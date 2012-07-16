@@ -41,6 +41,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		IAssembly GenerateAssembly(Project project, string code)
 		{
 			var wrapper = TypeSystemService.LoadProject (project);
+			project.Files.Add (new ProjectFile ("test.cs", BuildAction.Compile));
 			TypeSystemService.ParseFile (project, "test.cs", "text/x-csharp", code);
 			return wrapper.Compilation.MainAssembly;
 		}

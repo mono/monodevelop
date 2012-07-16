@@ -1078,8 +1078,9 @@ namespace MonoDevelop.Ide.TypeSystem
 					project.FileRemovedFromProject += OnFileRemoved;
 					project.FileRenamedInProject += OnFileRenamed;
 					project.Modified += OnProjectModified;
+					var files = project.Files.ToArray ();
 					Task.Factory.StartNew (delegate {
-						CheckModifiedFiles (project, wrapper);
+						CheckModifiedFiles (project, files, wrapper);
 					});
 
 					return wrapper;
@@ -1925,38 +1926,44 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		static void CheckModifiedFiles (Project project, ProjectContentWrapper content)
+		static void CheckModifiedFiles (Project project, ProjectFile[] projectFiles, ProjectContentWrapper content)
 		{
-			List<ProjectFile> modifiedFiles = null;
-			foreach (var file in project.Files) {
-				if (!string.Equals (file.BuildAction, "compile", StringComparison.OrdinalIgnoreCase)) 
-					continue;
-				var fileName = file.Name;
-				// if the file is already inside the content a parser exists for it, if not check if it can be parsed.
-				var oldFile = content.Content.GetFile (fileName);
-				if (oldFile == null) {
-					var parser = TypeSystemService.GetParser (DesktopService.GetMimeTypeForUri (fileName));
-					if (parser == null)
-						continue;
+			try {
+				lock (projectWrapperUpdateLock) {
+					List<ProjectFile> modifiedFiles = null;
+					foreach (var file in projectFiles) {
+						if (file.BuildAction == null || !string.Equals (file.BuildAction, "compile", StringComparison.OrdinalIgnoreCase)) 
+							continue;
+						var fileName = file.Name;
+						// if the file is already inside the content a parser exists for it, if not check if it can be parsed.
+						var oldFile = content.Content.GetFile (fileName);
+						if (oldFile == null) {
+							var parser = TypeSystemService.GetParser (DesktopService.GetMimeTypeForUri (fileName));
+							if (parser == null)
+								continue;
+						}
+						if (!IsFileModified (file, oldFile))
+							continue;
+						if (modifiedFiles == null)
+							modifiedFiles = new List<ProjectFile> ();
+						modifiedFiles.Add (file);
+					}
+					
+					// check if file needs to be removed from project content 
+					foreach (var file in content.Content.Files) {
+						if (project.GetProjectFile (file.FileName) == null) {
+							content.UpdateContent (c => c.UpdateProjectContent (file, null));
+							content.InformFileRemoved (new ParsedFileEventArgs (file));
+						}
+					}
+					
+					if (modifiedFiles == null)
+						return;
+					QueueParseJob (content, modifiedFiles);
 				}
-				if (!IsFileModified (file, oldFile))
-					continue;
-				if (modifiedFiles == null)
-					modifiedFiles = new List<ProjectFile> ();
-				modifiedFiles.Add (file);
+			} catch (Exception e) {
+				LoggingService.LogError ("Exception in check modified files.", e);
 			}
-			
-			// check if file needs to be removed from project content 
-			foreach (var file in content.Content.Files) {
-				if (project.GetProjectFile (file.FileName) == null) {
-					content.UpdateContent (c => c.UpdateProjectContent (file, null));
-					content.InformFileRemoved (new ParsedFileEventArgs (file));
-				}
-			}
-			
-			if (modifiedFiles == null)
-				return;
-			QueueParseJob (content, modifiedFiles);
 		}
 
 		static void CheckModifiedFile (AssemblyContext context)
@@ -1991,7 +1998,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			
 			while (list.Count > 0) {
 				var readydb = list.Dequeue ();
-				CheckModifiedFiles (readydb.Key, readydb.Value);
+				var files = readydb.Key.Files.ToArray ();
+				CheckModifiedFiles (readydb.Key, files, readydb.Value);
 			}
 			
 			Queue<KeyValuePair<string, AssemblyContext>> assemblyList;

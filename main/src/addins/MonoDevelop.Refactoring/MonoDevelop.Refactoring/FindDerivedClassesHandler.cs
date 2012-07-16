@@ -77,7 +77,34 @@ namespace MonoDevelop.Refactoring
 							if (!cache.TryGetValue (type.Region.FileName, out textFile)) {
 								cache [type.Region.FileName] = textFile = TextFileProvider.Instance.GetTextEditorData (type.Region.FileName);
 							}
-							int position = textFile.LocationToOffset (type.Region.BeginLine, type.Region.BeginColumn);
+							int position = textFile.LocationToOffset (type.Region.Begin);
+							string keyword;
+							switch (type.Kind) {
+							case TypeKind.Interface:
+								keyword = "interface";
+								break;
+							case TypeKind.Struct:
+								keyword = "struct";
+								break;
+							case TypeKind.Delegate:
+								keyword = "delegate";
+								break;
+							case TypeKind.Enum:
+								keyword = "enum";
+								break;
+							default:
+								keyword = "class";
+								break;
+							}
+							while (position < textFile.Length - keyword.Length) {
+								if (textFile.GetTextAt (position, keyword.Length) == keyword) {
+									position += keyword.Length;
+									while (position < textFile.Length && textFile.GetCharAt (position) == ' ' || textFile.GetCharAt (position) == '\t')
+										position++;
+									break;
+								}
+								position++;
+							}
 							monitor.ReportResult (new MonoDevelop.Ide.FindInFiles.SearchResult (new FileProvider (type.Region.FileName, p), position, 0));
 						}
 					});

@@ -225,15 +225,7 @@ namespace MonoDevelop.SourceEditor
 			debugStackLineMarker = new DebugStackLineTextMarker (widget.TextEditor);
 			currentDebugLineMarker = new CurrentDebugLineTextMarker (widget.TextEditor);
 			
-
-			this.WorkbenchWindowChanged += delegate {
-				if (WorkbenchWindow != null) {
-					widget.TextEditor.ExtensionContext = WorkbenchWindow.ExtensionContext ?? AddinManager.AddinEngine;
-					WorkbenchWindow.ActiveViewContentChanged += delegate {
-						widget.UpdateLineCol ();
-					};
-				}
-			};
+			this.WorkbenchWindowChanged += HandleWorkbenchWindowChanged;
 			this.ContentNameChanged += delegate {
 				this.Document.FileName = this.ContentName;
 				if (String.IsNullOrEmpty (ContentName) || !File.Exists (ContentName))
@@ -264,6 +256,20 @@ namespace MonoDevelop.SourceEditor
 			IdeApp.Preferences.DefaultHideMessageBubblesChanged += HandleIdeAppPreferencesDefaultHideMessageBubblesChanged;
 			Document.AddAnnotation (this);
 			FileRegistry.Add (this);
+		}
+
+		void HandleWorkbenchWindowChanged (object sender, EventArgs e)
+		{
+			if (WorkbenchWindow != null) {
+				widget.TextEditor.ExtensionContext = WorkbenchWindow.ExtensionContext;
+				WorkbenchWindow.ActiveViewContentChanged += HandleActiveViewContentChanged;
+				this.WorkbenchWindowChanged -= HandleWorkbenchWindowChanged;
+			}
+		}
+
+		void HandleActiveViewContentChanged (object o, ActiveViewContentEventArgs e)
+		{
+			widget.UpdateLineCol ();
 		}
 		
 		MessageBubbleHighlightPopupWindow messageBubbleHighlightPopupWindow = null;
@@ -708,7 +714,7 @@ namespace MonoDevelop.SourceEditor
 			
 			if (messageBubbleHighlightPopupWindow != null)
 				messageBubbleHighlightPopupWindow.Destroy ();
-			
+
 			IdeApp.Preferences.DefaultHideMessageBubblesChanged -= HandleIdeAppPreferencesDefaultHideMessageBubblesChanged;
 			IdeApp.Preferences.ShowMessageBubblesChanged -= HandleIdeAppPreferencesShowMessageBubblesChanged;
 			TaskService.TaskToggled -= HandleErrorListPadTaskToggled;

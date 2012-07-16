@@ -80,6 +80,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		{
 			if (type == null || string.IsNullOrEmpty(shortType) || usedTypes.Contains(shortType))
 				return null;
+			if (type.Name == "Void" && type.Namespace == "System")
+				return null;
 			usedTypes.Add(shortType);
 			var iCompletionData = Factory.CreateTypeCompletionData(type, shortType);
 			result.Add(iCompletionData);
@@ -89,6 +91,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		public ICompletionData AddType(IUnresolvedTypeDefinition type, string shortType)
 		{
 			if (type == null || string.IsNullOrEmpty(shortType) || usedTypes.Contains(shortType))
+				return null;
+			if (type.Name == "Void" && type.Namespace == "System")
 				return null;
 			usedTypes.Add(shortType);
 			var iCompletionData = Factory.CreateTypeCompletionData(type, shortType);

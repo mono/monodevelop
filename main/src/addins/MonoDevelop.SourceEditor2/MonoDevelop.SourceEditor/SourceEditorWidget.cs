@@ -647,7 +647,7 @@ namespace MonoDevelop.SourceEditor
 			get {
 				Gtk.Container c = vbox;
 				while (c != null) {
-					if (c.FocusChild == textEditor)
+					if (c.FocusChild == TextEditor)
 						return true;
 					c = c.FocusChild as Gtk.Container;
 				}
@@ -727,7 +727,9 @@ namespace MonoDevelop.SourceEditor
 					OnLostFocus ();
 			};
 			this.splittedTextEditor.Extension = textEditor.Extension;
-			
+			this.splittedTextEditor.GetTextEditorData ().IndentationTracker = textEditor.GetTextEditorData ().IndentationTracker;
+			this.splittedTextEditor.Document.BracketMatcher = textEditor.Document.BracketMatcher;
+
 			this.splittedTextEditorContainer = new TextEditorContainer (this.splittedTextEditor);
 			secondsw.SetTextEditor (this.splittedTextEditorContainer);
 			splitContainer.Add2 (secondsw);
