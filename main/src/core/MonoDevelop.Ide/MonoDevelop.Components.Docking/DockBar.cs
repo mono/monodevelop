@@ -47,7 +47,6 @@ namespace MonoDevelop.Components.Docking
 
 		internal DockBar (DockFrame frame, Gtk.PositionType position)
 		{
-			frame.ShadedContainer.Add (this);
 			VisibleWindow = false;
 			this.frame = frame;
 			this.position = position;

@@ -60,14 +60,11 @@ namespace MonoDevelop.Components.Docking
 		
 		DockBar dockBarTop, dockBarBottom, dockBarLeft, dockBarRight;
 		VBox mainBox;
-		ShadedContainer shadedContainer;
-		
+
 		public DockFrame ()
 		{
 			Mono.TextEditor.GtkWorkarounds.FixContainerLeak (this);
-			
-			shadedContainer = new ShadedContainer ();
-			
+
 			dockBarTop = new DockBar (this, Gtk.PositionType.Top);
 			dockBarBottom = new DockBar (this, Gtk.PositionType.Bottom);
 			dockBarLeft = new DockBar (this, Gtk.PositionType.Left);
@@ -255,11 +252,7 @@ namespace MonoDevelop.Components.Docking
 		internal DockContainer Container {
 			get { return container; }
 		}
-		
-		public ShadedContainer ShadedContainer {
-			get { return this.shadedContainer; }
-		}
-		
+
 		public int HandleSize {
 			get {
 				return handleSize;
@@ -830,8 +823,6 @@ namespace MonoDevelop.Components.Docking
 			HslColor cDark = cLight;
 			cLight.L *= 0.9;
 			cDark.L *= 0.8;
-			shadedContainer.LightColor = cLight;
-			shadedContainer.DarkColor = cDark;
 		}
 
 

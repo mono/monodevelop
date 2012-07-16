@@ -47,7 +47,6 @@ namespace MonoDevelop.Components.Docking
 		public TabStrip (DockFrame frame)
 		{
 			this.frame = frame;
-			frame.ShadedContainer.Add (this);
 			VBox vbox = new VBox ();
 			box = new TabStripBox () { TabStrip = this };
 			vbox.PackStart (box, false, false, 0);

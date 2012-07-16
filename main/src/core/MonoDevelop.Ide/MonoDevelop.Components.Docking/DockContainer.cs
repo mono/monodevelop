@@ -39,7 +39,7 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Components.Docking
 {
-	class DockContainer: Container, IShadedWidget
+	class DockContainer: Container
 	{
 		DockLayout layout;
 		DockFrame frame;
@@ -60,7 +60,6 @@ namespace MonoDevelop.Components.Docking
 			
 			this.Events = EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.PointerMotionMask | EventMask.LeaveNotifyMask;
 			this.frame = frame;
-			frame.ShadedContainer.Add (this);
 		}
 
 		internal DockGroupItem FindDockGroupItem (string id)
@@ -298,8 +297,6 @@ namespace MonoDevelop.Components.Docking
 					Add (s);
 				}
 			}
-
-			NotifySeparatorsChanged ();
 		}
 
 		void GetTabbedGroups (DockGroup grp, List<DockGroup> tabbedGroups)
@@ -466,22 +463,6 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 		
-		public IEnumerable<Rectangle> GetShadedAreas ()
-		{
-			List<Gdk.Rectangle> rects = new List<Gdk.Rectangle> ();
-			if (layout != null)
-				layout.DrawSeparators (Allocation, null, 0, DrawSeparatorOperation.CollectAreas, rects);
-			return rects;
-		}
-		
-		internal void NotifySeparatorsChanged ()
-		{
-			if (AreasChanged != null)
-				AreasChanged (this, EventArgs.Empty);
-		}
-		
-		public event EventHandler AreasChanged;
-
 		internal class SplitterWidget: EventBox
 		{
 			static Gdk.Cursor hresizeCursor = new Gdk.Cursor (CursorType.SbHDoubleArrow);
@@ -553,9 +534,7 @@ namespace MonoDevelop.Components.Docking
 			
 			protected override bool OnMotionNotifyEvent (Gdk.EventMotion e)
 			{
-				DockContainer container = (DockContainer) Parent;
 				if (dragging) {
-					container.NotifySeparatorsChanged ();
 					int newpos = (dockGroup.Type == DockGroupType.Horizontal) ? (int)e.XRoot : (int)e.YRoot;
 					if (newpos != dragPos) {
 						int nsize = dragSize + (newpos - dragPos);

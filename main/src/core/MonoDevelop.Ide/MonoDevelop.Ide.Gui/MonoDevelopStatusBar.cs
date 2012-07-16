@@ -39,7 +39,7 @@ using MonoDevelop.Components.MainToolbar;
 
 namespace MonoDevelop.Ide
 {
-	class MonoDevelopStatusBar : Gtk.Statusbar, StatusBar, IShadedWidget
+	class MonoDevelopStatusBar : Gtk.Statusbar, StatusBar
 	{
 		Label modeLabel;
 		Label cursorLabel;
@@ -137,7 +137,6 @@ namespace MonoDevelop.Ide
 			// Dock area
 			
 			DefaultWorkbench wb = (DefaultWorkbench)IdeApp.Workbench.RootWindow;
-			wb.DockFrame.ShadedContainer.Add (this);
 			var dockBar = wb.DockFrame.ExtractDockBar (PositionType.Bottom);
 			dockBar.AlignToEnd = true;
 			dockBar.ShowBorder = false;
@@ -656,7 +655,6 @@ namespace MonoDevelop.Ide
 			bool ret = base.OnExposeEvent (evnt);
 			if (HasResizeGrip) {
 				DefaultWorkbench wb = (DefaultWorkbench) IdeApp.Workbench.RootWindow;
-				wb.DockFrame.ShadedContainer.DrawBackground (this, GetGripRect ());
 				Gdk.Rectangle rect = GetGripRect ();
 				int w = rect.Width - Style.Xthickness;
 				int h = Allocation.Height - Style.YThickness;
@@ -666,20 +664,6 @@ namespace MonoDevelop.Ide
 			}
 			return ret;
 		}
-		
-		public void NotifyShadedAreasChanged ()
-		{
-			if (AreasChanged != null)
-				AreasChanged (this, EventArgs.Empty);
-		}
-		
-		public IEnumerable<Gdk.Rectangle> GetShadedAreas ()
-		{
-			if (HasResizeGrip)
-				yield return GetGripRect ();
-		}
-		
-		public event EventHandler AreasChanged;
 	}
 	
 	/// <summary>
@@ -1038,7 +1022,6 @@ namespace MonoDevelop.Ide
 			}
 			set {
 				statusBar.HasResizeGrip = value;
-				statusBar.NotifyShadedAreasChanged ();
 			}
 		}
 		

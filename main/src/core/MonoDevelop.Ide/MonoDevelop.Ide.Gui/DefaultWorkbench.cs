@@ -808,7 +808,7 @@ namespace MonoDevelop.Ide.Gui
 			toolbarFrame.AddContent (dock);
 			
 			// Create the notebook for the various documents.
-			tabControl = new SdiDragNotebook (dock.ShadedContainer);
+			tabControl = new SdiDragNotebook ();
 			tabControl.SwitchPage += OnActiveWindowChanged;
 			tabControl.PageAdded += OnActiveWindowChanged;
 			tabControl.PageRemoved += OnActiveWindowChanged;
@@ -1390,21 +1390,8 @@ namespace MonoDevelop.Ide.Gui
 	
 	class SdiDragNotebook: DockNotebook, ICommandDelegatorRouter, ICommandBar
 	{
-		ShadedContainer shadedContainer;
-		
-		public SdiDragNotebook (ShadedContainer shadedContainer)
+		public SdiDragNotebook ()
 		{
-			this.shadedContainer = shadedContainer;
-			shadedContainer.Add (this);
-			
-			PageAdded += delegate {
-				if (AreasChanged != null)
-					AreasChanged (this, EventArgs.Empty);
-			};
-			PageRemoved += delegate {
-				if (AreasChanged != null)
-					AreasChanged (this, EventArgs.Empty);
-			};
 			NextButtonClicked += delegate {
 				IdeApp.CommandService.DispatchCommand (Ide.Commands.NavigationCommands.NavigateForward);
 			};
@@ -1423,22 +1410,6 @@ namespace MonoDevelop.Ide.Gui
 		{
 			SdiWorkspaceWindow win = CurrentTab != null ? (SdiWorkspaceWindow) CurrentTab.Content : null;
 			return win != null ? win.CommandHandler : null;
-		}
-		
-		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
-		{
-			shadedContainer.DrawBackground (this);
-			return base.OnExposeEvent (evnt);
-		}
-
-		public event EventHandler AreasChanged;
-		
-		public IEnumerable<Gdk.Rectangle> GetShadedAreas ()
-		{
-			Gdk.Rectangle rect = Allocation;
-			if (CurrentTab != null && CurrentTab.Content.Visible)
-				rect.Height -= CurrentTab.Content.Allocation.Height;
-			yield return rect;
 		}
 		
 		#region ICommandBar implementation

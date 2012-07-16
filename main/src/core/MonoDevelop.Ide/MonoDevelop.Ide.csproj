@@ -1396,7 +1396,6 @@
     <Compile Include="MonoDevelop.Components.Docking\DockObject.cs" />
     <Compile Include="MonoDevelop.Components.Docking\DockPosition.cs" />
     <Compile Include="MonoDevelop.Components.Docking\PlaceholderWindow.cs" />
-    <Compile Include="MonoDevelop.Components.Docking\ShadedContainer.cs" />
     <Compile Include="MonoDevelop.Components.Docking\TabStrip.cs" />
     <Compile Include="MonoDevelop.Components\MenuButtonEntry.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\IOptionsPanel.cs" />
