@@ -42,11 +42,14 @@ namespace MonoDevelop.Components.MainToolbar
 		List<ButtonBarButton> buttons = new List<ButtonBarButton> ();
 		ButtonBarButton[] visibleButtons;
 
-		LazyImage[] btnNormal;
-		LazyImage[] btnPressed;
+		Gdk.Pixbuf[] btnNormalOriginal;
+		Gdk.Pixbuf[] btnPressedOriginal;
+		Gdk.Pixbuf[] btnNormal;
+		Gdk.Pixbuf[] btnPressed;
 
 		ButtonBarButton pushedButton;
 		object lastCommandTarget;
+		int currentImagesHeight;
 
 		public ButtonBar ()
 		{
@@ -54,17 +57,37 @@ namespace MonoDevelop.Components.MainToolbar
 			VisibleWindow = false;
 			Events |= EventMask.ButtonPressMask | EventMask.ButtonReleaseMask;
 
-			btnNormal = new LazyImage[] {
-				new LazyImage ("btDebugBase-LeftCap-Normal.png"),
-				new LazyImage ("btDebugBase-MidCap-Normal.png"),
-				new LazyImage ("btDebugBase-RightCap-Normal.png")
+			btnNormalOriginal = new Gdk.Pixbuf[] {
+				Gdk.Pixbuf.LoadFromResource ("btDebugBase-LeftCap-Normal.png"),
+				Gdk.Pixbuf.LoadFromResource ("btDebugBase-MidCap-Normal.png"),
+				Gdk.Pixbuf.LoadFromResource ("btDebugBase-RightCap-Normal.png")
 			};
 
-			btnPressed = new LazyImage[] {
-				new LazyImage ("btDebugBase-LeftCap-Pressed.png"),
-				new LazyImage ("btDebugBase-MidCap-Pressed.png"),
-				new LazyImage ("btDebugBase-RightCap-Pressed.png")
+			btnPressedOriginal = new Gdk.Pixbuf[] {
+				Gdk.Pixbuf.LoadFromResource ("btDebugBase-LeftCap-Pressed.png"),
+				Gdk.Pixbuf.LoadFromResource ("btDebugBase-MidCap-Pressed.png"),
+				Gdk.Pixbuf.LoadFromResource ("btDebugBase-RightCap-Pressed.png")
 			};
+			btnNormal = new Pixbuf[btnNormalOriginal.Length];
+			btnPressed = new Pixbuf[btnNormalOriginal.Length];
+		}
+
+		void ScaleImages (int newHeight)
+		{
+			if (currentImagesHeight == newHeight)
+				return;
+
+			currentImagesHeight = newHeight;
+			for (int n=0; n<btnNormalOriginal.Length; n++) {
+				if (btnNormal[n] != null)
+					btnNormal[n].Dispose ();
+				btnNormal[n] = ExpandImageVertically (btnNormalOriginal[n], newHeight);
+			}
+			for (int n=0; n<btnPressedOriginal.Length; n++) {
+				if (btnPressed[n] != null)
+					btnPressed[n].Dispose ();
+				btnPressed[n] = ExpandImageVertically (btnPressedOriginal[n], newHeight);
+			}
 		}
 
 		ButtonBarButton[] VisibleButtons {
@@ -138,12 +161,14 @@ namespace MonoDevelop.Components.MainToolbar
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
 			base.OnSizeRequested (ref requisition);
-			requisition.Width = VisibleButtons.Sum (b => !b.IsSeparator ? btnNormal[0].Img.Width : SeparatorSpacing);
-			requisition.Height = btnNormal[0].Img.Height;
+			requisition.Width = VisibleButtons.Sum (b => b.Visible ? (!b.IsSeparator ? btnNormalOriginal[0].Width : SeparatorSpacing) : 0);
+			requisition.Height = btnNormalOriginal[0].Height;
 		}
 
 		protected override bool OnExposeEvent (EventExpose evnt)
 		{
+			ScaleImages (Allocation.Height);
+
 			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
 				double x = Allocation.X, y = Allocation.Y;
 				for (int i = 0; i < VisibleButtons.Length; i++) {
@@ -155,9 +180,11 @@ namespace MonoDevelop.Components.MainToolbar
 							x += SeparatorSpacing;
 						continue;
 					}
-					LazyImage[] images = State == StateType.Selected && pushedButton == button ? btnPressed : btnNormal;
-					ImageSurface img = images [lastWasSeparator ? 0 : nextIsSeparator ? 2 : 1];
-					img.Show (context, x, y);
+					Gdk.Pixbuf[] images = State == StateType.Selected && pushedButton == button ? btnPressed : btnNormal;
+					Gdk.Pixbuf img = images [lastWasSeparator ? 0 : nextIsSeparator ? 2 : 1];
+					Gdk.CairoHelper.SetSourcePixbuf (context, img, x, y);
+					context.Paint ();
+
 					button.Allocation = new Gdk.Rectangle ((int)x, (int)y, img.Width, img.Height);
 
 					var icon = ImageService.GetPixbuf (button.Image, IconSize.Menu);
@@ -172,6 +199,20 @@ namespace MonoDevelop.Components.MainToolbar
 				}
 			}
 			return base.OnExposeEvent (evnt);
+		}
+
+		Gdk.Pixbuf ExpandImageVertically (Gdk.Pixbuf img, int newHeight)
+		{
+			if (newHeight <= img.Height)
+				return img.Copy ();
+			var res = new Gdk.Pixbuf (img.Colorspace, img.HasAlpha, img.BitsPerSample, img.Width, newHeight);
+			var h1 = img.Height / 2;
+			var h2 = img.Height - h1;
+			res.Fill (0xff000000);
+			img.Composite (res, 0, h1, res.Width, newHeight - img.Height, 0, 0, 1, (double)newHeight / (double)img.Height, InterpType.Bilinear, 255);
+			img.Composite (res, 0, 0, img.Width, h1, 0, 0, 1, 1, InterpType.Bilinear, 255);
+			img.Composite (res, 0, newHeight - h2, img.Width, h2, 0, newHeight - img.Height, 1, 1, InterpType.Bilinear, 255);
+			return res;
 		}
 
 		public sealed class ClickEventArgs : EventArgs
