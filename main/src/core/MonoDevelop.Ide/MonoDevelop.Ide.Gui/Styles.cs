@@ -33,10 +33,10 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly Cairo.Color BaseBackgroundColor = new Cairo.Color (1, 1, 1);
 		public static readonly Cairo.Color BaseForegroundColor = new Cairo.Color (0, 0, 0);
 
+		// Document tab bar
+
 		public static readonly Cairo.Color TabBarBackgroundColor = new Cairo.Color (248d / 255d, 248d / 255d, 248d / 255d);
 		public static readonly Cairo.Color BreadcrumbBackgroundColor = new Cairo.Color (77d / 255d, 77d / 255d, 77d / 255d);
-		public static readonly Cairo.Color WidgetBorderColor = CairoExtensions.ParseColor ("8c8c8c");
-
 
 		public static readonly Cairo.Color TabBarGradientStartColor = TabBarBackgroundColor;
 		public static readonly Cairo.Color TabBarGradientMidColor = Shift (TabBarBackgroundColor, 0.875);
@@ -54,6 +54,8 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly Cairo.Color BreadcrumbButtonBorderColor = Shift (BaseBackgroundColor, 0.8);
 		public static readonly Cairo.Color BreadcrumbButtonFillColor = WithAlpha (BaseBackgroundColor, 0.1d);
 
+		// Dock pads
+		
 		public static readonly Cairo.Color DockTabBarGradientTop = new Cairo.Color (248d / 255d, 248d / 255d, 248d / 255d);
 		public static readonly Cairo.Color DockTabBarGradientStart = new Cairo.Color (242d / 255d, 242d / 255d, 242d / 255d);
 		public static readonly Cairo.Color DockTabBarGradientEnd = new Cairo.Color (230d / 255d, 230d / 255d, 230d / 255d);
@@ -74,11 +76,22 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly Cairo.Color DockBarSeparatorColorDark = new Cairo.Color (0, 0, 0, 0.2);
 		public static readonly Cairo.Color DockBarSeparatorColorLight = new Cairo.Color (1, 1, 1, 0.3);
 
+		// Status area
+
+		public static readonly Cairo.Color WidgetBorderColor = CairoExtensions.ParseColor ("8c8c8c");
+
 		public static readonly Cairo.Color StatusBarBorderColor = Styles.WidgetBorderColor;
 		public static readonly Cairo.Color StatusBarFill1Color = CairoExtensions.ParseColor ("eff5f7");
 		public static readonly Cairo.Color StatusBarFill2Color = CairoExtensions.ParseColor ("d0d9db");
 		public static readonly Cairo.Color StatusBarInnerColor = CairoExtensions.ParseColor ("c4cdcf", 0.5);
 		public static readonly Cairo.Color StatusBarTextColor = CairoExtensions.ParseColor ("3a4029");
+
+		// Toolbar
+
+		public static readonly Cairo.Color ToolbarBottomBorderColor = new Cairo.Color (0.5, 0.5, 0.5);
+		public static readonly Cairo.Color ToolbarBottomGlowColor = new Cairo.Color (1, 1, 1, 0.2);
+
+		// Helper methods
 
 		internal static Cairo.Color Shift (Cairo.Color color, double factor)
 		{

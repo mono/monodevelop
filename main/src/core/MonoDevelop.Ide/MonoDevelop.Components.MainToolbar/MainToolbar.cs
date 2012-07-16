@@ -38,6 +38,7 @@ using MonoDevelop.Projects;
 using System.Collections.Generic;
 using Mono.Addins;
 using MonoDevelop.Components.Commands.ExtensionNodes;
+using MonoDevelop.Ide.Gui;
 
 
 namespace MonoDevelop.Components.MainToolbar
@@ -46,7 +47,7 @@ namespace MonoDevelop.Components.MainToolbar
 	{
 		const string ToolbarExtensionPath = "/MonoDevelop/Ide/CommandBar";
 
-		HBox contentBox = new HBox (false, 6);
+		HBox contentBox = new HBox (false, 0);
 
 		ComboBox configurationCombo;
 		TreeStore configurationStore = new TreeStore (typeof(string), typeof(string));
@@ -60,6 +61,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		ButtonBar buttonBar = new ButtonBar ();
 		RoundButton button = new RoundButton ();
+		Alignment buttonBarBox;
 
 		HashSet<string> visibleBars = new HashSet<string> ();
 
@@ -69,11 +71,6 @@ namespace MonoDevelop.Components.MainToolbar
 		}
 
 		public int TitleBarHeight {
-			get;
-			set;
-		}
-
-		public Cairo.Color BottomColor {
 			get;
 			set;
 		}
@@ -108,12 +105,13 @@ namespace MonoDevelop.Components.MainToolbar
 			IdeApp.Workspace.SolutionLoaded += (sender, e) => UpdateCombos ();
 			IdeApp.Workspace.SolutionUnloaded += (sender, e) => UpdateCombos ();
 			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
-			contentBox.BorderWidth = 6;
 
 			AddWidget (button);
+			AddSpace (8);
+
+			var height = 24;
 
 			configurationCombo = new Gtk.ComboBox ();
-			configurationCombo.SetSizeRequest (150, -1);
 			configurationCombo.Model = configurationStore;
 			var ctx = new Gtk.CellRendererText ();
 			configurationCombo.PackStart (ctx, true);
@@ -122,9 +120,9 @@ namespace MonoDevelop.Components.MainToolbar
 			var configurationComboVBox = new VBox ();
 			configurationComboVBox.PackStart (configurationCombo, true, false, 0);
 			AddWidget (configurationComboVBox);
+			AddSpace (8);
 
 			runtimeCombo = new Gtk.ComboBox ();
-			runtimeCombo.SetSizeRequest (150, -1);
 			runtimeCombo.Model = runtimeStore;
 			runtimeCombo.PackStart (ctx, true);
 			runtimeCombo.AddAttribute (ctx, "text", 0);
@@ -133,16 +131,19 @@ namespace MonoDevelop.Components.MainToolbar
 			runtimeComboVBox.PackStart (runtimeCombo, true, false, 0);
 			AddWidget (runtimeComboVBox);
 
-			var buttonBarVBox = new VBox ();
-			buttonBarVBox.PackStart (buttonBar, true, false, 0);
-			AddWidget (buttonBarVBox);
+			buttonBarBox = new Alignment (0.5f, 0.5f, 0, 0);
+			buttonBarBox.LeftPadding = 7;
+			buttonBarBox.Add (buttonBar);
+			buttonBarBox.NoShowAll = true;
+			AddWidget (buttonBarBox);
+			AddSpace (24);
 
 			statusArea = new StatusArea ();
 
 			var statusAreaVBox = new VBox ();
 			statusAreaVBox.PackStart (statusArea, true, false, 0);
-
 			contentBox.PackStart (statusAreaVBox, true, true, 0);
+			AddSpace (24);
 
 			matchEntry = new SearchEntry ();
 
@@ -207,13 +208,35 @@ namespace MonoDevelop.Components.MainToolbar
 					BuildToolbar ();
 			};
 
-			AddWidget (matchEntry);
+			contentBox.PackStart (matchEntry, false, false, 0);
 
-			Add (contentBox);
+			configurationCombo.SetSizeRequest (150, height);
+			runtimeCombo.SetSizeRequest (150, height);
+			statusArea.SetSizeRequest (32, height);
+			matchEntry.HeightRequest = height + 2;
+			buttonBar.HeightRequest = height + 2;
+
+			var align = new Gtk.Alignment (0, 0, 1f, 1f);
+			align.TopPadding = 6;
+			align.LeftPadding = 9;
+			align.RightPadding = 18;
+			align.BottomPadding = 11;
+			align.Add (contentBox);
+			align.Show ();
+
+			Add (align);
 			UpdateCombos ();
 
 			button.Clicked += HandleStartButtonClicked;
 			IdeApp.CommandService.RegisterCommandBar (this);
+		}
+
+		void AddSpace (int w)
+		{
+			Label la = new Label ("");
+			la.WidthRequest = w;
+			la.Show ();
+			contentBox.PackStart (la, false, false, 0);
 		}
 
 		void BuildToolbar ()
@@ -221,10 +244,11 @@ namespace MonoDevelop.Components.MainToolbar
 			buttonBar.Clear ();
 			var bars = AddinManager.GetExtensionNodes (ToolbarExtensionPath).Cast<ItemSetCodon> ().Where (n => visibleBars.Contains (n.Id));
 			if (!bars.Any ()) {
-				buttonBar.Hide ();
+				buttonBarBox.Hide ();
 				return;
 			}
 
+			buttonBarBox.Show ();
 			buttonBar.ShowAll ();
 			foreach (var bar in bars) {
 				foreach (CommandItemCodon node in bar.ChildNodes.OfType<CommandItemCodon> ())
@@ -431,9 +455,14 @@ namespace MonoDevelop.Components.MainToolbar
 					context.Fill ();
 
 				}
-				context.MoveTo (0, Allocation.Bottom + 0.5);
-				context.LineTo (Allocation.Width + evnt.Area.Width, Allocation.Bottom + 0.5);
-				context.Color = BottomColor;
+				context.MoveTo (0, Allocation.Height - 0.5);
+				context.RelLineTo (Allocation.Width, 0);
+				context.Color = Styles.ToolbarBottomBorderColor;
+				context.Stroke ();
+
+				context.MoveTo (0, Allocation.Height - 1.5);
+				context.RelLineTo (Allocation.Width, 0);
+				context.Color = Styles.ToolbarBottomGlowColor;
 				context.Stroke ();
 			}
 			return base.OnExposeEvent (evnt);

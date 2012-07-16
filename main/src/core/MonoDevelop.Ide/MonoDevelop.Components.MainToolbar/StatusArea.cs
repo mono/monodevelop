@@ -67,7 +67,6 @@ namespace MonoDevelop.Components.MainToolbar
 				UpdateSeparators ();
 			};
 			
-			SetSizeRequest (32, 22);
 			ShowAll ();
 		}
 
@@ -184,7 +183,7 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			using (var ctx = Gdk.CairoHelper.Create (this.GdkWindow)) {
 				var alloc = Allocation;
-				alloc.Inflate (0, -2);
+				//alloc.Inflate (0, -2);
 				ctx.Rectangle (alloc.X, alloc.Y, 1, alloc.Height);
 				Cairo.LinearGradient gr = new LinearGradient (alloc.X, alloc.Y, alloc.X, alloc.Y + alloc.Height);
 				gr.AddColorStop (0, new Cairo.Color (0, 0, 0, 0));

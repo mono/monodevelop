@@ -56,6 +56,7 @@ namespace MonoDevelop.Components
 		EventHandler activated_event;
 		bool roundedShape;
 		bool hasFrame = true;
+		bool customRoundedShapeDrawing = false;
 
 		public event EventHandler Changed {
 			add { entry_changed += value; }
@@ -100,8 +101,11 @@ namespace MonoDevelop.Components
 		public bool RoundedShape {
 			get { return roundedShape; }
 			set {
-//				roundedShape = value;
-				entry.Name = "search-entry";
+				roundedShape = value;
+				if (value)
+					entry.Name = "search-entry";
+				else
+					entry.Name = "";
 				ShowHideButtons ();
 				QueueDraw ();
 			}
@@ -138,7 +142,7 @@ namespace MonoDevelop.Components
 
 			entryAlignment = new Gtk.Alignment (0.5f, 0.5f, 1f, 1f);
 			entryAlignment.Add (entry);
-			box.PackStart (filter_button, false, false, 0);
+			box.PackStart (filter_button, false, false, 2);
 			box.PackStart (entryAlignment, true, true, 0);
 			box.PackStart (clear_button, false, false, 0);
 			alignment.Add (box);
@@ -164,6 +168,11 @@ namespace MonoDevelop.Components
 			clear_button.Clicked += OnClearButtonClicked;
 
 			ShowHideButtons ();
+
+			box.SizeRequested += delegate(object o, SizeRequestedArgs args) {
+				if (HeightRequest != -1)
+				args.Requisition = new Gtk.Requisition () { Width = args.Requisition.Width, Height = HeightRequest };
+			};
 		}
 
 		Gtk.EventBox statusLabelEventBox;
@@ -283,7 +292,15 @@ namespace MonoDevelop.Components
 			clear_button.ModifyBg (entry.State, color);
 			if (statusLabelEventBox != null)
 				statusLabelEventBox.ModifyBg (entry.State, color);
-			box.BorderWidth = (uint)entry.Style.XThickness;
+
+			box.BorderWidth = 0;
+			var h = entry.SizeRequest ().Height + entry.Style.Ythickness * 2;
+			var req = entry.SizeRequest ().Height;
+			req = Math.Max (req, filter_button.SizeRequest ().Height);
+			req = Math.Max (req, clear_button.SizeRequest ().Height);
+			var diff = h - req;
+			if (diff > 1)
+				box.BorderWidth = (uint)(diff / 2);
 		}
 
 		private void OnInnerEntryStyleSet (object o, StyleSetArgs args)
@@ -358,9 +375,15 @@ namespace MonoDevelop.Components
 		{
 			var alloc = box.Allocation;
 
-			if (hasFrame && !roundedShape) {
+			if (hasFrame && (!roundedShape || (roundedShape && !customRoundedShapeDrawing))) {
 				Style.PaintShadow (entry.Style, GdkWindow, StateType.Normal, ShadowType.In,
 				                   evnt.Area, entry, "entry", alloc.X, alloc.Y, alloc.Width, alloc.Height);
+/*				using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
+					ctx.LineWidth = 1;
+					ctx.Rectangle (alloc.X + 0.5, alloc.Y + 0.5, alloc.Width - 1, alloc.Height - 1);
+					ctx.Color = new Cairo.Color (1,0,0);
+					ctx.Stroke ();
+				}*/
 			}
 			else if (!roundedShape) {
 				using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
@@ -379,14 +402,12 @@ namespace MonoDevelop.Components
 
 			PropagateExpose (Child, evnt);
 
-			if (hasFrame) {
-				if (roundedShape) {
-					using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
-						RoundBorder (ctx, alloc.X + 0.5, alloc.Y + 0.5, alloc.Width - 1, alloc.Height - 1);
-						ctx.Color = Styles.WidgetBorderColor;
-						ctx.LineWidth = 1;
-						ctx.Stroke ();
-					}
+			if (hasFrame && roundedShape && customRoundedShapeDrawing) {
+				using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
+					RoundBorder (ctx, alloc.X + 0.5, alloc.Y + 0.5, alloc.Width - 1, alloc.Height - 1);
+					ctx.Color = Styles.WidgetBorderColor;
+					ctx.LineWidth = 1;
+					ctx.Stroke ();
 				}
 			}
 			return true;
