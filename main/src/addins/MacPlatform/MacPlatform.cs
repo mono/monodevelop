@@ -535,7 +535,6 @@ end tell", directory.ToString ().Replace ("\"", "\\\"")));
 		{
 			NSApplication.Init ();
 			
-			NSColor bottomColor = NSColor.FromDeviceWhite (0.408f, 1.0f);
 			NSWindow w = GtkQuartz.GetWindow (window);
 			w.IsOpaque = false;
 
@@ -546,8 +545,7 @@ end tell", directory.ToString ().Replace ("\"", "\\\"")));
 			w.StyleMask |= NSWindowStyle.TexturedBackground;
 			var result = new MainToolbar () {
 				Background = MonoDevelop.Components.CairoExtensions.LoadImage (typeof (MacPlatformService).Assembly, resource),
-				TitleBarHeight = GetTitleBarHeight (),
-				BottomColor = ConvertColor (bottomColor)
+				TitleBarHeight = GetTitleBarHeight ()
 			};
 			//		File.Delete (tempName);
 			
