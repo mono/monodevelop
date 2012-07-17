@@ -167,7 +167,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			new ColorMetaData ("text.preprocessor.keyword", GettextCatalog.GetString ("Pre processor keywords"), ColorsAvailable.Text),
 			new ColorMetaData ("text.markup", GettextCatalog.GetString ("Text markup"), ColorsAvailable.Text),
 			new ColorMetaData ("text.markup.tag", GettextCatalog.GetString ("Text markup tags"), ColorsAvailable.Text),
-			
+			new ColorMetaData ("text.markup.attribute", GettextCatalog.GetString ("Text markup attributes"), ColorsAvailable.Text),
+
 			new ColorMetaData ("comment", GettextCatalog.GetString ("Comments"), ColorsAvailable.Text),
 			new ColorMetaData ("comment.line", GettextCatalog.GetString ("Line comments"), ColorsAvailable.Text),
 			new ColorMetaData ("comment.block", GettextCatalog.GetString ("Block comments"), ColorsAvailable.Text),

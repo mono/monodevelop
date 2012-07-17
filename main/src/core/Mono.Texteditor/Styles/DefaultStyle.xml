@@ -71,6 +71,7 @@
 			<Style name="keyword" color="#5e452b" />
 		</Style>
 		<Style name="markup" color="skyblue3">
+			<Style name="attribute" weight="italic"/>
 			<Style name="tag"/>
 		</Style>
 	</Style>

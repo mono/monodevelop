@@ -65,6 +65,7 @@ THE SOFTWARE.
 			<Style name="keyword" weight="italic"/>
 		</Style>
 		<Style name="markup" color="blue">
+			<Style name="attribute" color="base00" />
 			<Style name="tag"/>
 		</Style>
 	</Style>

@@ -26,8 +26,10 @@
 //
 
 using System;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml;
+using System.Collections.Generic;
 
 namespace Mono.TextEditor.Highlighting
 {
@@ -60,28 +62,66 @@ namespace Mono.TextEditor.Highlighting
 			return String.Format ("[Match: Color={0}, Pattern={1}]", Color, Pattern);
 		}
 
-		public virtual int TryMatch (string text, int matchOffset)
+		protected readonly static int[] emptyMatch = new int[0];
+		public virtual int[] TryMatch (string text, int matchOffset)
 		{
-			
-//			System.Text.RegularExpressions.Match match = regex.Match (text, matchOffset);
 			string matchStr = text.Substring (matchOffset);
-			System.Text.RegularExpressions.Match match = regex.Match (matchStr);
-			
-			if (match.Success)
-				return match.Length;
-			return -1;
+			var match = regex.Match (matchStr);
+			if (match.Success) {
+				var result = new int[match.Groups.Count - 1];
+				for (int i = 0; i < result.Length; i++) {
+					result[i] = match.Groups[i + 1].Length;
+				}
+				return result;
+			}
+			return emptyMatch;
 		}
 		
 		public const string Node = "Match";
+
+		public bool IsGroupMatch {
+			get {
+				return groups != null && string.IsNullOrEmpty (Color);
+			}
+		}
+
+		List<string> groups = null;
+		public List<string> Groups {
+			get {
+				if (groups == null)
+					groups = new List<string> ();
+				return groups;
+			}
+		}
+
 		public static Match Read (XmlReader reader)
 		{
+			string expression = reader.GetAttribute ("expression");
+			if (!string.IsNullOrEmpty (expression)) {
+				var result = new Match ();
+
+				result.Pattern = "^" + expression;
+				result.regex   = new System.Text.RegularExpressions.Regex (result.Pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+				XmlReadHelper.ReadList (reader, Node, delegate () {
+					switch (reader.LocalName) {
+					case "Group":
+						result.Groups.Add (reader.GetAttribute ("color"));
+						return true;
+					}
+					return false;
+				});
+
+				return result;
+			}
+
 			string color   = reader.GetAttribute ("color");
 			string pattern = reader.ReadElementString ();
-			Match result   = pattern == "CSharpNumber" ? new CSharpNumberMatch () : new Match ();
-			result.Color   = color;
-			result.Pattern = "^" + pattern;
-			result.regex   = new System.Text.RegularExpressions.Regex (result.Pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
-			return result;
+			Match result2   = pattern == "CSharpNumber" ? new CSharpNumberMatch () : new Match ();
+			result2.Color   = color;
+			result2.Pattern = "^" + pattern;
+			result2.regex   = new System.Text.RegularExpressions.Regex (result2.Pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+			return result2;
 		}
 	}
 	
@@ -123,7 +163,7 @@ namespace Mono.TextEditor.Highlighting
 			return true;
 		}
 		
-		public override int TryMatch (string text, int matchOffset)
+		public override int[] TryMatch (string text, int matchOffset)
 		{
 			int i = matchOffset;
 			if (matchOffset + 1 < text.Length && text[matchOffset] == '0' && Char.ToUpper (text[matchOffset + 1]) == 'X') {
@@ -135,22 +175,22 @@ namespace Mono.TextEditor.Highlighting
 					i++;
 				}
 				ReadNonFloatEnd (text, ref i);
-				return i - matchOffset;
+				return new [] {i - matchOffset};
 			} else {
 				if (i >= text.Length || !Char.IsDigit (text[i]))
-					return -1;
+					return emptyMatch;
 				i++;
 				while (i < text.Length && Char.IsDigit (text[i]))
 					i++;
 			}
 			if (ReadNonFloatEnd (text, ref i))
-				return i - matchOffset;
+				return new [] {i - matchOffset};
 			if (i < text.Length && text[i] == '.') {
 				i++;
 				if (i >= text.Length) 
-					return (i - 1) - matchOffset;
+					return new [] {(i - 1) - matchOffset};
 				if (!Char.IsDigit (text[i]))
-					return -1;
+					return emptyMatch;
 				i++;
 				while (i < text.Length && Char.IsDigit (text[i]))
 					i++;
@@ -163,7 +203,7 @@ namespace Mono.TextEditor.Highlighting
 					i++;
 			}
 			ReadFloatEnd (text, ref i);
-			return i - matchOffset;
+			return new [] { (i - matchOffset) };
 		}
 	}
 	

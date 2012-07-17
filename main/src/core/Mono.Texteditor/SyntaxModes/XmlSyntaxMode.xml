@@ -37,7 +37,7 @@
 	
 	<Span color = "text.preprocessor" rule = "Comment">
 		<Begin>&amp;</Begin>
-		<Exit flags="CancelSpan"> |	</Exit>
+	
 		<End>;</End>
 	</Span>
 	
@@ -62,15 +62,30 @@
 		<End>?&gt;</End>
 	</Span>
 	
-	<Span color = "text.markup" rule = "InTag">
-		<Begin>&lt;</Begin>
+	<Span tagColor = "text" color = "text.markup" rule = "InTag">
+		<Begin>&lt;/</Begin>
 		<End>&gt;</End>
 	</Span>
 	
+	<Span tagColor = "text" color = "text.markup" rule = "InTag">
+		<Begin>&lt;</Begin>
+		<Exit>&gt;</Exit>
+		<End>/&gt;</End>
+	</Span>
+	
 	<Rule name = "Comment">
+		<Span color = "text.preprocessor">
+			<Begin>&amp;</Begin>
+			<End>;</End>
+		</Span>
 	</Rule>
 	
 	<Rule name = "InTag">
+		<Span color = "text.preprocessor">
+			<Begin>&amp;</Begin>
+			<End>;</End>
+		</Span>
+	
 		<Span color = "string" rule="InLiteral">
 			<Begin>&quot;</Begin>
 			<Exit>&lt;</Exit>
@@ -84,7 +99,10 @@
 		</Span>
 		
 		<!-- attributes -->
-		<Match color = "keyword.type">[A-Za-z0-9_]+(:[A-Za-z0-9_]+)?[\s\n\r]*=</Match>
+		<Match expression="([A-Za-z0-9_]+[:[A-Za-z0-9_]+]?)([\s\n\r]*=)">
+			<Group color = "text.markup.attribute"/>
+			<Group color = "text"/>
+		</Match>
 	</Rule>
 	
 	<Rule name = "InLiteral">

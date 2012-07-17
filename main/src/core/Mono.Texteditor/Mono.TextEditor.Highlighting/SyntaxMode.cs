@@ -595,18 +595,27 @@ namespace Mono.TextEditor.Highlighting
 
 				if (cur.HasMatches && i - curChunk.Offset == 0) {
 					Match foundMatch = null;
-					int   foundMatchLength = 0;
+					var   foundMatchLength = new int[0];
 					foreach (Match ruleMatch in cur.Matches) {
-						int matchLength = ruleMatch.TryMatch (spanParser.CurText, textOffset);
-						if (foundMatchLength < matchLength) {
+						var matchLength = ruleMatch.TryMatch (spanParser.CurText, textOffset);
+						if (foundMatchLength.Length < matchLength.Length) {
 							foundMatch = ruleMatch;
 							foundMatchLength = matchLength;
 						}
 					}
 					if (foundMatch != null) {
-						AddChunk (ref curChunk, foundMatchLength, GetChunkStyleColor (foundMatch.Color));
-						i += foundMatchLength - 1;
-						curChunk.Length = i - curChunk.Offset + 1;
+						if (foundMatch.IsGroupMatch) {
+							int lastGroup = System.Math.Max (foundMatchLength.Length, foundMatch.Groups.Count);
+							for (int j = 0; j < lastGroup; j++) {
+								AddChunk (ref curChunk, foundMatchLength[j], GetChunkStyleColor (foundMatch.Groups[j]));
+								i += foundMatchLength[j] - 1;
+								curChunk.Length = 0;
+							}
+						} else {
+							AddChunk (ref curChunk, foundMatchLength[0], GetChunkStyleColor (foundMatch.Color));
+							i += foundMatchLength[0] - 1;
+							curChunk.Length = i - curChunk.Offset + 1;
+						}
 						return;
 					}
 				}

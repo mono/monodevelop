@@ -45,7 +45,9 @@ THE SOFTWARE.
 		<Style name="preprocessor" color="#729fcf">
 			<Style name="keyword" color="#729fcf" weight="Italic"/>
 		</Style>
-		<Style name="markup" color="#A4E22E">
+		
+		<Style name="markup" color="#F92672">
+			<Style name="attribute" color="#98FC66" />
 			<Style name="tag" weight="Bold" />
 		</Style>
 	</Style>
