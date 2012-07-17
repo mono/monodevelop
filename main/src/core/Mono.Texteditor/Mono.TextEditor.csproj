@@ -253,23 +253,11 @@
     <EmbeddedResource Include="SyntaxModes\CSyntaxMode.xml">
       <LogicalName>CSyntaxMode.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Styles\BrownStyle.xml">
-      <LogicalName>BrownStyle.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Styles\C64Style.xml">
-      <LogicalName>C64Style.xml</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="Styles\OblivionStyle.xml">
       <LogicalName>OblivionStyle.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Styles\TangoLightStyle.xml">
-      <LogicalName>TangoLightStyle.xml</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="Styles\VisualStudioStyle.xml">
       <LogicalName>VisualStudioStyle.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Styles\IrBlackStyle.xml">
-      <LogicalName>IrBlackStyle.xml</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
@@ -301,9 +289,6 @@
     <EmbeddedResource Include="Styles\DefaultStyle.xml">
       <LogicalName>DefaultStyle.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Styles\GeditStyle.xml">
-      <LogicalName>GeditStyle.xml</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="SyntaxModes\CGSyntaxMode.xml">
       <LogicalName>CGSyntaxMode.xml</LogicalName>
     </EmbeddedResource>
@@ -324,6 +309,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Styles\MonokaiStyle.xml">
       <LogicalName>MonokaiStyle.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Styles\NightshadeStyle.xml">
+      <LogicalName>NightshadeStyle.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Styles\TangoStyle.xml">
+      <LogicalName>TangoStyle.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
