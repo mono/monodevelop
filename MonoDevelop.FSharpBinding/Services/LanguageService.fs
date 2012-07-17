@@ -46,6 +46,11 @@ module ServiceSettings =
   /// type anything new into the editor for the time specified here
   let errorTimeout = 1000
 
+  // What version of the FSharp language are we supporting? 
+  // This will evenually be made a project/script parameter.
+  let fsVersion = FSharpCompilerVersion.Version_4_3
+
+
 // --------------------------------------------------------------------------------------
     
 /// Formatting of tool-tip information displayed in F# IntelliSense
@@ -114,9 +119,15 @@ module Parsing =
   let parseIdent =  
     many (sat PrettyNaming.IsIdentifierPartCharacter) |> map String.ofSeq
 
+  let fsharpIdentCharacter = sat PrettyNaming.IsIdentifierPartCharacter
   /// Parse F# short-identifier and reverse the resulting string
   let parseBackIdent =  
-    many (sat PrettyNaming.IsIdentifierPartCharacter) |> map String.ofReversedSeq
+    parser { 
+        let! x = optional (string "``")
+        let! res = many (if x.IsSome then (whitespace <|> fsharpIdentCharacter) else fsharpIdentCharacter) |> map String.ofReversedSeq 
+        let! _ = optional (string "``") 
+        return res }
+
 
   /// Parse remainder of a logn identifier before '.' (e.g. "Name.space.")
   /// (designed to look backwards - reverses the results after parsing)
@@ -131,7 +142,9 @@ module Parsing =
   /// Parse long identifier with residue (backwards) (e.g. "Console.Wri")
   /// and returns it as a tuple (reverses the results after parsing)
   let parseBackIdentWithResidue = parser {
-    let! residue = many alphanum |> map String.ofReversedSeq
+    let! residue = many fsharpIdentCharacter 
+    let residue = String.ofReversedSeq residue
+    let! _ = optional (string "``")
     return! parser {
       let! long = parseBackLongIdentRest
       return residue, long |> List.rev }
@@ -178,10 +191,7 @@ type internal TypedParseResult(info:TypeCheckInfo) =
     
     Debug.tracef "Result" "GetDeclarations: column: %d, ident: %A\n    Line: %s" 
       (doc.Editor.Caret.Line - 1) (longName, residue) lineStr
-    let res = 
-      info.GetDeclarations
-        ( (doc.Editor.Caret.Line - 1, doc.Editor.Caret.Column - 1), 
-          lineStr, (longName, residue), 0) // 0 is tokenTag, which is ignored in this case
+    let res = info.GetDeclarations( (doc.Editor.Caret.Line - 1, doc.Editor.Caret.Column - 1), lineStr, (longName, residue), 0, ServiceSettings.blockingTimeout) // 0 is tokenTag, which is ignored in this case
 
     Debug.tracef "Result" "GetDeclarations: returning %d items" res.Items.Length
     res
@@ -270,7 +280,7 @@ type internal LanguageServiceMessage =
   
 
 open System.Reflection
-open Microsoft.FSharp.Compiler.Reflection
+open MonoDevelop.FSharp.Reflection
 open ICSharpCode.NRefactory.TypeSystem
 open MonoDevelop.Ide.TypeSystem
 
@@ -312,13 +322,40 @@ type internal LanguageService private () =
     [ for error in currentErrors do
           yield formatError error ]
 
+  /// Load times used to reset type checking properly on script/project load/unload. It just has to be unique for each project load/reload.
+  /// Not yet sure if this works for scripts.
+  let fakeDateTimeRepresentingTimeLoaded proj = System.DateTime(abs (int64 (match proj with null -> 0 | _ -> proj.GetHashCode())) % 103231L)
+  
 
   // ------------------------------------------------------------------------------------
 
-  // Create an instance of interactive checker
-  let checker = InteractiveChecker.Create(ignore)
-  
-  // Post message to the 'LanguageService' mailbox
+  // Create an instance of interactive checker. The callback is called by the F# compiler service
+  // when its view of the prior-typechecking-state of the start of a file has changed, for example
+  // when the background typechecker has "caught up" after some other file has been changed, 
+  // and its time to re-typecheck the current file.
+  let getChecker = 
+      let create() = 
+       InteractiveChecker.Create(fun file -> 
+          DispatchService.GuiDispatch(fun () ->
+                        try 
+                         Debug.tracef "Parsing" "Considering re-typcheck of file %s because compiler reports it needs it" file
+                         let doc = IdeApp.Workbench.ActiveDocument
+                         if doc <> null && doc.FileName.FullPath.ToString() = file then 
+                             Debug.tracef "Parsing" "Requesting re-parse of file '%s' because some errors were reported asynchronously and we should return a new document showing these" file
+                             doc.ReparseDocument()
+                        with _ -> ()))
+      // Nuke the checker when the current requested language version changes
+      let lastVersion = ref FSharpCompilerVersion.CurrentRequestedVersion
+      let lastChecker = ref (create())
+      fun () -> 
+          let currentVer = FSharpCompilerVersion.CurrentRequestedVersion
+          if currentVer <> lastVersion.Value then 
+              lastChecker := create()
+              lastVersion := currentVer
+          lastChecker.Value
+        
+
+    // Post message to the 'LanguageService' mailbox
   let rec post m = (mbox:SimpleMailboxProcessor<_>).Post(m)
   
   // Mailbox of this 'LanguageService'
@@ -337,10 +374,11 @@ type internal LanguageService private () =
             let fileName = info.File.FullPath.ToString()        
             Debug.tracef "Worker" "Request parse received"
             // Run the untyped parsing of the file and report result...
+            let checker = getChecker()
             let untypedInfo = checker.UntypedParse(fileName, info.Source, info.Options)
               
             // Now run the type-checking
-            let fileName = Common.fixFileName(fileName)
+            let fileName = CompilerArguments.fixFileName(fileName)
             let res = checker.TypeCheckSource( untypedInfo, fileName, 0, info.Source,info.Options, IsResultObsolete(fun () -> false) )
               
             // If this is 'full' request, then start background compilations too
@@ -421,9 +459,10 @@ type internal LanguageService private () =
 #else
           // TODO: In an early version, the InteractiveChecker resolution doesn't sometimes
           // include FSharp.Core and other essential assemblies, so we need to include them by hand
-          let fileName = Common.fixFileName(fileName)
+          let fileName = CompilerArguments.fixFileName(fileName)
           Debug.tracef "Checkoptions" "Creating for file: '%s'" fileName 
-          let opts = checker.GetCheckOptionsFromScriptRoot(fileName, source)
+          let checker = getChecker()
+          let opts = checker.GetCheckOptionsFromScriptRoot(fileName, source, fakeDateTimeRepresentingTimeLoaded proj)
           if opts.ProjectOptions |> Seq.exists (fun s -> s.Contains("FSharp.Core.dll")) then opts
           else 
             // Add assemblies that may be missing in the standard assembly resolution
@@ -444,7 +483,7 @@ type internal LanguageService private () =
       // We are in a project - construct options using current properties
       else
         let projFile = proj.FileName.ToString()
-        let files = Common.getSourceFiles(proj.Items) 
+        let files = CompilerArguments.getSourceFiles(proj.Items) 
         
         // Read project configuration (compiler & build)
         let projConfig = proj.GetConfiguration(config) :?> DotNetProjectConfiguration
@@ -453,10 +492,10 @@ type internal LanguageService private () =
         
         // Order files using the configuration settings & get options
         let shouldWrap = false //It is unknown if the IntelliSense fails to load assemblies with wrapped paths.
-        let args = Common.generateCompilerOptions fsconfig proj.Items config shouldWrap |> Array.ofList
+        let args = CompilerArguments.generateCompilerOptions fsconfig proj.Items config shouldWrap |> Array.ofList
         let root = System.IO.Path.GetDirectoryName(proj.FileName.FullPath.ToString())
-        let files = Common.getItemsInOrder root files fsbuild.BuildOrder false |> Array.ofList
-        CheckOptions.Create(projFile, files, args, false, false) 
+        let files = CompilerArguments.getItemsInOrder root files fsbuild.BuildOrder false |> Array.ofList
+        CheckOptions.Create(projFile, files, args, false, false, fakeDateTimeRepresentingTimeLoaded proj) 
 
     // Print contents of check option for debugging purposes
     Debug.tracef "Checkoptions" "ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A" 
@@ -464,17 +503,18 @@ type internal LanguageService private () =
                  opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules
     opts
   
-  member x.TriggerParse(file:FilePath, src, proj:MonoDevelop.Projects.Project, config, full, afterCompleteTypeCheckCallback) = 
+  member x.TriggerParse(file:FilePath, src, proj:MonoDevelop.Projects.Project, config, afterCompleteTypeCheckCallback) = 
     let fileName = file.FullPath.ToString()
     let opts = x.GetCheckerOptions(fileName, src, proj, config)
     Debug.tracef "Parsing" "Trigger parse (fileName=%s)" fileName
-    mbox.Post(TriggerRequest(ParseRequest(file, src, opts, full, Some afterCompleteTypeCheckCallback)))
+    mbox.Post(TriggerRequest(ParseRequest(file, src, opts, true, Some afterCompleteTypeCheckCallback)))
 
   member x.GetTypedParseResult((file:FilePath, src, proj:MonoDevelop.Projects.Project, config), ?timeout)  : TypedParseResult = 
     let fileName = file.FullPath.ToString()
     let opts = x.GetCheckerOptions(fileName, src, proj, config)
     Debug.tracef "Parsing" "Get typed parse result (fileName=%s)" fileName
     let req = ParseRequest(file, src, opts, false, None)
+    let checker = getChecker()
 
     // Try to get recent results from the F# service
     match checker.TryGetRecentTypeCheckResultsForFile(fileName, req.Options) with

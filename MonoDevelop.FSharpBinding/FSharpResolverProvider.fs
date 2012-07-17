@@ -22,9 +22,6 @@ open MonoDevelop.Refactoring
 open ICSharpCode.NRefactory
 open ICSharpCode.NRefactory.Semantics
 open ICSharpCode.NRefactory.TypeSystem
-open ICSharpCode.NRefactory.CSharp
-open ICSharpCode.NRefactory.CSharp.Resolver
-open ICSharpCode.NRefactory.CSharp.TypeSystem
 
 open Microsoft.FSharp.Compiler.SourceCodeServices
 

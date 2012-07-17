@@ -152,7 +152,7 @@ type FSharpInteractivePad() =
        IdeApp.Workbench.ActiveDocument.FileName.FileName = null then false
     else
       let file = IdeApp.Workbench.ActiveDocument.FileName.ToString()
-      Common.supportedExtension(IO.Path.GetExtension(file))
+      CompilerArguments.supportedExtension(IO.Path.GetExtension(file))
       
   static member CurrentPad =  
     let existing = 

@@ -28,6 +28,8 @@ let bind (P p) f = P(fun inp ->
 let plus (P p) (P q) = P (fun inp ->
   (p inp) @ (q inp) )
 
+let (<|>) p1 p2 = plus p1 p2
+
 type ParserBuilder() =
   member x.Bind(v, f) = bind v f
   member x.Zero() = zero()
@@ -91,7 +93,11 @@ let rec many p = parser {
 let rec map f p = parser { 
   let! v = p 
   return f v }
-             
+
+let optional p = parser {
+  return! parser { let! v = p in return Some v }
+  return None }             
+
 let apply (P p) (str:seq<char>) = 
   let res = str |> LazyList.ofSeq |> p
   res |> List.map fst

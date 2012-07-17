@@ -34,17 +34,17 @@ module CompilerService =
       | CompileTarget.WinExe   -> yield "--target:winexe"
       | (*CompileTarget.Exe*)_ -> yield "--target:exe"
     
-      if config.SignAssembly then yield "--keyfile:" + Common.wrapFile config.AssemblyKeyFile
-      yield "--out:" + Common.wrapFile (config.CompiledOutputName.ToString())
+      if config.SignAssembly then yield "--keyfile:" + CompilerArguments.wrapFile config.AssemblyKeyFile
+      yield "--out:" + CompilerArguments.wrapFile (config.CompiledOutputName.ToString())
     
       // Generate compiler options based on F# specific project settings
       let fsconfig = config.CompilationParameters :?> FSharpCompilerParameters
     
       if not (String.IsNullOrEmpty fsconfig.DocumentationFile) then 
-          yield ("--doc:" + Common.wrapFile fsconfig.DocumentationFile)
+          yield ("--doc:" + CompilerArguments.wrapFile fsconfig.DocumentationFile)
 
       let shouldWrap = true// The compiler argument paths should always be wrapped, since some paths (ie. on Windows) may contain spaces.
-      yield! Common.generateCompilerOptions fsconfig items configSel shouldWrap ]
+      yield! CompilerArguments.generateCompilerOptions fsconfig items configSel shouldWrap ]
 
 
   /// Process a single message emitted by the F# compiler
@@ -76,10 +76,10 @@ module CompilerService =
 //    monitor.Log.WriteLine("Default Framework:" + (Common.getDefaultTargetFramework IdeApp.Preferences.DefaultTargetRuntime).Id.ToString())
 
     let br = BuildResult()
-
+    
     // Concatenate arguments & run
     let fscPath =
-      match Common.getCompilerFromEnvironment runtime framework with
+      match CompilerArguments.getCompilerFromEnvironment runtime framework with
       | Some(result) -> Some(result)
       | None -> 
         match PropertyService.Get<string>("FSharpBinding.FscPath","") with
@@ -88,7 +88,7 @@ module CompilerService =
             br.AddWarning("No compiler found for the selected runtime; using default compiler instead.")
           Some(result)
         | _ ->
-          match Common.getDefaultDefaultCompiler() with
+          match CompilerArguments.getDefaultDefaultCompiler() with
           | Some(result) ->
             if runtime.Id <> IdeApp.Preferences.DefaultTargetRuntime.Id then
               br.AddWarning("No compiler found for the selected runtime; using default compiler instead.")
@@ -164,13 +164,13 @@ module CompilerService =
     let args = 
         [ yield! [ "--noframework --nologo" ]
           yield! generateCmdArgs config items configSel  
-          yield! Common.generateOtherItems items 
+          yield! CompilerArguments.generateOtherItems items 
       
           // Generate source files (sort using current configuration)
           let fsconfig = config.ProjectParameters :?> FSharpProjectParameters
-          let files = Common.getSourceFiles items
+          let files = CompilerArguments.getSourceFiles items
           let root = System.IO.Path.GetDirectoryName(config.ProjectParameters.ParentProject.FileName.FullPath.ToString())
-          yield! Common.getItemsInOrder root files fsconfig.BuildOrder false ]
+          yield! CompilerArguments.getItemsInOrder root files fsconfig.BuildOrder false ]
           
     compile runtime framework monitor args
     

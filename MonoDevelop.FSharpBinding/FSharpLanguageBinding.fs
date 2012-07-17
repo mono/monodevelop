@@ -28,9 +28,10 @@ type FSharpLanguageBinding() =
   // Register handler that will reparse when F# file is opened/closed (is this even needed?)
   do IdeApp.Workbench.ActiveDocumentChanged.Add(fun _ ->
     let doc = IdeApp.Workbench.ActiveDocument
-    if doc <> null && (Common.supportedExtension(IO.Path.GetExtension(doc.FileName.ToString()))) then
+    if doc <> null && (CompilerArguments.supportedExtension(IO.Path.GetExtension(doc.FileName.ToString()))) then
          doc.ReparseDocument())
-  
+
+    
   
   // ------------------------------------------------------------------------------------
   
@@ -44,7 +45,7 @@ type FSharpLanguageBinding() =
     //member x.Refactorer = null
 
     member x.GetFileName(baseName) = new FilePath(baseName.ToString() + ".fs")
-    member x.IsSourceCodeFile(fileName) = Common.supportedExtension (Path.GetExtension (fileName.ToString()))
+    member x.IsSourceCodeFile(fileName) = CompilerArguments.supportedExtension (Path.GetExtension (fileName.ToString()))
     
     // IDotNetLanguageBinding
     override x.Compile(items, config, configSel, monitor) : BuildResult =
