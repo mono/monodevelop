@@ -238,41 +238,48 @@
 	</Rule>
 	
 	<Rule name = "XmlDocumentation">
-		<Span color = "comment" rule = "XmlDocumentationTag" stopateol = "true" >
-			<Begin>&lt;</Begin>
+	
+		<Span color = "text.preprocessor" rule = "Comment">
+			<Begin>&amp;</Begin>
+			<End>;</End>
+		</Span>
+		
+		<Span tagColor = "comment" color = "text.markup" rule = "XmlDocumentationTag">
+			<Begin>&lt;/</Begin>
 			<End>&gt;</End>
 		</Span>
+		
+		<Span tagColor = "comment" color = "text.markup" rule = "XmlDocumentationTag">
+			<Begin>&lt;</Begin>
+			<Exit>&gt;</Exit>
+			<End>/&gt;</End>
+		</Span>
+		
 	</Rule>
 
 	<Rule name = "XmlDocumentationTag">
-		<Span color = "string" stopateol = "true" escape="\" rule="String" >
-			<Begin>"</Begin>
-			<End>"</End>
+		<Span color = "text.preprocessor">
+			<Begin>&amp;</Begin>
+			<End>;</End>
 		</Span>
-		<Keywords color="comment.keyword">
-			<Word>c</Word>
-			<Word>code</Word>
-			<Word>example</Word>
-			<Word>exception</Word>
-			<Word>list</Word>
-			<Word>para</Word>
-			<Word>param</Word>
-			<Word>paramref</Word>
-			<Word>permission</Word>
-			<Word>remarks</Word>
-			<Word>returns</Word>
-			<Word>see</Word>
-			<Word>seealso</Word>
-			<Word>summary</Word>
-			<Word>value</Word>
-			<Word>type</Word>
-			<Word>name</Word>
-			<Word>cref</Word>
-			<Word>item</Word>
-			<Word>term</Word>
-			<Word>description</Word>
-			<Word>listheader</Word>
-		</Keywords>
+		
+		<Span color = "string" stopateol = "true" escape="\" rule="String">
+			<Begin>&quot;</Begin>
+			<Exit>&lt;</Exit>
+			<End>&quot;</End>
+		</Span>
+		
+		<Span color = "string" stopateol = "true" escape="\" rule="String" >
+			<Begin>&apos;</Begin>
+			<Exit>&lt;</Exit>
+			<End>&apos;</End>
+		</Span>
+		
+		<!-- attributes -->
+		<Match expression="([A-Za-z0-9_]+[:[A-Za-z0-9_]+]?)([\s\n\r]*=)">
+			<Group color = "text.markup.attribute"/>
+			<Group color = "comment"/>
+		</Match>
 	</Rule>
 
 </SyntaxMode>
