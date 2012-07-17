@@ -425,6 +425,7 @@ namespace MonoDevelop.Ide.Gui
 
 	class TabStrip: EventBox
 	{
+		List<Gtk.Widget> children = new List<Widget> ();
 		DockNotebook notebook;
 		IDockNotebookTab firstTab;
 		int firstTabIndex;
@@ -513,6 +514,10 @@ namespace MonoDevelop.Ide.Gui
 			PreviousButton.Parent = this;
 			NextButton.Parent = this;
 			DropDownButton.Parent = this;
+
+			children.Add (PreviousButton);
+			children.Add (NextButton);
+			children.Add (DropDownButton);
 		}
 
 		public void StartCloseAnimation (DockNotebookTab closingTab)
@@ -548,9 +553,8 @@ namespace MonoDevelop.Ide.Gui
 		protected override void ForAll (bool include_internals, Callback callback)
 		{
 			base.ForAll (include_internals, callback);
-			callback (NextButton);
-			callback (PreviousButton);
-			callback (DropDownButton);
+			foreach (var c in children)
+				callback (c);
 		}
 
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
@@ -794,15 +798,19 @@ namespace MonoDevelop.Ide.Gui
 				gr.AddColorStop (1, Styles.TabBarGradientEndColor);
 				ctx.Pattern = gr;
 				ctx.Fill ();
+			}
 
+			foreach (var c in children)
+				PropagateExpose (c, evnt);
+
+			using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
+				
 				if (notebook.Tabs.Count > 0) {
 					ctx.Rectangle (0, Allocation.Height - BottomBarPadding, Allocation.Width, BottomBarPadding);
 					ctx.Color = Styles.BreadcrumbBackgroundColor;
 					ctx.Fill ();
 				}
 
-				ctx.Rectangle (tabStartX, 0, tabEndX - tabStartX, Allocation.Height); 
-				ctx.Clip ();
 				int x = tabStartX;
 				int y = 0;
 				for (int n = firstTabIndex; n < notebook.Tabs.Count && x < tabEndX; n++) {

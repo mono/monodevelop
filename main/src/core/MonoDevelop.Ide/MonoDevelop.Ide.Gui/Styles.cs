@@ -37,12 +37,12 @@ namespace MonoDevelop.Ide.Gui
 
 		public static readonly Cairo.Color TabBarBackgroundColor = new Cairo.Color (248d / 255d, 248d / 255d, 248d / 255d);
 		public static readonly Cairo.Color BreadcrumbBackgroundColor = new Cairo.Color (77d / 255d, 77d / 255d, 77d / 255d);
+		public static readonly Cairo.Color TabBarActiveTextColor = new Cairo.Color (1, 1, 1);
 
 		public static readonly Cairo.Color TabBarGradientStartColor = TabBarBackgroundColor;
 		public static readonly Cairo.Color TabBarGradientMidColor = Shift (TabBarBackgroundColor, 0.875);
 		public static readonly Cairo.Color TabBarGradientEndColor = Shift (TabBarBackgroundColor, 0.738);
-		public static readonly Cairo.Color TabBarActiveTextColor = new Cairo.Color (1, 1, 1);
-		public static readonly Cairo.Color TabBarHoverActiveTextColor = new Cairo.Color (1, 1, 1);
+		public static readonly Cairo.Color TabBarHoverActiveTextColor = TabBarActiveTextColor;
 		public static readonly Cairo.Color TabBarInactiveTextColor = Blend (new Cairo.Color (0, 0, 0), TabBarGradientStartColor, 0.4);
 		public static readonly Cairo.Color TabBarHoverInactiveTextColor = new Cairo.Color (0, 0, 0);
 
