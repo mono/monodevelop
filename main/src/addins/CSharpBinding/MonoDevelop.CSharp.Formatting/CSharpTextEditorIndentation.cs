@@ -594,6 +594,8 @@ namespace MonoDevelop.CSharp.Formatting
 
 		void DoReSmartIndent (int cursor)
 		{
+			if (stateTracker.Engine.LineBeganInsideVerbatimString || stateTracker.Engine.LineBeganInsideMultiLineComment)
+				return;
 			string newIndent = string.Empty;
 			DocumentLine line = textEditorData.Document.GetLineByOffset (cursor);
 //			stateTracker.UpdateEngine (line.Offset);
@@ -602,7 +604,6 @@ namespace MonoDevelop.CSharp.Formatting
 			for (int max = cursor; max < line.EndOffset; max++) {
 				ctx.Push (textEditorData.Document.GetCharAt (max));
 			}
-			
 			int pos = line.Offset;
 			string curIndent = line.GetIndentation (textEditorData.Document);
 			int nlwsp = curIndent.Length;
