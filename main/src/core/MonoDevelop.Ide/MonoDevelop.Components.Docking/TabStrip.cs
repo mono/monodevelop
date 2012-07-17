@@ -340,6 +340,12 @@ namespace MonoDevelop.Components.Docking
 					labelWidget.Text = label.ToUpper ();
 				else
 					labelWidget.Text = label;
+				labelWidget.UseMarkup = true;
+				if (visualStyle.ExpandedTabs)
+					labelWidget.Xalign = 0.5f;
+
+				if (!(Parent is TabStrip.TabStripBox))
+					labelWidget.Xalign = 0;
 			}
 
 			if (tabIcon != null)
@@ -377,7 +383,6 @@ namespace MonoDevelop.Components.Docking
 			if (!string.IsNullOrEmpty (label)) {
 				labelWidget = new Gtk.Label (label);
 				labelWidget.UseMarkup = true;
-				labelWidget.Xalign = 0.5f;
 				box.PackStart (labelWidget, true, true, 0);
 			} else {
 				labelWidget = null;
@@ -492,7 +497,7 @@ namespace MonoDevelop.Components.Docking
 				evnt.Window.DrawRectangle (gc, true, alloc);
 				if (!first)
 					evnt.Window.DrawLine (bgc, alloc.X, alloc.Y, alloc.X, alloc.Y + alloc.Height - 1);
-				if (!last || !first)
+				if (!(last && first) && !(visualStyle.ExpandedTabs && last))
 					evnt.Window.DrawLine (bgc, alloc.X + alloc.Width - 1, alloc.Y, alloc.X + alloc.Width - 1, alloc.Y + alloc.Height - 1);
 				gc.Dispose ();
 
