@@ -428,7 +428,7 @@ namespace Mono.TextEditor
 			}
 			markerLayout.FontDescription.Weight = Pango.Weight.Normal;
 			using (var metrics = textEditor.PangoContext.GetMetrics (markerLayout.FontDescription, textEditor.PangoContext.Language)) {
-				this.textEditor.GetTextEditorData ().LineHeight = System.Math.Ceiling ((metrics.Ascent + metrics.Descent) / Pango.Scale.PangoScale);
+				this.textEditor.GetTextEditorData ().LineHeight = System.Math.Ceiling (0.5 + (metrics.Ascent + metrics.Descent) / Pango.Scale.PangoScale);
 				this.charWidth = metrics.ApproximateCharWidth / Pango.Scale.PangoScale;
 			}
 
