@@ -174,45 +174,72 @@ namespace MonoDevelop.Ide.TypeSystem
 			return Field;
 		}
 		
-		public static string GetStockIcon (this IEntity entity)
+		public static string GetStockIcon (this IEntity entity, bool showAccessibility = true)
 		{
 			switch (entity.EntityType) {
 			case EntityType.TypeDefinition:
 				return GetStockIcon ((IType)entity);
 			case EntityType.Field:
-				return fieldIconTable [ModifierToOffset (entity.Accessibility)];
+				if (showAccessibility)
+					return fieldIconTable [ModifierToOffset (entity.Accessibility)];
+				else
+					return fieldIconTable [0];
 			case EntityType.Method:
 			case EntityType.Constructor:
 			case EntityType.Destructor:
 			case EntityType.Operator:
-				if (((IMethod)entity).IsExtensionMethod)
-					return extensionMethodIconTable [ModifierToOffset (entity.Accessibility)];
-				return methodIconTable [ModifierToOffset (entity.Accessibility)];
+				if (showAccessibility) {
+					if (((IMethod)entity).IsExtensionMethod)
+						return extensionMethodIconTable [ModifierToOffset (entity.Accessibility)];
+					return methodIconTable [ModifierToOffset (entity.Accessibility)];
+				} else {
+					if (((IMethod)entity).IsExtensionMethod)
+						return extensionMethodIconTable [0];
+					return methodIconTable [0];
+				}
 			case EntityType.Property:
 			case EntityType.Indexer:
-				return propertyIconTable [ModifierToOffset (entity.Accessibility)];
+				if (showAccessibility)
+					return propertyIconTable [ModifierToOffset (entity.Accessibility)];
+				else
+					return propertyIconTable [0];
 			case EntityType.Event:
-				return eventIconTable [ModifierToOffset (entity.Accessibility)];
+				if (showAccessibility)
+					return eventIconTable [ModifierToOffset (entity.Accessibility)];
+				else
+					return eventIconTable [0];
 			}
 			return "";
 		}
-		public static string GetStockIcon (this IUnresolvedEntity entity)
+		public static string GetStockIcon (this IUnresolvedEntity entity, bool showAccessibility = true)
 		{
 			switch (entity.EntityType) {
 			case EntityType.TypeDefinition:
 				return GetStockIcon ((IUnresolvedTypeDefinition)entity);
 			case EntityType.Field:
-				return fieldIconTable [ModifierToOffset (entity.Accessibility)];
+				if (showAccessibility)
+					return fieldIconTable [ModifierToOffset (entity.Accessibility)];
+				else
+					return fieldIconTable [0];
 			case EntityType.Method:
 			case EntityType.Constructor:
 			case EntityType.Destructor:
 			case EntityType.Operator:
-				return methodIconTable [ModifierToOffset (entity.Accessibility)];
+				if (showAccessibility)
+					return methodIconTable [ModifierToOffset (entity.Accessibility)];
+				else
+					return methodIconTable [0];
 			case EntityType.Property:
 			case EntityType.Indexer:
-				return propertyIconTable [ModifierToOffset (entity.Accessibility)];
+				if (showAccessibility)
+					return propertyIconTable [ModifierToOffset (entity.Accessibility)];
+				else
+					return propertyIconTable [0];
 			case EntityType.Event:
-				return eventIconTable [ModifierToOffset (entity.Accessibility)];
+				if (showAccessibility)
+					return eventIconTable [ModifierToOffset (entity.Accessibility)];
+				else
+					return eventIconTable [0];
 			}
 			return "";
 		}

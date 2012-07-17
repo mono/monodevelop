@@ -115,7 +115,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		
 		public override Gdk.Pixbuf Icon {
 			get {
-				return ImageService.GetPixbuf (type.GetStockIcon (), IconSize.Menu);
+				return ImageService.GetPixbuf (type.GetStockIcon (false), IconSize.Menu);
 			}
 		}
 		
@@ -248,7 +248,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		
 		public override Gdk.Pixbuf Icon {
 			get {
-				return ImageService.GetPixbuf (member.GetStockIcon (), IconSize.Menu);
+				return ImageService.GetPixbuf (member.GetStockIcon (false), IconSize.Menu);
 			}
 		}
 		
