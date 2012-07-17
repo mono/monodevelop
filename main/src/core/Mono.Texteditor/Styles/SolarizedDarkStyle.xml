@@ -58,7 +58,7 @@ THE SOFTWARE.
 			<Style name="searchresult" color="base02"/>
 		</Style>
 		<Style name="selection" bgColor="base02"/>
-		<Style name="selection.inactive" bgColor="base2"/>
+		<Style name="selection.inactive" bgColor="base3"/>
 		<Style name="link" color="base00"/>
 		<Style name="punctuation" color="base00"/>
 		<Style name="preprocessor" color="orange">
