@@ -168,7 +168,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			bool alreadyImplemented;
 			
 			// Stub out non-implemented events defined by @iface
-			foreach (var ev in interfaceType.GetEvents (e => !e.IsSynthetic && e.DeclaringTypeDefinition.ReflectionName == def.ReflectionName)) {
+			foreach (var ev in interfaceType.GetEvents (e => !e.IsSynthetic && e.DeclaringTypeDefinition.ReflectionName == def.ReflectionName).Reverse ()) {
 				bool needsExplicitly = explicitly;
 				alreadyImplemented = implementingType.GetAllBaseTypeDefinitions().Any(
 					x => x.Kind != TypeKind.Interface && x.Events.Any (y => y.Name == ev.Name)
@@ -177,9 +177,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (!alreadyImplemented)
 					toImplement.Add(new Tuple<IMember, bool>(ev, needsExplicitly));
 			}
-
+			
 			// Stub out non-implemented methods defined by @iface
-			foreach (var method in interfaceType.GetMethods (d => !d.IsSynthetic /* && d.DeclaringTypeDefinition.ReflectionName == def.ReflectionName*/)) {
+			foreach (var method in interfaceType.GetMethods (d => !d.IsSynthetic /* && d.DeclaringTypeDefinition.ReflectionName == def.ReflectionName*/).Reverse ()) {
 				bool needsExplicitly = explicitly;
 				alreadyImplemented = false;
 				
@@ -198,7 +198,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 			
 			// Stub out non-implemented properties defined by @iface
-			foreach (var prop in interfaceType.GetProperties (p => !p.IsSynthetic && p.DeclaringTypeDefinition.ReflectionName == def.ReflectionName)) {
+			foreach (var prop in interfaceType.GetProperties (p => !p.IsSynthetic && p.DeclaringTypeDefinition.ReflectionName == def.ReflectionName).Reverse ()) {
 				bool needsExplicitly = explicitly;
 				alreadyImplemented = false;
 				foreach (var t in implementingType.GetAllBaseTypeDefinitions ()) {
