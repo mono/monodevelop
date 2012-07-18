@@ -32,7 +32,7 @@ using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-//	[ContextAction("Implement interface", Description = "Creates an interface implementation.")]
+	[ContextAction("Implement interface", Description = "Creates an interface implementation.")]
 	public class ImplementInterfaceAction : ICodeActionProvider
 	{
 		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
@@ -40,36 +40,38 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var type = context.GetNode<AstType>();
 			if (type == null || type.Role != Roles.BaseType)
 				yield break;
-
+			
 			var state = context.GetResolverStateBefore(type);
 			if (state.CurrentTypeDefinition == null)
 				yield break;
-
+			
 			var resolveResult = context.Resolve(type);
 			if (resolveResult.Type.Kind != TypeKind.Interface)
 				yield break;
+			
 			var toImplement = CollectMembersToImplement(state.CurrentTypeDefinition, resolveResult.Type, false);
 			if (toImplement.Count == 0)
 				yield break;
+			
 			yield return new CodeAction(context.TranslateString("Implement interface"), script => {
 				script.InsertWithCursor(
 					context.TranslateString ("Implement Interface"),
 					state.CurrentTypeDefinition,
 					GenerateImplementation (context, toImplement)
-				);
+					);
 			});
 		}
-
-		public static IEnumerable<AstNode> GenerateImplementation(RefactoringContext context, List<Tuple<IMember, bool>> toImplement)
+		
+		public static IEnumerable<AstNode> GenerateImplementation(RefactoringContext context, IEnumerable<Tuple<IMember, bool>> toImplement)
 		{
 			var nodes = new Dictionary<IType, List<AstNode>>();
-
+			
 			foreach (var member in toImplement) {
 				if (!nodes.ContainsKey(member.Item1.DeclaringType)) 
 					nodes [member.Item1.DeclaringType] = new List<AstNode>();
 				nodes [member.Item1.DeclaringType].Add(GenerateMemberImplementation(context, member));
 			}
-
+			
 			foreach (var kv in nodes) {
 				yield return new PreProcessorDirective(
 					PreProcessorDirectiveType.Region,
@@ -78,26 +80,26 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					yield return member;
 				yield return new PreProcessorDirective(
 					PreProcessorDirectiveType.Endregion
-				);
+					);
 			}
 		}
-
+		
 		static AstNode GenerateMemberImplementation(RefactoringContext context, Tuple<IMember, bool> member)
 		{
 			switch (member.Item1.EntityType) {
-				case EntityType.Property:
-					return null;
-				case EntityType.Indexer:
-					return null;
-				case EntityType.Event:
-					return null;
-				case EntityType.Method:
-					return GenerateMethod(context, (IMethod)member.Item1, member.Item2);
-				default:
-					throw new ArgumentOutOfRangeException();
+			case EntityType.Property:
+				return null;
+			case EntityType.Indexer:
+				return null;
+			case EntityType.Event:
+				return null;
+			case EntityType.Method:
+				return GenerateMethod(context, (IMethod)member.Item1, member.Item2);
+			default:
+				throw new ArgumentOutOfRangeException();
 			}
 		}
-
+		
 		static AstNode GenerateMethod(RefactoringContext context, IMethod method, bool explicitImplementation)
 		{
 			var result = new MethodDeclaration() {
@@ -107,17 +109,40 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					new ThrowStatement(new ObjectCreateExpression(context.CreateShortType("System", "NotImplementedException")))
 				}
 			};
-
+			
 			if (!explicitImplementation) {
 				result.Modifiers = Modifiers.Public;
 			} else {
 				result.PrivateImplementationType = context.CreateShortType(method.DeclaringType);
 			}
-
+			
 			foreach (var typeParam in method.TypeParameters) {
 				result.TypeParameters.Add(new TypeParameterDeclaration(typeParam.Name));
+				
+				var constraint = new Constraint() {
+					TypeParameter = new SimpleType(typeParam.Name)
+				};
+				
+				if (typeParam.HasDefaultConstructorConstraint) {
+					constraint.BaseTypes.Add (new PrimitiveType("new"));
+				} else if (typeParam.HasReferenceTypeConstraint) {
+					constraint.BaseTypes.Add (new PrimitiveType("class"));
+				} else if (typeParam.HasValueTypeConstraint) {
+					constraint.BaseTypes.Add (new PrimitiveType("struct"));
+				}
+				
+				foreach (var type in typeParam.DirectBaseTypes) {
+					if (type.FullName == "System.Object")
+						continue;
+					if (type.FullName == "System.ValueType")
+						continue;
+					constraint.BaseTypes.Add (context.CreateShortType (type));
+				}
+				if (constraint.BaseTypes.Count == 0)
+					continue;
+				result.Constraints.Add (constraint);
 			}
-
+			
 			foreach (var p in method.Parameters) {
 				ParameterModifier modifier;
 				if (p.IsOut) {
@@ -131,29 +156,30 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 				result.Parameters.Add(new ParameterDeclaration(context.CreateShortType(p.Type), p.Name, modifier));
 			}
-
+			
 			return result;
 		}
-
-
+		
+		
 		public static List<Tuple<IMember, bool>> CollectMembersToImplement(ITypeDefinition implementingType, IType interfaceType, bool explicitly)
 		{
 			var def = interfaceType.GetDefinition();
 			List<Tuple<IMember, bool>> toImplement = new List<Tuple<IMember, bool>>();
 			bool alreadyImplemented;
+			
 			// Stub out non-implemented events defined by @iface
 			foreach (var ev in interfaceType.GetEvents (e => !e.IsSynthetic && e.DeclaringTypeDefinition.ReflectionName == def.ReflectionName)) {
 				bool needsExplicitly = explicitly;
 				alreadyImplemented = implementingType.GetAllBaseTypeDefinitions().Any(
 					x => x.Kind != TypeKind.Interface && x.Events.Any (y => y.Name == ev.Name)
-				);
-
+					);
+				
 				if (!alreadyImplemented)
 					toImplement.Add(new Tuple<IMember, bool>(ev, needsExplicitly));
 			}
 
 			// Stub out non-implemented methods defined by @iface
-			foreach (var method in interfaceType.GetMethods (d => !d.IsSynthetic && d.DeclaringTypeDefinition.ReflectionName == def.ReflectionName)) {
+			foreach (var method in interfaceType.GetMethods (d => !d.IsSynthetic /* && d.DeclaringTypeDefinition.ReflectionName == def.ReflectionName*/)) {
 				bool needsExplicitly = explicitly;
 				alreadyImplemented = false;
 				
@@ -165,10 +191,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 							alreadyImplemented |= !needsExplicitly /*|| cmet.InterfaceImplementations.Any (impl => impl.InterfaceType.Equals (interfaceType))*/;
 					}
 				}
+				if (toImplement.Where (t => t.Item1 is IMethod).Any (t => CompareMethods (method, (IMethod)t.Item1)))
+					needsExplicitly = true;
 				if (!alreadyImplemented) 
 					toImplement.Add(new Tuple<IMember, bool>(method, needsExplicitly));
 			}
-
+			
 			// Stub out non-implemented properties defined by @iface
 			foreach (var prop in interfaceType.GetProperties (p => !p.IsSynthetic && p.DeclaringTypeDefinition.ReflectionName == def.ReflectionName)) {
 				bool needsExplicitly = explicitly;
@@ -190,7 +218,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 			return toImplement;
 		}
-
+		
 		static bool CompareMethods (IMethod interfaceMethod, IMethod typeMethod)
 		{
 			if (typeMethod.IsExplicitInterfaceImplementation)

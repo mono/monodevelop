@@ -32,7 +32,7 @@ using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-//	[ContextAction("Implement interface explicit", Description = "Creates an interface implementation.")]
+	[ContextAction("Implement interface explicit", Description = "Creates an interface implementation.")]
 	public class ImplementInterfaceExplicitAction : ICodeActionProvider
 	{
 		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
@@ -43,25 +43,25 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var state = context.GetResolverStateBefore(type);
 			if (state.CurrentTypeDefinition == null)
 				yield break;
-
+			
 			var resolveResult = context.Resolve(type);
 			if (resolveResult.Type.Kind != TypeKind.Interface)
 				yield break;
-
+			
 			var toImplement = ImplementInterfaceAction.CollectMembersToImplement(
 				state.CurrentTypeDefinition,
 				resolveResult.Type,
 				false
-			);
+				);
 			if (toImplement.Count == 0)
 				yield break;
-
+			
 			yield return new CodeAction(context.TranslateString("Implement interface explicit"), script => {
 				script.InsertWithCursor(
 					context.TranslateString("Implement Interface"),
 					state.CurrentTypeDefinition,
-					ImplementInterfaceAction.GenerateImplementation (context, toImplement)
-				);
+					ImplementInterfaceAction.GenerateImplementation (context, toImplement.Select (t => Tuple.Create (t.Item1, true)))
+					);
 			});
 		}
 	}

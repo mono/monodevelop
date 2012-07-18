@@ -91,8 +91,6 @@
     <Compile Include="MonoDevelop.Refactoring\RefactoringPreviewDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Refactoring.RefactoringPreviewDialog.cs" />
     <Compile Include="MonoDevelop.Refactoring\FindDerivedClassesHandler.cs" />
-    <Compile Include="MonoDevelop.Refactoring.ImplementInterface\ImplementImplicit.cs" />
-    <Compile Include="MonoDevelop.Refactoring.ImplementInterface\ImplementExplicit.cs" />
     <Compile Include="MonoDevelop.Refactoring.ImplementInterface\ImplementAbstractMembers.cs" />
     <Compile Include="MonoDevelop.Refactoring\ImportSymbolHandler.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CodeIssueProvider.cs" />
