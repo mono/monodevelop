@@ -1,9 +1,10 @@
 // RawViewSource.cs
 //
-// Author:
-//   Lluis Sanchez Gual <lluis@novell.com>
-//
+// Authors: Lluis Sanchez Gual <lluis@novell.com>
+//          Jeffrey Stedfast <jeff@xamarin.com>
+// 
 // Copyright (c) 2008 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2012 Xamarin Inc. (http://www.xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -51,6 +52,12 @@ namespace Mono.Debugging.Evaluation
 			ObjectValue val = ObjectValue.CreateObject (src, new ObjectPath ("Raw View"), "", "", ObjectValueFlags.Group|ObjectValueFlags.ReadOnly|ObjectValueFlags.NoRefresh, null);
 			val.ChildSelector = "";
 			return val;
+		}
+
+		public bool HasChildren (ObjectPath path, EvaluationOptions options)
+		{
+			EvaluationContext cctx = ctx.WithOptions (options);
+			return cctx.Adapter.ObjectValueHasChildren (cctx, objectSource, cctx.Adapter.GetValueType (cctx, obj), obj, false);
 		}
 		
 		public ObjectValue[] GetChildren (ObjectPath path, int index, int count, EvaluationOptions options)

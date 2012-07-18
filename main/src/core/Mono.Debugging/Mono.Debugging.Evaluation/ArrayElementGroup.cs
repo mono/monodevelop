@@ -1,9 +1,10 @@
 // ArrayElementGroup.cs
 //
-// Author:
-//   Lluis Sanchez Gual <lluis@novell.com>
-//
+// Authors: Lluis Sanchez Gual <lluis@novell.com>
+//          Jeffrey Stedfast <jeff@xamarin.com>
+// 
 // Copyright (c) 2008 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2012 Xamarin Inc. (http://www.xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -90,6 +91,25 @@ namespace Mono.Debugging.Evaluation
 			ObjectValue res = ObjectValue.CreateObject (this, new ObjectPath (sb.ToString ()), "", "", ObjectValueFlags.ArrayElement|ObjectValueFlags.ReadOnly|ObjectValueFlags.NoRefresh, null);
 			res.ChildSelector = "";
 			return res;
+		}
+
+		public bool HasChildren (EvaluationOptions options)
+		{
+			return HasChildren (new ObjectPath ("this"), options);
+		}
+
+		public bool HasChildren (ObjectPath path, EvaluationOptions options)
+		{
+			EvaluationContext cctx = ctx.WithOptions (options);
+
+			if (path.Length > 1) {
+				// Looking for children of an array element
+				int[] idx = StringToIndices (path [1]);
+				object obj = array.GetElement (idx);
+				return cctx.Adapter.ObjectValueHasChildren (cctx, new ArrayObjectSource (array, path[1]), obj);
+			}
+
+			return true;
 		}
 
 		public ObjectValue[] GetChildren (EvaluationOptions options)
