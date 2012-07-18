@@ -41,7 +41,7 @@ namespace MonoDevelop.VersionControl.Views
 	{
 		bool alreadyStarted = false;
 		
-		public IViewContent Document {
+		public DocumentView Document {
 			get;
 			set;
 		}
@@ -70,7 +70,7 @@ namespace MonoDevelop.VersionControl.Views
 			get { return alreadyStarted; }
 		}
 
-		public VersionControlDocumentInfo (IViewContent document, VersionControlItem item, Repository repository)
+		public VersionControlDocumentInfo (DocumentView document, VersionControlItem item, Repository repository)
 		{
 			this.Document = document;
 			this.Item = item;

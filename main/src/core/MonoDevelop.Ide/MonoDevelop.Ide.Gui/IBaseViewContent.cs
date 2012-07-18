@@ -40,7 +40,7 @@ namespace MonoDevelop.Ide.Gui
 		/// </summary>
 		string TabPageLabel { get; }
 
-		T GetContent<T> () where T : class;
+		object GetContent (Type type);
 		
 		bool CanReuseView (string fileName);
 		void RedrawContent ();

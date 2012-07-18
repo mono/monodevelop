@@ -944,7 +944,7 @@ namespace MonoDevelop.SourceEditor
 			view.WorkbenchWindow.ShowNotification = true;
 			
 			// Ensure that one file with incorret EOL markers is shown.
-			var currentView = IdeApp.Workbench.ActiveDocument.PrimaryView as SourceEditorView;
+			var currentView = IdeApp.Workbench.ActiveDocument.PrimaryView.GetContent<SourceEditorView> ();
 			if (currentView == null || !currentView.IsDirty || !currentView.SourceEditorWidget.HasIncorrectEolMarker || currentView.SourceEditorWidget.UseIncorrectMarkers)
 				view.WorkbenchWindow.SelectWindow ();
 		}

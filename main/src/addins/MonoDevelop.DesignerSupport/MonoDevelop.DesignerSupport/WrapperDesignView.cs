@@ -164,9 +164,9 @@ namespace MonoDevelop.DesignerSupport
 		{
 		}
 		
-		public override T GetContent<T> ()
+		public override object GetContent (Type type)
 		{
-			return base.GetContent<T> () ?? content.GetContent<T> ();
+			return base.GetContent (type) ?? content.GetContent (type);
 		}
 	}
 }

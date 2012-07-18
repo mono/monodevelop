@@ -1,21 +1,21 @@
-// 
-// DefaultLogViewHandler.cs
-//  
+//
+// DocumentView.cs
+//
 // Author:
-//       Alan McGovern <alan@xamarin.com>
-// 
-// Copyright 2011, Xamarin Inc.
-// 
+//       Lluis Sanchez <lluis@xamarin.com>
+//
+// Copyright (c) 2012 Xamarin Inc
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -23,24 +23,41 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using MonoDevelop.Ide;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.VersionControl.Views;
 
-namespace MonoDevelop.VersionControl
+namespace MonoDevelop.Ide.Gui
 {
-	public class DefaultLogViewHandler : ILogViewHandler
+	public class DocumentView
 	{
-		public bool CanHandle (VersionControlItem item, DocumentView primaryView)
+		IBaseViewContent content;
+		Document document;
+
+		internal DocumentView (Document doc, IBaseViewContent content)
 		{
-			return true;
+			document = doc;
+			this.content = content;
 		}
 
-		public ILogView CreateView (VersionControlDocumentInfo info)
+		internal IBaseViewContent BaseContent {
+			get { return content; }
+		}
+
+		public Document ParentDocument {
+			get { return document; }
+		}
+
+		public T GetContent<T> () where T : class
 		{
-			return new LogView (info);
+			return content.GetContent (typeof(T)) as T;
+		}
+
+		public void Select ()
+		{
+			if (content is IAttachableViewContent)
+				document.Window.SwitchView ((IAttachableViewContent)content);
+			else
+				document.Window.SwitchView (0);
 		}
 	}
 }
+

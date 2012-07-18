@@ -63,6 +63,7 @@ namespace MonoDevelop.Ide.Gui
 		event WorkbenchWindowEventHandler Closed;
 		event WorkbenchWindowEventHandler Closing;
 		event ActiveViewContentEventHandler ActiveViewContentChanged;
+		event EventHandler ViewsChanged;
 	}
 
 	public delegate void WorkbenchWindowEventHandler (object o, WorkbenchWindowEventArgs e);

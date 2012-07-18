@@ -51,7 +51,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public T GetContent <T>() where T : class
 		{
-			return window.ActiveViewContent.GetContent<T> ();
+			return (T) window.ActiveViewContent.GetContent (typeof(T));
 		}
 		
 		object ICommandRouter.GetNextCommandTarget ()

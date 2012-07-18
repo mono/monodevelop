@@ -50,6 +50,7 @@ using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using System.Text;
+using System.Collections.ObjectModel;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -78,14 +79,14 @@ namespace MonoDevelop.Ide.Gui
 		public T GetContent<T> () where T : class
 		{
 			//check whether the ViewContent can return the type directly
-			T ret = Window.ActiveViewContent.GetContent<T> ();
+			T ret = Window.ActiveViewContent.GetContent (typeof(T)) as T;
 			if (ret != null)
 				return ret;
 			
 			//check the primary viewcontent
 			//not sure if this is the right thing to do, but things depend on this behaviour
 			if (Window.ViewContent != Window.ActiveViewContent) {
-				ret = Window.ViewContent.GetContent<T> ();
+				ret = Window.ViewContent.GetContent (typeof(T)) as T;
 				if (ret != null)
 					return ret;
 			}
@@ -103,14 +104,14 @@ namespace MonoDevelop.Ide.Gui
 		public IEnumerable<T> GetContents<T> () where T : class
 		{
 			//check whether the ViewContent can return the type directly
-			T ret = Window.ActiveViewContent.GetContent<T> ();
+			T ret = (T) Window.ActiveViewContent.GetContent (typeof(T));
 			if (ret != null)
 				yield return ret;
 			
 			//check the primary viewcontent
 			//not sure if this is the right thing to do, but things depend on this behaviour
 			if (Window.ViewContent != Window.ActiveViewContent) {
-				ret = Window.ViewContent.GetContent<T> ();
+				ret = (T) Window.ViewContent.GetContent (typeof(T));
 				if (ret != null)
 					yield return ret;
 			}
@@ -147,6 +148,7 @@ namespace MonoDevelop.Ide.Gui
 				IdeApp.Workspace.ItemRemovedFromSolution += OnEntryRemoved;
 			if (window.ViewContent.Project != null)
 				window.ViewContent.Project.Modified += HandleProjectModified;
+			window.ViewsChanged += HandleViewsChanged;
 		}
 
 /*		void UpdateRegisteredDom (object sender, ProjectDomEventArgs e)
@@ -230,14 +232,54 @@ namespace MonoDevelop.Ide.Gui
 			window.SelectWindow ();
 		}
 		
-		public IBaseViewContent ActiveView {
-			get { return window.ActiveViewContent; }
+		public DocumentView ActiveView {
+			get {
+				LoadViews (true);
+				return WrapView (window.ActiveViewContent);
+			}
 		}
 		
-		public IViewContent PrimaryView {
-			get { return window.ViewContent; }
+		public DocumentView PrimaryView {
+			get {
+				LoadViews (true);
+				return WrapView (window.ViewContent);
+			}
 		}
-		
+
+		public ReadOnlyCollection<DocumentView> Views {
+			get {
+				LoadViews (true);
+				if (viewsRO == null)
+					viewsRO = new ReadOnlyCollection<DocumentView> (views);
+				return viewsRO;
+			}
+		}
+
+		ReadOnlyCollection<DocumentView> viewsRO;
+		List<DocumentView> views = new List<DocumentView> ();
+
+		void HandleViewsChanged (object sender, EventArgs e)
+		{
+			LoadViews (false);
+		}
+
+		void LoadViews (bool force)
+		{
+			if (!force && views == null)
+				return;
+			var newList = new List<DocumentView> ();
+			newList.Add (WrapView (window.ViewContent));
+			foreach (var v in window.SubViewContents)
+				newList.Add (WrapView (v));
+			views = newList;
+			viewsRO = null;
+		}
+
+		DocumentView WrapView (IBaseViewContent content)
+		{
+			return content != null && views != null ? views.FirstOrDefault (v => v.BaseContent == content) : new DocumentView (this, content);
+		}
+
 		public string Name {
 			get {
 				IViewContent view = Window.ViewContent;

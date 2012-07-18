@@ -1713,6 +1713,7 @@
     <Compile Include="MonoDevelop.Ide\DefaultWebCertificateProvider.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\ParsedFileEventArgs.cs" />
     <Compile Include="MonoDevelop.Ide.Extensions\MimeTypeExtensionNode.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\DocumentView.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

@@ -36,6 +36,7 @@ using MonoDevelop.Components;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Extensions;
+using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -67,7 +68,9 @@ namespace MonoDevelop.Ide.Gui
 		bool show_notification = false;
 		
 		ViewCommandHandlers commandHandler;
-		
+
+		public event EventHandler ViewsChanged;
+
 		public SdiWorkspaceWindow (DefaultWorkbench workbench, IViewContent content, DockNotebook tabControl, IDockNotebookTab tabLabel) : base ()
 		{
 			this.workbench = workbench;
@@ -481,6 +484,9 @@ namespace MonoDevelop.Ide.Gui
 			AddButton (subViewContent.TabPageLabel, subViewContent);
 			
 			OnContentChanged (null, null);
+
+			if (ViewsChanged != null)
+				ViewsChanged (this, EventArgs.Empty);
 		}
 		
 		bool updating = false;
@@ -607,9 +613,9 @@ namespace MonoDevelop.Ide.Gui
 			
 			MonoDevelop.Ide.Gui.Content.IPathedDocument pathedDocument;
 			if (oldIndex <= 0) {
-				pathedDocument = Document != null ? Document.GetContent<MonoDevelop.Ide.Gui.Content.IPathedDocument> () : ViewContent.GetContent<MonoDevelop.Ide.Gui.Content.IPathedDocument> ();
+				pathedDocument = Document != null ? Document.GetContent<IPathedDocument> () : (IPathedDocument) ViewContent.GetContent (typeof(IPathedDocument));
 			} else {
-				pathedDocument = subViewContents[oldIndex - 1].GetContent<MonoDevelop.Ide.Gui.Content.IPathedDocument> ();
+				pathedDocument = (IPathedDocument) subViewContents[oldIndex - 1].GetContent (typeof(IPathedDocument));
 			}
 
 			if (pathedDocument != null)

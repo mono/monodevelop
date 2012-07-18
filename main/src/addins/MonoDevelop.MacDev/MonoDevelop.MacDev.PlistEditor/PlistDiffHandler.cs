@@ -35,7 +35,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 {	
 	public class PlistDiffViewHandler : IDiffViewHandler
 	{
-		public bool CanHandle (VersionControlItem item, IViewContent primaryView)
+		public bool CanHandle (VersionControlItem item, DocumentView primaryView)
 		{
 			return (primaryView == null || primaryView.GetContent<ITextFile> () != null)
 				&& !item.IsDirectory

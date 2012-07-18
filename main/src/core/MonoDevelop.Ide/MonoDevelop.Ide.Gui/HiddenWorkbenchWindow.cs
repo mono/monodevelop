@@ -110,5 +110,6 @@ namespace MonoDevelop.Ide.Gui
 		public event MonoDevelop.Ide.Gui.WorkbenchWindowEventHandler Closing;
 		public event MonoDevelop.Ide.Gui.WorkbenchWindowEventHandler Closed;
 		public event MonoDevelop.Ide.Gui.ActiveViewContentEventHandler ActiveViewContentChanged;
+		public event EventHandler ViewsChanged;
 	}
 }

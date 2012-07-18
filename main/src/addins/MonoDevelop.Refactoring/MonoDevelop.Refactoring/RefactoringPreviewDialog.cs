@@ -92,8 +92,6 @@ namespace MonoDevelop.Refactoring
 			};
 			
 			FillChanges ();
-			Resize (IdeApp.Workbench.ActiveDocument.ActiveView.Control.Allocation.Width,
-			        IdeApp.Workbench.ActiveDocument.ActiveView.Control.Allocation.Height);
 		}
 		
 		void SetLocationTextData (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)

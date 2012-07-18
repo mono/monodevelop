@@ -34,7 +34,7 @@ namespace MonoDevelop.VersionControl
 {
 	public class DefaultMergeViewHandler : IMergeViewHandler
 	{
-		public bool CanHandle (VersionControlItem item, IViewContent primaryView)
+		public bool CanHandle (VersionControlItem item, DocumentView primaryView)
 		{
 			return (primaryView == null || primaryView.GetContent <ITextFile> () != null)
 				&& DesktopService.GetMimeTypeIsText (DesktopService.GetMimeTypeForUri (item.Path));
