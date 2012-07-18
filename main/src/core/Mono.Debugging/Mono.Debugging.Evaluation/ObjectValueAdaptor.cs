@@ -1081,14 +1081,17 @@ namespace Mono.Debugging.Evaluation
 		public string EvaluateDisplayString (EvaluationContext ctx, object obj, string exp)
 		{
 			StringBuilder sb = new StringBuilder ();
-			int last = 0;
 			int i = exp.IndexOf ("{");
+			int last = 0;
+
 			while (i != -1 && i < exp.Length) {
 				sb.Append (exp.Substring (last, i - last));
 				i++;
+
 				int j = exp.IndexOf ("}", i);
 				if (j == -1)
 					return exp;
+
 				string mem = exp.Substring (i, j - i).Trim ();
 				if (mem.Length == 0)
 					return exp;
@@ -1106,14 +1109,21 @@ namespace Mono.Debugging.Evaluation
 				}
 				
 				if (member != null) {
-					sb.Append (ctx.Evaluator.TargetObjectToString (ctx, val));
+					var str = ctx.Evaluator.TargetObjectToString (ctx, val);
+					if (str == null)
+						sb.Append ("null");
+					else
+						sb.Append (str);
 				} else {
 					sb.Append ("{Unknown member '" + mem + "'}");
 				}
+
 				last = j + 1;
 				i = exp.IndexOf ("{", last);
 			}
+
 			sb.Append (exp.Substring (last));
+
 			return sb.ToString ();
 		}
 
