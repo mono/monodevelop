@@ -1753,7 +1753,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						if (method.TypeParameters.Count != typeArguments.Count)
 							continue;
 						SpecializedMethod sm = new SpecializedMethod(method, new TypeParameterSubstitution(null, typeArguments));
-						if (IsEligibleExtensionMethod(compilation, conversions, targetType, method, false, out inferredTypes))
+						if (IsEligibleExtensionMethod(compilation, conversions, targetType, method, true, out inferredTypes))
 							outputGroup.Add(sm);
 					} else {
 						if (IsEligibleExtensionMethod(compilation, conversions, targetType, method, true, out inferredTypes)) {
