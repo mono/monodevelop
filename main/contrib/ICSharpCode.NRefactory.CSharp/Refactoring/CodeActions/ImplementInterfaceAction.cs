@@ -73,9 +73,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 			
 			foreach (var kv in nodes) {
-				yield return new PreProcessorDirective(
-					PreProcessorDirectiveType.Region,
-					string.Format("{0} implementation", kv.Key.Name));
+				if (kv.Key.Kind == TypeKind.Interface) {
+					yield return new PreProcessorDirective(
+						PreProcessorDirectiveType.Region,
+						string.Format("{0} implementation", kv.Key.Name));
+				} else {
+					yield return new PreProcessorDirective(
+						PreProcessorDirectiveType.Region,
+						string.Format("implemented abstract members of {0}", kv.Key.Name));
+				}
 				foreach (var member in kv.Value)
 					yield return member;
 				yield return new PreProcessorDirective(
@@ -88,16 +94,124 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			switch (member.Item1.EntityType) {
 			case EntityType.Property:
-				return null;
+				return GenerateProperty(context, (IProperty)member.Item1, member.Item2);
 			case EntityType.Indexer:
-				return null;
+				return GenerateIndexer(context, (IProperty)member.Item1, member.Item2);
 			case EntityType.Event:
-				return null;
+				return GenerateEvent(context, (IEvent)member.Item1, member.Item2);
 			case EntityType.Method:
 				return GenerateMethod(context, (IMethod)member.Item1, member.Item2);
 			default:
 				throw new ArgumentOutOfRangeException();
 			}
+		}
+		
+		static AstNode GenerateEvent(RefactoringContext context, IEvent evt, bool explicitImplementation)
+		{
+			if (!explicitImplementation) {
+				return new EventDeclaration() {
+					Modifiers = Modifiers.Public,
+					Name = evt.Name,
+					ReturnType = context.CreateShortType (evt.ReturnType)
+				};
+			}
+			return new CustomEventDeclaration () {
+				Name = evt.Name,
+				ReturnType = context.CreateShortType (evt.ReturnType),
+				PrivateImplementationType = context.CreateShortType(evt.DeclaringType),
+				AddAccessor = new Accessor {
+					Body = new BlockStatement() {
+						new ThrowStatement(new ObjectCreateExpression(context.CreateShortType("System", "NotImplementedException")))
+					}
+				},
+				RemoveAccessor = new Accessor {
+					Body = new BlockStatement() {
+						new ThrowStatement(new ObjectCreateExpression(context.CreateShortType("System", "NotImplementedException")))
+					}
+				}
+			};
+		}
+		
+		static AstNode GenerateProperty(RefactoringContext context, IProperty property, bool explicitImplementation)
+		{
+			var result = new PropertyDeclaration() {
+				Name = property.Name,
+				ReturnType = context.CreateShortType (property.ReturnType)
+			};
+			
+			if (!explicitImplementation) {
+				result.Modifiers = Modifiers.Public;
+			} else {
+				result.PrivateImplementationType = context.CreateShortType(property.DeclaringType);
+			}
+			
+			if (property.CanGet) {
+				if (property.DeclaringType.Kind != TypeKind.Interface) {
+					result.Getter = new Accessor () {
+						Body = new BlockStatement () {
+							new ThrowStatement(new ObjectCreateExpression(context.CreateShortType("System", "NotImplementedException")))
+						}
+					};
+				} else {
+					result.Getter = new Accessor ();
+				}
+			}
+			if (property.CanSet) {
+				if (property.DeclaringType.Kind != TypeKind.Interface) {
+					result.Setter = new Accessor () {
+						Body = new BlockStatement () {
+							new ThrowStatement(new ObjectCreateExpression(context.CreateShortType("System", "NotImplementedException")))
+						}
+					};
+				} else {
+					result.Setter = new Accessor ();
+				}
+			}
+
+			return result;
+		}
+		
+		static AstNode GenerateIndexer (RefactoringContext context, IProperty indexer, bool explicitImplementation)
+		{
+			var result = new IndexerDeclaration () {
+				ReturnType = context.CreateShortType (indexer.ReturnType)
+			};
+			
+			if (!explicitImplementation) {
+				result.Modifiers = Modifiers.Public;
+			} else {
+				result.PrivateImplementationType = context.CreateShortType (indexer.DeclaringType);
+			}
+			
+			foreach (var p in indexer.Parameters) {
+				ParameterModifier modifier;
+				if (p.IsOut) {
+					modifier = ParameterModifier.Out;
+				} else if (p.IsRef) {
+					modifier = ParameterModifier.Ref;
+				} else if (p.IsParams) {
+					modifier = ParameterModifier.Params;
+				} else {
+					modifier = ParameterModifier.None;
+				}
+				result.Parameters.Add (new ParameterDeclaration (context.CreateShortType (p.Type), p.Name, modifier));
+			}
+			
+			if (indexer.CanGet) {
+				result.Getter = new Accessor () {
+					Body = new BlockStatement () {
+						new ThrowStatement(new ObjectCreateExpression(context.CreateShortType("System", "NotImplementedException")))
+					}
+				};
+			}
+			if (indexer.CanSet) {
+				result.Setter = new Accessor () {
+					Body = new BlockStatement () {
+						new ThrowStatement(new ObjectCreateExpression(context.CreateShortType("System", "NotImplementedException")))
+					}
+				};
+			}
+			return result;
 		}
 		
 		static AstNode GenerateMethod(RefactoringContext context, IMethod method, bool explicitImplementation)
@@ -168,7 +282,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			bool alreadyImplemented;
 			
 			// Stub out non-implemented events defined by @iface
-			foreach (var ev in interfaceType.GetEvents (e => !e.IsSynthetic && e.DeclaringTypeDefinition.ReflectionName == def.ReflectionName).Reverse ()) {
+			foreach (var evGroup in interfaceType.GetEvents (e => !e.IsSynthetic && e.DeclaringTypeDefinition.ReflectionName == def.ReflectionName).GroupBy (m => m.DeclaringType).Reverse ())
+			foreach (var ev in evGroup) {
 				bool needsExplicitly = explicitly;
 				alreadyImplemented = implementingType.GetAllBaseTypeDefinitions().Any(
 					x => x.Kind != TypeKind.Interface && x.Events.Any (y => y.Name == ev.Name)
@@ -179,7 +294,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 			
 			// Stub out non-implemented methods defined by @iface
-			foreach (var method in interfaceType.GetMethods (d => !d.IsSynthetic /* && d.DeclaringTypeDefinition.ReflectionName == def.ReflectionName*/).Reverse ()) {
+			foreach (var methodGroup in interfaceType.GetMethods (d => !d.IsSynthetic).GroupBy (m => m.DeclaringType).Reverse ())
+			foreach (var method in methodGroup) {
+				
 				bool needsExplicitly = explicitly;
 				alreadyImplemented = false;
 				
@@ -198,7 +315,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 			
 			// Stub out non-implemented properties defined by @iface
-			foreach (var prop in interfaceType.GetProperties (p => !p.IsSynthetic && p.DeclaringTypeDefinition.ReflectionName == def.ReflectionName).Reverse ()) {
+			foreach (var propGroup in interfaceType.GetProperties (p => !p.IsSynthetic && p.DeclaringTypeDefinition.ReflectionName == def.ReflectionName).GroupBy (m => m.DeclaringType).Reverse ())
+			foreach (var prop in propGroup) {
 				bool needsExplicitly = explicitly;
 				alreadyImplemented = false;
 				foreach (var t in implementingType.GetAllBaseTypeDefinitions ()) {
@@ -219,7 +337,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return toImplement;
 		}
 		
-		static bool CompareMethods (IMethod interfaceMethod, IMethod typeMethod)
+		internal static bool CompareMethods (IMethod interfaceMethod, IMethod typeMethod)
 		{
 			if (typeMethod.IsExplicitInterfaceImplementation)
 				return typeMethod.ImplementedInterfaceMembers.Any (m => m.Equals (interfaceMethod));
