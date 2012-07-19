@@ -115,8 +115,6 @@ namespace MonoDevelop.Components.MainToolbar
 			AddWidget (button);
 			AddSpace (8);
 
-			var height = 24;
-
 			configurationCombo = new Gtk.ComboBox ();
 			configurationCombo.Model = configurationStore;
 			var ctx = new Gtk.CellRendererText ();
@@ -216,12 +214,6 @@ namespace MonoDevelop.Components.MainToolbar
 
 			contentBox.PackStart (matchEntry, false, false, 0);
 
-			configurationCombo.SetSizeRequest (150, height);
-			runtimeCombo.SetSizeRequest (150, height);
-			statusArea.SetSizeRequest (32, height);
-			matchEntry.HeightRequest = height + 2;
-			buttonBar.HeightRequest = height + 2;
-
 			var align = new Gtk.Alignment (0, 0, 1f, 1f);
 			align.Show ();
 			align.TopPadding = 6;
@@ -237,6 +229,21 @@ namespace MonoDevelop.Components.MainToolbar
 			IdeApp.CommandService.RegisterCommandBar (this);
 			this.ShowAll ();
 			this.statusArea.statusIconBox.HideAll ();
+		}
+
+		protected override void OnRealized ()
+		{
+			base.OnRealized ();
+			UpdateSize (-1, 21);
+		}
+
+		void UpdateSize (int comboHeight, int height)
+		{
+			configurationCombo.SetSizeRequest (150, comboHeight);
+			runtimeCombo.SetSizeRequest (150, comboHeight);
+			statusArea.SetSizeRequest (32, height);
+			matchEntry.HeightRequest = height + 2;
+			buttonBar.HeightRequest = height + 2;
 		}
 
 		void AddSpace (int w)
@@ -472,6 +479,7 @@ namespace MonoDevelop.Components.MainToolbar
 				context.RelLineTo (Allocation.Width, 0);
 				context.Color = Styles.ToolbarBottomGlowColor;
 				context.Stroke ();
+
 			}
 			return base.OnExposeEvent (evnt);
 		}
