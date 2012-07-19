@@ -261,7 +261,7 @@ namespace MonoDevelop.SourceEditor
 		void HandleWorkbenchWindowChanged (object sender, EventArgs e)
 		{
 			if (WorkbenchWindow != null) {
-				widget.TextEditor.ExtensionContext = WorkbenchWindow.ExtensionContext;
+				widget.TextEditor.ExtensionContext = WorkbenchWindow.ExtensionContext ?? AddinManager.AddinEngine;
 				WorkbenchWindow.ActiveViewContentChanged += HandleActiveViewContentChanged;
 				this.WorkbenchWindowChanged -= HandleWorkbenchWindowChanged;
 			}
