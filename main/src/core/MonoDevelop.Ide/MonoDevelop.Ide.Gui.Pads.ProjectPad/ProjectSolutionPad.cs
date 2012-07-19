@@ -38,7 +38,7 @@ using System.Text;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
-	public class ProjectSolutionPad: SolutionPad
+	class ProjectSolutionPad: SolutionPad
 	{
 		public ProjectSolutionPad ()
 		{

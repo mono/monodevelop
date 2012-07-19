@@ -40,7 +40,7 @@ using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
-	public class ProjectReferenceNodeBuilder: TypeNodeBuilder
+	class ProjectReferenceNodeBuilder: TypeNodeBuilder
 	{
 		public override Type NodeDataType {
 			get { return typeof(ProjectReference); }
@@ -130,7 +130,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 	}
 	
-	public class ProjectReferenceNodeCommandHandler: NodeCommandHandler
+	class ProjectReferenceNodeCommandHandler: NodeCommandHandler
 	{
 		public override void ActivateItem ()
 		{

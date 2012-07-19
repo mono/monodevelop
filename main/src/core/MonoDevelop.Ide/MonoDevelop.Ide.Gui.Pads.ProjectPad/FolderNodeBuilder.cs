@@ -50,7 +50,7 @@ using MonoDevelop.Ide.Projects;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
-	public abstract class FolderNodeBuilder: TypeNodeBuilder
+	abstract class FolderNodeBuilder: TypeNodeBuilder
 	{
 		public override void GetNodeAttributes (ITreeNavigator treeNavigator, object dataObject, ref NodeAttributes attributes)
 		{
@@ -136,7 +136,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 	}
 	
-	public abstract class FolderCommandHandler: NodeCommandHandler
+	abstract class FolderCommandHandler: NodeCommandHandler
 	{
 		public abstract string GetFolderPath (object dataObject);
 

@@ -38,7 +38,7 @@ using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
-	public class ShowAllFilesBuilderExtension: NodeBuilderExtension
+	class ShowAllFilesBuilderExtension: NodeBuilderExtension
 	{
 		ProjectFileEventHandler fileAddedHandler;
 		ProjectFileEventHandler fileRemovedHandler;
@@ -335,7 +335,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 	}
 	
-	public class ShowAllFilesCommandHandler: NodeCommandHandler
+	class ShowAllFilesCommandHandler: NodeCommandHandler
 	{
 		public override bool CanDropNode (object dataObject, DragOperation operation)
 		{

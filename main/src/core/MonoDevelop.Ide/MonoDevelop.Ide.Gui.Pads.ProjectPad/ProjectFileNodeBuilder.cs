@@ -41,7 +41,7 @@ using System.Linq;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
-	public class ProjectFileNodeBuilder: TypeNodeBuilder
+	class ProjectFileNodeBuilder: TypeNodeBuilder
 	{
 		public override Type NodeDataType {
 			get { return typeof(ProjectFile); }
@@ -141,7 +141,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 	}
 	
-	public class ProjectFileNodeCommandHandler: NodeCommandHandler
+	class ProjectFileNodeCommandHandler: NodeCommandHandler
 	{
 		public override void OnRenameStarting (ref int selectionStart, ref int selectionLength)
 		{

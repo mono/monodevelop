@@ -42,7 +42,7 @@ using System.Linq;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
-	public class ProjectNodeBuilder: FolderNodeBuilder
+	class ProjectNodeBuilder: FolderNodeBuilder
 	{
 		ProjectFileEventHandler fileAddedHandler;
 		ProjectFileEventHandler fileRemovedHandler;
@@ -338,7 +338,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 	}
 	
-	public class ProjectNodeCommandHandler: FolderCommandHandler
+	class ProjectNodeCommandHandler: FolderCommandHandler
 	{
 		public override string GetFolderPath (object dataObject)
 		{

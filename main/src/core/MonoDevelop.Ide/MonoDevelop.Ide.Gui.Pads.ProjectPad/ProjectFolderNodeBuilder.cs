@@ -42,7 +42,7 @@ using System.Linq;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
-	public class ProjectFolderNodeBuilder: FolderNodeBuilder
+	class ProjectFolderNodeBuilder: FolderNodeBuilder
 	{
 		Gdk.Pixbuf folderOpenIcon;
 		Gdk.Pixbuf folderClosedIcon;
@@ -137,7 +137,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 	}
 	
-	public class ProjectFolderCommandHandler: FolderCommandHandler
+	class ProjectFolderCommandHandler: FolderCommandHandler
 	{
 		public override string GetFolderPath (object dataObject)
 		{

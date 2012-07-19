@@ -34,7 +34,7 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
-	public class SolutionFolderFileNodeBuilder: TypeNodeBuilder
+	class SolutionFolderFileNodeBuilder: TypeNodeBuilder
 	{
 		public override Type NodeDataType {
 			get {
@@ -120,7 +120,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 	}
 	
-	public class SolutionFolderFileNode: IFileItem
+	class SolutionFolderFileNode: IFileItem
 	{
 		FilePath file;
 		SolutionFolder parent;

@@ -42,7 +42,7 @@ using System.Linq;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
-	public class SystemFileNodeBuilder: TypeNodeBuilder
+	class SystemFileNodeBuilder: TypeNodeBuilder
 	{
 		public override Type NodeDataType {
 			get { return typeof(SystemFile); }
@@ -89,7 +89,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 	}
 	
-	public class SystemFileNodeCommandHandler: NodeCommandHandler
+	class SystemFileNodeCommandHandler: NodeCommandHandler
 	{
 		public override void RenameItem (string newName)
 		{

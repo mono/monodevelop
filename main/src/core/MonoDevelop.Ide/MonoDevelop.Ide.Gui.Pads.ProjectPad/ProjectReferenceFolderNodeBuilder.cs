@@ -38,7 +38,7 @@ using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
-	public class ProjectReferenceFolderNodeBuilder: TypeNodeBuilder
+	class ProjectReferenceFolderNodeBuilder: TypeNodeBuilder
 	{
 		ProjectReferenceEventHandler addedHandler;
 		ProjectReferenceEventHandler removedHandler;
@@ -114,7 +114,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 	}
 	
-	public class ProjectReferenceFolderNodeCommandHandler: NodeCommandHandler
+	class ProjectReferenceFolderNodeCommandHandler: NodeCommandHandler
 	{
 		public override bool CanDropNode (object dataObject, DragOperation operation)
 		{

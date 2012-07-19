@@ -39,7 +39,7 @@ using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
-	public class SolutionNodeBuilder: TypeNodeBuilder
+	class SolutionNodeBuilder: TypeNodeBuilder
 	{
 		SolutionItemChangeEventHandler globalItemAddedRemoved;
 		SolutionItemChangeEventHandler combineEntryAdded;
@@ -195,7 +195,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 	}
 	
-	public class SolutionNodeCommandHandler: NodeCommandHandler
+	class SolutionNodeCommandHandler: NodeCommandHandler
 	{
 		public override void RenameItem (string newName)
 		{

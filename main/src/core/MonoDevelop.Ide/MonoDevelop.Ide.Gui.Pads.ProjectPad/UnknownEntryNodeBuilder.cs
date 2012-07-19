@@ -37,7 +37,7 @@ using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
-	public class UnknownEntryNodeBuilder: TypeNodeBuilder
+	class UnknownEntryNodeBuilder: TypeNodeBuilder
 	{
 		public override Type NodeDataType {
 			get { return typeof(UnknownSolutionItem); }
