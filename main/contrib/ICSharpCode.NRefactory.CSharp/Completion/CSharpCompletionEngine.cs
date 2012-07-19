@@ -2323,11 +2323,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						continue;
 					result.AddMember(field);
 				}
-				foreach (var m in type.GetMethods ()) {
-					if (m.IsStatic && m.IsPublic) {
-						result.AddMember(m);
-					}
-				}
 				return result.Result;
 			}
 			
@@ -2350,11 +2345,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						if (trr.Type.Kind == TypeKind.Enum) {
 							foreach (var field in trr.Type.GetFields ()) {
 								result.AddMember(field);
-							}
-							foreach (var m in trr.Type.GetMethods ()) {
-								if (m.Name == "TryParse" && m.IsStatic) {
-									result.AddMember(m);
-								}
 							}
 							return result.Result;
 						}
