@@ -202,8 +202,8 @@ namespace MonoDevelop.Components.MainToolbar
 				y -= itemSeparatorHeight;
 			}
 
-			requisition.Height = Math.Min (geometry.Height * 4 / 5, (int)y + yMargin + results.Count (res => res.Item2.ItemCount > 0) * categorySeparatorHeight);
-		
+			var calculedHeight = Math.Min (geometry.Height * 4 / 5, (int)y + yMargin + results.Count (res => res.Item2.ItemCount > 0) * categorySeparatorHeight);
+			requisition.Height = requisition.Height + calculedHeight;
 		}
 
 		ItemIdentifier GetItemAt (double px, double py)
@@ -530,7 +530,7 @@ namespace MonoDevelop.Components.MainToolbar
 				headerLayout.GetPixelSize (out w, out h);
 				context.MoveTo (alloc.Left + headerMarginSize - w - xMargin, y);
 				context.Color = headerColor;
-				PangoCairoHelper.ShowLayout (context, headerLayout);
+				Pango.CairoHelper.ShowLayout (context, headerLayout);
 
 				var category = topItem.Category;
 				var dataSrc = topItem.DataSource;
@@ -554,7 +554,7 @@ namespace MonoDevelop.Components.MainToolbar
 				}
 
 				context.MoveTo (x, y);
-				PangoCairoHelper.ShowLayout (context, layout);
+				Pango.CairoHelper.ShowLayout (context, layout);
 
 				y += h + itemSeparatorHeight;
 
@@ -571,7 +571,7 @@ namespace MonoDevelop.Components.MainToolbar
 				headerLayout.GetPixelSize (out w, out h);
 				context.MoveTo (alloc.X + headerMarginSize - w - xMargin, y);
 				context.Color = headerColor;
-				PangoCairoHelper.ShowLayout (context, headerLayout);
+				Pango.CairoHelper.ShowLayout (context, headerLayout);
 
 				for (int i = 0; i < maxItems && i < dataSrc.ItemCount; i++) {
 					if (topItem != null && topItem.Category == category && topItem.Item == i)
@@ -594,7 +594,7 @@ namespace MonoDevelop.Components.MainToolbar
 					}
 
 					context.MoveTo (x, y);
-					PangoCairoHelper.ShowLayout (context, layout);
+					Pango.CairoHelper.ShowLayout (context, layout);
 
 					y += h + itemSeparatorHeight;
 				}
@@ -610,7 +610,7 @@ namespace MonoDevelop.Components.MainToolbar
 				context.Color = new Cairo.Color (0, 0, 0);
 				layout.SetMarkup (isInSearch ? GettextCatalog.GetString ("Searching...") : GettextCatalog.GetString ("No matches"));
 				context.MoveTo (alloc.X + xMargin, y);
-				PangoCairoHelper.ShowLayout (context, layout);
+				Pango.CairoHelper.ShowLayout (context, layout);
 			}
 		}
 	}
