@@ -277,7 +277,12 @@ namespace MonoDevelop.Ide.Gui
 
 		DocumentView WrapView (IBaseViewContent content)
 		{
-			return content != null && views != null ? views.FirstOrDefault (v => v.BaseContent == content) : new DocumentView (this, content);
+			if (content == null)
+				return null;
+			if (views != null)
+				return views.FirstOrDefault (v => v.BaseContent == content) ?? new DocumentView (this, content);
+			else
+				return new DocumentView (this, content);
 		}
 
 		public string Name {
