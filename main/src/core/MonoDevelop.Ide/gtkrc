@@ -6,7 +6,7 @@ gtk-color-scheme =
 fg_color:          #000
 base_color:        #fff
 text_color:        #000
-selected_bg_color: #62b3ec
+selected_bg_color: #649dd6
 selected_fg_color: #fff
 tooltip_bg_color:  #fff9e5
 tooltip_fg_color:  #000"
@@ -21,6 +21,8 @@ gtk-auto-mnemonics    = 1
 
 
 style "default" {
+    font_name = "Lucida Grande 11"
+
     xthickness = 1
     ythickness = 1
 
@@ -237,6 +239,12 @@ style "check-box" = "default"
     text[ACTIVE] = "#404040"
 }
 
+style "entry" = "default"
+{
+    xthickness = 4
+    ythickness = 4
+}
+
 style "search-entry" = "wider"
 {
     GtkEntry::inner-border = { 0, 0, 0, 0 }
@@ -248,7 +256,8 @@ style "search-entry" = "wider"
 ### Apply the styles
 class "GtkWidget"    style "default"
 
-class "GtkEntry"     style "wider"
+class "GtkEntry"     style "entry"
+class "GtkSpinButton" style "wider"
 class "GtkFrame"     style "wide"
 class "GtkRange"     style "wide"
 class "GtkSeparator" style "wide"
