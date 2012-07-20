@@ -874,7 +874,9 @@ namespace MonoDevelop.Ide.Gui
 
 			Add (fullViewVBox);
 			fullViewVBox.ShowAll ();
-			
+			var bar = new MonoDevelopStatusBar ();
+			fullViewVBox.PackEnd (bar, false, true, 0);
+			bar.ShowAll ();
 			toolbarBox.PackStart (this.toolbar, true, true, 0);
 			
 			if (MonoDevelop.Core.Platform.IsMac)
