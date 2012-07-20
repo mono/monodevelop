@@ -119,7 +119,7 @@ namespace MonoDevelop.XmlEditor
 		{
 			XmlTextWriter xmlWriter = new XmlTextWriter(textWriter);
 			xmlWriter.Formatting = Formatting.Indented;
-			if (doc.Editor.Options.TabsToSpaces) {
+			if (doc.Editor.TabsToSpaces) {
 				xmlWriter.Indentation = doc.Editor.Options.TabSize;
 				xmlWriter.IndentChar = ' ';
 			} else {

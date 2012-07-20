@@ -103,6 +103,15 @@ namespace Mono.TextEditor
 			protected set;
 		}
 
+		bool? customTabsToSpaces;
+		public bool TabsToSpaces {
+			get {
+				return customTabsToSpaces.HasValue ? customTabsToSpaces.Value : options.TabsToSpaces;
+			}
+			set {
+				customTabsToSpaces = value;
+			}
+		}
 		
 		public TextEditorData () : this (new TextDocument ())
 		{
@@ -339,7 +348,7 @@ namespace Mono.TextEditor
 			if (string.IsNullOrEmpty (str))
 				return "";
 			StringBuilder sb = new StringBuilder ();
-			bool convertTabs = Options.TabsToSpaces;
+			bool convertTabs = TabsToSpaces;
 			
 			for (int i = 0; i < str.Length; i++) {
 				char ch = str [i];

@@ -50,7 +50,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		public static ICSharpCode.NRefactory.CSharp.TextEditorOptions CreateNRefactoryTextEditorOptions (this TextEditorData doc)
 		{
 			return new ICSharpCode.NRefactory.CSharp.TextEditorOptions () {
-				TabsToSpaces = doc.Options.TabsToSpaces,
+				TabsToSpaces = doc.TabsToSpaces,
 				TabSize = doc.Options.TabSize,
 				IndentSize = doc.Options.IndentationSize,
 				ContinuationIndent = doc.Options.IndentationSize,

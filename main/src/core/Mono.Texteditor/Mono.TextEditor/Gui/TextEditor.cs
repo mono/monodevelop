@@ -85,8 +85,22 @@ namespace Mono.TextEditor
 				return textEditorData.IsDisposed;
 			}
 		}
-	
 		
+		/// <summary>
+		/// Gets or sets a value indicating whether this <see cref="Mono.TextEditor.TextEditor"/> converts tabs to spaces.
+		/// It is possible to overwrite the default options value for certain languages (like F#).
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if tabs to spaces should be converted; otherwise, <c>false</c>.
+		/// </value>
+		public bool TabsToSpaces {
+			get {
+				return textEditorData.TabsToSpaces;
+			}
+			set {
+				textEditorData.TabsToSpaces = value;
+			}
+		}
 		
 		public Mono.TextEditor.Caret Caret {
 			get {
