@@ -854,21 +854,20 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						resolver.CurrentTypeResolveContext, propertyOrIndexerDeclaration.EntityType, name,
 						explicitInterfaceType, parameterTypeReferences: parameterTypeReferences);
 				}
+				// We need to use the property as current member so that indexer parameters can be resolved correctly.
+				resolver = resolver.WithCurrentMember(member);
+				var resolverWithPropertyAsMember = resolver;
 				
 				for (AstNode node = propertyOrIndexerDeclaration.FirstChild; node != null; node = node.NextSibling) {
 					if (node.Role == PropertyDeclaration.GetterRole && member is IProperty) {
-						resolver = resolver.PushBlock();
 						resolver = resolver.WithCurrentMember(((IProperty)member).Getter);
 						Scan(node);
-						resolver = resolver.PopBlock();
-					}
-					else if (node.Role == PropertyDeclaration.SetterRole && member is IProperty) {
-						resolver = resolver.PushBlock();
+						resolver = resolverWithPropertyAsMember;
+					} else if (node.Role == PropertyDeclaration.SetterRole && member is IProperty) {
 						resolver = resolver.WithCurrentMember(((IProperty)member).Setter);
 						Scan(node);
-						resolver = resolver.PopBlock();
-					}
-					else {
+						resolver = resolverWithPropertyAsMember;
+					} else {
 						Scan(node);
 					}
 				}
@@ -908,21 +907,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						                                          explicitInterfaceAstType.ToTypeReference());
 					}
 				}
-
+				resolver = resolver.WithCurrentMember(member);
+				var resolverWithEventAsMember = resolver;
+				
 				for (AstNode node = eventDeclaration.FirstChild; node != null; node = node.NextSibling) {
 					if (node.Role == CustomEventDeclaration.AddAccessorRole && member is IEvent) {
-						resolver = resolver.PushBlock();
 						resolver = resolver.WithCurrentMember(((IEvent)member).AddAccessor);
 						Scan(node);
-						resolver = resolver.PopBlock();
-					}
-					else if (node.Role == CustomEventDeclaration.RemoveAccessorRole && member is IEvent) {
-						resolver = resolver.PushBlock();
+						resolver = resolverWithEventAsMember;
+					} else if (node.Role == CustomEventDeclaration.RemoveAccessorRole && member is IEvent) {
 						resolver = resolver.WithCurrentMember(((IEvent)member).RemoveAccessor);
 						Scan(node);
-						resolver = resolver.PopBlock();
-					}
-					else {
+						resolver = resolverWithEventAsMember;
+					} else {
 						Scan(node);
 					}
 				}

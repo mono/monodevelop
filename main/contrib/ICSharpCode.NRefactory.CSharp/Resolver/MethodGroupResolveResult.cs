@@ -132,6 +132,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// Gets all candidate extension methods.
 		/// Note: this includes candidates that are not eligible due to an inapplicable
 		/// this argument.
+		/// The candidates will only be specialized if the type arguments were provided explicitly.
 		/// </summary>
 		/// <remarks>
 		/// The results are stored in nested lists because they are grouped by using scope.
@@ -155,6 +156,24 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return extensionMethods ?? Enumerable.Empty<IEnumerable<IMethod>>();
 		}
 		
+		/// <summary>
+		/// Gets the eligible extension methods.
+		/// </summary>
+		/// <param name="substituteInferredTypes">
+		/// Specifies whether to produce a <see cref="SpecializedMethod"/>
+		/// when type arguments could be inferred from <paramref name="targetType"/>. This parameter
+		/// is only used for inferred types and has no effect if the type parameters are
+		/// specified explicitly.
+		/// </param>
+		/// <remarks>
+		/// The results are stored in nested lists because they are grouped by using scope.
+		/// That is, for "using SomeExtensions; namespace X { using MoreExtensions; ... }",
+		/// the return value will be
+		/// new List {
+		///    new List { all extensions from MoreExtensions },
+		///    new List { all extensions from SomeExtensions }
+		/// }
+		/// </remarks>
 		public IEnumerable<IEnumerable<IMethod>> GetEligibleExtensionMethods(bool substituteInferredTypes)
 		{
 			var result = new List<List<IMethod>>();

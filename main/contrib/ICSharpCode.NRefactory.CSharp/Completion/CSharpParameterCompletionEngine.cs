@@ -121,7 +121,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				yield return method;	
 			}
 				
-			foreach (var extMethods in resolveResult.GetExtensionMethods ()) {
+			foreach (var extMethods in resolveResult.GetEligibleExtensionMethods (true)) {
 				foreach (var method in extMethods) {
 					yield return method;
 				}

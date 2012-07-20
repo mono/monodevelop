@@ -53,7 +53,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 			this.context = context;
 			this.usedVariables = usedVariables;
 		}
-		
+
 		public bool Has(IVariable variable)
 		{
 			return states.ContainsKey (variable);
@@ -118,21 +118,21 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 			}
 			base.VisitDirectionExpression (directionExpression);
 		}
-		
+
 		public override void VisitVariableInitializer(VariableInitializer variableInitializer)
 		{
 			if (startLocation.IsEmpty || startLocation <= variableInitializer.StartLocation && variableInitializer.EndLocation <= endLocation) {
 				SetState(variableInitializer.Name, variableInitializer.Initializer.IsNull ?  VariableState.None : VariableState.Changed);
 			}
-			
+
 			base.VisitVariableInitializer(variableInitializer);
 		}
-		
+
 		public override void VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression)
 		{
 			if (startLocation.IsEmpty || startLocation <= unaryOperatorExpression.StartLocation && unaryOperatorExpression.EndLocation <= endLocation) {
 				if (unaryOperatorExpression.Operator == UnaryOperatorType.Increment || unaryOperatorExpression.Operator == UnaryOperatorType.Decrement ||
-				    unaryOperatorExpression.Operator == UnaryOperatorType.PostIncrement || unaryOperatorExpression.Operator == UnaryOperatorType.PostDecrement) {
+					unaryOperatorExpression.Operator == UnaryOperatorType.PostIncrement || unaryOperatorExpression.Operator == UnaryOperatorType.PostDecrement) {
 					var expr = unaryOperatorExpression.Expression as IdentifierExpression;
 					if (expr != null)
 						SetState(expr.Identifier, VariableState.Changed);

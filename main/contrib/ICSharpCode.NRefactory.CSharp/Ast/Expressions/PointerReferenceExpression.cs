@@ -43,16 +43,16 @@ namespace ICSharpCode.NRefactory.CSharp
 		public CSharpTokenNode ArrowToken {
 			get { return GetChildByRole (ArrowRole); }
 		}
-
+		
 		public string MemberName {
 			get {
 				return GetChildByRole (Roles.Identifier).Name;
 			}
 			set {
-				SetChildByRole(Roles.Identifier, Identifier.Create (value));
+				SetChildByRole(Roles.Identifier, Identifier.Create (value));
 			}
 		}
-
+		
 		public Identifier MemberNameToken {
 			get {
 				return GetChildByRole (Roles.Identifier);
@@ -61,7 +61,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				SetChildByRole (Roles.Identifier, value);
 			}
 		}
-
+		
 		public AstNodeCollection<AstType> TypeArguments {
 			get { return GetChildrenByRole (Roles.TypeArgument); }
 		}
@@ -70,7 +70,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			visitor.VisitPointerReferenceExpression (this);
 		}
-			
+		
 		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
 		{
 			return visitor.VisitPointerReferenceExpression (this);

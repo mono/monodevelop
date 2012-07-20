@@ -372,6 +372,8 @@
     <Compile Include="Completion\ICompletionContextProvider.cs" />
     <Compile Include="Parser\CompilerSettings.cs" />
     <Compile Include="Refactoring\CodeActions\ExtractMethod\VariableUsageAnalyzation.cs" />
+    <Compile Include="Resolver\DynamicInvocationResolveResult.cs" />
+    <Compile Include="Resolver\DynamicMemberResolveResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

@@ -50,11 +50,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		#region Input properties
 		public CSharpTypeResolveContext ctx { get; private set; }
-		
+
 		public IProjectContent ProjectContent { get; private set; }
 		
 		ICompilation compilation;
-		
+
 		protected ICompilation Compilation {
 			get {
 				if (compilation == null)
@@ -62,7 +62,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return compilation;
 			}
 		}
-#endregion
+		#endregion
 		
 		protected CSharpCompletionEngineBase(IProjectContent content, ICompletionContextProvider completionContextProvider, CSharpTypeResolveContext ctx)
 		{
@@ -92,7 +92,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			this.location = document.GetLocation (offset);
 			CompletionContextProvider.GetCurrentMembers (offset, out currentType, out currentMember);
 		}
-		
+
 		public bool GetParameterCompletionCommandOffset (out int cpos)
 		{
 			// Start calculating the parameter offset from the beginning of the
@@ -282,15 +282,15 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (parameter.Count == 0 || bracketStack.Count > 0) {
 				return -1;
 			}
-			
+
 			return parameter.Pop() + 1;
 		}
-		
+
 		#region Context helper methods
 		public class MiniLexer
 		{
 			readonly string text;
-			
+
 			public bool IsFistNonWs = true;
 			public bool IsInSingleComment = false;
 			public bool IsInString = false;
@@ -298,83 +298,83 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			public bool IsInChar = false;
 			public bool IsInMultiLineComment = false;
 			public bool IsInPreprocessorDirective = false;
-			
+
 			public MiniLexer(string text)
 			{
 				this.text = text;
 			}
-			
+
 			public void Parse(Action<char> act = null)
 			{
 				Parse(0, text.Length, act);
 			}
-			
+
 			public void Parse(int start, int length, Action<char> act = null)
 			{
 				for (int i = start; i < length; i++) {
 					char ch = text [i];
 					char nextCh = i + 1 < text.Length ? text [i + 1] : '\0';
 					switch (ch) {
-					case '#':
-						if (IsFistNonWs)
-							IsInPreprocessorDirective = true;
-						break;
-					case '/':
-						if (IsInString || IsInChar || IsInVerbatimString)
+						case '#':
+							if (IsFistNonWs)
+								IsInPreprocessorDirective = true;
 							break;
-						if (nextCh == '/') {
-							i++;
-							IsInSingleComment = true;
-						}
-						if (nextCh == '*')
-							IsInMultiLineComment = true;
-						break;
-					case '*':
-						if (IsInString || IsInChar || IsInVerbatimString || IsInSingleComment)
+						case '/':
+							if (IsInString || IsInChar || IsInVerbatimString)
+								break;
+							if (nextCh == '/') {
+								i++;
+								IsInSingleComment = true;
+							}
+							if (nextCh == '*')
+								IsInMultiLineComment = true;
 							break;
-						if (nextCh == '/') {
-							i++;
-							IsInMultiLineComment = false;
-						}
-						break;
-					case '@':
-						if (IsInString || IsInChar || IsInVerbatimString || IsInSingleComment || IsInMultiLineComment)
+						case '*':
+							if (IsInString || IsInChar || IsInVerbatimString || IsInSingleComment)
+								break;
+							if (nextCh == '/') {
+								i++;
+								IsInMultiLineComment = false;
+							}
 							break;
-						if (nextCh == '"') {
-							i++;
-							IsInVerbatimString = true;
-						}
-						break;
-					case '\n':
-					case '\r':
-						IsInSingleComment = false;
-						IsInString = false;
-						IsInChar = false;
-						IsFistNonWs = true;
-						IsInPreprocessorDirective = false;
-						break;
-					case '\\':
-						if (IsInString || IsInChar)
-							i++;
-						break;
-					case '"':
-						if (IsInSingleComment || IsInMultiLineComment || IsInChar)
-							break;
-						if (IsInVerbatimString) {
+						case '@':
+							if (IsInString || IsInChar || IsInVerbatimString || IsInSingleComment || IsInMultiLineComment)
+								break;
 							if (nextCh == '"') {
 								i++;
+								IsInVerbatimString = true;
+							}
+							break;
+						case '\n':
+						case '\r':
+							IsInSingleComment = false;
+							IsInString = false;
+							IsInChar = false;
+							IsFistNonWs = true;
+							IsInPreprocessorDirective = false;
+							break;
+						case '\\':
+							if (IsInString || IsInChar)
+								i++;
+							break;
+						case '"':
+							if (IsInSingleComment || IsInMultiLineComment || IsInChar)
+								break;
+							if (IsInVerbatimString) {
+								if (nextCh == '"') {
+									i++;
+									break;
+								}
+								IsInVerbatimString = false;
 								break;
 							}
-							IsInVerbatimString = false;
+							IsInString = !IsInString;
 							break;
-						}
-						IsInString = !IsInString;
-						break;
-					case '\'':
-						if (IsInSingleComment || IsInMultiLineComment || IsInString || IsInVerbatimString)
+						case '\'':
+							if (IsInSingleComment || IsInMultiLineComment || IsInString || IsInVerbatimString)
+								break;
+							IsInChar = !IsInChar;
 							break;
-						IsInChar = !IsInChar;
-						break;
 					}
 					if (act != null)
 						act(ch);
@@ -382,7 +382,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 			}
 		}
-		
+
 		
 		protected bool IsInsideCommentStringOrDirective(int offset)
 		{
@@ -390,14 +390,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			lexer.Parse(0, offset);
 			return
 				lexer.IsInSingleComment || 
-					lexer.IsInString ||
-					lexer.IsInVerbatimString ||
-					lexer.IsInChar ||
-					lexer.IsInMultiLineComment || 
-					lexer.IsInPreprocessorDirective;
+				lexer.IsInString ||
+				lexer.IsInVerbatimString ||
+				lexer.IsInChar ||
+				lexer.IsInMultiLineComment || 
+				lexer.IsInPreprocessorDirective;
 		}
-		
-		
+
+
 		protected bool IsInsideCommentStringOrDirective()
 		{
 			var text = GetMemberTextToCaret();
@@ -405,13 +405,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			lexer.Parse();
 			return
 				lexer.IsInSingleComment || 
-					lexer.IsInString ||
-					lexer.IsInVerbatimString ||
-					lexer.IsInChar ||
-					lexer.IsInMultiLineComment || 
-					lexer.IsInPreprocessorDirective;
+				lexer.IsInString ||
+				lexer.IsInVerbatimString ||
+				lexer.IsInChar ||
+				lexer.IsInMultiLineComment || 
+				lexer.IsInPreprocessorDirective;
 		}
-		
+
 		protected bool IsInsideDocComment ()
 		{
 			var text = GetMemberTextToCaret ();
@@ -486,7 +486,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			return inSingleComment && singleLineIsDoc;
 		}
-		
+
 		protected CSharpResolver GetState ()
 		{
 			return new CSharpResolver (ctx);
@@ -512,7 +512,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			return state;*/
 		}
-#endregion
+				#endregion
 		
 		#region Basic parsing/resolving functions
 		static Stack<Tuple<char, int>> GetBracketStack (string memberText)
@@ -633,7 +633,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						didAppendSemicolon = true;
 						wrapper.Append (';');
 					}
-					
+						
 					bool didAppendCatch = false;
 					while (o >= "try".Length) {
 						char ch = memberText [o];
@@ -654,14 +654,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (!didAppendSemicolon)
 				wrapper.Append (';');
 		}
-		
+
 		protected CompilationUnit ParseStub(string continuation, bool appendSemicolon = true, string afterContinuation = null)
 		{
 			var mt = GetMemberTextToCaret();
 			if (mt == null) {
 				return null;
 			}
-			
+
 			string memberText = mt.Item1;
 			var memberLocation = mt.Item2;
 			int closingBrackets = 1;
@@ -694,11 +694,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 		}
 		
-		//		string cachedText = null;
+//		string cachedText = null;
 		
 		protected virtual void Reset ()
 		{
-			//			cachedText = null;
+//			cachedText = null;
 		}
 		
 		protected Tuple<string, TextLocation> GetMemberTextToCaret()
@@ -716,7 +716,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (attr != null) {
 				return new ExpressionResult((AstNode)attr, baseUnit);
 			}
-			
+
 			//var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
 			var mref = baseUnit.GetNodeAt(location.Line, location.Column - 1, n => n is InvocationExpression || n is ObjectCreateExpression); 
 			AstNode expr = null;
@@ -733,17 +733,17 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					expr = mref;
 				}
 			}
-			
+
 			if (expr == null) {
 				// work around for missing ';' bug in mcs:
 				baseUnit = ParseStub("a", true);
-				
+			
 				section = baseUnit.GetNodeAt<AttributeSection>(location.Line, location.Column - 2);
 				attr = section != null ? section.Attributes.LastOrDefault() : null;
 				if (attr != null) {
 					return new ExpressionResult((AstNode)attr, baseUnit);
 				}
-				
+	
 				//var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
 				mref = baseUnit.GetNodeAt(location.Line, location.Column - 1, n => n is InvocationExpression || n is ObjectCreateExpression); 
 				expr = null;
@@ -753,7 +753,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					expr = mref;
 				}
 			}
-			
+
 			if (expr == null) {
 				return null;
 			}
@@ -782,7 +782,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		{
 			return ResolveExpression (tuple.Node);
 		}
-		
+
 		protected Tuple<ResolveResult, CSharpResolver> ResolveExpression(AstNode expr)
 		{
 			if (expr == null) {
@@ -813,6 +813,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 		}
 		
-#endregion
+		#endregion
 	}
 }

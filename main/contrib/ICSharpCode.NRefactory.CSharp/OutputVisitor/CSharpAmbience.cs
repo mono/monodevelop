@@ -150,7 +150,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		protected virtual TypeSystemAstBuilder CreateAstBuilder()
+		TypeSystemAstBuilder CreateAstBuilder()
 		{
 			TypeSystemAstBuilder astBuilder = new TypeSystemAstBuilder();
 			astBuilder.AddAnnotations = true;

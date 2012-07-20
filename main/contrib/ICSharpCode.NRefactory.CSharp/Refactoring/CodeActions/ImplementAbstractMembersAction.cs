@@ -42,29 +42,29 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var state = context.GetResolverStateBefore(type);
 			if (state.CurrentTypeDefinition == null)
 				yield break;
-			
+
 			var resolveResult = context.Resolve(type);
 			if (resolveResult.Type.Kind != TypeKind.Class || resolveResult.Type.GetDefinition() == null || !resolveResult.Type.GetDefinition().IsAbstract)
 				yield break;
-			
+
 			var toImplement = CollectMembersToImplement(state.CurrentTypeDefinition, resolveResult.Type);
 			if (toImplement.Count == 0)
 				yield break;
-			
+
 			yield return new CodeAction(context.TranslateString("Implement abstract members"), script => {
 				script.InsertWithCursor(
 					context.TranslateString("Implement abstract members"),
 					state.CurrentTypeDefinition,
 					ImplementInterfaceAction.GenerateImplementation (context, toImplement.Select (m => Tuple.Create (m, false))).Select (entity => {
-					var decl = entity as EntityDeclaration;
-					if (decl != null)
-						decl.Modifiers |= Modifiers.Override;
-					return entity;
-				})
-					);
+						var decl = entity as EntityDeclaration;
+						if (decl != null)
+							decl.Modifiers |= Modifiers.Override;
+						return entity;
+					})
+				);
 			});
 		}
-		
+
 		public static List<IMember> CollectMembersToImplement(ITypeDefinition implementingType, IType abstractType)
 		{
 			var def = abstractType.GetDefinition();
@@ -111,6 +111,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 			return toImplement;
 		}
-		
+
 	}
 }

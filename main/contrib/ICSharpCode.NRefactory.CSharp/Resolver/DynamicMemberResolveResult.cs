@@ -17,35 +17,41 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.IO;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 
-namespace ICSharpCode.NRefactory.Documentation
+namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
 	/// <summary>
-	/// Provides XML documentation for entities.
+	/// Represents the result of an access to a member of a dynamic object.
 	/// </summary>
-	public interface IDocumentationProvider
+	public class DynamicMemberResolveResult : ResolveResult
 	{
 		/// <summary>
-		/// Gets the XML documentation for the specified entity.
+		/// Target of the member access (a dynamic object).
 		/// </summary>
-		DocumentationComment GetDocumentation(IEntity entity);
-	}
-	
-	/// <summary>
-	/// Provides XML documentation for entities.
-	/// </summary>
-	public interface IUnresolvedDocumentationProvider
-	{
+		public readonly ResolveResult Target;
+
 		/// <summary>
-		/// Gets the XML documentation for the specified entity.
+		/// Name of the accessed member.
 		/// </summary>
-		string GetDocumentation(IUnresolvedEntity entity);
-		
-		/// <summary>
-		/// Gets the XML documentation for the specified entity.
-		/// </summary>
-		DocumentationComment GetDocumentation(IUnresolvedEntity entity, IEntity resolvedEntity);
+		public readonly string Member;
+
+		public DynamicMemberResolveResult(ResolveResult target, string member) : base(SpecialType.Dynamic) {
+			this.Target = target;
+			this.Member = member;
+		}
+
+		public override string ToString()
+		{
+			return string.Format(CultureInfo.InvariantCulture, "[Dynamic member '{0}']", Member);
+		}
+
+		public override IEnumerable<ResolveResult> GetChildResults() {
+			return new[] { Target };
+		}
 	}
 }

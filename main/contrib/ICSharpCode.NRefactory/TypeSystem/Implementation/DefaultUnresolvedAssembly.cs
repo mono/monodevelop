@@ -69,10 +69,18 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				assemblyName = value;
 			}
 		}
-		
+
+		string location;
 		public string Location {
-			get;
-			set;
+			get {
+				return location;
+			}
+			set {
+				if (value == null)
+					throw new ArgumentNullException("value");
+				FreezableHelper.ThrowIfFrozen(this);
+				location = value;
+			}
 		}
 
 		public IList<IUnresolvedAttribute> AssemblyAttributes {
