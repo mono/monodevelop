@@ -14,6 +14,7 @@ using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using Mono.TextEditor;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -148,7 +149,7 @@ namespace MonoDevelop.VersionControl.Views
 			main.PackStart(status, false, false, 0);
 			
 			scroller = new ScrolledWindow();
-			scroller.ShadowType = Gtk.ShadowType.In;
+			scroller.ShadowType = Gtk.ShadowType.None;
 			filelist = new FileTreeView();
 			filelist.Selection.Mode = Gtk.SelectionMode.Multiple;
 			
@@ -216,24 +217,31 @@ namespace MonoDevelop.VersionControl.Views
 			filelist.TestExpandRow += new Gtk.TestExpandRowHandler (OnTestExpandRow);
 			
 			commitBox = new VBox ();
-			
+
+			HeaderBox commitMessageLabelBox = new HeaderBox ();
+			commitMessageLabelBox.SetPadding (6, 6, 6, 6);
+			commitMessageLabelBox.SetMargins (1, 1, 0, 0);
+
 			HBox labBox = new HBox ();
 			labelCommit = new Gtk.Label (GettextCatalog.GetString ("Commit message:"));
 			labelCommit.Xalign = 0;
 			labBox.PackStart (new Gtk.Image ("vc-comment", Gtk.IconSize.Menu), false, false, 0);
 			labBox.PackStart (labelCommit, true, true, 3);
-			
-			commitBox.PackStart (labBox, false, false, 0);
+
+			commitMessageLabelBox.Add (labBox);
+			commitMessageLabelBox.ShowAll ();
+			//commitBox.PackStart (commitMessageLabelBox, false, false, 0);
 			
 			Gtk.ScrolledWindow frame = new Gtk.ScrolledWindow ();
-			frame.ShadowType = ShadowType.In;
+			frame.ShadowType = ShadowType.None;
 			commitText = new TextView ();
 			commitText.WrapMode = WrapMode.WordChar;
 			commitText.Buffer.Changed += OnCommitTextChanged;
 			frame.Add (commitText);
-			commitBox.PackStart (frame, true, true, 6);
+			commitBox.PackStart (frame, true, true, 0);
 			
-			VPaned paned = new VPaned ();
+			var paned = new VPanedThin ();
+			paned.HandleWidget = commitMessageLabelBox;
 			paned.Pack1 (scroller, true, true);
 			paned.Pack2 (commitBox, false, false);
 			main.PackStart (paned, true, true, 0);

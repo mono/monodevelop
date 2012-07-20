@@ -14,6 +14,7 @@ namespace MonoDevelop.VersionControl.Views
 		private global::Gtk.ScrolledWindow scrolledLog;
 		private global::Gtk.TreeView treeviewLog;
 		private global::Gtk.VBox vbox2;
+		private global::Gtk.EventBox commitBox;
 		private global::Gtk.HBox hbox1;
 		private global::Gtk.Image imageUser;
 		private global::Gtk.VBox vbox5;
@@ -85,11 +86,14 @@ namespace MonoDevelop.VersionControl.Views
 			// Container child hpaned1.Gtk.Paned+PanedChild
 			this.vbox2 = new global::Gtk.VBox ();
 			this.vbox2.Name = "vbox2";
-			this.vbox2.Spacing = 6;
 			// Container child vbox2.Gtk.Box+BoxChild
+			this.commitBox = new global::Gtk.EventBox ();
+			this.commitBox.Name = "commitBox";
+			// Container child commitBox.Gtk.Container+ContainerChild
 			this.hbox1 = new global::Gtk.HBox ();
 			this.hbox1.Name = "hbox1";
 			this.hbox1.Spacing = 6;
+			this.hbox1.BorderWidth = ((uint)(8));
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.imageUser = new global::Gtk.Image ();
 			this.imageUser.WidthRequest = 32;
@@ -147,16 +151,16 @@ namespace MonoDevelop.VersionControl.Views
 			this.hbox1.Add (this.vbox5);
 			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.vbox5]));
 			w15.Position = 1;
-			this.vbox2.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox1]));
-			w16.Position = 0;
-			w16.Expand = false;
-			w16.Fill = false;
+			this.commitBox.Add (this.hbox1);
+			this.vbox2.Add (this.commitBox);
+			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.commitBox]));
+			w17.Position = 0;
+			w17.Expand = false;
+			w17.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.scrolledwindow1 = new global::Gtk.ScrolledWindow ();
 			this.scrolledwindow1.CanFocus = true;
 			this.scrolledwindow1.Name = "scrolledwindow1";
-			this.scrolledwindow1.ShadowType = ((global::Gtk.ShadowType)(1));
 			// Container child scrolledwindow1.Gtk.Container+ContainerChild
 			this.textviewDetails = new global::Gtk.TextView ();
 			this.textviewDetails.CanFocus = true;
@@ -164,20 +168,20 @@ namespace MonoDevelop.VersionControl.Views
 			this.textviewDetails.Editable = false;
 			this.scrolledwindow1.Add (this.textviewDetails);
 			this.vbox2.Add (this.scrolledwindow1);
-			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.scrolledwindow1]));
-			w18.Position = 1;
+			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.scrolledwindow1]));
+			w19.Position = 1;
 			this.hpaned1.Add (this.vbox2);
 			this.vpaned1.Add (this.hpaned1);
-			global::Gtk.Paned.PanedChild w20 = ((global::Gtk.Paned.PanedChild)(this.vpaned1 [this.hpaned1]));
-			w20.Resize = false;
+			global::Gtk.Paned.PanedChild w21 = ((global::Gtk.Paned.PanedChild)(this.vpaned1 [this.hpaned1]));
+			w21.Resize = false;
 			// Container child vpaned1.Gtk.Paned+PanedChild
 			this.scrolledwindowFiles = new global::Gtk.ScrolledWindow ();
 			this.scrolledwindowFiles.CanFocus = true;
 			this.scrolledwindowFiles.Name = "scrolledwindowFiles";
 			this.vpaned1.Add (this.scrolledwindowFiles);
 			this.vbox1.Add (this.vpaned1);
-			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.vpaned1]));
-			w22.Position = 0;
+			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.vpaned1]));
+			w23.Position = 0;
 			this.Add (this.vbox1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();

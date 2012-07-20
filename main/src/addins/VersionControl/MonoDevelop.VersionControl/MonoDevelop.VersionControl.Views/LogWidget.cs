@@ -115,7 +115,15 @@ namespace MonoDevelop.VersionControl.Views
 			this.info = info;
 			if (info.Document != null)
 				this.preselectFile = info.Item.Path;
+
+			var separator = new HeaderBox ();
+			separator.SetMargins (1, 0, 0, 0);
+			separator.HeightRequest = 4;
+			separator.ShowAll ();
 			
+			hpaned1 = hpaned1.ReplaceWithWidget (new HPanedThin (), true);
+			vpaned1 = vpaned1.ReplaceWithWidget (new VPanedThin () { HandleWidget = separator }, true);
+
 			revertButton = new DocumentToolButton ("vc-revert-command", GettextCatalog.GetString ("Revert changes from this revision"));
 //			revertButton.Sensitive = false;
 			revertButton.Clicked += new EventHandler (RevertRevisionClicked);
@@ -218,6 +226,29 @@ namespace MonoDevelop.VersionControl.Views
 			labelAuthor.Text = "";
 			labelDate.Text = "";
 			labelRevision.Text = "";
+
+			vbox2.Remove (scrolledwindow1);
+			HeaderBox tb = new HeaderBox ();
+			tb.Show ();
+			tb.SetMargins (1, 0, 0, 0);
+			tb.ShowTopShadow = true;
+			tb.ShadowSize = 4;
+			tb.SetPadding (8, 8, 8, 8);
+			tb.UseChildBackgroundColor = true;
+			tb.Add (scrolledwindow1);
+			vbox2.PackStart (tb, true, true, 0);
+		}
+
+		protected override void OnRealized ()
+		{
+			base.OnRealized ();
+			var c = new HslColor (Style.Base (StateType.Normal));
+			c.L *= 0.8;
+			commitBox.ModifyBg (StateType.Normal, c);
+
+			var tcol = new Gdk.Color (255, 251, 242);
+			textviewDetails.ModifyBase (StateType.Normal, tcol);
+			scrolledwindow1.ModifyBase (StateType.Normal, tcol);
 		}
 
 		internal void SetToolbar (DocumentToolbar toolbar)
