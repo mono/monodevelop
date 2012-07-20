@@ -55,6 +55,7 @@ namespace MonoDevelop.Ide.Gui
 	internal class DefaultWorkbench : WorkbenchWindow, ICommandDelegatorRouter
 	{
 		readonly static string mainMenuPath    = "/MonoDevelop/Ide/MainMenu";
+		readonly static string appMenuPath    = "/MonoDevelop/Ide/AppMenu";
 		readonly static string viewContentPath = "/MonoDevelop/Ide/Pads";
 //		readonly static string toolbarsPath    = "/MonoDevelop/Ide/Toolbar";
 		readonly static string stockLayoutsPath    = "/MonoDevelop/Ide/WorkbenchLayouts";
@@ -289,21 +290,33 @@ namespace MonoDevelop.Ide.Gui
 //			TopMenu.Selected   += new CommandHandler(OnTopMenuSelected);
 //			TopMenu.Deselected += new CommandHandler(OnTopMenuDeselected);
 			
-			if (!DesktopService.SetGlobalMenu (IdeApp.CommandService, mainMenuPath))
-				topMenu = IdeApp.CommandService.CreateMenuBar (mainMenuPath);
+			if (!DesktopService.SetGlobalMenu (IdeApp.CommandService, mainMenuPath, appMenuPath)) {
+				CreateMenuBar ();
+			}
 			
 			AddinManager.ExtensionChanged += OnExtensionChanged;
 		}
 		
 		void OnExtensionChanged (object s, ExtensionEventArgs args)
 		{
-			if (args.PathChanged (mainMenuPath)) {
-				if (DesktopService.SetGlobalMenu (IdeApp.CommandService, mainMenuPath))
+			if (args.PathChanged (mainMenuPath) || args.PathChanged (appMenuPath)) {
+				if (DesktopService.SetGlobalMenu (IdeApp.CommandService, mainMenuPath, appMenuPath))
 					return;
 				
 				UninstallMenuBar ();
-				topMenu = IdeApp.CommandService.CreateMenuBar (mainMenuPath);
+				CreateMenuBar ();
 				InstallMenuBar ();
+			}
+		}
+
+		void CreateMenuBar ()
+		{
+			topMenu = IdeApp.CommandService.CreateMenuBar (mainMenuPath);
+			var appMenu = IdeApp.CommandService.CreateMenu (appMenuPath);
+			if (appMenu != null && appMenu.Children.Length > 0) {
+				var item = new MenuItem (BrandingService.ApplicationName);
+				item.Submenu = appMenu;
+				topMenu.Insert (item, 0);
 			}
 		}
 		

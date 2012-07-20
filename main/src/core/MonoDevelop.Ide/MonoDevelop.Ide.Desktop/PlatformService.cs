@@ -286,7 +286,8 @@ namespace MonoDevelop.Ide.Desktop
 			return null;
 		}
 		
-		public virtual bool SetGlobalMenu (MonoDevelop.Components.Commands.CommandManager commandManager, string commandMenuAddinPath)
+		public virtual bool SetGlobalMenu (MonoDevelop.Components.Commands.CommandManager commandManager,
+			string commandMenuAddinPath, string appMenuAddinPath)
 		{
 			return false;
 		}

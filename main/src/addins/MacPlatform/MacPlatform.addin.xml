@@ -19,38 +19,54 @@
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/Core/PlatformService">
-		<Class id      = "PlatformService"
-		       class   = "MonoDevelop.MacIntegration.MacPlatformService"/>
+		<Condition id = "Platform" value = "mac">
+			<Class id      = "PlatformService"
+			       class   = "MonoDevelop.MacIntegration.MacPlatformService"/>
+		</Condition>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Commands/Window">
-		<Command id  = "MonoDevelop.MacIntegration.MacIntegrationCommands.MinimizeWindow"
-				defaultHandler = "MonoDevelop.MacIntegration.MacMinimizeWindowHandler"
-				_label = "_Minimize"
-				_description = "Minimize the window" 
-				macShortcut = "Meta|M" />
-		<Command id  = "MonoDevelop.MacIntegration.MacIntegrationCommands.HideWindow"
-				defaultHandler = "MonoDevelop.MacIntegration.MacHideWindowHandler"
-				_label = "_Hide MonoDevelop"
-				_description = "Hide MonoDevelop" 
-				macShortcut = "Meta|H" />
-		<Command id  = "MonoDevelop.MacIntegration.MacIntegrationCommands.HideOthers"
-				defaultHandler = "MonoDevelop.MacIntegration.MacHideOthersHandler"
-				_label = "_Hide Others"
-				_description = "Hide other windows" 
-				macShortcut = "Meta|Alt|H" />
+		<Condition id = "Platform" value = "mac">
+			<Command id  = "MonoDevelop.MacIntegration.MacIntegrationCommands.MinimizeWindow"
+					defaultHandler = "MonoDevelop.MacIntegration.MacMinimizeWindowHandler"
+					_label = "_Minimize"
+					_description = "Minimize the window"
+					macShortcut = "Meta|M" />
+			<Command id  = "MonoDevelop.MacIntegration.MacIntegrationCommands.HideWindow"
+					defaultHandler = "MonoDevelop.MacIntegration.MacHideWindowHandler"
+					_label = "_Hide Application"
+					_description = "Hide Application"
+					macShortcut = "Meta|H" />
+			<Command id  = "MonoDevelop.MacIntegration.MacIntegrationCommands.HideOthers"
+					defaultHandler = "MonoDevelop.MacIntegration.MacHideOthersHandler"
+					_label = "_Hide Others"
+					_description = "Hide other windows"
+					macShortcut = "Meta|Alt|H" />
+		</Condition>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Window">
-		<CommandItem id = "MonoDevelop.MacIntegration.MacIntegrationCommands.MinimizeWindow"
-		             insertbefore = "MonoDevelop.Ide.Commands.WindowCommands.NextWindow" />
+		<Condition id = "Platform" value = "mac">
+			<CommandItem id = "MonoDevelop.MacIntegration.MacIntegrationCommands.MinimizeWindow"
+			             insertbefore = "MonoDevelop.Ide.Commands.WindowCommands.NextWindow" />
+		</Condition>
+	</Extension>
+	
+	<Extension path="/MonoDevelop/Ide/AppMenu">
+		<Condition id = "Platform" value = "mac">
+			<SeparatorItem id = "HideSeparator" insertbefore="QuitSeparator" />
+			<CommandItem id = "MonoDevelop.MacIntegration.MacIntegrationCommands.HideWindow" />
+			<CommandItem id = "MonoDevelop.MacIntegration.MacIntegrationCommands.HideOthers" />
+		</Condition>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Components/DialogHandlers">
-		<Class class="MonoDevelop.MacIntegration.MacSelectFileDialogHandler" />
-		<Class class="MonoDevelop.MacIntegration.MacAddFileDialogHandler" />
-		<Class class="MonoDevelop.MacIntegration.MacOpenFileDialogHandler" />
-		<Class class="MonoDevelop.MacIntegration.MacAlertDialogHandler" />
-		<Class class="MonoDevelop.MacIntegration.MacExceptionDialogHandler" />
+		<Condition id = "Platform" value = "mac">
+			<Class class="MonoDevelop.MacIntegration.MacSelectFileDialogHandler" />
+			<Class class="MonoDevelop.MacIntegration.MacAddFileDialogHandler" />
+			<Class class="MonoDevelop.MacIntegration.MacOpenFileDialogHandler" />
+			<Class class="MonoDevelop.MacIntegration.MacAlertDialogHandler" />
+			<Class class="MonoDevelop.MacIntegration.MacExceptionDialogHandler" />
+		</Condition>
 	</Extension>
 </Addin>

@@ -139,9 +139,10 @@ namespace MonoDevelop.Ide
 			return PlatformService.GetPixbufForType (mimeType, size);
 		}
 
-		public static bool SetGlobalMenu (MonoDevelop.Components.Commands.CommandManager commandManager, string commandMenuAddinPath)
+		public static bool SetGlobalMenu (MonoDevelop.Components.Commands.CommandManager commandManager,
+			string commandMenuAddinPath, string appMenuAddinPath)
 		{
-			return PlatformService.SetGlobalMenu (commandManager, commandMenuAddinPath);
+			return PlatformService.SetGlobalMenu (commandManager, commandMenuAddinPath, appMenuAddinPath);
 		}
 		
 		// Used for preserve the file attributes when monodevelop opens & writes a file.

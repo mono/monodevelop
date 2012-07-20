@@ -33,6 +33,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.MacInterop;
 using System.Text;
 using MonoDevelop.Ide;
+using System.Linq;
 
 namespace MonoDevelop.MacIntegration
 {
@@ -53,8 +54,8 @@ namespace MonoDevelop.MacIntegration
 		static ushort idSeq;
 		
 		static HashSet<IntPtr> mainMenus = new HashSet<IntPtr> ();
-		static Dictionary<uint,object> commands = new Dictionary<uint,object> ();
-		static Dictionary<object,CarbonCommandID> cmdIdMap = new Dictionary<object, CarbonCommandID> ();
+		static Dictionary<uint,object> macIdToCommandId = new Dictionary<uint,object> ();
+		static Dictionary<object,uint> commandIdToMacId = new Dictionary<object,uint> ();
 		static Dictionary<object,uint> menuIdMap = new Dictionary<object, uint> ();
 		
 		static List<object> objectsToDestroyOnMenuClose = new List<object> ();
@@ -89,12 +90,15 @@ namespace MonoDevelop.MacIntegration
 		
 		static public void AddCommandIDMappings (Dictionary<object,CarbonCommandID> map)
 		{
-			if (cmdIdMap.Count > 0)
+			if (commandIdToMacId.Count > 0)
 				throw new InvalidOperationException ("This can only be done once, before creating menus");
-			cmdIdMap = new Dictionary<object, CarbonCommandID> (map);
+			foreach (var kvp in map) {
+				commandIdToMacId [kvp.Key] = (uint)kvp.Value;
+				macIdToCommandId [(uint)kvp.Value] = kvp.Key;
+			}
 		}
 		
-		public static void Recreate (CommandManager manager, CommandEntrySet entrySet, HashSet<object> ignoreCommands) 
+		public static void Recreate (CommandManager manager, CommandEntrySet entrySet)
 		{
 			if (manager == null)
 				throw new ArgumentException ("manager");
@@ -106,11 +110,11 @@ namespace MonoDevelop.MacIntegration
 			
 			if (rootMenu == IntPtr.Zero) {
 				rootMenu = HIToolbox.CreateMenu (idSeq++, GetName (entrySet), 0);
-				CreateChildren (rootMenu, entrySet, ignoreCommands);
+				AddMenuItems (new HIMenuItem (rootMenu, 0), entrySet);
 				InstallRootMenu ();
 			} else {
 				Destroy (false);
-				CreateChildren (rootMenu, entrySet, ignoreCommands);
+				AddMenuItems (new HIMenuItem (rootMenu, 0), entrySet);
 			}
 		}
 
@@ -140,64 +144,62 @@ namespace MonoDevelop.MacIntegration
 			commandHandlerRef = Carbon.InstallApplicationEventHandler (HandleMenuCommand, CarbonEventCommand.Process);
 		}
 
-		static void CreateChildren (IntPtr parentMenu, CommandEntrySet entrySet, HashSet<object> ignoreCommands) 
+		static void AddMenuItems (HIMenuItem afterItem, IEnumerable<CommandEntry> entries)
 		{
+			IntPtr parentMenu = afterItem.MenuRef;
 			var menuId = HIToolbox.GetMenuID (parentMenu);
-			foreach (CommandEntry entry in entrySet){
-				CommandEntrySet ces = entry as CommandEntrySet;
+			var index = afterItem.Index;
 
-				if (ces == null){
-					ushort pos;
-					
-					if (ignoreCommands.Contains (entry.CommandId))
-						continue;
-
-					if (entry.CommandId == Command.Separator) {
-						HIToolbox.AppendMenuSeparator (parentMenu);
-						continue;
-					}
-					
-					if (entry is LinkCommandEntry) {
-						LinkCommandEntry lce = (LinkCommandEntry)entry;
-						pos = HIToolbox.AppendMenuItem (parentMenu, (lce.Text ?? "").Replace ("_", ""), 0, linkCommandId);
-						HIToolbox.SetMenuItemReferenceConstant (new HIMenuItem (parentMenu, pos), (uint)linkCommands.Count);
-						linkCommands.Add (lce.Url);
-						continue;
-					}
-
-					Command cmd = manager.GetCommand (entry.CommandId);
-					if (cmd == null) {
-						MonoDevelop.Core.LoggingService.LogError (
-							"Mac main menu '{0}' child '{1}' maps to null command", entrySet.Name, entry.CommandId);
-						continue;
-					}
-
-					if (cmd is CustomCommand) {
-						MonoDevelop.Core.LoggingService.LogWarning (
-							"Mac main menu does not support custom command widgets for command '{0}'", entry.CommandId);
-						continue;
-					}
-					
-					menuIdMap[entry.CommandId] = menuId;
-					
-					ActionCommand acmd = cmd as ActionCommand;
-					if (acmd == null) {
-						MonoDevelop.Core.LoggingService.LogWarning (
-							"Mac main menu does not support command type '{0}' for command '{1}'", cmd.GetType (), entry.CommandId);
-						continue;
-					}
-					
-					uint macCmdId = GetNewMenuItemId (cmd);
-					
-					pos = HIToolbox.AppendMenuItem (parentMenu, (cmd.Text ?? "").Replace ("_", ""), 0, macCmdId);
-				} else {
-					var macCmdId = (ces.AutoHide) ? autohideSubmenuCommandId : submenuCommandId;
+			foreach (CommandEntry entry in entries) {
+				var ces = entry as CommandEntrySet;
+				if (ces != null) {
+					var macMenuCmdId = (ces.AutoHide) ? autohideSubmenuCommandId : submenuCommandId;
 					IntPtr menuRef = HIToolbox.CreateMenu (idSeq++, GetName (ces), MenuAttributes.CondenseSeparators);
 					mainMenus.Add (menuRef);
-					CreateChildren (menuRef, ces, ignoreCommands);
-					ushort pos = HIToolbox.AppendMenuItem (parentMenu, GetName (ces), 0, macCmdId);
-					HIToolbox.CheckResult (HIToolbox.SetMenuItemHierarchicalMenu (parentMenu, pos, menuRef));
+					AddMenuItems (new HIMenuItem (menuRef, 0), ces);
+					index = HIToolbox.InsertMenuItem (parentMenu, GetName (ces), index, 0, macMenuCmdId);
+					HIToolbox.CheckResult (HIToolbox.SetMenuItemHierarchicalMenu (parentMenu, index, menuRef));
+					continue;
 				}
+
+				if (entry.CommandId == Command.Separator) {
+					index = HIToolbox.InsertMenuSeparator (parentMenu, index);
+					continue;
+				}
+
+				if (entry is LinkCommandEntry) {
+					var lce = (LinkCommandEntry)entry;
+					index = HIToolbox.InsertMenuItem (parentMenu, (lce.Text ?? "").Replace ("_", ""), index, 0, linkCommandId);
+					HIToolbox.SetMenuItemReferenceConstant (new HIMenuItem (parentMenu, index), (uint)linkCommands.Count);
+					linkCommands.Add (lce.Url);
+					continue;
+				}
+
+				Command cmd = manager.GetCommand (entry.CommandId);
+				if (cmd == null) {
+					MonoDevelop.Core.LoggingService.LogError (
+						"Mac main menu item '{0}' maps to null command", entry.CommandId);
+					continue;
+				}
+
+				if (cmd is CustomCommand) {
+					MonoDevelop.Core.LoggingService.LogWarning (
+						"Mac main menu does not support custom command widget for command '{0}'", entry.CommandId);
+					continue;
+				}
+
+				menuIdMap[entry.CommandId] = menuId;
+
+				var acmd = cmd as ActionCommand;
+				if (acmd == null) {
+					MonoDevelop.Core.LoggingService.LogWarning (
+						"Mac main menu does not support command type '{0}' for command '{1}'", cmd.GetType (), entry.CommandId);
+					continue;
+				}
+
+				uint macCmdId = GetMacID (entry.CommandId);
+
+				index = HIToolbox.InsertMenuItem (parentMenu, (cmd.Text ?? "").Replace ("_", ""), index, 0, macCmdId);
 			}
 		}
 		
@@ -229,7 +231,7 @@ namespace MonoDevelop.MacIntegration
 				return false;
 			
 			if (modeKey != 0) {
-				System.Console.WriteLine("WARNING: Cannot display accelerators with mode keys ({0})", accelKey);
+				Console.WriteLine("WARNING: Cannot display accelerators with mode keys ({0})", accelKey);
 				return false;
 			}
 			
@@ -242,7 +244,7 @@ namespace MonoDevelop.MacIntegration
 						virtualHardwareCode = (ushort) map [0].Keycode;
 					
 					if (virtualHardwareCode == 0) {
-						System.Console.WriteLine("WARNING: Could not map key ({0})", key);
+						Console.WriteLine("WARNING: Could not map key ({0})", key);
 						return false;
 					}
 				} else {
@@ -271,7 +273,7 @@ namespace MonoDevelop.MacIntegration
 			}
 			
 			if (mod != 0) {
-				System.Console.WriteLine("WARNING: Cannot display accelerators with modifiers: {0}", mod);
+				Console.WriteLine ("WARNING: Cannot display accelerators with modifiers: {0}", mod);
 				return false;
 			}
 			
@@ -303,25 +305,25 @@ namespace MonoDevelop.MacIntegration
 				return MenuGlyphs.None;
 			}
 		}
-		
-		static uint GetNewMenuItemId (Command cmd)
+
+		static uint GetMacID (object commandID)
 		{
-			uint macCmdId;
-			CarbonCommandID standardId;
+			uint macCmdID;
+
 			//use mapped values if possible
-			if (cmdIdMap.TryGetValue (cmd.Id, out standardId))
-				macCmdId = (uint) standardId;
-			//or generate a new value
-			else {
-				//but avoid conflicts
-				do cmdSeq++;
-				while (commands.ContainsKey (cmdSeq));
-				macCmdId = cmdSeq;
-				cmdIdMap[cmd.Id] = (CarbonCommandID)macCmdId;
+			if (commandIdToMacId.TryGetValue (commandID, out macCmdID)) {
+				return macCmdID;
 			}
-			
-			commands[macCmdId] = cmd.Id;
-			return macCmdId;
+
+			//or generate a new value but avoid conflicts (cmdIdMap may container higher numbers than cmdseq)
+			do {
+				macCmdID = ++cmdSeq;
+			} while (macIdToCommandId.ContainsKey (macCmdID));
+
+			commandIdToMacId[commandID] = macCmdID;
+			macIdToCommandId[macCmdID] = commandID;
+
+			return macCmdID;
 		}
 		
 		//NOTE: This is used to disable the whole menu when there's a modal dialog.
@@ -334,7 +336,7 @@ namespace MonoDevelop.MacIntegration
 		
 		static void SetMenuItemAttributes (HIMenuItem item, CommandInfo ci, uint refcon)
 		{
-			MenuItemData data = new MenuItemData ();
+			var data = new MenuItemData ();
 			IntPtr text = IntPtr.Zero;
 			try {
 				if (ci.IsArraySeparator) {
@@ -396,7 +398,7 @@ namespace MonoDevelop.MacIntegration
 			
 			//strip GMarkup
 			//FIXME: markup stripping could be done better
-			StringBuilder sb = new StringBuilder ();
+			var sb = new StringBuilder ();
 			for (int i = 0; i < txt.Length; i++) {
 				char ch = txt[i];
 				if (ch == '<') {
@@ -440,33 +442,73 @@ namespace MonoDevelop.MacIntegration
 		
 		public static void SetAppQuitCommand (object cmdID)
 		{
-			commands[(uint)CarbonCommandID.Quit] = cmdID;
+			macIdToCommandId[(uint)CarbonCommandID.Quit] = cmdID;
+		}
+
+		static uint[] GetMenuCommandIDs (IntPtr menuRef)
+		{
+			int count = HIToolbox.CountMenuItems (menuRef);
+			var existingitems = new uint[count];
+			for (int i = 0; i < count; i++) {
+				existingitems[i] = HIToolbox.GetMenuItemCommandID (new HIMenuItem (menuRef, (ushort) (i + 1)));
+			}
+			return existingitems;
 		}
 		
-		public static void AddAppMenuItems (CommandManager manager, params object [] cmdIds)
+		public static void SetAppMenuItems (CommandManager manager, CommandEntrySet entrySet)
 		{
-			//FIXME: we assume we get first pick of cmdIDs
-			
 			HIMenuItem mnu = HIToolbox.GetMenuItem ((uint)CarbonCommandID.Hide);
+
+			bool firstTime = appMenu == IntPtr.Zero;
 			appMenu = mnu.MenuRef;
-			var appMenuId = HIToolbox.GetMenuID (appMenu);
-			for (int i = cmdIds.Length - 1; i >= 0; i--) {
-				var cmdId = cmdIds[i];
-				if (cmdId == Command.Separator) {
-					HIToolbox.InsertMenuSeparator (mnu.MenuRef, 0);
+
+			var existingitems = GetMenuCommandIDs (appMenu).ToList ();
+			for (int i = existingitems.Count - 1; i >= 0; i--) {
+				var item = new HIMenuItem (appMenu, (ushort)(i + 1));
+				//if first time, keep all the existing items except QuitAndCloseAllWindows
+				if (firstTime && existingitems [i] != (uint)CarbonCommandID.QuitAndCloseAllWindows) {
+					//mark them so we can recognise and keep them in future
+					//HIToolbox.SetMenuItemReferenceConstant (item, uint.MaxValue);
 					continue;
 				}
-				
-				Command cmd = manager.GetCommand (cmdId);
-				if (cmd == null){
-					MonoDevelop.Core.LoggingService.LogError ("Null command in Mac app menu for ID {0}", cmdId);
+
+				// if it's not the first time, keep the original items we marked
+				if (!firstTime && HIToolbox.GetMenuItemReferenceConstant (item) == UInt32.MaxValue) {
 					continue;
 				}
-				
-				uint macCmdId = GetNewMenuItemId (cmd);
-				ushort pos = HIToolbox.InsertMenuItem (mnu.MenuRef, (cmd.Text ?? "").Replace ("_", ""), 0, 0, macCmdId);
-				SetMenuAccelerator (new HIMenuItem (mnu.MenuRef, pos), cmd.AccelKey);
-				menuIdMap[cmdId] = appMenuId;
+
+				//remove everything else
+				HIToolbox.DeleteMenuItem (item);
+				existingitems.RemoveAt (i);
+			}
+
+			// Iterate backwards over the entries. For each one, try to find a matching built-in item. If successful,
+			// get all the items from that point to the last item that was not yet inserted, and insert them
+			// at that point.
+			var entries = entrySet.ToList ();
+			int uninsertedCount = entries.Count;
+			for (int i = entries.Count - 1; i >= 0; i--) {
+				var entry = entries [i];
+				if (entry.CommandId == null || entry.CommandId == Command.Separator)
+					continue;
+				var id = GetMacID (entry.CommandId);
+
+				//find an existing item
+				int match = existingitems.IndexOf (id);
+
+				if (match >= 0) {
+					//if there are uninserted items *after* this one, insert them at this point
+					if ((uninsertedCount - i) > 0) {
+						var items = entries.Skip (i + 1).Take (uninsertedCount - i - 2);
+						var insertionPoint = new HIMenuItem (appMenu, (ushort)(match + 1));
+						AddMenuItems (insertionPoint, items);
+					}
+					uninsertedCount = i;
+				}
+			}
+			// Finally, insert any remaining items at the beginning/top of the menu.
+			if (uninsertedCount > 0) {
+				AddMenuItems (new HIMenuItem (appMenu, 0), entries.Take (uninsertedCount));
 			}
 		}
 		
@@ -476,26 +518,22 @@ namespace MonoDevelop.MacIntegration
 		
 		//updates commands and populates arrays and dynamic menus
 		//NOTE: when Help menu is opened, Mac OS calls this for ALL menus because the Help menu can search menu items
-		static CarbonEventHandlerStatus HandleMenuOpening (IntPtr callRef, IntPtr eventRef, IntPtr user_data)
+		static CarbonEventHandlerStatus HandleMenuOpening (IntPtr callRef, IntPtr eventRef, IntPtr userData)
 		{
 			DestroyOldMenuObjects ();
 			menuOpenDepth++;
 			try {
 				IntPtr menuRef = Carbon.GetEventParameter (eventRef, CarbonEventParameterName.DirectObject, CarbonEventParameterType.MenuRef);
-				
+
 				//don't update dynamic menus recursively
 				if (!mainMenus.Contains (menuRef) && menuRef != appMenu)
 					return CarbonEventHandlerStatus.NotHandled;
 				
-			//	uint cmd = HIToolbox.GetMenuItemCommandID (new HIMenuItem (menuRef, 0));
-				
-				CommandTargetRoute route = new CommandTargetRoute ();
+				var route = new CommandTargetRoute ();
 				ushort count = HIToolbox.CountMenuItems (menuRef);
 				for (ushort i = 1; i <= count; i++) {
-					HIMenuItem mi = new HIMenuItem (menuRef, i);
+					var mi = new HIMenuItem (menuRef, i);
 					uint macCmdID = HIToolbox.GetMenuItemCommandID (mi);
-					object cmdID;
-					
 					//link items
 					if (macCmdID == linkCommandId) {
 						if (IsGloballyDisabled)
@@ -514,7 +552,8 @@ namespace MonoDevelop.MacIntegration
 					}
 					
 					//items that map to command objects
-					if (!commands.TryGetValue (macCmdID, out cmdID) || cmdID == null)
+					object cmdID;
+					if (!macIdToCommandId.TryGetValue (macCmdID, out cmdID) || cmdID == null)
 						continue;
 					
 					CommandInfo cinfo = manager.GetCommandInfo (cmdID, route);
@@ -522,7 +561,7 @@ namespace MonoDevelop.MacIntegration
 					UpdateMenuItem (menuRef, menuRef, ref i, ref count, macCmdID, cinfo);
 				}
 			} catch (Exception ex) {
-				System.Console.WriteLine (ex);
+				Console.WriteLine (ex);
 			}
 			
 			return CarbonEventHandlerStatus.NotHandled;
@@ -547,14 +586,14 @@ namespace MonoDevelop.MacIntegration
 			ushort count = HIToolbox.CountMenuItems (submenu);
 			
 			for (ushort i = 1; i <= count; i++) {
-				HIMenuItem mi = new HIMenuItem (submenu, i);
+				var mi = new HIMenuItem (submenu, i);
 				uint macCmdID = HIToolbox.GetMenuItemCommandID (mi);
 				object cmdID;
 				
 				if (macCmdID == linkCommandId)
 					return true;
 				
-				if (!commands.TryGetValue (macCmdID, out cmdID) || cmdID == null)
+				if (!macIdToCommandId.TryGetValue (macCmdID, out cmdID) || cmdID == null)
 					continue;
 				
 				CommandInfo cinfo = manager.GetCommandInfo (cmdID, route);
@@ -600,7 +639,7 @@ namespace MonoDevelop.MacIntegration
 				HIToolbox.ChangeMenuItemAttributes (new HIMenuItem (menuRef, index), MenuItemAttributes.Hidden, 0);
 				index++;
 				while (index <= count && HIToolbox.GetMenuItemCommandID (new HIMenuItem (menuRef, index)) == macCmdID) {
-					HIToolbox.DeleteMenuItem (menuRef, index);
+					HIToolbox.DeleteMenuItem (new HIMenuItem (menuRef, index));
 					count--;
 				}
 				index--;
@@ -627,7 +666,7 @@ namespace MonoDevelop.MacIntegration
 		}
 		
 		//this releases resources and gc-prevention handles from dynamic menu creation
-		static CarbonEventHandlerStatus HandleMenuClosed (IntPtr callRef, IntPtr eventRef, IntPtr user_data)
+		static CarbonEventHandlerStatus HandleMenuClosed (IntPtr callRef, IntPtr eventRef, IntPtr userData)
 		{
 			menuOpenDepth--;
 			//we can't destroy the menu objects instantly, since the command handler is invoked after the close event
@@ -653,7 +692,7 @@ namespace MonoDevelop.MacIntegration
 		static object GetCommandID (CarbonHICommand cmdEvent)
 		{
 			object cmdID;
-			commands.TryGetValue (cmdEvent.CommandID, out cmdID);
+			macIdToCommandId.TryGetValue (cmdEvent.CommandID, out cmdID);
 			return cmdID;
 		}
 		
@@ -662,11 +701,22 @@ namespace MonoDevelop.MacIntegration
 			return Carbon.GetEventParameter<CarbonHICommand> (eventRef, CarbonEventParameterName.DirectObject,
 			                                                  CarbonEventParameterType.HICommand);
 		}
+
+		static uint[] systemHandledCommands = {
+			(uint) CarbonCommandID.Hide,
+			(uint) CarbonCommandID.HideOthers,
+			(uint) CarbonCommandID.ShowAll,
+		};
 		
 		static CarbonEventHandlerStatus HandleMenuCommand (IntPtr callRef, IntPtr eventRef, IntPtr userData)
 		{
 			try {
 				CarbonHICommand hiCmd = GetCarbonHICommand (eventRef);
+
+				//let the system handle these
+				if (Array.IndexOf (systemHandledCommands, hiCmd.CommandID) > -1)
+					return CarbonEventHandlerStatus.NotHandled;
+
 				uint refCon = HIToolbox.GetMenuItemReferenceConstant (hiCmd.MenuItem);
 				
 				//link commands
@@ -677,7 +727,7 @@ namespace MonoDevelop.MacIntegration
 						MacPlatformService.OpenUrl (url);
 					} catch (Exception ex) {
 						Gtk.Application.Invoke (delegate {
-							MonoDevelop.Ide.MessageService.ShowException (ex, MonoDevelop.Core.GettextCatalog.GetString ("Could not open the url {0}", url));
+							MessageService.ShowException (ex, MonoDevelop.Core.GettextCatalog.GetString ("Could not open the url {0}", url));
 						});
 					}
 					DestroyOldMenuObjects ();

@@ -85,7 +85,7 @@ namespace MonoDevelop.MacIntegration
 
 		protected override string OnGetMimeTypeForUri (string uri)
 		{
-			var ext = System.IO.Path.GetExtension (uri);
+			var ext = Path.GetExtension (uri);
 			string mime = null;
 			if (ext != null && mimemap.Value.TryGetValue (ext, out mime))
 				return mime;
@@ -115,12 +115,12 @@ namespace MonoDevelop.MacIntegration
 			get { return "OSX"; }
 		}
 		
-		private static Dictionary<string, string> LoadMimeMapAsync ()
+		static Dictionary<string, string> LoadMimeMapAsync ()
 		{
 			var map = new Dictionary<string, string> ();
 			// All recent Macs should have this file; if not we'll just die silently
 			if (!File.Exists ("/etc/apache2/mime.types")) {
-				MonoDevelop.Core.LoggingService.LogError ("Apache mime database is missing");
+				LoggingService.LogError ("Apache mime database is missing");
 				return map;
 			}
 			
@@ -138,21 +138,13 @@ namespace MonoDevelop.MacIntegration
 					}
 				}
 			} catch (Exception ex){
-				MonoDevelop.Core.LoggingService.LogError ("Could not load Apache mime database", ex);
+				LoggingService.LogError ("Could not load Apache mime database", ex);
 			}
 			mimeTimer.EndTiming ();
 			return map;
 		}
 		
-		HashSet<object> ignoreCommands = new HashSet<object> () {
-			CommandManager.ToCommandId (HelpCommands.About),
-			CommandManager.ToCommandId (EditCommands.DefaultPolicies),
-			CommandManager.ToCommandId (EditCommands.MonodevelopPreferences),
-			CommandManager.ToCommandId (ToolCommands.AddinManager),
-			CommandManager.ToCommandId (FileCommands.Exit),
-		};
-		
-		public override bool SetGlobalMenu (CommandManager commandManager, string commandMenuAddinPath)
+		public override bool SetGlobalMenu (CommandManager commandManager, string commandMenuAddinPath, string appMenuAddinPath)
 		{
 			if (setupFail)
 				return false;
@@ -160,12 +152,15 @@ namespace MonoDevelop.MacIntegration
 			try {
 				InitApp (commandManager);
 				CommandEntrySet ces = commandManager.CreateCommandEntrySet (commandMenuAddinPath);
-				MacMainMenu.Recreate (commandManager, ces, ignoreCommands);
+				MacMainMenu.Recreate (commandManager, ces);
+
+				CommandEntrySet aes = commandManager.CreateCommandEntrySet (appMenuAddinPath);
+				MacMainMenu.SetAppMenuItems (commandManager, aes);
 			} catch (Exception ex) {
 				try {
 					MacMainMenu.Destroy (true);
 				} catch {}
-				MonoDevelop.Core.LoggingService.LogError ("Could not install global menu", ex);
+				LoggingService.LogError ("Could not install global menu", ex);
 				setupFail = true;
 				return false;
 			}
@@ -177,13 +172,14 @@ namespace MonoDevelop.MacIntegration
 		{
 			if (initedApp)
 				return;
+
+			MacMainMenu.SetAppQuitCommand (CommandManager.ToCommandId (FileCommands.Exit));
 			
 			MacMainMenu.AddCommandIDMappings (new Dictionary<object, CarbonCommandID> ()
 			{
 				{ CommandManager.ToCommandId (EditCommands.Copy), CarbonCommandID.Copy },
 				{ CommandManager.ToCommandId (EditCommands.Cut), CarbonCommandID.Cut },
-				//FIXME: for some reason mapping this causes two menu items to be created
-				// { EditCommands.MonodevelopPreferences, CarbonCommandID.Preferences }, 
+				{ CommandManager.ToCommandId (EditCommands.MonodevelopPreferences), CarbonCommandID.Preferences }, 
 				{ CommandManager.ToCommandId (EditCommands.Redo), CarbonCommandID.Redo },
 				{ CommandManager.ToCommandId (EditCommands.Undo), CarbonCommandID.Undo },
 				{ CommandManager.ToCommandId (EditCommands.SelectAll), CarbonCommandID.SelectAll },
@@ -196,24 +192,18 @@ namespace MonoDevelop.MacIntegration
 				{ CommandManager.ToCommandId (FileCommands.ReloadFile), CarbonCommandID.Revert },
 				{ CommandManager.ToCommandId (HelpCommands.About), CarbonCommandID.About },
 				{ CommandManager.ToCommandId (HelpCommands.Help), CarbonCommandID.AppHelp },
+				{ CommandManager.ToCommandId (MacIntegrationCommands.HideWindow), CarbonCommandID.Hide },
+				{ CommandManager.ToCommandId (MacIntegrationCommands.HideOthers), CarbonCommandID.HideOthers },
 			});
 			
 			//mac-ify these command names
 			commandManager.GetCommand (EditCommands.MonodevelopPreferences).Text = GettextCatalog.GetString ("Preferences...");
 			commandManager.GetCommand (EditCommands.DefaultPolicies).Text = GettextCatalog.GetString ("Custom Policies...");
-			commandManager.GetCommand (HelpCommands.About).Text = string.Format (GettextCatalog.GetString ("About {0}"), BrandingService.ApplicationName);
+			commandManager.GetCommand (HelpCommands.About).Text = GettextCatalog.GetString ("About {0}", BrandingService.ApplicationName);
+			commandManager.GetCommand (MacIntegrationCommands.HideWindow).Text = GettextCatalog.GetString ("Hide {0}", BrandingService.ApplicationName);
 			commandManager.GetCommand (ToolCommands.AddinManager).Text = GettextCatalog.GetString ("Add-in Manager...");
 			
 			initedApp = true;
-			MacMainMenu.SetAppQuitCommand (CommandManager.ToCommandId (FileCommands.Exit));
-			MacMainMenu.AddAppMenuItems (
-				commandManager,
-			    CommandManager.ToCommandId (HelpCommands.About),
-				CommandManager.ToCommandId (MonoDevelop.Ide.Updater.UpdateCommands.CheckForUpdates),
-				CommandManager.ToCommandId (Command.Separator),
-				CommandManager.ToCommandId (EditCommands.MonodevelopPreferences),
-				CommandManager.ToCommandId (EditCommands.DefaultPolicies),
-				CommandManager.ToCommandId (ToolCommands.AddinManager));
 			
 			IdeApp.Workbench.RootWindow.DeleteEvent += HandleDeleteEvent;
 		}
@@ -286,7 +276,7 @@ namespace MonoDevelop.MacIntegration
 					NSApplication.SharedApplication.ApplicationIconImage = new NSImage (iconFile);
 				}
 			} catch (Exception ex) {
-				MonoDevelop.Core.LoggingService.LogError ("Could not install app event handlers", ex);
+				LoggingService.LogError ("Could not install app event handlers", ex);
 				setupFail = true;
 			}
 		}
@@ -300,7 +290,7 @@ namespace MonoDevelop.MacIntegration
 
 		public static Gdk.Pixbuf GetPixbufFromNSImageRep (NSImageRep rep, int width, int height)
 		{
-			var rect = new System.Drawing.RectangleF (0, 0, width, height);
+			var rect = new RectangleF (0, 0, width, height);
 			var bitmap = rep as NSBitmapImageRep;
 			
 			if (bitmap == null) {
@@ -524,10 +514,10 @@ end tell", directory.ToString ().Replace ("\"", "\\\"")));
 			}
 
 			// Workaround: loading from file name.
-			var tmp = System.IO.Path.GetTempFileName ();
-			System.IO.File.WriteAllBytes (tmp, buffer);
+			var tmp = Path.GetTempFileName ();
+			File.WriteAllBytes (tmp, buffer);
 			var img = new NSImage (tmp);
-			System.IO.File.Delete (tmp);
+			File.Delete (tmp);
 			return img;
 		}
 

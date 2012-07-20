@@ -64,10 +64,15 @@ namespace MonoDevelop.MacInterop
 		internal static extern ushort CountMenuItems (IntPtr menuRef);
 		
 		[DllImport (hiToolboxLib)]
-		internal static extern void DeleteMenuItem (IntPtr menuRef, ushort index);
+		static extern void DeleteMenuItem (IntPtr menuRef, ushort index);
+
+		public static void DeleteMenuItem (HIMenuItem item)
+		{
+			DeleteMenuItem (item.MenuRef, item.Index);
+		}
 		
 		[DllImport (hiToolboxLib)]
-		internal static extern void InsertMenu (IntPtr menuRef, ushort before_id);
+		internal static extern void InsertMenu (IntPtr menuRef, ushort beforeId);
 		
 		[DllImport (hiToolboxLib)]
 		static extern CarbonMenuStatus AppendMenuItemTextWithCFString (IntPtr menuRef, IntPtr cfString, MenuItemAttributes attributes, uint commandId, out ushort index);
@@ -91,25 +96,23 @@ namespace MonoDevelop.MacInterop
 		}
 		
 		[DllImport (hiToolboxLib)]
-		static extern CarbonMenuStatus InsertMenuItemTextWithCFString (IntPtr menuRef, IntPtr cfString, ushort afterItemIndex,
-		                                                         MenuItemAttributes attributes, uint commandID, out ushort index);
+		static extern CarbonMenuStatus InsertMenuItemTextWithCFString (IntPtr menuRef, IntPtr cfString,
+			ushort afterItemIndex, MenuItemAttributes attributes, uint commandID);
 		
 		public static ushort InsertMenuItem (IntPtr parentRef, string title, ushort afterItemIndex, MenuItemAttributes attributes, uint commandId)
 		{
-			ushort index;
 			IntPtr str = CoreFoundation.CreateString (title);
-			CarbonMenuStatus result = InsertMenuItemTextWithCFString (parentRef, str, afterItemIndex, attributes, commandId, out index);
+			CarbonMenuStatus result = InsertMenuItemTextWithCFString (parentRef, str, afterItemIndex, attributes, commandId);
 			CoreFoundation.Release (str);
 			CheckResult (result);
-			return index;
+			return (ushort) (afterItemIndex + 1);
 		}
 		
 		public static ushort InsertMenuSeparator (IntPtr parentRef, ushort afterItemIndex)
 		{
-			ushort index;
-			CarbonMenuStatus result = InsertMenuItemTextWithCFString (parentRef, IntPtr.Zero, afterItemIndex, MenuItemAttributes.Separator, 0, out index);
+			CarbonMenuStatus result = InsertMenuItemTextWithCFString (parentRef, IntPtr.Zero, afterItemIndex, MenuItemAttributes.Separator, 0);
 			CheckResult (result);
-			return index;
+			return (ushort) (afterItemIndex + 1);
 		}
 
 		
@@ -277,6 +280,7 @@ namespace MonoDevelop.MacInterop
 	[Flags]
 	internal enum MenuItemAttributes : uint
 	{
+		None = 0,
 		Disabled = 1 << 0,
 		IconDisabled = 1 << 1,
 		SubmenuParentChoosable = 1 << 2,

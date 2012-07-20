@@ -27,14 +27,14 @@
 //
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.Commands
 {
-	public class CommandEntrySet: CommandEntry, IEnumerable
+	public class CommandEntrySet: CommandEntry, IEnumerable<CommandEntry>
 	{
-		ArrayList cmds = new ArrayList ();
+		List<CommandEntry> cmds = new List<CommandEntry> ();
 		string name;
 		IconId icon;
 		bool autoHide;
@@ -98,7 +98,12 @@ namespace MonoDevelop.Components.Commands
 			return cmdset;
 		}
 		
-		public IEnumerator GetEnumerator ()
+		public System.Collections.IEnumerator GetEnumerator ()
+		{
+			return cmds.GetEnumerator ();
+		}
+
+		IEnumerator<CommandEntry> IEnumerable<CommandEntry>.GetEnumerator ()
 		{
 			return cmds.GetEnumerator ();
 		}
