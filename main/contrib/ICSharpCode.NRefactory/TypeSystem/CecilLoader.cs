@@ -105,13 +105,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		/// <returns>IProjectContent that represents the assembly</returns>
 		[CLSCompliant(false)]
-		public IUnresolvedAssembly LoadAssembly(AssemblyDefinition assemblyDefinition)
+		public IUnresolvedAssembly LoadAssembly(AssemblyDefinition assemblyDefinition, string location = null)
 		{
 			if (assemblyDefinition == null)
 				throw new ArgumentNullException("assemblyDefinition");
 			
 			this.currentModule = assemblyDefinition.MainModule;
-			
+
 			// Read assembly and module attributes
 			IList<IUnresolvedAttribute> assemblyAttributes = new List<IUnresolvedAttribute>();
 			IList<IUnresolvedAttribute> moduleAttributes = new List<IUnresolvedAttribute>();
@@ -166,6 +166,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				typeSystemTranslationTable[this.currentAssembly] = assemblyDefinition;
 			
 			var result = this.currentAssembly;
+			result.Location = location;
 			this.currentAssembly = null;
 			this.currentModule = null;
 			return result;
