@@ -50,7 +50,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		internal const ushort FlagShadowing = 0x0008;
 		internal const ushort FlagSynthetic = 0x0010;
 		internal const ushort FlagStatic    = 0x0020;
-		// flags for DefaultUnresolvedTypeDefinition
+		// flags for DefaultUnresolvedTypeDefinition/LazyCecilTypeDefinition
 		internal const ushort FlagAddDefaultConstructorIfRequired = 0x0040;
 		internal const ushort FlagHasExtensionMethods = 0x0080;
 		internal const ushort FlagHasNoExtensionMethods = 0x0100;

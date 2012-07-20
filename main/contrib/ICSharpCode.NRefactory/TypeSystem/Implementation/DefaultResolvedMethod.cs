@@ -19,6 +19,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+
 using ICSharpCode.NRefactory.Semantics;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
@@ -215,6 +217,29 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					this.EntityType, declTypeRef, this.Name, this.TypeParameters.Count,
 					this.Parameters.Select(p => p.Type.ToTypeReference()).ToList());
 			}
+		}
+		
+		public override string ToString()
+		{
+			StringBuilder b = new StringBuilder("[");
+			b.Append(this.EntityType);
+			b.Append(' ');
+			b.Append(this.DeclaringType.ReflectionName);
+			b.Append('.');
+			b.Append(this.Name);
+			if (this.TypeParameters.Count > 0) {
+				b.Append("``");
+				b.Append(this.TypeParameters.Count);
+			}
+			b.Append('(');
+			for (int i = 0; i < this.Parameters.Count; i++) {
+				if (i > 0) b.Append(", ");
+				b.Append(this.Parameters[i].ToString());
+			}
+			b.Append("):");
+			b.Append(this.ReturnType.ReflectionName);
+			b.Append(']');
+			return b.ToString();
 		}
 		
 		/// <summary>
