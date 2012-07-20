@@ -103,8 +103,11 @@ namespace MonoDevelop.Components
 		internal Gdk.Pixbuf DarkIcon {
 			get {
 				if (darkIcon == null && Icon != null) {
-					darkIcon = ImageService.MakeGrayscale (Icon);
-					darkIcon = ImageService.MakeInverted (darkIcon);
+					darkIcon = Icon;
+					if (Styles.BreadcrumbGreyscaleIcons)
+						darkIcon = ImageService.MakeGrayscale (darkIcon);
+					if (Styles.BreadcrumbInvertedIcons)
+						darkIcon = ImageService.MakeInverted (darkIcon);
 				}
 				return darkIcon;
 			}
@@ -243,10 +246,10 @@ namespace MonoDevelop.Components
 				layout.SetMarkup (leftPath [i].Markup);
 
 				// Text shadow
-				ctx.Color = new Cairo.Color (0,0,0);
+/*				ctx.Color = new Cairo.Color (0,0,0);
 				ctx.MoveTo (x + textOffset, textTopPadding + 1);
 				PangoCairoHelper.ShowLayout (ctx, layout);
-
+*/
 				// Text
 				ctx.Color = Styles.BreadcrumbTextColor.ToCairoColor ();
 				ctx.MoveTo (x + textOffset, textTopPadding);
@@ -297,6 +300,12 @@ namespace MonoDevelop.Components
 				ctx.MoveTo (x + textOffset, textTopPadding);
 				PangoCairoHelper.ShowLayout (ctx, layout);
 			}
+
+			ctx.MoveTo (0.5, Allocation.Height - 0.5);
+			ctx.RelLineTo (Allocation.Width, 0);
+			ctx.Color = Styles.BreadcrumbBottomBorderColor;
+			ctx.LineWidth = 1;
+			ctx.Stroke ();
 
 			((IDisposable)ctx).Dispose ();
 

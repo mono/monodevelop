@@ -211,6 +211,93 @@ namespace MonoDevelop.Components
 			oy += widget.Allocation.Y;
 			return new Gdk.Point (x - ox, y - oy);
 		}
+
+		public static T ReplaceWithWidget<T> (this Gtk.Widget oldWidget, T newWidget, bool transferChildren = false) where T:Gtk.Widget
+		{
+			Gtk.Container parent = (Gtk.Container) oldWidget.Parent;
+			if (parent == null)
+				throw new InvalidOperationException ();
+
+			if (parent is Box) {
+				var box = (Box) parent;
+				var bc = (Gtk.Box.BoxChild) parent [oldWidget];
+				box.Add (newWidget);
+				var nc = (Gtk.Box.BoxChild) parent [newWidget];
+				nc.Expand = bc.Expand;
+				nc.Fill = bc.Fill;
+				nc.PackType = bc.PackType;
+				nc.Padding = bc.Padding;
+				nc.Position = bc.Position;
+				box.Remove (oldWidget);
+			}
+			else if (parent is Table) {
+				var table = (Table) parent;
+				var bc = (Gtk.Table.TableChild) parent [oldWidget];
+				table.Add (newWidget);
+				var nc = (Gtk.Table.TableChild) parent [newWidget];
+				nc.BottomAttach = bc.BottomAttach;
+				nc.LeftAttach = bc.LeftAttach;
+				nc.RightAttach = bc.RightAttach;
+				nc.TopAttach = bc.TopAttach;
+				nc.XOptions = bc.XOptions;
+				nc.XPadding = bc.XPadding;
+				nc.YOptions = bc.YOptions;
+				nc.YPadding = bc.YPadding;
+				table.Remove (oldWidget);
+			}
+			else if (parent is Paned) {
+				var paned = (Paned) parent;
+				var bc = (Gtk.Paned.PanedChild) parent [oldWidget];
+				var resize = bc.Resize;
+				var shrink = bc.Shrink;
+				if (oldWidget == paned.Child1) {
+					paned.Remove (oldWidget);
+					paned.Add1 (newWidget);
+				} else {
+					paned.Remove (oldWidget);
+					paned.Add2 (newWidget);
+				}
+				var nc = (Gtk.Paned.PanedChild) parent [newWidget];
+				nc.Resize = resize;
+				nc.Shrink = shrink;
+			}
+			else
+				throw new NotSupportedException ();
+
+			if (transferChildren) {
+				if (newWidget is Paned && oldWidget is Paned) {
+					var panedOld = (Paned) oldWidget;
+					var panedNew = (Paned) (object) newWidget;
+					if (panedOld.Child1 != null) {
+						var c = panedOld.Child1;
+						var bc = (Gtk.Paned.PanedChild) panedOld [c];
+						var resize = bc.Resize;
+						var shrink = bc.Shrink;
+						panedOld.Remove (c);
+						panedNew.Add1 (c);
+						var nc = (Gtk.Paned.PanedChild) panedNew [c];
+						nc.Resize = resize;
+						nc.Shrink = shrink;
+					}
+					if (panedOld.Child2 != null) {
+						var c = panedOld.Child2;
+						var bc = (Gtk.Paned.PanedChild) panedOld [c];
+						var resize = bc.Resize;
+						var shrink = bc.Shrink;
+						panedOld.Remove (c);
+						panedNew.Add2 (c);
+						var nc = (Gtk.Paned.PanedChild) panedNew [c];
+						nc.Resize = resize;
+						nc.Shrink = shrink;
+					}
+				}
+				else
+					throw new NotSupportedException ();
+			}
+
+			newWidget.Visible = oldWidget.Visible;
+			return newWidget;
+		}
 	}
 
 	class TreeViewTooltipsData
