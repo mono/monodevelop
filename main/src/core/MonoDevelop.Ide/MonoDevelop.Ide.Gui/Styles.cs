@@ -50,9 +50,13 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly Cairo.Color BreadcrumbGradientEndColor = Shift (BreadcrumbBackgroundColor, 0.662);
 		public static readonly Cairo.Color BreadcrumbBorderColor = Shift (BreadcrumbBackgroundColor, 0.714);
 		public static readonly Cairo.Color BreadcrumbInnerBorderColor = WithAlpha (BaseBackgroundColor, 0.1d);
+		public static readonly Cairo.Color BreadcrumbBottomBorderColor = Shift (BreadcrumbBackgroundColor, 0.714);
 		public static readonly Gdk.Color BreadcrumbTextColor = Shift (BaseBackgroundColor, 0.8).ToGdkColor ();
 		public static readonly Cairo.Color BreadcrumbButtonBorderColor = Shift (BaseBackgroundColor, 0.8);
 		public static readonly Cairo.Color BreadcrumbButtonFillColor = WithAlpha (BaseBackgroundColor, 0.1d);
+
+		public static readonly bool BreadcrumbGreyscaleIcons = false;
+		public static readonly bool BreadcrumbInvertedIcons = false;
 
 		// Dock pads
 		
@@ -90,6 +94,10 @@ namespace MonoDevelop.Ide.Gui
 
 		public static readonly Cairo.Color ToolbarBottomBorderColor = new Cairo.Color (0.5, 0.5, 0.5);
 		public static readonly Cairo.Color ToolbarBottomGlowColor = new Cairo.Color (1, 1, 1, 0.2);
+
+		// Thin splitter
+
+		public static readonly Cairo.Color ThinSplitterColor = new Cairo.Color (0.5, 0.5, 0.5);
 
 		// Helper methods
 

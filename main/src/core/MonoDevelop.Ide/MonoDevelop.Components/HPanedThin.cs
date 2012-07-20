@@ -81,7 +81,7 @@ namespace MonoDevelop.Components
 
 			if (Child1 != null && Child2 != null) {
 				var gc = new Gdk.GC (evnt.Window);
-				gc.RgbFgColor = Styles.ThinSplitterColor;
+				gc.RgbFgColor = (HslColor) Styles.ThinSplitterColor;
 				var x = Child1.Allocation.X + Child1.Allocation.Width;
 				evnt.Window.DrawLine (gc, x, Allocation.Y, x, Allocation.Y + Allocation.Height);
 				gc.Dispose ();
