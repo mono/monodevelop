@@ -386,14 +386,14 @@ namespace MonoDevelop.VersionControl.Views
 
 		static void UpdateCaretPosition (Caret caret)
 		{
-			int offset = caret.Offset;
-			if (offset < 0 || offset > caret.TextEditorData.Document.TextLength)
-				return;
-			DocumentLocation location = caret.TextEditorData.LogicalToVisualLocation (caret.Location);
-			IdeApp.Workbench.StatusBar.ShowCaretState (caret.Line,
-			                                           location.Column,
-			                                           caret.TextEditorData.IsSomethingSelected ? caret.TextEditorData.SelectionRange.Length : 0,
-			                                           caret.IsInInsertMode);
+//			int offset = caret.Offset;
+//			if (offset < 0 || offset > caret.TextEditorData.Document.TextLength)
+//				return;
+//			DocumentLocation location = caret.TextEditorData.LogicalToVisualLocation (caret.Location);
+//			IdeApp.Workbench.StatusBar.ShowCaretState (caret.Line,
+//			                                           location.Column,
+//			                                           caret.TextEditorData.IsSomethingSelected ? caret.TextEditorData.SelectionRange.Length : 0,
+//			                                           caret.IsInInsertMode);
 		}
 
 		#region Container implementation

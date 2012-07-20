@@ -85,7 +85,6 @@ namespace MonoDevelop.Ide.Gui
 		DockFrame dock;
 		SdiDragNotebook tabControl;
 		Gtk.MenuBar topMenu;
-		MonoDevelopStatusBar statusBar;
 		Gtk.VBox fullViewVBox;
 		DockItem documentDockItem;
 		MainToolbar toolbar;
@@ -108,11 +107,9 @@ namespace MonoDevelop.Ide.Gui
 		
 		public event EventHandler ActiveWorkbenchWindowChanged;
 		
-		public MonoDevelopStatusBar StatusBar {
+		public MonoDevelop.Ide.StatusBar StatusBar {
 			get {
-				if (statusBar == null)
-					statusBar = new MonoDevelop.Ide.MonoDevelopStatusBar ();
-				return statusBar;
+				return toolbar.StatusBar;
 			}
 		}
 
@@ -776,9 +773,8 @@ namespace MonoDevelop.Ide.Gui
 			InstallMenuBar ();
 			Realize ();
 			toolbar = DesktopService.CreateMainToolbar (this);
-			
-			toolbar.ShowAll ();
-			fullViewVBox.PackStart (toolbar, false, false, 0);
+			var toolbarBox = new HBox ();
+			fullViewVBox.PackStart (toolbarBox, false, false, 0);
 			toolbarFrame = new CommandFrame (IdeApp.CommandService);
 
 			fullViewVBox.PackStart (toolbarFrame, true, true, 0);
@@ -879,7 +875,7 @@ namespace MonoDevelop.Ide.Gui
 			Add (fullViewVBox);
 			fullViewVBox.ShowAll ();
 			
-			fullViewVBox.PackEnd (this.StatusBar, false, true, 0);
+			toolbarBox.PackStart (this.toolbar, true, true, 0);
 			
 			if (MonoDevelop.Core.Platform.IsMac)
 				this.StatusBar.HasResizeGrip = true;

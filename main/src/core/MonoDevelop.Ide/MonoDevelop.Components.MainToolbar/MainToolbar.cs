@@ -84,6 +84,12 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
+		public MonoDevelop.Ide.StatusBar StatusBar {
+			get {
+				return statusArea;
+			}
+		}
+
 		/*
 		internal class SelectActiveRuntimeHandler : CommandHandler
 		{
@@ -217,18 +223,20 @@ namespace MonoDevelop.Components.MainToolbar
 			buttonBar.HeightRequest = height + 2;
 
 			var align = new Gtk.Alignment (0, 0, 1f, 1f);
+			align.Show ();
 			align.TopPadding = 6;
 			align.LeftPadding = 9;
 			align.RightPadding = 18;
 			align.BottomPadding = 11;
 			align.Add (contentBox);
-			align.Show ();
 
 			Add (align);
 			UpdateCombos ();
 
 			button.Clicked += HandleStartButtonClicked;
 			IdeApp.CommandService.RegisterCommandBar (this);
+			this.ShowAll ();
+			this.statusArea.statusIconBox.HideAll ();
 		}
 
 		void AddSpace (int w)

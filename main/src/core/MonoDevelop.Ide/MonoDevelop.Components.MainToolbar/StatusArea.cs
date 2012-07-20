@@ -30,22 +30,75 @@ using Cairo;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Tasks;
+using System.Collections.Generic;
+using MonoDevelop.Ide.CodeCompletion;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.MainToolbar
 {
-	class StatusArea : EventBox
+	class StatusArea : EventBox, StatusBar
 	{
 		HBox contentBox = new HBox (false, 8);
 
 		StatusAreaSeparator statusIconSeparator;
 		Gtk.Widget buildResultWidget;
 
+		readonly StyledProgressBar progressBar = new StyledProgressBar ();
+		readonly Label statusLabel = new Label ();
+		readonly HBox messageBox = new HBox ();
+		internal readonly HBox statusIconBox = new HBox ();
+
+		MainStatusBarContextImpl mainContext;
+		StatusBarContextImpl activeContext;
+		
+		public StatusBar MainContext {
+			get { return mainContext; }
+		}
+
 		public StatusArea ()
 		{
+			mainContext = new MainStatusBarContextImpl (this);
+			activeContext = mainContext;
+			contexts.Add (mainContext);
+
 			VisibleWindow = false;
 			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
-			contentBox.PackStart (MonoDevelopStatusBar.messageBox, true, true, 0);
-			contentBox.PackEnd (MonoDevelopStatusBar.statusIconBox, false, false, 0);
+
+			statusLabel.SetAlignment (0, 0.5f);
+			statusLabel.Wrap = false;
+			int w, h;
+			Gtk.Icon.SizeLookup (IconSize.Menu, out w, out h);
+			statusLabel.HeightRequest = h;
+			statusLabel.SetPadding (0, 0);
+			statusLabel.ShowAll ();
+			
+			statusIconBox.BorderWidth = 0;
+			statusIconBox.Spacing = 3;
+			
+			//			EventBox eventMessageBox = new EventBox ();
+			messageBox.PackEnd (progressBar, false, false, 0);
+			messageBox.PackStart (statusLabel, true, true, 0);
+
+			ProgressBegin += delegate {
+				progressBar.ShowProgress = true;
+				progressBar.Visible = true;
+				progressBar.Fraction = 0;
+			};
+			
+			ProgressEnd += delegate {
+				progressBar.ShowProgress = false;
+				progressBar.Visible = false;
+				progressBar.Fraction = 0;
+			};
+			
+			ProgressFraction += delegate(object sender, FractionEventArgs e) {
+				progressBar.Fraction = e.Work;
+				QueueDraw ();
+			};
+
+
+			contentBox.PackStart (messageBox, true, true, 0);
+			contentBox.PackEnd (statusIconBox, false, false, 0);
 			contentBox.PackEnd (statusIconSeparator = new StatusAreaSeparator (), false, false, 0);
 			contentBox.PackEnd (buildResultWidget = CreateBuildResultsWidget (Orientation.Horizontal), false, false, 0);
 
@@ -56,23 +109,42 @@ namespace MonoDevelop.Components.MainToolbar
 			Add (align);
 
 			this.ButtonPressEvent += delegate {
-				MonoDevelopStatusBar.HandleEventMessageBoxButtonPressEvent (null, null);
+				if (sourcePad != null)
+					sourcePad.BringToFront (true);
 			};
 
-			MonoDevelopStatusBar.statusIconBox.Shown += delegate {
+			statusIconBox.Shown += delegate {
 				UpdateSeparators ();
 			};
 
-			MonoDevelopStatusBar.statusIconBox.Hidden += delegate {
+			statusIconBox.Hidden += delegate {
 				UpdateSeparators ();
+			};
+
+
+
+			// todo: Move this to the CompletionWindowManager when it's possible.
+			StatusBarContext completionStatus = null;
+			CompletionWindowManager.WindowShown += delegate {
+				CompletionListWindow wnd = CompletionWindowManager.Wnd;
+				if (wnd != null && wnd.List != null && wnd.List.CategoryCount > 1) {
+					if (completionStatus == null)
+						completionStatus = CreateContext ();
+					completionStatus.ShowMessage (string.Format (GettextCatalog.GetString ("To toggle categorized completion mode press {0}."), IdeApp.CommandService.GetCommandInfo (MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow).AccelKey));
+				}
 			};
 			
-			ShowAll ();
+			CompletionWindowManager.WindowClosed += delegate {
+				if (completionStatus != null) {
+					completionStatus.Dispose ();
+					completionStatus = null;
+				}
+			};
 		}
 
 		void UpdateSeparators ()
 		{
-			statusIconSeparator.Visible = MonoDevelopStatusBar.statusIconBox.Visible && buildResultWidget.Visible;
+			statusIconSeparator.Visible = statusIconBox.Visible && buildResultWidget.Visible;
 		}
 
 		public Widget CreateBuildResultsWidget (Orientation orientation)
@@ -174,6 +246,386 @@ namespace MonoDevelop.Components.MainToolbar
 				context.Stroke ();
 			}
 			return base.OnExposeEvent (evnt);
+		}
+
+		#region StatusBar implementation
+
+		public void ShowCaretState (int line, int column, int selectedChars, bool isInInsertMode)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public void ClearCaretState ()
+		{
+			throw new NotImplementedException ();
+		}
+
+		public StatusBarIcon ShowStatusIcon (Gdk.Pixbuf pixbuf)
+		{
+			DispatchService.AssertGuiThread ();
+			StatusIcon icon = new StatusIcon (this, pixbuf);
+			statusIconBox.PackEnd (icon.box);
+			statusIconBox.ShowAll ();
+			return icon;
+		}
+		
+		void HideStatusIcon (StatusIcon icon)
+		{
+			statusIconBox.Remove (icon.EventBox);
+			if (statusIconBox.Children.Length == 0)
+				statusIconBox.Hide ();
+			icon.EventBox.Destroy ();
+		}
+
+		List<StatusBarContextImpl> contexts = new List<StatusBarContextImpl> ();
+		public StatusBarContext CreateContext ()
+		{
+			StatusBarContextImpl ctx = new StatusBarContextImpl (this);
+			contexts.Add (ctx);
+			return ctx;
+		}
+
+		public void ShowReady ()
+		{
+			ShowMessage ("");	
+		}
+
+		public void SetMessageSourcePad (Pad pad)
+		{
+			sourcePad = pad;
+		}
+
+		public bool HasResizeGrip {
+			get;
+			set;
+		}
+
+		public class StatusIcon : StatusBarIcon
+		{
+			StatusArea statusBar;
+			internal EventBox box;
+			string tip;
+			DateTime alertEnd;
+			Gdk.Pixbuf icon;
+			uint animation;
+			Gtk.Image image;
+			
+			int astep;
+			Gdk.Pixbuf[] images;
+			TooltipPopoverWindow tooltipWindow;
+			bool mouseOver;
+			
+			public StatusIcon (StatusArea statusBar, Gdk.Pixbuf icon)
+			{
+				this.statusBar = statusBar;
+				this.icon = icon;
+				box = new EventBox ();
+				box.VisibleWindow = false;
+				image = new Image (icon);
+				image.SetPadding (0, 0);
+				box.Child = image;
+				box.Events |= Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask;
+				box.EnterNotifyEvent += HandleEnterNotifyEvent;
+				box.LeaveNotifyEvent += HandleLeaveNotifyEvent;
+			}
+			
+			[GLib.ConnectBefore]
+			void HandleLeaveNotifyEvent (object o, LeaveNotifyEventArgs args)
+			{
+				mouseOver = false;
+				HideTooltip ();
+			}
+			
+			[GLib.ConnectBefore]
+			void HandleEnterNotifyEvent (object o, EnterNotifyEventArgs args)
+			{
+				mouseOver = true;
+				ShowTooltip ();
+			}
+			
+			void ShowTooltip ()
+			{
+				if (!string.IsNullOrEmpty (tip)) {
+					HideTooltip ();
+					tooltipWindow = new TooltipPopoverWindow ();
+					tooltipWindow.ShowArrow = true;
+					tooltipWindow.Text = tip;
+					tooltipWindow.ShowPopup (box, PopupPosition.Top);
+				}
+			}
+			
+			void HideTooltip ()
+			{
+				if (tooltipWindow != null) {
+					tooltipWindow.Destroy ();
+					tooltipWindow = null;
+				}
+			}
+			
+			public void Dispose ()
+			{
+				HideTooltip ();
+				statusBar.HideStatusIcon (this);
+				if (images != null) {
+					foreach (Gdk.Pixbuf img in images) {
+						img.Dispose ();
+					}
+				}
+				if (animation != 0) {
+					GLib.Source.Remove (animation);
+					animation = 0;
+				}
+			}
+			
+			public string ToolTip {
+				get { return tip; }
+				set {
+					tip = value;
+					if (tooltipWindow != null) {
+						if (!string.IsNullOrEmpty (tip))
+							tooltipWindow.Text = value;
+						else
+							HideTooltip ();
+					} else if (!string.IsNullOrEmpty (tip) && mouseOver)
+						ShowTooltip ();
+				}
+			}
+			
+			public EventBox EventBox {
+				get { return box; }
+			}
+			
+			public Gdk.Pixbuf Image {
+				get { return icon; }
+				set {
+					icon = value;
+					image.Pixbuf = icon;
+				}
+			}
+			
+			public void SetAlertMode (int seconds)
+			{
+				astep = 0;
+				alertEnd = DateTime.Now.AddSeconds (seconds);
+				
+				if (animation != 0)
+					GLib.Source.Remove (animation);
+				
+				animation = GLib.Timeout.Add (60, new GLib.TimeoutHandler (AnimateIcon));
+				
+				if (images == null) {
+					images = new Gdk.Pixbuf [10];
+					for (int n=0; n<10; n++)
+						images [n] = ImageService.MakeTransparent (icon, ((double)(9-n))/10.0);
+				}
+			}
+			
+			bool AnimateIcon ()
+			{
+				if (DateTime.Now >= alertEnd && astep == 0) {
+					image.Pixbuf = icon;
+					animation = 0;
+					return false;
+				}
+				if (astep < 10)
+					image.Pixbuf = images [astep];
+				else
+					image.Pixbuf = images [20 - astep - 1];
+				
+				astep = (astep + 1) % 20;
+				return true;
+			}
+		}
+		
+		#endregion
+
+		#region StatusBarContextBase implementation
+
+		public void ShowError (string error)
+		{
+			ShowMessage (new Image (MonoDevelop.Ide.Gui.Stock.Error, IconSize.Menu), error);
+		}
+
+		public void ShowWarning (string warning)
+		{
+			DispatchService.AssertGuiThread ();
+			ShowMessage (new Gtk.Image (MonoDevelop.Ide.Gui.Stock.Warning, IconSize.Menu), warning);
+		}
+
+		public void ShowMessage (string message)
+		{
+			ShowMessage (null, message, false);
+		}
+
+		public void ShowMessage (string message, bool isMarkup)
+		{
+			ShowMessage (null, message, isMarkup);
+		}
+
+		public void ShowMessage (Image image, string message)
+		{
+			ShowMessage (image, message, false);
+		}
+
+		string lastText = null;
+		Image currentStatusImage;
+		static Pad sourcePad;
+		public void ShowMessage (Image image, string message, bool isMarkup)
+		{
+			if (message == lastText)
+				return;
+			sourcePad = null;
+			lastText = message;
+			DispatchService.AssertGuiThread ();
+			if (currentStatusImage != image) {
+				if (currentStatusImage != null) 
+					messageBox.Remove (currentStatusImage);
+				currentStatusImage = image;
+				if (image != null) {
+					image.SetPadding (0, 0);
+					messageBox.PackStart (image, false, false, 3);
+					messageBox.ReorderChild (image, 1);
+					image.Show ();
+				}
+			}
+			
+			string txt = !String.IsNullOrEmpty (message) ? " " + message.Replace ("\n", " ") : "";
+			if (isMarkup) {
+				statusLabel.Markup = txt;
+			} else {
+				statusLabel.Text = txt;
+			}
+		}
+		#endregion
+
+
+		#region Progress Monitor implementation
+		public static event EventHandler ProgressBegin, ProgressEnd, ProgressPulse;
+		public static event EventHandler<FractionEventArgs> ProgressFraction;
+		
+		public sealed class FractionEventArgs : EventArgs
+		{
+			public double Work { get; private set; }
+			
+			public FractionEventArgs (double work)
+			{
+				this.Work = work;
+			}
+		}
+		
+		static void OnProgressBegin (EventArgs e)
+		{
+			var handler = ProgressBegin;
+			if (handler != null)
+				handler (null, e);
+		}
+		
+		static void OnProgressEnd (EventArgs e)
+		{
+			var handler = ProgressEnd;
+			if (handler != null)
+				handler (null, e);
+		}
+		
+		static void OnProgressPulse (EventArgs e)
+		{
+			var handler = ProgressPulse;
+			if (handler != null)
+				handler (null, e);
+		}
+		
+		static void OnProgressFraction (FractionEventArgs e)
+		{
+			var handler = ProgressFraction;
+			if (handler != null)
+				handler (null, e);
+		}
+		
+		public void BeginProgress (string name)
+		{
+			ShowMessage (name);
+			OnProgressBegin (EventArgs.Empty);
+		}
+		
+		public void BeginProgress (Image image, string name)
+		{
+			ShowMessage (image, name);
+			OnProgressBegin (EventArgs.Empty);
+		}
+		
+		public void SetProgressFraction (double work)
+		{
+			DispatchService.AssertGuiThread ();
+			OnProgressFraction (new FractionEventArgs (work));
+		}
+		
+		public void EndProgress ()
+		{
+			ShowMessage ("");
+			OnProgressEnd (EventArgs.Empty);
+			AutoPulse = false;
+		}
+		
+		public void Pulse ()
+		{
+			DispatchService.AssertGuiThread ();
+			OnProgressPulse (EventArgs.Empty);
+		}
+		
+		uint autoPulseTimeoutId;
+		public bool AutoPulse {
+			get { return autoPulseTimeoutId != 0; }
+			set {
+				DispatchService.AssertGuiThread ();
+				if (value) {
+					if (autoPulseTimeoutId == 0) {
+						autoPulseTimeoutId = GLib.Timeout.Add (100, delegate {
+							Pulse ();
+							return true;
+						});
+					}
+				} else {
+					if (autoPulseTimeoutId != 0) {
+						GLib.Source.Remove (autoPulseTimeoutId);
+						autoPulseTimeoutId = 0;
+					}
+				}
+			}
+		}
+		#endregion
+	
+		internal bool IsCurrentContext (StatusBarContextImpl ctx)
+		{
+			return ctx == activeContext;
+		}
+		
+		internal void Remove (StatusBarContextImpl ctx)
+		{
+			if (ctx == mainContext)
+				return;
+			
+			StatusBarContextImpl oldActive = activeContext;
+			contexts.Remove (ctx);
+			UpdateActiveContext ();
+			if (oldActive != activeContext) {
+				// Removed the active context. Update the status bar.
+				activeContext.Update ();
+			}
+		}
+		
+		internal void UpdateActiveContext ()
+		{
+			for (int n = contexts.Count - 1; n >= 0; n--) {
+				StatusBarContextImpl ctx = contexts [n];
+				if (ctx.StatusChanged) {
+					if (ctx != activeContext) {
+						activeContext = ctx;
+						activeContext.Update ();
+					}
+					return;
+				}
+			}
+			throw new InvalidOperationException (); // There must be at least the main context
 		}
 	}
 

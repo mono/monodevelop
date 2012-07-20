@@ -360,7 +360,7 @@ namespace MonoDevelop.SourceEditor
 				this.splittedTextEditor = null;
 				view = null;
 				
-				IdeApp.Workbench.StatusBar.ClearCaretState ();
+//				IdeApp.Workbench.StatusBar.ClearCaretState ();
 				if (parseInformationUpdaterWorkerThread != null) {
 					parseInformationUpdaterWorkerThread.Dispose ();
 					parseInformationUpdaterWorkerThread = null;
@@ -1062,14 +1062,14 @@ namespace MonoDevelop.SourceEditor
 		
 		internal void UpdateLineCol ()
 		{
-			int offset = TextEditor.Caret.Offset;
-			if (offset < 0 || offset > TextEditor.Document.TextLength)
-				return;
-			DocumentLocation location = TextEditor.LogicalToVisualLocation (TextEditor.Caret.Location);
-			IdeApp.Workbench.StatusBar.ShowCaretState (TextEditor.Caret.Line,
-			                                           location.Column,
-			                                           TextEditor.IsSomethingSelected ? TextEditor.SelectionRange.Length : 0,
-			                                           TextEditor.Caret.IsInInsertMode);
+//			int offset = TextEditor.Caret.Offset;
+//			if (offset < 0 || offset > TextEditor.Document.TextLength)
+//				return;
+//			DocumentLocation location = TextEditor.LogicalToVisualLocation (TextEditor.Caret.Location);
+//			IdeApp.Workbench.StatusBar.ShowCaretState (TextEditor.Caret.Line,
+//			                                           location.Column,
+//			                                           TextEditor.IsSomethingSelected ? TextEditor.SelectionRange.Length : 0,
+//			                                           TextEditor.Caret.IsInInsertMode);
 		}
 		
 		#endregion
