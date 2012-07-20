@@ -50,6 +50,7 @@ using Mono.TextEditor.Theatrics;
 using MonoDevelop.SourceEditor;
 using XmlDocIdLib;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -183,7 +184,7 @@ namespace MonoDevelop.AssemblyBrowser
 			TreeView.Tree.CursorChanged += HandleCursorChanged;
 			TreeView.ShadowType = ShadowType.None;
 			TreeView.BorderWidth = 1;
-			TreeView.ShowBorderLine = true;
+			TreeView.ShowBorderLine = false;
 			TreeView.Zoom = 1.0;
 			treeViewPlaceholder.Add (TreeView);
 			treeViewPlaceholder.ShowAll ();
@@ -246,6 +247,8 @@ namespace MonoDevelop.AssemblyBrowser
 			
 //			this.vpaned1.ExposeEvent += VPaneExpose;
 			this.hpaned1.ExposeEvent += HPaneExpose;
+			hpaned1 = hpaned1.ReplaceWithWidget (new HPanedThin (), true);
+
 /*			this.notebook1.SwitchPage += delegate {
 				// Hack for the switch page select all bug.
 //				this.inspectLabel.Selectable = false;
