@@ -42,6 +42,9 @@ namespace MonoDevelop.Components
 		int rightPadding;
 		Gdk.Color? backgroundColor;
 		bool showTopShadow;
+		bool useChildBackgroundColor;
+		int shadowSize = 3;
+		double shadowStrengh = 0.1;
 
 		public HeaderBox ()
 		{
@@ -75,6 +78,26 @@ namespace MonoDevelop.Components
 				QueueDraw ();
 			}
 		}
+
+		public int ShadowSize {
+			get {
+				return shadowSize;
+			}
+			set {
+				shadowSize = value;
+				QueueDraw ();
+			}
+		}
+
+		public double ShadowStrengh {
+			get {
+				return shadowStrengh;
+			}
+			set {
+				shadowStrengh = value;
+				QueueDraw ();
+			}
+		}
 		
 		public bool GradientBackround { get; set; }
 
@@ -84,6 +107,16 @@ namespace MonoDevelop.Components
 			get { return backgroundColor; }
 			set {
 				backgroundColor = value;
+				QueueDraw ();
+			}
+		}
+
+		public bool UseChildBackgroundColor {
+			get {
+				return useChildBackgroundColor;
+			}
+			set {
+				useChildBackgroundColor = value;
 				QueueDraw ();
 			}
 		}
@@ -152,6 +185,12 @@ namespace MonoDevelop.Components
 					cr.Color = BackgroundColor.Value.ToCairoColor ();
 					cr.Fill ();
 				}
+			} else if (useChildBackgroundColor && Child != null) {
+				using (Cairo.Context cr = Gdk.CairoHelper.Create (GdkWindow)) {
+					cr.Rectangle (Allocation.X, Allocation.Y, Allocation.Width, Allocation.Height);
+					cr.Color = Child.Style.Base (StateType.Normal).ToCairoColor ();
+					cr.Fill ();
+				}
 			}
 			
 			bool res = base.OnExposeEvent (evnt);
@@ -174,9 +213,9 @@ namespace MonoDevelop.Components
 
 			if (showTopShadow) {
 				using (Cairo.Context cr = Gdk.CairoHelper.Create (GdkWindow)) {
-					cr.Rectangle (Allocation.X, Allocation.Y, Allocation.Width, 3);
-					Cairo.Gradient pat = new Cairo.LinearGradient (rect.X, rect.Y, rect.X, rect.Y + 3);
-					pat.AddColorStop (0, new Cairo.Color (0, 0, 0, 0.1));
+					cr.Rectangle (Allocation.X, Allocation.Y, Allocation.Width, shadowSize);
+					Cairo.Gradient pat = new Cairo.LinearGradient (rect.X, rect.Y, rect.X, rect.Y + shadowSize);
+					pat.AddColorStop (0, new Cairo.Color (0, 0, 0, shadowStrengh));
 					pat.AddColorStop (1, new Cairo.Color (0, 0, 0, 0));
 					cr.Pattern = pat;
 					cr.Fill ();
