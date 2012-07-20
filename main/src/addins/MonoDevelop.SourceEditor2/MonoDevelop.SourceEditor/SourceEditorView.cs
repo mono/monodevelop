@@ -1316,16 +1316,48 @@ namespace MonoDevelop.SourceEditor
 			return Document.GetLine (location.Line);
 		}
 				
-		public void SetBookmarked (int position, bool mark)
+		public void SetBookmarked (int position, bool mark, int number)
 		{
 			DocumentLine line = GetLine (position);
-			if (line != null && line.IsBookmarked != mark) {
-				int lineNumber = widget.TextEditor.Document.OffsetToLineNumber (line.Offset);
-				line.IsBookmarked = mark;
-				widget.TextEditor.Document.RequestUpdate (new LineUpdate (lineNumber));
-				widget.TextEditor.Document.CommitDocumentUpdate ();
+			if (line == null)
+				return;
+			int lineNumber = widget.TextEditor.Document.OffsetToLineNumber (line.Offset);
+			if (number == -1) {
+				if (line.IsBookmarked != mark) {
+					if (mark)
+						line.SetBookmark(number);
+					else
+						line.RemoveBookmark();
+				}
+			} else {
+				ClearBookmarks(number, lineNumber);
+				line.SetBookmark(number);
+			}
+			widget.TextEditor.Document.RequestUpdate (new LineUpdate (lineNumber));
+			widget.TextEditor.Document.CommitDocumentUpdate ();
+		}
+
+		public int HasBookmark(int number)
+		{
+			for (int i = 1; i <= this.LineCount; i++) {
+				var line = Document.GetLine(i);
+				if (line.IsBookmarked && line.GetBookmark().Number == number) {
+					return i;
+				}
+			}
+			return -1;
+		}
+
+		private void ClearBookmarks(int number, int lineNumber)
+		{
+			var bookmarkCheck = HasBookmark(number);
+			if (bookmarkCheck > -1 && bookmarkCheck != lineNumber) {
+				var line = Document.GetLine(bookmarkCheck);
+				line.RemoveBookmark();
+				widget.TextEditor.Document.RequestUpdate(new LineUpdate(bookmarkCheck));
 			}
 		}
+
 		
 		public bool IsBookmarked (int position)
 		{
@@ -1347,6 +1379,12 @@ namespace MonoDevelop.SourceEditor
 		{
 			TextEditor.RunAction (BookmarkActions.ClearAll);
 		}
+
+		public void GoToBookmark(int number)
+		{
+			BookmarkActions.GoToNumber(TextEditor, number);
+		}
+
 		#endregion
 		
 		#region IClipboardHandler

@@ -56,5 +56,27 @@ namespace MonoDevelop.Ide.Commands
 		PrevBookmark,
 		NextBookmark,
 		ClearBookmarks,
+
+		CreateBookmark1,
+		CreateBookmark2,
+		CreateBookmark3,
+		CreateBookmark4,
+		CreateBookmark5,
+		CreateBookmark6,
+		CreateBookmark7,
+		CreateBookmark8,
+		CreateBookmark9,
+		CreateBookmark0,
+
+		GoToBookmark1,
+		GoToBookmark2,
+		GoToBookmark3,
+		GoToBookmark4,
+		GoToBookmark5,
+		GoToBookmark6,
+		GoToBookmark7,
+		GoToBookmark8,
+		GoToBookmark9,
+		GoToBookmark0,
 	}
 }

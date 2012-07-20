@@ -136,7 +136,7 @@ namespace MonoDevelop.HexEditor
 		#endregion
 		
 		#region IBookmarkBuffer implementation
-		void IBookmarkBuffer.SetBookmarked (int position, bool mark)
+		void IBookmarkBuffer.SetBookmarked (int position, bool mark, int number)
 		{
 			if (mark) {
 				hexEditor.HexEditorData.Bookmarks.Add (position);
@@ -169,6 +169,16 @@ namespace MonoDevelop.HexEditor
 		{
 			hexEditor.HexEditorData.Bookmarks.Clear ();
 			hexEditor.Repaint ();
+		}
+
+		void IBookmarkBuffer.GoToBookmark (int number)
+		{
+			throw new NotSupportedException("Numbered bookmarks are not supported yet");
+		}
+
+		int IBookmarkBuffer.HasBookmark (int number)
+		{
+			throw new NotSupportedException("Numbered bookmarks are not supported yet");
 		}
 		
 		

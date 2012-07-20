@@ -31,12 +31,13 @@ using Mono.TextEditor.Highlighting;
 namespace Mono.TextEditor
 {
 	public class BookmarkMarker: TextMarker, IIconBarMarker
-	{
-		internal static BookmarkMarker Instance = new BookmarkMarker ();
-		
-		public BookmarkMarker()
+	{		
+		public BookmarkMarker(int number)
 		{
+			Number = number ;
 		}
+
+		public int Number { get; set; }
 
 		public void DrawIcon (TextEditor editor, Cairo.Context cr, DocumentLine lineSegment, int lineNumber, double x, double y, double width, double height)
 		{
@@ -57,6 +58,16 @@ namespace Mono.TextEditor
 					//pat.AddColorStop (1, color1);
 					cr.Pattern = pat;
 					cr.Stroke ();
+				}
+				
+				if (Number > -1)
+				{
+					cr.Color = new Cairo.Color(0, 0, 0);
+					cr.SelectFontFace("Arial", Cairo.FontSlant.Normal, Cairo.FontWeight.Bold); 
+					cr.SetFontSize(12);
+					var te = cr.TextExtents(Number.ToString());
+					cr.MoveTo(x + 5, y + 1 + te.Height);
+					cr.ShowText(Number.ToString());
 				}
 			}
 		}

@@ -524,6 +524,16 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (SearchCommands.PrevBookmark)]
 		[CommandUpdateHandler (SearchCommands.NextBookmark)]
 		[CommandUpdateHandler (SearchCommands.ClearBookmarks)]
+		[CommandUpdateHandler (SearchCommands.CreateBookmark1)]
+		[CommandUpdateHandler (SearchCommands.CreateBookmark2)]
+		[CommandUpdateHandler (SearchCommands.CreateBookmark3)]
+		[CommandUpdateHandler (SearchCommands.CreateBookmark4)]
+		[CommandUpdateHandler (SearchCommands.CreateBookmark5)]
+		[CommandUpdateHandler (SearchCommands.CreateBookmark6)]
+		[CommandUpdateHandler (SearchCommands.CreateBookmark7)]
+		[CommandUpdateHandler (SearchCommands.CreateBookmark8)]
+		[CommandUpdateHandler (SearchCommands.CreateBookmark9)]
+		[CommandUpdateHandler (SearchCommands.CreateBookmark0)]
 		protected void UpdateBookmarkCommands (CommandInfo info)
 		{
 			info.Enabled = GetContent <IBookmarkBuffer> () != null;
@@ -535,7 +545,7 @@ namespace MonoDevelop.Ide.Gui
 			IBookmarkBuffer markBuffer = GetContent <IBookmarkBuffer> ();
 			Debug.Assert (markBuffer != null);
 			int position = markBuffer.CursorPosition;
-			markBuffer.SetBookmarked (position, !markBuffer.IsBookmarked (position));
+			markBuffer.SetBookmarked (position, !markBuffer.IsBookmarked (position), -1);
 		}
 		
 		[CommandHandler (SearchCommands.PrevBookmark)]
@@ -561,6 +571,212 @@ namespace MonoDevelop.Ide.Gui
 			Debug.Assert (markBuffer != null);
 			markBuffer.ClearBookmarks ();
 		}
+
+		#region Numbered Bookmarks
+
+		private void CreateBookMark(int number)
+		{
+			IBookmarkBuffer markBuffer = GetContent <IBookmarkBuffer> ();
+			Debug.Assert (markBuffer != null);
+			int position = markBuffer.CursorPosition;
+			markBuffer.SetBookmarked (position, true, number);
+		}
+
+		[CommandHandler (SearchCommands.CreateBookmark1)]
+		public void CreateBookmark1 ()
+		{
+			CreateBookMark(1);
+		}
+
+		[CommandHandler (SearchCommands.CreateBookmark2)]
+		public void CreateBookmark2 ()
+		{
+			CreateBookMark(2);
+		}
+
+		[CommandHandler (SearchCommands.CreateBookmark3)]
+		public void CreateBookmark3 ()
+		{
+			CreateBookMark(3);
+		}
+
+		[CommandHandler (SearchCommands.CreateBookmark4)]
+		public void CreateBookmark4 ()
+		{
+			CreateBookMark(4);
+		}
+
+		[CommandHandler (SearchCommands.CreateBookmark5)]
+		public void CreateBookmark5 ()
+		{
+			CreateBookMark(5);
+		}
+
+		[CommandHandler (SearchCommands.CreateBookmark6)]
+		public void CreateBookmark6 ()
+		{
+			CreateBookMark(6);
+		}
+
+		[CommandHandler (SearchCommands.CreateBookmark7)]
+		public void CreateBookmark7 ()
+		{
+			CreateBookMark(7);
+		}
+
+		[CommandHandler (SearchCommands.CreateBookmark8)]
+		public void CreateBookmark8 ()
+		{
+			CreateBookMark(8);
+		}
+
+		[CommandHandler (SearchCommands.CreateBookmark9)]
+		public void CreateBookmark9 ()
+		{
+			CreateBookMark(9);
+		}
+
+		[CommandHandler (SearchCommands.CreateBookmark0)]
+		public void CreateBookmark0 ()
+		{
+			CreateBookMark(0);
+		}
+
+		[CommandUpdateHandler (SearchCommands.GoToBookmark1)]
+		protected void UpdateGoToBookmarkCommand1(CommandInfo info)
+		{
+			CheckBookmark(info, 1);
+		}
+
+		[CommandUpdateHandler (SearchCommands.GoToBookmark2)]
+		protected void UpdateGoToBookmarkCommand2(CommandInfo info)
+		{
+			CheckBookmark(info, 2);
+		}
+
+		[CommandUpdateHandler (SearchCommands.GoToBookmark3)]
+		protected void UpdateGoToBookmarkCommand3(CommandInfo info)
+		{
+			CheckBookmark(info, 3);
+		}
+
+		[CommandUpdateHandler (SearchCommands.GoToBookmark4)]
+		protected void UpdateGoToBookmarkCommand4(CommandInfo info)
+		{
+			CheckBookmark(info, 4);
+		}
+
+		[CommandUpdateHandler (SearchCommands.GoToBookmark5)]
+		protected void UpdateGoToBookmarkCommand5(CommandInfo info)
+		{
+			CheckBookmark(info, 5);
+		}
+
+		[CommandUpdateHandler (SearchCommands.GoToBookmark6)]
+		protected void UpdateGoToBookmarkCommand6(CommandInfo info)
+		{
+			CheckBookmark(info, 6);
+		}
+
+		[CommandUpdateHandler (SearchCommands.GoToBookmark7)]
+		protected void UpdateGoToBookmarkCommand7(CommandInfo info)
+		{
+			CheckBookmark(info, 7);
+		}
+
+		[CommandUpdateHandler (SearchCommands.GoToBookmark8)]
+		protected void UpdateGoToBookmarkCommand8(CommandInfo info)
+		{
+			CheckBookmark(info, 8);
+		}
+
+		[CommandUpdateHandler (SearchCommands.GoToBookmark9)]
+		protected void UpdateGoToBookmarkCommand9(CommandInfo info)
+		{
+			CheckBookmark(info, 9);
+		}
+
+		[CommandUpdateHandler (SearchCommands.GoToBookmark0)]
+		protected void UpdateGoToBookmarkCommand0(CommandInfo info)
+		{
+			CheckBookmark(info, 0);
+		}
+
+		private void CheckBookmark(CommandInfo info, int number)
+		{
+			var content = GetContent<IBookmarkBuffer>();
+			info.Enabled = content != null && content.HasBookmark(number) > -1;
+		}
+
+		private void GoToBookMarkNumber(int number)
+		{
+			IBookmarkBuffer markBuffer = GetContent <IBookmarkBuffer> ();
+			Debug.Assert (markBuffer != null);
+			markBuffer.GoToBookmark(number);
+		}
+
+		[CommandHandler (SearchCommands.GoToBookmark1)]
+		public void GoToBookmark1 ()
+		{
+			GoToBookMarkNumber(1);
+		}
+
+		[CommandHandler (SearchCommands.GoToBookmark2)]
+		public void GoToBookmark2 ()
+		{
+			GoToBookMarkNumber(2);
+		}
+
+		[CommandHandler (SearchCommands.GoToBookmark3)]
+		public void GoToBookmark3 ()
+		{
+			GoToBookMarkNumber(3);
+		}
+
+		[CommandHandler (SearchCommands.GoToBookmark4)]
+		public void GoToBookmark4 ()
+		{
+			GoToBookMarkNumber(4);
+		}
+
+		[CommandHandler (SearchCommands.GoToBookmark5)]
+		public void GoToBookmark5 ()
+		{
+			GoToBookMarkNumber(5);
+		}
+
+		[CommandHandler (SearchCommands.GoToBookmark6)]
+		public void GoToBookmark6 ()
+		{
+			GoToBookMarkNumber(6);
+		}
+
+		[CommandHandler (SearchCommands.GoToBookmark7)]
+		public void GoToBookmark7 ()
+		{
+			GoToBookMarkNumber(7);
+		}
+
+		[CommandHandler (SearchCommands.GoToBookmark8)]
+		public void GoToBookmark8 ()
+		{
+			GoToBookMarkNumber(8);
+		}
+
+		[CommandHandler (SearchCommands.GoToBookmark9)]
+		public void GoToBookmark9 ()
+		{
+			GoToBookMarkNumber(9);
+		}
+
+		[CommandHandler (SearchCommands.GoToBookmark0)]
+		public void GoToBookmark0 ()
+		{
+			GoToBookMarkNumber(0);
+		}
+
+		#endregion
+
 		#endregion
 		
 	}

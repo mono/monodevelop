@@ -81,12 +81,25 @@ namespace Mono.TextEditor
 			bool redraw = false;
 			foreach (DocumentLine line in data.Document.Lines) {
 				redraw |= line.IsBookmarked;
-				line.IsBookmarked = false;
+				line.RemoveBookmark();
 			}
 			if (redraw) {
 				data.Document.RequestUpdate (new UpdateAll ());
 				data.Document.CommitDocumentUpdate ();
 			}
+		}
+
+		static int GetOffset(TextDocument document, int number)
+		{
+			var line = document.GetLinesStartingAt(0).FirstOrDefault(x => x.IsBookmarked && x.GetBookmark().Number == number);
+			return line != null ? line.Offset : -1;
+		}
+
+		public static void GoToNumber(TextEditor data, int number)
+		{
+			var offset = GetOffset(data.Document, number);
+			if (offset > 0)
+				data.Caret.Offset = offset;
 		}
 	}
 }
