@@ -102,19 +102,21 @@ namespace MonoDevelop.CSharp
 			return 0;
 		}
 		
-		public static string GetStockIcon (this EntityDeclaration element)
+		public static string GetStockIcon (this EntityDeclaration element, bool showAccessibility = true)
 		{
-			Accessibility acc = Accessibility.None;
-			// type accessibility
-			acc = Accessibility.Internal;
-			if (element.HasModifier (Modifiers.Public)) {
-				acc = Accessibility.Public;
-			} else if (element.HasModifier (Modifiers.Protected)) {
-				acc = Accessibility.Protected;
-			} else if (element.HasModifier (Modifiers.Private)) {
-				acc = Accessibility.Private;
+			Accessibility acc = Accessibility.Public;
+			if (showAccessibility) {
+				// type accessibility
+				acc = Accessibility.Internal;
+				if (element.HasModifier (Modifiers.Public)) {
+					acc = Accessibility.Public;
+				} else if (element.HasModifier (Modifiers.Protected)) {
+					acc = Accessibility.Protected;
+				} else if (element.HasModifier (Modifiers.Private)) {
+					acc = Accessibility.Private;
+				}
 			}
-			
+
 			if (element is TypeDeclaration) {
 				var type = element as TypeDeclaration;
 				switch (type.ClassType) {
