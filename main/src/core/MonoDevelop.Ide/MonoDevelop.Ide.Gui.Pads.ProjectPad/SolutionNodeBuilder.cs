@@ -225,7 +225,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				sol.RootFolder.Items.Add (it);
 			}
 			else {
-				CombineNodeCommandHandler.DropFile (sol.RootFolder, (IFileItem) dataObject, operation);
+				SolutionFolderNodeCommandHandler.DropFile (sol.RootFolder, (IFileItem) dataObject, operation);
 			}
 			IdeApp.ProjectOperations.Save (sol);
 		}

@@ -1,5 +1,5 @@
 //
-// CombineNodeBuilder.cs
+// SolutionFolderNodeBuilder.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -27,34 +27,31 @@
 //
 
 using System;
-using System.Collections;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Collections;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
 	class SolutionFolderNodeBuilder: TypeNodeBuilder
 	{
-		SolutionItemRenamedEventHandler combineNameChanged;
-		SolutionItemChangeEventHandler combineEntryAdded;
-		SolutionItemChangeEventHandler combineEntryRemoved;
+		SolutionItemRenamedEventHandler nameChanged;
+		SolutionItemChangeEventHandler entryAdded;
+		SolutionItemChangeEventHandler entryRemoved;
 		EventHandler<SolutionItemFileEventArgs> fileAdded;
 		EventHandler<SolutionItemFileEventArgs> fileRemoved;
 		
 		public SolutionFolderNodeBuilder ()
 		{
-			combineNameChanged = (SolutionItemRenamedEventHandler) DispatchService.GuiDispatch (new SolutionItemRenamedEventHandler (OnCombineRenamed));
-			combineEntryAdded = (SolutionItemChangeEventHandler) DispatchService.GuiDispatch (new SolutionItemChangeEventHandler (OnEntryAdded));
-			combineEntryRemoved = (SolutionItemChangeEventHandler) DispatchService.GuiDispatch (new SolutionItemChangeEventHandler (OnEntryRemoved));
-			fileAdded = (EventHandler<SolutionItemFileEventArgs>) DispatchService.GuiDispatch (new EventHandler<SolutionItemFileEventArgs> (OnFileAdded));
-			fileRemoved = (EventHandler<SolutionItemFileEventArgs>) DispatchService.GuiDispatch (new EventHandler<SolutionItemFileEventArgs> (OnFileRemoved));
+			nameChanged = DispatchService.GuiDispatch<SolutionItemRenamedEventHandler> (OnSolutionFolderRenamed);
+			entryAdded = DispatchService.GuiDispatch<SolutionItemChangeEventHandler> (OnEntryAdded);
+			entryRemoved = DispatchService.GuiDispatch<SolutionItemChangeEventHandler> (OnEntryRemoved);
+			fileAdded = DispatchService.GuiDispatch<EventHandler<SolutionItemFileEventArgs>> (OnFileAdded);
+			fileRemoved =  DispatchService.GuiDispatch<EventHandler<SolutionItemFileEventArgs>> (OnFileRemoved);
 		}
 
 		public override Type NodeDataType {
@@ -62,7 +59,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 		
 		public override Type CommandHandlerType {
-			get { return typeof(CombineNodeCommandHandler); }
+			get { return typeof(SolutionFolderNodeCommandHandler); }
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
@@ -77,8 +74,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
-			SolutionFolder combine = dataObject as SolutionFolder;
-			label = GLib.Markup.EscapeText (combine.Name);
+			SolutionFolder folder = dataObject as SolutionFolder;
+			label = GLib.Markup.EscapeText (folder.Name);
 			icon = Context.GetIcon (Stock.SolutionFolderOpen);
 			closedIcon = Context.GetIcon (Stock.SolutionFolderClosed);
 		}
@@ -115,9 +112,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void OnNodeAdded (object dataObject)
 		{
 			SolutionFolder folder = (SolutionFolder) dataObject;
-			folder.NameChanged += combineNameChanged;
-			folder.ItemAdded += combineEntryAdded;
-			folder.ItemRemoved += combineEntryRemoved;
+			folder.NameChanged += nameChanged;
+			folder.ItemAdded += entryAdded;
+			folder.ItemRemoved += entryRemoved;
 			folder.SolutionItemFileAdded += fileAdded;
 			folder.SolutionItemFileRemoved += fileRemoved;
 		}
@@ -125,14 +122,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void OnNodeRemoved (object dataObject)
 		{
 			SolutionFolder folder = (SolutionFolder) dataObject;
-			folder.NameChanged -= combineNameChanged;
-			folder.ItemAdded -= combineEntryAdded;
-			folder.ItemRemoved -= combineEntryRemoved;
+			folder.NameChanged -= nameChanged;
+			folder.ItemAdded -= entryAdded;
+			folder.ItemRemoved -= entryRemoved;
 			folder.SolutionItemFileAdded -= fileAdded;
 			folder.SolutionItemFileRemoved -= fileRemoved;
 		}
 		
-		void OnCombineRenamed (object sender, SolutionItemRenamedEventArgs e)
+		void OnSolutionFolderRenamed (object sender, SolutionItemRenamedEventArgs e)
 		{
 			ITreeBuilder tb = Context.GetTreeBuilder (e.SolutionItem);
 			if (tb != null) tb.Update ();
@@ -174,7 +171,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 	}
 	
-	class CombineNodeCommandHandler: NodeCommandHandler
+	class SolutionFolderNodeCommandHandler: NodeCommandHandler
 	{
 		public override void RenameItem (string newName)
 		{
@@ -251,7 +248,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 		
 		[CommandHandler (ProjectCommands.AddNewProject)]
-		public void AddNewProjectToCombine()
+		public void AddNewProjectToSolutionFolder()
 		{
 			SolutionFolder folder = (SolutionFolder) CurrentNode.DataItem;
 			SolutionItem ce = IdeApp.ProjectOperations.CreateProject (folder);
@@ -261,7 +258,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 		
 		[CommandHandler (ProjectCommands.AddProject)]
-		public void AddProjectToCombine()
+		public void AddProjectToSolutionFolder()
 		{
 			SolutionFolder folder = (SolutionFolder) CurrentNode.DataItem;
 			SolutionItem ce = IdeApp.ProjectOperations.AddSolutionItem (folder);
