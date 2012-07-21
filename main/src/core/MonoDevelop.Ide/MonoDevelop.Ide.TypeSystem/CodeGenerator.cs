@@ -79,7 +79,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				return null;
 
 			var result = (CodeGenerator)node.CreateInstance ();
-			result.UseSpaceIndent = doc.Editor.Options.TabsToSpaces;
+			result.UseSpaceIndent = doc.Editor.TabsToSpaces;
 			result.EolMarker = doc.Editor.EolMarker;
 			result.TabSize = doc.Editor.Options.TabSize;
 			result.Compilation = doc.Compilation;
@@ -93,7 +93,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				return null;
 
 			var result = (CodeGenerator)node.CreateInstance ();
-			result.UseSpaceIndent = editor.Options.TabsToSpaces;
+			result.UseSpaceIndent = editor.TabsToSpaces;
 			result.EolMarker = editor.EolMarker;
 			result.TabSize = editor.Options.TabSize;
 			result.Compilation = compilation;
@@ -160,117 +160,11 @@ namespace MonoDevelop.Ide.TypeSystem
 				IndentLevel = AutoIndent ? CodeGenerationService.CalculateBodyIndentLevel (implementingType) : 0;
 		}
 
-		public string CreateInterfaceImplementation (ITypeDefinition implementingType, IUnresolvedTypeDefinition implementingPart, IType interfaceType, bool explicitly, bool wrapRegions = true)
-		{
-			SetIndentTo (implementingPart);
-			StringBuilder result = new StringBuilder ();
-			List<IMember> implementedMembers = new List<IMember> ();
-			foreach (var def in interfaceType.GetAllBaseTypes ().Where (bt => bt.Kind == TypeKind.Interface)) {
-				if (result.Length > 0) {
-					AppendLine (result);
-					AppendLine (result);
-				}
-				string implementation = InternalCreateInterfaceImplementation (implementingType, implementingPart, def, explicitly, implementedMembers);
-				if (string.IsNullOrWhiteSpace (implementation))
-					continue;
-				if (wrapRegions) {
-					result.Append (WrapInRegions (def.Name + " implementation", implementation));
-				} else {
-					result.Append (implementation);
-				}
-			}
-			return result.ToString ();
-		}
-
 		static bool CompareMethods (IMethod interfaceMethod, IMethod typeMethod)
 		{
 			if (typeMethod.IsExplicitInterfaceImplementation)
 				return typeMethod.ImplementedInterfaceMembers.Any (m => m.Equals (interfaceMethod));
 			return SignatureComparer.Ordinal.Equals (interfaceMethod, typeMethod);
-		}
-
-		public static List<KeyValuePair<IMember, bool>> CollectMembersToImplement (ITypeDefinition implementingType, IType interfaceType, bool explicitly)
-		{
-			var def = interfaceType.GetDefinition ();
-			List<KeyValuePair<IMember, bool>> toImplement = new List<KeyValuePair<IMember, bool>> ();
-			bool alreadyImplemented;
-			// Stub out non-implemented events defined by @iface
-			foreach (var ev in interfaceType.GetEvents (e => !e.IsSynthetic && e.DeclaringTypeDefinition.ReflectionName == def.ReflectionName)) {
-				bool needsExplicitly = explicitly;
-				alreadyImplemented = implementingType.GetAllBaseTypeDefinitions ().Any (x => x.Kind != TypeKind.Interface && x.Events.Any (y => y.Name == ev.Name));
-
-				if (!alreadyImplemented)
-					toImplement.Add (new KeyValuePair<IMember, bool> (ev, needsExplicitly));
-			}
-
-			// Stub out non-implemented methods defined by @iface
-			foreach (var method in interfaceType.GetMethods (d => !d.IsSynthetic && d.DeclaringTypeDefinition.ReflectionName == def.ReflectionName)) {
-				bool needsExplicitly = explicitly;
-				alreadyImplemented = false;
-				
-				foreach (var cmet in implementingType.GetMethods ()) {
-					if (CompareMethods (method, cmet)) {
-						if (!needsExplicitly && !cmet.ReturnType.Equals (method.ReturnType))
-							needsExplicitly = true;
-						else
-							alreadyImplemented |= !needsExplicitly /*|| cmet.InterfaceImplementations.Any (impl => impl.InterfaceType.Equals (interfaceType))*/;
-					}
-				}
-				if (!alreadyImplemented) 
-					toImplement.Add (new KeyValuePair<IMember, bool> (method, needsExplicitly));
-			}
-
-			// Stub out non-implemented properties defined by @iface
-			foreach (var prop in interfaceType.GetProperties (p => !p.IsSynthetic && p.DeclaringTypeDefinition.ReflectionName == def.ReflectionName)) {
-				bool needsExplicitly = explicitly;
-				alreadyImplemented = false;
-				foreach (var t in implementingType.GetAllBaseTypeDefinitions ()) {
-					if (t.Kind == TypeKind.Interface)
-						continue;
-					foreach (IProperty cprop in t.Properties) {
-						if (cprop.Name == prop.Name) {
-							if (!needsExplicitly && !cprop.ReturnType.Equals (prop.ReturnType))
-								needsExplicitly = true;
-							else
-								alreadyImplemented |= !needsExplicitly/* || cprop.InterfaceImplementations.Any (impl => impl.InterfaceType.Resolve (ctx).Equals (interfaceType))*/;
-						}
-					}
-				}
-				if (!alreadyImplemented)
-					toImplement.Add (new KeyValuePair<IMember, bool> (prop, needsExplicitly));
-			}
-			return toImplement;
-		}
-
-		protected string InternalCreateInterfaceImplementation (ITypeDefinition implementingType, IUnresolvedTypeDefinition part, IType interfaceType, bool explicitly, List<IMember> implementedMembers)
-		{
-			StringBuilder result = new StringBuilder ();
-			var toImplement = CollectMembersToImplement (implementingType, interfaceType, explicitly);
-
-			bool first = true;
-			foreach (var pair in toImplement) {
-				if (!first) {
-					AppendLine (result);
-					AppendLine (result);
-				} else {
-					first = false;
-				}
-				bool isExplicit = pair.Value;
-				foreach (var member in implementedMembers.Where (m => m.Name == pair.Key.Name && m.EntityType == pair.Key.EntityType)) {
-					
-					if (member is IMethod && pair.Key is IMethod) {
-						var method = (IMethod)member;
-						var othermethod = (IMethod)pair.Key;
-						isExplicit = CompareMethods (othermethod, method);
-					} else {
-						isExplicit = true;
-					}
-				}
-				result.Append (CreateMemberImplementation (implementingType, part, pair.Key, isExplicit).Code);
-				implementedMembers.Add (pair.Key);
-			}
-
-			return result.ToString ();
 		}
 
 		public abstract string WrapInRegions (string regionName, string text);

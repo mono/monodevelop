@@ -195,6 +195,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					b.Append(this.TypeArguments[i].ReflectionName);
 				}
 				b.Append(']');
+			} else if (this.TypeParameters.Count > 0) {
+				b.Append("``");
+				b.Append(this.TypeParameters.Count);
 			}
 			b.Append('(');
 			for (int i = 0; i < this.Parameters.Count; i++) {

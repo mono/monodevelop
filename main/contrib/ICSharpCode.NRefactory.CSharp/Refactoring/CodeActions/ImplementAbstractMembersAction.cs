@@ -31,7 +31,7 @@ using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-//	[ContextAction("Implement abstract members", Description = "Implements abstract members from an abstract class.")]
+	[ContextAction("Implement abstract members", Description = "Implements abstract members from an abstract class.")]
 	public class ImplementAbstractMembersAction : ICodeActionProvider
 	{
 		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
@@ -47,15 +47,70 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (resolveResult.Type.Kind != TypeKind.Class || resolveResult.Type.GetDefinition() == null || !resolveResult.Type.GetDefinition().IsAbstract)
 				yield break;
 
-			yield break;
-			/*
+			var toImplement = CollectMembersToImplement(state.CurrentTypeDefinition, resolveResult.Type);
+			if (toImplement.Count == 0)
+				yield break;
+
 			yield return new CodeAction(context.TranslateString("Implement abstract members"), script => {
 				script.InsertWithCursor(
 					context.TranslateString("Implement abstract members"),
 					state.CurrentTypeDefinition,
-					ImplementInterfaceAction.GenerateImplementation (context, toImplement)
+					ImplementInterfaceAction.GenerateImplementation (context, toImplement.Select (m => Tuple.Create (m, false))).Select (entity => {
+						var decl = entity as EntityDeclaration;
+						if (decl != null)
+							decl.Modifiers |= Modifiers.Override;
+						return entity;
+					})
 				);
-			});*/
+			});
 		}
+
+		public static List<IMember> CollectMembersToImplement(ITypeDefinition implementingType, IType abstractType)
+		{
+			var def = abstractType.GetDefinition();
+			var toImplement = new List<IMember>();
+			bool alreadyImplemented;
+			
+			// Stub out non-implemented events defined by @iface
+			foreach (var ev in abstractType.GetEvents (e => !e.IsSynthetic && e.IsAbstract)) {
+				alreadyImplemented = implementingType.GetAllBaseTypeDefinitions().Any(
+					x => x.Kind != TypeKind.Interface && x.Events.Any (y => y.Name == ev.Name)
+					);
+				
+				if (!alreadyImplemented)
+					toImplement.Add(ev);
+			}
+			
+			// Stub out non-implemented methods defined by @iface
+			foreach (var method in abstractType.GetMethods (d => !d.IsSynthetic  && d.IsAbstract)) {
+				alreadyImplemented = false;
+				
+				foreach (var cmet in implementingType.GetMethods ()) {
+					if (!cmet.IsAbstract && ImplementInterfaceAction.CompareMethods(method, cmet)) {
+						alreadyImplemented = true;
+					}
+				}
+				if (!alreadyImplemented) 
+					toImplement.Add(method);
+			}
+			
+			// Stub out non-implemented properties defined by @iface
+			foreach (var prop in abstractType.GetProperties (p => !p.IsSynthetic && p.IsAbstract)) {
+				alreadyImplemented = false;
+				foreach (var t in implementingType.GetAllBaseTypeDefinitions ()) {
+					if (t.Kind == TypeKind.Interface)
+						continue;
+					foreach (IProperty cprop in t.Properties) {
+						if (!cprop.IsAbstract && cprop.Name == prop.Name) {
+							alreadyImplemented = true;
+						}
+					}
+				}
+				if (!alreadyImplemented)
+					toImplement.Add(prop);
+			}
+			return toImplement;
+		}
+
 	}
 }

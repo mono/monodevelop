@@ -322,10 +322,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					}
 				}
 				
-				DefaultUnresolvedTypeDefinition dutd = part as DefaultUnresolvedTypeDefinition;
-				if (dutd != null) {
-					addDefaultConstructorIfRequired |= dutd.AddDefaultConstructorIfRequired;
-				}
+				addDefaultConstructorIfRequired |= part.AddDefaultConstructorIfRequired;
 			}
 			if (addDefaultConstructorIfRequired) {
 				TypeKind kind = this.Kind;

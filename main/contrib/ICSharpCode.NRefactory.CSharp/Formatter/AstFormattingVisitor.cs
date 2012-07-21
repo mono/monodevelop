@@ -117,7 +117,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			curIndent = new Indent(this.options);
 		}
 
-		protected virtual void VisitChildren (AstNode node)
+		protected override void VisitChildren (AstNode node)
 		{
 			if (!FormattingRegion.IsEmpty) {
 				if (node.EndLocation < FormattingRegion.Begin || node.StartLocation > FormattingRegion.End)

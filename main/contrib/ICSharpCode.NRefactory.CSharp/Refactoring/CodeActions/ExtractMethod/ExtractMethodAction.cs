@@ -80,13 +80,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 				if (!StaticVisitor.UsesNotStaticMember(context, expression))
 					method.Modifiers |= Modifiers.Static;
 				var task = script.InsertWithCursor(context.TranslateString("Extract method"), Script.InsertPosition.Before, method);
-				
+
 				Action<Task> replaceStatements = delegate {
 					var target = new IdentifierExpression(methodName);
 					script.Replace(expression, new InvocationExpression(target));
 					script.Link(target, method.NameToken);
 				};
-				
+
 				if (task.IsCompleted) {
 					replaceStatements (null);
 				} else {
@@ -139,7 +139,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 				afterExtractedRegion.SetAnalyzedRange(lastStatement, stmt.Statements.Last(), false, true);
 				stmt.AcceptVisitor (afterExtractedRegion);
 				usedVariables.Sort ((l, r) => l.Region.Begin.CompareTo (r.Region.Begin));
-				
+
 				IVariable generatedReturnVariable = null;
 				foreach (var variable in usedVariables) {
 					if ((variable is IParameter) || beforeExtractedRegion.Has (variable) || !afterExtractedRegion.Has (variable))
@@ -149,7 +149,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 					method.Body.Add (new ReturnStatement (new IdentifierExpression (variable.Name)));
 					break;
 				}
-				
+
 				foreach (var variable in usedVariables) {
 					if (!(variable is IParameter) && !beforeExtractedRegion.Has (variable) && !afterExtractedRegion.Has (variable))
 						continue;
@@ -184,18 +184,18 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 						script.InsertBefore (statements [0], new VariableDeclarationStatement (context.CreateShortType(variable.Type), variable.Name));
 					}
 					AstNode invocationStatement;
-					
+
 					if (generatedReturnVariable != null) {
 						invocationStatement = new VariableDeclarationStatement (new SimpleType ("var"), generatedReturnVariable.Name, invocation);
 					} else {
 						invocationStatement = new ExpressionStatement(invocation);
 					}
 					script.Replace(statements [0], invocationStatement);
-					
-					
+
+
 					script.Link(target, method.NameToken);
 				};
-				
+
 				if (task.IsCompleted) {
 					replaceStatements (null);
 				} else {

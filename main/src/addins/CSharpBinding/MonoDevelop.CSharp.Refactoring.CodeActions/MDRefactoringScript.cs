@@ -118,7 +118,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			mode.StartMode ();
 			mode.Exited += delegate(object s, InsertionCursorEventArgs iCArgs) {
 				if (iCArgs.Success) {
-					foreach (var node in nodes) {
+					foreach (var node in nodes.Reverse ()) {
 						var output = OutputNode (CodeGenerationService.CalculateBodyIndentLevel (declaringType), node);
 						var offset = document.Editor.LocationToOffset (iCArgs.InsertionPoint.Location);
 						var delta = iCArgs.InsertionPoint.Insert (editor, output.Text);
@@ -167,7 +167,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				mode.StartMode ();
 				mode.Exited += delegate(object s, InsertionCursorEventArgs iCArgs) {
 					if (iCArgs.Success) {
-						foreach (var node in nodes) {
+						foreach (var node in nodes.Reverse ()) {
 							var output = OutputNode (CodeGenerationService.CalculateBodyIndentLevel (declaringType), node);
 							var offset = loadedDocument.Editor.LocationToOffset (iCArgs.InsertionPoint.Location);
 							var delta = iCArgs.InsertionPoint.Insert (editor, output.Text);

@@ -1,10 +1,11 @@
 // 
 // BaseTypeViewSource.cs
 //  
-// Author:
-//       Lluis Sanchez Gual <lluis@novell.com>
+// Authors: Lluis Sanchez Gual <lluis@novell.com>
+//          Jeffrey Stedfast <jeff@xamarin.com>
 // 
 // Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2012 Xamarin Inc. (http://www.xamarin.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -56,19 +57,23 @@ namespace Mono.Debugging.Evaluation
 		}
 		
 		#region IObjectValueSource implementation
+		public bool HasChildren (ObjectPath path, EvaluationOptions options)
+		{
+			EvaluationContext cctx = ctx.WithOptions (options);
+			return cctx.Adapter.ObjectValueHasChildren (cctx, objectSource, type, obj, false);
+		}
+
 		public ObjectValue[] GetChildren (ObjectPath path, int index, int count, EvaluationOptions options)
 		{
 			EvaluationContext cctx = ctx.WithOptions (options);
 			return cctx.Adapter.GetObjectValueChildren (cctx, objectSource, type, obj, index, count, false);
 		}
-		
-		
+
 		public EvaluationResult SetValue (ObjectPath path, string value, EvaluationOptions options)
 		{
 			throw new NotSupportedException();
 		}
-		
-		
+
 		public ObjectValue GetValue (ObjectPath path, EvaluationOptions options)
 		{
 			throw new NotSupportedException();

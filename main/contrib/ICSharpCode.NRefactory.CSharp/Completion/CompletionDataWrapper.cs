@@ -36,7 +36,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 	{
 		CSharpCompletionEngine completion;
 		List<ICompletionData> result = new List<ICompletionData> ();
-			
+		
 		public List<ICompletionData> Result {
 			get {
 				return result;
@@ -48,24 +48,24 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return completion.factory;
 			}
 		}
-			
+		
 		public CompletionDataWrapper (CSharpCompletionEngine completion)
 		{
 			this.completion = completion;
 		}
-
+		
 		public void Add (ICompletionData data)
 		{
 			result.Add (data);
 		}
-
+		
 		public void AddCustom (string displayText, string description = null, string completionText = null)
 		{
 			result.Add (Factory.CreateLiteralCompletionData (displayText, description, completionText));
 		}
-			
+		
 		HashSet<string> usedNamespaces = new HashSet<string> ();
-			
+		
 		public void AddNamespace (string name)
 		{
 			if (string.IsNullOrEmpty (name) || usedNamespaces.Contains (name))
@@ -73,9 +73,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			usedNamespaces.Add (name);
 			result.Add (Factory.CreateNamespaceCompletionData (name));
 		}
-			
+		
 		HashSet<string> usedTypes = new HashSet<string> ();
-
+		
 		public ICompletionData AddType(IType type, string shortType)
 		{
 			if (type == null || string.IsNullOrEmpty(shortType) || usedTypes.Contains(shortType))
@@ -99,9 +99,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			result.Add(iCompletionData);
 			return iCompletionData;
 		}
-			
+		
 		Dictionary<string, List<ICompletionData>> data = new Dictionary<string, List<ICompletionData>> ();
-			
+		
 		public ICompletionData AddVariable(IVariable variable)
 		{
 			if (data.ContainsKey(variable.Name))
@@ -111,14 +111,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			result.Add(cd);
 			return cd;
 		}
-
+		
 		public ICompletionData AddNamedParameterVariable(IVariable variable)
 		{
 			var name = variable.Name + ":";
 			if (data.ContainsKey(name))
 				return null;
 			data [name] = new List<ICompletionData>();
-
+			
 			var cd = Factory.CreateVariableCompletionData(variable);
 			cd.CompletionText += ":";
 			cd.DisplayText += ":";
@@ -133,12 +133,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			data [variable.Name] = new List<ICompletionData> ();
 			result.Add (Factory.CreateVariableCompletionData (variable));
 		}
-			
+		
 		public ICompletionData AddMember (IUnresolvedMember member)
 		{
 			var newData = Factory.CreateEntityCompletionData (member);
 			
-//				newData.HideExtensionParameter = HideExtensionParameter;
+			//				newData.HideExtensionParameter = HideExtensionParameter;
 			string memberKey = newData.DisplayText;
 			if (memberKey == null)
 				return null;
@@ -147,7 +147,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			List<ICompletionData> existingData;
 			data.TryGetValue (memberKey, out existingData);
-				
+			
 			if (existingData != null) {
 				var a = member as IEntity;
 				foreach (var d in existingData) {
@@ -175,7 +175,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		{
 			var newData = Factory.CreateEntityCompletionData (member);
 			
-//				newData.HideExtensionParameter = HideExtensionParameter;
+			//				newData.HideExtensionParameter = HideExtensionParameter;
 			string memberKey = newData.DisplayText;
 			if (memberKey == null)
 				return null;
@@ -184,7 +184,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			List<ICompletionData> existingData;
 			data.TryGetValue (memberKey, out existingData);
-				
+			
 			if (existingData != null) {
 				var a = member as IEntity;
 				foreach (var d in existingData) {
@@ -207,7 +207,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			return newData;
 		}
-			
+		
 		internal CompletionCategory GetCompletionCategory (IType type)
 		{
 			if (type == null)
@@ -216,7 +216,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				completionCategories [type] = new TypeCompletionCategory (type);
 			return completionCategories [type];
 		}
-			
+		
 		Dictionary<IType, CompletionCategory> completionCategories = new Dictionary<IType, CompletionCategory> ();
 		class TypeCompletionCategory : CompletionCategory
 		{
@@ -235,10 +235,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				var compareCategory = other as TypeCompletionCategory;
 				if (compareCategory == null)
 					return -1;
-					
+				
 				if (Type.ReflectionName == compareCategory.Type.ReflectionName)
 					return 0;
-					
+				
 				if (Type.GetAllBaseTypes ().Any (t => t.ReflectionName == compareCategory.Type.ReflectionName))
 					return -1;
 				return 1;
@@ -258,8 +258,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					Result.Add(Factory.CreateEntityCompletionData(
 						field,
 						typeString + "." + field.Name
-					)
-					);
+						)
+					           );
 				}
 			}
 		}

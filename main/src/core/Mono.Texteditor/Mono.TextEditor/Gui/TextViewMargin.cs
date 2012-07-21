@@ -435,7 +435,7 @@ namespace Mono.TextEditor
 
 			defaultLayout.FontDescription = textEditor.Options.Font;
 			using (var metrics = textEditor.PangoContext.GetMetrics (defaultLayout.FontDescription, textEditor.PangoContext.Language)) {
-				this.textEditor.GetTextEditorData ().LineHeight = System.Math.Ceiling ((metrics.Ascent + metrics.Descent) / Pango.Scale.PangoScale);
+				this.textEditor.GetTextEditorData ().LineHeight = System.Math.Ceiling (0.5 + (metrics.Ascent + metrics.Descent) / Pango.Scale.PangoScale);
 				this.charWidth = metrics.ApproximateCharWidth / Pango.Scale.PangoScale;
 			}
 

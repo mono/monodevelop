@@ -31,6 +31,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	public class CSharpProjectContent : IProjectContent
 	{
 		string assemblyName;
+		string location;
 		Dictionary<string, IParsedFile> parsedFiles;
 		List<IAssemblyReference> assemblyReferences;
 		CompilerSettings compilerSettings;
@@ -47,14 +48,12 @@ namespace ICSharpCode.NRefactory.CSharp
 		protected CSharpProjectContent(CSharpProjectContent pc)
 		{
 			this.assemblyName = pc.assemblyName;
+			this.location = pc.location;
 			this.parsedFiles = new Dictionary<string, IParsedFile>(pc.parsedFiles, Platform.FileNameComparer);
 			this.assemblyReferences = new List<IAssemblyReference>(pc.assemblyReferences);
-			this.compilerSettings = pc.CompilerSettings;
-			this.Location = pc.Location;
+			this.compilerSettings = pc.compilerSettings;
 		}
-
-		public string Location { get; set; }
-
+		
 		public IEnumerable<IParsedFile> Files {
 			get { return parsedFiles.Values; }
 		}
@@ -66,7 +65,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		public string AssemblyName {
 			get { return assemblyName; }
 		}
-		
+
+		public string Location {
+			get { return location; }
+		}
+
 		public CompilerSettings CompilerSettings {
 			get { return compilerSettings; }
 		}
@@ -124,6 +127,13 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			CSharpProjectContent pc = Clone();
 			pc.assemblyName = newAssemblyName;
+			return pc;
+		}
+
+		public IProjectContent SetLocation(string location)
+		{
+			CSharpProjectContent pc = Clone();
+			pc.location = location;
 			return pc;
 		}
 		

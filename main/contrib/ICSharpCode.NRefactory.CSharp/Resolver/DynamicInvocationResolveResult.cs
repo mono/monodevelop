@@ -17,35 +17,57 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.IO;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 
-namespace ICSharpCode.NRefactory.Documentation
+namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
 	/// <summary>
-	/// Provides XML documentation for entities.
+	/// Represents a single argument in a dynamic invocation.
 	/// </summary>
-	public interface IDocumentationProvider
-	{
+	public class DynamicInvocationArgument {
 		/// <summary>
-		/// Gets the XML documentation for the specified entity.
+		/// Parameter name, if the argument is named. Null otherwise.
 		/// </summary>
-		DocumentationComment GetDocumentation(IEntity entity);
+		public readonly string Name;
+
+		/// <summary>
+		/// Value of the argument.
+		/// </summary>
+		public readonly ResolveResult Value;
+
+		public DynamicInvocationArgument(string name, ResolveResult value) {
+			Name = name;
+			Value = value;
+		}
 	}
-	
+
 	/// <summary>
-	/// Provides XML documentation for entities.
+	/// Represents the result of an invocation of a member of a dynamic object.
 	/// </summary>
-	public interface IUnresolvedDocumentationProvider
+	public class DynamicInvocationResolveResult : ResolveResult
 	{
 		/// <summary>
-		/// Gets the XML documentation for the specified entity.
+		/// Target of the invocation (a dynamic object).
 		/// </summary>
-		string GetDocumentation(IUnresolvedEntity entity);
-		
+		public readonly ResolveResult Target;
+
 		/// <summary>
-		/// Gets the XML documentation for the specified entity.
+		/// Arguments for the call.
 		/// </summary>
-		DocumentationComment GetDocumentation(IUnresolvedEntity entity, IEntity resolvedEntity);
+		public readonly IList<DynamicInvocationArgument> Arguments; 
+
+		public DynamicInvocationResolveResult(ResolveResult target, IList<DynamicInvocationArgument> arguments) : base(SpecialType.Dynamic) {
+			this.Target    = target;
+			this.Arguments = arguments ?? EmptyList<DynamicInvocationArgument>.Instance;
+		}
+
+		public override string ToString()
+		{
+			return string.Format(CultureInfo.InvariantCulture, "[Dynamic invocation ]");
+		}
 	}
 }

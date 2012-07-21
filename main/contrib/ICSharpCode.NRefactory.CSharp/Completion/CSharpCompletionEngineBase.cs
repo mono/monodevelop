@@ -801,6 +801,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (root == null) {
 					return null;
 				}
+				if (root is Accessor)
+					root = root.Parent;
 				var csResolver = CompletionContextProvider.GetResolver (GetState(), root);
 				var result = csResolver.Resolve(resolveNode);
 				var state = csResolver.GetResolverStateBefore(resolveNode);

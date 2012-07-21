@@ -1,9 +1,10 @@
 // IObjectValueSource.cs
 //
-// Author:
-//   Lluis Sanchez Gual <lluis@novell.com>
-//
+// Authors: Lluis Sanchez Gual <lluis@novell.com>
+//          Jeffrey Stedfast <jeff@xamarin.com>
+// 
 // Copyright (c) 2008 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2012 Xamarin Inc. (http://www.xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -32,6 +33,7 @@ namespace Mono.Debugging.Backend
 {
 	public interface IObjectValueSource
 	{
+		bool HasChildren (ObjectPath path, EvaluationOptions options);
 		ObjectValue[] GetChildren (ObjectPath path, int index, int count, EvaluationOptions options);
 		EvaluationResult SetValue (ObjectPath path, string value, EvaluationOptions options);
 		ObjectValue GetValue (ObjectPath path, EvaluationOptions options);

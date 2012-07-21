@@ -50,12 +50,6 @@
 	</ExtensionPoint>
 	
 	<!-- Extensions -->
-	<Extension path = "/MonoDevelop/Refactoring/Refactorings">
-		<Class id="ImplementImplicit" class = "MonoDevelop.Refactoring.ImplementInterface.ImplementImplicit" />
-		<Class id="ImplementExplicit" class = "MonoDevelop.Refactoring.ImplementInterface.ImplementExplicit" />
-		<Class id="ImplementAbstract" class = "MonoDevelop.Refactoring.ImplementInterface.ImplementAbstractMembers" />
-	</Extension>
-	
 	
 	<ExtensionNodeSet id="MonoDevelop.AnalysisCore.Rules">
 		<ExtensionNode name="Category" type="MonoDevelop.Ide.Codons.CategoryNode">

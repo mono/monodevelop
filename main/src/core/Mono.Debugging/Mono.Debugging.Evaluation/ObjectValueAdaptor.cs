@@ -1,3 +1,30 @@
+// 
+// ObjectValueAdaptor.cs
+//  
+// Authors: Lluis Sanchez Gual <lluis@novell.com>
+//          Jeffrey Stedfast <jeff@xamarin.com>
+// 
+// Copyright (c) 2008 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2012 Xamarin Inc. (http://www.xamarin.com)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -368,6 +395,69 @@ namespace Mono.Debugging.Evaluation
 					oval.Name = EvaluateDisplayString (ctx, obj, tdata.NameDisplayString);
 				return oval;
 			}
+		}
+
+		public bool ObjectValueHasChildren (EvaluationContext ctx, IObjectSource objectSource, object obj)
+		{
+			return ObjectValueHasChildren (ctx, objectSource, GetValueType (ctx, obj), obj, true);
+		}
+
+		public virtual bool ObjectValueHasChildren (EvaluationContext ctx, IObjectSource objectSource, object type, object obj, bool dereferenceProxy)
+		{
+			if (obj is EvaluationResult)
+				return false;
+
+			if (IsArray (ctx, obj))
+				return true;
+
+			if (IsPrimitive (ctx, obj))
+				return false;
+
+			bool showRawView = false;
+			
+			// If there is a proxy, it has to show the members of the proxy
+			object proxy = obj;
+			if (dereferenceProxy) {
+				proxy = GetProxyObject (ctx, obj);
+				if (proxy != obj) {
+					type = GetValueType (ctx, proxy);
+					showRawView = true;
+				}
+			}
+
+			TypeDisplayData tdata = GetTypeDisplayData (ctx, type);
+			bool groupPrivateMembers = ctx.Options.GroupPrivateMembers && (ctx.Options.GroupUserPrivateMembers || IsExternalType (ctx, type));
+			BindingFlags flattenFlag = ctx.Options.FlattenHierarchy ? (BindingFlags)0 : BindingFlags.DeclaredOnly;
+			BindingFlags nonNonPublicFlag = groupPrivateMembers || showRawView ? (BindingFlags)0 : BindingFlags.NonPublic;
+			BindingFlags staticFlag = ctx.Options.GroupStaticMembers ? (BindingFlags)0 : BindingFlags.Static;
+			BindingFlags access = BindingFlags.Public | BindingFlags.Instance | flattenFlag | nonNonPublicFlag | staticFlag;
+			
+			// Load all members to a list before creating the object values,
+			// to avoid problems with objects being invalidated due to evaluations in the target,
+			List<ValueReference> list = new List<ValueReference> ();
+			list.AddRange (GetMembersSorted (ctx, objectSource, type, proxy, access));
+			object tdataType = type;
+			
+			foreach (ValueReference val in list) {
+				try {
+					object decType = val.DeclaringType;
+					if (decType != null && decType != tdataType) {
+						tdataType = decType;
+						tdata = GetTypeDisplayData (ctx, decType);
+					}
+
+					DebuggerBrowsableState state = tdata.GetMemberBrowsableState (val.Name);
+					if (state == DebuggerBrowsableState.Never)
+						continue;
+
+					return true;
+				}
+				catch (Exception ex) {
+					ctx.WriteDebuggerError (ex);
+				}
+			}
+
+			return false;
 		}
 
 		public ObjectValue[] GetObjectValueChildren (EvaluationContext ctx, IObjectSource objectSource, object obj, int firstItemIndex, int count)
@@ -991,14 +1081,17 @@ namespace Mono.Debugging.Evaluation
 		public string EvaluateDisplayString (EvaluationContext ctx, object obj, string exp)
 		{
 			StringBuilder sb = new StringBuilder ();
-			int last = 0;
 			int i = exp.IndexOf ("{");
+			int last = 0;
+
 			while (i != -1 && i < exp.Length) {
 				sb.Append (exp.Substring (last, i - last));
 				i++;
+
 				int j = exp.IndexOf ("}", i);
 				if (j == -1)
 					return exp;
+
 				string mem = exp.Substring (i, j - i).Trim ();
 				if (mem.Length == 0)
 					return exp;
@@ -1016,14 +1109,21 @@ namespace Mono.Debugging.Evaluation
 				}
 				
 				if (member != null) {
-					sb.Append (ctx.Evaluator.TargetObjectToString (ctx, val));
+					var str = ctx.Evaluator.TargetObjectToString (ctx, val);
+					if (str == null)
+						sb.Append ("null");
+					else
+						sb.Append (str);
 				} else {
 					sb.Append ("{Unknown member '" + mem + "'}");
 				}
+
 				last = j + 1;
 				i = exp.IndexOf ("{", last);
 			}
+
 			sb.Append (exp.Substring (last));
+
 			return sb.ToString ();
 		}
 

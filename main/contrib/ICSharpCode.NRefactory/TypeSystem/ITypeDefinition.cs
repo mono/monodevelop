@@ -49,6 +49,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		bool? HasExtensionMethods { get; }
 		
 		/// <summary>
+		/// Gets whether this unresolved type definition causes the addition of a default constructor
+		/// if no other constructor is present.
+		/// </summary>
+		bool AddDefaultConstructorIfRequired { get; }
+		
+		/// <summary>
 		/// Looks up the resolved type definition from the <paramref name="context"/> corresponding to this unresolved
 		/// type definition.
 		/// </summary>
