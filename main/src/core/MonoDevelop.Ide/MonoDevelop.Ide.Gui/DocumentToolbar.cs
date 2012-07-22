@@ -164,6 +164,12 @@ namespace MonoDevelop.Ide.Gui
 					g.AddColorStop (1, Styles.BreadcrumbGradientEndColor);
 					ctx.Pattern = g;
 					ctx.Fill ();
+
+					ctx.MoveTo (0.5, Allocation.Height - 0.5);
+					ctx.RelLineTo (Allocation.Width, 0);
+					ctx.Color = Styles.BreadcrumbBottomBorderColor;
+					ctx.LineWidth = 1;
+					ctx.Stroke ();
 				}
 				return base.OnExposeEvent (evnt);
 			}

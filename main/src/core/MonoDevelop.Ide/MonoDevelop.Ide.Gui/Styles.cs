@@ -33,27 +33,33 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly Cairo.Color BaseBackgroundColor = new Cairo.Color (1, 1, 1);
 		public static readonly Cairo.Color BaseForegroundColor = new Cairo.Color (0, 0, 0);
 
+		// General
+
+		public static readonly Gdk.Color ThinSplitterColor = new Gdk.Color (166, 166, 166);
+
 		// Document tab bar
 
-		public static readonly Cairo.Color TabBarBackgroundColor = new Cairo.Color (248d / 255d, 248d / 255d, 248d / 255d);
-		public static readonly Cairo.Color BreadcrumbBackgroundColor = new Cairo.Color (77d / 255d, 77d / 255d, 77d / 255d);
-		public static readonly Cairo.Color TabBarActiveTextColor = new Cairo.Color (1, 1, 1);
+		public static readonly Cairo.Color TabBarBackgroundColor = new Cairo.Color (230d / 255d, 230d / 255d, 230d / 255d);
+		public static readonly Cairo.Color BreadcrumbBackgroundColor = new Cairo.Color (255d / 255d, 255d / 255d, 255d / 255d);
+		public static readonly Cairo.Color TabBarActiveTextColor = new Cairo.Color (0, 0, 0);
 
 		public static readonly Cairo.Color TabBarGradientStartColor = TabBarBackgroundColor;
-		public static readonly Cairo.Color TabBarGradientMidColor = Shift (TabBarBackgroundColor, 0.875);
-		public static readonly Cairo.Color TabBarGradientEndColor = Shift (TabBarBackgroundColor, 0.738);
+		public static readonly Cairo.Color TabBarGradientMidColor = Shift (TabBarBackgroundColor, 0.95);
+		public static readonly Cairo.Color TabBarGradientEndColor = Shift (TabBarBackgroundColor, 0.9);
 		public static readonly Cairo.Color TabBarHoverActiveTextColor = TabBarActiveTextColor;
 		public static readonly Cairo.Color TabBarInactiveTextColor = Blend (new Cairo.Color (0, 0, 0), TabBarGradientStartColor, 0.4);
 		public static readonly Cairo.Color TabBarHoverInactiveTextColor = new Cairo.Color (0, 0, 0);
 
-		public static readonly Cairo.Color BreadcrumbGradientStartColor = Shift (BreadcrumbBackgroundColor, 1.299);
-		public static readonly Cairo.Color BreadcrumbGradientEndColor = Shift (BreadcrumbBackgroundColor, 0.662);
+		public static readonly Cairo.Color BreadcrumbGradientStartColor = Shift (BreadcrumbBackgroundColor, 1);
+		public static readonly Cairo.Color BreadcrumbGradientEndColor = Shift (BreadcrumbBackgroundColor, 0.95);
 		public static readonly Cairo.Color BreadcrumbBorderColor = Shift (BreadcrumbBackgroundColor, 0.714);
 		public static readonly Cairo.Color BreadcrumbInnerBorderColor = WithAlpha (BaseBackgroundColor, 0.1d);
-		public static readonly Cairo.Color BreadcrumbBottomBorderColor = Shift (BreadcrumbBackgroundColor, 0.714);
-		public static readonly Gdk.Color BreadcrumbTextColor = Shift (BaseBackgroundColor, 0.8).ToGdkColor ();
+		public static readonly Gdk.Color BreadcrumbTextColor = Shift (BaseForegroundColor, 0.8).ToGdkColor ();
 		public static readonly Cairo.Color BreadcrumbButtonBorderColor = Shift (BaseBackgroundColor, 0.8);
 		public static readonly Cairo.Color BreadcrumbButtonFillColor = WithAlpha (BaseBackgroundColor, 0.1d);
+		public static readonly Cairo.Color BreadcrumbBottomBorderColor = Shift (BreadcrumbBackgroundColor, 0.7d);
+		public static readonly bool BreadcrumbInvertedIcons = false;
+		public static readonly bool BreadcrumbGreyscaleIcons = true;
 
 		public static readonly bool BreadcrumbGreyscaleIcons = false;
 		public static readonly bool BreadcrumbInvertedIcons = false;
@@ -70,7 +76,7 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly Gdk.Color InactivePadBackground = ReduceLight (PadBackground.ToCairoColor (), 0.9).ToGdkColor ();
 		public static readonly Gdk.Color PadLabelColor = new Gdk.Color (92, 99, 102);
 		public static readonly Gdk.Color DockFrameBackground = new Gdk.Color (157, 162, 166);
-		public static readonly Gdk.Color DockSeparatorColor = new Gdk.Color (166, 166, 166);
+		public static readonly Gdk.Color DockSeparatorColor = ThinSplitterColor;
 
 		public static readonly Gdk.Color BrowserPadBackground = new Gdk.Color (219, 224, 231);
 		public static readonly Gdk.Color InactiveBrowserPadBackground = ReduceLight (BrowserPadBackground.ToCairoColor (), 0.9).ToGdkColor ();
