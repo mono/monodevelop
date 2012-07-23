@@ -151,6 +151,10 @@ main/external/Makefile
 /main/contrib/Sharpen/Makefile
 /main/contrib/ICSharpCode.Decompiler/Makefile
 /main/contrib/ICSharpCode.NRefactory/Makefile
+/main/src/addins/TextTemplating/Mono.TextTemplating.Tests/Makefile
+/main/tests/MacPlatform.Tests/Makefile
+/main/tests/MonoDevelop.MacDev.Tests/Makefile
+/main/tests/UserInterfaceTests/Makefile
 
 # extras configure junk
 /extras/MonoDevelop.Database/INSTALL
