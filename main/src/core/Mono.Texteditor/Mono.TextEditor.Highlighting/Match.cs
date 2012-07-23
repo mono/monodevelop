@@ -184,11 +184,11 @@ namespace Mono.TextEditor.Highlighting
 					i++;
 			}
 			if (ReadNonFloatEnd (text, ref i))
-				return new [] {i - matchOffset};
+			return new [] {i - matchOffset};
 			if (i < text.Length && text[i] == '.') {
 				i++;
 				if (i >= text.Length || !char.IsDigit (text[i])) 
-					return (i - 1) - matchOffset;
+					return new [] { (i - 1) - matchOffset };
 				i++;
 				while (i < text.Length && Char.IsDigit (text[i]))
 					i++;
