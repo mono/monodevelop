@@ -2400,12 +2400,9 @@ namespace Mono.TextEditor
 				
 				int offset = line.Offset;
 				
-				yp = ((int)yp % margin.LineHeight);
 				xp -= margin.TextStartPosition;
 				xp += margin.textEditor.HAdjustment.Value;
 				xp *= Pango.Scale.PangoScale;
-				yp *= Pango.Scale.PangoScale;
-				yp = System.Math.Max (0, yp);
 				if (xp < 0)
 					return new DocumentLocation (lineNumber, DocumentLocation.MinColumn);
 				int column = DocumentLocation.MinColumn;
@@ -2420,7 +2417,7 @@ namespace Mono.TextEditor
 					if (foldOffset < offset)
 						continue;
 					layoutWrapper = margin.CreateLinePartLayout (mode, line, logicalRulerColumn, line.Offset, foldOffset - offset, -1, -1);
-					done |= ConsumeLayout ((int)(xp - xPos), (int)yp);
+					done |= ConsumeLayout ((int)(xp - xPos), 0);
 					if (done)
 						break;
 					int height, width;
@@ -2459,7 +2456,7 @@ namespace Mono.TextEditor
 				}
 				if (!done) {
 					layoutWrapper = margin.CreateLinePartLayout (mode, line, logicalRulerColumn, offset, line.Offset + line.Length - offset, -1, -1);
-					ConsumeLayout ((int)(xp - xPos), (int)yp);
+					ConsumeLayout ((int)(xp - xPos), 0);
 				}
 				if (measueLayout != null)
 					measueLayout.Dispose ();
