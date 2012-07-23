@@ -224,6 +224,8 @@ namespace MonoDevelop.MacDev
 	{
 		public string Description {
 			get {
+				AppleSdkSettings.CheckChanged ();
+
 				var sb = new System.Text.StringBuilder ();
 				sb.AppendLine ("Apple Developer Tools:");
 				if (!AppleSdkSettings.IsValid) {
