@@ -1,5 +1,5 @@
-[submodule "main/external/cecil"]
-	path = main/external/cecil
+[submodule "main/external/Mono.Cecil"]
+	path = main/external/Mono.Cecil
 	url = git://github.com/mono/cecil.git
 [submodule "main/external/maccore"]
 	path = main/external/maccore
@@ -16,3 +16,6 @@
 [submodule "main/external/mdtestharness"]
 	path = main/external/mdtestharness
 	url = git://github.com/alanmcgovern/mdtestharness.git
+[submodule "main/external/nrefactory"]
+	path = main/external/nrefactory
+	url = git://github.com/icsharpcode/NRefactory.git

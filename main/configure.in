@@ -270,8 +270,6 @@ build/MacOSX/Makefile
 contrib/Makefile
 contrib/Mono.Debugger.Soft/Makefile
 contrib/NRefactory/Makefile
-contrib/ICSharpCode.NRefactory/Makefile
-contrib/ICSharpCode.NRefactory.CSharp/Makefile
 contrib/ICSharpCode.Decompiler/Makefile
 external/Makefile
 src/Makefile
