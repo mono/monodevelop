@@ -177,7 +177,7 @@ namespace MonoDevelop.CodeActions
 						string ns = ns_;
 						var menuItem = new Gtk.MenuItem (string.Format ("using {0};", ns));
 						menuItem.Activated += delegate {
-							new MonoDevelop.Refactoring.ResolveCommandHandler.AddImport (document, resolveResult, ns, true).Run ();
+							new MonoDevelop.Refactoring.ResolveCommandHandler.AddImport (document, resolveResult, ns, true, node).Run ();
 							menu.Destroy ();
 						};
 						menu.Add (menuItem);
@@ -189,7 +189,7 @@ namespace MonoDevelop.CodeActions
 					foreach (string ns in possibleNamespaces) {
 						var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("{0}", ns + "." + document.Editor.GetTextBetween (node.StartLocation, node.EndLocation)));
 						menuItem.Activated += delegate {
-							new MonoDevelop.Refactoring.ResolveCommandHandler.AddImport (document, resolveResult, ns, false).Run ();
+							new MonoDevelop.Refactoring.ResolveCommandHandler.AddImport (document, resolveResult, ns, false, node).Run ();
 							menu.Destroy ();
 						};
 						menu.Add (menuItem);

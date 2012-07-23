@@ -372,6 +372,19 @@ namespace MonoDevelop.CSharp.Formatting
 			if (caretOffset - 2 >= curLine.Offset && data.Document.GetCharAt (caretOffset - 2) == ')')
 				return caretOffset;
 
+			int end = caretOffset;
+			while (end > 1 && char.IsWhiteSpace (data.GetCharAt (end)))
+				end--;
+			int end2 = end;
+			while (end2 > 1 && char.IsLetter(data.GetCharAt (end2 - 1)))
+				end2--;
+			if (end != end2) {
+				string token = data.GetTextBetween (end2, end + 1);
+				// guess property context
+				if (token == "get" || token == "set")
+					return caretOffset;
+			}
+
 			bool isInString = false , isInChar= false , isVerbatimString= false;
 			bool isInLineComment = false , isInBlockComment= false;
 			for (int pos = caretOffset; pos < max; pos++) {
@@ -381,7 +394,6 @@ namespace MonoDevelop.CSharp.Formatting
 					}
 				}
 				char ch = data.Document.GetCharAt (pos);
-				Console.WriteLine ("ch:"+ ch +"/"+pos);
 				switch (ch) {
 				case '/':
 					if (isInBlockComment) {

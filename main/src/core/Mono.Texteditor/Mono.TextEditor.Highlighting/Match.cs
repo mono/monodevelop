@@ -187,10 +187,8 @@ namespace Mono.TextEditor.Highlighting
 				return new [] {i - matchOffset};
 			if (i < text.Length && text[i] == '.') {
 				i++;
-				if (i >= text.Length) 
-					return new [] {(i - 1) - matchOffset};
-				if (!Char.IsDigit (text[i]))
-					return emptyMatch;
+				if (i >= text.Length || !char.IsDigit (text[i])) 
+					return (i - 1) - matchOffset;
 				i++;
 				while (i < text.Length && Char.IsDigit (text[i]))
 					i++;

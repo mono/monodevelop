@@ -205,7 +205,16 @@ namespace MonoDevelop.CSharpBinding
 		{
 			TestGuessSemicolonInsertionOffset ("FooBar($~);");
 		}
-
+		
+		/// <summary>
+		/// Bug 6190 - Incorrect semicolon placement inside property declaration when "Smart semocolon placement" is active
+		/// </summary>
+		[Test]
+		public void TestBug6190 ()
+		{
+			TestGuessSemicolonInsertionOffset ("public bool Property { get$~ private set; }");
+			TestGuessSemicolonInsertionOffset ("public bool Property { get; private set$~ }");
+		}
 		/// <summary>
 		/// Bug 5353 - semicolon placed in wrong place in single-line statement 
 		/// </summary>
