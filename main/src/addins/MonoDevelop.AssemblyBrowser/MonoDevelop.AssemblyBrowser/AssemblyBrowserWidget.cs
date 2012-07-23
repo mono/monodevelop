@@ -248,6 +248,7 @@ namespace MonoDevelop.AssemblyBrowser
 //			this.vpaned1.ExposeEvent += VPaneExpose;
 			this.hpaned1.ExposeEvent += HPaneExpose;
 			hpaned1 = hpaned1.ReplaceWithWidget (new HPanedThin (), true);
+			hpaned1.Position = 271;
 
 /*			this.notebook1.SwitchPage += delegate {
 				// Hack for the switch page select all bug.
