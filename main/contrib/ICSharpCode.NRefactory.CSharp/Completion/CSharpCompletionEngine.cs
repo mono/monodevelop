@@ -262,7 +262,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						return contextList.Result;
 					}
 					
-					foreach (var m in initializerResult.Item1.Type.GetMembers (m => m.IsPublic && (m.EntityType == EntityType.Property || m.EntityType == EntityType.Field))) {
+					foreach (var m in initializerResult.Item1.Type.GetMembers (m => !m.IsSynthetic && m.IsPublic && (m.EntityType == EntityType.Property || m.EntityType == EntityType.Field))) {
 						contextList.AddMember(m);
 					}
 					
@@ -1349,6 +1349,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							if (member is IMethod && ((IMethod)member).FullName == "System.Object.Finalize") {
 								continue;
 							}
+							if (member.IsSynthetic)
+								continue;
 							if (member.EntityType == EntityType.Operator) {
 								continue;
 							}
@@ -1365,7 +1367,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						}
 						var declaring = def.DeclaringTypeDefinition;
 						while (declaring != null) {
-							foreach (var member in declaring.GetMembers (m => m.IsStatic)) {
+							foreach (var member in declaring.GetMembers (m => m.IsStatic && !m.IsSynthetic)) {
 								if (memberPred == null || memberPred(member)) {
 									wrapper.AddMember(member);
 								}
@@ -2147,6 +2149,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				var nr = (NamespaceResolveResult)resolveResult;
 				if (!(resolvedNode.Parent is UsingDeclaration || resolvedNode.Parent != null && resolvedNode.Parent.Parent is UsingDeclaration)) {
 					foreach (var cl in nr.Namespace.Types) {
+						if (cl.IsSynthetic)
+							continue;
 						string name = cl.Name;
 						if (hintType != null && hintType.Kind != TypeKind.Array && cl.Kind == TypeKind.Interface) {
 							continue;
@@ -2285,6 +2289,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				var namespaceContents = new CompletionDataWrapper(this);
 				
 				foreach (var cl in nr.Namespace.Types) {
+					if (cl.IsSynthetic)
+						continue;
 					IType addType = typePred != null ? typePred(cl) : cl;
 					if (addType != null)
 						namespaceContents.AddType(addType, addType.Name);
@@ -2385,6 +2391,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				
 				var filteredList = new List<IMember>();
 				foreach (var member in type.GetMembers ()) {
+					if (member.IsSynthetic)
+						continue;
 					if (member.EntityType == EntityType.Indexer || member.EntityType == EntityType.Operator || member.EntityType == EntityType.Constructor || member.EntityType == EntityType.Destructor) {
 						continue;
 					}
