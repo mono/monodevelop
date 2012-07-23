@@ -61,9 +61,6 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly bool BreadcrumbInvertedIcons = false;
 		public static readonly bool BreadcrumbGreyscaleIcons = true;
 
-		public static readonly bool BreadcrumbGreyscaleIcons = false;
-		public static readonly bool BreadcrumbInvertedIcons = false;
-
 		// Dock pads
 		
 		public static readonly Cairo.Color DockTabBarGradientTop = new Cairo.Color (248d / 255d, 248d / 255d, 248d / 255d);
@@ -100,10 +97,6 @@ namespace MonoDevelop.Ide.Gui
 
 		public static readonly Cairo.Color ToolbarBottomBorderColor = new Cairo.Color (0.5, 0.5, 0.5);
 		public static readonly Cairo.Color ToolbarBottomGlowColor = new Cairo.Color (1, 1, 1, 0.2);
-
-		// Thin splitter
-
-		public static readonly Cairo.Color ThinSplitterColor = new Cairo.Color (0.5, 0.5, 0.5);
 
 		// Helper methods
 
