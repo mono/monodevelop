@@ -95,7 +95,12 @@ namespace MonoDevelop.Ide
 			//OSXFIXME
 			var args = options.RemainingArgs.ToArray ();
 			Gtk.Application.Init ("monodevelop", ref args);
-			
+
+			FilePath p = typeof(IdeStartup).Assembly.Location;
+			Assembly.LoadFrom (p.ParentDirectory.Combine ("Xwt.Gtk.dll"));
+			Xwt.Application.Initialize ("Xwt.GtkBackend.GtkEngine, Xwt.Gtk, Version=1.0.0.0");
+			Xwt.Engine.Toolkit.ExitUserCode (null);
+
 			//default to Windows IME on Windows
 			if (Platform.IsWindows && Mono.TextEditor.GtkWorkarounds.GtkMinorVersion >= 16) {
 				var settings = Gtk.Settings.Default;

@@ -16,3 +16,9 @@
 [submodule "main/external/mdtestharness"]
 	path = main/external/mdtestharness
 	url = git://github.com/alanmcgovern/mdtestharness.git
+[submodule "main/external/xwt"]
+	path = main/external/xwt
+	url = git://github.com/mono/xwt.git
+[submodule "main/external/Newtonsoft.Json"]
+	path = main/external/Newtonsoft.Json
+	url = git://github.com/mono/Newtonsoft.Json.git
