@@ -124,7 +124,7 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		public string MonoDevelopVersion {
+		public static string MonoDevelopVersion {
 			get { return BuildVariables.PackageVersion == BuildVariables.PackageVersionLabel
 					? BuildVariables.PackageVersionLabel
 					: string.Format ("{0} ({1})", BuildVariables.PackageVersionLabel, BuildVariables.PackageVersion);
