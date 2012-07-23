@@ -213,7 +213,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					);
 			}
 			
-			
 			return CreateCompletionData(
 				location,
 				resolveResult.Item1,
@@ -1322,6 +1321,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				for (var ct = currentType; ct != null; ct = ct.DeclaringTypeDefinition) {
 					foreach (var nestedType in ct.NestedTypes) {
 						string name = nestedType.Name;
+						if (nestedType.IsSynthetic)
+							continue;
 						if (IsAttributeContext(node) && name.EndsWith("Attribute") && name.Length > "Attribute".Length) {
 							name = name.Substring(0, name.Length - "Attribute".Length);
 						}
@@ -2166,7 +2167,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 			} else if (resolveResult is TypeResolveResult) {
 				var type = resolveResult.Type;
-				foreach (var nested in type.GetNestedTypes ()) {
+				foreach (var nested in type.GetNestedTypes (t => !t.IsSynthetic)) {
 					if (hintType != null && hintType.Kind != TypeKind.Array && nested.Kind == TypeKind.Interface) {
 						continue;
 					}
@@ -2283,7 +2284,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (resolveResult == null /*|| resolveResult.IsError*/) {
 				return null;
 			}
-			
 			if (resolveResult is NamespaceResolveResult) {
 				var nr = (NamespaceResolveResult)resolveResult;
 				var namespaceContents = new CompletionDataWrapper(this);
@@ -2443,7 +2443,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			
 			if (resolveResult is TypeResolveResult || includeStaticMembers) {
-				foreach (var nested in type.GetNestedTypes ()) {
+				foreach (var nested in type.GetNestedTypes (t => !t.IsSynthetic)) {
+					if (!lookup.IsAccessible(nested.GetDefinition (), isProtectedAllowed))
+						continue;
+
 					IType addType = typePred != null ? typePred(nested) : nested;
 					if (addType != null)
 						result.AddType(addType, addType.Name);
