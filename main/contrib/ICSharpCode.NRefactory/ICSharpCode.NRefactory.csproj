@@ -235,6 +235,7 @@
     <Compile Include="Semantics\InitializedObjectResolveResult.cs" />
     <Compile Include="TypeSystem\SimpleTypeResolveContext.cs" />
     <Compile Include="TypeSystem\Implementation\AccessorOwnerMemberReference.cs" />
+    <Compile Include="Completion\CompletionExtensionMethods.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

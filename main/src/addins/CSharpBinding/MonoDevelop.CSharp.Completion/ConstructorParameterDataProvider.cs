@@ -28,6 +28,8 @@ using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
+using ICSharpCode.NRefactory.CSharp.Completion;
+using ICSharpCode.NRefactory.Completion;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -53,8 +55,11 @@ namespace MonoDevelop.CSharp.Completion
 				if (!lookup.IsAccessible (method, isProtectedAllowed)) {
 					continue;
 				}
+				if (!method.IsBrowsable ())
+					continue;
 				methods.Add (method);
 			}
+			methods.Sort ((l, r) => l.GetEditorBrowsableState ().CompareTo (r.GetEditorBrowsableState ()));
 		}
 		
 		protected override string GetPrefix (IMethod method)

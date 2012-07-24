@@ -295,6 +295,16 @@ namespace MonoDevelop.Ide.CodeCompletion
 	{
 		public IParameterDataProvider MethodProvider;
 		public CodeCompletionContext CompletionContext;
-		public int CurrentOverload;
+		int currentOverload;
+		public int CurrentOverload {
+			get {
+				return currentOverload;
+			}
+			set {
+				Console.WriteLine ("val:"+value);
+				Console.WriteLine (Environment.StackTrace);
+				currentOverload = value;
+			}
+		}
 	}
 }
