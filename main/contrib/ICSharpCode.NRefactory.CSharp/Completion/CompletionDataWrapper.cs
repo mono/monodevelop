@@ -75,31 +75,40 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		}
 		
 		HashSet<string> usedTypes = new HashSet<string> ();
-		
+
+		static bool IsBrowsable(IEntity entity)
+		{
+			var browsable = entity.Attributes.FirstOrDefault(attr => attr.AttributeType.Name == "BrowsableAttribute" && attr.AttributeType.Namespace == "System.ComponentModel");
+			if (browsable != null && browsable.PositionalArguments.Count == 1 && browsable.PositionalArguments [0].ConstantValue is bool)
+				return (bool)browsable.PositionalArguments [0].ConstantValue;
+
+			var browsableState = entity.Attributes.FirstOrDefault(attr => attr.AttributeType.Name == "EditorBrowsableAttribute" && attr.AttributeType.Namespace == "System.ComponentModel");
+			if (browsableState != null && browsableState.PositionalArguments.Count == 1) {
+				try {
+					var state = (System.ComponentModel.EditorBrowsableState)browsableState.PositionalArguments [0].ConstantValue;
+					return state != System.ComponentModel.EditorBrowsableState.Never;
+				} catch (Exception) {}
+			}
+			return true;
+		}
+
 		public ICompletionData AddType(IType type, string shortType)
 		{
 			if (type == null || string.IsNullOrEmpty(shortType) || usedTypes.Contains(shortType))
 				return null;
 			if (type.Name == "Void" && type.Namespace == "System")
 				return null;
+
+			var def = type.GetDefinition ();
+			if (def != null && !IsBrowsable (def))
+				return null;
+
 			usedTypes.Add(shortType);
 			var iCompletionData = Factory.CreateTypeCompletionData(type, shortType);
 			result.Add(iCompletionData);
 			return iCompletionData;
 		}
-		
-		public ICompletionData AddType(IUnresolvedTypeDefinition type, string shortType)
-		{
-			if (type == null || string.IsNullOrEmpty(shortType) || usedTypes.Contains(shortType))
-				return null;
-			if (type.Name == "Void" && type.Namespace == "System")
-				return null;
-			usedTypes.Add(shortType);
-			var iCompletionData = Factory.CreateTypeCompletionData(type, shortType);
-			result.Add(iCompletionData);
-			return iCompletionData;
-		}
-		
+
 		Dictionary<string, List<ICompletionData>> data = new Dictionary<string, List<ICompletionData>> ();
 		
 		public ICompletionData AddVariable(IVariable variable)
@@ -126,59 +135,25 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return cd;
 		}
 		
-		public void AddTypeParameter (IUnresolvedTypeParameter variable)
+		public void AddTypeParameter (ITypeParameter variable)
 		{
 			if (data.ContainsKey (variable.Name))
 				return;
 			data [variable.Name] = new List<ICompletionData> ();
 			result.Add (Factory.CreateVariableCompletionData (variable));
 		}
-		
-		public ICompletionData AddMember (IUnresolvedMember member)
-		{
-			var newData = Factory.CreateEntityCompletionData (member);
-			
-			//				newData.HideExtensionParameter = HideExtensionParameter;
-			string memberKey = newData.DisplayText;
-			if (memberKey == null)
-				return null;
-			if (member is IMember) {
-				newData.CompletionCategory = GetCompletionCategory (member.DeclaringTypeDefinition.Resolve (completion.ctx));
-			}
-			List<ICompletionData> existingData;
-			data.TryGetValue (memberKey, out existingData);
-			
-			if (existingData != null) {
-				var a = member as IEntity;
-				foreach (var d in existingData) {
-					if (!(d is IEntityCompletionData))
-						continue;
-					var b = ((IEntityCompletionData)d).Entity;
-					if (a == null || b == null || a.EntityType == b.EntityType) {
-						d.AddOverload (newData);
-						return d;
-					} 
-				}
-				if (newData != null) {
-					result.Add (newData);
-					data [memberKey].Add (newData);
-				}
-			} else {
-				result.Add (newData);
-				data [memberKey] = new List<ICompletionData> ();
-				data [memberKey].Add (newData);
-			}
-			return newData;
-		}
-		
+
 		public ICompletionData AddMember (IMember member)
 		{
 			var newData = Factory.CreateEntityCompletionData (member);
 			
-			//				newData.HideExtensionParameter = HideExtensionParameter;
+			if (!IsBrowsable (member))
+				return null;
+
 			string memberKey = newData.DisplayText;
 			if (memberKey == null)
 				return null;
+
 			if (member is IMember) {
 				newData.CompletionCategory = GetCompletionCategory (member.DeclaringTypeDefinition);
 			}
