@@ -168,8 +168,16 @@ namespace MonoDevelop.AssemblyBrowser
 
 		public List<ReferenceSegment> Disassemble (TextEditorData data, ITreeNavigator navigator)
 		{
-			var compilationUnit = Widget.CecilLoader.GetCecilObject (((AssemblyLoader)navigator.DataItem).UnresolvedAssembly);
-			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), null, b => b.AddAssembly (compilationUnit, true));
+			var assembly = ((AssemblyLoader)navigator.DataItem).UnresolvedAssembly;
+			var compilationUnit = Widget.CecilLoader.GetCecilObject (assembly);
+			if (compilationUnit == null) {
+				LoggingService.LogError ("Can't get cecil object for assembly:" + assembly);
+				return new List<ReferenceSegment> ();
+			}
+			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), null, b => {
+				if (b != null)
+					b.AddAssembly (compilationUnit, true);
+			});
 		}
 		
 		

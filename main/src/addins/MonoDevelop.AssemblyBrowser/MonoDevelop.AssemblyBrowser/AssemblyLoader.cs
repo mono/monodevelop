@@ -74,7 +74,8 @@ namespace MonoDevelop.AssemblyBrowser
 			this.unresolvedAssembly = new Lazy<IUnresolvedAssembly> (delegate {
 				try {
 					return widget.CecilLoader.LoadAssembly (Assembly);
-				} catch (Exception) {
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while loading assembly", e);
 					return new ICSharpCode.NRefactory.TypeSystem.Implementation.DefaultUnresolvedAssembly (FileName);
 				}
 			});
