@@ -37,6 +37,7 @@ using System.Linq;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
+using ICSharpCode.NRefactory.CSharp.Completion;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -56,6 +57,8 @@ namespace MonoDevelop.CSharp.Completion
 			foreach (var method in m) {
 				if (method.IsConstructor)
 					continue;
+				if (!method.IsBrowsable ())
+					continue;
 				string str = ambience.GetString (method, OutputFlags.IncludeParameters | OutputFlags.GeneralizeGenerics | OutputFlags.IncludeGenerics);
 				if (alreadyAdded.Contains (str))
 					continue;
@@ -73,7 +76,11 @@ namespace MonoDevelop.CSharp.Completion
 		
 		static int MethodComparer (IMethod left, IMethod right)
 		{
-			return left.Parameters.Count - right.Parameters.Count;
+			var lstate = left.GetEditorBrowsableState ();
+			var rstate = right.GetEditorBrowsableState ();
+			if (lstate == rstate)
+				return left.Parameters.Count - right.Parameters.Count;
+			return lstate.CompareTo (rstate);
 		}
 		
 		#region IParameterDataProvider implementation

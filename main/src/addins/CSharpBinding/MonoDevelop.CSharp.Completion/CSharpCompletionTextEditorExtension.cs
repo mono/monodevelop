@@ -485,24 +485,6 @@ namespace MonoDevelop.CSharp.Completion
 			return new CompletionData (text, entity.GetStockIcon (), null, text);
 		}
 		
-		ICompletionData ICompletionDataFactory.CreateEntityCompletionData (IUnresolvedEntity entity)
-		{
-			var context = CSharpParsedFile.GetTypeResolveContext (Document.Compilation, document.Editor.Caret.Location);
-			var resolvedEntity = ((IUnresolvedMember)entity).CreateResolved (context);
-			
-			return new MemberCompletionData (this, resolvedEntity, OutputFlags.IncludeGenerics | OutputFlags.HideArrayBrackets | OutputFlags.IncludeParameterName) {
-				HideExtensionParameter = true
-			};
-		}
-
-		ICompletionData ICompletionDataFactory.CreateEntityCompletionData (IUnresolvedEntity entity, string text)
-		{
-			var context = CSharpParsedFile.GetTypeResolveContext (Document.Compilation, document.Editor.Caret.Location);
-			var resolvedEntity = ((IUnresolvedMember)entity).CreateResolved (context);
-			return new MemberCompletionData (this, resolvedEntity, OutputFlags.IncludeGenerics | OutputFlags.HideArrayBrackets | OutputFlags.IncludeParameterName) {
-				HideExtensionParameter = true
-			};
-		}
 
 		ICompletionData ICompletionDataFactory.CreateTypeCompletionData (IType type, string shortType)
 		{
@@ -521,11 +503,6 @@ namespace MonoDevelop.CSharp.Completion
 			return result;
 		}
 		
-		ICompletionData ICompletionDataFactory.CreateTypeCompletionData (IUnresolvedTypeDefinition type, string shortType)
-		{
-			return new CompletionData (shortType, type.GetStockIcon ());
-		}
-		
 		ICompletionData ICompletionDataFactory.CreateLiteralCompletionData (string title, string description, string insertText)
 		{
 			return new CompletionData (title, "md-keyword", description, insertText ?? title);
@@ -541,7 +518,7 @@ namespace MonoDevelop.CSharp.Completion
 			return new VariableCompletionData (variable);
 		}
 
-		ICompletionData ICompletionDataFactory.CreateVariableCompletionData (IUnresolvedTypeParameter parameter)
+		ICompletionData ICompletionDataFactory.CreateVariableCompletionData (ITypeParameter parameter)
 		{
 			return new CompletionData (parameter.Name, parameter.GetStockIcon ());
 		}

@@ -82,18 +82,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return null;
 			if (type.Name == "Void" && type.Namespace == "System")
 				return null;
-			usedTypes.Add(shortType);
-			var iCompletionData = Factory.CreateTypeCompletionData(type, shortType);
-			result.Add(iCompletionData);
-			return iCompletionData;
-		}
-		
-		public ICompletionData AddType(IUnresolvedTypeDefinition type, string shortType)
-		{
-			if (type == null || string.IsNullOrEmpty(shortType) || usedTypes.Contains(shortType))
+			
+			var def = type.GetDefinition ();
+			if (def != null && def.ParentAssembly != completion.ctx.CurrentAssembly && !def.IsBrowsable ())
 				return null;
-			if (type.Name == "Void" && type.Namespace == "System")
-				return null;
+			
 			usedTypes.Add(shortType);
 			var iCompletionData = Factory.CreateTypeCompletionData(type, shortType);
 			result.Add(iCompletionData);
@@ -126,7 +119,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return cd;
 		}
 		
-		public void AddTypeParameter (IUnresolvedTypeParameter variable)
+		public void AddTypeParameter (ITypeParameter variable)
 		{
 			if (data.ContainsKey (variable.Name))
 				return;
@@ -134,51 +127,17 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			result.Add (Factory.CreateVariableCompletionData (variable));
 		}
 		
-		public ICompletionData AddMember (IUnresolvedMember member)
-		{
-			var newData = Factory.CreateEntityCompletionData (member);
-			
-			//				newData.HideExtensionParameter = HideExtensionParameter;
-			string memberKey = newData.DisplayText;
-			if (memberKey == null)
-				return null;
-			if (member is IMember) {
-				newData.CompletionCategory = GetCompletionCategory (member.DeclaringTypeDefinition.Resolve (completion.ctx));
-			}
-			List<ICompletionData> existingData;
-			data.TryGetValue (memberKey, out existingData);
-			
-			if (existingData != null) {
-				var a = member as IEntity;
-				foreach (var d in existingData) {
-					if (!(d is IEntityCompletionData))
-						continue;
-					var b = ((IEntityCompletionData)d).Entity;
-					if (a == null || b == null || a.EntityType == b.EntityType) {
-						d.AddOverload (newData);
-						return d;
-					} 
-				}
-				if (newData != null) {
-					result.Add (newData);
-					data [memberKey].Add (newData);
-				}
-			} else {
-				result.Add (newData);
-				data [memberKey] = new List<ICompletionData> ();
-				data [memberKey].Add (newData);
-			}
-			return newData;
-		}
-		
 		public ICompletionData AddMember (IMember member)
 		{
 			var newData = Factory.CreateEntityCompletionData (member);
 			
-			//				newData.HideExtensionParameter = HideExtensionParameter;
+			if (member.ParentAssembly != completion.ctx.CurrentAssembly && !member.IsBrowsable ())
+				return null;
+			
 			string memberKey = newData.DisplayText;
 			if (memberKey == null)
 				return null;
+			
 			if (member is IMember) {
 				newData.CompletionCategory = GetCompletionCategory (member.DeclaringTypeDefinition);
 			}

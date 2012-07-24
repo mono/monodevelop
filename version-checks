@@ -72,7 +72,7 @@ function reset_version
 	git checkout $NEEDED_BRANCH || git checkout -b $BRANCH_AND_REMOTE
 	echo "*** [$NAME] git reset --hard $NEEDED_VERSION"
 	git reset --hard $NEEDED_VERSION
-	
+
 	cd "$top_srcdir"
 }
 
@@ -143,7 +143,7 @@ elif [[ "x$1" == "x--check" && "x$2" == "x" ]]; then
 	check_all
 elif [[ "x$1" == "x--check" ]]; then
 	shift
-	while [[ "x$1" != "x" ]]; do 
+	while [[ "x$1" != "x" ]]; do
 		find_dep $1
 		check_version $DEP_IDX
 		shift
@@ -156,7 +156,7 @@ elif [[ "x$1" == "x--reset" && "x$2" == "x" ]]; then
 	reset_all
 elif [[ "x$1" == "x--reset" ]]; then
 	shift
-	while [[ "x$1" != "x" ]]; do 
+	while [[ "x$1" != "x" ]]; do
 		find_dep $1
 		reset_version $DEP_IDX
 		shift
@@ -173,5 +173,3 @@ if [[ "x$FAILURE" == "x1" ]]; then
 else
 	echo "All dependent modules up to date"
 fi
-
-
