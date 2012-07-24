@@ -84,7 +84,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return null;
 			
 			var def = type.GetDefinition ();
-			if (def != null && !def.IsBrowsable ())
+			if (def != null && def.ParentAssembly != completion.ctx.CurrentAssembly && !def.IsBrowsable ())
 				return null;
 			
 			usedTypes.Add(shortType);
@@ -131,7 +131,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		{
 			var newData = Factory.CreateEntityCompletionData (member);
 			
-			if (!member.IsBrowsable ())
+			if (member.ParentAssembly != completion.ctx.CurrentAssembly && !member.IsBrowsable ())
 				return null;
 			
 			string memberKey = newData.DisplayText;
