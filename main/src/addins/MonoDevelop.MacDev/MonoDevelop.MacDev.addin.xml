@@ -7,8 +7,8 @@
        description = "Mac Development Support for MonoDevelop"
        category    = "Mac Development"
        flags       = "Hidden"
-       version     = "3.1.0">
-	
+       version     = "3.0.4">
+
 	<Runtime>
 		<Import file = "icons/application-x-mono-develop-xib-16.png"/>
 		<Import file = "icons/application-x-mono-develop-xib-22.png"/>
@@ -22,29 +22,29 @@
 	</Runtime>
 
 	<Dependencies>
-	    <Addin id="Ide" version="3.1.0"/>
-	    <Addin id="Core" version="3.1.0"/>
-	    <Addin id="MacPlatform" version="3.1.0"/>
-	    <Addin id="DesignerSupport" version="3.1.0"/>
-	    <Addin id="VersionControl" version="3.1.0" />
+	    <Addin id="Ide" version="3.0.4"/>
+	    <Addin id="Core" version="3.0.4"/>
+	    <Addin id="MacPlatform" version="3.0.4"/>
+	    <Addin id="DesignerSupport" version="3.0.4"/>
+	    <Addin id="VersionControl" version="3.0.4" />
 	</Dependencies>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/MacDev/ContextMenu/ProjectPad/NativeReferenceFolder">
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/MacDev/ContextMenu/ProjectPad/NativeReference">
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/MacDev/PlistEditingHandler">
 		<ExtensionNode name="Class" objectType="MonoDevelop.MacDev.PlistEditor.IPlistEditingHandler"/>
 	</ExtensionPoint>
-	
+
 	<Extension path = "/MonoDevelop/VersionControl/DiffViewHandler">
 		<Handler class = "MonoDevelop.MacDev.PlistEditor.PlistDiffViewHandler" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Core/MimeTypes">
 		<MimeType id="application/vnd.apple-plist" _description="Mac Property List" isText="false">
 			<File pattern="*.plist" />
@@ -54,7 +54,7 @@
 			<File pattern="*.xib" />
 		</MimeType>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid = "application-vnd-apple-interface-builder"
 		           file = "icons/application-x-mono-develop-xib-16.png" size="Menu" />
@@ -73,58 +73,58 @@
 		<StockIcon stockid = "xib-template-window"
 		           file = "icons/xib-template-window.png" size="Dnd" />
 	</Extension>
-	
+
 	<Extension path="/MonoDevelop/Ide/DisplayBindings">
 		<DisplayBinding id = "InterfaceBuilder"
 			insertbefore ="DefaultDisplayBinding"
 			class = "MonoDevelop.MacDev.XcodeInterfaceBuilderDisplayBinding" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
 		<!--<NodeBuilder class = "MonoDevelop.MacDev.NativeReferences.ProjectFolderNodeBuilderExtension"/>-->
 		<NodeBuilder class = "MonoDevelop.MacDev.NativeReferences.ProjectNodeBuilder"/>
 		<NodeBuilder class = "MonoDevelop.MacDev.NativeReferences.NativeReferenceFolderNodeBuilder"/>
 		<NodeBuilder class = "MonoDevelop.MacDev.NativeReferences.NativeReferenceNodeBuilder"/>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/DesignerSupport/PropertyProviders" extension-nodes="Class">
 		<Class class = "MonoDevelop.MacDev.NativeReferences.NativeReferencePropertyProvider"/>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
 		<DataType class = "MonoDevelop.MacDev.NativeReferences.NativeReference" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Category _name = "Native Reference" id = "NativeReferences">
 		<Command id = "MonoDevelop.MacDev.NativeReferences.NativeReferenceCommands.Add"
 			_label = "Add Native Reference" />
 		</Category>
 	</Extension>
-		
+
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Add">
 		<Condition id="ItemType" value="DotNetProject">
 			<SeparatorItem insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.AddFiles" />
 			<CommandItem id = "MonoDevelop.MacDev.NativeReferences.NativeReferenceCommands.Add" disabledVisible="false"/>
 		</Condition>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/MacDev/ContextMenu/ProjectPad/NativeReferenceFolder">
 		<CommandItem id = "MonoDevelop.MacDev.NativeReferences.NativeReferenceCommands.Add" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/MacDev/ContextMenu/ProjectPad/NativeReference">
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/Other/SdkLocations">
 		<Panel id = "AppleSdkSettings" class="MonoDevelop.MacDev.AppleSdkSettingsPanel"/>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
 		<DisplayBinding class = "MonoDevelop.MacDev.PlistEditor.PListEditorDisplayBinding" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Core/SystemInformation">
 		<Class class = "MonoDevelop.MacDev.AppleSdkAboutInformation" />
 	</Extension>

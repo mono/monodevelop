@@ -6,33 +6,33 @@
 	url		= "http://www.monodevelop.com"
 	description	= "Database Query Module"
 	category    = "Database"
-	version		= "3.1.0">
-    
+	version		= "3.0.4">
+
 	<Runtime>
 		<Import assembly="MonoDevelop.Database.Query.dll"/>
 	</Runtime>
-	
+
   	<Localizer type="Gettext" catalog="monodevelop-database"/>
-	
+
 	<Dependencies>
-		<Addin id="Core" version="3.1.0"/>
-		<Addin id="Ide" version="3.1.0"/>
-		<Addin id="Database.Sql" version="3.1.0"/>
-		<Addin id="Database.Components" version="3.1.0"/>
+		<Addin id="Core" version="3.0.4"/>
+		<Addin id="Ide" version="3.0.4"/>
+		<Addin id="Database.Sql" version="3.0.4"/>
+		<Addin id="Database.Components" version="3.0.4"/>
 	</Dependencies>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/Database/ToolBar/SqlQueryView">
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
-	
+
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Command id = "MonoDevelop.Database.Query.ToolCommands.Query"
 			defaultHandler = "MonoDevelop.Database.Query.QueryHandler"
 			_label = "Query Database"
 			icon = "md-db-execute"/>
-			
+
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Tools">
 		<SeparatorItem id = "DatabaseSeparator" insertafter = "MonoDevelop.Ide.Commands.ToolCommands.AddinManager" />
 		<ItemSet id = "Database" _label = "_Database">
@@ -50,7 +50,7 @@
 		            _label = "Sql Script Files"
 			    extensions = "*.sql"/>
 	</Extension>
-		
+
 	<Extension path = "/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid = "md-db-column-key" file = "icons/Icons.16x16.Database.Column.Key.png" />
 		<StockIcon stockid = "md-db-column" file = "icons/Icons.16x16.Database.Column.png" />
@@ -77,7 +77,7 @@
 		<StockIcon stockid = "md-db-view-source" file = "icons/Icons.16x16.Database.View.Source.png" />
 		<StockIcon stockid = "md-db-views" file = "icons/Icons.16x16.Database.Views.png" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
 		<DisplayBinding id = "QueryEditor" insertbefore="DefaultDisplayBinding" supportedextensions = ".sql" supportedformats = ".Sql Files" class = "MonoDevelop.Database.Query.SqlQueryDisplayBinding" />
 	</Extension>

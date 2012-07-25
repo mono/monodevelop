@@ -7,72 +7,72 @@
        description = "Supporting services and pads for visual design tools."
 	   category    = "MonoDevelop Core"
        flags = "Hidden"
-       version     = "3.1.0">
-	
+       version     = "3.0.4">
+
 	<Runtime>
 		<Import assembly = "MonoDevelop.DesignerSupport.dll"/>
 	</Runtime>
-	
+
 	<Dependencies>
-		<Addin id="Core" version="3.1.0"/>
-		<Addin id="Ide" version="3.1.0"/>
+		<Addin id="Core" version="3.0.4"/>
+		<Addin id="Ide" version="3.0.4"/>
 	</Dependencies>
 
 	<!-- Extension points -->
-	
+
 	<ExtensionPoint path = "/MonoDevelop/DesignerSupport/ToolboxProviders" name = "Toolbox item providers">
 		<Description>Provides items to the toolbox. Must implement MonoDevelop.DesignerSupport.Toolbox.IToolboxDefaultProvider and/or IToolboxDynamicProvider</Description>
 		<ExtensionNode name="Class" />
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/DesignerSupport/ToolboxLoaders" name = "Toolbox loaders">
 		<Description>Used to load ItemToolboxNodes into the ToolboxMust implement
 		MonoDevelop.DesignerSupport.Toolbox.IToolboxItemLoader</Description>
 		<ExtensionNode name="Class" />
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/DesignerSupport/PropertyProviders" name = "Providers for the property grid">
 		<ExtensionNode name="Class" />
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/DesignerSupport/ToolboxItemContextMenu" name = "Toolbox item context menu">
 		<Description>Context menu for toolbox items.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet" />
 	</ExtensionPoint>
-	
+
 	<!-- Extensions -->
-	
+
 	<Extension path = "/MonoDevelop/DesignerSupport/PropertyProviders" extension-nodes="Class">
 		<Class class = "MonoDevelop.DesignerSupport.Projects.ProjectItemPropertyProvider"/>
 		<Class class = "MonoDevelop.DesignerSupport.Projects.SolutionItemPropertyProvider"/>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
 		<DataType class = "MonoDevelop.DesignerSupport.Toolbox.ToolboxItemToolboxNode" />
 		<DataType class = "MonoDevelop.DesignerSupport.Toolbox.TextToolboxNode" />
 		<DataType class = "MonoDevelop.DesignerSupport.Toolbox.TypeToolboxNode" />
 		<DataType class = "MonoDevelop.DesignerSupport.Toolbox.ItemToolboxNode" name = "item" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/Pads">
-		<Pad id = "MonoDevelop.DesignerSupport.ToolboxPad" 
-			class = "MonoDevelop.DesignerSupport.ToolboxPad" 
+		<Pad id = "MonoDevelop.DesignerSupport.ToolboxPad"
+			class = "MonoDevelop.DesignerSupport.ToolboxPad"
 			_label="Toolbox"
 			icon = "md-toolbox-pad"
 			defaultLayout="*"
 			defaultPlacement="Right"
 			defaultStatus="AutoHide"
 			/>
-		<Pad id = "MonoDevelop.DesignerSupport.PropertyPad" 
-			class = "MonoDevelop.DesignerSupport.PropertyPad" 
+		<Pad id = "MonoDevelop.DesignerSupport.PropertyPad"
+			class = "MonoDevelop.DesignerSupport.PropertyPad"
 			_label="Properties"
 			icon = "md-properties-pad"
 			defaultLayout="*"
 			defaultPlacement="MonoDevelop.DesignerSupport.ToolboxPad/bottom; right"
 			defaultStatus="AutoHide"
 			/>
-		<Pad id = "MonoDevelop.DesignerSupport.DocumentOutlinePad" 
-			class = "MonoDevelop.DesignerSupport.DocumentOutlinePad" 
+		<Pad id = "MonoDevelop.DesignerSupport.DocumentOutlinePad"
+			class = "MonoDevelop.DesignerSupport.DocumentOutlinePad"
 			_label="Document Outline"
 			icon="md-pad-document-outline"
 			defaultLayout="*"
@@ -80,7 +80,7 @@
 			defaultStatus="AutoHide"
 			/>
 	</Extension>
-	
+
 	<Extension path="/MonoDevelop/Ide/WorkbenchLayouts">
 		<Layout id="VisualDesign" _name="Visual Design">
 			<LayoutPad id="MonoDevelop.DesignerSupport.ToolboxPad" status="Dockable" />
@@ -88,13 +88,13 @@
 			<LayoutPad id="MonoDevelop.DesignerSupport.DocumentOutlinePad" status="Dockable" />
 		</Layout>
 	</Extension>
-	
+
 	<Extension path="/MonoDevelop/Ide/WorkbenchLayouts/Solution">
 		<LayoutPad id="MonoDevelop.DesignerSupport.ToolboxPad" placement="Right" status="AutoHide" />
 		<LayoutPad id="MonoDevelop.DesignerSupport.PropertyPad" placement="Right" status="AutoHide" />
 		<LayoutPad id="MonoDevelop.DesignerSupport.DocumentOutlinePad" placement="Right" status="AutoHide" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid = "md-design-categorise" resource = "group-by-category.png" size="Menu" />
 		<StockIcon stockid = "md-design-listboxtoggle" resource = "md-design-listboxtoggle.png" />
@@ -106,41 +106,41 @@
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
 		<NodeBuilder class = "MonoDevelop.DesignerSupport.Projects.ComponentNodeBuilder"/>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/Pads/ClassPad">
 		<NodeBuilder class = "MonoDevelop.DesignerSupport.Projects.ComponentNodeBuilder"/>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Command id = "MonoDevelop.DesignerSupport.Commands.SelectItems"
 				defaultHandler = "MonoDevelop.DesignerSupport.SelectItemsCommandHandler"
 				_label = "Add Items..." />
-		<Command id = "MonoDevelop.DesignerSupport.Commands.SwitchBetweenRelatedFiles" 
+		<Command id = "MonoDevelop.DesignerSupport.Commands.SwitchBetweenRelatedFiles"
 		         _label = "Switch between related files "
 		         _description = "Switch between related files, such as CodeBehind, headers, etc."
 		         defaultHandler="MonoDevelop.DesignerSupport.SwitchBetweenRelatedFilesCommand"
 		         shortcut="Control|Alt|Up"
 		         macShortcut="Meta|Alt|Up" />
 	</Extension>
-	
+
 	<Extension path="/MonoDevelop/Ide/ContextMenu/DocumentTab">
 		<CommandItem id = "MonoDevelop.DesignerSupport.Commands.SwitchBetweenRelatedFiles" />
-	</Extension>	
-	
+	</Extension>
+
 	<Extension path = "/MonoDevelop/DesignerSupport/ToolboxItemContextMenu">
 		<CommandItem id = "MonoDevelop.DesignerSupport.Commands.SelectItems" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class class = "MonoDevelop.DesignerSupport.Projects.PropertyPadTextEditorExtension" />
 		<Class class = "MonoDevelop.DesignerSupport.ClassOutlineTextEditorExtension" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/DesignerSupport/ToolboxProviders">
 		<Class class="MonoDevelop.DesignerSupport.Toolbox.CodeTemplateToolboxProvider" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Core/UserDataMigration">
 		<!-- 2.4 -->
 		<Migration sourceVersion="2.4" kind="LocalConfig" path="Toolbox.xml" />

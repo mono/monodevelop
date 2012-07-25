@@ -6,20 +6,20 @@
 	url		= "http://www.monodevelop.com"
 	description	= "Database CodeGenerator Module"
 	category	= "Database"
-	version		= "3.1.0">
-    
+	version		= "3.0.4">
+
 	<Runtime>
 		<Import assembly="MonoDevelop.Database.CodeGenerator.dll"/>
 	</Runtime>
-	
+
   	<Localizer type="Gettext" catalog="monodevelop-database"/>
-	
+
 	<Dependencies>
-		<Addin id="Core" version="3.1.0"/>
-		<Addin id="Ide" version="3.1.0"/>
-		<Addin id="Database.Sql" version="3.1.0"/>
-		<Addin id="Database.Components" version="3.1.0"/>
-		<Addin id="Database.Query" version="3.1.0"/>
+		<Addin id="Core" version="3.0.4"/>
+		<Addin id="Ide" version="3.0.4"/>
+		<Addin id="Database.Sql" version="3.0.4"/>
+		<Addin id="Database.Components" version="3.0.4"/>
+		<Addin id="Database.Query" version="3.0.4"/>
 	</Dependencies>
 
 	<Extension path = "/MonoDevelop/Ide/Commands">
@@ -28,17 +28,17 @@
 			_label = "Generate Linq Class"
 			icon = "md-class"/>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Tools">
 		<Condition id="ItemType" value="Project|ProjectFile|MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectFolder">
 			<CommandItem id = "MonoDevelop.Database.CodeGenerator.ToolCommands.GenerateDataClasses" insertafter="FindInFilesSeparator" insertbefore="CombineOptionsSeparator"/>
 		</Condition>
 	</Extension>
-	
-	
+
+
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Tools/Database">
 		<SeparatorItem id = "DatabaseSeparator" insertafter = "MonoDevelop.Database.Query.ToolCommands.Query" />
 		<CommandItem id = "MonoDevelop.Database.CodeGenerator.ToolCommands.GenerateDataClasses" />
 	</Extension>
-	
+
 </Addin>

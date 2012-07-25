@@ -6,8 +6,8 @@
        url         = "http://monodevelop.com/"
        description = "Support for ASP.NET MVC projects."
        category    = "Web Development"
-       version     = "3.1.0">
-	
+       version     = "3.0.4">
+
 	<Runtime>
 		<Import file = "Templates/Controller.xft.xml"/>
 		<Import file = "Templates/ViewPage.xft.xml"/>
@@ -33,16 +33,16 @@
 		<Import file = "Templates/ViewPageRazor.xft.xml" />
 		<Import file = "Templates/PartialViewPageRazor.xft.xml" />
 	</Runtime>
-	
+
 	<Dependencies>
-		<Addin id="Core" version="3.1.0"/>
-		<Addin id="Ide" version="3.1.0"/>
-		<Addin id="XmlEditor" version="3.1.0" />
-		<Addin id="AspNet" version="3.1.0" />
-		<Addin id="SourceEditor2" version="3.1.0" />
-		<Addin id="TextTemplating" version="3.1.0" />
+		<Addin id="Core" version="3.0.4"/>
+		<Addin id="Ide" version="3.0.4"/>
+		<Addin id="XmlEditor" version="3.0.4" />
+		<Addin id="AspNet" version="3.0.4" />
+		<Addin id="SourceEditor2" version="3.0.4" />
+		<Addin id="TextTemplating" version="3.0.4" />
 	</Dependencies>
-	
+
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
 		<DotNetProjectSubtype
 			guid="{603c0e0b-db56-11dc-be95-000d561079b0}"
@@ -104,18 +104,18 @@
 		<ProjectTemplate id = "AspMvc3Project-RazorWithUnitTest" file = "Templates/ProjectMvc3RazorWithUnitTest.xpt.xml" />
 	</Condition>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectBindings">
 		<ProjectBinding id = "AspNetMvc1" class = "MonoDevelop.AspNet.Mvc.AspMvc1ProjectBinding" />
 		<ProjectBinding id = "AspNetMvc2" class = "MonoDevelop.AspNet.Mvc.AspMvc2ProjectBinding" />
 		<ProjectBinding id = "AspNetMvc3" class = "MonoDevelop.AspNet.Mvc.AspMvc3ProjectBinding" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
 		<DataType class = "MonoDevelop.AspNet.Mvc.AspMvcProject" />
 		<DataType class = "MonoDevelop.AspNet.Mvc.AspMvcProjectConfiguration" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Category _name = "ASP.NET" id = "AspNet">
 		<Command id = "MonoDevelop.AspNet.Mvc.AspMvcCommands.AddController"
@@ -126,7 +126,7 @@
 		         _description = "Add an ASP.NET MVC view" />
 		</Category>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Add">
 		<Condition id="activeproject" value="AspNetMvc">
 			<CommandItem id = "MonoDevelop.AspNet.Mvc.AspMvcCommands.AddController" insertbefore="MonoDevelop.Ide.Commands.ProjectCommands.AddNewFiles"  disabledVisible="false"/>
@@ -134,7 +134,7 @@
 			<SeparatorItem id = "MvcAddSeparator" />
 		</Condition>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
 		<NodeBuilder id="AspMvcFolderNodeBuilderExtension" class = "MonoDevelop.AspNet.Mvc.Gui.FolderNodeBuilderExtension"/>
 	</Extension>
