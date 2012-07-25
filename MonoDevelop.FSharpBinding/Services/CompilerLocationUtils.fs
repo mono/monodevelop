@@ -250,8 +250,58 @@ module internal FSharpEnvironment =
       System.Diagnostics.Debug.Assert(false, "Error while determining default location of F# compiler")
       None
 
-  // Print debug information about compiler path
-  match BinFolderOfDefaultFSharpCompiler() with
-  | Some(path) -> Debug.tracef "Resolution" "Default compiler path: '%s'" path
-  | None -> Debug.tracef "Resolution" "Default compiler path: (unknown)" 
+
+  let FolderOfDefaultFSharpCore() = 
+    try 
+      let result = tryAppConfig "fsharp-core-location"
+      match result with 
+      | Some _ ->  result 
+      | None -> 
+
+        // Note: If the keys below change, be sure to update code in:
+        // Property pages (ApplicationPropPage.vb)
+
+        let key = 
+            match FSharpCompilerVersion.CurrentRequestedVersion with 
+            | Version_4_3 ->  @"Software\Microsoft\.NETFramework\v4.0.30319\AssemblyFoldersEx\F# 3.0 Core Assemblies"
+            | Version_4_0 ->  @"Software\Microsoft\.NETFramework\v4.0.30319\AssemblyFoldersEx\Microsoft Visual F# 4.0"
+        
+        let result = tryRegKey key
+        match result with 
+        | Some _ ->  result 
+        | None -> 
+        let result = 
+            let var = System.Environment.GetEnvironmentVariable("FSHARP_CORE_LOCATION")
+            if String.IsNullOrEmpty(var) then None
+            else Some(var)
+        match result with 
+        | Some _ -> result
+        | None -> 
+        let possibleInstallationPoints = 
+            Option.toList (BinFolderOfDefaultFSharpCompiler() |> Option.map Path.GetDirectoryName) @  
+            BackupInstallationProbePoints
+        Debug.tracef "Resolution" "Probing these installation locations for 4.0 lib/mono/4.0/FSharp.Core.dll  or fsc/fsi scripts or fsharpc/fsharpi scripts: %A" possibleInstallationPoints
+        let result = 
+            possibleInstallationPoints |> List.tryPick (fun possibleInstallationDir -> 
+
+              let (++) s x = Path.Combine(s,x)
+              let safeExists f = (try File.Exists(f) with _ -> false)
+              let candidate = possibleInstallationDir ++ "lib" ++ "mono" ++ "4.0" 
+              if safeExists (candidate ++ "FSharp.Core.dll") then 
+                  Some candidate
+              else
+                  let file f = Path.Combine(Path.Combine(possibleInstallationDir,"bin"),f)
+                  let exists f = safeExists(file f)
+                  if exists "fsc" && exists "fsi" then tryFsharpiScript (file "fsi")
+                  elif exists "fsharpc" && exists "fsharpi" then tryFsharpiScript (file "fsharpi")
+                  else None)
+                
+        match result with 
+        | Some _ -> result
+        | None -> 
+        None
+    with e -> 
+      System.Diagnostics.Debug.Assert(false, "Error while determining default location of F# compiler")
+      None
+
 

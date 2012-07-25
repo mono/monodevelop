@@ -41,7 +41,8 @@ module CompilerService =
       let fsconfig = config.CompilationParameters :?> FSharpCompilerParameters
     
       if not (String.IsNullOrEmpty fsconfig.DocumentationFile) then 
-          yield ("--doc:" + CompilerArguments.wrapFile fsconfig.DocumentationFile)
+          let docFile = config.CompiledOutputName.ChangeExtension(".xml").ToString() 
+          yield ("--doc:" + CompilerArguments.wrapFile docFile) 
 
       let shouldWrap = true// The compiler argument paths should always be wrapped, since some paths (ie. on Windows) may contain spaces.
       yield! CompilerArguments.generateCompilerOptions fsconfig items configSel shouldWrap ]
@@ -170,7 +171,8 @@ module CompilerService =
           let fsconfig = config.ProjectParameters :?> FSharpProjectParameters
           let files = CompilerArguments.getSourceFiles items
           let root = System.IO.Path.GetDirectoryName(config.ProjectParameters.ParentProject.FileName.FullPath.ToString())
-          yield! CompilerArguments.getItemsInOrder root files fsconfig.BuildOrder false ]
+          for file in CompilerArguments.getItemsInOrder root files fsconfig.BuildOrder false do 
+             yield CompilerArguments.wrapFile file ]
           
     compile runtime framework monitor args
     

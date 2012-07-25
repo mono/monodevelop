@@ -467,7 +467,7 @@ type internal LanguageService private () =
           else 
             // Add assemblies that may be missing in the standard assembly resolution
             Debug.tracef "Checkoptions" "Adding missing core assemblies."
-            let dirs = ScriptOptions.getDefaultDirectories None []
+            let dirs = ScriptOptions.getDefaultDirectories ()
             opts.WithOptions 
               [| yield! opts.ProjectOptions; 
                  match ScriptOptions.resolveAssembly dirs "FSharp.Core" with

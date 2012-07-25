@@ -31,47 +31,18 @@ module ScriptOptions =
     try File.Exists(f) with _ -> false
     
   /// Returns default directories to be used when searching for DLL files
-  let getDefaultDirectories root includes =   
-    let (++) s x = Path.Combine(s,x)
+  let getDefaultDirectories() =   
     // Return all known directories
     [ // Get the location of the System DLLs
-      let runtime = System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory() 
-      yield runtime
+      yield System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory() 
 
-      // Add the include directories
-      match root with 
-      | Some(root) -> yield! includes |> List.map (makeAbsolute root)
-      | None -> yield! includes |> List.filter Path.IsPathRooted
-      yield! root |> Option.toList                  
-
-      // Detect a usable default 4.0 FSharp.Core.dll (for Mono)
-      let result = 
-          let possibleInstallationPoints = 
-              Option.toList (FSharpEnvironment.BinFolderOfDefaultFSharpCompiler() |> Option.map Path.GetDirectoryName) @  
-              FSharpEnvironment.BackupInstallationProbePoints
-
-          Debug.tracef "Resolution" "Probing these installation locations for 4.0 FSharp.Core.dll : %A" possibleInstallationPoints
-          possibleInstallationPoints |> List.tryPick (fun possibleInstallationDir -> 
-              let candidate = possibleInstallationDir ++ "lib" ++ "mono" ++ "4.0" 
-              if safeExists (candidate ++ "FSharp.Core.dll") then 
-                  Some candidate
-              else
-                  None)
-
-      // Did we find a usable default 4.0 FSharp.Core.dll (for Mono)? If so, use that
-      match result with 
+      match FSharpEnvironment.FolderOfDefaultFSharpCore() with 
       | Some dir -> 
           Debug.tracef "Resolution" "Using '%A' as the location of default FSharp.Core.dll" dir
           yield dir
       | None -> 
-          // For Windows, just use BinFolderOfDefaultFSharpCompiler, a default FSharp.Core.dll is there
-          match FSharpEnvironment.BinFolderOfDefaultFSharpCompiler() with 
-          | Some dir -> 
-              Debug.tracef "Resolution" "Using '%A' as the location of default FSharp.Core.dll" dir
-              yield dir 
-          | None -> 
-              Debug.tracef "Resolution" "Unable to find a default location for FSharp.Core.dll"
-          ]
+          Debug.tracef "Resolution" "Unable to find a default location for FSharp.Core.dll"
+    ]
                 
   /// Resolve assembly in the specified list of directories
   let rec resolveAssembly dirs asm =
@@ -92,7 +63,7 @@ module ScriptOptions =
 
 module CompilerArguments = 
   /// Wraps the given string between double quotes
-  let wrapFile s = "\"" + s + "\""  
+  let wrapFile (s:string) = if s.StartsWith "\"" then s else "\"" + s + "\""  
 
   /// When creating new script file on Mac, the filename we get sometimes 
   /// has a name //foo.fsx, and as a result 'Path.GetFullPath' throws in the F#
@@ -127,14 +98,19 @@ module CompilerArguments =
     let files = 
       [ for ref in items.GetAll<ProjectReference>() do
           for file in ref.GetReferencedFileNames(configSelector) do
-            yield file ]
+            // The plain reference text "FSharp.Core" is used in Visual Studio .fsproj files.
+            // On MonoDevelop+windows this is incorrectly resolved. We just skip reference text of this form,
+            // and rely on the default directory search below.
+            if ref.StoredReference <> "FSharp.Core" || ref.IsExactVersion then 
+                 yield file ]
     
     // If 'mscorlib.dll' and 'FSharp.Core.dll' is not in the set of references, we need to 
-    // resolve it and add it.
+    // resolve it and add it. We look in the directories returned by getDefaultDirectories(),
+    // where no includes are given.
     for assumedFile in ["mscorlib"; "FSharp.Core"] do 
       let coreRef = files |> List.exists (fun fn -> fn.EndsWith(assumedFile + ".dll") || fn.EndsWith(assumedFile))
       if not coreRef then
-        let dirs = ScriptOptions.getDefaultDirectories None []
+        let dirs = ScriptOptions.getDefaultDirectories() 
         match ScriptOptions.resolveAssembly dirs assumedFile with
         | Some fn -> yield "-r:" + wrapf(fn)
         | None -> Debug.tracef "Resolution" "Assembly resolution failed when trying to find default reference for '%s'!" assumedFile
@@ -219,9 +195,7 @@ module CompilerArguments =
 
   let getShellToolPath (extensions:seq<string>) (toolName:string)  =
     let path_variable = Environment.GetEnvironmentVariable("PATH")
-    // Split the path by ';' on Windows
-    let pathSplitCharacter = (if Environment.OSVersion.Platform = PlatformID.Win32NT then ';' else ':')
-    let searchPaths = path_variable.Split [| pathSplitCharacter |]
+    let searchPaths = path_variable.Split [| IO.Path.PathSeparator  |]
     getToolPath searchPaths extensions toolName
 
   /// Get full path to tool
