@@ -1,5 +1,6 @@
-﻿// Learn more about F# at http://fsharp.net
-// See the 'F# Tutorial' project for more help.
+﻿// This is a sample F# app created in Visual Studio 2012, targeting .NET 4.5
+
+// At time of submission it won't build by default because MD doesn't support .NET 4.5 as yet
 
 [<EntryPoint>]
 let main argv = 
