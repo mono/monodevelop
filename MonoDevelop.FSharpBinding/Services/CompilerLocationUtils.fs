@@ -287,13 +287,20 @@ module internal FSharpEnvironment =
         let possibleInstallationPoints = 
             Option.toList (BinFolderOfDefaultFSharpCompiler() |> Option.map Path.GetDirectoryName) @  
             BackupInstallationProbePoints
-        Debug.tracef "Resolution" "Probing these installation locations for 4.0 lib/mono/4.0/FSharp.Core.dll  or fsc/fsi scripts or fsharpc/fsharpi scripts: %A" possibleInstallationPoints
+        Debug.tracef "Resolution" "Probing these installation locations for  lib/mono/4.0/FSharp.Core.dll  or fsc/fsi scripts or fsharpc/fsharpi scripts: %A" possibleInstallationPoints
+        let ext = 
+            match targetFramework with 
+            | x when (x = TargetFrameworkMoniker.NET_2_0 || x = TargetFrameworkMoniker.NET_3_0 || x = TargetFrameworkMoniker.NET_3_5) -> 
+                "2.0"
+            | _ -> 
+                "4.0"
         let result = 
             possibleInstallationPoints |> List.tryPick (fun possibleInstallationDir -> 
 
               let (++) s x = Path.Combine(s,x)
               let safeExists f = (try File.Exists(f) with _ -> false)
-              let candidate = possibleInstallationDir ++ "lib" ++ "mono" ++ "4.0" 
+              
+              let candidate = possibleInstallationDir ++ "lib" ++ "mono" ++ ext
               if safeExists (candidate ++ "FSharp.Core.dll") then 
                   Some candidate
               else
