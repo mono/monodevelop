@@ -45,7 +45,7 @@ module CompilerService =
           yield ("--doc:" + CompilerArguments.wrapFile docFile) 
 
       let shouldWrap = true// The compiler argument paths should always be wrapped, since some paths (ie. on Windows) may contain spaces.
-      yield! CompilerArguments.generateCompilerOptions fsconfig items configSel shouldWrap ]
+      yield! CompilerArguments.generateCompilerOptions (fsconfig, config.TargetFramework.Id, items, configSel, shouldWrap) ]
 
 
   /// Process a single message emitted by the F# compiler

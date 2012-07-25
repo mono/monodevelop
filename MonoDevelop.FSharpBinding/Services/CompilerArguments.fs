@@ -31,12 +31,12 @@ module ScriptOptions =
     try File.Exists(f) with _ -> false
     
   /// Returns default directories to be used when searching for DLL files
-  let getDefaultDirectories() =   
+  let getDefaultDirectories(targetFramework) =   
     // Return all known directories
     [ // Get the location of the System DLLs
       yield System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory() 
 
-      match FSharpEnvironment.FolderOfDefaultFSharpCore() with 
+      match FSharpEnvironment.FolderOfDefaultFSharpCore(targetFramework) with 
       | Some dir -> 
           Debug.tracef "Resolution" "Using '%A' as the location of default FSharp.Core.dll" dir
           yield dir
@@ -92,7 +92,7 @@ module CompilerArguments =
 
   /// Generates references for the current project & configuration as a 
   /// list of strings of the form [ "-r:<full-path>"; ... ]
-  let generateReferences (items:ProjectItemCollection) configSelector shouldWrap = 
+  let generateReferences (items:ProjectItemCollection, targetFramework, configSelector, shouldWrap) = 
    [ // Should we wrap references in "..."
     let wrapf = if shouldWrap then wrapFile else id
     let files = 
@@ -110,7 +110,7 @@ module CompilerArguments =
     for assumedFile in ["mscorlib"; "FSharp.Core"] do 
       let coreRef = files |> List.exists (fun fn -> fn.EndsWith(assumedFile + ".dll") || fn.EndsWith(assumedFile))
       if not coreRef then
-        let dirs = ScriptOptions.getDefaultDirectories() 
+        let dirs = ScriptOptions.getDefaultDirectories(targetFramework) 
         match ScriptOptions.resolveAssembly dirs assumedFile with
         | Some fn -> yield "-r:" + wrapf(fn)
         | None -> Debug.tracef "Resolution" "Assembly resolution failed when trying to find default reference for '%s'!" assumedFile
@@ -122,8 +122,8 @@ module CompilerArguments =
   /// Generates command line options for the compiler specified by the 
   /// F# compiler options (debugging, tail-calls etc.), custom command line
   /// parameters and assemblies referenced by the project ("-r" options)
-  let generateCompilerOptions (fsconfig:FSharpCompilerParameters) items config shouldWrap =
-    let dashr = generateReferences items config shouldWrap |> Array.ofSeq
+  let generateCompilerOptions (fsconfig:FSharpCompilerParameters, targetFramework, items, configSelector, shouldWrap) =
+    let dashr = generateReferences (items, targetFramework, configSelector, shouldWrap) |> Array.ofSeq
     let defines = fsconfig.DefineConstants.Split([| ';'; ','; ' ' |], StringSplitOptions.RemoveEmptyEntries)
     [  yield "--noframework"
        for symbol in defines do yield "--define:" + symbol
