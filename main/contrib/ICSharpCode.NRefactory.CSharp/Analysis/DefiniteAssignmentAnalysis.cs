@@ -721,7 +721,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 					}
 					
 					DefiniteAssignmentStatus afterTrue = conditionalExpression.TrueExpression.AcceptVisitor(this, beforeTrue);
-					DefiniteAssignmentStatus afterFalse = conditionalExpression.TrueExpression.AcceptVisitor(this, beforeFalse);
+					DefiniteAssignmentStatus afterFalse = conditionalExpression.FalseExpression.AcceptVisitor(this, beforeFalse);
 					return MergeStatus(CleanSpecialValues(afterTrue), CleanSpecialValues(afterFalse));
 				}
 			}

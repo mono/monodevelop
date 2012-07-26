@@ -61,13 +61,30 @@ namespace ICSharpCode.NRefactory.CSharp
 		public AstNodeCollection<AstNode> Members {
 			get { return GetChildrenByRole(MemberRole); }
 		}
-		
+
+		IList<string> conditionalSymbols = null;
+
 		List<Error> errors = new List<Error> ();
 		
 		public List<Error> Errors {
 			get { return errors; }
 		}
-		
+
+
+		/// <summary>
+		/// Gets the conditional symbols used to parse the source file. Note that this list contains
+		/// the conditional symbols at the start of the first token in the file - including the ones defined
+		/// in the source file.
+		/// </summary>
+		public IList<string> ConditionalSymbols {
+			get {
+				return conditionalSymbols ?? EmptyList<string>.Instance;
+			}
+			internal set {
+				conditionalSymbols = value;
+			}
+		}
+
 		/// <summary>
 		/// Gets the expression that was on top of the parse stack.
 		/// This is the only way to get an expression that isn't part of a statment.

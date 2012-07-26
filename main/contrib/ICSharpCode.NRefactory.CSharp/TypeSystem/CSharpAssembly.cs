@@ -290,6 +290,10 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				get { return assembly.Compilation; }
 			}
 			
+			IEnumerable<IAssembly> INamespace.ContributingAssemblies {
+				get { return new [] { assembly }; }
+			}
+			
 			INamespace INamespace.GetChildNamespace(string name)
 			{
 				var nameComparer = assembly.compilation.NameComparer;

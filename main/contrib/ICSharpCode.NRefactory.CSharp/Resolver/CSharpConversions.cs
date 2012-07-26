@@ -112,6 +112,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			c = ImplicitConversion(resolveResult.Type, toType);
 			if (c.IsValid) return c;
+			if (resolveResult.Type.Kind == TypeKind.Dynamic)
+				return Conversion.ImplicitDynamicConversion;
 			c = AnonymousFunctionConversion(resolveResult, toType);
 			if (c.IsValid) return c;
 			c = MethodGroupConversion(resolveResult, toType);
@@ -159,8 +161,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return Conversion.ImplicitReferenceConversion;
 			if (IsBoxingConversion(fromType, toType))
 				return Conversion.BoxingConversion;
-			if (fromType.Kind == TypeKind.Dynamic)
-				return Conversion.ImplicitDynamicConversion;
 			if (ImplicitTypeParameterConversion(fromType, toType)) {
 				// Implicit type parameter conversions that aren't also
 				// reference conversions are considered to be boxing conversions
@@ -471,7 +471,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		bool IdentityOrVarianceConversion(IType s, IType t, int subtypeCheckNestingDepth)
 		{
 			ITypeDefinition def = s.GetDefinition();
-			if (def != null && def.Equals(t.GetDefinition())) {
+			if (def != null) {
+				if (!def.Equals(t.GetDefinition()))
+					return false;
 				ParameterizedType ps = s as ParameterizedType;
 				ParameterizedType pt = t as ParameterizedType;
 				if (ps != null && pt != null) {
@@ -499,8 +501,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return false; // only of of them is parameterized, or counts don't match? -> not valid conversion
 				}
 				return true;
+			} else {
+				// not type definitions? we still need to check for equal types (e.g. s and t might be type parameters)
+				return s.Equals(t);
 			}
-			return false;
 		}
 		#endregion
 		

@@ -99,8 +99,12 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		{
 			if (node == null || node.IsNull)
 				return DomRegion.Empty;
-			else
-				return MakeRegion(node.StartLocation, node.EndLocation);
+			AstNode child = node.FirstChild;
+			// Skip attributes and comments between attributes for the purpose of
+			// getting a declaration's region.
+			while (child != null && (child is AttributeSection || child.NodeType == NodeType.Whitespace))
+				child = child.NextSibling;
+			return MakeRegion((child ?? node).StartLocation, node.EndLocation);
 		}
 		
 		DomRegion MakeBraceRegion(AstNode node)

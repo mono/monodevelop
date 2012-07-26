@@ -938,6 +938,23 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			ScanChildren(parameterDeclaration);
 			if (resolverEnabled) {
 				string name = parameterDeclaration.Name;
+				
+				if (parameterDeclaration.Parent is DocumentationReference) {
+					// create a dummy parameter
+					IType type = ResolveType(parameterDeclaration.Type);
+					switch (parameterDeclaration.ParameterModifier) {
+						case ParameterModifier.Ref:
+						case ParameterModifier.Out:
+							type = new ByReferenceType(type);
+							break;
+					}
+					return new LocalResolveResult(new DefaultParameter(
+						type, name,
+						isRef: parameterDeclaration.ParameterModifier == ParameterModifier.Ref,
+						isOut: parameterDeclaration.ParameterModifier == ParameterModifier.Out,
+						isParams: parameterDeclaration.ParameterModifier == ParameterModifier.Params));
+				}
+				
 				// Look in lambda parameters:
 				foreach (IParameter p in resolver.LocalVariables.OfType<IParameter>()) {
 					if (p.Name == name)
@@ -1479,12 +1496,20 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				
 				ResolveResult rr = resolver.ResolveObjectCreation(type, arguments, argumentNames, false, initializerStatements);
 				if (arguments.Length == 1 && rr.Type.Kind == TypeKind.Delegate) {
-					// process conversion in case it's a delegate creation
-					ProcessConversionResult(objectCreateExpression.Arguments.Single(), rr as ConversionResolveResult);
-					// wrap the result so that the delegate creation is not handled as a reference
-					// to the target method - otherwise FindReferencedEntities would produce two results for
-					// the same delegate creation.
-					return WrapResult(rr);
+					// Apply conversion to argument if it directly wraps the argument
+					// (but not when creating a delegate from a delegate, as then there would be a MGRR for .Invoke in between)
+					// This is necessary for lambda type inference.
+					var crr = rr as ConversionResolveResult;
+					if (crr != null && crr.Input == arguments[0]) {
+						ProcessConversionResult(objectCreateExpression.Arguments.Single(), crr);
+						
+						// wrap the result so that the delegate creation is not handled as a reference
+						// to the target method - otherwise FindReferencedEntities would produce two results for
+						// the same delegate creation.
+						return WrapResult(rr);
+					} else {
+						return rr;
+					}
 				} else {
 					// process conversions in all other cases
 					ProcessConversionsInInvocation(null, objectCreateExpression.Arguments, rr as CSharpInvocationResolveResult);
@@ -3847,7 +3872,102 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region Documentation Reference
 		ResolveResult IAstVisitor<ResolveResult>.VisitDocumentationReference(DocumentationReference documentationReference)
 		{
-			throw new NotImplementedException();
+			// Resolve child nodes:
+			ITypeDefinition declaringTypeDef;
+			if (documentationReference.DeclaringType.IsNull)
+				declaringTypeDef = resolver.CurrentTypeDefinition;
+			else
+				declaringTypeDef = ResolveType(documentationReference.DeclaringType).GetDefinition();
+			IType[] typeArguments = documentationReference.TypeArguments.Select(ResolveType).ToArray();
+			IType conversionOperatorReturnType = ResolveType(documentationReference.ConversionOperatorReturnType);
+			IParameter[] parameters = documentationReference.Parameters.Select(ResolveXmlDocParameter).ToArray();
+			
+			if (documentationReference.EntityType == EntityType.TypeDefinition) {
+				if (declaringTypeDef != null)
+					return new TypeResolveResult(declaringTypeDef);
+				else
+					return errorResult;
+			}
+			
+			if (documentationReference.EntityType == EntityType.None) {
+				// might be a type, member or ctor
+				string memberName = documentationReference.MemberName;
+				ResolveResult rr;
+				if (documentationReference.DeclaringType.IsNull) {
+					rr = resolver.LookupSimpleNameOrTypeName(memberName, typeArguments, NameLookupMode.Expression);
+				} else {
+					var target = Resolve(documentationReference.DeclaringType);
+					rr = resolver.ResolveMemberAccess(target, memberName, typeArguments);
+				}
+				// reduce to definition:
+				if (rr.IsError) {
+					return rr;
+				} else if (rr is TypeResolveResult) {
+					var typeDef = rr.Type.GetDefinition();
+					if (typeDef == null)
+						return errorResult;
+					if (documentationReference.HasParameterList) {
+						var ctors = typeDef.GetConstructors(options: GetMemberOptions.IgnoreInheritedMembers | GetMemberOptions.ReturnMemberDefinitions);
+						return FindByParameters(ctors, parameters);
+					} else {
+						return new TypeResolveResult(typeDef);
+					}
+				} else if (rr is MemberResolveResult) {
+					var mrr = (MemberResolveResult)rr;
+					return new MemberResolveResult(null, mrr.Member.MemberDefinition);
+				} else if (rr is MethodGroupResolveResult) {
+					var mgrr = (MethodGroupResolveResult)rr;
+					var methods = mgrr.MethodsGroupedByDeclaringType.Reverse()
+						.SelectMany(ml => ml.Select(m => (IParameterizedMember)m.MemberDefinition));
+					return FindByParameters(methods, parameters);
+				}
+				return rr;
+			}
+			
+			// Indexer or operator
+			if (declaringTypeDef == null)
+				return errorResult;
+			if (documentationReference.EntityType == EntityType.Indexer) {
+				var indexers = declaringTypeDef.Properties.Where(p => p.IsIndexer && !p.IsExplicitInterfaceImplementation);
+				return FindByParameters(indexers, parameters);
+			} else if (documentationReference.EntityType == EntityType.Operator) {
+				var opType = documentationReference.OperatorType;
+				string memberName = OperatorDeclaration.GetName(opType);
+				var methods = declaringTypeDef.Methods.Where(m => m.IsOperator && m.Name == memberName);
+				if (opType == OperatorType.Implicit || opType == OperatorType.Explicit) {
+					// conversion operator
+					foreach (var method in methods) {
+						if (ParameterListComparer.Instance.Equals(method.Parameters, parameters)) {
+							if (method.ReturnType.Equals(conversionOperatorReturnType))
+								return new MemberResolveResult(null, method);
+						}
+					}
+					return new MemberResolveResult(null, methods.FirstOrDefault());
+				} else {
+					// not a conversion operator
+					return FindByParameters(methods, parameters);
+				}
+			} else {
+				throw new NotSupportedException(); // unknown entity type
+			}
+		}
+		
+		IParameter ResolveXmlDocParameter(ParameterDeclaration p)
+		{
+			var lrr = Resolve(p) as LocalResolveResult;
+			if (lrr != null && lrr.IsParameter)
+				return (IParameter)lrr.Variable;
+			else
+				return new DefaultParameter(SpecialType.UnknownType, string.Empty);
+		}
+		
+		ResolveResult FindByParameters(IEnumerable<IParameterizedMember> methods, IList<IParameter> parameters)
+		{
+			foreach (var method in methods) {
+				if (ParameterListComparer.Instance.Equals(method.Parameters, parameters))
+					return new MemberResolveResult(null, method);
+			}
+			return new MemberResolveResult(null, methods.FirstOrDefault());
 		}
 		#endregion
 	}

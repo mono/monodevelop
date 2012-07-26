@@ -2277,9 +2277,11 @@ namespace Mono.CSharp {
 				}
 			}
 
+			var report = ctx.Module.Compiler.Report;
+
 			var retval = ctx.LookupNamespaceOrType (Name, Arity, LookupMode.IgnoreAccessibility, loc);
 			if (retval != null) {
-				ctx.Module.Compiler.Report.SymbolRelatedToPreviousError (retval.Type);
+				report.SymbolRelatedToPreviousError (retval.Type);
 				ErrorIsInaccesible (ctx, retval.GetSignatureForError (), loc);
 				return;
 			}
@@ -2290,7 +2292,17 @@ namespace Mono.CSharp {
 				return;
 			}
 
-			NamespaceContainer.Error_NamespaceNotFound (loc, Name, ctx.Module.Compiler.Report);
+			var ns_candidates = ctx.Module.GlobalRootNamespace.FindTypeNamespaces (ctx, Name, Arity);
+			if (ns_candidates != null) {
+				string usings = string.Join ("' or `", ns_candidates.ToArray ());
+				report.Error (246, loc,
+					"The type or namespace name `{0}' could not be found. Are you missing `{1}' using directive?",
+					Name, usings);
+			} else {
+				report.Error (246, loc,
+					"The type or namespace name `{0}' could not be found. Are you missing an assembly reference?",
+					Name);
+			}
 		}
 
 		public override FullNamedExpression ResolveAsTypeOrNamespace (IMemberContext ec)
@@ -3176,8 +3188,12 @@ namespace Mono.CSharp {
 			}
 
 			var me = ExtensionExpression as MemberExpr;
-			if (me != null)
+			if (me != null) {
 				me.ResolveInstanceExpression (ec, null);
+				var fe = me as FieldExpr;
+				if (fe != null)
+					fe.Spec.MemberDefinition.SetIsUsed ();
+			}
 
 			InstanceExpression = null;
 			return this;
@@ -3445,6 +3461,21 @@ namespace Mono.CSharp {
 			} else {
 				best_candidate = base_override;
 				best_candidate_return = best_candidate.ReturnType;
+			}
+
+			if (best_candidate.IsGeneric && TypeParameterSpec.HasAnyTypeParameterConstrained (best_candidate.GenericDefinition)) {
+				ConstraintChecker cc = new ConstraintChecker (ec);
+				cc.CheckAll (best_candidate.GetGenericMethodDefinition (), best_candidate.TypeArguments, best_candidate.Constraints, loc);
+			}
+
+			//
+			// Additional check for possible imported base override method which
+			// could not be done during IsOverrideMethodBaseTypeAccessible
+			//
+			if (best_candidate.IsVirtual && (best_candidate.DeclaringType.Modifiers & Modifiers.PROTECTED) != 0 &&
+				best_candidate.MemberDefinition.IsImported && !best_candidate.DeclaringType.IsAccessible (ec)) {
+				ec.Report.SymbolRelatedToPreviousError (best_candidate);
+				ErrorIsInaccesible (ec, best_candidate.GetSignatureForError (), loc);
 			}
 
 			return this;
@@ -3738,7 +3769,9 @@ namespace Mono.CSharp {
 				if (!TypeSpecComparer.Equals (p_m.Parameters.Types, q_m.Parameters.Types))
 					return 0;
 
+				var orig_p = p;
 				p = p_m.ReturnType;
+				var orig_q = q;
 				q = q_m.ReturnType;
 
 				//
@@ -3755,20 +3788,33 @@ namespace Mono.CSharp {
 					return p.Kind != MemberKind.Void ? 1: 0;
 				}
 
+				var am = (AnonymousMethodExpression) a.Expr;
+
 				//
 				// When anonymous method is an asynchronous, and P has a return type Task<Y1>, and Q has a return type Task<Y2>
 				// better conversion is performed between underlying types Y1 and Y2
 				//
 				if (p.IsGenericTask || q.IsGenericTask) {
-					var async_am = a.Expr as AnonymousMethodExpression;
-					if (async_am != null && async_am.Block.IsAsync) {
-
+					if (am.Block.IsAsync) {
 						if (p.IsGenericTask != q.IsGenericTask) {
 							return 0;
 						}
 
 						q = q.TypeArguments[0];
 						p = p.TypeArguments[0];
+					}
+				} else if (q != p) {
+					//
+					// LAMESPEC: Lambda expression returning dynamic type has identity (better) conversion to delegate returning object type
+					//
+					if (q.BuiltinType == BuiltinTypeSpec.Type.Object) {
+						var am_rt = am.InferReturnType (ec, null, orig_q);
+						if (am_rt != null && am_rt.BuiltinType == BuiltinTypeSpec.Type.Dynamic)
+							return 2;
+					} else if (p.BuiltinType == BuiltinTypeSpec.Type.Object) {
+						var am_rt = am.InferReturnType (ec, null, orig_p);
+						if (am_rt != null && am_rt.BuiltinType == BuiltinTypeSpec.Type.Dynamic)
+							return 1;
 					}
 				}
 
@@ -4048,6 +4094,32 @@ namespace Mono.CSharp {
 			return false;
 		}
 
+		static bool CheckInflatedArguments (MethodSpec ms)
+		{
+			if (!TypeParameterSpec.HasAnyTypeParameterTypeConstrained (ms.GenericDefinition))
+				return true;
+
+			// Setup constraint checker for probing only
+			ConstraintChecker cc = new ConstraintChecker (null);
+
+			var mp = ms.Parameters.Types;
+			for (int i = 0; i < mp.Length; ++i) {
+				var type = mp[i] as InflatedTypeSpec;
+				if (type == null)
+					continue;
+
+				var targs = type.TypeArguments;
+				if (targs.Length == 0)
+					continue;
+
+				// TODO: Checking inflated MVAR arguments should be enough
+				if (!cc.CheckAll (type.GetDefinition (), targs, type.Constraints, Location.Null))
+					return false;
+			}
+
+			return true;
+		}
+
 		public static void Error_ConstructorMismatch (ResolveContext rc, TypeSpec type, int argCount, Location loc)
 		{
 			rc.Report.Error (1729, loc,
@@ -4203,9 +4275,6 @@ namespace Mono.CSharp {
 			TypeSpec[] ptypes;
 			var ms = candidate as MethodSpec;
 			if (ms != null && ms.IsGeneric) {
-				// Setup constraint checker for probing only
-				ConstraintChecker cc = new ConstraintChecker (null);
-
 				if (type_arguments != null) {
 					var g_args_count = ms.Arity;
 					if (g_args_count != type_arguments.Count)
@@ -4251,14 +4320,12 @@ namespace Mono.CSharp {
 					if (i_args.Length != 0) {
 						ms = ms.MakeGenericMethod (ec, i_args);
 					}
-
-					cc.IgnoreInferredDynamic = true;
 				}
 
 				//
 				// Type arguments constraints have to match for the method to be applicable
 				//
-				if (!cc.CheckAll (ms.GetGenericMethodDefinition (), ms.TypeArguments, ms.Constraints, loc)) {
+				if (!CheckInflatedArguments (ms)) {
 					candidate = ms;
 					return int.MaxValue - 25000;
 				}
@@ -4485,7 +4552,7 @@ namespace Mono.CSharp {
 					return p;
 				if (specific == ac_q.Element)
 					return q;
-			} else if (TypeManager.IsGenericType (p)) {
+			} else if (p.IsGeneric && q.IsGeneric) {
 				var pargs = TypeManager.GetTypeArguments (p);
 				var qargs = TypeManager.GetTypeArguments (q);
 
@@ -4719,6 +4786,17 @@ namespace Mono.CSharp {
 					rc.Report.Error (1973, loc,
 						"Type `{0}' does not contain a member `{1}' and the best extension method overload `{2}' cannot be dynamically dispatched. Consider calling the method without the extension method syntax",
 						args [0].Type.GetSignatureForError (), best_candidate.Name, best_candidate.GetSignatureForError ());
+				}
+
+				//
+				// Check type constraints only when explicit type arguments are used
+				//
+				if (best_candidate.IsGeneric && type_arguments != null) {
+					MethodSpec bc = best_candidate as MethodSpec;
+					if (bc != null && TypeParameterSpec.HasAnyTypeParameterConstrained (bc.GenericDefinition)) {
+						ConstraintChecker cc = new ConstraintChecker (rc);
+						cc.CheckAll (bc.GetGenericMethodDefinition (), bc.TypeArguments, bc.Constraints, loc);
+					}
 				}
 
 				BestCandidateIsDynamic = true;
@@ -5279,6 +5357,8 @@ namespace Mono.CSharp {
 
 		protected override Expression DoResolve (ResolveContext ec)
 		{
+			spec.MemberDefinition.SetIsUsed ();
+
 			return DoResolve (ec, null);
 		}
 
@@ -5498,8 +5578,6 @@ namespace Mono.CSharp {
 		{
 			bool is_volatile = (spec.Modifiers & Modifiers.VOLATILE) != 0;
 
-			spec.MemberDefinition.SetIsUsed ();
-			
 			if (IsStatic){
 				if (is_volatile)
 					ec.Emit (OpCodes.Volatile);
