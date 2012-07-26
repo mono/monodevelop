@@ -46,10 +46,11 @@ FILES = \
 	MonoDevelop.FSharpBinding/PowerPack/LazyList.fs \
 	MonoDevelop.FSharpBinding/Services/Mailbox.fs \
 	MonoDevelop.FSharpBinding/Services/Parameters.fs \
-	MonoDevelop.FSharpBinding/Services/FSharpCompiler.fs \
-	MonoDevelop.FSharpBinding/Services/CompilerLocationUtils.fs \
 	MonoDevelop.FSharpBinding/Services/Common.fs \
+	MonoDevelop.FSharpBinding/Services/CompilerLocationUtils.fs \
+	MonoDevelop.FSharpBinding/Services/FSharpCompiler.fs \
 	MonoDevelop.FSharpBinding/Services/Parser.fs \
+	MonoDevelop.FSharpBinding/Services/CompilerArguments.fs \
 	MonoDevelop.FSharpBinding/Services/LanguageService.fs \
 	MonoDevelop.FSharpBinding/Services/CompilerService.fs \
 	MonoDevelop.FSharpBinding/Services/InteractiveSession.fs \
