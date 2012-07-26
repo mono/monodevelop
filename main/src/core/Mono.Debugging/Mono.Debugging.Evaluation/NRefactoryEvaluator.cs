@@ -428,7 +428,15 @@ namespace Mono.Debugging.Evaluation
 		
 		public override object VisitObjectCreateExpression (ICSharpCode.OldNRefactory.Ast.ObjectCreateExpression objectCreateExpression, object data)
 		{
-			throw CreateNotSupportedError ();
+			var type = objectCreateExpression.CreateType.AcceptVisitor (this, data) as TypeValueReference;
+			var args = new List<object> ();
+
+			foreach (var param in objectCreateExpression.Parameters) {
+				ValueReference val = param.AcceptVisitor (this, data) as ValueReference;
+				args.Add (val != null ? val.Value : null);
+			}
+
+			return LiteralValueReference.CreateTargetObjectLiteral (ctx, name, ctx.Adapter.CreateValue (ctx, type.Type, args.ToArray ()));
 		}
 		
 		public override object VisitInvocationExpression (ICSharpCode.OldNRefactory.Ast.InvocationExpression invocationExpression, object data)
