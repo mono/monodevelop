@@ -1,9 +1,7 @@
 F# Language Binding for MonoDevelop
 Released under the Apache 2.0 License
 
-Originally developed by Tomas Petricek. For original release information visit http://functional-variations.net/monodevelop and http://tomasp.net/blog.
-
-Main development is now at https://github.com/fsharp/fsharpbinding.
+For more information see the wiki https://github.com/fsharp/fsharpbinding/wiki
 
 Join the open source F# group on Google Groups, https://groups.google.com/forum/?fromgroups#!forum/fsharp-opensource
 

@@ -5,6 +5,7 @@ open System.IO
 open System.Configuration
 open System.Reflection
 open Microsoft.Win32
+open MonoDevelop.Core.Assemblies
 open System.Runtime.InteropServices
 open System.Text.RegularExpressions
 
@@ -12,18 +13,18 @@ open System.Text.RegularExpressions
 
 type FSharpCompilerVersion = 
     // F# 2.0
-    | Version_4_0 
+    | FSharp_2_0 
     // F# 3.0
-    | Version_4_3
-    override x.ToString() = match x with | Version_4_0 -> "4.0.0.0" | Version_4_3 -> "4.3.0.0"
+    | FSharp_3_0
+    override x.ToString() = match x with | FSharp_2_0 -> "4.0.0.0" | FSharp_3_0 -> "4.3.0.0"
     /// The current requested language version is a configuration setting specified by the user.
     static member CurrentRequestedVersion 
         with get() = 
             let setting = MonoDevelop.Core.PropertyService.Get<string>("FSharpBinding.EnableFSharp30","") 
             if System.String.Compare(setting, "true", true) = 0 then 
-                FSharpCompilerVersion.Version_4_3
+                FSharpCompilerVersion.FSharp_3_0
             else
-                FSharpCompilerVersion.Version_4_0
+                FSharpCompilerVersion.FSharp_2_0
                 
 
 module internal FSharpEnvironment =
@@ -210,8 +211,8 @@ module internal FSharpEnvironment =
         let key20 = @"Software\Microsoft\.NETFramework\AssemblyFolders\Microsoft.FSharp-" + FSharpTeamVersionNumber 
         let key40 = 
             match FSharpCompilerVersion.CurrentRequestedVersion with 
-            | Version_4_0 ->  @"Software\Microsoft\FSharp\2.0\Runtime\v4.0"
-            | Version_4_3 ->  @"Software\Microsoft\FSharp\3.0\Runtime\v4.0"
+            | FSharp_2_0 ->  @"Software\Microsoft\FSharp\2.0\Runtime\v4.0"
+            | FSharp_3_0 ->  @"Software\Microsoft\FSharp\3.0\Runtime\v4.0"
         let key1,key2 = 
           match FSharpCoreLibRunningVersion with 
           | None -> key20,key40 
@@ -250,8 +251,81 @@ module internal FSharpEnvironment =
       System.Diagnostics.Debug.Assert(false, "Error while determining default location of F# compiler")
       None
 
-  // Print debug information about compiler path
-  match BinFolderOfDefaultFSharpCompiler() with
-  | Some(path) -> Debug.tracef "Resolution" "Default compiler path: '%s'" path
-  | None -> Debug.tracef "Resolution" "Default compiler path: (unknown)" 
+
+  let FolderOfDefaultFSharpCore(targetFramework) = 
+    try 
+      let result = tryAppConfig "fsharp-core-location"
+      match result with 
+      | Some _ ->  result 
+      | None -> 
+
+        // On Windows, look for the registry key giving the installation location of FSharp.Core.dll.
+        // This only works for .NET 2.0 - 4.0. To target Silverlight or Portable you'll need to use a direct reference to
+        // the right FSharp.Core.dll.
+        let result =
+            match FSharpCompilerVersion.CurrentRequestedVersion, targetFramework with 
+            | FSharp_2_0, x when (x = TargetFrameworkMoniker.NET_2_0 || x = TargetFrameworkMoniker.NET_3_0 || x = TargetFrameworkMoniker.NET_3_5) -> 
+                tryRegKey @"Software\Microsoft\.NETFramework\v2.0.50727\AssemblyFoldersEx\Microsoft Visual F# 4.0"
+            | FSharp_2_0, _ -> 
+                tryRegKey @"Software\Microsoft\.NETFramework\v4.0.30319\AssemblyFoldersEx\Microsoft Visual F# 4.0"
+            | FSharp_3_0, x when (x = TargetFrameworkMoniker.NET_2_0 || x = TargetFrameworkMoniker.NET_3_0 || x = TargetFrameworkMoniker.NET_3_5) -> 
+                tryRegKey @"Software\Microsoft\.NETFramework\v2.0.50727\AssemblyFoldersEx\F# 3.0 Core Assemblies"
+            | FSharp_3_0, _ -> 
+                tryRegKey @"Software\Microsoft\.NETFramework\v4.0.30319\AssemblyFoldersEx\F# 3.0 Core Assemblies"
+            | _ -> None 
+        
+        match result with 
+        | Some _ ->  result 
+        | None -> 
+        let result = 
+            let var = System.Environment.GetEnvironmentVariable("FSHARP_CORE_LOCATION")
+            if String.IsNullOrEmpty(var) then None
+            else Some(var)
+        match result with 
+        | Some _ -> result
+        | None -> 
+        let possibleInstallationPoints = 
+            Option.toList (BinFolderOfDefaultFSharpCompiler() |> Option.map Path.GetDirectoryName) @  
+            BackupInstallationProbePoints
+        Debug.tracef "Resolution" "targetFramework = %A" targetFramework
+        let ext = 
+            match targetFramework with 
+            | x when (x = TargetFrameworkMoniker.NET_2_0 || x = TargetFrameworkMoniker.NET_3_0 || x = TargetFrameworkMoniker.NET_3_5) -> 
+                "2.0"
+            | _ -> 
+                "4.0"
+        let safeExists f = (try File.Exists(f) with _ -> false)
+        let result = 
+            possibleInstallationPoints |> List.tryPick (fun possibleInstallationDir -> 
+ 
+              Debug.tracef "Resolution" "Probing for %s/lib/mono/%s/FSharp.Core.dll" possibleInstallationDir ext 
+              let (++) s x = Path.Combine(s,x)
+              let candidate = possibleInstallationDir ++ "lib" ++ "mono" ++ ext
+              if safeExists (candidate ++ "FSharp.Core.dll") then 
+                  Some candidate
+              else
+                  None)
+                
+        match result with 
+        | Some _ -> result
+        | None -> 
+        let result = 
+            possibleInstallationPoints |> List.tryPick (fun possibleInstallationDir -> 
+
+                  Debug.tracef "Resolution" "Probing %s/bin for fsc/fsi scripts or fsharpc/fsharpi scripts" possibleInstallationDir
+              
+                  let file f = Path.Combine(Path.Combine(possibleInstallationDir,"bin"),f)
+                  let exists f = safeExists(file f)
+                  if exists "fsc" && exists "fsi" then tryFsharpiScript (file "fsi")
+                  elif exists "fsharpc" && exists "fsharpi" then tryFsharpiScript (file "fsharpi")
+                  else None)
+                
+        match result with 
+        | Some _ -> result
+        | None -> 
+        None
+    with e -> 
+      System.Diagnostics.Debug.Assert(false, "Error while determining default location of F# compiler")
+      None
+
 

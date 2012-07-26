@@ -12,11 +12,12 @@ open System.Text
 open System.Threading
 open System.Diagnostics
 
-open MonoDevelop.Ide
 open MonoDevelop.Core
-open MonoDevelop.Projects
+open MonoDevelop.Core.Assemblies
+open MonoDevelop.Ide
 open MonoDevelop.Ide.Tasks
 open MonoDevelop.Ide.Gui
+open MonoDevelop.Projects
 
 open ICSharpCode.NRefactory.TypeSystem
 open ICSharpCode.NRefactory.Completion
@@ -48,7 +49,7 @@ module ServiceSettings =
 
   // What version of the FSharp language are we supporting? 
   // This will evenually be made a project/script parameter.
-  let fsVersion = FSharpCompilerVersion.Version_4_3
+  let fsVersion = FSharpCompilerVersion.FSharp_3_0
 
 
 // --------------------------------------------------------------------------------------
@@ -467,7 +468,7 @@ type internal LanguageService private () =
           else 
             // Add assemblies that may be missing in the standard assembly resolution
             Debug.tracef "Checkoptions" "Adding missing core assemblies."
-            let dirs = ScriptOptions.getDefaultDirectories None []
+            let dirs = ScriptOptions.getDefaultDirectories (TargetFrameworkMoniker.NET_4_0 )
             opts.WithOptions 
               [| yield! opts.ProjectOptions; 
                  match ScriptOptions.resolveAssembly dirs "FSharp.Core" with
@@ -492,7 +493,7 @@ type internal LanguageService private () =
         
         // Order files using the configuration settings & get options
         let shouldWrap = false //It is unknown if the IntelliSense fails to load assemblies with wrapped paths.
-        let args = CompilerArguments.generateCompilerOptions fsconfig proj.Items config shouldWrap |> Array.ofList
+        let args = CompilerArguments.generateCompilerOptions (fsconfig, projConfig.TargetFramework.Id, proj.Items, config, shouldWrap) |> Array.ofList
         let root = System.IO.Path.GetDirectoryName(proj.FileName.FullPath.ToString())
         let files = CompilerArguments.getItemsInOrder root files fsbuild.BuildOrder false |> Array.ofList
         CheckOptions.Create(projFile, files, args, false, false, fakeDateTimeRepresentingTimeLoaded proj) 
