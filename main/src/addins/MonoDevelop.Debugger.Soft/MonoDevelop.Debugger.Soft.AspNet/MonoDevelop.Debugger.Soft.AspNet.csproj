@@ -85,6 +85,7 @@
     <ProjectReference Include="..\..\..\..\contrib\Mono.Debugger.Soft\Mono.Debugger.Soft.csproj">
       <Project>{372E8E3E-29D5-4B4D-88A2-4711CD628C4E}</Project>
       <Name>Mono.Debugger.Soft</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
