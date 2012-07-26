@@ -27,7 +27,9 @@
         <Reference type="Gac" refto="System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
       </References>
       <Files>
-        <File name = "Program.fs" AddStandardHeader="True"><![CDATA[open System
+        <File name = "Program.fs" AddStandardHeader="True"><![CDATA[module Program
+
+open System
 
 do
   Console.WriteLine("Hello world!")

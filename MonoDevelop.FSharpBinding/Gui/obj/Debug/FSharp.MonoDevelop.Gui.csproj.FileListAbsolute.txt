@@ -1,8 +1,0 @@
-C:\Users\Sega\Documents\GitHub\fsharpbinding\bin\FSharpBinding.Gui.dll
-C:\Users\Sega\Documents\GitHub\fsharpbinding\bin\FSharpBinding.Gui.pdb
-C:\Users\Sega\Documents\GitHub\fsharpbinding\src\Gui\obj\Debug\ResolveAssemblyReference.cache
-C:\Users\Sega\Documents\GitHub\fsharpbinding\src\Gui\obj\Debug\FSharpBinding.Gui.dll
-C:\Users\Sega\Documents\GitHub\fsharpbinding\src\Gui\obj\Debug\FSharpBinding.Gui.pdb
-C:\Users\Sega\Documents\GitHub\fsharpbinding\MonoDevelop.FSharpBinding\Gui\obj\Debug\ResolveAssemblyReference.cache
-C:\Users\Sega\Documents\GitHub\fsharpbinding\MonoDevelop.FSharpBinding\Gui\obj\Debug\FSharpBinding.Gui.dll
-C:\Users\Sega\Documents\GitHub\fsharpbinding\MonoDevelop.FSharpBinding\Gui\obj\Debug\FSharpBinding.Gui.pdb

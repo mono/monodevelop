@@ -15,6 +15,7 @@ namespace MonoDevelop.FSharp.Gui
 	    public Gtk.Entry EntryPath { get { return entryPath; } }
 	    public Gtk.FontButton FontInteractive { get { return fontbutton1; } }
 		public Gtk.CheckButton CheckCompilerUseDefault { get { return checkCompilerUseDefault; } }
+		public Gtk.CheckButton EnableFSharp30 { get { return this.enableFSharp3; } }
 		public Gtk.Button ButtonCompilerBrowse { get { return buttonCompilerBrowse; } }
 		public Gtk.Entry EntryCompilerPath { get { return entryCompilerPath; } }
 		

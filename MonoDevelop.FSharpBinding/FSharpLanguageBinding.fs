@@ -11,46 +11,27 @@ open MonoDevelop.Ide.Gui.Content
 open MonoDevelop.Projects
 open Microsoft.FSharp.Compiler
 
-//open ICSharpCode.NRefactory.TypeSystem
-//open ICSharpCode.NRefactory.Editor
-//open ICSharpCode.NRefactory.Completion
-
 type FSharpLanguageBinding() =
   static let LanguageName = "F#"
 
   let provider = lazy new CodeDom.FSharpCodeProvider()
   
   // ------------------------------------------------------------------------------------
-  // When the current document is F# file, we create a timer that allows us to run 
-  // a full background type-checking regularly (this recompiles the whole project)
-  
-  let mutable timerHandle = 0u
-  
-  /// Runs every 'ServiceSettings.idleTimeout' when current file is F# file
-  let idleTimer() = 
-    Debug.tracef "Gui" "OnIdle called"
-    let doc = IdeApp.Workbench.ActiveDocument
-    if doc <> null then
-      // Trigger full parse using the current configuration
-      let config = IdeApp.Workspace.ActiveConfiguration
-      Debug.tracef "Parsing" "Triggering full parse from OnIdle"
-      LanguageService.Service.TriggerParse(doc.FileName, doc.Editor.Text, doc.Window.Document, config, full=true)
-    true
+  // Watch for changes that trigger a reparse 
 
-  // Create or remove Idle timer 
-  let createIdleTimer() = 
-    timerHandle <- GLib.Timeout.Add(uint32 ServiceSettings.idleTimeout, (fun () -> idleTimer()))
-  let removeIdleTimer() = 
-    if timerHandle <> 0u then GLib.Source.Remove(timerHandle) |> ignore
-    timerHandle <- 0u
-  
-  // Register handler that will enable/disable timer when F# file is opened/closed
+  // Register handler that will reparse when the active configuration is changes
+  do IdeApp.Workspace.ActiveConfigurationChanged.Add(fun _ -> 
+         for doc in IdeApp.Workbench.Documents do
+             if doc.Editor <> null then 
+                doc.ReparseDocument ())
+
+  // Register handler that will reparse when F# file is opened/closed (is this even needed?)
   do IdeApp.Workbench.ActiveDocumentChanged.Add(fun _ ->
     let doc = IdeApp.Workbench.ActiveDocument
-    removeIdleTimer()
-    if doc <> null && (Common.supportedExtension(IO.Path.GetExtension(doc.FileName.ToString()))) then
-      createIdleTimer() )
-  
+    if doc <> null && (CompilerArguments.supportedExtension(IO.Path.GetExtension(doc.FileName.ToString()))) then
+         doc.ReparseDocument())
+
+    
   
   // ------------------------------------------------------------------------------------
   
@@ -64,7 +45,7 @@ type FSharpLanguageBinding() =
     //member x.Refactorer = null
 
     member x.GetFileName(baseName) = new FilePath(baseName.ToString() + ".fs")
-    member x.IsSourceCodeFile(fileName) = StringComparer.OrdinalIgnoreCase.Equals (Path.GetExtension (fileName.ToString()), ".fs")
+    member x.IsSourceCodeFile(fileName) = CompilerArguments.supportedExtension (Path.GetExtension (fileName.ToString()))
     
     // IDotNetLanguageBinding
     override x.Compile(items, config, configSel, monitor) : BuildResult =
@@ -72,7 +53,26 @@ type FSharpLanguageBinding() =
 
     override x.CreateCompilationParameters(options:XmlElement) : ConfigurationParameters =
       // Debug.tracef "Config" "Creating compiler configuration parameters"
-      new FSharpCompilerParameters() :> ConfigurationParameters
+      let pars = new FSharpCompilerParameters() 
+      // Set up the default options
+      if options <> null then 
+          let debugAtt = options.GetAttribute ("DefineDebug")
+          if (System.String.Compare ("True", debugAtt, StringComparison.OrdinalIgnoreCase) = 0) then
+              pars.AddDefineSymbol "DEBUG"
+              pars.DebugSymbols <- true
+              pars.Optimize <- false
+              pars.GenerateTailCalls <- false
+          let releaseAtt = options.GetAttribute ("Release")
+          if (System.String.Compare ("True", releaseAtt, StringComparison.OrdinalIgnoreCase) = 0) then
+              pars.DebugSymbols <- true
+              pars.Optimize <- true
+              pars.GenerateTailCalls <- true
+
+          // TODO: set up the documentation file to be AssemblyName.xml by default (but how do we get AssemblyName here?)
+          //pars.DocumentationFile <- ""
+          //    System.IO.Path.GetFileNameWithoutExtension(config.CompiledOutputName.ToString())+".xml" 
+      pars :> ConfigurationParameters
+
 
     override x.CreateProjectParameters(options:XmlElement) : ProjectParameters =
       new FSharpProjectParameters() :> ProjectParameters

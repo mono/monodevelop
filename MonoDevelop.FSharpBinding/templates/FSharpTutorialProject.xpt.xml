@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?xml version="1.0"?>
 <Template Originator="Community" Created="28/3/2012">
 
@@ -299,3 +300,306 @@ printfn "listC = %A" listC
     </Project>
   </Combine>
 </Template>
+=======
+<?xml version="1.0"?>
+<Template Originator="Community" Created="28/3/2012">
+
+  <!-- Template Header -->
+  <TemplateConfiguration>
+    <_Name>Tutorial Project</_Name>
+    <!--<Icon>md-project-console|res:fsharp-icon-32.png</Icon>-->
+    <_Description>This project could be useful for begginers</_Description>
+    <_Category>F#</_Category>
+    <LanguageName>F#</LanguageName>
+  </TemplateConfiguration>
+
+  <!-- Actions -->
+  <Actions>
+    <Open filename = "Tutorial.fs"/>
+  </Actions>
+
+  <!-- Template Content -->
+  <Combine name = "${ProjectName}" directory = ".">
+    <Options>
+      <StartupProject>${ProjectName}</StartupProject>
+    </Options>
+
+    <Project name = "${ProjectName}" directory = ".">
+      <Options ExternalConsole="True"/>
+      <References>
+        <Reference type="Gac" refto="System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+      </References>
+      <Files>
+        <File name = "Tutorial.fs" AddStandardHeader="True">
+  <![CDATA[
+
+// This file contains code snippets to learn F# basics.  
+//
+// Additional info about F# http://fsharp.net
+// More tutorials at http://www.tryfsharp.org/
+//
+// Subject:
+//   - A simple calculation
+//   - The functions of integers
+//   - Tuples 
+//   - Boolean values
+//   - Strings
+//   - Lists
+//   - Arrays
+//   - Additional collections
+//   - Functions
+//   - Types: associations
+//   - Types: records
+//   - Types: classes
+//   - Types: interfaces
+//   - Types: classes implementing interfaces
+//   - Print
+
+// opening standart namespaces
+open System
+
+// A simple calculation
+// ---------------------------------------------------------------
+// A simple calculation samples. Instructions for documenting code
+// with comments "///". Point to any reference to a variable 
+// to see its description.
+
+/// Very simple constant integer
+let int1 = 1
+
+/// Another very simple constant integer
+let int2 = 2
+
+/// Adding two integers
+let int3 = int1 + int2
+
+// The functions of integers  
+// ---------------------------------------------------------------
+
+/// The function of integers
+let f x = 2*x*x - 5*x + 3
+
+/// The result of the simple calculation
+let result = f (int3 + 4)
+
+/// Another function of integers
+let increment x = x + 1
+
+/// Calculate the factorial of an integer
+let rec factorial n = if n=0 then 1 else n * factorial (n-1)
+
+/// Calculate the greatest common divisor of two integers
+let rec hcf a b =                       // note: 2 parameters, separated by spaces
+    if a=0 then b
+    elif a<b then hcf a (b-a)           // note: 2 arguments, separated by spaces
+    else hcf (a-b) b
+    // note: function arguments are usually separated by spaces
+    // note: "let rec" defines recursive function
+
+      
+// Tuples
+// ---------------------------------------------------------------
+
+// Simple tuple of integers
+let pointA = (1, 2, 3)
+
+// Simple tuple of integer, string and a floating-point double-precision
+let dataB = (1, "fred", 3.1415)
+
+/// A function that transposes two numbers in a tuple
+let Swap (a, b) = (b, a)
+
+// Boolean values
+// ---------------------------------------------------------------
+
+/// Simple boolean value
+let boolean1 = true
+
+/// Another simple boolean value
+let boolean2 = false
+
+/// Calculation of a new logical values ​​with the operators and, or and not
+let boolean3 = not boolean1 && (boolean2 || false)
+
+// Strings
+// ---------------------------------------------------------------
+
+/// Simple string
+let stringA  = "Hello"
+
+/// Another simple string
+let stringB  = "world"
+
+/// "Hello, world", calculated using string concatenation
+let stringC  = stringA + " " + stringB
+
+
+// Functional lists
+// ---------------------------------------------------------------
+
+/// Empty list
+let listA = [ ]           
+
+/// List of 3 integers
+let listB = [ 1; 2; 3 ]     
+
+/// List of 3 integers. Note that :: is "cons" operation
+let listC = 1 :: [2; 3]    
+
+/// Computing the sum of a list of integers using a recursive function
+let rec SumList xs =
+    match xs with
+    | []    -> 0
+    | y::ys -> y + SumList ys
+
+/// The sum of the list
+let listD = SumList [1; 2; 3]  
+
+/// The list of integers from 1 to 10
+let oneToTen = [1..10]
+
+/// Squares of first ten integers
+let squaresOfOneToTen = [ for x in 0..10 -> x*x ]
+
+
+// Mutable arrays
+// ---------------------------------------------------------------
+
+/// Create array
+let arr = Array.create 4 "hello"
+arr.[1] <- "world"
+arr.[3] <- "don"
+
+/// Calculate the length of the array 
+let arrLength = arr.Length        
+
+// Exposing the subarray with the slice-notation
+let front = arr.[0..2]
+
+
+// Additional collections
+// ---------------------------------------------------------------
+
+/// Dictionary with integer keys and strings
+let lookupTable = dict [ (1, "One"); (2, "Two") ]
+
+let oneString = lookupTable.[1]
+
+
+// Functions
+// ---------------------------------------------------------------
+
+/// Function, exalts the square its input parameter
+let Square x = x*x              
+
+// Mapping functions on the list of values
+let squares1 = List.map Square [1; 2; 3; 4]
+let squares2 = List.map (fun x -> x*x) [1; 2; 3; 4]
+
+// Pipe-forward operator
+let squares3 = [1; 2; 3; 4] |> List.map (fun x -> x*x) 
+let SumOfSquaresUpTo n = 
+  [1..n] 
+  |> List.map Square 
+  |> List.sum
+
+// Types: assotiation
+// ---------------------------------------------------------------
+
+type Expr = 
+  | Num of int
+  | Add of Expr * Expr
+  | Mul of Expr * Expr
+  | Var of string
+  
+let rec Evaluate (env:Map<string,int>) exp = 
+    match exp with
+    | Num n -> n
+    | Add (x,y) -> Evaluate env x + Evaluate env y
+    | Mul (x,y) -> Evaluate env x * Evaluate env y
+    | Var id    -> env.[id]
+  
+let envA = Map.ofList [ "a",1 ;
+                        "b",2 ;
+                        "c",3 ]
+             
+let expT1 = Add(Var "a",Mul(Num 2,Var "b"))
+let resT1 = Evaluate envA expT1
+
+
+// Types: records
+// ---------------------------------------------------------------
+
+type Card = { Name  : string;
+              Phone : string;
+              Ok    : bool }
+              
+let cardA = { Name = "Alf" ; Phone = "(206) 555-0157" ; Ok = false }
+let cardB = { cardA with Phone = "(206) 555-0112"; Ok = true }
+let ShowCard c = 
+  c.Name + " Phone: " + c.Phone + (if not c.Ok then " (unchecked)" else "")
+
+
+// Types: classes
+// ---------------------------------------------------------------
+
+/// Two-dimensional array
+type Vector2D(dx:float, dy:float) = 
+    // Pre-calculated length of the vector
+    let length = sqrt(dx*dx + dy*dy)
+    /// The displacement along the X axis
+    member v.DX = dx
+    /// The displacement along the Y axis
+    member v.DY = dy
+    /// The length of the vector
+    member v.Length = length
+    // The displacement vector by a constant
+    member v.Scale(k) = Vector2D(k*dx, k*dy)
+    
+
+// Types: interfaces
+// ---------------------------------------------------------------
+
+type IPeekPoke = 
+    abstract Peek: unit -> int
+    abstract Poke: int -> unit
+
+              
+// Types: classes implementing interfaces
+// ---------------------------------------------------------------
+
+/// Interface element that counts how many times it was clicked
+type Widget(initialState:int) = 
+    /// The internal state of the interface
+    let mutable state = initialState
+
+    // IPeekPoke interface implementation
+    interface IPeekPoke with 
+        member x.Poke(n) = state <- state + n
+        member x.Peek() = state 
+        
+    /// Interface member was clicked?
+    member x.HasBeenPoked = (state <> 0)
+
+
+let widget = Widget(12) :> IPeekPoke
+
+widget.Poke(4)
+let peekResult = widget.Peek()
+
+              
+// Print
+// ---------------------------------------------------------------
+
+// Print integer
+printfn "peekResult = %d" peekResult 
+
+// Printing result using %A
+printfn "listC = %A" listC
+
+]]></File>
+      </Files>
+    </Project>
+  </Combine>
+</Template>
+>>>>>>> funnelweb/master

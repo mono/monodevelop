@@ -1,5 +1,5 @@
 <Addin id="FSharpBinding" namespace="MonoDevelop" name="F# Language Binding"
-       author="Community" copyright="???" url="http://www.fsharp.net"
+       author="Community" copyright="Community" url="https://github.com/fsharp/fsharpbinding/wiki"
        description="F# Language Binding" category="Language bindings" version="3.0">
 
 	<Runtime>
@@ -8,10 +8,10 @@
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="3.1.0"/>
-		<Addin id="Ide" version="3.1.0"/>
-		<Addin id="SourceEditor2" version="3.1.0"/>
-    <Addin id="Refactoring" version="3.1.0"/>
+		<Addin id="Core" version="3.0.2"/>
+		<Addin id="Ide" version="3.0.2"/>
+		<Addin id="SourceEditor2" version="3.0.2"/>
+    <Addin id="Refactoring" version="3.0.2"/>
   </Dependencies>
 
 	<Extension path="/MonoDevelop/ProjectModel/MSBuildItemTypes">
@@ -24,12 +24,16 @@
 	<Extension path="/MonoDevelop/Ide/GlobalOptionsDialog/Other">
     	<Section id="FSharpSettings" _label="F# Settings" class = "MonoDevelop.FSharp.FSharpSettingsPanel" />
   	</Extension>
-  
-  	<Extension path="/MonoDevelop/TypeSystem/Parser">
-    	<Parser class="MonoDevelop.FSharp.FSharpParser"  fileExtensions=".fs" />
-  	</Extension>
 
-  	<Extension path="/MonoDevelop/Ide/TextEditorResolver">
+  <Extension path="/MonoDevelop/TypeSystem/Parser">
+    <Parser class="MonoDevelop.FSharp.FSharpParser"  mimeType = "text/x-fsharp" />
+  </Extension>
+
+  <Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">
+    <Class id="LanguageItem" class="MonoDevelop.FSharp.FSharpLanguageItemTooltipProvider" />
+  </Extension>
+
+  <Extension path="/MonoDevelop/Ide/TextEditorResolver">
     	<Resolver class="MonoDevelop.FSharp.FSharpResolverProvider" mimeType="text/x-fsharp" />
   	</Extension>
 

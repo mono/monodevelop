@@ -1,4 +1,3 @@
-// Based on code from FSharp.PowerPack (MS-PL at CodePlex)
 namespace MonoDevelop.FSharp
 
 open System
@@ -10,6 +9,22 @@ open System.Runtime.InteropServices
 open System.Text.RegularExpressions
 
 #nowarn "44" // ConfigurationSettings is obsolete but the new stuff is horribly complicated. 
+
+type FSharpCompilerVersion = 
+    // F# 2.0
+    | Version_4_0 
+    // F# 3.0
+    | Version_4_3
+    override x.ToString() = match x with | Version_4_0 -> "4.0.0.0" | Version_4_3 -> "4.3.0.0"
+    /// The current requested language version is a configuration setting specified by the user.
+    static member CurrentRequestedVersion 
+        with get() = 
+            let setting = MonoDevelop.Core.PropertyService.Get<string>("FSharpBinding.EnableFSharp30","") 
+            if System.String.Compare(setting, "true", true) = 0 then 
+                FSharpCompilerVersion.Version_4_3
+            else
+                FSharpCompilerVersion.Version_4_0
+                
 
 module internal FSharpEnvironment =
 
@@ -164,15 +179,23 @@ module internal FSharpEnvironment =
     with e -> 
       None
 
- 
-  // The default location of FSharp.Core.dll and fsc.exe based on the version of fsc.exe that is running
+
+  let BackupInstallationProbePoints = 
+      [ // prefer the latest installation of Mono on Mac
+        "/Library/Frameworks/Mono.framework/Versions/Current"
+        // prefer freshly built F# compilers on Linux
+        "/usr/local"
+        // otherwise look in the standard place
+        "/usr" ]
+
+    // The default location of FSharp.Core.dll and fsc.exe based on the version of fsc.exe that is running
   // Used for
   //   - location of design-time copies of FSharp.Core.dll and FSharp.Compiler.Interactive.Settings.dll for the default assumed environment for scripts
   //   - default ToolPath in tasks in FSharp.Build.dll (for Fsc tasks)
   //   - default F# binaries directory in service.fs (REVIEW: check this)
   //   - default location of fsi.exe in FSharp.VS.FSI.dll
   //   - default location of fsc.exe in FSharp.Compiler.CodeDom.dll
-  let BinFolderOfDefaultFSharpCompiler = 
+  let BinFolderOfDefaultFSharpCompiler() = 
     // Check for an app.config setting to redirect the default compiler location
     // Like fsharp-compiler-location
     try 
@@ -185,7 +208,10 @@ module internal FSharpEnvironment =
         // Property pages (ApplicationPropPage.vb)
 
         let key20 = @"Software\Microsoft\.NETFramework\AssemblyFolders\Microsoft.FSharp-" + FSharpTeamVersionNumber 
-        let key40 = @"Software\Microsoft\FSharp\2.0\Runtime\v4.0"
+        let key40 = 
+            match FSharpCompilerVersion.CurrentRequestedVersion with 
+            | Version_4_0 ->  @"Software\Microsoft\FSharp\2.0\Runtime\v4.0"
+            | Version_4_3 ->  @"Software\Microsoft\FSharp\3.0\Runtime\v4.0"
         let key1,key2 = 
           match FSharpCoreLibRunningVersion with 
           | None -> key20,key40 
@@ -195,21 +221,37 @@ module internal FSharpEnvironment =
         match result with 
         | Some _ ->  result 
         | None -> 
-          let result =  tryRegKey key2
-          match result with 
-          | Some _ ->  result 
-          | None ->
-            let result = tryFsharpiScript("/usr/bin/fsharpi")
-            match result with 
-            | Some _ -> result
-            | None -> 
-              let result = tryFsharpiScript("/usr/local/bin/fsharpi")
-              match result with 
-              | Some _ -> result
-              | None -> 
-                let var = System.Environment.GetEnvironmentVariable("FSHARP_COMPILER_BIN")
-                if String.IsNullOrEmpty(var) then None
-                else Some(var)
+        let result =  tryRegKey key2
+        match result with 
+        | Some _ ->  result 
+        | None ->
+        let result = 
+            let var = System.Environment.GetEnvironmentVariable("FSHARP_COMPILER_BIN")
+            if String.IsNullOrEmpty(var) then None
+            else Some(var)
+        match result with 
+        | Some _ -> result
+        | None -> 
+        // NOTE: we should probably probe the path here??
+        let result = 
+            BackupInstallationProbePoints |> List.tryPick (fun x -> 
+               let safeExists f = (try File.Exists(f) with _ -> false)
+               let file f = Path.Combine(Path.Combine(x,"bin"),f)
+               let exists f = safeExists(file f)
+               if exists "fsc" && exists "fsi" then tryFsharpiScript (file "fsi")
+               elif exists "fsharpc" && exists "fsharpi" then tryFsharpiScript (file "fsharpi")
+               else None)
+                
+        match result with 
+        | Some _ -> result
+        | None -> 
+        None
     with e -> 
       System.Diagnostics.Debug.Assert(false, "Error while determining default location of F# compiler")
       None
+
+  // Print debug information about compiler path
+  match BinFolderOfDefaultFSharpCompiler() with
+  | Some(path) -> Debug.tracef "Resolution" "Default compiler path: '%s'" path
+  | None -> Debug.tracef "Resolution" "Default compiler path: (unknown)" 
+
