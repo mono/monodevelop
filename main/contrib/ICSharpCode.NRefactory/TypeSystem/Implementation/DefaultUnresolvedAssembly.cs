@@ -76,8 +76,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				return location;
 			}
 			set {
-				if (value == null)
-					throw new ArgumentNullException("value");
 				FreezableHelper.ThrowIfFrozen(this);
 				location = value;
 			}
@@ -378,6 +376,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				
 				INamespace INamespace.ParentNamespace {
 					get { return parentNamespace; }
+				}
+				
+				IEnumerable<IAssembly> INamespace.ContributingAssemblies {
+					get { return new [] { assembly }; }
 				}
 				
 				IEnumerable<INamespace> INamespace.ChildNamespaces {
