@@ -1,9 +1,10 @@
 // NRefactoryEvaluator.cs
 //
-// Author:
-//   Lluis Sanchez Gual <lluis@novell.com>
+// Authors: Lluis Sanchez Gual <lluis@novell.com>
+//          Jeffrey Stedfast <jeff@xamarin.com>
 //
 // Copyright (c) 2008 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2012 Xamarin Inc. (http://www.xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -863,12 +864,8 @@ namespace Mono.Debugging.Evaluation
 		public override object VisitBaseReferenceExpression (ICSharpCode.OldNRefactory.Ast.BaseReferenceExpression baseReferenceExpression, object data)
 		{
 			ValueReference thisobj = ctx.Adapter.GetThisReference (ctx);
-			if (thisobj != null) {
-				object baseob = ctx.Adapter.GetBaseValue (ctx, thisobj.Value);
-				if (baseob == null)
-					throw CreateParseError ("'base' reference not available.");
-				return LiteralValueReference.CreateTargetObjectLiteral (ctx, name, baseob);
-			}
+			if (thisobj != null)
+				return LiteralValueReference.CreateTargetBaseObjectLiteral (ctx, name, thisobj.Value);
 			else
 				throw CreateParseError ("'base' reference not available in static methods.");
 		}
