@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-<?xml version="1.0"?>
+﻿<?xml version="1.0"?>
 <Template Originator="Community" Created="28/3/2012">
 
   <!-- Template Header -->
@@ -602,4 +601,3 @@ printfn "listC = %A" listC
     </Project>
   </Combine>
 </Template>
->>>>>>> funnelweb/master
