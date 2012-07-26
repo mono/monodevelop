@@ -1189,18 +1189,20 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (DecLoadCount (project) != 0)
 				return;
-			if (referenceCounter.ContainsKey (project) && --referenceCounter [project] <= 0) {
-				project.FileAddedToProject -= OnFileAdded;
-				project.FileRemovedFromProject -= OnFileRemoved;
-				project.FileRenamedInProject -= OnFileRenamed;
-				project.Modified -= OnProjectModified;
-				
-				var wrapper = projectContents [project];
-				projectContents.Remove (project);
-				referenceCounter.Remove (project);
-				StoreProjectCache (project, wrapper);
-				
-				OnProjectUnloaded (new ProjectUnloadEventArgs (project, wrapper));
+			lock (projectWrapperUpdateLock) {
+				if (referenceCounter.ContainsKey (project) && --referenceCounter [project] <= 0) {
+					project.FileAddedToProject -= OnFileAdded;
+					project.FileRemovedFromProject -= OnFileRemoved;
+					project.FileRenamedInProject -= OnFileRenamed;
+					project.Modified -= OnProjectModified;
+					
+					var wrapper = projectContents [project];
+					projectContents.Remove (project);
+					referenceCounter.Remove (project);
+
+					StoreProjectCache (project, wrapper);
+					OnProjectUnloaded (new ProjectUnloadEventArgs (project, wrapper));
+				}
 			}
 		}
 		
