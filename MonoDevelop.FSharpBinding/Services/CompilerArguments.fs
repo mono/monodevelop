@@ -34,7 +34,6 @@ module ScriptOptions =
   let getDefaultDirectories(targetFramework) =   
     // Return all known directories
     [ // Get the location of the System DLLs
-      yield System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory() 
 
       match FSharpEnvironment.FolderOfDefaultFSharpCore(targetFramework) with 
       | Some dir -> 
@@ -42,6 +41,8 @@ module ScriptOptions =
           yield dir
       | None -> 
           Debug.tracef "Resolution" "Unable to find a default location for FSharp.Core.dll"
+
+      yield System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory() 
     ]
                 
   /// Resolve assembly in the specified list of directories

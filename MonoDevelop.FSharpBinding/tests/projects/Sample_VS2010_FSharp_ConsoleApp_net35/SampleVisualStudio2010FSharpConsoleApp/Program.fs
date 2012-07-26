@@ -6,6 +6,13 @@
 //  and should reference one of these depending on the language version of F# being used
 //     Program Files\Reference Assemblies\Microsoft\FSharp\2.0\Runtime\v2.0\FSharp.Core.dll
 //     Program Files\Reference Assemblies\Microsoft\FSharp\3.0\Runtime\v2.0\FSharp.Core.dll
+//
+// On Mac, you'll get
+//
+//  -r:"/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/2.0/FSharp.Core.dll"
+//  -r:"/Library/Frameworks/Mono.framework/Versions/2.10.9/lib/mono/2.0/mscorlib.dll"
+//  -r:"/Library/Frameworks/Mono.framework/Versions/2.10.9/lib/mono/2.0/System.dll"
+//  -r:"/Library/Frameworks/Mono.framework/Versions/2.10.9/lib/mono/2.0/System.Core.dll"
 
 module M 
 
