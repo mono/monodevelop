@@ -271,7 +271,7 @@ namespace Mono.Debugging.Evaluation
 			}
 			
 			if (ctx.Adapter.IsClassInstance (Context, obj)) {
-				ValueReference val = ctx.Adapter.GetMember (GetChildrenContext (options), this, obj, name);
+				ValueReference val = ctx.Adapter.GetMember (GetChildrenContext (options), this, Type, obj, name);
 				return val;
 			}
 					
