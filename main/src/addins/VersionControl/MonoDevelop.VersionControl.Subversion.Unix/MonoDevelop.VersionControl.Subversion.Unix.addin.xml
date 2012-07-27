@@ -6,13 +6,13 @@
        url       = "http://taubz.for.net/code/diff"
        description = "Subversion support for Linux and MacOSX"
        category  = "Version Control"
-       version   = "3.0.4">
+       version   = "3.0.4.2">
 
 	<Dependencies>
-	    <Addin id="Core" version="3.0.4"/>
-	    <Addin id="Ide" version="3.0.4"/>
-	    <Addin id="VersionControl" version="3.0.4"/>
-	    <Addin id="VersionControl.Subversion" version="3.0.4"/>
+	    <Addin id="Core" version="3.0.4.2"/>
+	    <Addin id="Ide" version="3.0.4.2"/>
+	    <Addin id="VersionControl" version="3.0.4.2"/>
+	    <Addin id="VersionControl.Subversion" version="3.0.4.2"/>
 	</Dependencies>
 
 	<Extension path = "/MonoDevelop/VersionControl/VersionControlSystems">

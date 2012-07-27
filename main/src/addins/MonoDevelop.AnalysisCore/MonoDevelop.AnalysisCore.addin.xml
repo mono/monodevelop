@@ -6,13 +6,13 @@
        url         = "http://www.monodevelop.com"
        description = "Core support for background analysis of code" 
        category    = "IDE extensions"
-       version     = "3.0.4">
+       version     = "3.0.4.2">
 
 	<Dependencies>
-		<Addin id="Core" version="3.0.4"/>
-		<Addin id="Ide" version="3.0.4"/>
-		<Addin id="SourceEditor2" version="3.0.4"/>
-		<Addin id="Refactoring" version="3.0.4"/>
+		<Addin id="Core" version="3.0.4.2"/>
+		<Addin id="Ide" version="3.0.4.2"/>
+		<Addin id="SourceEditor2" version="3.0.4.2"/>
+		<Addin id="Refactoring" version="3.0.4.2"/>
 	</Dependencies>
 	
 	<!-- Extension points -->
