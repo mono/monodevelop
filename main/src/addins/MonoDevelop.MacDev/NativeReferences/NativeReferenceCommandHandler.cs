@@ -47,18 +47,20 @@ namespace MonoDevelop.MacDev.NativeReferences
 		public void Add ()
 		{
 			var project = (DotNetProject) CurrentNode.GetParentDataItem (typeof(DotNetProject), true);
+			var inrproj = project as INativeReferencingProject;
 			
 			var dlg = new SelectFileDialog (GettextCatalog.GetString ("Select Native Library"), Gtk.FileChooserAction.Open);
 			dlg.SelectMultiple = true;
 			dlg.AddAllFilesFilter ();
-			//FIXME: add more filters, amke correct for platform
-			dlg.AddFilter (GettextCatalog.GetString ("Static Library"), ".a");
+
+			foreach (var filter in inrproj.NativeReferenceFileFilters)
+				dlg.AddFilter (filter.Description, "*" + filter.FileExtension);
 			
 			if (!dlg.Run ())
 				return;
 			
 			foreach (var file in dlg.SelectedFiles) {
-				var item = new NativeReference (file);
+				var item = new NativeReference (file, inrproj.GetNativeReferenceKind (file));
 				project.Items.Add (item);
 			}
 			

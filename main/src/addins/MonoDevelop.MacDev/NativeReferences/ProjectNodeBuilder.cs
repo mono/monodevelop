@@ -29,11 +29,29 @@ using System.Linq;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Projects;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.MacDev.NativeReferences
 {
+	public struct NativeReferenceFileFilter
+	{
+		public string Description;
+		public string FileExtension;
+
+		public NativeReferenceFileFilter (string desc, string ext)
+		{
+			Description = desc;
+			FileExtension = ext;
+		}
+	}
+
 	public interface INativeReferencingProject
 	{
+		bool AlwaysShowNativeReferencesFolder { get; }
+
+		IEnumerable<NativeReferenceFileFilter> NativeReferenceFileFilters { get; }
+
+		NativeReferenceKind GetNativeReferenceKind (FilePath path);
 	}
 	
 	class ProjectNodeBuilder: NodeBuilderExtension
@@ -52,13 +70,13 @@ namespace MonoDevelop.MacDev.NativeReferences
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			var project = (DotNetProject) dataObject;
-			return project.Items.GetAll<NativeReference> ().Any ();
+			return ((INativeReferencingProject) project).AlwaysShowNativeReferencesFolder || project.Items.GetAll<NativeReference> ().Any ();
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			var project = (DotNetProject) dataObject;
-			if (project.Items.GetAll<NativeReference> ().Any ())
+			if (HasChildNodes (builder, dataObject))
 				builder.AddChild (new NativeReferenceFolder (project));
 		}
 		

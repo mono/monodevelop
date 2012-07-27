@@ -48,20 +48,10 @@ namespace MonoDevelop.MacDev.NativeReferences
 		{
 		}
 		
-		public NativeReference (FilePath path)
+		public NativeReference (FilePath path, NativeReferenceKind kind)
 		{
-			this.Path = path;
-			switch (path.Extension) {
-			case ".a":
-				Kind = NativeReferenceKind.Static;
-				break;
-			case ".framework":
-				Kind = NativeReferenceKind.Framework;
-				break;
-			case ".lib":
-				Kind = NativeReferenceKind.Dynamic;
-				break;
-			}
+			Path = path;
+			Kind = kind;
 		}
 		
 		public override bool Equals (object obj)
