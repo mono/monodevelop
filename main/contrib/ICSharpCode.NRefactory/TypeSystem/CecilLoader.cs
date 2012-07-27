@@ -55,6 +55,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// the Cecil objects to stay in memory (which can significantly increase memory usage).
 		/// It also prevents serialization of the Cecil-loaded type system.
 		/// </summary>
+		/// <remarks>
+		/// Because the type system can be used on multiple threads, but Cecil is not
+		/// thread-safe for concurrent read access, the CecilLoader will lock on the <see cref="ModuleDefinition"/> instance
+		/// for every delay-loading operation.
+		/// If you access the Cecil objects directly in your application, you may need to take the same lock.
+		/// </remarks>
 		public bool LazyLoad { get; set; }
 		
 		/// <summary>
@@ -73,6 +79,17 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public CancellationToken CancellationToken { get; set; }
 		
 		/// <summary>
+		/// This delegate gets executed whenever an entity was loaded.
+		/// </summary>
+		/// <remarks>
+		/// This callback may be to build a dictionary that maps between
+		/// entities and cecil objects.
+		/// Warning: if delay-loading is used and the type system is accessed by multiple threads,
+		/// the callback may be invoked concurrently on multiple threads.
+		/// </remarks>
+		public Action<IUnresolvedEntity, MemberReference> OnEntityLoaded { get; set; }
+		
+		/// <summary>
 		/// Gets a value indicating whether this instance stores references to the cecil objects.
 		/// </summary>
 		/// <value>
@@ -87,16 +104,39 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ICSharpCode.NRefactory.TypeSystem.CecilLoader"/> class.
 		/// </summary>
+		public CecilLoader()
+		{
+			// Enable interning by default.
+			this.InterningProvider = new SimpleInterningProvider();
+		}
+		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ICSharpCode.NRefactory.TypeSystem.CecilLoader"/> class.
+		/// </summary>
 		/// <param name='createCecilReferences'>
 		/// If true references to the cecil objects are hold. In this case the cecil loader can do a type system -> cecil mapping.
 		/// </param>
-		public CecilLoader (bool createCecilReferences = false)
+		[Obsolete("The built-in entity<->cecil mapping is obsolete. Use the OnEntityLoaded callback instead!")]
+		public CecilLoader(bool createCecilReferences) : this()
 		{
 			if (createCecilReferences)
 				typeSystemTranslationTable = new Dictionary<object, object> ();
-			
-			// Enable interning by default.
-			this.InterningProvider = new SimpleInterningProvider();
+		}
+		
+		/// <summary>
+		/// Creates a nested CecilLoader for lazy-loading.
+		/// </summary>
+		private CecilLoader(CecilLoader loader)
+		{
+			// use a shared typeSystemTranslationTable
+			this.typeSystemTranslationTable = loader.typeSystemTranslationTable;
+			this.IncludeInternalMembers = loader.IncludeInternalMembers;
+			this.LazyLoad = loader.LazyLoad;
+			this.OnEntityLoaded = loader.OnEntityLoaded;
+			this.currentModule = loader.currentModule;
+			this.currentAssembly = loader.currentAssembly;
+			// don't use interning - the interning provider is most likely not thread-safe
+			// don't use cancellation for delay-loaded members
 		}
 
 		#region Load From AssemblyDefinition
@@ -105,69 +145,76 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		/// <returns>IProjectContent that represents the assembly</returns>
 		[CLSCompliant(false)]
-		public IUnresolvedAssembly LoadAssembly (AssemblyDefinition assemblyDefinition, string location = null)
+		public IUnresolvedAssembly LoadAssembly(AssemblyDefinition assemblyDefinition)
 		{
 			if (assemblyDefinition == null)
-				throw new ArgumentNullException ("assemblyDefinition");
+				throw new ArgumentNullException("assemblyDefinition");
 			
 			this.currentModule = assemblyDefinition.MainModule;
-
+			
 			// Read assembly and module attributes
-			IList<IUnresolvedAttribute> assemblyAttributes = new List<IUnresolvedAttribute> ();
-			IList<IUnresolvedAttribute> moduleAttributes = new List<IUnresolvedAttribute> ();
-			AddAttributes (assemblyDefinition, assemblyAttributes);
-			AddAttributes (assemblyDefinition.MainModule, moduleAttributes);
+			IList<IUnresolvedAttribute> assemblyAttributes = new List<IUnresolvedAttribute>();
+			IList<IUnresolvedAttribute> moduleAttributes = new List<IUnresolvedAttribute>();
+			AddAttributes(assemblyDefinition, assemblyAttributes);
+			AddAttributes(assemblyDefinition.MainModule, moduleAttributes);
 			
 			if (this.InterningProvider != null) {
-				assemblyAttributes = this.InterningProvider.InternList (assemblyAttributes);
-				moduleAttributes = this.InterningProvider.InternList (moduleAttributes);
+				assemblyAttributes = this.InterningProvider.InternList(assemblyAttributes);
+				moduleAttributes = this.InterningProvider.InternList(moduleAttributes);
 			}
 			
-			this.currentAssembly = new CecilUnresolvedAssembly (assemblyDefinition.Name.Name, this.DocumentationProvider);
-			currentAssembly.AssemblyAttributes.AddRange (assemblyAttributes);
-			currentAssembly.ModuleAttributes.AddRange (assemblyAttributes);
+			this.currentAssembly = new CecilUnresolvedAssembly(assemblyDefinition.Name.Name, this.DocumentationProvider);
+			currentAssembly.Location = assemblyDefinition.MainModule.FullyQualifiedName;
+			currentAssembly.AssemblyAttributes.AddRange(assemblyAttributes);
+			currentAssembly.ModuleAttributes.AddRange(assemblyAttributes);
 			
 			// Register type forwarders:
 			foreach (ExportedType type in assemblyDefinition.MainModule.ExportedTypes) {
 				if (type.IsForwarder) {
 					int typeParameterCount;
-					string name = ReflectionHelper.SplitTypeParameterCountFromReflectionName (type.Name, out typeParameterCount);
-					var typeRef = new GetClassTypeReference (GetAssemblyReference (type.Scope), type.Namespace, name, typeParameterCount);
-					typeRef = this.InterningProvider.Intern (typeRef);
-					var key = new FullNameAndTypeParameterCount (type.Namespace, name, typeParameterCount);
-					currentAssembly.AddTypeForwarder (key, typeRef);
+					string name = ReflectionHelper.SplitTypeParameterCountFromReflectionName(type.Name, out typeParameterCount);
+					var typeRef = new GetClassTypeReference(GetAssemblyReference(type.Scope), type.Namespace, name, typeParameterCount);
+					if (this.InterningProvider != null)
+						typeRef = this.InterningProvider.Intern(typeRef);
+					var key = new FullNameAndTypeParameterCount(type.Namespace, name, typeParameterCount);
+					currentAssembly.AddTypeForwarder(key, typeRef);
 				}
 			}
 			
 			// Create and register all types:
-			List<TypeDefinition> cecilTypeDefs = new List<TypeDefinition> ();
-			List<DefaultUnresolvedTypeDefinition> typeDefs = new List<DefaultUnresolvedTypeDefinition> ();
+			CecilLoader cecilLoaderCloneForLazyLoading = LazyLoad ? new CecilLoader(this) : null;
+			List<TypeDefinition> cecilTypeDefs = new List<TypeDefinition>();
+			List<DefaultUnresolvedTypeDefinition> typeDefs = new List<DefaultUnresolvedTypeDefinition>();
 			foreach (ModuleDefinition module in assemblyDefinition.Modules) {
 				foreach (TypeDefinition td in module.Types) {
-					this.CancellationToken.ThrowIfCancellationRequested ();
+					this.CancellationToken.ThrowIfCancellationRequested();
 					if (this.IncludeInternalMembers || (td.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.Public) {
 						string name = td.Name;
 						if (name.Length == 0)
 							continue;
 						
-						var t = CreateTopLevelTypeDefinition (td);
-						cecilTypeDefs.Add (td);
-						typeDefs.Add (t);
-						currentAssembly.AddTypeDefinition (t);
+						if (this.LazyLoad) {
+							var t = new LazyCecilTypeDefinition(cecilLoaderCloneForLazyLoading, td);
+							currentAssembly.AddTypeDefinition(t);
+							RegisterCecilObject(t, td);
+						} else {
+							var t = CreateTopLevelTypeDefinition(td);
+							cecilTypeDefs.Add(td);
+							typeDefs.Add(t);
+							currentAssembly.AddTypeDefinition(t);
+							// The registration will happen after the members are initialized
+						}
 					}
 				}
 			}
 			// Initialize the type's members:
 			for (int i = 0; i < typeDefs.Count; i++) {
-				InitTypeDefinition (cecilTypeDefs [i], typeDefs [i]);
+				InitTypeDefinition(cecilTypeDefs[i], typeDefs[i]);
 			}
 			
-			if (HasCecilReferences) {
-				typeSystemTranslationTable [this.currentAssembly] = assemblyDefinition;
-			}
+			AddToTypeSystemTranslationTable(this.currentAssembly, assemblyDefinition);
 			
 			var result = this.currentAssembly;
-			result.Location = location ?? "";
 			this.currentAssembly = null;
 			this.currentModule = null;
 			return result;
@@ -230,10 +277,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				throw new ArgumentNullException("fileName");
 			var param = new ReaderParameters { AssemblyResolver = new DummyAssemblyResolver() };
 			AssemblyDefinition asm = AssemblyDefinition.ReadAssembly(fileName, param);
-			var result = LoadAssembly(asm, fileName);
-			if (HasCecilReferences)
-				typeSystemTranslationTable[result] = asm;
-			return result;
+			return LoadAssembly(asm);
 		}
 		
 		// used to prevent Cecil from loading referenced assemblies
@@ -1179,14 +1223,14 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				EntityType memberType;
 				var b = ReadByte();
 				switch (b) {
-				case 0x53:
-					memberType = EntityType.Field;
-					break;
-				case 0x54:
-					memberType = EntityType.Property;
-					break;
-				default:
-					throw new NotSupportedException(string.Format("Custom member type 0x{0:x} is not supported.", b));
+					case 0x53:
+						memberType = EntityType.Field;
+						break;
+					case 0x54:
+						memberType = EntityType.Property;
+						break;
+					default:
+						throw new NotSupportedException(string.Format("Custom member type 0x{0:x} is not supported.", b));
 				}
 				IType type = ReadCustomAttributeFieldOrPropType();
 				string name = ReadSerString();
@@ -1502,12 +1546,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			
 			td.AddDefaultConstructorIfRequired = (td.Kind == TypeKind.Struct || td.Kind == TypeKind.Enum);
 			InitMembers(typeDefinition, td, td.Members);
-			if (HasCecilReferences)
-				typeSystemTranslationTable[td] = typeDefinition;
 			if (this.InterningProvider != null) {
 				td.ApplyInterningProvider(this.InterningProvider);
 			}
 			td.Freeze();
+			RegisterCecilObject(td, typeDefinition);
 		}
 		
 		void InitBaseTypes(TypeDefinition typeDefinition, IList<ITypeReference> baseTypes)
@@ -1659,7 +1702,18 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					bool getterVisible = property.GetMethod != null && IsVisible(property.GetMethod.Attributes);
 					bool setterVisible = property.SetMethod != null && IsVisible(property.SetMethod.Attributes);
 					if (getterVisible || setterVisible) {
-						EntityType type = property.Name == defaultMemberName ? EntityType.Indexer : EntityType.Property;
+						EntityType type = EntityType.Property;
+						if (property.HasParameters) {
+							// Try to detect indexer:
+							if (property.Name == defaultMemberName) {
+								type = EntityType.Indexer; // normal indexer
+							} else if (property.Name.EndsWith(".Item", StringComparison.Ordinal) && (property.GetMethod ?? property.SetMethod).HasOverrides) {
+								// explicit interface implementation of indexer
+								type = EntityType.Indexer;
+								// We can't really tell parameterized properties and indexers apart in this case without
+								// resolving the interface, so we rely on the "Item" naming convention instead.
+							}
+						}
 						members.Add(ReadProperty(property, td, type));
 					}
 				}
@@ -1710,8 +1764,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				loader.AddAttributes(typeDefinition, this);
 				flags[FlagHasExtensionMethods] = HasExtensionAttribute(typeDefinition);
 				
-				if (loader.HasCecilReferences)
-					loader.typeSystemTranslationTable[this] = typeDefinition;
 				if (loader.InterningProvider != null) {
 					this.ApplyInterningProvider(loader.InterningProvider);
 				}
@@ -1721,6 +1773,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			public override string Namespace {
 				get { return namespaceName; }
 				set { throw new NotSupportedException(); }
+			}
+			
+			public override string FullName {
+				// This works because LazyCecilTypeDefinition is only used for top-level types
+				get { return cecilTypeDef.FullName; }
+			}
+			
+			public override string ReflectionName {
+				get { return cecilTypeDef.FullName; }
 			}
 			
 			public TypeKind Kind {
@@ -1736,7 +1797,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					var result = LazyInit.VolatileRead(ref this.baseTypes);
 					if (result != null) {
 						return result;
-					} else {
+					}
+					lock (loader.currentModule) {
 						result = new List<ITypeReference>();
 						loader.InitBaseTypes(cecilTypeDef, result);
 						return LazyInit.GetOrSet(ref this.baseTypes, FreezableHelper.FreezeList(result));
@@ -1749,7 +1811,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					var result = LazyInit.VolatileRead(ref this.nestedTypes);
 					if (result != null) {
 						return result;
-					} else {
+					}
+					lock (loader.currentModule) {
+						if (this.nestedTypes != null)
+							return this.nestedTypes;
 						result = new List<IUnresolvedTypeDefinition>();
 						loader.InitNestedTypes(cecilTypeDef, this, result);
 						return LazyInit.GetOrSet(ref this.nestedTypes, FreezableHelper.FreezeList(result));
@@ -1762,7 +1827,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					var result = LazyInit.VolatileRead(ref this.members);
 					if (result != null) {
 						return result;
-					} else {
+					}
+					lock (loader.currentModule) {
+						if (this.members != null)
+							return this.members;
 						result = new List<IUnresolvedMember>();
 						loader.InitMembers(cecilTypeDef, this, result);
 						return LazyInit.GetOrSet(ref this.members, FreezableHelper.FreezeList(result));
@@ -2124,16 +2192,34 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		#endregion
 		
-		void FinishReadMember(AbstractUnresolvedMember member, object cecilDefinition)
+		void FinishReadMember(AbstractUnresolvedMember member, MemberReference cecilDefinition)
 		{
-			member.ApplyInterningProvider(this.InterningProvider);
+			if (this.InterningProvider != null)
+				member.ApplyInterningProvider(this.InterningProvider);
 			member.Freeze();
-			if (HasCecilReferences)
-				typeSystemTranslationTable[member] = cecilDefinition;
+			RegisterCecilObject(member, cecilDefinition);
 		}
 		
 		#region Type system translation table
-		Dictionary<object, object> typeSystemTranslationTable;
+		readonly Dictionary<object, object> typeSystemTranslationTable;
+		
+		void RegisterCecilObject(IUnresolvedEntity typeSystemObject, MemberReference cecilObject)
+		{
+			if (OnEntityLoaded != null)
+				OnEntityLoaded(typeSystemObject, cecilObject);
+			
+			AddToTypeSystemTranslationTable(typeSystemObject, cecilObject);
+		}
+		
+		void AddToTypeSystemTranslationTable(object typeSystemObject, object cecilObject)
+		{
+			if (typeSystemTranslationTable != null) {
+				// When lazy-loading, the dictionary might be shared between multiple cecil-loaders that are used concurrently
+				lock (typeSystemTranslationTable) {
+					typeSystemTranslationTable[typeSystemObject] = cecilObject;
+				}
+			}
+		}
 		
 		T InternalGetCecilObject<T> (object typeSystemObject) where T : class
 		{
@@ -2142,8 +2228,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			if (!HasCecilReferences)
 				throw new NotSupportedException ("This instance contains no cecil references.");
 			object result;
-			if (!typeSystemTranslationTable.TryGetValue (typeSystemObject, out result))
-				return null;
+			lock (typeSystemTranslationTable) {
+				if (!typeSystemTranslationTable.TryGetValue (typeSystemObject, out result))
+					return null;
+			}
 			return result as T;
 		}
 		

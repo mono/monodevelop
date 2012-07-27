@@ -44,7 +44,7 @@ namespace ICSharpCode.NRefactory.Completion
 		{
 			if (entity == null)
 				throw new ArgumentNullException ("entity");
-			
+
 			var browsableState = entity.Attributes.FirstOrDefault(attr => attr.AttributeType.Name == "EditorBrowsableAttribute" && attr.AttributeType.Namespace == "System.ComponentModel");
 			if (browsableState != null && browsableState.PositionalArguments.Count == 1) {
 				try {

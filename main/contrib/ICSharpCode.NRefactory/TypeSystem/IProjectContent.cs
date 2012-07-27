@@ -69,12 +69,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Changes the assembly name of this project content.
 		/// </summary>
 		IProjectContent SetAssemblyName(string newAssemblyName);
-		
+
 		/// <summary>
 		/// Changes the location of this project content.
 		/// </summary>
 		IProjectContent SetLocation(string newLocation);
-		
+
 		/// <summary>
 		/// Add assembly references to this project content.
 		/// </summary>

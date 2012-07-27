@@ -2387,7 +2387,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				if (binaryExpression.Left != null)
 					result.AddChild ((Expression)binaryExpression.Left.Accept (this), BinaryOperatorExpression.LeftRole);
-				result.AddChild (new CSharpTokenNode (Convert (binaryExpression.Location)), BinaryOperatorExpression.GetOperatorRole (result.Operator));
+				var location = LocationsBag.GetLocations (binaryExpression);
+				if (location != null)
+					result.AddChild (new CSharpTokenNode (Convert (location[0])), BinaryOperatorExpression.GetOperatorRole (result.Operator));
 				if (binaryExpression.Right != null)
 					result.AddChild ((Expression)binaryExpression.Right.Accept (this), BinaryOperatorExpression.RightRole);
 				return result;
@@ -2399,7 +2401,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				result.Operator = BinaryOperatorType.NullCoalescing;
 				if (nullCoalescingOperator.LeftExpression != null)
 					result.AddChild ((Expression)nullCoalescingOperator.LeftExpression.Accept (this), BinaryOperatorExpression.LeftRole);
-				result.AddChild (new CSharpTokenNode (Convert (nullCoalescingOperator.Location)), BinaryOperatorExpression.NullCoalescingRole);
+				var location = LocationsBag.GetLocations (nullCoalescingOperator);
+				if (location != null)
+					result.AddChild (new CSharpTokenNode (Convert (location[0])), BinaryOperatorExpression.NullCoalescingRole);
 				if (nullCoalescingOperator.RightExpression != null)
 					result.AddChild ((Expression)nullCoalescingOperator.RightExpression.Accept (this), BinaryOperatorExpression.RightRole);
 				return result;
@@ -3073,7 +3077,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				result.Operator = AssignmentOperatorType.Assign;
 				if (simpleAssign.Target != null)
 					result.AddChild ((Expression)simpleAssign.Target.Accept (this), AssignmentExpression.LeftRole);
-				result.AddChild (new CSharpTokenNode (Convert (simpleAssign.Location)), AssignmentExpression.AssignRole);
+				var location = LocationsBag.GetLocations (simpleAssign);
+				if (location != null)
+					result.AddChild (new CSharpTokenNode (Convert (location[0])), AssignmentExpression.AssignRole);
 				if (simpleAssign.Source != null) {
 					result.AddChild ((Expression)simpleAssign.Source.Accept (this), AssignmentExpression.RightRole);
 				}
@@ -3118,7 +3124,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				if (compoundAssign.Target != null)
 					result.AddChild ((Expression)compoundAssign.Target.Accept (this), AssignmentExpression.LeftRole);
-				result.AddChild (new CSharpTokenNode (Convert (compoundAssign.Location)), AssignmentExpression.GetOperatorRole (result.Operator));
+				var location = LocationsBag.GetLocations (compoundAssign);
+				if (location != null)
+					result.AddChild (new CSharpTokenNode (Convert (location[0])), AssignmentExpression.GetOperatorRole (result.Operator));
 				if (compoundAssign.Source != null)
 					result.AddChild ((Expression)compoundAssign.Source.Accept (this), AssignmentExpression.RightRole);
 				return result;
@@ -3469,6 +3477,73 @@ namespace ICSharpCode.NRefactory.CSharp
 				return result;
 			}
 			#endregion
+			
+			#region XmlDoc
+			public DocumentationReference ConvertXmlDoc(DocumentationBuilder doc)
+			{
+				DocumentationReference result = new DocumentationReference();
+				if (doc.ParsedName != null) {
+					if (doc.ParsedName.Name == "<this>") {
+						result.EntityType = EntityType.Indexer;
+					} else {
+						result.MemberName = doc.ParsedName.Name;
+					}
+					if (doc.ParsedName.Left != null) {
+						result.DeclaringType = ConvertToType(doc.ParsedName.Left);
+					} else if (doc.ParsedBuiltinType != null) {
+						result.DeclaringType = ConvertToType(doc.ParsedBuiltinType);
+					}
+					if (doc.ParsedName.TypeParameters != null) {
+						for (int i = 0; i < doc.ParsedName.TypeParameters.Count; i++) {
+							result.TypeArguments.Add(ConvertToType(doc.ParsedName.TypeParameters[i]));
+						}
+					}
+				} else if (doc.ParsedBuiltinType != null) {
+					result.EntityType = EntityType.TypeDefinition;
+					result.DeclaringType = ConvertToType(doc.ParsedBuiltinType);
+				}
+				if (doc.ParsedParameters != null) {
+					result.HasParameterList = true;
+					result.Parameters.AddRange(doc.ParsedParameters.Select(ConvertXmlDocParameter));
+				}
+				if (doc.ParsedOperator != null) {
+					result.EntityType = EntityType.Operator;
+					result.OperatorType = (OperatorType)doc.ParsedOperator;
+					if (result.OperatorType == OperatorType.Implicit || result.OperatorType == OperatorType.Explicit) {
+						var returnTypeParam = result.Parameters.LastOrNullObject();
+						returnTypeParam.Remove(); // detach from parameter list
+						var returnType = returnTypeParam.Type;
+						returnType.Remove();
+						result.ConversionOperatorReturnType = returnType;
+					}
+					if (result.Parameters.Count == 0) {
+						// reset HasParameterList if necessary
+						result.HasParameterList = false;
+					}
+				}
+				return result;
+			}
+			
+			ParameterDeclaration ConvertXmlDocParameter(DocumentationParameter p)
+			{
+				ParameterDeclaration result = new ParameterDeclaration();
+				switch (p.Modifier) {
+					case Parameter.Modifier.OUT:
+						result.ParameterModifier = ParameterModifier.Out;
+						break;
+					case Parameter.Modifier.REF:
+						result.ParameterModifier = ParameterModifier.Ref;
+						break;
+					case Parameter.Modifier.PARAMS:
+						result.ParameterModifier = ParameterModifier.Params;
+						break;
+				}
+				if (p.Type != null) {
+					result.Type = ConvertToType(p.Type);
+				}
+				return result;
+			}
+			#endregion
 		}
 		
 		public CSharpParser ()
@@ -3669,7 +3744,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (top.LastYYValue is Mono.CSharp.Expression) {
 				conversionVisitor.Unit.TopExpression = ((Mono.CSharp.Expression)top.LastYYValue).Accept(conversionVisitor) as AstNode;
 			}
+
 			conversionVisitor.Unit.FileName = fileName;
+			conversionVisitor.Unit.ConditionalSymbols = top.Conditionals.ToArray ();
 			return conversionVisitor.Unit;
 		}
 		
@@ -3709,12 +3786,15 @@ namespace ICSharpCode.NRefactory.CSharp
 				var file = new SourceFile (fileName, fileName, 0);
 				Location.Initialize (new List<SourceFile> (new [] { file }));
 				var module = new ModuleContainer (ctx);
-				var parser = Driver.Parse (reader, file, module, lineModifier);
-				
+				var session = new ParserSession ();
+				session.LocationsBag = new LocationsBag ();
+				var report = new Report (ctx, errorReportPrinter);
+				var parser = Driver.Parse (reader, file, module, session, report, lineModifier);
 				var top = new CompilerCompilationUnit () {
 					ModuleCompiled = module,
-					LocationsBag = parser.LocationsBag,
-					SpecialsBag = parser.Lexer.sbag
+					LocationsBag = session.LocationsBag,
+					SpecialsBag = parser.Lexer.sbag,
+					Conditionals = parser.Lexer.SourceFile.Conditionals
 				};
 				var unit = Parse (top, fileName, lineModifier);
 				unit.Errors.AddRange (errorReportPrinter.Errors);
@@ -3730,8 +3810,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (cu == null)
 				return Enumerable.Empty<EntityDeclaration> ();
 			var td = cu.Children.FirstOrDefault () as TypeDeclaration;
-			if (td != null)
-				return td.Members;
+			if (td != null) {
+				var members = td.Members.ToArray();
+				// detach members from parent
+				foreach (var m in members)
+					m.Remove();
+				return members;
+			}
 			return Enumerable.Empty<EntityDeclaration> ();
 		}
 		
@@ -3740,8 +3825,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			string code = "void M() { " + Environment.NewLine + reader.ReadToEnd () + "}";
 			var members = ParseTypeMembers (new StringReader (code), lineModifier - 1);
 			var method = members.FirstOrDefault () as MethodDeclaration;
-			if (method != null && method.Body != null)
-				return method.Body.Statements;
+			if (method != null && method.Body != null) {
+				var statements = method.Body.Statements.ToArray();
+				// detach statements from parent
+				foreach (var st in statements)
+					st.Remove();
+				return statements;
+			}
 			return Enumerable.Empty<Statement> ();
 		}
 		
@@ -3750,8 +3840,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			string code = reader.ReadToEnd () + " a;";
 			var members = ParseTypeMembers (new StringReader (code));
 			var field = members.FirstOrDefault () as FieldDeclaration;
-			if (field != null)
-				return field.ReturnType;
+			if (field != null) {
+				AstType type = field.ReturnType;
+				type.Remove();
+				return type;
+			}
 			return AstType.Null;
 		}
 		
@@ -3760,8 +3853,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			var es = ParseStatements (new StringReader ("tmp = " + Environment.NewLine + reader.ReadToEnd () + ";"), -1).FirstOrDefault () as ExpressionStatement;
 			if (es != null) {
 				AssignmentExpression ae = es.Expression as AssignmentExpression;
-				if (ae != null)
-					return ae.Right;
+				if (ae != null) {
+					Expression expr = ae.Right;
+					expr.Remove();
+					return expr;
+				}
 			}
 			return Expression.Null;
 		}
@@ -3777,12 +3873,41 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public DocumentationReference ParseDocumentationReference (string cref)
 		{
+			// see Mono.CSharp.DocumentationBuilder.HandleXrefCommon
 			if (cref == null)
 				throw new ArgumentNullException ("cref");
+			
+			// Additional symbols for < and > are allowed for easier XML typing
 			cref = cref.Replace ('{', '<').Replace ('}', '>');
-			// TODO: add support for parsing cref attributes
-			// (documentation_parsing production, see DocumentationBuilder.HandleXrefCommon)
-			throw new NotImplementedException ();
+			
+			lock (parseLock) {
+				errorReportPrinter = new ErrorReportPrinter("");
+				var ctx = new CompilerContext(compilerSettings.ToMono(), errorReportPrinter);
+				ctx.Settings.TabSize = 1;
+				var stream = new MemoryStream(Encoding.Unicode.GetBytes(cref));
+				var reader = new SeekableStreamReader(stream, Encoding.Unicode);
+				var file = new SourceFile("", "", 0);
+				Location.Initialize(new List<SourceFile> (new [] { file }));
+				var module = new ModuleContainer(ctx);
+				module.DocumentationBuilder = new DocumentationBuilder(module);
+				var source_file = new CompilationSourceFile (module);
+				var report = new Report (ctx, errorReportPrinter);
+				ParserSession session = new ParserSession ();
+				session.LocationsBag = new LocationsBag ();
+				var parser = new Mono.CSharp.CSharpParser (reader, source_file, report, session);
+				parser.Lexer.putback_char = Tokenizer.DocumentationXref;
+				parser.Lexer.parsing_generic_declaration_doc = true;
+				parser.parse ();
+				if (report.Errors > 0) {
+//					Report.Warning (1584, 1, mc.Location, "XML comment on `{0}' has syntactically incorrect cref attribute `{1}'",
+//					                mc.GetSignatureForError (), cref);
+				}
+				
+				ConversionVisitor conversionVisitor = new ConversionVisitor (false, session.LocationsBag);
+				DocumentationReference docRef = conversionVisitor.ConvertXmlDoc(module.DocumentationBuilder);
+				CompilerCallableEntryPoint.Reset();
+				return docRef;
+			}
 		}
 	}
 }

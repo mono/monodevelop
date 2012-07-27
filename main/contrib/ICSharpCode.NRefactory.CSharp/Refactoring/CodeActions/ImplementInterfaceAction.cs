@@ -1,4 +1,4 @@
-// 
+﻿// 
 // ImplementInterfaceAction.cs
 //  
 // Author:
@@ -68,7 +68,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			foreach (var member in toImplement) {
 				if (!nodes.ContainsKey(member.Item1.DeclaringType)) 
 					nodes [member.Item1.DeclaringType] = new List<AstNode>();
-				nodes [member.Item1.DeclaringType].Add(GenerateMemberImplementation(context, member));
+				nodes [member.Item1.DeclaringType].Add(GenerateMemberImplementation(context, member.Item1, member.Item2));
 			}
 			
 			foreach (var kv in nodes) {
@@ -89,188 +89,21 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 		}
 		
-		static AstNode GenerateMemberImplementation(RefactoringContext context, Tuple<IMember, bool> member)
+		static EntityDeclaration GenerateMemberImplementation(RefactoringContext context, IMember member, bool explicitImplementation)
 		{
-			switch (member.Item1.EntityType) {
-				case EntityType.Property:
-					return GenerateProperty(context, (IProperty)member.Item1, member.Item2);
-				case EntityType.Indexer:
-					return GenerateIndexer(context, (IProperty)member.Item1, member.Item2);
-				case EntityType.Event:
-					return GenerateEvent(context, (IEvent)member.Item1, member.Item2);
-				case EntityType.Method:
-					return GenerateMethod(context, (IMethod)member.Item1, member.Item2);
-				default:
-					throw new ArgumentOutOfRangeException();
-			}
-		}
-		
-		static AstNode GenerateEvent(RefactoringContext context, IEvent evt, bool explicitImplementation)
-		{
-			if (!explicitImplementation) {
-				return new EventDeclaration() {
-					Modifiers = Modifiers.Public,
-					Name = evt.Name,
-					ReturnType = context.CreateShortType (evt.ReturnType)
-				};
-			}
-			return new CustomEventDeclaration() {
-				Name = evt.Name,
-				ReturnType = context.CreateShortType (evt.ReturnType),
-				PrivateImplementationType = context.CreateShortType(evt.DeclaringType),
-				AddAccessor = new Accessor {
-					Body = new BlockStatement() {
-						new ThrowStatement(new ObjectCreateExpression(context.CreateShortType("System", "NotImplementedException")))
-					}
-				},
-				RemoveAccessor = new Accessor {
-					Body = new BlockStatement() {
-						new ThrowStatement(new ObjectCreateExpression(context.CreateShortType("System", "NotImplementedException")))
-					}
-				}
-			};
-		}
-		
-		static AstNode GenerateProperty(RefactoringContext context, IProperty property, bool explicitImplementation)
-		{
-			var result = new PropertyDeclaration() {
-				Name = property.Name,
-				ReturnType = context.CreateShortType (property.ReturnType)
-			};
-			
-			if (!explicitImplementation) {
-				result.Modifiers = Modifiers.Public;
+			var builder = context.CreateTypeSytemAstBuilder();
+			builder.GenerateBody = true;
+			builder.ShowConstantValues = !explicitImplementation;
+			builder.ShowTypeParameterConstraints = !explicitImplementation;
+			builder.UseCustomEvents = explicitImplementation;
+			var decl = builder.ConvertEntity(member);
+			if (explicitImplementation) {
+				decl.Modifiers = Modifiers.None;
+				decl.AddChild(builder.ConvertType(member.DeclaringType), EntityDeclaration.PrivateImplementationTypeRole);
 			} else {
-				result.PrivateImplementationType = context.CreateShortType(property.DeclaringType);
+				decl.Modifiers = Modifiers.Public;
 			}
-			
-			if (property.CanGet) {
-				if (property.DeclaringType.Kind != TypeKind.Interface) {
-					result.Getter = new Accessor() {
-						Body = new BlockStatement () {
-							new ThrowStatement(new ObjectCreateExpression(context.CreateShortType("System", "NotImplementedException")))
-						}
-					};
-				} else {
-					result.Getter = new Accessor();
-				}
-			}
-			if (property.CanSet) {
-				if (property.DeclaringType.Kind != TypeKind.Interface) {
-					result.Setter = new Accessor() {
-						Body = new BlockStatement () {
-							new ThrowStatement(new ObjectCreateExpression(context.CreateShortType("System", "NotImplementedException")))
-						}
-					};
-				} else {
-					result.Setter = new Accessor();
-				}
-			}
-			
-			return result;
-		}
-		
-		static AstNode GenerateIndexer(RefactoringContext context, IProperty indexer, bool explicitImplementation)
-		{
-			var result = new IndexerDeclaration() {
-				ReturnType = context.CreateShortType (indexer.ReturnType)
-			};
-			
-			if (!explicitImplementation) {
-				result.Modifiers = Modifiers.Public;
-			} else {
-				result.PrivateImplementationType = context.CreateShortType(indexer.DeclaringType);
-			}
-			
-			foreach (var p in indexer.Parameters) {
-				ParameterModifier modifier;
-				if (p.IsOut) {
-					modifier = ParameterModifier.Out;
-				} else if (p.IsRef) {
-					modifier = ParameterModifier.Ref;
-				} else if (p.IsParams) {
-					modifier = ParameterModifier.Params;
-				} else {
-					modifier = ParameterModifier.None;
-				}
-				result.Parameters.Add(new ParameterDeclaration(context.CreateShortType(p.Type), p.Name, modifier));
-			}
-			
-			if (indexer.CanGet) {
-				result.Getter = new Accessor() {
-					Body = new BlockStatement () {
-						new ThrowStatement(new ObjectCreateExpression(context.CreateShortType("System", "NotImplementedException")))
-					}
-				};
-			}
-			if (indexer.CanSet) {
-				result.Setter = new Accessor() {
-					Body = new BlockStatement () {
-						new ThrowStatement(new ObjectCreateExpression(context.CreateShortType("System", "NotImplementedException")))
-					}
-				};
-			}
-			return result;
-		}
-		
-		static AstNode GenerateMethod(RefactoringContext context, IMethod method, bool explicitImplementation)
-		{
-			var result = new MethodDeclaration() {
-				Name = method.Name,
-				ReturnType = context.CreateShortType (method.ReturnType),
-				Body = new BlockStatement() {
-					new ThrowStatement(new ObjectCreateExpression(context.CreateShortType("System", "NotImplementedException")))
-				}
-			};
-			
-			if (!explicitImplementation) {
-				result.Modifiers = Modifiers.Public;
-			} else {
-				result.PrivateImplementationType = context.CreateShortType(method.DeclaringType);
-			}
-			
-			foreach (var typeParam in method.TypeParameters) {
-				result.TypeParameters.Add(new TypeParameterDeclaration(typeParam.Name));
-				
-				var constraint = new Constraint() {
-					TypeParameter = new SimpleType(typeParam.Name)
-				};
-				
-				if (typeParam.HasDefaultConstructorConstraint) {
-					constraint.BaseTypes.Add(new PrimitiveType("new"));
-				} else if (typeParam.HasReferenceTypeConstraint) {
-					constraint.BaseTypes.Add(new PrimitiveType("class"));
-				} else if (typeParam.HasValueTypeConstraint) {
-					constraint.BaseTypes.Add(new PrimitiveType("struct"));
-				}
-				
-				foreach (var type in typeParam.DirectBaseTypes) {
-					if (type.FullName == "System.Object")
-						continue;
-					if (type.FullName == "System.ValueType")
-						continue;
-					constraint.BaseTypes.Add(context.CreateShortType(type));
-				}
-				if (constraint.BaseTypes.Count == 0)
-					continue;
-				result.Constraints.Add(constraint);
-			}
-			
-			foreach (var p in method.Parameters) {
-				ParameterModifier modifier;
-				if (p.IsOut) {
-					modifier = ParameterModifier.Out;
-				} else if (p.IsRef) {
-					modifier = ParameterModifier.Ref;
-				} else if (p.IsParams) {
-					modifier = ParameterModifier.Params;
-				} else {
-					modifier = ParameterModifier.None;
-				}
-				result.Parameters.Add(new ParameterDeclaration(context.CreateShortType(p.Type), p.Name, modifier));
-			}
-			
-			return result;
+			return decl;
 		}
 		
 		public static List<Tuple<IMember, bool>> CollectMembersToImplement(ITypeDefinition implementingType, IType interfaceType, bool explicitly)

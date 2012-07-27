@@ -44,6 +44,17 @@ namespace Mono.Debugging.Evaluation
 		{
 		}
 
+		public static LiteralValueReference CreateTargetBaseObjectLiteral (EvaluationContext ctx, string name, object value)
+		{
+			LiteralValueReference val = new LiteralValueReference (ctx);
+			var type = ctx.Adapter.GetValueType (ctx, value);
+			val.name = name;
+			val.value = value;
+			val.type = ctx.Adapter.GetBaseType (ctx, type);
+			val.objCreated = true;
+			return val;
+		}
+
 		public static LiteralValueReference CreateTargetObjectLiteral (EvaluationContext ctx, string name, object value)
 		{
 			LiteralValueReference val = new LiteralValueReference (ctx);

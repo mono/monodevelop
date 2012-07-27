@@ -1190,18 +1190,20 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (DecLoadCount (project) != 0)
 				return;
-			if (referenceCounter.ContainsKey (project) && --referenceCounter [project] <= 0) {
-				project.FileAddedToProject -= OnFileAdded;
-				project.FileRemovedFromProject -= OnFileRemoved;
-				project.FileRenamedInProject -= OnFileRenamed;
-				project.Modified -= OnProjectModified;
-				
-				var wrapper = projectContents [project];
-				projectContents.Remove (project);
-				referenceCounter.Remove (project);
-				StoreProjectCache (project, wrapper);
-				
-				OnProjectUnloaded (new ProjectUnloadEventArgs (project, wrapper));
+			lock (projectWrapperUpdateLock) {
+				if (referenceCounter.ContainsKey (project) && --referenceCounter [project] <= 0) {
+					project.FileAddedToProject -= OnFileAdded;
+					project.FileRemovedFromProject -= OnFileRemoved;
+					project.FileRenamedInProject -= OnFileRenamed;
+					project.Modified -= OnProjectModified;
+					
+					var wrapper = projectContents [project];
+					projectContents.Remove (project);
+					referenceCounter.Remove (project);
+
+					StoreProjectCache (project, wrapper);
+					OnProjectUnloaded (new ProjectUnloadEventArgs (project, wrapper));
+				}
 			}
 		}
 		
@@ -1548,7 +1550,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					var loader = new CecilLoader ();
 					loader.IncludeInternalMembers = true;
 					loader.DocumentationProvider = new CombinedDocumentationProvider (fileName);
-					assembly = loader.LoadAssembly (asm, fileName);
+					assembly = loader.LoadAssembly (asm);
 				} catch (Exception e) {
 					LoggingService.LogError ("Can't convert assembly: " + fileName, e);
 					return null;

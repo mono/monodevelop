@@ -44,24 +44,23 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		}
 
 		public abstract TextLocation Location { get; }
-
-		public virtual AstType CreateShortType (IType fullType)
+		
+		public TypeSystemAstBuilder CreateTypeSytemAstBuilder()
 		{
 			var csResolver = Resolver.GetResolverStateBefore(GetNode());
-			var builder = new TypeSystemAstBuilder(csResolver);
+			return new TypeSystemAstBuilder(csResolver);
+		}
+		
+		public virtual AstType CreateShortType (IType fullType)
+		{
+			var builder = CreateTypeSytemAstBuilder();
 			return builder.ConvertType(fullType);
 		}
 		
-		public AstType CreateShortType(string ns, string name, int typeParameterCount = 0)
+		public virtual AstType CreateShortType(string ns, string name, int typeParameterCount = 0)
 		{
-			foreach (var asm in Compilation.Assemblies) {
-				var def = asm.GetTypeDefinition(ns, name, typeParameterCount);
-				if (def != null) {
-					return CreateShortType(def);
-				}
-			}
-			
-			return new MemberType(new SimpleType(ns), name);
+			var builder = CreateTypeSytemAstBuilder();
+			return builder.ConvertType(ns, name, typeParameterCount);
 		}
 
 		public virtual IEnumerable<AstNode> GetSelectedNodes()

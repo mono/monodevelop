@@ -118,6 +118,7 @@ main/external/Makefile
 /main/src/addins/NUnit/NUnitRunner/Makefile
 /main/src/addins/TextTemplating/Makefile
 /main/src/addins/TextTemplating/Mono.TextTemplating/Makefile
+/main/src/addins/TextTemplating/Mono.TextTemplating.Tests/Makefile
 /main/src/addins/TextTemplating/MonoDevelop.TextTemplating/Makefile
 /main/src/addins/TextTemplating/TextTransform/Makefile
 /main/src/addins/VBNetBinding/Makefile
@@ -144,7 +145,10 @@ main/external/Makefile
 /main/src/tools/MacCrashLogger/Makefile
 /main/src/tools/mdcrashlog/Makefile
 /main/tests/Makefile
+/main/tests/MacPlatform.Tests/Makefile
+/main/tests/MonoDevelop.MacDev.Tests/Makefile
 /main/tests/UnitTests/Makefile
+/main/tests/UserInterfaceTests/Makefile
 /main/theme-icons/Makefile
 /main/contrib/NGit/Makefile
 /main/contrib/NSch/Makefile

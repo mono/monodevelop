@@ -346,6 +346,24 @@ namespace Mono.CSharp
 			return MemberName.GetSignatureForError ();
 		}
 
+		public string GetSignatureForMetadata ()
+		{
+#if STATIC
+			var name = TypeNameParser.Escape (MemberName.Basename);
+
+			if (Parent is TypeDefinition) {
+				return Parent.GetSignatureForMetadata () + "+" + name;
+			}
+
+			if (Parent != null && Parent.MemberName != null)
+				return Parent.GetSignatureForMetadata () + "." + name;
+
+			return name;
+#else
+			throw new NotImplementedException ();
+#endif
+		}
+
 		public virtual void RemoveContainer (TypeContainer cont)
 		{
 			if (containers != null)
@@ -1845,13 +1863,20 @@ namespace Mono.CSharp
 				return;
 
 			string class_indexer_name = null;
-			has_normal_indexers = true;
 
 			//
 			// Check normal indexers for consistent name, explicit interface implementation
 			// indexers are ignored
 			//
 			foreach (var indexer in indexers) {
+				//
+				// FindMembers can return unfiltered full hierarchy names
+				//
+				if (indexer.DeclaringType != spec)
+					continue;
+
+				has_normal_indexers = true;
+
 				if (class_indexer_name == null) {
 					indexer_name = class_indexer_name = indexer.Name;
 					continue;

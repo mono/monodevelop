@@ -172,6 +172,10 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				get { return EmptyList<ITypeDefinition>.Instance; }
 			}
 			
+			IEnumerable<IAssembly> INamespace.ContributingAssemblies {
+				get { return EmptyList<IAssembly>.Instance; }
+			}
+			
 			ICompilation IResolved.Compilation {
 				get { return parentNamespace.Compilation; }
 			}

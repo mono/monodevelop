@@ -2596,7 +2596,7 @@ namespace Mono.TextEditor
 						break;
 					}
 
-					offset = folding.EndLine.Offset + folding.EndColumn;
+					offset = folding.EndLine.Offset + folding.EndColumn - 1;
 					DocumentLocation foldingEndLocation = margin.Document.OffsetToLocation (offset);
 					lineNumber = foldingEndLocation.Line;
 					column = foldingEndLocation.Column;

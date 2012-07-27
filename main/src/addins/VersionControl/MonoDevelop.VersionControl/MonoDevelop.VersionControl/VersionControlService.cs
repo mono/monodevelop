@@ -603,12 +603,12 @@ namespace MonoDevelop.VersionControl
 		{
 			if (configuration == null) {
 				if (File.Exists (ConfigFile)) {
-					XmlDataSerializer ser = new XmlDataSerializer (dataContext);
-					XmlTextReader reader = new XmlTextReader (new StreamReader (ConfigFile));
 					try {
-						configuration = (VersionControlConfiguration) ser.Deserialize (reader, typeof (VersionControlConfiguration));
-					} finally {
-						reader.Close ();
+						XmlDataSerializer ser = new XmlDataSerializer (dataContext);
+						using (var reader = File.OpenText (ConfigFile))
+							configuration = (VersionControlConfiguration) ser.Deserialize (reader, typeof (VersionControlConfiguration));
+					} catch {
+						((FilePath) ConfigFile).Delete ();
 					}
 				}
 				if (configuration == null)
@@ -621,12 +621,9 @@ namespace MonoDevelop.VersionControl
 		{
 			if (configuration != null) {
 				XmlDataSerializer ser = new XmlDataSerializer (dataContext);
-				XmlTextWriter tw = new XmlTextWriter (new StreamWriter (ConfigFile));
-				tw.Formatting = Formatting.Indented;
-				try {
+				using (var tw = new XmlTextWriter (File.CreateText (ConfigFile))) {
+					tw.Formatting = Formatting.Indented;
 					ser.Serialize (tw, configuration, typeof (VersionControlConfiguration));
-				} finally {
-					tw.Close ();
 				}
 			}
 		}

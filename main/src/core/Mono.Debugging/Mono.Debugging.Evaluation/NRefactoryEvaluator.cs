@@ -1,9 +1,10 @@
 // NRefactoryEvaluator.cs
 //
-// Author:
-//   Lluis Sanchez Gual <lluis@novell.com>
+// Authors: Lluis Sanchez Gual <lluis@novell.com>
+//          Jeffrey Stedfast <jeff@xamarin.com>
 //
 // Copyright (c) 2008 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2012 Xamarin Inc. (http://www.xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -427,7 +428,15 @@ namespace Mono.Debugging.Evaluation
 		
 		public override object VisitObjectCreateExpression (ICSharpCode.OldNRefactory.Ast.ObjectCreateExpression objectCreateExpression, object data)
 		{
-			throw CreateNotSupportedError ();
+			var type = objectCreateExpression.CreateType.AcceptVisitor (this, data) as TypeValueReference;
+			var args = new List<object> ();
+
+			foreach (var param in objectCreateExpression.Parameters) {
+				ValueReference val = param.AcceptVisitor (this, data) as ValueReference;
+				args.Add (val != null ? val.Value : null);
+			}
+
+			return LiteralValueReference.CreateTargetObjectLiteral (ctx, name, ctx.Adapter.CreateValue (ctx, type.Type, args.ToArray ()));
 		}
 		
 		public override object VisitInvocationExpression (ICSharpCode.OldNRefactory.Ast.InvocationExpression invocationExpression, object data)
@@ -863,12 +872,8 @@ namespace Mono.Debugging.Evaluation
 		public override object VisitBaseReferenceExpression (ICSharpCode.OldNRefactory.Ast.BaseReferenceExpression baseReferenceExpression, object data)
 		{
 			ValueReference thisobj = ctx.Adapter.GetThisReference (ctx);
-			if (thisobj != null) {
-				object baseob = ctx.Adapter.GetBaseValue (ctx, thisobj.Value);
-				if (baseob == null)
-					throw CreateParseError ("'base' reference not available.");
-				return LiteralValueReference.CreateTargetObjectLiteral (ctx, name, baseob);
-			}
+			if (thisobj != null)
+				return LiteralValueReference.CreateTargetBaseObjectLiteral (ctx, name, thisobj.Value);
 			else
 				throw CreateParseError ("'base' reference not available in static methods.");
 		}

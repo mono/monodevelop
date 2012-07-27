@@ -166,7 +166,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			// Default implementation: do nothing
 			// Derived classes are supposed to enter the text editor's linked state.
-			return null;
+			
+			// Immediately signal the task as completed:
+			var tcs = new TaskCompletionSource<object>();
+			tcs.SetResult(null);
+			return tcs.Task;
 		}
 		
 		public void Replace (AstNode node, AstNode replaceWith)
