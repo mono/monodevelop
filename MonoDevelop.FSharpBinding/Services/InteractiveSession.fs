@@ -67,7 +67,22 @@ type InteractiveSession() =
   member x.PromptReady = promptReady.Publish
   
   member x.Kill() = 
-    fsiProcess.Kill()
+    if not fsiProcess.HasExited then 
+      x.SendCommand "#q"
+      for i in 0 .. 10 do 
+        if not fsiProcess.HasExited then 
+           Debug.tracef "Interactive" "waiting for process exit after #q... %d" (i*200)
+           fsiProcess.WaitForExit(200) |> ignore
+           
+    if not fsiProcess.HasExited then 
+      fsiProcess.Kill()
+      for i in 0 .. 10 do 
+        if not fsiProcess.HasExited then 
+           Debug.tracef "Interactive" "waiting for process exit after kill... %d" (i*200)
+           fsiProcess.WaitForExit(200) |> ignore
+           
+    if not fsiProcess.HasExited then 
+       Debug.tracef "Interactive" "failed to get process exit after kill, may get hang on mac" 
     
   member x.SendCommand(str:string) = 
     waitingForResponse <- true
