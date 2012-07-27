@@ -7,15 +7,15 @@
        description = "GNOME Platform Support for MonoDevelop"
        category    = "MonoDevelop Core"
        flags       = "Hidden"
-       version     = "3.0.4.1">
+       version     = "3.0.4">
 
 	<Runtime>
 		<Import assembly="GnomePlatform.dll"/>
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="3.0.4.1"/>
-		<Addin id="Ide" version="3.0.4.1"/>
+		<Addin id="Core" version="3.0.4"/>
+		<Addin id="Ide" version="3.0.4"/>
 	</Dependencies>
 
 	<Extension path = "/MonoDevelop/Core/PlatformService">
