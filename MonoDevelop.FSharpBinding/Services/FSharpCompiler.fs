@@ -317,7 +317,12 @@ module SourceCodeServices =
     member x.ProjectOptions : string array = wrapped?ProjectOptions
     member x.IsIncompleteTypeCheckEnvironment : bool = wrapped?IsIncompleteTypeCheckEnvironment 
     member x.UseScriptResolutionRules : bool = wrapped?UseScriptResolutionRules
-    member x.LoadTime : System.DateTime = wrapped?LoadTime
+    member x.LoadTime : System.DateTime = 
+          // This property only available with F# 2.0
+          let fsc = FSharpCompiler.Current
+          match fsc.ActualVersion with 
+          | FSharpCompilerVersion.FSharp_2_0 -> System.DateTime.Now
+          | FSharpCompilerVersion.FSharp_3_0 -> try wrapped?LoadTime with _ -> System.DateTime.Now
     static member Create(fileName:string, fileNames:string[], options:string[], incomplete:bool, scriptRes:bool, loadTime:System.DateTime) =
       let res = 
           let fsc = FSharpCompiler.Current
