@@ -1,4 +1,4 @@
-<WorkspaceItem ctype="Workspace">
+<WorkspaceItem name="MonoDevelop" ctype="Workspace">
   <Items>
     <Item>extras/extras.mdw</Item>
     <Item>main/Main.sln</Item>
