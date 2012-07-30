@@ -29,7 +29,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -->
 
- <EditorStyle name="Solarized_Dark" _description="Solarized color stlye (dark)">
+ <EditorStyle name="Solarized Dark" _description="An artful, dark scheme that's easy on the eyes.">
  
 	<!-- solarized palette -->
 	

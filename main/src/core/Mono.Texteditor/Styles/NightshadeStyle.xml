@@ -1,4 +1,4 @@
-<!-- IrBlackStyle.xml
+<!-- NightshadeStyle.xml
 
  Author:
    Anirudh Sanjeev <anirudh@anirudhsanjeev.org>
@@ -22,7 +22,7 @@
  THE SOFTWARE. -->
  
  <!-- This is based on the VIM scheme from http://blog.infinitered.com/entries/show/8 -->
- <EditorStyle name="IrBlack" _description="IR Black style from Vim">
+ <EditorStyle name="Nightshade" _description="An inky scheme with vibrant highlights.">
 	<!-- tango palette -->
 	<Color name="butter1" value="#fce94f"/>
 	<Color name="butter2" value="#edd400"/>

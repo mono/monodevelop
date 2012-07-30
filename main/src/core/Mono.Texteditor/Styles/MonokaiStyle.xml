@@ -29,7 +29,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -->
 
-<EditorStyle name="Monokai" _description="Monokai style from Textmate color theme.">
+<EditorStyle name="Monokai" _description="A smooth, dusky scheme from TextMate.">
 	<Color name="errorColor" value="#FF0000"/>
 
 	<Style name="text" color="#F8F8F2" bgColor="#272822">
