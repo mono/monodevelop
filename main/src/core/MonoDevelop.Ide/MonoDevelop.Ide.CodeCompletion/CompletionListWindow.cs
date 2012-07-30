@@ -88,8 +88,17 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 
+		void RemoveWindowOpacityTimer ()
+		{
+			if (windowOpacityTimer != 0) {
+				GLib.Source.Remove (windowOpacityTimer);
+				windowOpacityTimer = 0;
+			}
+		}
+
 		protected override void OnDestroyed ()
 		{
+			RemoveWindowOpacityTimer ();
 			if (declarationviewwindow != null) {
 				declarationviewwindow.Destroy ();
 				declarationviewwindow = null;
@@ -145,6 +154,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		public bool PreProcessKeyEvent (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
+			if (key == Gdk.Key.Escape) {
+				RemoveWindowOpacityTimer ();
+				windowOpacityTimer = GLib.Timeout.Add (10, new WindowOpacityTimer (this, true).Timer);
+				return false;
+			}
+
 			KeyActions ka = KeyActions.None;
 			bool keyHandled = false;
 			foreach (ICompletionKeyHandler handler in CompletionDataList.KeyHandler) {
@@ -247,6 +262,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 					//completionWidget.SelectedLength;
 					StartOffset = completionWidget.CaretOffset;
 					ResetSizes ();
+					Opacity = 0;
+					windowOpacityTimer = GLib.Timeout.Add (10, new WindowOpacityTimer (this, false).Timer);
 					ShowAll ();
 					UpdateWordSelection ();
 					UpdateDeclarationView ();
@@ -270,6 +287,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 					CompletionWindowManager.HideWindow ();
 					return false;
 				} else {
+
+					Opacity = 0;
+					windowOpacityTimer = GLib.Timeout.Add (10, new WindowOpacityTimer (this, false).Timer);
 					ShowAll ();
 					UpdateDeclarationView ();
 				}
@@ -418,6 +438,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		protected override void OnSelectionChanged ()
 		{
+
 			base.OnSelectionChanged ();
 			UpdateDeclarationView ();
 		}
@@ -426,7 +447,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		int declarationViewX = -1, declarationViewY = -1;
 		uint declarationViewTimer = 0;
 		uint declarationViewWindowOpacityTimer = 0;
-		
+		uint windowOpacityTimer = 0;
+
 		void UpdateDeclarationView ()
 		{
 			if (completionDataList == null || List.SelectionFilterIndex >= completionDataList.Count || List.SelectionFilterIndex == -1)
@@ -518,11 +540,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 			public double Opacity { get; private set; }
 			
 			CompletionListWindow window;
-//			static int num = 0;
-//			int id;
+			//			static int num = 0;
+			//			int id;
 			public OpacityTimer (CompletionListWindow window)
 			{
-//				id = num++;
+				//				id = num++;
 				this.window = window;
 				Opacity = 0.0;
 				window.declarationviewwindow.Opacity = Opacity;
@@ -535,6 +557,37 @@ namespace MonoDevelop.Ide.CodeCompletion
 				bool result = Math.Round (Opacity * 10.0) < 10;
 				if (!result)
 					window.declarationViewWindowOpacityTimer = 0;
+				return result;
+			}
+		}
+
+		class WindowOpacityTimer
+		{
+			public double Opacity { get; private set; }
+			int runtime = 150;
+			DateTime startTime;
+			readonly bool hide;
+
+			CompletionListWindow window;
+			public WindowOpacityTimer (CompletionListWindow window, bool hide)
+			{
+				this.startTime = DateTime.Now;
+				this.window = window;
+				this.hide = hide;
+				Opacity = hide ? 1.0 : 0.0;
+				window.declarationviewwindow.Opacity = Opacity;
+			}
+			
+			public bool Timer ()
+			{
+				Opacity = Math.Min (1.0, (DateTime.Now - startTime).TotalMilliseconds / (double)runtime);
+				window.Opacity = hide ? 1.0 - Opacity : Opacity;
+				bool result = Opacity < 1.0;
+				if (!result) {
+					window.windowOpacityTimer = 0;
+					if (hide)
+						CompletionWindowManager.HideWindow ();
+				}
 				return result;
 			}
 		}
