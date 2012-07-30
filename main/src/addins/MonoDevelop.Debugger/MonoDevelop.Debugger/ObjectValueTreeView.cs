@@ -929,6 +929,7 @@ namespace MonoDevelop.Debugger
 			editing = true;
 			editEntry = (Gtk.Entry) args.Editable;
 			editEntry.KeyPressEvent += OnEditKeyPress;
+			editEntry.KeyReleaseEvent += OnEditKeyRelease;
 			if (StartEditing != null)
 				StartEditing (this, EventArgs.Empty);
 		}
@@ -937,21 +938,37 @@ namespace MonoDevelop.Debugger
 		{
 			editing = false;
 			editEntry.KeyPressEvent -= OnEditKeyPress;
+			editEntry.KeyReleaseEvent -= OnEditKeyRelease;
 			CompletionWindowManager.HideWindow ();
 			currentCompletionData = null;
 			if (EndEditing != null)
 				EndEditing (this, EventArgs.Empty);
 		}
-		
+
 		[GLib.ConnectBeforeAttribute]
 		void OnEditKeyPress (object s, Gtk.KeyPressEventArgs args)
+		{
+			if (CompletionWindowManager.IsVisible) {
+				if ((args.Event.Key == Gdk.Key.Return ||
+				     args.Event.Key == Gdk.Key.Down || 
+				     args.Event.Key == Gdk.Key.Up)) {
+					args.RetVal = true;
+				}
+			}
+		}
+		
+		[GLib.ConnectBeforeAttribute]
+		void OnEditKeyRelease (object s, Gtk.KeyReleaseEventArgs args)
 		{
 			Gtk.Entry entry = (Gtk.Entry)s;
 			
 			if (currentCompletionData != null) {
-				bool ret = CompletionWindowManager.PreProcessKeyEvent (args.Event.Key, (char)args.Event.Key, args.Event.State);
-				CompletionWindowManager.PostProcessKeyEvent (args.Event.Key, (char)args.Event.Key, args.Event.State);
-				args.RetVal = ret;
+				char keyChar = (char)args.Event.Key;
+				if ((args.Event.Key == Gdk.Key.Down || args.Event.Key == Gdk.Key.Up)) {
+					keyChar = '\0';
+				}
+				CompletionWindowManager.PreProcessKeyEvent (args.Event.Key, keyChar, args.Event.State);
+				CompletionWindowManager.PostProcessKeyEvent (args.Event.Key, keyChar, args.Event.State);
 			}
 			
 			Gtk.Application.Invoke (delegate {
