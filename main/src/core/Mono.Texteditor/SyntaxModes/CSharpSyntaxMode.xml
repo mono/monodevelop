@@ -149,13 +149,11 @@
 		<Word>char</Word>
 		<Word>decimal</Word>
 		<Word>double</Word>
-		<Word>enum</Word>
 		<Word>float</Word>
 		<Word>int</Word>
 		<Word>long</Word>
 		<Word>sbyte</Word>
 		<Word>short</Word>
-		<Word>struct</Word>
 		<Word>uint</Word>
 		<Word>ushort</Word>
 		<Word>ulong</Word>
@@ -184,6 +182,8 @@
 		<Word>class</Word>
 		<Word>interface</Word>
 		<Word>delegate</Word>
+		<Word>enum</Word>
+		<Word>struct</Word>
 	</Keywords>
 	
 	<Keywords color = "keyword.parameter">
