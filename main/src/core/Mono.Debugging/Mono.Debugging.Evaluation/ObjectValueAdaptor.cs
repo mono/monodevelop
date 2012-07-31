@@ -451,10 +451,24 @@ namespace Mono.Debugging.Evaluation
 						continue;
 
 					return true;
-				}
-				catch (Exception ex) {
+				} catch (Exception ex) {
 					ctx.WriteDebuggerError (ex);
 				}
+			}
+
+			if (IsArray (ctx, proxy))
+				return true;
+
+			if (ctx.Options.GroupStaticMembers && HasMembers (ctx, type, proxy, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | flattenFlag))
+				return true;
+
+			if (groupPrivateMembers && HasMembers (ctx, type, proxy, BindingFlags.Instance | BindingFlags.NonPublic | flattenFlag | staticFlag))
+				return true;
+
+			if (!ctx.Options.FlattenHierarchy) {
+				object baseType = GetBaseType (ctx, type, false);
+				if (baseType != null)
+					return true;
 			}
 
 			return false;
