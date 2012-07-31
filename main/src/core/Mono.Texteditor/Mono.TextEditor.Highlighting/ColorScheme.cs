@@ -681,6 +681,14 @@ namespace Mono.TextEditor.Highlighting
 			if (styleLookupTable.TryGetValue (colorString, out style))
 				return style.CairoColor;
 			if (colorString.Length > 0 && colorString[0] == '#') {
+				if (colorString.Length == 4) {
+					// #RGB -> #RRGGBB
+					colorString = string.Format ("#{0}{0}{1}{1}{2}{2}", colorString[1], colorString[2], colorString[3]);
+				}
+				if (colorString.Length == 5) {
+					// #RAGB -> #AARRGGBB
+					colorString = string.Format ("#{0}{0}{1}{1}{2}{2}{3}{3}", colorString[1], colorString[2], colorString[3], colorString[4]);
+				}
 				if (colorString.Length == 9) {
 					// #AARRGGBB
 					return new Cairo.Color ( GetNumber (colorString, 3) / 255.0, GetNumber (colorString, 5) / 255.0, GetNumber (colorString, 7) / 255.0, GetNumber (colorString, 1) / 255.0);
