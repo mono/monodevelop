@@ -39,13 +39,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 {
 	public class ListWidget : Gtk.DrawingArea
 	{
-		int margin = 0;
 		int listWidth = 300;
 		Pango.Layout layout;
 		ListWindow win;
 		int selection = 0;
-		int page = 0;
-		
+
 		int rowHeight;
 		bool buttonPressed;
 		public event EventHandler SelectionChanged;
@@ -106,7 +104,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			set {
 				inCategoryMode = value;
 				this.CalcVisibleRows ();
-				this.UpdatePage ();
+				this.ScrollToSelectedItem ();
 				if (inCategoryMode)
 					SelectFirstItemInCategory ();
 			}
@@ -120,6 +118,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		Cairo.Color darkSearchBackground;
 
 		Cairo.Color color1, color2;
+		Cairo.Color headerColor1, headerColor2;
 
 		const int marginIconSpacing = 4;
 		const int iconTextSpacing = 6;
@@ -141,15 +140,29 @@ namespace MonoDevelop.Ide.CodeCompletion
 			lightSearchBackground = CairoExtensions.ParseColor ("f2f2f2");
 			color1 = CairoExtensions.ParseColor ("cccccc");
 			color2 = CairoExtensions.ParseColor ("cccccc");
+
+			headerColor1 = CairoExtensions.ParseColor ("dddddd");
+			headerColor2 = CairoExtensions.ParseColor ("cccccc");
 		}
-		
+
+		Adjustment vadj;
+
+		protected override void OnSetScrollAdjustments (Adjustment hadj, Adjustment vadj)
+		{
+			this.vadj = vadj;
+			base.OnSetScrollAdjustments (hadj, vadj);
+			if (this.vadj != null) {
+				this.vadj.ValueChanged += (sender, e) => QueueDraw ();
+				SetAdjustments ();
+			}
+		}
+
 		public void ResetState ()
 		{
 			categories.Clear ();
 			filteredItems.Clear ();
 			oldCompletionString = completionString = null;
 			selection = 0;
-			page = 0;
 			AutoSelect = false;
 		}
 		
@@ -179,7 +192,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			set {
 				if (value != selection) {
 					selection = value;
-					UpdatePage ();
+					ScrollToSelectedItem ();
 					OnSelectionChanged (EventArgs.Empty);
 					this.QueueDraw ();
 				}
@@ -236,9 +249,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return;
 			Category newCategory = categories[next];
 			SelectionFilterIndex = newCategory.Items[0];
-			if (next == 0)
-				Page = 0;
-			UpdatePage ();
+			ScrollToSelectedItem ();
 		}
 		
 		int CurrentCategory ()
@@ -258,24 +269,22 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return;
 
 			if (SelectedItem == newSelection && relative < 0) {
-				Page = 0;
+				SelectedItem = 0;
 			} else {
 				SelectedItem = newSelection;
 			}
 		}
 		
-		public void UpdatePage ()
+		public void ScrollToSelectedItem ()
 		{
-			int index = GetIndex (true, SelectedItem);
-			if (index < page || index >= page + VisibleRows)
-				page = index - (VisibleRows / 2);
-			int itemCount = filteredItems.Count;
-			if (InCategoryMode) {
-				itemCount += categories.Count;
-				if (categories.Any (cat => cat.CompletionCategory == null))
-					itemCount--;
+			var area = GetRowArea (SelectedItem);
+			if (area.Y < vadj.Value) {
+				vadj.Value = area.Y;
+				return;
 			}
-			Page = System.Math.Max (0, System.Math.Min (page, itemCount - VisibleRows - 1));
+			if (vadj.Value + Allocation.Height < area.Bottom) {
+				vadj.Value = Math.Max (0, area.Bottom - vadj.PageSize);
+			}
 		}
 		
 		bool autoSelect;
@@ -295,17 +304,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public bool SelectionEnabled {
 			get {
 				return AutoSelect && (AutoCompleteEmptyMatch || !string.IsNullOrEmpty (CompletionString));
-			}
-		}
-		
-		public int Page {
-			get { return page; }
-			set {
-				if (page != value) {
-					page = value;
-					this.QueueDraw ();
-				}
-				OnSelectionChanged (EventArgs.Empty);
 			}
 		}
 		
@@ -361,9 +359,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 				int width = alloc.Width;
 				int height = alloc.Height;
 				
-				int lineWidth = width - margin * 2;
-				int xpos = margin + iconTextSpacing;
-				int yPos = margin;
+				int lineWidth = width;
+				int xpos = iconTextSpacing;
+				int yPos = (int)-vadj.Value;
 				
 				if (PreviewCompletionString) {
 					layout.SetText (
@@ -371,7 +369,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 					);
 					int wi, he;
 					layout.GetPixelSize (out wi, out he);
-					window.DrawRectangle (this.Style.BaseGC (StateType.Insensitive), true, margin, yPos, lineWidth, he + iconTextSpacing);
+					context.Rectangle (0, yPos, lineWidth, he + iconTextSpacing);
+					context.Fill ();
+
 					window.DrawLayout (
 						string.IsNullOrEmpty (CompletionString) ? this.Style.TextGC (StateType.Insensitive) : this.Style.TextGC (StateType.Normal),
 						xpos,
@@ -395,26 +395,26 @@ namespace MonoDevelop.Ide.CodeCompletion
 					return true;
 				}
 				
-				var textGCInsensitive = this.Style.TextGC (StateType.Insensitive);
+				var textGCInsensitive = this.Style.WhiteGC;
 				var textGCNormal = this.Style.TextGC (StateType.Normal);
 				var fgGCNormal = this.Style.ForegroundGC (StateType.Normal);
 				var matcher = CompletionMatcher.CreateCompletionMatcher (CompletionString);
 				var highlightColor = HighlightColor;
 				Iterate (true, ref yPos, delegate (Category category, int ypos) {
-					if (ypos >= height - margin)
+					if (ypos >= height)
 						return;
 					
 					//	window.DrawRectangle (this.Style.BackgroundGC (StateType.Insensitive), true, 0, yPos, width, rowHeight);
 					int x = 2;
 					if (category.CompletionCategory != null && !string.IsNullOrEmpty (category.CompletionCategory.Icon)) {
 						var icon = ImageService.GetPixbuf (category.CompletionCategory.Icon, IconSize.Menu);
-						window.DrawPixbuf (fgGCNormal, icon, 0, 0, margin, ypos, icon.Width, icon.Height, Gdk.RgbDither.None, 0, 0);
+						window.DrawPixbuf (fgGCNormal, icon, 0, 0, 0, ypos, icon.Width, icon.Height, Gdk.RgbDither.None, 0, 0);
 						x = icon.Width + 4;
 					}
 					context.Rectangle (0, ypos, Allocation.Width, rowHeight);
 					var linearGradient =new Cairo.LinearGradient (0, ypos+ 0.5, 0, ypos + rowHeight + 0.5);
-					linearGradient.AddColorStop (0, color1);
-					linearGradient.AddColorStop (0, color2);
+					linearGradient.AddColorStop (0, headerColor1);
+					linearGradient.AddColorStop (0, headerColor2);
 					context.Pattern = linearGradient;
 					context.Fill ();
 			
@@ -422,13 +422,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 					window.DrawLayout (textGCInsensitive, x, ypos, layout);
 					layout.SetMarkup ("");
 				}, delegate (Category curCategory, int item, int itemidx, int ypos) {
-					if (ypos >= height - margin)
+					if (ypos >= height)
 						return false;
 					const int categoryModeItemIndenting = 0;
 					if (InCategoryMode && curCategory != null && curCategory.CompletionCategory != null) {
-						xpos = margin + iconTextSpacing + categoryModeItemIndenting;
+						xpos = iconTextSpacing + categoryModeItemIndenting;
 					} else {
-						xpos = margin + iconTextSpacing;
+						xpos = iconTextSpacing;
 					}
 					string markup = win.DataProvider.HasMarkup (item) ? (win.DataProvider.GetMarkup (item) ?? "&lt;null&gt;") : GLib.Markup.EscapeText (win.DataProvider.GetText (item) ?? "<null>");
 					string description = win.DataProvider.GetDescription (item);
@@ -499,7 +499,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 						window.DrawLayout (textGCNormal, xpos + iconWidth + 2, typos, layout);
 					} else {
 						context.Color = lightSearchBackground;
-						var xSpacing = marginIconSpacing + iconTextSpacing + 16 + margin;
+						var xSpacing = marginIconSpacing + iconTextSpacing + 16;
 						if (InCategoryMode && curCategory != null && curCategory.CompletionCategory != null)
 							xSpacing += categoryModeItemIndenting;
 						context.Rectangle (0, ypos + 0.5, xSpacing, he + iconTextSpacing - 1);
@@ -597,7 +597,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				int iconWidth, iconHeight;
 				if (!Gtk.Icon.SizeLookup (Gtk.IconSize.Menu, out iconWidth, out iconHeight))
 					iconHeight = iconWidth = 16;
-				var xSpacing = marginIconSpacing + iconTextSpacing + margin;
+				var xSpacing = marginIconSpacing + iconTextSpacing;
 				return iconWidth + xSpacing + 2 + 1;
 			}
 		}
@@ -667,7 +667,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			
 			SelectFirstItemInCategory ();
 			CalcVisibleRows ();
-			UpdatePage ();
+			SetAdjustments ();
+			ScrollToSelectedItem ();
 			
 			OnWordsFiltered (EventArgs.Empty);
 			oldCompletionString = CompletionString;
@@ -678,9 +679,18 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (string.IsNullOrEmpty (CompletionString) && inCategoryMode)
 				selection = categories.First ().Items.First ();
 		}
+
+		void SetAdjustments ()
+		{
+			if (vadj == null)
+				return;
+			vadj.SetBounds (0, filteredItems.Count * rowHeight, rowHeight, Allocation.Height, Allocation.Height);
+		}
 		
 		protected virtual void OnWordsFiltered (EventArgs e)
 		{
+			SetAdjustments ();
+			this.vadj.Value = 0;
 			EventHandler handler = this.WordsFiltered;
 			if (handler != null)
 				handler (this, e);
@@ -690,32 +700,30 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		int GetRowByPosition (int ypos)
 		{
-			return GetItem (true, page + (ypos - margin) / rowHeight - (PreviewCompletionString ? 1 : 0));
+			return GetItem (true, ((int)vadj.Value + ypos) / rowHeight - (PreviewCompletionString ? 1 : 0));
 		}
 		
 		public Gdk.Rectangle GetRowArea (int row)
 		{
-			if (this.GdkWindow == null)
-				return Gdk.Rectangle.Zero;
-			row -= page;
-			int winWidth, winHeight;
-			this.GdkWindow.GetSize (out winWidth, out winHeight);
-			return new Gdk.Rectangle (margin, margin + rowHeight * row, winWidth, rowHeight);
-		}
-		
-		public int VisibleRows {
-			get {
-				int rowWidth;
-				layout.GetPixelSize (out rowWidth, out rowHeight);
-				rowHeight += 4;
-				return Allocation.Height / rowHeight;
-			}
+			int outpos = 0;
+			int yPos = 0;
+			Iterate (false, ref yPos, delegate (Category category, int ypos) {
+			}, delegate (Category curCategory, int item, int itemIndex, int ypos) {
+				if (item == row) {
+					outpos = ypos;
+					return false;
+				}
+				return true;
+			});
+			
+			return new Gdk.Rectangle (0, outpos, Allocation.Width, rowHeight);
 		}
 		
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
 			base.OnSizeAllocated (allocation);
-			UpdatePage ();
+			SetAdjustments ();
+			ScrollToSelectedItem ();
 		}
 		
 		protected override void OnSizeRequested (ref Requisition requisition)
@@ -726,25 +734,23 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		void CalcVisibleRows ()
 		{
-			int winHeight = 200;
 			int lvWidth, lvHeight;
 			this.GetSizeRequest (out lvWidth, out lvHeight);
 			
 			int rowWidth;
 			layout.GetPixelSize (out rowWidth, out rowHeight);
 			rowHeight += 4;
-			int requestedVisibleRows = (winHeight + 4 - margin * 2) / rowHeight;
-			
+
 			int viewableCats = InCategoryMode ? categories.Count: 0;
 			if (InCategoryMode && categories.Any (cat => cat.CompletionCategory == null))
 				viewableCats--;
-			int newHeight = (rowHeight * Math.Max (1, Math.Min (requestedVisibleRows, Math.Max (1, filteredItems.Count + viewableCats)))) + margin * 2;
+			int newHeight = rowHeight * 8;
 			if (PreviewCompletionString) {
 				newHeight += rowHeight;
 			}
-			
 			if (lvWidth != listWidth || lvHeight != newHeight) 
 				this.SetSizeRequest (listWidth, newHeight);
+			ScrollToSelectedItem ();
 		}
 		
 		const int spacing = 2;
@@ -758,7 +764,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (InCategoryMode) {
 				foreach (Category category in this.categories) {
 	//				if (category.CompletionCategory != null) {
-						if (!startAtPage || curItem >= page) {
+						if (!startAtPage|| ypos + rowHeight >= vadj.Value) {
 							if (catAction != null)  
 								catAction (category, ypos);
 							ypos += rowHeight;
@@ -773,7 +779,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			} else {
 				int startItem = 0;
 				if (startAtPage)
-					startItem = curItem = page;
+					startItem = curItem = Math.Max (0, (int)(ypos / rowHeight));
 				if (action != null) {
 					for (int item = startItem; item < filteredItems.Count; item++) {
 						bool result = action (null, filteredItems[item], curItem, ypos);
@@ -793,7 +799,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		bool IterateItems (Category category, bool startAtPage, ref int ypos, ref int curItem, ItemAction action)
 		{
 			foreach (int item in category.Items) {
-				if (!startAtPage || curItem >= page) {
+				if (!startAtPage || ypos + rowHeight >= vadj.Value) {
 					if (action != null) {
 						bool result = action (category, item, curItem, ypos);
 						if (!result)

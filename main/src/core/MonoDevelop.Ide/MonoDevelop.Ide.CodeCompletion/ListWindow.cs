@@ -52,7 +52,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 	public class ListWindow : Gtk.Window
 	{
-		internal VScrollbar scrollbar;
 		ListWidget list;
 		Widget footer;
 		VBox vbox;
@@ -67,33 +66,25 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return list.filteredItems;
 			}
 		}
+
+		internal ScrolledWindow scrollbar;
 		
 		public ListWindow () : base(Gtk.WindowType.Popup)
 		{
 			vbox = new VBox ();
-			HBox box = new HBox ();
 			list = new ListWidget (this);
 			list.SelectionChanged += new EventHandler (OnSelectionChanged);
 			list.ScrollEvent += new ScrollEventHandler (OnScrolled);
 			
-			box.PackStart (list, true, true, 0);
 			this.BorderWidth = 1;
 
-			scrollbar = new VScrollbar (null);
-			scrollbar.ValueChanged += new EventHandler (OnScrollChanged);
-			box.PackStart (scrollbar, false, false, 0);
+			scrollbar = new Gtk.ScrolledWindow ();
+			scrollbar.Child = list;
 			list.ButtonPressEvent += delegate(object o, ButtonPressEventArgs args) {
 				if (args.Event.Button == 1 && args.Event.Type == Gdk.EventType.TwoButtonPress)
 					DoubleClick ();
 			};
-			list.WordsFiltered += delegate {
-				UpdateScrollBar ();
-			};
-			list.SizeAllocated += delegate {
-				UpdateScrollBar ();
-			};
-			vbox.PackStart (box, true, true, 0);
-			Add (vbox);
+			Add (scrollbar);
 			this.AutoSelect = true;
 			this.TypeHint = WindowTypeHint.Menu;
 		}
@@ -139,25 +130,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 				Show ();
 			
 			int width = list.WidthRequest;
-			int height = list.HeightRequest + (footer != null ? footer.Allocation.Height : 0);
+			int height = list.HeightRequest + 2 + (footer != null ? footer.Allocation.Height : 0);
 			
 			SetSizeRequest (width, height);
 			if (IsRealized) 
 				Resize (width, height);
-		}
-
-		void UpdateScrollBar ()
-		{
-			double pageSize = Math.Max (0, list.VisibleRows);
-			double upper = Math.Max (0, list.filteredItems.Count - 1);
-			scrollbar.Adjustment.SetBounds (0, upper, 1, pageSize, pageSize);
-			if (pageSize >= upper) {
-				this.scrollbar.Value = -1;
-				this.scrollbar.Visible = false;
-			} else {
-				this.scrollbar.Value = list.Page;
-				this.scrollbar.Visible = true;
-			}
 		}
 
 
@@ -383,7 +360,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					return KeyActions.Process;
 				if (list.filteredItems.Count < 2)
 					return KeyActions.CloseWindow | KeyActions.Process;
-				list.MoveCursor (-(list.VisibleRows - 1));
+				list.MoveCursor (-8);
 				return KeyActions.Ignore;
 
 			case Gdk.Key.Page_Down:
@@ -391,7 +368,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					return KeyActions.Process;
 				if (list.filteredItems.Count < 2)
 					return KeyActions.CloseWindow | KeyActions.Process;
-				list.MoveCursor (list.VisibleRows - 1);
+				list.MoveCursor (8);
 				return KeyActions.Ignore;
 
 			case Gdk.Key.Left:
@@ -604,17 +581,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 			SelectEntry (matchedIndex);
 		}
 
-		void OnScrollChanged (object o, EventArgs args)
-		{
-			list.Page = (int)scrollbar.Value;
-		}
-
 		void OnScrolled (object o, ScrollEventArgs args)
 		{
 			if (!scrollbar.Visible)
 				return;
 			
-			var adj = scrollbar.Adjustment;
+			var adj = scrollbar.Vadjustment;
 			var alloc = Allocation;
 			
 			//This widget is a special case because it's always aligned to items as it scrolls.
@@ -638,7 +610,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		void OnSelectionChanged (object o, EventArgs args)
 		{
-			scrollbar.Value = list.Page;
 			OnSelectionChanged ();
 		}
 
