@@ -615,18 +615,20 @@ namespace Mono.TextEditor.Utils
 
 			public override byte[][] StateTable { get { return table; } }
 
+
+			const int westernEncodingCodePage = 1252;
 			/// <summary>
 			/// Try to guess the windows code page using the default encoding, on non windows system default
-			/// to 1251 (western encoding).
+			/// to 1252 (western encoding).
 			/// </summary>
 			int WindowsCodePage {
 				get {
 					if (Platform.IsWindows) {
 						int cp = Encoding.Default.CodePage;
-						if (cp >= 1200 && cp < 1300)
+						if (cp >= 1250 && cp < 1260)
 							return cp;
 					}
-					return 1252;
+					return westernEncodingCodePage;
 				}
 			}
 
