@@ -108,7 +108,7 @@ namespace MonoDevelop.MacIntegration
 		}
 
 		public override string DefaultMonospaceFont {
-			get { return "Monaco 12"; }
+			get { return "Menlo 12"; }
 		}
 		
 		public override string Name {
