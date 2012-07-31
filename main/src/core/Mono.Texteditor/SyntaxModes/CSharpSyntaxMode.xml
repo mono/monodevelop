@@ -127,6 +127,8 @@
 	
 	<Keywords color = "keyword.modifier">
 		<Word>abstract</Word>
+		<Word>async</Word>
+		<Word>await</Word>
 		<Word>const</Word>
 		<Word>event</Word>
 		<Word>extern</Word>
@@ -160,6 +162,7 @@
 		<Word>object</Word>
 		<Word>string</Word>
 		<Word>var</Word>
+		<Word>dynamic</Word>
 	</Keywords>
 	
 	<Keywords color = "constant.language.void">

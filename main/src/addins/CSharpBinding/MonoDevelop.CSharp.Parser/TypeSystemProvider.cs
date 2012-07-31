@@ -372,6 +372,12 @@ namespace MonoDevelop.CSharp.Parser
 				return new Version (1, 0, 0, 0);
 			case LangVersion.ISO_2:
 				return new Version (2, 0, 0, 0);
+			case LangVersion.Version3:
+				return new Version (3, 0, 0, 0);
+			case LangVersion.Version4:
+				return new Version (4, 0, 0, 0);
+			case LangVersion.Version5:
+				return new Version (5, 0, 0, 0);
 			}
 			return new Version (4, 0, 0, 0);;
 		}

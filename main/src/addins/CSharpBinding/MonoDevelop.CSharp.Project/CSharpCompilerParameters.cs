@@ -37,7 +37,10 @@ namespace MonoDevelop.CSharp.Project
 	public enum LangVersion {
 		Default = 0,
 		ISO_1   = 1,
-		ISO_2   = 2
+		ISO_2   = 2,
+		Version3 = 3,
+		Version4 = 4,
+		Version5 = 5
 	}
 	
 	/// <summary>
