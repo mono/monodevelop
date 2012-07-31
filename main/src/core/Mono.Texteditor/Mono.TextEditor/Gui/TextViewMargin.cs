@@ -2498,7 +2498,19 @@ namespace Mono.TextEditor
 				extendingMarker.Draw (textEditor, cr, lineNr, lineArea);
 			
 			lastLineRenderWidth = pangoPosition / Pango.Scale.PangoScale;
+			if (textEditor.HAdjustment.Value > 0) {
+				cr.LineWidth = textEditor.Options.Zoom;
+				for (int i = 0; i < 5; i++) {
+
+					cr.Color = new Cairo.Color (0, 0, 0, 1 - alphatable[i]);
+					cr.MoveTo (x + i * cr.LineWidth + 0.5, y);
+					cr.LineTo (x + i * cr.LineWidth + 0.5, y + 1 + _lineHeight);
+					cr.Stroke ();
+				}
+			}
 		}
+
+		static double[] alphatable = new [] { 0.56, 0.6, 0.71, 0.84, 0.95};
 
 		internal double lastLineRenderWidth = 0;
 
