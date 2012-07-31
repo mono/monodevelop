@@ -1,10 +1,7 @@
 <!-- DefaultStyle.xml
 
- Authors: Lauri Taimila <lauri@taimila.com>
-          David Siegel <david.siegel@xamarin.com>
+ Authors: David Siegel <david.siegel@xamarin.com>
           Mike Krüger <mkrueger@xamarin.com>
-
- Copyright (c) Lauri Taimila (www.taimila.com)
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -23,8 +20,8 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE. -->
+
  <EditorStyle name="Default" _description="Bright and friendly, just like Xamarin.">
- 
 	<!-- tango palette -->
 	<Color name="butter1" value="#fce94f"/>
 	<Color name="butter2" value="#edd400"/>
@@ -54,12 +51,12 @@
 	<Color name="aluminium5" value="#555753"/>
 	<Color name="aluminium6" value="#2e3436"/>
 	
-	<!-- XCode palette -->
-	<Color name="comment-green" value="#23972d"/>
+	<Color name="comment-gray" value="#999988"/>
 	<Color name="string-red" value="#ce2f30"/>
-	<Color name="keyword-purple" value="#c12dad"/>
+	<Color name="literal-orange" value="#F57E00"/>
+	<Color name="keyword-teal" value="#009695"/>
 	<Color name="method-purple" value="#653c98"/>
-	<Color name="type-purple" value="#8046b0" />
+	<Color name="type-maroon" value="#81004e" />
 	<Color name="constant-purple" value="#4d16d8"/>
 	<Color name="method-cyan" value="#506f73"/>
 	<Color name="macro-brown" value="#774b31"/>
@@ -76,7 +73,7 @@
 	<Color name="bookmark-purple" value="#bfd2f9"/>
 	
 	<!-- color styles -->
-	<Style name="text" color="black" bgColor="white">
+	<Style name="text" color="#444" bgColor="white">
 		<Style name="background" color="white">
 			<Style name="readonly" color="aluminium1"/>
 			<Style name="searchresult-main" color="butter1"/>
@@ -151,7 +148,7 @@
 	<Style name="fold" color="aluminium4" bgColor="white"/>
 	<Style name="fold.margin" color="#2a669a" bgColor ="#b1cce3" />
 	
-	<Style name="comment" color="comment-green">
+	<Style name="comment" color="comment-gray" weight="italic">
 		<Style name="line"/>
 		<Style name="block"/>
 		<Style name="doc"/>
@@ -160,27 +157,24 @@
 			<Style name="block"/>
 			<Style name="doc"/>
 		</Style>
-		
-		<Style name="keyword" color="comment-green" weight="italic">
-			<Style name="todo" color="comment-green" weight="italic"/>
-		</Style>
-		
+		<Style name="keyword" color="type-maroon" weight="italic bold" />
 	</Style>
 	
-	<Style name="constant" color="constant-purple">
-		<Style name="language" color="constant-purple"/>
-		<Style name="language.void" color="type-purple"/>
-	</Style>
 	
-	<Style name="string" color="string-red"/>
+	<Style name="constant" color="literal-orange"/>
+	<Style name="string" color="literal-orange"/>
 	
-	<Style name="keyword" color="keyword-purple">
-		<Style name="access" color="constant-purple"/> 
-		<Style name="type" color="type-purple"/>
+	<Style name="keyword.type" color="skyblue2"/>
+	<Style name="constant.language" color="skyblue2"/>
+	<Style name="constant.language.void" color="skyblue2"/>
+	<Style name="keyword.semantic.type" color="skyblue2"/> 
+	
+	<Style name="keyword.semantic.field" color="method-purple"/>
+	<Style name="keyword.semantic.property" color="method-purple"/>
+	<Style name="keyword.semantic.method" color="method-purple" weight="bold"/>
 		
-		<Style name="semantic.type" color="type-purple"/>
-		<Style name="semantic.field" color="skyblue2"/>
-		<Style name="semantic.property" color="skyblue2"/>
+	<Style name="keyword" color="keyword-teal">
+		<Style name="access" color="constant-purple"/>
 		<Style name="semantic.error" color="invalid-red"/>
 	</Style>
 </EditorStyle>
