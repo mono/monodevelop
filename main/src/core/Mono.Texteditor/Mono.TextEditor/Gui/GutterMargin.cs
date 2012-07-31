@@ -37,6 +37,8 @@ namespace Mono.TextEditor
 		TextEditor editor;
 		int width;
 		int oldLineCountLog10 = -1;
+
+		double fontHeight;
 		
 		public GutterMargin (TextEditor editor)
 		{
@@ -70,7 +72,7 @@ namespace Mono.TextEditor
 		void CalculateWidth ()
 		{
 			using (var layout = PangoUtil.CreateLayout (editor)) {
-				layout.FontDescription = editor.Options.Font;
+				layout.FontDescription = gutterFont;
 				layout.SetText (LineCountMax.ToString ());
 				layout.Alignment = Pango.Alignment.Left;
 				layout.Width = -1;
@@ -79,6 +81,11 @@ namespace Mono.TextEditor
 				this.width += 4;
 				if (!editor.Options.ShowFoldMargin)
 					this.width += 2;
+
+				using (var metrics = editor.PangoContext.GetMetrics (layout.FontDescription, editor.PangoContext.Language)) {
+					fontHeight = System.Math.Ceiling (0.5 + (metrics.Ascent + metrics.Descent) / Pango.Scale.PangoScale);
+				}
+
 			}
 		}
 		
@@ -183,12 +190,17 @@ namespace Mono.TextEditor
 		}
 		
 		Cairo.Color lineNumberBgGC, lineNumberGC, lineNumberHighlightGC;
+
+		Pango.FontDescription gutterFont;
+
 		internal protected override void OptionsChanged ()
 		{
 			CalculateWidth ();
 			
 			lineNumberBgGC = editor.ColorStyle.LineNumber.CairoBackgroundColor;
 			lineNumberGC = editor.ColorStyle.LineNumber.CairoColor;
+			gutterFont = Gtk.Widget.DefaultStyle.FontDescription.Copy ();
+			gutterFont.Size = (int)(Pango.Scale.PangoScale * 11.0 * editor.Options.Zoom);
 		}
 
 		internal protected override void Draw (Cairo.Context cr, Cairo.Rectangle area, DocumentLine lineSegment, int line, double x, double y, double lineHeight)
@@ -227,12 +239,13 @@ namespace Mono.TextEditor
 				// Due to a mac? gtk bug I need to re-create the layout here
 				// otherwise I get pango exceptions.
 				using (var layout = PangoUtil.CreateLayout (editor)) {
-					layout.FontDescription = editor.Options.Font;
+					layout.FontDescription = gutterFont;
+
 					layout.Width = (int)Width;
 					layout.Alignment = Pango.Alignment.Right;
 					layout.SetText (line.ToString ());
 					cr.Save ();
-					cr.Translate (x + (int)Width + (editor.Options.ShowFoldMargin ? 0 : -2), y);
+					cr.Translate (x + (int)Width + (editor.Options.ShowFoldMargin ? 0 : -2), y + (lineHeight - fontHeight) / 2);
 					cr.Color = lineNumberGC;
 					cr.ShowLayout (layout);
 					cr.Restore ();
