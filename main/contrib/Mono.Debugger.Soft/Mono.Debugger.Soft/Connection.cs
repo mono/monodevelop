@@ -43,6 +43,7 @@ namespace Mono.Debugger.Soft
 		public int max_il_offset;
 		public int[] il_offsets;
 		public int[] line_numbers;
+		public int[] column_numbers;
 		public SourceInfo[] source_files;
 	}
 
@@ -79,6 +80,24 @@ namespace Mono.Debugger.Soft
 
 	class MethodBodyInfo {
 		public byte[] il;
+		public ExceptionClauseInfo[] clauses;
+	}
+
+	struct ExceptionClauseInfo {
+		public ExceptionClauseFlags flags;
+		public int try_offset;
+		public int try_length;
+		public int handler_offset;
+		public int handler_length;
+		public int filter_offset;
+		public long catch_type_id;
+	}
+
+	enum ExceptionClauseFlags {
+		None = 0x0,
+		Filter = 0x1,
+		Finally = 0x2,
+		Fault = 0x4,
 	}
 
 	struct ParamInfo {
@@ -376,7 +395,7 @@ namespace Mono.Debugger.Soft
 		 * with newer runtimes, and vice versa.
 		 */
 		internal const int MAJOR_VERSION = 2;
-		internal const int MINOR_VERSION = 17;
+		internal const int MINOR_VERSION = 20;
 
 		enum WPSuspendPolicy {
 			NONE = 0,
@@ -1672,6 +1691,7 @@ namespace Mono.Debugger.Soft
 			info.il_offsets = new int [n_il_offsets];
 			info.line_numbers = new int [n_il_offsets];
 			info.source_files = new SourceInfo [n_il_offsets];
+			info.column_numbers = new int [n_il_offsets];
 			for (int i = 0; i < n_il_offsets; ++i) {
 				info.il_offsets [i] = res.ReadInt ();
 				info.line_numbers [i] = res.ReadInt ();
@@ -1681,6 +1701,10 @@ namespace Mono.Debugger.Soft
 				} else {
 					info.source_files [i] = sources [0];
 				}
+				if (Version.AtLeast (2, 19))
+					info.column_numbers [i] = res.ReadInt ();
+				else
+					info.column_numbers [i] = 0;
 			}
 
 			return info;
@@ -1756,6 +1780,28 @@ namespace Mono.Debugger.Soft
 			info.il = new byte [res.ReadInt ()];
 			for (int i = 0; i < info.il.Length; ++i)
 				info.il [i] = (byte)res.ReadByte ();
+
+			if (Version.AtLeast (2, 18)) {
+				info.clauses = new ExceptionClauseInfo [res.ReadInt ()];
+
+				for (int i = 0; i < info.clauses.Length; ++i) {
+					var clause = new ExceptionClauseInfo {
+						flags = (ExceptionClauseFlags) res.ReadInt (),
+						try_offset = res.ReadInt (),
+						try_length = res.ReadInt (),
+						handler_offset = res.ReadInt (),
+						handler_length = res.ReadInt (),
+					};
+
+					if (clause.flags == ExceptionClauseFlags.None)
+						clause.catch_type_id = res.ReadId ();
+					else if (clause.flags == ExceptionClauseFlags.Filter)
+						clause.filter_offset = res.ReadInt ();
+
+					info.clauses [i] = clause;
+				}
+			} else
+				info.clauses = new ExceptionClauseInfo [0];
 
 			return info;
 		}
