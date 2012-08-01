@@ -188,6 +188,15 @@ namespace MonoDevelop.CSharp
 			case LangVersion.ISO_2:
 				sb.AppendLine ("/langversion:ISO-2");
 				break;
+			case LangVersion.Version3:
+				sb.AppendLine ("/langversion:3");
+				break;
+			case LangVersion.Version4:
+				sb.AppendLine ("/langversion:4");
+				break;
+			case LangVersion.Version5:
+				sb.AppendLine ("/langversion:5");
+				break;
 			default:
 				string message = "Invalid LangVersion enum value '" + compilerParameters.LangVersion.ToString () + "'";
 				monitor.ReportError (message, null);
