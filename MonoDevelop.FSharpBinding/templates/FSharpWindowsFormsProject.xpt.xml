@@ -35,7 +35,7 @@
       </References>
       <Files>
         <File name = "Actions.fs" AddStandardHeader="True">
-  <![CDATA[namespace WindowsForms.Actions
+  <![CDATA[namespace ${Namespace}.Actions
 
 module Actions =
     
@@ -78,19 +78,17 @@ module Actions =
 		<File name = "Program.fs" AddStandardHeader="True">
 				<![CDATA[namespace ${Namespace}
 
-module Program
+module Program =
 
-open System
-open ${Namespace}.Actions
+    open System
+    open ${Namespace}.Actions
 
-let button = Actions.newButton "button1" "Test" 50 20 150 150
+    let button = Actions.newButton "button1" "Test" 50 20 150 150
 
-let form = Actions.newForm "form1" "Form" 250 150 80 80 
-form.Controls.Add button
+    let form = Actions.newForm "form1" "Form" 250 150 80 80 
+    form.Controls.Add button
 
-form.Show() |> ignore
-
- 				]]></File>
+    form.Show() |> ignore ]]></File>
  			</Files>
  		</Project>
  	</Combine>
