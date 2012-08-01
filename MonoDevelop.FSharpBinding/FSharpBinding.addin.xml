@@ -60,6 +60,8 @@
 		<ProjectTemplate id="FSharpConsoleProject" resource="FSharpConsoleProject.xpt.xml"/>
 		<ProjectTemplate id="FSharpLibraryProject" resource="FSharpLibraryProject.xpt.xml"/>
 		<ProjectTemplate id="FSharpTutorialProject" resource="FSharpTutorialProject.xpt.xml"/>
+		<ProjectTemplate id="FSharpWindowsFormsProject" resource="FSharpWindowsFormsProject.xpt.xml"/>
+		<!--<ProjectTemplate id="FSharpMoonlightLibraryProject" resource="FSharpMoonlightLibraryProject.xpt.xml"/> -->
 	</Extension>
 
   	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">

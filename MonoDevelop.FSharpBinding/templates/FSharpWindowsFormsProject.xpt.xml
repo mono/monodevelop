@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Template Originator="Ihor Sihuta" Created="25/7/2012">
+
+  <!-- Template Header -->
+  <TemplateConfiguration>
+    <_Name>F# Windows Forms project</_Name>
+    <!--<Icon>md-project-console|res:fsharp-icon-32.png</Icon>-->
+    <_Description>Creates F# Windows Forms project</_Description>
+    <_Category>F#</_Category>
+    <LanguageName>F#</LanguageName>
+  </TemplateConfiguration>
+
+  <!-- Actions -->
+  <Actions>
+    <Open filename = "Actions.fs"/>
+    <Open filename = "Program.fs" />
+  </Actions>
+
+  <!-- Template Content -->
+  <Combine name = "${ProjectName}" directory = ".">
+    <Options>
+      <StartupProject>${ProjectName}</StartupProject>
+    </Options>
+
+    <Project name = "${ProjectName}" directory = ".">
+      <Options ExternalConsole="True"/>
+      <References>
+      	<Reference type="Gac" refto="FSharp.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+      	<Reference type="Gac" refto="System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+      	<Reference type="Gac" refto="System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+      	<Reference type="Gac" refto="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+      	<Reference type="Gac" refto="System.Numerics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+      	<Reference type="Gac" refto="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+      </References>
+      <Files>
+        <File name = "Actions.fs" AddStandardHeader="True">
+  <![CDATA[namespace WindowsForms.Actions
+
+module Actions =
+    
+    open System
+    open System.Windows.Forms
+    
+    let setProperties<'a when 'a :> Control> (control:'a) name content width height x y = 
+        control.Width   <- width
+        control.Height  <- height
+        control.Name    <- name
+        control.Left    <- x
+        control.Top     <- y
+        control.Text    <- content 
+        control 
+
+    ///params: name title width height X Y
+    let newForm = new Form() |> setProperties
+    
+    ///params: name text width height X Y
+    let newButton       = new Button()      |> setProperties
+    
+    ///params: name text width height X Y
+    let newTextBox      = new TextBox()     |> setProperties
+    
+    ///params: name text width height X Y
+    let newLabel        = new Label()       |> setProperties
+    
+    ///params: name text width height X Y
+    let newCheckBox     = new CheckBox()    |> setProperties
+    
+    ///params: name text width height X Y
+    let newComboBox     = new ComboBox()    |> setProperties
+    
+    ///params: name text width height X Y
+    let newListBox      = new ListBox()     |> setProperties
+    
+    ///params: name text idth height X Y 
+    let newLinkLabel    = new LinkLabel()   |> setProperties
+]]></File>
+		<File name = "Program.fs" AddStandardHeader="True">
+				<![CDATA[namespace ${Namespace}
+
+module Program
+
+open System
+open ${Namespace}.Actions
+
+let button = Actions.newButton "button1" "Test" 50 20 150 150
+
+let form = Actions.newForm "form1" "Form" 250 150 80 80 
+form.Controls.Add button
+
+form.Show() |> ignore
+
+ 				]]></File>
+ 			</Files>
+ 		</Project>
+ 	</Combine>
+ </Template>
