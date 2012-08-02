@@ -87,6 +87,22 @@
       <Name>Mono.Debugger.Soft</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\Deployment\MonoDevelop.Deployment\MonoDevelop.Deployment.csproj">
+      <Project>{9BC670A8-1851-40EC-9685-279F4C98433D}</Project>
+      <Name>MonoDevelop.Deployment</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.csproj">
+      <Project>{2C24D515-4A2C-445C-8419-C09231913CFA}</Project>
+      <Name>MonoDevelop.DesignerSupport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MonoDevelop.XmlEditor\MonoDevelop.XmlEditor.csproj">
+      <Project>{86DFC74A-B0B6-4C73-9E05-9098DA8FA5F1}</Project>
+      <Name>MonoDevelop.XmlEditor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MonoDevelop.SourceEditor2\MonoDevelop.SourceEditor.csproj">
+      <Project>{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}</Project>
+      <Name>MonoDevelop.SourceEditor</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AspNetSoftDebuggerEngine.cs" />
