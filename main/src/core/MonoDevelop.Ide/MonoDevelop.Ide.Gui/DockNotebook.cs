@@ -469,6 +469,9 @@ namespace MonoDevelop.Ide.Gui
 		const uint CloseAnimationFrameRate = 20;
 		const int CloseAnimationStepSize = 25;
 
+		// Vertically aligns the close image(s) with the tab label.
+		const int CloseImageTopOffset = 2;
+
 		static TabStrip ()
 		{
 			try {
@@ -908,7 +911,7 @@ namespace MonoDevelop.Ide.Gui
 			x += w + LabelButtonSeparatorWidth;
 
 			var image = highlight && overCloseButton ? closeOverImage : closeImage;
-			var ch = Allocation.Height - TopBarPadding - BottomBarPadding;
+			var ch = Allocation.Height - TopBarPadding - BottomBarPadding + CloseImageTopOffset;
 			var crect = new Gdk.Rectangle (x, y + TopBarPadding + (ch - image.Height) / 2, image.Width, image.Height);
 			CairoHelper.SetSourcePixbuf (ctx, image, crect.X, crect.Y);
 			ctx.Paint ();
@@ -970,7 +973,7 @@ namespace MonoDevelop.Ide.Gui
 
 			x += w + LabelButtonSeparatorWidth;
 
-			var ch = Allocation.Height - TopBarPadding - BottomBarPadding;
+			var ch = Allocation.Height - TopBarPadding - BottomBarPadding + CloseImageTopOffset;
 			var crect = new Gdk.Rectangle (x, y + TopBarPadding + (ch - closePix.Height) / 2, closePix.Width, closePix.Height);
 			CairoHelper.SetSourcePixbuf (ctx, closePix, crect.X, crect.Y);
 			ctx.Paint ();
