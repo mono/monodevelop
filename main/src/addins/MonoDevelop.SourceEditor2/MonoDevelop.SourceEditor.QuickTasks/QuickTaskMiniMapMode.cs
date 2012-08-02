@@ -133,7 +133,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			protected override void OnSizeRequested (ref Requisition requisition)
 			{
 				base.OnSizeRequested (ref requisition);
-				requisition.Width = 164;
+				requisition.Width = 150;
 			}
 			
 			void DestroyBgBuffer ()
