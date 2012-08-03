@@ -48,7 +48,7 @@ namespace MonoDevelop.AspNet.Parser.Dom
 		{
 		}
 		
-		internal ICollection<ParseException> ParseErrors {
+		public ICollection<ParseException> ParseErrors {
 			get { return errors; }
 		}
 		
