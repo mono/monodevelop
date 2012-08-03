@@ -50,6 +50,17 @@
     <Compile Include="Parser\RazorPageInfo.cs" />
     <Compile Include="Parser\RazorSymbols.cs" />
     <Compile Include="Parser\RazorUtils.cs" />
+    <Compile Include="StateEngine\RazorCodeBlockState.cs" />
+    <Compile Include="StateEngine\RazorCodeFragmentState.cs" />
+    <Compile Include="StateEngine\RazorCommentState.cs" />
+    <Compile Include="StateEngine\RazorDirectiveState.cs" />
+    <Compile Include="StateEngine\RazorDom.cs" />
+    <Compile Include="StateEngine\RazorExpressionState.cs" />
+    <Compile Include="StateEngine\RazorFreeState.cs" />
+    <Compile Include="StateEngine\RazorSpeculativeState.cs" />
+    <Compile Include="StateEngine\RazorState.cs" />
+    <Compile Include="StateEngine\RazorStatementState.cs" />
+    <Compile Include="StateEngine\StateEngineService.cs" />
     <Compile Include="TextTemplating\MvcTextTemplateHost.cs" />
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="Gui\AddViewDialog.cs" />
