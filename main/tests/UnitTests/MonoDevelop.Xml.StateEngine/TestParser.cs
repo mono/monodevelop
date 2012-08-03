@@ -30,9 +30,9 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects.Dom;
 
 using NUnit.Framework;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.Xml.StateEngine
 {
