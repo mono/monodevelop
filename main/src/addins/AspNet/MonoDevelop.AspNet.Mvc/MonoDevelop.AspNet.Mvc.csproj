@@ -35,6 +35,10 @@
     <Compile Include="AspMvcProjectConfiguration.cs" />
     <Compile Include="AspMvcCommands.cs" />
     <Compile Include="CommandHandlers.cs" />
+    <Compile Include="Completion\IRazorCompletionBuilder.cs" />
+    <Compile Include="Completion\RazorCompletion.cs" />
+    <Compile Include="Completion\RazorCSharpCompletionBuilder.cs" />
+    <Compile Include="Formatting\RazorCSharpFormatter.cs" />
     <Compile Include="Gui\FolderNodeBuilderExtension.cs" />
     <None Include="CodeTemplates\C#\AddController\Controller with empty read and write actions.tt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -54,6 +58,7 @@
     <None Include="Templates\Common\HomeControllerTest.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Compile Include="Gui\RazorCSharpEditorExtension.cs" />
     <Compile Include="Parser\OutlineNode.cs" />
     <Compile Include="Parser\RazorCSharpParsedDocument.cs" />
     <Compile Include="Parser\RazorCSharpParser.cs" />
@@ -80,6 +85,9 @@
     <Compile Include="gtk-gui\MonoDevelop.AspNet.Mvc.Gui.AddControllerDialog.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Mono.Addins, Version=0.6.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web" />
@@ -277,6 +285,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Templates\ViewPageRazor.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <None Include="Razor-templates.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </None>

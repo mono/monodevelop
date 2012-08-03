@@ -173,6 +173,14 @@
 		<Parser class = "MonoDevelop.AspNet.Mvc.Parser.RazorCSharpParser" mimeType="text/x-cshtml" />
 	</Extension>
 
+	<ExtensionPoint path = "/MonoDevelop/Razor/CompletionBuilders">
+		<ExtensionNode name="Class" />
+	</ExtensionPoint>
+
+	<Extension path = "/MonoDevelop/Razor/CompletionBuilders">
+		<Class class = "MonoDevelop.AspNet.Mvc.Completion.RazorCSharpCompletionBuilder" />
+	</Extension>
+
 	<Extension path = "/MonoDevelop/Core/MimeTypes">
 		<MimeType id="text/x-cshtml" _description="ASP.NET MVC Razor View" icon="md-html-file-icon" isText="true">
 			<File pattern="*.cshtml" />
@@ -181,5 +189,17 @@
 
 	<Extension path = "/MonoDevelop/SourceEditor2/CustomModes">
 		<SyntaxMode mimeTypes="text/x-cshtml" class="MonoDevelop.AspNet.Mvc.RazorSyntaxMode"/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
+		<Class fileExtensions=".cshtml" class = "MonoDevelop.AspNet.Mvc.Gui.RazorCSharpEditorExtension" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/CodeTemplates">
+		<CodeTemplate file="Razor-templates.xml" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/CodeFormatters">
+		<Formatter mimeType="text/x-cshtml" class="MonoDevelop.AspNet.Mvc.Formatting.RazorCSharpFormatter" />
 	</Extension>
 </Addin>
