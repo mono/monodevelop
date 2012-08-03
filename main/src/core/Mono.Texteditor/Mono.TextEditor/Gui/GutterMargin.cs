@@ -44,7 +44,6 @@ namespace Mono.TextEditor
 		{
 			this.editor = editor;
 			
-			base.cursor = new Gdk.Cursor (Gdk.CursorType.RightPtr);
 			this.editor.Document.LineChanged += UpdateWidth;
 			this.editor.Document.TextSet += HandleEditorDocumenthandleTextSet;
 			this.editor.Caret.PositionChanged += EditorCarethandlePositionChanged;
@@ -109,30 +108,10 @@ namespace Mono.TextEditor
 		internal protected override void MousePressed (MarginMouseEventArgs args)
 		{
 			base.MousePressed (args);
-			
-			if (args.Button != 1 || args.LineNumber < DocumentLocation.MinLine)
-				return;
-			editor.LockedMargin = this;
-			int lineNumber = args.LineNumber;
-			bool extendSelection = (args.ModifierState & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask;
-			if (lineNumber <= editor.Document.LineCount) {
-				DocumentLocation loc = new DocumentLocation (lineNumber, DocumentLocation.MinColumn);
-				DocumentLine line = args.LineSegment;
-				if (args.Type == EventType.TwoButtonPress) {
-					if (line != null)
-						editor.MainSelection = new Selection (loc, GetLineEndLocation (editor.GetTextEditorData (), lineNumber));
-				} else if (extendSelection) {
-					if (!editor.IsSomethingSelected) {
-						editor.MainSelection = new Selection (loc, loc);
-					} 
-					editor.MainSelection.Lead = loc;
-				} else {
-					anchorLocation = loc;
-					editor.ClearSelection ();
-				}
-				editor.Caret.PreserveSelection = true;
-				editor.Caret.Location = loc;
-				editor.Caret.PreserveSelection = false;
+			if (hoverSegment != null) {
+				hoverSegment.IsFolded = !hoverSegment.IsFolded;
+				editor.SetAdjustments ();
+				editor.Caret.MoveCaretBeforeFoldings ();
 			}
 		}
 		
@@ -159,21 +138,38 @@ namespace Mono.TextEditor
 				result = data.Document.OffsetToLocation (segment.EndLine.Offset + segment.EndColumn - 1); 
 			return result;
 		}
-		
+
+		DocumentLine lineHover;
+		FoldSegment hoverSegment;
+
 		internal protected override void MouseHover (MarginMouseEventArgs args)
 		{
 			base.MouseHover (args);
-			
-			if (!args.TriggersContextMenu () && args.Button == 1) {
-				//	DocumentLocation loc = editor.Document.LogicalToVisualLocation (editor.GetTextEditorData (), editor.Caret.Location);
-				
-				int lineNumber = args.LineNumber >= DocumentLocation.MinLine ? args.LineNumber : editor.Document.LineCount;
-				editor.Caret.PreserveSelection = true;
-				editor.Caret.Location = new DocumentLocation (lineNumber, DocumentLocation.MinColumn);
-				editor.MainSelection = new Selection (anchorLocation, editor.Caret.Location);
-				editor.Caret.PreserveSelection = false;
+
+			DocumentLine lineSegment = null;
+			if (args.LineSegment != null) {
+				lineSegment = args.LineSegment;
+				if (lineHover != lineSegment) {
+					lineHover = lineSegment;
+					editor.RedrawMargin (this);
+				}
+			} 
+			lineHover = lineSegment;
+			hoverSegment = null;
+			foreach (var seg in editor.Document.GetFoldingContaining (lineSegment)) {
+				if (hoverSegment == null || hoverSegment.StartLine.LineNumber < seg.StartLine.LineNumber)
+					hoverSegment = seg;
 			}
+			editor.RedrawMargin (this);
 		}
+
+		internal protected override void MouseLeft ()
+		{
+			base.MouseLeft ();
+			hoverSegment = null;
+			editor.RedrawMargin (this);
+		}
+
 		
 		public override void Dispose ()
 		{
@@ -210,9 +206,85 @@ namespace Mono.TextEditor
 				gutterMarker.DrawLineNumber (editor, Width, cr, area, lineSegment, line, x, y, lineHeight);
 				return;
 			}
+			cr.Rectangle (x, y, Width, lineHeight);
+			cr.Color = lineNumberBgGC;
+
+			if (hoverSegment != null && hoverSegment.StartLine.LineNumber <= line && line <= hoverSegment.EndLine.LineNumber) {
+				cr.Fill ();
+				double a = 6 * editor.Options.Zoom;
+				var startX = x + width - a - 2 * editor.Options.Zoom;
+				if (hoverSegment.IsFolded || hoverSegment.StartLine.LineNumber == line && hoverSegment.EndLine.LineNumber == line) {
+					
+					cr.Rectangle (startX - a / 2,
+					              y + lineHeight * 0.4, 
+					              a,
+					              lineHeight * 0.2);
+					cr.Color = new Cairo.Color (lineNumberGC.R, lineNumberGC.G, lineNumberGC.B, 0.7);
+					cr.Fill ();
+
+					
+					cr.MoveTo (startX , y);
+					cr.LineTo (startX  + a * 0.7, y + lineHeight * 0.4);
+					cr.LineTo (startX  - a * 0.7 , y + lineHeight * 0.4);
+					cr.ClosePath ();
+					cr.Color = new Cairo.Color (lineNumberGC.R, lineNumberGC.G, lineNumberGC.B);
+					cr.Fill ();
+
+					cr.MoveTo (startX , y+ lineHeight);
+					cr.LineTo (startX  + a * 0.7, y + lineHeight * 0.6);
+					cr.LineTo (startX  - a * 0.7 , y + lineHeight * 0.6);
+					cr.ClosePath ();
+					cr.Color = new Cairo.Color (lineNumberGC.R, lineNumberGC.G, lineNumberGC.B);
+					cr.Fill ();
+
+				} else if (hoverSegment.StartLine.LineNumber == line) {
+					
+					cr.Rectangle (startX - a / 2,
+					              y + lineHeight / 2, 
+					              a,
+					              lineHeight / 2);
+					cr.Color = new Cairo.Color (lineNumberGC.R, lineNumberGC.G, lineNumberGC.B, 0.7);
+					cr.Fill ();
+					
+					cr.MoveTo (startX , y);
+					cr.LineTo (startX  + a * 0.7, y + lineHeight / 2);
+					cr.LineTo (startX  - a * 0.7 , y + lineHeight / 2);
+					cr.ClosePath ();
+					cr.Color = new Cairo.Color (lineNumberGC.R, lineNumberGC.G, lineNumberGC.B);
+					cr.Fill ();
+					
+				} else if (hoverSegment.EndLine.LineNumber == line) {
+					
+					cr.Rectangle (startX - a / 2,
+					              y, 
+					              a,
+					              lineHeight / 2);
+					cr.Color = new Cairo.Color (lineNumberGC.R, lineNumberGC.G, lineNumberGC.B, 0.7);
+					cr.Fill ();
+
+					cr.MoveTo (startX , y + lineHeight);
+					cr.LineTo (startX  + a * 0.7, y + lineHeight / 2);
+					cr.LineTo (startX  - a * 0.7 , y + lineHeight / 2);
+					cr.ClosePath ();
+					cr.Color = new Cairo.Color (lineNumberGC.R, lineNumberGC.G, lineNumberGC.B);
+					cr.Fill ();
+					
+				} else {
+
+					cr.Rectangle (startX - a / 2,
+					              y, 
+					              a,
+					              lineHeight);
+					cr.Color = new Cairo.Color (lineNumberGC.R, lineNumberGC.G, lineNumberGC.B, 0.7);
+					cr.Fill ();
+
+				}
+				return;
+			}
+
+			bool containsFoldedFolding = editor.Document.GetFoldingContaining (lineSegment).Any (seg => seg.IsFolded && seg.StartLine == lineSegment);
+
 			if (editor.Caret.Line == line) {
-				cr.Rectangle (x, y, Width, lineHeight);
-				cr.Color = lineNumberBgGC;
 				cr.FillPreserve ();
 
 				var color = editor.ColorStyle.LineMarker;
@@ -230,12 +302,32 @@ namespace Mono.TextEditor
 				cr.Color = color;
 				cr.Stroke ();
 			} else {
-				cr.Rectangle (x, y, Width, lineHeight);
-				cr.Color = lineNumberBgGC;
 				cr.Fill ();
 			}
-			
+
 			if (line <= editor.Document.LineCount) {
+				var state = editor.Document.GetLineState (lineSegment);
+				double len = 4 * editor.Options.Zoom;
+				if (state == TextDocument.LineState.Changed) {
+					cr.Color = editor.ColorStyle.LineChangedBg;
+					cr.Rectangle (x + Width - len, y, len, lineHeight);
+					cr.Fill ();
+				} else if (state == TextDocument.LineState.Dirty) {
+					cr.Color = editor.ColorStyle.LineDirtyBg;
+					cr.Rectangle (x + Width - len, y, len, lineHeight);
+					cr.Fill ();
+				}
+
+				if (containsFoldedFolding) {
+					cr.Color = new Cairo.Color (lineNumberGC.R, lineNumberGC.G, lineNumberGC.B, 0.7);
+					var rad = 2 * editor.Options.Zoom;
+					for (int i = 0; i < 3; i++) {
+						cr.Arc (x + Width - rad * 2, y  + rad + i * lineHeight / 3, rad, 0, System.Math.PI * 2);
+						cr.Fill ();
+					}
+					return;
+				}
+
 				// Due to a mac? gtk bug I need to re-create the layout here
 				// otherwise I get pango exceptions.
 				using (var layout = PangoUtil.CreateLayout (editor)) {
