@@ -178,4 +178,8 @@
 			<File pattern="*.cshtml" />
 		</MimeType>
 	</Extension>
+
+	<Extension path = "/MonoDevelop/SourceEditor2/CustomModes">
+		<SyntaxMode mimeTypes="text/x-cshtml" class="MonoDevelop.AspNet.Mvc.RazorSyntaxMode"/>
+	</Extension>
 </Addin>

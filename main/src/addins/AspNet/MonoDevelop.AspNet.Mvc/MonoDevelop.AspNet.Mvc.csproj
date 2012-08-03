@@ -60,6 +60,7 @@
     <Compile Include="Parser\RazorPageInfo.cs" />
     <Compile Include="Parser\RazorSymbols.cs" />
     <Compile Include="Parser\RazorUtils.cs" />
+    <Compile Include="RazorSyntaxMode.cs" />
     <Compile Include="StateEngine\RazorCodeBlockState.cs" />
     <Compile Include="StateEngine\RazorCodeFragmentState.cs" />
     <Compile Include="StateEngine\RazorCommentState.cs" />
