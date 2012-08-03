@@ -1,10 +1,11 @@
 // 
 // SoftDebuggerBacktrace.cs
 //  
-// Author:
-//       Lluis Sanchez Gual <lluis@novell.com>
+// Authors: Lluis Sanchez Gual <lluis@novell.com>
+//          Jeffrey Stedfast <jeff@xamarin.com>
 // 
 // Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2012 Xamarin Inc. (http://www.xamarin.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +26,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Text;
 using System.Collections.Generic;
 using Mono.Debugging.Client;
@@ -40,8 +42,8 @@ namespace Mono.Debugging.Soft
 			get; private set;
 		}
 		
-		public SoftDebuggerStackFrame (Mono.Debugger.Soft.StackFrame frame, string addressSpace, SourceLocation location, string language, bool isExternalCode, bool hasDebugInfo, string fullModuleName, string fullTypeName)
-			: base (frame.ILOffset, addressSpace, location, language, isExternalCode, hasDebugInfo, fullModuleName, fullTypeName)
+		public SoftDebuggerStackFrame (Mono.Debugger.Soft.StackFrame frame, string addressSpace, SourceLocation location, string language, bool isExternalCode, bool hasDebugInfo, bool isDebuggerHidden, string fullModuleName, string fullTypeName)
+			: base (frame.ILOffset, addressSpace, location, language, isExternalCode, hasDebugInfo, isDebuggerHidden, fullModuleName, fullTypeName)
 		{
 			StackFrame = frame;
 		}
@@ -74,11 +76,14 @@ namespace Mono.Debugging.Soft
 		public override DC.StackFrame[] GetStackFrames (int firstIndex, int lastIndex)
 		{
 			ValidateStack ();
+
 			if (lastIndex < 0)
 				lastIndex = frames.Length - 1;
+
 			List<DC.StackFrame> list = new List<DC.StackFrame> ();
 			for (int n = firstIndex; n <= lastIndex && n < frames.Length; n++)
-				list.Add (CreateStackFrame (frames [n]));
+				list.Add (CreateStackFrame (frames[n], n));
+
 			return list.ToArray ();
 		}
 		
@@ -89,7 +94,7 @@ namespace Mono.Debugging.Soft
 			}
 		}
 		
-		DC.StackFrame CreateStackFrame (MDB.StackFrame frame)
+		DC.StackFrame CreateStackFrame (MDB.StackFrame frame, int frameIndex)
 		{
 			MDB.MethodMirror method = frame.Method;
 			MDB.TypeMirror type = method.DeclaringType;
@@ -148,7 +153,7 @@ namespace Mono.Debugging.Soft
 					int targs = typeDisplayName.LastIndexOf ('<');
 					if (targs > dot + 1)
 						mn += typeDisplayName.Substring (targs, typeDisplayName.Length - targs);
-					
+
 					typeDisplayName = tname;
 					
 					if (special_method)
@@ -162,11 +167,19 @@ namespace Mono.Debugging.Soft
 				typeFQN = type.Module.FullyQualifiedName;
 				typeFullName = type.FullName;
 			}
+
+			bool hidden = false;
+			if (session.VirtualMachine.Version.AtLeast (2, 21)) {
+				var ctx = GetEvaluationContext (frameIndex, session.EvaluationOptions);
+				var hiddenAttr = session.Adaptor.GetType (ctx, "System.Diagnostics.DebuggerHiddenAttribute") as MDB.TypeMirror;
 			
+				hidden = method.GetCustomAttributes (hiddenAttr, true).Any ();
+			}
+
 			var location = new DC.SourceLocation (methodName, fileName, frame.LineNumber);
 			var external = session.IsExternalCode (frame);
-			
-			return new SoftDebuggerStackFrame (frame, method.FullName, location, "Managed", external, true, typeFQN, typeFullName);
+
+			return new SoftDebuggerStackFrame (frame, method.FullName, location, "Managed", external, true, hidden, typeFQN, typeFullName);
 		}
 		
 		protected override EvaluationContext GetEvaluationContext (int frameIndex, EvaluationOptions options)

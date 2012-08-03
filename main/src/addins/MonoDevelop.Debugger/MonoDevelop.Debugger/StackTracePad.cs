@@ -124,6 +124,8 @@ namespace MonoDevelop.Debugger
 					icon = null;
 				
 				StackFrame fr = current_backtrace.GetFrame (i);
+				if (fr.IsDebuggerHidden)
+					continue;
 				
 				StringBuilder met = new StringBuilder (fr.SourceLocation.MethodName);
 				ObjectValue[] args = fr.GetParameters ();
