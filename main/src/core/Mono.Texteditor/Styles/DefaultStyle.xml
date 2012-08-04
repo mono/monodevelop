@@ -167,11 +167,13 @@
 	<Style name="keyword.type" color="skyblue2"/>
 	<Style name="constant.language" color="skyblue2"/>
 	<Style name="constant.language.void" color="skyblue2"/>
-	<Style name="keyword.semantic.type" color="skyblue2"/> 
 	
+	<Style name="keyword.semantic.type" color="skyblue2"/> 
 	<Style name="keyword.semantic.field" color="method-purple"/>
 	<Style name="keyword.semantic.property" color="method-purple"/>
 	<Style name="keyword.semantic.method" color="method-purple" weight="bold"/>
+	
+	<Style name="keyword.semantic.extensionthis" color="keyword-teal"/> 
 		
 	<Style name="keyword" color="keyword-teal">
 		<Style name="access" color="constant-purple"/>

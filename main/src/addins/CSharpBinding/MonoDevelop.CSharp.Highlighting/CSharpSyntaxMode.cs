@@ -549,16 +549,16 @@ namespace MonoDevelop.CSharp.Highlighting
 					if (node is Identifier) {
 						if (node.Parent is TypeDeclaration && node.Role == Roles.Identifier) {
 							endOffset = chunk.Offset + TokenLength ((Identifier)node);
-							return "keyword.semantic.type";
+							return "keyword.semantic.type.declaration";
 						}
 
 						if (node.Parent is PropertyDeclaration) {
 							endOffset = chunk.Offset + TokenLength ((Identifier)node);
-							return "keyword.semantic.property";
+							return "keyword.semantic.property.declaration";
 						}
 						if (node.Parent is MethodDeclaration) {
 							endOffset = chunk.Offset + TokenLength ((Identifier)node);
-							return "keyword.semantic.method";
+							return "keyword.semantic.method.declaration";
 						}
 
 						if (node.Parent is VariableInitializer && node.Parent.Parent is FieldDeclaration) {
@@ -566,11 +566,11 @@ namespace MonoDevelop.CSharp.Highlighting
 							if (field.Modifiers.HasFlag (Modifiers.Const) || field.Modifiers.HasFlag (Modifiers.Static | Modifiers.Readonly))
 								return null;
 							endOffset = chunk.Offset + TokenLength ((Identifier)node);
-							return "keyword.semantic.field";
+							return "keyword.semantic.field.declaration";
 						}
 						if (node.Parent is FixedVariableInitializer /*|| node.Parent is EnumMemberDeclaration*/) {
 							endOffset = chunk.Offset + TokenLength ((Identifier)node);
-							return "keyword.semantic.field";
+							return "keyword.semantic.field.declaration";
 						}
 					}
 					
@@ -580,6 +580,11 @@ namespace MonoDevelop.CSharp.Highlighting
 						if (result.IsError && csharpSyntaxMode.guiDocument.Project != null) {
 							endOffset = chunk.Offset + TokenLength (id.IdentifierToken);
 							return "keyword.semantic.error";
+						}
+
+						if (id.Parent is DirectionExpression) {
+							endOffset = chunk.Offset + TokenLength (id.IdentifierToken);
+							return "keyword.semantic.extensionthis";
 						}
 						
 						if (result is MemberResolveResult) {
