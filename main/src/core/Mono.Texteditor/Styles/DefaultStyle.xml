@@ -51,6 +51,7 @@
 	<Color name="aluminium5" value="#555753"/>
 	<Color name="aluminium6" value="#2e3436"/>
 	
+	<Color name="text-black" value="#444"/>
 	<Color name="comment-gray" value="#999988"/>
 	<Color name="string-red" value="#ce2f30"/>
 	<Color name="literal-orange" value="#F57E00"/>
@@ -61,6 +62,7 @@
 	<Color name="method-cyan" value="#506f73"/>
 	<Color name="macro-brown" value="#774b31"/>
 	<Color name="linenumber-gray" value="#D5D1C6"/>
+	<Color name="field-pink" value="#c12dad"/>
 	<Color name="selection-bg" value="#b5d5ff"/>
 	<Color name="aluminium1" value="#eeeeec"/>
 	<Color name="aluminium2" value="#d3d7cf"/>
@@ -73,7 +75,7 @@
 	<Color name="bookmark-purple" value="#bfd2f9"/>
 	
 	<!-- color styles -->
-	<Style name="text" color="#444" bgColor="white">
+	<Style name="text" color="text-black" bgColor="white">
 		<Style name="background" color="white">
 			<Style name="readonly" color="aluminium1"/>
 			<Style name="searchresult-main" color="butter1"/>
@@ -168,15 +170,15 @@
 	<Style name="constant.language" color="skyblue2"/>
 	<Style name="constant.language.void" color="skyblue2"/>
 	
+	<Style name="keyword.semantic.field" color="field-pink"/>
+	<Style name="keyword.semantic.property" color="text-black"/>
+	<Style name="keyword.semantic.method" color="text-black"/>
 	<Style name="keyword.semantic.type" color="skyblue2"/> 
-	<Style name="keyword.semantic.field" color="method-purple"/>
-	<Style name="keyword.semantic.property" color="method-purple"/>
-	<Style name="keyword.semantic.method" color="method-purple" weight="bold"/>
 	
 	<Style name="keyword.semantic.extensionthis" color="keyword-teal"/> 
 		
 	<Style name="keyword" color="keyword-teal">
-		<Style name="access" color="constant-purple"/>
+		<Style name="access" color="field-pink"/>
 		<Style name="semantic.error" color="invalid-red"/>
 	</Style>
 </EditorStyle>

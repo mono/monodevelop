@@ -550,7 +550,7 @@ namespace MonoDevelop.CSharp.Highlighting
 						if (node.Parent is TypeDeclaration && node.Role == Roles.Identifier) {
 							endOffset = chunk.Offset + TokenLength ((Identifier)node);
 							return "keyword.semantic.type.declaration";
-						}
+						} 
 
 						if (node.Parent is PropertyDeclaration) {
 							endOffset = chunk.Offset + TokenLength ((Identifier)node);
