@@ -84,7 +84,7 @@
 		<Style name="selection.inactive" bgColor="aluminium2"/>
 		<Style name="link" color="blue"/>
 		<Style name="punctuation" color="aluminium6"/>
-		<Style name="preprocessor" color="field-maroon" weight="regular">
+		<Style name="preprocessor" color="#c12dad" weight="regular">
 			<Style name="keyword" weight="bold"/>
 		</Style>
     <Style name="markup" color="comment-gray" weight="italic">
@@ -158,7 +158,7 @@
 			<Style name="block"/>
 			<Style name="doc"/>
 		</Style>
-		<Style name="keyword" color="field-maroon" weight="italic bold" />
+		<Style name="keyword" color="text-black" weight="italic bold" />
 	</Style>
 	
 	
