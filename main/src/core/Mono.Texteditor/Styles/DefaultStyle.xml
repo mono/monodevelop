@@ -57,12 +57,11 @@
 	<Color name="literal-orange" value="#F57E00"/>
 	<Color name="keyword-teal" value="#009695"/>
 	<Color name="method-purple" value="#653c98"/>
-	<Color name="type-maroon" value="#81004e" />
+	<Color name="field-maroon" value="#590000" />
 	<Color name="constant-purple" value="#4d16d8"/>
 	<Color name="method-cyan" value="#506f73"/>
 	<Color name="macro-brown" value="#774b31"/>
 	<Color name="linenumber-gray" value="#D5D1C6"/>
-	<Color name="field-pink" value="#c12dad"/>
 	<Color name="selection-bg" value="#b5d5ff"/>
 	<Color name="aluminium1" value="#eeeeec"/>
 	<Color name="aluminium2" value="#d3d7cf"/>
@@ -85,12 +84,12 @@
 		<Style name="selection.inactive" bgColor="aluminium2"/>
 		<Style name="link" color="blue"/>
 		<Style name="punctuation" color="aluminium6"/>
-		<Style name="preprocessor" color="chocolate2">
+		<Style name="preprocessor" color="field-maroon" weight="regular">
 			<Style name="keyword" weight="bold"/>
 		</Style>
-		<Style name="markup" color="skyblue3">
-			<Style name="tag"/>
-		</Style>
+    <Style name="markup" color="comment-gray" weight="italic">
+      <Style name="tag"/>
+    </Style>
 	</Style>
 	
 	<Style name="template" color ="black" bgColor="#fdfaed">
@@ -159,26 +158,30 @@
 			<Style name="block"/>
 			<Style name="doc"/>
 		</Style>
-		<Style name="keyword" color="type-maroon" weight="italic bold" />
+		<Style name="keyword" color="field-maroon" weight="italic bold" />
 	</Style>
 	
 	
 	<Style name="constant" color="literal-orange"/>
 	<Style name="string" color="literal-orange"/>
 	
+  <Style name="keyword" color="keyword-teal"/>
 	<Style name="keyword.type" color="skyblue2"/>
+	<Style name="keyword.semantic.type" color="skyblue2"/>
 	<Style name="constant.language" color="skyblue2"/>
 	<Style name="constant.language.void" color="skyblue2"/>
 	
-	<Style name="keyword.semantic.field" color="field-pink"/>
-	<Style name="keyword.semantic.property" color="text-black"/>
-	<Style name="keyword.semantic.method" color="text-black"/>
-	<Style name="keyword.semantic.type" color="skyblue2"/> 
+	<Style name="keyword.semantic.extensionthis" color="#888" weight="italic" />
 	
-	<Style name="keyword.semantic.extensionthis" color="keyword-teal"/> 
+	<Style name="keyword.access" color="#593586" />
+  <!-- text-black until we can find a good color -->
+	<Style name="keyword.semantic.field" color="text-black"/>
+
+  <Style name="keyword.semantic.property" color="text-black"/>
+  <Style name="keyword.semantic.property.declaration" color="text-black"/>
+
+  <Style name="keyword.semantic.method" color="text-black"/>
+  <Style name="keyword.semantic.method.declaration" color="text-black"/>
 		
-	<Style name="keyword" color="keyword-teal">
-		<Style name="access" color="field-pink"/>
-		<Style name="semantic.error" color="invalid-red"/>
-	</Style>
+  <Style name="keyword.semantic.error" color="invalid-red"/>
 </EditorStyle>
