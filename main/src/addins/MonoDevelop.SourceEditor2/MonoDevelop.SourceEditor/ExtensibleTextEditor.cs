@@ -970,7 +970,7 @@ namespace MonoDevelop.SourceEditor
 		[CommandHandler (MonoDevelop.SourceEditor.SourceEditorCommands.ToggleCodeFocus)]
 		internal void OnToggleCodeFocus ()
 		{
-			foldMarkerMargin.IsInCodeFocusMode = !foldMarkerMargin.IsInCodeFocusMode;
+//			foldMarkerMargin.IsInCodeFocusMode = !foldMarkerMargin.IsInCodeFocusMode;
 		}
 		
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.TransposeCharacters)]

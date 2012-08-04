@@ -556,6 +556,10 @@ namespace MonoDevelop.CSharp.Highlighting
 							endOffset = chunk.Offset + TokenLength ((Identifier)node);
 							return "keyword.semantic.property";
 						}
+						if (node.Parent is MethodDeclaration) {
+							endOffset = chunk.Offset + TokenLength ((Identifier)node);
+							return "keyword.semantic.method";
+						}
 
 						if (node.Parent is VariableInitializer && node.Parent.Parent is FieldDeclaration) {
 							var field = node.Parent.Parent as FieldDeclaration;
@@ -591,6 +595,14 @@ namespace MonoDevelop.CSharp.Highlighting
 								endOffset = chunk.Offset + TokenLength (id.IdentifierToken);
 								return "keyword.semantic.property";
 							}
+							if (member is IMethod) {
+								endOffset = chunk.Offset + TokenLength (id.IdentifierToken);
+								return "keyword.semantic.method";
+							}
+						}
+						if (result is MethodGroupResolveResult) {
+							endOffset = chunk.Offset + TokenLength (id.IdentifierToken);
+							return "keyword.semantic.method";
 						}
 						if (result is TypeResolveResult) {
 							if (!result.IsError && csharpSyntaxMode.guiDocument.Project != null) {
@@ -617,7 +629,21 @@ namespace MonoDevelop.CSharp.Highlighting
 								endOffset = chunk.Offset + TokenLength (memberReferenceExpression.MemberNameToken);
 								return "keyword.semantic.field";
 							}
+							if (member is IProperty) {
+								endOffset = chunk.Offset + TokenLength (memberReferenceExpression.MemberNameToken);
+								return "keyword.semantic.property";
+							}
+							if (member is IMethod) {
+								endOffset = chunk.Offset + TokenLength (memberReferenceExpression.MemberNameToken);
+								return "keyword.semantic.method";
+							}
 						}
+
+						if (result is MethodGroupResolveResult) {
+							endOffset = chunk.Offset + TokenLength (memberReferenceExpression.MemberNameToken);
+							return "keyword.semantic.method";
+						}
+
 						if (result is TypeResolveResult) {
 							if (!result.IsError && csharpSyntaxMode.guiDocument.Project != null) {
 								endOffset = chunk.Offset + TokenLength (memberReferenceExpression.MemberNameToken);
@@ -641,6 +667,14 @@ namespace MonoDevelop.CSharp.Highlighting
 							if (member is IField && !member.IsStatic && !((IField)member).IsConst) {
 								endOffset = chunk.Offset + TokenLength (pointerReferenceExpression.MemberNameToken);
 								return "keyword.semantic.field";
+							}
+							if (member is IProperty) {
+								endOffset = chunk.Offset + TokenLength (pointerReferenceExpression.MemberNameToken);
+								return "keyword.semantic.property";
+							}
+							if (member is IMethod) {
+								endOffset = chunk.Offset + TokenLength (pointerReferenceExpression.MemberNameToken);
+								return "keyword.semantic.method";
 							}
 						}
 						if (result is TypeResolveResult) {

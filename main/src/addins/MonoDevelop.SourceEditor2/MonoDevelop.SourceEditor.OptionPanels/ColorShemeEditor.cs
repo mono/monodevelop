@@ -193,6 +193,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			new ColorMetaData ("keyword.semantic.type", GettextCatalog.GetString ("Types (semantic)"), ColorsAvailable.Text),
 			new ColorMetaData ("keyword.semantic.field", GettextCatalog.GetString ("Field (semantic)"), ColorsAvailable.Text),
 			new ColorMetaData ("keyword.semantic.property", GettextCatalog.GetString ("Property (semantic)"), ColorsAvailable.Text),
+			new ColorMetaData ("keyword.semantic.method", GettextCatalog.GetString ("Method (semantic)"), ColorsAvailable.Text),
 			new ColorMetaData ("keyword.semantic.error", GettextCatalog.GetString ("Error (semantic)"), ColorsAvailable.Text),
 			
 			new ColorMetaData ("keyword", GettextCatalog.GetString ("Keywords"), ColorsAvailable.Text),

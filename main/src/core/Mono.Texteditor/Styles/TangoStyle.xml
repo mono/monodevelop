@@ -177,6 +177,7 @@
 		<Style name="semantic.type" color="skyblue2" weight="normal"/>
 		<Style name="semantic.field" color="plum3"/>
 		<Style name="semantic.property" color="plum3"/>
+		<Style name="semantic.method" color="plum3"/>
 		<Style name="semantic.error" color="scarletred1"/>
 	</Style>
 </EditorStyle>

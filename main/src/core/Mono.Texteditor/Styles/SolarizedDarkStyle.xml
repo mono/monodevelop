@@ -135,6 +135,7 @@ THE SOFTWARE.
 		<Style name="semantic.type" color="yellow"/>
 		<Style name="semantic.field" color="blue"/>
 		<Style name="semantic.property" color="blue"/>
+		<Style name="semantic.method" color="blue"/>
 		<Style name="semantic.error" color="red"/>
 	</Style>
 </EditorStyle>

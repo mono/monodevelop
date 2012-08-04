@@ -126,6 +126,7 @@ THE SOFTWARE.
 		<Style name="semantic.type" weight="italic" color="#66D9EF"/> 
 		<Style name="semantic.field" color="#A4E22E"/>
 		<Style name="semantic.property" color="#A4E22E"/>
+		<Style name="semantic.method" color="#A4E22E"/>
 		<Style name="semantic.error" color="errorColor"/>
 	</Style>
 </EditorStyle>
