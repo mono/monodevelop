@@ -70,7 +70,7 @@ namespace ICSharpCode.Decompiler.Ast
 			if (method != null) {
 				if (method.IsGetter || method.IsSetter || method.IsAddOn || method.IsRemoveOn)
 					return true;
-				if (settings.AnonymousMethods && method.HasGeneratedName() && method.IsCompilerGenerated())
+				if (settings.HideNonPublicMembers && !(method.IsPublic || method.IsFamily))
 					return true;
 			}
 
@@ -104,8 +104,24 @@ namespace ICSharpCode.Decompiler.Ast
 				// event-fields are not [CompilerGenerated]
 				if (settings.AutomaticEvents && field.DeclaringType.Events.Any(ev => ev.Name == field.Name))
 					return true;
+				if (settings.HideNonPublicMembers && !(field.IsPublic || field.IsFamily))
+					return true;
+			}
+
+			PropertyDefinition property = member as PropertyDefinition;
+			if (property != null) {
+				if (settings.HideNonPublicMembers && (property.GetMethod == null || !(property.GetMethod.IsPublic || property.GetMethod.IsFamily)) &&
+				    (property.SetMethod == null || !(property.SetMethod.IsPublic || property.SetMethod.IsFamily)))
+					return true;
 			}
 			
+			EventDefinition evt = member as EventDefinition;
+			if (evt != null) {
+				if (settings.HideNonPublicMembers && (evt.AddMethod == null || !(evt.AddMethod.IsPublic | evt.AddMethod.IsFamily)) && 
+				    (evt.RemoveMethod == null || !(evt.RemoveMethod.IsPublic || evt.RemoveMethod.IsFamily)))
+					return true;
+			}
+
 			return false;
 		}
 
