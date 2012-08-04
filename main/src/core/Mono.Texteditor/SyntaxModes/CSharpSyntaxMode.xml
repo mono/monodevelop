@@ -266,18 +266,6 @@
 			<End>;</End>
 		</Span>
 		
-		<Span color = "string" stopateol = "true" escape="\" rule="String">
-			<Begin>&quot;</Begin>
-			<Exit>&lt;</Exit>
-			<End>&quot;</End>
-		</Span>
-		
-		<Span color = "string" stopateol = "true" escape="\" rule="String" >
-			<Begin>&apos;</Begin>
-			<Exit>&lt;</Exit>
-			<End>&apos;</End>
-		</Span>
-		
 		<!-- attributes -->
 		<Match expression="([A-Za-z0-9_]+[:[A-Za-z0-9_]+]?)([\s\n\r]*=)">
 			<Group color = "text.markup.attribute"/>
