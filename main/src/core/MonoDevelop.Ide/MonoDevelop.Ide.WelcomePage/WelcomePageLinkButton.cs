@@ -70,6 +70,8 @@ namespace MonoDevelop.Ide.WelcomePage
 			string tooltip = (string) (el.Attribute ("tooltip") ?? el.Attribute ("_tooltip"));
 			if (!string.IsNullOrEmpty (tooltip))
 				this.TooltipText = GettextCatalog.GetString (tooltip);
+			else
+				this.TooltipText = GetLinkTooltip (href);
 			
 			string icon = (string) el.Attribute ("icon");
 			if (!string.IsNullOrEmpty (icon))
@@ -100,12 +102,6 @@ namespace MonoDevelop.Ide.WelcomePage
 			box = new HBox (false, 6);
 			box.PackStart (label, true, true, 0);
 			Add (box);
-		}
-		
-		protected override void OnDestroyed ()
-		{
-			base.OnDestroyed ();
-			DestroyStatusBar ();
 		}
 		
 		public string LinkUrl { get; private set; }
@@ -181,7 +177,6 @@ namespace MonoDevelop.Ide.WelcomePage
 		
 		protected override bool OnEnterNotifyEvent (Gdk.EventCrossing evnt)
 		{
-			SetLinkStatus (LinkUrl);
 			UpdateLabel (true);
 			return base.OnEnterNotifyEvent (evnt);
 		}
@@ -189,7 +184,6 @@ namespace MonoDevelop.Ide.WelcomePage
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)
 		{
 			UpdateLabel (false);
-			DestroyStatusBar ();
 			return base.OnLeaveNotifyEvent (evnt);
 		}
 		
@@ -219,38 +213,22 @@ namespace MonoDevelop.Ide.WelcomePage
 			}
 		}
 		
-		static StatusBarContext statusBar;
-		
-		void DestroyStatusBar ()
+		string GetLinkTooltip (string link)
 		{
-			if (statusBar != null) {
-				statusBar.Dispose ();
-				statusBar = null;
-			}
-		}
-		
-		void SetLinkStatus (string link)
-		{
-			if (link == null) {
-				DestroyStatusBar ();
-				return;
-			}
+			if (link == null)
+				return "";
 			if (link.IndexOf ("monodevelop://") != -1)
-				return;
+				return "";
 				
-			if (statusBar == null)
-				statusBar = IdeApp.Workbench.StatusBar.CreateContext ();
-			
 			if (link.IndexOf ("project://") != -1) {
 				string message = link;
 				message = message.Substring (10);
 				string msg = GettextCatalog.GetString ("Open solution {0}", message);
 				if (IdeApp.Workspace.IsOpen)
 					msg += " - " + GettextCatalog.GetString ("Hold Control key to open in current workspace.");
-				statusBar.ShowMessage (msg);
+				return msg;
 			} else {
-				string msg = GettextCatalog.GetString ("Open {0}", link);
-				statusBar.ShowMessage (msg);
+				return GettextCatalog.GetString ("Open {0}", link);
 			}
 		}
 	}
