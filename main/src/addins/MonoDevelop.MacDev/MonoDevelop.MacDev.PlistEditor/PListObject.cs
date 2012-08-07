@@ -150,6 +150,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 		public abstract string TypeString {
 			get;
 		}
+
+		public abstract PObject Clone ();
 		
 		public void Replace (PObject newObject)
 		{
@@ -386,6 +388,14 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 			dict = new Dictionary<string, PObject> ();
 			order = new List<string> ();
+		}
+
+		public override PObject Clone ()
+		{
+			var dict = new PDictionary ();
+			foreach (var kv in this)
+				dict.Add (kv.Key, kv.Value.Clone ());
+			return dict;
 		}
 
 		public bool ContainsKey (string name)
@@ -687,6 +697,14 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 			list = new List<PObject> ();
 		}
+
+		public override PObject Clone ()
+		{
+			var array = new PArray ();
+			foreach (var item in this)
+				array.Add (item.Clone ());
+			return array;
+		}
 		
 		public EventHandler<PObjectEventArgs> Added;
 		
@@ -852,6 +870,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 		public PBoolean (bool value) : base(value)
 		{
 		}
+
+		public override PObject Clone ()
+		{
+			return new PBoolean (Value);
+		}
 		
 		public override void SetValue (string text)
 		{
@@ -891,6 +914,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 		public PData (byte[] value) : base(value ?? Empty)
 		{
 		}
+
+		public override PObject Clone ()
+		{
+			return new PData (Value);
+		}
 		
 		public override void SetValue (string text)
 		{
@@ -911,6 +939,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		public PDate (DateTime value) : base(value)
 		{
+		}
+
+		public override PObject Clone ()
+		{
+			return new PDate (Value);
 		}
 		
 		public override void SetValue (string text)
@@ -937,6 +970,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 		
 		public PNumber (int value) : base(value)
 		{
+		}
+
+		public override PObject Clone ()
+		{
+			return new PNumber (Value);
 		}
 		
 		public override void SetValue (string text)
@@ -966,6 +1004,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 		{
 			if (value == null)
 				throw new ArgumentNullException ("value");
+		}
+
+		public override PObject Clone ()
+		{
+			return new PString (Value);
 		}
 		
 		public override void SetValue (string text)

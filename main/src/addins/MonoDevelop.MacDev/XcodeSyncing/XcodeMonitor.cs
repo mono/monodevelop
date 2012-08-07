@@ -359,7 +359,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		static string GetWorkspacePath (string infoPlist)
 		{
 			try {
-				var dict = PDictionary.Load (infoPlist);
+				var dict = PDictionary.FromFile (infoPlist);
 				PString val;
 				if (dict.TryGetValue<PString>("WorkspacePath", out val))
 					return val.Value;
