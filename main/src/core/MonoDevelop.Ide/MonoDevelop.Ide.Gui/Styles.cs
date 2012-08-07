@@ -75,7 +75,7 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly Gdk.Color DockFrameBackground = new Gdk.Color (157, 162, 166);
 		public static readonly Gdk.Color DockSeparatorColor = ThinSplitterColor;
 
-		public static readonly Gdk.Color BrowserPadBackground = new Gdk.Color (219, 224, 231);
+		public static readonly Gdk.Color BrowserPadBackground = new Gdk.Color (235, 241, 241);
 		public static readonly Gdk.Color InactiveBrowserPadBackground = ReduceLight (BrowserPadBackground.ToCairoColor (), 0.9).ToGdkColor ();
 
 		public static readonly Cairo.Color DockBarBackground1 = PadBackground.ToCairoColor ();
@@ -91,7 +91,7 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly Cairo.Color StatusBarFill1Color = CairoExtensions.ParseColor ("eff5f7");
 		public static readonly Cairo.Color StatusBarFill2Color = CairoExtensions.ParseColor ("d0d9db");
 		public static readonly Cairo.Color StatusBarInnerColor = CairoExtensions.ParseColor ("c4cdcf", 0.5);
-		public static readonly Cairo.Color StatusBarTextColor = CairoExtensions.ParseColor ("666666");
+		public static readonly Cairo.Color StatusBarTextColor = CairoExtensions.ParseColor ("555555");
 		public static readonly Cairo.Color StatusBarProgressColor = StatusBarTextColor;
 		public static readonly Cairo.Color StatusBarProgressBackgroundColor = new Cairo.Color (0, 0, 0, 0.2);
 
