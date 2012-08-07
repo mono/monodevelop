@@ -826,7 +826,7 @@ But I leave it in in the case I've missed something. Mike
 				IdeApp.Workbench.StatusBar.ShowError (GettextCatalog.GetString ("Search pattern not found"));
 			} else if (result.SearchWrapped) {
 				IdeApp.Workbench.StatusBar.ShowMessage (
-					new Image (Stock.Find, IconSize.Menu),
+					Stock.Find,
 					GettextCatalog.GetString ("Reached bottom, continued from top")
 				);
 			} else {
@@ -844,7 +844,7 @@ But I leave it in in the case I've missed something. Mike
 				IdeApp.Workbench.StatusBar.ShowError (GettextCatalog.GetString ("Search pattern not found"));
 			} else if (result.SearchWrapped) {
 				IdeApp.Workbench.StatusBar.ShowMessage (
-					new Image (Stock.Find, IconSize.Menu),
+					Stock.Find,
 					GettextCatalog.GetString ("Reached top, continued from bottom")
 				);
 			} else {
