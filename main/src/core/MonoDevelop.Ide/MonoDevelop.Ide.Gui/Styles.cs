@@ -91,7 +91,7 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly Cairo.Color StatusBarFill1Color = CairoExtensions.ParseColor ("eff5f7");
 		public static readonly Cairo.Color StatusBarFill2Color = CairoExtensions.ParseColor ("d0d9db");
 		public static readonly Cairo.Color StatusBarInnerColor = CairoExtensions.ParseColor ("c4cdcf", 0.5);
-		public static readonly Cairo.Color StatusBarTextColor = CairoExtensions.ParseColor ("3a4029");
+		public static readonly Cairo.Color StatusBarTextColor = CairoExtensions.ParseColor ("666666");
 		public static readonly Cairo.Color StatusBarProgressColor = StatusBarTextColor;
 		public static readonly Cairo.Color StatusBarProgressBackgroundColor = new Cairo.Color (0, 0, 0, 0.2);
 
