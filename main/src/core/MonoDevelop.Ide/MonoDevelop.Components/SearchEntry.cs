@@ -168,11 +168,15 @@ namespace MonoDevelop.Components
 			clear_button.Clicked += OnClearButtonClicked;
 
 			ShowHideButtons ();
+		}
 
-			box.SizeRequested += delegate(object o, SizeRequestedArgs args) {
-				if (HeightRequest != -1)
-				args.Requisition = new Gtk.Requisition () { Width = args.Requisition.Width, Height = HeightRequest };
-			};
+		protected override void OnSizeRequested (ref Requisition requisition)
+		{
+			if (HeightRequest != -1 && box.HeightRequest != HeightRequest)
+				box.HeightRequest = HeightRequest;
+			if (box.HeightRequest != -1 && HeightRequest == -1)
+				box.HeightRequest = -1;
+			base.OnSizeRequested (ref requisition);
 		}
 
 		Gtk.EventBox statusLabelEventBox;
