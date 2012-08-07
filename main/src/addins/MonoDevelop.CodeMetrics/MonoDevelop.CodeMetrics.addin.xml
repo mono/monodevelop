@@ -7,15 +7,15 @@
         url = "http://www.monodevelop.com/"
         description = "Provides code metric support for monodevelop"
         category = "IDE extensions"
-        version = "3.0.4.2">
+        version = "3.0.4">
 
 	<Runtime>
 		<Import assembly = "MonoDevelop.CodeMetrics.dll"/>
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="3.0.4.2"/>
-		<Addin id="Ide" version="3.0.4.2"/>
+		<Addin id="Core" version="3.0.4"/>
+		<Addin id="Ide" version="3.0.4"/>
 	</Dependencies>
 
 	<Extension path = "/MonoDevelop/Ide/Commands">
