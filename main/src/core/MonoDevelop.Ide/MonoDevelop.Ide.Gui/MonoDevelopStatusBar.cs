@@ -725,7 +725,7 @@ namespace MonoDevelop.Ide
 		/// <summary>
 		/// Shows a message in the status bar
 		/// </summary>
-		void ShowMessage (Image image, string message);
+		void ShowMessage (IconId image, string message);
 		
 		/// <summary>
 		/// Shows a progress bar, with the provided label next to it
@@ -735,7 +735,7 @@ namespace MonoDevelop.Ide
 		/// <summary>
 		/// Shows a progress bar, with the provided label and icon next to it
 		/// </summary>
-		void BeginProgress (Image image, string name);
+		void BeginProgress (IconId image, string name);
 		
 		/// <summary>
 		/// Sets the progress fraction. It can only be used after calling BeginProgress.
@@ -788,7 +788,7 @@ namespace MonoDevelop.Ide
 	
 	class StatusBarContextImpl: StatusBarContext
 	{
-		Image image;
+		IconId image;
 		string message;
 		bool isMarkup;
 		double progressFraction;
@@ -811,12 +811,12 @@ namespace MonoDevelop.Ide
 		
 		public void ShowError (string error)
 		{
-			ShowMessage (new Image (MonoDevelop.Ide.Gui.Stock.Error, IconSize.Menu), error);
+			ShowMessage (MonoDevelop.Ide.Gui.Stock.Error, error);
 		}
 		
 		public void ShowWarning (string warning)
 		{
-			ShowMessage (new Gtk.Image (MonoDevelop.Ide.Gui.Stock.Warning, IconSize.Menu), warning);
+			ShowMessage (MonoDevelop.Ide.Gui.Stock.Warning, warning);
 		}
 		
 		public void ShowMessage (string message)
@@ -829,7 +829,7 @@ namespace MonoDevelop.Ide
 			ShowMessage (null, message, isMarkup);
 		}
 		
-		public void ShowMessage (Image image, string message)
+		public void ShowMessage (IconId image, string message)
 		{
 			ShowMessage (image, message, false);
 		}
@@ -844,7 +844,7 @@ namespace MonoDevelop.Ide
 				return false;
 		}
 		
-		public void ShowMessage (Image image, string message, bool isMarkup)
+		public void ShowMessage (IconId image, string message, bool isMarkup)
 		{
 			this.image = image;
 			this.message = message;
@@ -874,7 +874,7 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		public void BeginProgress (Image image, string name)
+		public void BeginProgress (IconId image, string name)
 		{
 			this.image = image;
 			isMarkup = false;

@@ -60,7 +60,7 @@ namespace MonoDevelop.Components.MainToolbar
 			borderColor = CairoExtensions.ParseColor ("777a7a");
 			progressColor = CairoExtensions.ParseColor ("95999a");
 			VisibleWindow = false;
-			SetSizeRequest (200, height);
+			HeightRequest = 1;
 		}
 
 		const int height = 14;
@@ -69,21 +69,17 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			if (!showProgress)
 				return base.OnExposeEvent (evnt);
-			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
-				context.LineWidth = 1;
-				var y = Allocation.Y + (Allocation.Height - height) / 2;
-				const int leftBorder = 0;
-				const int rightBorder = 6;
-				var barWidth = Allocation.Width - leftBorder - rightBorder;
-				context.Rectangle (Allocation.X + 0.5 + leftBorder, y + 0.5, barWidth, height);
-				context.Color = borderColor;
-				context.Stroke ();
-				context.Color = progressColor;
-				for (double x = leftBorder; x < barWidth * fraction; x += 3) {
-					context.Rectangle (Allocation.X + x + 0.5, y + 1 + 0.5, 2, height - 2);
-					context.Fill ();
-				}
+			using (var ctx = Gdk.CairoHelper.Create (evnt.Window)) {
+				ctx.LineWidth = 1;
+				ctx.MoveTo (Allocation.X + 0.5, Allocation.Y + 0.5);
+				ctx.RelLineTo (Allocation.Width, 0);
+				ctx.Color = new Cairo.Color (0.8, 0.8, 0.8);
+				ctx.Stroke ();
 
+				ctx.MoveTo (Allocation.X + 0.5, Allocation.Y + 0.5);
+				ctx.RelLineTo ((double)Allocation.Width * fraction, 0);
+				ctx.Color = new Cairo.Color (0.1, 0.1, 0.1);
+				ctx.Stroke ();
 			}
 			return base.OnExposeEvent (evnt);
 		}

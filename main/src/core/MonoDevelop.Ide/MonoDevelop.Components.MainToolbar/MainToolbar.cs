@@ -146,7 +146,8 @@ namespace MonoDevelop.Components.MainToolbar
 
 			var statusAreaVBox = new VBox ();
 			statusAreaVBox.PackStart (statusArea, true, false, 0);
-			contentBox.PackStart (statusAreaVBox, true, true, 0);
+			contentBox.PackStart (statusAreaVBox, true, false, 0);
+			statusAreaVBox.WidthRequest = 600;
 			AddSpace (24);
 
 			matchEntry = new SearchEntry ();
@@ -216,10 +217,10 @@ namespace MonoDevelop.Components.MainToolbar
 
 			var align = new Gtk.Alignment (0, 0, 1f, 1f);
 			align.Show ();
-			align.TopPadding = 6;
+			align.TopPadding = 5;
 			align.LeftPadding = 9;
 			align.RightPadding = 18;
-			align.BottomPadding = 11;
+			align.BottomPadding = 10;
 			align.Add (contentBox);
 
 			Add (align);
@@ -241,7 +242,7 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			configurationCombo.SetSizeRequest (150, comboHeight);
 			runtimeCombo.SetSizeRequest (150, comboHeight);
-			statusArea.SetSizeRequest (32, height);
+			statusArea.SetSizeRequest (32, height + 12);
 			matchEntry.HeightRequest = height + 2;
 			buttonBar.HeightRequest = height + 2;
 		}

@@ -33,20 +33,35 @@ using MonoDevelop.Ide.Tasks;
 using System.Collections.Generic;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.Components.MainToolbar
 {
 	class StatusArea : EventBox, StatusBar
 	{
+		const int PaddingLeft = 10;
+		int PaddingTop = 4;
+
 		HBox contentBox = new HBox (false, 8);
 
 		StatusAreaSeparator statusIconSeparator;
 		Gtk.Widget buildResultWidget;
 
-		readonly StyledProgressBar progressBar = new StyledProgressBar ();
-		readonly Label statusLabel = new Label ();
 		readonly HBox messageBox = new HBox ();
 		internal readonly HBox statusIconBox = new HBox ();
+
+		string currentText;
+		bool textIsMarkup;
+		AnimatedIcon iconAnimation;
+		IconId currentIcon;
+		Gdk.Pixbuf currentPixbuf;
+		static Pad sourcePad;
+		IDisposable currentIconAnimation;
+		double progressFraction;
+		bool showingProgress;
+
+		IDisposable progressFadeAnimation;
+		double progressDisplayAlpha;
 
 		MainStatusBarContextImpl mainContext;
 		StatusBarContextImpl activeContext;
@@ -64,45 +79,55 @@ namespace MonoDevelop.Components.MainToolbar
 			VisibleWindow = false;
 			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
 
-			statusLabel.SetAlignment (0, 0.5f);
-			statusLabel.Wrap = false;
-			int w, h;
-			Gtk.Icon.SizeLookup (IconSize.Menu, out w, out h);
-			statusLabel.HeightRequest = h;
-			statusLabel.SetPadding (0, 0);
-			statusLabel.ShowAll ();
-			
 			statusIconBox.BorderWidth = 0;
 			statusIconBox.Spacing = 3;
 			
-			//			EventBox eventMessageBox = new EventBox ();
-			messageBox.PackEnd (progressBar, false, false, 0);
-			messageBox.PackStart (statusLabel, true, true, 0);
-
 			ProgressBegin += delegate {
-				progressBar.ShowProgress = true;
-				progressBar.Visible = true;
-				progressBar.Fraction = 0;
+				showingProgress = true;
+				progressFraction = 0;
+				QueueDraw ();
 			};
 			
 			ProgressEnd += delegate {
-				progressBar.ShowProgress = false;
-				progressBar.Visible = false;
-				progressBar.Fraction = 0;
+				showingProgress = false;
+				if (progressFadeAnimation != null)
+					progressFadeAnimation.Dispose ();
+				progressFadeAnimation = DispatchService.RunAnimation (delegate {
+					progressDisplayAlpha -= 0.2;
+					QueueDraw ();
+					if (progressDisplayAlpha <= 0) {
+						progressDisplayAlpha = 0;
+						return 0;
+					}
+					else
+						return 100;
+				});
+				QueueDraw ();
 			};
 			
 			ProgressFraction += delegate(object sender, FractionEventArgs e) {
-				progressBar.Fraction = e.Work;
+				progressFraction = e.Work;
+				if (progressFadeAnimation != null)
+					progressFadeAnimation.Dispose ();
+				progressFadeAnimation = DispatchService.RunAnimation (delegate {
+					progressDisplayAlpha += 0.2;
+					QueueDraw ();
+					if (progressDisplayAlpha >= 1) {
+						progressDisplayAlpha = 1;
+						return 0;
+					}
+					else
+						return 100;
+				});
 				QueueDraw ();
 			};
-
 
 			contentBox.PackStart (messageBox, true, true, 0);
 			contentBox.PackEnd (statusIconBox, false, false, 0);
 			contentBox.PackEnd (statusIconSeparator = new StatusAreaSeparator (), false, false, 0);
 			contentBox.PackEnd (buildResultWidget = CreateBuildResultsWidget (Orientation.Horizontal), false, false, 0);
 
-			var align = new Alignment (0, 0, 1, 1);
+			var align = new Alignment (0, 0.5f, 1, 0);
 			align.LeftPadding = 4;
 			align.RightPadding = 8;
 			align.Add (contentBox);
@@ -171,6 +196,8 @@ namespace MonoDevelop.Components.MainToolbar
 			box.PackStart (warningImage, false, false, 0);
 			Label warnings = new Gtk.Label ();
 			box.PackStart (warnings, false, false, 0);
+			box.NoShowAll = true;
+			box.Show ();
 			
 			TaskEventHandler updateHandler = delegate {
 				int ec=0, wc=0;
@@ -180,10 +207,13 @@ namespace MonoDevelop.Components.MainToolbar
 					else if (t.Severity == TaskSeverity.Warning)
 						wc++;
 				}
+				errors.Visible = ec > 0;
 				errors.Text = ec.ToString ();
-				errorImage.Pixbuf = ec > 0 ? errorIcon : noErrorIcon;
+				errorImage.Visible = ec > 0;
+
+				warnings.Visible = wc > 0;
 				warnings.Text = wc.ToString ();
-				warningImage.Pixbuf = wc > 0 ? warningIcon : noWarningIcon;
+				warningImage.Visible = wc > 0;
 			};
 			
 			updateHandler (null, null);
@@ -207,6 +237,10 @@ namespace MonoDevelop.Components.MainToolbar
 				pad.BringToFront ();
 			};
 
+			errors.Visible = false;
+			errorImage.Visible = false;
+			warnings.Visible = false;
+			warningImage.Visible = false;
 
 			return ebox;
 		}
@@ -244,8 +278,51 @@ namespace MonoDevelop.Components.MainToolbar
 				context.LineWidth = 1;
 				context.Color = Styles.StatusBarBorderColor;
 				context.Stroke ();
+
+				int x = Allocation.X + PaddingLeft;
+
+				if (currentPixbuf != null) {
+					int y = Allocation.Y + (Allocation.Height - currentPixbuf.Height) / 2;
+					Gdk.CairoHelper.SetSourcePixbuf (context, currentPixbuf, x, y);
+					context.Paint ();
+					x += currentPixbuf.Width + 4;
+				}
+
+				if (currentText != null) {
+					Pango.Layout pl = new Pango.Layout (this.PangoContext);
+					if (textIsMarkup)
+						pl.SetMarkup (currentText);
+					else
+						pl.SetText (currentText);
+					int w, h;
+					pl.GetPixelSize (out w, out h);
+					int y = Allocation.Y + (Allocation.Height - h) / 2;
+					context.MoveTo (x, y);
+					context.Color = Styles.StatusBarTextColor;
+					Pango.CairoHelper.ShowLayout (context, pl);
+					pl.Dispose ();
+
+					if (showingProgress || progressDisplayAlpha > 0) {
+						double py = y + h + 1.5;
+						double pw = messageBox.Allocation.Width - (x - Allocation.X);
+						context.LineWidth = 1;
+						context.MoveTo (x + 0.5, py);
+						context.RelLineTo (pw, 0);
+						var c = Styles.StatusBarProgressBackgroundColor;
+						c.A *= progressDisplayAlpha;
+						context.Color = c;
+						context.Stroke ();
+
+						context.MoveTo (x + 0.5, py);
+						context.RelLineTo ((double)pw * progressFraction, 0);
+						c = Styles.StatusBarProgressColor;
+						c.A *= progressDisplayAlpha;
+						context.Color = c;
+						context.Stroke ();
+					}
+				}
 			}
-			return base.OnExposeEvent (evnt);
+			return true;
 		}
 
 		#region StatusBar implementation
@@ -443,13 +520,13 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public void ShowError (string error)
 		{
-			ShowMessage (new Image (MonoDevelop.Ide.Gui.Stock.Error, IconSize.Menu), error);
+			ShowMessage (MonoDevelop.Ide.Gui.Stock.Error, error);
 		}
 
 		public void ShowWarning (string warning)
 		{
 			DispatchService.AssertGuiThread ();
-			ShowMessage (new Gtk.Image (MonoDevelop.Ide.Gui.Stock.Warning, IconSize.Menu), warning);
+			ShowMessage (MonoDevelop.Ide.Gui.Stock.Warning, warning);
 		}
 
 		public void ShowMessage (string message)
@@ -462,39 +539,36 @@ namespace MonoDevelop.Components.MainToolbar
 			ShowMessage (null, message, isMarkup);
 		}
 
-		public void ShowMessage (Image image, string message)
+		public void ShowMessage (IconId image, string message)
 		{
 			ShowMessage (image, message, false);
 		}
 
-		string lastText = null;
-		Image currentStatusImage;
-		static Pad sourcePad;
-		public void ShowMessage (Image image, string message, bool isMarkup)
+		public void ShowMessage (IconId image, string message, bool isMarkup)
 		{
-			if (message == lastText)
-				return;
-			sourcePad = null;
-			lastText = message;
 			DispatchService.AssertGuiThread ();
-			if (currentStatusImage != image) {
-				if (currentStatusImage != null) 
-					messageBox.Remove (currentStatusImage);
-				currentStatusImage = image;
-				if (image != null) {
-					image.SetPadding (0, 0);
-					messageBox.PackStart (image, false, false, 3);
-					messageBox.ReorderChild (image, 1);
-					image.Show ();
+			string txt = !String.IsNullOrEmpty (message) ? " " + message.Replace ("\n", " ") : "";
+			currentText = txt != null ? txt.Trim () : null;
+			textIsMarkup = isMarkup;
+			if (currentIcon != image) {
+				currentIcon = image;
+				iconAnimation = null;
+				if (currentIconAnimation != null) {
+					currentIconAnimation.Dispose ();
+					currentIconAnimation = null;
+				}
+				if (image != IconId.Null && ImageService.IsAnimation (image, Gtk.IconSize.Menu)) {
+					iconAnimation = ImageService.GetAnimatedIcon (image, Gtk.IconSize.Menu);
+					currentPixbuf = iconAnimation.FirstFrame;
+					currentIconAnimation = iconAnimation.StartAnimation (delegate (Gdk.Pixbuf p) {
+						currentPixbuf = p;
+						QueueDraw ();
+					});
+				} else {
+					currentPixbuf = currentIcon != IconId.Null ? ImageService.GetPixbuf (image) : null;
 				}
 			}
-			
-			string txt = !String.IsNullOrEmpty (message) ? " " + message.Replace ("\n", " ") : "";
-			if (isMarkup) {
-				statusLabel.Markup = txt;
-			} else {
-				statusLabel.Text = txt;
-			}
+			QueueDraw ();
 		}
 		#endregion
 
@@ -547,7 +621,7 @@ namespace MonoDevelop.Components.MainToolbar
 			OnProgressBegin (EventArgs.Empty);
 		}
 		
-		public void BeginProgress (Image image, string name)
+		public void BeginProgress (IconId image, string name)
 		{
 			ShowMessage (image, name);
 			OnProgressBegin (EventArgs.Empty);

@@ -524,7 +524,7 @@ namespace MonoDevelop.VersionControl.Views
 			{
 				StatusBarContext ctx = IdeApp.Workbench.StatusBar.CreateContext ();
 				ctx.AutoPulse = true;
-				ctx.ShowMessage (ImageService.GetImage ("md-version-control", IconSize.Menu), GettextCatalog.GetString ("Retrieving history"));
+				ctx.ShowMessage ("md-version-control", GettextCatalog.GetString ("Retrieving history"));
 				
 				ThreadPool.QueueUserWorkItem (delegate {
 					try {
