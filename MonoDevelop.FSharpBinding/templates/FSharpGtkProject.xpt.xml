@@ -4,7 +4,7 @@
 
 	<TemplateConfiguration>
 		<_Name>C#F# Gtk project</_Name>
-		<_Description>Creates C# Gtk# and F# library in one solution</_Description>
+		<_Description>Create C# Gtk and F# library projects</_Description>
 		<_Category>F#</_Category>
 		<LanguageName>F#</LanguageName>
 	</TemplateConfiguration>
@@ -30,7 +30,6 @@
 				<Reference type="Package" SpecificVersion="false" refto="glade-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
 				<Reference type="Package" SpecificVersion="false" refto="pango-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
 				<Reference type="Package" SpecificVersion="false" refto="atk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-				<!--<Reference type="ProjectRefenrece" refto="${ProjectName}.Logic.fsproj" />-->
 			</References>
 
 			<Files>
