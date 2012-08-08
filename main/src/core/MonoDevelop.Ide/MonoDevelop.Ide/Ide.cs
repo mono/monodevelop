@@ -269,9 +269,6 @@ namespace MonoDevelop.Ide
 				}
 			}
 			
-			commandService.CommandSelected += OnCommandSelected;
-			commandService.CommandDeselected += OnCommandDeselected;
-			
 			//FIXME: we should really make this on-demand. consumers can display a "loading help cache" message like VS
 			MonoDevelop.Projects.HelpService.AsyncInitialize ();
 			
@@ -359,32 +356,6 @@ namespace MonoDevelop.Ide
 		
 		static StatusBarContext menuDescriptionContext;
 		
-		static void OnCommandSelected (object s, CommandSelectedEventArgs args)
-		{
-			string msg = args.CommandInfo.Description;
-			if (string.IsNullOrEmpty (msg)) {
-				msg = args.CommandInfo.Text;
-				// only replace _ outside of markup: usecase : Field <b>some_field</b>
-				int idx = msg.IndexOf ('<');
-				if (idx < 0)
-					idx = msg.Length;
-				msg = msg.Substring (0, idx).Replace ("_", "") + msg.Substring (idx);
-			}
-			if (!string.IsNullOrEmpty (msg)) {
-				if (menuDescriptionContext == null)
-					menuDescriptionContext = Workbench.StatusBar.CreateContext ();
-				menuDescriptionContext.ShowMessage (msg, args.CommandInfo.UseMarkup);
-			}
-		}
-			
-		static void OnCommandDeselected (object s, EventArgs args)
-		{
-			if (menuDescriptionContext != null) {
-				menuDescriptionContext.Dispose ();
-				menuDescriptionContext = null;
-			}
-		}
-			
 		public static void Run ()
 		{
 			// finally run the workbench window ...
