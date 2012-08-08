@@ -43,7 +43,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		static QuickTaskStrip ()
 		{
 			EnableFancyFeatures.Changed += delegate {
-				PropertyService.Set ("ScrollBar.Mode", EnableFancyFeatures ? ScrollBarMode.Overview : ScrollBarMode.Normal);
+				PropertyService.Set ("ScrollBar.Mode", ScrollBarMode.Overview);
 			};
 		}
 		Adjustment adj;
@@ -54,7 +54,6 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			}
 			set {
 				adj = value;
-				SetupMode ();
 			}
 		}
 		
@@ -111,45 +110,40 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 		public QuickTaskStrip ()
 		{
-			if (EnableFancyFeatures) {
-				ScrollBarMode = PropertyService.Get ("ScrollBar.Mode", ScrollBarMode.Overview);
-			} else {
-				ScrollBarMode = ScrollBarMode.Normal;
-			}
+			ScrollBarMode = PropertyService.Get ("ScrollBar.Mode", ScrollBarMode.Overview);
 			PropertyService.AddPropertyHandler ("ScrollBar.Mode", ScrollBarModeChanged);
+			EnableFancyFeatures.Changed += HandleChanged;
 			Events |= EventMask.ButtonPressMask;
 		}
+
+		void HandleChanged (object sender, EventArgs e)
+		{
+			SetupMode ();
+		}
 		
-		VScrollbar vScrollBar;
 		Widget mapMode;
 		void SetupMode ()
 		{
 			if (adj == null || textEditor == null)
 				return;
-			if (vScrollBar != null) {
-				vScrollBar.Destroy ();
-				vScrollBar = null;
-			}
-			
+
 			if (mapMode != null) {
 				mapMode.Destroy ();
 				mapMode = null;
 			}
-			switch (ScrollBarMode) {
-			case ScrollBarMode.Normal:
-				vScrollBar = new VScrollbar (adj);
-				PackStart (vScrollBar, true, true, 0);
-				break;
-			case ScrollBarMode.Overview:
-				mapMode = new QuickTaskOverviewMode (this);
-				PackStart (mapMode, true, true, 0);
-				break;
-			case ScrollBarMode.Minimap:
-				mapMode = new QuickTaskMiniMapMode (this);
-				PackStart (mapMode, true, true, 0);
-				break;
-			default:
-				throw new ArgumentOutOfRangeException ();
+			if (EnableFancyFeatures) {
+				switch (ScrollBarMode) {
+				case ScrollBarMode.Overview:
+					mapMode = new QuickTaskOverviewMode (this);
+					PackStart (mapMode, true, true, 0);
+					break;
+				case ScrollBarMode.Minimap:
+					mapMode = new QuickTaskMiniMapMode (this);
+					PackStart (mapMode, true, true, 0);
+					break;
+				default:
+					throw new ArgumentOutOfRangeException ();
+				}
 			}
 			ShowAll ();
 		}
@@ -161,13 +155,12 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			textEditor = null;
 			providerTasks = null;
 			PropertyService.RemovePropertyHandler ("ScrollBar.Mode", ScrollBarModeChanged);
+			EnableFancyFeatures.Changed -= HandleChanged;
 		}
 		
 		void ScrollBarModeChanged (object sender, PropertyChangedEventArgs args)
 		{
 			var newMode =  (ScrollBarMode)args.NewValue;
-			if (newMode == this.ScrollBarMode)
-				return;
 			this.ScrollBarMode = newMode;
 		}
 		
@@ -227,21 +220,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		void GotoPgDown ()
 		{
 			VAdjustment.Value = Math.Min (VAdjustment.Upper, VAdjustment.Value + VAdjustment.PageSize);
-		}
-		
-		[CommandUpdateHandler (ScrollbarCommand.ShowScrollBar)]
-		void UpdateShowScrollBar (CommandInfo info)
-		{
-			info.Visible = EnableFancyFeatures;
-			info.Checked = ScrollBarMode == ScrollBarMode.Normal;
-		}
-		
-		[CommandHandler (ScrollbarCommand.ShowScrollBar)]
-		void ShowScrollBar ()
-		{
-			 ScrollBarMode = ScrollBarMode.Normal; 
-		}
-		
+		}	
+
 		[CommandUpdateHandler (ScrollbarCommand.ShowTasks)]
 		void UpdateShowMap (CommandInfo info)
 		{

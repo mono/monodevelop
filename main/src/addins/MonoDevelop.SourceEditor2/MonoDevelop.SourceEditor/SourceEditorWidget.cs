@@ -176,7 +176,7 @@ namespace MonoDevelop.SourceEditor
 		class DecoratedScrolledWindow : HBox
 		{
 			SourceEditorWidget parent;
-			SmartScrolledWindow scrolledWindow;
+			ScrolledWindow scrolledWindow;
 			
 			QuickTaskStrip strip;
 			
@@ -196,54 +196,18 @@ namespace MonoDevelop.SourceEditor
 			{
 				this.parent = parent;
 				this.strip = new QuickTaskStrip ();
-				/*
-				Border border = new Border ();
-				border.HeightRequest = 1;
-				PackStart (border, false, true, 0);
-								 
-				HBox box = new HBox ();
-				
-				border = new Border ();
-				border.WidthRequest = 1;
-				box.PackStart (border, false, true, 0);
-				
-				scrolledWindow = new ScrolledWindow ();
-				scrolledWindow.BorderWidth = 0;
-				scrolledWindow.ShadowType = ShadowType.None;
-				scrolledWindow.ButtonPressEvent += PrepareEvent;
-				box.PackStart (scrolledWindow, true, true, 0);
-				
-				
-				border = new Border ();
-				border.WidthRequest = 1;
-				box.PackStart (border, false, true, 0);
-				
-				PackStart (box, true, true, 0);
-				
-				border = new Border ();
-				border.HeightRequest = 1;
-				PackStart (border, false, true, 0);*/
-				
-				scrolledWindow = new SmartScrolledWindow ();
-//				scrolledWindow.BorderWidth = 0;
-//				scrolledWindow.ShadowType = ShadowType.In;
+
+				scrolledWindow = new CompactScrolledWindow ();
 				scrolledWindow.ButtonPressEvent += PrepareEvent;
 				PackStart (scrolledWindow, true, true, 0);
-				if (parent.quickTaskProvider.Count > 0) {
-					strip.VAdjustment = scrolledWindow.Vadjustment;
-					scrolledWindow.ReplaceVScrollBar (strip);
-				} else {
-					strip.Visible = false;
-				}
+				strip.VAdjustment = scrolledWindow.Vadjustment;
+				PackEnd (strip, false, true, 0);
+
 				parent.quickTaskProvider.ForEach (p => AddQuickTaskProvider (p));
 			}
 			
 			public void AddQuickTaskProvider (IQuickTaskProvider p)
 			{
-				if (!strip.Visible) {
-					strip.VAdjustment = scrolledWindow.Vadjustment;
-					scrolledWindow.ReplaceVScrollBar (strip);
-				}
 				p.TasksUpdated += HandleTasksUpdated; 
 			}
 
@@ -261,10 +225,6 @@ namespace MonoDevelop.SourceEditor
 
 			public void AddUsageProvider (IUsageProvider p)
 			{
-				if (!strip.Visible) {
-					strip.VAdjustment = scrolledWindow.Vadjustment;
-					scrolledWindow.ReplaceVScrollBar (strip);
-				}
 				p.UsagesUpdated += (sender, e) => strip.Update (p);
 			}
 			

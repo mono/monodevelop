@@ -38,7 +38,6 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 {
 	
 	public enum ScrollBarMode {
-		Normal,
 		Overview,
 		Minimap
 	}

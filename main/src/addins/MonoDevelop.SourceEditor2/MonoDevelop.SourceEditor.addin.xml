@@ -131,9 +131,6 @@
 				_label = "_Page Up"/>
 		<Command id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.PgDown"
 				_label = "P_age Down"/>
-		<Command id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.ShowScrollBar"
-				_label = "Show _Scroll Bar Mode"
-				type="radio"/>
 		<Command id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.ShowTasks"
 				_label = "Show _Tasks"
 				type="radio"/>
@@ -172,7 +169,6 @@
 		<CommandItem id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.PgUp" />
 		<CommandItem id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.PgDown" />
 		<SeparatorItem id = "Separator2" />
-		<CommandItem id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.ShowScrollBar" />
 		<CommandItem id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.ShowTasks" />
 		<CommandItem id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.ShowMinimap" />
 	</Extension>
