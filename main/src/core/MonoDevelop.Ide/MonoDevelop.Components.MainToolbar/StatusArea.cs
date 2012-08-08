@@ -40,7 +40,6 @@ namespace MonoDevelop.Components.MainToolbar
 	class StatusArea : EventBox, StatusBar
 	{
 		const int PaddingLeft = 10;
-		int PaddingTop = 4;
 
 		HBox contentBox = new HBox (false, 8);
 
@@ -49,6 +48,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		readonly HBox messageBox = new HBox ();
 		internal readonly HBox statusIconBox = new HBox ();
+		Alignment mainAlign;
 
 		string currentText;
 		bool textIsMarkup;
@@ -79,6 +79,7 @@ namespace MonoDevelop.Components.MainToolbar
 			contexts.Add (mainContext);
 
 			VisibleWindow = false;
+			NoShowAll = true;
 			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
 
 			statusIconBox.BorderWidth = 0;
@@ -129,11 +130,17 @@ namespace MonoDevelop.Components.MainToolbar
 			contentBox.PackEnd (statusIconSeparator = new StatusAreaSeparator (), false, false, 0);
 			contentBox.PackEnd (buildResultWidget = CreateBuildResultsWidget (Orientation.Horizontal), false, false, 0);
 
-			var align = new Alignment (0, 0.5f, 1, 0);
-			align.LeftPadding = 4;
-			align.RightPadding = 8;
-			align.Add (contentBox);
-			Add (align);
+			mainAlign = new Alignment (0, 0.5f, 1, 0);
+			mainAlign.LeftPadding = 12;
+			mainAlign.RightPadding = 8;
+			mainAlign.Add (contentBox);
+			Add (mainAlign);
+
+			mainAlign.ShowAll ();
+			statusIconBox.Hide ();
+			statusIconSeparator.Hide ();
+			buildResultWidget.Hide ();
+			Show ();
 
 			this.ButtonPressEvent += delegate {
 				if (sourcePad != null)
@@ -147,8 +154,6 @@ namespace MonoDevelop.Components.MainToolbar
 			statusIconBox.Hidden += delegate {
 				UpdateSeparators ();
 			};
-
-
 
 			// todo: Move this to the CompletionWindowManager when it's possible.
 			StatusBarContext completionStatus = null;
@@ -184,6 +189,8 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public Widget CreateBuildResultsWidget (Orientation orientation)
 		{
+			EventBox ebox = new EventBox ();
+
 			Gtk.Box box;
 			if (orientation == Orientation.Horizontal)
 				box = new HBox ();
@@ -224,6 +231,8 @@ namespace MonoDevelop.Components.MainToolbar
 				warnings.Visible = wc > 0;
 				warnings.Text = wc.ToString ();
 				warningImage.Visible = wc > 0;
+				ebox.Visible = ec > 0 || wc > 0;
+				UpdateSeparators ();
 			};
 			
 			updateHandler (null, null);
@@ -238,7 +247,6 @@ namespace MonoDevelop.Components.MainToolbar
 				TaskService.Errors.TasksRemoved -= updateHandler;
 			};
 
-			EventBox ebox = new EventBox ();
 			ebox.VisibleWindow = false;
 			ebox.Add (box);
 			ebox.ShowAll ();
@@ -289,7 +297,7 @@ namespace MonoDevelop.Components.MainToolbar
 				context.Color = Styles.StatusBarBorderColor;
 				context.Stroke ();
 
-				int x = Allocation.X + PaddingLeft;
+				int x = messageBox.Allocation.X;
 
 				if (currentPixbuf != null) {
 					int y = Allocation.Y + (Allocation.Height - currentPixbuf.Height) / 2;
@@ -313,17 +321,18 @@ namespace MonoDevelop.Components.MainToolbar
 					pl.Dispose ();
 
 					if (showingProgress || progressDisplayAlpha > 0) {
-						double py = y + h + 2.5;
-						double pw = messageBox.Allocation.Width - (x - Allocation.X);
+						double py = y + h + 3.5;
+						double pw = mainAlign.Allocation.Width - mainAlign.LeftPadding - mainAlign.RightPadding;
+						var px = mainAlign.Allocation.X + mainAlign.LeftPadding;
 						context.LineWidth = 1;
-						context.MoveTo (x + 0.5, py);
+						context.MoveTo (px, py);
 						context.RelLineTo (pw, 0);
 						var c = Styles.StatusBarProgressBackgroundColor;
 						c.A *= progressDisplayAlpha;
 						context.Color = c;
 						context.Stroke ();
 
-						context.MoveTo (x + 0.5, py);
+						context.MoveTo (px, py);
 						context.RelLineTo ((double)pw * progressFraction, 0);
 						c = Styles.StatusBarProgressColor;
 						c.A *= progressDisplayAlpha;
@@ -332,7 +341,7 @@ namespace MonoDevelop.Components.MainToolbar
 					}
 				}
 			}
-			return true;
+			return base.OnExposeEvent (evnt);
 		}
 
 		#region StatusBar implementation
