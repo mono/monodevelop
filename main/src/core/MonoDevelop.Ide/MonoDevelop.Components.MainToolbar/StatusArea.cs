@@ -272,22 +272,35 @@ namespace MonoDevelop.Components.MainToolbar
 
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
-			requisition.Height = 22;
+			requisition.Height = 32;
 			base.OnSizeRequested (ref requisition);
 		}
 
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
 			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
-				CairoExtensions.RoundedRectangle (context, Allocation.X + 0.5, Allocation.Y + 0.5, Allocation.Width - 1, Allocation.Height - 1, 3);
-				using (LinearGradient lg = new LinearGradient (Allocation.X, Allocation.Y, Allocation.X, Allocation.Height)) {
+
+				CairoExtensions.RoundedRectangle (context, Allocation.X + 0.5, Allocation.Y + 1.5, Allocation.Width - 1, Allocation.Height - 1, 3);
+				context.LineWidth = 1;
+				context.Color = Styles.StatusBarShadowColor1;
+				context.Stroke ();
+				
+				CairoExtensions.RoundedRectangle (context, Allocation.X + 0.5, Allocation.Y + 2.5, Allocation.Width - 1, Allocation.Height - 1, 3);
+				context.LineWidth = 1;
+				context.Color = Styles.StatusBarShadowColor2;
+				context.Stroke ();
+				
+				CairoExtensions.RoundedRectangle (context, Allocation.X + 1, Allocation.Y + 1, Allocation.Width - 2, Allocation.Height - 2, 3);
+				using (LinearGradient lg = new LinearGradient (Allocation.X + 1, Allocation.Y + 1, Allocation.X + 1, Allocation.Y + Allocation.Height - 1)) {
 					lg.AddColorStop (0, Styles.StatusBarFill1Color);
-					lg.AddColorStop (1, Styles.StatusBarFill2Color);
+					lg.AddColorStop (0.5, Styles.StatusBarFill2Color);
+					lg.AddColorStop (0.5, Styles.StatusBarFill3Color);
+					lg.AddColorStop (1, Styles.StatusBarFill4Color);
 					context.Pattern = lg;
 				}
 				context.Fill ();
 
-				CairoExtensions.RoundedRectangle (context, Allocation.X + 1.5, Allocation.Y + 1.5, Allocation.Width - 2.5, Allocation.Height - 2.5, 3);
+				CairoExtensions.RoundedRectangle (context, Allocation.X + 1.5, Allocation.Y + 1.5, Allocation.Width - 3, Allocation.Height - 3, 3);
 				context.LineWidth = 1;
 				context.Color = Styles.StatusBarInnerColor;
 				context.Stroke ();

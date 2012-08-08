@@ -87,10 +87,14 @@ namespace MonoDevelop.Ide.Gui
 
 		public static readonly Cairo.Color WidgetBorderColor = CairoExtensions.ParseColor ("8c8c8c");
 
-		public static readonly Cairo.Color StatusBarBorderColor = Styles.WidgetBorderColor;
-		public static readonly Cairo.Color StatusBarFill1Color = CairoExtensions.ParseColor ("eff5f7");
-		public static readonly Cairo.Color StatusBarFill2Color = CairoExtensions.ParseColor ("d0d9db");
-		public static readonly Cairo.Color StatusBarInnerColor = CairoExtensions.ParseColor ("c4cdcf", 0.5);
+		public static readonly Cairo.Color StatusBarBorderColor = CairoExtensions.ParseColor ("919191");
+		public static readonly Cairo.Color StatusBarFill1Color = CairoExtensions.ParseColor ("f5fafc");
+		public static readonly Cairo.Color StatusBarFill2Color = CairoExtensions.ParseColor ("e9f1f3");
+		public static readonly Cairo.Color StatusBarFill3Color = CairoExtensions.ParseColor ("d8e7ea");
+		public static readonly Cairo.Color StatusBarFill4Color = CairoExtensions.ParseColor ("d1e3e7");
+		public static readonly Cairo.Color StatusBarInnerColor = new Cairo.Color (0,0,0, 0.08);
+		public static readonly Cairo.Color StatusBarShadowColor1 = new Cairo.Color (1,1,1, 0.2);
+		public static readonly Cairo.Color StatusBarShadowColor2 = new Cairo.Color (1,1,1, 0.1);
 		public static readonly Cairo.Color StatusBarTextColor = CairoExtensions.ParseColor ("555555");
 		public static readonly Cairo.Color StatusBarProgressColor = StatusBarTextColor;
 		public static readonly Cairo.Color StatusBarProgressBackgroundColor = new Cairo.Color (0, 0, 0, 0.2);

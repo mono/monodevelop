@@ -242,7 +242,7 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			configurationCombo.SetSizeRequest (150, comboHeight);
 			runtimeCombo.SetSizeRequest (150, comboHeight);
-			statusArea.SetSizeRequest (32, height + 12);
+			statusArea.SetSizeRequest (32, 32);
 			matchEntry.HeightRequest = height + 4;
 			buttonBar.HeightRequest = height + 2;
 		}
