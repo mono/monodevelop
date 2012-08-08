@@ -990,6 +990,9 @@
     <EmbeddedResource Include="icons\tree-popup-button-down.png">
       <LogicalName>tree-popup-button-down.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\command.png">
+      <LogicalName>command.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
@@ -1724,6 +1727,7 @@
     <Compile Include="MonoDevelop.Ide.Gui\DocumentView.cs" />
     <Compile Include="MonoDevelop.Components\VPanedThin.cs" />
     <Compile Include="MonoDevelop.Components\HPanedThin.cs" />
+    <Compile Include="MonoDevelop.Components.MainToolbar\CommandSearchCategory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

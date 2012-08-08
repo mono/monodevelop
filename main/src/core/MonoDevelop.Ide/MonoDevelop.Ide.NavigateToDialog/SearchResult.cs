@@ -33,6 +33,7 @@ using MonoDevelop.Core.Text;
 using MonoDevelop.Projects;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.Ide.NavigateToDialog
 {
@@ -40,7 +41,8 @@ namespace MonoDevelop.Ide.NavigateToDialog
 	{
 		File,
 		Type,
-		Member
+		Member,
+		Command
 	}
 
 	abstract class SearchResult
@@ -100,6 +102,14 @@ namespace MonoDevelop.Ide.NavigateToDialog
 				MarkupUtilities.AppendEscapedString (result, text);
 			}
 			return result.ToString ();
+		}
+
+		public virtual bool CanActivate {
+			get { return false; }
+		}
+
+		public virtual void Activate ()
+		{
 		}
 	}
 	
@@ -309,6 +319,75 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		internal Ambience Ambience { 
 			get;
 			set;
+		}
+	}
+
+	class CommandResult: SearchResult
+	{
+		Command command;
+
+		public CommandResult (Command cmd, string match, string matchedString, int rank): base (match, matchedString, rank)
+		{
+			command = cmd;
+		}
+
+		public override SearchResultType SearchResultType {
+			get {
+				return SearchResultType.Command;
+			}
+		}
+
+		public override string PlainText {
+			get {
+				return MatchedString;
+			}
+		}
+
+		public override string File {
+			get {
+				return null;
+			}
+		}
+
+		public override Pixbuf Icon {
+			get {
+				return ImageService.GetPixbuf ("md-command", IconSize.Menu);
+			}
+		}
+
+		public override string Description {
+			get {
+				string desc = "";
+				if (!string.IsNullOrEmpty (command.AccelKey))
+					desc = KeyBindingManager.BindingToDisplayLabel (command.AccelKey, false);
+				if (!string.IsNullOrEmpty (command.Description)) {
+					if (desc.Length > 0)
+						desc += " - ";
+					desc += command.Description;
+				}
+				else if (desc.Length == 0) {
+					desc = "Command";
+				}
+				if (!string.IsNullOrEmpty (command.Category))
+					desc += " (" + command.Category + ")";
+				return desc;
+			}
+		}
+		
+		public override string GetMarkupText (Widget widget)
+		{
+			return HighlightMatch (widget, MatchedString, match);
+		}
+
+		public override bool CanActivate {
+			get {
+				return true;
+			}
+		}
+
+		public override void Activate ()
+		{
+			IdeApp.CommandService.DispatchCommand (command.Id);
 		}
 	}
 }

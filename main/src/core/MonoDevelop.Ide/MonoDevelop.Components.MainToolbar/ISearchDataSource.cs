@@ -41,6 +41,8 @@ namespace MonoDevelop.Components.MainToolbar
 		double GetWeight (int item);
 
 		DomRegion GetRegion (int item);
+		bool CanActivate (int item);
+		void Activate (int item);
 	}
 	
 }

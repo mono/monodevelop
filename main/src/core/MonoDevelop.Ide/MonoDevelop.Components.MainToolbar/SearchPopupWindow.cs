@@ -67,6 +67,7 @@ namespace MonoDevelop.Components.MainToolbar
 			selectionBackgroundColor = CairoExtensions.ParseColor ("cccccc");
 			categories.Add (new ProjectSearchCategory (this));
 			categories.Add (new FileSearchCategory (this));
+			categories.Add (new CommandSearchCategory (this));
 			layout = new Pango.Layout (PangoContext);
 			headerLayout = new Pango.Layout (PangoContext);
 			CanFocus = false;
@@ -95,15 +96,25 @@ namespace MonoDevelop.Components.MainToolbar
 
 		internal void OpenFile ()
 		{
-			var region = SelectedItemRegion;
-			if (string.IsNullOrEmpty (region.FileName))
+			if (selectedItem == null || selectedItem.Item < 0 || selectedItem.Item >= selectedItem.DataSource.ItemCount)
 				return;
-			if (region.Begin.IsEmpty) {
-				IdeApp.Workbench.OpenDocument (region.FileName);
-			} else {
-				IdeApp.Workbench.OpenDocument (region.FileName, region.BeginLine, region.BeginColumn);
+
+			if (selectedItem.DataSource.CanActivate (selectedItem.Item)) {
+				Destroy ();
+				selectedItem.DataSource.Activate (selectedItem.Item);
 			}
-			Destroy ();
+			else {
+				var region = SelectedItemRegion;
+
+				if (string.IsNullOrEmpty (region.FileName))
+					return;
+				if (region.Begin.IsEmpty) {
+					IdeApp.Workbench.OpenDocument (region.FileName);
+				} else {
+					IdeApp.Workbench.OpenDocument (region.FileName, region.BeginLine, region.BeginColumn);
+				}
+				Destroy ();
+			}
 		}
 
 		public void Update (string searchPattern)
@@ -181,7 +192,7 @@ namespace MonoDevelop.Components.MainToolbar
 					continue;
 				
 				for (int i = 0; i < maxItems && i < dataSrc.ItemCount; i++) {
-					layout.SetMarkup (dataSrc.GetMarkup (i, false) + "\n<small>" + dataSrc.GetDescriptionMarkup (i, false) + "</small>");
+					layout.SetMarkup (GetRowMarkup (dataSrc, i));
 
 					int w, h;
 					layout.GetPixelSize (out w, out h);
@@ -217,7 +228,7 @@ namespace MonoDevelop.Components.MainToolbar
 					continue;
 				
 				for (int i = 0; i < maxItems && i < dataSrc.ItemCount; i++) {
-					layout.SetMarkup (dataSrc.GetMarkup (i, false) + "\n<small>" + dataSrc.GetDescriptionMarkup (i, false) + "</small>");
+					layout.SetMarkup (GetRowMarkup (dataSrc, i));
 
 					int w, h;
 					layout.GetPixelSize (out w, out h);
@@ -538,7 +549,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 				double x = alloc.X + xMargin + headerMarginSize;
 				context.Color = new Cairo.Color (0, 0, 0);
-				layout.SetMarkup ("<span foreground=\"#606060\">" + dataSrc.GetMarkup (i, false) +"</span><span foreground=\"#8F8F8F\" size=\"small\">\n"+dataSrc.GetDescriptionMarkup (i, false) +"</span>");
+				layout.SetMarkup (GetRowMarkup (dataSrc, i));
 				layout.GetPixelSize (out w, out h);
 				if (selectedItem != null && selectedItem.Category == category && selectedItem.Item == i) {
 					context.Color = selectionBackgroundColor;
@@ -578,7 +589,7 @@ namespace MonoDevelop.Components.MainToolbar
 						continue;
 					double x = alloc.X + xMargin + headerMarginSize;
 					context.Color = new Cairo.Color (0, 0, 0);
-					layout.SetMarkup ("<span foreground=\"#606060\">" + dataSrc.GetMarkup (i, false) +"</span><span foreground=\"#8F8F8F\" size=\"small\">\n"+dataSrc.GetDescriptionMarkup (i, false) +"</span>");
+					layout.SetMarkup (GetRowMarkup (dataSrc, i));
 					layout.GetPixelSize (out w, out h);
 					if (selectedItem != null && selectedItem.Category == category && selectedItem.Item == i) {
 						context.Color = selectionBackgroundColor;
@@ -612,6 +623,15 @@ namespace MonoDevelop.Components.MainToolbar
 				context.MoveTo (alloc.X + xMargin, y);
 				Pango.CairoHelper.ShowLayout (context, layout);
 			}
+		}
+
+		string GetRowMarkup (ISearchDataSource dataSrc, int i)
+		{
+			string txt = "<span foreground=\"#606060\">" + dataSrc.GetMarkup (i, false) +"</span>";
+			string desc = dataSrc.GetDescriptionMarkup (i, false);
+			if (!string.IsNullOrEmpty (desc))
+				txt += "<span foreground=\"#8F8F8F\" size=\"small\">\n" + desc + "</span>";
+			return txt;
 		}
 	}
 }

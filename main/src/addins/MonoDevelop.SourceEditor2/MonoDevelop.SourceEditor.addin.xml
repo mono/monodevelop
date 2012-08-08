@@ -89,7 +89,7 @@
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Command id = "MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations"
 		         defaultHandler = "MonoDevelop.SourceEditor.MarkerOperationsHandler"
-		         _label = ""
+		         _label = "MarkerOperations"
 		         type = "array"/> 
 	</Extension>
 	
@@ -120,7 +120,7 @@
 		
 		<Command id = "MonoDevelop.SourceEditor.MessageBubbleCommands.ToggleIssues"
 				defaultHandler = "MonoDevelop.SourceEditor.ToggleIssuesHandler"
-				_label = ""
+				_label = "Toggle Issues"
 				type="array"/>
 				
 		<Command id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.Top"

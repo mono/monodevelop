@@ -82,6 +82,18 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			return new DomRegion (result.File, result.Row, result.Column, result.Row, result.Column);
 		}
 
+		bool ISearchDataSource.CanActivate (int item)
+		{
+			var result = this [item];
+			return result.CanActivate;
+		}
+
+		void ISearchDataSource.Activate (int item)
+		{
+			var result = this [item];
+			result.Activate ();
+		}
+		
 		double ISearchDataSource.GetWeight (int item)
 		{
 			return this [item].Rank;
