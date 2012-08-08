@@ -831,10 +831,23 @@ namespace MonoDevelop.Ide.Gui
 				if (e.Event.Type == Gdk.EventType.TwoButtonPress)
 					ToggleFullViewMode ();
 			};
-			
+
 			this.tabControl.DoPopupMenu = ShowPopup;
 			
 			tabControl.TabsReordered += new TabsReorderedHandler (OnTabsReordered);
+
+			Add (fullViewVBox);
+			fullViewVBox.ShowAll ();
+			var bar = new MonoDevelopStatusBar ();
+			fullViewVBox.PackEnd (bar, false, true, 0);
+			bar.ShowAll ();
+			toolbarBox.PackStart (this.toolbar, true, true, 0);
+
+			// In order to get the correct bar height we need to calculate the tab size using the
+			// correct style (the style of the window). At this point the widget is not yet a child
+			// of the window, so its style is not yet the correct one.
+			tabControl.InitSize (this);
+			var barHeight = tabControl.BarHeight;
 
 			// The main document area
 			documentDockItem = dock.AddItem ("Documents");
@@ -848,10 +861,12 @@ namespace MonoDevelop.Ide.Gui
 			style.PadTitleLabelColor = Styles.PadLabelColor;
 			style.PadBackgroundColor = Styles.PadBackground;
 			style.InactivePadBackgroundColor = Styles.InactivePadBackground;
+			style.PadTitleHeight = barHeight;
 			dock.DefaultVisualStyle = style;
 
 			style = new DockVisualStyle ();
 			style.PadTitleLabelColor = Styles.PadLabelColor;
+			style.PadTitleHeight = barHeight;
 			style.ShowPadTitleIcon = false;
 			style.UppercaseTitles = true;
 			style.ExpandedTabs = true;
@@ -885,13 +900,6 @@ namespace MonoDevelop.Ide.Gui
 			dit.Behavior = DockItemBehavior.Locked;
 			dit.DefaultVisible = false;
 
-			Add (fullViewVBox);
-			fullViewVBox.ShowAll ();
-			var bar = new MonoDevelopStatusBar ();
-			fullViewVBox.PackEnd (bar, false, true, 0);
-			bar.ShowAll ();
-			toolbarBox.PackStart (this.toolbar, true, true, 0);
-			
 			if (MonoDevelop.Core.Platform.IsMac)
 				this.StatusBar.HasResizeGrip = true;
 			else {

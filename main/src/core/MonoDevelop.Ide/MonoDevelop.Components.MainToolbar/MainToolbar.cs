@@ -145,9 +145,9 @@ namespace MonoDevelop.Components.MainToolbar
 			statusArea = new StatusArea ();
 
 			var statusAreaVBox = new VBox ();
-			statusAreaVBox.PackStart (statusArea, true, false, 0);
-			contentBox.PackStart (statusAreaVBox, true, false, 0);
-			statusAreaVBox.WidthRequest = 600;
+			statusAreaVBox.PackStart (statusArea, true, true, 0);
+			contentBox.PackStart (statusAreaVBox, true, true, 0);
+			statusArea.MaxWidth = 600;
 			AddSpace (24);
 
 			matchEntry = new SearchEntry ();

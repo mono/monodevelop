@@ -301,7 +301,7 @@ namespace MonoDevelop.Components
 				PangoCairoHelper.ShowLayout (ctx, layout);
 			}
 
-			ctx.MoveTo (0.5, Allocation.Height - 0.5);
+			ctx.MoveTo (0, Allocation.Height - 0.5);
 			ctx.RelLineTo (Allocation.Width, 0);
 			ctx.Color = Styles.BreadcrumbBottomBorderColor;
 			ctx.LineWidth = 1;

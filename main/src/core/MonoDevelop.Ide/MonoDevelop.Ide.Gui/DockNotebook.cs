@@ -145,6 +145,15 @@ namespace MonoDevelop.Ide.Gui
 			get { return pages.Count; }
 		}
 
+		public int BarHeight {
+			get { return tabStrip.BarHeight; }
+		}
+
+		internal void InitSize (Gtk.Window window)
+		{
+			tabStrip.InitSize (window);
+		}
+
 		public Action<int,Gdk.EventButton> DoPopupMenu { get; set; }
 
 		public IDockNotebookTab InsertTab (int index)
@@ -588,18 +597,29 @@ namespace MonoDevelop.Ide.Gui
 			Update ();
 		}
 
+		int totalHeight;
+
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
 			base.OnSizeRequested (ref requisition);
+			requisition.Height = totalHeight;
+			requisition.Width = 0;
+		}
 
-			Pango.Layout la = new Pango.Layout (PangoContext);
+		internal void InitSize (Gtk.Window window)
+		{
+			Pango.Layout la = new Pango.Layout (window.PangoContext);
 			la.SetText ("H");
 			int w, h;
 			la.GetPixelSize (out w, out h);
+			
+			totalHeight = h + TopPadding + BottomPadding;
+		}
 
-			h += TopPadding + BottomPadding;
-			requisition.Height = h;
-			requisition.Width = 0;
+		public int BarHeight {
+			get {
+				return totalHeight - BottomBarPadding + 1;
+			}
 		}
 
 		int lastDragX = 0;
@@ -994,7 +1014,7 @@ namespace MonoDevelop.Ide.Gui
 			double y = (double) Allocation.Height + 0.5 - BottomBarPadding + margin;
 			double height = Allocation.Height - TopBarPadding - BottomBarPadding;
 
-			ctx.MoveTo (0.5, y);
+			ctx.MoveTo (0, y);
 			ctx.LineTo (x, y);
 			ctx.LineTo (x, y - height + TabBorderRadius);
 			ctx.Arc (x + TabBorderRadius, y - height + TabBorderRadius, TabBorderRadius, System.Math.PI, System.Math.PI * 1.5d);
@@ -1002,7 +1022,7 @@ namespace MonoDevelop.Ide.Gui
 			ctx.LineTo (rightx - TabBorderRadius, y - height);
 			ctx.Arc (rightx - TabBorderRadius, y - height + TabBorderRadius, TabBorderRadius, System.Math.PI * 1.5d, System.Math.PI * 2d);
 			ctx.LineTo (rightx, y);
-			ctx.LineTo (Allocation.Width - 0.5, y);
+			ctx.LineTo (Allocation.Width, y);
 		}
 
 		Pango.Layout CreateTabLayout (IDockNotebookTab tab)

@@ -70,6 +70,8 @@ namespace MonoDevelop.Components.MainToolbar
 			get { return mainContext; }
 		}
 
+		public int MaxWidth { get; set; }
+
 		public StatusArea ()
 		{
 			mainContext = new MainStatusBarContextImpl (this);
@@ -165,6 +167,14 @@ namespace MonoDevelop.Components.MainToolbar
 					completionStatus = null;
 				}
 			};
+		}
+
+		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
+		{
+			if (MaxWidth > 0 && allocation.Width > MaxWidth) {
+				allocation = new Gdk.Rectangle (allocation.X + (allocation.Width - MaxWidth) / 2, allocation.Y, MaxWidth, allocation.Height);
+			}
+			base.OnSizeAllocated (allocation);
 		}
 
 		void UpdateSeparators ()
@@ -303,7 +313,7 @@ namespace MonoDevelop.Components.MainToolbar
 					pl.Dispose ();
 
 					if (showingProgress || progressDisplayAlpha > 0) {
-						double py = y + h + 1.5;
+						double py = y + h + 2.5;
 						double pw = messageBox.Allocation.Width - (x - Allocation.X);
 						context.LineWidth = 1;
 						context.MoveTo (x + 0.5, py);
