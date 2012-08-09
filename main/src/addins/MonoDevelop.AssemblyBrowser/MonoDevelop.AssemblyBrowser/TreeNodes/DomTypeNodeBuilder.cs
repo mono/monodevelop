@@ -192,10 +192,8 @@ namespace MonoDevelop.AssemblyBrowser
 				AutomaticProperties = true,
 				ForEachStatement = true,
 				LockStatement = true,
-				CSharpFormattingOptions = codePolicy.CreateOptions ()
-
-				//,
-//				HideNonPublicMembers = publicOnly
+				CSharpFormattingOptions = codePolicy.CreateOptions (),
+				HideNonPublicMembers = publicOnly
 			};
 			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), type, builder => {
 				builder.AddType (type);

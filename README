@@ -15,6 +15,11 @@ Directory organization
 Compiling
 ---------
 
+	If you are building from Git, make sure that you initialize the submodules
+	that are part of MonoDevelop, to do this execute:
+
+	git submodule update --init --recursive
+
 	To compile execute:
 
 	./configure

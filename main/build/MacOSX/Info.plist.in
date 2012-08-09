@@ -73,5 +73,7 @@
 	<string>NO</string>
 	<key>QuartzGLEnable</key>
 	<false/>
+	<key>NSHighResolutionCapable</key>
+	<true/>
 </dict>
 </plist>

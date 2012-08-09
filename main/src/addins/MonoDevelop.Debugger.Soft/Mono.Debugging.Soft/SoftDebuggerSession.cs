@@ -1059,7 +1059,7 @@ namespace Mono.Debugging.Soft
 					var req = vm.CreateStepRequest (current_thread);
 					req.Depth = depth;
 					req.Size = size;
-					req.Filter = StepFilter.StaticCtor;
+					req.Filter = StepFilter.StaticCtor | StepFilter.DebuggerHidden;
 					if (assemblyFilters != null && assemblyFilters.Count > 0)
 						req.AssemblyFilter = assemblyFilters;
 					req.Enabled = true;

@@ -61,7 +61,7 @@ namespace Mono.TextEditor.Utils
 			// Encoding verifiers
 			var verifierList = new List<Verifier> () {
 				new Utf8Verifier (),
-				new CodePage1252Verifier (),
+				new WindowsCodePageVerifier (),
 				new UnicodeVerifier (),
 				new BigEndianUnicodeVerifier (),
 				new CodePage858Verifier ()
@@ -602,23 +602,40 @@ namespace Mono.TextEditor.Utils
 		/// <summary>
 		/// Code page 1252 was the long time default on windows. This encoding is a superset of ISO 8859-1.
 		/// </summary>
-		class CodePage1252Verifier : Verifier
+		class WindowsCodePageVerifier : Verifier
 		{
 			const byte Valid = 1;
 			const byte LAST = 2;
 			static byte[][] table;
-			static Encoding EncodingCp1252;
+			static Encoding EncodingWindows;
 
 			public override byte InitalState { get { return Valid; } }
 
-			public override Encoding Encoding { get { return EncodingCp1252; } }
+			public override Encoding Encoding { get { return EncodingWindows; } }
 
 			public override byte[][] StateTable { get { return table; } }
+
+
+			const int westernEncodingCodePage = 1252;
+			/// <summary>
+			/// Try to guess the windows code page using the default encoding, on non windows system default
+			/// to 1252 (western encoding).
+			/// </summary>
+			int WindowsCodePage {
+				get {
+					if (Platform.IsWindows) {
+						int cp = Encoding.Default.CodePage;
+						if (cp >= 1250 && cp < 1260)
+							return cp;
+					}
+					return westernEncodingCodePage;
+				}
+			}
 
 			public override bool IsSupported {
 				get {
 					try {
-						return Encoding.GetEncoding (1252) != null;
+						return Encoding.GetEncoding (WindowsCodePage) != null;
 					} catch (Exception) {
 						return false;
 					}
@@ -627,7 +644,7 @@ namespace Mono.TextEditor.Utils
 
 			protected override void Init ()
 			{
-				EncodingCp1252 = Encoding.GetEncoding (1252);
+				EncodingWindows = Encoding.GetEncoding (WindowsCodePage);
 				table = new byte[LAST][];
 				table [0] = errorTable;
 				for (int i = 1; i < LAST; i++)

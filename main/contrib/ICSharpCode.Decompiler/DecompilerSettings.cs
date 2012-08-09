@@ -266,6 +266,18 @@ namespace ICSharpCode.Decompiler
 				}
 			}
 		}
+
+		bool hideNonPublicMembers = false;
+		
+		public bool HideNonPublicMembers {
+			get { return hideNonPublicMembers; }
+			set {
+				if (hideNonPublicMembers != value) {
+					hideNonPublicMembers = value;
+					OnPropertyChanged("HideNonPublicMembers");
+				}
+			}
+		}
 		
 		#region Options to aid VB decompilation
 		bool introduceIncrementAndDecrement = true;

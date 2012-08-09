@@ -430,9 +430,7 @@ namespace MonoDevelop.Ide.Gui
 				else
 					Window.ViewContent.Save (filename + "~");
 			}
-			lock (TypeSystemService.FilesSkippedInParseThread) {
-				TypeSystemService.FilesSkippedInParseThread.Remove (FileName);
-			}
+			TypeSystemService.RemoveSkippedfile (FileName);
 			// do actual save
 			if (tbuffer != null && encoding != null)
 				tbuffer.Save (filename, encoding);
@@ -519,10 +517,7 @@ namespace MonoDevelop.Ide.Gui
 //			TypeSystemService.DomRegistered -= UpdateRegisteredDom;
 			CancelParseTimeout ();
 			ClearTasks ();
-
-			lock (TypeSystemService.FilesSkippedInParseThread) {
-				TypeSystemService.FilesSkippedInParseThread.Remove (FileName);
-			}
+			TypeSystemService.RemoveSkippedfile (FileName);
 			if (window is SdiWorkspaceWindow)
 				((SdiWorkspaceWindow)window).DetachFromPathedDocument ();
 			window.Closed -= OnClosed;
@@ -735,9 +730,7 @@ namespace MonoDevelop.Ide.Gui
 				var editor = Editor;
 				if (editor == null)
 					return null;
-				lock (TypeSystemService.FilesSkippedInParseThread) {
-					TypeSystemService.FilesSkippedInParseThread.Add (currentParseFile);
-				}
+				TypeSystemService.AddSkippedFile (currentParseFile);
 				string currentParseText = editor.Text;
 				this.parsedDocument = TypeSystemService.ParseFile (Project, currentParseFile, editor.Document.MimeType, currentParseText);
 				if (Project == null && this.parsedDocument != null) {
@@ -788,9 +781,7 @@ namespace MonoDevelop.Ide.Gui
 				string currentParseText = editor.Text;
 				string mimeType = editor.Document.MimeType;
 				ThreadPool.QueueUserWorkItem (delegate {
-					lock (TypeSystemService.FilesSkippedInParseThread) {
-						TypeSystemService.FilesSkippedInParseThread.Add (currentParseFile);
-					}
+					TypeSystemService.AddSkippedFile (currentParseFile);
 					var currentParsedDocument = TypeSystemService.ParseFile (Project, currentParseFile, mimeType, currentParseText);
 					Application.Invoke (delegate {
 						// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.

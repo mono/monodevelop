@@ -44,8 +44,7 @@ namespace Mono.Debugging.Soft
 		{
 			Frame = frame;
 			Thread = frame.Thread;
-		
-		
+
 			string method = frame.Method.Name;
 			if (frame.Method.DeclaringType != null)
 				method = frame.Method.DeclaringType.FullName + "." + method;

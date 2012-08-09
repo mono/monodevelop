@@ -78,8 +78,26 @@ namespace MonoDevelop.Debugger
 		{
 			if (null == a || null == z)
 				return a == z;
-			return a.SourceLocation.FileName.Equals (z.SourceLocation.FileName, StringComparison.Ordinal) &&
-			       a.SourceLocation.MethodName.Equals (z.SourceLocation.MethodName, StringComparison.Ordinal);
+
+			if (a.SourceLocation == null || z.SourceLocation == null)
+				return a.SourceLocation == z.SourceLocation;
+
+			if (a.SourceLocation.FileName == null) {
+				if (z.SourceLocation.FileName != null)
+					return false;
+			} else {
+				if (!a.SourceLocation.FileName.Equals (z.SourceLocation.FileName, StringComparison.Ordinal))
+					return false;
+			}
+
+			if (a.SourceLocation.MethodName == null) {
+				if (z.SourceLocation.MethodName != null)
+					return false;
+
+				return true;
+			} else {
+				return a.SourceLocation.MethodName.Equals (z.SourceLocation.MethodName, StringComparison.Ordinal);
+			}
 		}
 	}
 }
