@@ -147,13 +147,24 @@ namespace MonoDevelop.Ide.TypeSystem
 	{
 		const string CurrentVersion = "1.0.1";
 		static List<TypeSystemParserNode> parsers;
-		public static readonly HashSet<string> FilesSkippedInParseThread = new HashSet<string> ();
+		static string[] filesSkippedInParseThread = new string[0];
 		static IEnumerable<TypeSystemParserNode> Parsers {
 			get {
 				return parsers;
 			}
 		}
-		
+
+		public static void RemoveSkippedfile (FilePath fileName)
+		{
+			filesSkippedInParseThread = filesSkippedInParseThread.Where (f => f != fileName).ToArray ();
+		}
+		public static void AddSkippedFile (FilePath fileName)
+		{
+			if (filesSkippedInParseThread.Any (f => f == fileName))
+				return;
+			filesSkippedInParseThread = filesSkippedInParseThread.Concat (new string[] { fileName }).ToArray ();
+		}
+
 		static TypeSystemService ()
 		{
 			parsers = new List<TypeSystemParserNode> ();
@@ -1740,28 +1751,26 @@ namespace MonoDevelop.Ide.TypeSystem
 			{
 				TypeSystemParserNode node = null;
 				ITypeSystemParser parser = null;
-				lock (FilesSkippedInParseThread) {
-					foreach (var file in (FileList ?? Context.Project.Files)) {
-						if (!string.Equals (file.BuildAction, "compile", StringComparison.OrdinalIgnoreCase)) 
-							continue;
-						var fileName = file.FilePath;
-						if (FilesSkippedInParseThread.Contains (fileName))
-							continue;
-						if (node == null || !node.CanParse (fileName)) {
-							node = TypeSystemService.GetTypeSystemParserNode (DesktopService.GetMimeTypeForUri (fileName));
-							parser = node != null ? node.Parser : null;
-						}
-						if (parser == null)
-							continue;
-						using (var stream = new System.IO.StreamReader (fileName)) {
-							var parsedDocument = parser.Parse (false, fileName, stream, Context.Project);
-							UpdateParsedDocument (Context, parsedDocument);
-							var oldFile = Context.Content.GetFile (fileName);
-							Context.UpdateContent (c => c.UpdateProjectContent (c.GetFile (fileName), parsedDocument.ParsedFile));
-							if (oldFile != null)
-								Context.InformFileRemoved (new ParsedFileEventArgs (oldFile));
-							Context.InformFileAdded (new ParsedFileEventArgs (parsedDocument.ParsedFile));
-						}
+				foreach (var file in (FileList ?? Context.Project.Files)) {
+					if (!string.Equals (file.BuildAction, "compile", StringComparison.OrdinalIgnoreCase)) 
+						continue;
+					var fileName = file.FilePath;
+					if (filesSkippedInParseThread.Any (f => f == fileName))
+						continue;
+					if (node == null || !node.CanParse (fileName)) {
+						node = TypeSystemService.GetTypeSystemParserNode (DesktopService.GetMimeTypeForUri (fileName));
+						parser = node != null ? node.Parser : null;
+					}
+					if (parser == null)
+						continue;
+					using (var stream = new System.IO.StreamReader (fileName)) {
+						var parsedDocument = parser.Parse (false, fileName, stream, Context.Project);
+						UpdateParsedDocument (Context, parsedDocument);
+						var oldFile = Context.Content.GetFile (fileName);
+						Context.UpdateContent (c => c.UpdateProjectContent (c.GetFile (fileName), parsedDocument.ParsedFile));
+						if (oldFile != null)
+							Context.InformFileRemoved (new ParsedFileEventArgs (oldFile));
+						Context.InformFileAdded (new ParsedFileEventArgs (parsedDocument.ParsedFile));
 					}
 				}
 			}
