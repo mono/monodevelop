@@ -78,7 +78,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			
 			this.BorderWidth = 1;
 
-			scrollbar = new Gtk.ScrolledWindow ();
+			scrollbar = new MonoDevelop.Components.CompactScrolledWindow ();
 			scrollbar.Child = list;
 			list.ButtonPressEvent += delegate(object o, ButtonPressEventArgs args) {
 				if (args.Event.Button == 1 && args.Event.Type == Gdk.EventType.TwoButtonPress)
