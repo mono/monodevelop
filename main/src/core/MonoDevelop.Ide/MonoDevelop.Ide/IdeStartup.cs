@@ -135,6 +135,11 @@ namespace MonoDevelop.Ide
 				}
 			}
 			
+			Counters.Initialization.Trace ("Initializing Runtime");
+			Runtime.Initialize (true);
+
+			Counters.Initialization.Trace ("Initializing theme and splash window");
+
 			DefaultTheme = Gtk.Settings.Default.ThemeName;
 			if (!string.IsNullOrEmpty (IdeApp.Preferences.UserInterfaceTheme))
 				Gtk.Settings.Default.ThemeName = IdeApp.Preferences.UserInterfaceTheme;
@@ -153,11 +158,8 @@ namespace MonoDevelop.Ide
 				SplashScreenForm.SplashScreen.ShowAll ();
 			}
 			
-			Counters.Initialization.Trace ("Initializing Runtime");
-			monitor.BeginTask (GettextCatalog.GetString ("Starting {0}", BrandingService.ApplicationName), 3);
-			monitor.Step (1);
-			Runtime.Initialize (true);
-			
+			monitor.BeginTask (GettextCatalog.GetString ("Starting {0}", BrandingService.ApplicationName), 2);
+
 			//make sure that the platform service is initialised so that the Mac platform can subscribe to open-document events
 			Counters.Initialization.Trace ("Initializing Platform Service");
 			DesktopService.Initialize ();

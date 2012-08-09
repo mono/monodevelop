@@ -261,9 +261,14 @@ namespace MonoDevelop.MacIntegration
 				//if not running inside an app bundle, assume usual MD build layout and load the app icon
 				FilePath exePath = System.Reflection.Assembly.GetExecutingAssembly ().Location;
 				string iconFile = null;
-				if (!exePath.ToString ().Contains ("MonoDevelop.app")) {
-					var mdSrcMain = exePath.ParentDirectory.ParentDirectory.ParentDirectory;
-					iconFile = mdSrcMain.Combine ("theme-icons", "Mac", "monodevelop.icns");
+
+				iconFile = BrandingService.GetString ("ApplicationIcon");
+				if (iconFile != null) {
+					iconFile = BrandingService.GetFile (iconFile);
+				}
+				else if (!exePath.ToString ().Contains ("MonoDevelop.app")) {
+						var mdSrcMain = exePath.ParentDirectory.ParentDirectory.ParentDirectory;
+						iconFile = mdSrcMain.Combine ("theme-icons", "Mac", "monodevelop.icns");
 				} else {
 					//HACK: override the app image
 					//NSApplication doesn't seem to pick up the image correctly, probably due to the
