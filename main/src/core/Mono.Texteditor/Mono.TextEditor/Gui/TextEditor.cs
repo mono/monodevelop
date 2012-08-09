@@ -1700,7 +1700,7 @@ namespace Mono.TextEditor
 		protected override bool OnExposeEvent (Gdk.EventExpose e)
 		{
 			if (this.isDisposed)
-				return true;
+				return false;
 			UpdateAdjustments ();
 			
 			var area = e.Region.Clipbox;
@@ -1740,7 +1740,7 @@ namespace Mono.TextEditor
 				OnPainted (new PaintEventArgs (cr, cairoArea));
 			}
 			
-			return true;
+			return false;
 		}
 		
 		protected virtual void OnPainted (PaintEventArgs e)

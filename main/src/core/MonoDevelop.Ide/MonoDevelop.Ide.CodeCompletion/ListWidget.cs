@@ -395,7 +395,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					gc.RgbFgColor = new Gdk.Color (0, 0, 0);
 					window.DrawLayout (gc, (width - lWidth) / 2, yPos + (height - lHeight - yPos) / 2, layout);
 					gc.Dispose ();
-					return true;
+					return false;
 				}
 
 
@@ -628,7 +628,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					}
 				}
 				*/
-				return true;
+				return false;
 			}
 		}
 		
