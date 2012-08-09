@@ -50,7 +50,6 @@ namespace MonoDevelop.Components.Docking
 		string label;
 		Gdk.Pixbuf icon;
 		bool expand;
-		bool drawFrame = true;
 		DockItemBehavior behavior;
 		Gtk.Window floatingWindow;
 		DockBarItem dockBarItem;
@@ -397,7 +396,6 @@ namespace MonoDevelop.Components.Docking
 //				return drawFrame;
 			}
 			set {
-				drawFrame = value;
 			}
 		}
 		

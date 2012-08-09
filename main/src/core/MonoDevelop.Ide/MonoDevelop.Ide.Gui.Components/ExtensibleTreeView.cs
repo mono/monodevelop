@@ -2337,6 +2337,8 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			window.DrawLayout (widget.Style.TextGC (st), tx, ty, la);
 
+			la.Dispose ();
+
 			if (parent.ShowSelectionPopupButton) {
 				if (!bound) {
 					bound = true;

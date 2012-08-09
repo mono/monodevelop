@@ -303,7 +303,7 @@ namespace MonoDevelop.Components.Docking
 	{
 		bool active;
 		Gtk.Widget page;
-		Gtk.Label labelWidget;
+		ExtendedLabel labelWidget;
 		int labelWidth;
 		DockVisualStyle visualStyle;
 		Image tabIcon;
@@ -384,7 +384,8 @@ namespace MonoDevelop.Components.Docking
 				tabIcon = null;
 
 			if (!string.IsNullOrEmpty (label)) {
-				labelWidget = new Gtk.Label (label);
+				labelWidget = new ExtendedLabel (label);
+				labelWidget.DropShadowVisible = true;
 				labelWidget.UseMarkup = true;
 				box.PackStart (labelWidget, true, true, 0);
 			} else {
