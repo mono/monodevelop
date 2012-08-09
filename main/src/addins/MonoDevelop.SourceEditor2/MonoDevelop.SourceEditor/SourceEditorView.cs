@@ -878,7 +878,7 @@ namespace MonoDevelop.SourceEditor
 		void UpdatePinnedWatches ()
 		{
 			foreach (PinnedWatchInfo wi in pinnedWatches) {
-				widget.TextEditorContainer.Remove (wi.Widget);
+				widget.TextEditor.Remove (wi.Widget);
 				wi.Widget.Destroy ();
 			}
 			pinnedWatches.Clear ();
@@ -903,7 +903,7 @@ namespace MonoDevelop.SourceEditor
 				widget.TextEditor.TextViewMargin.GetLayout (line).Layout.GetPixelSize (out lw, out lh);
 				w.OffsetX = (int)widget.TextEditor.TextViewMargin.XOffset + lw + 4;
 			}
-			wi.Widget = new PinnedWatchWidget (widget.TextEditorContainer, w);
+			wi.Widget = new PinnedWatchWidget (widget.TextEditor, w);
 			
 //			wi.Marker = new DebugValueMarker (widget.TextEditor, line, w);
 			wi.Watch = w;
@@ -911,7 +911,7 @@ namespace MonoDevelop.SourceEditor
 //			if (w.Value != null)
 //				wi.Marker.AddValue (w.Value);
 
-			widget.TextEditorContainer.AddTopLevelWidget (wi.Widget, w.OffsetX, w.OffsetY);
+			widget.TextEditor.AddTopLevelWidget (wi.Widget, w.OffsetX, w.OffsetY);
 			
 //			widget.TextEditor.QueueDraw ();
 		}
@@ -932,7 +932,7 @@ namespace MonoDevelop.SourceEditor
 			foreach (PinnedWatchInfo wi in pinnedWatches) {
 				if (wi.Watch == args.Watch) {
 					pinnedWatches.Remove (wi);
-					widget.TextEditorContainer.Remove (wi.Widget);
+					widget.TextEditor.Remove (wi.Widget);
 					wi.Widget.Destroy ();
 					break;
 				}
@@ -944,7 +944,7 @@ namespace MonoDevelop.SourceEditor
 			foreach (PinnedWatchInfo wi in pinnedWatches) {
 				if (wi.Watch == args.Watch) {
 					wi.Widget.ObjectValue = wi.Watch.Value;
-					widget.TextEditorContainer.MoveTopLevelWidget (wi.Widget, args.Watch.OffsetX, args.Watch.OffsetY);
+					widget.TextEditor.MoveTopLevelWidget (wi.Widget, args.Watch.OffsetX, args.Watch.OffsetY);
 					break;
 				}
 			}
@@ -1470,8 +1470,8 @@ namespace MonoDevelop.SourceEditor
 			var p = this.widget.TextEditor.TextViewMargin.CaretVisualLocation;
 			int tx, ty;
 			widget.TextEditor.ParentWindow.GetOrigin (out tx, out ty);
-			tx += widget.TextEditorContainer.Allocation.X + (int)p.X;
-			ty += widget.TextEditorContainer.Allocation.Y + (int)p.Y + (int)TextEditor.LineHeight;
+			tx += widget.TextEditor.Allocation.X + (int)p.X;
+			ty += widget.TextEditor.Allocation.Y + (int)p.Y + (int)TextEditor.LineHeight;
 
 			result.TriggerXCoord = tx;
 			result.TriggerYCoord = ty;
@@ -1484,8 +1484,8 @@ namespace MonoDevelop.SourceEditor
 			var p = widget.TextEditor.LocationToPoint (location);
 			int tx, ty;
 			widget.Vbox.ParentWindow.GetOrigin (out tx, out ty);
-			tx += widget.TextEditorContainer.Allocation.X + p.X;
-			ty += widget.TextEditorContainer.Allocation.Y + p.Y + (int)TextEditor.LineHeight;
+			tx += widget.TextEditor.Allocation.X + p.X;
+			ty += widget.TextEditor.Allocation.Y + p.Y + (int)TextEditor.LineHeight;
 			return new Gdk.Point (tx, ty);
 		}
 		

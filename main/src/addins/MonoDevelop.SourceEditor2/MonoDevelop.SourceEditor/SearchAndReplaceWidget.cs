@@ -61,7 +61,7 @@ namespace MonoDevelop.SourceEditor
 
 		readonly TextEditor textEditor;
 		readonly Widget frame;
-		readonly TextEditorContainer textEditorContainer;
+		readonly TextEditor textEditorContainer;
 
 		bool isReplaceMode = true;
 		Widget [] replaceWidgets;
@@ -107,7 +107,7 @@ namespace MonoDevelop.SourceEditor
 			if (frame == null || textEditor == null)
 				return;
 			int newX = textEditor.Allocation.Width - Allocation.Width - 8;
-			TextEditorContainer.EditorContainerChild containerChild = ((TextEditorContainer.EditorContainerChild)textEditorContainer [frame]);
+			TextEditor.EditorContainerChild containerChild = ((TextEditor.EditorContainerChild)textEditorContainer [frame]);
 			if (newX != containerChild.X) {
 				searchEntry.WidthRequest = textEditor.Allocation.Width / 3;
 				containerChild.X = newX;
@@ -127,7 +127,7 @@ namespace MonoDevelop.SourceEditor
 		public SearchAndReplaceWidget (TextEditor textEditor, Widget frame)
 		{
 			this.textEditor = textEditor;
-			textEditorContainer = textEditor.Parent as TextEditorContainer;
+			textEditorContainer = textEditor.Parent as TextEditor;
 			this.frame = frame;
 			textEditorContainer.SizeAllocated += HandleViewTextEditorhandleSizeAllocated;
 			textEditor.TextViewMargin.SearchRegionsUpdated += HandleWidgetTextEditorTextViewMarginSearchRegionsUpdated;

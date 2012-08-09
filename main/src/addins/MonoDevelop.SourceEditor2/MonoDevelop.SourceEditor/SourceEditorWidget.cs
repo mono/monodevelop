@@ -84,12 +84,6 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		public TextEditorContainer TextEditorContainer {
-			get {
-				return lastActiveEditor == textEditor ? textEditorContainer : splittedTextEditorContainer;
-			}
-		}
-		
 		public Ambience Ambience {
 			get {
 				string fileName = this.view.IsUntitled ? this.view.UntitledName : this.view.ContentName;
@@ -242,14 +236,14 @@ namespace MonoDevelop.SourceEditor
 				args.RetVal = true;
 			}
 		
-			public void SetTextEditor (TextEditorContainer container)
+			public void SetTextEditor (TextEditor container)
 			{
-				scrolledWindow.Child = container;
-				this.strip.TextEditor = container.TextEditorWidget;
+				scrolledWindow.Add (container);
+				this.strip.TextEditor = container;
 //				container.TextEditorWidget.EditorOptionsChanged += OptionsChanged;
-				container.TextEditorWidget.Caret.ModeChanged += parent.UpdateLineColOnEventHandler;
-				container.TextEditorWidget.Caret.PositionChanged += parent.CaretPositionChanged;
-				container.TextEditorWidget.SelectionChanged += parent.UpdateLineColOnEventHandler;
+				container.Caret.ModeChanged += parent.UpdateLineColOnEventHandler;
+				container.Caret.PositionChanged += parent.CaretPositionChanged;
+				container.SelectionChanged += parent.UpdateLineColOnEventHandler;
 			}
 			
 			void OptionsChanged (object sender, EventArgs e)
@@ -260,20 +254,20 @@ namespace MonoDevelop.SourceEditor
 			
 			void RemoveEvents ()
 			{
-				TextEditorContainer container = scrolledWindow.Child as TextEditorContainer;
+				var container = scrolledWindow.Child as TextEditor;
 				if (container == null) {
 					LoggingService.LogError ("can't remove events from text editor container.");
 					return;
 				}
 //				container.TextEditorWidget.EditorOptionsChanged -= OptionsChanged;
-				container.TextEditorWidget.Caret.ModeChanged -= parent.UpdateLineColOnEventHandler;
-				container.TextEditorWidget.Caret.PositionChanged -= parent.CaretPositionChanged;
-				container.TextEditorWidget.SelectionChanged -= parent.UpdateLineColOnEventHandler;
+				container.Caret.ModeChanged -= parent.UpdateLineColOnEventHandler;
+				container.Caret.PositionChanged -= parent.CaretPositionChanged;
+				container.SelectionChanged -= parent.UpdateLineColOnEventHandler;
 			}
 			
-			public TextEditorContainer RemoveTextEditor ()
+			public TextEditor RemoveTextEditor ()
 			{
-				TextEditorContainer child = scrolledWindow.Child as TextEditorContainer;
+				var child = scrolledWindow.Child as TextEditor;
 				if (child == null)
 					return null;
 				RemoveEvents ();
@@ -283,7 +277,6 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		TextEditorContainer textEditorContainer;
 		public SourceEditorWidget (SourceEditorView view)
 		{
 			this.view = view;
@@ -295,8 +288,8 @@ namespace MonoDevelop.SourceEditor
 					OnLostFocus ();
 			};
 			mainsw = new DecoratedScrolledWindow (this);
-			this.textEditorContainer = new TextEditorContainer (textEditor);
-			mainsw.SetTextEditor (textEditorContainer);
+			this.textEditor = textEditor;
+			mainsw.SetTextEditor (textEditor);
 			
 			vbox.PackStart (mainsw, true, true, 0);
 			
@@ -656,9 +649,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		DecoratedScrolledWindow secondsw;
-		TextEditorContainer splittedTextEditorContainer;
-		
-		
+
 		public void Split (bool vSplit)
 		{
 			double vadjustment = this.mainsw.Vadjustment.Value;
@@ -690,8 +681,8 @@ namespace MonoDevelop.SourceEditor
 			this.splittedTextEditor.GetTextEditorData ().IndentationTracker = textEditor.GetTextEditorData ().IndentationTracker;
 			this.splittedTextEditor.Document.BracketMatcher = textEditor.Document.BracketMatcher;
 
-			this.splittedTextEditorContainer = new TextEditorContainer (this.splittedTextEditor);
-			secondsw.SetTextEditor (this.splittedTextEditorContainer);
+			this.splittedTextEditor = this.splittedTextEditor;
+			secondsw.SetTextEditor (this.splittedTextEditor);
 			splitContainer.Add2 (secondsw);
 			
 			vbox.PackStart (splitContainer, true, true, 0);
@@ -1136,7 +1127,7 @@ namespace MonoDevelop.SourceEditor
 				searchAndReplaceWidgetFrame.Child = searchAndReplaceWidget = new SearchAndReplaceWidget (TextEditor, searchAndReplaceWidgetFrame);
 				searchAndReplaceWidget.Destroyed += (sender, e) => RemoveSearchWidget ();
 				searchAndReplaceWidgetFrame.ShowAll ();
-				this.TextEditorContainer.AddAnimatedWidget (searchAndReplaceWidgetFrame, 300, Easing.ExponentialInOut, Blocking.Downstage, TextEditor.Allocation.Width - 400, -searchAndReplaceWidget.Allocation.Height);
+				this.TextEditor.AddAnimatedWidget (searchAndReplaceWidgetFrame, 300, Easing.ExponentialInOut, Blocking.Downstage, TextEditor.Allocation.Width - 400, -searchAndReplaceWidget.Allocation.Height);
 //				this.PackEnd (searchAndReplaceWidget);
 //				this.SetChildPacking (searchAndReplaceWidget, false, false, CHILD_PADDING, PackType.End);
 				//		searchAndReplaceWidget.ShowAll ();
@@ -1176,7 +1167,7 @@ namespace MonoDevelop.SourceEditor
 				gotoLineNumberWidgetFrame.Child = gotoLineNumberWidget = new GotoLineNumberWidget (textEditor, gotoLineNumberWidgetFrame);
 				gotoLineNumberWidget.Destroyed += (sender, e) => RemoveSearchWidget ();
 				gotoLineNumberWidgetFrame.ShowAll ();
-				TextEditorContainer.AddAnimatedWidget (gotoLineNumberWidgetFrame, 300, Easing.ExponentialInOut, Mono.TextEditor.Theatrics.Blocking.Downstage, this.TextEditor.Allocation.Width - 400, -gotoLineNumberWidget.Allocation.Height);
+				TextEditor.AddAnimatedWidget (gotoLineNumberWidgetFrame, 300, Easing.ExponentialInOut, Mono.TextEditor.Theatrics.Blocking.Downstage, this.TextEditor.Allocation.Width - 400, -gotoLineNumberWidget.Allocation.Height);
 				
 				ResetFocusChain ();
 			}

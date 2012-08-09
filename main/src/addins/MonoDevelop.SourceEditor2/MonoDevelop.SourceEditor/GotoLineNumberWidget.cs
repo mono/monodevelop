@@ -45,8 +45,7 @@ namespace MonoDevelop.SourceEditor
 		void HandleViewTextEditorhandleSizeAllocated (object o, SizeAllocatedArgs args)
 		{
 			int newX = textEditor.Allocation.Width - this.Allocation.Width - 8;
-			var wc = (TextEditorContainer)textEditor.Parent;
-			TextEditorContainer.EditorContainerChild containerChild = ((TextEditorContainer.EditorContainerChild)wc [frame]);
+			var containerChild = ((TextEditor.EditorContainerChild)textEditor [frame]);
 			if (newX != containerChild.X) {
 				this.entryLineNumber.WidthRequest = textEditor.Allocation.Width / 4;
 				containerChild.X = newX;

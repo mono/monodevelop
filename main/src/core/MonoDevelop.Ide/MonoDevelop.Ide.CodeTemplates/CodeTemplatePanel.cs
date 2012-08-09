@@ -46,7 +46,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		public CodeTemplatePanelWidget (OptionsDialog parent)
 		{
 			this.Build();
-			scrolledwindow1.Child = textEditor;
+			scrolledwindow1.Add (textEditor);
 			textEditor.ShowAll ();
 			
 			templateStore = new TreeStore (typeof (CodeTemplate), typeof (string), typeof (string));

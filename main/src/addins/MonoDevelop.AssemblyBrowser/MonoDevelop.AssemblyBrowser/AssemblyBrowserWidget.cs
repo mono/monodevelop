@@ -81,7 +81,6 @@ namespace MonoDevelop.AssemblyBrowser
 		}
 		
 		DocumentationPanel documentationPanel = new DocumentationPanel ();
-		TextEditorContainer textEditorContainer;
 		readonly TextEditor inspectEditor;
 
 		public class AssemblyBrowserTreeView : ExtensibleTreeView
@@ -235,10 +234,9 @@ namespace MonoDevelop.AssemblyBrowser
 				return referencedSegment.Reference.ToString ();
 			};
 			this.inspectEditor.LinkRequest += InspectEditorhandleLinkRequest;
-			var scrolledWindow = new SmartScrolledWindow ();
-			scrolledWindow.Show ();
-			textEditorContainer = new TextEditorContainer (inspectEditor);
-			scrolledWindow.Child = textEditorContainer;
+			var scrolledWindow = new CompactScrolledWindow ();
+			scrolledWindow.Add (inspectEditor);
+			scrolledWindow.ShowAll ();
 			notebookInspection.Add (scrolledWindow);
 			var notebookChild = ((Notebook.NotebookChild)(notebookInspection [scrolledWindow]));
 			notebookChild.Position = 1;
@@ -1396,7 +1394,7 @@ namespace MonoDevelop.AssemblyBrowser
 						inspectEditor.GrabFocus ();
 				};
 				searchAndReplaceWidget.UpdateSearchPattern ();
-				textEditorContainer.AddAnimatedWidget (popupWidgetFrame, 300, Easing.ExponentialInOut, Blocking.Downstage, inspectEditor.Allocation.Width - 400, -searchAndReplaceWidget.Allocation.Height);
+				inspectEditor.AddAnimatedWidget (popupWidgetFrame, 300, Easing.ExponentialInOut, Blocking.Downstage, inspectEditor.Allocation.Width - 400, -searchAndReplaceWidget.Allocation.Height);
 				searchAndReplaceWidget.IsReplaceMode = false;
 			}
 			
@@ -1433,7 +1431,7 @@ namespace MonoDevelop.AssemblyBrowser
 					if (inspectEditor.IsRealized)
 						inspectEditor.GrabFocus ();
 				};
-				textEditorContainer.AddAnimatedWidget (popupWidgetFrame, 300, Easing.ExponentialInOut, Blocking.Downstage, inspectEditor.Allocation.Width - 400, -gotoLineNumberWidget.Allocation.Height);
+				inspectEditor.AddAnimatedWidget (popupWidgetFrame, 300, Easing.ExponentialInOut, Blocking.Downstage, inspectEditor.Allocation.Width - 400, -gotoLineNumberWidget.Allocation.Height);
 			}
 			
 			gotoLineNumberWidget.Focus ();

@@ -88,7 +88,7 @@ namespace MonoDevelop.CodeActions
 				return;
 			}
 
-			var container = editor.Parent.Parent as TextEditorContainer;
+			var container = editor.Parent;
 			if (container == null) {
 				RemoveWidget ();
 				return;

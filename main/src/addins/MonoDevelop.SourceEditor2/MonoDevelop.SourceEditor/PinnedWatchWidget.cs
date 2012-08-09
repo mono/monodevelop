@@ -59,15 +59,15 @@ namespace MonoDevelop.SourceEditor
 		
 		ObjectValue objectValue;
 		
-		TextEditorContainer container;
+		TextEditor container;
 		
 		TextEditor Editor {
 			get {
-				return container.TextEditorWidget;
+				return container;
 			}
 		}
 		
-		public PinnedWatchWidget (TextEditorContainer container, PinnedWatch watch)
+		public PinnedWatchWidget (TextEditor container, PinnedWatch watch)
 		{
 			this.container = container;
 			this.watch = watch;

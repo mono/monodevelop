@@ -177,7 +177,6 @@
     <Compile Include="Mono.TextEditor\Document\TextDocument.cs" />
     <Compile Include="Mono.TextEditor\Gui\TextEditor.cs" />
     <Compile Include="Mono.TextEditor\Gui\TextEditorAccessibility.cs" />
-    <Compile Include="Mono.TextEditor\Gui\TextEditorContainer.cs" />
     <Compile Include="Mono.TextEditor\Document\ILineSplitter.cs" />
     <Compile Include="Mono.TextEditor\Document\FoldingType.cs" />
     <Compile Include="Mono.TextEditor\Gui\HslColor.cs" />

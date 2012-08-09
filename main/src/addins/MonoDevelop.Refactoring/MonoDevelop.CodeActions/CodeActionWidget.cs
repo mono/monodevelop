@@ -212,8 +212,8 @@ namespace MonoDevelop.CodeActions
 				menuPushed = false;
 				Hide ();
 			};
-			var container = (TextEditorContainer)document.Editor.Parent.Parent;
-			var child = (TextEditorContainer.EditorContainerChild)container [this];
+			var container = document.Editor.Parent;
+			var child = (TextEditor.EditorContainerChild)container [this];
 			GtkWorkarounds.ShowContextMenu (menu, document.Editor.Parent, null, new Gdk.Rectangle (child.X, child.Y + Allocation.Height - (int)document.Editor.VAdjustment.Value, 0, 0));
 		}
 

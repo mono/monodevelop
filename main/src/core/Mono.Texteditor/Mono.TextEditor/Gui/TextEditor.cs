@@ -46,7 +46,7 @@ namespace Mono.TextEditor
 {
 	[System.ComponentModel.Category("Mono.TextEditor")]
 	[System.ComponentModel.ToolboxItem(true)]
-	public class TextEditor : Gtk.Widget, ITextEditorDataProvider
+	public class TextEditor : Container, ITextEditorDataProvider
 	{
 		TextEditorData textEditorData;
 		
@@ -173,6 +173,12 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		public override ContainerChild this [Widget w] {
+			get {
+				return containerChildren.FirstOrDefault (info => info.Child == w || (info.Child is AnimatedWidget && ((AnimatedWidget)info.Child).Widget == w));
+			}
+		}
+
 		public TextEditor () : this(new TextDocument ())
 		{
 		}
@@ -188,6 +194,7 @@ namespace Mono.TextEditor
 		void HAdjustmentValueChanged (object sender, EventArgs args)
 		{
 			HAdjustmentValueChanged ();
+			SetChildrenPositions (this.Allocation);
 		}
 		
 		protected virtual void HAdjustmentValueChanged ()
@@ -206,6 +213,7 @@ namespace Mono.TextEditor
 		void VAdjustmentValueChanged (object sender, EventArgs args)
 		{
 			VAdjustmentValueChanged ();
+			SetChildrenPositions (this.Allocation);
 		}
 		
 		protected virtual void VAdjustmentValueChanged ()
@@ -284,6 +292,8 @@ namespace Mono.TextEditor
 		
 		public TextEditor (TextDocument doc, ITextEditorOptions options, EditMode initialMode)
 		{
+			GtkWorkarounds.FixContainerLeak (this);
+
 			textEditorData = new TextEditorData (doc);
 			textEditorData.Parent = this;
 			textEditorData.RecenterEditor += delegate {
@@ -365,7 +375,208 @@ namespace Mono.TextEditor
 					Options.Zoom += Options.Zoom * (args.Magnification / 4d);
 				});
 			}
+
+			stage.ActorStep += OnActorStep;
+			// bug on mac: search widget gets overdrawn in the scroll event.
+			if (Platform.IsMac) {
+				VScroll += delegate {
+					for (int i = 1; i < containerChildren.Count; i++) {
+						containerChildren[i].Child.QueueDraw ();
+					}
+				};
+				HScroll += delegate {
+					for (int i = 1; i < containerChildren.Count; i++) {
+						containerChildren[i].Child.QueueDraw ();
+					}
+				};
+			}
 		}
+
+		#region Container
+		public class EditorContainerChild : Container.ContainerChild
+		{
+			public int X { get; set; }
+			public int Y { get; set; }
+			public bool FixedPosition { get; set; }
+			public EditorContainerChild (Container parent, Widget child) : base (parent, child)
+			{
+			}
+		}
+		
+		public override GLib.GType ChildType ()
+		{
+			return Gtk.Widget.GType;
+		}
+		
+		List<EditorContainerChild> containerChildren = new List<EditorContainerChild> ();
+		
+		public void AddTopLevelWidget (Gtk.Widget widget, int x, int y)
+		{
+			widget.Parent = this;
+			EditorContainerChild info = new EditorContainerChild (this, widget);
+			info.X = x;
+			info.Y = y;
+			containerChildren.Add (info);
+		}
+		
+		public void MoveTopLevelWidget (Gtk.Widget widget, int x, int y)
+		{
+			foreach (EditorContainerChild info in containerChildren.ToArray ()) {
+				if (info.Child == widget || (info.Child is AnimatedWidget && ((AnimatedWidget)info.Child).Widget == widget)) {
+					if (info.X == x && info.Y == y)
+						break;
+					info.X = x;
+					info.Y = y;
+					if (widget.Visible)
+						ResizeChild (Allocation, info);
+					break;
+				}
+			}
+		}
+		
+		public void MoveToTop (Gtk.Widget widget)
+		{
+			EditorContainerChild editorContainerChild = containerChildren.FirstOrDefault (c => c.Child == widget);
+			if (editorContainerChild == null)
+				throw new Exception ("child " + widget + " not found.");
+			List<EditorContainerChild> newChilds = new List<EditorContainerChild> (containerChildren.Where (child => child != editorContainerChild));
+			newChilds.Add (editorContainerChild);
+			this.containerChildren = newChilds;
+			widget.GdkWindow.Raise ();
+		}
+		
+		protected override void OnAdded (Widget widget)
+		{
+			AddTopLevelWidget (widget, 0, 0);
+		}
+		
+		protected override void OnRemoved (Widget widget)
+		{
+			foreach (EditorContainerChild info in containerChildren.ToArray ()) {
+				if (info.Child == widget) {
+					widget.Unparent ();
+					containerChildren.Remove (info);
+					break;
+				}
+			}
+		}
+		
+		protected override void ForAll (bool include_internals, Gtk.Callback callback)
+		{
+			containerChildren.ForEach (child => callback (child.Child));
+		}
+
+
+		void ResizeChild (Rectangle allocation, EditorContainerChild child)
+		{
+			Requisition req = child.Child.SizeRequest ();
+			var childRectangle = new Gdk.Rectangle (child.X, child.Y, req.Width, req.Height);
+			if (!child.FixedPosition) {
+				double zoom = Options.Zoom;
+				childRectangle.X = (int)(child.X * zoom - HAdjustment.Value);
+				childRectangle.Y = (int)(child.Y * zoom - VAdjustment.Value);
+			}
+			//			childRectangle.X += allocation.X;
+			//			childRectangle.Y += allocation.Y;
+			child.Child.SizeAllocate (childRectangle);
+		}
+		
+		void SetChildrenPositions (Rectangle allocation)
+		{
+			foreach (EditorContainerChild child in containerChildren.ToArray ()) {
+				ResizeChild (allocation, child);
+			}
+		}
+		#endregion
+
+		#region Animated Widgets
+		Stage<AnimatedWidget> stage = new Stage<AnimatedWidget> ();
+		
+		bool OnActorStep (Actor<AnimatedWidget> actor)
+		{
+			switch (actor.Target.AnimationState) {
+			case AnimationState.Coming:
+				actor.Target.QueueDraw ();
+				actor.Target.Percent = actor.Percent;
+				if (actor.Expired) {
+					actor.Target.AnimationState = AnimationState.Idle;
+					return false;
+				}
+				break;
+			case AnimationState.IntendingToGo:
+				actor.Target.AnimationState = AnimationState.Going;
+				actor.Target.Bias = actor.Percent;
+				actor.Reset ((uint)(actor.Target.Duration * actor.Percent));
+				break;
+			case AnimationState.Going:
+				if (actor.Expired) {
+					this.Remove (actor.Target);
+					return false;
+				}
+				actor.Target.Percent = 1.0 - actor.Percent;
+				break;
+			}
+			return true;
+		}
+		
+		void OnWidgetDestroyed (object sender, EventArgs args)
+		{
+			RemoveCore ((AnimatedWidget)sender);
+		}
+		
+		void RemoveCore (AnimatedWidget widget)
+		{
+			RemoveCore (widget, widget.Duration, 0, 0, false, false);
+		}
+		
+		void RemoveCore (AnimatedWidget widget, uint duration, Easing easing, Blocking blocking, bool use_easing, bool use_blocking)
+		{
+			if (duration > 0)
+				widget.Duration = duration;
+			
+			if (use_easing)
+				widget.Easing = easing;
+			
+			if (use_blocking)
+				widget.Blocking = blocking;
+			
+			if (widget.AnimationState == AnimationState.Coming) {
+				widget.AnimationState = AnimationState.IntendingToGo;
+			} else {
+				if (widget.Easing == Easing.QuadraticIn) {
+					widget.Easing = Easing.QuadraticOut;
+				} else if (widget.Easing == Easing.QuadraticOut) {
+					widget.Easing = Easing.QuadraticIn;
+				} else if (widget.Easing == Easing.ExponentialIn) {
+					widget.Easing = Easing.ExponentialOut;
+				} else if (widget.Easing == Easing.ExponentialOut) {
+					widget.Easing = Easing.ExponentialIn;
+				}
+				widget.AnimationState = AnimationState.Going;
+				stage.Add (widget, widget.Duration);
+			}
+		}
+		
+		public void AddAnimatedWidget (Widget widget, uint duration, Easing easing, Blocking blocking, int x, int y)
+		{
+			AnimatedWidget animated_widget = new AnimatedWidget (widget, duration, easing, blocking, false);
+			animated_widget.Parent = this;
+			animated_widget.WidgetDestroyed += OnWidgetDestroyed;
+			stage.Add (animated_widget, duration);
+			animated_widget.StartPadding = 0;
+			animated_widget.EndPadding = widget.Allocation.Height;
+			//			animated_widget.Node = animated_widget;
+			
+			EditorContainerChild info = new EditorContainerChild (this, animated_widget);
+			info.X = x;
+			info.Y = y;
+			info.FixedPosition = true;
+			containerChildren.Add (info);
+			
+			//			RecalculateSpacings ();
+		}
+		#endregion
+		
 
 		void HandleDocumenthandleEndUndo (object sender, TextDocument.UndoOperationEventArgs e)
 		{
