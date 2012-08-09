@@ -116,7 +116,9 @@ THE SOFTWARE.
 	<Style name="iconbar.separator" color="base02"/>
 
 	<Style name="fold" color="base01" bgColor="base02"/>
-	<Style name="fold.margin" color="base01" bgColor="base02" />
+	<Style name="fold.collapsedots" color="base01"/>
+	<Style name="fold.hovermarker.space" color="base1"/>
+	<Style name="fold.hovermarker.arrow" color="base2"/>
 	
 	<Style name="comment" color="base01">
 		<Style name="keyword" weight="italic"/>

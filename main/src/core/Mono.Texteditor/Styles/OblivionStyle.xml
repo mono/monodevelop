@@ -126,7 +126,9 @@
 	<Style name="iconbar.separator" color="aluminium6"/>
 
 	<Style name="fold" color="aluminium3" bgColor="black"/>
-	<Style name="fold.margin" color="white" bgColor ="aluminium7" />
+	<Style name="fold.collapsedots" color="aluminium3"/>
+	<Style name="fold.hovermarker.space" color="aluminium5"/>
+	<Style name="fold.hovermarker.arrow" color="aluminium3"/>
 	
 	<!-- highlighting -->
 	<Style name="comment" color="aluminium4"/>

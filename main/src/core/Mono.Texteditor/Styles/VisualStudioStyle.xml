@@ -62,7 +62,9 @@
 	<Style name="iconbar.separator" color="aluminium3"/>
 	
 	<Style name="fold" color="aluminium3" bgColor="white"/>
-	<Style name="fold.margin" color="#2a669a" bgColor ="#b1cce3" />
+	<Style name="fold.collapsedots" color="aluminium3"/>
+	<Style name="fold.hovermarker.space" color="aluminium1"/>
+	<Style name="fold.hovermarker.arrow" color="aluminium2"/>
 	
 	<!-- highlighting -->
 	<Style name="comment" color="comment-green"/>

@@ -147,7 +147,9 @@
 	<Style name="iconbar.separator" color="aluminium3"/>
 
 	<Style name="fold" color="aluminium4" bgColor="white"/>
-	<Style name="fold.margin" color="#2a669a" bgColor ="#b1cce3" />
+	<Style name="fold.collapsedots" color="aluminium4"/>
+	<Style name="fold.hovermarker.space" color="aluminium2"/>
+	<Style name="fold.hovermarker.arrow" color="aluminium4"/>
 	
 	<Style name="comment" color="comment-gray" weight="italic">
 		<Style name="line"/>
