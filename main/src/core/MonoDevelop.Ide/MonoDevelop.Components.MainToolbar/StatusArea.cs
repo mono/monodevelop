@@ -328,10 +328,16 @@ namespace MonoDevelop.Components.MainToolbar
 					int w, h;
 					pl.GetPixelSize (out w, out h);
 					int y = Allocation.Y + (Allocation.Height - h) / 2;
+
+					context.Save ();
+					context.Rectangle (new Rectangle (messageBox.Allocation.X, messageBox.Allocation.Y, messageBox.Allocation.Width, messageBox.Allocation.Height));
+					context.Clip ();
+
 					context.MoveTo (x, y);
 					context.Color = Styles.StatusBarTextColor;
 					Pango.CairoHelper.ShowLayout (context, pl);
 					pl.Dispose ();
+					context.Restore ();
 
 					if (showingProgress || progressDisplayAlpha > 0) {
 						double py = y + h + 3.5;
