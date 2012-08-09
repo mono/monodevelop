@@ -209,7 +209,7 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("cc SomeProject", cmd.GetCommandArgs (p, c.Selector));
 			
 			cmd.WorkingDir = NormalizePath ("/some/${ProjectName}/place");
-			Assert.AreEqual (NormalizePath ("/some/SomeProject/place"), (string)cmd.GetCommandWorkingDir (p, c.Selector));
+			Assert.AreEqual (Path.GetFullPath (NormalizePath ("/some/SomeProject/place")), (string)cmd.GetCommandWorkingDir (p, c.Selector));
 		}
 		
 		[Test()]
