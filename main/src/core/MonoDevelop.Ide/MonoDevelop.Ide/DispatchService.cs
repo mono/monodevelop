@@ -341,7 +341,6 @@ namespace MonoDevelop.Ide
 				NextDueTime = DateTime.Now
 			};
 
-			Console.WriteLine ("Started animation " + animation.GetHashCode ());
 			activeAnimations.Add (ainfo);
 			
 			// Don't immediately run the animation if we are going to do it in less than 20ms
@@ -414,7 +413,6 @@ namespace MonoDevelop.Ide
 		static void StopAnimation (AnimationInfo a)
 		{
 			activeAnimations.Remove (a);
-			Console.WriteLine ("Stopped animation " + a.AnimationFunc.GetHashCode ());
 			if (activeAnimations.Count == 0 && animationHandle != 0) {
 				GLib.Source.Remove (animationHandle);
 				animationHandle = 0;
