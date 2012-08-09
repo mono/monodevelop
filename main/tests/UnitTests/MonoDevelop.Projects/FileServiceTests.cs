@@ -33,6 +33,8 @@ namespace MonoDevelop.Projects
 	[TestFixture]
 	public class FileServiceTests : TestBase
 	{
+		static readonly string Sep = System.IO.Path.DirectorySeparatorChar.ToString();
+
 		[Test]
 		public void TestGetRelativePath ()
 		{
@@ -41,12 +43,12 @@ namespace MonoDevelop.Projects
 		[Test]
 		public void TestGetRelativePathCase2 ()
 		{
-			Assert.AreEqual (@"../a/blub", FileService.AbsoluteToRelativePath (@"/hello/", @"/a/blub"));
+			Assert.AreEqual (string.Format ("..{0}a{0}blub", Sep), FileService.AbsoluteToRelativePath (@"/hello/", @"/a/blub"));
 		}
 		[Test]
 		public void TestGetRelativePathCase3 ()
 		{
-			Assert.AreEqual (@"../a/blub", FileService.AbsoluteToRelativePath (@"/hello", @"/a/blub"));
+			Assert.AreEqual (string.Format ("..{0}a{0}blub", Sep), FileService.AbsoluteToRelativePath (@"/hello", @"/a/blub"));
 		}
 
 		[Test]
@@ -64,26 +66,26 @@ namespace MonoDevelop.Projects
 		[Test]
 		public void TestGetRelativeGoSeveralUpCaseAtEnd ()
 		{
-			Assert.AreEqual (@"../..", FileService.AbsoluteToRelativePath (@"/aa/bb/cc/dd", @"/aa/bb"));
+			Assert.AreEqual (string.Format ("..{0}..", Sep), FileService.AbsoluteToRelativePath (@"/aa/bb/cc/dd", @"/aa/bb"));
 		}
 
 		[Test]
 		public void TestGetRelativeWithSamePathSubstring ()
 		{
-			Assert.AreEqual (@"../bbcc", FileService.AbsoluteToRelativePath (@"/aa/bb", @"/aa/bbcc"));
-			Assert.AreEqual (@"../bbcc/dd", FileService.AbsoluteToRelativePath (@"/aa/bb", @"/aa/bbcc/dd"));
-			Assert.AreEqual (@"../bbcc", FileService.AbsoluteToRelativePath (@"/aa/bb/", @"/aa/bbcc"));
-			Assert.AreEqual (@"../bbcc/", FileService.AbsoluteToRelativePath (@"/aa/bb/", @"/aa/bbcc/"));
-			Assert.AreEqual (@"../bbcc/", FileService.AbsoluteToRelativePath (@"/aa/bb/", @"/aa/bbcc/"));
+			Assert.AreEqual (string.Format ("..{0}bbcc", Sep), FileService.AbsoluteToRelativePath (@"/aa/bb", @"/aa/bbcc"));
+			Assert.AreEqual (string.Format ("..{0}bbcc{0}dd", Sep), FileService.AbsoluteToRelativePath (@"/aa/bb", @"/aa/bbcc/dd"));
+			Assert.AreEqual (string.Format ("..{0}bbcc", Sep), FileService.AbsoluteToRelativePath (@"/aa/bb/", @"/aa/bbcc"));
+			Assert.AreEqual (string.Format ("..{0}bbcc{0}", Sep), FileService.AbsoluteToRelativePath (@"/aa/bb/", @"/aa/bbcc/"));
+			Assert.AreEqual (string.Format ("..{0}bbcc{0}", Sep), FileService.AbsoluteToRelativePath (@"/aa/bb/", @"/aa/bbcc/"));
 		}
 
 		[Test]
 		public void TestGetRelativeEmptyDir ()
 		{
-			Assert.AreEqual (@"cc", FileService.AbsoluteToRelativePath (@"/aa/bb/", @"/aa/bb/cc"));
-			Assert.AreEqual (@".", FileService.AbsoluteToRelativePath (@"/aa/bb/", @"/aa/bb/"));
-			Assert.AreEqual (@"bb/", FileService.AbsoluteToRelativePath (@"/aa", @"/aa/bb/"));
-			Assert.AreEqual (@"bb/", FileService.AbsoluteToRelativePath (@"/aa/", @"/aa/bb/"));
+			Assert.AreEqual ("cc", FileService.AbsoluteToRelativePath (@"/aa/bb/", @"/aa/bb/cc"));
+			Assert.AreEqual (".", FileService.AbsoluteToRelativePath (@"/aa/bb/", @"/aa/bb/"));
+			Assert.AreEqual (string.Format ("bb{0}", Sep), FileService.AbsoluteToRelativePath(@"/aa", @"/aa/bb/"));
+			Assert.AreEqual (string.Format ("bb{0}", Sep), FileService.AbsoluteToRelativePath(@"/aa/", @"/aa/bb/"));
 		}
 
 		[Test]

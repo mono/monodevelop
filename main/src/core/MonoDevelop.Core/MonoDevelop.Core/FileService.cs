@@ -331,7 +331,7 @@ namespace MonoDevelop.Core
 				return absPath;
 				
 			absPath = Path.GetFullPath (absPath);
-			baseDirectoryPath = Path.GetFullPath (baseDirectoryPath.TrimEnd (Path.DirectorySeparatorChar));
+			baseDirectoryPath = Path.GetFullPath (baseDirectoryPath).TrimEnd (Path.DirectorySeparatorChar);
 			
 			fixed (char* bPtr = baseDirectoryPath, aPtr = absPath) {
 				var bEnd = bPtr + baseDirectoryPath.Length;
