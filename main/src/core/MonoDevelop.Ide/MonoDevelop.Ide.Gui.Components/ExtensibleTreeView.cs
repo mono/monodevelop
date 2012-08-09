@@ -200,7 +200,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			text_render.EditingCanceled += HandleOnEditCancelled;
 			
 			complete_column.PackStart (text_render, true);
-			complete_column.AddAttribute (text_render, "markup", TextColumn);
+			complete_column.AddAttribute (text_render, "text-markup", TextColumn);
 			
 			tree.AppendColumn (complete_column);
 			
@@ -2304,6 +2304,9 @@ namespace MonoDevelop.Ide.Gui.Components
 			popupIconDown = Gdk.Pixbuf.LoadFromResource ("tree-popup-button-down.png");
 		}
 
+		[GLib.Property ("text-markup")]
+		public string TextMarkup { get; set; }
+
 		public CustomCellRendererText (ExtensibleTreeView parent)
 		{
 			this.parent = parent;
@@ -2311,7 +2314,28 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		protected override void Render (Gdk.Drawable window, Gtk.Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, Gtk.CellRendererState flags)
 		{
-			base.Render (window, widget, background_area, cell_area, expose_area, flags);
+			Pango.Layout la = new Pango.Layout (widget.PangoContext);
+			int w, h;
+			la.SetMarkup (TextMarkup);
+			la.GetPixelSize (out w, out h);
+
+			Gtk.StateType st = Gtk.StateType.Normal;
+			if ((flags & Gtk.CellRendererState.Prelit) != 0)
+				st = Gtk.StateType.Prelight;
+			if ((flags & Gtk.CellRendererState.Focused) != 0)
+				st = Gtk.StateType.Normal;
+			if ((flags & Gtk.CellRendererState.Insensitive) != 0)
+				st = Gtk.StateType.Insensitive;
+			if ((flags & Gtk.CellRendererState.Selected) != 0)
+				st = Gtk.StateType.Selected;
+
+			int tx = cell_area.X + (int) Xpad;
+			int ty = cell_area.Y + (cell_area.Height - h) / 2;
+
+			if (st != Gtk.StateType.Selected && TextMarkup.IndexOf ('<') == -1)
+				window.DrawLayout (widget.Style.WhiteGC, tx + 1, ty + 1, la);
+
+			window.DrawLayout (widget.Style.TextGC (st), tx, ty, la);
 
 			if (parent.ShowSelectionPopupButton) {
 				if (!bound) {
