@@ -188,6 +188,9 @@ namespace MonoDevelop.SourceEditor
 				case "DrawIndentationMarkers":
 					base.DrawIndentationMarkers = (bool)args.NewValue;
 					break;
+				case "EnableQuickDiff":
+					base.EnableQuickDiff = (bool)args.NewValue;
+					break;
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("SourceEditorOptions error with property value for '" + (args.Key ?? "") + "'", ex);
@@ -224,6 +227,7 @@ namespace MonoDevelop.SourceEditor
 			this.lineEndingConversion = PropertyService.Get ("LineEndingConversion", LineEndingConversion.Ask);
 			this.ShowWhitespaces = PropertyService.Get ("ShowWhitespaces", Mono.TextEditor.ShowWhitespaces.Never);
 			this.WrapLines = PropertyService.Get ("WrapLines", false);
+			this.EnableQuickDiff = PropertyService.Get ("EnableQuickDiff", false);
 		}
 		
 		#region new options
@@ -623,6 +627,13 @@ namespace MonoDevelop.SourceEditor
 			set {
 				PropertyService.Set ("WrapLines", value);
 				base.WrapLines = value;
+			}
+		}
+
+		public override bool EnableQuickDiff {
+			set {
+				PropertyService.Set ("EnableQuickDiff", value);
+				base.EnableQuickDiff = value;
 			}
 		}
 

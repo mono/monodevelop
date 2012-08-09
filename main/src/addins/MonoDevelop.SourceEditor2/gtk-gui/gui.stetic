@@ -549,6 +549,22 @@
                   </packing>
                 </child>
                 <child>
+                  <widget class="Gtk.CheckButton" id="enableQuickDiffCheckbutton">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="Label" translatable="yes">_Enable quick diff</property>
+                    <property name="DrawIndicator">True</property>
+                    <property name="HasLabel">True</property>
+                    <property name="UseUnderline">True</property>
+                  </widget>
+                  <packing>
+                    <property name="Position">8</property>
+                    <property name="AutoSize">True</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
+                <child>
                   <widget class="Gtk.HBox" id="hbox1">
                     <property name="MemberName" />
                     <property name="Spacing">6</property>
@@ -580,7 +596,7 @@
                     </child>
                   </widget>
                   <packing>
-                    <property name="Position">8</property>
+                    <property name="Position">9</property>
                     <property name="AutoSize">True</property>
                     <property name="Expand">False</property>
                     <property name="Fill">False</property>

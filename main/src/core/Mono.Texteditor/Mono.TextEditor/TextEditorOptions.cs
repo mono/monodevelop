@@ -461,6 +461,19 @@ namespace Mono.TextEditor
 			}
 		}
 
+		bool enableQuickDiff = true;
+		public virtual bool EnableQuickDiff {
+			get {
+				return enableQuickDiff;
+			}
+			set {
+				if (enableQuickDiff != value) {
+					enableQuickDiff = value;
+					OnChanged (EventArgs.Empty);
+				}
+			}
+		}
+
 		public virtual ColorScheme GetColorStyle (Gtk.Style widgetStyle)
 		{
 			return SyntaxModeService.GetColorStyle (widgetStyle, ColorScheme);

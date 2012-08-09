@@ -65,6 +65,8 @@ namespace Mono.TextEditor
 		bool EnableSyntaxHighlighting { get; set; }
 		bool EnableAnimations { get; }
 
+		bool EnableQuickDiff { get; set; }
+
 		bool DrawIndentationMarkers { get; set; }
 
 		bool UseAntiAliasing { get; set; }

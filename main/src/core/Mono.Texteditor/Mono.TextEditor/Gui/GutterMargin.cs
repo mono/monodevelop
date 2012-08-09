@@ -326,18 +326,19 @@ namespace Mono.TextEditor
 			}
 
 			if (line <= editor.Document.LineCount) {
-				var state = editor.Document.GetLineState (lineSegment);
-				double len = 4 * editor.Options.Zoom;
-				if (state == TextDocument.LineState.Changed) {
-					cr.Color = editor.ColorStyle.LineChangedBg;
-					cr.Rectangle (x + Width - len, y, len, lineHeight);
-					cr.Fill ();
-				} else if (state == TextDocument.LineState.Dirty) {
-					cr.Color = editor.ColorStyle.LineDirtyBg;
-					cr.Rectangle (x + Width - len, y, len, lineHeight);
-					cr.Fill ();
+				if (editor.Options.EnableQuickDiff) {
+					var state = editor.Document.GetLineState (lineSegment);
+					double len = editor.Options.Zoom;
+					if (state == TextDocument.LineState.Changed) {
+						cr.Color = editor.ColorStyle.LineChangedBg;
+						cr.Rectangle (x + Width - len, y, len, lineHeight);
+						cr.Fill ();
+					} else if (state == TextDocument.LineState.Dirty) {
+						cr.Color = editor.ColorStyle.LineDirtyBg;
+						cr.Rectangle (x + Width - len, y, len, lineHeight);
+						cr.Fill ();
+					}
 				}
-
 				if (containsFoldedFolding) {
 					cr.Color = editor.ColorStyle.FoldMarkerCollapsedots;
 					var rad = 2 * editor.Options.Zoom;

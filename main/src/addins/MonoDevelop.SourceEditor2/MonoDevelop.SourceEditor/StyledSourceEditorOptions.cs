@@ -257,6 +257,11 @@ namespace MonoDevelop.SourceEditor
 			set { DefaultSourceEditorOptions.Instance.WrapLines = value; }
 		}
 
+		public bool EnableQuickDiff {
+			get { return DefaultSourceEditorOptions.Instance.EnableQuickDiff; }
+			set { DefaultSourceEditorOptions.Instance.EnableQuickDiff = value; }
+		}
+
 		public void ZoomIn ()
 		{
 			DefaultSourceEditorOptions.Instance.ZoomIn ();

@@ -52,6 +52,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.showWhitespacesCombobox.AppendText (GettextCatalog.GetString ("Selection"));
 			this.showWhitespacesCombobox.AppendText (GettextCatalog.GetString ("Always"));
 			this.showWhitespacesCombobox.Active = (int)DefaultSourceEditorOptions.Instance.ShowWhitespaces;
+			this.enableQuickDiffCheckbutton.Active = DefaultSourceEditorOptions.Instance.EnableQuickDiff;
 			return this;
 		}
 		
@@ -66,6 +67,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			DefaultSourceEditorOptions.Instance.EnableHighlightUsages = this.enableHighlightUsagesCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.DrawIndentationMarkers = this.drawIndentMarkersCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.ShowWhitespaces = (ShowWhitespaces) this.showWhitespacesCombobox.Active;
+			DefaultSourceEditorOptions.Instance.EnableQuickDiff = this.enableQuickDiffCheckbutton.Active;
 		}
 
 		public void Initialize (OptionsDialog dialog, object dataObject)
