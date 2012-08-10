@@ -132,7 +132,7 @@ namespace MonoDevelop.Components
 		private void BuildWidget ()
 		{
 			alignment = new Alignment (0.5f, 0.5f, 1f, 0f);
-			alignment.SetPadding (0, 0, 0, 0);
+			alignment.SetPadding (0, 0, 3, 3);
 			VisibleWindow = false;
 
 			box = new HBox ();
@@ -141,8 +141,9 @@ namespace MonoDevelop.Components
 			clear_button = new HoverImageButton (IconSize.Menu, "md-searchbox-clear");
 
 			entryAlignment = new Gtk.Alignment (0.5f, 0.5f, 1f, 1f);
+			alignment.SetPadding (0, 0, 3, 3);
 			entryAlignment.Add (entry);
-			box.PackStart (filter_button, false, false, 2);
+			box.PackStart (filter_button, false, false, 0);
 			box.PackStart (entryAlignment, true, true, 0);
 			box.PackStart (clear_button, false, false, 0);
 			alignment.Add (box);
@@ -377,7 +378,7 @@ namespace MonoDevelop.Components
 
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
-			var alloc = box.Allocation;
+			var alloc = new Gdk.Rectangle (alignment.Allocation.X, box.Allocation.Y, alignment.Allocation.Width, box.Allocation.Height);
 
 			if (hasFrame && (!roundedShape || (roundedShape && !customRoundedShapeDrawing))) {
 				Style.PaintShadow (entry.Style, GdkWindow, StateType.Normal, ShadowType.In,
