@@ -667,6 +667,13 @@ namespace MonoDevelop.CSharp.Completion
 			}
 
 			#region ICompletionContextProvider implementation
+
+			IList<string> ICompletionContextProvider.ConditionalSymbols {
+				get {
+					return document.ParsedDocument.GetAst<CompilationUnit> ().ConditionalSymbols;
+				}
+			}
+
 			void ICompletionContextProvider.GetCurrentMembers (int offset, out IUnresolvedTypeDefinition currentType, out IUnresolvedMember currentMember)
 			{
 				currentType = GetTypeAt (offset);

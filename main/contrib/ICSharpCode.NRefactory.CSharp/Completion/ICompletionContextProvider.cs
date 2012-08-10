@@ -35,6 +35,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 {
 	public interface ICompletionContextProvider
 	{
+		IList<string> ConditionalSymbols {
+			get;
+		}
+
 		void GetCurrentMembers (int offset, out IUnresolvedTypeDefinition currentType, out IUnresolvedMember currentMember);
 
 		Tuple<string, TextLocation> GetMemberTextToCaret(int caretOffset, IUnresolvedTypeDefinition currentType, IUnresolvedMember currentMember);
@@ -46,6 +50,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 	{
 		readonly IDocument document;
 		readonly CSharpParsedFile parsedFile;
+
+		public IList<string> ConditionalSymbols {
+			get {
+				return new string[0];
+			}
+		}
 
 		public DefaultCompletionContextProvider (IDocument document, CSharpParsedFile parsedFile)
 		{

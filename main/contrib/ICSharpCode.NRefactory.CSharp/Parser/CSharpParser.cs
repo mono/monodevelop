@@ -3746,7 +3746,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 
 			conversionVisitor.Unit.FileName = fileName;
-			conversionVisitor.Unit.ConditionalSymbols = top.Conditionals.ToArray ();
+			conversionVisitor.Unit.ConditionalSymbols = top.Conditionals.Concat (compilerSettings.ConditionalSymbols).ToArray ();
 			return conversionVisitor.Unit;
 		}
 		

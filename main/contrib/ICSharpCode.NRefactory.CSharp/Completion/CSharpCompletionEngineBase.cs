@@ -684,7 +684,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			using (var stream = new System.IO.StringReader (wrapper.ToString ())) {
 				try {
 					var parser = new CSharpParser ();
+					foreach (var sym in CompletionContextProvider.ConditionalSymbols) {
+						parser.CompilerSettings.ConditionalSymbols.Add (sym);
+					}
 					var result = parser.Parse(stream, "stub.cs", memberLocation.Line - 1 - generatedLines);
+
 					return result;
 				} catch (Exception) {
 					Console.WriteLine("------");
