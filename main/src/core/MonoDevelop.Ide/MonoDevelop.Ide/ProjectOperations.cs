@@ -48,7 +48,6 @@ using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Instrumentation;
 using Mono.TextEditor;
 using System.Diagnostics;
-using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Documentation;
 
 namespace MonoDevelop.Ide
@@ -213,11 +212,11 @@ namespace MonoDevelop.Ide
 			return (GetDeclaredFile(item) != null);
 		}*/
 		
-		public bool CanJumpToDeclaration (INamedElement element)
+		public bool CanJumpToDeclaration (ICSharpCode.NRefactory.TypeSystem.INamedElement element)
 		{
-			var entity = element as IEntity;
-			if (entity == null && element is IType)
-				entity = ((IType)element).GetDefinition ();
+			var entity = element as ICSharpCode.NRefactory.TypeSystem.IEntity;
+			if (entity == null && element is ICSharpCode.NRefactory.TypeSystem.IType)
+				entity = ((ICSharpCode.NRefactory.TypeSystem.IType)element).GetDefinition ();
 			if (entity == null)
 				return false;
 			
@@ -228,7 +227,7 @@ namespace MonoDevelop.Ide
 		}
 		
 		
-		static MonoDevelop.Ide.FindInFiles.SearchResult GetJumpTypePartSearchResult (IUnresolvedTypeDefinition part)
+		static MonoDevelop.Ide.FindInFiles.SearchResult GetJumpTypePartSearchResult (ICSharpCode.NRefactory.TypeSystem.IUnresolvedTypeDefinition part)
 		{
 			var provider = new MonoDevelop.Ide.FindInFiles.FileProvider (part.Region.FileName);
 			var doc = new Mono.TextEditor.TextDocument ();
@@ -242,10 +241,10 @@ namespace MonoDevelop.Ide
 			return new MonoDevelop.Ide.FindInFiles.SearchResult (provider, position, part.Name.Length);
 		}
 
-		public void JumpToDeclaration (INamedElement visitable, bool askIfMultipleLocations = true)
+		public void JumpToDeclaration (ICSharpCode.NRefactory.TypeSystem.INamedElement visitable, bool askIfMultipleLocations = true)
 		{
 			if (askIfMultipleLocations) {
-				var type = visitable as IType;
+				var type = visitable as ICSharpCode.NRefactory.TypeSystem.IType;
 				if (type != null && type.GetDefinition () != null && type.GetDefinition ().Parts.Count > 1) {
 					using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
 						foreach (var part in type.GetDefinition ().Parts)
@@ -258,12 +257,12 @@ namespace MonoDevelop.Ide
 			JumpToDeclaration (visitable);
 		}
 
-		void JumpToDeclaration (INamedElement element)
+		void JumpToDeclaration (ICSharpCode.NRefactory.TypeSystem.INamedElement element)
 		{
-			IEntity entity = element as IEntity;
+			var entity = element as ICSharpCode.NRefactory.TypeSystem.IEntity;
 
-			if (entity == null && element is IType)
-				entity = ((IType)element).GetDefinition ();
+			if (entity == null && element is ICSharpCode.NRefactory.TypeSystem.IType)
+				entity = ((ICSharpCode.NRefactory.TypeSystem.IType)element).GetDefinition ();
 			if (entity == null) {
 				LoggingService.LogError ("Unknown element:" + element);
 				return;
@@ -288,7 +287,7 @@ namespace MonoDevelop.Ide
 			}
 		}
 
-		public void JumpToDeclaration (IVariable entity)
+		public void JumpToDeclaration (ICSharpCode.NRefactory.TypeSystem.IVariable entity)
 		{
 			if (entity == null)
 				throw new ArgumentNullException ("entity");

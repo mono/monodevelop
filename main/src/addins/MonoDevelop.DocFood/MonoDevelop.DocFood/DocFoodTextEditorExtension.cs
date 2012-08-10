@@ -136,7 +136,7 @@ namespace MonoDevelop.DocFood
 			if (type == null) {
 				foreach (var t in parsedDocument.TopLevelTypeDefinitions) {
 					if (t.Region.BeginLine > textEditorData.Caret.Line) {
-						var ctx = (parsedDocument.ParsedFile as CSharpParsedFile).GetTypeResolveContext (Document.Compilation, t.Region.Begin);
+						var ctx = (parsedDocument.ParsedFile as CSharpUnresolvedFile).GetTypeResolveContext (Document.Compilation, t.Region.Begin);
 						return t.Resolve (ctx).GetDefinition ();
 					}
 				}
@@ -146,7 +146,7 @@ namespace MonoDevelop.DocFood
 			IMember result = null;
 			foreach (var member in type.Members) {
 				if (member.Region.Begin > new TextLocation (textEditorData.Caret.Line, textEditorData.Caret.Column) && (result == null || member.Region.Begin < result.Region.Begin) && IsEmptyBetweenLines (textEditorData.Caret.Line, member.Region.BeginLine)) {
-					var ctx = (parsedDocument.ParsedFile as CSharpParsedFile).GetTypeResolveContext (Document.Compilation, member.Region.Begin);
+					var ctx = (parsedDocument.ParsedFile as CSharpUnresolvedFile).GetTypeResolveContext (Document.Compilation, member.Region.Begin);
 					result = member.CreateResolved (ctx);
 				}
 			}

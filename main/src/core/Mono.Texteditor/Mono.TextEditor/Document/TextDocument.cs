@@ -1755,6 +1755,16 @@ namespace Mono.TextEditor
 		#endregion
 
 		#region ITextSource implementation
+		void ICSharpCode.NRefactory.Editor.ITextSource.WriteTextTo (System.IO.TextWriter writer)
+		{
+			throw new NotImplementedException ();
+		}
+
+		void ICSharpCode.NRefactory.Editor.ITextSource.WriteTextTo (System.IO.TextWriter writer, int offset, int length)
+		{
+			throw new NotImplementedException ();
+		}
+
 		ICSharpCode.NRefactory.Editor.ITextSource ICSharpCode.NRefactory.Editor.ITextSource.CreateSnapshot ()
 		{
 			throw new NotImplementedException ();
@@ -1818,6 +1828,8 @@ namespace Mono.TextEditor
 		{
 			return new SnapshotDocument (Text, Version);
 		}
+
+
 
 		#endregion
 	}

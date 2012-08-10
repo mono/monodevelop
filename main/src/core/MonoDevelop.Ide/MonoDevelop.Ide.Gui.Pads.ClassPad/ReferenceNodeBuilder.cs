@@ -33,7 +33,6 @@ using System.IO;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Components;
-using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {

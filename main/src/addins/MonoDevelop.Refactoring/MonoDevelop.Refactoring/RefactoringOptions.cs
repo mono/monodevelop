@@ -78,7 +78,7 @@ namespace MonoDevelop.Refactoring
 				return new TextLocation (Document.Editor.Caret.Line, Document.Editor.Caret.Column);
 			}
 		}
-		public readonly CompilationUnit Unit;
+		public readonly SyntaxTree Unit;
 
 		public RefactoringOptions ()
 		{
@@ -88,18 +88,18 @@ namespace MonoDevelop.Refactoring
 		{
 			this.Document = doc;
 			if (doc != null && doc.ParsedDocument != null) {
-				Unit = doc.ParsedDocument.GetAst<CompilationUnit> ();
+				Unit = doc.ParsedDocument.GetAst<SyntaxTree> ();
 				resolver = CreateResolver (Unit);
 			}
 		}
 
-		public CSharpAstResolver CreateResolver (CompilationUnit unit)
+		public CSharpAstResolver CreateResolver (SyntaxTree unit)
 		{
 			var parsedDocument = Document.ParsedDocument;
 			if (parsedDocument == null)
 				return null;
 
-			var parsedFile = parsedDocument.ParsedFile as CSharpParsedFile;
+			var parsedFile = parsedDocument.ParsedFile as CSharpUnresolvedFile;
 			
 			if (unit == null || parsedFile == null)
 				return null;
@@ -180,7 +180,7 @@ namespace MonoDevelop.Refactoring
 		public static List<string> GetUsedNamespaces (Document doc, TextLocation loc)
 		{
 			var result = new List<string> ();
-			var pf = doc.ParsedDocument.ParsedFile as CSharpParsedFile;
+			var pf = doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile;
 			if (pf == null)
 				return result;
 			var scope = pf.GetUsingScope (loc);
@@ -203,7 +203,7 @@ namespace MonoDevelop.Refactoring
 		
 		public AstType CreateShortType (IType fullType)
 		{
-			var parsedFile = Document.ParsedDocument.ParsedFile as CSharpParsedFile;
+			var parsedFile = Document.ParsedDocument.ParsedFile as CSharpUnresolvedFile;
 			
 			var csResolver = parsedFile.GetResolver (Document.Compilation, Document.Editor.Caret.Location);
 			

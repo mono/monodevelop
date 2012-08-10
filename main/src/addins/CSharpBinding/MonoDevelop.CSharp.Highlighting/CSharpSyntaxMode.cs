@@ -69,8 +69,8 @@ namespace MonoDevelop.CSharp.Highlighting
 	public class CSharpSyntaxMode : Mono.TextEditor.Highlighting.SyntaxMode, IQuickTaskProvider
 	{
 		Document guiDocument;
-		CompilationUnit unit;
-		CSharpParsedFile parsedFile;
+		SyntaxTree unit;
+		CSharpUnresolvedFile parsedFile;
 		ICompilation compilation;
 		CSharpAstResolver resolver;
 		CancellationTokenSource src = null;
@@ -136,8 +136,8 @@ namespace MonoDevelop.CSharp.Highlighting
 			if (guiDocument != null && MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", true)) {
 				var parsedDocument = guiDocument.ParsedDocument;
 				if (parsedDocument != null) {
-					unit = parsedDocument.GetAst<CompilationUnit> ();
-					parsedFile = parsedDocument.ParsedFile as CSharpParsedFile;
+					unit = parsedDocument.GetAst<SyntaxTree> ();
+					parsedFile = parsedDocument.ParsedFile as CSharpUnresolvedFile;
 					if (guiDocument.Project != null && guiDocument.IsCompileableInProject) {
 						src = new CancellationTokenSource ();
 						var cancellationToken = src.Token;
@@ -912,10 +912,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			{
 				int length = CurText.Length - textOffset;
 				string parameter = CurText.Substring (textOffset + 3, length - 3);
-				AstNode expr;
-				using (var reader = new StringReader (parameter)) {
-					expr = new CSharpParser ().ParseExpression (reader);
-				}
+				AstNode expr = new CSharpParser ().ParseExpression (parameter);
 				bool result = false;
 				if (expr != null && !expr.IsNull) {
 					object o = expr.AcceptVisitor (new ConditinalExpressionEvaluator (doc, Defines), null);
@@ -951,10 +948,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				DocumentLine line = doc.GetLineByOffset (i);
 				int length = line.Offset + line.Length - i;
 				string parameter = doc.GetTextAt (i + 5, length - 5);
-				AstNode expr;
-				using (var reader = new StringReader (parameter)) {
-					expr = new CSharpParser ().ParseExpression (reader);
-				}
+				AstNode expr= new CSharpParser ().ParseExpression (parameter);
 				bool result;
 				if (expr != null && !expr.IsNull) {
 					var visitResult = expr.AcceptVisitor (new ConditinalExpressionEvaluator (doc, Defines), null);

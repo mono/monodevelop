@@ -84,8 +84,8 @@ namespace MonoDevelop.CSharp
 			public void Reset ()
 			{
 				memberList.Clear ();
-				if (tag is CompilationUnit) {
-					var unit = tag as CompilationUnit;
+				if (tag is SyntaxTree) {
+					var unit = tag as SyntaxTree;
 					memberList.AddRange (unit.GetTypes (true));
 				} else if (tag is TypeDeclaration) {
 					var type = (TypeDeclaration)tag;
@@ -122,7 +122,7 @@ namespace MonoDevelop.CSharp
 
 			string GetName (AstNode node)
 			{
-				if (tag is CompilationUnit) {
+				if (tag is SyntaxTree) {
 					var type = node as TypeDeclaration;
 					if (type != null) {
 						var sb = new StringBuilder ();
@@ -154,7 +154,7 @@ namespace MonoDevelop.CSharp
 			public string GetMarkup (int n)
 			{
 				var node = memberList [n];
-				if (tag is CompilationUnit) {
+				if (tag is SyntaxTree) {
 					var type = node;
 					if (type != null) {
 						var sb = new StringBuilder ();
@@ -328,7 +328,7 @@ namespace MonoDevelop.CSharp
 				return;
 			amb = new AstAmbience (document.GetFormattingOptions ());
 			
-			var unit = parsedDocument.GetAst<CompilationUnit> ();
+			var unit = parsedDocument.GetAst<SyntaxTree> ();
 			if (unit == null)
 				return;
 
@@ -353,7 +353,7 @@ namespace MonoDevelop.CSharp
 			lastMemberMarkup = curMemberMarkup;
 
 			if (curType == null) {
-				if (CurrentPath != null && CurrentPath.Length == 1 && CurrentPath [0].Tag is IParsedFile)
+				if (CurrentPath != null && CurrentPath.Length == 1 && CurrentPath [0].Tag is IUnresolvedFile)
 					return;
 				var prevPath = CurrentPath;
 				CurrentPath = new PathEntry[] { new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = unit } };

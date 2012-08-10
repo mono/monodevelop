@@ -55,7 +55,7 @@ namespace MonoDevelop.CSharp.Completion
 		protected string GetShortType (IType type)
 		{
 			if (builder == null) {
-				var ctx = ext.CSharpParsedFile.GetTypeResolveContext (type.GetDefinition () == null ? ext.Document.Compilation : type.GetDefinition ().Compilation, ext.Document.Editor.Caret.Location) as CSharpTypeResolveContext;
+				var ctx = ext.CSharpUnresolvedFile.GetTypeResolveContext (type.GetDefinition () == null ? ext.Document.Compilation : type.GetDefinition ().Compilation, ext.Document.Editor.Caret.Location) as CSharpTypeResolveContext;
 				var state = new CSharpResolver (ctx);
 				builder = new TypeSystemAstBuilder (state);
 				var dt = state.CurrentTypeDefinition;

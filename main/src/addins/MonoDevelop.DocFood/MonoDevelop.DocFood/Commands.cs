@@ -90,7 +90,7 @@ namespace MonoDevelop.DocFood
 					if (!NeedsDocumentation (data, member))
 						continue;
 					int offset;
-					var ctx = (unit.ParsedFile as CSharpParsedFile).GetTypeResolveContext (document.Compilation, member.Region.Begin);
+					var ctx = (unit.ParsedFile as CSharpUnresolvedFile).GetTypeResolveContext (document.Compilation, member.Region.Begin);
 					var resolvedMember = member.CreateResolved (ctx);
 					string indent = GetIndent (data, resolvedMember, out offset);
 					string documentation = GenerateDocumentation (data, resolvedMember, indent);

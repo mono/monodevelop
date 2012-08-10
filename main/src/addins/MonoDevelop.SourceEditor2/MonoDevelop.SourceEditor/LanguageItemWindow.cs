@@ -44,7 +44,7 @@ namespace MonoDevelop.SourceEditor
 	{
 		public bool IsEmpty { get; set; }
 		
-		public LanguageItemWindow (ExtensibleTextEditor ed, Gdk.ModifierType modifierState, ResolveResult result, string errorInformations, IParsedFile unit)
+		public LanguageItemWindow (ExtensibleTextEditor ed, Gdk.ModifierType modifierState, ResolveResult result, string errorInformations, IUnresolvedFile unit)
 		{
 			string tooltip = null;
 			if (result is UnknownIdentifierResolveResult) {

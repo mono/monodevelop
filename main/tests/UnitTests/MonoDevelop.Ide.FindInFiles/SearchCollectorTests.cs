@@ -97,7 +97,7 @@ namespace project1 {
 }";
 			var project1 = new UnknownProject { FileName = "projectc1.csproj" };
 			var project2 = new DotNetAssemblyProject { FileName = "projectc2.csproj" };
-			project2.References.Add (new ProjectReference (project1));
+			project2.References.Add (new MonoDevelop.Projects.ProjectReference (project1));
 
 			var solution = new Solution ();
 			solution.RootFolder.AddItem (project1);
@@ -159,7 +159,7 @@ namespace project1 {
 			TestCollectProjects (solution, typeA.GetMembers (m => m.Name == "Method1"), new [] { project1 });
 			TestCollectProjects (solution, typeA.GetMembers (m => m.Name == "Method2"), new [] { project1 });
 
-			project2.References.Add (new ProjectReference (project1));
+			project2.References.Add (new MonoDevelop.Projects.ProjectReference (project1));
 			var typeB = compilation.MainAssembly.GetTypeDefinition ("project1", "B", 0);
 			TestCollectProjects (solution, new [] { typeB }, new Project [] { project1, project2 });
 			TestCollectProjects (solution, typeB.GetMembers (), new Project [] { project1, project2 });
