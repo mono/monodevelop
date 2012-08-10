@@ -220,6 +220,8 @@ namespace MonoDevelop.CSharp.Highlighting
 					TextEditorData data = doc.Editor;
 					if (data == null)
 						continue;
+					// Force syntax mode reparse (required for #if directives)
+					doc.Editor.Document.SyntaxMode = doc.Editor.Document.SyntaxMode;
 					doc.ReparseDocument ();
 				}
 			};
