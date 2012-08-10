@@ -593,12 +593,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 		}
 		
-		Accessor ConvertAccessor(IMethod accessor)
+		Accessor ConvertAccessor(IMethod accessor, Accessibility ownerAccessibility)
 		{
 			if (accessor == null)
 				return Accessor.Null;
 			Accessor decl = new Accessor();
-			decl.Modifiers = ModifierFromAccessibility(accessor.Accessibility);
+			if (accessor.Accessibility != ownerAccessibility)
+				decl.Modifiers = ModifierFromAccessibility(accessor.Accessibility);
 			decl.Body = GenerateBodyBlock();
 			return decl;
 		}
@@ -609,8 +610,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			decl.Modifiers = GetMemberModifiers(property);
 			decl.ReturnType = ConvertType(property.ReturnType);
 			decl.Name = property.Name;
-			decl.Getter = ConvertAccessor(property.Getter);
-			decl.Setter = ConvertAccessor(property.Setter);
+			decl.Getter = ConvertAccessor(property.Getter, property.Accessibility);
+			decl.Setter = ConvertAccessor(property.Setter, property.Accessibility);
 			return decl;
 		}
 		
@@ -622,8 +623,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			foreach (IParameter p in indexer.Parameters) {
 				decl.Parameters.Add(ConvertParameter(p));
 			}
-			decl.Getter = ConvertAccessor(indexer.Getter);
-			decl.Setter = ConvertAccessor(indexer.Setter);
+			decl.Getter = ConvertAccessor(indexer.Getter, indexer.Accessibility);
+			decl.Setter = ConvertAccessor(indexer.Setter, indexer.Accessibility);
 			return decl;
 		}
 		
@@ -634,8 +635,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				decl.Modifiers = GetMemberModifiers(ev);
 				decl.ReturnType = ConvertType(ev.ReturnType);
 				decl.Name = ev.Name;
-				decl.AddAccessor    = ConvertAccessor(ev.AddAccessor);
-				decl.RemoveAccessor = ConvertAccessor(ev.RemoveAccessor);
+				decl.AddAccessor    = ConvertAccessor(ev.AddAccessor, ev.Accessibility);
+				decl.RemoveAccessor = ConvertAccessor(ev.RemoveAccessor, ev.Accessibility);
 				return decl;
 			} else {
 				EventDeclaration decl = new EventDeclaration();

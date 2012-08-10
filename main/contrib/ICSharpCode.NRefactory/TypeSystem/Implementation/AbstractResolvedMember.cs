@@ -92,7 +92,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public override DocumentationComment Documentation {
 			get {
-				IUnresolvedDocumentationProvider docProvider = unresolved.ParsedFile as IUnresolvedDocumentationProvider;
+				IUnresolvedDocumentationProvider docProvider = unresolved.UnresolvedFile as IUnresolvedDocumentationProvider;
 				if (docProvider != null) {
 					var doc = docProvider.GetDocumentation(unresolved, this);
 					if (doc != null)

@@ -17,8 +17,6 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
@@ -26,9 +24,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// Represents a reference to a type.
 	/// Must be resolved before it can be used as type.
 	/// </summary>
-	#if WITH_CONTRACTS
-	[ContractClass(typeof(ITypeReferenceContract))]
-	#endif
 	public interface ITypeReference
 	{
 		// Keep this interface simple: I decided against having GetMethods/GetEvents etc. here,
@@ -81,17 +76,4 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		ITypeResolveContext WithCurrentTypeDefinition(ITypeDefinition typeDefinition);
 		ITypeResolveContext WithCurrentMember(IMember member);
 	}
-	
-	#if WITH_CONTRACTS
-	[ContractClassFor(typeof(ITypeReference))]
-	abstract class ITypeReferenceContract : ITypeReference
-	{
-		IType ITypeReference.Resolve(ITypeResolveContext context)
-		{
-			Contract.Requires(context != null);
-			Contract.Ensures(Contract.Result<IType>() != null);
-			return null;
-		}
-	}
-	#endif
 }

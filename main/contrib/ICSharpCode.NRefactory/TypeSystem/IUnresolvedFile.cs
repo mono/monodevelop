@@ -24,7 +24,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// <summary>
 	/// Represents a single file that was parsed.
 	/// </summary>
-	public interface IParsedFile
+	public interface IUnresolvedFile
 	{
 		/// <summary>
 		/// Returns the full path of the file.

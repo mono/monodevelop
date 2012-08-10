@@ -127,7 +127,7 @@ namespace Mono.CSharp {
 			return true;
 		}
 	}
-
+	#if !FULL_AST
 	/// <summary>
 	///   This is an arbitrarily seekable StreamReader wrapper.
 	///
@@ -276,7 +276,7 @@ namespace Mono.CSharp {
 			return buffer [pos++];
 		}
 	}
-
+#endif
 	public class UnixUtils {
 		[System.Runtime.InteropServices.DllImport ("libc", EntryPoint="isatty")]
 		extern static int _isatty (int fd);

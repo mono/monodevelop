@@ -114,7 +114,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				indentLevel++;
 				declaringType = declaringType.DeclaringTypeDefinition;
 			}
-			var file = declaringType.ParsedFile as CSharpParsedFile;
+			var file = declaringType.UnresolvedFile as CSharpUnresolvedFile;
 			if (file == null)
 				return indentLevel;
 			var scope = file.GetUsingScope (declaringType.Region.Begin);

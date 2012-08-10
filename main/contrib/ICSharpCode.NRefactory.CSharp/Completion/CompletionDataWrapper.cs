@@ -75,24 +75,24 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		}
 		
 		HashSet<string> usedTypes = new HashSet<string> ();
-		
+
 		public ICompletionData AddType(IType type, string shortType)
 		{
 			if (type == null || string.IsNullOrEmpty(shortType) || usedTypes.Contains(shortType))
 				return null;
 			if (type.Name == "Void" && type.Namespace == "System")
 				return null;
-			
+
 			var def = type.GetDefinition ();
 			if (def != null && def.ParentAssembly != completion.ctx.CurrentAssembly && !def.IsBrowsable ())
 				return null;
-			
+
 			usedTypes.Add(shortType);
 			var iCompletionData = Factory.CreateTypeCompletionData(type, shortType);
 			result.Add(iCompletionData);
 			return iCompletionData;
 		}
-		
+
 		Dictionary<string, List<ICompletionData>> data = new Dictionary<string, List<ICompletionData>> ();
 		
 		public ICompletionData AddVariable(IVariable variable)
@@ -126,18 +126,18 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			data [variable.Name] = new List<ICompletionData> ();
 			result.Add (Factory.CreateVariableCompletionData (variable));
 		}
-		
+
 		public ICompletionData AddMember (IMember member)
 		{
 			var newData = Factory.CreateEntityCompletionData (member);
 			
 			if (member.ParentAssembly != completion.ctx.CurrentAssembly && !member.IsBrowsable ())
 				return null;
-			
+
 			string memberKey = newData.DisplayText;
 			if (memberKey == null)
 				return null;
-			
+
 			if (member is IMember) {
 				newData.CompletionCategory = GetCompletionCategory (member.DeclaringTypeDefinition);
 			}

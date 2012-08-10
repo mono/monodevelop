@@ -66,8 +66,8 @@ namespace CBinding.Parser
 		public void Reset ()
 		{
 			memberList.Clear ();
-			if (tag is IParsedFile) {
-				var types = new Stack<IUnresolvedTypeDefinition> (((IParsedFile)tag).TopLevelTypeDefinitions);
+			if (tag is IUnresolvedFile) {
+				var types = new Stack<IUnresolvedTypeDefinition> (((IUnresolvedFile)tag).TopLevelTypeDefinitions);
 				while (types.Count > 0) {
 					var type = types.Pop ();
 					memberList.Add (type);
@@ -87,7 +87,7 @@ namespace CBinding.Parser
 			if (x is IUnresolvedMember)
 				rx = ((IUnresolvedMember)x).CreateResolved (ctx);
 			
-			if (tag is IParsedFile)
+			if (tag is IUnresolvedFile)
 				return amb.GetString (rx, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.UseFullInnerTypeName | OutputFlags.ReformatDelegates);
 			return amb.GetString (rx, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates);
 		}

@@ -62,9 +62,9 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 		
-		CompilationUnit unit;
-		static readonly CompilationUnit emptyUnit = new CompilationUnit ();
-		CompilationUnit Unit {
+		SyntaxTree unit;
+		static readonly SyntaxTree emptyUnit = new SyntaxTree ();
+		SyntaxTree Unit {
 			get {
 				return unit ?? emptyUnit;
 			}
@@ -79,7 +79,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 		
-		public CSharpParsedFile CSharpParsedFile {
+		public CSharpUnresolvedFile CSharpUnresolvedFile {
 			get;
 			set;
 		}
@@ -135,8 +135,8 @@ namespace MonoDevelop.CSharp.Completion
 			base.Initialize ();
 			var parsedDocument = document.ParsedDocument;
 			if (parsedDocument != null) {
-				this.Unit = parsedDocument.GetAst<CompilationUnit> ();
-				this.CSharpParsedFile = parsedDocument.ParsedFile as CSharpParsedFile;
+				this.Unit = parsedDocument.GetAst<SyntaxTree> ();
+				this.CSharpUnresolvedFile = parsedDocument.ParsedFile as CSharpUnresolvedFile;
 			}
 			
 			Document.DocumentParsed += HandleDocumentParsed; 
@@ -145,7 +145,7 @@ namespace MonoDevelop.CSharp.Completion
 		public override void Dispose ()
 		{
 			unit = null;
-			CSharpParsedFile = null;
+			CSharpUnresolvedFile = null;
 			Document.DocumentParsed -= HandleDocumentParsed; 
 			base.Dispose ();
 		}
@@ -161,8 +161,8 @@ namespace MonoDevelop.CSharp.Completion
 			typeSystemSegmentTree = newTree;
 			typeSystemSegmentTree.InstallListener (document.Editor.Document);
 			
-			this.Unit = newDocument.GetAst<CompilationUnit> ();
-			this.CSharpParsedFile = newDocument.ParsedFile as CSharpParsedFile;
+			this.Unit = newDocument.GetAst<SyntaxTree> ();
+			this.CSharpUnresolvedFile = newDocument.ParsedFile as CSharpUnresolvedFile;
 			if (TypeSegmentTreeUpdated != null)
 				TypeSegmentTreeUpdated (this, EventArgs.Empty);
 		}
@@ -214,7 +214,7 @@ namespace MonoDevelop.CSharp.Completion
 				if (((TextLinkEditMode)TextEditorData.CurrentMode).TextLinkMode == TextLinkMode.EditIdentifier)
 					return null;
 			}
-			if (Unit == null || CSharpParsedFile == null)
+			if (Unit == null || CSharpUnresolvedFile == null)
 				return null;
 			var list = new CompletionDataList ();
 			var engine = new CSharpCompletionEngine (
@@ -222,7 +222,7 @@ namespace MonoDevelop.CSharp.Completion
 				typeSystemSegmentTree,
 				this,
 				Document.GetProjectContext (),
-				CSharpParsedFile.GetTypeResolveContext (Document.Compilation, document.Editor.Caret.Location) as CSharpTypeResolveContext
+				CSharpUnresolvedFile.GetTypeResolveContext (Document.Compilation, document.Editor.Caret.Location) as CSharpTypeResolveContext
 			);
 			engine.FormattingPolicy = FormattingPolicy.CreateOptions ();
 			engine.EolMarker = TextEditorData.EolMarker;
@@ -361,7 +361,7 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			if (!EnableCodeCompletion)
 				return null;
-			if (Unit == null || CSharpParsedFile == null)
+			if (Unit == null || CSharpUnresolvedFile == null)
 				return null;
 			try {
 				var engine = new CSharpParameterCompletionEngine (
@@ -369,7 +369,7 @@ namespace MonoDevelop.CSharp.Completion
 					typeSystemSegmentTree,
 					this,
 					Document.GetProjectContext (),
-					CSharpParsedFile.GetTypeResolveContext (Document.Compilation, document.Editor.Caret.Location) as CSharpTypeResolveContext
+					CSharpUnresolvedFile.GetTypeResolveContext (Document.Compilation, document.Editor.Caret.Location) as CSharpTypeResolveContext
 				);
 				return engine.GetParameterDataProvider (completionContext.TriggerOffset, completionChar);
 			} catch (Exception e) {
@@ -387,11 +387,11 @@ namespace MonoDevelop.CSharp.Completion
 		
 		List<string> GetUsedNamespaces ()
 		{
-			var scope = CSharpParsedFile.GetUsingScope (document.Editor.Caret.Location);
+			var scope = CSharpUnresolvedFile.GetUsingScope (document.Editor.Caret.Location);
 			var result = new List<string> ();
 			while (scope != null) {
 				result.Add (scope.NamespaceName);
-				var ctx = CSharpParsedFile.GetResolver (Document.Compilation, scope.Region.Begin);
+				var ctx = CSharpUnresolvedFile.GetResolver (Document.Compilation, scope.Region.Begin);
 				foreach (var u in scope.Usings) {
 					var ns = u.ResolveNamespace (ctx);
 					if (ns == null)
@@ -410,7 +410,7 @@ namespace MonoDevelop.CSharp.Completion
 				typeSystemSegmentTree,
 				this,
 				Document.GetProjectContext (),
-				CSharpParsedFile.GetTypeResolveContext (Document.Compilation, document.Editor.Caret.Location) as CSharpTypeResolveContext
+				CSharpUnresolvedFile.GetTypeResolveContext (Document.Compilation, document.Editor.Caret.Location) as CSharpTypeResolveContext
 			);
 			engine.SetOffset (document.Editor.Caret.Offset);
 			return engine.GetParameterCompletionCommandOffset (out cpos);
@@ -423,7 +423,7 @@ namespace MonoDevelop.CSharp.Completion
 				typeSystemSegmentTree,
 				this,
 				Document.GetProjectContext (),
-				CSharpParsedFile.GetTypeResolveContext (Document.Compilation, document.Editor.Caret.Location) as CSharpTypeResolveContext
+				CSharpUnresolvedFile.GetTypeResolveContext (Document.Compilation, document.Editor.Caret.Location) as CSharpTypeResolveContext
 			);
 			return engine.GetCurrentParameterIndex (startOffset, document.Editor.Caret.Offset);
 		}
@@ -534,7 +534,7 @@ namespace MonoDevelop.CSharp.Completion
 		}
 		ICompletionData ICompletionDataFactory.CreateNewPartialCompletionData (int declarationBegin, IUnresolvedTypeDefinition type, IUnresolvedMember m)
 		{
-			var ctx = CSharpParsedFile.GetTypeResolveContext (Compilation, document.Editor.Caret.Location);
+			var ctx = CSharpUnresolvedFile.GetTypeResolveContext (Compilation, document.Editor.Caret.Location);
 			return new NewOverrideCompletionData (this, declarationBegin, type, m.CreateResolved (ctx));
 		}
 		IEnumerable<ICompletionData> ICompletionDataFactory.CreateCodeTemplateCompletionData ()
@@ -670,7 +670,7 @@ namespace MonoDevelop.CSharp.Completion
 
 			IList<string> ICompletionContextProvider.ConditionalSymbols {
 				get {
-					return document.ParsedDocument.GetAst<CompilationUnit> ().ConditionalSymbols;
+					return document.ParsedDocument.GetAst<SyntaxTree> ().ConditionalSymbols;
 				}
 			}
 
@@ -705,7 +705,7 @@ namespace MonoDevelop.CSharp.Completion
 
 			CSharpAstResolver ICompletionContextProvider.GetResolver (CSharpResolver resolver, AstNode rootNode)
 			{
-				return new CSharpAstResolver (resolver, rootNode, document.ParsedDocument.ParsedFile as CSharpParsedFile);
+				return new CSharpAstResolver (resolver, rootNode, document.ParsedDocument.ParsedFile as CSharpUnresolvedFile);
 			}
 			#endregion
 		}

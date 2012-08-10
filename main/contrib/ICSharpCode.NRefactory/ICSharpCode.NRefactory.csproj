@@ -132,7 +132,6 @@
     <Compile Include="TypeSystem\IntersectionType.cs" />
     <Compile Include="TypeSystem\IParameter.cs" />
     <Compile Include="TypeSystem\IParameterizedMember.cs" />
-    <Compile Include="TypeSystem\IParsedFile.cs" />
     <Compile Include="TypeSystem\IProjectContent.cs" />
     <Compile Include="TypeSystem\IProperty.cs" />
     <Compile Include="TypeSystem\ISupportsInterning.cs" />
@@ -180,7 +179,6 @@
     <Compile Include="TypeSystem\Implementation\DefaultResolvedProperty.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultResolvedTypeDefinition.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultResolvedTypeParameter.cs" />
-    <Compile Include="TypeSystem\Implementation\DefaultSolutionSnapshot.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultUnresolvedAssembly.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultUnresolvedAttribute.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultUnresolvedEvent.cs" />
@@ -236,6 +234,12 @@
     <Compile Include="TypeSystem\SimpleTypeResolveContext.cs" />
     <Compile Include="TypeSystem\Implementation\AccessorOwnerMemberReference.cs" />
     <Compile Include="Completion\CompletionExtensionMethods.cs" />
+    <Compile Include="TypeSystem\DefaultSolutionSnapshot.cs" />
+    <Compile Include="TypeSystem\ProjectReference.cs" />
+    <Compile Include="TypeSystem\IUnresolvedFile.cs" />
+    <Compile Include="TypeSystem\Implementation\DefaultAttribute.cs" />
+    <Compile Include="Utils\MultiDictionary.cs" />
+    <Compile Include="Semantics\NamedArgumentResolveResult.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

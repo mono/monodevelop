@@ -72,9 +72,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 		}
 
-		public virtual CSharpParsedFile ParsedFile {
+		public virtual CSharpUnresolvedFile UnresolvedFile {
 			get {
-				return resolver.ParsedFile;
+				return resolver.UnresolvedFile;
 			}
 		}
 

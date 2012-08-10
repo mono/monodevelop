@@ -360,6 +360,18 @@ namespace ICSharpCode.NRefactory.Editor
 		}
 		
 		/// <inheritdoc/>
+		public void WriteTextTo(System.IO.TextWriter writer)
+		{
+			textSource.WriteTextTo(writer);
+		}
+		
+		/// <inheritdoc/>
+		public void WriteTextTo(System.IO.TextWriter writer, int offset, int length)
+		{
+			textSource.WriteTextTo(writer, offset, length);
+		}
+		
+		/// <inheritdoc/>
 		public char GetCharAt(int offset)
 		{
 			return textSource.GetCharAt(offset);

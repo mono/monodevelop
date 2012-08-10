@@ -1,4 +1,4 @@
-// 
+﻿// 
 // AstFormattingVisitor.cs
 //
 // Author:
@@ -199,9 +199,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			changes.Clear();
 		}
 
-		public override void VisitCompilationUnit(CompilationUnit unit)
+		public override void VisitSyntaxTree(SyntaxTree unit)
 		{
-			base.VisitCompilationUnit(unit);
+			base.VisitSyntaxTree(unit);
 		}
 
 		public void EnsureBlankLinesAfter(AstNode node, int blankLines)

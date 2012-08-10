@@ -55,7 +55,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.DeclaringTypeDefinition = declaringType;
 			this.Name = name;
 			if (declaringType != null)
-				this.ParsedFile = declaringType.ParsedFile;
+				this.UnresolvedFile = declaringType.UnresolvedFile;
 		}
 		
 		public bool CanAdd {

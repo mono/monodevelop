@@ -33,7 +33,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	{
 		readonly CSharpResolver initialResolverState;
 		readonly AstNode rootNode;
-		readonly CSharpParsedFile parsedFile;
+		readonly CSharpUnresolvedFile unresolvedFile;
 		readonly ResolveVisitor resolveVisitor;
 		bool resolverInitialized;
 		
@@ -42,50 +42,50 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// Use this overload if you are resolving within a complete C# file.
 		/// </summary>
 		/// <param name="compilation">The current compilation.</param>
-		/// <param name="compilationUnit">The compilation unit corresponding to the specified parsed file.</param>
-		/// <param name="parsedFile">
-		/// Optional: Result of the <see cref="TypeSystemConvertVisitor"/> for the file being resolved.
+		/// <param name="syntaxTree">The syntax tree to be resolved.</param>
+		/// <param name="unresolvedFile">
+		/// Optional: Result of <see cref="SyntaxTree.ToTypeSystem()"/> for the file being resolved.
 		/// <para>
-		/// This is used for setting up the context on the resolver. The parsed file must be registered in the compilation.
+		/// This is used for setting up the context on the resolver. The unresolved file must be registered in the compilation.
 		/// </para>
 		/// <para>
-		/// When a parsedFile is specified, the resolver will use the member's StartLocation/EndLocation to identify
+		/// When a unresolvedFile is specified, the resolver will use the member's StartLocation/EndLocation to identify
 		/// member declarations in the AST with members in the type system.
-		/// When no parsedFile is specified (<c>null</c> value for this parameter), the resolver will instead compare the
+		/// When no unresolvedFile is specified (<c>null</c> value for this parameter), the resolver will instead compare the
 		/// member's signature in the AST with the signature in the type system.
 		/// </para>
 		/// </param>
-		public CSharpAstResolver(ICompilation compilation, CompilationUnit compilationUnit, CSharpParsedFile parsedFile = null)
+		public CSharpAstResolver(ICompilation compilation, SyntaxTree syntaxTree, CSharpUnresolvedFile unresolvedFile = null)
 		{
 			if (compilation == null)
 				throw new ArgumentNullException("compilation");
-			if (compilationUnit == null)
-				throw new ArgumentNullException("compilationUnit");
+			if (syntaxTree == null)
+				throw new ArgumentNullException("syntaxTree");
 			this.initialResolverState = new CSharpResolver(compilation);
-			this.rootNode = compilationUnit;
-			this.parsedFile = parsedFile;
-			this.resolveVisitor = new ResolveVisitor(initialResolverState, parsedFile);
+			this.rootNode = syntaxTree;
+			this.unresolvedFile = unresolvedFile;
+			this.resolveVisitor = new ResolveVisitor(initialResolverState, unresolvedFile);
 		}
 		
 		/// <summary>
 		/// Creates a new C# AST resolver.
 		/// Use this overload if you are resolving code snippets (not necessarily complete files).
 		/// </summary>
-		/// <param name="resolver">The resolver state at the root node (to be more precise: outside the root node).</param>
-		/// <param name="rootNode">The root node of the resolved tree.</param>
-		/// <param name="parsedFile">
-		/// Optional: Result of the <see cref="TypeSystemConvertVisitor"/> for the file being resolved.
+		/// <param name="resolver">The resolver state at the root node (to be more precise: just outside the root node).</param>
+		/// <param name="rootNode">The root node of the tree to be resolved.</param>
+		/// <param name="unresolvedFile">
+		/// Optional: Result of <see cref="SyntaxTree.ToTypeSystem()"/> for the file being resolved.
 		/// <para>
-		/// This is used for setting up the context on the resolver. The parsed file must be registered in the compilation.
+		/// This is used for setting up the context on the resolver. The unresolved file must be registered in the compilation.
 		/// </para>
 		/// <para>
-		/// When a parsedFile is specified, the resolver will use the member's StartLocation/EndLocation to identify
+		/// When a unresolvedFile is specified, the resolver will use the member's StartLocation/EndLocation to identify
 		/// member declarations in the AST with members in the type system.
-		/// When no parsedFile is specified (<c>null</c> value for this parameter), the resolver will instead compare the
+		/// When no unresolvedFile is specified (<c>null</c> value for this parameter), the resolver will instead compare the
 		/// member's signature in the AST with the signature in the type system.
 		/// </para>
 		/// </param>
-		public CSharpAstResolver(CSharpResolver resolver, AstNode rootNode, CSharpParsedFile parsedFile = null)
+		public CSharpAstResolver(CSharpResolver resolver, AstNode rootNode, CSharpUnresolvedFile unresolvedFile = null)
 		{
 			if (resolver == null)
 				throw new ArgumentNullException("resolver");
@@ -93,8 +93,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				throw new ArgumentNullException("rootNode");
 			this.initialResolverState = resolver;
 			this.rootNode = rootNode;
-			this.parsedFile = parsedFile;
-			this.resolveVisitor = new ResolveVisitor(initialResolverState, parsedFile);
+			this.unresolvedFile = unresolvedFile;
+			this.resolveVisitor = new ResolveVisitor(initialResolverState, unresolvedFile);
 		}
 		
 		/// <summary>
@@ -119,11 +119,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		/// <summary>
-		/// Gets the parsed file used by this CSharpAstResolver.
+		/// Gets the unresolved file used by this CSharpAstResolver.
 		/// Can return null.
 		/// </summary>
-		public CSharpParsedFile ParsedFile {
-			get { return parsedFile; }
+		public CSharpUnresolvedFile UnresolvedFile {
+			get { return unresolvedFile; }
 		}
 		
 		/// <summary>
@@ -275,7 +275,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 				return true;
 			}
-			return (node.NodeType == NodeType.Whitespace || node is ArraySpecifier || node is NamedArgumentExpression);
+			return (node.NodeType == NodeType.Whitespace || node is ArraySpecifier);
 		}
 	}
 }

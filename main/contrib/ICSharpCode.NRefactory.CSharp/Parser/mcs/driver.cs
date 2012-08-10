@@ -161,13 +161,14 @@ namespace Mono.CSharp
 			input.Close ();
 		}
 
-		public static CSharpParser Parse (SeekableStreamReader reader, SourceFile sourceFile, ModuleContainer module, ParserSession session, Report report, int lineModifier = 0)
+		public static CSharpParser Parse (SeekableStreamReader reader, SourceFile sourceFile, ModuleContainer module, ParserSession session, Report report, int lineModifier = 0, int colModifier = 0)
 		{
 			var file = new CompilationSourceFile (module, sourceFile);
 			module.AddTypeContainer(file);
 
 			CSharpParser parser = new CSharpParser (reader, file, report, session);
 			parser.Lexer.Line += lineModifier;
+			parser.Lexer.Column += colModifier;
 			parser.Lexer.sbag = new SpecialsBag ();
 			parser.parse ();
 			return parser;

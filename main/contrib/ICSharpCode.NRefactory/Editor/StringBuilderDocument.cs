@@ -41,9 +41,25 @@ namespace ICSharpCode.NRefactory.Editor
 			b = new StringBuilder();
 		}
 		
+		/// <summary>
+		/// Creates a new StringBuilderDocument with the specified initial text.
+		/// </summary>
 		public StringBuilderDocument(string text)
 		{
+			if (text == null)
+				throw new ArgumentNullException("text");
 			b = new StringBuilder(text);
+		}
+		
+		/// <summary>
+		/// Creates a new StringBuilderDocument with the initial text copied from the specified text source.
+		/// </summary>
+		public StringBuilderDocument(ITextSource textSource)
+		{
+			if (textSource == null)
+				throw new ArgumentNullException("textSource");
+			b = new StringBuilder(textSource.TextLength);
+			textSource.WriteTextTo(new StringWriter(b));
 		}
 		
 		/// <inheritdoc/>
@@ -273,6 +289,22 @@ namespace ICSharpCode.NRefactory.Editor
 		{
 			return new StringReader(GetText(offset, length));
 		}
+		
+		/// <inheritdoc/>
+		public void WriteTextTo(TextWriter writer)
+		{
+			if (writer == null)
+				throw new ArgumentNullException("writer");
+			writer.Write(this.Text);
+		}
+		
+		/// <inheritdoc/>
+		public void WriteTextTo(TextWriter writer, int offset, int length)
+		{
+			if (writer == null)
+				throw new ArgumentNullException("writer");
+			writer.Write(GetText(offset, length));
+		}
 		#endregion
 		
 		#region GetText / IndexOf
@@ -310,6 +342,8 @@ namespace ICSharpCode.NRefactory.Editor
 		/// <inheritdoc/>
 		public string GetText(ISegment segment)
 		{
+			if (segment == null)
+				throw new ArgumentNullException("segment");
 			return b.ToString(segment.Offset, segment.Length);
 		}
 		

@@ -76,7 +76,7 @@ namespace MonoDevelop.CSharp.Formatting
 		/// </param>
 		static string BuildStub (MonoDevelop.Ide.Gui.Document data, CSharpCompletionTextEditorExtension.TypeSystemTreeSegment seg, int startOffset, int endOffset, out int memberStartOffset)
 		{
-			var pf = data.ParsedDocument.ParsedFile as CSharpParsedFile;
+			var pf = data.ParsedDocument.ParsedFile as CSharpUnresolvedFile;
 			if (pf == null) {
 				memberStartOffset = 0;
 				return null;

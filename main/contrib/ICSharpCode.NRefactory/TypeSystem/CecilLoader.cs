@@ -967,7 +967,16 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					return;
 				}
 				foreach (var ctorParameter in ctorParameterTypes.Resolve(context)) {
-					positionalArguments.Add(reader.ReadFixedArg(ctorParameter));
+					ResolveResult arg = reader.ReadFixedArg(ctorParameter);
+					positionalArguments.Add(arg);
+					if (arg.IsError) {
+						// After a decoding error, we must stop decoding the blob because
+						// we might have read too few bytes due to the error.
+						// Just fill up the remaining arguments with ErrorResolveResult:
+						while (positionalArguments.Count < ctorParameterTypes.Count)
+							positionalArguments.Add(ErrorResolveResult.UnknownError);
+						return;
+					}
 				}
 				ushort numNamed = reader.ReadUInt16();
 				for (int i = 0; i < numNamed; i++) {
@@ -1131,6 +1140,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 						ResolveResult[] elements = new ResolveResult[numElem];
 						for (int i = 0; i < elements.Length; i++) {
 							elements[i] = ReadElem(elementType);
+							// Stop decoding when encountering an error:
+							if (elements[i].IsError)
+								return ErrorResolveResult.UnknownError;
 						}
 						return new ArrayCreateResolveResult(argType, null, elements);
 					}
@@ -1421,11 +1433,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 							namedArgs.Add(namedArg);
 						
 					}
-					attributes[i] = new ResolvedSecurityAttribute {
-						AttributeType = attributeType,
-						NamedArguments = namedArgs,
-						PositionalArguments = new ResolveResult[] { securityActionRR }
-					};
+					attributes[i] = new DefaultAttribute(
+						attributeType,
+						positionalArguments: new ResolveResult[] { securityActionRR },
+						namedArguments: namedArgs);
 				}
 			}
 			
@@ -1467,37 +1478,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			{
 				return secDecl.Resolve(context.CurrentAssembly)[index];
 			}
-		}
-		
-		sealed class ResolvedSecurityAttribute : IAttribute
-		{
-			public IType AttributeType { get; internal set; }
-			
-			DomRegion IAttribute.Region {
-				get { return DomRegion.Empty; }
-			}
-			
-			volatile IMethod constructor;
-			
-			public IMethod Constructor {
-				get {
-					IMethod ctor = this.constructor;
-					if (ctor == null) {
-						foreach (IMethod candidate in this.AttributeType.GetConstructors(m => m.Parameters.Count == 1)) {
-							if (candidate.Parameters[0].Type.Equals(this.PositionalArguments[0].Type)) {
-								ctor = candidate;
-								break;
-							}
-						}
-						this.constructor = ctor;
-					}
-					return ctor;
-				}
-			}
-			
-			public IList<ResolveResult> PositionalArguments { get; internal set; }
-			
-			public IList<KeyValuePair<IMember, ResolveResult>> NamedArguments { get; internal set; }
 		}
 		#endregion
 		#endregion
@@ -1647,11 +1627,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		static bool IsDelegate(TypeDefinition type)
 		{
-			if (type.BaseType == null)
-				return false;
-			else
-				return type.BaseType.FullName == "System.Delegate"
-					|| type.BaseType.FullName == "System.MulticastDelegate";
+			if (type.BaseType != null && type.BaseType.Namespace == "System") {
+				if (type.BaseType.Name == "MulticastDelegate")
+					return true;
+				if (type.BaseType.Name == "Delegate" && type.Name != "MulticastDelegate")
+					return true;
+			}
+			return false;
 		}
 		
 		static bool IsModule(TypeDefinition type)

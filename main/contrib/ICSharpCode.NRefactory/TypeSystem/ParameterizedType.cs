@@ -151,6 +151,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return typeArguments[index];
 		}
 		
+		/// <summary>
+		/// Gets the definition of the generic type.
+		/// For <c>ParameterizedType</c>, this method never returns null.
+		/// </summary>
 		public ITypeDefinition GetDefinition()
 		{
 			return genericType;

@@ -1883,6 +1883,20 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region ResolveInvocation
+
+		IList<ResolveResult> AddArgumentNamesIfNecessary(ResolveResult[] arguments, string[] argumentNames) {
+			if (argumentNames == null) {
+				return arguments;
+			}
+			else {
+				var result = new ResolveResult[arguments.Length];
+				for (int i = 0; i < arguments.Length; i++) {
+					result[i] = (argumentNames[i] != null ? new NamedArgumentResolveResult(argumentNames[i], arguments[i]) : arguments[i]);
+				}
+				return result;
+			}
+		}
+
 		/// <summary>
 		/// Resolves an invocation.
 		/// </summary>
@@ -1900,7 +1914,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			// C# 4.0 spec: §7.6.5
 			
 			if (target.Type.Kind == TypeKind.Dynamic) {
-				return new DynamicInvocationResolveResult(target, DynamicInvocationType.Invocation, arguments.Select((a, i) => new DynamicInvocationArgument(argumentNames != null ? argumentNames[i] : null, a)).ToList().AsReadOnly());
+				return new DynamicInvocationResolveResult(target, DynamicInvocationType.Invocation, AddArgumentNamesIfNecessary(arguments, argumentNames));
 			}
 			
 			MethodGroupResolveResult mgrr = target as MethodGroupResolveResult;
@@ -1923,7 +1937,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 								l.Add(new MethodListWithDeclaringType(m.DeclaringType));
 							l[l.Count - 1].Add(m.Method);
 						}
-						return new DynamicInvocationResolveResult(new MethodGroupResolveResult(actualTarget, mgrr.MethodName, l, mgrr.TypeArguments), DynamicInvocationType.Invocation, arguments.Select((a, i) => new DynamicInvocationArgument(argumentNames != null ? argumentNames[i] : null, a)).ToList().AsReadOnly());
+						return new DynamicInvocationResolveResult(new MethodGroupResolveResult(actualTarget, mgrr.MethodName, l, mgrr.TypeArguments), DynamicInvocationType.Invocation, AddArgumentNamesIfNecessary(arguments, argumentNames));
 					}
 				}
 
@@ -1954,7 +1968,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				or.AddCandidate(invokeMethod);
 				return new CSharpInvocationResolveResult(
 					target, invokeMethod, //invokeMethod.ReturnType.Resolve(context),
-					or.GetArgumentsWithConversions(), or.BestCandidateErrors,
+					or.GetArgumentsWithConversionsAndNames(), or.BestCandidateErrors,
 					isExpandedForm: or.BestCandidateIsExpandedForm,
 					isDelegateInvocation: true,
 					argumentToParameterMap: or.GetArgumentToParameterMap());
@@ -2065,7 +2079,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			switch (target.Type.Kind) {
 				case TypeKind.Dynamic:
-					return new DynamicInvocationResolveResult(target, DynamicInvocationType.Indexing, arguments.Select((a, i) => new DynamicInvocationArgument(argumentNames != null ? argumentNames[i] : null, a)).ToList().AsReadOnly());
+					return new DynamicInvocationResolveResult(target, DynamicInvocationType.Indexing, AddArgumentNamesIfNecessary(arguments, argumentNames));
 					
 				case TypeKind.Array:
 				case TypeKind.Pointer:
@@ -2085,7 +2099,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				var applicableIndexers = indexers.SelectMany(x => x).Where(m => OverloadResolution.IsApplicable(or2.AddCandidate(m))).ToList();
 
 				if (applicableIndexers.Count > 1) {
-					return new DynamicInvocationResolveResult(target, DynamicInvocationType.Indexing, arguments.Select((a, i) => new DynamicInvocationArgument(argumentNames != null ? argumentNames[i] : null, a)).ToList().AsReadOnly());
+					return new DynamicInvocationResolveResult(target, DynamicInvocationType.Indexing, AddArgumentNamesIfNecessary(arguments, argumentNames));
 				}
 			}
 
@@ -2166,7 +2180,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 
 			if (allApplicable != null && allApplicable.Count > 1) {
 				// If we have dynamic arguments, we need to represent the invocation as a dynamic invocation if there is more than one applicable constructor.
-				return new DynamicInvocationResolveResult(new MethodGroupResolveResult(null, allApplicable[0].Name, new[] { new MethodListWithDeclaringType(type, allApplicable) }, null), DynamicInvocationType.ObjectCreation, arguments.Select((a, i) => new DynamicInvocationArgument(argumentNames != null ? argumentNames[i] : null, a)).ToList().AsReadOnly(), initializerStatements);
+				return new DynamicInvocationResolveResult(new MethodGroupResolveResult(null, allApplicable[0].Name, new[] { new MethodListWithDeclaringType(type, allApplicable) }, null), DynamicInvocationType.ObjectCreation, AddArgumentNamesIfNecessary(arguments, argumentNames), initializerStatements);
 			}
 
 			if (or.BestCandidate != null) {

@@ -18,7 +18,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using ICSharpCode.NRefactory.Documentation;
 using ICSharpCode.NRefactory.Utils;
@@ -590,7 +589,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public virtual DocumentationComment Documentation {
 			get {
 				foreach (var part in parts) {
-					var unresolvedProvider = part.ParsedFile as IUnresolvedDocumentationProvider;
+					var unresolvedProvider = part.UnresolvedFile as IUnresolvedDocumentationProvider;
 					if (unresolvedProvider != null) {
 						var doc = unresolvedProvider.GetDocumentation(part, this);
 						if (doc != null)
@@ -858,6 +857,46 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 						yield return ((IEvent)members[i]).InvokeAccessor;
 				}
 			}
+		}
+		#endregion
+		
+		#region GetInterfaceImplementation
+		public IMember GetInterfaceImplementation(IMember interfaceMember)
+		{
+			return GetInterfaceImplementation(new[] { interfaceMember })[0];
+		}
+		
+		public IList<IMember> GetInterfaceImplementation(IList<IMember> interfaceMembers)
+		{
+			// TODO: review the subtle rules for interface reimplementation,
+			// write tests and fix this method.
+			// Also virtual/override is going to be tricky -
+			// I think we'll need to consider the 'virtual' method first for
+			// reimplemenatation purposes, but then actually return the 'override'
+			// (as that's the method that ends up getting called)
+			
+			interfaceMembers = interfaceMembers.ToList(); // avoid evaluating more than once
+			
+			var result = new IMember[interfaceMembers.Count];
+			var signatureToIndexDict = new MultiDictionary<IMember, int>(SignatureComparer.Ordinal);
+			for (int i = 0; i < interfaceMembers.Count; i++) {
+				signatureToIndexDict.Add(interfaceMembers[i], i);
+			}
+			foreach (var member in GetMembers(m => !m.IsExplicitInterfaceImplementation)) {
+				foreach (int interfaceMemberIndex in signatureToIndexDict[member]) {
+					result[interfaceMemberIndex] = member;
+				}
+			}
+			foreach (var explicitImpl in GetMembers(m => m.IsExplicitInterfaceImplementation)) {
+				foreach (var interfaceMember in explicitImpl.ImplementedInterfaceMembers) {
+					foreach (int potentialMatchingIndex in signatureToIndexDict[interfaceMember]) {
+						if (interfaceMember.Equals(interfaceMembers[potentialMatchingIndex])) {
+							result[potentialMatchingIndex] = explicitImpl;
+						}
+					}
+				}
+			}
+			return result;
 		}
 		#endregion
 		

@@ -53,7 +53,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		[NonSerialized]
 		List<Comment> comments = new List<Comment> ();
 		
-		public virtual IParsedFile ParsedFile {
+		public virtual IUnresolvedFile ParsedFile {
 			get { return null; }
 			set { throw new InvalidOperationException (); }
 		}
@@ -212,7 +212,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			this.conditionalRegions.AddRange (conditionalRegions);
 		}
 		
-		#region IParsedFile delegation
+		#region IUnresolvedFile delegation
 		public virtual IUnresolvedTypeDefinition GetTopLevelTypeDefinition (TextLocation location)
 		{
 			return null;
@@ -241,10 +241,10 @@ namespace MonoDevelop.Ide.TypeSystem
 		#endregion
 	}
 	
-	public class DefaultParsedDocument : ParsedDocument, IParsedFile
+	public class DefaultParsedDocument : ParsedDocument, IUnresolvedFile
 	{
 
-		public override IParsedFile ParsedFile {
+		public override IUnresolvedFile ParsedFile {
 			get { return this; }
 		}
 		
@@ -261,7 +261,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			
 		}
 		
-		#region IParsedFile implementation
+		#region IUnresolvedFile implementation
 		public override IUnresolvedTypeDefinition GetTopLevelTypeDefinition(TextLocation location)
 		{
 			return TopLevelTypeDefinitions.FirstOrDefault (t => t.Region.IsInside (location));
@@ -322,8 +322,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			this.errors.AddRange (errors);
 		}
 
-		#region IParsedFile implementation
-		DateTime? IParsedFile.LastWriteTime {
+		#region IUnresolvedFile implementation
+		DateTime? IUnresolvedFile.LastWriteTime {
 			get {
 				return LastWriteTimeUtc;
 			}
@@ -337,9 +337,9 @@ namespace MonoDevelop.Ide.TypeSystem
 	[Serializable]
 	public class ParsedDocumentDecorator : ParsedDocument
 	{
-		IParsedFile parsedFile;
+		IUnresolvedFile parsedFile;
 		
-		public override IParsedFile ParsedFile {
+		public override IUnresolvedFile ParsedFile {
 			get { return parsedFile; }
 			set { parsedFile = value; FileName = parsedFile.FileName; }
 		}
@@ -350,7 +350,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 		
-		public ParsedDocumentDecorator (IParsedFile parsedFile) : base (parsedFile.FileName)
+		public ParsedDocumentDecorator (IUnresolvedFile parsedFile) : base (parsedFile.FileName)
 		{
 			this.parsedFile = parsedFile;
 		}
@@ -359,7 +359,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 		}
 		
-		#region IParsedFile implementation
+		#region IUnresolvedFile implementation
 		public override IUnresolvedTypeDefinition GetTopLevelTypeDefinition (TextLocation location)
 		{
 			return parsedFile.GetTopLevelTypeDefinition (location);

@@ -101,7 +101,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 			internal DomRegion region;
 			internal DomRegion bodyRegion;
-			internal IParsedFile parsedFile;
+			internal IUnresolvedFile unresolvedFile;
 			
 			protected internal virtual void FreezeInternal()
 			{
@@ -148,11 +148,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
-		public IParsedFile ParsedFile {
-			get { return rareFields != null ? rareFields.parsedFile : null; }
+		public IUnresolvedFile UnresolvedFile {
+			get { return rareFields != null ? rareFields.unresolvedFile : null; }
 			set {
 				if (value != null || rareFields != null)
-					WriteRareFields().parsedFile = value;
+					WriteRareFields().unresolvedFile = value;
 			}
 		}
 		

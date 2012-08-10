@@ -60,24 +60,24 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		/// <summary>
-		/// Converts a compilation unit to CodeDom.
+		/// Converts a syntax tree to CodeDom.
 		/// </summary>
-		/// <param name="compilationUnit">The input compilation unit.</param>
+		/// <param name="syntaxTree">The input syntax tree.</param>
 		/// <param name="compilation">The current compilation.</param>
-		/// <param name="parsedFile">CSharpParsedFile, used for resolving.</param>
+		/// <param name="unresolvedFile">CSharpUnresolvedFile, used for resolving.</param>
 		/// <returns>Converted CodeCompileUnit</returns>
 		/// <remarks>
 		/// This conversion process requires a resolver because it needs to distinguish field/property/event references etc.
 		/// </remarks>
-		public CodeCompileUnit Convert(ICompilation compilation, CompilationUnit compilationUnit, CSharpParsedFile parsedFile)
+		public CodeCompileUnit Convert(ICompilation compilation, SyntaxTree syntaxTree, CSharpUnresolvedFile unresolvedFile)
 		{
-			if (compilationUnit == null)
-				throw new ArgumentNullException("compilationUnit");
+			if (syntaxTree == null)
+				throw new ArgumentNullException("syntaxTree");
 			if (compilation == null)
 				throw new ArgumentNullException("compilation");
 			
-			CSharpAstResolver resolver = new CSharpAstResolver(compilation, compilationUnit, parsedFile);
-			return (CodeCompileUnit)Convert(compilationUnit, resolver);
+			CSharpAstResolver resolver = new CSharpAstResolver(compilation, syntaxTree, unresolvedFile);
+			return (CodeCompileUnit)Convert(syntaxTree, resolver);
 		}
 		
 		/// <summary>
@@ -1236,10 +1236,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			throw new NotSupportedException(); // should be handled by the parent node
 		}
 		
-		CodeObject IAstVisitor<CodeObject>.VisitCompilationUnit(CompilationUnit compilationUnit)
+		CodeObject IAstVisitor<CodeObject>.VisitSyntaxTree(SyntaxTree syntaxTree)
 		{
 			CodeCompileUnit cu = new CodeCompileUnit();
-			foreach (AstNode node in compilationUnit.Children) {
+			foreach (AstNode node in syntaxTree.Children) {
 				CodeObject o = node.AcceptVisitor(this);
 				
 				CodeNamespace ns = o as CodeNamespace;

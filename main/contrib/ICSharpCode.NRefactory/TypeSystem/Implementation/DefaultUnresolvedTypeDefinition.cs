@@ -72,7 +72,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.DeclaringTypeDefinition = declaringTypeDefinition;
 			this.namespaceName = declaringTypeDefinition.Namespace;
 			this.Name = name;
-			this.ParsedFile = declaringTypeDefinition.ParsedFile;
+			this.UnresolvedFile = declaringTypeDefinition.UnresolvedFile;
 		}
 		
 		public TypeKind Kind {

@@ -1,5 +1,5 @@
 ﻿// 
-// CompilationUnit.cs
+// SyntaxTree.cs
 //
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -23,6 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp.Resolver;
@@ -35,7 +36,10 @@ using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class CompilationUnit : AstNode
+	[Obsolete("CompilationUnit was renamed to SyntaxTree", true)]
+	public class CompilationUnit {}
+	
+	public class SyntaxTree : AstNode
 	{
 		public static readonly Role<AstNode> MemberRole = new Role<AstNode>("Member", AstNode.Null);
 		
@@ -48,7 +52,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		string fileName;
 		
 		/// <summary>
-		/// Gets/Sets the file name of this compilation unit.
+		/// Gets/Sets the file name of this syntax tree.
 		/// </summary>
 		public string FileName {
 			get { return fileName; }
@@ -97,7 +101,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			internal set;
 		}
 		
-		public CompilationUnit ()
+		public SyntaxTree ()
 		{
 		}
 		
@@ -120,59 +124,59 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		protected internal override bool DoMatch(AstNode other, PatternMatching.Match match)
 		{
-			CompilationUnit o = other as CompilationUnit;
+			SyntaxTree o = other as SyntaxTree;
 			return o != null && GetChildrenByRole(MemberRole).DoMatch(o.GetChildrenByRole(MemberRole), match);
 		}
 		
 		public override void AcceptVisitor (IAstVisitor visitor)
 		{
-			visitor.VisitCompilationUnit (this);
+			visitor.VisitSyntaxTree (this);
 		}
 		
 		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
 		{
-			return visitor.VisitCompilationUnit (this);
+			return visitor.VisitSyntaxTree (this);
 		}
 		
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
-			return visitor.VisitCompilationUnit (this, data);
+			return visitor.VisitSyntaxTree (this, data);
 		}
 		
 		/// <summary>
-		/// Converts this compilation unit into a parsed file that can be stored in the type system.
+		/// Converts this syntax tree into a parsed file that can be stored in the type system.
 		/// </summary>
-		public CSharpParsedFile ToTypeSystem ()
+		public CSharpUnresolvedFile ToTypeSystem ()
 		{
 			if (string.IsNullOrEmpty (this.FileName))
-				throw new InvalidOperationException ("Cannot use ToTypeSystem() on a compilation unit without file name.");
+				throw new InvalidOperationException ("Cannot use ToTypeSystem() on a syntax tree without file name.");
 			var v = new TypeSystemConvertVisitor (this.FileName);
-			v.VisitCompilationUnit (this);
-			return v.ParsedFile;
+			v.VisitSyntaxTree (this);
+			return v.UnresolvedFile;
 		}
 		
-		public static CompilationUnit Parse (string text, string fileName = "", CompilerSettings settings = null, CancellationToken cancellationToken = default (CancellationToken))
+		public static SyntaxTree Parse (string program, string fileName = "", CompilerSettings settings = null, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			var parser = new CSharpParser (settings);
-			return parser.Parse (text, fileName);
+			return parser.Parse (program, fileName);
 		}
 		
-		public static CompilationUnit Parse (TextReader reader, string fileName = "", CompilerSettings settings = null, CancellationToken cancellationToken = default (CancellationToken))
+		public static SyntaxTree Parse (TextReader reader, string fileName = "", CompilerSettings settings = null, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			var parser = new CSharpParser (settings);
-			return parser.Parse (reader, fileName, 0);
+			return parser.Parse (reader, fileName);
 		}
 		
-		public static CompilationUnit Parse (Stream stream, string fileName = "", CompilerSettings settings = null, CancellationToken cancellationToken = default (CancellationToken))
+		public static SyntaxTree Parse (Stream stream, string fileName = "", CompilerSettings settings = null, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			var parser = new CSharpParser (settings);
-			return parser.Parse (stream, fileName, 0);
+			return parser.Parse (stream, fileName);
 		}
 		
-		public static CompilationUnit Parse (ITextSource textSource, string fileName = "", CompilerSettings settings = null, CancellationToken cancellationToken = default (CancellationToken))
+		public static SyntaxTree Parse (ITextSource textSource, string fileName = "", CompilerSettings settings = null, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			var parser = new CSharpParser (settings);
-			return parser.Parse (textSource, fileName, 0);
+			return parser.Parse (textSource, fileName);
 		}
 	}
 }

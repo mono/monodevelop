@@ -96,10 +96,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					mappedTo = IsExpandedForm ? Math.Min(i, results.Length - 1) : i;
 				
 				if (mappedTo >= 0 && mappedTo < results.Length) {
-					if (IsExpandedForm && mappedTo == results.Length - 1)
+					if (IsExpandedForm && mappedTo == results.Length - 1) {
 						paramsArguments.Add(Arguments[i]);
-					else
-						results[mappedTo] = Arguments[i];
+					} else {
+						var narr = Arguments[i] as NamedArgumentResolveResult;
+						if (narr != null)
+							results[mappedTo] = narr.Argument;
+						else
+							results[mappedTo] = Arguments[i];
+					}
 				}
 			}
 			if (IsExpandedForm)

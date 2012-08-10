@@ -65,7 +65,6 @@
     <Compile Include="Ast\AstNodeCollection.cs" />
     <Compile Include="Ast\AstType.cs" />
     <Compile Include="Ast\IdentifierExpressionBackreference.cs" />
-    <Compile Include="Ast\CompilationUnit.cs" />
     <Compile Include="Ast\ComposedType.cs" />
     <Compile Include="Ast\CSharpModifierToken.cs" />
     <Compile Include="Ast\CSharpTokenNode.cs" />
@@ -271,7 +270,6 @@
     <Compile Include="TypeSystem\ConstantValues.cs" />
     <Compile Include="TypeSystem\CSharpAssembly.cs" />
     <Compile Include="TypeSystem\CSharpAttribute.cs" />
-    <Compile Include="TypeSystem\CSharpParsedFile.cs" />
     <Compile Include="TypeSystem\CSharpTypeResolveContext.cs" />
     <Compile Include="TypeSystem\CSharpUnresolvedTypeDefinition.cs" />
     <Compile Include="TypeSystem\MemberTypeOrNamespaceReference.cs" />
@@ -374,6 +372,10 @@
     <Compile Include="Refactoring\CodeActions\ExtractMethod\VariableUsageAnalyzation.cs" />
     <Compile Include="Resolver\DynamicInvocationResolveResult.cs" />
     <Compile Include="Resolver\DynamicMemberResolveResult.cs" />
+    <Compile Include="Ast\SyntaxTree.cs" />
+    <Compile Include="Ast\old_ObservableAstVisitor.cs" />
+    <Compile Include="TypeSystem\CSharpUnresolvedFile.cs" />
+    <Compile Include="Parser\SeekableStreamReader.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

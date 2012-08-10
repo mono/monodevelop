@@ -229,8 +229,8 @@ namespace MonoDevelop.CSharp.Refactoring
 			var implementingType = options.Part;
 			var loc = implementingType.Region.End;
 			
-			var pf = implementingType.ParsedFile;
-			var file = pf as CSharpParsedFile;
+			var pf = implementingType.UnresolvedFile;
+			var file = pf as CSharpUnresolvedFile;
 			var resolved = type;
 			if (resolved.Kind == TypeKind.Unknown) {
 				result.Append (type.FullName);
@@ -806,7 +806,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		public override void AddGlobalNamespaceImport (MonoDevelop.Ide.Gui.Document doc, string nsName)
 		{
 			var parsedDocument = doc.ParsedDocument;
-			var unit = parsedDocument.GetAst<CompilationUnit> ();
+			var unit = parsedDocument.GetAst<SyntaxTree> ();
 			if (unit == null)
 				return;
 			
@@ -850,7 +850,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		public override void AddLocalNamespaceImport (MonoDevelop.Ide.Gui.Document doc, string nsName, TextLocation caretLocation)
 		{
 			var parsedDocument = doc.ParsedDocument;
-			var unit = parsedDocument.GetAst<CompilationUnit> ();
+			var unit = parsedDocument.GetAst<SyntaxTree> ();
 			if (unit == null)
 				return;
 			
@@ -905,7 +905,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		
 		public override string GetShortTypeString (MonoDevelop.Ide.Gui.Document doc, IType type)
 		{
-			var shortType = CreateShortType (doc.Compilation, doc.ParsedDocument.ParsedFile as CSharpParsedFile, doc.Editor.Caret.Location, type);
+			var shortType = CreateShortType (doc.Compilation, doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile, doc.Editor.Caret.Location, type);
 			return OutputNode (doc, shortType);
 		}
 		
@@ -923,7 +923,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		}
 		
 		
-		public AstType CreateShortType (ICompilation compilation, CSharpParsedFile parsedFile, TextLocation loc, IType fullType)
+		public AstType CreateShortType (ICompilation compilation, CSharpUnresolvedFile parsedFile, TextLocation loc, IType fullType)
 		{
 			var csResolver = parsedFile.GetResolver (compilation, loc);
 			var builder = new ICSharpCode.NRefactory.CSharp.Refactoring.TypeSystemAstBuilder (csResolver);

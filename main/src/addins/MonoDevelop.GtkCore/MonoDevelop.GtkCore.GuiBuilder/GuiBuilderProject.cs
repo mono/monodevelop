@@ -403,7 +403,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 		}
 
-		string GetReferenceLibraryPath (ProjectReference pref)
+		string GetReferenceLibraryPath (MonoDevelop.Projects.ProjectReference pref)
 		{
 			string path = null;
 			
@@ -562,7 +562,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			ArrayList libs = new ArrayList ();
 			string[] internalLibs;
 			
-			foreach (ProjectReference pref in project.References) {
+			foreach (var pref in project.References) {
 				string wref = GetReferenceLibraryPath (pref);
 				if (wref != null)
 					libs.Add (wref);

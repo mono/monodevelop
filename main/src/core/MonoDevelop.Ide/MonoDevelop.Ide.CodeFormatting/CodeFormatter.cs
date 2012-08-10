@@ -88,7 +88,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 		/// A <see cref="ITypeResolveContext"/>
 		/// </param>
 		/// <param name="unit">
-		/// A <see cref="IParsedFile"/>
+		/// A <see cref="IUnresolvedFile"/>
 		/// </param>
 		/// <param name="caretLocation">
 		/// A <see cref="TextLocation"/> that should be the end location to which the parsing should occur.

@@ -53,7 +53,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			}
 		}
 		
-		public IParsedFile ParsedDocument {
+		public IUnresolvedFile ParsedDocument {
 			get;
 			set;
 		}

@@ -2172,6 +2172,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			WriteAttributes(indexerDeclaration.Attributes);
 			WriteModifiers(indexerDeclaration.ModifierTokens);
 			indexerDeclaration.ReturnType.AcceptVisitor(this);
+			Space();
 			WritePrivateImplementationType(indexerDeclaration.PrivateImplementationType);
 			WriteKeyword(IndexerDeclaration.ThisKeywordRole);
 			Space(policy.SpaceBeforeMethodDeclarationParentheses);
@@ -2304,10 +2305,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			EndNode(variableInitializer);
 		}
 		
-		public void VisitCompilationUnit(CompilationUnit compilationUnit)
+		public void VisitSyntaxTree(SyntaxTree syntaxTree)
 		{
 			// don't do node tracking as we visit all children directly
-			foreach (AstNode node in compilationUnit.Children) {
+			foreach (AstNode node in syntaxTree.Children) {
 				node.AcceptVisitor(this);
 			}
 		}

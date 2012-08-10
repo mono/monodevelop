@@ -130,5 +130,25 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		/// <remarks>This property is used to speed up the search for extension methods.</remarks>
 		bool HasExtensionMethods { get; }
+		
+		/// <summary>
+		/// Determines how this type is implementing the specified interface member.
+		/// </summary>
+		/// <returns>
+		/// The method on this type that implements the interface member;
+		/// or null if the type does not implement the interface.
+		/// </returns>
+		IMember GetInterfaceImplementation(IMember interfaceMember);
+		
+		/// <summary>
+		/// Determines how this type is implementing the specified interface members.
+		/// </summary>
+		/// <returns>
+		/// For each interface member, this method returns the class member 
+		/// that implements the interface member.
+		/// For interface members that are missing an implementation, the
+		/// result collection will contain a null element.
+		/// </returns>
+		IList<IMember> GetInterfaceImplementation(IList<IMember> interfaceMembers);
 	}
 }

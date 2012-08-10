@@ -20,16 +20,37 @@ using System;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
-	public interface IFreezable
+	/// <summary>
+	/// References another project content in the same solution.
+	/// Using the <see cref="ProjectReference"/> class requires that you 
+	/// </summary>
+	[Serializable]
+	public class ProjectReference : IAssemblyReference
 	{
-		/// <summary>
-		/// Gets if this instance is frozen. Frozen instances are immutable and thus thread-safe.
-		/// </summary>
-		bool IsFrozen { get; }
+		readonly string projectFileName;
 		
 		/// <summary>
-		/// Freezes this instance.
+		/// Creates a new reference to the specified project (must be part of the same solution).
 		/// </summary>
-		void Freeze();
+		/// <param name="projectFileName">Full path to the file name. Must be identical to <see cref="IProjectContent.ProjectFileName"/> of the target project; do not use a relative path.</param>
+		public ProjectReference(string projectFileName)
+		{
+			this.projectFileName = projectFileName;
+		}
+		
+		public IAssembly Resolve(ITypeResolveContext context)
+		{
+			var solution = context.Compilation.SolutionSnapshot;
+			var pc = solution.GetProjectContent(projectFileName);
+			if (pc != null)
+				return pc.Resolve(context);
+			else
+				return null;
+		}
+		
+		public override string ToString()
+		{
+			return string.Format("[ProjectReference {0}]", projectFileName);
+		}
 	}
 }

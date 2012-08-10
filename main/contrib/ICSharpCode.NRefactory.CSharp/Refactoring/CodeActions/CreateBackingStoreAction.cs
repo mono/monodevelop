@@ -35,9 +35,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			var property = context.GetNode<PropertyDeclaration>();
 			if (!(property != null &&
-			      !property.Getter.IsNull && !property.Setter.IsNull && // automatic properties always need getter & setter
-			      property.Getter.Body.IsNull &&
-			      property.Setter.Body.IsNull)) {
+				!property.Getter.IsNull && !property.Setter.IsNull && // automatic properties always need getter & setter
+				property.Getter.Body.IsNull &&
+				property.Setter.Body.IsNull)) {
 				yield break;
 			}
 			

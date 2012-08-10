@@ -98,9 +98,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		public override void FormatText(AstNode node)
 		{
 			var segment = GetSegment(node);
-			var cu = CompilationUnit.Parse(currentDocument, "dummy.cs");
+			var syntaxTree = SyntaxTree.Parse(currentDocument, "dummy.cs");
 			var formatter = new AstFormattingVisitor(FormattingOptions, currentDocument, Options);
-			cu.AcceptVisitor(formatter);
+			syntaxTree.AcceptVisitor(formatter);
 			formatter.ApplyChanges(segment.Offset, segment.Length);
 		}
 		

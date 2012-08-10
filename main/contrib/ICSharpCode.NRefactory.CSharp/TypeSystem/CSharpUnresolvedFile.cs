@@ -30,7 +30,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 	/// Represents a file that was parsed and converted for the type system.
 	/// </summary>
 	[Serializable]
-	public sealed class CSharpParsedFile : AbstractFreezable, IParsedFile, IUnresolvedDocumentationProvider
+	public sealed class CSharpUnresolvedFile : AbstractFreezable, IUnresolvedFile, IUnresolvedDocumentationProvider
 	{
 		readonly string fileName;
 		readonly UsingScope rootUsingScope;
@@ -51,7 +51,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			usingScopes = FreezableHelper.FreezeListAndElements(usingScopes);
 		}
 		
-		public CSharpParsedFile(string fileName)
+		public CSharpUnresolvedFile(string fileName)
 		{
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
@@ -59,7 +59,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			this.rootUsingScope = new UsingScope();
 		}
 		
-		public CSharpParsedFile(string fileName, UsingScope rootUsingScope)
+		public CSharpUnresolvedFile(string fileName, UsingScope rootUsingScope)
 		{
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
@@ -178,7 +178,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			return rctx;
 		}
 		
-		ITypeResolveContext IParsedFile.GetTypeResolveContext (ICompilation compilation, TextLocation loc)
+		ITypeResolveContext IUnresolvedFile.GetTypeResolveContext (ICompilation compilation, TextLocation loc)
 		{
 			return GetTypeResolveContext (compilation, loc);
 		}

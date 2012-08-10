@@ -64,7 +64,7 @@ namespace MonoDevelop.CSharp
 			}
 		}
 		
-		public static ICSharpCode.NRefactory.CSharp.CompilationUnit Parse (this ICSharpCode.NRefactory.CSharp.CSharpParser parser, TextEditorData data)
+		public static ICSharpCode.NRefactory.CSharp.SyntaxTree Parse (this ICSharpCode.NRefactory.CSharp.CSharpParser parser, TextEditorData data)
 		{
 			using (var stream = data.OpenStream ()) {
 				return parser.Parse (stream, data.Document.FileName);
@@ -121,8 +121,8 @@ namespace MonoDevelop.CSharp
 			if (parsedDocument == null)
 				return false;
 
-			var unit = parsedDocument.GetAst<CompilationUnit> ();
-			var parsedFile = parsedDocument.ParsedFile as CSharpParsedFile;
+			var unit = parsedDocument.GetAst<SyntaxTree> ();
+			var parsedFile = parsedDocument.ParsedFile as CSharpUnresolvedFile;
 			
 			if (unit == null || parsedFile == null)
 				return false;

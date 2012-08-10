@@ -1,4 +1,4 @@
-// 
+﻿// 
 // GenerateProperty.cs
 //  
 // Author:
@@ -51,7 +51,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 			}
 			var field = initializer.Parent as FieldDeclaration;
-			if (field == null) {
+			if (field == null || field.HasModifier(Modifiers.Readonly) || field.HasModifier(Modifiers.Const)) {
 				yield break;
 			}
 			var resolveResult = context.Resolve(initializer) as MemberResolveResult;

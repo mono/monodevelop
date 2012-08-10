@@ -40,10 +40,10 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		class ConversionVisitor : StructuralVisitor
 		{
-			CompilationUnit unit = new CompilationUnit ();
+			SyntaxTree unit = new SyntaxTree ();
 			internal bool convertTypeSystemMode;
 			
-			public CompilationUnit Unit {
+			public SyntaxTree Unit {
 				get {
 					return unit;
 				}
@@ -335,12 +335,16 @@ namespace ICSharpCode.NRefactory.CSharp
 					if (loc != null && pos < loc.Count)
 						result.AddChild (new CSharpTokenNode (Convert (loc [pos++])), Roles.Colon);
 				}
-				
+
+				int attributeCount = 0;
 				foreach (var attr in GetAttributes (optAttributes)) {
 					result.AddChild (attr, Roles.Attribute);
+					attributeCount++;
 				}
+				// Left and right bracket + commas between the attributes
+				int locCount = 2 + attributeCount - 1;
 				// optional comma
-				if (loc != null && pos < loc.Count - 1 && !loc [pos].Equals (loc [pos + 1]))
+				if (loc != null && pos < loc.Count - 1 && loc.Count == locCount + 1)
 					result.AddChild (new CSharpTokenNode (Convert (loc [pos++])), Roles.Comma);
 				if (loc != null && pos < loc.Count)
 					result.AddChild (new CSharpTokenNode (Convert (loc [pos++])), Roles.RBracket);
@@ -668,7 +672,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (namespaceStack.Count > 0) {
 					namespaceStack.Peek ().AddChild (child, NamespaceDeclaration.MemberRole);
 				} else {
-					unit.AddChild (child, CompilationUnit.MemberRole);
+					unit.AddChild (child, SyntaxTree.MemberRole);
 				}
 			}
 			
@@ -2798,8 +2802,8 @@ namespace ICSharpCode.NRefactory.CSharp
 					}
 					if (commaLoc != null && curComma < commaLoc.Count)
 						init.AddChild(new CSharpTokenNode(Convert(commaLoc [curComma++])), Roles.Comma);
-
 				}
+
 				if (initLoc != null) {
 					if (initLoc.Count == 3) // optional comma
 						init.AddChild(new CSharpTokenNode(Convert(initLoc [1])), Roles.Comma);
@@ -2883,9 +2887,11 @@ namespace ICSharpCode.NRefactory.CSharp
 							initializer.AddChild (new CSharpTokenNode (Convert (commaLocations [i])), Roles.Comma);
 						}
 					}
-					
-					if (initLocation != null)
+					if (initLocation != null) {
+						if (initLocation.Count == 2) // optional comma
+							initializer.AddChild (new CSharpTokenNode(Convert(initLocation [0])), Roles.Comma);
 						initializer.AddChild (new CSharpTokenNode (Convert (initLocation [initLocation.Count - 1])), Roles.RBrace);
+					}
 					result.AddChild (initializer, ArrayCreateExpression.InitializerRole);
 				}
 				
@@ -3212,7 +3218,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				if (location != null) {
 					if (location.Count == 2) // optional comma
-						result.AddChild (new CSharpTokenNode (Convert (location [1])), Roles.Comma);
+						result.AddChild (new CSharpTokenNode (Convert (location [0])), Roles.Comma);
 					result.AddChild (new CSharpTokenNode (Convert (location [location.Count - 1])), Roles.RBrace);
 				}
 				return result;
@@ -3221,25 +3227,36 @@ namespace ICSharpCode.NRefactory.CSharp
 			#endregion
 			
 			#region LINQ expressions
+			QueryOrderClause currentQueryOrderClause;
+
 			public override object Visit (Mono.CSharp.Linq.QueryExpression queryExpression)
 			{
-				var result = new QueryExpression ();
-				
-				var currentClause = queryExpression.next;
-				
-				while (currentClause != null) {
-					QueryClause clause = (QueryClause)currentClause.Accept (this);
-					if (clause is QueryContinuationClause) {
-						// insert preceding query at beginning of QueryContinuationClause
-						clause.InsertChildAfter (null, result, QueryContinuationClause.PrecedingQueryRole);
-						// create a new QueryExpression for the remaining query
-						result = new QueryExpression ();
+				var oldQueryOrderClause = currentQueryOrderClause;
+				try {
+					currentQueryOrderClause = null;
+					var result = new QueryExpression ();
+					
+					var currentClause = queryExpression.next;
+					
+					while (currentClause != null) {
+						QueryClause clause = (QueryClause)currentClause.Accept (this);
+						if (clause is QueryContinuationClause) {
+							// insert preceding query at beginning of QueryContinuationClause
+							clause.InsertChildAfter (null, result, QueryContinuationClause.PrecedingQueryRole);
+							// create a new QueryExpression for the remaining query
+							result = new QueryExpression ();
+						}
+						if (clause != null) {
+							result.AddChild (clause, QueryExpression.ClauseRole);
+						}
+						currentClause = currentClause.next;
 					}
-					result.AddChild (clause, QueryExpression.ClauseRole);
-					currentClause = currentClause.next;
+					
+					return result;
 				}
-				
-				return result;
+				finally {
+					currentQueryOrderClause = oldQueryOrderClause;
+				}
 			}
 			
 			public override object Visit (Mono.CSharp.Linq.QueryStartClause queryStart)
@@ -3405,7 +3422,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			public override object Visit (Mono.CSharp.Linq.OrderByAscending orderByAscending)
 			{
-				var result = new QueryOrderClause ();
+				currentQueryOrderClause = new QueryOrderClause();
 				
 				var ordering = new QueryOrdering ();
 				if (orderByAscending.Expr != null)
@@ -3415,13 +3432,13 @@ namespace ICSharpCode.NRefactory.CSharp
 					ordering.Direction = QueryOrderingDirection.Ascending;
 					ordering.AddChild (new CSharpTokenNode (Convert (location [0])), QueryOrdering.AscendingKeywordRole);
 				}
-				result.AddChild (ordering, QueryOrderClause.OrderingRole);
-				return result;
+				currentQueryOrderClause.AddChild (ordering, QueryOrderClause.OrderingRole);
+				return currentQueryOrderClause;
 			}
 			
 			public override object Visit (Mono.CSharp.Linq.OrderByDescending orderByDescending)
 			{
-				var result = new QueryOrderClause ();
+				currentQueryOrderClause = new QueryOrderClause ();
 				
 				var ordering = new QueryOrdering ();
 				if (orderByDescending.Expr != null)
@@ -3431,14 +3448,12 @@ namespace ICSharpCode.NRefactory.CSharp
 					ordering.Direction = QueryOrderingDirection.Descending;
 					ordering.AddChild (new CSharpTokenNode (Convert (location [0])), QueryOrdering.DescendingKeywordRole);
 				}
-				result.AddChild (ordering, QueryOrderClause.OrderingRole);
-				return result;
+				currentQueryOrderClause.AddChild (ordering, QueryOrderClause.OrderingRole);
+				return currentQueryOrderClause;
 			}
 			
 			public override object Visit (Mono.CSharp.Linq.ThenByAscending thenByAscending)
 			{
-				var result = new QueryOrderClause ();
-				
 				var ordering = new QueryOrdering ();
 				if (thenByAscending.Expr != null)
 					ordering.AddChild ((Expression)thenByAscending.Expr.Accept (this), Roles.Expression);
@@ -3447,14 +3462,12 @@ namespace ICSharpCode.NRefactory.CSharp
 					ordering.Direction = QueryOrderingDirection.Ascending;
 					ordering.AddChild (new CSharpTokenNode (Convert (location [0])), QueryOrdering.AscendingKeywordRole);
 				}
-				result.AddChild (ordering, QueryOrderClause.OrderingRole);
-				return result;
+				currentQueryOrderClause.AddChild (ordering, QueryOrderClause.OrderingRole);
+				return null;
 			}
 			
 			public override object Visit (Mono.CSharp.Linq.ThenByDescending thenByDescending)
 			{
-				var result = new QueryOrderClause ();
-				
 				var ordering = new QueryOrdering ();
 				if (thenByDescending.Expr != null)
 					ordering.AddChild ((Expression)thenByDescending.Expr.Accept (this), Roles.Expression);
@@ -3463,8 +3476,8 @@ namespace ICSharpCode.NRefactory.CSharp
 					ordering.Direction = QueryOrderingDirection.Descending;
 					ordering.AddChild (new CSharpTokenNode (Convert (location [0])), QueryOrdering.DescendingKeywordRole);
 				}
-				result.AddChild (ordering, QueryOrderClause.OrderingRole);
-				return result;
+				currentQueryOrderClause.AddChild (ordering, QueryOrderClause.OrderingRole);
+				return null;
 			}
 			
 			public override object Visit (Await awaitExpr)
@@ -3709,28 +3722,34 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return errorReportPrinter.Errors; }
 		}
 		
-		public CompilationUnit Parse (ITextSource textSource, string fileName, int lineModifier = 0)
+		/// <summary>
+		/// Parses a C# code file.
+		/// </summary>
+		/// <param name="program">The source code to parse.</param>
+		/// <param name="fileName">The file name. Used to identify the file (e.g. when building a type system).
+		/// This can be an arbitrary identifier, NRefactory never tries to access the file on disk.</param>
+		/// <returns>Returns the syntax tree.</returns>
+		public SyntaxTree Parse (string program, string fileName = "")
 		{
-			return Parse (textSource.CreateReader (), fileName, lineModifier);
+			return Parse (new StringTextSource (program), fileName);
 		}
 		
-		public CompilationUnit Parse (TextReader reader, string fileName, int lineModifier = 0)
+		/// <summary>
+		/// Parses a C# code file.
+		/// </summary>
+		/// <param name="reader">The text reader containing the source code to parse.</param>
+		/// <param name="fileName">The file name. Used to identify the file (e.g. when building a type system).
+		/// This can be an arbitrary identifier, NRefactory never tries to access the file on disk.</param>
+		/// <returns>Returns the syntax tree.</returns>
+		public SyntaxTree Parse (TextReader reader, string fileName = "")
 		{
-			// TODO: can we optimize this to avoid the text->stream->text roundtrip?
-			using (MemoryStream stream = new MemoryStream ()) {
-				StreamWriter w = new StreamWriter (stream, Encoding.UTF8);
-				char[] buffer = new char[2048];
-				int read;
-				while ((read = reader.ReadBlock(buffer, 0, buffer.Length)) > 0)
-					w.Write (buffer, 0, read);
-				w.Flush (); // we can't close the StreamWriter because that would also close the MemoryStream
-				stream.Position = 0;
-				
-				return Parse (stream, fileName, lineModifier);
-			}
+			return Parse(new StringTextSource (reader.ReadToEnd ()), fileName);
 		}
 
-		public CompilationUnit Parse(CompilerCompilationUnit top, string fileName, int lineModifier = 0)
+		/// <summary>
+		/// Converts a Mono.CSharp syntax tree into an NRefactory syntax tree.
+		/// </summary>
+		public SyntaxTree Parse(CompilerCompilationUnit top, string fileName)
 		{
 			if (top == null) {
 				return null;
@@ -3759,57 +3778,104 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		/// <summary>
+		/// Callback that gets called with the Mono.CSharp syntax tree whenever some code is parsed.
+		/// </summary>
 		public Action<CompilerCompilationUnit> CompilationUnitCallback {
 			get;
 			set;
 		}
 		
+		/// <summary>
+		/// Specifies whether to run the parser in a special mode for generating the type system.
+		/// If this property is true, the syntax tree will only contain nodes relevant for the
+		/// <see cref="SyntaxTree.ToTypeSystem()"/> call and might be missing other nodes (e.g. method bodies).
+		/// The default is false.
+		/// </summary>
 		public bool GenerateTypeSystemMode {
 			get;
 			set;
 		}
 		
-		public CompilationUnit Parse (string program, string fileName)
-		{
-			return Parse (new StringReader (program), fileName);
+		TextLocation initialLocation = new TextLocation(1, 1);
+		
+		/// <summary>
+		/// Specifies the text location where parsing starts.
+		/// This property can be used when parsing a part of a file to make the locations of the AstNodes
+		/// refer to the position in the whole file.
+		/// The default is (1,1).
+		/// </summary>
+		public TextLocation InitialLocation {
+			get { return initialLocation; }
+			set { initialLocation = value; }
 		}
 		
 		internal static object parseLock = new object ();
 		
-		public CompilationUnit Parse(Stream stream, string fileName, int lineModifier = 0)
+		/// <summary>
+		/// Parses a C# code file.
+		/// </summary>
+		/// <param name="stream">The stream containing the source code to parse.</param>
+		/// <param name="fileName">The file name. Used to identify the file (e.g. when building a type system).
+		/// This can be an arbitrary identifier, NRefactory never tries to access the file on disk.</param>
+		/// <returns>Returns the syntax tree.</returns>
+		public SyntaxTree Parse (Stream stream, string fileName = "")
+		{
+			return Parse (new StreamReader (stream), fileName);
+		}
+		
+		/// <summary>
+		/// Parses a C# code file.
+		/// </summary>
+		/// <param name="program">The source code to parse.</param>
+		/// <param name="fileName">The file name. Used to identify the file (e.g. when building a type system).
+		/// This can be an arbitrary identifier, NRefactory never tries to access the file on disk.</param>
+		///  </param>
+		/// <returns>Returns the syntax tree.</returns>
+		public SyntaxTree Parse(ITextSource program, string fileName = "")
+		{
+			return Parse(program, fileName, initialLocation.Line, initialLocation.Column);
+		}
+		
+		SyntaxTree Parse(ITextSource program, string fileName, int initialLine, int initialColumn)
 		{
 			lock (parseLock) {
 				errorReportPrinter = new ErrorReportPrinter ("");
 				var ctx = new CompilerContext (compilerSettings.ToMono(), errorReportPrinter);
 				ctx.Settings.TabSize = 1;
-				var reader = new SeekableStreamReader (stream, Encoding.UTF8);
+				var reader = new SeekableStreamReader (program);
 				var file = new SourceFile (fileName, fileName, 0);
 				Location.Initialize (new List<SourceFile> (new [] { file }));
 				var module = new ModuleContainer (ctx);
 				var session = new ParserSession ();
 				session.LocationsBag = new LocationsBag ();
 				var report = new Report (ctx, errorReportPrinter);
-				var parser = Driver.Parse (reader, file, module, session, report, lineModifier);
+				var parser = Driver.Parse (reader, file, module, session, report, initialLine - 1, initialColumn - 1);
 				var top = new CompilerCompilationUnit () {
 					ModuleCompiled = module,
 					LocationsBag = session.LocationsBag,
 					SpecialsBag = parser.Lexer.sbag,
 					Conditionals = parser.Lexer.SourceFile.Conditionals
 				};
-				var unit = Parse (top, fileName, lineModifier);
+				var unit = Parse (top, fileName);
 				unit.Errors.AddRange (errorReportPrinter.Errors);
 				CompilerCallableEntryPoint.Reset ();
 				return unit;
 			}
 		}
 
-		public IEnumerable<EntityDeclaration> ParseTypeMembers (TextReader reader, int lineModifier = 0)
+		public IEnumerable<EntityDeclaration> ParseTypeMembers (string code)
 		{
-			string code = "unsafe partial class MyClass { " + Environment.NewLine + reader.ReadToEnd () + "}";
-			var cu = Parse (new StringReader (code), "parsed.cs", lineModifier - 1);
-			if (cu == null)
+			return ParseTypeMembers(code, initialLocation.Line, initialLocation.Column);
+		}
+		
+		IEnumerable<EntityDeclaration> ParseTypeMembers (string code, int initialLine, int initialColumn)
+		{
+			const string prefix = "unsafe partial class MyClass { ";
+			var syntaxTree = Parse (new StringTextSource (prefix + code + "}"), "parsed.cs", initialLine, initialColumn - prefix.Length);
+			if (syntaxTree == null)
 				return Enumerable.Empty<EntityDeclaration> ();
-			var td = cu.Children.FirstOrDefault () as TypeDeclaration;
+			var td = syntaxTree.FirstChild as TypeDeclaration;
 			if (td != null) {
 				var members = td.Members.ToArray();
 				// detach members from parent
@@ -3820,10 +3886,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			return Enumerable.Empty<EntityDeclaration> ();
 		}
 		
-		public IEnumerable<Statement> ParseStatements (TextReader reader, int lineModifier = 0)
+		public IEnumerable<Statement> ParseStatements (string code)
 		{
-			string code = "void M() { " + Environment.NewLine + reader.ReadToEnd () + "}";
-			var members = ParseTypeMembers (new StringReader (code), lineModifier - 1);
+			return ParseStatements(code, initialLocation.Line, initialLocation.Column);
+		}
+		
+		IEnumerable<Statement> ParseStatements (string code, int initialLine, int initialColumn)
+		{
+			// the dummy method is async so that 'await' expressions are parsed as expected
+			const string prefix = "async void M() { ";
+			var members = ParseTypeMembers (prefix + code + "}", initialLine, initialColumn - prefix.Length);
 			var method = members.FirstOrDefault () as MethodDeclaration;
 			if (method != null && method.Body != null) {
 				var statements = method.Body.Statements.ToArray();
@@ -3835,10 +3907,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			return Enumerable.Empty<Statement> ();
 		}
 		
-		public AstType ParseTypeReference (TextReader reader)
+		public AstType ParseTypeReference (string code)
 		{
-			string code = reader.ReadToEnd () + " a;";
-			var members = ParseTypeMembers (new StringReader (code));
+			var members = ParseTypeMembers (code + " a;");
 			var field = members.FirstOrDefault () as FieldDeclaration;
 			if (field != null) {
 				AstType type = field.ReturnType;
@@ -3848,9 +3919,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			return AstType.Null;
 		}
 		
-		public Expression ParseExpression (TextReader reader)
+		public Expression ParseExpression (string code)
 		{
-			var es = ParseStatements (new StringReader ("tmp = " + Environment.NewLine + reader.ReadToEnd () + ";"), -1).FirstOrDefault () as ExpressionStatement;
+			const string prefix = "tmp = ";
+			var statements = ParseStatements (prefix + code + ";", initialLocation.Line, initialLocation.Column - prefix.Length);
+			var es = statements.FirstOrDefault () as ExpressionStatement;
 			if (es != null) {
 				AssignmentExpression ae = es.Expression as AssignmentExpression;
 				if (ae != null) {
@@ -3862,14 +3935,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			return Expression.Null;
 		}
 		
+		/*
 		/// <summary>
-		/// Parses a file snippet; guessing what the code snippet represents (compilation unit, type members, block, type reference, expression).
+		/// Parses a file snippet; guessing what the code snippet represents (whole file, type members, block, type reference, expression).
 		/// </summary>
-		public AstNode ParseSnippet (TextReader reader)
+		public AstNode ParseSnippet (string code)
 		{
 			// TODO: add support for parsing a part of a file
 			throw new NotImplementedException ();
 		}
+		*/
 		
 		public DocumentationReference ParseDocumentationReference (string cref)
 		{
@@ -3884,8 +3959,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				errorReportPrinter = new ErrorReportPrinter("");
 				var ctx = new CompilerContext(compilerSettings.ToMono(), errorReportPrinter);
 				ctx.Settings.TabSize = 1;
-				var stream = new MemoryStream(Encoding.Unicode.GetBytes(cref));
-				var reader = new SeekableStreamReader(stream, Encoding.Unicode);
+				var reader = new SeekableStreamReader(new StringTextSource (cref));
 				var file = new SourceFile("", "", 0);
 				Location.Initialize(new List<SourceFile> (new [] { file }));
 				var module = new ModuleContainer(ctx);
@@ -3895,6 +3969,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				ParserSession session = new ParserSession ();
 				session.LocationsBag = new LocationsBag ();
 				var parser = new Mono.CSharp.CSharpParser (reader, source_file, report, session);
+				parser.Lexer.Line += initialLocation.Line - 1;
+				parser.Lexer.Column += initialLocation.Column - 1;
 				parser.Lexer.putback_char = Tokenizer.DocumentationXref;
 				parser.Lexer.parsing_generic_declaration_doc = true;
 				parser.parse ();

@@ -96,6 +96,18 @@ namespace ICSharpCode.NRefactory.Editor
 		}
 		
 		/// <inheritdoc/>
+		public void WriteTextTo(TextWriter writer)
+		{
+			writer.Write(text);
+		}
+		
+		/// <inheritdoc/>
+		public void WriteTextTo(TextWriter writer, int offset, int length)
+		{
+			writer.Write(text.Substring(offset, length));
+		}
+		
+		/// <inheritdoc/>
 		public char GetCharAt(int offset)
 		{
 			return text[offset];

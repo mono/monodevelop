@@ -927,7 +927,10 @@ namespace MonoDevelop.Ide.TypeSystem
 				#endregion
 
 				#region IProjectContent implementation
-				IParsedFile IProjectContent.GetFile (string fileName)
+
+				string IProjectContent.ProjectFileName { get { return Content.ProjectFileName; } }
+
+				IUnresolvedFile IProjectContent.GetFile (string fileName)
 				{
 					return Content.GetFile (fileName);
 				}
@@ -957,22 +960,42 @@ namespace MonoDevelop.Ide.TypeSystem
 					return Content.AddAssemblyReferences (references);
 				}
 
+				IProjectContent IProjectContent.AddAssemblyReferences (params IAssemblyReference[] references)
+				{
+					return Content.AddAssemblyReferences (references);
+				}
+
 				IProjectContent IProjectContent.RemoveAssemblyReferences (IEnumerable<IAssemblyReference> references)
 				{
 					return Content.RemoveAssemblyReferences (references);
 				}
 
-				IProjectContent IProjectContent.UpdateProjectContent (IParsedFile oldFile, IParsedFile newFile)
+				IProjectContent IProjectContent.RemoveAssemblyReferences (params IAssemblyReference[] references)
+				{
+					return Content.RemoveAssemblyReferences (references);
+				}
+
+				IProjectContent IProjectContent.UpdateProjectContent (IUnresolvedFile oldFile, IUnresolvedFile newFile)
 				{
 					return Content.UpdateProjectContent (oldFile, newFile);
 				}
 
-				public IProjectContent UpdateProjectContent (IEnumerable<IParsedFile> oldFiles, IEnumerable<IParsedFile> newFiles)
+				public IProjectContent UpdateProjectContent (IEnumerable<IUnresolvedFile> oldFiles, IEnumerable<IUnresolvedFile> newFiles)
 				{
 					return Content.UpdateProjectContent (oldFiles, newFiles);
 				}
 
-				IEnumerable<IParsedFile> IProjectContent.Files {
+				public IProjectContent AddOrUpdateFiles (IEnumerable<IUnresolvedFile> newFiles)
+				{
+					return Content.AddOrUpdateFiles (newFiles);
+				}
+
+				public IProjectContent AddOrUpdateFiles (params IUnresolvedFile[] newFiles)
+				{
+					return Content.AddOrUpdateFiles (newFiles);
+				}
+
+				IEnumerable<IUnresolvedFile> IProjectContent.Files {
 					get {
 						return Content.Files;
 					}
@@ -982,6 +1005,21 @@ namespace MonoDevelop.Ide.TypeSystem
 					get {
 						return Content.AssemblyReferences;
 					}
+				}
+
+				IProjectContent IProjectContent.SetProjectFileName (string newProjectFileName)
+				{
+					return Content.SetProjectFileName (newProjectFileName);
+				}
+
+				IProjectContent IProjectContent.RemoveFiles (IEnumerable<string> fileNames)
+				{
+					return Content.RemoveFiles (fileNames);
+				}
+
+				IProjectContent IProjectContent.RemoveFiles (params string[] fileNames)
+				{
+					return Content.RemoveFiles (fileNames);
 				}
 				#endregion
 
@@ -1918,7 +1956,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		static bool IsFileModified (ProjectFile file, IParsedFile parsedFile)
+		static bool IsFileModified (ProjectFile file, IUnresolvedFile parsedFile)
 		{
 			if (parsedFile == null)
 				return true;
