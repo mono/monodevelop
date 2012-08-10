@@ -35,9 +35,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			var property = context.GetNode<PropertyDeclaration>();
 			if (!(property != null &&
-				!property.Getter.IsNull && !property.Setter.IsNull && // automatic properties always need getter & setter
-				property.Getter.Body.IsNull &&
-				property.Setter.Body.IsNull)) {
+			      !property.Getter.IsNull && !property.Setter.IsNull && // automatic properties always need getter & setter
+			      property.Getter.Body.IsNull &&
+			      property.Setter.Body.IsNull)) {
 				yield break;
 			}
 			
@@ -46,6 +46,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				
 				// create field
 				var backingStore = new FieldDeclaration ();
+				if (property.Modifiers.HasFlag (Modifiers.Static))
+					backingStore.Modifiers |= Modifiers.Static;
 				backingStore.ReturnType = property.ReturnType.Clone ();
 				
 				var initializer = new VariableInitializer (backingStoreName);
