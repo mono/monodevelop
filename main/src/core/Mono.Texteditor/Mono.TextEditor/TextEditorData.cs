@@ -41,9 +41,9 @@ namespace Mono.TextEditor
 	
 	public class TextEditorData : IDisposable
 	{
-		ITextEditorOptions options;
+		ITextEditorOptions    options;
 		readonly TextDocument document; 
-		Caret      caret;
+		readonly Caret        caret;
 		
 		static Adjustment emptyAdjustment = new Adjustment (0, 0, 0, 0, 0, 0);
 		

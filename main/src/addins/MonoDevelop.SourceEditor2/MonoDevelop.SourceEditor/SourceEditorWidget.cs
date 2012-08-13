@@ -238,7 +238,7 @@ namespace MonoDevelop.SourceEditor
 		
 			public void SetTextEditor (TextEditor container)
 			{
-				scrolledWindow.Add (container);
+				scrolledWindow.Child = container;
 				this.strip.TextEditor = container;
 //				container.TextEditorWidget.EditorOptionsChanged += OptionsChanged;
 				container.Caret.ModeChanged += parent.UpdateLineColOnEventHandler;

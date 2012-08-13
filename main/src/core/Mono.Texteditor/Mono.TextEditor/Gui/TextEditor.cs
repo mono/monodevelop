@@ -48,7 +48,7 @@ namespace Mono.TextEditor
 	[System.ComponentModel.ToolboxItem(true)]
 	public class TextEditor : Container, ITextEditorDataProvider
 	{
-		TextEditorData textEditorData;
+		readonly TextEditorData textEditorData;
 		
 		protected IconMargin       iconMargin;
 		protected GutterMargin     gutterMargin;
@@ -311,7 +311,6 @@ namespace Mono.TextEditor
 			this.Events = EventMask.PointerMotionMask | EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.EnterNotifyMask | EventMask.LeaveNotifyMask | EventMask.VisibilityNotifyMask | EventMask.FocusChangeMask | EventMask.ScrollMask | EventMask.KeyPressMask | EventMask.KeyReleaseMask;
 			this.DoubleBuffered = true;
 			base.CanFocus = true;
-			WidgetFlags |= WidgetFlags.NoWindow;
 			iconMargin = new IconMargin (this);
 			gutterMargin = new GutterMargin (this);
 			textViewMargin = new TextViewMargin (this);
@@ -390,6 +389,7 @@ namespace Mono.TextEditor
 					}
 				};
 			}
+			ShowAll ();
 		}
 
 		#region Container
@@ -465,7 +465,6 @@ namespace Mono.TextEditor
 		{
 			containerChildren.ForEach (child => callback (child.Child));
 		}
-
 
 		void ResizeChild (Rectangle allocation, EditorContainerChild child)
 		{
@@ -559,21 +558,20 @@ namespace Mono.TextEditor
 		
 		public void AddAnimatedWidget (Widget widget, uint duration, Easing easing, Blocking blocking, int x, int y)
 		{
-			AnimatedWidget animated_widget = new AnimatedWidget (widget, duration, easing, blocking, false);
+			var animated_widget = new AnimatedWidget (widget, duration, easing, blocking, false);
 			animated_widget.Parent = this;
 			animated_widget.WidgetDestroyed += OnWidgetDestroyed;
 			stage.Add (animated_widget, duration);
 			animated_widget.StartPadding = 0;
 			animated_widget.EndPadding = widget.Allocation.Height;
-			//			animated_widget.Node = animated_widget;
-			
-			EditorContainerChild info = new EditorContainerChild (this, animated_widget);
+
+			var info = new EditorContainerChild (this, animated_widget);
 			info.X = x;
 			info.Y = y;
 			info.FixedPosition = true;
 			containerChildren.Add (info);
+			animated_widget.Show ();
 			
-			//			RecalculateSpacings ();
 		}
 		#endregion
 		
@@ -837,9 +835,7 @@ namespace Mono.TextEditor
 			this.GdkWindow = new Gdk.Window (ParentWindow, attributes, mask);
 			this.GdkWindow.UserData = this.Raw;
 			this.Style = Style.Attach (this.GdkWindow);
-			this.WidgetFlags &= ~WidgetFlags.NoWindow;
-			
-			//base.OnRealized ();
+
 			imContext.ClientWindow = this.GdkWindow;
 			OptionsChanged (this, EventArgs.Empty);
 			Caret.PositionChanged += CaretPositionChanged;
@@ -852,7 +848,6 @@ namespace Mono.TextEditor
 			if (this.GdkWindow != null) {
 				this.GdkWindow.UserData = IntPtr.Zero;
 				this.GdkWindow.Destroy ();
-				this.WidgetFlags |= WidgetFlags.NoWindow;
 			}
 			base.OnUnrealized ();
 		}
