@@ -140,9 +140,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 	/*
 	public class CompilationUnitNamespaceData : NamespaceData
 	{
-		IParsedFile unit;
+		IUnresolvedFile unit;
 		
-		public CompilationUnitNamespaceData (IParsedFile unit, INamespace fullNamespace) : base (fullNamespace)
+		public CompilationUnitNamespaceData (IUnresolvedFile unit, INamespace fullNamespace) : base (fullNamespace)
 		{
 			this.unit = unit;
 		}

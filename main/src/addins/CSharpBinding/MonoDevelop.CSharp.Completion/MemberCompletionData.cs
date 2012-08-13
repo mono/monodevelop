@@ -262,7 +262,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		TypeSystemAstBuilder GetBuilder (ICompilation compilation)
 		{
-			var ctx = editorCompletion.CSharpParsedFile.GetTypeResolveContext (compilation, editorCompletion.Document.Editor.Caret.Location) as CSharpTypeResolveContext;
+			var ctx = editorCompletion.CSharpUnresolvedFile.GetTypeResolveContext (compilation, editorCompletion.Document.Editor.Caret.Location) as CSharpTypeResolveContext;
 			var state = new CSharpResolver (ctx);
 			var builder = new TypeSystemAstBuilder (state);
 			builder.AddAnnotations = true;

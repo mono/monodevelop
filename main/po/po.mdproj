@@ -39,8 +39,6 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' " />
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' " />
   <!--
   Everything above is for the MD translation project serializer, and isn't really valid MSBuild.
   The real MSBuild project is below. Need to update MD to serialize this instead.

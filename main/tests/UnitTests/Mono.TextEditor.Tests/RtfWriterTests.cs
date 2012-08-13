@@ -41,8 +41,7 @@ namespace Mono.TextEditor.Tests
 			ISyntaxMode mode = SyntaxModeService.GetSyntaxMode (data.Document, "text/x-csharp");
 			string generatedRtf = RtfWriter.GenerateRtf (data.Document, mode, style, data.Options);
 			Assert.AreEqual (
-			@"{\rtf1\ansi\deff0\adeflang1025{\fonttbl{\f0\fnil\fprq1\fcharset128 Mono;}}{\colortbl ;\red92\green53\blue102;\red0\green0\blue0;}\viewkind4\uc1\pard\f0\fs20\cf1\b\cf1 class\b0\cf2  Foo \{\}\par
-}", generatedRtf);
+                @"{\rtf1\ansi\deff0\adeflang1025{\fonttbl{\f0\fnil\fprq1\fcharset128 Mono;}}{\colortbl ;\red92\green53\blue102;\red0\green0\blue0;}\viewkind4\uc1\pard\f0\fs20\cf1\b\cf1 class\b0\cf2  Foo \{\}\par" + Environment.NewLine + "}", generatedRtf);
 		}
 
 		/// <summary>

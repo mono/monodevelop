@@ -31,12 +31,12 @@ namespace MonoDevelop.Ide.TypeSystem
 {
 	public class ParsedFileEventArgs : EventArgs
 	{
-		public IParsedFile File {
+		public IUnresolvedFile File {
 			get;
 			private set;
 		}
 
-		public ParsedFileEventArgs (IParsedFile file)
+		public ParsedFileEventArgs (IUnresolvedFile file)
 		{
 			this.File = file;
 		}

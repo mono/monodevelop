@@ -97,7 +97,7 @@ namespace MonoDevelop.Ide
 						if (pw.ExitCode != 0) 
 							MessageService.ShowError (
 								String.Format (
-								"MonoDoc exited with a exit code = {0}. Error : {1}", 
+								"MonoDoc exited with exit code {0}. Error : {1}", 
 								pw.ExitCode, errWriter.ToString ()));
 						pw = null;
 					}, true);
@@ -140,7 +140,7 @@ namespace MonoDevelop.Ide
 
 							MessageService.ShowError (
 								String.Format (
-								"MonoDoc exited with a exit code = {0}.", 
+								"MonoDoc exited with exit code {0}.", 
 								pw.ExitCode, errWriter.ToString ()));
 							pw = null;
 						}, true);

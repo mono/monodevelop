@@ -13,7 +13,7 @@
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <SignAssembly>True</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\..\external\nrefactory\ICSharpCode.NRefactory.snk</AssemblyOriginatorKeyFile>
     <DelaySign>False</DelaySign>
     <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
     <ProductVersion>10.0.0</ProductVersion>
@@ -123,17 +123,17 @@
     <Compile Include="ILAst\AsyncDecompiler.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+    <ProjectReference Include="..\..\external\Mono.Cecil\Mono.Cecil.csproj">
+      <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
+      <Name>Mono.Cecil</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
       <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
       <Name>ICSharpCode.NRefactory</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
+    <ProjectReference Include="..\..\external\nrefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
       <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
       <Name>ICSharpCode.NRefactory.CSharp</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\external\cecil\Mono.Cecil.csproj">
-      <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
-      <Name>Mono.Cecil</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

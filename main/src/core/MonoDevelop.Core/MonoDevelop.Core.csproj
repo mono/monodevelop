@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -450,21 +450,21 @@
       <Name>MonoDevelop.Projects.Formats.MSBuild</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\contrib\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
-      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
-      <Name>ICSharpCode.NRefactory</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\external\cecil\Mono.Cecil.csproj">
+    <ProjectReference Include="..\..\..\external\Mono.Cecil\Mono.Cecil.csproj">
       <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
       <Name>Mono.Cecil</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\external\cecil\symbols\mdb\Mono.Cecil.Mdb.csproj">
+    <ProjectReference Include="..\..\..\external\Mono.Cecil\symbols\mdb\Mono.Cecil.Mdb.csproj">
       <Project>{8559DD7F-A16F-46D0-A05A-9139FAEBA8FD}</Project>
       <Name>Mono.Cecil.Mdb</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\external\Newtonsoft.Json\Src\Newtonsoft.Json\Newtonsoft.Json.csproj">
       <Project>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</Project>
       <Name>Newtonsoft.Json</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

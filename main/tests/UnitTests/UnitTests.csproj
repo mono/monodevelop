@@ -129,14 +129,6 @@
       <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
       <Name>NRefactory</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\contrib\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
-      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
-      <Name>ICSharpCode.NRefactory</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\contrib\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
-      <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
-      <Name>ICSharpCode.NRefactory.CSharp</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\external\ngit\NGit\NGit.csproj">
       <Project>{E3BFF8B4-189C-496A-A817-7E8B31E22B91}</Project>
       <Name>NGit</Name>
@@ -204,6 +196,14 @@
     <ProjectReference Include="..\..\external\ngit\Sharpen.Unix\Sharpen.Unix.csproj">
       <Project>{849AE05D-0058-4A8C-A0E8-77DC6BB12E52}</Project>
       <Name>Sharpen.Unix</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\external\nrefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
+      <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
+      <Name>ICSharpCode.NRefactory.CSharp</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

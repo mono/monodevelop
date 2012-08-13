@@ -58,7 +58,7 @@ namespace MonoDevelop.Refactoring
 	{
 		Dictionary<string, GenerateNamespaceImport> cache = new Dictionary<string, GenerateNamespaceImport> ();
 		
-		public GenerateNamespaceImport GetResult (IParsedFile unit, IType type, MonoDevelop.Ide.Gui.Document doc)
+		public GenerateNamespaceImport GetResult (IUnresolvedFile unit, IType type, MonoDevelop.Ide.Gui.Document doc)
 		{
 			GenerateNamespaceImport result;
 			if (cache.TryGetValue (type.Namespace, out result))

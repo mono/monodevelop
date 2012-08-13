@@ -52,7 +52,7 @@ namespace ICSharpCode.Decompiler.Ast
 	public class AstBuilder
 	{
 		DecompilerContext context;
-		CompilationUnit astCompileUnit = new CompilationUnit();
+		SyntaxTree astCompileUnit = new SyntaxTree();
 		Dictionary<string, NamespaceDeclaration> astNamespaces = new Dictionary<string, NamespaceDeclaration>();
 		bool transformationsHaveRun;
 		
@@ -162,7 +162,7 @@ namespace ICSharpCode.Decompiler.Ast
 		/// <summary>
 		/// Gets the abstract source tree.
 		/// </summary>
-		public CompilationUnit CompilationUnit {
+		public SyntaxTree CompilationUnit {
 			get { return astCompileUnit; }
 		}
 		
@@ -219,7 +219,7 @@ namespace ICSharpCode.Decompiler.Ast
 			}
 		}
 		
-		void AddTypeForwarderAttributes(CompilationUnit astCompileUnit, ModuleDefinition module, string target)
+		void AddTypeForwarderAttributes(SyntaxTree astCompileUnit, ModuleDefinition module, string target)
 		{
 			if (!module.HasExportedTypes)
 				return;
@@ -253,7 +253,7 @@ namespace ICSharpCode.Decompiler.Ast
 			} else {
 				// Create the namespace
 				NamespaceDeclaration astNamespace = new NamespaceDeclaration { Name = name };
-				astCompileUnit.AddChild(astNamespace, CompilationUnit.MemberRole);
+				astCompileUnit.AddChild(astNamespace, SyntaxTree.MemberRole);
 				astNamespaces[name] = astNamespace;
 				return astNamespace;
 			}
@@ -266,29 +266,29 @@ namespace ICSharpCode.Decompiler.Ast
 			if (astNS != null) {
 				astNS.AddChild(astType, NamespaceDeclaration.MemberRole);
 			} else {
-				astCompileUnit.AddChild(astType, CompilationUnit.MemberRole);
+				astCompileUnit.AddChild(astType, SyntaxTree.MemberRole);
 			}
 		}
 		
 		public void AddMethod(MethodDefinition method)
 		{
 			AstNode node = method.IsConstructor ? (AstNode)CreateConstructor(method) : CreateMethod(method);
-			astCompileUnit.AddChild(node, CompilationUnit.MemberRole);
+			astCompileUnit.AddChild(node, SyntaxTree.MemberRole);
 		}
 
 		public void AddProperty(PropertyDefinition property)
 		{
-			astCompileUnit.AddChild(CreateProperty(property), CompilationUnit.MemberRole);
+			astCompileUnit.AddChild(CreateProperty(property), SyntaxTree.MemberRole);
 		}
 		
 		public void AddField(FieldDefinition field)
 		{
-			astCompileUnit.AddChild(CreateField(field), CompilationUnit.MemberRole);
+			astCompileUnit.AddChild(CreateField(field), SyntaxTree.MemberRole);
 		}
 		
 		public void AddEvent(EventDefinition ev)
 		{
-			astCompileUnit.AddChild(CreateEvent(ev), CompilationUnit.MemberRole);
+			astCompileUnit.AddChild(CreateEvent(ev), SyntaxTree.MemberRole);
 		}
 		
 		/// <summary>

@@ -112,8 +112,8 @@ namespace MonoDevelop.CodeGeneration
 				var parsedDocument = Document.ParsedDocument;
 				if (parsedDocument == null)
 					return null;
-				var unit = parsedDocument.GetAst<CompilationUnit> ().Clone ();
-				var file = parsedDocument.ParsedFile as CSharpParsedFile;
+				var unit = parsedDocument.GetAst<SyntaxTree> ().Clone ();
+				var file = parsedDocument.ParsedFile as CSharpUnresolvedFile;
 				
 				var resolvedNode = unit.GetNodeAt<BlockStatement> (Document.Editor.Caret.Location);
 				if (resolvedNode == null)
@@ -135,7 +135,7 @@ namespace MonoDevelop.CodeGeneration
 		
 		public AstType CreateShortType (IType fullType)
 		{
-			var parsedFile = Document.ParsedDocument.ParsedFile as CSharpParsedFile;
+			var parsedFile = Document.ParsedDocument.ParsedFile as CSharpUnresolvedFile;
 			
 			var csResolver = parsedFile.GetResolver (Document.Compilation, Document.Editor.Caret.Location);
 			

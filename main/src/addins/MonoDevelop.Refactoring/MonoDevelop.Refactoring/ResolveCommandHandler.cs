@@ -56,8 +56,8 @@ namespace MonoDevelop.Refactoring
 			node = null;
 			if (parsedDocument == null)
 				return false;
-			var unit = parsedDocument.GetAst<CompilationUnit> ();
-			var parsedFile = parsedDocument.ParsedFile as CSharpParsedFile;
+			var unit = parsedDocument.GetAst<SyntaxTree> ();
+			var parsedFile = parsedDocument.ParsedFile as CSharpUnresolvedFile;
 			if (unit == null || parsedFile == null)
 				return false;
 			try {
@@ -161,11 +161,11 @@ namespace MonoDevelop.Refactoring
 					wasWhitespaceAfterLetter |= isWhiteSpace;
 			}
 
-			var unit = CompilationUnit.Parse (CreateStub (doc, offset), doc.FileName);
+			var unit = SyntaxTree.Parse (CreateStub (doc, offset), doc.FileName);
 
 			return ResolveAtLocation.Resolve (
 				doc.Compilation, 
-				doc.ParsedDocument.ParsedFile as CSharpParsedFile,
+				doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile,
 				unit,
 				location, 
 				out node);
@@ -202,7 +202,7 @@ namespace MonoDevelop.Refactoring
 
 		static IEnumerable<string> GetPossibleNamespaces (Document doc, AstNode node, ResolveResult resolveResult, DocumentLocation location)
 		{
-			var unit = doc.ParsedDocument.GetAst<CompilationUnit> ();
+			var unit = doc.ParsedDocument.GetAst<SyntaxTree> ();
 			if (unit == null)
 				yield break;
 
@@ -213,7 +213,7 @@ namespace MonoDevelop.Refactoring
 			var lookup = new MemberLookup (null, compilation.MainAssembly);
 			if (resolveResult is AmbiguousTypeResolveResult) {
 				var aResult = resolveResult as AmbiguousTypeResolveResult;
-				var file = doc.ParsedDocument.ParsedFile as CSharpParsedFile;
+				var file = doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile;
 				var scope = file.GetUsingScope (location).Resolve (compilation);
 				while (scope != null) {
 					foreach (var u in scope.Usings) {
@@ -304,7 +304,7 @@ namespace MonoDevelop.Refactoring
 				var loc = doc.Editor.Caret.Location;
 
 				if (!addUsing) {
-					var unit = doc.ParsedDocument.GetAst<CompilationUnit> ();
+					var unit = doc.ParsedDocument.GetAst<SyntaxTree> ();
 					int offset = doc.Editor.LocationToOffset (node.StartLocation);
 					doc.Editor.Insert (offset, ns + ".");
 					doc.Editor.Document.CommitLineUpdate (loc.Line);

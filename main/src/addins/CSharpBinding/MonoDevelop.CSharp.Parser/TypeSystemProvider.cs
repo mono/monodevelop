@@ -83,7 +83,7 @@ namespace MonoDevelop.CSharp.Parser
 			return result;
 		}
 		
-		IEnumerable<FoldingRegion> GenerateFoldings (CompilationUnit unit, ParsedDocument doc)
+		IEnumerable<FoldingRegion> GenerateFoldings (SyntaxTree unit, ParsedDocument doc)
 		{
 			foreach (var fold in doc.ConditionalRegions.ToFolds ())
 				yield return fold;
@@ -117,10 +117,10 @@ namespace MonoDevelop.CSharp.Parser
 					Foldings.Add (new FoldingRegion (new DomRegion (firstChild.StartLocation, node.EndLocation), FoldType.Undefined));
 				}
 			}
-			public override object VisitCompilationUnit (CompilationUnit unit, object data)
+			public override object VisitSyntaxTree (SyntaxTree unit, object data)
 			{
 				AddUsings (unit);
-				return base.VisitCompilationUnit (unit, data);
+				return base.VisitSyntaxTree (unit, data);
 			}
 
 			public override object VisitNamespaceDeclaration (NamespaceDeclaration namespaceDeclaration, object data)

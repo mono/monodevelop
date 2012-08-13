@@ -53,12 +53,12 @@ namespace MonoDevelop.SourceEditor
 
 		class ToolTipData
 		{
-			public CompilationUnit Unit;
+			public SyntaxTree Unit;
 			public ResolveResult Result;
 			public AstNode Node;
 			public CSharpAstResolver Resolver;
 
-			public ToolTipData (ICSharpCode.NRefactory.CSharp.CompilationUnit unit, ICSharpCode.NRefactory.Semantics.ResolveResult result, ICSharpCode.NRefactory.CSharp.AstNode node, CSharpAstResolver file)
+			public ToolTipData (ICSharpCode.NRefactory.CSharp.SyntaxTree unit, ICSharpCode.NRefactory.Semantics.ResolveResult result, ICSharpCode.NRefactory.CSharp.AstNode node, CSharpAstResolver file)
 			{
 				this.Unit = unit;
 				this.Result = result;
@@ -74,11 +74,11 @@ namespace MonoDevelop.SourceEditor
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null || doc.ParsedDocument == null)
 				return null;
-			var unit = doc.ParsedDocument.GetAst<CompilationUnit> ();
+			var unit = doc.ParsedDocument.GetAst<SyntaxTree> ();
 			if (unit == null)
 				return null;
 
-			var file = doc.ParsedDocument.ParsedFile as CSharpParsedFile;
+			var file = doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile;
 			if (file == null)
 				return null;
 			

@@ -55,7 +55,7 @@
       <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
       <Name>MonoDevelop.Ide</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\external\cecil\Mono.Cecil.csproj">
+    <ProjectReference Include="..\..\external\Mono.Cecil\Mono.Cecil.csproj">
       <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
       <Name>Mono.Cecil</Name>
     </ProjectReference>
@@ -67,17 +67,17 @@
       <Project>{984CC812-9470-4A13-AFF9-CC44068D666C}</Project>
       <Name>ICSharpCode.Decompiler</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\contrib\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
-      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
-      <Name>ICSharpCode.NRefactory</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\contrib\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
-      <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
-      <Name>ICSharpCode.NRefactory.CSharp</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\src\core\Mono.Texteditor\Mono.TextEditor.csproj">
       <Project>{A2329308-3751-4DBD-9A75-5F7B8B024625}</Project>
       <Name>Mono.TextEditor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\external\nrefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
+      <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
+      <Name>ICSharpCode.NRefactory.CSharp</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>
