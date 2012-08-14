@@ -45,11 +45,13 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 	public partial class AddViewDialog : Gtk.Dialog
 	{	
 		AspMvcProject project;
-		IList<string> loadedTemplateList;
+		IDictionary<string, IList<string>> loadedTemplateList;
+		IDictionary<string, Gtk.ListStore> templateStore;
+		Gtk.ListStore dataClassStore;
 		string oldMaster;
+		string oldEngine;
 		Gtk.ListStore primaryPlaceholderStore = new Gtk.ListStore (typeof (String));
 		System.CodeDom.Compiler.CodeDomProvider provider;
-		DropDownBox dataClassCombo;
 		TypeDataProvider classDataProvider;
 		
 		public AddViewDialog (AspMvcProject project)
@@ -57,46 +59,69 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			this.project = project;
 			this.Build ();
 			
-			dataClassCombo = new DropDownBox ();
-			
-			int w, h;
-			Gtk.Icon.SizeLookup (Gtk.IconSize.Menu, out w, out h);
-			dataClassCombo.DefaultIconHeight = Math.Max (h, 16);
-			dataClassCombo.DefaultIconWidth = Math.Max (w, 16);
-			dataClassAlignment.Add (dataClassCombo);
-			dataClassAlignment.QueueResize ();
-			dataClassCombo.ShowAll ();
-			
 			provider = project.LanguageBinding.GetCodeDomProvider ();
+
+			var viewEngines = GetProperViewEngines ();
+			loadedTemplateList = new Dictionary<string, IList<string>> ();
+			foreach (var engine in viewEngines) {
+				viewEngineCombo.AppendText (engine);
+				string type = PP.Combine (project.LanguageName, "AddView", engine);
+				loadedTemplateList[engine] = project.GetCodeTemplates (type);
+			}
+
+			viewEngineCombo.Active = 0;
+			InitializeTemplateStore (loadedTemplateList);
 			
 			ContentPlaceHolders = new List<string> ();
 			string siteMaster = project.VirtualToLocalPath ("~/Views/Shared/Site.master", null);
 			if (project.Files.GetFile (siteMaster) != null)
 				masterEntry.Text = "~/Views/Shared/Site.master";
 			
-			loadedTemplateList = project.GetCodeTemplates ("AddView");
-			bool foundEmptyTemplate = false;
-			int templateIndex = 0;
-			foreach (string file in loadedTemplateList) {
-				string name = PP.GetFileNameWithoutExtension (file);
-				templateCombo.AppendText (name);
-				if (!foundEmptyTemplate){
-					if (name == "Empty") {
-						templateCombo.Active = templateIndex;
-						foundEmptyTemplate = true;
-					} else
-						templateIndex++;
-				}
-			}
-			
-			if (!foundEmptyTemplate)
-				throw new Exception ("The Empty.tt template is missing.");
-			
 			primaryPlaceholderCombo.Model = primaryPlaceholderStore;
 			
 			UpdateTypePanelSensitivity (null, null);
 			UpdateMasterPanelSensitivity (null, null);
 			Validate ();
+		}
+
+		IEnumerable<string> GetProperViewEngines ()
+		{
+			yield return "Aspx";
+			if (MvcVersion.CompareTo ("2.0.0.0") > 0)
+				yield return "Razor";
+		}
+
+		void InitializeTemplateStore (IDictionary<string, IList<string>> tempList)
+		{
+			templateStore = new Dictionary<string, Gtk.ListStore> ();
+
+			foreach (var engine in tempList.Keys) {
+				bool foundEmptyTemplate = false;
+				templateStore[engine] = new Gtk.ListStore (typeof (string));
+
+				foreach (string file in tempList[engine]) {
+					string name = PP.GetFileNameWithoutExtension (file);
+					if (!foundEmptyTemplate) {
+						if (name == "Empty") {
+							templateStore[engine].InsertWithValues (0, name);
+							foundEmptyTemplate = true;
+						} else
+							templateStore[engine].AppendValues (name);
+					}
+				}
+
+				if (!foundEmptyTemplate)
+					throw new Exception ("The Empty.tt template is missing.");
+			}
+
+			UpdateTemplateList ();
+		}
+
+		void UpdateTemplateList ()
+		{
+			templateCombo.Model = templateStore[ActiveViewEngine];
+			oldEngine = ActiveViewEngine;
+			templateCombo.Active = 0;
 		}
 		
 		protected virtual void Validate (object sender, EventArgs e)
@@ -114,21 +139,25 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			bool canHaveMaster = !IsPartialView;
 			masterCheck.Sensitive = canHaveMaster;
 			masterPanel.Sensitive = canHaveMaster && HasMaster;
+			placeholderBox.Sensitive = masterPanel.Sensitive && ActiveViewEngine != "Razor";
 			MasterChanged (null, null);
 			Validate ();
 		}
 		
 		protected virtual void UpdateTypePanelSensitivity (object sender, EventArgs e)
 		{
-			//FIXME: need to fix the class list widget
-			bool enabled = typePanel.Sensitive = false; // stronglyTypedCheck.Active;
-			
+			bool enabled = typePanel.Sensitive = stronglyTypedCheck.Active;
+
 			if (enabled && classDataProvider == null) {
-				dataClassCombo.DataProvider = classDataProvider = new TypeDataProvider (project);
-				if (classDataProvider.List.Count > 0)
-					dataClassCombo.SetItem (0);
+				classDataProvider = new TypeDataProvider (project);
+				dataClassStore = new Gtk.ListStore (typeof (string));
+				foreach (var item in classDataProvider.TypeNamesList)
+					dataClassStore.AppendValues (item);
+				dataClassCombo.Model = dataClassStore;
+				if (classDataProvider.TypeNamesList.Count > 0)
+					dataClassCombo.Active = 0;
 			}
-			
+
 			Validate ();
 		}
 		
@@ -142,14 +171,15 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		{
 			if (!IsValidIdentifier (ViewName))
 				return false;
-			
-			if (!IsPartialView && HasMaster) {
+
+			if (!IsPartialView && HasMaster && ActiveViewEngine != "Razor") {
 				if (String.IsNullOrEmpty (MasterFile) || !System.IO.File.Exists (project.VirtualToLocalPath (oldMaster, null)))
-				return false;
+					return false;
 				//PrimaryPlaceHolder can be empty
+				//Layout Page can be empty in Razor Views - it's usually set in _ViewStart.cshtml file
 			}
 			
-			if (IsStronglyTyped && (ViewDataType == null))
+			if (IsStronglyTyped && String.IsNullOrEmpty(ViewDataTypeString))
 			    return false;
 			
 			return true;
@@ -162,8 +192,17 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 	
 		protected virtual void ShowMasterSelectionDialog (object sender, System.EventArgs e)
 		{
-			var dialog = new MonoDevelop.Ide.Projects.ProjectFileSelectorDialog (project, null, "*.master") {
-				Title = MonoDevelop.Core.GettextCatalog.GetString ("Select a Master Page..."),
+			string pattern, title;
+			if (ActiveViewEngine == "Razor") {
+				pattern = "*.cshtml";
+				title = MonoDevelop.Core.GettextCatalog.GetString ("Select a Layout file...");
+			} else {
+				pattern = "*.master";
+				title = MonoDevelop.Core.GettextCatalog.GetString ("Select a Master Page...");
+			}
+			var dialog = new MonoDevelop.Ide.Projects.ProjectFileSelectorDialog (project, null, pattern)
+			{
+				Title = title,
 				TransientFor = this,
 			};
 			try {
@@ -204,7 +243,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 						primaryPlaceholderStore.AppendValues (placeholder);
 						
 						if (placeholder.Contains ("main") || placeholder.Contains ("Main") 
-						    	|| placeholder.Contains ("content") || placeholder.Contains ("Main"))
+							|| placeholder.Contains ("content") || placeholder.Contains ("Content"))
 							primaryPlaceholderCombo.Active = i;
 					}
 				} catch (Exception ex) {
@@ -214,12 +253,33 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			
 			Validate ();
 		}
+
+		protected virtual void ViewEngineChanged (object sender, EventArgs e)
+		{
+			if (String.IsNullOrEmpty (oldEngine))
+				return;
+			if (oldEngine != ActiveViewEngine) {
+				UpdateTemplateList ();
+				UpdateMasterPanelSensitivity (null, null);
+			}
+		}
+
+		protected virtual void DataClassChanged (object sender, EventArgs e)
+		{
+			Validate ();
+		}
 		
 		#region Public properties
 		
-		public IType ViewDataType {
+		public Type ViewDataType {
 			get {
-				return (IType)dataClassCombo.CurrentItem;
+				return dataClassCombo.Active >= 0 ? (Type)classDataProvider.TypesList[dataClassCombo.Active] : System.Type.GetType(dataClassCombo.ActiveText, false);
+			}
+		}
+
+		public string ViewDataTypeString {
+			get {
+				return dataClassCombo.ActiveText;
 			}
 		}
 		
@@ -247,7 +307,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		
 		public string TemplateFile {
 			get {
-				return loadedTemplateList[templateCombo.Active];
+				return loadedTemplateList[ActiveViewEngine][templateCombo.Active];
 			}
 		}
 		
@@ -267,47 +327,40 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		public bool IsStronglyTyped {
 			get { return stronglyTypedCheck.Active; }
 		}
+
+		public string ActiveViewEngine {
+			get { return viewEngineCombo.ActiveText; }
+		}
+
+		public string MvcVersion {
+			get {
+				var asm = project.References.FirstOrDefault (
+					r => r.Reference.StartsWith ("System.Web.Mvc", StringComparison.InvariantCultureIgnoreCase));
+				if (asm != null) {
+					string pattern = "Version=";
+					return asm.Reference.Substring (asm.Reference.IndexOf (pattern) + pattern.Length, "0.0.0.0".Length);
+				}
+				return "2.0.0.0";
+			}
+		}
 		
 		#endregion
-		
-		class TypeDataProvider : DropDownBoxListWindow.IListDataProvider
+
+		class TypeDataProvider
 		{
+			public List<ITypeDefinition> TypesList { get; private set; }
+			public List<string> TypeNamesList { get; private set; }
 			Ambience ambience;
-			
-			public List<ITypeDefinition> List { get; private set; }
-			
+
 			public TypeDataProvider (MonoDevelop.Projects.DotNetProject project)
 			{
+				TypeNamesList = new List<string> ();
 				var ctx = TypeSystemService.GetCompilation (project);
-				List = new List<ITypeDefinition> (ctx.MainAssembly.GetAllTypeDefinitions ());
+				TypesList = new List<ITypeDefinition> (ctx.MainAssembly.GetAllTypeDefinitions ());
 				this.ambience = AmbienceService.GetAmbience (project.LanguageName);
-			}
-			
-			public int IconCount { get { return List.Count; } }
-			
-			public void Reset ()
-			{
-				//called when the list is shown
-			}
-			
-			public string GetMarkup (int n)
-			{
-				return ambience.GetString ((IEntity)List[n], OutputFlags.IncludeGenerics | OutputFlags.UseFullName | OutputFlags.IncludeMarkup);
-			}
-			
-			public Gdk.Pixbuf GetIcon (int n)
-			{
-				return ImageService.GetPixbuf (List[n].GetStockIcon (),Gtk.IconSize.Menu);
-			}
-			
-			public object GetTag (int n)
-			{
-				return List[n];
-			}
-			
-			public void ActivateItem (int n)
-			{
-				// nothing
+				foreach (var typeDef in TypesList) {
+					TypeNamesList.Add (ambience.GetString ((IEntity)typeDef, OutputFlags.IncludeGenerics | OutputFlags.UseFullName | OutputFlags.IncludeMarkup));
+				}
 			}
 		}
 	}
