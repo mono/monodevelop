@@ -528,10 +528,10 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
-		Lazy<TooltipInformation> info = new Lazy<MonoDevelop.Ide.CodeCompletion.TooltipInformation> () { () => {
+		Lazy<TooltipInformation> info = new Lazy<MonoDevelop.Ide.CodeCompletion.TooltipInformation> (() => {
 				TooltipInformation result = new TooltipInformation ();
-				return result;
-			}};
+			return result;
+		});
 		
 		public override TooltipInformation TooltipInformation {
 			get {
