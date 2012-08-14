@@ -54,6 +54,7 @@
 	<Extension path="/MonoDevelop/Ide/FileTemplates">
 		<FileTemplate id="EmptyFSharpSource" resource="EmptyFSharpSource.xft.xml"/>
     	<FileTemplate id="EmptyFSharpScript" resource="EmptyFSharpScript.xft.xml"/>
+        <FileTemplate id="FSharpAssemblyInfo" resource="AssemblyInfo.xft.xml" />
   	</Extension>
 
   	<Extension path="/MonoDevelop/Ide/ProjectTemplates">
