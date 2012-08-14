@@ -168,4 +168,14 @@
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
 		<NodeBuilder id="AspMvcFolderNodeBuilderExtension" class = "MonoDevelop.AspNet.Mvc.Gui.FolderNodeBuilderExtension"/>
 	</Extension>
+
+	<Extension path = "/MonoDevelop/TypeSystem/Parser">
+		<Parser class = "MonoDevelop.AspNet.Mvc.Parser.RazorCSharpParser" mimeType="text/x-cshtml" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Core/MimeTypes">
+		<MimeType id="text/x-cshtml" _description="ASP.NET MVC Razor View" icon="md-html-file-icon" isText="true">
+			<File pattern="*.cshtml" />
+		</MimeType>
+	</Extension>
 </Addin>
