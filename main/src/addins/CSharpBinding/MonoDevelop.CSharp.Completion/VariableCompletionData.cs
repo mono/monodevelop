@@ -38,15 +38,10 @@ namespace MonoDevelop.CSharp.Completion
 			private set;
 		}
 
-		Lazy<TooltipInformation> info = new Lazy<MonoDevelop.Ide.CodeCompletion.TooltipInformation> (() => {
-			TooltipInformation result = new TooltipInformation ();
-			return result;
-		});
-		
-		public override TooltipInformation TooltipInformation {
-			get {
-				return info.Value;
-			}
+		public override TooltipInformation CreateTooltipInformation (bool smartWrap)
+		{
+			var tooltipInfo = new TooltipInformation ();
+			return tooltipInfo;
 		}
 
 		public VariableCompletionData (IVariable variable) : base (variable.Name, variable.GetStockIcon ())

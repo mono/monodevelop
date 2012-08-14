@@ -33,155 +33,346 @@ using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using System.Collections.Generic;
+using Mono.TextEditor.Highlighting;
+using Mono.TextEditor;
 
 namespace MonoDevelop.CSharp
 {
 	public class SignatureMarkupCreator
-	{/*
-		public string GetTypeString (IType t, OutputSettings settings)
+	{
+		const double optionalAlpha = 0.7;
+		readonly CSharpResolver resolver;
+		readonly TypeSystemAstBuilder astBuilder;
+		readonly CSharpFormattingOptions formattingOptions;
+		readonly TextEditorData textEditor;
+
+		public bool BreakLineAfterReturnType {
+			get;
+			set;
+		}
+
+		public SignatureMarkupCreator (TextEditorData textEditor, CSharpResolver resolver, CSharpFormattingOptions formattingOptions)
 		{
-			if (t.Kind == TypeKind.Unknown) {
-				return t.Name;
+			this.textEditor = textEditor;
+			this.resolver = resolver;
+			this.astBuilder = new TypeSystemAstBuilder (resolver);
+			this.formattingOptions = formattingOptions;
+		}
+
+		public string GetTypeReferenceString (IType typeReference)
+		{
+			if (typeReference == null)
+				throw new ArgumentNullException ("typeReference");
+			var astType = astBuilder.ConvertType (resolver.Compilation.Import (typeReference));
+			if (astType is PrimitiveType) {
+				return Highlight (astType.GetText (formattingOptions), "keyword.type");
 			}
-			
-			if (t.Kind == TypeKind.TypeParameter)
-				return t.FullName;
-			
-			var typeWithElementType = t as TypeWithElementType;
-			if (typeWithElementType != null) {
-				var sb = new StringBuilder ();
+			var text = AmbienceService.EscapeText (astType.GetText (formattingOptions));
+			return HighlightSemantically (text, "keyword.semantic.type");
+		}
+
+		public string GetString (IEntity entity)
+		{
+			switch (entity.EntityType) {
+			case EntityType.TypeDefinition:
+				break;
+			case EntityType.Field:
+				return GetFieldMarkup ((IField)entity);
+			case EntityType.Property:
+			case EntityType.Indexer:
+				return GetPropertyMarkup ((IProperty)entity);
+			case EntityType.Event:
+				return GetEventMarkup ((IEvent)entity);
+			case EntityType.Method:
+			case EntityType.Operator:
+			case EntityType.Constructor:
+			case EntityType.Destructor:
+				return GetMethodMarkup ((IMethod)entity);
 				
-				if (typeWithElementType is PointerType) {
-					sb.Append (settings.Markup ("*"));
-				} 
-				AppendType (sb, typeWithElementType.ElementType, settings);
-				
-				if (typeWithElementType is ArrayType) {
-					sb.Append (settings.Markup ("["));
-					sb.Append (settings.Markup (new string (',', ((ArrayType)t).Dimensions - 1)));
-					sb.Append (settings.Markup ("]"));
-				}
-				return sb.ToString ();
+			default:
+				throw new ArgumentOutOfRangeException ();
 			}
+			return "";
+		}
+
+		void AppendModifiers (StringBuilder result, IEntity entity)
+		{
+			if (entity.IsStatic)
+				result.Append (Highlight ("static ", "keyword.modifier"));
+			if (entity.IsSealed)
+				result.Append (Highlight ("sealed ", "keyword.modifier"));
+			if (entity.IsAbstract)
+				result.Append (Highlight ("abstract ", "keyword.modifier"));
+			if (entity.IsShadowing)
+				result.Append (Highlight ("new ", "keyword.modifier"));
 			
-			ITypeDefinition type = t.GetDefinition ();
-			if (type == null)
-				return "";
-			
-			if (!settings.UseNETTypeNames && type.Namespace == "System" && type.TypeParameterCount == 0) {
-				switch (type.Name) {
-				case "Object":
-					return "object";
-				case "Boolean":
-					return "bool";
-				case "Char":
-					return "char";
-				case "SByte":
-					return "sbyte";
-				case "Byte":
-					return "byte";
-				case "Int16":
-					return "short";
-				case "UInt16":
-					return "ushort";
-				case "Int32":
-					return "int";
-				case "UInt32":
-					return "uint";
-				case "Int64":
-					return "long";
-				case "UInt64":
-					return "ulong";
-				case "Single":
-					return "float";
-				case "Double":
-					return "double";
-				case "Decimal":
-					return "decimal";
-				case "String":
-					return "string";
-				case "Void":
-					return "void";
-				}
+			switch (entity.Accessibility) {
+			case Accessibility.Internal:
+				if (entity.EntityType != EntityType.TypeDefinition)
+					result.Append (Highlight ("internal ", "keyword.modifier"));
+				break;
+			case Accessibility.ProtectedAndInternal:
+				result.Append (Highlight ("protected internal ", "keyword.modifier"));
+				break;
+			case Accessibility.ProtectedOrInternal:
+				result.Append (Highlight ("internal protected ", "keyword.modifier"));
+				break;
+			case Accessibility.Protected:
+				result.Append (Highlight ("protected ", "keyword.modifier"));
+				break;
+			case Accessibility.Private:
+// private is the default modifier - no need to show that
+//				result.Append (Highlight (" private", "keyword.modifier"));
+				break;
+			case Accessibility.Public:
+				result.Append (Highlight ("public ", "keyword.modifier"));
+				break;
 			}
-			
-			// output anonymous type
-			if (type.IsSynthetic && type.Name == "$Anonymous$")
-				return GetTypeReferenceString (type, settings);
-			
+		}
+
+		string GetFieldMarkup (IField field)
+		{
+			if (field == null)
+				throw new ArgumentNullException ("field");
+
 			var result = new StringBuilder ();
-			
-			
-			var def = type;
-			AppendModifiers (result, settings, def);
-			if (settings.IncludeKeywords)
-				result.Append (GetString (def.Kind));
-			if (result.Length > 0 && !result.ToString ().EndsWith (" "))
-				result.Append (settings.Markup (" "));
-			
-			
-			if (type.Kind == TypeKind.Delegate && settings.ReformatDelegates && settings.IncludeReturnType) {
-				var invoke = type.GetDelegateInvokeMethod ();
-				result.Append (GetTypeReferenceString (invoke.ReturnType, settings));
-				result.Append (settings.Markup (" "));
-			}
-			
-			if (settings.UseFullName && !string.IsNullOrEmpty (type.Namespace)) 
-				result.Append (type.Namespace + ".");
-			
-			if (settings.UseFullInnerTypeName && type.DeclaringTypeDefinition != null) {
-				bool includeGenerics = settings.IncludeGenerics;
-				settings.OutputFlags |= OutputFlags.IncludeGenerics;
-				string typeString = GetTypeReferenceString (type.DeclaringTypeDefinition, settings);
-				if (!includeGenerics)
-					settings.OutputFlags &= ~OutputFlags.IncludeGenerics;
-				result.Append (typeString);
-				result.Append (settings.Markup ("."));
-			}
-			result.Append (settings.EmitName (type, type.Name));
-			if (settings.IncludeGenerics && type.TypeParameterCount > 0) {
-				result.Append (settings.Markup ("<"));
-				for (int i = 0; i < type.TypeParameterCount; i++) {
-					if (i > 0)
-						result.Append (settings.Markup (settings.HideGenericParameterNames ? "," : ", "));
-					if (!settings.HideGenericParameterNames) {
-						if (t is ParameterizedType) {
-							result.Append (GetTypeReferenceString (((ParameterizedType)t).TypeArguments [i], settings));
-						} else {
-							AppendVariance (result, type.TypeParameters [i].Variance);
-							result.Append (NetToCSharpTypeName (type.TypeParameters [i].FullName));
-						}
-					}
+			bool isEnum = field.DeclaringTypeDefinition != null && field.DeclaringTypeDefinition.Kind == TypeKind.Enum;
+			AppendModifiers (result, field);
+			if (!isEnum) {
+				result.Append (GetTypeReferenceString (field.ReturnType));
+				if (BreakLineAfterReturnType) {
+					result.AppendLine ();
+				} else {
+					result.Append (" ");
 				}
-				result.Append (settings.Markup (">"));
 			}
-			
-			if (t.Kind == TypeKind.Delegate && settings.ReformatDelegates) {
-				//				var policy = GetPolicy (settings);
-				//				if (policy.BeforeMethodCallParentheses)
-				//					result.Append (settings.Markup (" "));
-				result.Append (settings.Markup ("("));
-				var invoke = type.GetDelegateInvokeMethod ();
-				if (invoke != null) 
-					AppendParameterList (result, settings, invoke.Parameters);
-				result.Append (settings.Markup (")"));
-				return result.ToString ();
-			}
-			
-			if (settings.IncludeBaseTypes && type.DirectBaseTypes.Any ()) {
-				bool first = true;
-				foreach (var baseType in type.DirectBaseTypes) {
-					//				if (baseType.FullName == "System.Object" || baseType.FullName == "System.Enum")
-					//					continue;
-					result.Append (settings.Markup (first ? " : " : ", "));
-					first = false;
-					result.Append (GetTypeReferenceString (baseType, settings));	
-				}
-				
-			}
-			//		OutputConstraints (result, settings, type.TypeParameters);
+			result.Append (field.Name);
 			return result.ToString ();
 		}
-	*/}
-}
 
+		string GetMethodMarkup (IMethod method)
+		{
+			if (method == null)
+				throw new ArgumentNullException ("method");
+
+			var result = new StringBuilder ();
+			AppendModifiers (result, method);
+			result.Append (GetTypeReferenceString (method.ReturnType));
+			if (BreakLineAfterReturnType) {
+				result.AppendLine ();
+			} else {
+				result.Append (" ");
+			}
+
+			AppendExplicitInterfaces (result, method);
+
+			if (method.EntityType == EntityType.Operator) {
+				result.Append ("operator ");
+				result.Append (CSharpAmbience.GetOperator (method.Name));
+			} else {
+				result.Append (method.Name);
+			}
+			
+			if (method.TypeParameters.Count > 0) {
+				result.Append ("&lt;");
+				for (int i = 0; i < method.TypeParameters.Count; i++) {
+					if (i > 0)
+						result.Append (", ");
+					AppendVariance (result, method.TypeParameters [i].Variance);
+					result.Append (CSharpAmbience.NetToCSharpTypeName (method.TypeParameters [i].Name));
+				}
+				result.Append ("&gt;");
+			}
+
+			if (formattingOptions.SpaceBeforeMethodDeclarationParentheses)
+				result.Append (" ");
+
+			result.Append ('(');
+			AppendParameterList (result,  method.Parameters);
+			result.Append (" )");
+			return result.ToString ();
+		}
+
+		string GetPropertyMarkup (IProperty property)
+		{
+			if (property == null)
+				throw new ArgumentNullException ("property");
+			var result = new StringBuilder ();
+			AppendModifiers (result, property);
+			result.Append (GetTypeReferenceString (property.ReturnType));
+			if (BreakLineAfterReturnType) {
+				result.AppendLine ();
+			} else {
+				result.Append (" ");
+			}
+
+			AppendExplicitInterfaces (result, property);
+			
+			if (property.EntityType == EntityType.Indexer) {
+				result.Append (Highlight ("this", "keyword.access"));
+			} else {
+				result.Append (CSharpAmbience.FilterName (property.Name));
+			}
+			
+			if (property.Parameters.Count > 0) {
+				if (formattingOptions.SpaceBeforeIndexerDeclarationBracket)
+					result.Append (" ");
+				result.Append ("[");
+				AppendParameterList (result, property.Parameters);
+				result.Append ("]");
+			}
+			
+			result.Append (" {");
+			if (property.CanGet)
+				result.Append (Highlight (" get", "keyword.property") + ";");
+			if (property.CanSet)
+				result.Append (Highlight (" set", "keyword.property") + ";");
+			result.Append (" }");
+
+			return result.ToString ();
+		}
+
+		string GetEventMarkup (IEvent evt)
+		{
+			if (evt == null)
+				throw new ArgumentNullException ("evt");
+			var result = new StringBuilder ();
+			AppendModifiers (result, evt);
+			result.Append (Highlight ("event ", "keyword.modifier"));
+			result.Append (GetTypeReferenceString (evt.ReturnType));
+			if (BreakLineAfterReturnType) {
+				result.AppendLine ();
+			} else {
+				result.Append (" ");
+			}
+
+			AppendExplicitInterfaces (result, evt);
+			result.Append (CSharpAmbience.FilterName (evt.Name));
+			return result.ToString ();
+		}
+
+		bool grayOut;
+		bool GrayOut {
+			get {
+				return grayOut;
+			}
+			set {
+				grayOut = value;
+			}
+		}
+
+		void AppendParameterList (StringBuilder result, IList<IParameter> parameterList)
+		{
+			if (parameterList == null)
+				return;
+			
+			result.AppendLine ();
+			for (int i = 0; i < parameterList.Count; i++) {
+				var parameter = parameterList [i];
+				result.Append (new string (' ', 2));
+				if (parameter.IsOptional) {
+					GrayOut = true;
+					var color = AlphaBlend (textEditor.ColorStyle.Default.Color, textEditor.ColorStyle.Default.BackgroundColor, optionalAlpha);
+					var colorString = Mono.TextEditor.HelperMethods.GetColorString (color);
+					result.Append ("<span foreground=\"" + colorString + "\">");
+				}
+				AppendParameter (result, parameter);
+				if (parameter.IsOptional) {
+					if (formattingOptions.SpaceAroundAssignment) {
+						result.Append (" = ");
+					} else {
+						result.Append ("=");
+					}
+					AppendConstant (result, parameter.ConstantValue);
+					GrayOut = false;
+					result.Append ("</span>");
+				}
+				if (i + 1 < parameterList.Count) {
+					result.Append (',');
+					result.AppendLine ();
+				}
+			}
+			result.AppendLine ();
+		}
+		
+		void AppendParameter (StringBuilder result, IParameter parameter)
+		{
+			if (parameter == null)
+				return;
+			if (parameter.IsOut) {
+				result.Append (Highlight ("out ", "keyword.parameter"));
+			} else if (parameter.IsRef) {
+				result.Append (Highlight ("ref ", "keyword.parameter"));
+			} else if (parameter.IsParams) {
+				result.Append (Highlight ("params", "keyword.parameter"));
+			}
+			result.Append (GetTypeReferenceString (parameter.Type));
+			result.Append (" ");
+			result.Append (parameter.Name);
+		}
+
+		void AppendExplicitInterfaces (StringBuilder sb, IMember member)
+		{
+			if (member == null || !member.IsExplicitInterfaceImplementation)
+				return;
+			foreach (var implementedInterfaceMember in member.ImplementedInterfaceMembers) {
+				sb.Append (GetTypeReferenceString (implementedInterfaceMember.DeclaringTypeDefinition));
+				sb.Append (".");
+			}
+		}
+
+		void AppendConstant (StringBuilder sb, object constantValue)
+		{
+			if (constantValue is string) {
+				sb.Append (Highlight ("\"" + constantValue +"\"", "string.double"));
+				return;
+			}
+			if (constantValue is char) {
+				sb.Append (Highlight ("'" + constantValue +"'", "string.single"));
+				return;
+			}
+			sb.Append (Highlight (constantValue.ToString (), "constant.digit"));
+		}
+
+		void AppendVariance (StringBuilder sb, VarianceModifier variance)
+		{
+			if (variance  == VarianceModifier.Contravariant) {
+				sb.Append (Highlight ("in ", "keyword.parameter"));
+			} else if (variance  == VarianceModifier.Covariant) {
+				sb.Append (Highlight ("out ", "keyword.parameter"));
+			}
+		}
+
+		Gdk.Color AlphaBlend (Gdk.Color color, Gdk.Color color2, double alpha)
+		{
+			return new Gdk.Color (
+				(byte)((alpha * color.Red + (1 - alpha) * color2.Red) / 256), 
+				(byte)((alpha * color.Green + (1 - alpha) * color2.Green) / 256), 
+				(byte)((alpha * color.Blue + (1 - alpha) * color2.Blue) / 256)
+			);
+		}
+
+		string Highlight (string str, string colorScheme)
+		{
+			var style = textEditor.ColorStyle.GetChunkStyle (colorScheme);
+			if (style != null) {
+				var color = style.Color;
+				
+				if (grayOut) {
+					color = AlphaBlend (color, textEditor.ColorStyle.Default.BackgroundColor, optionalAlpha);
+				}
+				
+				var colorString = Mono.TextEditor.HelperMethods.GetColorString (color);
+				return "<span foreground=\"" + colorString + "\">" + str + "</span>";
+			}
+			return str;
+		}
+
+		string HighlightSemantically (string str, string colorScheme)
+		{
+			if (!MonoDevelop.SourceEditor.DefaultSourceEditorOptions.Instance.EnableSemanticHighlighting)
+				return str;
+			return Highlight (str, colorScheme);
+		}
+	}
+}

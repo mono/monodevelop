@@ -48,7 +48,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
 			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
-
 				var h = Allocation.Height;
 				var w = Allocation.Width;
 				context.Translate (Allocation.X, Allocation.Y);
@@ -99,6 +98,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			AppPaintable = true;
 			VisibleWindow = false;
+			Show ();
 		}
 
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
@@ -152,23 +152,51 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 
-		public void AddOverload (TooltipInformation tooltipInformation)
+		public void AddOverload (CompletionData data)
 		{
+			var tooltipInformation = data.CreateTooltipInformation (false);
+
+			using (var layout = new Pango.Layout (PangoContext)) {
+				var des = FontService.GetFontDescription ("Editor");
+				layout.FontDescription = des;
+				layout.SetMarkup (tooltipInformation.SignatureMarkup);
+				int w, h;
+				layout.GetPixelSize (out w, out h);
+				if (w >= Allocation.Width - 10) {
+					tooltipInformation = data.CreateTooltipInformation (true);
+				}
+			}
+
+
 			overloads.Add (tooltipInformation);
 			if (overloads.Count == 2)
 				helpbox.Visible = true;
+			infoBubbles.Bubbles = overloads.Count;
+
 			ShowOverload ();
+		}
+
+		protected override void OnSizeRequested (ref Requisition requisition)
+		{
+			requisition.Width = Math.Min (Allocation.Width, requisition.Width);
+			requisition.Height = Math.Min (Allocation.Height, requisition.Height);
+			base.OnSizeRequested (ref requisition);
 		}
 
 		void ShowOverload ()
 		{
 			if (current_overload >= 0 && current_overload < overloads.Count) {
-				SetFixedWidth (Allocation.Width);
+				QueueResize ();
 				var o = overloads[current_overload];
 				headlabel.Markup = o.SignatureMarkup;
 				headlabel.Visible = true;
-				bodylabel.Markup = "<span size=\"smaller\">Summary</span>"+ Environment.NewLine + o.SummaryMarkup;
-				bodylabel.Visible = true;
+				if (!string.IsNullOrEmpty (o.SummaryMarkup)) {
+					bodylabel.Markup = "<span size=\"smaller\">Summary</span>"+ Environment.NewLine + o.SummaryMarkup;
+					bodylabel.Visible = true;
+				} else {
+					bodylabel.Visible = false;
+				}
+				infoBubbles.ActiveBubble = current_overload;
 			}
 		}
 
@@ -252,9 +280,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			vb2.Spacing = 4;
 			vb2.PackStart (hb, true, true, 0);
 			vb2.PackStart (helpbox, false, true, 0);
-			
 			this.Add (vb2);
-			
+			var scheme = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (Style, PropertyService.Get<string> ("ColorScheme"));
+			this.BackgroundColor = scheme.Tooltip.CairoBackgroundColor;
 			ShowAll ();
 		}
 	}

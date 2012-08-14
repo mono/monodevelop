@@ -143,6 +143,8 @@
 	<Style name="text.markup.attribute" color="chameleon2"/>
 	<Style name="text.markup.tag" color="skyblue1"/>
 	
+	<Style name="tooltip" color="black" bgColor="#feffe9"/>
+	
 	<Style name="constant" color="butter2"/>
 	<Style name="constant.digit" color="butter2"/>
 	<Style name="constant.language" color="orange3"/>

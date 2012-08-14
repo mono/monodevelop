@@ -60,6 +60,13 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 
+		public const string TooltipString = "tooltip";
+		public virtual ChunkStyle Tooltip {
+			get {
+				return GetChunkStyle (TooltipString);
+			}
+		}
+
 		public const string LineNumberString = "linenumber";
 		public virtual ChunkStyle LineNumber {
 			get {

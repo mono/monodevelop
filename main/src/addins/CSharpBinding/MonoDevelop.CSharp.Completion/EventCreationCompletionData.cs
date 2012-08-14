@@ -47,15 +47,10 @@ namespace MonoDevelop.CSharp.Completion
 		public bool AddSemicolon = true;
 		TextEditorData editor;
 
-		Lazy<TooltipInformation> info = new Lazy<MonoDevelop.Ide.CodeCompletion.TooltipInformation> (() => {
-			TooltipInformation result = new TooltipInformation ();
-			return result;
-		});
-
-		public override TooltipInformation TooltipInformation {
-			get {
-				return info.Value;
-			}
+		public override TooltipInformation CreateTooltipInformation (bool smartWrap)
+		{
+			var tooltipInfo = new TooltipInformation ();
+			return tooltipInfo;
 		}
 
 		public EventCreationCompletionData (CSharpCompletionTextEditorExtension ext, string varName, IType delegateType, IEvent evt, string parameterList, IUnresolvedMember callingMember, IUnresolvedTypeDefinition declaringType) : base (null)

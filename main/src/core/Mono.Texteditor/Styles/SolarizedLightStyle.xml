@@ -70,6 +70,8 @@ THE SOFTWARE.
 		</Style>
 	</Style>
 	
+	<Style name="tooltip" color="black" bgColor="#feffe9"/>
+	
 	<Style name="template" color ="black" bgColor="#fdfaed">
 		<Style name="tag" color ="black" bgColor="#fdf0bd"/>
 	</Style>

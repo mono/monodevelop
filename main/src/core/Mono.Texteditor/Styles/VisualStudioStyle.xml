@@ -72,6 +72,8 @@
 	<Style name="text.preprocessor" color="purple"/>
 	<Style name="text.markup" color="skyblue"/>
 	
+	<Style name="tooltip" color="black" bgColor="#feffe9"/>
+	
 	<Style name="constant" color="black"/>
 	<Style name="constant.language" color="keyword-blue"/>
 

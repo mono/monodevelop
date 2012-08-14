@@ -373,7 +373,7 @@ namespace MonoDevelop.CSharp
 				sb.Append ("out ");
 			}
 		}
-		
+
 		protected override string GetTypeReferenceString (IType reference, OutputSettings settings)
 		{
 			if (reference == null)
@@ -551,7 +551,7 @@ namespace MonoDevelop.CSharp
 			return result.ToString ();
 		}
 		
-		static string GetOperator (string methodName)
+		internal static string GetOperator (string methodName)
 		{
 			switch (methodName) {
 			case "op_Subtraction":
@@ -847,7 +847,7 @@ namespace MonoDevelop.CSharp
 				
 				result.Append (GetTypeReferenceString (parameter.Type, settings));
 				result.Append (" ");
-				
+
 				if (settings.HighlightName) {
 					result.Append (settings.EmitName (parameter, settings.Highlight (Format (FilterName (parameter.Name)))));
 				} else {
@@ -874,7 +874,7 @@ namespace MonoDevelop.CSharp
 				sb.Append (settings.Markup ("."));
 			}
 		}
-		
+
 		void AppendParameterList (StringBuilder result, OutputSettings settings, IEnumerable<IParameter> parameterList)
 		{
 			if (parameterList == null)

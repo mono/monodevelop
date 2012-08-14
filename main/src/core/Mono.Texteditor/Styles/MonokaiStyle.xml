@@ -52,6 +52,8 @@ THE SOFTWARE.
 		</Style>
 	</Style>
 	
+	<Style name="tooltip" color="black" bgColor="#feffe9"/>
+	
 	<Style name="template" color ="black" bgColor="#A6E22E">
 		<Style name="tag" color="#FF00FF" />
 		<Style name="directive" color="#FF00FF" />

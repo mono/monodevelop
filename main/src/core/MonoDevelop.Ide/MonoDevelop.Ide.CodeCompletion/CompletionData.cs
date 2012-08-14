@@ -46,10 +46,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public virtual string DisplayDescription { get; set; }
 		public virtual CompletionCategory CompletionCategory { get; set; }
 		public virtual DisplayFlags DisplayFlags { get; set; }
-		public virtual TooltipInformation TooltipInformation { 
-			get {
-				return new TooltipInformation ();
-			}
+
+		public virtual TooltipInformation CreateTooltipInformation (bool smartWrap)
+		{
+			return new TooltipInformation ();
 		}
 
 		public virtual bool HasOverloads { 

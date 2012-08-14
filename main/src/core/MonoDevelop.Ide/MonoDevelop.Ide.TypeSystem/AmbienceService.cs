@@ -155,7 +155,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (member == null || member.Documentation == null)
 				return null;
 			string documentation = member.Documentation.Xml.Text;
-			
 			if (!string.IsNullOrEmpty (documentation)) {
 				int idx1 = documentation.IndexOf ("<summary>");
 				int idx2 = documentation.IndexOf ("</summary>");

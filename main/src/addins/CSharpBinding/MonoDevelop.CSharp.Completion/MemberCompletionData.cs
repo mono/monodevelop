@@ -528,58 +528,16 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
-		Lazy<TooltipInformation> info = new Lazy<MonoDevelop.Ide.CodeCompletion.TooltipInformation> (() => {
-				TooltipInformation result = new TooltipInformation ();
-			return result;
-		});
-		
-		public override TooltipInformation TooltipInformation {
-			get {
-				return info.Value;
-			}
-		}
-		/*
-		void CheckDescription ()
+		public override TooltipInformation CreateTooltipInformation (bool smartWrap)
 		{
-			if (descriptionCreated)
-				return;
-			
-			var sb = new StringBuilder ();
-
-			descriptionCreated = true;
-			if (Entity is IMethod && ((IMethod)Entity).IsExtensionMethod)
-				sb.Append (GettextCatalog.GetString ("(Extension) "));
-			try {
-				var amb = new MyAmbience (GetBuilder (Entity.Compilation));
-				sb.Append (GLib.Markup.EscapeText (amb.ConvertEntity (Entity)));
-			} catch (Exception e) {
-				sb.Append (e.ToString ());
-			}
-
-			var m = (IMember)Entity;
-			if (m.IsObsolete ()) {
-				sb.AppendLine ();
-				sb.Append (GettextCatalog.GetString ("[Obsolete]"));
-				DisplayFlags |= DisplayFlags.Obsolete;
-			}
-			
-			var returnType = m.ReturnType;
-			if (returnType.Kind == TypeKind.Delegate) {
-				sb.AppendLine ();
-				sb.AppendLine (GettextCatalog.GetString ("Delegate information"));
-				sb.Append (ambience.GetString (returnType, OutputFlags.ReformatDelegates | OutputFlags.IncludeReturnType | OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName));
-			}
-			
-			string docMarkup = AmbienceService.GetDocumentationMarkup ("<summary>" + AmbienceService.GetDocumentationSummary ((IMember)Entity) + "</summary>", new AmbienceService.DocumentationFormatOptions {
-				Ambience = ambience
-			});
-			
-			if (!string.IsNullOrEmpty (docMarkup)) {
-				sb.AppendLine ();
-				sb.Append (docMarkup);
-			}
-			description = sb.ToString ();
-		}*/
+			var tooltipInfo = new TooltipInformation ();
+			var resolver = editorCompletion.CSharpUnresolvedFile.GetResolver (editorCompletion.Compilation, editorCompletion.TextEditorData.Caret.Location);
+			var sig = new SignatureMarkupCreator (editorCompletion.TextEditorData, resolver, editorCompletion.FormattingPolicy.CreateOptions ());
+			sig.BreakLineAfterReturnType = smartWrap;
+			tooltipInfo.SignatureMarkup = sig.GetString (this.Entity);
+			tooltipInfo.SummaryMarkup = AmbienceService.GetDocumentationMarkup (AmbienceService.GetDocumentationSummary (Entity) ?? "");
+			return tooltipInfo;
+		}
 		
 
 		#region IOverloadedCompletionData implementation 

@@ -88,6 +88,8 @@
 	<Style name="text.background.searchresult" color="VisualBGVim"/>
 	<Style name="text.link" color="butter2"/>
 	
+	<Style name="tooltip" color="black" bgColor="#feffe9"/>
+	
 	<Style name="marker.line" color="CursorLineBGVim"/>
 	<Style name="marker.line.changed" color="StringVim"/>
 	<Style name="marker.line.dirty" color="butter2"/>
