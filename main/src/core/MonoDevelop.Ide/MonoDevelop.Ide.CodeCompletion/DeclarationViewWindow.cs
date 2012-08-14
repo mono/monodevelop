@@ -28,14 +28,102 @@ using Gtk;
 using MonoDevelop.Components;
 using System.Collections.Generic;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
-	internal class DeclarationViewWindow : TooltipWindow
+	class DeclarationViewArrow : Gtk.EventBox
 	{
-		static char[] newline = {'\n'};
+		readonly bool left;
+
+		public DeclarationViewArrow (bool left)
+		{
+			this.left =  left;
+			AppPaintable = true;
+			VisibleWindow = false;
+			SetSizeRequest (10, 9);
+			Show ();
+		}
+
+		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+		{
+			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
+
+				var h = Allocation.Height;
+				var w = Allocation.Width;
+				context.Translate (Allocation.X, Allocation.Y);
+				if (left) {
+					context.MoveTo (0, h / 2);
+					context.LineTo (w / 2, h);
+					context.LineTo (w / 2, h * 2 / 3);
+					context.LineTo (w, h * 2 / 3);
+					context.LineTo (w, h * 1 / 3);
+					context.LineTo (w / 2, h * 1 / 3);
+					context.LineTo (w / 2, 0);
+				} else {
+					context.MoveTo (w, h / 2);
+					context.LineTo (w / 2, h);
+					context.LineTo (w / 2, h * 2 / 3);
+					context.LineTo (0, h * 2 / 3);
+					context.LineTo (0, h * 1 / 3);
+					context.LineTo (w / 2, h * 1 / 3);
+					context.LineTo (w / 2, 0);
+
+				}
+				context.ClosePath ();
+				context.Color = new Cairo.Color (0, 0, 0, 0.6);
+				context.Fill ();
+			}
+
+			return base.OnExposeEvent (evnt);
+		}
+
+	}
+
+	class DelecationViewPagerBubbles : Gtk.EventBox
+	{
+		const int bubblePadding = 1;
+		const int bubbleRadius  = 3;
+
+		public int Bubbles {
+			get;
+			set;
+		}
+
+		public int ActiveBubble {
+			get;
+			set;
+		}
+
+		public DelecationViewPagerBubbles ()
+		{
+			AppPaintable = true;
+			VisibleWindow = false;
+		}
+
+		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+		{
+			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
+				context.Translate (Allocation.X, Allocation.Y);
+				var bubbleWidth = bubbleRadius * 2 + bubblePadding;
+				double x = Math.Max (0, (Allocation.Width - (Bubbles * bubbleWidth)) / 2);
+				for (int i = 0 ; i < Bubbles; i++) {
+					context.Arc (x, Allocation.Height / 2, bubbleRadius, 0, Math.PI * 2);
+					context.Color = new Cairo.Color (0, 0, 0, i == ActiveBubble ? 0.8 : 0.3);
+					context.Fill ();
+					x += bubbleWidth;
+				}
+			}
+			return base.OnExposeEvent (evnt);
+		}
+
+	}
+
+	class DeclarationViewWindow : PopoverWindow
+	{
+		static char[] newline = { '\n' };
 		
-		List<string> overloads = new List<string> ();
+		List<TooltipInformation> overloads = new List<TooltipInformation> ();
 		int current_overload;
 		
 		public int CurrentOverload {
@@ -47,58 +135,40 @@ namespace MonoDevelop.Ide.CodeCompletion
 				ShowOverload ();
 			}
 		}
-		
-		MonoDevelop.Components.FixedWidthWrapLabel headlabel, bodylabel;
-		Label helplabel;
-		Arrow left, right;
-		VBox helpbox;
-		
-		public string DescriptionMarkup {
+
+		public int Overloads {
 			get {
-			 	if (string.IsNullOrEmpty (bodylabel.Text))
-					return headlabel.Text;
-				return headlabel.Text + "\n" + bodylabel.Text;
-			}
-			set {
-				if (string.IsNullOrEmpty (value)) {
-					headlabel.Markup = bodylabel.Markup = "";
-					headlabel.Visible = bodylabel.Visible = false;
-					return;
-				}
-				string[] parts = value.Split (newline, 2);
-				headlabel.Markup = "<b>" + parts[0].Trim () + "</b>";
-				bodylabel.Markup = parts.Length == 2 && !string.IsNullOrEmpty (parts[1].Trim ())? "<span size=\"smaller\">" + parts[1].Trim () + "</span>" : "";
-				headlabel.Visible = !string.IsNullOrEmpty (parts[0].Trim ());
-				bodylabel.Visible = parts.Length == 2 ;
+				return overloads.Count;
 			}
 		}
+		
+		MonoDevelop.Components.FixedWidthWrapLabel headlabel, bodylabel;
+		HBox helpbox;
+		DelecationViewPagerBubbles infoBubbles = new DelecationViewPagerBubbles ();
 
 		public bool Multiple{
 			get {
-				return left.Visible;
-			}
-			set {
-				left.Visible = right.Visible = helpbox.Visible = value;
-				
-				//this could go somewhere better, as long as it's after realization
-				headlabel.Visible = !string.IsNullOrEmpty (headlabel.Text);
-				bodylabel.Visible = !string.IsNullOrEmpty (bodylabel.Text);
+				return overloads.Count > 1;
 			}
 		}
 
-		public void AddOverload (string desc)
+		public void AddOverload (TooltipInformation tooltipInformation)
 		{
-			overloads.Add (desc);
+			overloads.Add (tooltipInformation);
 			if (overloads.Count == 2)
-				Multiple = overloads.Count > 1;
+				helpbox.Visible = true;
 			ShowOverload ();
 		}
 
 		void ShowOverload ()
 		{
 			if (current_overload >= 0 && current_overload < overloads.Count) {
-				DescriptionMarkup = overloads[current_overload];
-				helplabel.Markup = string.Format ("<small>" + GettextCatalog.GetString ("{0} of {1} overloads") + "</small>", current_overload + 1, overloads.Count);
+				SetFixedWidth (Allocation.Width);
+				var o = overloads[current_overload];
+				headlabel.Markup = o.SignatureMarkup;
+				headlabel.Visible = true;
+				bodylabel.Markup = "<span size=\"smaller\">Summary</span>"+ Environment.NewLine + o.SummaryMarkup;
+				bodylabel.Visible = true;
 			}
 		}
 
@@ -127,16 +197,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public void Clear ()
 		{
 			overloads.Clear ();
-			Multiple = false;
-			DescriptionMarkup = String.Empty;
+			helpbox.Visible = false;
 			current_overload = 0;
 		}
 		
 		public void SetFixedWidth (int w)
 		{
 			if (w != -1) {
-				w -= SizeRequest ().Width - headlabel.SizeRequest ().Width;
-				headlabel.MaxWidth = w > 0 ? w : 1;
+				headlabel.MaxWidth = w;
 			} else {
 				headlabel.MaxWidth = -1;
 			}
@@ -149,10 +217,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 			this.AllowShrink = false;
 			this.AllowGrow = false;
 			
-			EnableTransparencyControl = true;
-			
 			headlabel = new MonoDevelop.Components.FixedWidthWrapLabel ();
 			headlabel.Indent = -20;
+			var des = FontService.GetFontDescription ("Editor");
+			
+			headlabel.FontDescription = des;
+
 			headlabel.Wrap = Pango.WrapMode.WordChar;
 			headlabel.BreakOnCamelCasing = true;
 			headlabel.BreakOnPunctuation = true;
@@ -166,21 +236,16 @@ namespace MonoDevelop.Ide.CodeCompletion
 			vb.PackStart (headlabel, true, true, 0);
 			vb.PackStart (bodylabel, true, true, 3);
 
-			left = new Arrow (ArrowType.Left, ShadowType.None);
-			right = new Arrow (ArrowType.Right, ShadowType.None);
-
 			HBox hb = new HBox (false, 0);
 			hb.Spacing = 4;
-			hb.PackStart (left, false, true, 0);
 			hb.PackStart (vb, true, true, 0);
-			hb.PackStart (right, false, true, 0);
 
-			helplabel = new Label (string.Empty);
-			helplabel.Xalign = 1;
-			
-			helpbox = new VBox (false, 0);
-			helpbox.PackStart (new HSeparator (), false, true, 0);
-			helpbox.PackStart (helplabel, false, true, 0);
+			helpbox = new HBox (false, 0);
+			var leftArrow = new DeclarationViewArrow (true);
+			helpbox.PackStart (leftArrow, false, false, 0);
+			helpbox.PackStart (infoBubbles, true, true, 0);
+			var rightArrow = new DeclarationViewArrow (false);
+			helpbox.PackEnd (rightArrow, false, false, 0);
 			helpbox.BorderWidth = 2;
 			
 			VBox vb2 = new VBox (false, 0);

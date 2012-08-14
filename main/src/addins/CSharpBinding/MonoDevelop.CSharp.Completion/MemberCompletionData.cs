@@ -75,8 +75,7 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public override string Description {
 			get {
-				CheckDescription ();
-				return description;
+				return "";
 			}
 		}
 		
@@ -528,6 +527,18 @@ namespace MonoDevelop.CSharp.Completion
 				return "// " + comment;
 			}
 		}
+
+		Lazy<TooltipInformation> info = new Lazy<MonoDevelop.Ide.CodeCompletion.TooltipInformation> () { () => {
+				TooltipInformation result = new TooltipInformation ();
+				return result;
+			}};
+		
+		public override TooltipInformation TooltipInformation {
+			get {
+				return info.Value;
+			}
+		}
+		/*
 		void CheckDescription ()
 		{
 			if (descriptionCreated)
@@ -568,7 +579,7 @@ namespace MonoDevelop.CSharp.Completion
 				sb.Append (docMarkup);
 			}
 			description = sb.ToString ();
-		}
+		}*/
 		
 
 		#region IOverloadedCompletionData implementation 

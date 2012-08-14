@@ -47,7 +47,18 @@ namespace MonoDevelop.CSharp.Completion
 		IUnresolvedTypeDefinition  type;
 		
 		public bool GenerateBody { get; set; }
+
+		Lazy<TooltipInformation> info = new Lazy<MonoDevelop.Ide.CodeCompletion.TooltipInformation> () { () => {
+				TooltipInformation result = new TooltipInformation ();
+				return result;
+			}};
 		
+		public override TooltipInformation TooltipInformation {
+			get {
+				return info.Value;
+			}
+		}
+
 		public NewOverrideCompletionData (CSharpCompletionTextEditorExtension ext, int declarationBegin, IUnresolvedTypeDefinition type, IMember member) : base (null)
 		{
 			this.ext = ext;

@@ -46,7 +46,18 @@ namespace MonoDevelop.CSharp.Completion
 		int initialOffset;
 		public bool AddSemicolon = true;
 		TextEditorData editor;
-		
+
+		Lazy<TooltipInformation> info = new Lazy<MonoDevelop.Ide.CodeCompletion.TooltipInformation> () { () => {
+				TooltipInformation result = new TooltipInformation ();
+				return result;
+			}};
+
+		public override TooltipInformation TooltipInformation {
+			get {
+				return info.Value;
+			}
+		}
+
 		public EventCreationCompletionData (CSharpCompletionTextEditorExtension ext, string varName, IType delegateType, IEvent evt, string parameterList, IUnresolvedMember callingMember, IUnresolvedTypeDefinition declaringType) : base (null)
 		{
 			if (string.IsNullOrEmpty (varName)) {

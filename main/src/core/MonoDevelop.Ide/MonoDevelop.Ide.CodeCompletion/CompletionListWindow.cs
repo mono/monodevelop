@@ -487,11 +487,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 				declarationviewwindow.Realize ();
 				
 				foreach (var overload in overloads) {
-					bool hasMarkup = (overload.DisplayFlags & DisplayFlags.DescriptionHasMarkup) != 0;
-					declarationviewwindow.AddOverload (hasMarkup ? overload.Description : GLib.Markup.EscapeText (overload.Description));
+					declarationviewwindow.AddOverload (((CompletionData)overload).TooltipInformation);
 				}
 				
-				declarationviewwindow.Multiple = data.HasOverloads;
 				currentData = data;
 				if (data.HasOverloads) {
 					for (int i = 0; i < overloads.Count; i++) {
@@ -503,7 +501,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				}
 			}
 			
-			if (declarationviewwindow.DescriptionMarkup.Length == 0) {
+			if (declarationviewwindow.Overloads == 0) {
 				HideDeclarationView ();
 				return;
 			}
@@ -594,62 +592,19 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		bool DelayedTooltipShow ()
 		{
-			Gdk.Rectangle rect = List.GetRowArea (List.SelectionFilterIndex);
+			Gdk.Rectangle rect = List.GetRowArea (List.SelectedItem);
 			if (rect.IsEmpty)
 				return false;
-			int listpos_x = 0, listpos_y = 0, i = 0;
-			while ((listpos_x == 0 || listpos_y == 0) && (i++ < 10))
-				GetPosition (out listpos_x, out listpos_y);
-			if (i >= 10)
-				return false;
-			int vert = listpos_y + rect.Y;
-			int lvWidth = 0, lvHeight = 0;
-			while (lvWidth == 0)
-				this.GdkWindow.GetSize (out lvWidth, out lvHeight);
-			
-			if (vert >= listpos_y + lvHeight - 2 || vert < listpos_y) {
-				HideDeclarationView ();
-				return false;
-			}
-			
-/*			if (vert >= listpos_y + lvHeight - 2) {
-				vert = listpos_y + lvHeight - rect.Height;
-			} else if (vert < listpos_y) {
-				vert = listpos_y;
-			}*/
-			
+
 			if (declarationViewHidden && Visible) {
-				declarationviewwindow.Move (this.Screen.Width + 1, vert);
-				declarationviewwindow.SetFixedWidth (-1);
-				declarationviewwindow.ReshowWithInitialSize ();
-				declarationviewwindow.Show ();
+				declarationviewwindow.ShowArrow = true;
+				declarationviewwindow.ShowPopup (this, new Gdk.Rectangle (0, Math.Min (Allocation.Height, Math.Max (0, rect.Y - (int)List.vadj.Value)), Allocation.Width, rect.Height), PopupPosition.Left);
 				if (declarationViewWindowOpacityTimer != 0) 
 					GLib.Source.Remove (declarationViewWindowOpacityTimer);
 				declarationViewWindowOpacityTimer = GLib.Timeout.Add (50, new OpacityTimer (this).Timer);
 				declarationViewHidden = false;
 			}
 			
-			Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtWindow (GdkWindow));
-		
-			Requisition req = declarationviewwindow.SizeRequest ();
-			int dvwWidth = req.Width;
-			int horiz = listpos_x + lvWidth + declarationWindowMargin;
-			if (geometry.Right - horiz >= lvWidth) {
-				if (geometry.Right - horiz < dvwWidth)
-					declarationviewwindow.SetFixedWidth (geometry.Right - horiz);
-			} else {
-				if (listpos_x - dvwWidth - declarationWindowMargin < 0) {
-					declarationviewwindow.SetFixedWidth (listpos_x - declarationWindowMargin);
-					dvwWidth = declarationviewwindow.SizeRequest ().Width;
-				}
-				horiz = curXPos - dvwWidth - declarationWindowMargin;
-			}
-			
-			if (declarationViewX != horiz || declarationViewY != vert) {
-				declarationviewwindow.Move (horiz, vert);
-				declarationViewX = horiz;
-				declarationViewY = vert;
-			}
 			declarationViewTimer = 0;
 			return false;
 		}

@@ -134,7 +134,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			layout = new Pango.Layout (this.PangoContext);
 			layout.Wrap = Pango.WrapMode.Char;
 			FontDescription des = FontService.GetFontDescription ("Editor");
-
+			
 			layout.FontDescription = des;
 			separatorLine = CairoExtensions.ParseColor ("dedede");
 			darkSearchBackground = CairoExtensions.ParseColor ("ffffff");
@@ -148,7 +148,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			headerColor2 = CairoExtensions.ParseColor ("c7ccd2");
 		}
 
-		Adjustment vadj;
+		internal Adjustment vadj;
 
 		protected override void OnSetScrollAdjustments (Adjustment hadj, Adjustment vadj)
 		{

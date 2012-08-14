@@ -1729,6 +1729,7 @@
     <Compile Include="MonoDevelop.Components\HPanedThin.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\CommandSearchCategory.cs" />
     <Compile Include="MonoDevelop.Components\ExtendedLabel.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeCompletion\TooltipInformation.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
