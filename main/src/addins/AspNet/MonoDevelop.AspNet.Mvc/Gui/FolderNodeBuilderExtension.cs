@@ -60,7 +60,79 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		[CommandHandler (AspMvcCommands.AddController)]
 		public void AddController ()
 		{
-			AddFile ("AspMvcController");
+			AspMvcProject project = CurrentNode.GetParentDataItem (typeof (AspMvcProject), true) as AspMvcProject;
+			if (project == null)
+				return;
+
+			object currentItem = CurrentNode.DataItem;
+
+			ProjectFolder folder = CurrentNode.GetParentDataItem (typeof (ProjectFolder), true) as ProjectFolder;
+			string path = folder != null ? folder.Path : project.BaseDirectory;
+
+			AddController (project, path, null);
+
+			ITreeNavigator nav = Tree.GetNodeAtObject (currentItem);
+			if (nav != null)
+				nav.Expanded = true;
+		}
+
+		public static void AddController(AspMvcProject project, string path, string name)
+		{
+			var provider = project.LanguageBinding.GetCodeDomProvider ();
+			if (provider == null)
+				throw new InvalidOperationException ("Project language has null CodeDOM provider");
+
+			string outputFile = null;
+			MvcTextTemplateHost host = null;
+			Mono.TextTemplating.TemplatingAppDomainRecycler.Handle handle = null;
+			AddControllerDialog dialog = null;
+
+			try {
+				dialog = new AddControllerDialog (project);
+				if (!String.IsNullOrEmpty (name))
+					dialog.ControllerName = name;
+
+				bool fileGood = false;
+				while (!fileGood) {
+					Gtk.ResponseType resp = (Gtk.ResponseType)MessageService.RunCustomDialog (dialog);
+					dialog.Hide ();
+					if (resp != Gtk.ResponseType.Ok || !dialog.IsValid ())
+						return;
+
+					outputFile = System.IO.Path.Combine (path, dialog.ControllerName) + ".cs";
+
+					if (System.IO.File.Exists (outputFile)) {
+						fileGood = MessageService.AskQuestion ("Overwrite file?",
+								String.Format ("The file '{0}' already exists.\n", dialog.ControllerName) +
+								"Would you like to overwrite it?", AlertButton.OverwriteFile, AlertButton.Cancel)
+							!= AlertButton.Cancel;
+					} else
+						break;
+				}
+
+				handle = MonoDevelop.TextTemplating.TextTemplatingService.GetTemplatingDomain ();
+				handle.AddAssembly (typeof (MvcTextTemplateHost).Assembly);
+
+				host = MvcTextTemplateHost.Create (handle.Domain);
+
+				host.LanguageExtension = provider.FileExtension;
+				host.ItemName = dialog.ControllerName;
+				host.NameSpace = project.DefaultNamespace + ".Controllers";
+
+				host.ProcessTemplate (dialog.TemplateFile, outputFile);
+				MonoDevelop.TextTemplating.TextTemplatingService.ShowTemplateHostErrors (host.Errors);
+
+			} finally {
+				if (handle != null)
+					handle.Dispose ();
+				if (dialog != null)
+					dialog.Destroy ();
+			}
+
+			if (System.IO.File.Exists (outputFile)) {
+				project.AddFile (outputFile);
+				IdeApp.ProjectOperations.Save (project);
+			}
 		}
 		
 		[CommandUpdateHandler (AspMvcCommands.AddView)]
@@ -111,11 +183,16 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 					dialog.Hide ();
 					if (resp != Gtk.ResponseType.Ok || ! dialog.IsValid ())
 						return;
-				
-					outputFile = System.IO.Path.Combine (path, dialog.ViewName) + (dialog.IsPartialView? ".ascx" : ".aspx");
-					
+
+					string ext = ".cshtml";
+					if (dialog.ActiveViewEngine == "Aspx")
+						ext = dialog.IsPartialView ? ".ascx" : ".aspx";
+
+					outputFile = System.IO.Path.Combine (path, dialog.ViewName) + ext;
+
 					if (System.IO.File.Exists (outputFile)) {
-						fileGood = MessageService.AskQuestion ("Overwrite file?", "The file '{0}' already exists.\n" +
+						fileGood = MessageService.AskQuestion ("Overwrite file?",
+								String.Format ("The file '{0}' already exists.\n", dialog.ViewName) +
 								"Would you like to overwrite it?", AlertButton.OverwriteFile, AlertButton.Cancel)
 							!= AlertButton.Cancel;
 					} else
@@ -128,7 +205,8 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 				host = MvcTextTemplateHost.Create (handle.Domain);
 				
 				host.LanguageExtension = provider.FileExtension;
-				host.ViewDataTypeGenericString = "";
+				host.ItemName = dialog.ViewName;
+				host.ViewDataTypeString = "";
 				
 				if (dialog.HasMaster) {
 					host.IsViewContentPage = true;
@@ -141,10 +219,8 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 				else
 					host.IsViewPage = true;
 				
-				if (dialog.IsStronglyTyped) {
-					//TODO: use dialog.ViewDataType to construct 
-					// host.ViewDataTypeGenericString and host.ViewDataType
-				}
+				if (dialog.IsStronglyTyped)
+					host.ViewDataTypeString = dialog.ViewDataTypeString;
 				
 				host.ProcessTemplate (dialog.TemplateFile, outputFile);
 				MonoDevelop.TextTemplating.TextTemplatingService.ShowTemplateHostErrors (host.Errors);
@@ -160,26 +236,6 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 				project.AddFile (outputFile);
 				IdeApp.ProjectOperations.Save (project);
 			}
-		}
-		
-		//adapted from GtkCore
-		void AddFile (string id)
-		{
-			AspMvcProject project = CurrentNode.GetParentDataItem (typeof(AspMvcProject), true) as AspMvcProject;
-			if (project == null)
-				return;
-			
-			object currentItem = CurrentNode.DataItem;
-				
-			ProjectFolder folder = CurrentNode.GetParentDataItem (typeof(ProjectFolder), true) as ProjectFolder;
-			string path = folder != null? folder.Path : project.BaseDirectory;
-
-			IdeApp.ProjectOperations.CreateProjectFile (project, path, id);
-			IdeApp.ProjectOperations.Save (project);
-			
-			ITreeNavigator nav = Tree.GetNodeAtObject (currentItem);
-			if (nav != null)
-				nav.Expanded = true;
 		}
 	}
 }

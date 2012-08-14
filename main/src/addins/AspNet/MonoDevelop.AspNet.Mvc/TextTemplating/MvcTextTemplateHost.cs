@@ -43,10 +43,27 @@ namespace MonoDevelop.AspNet.Mvc.TextTemplating
 		{
 			if (domain == null)
 				return new MvcTextTemplateHost ();
-			
-			return (MvcTextTemplateHost) domain.CreateInstanceAndUnwrap (
+
+			// HACK: get rid of InvalidCastException - Unable to cast transparent proxy to type
+			AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+
+			var host = (MvcTextTemplateHost) domain.CreateInstanceAndUnwrap (
 				typeof (MvcTextTemplateHost).Assembly.FullName,
 				typeof (MvcTextTemplateHost).FullName);
+
+			AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomain_AssemblyResolve;
+
+			return host;
+
+		}
+
+		static System.Reflection.Assembly CurrentDomain_AssemblyResolve (object sender, ResolveEventArgs args)
+		{
+			foreach (System.Reflection.Assembly asm in AppDomain.CurrentDomain.GetAssemblies ()) {
+				if (asm.GetName ().FullName == args.Name)
+					return asm;
+			}
+			return null;
 		}
 		
 		public string ItemName { get; set; }
@@ -75,7 +92,11 @@ namespace MonoDevelop.AspNet.Mvc.TextTemplating
 		
 		public string LanguageExtension { get; set; }
 		
-		public string ViewDataTypeGenericString { get; set; }
+		public string ViewDataTypeString { get; set; }
+
+		public string ViewDataTypeGenericString {
+			get	{ return String.IsNullOrEmpty (ViewDataTypeString) ? "" : "<" + ViewDataTypeString + ">"; }
+		}
 		
 		public Type ViewDataType { get; set; }
 		

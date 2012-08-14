@@ -1,0 +1,48 @@
+﻿<#@ template language="C#" HostSpecific="True" #>
+<#@ output extension=".cshtml" #>
+<#
+MvcTextTemplateHost mvcHost = (MvcTextTemplateHost) Host;
+
+if (!String.IsNullOrEmpty (mvcHost.ViewDataTypeString)) {
+#>
+@model <#= mvcHost.ViewDataTypeString #>
+
+<#
+}
+
+if (mvcHost.IsViewUserControl) {
+#>
+<#
+} else if (mvcHost.IsViewContentPage) {
+#>
+@{
+    ViewBag.Title = "<#= mvcHost.ItemName#>";
+<#
+if (!String.IsNullOrEmpty (mvcHost.MasterPage)) {
+#>
+    Layout = "<#= mvcHost.MasterPage#>";
+<#
+}
+#>
+}
+
+<h2><#= mvcHost.ItemName#></h2>
+<#
+} else {
+#>
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title><#= mvcHost.ItemName #></title>
+</head>
+<body>
+</body>
+</html>
+<#
+}
+#>
+
