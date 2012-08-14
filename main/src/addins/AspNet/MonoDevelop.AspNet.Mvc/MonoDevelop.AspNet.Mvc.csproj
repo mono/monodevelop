@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -54,6 +54,23 @@
     <None Include="Templates\Common\HomeControllerTest.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Compile Include="Parser\OutlineNode.cs" />
+    <Compile Include="Parser\RazorCSharpParsedDocument.cs" />
+    <Compile Include="Parser\RazorCSharpParser.cs" />
+    <Compile Include="Parser\RazorPageInfo.cs" />
+    <Compile Include="Parser\RazorSymbols.cs" />
+    <Compile Include="Parser\RazorUtils.cs" />
+    <Compile Include="StateEngine\RazorCodeBlockState.cs" />
+    <Compile Include="StateEngine\RazorCodeFragmentState.cs" />
+    <Compile Include="StateEngine\RazorCommentState.cs" />
+    <Compile Include="StateEngine\RazorDirectiveState.cs" />
+    <Compile Include="StateEngine\RazorDom.cs" />
+    <Compile Include="StateEngine\RazorExpressionState.cs" />
+    <Compile Include="StateEngine\RazorFreeState.cs" />
+    <Compile Include="StateEngine\RazorSpeculativeState.cs" />
+    <Compile Include="StateEngine\RazorState.cs" />
+    <Compile Include="StateEngine\RazorStatementState.cs" />
+    <Compile Include="StateEngine\StateEngineService.cs" />
     <Compile Include="TextTemplating\MvcTextTemplateHost.cs" />
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="Gui\AddViewDialog.cs" />
@@ -63,6 +80,24 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="Mono.Posix" />
@@ -87,6 +122,14 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\external\nrefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
+      <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
+      <Name>ICSharpCode.NRefactory.CSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\CSharpBinding\CSharpBinding.csproj">
+      <Project>{07CC7654-27D6-421D-A64C-0FFA40456FA2}</Project>
+      <Name>CSharpBinding %28Addins\CSharpBinding\CSharpBinding%29</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\TextTemplating\Mono.TextTemplating\Mono.TextTemplating.csproj">
       <Project>{A2364D6A-00EF-417C-80A6-815726C70032}</Project>
       <Name>Mono.TextTemplating</Name>
