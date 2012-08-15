@@ -167,6 +167,11 @@ namespace MonoDevelop.CSharp.Completion
 				TypeSegmentTreeUpdated (this, EventArgs.Empty);
 		}
 		public event EventHandler TypeSegmentTreeUpdated;
+
+		public void UpdateParsedDocument ()
+		{
+			HandleDocumentParsed (null, null);
+		}
 		
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{

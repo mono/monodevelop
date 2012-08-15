@@ -33,6 +33,9 @@ namespace MonoDevelop.AspNet.Mvc
 	public enum AspMvcCommands
 	{
 		AddView,
-		AddController
+		AddController,
+		GoToView,
+		GoToController,
+		AddViewFromController
 	}
 }

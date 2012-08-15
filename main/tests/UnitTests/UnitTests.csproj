@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -207,6 +207,16 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MonoDevelop.AspNet.Mvc.Completion\CompletionTests.cs" />
+    <Compile Include="MonoDevelop.AspNet.Mvc.Completion\RazorCompletionTesting.cs" />
+    <Compile Include="MonoDevelop.AspNet.Mvc.StateEngine\RazorCodeBlockParsingTests.cs" />
+    <Compile Include="MonoDevelop.AspNet.Mvc.StateEngine\RazorCodeFragmentsParsingTests.cs" />
+    <Compile Include="MonoDevelop.AspNet.Mvc.StateEngine\RazorCommentParsingTests.cs" />
+    <Compile Include="MonoDevelop.AspNet.Mvc.StateEngine\RazorDirectivesParsingTests.cs" />
+    <Compile Include="MonoDevelop.AspNet.Mvc.StateEngine\RazorExplicitExpressionsParsingTests.cs" />
+    <Compile Include="MonoDevelop.AspNet.Mvc.StateEngine\RazorImplicitExpressionsParsingTests.cs" />
+    <Compile Include="MonoDevelop.AspNet.Mvc.StateEngine\RazorParsingTests.cs" />
+    <Compile Include="MonoDevelop.AspNet.Mvc.StateEngine\RazorStatementsParsingTests.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="MonoDevelop.Projects\MdsTests.cs" />
     <Compile Include="MonoDevelop.Projects\TestProjectsChecks.cs" />
@@ -292,7 +302,7 @@
     <None Include="MonoDevelop.Projects\CompletionDatabaseTests.cs" />
     <None Include="MonoDevelop.Projects\DomPersistenceTests.cs" />
     <None Include="MonoDevelop.Projects\DomCompilationUnitTests.cs" />
-    <None Include="MonoDevelop.Xml.StateEngine\TestParser.cs" />
+    <Compile Include="MonoDevelop.Xml.StateEngine\TestParser.cs" />
     <None Include="MonoDevelop.Projects\DomTests.cs" />
     <None Include="MonoDevelop.Xml.StateEngine\ParsingTests.cs" />
     <None Include="MonoDevelop.Xml.StateEngine\AspNetParsingTests.cs" />
@@ -300,14 +310,5 @@
     <None Include="MonoDevelop.AspNet\AspNetCompletionTests.cs" />
     <None Include="MonoDevelop.AspNet\AspNetTesting.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="MonoDevelop.AspNet\" />
-    <Folder Include="MonoDevelop.VersionControl.Views\" />
-    <Folder Include="MonoDevelop.VersionControl.Git\" />
-    <Folder Include="MonoDevelop.Ide.Gui\" />
-    <Folder Include="MonoDevelop.CSharpBinding.Refactoring\" />
-    <Folder Include="MonoDevelop.Ide.FindInFiles\" />
-    <Folder Include="MonoDevelop.SourceEditor\" />
-    <Folder Include="MonoDevelop.Core\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

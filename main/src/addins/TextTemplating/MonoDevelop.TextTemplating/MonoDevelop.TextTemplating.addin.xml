@@ -9,11 +9,7 @@
        version     = "3.1.0">
 	
 	<Runtime>
-		<!--
-		This needs to be in the .NET Load assembly context so the AppDomain remoting works. This means it must be
-		imported as a file, not not an assembly, else Mono.Addins will load it into the LoadFrom assembly context.
-		-->
-		<Import file="Mono.TextTemplating.dll" />
+		<Import assembly="Mono.TextTemplating.dll" />
 	</Runtime>
 	
 	<Dependencies>
