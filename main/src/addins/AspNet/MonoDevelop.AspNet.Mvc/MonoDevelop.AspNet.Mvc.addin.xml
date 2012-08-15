@@ -31,10 +31,10 @@
 		<Import file = "Templates/LayoutPage.xft.xml" />
 		<Import file = "Templates/ViewPageRazor.xft.xml" />
 		<Import file = "Templates/PartialViewPageRazor.xft.xml" />
-		<Import file = "CodeTemplates/C#/AddView/Aspx/Empty.tt" />
-		<Import file = "CodeTemplates/C#/AddView/Razor/Empty.tt" />
-		<Import file = "CodeTemplates/C#/AddController/Empty.tt" />
-		<Import file = "CodeTemplates/C#/AddController/ControllerWithEmptyReadAndWriteActions.tt" />
+		<Import file = "CodeTemplates/CSharp/AddView/Aspx/Empty.tt" />
+		<Import file = "CodeTemplates/CSharp/AddView/Razor/Empty.tt" />
+		<Import file = "CodeTemplates/CSharp/AddController/Empty.tt" />
+		<Import file = "CodeTemplates/CSharp/AddController/ControllerWithEmptyReadAndWriteActions.tt" />
 	</Runtime>
 	
 	<Dependencies>
