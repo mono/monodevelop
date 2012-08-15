@@ -168,7 +168,7 @@ namespace Mono.TextEditor
 		{
 			containerChildren.ForEach (child => callback (child.Child));
 		}
-		/*
+
 		protected override void OnMapped ()
 		{
 			WidgetFlags |= WidgetFlags.Mapped;
@@ -215,7 +215,7 @@ namespace Mono.TextEditor
 			WidgetFlags &= ~WidgetFlags.Realized;
 			GdkWindow.Dispose ();
 			base.OnUnrealized ();
-		}*/
+		}
 		
 		protected override void OnSizeAllocated (Rectangle allocation)
 		{
