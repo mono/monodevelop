@@ -175,7 +175,6 @@
     <Compile Include="Mono.TextEditor\Document\LineSplitter.cs" />
     <Compile Include="Mono.TextEditor\Document\SegmentTree.cs" />
     <Compile Include="Mono.TextEditor\Document\TextDocument.cs" />
-    <Compile Include="Mono.TextEditor\Gui\TextEditor.cs" />
     <Compile Include="Mono.TextEditor\Gui\TextEditorAccessibility.cs" />
     <Compile Include="Mono.TextEditor\Document\ILineSplitter.cs" />
     <Compile Include="Mono.TextEditor\Document\FoldingType.cs" />
@@ -204,6 +203,8 @@
     <Compile Include="Mono.TextEditor\Gui\TooltipProvider.cs" />
     <Compile Include="Mono.TextEditor\ISelectionSurroundingProvider.cs" />
     <Compile Include="Mono.TextEditor\Gui\Blur.cs" />
+    <Compile Include="Mono.TextEditor\Gui\TextArea.cs" />
+    <Compile Include="Mono.TextEditor\Gui\TextEditor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mono.TextEditor.dll.config">

@@ -67,7 +67,7 @@ namespace Mono.TextEditor
 		
 		public override void Update (TextEditor editor)
 		{
-			editor.RedrawLine (line);
+			editor.TextArea.RedrawLine (line);
 		}
 	}
 	
@@ -83,7 +83,7 @@ namespace Mono.TextEditor
 		
 		public override void Update (TextEditor editor)
 		{
-			editor.RedrawLines (start, end);
+			editor.TextArea.RedrawLines (start, end);
 		}
 	}
 }

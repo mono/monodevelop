@@ -195,7 +195,7 @@ namespace Mono.TextEditor
 			this.baseOffset = baseOffset;
 			this.endOffset = editor.Caret.Offset;
 			tooltipProvider = new TextLinkTooltipProvider (this);
-			this.Editor.tooltipProviders.Insert (0, tooltipProvider);
+			this.Editor.TextArea.tooltipProviders.Insert (0, tooltipProvider);
 			this.SetCaretPosition = true;
 			this.SelectPrimaryLink = true;
 		}
@@ -241,7 +241,7 @@ namespace Mono.TextEditor
 					window.DataProvider = link;
 					
 					DocumentLocation loc = Editor.Document.OffsetToLocation (BaseOffset + link.PrimaryLink.Offset);
-					Editor.ShowListWindow (window, loc);
+					Editor.TextArea.ShowListWindow (window, loc);
 					
 				} 
 			} else {

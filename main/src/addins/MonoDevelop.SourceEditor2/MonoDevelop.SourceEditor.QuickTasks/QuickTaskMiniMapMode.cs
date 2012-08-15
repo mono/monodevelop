@@ -124,7 +124,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			{
 				if (button != 1)
 					return;
-				var ph = (int)(lineHeight * (TextEditor.GetTextEditorData ().VisibleLineCount + TextEditor.EditorLineThreshold));
+				var ph = (int)(lineHeight * (TextEditor.GetTextEditorData ().VisibleLineCount));
 				double position = vadjustment.Upper * (Math.Min (GetBufferYOffset () + y, ph) / (double)ph) - vadjustment.PageSize / 2;
 				position = Math.Max (vadjustment.Lower, Math.Min (position, vadjustment.Upper - vadjustment.PageSize));
 				vadjustment.Value = position;
@@ -190,7 +190,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			{
 				DestroyBgBuffer ();
 				curWidth = Allocation.Width;
-				curHeight = Math.Max (Allocation.Height, (int)(lineHeight * (TextEditor.GetTextEditorData ().VisibleLineCount + TextEditor.EditorLineThreshold)));
+				curHeight = Math.Max (Allocation.Height, (int)(lineHeight * (TextEditor.GetTextEditorData ().VisibleLineCount)));
 				if (GdkWindow == null || curWidth < 1 || curHeight < 1)
 					return;
 				backgroundPixbuf = new Pixmap (GdkWindow, curWidth, curHeight);
@@ -232,7 +232,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 						cr.Color = mode.TextEditor.ColorStyle.Default.CairoBackgroundColor;
 					cr.Fill ();
 					
-					maxLine = mode.TextEditor.GetTextEditorData ().VisibleLineCount + TextEditor.EditorLineThreshold;
+					maxLine = mode.TextEditor.GetTextEditorData ().VisibleLineCount;
 					sx = w / (double)mode.TextEditor.Allocation.Width;
 					sy = Math.Min (1, lineHeight * maxLine / (double)mode.TextEditor.GetTextEditorData ().TotalHeight );
 					cr.Scale (sx, sy);

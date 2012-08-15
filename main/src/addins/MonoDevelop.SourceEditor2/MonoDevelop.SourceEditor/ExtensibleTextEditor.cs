@@ -642,22 +642,23 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		protected override void HAdjustmentValueChanged ()
+		protected override void OnScrollAdjustmentsSet()
 		{
-			base.HAdjustmentValueChanged ();
-			if (!isInKeyStroke) {
-				CompletionWindowManager.HideWindow ();
-				ParameterInformationWindowManager.HideWindow (null, view);
+			if (HAdjustment != null) {
+				HAdjustment.ValueChanged += delegate {
+					if (!isInKeyStroke) {
+						CompletionWindowManager.HideWindow ();
+						ParameterInformationWindowManager.HideWindow (null, view);
+					}
+				};
+			}
+			if (VAdjustment != null) {
+				VAdjustment.ValueChanged += delegate {
+					CompletionWindowManager.HideWindow ();
+					ParameterInformationWindowManager.HideWindow (null, view);
+				};
 			}
 		}
-		
-		protected override void VAdjustmentValueChanged ()
-		{
-			base.VAdjustmentValueChanged ();
-			CompletionWindowManager.HideWindow ();
-			ParameterInformationWindowManager.HideWindow (null, view);
-		}
-		
 		
 #endregion
 		
