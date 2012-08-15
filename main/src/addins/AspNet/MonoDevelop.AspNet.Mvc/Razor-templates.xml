@@ -1,0 +1,581 @@
+﻿<RazorCodeTemplates version="1.0">
+
+	<CodeTemplate version="2.0">
+		<Header>
+			<_Group>Razor</_Group>
+			<Version>1.0</Version>
+			<MimeType>text/x-cshtml</MimeType>
+			<Shortcut>@inherits</Shortcut>
+			<_Description>Template for inherits directive</_Description>
+			<TemplateType>Expansion</TemplateType>
+		</Header>
+		<Variables>
+			<Variable name="baseClass">
+				<Default>System.Web.Mvc.WebViewPage</Default>
+				<_ToolTip>Base class</_ToolTip>
+			</Variable>
+		</Variables>
+		<Code><![CDATA[@inherits $baseClass$ $end$]]>
+		</Code>
+	</CodeTemplate>
+
+	<CodeTemplate version="2.0">
+		<Header>
+			<_Group>Razor</_Group>
+			<Version>1.0</Version>
+			<MimeType>text/x-cshtml</MimeType>
+			<Shortcut>@model</Shortcut>
+			<_Description>Template for model directive</_Description>
+			<TemplateType>Expansion</TemplateType>
+		</Header>
+		<Variables>
+			<Variable name="model">
+				<Default>dynamic</Default>
+				<_ToolTip>Strongly typed model</_ToolTip>
+			</Variable>
+		</Variables>
+		<Code><![CDATA[@model $model$ $end$]]>
+		</Code>
+	</CodeTemplate>
+
+	<CodeTemplate version="2.0">
+		<Header>
+			<_Group>Razor</_Group>
+			<Version>1.0</Version>
+			<MimeType>text/x-cshtml</MimeType>
+			<Shortcut>@using</Shortcut>
+			<_Description>Template for using statement</_Description>
+			<TemplateType>SurroundsWith,Expansion</TemplateType>
+		</Header>
+		<Variables>
+			<Variable name="resource">
+				<Default>resource</Default>
+				<_ToolTip>Resource to use</_ToolTip>
+			</Variable>
+		</Variables>
+		<Code><![CDATA[@using ($resource$) {
+	$selected$$end$
+}]]>
+		</Code>
+	</CodeTemplate>
+
+	<CodeTemplate version="2.0">
+		<Header>
+			<_Group>Razor</_Group>
+			<Version>1.0</Version>
+			<MimeType>text/x-cshtml</MimeType>
+			<Shortcut>@section</Shortcut>
+			<_Description>Template for section directive</_Description>
+			<TemplateType>SurroundsWith,Expansion</TemplateType>
+		</Header>
+		<Variables>
+			<Variable name="name">
+				<Default>Name</Default>
+				<_ToolTip>Section's name</_ToolTip>
+			</Variable>
+		</Variables>
+		<Code><![CDATA[@section $name$ {
+	$selected$$end$
+}]]>
+		</Code>
+	</CodeTemplate>
+
+	<CodeTemplate version="2.0">
+		<Header>
+			<_Group>Razor</_Group>
+			<Version>1.0</Version>
+			<MimeType>text/x-cshtml</MimeType>
+			<Shortcut>@helper</Shortcut>
+			<_Description>Template for helper directive</_Description>
+			<TemplateType>SurroundsWith,Expansion</TemplateType>
+		</Header>
+		<Variables>
+			<Variable name="name">
+				<Default>HelperName</Default>
+				<_ToolTip>Helper's name</_ToolTip>
+			</Variable>
+			<Variable name="args">
+				<Default>args</Default>
+				<_ToolTip>Helper's arguments</_ToolTip>
+			</Variable>
+		</Variables>
+		<Code><![CDATA[@helper $name$ ($args$) {
+	$selected$$end$
+}]]>
+		</Code>
+	</CodeTemplate>
+
+	<CodeTemplate version="2.0">
+		<Header>
+			<_Group>Razor</_Group>
+			<Version>1.0</Version>
+			<MimeType>text/x-cshtml</MimeType>
+			<Shortcut>@functions</Shortcut>
+			<_Description>Template for functions directive</_Description>
+			<TemplateType>SurroundsWith,Expansion</TemplateType>
+		</Header>
+		<Code><![CDATA[@functions {
+	$selected$$end$
+}]]>
+		</Code>
+	</CodeTemplate>
+
+	<CodeTemplate version="2.0">
+		<Header>
+			<_Group>Razor</_Group>
+			<Version>1.0</Version>
+			<MimeType>text/x-cshtml</MimeType>
+			<Shortcut>switch</Shortcut>
+			<_Description>Template for switch statement</_Description>
+			<TemplateType>Expansion</TemplateType>
+		</Header>
+		<Variables>
+			<Variable name="expression">
+				<Default>switch_on</Default>
+				<_ToolTip>Expression to switch on</_ToolTip>
+			</Variable>
+		</Variables>
+		<Code><![CDATA[switch ($expression$) {
+default:
+break;
+}$end$]]>
+		</Code>
+	</CodeTemplate>
+
+	<CodeTemplate version="2.0">
+		<Header>
+			<_Group>Razor</_Group>
+			<Version>1.0</Version>
+			<MimeType>text/x-cshtml</MimeType>
+			<Shortcut>@switch</Shortcut>
+			<_Description>Template for switch statement</_Description>
+			<TemplateType>Expansion</TemplateType>
+		</Header>
+		<Variables>
+			<Variable name="expression">
+				<Default>switch_on</Default>
+				<_ToolTip>Expression to switch on</_ToolTip>
+			</Variable>
+		</Variables>
+		<Code><![CDATA[@switch ($expression$) {
+default:
+break;
+}$end$]]>
+		</Code>
+	</CodeTemplate>
+
+	<!-- Surround Templates -->
+	<CodeTemplate version="2.0">
+		<Header>
+			<_Group>Razor</_Group>
+			<Version>1.0</Version>
+			<MimeType>text/x-cshtml</MimeType>
+			<Shortcut>for</Shortcut>
+			<_Description>Template for 'for' loop</_Description>
+			<TemplateType>SurroundsWith,Expansion</TemplateType>
+		</Header>
+		<Variables>
+			<Variable name="i" isIdentifier="true">
+				<Default>i</Default>
+				<_ToolTip>Index</_ToolTip>
+			</Variable>
+			<Variable name="max">
+				<Default>max</Default>
+				<_ToolTip>Number of iterations</_ToolTip>
+			</Variable>
+		</Variables>
+		<Code><![CDATA[for (int $i$ = 0; $i$ < $max$; $i$++) {
+	$selected$$end$
+}]]>
+		</Code>
+	</CodeTemplate>
+
+	<CodeTemplate version="2.0">
+		<Header>
+			<_Group>Razor</_Group>
+			<Version>1.0</Version>
+			<MimeType>text/x-cshtml</MimeType>
+			<Shortcut>@for</Shortcut>
+			<_Description>Template for 'for' loop</_Description>
+			<TemplateType>SurroundsWith,Expansion</TemplateType>
+		</Header>
+		<Variables>
+			<Variable name="i" isIdentifier="true">
+				<Default>i</Default>
+				<_ToolTip>Index</_ToolTip>
+			</Variable>
+			<Variable name="max">
+				<Default>max</Default>
+				<_ToolTip>Number of iterations</_ToolTip>
+			</Variable>
+		</Variables>
+		<Code><![CDATA[@for (int $i$ = 0; $i$ < $max$; $i$++) {
+	$selected$$end$
+}]]>
+		</Code>
+	</CodeTemplate>
+
+	<CodeTemplate version="2.0">
+		<Header>
+			<_Group>Razor</_Group>
+			<Version>1.0</Version>
+			<MimeType>text/x-cshtml</MimeType>
+			<Shortcut>forr</Shortcut>
+			<_Description>Template for reverse 'for' loop</_Description>
+			<TemplateType>SurroundsWith,Expansion</TemplateType>
+		</Header>
+		<Variables>
+			<Variable name="i" isIdentifier="true">
+				<Default>i</Default>
+				<_ToolTip>Index</_ToolTip>
+			</Variable>
+			<Variable name="max">
+				<Default>max</Default>
+				<_ToolTip>Number of iterations</_ToolTip>
+			</Variable>
+		</Variables>
+		<Code><![CDATA[for (int $i$ = $max$ - 1; $i$ >= 0; $i$--) {
+	$selected$$end$
+}]]>
+		</Code>
+	</CodeTemplate>
+
+
+	<CodeTemplate version="2.0">
+		<Header>
+			<_Group>Razor</_Group>
+			<Version>1.0</Version>
+			<MimeType>text/x-cshtml</MimeType>
+			<Shortcut>@forr</Shortcut>
+			<_Description>Template for reverse 'for' loop</_Description>
+			<TemplateType>SurroundsWith,Expansion</TemplateType>
+		</Header>
+		<Variables>
+			<Variable name="i" isIdentifier="true">
+				<Default>i</Default>
+				<_ToolTip>Index</_ToolTip>
+			</Variable>
+			<Variable name="max">
+				<Default>max</Default>
+				<_ToolTip>Number of iterations</_ToolTip>
+			</Variable>
+		</Variables>
+		<Code><![CDATA[@for (int $i$ = $max$ - 1; $i$ >= 0; $i$--) {
+	$selected$$end$
+}]]>
+		</Code>
+	</CodeTemplate>
+
+	<CodeTemplate version="2.0">
+		<Header>
+			<_Group>Razor</_Group>
+			<Version>1.0</Version>
+			<MimeType>text/x-cshtml</MimeType>
+			<Shortcut>while</Shortcut>
+			<_Description>Template for 'while' loop</_Description>
+			<TemplateType>SurroundsWith,Expansion</TemplateType>
+		</Header>
+		<Variables>
+			<Variable name="expression">
+				<Default>true</Default>
+				<_ToolTip>Expression to evaluate</_ToolTip>
+			</Variable>
+		</Variables>
+		<Code><![CDATA[while ($expression$) {
+	$selected$$end$
+}]]>
+		</Code>
+	</CodeTemplate>
+
+	<CodeTemplate version="2.0">
+		<Header>
+			<_Group>Razor</_Group>
+			<Version>1.0</Version>
+			<MimeType>text/x-cshtml</MimeType>
+			<Shortcut>@while</Shortcut>
+			<_Description>Template for 'while' loop</_Description>
+			<TemplateType>SurroundsWith,Expansion</TemplateType>
+		</Header>
+		<Variables>
+			<Variable name="expression">
+				<Default>true</Default>
+				<_ToolTip>Expression to evaluate</_ToolTip>
+			</Variable>
+		</Variables>
+		<Code><![CDATA[@while ($expression$) {
+	$selected$$end$
+}]]>
+		</Code>
+	</CodeTemplate>
+
+	<CodeTemplate version="2.0">
+		<Header>
+			<_Group>Razor</_Group>
+			<Version>1.0</Version>
+			<MimeType>text/x-cshtml</MimeType>
+			<Shortcut>do</Shortcut>
+			<_Description>Template for 'do...while' loop</_Description>
+			<TemplateType>SurroundsWith,Expansion</TemplateType>
+		</Header>
+		<Variables>
+			<Variable name="expression">
+				<Default>true</Default>
+				<_ToolTip>Expression to evaluate</_ToolTip>
+			</Variable>
+		</Variables>
+		<Code><![CDATA[do {
+	$selected$$end$
+} while ($expression$);]]>
+		</Code>
+	</CodeTemplate>
+
+	<CodeTemplate version="2.0">
+		<Header>
+			<_Group>Razor</_Group>
+			<Version>1.0</Version>
+			<MimeType>text/x-cshtml</MimeType>
+			<Shortcut>@do</Shortcut>
+			<_Description>Template for 'do...while' loop</_Description>
+			<TemplateType>SurroundsWith,Expansion</TemplateType>
+		</Header>
+		<Variables>
+			<Variable name="expression">
+				<Default>true</Default>
+				<_ToolTip>Expression to evaluate</_ToolTip>
+			</Variable>
+		</Variables>
+		<Code><![CDATA[@do {
+	$selected$$end$
+} while ($expression$);]]>
+		</Code>
+	</CodeTemplate>
+
+	<CodeTemplate version="2.0">
+		<Header>
+			<_Group>Razor</_Group>
+			<Version>1.0</Version>
+			<MimeType>text/x-cshtml</MimeType>
+			<Shortcut>else</Shortcut>
+			<_Description>Template for 'else'</_Description>
+			<TemplateType>SurroundsWith,Expansion</TemplateType>
+		</Header>
+		<Code><![CDATA[else {
+	$selected$$end$
+}]]>
+		</Code>
+	</CodeTemplate>
+
+	<CodeTemplate version="2.0">
+		<Header>
+			<_Group>Razor</_Group>
+			<Version>1.0</Version>
+			<MimeType>text/x-cshtml</MimeType>
+			<Shortcut>foreach</Shortcut>
+			<_Description>Template for 'foreach' loop</_Description>
+			<TemplateType>SurroundsWith,Expansion</TemplateType>
+		</Header>
+		<Variables>
+			<Variable name="id" isIdentifier="true">
+				<Default>item</Default>
+				<_ToolTip>Identifier for the current element</_ToolTip>
+			</Variable>
+			<Variable name="collection">
+				<Default>collection</Default>
+				<_ToolTip>Collection to iterate through</_ToolTip>
+			</Variable>
+		</Variables>
+		<Code><![CDATA[foreach (var $id$ in $collection$) {
+	$selected$$end$
+}]]>
+		</Code>
+	</CodeTemplate>
+
+	<CodeTemplate version="2.0">
+		<Header>
+			<_Group>Razor</_Group>
+			<Version>1.0</Version>
+			<MimeType>text/x-cshtml</MimeType>
+			<Shortcut>@foreach</Shortcut>
+			<_Description>Template for 'foreach' loop</_Description>
+			<TemplateType>SurroundsWith,Expansion</TemplateType>
+		</Header>
+		<Variables>
+			<Variable name="id" isIdentifier="true">
+				<Default>item</Default>
+				<_ToolTip>Identifier for the current element</_ToolTip>
+			</Variable>
+			<Variable name="collection">
+				<Default>collection</Default>
+				<_ToolTip>Collection to iterate through</_ToolTip>
+			</Variable>
+		</Variables>
+		<Code><![CDATA[@foreach (var $id$ in $collection$) {
+	$selected$$end$
+}]]>
+		</Code>
+	</CodeTemplate>
+
+	<CodeTemplate version="2.0">
+		<Header>
+			<_Group>Razor</_Group>
+			<Version>1.0</Version>
+			<MimeType>text/x-cshtml</MimeType>
+			<Shortcut>if</Shortcut>
+			<_Description>Template for 'if' statement</_Description>
+			<TemplateType>SurroundsWith,Expansion</TemplateType>
+		</Header>
+		<Variables>
+			<Variable name="expression">
+				<Default>true</Default>
+				<_ToolTip>Expression to evaluate</_ToolTip>
+			</Variable>
+		</Variables>
+		<Code><![CDATA[if ($expression$) {
+	$selected$$end$
+}]]>
+		</Code>
+	</CodeTemplate>
+
+	<CodeTemplate version="2.0">
+		<Header>
+			<_Group>Razor</_Group>
+			<Version>1.0</Version>
+			<MimeType>text/x-cshtml</MimeType>
+			<Shortcut>@if</Shortcut>
+			<_Description>Template for 'if' statement</_Description>
+			<TemplateType>SurroundsWith,Expansion</TemplateType>
+		</Header>
+		<Variables>
+			<Variable name="expression">
+				<Default>true</Default>
+				<_ToolTip>Expression to evaluate</_ToolTip>
+			</Variable>
+		</Variables>
+		<Code><![CDATA[@if ($expression$) {
+	$selected$$end$
+}]]>
+		</Code>
+	</CodeTemplate>
+
+	<CodeTemplate version="2.0">
+		<Header>
+			<_Group>Razor</_Group>
+			<Version>1.0</Version>
+			<MimeType>text/x-cshtml</MimeType>
+			<Shortcut>lock</Shortcut>
+			<_Description>Template for 'lock' statement</_Description>
+			<TemplateType>SurroundsWith,Expansion</TemplateType>
+		</Header>
+		<Variables>
+			<Variable name="expression" isIdentifier="true">
+				<Default>this</Default>
+				<_ToolTip>Object to lock</_ToolTip>
+			</Variable>
+		</Variables>
+		<Code><![CDATA[lock ($expression$) {
+	$selected$$end$
+}]]>
+		</Code>
+	</CodeTemplate>
+
+	<CodeTemplate version="2.0">
+		<Header>
+			<_Group>Razor</_Group>
+			<Version>1.0</Version>
+			<MimeType>text/x-cshtml</MimeType>
+			<Shortcut>@lock</Shortcut>
+			<_Description>Template for 'lock' statement</_Description>
+			<TemplateType>SurroundsWith,Expansion</TemplateType>
+		</Header>
+		<Variables>
+			<Variable name="expression" isIdentifier="true">
+				<Default>this</Default>
+				<_ToolTip>Object to lock</_ToolTip>
+			</Variable>
+		</Variables>
+		<Code><![CDATA[@lock ($expression$) {
+	$selected$$end$
+}]]>
+		</Code>
+	</CodeTemplate>
+
+	<CodeTemplate version="2.0">
+		<Header>
+			<_Group>Razor</_Group>
+			<Version>1.0</Version>
+			<MimeType>text/x-cshtml</MimeType>
+			<Shortcut>try</Shortcut>
+			<_Description>Template for try...catch</_Description>
+			<TemplateType>SurroundsWith,Expansion</TemplateType>
+		</Header>
+		<Variables>
+			<Variable name="SystemException" isEditable="false">
+				<Default>System.Exception</Default>
+			</Variable>
+		</Variables>
+		<Code><![CDATA[try {
+	$selected$
+} catch ($SystemException$ ex) {
+	$end$
+}]]>
+		</Code>
+	</CodeTemplate>
+
+	<CodeTemplate version="2.0">
+		<Header>
+			<_Group>Razor</_Group>
+			<Version>1.0</Version>
+			<MimeType>text/x-cshtml</MimeType>
+			<Shortcut>@try</Shortcut>
+			<_Description>Template for try...catch</_Description>
+			<TemplateType>SurroundsWith,Expansion</TemplateType>
+		</Header>
+		<Variables>
+			<Variable name="SystemException" isEditable="false">
+				<Default>System.Exception</Default>
+			</Variable>
+		</Variables>
+		<Code><![CDATA[@try {
+	$selected$
+} catch ($SystemException$ ex) {
+	$end$
+}]]>
+		</Code>
+	</CodeTemplate>
+
+	<CodeTemplate version="2.0">
+		<Header>
+			<_Group>Razor</_Group>
+			<Version>1.0</Version>
+			<MimeType>text/x-cshtml</MimeType>
+			<Shortcut>tryf</Shortcut>
+			<_Description>Template for try...finally</_Description>
+			<TemplateType>SurroundsWith,Expansion</TemplateType>
+		</Header>
+		<Code><![CDATA[try {
+	$selected$
+} finally {
+	$end$
+}]]>
+		</Code>
+	</CodeTemplate>
+
+	<CodeTemplate version="2.0">
+		<Header>
+			<_Group>Razor</_Group>
+			<Version>1.0</Version>
+			<MimeType>text/x-cshtml</MimeType>
+			<Shortcut>@tryf</Shortcut>
+			<_Description>Template for try...finally</_Description>
+			<TemplateType>SurroundsWith,Expansion</TemplateType>
+		</Header>
+		<Code><![CDATA[@try {
+	$selected$
+} finally {
+	$end$
+}]]>
+		</Code>
+	</CodeTemplate>
+
+</RazorCodeTemplates>
+
