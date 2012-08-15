@@ -485,7 +485,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 				
 				declarationviewwindow.Clear ();
 				declarationviewwindow.Realize ();
-
 				foreach (var overload in overloads) {
 					declarationviewwindow.AddOverload ((CompletionData)overload);
 				}

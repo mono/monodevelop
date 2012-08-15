@@ -75,7 +75,7 @@ namespace MonoDevelop.CSharp
 		{
 			switch (entity.EntityType) {
 			case EntityType.TypeDefinition:
-				break;
+				return GetTypeMarkup ((ITypeDefinition)entity);
 			case EntityType.Field:
 				return GetFieldMarkup ((IField)entity);
 			case EntityType.Property:
@@ -97,15 +97,18 @@ namespace MonoDevelop.CSharp
 
 		void AppendModifiers (StringBuilder result, IEntity entity)
 		{
-			if (entity.IsStatic)
-				result.Append (Highlight ("static ", "keyword.modifier"));
-			if (entity.IsSealed)
-				result.Append (Highlight ("sealed ", "keyword.modifier"));
-			if (entity.IsAbstract)
-				result.Append (Highlight ("abstract ", "keyword.modifier"));
-			if (entity.IsShadowing)
-				result.Append (Highlight ("new ", "keyword.modifier"));
-			
+			if (entity is IField && ((IField)entity).IsConst) {
+				result.Append (Highlight ("const ", "keyword.modifier"));
+			} else {
+				if (entity.IsStatic)
+					result.Append (Highlight ("static ", "keyword.modifier"));
+				if (entity.IsSealed)
+					result.Append (Highlight ("sealed ", "keyword.modifier"));
+				if (entity.IsAbstract)
+					result.Append (Highlight ("abstract ", "keyword.modifier"));
+				if (entity.IsShadowing)
+					result.Append (Highlight ("new ", "keyword.modifier"));
+			}
 			switch (entity.Accessibility) {
 			case Accessibility.Internal:
 				if (entity.EntityType != EntityType.TypeDefinition)
@@ -130,6 +133,115 @@ namespace MonoDevelop.CSharp
 			}
 		}
 
+		string GetTypeMarkup (ITypeDefinition t)
+		{
+			if (t == null)
+				throw new ArgumentNullException ("t");
+
+			if (t.Kind == TypeKind.Delegate)
+				return GetDelegateMarkup (t);
+
+			var result = new StringBuilder ();
+			AppendModifiers (result, t);
+
+			switch (t.Kind) {
+			case TypeKind.Class:
+				result.Append (Highlight ("class ", "keyword.declaration"));
+				break;
+			case TypeKind.Interface:
+				result.Append (Highlight ("interface ", "keyword.declaration"));
+				break;
+			case TypeKind.Struct:
+				result.Append (Highlight ("struct ", "keyword.declaration"));
+				break;
+			case TypeKind.Enum:
+				result.Append (Highlight ("enum ", "keyword.declaration"));
+				break;
+			}
+
+			result.Append (t.Name);
+
+
+			return result.ToString ();
+		}
+
+		public string GetDelegateInfo (IType type)
+		{
+			if (type == null)
+				throw new ArgumentNullException ("returnType");
+			var t = type.GetDefinition ();
+
+			var result = new StringBuilder ();
+			
+			var method = t.GetDelegateInvokeMethod ();
+			result.Append (GetTypeReferenceString (method.ReturnType));
+			if (BreakLineAfterReturnType) {
+				result.AppendLine ();
+			} else {
+				result.Append (" ");
+			}
+			
+			
+			result.Append (CSharpAmbience.FilterName (t.Name));
+			
+			if (method.TypeParameters.Count > 0) {
+				result.Append ("&lt;");
+				for (int i = 0; i < method.TypeParameters.Count; i++) {
+					if (i > 0)
+						result.Append (", ");
+					AppendVariance (result, method.TypeParameters [i].Variance);
+					result.Append (CSharpAmbience.NetToCSharpTypeName (method.TypeParameters [i].Name));
+				}
+				result.Append ("&gt;");
+			}
+			
+			if (formattingOptions.SpaceBeforeMethodDeclarationParentheses)
+				result.Append (" ");
+			
+			result.Append ('(');
+			AppendParameterList (result,  method.Parameters, false);
+			result.Append (')');
+			return result.ToString ();
+		}
+
+		string GetDelegateMarkup (ITypeDefinition t)
+		{
+			var result = new StringBuilder ();
+			
+			var method = t.GetDelegateInvokeMethod ();
+			
+			AppendModifiers (result, t);
+			result.Append (Highlight ("delegate ", "keyword.declaration"));
+			result.Append (GetTypeReferenceString (method.ReturnType));
+			if (BreakLineAfterReturnType) {
+				result.AppendLine ();
+			} else {
+				result.Append (" ");
+			}
+			
+			
+			result.Append (CSharpAmbience.FilterName (t.Name));
+			
+			if (method.TypeParameters.Count > 0) {
+				result.Append ("&lt;");
+				for (int i = 0; i < method.TypeParameters.Count; i++) {
+					if (i > 0)
+						result.Append (", ");
+					AppendVariance (result, method.TypeParameters [i].Variance);
+					result.Append (CSharpAmbience.NetToCSharpTypeName (method.TypeParameters [i].Name));
+				}
+				result.Append ("&gt;");
+			}
+			
+			if (formattingOptions.SpaceBeforeMethodDeclarationParentheses)
+				result.Append (" ");
+			
+			result.Append ('(');
+			AppendParameterList (result,  method.Parameters);
+			result.Append (')');
+			return result.ToString ();
+		}
+
 		string GetFieldMarkup (IField field)
 		{
 			if (field == null)
@@ -147,6 +259,16 @@ namespace MonoDevelop.CSharp
 				}
 			}
 			result.Append (field.Name);
+
+			if (field.IsConst) {
+				if (formattingOptions.SpaceAroundAssignment) {
+					result.Append (" = ");
+				} else {
+					result.Append ("=");
+				}
+				AppendConstant (result, field.ConstantValue);
+			}
+
 			return result.ToString ();
 		}
 
@@ -189,7 +311,7 @@ namespace MonoDevelop.CSharp
 
 			result.Append ('(');
 			AppendParameterList (result,  method.Parameters);
-			result.Append (" )");
+			result.Append (')');
 			return result.ToString ();
 		}
 
@@ -261,15 +383,16 @@ namespace MonoDevelop.CSharp
 			}
 		}
 
-		void AppendParameterList (StringBuilder result, IList<IParameter> parameterList)
+		void AppendParameterList (StringBuilder result, IList<IParameter> parameterList, bool newLine = true)
 		{
-			if (parameterList == null)
+			if (parameterList == null || parameterList.Count == 0)
 				return;
-			
-			result.AppendLine ();
+			if (newLine)
+				result.AppendLine ();
 			for (int i = 0; i < parameterList.Count; i++) {
 				var parameter = parameterList [i];
-				result.Append (new string (' ', 2));
+				if (newLine)
+					result.Append (new string (' ', 2));
 				if (parameter.IsOptional) {
 					GrayOut = true;
 					var color = AlphaBlend (textEditor.ColorStyle.Default.Color, textEditor.ColorStyle.Default.BackgroundColor, optionalAlpha);
@@ -289,10 +412,17 @@ namespace MonoDevelop.CSharp
 				}
 				if (i + 1 < parameterList.Count) {
 					result.Append (',');
-					result.AppendLine ();
+					if (newLine) {
+						result.AppendLine ();
+					} else {
+						result.Append (' ');
+					}
 				}
 			}
-			result.AppendLine ();
+			if (newLine) {
+				result.AppendLine ();
+				result.Append (' ');
+			}
 		}
 		
 		void AppendParameter (StringBuilder result, IParameter parameter)

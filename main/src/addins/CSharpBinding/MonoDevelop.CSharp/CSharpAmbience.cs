@@ -414,7 +414,7 @@ namespace MonoDevelop.CSharp
 			
 			if (t.Kind == TypeKind.TypeParameter)
 				return t.FullName;
-			
+
 			var typeWithElementType = t as TypeWithElementType;
 			if (typeWithElementType != null) {
 				var sb = new StringBuilder ();

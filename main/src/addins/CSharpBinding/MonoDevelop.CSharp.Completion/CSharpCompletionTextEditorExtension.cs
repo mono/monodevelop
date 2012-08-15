@@ -480,15 +480,38 @@ namespace MonoDevelop.CSharp.Completion
 			};
 		}
 
+		class EntityCompletionDate : CompletionData
+		{
+			readonly CSharpCompletionTextEditorExtension editorCompletion;
+			readonly IEntity entity;
+
+			public EntityCompletionDate (CSharpCompletionTextEditorExtension editorCompletion, IEntity entity, string text) : base (text, entity.GetStockIcon ())
+			{
+				this.editorCompletion = editorCompletion;
+				this.entity = entity;
+			}
+			
+			public override TooltipInformation CreateTooltipInformation (bool smartWrap)
+			{
+				var tooltipInfo = new TooltipInformation ();
+				var resolver = editorCompletion.CSharpUnresolvedFile.GetResolver (editorCompletion.Compilation, editorCompletion.TextEditorData.Caret.Location);
+				var sig = new SignatureMarkupCreator (editorCompletion.TextEditorData, resolver, editorCompletion.FormattingPolicy.CreateOptions ());
+				sig.BreakLineAfterReturnType = smartWrap;
+				tooltipInfo.SignatureMarkup = sig.GetString (entity);
+				var plainDoc = AmbienceService.GetDocumentationSummary (entity) ?? "";
+				tooltipInfo.SummaryMarkup = AmbienceService.GetDocumentationMarkup (plainDoc);
+				return tooltipInfo;
+			}
+		}
+
 		ICompletionData ICompletionDataFactory.CreateEntityCompletionData (IEntity entity, string text)
 		{
-			return new CompletionData (text, entity.GetStockIcon (), null, text);
+			return new EntityCompletionDate (this, entity, text);
 		}
-		
 
 		ICompletionData ICompletionDataFactory.CreateTypeCompletionData (IType type, string shortType)
 		{
-			var result = new CompletionData (shortType, type.GetStockIcon ());
+			var result = new EntityCompletionDate (this, type.GetDefinition (), shortType);
 			if (!(type is ParameterizedType) && type.TypeParameterCount > 0) {
 				var sb = new StringBuilder (shortType);
 				sb.Append ("<");

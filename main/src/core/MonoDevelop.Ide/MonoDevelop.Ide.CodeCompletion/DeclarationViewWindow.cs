@@ -142,7 +142,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 		
-		MonoDevelop.Components.FixedWidthWrapLabel headlabel, bodylabel;
+		MonoDevelop.Components.FixedWidthWrapLabel headlabel;
 		HBox helpbox;
 		DelecationViewPagerBubbles infoBubbles = new DelecationViewPagerBubbles ();
 
@@ -185,17 +185,22 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		void ShowOverload ()
 		{
+			ClearDescriptions ();
+
 			if (current_overload >= 0 && current_overload < overloads.Count) {
 				QueueResize ();
 				var o = overloads[current_overload];
 				headlabel.Markup = o.SignatureMarkup;
 				headlabel.Visible = true;
-				if (!string.IsNullOrEmpty (o.SummaryMarkup)) {
-					bodylabel.Markup = "<span size=\"smaller\">Summary</span>"+ Environment.NewLine + o.SummaryMarkup;
-					bodylabel.Visible = true;
-				} else {
-					bodylabel.Visible = false;
+
+				foreach (var cat in o.Categories) {
+					descriptionBox.PackStart (CreateCategory (cat.Item1, cat.Item2), true, true, 4);
 				}
+
+				if (!string.IsNullOrEmpty (o.SummaryMarkup)) {
+					descriptionBox.PackStart (CreateCategory (GettextCatalog.GetString ("Summary"), o.SummaryMarkup), true, true, 4);
+				}
+				descriptionBox.ShowAll ();
 				infoBubbles.ActiveBubble = current_overload;
 			}
 		}
@@ -222,10 +227,21 @@ namespace MonoDevelop.Ide.CodeCompletion
 			ShowOverload ();
 		}
 
+		void ClearDescriptions ()
+		{
+			while (descriptionBox.Children.Length > 0) {
+				var child = descriptionBox.Children [0];
+				descriptionBox.Remove (child);
+				child.Destroy ();
+			}
+		}
+
 		public void Clear ()
 		{
+			ClearDescriptions ();
 			overloads.Clear ();
 			helpbox.Visible = false;
+			headlabel.Markup = "";
 			current_overload = 0;
 		}
 		
@@ -236,10 +252,32 @@ namespace MonoDevelop.Ide.CodeCompletion
 			} else {
 				headlabel.MaxWidth = -1;
 			}
-			bodylabel.MaxWidth = headlabel.RealWidth > 350 ? headlabel.RealWidth : 350;
 			QueueResize ();
 		}
 
+		VBox CreateCategory (string categoryName, string categoryContentMarkup)
+		{
+			var vbox = new VBox ();
+
+			vbox.Spacing = 2;
+
+			var catLabel = new MonoDevelop.Components.FixedWidthWrapLabel ();
+			catLabel.Text = categoryName;
+
+			vbox.PackStart (catLabel, false, true, 0);
+
+			var contentLabel = new MonoDevelop.Components.FixedWidthWrapLabel ();
+			contentLabel.Wrap = Pango.WrapMode.WordChar;
+			contentLabel.BreakOnCamelCasing = true;
+			contentLabel.BreakOnPunctuation = true;
+			contentLabel.Markup = categoryContentMarkup.Trim ();
+
+			vbox.PackStart (contentLabel, true, true, 0);
+
+			return vbox;
+		}
+
+		VBox descriptionBox = new VBox (false, 0);
 		public DeclarationViewWindow () : base ()
 		{
 			this.AllowShrink = false;
@@ -254,18 +292,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 			headlabel.Wrap = Pango.WrapMode.WordChar;
 			headlabel.BreakOnCamelCasing = true;
 			headlabel.BreakOnPunctuation = true;
-			
-			bodylabel = new MonoDevelop.Components.FixedWidthWrapLabel ();
-			bodylabel.Wrap = Pango.WrapMode.WordChar;
-			bodylabel.BreakOnCamelCasing = true;
-			bodylabel.BreakOnPunctuation = true;
-			
+			descriptionBox.Spacing = 4;
 			VBox vb = new VBox (false, 0);
 			vb.PackStart (headlabel, true, true, 0);
-			vb.PackStart (bodylabel, true, true, 3);
+			vb.PackStart (descriptionBox, true, true, 0);
 
 			HBox hb = new HBox (false, 0);
-			hb.Spacing = 4;
 			hb.PackStart (vb, true, true, 0);
 
 			helpbox = new HBox (false, 0);
@@ -274,7 +306,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			helpbox.PackStart (infoBubbles, true, true, 0);
 			var rightArrow = new DeclarationViewArrow (false);
 			helpbox.PackEnd (rightArrow, false, false, 0);
-			helpbox.BorderWidth = 2;
+			helpbox.BorderWidth = 0;
 			
 			VBox vb2 = new VBox (false, 0);
 			vb2.Spacing = 4;

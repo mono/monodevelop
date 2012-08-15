@@ -261,6 +261,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		
 		public static string EscapeText (string text)
 		{
+			if (text == null)
+				return null;
 			StringBuilder result = new StringBuilder ();
 			foreach (char ch in text) {
 				switch (ch) {
@@ -499,8 +501,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				MonoDevelop.Core.LoggingService.LogError (ex.ToString ());
 				return EscapeText (doc);
 			}
+
 			if (IsEmptyDocumentation (ret.ToString ()) && IsEmptyDocumentation (parameterBuilder.ToString ()))
-				return null;
+				return EscapeText (doc);
 			if (string.IsNullOrEmpty (options.HighlightParameter) && exceptionCount > 0)
 				ret.Append (exceptions.ToString ());
 			

@@ -535,10 +535,25 @@ namespace MonoDevelop.CSharp.Completion
 			var sig = new SignatureMarkupCreator (editorCompletion.TextEditorData, resolver, editorCompletion.FormattingPolicy.CreateOptions ());
 			sig.BreakLineAfterReturnType = smartWrap;
 			tooltipInfo.SignatureMarkup = sig.GetString (this.Entity);
-			tooltipInfo.SummaryMarkup = AmbienceService.GetDocumentationMarkup (AmbienceService.GetDocumentationSummary (Entity) ?? "");
+			var plainDoc = AmbienceService.GetDocumentationSummary (Entity) ?? "";
+			tooltipInfo.SummaryMarkup = AmbienceService.GetDocumentationMarkup (plainDoc);
+
+			if (Entity is IMember) {
+				var evt = (IMember)Entity;
+				if (evt.ReturnType.Kind == TypeKind.Delegate) {
+					tooltipInfo.AddCategory (GettextCatalog.GetString ("Delegate Info"), sig.GetDelegateInfo (evt.ReturnType));
+				}
+			}
+			if (Entity is IMethod) {
+				var method = (IMethod)Entity;
+				if (method.IsExtensionMethod) {
+					tooltipInfo.AddCategory (GettextCatalog.GetString ("Extension Method From"), method.DeclaringTypeDefinition.FullName);
+				}
+			}
+
 			return tooltipInfo;
 		}
-		
+
 
 		#region IOverloadedCompletionData implementation 
 	
