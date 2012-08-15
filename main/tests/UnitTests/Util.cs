@@ -46,7 +46,7 @@ namespace UnitTests
 				if (rootDir == null) {
 					rootDir = Path.GetDirectoryName (typeof(Util).Assembly.Location);
 					rootDir = Path.Combine (Path.Combine (rootDir, ".."), "..");
-					rootDir = Path.Combine (rootDir, "tests");
+					rootDir = Path.GetFullPath (Path.Combine (rootDir, "tests"));
 				}
 				return rootDir;
 			}
