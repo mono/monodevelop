@@ -63,7 +63,14 @@ namespace MonoDevelop.CSharp
 		{
 			if (typeReference == null)
 				throw new ArgumentNullException ("typeReference");
-			var astType = astBuilder.ConvertType (resolver.Compilation.Import (typeReference));
+
+			AstType astType;
+			try {
+				astType = astBuilder.ConvertType (typeReference);
+			} catch (Exception) {
+				astType = astBuilder.ConvertType (resolver.Compilation.Import (typeReference));
+			}
+
 			if (astType is PrimitiveType) {
 				return Highlight (astType.GetText (formattingOptions), "keyword.type");
 			}
