@@ -125,10 +125,12 @@
     <ProjectReference Include="..\..\..\..\external\nrefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
       <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
       <Name>ICSharpCode.NRefactory.CSharp</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\CSharpBinding\CSharpBinding.csproj">
       <Project>{07CC7654-27D6-421D-A64C-0FFA40456FA2}</Project>
-      <Name>CSharpBinding %28Addins\CSharpBinding\CSharpBinding%29</Name>
+      <Name>CSharpBinding</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\TextTemplating\Mono.TextTemplating\Mono.TextTemplating.csproj">
       <Project>{A2364D6A-00EF-417C-80A6-815726C70032}</Project>
