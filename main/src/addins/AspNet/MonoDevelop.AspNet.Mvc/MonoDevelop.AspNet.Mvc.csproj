@@ -40,13 +40,13 @@
     <Compile Include="Completion\RazorCSharpCompletionBuilder.cs" />
     <Compile Include="Formatting\RazorCSharpFormatter.cs" />
     <Compile Include="Gui\FolderNodeBuilderExtension.cs" />
-    <None Include="CodeTemplates\C#\AddController\ControllerWithEmptyReadAndWriteActions.tt">
+    <None Include="CodeTemplates\CSharp\AddController\ControllerWithEmptyReadAndWriteActions.tt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="CodeTemplates\C#\AddController\Empty.tt">
+    <None Include="CodeTemplates\CSharp\AddController\Empty.tt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="CodeTemplates\C#\AddView\Razor\Empty.tt">
+    <None Include="CodeTemplates\CSharp\AddView\Razor\Empty.tt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Templates\Common\Error.cshtml">
@@ -231,7 +231,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </None>
-    <None Include="CodeTemplates\C#\AddView\Aspx\Empty.tt">
+    <None Include="CodeTemplates\CSharp\AddView\Aspx\Empty.tt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Makefile.am" />
