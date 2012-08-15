@@ -202,9 +202,8 @@
     <Compile Include="Mono.TextEditor\Gui\GtkGestures.cs" />
     <Compile Include="Mono.TextEditor\Gui\TooltipProvider.cs" />
     <Compile Include="Mono.TextEditor\ISelectionSurroundingProvider.cs" />
-    <Compile Include="Mono.TextEditor\Gui\Blur.cs" />
-    <Compile Include="Mono.TextEditor\Gui\TextArea.cs" />
     <Compile Include="Mono.TextEditor\Gui\TextEditor.cs" />
+    <Compile Include="Mono.TextEditor\Gui\TextEditorContainer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mono.TextEditor.dll.config">
@@ -314,9 +313,6 @@
     <EmbeddedResource Include="Styles\TangoStyle.xml">
       <LogicalName>TangoStyle.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="SyntaxModes\RazorSyntaxMode.xml">
-      <LogicalName>RazorSyntaxMode.xml</LogicalName>
-    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
@@ -338,7 +334,7 @@
     <Folder Include="Mono.TextEditor\Standalone\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+    <ProjectReference Include="..\..\..\contrib\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
       <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
       <Name>ICSharpCode.NRefactory</Name>
       <Private>False</Private>
