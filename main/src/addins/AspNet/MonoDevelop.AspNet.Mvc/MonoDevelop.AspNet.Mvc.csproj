@@ -40,7 +40,7 @@
     <Compile Include="Completion\RazorCSharpCompletionBuilder.cs" />
     <Compile Include="Formatting\RazorCSharpFormatter.cs" />
     <Compile Include="Gui\FolderNodeBuilderExtension.cs" />
-    <None Include="CodeTemplates\C#\AddController\Controller with empty read and write actions.tt">
+    <None Include="CodeTemplates\C#\AddController\ControllerWithEmptyReadAndWriteActions.tt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="CodeTemplates\C#\AddController\Empty.tt">
