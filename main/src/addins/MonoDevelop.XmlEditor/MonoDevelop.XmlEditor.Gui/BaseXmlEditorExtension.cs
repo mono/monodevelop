@@ -234,36 +234,8 @@ namespace MonoDevelop.XmlEditor.Gui
 				tracker.Engine.CurrentStateLength, previousChar, currentChar, forced);
 			
 			//closing tag completion
-			if (tracker.Engine.CurrentState is XmlFreeState && currentChar == '>') {
-				//get name of current node in document that's being ended
-				XElement el = tracker.Engine.Nodes.Peek () as XElement;
-				if (el != null && el.Region.End >= currentLocation && !el.IsClosed && el.IsNamed) {
-					string tag = String.Concat ("</", el.Name.FullName, ">");
-					if (XmlEditorOptions.AutoCompleteElements) {
-						
-//						//make sure we have a clean atomic undo so the user can undo the tag insertion
-//						//independently of the >
-//						bool wasInAtomicUndo = this.Editor.Document.IsInAtomicUndo;
-//						if (wasInAtomicUndo)
-//							this.Editor.Document.EndAtomicUndo ();
-						
-						using (var undo = buf.OpenUndoGroup ()) {
-							buf.InsertText (buf.CursorPosition, tag);
-							buf.CursorPosition -= tag.Length;
-						}
-						
-//						if (wasInAtomicUndo)
-//							this.Editor.Document.BeginAtomicUndo ();
-						
-						return null;
-					} else {
-						CompletionDataList cp = new CompletionDataList ();
-						cp.Add (new XmlTagCompletionData (tag, 0, true));
-						return cp;
-					}
-				}
-				return null;
-			}
+			if (tracker.Engine.CurrentState is XmlFreeState && currentChar == '>')
+				return ClosingTagCompletion (buf, currentLocation);
 			
 			// Auto insert '>' when '/' is typed inside tag state (for quick tag closing)
 			//FIXME: avoid doing this when the next non-whitespace char is ">" or ignore the next ">" typed
@@ -391,6 +363,38 @@ namespace MonoDevelop.XmlEditor.Gui
 				return list.Count > 0? list : null;
 			}
 			
+			return null;
+		}
+
+		protected virtual ICompletionDataList ClosingTagCompletion (IEditableTextBuffer buf, TextLocation currentLocation)
+		{
+			//get name of current node in document that's being ended
+			XElement el = tracker.Engine.Nodes.Peek () as XElement;
+			if (el != null && el.Region.End >= currentLocation && !el.IsClosed && el.IsNamed) {
+				string tag = String.Concat ("</", el.Name.FullName, ">");
+				if (XmlEditorOptions.AutoCompleteElements) {
+
+					//						//make sure we have a clean atomic undo so the user can undo the tag insertion
+					//						//independently of the >
+					//						bool wasInAtomicUndo = this.Editor.Document.IsInAtomicUndo;
+					//						if (wasInAtomicUndo)
+					//							this.Editor.Document.EndAtomicUndo ();
+
+					using (var undo = buf.OpenUndoGroup ()) {
+						buf.InsertText (buf.CursorPosition, tag);
+						buf.CursorPosition -= tag.Length;
+					}
+
+					//						if (wasInAtomicUndo)
+					//							this.Editor.Document.BeginAtomicUndo ();
+
+					return null;
+				} else {
+					CompletionDataList cp = new CompletionDataList ();
+					cp.Add (new XmlTagCompletionData (tag, 0, true));
+					return cp;
+				}
+			}
 			return null;
 		}
 		

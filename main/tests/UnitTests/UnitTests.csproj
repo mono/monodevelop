@@ -207,6 +207,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MonoDevelop.AspNet.Mvc.Completion\CompletionTests.cs" />
+    <Compile Include="MonoDevelop.AspNet.Mvc.Completion\RazorCompletionTesting.cs" />
     <Compile Include="MonoDevelop.AspNet.Mvc.StateEngine\RazorCodeBlockParsingTests.cs" />
     <Compile Include="MonoDevelop.AspNet.Mvc.StateEngine\RazorCodeFragmentsParsingTests.cs" />
     <Compile Include="MonoDevelop.AspNet.Mvc.StateEngine\RazorCommentParsingTests.cs" />
