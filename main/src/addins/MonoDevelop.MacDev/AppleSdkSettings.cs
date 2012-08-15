@@ -125,6 +125,8 @@ namespace MonoDevelop.MacDev
 			IsValid = false;
 			DTXcode = null;
 			IsXcode4 = false;
+			XcodeVersion = null;
+			XcodeRevision = int.MinValue;
 			lastWritten = DateTime.MinValue;
 		}
 		
@@ -170,19 +172,31 @@ namespace MonoDevelop.MacDev
 
 			try {
 				var plist = XcodePath.Combine ("Contents", "Info.plist");
+				
 				if (!File.Exists (plist))
 					return;
+				
 				lastWritten = File.GetLastWriteTime (plist);
+				
+				XcodeVersion = new Version (3, 2, 6);
+				XcodeRevision = 0;
 				
 				// DTXCode was introduced after xcode 3.2.6 so it may not exist
 				using (var pool = new NSAutoreleasePool ()) {
 					var dict = NSDictionary.FromFile (plist);
 					NSObject value;
-					if (dict.TryGetValue (new NSString ("DTXcode"), out value))
+					
+					if (dict.TryGetValue ((NSString) "DTXcode", out value))
 						DTXcode = ((NSString) value).ToString ();
+					
+					if (dict.TryGetValue ((NSString) "CFBundleShortVersionString", out value))
+						XcodeVersion = Version.Parse (((NSString) value).ToString ());
+					
+					if (dict.TryGetValue ((NSString) "CFBundleVersion", out value))
+						XcodeRevision = int.Parse (((NSString) value).ToString ());
 				}
+
 				IsXcode4 = !string.IsNullOrEmpty (DTXcode) && int.Parse (DTXcode) >= 0400;
-				IsXcode42 = !string.IsNullOrEmpty (DTXcode) && int.Parse (DTXcode) >= 0420;
 				IsValid = true;
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error loading Xcode information for prefix '" + DeveloperRoot + "'", ex);
@@ -215,7 +229,9 @@ namespace MonoDevelop.MacDev
 		public static bool IsValid { get; private set; }
 		public static string DTXcode { get; private set; }
 		public static bool IsXcode4 { get; private set; }
-		public static bool IsXcode42 { get; private set; }
+		
+		public static Version XcodeVersion { get; private set; }
+		public static int XcodeRevision { get; private set; }
 		
 		public static event Action Changed;
 	}
@@ -232,13 +248,10 @@ namespace MonoDevelop.MacDev
 				}
 				
 				using (var pool = new NSAutoreleasePool ()) {
-					var dict = NSDictionary.FromFile (AppleSdkSettings.XcodePath.Combine ("Contents", "Info.plist"));
-					sb.AppendFormat ("\t Xcode {0} ({1})",
-						dict[(NSString)"CFBundleShortVersionString"],
-						dict[(NSString)"CFBundleVersion"]);
+					sb.AppendFormat ("\t Xcode {0} ({1})", AppleSdkSettings.XcodeVersion, AppleSdkSettings.XcodeRevision);
 					sb.AppendLine ();
 					
-					dict = NSDictionary.FromFile (AppleSdkSettings.DeveloperRootVersionPlist);
+					var dict = NSDictionary.FromFile (AppleSdkSettings.DeveloperRootVersionPlist);
 					sb.AppendFormat ("\t Build {0}",
 						dict[(NSString)"ProductBuildVersion"]);
 				}
