@@ -206,7 +206,7 @@ namespace MonoDevelop.Core.Assemblies
 				return;
 			foreach (string pcfile in GetAllPkgConfigFiles ()) {
 				try {
-					ParsePCFile (pcfile);
+					ParsePCFile (FileService.ResolveFullPath (pcfile));
 					if (ShuttingDown)
 						return;
 				}
