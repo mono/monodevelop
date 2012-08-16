@@ -340,8 +340,7 @@ namespace MonoDevelop.SourceEditor
 		void ResetFocusChain ()
 		{
 			List<Widget> focusChain = new List<Widget> ();
-			
-			focusChain.Add (this.textEditor);
+			focusChain.Add (this.textEditor.TextAreaWidget);
 			if (this.searchAndReplaceWidget != null) {
 				focusChain.Add (this.searchAndReplaceWidget);
 			}
@@ -598,13 +597,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public bool EditorHasFocus {
 			get {
-				Gtk.Container c = vbox;
-				while (c != null) {
-					if (c.FocusChild == TextEditor)
-						return true;
-					c = c.FocusChild as Gtk.Container;
-				}
-				return false;
+				return TextEditor.TextAreaWidget.HasFocus;
 			}
 		}
 

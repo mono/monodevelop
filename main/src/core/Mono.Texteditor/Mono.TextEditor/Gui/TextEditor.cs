@@ -41,13 +41,21 @@ namespace Mono.TextEditor
 	[System.ComponentModel.ToolboxItem(true)]
 	public class TextEditor : Container
 	{
-		readonly TextArea textEditorWidget;
+		readonly TextArea textArea;
 
 		internal TextArea TextArea {
 			get {
-				return textEditorWidget;
+				return textArea;
 			}
 		}
+
+		
+		public Widget TextAreaWidget {
+			get {
+				return textArea;
+			}
+		}
+
 
 		public override ContainerChild this [Widget w] {
 			get {
@@ -73,22 +81,22 @@ namespace Mono.TextEditor
 		{
 			GtkWorkarounds.FixContainerLeak (this);
 			WidgetFlags |= Gtk.WidgetFlags.NoWindow;
-			this.textEditorWidget = new TextArea (this, doc, options, initialMode);
-			this.textEditorWidget.Initialize ();
-			this.textEditorWidget.EditorOptionsChanged += (sender, e) => OptionsChanged (sender, e);
+			this.textArea = new TextArea (this, doc, options, initialMode);
+			this.textArea.Initialize ();
+			this.textArea.EditorOptionsChanged += (sender, e) => OptionsChanged (sender, e);
 		
-			AddTopLevelWidget (textEditorWidget, 0, 0);
+			AddTopLevelWidget (textArea, 0, 0);
 			stage.ActorStep += OnActorStep;
 			ShowAll ();
 			
 			// bug on mac: search widget gets overdrawn in the scroll event.
 			if (Platform.IsMac) {
-				textEditorWidget.VScroll += delegate {
+				textArea.VScroll += delegate {
 					for (int i = 1; i < containerChildren.Count; i++) {
 						containerChildren[i].Child.QueueDraw ();
 					}
 				};
-				textEditorWidget.HScroll += delegate {
+				textArea.HScroll += delegate {
 					for (int i = 1; i < containerChildren.Count; i++) {
 						containerChildren[i].Child.QueueDraw ();
 					}
@@ -223,8 +231,8 @@ namespace Mono.TextEditor
 			if (this.GdkWindow != null)
 				this.GdkWindow.MoveResize (allocation);
 			allocation = new Rectangle (0, 0, allocation.Width, allocation.Height);
-			if (textEditorWidget.Allocation != allocation)
-				textEditorWidget.SizeAllocate (allocation);
+			if (textArea.Allocation != allocation)
+				textArea.SizeAllocate (allocation);
 			SetChildrenPositions (allocation);
 		}
 		
@@ -233,9 +241,9 @@ namespace Mono.TextEditor
 			Requisition req = child.Child.SizeRequest ();
 			var childRectangle = new Gdk.Rectangle (child.X, child.Y, req.Width, req.Height);
 			if (!child.FixedPosition) {
-				double zoom = textEditorWidget.Options.Zoom;
-				childRectangle.X = (int)(child.X * zoom - textEditorWidget.HAdjustment.Value);
-				childRectangle.Y = (int)(child.Y * zoom - textEditorWidget.VAdjustment.Value);
+				double zoom = textArea.Options.Zoom;
+				childRectangle.X = (int)(child.X * zoom - textArea.HAdjustment.Value);
+				childRectangle.Y = (int)(child.Y * zoom - textArea.VAdjustment.Value);
 			}
 			//			childRectangle.X += allocation.X;
 			//			childRectangle.Y += allocation.Y;
@@ -245,7 +253,7 @@ namespace Mono.TextEditor
 		void SetChildrenPositions (Rectangle allocation)
 		{
 			foreach (EditorContainerChild child in containerChildren.ToArray ()) {
-				if (child.Child == textEditorWidget)
+				if (child.Child == textArea)
 					continue;
 				ResizeChild (allocation, child);
 			}
@@ -354,7 +362,7 @@ namespace Mono.TextEditor
 			
 			editorHAdjustement = hAdjustement;
 			editorVAdjustement = vAdjustement;
-			textEditorWidget.SetScrollAdjustments (hAdjustement, vAdjustement);
+			textArea.SetScrollAdjustments (hAdjustement, vAdjustement);
 			OnScrollAdjustmentsSet ();
 		}
 
@@ -381,13 +389,13 @@ namespace Mono.TextEditor
 		#region TextArea delegation
 		public TextDocument Document {
 			get {
-				return textEditorWidget.Document;
+				return textArea.Document;
 			}
 		}
 		
 		public bool IsDisposed {
 			get {
-				return textEditorWidget.IsDisposed;
+				return textArea.IsDisposed;
 			}
 		}
 		
@@ -400,301 +408,301 @@ namespace Mono.TextEditor
 		/// </value>
 		public bool TabsToSpaces {
 			get {
-				return textEditorWidget.TabsToSpaces;
+				return textArea.TabsToSpaces;
 			}
 			set {
-				textEditorWidget.TabsToSpaces = value;
+				textArea.TabsToSpaces = value;
 			}
 		}
 
 		public Mono.TextEditor.Caret Caret {
 			get {
-				return textEditorWidget.Caret;
+				return textArea.Caret;
 			}
 		}
 
 		protected internal IMMulticontext IMContext {
-			get { return textEditorWidget.IMContext; }
+			get { return textArea.IMContext; }
 		}
 
 		public string IMModule {
 			get {
-				return textEditorWidget.IMModule;
+				return textArea.IMModule;
 			}
 			set {
-				textEditorWidget.IMModule = value;
+				textArea.IMModule = value;
 			}
 		}
 
 		public ITextEditorOptions Options {
 			get {
-				return textEditorWidget.Options;
+				return textArea.Options;
 			}
 			set {
-				textEditorWidget.Options = value;
+				textArea.Options = value;
 			}
 		}
 
 		public string FileName {
 			get {
-				return textEditorWidget.FileName;
+				return textArea.FileName;
 			}
 		}
 
 		public string MimeType {
 			get {
-				return textEditorWidget.MimeType;
+				return textArea.MimeType;
 			}
 		}
 
 		public double LineHeight {
 			get {
-				return textEditorWidget.LineHeight;
+				return textArea.LineHeight;
 			}
 			internal set {
-				textEditorWidget.LineHeight = value;
+				textArea.LineHeight = value;
 			}
 		}
 
 		public TextViewMargin TextViewMargin {
 			get {
-				return textEditorWidget.TextViewMargin;
+				return textArea.TextViewMargin;
 			}
 		}
 
 		public Margin IconMargin {
-			get { return textEditorWidget.IconMargin; }
+			get { return textArea.IconMargin; }
 		}
 
 		public DocumentLocation LogicalToVisualLocation (DocumentLocation location)
 		{
-			return textEditorWidget.LogicalToVisualLocation (location);
+			return textArea.LogicalToVisualLocation (location);
 		}
 		
 		public DocumentLocation LogicalToVisualLocation (int line, int column)
 		{
-			return textEditorWidget.LogicalToVisualLocation (line, column);
+			return textArea.LogicalToVisualLocation (line, column);
 		}
 		
 		public void CenterToCaret ()
 		{
-			textEditorWidget.CenterToCaret ();
+			textArea.CenterToCaret ();
 		}
 		
 		public void CenterTo (int offset)
 		{
-			textEditorWidget.CenterTo (offset);
+			textArea.CenterTo (offset);
 		}
 		
 		public void CenterTo (int line, int column)
 		{
-			textEditorWidget.CenterTo (line, column);
+			textArea.CenterTo (line, column);
 		}
 		
 		public void CenterTo (DocumentLocation p)
 		{
-			textEditorWidget.CenterTo (p);
+			textArea.CenterTo (p);
 		}
 
 		internal void SmoothScrollTo (double value)
 		{
-			textEditorWidget.SmoothScrollTo (value);
+			textArea.SmoothScrollTo (value);
 		}
 
 		public void ScrollTo (int offset)
 		{
-			textEditorWidget.ScrollTo (offset);
+			textArea.ScrollTo (offset);
 		}
 		
 		public void ScrollTo (int line, int column)
 		{
-			textEditorWidget.ScrollTo (line, column);
+			textArea.ScrollTo (line, column);
 		}
 
 		public void ScrollTo (DocumentLocation p)
 		{
-			textEditorWidget.ScrollTo (p);
+			textArea.ScrollTo (p);
 		}
 
 		public void ScrollToCaret ()
 		{
-			textEditorWidget.ScrollToCaret ();
+			textArea.ScrollToCaret ();
 		}
 
 		public void TryToResetHorizontalScrollPosition ()
 		{
-			textEditorWidget.TryToResetHorizontalScrollPosition ();
+			textArea.TryToResetHorizontalScrollPosition ();
 		}
 
 		public int GetWidth (string text)
 		{
-			return textEditorWidget.GetWidth (text);
+			return textArea.GetWidth (text);
 		}
 
 		internal void HideMouseCursor ()
 		{
-			textEditorWidget.HideMouseCursor ();
+			textArea.HideMouseCursor ();
 		}
 
 		public void ClearTooltipProviders ()
 		{
-			textEditorWidget.ClearTooltipProviders ();
+			textArea.ClearTooltipProviders ();
 		}
 		
 		public void AddTooltipProvider (TooltipProvider provider)
 		{
-			textEditorWidget.AddTooltipProvider (provider);
+			textArea.AddTooltipProvider (provider);
 		}
 		
 		public void RemoveTooltipProvider (TooltipProvider provider)
 		{
-			textEditorWidget.RemoveTooltipProvider (provider);
+			textArea.RemoveTooltipProvider (provider);
 		}
 
 		internal void RedrawMargin (Margin margin)
 		{
-			textEditorWidget.RedrawMargin (margin);
+			textArea.RedrawMargin (margin);
 		}
 		
 		public void RedrawMarginLine (Margin margin, int logicalLine)
 		{
-			textEditorWidget.RedrawMarginLine (margin, logicalLine);
+			textArea.RedrawMarginLine (margin, logicalLine);
 		}
 		internal void RedrawPosition (int logicalLine, int logicalColumn)
 		{
-			textEditorWidget.RedrawPosition (logicalLine, logicalColumn);
+			textArea.RedrawPosition (logicalLine, logicalColumn);
 		}
 #endregion
 
 		#region TextEditorData delegation
 		public string EolMarker {
 			get {
-				return textEditorWidget.EolMarker;
+				return textArea.EolMarker;
 			}
 		}
 		
 		public Mono.TextEditor.Highlighting.ColorScheme ColorStyle {
 			get {
-				return textEditorWidget.ColorStyle;
+				return textArea.ColorStyle;
 			}
 		}
 		
 		public EditMode CurrentMode {
 			get {
-				return textEditorWidget.CurrentMode;
+				return textArea.CurrentMode;
 			}
 			set {
-				textEditorWidget.CurrentMode = value;
+				textArea.CurrentMode = value;
 			}
 		}
 		
 		public bool IsSomethingSelected {
 			get {
-				return textEditorWidget.IsSomethingSelected;
+				return textArea.IsSomethingSelected;
 			}
 		}
 		
 		public Selection MainSelection {
 			get {
-				return textEditorWidget.MainSelection;
+				return textArea.MainSelection;
 			}
 			set {
-				textEditorWidget.MainSelection = value;
+				textArea.MainSelection = value;
 			}
 		}
 		
 		public SelectionMode SelectionMode {
 			get {
-				return textEditorWidget.SelectionMode;
+				return textArea.SelectionMode;
 			}
 			set {
-				textEditorWidget.SelectionMode = value;
+				textArea.SelectionMode = value;
 			}
 		}
 		
 		public TextSegment SelectionRange {
 			get {
-				return textEditorWidget.SelectionRange;
+				return textArea.SelectionRange;
 			}
 			set {
-				textEditorWidget.SelectionRange = value;
+				textArea.SelectionRange = value;
 			}
 		}
 		
 		public string SelectedText {
 			get {
-				return textEditorWidget.SelectedText;
+				return textArea.SelectedText;
 			}
 			set {
-				textEditorWidget.SelectedText = value;
+				textArea.SelectedText = value;
 			}
 		}
 		
 		public int SelectionAnchor {
 			get {
-				return textEditorWidget.SelectionAnchor;
+				return textArea.SelectionAnchor;
 			}
 			set {
-				textEditorWidget.SelectionAnchor = value;
+				textArea.SelectionAnchor = value;
 			}
 		}
 		
 		public IEnumerable<DocumentLine> SelectedLines {
 			get {
-				return textEditorWidget.SelectedLines;
+				return textArea.SelectedLines;
 			}
 		}
 		
 		public Adjustment HAdjustment {
 			get {
-				return textEditorWidget.HAdjustment;
+				return textArea.HAdjustment;
 			}
 		}
 		
 		public Adjustment VAdjustment {
 			get {
-				return textEditorWidget.VAdjustment;
+				return textArea.VAdjustment;
 			}
 		}
 		
 		public int Insert (int offset, string value)
 		{
-			return textEditorWidget.Insert (offset, value);
+			return textArea.Insert (offset, value);
 		}
 		
 		public void Remove (DocumentRegion region)
 		{
-			textEditorWidget.Remove (region);
+			textArea.Remove (region);
 		}
 		
 		public void Remove (TextSegment removeSegment)
 		{
-			textEditorWidget.Remove (removeSegment);
+			textArea.Remove (removeSegment);
 		}
 		
 		public void Remove (int offset, int count)
 		{
-			textEditorWidget.Remove (offset, count);
+			textArea.Remove (offset, count);
 		}
 		
 		public int Replace (int offset, int count, string value)
 		{
-			return textEditorWidget.Replace (offset, count, value);
+			return textArea.Replace (offset, count, value);
 		}
 		
 		public void ClearSelection ()
 		{
-			textEditorWidget.ClearSelection ();
+			textArea.ClearSelection ();
 		}
 		
 		public void DeleteSelectedText ()
 		{
-			textEditorWidget.DeleteSelectedText ();
+			textArea.DeleteSelectedText ();
 		}
 		
 		public void DeleteSelectedText (bool clearSelection)
 		{
-			textEditorWidget.DeleteSelectedText (clearSelection);
+			textArea.DeleteSelectedText (clearSelection);
 		}
 		
 		public void RunEditAction (Action<TextEditorData> action)
@@ -704,50 +712,50 @@ namespace Mono.TextEditor
 		
 		public void SetSelection (int anchorOffset, int leadOffset)
 		{
-			textEditorWidget.SetSelection (anchorOffset, leadOffset);
+			textArea.SetSelection (anchorOffset, leadOffset);
 		}
 		
 		public void SetSelection (DocumentLocation anchor, DocumentLocation lead)
 		{
-			textEditorWidget.SetSelection (anchor, lead);
+			textArea.SetSelection (anchor, lead);
 		}
 		
 		public void SetSelection (int anchorLine, int anchorColumn, int leadLine, int leadColumn)
 		{
-			textEditorWidget.SetSelection (anchorLine, anchorColumn, leadLine, leadColumn);
+			textArea.SetSelection (anchorLine, anchorColumn, leadLine, leadColumn);
 		}
 		
 		public void ExtendSelectionTo (DocumentLocation location)
 		{
-			textEditorWidget.ExtendSelectionTo (location);
+			textArea.ExtendSelectionTo (location);
 		}
 		public void ExtendSelectionTo (int offset)
 		{
-			textEditorWidget.ExtendSelectionTo (offset);
+			textArea.ExtendSelectionTo (offset);
 		}
 		public void SetSelectLines (int from, int to)
 		{
-			textEditorWidget.SetSelectLines (from, to);
+			textArea.SetSelectLines (from, to);
 		}
 		
 		public void InsertAtCaret (string text)
 		{
-			textEditorWidget.InsertAtCaret (text);
+			textArea.InsertAtCaret (text);
 		}
 		
 		public bool CanEdit (int line)
 		{
-			return textEditorWidget.CanEdit (line);
+			return textArea.CanEdit (line);
 		}
 		
 		public string GetLineText (int line)
 		{
-			return textEditorWidget.GetLineText (line);
+			return textArea.GetLineText (line);
 		}
 		
 		public string GetLineText (int line, bool includeDelimiter)
 		{
-			return textEditorWidget.GetLineText (line, includeDelimiter);
+			return textArea.GetLineText (line, includeDelimiter);
 		}
 		
 		/// <summary>
@@ -758,7 +766,7 @@ namespace Mono.TextEditor
 		/// </returns>
 		public TextEditorData GetTextEditorData ()
 		{
-			return textEditorWidget.GetTextEditorData ();
+			return textArea.GetTextEditorData ();
 		}
 
 		/// <remarks>
@@ -772,7 +780,7 @@ namespace Mono.TextEditor
 
 		public void SimulateKeyPress (Gdk.Key key, uint unicodeChar, ModifierType modifier)
 		{
-			textEditorWidget.SimulateKeyPress (key, unicodeChar, modifier);
+			textArea.SimulateKeyPress (key, unicodeChar, modifier);
 		}
 
 		
@@ -787,48 +795,48 @@ namespace Mono.TextEditor
 
 		public void HideTooltip ()
 		{
-			textEditorWidget.HideTooltip ();
+			textArea.HideTooltip ();
 		}
 		public Action<Gdk.EventButton> DoPopupMenu {
 			get {
-				return textEditorWidget.DoPopupMenu;
+				return textArea.DoPopupMenu;
 			}
 			set {
-				textEditorWidget.DoPopupMenu = value;
+				textArea.DoPopupMenu = value;
 			} 
 		}
 
 		public MenuItem CreateInputMethodMenuItem (string label)
 		{
-			return textEditorWidget.CreateInputMethodMenuItem (label);
+			return textArea.CreateInputMethodMenuItem (label);
 		}
 
 		public event EventHandler SelectionChanged {
-			add { textEditorWidget.SelectionChanged += value; }
-			remove { textEditorWidget.SelectionChanged -= value; }
+			add { textArea.SelectionChanged += value; }
+			remove { textArea.SelectionChanged -= value; }
 		}
 
 		public void CaretToDragCaretPosition ()
 		{
-			textEditorWidget.CaretToDragCaretPosition ();
+			textArea.CaretToDragCaretPosition ();
 		}
 
 		public event EventHandler<PaintEventArgs> Painted {
-			add { textEditorWidget.Painted += value; }
-			remove { textEditorWidget.Painted -= value; }
+			add { textArea.Painted += value; }
+			remove { textArea.Painted -= value; }
 		}
 
 		public event EventHandler<LinkEventArgs> LinkRequest {
-			add { textEditorWidget.LinkRequest += value; }
-			remove { textEditorWidget.LinkRequest -= value; }
+			add { textArea.LinkRequest += value; }
+			remove { textArea.LinkRequest -= value; }
 		}
 		#endregion
 		
 		#region Document delegation
 
 		public event EventHandler EditorOptionsChanged {
-			add { textEditorWidget.EditorOptionsChanged += value; }
-			remove { textEditorWidget.EditorOptionsChanged -= value; }
+			add { textArea.EditorOptionsChanged += value; }
+			remove { textArea.EditorOptionsChanged -= value; }
 		}
 
 		protected virtual void OptionsChanged (object sender, EventArgs args)
@@ -946,73 +954,73 @@ namespace Mono.TextEditor
 		#region Search & Replace
 		public string SearchPattern {
 			get {
-				return textEditorWidget.SearchPattern;
+				return textArea.SearchPattern;
 			}
 			set {
-				textEditorWidget.SearchPattern = value;
+				textArea.SearchPattern = value;
 			}
 		}
 		
 		public ISearchEngine SearchEngine {
 			get {
-				return textEditorWidget.SearchEngine;
+				return textArea.SearchEngine;
 			}
 			set {
-				textEditorWidget.SearchEngine = value;
+				textArea.SearchEngine = value;
 			}
 		}
 
 		public event EventHandler HighlightSearchPatternChanged {
-			add { textEditorWidget.HighlightSearchPatternChanged += value; }
-			remove { textEditorWidget.HighlightSearchPatternChanged -= value; }
+			add { textArea.HighlightSearchPatternChanged += value; }
+			remove { textArea.HighlightSearchPatternChanged -= value; }
 		}
 
 		public bool HighlightSearchPattern {
 			get {
-				return textEditorWidget.HighlightSearchPattern;
+				return textArea.HighlightSearchPattern;
 			}
 			set {
-				textEditorWidget.HighlightSearchPattern = value;
+				textArea.HighlightSearchPattern = value;
 			}
 		}
 		
 		public bool IsCaseSensitive {
 			get {
-				return textEditorWidget.IsCaseSensitive;
+				return textArea.IsCaseSensitive;
 			}
 			set {
-				textEditorWidget.IsCaseSensitive = value;
+				textArea.IsCaseSensitive = value;
 			}
 		}
 		
 		public bool IsWholeWordOnly {
 			get {
-				return textEditorWidget.IsWholeWordOnly;
+				return textArea.IsWholeWordOnly;
 			}
 			
 			set {
-				textEditorWidget.IsWholeWordOnly = value;
+				textArea.IsWholeWordOnly = value;
 			}
 		}
 		
 		public TextSegment SearchRegion {
 			get {
-				return textEditorWidget.SearchRegion;
+				return textArea.SearchRegion;
 			}
 			
 			set {
-				textEditorWidget.SearchRegion = value;
+				textArea.SearchRegion = value;
 			}
 		}
 		
 		public SearchResult SearchForward (int fromOffset)
 		{
-			return textEditorWidget.SearchForward (fromOffset);
+			return textArea.SearchForward (fromOffset);
 		}
 		
 		public SearchResult SearchBackward (int fromOffset)
 		{
-			return textEditorWidget.SearchBackward (fromOffset);
+			return textArea.SearchBackward (fromOffset);
 		}
 		
 		/// <summary>
@@ -1023,43 +1031,43 @@ namespace Mono.TextEditor
 		/// </param>
 		public void PulseCharacter (DocumentLocation pulseStart)
 		{
-			textEditorWidget.PulseCharacter (pulseStart);
+			textArea.PulseCharacter (pulseStart);
 		}
 		
 		
 		public SearchResult FindNext (bool setSelection)
 		{
-			return textEditorWidget.FindNext (setSelection);
+			return textArea.FindNext (setSelection);
 		}
 		
 		public void StartCaretPulseAnimation ()
 		{
-			textEditorWidget.StartCaretPulseAnimation ();
+			textArea.StartCaretPulseAnimation ();
 		}
 
 		public void StopSearchResultAnimation ()
 		{
-			textEditorWidget.StopSearchResultAnimation ();
+			textArea.StopSearchResultAnimation ();
 		}
 		
 		public void AnimateSearchResult (SearchResult result)
 		{
-			textEditorWidget.AnimateSearchResult (result);
+			textArea.AnimateSearchResult (result);
 		}
 
 		public SearchResult FindPrevious (bool setSelection)
 		{
-			return textEditorWidget.FindPrevious (setSelection);
+			return textArea.FindPrevious (setSelection);
 		}
 		
 		public bool Replace (string withPattern)
 		{
-			return textEditorWidget.Replace (withPattern);
+			return textArea.Replace (withPattern);
 		}
 		
 		public int ReplaceAll (string withPattern)
 		{
-			return textEditorWidget.ReplaceAll (withPattern);
+			return textArea.ReplaceAll (withPattern);
 		}
 		#endregion
 
@@ -1131,17 +1139,17 @@ namespace Mono.TextEditor
 
 		public void SetCaretTo (int line, int column)
 		{
-			textEditorWidget.SetCaretTo (line, column);
+			textArea.SetCaretTo (line, column);
 		}
 		
 		public void SetCaretTo (int line, int column, bool highlight)
 		{
-			textEditorWidget.SetCaretTo (line, column, highlight);
+			textArea.SetCaretTo (line, column, highlight);
 		}
 		
 		public void SetCaretTo (int line, int column, bool highlight, bool centerCaret)
 		{
-			textEditorWidget.SetCaretTo (line, column, highlight, centerCaret);
+			textArea.SetCaretTo (line, column, highlight, centerCaret);
 		}
 	}
 }
