@@ -297,6 +297,39 @@ namespace MonoDevelop.CSharp
 			return result.ToString ();
 		}
 
+		public string GetLocalVariableMarkup (IVariable variable)
+		{
+			if (variable == null)
+				throw new ArgumentNullException ("field");
+			
+			var result = new StringBuilder ();
+
+			if (variable.IsConst) {
+				result.Append (Highlight ("const", "keyword.modifier"));
+			}
+
+			result.Append (GetTypeReferenceString (variable.Type));
+			if (BreakLineAfterReturnType) {
+				result.AppendLine ();
+			} else {
+				result.Append (" ");
+			}
+	
+			result.Append (variable.Name);
+			
+			if (variable.IsConst) {
+				if (formattingOptions.SpaceAroundAssignment) {
+					result.Append (" = ");
+				} else {
+					result.Append ("=");
+				}
+				AppendConstant (result, variable.ConstantValue);
+			}
+			
+			return result.ToString ();
+		}
+		
+
 		string GetFieldMarkup (IField field)
 		{
 			if (field == null)

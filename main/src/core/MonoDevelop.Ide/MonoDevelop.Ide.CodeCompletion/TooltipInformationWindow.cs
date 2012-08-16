@@ -157,7 +157,16 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (tooltipInformation == null || string.IsNullOrEmpty (tooltipInformation.SignatureMarkup))
 				return;
 			overloads.Add (tooltipInformation);
-			helpbox.Visible = overloads.Count >= 2;
+			if (overloads.Count >= 2) {
+				helpbox = new HBox (false, 0);
+				var leftArrow = new DeclarationViewArrow (true);
+				helpbox.PackStart (leftArrow, false, false, 0);
+				helpbox.PackStart (infoBubbles, true, true, 0);
+				var rightArrow = new DeclarationViewArrow (false);
+				helpbox.PackEnd (rightArrow, false, false, 0);
+				helpbox.BorderWidth = 0;
+				vb2.PackStart (helpbox, false, true, 0);
+			}
 			infoBubbles.Bubbles = overloads.Count;
 			
 			ShowOverload ();
@@ -244,7 +253,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			ClearDescriptions ();
 			overloads.Clear ();
-			helpbox.Visible = false;
+			if (helpbox != null) {
+				helpbox.Destroy ();
+				helpbox = null;
+			}
 			headlabel.Markup = "";
 			current_overload = 0;
 		}
@@ -267,6 +279,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			var catLabel = new MonoDevelop.Components.FixedWidthWrapLabel ();
 			catLabel.Text = categoryName;
+			catLabel.ModifyFg (StateType.Normal, foreColor);
 
 			vbox.PackStart (catLabel, false, true, 0);
 
@@ -275,6 +288,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			contentLabel.BreakOnCamelCasing = true;
 			contentLabel.BreakOnPunctuation = true;
 			contentLabel.Markup = categoryContentMarkup.Trim ();
+			contentLabel.ModifyFg (StateType.Normal, foreColor);
 
 			vbox.PackStart (contentLabel, true, true, 0);
 
@@ -282,6 +296,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 
 		VBox descriptionBox = new VBox (false, 0);
+		VBox vb2 = new VBox (false, 0);
+		Gdk.Color foreColor;
 		public TooltipInformationWindow () : base ()
 		{
 			this.AllowShrink = false;
@@ -304,21 +320,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 			HBox hb = new HBox (false, 0);
 			hb.PackStart (vb, true, true, 0);
 
-			helpbox = new HBox (false, 0);
-			var leftArrow = new DeclarationViewArrow (true);
-			helpbox.PackStart (leftArrow, false, false, 0);
-			helpbox.PackStart (infoBubbles, true, true, 0);
-			var rightArrow = new DeclarationViewArrow (false);
-			helpbox.PackEnd (rightArrow, false, false, 0);
-			helpbox.BorderWidth = 0;
-			
-			VBox vb2 = new VBox (false, 0);
+
 			vb2.Spacing = 4;
 			vb2.PackStart (hb, true, true, 0);
-			vb2.PackStart (helpbox, false, true, 0);
 			this.Add (vb2);
 			var scheme = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (Style, PropertyService.Get<string> ("ColorScheme"));
 			this.BackgroundColor = scheme.Tooltip.CairoBackgroundColor;
+
+			foreColor = scheme.Default.Color;
+			headlabel.ModifyFg (StateType.Normal, foreColor);
 			ShowAll ();
 		}
 	}

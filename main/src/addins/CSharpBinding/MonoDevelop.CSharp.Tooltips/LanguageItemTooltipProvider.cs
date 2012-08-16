@@ -44,6 +44,7 @@ using System.Linq;
 using MonoDevelop.CSharp.Resolver;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.CSharp.Completion;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -99,7 +100,6 @@ namespace MonoDevelop.SourceEditor
 		
 		ResolveResult lastResult = null;
 		TooltipInformationWindow lastWindow = null;
-		static Ambience ambience = new MonoDevelop.CSharp.CSharpAmbience ();
 
 		protected override Gtk.Window CreateTooltipWindow (Mono.TextEditor.TextEditor editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
 		{
@@ -108,23 +108,45 @@ namespace MonoDevelop.SourceEditor
 				return null;
 
 			var titem = (ToolTipData)item.Item;
-			string tooltip = null;
 
 			if (lastResult != null && lastWindow.IsRealized && 
 				titem.Result != null && lastResult.Type.Equals (titem.Result.Type))
 				return lastWindow;
-			var result = new TooltipInformationWindow ();
 			var tooltipInformation = CreateTooltip (titem.Result, offset, null);
-			if (tooltipInformation == null) {
-				Console.WriteLine ("null");
-			} else {
-				Console.WriteLine (":" + tooltipInformation.SignatureMarkup);
-			}
+			if (tooltipInformation == null || string.IsNullOrEmpty (tooltipInformation.SignatureMarkup))
+				return null;
+
+			var result = new TooltipInformationWindow ();
+
+			result.ShowArrow = true;
 			result.AddOverload (tooltipInformation);
+			result.RepositionWindow ();
 			lastWindow = result;
 			lastResult = titem.Result;
 			return result;
 		}
+
+		public override Gtk.Window ShowTooltipWindow (TextEditor editor, int offset, Gdk.ModifierType modifierState, int mouseX, int mouseY, TooltipItem item)
+		{
+			Console.WriteLine ("show !");
+			var tipWindow = CreateTooltipWindow (editor, offset, modifierState, item) as TooltipInformationWindow;
+			if (tipWindow == null)
+				return null;
+			/*
+			int ox = 0, oy = 0;
+			if (editor.GdkWindow != null)
+				editor.GdkWindow.GetOrigin (out ox, out oy);*/
+			var titem = (ToolTipData)item.Item;
+			var p1 = editor.LocationToPoint (titem.Node.StartLocation);
+			var p2 = editor.LocationToPoint (titem.Node.EndLocation);
+			Console.WriteLine (editor.Allocation.Y + "/"+p1+"/"+p2);
+			var caret = new Gdk.Rectangle ((int)p1.X - editor.Allocation.X, (int)p2.Y - editor.Allocation.Y, (int)(p2.X - p1.X), (int)editor.LineHeight);
+
+			tipWindow.ShowPopup (editor, caret, PopupPosition.Top);
+			
+			return tipWindow;
+		}
+
 
 		public TooltipInformation CreateTooltip (ResolveResult result, int offset, Ambience ambience)
 		{
@@ -151,8 +173,13 @@ namespace MonoDevelop.SourceEditor
 
 			if (result is LocalResolveResult) {
 				var lr = (LocalResolveResult)result;
+				var tooltipInfo = new TooltipInformation ();
+				var resolver = (doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile).GetResolver (doc.Compilation, doc.Editor.Caret.Location);
+				var sig = new SignatureMarkupCreator (doc.Editor, resolver, doc.GetFormattingPolicy ().CreateOptions ());
+				sig.BreakLineAfterReturnType =  false;
+				tooltipInfo.SignatureMarkup = sig.GetLocalVariableMarkup (lr.Variable);
+				return tooltipInfo;
 			} else if (result is MethodGroupResolveResult) {
-
 				var mrr = (MethodGroupResolveResult)result;
 				var allMethods = new List<IMethod> (mrr.Methods);
 				foreach (var l in mrr.GetExtensionMethods ()) {
@@ -179,18 +206,12 @@ namespace MonoDevelop.SourceEditor
 					member, 
 					false);
 			} else if (result is NamespaceResolveResult) {
-			/*	s.Append ("<small><i>");
-				s.Append (namespaceStr);
-				s.Append ("</i></small>\n");
-				s.Append (ambience.GetString (((NamespaceResolveResult)result).NamespaceName, settings));
-
-				return MemberCompletionData.CreateTooltipInformation (
-					doc.Compilation,
-					doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile,
-					doc.Editor,
-					doc.GetFormattingPolicy (),
-					member, 
-					false);*/
+				var tooltipInfo = new TooltipInformation ();
+				var resolver = (doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile).GetResolver (doc.Compilation, doc.Editor.Caret.Location);
+				var sig = new SignatureMarkupCreator (doc.Editor, resolver, doc.GetFormattingPolicy ().CreateOptions ());
+				sig.BreakLineAfterReturnType =  false;
+				tooltipInfo.SignatureMarkup = sig.GetMarkup (((NamespaceResolveResult)result).Namespace);
+				return tooltipInfo;
 			} else {
 				if (result.Type.GetDefinition () != null) {
 					return MemberCompletionData.CreateTooltipInformation (
