@@ -1,10 +1,17 @@
 TARBALL_PATH=../../tarballs/external
 
 all:
+
+clean:
+
+if ENABLE_MACPLATFORM
+all:
 	$(MAKE) -C monomac/src
 
 clean:
 	$(MAKE) -C monomac/src clean
+endif
+
 install:
 
 uninstall:
