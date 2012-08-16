@@ -35,6 +35,7 @@ using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using System.Collections.Generic;
 using Mono.TextEditor.Highlighting;
 using Mono.TextEditor;
+using System.Linq;
 
 namespace MonoDevelop.CSharp
 {
@@ -78,7 +79,7 @@ namespace MonoDevelop.CSharp
 			return HighlightSemantically (text, "keyword.semantic.type");
 		}
 
-		public string GetString (IEntity entity)
+		public string GetMarkup (IEntity entity)
 		{
 			switch (entity.EntityType) {
 			case EntityType.TypeDefinition:
@@ -99,7 +100,15 @@ namespace MonoDevelop.CSharp
 			default:
 				throw new ArgumentOutOfRangeException ();
 			}
-			return "";
+		}
+
+		public string GetMarkup (INamespace ns)
+		{
+			var result = new StringBuilder ();
+			result.Append (Highlight ("namespace ", "keyword.namespace"));
+			result.Append (ns.FullName);
+
+			return result.ToString ();
 		}
 
 		void AppendModifiers (StringBuilder result, IEntity entity)
@@ -166,8 +175,36 @@ namespace MonoDevelop.CSharp
 				break;
 			}
 
-			result.Append (t.Name);
+			result.Append (GetTypeReferenceString (t));
+			bool first = true;
+			int maxLength = result.Length;
+			int length = maxLength;
+			var sortedTypes = new List<IType>(t.DirectBaseTypes.Where (x => x.FullName != "System.Object"));
+			sortedTypes.Sort ((x, y) => GetTypeReferenceString (y).Length.CompareTo (GetTypeReferenceString (x).Length));
 
+			foreach (var directBaseType in sortedTypes) {
+				if (first) {
+					result.AppendLine (" :");
+					result.Append ("  ");
+					length = 2;
+				} else {
+					result.Append (", ");
+					length += 2;
+				}
+				var typeRef = GetTypeReferenceString (directBaseType);
+
+				if (!first && BreakLineAfterReturnType && length + typeRef.Length >= maxLength) {
+					result.AppendLine ();
+					result.Append ("  ");
+					length = 2;
+				}
+
+				result.Append (typeRef);
+				length += typeRef.Length;
+				maxLength = Math.Max (maxLength, length);
+				first = false;
+			}
+			
 
 			return result.ToString ();
 		}
@@ -361,6 +398,135 @@ namespace MonoDevelop.CSharp
 			return result.ToString ();
 		}
 
+		public string GetKeywordMarkup (string keyword)
+		{
+			switch (keyword){
+			case "as":
+				return "expression " + Highlight (" get", "keyword.operator") + " type";
+			case "break":
+				return Highlight ("break", "keyword.jump") + ";";
+			case "case":
+				return Highlight ("case", "keyword.selection") + " constant-expression:" + Environment.NewLine +
+			"  statement" + Environment.NewLine +
+			"  jump-statement";
+			case "catch":
+				return Highlight ("try", "keyword.exceptions") + " try-block" + Environment.NewLine +
+					"  " + Highlight ("catch", "keyword.exceptions") + " (exception-declaration-1) catch-block-1" + Environment.NewLine +
+					"  " + Highlight ("catch", "keyword.exceptions") + " (exception-declaration-2) catch-block-2" + Environment.NewLine +
+					"  ..." + Environment.NewLine +
+						Highlight ("try", "keyword.exceptions") + " try-block " + Highlight ("catch", "keyword.exceptions") + " catch-block";
+			case "checked":
+				return Highlight ("checked", "keyword.misc") + " block" + Environment.NewLine +
+					"or" + Environment.NewLine +
+					Highlight ("checked", "keyword.misc") + " (expression)";
+			case "class":
+				return " [attributes] [modifiers] " + Highlight ("class", "keyword.declaration") + " identifier [:base-list] { class-body }[;]";
+			case "const":
+				return " [attributes] [modifiers] " + Highlight ("const", "keyword.modifier") + " type declarators;";
+			case "continue":
+				return Highlight ("continue", "keyword.jump") + ";";
+			case "default":
+				return Highlight ("switch", "keyword.selection") + " (expression) { "+ Environment.NewLine +
+					"  " + Highlight ("case", "keyword.selection") + " constant-expression:" + Environment.NewLine +
+					"    statement"+ Environment.NewLine +
+					"    jump-statement" + Environment.NewLine +
+					"  [" + Highlight ("default", "keyword.selection") + ":" + Environment.NewLine +
+					"    statement" + Environment.NewLine +
+					"    jump-statement]" + Environment.NewLine +
+					"}";
+			case "delegate":
+				return " [attributes] [modifiers] " + Highlight ("delegate", "keyword.declaration") + " result-type identifier ([formal-parameters]);";
+			case "do":
+				return Highlight ("do", "keyword.iteration") + " statement " + Highlight ("while", "keyword.iteration") + " (expression);";
+			case "else":
+				return Highlight ("if", "keyword.selection") + " (expression)" + Environment.NewLine +
+					"  statement1" + Environment.NewLine +
+					"  [" + Highlight ("else", "keyword.selection") + Environment.NewLine +
+					"  statement2]";
+			case "enum":
+				return " [attributes] [modifiers] " + Highlight ("enum", "keyword.declaration") + " identifier [:base-type] {enumerator-list} [;]";
+			case "event":
+				return " [attributes] [modifiers] " + Highlight ("event", "keyword.modifier") + " type declarator;" + Environment.NewLine +
+					" [attributes] [modifiers] " + Highlight ("event", "keyword.modifier") + " type member-name {accessor-declarations};";
+			case "finally":
+				return Highlight ("try", "keyword.exceptions") + " try-block " + Highlight ("finally", "keyword.exceptions") + " finally-block";
+			case "fixed":
+				return Highlight ("fixed", "keyword.misc") + " ( type* ptr = expr ) statement";
+			case "for":
+				return Highlight ("for", "keyword.iteration") + " ([initializers]; [expression]; [iterators]) statement";
+			case "foreach":
+				return Highlight ("foreach", "keyword.iteration") + " (type identifier " + Highlight ("in", "keyword.iteration") + " expression) statement";
+			case "goto":
+				return Highlight ("goto", "keyword.jump") + " identifier;" + Environment.NewLine +
+					Highlight ("goto", "keyword.jump") + " " + Highlight ("case", "keyword.selection") + " constant-expression;" + Environment.NewLine +
+					Highlight ("goto", "keyword.jump") + " " + Highlight ("default", "keyword.selection") + ";";
+			case "if":
+				return Highlight ("if", "keyword.selection") + " (expression)" + Environment.NewLine +
+					"  statement1" + Environment.NewLine +
+					"  [" + Highlight ("else", "keyword.selection") + Environment.NewLine +
+					"  statement2]";
+			case "in":
+				return Highlight ("foreach", "keyword.iteration") + " (type identifier " + Highlight ("in", "keyword.iteration") + " expression) statement";
+			case "interface":
+				return " [attributes] [modifiers] " + Highlight ("interface", "keyword.declaration") + " identifier [:base-list] {interface-body}[;]";
+			case "is":
+				return "expression " + Highlight ("interface", "keyword.operator") + " type";
+			case "lock":
+				return Highlight ("lock", "keyword.misc") + " (expression) statement_block";
+			case "namespace":
+				return Highlight ("namespace", "keyword.namespace") + " name[.name1] ...] {" + Environment.NewLine +
+					"type-declarations" + Environment.NewLine +
+					" }";
+			case "operator":
+				return Highlight ("public static ", "keyword.modifier") + "result-type " + Highlight ("operator", "keyword.operator.declaration") + " unary-operator ( op-type operand )" + Environment.NewLine +
+					Highlight ("public static ", "keyword.modifier") + "result-type " + Highlight ("operator", "keyword.operator.declaration") + " binary-operator (" + Environment.NewLine +
+					"op-type operand," + Environment.NewLine +
+					"op-type2 operand2" + Environment.NewLine +
+					" )" + Environment.NewLine +
+					Highlight ("public static ", "keyword.modifier") + Highlight ("implicit operator", "keyword.operator.declaration") + " conv-type-out ( conv-type-in operand )" + Environment.NewLine +
+					Highlight ("public static ", "keyword.modifier") + Highlight ("explicit operator", "keyword.operator.declaration") + " conv-type-out ( conv-type-in operand )";
+			case "return":
+				return Highlight ("return", "keyword.jump") + " [expression];";
+			case "sizeof":
+				return Highlight ("sizeof", "keyword.operator") + " (type)";
+			case "stackalloc":
+				return "type * ptr = " + Highlight ("stackalloc", "keyword.operator") + " type [ expr ];";
+			case "struct":
+				return " [attributes] [modifiers] " + Highlight ("struct", "keyword.declaration") + " identifier [:interfaces] body [;]";
+			case "switch":
+				return Highlight ("switch", "keyword.selection") + " (expression)" + Environment.NewLine + 
+					" {" + Environment.NewLine + 
+					"  " + Highlight ("case", "keyword.selection") + " constant-expression:" + Environment.NewLine + 
+					"  statement" + Environment.NewLine + 
+					"  jump-statement" + Environment.NewLine + 
+					"  [" + Highlight ("default", "keyword.selection") + ":" + Environment.NewLine + 
+					"  statement" + Environment.NewLine + 
+					"  jump-statement]" + Environment.NewLine + 
+					" }";
+			case "throw":
+				return Highlight ("throw", "keyword.exceptions") + " [expression];";
+			case "try":
+				return Highlight ("try", "keyword.exceptions") + " try-block" + Environment.NewLine + 
+					"  " + Highlight ("catch", "keyword.exceptions") + " (exception-declaration-1) catch-block-1 " + Environment.NewLine + 
+					"  " + Highlight ("catch", "keyword.exceptions") + " (exception-declaration-2) catch-block-2 " + Environment.NewLine + 
+					"..." + Environment.NewLine + 
+					Highlight ("try", "keyword.exceptions") + " try-block " + Highlight ("catch", "keyword.exceptions") + " catch-block";
+			case "typeof":
+				return Highlight ("typeof", "keyword.operator") + "(type)";
+			case "unchecked":
+				return Highlight ("unchecked", "keyword.misc") + " block" + Environment.NewLine +
+					Highlight ("unchecked", "keyword.misc") + " (expression)";
+			case "using":
+				return Highlight ("using", "keyword.namespace") + " (expression | type identifier = initializer) statement" + Environment.NewLine +
+					Highlight ("using", "keyword.namespace") + " [alias = ]class_or_namespace;";
+			case "volatile":
+				return Highlight ("volatile", "keyword.modifier") + " declaration";
+			case "while":
+				return Highlight ("while", "keyword.iteration") + " (expression) statement";
+			}
+			return "";
+		}
+
 		string GetEventMarkup (IEvent evt)
 		{
 			if (evt == null)
@@ -441,7 +607,7 @@ namespace MonoDevelop.CSharp
 			} else if (parameter.IsRef) {
 				result.Append (Highlight ("ref ", "keyword.parameter"));
 			} else if (parameter.IsParams) {
-				result.Append (Highlight ("params", "keyword.parameter"));
+				result.Append (Highlight ("params ", "keyword.parameter"));
 			}
 			result.Append (GetTypeReferenceString (parameter.Type));
 			result.Append (" ");

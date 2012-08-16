@@ -528,30 +528,36 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
-		public override TooltipInformation CreateTooltipInformation (bool smartWrap)
+		public static TooltipInformation CreateTooltipInformation (CSharpCompletionTextEditorExtension editorCompletion, IEntity entity, bool smartWrap)
 		{
 			var tooltipInfo = new TooltipInformation ();
-			var resolver = editorCompletion.CSharpUnresolvedFile.GetResolver (editorCompletion.Compilation, editorCompletion.TextEditorData.Caret.Location);
+			var file = editorCompletion.CSharpUnresolvedFile;
+			var resolver = file.GetResolver (editorCompletion.Compilation, editorCompletion.TextEditorData.Caret.Location);
 			var sig = new SignatureMarkupCreator (editorCompletion.TextEditorData, resolver, editorCompletion.FormattingPolicy.CreateOptions ());
 			sig.BreakLineAfterReturnType = smartWrap;
-			tooltipInfo.SignatureMarkup = sig.GetString (this.Entity);
-			var plainDoc = AmbienceService.GetDocumentationSummary (Entity) ?? "";
+			tooltipInfo.SignatureMarkup = sig.GetMarkup (entity);
+			var plainDoc = AmbienceService.GetDocumentationSummary (entity) ?? "";
 			tooltipInfo.SummaryMarkup = AmbienceService.GetDocumentationMarkup (plainDoc);
-
-			if (Entity is IMember) {
-				var evt = (IMember)Entity;
+			
+			if (entity is IMember) {
+				var evt = (IMember)entity;
 				if (evt.ReturnType.Kind == TypeKind.Delegate) {
 					tooltipInfo.AddCategory (GettextCatalog.GetString ("Delegate Info"), sig.GetDelegateInfo (evt.ReturnType));
 				}
 			}
-			if (Entity is IMethod) {
-				var method = (IMethod)Entity;
+			if (entity is IMethod) {
+				var method = (IMethod)entity;
 				if (method.IsExtensionMethod) {
 					tooltipInfo.AddCategory (GettextCatalog.GetString ("Extension Method From"), method.DeclaringTypeDefinition.FullName);
 				}
 			}
-
+			
 			return tooltipInfo;
+		}
+
+		public override TooltipInformation CreateTooltipInformation (bool smartWrap)
+		{
+			return CreateTooltipInformation (editorCompletion, Entity, smartWrap);
 		}
 
 

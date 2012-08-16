@@ -485,38 +485,34 @@ namespace MonoDevelop.CSharp.Completion
 			};
 		}
 
-		class EntityCompletionDate : CompletionData
+		class GenericTooltipCompletionDate : CompletionData
 		{
-			readonly CSharpCompletionTextEditorExtension editorCompletion;
-			readonly IEntity entity;
+			readonly Func<bool, TooltipInformation> tooltipFunc;
 
-			public EntityCompletionDate (CSharpCompletionTextEditorExtension editorCompletion, IEntity entity, string text) : base (text, entity.GetStockIcon ())
+			public GenericTooltipCompletionDate (Func<bool, TooltipInformation> tooltipFunc, string text, string icon) : base (text, icon)
 			{
-				this.editorCompletion = editorCompletion;
-				this.entity = entity;
+				this.tooltipFunc = tooltipFunc;
 			}
-			
+
+			public GenericTooltipCompletionDate (Func<bool, TooltipInformation> tooltipFunc, string text, string icon, string description, string completionText) : base (text, icon, description, completionText)
+			{
+				this.tooltipFunc = tooltipFunc;
+			}
+
 			public override TooltipInformation CreateTooltipInformation (bool smartWrap)
 			{
-				var tooltipInfo = new TooltipInformation ();
-				var resolver = editorCompletion.CSharpUnresolvedFile.GetResolver (editorCompletion.Compilation, editorCompletion.TextEditorData.Caret.Location);
-				var sig = new SignatureMarkupCreator (editorCompletion.TextEditorData, resolver, editorCompletion.FormattingPolicy.CreateOptions ());
-				sig.BreakLineAfterReturnType = smartWrap;
-				tooltipInfo.SignatureMarkup = sig.GetString (entity);
-				var plainDoc = AmbienceService.GetDocumentationSummary (entity) ?? "";
-				tooltipInfo.SummaryMarkup = AmbienceService.GetDocumentationMarkup (plainDoc);
-				return tooltipInfo;
+				return tooltipFunc (smartWrap);
 			}
 		}
 
 		ICompletionData ICompletionDataFactory.CreateEntityCompletionData (IEntity entity, string text)
 		{
-			return new EntityCompletionDate (this, entity, text);
+			return new GenericTooltipCompletionDate (sw => MemberCompletionData.CreateTooltipInformation (this, entity, sw), text, entity.GetStockIcon ());
 		}
 
 		ICompletionData ICompletionDataFactory.CreateTypeCompletionData (IType type, string shortType)
 		{
-			var result = new EntityCompletionDate (this, type.GetDefinition (), shortType);
+			var result = new GenericTooltipCompletionDate (sw => MemberCompletionData.CreateTooltipInformation (this, type.GetDefinition (), sw), shortType, type.GetStockIcon ());
 			if (!(type is ParameterizedType) && type.TypeParameterCount > 0) {
 				var sb = new StringBuilder (shortType);
 				sb.Append ("<");
@@ -530,15 +526,30 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			return result;
 		}
-		
+
 		ICompletionData ICompletionDataFactory.CreateLiteralCompletionData (string title, string description, string insertText)
 		{
-			return new CompletionData (title, "md-keyword", description, insertText ?? title);
+			return new GenericTooltipCompletionDate (smartWrap => {
+				var tooltipInfo = new TooltipInformation ();
+				var resolver = this.CSharpUnresolvedFile.GetResolver (this.Compilation, this.TextEditorData.Caret.Location);
+				var sig = new SignatureMarkupCreator (this.TextEditorData, resolver, this.FormattingPolicy.CreateOptions ());
+				sig.BreakLineAfterReturnType = smartWrap;
+				tooltipInfo.SignatureMarkup = sig.GetKeywordMarkup (title);
+				return tooltipInfo;
+			}, title, "md-keyword", description, insertText ?? title);
 		}
 
-		ICompletionData ICompletionDataFactory.CreateNamespaceCompletionData (string name)
+		ICompletionData ICompletionDataFactory.CreateNamespaceCompletionData (INamespace ns)
 		{
-			return new CompletionData (name, AstStockIcons.Namespace);
+			return new GenericTooltipCompletionDate (smartWrap => {
+				var tooltipInfo = new TooltipInformation ();
+				var resolver = this.CSharpUnresolvedFile.GetResolver (this.Compilation, this.TextEditorData.Caret.Location);
+				var sig = new SignatureMarkupCreator (this.TextEditorData, resolver, this.FormattingPolicy.CreateOptions ());
+				sig.BreakLineAfterReturnType = smartWrap;
+				tooltipInfo.SignatureMarkup = sig.GetMarkup (ns);
+
+				return tooltipInfo;
+			}, ns.Name, AstStockIcons.Namespace);
 		}
 
 		ICompletionData ICompletionDataFactory.CreateVariableCompletionData (IVariable variable)
