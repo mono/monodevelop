@@ -513,9 +513,9 @@ namespace MonoDevelop.CSharp.Completion
 			return new CompletionData (title, "md-keyword", description, insertText ?? title);
 		}
 
-		ICompletionData ICompletionDataFactory.CreateNamespaceCompletionData (string name)
+		ICompletionData ICompletionDataFactory.CreateNamespaceCompletionData (INamespace name)
 		{
-			return new CompletionData (name, AstStockIcons.Namespace);
+			return new CompletionData (name.Name, AstStockIcons.Namespace);
 		}
 
 		ICompletionData ICompletionDataFactory.CreateVariableCompletionData (IVariable variable)
