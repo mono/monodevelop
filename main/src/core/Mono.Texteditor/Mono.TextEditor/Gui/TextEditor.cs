@@ -80,7 +80,6 @@ namespace Mono.TextEditor
 		public TextEditor (TextDocument doc, ITextEditorOptions options, EditMode initialMode)
 		{
 			GtkWorkarounds.FixContainerLeak (this);
-			WidgetFlags |= Gtk.WidgetFlags.NoWindow;
 			this.textArea = new TextArea (this, doc, options, initialMode);
 			this.textArea.Initialize ();
 			this.textArea.EditorOptionsChanged += (sender, e) => OptionsChanged (sender, e);
