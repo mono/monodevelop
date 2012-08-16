@@ -175,7 +175,18 @@ namespace MonoDevelop.CSharp
 				break;
 			}
 
-			result.Append (GetTypeReferenceString (t));
+			result.Append (t.Name);
+			if (t.TypeParameters.Count > 0) {
+				result.Append ("&lt;");
+				for (int i = 0; i < t.TypeParameters.Count; i++) {
+					if (i > 0)
+						result.Append (", ");
+					AppendVariance (result, t.TypeParameters [i].Variance);
+					result.Append (CSharpAmbience.NetToCSharpTypeName (t.TypeParameters [i].Name));
+				}
+				result.Append ("&gt;");
+			}
+
 			bool first = true;
 			int maxLength = result.Length;
 			int length = maxLength;
@@ -248,13 +259,13 @@ namespace MonoDevelop.CSharp
 			return result.ToString ();
 		}
 
-		string GetDelegateMarkup (ITypeDefinition t)
+		string GetDelegateMarkup (ITypeDefinition delegateType)
 		{
 			var result = new StringBuilder ();
 			
-			var method = t.GetDelegateInvokeMethod ();
+			var method = delegateType.GetDelegateInvokeMethod ();
 			
-			AppendModifiers (result, t);
+			AppendModifiers (result, delegateType);
 			result.Append (Highlight ("delegate ", "keyword.declaration"));
 			result.Append (GetTypeReferenceString (method.ReturnType));
 			if (BreakLineAfterReturnType) {
@@ -264,15 +275,15 @@ namespace MonoDevelop.CSharp
 			}
 			
 			
-			result.Append (CSharpAmbience.FilterName (t.Name));
+			result.Append (CSharpAmbience.FilterName (delegateType.Name));
 			
-			if (method.TypeParameters.Count > 0) {
+			if (delegateType.TypeParameters.Count > 0) {
 				result.Append ("&lt;");
-				for (int i = 0; i < method.TypeParameters.Count; i++) {
+				for (int i = 0; i < delegateType.TypeParameters.Count; i++) {
 					if (i > 0)
 						result.Append (", ");
-					AppendVariance (result, method.TypeParameters [i].Variance);
-					result.Append (CSharpAmbience.NetToCSharpTypeName (method.TypeParameters [i].Name));
+					AppendVariance (result, delegateType.TypeParameters [i].Variance);
+					result.Append (CSharpAmbience.NetToCSharpTypeName (delegateType.TypeParameters [i].Name));
 				}
 				result.Append ("&gt;");
 			}
