@@ -82,16 +82,26 @@ namespace MonoDevelop.AspNet.Mvc
 			return base.GetSpecialDirectories ();
 		}
 		
-		public IList<string> GetCodeTemplates (string type)
+		public IList<string> GetCodeTemplates (string type, string subtype = null)
 		{
-			List<string> files = new List<string> ();
-			HashSet<string> names = new HashSet<string> ();
+			var files = new List<string> ();
+			var names = new HashSet<string> ();
 			
 			string asmDir = Path.GetDirectoryName (typeof (AspMvcProject).Assembly.Location);
+			string lang = this.LanguageName;
+			if (lang == "C#") {
+				lang = "CSharp";
+			}
+
+			if (subtype != null) {
+				type = Path.Combine (type, subtype);
+			}
 			
-			string[] dirs = new string[] {
-				Path.Combine (Path.Combine (this.BaseDirectory, "CodeTemplates"), type),
-				Path.Combine (Path.Combine (asmDir, "CodeTemplates"), type)
+			var dirs = new string[] {
+				Path.Combine (this.BaseDirectory, "CodeTemplates", type),
+				Path.Combine (this.BaseDirectory, "CodeTemplates", lang, type),
+				Path.Combine (asmDir, "CodeTemplates", type),
+				Path.Combine (asmDir, "CodeTemplates", lang, type),
 			};
 			
 			foreach (string directory in dirs)

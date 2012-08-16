@@ -60,7 +60,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 
 			provider = project.LanguageBinding.GetCodeDomProvider ();
 
-			loadedTemplateList = project.GetCodeTemplates (System.IO.Path.Combine (project.LanguageName, "AddController"));
+			loadedTemplateList = project.GetCodeTemplates ("AddController");
 			bool foundEmptyTemplate = false;
 			int templateIndex = 0;
 			foreach (string file in loadedTemplateList) {

@@ -509,7 +509,7 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			return new GenericTooltipCompletionDate (sw => MemberCompletionData.CreateTooltipInformation (this, entity, sw), text, entity.GetStockIcon ());
 		}
-
+		
 		ICompletionData ICompletionDataFactory.CreateTypeCompletionData (IType type, string shortType)
 		{
 			var result = new GenericTooltipCompletionDate (sw => MemberCompletionData.CreateTooltipInformation (this, type.GetDefinition (), sw), shortType, type.GetStockIcon ());
@@ -526,7 +526,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			return result;
 		}
-
+		
 		ICompletionData ICompletionDataFactory.CreateLiteralCompletionData (string title, string description, string insertText)
 		{
 			return new GenericTooltipCompletionDate (smartWrap => {
@@ -539,17 +539,9 @@ namespace MonoDevelop.CSharp.Completion
 			}, title, "md-keyword", description, insertText ?? title);
 		}
 
-		ICompletionData ICompletionDataFactory.CreateNamespaceCompletionData (INamespace ns)
+		ICompletionData ICompletionDataFactory.CreateNamespaceCompletionData (INamespace name)
 		{
-			return new GenericTooltipCompletionDate (smartWrap => {
-				var tooltipInfo = new TooltipInformation ();
-				var resolver = this.CSharpUnresolvedFile.GetResolver (this.Compilation, this.TextEditorData.Caret.Location);
-				var sig = new SignatureMarkupCreator (this.TextEditorData, resolver, this.FormattingPolicy.CreateOptions ());
-				sig.BreakLineAfterReturnType = smartWrap;
-				tooltipInfo.SignatureMarkup = sig.GetMarkup (ns);
-
-				return tooltipInfo;
-			}, ns.Name, AstStockIcons.Namespace);
+			return new CompletionData (name.Name, AstStockIcons.Namespace);
 		}
 
 		ICompletionData ICompletionDataFactory.CreateVariableCompletionData (IVariable variable)
