@@ -52,7 +52,7 @@ namespace MonoDevelop.Components
 		bool showArrow;
 		PopupPosition position;
 		int arrowOffset;
-		int cornerRadius = 6;
+		int cornerRadius = 4;
 		int padding = 6;
 		Cairo.Color backgroundColor = new Cairo.Color (1, 1, 1);
 		Cairo.Color borderColor = new Cairo.Color (0.7, 0.7, 0.7);
@@ -63,7 +63,7 @@ namespace MonoDevelop.Components
 		Gtk.Widget parent;
 		bool eventProvided;
 
-		const int ArrowLength = 10;
+		const int ArrowLength = 5;
 		const int ArrowWidth = 10;
 		const int MinArrowSpacing = 5;
 
