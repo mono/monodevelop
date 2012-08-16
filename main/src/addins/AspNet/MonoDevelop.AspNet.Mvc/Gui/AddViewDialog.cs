@@ -65,8 +65,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			loadedTemplateList = new Dictionary<string, IList<string>> ();
 			foreach (var engine in viewEngines) {
 				viewEngineCombo.AppendText (engine);
-				string type = PP.Combine (project.LanguageName, "AddView", engine);
-				loadedTemplateList[engine] = project.GetCodeTemplates (type);
+				loadedTemplateList[engine] = project.GetCodeTemplates ("AddView", engine);
 			}
 
 			viewEngineCombo.Active = 0;
