@@ -1723,7 +1723,7 @@ namespace Mono.TextEditor
 		{
 			EventHandler<PaintEventArgs> handler = this.Painted;
 			if (handler != null)
-				handler (this, e);
+				handler (this.parentEditor, e);
 		}
 
 		public event EventHandler<PaintEventArgs> Painted;
