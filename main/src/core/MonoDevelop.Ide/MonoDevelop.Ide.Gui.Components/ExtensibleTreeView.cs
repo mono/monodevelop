@@ -2333,7 +2333,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			int ty = cell_area.Y + (cell_area.Height - h) / 2;
 
 			if (st != Gtk.StateType.Selected && TextMarkup.IndexOf ('<') == -1)
-				window.DrawLayout (widget.Style.WhiteGC, tx + 1, ty + 1, la);
+				window.DrawLayout (widget.Style.WhiteGC, tx, ty + 1, la);
 
 			window.DrawLayout (widget.Style.TextGC (st), tx, ty, la);
 
