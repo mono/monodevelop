@@ -166,7 +166,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 					tooltipInformation = data.CreateTooltipInformation (true);
 				}
 			}
-
+			if (string.IsNullOrEmpty (tooltipInformation.SignatureMarkup))
+				return;
 
 			overloads.Add (tooltipInformation);
 			if (overloads.Count == 2)
