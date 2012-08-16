@@ -1,4 +1,4 @@
-// DeclarationViewWindow.cs
+// TooltipInformationWindow.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -119,7 +119,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 	}
 
-	class DeclarationViewWindow : PopoverWindow
+	public class TooltipInformationWindow : PopoverWindow
 	{
 		static char[] newline = { '\n' };
 		
@@ -152,6 +152,17 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 
+		public void AddOverload (TooltipInformation tooltipInformation)
+		{
+			if (tooltipInformation == null || string.IsNullOrEmpty (tooltipInformation.SignatureMarkup))
+				return;
+			overloads.Add (tooltipInformation);
+			helpbox.Visible = overloads.Count >= 2;
+			infoBubbles.Bubbles = overloads.Count;
+			
+			ShowOverload ();
+		}
+
 		public void AddOverload (CompletionData data)
 		{
 			var tooltipInformation = data.CreateTooltipInformation (false);
@@ -166,15 +177,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					tooltipInformation = data.CreateTooltipInformation (true);
 				}
 			}
-			if (string.IsNullOrEmpty (tooltipInformation.SignatureMarkup))
-				return;
-
-			overloads.Add (tooltipInformation);
-			if (overloads.Count == 2)
-				helpbox.Visible = true;
-			infoBubbles.Bubbles = overloads.Count;
-
-			ShowOverload ();
+			AddOverload (tooltipInformation);
 		}
 
 		protected override void OnSizeRequested (ref Requisition requisition)
@@ -279,7 +282,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 
 		VBox descriptionBox = new VBox (false, 0);
-		public DeclarationViewWindow () : base ()
+		public TooltipInformationWindow () : base ()
 		{
 			this.AllowShrink = false;
 			this.AllowGrow = false;

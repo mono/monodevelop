@@ -42,7 +42,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 	{
 		const int declarationWindowMargin = 3;
 		
-		DeclarationViewWindow declarationviewwindow = new DeclarationViewWindow ();
+		TooltipInformationWindow declarationviewwindow = new TooltipInformationWindow ();
 		ICompletionData currentData;
 		Widget parsingMessage;
 		int initialWordLength;
