@@ -42,7 +42,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 	public class ListWidget : Gtk.DrawingArea
 	{
 		int listWidth = 300;
-		Pango.Layout layout;
+		Pango.Layout layout, categoryLayout;
 		ListWindow win;
 		int selection = 0;
 
@@ -132,6 +132,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			this.win = win;
 			this.Events = EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.PointerMotionMask;
 			DefaultCompletionString = "";
+			categoryLayout = new Pango.Layout (this.PangoContext);
 			layout = new Pango.Layout (this.PangoContext);
 			layout.Wrap = Pango.WrapMode.Char;
 			FontDescription des = FontService.GetFontDescription ("Editor");
@@ -416,13 +417,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 					context.Fill ();
 
 
-					layout.SetMarkup ("<span weight='bold' foreground='#AAAAAA'>" + (category.CompletionCategory != null ? category.CompletionCategory.DisplayText : "Uncategorized") + "</span>");
+//					layout.SetMarkup ("<span weight='bold' foreground='#AAAAAA'>" + (category.CompletionCategory != null ? category.CompletionCategory.DisplayText : "Uncategorized") + "</span>");
+//					window.DrawLayout (textGCInsensitive, x - 1, ypos + 1 + (rowHeight - py) / 2, layout);
+//					layout.SetMarkup ("<span weight='bold'>" + (category.CompletionCategory != null ? category.CompletionCategory.DisplayText : "Uncategorized") + "</span>");
+					categoryLayout.SetMarkup ((category.CompletionCategory != null ? category.CompletionCategory.DisplayText : "Uncategorized"));
 					int px, py;
-					layout.GetPixelSize (out px, out py);
-					window.DrawLayout (textGCInsensitive, x - 1, ypos + 1 + (rowHeight - py) / 2, layout);
-					layout.SetMarkup ("<span weight='bold'>" + (category.CompletionCategory != null ? category.CompletionCategory.DisplayText : "Uncategorized") + "</span>");
-					window.DrawLayout (textGCInsensitive, x, ypos + (rowHeight - py) / 2, layout);
-					layout.SetMarkup ("");
+					categoryLayout.GetPixelSize (out px, out py);
+					window.DrawLayout (textGCNormal, x, ypos + (rowHeight - py) / 2, categoryLayout);
 				}, delegate (Category curCategory, int item, int itemidx, int ypos) {
 					if (ypos >= height)
 						return false;
@@ -495,6 +496,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 						context.MoveTo (0, ypos + rowHeight - 1 + 0.5);
 						context.LineTo (Allocation.Width, ypos + rowHeight - 1 + 0.5);
+						if (!SelectionEnabled)
+							context.SetDash (new double[] {4, 1}, 0);
 						context.Stroke ();
 
 						if (icon != null) {
