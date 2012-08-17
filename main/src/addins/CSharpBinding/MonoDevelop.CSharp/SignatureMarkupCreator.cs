@@ -678,6 +678,9 @@ namespace MonoDevelop.CSharp
 				sb.Append (Highlight ("'" + constantValue +"'", "string.single"));
 				return;
 			}
+			if (constantValue == null)
+				sb.Append (Highlight ("null", "constant.language"));
+
 			sb.Append (Highlight (constantValue.ToString (), "constant.digit"));
 		}
 
