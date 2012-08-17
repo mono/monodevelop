@@ -355,7 +355,7 @@ namespace MonoDevelop.AspNet.Mvc.Parser
 			//HACK: Add a newline between first line pragma and constructor declaration in the generated code file
 			//to correctly determine code segments and get code completion working properly on Mono.
 			//The missing newline is present only when Mono is used as a runtime.
-			code = code.Replace ("#line hiddenpublic", "#line hidden\r\npublic");
+			code = code.Replace ("#line hiddenpublic", "#line hidden" + Environment.NewLine + "public");
 			return code;
 		}
 
