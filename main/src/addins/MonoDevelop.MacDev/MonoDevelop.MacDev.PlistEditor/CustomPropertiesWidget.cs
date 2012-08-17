@@ -602,7 +602,10 @@ namespace MonoDevelop.MacDev.PlistEditor
 					if (treeStore.IterChildren (out subIter, iter))
 						RemovePObjects (subIter, toRemove);
 				}
-			} while (!iter.Equals (TreeIter.Zero) && treeStore.IterNext (ref iter));
+
+				if (!treeStore.IterNext (ref iter))
+					break;
+			} while (!iter.Equals (TreeIter.Zero));
 		}
 	}
 }
