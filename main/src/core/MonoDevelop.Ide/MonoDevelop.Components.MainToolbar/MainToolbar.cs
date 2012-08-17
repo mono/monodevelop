@@ -286,6 +286,21 @@ namespace MonoDevelop.Components.MainToolbar
 		}
 
 		SearchPopupWindow popup = null;
+
+		public SearchPopupWindow SearchPopupWindow {
+			get {
+				return popup;
+			}
+		}
+		public event EventHandler SearchPopupWindowCreated;
+
+		protected virtual void OnSearchPopupWindowCreated (EventArgs e)
+		{
+			EventHandler handler = this.SearchPopupWindowCreated;
+			if (handler != null)
+				handler (this, e);
+		}
+
 		void HandleSearchEntryChanged (object sender, EventArgs e)
 		{
 			if (string.IsNullOrEmpty (matchEntry.Entry.Text)){
@@ -305,6 +320,7 @@ namespace MonoDevelop.Components.MainToolbar
 				};
 				PositionPopup ();
 				popup.ShowAll ();
+				OnSearchPopupWindowCreated (EventArgs.Empty);
 			}
 			popup.Update (matchEntry.Entry.Text);
 

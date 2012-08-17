@@ -542,6 +542,10 @@ end tell", directory.ToString ().Replace ("\"", "\\\"")));
 				Background = MonoDevelop.Components.CairoExtensions.LoadImage (typeof (MacPlatformService).Assembly, resource),
 				TitleBarHeight = GetTitleBarHeight ()
 			};
+			result.SearchPopupWindowCreated += delegate {
+				var popupWindow = GtkQuartz.GetWindow (result.SearchPopupWindow);
+				popupWindow.HasShadow = false;
+			};
 			//		File.Delete (tempName);
 			
 			return result;
