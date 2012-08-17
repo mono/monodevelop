@@ -34,6 +34,8 @@ using System.Collections.Generic;
 using ICSharpCode.NRefactory.Completion;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Fonts;
+using Mono.TextEditor.Highlighting;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -113,13 +115,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 			get { return this.categories.Count; }
 		}
 
-		Cairo.Color separatorLine;
-		Cairo.Color lightSearchBackground;
-		Cairo.Color darkSearchBackground;
+		Cairo.Color backgroundColor;
+		Cairo.Color selectedItemColor, selectionBorderColor;
 
-		Cairo.Color color1, color2;
-		Cairo.Color headerColor1, headerColor2;
-		Cairo.Color headerSeparatorTop, headerSeparatorBottom;
+		Gdk.Color textColor;
+		Gdk.Color highlightColor;
+		
 
 		const int marginIconSpacing = 4;
 		const int iconTextSpacing = 6;
@@ -134,18 +135,17 @@ namespace MonoDevelop.Ide.CodeCompletion
 			layout = new Pango.Layout (this.PangoContext);
 			layout.Wrap = Pango.WrapMode.Char;
 			FontDescription des = FontService.GetFontDescription ("Editor");
-			
-			layout.FontDescription = des;
-			separatorLine = CairoExtensions.ParseColor ("dedede");
-			darkSearchBackground = CairoExtensions.ParseColor ("ffffff");
-			lightSearchBackground = CairoExtensions.ParseColor ("f2f2f2");
-			color1 = CairoExtensions.ParseColor ("cccccc");
-			color2 = CairoExtensions.ParseColor ("cccccc");
 
-			headerSeparatorTop = CairoExtensions.ParseColor ("9b9b9b");
-			headerSeparatorBottom = CairoExtensions.ParseColor ("bdbdbe");
-			headerColor1 = CairoExtensions.ParseColor ("abaeae");
-			headerColor2 = CairoExtensions.ParseColor ("c7ccd2");
+			var style = SyntaxModeService.GetColorStyle (Style, PropertyService.Get ("ColorScheme", "Default"));
+
+			layout.FontDescription = des;
+			var completion = style.GetChunkStyle ("completion");
+			textColor = completion.Color;
+
+			highlightColor = style.GetChunkStyle ("completion.highlight").Color;
+			backgroundColor = completion.CairoBackgroundColor;
+			selectedItemColor = style.GetChunkStyle ("completion.selection").CairoColor;
+			selectionBorderColor = style.GetChunkStyle ("completion.selection.border").CairoColor;
 		}
 
 		internal Adjustment vadj;
@@ -347,12 +347,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			get { return MonoDevelop.Core.GettextCatalog.GetString ("No suggestions"); }
 		}
 
-		Gdk.Color HighlightColor {
-			get {
-				return (Gdk.Color)Mono.TextEditor.HslColor.GenerateHighlightColors (Style.Base (State), Style.Text (State), 3)[2];
-			}
-		}
-		
 		protected override bool OnExposeEvent (Gdk.EventExpose args)
 		{
 			using (var context = Gdk.CairoHelper.Create (args.Window)) {
@@ -400,10 +394,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 
 				var textGCInsensitive = this.Style.WhiteGC;
-				var textGCNormal = this.Style.TextGC (StateType.Normal);
+				var textGCNormal = new Gdk.GC (window);
+				textGCNormal.RgbFgColor = textColor;
 				var fgGCNormal = this.Style.ForegroundGC (StateType.Normal);
 				var matcher = CompletionMatcher.CreateCompletionMatcher (CompletionString);
-				var highlightColor = HighlightColor;
 				Iterate (true, ref yPos, delegate (Category category, int ypos) {
 					if (ypos >= height)
 						return;
@@ -418,21 +412,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 						x = icon.Width + 4;
 					}
 					context.Rectangle (0, ypos, Allocation.Width, rowHeight);
-					var linearGradient =new Cairo.LinearGradient (0, ypos+ 0.5, 0, ypos + rowHeight + 0.5);
-					linearGradient.AddColorStop (0, headerColor1);
-					linearGradient.AddColorStop (1, headerColor2);
-					context.Pattern = linearGradient;
+					context.Color = backgroundColor;
 					context.Fill ();
 
-					context.MoveTo (0, ypos + 0.5);
-					context.LineTo (Allocation.Width, ypos + 0.5);
-					context.Color = headerSeparatorTop;
-					context.Stroke ();
-
-					context.MoveTo (0, ypos + rowHeight + 0.5);
-					context.LineTo (Allocation.Width, ypos + rowHeight + 0.5);
-					context.Color = headerSeparatorBottom;
-					context.Stroke ();
 
 					layout.SetMarkup ("<span weight='bold' foreground='#AAAAAA'>" + (category.CompletionCategory != null ? category.CompletionCategory.DisplayText : "Uncategorized") + "</span>");
 					int px, py;
@@ -504,15 +486,16 @@ namespace MonoDevelop.Ide.CodeCompletion
 					iypos = iconHeight < rowHeight ? ypos + (rowHeight - iconHeight) / 2 : ypos;
 					if (item == SelectedItem) {
 						context.Rectangle (0, ypos, Allocation.Width, rowHeight);
-						if (SelectionEnabled) {
-							var linearGradient =new Cairo.LinearGradient (0, ypos, 0, ypos + rowHeight);
-							linearGradient.AddColorStop (0, color1);
-							linearGradient.AddColorStop (0, color2);
-							context.Pattern = linearGradient;
-						} else {
-							context.Color = darkSearchBackground;
-						}
+						context.Color = this.selectedItemColor;
 						context.Fill ();
+
+						context.Color = this.selectionBorderColor;
+						context.MoveTo (0, ypos + 0.5);
+						context.LineTo (Allocation.Width, ypos + 0.5);
+
+						context.MoveTo (0, ypos + rowHeight - 1 + 0.5);
+						context.LineTo (Allocation.Width, ypos + rowHeight - 1 + 0.5);
+						context.Stroke ();
 
 						if (icon != null) {
 							window.DrawPixbuf (fgGCNormal, icon, 0, 0, xpos, iypos, iconWidth, iconHeight, Gdk.RgbDither.None, 0, 0);
@@ -520,21 +503,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 						}
 						window.DrawLayout (textGCNormal, xpos + iconWidth + 2, typos, layout);
 					} else {
-						context.Color = lightSearchBackground;
-						var xSpacing = marginIconSpacing + iconTextSpacing + 16;
-						if (InCategoryMode && curCategory != null && curCategory.CompletionCategory != null)
-							xSpacing += categoryModeItemIndenting;
-						context.Rectangle (0, ypos + 0.5, xSpacing, he + iconTextSpacing - 1);
+						context.Rectangle (0, ypos, Allocation.Width, rowHeight);
+						context.Color = this.backgroundColor;
 						context.Fill ();
-						
-						context.Color = darkSearchBackground;
-						context.Rectangle (xSpacing, ypos + 0.5, lineWidth - 1 - xSpacing, he + iconTextSpacing - 1);
-						context.Fill ();
-
-						context.MoveTo (0.5 + xSpacing, 0.5 + ypos);
-						context.LineTo (0.5 + xSpacing, 0.5 + ypos + he + iconTextSpacing - 1);
-						context.Color = separatorLine;
-						context.Stroke ();
 						if (icon != null) {
 							window.DrawPixbuf (fgGCNormal, icon, 0, 0, xpos, iypos, iconWidth, iconHeight, Gdk.RgbDither.None, 0, 0);
 							xpos += iconTextSpacing;
@@ -549,23 +520,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 					}
 					return true;
 				});
-
-				{
-					context.Color = lightSearchBackground;
-					var xSpacing = marginIconSpacing + iconTextSpacing + 16;
-					context.Rectangle (0, yPos, xSpacing, Allocation.Height - yPos);
-					context.Fill ();
-					
-					context.Color = darkSearchBackground;
-					context.Rectangle (xSpacing, yPos, lineWidth - 1 - xSpacing, Allocation.Height - yPos);
-					context.Fill ();
-
-					context.MoveTo (0.5 + xSpacing, 0.5 + yPos);
-					context.LineTo (0.5 + xSpacing, 0.5 + Allocation.Height);
-					context.Color = separatorLine;
-					context.Stroke ();
-
-				}
 
 				/*
 				int n = 0;
@@ -772,6 +726,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			requisition.Height += requisition.Height % rowHeight;
 		}
 
+		const int maxVisibleRows = 7;
 		void CalcVisibleRows ()
 		{
 			int lvWidth, lvHeight;
@@ -784,7 +739,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			int viewableCats = InCategoryMode ? categories.Count: 0;
 			if (InCategoryMode && categories.Any (cat => cat.CompletionCategory == null))
 				viewableCats--;
-			int newHeight = rowHeight * 8;
+			int newHeight = rowHeight * maxVisibleRows;
 			if (PreviewCompletionString) {
 				newHeight += rowHeight;
 			}

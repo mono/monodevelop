@@ -37,6 +37,7 @@ using MonoDevelop.Core.Text;
 using ICSharpCode.NRefactory.Completion;
 using Mono.TextEditor;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -129,7 +130,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (IsRealized && !Visible)
 				Show ();
 			
-			int width = list.WidthRequest;
+			int width = 200; //list.WidthRequest;
 			int height = list.HeightRequest + 2 + (footer != null ? footer.Allocation.Height : 0);
 			
 			SetSizeRequest (width, height);
@@ -616,7 +617,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		protected virtual void OnSelectionChanged ()
 		{
 		}
-		
+		/*
 		protected override bool OnExposeEvent (Gdk.EventExpose args)
 		{
 			base.OnExposeEvent (args);
@@ -625,7 +626,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			this.GetSize (out winWidth, out winHeight);
 			this.GdkWindow.DrawRectangle (this.Style.ForegroundGC (StateType.Insensitive), false, 0, 0, winWidth - 1, winHeight - 1);
 			return true;
-		}
+		}*/
 		
 		public int TextOffset {
 			get { return list.TextOffset + (int)this.BorderWidth; }

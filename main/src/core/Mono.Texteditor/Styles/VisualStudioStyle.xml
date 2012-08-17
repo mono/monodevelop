@@ -74,6 +74,13 @@
 	
 	<Style name="tooltip" color="black" bgColor="#feffe9"/>
 	
+	<Style name="completion" color="#434343" bgColor="#F0F6F8">
+		<Style name="highlight" color="#BA3373"/>
+		<Style name="selection" color="#E0EEF0">
+			<Style name="border" color="#C9C9C9"/>
+		</Style>
+	</Style>
+	
 	<Style name="constant" color="black"/>
 	<Style name="constant.language" color="keyword-blue"/>
 
