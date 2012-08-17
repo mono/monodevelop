@@ -1500,7 +1500,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			
 			public IUnresolvedAssembly Ctx {
 				get {
-					return CtxLoader.Assembly;
+					return CtxLoader;
 				}
 			}
 
@@ -1544,8 +1544,157 @@ namespace MonoDevelop.Ide.TypeSystem
 			#endregion
 		}
 		
-		class LazyAssemblyLoader
+		class LazyAssemblyLoader : IUnresolvedAssembly
 		{
+			class LazyAssembly : IAssembly
+			{
+				readonly LazyAssemblyLoader loader;
+				readonly ITypeResolveContext context;
+
+				IAssembly assembly;
+				IAssembly Assembly {
+					get {
+						lock (loader) {
+							if (assembly == null) {
+								loader.EnsureAssemblyLoaded ();
+								assembly = loader.assembly.Resolve (context);
+							}
+							return assembly;
+						}
+					}
+				}
+
+				public LazyAssembly (LazyAssemblyLoader loader, ITypeResolveContext context)
+				{
+					this.loader = loader;
+					this.context = context;
+				}
+
+
+				#region IAssembly implementation				
+				bool IAssembly.InternalsVisibleTo (IAssembly assembly)
+				{
+					return Assembly.InternalsVisibleTo (assembly);
+				}				
+
+				ITypeDefinition IAssembly.GetTypeDefinition (string ns, string name, int typeParameterCount)
+				{
+					return Assembly.GetTypeDefinition (ns, name, typeParameterCount);
+				}				
+
+				IUnresolvedAssembly IAssembly.UnresolvedAssembly {
+					get {
+						return Assembly.UnresolvedAssembly;
+					}
+				}				
+
+				bool IAssembly.IsMainAssembly {
+					get {
+						return Assembly.IsMainAssembly;
+					}
+				}				
+
+				string IAssembly.AssemblyName {
+					get {
+						return Assembly.AssemblyName;
+					}
+				}				
+
+				IList<IAttribute> IAssembly.AssemblyAttributes {
+					get {
+						return Assembly.AssemblyAttributes;
+					}
+				}				
+
+				IList<IAttribute> IAssembly.ModuleAttributes {
+					get {
+						return Assembly.ModuleAttributes;
+					}
+				}				
+
+				INamespace IAssembly.RootNamespace {
+					get {
+						return Assembly.RootNamespace;
+					}
+				}				
+
+				IEnumerable<ITypeDefinition> IAssembly.TopLevelTypeDefinitions {
+					get {
+						return Assembly.TopLevelTypeDefinitions;
+					}
+				}				
+
+				#endregion
+			
+				#region IResolved implementation
+				ICompilation IResolved.Compilation {
+					get {
+						return Assembly.Compilation;
+					}
+				}
+				#endregion
+			}
+
+			#region IAssemblyReference implementation
+
+			IAssembly IAssemblyReference.Resolve (ITypeResolveContext context)
+			{
+				if (assembly != null)
+					return assembly.Resolve (context);
+				return new LazyAssembly (this, context);
+			}
+
+			#endregion
+
+			#region IUnresolvedAssembly implementation
+
+			string IUnresolvedAssembly.AssemblyName {
+				get {
+					lock (this) {
+						EnsureAssemblyLoaded ();
+						return assembly.AssemblyName;
+					}
+				}
+			}
+
+			string IUnresolvedAssembly.Location {
+				get {
+					lock (this) {
+						EnsureAssemblyLoaded ();
+						return assembly.Location;
+					}
+				}
+			}
+
+			IEnumerable<IUnresolvedAttribute> IUnresolvedAssembly.AssemblyAttributes {
+				get {
+					lock (this) {
+						EnsureAssemblyLoaded ();
+						return assembly.AssemblyAttributes;
+					}
+				}
+			}
+
+			IEnumerable<IUnresolvedAttribute> IUnresolvedAssembly.ModuleAttributes {
+				get {
+					lock (this) {
+						EnsureAssemblyLoaded ();
+						return assembly.ModuleAttributes;
+					}
+				}
+			}
+
+			IEnumerable<IUnresolvedTypeDefinition> IUnresolvedAssembly.TopLevelTypeDefinitions {
+				get {
+					lock (this) {
+						EnsureAssemblyLoaded ();
+						return assembly.TopLevelTypeDefinitions;
+					}
+				}
+			}
+
+			#endregion
+
 			string fileName;
 			string cache;
 			
@@ -1553,20 +1702,9 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			void EnsureAssemblyLoaded ()
 			{
-				lock (this) {
-					if (assembly != null)
-						return;
-					assembly = LoadAssembly () ?? new DefaultUnresolvedAssembly (fileName);
-				}
-			}
-
-			public IUnresolvedAssembly Assembly {
-				get {
-					lock (this) {
-						EnsureAssemblyLoaded ();
-						return assembly;
-					}
-				}
+				if (assembly != null)
+					return;
+				assembly = LoadAssembly () ?? new DefaultUnresolvedAssembly (fileName);
 			}
 
 			public LazyAssemblyLoader (string fileName, string cache)
@@ -2102,4 +2240,5 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 	}
 }
+
 
