@@ -188,6 +188,9 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 					if (dialog.ActiveViewEngine == "Aspx")
 						ext = dialog.IsPartialView ? ".ascx" : ".aspx";
 
+					if (!System.IO.Directory.Exists (path))
+						System.IO.Directory.CreateDirectory (path);
+
 					outputFile = System.IO.Path.Combine (path, dialog.ViewName) + ext;
 
 					if (System.IO.File.Exists (outputFile)) {
