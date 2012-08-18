@@ -34,6 +34,7 @@ using System.Collections;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Evaluation;
 using Microsoft.Build.Construction;
+using System.Linq;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
@@ -95,14 +96,25 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			RunSTA (delegate {
 				foreach (var engine in engines.Values) {
-					ProjectRootElement xml = null;
-					foreach (var p in engine.GetLoadedProjects (file)) {
-						engine.UnloadProject (p);
-						xml = p.Xml;
+					//unloading projects modifies the collection, so copy it
+					var projects = engine.GetLoadedProjects (file).ToArray ();
+
+					if (projects.Length == 0) {
+						return;
 					}
-					if (xml != null) {
-						// All the projects from the same file share the same xml, so it has to be unloaded only once
-						engine.UnloadProject (xml);
+
+					var rootElement = projects[0].Xml;
+
+					foreach (var p in projects) {
+						engine.UnloadProject (p);
+					}
+
+					//try to unload the projects' XML from the cache
+					try {
+						engine.UnloadProject (rootElement);
+					} catch (InvalidOperationException) {
+						// This could fail if something else is referencing the xml somehow.
+						// But not a big deal, it's just a cache.
 					}
 				}
 			});
