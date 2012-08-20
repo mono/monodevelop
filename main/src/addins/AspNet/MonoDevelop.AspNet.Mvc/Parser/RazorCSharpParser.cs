@@ -46,6 +46,7 @@ using MonoDevelop.AspNet.Parser;
 using System.Web.Configuration;
 using System.Web.WebPages.Razor.Configuration;
 using System.Web.WebPages.Razor;
+using System.Configuration;
 
 namespace MonoDevelop.AspNet.Mvc.Parser
 {
@@ -163,9 +164,14 @@ namespace MonoDevelop.AspNet.Mvc.Parser
 
 			// Try to create host using web.config file
 			var webConfigMap = new WebConfigurationFileMap ();
-			var vdm = new VirtualDirectoryMapping (project.BaseDirectory.Combine ("Views"), true);
+			var vdm = new VirtualDirectoryMapping (project.BaseDirectory.Combine ("Views"), true, "web.config");
 			webConfigMap.VirtualDirectories.Add ("/", vdm);
-			var configuration = WebConfigurationManager.OpenMappedWebConfiguration (webConfigMap, "/");
+			Configuration configuration;
+			try {
+				configuration = WebConfigurationManager.OpenMappedWebConfiguration (webConfigMap, "/");
+			} catch {
+				configuration = null;
+			}
 			if (configuration != null) {
 				var rws = configuration.GetSectionGroup (RazorWebSectionGroup.GroupName) as RazorWebSectionGroup;
 				if (rws != null) {
@@ -346,6 +352,10 @@ namespace MonoDevelop.AspNet.Mvc.Parser
 				sw.Flush ();
 				code = sw.ToString ();
 			}
+			//HACK: Add a newline between first line pragma and constructor declaration in the generated code file
+			//to correctly determine code segments and get code completion working properly on Mono.
+			//The missing newline is present only when Mono is used as a runtime.
+			code = code.Replace ("#line hiddenpublic", "#line hidden" + Environment.NewLine + "public");
 			return code;
 		}
 
