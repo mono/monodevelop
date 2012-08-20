@@ -93,10 +93,12 @@ namespace MonoDevelop.CSharp
 				return GetEventMarkup ((IEvent)entity);
 			case EntityType.Method:
 			case EntityType.Operator:
-			case EntityType.Constructor:
-			case EntityType.Destructor:
 				return GetMethodMarkup ((IMethod)entity);
-				
+			case EntityType.Constructor:
+				return GetConstructorMarkup ((IMethod)entity);
+			case EntityType.Destructor:
+				return GetDestructorMarkup ((IMethod)entity);
+
 			default:
 				throw new ArgumentOutOfRangeException ();
 			}
@@ -250,11 +252,11 @@ namespace MonoDevelop.CSharp
 				result.Append ("&gt;");
 			}
 			
-			if (formattingOptions.SpaceBeforeMethodDeclarationParentheses)
+			if (formattingOptions.SpaceBeforeDelegateDeclarationParentheses)
 				result.Append (" ");
 			
 			result.Append ('(');
-			AppendParameterList (result,  method.Parameters, false);
+			AppendParameterList (result,  method.Parameters, formattingOptions.SpaceBeforeDelegateDeclarationParameterComma, formattingOptions.SpaceAfterDelegateDeclarationParameterComma, false);
 			result.Append (')');
 			return result.ToString ();
 		}
@@ -288,11 +290,11 @@ namespace MonoDevelop.CSharp
 				result.Append ("&gt;");
 			}
 			
-			if (formattingOptions.SpaceBeforeMethodDeclarationParentheses)
+			if (formattingOptions.SpaceBeforeMethodDeclarationParameterComma)
 				result.Append (" ");
 			
 			result.Append ('(');
-			AppendParameterList (result,  method.Parameters);
+			AppendParameterList (result,  method.Parameters, formattingOptions.SpaceBeforeDelegateDeclarationParameterComma, formattingOptions.SpaceAfterDelegateDeclarationParameterComma);
 			result.Append (')');
 			return result.ToString ();
 		}
@@ -337,18 +339,23 @@ namespace MonoDevelop.CSharp
 
 			var result = new StringBuilder ();
 			bool isEnum = field.DeclaringTypeDefinition != null && field.DeclaringTypeDefinition.Kind == TypeKind.Enum;
-			AppendModifiers (result, field);
 			if (!isEnum) {
+				AppendModifiers (result, field);
 				result.Append (GetTypeReferenceString (field.ReturnType));
-				if (BreakLineAfterReturnType) {
-					result.AppendLine ();
-				} else {
-					result.Append (" ");
-				}
+			} else {
+				result.Append (GetTypeReferenceString (field.DeclaringType));
+			}
+			if (BreakLineAfterReturnType) {
+				result.AppendLine ();
+			} else {
+				result.Append (" ");
 			}
 			result.Append (field.Name);
 
 			if (field.IsConst) {
+				if (isEnum && !(field.DeclaringTypeDefinition.Attributes.Any (attr => attr.AttributeType.FullName == "System.FlagsAttribute"))) {
+					return result.ToString ();
+				}
 				if (formattingOptions.SpaceAroundAssignment) {
 					result.Append (" = ");
 				} else {
@@ -398,7 +405,58 @@ namespace MonoDevelop.CSharp
 				result.Append (" ");
 
 			result.Append ('(');
-			AppendParameterList (result,  method.Parameters);
+			AppendParameterList (result,  method.Parameters, formattingOptions.SpaceBeforeMethodDeclarationParameterComma, formattingOptions.SpaceAfterMethodDeclarationParameterComma);
+			result.Append (')');
+			return result.ToString ();
+		}
+
+		string GetConstructorMarkup (IMethod method)
+		{
+			if (method == null)
+				throw new ArgumentNullException ("method");
+			
+			var result = new StringBuilder ();
+			AppendModifiers (result, method);
+			if (BreakLineAfterReturnType) {
+				result.AppendLine ();
+			} else {
+				result.Append (" ");
+			}
+			
+			AppendExplicitInterfaces (result, method);
+			
+			result.Append (method.DeclaringType.Name);
+
+			if (formattingOptions.SpaceBeforeConstructorDeclarationParentheses)
+				result.Append (" ");
+			
+			result.Append ('(');
+			AppendParameterList (result,  method.Parameters, formattingOptions.SpaceBeforeConstructorDeclarationParameterComma, formattingOptions.SpaceAfterConstructorDeclarationParameterComma);
+			result.Append (')');
+			return result.ToString ();
+		}
+
+		string GetDestructorMarkup (IMethod method)
+		{
+			if (method == null)
+				throw new ArgumentNullException ("method");
+			
+			var result = new StringBuilder ();
+			AppendModifiers (result, method);
+			if (BreakLineAfterReturnType) {
+				result.AppendLine ();
+			} else {
+				result.Append (" ");
+			}
+			
+			result.Append ("~");
+			result.Append (method.DeclaringType.Name);
+			
+			if (formattingOptions.SpaceBeforeConstructorDeclarationParentheses)
+				result.Append (" ");
+			
+			result.Append ('(');
+			AppendParameterList (result,  method.Parameters, formattingOptions.SpaceBeforeConstructorDeclarationParameterComma, formattingOptions.SpaceAfterConstructorDeclarationParameterComma);
 			result.Append (')');
 			return result.ToString ();
 		}
@@ -428,7 +486,7 @@ namespace MonoDevelop.CSharp
 				if (formattingOptions.SpaceBeforeIndexerDeclarationBracket)
 					result.Append (" ");
 				result.Append ("[");
-				AppendParameterList (result, property.Parameters);
+				AppendParameterList (result, property.Parameters, formattingOptions.SpaceBeforeIndexerDeclarationParameterComma, formattingOptions.SpaceAfterIndexerDeclarationParameterComma);
 				result.Append ("]");
 			}
 			
@@ -600,7 +658,7 @@ namespace MonoDevelop.CSharp
 			}
 		}
 
-		void AppendParameterList (StringBuilder result, IList<IParameter> parameterList, bool newLine = true)
+		void AppendParameterList (StringBuilder result, IList<IParameter> parameterList, bool spaceBefore, bool spaceAfter, bool newLine = true)
 		{
 			if (parameterList == null || parameterList.Count == 0)
 				return;
@@ -628,11 +686,14 @@ namespace MonoDevelop.CSharp
 					result.Append ("</span>");
 				}
 				if (i + 1 < parameterList.Count) {
+					if (spaceBefore)
+						result.Append (' ');
 					result.Append (',');
 					if (newLine) {
 						result.AppendLine ();
 					} else {
-						result.Append (' ');
+						if (spaceAfter)
+							result.Append (' ');
 					}
 				}
 			}
