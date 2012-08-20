@@ -29,5 +29,4 @@ SUBDIRS = \
 	MonoDevelop.Debugger.Soft \
 	WindowsPlatform \
 	MonoDevelop.HexEditor \
-	MonoDevelop.DocFood \
-	MonoDevelop.MacDev
+	MonoDevelop.DocFood
