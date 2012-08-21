@@ -536,8 +536,8 @@ namespace MonoDevelop.CSharp.Completion
 		public static TooltipInformation CreateTooltipInformation (ICompilation compilation, CSharpUnresolvedFile file, TextEditorData textEditorData, MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy formattingPolicy, IEntity entity, bool smartWrap)
 		{
 			var tooltipInfo = new TooltipInformation ();
-			var resolver = file.GetResolver (compilation, textEditorData.Caret.Location);
-			var sig = new SignatureMarkupCreator (textEditorData, resolver, formattingPolicy.CreateOptions ());
+			var resolver = file != null ? file.GetResolver (compilation, textEditorData.Caret.Location) : new CSharpResolver (compilation);
+			var sig = new SignatureMarkupCreator (resolver, formattingPolicy.CreateOptions ());
 			sig.BreakLineAfterReturnType = smartWrap;
 			tooltipInfo.SignatureMarkup = sig.GetMarkup (entity);
 			var plainDoc = AmbienceService.GetDocumentationSummary (entity) ?? "";

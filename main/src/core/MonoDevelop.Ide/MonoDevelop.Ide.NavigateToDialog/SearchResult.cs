@@ -146,6 +146,12 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			}
 		}
 
+		public override MonoDevelop.Ide.CodeCompletion.TooltipInformation TooltipInformation {
+			get {
+				return Ambience.GetTooltip (type);
+			}
+		}
+
 		public override string Description {
 			get {
 				string loc;
@@ -263,9 +269,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 
 		public override MonoDevelop.Ide.CodeCompletion.TooltipInformation TooltipInformation {
 			get {
-				return new MonoDevelop.Ide.CodeCompletion.TooltipInformation () {
-					SignatureMarkup = "TODO"
-				};
+				return Ambience.GetTooltip (member);
 			}
 		}
 

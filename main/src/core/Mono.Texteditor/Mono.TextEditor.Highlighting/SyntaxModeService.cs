@@ -75,15 +75,15 @@ namespace Mono.TextEditor.Highlighting
 			syntaxModes[mimeType] = modeProvider;
 		}
 		
-		public static ColorScheme GetColorStyle (Gtk.Style widgetStyle, string name)
+		public static ColorScheme GetColorStyle (string name)
 		{
 			if (styles.ContainsKey (name))
 				return styles [name];
 			if (styleLookup.ContainsKey (name)) {
 				LoadStyle (name);
-				return GetColorStyle (widgetStyle, name);
+				return GetColorStyle (name);
 			}
-			return GetColorStyle (widgetStyle, "Default");
+			return GetColorStyle ("Default");
 		}
 		
 		public static IXmlProvider GetProvider (SyntaxMode mode)
@@ -166,7 +166,7 @@ namespace Mono.TextEditor.Highlighting
 			}
 			syntaxModeLookup.Clear ();
 			foreach (string style in new List<string> (styleLookup.Keys)) {
-				GetColorStyle (null, style);
+				GetColorStyle (style);
 			}
 			styleLookup.Clear ();
 			bool result = true;

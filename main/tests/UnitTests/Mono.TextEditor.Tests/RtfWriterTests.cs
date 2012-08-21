@@ -37,7 +37,7 @@ namespace Mono.TextEditor.Tests
 		public void TestSimpleCSharpRtf ()
 		{
 			var data = Create ("class Foo {}");
-			var style = SyntaxModeService.GetColorStyle (null, "TangoLight");
+			var style = SyntaxModeService.GetColorStyle ("TangoLight");
 			ISyntaxMode mode = SyntaxModeService.GetSyntaxMode (data.Document, "text/x-csharp");
 			string generatedRtf = RtfWriter.GenerateRtf (data.Document, mode, style, data.Options);
 			Assert.AreEqual (
@@ -51,7 +51,7 @@ namespace Mono.TextEditor.Tests
 		public void TestBug5628 ()
 		{
 			var data = Create ("class Foo {}");
-			var style = SyntaxModeService.GetColorStyle (null, "TangoLight");
+			var style = SyntaxModeService.GetColorStyle ("TangoLight");
 			ISyntaxMode mode = null;
 			string generatedRtf = RtfWriter.GenerateRtf (data.Document, mode, style, data.Options);
 			Assert.AreEqual (

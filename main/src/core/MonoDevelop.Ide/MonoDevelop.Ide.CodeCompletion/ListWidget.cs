@@ -157,7 +157,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			categoryLayout = new Pango.Layout (this.PangoContext);
 			layout = new Pango.Layout (this.PangoContext);
 			layout.Wrap = Pango.WrapMode.Char;
- 			var style = SyntaxModeService.GetColorStyle (Style, PropertyService.Get ("ColorScheme", "Default"));
+ 			var style = SyntaxModeService.GetColorStyle (PropertyService.Get ("ColorScheme", "Default"));
 			SetFont ();
 			var completion = style.GetChunkStyle ("completion");
 			textColor = completion.Color;

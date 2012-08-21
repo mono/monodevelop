@@ -474,9 +474,9 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public virtual ColorScheme GetColorStyle (Gtk.Style widgetStyle)
+		public virtual ColorScheme GetColorStyle ()
 		{
-			return SyntaxModeService.GetColorStyle (widgetStyle, ColorScheme);
+			return SyntaxModeService.GetColorStyle (ColorScheme);
 		}
 		
 		public virtual void CopyFrom (TextEditorOptions other)

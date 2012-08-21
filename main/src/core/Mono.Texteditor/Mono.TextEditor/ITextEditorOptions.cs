@@ -79,7 +79,7 @@ namespace Mono.TextEditor
 
 		ShowWhitespaces ShowWhitespaces { get; set; }
 
-		ColorScheme GetColorStyle (Gtk.Style widgetStyle);
+		ColorScheme GetColorStyle ();
 		
 		event EventHandler Changed;
 	}

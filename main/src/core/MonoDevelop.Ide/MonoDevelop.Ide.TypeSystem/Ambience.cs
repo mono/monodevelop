@@ -33,6 +33,7 @@ using MonoDevelop.Core;
 using ICSharpCode.NRefactory.TypeSystem;
 using Mono.Cecil;
 using System.Linq;
+using MonoDevelop.Ide.CodeCompletion;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -66,10 +67,16 @@ namespace MonoDevelop.Ide.TypeSystem
 		protected abstract string GetEventString (IEvent evt, OutputSettings settings);
 		protected abstract string GetPropertyString (IProperty property, OutputSettings settings);
 		protected abstract string GetIndexerString (IProperty property, OutputSettings settings);
-		
+
 		protected abstract string GetParameterString (IParameterizedMember member, IParameter parameter, OutputSettings settings);
+
 		#endregion
 		
+		public virtual TooltipInformation GetTooltip (IEntity entity)
+		{
+			return null;
+		}
+
 		public static string Format (string str)
 		{
 			if (String.IsNullOrEmpty (str))

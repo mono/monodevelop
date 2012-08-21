@@ -87,19 +87,16 @@ namespace MonoDevelop.Components.MainToolbar
 					inResize = false;
 				}
 			};
+			Destroyed += delegate {
+				HideTooltip ();
+				this.declarationviewwindow.Destroy ();
+			};
 		}
 		bool inResize = false;
 
 		public bool SearchForMembers {
 			get;
 			set;
-		}
-
-		protected override bool OnDestroyEvent (Gdk.Event evnt)
-		{
-			HideTooltip ();
-			this.declarationviewwindow.Destroy ();
-			return base.OnDestroyEvent (evnt);
 		}
 
 		internal void OpenFile ()
@@ -364,7 +361,30 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void ShowTooltip ()
 		{
-			throw new NotImplementedException ();
+			HideTooltip ();
+			if (selectedItem == null || selectedItem.DataSource == null)
+				return;
+			var tooltip = selectedItem.DataSource.GetTooltip (selectedItem.Item);
+			if (tooltip == null || string.IsNullOrEmpty (tooltip.SignatureMarkup))
+				return;
+
+			declarationviewwindow.Clear ();
+			declarationviewwindow.AddOverload (tooltip);
+			declarationviewwindow.CurrentOverload = 0;
+			declarationViewTimer = GLib.Timeout.Add (250, DelayedTooltipShow);
+		}
+
+		bool DelayedTooltipShow ()
+		{
+			declarationviewwindow.ShowArrow = true;
+			var rect = SelectedItemRectangle;
+
+			declarationviewwindow.ShowPopup (this, new Gdk.Rectangle (0, (int)rect.Y, Allocation.Width, (int)rect.Height), PopupPosition.Right);
+			if (declarationViewWindowOpacityTimer != 0) 
+				GLib.Source.Remove (declarationViewWindowOpacityTimer);
+			declarationViewWindowOpacityTimer = GLib.Timeout.Add (50, new OpacityTimer (this).Timer);
+			declarationViewTimer = 0;
+			return false;
 		}
 
 		class OpacityTimer
@@ -577,6 +597,58 @@ namespace MonoDevelop.Components.MainToolbar
 		}
 
 		ItemIdentifier selectedItem = null, topItem = null;
+
+		Cairo.Rectangle SelectedItemRectangle {
+			get {
+				var alloc = ChildAllocation;
+				var adjustedMarginSize = alloc.X - Allocation.X  + headerMarginSize;
+				
+				var r = results.Where (res => res.Item2.ItemCount > 0).ToArray ();
+
+				double y = alloc.Y + yMargin;
+				int w, h;
+				if (topItem != null) {
+
+					var category = topItem.Category;
+					var dataSrc = topItem.DataSource;
+					var i = topItem.Item;
+					headerLayout.SetText (GettextCatalog.GetString ("Top result"));
+					headerLayout.GetPixelSize (out w, out h);
+
+					if (selectedItem != null && selectedItem.Category == category && selectedItem.Item == i) {
+						return new Cairo.Rectangle (0, y, Allocation.Width, h + itemSeparatorHeight);
+					}
+
+					y += h + itemSeparatorHeight;
+				}
+				
+				foreach (var result in r) {
+					var category = result.Item1;
+					var dataSrc = result.Item2;
+					if (dataSrc.ItemCount == 0)
+						continue;
+					if (dataSrc.ItemCount == 1 && topItem != null && topItem.DataSource == dataSrc)
+						continue;
+
+					for (int i = 0; i < maxItems && i < dataSrc.ItemCount; i++) {
+						if (topItem != null && topItem.Category == category && topItem.Item == i)
+							continue;
+						layout.SetMarkup (GetRowMarkup (dataSrc, i));
+						layout.GetPixelSize (out w, out h);
+
+						if (selectedItem != null && selectedItem.Category == category && selectedItem.Item == i) {
+							return new Cairo.Rectangle (0, y, Allocation.Width, h + itemSeparatorHeight);
+						}
+
+						y += h + itemSeparatorHeight;
+					}
+					if (result != r.Last ()) {
+						y += categorySeparatorHeight;
+					}
+				}
+				return new Cairo.Rectangle (0, 0, Allocation.Width, 16);
+			}
+		}
 
 		protected override void OnDrawContent (Gdk.EventExpose evnt, Cairo.Context context)
 		{

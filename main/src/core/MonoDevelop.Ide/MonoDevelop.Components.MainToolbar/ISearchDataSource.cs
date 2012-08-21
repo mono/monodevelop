@@ -27,6 +27,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide.CodeCompletion;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -38,6 +39,7 @@ namespace MonoDevelop.Components.MainToolbar
 		Gdk.Pixbuf GetIcon (int item);
 		string GetMarkup (int item, bool isSelected);
 		string GetDescriptionMarkup (int item, bool isSelected);
+		TooltipInformation GetTooltip (int item);
 		double GetWeight (int item);
 
 		DomRegion GetRegion (int item);

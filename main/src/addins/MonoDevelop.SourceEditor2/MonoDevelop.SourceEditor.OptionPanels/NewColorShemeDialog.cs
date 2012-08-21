@@ -61,7 +61,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				return;
 			string name = (string)store.GetValue (iter, 0);
 			
-			var style = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (this.Style, name);
+			var style = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (name);
 			
 			style = style.Clone ();
 			style.Name = this.entryName.Text;

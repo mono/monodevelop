@@ -61,7 +61,7 @@ namespace MonoDevelop.SourceEditor
 			SetHeaderFormat (settings.HeaderFormat);
 			SetFooterFormat (settings.FooterFormat);
 			
-			style = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (null, settings.ColorScheme);
+			style = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (settings.ColorScheme);
 			
 			pageWidth = context.PageSetup.GetPageWidth (Unit.Pixel);
 			pageHeight = context.PageSetup.GetPageHeight (Unit.Pixel);

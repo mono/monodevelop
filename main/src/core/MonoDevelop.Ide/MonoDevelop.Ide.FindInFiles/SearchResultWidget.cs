@@ -193,7 +193,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		protected override void OnRealized ()
 		{
 			base.OnRealized ();
-			highlightStyle = SyntaxModeService.GetColorStyle (Style, PropertyService.Get ("ColorScheme", "Default"));
+			highlightStyle = SyntaxModeService.GetColorStyle (PropertyService.Get ("ColorScheme", "Default"));
 		}
 		
 		protected override void OnStyleSet (Gtk.Style previousStyle)

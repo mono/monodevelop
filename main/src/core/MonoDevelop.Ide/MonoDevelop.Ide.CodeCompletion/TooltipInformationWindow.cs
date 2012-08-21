@@ -157,7 +157,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (tooltipInformation == null || string.IsNullOrEmpty (tooltipInformation.SignatureMarkup))
 				return;
 			overloads.Add (tooltipInformation);
-			if (overloads.Count >= 2) {
+			if (helpbox == null && overloads.Count >= 2) {
 				helpbox = new HBox (false, 0);
 				var leftArrow = new DeclarationViewArrow (true);
 				helpbox.PackStart (leftArrow, false, false, 0);
@@ -205,7 +205,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 				var o = overloads[current_overload];
 				headlabel.Markup = o.SignatureMarkup;
 				headlabel.Visible = true;
-
 				foreach (var cat in o.Categories) {
 					descriptionBox.PackStart (CreateCategory (cat.Item1, cat.Item2), true, true, 4);
 				}
@@ -324,7 +323,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			vb2.Spacing = 4;
 			vb2.PackStart (hb, true, true, 0);
 			this.Add (vb2);
-			var scheme = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (Style, PropertyService.Get<string> ("ColorScheme"));
+			var scheme = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (PropertyService.Get<string> ("ColorScheme"));
 			this.BackgroundColor = scheme.Tooltip.CairoBackgroundColor;
 
 			foreColor = scheme.Default.Color;

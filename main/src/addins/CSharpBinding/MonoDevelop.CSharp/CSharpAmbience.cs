@@ -198,7 +198,20 @@ namespace MonoDevelop.CSharp
 		}
 		
 		static Dictionary<TypeKind, string> classTypes = new Dictionary<TypeKind, string> ();
-		
+
+		public override MonoDevelop.Ide.CodeCompletion.TooltipInformation GetTooltip (IEntity entity)
+		{
+			if (entity == null)
+				throw new ArgumentNullException ("entity");
+			return MonoDevelop.CSharp.Completion.MemberCompletionData.CreateTooltipInformation (
+				entity.Compilation,
+				null,
+				null,
+				new CSharpFormattingPolicy (),
+				entity,
+				false);
+		}
+
 		static string GetString (TypeKind classType)
 		{
 			string res;

@@ -532,7 +532,7 @@ namespace MonoDevelop.CSharp.Completion
 			return new GenericTooltipCompletionDate (smartWrap => {
 				var tooltipInfo = new TooltipInformation ();
 				var resolver = this.CSharpUnresolvedFile.GetResolver (this.Compilation, this.TextEditorData.Caret.Location);
-				var sig = new SignatureMarkupCreator (this.TextEditorData, resolver, this.FormattingPolicy.CreateOptions ());
+				var sig = new SignatureMarkupCreator (resolver, this.FormattingPolicy.CreateOptions ());
 				sig.BreakLineAfterReturnType = smartWrap;
 				tooltipInfo.SignatureMarkup = sig.GetKeywordMarkup (title);
 				return tooltipInfo;

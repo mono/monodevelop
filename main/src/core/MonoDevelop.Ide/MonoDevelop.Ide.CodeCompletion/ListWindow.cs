@@ -89,7 +89,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			this.AutoSelect = true;
 			this.TypeHint = WindowTypeHint.Menu;
 			CornerRadius = 4;
-			var style = SyntaxModeService.GetColorStyle (Style, PropertyService.Get ("ColorScheme", "Default"));
+			var style = SyntaxModeService.GetColorStyle (PropertyService.Get ("ColorScheme", "Default"));
 			var completion = style.GetChunkStyle ("completion");
 
 			this.BackgroundColor = completion.CairoBackgroundColor;

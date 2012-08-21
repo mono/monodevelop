@@ -36,6 +36,7 @@ using System.Collections.Generic;
 using Mono.TextEditor.Highlighting;
 using Mono.TextEditor;
 using System.Linq;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp
 {
@@ -45,7 +46,7 @@ namespace MonoDevelop.CSharp
 		readonly CSharpResolver resolver;
 		readonly TypeSystemAstBuilder astBuilder;
 		readonly CSharpFormattingOptions formattingOptions;
-		readonly TextEditorData textEditor;
+		readonly ColorScheme colorStyle;
 
 		public bool BreakLineAfterReturnType {
 			get;
@@ -62,9 +63,10 @@ namespace MonoDevelop.CSharp
 			}
 		}
 
-		public SignatureMarkupCreator (TextEditorData textEditor, CSharpResolver resolver, CSharpFormattingOptions formattingOptions)
+		public SignatureMarkupCreator (CSharpResolver resolver, CSharpFormattingOptions formattingOptions)
 		{
-			this.textEditor = textEditor;
+			this.colorStyle = SyntaxModeService.GetColorStyle (PropertyService.Get ("ColorScheme", "Default"));
+
 			this.resolver = resolver;
 			this.astBuilder = new TypeSystemAstBuilder (resolver);
 			this.formattingOptions = formattingOptions;
@@ -440,19 +442,12 @@ namespace MonoDevelop.CSharp
 			
 			var result = new StringBuilder ();
 			AppendModifiers (result, method);
-			if (BreakLineAfterReturnType) {
-				result.AppendLine ();
-			} else {
-				result.Append (" ");
-			}
-			
-			AppendExplicitInterfaces (result, method);
-			
+
 			result.Append (method.DeclaringType.Name);
 
 			if (formattingOptions.SpaceBeforeConstructorDeclarationParentheses)
 				result.Append (" ");
-			
+
 			result.Append ('(');
 			AppendParameterList (result,  method.Parameters, formattingOptions.SpaceBeforeConstructorDeclarationParameterComma, formattingOptions.SpaceAfterConstructorDeclarationParameterComma);
 			result.Append (')');
@@ -696,7 +691,7 @@ namespace MonoDevelop.CSharp
 					result.Append("<u>");
 				if (parameter.IsOptional) {
 					GrayOut = true;
-					var color = AlphaBlend (textEditor.ColorStyle.Default.Color, textEditor.ColorStyle.Default.BackgroundColor, optionalAlpha);
+					var color = AlphaBlend (colorStyle.Default.Color, colorStyle.Default.BackgroundColor, optionalAlpha);
 					var colorString = Mono.TextEditor.HelperMethods.GetColorString (color);
 					result.Append ("<span foreground=\"" + colorString + "\">");
 				}
@@ -791,12 +786,12 @@ namespace MonoDevelop.CSharp
 
 		string Highlight (string str, string colorScheme)
 		{
-			var style = textEditor.ColorStyle.GetChunkStyle (colorScheme);
+			var style = colorStyle.GetChunkStyle (colorScheme);
 			if (style != null) {
 				var color = style.Color;
 				
 				if (grayOut) {
-					color = AlphaBlend (color, textEditor.ColorStyle.Default.BackgroundColor, optionalAlpha);
+					color = AlphaBlend (color, colorStyle.Default.BackgroundColor, optionalAlpha);
 				}
 				
 				var colorString = Mono.TextEditor.HelperMethods.GetColorString (color);

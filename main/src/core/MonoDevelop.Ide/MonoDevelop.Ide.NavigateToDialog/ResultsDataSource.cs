@@ -45,6 +45,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 {
 	class ResultsDataSource: List<SearchResult>, ISearchDataSource
 	{
+
 		Gtk.Widget widget;
 		SearchResult bestResult;
 		int bestRank = int.MinValue;
@@ -104,6 +105,11 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			get {
 				return this.Count;
 			}
+		}
+
+		TooltipInformation ISearchDataSource.GetTooltip (int item)
+		{
+			return this[item].TooltipInformation;
 		}
 		#endregion		
 /*		public string GetText (int n)

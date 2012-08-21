@@ -161,7 +161,7 @@ namespace MonoDevelop.SourceEditor
 			if (result == null && data.Node is CSharpTokenNode) {
 				var tooltipInfo = new TooltipInformation ();
 				var resolver = (doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile).GetResolver (doc.Compilation, doc.Editor.Caret.Location);
-				var sig = new SignatureMarkupCreator (doc.Editor, resolver, doc.GetFormattingPolicy ().CreateOptions ());
+				var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
 				sig.BreakLineAfterReturnType = false;
 				tooltipInfo.SignatureMarkup = sig.GetKeywordMarkup (data.Node.GetText ());;
 				return tooltipInfo;
@@ -188,7 +188,7 @@ namespace MonoDevelop.SourceEditor
 				var lr = (LocalResolveResult)result;
 				var tooltipInfo = new TooltipInformation ();
 				var resolver = (doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile).GetResolver (doc.Compilation, doc.Editor.Caret.Location);
-				var sig = new SignatureMarkupCreator (doc.Editor, resolver, doc.GetFormattingPolicy ().CreateOptions ());
+				var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
 				sig.BreakLineAfterReturnType =  false;
 				tooltipInfo.SignatureMarkup = sig.GetLocalVariableMarkup (lr.Variable);
 				return tooltipInfo;
@@ -221,7 +221,7 @@ namespace MonoDevelop.SourceEditor
 			} else if (result is NamespaceResolveResult) {
 				var tooltipInfo = new TooltipInformation ();
 				var resolver = (doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile).GetResolver (doc.Compilation, doc.Editor.Caret.Location);
-				var sig = new SignatureMarkupCreator (doc.Editor, resolver, doc.GetFormattingPolicy ().CreateOptions ());
+				var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
 				sig.BreakLineAfterReturnType =  false;
 				tooltipInfo.SignatureMarkup = sig.GetMarkup (((NamespaceResolveResult)result).Namespace);
 				return tooltipInfo;

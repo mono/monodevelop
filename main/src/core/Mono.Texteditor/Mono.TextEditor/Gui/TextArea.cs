@@ -653,7 +653,7 @@ namespace Mono.TextEditor
 				return;
 			if (currentStyleName != Options.ColorScheme) {
 				currentStyleName = Options.ColorScheme;
-				this.textEditorData.ColorStyle = Options.GetColorStyle (this.Style);
+				this.textEditorData.ColorStyle = Options.GetColorStyle ();
 				SetWidgetBgFromStyle ();
 			}
 			
