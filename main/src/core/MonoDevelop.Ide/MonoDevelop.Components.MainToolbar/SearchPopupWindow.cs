@@ -357,6 +357,8 @@ namespace MonoDevelop.Components.MainToolbar
 					}
 				}
 			} else {
+				while (i < results.Count - 1 && results [i + 1].Item2.ItemCount == 0)
+					i++;
 				if (i < results.Count - 1) {
 					selectedItem = new ItemIdentifier (
 						results [i + 1].Item1,
