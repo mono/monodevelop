@@ -454,7 +454,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			return base.GetCurrentParameterIndex (startOffset);
 		}
 
-		public override IParameterDataProvider HandleParameterCompletion (CodeCompletionContext completionContext,
+		public override ParameterDataProvider HandleParameterCompletion (CodeCompletionContext completionContext,
 			char completionChar)
 		{
 			if (hiddenInfo != null && isInCSharpContext) {
