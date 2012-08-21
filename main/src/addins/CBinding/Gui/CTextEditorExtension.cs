@@ -562,7 +562,7 @@ namespace CBinding
 			return list;
 		}
 		
-		public override  IParameterDataProvider HandleParameterCompletion (
+		public override  MonoDevelop.Ide.CodeCompletion.ParameterDataProvider HandleParameterCompletion (
 		    CodeCompletionContext completionContext, char completionChar)
 		{
 			if (completionChar != '(')

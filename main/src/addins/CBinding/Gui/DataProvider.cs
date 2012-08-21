@@ -43,21 +43,13 @@ using ICSharpCode.NRefactory.Completion;
 
 namespace CBinding
 {
-	public class ParameterDataProvider : IParameterDataProvider
+	public class ParameterDataProvider : MonoDevelop.Ide.CodeCompletion.ParameterDataProvider
 	{
 		private Mono.TextEditor.TextEditorData editor;
 		private List<Function> functions = new List<Function> ();
-		int startOffset;
 
-		public int StartOffset {
-			get {
-				return startOffset;
-			}
-		}	
-		
-		public ParameterDataProvider (int startOffset, Document document, ProjectInformation info, string functionName)
+		public ParameterDataProvider (int startOffset, Document document, ProjectInformation info, string functionName) :base (startOffset)
 		{
-			this.startOffset = startOffset;
 			this.editor = document.Editor;
 			
 			foreach (Function f in info.Functions) {
@@ -80,7 +72,7 @@ namespace CBinding
 		}
 		
 		// Returns the number of methods
-		public int Count {
+		public override int Count {
 			get { return functions.Count; }
 		}
 		
@@ -150,12 +142,12 @@ namespace CBinding
 		}
 		
 		// Returns the number of parameters of the specified method
-		public int GetParameterCount (int overload)
+		public override int GetParameterCount (int overload)
 		{
 			return functions[overload].Parameters.Length;
 		}
 		
-		public bool AllowParameterList (int overload)
+		public override bool AllowParameterList (int overload)
 		{
 			return false;
 		}
