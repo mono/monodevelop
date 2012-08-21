@@ -121,7 +121,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			UpdateWindow (ext, widget);
 		}
 		
-		public static void ShowWindow (CompletionTextEditorExtension ext, ICompletionWidget widget, CodeCompletionContext ctx, IParameterDataProvider provider)
+		public static void ShowWindow (CompletionTextEditorExtension ext, ICompletionWidget widget, CodeCompletionContext ctx, ParameterDataProvider provider)
 		{
 			if (provider.Count == 0)
 				return;
@@ -293,7 +293,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 	class MethodData
 	{
-		public IParameterDataProvider MethodProvider;
+		public ParameterDataProvider MethodProvider;
 		public CodeCompletionContext CompletionContext;
 		int currentOverload;
 		public int CurrentOverload {

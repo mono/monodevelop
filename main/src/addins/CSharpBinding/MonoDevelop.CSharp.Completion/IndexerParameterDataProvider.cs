@@ -55,62 +55,12 @@ namespace MonoDevelop.CSharp.Completion
 			indexers = new List<IProperty> (type.GetProperties (p => p.IsIndexer));
 		}
 
+		public override TooltipInformation CreateTooltipInformation (int overload, int currentParameter, bool smartWrap)
+		{
+			return MethodParameterDataProvider.CreateTooltipInformation (ext, indexers[overload], currentParameter, smartWrap);
+		}
+
 		#region IParameterDataProvider implementation
-		public override string GetHeading (int overload, string[] parameterMarkup, int currentParameter)
-		{
-			StringBuilder result = new StringBuilder ();
-//			int curLen = 0;
-			result.Append (GetShortType (indexers [overload].ReturnType));
-			result.Append (' ');
-			result.Append ("<b>");
-			result.Append (resolvedExpression);
-			result.Append ("</b>");
-			result.Append ('[');
-			int parameterCount = 0;
-			foreach (string parameter in parameterMarkup) {
-				if (parameterCount > 0)
-					result.Append (", ");
-				result.Append (parameter);
-				parameterCount++;
-			}
-			result.Append (']');
-			return result.ToString ();
-		}
-		
-		public override string GetDescription (int overload, int currentParameter)
-		{
-			StringBuilder result = new StringBuilder ();
-			var curParameter = currentParameter >= 0 && currentParameter < indexers [overload].Parameters.Count ? indexers [overload].Parameters [currentParameter] : null;
-			if (curParameter != null) {
-				string docText = AmbienceService.GetDocumentation (indexers [overload]);
-				if (!string.IsNullOrEmpty (docText)) {
-					var paramRegex = new Regex ("(\\<param\\s+name\\s*=\\s*\"" + curParameter.Name + "\"\\s*\\>.*?\\</param\\>)", RegexOptions.Compiled);
-					var match = paramRegex.Match (docText);
-					if (match.Success) {
-						result.AppendLine ();
-						string text = match.Groups [1].Value;
-						text = "<summary>" + AmbienceService.GetDocumentationSummary (indexers [overload]) + "</summary>" + text;
-						result.Append (AmbienceService.GetDocumentationMarkup (text, new AmbienceService.DocumentationFormatOptions {
-							HighlightParameter = curParameter.Name,
-							MaxLineLength = 60
-						}));
-					}
-				}
-			}
-			
-			return result.ToString ();
-		}
-		
-		public override string GetParameterDescription (int overload, int paramIndex)
-		{
-			var indexer = indexers[overload];
-			
-			if (paramIndex < 0 || paramIndex >= indexer.Parameters.Count)
-				return "";
-
-			return GetParameterString (indexer.Parameters [paramIndex]);
-		}
-
 		public override int GetParameterCount (int overload)
 		{
 			if (overload >= Count)

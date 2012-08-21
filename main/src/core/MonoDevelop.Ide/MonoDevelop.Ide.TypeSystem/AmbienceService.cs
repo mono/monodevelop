@@ -513,10 +513,10 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (paramCount > 0) {
 				var paramSb = new StringBuilder ();
 				if (result.Length > 0)
-					paramSb.AppendLine ();
+					paramSb.AppendLine ();/*
 				paramSb.Append ("<small>");
 				paramSb.AppendLine (options.FormatHeading (GettextCatalog.GetPluralString ("Parameter:", "Parameters:", paramCount)));
-				paramSb.Append ("</small>");
+				paramSb.Append ("</small>");*/
 				paramSb.Append (parameterBuilder.ToString ());
 				result = result.Insert (summaryEnd, paramSb.ToString ());
 			}

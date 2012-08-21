@@ -88,7 +88,26 @@ namespace MonoDevelop.Ide.TypeSystem
 				return false;
 			return member.Attributes.Any (a => a.AttributeType.FullName == "System.ObsoleteAttribute");
 		}
-		
+
+		public static bool IsObsolete (this IEntity member, out string reason)
+		{
+			if (member == null) {
+				reason = null;
+				return false;
+			}
+			var attr = member.Attributes.FirstOrDefault (a => a.AttributeType.FullName == "System.ObsoleteAttribute");
+			if (attr == null) {
+				reason = null;
+				return false;
+			}
+			if (attr.PositionalArguments.Count > 0) {
+				reason = attr.PositionalArguments [0].ConstantValue.ToString ();
+			} else {
+				reason = null;
+			}
+			return true;
+		}
+
 		public static IType Resolve (this IUnresolvedTypeDefinition def, Project project)
 		{
 			var pf = TypeSystemService.GetProjectContext (project).GetFile (def.Region.FileName);

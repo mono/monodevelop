@@ -1731,6 +1731,7 @@
     <Compile Include="MonoDevelop.Components\ExtendedLabel.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\TooltipInformation.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\TooltipInformationWindow.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeCompletion\ParameterDataProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

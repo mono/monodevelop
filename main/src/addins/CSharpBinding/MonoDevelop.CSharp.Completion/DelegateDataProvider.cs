@@ -56,102 +56,13 @@ namespace MonoDevelop.CSharp.Completion
 			this.delegateType = delegateType;
 			this.delegateMethod = delegateType.GetDelegateInvokeMethod ();
 		}
-		
+
+		public override TooltipInformation CreateTooltipInformation (int overload, int currentParameter, bool smartWrap)
+		{
+			return MethodParameterDataProvider.CreateTooltipInformation (ext, delegateMethod, currentParameter, smartWrap);
+		}
+
 		#region IParameterDataProvider implementation
-		public override string GetHeading (int overload, string[] parameterMarkup, int currentParameter)
-		{
-			string name = delegateType.Name;
-			var parameters = new StringBuilder ();
-			int curLen = 0;
-			string prefix = !delegateMethod.IsConstructor ? GetShortType (delegateMethod.ReturnType) + " " : "";
-
-			foreach (string parameter in parameterMarkup) {
-				if (parameters.Length > 0)
-					parameters.Append (", ");
-				string text;
-				Pango.AttrList attrs;
-				char ch;
-				Pango.Global.ParseMarkup (parameter, '_', out attrs, out text, out ch);
-				if (curLen > 80) {
-					parameters.AppendLine ();
-					parameters.Append (new string (' ', (prefix != null ? prefix.Length : 0) + name.Length + 4));
-					curLen = 0;
-				}
-				curLen += text.Length + 2;
-				parameters.Append (parameter);
-			}
-			var sb = new StringBuilder ();
-			sb.Append (prefix);
-			sb.Append ("<b>");
-			sb.Append (CSharpAmbience.FilterName (name));
-			sb.Append ("</b> (");
-			sb.Append (parameters.ToString ());
-			sb.Append (")");
-			return sb.ToString ();
-		}
-		
-		public override string GetDescription (int overload, int currentParameter)
-		{
-//			var flags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.IncludeGenerics;
-//			
-//			string name = delegateType.Name;
-//			var parameters = new StringBuilder ();
-//			int curLen = 0;
-			
-			var sb = new StringBuilder ();
-			
-			if (delegateType.GetDefinition ().IsObsolete ()) {
-				sb.AppendLine ();
-				sb.Append (GettextCatalog.GetString ("[Obsolete]"));
-			}
-			var curParameter = currentParameter >= 0 && currentParameter < delegateMethod.Parameters.Count ? delegateMethod.Parameters [currentParameter] : null;
-
-			string docText = AmbienceService.GetDocumentation (delegateType.GetDefinition ());
-
-			if (!string.IsNullOrEmpty (docText)) {
-				string text = docText;
-				if (curParameter != null) {
-					Regex paramRegex = new Regex ("(\\<param\\s+name\\s*=\\s*\"" + curParameter.Name + "\"\\s*\\>.*?\\</param\\>)", RegexOptions.Compiled);
-					Match match = paramRegex.Match (docText);
-					if (match.Success) {
-						text = match.Groups [1].Value;
-						text = "<summary>" + AmbienceService.GetDocumentationSummary (delegateMethod) + "</summary>" + text;
-					}
-				} else {
-					text = "<summary>" + AmbienceService.GetDocumentationSummary (delegateMethod) + "</summary>";
-				}
-				sb.Append (AmbienceService.GetDocumentationMarkup (text, new AmbienceService.DocumentationFormatOptions {
-					HighlightParameter = curParameter != null ? curParameter.Name : null,
-					Ambience = ambience,
-					SmallText = true,
-					BoldHeadings = false
-				}));
-			}
-			
-			if (curParameter != null) {
-				var returnType = curParameter.Type;
-				if (returnType.Kind == TypeKind.Delegate) {
-					if (sb.Length > 0) {
-						sb.AppendLine ();
-						sb.AppendLine ();
-					}
-					sb.Append ("<small>");
-					sb.AppendLine (GettextCatalog.GetString ("Delegate information"));
-					sb.Append (ambience.GetString (returnType, OutputFlags.ReformatDelegates | OutputFlags.IncludeReturnType | OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName));
-					sb.Append ("</small>");
-				}
-			}
-			return sb.ToString ();
-		}
-		
-		public override string GetParameterDescription (int overload, int paramIndex)
-		{
-			if (paramIndex < 0 || paramIndex >= delegateMethod.Parameters.Count)
-				return "";
-
-			return GetParameterString (delegateMethod.Parameters [paramIndex]);
-		}
-		
 		public override int GetParameterCount (int overload)
 		{
 			if (overload >= Count)

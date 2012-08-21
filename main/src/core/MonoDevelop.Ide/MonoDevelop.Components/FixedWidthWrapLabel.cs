@@ -250,7 +250,7 @@ namespace MonoDevelop.Components
 			bool prevIsLower = false;
 			bool inMarkup = false;
 			bool inEntity = false;
-			int textLen = 0;
+			int lineLength = 0;
 
 			for (int i = 0; i < text.Length; i++) {
 				char c = text[i];
@@ -283,7 +283,7 @@ namespace MonoDevelop.Components
 					sb.Append (c);
 					continue;
 				}
-				if (textLen > 0) {
+				if (lineLength > 0) {
 					//insert breaks using zero-width space unicode char
 					if ((breakOnPunctuation && char.IsPunctuation (c))
 					    || (breakOnCamelCasing && prevIsLower && char.IsUpper (c))) {
@@ -291,7 +291,11 @@ namespace MonoDevelop.Components
 					}
 				}
 				sb.Append (c);
-				textLen++;
+				if (c == '\n' || c == '\r') {
+					lineLength = 0;
+				} else {
+					lineLength++;
+				}
 
 				if (breakOnCamelCasing)
 					prevIsLower = char.IsLower (c);

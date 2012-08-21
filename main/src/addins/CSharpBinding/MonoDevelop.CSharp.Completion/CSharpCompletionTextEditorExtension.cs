@@ -362,7 +362,7 @@ namespace MonoDevelop.CSharp.Completion
 //			}
 //		}
 		
-		public override IParameterDataProvider HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)
+		public override ParameterDataProvider HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)
 		{
 			if (!EnableCodeCompletion)
 				return null;
@@ -376,7 +376,7 @@ namespace MonoDevelop.CSharp.Completion
 					Document.GetProjectContext (),
 					CSharpUnresolvedFile.GetTypeResolveContext (Document.Compilation, document.Editor.Caret.Location) as CSharpTypeResolveContext
 				);
-				return engine.GetParameterDataProvider (completionContext.TriggerOffset, completionChar);
+				return engine.GetParameterDataProvider (completionContext.TriggerOffset, completionChar) as ParameterDataProvider;
 			} catch (Exception e) {
 				LoggingService.LogError ("Unexpected parameter completion exception." + Environment.NewLine + 
 					"FileName: " + Document.FileName + Environment.NewLine + 

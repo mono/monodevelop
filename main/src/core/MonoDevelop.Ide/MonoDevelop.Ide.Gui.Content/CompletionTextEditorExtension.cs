@@ -142,7 +142,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			
 			if (EnableParameterInsight && CompletionWidget != null) {
 				CodeCompletionContext ctx = CompletionWidget.CurrentCodeCompletionContext;
-				IParameterDataProvider paramProvider = HandleParameterCompletion (ctx, keyChar);
+				var paramProvider = HandleParameterCompletion (ctx, keyChar);
 				if (paramProvider != null)
 					ParameterInformationWindowManager.ShowWindow (this, CompletionWidget, ctx, paramProvider);
 			}
@@ -255,7 +255,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		{
 			if (Document.Editor.SelectionMode == Mono.TextEditor.SelectionMode.Block)
 				return;
-			IParameterDataProvider cp = null;
+			ParameterDataProvider cp = null;
 			int cpos;
 			if (!GetParameterCompletionCommandOffset (out cpos))
 				cpos = Editor.Caret.Offset;
@@ -284,7 +284,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			return null;
 		}
 		
-		public virtual IParameterDataProvider HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)
+		public virtual ParameterDataProvider HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)
 		{
 			return null;
 		}
@@ -372,7 +372,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			return null;
 		}
 		
-		public virtual IParameterDataProvider ParameterCompletionCommand (CodeCompletionContext completionContext)
+		public virtual ParameterDataProvider ParameterCompletionCommand (CodeCompletionContext completionContext)
 		{
 			// This default implementation of ParameterCompletionCommand calls HandleParameterCompletion providing
 			// the char at the cursor position. If it returns a provider, just return it.
@@ -380,7 +380,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			int pos = completionContext.TriggerOffset;
 			if (pos <= 0)
 				return null;
-			IParameterDataProvider cp = HandleParameterCompletion (completionContext, Editor.Document.GetCharAt (pos - 1));
+			var cp = HandleParameterCompletion (completionContext, Editor.Document.GetCharAt (pos - 1));
 			if (cp != null)
 				return cp;
 			return null;

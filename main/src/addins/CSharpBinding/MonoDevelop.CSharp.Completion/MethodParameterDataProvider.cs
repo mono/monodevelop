@@ -38,6 +38,8 @@ using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.CSharp.Completion;
+using MonoDevelop.Ide.CodeCompletion;
+using Mono.TextEditor;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -82,14 +84,70 @@ namespace MonoDevelop.CSharp.Completion
 				return left.Parameters.Count - right.Parameters.Count;
 			return lstate.CompareTo (rstate);
 		}
+
+
+		public override MonoDevelop.Ide.CodeCompletion.TooltipInformation CreateTooltipInformation (int overload, int currentParameter, bool smartWrap)
+		{
+			return CreateTooltipInformation (ext, methods[overload], currentParameter, smartWrap);
+		}
+
+		public static TooltipInformation CreateTooltipInformation (CSharpCompletionTextEditorExtension ext, IParameterizedMember entity, int currentParameter, bool smartWrap)
+		{
+			return CreateTooltipInformation (ext.Compilation, ext.CSharpUnresolvedFile, ext.TextEditorData, ext.FormattingPolicy, entity, currentParameter, smartWrap);
+		}
+
+		public static TooltipInformation CreateTooltipInformation (ICompilation compilation, CSharpUnresolvedFile file, TextEditorData textEditorData, MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy formattingPolicy, IParameterizedMember entity, int currentParameter, bool smartWrap)
+		{
+				var tooltipInfo = new TooltipInformation ();
+			var resolver = file.GetResolver (compilation, textEditorData.Caret.Location);
+			var sig = new SignatureMarkupCreator (textEditorData, resolver, formattingPolicy.CreateOptions ());
+			sig.HighlightParameter = currentParameter;
+			sig.BreakLineAfterReturnType = smartWrap;
+			tooltipInfo.SignatureMarkup = sig.GetMarkup (entity);
+			var plainDoc = AmbienceService.GetDocumentationSummary (entity) ?? "";
+			tooltipInfo.SummaryMarkup = AmbienceService.GetDocumentationMarkup (plainDoc);
+			
+			if (entity is IMethod) {
+				var method = (IMethod)entity;
+				if (method.IsExtensionMethod) {
+					tooltipInfo.AddCategory (GettextCatalog.GetString ("Extension Method From"), method.DeclaringTypeDefinition.FullName);
+				}
+			}
+			int paramIndex = currentParameter;
+
+			if (entity is IMethod && ((IMethod)entity).IsExtensionMethod)
+				paramIndex++;
+			paramIndex = Math.Min (entity.Parameters.Count - 1, paramIndex);
+
+			var curParameter = paramIndex >= 0  && paramIndex < entity.Parameters.Count ? entity.Parameters [paramIndex] : null;
+			if (curParameter != null) {
+
+				string docText = AmbienceService.GetDocumentation (entity);
+				if (!string.IsNullOrEmpty (docText)) {
+					string text = docText;
+					Regex paramRegex = new Regex ("(\\<param\\s+name\\s*=\\s*\"" + curParameter.Name + "\"\\s*\\>.*?\\</param\\>)", RegexOptions.Compiled);
+					Match match = paramRegex.Match (docText);
+					
+					if (match.Success) {
+						text = AmbienceService.GetDocumentationMarkup (match.Groups [1].Value);
+						if (!string.IsNullOrWhiteSpace (text))
+							tooltipInfo.AddCategory (GettextCatalog.GetString ("Parameter"), text);
+					}
+				}
 		
+				if (curParameter.Type.Kind == TypeKind.Delegate)
+					tooltipInfo.AddCategory (GettextCatalog.GetString ("Delegate Info"), sig.GetDelegateInfo (curParameter.Type));
+			}
+			return tooltipInfo;
+		}
+
 		#region IParameterDataProvider implementation
 		
 		protected virtual string GetPrefix (IMethod method)
 		{
 			return GetShortType (method.ReturnType) + " ";
 		}
-		
+		/*
 		public override string GetHeading (int overload, string[] parameterMarkup, int currentParameter)
 		{
 			var flags = OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.IncludeGenerics;
@@ -193,7 +251,7 @@ namespace MonoDevelop.CSharp.Completion
 			var parameter = method.Parameters [paramIndex];
 
 			return GetParameterString (parameter);
-		}
+		}*/
 		
 		public override int GetParameterCount (int overload)
 		{

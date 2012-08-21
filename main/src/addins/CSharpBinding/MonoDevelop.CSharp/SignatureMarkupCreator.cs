@@ -52,6 +52,16 @@ namespace MonoDevelop.CSharp
 			set;
 		}
 
+		int highlightParameter = -1;
+		public int HighlightParameter {
+			get {
+				return highlightParameter;
+			}
+			set {
+				highlightParameter = value;
+			}
+		}
+
 		public SignatureMarkupCreator (TextEditorData textEditor, CSharpResolver resolver, CSharpFormattingOptions formattingOptions)
 		{
 			this.textEditor = textEditor;
@@ -81,27 +91,40 @@ namespace MonoDevelop.CSharp
 
 		public string GetMarkup (IEntity entity)
 		{
+			string result;
 			switch (entity.EntityType) {
 			case EntityType.TypeDefinition:
-				return GetTypeMarkup ((ITypeDefinition)entity);
+				result = GetTypeMarkup ((ITypeDefinition)entity);
+				break;
 			case EntityType.Field:
-				return GetFieldMarkup ((IField)entity);
+				result = GetFieldMarkup ((IField)entity);
+				break;
 			case EntityType.Property:
 			case EntityType.Indexer:
-				return GetPropertyMarkup ((IProperty)entity);
+				result = GetPropertyMarkup ((IProperty)entity);
+				break;
 			case EntityType.Event:
-				return GetEventMarkup ((IEvent)entity);
+				result = GetEventMarkup ((IEvent)entity);
+				break;
 			case EntityType.Method:
 			case EntityType.Operator:
-				return GetMethodMarkup ((IMethod)entity);
+				result = GetMethodMarkup ((IMethod)entity);
+				break;
 			case EntityType.Constructor:
-				return GetConstructorMarkup ((IMethod)entity);
+				result = GetConstructorMarkup ((IMethod)entity);
+				break;
 			case EntityType.Destructor:
-				return GetDestructorMarkup ((IMethod)entity);
-
+				result = GetDestructorMarkup ((IMethod)entity);
+				break;
 			default:
 				throw new ArgumentOutOfRangeException ();
 			}
+			string reason;
+			if (entity.IsObsolete (out reason)) {
+				var attr =  reason == null ? "[Obsolete]" : "[Obsolete(\"" + reason + "\")]";
+				result = "<span size=\"smaller\">" + attr + "</span>" + Environment.NewLine + result;
+			}
+			return result;
 		}
 
 		public string GetMarkup (INamespace ns)
@@ -522,9 +545,9 @@ namespace MonoDevelop.CSharp
 					"or" + Environment.NewLine +
 					Highlight ("checked", "keyword.misc") + " (expression)";
 			case "class":
-				return " [attributes] [modifiers] " + Highlight ("class", "keyword.declaration") + " identifier [:base-list] { class-body }[;]";
+				return "[attributes] [modifiers] " + Highlight ("class", "keyword.declaration") + " identifier [:base-list] { class-body }[;]";
 			case "const":
-				return " [attributes] [modifiers] " + Highlight ("const", "keyword.modifier") + " type declarators;";
+				return "[attributes] [modifiers] " + Highlight ("const", "keyword.modifier") + " type declarators;";
 			case "continue":
 				return Highlight ("continue", "keyword.jump") + ";";
 			case "default":
@@ -537,7 +560,7 @@ namespace MonoDevelop.CSharp
 					"    jump-statement]" + Environment.NewLine +
 					"}";
 			case "delegate":
-				return " [attributes] [modifiers] " + Highlight ("delegate", "keyword.declaration") + " result-type identifier ([formal-parameters]);";
+				return "[attributes] [modifiers] " + Highlight ("delegate", "keyword.declaration") + " result-type identifier ([formal-parameters]);";
 			case "do":
 				return Highlight ("do", "keyword.iteration") + " statement " + Highlight ("while", "keyword.iteration") + " (expression);";
 			case "else":
@@ -546,10 +569,10 @@ namespace MonoDevelop.CSharp
 					"  [" + Highlight ("else", "keyword.selection") + Environment.NewLine +
 					"  statement2]";
 			case "enum":
-				return " [attributes] [modifiers] " + Highlight ("enum", "keyword.declaration") + " identifier [:base-type] {enumerator-list} [;]";
+				return "[attributes] [modifiers] " + Highlight ("enum", "keyword.declaration") + " identifier [:base-type] {enumerator-list} [;]";
 			case "event":
-				return " [attributes] [modifiers] " + Highlight ("event", "keyword.modifier") + " type declarator;" + Environment.NewLine +
-					" [attributes] [modifiers] " + Highlight ("event", "keyword.modifier") + " type member-name {accessor-declarations};";
+				return "[attributes] [modifiers] " + Highlight ("event", "keyword.modifier") + " type declarator;" + Environment.NewLine +
+					"[attributes] [modifiers] " + Highlight ("event", "keyword.modifier") + " type member-name {accessor-declarations};";
 			case "finally":
 				return Highlight ("try", "keyword.exceptions") + " try-block " + Highlight ("finally", "keyword.exceptions") + " finally-block";
 			case "fixed":
@@ -570,7 +593,7 @@ namespace MonoDevelop.CSharp
 			case "in":
 				return Highlight ("foreach", "keyword.iteration") + " (type identifier " + Highlight ("in", "keyword.iteration") + " expression) statement";
 			case "interface":
-				return " [attributes] [modifiers] " + Highlight ("interface", "keyword.declaration") + " identifier [:base-list] {interface-body}[;]";
+				return "[attributes] [modifiers] " + Highlight ("interface", "keyword.declaration") + " identifier [:base-list] {interface-body}[;]";
 			case "is":
 				return "expression " + Highlight ("interface", "keyword.operator") + " type";
 			case "lock":
@@ -594,7 +617,7 @@ namespace MonoDevelop.CSharp
 			case "stackalloc":
 				return "type * ptr = " + Highlight ("stackalloc", "keyword.operator") + " type [ expr ];";
 			case "struct":
-				return " [attributes] [modifiers] " + Highlight ("struct", "keyword.declaration") + " identifier [:interfaces] body [;]";
+				return "[attributes] [modifiers] " + Highlight ("struct", "keyword.declaration") + " identifier [:interfaces] body [;]";
 			case "switch":
 				return Highlight ("switch", "keyword.selection") + " (expression)" + Environment.NewLine + 
 					" {" + Environment.NewLine + 
@@ -668,6 +691,9 @@ namespace MonoDevelop.CSharp
 				var parameter = parameterList [i];
 				if (newLine)
 					result.Append (new string (' ', 2));
+				var doHighightParameter = i == HighlightParameter || HighlightParameter >= i && i == parameterList.Count - 1 && parameter.IsParams;
+				if (doHighightParameter)
+					result.Append("<u>");
 				if (parameter.IsOptional) {
 					GrayOut = true;
 					var color = AlphaBlend (textEditor.ColorStyle.Default.Color, textEditor.ColorStyle.Default.BackgroundColor, optionalAlpha);
@@ -685,6 +711,8 @@ namespace MonoDevelop.CSharp
 					GrayOut = false;
 					result.Append ("</span>");
 				}
+				if (doHighightParameter)
+					result.Append("</u>");
 				if (i + 1 < parameterList.Count) {
 					if (spaceBefore)
 						result.Append (' ');
@@ -697,10 +725,8 @@ namespace MonoDevelop.CSharp
 					}
 				}
 			}
-			if (newLine) {
+			if (newLine)
 				result.AppendLine ();
-				result.Append (' ');
-			}
 		}
 		
 		void AppendParameter (StringBuilder result, IParameter parameter)
