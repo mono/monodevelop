@@ -72,7 +72,7 @@ function reset_version
 	echo "*** [$NAME] git checkout $NEEDED_BRANCH"
 	git checkout $NEEDED_BRANCH || git checkout -b $BRANCH_AND_REMOTE
 	echo "*** [$NAME] git reset --hard $NEEDED_VERSION"
-	git reset --hard $NEEDED_VERSION && git submodule update --init --recursive
+	(git reset --hard $NEEDED_VERSION && git submodule update --init --recursive) || exit 1;
 
 	cd "$top_srcdir"
 }
