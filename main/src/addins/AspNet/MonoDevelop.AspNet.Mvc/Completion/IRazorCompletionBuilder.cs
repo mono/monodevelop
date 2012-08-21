@@ -45,7 +45,7 @@ namespace MonoDevelop.AspNet.Mvc.Completion
 		ICompletionDataList HandlePopupCompletion (Document realDocument, UnderlyingDocumentInfo docInfo);
 		ICompletionDataList HandleCompletion (Document realDocument, CodeCompletionContext completionContext,
 			UnderlyingDocumentInfo docInfo, char currentChar, ref int triggerWordLength);
-		IParameterDataProvider HandleParameterCompletion (Document realDocument, CodeCompletionContext completionContext,
+		ParameterDataProvider HandleParameterCompletion (Document realDocument, CodeCompletionContext completionContext,
 			UnderlyingDocumentInfo docInfo, char completionChar);
 		bool GetParameterCompletionCommandOffset (Document realDocument, UnderlyingDocumentInfo docInfo, out int cpos);
 		int GetCurrentParameterIndex (Document realDocument, UnderlyingDocumentInfo docInfo, int startOffset);
