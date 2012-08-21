@@ -3,6 +3,19 @@ Released under the Apache 2.0 License
 
 You can install F# Language Binding via Add-in manager by opening 'Gallery' tab and finding 'F# Language Binding' in the 'Language Bindings' section.
 
+Adds F# project support and allows you to code in F# in MonoDevelop. 
+Can create such projects as:
+- Console Application
+- Library
+- Tutorial Project
+- Gtk Project
+
+Supports the following features:
+- Code completion
+- Highlighting
+- Tooltips
+- Debugging 
+
 For more information about F# and code examples see these links:
 - http://fsharp.net
 - http://tryfsharp.org
