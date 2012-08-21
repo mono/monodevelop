@@ -32,6 +32,7 @@ using Gtk;
 using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.CodeCompletion;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -94,6 +95,13 @@ namespace MonoDevelop.Components.MainToolbar
 			set;
 		}
 
+		protected override bool OnDestroyEvent (Gdk.Event evnt)
+		{
+			HideTooltip ();
+			this.declarationviewwindow.Destroy ();
+			return base.OnDestroyEvent (evnt);
+		}
+
 		internal void OpenFile ()
 		{
 			if (selectedItem == null || selectedItem.Item < 0 || selectedItem.Item >= selectedItem.DataSource.ItemCount)
@@ -122,7 +130,7 @@ namespace MonoDevelop.Components.MainToolbar
 			if (src != null)
 				src.Cancel ();
 			selectedItem = null;
-
+			HideTooltip ();
 			src = new CancellationTokenSource ();
 			isInSearch = true;
 			if (results.Count == 0) {
@@ -167,6 +175,7 @@ namespace MonoDevelop.Components.MainToolbar
 				}
 				selectedItem = topItem;
 
+				ShowTooltip ();
 				QueueResize ();
 				QueueDraw ();
 				isInSearch = false;
@@ -296,6 +305,7 @@ namespace MonoDevelop.Components.MainToolbar
 				SelectItemUp ();
 				return;
 			}
+			ShowTooltip ();
 			QueueDraw ();
 		}
 
@@ -325,8 +335,65 @@ namespace MonoDevelop.Components.MainToolbar
 				SelectItemDown ();
 				return;
 			}
+			ShowTooltip ();
 			QueueDraw ();
 		}
+
+		TooltipInformationWindow declarationviewwindow = new TooltipInformationWindow ();
+		uint declarationViewTimer, declarationViewWindowOpacityTimer;
+		void RemoveDeclarationViewTimer ()
+		{
+			if (declarationViewWindowOpacityTimer != 0) {
+				GLib.Source.Remove (declarationViewWindowOpacityTimer);
+				declarationViewWindowOpacityTimer = 0;
+			}
+			if (declarationViewTimer != 0) {
+				GLib.Source.Remove (declarationViewTimer);
+				declarationViewTimer = 0;
+			}
+		}
+
+		void HideTooltip ()
+		{
+			RemoveDeclarationViewTimer ();
+			if (declarationviewwindow != null) {
+				declarationviewwindow.Hide ();
+				declarationviewwindow.Opacity = 0;
+			}
+		}
+
+		void ShowTooltip ()
+		{
+			throw new NotImplementedException ();
+		}
+
+		class OpacityTimer
+		{
+			public double Opacity { get; private set; }
+			
+			SearchPopupWindow window;
+			//			static int num = 0;
+			//			int id;
+			public OpacityTimer (SearchPopupWindow window)
+			{
+				//				id = num++;
+				this.window = window;
+				Opacity = 0.0;
+				window.declarationviewwindow.Opacity = Opacity;
+			}
+			
+			public bool Timer ()
+			{
+				Opacity = System.Math.Min (1.0, Opacity + 0.33);
+				window.declarationviewwindow.Opacity = Opacity;
+				bool result = Math.Round (Opacity * 10.0) < 10;
+				if (!result)
+					window.declarationViewWindowOpacityTimer = 0;
+				return result;
+			}
+		}
+
+
 
 		void SelectNextCategory ()
 		{

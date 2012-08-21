@@ -34,6 +34,7 @@ using MonoDevelop.Projects;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.CodeCompletion;
 
 namespace MonoDevelop.Ide.NavigateToDialog
 {
@@ -73,7 +74,9 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		
 		public abstract string Description { get; }
 		public string MatchedString { get; private set;}
-		
+
+		public abstract TooltipInformation TooltipInformation { get; }
+
 		public SearchResult (string match, string matchedString, int rank)
 		{
 			this.match = match;
@@ -139,7 +142,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		
 		public override string PlainText {
 			get {
-				return Ambience.GetString (type, Flags);
+				return type.Name;
 			}
 		}
 
@@ -170,7 +173,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		public override string GetMarkupText (Widget widget)
 		{
 			if (useFullName)
-				return HighlightMatch (widget, Ambience.GetString (type, Flags), match);
+				return HighlightMatch (widget, type.FullName, match);
 			return HighlightMatch (widget, type.Name, match);
 		}
 		
@@ -204,6 +207,12 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		public override Gdk.Pixbuf Icon {
 			get {
 				return DesktopService.GetPixbufForFile (file.FilePath, IconSize.Menu);
+			}
+		}
+
+		public override MonoDevelop.Ide.CodeCompletion.TooltipInformation TooltipInformation {
+			get {
+				return null;
 			}
 		}
 
@@ -248,10 +257,18 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		
 		public override string PlainText {
 			get {
-				return Ambience.GetString (member, Flags);
+				return member.Name;
 			}
 		}
-		
+
+		public override MonoDevelop.Ide.CodeCompletion.TooltipInformation TooltipInformation {
+			get {
+				return new MonoDevelop.Ide.CodeCompletion.TooltipInformation () {
+					SignatureMarkup = "TODO"
+				};
+			}
+		}
+
 		public override string File {
 			get { return member.DeclaringTypeDefinition.Region.FileName; }
 		}
@@ -306,14 +323,8 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		public override string GetMarkupText (Widget widget)
 		{
 			if (useFullName)
-				return HighlightMatch (widget, Ambience.GetString (member, Flags), match);
-			OutputSettings settings = new OutputSettings (Flags | OutputFlags.IncludeMarkup);
-			settings.EmitNameCallback = delegate (object domVisitable, string outString) {
-				if (member == domVisitable)
-					outString = HighlightMatch (widget, outString, match);
-				return outString;
-			};
-			return Ambience.GetString (member, settings);
+				return HighlightMatch (widget, member.EntityType == EntityType.Constructor ? member.DeclaringType.FullName :  member.FullName, match);
+			return HighlightMatch (widget, member.EntityType == EntityType.Constructor ? member.DeclaringType.Name : member.Name, match);
 		}
 		
 		internal Ambience Ambience { 
@@ -352,6 +363,12 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		public override Pixbuf Icon {
 			get {
 				return ImageService.GetPixbuf ("md-command", IconSize.Menu);
+			}
+		}
+
+		public override MonoDevelop.Ide.CodeCompletion.TooltipInformation TooltipInformation {
+			get {
+				return null;
 			}
 		}
 
