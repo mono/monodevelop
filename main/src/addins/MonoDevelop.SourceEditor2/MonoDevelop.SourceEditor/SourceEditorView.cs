@@ -1467,7 +1467,10 @@ namespace MonoDevelop.SourceEditor
 			DocumentLocation loc = Document.OffsetToLocation (triggerOffset);
 			result.TriggerLine = loc.Line;
 			result.TriggerLineOffset = loc.Column - 1;
-			var p = this.widget.TextEditor.TextViewMargin.CaretVisualLocation;
+			var p = new Cairo.Point ((int)this.widget.TextEditor.TextViewMargin.CaretVisualLocation.X,
+			                         (int)this.widget.TextEditor.TextViewMargin.CaretVisualLocation.Y);
+			if (widget.TextEditor.Caret.Location.Column == loc.Column)
+				p = this.widget.TextEditor.LocationToPoint (loc);
 			int tx, ty;
 			widget.TextEditor.ParentWindow.GetOrigin (out tx, out ty);
 			tx += widget.TextEditor.Allocation.X + (int)p.X;

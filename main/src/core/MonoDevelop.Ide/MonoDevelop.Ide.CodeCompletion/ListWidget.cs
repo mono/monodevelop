@@ -36,6 +36,7 @@ using MonoDevelop.Components;
 using MonoDevelop.Ide.Fonts;
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.Core;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -79,7 +80,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				if (completionString != value) {
 					completionString = value;
 					FilterWords ();
-					QueueDraw ();
+					QueueDraw (); 
 				}
 			}
 		}
@@ -115,6 +116,17 @@ namespace MonoDevelop.Ide.CodeCompletion
 			get { return this.categories.Count; }
 		}
 
+		ICompletionWidget completionWidget;
+		public ICompletionWidget CompletionWidget {
+			get {
+				return completionWidget;
+			}
+			set {
+				completionWidget = value;
+				SetFont ();
+			}
+		}
+
 		Cairo.Color backgroundColor;
 		Cairo.Color selectedItemColor, selectionBorderColor;
 
@@ -127,6 +139,16 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		const int itemSeparatorHeight = 2;
 
+		void SetFont ()
+		{
+			// TODO: Add font property to ICompletionWidget;
+			FontDescription des = FontService.GetFontDescription ("Editor").Copy ();
+			var provider = CompletionWidget as ITextEditorDataProvider;
+			if (provider != null)
+				des.Size = (int)(des.Size * provider.GetTextEditorData ().Options.Zoom);
+			layout.FontDescription = des;
+		}
+
 		public ListWidget (ListWindow win)
 		{
 			this.win = win;
@@ -135,11 +157,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			categoryLayout = new Pango.Layout (this.PangoContext);
 			layout = new Pango.Layout (this.PangoContext);
 			layout.Wrap = Pango.WrapMode.Char;
-			FontDescription des = FontService.GetFontDescription ("Editor");
-
-			var style = SyntaxModeService.GetColorStyle (Style, PropertyService.Get ("ColorScheme", "Default"));
-
-			layout.FontDescription = des;
+ 			var style = SyntaxModeService.GetColorStyle (Style, PropertyService.Get ("ColorScheme", "Default"));
+			SetFont ();
 			var completion = style.GetChunkStyle ("completion");
 			textColor = completion.Color;
 
@@ -287,7 +306,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return;
 			}
 			if (vadj.Value + Allocation.Height < area.Bottom) {
-				vadj.Value = Math.Max (0, area.Bottom - vadj.PageSize);
+				vadj.Value = Math.Max (0, area.Bottom - vadj.PageSize + 1);
 			}
 		}
 		
@@ -595,7 +614,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				if (!Gtk.Icon.SizeLookup (Gtk.IconSize.Menu, out iconWidth, out iconHeight))
 					iconHeight = iconWidth = 16;
 				var xSpacing = marginIconSpacing + iconTextSpacing;
-				return iconWidth + xSpacing + 2 + 1;
+				return iconWidth + xSpacing + 5;
 			}
 		}
 		
@@ -737,7 +756,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			
 			int rowWidth;
 			layout.GetPixelSize (out rowWidth, out rowHeight);
-			rowHeight += 4;
+			rowHeight = rowHeight * 3 / 2;
 
 			int viewableCats = InCategoryMode ? categories.Count: 0;
 			if (InCategoryMode && categories.Any (cat => cat.CompletionCategory == null))

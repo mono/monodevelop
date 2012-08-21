@@ -38,6 +38,8 @@ using ICSharpCode.NRefactory.Completion;
 using Mono.TextEditor;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Components;
+using Mono.TextEditor.Highlighting;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -51,7 +53,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		Complete = 8
 	}
 
-	public class ListWindow : Gtk.Window
+	public class ListWindow : PopoverWindow
 	{
 		ListWidget list;
 		Widget footer;
@@ -76,8 +78,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			list = new ListWidget (this);
 			list.SelectionChanged += new EventHandler (OnSelectionChanged);
 			list.ScrollEvent += new ScrollEventHandler (OnScrolled);
-			
-			this.BorderWidth = 1;
 
 			scrollbar = new MonoDevelop.Components.CompactScrolledWindow ();
 			scrollbar.Child = list;
@@ -88,6 +88,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 			Add (scrollbar);
 			this.AutoSelect = true;
 			this.TypeHint = WindowTypeHint.Menu;
+			CornerRadius = 4;
+			var style = SyntaxModeService.GetColorStyle (Style, PropertyService.Get ("ColorScheme", "Default"));
+			var completion = style.GetChunkStyle ("completion");
+
+			this.BackgroundColor = completion.CairoBackgroundColor;
 		}
 
 		protected virtual void DoubleClick ()
@@ -131,7 +136,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				Show ();
 			
 			int width = 200; //list.WidthRequest;
-			int height = list.HeightRequest + 2 + (footer != null ? footer.Allocation.Height : 0);
+			int height = list.HeightRequest + 2 + (footer != null ? footer.Allocation.Height : 0) + CornerRadius * 2;
 			
 			SetSizeRequest (width, height);
 			if (IsRealized) 
@@ -194,8 +199,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 		
 		public ICompletionWidget CompletionWidget {
-			get;
-			set;
+			get {
+				return list.CompletionWidget;
+			}
+			set {
+				list.CompletionWidget = value;
+			}
 		}
 		
 		int endOffset = -1;
@@ -629,7 +638,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}*/
 		
 		public int TextOffset {
-			get { return list.TextOffset + (int)this.BorderWidth; }
+			get { return list.TextOffset + (int)this.CornerRadius; }
 		}
 	}
 
