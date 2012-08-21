@@ -250,7 +250,8 @@ namespace MonoDevelop.Components
 			bool prevIsLower = false;
 			bool inMarkup = false;
 			bool inEntity = false;
-			
+			int textLen = 0;
+
 			for (int i = 0; i < text.Length; i++) {
 				char c = text[i];
 				
@@ -282,19 +283,21 @@ namespace MonoDevelop.Components
 					sb.Append (c);
 					continue;
 				}
-					
-				//insert breaks using zero-width space unicode char
-				if ((breakOnPunctuation && char.IsPunctuation (c))
-				    || (breakOnCamelCasing && prevIsLower && char.IsUpper (c)))
-					sb.Append ('\u200b');
-				
+				if (textLen > 0) {
+					//insert breaks using zero-width space unicode char
+					if ((breakOnPunctuation && char.IsPunctuation (c))
+					    || (breakOnCamelCasing && prevIsLower && char.IsUpper (c))) {
+						sb.Append ('\u200b');
+					}
+				}
 				sb.Append (c);
-				
+				textLen++;
+
 				if (breakOnCamelCasing)
 					prevIsLower = char.IsLower (c);
 			}
 			brokentext = sb.ToString ();
-			
+
 			if (layout != null) {
 				if (use_markup) {
 					layout.SetMarkup (brokentext != null? brokentext : (text ?? string.Empty));
