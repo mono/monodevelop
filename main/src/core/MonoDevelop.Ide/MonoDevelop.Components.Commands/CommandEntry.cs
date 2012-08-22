@@ -144,8 +144,11 @@ namespace MonoDevelop.Components.Commands
 			
 			if (cmd == null)
 				cmd = manager.GetCommand (cmdId);
-			if (cmd == null)
+
+			if (cmd == null) {
+				MonoDevelop.Core.LoggingService.LogWarning ("Unknown command '{0}'", cmdId);
 				return new Gtk.MenuItem ("<Unknown Command>");
+			}
 			
 			if (cmd is CustomCommand) {
 				Gtk.Widget child = (Gtk.Widget) Activator.CreateInstance (((CustomCommand)cmd).WidgetType);
