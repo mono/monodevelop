@@ -143,7 +143,7 @@
 	<Style name="text.markup.attribute" color="chameleon2"/>
 	<Style name="text.markup.tag" color="skyblue1"/>
 	
-	<Style name="tooltip" color="black" bgColor="#feffe9"/>
+	<Style name="tooltip" color="aluminium2" bgColor="aluminium5"/>
 	
 	<Style name="completion" color="#434343" bgColor="#F0F6F8">
 		<Style name="highlight" color="#BA3373"/>

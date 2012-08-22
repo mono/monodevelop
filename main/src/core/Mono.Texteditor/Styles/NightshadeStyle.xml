@@ -88,7 +88,7 @@
 	<Style name="text.background.searchresult" color="VisualBGVim"/>
 	<Style name="text.link" color="butter2"/>
 	
-	<Style name="tooltip" color="black" bgColor="#feffe9"/>
+	<Style name="tooltip" color="NormalVim" bgColor="#0a0a0a"/>
 	
 	<Style name="completion" color="#434343" bgColor="#F0F6F8">
 		<Style name="highlight" color="#BA3373"/>
