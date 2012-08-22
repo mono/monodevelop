@@ -285,6 +285,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			var contentLabel = new MonoDevelop.Components.FixedWidthWrapLabel ();
 			contentLabel.Wrap = Pango.WrapMode.WordChar;
 			contentLabel.BreakOnCamelCasing = true;
+			contentLabel.MaxWidth = 400;
 			contentLabel.BreakOnPunctuation = true;
 			contentLabel.Markup = categoryContentMarkup.Trim ();
 			contentLabel.ModifyFg (StateType.Normal, foreColor);
@@ -312,7 +313,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			headlabel.BreakOnCamelCasing = true;
 			headlabel.BreakOnPunctuation = true;
 			descriptionBox.Spacing = 4;
-			VBox vb = new VBox (false, 0);
+			VBox vb = new VBox (false, 8);
 			vb.PackStart (headlabel, true, true, 0);
 			vb.PackStart (descriptionBox, true, true, 0);
 
