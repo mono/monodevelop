@@ -90,6 +90,11 @@ namespace MonoDevelop.CSharp.Formatting
 			var scope = pf.GetUsingScope (seg.Entity.Region.Begin);
 
 			while (scope != null && !string.IsNullOrEmpty (scope.NamespaceName)) {
+				// Hack: some syntax errors lead to invalid namespace names.
+				if (scope.NamespaceName.EndsWith ("<invalid>")) {
+					scope = scope.Parent;
+					continue;
+				}
 				sb.Append ("namespace Stub {");
 				sb.Append (data.Editor.EolMarker);
 				closingBrackets++;
@@ -117,7 +122,6 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 			sb.Append (data.Editor.EolMarker);
 			sb.Append (new string ('}', closingBrackets));
-			
 			return sb.ToString ();
 		}
 		
