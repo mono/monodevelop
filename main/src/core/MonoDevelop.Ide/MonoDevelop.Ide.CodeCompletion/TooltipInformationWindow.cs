@@ -166,6 +166,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				helpbox.PackEnd (rightArrow, false, false, 0);
 				helpbox.BorderWidth = 0;
 				vb2.PackStart (helpbox, false, true, 0);
+				helpbox.ShowAll ();
 			}
 			infoBubbles.Bubbles = overloads.Count;
 			
