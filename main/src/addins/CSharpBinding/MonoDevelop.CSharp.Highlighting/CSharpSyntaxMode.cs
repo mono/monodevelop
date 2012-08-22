@@ -141,9 +141,9 @@ namespace MonoDevelop.CSharp.Highlighting
 					if (guiDocument.Project != null && guiDocument.IsCompileableInProject) {
 						src = new CancellationTokenSource ();
 						var cancellationToken = src.Token;
+						compilation = guiDocument.Compilation;
 						System.Threading.Tasks.Task.Factory.StartNew (delegate {
 							Thread.Sleep (100);
-							compilation = guiDocument.Compilation;
 							var newResolver = new CSharpAstResolver (compilation, unit, parsedFile);
 							var visitor = new QuickTaskVisitor (newResolver, cancellationToken);
 							unit.AcceptVisitor (visitor);
