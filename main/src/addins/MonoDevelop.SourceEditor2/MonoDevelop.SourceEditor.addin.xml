@@ -108,11 +108,6 @@
 		<Command id = "MonoDevelop.SourceEditor.SourceEditorCommands.ToggleErrorTextMarker"
 				_label = "Toggle message bubble"
 				_description = "Toggles message bubble on/off"/>
-		<!--
-		<Command id = "MonoDevelop.SourceEditor.SourceEditorCommands.ToggleCodeFocus"
-				_label = "Toggle code focus"
-				_description = "Activates code focus on caret move"
-				shortcut = "Ctrl|Shift|k" /> -->
 		
 		<Command id = "MonoDevelop.SourceEditor.MessageBubbleCommands.HideIssues"
 				defaultHandler = "MonoDevelop.SourceEditor.HideIssuesHandler"
@@ -158,7 +153,6 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.IndentSelection" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection" />
 		<SeparatorItem id = "Separator3" />
-		<CommandItem id = "MonoDevelop.SourceEditor.SourceEditorCommands.ToggleCodeFocus" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow" />
 	</Extension>
 	
