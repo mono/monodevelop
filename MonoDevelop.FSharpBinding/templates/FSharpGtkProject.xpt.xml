@@ -3,7 +3,7 @@
 <Template originator="Ihor Sihuta" created="2012/08/05">
 
 	<TemplateConfiguration>
-		<_Name>F# Gtk# 2.0 project</_Name>
+		<_Name>Gtk# 2.0 project</_Name>
 		<_Description>Create F# Gtk# 2.0 and F# library projects</_Description>
 		<_Category>F#</_Category>
 		<LanguageName>F#</LanguageName>
@@ -36,7 +36,7 @@
 
 			<!-- A window template -->
 
-				<!--<Widget>
+				<Widget>
 					<SteticTemplate>
 					  <widget class="Gtk.Window" id="MainWindow" design-size="400 300">
 					    <property name="Title" translatable="yes">${Name}</property>
@@ -46,7 +46,7 @@
 				          <placeholder />
 				        </child>
 					  </widget>			
-					</SteticTemplate>-->
+					</SteticTemplate>
 
 					<!-- Class bound to the window -->
 
@@ -59,36 +59,31 @@
         open Gtk;
 
         type MyWindow() as this =
-            inherit Window("MyWindow")
+            inherit Window("MainWindow")
             
-            do
-                this.SetDefaultSize(400,300)
-                this.DeleteEvent.AddHandler(fun o e -> this.OnDeleteEvent(o,e))
-                this.ShowAll()
+            do this.SetDefaultSize(400,300)
+            do this.DeleteEvent.AddHandler(fun o e -> this.OnDeleteEvent(o,e))
+            do this.ShowAll()
             
             member this.OnDeleteEvent(o,e:DeleteEventArgs) = 
                 Application.Quit ()
-                e.RetVal <- true]]></File>
-				<!--</Widget>-->
-
-				<!-- The main class -->
-
-				<File name="Main.fs" AddStandardHeader="True">
-<![CDATA[namespace ${ProjectName}
-
-module MainWindow =
-
-    open System;
-    open Gtk;
-
-    type MainClass = 
+                e.RetVal <- true]]>
+				</File>
+             </Widget>
+             <File name="Main.fs" AddStandardHeader="true">
+                <![CDATA[namespace ${ProjectName}
+    module Main =
+        
+        open System
+        open Gtk
+    
+        type MainClass = 
             static member Main() = 
                 Application.Init()
-                let mutable win = new Window(WindowType.Toplevel)
+                let mutable win = new MainWindow.MyWindow()
                 win.Show()
                 Application.Run()]]>
-				</File>
-
+             </File>
 				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
 			</Files>
 		</Project>
