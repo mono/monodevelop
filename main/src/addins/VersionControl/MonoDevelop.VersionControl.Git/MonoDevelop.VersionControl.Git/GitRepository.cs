@@ -48,6 +48,7 @@ using NGit.Api.Errors;
 using NGit.Diff;
 using NGit.Merge;
 using Mono.TextEditor;
+using NGit.Submodule;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -162,23 +163,39 @@ namespace MonoDevelop.VersionControl.Git
 
 		FilePath[] cachedSubmodules = new FilePath [0];
 		DateTime cachedSubmoduleTime = DateTime.MinValue;
+
+		FilePath[] CachedSubmodules {
+			get {
+				var submoduleWriteTime = File.GetLastWriteTimeUtc(RootPath.Combine(".gitmodule"));
+				if (cachedSubmoduleTime != submoduleWriteTime) {
+					cachedSubmoduleTime = submoduleWriteTime;
+					cachedSubmodules = new NGit.Api.Git (RootRepository)
+					.SubmoduleStatus ()
+					.Call ()
+					.Select(s => (FilePath) s.Key)
+					.ToArray ();
+				}
+				return cachedSubmodules;
+			}
+		}
+
 		NGit.Repository GetRepository (FilePath localPath)
 		{
-			var submoduleWriteTime = File.GetLastWriteTimeUtc(RootPath.Combine(".gitmodule"));
-			if (cachedSubmoduleTime != submoduleWriteTime) {
-				cachedSubmoduleTime = submoduleWriteTime;
-				cachedSubmodules = new NGit.Api.Git (RootRepository)
-				.SubmoduleStatus ()
-				.Call ()
-				.Select(s => (FilePath) s.Key)
-				.ToArray ();
-			}
+			return GroupByRepository (new [] { localPath }).First ().Key;
+		}
 
-			var submodule = cachedSubmodules.FirstOrDefault (s => {
-				var fullPath = s.ToAbsolute(RootPath);
-				return localPath.IsChildPathOf(fullPath) || localPath.CanonicalPath == fullPath.CanonicalPath;
+		IEnumerable<IGrouping<NGit.Repository, FilePath>> GroupByRepository (IEnumerable<FilePath> files)
+		{
+			var cache = CachedSubmodules;
+			return files.GroupBy (f => {
+				return cache
+					.Where (s => {
+						var fullPath = s.ToAbsolute (RootPath);
+						return f.IsChildPathOf (fullPath) || f.CanonicalPath == fullPath.CanonicalPath;
+					})
+					.Select (s => SubmoduleWalk.GetSubmoduleRepository (RootRepository, s))
+					.FirstOrDefault () ?? RootRepository;
 			});
-			return submodule.IsNullOrEmpty ? RootRepository : NGit.Submodule.SubmoduleWalk.GetSubmoduleRepository (RootRepository, submodule);
 		}
 
 		public override Revision[] GetHistory (FilePath localFile, Revision since)
@@ -244,7 +261,7 @@ namespace MonoDevelop.VersionControl.Git
 			
 			if (localFileNames != null) {
 				var localFiles = new List<FilePath> ();
-				foreach (var group in localFileNames.GroupBy (f => GetRepository (f))) {
+				foreach (var group in GroupByRepository (localFileNames)) {
 					var repository = group.Key;
 					var arev = new GitRevision (this, repository, "");
 					foreach (var p in group) {
