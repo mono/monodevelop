@@ -106,10 +106,6 @@ namespace MonoDevelop.Ide.Gui
 			commandHandler = new ViewCommandHandlers (this);
 		}
 		
-		protected SdiWorkspaceWindow (IntPtr p): base (p)
-		{
-		}
-		
 		public Widget TabPage {
 			get {
 				return tabPage;
