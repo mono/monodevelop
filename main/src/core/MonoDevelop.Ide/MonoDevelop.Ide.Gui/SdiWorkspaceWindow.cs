@@ -78,18 +78,20 @@ namespace MonoDevelop.Ide.Gui
 			this.content = content;
 			this.tab = tabLabel;
 			this.tabPage = content.Control;
+
+			fileTypeCondition.SetFileName (content.ContentName ?? content.UntitledName);
+			extensionContext = AddinManager.CreateExtensionContext ();
+			extensionContext.RegisterCondition ("FileType", fileTypeCondition);
 			
 			box = new VBox ();
+
+			//this fires an event that the content uses to access this object's ExtensionContext
 			content.WorkbenchWindow = this;
 
 			// The previous WorkbenchWindow property assignement may end with a call to AttachViewContent,
 			// which will add the content control to the subview notebook. In that case, we don't need to add it to box
 			if (subViewContents == null)
 				box.PackStart (content.Control);
-			
-			fileTypeCondition.SetFileName (content.ContentName ?? content.UntitledName);
-			extensionContext = AddinManager.CreateExtensionContext ();
-			extensionContext.RegisterCondition ("FileType", fileTypeCondition);
 			
 			content.ContentNameChanged += new EventHandler(SetTitleEvent);
 			content.DirtyChanged       += new EventHandler(SetTitleEvent);
