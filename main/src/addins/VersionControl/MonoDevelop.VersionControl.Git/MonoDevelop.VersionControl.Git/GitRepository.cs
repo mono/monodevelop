@@ -160,14 +160,25 @@ namespace MonoDevelop.VersionControl.Git
 			return new StashCollection (repository);
 		}
 
+		FilePath[] cachedSubmodules = new FilePath [0];
+		DateTime cachedSubmoduleTime = DateTime.MinValue;
 		NGit.Repository GetRepository (FilePath localPath)
 		{
-			var submodules = new NGit.Api.Git (RootRepository).SubmoduleStatus ().Call ();
-			var submodule = submodules.Where (s => {
-				var fullPath = ((FilePath) s.Key).ToAbsolute (RootPath);
-				return localPath.IsChildPathOf (fullPath) || localPath.CanonicalPath == fullPath.CanonicalPath;
-			}).Select (s => s.Key).FirstOrDefault ();
-			return submodule == null ? RootRepository : NGit.Submodule.SubmoduleWalk.GetSubmoduleRepository (RootRepository, submodule);
+			var submoduleWriteTime = File.GetLastWriteTimeUtc(RootPath.Combine(".gitmodule"));
+			if (cachedSubmoduleTime != submoduleWriteTime) {
+				cachedSubmoduleTime = submoduleWriteTime;
+				cachedSubmodules = new NGit.Api.Git (RootRepository)
+				.SubmoduleStatus ()
+				.Call ()
+				.Select(s => (FilePath) s.Key)
+				.ToArray ();
+			}
+
+			var submodule = cachedSubmodules.FirstOrDefault (s => {
+				var fullPath = s.ToAbsolute(RootPath);
+				return localPath.IsChildPathOf(fullPath) || localPath.CanonicalPath == fullPath.CanonicalPath;
+			});
+			return submodule.IsNullOrEmpty ? RootRepository : NGit.Submodule.SubmoduleWalk.GetSubmoduleRepository (RootRepository, submodule);
 		}
 
 		public override Revision[] GetHistory (FilePath localFile, Revision since)
