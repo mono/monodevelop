@@ -129,7 +129,7 @@ namespace MonoDevelop.AspNet.Mvc
 		public static void Update (CommandInfo info)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			if (!(doc.Project is AspMvcProject)) {
+			if (doc == null || !(doc.Project is AspMvcProject)) {
 				info.Enabled = info.Visible = false;
 				return;
 			}
