@@ -89,20 +89,29 @@ namespace MonoDevelop.SourceEditor
 			AstNode node;
 			var loc = editor.OffsetToLocation (offset);
 			if (!doc.TryResolveAt (loc, out result, out node)) {
-				if (node is CSharpTokenNode)
-					return new TooltipItem (new ToolTipData (unit, result, node, null), offset, 0);
+				if (node is CSharpTokenNode) {
+					int startOffset2 = editor.LocationToOffset (node.StartLocation);
+					int endOffset2 = editor.LocationToOffset (node.EndLocation);
+					return new TooltipItem (new ToolTipData (unit, result, node, null), startOffset2, endOffset2 - startOffset2);
+				}
 				return null;
 			}
+			if (node == lastNode)
+				return lastResult;
 			var resolver = new CSharpAstResolver (doc.Compilation, unit, file);
 			resolver.ApplyNavigator (new NodeListResolveVisitorNavigator (node), CancellationToken.None);
 
-			int startOffset = offset;
-			int endOffset = offset;
-			return new TooltipItem (new ToolTipData (unit, result, node, resolver), startOffset, endOffset - startOffset);
+			var hoverNode = node.GetNodeAt (loc) ?? node;
+
+			int startOffset = editor.LocationToOffset (hoverNode.StartLocation);
+			int endOffset = editor.LocationToOffset (hoverNode.EndLocation);
+			return lastResult = new TooltipItem (new ToolTipData (unit, result, node, resolver), startOffset, endOffset - startOffset);
 		}
 		
-		ResolveResult lastResult = null;
+		AstNode lastNode = null;
 		TooltipInformationWindow lastWindow = null;
+
+		TooltipItem lastResult;
 
 		protected override Gtk.Window CreateTooltipWindow (Mono.TextEditor.TextEditor editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
 		{
@@ -112,41 +121,40 @@ namespace MonoDevelop.SourceEditor
 
 			var titem = (ToolTipData)item.Item;
 
-			if (lastResult != null && lastWindow.IsRealized && 
-				titem.Result != null && lastResult.Type.Equals (titem.Result.Type))
+			if (lastNode != null && lastWindow.IsRealized && titem.Node != null && lastNode == titem.Node) {
 				return lastWindow;
+			}
 			var tooltipInformation = CreateTooltip (titem, offset, null);
 			if (tooltipInformation == null || string.IsNullOrEmpty (tooltipInformation.SignatureMarkup))
 				return null;
 
 			var result = new TooltipInformationWindow ();
-
 			result.ShowArrow = true;
 			result.AddOverload (tooltipInformation);
 			result.RepositionWindow ();
 			if (lastWindow != null && lastWindow.Visible)
 				lastWindow.Destroy ();
-			lastWindow = result;
-			lastResult = titem.Result;
 			return result;
 		}
 
 		public override Gtk.Window ShowTooltipWindow (TextEditor editor, int offset, Gdk.ModifierType modifierState, int mouseX, int mouseY, TooltipItem item)
 		{
+			var titem = (ToolTipData)item.Item;
+			if (lastNode != null && lastWindow.IsRealized && titem.Node != null && lastNode == titem.Node)
+				return lastWindow;
+			
 			var tipWindow = CreateTooltipWindow (editor, offset, modifierState, item) as TooltipInformationWindow;
 			if (tipWindow == null)
 				return null;
-			/*
-			int ox = 0, oy = 0;
-			if (editor.GdkWindow != null)
-				editor.GdkWindow.GetOrigin (out ox, out oy);*/
-			var titem = (ToolTipData)item.Item;
-			var p1 = editor.LocationToPoint (titem.Node.StartLocation);
-			var p2 = editor.LocationToPoint (titem.Node.EndLocation);
+			var hoverNode = titem.Node.GetNodeAt (editor.OffsetToLocation (offset)) ?? titem.Node;
+			var p1 = editor.LocationToPoint (hoverNode.StartLocation);
+			var p2 = editor.LocationToPoint (hoverNode.EndLocation);
 			var caret = new Gdk.Rectangle ((int)p1.X - editor.Allocation.X, (int)p2.Y - editor.Allocation.Y, (int)(p2.X - p1.X), (int)editor.LineHeight);
 
 			tipWindow.ShowPopup (editor, caret, PopupPosition.Top);
 			
+			lastWindow = tipWindow;
+			lastNode   = titem.Node;
 			return tipWindow;
 		}
 
