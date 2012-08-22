@@ -393,6 +393,10 @@ namespace MonoDevelop.Ide.Gui.Content
 			CompletionWidget = Document.GetContent <ICompletionWidget> ();
 			if (CompletionWidget != null)
 				CompletionWidget.CompletionContextChanged += OnCompletionContextChanged;
+
+			document.Editor.Parent.TextAreaWidget.FocusOutEvent += delegate {
+				CompletionWindowManager.HideWindow ();
+			};
 		}
 
 		bool disposed = false;

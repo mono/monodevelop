@@ -301,6 +301,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 		Gdk.Color foreColor;
 		public TooltipInformationWindow () : base ()
 		{
+			TypeHint = Gdk.WindowTypeHint.Utility;
+			this.SkipTaskbarHint = true;
+			this.SkipPagerHint = true;
+			this.TransientFor = IdeApp.Workbench.RootWindow;
 			this.AllowShrink = false;
 			this.AllowGrow = false;
 			
