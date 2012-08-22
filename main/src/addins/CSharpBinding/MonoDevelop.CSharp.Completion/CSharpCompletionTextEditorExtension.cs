@@ -530,12 +530,10 @@ namespace MonoDevelop.CSharp.Completion
 		ICompletionData ICompletionDataFactory.CreateLiteralCompletionData (string title, string description, string insertText)
 		{
 			return new GenericTooltipCompletionDate (smartWrap => {
-				var tooltipInfo = new TooltipInformation ();
 				var resolver = this.CSharpUnresolvedFile.GetResolver (this.Compilation, this.TextEditorData.Caret.Location);
 				var sig = new SignatureMarkupCreator (resolver, this.FormattingPolicy.CreateOptions ());
 				sig.BreakLineAfterReturnType = smartWrap;
-				tooltipInfo.SignatureMarkup = sig.GetKeywordMarkup (title);
-				return tooltipInfo;
+				return sig.GetKeywordTooltip (title);
 			}, title, "md-keyword", description, insertText ?? title);
 		}
 

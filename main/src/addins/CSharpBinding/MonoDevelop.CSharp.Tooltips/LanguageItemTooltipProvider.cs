@@ -159,12 +159,10 @@ namespace MonoDevelop.SourceEditor
 				return null;
 
 			if (result == null && data.Node is CSharpTokenNode) {
-				var tooltipInfo = new TooltipInformation ();
 				var resolver = (doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile).GetResolver (doc.Compilation, doc.Editor.Caret.Location);
 				var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
 				sig.BreakLineAfterReturnType = false;
-				tooltipInfo.SignatureMarkup = sig.GetKeywordMarkup (data.Node.GetText ());;
-				return tooltipInfo;
+				return sig.GetKeywordTooltip (data.Node);
 			}
 
 			if (result is UnknownIdentifierResolveResult) {
