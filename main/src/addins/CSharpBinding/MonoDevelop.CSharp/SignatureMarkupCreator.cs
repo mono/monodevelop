@@ -94,6 +94,8 @@ namespace MonoDevelop.CSharp
 
 		public string GetMarkup (IEntity entity)
 		{
+			if (entity == null)
+				throw new ArgumentNullException ("entity");
 			string result;
 			switch (entity.EntityType) {
 			case EntityType.TypeDefinition:

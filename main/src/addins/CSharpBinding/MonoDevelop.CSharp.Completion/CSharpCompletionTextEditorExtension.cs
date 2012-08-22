@@ -512,7 +512,7 @@ namespace MonoDevelop.CSharp.Completion
 		
 		ICompletionData ICompletionDataFactory.CreateTypeCompletionData (IType type, string shortType)
 		{
-			var result = new GenericTooltipCompletionDate (sw => MemberCompletionData.CreateTooltipInformation (this, type.GetDefinition (), sw), shortType, type.GetStockIcon ());
+			var result = new GenericTooltipCompletionDate (sw => type.GetDefinition () != null ? MemberCompletionData.CreateTooltipInformation (this, type.GetDefinition (), sw) : new TooltipInformation (), shortType, type.GetStockIcon ());
 			if (!(type is ParameterizedType) && type.TypeParameterCount > 0) {
 				var sb = new StringBuilder (shortType);
 				sb.Append ("<");
