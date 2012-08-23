@@ -110,8 +110,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			ProjectReference pref = (ProjectReference)dataObject;
-			return pref.ReferenceType != ReferenceType.Project;
+			return false;
+			//ProjectReference pref = (ProjectReference)dataObject;
+			//return pref.ReferenceType != ReferenceType.Project;
 		}
 	}
 	
