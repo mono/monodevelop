@@ -630,6 +630,12 @@ namespace MonoDevelop.Ide.Gui
 
 			if (!draggingTab) {
 				var t = FindTab ((int)evnt.X, (int)evnt.Y);
+
+				// If the user clicks and drags on the 'x' which closes the current
+				// tab we can end up with a null tab here
+				if (t == null)
+					return base.OnMotionNotifyEvent (evnt);;
+
 				if (t != highlightedTab) {
 					highlightedTab = t;
 					QueueDraw ();
