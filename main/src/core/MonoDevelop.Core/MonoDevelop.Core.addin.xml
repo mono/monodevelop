@@ -221,6 +221,10 @@
 			class = "MonoDevelop.Projects.Formats.MSBuild.MSBuildFileFormatVS10"
 			name = "MSBuild (Visual Studio 2010)"
 			canDefault = "true" />
+		<FileFormat id = "MSBuild11"
+			class = "MonoDevelop.Projects.Formats.MSBuild.MSBuildFileFormatVS11"
+			name = "MSBuild (Visual Studio 2012)"
+			canDefault = "true" />
 		<FileFormat id = "MD1" 
 			class = "MonoDevelop.Projects.Formats.MD1.MD1FileFormat"
 			name = "MonoDevelop 1.0 (deprecated)" />
