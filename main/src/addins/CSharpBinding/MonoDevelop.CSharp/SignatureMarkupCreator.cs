@@ -998,15 +998,17 @@ namespace MonoDevelop.CSharp
 		void AppendConstant (StringBuilder sb, object constantValue)
 		{
 			if (constantValue is string) {
-				sb.Append (Highlight ("\"" + constantValue +"\"", "string.double"));
+				sb.Append (Highlight ("\"" + constantValue + "\"", "string.double"));
 				return;
 			}
 			if (constantValue is char) {
-				sb.Append (Highlight ("'" + constantValue +"'", "string.single"));
+				sb.Append (Highlight ("'" + constantValue + "'", "string.single"));
 				return;
 			}
-			if (constantValue == null)
+			if (constantValue == null) {
 				sb.Append (Highlight ("null", "constant.language"));
+				return;
+			}
 
 			sb.Append (Highlight (constantValue.ToString (), "constant.digit"));
 		}
