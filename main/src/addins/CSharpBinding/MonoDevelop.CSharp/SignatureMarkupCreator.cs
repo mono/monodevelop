@@ -179,6 +179,35 @@ namespace MonoDevelop.CSharp
 			}
 		}
 
+		static int GetMarkupLength (string str)
+		{
+			int result = 0;
+			bool inTag = false, inAbbrev = false;
+			foreach (var ch in str) {
+				switch (ch) {
+				case '&':
+					inAbbrev = true;
+					break;
+				case ';':
+					if (!inAbbrev)
+						goto default;
+					inAbbrev = false;
+					break;
+				case '<':
+					inTag = true;
+					break;
+				case '>':
+					inTag = false;
+					break;
+				default:
+					if (!inTag)
+						result++;
+					break;
+				}
+			}
+			return result;
+		}
+
 		string GetTypeMarkup (ITypeDefinition t)
 		{
 			if (t == null)
@@ -222,7 +251,7 @@ namespace MonoDevelop.CSharp
 			result.Append (Highlight (typeName.ToString (), "keyword.type"));
 
 			bool first = true;
-			int maxLength = result.Length;
+			int maxLength = GetMarkupLength (result.ToString ());
 			int length = maxLength;
 			var sortedTypes = new List<IType>(t.DirectBaseTypes.Where (x => x.FullName != "System.Object"));
 			sortedTypes.Sort ((x, y) => GetTypeReferenceString (y).Length.CompareTo (GetTypeReferenceString (x).Length));
@@ -238,15 +267,14 @@ namespace MonoDevelop.CSharp
 				}
 				var typeRef = GetTypeReferenceString (directBaseType, false);
 
-				if (!first && BreakLineAfterReturnType && length + typeRef.Length >= maxLength) {
+				if (!first && length + typeRef.Length >= maxLength) {
 					result.AppendLine ();
 					result.Append ("  ");
 					length = 2;
 				}
 
 				result.Append (typeRef);
-				length += typeRef.Length;
-				maxLength = Math.Max (maxLength, length);
+				length += GetMarkupLength (typeRef);
 				first = false;
 			}
 			

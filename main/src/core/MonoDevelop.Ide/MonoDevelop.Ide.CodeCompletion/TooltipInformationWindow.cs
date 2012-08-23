@@ -310,13 +310,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 			
 			headlabel = new MonoDevelop.Components.FixedWidthWrapLabel ();
 			headlabel.Indent = -20;
-			var des = FontService.GetFontDescription ("Editor");
-			
+			var des = FontService.GetFontDescription ("Editor").Copy ();
+			des.Size = des.Size * 9 / 10;
 			headlabel.FontDescription = des;
-
+//			headlabel.MaxWidth = 400;
 			headlabel.Wrap = Pango.WrapMode.WordChar;
 			headlabel.BreakOnCamelCasing = true;
-			headlabel.BreakOnPunctuation = true;
+//			headlabel.BreakOnPunctuation = true;
 			descriptionBox.Spacing = 4;
 			VBox vb = new VBox (false, 8);
 			vb.PackStart (headlabel, true, true, 0);
