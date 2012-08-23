@@ -369,6 +369,7 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
+		CancellationTokenSource tooltipSrc = null;
 		void ShowTooltip ()
 		{
 			HideTooltip ();
@@ -377,14 +378,26 @@ namespace MonoDevelop.Components.MainToolbar
 			var i = selectedItem.Item;
 			if (i < 0 || i >= selectedItem.DataSource.ItemCount)
 				return;
-			var tooltip = selectedItem.DataSource.GetTooltip (i);
-			if (tooltip == null || string.IsNullOrEmpty (tooltip.SignatureMarkup))
-				return;
 
-			declarationviewwindow.Clear ();
-			declarationviewwindow.AddOverload (tooltip);
-			declarationviewwindow.CurrentOverload = 0;
-			declarationViewTimer = GLib.Timeout.Add (250, DelayedTooltipShow);
+			if (tooltipSrc != null)
+				tooltipSrc.Cancel ();
+			tooltipSrc = new CancellationTokenSource ();
+			var token = tooltipSrc.Token;
+
+			Task.Factory.StartNew (delegate {
+				var tooltip = selectedItem.DataSource.GetTooltip (i);
+				if (tooltip == null || string.IsNullOrEmpty (tooltip.SignatureMarkup) || token.IsCancellationRequested)
+					return;
+				Application.Invoke (delegate {
+					if (token.IsCancellationRequested)
+						return;
+					declarationviewwindow.Clear ();
+					declarationviewwindow.AddOverload (tooltip);
+					declarationviewwindow.CurrentOverload = 0;
+					declarationViewTimer = GLib.Timeout.Add (250, DelayedTooltipShow);
+				});
+			});
+
 		}
 
 		bool DelayedTooltipShow ()
