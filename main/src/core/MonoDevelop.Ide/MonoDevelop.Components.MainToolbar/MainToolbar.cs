@@ -181,7 +181,6 @@ namespace MonoDevelop.Components.MainToolbar
 			matchEntry.WidthRequest = 240;
 			matchEntry.RoundedShape = true;
 			matchEntry.Entry.Changed += HandleSearchEntryChanged;
-			matchEntry.SizeAllocated += (o, args) => PositionPopup ();
 			matchEntry.Activated += (sender, e) => {
 				if (popup != null)
 					popup.OpenFile ();
@@ -314,9 +313,6 @@ namespace MonoDevelop.Components.MainToolbar
 				popup.Destroyed += delegate {
 					popup = null;
 					matchEntry.Entry.Text = "";
-				};
-				popup.SizeAllocated += delegate {
-					PositionPopup ();
 				};
 				PositionPopup ();
 				popup.ShowAll ();

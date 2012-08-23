@@ -146,6 +146,8 @@ namespace MonoDevelop.Components
 			int x, y;
 			Gdk.Rectangle caret = currentCaret;
 			Gdk.Window window = targetWindow;
+			if (targetWindow == null)
+				return;
 			PopupPosition position = targetPosition;
 			this.position = targetPosition;
 			window.GetOrigin (out x, out y);

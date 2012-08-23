@@ -60,19 +60,26 @@ namespace MonoDevelop.Components.MainToolbar
 		bool isInSearch;
 		public SearchPopupWindow ()
 		{
-			Events = Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonMotionMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.ExposureMask;
 			headerColor = CairoExtensions.ParseColor ("8c8c8c");
 			separatorLine = CairoExtensions.ParseColor ("dedede");
 			lightSearchBackground = CairoExtensions.ParseColor ("ffffff");
 			darkSearchBackground = CairoExtensions.ParseColor ("f7f7f7");
 			selectionBackgroundColor = CairoExtensions.ParseColor ("cccccc");
+
+			TypeHint = Gdk.WindowTypeHint.Utility;
+			this.SkipTaskbarHint = true;
+			this.SkipPagerHint = true;
+			this.TransientFor = IdeApp.Workbench.RootWindow;
+			this.AllowShrink = false;
+			this.AllowGrow = false;
+
 			categories.Add (new ProjectSearchCategory (this));
 			categories.Add (new FileSearchCategory (this));
 			categories.Add (new CommandSearchCategory (this));
 			layout = new Pango.Layout (PangoContext);
 			headerLayout = new Pango.Layout (PangoContext);
-			CanFocus = false;
-			TransientFor = IdeApp.Workbench.RootWindow;
+
+			Events = Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonMotionMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.ExposureMask;
 			ItemActivated += (sender, e) => OpenFile ();
 			SizeRequested += delegate(object o, SizeRequestedArgs args) {
 				if (inResize)
@@ -87,16 +94,19 @@ namespace MonoDevelop.Components.MainToolbar
 					inResize = false;
 				}
 			};
-			Destroyed += delegate {
-				HideTooltip ();
-				this.declarationviewwindow.Destroy ();
-			};
 		}
 		bool inResize = false;
 
 		public bool SearchForMembers {
 			get;
 			set;
+		}
+
+		protected override void OnDestroyed ()
+		{
+			HideTooltip ();
+			this.declarationviewwindow.Destroy ();
+			base.OnDestroyed ();
 		}
 
 		internal void OpenFile ()
@@ -364,7 +374,10 @@ namespace MonoDevelop.Components.MainToolbar
 			HideTooltip ();
 			if (selectedItem == null || selectedItem.DataSource == null)
 				return;
-			var tooltip = selectedItem.DataSource.GetTooltip (selectedItem.Item);
+			var i = selectedItem.Item;
+			if (i < 0 || i >= selectedItem.DataSource.ItemCount)
+				return;
+			var tooltip = selectedItem.DataSource.GetTooltip (i);
 			if (tooltip == null || string.IsNullOrEmpty (tooltip.SignatureMarkup))
 				return;
 
