@@ -745,7 +745,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
 			base.OnSizeRequested (ref requisition);
-			requisition.Height += requisition.Height % rowHeight;
+			if (rowHeight > 0)
+				requisition.Height += requisition.Height % rowHeight;
 		}
 
 		const int maxVisibleRows = 7;
