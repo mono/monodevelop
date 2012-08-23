@@ -533,34 +533,40 @@ namespace MonoDevelop.CSharp
 		public TooltipInformation GetKeywordTooltip (string keyword)
 		{
 			var result = new TooltipInformation ();
+
+			var color = AlphaBlend (colorStyle.Default.Color, colorStyle.Default.BackgroundColor, optionalAlpha);
+			var colorString = Mono.TextEditor.HelperMethods.GetColorString (color);
+
+			var keywordSign = "<span foreground=\"" + colorString + "\">" + " (keyword)</span>";
+
 			switch (keyword){
 			case "abstract":
-				result.SignatureMarkup = Highlight ("abstract", "keyword.modifier") + " (keyword)";
+				result.SignatureMarkup = Highlight ("abstract", "keyword.modifier") + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("abstract", "keyword.modifier") + " modifier can be used with classes, methods, properties, indexers, and events.";
 				break;
 			case "as":
-				result.SignatureMarkup = Highlight ("as", "keyword.operator") + " (keyword)";
+				result.SignatureMarkup = Highlight ("as", "keyword.operator") + keywordSign;
 				result.AddCategory ("Form", "expression " + Highlight ("as", "keyword.operator") + " type");
 				result.SummaryMarkup = "The " + Highlight ("as", "keyword.operator") + " operator is used to perform conversions between compatible types. ";
 				break;
 			case "base":
-				result.SignatureMarkup = Highlight ("base", "keyword.access") + " (keyword)";
+				result.SignatureMarkup = Highlight ("base", "keyword.access") + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("base", "keyword.access") + " keyword is used to access members of the base class from within a derived class.";
 				break;
 			case "break":
-				result.SignatureMarkup = Highlight ("break", "keyword.jump") + " (keyword)";
+				result.SignatureMarkup = Highlight ("break", "keyword.jump") + keywordSign;
 				result.AddCategory ("Form", Highlight ("break", "keyword.jump") + ";");
 				result.SummaryMarkup = "The " + Highlight ("break", "keyword.jump") + " statement terminates the closest enclosing loop or switch statement in which it appears.";
 				break;
 			case "case":
-				result.SignatureMarkup = Highlight ("case", "keyword.selection") + " (keyword)";
+				result.SignatureMarkup = Highlight ("case", "keyword.selection") + keywordSign;
 				result.AddCategory ("Form", Highlight ("case", "keyword.selection") + " constant-expression:" + Environment.NewLine +
 				                    "  statement" + Environment.NewLine +
 				                    "  jump-statement");
 				result.SummaryMarkup = "";
 				break;
 			case "catch":
-				result.SignatureMarkup = Highlight ("catch", "keyword.exceptions") + " (keyword)";
+				result.SignatureMarkup = Highlight ("catch", "keyword.exceptions") + keywordSign;
 				result.AddCategory ("Form", Highlight ("try", "keyword.exceptions") + " try-block" + Environment.NewLine +
 				                    "  " + Highlight ("catch", "keyword.exceptions") + " (exception-declaration-1) catch-block-1" + Environment.NewLine +
 				                    "  " + Highlight ("catch", "keyword.exceptions") + " (exception-declaration-2) catch-block-2" + Environment.NewLine +
@@ -569,29 +575,29 @@ namespace MonoDevelop.CSharp
 				result.SummaryMarkup = "";
 				break;
 			case "checked":
-				result.SignatureMarkup = Highlight ("checked", "keyword.misc") + " (keyword)";
+				result.SignatureMarkup = Highlight ("checked", "keyword.misc") + keywordSign;
 				result.AddCategory ("Form", Highlight ("checked", "keyword.misc") + " block" + Environment.NewLine +
 				                    "or" + Environment.NewLine +
 				                    Highlight ("checked", "keyword.misc") + " (expression)");
 				result.SummaryMarkup = "The " + Highlight ("checked", "keyword.misc") + " keyword is used to control the overflow-checking context for integral-type arithmetic operations and conversions. It can be used as an operator or a statement.";
 				break;
 			case "class":
-				result.SignatureMarkup = Highlight ("class", "keyword.declaration") + " (keyword)";
+				result.SignatureMarkup = Highlight ("class", "keyword.declaration") + keywordSign;
 				result.AddCategory ("Form", "[attributes] [modifiers] " + Highlight ("class", "keyword.declaration") + " identifier [:base-list] { class-body }[;]");
 				result.SummaryMarkup = "Classes are declared using the keyword " + Highlight ("class", "keyword.declaration") + ".";
 				break;
 			case "const":
-				result.SignatureMarkup = Highlight ("const", "keyword.modifier") + " (keyword)";
+				result.SignatureMarkup = Highlight ("const", "keyword.modifier") + keywordSign;
 				result.AddCategory ("Form", "[attributes] [modifiers] " + Highlight ("const", "keyword.modifier") + " type declarators;");
 				result.SummaryMarkup = "The " + Highlight ("const", "keyword.modifier") + " keyword is used to modify a declaration of a field or local variable. It specifies that the value of the field or the local variable cannot be modified. ";
 				break;
 			case "continue":
-				result.SignatureMarkup = Highlight ("continue", "keyword.jump") + " (keyword)";
+				result.SignatureMarkup = Highlight ("continue", "keyword.jump") + keywordSign;
 				result.AddCategory ("Form", Highlight ("continue", "keyword.jump") + ";");
 				result.SummaryMarkup = "The " + Highlight ("continue", "keyword.jump") + " statement passes control to the next iteration of the enclosing iteration statement in which it appears.";
 				break;
 			case "default":
-				result.SignatureMarkup = Highlight ("default", "keyword.selection") + " (keyword)";
+				result.SignatureMarkup = Highlight ("default", "keyword.selection") + keywordSign;
 				result.AddCategory ("Form", Highlight ("switch", "keyword.selection") + " (expression) { "+ Environment.NewLine +
 				                    "  " + Highlight ("case", "keyword.selection") + " constant-expression:" + Environment.NewLine +
 				                    "    statement"+ Environment.NewLine +
@@ -603,17 +609,17 @@ namespace MonoDevelop.CSharp
 				result.SummaryMarkup = "";
 				break;
 			case "delegate":
-				result.SignatureMarkup = Highlight ("delegate", "keyword.declaration") + " (keyword)";
+				result.SignatureMarkup = Highlight ("delegate", "keyword.declaration") + keywordSign;
 				result.AddCategory ("Form", "[attributes] [modifiers] " + Highlight ("delegate", "keyword.declaration") + " result-type identifier ([formal-parameters]);");
 				result.SummaryMarkup = "A " + Highlight ("delegate", "keyword.declaration") + " declaration defines a reference type that can be used to encapsulate a method with a specific signature.";
 				break;
 			case "do":
-				result.SignatureMarkup = Highlight ("do", "keyword.iteration") + " (keyword)";
+				result.SignatureMarkup = Highlight ("do", "keyword.iteration") + keywordSign;
 				result.AddCategory ("Form", Highlight ("do", "keyword.iteration") + " statement " + Highlight ("while", "keyword.iteration") + " (expression);");
 				result.SummaryMarkup = "The " + Highlight ("do", "keyword.iteration") + " statement executes a statement or a block of statements repeatedly until a specified expression evaluates to false.";
 				break;
 			case "else":
-				result.SignatureMarkup = Highlight ("else", "keyword.selection") + " (keyword)";
+				result.SignatureMarkup = Highlight ("else", "keyword.selection") + keywordSign;
 				result.AddCategory ("Form", Highlight ("if", "keyword.selection") + " (expression)" + Environment.NewLine +
 				                    "  statement1" + Environment.NewLine +
 				                    "  [" + Highlight ("else", "keyword.selection") + Environment.NewLine +
@@ -621,53 +627,53 @@ namespace MonoDevelop.CSharp
 				result.SummaryMarkup = "";
 				break;
 			case "enum":
-				result.SignatureMarkup = Highlight ("enum", "keyword.declaration") + " (keyword)";
+				result.SignatureMarkup = Highlight ("enum", "keyword.declaration") + keywordSign;
 				result.AddCategory ("Form", "[attributes] [modifiers] " + Highlight ("enum", "keyword.declaration") + " identifier [:base-type] {enumerator-list} [;]");
 				result.SummaryMarkup = "The " + Highlight ("enum", "keyword.declaration") + " keyword is used to declare an enumeration, a distinct type consisting of a set of named constants called the enumerator list.";
 				break;
 			case "event":
-				result.SignatureMarkup = Highlight ("event", "keyword.modifier") + " (keyword)";
+				result.SignatureMarkup = Highlight ("event", "keyword.modifier") + keywordSign;
 				result.AddCategory ("Form", "[attributes] [modifiers] " + Highlight ("event", "keyword.modifier") + " type declarator;" + Environment.NewLine +
 				                    "[attributes] [modifiers] " + Highlight ("event", "keyword.modifier") + " type member-name {accessor-declarations};");
 				result.SummaryMarkup = "Specifies an event.";
 				break;
 			case "explicit":
-				result.SignatureMarkup = Highlight ("explicit", "keyword.operator.declaration") + " (keyword)";
+				result.SignatureMarkup = Highlight ("explicit", "keyword.operator.declaration") + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("explicit", "keyword.operator.declaration") + " keyword is used to declare an explicit user-defined type conversion operator.";
 				break;
 			case "extern":
-				result.SignatureMarkup = Highlight ("extern", "keyword.modifier") + " (keyword)";
+				result.SignatureMarkup = Highlight ("extern", "keyword.modifier") + keywordSign;
 				result.SummaryMarkup = "Use the " + Highlight ("extern", "keyword.modifier") + " modifier in a method declaration to indicate that the method is implemented externally. A common use of the extern modifier is with the DllImport attribute.";
 				break;
 			case "finally":
-				result.SignatureMarkup = Highlight ("finally", "keyword.exceptions") + " (keyword)";
+				result.SignatureMarkup = Highlight ("finally", "keyword.exceptions") + keywordSign;
 				result.AddCategory ("Form", Highlight ("try", "keyword.exceptions") + " try-block " + Highlight ("finally", "keyword.exceptions") + " finally-block");
 				result.SummaryMarkup = "The " + Highlight ("finally", "keyword.exceptions") + " block is useful for cleaning up any resources allocated in the try block. Control is always passed to the finally block regardless of how the try block exits.";
 				break;
 			case "fixed":
-				result.SignatureMarkup = Highlight ("fixed", "keyword.misc") + " (keyword)";
+				result.SignatureMarkup = Highlight ("fixed", "keyword.misc") + keywordSign;
 				result.AddCategory ("Form", Highlight ("fixed", "keyword.misc") + " ( type* ptr = expr ) statement");
 				result.SummaryMarkup = "Prevents relocation of a variable by the garbage collector.";
 				break;
 			case "for":
-				result.SignatureMarkup = Highlight ("for", "keyword.iteration") + " (keyword)";
+				result.SignatureMarkup = Highlight ("for", "keyword.iteration") + keywordSign;
 				result.AddCategory ("Form", Highlight ("for", "keyword.iteration") + " ([initializers]; [expression]; [iterators]) statement");
 				result.SummaryMarkup = "The " + Highlight ("for", "keyword.iteration") + " loop executes a statement or a block of statements repeatedly until a specified expression evaluates to false.";
 				break;
 			case "foreach":
-				result.SignatureMarkup = Highlight ("foreach", "keyword.iteration") + " (keyword)";
+				result.SignatureMarkup = Highlight ("foreach", "keyword.iteration") + keywordSign;
 				result.AddCategory ("Form", Highlight ("foreach", "keyword.iteration") + " (type identifier " + Highlight ("in", "keyword.iteration") + " expression) statement");
 				result.SummaryMarkup = "The " + Highlight ("foreach", "keyword.iteration") + " statement repeats a group of embedded statements for each element in an array or an object collection. ";
 				break;
 			case "goto":
-				result.SignatureMarkup = Highlight ("goto", "keyword.jump") + " (keyword)";
+				result.SignatureMarkup = Highlight ("goto", "keyword.jump") + keywordSign;
 				result.AddCategory ("Form", Highlight ("goto", "keyword.jump") + " identifier;" + Environment.NewLine +
 					Highlight ("goto", "keyword.jump") + " " + Highlight ("case", "keyword.selection") + " constant-expression;" + Environment.NewLine +
 				                    Highlight ("goto", "keyword.jump") + " " + Highlight ("default", "keyword.selection") + ";");
 				result.SummaryMarkup = "The " + Highlight ("goto", "keyword.jump") + " statement transfers the program control directly to a labeled statement. ";
 				break;
 			case "if":
-				result.SignatureMarkup = Highlight ("if", "keyword.selection") + " (keyword)";
+				result.SignatureMarkup = Highlight ("if", "keyword.selection") + keywordSign;
 				result.AddCategory ("Form", Highlight ("if", "keyword.selection") + " (expression)" + Environment.NewLine +
 					"  statement1" + Environment.NewLine +
 					"  [" + Highlight ("else", "keyword.selection") + Environment.NewLine +
@@ -675,50 +681,50 @@ namespace MonoDevelop.CSharp
 				result.SummaryMarkup = "The " + Highlight ("if", "keyword.selection") + " statement selects a statement for execution based on the value of a Boolean expression. ";
 				break;
 			case "implicit":
-				result.SignatureMarkup = Highlight ("implicit", "keyword.operator.declaration") + " (keyword)";
+				result.SignatureMarkup = Highlight ("implicit", "keyword.operator.declaration") + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("implicit", "keyword.operator.declaration") + " keyword is used to declare an implicit user-defined type conversion operator.";
 				break;
 			case "in":
-				result.SignatureMarkup = Highlight ("in", "keyword.iteration") + " (keyword)";
+				result.SignatureMarkup = Highlight ("in", "keyword.iteration") + keywordSign;
 				result.AddCategory ("Form", Highlight ("foreach", "keyword.iteration") + " (type identifier " + Highlight ("in", "keyword.iteration") + " expression) statement");
 				result.SummaryMarkup = "";
 				break;
 			case "interface":
-				result.SignatureMarkup = Highlight ("interface", "keyword.declaration") + " (keyword)";
+				result.SignatureMarkup = Highlight ("interface", "keyword.declaration") + keywordSign;
 				result.AddCategory ("Form", "[attributes] [modifiers] " + Highlight ("interface", "keyword.declaration") + " identifier [:base-list] {interface-body}[;]");
 				result.SummaryMarkup = "An interface defines a contract. A class or struct that implements an interface must adhere to its contract.";
 				break;
 			case "internal":
-				result.SignatureMarkup = Highlight ("internal", "keyword.modifier") + " (keyword)";
+				result.SignatureMarkup = Highlight ("internal", "keyword.modifier") + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("internal", "keyword.modifier") + " keyword is an access modifier for types and type members. Internal members are accessible only within files in the same assembly.";
 				break;
 			case "is":
-				result.SignatureMarkup = Highlight ("is", "keyword.operator") + " (keyword)";
+				result.SignatureMarkup = Highlight ("is", "keyword.operator") + keywordSign;
 				result.AddCategory ("Form", "expression " + Highlight ("is", "keyword.operator") + " type");
 				result.SummaryMarkup = "The " + Highlight ("is", "keyword.operator") + " operator is used to check whether the run-time type of an object is compatible with a given type.";
 				break;
 			case "lock":
-				result.SignatureMarkup = Highlight ("lock", "keyword.misc") + " (keyword)";
+				result.SignatureMarkup = Highlight ("lock", "keyword.misc") + keywordSign;
 				result.AddCategory ("Form", Highlight ("lock", "keyword.misc") + " (expression) statement_block");
 				result.SummaryMarkup = "The " + Highlight ("lock", "keyword.misc") + " keyword marks a statement block as a critical section by obtaining the mutual-exclusion lock for a given object, executing a statement, and then releasing the lock. ";
 				break;
 			case "namespace":
-				result.SignatureMarkup = Highlight ("namespace", "keyword.namespace") + " (keyword)";
+				result.SignatureMarkup = Highlight ("namespace", "keyword.namespace") + keywordSign;
 				result.AddCategory ("Form", Highlight ("namespace", "keyword.namespace") + " name[.name1] ...] {" + Environment.NewLine +
 					"type-declarations" + Environment.NewLine +
 				                    " }");
 				result.SummaryMarkup = "The " + Highlight ("namespace", "keyword.namespace") + " keyword is used to declare a scope. ";
 				break;
 			case "new":
-				result.SignatureMarkup = Highlight ("new", "keyword.operator") + " (keyword)";
+				result.SignatureMarkup = Highlight ("new", "keyword.operator") + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("new", "keyword.operator") + " keyword can be used as an operator or as a modifier. The operator is used to create objects on the heap and invoke constructors. The modifier is used to hide an inherited member from a base class member.";
 				break;
 			case "null":
-				result.SignatureMarkup = Highlight ("null", "constant.language") + " (keyword)";
+				result.SignatureMarkup = Highlight ("null", "constant.language") + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("null", "constant.language") + " keyword is a literal that represents a null reference, one that does not refer to any object. " + Highlight ("null", "constant.language") + " is the default value of reference-type variables.";
 				break;
 			case "operator":
-				result.SignatureMarkup = Highlight ("operator", "keyword.operator.declaration") + " (keyword)";
+				result.SignatureMarkup = Highlight ("operator", "keyword.operator.declaration") + keywordSign;
 				result.AddCategory ("Form", Highlight ("public static ", "keyword.modifier") + "result-type " + Highlight ("operator", "keyword.operator.declaration") + " unary-operator ( op-type operand )" + Environment.NewLine +
 				                    Highlight ("public static ", "keyword.modifier") + "result-type " + Highlight ("operator", "keyword.operator.declaration") + " binary-operator (" + Environment.NewLine +
 					"op-type operand," + Environment.NewLine +
@@ -729,67 +735,67 @@ namespace MonoDevelop.CSharp
 				result.SummaryMarkup = "The " + Highlight ("operator", "keyword.operator.declaration") + " keyword is used to declare an operator in a class or struct declaration.";
 				break;
 			case "out":
-				result.SignatureMarkup = Highlight ("out", "keyword.parameter") + " (keyword)";
+				result.SignatureMarkup = Highlight ("out", "keyword.parameter") + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("out", "keyword.parameter") + " method parameter keyword on a method parameter causes a method to refer to the same variable that was passed into the method.";
 				break;
 			case "override":
-				result.SignatureMarkup = Highlight ("override", "keyword.modifier") + " (keyword)";
+				result.SignatureMarkup = Highlight ("override", "keyword.modifier") + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("override", "keyword.modifier") + " modifier is used to override a method, a property, an indexer, or an event.";
 				break;
 			case "params":
-				result.SignatureMarkup = Highlight ("params", "keyword.parameter") + " (keyword)";
+				result.SignatureMarkup = Highlight ("params", "keyword.parameter") + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("params", "keyword.parameter") + " keyword lets you specify a method parameter that takes an argument where the number of arguments is variable.";
 				break;
 			case "private":
-				result.SignatureMarkup = Highlight ("private", "keyword.modifier") + " (keyword)";
+				result.SignatureMarkup = Highlight ("private", "keyword.modifier") + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("private", "keyword.modifier") + " keyword is a member access modifier. Private access is the least permissive access level. Private members are accessible only within the body of the class or the struct in which they are declared.";
 				break;
 			case "protected":
-				result.SignatureMarkup = Highlight ("protected", "keyword.modifier") + " (keyword)";
+				result.SignatureMarkup = Highlight ("protected", "keyword.modifier") + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("protected", "keyword.modifier") + " keyword is a member access modifier. A protected member is accessible from within the class in which it is declared, and from within any class derived from the class that declared this member.";
 				break;
 			case "public":
-				result.SignatureMarkup = Highlight ("public", "keyword.modifier") + " (keyword)";
+				result.SignatureMarkup = Highlight ("public", "keyword.modifier") + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("public", "keyword.modifier") + " keyword is an access modifier for types and type members. Public access is the most permissive access level. There are no restrictions on accessing public members.";
 				break;
 			case "readonly":
-				result.SignatureMarkup = Highlight ("readonly", "keyword.modifier") + " (keyword)";
+				result.SignatureMarkup = Highlight ("readonly", "keyword.modifier") + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("readonly", "keyword.modifier") + " keyword is a modifier that you can use on fields. When a field declaration includes a " + Highlight ("readonly", "keyword.modifier") + " modifier, assignments to the fields introduced by the declaration can only occur as part of the declaration or in a constructor in the same class.";
 				break;
 			case "ref":
-				result.SignatureMarkup = Highlight ("ref", "keyword.parameter") + " (keyword)";
+				result.SignatureMarkup = Highlight ("ref", "keyword.parameter") + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("ref", "keyword.parameter") + " method parameter keyword on a method parameter causes a method to refer to the same variable that was passed into the method.";
 				break;
 			case "return":
-				result.SignatureMarkup = Highlight ("return", "keyword.jump") + " (keyword)";
+				result.SignatureMarkup = Highlight ("return", "keyword.jump") + keywordSign;
 				result.AddCategory ("Form", Highlight ("return", "keyword.jump") + " [expression];");
 				result.SummaryMarkup = "The " + Highlight ("return", "keyword.jump") + " statement terminates execution of the method in which it appears and returns control to the calling method.";
 				break;
 			case "sealed":
-				result.SignatureMarkup = Highlight ("sealed", "keyword.modifier") + " (keyword)";
+				result.SignatureMarkup = Highlight ("sealed", "keyword.modifier") + keywordSign;
 				result.SummaryMarkup = "A sealed class cannot be inherited.";
 				break;
 			case "sizeof":
-				result.SignatureMarkup = Highlight ("sizeof", "keyword.operator") + " (keyword)";
+				result.SignatureMarkup = Highlight ("sizeof", "keyword.operator") + keywordSign;
 				result.AddCategory ("Form", Highlight ("sizeof", "keyword.operator") + " (type)");
 				result.SummaryMarkup = "The " + Highlight ("sizeof", "keyword.operator") + " operator is used to obtain the size in bytes for a value type.";
 				break;
 			case "stackalloc":
-				result.SignatureMarkup = Highlight ("stackalloc", "keyword.operator") + " (keyword)";
+				result.SignatureMarkup = Highlight ("stackalloc", "keyword.operator") + keywordSign;
 				result.AddCategory ("Form", "type * ptr = " + Highlight ("stackalloc", "keyword.operator") + " type [ expr ];");
 				result.SummaryMarkup = "Allocates a block of memory on the stack.";
 				break;
 			case "static":
-				result.SignatureMarkup = Highlight ("static", "keyword.modifier") + " (keyword)";
+				result.SignatureMarkup = Highlight ("static", "keyword.modifier") + keywordSign;
 				result.SummaryMarkup = "Use the " + Highlight ("static", "keyword.modifier") + "modifier to declare a static member, which belongs to the type itself rather than to a specific object.";
 				break;
 			case "struct":
-				result.SignatureMarkup = Highlight ("struct", "keyword.declaration") + " (keyword)";
+				result.SignatureMarkup = Highlight ("struct", "keyword.declaration") + keywordSign;
 				result.AddCategory ("Form", "[attributes] [modifiers] " + Highlight ("struct", "keyword.declaration") + " identifier [:interfaces] body [;]");
 				result.SummaryMarkup = "A " + Highlight ("struct", "keyword.declaration") + " type is a value type that can contain constructors, constants, fields, methods, properties, indexers, operators, events, and nested types. ";
 				break;
 			case "switch":
-				result.SignatureMarkup = Highlight ("switch", "keyword.selection") + " (keyword)";
+				result.SignatureMarkup = Highlight ("switch", "keyword.selection") + keywordSign;
 				result.AddCategory ("Form", Highlight ("switch", "keyword.selection") + " (expression)" + Environment.NewLine + 
 					" {" + Environment.NewLine + 
 				                    "  " + Highlight ("case", "keyword.selection") + " constant-expression:" + Environment.NewLine + 
@@ -802,16 +808,16 @@ namespace MonoDevelop.CSharp
 				result.SummaryMarkup = "The " + Highlight ("switch", "keyword.selection") + " statement is a control statement that handles multiple selections by passing control to one of the " + Highlight ("case", "keyword.selection") + " statements within its body.";
 				break;
 			case "this":
-				result.SignatureMarkup = Highlight ("this", "keyword.access") + " (keyword)";
+				result.SignatureMarkup = Highlight ("this", "keyword.access") + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("this", "keyword.access") + " keyword refers to the current instance of the class.";
 				break;
 			case "throw":
-				result.SignatureMarkup = Highlight ("throw", "keyword.exceptions") + " (keyword)";
+				result.SignatureMarkup = Highlight ("throw", "keyword.exceptions") + keywordSign;
 				result.AddCategory ("Form", Highlight ("throw", "keyword.exceptions") + " [expression];");
 				result.SummaryMarkup = "The " + Highlight ("throw", "keyword.exceptions") + " statement is used to signal the occurrence of an anomalous situation (exception) during the program execution.";
 				break;
 			case "try":
-				result.SignatureMarkup = Highlight ("try", "keyword.exceptions") + " (keyword)";
+				result.SignatureMarkup = Highlight ("try", "keyword.exceptions") + keywordSign;
 				result.AddCategory ("Form", Highlight ("try", "keyword.exceptions") + " try-block" + Environment.NewLine + 
 				                    "  " + Highlight ("catch", "keyword.exceptions") + " (exception-declaration-1) catch-block-1 " + Environment.NewLine + 
 					"  " + Highlight ("catch", "keyword.exceptions") + " (exception-declaration-2) catch-block-2 " + Environment.NewLine + 
@@ -820,37 +826,37 @@ namespace MonoDevelop.CSharp
 				result.SummaryMarkup = "The try-catch statement consists of a " + Highlight ("try", "keyword.exceptions") + " block followed by one or more " + Highlight ("catch", "keyword.exceptions") + " clauses, which specify handlers for different exceptions.";
 				break;
 			case "typeof":
-				result.SignatureMarkup = Highlight ("typeof", "keyword.operator") + " (keyword)";
+				result.SignatureMarkup = Highlight ("typeof", "keyword.operator") + keywordSign;
 				result.AddCategory ("Form", Highlight ("typeof", "keyword.operator") + "(type)");
 				result.SummaryMarkup = "The " + Highlight ("typeof", "keyword.operator") + " operator is used to obtain the System.Type object for a type.";
 				break;
 			case "unchecked":
-				result.SignatureMarkup = Highlight ("unchecked", "keyword.misc") + " (keyword)";
+				result.SignatureMarkup = Highlight ("unchecked", "keyword.misc") + keywordSign;
 				result.AddCategory ("Form", Highlight ("unchecked", "keyword.misc") + " block" + Environment.NewLine +
 				                    Highlight ("unchecked", "keyword.misc") + " (expression)");
 				result.SummaryMarkup = "The "+ Highlight ("unchecked", "keyword.misc") + " keyword is used to control the overflow-checking context for integral-type arithmetic operations and conversions.";
 				break;
 			case "unsafe":
-				result.SignatureMarkup = Highlight ("unsafe", "keyword.misc") + " (keyword)";
+				result.SignatureMarkup = Highlight ("unsafe", "keyword.misc") + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("unsafe", "keyword.misc") + " keyword denotes an unsafe context, which is required for any operation involving pointers.";
 				break;
 			case "using":
-				result.SignatureMarkup = Highlight ("using", "keyword.namespace") + " (keyword)";
+				result.SignatureMarkup = Highlight ("using", "keyword.namespace") + keywordSign;
 				result.AddCategory ("Form", Highlight ("using", "keyword.namespace") + " (expression | type identifier = initializer) statement" + Environment.NewLine +
 				                    Highlight ("using", "keyword.namespace") + " [alias = ]class_or_namespace;");
 				result.SummaryMarkup = "The " + Highlight ("using", "keyword.namespace") + " directive creates an alias for a namespace or imports types defined in other namespaces. The " + Highlight ("using", "keyword.namespace") + " statement defines a scope at the end of which an object will be disposed.";
 				break;
 			case "virtual":
-				result.SignatureMarkup = Highlight ("virtual", "keyword.modifier") + " (keyword)";
+				result.SignatureMarkup = Highlight ("virtual", "keyword.modifier") + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("virtual", "keyword.modifier") + " keyword is used to modify a method or property declaration, in which case the method or the property is called a virtual member.";
 				break;
 			case "volatile":
-				result.SignatureMarkup = Highlight ("volatile", "keyword.modifier") + " (keyword)";
+				result.SignatureMarkup = Highlight ("volatile", "keyword.modifier") + keywordSign;
 				result.AddCategory ("Form", Highlight ("volatile", "keyword.modifier") + " declaration");
 				result.SummaryMarkup = "The " + Highlight ("volatile", "keyword.modifier") + " keyword indicates that a field can be modified in the program by something such as the operating system, the hardware, or a concurrently executing thread.";
 				break;
 			case "while":
-				result.SignatureMarkup = Highlight ("while", "keyword.iteration") + " (keyword)";
+				result.SignatureMarkup = Highlight ("while", "keyword.iteration") + keywordSign;
 				result.AddCategory ("Form", Highlight ("while", "keyword.iteration") + " (expression) statement");
 				result.SummaryMarkup = "The " + Highlight ("while", "keyword.iteration") + " statement executes a statement or a block of statements until a specified expression evaluates to false. ";
 				break;
@@ -900,12 +906,12 @@ namespace MonoDevelop.CSharp
 				var doHighightParameter = i == HighlightParameter || HighlightParameter >= i && i == parameterList.Count - 1 && parameter.IsParams;
 				if (doHighightParameter)
 					result.Append("<u>");
-				if (parameter.IsOptional) {
+/*				if (parameter.IsOptional) {
 					GrayOut = true;
 					var color = AlphaBlend (colorStyle.Default.Color, colorStyle.Default.BackgroundColor, optionalAlpha);
 					var colorString = Mono.TextEditor.HelperMethods.GetColorString (color);
 					result.Append ("<span foreground=\"" + colorString + "\">");
-				}
+				}*/
 				AppendParameter (result, parameter);
 				if (parameter.IsOptional) {
 					if (formattingOptions.SpaceAroundAssignment) {
@@ -914,8 +920,8 @@ namespace MonoDevelop.CSharp
 						result.Append ("=");
 					}
 					AppendConstant (result, parameter.ConstantValue);
-					GrayOut = false;
-					result.Append ("</span>");
+//					GrayOut = false;
+//					result.Append ("</span>");
 				}
 				if (doHighightParameter)
 					result.Append("</u>");
