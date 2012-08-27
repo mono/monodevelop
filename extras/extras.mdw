@@ -10,6 +10,5 @@
     <Item>MonoDevelop.CodeAnalysis/MonoDevelop.CodeAnalysis.sln</Item>
     <Item>JavaBinding/JavaBinding.sln</Item>
     <Item>MonoDevelop.Debugger.Win32/MonoDevelop.Debugger.Win32.sln</Item>
-    <Item>MonoDevelop.MonoMac/MonoDevelop.MonoMac.sln</Item>
   </Items>
 </WorkspaceItem>
