@@ -520,7 +520,7 @@ namespace MonoDevelop.Ide
 					break;
 				} catch (Exception ex) {
 					if (!retry && AddinManager.IsInitialized) {
-						LoggingService.LogWarning (BrandingService.ApplicationName + " failed to start. Rebuilding addins registry.");
+						LoggingService.LogWarning (BrandingService.ApplicationName + " failed to start. Rebuilding addins registry.", ex);
 						AddinManager.Registry.Rebuild (new Mono.Addins.ConsoleProgressStatus (true));
 						LoggingService.LogInfo ("Addin registry rebuilt. Restarting MonoDevelop.");
 						retry = true;
