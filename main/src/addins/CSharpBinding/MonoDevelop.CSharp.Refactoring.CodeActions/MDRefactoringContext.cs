@@ -57,7 +57,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 
 		public bool IsInvalid {
 			get {
-				return Resolver == null;
+				return Resolver == null || Document.ParsedDocument.HasErrors;
 			}
 		}
 

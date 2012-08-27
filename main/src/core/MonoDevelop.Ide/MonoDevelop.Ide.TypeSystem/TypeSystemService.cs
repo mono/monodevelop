@@ -165,7 +165,7 @@ namespace MonoDevelop.Ide.TypeSystem
 	
 	public static class TypeSystemService
 	{
-		const string CurrentVersion = "1.0.1";
+		const string CurrentVersion = "1.0.2";
 		static List<TypeSystemParserNode> parsers;
 		static string[] filesSkippedInParseThread = new string[0];
 		static IEnumerable<TypeSystemParserNode> Parsers {
@@ -1430,9 +1430,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				throw new ArgumentNullException ("fileName");
 			ReaderParameters parameters = new ReaderParameters ();
 			parameters.AssemblyResolver = new DefaultAssemblyResolver (); // new SimpleAssemblyResolver (Path.GetDirectoryName (fileName));
-			using (var stream = new MemoryStream (File.ReadAllBytes (fileName))) {
-				return AssemblyDefinition.ReadAssembly (stream, parameters);
-			}
+			return AssemblyDefinition.ReadAssembly (fileName, parameters);
 		}
 		
 		static bool GetXml (string baseName, MonoDevelop.Core.Assemblies.TargetRuntime runtime, out FilePath xmlFileName)
