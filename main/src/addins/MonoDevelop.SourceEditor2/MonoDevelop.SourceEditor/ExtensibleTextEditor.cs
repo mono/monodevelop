@@ -202,7 +202,7 @@ namespace MonoDevelop.SourceEditor
 		
 		protected override void OptionsChanged (object sender, EventArgs args)
 		{
-			if (view.Control != null) {
+			if (view != null && view.Control != null) {
 				if (!Options.ShowFoldMargin)
 					this.Document.ClearFoldSegments ();
 			}

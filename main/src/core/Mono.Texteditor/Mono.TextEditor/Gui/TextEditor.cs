@@ -39,20 +39,20 @@ namespace Mono.TextEditor
 {
 	[System.ComponentModel.Category("Mono.TextEditor")]
 	[System.ComponentModel.ToolboxItem(true)]
-	public class TextEditor : Container
+	public class TextEditor : TextArea
 	{
-		readonly TextArea textArea;
+	//	readonly TextArea textArea;
 
 		internal TextArea TextArea {
 			get {
-				return textArea;
+				return this;
 			}
 		}
 
 		
 		public Widget TextAreaWidget {
 			get {
-				return textArea;
+				return this;
 			}
 		}
 
@@ -80,22 +80,24 @@ namespace Mono.TextEditor
 		public TextEditor (TextDocument doc, ITextEditorOptions options, EditMode initialMode)
 		{
 			GtkWorkarounds.FixContainerLeak (this);
-			this.textArea = new TextArea (this, doc, options, initialMode);
+			Initialize (this, doc, options, initialMode);
+
+	/*		this.textArea = new TextArea (this, doc, options, initialMode);
 			this.textArea.Initialize ();
 			this.textArea.EditorOptionsChanged += (sender, e) => OptionsChanged (sender, e);
 		
-			AddTopLevelWidget (textArea, 0, 0);
+			AddTopLevelWidget (textArea, 0, 0);*/
 			stage.ActorStep += OnActorStep;
 			ShowAll ();
 			
 			// bug on mac: search widget gets overdrawn in the scroll event.
 			if (Platform.IsMac) {
-				textArea.VScroll += delegate {
+				VScroll += delegate {
 					for (int i = 1; i < containerChildren.Count; i++) {
 						containerChildren[i].Child.QueueDraw ();
 					}
 				};
-				textArea.HScroll += delegate {
+				HScroll += delegate {
 					for (int i = 1; i < containerChildren.Count; i++) {
 						containerChildren[i].Child.QueueDraw ();
 					}
@@ -230,8 +232,8 @@ namespace Mono.TextEditor
 			if (this.GdkWindow != null)
 				this.GdkWindow.MoveResize (allocation);
 			allocation = new Rectangle (0, 0, allocation.Width, allocation.Height);
-			if (textArea.Allocation != allocation)
-				textArea.SizeAllocate (allocation);
+//			if (textArea.Allocation != allocation)
+//				textArea.SizeAllocate (allocation);
 			SetChildrenPositions (allocation);
 		}
 		
@@ -240,9 +242,9 @@ namespace Mono.TextEditor
 			Requisition req = child.Child.SizeRequest ();
 			var childRectangle = new Gdk.Rectangle (child.X, child.Y, req.Width, req.Height);
 			if (!child.FixedPosition) {
-				double zoom = textArea.Options.Zoom;
-				childRectangle.X = (int)(child.X * zoom - textArea.HAdjustment.Value);
-				childRectangle.Y = (int)(child.Y * zoom - textArea.VAdjustment.Value);
+				double zoom = Options.Zoom;
+				childRectangle.X = (int)(child.X * zoom - HAdjustment.Value);
+				childRectangle.Y = (int)(child.Y * zoom - VAdjustment.Value);
 			}
 			//			childRectangle.X += allocation.X;
 			//			childRectangle.Y += allocation.Y;
@@ -252,8 +254,8 @@ namespace Mono.TextEditor
 		void SetChildrenPositions (Rectangle allocation)
 		{
 			foreach (EditorContainerChild child in containerChildren.ToArray ()) {
-				if (child.Child == textArea)
-					continue;
+//				if (child.Child == textArea)
+//					continue;
 				ResizeChild (allocation, child);
 			}
 		}
@@ -347,7 +349,7 @@ namespace Mono.TextEditor
 		Adjustment editorHAdjustement;
 		Adjustment editorVAdjustement;
 
-		protected sealed override void OnSetScrollAdjustments (Adjustment hAdjustement, Adjustment vAdjustement)
+		protected override void OnSetScrollAdjustments (Adjustment hAdjustement, Adjustment vAdjustement)
 		{
 			if (editorHAdjustement != null)
 				editorHAdjustement.ValueChanged -= HandleHAdjustementValueChanged;
@@ -361,9 +363,8 @@ namespace Mono.TextEditor
 			
 			editorHAdjustement = hAdjustement;
 			editorVAdjustement = vAdjustement;
-			textArea.SetScrollAdjustments (hAdjustement, vAdjustement);
-			OnScrollAdjustmentsSet ();
-		}
+			base.UpdateScrollAdjustments (hAdjustement, vAdjustement);
+			OnScrollAdjustmentsSet ();		}
 
 		protected virtual void OnScrollAdjustmentsSet ()
 		{
@@ -384,6 +385,7 @@ namespace Mono.TextEditor
 				editorVAdjustement.ValueChanged -= HandleHAdjustementValueChanged;
 			base.OnDestroyed ();
 		}
+		/*
 
 		#region TextArea delegation
 		public TextDocument Document {
@@ -766,7 +768,7 @@ namespace Mono.TextEditor
 		public TextEditorData GetTextEditorData ()
 		{
 			return textArea.GetTextEditorData ();
-		}
+		}*/
 
 		/// <remarks>
 		/// The Key may be null if it has been handled by the IMContext. In such cases, the char is the value.
@@ -776,11 +778,11 @@ namespace Mono.TextEditor
 			SimulateKeyPress (key, ch, state);
 			return true;
 		}
-
+/*
 		public void SimulateKeyPress (Gdk.Key key, uint unicodeChar, ModifierType modifier)
 		{
-			textArea.SimulateKeyPress (key, unicodeChar, modifier);
-		}
+			base.SimulateKeyPress (key, unicodeChar, modifier);
+		}*/
 
 		
 		public void RunAction (Action<TextEditorData> action)
@@ -791,7 +793,7 @@ namespace Mono.TextEditor
 				Console.WriteLine ("Error while executing " + action + " :" + e);
 			}
 		}
-
+/*
 		public void HideTooltip ()
 		{
 			textArea.HideTooltip ();
@@ -1149,6 +1151,6 @@ namespace Mono.TextEditor
 		public void SetCaretTo (int line, int column, bool highlight, bool centerCaret)
 		{
 			textArea.SetCaretTo (line, column, highlight, centerCaret);
-		}
+		}*/
 	}
 }

@@ -44,10 +44,10 @@ using Gtk;
 
 namespace Mono.TextEditor
 {
-	class TextArea : Gtk.Widget, ITextEditorDataProvider
+	public class TextArea : Gtk.Container, ITextEditorDataProvider
 	{
-		readonly TextEditor parentEditor;
-		readonly TextEditorData textEditorData;
+		TextEditor parentEditor;
+		TextEditorData textEditorData;
 		
 		protected IconMargin       iconMargin;
 		protected GutterMargin     gutterMargin;
@@ -153,8 +153,7 @@ namespace Mono.TextEditor
 				textEditorData.Options = value;
 				if (textEditorData.Options != null) {
 					textEditorData.Options.Changed += OptionsChanged;
-					if (IsRealized)
-						OptionsChanged (null, null);
+					OptionsChanged (null, null);
 				}
 			}
 		}
@@ -219,16 +218,16 @@ namespace Mono.TextEditor
 			oldVadjustment = value;
 			TextViewMargin.caretY -= delta;
 			
-			if (System.Math.Abs (delta) >= Allocation.Height - this.LineHeight * 2 || this.TextViewMargin.inSelectionDrag) {
+	//		if (System.Math.Abs (delta) >= Allocation.Height - this.LineHeight * 2 || this.TextViewMargin.inSelectionDrag) {
 				this.QueueDraw ();
 				OnVScroll (EventArgs.Empty);
 				return;
-			}
+		/*	}
 			
 			if (GdkWindow != null)
 				GdkWindow.Scroll (0, (int)-delta);
-			
-			OnVScroll (EventArgs.Empty);
+
+			OnVScroll (EventArgs.Empty);*/
 		}
 		
 		protected virtual void OnVScroll (EventArgs e)
@@ -248,7 +247,7 @@ namespace Mono.TextEditor
 		public event EventHandler VScroll;
 		public event EventHandler HScroll;
 		
-		protected override void OnSetScrollAdjustments (Adjustment hAdjustement, Adjustment vAdjustement)
+		internal void UpdateScrollAdjustments (Adjustment hAdjustement, Adjustment vAdjustement)
 		{
 			if (textEditorData == null)
 				return;
@@ -268,15 +267,21 @@ namespace Mono.TextEditor
 		}
 		
 
-		public TextArea (TextEditor parentEditor, TextDocument doc, ITextEditorOptions options, EditMode initialMode)
+		protected TextArea ()
 		{
-			if (parentEditor == null)
-				throw new ArgumentNullException ("parentEditor");
+			this.Events = EventMask.PointerMotionMask | EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.EnterNotifyMask | EventMask.LeaveNotifyMask | EventMask.VisibilityNotifyMask | EventMask.FocusChangeMask | EventMask.ScrollMask | EventMask.KeyPressMask | EventMask.KeyReleaseMask;
+			this.DoubleBuffered = true;
+			base.CanFocus = true;
+		}
+
+		internal void Initialize (TextEditor editor, TextDocument doc, ITextEditorOptions options, EditMode initialMode)
+		{
 			if (doc == null)
 				throw new ArgumentNullException ("doc");
-			this.parentEditor = parentEditor;
+			parentEditor = editor;
+
+
 			textEditorData = new TextEditorData (doc);
-			textEditorData.Parent = parentEditor;
 			textEditorData.RecenterEditor += delegate {
 				CenterToCaret ();
 				StartCaretPulseAnimation ();
@@ -286,18 +291,14 @@ namespace Mono.TextEditor
 			textEditorData.Document.LineChanged += UpdateLinesOnTextMarkerHeightChange; 
 			textEditorData.Document.MarkerAdded += HandleTextEditorDataDocumentMarkerChange;
 			textEditorData.Document.MarkerRemoved += HandleTextEditorDataDocumentMarkerChange;
-
+			
 			textEditorData.CurrentMode = initialMode;
-
+			
 			this.textEditorData.Options = options ?? TextEditorOptions.DefaultOptions;
 
-			this.Events = EventMask.PointerMotionMask | EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.EnterNotifyMask | EventMask.LeaveNotifyMask | EventMask.VisibilityNotifyMask | EventMask.FocusChangeMask | EventMask.ScrollMask | EventMask.KeyPressMask | EventMask.KeyReleaseMask;
-			this.DoubleBuffered = true;
-			base.CanFocus = true;
-		}
 
-		internal void Initialize ()
-		{
+			textEditorData.Parent = parentEditor;
+
 			iconMargin = new IconMargin (parentEditor);
 			gutterMargin = new GutterMargin (parentEditor);
 			textViewMargin = new TextViewMargin (parentEditor);
@@ -649,7 +650,7 @@ namespace Mono.TextEditor
 
 		protected virtual void OptionsChanged (object sender, EventArgs args)
 		{
-			if (!this.IsRealized)
+			if (Options == null)
 				return;
 			if (currentStyleName != Options.ColorScheme) {
 				currentStyleName = Options.ColorScheme;
