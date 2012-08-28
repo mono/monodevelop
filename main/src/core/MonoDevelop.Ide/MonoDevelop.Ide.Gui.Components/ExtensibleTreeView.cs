@@ -49,6 +49,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Projects.Extensions;
 using Mono.TextEditor;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
@@ -60,7 +61,8 @@ namespace MonoDevelop.Ide.Gui.Components
 		internal const int DataItemColumn     = 3;
 		internal const int BuilderChainColumn = 4;
 		internal const int FilledColumn       = 5;
-		
+		internal const int ShowPopupColumn    = 6;
+
 		NodeBuilder[] builders;
 		Dictionary<Type, NodeBuilder[]> builderChains = new Dictionary<Type, NodeBuilder[]> ();
 		NodeHashtable nodeHash = new NodeHashtable ();
@@ -75,6 +77,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		bool editingText = false;
 		int customFontSize = -1;
 		bool showSelectionPopupButton;
+		Gtk.TreeIter? lastPopupButtonIter;
 		
 		TreePadOption[] options;
 		TreeOptions globalOptions;
@@ -165,7 +168,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			4 -- Builder chain
 			5 -- Expanded
 			*/
-			store = new Gtk.TreeStore (typeof(string), typeof(Gdk.Pixbuf), typeof(Gdk.Pixbuf), typeof(object), typeof(object), typeof(bool));
+			store = new Gtk.TreeStore (typeof(string), typeof(Gdk.Pixbuf), typeof(Gdk.Pixbuf), typeof(object), typeof(object), typeof(bool), typeof(bool));
 			tree.Model = store;
 			tree.Selection.Mode = Gtk.SelectionMode.Multiple;
 			
@@ -201,7 +204,8 @@ namespace MonoDevelop.Ide.Gui.Components
 			
 			complete_column.PackStart (text_render, true);
 			complete_column.AddAttribute (text_render, "text-markup", TextColumn);
-			
+			complete_column.AddAttribute (text_render, "show-popup-button", ShowPopupColumn);
+
 			tree.AppendColumn (complete_column);
 			
 			tree.TestExpandRow += OnTestExpandRow;
@@ -1801,7 +1805,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			get { return showSelectionPopupButton; }
 			set {
 				showSelectionPopupButton = value;
-				QueueDraw ();
+				UpdateSelectionPopupButton ();
 			}
 		}
 
@@ -1884,9 +1888,31 @@ namespace MonoDevelop.Ide.Gui.Components
 		{
 			ActivateCurrentItem ();
 		}
+
+		void UpdateSelectionPopupButton ()
+		{
+			if (lastPopupButtonIter != null) {
+				if (store.IterIsValid (lastPopupButtonIter.Value))
+					tree.Model.SetValue (lastPopupButtonIter.Value, ShowPopupColumn, false);
+				lastPopupButtonIter = null;
+			}
+
+			if (showSelectionPopupButton) {
+				var sel = Tree.Selection.GetSelectedRows ();
+				if (sel.Length > 0) {
+					Gtk.TreeIter it;
+					if (store.GetIter (out it, sel[0])) {
+						lastPopupButtonIter = it;
+						tree.Model.SetValue (it, ShowPopupColumn, true);
+					}
+				}
+			}
+		}
 		
 		protected virtual void OnSelectionChanged (object sender, EventArgs args)
 		{
+			UpdateSelectionPopupButton ();
+
 			TreeNodeNavigator node = (TreeNodeNavigator) GetSelectedNode ();
 			if (node != null) {
 				NodeBuilder[] chain = node.NodeBuilderChain;
@@ -2307,6 +2333,9 @@ namespace MonoDevelop.Ide.Gui.Components
 		[GLib.Property ("text-markup")]
 		public string TextMarkup { get; set; }
 
+		[GLib.Property ("show-popup-button")]
+		public bool ShowPopupButton { get; set; }
+		
 		public CustomCellRendererText (ExtensibleTreeView parent)
 		{
 			this.parent = parent;
@@ -2339,7 +2368,7 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			la.Dispose ();
 
-			if (parent.ShowSelectionPopupButton) {
+			if (ShowPopupButton) {
 				if (!bound) {
 					bound = true;
 					((Gtk.ScrolledWindow)widget.Parent).Hadjustment.ValueChanged += delegate {
@@ -2393,7 +2422,7 @@ namespace MonoDevelop.Ide.Gui.Components
 						if (mouseOver || Pushed)
 							ctx.Paint ();
 						else
-							ctx.PaintWithAlpha (0.5);
+							ctx.PaintWithAlpha (0.7);
 					}
 				}
 			}
