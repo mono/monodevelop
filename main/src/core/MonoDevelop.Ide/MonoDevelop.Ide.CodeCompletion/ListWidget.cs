@@ -700,7 +700,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			if (vadj == null)
 				return;
-			vadj.SetBounds (0, filteredItems.Count * rowHeight, rowHeight, Allocation.Height, Allocation.Height);
+			vadj.SetBounds (0, Math.Max (Allocation.Height, filteredItems.Count * rowHeight), rowHeight, Allocation.Height, Allocation.Height);
 		}
 		
 		protected virtual void OnWordsFiltered (EventArgs e)

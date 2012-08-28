@@ -1841,7 +1841,7 @@ namespace Mono.TextEditor
 					VAdjustment.Value = System.Math.Max (0, maxY - allocation.Height);
 				}
 				this.textEditorData.VAdjustment.SetBounds (0, 
-				                                           maxY, 
+				                                           System.Math.Max (allocation.Height, maxY), 
 				                                           LineHeight,
 				                                           allocation.Height,
 				                                           allocation.Height);
@@ -1947,7 +1947,8 @@ namespace Mono.TextEditor
 			if (this.isDisposed)
 				return false;
 			UpdateAdjustments ();
-			
+
+
 			var area = e.Region.Clipbox;
 			var cairoArea = new Cairo.Rectangle (area.X, area.Y, area.Width, area.Height);
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (e.Window))
