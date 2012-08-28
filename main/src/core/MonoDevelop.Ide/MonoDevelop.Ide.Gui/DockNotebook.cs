@@ -37,7 +37,7 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public delegate void TabsReorderedHandler (Widget widget, int oldPlacement, int newPlacement);
+	delegate void TabsReorderedHandler (Widget widget, int oldPlacement, int newPlacement);
 
 	class DockNotebook : Gtk.VBox
     {
@@ -52,8 +52,6 @@ namespace MonoDevelop.Ide.Gui
 		public DockNotebook ()
 		{
 			pagesCol = new ReadOnlyCollection<IDockNotebookTab> (pages);
-			ButtonPressEvent += new ButtonPressEventHandler (OnButtonPress);
-			ButtonReleaseEvent += new ButtonReleaseEventHandler (OnButtonRelease);
 			AddEvents ((Int32)(EventMask.AllEventsMask));
 
 			tabStrip = new TabStrip (this);
@@ -84,6 +82,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public event TabsReorderedHandler TabsReordered;
 		public event EventHandler<TabEventArgs> TabClosed;
+		public event EventHandler<TabEventArgs> TabActivated;
 
 		public event EventHandler PageAdded;
 		public event EventHandler PageRemoved;
@@ -238,109 +237,18 @@ namespace MonoDevelop.Ide.Gui
 				TabClosed (this, new TabEventArgs () { Tab = tab });
 		}
 
+		internal void OnActivateTab (DockNotebookTab tab)
+		{
+			if (TabActivated != null)
+				TabActivated (this, new TabEventArgs () { Tab = tab });
+		}
+		
 		internal void ShowContent (DockNotebookTab tab)
 		{
 			if (tab == currentTab)
 				contentBox.Child = tab.Content;
 		}
 
-		bool DragInProgress;
-
-		public int FindTabAtPosition (double cursorX, double cursorY) {
-/*			int    dragNotebookXRoot;
-			int    dragNotebookYRoot;
-			Widget page;
-			int    pageNumber        = CurrentPage;
-			Widget tab;
-			int    tabMaxX;
-			int    tabMaxY;
-			int    tabMinX;
-			int    tabMinY;
-			int? direction = null;
-
-			ParentWindow.GetOrigin (out dragNotebookXRoot, out dragNotebookYRoot);
-			
-			// We cannot rely on the allocations being zero for tabs which are
-			// offscreen. If we write the logic to walk from page 0 til NPages,
-			// we can end up choosing the wrong page because pages which are
-			// offscreen will match the mouse coordinates. We can work around
-			// this by walking either up or down from the active page and choosing
-			// the first page which is within the mouse x/y coordinates.
-			while ((page = GetTab (pageNumber)) != null && pageNumber >= 0 && pageNumber <= NPages) {
-
-				if ((tab = GetTabLabel (page)) == null)
-					return -1;
-
-				tabMinX = dragNotebookXRoot + tab.Allocation.X;
-				tabMaxX = tabMinX + tab.Allocation.Width;
-
-				tabMinY = dragNotebookYRoot + tab.Allocation.Y;
-				tabMaxY = tabMinY + tab.Allocation.Height;
-
-				if ((tabMinX <= cursorX) && (cursorX <= tabMaxX) &&
-					(tabMinY <= cursorY) && (cursorY <= tabMaxY))
-					return pageNumber;
-
-				if (!direction.HasValue)
-						direction = cursorX > tabMaxX ? 1 : -1;
-
-				pageNumber += direction.Value;
-			}
-*/
-			return -1;
-		}
-
-		void MoveTab (int destinationPage)
-		{
-			if (destinationPage >= 0 && destinationPage != CurrentTabIndex) {
-				int oldPage = CurrentTabIndex;
-				ReorderChild (CurrentTab.Content, destinationPage);
-
-				if (TabsReordered != null)
-					TabsReordered (CurrentTab.Content, oldPage, destinationPage);
-			}
-		}
-
-		[GLib.ConnectBefore]
-		void OnButtonPress (object obj, ButtonPressEventArgs args) {
-
-			if (DragInProgress || args.Event.TriggersContextMenu ())
-				return;
-
-			if (args.Event.Button == 1 && args.Event.Type == EventType.ButtonPress && FindTabAtPosition (args.Event.XRoot, args.Event.YRoot) >= 0)
-				MotionNotifyEvent += new MotionNotifyEventHandler (OnMotionNotify);
-		}
-		
-		public void LeaveDragMode (uint time)
-		{
-			if (DragInProgress) {
-				Pointer.Ungrab (time);
-				Grab.Remove (this);
-			}
-			MotionNotifyEvent -= new MotionNotifyEventHandler (OnMotionNotify);
-			DragInProgress = false;
-		}
-		
-		[GLib.ConnectBefore]
-		void OnButtonRelease (object obj, ButtonReleaseEventArgs args) {
-			LeaveDragMode (args.Event.Time);
-		}
-
-
-		[GLib.ConnectBefore]
-		void OnMotionNotify (object obj, MotionNotifyEventArgs args) {
-
-			if (!DragInProgress) {
-				DragInProgress = true;
-				Grab.Add (this);
-
-				if (!Pointer.IsGrabbed)
-					Pointer.Grab (ParentWindow, false, EventMask.Button1MotionMask | EventMask.ButtonReleaseMask, null, fleurCursor, args.Event.Time);	
-			}
-
-			MoveTab (FindTabAtPosition (args.Event.XRoot, args.Event.YRoot));
-		}
-		
 		protected override void OnDestroyed ()
 		{
 			if (fleurCursor != null) {
@@ -695,6 +603,11 @@ namespace MonoDevelop.Ide.Gui
 			if (t != null) {
 				if (evnt.IsContextMenuButton ()) {
 					notebook.DoPopupMenu (t.Index, evnt);
+					return true;
+				}
+				if (evnt.Type == Gdk.EventType.TwoButtonPress) {
+					notebook.OnActivateTab (t);
+					buttonPressedOnTab = false;
 					return true;
 				}
 				buttonPressedOnTab = true;

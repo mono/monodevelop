@@ -170,9 +170,6 @@ namespace MonoDevelop.Ide.Gui
 					return "";
 			}
 			set {
-				// Leave dragging mode, to avoid problems due to widget relocating
-				tabControl.LeaveDragMode (0);
-				
 				var oldLayout = dock.CurrentLayout;
 				
 				InitializeLayout (value);
@@ -824,13 +821,8 @@ namespace MonoDevelop.Ide.Gui
 			tabControl.PageRemoved += OnActiveWindowChanged;
 			tabControl.TabClosed += CloseClicked;
 		
-			tabControl.ButtonPressEvent += delegate(object sender, ButtonPressEventArgs e) {
-				int tab = tabControl.FindTabAtPosition (e.Event.XRoot, e.Event.YRoot);
-				if (tab < 0)
-					return;
-				tabControl.CurrentTabIndex = tab;
-				if (e.Event.Type == Gdk.EventType.TwoButtonPress)
-					ToggleFullViewMode ();
+			tabControl.TabActivated += delegate(object sender, TabEventArgs e) {
+				ToggleFullViewMode ();
 			};
 
 			this.tabControl.DoPopupMenu = ShowPopup;
@@ -1020,8 +1012,6 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void ToggleFullViewMode ()
 		{
-			this.tabControl.LeaveDragMode (0);
-			
 			if (IsInFullViewMode) {
 				var oldLayout = dock.CurrentLayout;
 				toolbarFrame.CurrentLayout = dock.CurrentLayout = CurrentLayout;
