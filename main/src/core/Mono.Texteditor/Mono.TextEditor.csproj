@@ -202,7 +202,6 @@
     <Compile Include="Mono.TextEditor\Gui\GtkGestures.cs" />
     <Compile Include="Mono.TextEditor\Gui\TooltipProvider.cs" />
     <Compile Include="Mono.TextEditor\ISelectionSurroundingProvider.cs" />
-    <Compile Include="Mono.TextEditor\Gui\TextArea.cs" />
     <Compile Include="Mono.TextEditor\Gui\TextEditor.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -340,7 +340,7 @@ namespace MonoDevelop.SourceEditor
 		void ResetFocusChain ()
 		{
 			List<Widget> focusChain = new List<Widget> ();
-			focusChain.Add (this.textEditor.TextAreaWidget);
+			focusChain.Add (this.textEditor);
 			if (this.searchAndReplaceWidget != null) {
 				focusChain.Add (this.searchAndReplaceWidget);
 			}
@@ -597,7 +597,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public bool EditorHasFocus {
 			get {
-				return TextEditor.TextAreaWidget.HasFocus;
+				return TextEditor.HasFocus;
 			}
 		}
 

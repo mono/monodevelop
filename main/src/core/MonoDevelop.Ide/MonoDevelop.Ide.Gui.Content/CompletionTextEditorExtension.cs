@@ -394,7 +394,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			if (CompletionWidget != null)
 				CompletionWidget.CompletionContextChanged += OnCompletionContextChanged;
 
-			document.Editor.Parent.TextAreaWidget.FocusOutEvent += delegate {
+			document.Editor.Parent.FocusOutEvent += delegate {
 				CompletionWindowManager.HideWindow ();
 			};
 		}

@@ -58,8 +58,8 @@ namespace Mono.TextEditor
 		{
 			if (e.Location.Line == editor.Caret.Line)
 				return;
-			editor.TextArea.RedrawMarginLine (this, e.Location.Line);
-			editor.TextArea.RedrawMarginLine (this, editor.Caret.Line);
+			editor.RedrawMarginLine (this, e.Location.Line);
+			editor.RedrawMarginLine (this, editor.Caret.Line);
 		}
 
 		int LineCountMax {
@@ -110,14 +110,14 @@ namespace Mono.TextEditor
 			base.MousePressed (args);
 			if (hoverSegment != null) {
 				hoverSegment.IsFolded = !hoverSegment.IsFolded;
-				editor.TextArea.SetAdjustments ();
+				editor.SetAdjustments ();
 				editor.Caret.MoveCaretBeforeFoldings ();
 			}
 		}
 		
 		internal protected override void MouseReleased (MarginMouseEventArgs args)
 		{
-			editor.TextArea.LockedMargin = null;
+			editor.LockedMargin = null;
 			base.MouseReleased (args);
 		}
 		

@@ -301,8 +301,8 @@ namespace Mono.TextEditor
 		public static bool CancelPreEditMode (TextEditorData data)
 		{
 			var editor = data.Parent;
-			if (editor != null && !string.IsNullOrEmpty (editor.TextArea.preeditString)) {
-				editor.TextArea.ResetIMContext ();
+			if (editor != null && !string.IsNullOrEmpty (editor.preeditString)) {
+				editor.ResetIMContext ();
 				return true;
 			}
 			return false;
