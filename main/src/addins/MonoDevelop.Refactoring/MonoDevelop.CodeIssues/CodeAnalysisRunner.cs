@@ -70,6 +70,8 @@ namespace MonoDevelop.CodeIssues
 							fixes.ToArray ()
 						));
 					}
+				} catch (OperationCanceledException) {
+					//ignore
 				} catch (Exception e) {
 					LoggingService.LogError ("CodeAnalysis: Got exception in inspector '" + provider + "'", e);
 				}
