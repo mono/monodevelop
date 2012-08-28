@@ -786,7 +786,9 @@ namespace MonoDevelop.Ide.TypeSystem
 						((LazyProjectLoader)Content).ContextTask.Wait ();
 					}
 					Content = updateFunc (Content);
-					compilation = null;
+					// Need to clear this compilation & all compilations that reference this directly or indirectly
+					foreach (var wrapper in projectContents.Values)
+						wrapper.compilation = null;
 					WasChanged = true;
 				}
 			}
