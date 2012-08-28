@@ -208,15 +208,13 @@ namespace MonoDevelop.CSharp.Refactoring
 		
 		public override IEnumerable<MemberReference> FindReferences (Project project, IProjectContent content, IEnumerable<FilePath> possibleFiles, IEnumerable<object> members)
 		{
-			if (project == null)
-				throw new ArgumentNullException ("project", "Project not set.");
 			if (content == null)
 				throw new ArgumentNullException ("content", "Project content not set.");
 			SetPossibleFiles (possibleFiles);
 			SetSearchedMembers (members);
-			
+
 			var scopes = searchedMembers.Select (e => refFinder.GetSearchScopes (e as IEntity));
-			var compilation = TypeSystemService.GetCompilation (project);
+			var compilation = project != null ? TypeSystemService.GetCompilation (project) : content.CreateCompilation ();
 			List<MemberReference> refs = new List<MemberReference> ();
 			foreach (var opendoc in openDocuments) {
 				foreach (var newRef in FindInDocument (opendoc.Item2)) {
