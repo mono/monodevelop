@@ -78,6 +78,12 @@ namespace Mono.TextEditor.Utils
 		}
 
 		#region stream reader methods
+		public static StreamReader OpenStream (string fileName)
+		{
+			bool hadBom;
+			return OpenStream (File.ReadAllBytes (fileName), out hadBom);
+		}
+
 		public static StreamReader OpenStream (byte[] bytes)
 		{
 			bool hadBom;

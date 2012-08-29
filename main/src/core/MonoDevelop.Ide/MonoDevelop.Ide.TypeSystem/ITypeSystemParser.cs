@@ -30,16 +30,59 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
+	/// <summary>
+	/// A type system parser provides a ParsedDocument (which just adds some more information to a IUnresolvedFile) for
+	/// a given file. This is required for adding information to the type system service to make the file contents available
+	/// for type lookup (code completion, resolving etc.).
+	/// </summary>
 	public interface ITypeSystemParser
 	{
+		/// <summary>
+		/// Parse the specified file. The file content is provided as text reader.
+		/// </summary>
+		/// <param name='storeAst'>
+		/// If set to <c>true</c> the ast should be stored in the parsed document.
+		/// </param>
+		/// <param name='fileName'>
+		/// The name of the file.
+		/// </param>
+		/// <param name='content'>
+		/// A text reader providing the file contents.
+		/// </param>
+		/// <param name='project'>
+		/// The project the file belongs to.
+		/// </param>
 		ParsedDocument Parse (bool storeAst, string fileName, TextReader content, Project project = null);
+
+		/// <summary>
+		/// Parse the specified file. The file content should be read by the type system parser.
+		/// </summary>
+		/// <param name='storeAst'>
+		/// If set to <c>true</c> the ast should be stored in the parsed document.
+		/// </param>
+		/// <param name='fileName'>
+		/// The name of the file.
+		/// </param>
+		/// <param name='project'>
+		/// The project the file belongs to.
+		/// </param>
+		ParsedDocument Parse (bool storeAst, string fileName, Project project = null);
 	}
-	
+
+	/// <summary>
+	/// Abstract base class for the type system parser. 
+	/// </summary>
 	public abstract class AbstractTypeSystemParser : ITypeSystemParser
 	{
 		public virtual ParsedDocument Parse (bool storeAst, string fileName, TextReader content, Project project = null)
 		{
 			return null;
+		}
+
+		public virtual ParsedDocument Parse (bool storeAst, string fileName, Project project = null)
+		{
+			using (var stream = Mono.TextEditor.Utils.TextFileUtility.OpenStream (fileName)) 
+				return Parse (storeAst, fileName, stream, project);
 		}
 	}
 }

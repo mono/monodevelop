@@ -219,15 +219,15 @@ namespace MonoDevelop.Ide.TypeSystem
 			};
 		}
 		
-		public static ITypeSystemParser GetParser (string mimeType)
+		public static ITypeSystemParser GetParser (string mimeType, string buildAction = BuildAction.Compile)
 		{
-			var provider = Parsers.FirstOrDefault (p => p.CanParse (mimeType));
+			var provider = Parsers.FirstOrDefault (p => p.CanParse (mimeType, buildAction));
 			return provider != null ? provider.Parser : null;
 		}
 		
-		static TypeSystemParserNode GetTypeSystemParserNode (string mimeType)
+		static TypeSystemParserNode GetTypeSystemParserNode (string mimeType, string buildAction)
 		{
-			return Parsers.FirstOrDefault (p => p.CanParse (mimeType));
+			return Parsers.FirstOrDefault (p => p.CanParse (mimeType, buildAction));
 		}
 		
 		static List<MimeTypeExtensionNode> foldingParsers;
@@ -1948,26 +1948,22 @@ namespace MonoDevelop.Ide.TypeSystem
 				TypeSystemParserNode node = null;
 				ITypeSystemParser parser = null;
 				foreach (var file in (FileList ?? Context.Project.Files)) {
-					if (!string.Equals (file.BuildAction, "compile", StringComparison.OrdinalIgnoreCase)) 
-						continue;
 					var fileName = file.FilePath;
 					if (filesSkippedInParseThread.Any (f => f == fileName))
 						continue;
-					if (node == null || !node.CanParse (fileName)) {
-						node = TypeSystemService.GetTypeSystemParserNode (DesktopService.GetMimeTypeForUri (fileName));
+					if (node == null || !node.CanParse (fileName, file.BuildAction)) {
+						node = TypeSystemService.GetTypeSystemParserNode (DesktopService.GetMimeTypeForUri (fileName), file.BuildAction);
 						parser = node != null ? node.Parser : null;
 					}
 					if (parser == null)
 						continue;
-					using (var stream = new System.IO.StreamReader (fileName)) {
-						var parsedDocument = parser.Parse (false, fileName, stream, Context.Project);
-						UpdateParsedDocument (Context, parsedDocument);
-						var oldFile = Context.Content.GetFile (fileName);
-						Context.UpdateContent (c => c.UpdateProjectContent (c.GetFile (fileName), parsedDocument.ParsedFile));
-						if (oldFile != null)
-							Context.InformFileRemoved (new ParsedFileEventArgs (oldFile));
-						Context.InformFileAdded (new ParsedFileEventArgs (parsedDocument.ParsedFile));
-					}
+					var parsedDocument = parser.Parse (false, fileName, Context.Project);
+					UpdateParsedDocument (Context, parsedDocument);
+					var oldFile = Context.Content.GetFile (fileName);
+					Context.UpdateContent (c => c.UpdateProjectContent (c.GetFile (fileName), parsedDocument.ParsedFile));
+					if (oldFile != null)
+						Context.InformFileRemoved (new ParsedFileEventArgs (oldFile));
+					Context.InformFileAdded (new ParsedFileEventArgs (parsedDocument.ParsedFile));
 				}
 			}
 		}
@@ -2131,13 +2127,13 @@ namespace MonoDevelop.Ide.TypeSystem
 				lock (projectWrapperUpdateLock) {
 					List<ProjectFile> modifiedFiles = null;
 					foreach (var file in projectFiles) {
-						if (file.BuildAction == null || !string.Equals (file.BuildAction, "compile", StringComparison.OrdinalIgnoreCase)) 
+						if (file.BuildAction == null) 
 							continue;
 						var fileName = file.Name;
 						// if the file is already inside the content a parser exists for it, if not check if it can be parsed.
 						var oldFile = content.Content.GetFile (fileName);
 						if (oldFile == null) {
-							var parser = TypeSystemService.GetParser (DesktopService.GetMimeTypeForUri (fileName));
+							var parser = TypeSystemService.GetParser (DesktopService.GetMimeTypeForUri (fileName), file.BuildAction);
 							if (parser == null)
 								continue;
 						}

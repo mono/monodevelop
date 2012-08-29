@@ -37,9 +37,9 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.XmlEditor
 {
-	public class XmlDocumentParser : ITypeSystemParser
+	public class XmlDocumentParser : AbstractTypeSystemParser
 	{
-		ParsedDocument ITypeSystemParser.Parse (bool storeAst, string fileName, TextReader content, MonoDevelop.Projects.Project project = null)
+		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader content, MonoDevelop.Projects.Project project = null)
 		{
 			XmlParsedDocument doc = new XmlParsedDocument (fileName);
 			doc.Flags |= ParsedDocumentFlags.NonSerializable;

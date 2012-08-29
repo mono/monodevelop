@@ -37,9 +37,9 @@ using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.CSharp.Parser
 {
-	public class TypeSystemParser : ITypeSystemParser
+	public class TypeSystemParser : AbstractTypeSystemParser
 	{
-		public ParsedDocument Parse (bool storeAst, string fileName, System.IO.TextReader content, MonoDevelop.Projects.Project project = null)
+		public override ParsedDocument Parse (bool storeAst, string fileName, System.IO.TextReader content, MonoDevelop.Projects.Project project = null)
 		{
 			var parser = new ICSharpCode.NRefactory.CSharp.CSharpParser (GetCompilerArguments (project));
 			parser.GenerateTypeSystemMode = !storeAst;
