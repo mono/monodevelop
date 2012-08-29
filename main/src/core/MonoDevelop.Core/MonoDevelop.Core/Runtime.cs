@@ -58,7 +58,8 @@ namespace MonoDevelop.Core
 			if (initialized)
 				return;
 			Counters.RuntimeInitialization.BeginTiming ();
-
+			SetupInstrumentation ();
+			
 			if (Platform.IsMac)
 				InitMacFoundation ();
 			
@@ -92,10 +93,7 @@ namespace MonoDevelop.Core
 					devAddinDir ?? UserProfile.Current.LocalInstallDir.Combine ("Addins"),
 					devAddinDir ?? UserProfile.Current.CacheDir);
 				AddinManager.InitializeDefaultLocalizer (new DefaultAddinLocalizer ());
-				BrandingService.Initialize ();
 				
-				SetupInstrumentation ();
-
 				if (updateAddinRegistry)
 					AddinManager.Registry.Update (null);
 				setupService = new AddinSetupService (AddinManager.Registry);

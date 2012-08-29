@@ -27,11 +27,8 @@
 using System;
 using System.Reflection;
 using System.IO;
-using System.Linq;
 using System.Xml.Linq;
 using System.Runtime.CompilerServices;
-using Mono.Addins;
-using MonoDevelop.Core.AddIns;
 
 namespace MonoDevelop.Core
 {
@@ -40,25 +37,18 @@ namespace MonoDevelop.Core
 	/// </summary>
 	public static class BrandingService
 	{
-		const string BrandingExtension = "/MonoDevelop/Core/BrandingRoot";
 		static FilePath brandingDir;
 		static FilePath localizedBrandingDir;
 		static XDocument brandingDocument;
 		static XDocument localizedBrandingDocument;
 		
-		public static string ApplicationName { get; private set; }
+		public static readonly string ApplicationName;
 		
-		internal static void Initialize ()
+		static BrandingService ()
 		{
 			try {
-				var dirNode = AddinManager.GetExtensionNodes<FilePathExtensionNode> (BrandingExtension).FirstOrDefault ();
-				if (dirNode != null)
-					brandingDir = dirNode.FilePath;
-				else {
-					FilePath asmPath = typeof (BrandingService).Assembly.Location;
-					brandingDir = asmPath.ParentDirectory.Combine ("branding");
-				}
-
+				FilePath asmPath = typeof (BrandingService).Assembly.Location;
+				brandingDir = asmPath.ParentDirectory.Combine ("branding");
 				if (!Directory.Exists (brandingDir)) {
 					brandingDir = null;
 				} else {

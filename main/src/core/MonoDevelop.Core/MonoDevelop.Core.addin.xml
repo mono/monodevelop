@@ -156,11 +156,6 @@
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/DocumentationGenerator">
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
-	
-	<ExtensionPoint path = "/MonoDevelop/Core/BrandingRoot" name = "Branding root directory">
-		<ExtensionNode name="Source" type="MonoDevelop.Core.AddIns.FilePathExtensionNode" />
-	</ExtensionPoint>
-	
 	<!-- Extensions -->
 	
 	
