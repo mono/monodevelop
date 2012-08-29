@@ -134,7 +134,7 @@ namespace MonoDevelop.Platform
 		}
 	}
 	
-	static class GdkWin32
+	public static class GdkWin32
 	{
 		[System.Runtime.InteropServices.DllImport ("libgdk-win32-2.0-0.dll")]
 		static extern IntPtr gdk_win32_drawable_get_handle (IntPtr drawable);
@@ -161,7 +161,7 @@ namespace MonoDevelop.Platform
 		}
 	}
 	
-	class GtkWin32Proxy : IWin32Window
+	public class GtkWin32Proxy : IWin32Window
 	{
 		public GtkWin32Proxy (Gtk.Window gtkWindow)
 		{
