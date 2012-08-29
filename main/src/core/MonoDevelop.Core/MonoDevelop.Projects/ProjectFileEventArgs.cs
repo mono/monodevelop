@@ -152,7 +152,7 @@ namespace MonoDevelop.Projects
 	
 	public delegate void ProjectFileRenamedEventHandler(object sender, ProjectFileRenamedEventArgs e);
 	
-	public class ProjectFileRenamedEventArgs : EventArgsChain<ProjectFileEventInfo>
+	public class ProjectFileRenamedEventArgs : EventArgsChain<ProjectFileRenamedEventInfo>
 	{
 		public ProjectFileRenamedEventArgs (Project project, ProjectFile file, FilePath oldName)
 		{
