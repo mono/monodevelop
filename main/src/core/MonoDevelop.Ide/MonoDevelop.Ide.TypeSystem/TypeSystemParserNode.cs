@@ -32,9 +32,21 @@ namespace MonoDevelop.Ide.TypeSystem
 {
 	public class TypeSystemParserNode : TypeExtensionNode
 	{
+		[NodeAttribute (Description="The build actions.")]
+		string[] buildActions = new string[] { MonoDevelop.Projects.BuildAction.Compile };
+
+		public string[] BuildActions {
+			get {
+				return buildActions;
+			}
+			set {
+				buildActions = value;
+			}
+		}
+
 		[NodeAttribute (Description="The mime type.")]
 		string mimeType;
-		
+
 		public string MimeType {
 			get {
 				return mimeType;
@@ -53,11 +65,13 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 		
 		HashSet<string> mimeTypes;
-		public bool CanParse (string mimeType)
+		public bool CanParse (string mimeType, string buildAction)
 		{
 			if (mimeTypes == null)
 				mimeTypes  = this.mimeType != null ? new HashSet<string> (this.mimeType.Split (',').Select (s => s.Trim ())) : new HashSet<string> ();
-			return mimeTypes.Contains (mimeType, StringComparer.Ordinal);
+			if (!mimeTypes.Contains (mimeType, StringComparer.Ordinal))
+				return false;
+			return buildActions.Any (action => string.Equals (action, buildAction, StringComparison.OrdinalIgnoreCase));
 		}
 	}
 }
