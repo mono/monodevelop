@@ -1799,15 +1799,13 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 					if (parser == null)
 						continue;
-					using (var stream = new System.IO.StreamReader (fileName)) {
-						var parsedDocument = parser.Parse (false, fileName, stream, Context.Project);
-						UpdateParsedDocument (Context, parsedDocument);
-						var oldFile = Context.Content.GetFile (fileName);
-						Context.UpdateContent (c => c.UpdateProjectContent (c.GetFile (fileName), parsedDocument.ParsedFile));
-						if (oldFile != null)
-							Context.InformFileRemoved (new ParsedFileEventArgs (oldFile));
-						Context.InformFileAdded (new ParsedFileEventArgs (parsedDocument.ParsedFile));
-					}
+					var parsedDocument = parser.Parse (false, fileName, Context.Project);
+					UpdateParsedDocument (Context, parsedDocument);
+					var oldFile = Context.Content.GetFile (fileName);
+					Context.UpdateContent (c => c.UpdateProjectContent (c.GetFile (fileName), parsedDocument.ParsedFile));
+					if (oldFile != null)
+						Context.InformFileRemoved (new ParsedFileEventArgs (oldFile));
+					Context.InformFileAdded (new ParsedFileEventArgs (parsedDocument.ParsedFile));
 				}
 			}
 		}

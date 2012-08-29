@@ -39,7 +39,7 @@ namespace MonoDevelop.VersionControl.Views
 	/// <summary>
 	/// Parser for unified diffs
 	/// </summary>
-	public class DiffParser: ITypeSystemParser
+	public class DiffParser : AbstractTypeSystemParser
 	{
 		// Match the original file and time/revstamp line, capturing the filepath and the stamp
 		static Regex fileHeaderExpression = new Regex (@"^---\s+(?<filepath>[^\t]+)\t(?<stamp>.*)$", RegexOptions.Compiled);
@@ -52,7 +52,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		#region AbstractParser overrides
 		
-		ParsedDocument ITypeSystemParser.Parse (bool storeAst, string fileName, TextReader textReader, Project project = null)
+		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader textReader, Project project = null)
 		{
 			var doc = new DefaultParsedDocument (fileName);
 			
