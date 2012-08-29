@@ -1839,6 +1839,7 @@ namespace Mono.TextEditor
 					maxY += EditorLineThreshold * this.LineHeight;
 				if (VAdjustment.Value > maxY - allocation.Height) {
 					VAdjustment.Value = System.Math.Max (0, maxY - allocation.Height);
+					QueueDraw ();
 				}
 				this.textEditorData.VAdjustment.SetBounds (0, 
 				                                           System.Math.Max (allocation.Height, maxY), 
