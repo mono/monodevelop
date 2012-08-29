@@ -55,6 +55,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 	public class ListWindow : PopoverWindow
 	{
+		const int WindowWidth = 300;
+
 		ListWidget list;
 		Widget footer;
 		VBox vbox;
@@ -135,7 +137,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (IsRealized && !Visible)
 				Show ();
 			
-			int width = 200; //list.WidthRequest;
+			int width = WindowWidth; //list.WidthRequest;
 			int height = list.HeightRequest + 2 + (footer != null ? footer.Allocation.Height : 0) + CornerRadius * 2;
 			
 			SetSizeRequest (width, height);
