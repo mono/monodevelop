@@ -166,6 +166,7 @@ namespace MonoDevelop.Ide.TypeSystem
 	public static class TypeSystemService
 	{
 		const string CurrentVersion = "1.0.2";
+
 		static List<TypeSystemParserNode> parsers;
 		static string[] filesSkippedInParseThread = new string[0];
 		static IEnumerable<TypeSystemParserNode> Parsers {
@@ -198,6 +199,19 @@ namespace MonoDevelop.Ide.TypeSystem
 					break;
 				}
 			});
+
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/TypeSystem/OutputTracking", delegate (object sender, ExtensionNodeEventArgs args) {
+				var projectType = ((TypeSystemOutputTrackingNode)args.ExtensionNode).ProjectType;
+				switch (args.Change) {
+				case ExtensionChange.Add:
+					outputTrackedProjects.Add (projectType);
+					break;
+				case ExtensionChange.Remove:
+					outputTrackedProjects.Remove (projectType);
+					break;
+				}
+			});
+
 			FileService.FileChanged += delegate(object sender, FileEventArgs e) {
 				if (!TrackFileChanges)
 					return;
@@ -217,6 +231,27 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 				}
 			};
+			IdeApp.ProjectOperations.EndBuild += HandleEndBuild;
+		}
+
+		static List<string> outputTrackedProjects =new List<string> ();
+		static void CheckProjectOutput (DotNetProject project)
+		{
+			if (project == null)
+				throw new ArgumentNullException ("project");
+			Console.WriteLine (project.ProjectType);
+			if (outputTrackedProjects.Contains (project.ProjectType, StringComparer.OrdinalIgnoreCase)) {
+				var fileName = project.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration);
+				GetProjectContentWrapper (project).UpdateTrackedOutputAssembly (fileName);
+			}
+		}
+
+		static void HandleEndBuild (object sender, BuildEventArgs args)
+		{
+			var project = args.SolutionItem as DotNetProject;
+			if (project == null)
+				return;
+			CheckProjectOutput (project);
 		}
 		
 		public static TypeSystemParser GetParser (string mimeType, string buildAction = BuildAction.Compile)
@@ -657,6 +692,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			
 			IUnresolvedAssembly assembly {
 				get {
+					if (wrapper.OutputAssembly != null)
+						return wrapper.OutputAssembly;
 					return wrapper.Compilation.MainAssembly.UnresolvedAssembly;
 				}
 			}
@@ -815,7 +852,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			
 			[NonSerialized]
 			ICompilation compilation = null;
-			
+
 			public ICompilation Compilation {
 				get {
 					lock (this) {
@@ -831,6 +868,16 @@ namespace MonoDevelop.Ide.TypeSystem
 				get;
 				private set;
 			}
+
+
+			[NonSerialized]
+			internal LazyAssemblyLoader OutputAssembly = null;
+
+			internal void UpdateTrackedOutputAssembly (FilePath fileName)
+			{
+				if (File.Exists (fileName))
+					OutputAssembly = new LazyAssemblyLoader (fileName, null);
+			}
 			
 			public ProjectContentWrapper (Project project)
 			{
@@ -839,7 +886,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				this.Project = project;
 				this.Content = new LazyProjectLoader (this).Content;
 			}
-			
+
 			public IEnumerable<Project> ReferencedProjects {
 				get {
 					foreach (var pr in Project.GetReferencedItems (ConfigurationSelector.Default)) {
@@ -1143,6 +1190,10 @@ namespace MonoDevelop.Ide.TypeSystem
 					projectContents [project] = wrapper = new ProjectContentWrapper (project);
 					referenceCounter [project] = 1;
 					OnProjectContentLoaded (new ProjectContentEventArgs (project, wrapper.Content));
+					var dotNetProject = project as DotNetProject;
+					if (dotNetProject != null)
+						CheckProjectOutput (dotNetProject);
+
 					project.FileAddedToProject += OnFileAdded;
 					project.FileRemovedFromProject += OnFileRemoved;
 					project.FileRenamedInProject += OnFileRenamed;
@@ -1563,7 +1614,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			#endregion
 		}
 		
-		class LazyAssemblyLoader : IUnresolvedAssembly
+		internal class LazyAssemblyLoader : IUnresolvedAssembly
 		{
 			class LazyAssembly : IAssembly
 			{
@@ -1734,9 +1785,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			
 			IUnresolvedAssembly LoadAssembly ()
 			{
-				var assemblyPath = Path.Combine (cache, "assembly.data");
+				var assemblyPath = cache != null ? Path.Combine (cache, "assembly.data") : null;
 				try {
-					if (File.Exists (assemblyPath)) {
+					if (assemblyPath != null && File.Exists (assemblyPath)) {
 						var deserializedAssembly = DeserializeObject <IUnresolvedAssembly> (assemblyPath);
 						if (deserializedAssembly != null) {
 						/*	var provider = deserializedAssembly as IDocumentationProviderContainer;

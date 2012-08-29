@@ -74,5 +74,22 @@ namespace MonoDevelop.Ide.TypeSystem
 			return buildActions.Any (action => string.Equals (action, buildAction, StringComparison.OrdinalIgnoreCase));
 		}
 	}
+
+
+	public class TypeSystemOutputTrackingNode : ExtensionNode
+	{
+		[NodeAttribute (Description="The project type.")]
+		string projectType;
+
+		public string ProjectType {
+			get {
+				return projectType;
+			}
+			set {
+				projectType = value;
+			}
+		}
+	}
+
 }
 
