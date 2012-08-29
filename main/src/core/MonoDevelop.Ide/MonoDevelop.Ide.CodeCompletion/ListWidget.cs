@@ -360,7 +360,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 		
 		string NoMatchesMsg {
-			get { return MonoDevelop.Core.GettextCatalog.GetString ("No matches"); }
+			get { return MonoDevelop.Core.GettextCatalog.GetString ("No Completions Found"); }
 		}
 		
 		string NoSuggestionsMsg {
@@ -401,13 +401,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 				//when there are no matches, display a message to indicate that the completion list is still handling input
 				if (filteredItems.Count == 0) {
 					Gdk.GC gc = new Gdk.GC (window);
-					gc.RgbFgColor = new Gdk.Color (0xff, 0xbc, 0xc1);
+					gc.RgbFgColor = backgroundColor.ToGdkColor ();
 					window.DrawRectangle (gc, true, 0, yPos, width, height - yPos);
 					layout.SetText (win.DataProvider.ItemCount == 0 ? NoSuggestionsMsg : NoMatchesMsg);
 					int lWidth, lHeight;
 					layout.GetPixelSize (out lWidth, out lHeight);
-					gc.RgbFgColor = new Gdk.Color (0, 0, 0);
-					window.DrawLayout (gc, (width - lWidth) / 2, yPos + (height - lHeight - yPos) / 2, layout);
+					gc.RgbFgColor = textColor;
+					window.DrawLayout (gc, (width - lWidth) / 2, yPos + (height - lHeight - yPos) / 2 - lHeight, layout);
 					gc.Dispose ();
 					return false;
 				}
