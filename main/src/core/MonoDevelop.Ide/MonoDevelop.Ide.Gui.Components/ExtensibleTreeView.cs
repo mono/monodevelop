@@ -2356,7 +2356,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			if ((flags & Gtk.CellRendererState.Insensitive) != 0)
 				st = Gtk.StateType.Insensitive;
 			if ((flags & Gtk.CellRendererState.Selected) != 0)
-				st = Gtk.StateType.Selected;
+				st = widget.HasFocus ? Gtk.StateType.Selected : Gtk.StateType.Active;
 
 			int tx = cell_area.X + (int) Xpad;
 			int ty = cell_area.Y + (cell_area.Height - h) / 2;

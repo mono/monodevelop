@@ -320,7 +320,7 @@ namespace MonoDevelop.VersionControl.Views
 			} else {
 				// Rendering a normal text row
 				int y = cell_area.Y + (cell_area.Height - height)/2;
-				window.DrawLayout (widget.Style.TextGC (GetState(flags)), cell_area.X, y, layout);
+				window.DrawLayout (widget.Style.TextGC (GetState(widget, flags)), cell_area.X, y, layout);
 			}
 		}
 		
@@ -515,10 +515,10 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		StateType GetState (CellRendererState flags)
+		StateType GetState (Gtk.Widget widget, CellRendererState flags)
 		{
 			if ((flags & CellRendererState.Selected) != 0)
-				return StateType.Selected;
+				return widget.HasFocus ? StateType.Selected : StateType.Active;
 			else
 				return StateType.Normal;
 		}
