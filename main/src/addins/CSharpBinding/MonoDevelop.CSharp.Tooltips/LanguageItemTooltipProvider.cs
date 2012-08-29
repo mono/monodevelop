@@ -48,7 +48,7 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class LanguageItemTooltipProvider: TooltipProvider
+	public class LanguageItemTooltipProvider: TooltipProvider, IDisposable
 	{
 		public LanguageItemTooltipProvider()
 		{
@@ -109,9 +109,26 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		AstNode lastNode = null;
-		TooltipInformationWindow lastWindow = null;
+		static TooltipInformationWindow lastWindow = null;
 
 		TooltipItem lastResult;
+
+		static void DestroyLastTooltipWindow ()
+		{
+			if (lastWindow != null) {
+				lastWindow.Destroy ();
+				lastWindow = null;
+			}
+		}
+
+		#region IDisposable implementation
+
+		public void Dispose ()
+		{
+			DestroyLastTooltipWindow ();
+		}
+
+		#endregion
 
 		protected override Gtk.Window CreateTooltipWindow (Mono.TextEditor.TextEditor editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
 		{
@@ -121,9 +138,6 @@ namespace MonoDevelop.SourceEditor
 
 			var titem = (ToolTipData)item.Item;
 
-			if (lastNode != null && lastWindow.IsRealized && titem.Node != null && lastNode == titem.Node) {
-				return lastWindow;
-			}
 			var tooltipInformation = CreateTooltip (titem, offset, null);
 			if (tooltipInformation == null || string.IsNullOrEmpty (tooltipInformation.SignatureMarkup))
 				return null;
@@ -132,8 +146,6 @@ namespace MonoDevelop.SourceEditor
 			result.ShowArrow = true;
 			result.AddOverload (tooltipInformation);
 			result.RepositionWindow ();
-			if (lastWindow != null && lastWindow.Visible)
-				lastWindow.Destroy ();
 			return result;
 		}
 
@@ -143,9 +155,12 @@ namespace MonoDevelop.SourceEditor
 			if (lastNode != null && lastWindow.IsRealized && titem.Node != null && lastNode == titem.Node)
 				return lastWindow;
 			
+			DestroyLastTooltipWindow ();
+
 			var tipWindow = CreateTooltipWindow (editor, offset, modifierState, item) as TooltipInformationWindow;
 			if (tipWindow == null)
 				return null;
+
 			var hoverNode = titem.Node.GetNodeAt (editor.OffsetToLocation (offset)) ?? titem.Node;
 			var p1 = editor.LocationToPoint (hoverNode.StartLocation);
 			var p2 = editor.LocationToPoint (hoverNode.EndLocation);
