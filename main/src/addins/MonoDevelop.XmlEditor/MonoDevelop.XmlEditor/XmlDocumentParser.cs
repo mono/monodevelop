@@ -37,7 +37,7 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.XmlEditor
 {
-	public class XmlDocumentParser : AbstractTypeSystemParser
+	public class XmlDocumentParser : TypeSystemParser
 	{
 		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader content, MonoDevelop.Projects.Project project = null)
 		{

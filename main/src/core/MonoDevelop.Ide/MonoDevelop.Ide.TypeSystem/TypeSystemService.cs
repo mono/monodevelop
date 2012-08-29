@@ -219,7 +219,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			};
 		}
 		
-		public static ITypeSystemParser GetParser (string mimeType, string buildAction = BuildAction.Compile)
+		public static TypeSystemParser GetParser (string mimeType, string buildAction = BuildAction.Compile)
 		{
 			var provider = Parsers.FirstOrDefault (p => p.CanParse (mimeType, buildAction));
 			return provider != null ? provider.Parser : null;
@@ -1946,7 +1946,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			public void Run (IProgressMonitor monitor)
 			{
 				TypeSystemParserNode node = null;
-				ITypeSystemParser parser = null;
+				TypeSystemParser parser = null;
 				foreach (var file in (FileList ?? Context.Project.Files)) {
 					var fileName = file.FilePath;
 					if (filesSkippedInParseThread.Any (f => f == fileName))

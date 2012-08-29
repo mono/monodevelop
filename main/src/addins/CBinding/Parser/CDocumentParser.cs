@@ -41,7 +41,7 @@ namespace CBinding.Parser
 	/// <summary>
 	/// Ctags-based document parser helper
 	/// </summary>
-	public class CDocumentParser:  AbstractTypeSystemParser
+	public class CDocumentParser:  TypeSystemParser
 	{
 		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader reader, Project project = null)
 		{

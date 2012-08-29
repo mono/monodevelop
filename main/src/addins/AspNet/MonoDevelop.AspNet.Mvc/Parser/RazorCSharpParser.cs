@@ -50,7 +50,7 @@ using System.Configuration;
 
 namespace MonoDevelop.AspNet.Mvc.Parser
 {
-	public class RazorCSharpParser : AbstractTypeSystemParser
+	public class RazorCSharpParser : TypeSystemParser
 	{
 		RazorEditorParser editorParser;
 		DocumentParseCompleteEventArgs capturedArgs;

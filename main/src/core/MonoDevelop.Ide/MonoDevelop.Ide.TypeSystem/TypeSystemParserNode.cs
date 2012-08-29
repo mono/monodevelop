@@ -56,11 +56,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 		
-		ITypeSystemParser cachedInstance;
+		TypeSystemParser cachedInstance;
 		
-		public ITypeSystemParser Parser {
+		public TypeSystemParser Parser {
 			get {
-				return cachedInstance ?? (cachedInstance = (ITypeSystemParser)CreateInstance ());
+				return cachedInstance ?? (cachedInstance = (TypeSystemParser)CreateInstance ());
 			}
 		}
 		

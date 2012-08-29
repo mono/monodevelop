@@ -35,7 +35,7 @@ namespace MonoDevelop.Ide.TypeSystem
 	/// a given file. This is required for adding information to the type system service to make the file contents available
 	/// for type lookup (code completion, resolving etc.).
 	/// </summary>
-	public interface ITypeSystemParser
+	public abstract class TypeSystemParser 
 	{
 		/// <summary>
 		/// Parse the specified file. The file content is provided as text reader.
@@ -52,7 +52,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		/// <param name='project'>
 		/// The project the file belongs to.
 		/// </param>
-		ParsedDocument Parse (bool storeAst, string fileName, TextReader content, Project project = null);
+		public abstract ParsedDocument Parse (bool storeAst, string fileName, TextReader content, Project project = null);
 
 		/// <summary>
 		/// Parse the specified file. The file content should be read by the type system parser.
@@ -66,19 +66,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		/// <param name='project'>
 		/// The project the file belongs to.
 		/// </param>
-		ParsedDocument Parse (bool storeAst, string fileName, Project project = null);
-	}
-
-	/// <summary>
-	/// Abstract base class for the type system parser. 
-	/// </summary>
-	public abstract class AbstractTypeSystemParser : ITypeSystemParser
-	{
-		public virtual ParsedDocument Parse (bool storeAst, string fileName, TextReader content, Project project = null)
-		{
-			return null;
-		}
-
 		public virtual ParsedDocument Parse (bool storeAst, string fileName, Project project = null)
 		{
 			using (var stream = Mono.TextEditor.Utils.TextFileUtility.OpenStream (fileName)) 

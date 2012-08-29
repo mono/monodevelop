@@ -33,7 +33,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.TextTemplating.Parser
 {
-	public class T4Parser : AbstractTypeSystemParser
+	public class T4Parser : TypeSystemParser
 	{
 		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader content, Project project = null)
 		{

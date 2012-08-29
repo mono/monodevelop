@@ -54,7 +54,7 @@ namespace MonoDevelop.CSharp.Completion
 		public static ParsedDocument Parse (string fileName, string text)
 		{
 			using (var content = new StringReader (text)) {
-				return new TypeSystemParser ().Parse (true, fileName, content);
+				return new MonoDevelop.CSharp.Parser.TypeSystemParser ().Parse (true, fileName, content);
 			}
 		}
 		

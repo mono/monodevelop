@@ -38,7 +38,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.AspNet.Parser
 {
-	public class AspNetParser : AbstractTypeSystemParser
+	public class AspNetParser : TypeSystemParser
 	{
 		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader tr, Project project = null)
 		{

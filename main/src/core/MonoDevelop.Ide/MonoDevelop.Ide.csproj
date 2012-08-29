@@ -1695,7 +1695,6 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\CodeGenerationService.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\CodeGenerator.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\TypeSystemParserNode.cs" />
-    <Compile Include="MonoDevelop.Ide.TypeSystem\ITypeSystemParser.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDocDocumentationProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\PortableRuntimeOptionsPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.OptionPanels.PortableRuntimeOptionsPanelWidget.cs" />
@@ -1732,6 +1731,7 @@
     <Compile Include="MonoDevelop.Ide.CodeCompletion\TooltipInformation.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\TooltipInformationWindow.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\ParameterDataProvider.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\TypeSystemParser.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

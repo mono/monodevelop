@@ -38,7 +38,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Html
 {
-	public class HtmlParser : AbstractTypeSystemParser
+	public class HtmlParser : TypeSystemParser
 	{
 		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader tr, Project project = null)
 		{
