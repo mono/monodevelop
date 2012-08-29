@@ -152,7 +152,7 @@ namespace MonoDevelop.SourceEditor
 		public override Gtk.Window ShowTooltipWindow (TextEditor editor, int offset, Gdk.ModifierType modifierState, int mouseX, int mouseY, TooltipItem item)
 		{
 			var titem = (ToolTipData)item.Item;
-			if (lastNode != null && lastWindow.IsRealized && titem.Node != null && lastNode == titem.Node)
+			if (lastNode != null && lastWindow != null && lastWindow.IsRealized && titem.Node != null && lastNode == titem.Node)
 				return lastWindow;
 			
 			DestroyLastTooltipWindow ();
