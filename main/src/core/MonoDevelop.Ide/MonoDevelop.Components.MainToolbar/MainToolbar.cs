@@ -170,9 +170,9 @@ namespace MonoDevelop.Components.MainToolbar
 			var info = IdeApp.CommandService.GetCommand (MonoDevelop.Ide.NavigateToDialog.Commands.NavigateTo);
 
 			if (info != null && !string.IsNullOrEmpty (info.AccelKey)) {
-				matchEntry.EmptyMessage = GettextCatalog.GetString ("Press {0} for search.", KeyBindingManager.BindingToDisplayLabel (info.AccelKey, false));
+				matchEntry.EmptyMessage = GettextCatalog.GetString ("Press {0} to search", KeyBindingManager.BindingToDisplayLabel (info.AccelKey, false));
 			} else {
-				matchEntry.EmptyMessage = GettextCatalog.GetString ("Enter text to search.");
+				matchEntry.EmptyMessage = GettextCatalog.GetString ("Search solution");
 			}
 			matchEntry.Ready = true;
 			matchEntry.Visible = true;
