@@ -159,6 +159,10 @@
 		<ExtensionNode name="Parser" type="MonoDevelop.Ide.TypeSystem.TypeSystemParserNode"/>
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/TypeSystem/OutputTracking" name = "TypeSystemOutputTracker">
+		<ExtensionNode name="Track" type="MonoDevelop.Ide.TypeSystem.TypeSystemOutputTrackingNode"/>
+	</ExtensionPoint>
+	
 	<ExtensionPoint path = "/MonoDevelop/TypeSystem/FoldingParser">
 		<ExtensionNode name="Parser" type="MonoDevelop.Core.AddIns.MimeTypeExtensionNode"/>
 	</ExtensionPoint>	
