@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Template originator="Ihor Sihuta" created="2012/08/05">
+
+	<TemplateConfiguration>
+		<_Name>Gtk# 2.0 project</_Name>
+		<_Description>Create F# Gtk# 2.0 and F# library projects</_Description>
+		<_Category>F#</_Category>
+		<LanguageName>F#</LanguageName>
+	</TemplateConfiguration>
+	
+	<Actions>
+		<Open filename="Main.fs" />
+        <Open filename="MainWindow.fs" />
+		<Open filename="Program.fs" />
+	</Actions>
+	
+	<Combine name="${ProjectName}" directory=".">
+		<Options>
+			<StartupProject>${ProjectName}</StartupProject>
+		</Options>
+
+		<Project name = "${ProjectName}" directory = ".">
+			<Options Target = "WinExe" />
+
+			<References>
+				<Reference type="Package" refto="System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+				<Reference type="Package" SpecificVersion="false" refto="gtk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+				<Reference type="Package" SpecificVersion="false" refto="gdk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+				<Reference type="Package" SpecificVersion="false" refto="glib-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+				<Reference type="Package" SpecificVersion="false" refto="glade-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+				<Reference type="Package" SpecificVersion="false" refto="pango-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+				<Reference type="Package" SpecificVersion="false" refto="atk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+			</References>
+
+			<Files>
+
+			<!-- A window template -->
+
+				<Widget>
+					<SteticTemplate>
+					  <widget class="Gtk.Window" id="MainWindow" design-size="400 300">
+					    <property name="Title" translatable="yes">${Name}</property>
+					    <property name="WindowPosition">CenterOnParent</property>
+					    <signal name="DeleteEvent" handler="OnDeleteEvent" />
+				        <child>
+				          <placeholder />
+				        </child>
+					  </widget>			
+					</SteticTemplate>
+
+					<!-- Class bound to the window -->
+
+					<File name="MainWindow.fs" AddStandardHeader="True">
+<![CDATA[namespace ${ProjectName}
+
+    module MainWindow =
+    
+        open System
+        open Gtk;
+
+        type MyWindow() as this =
+            inherit Window("MainWindow")
+            
+            do this.SetDefaultSize(400,300)
+            do this.DeleteEvent.AddHandler(fun o e -> this.OnDeleteEvent(o,e))
+            do this.ShowAll()
+            
+            member this.OnDeleteEvent(o,e:DeleteEventArgs) = 
+                Application.Quit ()
+                e.RetVal <- true]]>
+				</File>
+             </Widget>
+             <File name="Main.fs" AddStandardHeader="true">
+                <![CDATA[namespace ${ProjectName}
+    module Main =
+        
+        open System
+        open Gtk
+    
+        type MainClass = 
+            static member Main() = 
+                Application.Init()
+                let mutable win = new MainWindow.MyWindow()
+                win.Show()
+                Application.Run()]]>
+             </File>
+				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
+			</Files>
+		</Project>
+		<Project name="${ProjectName}.Logic" directory="${ProjectName}.Logic">
+			<Options>
+                <Target>Library</Target>
+                <!--<Language>F#</Language>-->
+            </Options>
+			<References>
+				<Reference type="Gac" refto="System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+				<Reference type="Gac" refto="FSharp.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+				<Reference type="Package" SpecificVersion="false" refto="gtk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+				<Reference type="Package" SpecificVersion="false" refto="gdk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+				<Reference type="Package" SpecificVersion="false" refto="glib-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+				<Reference type="Package" SpecificVersion="false" refto="glade-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+				<Reference type="Package" SpecificVersion="false" refto="pango-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+				<Reference type="Package" SpecificVersion="false" refto="atk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+			</References>
+			<Files>
+				<File name="Program.fs" AddStandardHeader="true">
+					<![CDATA[namespace ${Namespace}.Logic
+    module Numbers =                    
+        let countTo n = [1..n] |> List.iter (fun x -> printfn "%d" x)]]> 
+				</File>
+			</Files>
+		</Project>
+	</Combine>
+</Template>
+

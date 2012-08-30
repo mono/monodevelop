@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -56,6 +56,9 @@
     <EmbeddedResource Include="templates\FSharpSyntaxMode.xml" />
     <EmbeddedResource Include="templates\FSharpLibraryProject.xpt.xml" />
     <EmbeddedResource Include="templates\FSharpTutorialProject.xpt.xml" />
+    <EmbeddedResource Include="templates\FSharpGtkProject.xpt.xml" />
+    <EmbeddedResource Include="templates\AssemblyInfo.xft.xml" />
+    <!--<EmbeddedResource Include="templates\FSharpMoonlightLibraryProject.xpt.xml" /> -->
     <EmbeddedResource Include="FSharpBinding.addin.xml" />
     <Compile Include="PowerPack\CodeDomVisitor.fs" />
     <Compile Include="PowerPack\CodeDomGenerator.fs" />
@@ -86,33 +89,7 @@
   <ItemGroup>
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="ICSharpCode.NRefactory">
-      <HintPath>..\..\..\..\..\..\..\Applications\MonoDevelop.app\Contents\MacOS\lib\monodevelop\bin\ICSharpCode.NRefactory.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Addins">
-      <HintPath>/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/bin/Mono.Addins.dll</HintPath>
-      <HintPath>C:\Program Files\MonoDevelop\bin\Mono.Addins.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.TextEditor">
-      <HintPath>..\..\..\..\..\..\..\Applications\MonoDevelop.app\Contents\MacOS\lib\monodevelop\bin\Mono.TextEditor.dll</HintPath>
-      <HintPath>C:\Program Files\MonoDevelop\bin\Mono.TextEditor.dll</HintPath>
-    </Reference>
-    <Reference Include="MonoDevelop.Core">
-      <HintPath>..\..\..\..\..\..\..\Applications\MonoDevelop.app\Contents\MacOS\lib\monodevelop\bin\MonoDevelop.Core.dll</HintPath>
-      <HintPath>C:\Program Files\MonoDevelop\bin\MonoDevelop.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="MonoDevelop.Ide">
-      <HintPath>..\..\..\..\..\..\..\Applications\MonoDevelop.app\Contents\MacOS\lib\monodevelop\bin\MonoDevelop.Ide.dll</HintPath>
-      <HintPath>C:\Program Files\MonoDevelop\bin\MonoDevelop.Ide.dll</HintPath>
-    </Reference>
-    <Reference Include="MonoDevelop.Refactoring">
-      <HintPath>..\..\..\..\..\..\..\Applications\MonoDevelop.app\Contents\MacOS\lib\monodevelop\AddIns\MonoDevelop.Refactoring\MonoDevelop.Refactoring.dll</HintPath>
-      <HintPath>C:\Program Files\MonoDevelop\AddIns\MonoDevelop.Refactoring\MonoDevelop.Refactoring.dll</HintPath>
-    </Reference>
-    <Reference Include="MonoDevelop.SourceEditor2">
-      <HintPath>..\..\..\..\..\..\..\Applications\MonoDevelop.app\Contents\MacOS\lib\monodevelop\AddIns\DisplayBindings\SourceEditor\MonoDevelop.SourceEditor2.dll</HintPath>
-      <HintPath>C:\Program Files\MonoDevelop\AddIns\DisplayBindings\SourceEditor\MonoDevelop.SourceEditor2.dll</HintPath>
-    </Reference>
+    <!-- Use these for Windows -->
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="System" />
     <Reference Include="System.Xml" />
@@ -121,11 +98,32 @@
     <Reference Include="System.Core" />
     <Reference Include="mscorlib" />
     <Reference Include="Mono.Cairo" />
+    <Reference Include="Mono.Addins, Version=0.6.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Mono.TextEditor">
+      <HintPath>..\..\..\..\..\Applications\MonoDevelop.app\Contents\MacOS\lib\monodevelop\bin\Mono.TextEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoDevelop.Core">
+      <HintPath>..\..\..\..\..\Applications\MonoDevelop.app\Contents\MacOS\lib\monodevelop\bin\MonoDevelop.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoDevelop.Ide">
+      <HintPath>..\..\..\..\..\Applications\MonoDevelop.app\Contents\MacOS\lib\monodevelop\bin\MonoDevelop.Ide.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.NRefactory">
+      <HintPath>..\..\..\..\..\Applications\MonoDevelop.app\Contents\MacOS\lib\monodevelop\bin\ICSharpCode.NRefactory.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoDevelop.SourceEditor2">
+      <HintPath>..\..\..\..\..\Applications\MonoDevelop.app\Contents\MacOS\lib\monodevelop\AddIns\DisplayBindings\SourceEditor\MonoDevelop.SourceEditor2.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoDevelop.Refactoring">
+      <HintPath>..\..\..\..\..\Applications\MonoDevelop.app\Contents\MacOS\lib\monodevelop\AddIns\MonoDevelop.Refactoring\MonoDevelop.Refactoring.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Gui\MonoDevelop.FSharp.Gui.csproj">
-      <Name>MonoDevelop.FSharp.Gui</Name>
       <Project>{FD0D1033-9145-48E5-8ED8-E2365252878C}</Project>
+      <Name>MonoDevelop.FSharp.Gui</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>
