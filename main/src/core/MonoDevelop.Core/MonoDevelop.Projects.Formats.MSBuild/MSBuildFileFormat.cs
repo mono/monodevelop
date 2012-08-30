@@ -257,6 +257,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return new MSBuildFileFormatVS08 ();
 			case "4.0":
 				return new MSBuildFileFormatVS10 ();
+			case "4.5":
+				return new MSBuildFileFormatVS11 ();
 			}
 			throw new Exception ("Unknown ToolsVersion '" + toolsVersion + "'");
 		}
@@ -334,4 +336,34 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			get { return "MSBuild10"; }
 		}
 	}
+
+	class MSBuildFileFormatVS11: MSBuildFileFormat
+	{
+		public const string Version = "11.0.0";
+		const string toolsVersion = "4.0";
+		const string slnVersion = "12.00";
+		const string productComment = "Visual Studio 2012";
+		static TargetFrameworkMoniker[] frameworkVersions = {
+			TargetFrameworkMoniker.NET_2_0,
+			TargetFrameworkMoniker.NET_3_0,
+			TargetFrameworkMoniker.NET_3_5,
+			TargetFrameworkMoniker.NET_4_0,
+			TargetFrameworkMoniker.NET_4_5,
+			TargetFrameworkMoniker.SL_2_0,
+			TargetFrameworkMoniker.SL_3_0,
+			TargetFrameworkMoniker.SL_4_0,
+			TargetFrameworkMoniker.MONOTOUCH_1_0,
+			TargetFrameworkMoniker.PORTABLE_4_0
+		};
+		const bool supportsMonikers = true;
+		
+		public MSBuildFileFormatVS11 (): base (Version, toolsVersion, slnVersion, productComment, frameworkVersions, supportsMonikers)
+		{
+		}
+		
+		public override string Id {
+			get { return "MSBuild11"; }
+		}
+	}
+
 }
