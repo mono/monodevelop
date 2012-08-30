@@ -41,7 +41,16 @@ namespace MonoDevelop.CodeIssues
 		/// <summary>
 		/// Gets or sets the type of the MIME the provider is attached to.
 		/// </summary>
-		public string MimeType { get; set; }
+		string mimeType;
+		public string MimeType {
+			get {
+				return mimeType;
+			}
+			set {
+				mimeType = value;
+				UpdateSeverity ();
+			}
+		}
 
 		/// <summary>
 		/// Gets or sets the category of the issue provider (used in the option panel).
@@ -81,9 +90,15 @@ namespace MonoDevelop.CodeIssues
 		/// <summary>
 		/// Gets the current (user defined) severity.
 		/// </summary>
+		Severity severity;
 		public Severity GetSeverity ()
 		{
-			return PropertyService.Get<Severity> (IdString, DefaultSeverity);
+			return severity;
+		}
+
+		protected void UpdateSeverity ()
+		{
+			severity = PropertyService.Get<Severity> (IdString, DefaultSeverity);
 		}
 		
 		/// <summary>
