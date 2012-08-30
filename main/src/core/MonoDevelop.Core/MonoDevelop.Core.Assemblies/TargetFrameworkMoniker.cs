@@ -218,6 +218,10 @@ namespace MonoDevelop.Core.Assemblies
 		public static TargetFrameworkMoniker NET_4_0 {
 			get { return new TargetFrameworkMoniker ("4.0"); }
 		}
+
+		public static TargetFrameworkMoniker NET_4_5 {
+			get { return new TargetFrameworkMoniker ("4.5"); }
+		}
 		
 		public static TargetFrameworkMoniker PORTABLE_4_0 {
 			get { return new TargetFrameworkMoniker (ID_PORTABLE, "4.0", "Profile1"); }
