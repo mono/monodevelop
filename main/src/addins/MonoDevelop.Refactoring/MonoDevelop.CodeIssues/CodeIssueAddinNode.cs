@@ -63,9 +63,9 @@ namespace MonoDevelop.CodeIssues
 			get {
 				if (inspector == null) {
 					inspector = (CodeIssueProvider)CreateInstance ();
+					inspector.DefaultSeverity = severity;
 					inspector.MimeType = MimeType;
 					inspector.IssueMarker = IssueMarker;
-					inspector.DefaultSeverity = severity;
 				}
 				return inspector;
 			}
