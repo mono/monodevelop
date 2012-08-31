@@ -186,9 +186,12 @@ namespace MonoDevelop.AnalysisCore.Gui
 					var currentResult = (Result)enumerator.Current;
 					
 					if (currentResult.InspectionMark != IssueMarker.None) {
-						var marker = new ResultMarker (currentResult);
+						int start = editor.LocationToOffset (currentResult.Region.Begin);
+						int end = editor.LocationToOffset (currentResult.Region.End);
+
+						var marker = new ResultMarker (currentResult, TextSegment.FromBounds (start, end));
 						marker.IsVisible = currentResult.Underline;
-						editor.Document.AddMarker (marker.Line, marker);
+						editor.Document.AddMarker (marker);
 						ext.markers.Enqueue (marker);
 					}
 					
@@ -210,7 +213,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 			var line = Editor.GetLineByOffset (offset);
 			
 			var list = new List<Result> ();
-			foreach (var marker in line.Markers) {
+			foreach (var marker in Editor.Document.GetTextSegmentMarkersAt (offset)) {
 				if (token.IsCancellationRequested)
 					break;
 				var resultMarker = marker as ResultMarker;

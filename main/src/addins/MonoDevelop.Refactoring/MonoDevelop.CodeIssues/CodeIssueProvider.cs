@@ -106,6 +106,7 @@ namespace MonoDevelop.CodeIssues
 		/// </summary>
 		public void SetSeverity (Severity severity)
 		{
+			this.severity = severity;
 			PropertyService.Set (IdString, severity);
 		}
 
