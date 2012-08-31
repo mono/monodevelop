@@ -182,6 +182,30 @@ namespace MonoDevelop.CSharp
 
 		}
 
+		void AppendAccessibility (StringBuilder result, IMethod entity)
+		{
+			switch (entity.Accessibility) {
+			case Accessibility.Internal:
+				result.Append (Highlight ("internal", "keyword.modifier"));
+				break;
+			case Accessibility.ProtectedAndInternal:
+				result.Append (Highlight ("protected internal", "keyword.modifier"));
+				break;
+			case Accessibility.ProtectedOrInternal:
+				result.Append (Highlight ("internal protected", "keyword.modifier"));
+				break;
+			case Accessibility.Protected:
+				result.Append (Highlight ("protected", "keyword.modifier"));
+				break;
+			case Accessibility.Private:
+				result.Append (Highlight ("private", "keyword.modifier"));
+				break;
+			case Accessibility.Public:
+				result.Append (Highlight ("public", "keyword.modifier"));
+				break;
+			}
+		}
+
 		static int GetMarkupLength (string str)
 		{
 			int result = 0;
@@ -547,10 +571,20 @@ namespace MonoDevelop.CSharp
 			}
 			
 			result.Append (" {");
-			if (property.CanGet)
+			if (property.CanGet) {
+				if (property.Getter.Accessibility != property.Accessibility) {
+					result.Append (" ");
+					AppendAccessibility (result, property.Getter);
+				}
 				result.Append (Highlight (" get", "keyword.property") + ";");
-			if (property.CanSet)
+			}
+			if (property.CanSet) {
+				if (property.Setter.Accessibility != property.Accessibility) {
+					result.Append (" ");
+					AppendAccessibility (result, property.Setter);
+				}
 				result.Append (Highlight (" set", "keyword.property") + ";");
+			}
 			result.Append (" }");
 
 			return result.ToString ();
