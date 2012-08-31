@@ -146,14 +146,7 @@ namespace MonoDevelop.CSharp
 			if (entity is IField && ((IField)entity).IsConst) {
 				result.Append (Highlight ("const ", "keyword.modifier"));
 			} else {
-				if (entity.IsStatic)
-					result.Append (Highlight ("static ", "keyword.modifier"));
-				if (entity.IsSealed)
-					result.Append (Highlight ("sealed ", "keyword.modifier"));
-				if (entity.IsAbstract)
-					result.Append (Highlight ("abstract ", "keyword.modifier"));
-				if (entity.IsShadowing)
-					result.Append (Highlight ("new ", "keyword.modifier"));
+
 			}
 			switch (entity.Accessibility) {
 			case Accessibility.Internal:
@@ -177,6 +170,16 @@ namespace MonoDevelop.CSharp
 				result.Append (Highlight ("public ", "keyword.modifier"));
 				break;
 			}
+
+			if (entity.IsStatic)
+				result.Append (Highlight ("static ", "keyword.modifier"));
+			if (entity.IsSealed)
+				result.Append (Highlight ("sealed ", "keyword.modifier"));
+			if (entity.IsAbstract)
+				result.Append (Highlight ("abstract ", "keyword.modifier"));
+			if (entity.IsShadowing)
+				result.Append (Highlight ("new ", "keyword.modifier"));
+
 		}
 
 		static int GetMarkupLength (string str)
