@@ -217,12 +217,8 @@ namespace MonoDevelop.AnalysisCore.Gui
 				if (token.IsCancellationRequested)
 					break;
 				var resultMarker = marker as ResultMarker;
-				if (resultMarker == null || resultMarker.Line != location.Line)
-					continue;
-				int cs = resultMarker.ColStart, ce = resultMarker.ColEnd;
-				if ((cs >= 0 && cs > location.Column) || (ce >= 0 && ce < location.Column))
-					continue;
-				list.Add (resultMarker.Result);
+				if (resultMarker != null)
+					list.Add (resultMarker.Result);
 			}
 			return list;
 		}
