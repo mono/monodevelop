@@ -606,6 +606,8 @@ namespace MonoDevelop.CSharp.Completion
 		
 		IParameterDataProvider IParameterCompletionDataFactory.CreateIndexerParameterDataProvider (int startOffset, IType type, AstNode resolvedNode)
 		{
+			if (type is ArrayType)
+				return new ArrayTypeParameterDataProvider (startOffset, this, (ArrayType)type, resolvedNode);
 			return new IndexerParameterDataProvider (startOffset, this, type, resolvedNode);
 		}
 		

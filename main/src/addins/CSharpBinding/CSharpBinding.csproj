@@ -296,6 +296,7 @@
     <Compile Include="MonoDevelop.CSharp.Completion\AbstractParameterDataProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Highlighting\CSharpSelectionSurroundingProvider.cs" />
     <Compile Include="MonoDevelop.CSharp\SignatureMarkupCreator.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\ArrayTypeParameterDataProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

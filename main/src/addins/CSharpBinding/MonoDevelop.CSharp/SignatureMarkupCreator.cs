@@ -982,7 +982,7 @@ namespace MonoDevelop.CSharp
 				var doHighightParameter = i == HighlightParameter || HighlightParameter >= i && i == parameterList.Count - 1 && parameter.IsParams;
 				if (doHighightParameter)
 					result.Append("<u>");
-/*				if (parameter.IsOptional) {
+				/*				if (parameter.IsOptional) {
 					GrayOut = true;
 					var color = AlphaBlend (colorStyle.Default.Color, colorStyle.Default.BackgroundColor, optionalAlpha);
 					var colorString = Mono.TextEditor.HelperMethods.GetColorString (color);
@@ -1077,6 +1077,38 @@ namespace MonoDevelop.CSharp
 				(byte)((alpha * color.Green + (1 - alpha) * color2.Green) / 256), 
 				(byte)((alpha * color.Blue + (1 - alpha) * color2.Blue) / 256)
 			);
+		}
+
+		public string GetArrayIndexerMarkup (ArrayType property)
+		{
+			if (property == null)
+				throw new ArgumentNullException ("property");
+			var result = new StringBuilder ();
+			result.Append (GetTypeReferenceString (property.ElementType));
+			if (BreakLineAfterReturnType) {
+				result.AppendLine ();
+			} else {
+				result.Append (" ");
+			}
+			result.Append (Highlight ("this", "keyword.access"));
+
+			result.Append ("[");
+			var doHighightParameter = 0 == HighlightParameter;
+			if (doHighightParameter)
+				result.Append("<u>");
+
+			result.Append (Highlight ("int ", "keyword.type"));
+			result.Append ("index");
+			if (doHighightParameter)
+				result.Append("</u>");
+			result.Append ("]");
+
+			result.Append (" {");
+			result.Append (Highlight (" get", "keyword.property") + ";");
+			result.Append (Highlight (" set", "keyword.property") + ";");
+			result.Append (" }");
+			
+			return result.ToString ();
 		}
 
 		string Highlight (string str, string colorScheme)
