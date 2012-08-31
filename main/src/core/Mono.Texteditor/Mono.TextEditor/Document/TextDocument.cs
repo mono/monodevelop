@@ -116,6 +116,7 @@ namespace Mono.TextEditor
 			splitter.LineChanged += SplitterLineSegmentTreeLineChanged;
 			splitter.LineRemoved += HandleSplitterLineSegmentTreeLineRemoved;
 			foldSegmentTree.tree.NodeRemoved += HandleFoldSegmentTreetreeNodeRemoved; 
+			textSegmentMarkerTree.InstallListener (this);
 		}
 
 		void HandleFoldSegmentTreetreeNodeRemoved (object sender, RedBlackTree<FoldSegment>.RedBlackTreeNodeEventArgs e)
@@ -166,6 +167,7 @@ namespace Mono.TextEditor
 			}
 			set {
 				var args = new DocumentChangeEventArgs (0, Text, value);
+				textSegmentMarkerTree.Clear ();
 				OnTextReplacing (args);
 				buffer.Text = value;
 				splitter.Initalize (value);
@@ -1220,7 +1222,9 @@ namespace Mono.TextEditor
 		
 		public event EventHandler<FoldSegmentEventArgs> Folded;
 		#endregion
-		
+
+		#region Text line markers
+
 		public event EventHandler<TextMarkerEvent> MarkerAdded;
 		protected virtual void OnMarkerAdded (TextMarkerEvent e)
 		{
@@ -1254,7 +1258,7 @@ namespace Mono.TextEditor
 		{
 			AddMarker (line, marker, true);
 		}
-		
+
 		public void AddMarker (DocumentLine line, TextLineMarker marker, bool commitUpdate)
 		{
 			if (line == null || marker == null)
@@ -1333,7 +1337,41 @@ namespace Mono.TextEditor
 			if (updateLine)
 				this.CommitLineUpdate (line);
 		}
+
+		#endregion
+
+		#region Text segment markers
+
+		SegmentTree<TextSegmentMarker> textSegmentMarkerTree = new SegmentTree<TextSegmentMarker> (); 
+
+		public IEnumerable<TextSegmentMarker> GetTextSegmentMarkersAt (DocumentLine line)
+		{
+			return textSegmentMarkerTree.GetSegmentsOverlapping (line.Segment);
+		}
+
+		public IEnumerable<TextSegmentMarker> GetTextSegmentMarkersAt (TextSegment segment)
+		{
+			return textSegmentMarkerTree.GetSegmentsOverlapping (segment);
+		}
+
+		public IEnumerable<TextSegmentMarker> GetTextSegmentMarkersAt (int offset)
+		{
+			return textSegmentMarkerTree.GetSegmentsAt (offset);
+		}
 		
+
+		public void AddMarker (TextSegmentMarker marker)
+		{
+			textSegmentMarkerTree.Add (marker);
+		}
+
+		public void RemoveMarker (TextSegmentMarker marker)
+		{
+			textSegmentMarkerTree.Remove (marker);
+		}
+
+		#endregion
+
 		void HandleSplitterLineSegmentTreeLineRemoved (object sender, LineEventArgs e)
 		{
 			foreach (TextLineMarker marker in e.Line.Markers) {

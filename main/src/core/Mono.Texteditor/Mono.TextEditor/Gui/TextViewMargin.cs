@@ -1485,7 +1485,7 @@ namespace Mono.TextEditor
 				DrawIndent (cr, layout, line, xPos, y);
 			}
 
-			if (textEditor.Options.ShowWhitespaces != ShowWhitespaces.Never &&  !(BackgroundRenderer != null && textEditor.Options.ShowWhitespaces == ShowWhitespaces.Selection))
+			if (textEditor.Options.ShowWhitespaces != ShowWhitespaces.Never && !(BackgroundRenderer != null && textEditor.Options.ShowWhitespaces == ShowWhitespaces.Selection))
 				DecorateTabsAndSpaces (cr, layout, offset, length, xPos, y, selectionStart, selectionEnd);
 
 			if (lineNumber == Caret.Line) {
@@ -1561,6 +1561,11 @@ namespace Mono.TextEditor
 			}
 
 			foreach (TextLineMarker marker in line.Markers.Where (m => m.IsVisible)) {
+				if (layout.Layout != null)
+					marker.Draw (textEditor, cr, layout.Layout, false, /*selected*/offset, offset + length, y, xPos, xPos + width);
+			}
+
+			foreach (var marker in Document.GetTextSegmentMarkersAt (line).Where (m => m.IsVisible)) {
 				if (layout.Layout != null)
 					marker.Draw (textEditor, cr, layout.Layout, false, /*selected*/offset, offset + length, y, xPos, xPos + width);
 			}
