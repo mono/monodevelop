@@ -29,12 +29,12 @@ namespace Mono.TextEditor
 {
 	public class TextMarkerEvent : LineEventArgs
 	{
-		public TextMarker TextMarker {
+		public TextLineMarker TextMarker {
 			get;
 			private set;
 		}
 		
-		public TextMarkerEvent (DocumentLine line, TextMarker textMarker) : base (line)
+		public TextMarkerEvent (DocumentLine line, TextLineMarker textMarker) : base (line)
 		{
 			this.TextMarker = textMarker;
 		}

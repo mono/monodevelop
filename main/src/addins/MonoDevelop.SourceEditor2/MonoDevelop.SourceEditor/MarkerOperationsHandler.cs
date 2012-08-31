@@ -65,7 +65,7 @@ namespace MonoDevelop.SourceEditor
 					DocumentLine line = view.Document.GetLine (location.Line);
 					if (line == null || line.Markers == null)
 						return;
-					foreach (TextMarker marker in line.Markers) {
+					foreach (TextLineMarker marker in line.Markers) {
 						UrlMarker urlMarker = marker as UrlMarker;
 						if (urlMarker != null) {
 							if (urlMarker.StartColumn <= location.Column && location.Column < urlMarker.EndColumn) {

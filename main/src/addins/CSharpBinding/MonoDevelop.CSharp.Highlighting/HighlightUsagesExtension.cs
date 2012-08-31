@@ -235,7 +235,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		}
 
 		
-		public class UsageMarker : TextMarker, IBackgroundMarker
+		public class UsageMarker : TextLineMarker, IBackgroundMarker
 		{
 			List<TextSegment> usages = new List<TextSegment> ();
 

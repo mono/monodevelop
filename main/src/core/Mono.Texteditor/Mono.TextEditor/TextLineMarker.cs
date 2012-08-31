@@ -28,36 +28,36 @@ using Gdk;
 
 namespace Mono.TextEditor
 {
-	public interface IExtendingTextMarker 
+	public interface IExtendingTextLineMarker 
 	{
 		double GetLineHeight (TextEditor editor);
 		void Draw (TextEditor editor, Cairo.Context cr, int lineNr, Cairo.Rectangle lineArea);
 	}
 	
-	public interface IActionTextMarker
+	public interface IActionTextLineMarker
 	{
 		/// <returns>
 		/// true, if the mouse press was handled - false otherwise.
 		/// </returns>
 		bool MousePressed (TextEditor editor, MarginMouseEventArgs args);
 		
-		void MouseHover (TextEditor editor, MarginMouseEventArgs args, TextMarkerHoverResult result);
+		void MouseHover (TextEditor editor, MarginMouseEventArgs args, TextLineMarkerHoverResult result);
 	}
 	
-	public class TextMarkerHoverResult 
+	public class TextLineMarkerHoverResult 
 	{
 		public Gdk.Cursor Cursor { get; set; }
 		public string TooltipMarkup { get; set; }
 	}
 	
 	[Flags]
-	public enum TextMarkerFlags
+	public enum TextLineMarkerFlags
 	{
 		None           = 0,
 		DrawsSelection = 1
 	}
 	
-	public class TextMarker
+	public class TextLineMarker
 	{
 		DocumentLine lineSegment;
 		
@@ -70,7 +70,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public virtual TextMarkerFlags Flags {
+		public virtual TextLineMarkerFlags Flags {
 			get;
 			set;
 		}
@@ -82,7 +82,7 @@ namespace Mono.TextEditor
 			set { isVisible = value; }
 		}
 
-		public TextMarker ()
+		public TextLineMarker ()
 		{
 		}
 		
@@ -102,7 +102,7 @@ namespace Mono.TextEditor
 		Email
 	}
 	
-	public class UrlMarker : TextMarker, IDisposable
+	public class UrlMarker : TextLineMarker, IDisposable
 	{
 		string url;
 		string style;
@@ -223,7 +223,7 @@ namespace Mono.TextEditor
 		void DrawLineNumber (TextEditor editor, double marginWidth, Cairo.Context cr, Cairo.Rectangle area, DocumentLine lineSegment, int line, double x, double y, double lineHeight);
 	}
 	
-	public class LineBackgroundMarker: TextMarker, IBackgroundMarker
+	public class LineBackgroundMarker: TextLineMarker, IBackgroundMarker
 	{
 		Cairo.Color color;
 		
@@ -244,7 +244,7 @@ namespace Mono.TextEditor
 		}
 	}
 	
-	public class UnderlineMarker: TextMarker
+	public class UnderlineMarker: TextLineMarker
 	{
 		protected UnderlineMarker ()
 		{}
@@ -346,7 +346,7 @@ namespace Mono.TextEditor
 		}
 	}
 
-	public class StyleTextMarker: TextMarker
+	public class StyleTextLineMarker: TextLineMarker
 	{
 		[Flags]
 		public enum StyleFlag {

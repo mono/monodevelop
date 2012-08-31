@@ -174,7 +174,7 @@ namespace Mono.TextEditor
 
 		void HandleTextEditorDataDocumentMarkerChange (object sender, TextMarkerEvent e)
 		{
-			if (e.TextMarker is IExtendingTextMarker) {
+			if (e.TextMarker is IExtendingTextLineMarker) {
 				int lineNumber = e.Line.LineNumber;
 				textEditorData.HeightTree.SetLineHeight (lineNumber, GetLineHeight (e.Line));
 			}
@@ -3135,7 +3135,7 @@ namespace Mono.TextEditor
 
 		void UpdateLinesOnTextMarkerHeightChange (object sender, LineEventArgs e)
 		{
-			if (!e.Line.Markers.Any (m => m is IExtendingTextMarker))
+			if (!e.Line.Markers.Any (m => m is IExtendingTextLineMarker))
 				return;
 			var line = e.Line.LineNumber;
 			textEditorData.HeightTree.SetLineHeight (line, GetLineHeight (e.Line));

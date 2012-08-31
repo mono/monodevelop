@@ -65,8 +65,8 @@ namespace MonoDevelop.SourceEditor
 		DateTime lastSaveTimeUtc;
 		string loadedMimeType;
 		internal object MemoryProbe = Counters.SourceViewsInMemory.CreateMemoryProbe ();
-		TextMarker currentDebugLineMarker;
-		TextMarker debugStackLineMarker;
+		TextLineMarker currentDebugLineMarker;
+		TextLineMarker debugStackLineMarker;
 		int lastDebugLine = -1;
 		EventHandler currentFrameChanged;
 		EventHandler<BreakpointEventArgs> breakpointAdded;

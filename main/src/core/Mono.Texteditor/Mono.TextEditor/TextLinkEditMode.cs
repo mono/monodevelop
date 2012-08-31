@@ -578,7 +578,7 @@ namespace Mono.TextEditor
 		#endregion 
 	}
 
-	public class TextLinkMarker : TextMarker, IBackgroundMarker, IGutterMarker
+	public class TextLinkMarker : TextLineMarker, IBackgroundMarker, IGutterMarker
 	{
 		TextLinkEditMode mode;
 

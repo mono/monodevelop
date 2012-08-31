@@ -354,7 +354,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 	
-	class AsmLineMarker: TextMarker
+	class AsmLineMarker: TextLineMarker
 	{
 		public override ChunkStyle GetStyle (ChunkStyle baseStyle)
 		{

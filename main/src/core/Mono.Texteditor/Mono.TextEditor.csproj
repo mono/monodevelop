@@ -72,7 +72,6 @@
     <Compile Include="Mono.TextEditor\TextEditorOptions.cs" />
     <Compile Include="Mono.TextEditor\TextEditorData.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\DefaultStyle.cs" />
-    <Compile Include="Mono.TextEditor\TextMarker.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\ChunkStyle.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\Match.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\Span.cs" />
@@ -203,6 +202,7 @@
     <Compile Include="Mono.TextEditor\Gui\TooltipProvider.cs" />
     <Compile Include="Mono.TextEditor\ISelectionSurroundingProvider.cs" />
     <Compile Include="Mono.TextEditor\Gui\TextEditor.cs" />
+    <Compile Include="Mono.TextEditor\TextLineMarker.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mono.TextEditor.dll.config">

@@ -340,7 +340,7 @@ namespace Mono.TextEditor
 				
 				Mono.TextEditor.DocumentLine prevLine = data.Document.GetLine (lineStart - 1);
 				string text = data.Document.GetTextAt (prevLine.Offset, prevLine.Length);
-				List<TextMarker> prevLineMarkers = new List<TextMarker> (prevLine.Markers);
+				List<TextLineMarker> prevLineMarkers = new List<TextLineMarker> (prevLine.Markers);
 				prevLine.ClearMarker ();
 				var loc = data.Caret.Location;
 				for (int i = lineStart - 1; i <= lineEnd; i++) {
@@ -348,7 +348,7 @@ namespace Mono.TextEditor
 					DocumentLine next = data.Document.GetLine (i + 1);
 					data.Replace (cur.Offset, cur.Length, i != lineEnd ? data.Document.GetTextAt (next.Offset, next.Length) : text);
 					data.Document.GetLine (i).ClearMarker ();
-					foreach (TextMarker marker in (i != lineEnd ? data.Document.GetLine (i + 1).Markers : prevLineMarkers)) {
+					foreach (TextLineMarker marker in (i != lineEnd ? data.Document.GetLine (i + 1).Markers : prevLineMarkers)) {
 						data.Document.GetLine (i).AddMarker (marker);
 					}
 				}
@@ -384,7 +384,7 @@ namespace Mono.TextEditor
 				if (nextLine == null)
 					return;
 				string text = data.Document.GetTextAt (nextLine.Offset, nextLine.Length);
-				List<TextMarker> prevLineMarkers = new List<TextMarker> (nextLine.Markers);
+				List<TextLineMarker> prevLineMarkers = new List<TextLineMarker> (nextLine.Markers);
 				nextLine.ClearMarker ();
 				var loc = data.Caret.Location;
 				for (int i = lineEnd + 1; i >= lineStart; i--) {
@@ -392,7 +392,7 @@ namespace Mono.TextEditor
 					DocumentLine prev = data.Document.GetLine (i - 1);
 					data.Replace (cur.Offset, cur.Length, i != lineStart ? data.Document.GetTextAt (prev.Offset, prev.Length) : text);
 					data.Document.GetLine (i).ClearMarker ();
-					foreach (TextMarker marker in (i != lineStart ? data.Document.GetLine (i - 1).Markers : prevLineMarkers)) {
+					foreach (TextLineMarker marker in (i != lineStart ? data.Document.GetLine (i - 1).Markers : prevLineMarkers)) {
 						data.Document.GetLine (i).AddMarker (marker);
 					}
 				}

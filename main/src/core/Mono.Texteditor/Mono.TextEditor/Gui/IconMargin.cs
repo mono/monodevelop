@@ -74,7 +74,7 @@ namespace Mono.TextEditor
 			
 			DocumentLine lineSegment = args.LineSegment;
 			if (lineSegment != null) {
-				foreach (TextMarker marker in lineSegment.Markers) {
+				foreach (TextLineMarker marker in lineSegment.Markers) {
 					if (marker is IIconBarMarker) 
 						((IIconBarMarker)marker).MousePress (args);
 				}
@@ -87,7 +87,7 @@ namespace Mono.TextEditor
 			
 			DocumentLine lineSegment = args.LineSegment;
 			if (lineSegment != null) {
-				foreach (TextMarker marker in lineSegment.Markers) {
+				foreach (TextLineMarker marker in lineSegment.Markers) {
 					if (marker is IIconBarMarker) 
 						((IIconBarMarker)marker).MouseRelease (args);
 				}
@@ -100,7 +100,7 @@ namespace Mono.TextEditor
 			args.Editor.TooltipText = null;
 			DocumentLine lineSegment = args.LineSegment;
 			if (lineSegment != null) {
-				foreach (TextMarker marker in lineSegment.Markers) {
+				foreach (TextLineMarker marker in lineSegment.Markers) {
 					if (marker is IIconBarMarker) 
 						((IIconBarMarker)marker).MouseHover (args);
 				}
@@ -119,7 +119,7 @@ namespace Mono.TextEditor
 			ctx.Stroke ();
 			
 			if (lineSegment != null && line <= editor.Document.LineCount) {
-				foreach (TextMarker marker in lineSegment.Markers) {
+				foreach (TextLineMarker marker in lineSegment.Markers) {
 					if (marker is IIconBarMarker) 
 						((IIconBarMarker)marker).DrawIcon (editor, ctx, lineSegment, line, x, y, (int)Width, editor.LineHeight);
 				}

@@ -54,7 +54,7 @@ namespace MonoDevelop.SourceEditor
 		}
 	}
 
-	public class MessageBubbleTextMarker : TextMarker, IBackgroundMarker, IIconBarMarker, IExtendingTextMarker, IDisposable, IActionTextMarker
+	public class MessageBubbleTextMarker : TextLineMarker, IBackgroundMarker, IIconBarMarker, IExtendingTextLineMarker, IDisposable, IActionTextLineMarker
 	{
 		MessageBubbleCache cache;
 		
@@ -180,7 +180,7 @@ namespace MonoDevelop.SourceEditor
 			this.IsVisible = true;
 			this.lineSegment = lineSegment;
 			this.initialText = editor.Document.GetTextAt (lineSegment);
-			this.Flags = TextMarkerFlags.DrawsSelection;
+			this.Flags = TextLineMarkerFlags.DrawsSelection;
 			AddError (isError, errorMessage);
 //			cache.Changed += (sender, e) => CalculateLineFit (editor, lineSegment);
 		}
@@ -767,7 +767,7 @@ namespace MonoDevelop.SourceEditor
 
 		bool oldIsOver = false;
 
-		public void MouseHover (TextEditor editor, MarginMouseEventArgs args, TextMarkerHoverResult result)
+		public void MouseHover (TextEditor editor, MarginMouseEventArgs args, TextLineMarkerHoverResult result)
 		{
 			if (this.LineSegment == null)
 				return;

@@ -890,7 +890,7 @@ namespace Mono.TextEditor
 			uint oldEndIndex = 0;
 			foreach (Chunk chunk in chunks) {
 				ChunkStyle chunkStyle = chunk != null ? textEditor.ColorStyle.GetChunkStyle (chunk) : null;
-				foreach (TextMarker marker in line.Markers)
+				foreach (TextLineMarker marker in line.Markers)
 					chunkStyle = marker.GetStyle (chunkStyle);
 
 				if (chunkStyle != null) {
@@ -1410,11 +1410,11 @@ namespace Mono.TextEditor
 
 			bool drawBg = true;
 			bool drawText = true;
-			foreach (TextMarker marker in line.Markers) {
+			foreach (TextLineMarker marker in line.Markers) {
 				IBackgroundMarker bgMarker = marker as IBackgroundMarker;
 				if (bgMarker == null || !marker.IsVisible)
 					continue;
-				isSelectionDrawn |= (marker.Flags & TextMarkerFlags.DrawsSelection) == TextMarkerFlags.DrawsSelection;
+				isSelectionDrawn |= (marker.Flags & TextLineMarkerFlags.DrawsSelection) == TextLineMarkerFlags.DrawsSelection;
 				drawText &= bgMarker.DrawBackground (textEditor, cr, layout, selectionStart, selectionEnd, offset, offset + length, y, xPos, xPos + width, ref drawBg);
 			}
 
@@ -1560,7 +1560,7 @@ namespace Mono.TextEditor
 				}
 			}
 
-			foreach (TextMarker marker in line.Markers.Where (m => m.IsVisible)) {
+			foreach (TextLineMarker marker in line.Markers.Where (m => m.IsVisible)) {
 				if (layout.Layout != null)
 					marker.Draw (textEditor, cr, layout.Layout, false, /*selected*/offset, offset + length, y, xPos, xPos + width);
 			}
@@ -1690,9 +1690,9 @@ namespace Mono.TextEditor
 				DocumentLine line = Document.GetLine (clickLocation.Line);
 				bool isHandled = false;
 				if (line != null) {
-					foreach (TextMarker marker in line.Markers) {
-						if (marker is IActionTextMarker) {
-							isHandled |= ((IActionTextMarker)marker).MousePressed (textEditor, args);
+					foreach (TextLineMarker marker in line.Markers) {
+						if (marker is IActionTextLineMarker) {
+							isHandled |= ((IActionTextLineMarker)marker).MousePressed (textEditor, args);
 							if (isHandled)
 								break;
 						}
@@ -1950,8 +1950,8 @@ namespace Mono.TextEditor
 				handler (this, e);
 		}
 
-		List<IActionTextMarker> oldMarkers = new List<IActionTextMarker> ();
-		List<IActionTextMarker> newMarkers = new List<IActionTextMarker> ();
+		List<IActionTextLineMarker> oldMarkers = new List<IActionTextLineMarker> ();
+		List<IActionTextLineMarker> newMarkers = new List<IActionTextLineMarker> ();
 
 		protected internal override void MouseHover (MarginMouseEventArgs args)
 		{
@@ -1965,13 +1965,13 @@ namespace Mono.TextEditor
 			HoveredLine = line;
 			OnHoveredLineChanged (new LineEventArgs (oldHoveredLine));
 
-			var hoverResult = new TextMarkerHoverResult ();
+			var hoverResult = new TextLineMarkerHoverResult ();
 			oldMarkers.ForEach (m => m.MouseHover (textEditor, args, hoverResult));
 
 			if (line != null) {
 				newMarkers.Clear ();
-				newMarkers.AddRange (line.Markers.Where (m => m is IActionTextMarker).Cast <IActionTextMarker> ());
-				var extraMarker = Document.GetExtendingTextMarker (loc.Line) as IActionTextMarker;
+				newMarkers.AddRange (line.Markers.Where (m => m is IActionTextLineMarker).Cast <IActionTextLineMarker> ());
+				var extraMarker = Document.GetExtendingTextMarker (loc.Line) as IActionTextLineMarker;
 				if (extraMarker != null && !oldMarkers.Contains (extraMarker))
 					newMarkers.Add (extraMarker);
 				foreach (var marker in newMarkers.Where (m => !oldMarkers.Contains (m))) {
@@ -2722,7 +2722,7 @@ namespace Mono.TextEditor
 			foreach (Chunk chunk in startChunk) {
 				ChunkStyle chunkStyle = chunk != null ? textEditor.ColorStyle.GetChunkStyle (chunk) : null;
 
-				foreach (TextMarker marker in line.Markers)
+				foreach (TextLineMarker marker in line.Markers)
 					chunkStyle = marker.GetStyle (chunkStyle);
 
 				if (chunkStyle != null) {
@@ -2831,7 +2831,7 @@ namespace Mono.TextEditor
 			if (line == null)
 				return LineHeight;
 			foreach (var marker in line.Markers) {
-				IExtendingTextMarker extendingTextMarker = marker as IExtendingTextMarker;
+				IExtendingTextLineMarker extendingTextMarker = marker as IExtendingTextLineMarker;
 				if (extendingTextMarker == null)
 					continue;
 				return extendingTextMarker.GetLineHeight (textEditor);

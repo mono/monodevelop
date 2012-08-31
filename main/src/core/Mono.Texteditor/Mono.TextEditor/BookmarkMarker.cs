@@ -30,7 +30,7 @@ using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor
 {
-	public class BookmarkMarker: TextMarker, IIconBarMarker
+	public class BookmarkMarker: TextLineMarker, IIconBarMarker
 	{
 		internal static BookmarkMarker Instance = new BookmarkMarker ();
 		
