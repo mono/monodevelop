@@ -161,10 +161,9 @@ namespace MonoDevelop.VersionControl.Git
 			return new StashCollection (repository);
 		}
 
-		FilePath[] cachedSubmodules = new FilePath [0];
 		DateTime cachedSubmoduleTime = DateTime.MinValue;
-
-		FilePath[] CachedSubmodules {
+		Tuple<FilePath, NGit.Repository>[] cachedSubmodules = new Tuple<FilePath, NGit.Repository>[0];
+		Tuple<FilePath, NGit.Repository>[] CachedSubmodules {
 			get {
 				var submoduleWriteTime = File.GetLastWriteTimeUtc(RootPath.Combine(".gitmodule"));
 				if (cachedSubmoduleTime != submoduleWriteTime) {
@@ -172,7 +171,7 @@ namespace MonoDevelop.VersionControl.Git
 					cachedSubmodules = new NGit.Api.Git (RootRepository)
 					.SubmoduleStatus ()
 					.Call ()
-					.Select(s => (FilePath) s.Key)
+					.Select(s => Tuple.Create ((FilePath) s.Key, SubmoduleWalk.GetSubmoduleRepository (RootRepository, s.Key)))
 					.ToArray ();
 				}
 				return cachedSubmodules;
@@ -190,10 +189,10 @@ namespace MonoDevelop.VersionControl.Git
 			return files.GroupBy (f => {
 				return cache
 					.Where (s => {
-						var fullPath = s.ToAbsolute (RootPath);
+						var fullPath = s.Item1.ToAbsolute (RootPath);
 						return f.IsChildPathOf (fullPath) || f.CanonicalPath == fullPath.CanonicalPath;
 					})
-					.Select (s => SubmoduleWalk.GetSubmoduleRepository (RootRepository, s))
+					.Select (s => s.Item2)
 					.FirstOrDefault () ?? RootRepository;
 			});
 		}
