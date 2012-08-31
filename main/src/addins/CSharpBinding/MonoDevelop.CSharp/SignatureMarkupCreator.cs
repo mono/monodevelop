@@ -171,14 +171,25 @@ namespace MonoDevelop.CSharp
 				break;
 			}
 
-			if (entity.IsStatic)
+			if (entity.IsStatic) {
 				result.Append (Highlight ("static ", "keyword.modifier"));
-			if (entity.IsSealed)
+			} else if (entity.IsSealed) {
 				result.Append (Highlight ("sealed ", "keyword.modifier"));
-			if (entity.IsAbstract)
+			} else if (entity.IsAbstract) {
 				result.Append (Highlight ("abstract ", "keyword.modifier"));
+			}
+
 			if (entity.IsShadowing)
 				result.Append (Highlight ("new ", "keyword.modifier"));
+
+			var member = entity as IMember;
+			if (member != null) {
+				if (member.IsOverride) {
+					result.Append (Highlight ("override ", "keyword.modifier"));
+				} else if (member.IsVirtual) {
+					result.Append (Highlight ("virtual ", "keyword.modifier"));
+				}
+			}
 
 		}
 
