@@ -1201,13 +1201,16 @@ namespace MonoDevelop.Ide.Gui.Components
 				if (editable == null)
 					return false;
 
+				int insertPos;
+				editable.InsertText (nodeName, ref insertPos);
 				editable.SelectRegion (selectionStart, selectionStart + selectionLength);
 				return false;
 			});
+			// Ensure we set all our state variables before calling SetCursor
+			// as this may directly invoke HandleOnEditCancelled
 			text_render.Editable = true;
-			tree.SetCursor (store.GetPath (iter), complete_column, true);
-			
 			editingText = true;
+			tree.SetCursor (store.GetPath (iter), complete_column, true);
 		}
 
 		Gtk.Editable currentLabelEditable;
