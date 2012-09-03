@@ -161,7 +161,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		}
 		
 		bool IAsyncOperation.Success {
-			get { return !error; }
+			get { return !error && !canceled; }
 		}
 		
 		bool IAsyncOperation.SuccessWithWarnings {
