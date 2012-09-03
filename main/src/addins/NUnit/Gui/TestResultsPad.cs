@@ -91,7 +91,8 @@ namespace MonoDevelop.NUnit
 		
 		bool cancel;
 		
-		public class ResultRecord {
+		public class ResultRecord
+		{
 			public UnitTest Test;
 			public UnitTestResult Result;
 		}
@@ -124,17 +125,17 @@ namespace MonoDevelop.NUnit
 		
 			var sw = new MonoDevelop.Components.CompactScrolledWindow ();
 			sw.ShadowType = ShadowType.None;
-			sw.Add(failuresTreeView);
+			sw.Add (failuresTreeView);
 			book.Pack1 (sw, true, true);
 			
-			outputView = new TextView();
+			outputView = new TextView ();
 			outputView.Editable = false;
 			bold = new TextTag ("bold");
 			bold.Weight = Pango.Weight.Bold;
 			outputView.Buffer.TagTable.Add (bold);
 			sw = new MonoDevelop.Components.CompactScrolledWindow ();
 			sw.ShadowType = ShadowType.None;
-			sw.Add(outputView);
+			sw.Add (outputView);
 			book.Pack2 (sw, true, true);
 			outputViewScrolled = sw;
 			
@@ -463,7 +464,7 @@ namespace MonoDevelop.NUnit
 		{
 			Pad pad = IdeApp.Workbench.GetPad<TestPad> ();
 			pad.BringToFront ();
-			TestPad content = (TestPad) pad.Content;
+			TestPad content = (TestPad)pad.Content;
 			content.SelectTest (GetSelectedTest ());
 		}
 		
@@ -516,7 +517,7 @@ namespace MonoDevelop.NUnit
 			if (!failuresTreeView.Selection.GetSelected (out foo, out iter))
 				return null;
 				
-			UnitTest t = (UnitTest) failuresStore.GetValue (iter, 2);
+			UnitTest t = (UnitTest)failuresStore.GetValue (iter, 2);
 			return t;
 		}
 		
@@ -656,36 +657,51 @@ namespace MonoDevelop.NUnit
 		public event TestHandler CancelRequested;
 	}
 	
-	class TestMonitor: GuiSyncObject, ITestProgressMonitor
+	class TestMonitor: ITestProgressMonitor
 	{
-		// TestResultsPad can't be a GuiSyncObject because there are some
-		// object identity issues. If the pad is registered using the
-		// proxy, it will get different hash codes depending on the caller.
-		
 		ITestProgressMonitor monitor;
 		TestResultsPad pad;
 		
-		public TestMonitor (TestResultsPad pad) {
+		public TestMonitor (TestResultsPad pad)
+		{
 			this.pad = pad;
 			this.monitor = pad;
 		}
-		public void InitializeTestRun (UnitTest test) {
-			pad.InitializeTestRun (test);
+		public void InitializeTestRun (UnitTest test)
+		{
+			DispatchService.GuiDispatch (delegate {
+				pad.InitializeTestRun (test);
+			});
 		}
-		public void FinishTestRun () {
-			pad.FinishTestRun ();
+		public void FinishTestRun ()
+		{
+			DispatchService.GuiDispatch (delegate {
+				pad.FinishTestRun ();
+			});
 		}
-		public void Cancel () {
-			pad.Cancel ();
+		public void Cancel ()
+		{
+			DispatchService.GuiDispatch (delegate {
+				pad.Cancel ();
+			});
 		}
-		public void BeginTest (UnitTest test) {
-			monitor.BeginTest (test);
+		public void BeginTest (UnitTest test)
+		{
+			DispatchService.GuiDispatch (delegate {
+				monitor.BeginTest (test);
+			});
 		}
-		public void EndTest (UnitTest test, UnitTestResult result) {
-			monitor.EndTest (test, result);
+		public void EndTest (UnitTest test, UnitTestResult result)
+		{
+			DispatchService.GuiDispatch (delegate {
+				monitor.EndTest (test, result);
+			});
 		}
-		public void ReportRuntimeError (string message, Exception exception) {
-			monitor.ReportRuntimeError (message, exception);
+		public void ReportRuntimeError (string message, Exception exception)
+		{
+			DispatchService.GuiDispatch (delegate {
+				monitor.ReportRuntimeError (message, exception);
+			});
 		}
 		public bool IsCancelRequested {
 			get { return monitor.IsCancelRequested; }
