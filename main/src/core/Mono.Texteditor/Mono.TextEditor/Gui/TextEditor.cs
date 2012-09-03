@@ -296,11 +296,12 @@ namespace Mono.TextEditor
 		
 		public TextEditor (TextDocument doc, ITextEditorOptions options, EditMode initialMode)
 		{
+			GtkWorkarounds.FixContainerLeak (this);
+
 			this.Events = EventMask.PointerMotionMask | EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.EnterNotifyMask | EventMask.LeaveNotifyMask | EventMask.VisibilityNotifyMask | EventMask.FocusChangeMask | EventMask.ScrollMask | EventMask.KeyPressMask | EventMask.KeyReleaseMask;
 			this.DoubleBuffered = true;
 			base.CanFocus = true;
 
-			GtkWorkarounds.FixContainerLeak (this);
 			Initialize (this, doc, options, initialMode);
 
 			stage.ActorStep += OnActorStep;
