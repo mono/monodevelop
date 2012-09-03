@@ -1894,6 +1894,9 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		void UpdateSelectionPopupButton ()
 		{
+			if (editingText)
+				return;
+
 			if (lastPopupButtonIter != null) {
 				if (store.IterIsValid (lastPopupButtonIter.Value))
 					tree.Model.SetValue (lastPopupButtonIter.Value, ShowPopupColumn, false);
