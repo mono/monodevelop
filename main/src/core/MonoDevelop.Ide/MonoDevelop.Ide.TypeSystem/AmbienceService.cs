@@ -350,6 +350,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					switch (xml.Name.ToLower ()) {
 					case "para":
 						result.AppendLine (ParseBody (xml, xml.Name, options));
+						wasWhiteSpace = true;
 						break;
 					case "see":
 						if (!wasWhiteSpace) {
@@ -362,6 +363,7 @@ namespace MonoDevelop.Ide.TypeSystem
 							name = options.Ambience.GetIntrinsicTypeName (name);
 						result.Append (EscapeText (name));
 						result.Append ("</i>");
+						wasWhiteSpace = false;
 						break;
 					case "paramref":
 						if (!wasWhiteSpace) {
@@ -371,6 +373,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						result.Append ("<i>");
 						result.Append (EscapeText (xml ["name"].Trim ()));
 						result.Append ("</i>");
+						wasWhiteSpace = false;
 						break;
 					}
 					break;
