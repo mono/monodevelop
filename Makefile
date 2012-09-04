@@ -41,7 +41,7 @@ distclean: distclean-recursive
 remove-stale-tarballs:
 	rm -rf tarballs
 
-dist: update_submodules remove-stale-tarballs dist-recursive
+dist: remove-stale-tarballs dist-recursive
 	mkdir -p tarballs
 	for t in $(SUBDIRS); do \
 		if test -e $$t/*.tar.gz; then \
