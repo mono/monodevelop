@@ -272,6 +272,7 @@ namespace MonoDevelop.Components.MainToolbar
 				var item = GetItemAt (evnt.X, evnt.Y);
 				if (item != null) {
 					selectedItem = item;
+					ShowTooltip ();
 					QueueDraw ();
 				}
 				if (evnt.Type == Gdk.EventType.TwoButtonPress)
