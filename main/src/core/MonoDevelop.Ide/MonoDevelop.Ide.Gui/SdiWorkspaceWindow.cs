@@ -221,6 +221,12 @@ namespace MonoDevelop.Ide.Gui
 			
 			return -1;
 		}
+
+		public void OnDeactivated ()
+		{
+			if (pathBar != null)
+				pathBar.HideMenu ();
+		}
 		
 		public void SelectWindow()
 		{

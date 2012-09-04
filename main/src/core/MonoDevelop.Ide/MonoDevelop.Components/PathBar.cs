@@ -114,7 +114,7 @@ namespace MonoDevelop.Components
 		}
 	}
 	
-	public class PathBar : Gtk.DrawingArea
+	class PathBar : Gtk.DrawingArea
 	{
 		PathEntry[] leftPath  = new PathEntry[0];
 		PathEntry[] rightPath = new PathEntry[0];
@@ -146,6 +146,7 @@ namespace MonoDevelop.Components
 		const int spacing = arrowLeftPadding + arrowRightPadding + arrowSize;
 		
 		Func<int, Widget> createMenuForItem;
+		Widget menuWidget;
 		
 		public PathBar (Func<int, Widget> createMenuForItem)
 		{
@@ -168,6 +169,9 @@ namespace MonoDevelop.Components
 		{
 			if (ArrSame (this.leftPath, path))
 				return;
+
+			HideMenu ();
+
 			this.Path = path ?? new PathEntry[0];
 			this.leftPath = Path.Where (p => p.Position == EntryPosition.Left).ToArray ();
 			this.rightPath = Path.Where (p => p.Position == EntryPosition.Right).ToArray ();
@@ -352,11 +356,13 @@ namespace MonoDevelop.Components
 		{
 			if (hoverIndex < 0)
 				return;
-			
-			Gtk.Widget widget = createMenuForItem (hoverIndex);
-			if (widget == null)
+
+			HideMenu ();
+
+			menuWidget = createMenuForItem (hoverIndex);
+			if (menuWidget == null)
 				return;
-			widget.Hidden += delegate {
+			menuWidget.Hidden += delegate {
 				
 				menuVisible = false;
 				QueueDraw ();
@@ -364,18 +370,25 @@ namespace MonoDevelop.Components
 				//FIXME: for some reason the menu's children don't get activated if we destroy 
 				//directly here, so use a timeout to delay it
 				GLib.Timeout.Add (100, delegate {
-					widget.Destroy ();
+					HideMenu ();
 					return false;
 				});
 			};
 			menuVisible = true;
-			if (widget is Menu) {
-				((Menu)widget).Popup (null, null, PositionFunc, 0, Gtk.Global.CurrentEventTime);
+			if (menuWidget is Menu) {
+				((Menu)menuWidget).Popup (null, null, PositionFunc, 0, Gtk.Global.CurrentEventTime);
 			} else {
-				PositionWidget (widget);
-				widget.ShowAll ();
+				PositionWidget (menuWidget);
+				menuWidget.ShowAll ();
 			}
-				
+		}
+
+		public void HideMenu ()
+		{
+			if (menuWidget != null) {
+				menuWidget.Destroy ();
+				menuWidget = null;
+			}
 		}
 		
 		public int GetHoverXPosition (out int w)
