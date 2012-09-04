@@ -1242,12 +1242,7 @@ namespace Mono.TextEditor
 			pressPositionY = e.Y;
 			base.IsFocus = true;
 			
-			//main context menu
-			if (DoPopupMenu != null && e.TriggersContextMenu ()) {
-				DoClickedPopupMenu (e);
-				return true;
-			}
-			
+
 			if (lastTime != e.Time) {// filter double clicks
 				if (e.Type == EventType.TwoButtonPress) {
 				    lastTime = e.Time;
@@ -1257,6 +1252,13 @@ namespace Mono.TextEditor
 				mouseButtonPressed = e.Button;
 				double startPos;
 				Margin margin = GetMarginAtX (e.X, out startPos);
+				if (margin == textViewMargin) {
+					//main context menu
+					if (DoPopupMenu != null && e.TriggersContextMenu ()) {
+						DoClickedPopupMenu (e);
+						return true;
+					}
+				}
 				if (margin != null) 
 					margin.MousePressed (new MarginMouseEventArgs (textEditorData.Parent, e, e.Button, e.X - startPos, e.Y, e.State));
 			}
