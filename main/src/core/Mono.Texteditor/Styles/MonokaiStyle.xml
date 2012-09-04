@@ -34,7 +34,7 @@ THE SOFTWARE.
 
 	<Style name="text" color="#F8F8F2" bgColor="#272822">
 		<Style name="background" color="white">
-			<Style name="readonly" color="#F9F9F8"/>
+			<Style name="readonly" color="#252620"/>
 			<Style name="searchresult-main" color="#FFE792"/>
 			<Style name="searchresult" color="#FFE792"/> 
 		</Style>
@@ -56,8 +56,11 @@ THE SOFTWARE.
 	
 	<Style name="completion" color="#434343" bgColor="#F0F6F8">
 		<Style name="highlight" color="#BA3373"/>
-		<Style name="selection" color="#E0EEF0">
+		<Style name="selection" color="#f8fcfc" bgColor="#dff4f0">
 			<Style name="border" color="#C9C9C9"/>
+		</Style>
+		<Style name="selection.inactive" color="#f9f9f9" bgColor="#e6e6e6">
+			<Style name="border" color="#bebebe"/>
 		</Style>
 	</Style>
 	

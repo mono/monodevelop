@@ -128,8 +128,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 
 		Cairo.Color backgroundColor;
-		Cairo.Color selectedItemColor, selectionBorderColor;
-
+		Cairo.Color selectionBorderColor, selectionBorderInactiveColor;
+		ChunkStyle selectedItemColor, selectedItemInactiveColor;
 		Gdk.Color textColor;
 		Gdk.Color highlightColor;
 		
@@ -164,8 +164,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			highlightColor = style.GetChunkStyle ("completion.highlight").Color;
 			backgroundColor = completion.CairoBackgroundColor;
-			selectedItemColor = style.GetChunkStyle ("completion.selection").CairoColor;
+			selectedItemColor = style.GetChunkStyle ("completion.selection");
+			selectedItemInactiveColor = style.GetChunkStyle ("completion.selection.inactive");
 			selectionBorderColor = style.GetChunkStyle ("completion.selection.border").CairoColor;
+			selectionBorderInactiveColor = style.GetChunkStyle ("completion.selection.inactive.border").CairoColor;
 		}
 
 		internal Adjustment vadj;
@@ -505,18 +507,17 @@ namespace MonoDevelop.Ide.CodeCompletion
 					typos = he < rowHeight ? ypos + (rowHeight - he) / 2 : ypos;
 					iypos = iconHeight < rowHeight ? ypos + (rowHeight - iconHeight) / 2 : ypos;
 					if (item == SelectedItem) {
-						context.Rectangle (0, ypos, Allocation.Width, rowHeight);
-						context.Color = this.selectedItemColor;
+						context.Rectangle (0, ypos, Allocation.Width, rowHeight / 2);
+						context.Color = SelectionEnabled ? selectedItemColor.CairoColor : selectedItemInactiveColor.CairoColor;
+						context.Fill ();
+						context.Rectangle (0, ypos + rowHeight / 2, Allocation.Width, rowHeight / 2);
+						context.Color = SelectionEnabled ? selectedItemColor.CairoBackgroundColor : selectedItemInactiveColor.CairoBackgroundColor;
 						context.Fill ();
 
-						context.Color = this.selectionBorderColor;
-						context.MoveTo (0, ypos + 0.5);
-						context.LineTo (Allocation.Width, ypos + 0.5);
-
-						context.MoveTo (0, ypos + rowHeight - 1 + 0.5);
-						context.LineTo (Allocation.Width, ypos + rowHeight - 1 + 0.5);
+						context.Rectangle (0.5, ypos + 0.5, Allocation.Width - 1, rowHeight - 1);
 						if (!SelectionEnabled)
 							context.SetDash (new double[] {4, 1}, 0);
+						context.Color = SelectionEnabled ? selectionBorderColor : selectionBorderInactiveColor;
 						context.Stroke ();
 
 						if (icon != null) {
@@ -731,7 +732,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				}
 				return true;
 			});
-			
+
 			return new Gdk.Rectangle (0, outpos, Allocation.Width, rowHeight);
 		}
 		
