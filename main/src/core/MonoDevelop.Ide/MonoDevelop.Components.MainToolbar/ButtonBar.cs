@@ -70,6 +70,7 @@ namespace MonoDevelop.Components.MainToolbar
 			};
 			btnNormal = new Pixbuf[btnNormalOriginal.Length];
 			btnPressed = new Pixbuf[btnNormalOriginal.Length];
+			HasTooltip = true;
 		}
 
 		void ScaleImages (int newHeight)
@@ -130,6 +131,20 @@ namespace MonoDevelop.Components.MainToolbar
 			leaveState = StateType.Normal;
 			pushedButton = null;
 			return base.OnButtonReleaseEvent (evnt);
+		}
+
+		protected override bool OnQueryTooltip (int x, int y, bool keyboard_tooltip, Tooltip tooltip)
+		{
+			var button = VisibleButtons.FirstOrDefault (b => b.Allocation.Contains (Allocation.X + (int)x, Allocation.Y + (int)y));
+			if (button != null) {
+				tooltip.Text = button.Tooltip;
+				var rect = button.Allocation;
+				rect.Offset (-Allocation.X, -Allocation.Y);
+				tooltip.TipArea = rect;
+				return true;
+			} else {
+				return false;
+			}
 		}
 
 		public void Clear ()
@@ -252,6 +267,8 @@ namespace MonoDevelop.Components.MainToolbar
 				b.Enabled = ci.Enabled;
 				QueueDraw ();
 			}
+			if (ci.Description != b.Tooltip)
+				b.Tooltip = ci.Description;
 		}
 
 		void ICommandBar.SetEnabled (bool enabled)
@@ -272,6 +289,7 @@ namespace MonoDevelop.Components.MainToolbar
 		public string CommandId { get; set; }
 		internal bool Enabled { get; set; }
 		internal bool Visible { get; set; }
+		public string Tooltip { get; set; }
 
 		public Gdk.Rectangle Allocation;
 
