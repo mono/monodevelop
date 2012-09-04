@@ -166,6 +166,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			vbox.PackStart (catLabel, false, true, 0);
 			
 			var contentLabel = new MonoDevelop.Components.FixedWidthWrapLabel ();
+			contentLabel.MaxWidth = Math.Max (240, this.Allocation.Width);
 			contentLabel.Wrap = Pango.WrapMode.WordChar;
 			contentLabel.BreakOnCamelCasing = true;
 			contentLabel.BreakOnPunctuation = true;
