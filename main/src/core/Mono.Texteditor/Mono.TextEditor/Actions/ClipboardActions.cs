@@ -260,8 +260,11 @@ namespace Mono.TextEditor
 						bool pasteLine = (selBytes [0] & 2) == 2;
 						
 //						var clearSelection = data.IsSomethingSelected ? data.MainSelection.SelectionMode != SelectionMode.Block : true;
-						using (var undo = data.OpenUndoGroup ()) {
-							if (pasteBlock) {
+						if (pasteBlock) {
+							using (var undo = data.OpenUndoGroup ()) {
+								data.DeleteSelectedText (!data.IsSomethingSelected || data.MainSelection.SelectionMode != SelectionMode.Block);
+								data.EnsureCaretIsNotVirtual ();
+
 								data.Caret.PreserveSelection = true;
 							
 								string[] lines = text.Split ('\r');
@@ -292,7 +295,12 @@ namespace Mono.TextEditor
 								if (!preserveState)
 									data.ClearSelection ();
 								data.Caret.PreserveSelection = false;
-							} else if (pasteLine) {
+							}
+						} else if (pasteLine) {
+							using (var undo = data.OpenUndoGroup ()) {
+								data.DeleteSelectedText (!data.IsSomethingSelected || data.MainSelection.SelectionMode != SelectionMode.Block);
+								data.EnsureCaretIsNotVirtual ();
+
 								data.Caret.PreserveSelection = true;
 								result = text.Length;
 								DocumentLine curLine = data.Document.GetLine (data.Caret.Line);
@@ -300,9 +308,9 @@ namespace Mono.TextEditor
 								if (!preserveState)
 									data.ClearSelection ();
 								data.Caret.PreserveSelection = false;
-							} else {
-								result = PastePlainText (data, insertionOffset, text);
 							}
+						} else {
+							result = PastePlainText (data, insertionOffset, text);
 						}
 					}
 				});
@@ -325,7 +333,12 @@ namespace Mono.TextEditor
 
 		static int PastePlainText (TextEditorData data, int offset, string text)
 		{
-			int inserted = data.Insert (offset, text);
+			int inserted;
+			using (var undo = data.OpenUndoGroup ()) {
+				data.DeleteSelectedText (!data.IsSomethingSelected || data.MainSelection.SelectionMode != SelectionMode.Block);
+				data.EnsureCaretIsNotVirtual ();
+				inserted = data.Insert (offset, text);
+			}
 			data.PasteText (offset, text, inserted);
 			return inserted;
 		}
@@ -341,11 +354,7 @@ namespace Mono.TextEditor
 		{
 			if (!data.CanEditSelection)
 				return;
-			using (var undo = data.OpenUndoGroup ()) {
-				data.DeleteSelectedText (!data.IsSomethingSelected || data.MainSelection.SelectionMode != SelectionMode.Block);
-				data.EnsureCaretIsNotVirtual ();
-				PasteFrom (Clipboard.Get (CopyOperation.CLIPBOARD_ATOM), data, true, data.IsSomethingSelected ? data.SelectionRange.Offset : data.Caret.Offset);
-			}
+			PasteFrom (Clipboard.Get (CopyOperation.CLIPBOARD_ATOM), data, true, data.IsSomethingSelected ? data.SelectionRange.Offset : data.Caret.Offset);
 		}
 	}
 }

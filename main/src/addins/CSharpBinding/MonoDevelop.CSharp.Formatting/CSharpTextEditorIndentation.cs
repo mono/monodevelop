@@ -83,6 +83,8 @@ namespace MonoDevelop.CSharp.Formatting
 
 		void HandleTextPaste (int insertionOffset, string text, int insertedChars)
 		{
+			using (var undo = Editor.OpenUndoGroup ()) {
+
 //			// Trim blank spaces on text paste, see: Bug 511 - Trim blank spaces when copy-pasting
 //			if (OnTheFlyFormatting) {
 //				int i = insertionOffset + insertedChars;
@@ -113,11 +115,12 @@ namespace MonoDevelop.CSharp.Formatting
 //					}
 //				}
 //			}
-			var documentLine = Editor.GetLineByOffset (insertionOffset + insertedChars);
-			while (documentLine != null && insertionOffset < documentLine.EndOffset) {
-				stateTracker.UpdateEngine (documentLine.Offset);
-				DoReSmartIndent (documentLine.Offset);
-				documentLine = documentLine.PreviousLine;
+				var documentLine = Editor.GetLineByOffset (insertionOffset + insertedChars);
+				while (documentLine != null && insertionOffset < documentLine.EndOffset) {
+					stateTracker.UpdateEngine (documentLine.Offset);
+					DoReSmartIndent (documentLine.Offset);
+					documentLine = documentLine.PreviousLine;
+				}
 			}
 		} 
 
