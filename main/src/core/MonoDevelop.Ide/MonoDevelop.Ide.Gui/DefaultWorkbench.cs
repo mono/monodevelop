@@ -864,7 +864,7 @@ namespace MonoDevelop.Ide.Gui
 			style.PadTitleLabelColor = Styles.PadLabelColor;
 			style.PadTitleHeight = barHeight;
 			style.ShowPadTitleIcon = false;
-			style.UppercaseTitles = true;
+			style.UppercaseTitles = false;
 			style.ExpandedTabs = true;
 			style.PadBackgroundColor = Styles.BrowserPadBackground;
 			style.InactivePadBackgroundColor = Styles.InactiveBrowserPadBackground;

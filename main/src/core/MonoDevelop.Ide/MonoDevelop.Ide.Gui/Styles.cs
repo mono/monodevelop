@@ -59,7 +59,7 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly Cairo.Color BreadcrumbButtonFillColor = WithAlpha (BaseBackgroundColor, 0.1d);
 		public static readonly Cairo.Color BreadcrumbBottomBorderColor = Shift (BreadcrumbBackgroundColor, 0.7d);
 		public static readonly bool BreadcrumbInvertedIcons = false;
-		public static readonly bool BreadcrumbGreyscaleIcons = true;
+		public static readonly bool BreadcrumbGreyscaleIcons = false;
 
 		// Dock pads
 		
