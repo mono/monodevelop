@@ -43,13 +43,13 @@ style "default" {
     text[PRELIGHT]    = @text_color
     text[SELECTED]    = @selected_fg_color
     text[INSENSITIVE] = darker (@bg_color)
-    text[ACTIVE]      = @selected_fg_color
+    text[ACTIVE]      = @text_color
 
     base[NORMAL]      = @base_color
     base[PRELIGHT]    = @selected_bg_color
     base[SELECTED]    = @selected_bg_color
     base[INSENSITIVE] = @bg_color
-    base[ACTIVE]      = @selected_bg_color
+    base[ACTIVE]      = shade (1.3, @selected_bg_color)
 
     ### style properties
     GtkWidget::new-tooltip-style = 1
@@ -59,9 +59,15 @@ style "default" {
     GtkButton::child-displacement-x = 0
     GtkButton::child-displacement-y = 0
     GtkButton::default-border = { 0, 0, 0, 0 }
-    GtkButton::inner-border = { 0, 0, 0, 0 }
+    GtkButton::inner-border = { 2, 2, 2, 2 }
 
     GtkTreeView::odd-row-color = @base_color
+
+    GtkScrolledWindow::scrollbar-spacing = 0
+    GtkScale::slider-length = 14
+
+    GtkTreeView::expander-size = 8
+    GtkExpander::expander-size = 8
 
     engine "xamarin" {
 
@@ -75,6 +81,9 @@ style "default" {
         menubaritemstyle = 0
         comboboxstyle    = 1
         spinbuttonstyle  = 1
+        colorize_scrollbar = FALSE
+        progressbarstyle = 0
+        trough_shades = { 0.842, 0.886 }
     }
 }
 
@@ -90,17 +99,17 @@ style "wider" = "default" {
 
 
 style "button" {
-    xthickness = 0
-    ythickness = 0
+    xthickness = 2
+    ythickness = 2
 
-    bg[NORMAL]      = @base_color
-    bg[PRELIGHT]    = @bg_color
-    bg[ACTIVE]      = shade(0.7, @bg_color)
+    bg[NORMAL]      = @bg_color
+    bg[PRELIGHT]    = shade(1.1, @bg_color)
+    bg[ACTIVE]      = @bg_color
     bg[INSENSITIVE] = @bg_color
 
     engine "xamarin" {
         contrast = 1.0
-        gradient_shades     = {1.02, 0.97, 0.92, 0.87}
+        gradient_shades     = {0.96, 0.918, 0.926, 0.858}
         focus_color         = shade(0.6, @bg_color)
         textstyle           = 1
       }
@@ -157,12 +166,6 @@ style "tooltip"
 
 style "treeview" = "default"
 {
-    text[ACTIVE] = @text_color
-    text[SELECTED] = @selected_fg_color
-
-    base[ACTIVE] = @base_color
-    base[SELECTED] = @selected_bg_color
-
     GtkTreeView::odd-row-color = "#f5f5f5"
 
     engine "xamarin" {
@@ -191,8 +194,8 @@ style "icon-view" = "default"
 
 style "toolbar-combo-box" = "default"
 {
-    fg[NORMAL] = "#737373"
-    text[NORMAL] = "#737373"
+    fg[NORMAL] = @fg_color
+    text[NORMAL] = @fg_color
     bg[NORMAL] = "#fff"
     base[NORMAL] = "#fff"
     ythickness = 0
@@ -206,6 +209,8 @@ style "toolbar-combo-box" = "default"
 style "combo-box" = "default"
 {
     fg[NORMAL] = "#616161"
+    xthickness = 2
+    ythickness = 2
 
     engine "xamarin" {
         arrowstyle = 3
@@ -220,7 +225,12 @@ style "combo-box-label" = "combo-box"
 style "notebook" = "default"
 {
     GtkNotebook::tab-overlap = 1
-    bg[ACTIVE] = "#e9e9e9"
+    bg[ACTIVE] = @base_color
+    bg[NORMAL] = @base_color
+
+    engine "xamarin" {
+        gradient_shades = { 0.945, 0.945, 0.945, 0.685 }
+    }
 }
 
 style "radio-button" = "default"
@@ -253,6 +263,43 @@ style "search-entry" = "wider"
     bg[NORMAL] = @base_color
 }
 
+style "scrollbar" = "default"
+{
+    GtkScrollbar::has-forward-stepper = 0
+    GtkScrollbar::has-backward-stepper = 0
+    GtkRange::slider-width = 10
+    GtkRange::trough-border = 2
+
+    bg[SELECTED] = @bg_color
+    bg[NORMAL] = @bg_color
+
+    engine "xamarin" {
+        trough_shades = { 0.968, 1.04 }
+        roundness = 0
+    }
+}
+
+style "progressbar" = "default"
+{
+    bg[SELECTED] = "#62b3ec"
+    fg[SELECTED] = "#3a67a6"
+    xthickness = 0
+    ythickness = 0
+}
+
+style "scrolled-window" = "default"
+{
+    xthickness = 0
+    ythickness = 0
+}
+
+style "scale" = "default"
+{
+    engine "xamarin" {
+        roundness = 7
+    }
+}
+
 ### Apply the styles
 class "GtkWidget"    style "default"
 
@@ -261,9 +308,14 @@ class "GtkSpinButton" style "wider"
 class "GtkFrame"     style "wide"
 class "GtkRange"     style "wide"
 class "GtkSeparator" style "wide"
+class "GtkScrollbar" style "scrollbar"
+class "GtkProgressBar" style "progressbar"
+class "GtkScrolledWindow" style "scrolled-window"
+class "GtkNotebook" style "notebook"
 
 class "GtkRadioButton" style "radio-button"
 class "GtkCheckButton" style "check-box"
+class "GtkScale" style "scale"
 
 widget "*search-entry*" style "search-entry"
 
@@ -287,7 +339,5 @@ widget_class "*.<GtkComboBox>.*.GtkLabel" style "combo-box-label"
 # Comboboxes within toolbars
 widget_class "*.<GtkToolbar>.*.<GtkComboBox>.*" style "toolbar-combo-box"
 widget_class "*.<GtkEventBox>.*.<GtkComboBox>.*" style "toolbar-combo-box"
-
-widget_class "*<GtkNotebook>" style "notebook"
 
 widget "gtk-tooltip*"       style "tooltip"
