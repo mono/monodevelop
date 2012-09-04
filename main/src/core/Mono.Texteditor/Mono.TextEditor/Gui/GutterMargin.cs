@@ -191,12 +191,12 @@ namespace Mono.TextEditor
 
 		internal protected override void OptionsChanged ()
 		{
-			CalculateWidth ();
-			
 			lineNumberBgGC = editor.ColorStyle.LineNumber.CairoBackgroundColor;
 			lineNumberGC = editor.ColorStyle.LineNumber.CairoColor;
 			gutterFont = Gtk.Widget.DefaultStyle.FontDescription.Copy ();
 			gutterFont.Size = (int)(Pango.Scale.PangoScale * 11.0 * editor.Options.Zoom);
+
+			CalculateWidth ();
 		}
 
 		internal protected override void Draw (Cairo.Context cr, Cairo.Rectangle area, DocumentLine lineSegment, int line, double x, double y, double lineHeight)
