@@ -559,6 +559,22 @@ namespace MonoDevelop.CSharp.Completion
 			return tooltipInfo;
 		}
 
+		public static TooltipInformation CreateTooltipInformation (ICompilation compilation, CSharpUnresolvedFile file, TextEditorData textEditorData, MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy formattingPolicy, IType entity, bool smartWrap)
+		{
+			var tooltipInfo = new TooltipInformation ();
+			var resolver = file != null ? file.GetResolver (compilation, textEditorData.Caret.Location) : new CSharpResolver (compilation);
+			var sig = new SignatureMarkupCreator (resolver, formattingPolicy.CreateOptions ());
+			sig.BreakLineAfterReturnType = smartWrap;
+			tooltipInfo.SignatureMarkup = sig.GetMarkup (entity);
+			var definition = entity.GetDefinition ();
+			if (definition != null) {
+				var plainDoc = AmbienceService.GetDocumentationSummary (definition) ?? "";
+				tooltipInfo.SummaryMarkup = AmbienceService.GetDocumentationMarkup (plainDoc);
+			}
+
+			return tooltipInfo;
+		}
+
 		public override TooltipInformation CreateTooltipInformation (bool smartWrap)
 		{
 			return CreateTooltipInformation (editorCompletion, Entity, smartWrap);

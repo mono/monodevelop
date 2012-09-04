@@ -247,15 +247,13 @@ namespace MonoDevelop.SourceEditor
 				tooltipInfo.SignatureMarkup = sig.GetMarkup (((NamespaceResolveResult)result).Namespace);
 				return tooltipInfo;
 			} else {
-				if (result.Type.GetDefinition () != null) {
-					return MemberCompletionData.CreateTooltipInformation (
-						doc.Compilation,
-						doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile,
-						doc.Editor,
-						doc.GetFormattingPolicy (),
-						result.Type.GetDefinition (), 
-						false);
-				}
+				return MemberCompletionData.CreateTooltipInformation (
+					doc.Compilation,
+					doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile,
+					doc.Editor,
+					doc.GetFormattingPolicy (),
+					result.Type, 
+					false);
 			}
 
 			return null;

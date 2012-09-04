@@ -98,7 +98,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		public static TooltipInformation CreateTooltipInformation (ICompilation compilation, CSharpUnresolvedFile file, TextEditorData textEditorData, MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy formattingPolicy, IParameterizedMember entity, int currentParameter, bool smartWrap)
 		{
-				var tooltipInfo = new TooltipInformation ();
+			var tooltipInfo = new TooltipInformation ();
 			var resolver = file.GetResolver (compilation, textEditorData.Caret.Location);
 			var sig = new SignatureMarkupCreator (resolver, formattingPolicy.CreateOptions ());
 			sig.HighlightParameter = currentParameter;

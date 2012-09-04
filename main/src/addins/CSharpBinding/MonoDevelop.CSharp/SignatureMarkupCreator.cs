@@ -92,6 +92,13 @@ namespace MonoDevelop.CSharp
 			return highlight ? HighlightSemantically (text, "keyword.semantic.type") : text;
 		}
 
+		public string GetMarkup (IType type)
+		{
+			if (type == null)
+				throw new ArgumentNullException ("entity");
+			return GetTypeMarkup (type);
+		}
+
 		public string GetMarkup (IEntity entity)
 		{
 			if (entity == null)
@@ -246,7 +253,7 @@ namespace MonoDevelop.CSharp
 			return result;
 		}
 
-		string GetTypeMarkup (ITypeDefinition t)
+		string GetTypeMarkup (IType t)
 		{
 			if (t == null)
 				throw new ArgumentNullException ("t");
@@ -255,7 +262,8 @@ namespace MonoDevelop.CSharp
 				return GetDelegateMarkup (t);
 
 			var result = new StringBuilder ();
-			AppendModifiers (result, t);
+			if (t.GetDefinition () != null)
+				AppendModifiers (result, t.GetDefinition ());
 
 			switch (t.Kind) {
 			case TypeKind.Class:
@@ -275,15 +283,28 @@ namespace MonoDevelop.CSharp
 			var typeName = new StringBuilder ();
 
 			typeName.Append (t.Name);
-			if (t.TypeParameters.Count > 0) {
+			var pt = t as ParameterizedType;
+			if (pt != null && pt.TypeArguments.Count > 0) {
 				typeName.Append ("&lt;");
-				for (int i = 0; i < t.TypeParameters.Count; i++) {
+				for (int i = 0; i < pt.TypeArguments.Count; i++) {
 					if (i > 0)
-						result.Append (", ");
-					AppendVariance (result, t.TypeParameters [i].Variance);
-					typeName.Append (CSharpAmbience.NetToCSharpTypeName (t.TypeParameters [i].Name));
+						typeName.Append (", ");
+					//					AppendVariance (result, pt.TypeArguments [i].Variance);
+					typeName.Append (GetTypeReferenceString (pt.TypeArguments [i]));
 				}
 				typeName.Append ("&gt;");
+			} else {
+				var tt = t as ITypeDefinition;
+				if (tt != null && tt.TypeParameters.Count > 0) {
+					typeName.Append ("&lt;");
+					for (int i = 0; i < tt.TypeParameters.Count; i++) {
+						if (i > 0)
+							typeName.Append (", ");
+						AppendVariance (result, tt.TypeParameters [i].Variance);
+						typeName.Append (CSharpAmbience.NetToCSharpTypeName (tt.TypeParameters [i].Name));
+					}
+					typeName.Append ("&gt;");
+				}
 			}
 
 			result.Append (Highlight (typeName.ToString (), "keyword.type"));
@@ -359,13 +380,14 @@ namespace MonoDevelop.CSharp
 			return result.ToString ();
 		}
 
-		string GetDelegateMarkup (ITypeDefinition delegateType)
+		string GetDelegateMarkup (IType delegateType)
 		{
 			var result = new StringBuilder ();
 			
 			var method = delegateType.GetDelegateInvokeMethod ();
-			
-			AppendModifiers (result, delegateType);
+
+			if (delegateType.GetDefinition () != null)
+				AppendModifiers (result, delegateType.GetDefinition ());
 			result.Append (Highlight ("delegate ", "keyword.declaration"));
 			result.Append (GetTypeReferenceString (method.ReturnType));
 			if (BreakLineAfterReturnType) {
@@ -376,18 +398,31 @@ namespace MonoDevelop.CSharp
 			
 			
 			result.Append (CSharpAmbience.FilterName (delegateType.Name));
-			
-			if (delegateType.TypeParameters.Count > 0) {
+
+			var pt = delegateType as ParameterizedType;
+			if (pt != null && pt.TypeArguments.Count > 0) {
 				result.Append ("&lt;");
-				for (int i = 0; i < delegateType.TypeParameters.Count; i++) {
+				for (int i = 0; i < pt.TypeArguments.Count; i++) {
 					if (i > 0)
 						result.Append (", ");
-					AppendVariance (result, delegateType.TypeParameters [i].Variance);
-					result.Append (CSharpAmbience.NetToCSharpTypeName (delegateType.TypeParameters [i].Name));
+					//					AppendVariance (result, pt.TypeArguments [i].Variance);
+					result.Append (GetTypeReferenceString (pt.TypeArguments [i]));
 				}
 				result.Append ("&gt;");
+			} else {
+				var tt = delegateType as ITypeDefinition;
+				if (tt != null && tt.TypeParameters.Count > 0) {
+					result.Append ("&lt;");
+					for (int i = 0; i < tt.TypeParameters.Count; i++) {
+						if (i > 0)
+							result.Append (", ");
+						AppendVariance (result, tt.TypeParameters [i].Variance);
+						result.Append (CSharpAmbience.NetToCSharpTypeName (tt.TypeParameters [i].Name));
+					}
+					result.Append ("&gt;");
+				}
 			}
-			
+
 			if (formattingOptions.SpaceBeforeMethodDeclarationParameterComma)
 				result.Append (" ");
 			
