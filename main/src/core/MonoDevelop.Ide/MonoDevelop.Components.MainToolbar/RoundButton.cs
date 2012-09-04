@@ -73,6 +73,13 @@ namespace MonoDevelop.Components.MainToolbar
 
 		LazyImage iconRunNormal, iconRunDisabled;
 		LazyImage iconStopNormal, iconStopDisabled;
+		LazyImage iconBuildNormal, iconBuildDisabled;
+
+		public enum OperationIcon {
+			Run,
+			Build,
+			Stop
+		}
 
 		public RoundButton ()
 		{
@@ -91,6 +98,9 @@ namespace MonoDevelop.Components.MainToolbar
 
 			iconStopNormal = new LazyImage ("icoStop-Normal.png");
 			iconStopDisabled = new LazyImage ("icoStop-Disabled.png");
+
+			iconBuildNormal = new LazyImage ("icoBuild-Normal.png");
+			iconBuildDisabled = new LazyImage ("icoBuild-Disabled.png");
 		}
 
 		StateType hoverState = StateType.Normal;
@@ -157,18 +167,23 @@ namespace MonoDevelop.Components.MainToolbar
 
 		ImageSurface GetIcon()
 		{
-			if (!ShowStart) {
+			switch (icon) {
+			case OperationIcon.Stop:
 				return State ==  StateType.Insensitive ? iconStopDisabled : iconStopNormal;
+			case OperationIcon.Run:
+				return State ==  StateType.Insensitive ? iconRunDisabled : iconRunNormal;
+			case OperationIcon.Build:
+				return State ==  StateType.Insensitive ? iconBuildDisabled : iconBuildNormal;
 			}
-			return State ==  StateType.Insensitive ? iconRunDisabled : iconRunNormal;
+			throw new InvalidOperationException ();
 		}
 
-		bool showStart;
-		public bool ShowStart {
-			get { return showStart; }
+		OperationIcon icon;
+		public OperationIcon Icon {
+			get { return icon; }
 			set {
-				if (value != showStart) {
-					showStart = value;
+				if (value != icon) {
+					icon = value;
 					QueueDraw ();
 				}
 			}

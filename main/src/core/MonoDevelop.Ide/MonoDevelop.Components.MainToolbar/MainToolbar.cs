@@ -503,23 +503,35 @@ namespace MonoDevelop.Components.MainToolbar
 			matchEntry.Entry.GrabFocus ();
 		}
 
-		CommandInfo GetStartButtonCommandInfo ()
+		CommandInfo GetStartButtonCommandInfo (out RoundButton.OperationIcon operation)
 		{
-			if (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted)
+			if (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted || !IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted) {
+				operation = RoundButton.OperationIcon.Stop;
 				return IdeApp.CommandService.GetCommandInfo (MonoDevelop.Ide.Commands.ProjectCommands.Stop);
+			}
 			else {
+				operation = RoundButton.OperationIcon.Run;
 				var ci = IdeApp.CommandService.GetCommandInfo ("MonoDevelop.Debugger.DebugCommands.Debug");
-				if (ci.Enabled)
-					return ci;
-				else
+				if (!ci.Enabled || !ci.Visible) {
 					// If debug is not enabled, try Run
-					return IdeApp.CommandService.GetCommandInfo (MonoDevelop.Ide.Commands.ProjectCommands.Run);
+					ci = IdeApp.CommandService.GetCommandInfo (MonoDevelop.Ide.Commands.ProjectCommands.Run);
+					if (!ci.Enabled || !ci.Visible) {
+						// Running is not possible, then allow building
+						var bci = IdeApp.CommandService.GetCommandInfo (MonoDevelop.Ide.Commands.ProjectCommands.BuildSolution);
+						if (bci.Enabled && bci.Visible) {
+							operation = RoundButton.OperationIcon.Build;
+							ci = bci;
+						}
+					}
+				}
+				return ci;
 			}
 		}
 		
 		void HandleStartButtonClicked (object sender, EventArgs e)
 		{
-			var ci = GetStartButtonCommandInfo ();
+			RoundButton.OperationIcon operation;
+			var ci = GetStartButtonCommandInfo (out operation);
 			if (ci.Enabled)
 				IdeApp.CommandService.DispatchCommand (ci.Command.Id);
 		}
@@ -531,10 +543,12 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			if (!toolbarEnabled)
 				return;
-			var ci = GetStartButtonCommandInfo ();
+			RoundButton.OperationIcon operation;
+			var ci = GetStartButtonCommandInfo (out operation);
 			if (ci.Enabled != button.Sensitive)
 				button.Sensitive = ci.Enabled;
-			button.ShowStart = IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
+
+			button.Icon = operation;
 		}
 
 		void ICommandBar.SetEnabled (bool enabled)
