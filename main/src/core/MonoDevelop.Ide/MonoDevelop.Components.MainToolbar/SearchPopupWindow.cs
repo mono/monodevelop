@@ -79,7 +79,7 @@ namespace MonoDevelop.Components.MainToolbar
 			layout = new Pango.Layout (PangoContext);
 			headerLayout = new Pango.Layout (PangoContext);
 
-			Events = Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonMotionMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.ExposureMask;
+			Events = Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonMotionMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.ExposureMask | Gdk.EventMask.PointerMotionMask;
 			ItemActivated += (sender, e) => OpenFile ();
 			SizeRequested += delegate(object o, SizeRequestedArgs args) {
 				if (inResize)
@@ -266,16 +266,22 @@ namespace MonoDevelop.Components.MainToolbar
 			return null;
 		}
 
+		protected override bool OnMotionNotifyEvent (Gdk.EventMotion evnt)
+		{
+			var item = GetItemAt (evnt.X, evnt.Y);
+			if (item == null && selectedItem != null || 
+			    item != null && selectedItem == null || !item.Equals (selectedItem)) {
+				selectedItem = item;
+				ShowTooltip ();
+				QueueDraw ();
+			}
+			return base.OnMotionNotifyEvent (evnt);
+		}
+
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
 			if (evnt.Button == 1) {
-				var item = GetItemAt (evnt.X, evnt.Y);
-				if (item != null) {
-					selectedItem = item;
-					ShowTooltip ();
-					QueueDraw ();
-				}
-				if (evnt.Type == Gdk.EventType.TwoButtonPress)
+				if (selectedItem != null)
 					OnItemActivated (EventArgs.Empty);
 			}
 
@@ -410,6 +416,7 @@ namespace MonoDevelop.Components.MainToolbar
 			if (declarationViewWindowOpacityTimer != 0) 
 				GLib.Source.Remove (declarationViewWindowOpacityTimer);
 			declarationViewWindowOpacityTimer = GLib.Timeout.Add (50, new OpacityTimer (this).Timer);
+			this.GrabDefault ();
 			declarationViewTimer = 0;
 			return false;
 		}
