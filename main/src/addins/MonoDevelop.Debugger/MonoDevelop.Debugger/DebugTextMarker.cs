@@ -69,13 +69,14 @@ namespace MonoDevelop.Debugger
 		{
 			double size;
 			if (width > height) {
-				x += (width - height) / 2;
 				size = height;
 			} else {
-				y += (height - width) / 2;
 				size = width;
 			}
-			
+			double borderLineWidth = cr.LineWidth;
+			x = Math.Floor (x + (width - borderLineWidth - size) / 2);
+			y = Math.Floor (y + (height - size) / 2);
+
 			DrawIcon (cr, x, y, size);
 		}
 		
