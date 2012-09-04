@@ -270,7 +270,7 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			var item = GetItemAt (evnt.X, evnt.Y);
 			if (item == null && selectedItem != null || 
-			    item != null && selectedItem == null || !item.Equals (selectedItem)) {
+			    item != null && selectedItem == null || item != null && !item.Equals (selectedItem)) {
 				selectedItem = item;
 				ShowTooltip ();
 				QueueDraw ();

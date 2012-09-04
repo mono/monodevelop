@@ -106,7 +106,8 @@ namespace MonoDevelop.Components
 
         protected override bool OnLeaveNotifyEvent(Gdk.EventCrossing evnt)
         {
-            is_hovering = false;
+			image.GdkWindow.Cursor = null;
+			is_hovering = false;
             UpdateImage();
             return base.OnLeaveNotifyEvent(evnt);
         }
