@@ -5,14 +5,14 @@
        description = "Managed Debugging Engine support for MDB"
        copyright   = "MIT X11"
        category = "Debugging"
-       version   = "3.1.0">
+       version   = "4.0">
 
 	<Dependencies>
-		<Addin id="MonoDevelop.Core" version="3.1.0"/>
-		<Addin id="MonoDevelop.Ide" version="3.1.0"/>
-		<Addin id="MonoDevelop.Debugger" version="3.1.0"/>
-		<Addin id="MonoDevelop.Debugger.Mdb" version="3.1.0"/>
-		<Addin id="MonoDevelop.AspNet" version="3.1.0"/>
+		<Addin id="MonoDevelop.Core" version="4.0"/>
+		<Addin id="MonoDevelop.Ide" version="4.0"/>
+		<Addin id="MonoDevelop.Debugger" version="4.0"/>
+		<Addin id="MonoDevelop.Debugger.Mdb" version="4.0"/>
+		<Addin id="MonoDevelop.AspNet" version="4.0"/>
 	</Dependencies>
 	
 	<Extension path="/MonoDevelop/Debugging/DebuggerEngines">

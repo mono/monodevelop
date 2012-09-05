@@ -7,18 +7,18 @@
         url = "http://www.monodevelop.com/"
         description = "Provides support for adding/editing PO files."
         category = "IDE extensions"
-        version = "3.1.0">
+        version = "4.0">
 
 	<Runtime>
 		<Import assembly = "MonoDevelop.Gettext.dll"/>
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="3.1.0"/>
-		<Addin id="Ide" version="3.1.0"/>
-		<Addin id="DesignerSupport" version="3.1.0"/>
-		<Addin id="Autotools" version="3.1.0"/>
-		<Addin id="Deployment" version="3.1.0"/>
+		<Addin id="Core" version="4.0"/>
+		<Addin id="Ide" version="4.0"/>
+		<Addin id="DesignerSupport" version="4.0"/>
+		<Addin id="Autotools" version="4.0"/>
+		<Addin id="Deployment" version="4.0"/>
 	</Dependencies>
 	
 	<!-- Extension Points -->

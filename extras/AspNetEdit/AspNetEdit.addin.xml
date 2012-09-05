@@ -6,7 +6,7 @@
        url         = "http://www.monodevelop.com/"
        description = "Visual Designer for ASP.NET Web Forms."
        category    = "Web Development"
-       version     = "3.1.0">
+       version     = "4.0">
 	
 	<Runtime>
 		<Import assembly = "AspNetEdit.dll"/>
@@ -14,11 +14,11 @@
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="3.1.0"/>
-		<Addin id="Ide" version="3.1.0"/>
-		<Addin id="Deployment" version="3.1.0" />
-		<Addin id="AspNet" version="3.1.0" />
-		<Addin id="DesignerSupport" version="3.1.0" />
+		<Addin id="Core" version="4.0"/>
+		<Addin id="Ide" version="4.0"/>
+		<Addin id="Deployment" version="4.0" />
+		<Addin id="AspNet" version="4.0" />
+		<Addin id="DesignerSupport" version="4.0" />
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
