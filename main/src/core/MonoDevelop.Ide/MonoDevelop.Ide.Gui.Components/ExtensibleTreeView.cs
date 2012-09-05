@@ -2323,6 +2323,7 @@ namespace MonoDevelop.Ide.Gui.Components
 	{
 		static Gdk.Pixbuf popupIcon;
 		static Gdk.Pixbuf popupIconDown;
+		static Gdk.Pixbuf popupIconHover;
 		bool bound;
 		ExtensibleTreeView parent;
 		Gdk.Rectangle buttonScreenRect;
@@ -2334,6 +2335,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		{
 			popupIcon = Gdk.Pixbuf.LoadFromResource ("tree-popup-button.png");
 			popupIconDown = Gdk.Pixbuf.LoadFromResource ("tree-popup-button-down.png");
+			popupIconHover = Gdk.Pixbuf.LoadFromResource ("tree-popup-button-hover.png");
 		}
 
 		[GLib.Property ("text-markup")]
@@ -2422,13 +2424,12 @@ namespace MonoDevelop.Ide.Gui.Components
 					buttonAllocation = GtkUtil.ToWindowCoordinates (widget, widget.GdkWindow, buttonAllocation);
 
 					bool mouseOver = (flags & Gtk.CellRendererState.Prelit) != 0 && buttonScreenRect.Contains (PointerPosition);
+					if (mouseOver && !Pushed)
+						icon = popupIconHover;
 
 					using (var ctx = Gdk.CairoHelper.Create (window)) {
 						Gdk.CairoHelper.SetSourcePixbuf (ctx, icon, x, y);
-						if (mouseOver || Pushed)
-							ctx.Paint ();
-						else
-							ctx.PaintWithAlpha (0.7);
+						ctx.Paint ();
 					}
 				}
 			}
