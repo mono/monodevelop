@@ -38,11 +38,33 @@ using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.Components.MainToolbar
 {
+	interface Easing
+	{
+		float Ease (float val);
+	}
+
+	class LinearEasing : Easing
+	{
+		public float Ease (float val)
+		{
+			return val;
+		}
+	}
+
+	class SinInOutEasing : Easing
+	{
+		public float Ease (float val)
+		{
+			return (float)Math.Sin (val * Math.PI * 0.5f);
+		}
+	}
+
 	class Tweener
 	{
 		public uint Length { get; private set; }
 		public uint Rate { get; private set; }
 		public float Value { get; private set; }
+		public Easing Easing { get; set; }
 
 		public bool IsRunning {
 			get { return runningTime.IsRunning; }
@@ -59,6 +81,7 @@ namespace MonoDevelop.Components.MainToolbar
 			Length = length;
 			Rate = rate;
 			runningTime = new Stopwatch ();
+			Easing = new LinearEasing ();
 		}
 
 		~Tweener ()
@@ -248,6 +271,7 @@ namespace MonoDevelop.Components.MainToolbar
 			};
 
 			tweener = new Tweener(250, 16);
+			tweener.Easing = new SinInOutEasing ();
 			tweener.ValueUpdated += (object self, EventArgs args) => {
 				QueueDraw ();
 			};
@@ -400,39 +424,37 @@ namespace MonoDevelop.Components.MainToolbar
 					width -= currentPixbuf.Width + 4;
 				}
 
-				{
-					int y = Allocation.Y + Allocation.Height / 2;
-					if (lastText != null) {
-						double opacity = 1.0f - tweener.Value;
-						DrawString (lastText, lastTextIsMarkup, context, x, y - (int)(tweener.Value * Allocation.Height * 0.5), width, opacity);
-					}
+				int center = Allocation.Y + Allocation.Height / 2;
+				if (lastText != null) {
+					double opacity = 1.0f - tweener.Value;
+					DrawString (lastText, lastTextIsMarkup, context, x, center - (int)(tweener.Value * Allocation.Height * 0.5), width, opacity);
+				}
 
-					if (currentText != null) {
-						int textHeight = DrawString (currentText, 
-						                             textIsMarkup, 
-						                             context, 
-						                             x, y + (int)((1.0f - tweener.Value) * Allocation.Height * 0.5), 
-						                             width, tweener.Value);
+				if (currentText != null) {
+					int textHeight = DrawString (currentText, 
+					                             textIsMarkup, 
+					                             context, 
+					                             x, center + (int)((1.0f - tweener.Value) * Allocation.Height * 0.5), 
+					                             width, tweener.Value);
 
-						if (showingProgress || progressDisplayAlpha > 0) {
-							double py = y + textHeight / 2 + 3.5;
-							double pw = mainAlign.Allocation.Width - mainAlign.LeftPadding - mainAlign.RightPadding;
-							var px = mainAlign.Allocation.X + mainAlign.LeftPadding;
-							context.LineWidth = 1;
-							context.MoveTo (px, py);
-							context.RelLineTo (pw, 0);
-							var c = Styles.StatusBarProgressBackgroundColor;
-							c.A *= progressDisplayAlpha;
-							context.Color = c;
-							context.Stroke ();
+					if (showingProgress || progressDisplayAlpha > 0) {
+						double py = center + textHeight / 2 + 3.5;
+						double pw = mainAlign.Allocation.Width - mainAlign.LeftPadding - mainAlign.RightPadding;
+						var px = mainAlign.Allocation.X + mainAlign.LeftPadding;
+						context.LineWidth = 1;
+						context.MoveTo (px, py);
+						context.RelLineTo (pw, 0);
+						var c = Styles.StatusBarProgressBackgroundColor;
+						c.A *= progressDisplayAlpha;
+						context.Color = c;
+						context.Stroke ();
 
-							context.MoveTo (px, py);
-							context.RelLineTo ((double)pw * progressFraction, 0);
-							c = Styles.StatusBarProgressColor;
-							c.A *= progressDisplayAlpha;
-							context.Color = c;
-							context.Stroke ();
-						}
+						context.MoveTo (px, py);
+						context.RelLineTo ((double)pw * progressFraction, 0);
+						c = Styles.StatusBarProgressColor;
+						c.A *= progressDisplayAlpha;
+						context.Color = c;
+						context.Stroke ();
 					}
 				}
 			}
@@ -455,6 +477,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 			context.Save ();
 			// use widget height instead of message box height as message box does not have a true height when no widgets are packed in it
+			// also ensures animations work properly instead of getting clipped
 			context.Rectangle (new Rectangle (x, Allocation.Y, width, Allocation.Height));
 			context.Clip ();
 
