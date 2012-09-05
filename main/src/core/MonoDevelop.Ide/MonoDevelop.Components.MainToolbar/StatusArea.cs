@@ -311,12 +311,14 @@ namespace MonoDevelop.Components.MainToolbar
 				context.Stroke ();
 
 				int x = messageBox.Allocation.X;
+				int width = messageBox.Allocation.Width;
 
 				if (currentPixbuf != null) {
 					int y = Allocation.Y + (Allocation.Height - currentPixbuf.Height) / 2;
 					Gdk.CairoHelper.SetSourcePixbuf (context, currentPixbuf, x, y);
 					context.Paint ();
 					x += currentPixbuf.Width + 4;
+					width -= currentPixbuf.Width + 4;
 				}
 
 				if (currentText != null) {
@@ -325,12 +327,17 @@ namespace MonoDevelop.Components.MainToolbar
 						pl.SetMarkup (currentText);
 					else
 						pl.SetText (currentText);
+					pl.FontDescription = Styles.StatusFont;
+					pl.Ellipsize = Pango.EllipsizeMode.End;
+					pl.Width = Pango.Units.FromPixels(width);
+
 					int w, h;
 					pl.GetPixelSize (out w, out h);
 					int y = Allocation.Y + (Allocation.Height - h) / 2;
 
 					context.Save ();
-					context.Rectangle (new Rectangle (messageBox.Allocation.X, messageBox.Allocation.Y, messageBox.Allocation.Width, messageBox.Allocation.Height));
+					// use widget height instead of message box height as message box does not have a true height when no widgets are packed in it
+					context.Rectangle (new Rectangle (x, Allocation.Y, width, Allocation.Height));
 					context.Clip ();
 
 					context.MoveTo (x, y);
@@ -402,7 +409,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public void ShowReady ()
 		{
-			ShowMessage ("");	
+			ShowMessage ("");
 		}
 
 		public void SetMessageSourcePad (Pad pad)
@@ -585,28 +592,56 @@ namespace MonoDevelop.Components.MainToolbar
 		public void ShowMessage (IconId image, string message, bool isMarkup)
 		{
 			DispatchService.AssertGuiThread ();
-			string txt = !String.IsNullOrEmpty (message) ? " " + message.Replace ("\n", " ") : "";
-			currentText = txt != null ? txt.Trim () : null;
-			textIsMarkup = isMarkup;
-			if (currentIcon != image) {
-				currentIcon = image;
-				iconAnimation = null;
-				if (currentIconAnimation != null) {
-					currentIconAnimation.Dispose ();
-					currentIconAnimation = null;
-				}
-				if (image != IconId.Null && ImageService.IsAnimation (image, Gtk.IconSize.Menu)) {
-					iconAnimation = ImageService.GetAnimatedIcon (image, Gtk.IconSize.Menu);
-					currentPixbuf = iconAnimation.FirstFrame;
-					currentIconAnimation = iconAnimation.StartAnimation (delegate (Gdk.Pixbuf p) {
-						currentPixbuf = p;
-						QueueDraw ();
-					});
-				} else {
-					currentPixbuf = currentIcon != IconId.Null ? ImageService.GetPixbuf (image) : null;
-				}
-			}
+
+			LoadText (message, isMarkup);
+			LoadPixbuf (image);
+
 			QueueDraw ();
+		}
+
+		void LoadText (string message, bool isMarkup)
+		{
+			if (string.IsNullOrEmpty(message))
+				message = GettextCatalog.GetString("Welcome");
+			message = message ?? "";
+
+			currentText = message.Replace ("\n", " ").Trim ();
+			textIsMarkup = isMarkup;
+		}
+
+		static bool iconLoaded = false;
+		void LoadPixbuf (IconId image)
+		{
+			// We dont need to load the same image twice
+			if (currentIcon == image && iconLoaded)
+				return;
+
+			currentIcon = image;
+			iconAnimation = null;
+
+			// clean up previous running animation
+			if (currentIconAnimation != null) {
+				currentIconAnimation.Dispose ();
+				currentIconAnimation = null;
+			}
+
+			// if we have nothing, use the default icon
+			if (image == IconId.Null)
+				image = "md-status-steady";
+
+			// load image now
+			if (ImageService.IsAnimation (image, Gtk.IconSize.Menu)) {
+				iconAnimation = ImageService.GetAnimatedIcon (image, Gtk.IconSize.Menu);
+				currentPixbuf = iconAnimation.FirstFrame;
+				currentIconAnimation = iconAnimation.StartAnimation (delegate (Gdk.Pixbuf p) {
+					currentPixbuf = p;
+					QueueDraw ();
+				});
+			} else {
+				currentPixbuf = ImageService.GetPixbuf (image);
+			}
+
+			iconLoaded = true;
 		}
 		#endregion
 

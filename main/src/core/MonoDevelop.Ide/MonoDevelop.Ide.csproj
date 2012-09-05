@@ -1003,6 +1003,9 @@
     <EmbeddedResource Include="icons\tree-popup-button-hover.png">
       <LogicalName>tree-popup-button-hover.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\statusSteady.png">
+      <LogicalName>statusSteady.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />

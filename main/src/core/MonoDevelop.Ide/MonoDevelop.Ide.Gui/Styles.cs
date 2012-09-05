@@ -99,6 +99,8 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly Cairo.Color StatusBarProgressColor = StatusBarTextColor;
 		public static readonly Cairo.Color StatusBarProgressBackgroundColor = new Cairo.Color (0, 0, 0, 0.2);
 
+		public static readonly Pango.FontDescription StatusFont = Pango.FontDescription.FromString ("Normal 11");
+
 		// Toolbar
 
 		public static readonly Cairo.Color ToolbarBottomBorderColor = new Cairo.Color (0.5, 0.5, 0.5);

@@ -143,6 +143,7 @@ namespace MonoDevelop.Components.MainToolbar
 			AddSpace (24);
 
 			statusArea = new StatusArea ();
+			statusArea.ShowMessage (GettextCatalog.GetString ("Welcome"));
 
 			var statusAreaVBox = new VBox ();
 			statusAreaVBox.PackStart (statusArea, true, true, 0);
