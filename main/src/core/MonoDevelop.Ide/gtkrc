@@ -21,7 +21,6 @@ gtk-auto-mnemonics    = 1
 
 
 style "default" {
-    font_name = "Lucida Grande 11"
 
     xthickness = 1
     ythickness = 1
