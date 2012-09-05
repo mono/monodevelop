@@ -63,9 +63,6 @@ namespace MonoDevelop.Components
 
 			int tx = Allocation.X + (int) Xpad + (int) ((float)(Allocation.Width - (int)(Xpad*2) - w) * Xalign);
 			int ty = Allocation.Y + (int) Ypad + (int) ((float)(Allocation.Height - (int)(Ypad*2) - h) * Yalign);
-
-			if (Text.IndexOf ('<') == -1)
-				GdkWindow.DrawLayout (Style.WhiteGC, tx, ty + 1, la);
 			
 			GdkWindow.DrawLayout (Style.TextGC (State), tx, ty, la);
 			
