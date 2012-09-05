@@ -503,6 +503,27 @@ namespace MonoDevelop.CSharp.Completion
 			{
 				return tooltipFunc (smartWrap);
 			}
+
+			List<ICompletionData> overloads;
+			public override bool HasOverloads {
+				get { return overloads != null && overloads.Count > 0; }
+			}
+
+			public override IEnumerable<ICompletionData> OverloadedData {
+				get {
+					return overloads;
+				}
+			}
+
+			public override void AddOverload (ICSharpCode.NRefactory.Completion.ICompletionData data)
+			{
+				if (overloads == null) {
+					overloads = new List<ICompletionData> ();
+					overloads.Add (this);
+				}
+				overloads.Add (data);
+			}
+
 		}
 
 		ICompletionData ICompletionDataFactory.CreateEntityCompletionData (IEntity entity, string text)
