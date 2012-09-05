@@ -537,8 +537,15 @@ namespace MonoDevelop.CSharp.Completion
 			if (!(type is ParameterizedType) && type.TypeParameterCount > 0) {
 				var sb = new StringBuilder (shortType);
 				sb.Append ("<");
-				for (int i = 0; i < type.TypeParameterCount; i++) {
-					if (i > 0)
+				int startParameter = 0;
+				var dt = type.DeclaringType;
+				while (dt != null) {
+					startParameter += dt.TypeParameterCount;
+					dt = dt.DeclaringType;
+				}
+
+				for (int i = startParameter; i < type.TypeParameterCount; i++) {
+					if (i > startParameter)
 						sb.Append (", ");
 					sb.Append (GetAmbience ().GetString (type.GetDefinition ().TypeParameters[i], OutputFlags.ClassBrowserEntries));
 				}
