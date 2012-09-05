@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-VERSION=3.1.0
+VERSION=4.0
 PACKAGE=aspnetedit
 prefix=/usr/local
 config=DEBUG

@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-VERSION=3.1.0
+VERSION=4.0
 PACKAGE=geckowebbrowser
 prefix=/usr/local
 config=DEBUG
 configurations=" RELEASE DEBUG"
-common_packages=" glib-sharp-2.0;2.12.8 gtk-sharp-2.0;2.12.8 gecko-sharp-2.0;0.12 monodevelop;3.1.0"
+common_packages=" glib-sharp-2.0;2.12.8 gtk-sharp-2.0;2.12.8 gecko-sharp-2.0;0.12 monodevelop;4.0"
 
 
 usage ()

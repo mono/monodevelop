@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-VERSION=3.1.0
+VERSION=4.0
 PACKAGE=monodevelop-debugger-gdb
 prefix=/usr/local
 config=DEBUG
 configurations=" RELEASE DEBUG"
-common_packages=" monodevelop;3.1.0"
+common_packages=" monodevelop;4.0"
 
 
 usage ()

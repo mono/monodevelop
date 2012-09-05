@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-VERSION=3.1.0
+VERSION=4.0
 PACKAGE=webkitwebbrowser
 prefix=/usr/local
 config=DEBUG
 configurations=" RELEASE DEBUG"
-common_packages=" glade-sharp-2.0;2.12.8 glib-sharp-2.0;2.12.8 gtk-sharp-2.0;2.12.8 monodevelop;3.1.0 webkit-sharp-1.0;0.2"
+common_packages=" glade-sharp-2.0;2.12.8 glib-sharp-2.0;2.12.8 gtk-sharp-2.0;2.12.8 monodevelop;4.0 webkit-sharp-1.0;0.2"
 
 
 usage ()

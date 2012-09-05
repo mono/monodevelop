@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-VERSION=3.1.0
+VERSION=4.0
 PACKAGE=monodevelop_addinauthoring
 prefix=/usr/local
 config=DEBUG
 configurations=" RELEASE DEBUG"
-common_packages=" monodevelop;3.1.0 gtk-sharp-2.0;2.12.8 mono-addins-setup;0.4 mono-addins;0.5"
+common_packages=" monodevelop;4.0 gtk-sharp-2.0;2.12.8 mono-addins-setup;0.4 mono-addins;0.5"
 
 
 usage ()
