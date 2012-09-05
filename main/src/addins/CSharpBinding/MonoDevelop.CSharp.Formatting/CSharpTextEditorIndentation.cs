@@ -117,8 +117,10 @@ namespace MonoDevelop.CSharp.Formatting
 //			}
 				var documentLine = Editor.GetLineByOffset (insertionOffset + insertedChars);
 				while (documentLine != null && insertionOffset < documentLine.EndOffset) {
-					stateTracker.UpdateEngine (documentLine.Offset);
-					DoReSmartIndent (documentLine.Offset);
+					if (documentLine.Length > 0) {
+						stateTracker.UpdateEngine (documentLine.Offset);
+						DoReSmartIndent (documentLine.Offset);
+					}
 					documentLine = documentLine.PreviousLine;
 				}
 			}
