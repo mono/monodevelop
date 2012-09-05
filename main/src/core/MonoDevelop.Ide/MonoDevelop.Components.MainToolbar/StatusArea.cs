@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Diagnostics;
 using Gtk;
 using MonoDevelop.Components;
 using Cairo;
@@ -37,6 +38,73 @@ using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.Components.MainToolbar
 {
+	class Tweener
+	{
+		public uint Length { get; private set; }
+		public uint Rate { get; private set; }
+		public float Value { get; private set; }
+
+		public bool IsRunning {
+			get { return runningTime.IsRunning; }
+		}
+
+		public event EventHandler ValueUpdated;
+
+		Stopwatch runningTime;
+		uint timeoutHandle;
+
+		public Tweener (uint length, uint rate)
+		{
+			Value = 0.0f;
+			Length = length;
+			Rate = rate;
+			runningTime = new Stopwatch ();
+		}
+
+		~Tweener ()
+		{
+			if (timeoutHandle > 0)
+				GLib.Source.Remove (timeoutHandle);
+		}
+
+		public void Start ()
+		{
+			// reset any current running instance and reset the stopwatch.
+			Stop ();
+			Value = 0.0f;
+
+			runningTime.Start ();
+			timeoutHandle = GLib.Timeout.Add (Rate, () => { 
+				Value = Math.Min (1.0f, runningTime.ElapsedMilliseconds / (float) Length);
+				ValueUpdated (this, new EventArgs());
+
+				if (Value >= 1.0f)
+				{
+					runningTime.Stop ();
+					timeoutHandle = 0;
+					return false;
+				}
+				return true;
+			});
+		}
+
+		public void Stop ()
+		{
+			Pause ();
+			runningTime.Reset ();
+		}
+
+		public void Pause ()
+		{
+			runningTime.Stop ();
+
+			if (timeoutHandle > 0) {
+				GLib.Source.Remove (timeoutHandle);
+				timeoutHandle = 0;
+			}
+		}
+	}
+
 	class StatusArea : EventBox, StatusBar
 	{
 		const int PaddingLeft = 10;
@@ -50,8 +118,14 @@ namespace MonoDevelop.Components.MainToolbar
 		internal readonly HBox statusIconBox = new HBox ();
 		Alignment mainAlign;
 
+		string lastText;
 		string currentText;
+
+		Tweener tweener;
+
 		bool textIsMarkup;
+		bool lastTextIsMarkup;
+
 		AnimatedIcon iconAnimation;
 		IconId currentIcon;
 		Gdk.Pixbuf currentPixbuf;
@@ -171,6 +245,11 @@ namespace MonoDevelop.Components.MainToolbar
 					completionStatus.Dispose ();
 					completionStatus = null;
 				}
+			};
+
+			tweener = new Tweener(250, 16);
+			tweener.ValueUpdated += (object self, EventArgs args) => {
+				QueueDraw ();
 			};
 		}
 
@@ -321,53 +400,75 @@ namespace MonoDevelop.Components.MainToolbar
 					width -= currentPixbuf.Width + 4;
 				}
 
-				if (currentText != null) {
-					Pango.Layout pl = new Pango.Layout (this.PangoContext);
-					if (textIsMarkup)
-						pl.SetMarkup (currentText);
-					else
-						pl.SetText (currentText);
-					pl.FontDescription = Styles.StatusFont;
-					pl.Ellipsize = Pango.EllipsizeMode.End;
-					pl.Width = Pango.Units.FromPixels(width);
+				{
+					int y = Allocation.Y + Allocation.Height / 2;
+					if (lastText != null) {
+						double opacity = 1.0f - tweener.Value;
+						DrawString (lastText, lastTextIsMarkup, context, x, y - (int)(tweener.Value * Allocation.Height * 0.5), width, opacity);
+					}
 
-					int w, h;
-					pl.GetPixelSize (out w, out h);
-					int y = Allocation.Y + (Allocation.Height - h) / 2;
+					if (currentText != null) {
+						int textHeight = DrawString (currentText, 
+						                             textIsMarkup, 
+						                             context, 
+						                             x, y + (int)((1.0f - tweener.Value) * Allocation.Height * 0.5), 
+						                             width, tweener.Value);
 
-					context.Save ();
-					// use widget height instead of message box height as message box does not have a true height when no widgets are packed in it
-					context.Rectangle (new Rectangle (x, Allocation.Y, width, Allocation.Height));
-					context.Clip ();
+						if (showingProgress || progressDisplayAlpha > 0) {
+							double py = y + textHeight / 2 + 3.5;
+							double pw = mainAlign.Allocation.Width - mainAlign.LeftPadding - mainAlign.RightPadding;
+							var px = mainAlign.Allocation.X + mainAlign.LeftPadding;
+							context.LineWidth = 1;
+							context.MoveTo (px, py);
+							context.RelLineTo (pw, 0);
+							var c = Styles.StatusBarProgressBackgroundColor;
+							c.A *= progressDisplayAlpha;
+							context.Color = c;
+							context.Stroke ();
 
-					context.MoveTo (x, y);
-					context.Color = Styles.StatusBarTextColor;
-					Pango.CairoHelper.ShowLayout (context, pl);
-					pl.Dispose ();
-					context.Restore ();
-
-					if (showingProgress || progressDisplayAlpha > 0) {
-						double py = y + h + 3.5;
-						double pw = mainAlign.Allocation.Width - mainAlign.LeftPadding - mainAlign.RightPadding;
-						var px = mainAlign.Allocation.X + mainAlign.LeftPadding;
-						context.LineWidth = 1;
-						context.MoveTo (px, py);
-						context.RelLineTo (pw, 0);
-						var c = Styles.StatusBarProgressBackgroundColor;
-						c.A *= progressDisplayAlpha;
-						context.Color = c;
-						context.Stroke ();
-
-						context.MoveTo (px, py);
-						context.RelLineTo ((double)pw * progressFraction, 0);
-						c = Styles.StatusBarProgressColor;
-						c.A *= progressDisplayAlpha;
-						context.Color = c;
-						context.Stroke ();
+							context.MoveTo (px, py);
+							context.RelLineTo ((double)pw * progressFraction, 0);
+							c = Styles.StatusBarProgressColor;
+							c.A *= progressDisplayAlpha;
+							context.Color = c;
+							context.Stroke ();
+						}
 					}
 				}
 			}
 			return base.OnExposeEvent (evnt);
+		}
+
+		int DrawString (string text, bool isMarkup, Cairo.Context context, int x, int y, int width, double opacity)
+		{
+			Pango.Layout pl = new Pango.Layout (this.PangoContext);
+			if (isMarkup)
+				pl.SetMarkup (text);
+			else
+				pl.SetText (text);
+			pl.FontDescription = Styles.StatusFont;
+			pl.Ellipsize = Pango.EllipsizeMode.End;
+			pl.Width = Pango.Units.FromPixels(width);
+
+			int w, h;
+			pl.GetPixelSize (out w, out h);
+
+			context.Save ();
+			// use widget height instead of message box height as message box does not have a true height when no widgets are packed in it
+			context.Rectangle (new Rectangle (x, Allocation.Y, width, Allocation.Height));
+			context.Clip ();
+
+			context.MoveTo (x, y - h / 2);
+
+			Cairo.Color finalColor = Styles.StatusBarTextColor;
+			finalColor.A = opacity;
+
+			context.Color = finalColor;
+			Pango.CairoHelper.ShowLayout (context, pl);
+			pl.Dispose ();
+			context.Restore ();
+
+			return h;
 		}
 
 		#region StatusBar implementation
@@ -596,6 +697,8 @@ namespace MonoDevelop.Components.MainToolbar
 			LoadText (message, isMarkup);
 			LoadPixbuf (image);
 
+			tweener.Start ();
+
 			QueueDraw ();
 		}
 
@@ -605,7 +708,10 @@ namespace MonoDevelop.Components.MainToolbar
 				message = GettextCatalog.GetString("Welcome");
 			message = message ?? "";
 
+			lastText = currentText;
 			currentText = message.Replace ("\n", " ").Trim ();
+
+			lastTextIsMarkup = textIsMarkup;
 			textIsMarkup = isMarkup;
 		}
 
