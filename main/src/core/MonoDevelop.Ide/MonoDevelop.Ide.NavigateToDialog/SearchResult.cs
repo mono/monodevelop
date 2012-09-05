@@ -139,10 +139,25 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		public override int Column {
 			get { return type.Region.BeginColumn; }
 		}
+
+		public static string GetPlainText (ITypeDefinition type, bool useFullName)
+		{
+			if (type.TypeParameterCount == 0)
+				return useFullName ? type.FullName : type.Name;
+			StringBuilder sb = new StringBuilder (useFullName ? type.FullName : type.Name);
+			sb.Append ("<");
+			for (int i = 0; i < type.TypeParameterCount; i++) {
+				if (i > 0)
+					sb.Append (", ");
+				sb.Append (type.TypeParameters [i].Name);
+			}
+			sb.Append (">");
+			return sb.ToString ();
+		}
 		
 		public override string PlainText {
 			get {
-				return type.Name;
+				return GetPlainText (type, false);
 			}
 		}
 
@@ -178,9 +193,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		
 		public override string GetMarkupText (Widget widget)
 		{
-			if (useFullName)
-				return HighlightMatch (widget, type.FullName, match);
-			return HighlightMatch (widget, type.Name, match);
+			return HighlightMatch (widget, GetPlainText (type, useFullName), match);
 		}
 		
 		public TypeSearchResult (string match, string matchedString, int rank, ITypeDefinition type, bool useFullName) : base (match, matchedString, rank, null, useFullName)

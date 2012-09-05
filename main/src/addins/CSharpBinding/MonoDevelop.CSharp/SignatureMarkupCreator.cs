@@ -183,7 +183,8 @@ namespace MonoDevelop.CSharp
 			if (entity.IsStatic) {
 				result.Append (Highlight ("static ", "keyword.modifier"));
 			} else if (entity.IsSealed) {
-				result.Append (Highlight ("sealed ", "keyword.modifier"));
+				if (!(entity is IType && ((IType)entity).Kind == TypeKind.Delegate))
+					result.Append (Highlight ("sealed ", "keyword.modifier"));
 			} else if (entity.IsAbstract) {
 				result.Append (Highlight ("abstract ", "keyword.modifier"));
 			}

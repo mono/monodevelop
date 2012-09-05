@@ -416,7 +416,6 @@ namespace MonoDevelop.Components.MainToolbar
 			if (declarationViewWindowOpacityTimer != 0) 
 				GLib.Source.Remove (declarationViewWindowOpacityTimer);
 			declarationViewWindowOpacityTimer = GLib.Timeout.Add (50, new OpacityTimer (this).Timer);
-			this.GrabDefault ();
 			declarationViewTimer = 0;
 			return false;
 		}

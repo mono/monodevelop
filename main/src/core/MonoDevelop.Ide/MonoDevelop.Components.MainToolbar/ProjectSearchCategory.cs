@@ -81,6 +81,8 @@ namespace MonoDevelop.Components.MainToolbar
 				try {
 					lock (members) {
 						foreach (var type in types) {
+							if (type.Kind == TypeKind.Delegate)
+								continue;
 							foreach (var m in type.Members) {
 								yield return m;
 							}
@@ -255,12 +257,12 @@ namespace MonoDevelop.Components.MainToolbar
 			internal SearchResult CheckType (ITypeDefinition type)
 			{
 				int rank;
-				if (MatchName (type.Name, out rank))
-					return new TypeSearchResult (pattern, type.Name, rank, type, false) { Ambience = ambience };
+				if (MatchName (TypeSearchResult.GetPlainText (type, false), out rank))
+					return new TypeSearchResult (pattern, TypeSearchResult.GetPlainText (type, false), rank, type, false) { Ambience = ambience };
 				if (!FullSearch)
 					return null;
-				if (MatchName (type.FullName, out rank))
-					return new TypeSearchResult (pattern, type.FullName, rank, type, true) { Ambience = ambience };
+				if (MatchName (TypeSearchResult.GetPlainText (type, true), out rank))
+					return new TypeSearchResult (pattern, TypeSearchResult.GetPlainText (type, true), rank, type, true) { Ambience = ambience };
 				return null;
 			}
 			
