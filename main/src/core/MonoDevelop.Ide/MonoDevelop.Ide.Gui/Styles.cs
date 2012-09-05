@@ -70,13 +70,13 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly Cairo.Color DockTabBarShadowGradientEnd = new Cairo.Color (154d / 255d, 154d / 255d, 154d / 255d, 0);
 
 		public static readonly Gdk.Color PadBackground = new Gdk.Color (240, 240, 240);
-		public static readonly Gdk.Color InactivePadBackground = ReduceLight (PadBackground.ToCairoColor (), 0.9).ToGdkColor ();
+		public static readonly Gdk.Color InactivePadBackground = ReduceLight (PadBackground, 0.9);
 		public static readonly Gdk.Color PadLabelColor = new Gdk.Color (92, 99, 102);
 		public static readonly Gdk.Color DockFrameBackground = new Gdk.Color (157, 162, 166);
 		public static readonly Gdk.Color DockSeparatorColor = ThinSplitterColor;
 
-		public static readonly Gdk.Color BrowserPadBackground = new Gdk.Color (230, 241, 243);
-		public static readonly Gdk.Color InactiveBrowserPadBackground = ReduceLight (BrowserPadBackground.ToCairoColor (), 0.9).ToGdkColor ();
+		public static readonly Gdk.Color BrowserPadBackground = new Gdk.Color (0xE5, 0xEC, 0xEE);
+		public static readonly Gdk.Color InactiveBrowserPadBackground = ReduceLight (BrowserPadBackground, 0.92);
 
 		public static readonly Cairo.Color DockBarBackground1 = PadBackground.ToCairoColor ();
 		public static readonly Cairo.Color DockBarBackground2 = Shift (PadBackground.ToCairoColor (), 0.95);
@@ -145,6 +145,16 @@ namespace MonoDevelop.Ide.Gui
 			c.L += (1 - c.L) * factor;
 			return c;
 		}
+
+		internal static Gdk.Color ReduceLight (Gdk.Color color, double factor)
+		{
+			return ReduceLight (color.ToCairoColor (), factor).ToGdkColor ();
+		}
+
+		internal static Gdk.Color IncreaseLight (Gdk.Color color, double factor)
+		{
+			return IncreaseLight (color.ToCairoColor (), factor).ToGdkColor ();
+		}		
 	}
 }
 
