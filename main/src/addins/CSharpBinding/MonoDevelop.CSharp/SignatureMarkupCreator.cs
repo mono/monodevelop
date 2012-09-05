@@ -84,7 +84,8 @@ namespace MonoDevelop.CSharp
 			try {
 				astType = astBuilder.ConvertType (type);
 			} catch (Exception) {
-				astType = astBuilder.ConvertType (resolver.Compilation.Import (type));
+
+				astType = new TypeSystemAstBuilder (new CSharpResolver (type.GetDefinition ().Compilation)).ConvertType (type);
 			}
 
 			if (astType is PrimitiveType) {
