@@ -69,20 +69,22 @@ namespace MonoDevelop.CSharp
 			this.colorStyle = SyntaxModeService.GetColorStyle (PropertyService.Get ("ColorScheme", "Default"));
 
 			this.resolver = resolver;
-			this.astBuilder = new TypeSystemAstBuilder (resolver);
+			this.astBuilder = new TypeSystemAstBuilder (resolver) {
+				ConvertUnboundTypeArguments = true
+			};
 			this.formattingOptions = formattingOptions;
 		}
 
-		public string GetTypeReferenceString (IType typeReference, bool highlight = true)
+		public string GetTypeReferenceString (IType type, bool highlight = true)
 		{
-			if (typeReference == null)
-				throw new ArgumentNullException ("typeReference");
+			if (type == null)
+				throw new ArgumentNullException ("type");
 
 			AstType astType;
 			try {
-				astType = astBuilder.ConvertType (typeReference);
+				astType = astBuilder.ConvertType (type);
 			} catch (Exception) {
-				astType = astBuilder.ConvertType (resolver.Compilation.Import (typeReference));
+				astType = astBuilder.ConvertType (resolver.Compilation.Import (type));
 			}
 
 			if (astType is PrimitiveType) {
@@ -280,33 +282,7 @@ namespace MonoDevelop.CSharp
 				break;
 			}
 
-			var typeName = new StringBuilder ();
-
-			typeName.Append (t.Name);
-			var pt = t as ParameterizedType;
-			if (pt != null && pt.TypeArguments.Count > 0) {
-				typeName.Append ("&lt;");
-				for (int i = 0; i < pt.TypeArguments.Count; i++) {
-					if (i > 0)
-						typeName.Append (", ");
-					//					AppendVariance (result, pt.TypeArguments [i].Variance);
-					typeName.Append (GetTypeReferenceString (pt.TypeArguments [i]));
-				}
-				typeName.Append ("&gt;");
-			} else {
-				var tt = t as ITypeDefinition;
-				if (tt != null && tt.TypeParameters.Count > 0) {
-					typeName.Append ("&lt;");
-					for (int i = 0; i < tt.TypeParameters.Count; i++) {
-						if (i > 0)
-							typeName.Append (", ");
-						AppendVariance (result, tt.TypeParameters [i].Variance);
-						typeName.Append (CSharpAmbience.NetToCSharpTypeName (tt.TypeParameters [i].Name));
-					}
-					typeName.Append ("&gt;");
-				}
-			}
-
+			var typeName = GetTypeReferenceString (t, false);
 			result.Append (Highlight (typeName.ToString (), "keyword.type"));
 
 			bool first = true;
