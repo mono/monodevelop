@@ -601,16 +601,19 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void LoadText (string message, bool isMarkup)
 		{
+			if (string.IsNullOrEmpty(message))
+				message = GettextCatalog.GetString("Welcome");
 			message = message ?? "";
 
 			currentText = message.Replace ("\n", " ").Trim ();
 			textIsMarkup = isMarkup;
 		}
 
+		static bool iconLoaded = false;
 		void LoadPixbuf (IconId image)
 		{
 			// We dont need to load the same image twice
-			if (currentIcon == image)
+			if (currentIcon == image && iconLoaded)
 				return;
 
 			currentIcon = image;
@@ -637,6 +640,8 @@ namespace MonoDevelop.Components.MainToolbar
 			} else {
 				currentPixbuf = ImageService.GetPixbuf (image);
 			}
+
+			iconLoaded = true;
 		}
 		#endregion
 
