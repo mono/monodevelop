@@ -1365,7 +1365,7 @@ namespace MonoDevelop.VersionControl.Git
 				return new Annotation [0];
 
 			var git = new NGit.Api.Git (repository);
-			var result = git.Blame ().SetFilePath (repository.ToGitPath (repositoryPath)).Call ();
+			var result = git.Blame ().SetFollowFileRenames (true).SetFilePath (repository.ToGitPath (repositoryPath)).Call ();
 			result.ComputeAll ();
 
 			List<Annotation> list = new List<Annotation> ();
