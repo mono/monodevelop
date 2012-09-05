@@ -107,12 +107,19 @@ namespace Mono.TextEditor.Theatrics
 			Show ();
 		}
 
+		Gtk.Adjustment vAdjustment;
+		Gtk.Adjustment hAdjustment;
 		protected void ListenToEvents ()
 		{
-			editor.VAdjustment.ValueChanged += HandleEditorVAdjustmentValueChanged;
-			editor.HAdjustment.ValueChanged += HandleEditorHAdjustmentValueChanged;
-			vValue = editor.VAdjustment.Value;
-			hValue = editor.HAdjustment.Value;
+			if (vAdjustment == null) {
+				vAdjustment = editor.VAdjustment;
+				hAdjustment = editor.HAdjustment;
+
+				vAdjustment.ValueChanged += HandleEditorVAdjustmentValueChanged;
+				hAdjustment.ValueChanged += HandleEditorHAdjustmentValueChanged;
+			}
+			vValue = vAdjustment.Value;
+			hValue = hAdjustment.Value;
 		}
 
 		protected override void OnShown ()
@@ -122,8 +129,12 @@ namespace Mono.TextEditor.Theatrics
 		
 		protected void DetachEvents ()
 		{
-			editor.VAdjustment.ValueChanged -= HandleEditorVAdjustmentValueChanged;
-			editor.HAdjustment.ValueChanged -= HandleEditorHAdjustmentValueChanged;
+			if (vAdjustment == null)
+				return;
+			vAdjustment.ValueChanged -= HandleEditorVAdjustmentValueChanged;
+			hAdjustment.ValueChanged -= HandleEditorHAdjustmentValueChanged;
+			vAdjustment = null;
+			hAdjustment = null;
 		}
 
 		protected override void OnHidden ()
