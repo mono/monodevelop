@@ -624,7 +624,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 			// if we have nothing, use the default icon
 			if (image == IconId.Null)
-				image = "md-version-control"; //FIXME use real icon
+				image = "md-status-steady";
 
 			// load image now
 			if (ImageService.IsAnimation (image, Gtk.IconSize.Menu)) {
