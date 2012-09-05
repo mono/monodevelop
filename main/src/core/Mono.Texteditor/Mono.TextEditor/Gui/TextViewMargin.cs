@@ -2686,6 +2686,19 @@ namespace Mono.TextEditor
 		public double ColumnToX (DocumentLine line, int column)
 		{
 			column--;
+			// calculate virtual indentation
+			if (column > 0 && line.Length == 0 && textEditor.GetTextEditorData ().HasIndentationTracker) {
+				Console.WriteLine (">"+textEditor.GetTextEditorData ().IndentationTracker.GetIndentationString (line.Offset) +"<");
+				using (var l = PangoUtil.CreateLayout (textEditor, textEditor.GetTextEditorData ().IndentationTracker.GetIndentationString (line.Offset))) {
+					l.Alignment = Pango.Alignment.Left;
+					l.FontDescription = textEditor.Options.Font;
+					l.Tabs = tabArray;
+
+					Pango.Rectangle ink_rect, logical_rect;
+					l.GetExtents (out ink_rect, out logical_rect);
+					return (logical_rect.Width + Pango.Scale.PangoScale - 1) / Pango.Scale.PangoScale;
+				}
+			}
 			if (line == null || line.Length == 0 || column < 0)
 				return 0;
 			int logicalRulerColumn = line.GetLogicalColumn (textEditor.GetTextEditorData (), textEditor.Options.RulerColumn);
@@ -2796,12 +2809,12 @@ namespace Mono.TextEditor
 			Pango.AttrList attributeList = new Pango.AttrList ();
 			attributes.ForEach (attr => attributeList.Insert (attr));
 			layout.Attributes = attributeList;
-			Pango.Rectangle ink_rect, logical_rect;
-			layout.GetExtents (out ink_rect, out logical_rect);
+			Pango.Rectangle inkrect, logicalrect;
+			layout.GetExtents (out inkrect, out logicalrect);
 			attributes.ForEach (attr => attr.Dispose ());
 			attributeList.Dispose ();
 			layout.Dispose ();
-			return (logical_rect.Width + Pango.Scale.PangoScale - 1) / Pango.Scale.PangoScale;
+			return (logicalrect.Width + Pango.Scale.PangoScale - 1) / Pango.Scale.PangoScale;
 		}
 		
 		public int YToLine (double yPos)
