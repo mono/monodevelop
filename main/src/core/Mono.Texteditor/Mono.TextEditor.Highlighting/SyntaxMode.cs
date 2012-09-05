@@ -336,8 +336,9 @@ namespace Mono.TextEditor.Highlighting
 					} 
 
 					RegexMatch match = span.Begin.TryMatch (CurText, textOffset);
-					if (!match.Success)
+					if (!match.Success) {
 						continue;
+					}
 					// scan for span exit which cancels the span.
 					if ((span.ExitFlags & SpanExitFlags.CancelSpan) == SpanExitFlags.CancelSpan && span.Exit != null) {
 						bool foundEnd = false;
@@ -359,7 +360,7 @@ namespace Mono.TextEditor.Highlighting
 					if (mismatch)
 						continue;
 					FoundSpanBegin (span, i, match.Length);
-					i += match.Length - 1;
+					i += System.Math.Max (0, match.Length - 1);
 					return;
 				}
 			}
@@ -372,7 +373,7 @@ namespace Mono.TextEditor.Highlighting
 					RegexMatch match = cur.End.TryMatch (CurText, textOffset);
 					if (match.Success) {
 						FoundSpanEnd (cur, i, match.Length);
-						i += match.Length - 1;
+						i += System.Math.Max (0, match.Length - 1);
 						return true;
 					}
 				}
@@ -381,7 +382,7 @@ namespace Mono.TextEditor.Highlighting
 					RegexMatch match = cur.Exit.TryMatch (CurText, textOffset);
 					if (match.Success) {
 						FoundSpanExit (cur, i, match.Length);
-						i += match.Length - 1;
+						i += System.Math.Max (0, match.Length - 1);
 						return true;
 					}
 				}
@@ -607,16 +608,19 @@ namespace Mono.TextEditor.Highlighting
 						if (foundMatch.IsGroupMatch) {
 							int lastGroup = System.Math.Max (foundMatchLength.Length, foundMatch.Groups.Count);
 							for (int j = 0; j < lastGroup; j++) {
-								AddChunk (ref curChunk, foundMatchLength[j], GetChunkStyleColor (foundMatch.Groups[j]));
-								i += foundMatchLength[j] - 1;
-								curChunk.Length = 0;
+								if (foundMatchLength[j] > 0) {
+									AddChunk (ref curChunk, foundMatchLength[j], GetChunkStyleColor (foundMatch.Groups[j]));
+									i += foundMatchLength[j] - 1;
+									curChunk.Length = 0;
+								}
 							}
-						} else {
+							return;
+						} else if (foundMatchLength[0] > 0) {
 							AddChunk (ref curChunk, foundMatchLength[0], GetChunkStyleColor (foundMatch.Color));
 							i += foundMatchLength[0] - 1;
 							curChunk.Length = i - curChunk.Offset + 1;
+							return;
 						}
-						return;
 					}
 				}
 				wordbuilder.Append (ch);
