@@ -71,6 +71,7 @@ namespace MonoDevelop.Components.MainToolbar
 		}
 
 		public event EventHandler ValueUpdated;
+		public event EventHandler Finished;
 
 		Stopwatch runningTime;
 		uint timeoutHandle;
@@ -99,12 +100,13 @@ namespace MonoDevelop.Components.MainToolbar
 			runningTime.Start ();
 			timeoutHandle = GLib.Timeout.Add (Rate, () => { 
 				Value = Math.Min (1.0f, runningTime.ElapsedMilliseconds / (float) Length);
-				ValueUpdated (this, new EventArgs());
+				ValueUpdated (this, EventArgs.Empty);
 
 				if (Value >= 1.0f)
 				{
 					runningTime.Stop ();
 					timeoutHandle = 0;
+					Finished (this, EventArgs.Empty);
 					return false;
 				}
 				return true;
@@ -130,6 +132,20 @@ namespace MonoDevelop.Components.MainToolbar
 
 	class StatusArea : EventBox, StatusBar
 	{
+		struct Message
+		{
+			public string Text;
+			public IconId Icon;
+			public bool IsMarkup;
+
+			public Message (IconId icon, string text, bool markup)
+			{
+				Text = text;
+				Icon = icon;
+				IsMarkup = markup;
+			}
+		}
+
 		const int PaddingLeft = 10;
 
 		HBox contentBox = new HBox (false, 8);
@@ -162,6 +178,8 @@ namespace MonoDevelop.Components.MainToolbar
 
 		MainStatusBarContextImpl mainContext;
 		StatusBarContextImpl activeContext;
+
+		Queue<Message> messageQueue;
 		
 		public StatusBar MainContext {
 			get { return mainContext; }
@@ -270,10 +288,20 @@ namespace MonoDevelop.Components.MainToolbar
 				}
 			};
 
+			messageQueue = new Queue<Message> ();
+
 			tweener = new Tweener(250, 16);
 			tweener.Easing = new SinInOutEasing ();
-			tweener.ValueUpdated += (object self, EventArgs args) => {
+			tweener.ValueUpdated += (o, a) => {
 				QueueDraw ();
+			};
+
+			tweener.Finished += (o, a) => {
+				if (messageQueue.Count > 0)
+				{
+					Message message = messageQueue.Dequeue();
+					ShowMessageInner (message.Icon, message.Text, message.IsMarkup);
+				}
 			};
 		}
 
@@ -715,13 +743,23 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public void ShowMessage (IconId image, string message, bool isMarkup)
 		{
+			if (tweener.IsRunning) {
+				messageQueue.Enqueue (new Message (image, message, isMarkup));
+			} else {
+				ShowMessageInner (image, message, isMarkup);
+			}
+		}
+
+		void ShowMessageInner (IconId image, string message, bool isMarkup)
+		{
 			DispatchService.AssertGuiThread ();
 
 			LoadText (message, isMarkup);
 			LoadPixbuf (image);
 
-			tweener.Start ();
-
+			if (currentText != lastText)
+				tweener.Start ();
+			
 			QueueDraw ();
 		}
 
