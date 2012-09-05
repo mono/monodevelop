@@ -91,6 +91,9 @@ namespace Mono.Debugging.Evaluation
 
 				return true;
 			}
+			
+			if ((bindingFlags & BindingFlags.NonPublic) == 0)
+				return true;
 
 			return false;
 		}
