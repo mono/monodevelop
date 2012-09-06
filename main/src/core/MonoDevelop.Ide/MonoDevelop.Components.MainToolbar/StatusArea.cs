@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Diagnostics;
 using Gtk;
 using MonoDevelop.Components;
 using Cairo;
@@ -37,8 +38,155 @@ using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.Components.MainToolbar
 {
+	interface Easing
+	{
+		float Ease (float val);
+	}
+
+	class LinearEasing : Easing
+	{
+		public float Ease (float val)
+		{
+			return val;
+		}
+	}
+
+	class SinInOutEasing : Easing
+	{
+		public float Ease (float val)
+		{
+			return (float)Math.Sin (val * Math.PI * 0.5f);
+		}
+	}
+
+	class Tweener
+	{
+		public uint Length { get; private set; }
+		public uint Rate { get; private set; }
+		public float Value { get; private set; }
+		public Easing Easing { get; set; }
+
+		public bool IsRunning {
+			get { return runningTime.IsRunning; }
+		}
+
+		public event EventHandler ValueUpdated;
+		public event EventHandler Finished;
+
+		Stopwatch runningTime;
+		uint timeoutHandle;
+
+		public Tweener (uint length, uint rate)
+		{
+			Value = 0.0f;
+			Length = length;
+			Rate = rate;
+			runningTime = new Stopwatch ();
+			Easing = new LinearEasing ();
+		}
+
+		~Tweener ()
+		{
+			if (timeoutHandle > 0)
+				GLib.Source.Remove (timeoutHandle);
+		}
+
+		public void Start ()
+		{
+			// reset any current running instance and reset the stopwatch.
+			Pause ();
+			runningTime.Reset ();
+			Value = 0.0f;
+
+			runningTime.Start ();
+			timeoutHandle = GLib.Timeout.Add (Rate, () => { 
+				Value = Math.Min (1.0f, runningTime.ElapsedMilliseconds / (float) Length);
+				if (ValueUpdated != null)
+					ValueUpdated (this, EventArgs.Empty);
+
+				if (Value >= 1.0f)
+				{
+					runningTime.Stop ();
+					timeoutHandle = 0;
+					if (Finished != null)
+						Finished (this, EventArgs.Empty);
+					return false;
+				}
+				return true;
+			});
+		}
+
+		public void Stop ()
+		{
+			Pause ();
+			runningTime.Reset ();
+			Value = 1.0f;
+			if (Finished != null)
+				Finished (this, EventArgs.Empty);
+		}
+
+		public void Pause ()
+		{
+			runningTime.Stop ();
+
+			if (timeoutHandle > 0) {
+				GLib.Source.Remove (timeoutHandle);
+				timeoutHandle = 0;
+			}
+		}
+	}
+
+	class MouseTracker
+	{
+		public bool Hovered { get; private set; }
+		public Gdk.Point MousePosition { get; private set; }
+
+		public event EventHandler MouseMoved;
+		public event EventHandler HoveredChanged;
+
+		public MouseTracker (Gtk.Widget owner)
+		{
+			Hovered = false;
+			MousePosition = new Gdk.Point(0, 0);
+
+			owner.Events = owner.Events | Gdk.EventMask.PointerMotionMask;
+
+			owner.MotionNotifyEvent += (object o, MotionNotifyEventArgs args) => {
+				MousePosition = new Gdk.Point ((int)args.Event.X, (int)args.Event.Y);
+				if (MouseMoved != null)
+					MouseMoved (this, EventArgs.Empty);
+			};
+
+			owner.EnterNotifyEvent += (o, args) => {
+				Hovered = true;
+				if (HoveredChanged != null)
+					HoveredChanged (this, EventArgs.Empty);
+			};
+
+			owner.LeaveNotifyEvent += (o, args) => {
+				Hovered = false;
+				if (HoveredChanged != null)
+					HoveredChanged (this, EventArgs.Empty);
+			};
+		}
+	}
+
 	class StatusArea : EventBox, StatusBar
 	{
+		struct Message
+		{
+			public string Text;
+			public IconId Icon;
+			public bool IsMarkup;
+
+			public Message (IconId icon, string text, bool markup)
+			{
+				Text = text;
+				Icon = icon;
+				IsMarkup = markup;
+			}
+		}
+
 		const int PaddingLeft = 10;
 
 		HBox contentBox = new HBox (false, 8);
@@ -50,8 +198,16 @@ namespace MonoDevelop.Components.MainToolbar
 		internal readonly HBox statusIconBox = new HBox ();
 		Alignment mainAlign;
 
+		string lastText;
 		string currentText;
+
+		Tweener textAnimTweener;
+		Tweener mouseHoverTweener;
+		MouseTracker tracker;
+
 		bool textIsMarkup;
+		bool lastTextIsMarkup;
+
 		AnimatedIcon iconAnimation;
 		IconId currentIcon;
 		Gdk.Pixbuf currentPixbuf;
@@ -65,6 +221,8 @@ namespace MonoDevelop.Components.MainToolbar
 
 		MainStatusBarContextImpl mainContext;
 		StatusBarContextImpl activeContext;
+
+		Queue<Message> messageQueue;
 		
 		public StatusBar MainContext {
 			get { return mainContext; }
@@ -172,6 +330,32 @@ namespace MonoDevelop.Components.MainToolbar
 					completionStatus = null;
 				}
 			};
+
+			messageQueue = new Queue<Message> ();
+
+			textAnimTweener = new Tweener(250, 16);
+			textAnimTweener.Easing = new SinInOutEasing ();
+			textAnimTweener.ValueUpdated += (o, a) => QueueDraw ();
+
+			textAnimTweener.Finished += (o, a) => {
+				if (messageQueue.Count > 0)
+				{
+					Message message = messageQueue.Dequeue();
+					ShowMessageInner (message.Icon, message.Text, message.IsMarkup);
+				}
+			};
+
+			mouseHoverTweener = new Tweener (250, 16);
+			mouseHoverTweener.Easing = new SinInOutEasing ();
+			mouseHoverTweener.ValueUpdated += (sender, e) => QueueDraw ();
+			mouseHoverTweener.Finished += (sender, e) => QueueDraw ();
+
+			tracker = new MouseTracker(this);
+			tracker.HoveredChanged += (sender, e) => {
+				mouseHoverTweener.Start ();
+				QueueDraw ();
+			};
+			tracker.MouseMoved += (sender, e) => QueueDraw ();
 		}
 
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
@@ -308,7 +492,36 @@ namespace MonoDevelop.Components.MainToolbar
 				CairoExtensions.RoundedRectangle (context, Allocation.X + 0.5, Allocation.Y + 0.5, Allocation.Width - 1, Allocation.Height - 1, 3);
 				context.LineWidth = 1;
 				context.Color = Styles.StatusBarBorderColor;
-				context.Stroke ();
+				context.StrokePreserve ();
+
+				if (tracker.Hovered || mouseHoverTweener.IsRunning)
+				{
+					context.Clip ();
+					int x1 = Allocation.X + tracker.MousePosition.X - 200;
+					int x2 = x1 + 400;
+					using (Cairo.LinearGradient gradient = new LinearGradient (x1, 0, x2, 0))
+					{
+						Cairo.Color targetColor = Styles.StatusBarFill1Color;
+						Cairo.Color transparentColor = targetColor;
+						targetColor.A = .7;
+						transparentColor.A = 0;
+
+						if (tracker.Hovered)
+							targetColor.A = .7 * mouseHoverTweener.Value;
+						else
+							targetColor.A = .7 * (1.0 - mouseHoverTweener.Value);
+
+						gradient.AddColorStop (0.0, transparentColor);
+						gradient.AddColorStop (0.5, targetColor);
+						gradient.AddColorStop (1.0, transparentColor);
+
+						context.Pattern = gradient;
+
+						context.Rectangle (x1, Allocation.Y, x2 - x1, Allocation.Height);
+						context.Fill ();
+					}
+					context.ResetClip ();
+				}
 
 				int x = messageBox.Allocation.X;
 				int width = messageBox.Allocation.Width;
@@ -321,53 +534,70 @@ namespace MonoDevelop.Components.MainToolbar
 					width -= currentPixbuf.Width + 4;
 				}
 
+				int center = Allocation.Y + Allocation.Height / 2;
+
+				if (showingProgress || progressDisplayAlpha > 0) {
+					DrawProgressBar (context, progressFraction, new Gdk.Rectangle (x - 2, center - Styles.ProgressBarHeight / 2, width + 4, Styles.ProgressBarHeight));
+				}
+
+				if (lastText != null) {
+					double opacity = 1.0f - textAnimTweener.Value;
+					DrawString (lastText, lastTextIsMarkup, context, x, center - (int)(textAnimTweener.Value * Allocation.Height * 0.5), width, opacity);
+				}
+
 				if (currentText != null) {
-					Pango.Layout pl = new Pango.Layout (this.PangoContext);
-					if (textIsMarkup)
-						pl.SetMarkup (currentText);
-					else
-						pl.SetText (currentText);
-					pl.FontDescription = Styles.StatusFont;
-					pl.Ellipsize = Pango.EllipsizeMode.End;
-					pl.Width = Pango.Units.FromPixels(width);
-
-					int w, h;
-					pl.GetPixelSize (out w, out h);
-					int y = Allocation.Y + (Allocation.Height - h) / 2;
-
-					context.Save ();
-					// use widget height instead of message box height as message box does not have a true height when no widgets are packed in it
-					context.Rectangle (new Rectangle (x, Allocation.Y, width, Allocation.Height));
-					context.Clip ();
-
-					context.MoveTo (x, y);
-					context.Color = Styles.StatusBarTextColor;
-					Pango.CairoHelper.ShowLayout (context, pl);
-					pl.Dispose ();
-					context.Restore ();
-
-					if (showingProgress || progressDisplayAlpha > 0) {
-						double py = y + h + 3.5;
-						double pw = mainAlign.Allocation.Width - mainAlign.LeftPadding - mainAlign.RightPadding;
-						var px = mainAlign.Allocation.X + mainAlign.LeftPadding;
-						context.LineWidth = 1;
-						context.MoveTo (px, py);
-						context.RelLineTo (pw, 0);
-						var c = Styles.StatusBarProgressBackgroundColor;
-						c.A *= progressDisplayAlpha;
-						context.Color = c;
-						context.Stroke ();
-
-						context.MoveTo (px, py);
-						context.RelLineTo ((double)pw * progressFraction, 0);
-						c = Styles.StatusBarProgressColor;
-						c.A *= progressDisplayAlpha;
-						context.Color = c;
-						context.Stroke ();
-					}
+					DrawString (currentText, textIsMarkup, context, x, center + (int)((1.0f - textAnimTweener.Value) * Allocation.Height * 0.5), width, textAnimTweener.Value);
 				}
 			}
 			return base.OnExposeEvent (evnt);
+		}
+
+		void DrawProgressBar (Cairo.Context context, double progress, Gdk.Rectangle bounding)
+		{
+			CairoExtensions.RoundedRectangle (context, bounding.X + 0.5, bounding.Y + 0.5, (bounding.Width - 1) * progress, bounding.Height - 1, 3);
+			context.Clip ();
+
+			CairoExtensions.RoundedRectangle (context, bounding.X + 0.5, bounding.Y + 0.5, bounding.Width - 1, bounding.Height - 1, 3);
+			context.Color = Styles.StatusBarProgressBackgroundColor;
+			context.FillPreserve ();
+
+			context.ResetClip ();
+
+			context.Color = Styles.StatusBarProgressOutlineColor;
+			context.LineWidth = 1;
+			context.Stroke ();
+		}
+
+		void DrawString (string text, bool isMarkup, Cairo.Context context, int x, int y, int width, double opacity)
+		{
+			Pango.Layout pl = new Pango.Layout (this.PangoContext);
+			if (isMarkup)
+				pl.SetMarkup (text);
+			else
+				pl.SetText (text);
+			pl.FontDescription = Styles.StatusFont;
+			pl.Ellipsize = Pango.EllipsizeMode.End;
+			pl.Width = Pango.Units.FromPixels(width);
+
+			int w, h;
+			pl.GetPixelSize (out w, out h);
+
+			context.Save ();
+			// use widget height instead of message box height as message box does not have a true height when no widgets are packed in it
+			// also ensures animations work properly instead of getting clipped
+			context.Rectangle (new Rectangle (x, Allocation.Y, width, Allocation.Height));
+			context.Clip ();
+
+			// Subtract off remainder instead of drop to prefer higher centering when centering an odd number of pixels
+			context.MoveTo (x, y - h / 2 - (h % 2));
+
+			Cairo.Color finalColor = Styles.StatusBarTextColor;
+			finalColor.A = opacity;
+			context.Color = finalColor;
+
+			Pango.CairoHelper.ShowLayout (context, pl);
+			pl.Dispose ();
+			context.Restore ();
 		}
 
 		#region StatusBar implementation
@@ -591,11 +821,26 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public void ShowMessage (IconId image, string message, bool isMarkup)
 		{
+			if (textAnimTweener.IsRunning) {
+				messageQueue.Clear ();
+				messageQueue.Enqueue (new Message (image, message, isMarkup));
+			} else {
+				ShowMessageInner (image, message, isMarkup);
+			}
+		}
+
+		void ShowMessageInner (IconId image, string message, bool isMarkup)
+		{
 			DispatchService.AssertGuiThread ();
 
 			LoadText (message, isMarkup);
 			LoadPixbuf (image);
 
+			textAnimTweener.Start ();
+
+			if (currentText == lastText)
+				textAnimTweener.Stop ();
+			
 			QueueDraw ();
 		}
 
@@ -605,7 +850,10 @@ namespace MonoDevelop.Components.MainToolbar
 				message = GettextCatalog.GetString("Welcome");
 			message = message ?? "";
 
+			lastText = currentText;
 			currentText = message.Replace ("\n", " ").Trim ();
+
+			lastTextIsMarkup = textIsMarkup;
 			textIsMarkup = isMarkup;
 		}
 
