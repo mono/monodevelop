@@ -203,6 +203,8 @@ namespace MonoDevelop.Components.MainToolbar
 		string lastText;
 		string currentText;
 
+		uint animPauseHandle;
+
 		Tweener textAnimTweener;
 		Tweener mouseHoverTweener;
 		MouseTracker tracker;
@@ -322,11 +324,14 @@ namespace MonoDevelop.Components.MainToolbar
 			textAnimTweener.ValueUpdated += (o, a) => QueueDraw ();
 
 			textAnimTweener.Finished += (o, a) => {
-				if (messageQueue.Count > 0)
-				{
-					Message message = messageQueue.Dequeue();
-					ShowMessageInner (message.Icon, message.Text, message.IsMarkup);
-				}
+				animPauseHandle = GLib.Timeout.Add (1000, () => {
+					if (messageQueue.Count > 0) {
+						Message message = messageQueue.Dequeue();
+						ShowMessageInner (message.Icon, message.Text, message.IsMarkup);
+					}
+					animPauseHandle = 0;
+					return false;
+				});	
 			};
 
 			mouseHoverTweener = new Tweener (250, 16);
@@ -522,8 +527,10 @@ namespace MonoDevelop.Components.MainToolbar
 
 				int center = Allocation.Y + Allocation.Height / 2;
 
+				Gdk.Rectangle progressArea = new Gdk.Rectangle (progress_bar_x, center - Styles.ProgressBarHeight / 2, progress_bar_width, Styles.ProgressBarHeight);
 				if (showingProgress || progressDisplayAlpha > 0) {
-					DrawProgressBar (context, progressFraction, new Gdk.Rectangle (progress_bar_x, center - Styles.ProgressBarHeight / 2, progress_bar_width, Styles.ProgressBarHeight));
+					DrawProgressBar (context, progressFraction, progressArea);
+					ClipProgressBar (context, progressArea);
 				}
 
 				int text_x = progress_bar_x + Styles.ProgressBarInnerPadding;
@@ -531,12 +538,15 @@ namespace MonoDevelop.Components.MainToolbar
 
 				if (lastText != null) {
 					double opacity = 1.0f - textAnimTweener.Value;
-					DrawString (lastText, lastTextIsMarkup, context, text_x, center - (int)(textAnimTweener.Value * Allocation.Height * 0.5), text_width, opacity);
+					DrawString (lastText, lastTextIsMarkup, context, text_x, center - (int)(textAnimTweener.Value * Allocation.Height * 0.3), text_width, opacity);
 				}
 
 				if (currentText != null) {
-					DrawString (currentText, textIsMarkup, context, text_x, center + (int)((1.0f - textAnimTweener.Value) * Allocation.Height * 0.5), text_width, textAnimTweener.Value);
+					DrawString (currentText, textIsMarkup, context, text_x, center + (int)((1.0f - textAnimTweener.Value) * Allocation.Height * 0.3), text_width, textAnimTweener.Value);
 				}
+
+				if (showingProgress || progressDisplayAlpha > 0)
+					context.ResetClip ();
 			}
 			return base.OnExposeEvent (evnt);
 		}
@@ -561,6 +571,12 @@ namespace MonoDevelop.Components.MainToolbar
 			                                 Styles.StatusBarProgressOutlineColor.A * progressDisplayAlpha);
 			context.LineWidth = 1;
 			context.Stroke ();
+		}
+
+		void ClipProgressBar (Cairo.Context context, Gdk.Rectangle bounding)
+		{
+			CairoExtensions.RoundedRectangle (context, bounding.X + 0.5, bounding.Y + 0.5, bounding.Width - 1, bounding.Height - 1, 3);
+			context.Clip ();
 		}
 
 		void DrawString (string text, bool isMarkup, Cairo.Context context, int x, int y, int width, double opacity)
@@ -816,7 +832,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public void ShowMessage (IconId image, string message, bool isMarkup)
 		{
-			if (textAnimTweener.IsRunning) {
+			if (textAnimTweener.IsRunning || animPauseHandle > 0) {
 				messageQueue.Clear ();
 				messageQueue.Enqueue (new Message (image, message, isMarkup));
 			} else {
@@ -842,7 +858,7 @@ namespace MonoDevelop.Components.MainToolbar
 		void LoadText (string message, bool isMarkup)
 		{
 			if (string.IsNullOrEmpty(message))
-				message = GettextCatalog.GetString("Welcome");
+				message = GettextCatalog.GetString("Xamarin Studio");
 			message = message ?? "";
 
 			lastText = currentText;
