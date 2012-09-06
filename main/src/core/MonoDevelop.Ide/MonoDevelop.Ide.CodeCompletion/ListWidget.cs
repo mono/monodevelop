@@ -144,9 +144,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 			// TODO: Add font property to ICompletionWidget;
 			FontDescription des = FontService.GetFontDescription ("Editor").Copy ();
 			var provider = CompletionWidget as ITextEditorDataProvider;
-			if (provider != null)
-				des.Size = (int)(des.Size * provider.GetTextEditorData ().Options.Zoom);
-			layout.FontDescription = des;
+			if (provider != null) {
+				var newSize = (des.Size * provider.GetTextEditorData ().Options.Zoom);
+				if (newSize > 0) {
+					des.Size = (int)newSize;
+					layout.FontDescription = des;
+				}
+			}
 		}
 
 		public ListWidget (ListWindow win)
@@ -758,7 +762,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			
 			int rowWidth;
 			layout.GetPixelSize (out rowWidth, out rowHeight);
-			rowHeight = rowHeight * 3 / 2;
+			rowHeight = Math.Max (1, rowHeight * 3 / 2);
 
 			int viewableCats = InCategoryMode ? categories.Count: 0;
 			if (InCategoryMode && categories.Any (cat => cat.CompletionCategory == null))

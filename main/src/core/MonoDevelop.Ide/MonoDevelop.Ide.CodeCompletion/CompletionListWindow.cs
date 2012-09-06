@@ -440,7 +440,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		protected override void OnSelectionChanged ()
 		{
-
 			base.OnSelectionChanged ();
 			UpdateDeclarationView ();
 		}
@@ -469,46 +468,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 				HideDeclarationView ();
 				return;
 			}
+
 			var data = completionDataList [List.SelectedItem];
-			
-			IEnumerable<ICompletionData> filteredOverloads;
-			if (data.HasOverloads) {
-				filteredOverloads = data.OverloadedData;
-				if (PropertyService.Get ("HideObsoleteItems", false))
-					filteredOverloads = filteredOverloads.Where (x => !x.DisplayFlags.HasFlag (DisplayFlags.Obsolete));
-			} else {
-				filteredOverloads = new ICompletionData[] { data };
-			}
-			
-			var overloads = new List<ICompletionData> (filteredOverloads);
-			
-			if (data != currentData) {
+			if (data != currentData)
 				HideDeclarationView ();
-				
-				declarationviewwindow.Clear ();
-				declarationviewwindow.Realize ();
-				foreach (var overload in overloads) {
-					declarationviewwindow.AddOverload ((CompletionData)overload);
-				}
-				
-				currentData = data;
-				if (data.HasOverloads) {
-					for (int i = 0; i < overloads.Count; i++) {
-						if (!overloads[i].DisplayFlags.HasFlag (DisplayFlags.Obsolete)) {
-							declarationviewwindow.CurrentOverload = i;
-							break;
-						}
-					}
-				}
-			}
-			
-			if (declarationviewwindow.Overloads == 0) {
-				HideDeclarationView ();
-				return;
-			}
-			
-			if (currentData != null)
-				declarationViewTimer = GLib.Timeout.Add (250, DelayedTooltipShow);
+
+			declarationViewTimer = GLib.Timeout.Add (250, DelayedTooltipShow);
 		}
 		
 		void HideDeclarationView ()
@@ -593,6 +558,36 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		bool DelayedTooltipShow ()
 		{
+			var data = completionDataList [List.SelectedItem];
+
+			IEnumerable<ICompletionData> filteredOverloads;
+			if (data.HasOverloads) {
+				filteredOverloads = data.OverloadedData;
+				if (PropertyService.Get ("HideObsoleteItems", false))
+					filteredOverloads = filteredOverloads.Where (x => !x.DisplayFlags.HasFlag (DisplayFlags.Obsolete));
+			} else {
+				filteredOverloads = new ICompletionData[] { data };
+			}
+
+			var overloads = new List<ICompletionData> (filteredOverloads);
+			
+			if (data != currentData) {
+				declarationviewwindow.Clear ();
+				foreach (var overload in overloads) {
+					declarationviewwindow.AddOverload ((CompletionData)overload);
+				}
+				
+				currentData = data;
+				if (data.HasOverloads) {
+					for (int i = 0; i < overloads.Count; i++) {
+						if (!overloads[i].DisplayFlags.HasFlag (DisplayFlags.Obsolete)) {
+							declarationviewwindow.CurrentOverload = i;
+							break;
+						}
+					}
+				}
+			}
+
 			Gdk.Rectangle rect = List.GetRowArea (List.SelectedItem);
 			if (rect.IsEmpty)
 				return false;
