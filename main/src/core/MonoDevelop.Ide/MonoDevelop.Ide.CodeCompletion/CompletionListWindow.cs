@@ -558,7 +558,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		bool DelayedTooltipShow ()
 		{
-			var data = completionDataList [List.SelectedItem];
+			var selectedItem = List.SelectedItem;
+			if (selectedItem < 0 || selectedItem >= completionDataList.Count)
+				return false;
+			var data = completionDataList [selectedItem];
 
 			IEnumerable<ICompletionData> filteredOverloads;
 			if (data.HasOverloads) {
@@ -588,7 +591,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				}
 			}
 
-			Gdk.Rectangle rect = List.GetRowArea (List.SelectedItem);
+			Gdk.Rectangle rect = List.GetRowArea (selectedItem);
 			if (rect.IsEmpty)
 				return false;
 

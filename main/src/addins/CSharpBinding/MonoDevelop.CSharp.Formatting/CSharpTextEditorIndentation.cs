@@ -236,9 +236,9 @@ namespace MonoDevelop.CSharp.Formatting
 				string text = textEditorData.Document.GetTextAt (curLine);
 				if (text.EndsWith (";") || text.Trim ().StartsWith ("for"))
 					return retval;
+				int guessedOffset;
 
-				int guessedOffset = GuessSemicolonInsertionOffset (textEditorData, curLine, textEditorData.Caret.Offset);
-				if (guessedOffset != textEditorData.Caret.Offset) {
+				if (GuessSemicolonInsertionOffset (textEditorData, curLine, textEditorData.Caret.Offset, out guessedOffset)) {
 					using (var undo = textEditorData.OpenUndoGroup ()) {
 						textEditorData.Remove (textEditorData.Caret.Offset - 1, 1);
 						textEditorData.Caret.Offset = guessedOffset;
@@ -368,14 +368,14 @@ namespace MonoDevelop.CSharp.Formatting
 			return result;
 		}
 
-		public static int GuessSemicolonInsertionOffset (TextEditorData data, DocumentLine curLine, int caretOffset)
+		public static bool GuessSemicolonInsertionOffset (TextEditorData data, DocumentLine curLine, int caretOffset, out int outOffset)
 		{
 			int lastNonWsOffset = caretOffset;
 			char lastNonWsChar = '\0';
-		
+			outOffset = caretOffset;
 			int max = curLine.EndOffset;
 			if (caretOffset - 2 >= curLine.Offset && data.Document.GetCharAt (caretOffset - 2) == ')')
-				return caretOffset;
+				return false;
 
 			int end = caretOffset;
 			while (end > 1 && char.IsWhiteSpace (data.GetCharAt (end)))
@@ -383,11 +383,12 @@ namespace MonoDevelop.CSharp.Formatting
 			int end2 = end;
 			while (end2 > 1 && char.IsLetter(data.GetCharAt (end2 - 1)))
 				end2--;
+			Console.WriteLine (2);
 			if (end != end2) {
 				string token = data.GetTextBetween (end2, end + 1);
 				// guess property context
 				if (token == "get" || token == "set")
-					return caretOffset;
+					return false;
 			}
 
 			bool isInString = false , isInChar= false , isVerbatimString= false;
@@ -395,7 +396,8 @@ namespace MonoDevelop.CSharp.Formatting
 			for (int pos = caretOffset; pos < max; pos++) {
 				if (pos == caretOffset) {
 					if (isInString || isInChar || isVerbatimString || isInLineComment || isInBlockComment) {
-						return pos;
+						outOffset = pos;
+						return true;
 					}
 				}
 				char ch = data.Document.GetCharAt (pos);
@@ -408,11 +410,13 @@ namespace MonoDevelop.CSharp.Formatting
 						char nextChar = data.Document.GetCharAt (pos + 1);
 						if (nextChar == '/') {
 							isInLineComment = true;
-							return lastNonWsOffset;
+							outOffset = lastNonWsOffset;
+							return true;
 						}
 						if (!isInLineComment && nextChar == '*') {
 							isInBlockComment = true;
-							return lastNonWsOffset;
+							outOffset = lastNonWsOffset;
+							return true;
 						}
 					}
 					break;
@@ -449,10 +453,10 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 			// if the line ends with ';' the line end is not the correct place for a new semicolon.
 			if (lastNonWsChar == ';')
-				return caretOffset;
+				return false;
 
-			return lastNonWsOffset;
-
+			outOffset = lastNonWsOffset;
+			return true;
 		}
 
 		static char TranslateKeyCharForIndenter (Gdk.Key key, char keyChar, char docChar)

@@ -173,7 +173,7 @@ namespace MonoDevelop.CSharpBinding
 			CheckOutput (data, "\"Hello\n\t" + eolMarker + "\t$");
 		}
 
-		void TestGuessSemicolonInsertionOffset (string fooBar)
+		void TestGuessSemicolonInsertionOffset (string fooBar, bool expected = true)
 		{
 			StringBuilder sb = new StringBuilder ();
 			int semicolonOffset = 0;
@@ -190,8 +190,10 @@ namespace MonoDevelop.CSharpBinding
 			}
 			var data = new TextEditorData ();
 			data.Text = sb.ToString ();
-			int guessed = CSharpTextEditorIndentation.GuessSemicolonInsertionOffset (data, data.GetLineByOffset (semicolonOffset), semicolonOffset);
-			Assert.AreEqual (guessedOffset, guessed);
+			int guessed;
+			Assert.AreEqual (expected, CSharpTextEditorIndentation.GuessSemicolonInsertionOffset (data, data.GetLineByOffset (semicolonOffset), semicolonOffset, out guessed));
+			if (expected)
+				Assert.AreEqual (guessedOffset, guessed);
 		}
 
 		[Test]
@@ -203,7 +205,7 @@ namespace MonoDevelop.CSharpBinding
 		[Test]
 		public void TestSemicolonAlreadyPlaced ()
 		{
-			TestGuessSemicolonInsertionOffset ("FooBar($~);");
+			TestGuessSemicolonInsertionOffset ("FooBar($~);", false);
 		}
 		
 		/// <summary>
@@ -212,8 +214,8 @@ namespace MonoDevelop.CSharpBinding
 		[Test]
 		public void TestBug6190 ()
 		{
-			TestGuessSemicolonInsertionOffset ("public bool Property { get$~ private set; }");
-			TestGuessSemicolonInsertionOffset ("public bool Property { get; private set$~ }");
+			TestGuessSemicolonInsertionOffset ("public bool Property { get$~ private set; }", false);
+			TestGuessSemicolonInsertionOffset ("public bool Property { get; private set$~ }", false);
 		}
 		/// <summary>
 		/// Bug 5353 - semicolon placed in wrong place in single-line statement 
@@ -221,13 +223,22 @@ namespace MonoDevelop.CSharpBinding
 		[Test]
 		public void TestBug5353 ()
 		{
-			TestGuessSemicolonInsertionOffset ("NavigationItem.RightBarButtonItem = new UIBarButtonItem(UIBarButtonSystemItem.Refresh, delegate { ReloadSummaryWrapper()$~}); ");
+			TestGuessSemicolonInsertionOffset ("NavigationItem.RightBarButtonItem = new UIBarButtonItem(UIBarButtonSystemItem.Refresh, delegate { ReloadSummaryWrapper()$~}); ", false);
 		}
 
 		[Test]
 		public void TestBug5353Case2 ()
 		{
 			TestGuessSemicolonInsertionOffset ("NavigationItem.RightBarButtonItem = new UIBarButtonItem(UIBarButtonSystemItem.Refresh, delegate { ReloadSummaryWrapper();$})~");
+		}
+
+		/// <summary>
+		/// Bug 6862 - Smart semicolon placement does not work on empty parameter call 
+		/// </summary>
+		[Test]
+		public void TestBug6862 ()
+		{
+			TestGuessSemicolonInsertionOffset ("this.method($)~");
 		}
 	}
 }
