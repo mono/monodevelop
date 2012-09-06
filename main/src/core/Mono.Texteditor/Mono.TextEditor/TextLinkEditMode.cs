@@ -238,6 +238,9 @@ namespace Mono.TextEditor
 				closedLink = null;
 				if (window == null) {
 					window = new ListWindow<string> ();
+					window.DoubleClicked += delegate {
+						CompleteWindow ();
+					};
 					window.DataProvider = link;
 					
 					DocumentLocation loc = Editor.Document.OffsetToLocation (BaseOffset + link.PrimaryLink.Offset);

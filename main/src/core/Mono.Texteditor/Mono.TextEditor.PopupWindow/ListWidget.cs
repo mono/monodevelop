@@ -41,7 +41,6 @@ namespace Mono.TextEditor.PopupWindow
 		Pango.Layout layout;
 		ListWindow<T> win;
 		int selection = 0;
-		int page = 0;
 		int visibleRows = -1;
 		int rowHeight;
 		bool buttonPressed;
@@ -73,13 +72,13 @@ namespace Mono.TextEditor.PopupWindow
 			else
 				selection = 0;
 
-			page = 0;
 			disableSelection = false;
 			if (IsRealized) {
 				UpdateStyle ();
 				QueueDraw ();
 			}
 			OnSelectionChanged (EventArgs.Empty);
+			SetAdjustments (Allocation);
 		}
 		
 		public int Selection
@@ -110,14 +109,13 @@ namespace Mono.TextEditor.PopupWindow
 		
 		void UpdatePage ()
 		{
-			if (!IsRealized) {
-				page = 0;
+			var area = GetRowArea (selection);
+			if (area.Y < vadj.Value) {
+				vadj.Value = area.Y;
 				return;
 			}
-			
-			if (selection < page || selection >= page + VisibleRows) {
-				page = selection - (VisibleRows / 2);
-				if (page < 0) page = 0;
+			if (vadj.Value + Allocation.Height < area.Bottom) {
+				vadj.Value = System.Math.Max (0, area.Bottom - vadj.PageSize + 1);
 			}
 		}
 		
@@ -131,21 +129,10 @@ namespace Mono.TextEditor.PopupWindow
 			}
 		}
 		
-		public int Page
-		{
-			get { 
-				return page; 
-			}
-			
-			set {
-				page = value;
-				this.QueueDraw ();
-			}
-		}
-		
+
 		protected override bool OnButtonPressEvent (EventButton e)
 		{
-			Selection = GetRowByPosition ((int) e.Y);
+			Selection = GetRowByPosition ((int) (vadj.Value + e.Y));
 			buttonPressed = true;
 			return base.OnButtonPressEvent (e);
 		}
@@ -170,9 +157,35 @@ namespace Mono.TextEditor.PopupWindow
 			else if (ypos >= winHeight) {
 			}
 			else
-	*/			Selection = GetRowByPosition ((int) e.Y);
+	*/			Selection = GetRowByPosition ((int) (vadj.Value + e.Y));
 			
 			return true;
+		}
+
+		Adjustment hadj;
+		Adjustment vadj;
+
+		protected override void OnSetScrollAdjustments (Adjustment hadj, Adjustment vadj)
+		{
+			this.hadj = hadj;
+			this.vadj = vadj;
+			if (this.vadj != null)
+				this.vadj.ValueChanged += (sender, e) => QueueDraw ();
+			base.OnSetScrollAdjustments (hadj, vadj);
+		}
+
+		void SetAdjustments (Gdk.Rectangle allocation)
+		{
+			hadj.SetBounds (0, allocation.Width, 0, 0, allocation.Width);
+			var height = System.Math.Max (allocation.Height, rowHeight * this.win.DataProvider.Count);
+			vadj.SetBounds (0, height, rowHeight, allocation.Height, allocation.Height);
+		}
+
+		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
+		{
+			SetAdjustments (allocation);
+
+			base.OnSizeAllocated (allocation);
 		}
 
 		protected override bool OnExposeEvent (Gdk.EventExpose args)
@@ -209,21 +222,23 @@ namespace Mono.TextEditor.PopupWindow
 			var fgGCNormal = this.Style.ForegroundGC (StateType.Normal);
 				
 			int n = 0;
-			while (ypos < winHeight - margin && (page + n) < win.DataProvider.Count)
+			n = (int)(vadj.Value / rowHeight);
+
+			while (ypos < winHeight - margin && n < win.DataProvider.Count)
 			{
 				bool hasMarkup = false;
 				IMarkupListDataProvider<T> markupListDataProvider = win.DataProvider as IMarkupListDataProvider<T>;
 				if (markupListDataProvider != null) {
-					if (markupListDataProvider.HasMarkup (page + n)) {
-						layout.SetMarkup (markupListDataProvider.GetMarkup (page + n) ?? "&lt;null&gt;");
+					if (markupListDataProvider.HasMarkup (n)) {
+						layout.SetMarkup (markupListDataProvider.GetMarkup (n) ?? "&lt;null&gt;");
 						hasMarkup = true;
 					}
 				}
 				
 				if (!hasMarkup)
-					layout.SetText (win.DataProvider.GetText (page + n) ?? "<null>");
+					layout.SetText (win.DataProvider.GetText (n) ?? "<null>");
 				
-				Gdk.Pixbuf icon = win.DataProvider.GetIcon (page + n);
+				Gdk.Pixbuf icon = win.DataProvider.GetIcon (n);
 				int iconHeight, iconWidth;
 				
 				if (icon != null) {
@@ -238,7 +253,7 @@ namespace Mono.TextEditor.PopupWindow
 				typos = he < rowHeight ? ypos + (rowHeight - he) / 2 : ypos;
 				iypos = iconHeight < rowHeight ? ypos + (rowHeight - iconHeight) / 2 : ypos;
 				
-				if (page + n == selection) {
+				if (n == selection) {
 					if (!disableSelection) {
 						args.Window.DrawRectangle (this.Style.BaseGC (StateType.Selected),
 						                              true, margin, ypos, lineWidth, he + padding);
@@ -268,19 +283,14 @@ namespace Mono.TextEditor.PopupWindow
 		
 		int GetRowByPosition (int ypos)
 		{
-			if (visibleRows == -1) CalcVisibleRows ();
-			return page + (ypos-margin) / rowHeight;
+			return ypos / rowHeight;
 		}
 		
 		public Gdk.Rectangle GetRowArea (int row)
 		{
-			row -= page;
-			int winWidth, winHeight;
-			this.GdkWindow.GetSize (out winWidth, out winHeight);
-			
-			return new Gdk.Rectangle (margin, margin + rowHeight * row, winWidth, rowHeight);
+			return new Gdk.Rectangle (0, row * rowHeight, Allocation.Width, rowHeight);
 		}
-		
+
 		public int VisibleRows
 		{
 			get {
@@ -299,7 +309,7 @@ namespace Mono.TextEditor.PopupWindow
 
 			layout.GetPixelSize (out rowWidth, out rowHeight);
 			rowHeight += padding;
-			visibleRows = (winHeight + padding - margin * 2) / rowHeight;
+			visibleRows = 7;//(winHeight + padding - margin * 2) / rowHeight;
 			
 			int newHeight;
 
