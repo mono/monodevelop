@@ -94,7 +94,8 @@ namespace MonoDevelop.Components.MainToolbar
 		public void Start ()
 		{
 			// reset any current running instance and reset the stopwatch.
-			Stop ();
+			Pause ();
+			runningTime.Reset ();
 			Value = 0.0f;
 
 			runningTime.Start ();
@@ -117,6 +118,8 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			Pause ();
 			runningTime.Reset ();
+			Value = 1.0f;
+			Finished (this, EventArgs.Empty);
 		}
 
 		public void Pause ()
@@ -453,40 +456,37 @@ namespace MonoDevelop.Components.MainToolbar
 				}
 
 				int center = Allocation.Y + Allocation.Height / 2;
+
+				if (showingProgress || progressDisplayAlpha > 0) {
+					DrawProgressBar (context, progressFraction, new Gdk.Rectangle (x - 2, center - Styles.ProgressBarHeight / 2, width + 4, Styles.ProgressBarHeight));
+				}
+
 				if (lastText != null) {
 					double opacity = 1.0f - tweener.Value;
 					DrawString (lastText, lastTextIsMarkup, context, x, center - (int)(tweener.Value * Allocation.Height * 0.5), width, opacity);
 				}
 
 				if (currentText != null) {
-					int textHeight = DrawString (currentText, 
-					                             textIsMarkup, 
-					                             context, 
-					                             x, center + (int)((1.0f - tweener.Value) * Allocation.Height * 0.5), 
-					                             width, tweener.Value);
-
-					if (showingProgress || progressDisplayAlpha > 0) {
-						double py = center + textHeight / 2 + 3.5;
-						double pw = mainAlign.Allocation.Width - mainAlign.LeftPadding - mainAlign.RightPadding;
-						var px = mainAlign.Allocation.X + mainAlign.LeftPadding;
-						context.LineWidth = 1;
-						context.MoveTo (px, py);
-						context.RelLineTo (pw, 0);
-						var c = Styles.StatusBarProgressBackgroundColor;
-						c.A *= progressDisplayAlpha;
-						context.Color = c;
-						context.Stroke ();
-
-						context.MoveTo (px, py);
-						context.RelLineTo ((double)pw * progressFraction, 0);
-						c = Styles.StatusBarProgressColor;
-						c.A *= progressDisplayAlpha;
-						context.Color = c;
-						context.Stroke ();
-					}
+					DrawString (currentText, textIsMarkup, context, x, center + (int)((1.0f - tweener.Value) * Allocation.Height * 0.5), width, tweener.Value);
 				}
 			}
 			return base.OnExposeEvent (evnt);
+		}
+
+		void DrawProgressBar (Cairo.Context context, double progress, Gdk.Rectangle bounding)
+		{
+			CairoExtensions.RoundedRectangle (context, bounding.X + 0.5, bounding.Y + 0.5, (bounding.Width - 1) * progress, bounding.Height - 1, 3);
+			context.Clip ();
+
+			CairoExtensions.RoundedRectangle (context, bounding.X + 0.5, bounding.Y + 0.5, bounding.Width - 1, bounding.Height - 1, 3);
+			context.Color = Styles.StatusBarProgressBackgroundColor;
+			context.FillPreserve ();
+
+			context.ResetClip ();
+
+			context.Color = Styles.StatusBarProgressOutlineColor;
+			context.LineWidth = 1;
+			context.Stroke ();
 		}
 
 		int DrawString (string text, bool isMarkup, Cairo.Context context, int x, int y, int width, double opacity)
@@ -744,6 +744,7 @@ namespace MonoDevelop.Components.MainToolbar
 		public void ShowMessage (IconId image, string message, bool isMarkup)
 		{
 			if (tweener.IsRunning) {
+				messageQueue.Clear ();
 				messageQueue.Enqueue (new Message (image, message, isMarkup));
 			} else {
 				ShowMessageInner (image, message, isMarkup);
@@ -757,8 +758,10 @@ namespace MonoDevelop.Components.MainToolbar
 			LoadText (message, isMarkup);
 			LoadPixbuf (image);
 
-			if (currentText != lastText)
-				tweener.Start ();
+			tweener.Start ();
+
+			if (currentText == lastText)
+				tweener.Stop ();
 			
 			QueueDraw ();
 		}
