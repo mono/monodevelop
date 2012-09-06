@@ -6,3 +6,4 @@ namespace MonoDevelop.Ide
 		public static string PackageVersionLabel = "3.0.4.6";
 	}
 }
+

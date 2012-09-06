@@ -72,32 +72,6 @@ namespace Mono.Debugging.Evaluation
 			return val;
 		}
 
-		public bool HasChildren (ObjectPath path, EvaluationOptions options)
-		{
-			EvaluationContext cctx = ctx.WithOptions (options);
-			TypeDisplayData tdata = null;
-			object tdataType = null;
-
-			foreach (ValueReference val in cctx.Adapter.GetMembersSorted (cctx, objectSource, type, obj, bindingFlags)) {
-				object decType = val.DeclaringType;
-				if (decType != null && decType != tdataType) {
-					tdataType = decType;
-					tdata = cctx.Adapter.GetTypeDisplayData (cctx, decType);
-				}
-
-				DebuggerBrowsableState state = tdata.GetMemberBrowsableState (val.Name);
-				if (state == DebuggerBrowsableState.Never)
-					continue;
-
-				return true;
-			}
-			
-			if ((bindingFlags & BindingFlags.NonPublic) == 0)
-				return true;
-
-			return false;
-		}
-
 		public ObjectValue[] GetChildren (ObjectPath path, int index, int count, EvaluationOptions options)
 		{
 			EvaluationContext cctx = ctx.WithOptions (options);
