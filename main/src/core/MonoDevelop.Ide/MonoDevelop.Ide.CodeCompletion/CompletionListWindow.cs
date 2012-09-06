@@ -71,7 +71,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		public CompletionListWindow ()
 		{
-			this.TransientFor = IdeApp.Workbench.RootWindow;
+			if (IdeApp.Workbench != null)
+				this.TransientFor = IdeApp.Workbench.RootWindow;
 			TypeHint = Gdk.WindowTypeHint.Utility;
 			SizeAllocated += new SizeAllocatedHandler (ListSizeChanged);
 			Events = Gdk.EventMask.PropertyChangeMask;

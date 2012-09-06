@@ -36,7 +36,7 @@ using MonoDevelop.Ide.Gui.Content;
 namespace MonoDevelop.Ide.Gui
 {
 	[TestFixture()]
-	public class CompletionListWindowTests
+	public class CompletionListWindowTests : UnitTests.TestBase
 	{
 		class TestCompletionWidget : ICompletionWidget 
 		{
@@ -735,6 +735,23 @@ namespace MonoDevelop.Ide.Gui
 		{
 			string output = RunSimulation ("", "View\t", true, true, false, "view", "View");
 			Assert.AreEqual ("View", output);
+		}
+
+		/// <summary>
+		/// Bug 6897 - Case insensitive matching issues
+		/// </summary>
+		[Test]
+		public void TestBug6897 ()
+		{
+			string output = RunSimulation ("", "io\t", true, true, false, "InvalidOperationException", "IO");
+			Assert.AreEqual ("IO", output);
+		}
+
+		[Test]
+		public void TestBug6897Case2 ()
+		{
+			string output = RunSimulation ("", "io\t", true, true, false, "InvalidOperationException", "IOException");
+			Assert.AreEqual ("IOException", output);
 		}
 
 		[TestFixtureSetUp] 

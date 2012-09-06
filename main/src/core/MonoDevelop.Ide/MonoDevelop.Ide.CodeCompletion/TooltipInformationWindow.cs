@@ -304,7 +304,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			TypeHint = Gdk.WindowTypeHint.Utility;
 			this.SkipTaskbarHint = true;
 			this.SkipPagerHint = true;
-			this.TransientFor = IdeApp.Workbench.RootWindow;
+			if (IdeApp.Workbench != null)
+				this.TransientFor = IdeApp.Workbench.RootWindow;
 			this.AllowShrink = false;
 			this.AllowGrow = false;
 			
