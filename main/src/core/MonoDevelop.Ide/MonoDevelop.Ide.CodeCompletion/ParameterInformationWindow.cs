@@ -113,9 +113,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (lastParam == currentParam) {
 				return;
 			}
+
 			lastParam = currentParam;
 			ClearDescriptions ();
-
 			var o = provider.CreateTooltipInformation (overload, _currentParam, false);
 			headlabel.Markup = o.SignatureMarkup;
 			headlabel.Visible = true;
@@ -166,7 +166,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			vbox.PackStart (catLabel, false, true, 0);
 			
 			var contentLabel = new MonoDevelop.Components.FixedWidthWrapLabel ();
-			contentLabel.MaxWidth = Math.Max (240, this.Allocation.Width);
+			contentLabel.MaxWidth = Math.Max (440, this.Allocation.Width);
 			contentLabel.Wrap = Pango.WrapMode.WordChar;
 			contentLabel.BreakOnCamelCasing = true;
 			contentLabel.BreakOnPunctuation = true;

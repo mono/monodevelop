@@ -90,6 +90,10 @@ namespace Mono.TextEditor.Theatrics
 
 		public virtual void Popup ()
 		{
+			if (editor.GdkWindow == null){
+				editor.Realized += HandleRealized;
+				return;
+			}
 			editor.GdkWindow.GetOrigin (out x, out y);
 			bounds = CalculateInitialBounds ();
 			x = x + bounds.X - (int)(ExpandWidth / 2);
@@ -105,6 +109,12 @@ namespace Mono.TextEditor.Theatrics
 			stage.Play ();
 			ListenToEvents ();
 			Show ();
+		}
+
+		void HandleRealized (object sender, EventArgs e)
+		{
+			editor.Realized -= HandleRealized;
+			Popup ();
 		}
 
 		Gtk.Adjustment vAdjustment;

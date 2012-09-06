@@ -142,6 +142,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public static void HideWindow (CompletionTextEditorExtension ext, ICompletionWidget widget)
 		{
 			methods.Clear ();
+			if (window != null)
+				window.ChangeOverload ();
 			UpdateWindow (ext, widget);
 		}
 		
@@ -227,7 +229,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 				int curParam = window.Ext != null ? window.Ext.GetCurrentParameterIndex (lastMethod.MethodProvider.StartOffset) : 0;
 				var geometry2 = DesktopService.GetUsableMonitorGeometry (window.Screen, window.Screen.GetMonitorAtPoint (X, Y));
 				window.ShowParameterInfo (lastMethod.MethodProvider, lastMethod.CurrentOverload, curParam - 1, geometry2.Width);
-				window.ChangeOverload ();
 				PositionParameterInfoWindow (window.Allocation);
 				window.Show ();
 			}
