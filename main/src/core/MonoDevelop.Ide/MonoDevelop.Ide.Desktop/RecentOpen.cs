@@ -61,7 +61,7 @@ namespace MonoDevelop.Ide.Desktop
 			remove { recentFiles.RecentFilesChanged -= value; }
 		}
 		
-		public override IList<RecentFile> GetProjects ()
+		protected override IList<RecentFile> OnGetProjects ()
 		{
 			try {
 				return Get (projGroup);
@@ -71,7 +71,7 @@ namespace MonoDevelop.Ide.Desktop
 			}
 		}
 		
-		public override IList<RecentFile> GetFiles ()
+		protected override IList<RecentFile> OnGetFiles ()
 		{
 			try {
 				return Get (fileGroup);
@@ -160,8 +160,36 @@ namespace MonoDevelop.Ide.Desktop
 		
 	public abstract class RecentFiles
 	{
-		public abstract IList<RecentFile> GetFiles ();
-		public abstract IList<RecentFile> GetProjects ();
+		List<string> favoriteFiles;
+		const string FavoritesConfigKey = "FavoriteRecentFiles";
+
+		public RecentFiles ()
+		{
+			favoriteFiles = PropertyService.Get (FavoritesConfigKey, new List<string> ());
+		}
+
+		public IList<RecentFile> GetProjects ()
+		{
+			var projects = OnGetProjects ();
+			List<RecentFile> result = new List<RecentFile> ();
+			foreach (var f in favoriteFiles) {
+				var entry = projects.FirstOrDefault (p => f == p.FileName);
+				if (entry != null)
+					result.Add (entry);
+				else
+					result.Add (new RecentFile (f, Path.GetFileNameWithoutExtension (f), DateTime.Now));
+			}
+			foreach (var e in projects)
+				if (!result.Contains (e))
+					result.Add (e);
+			return result;
+		}
+
+		public IList<RecentFile> GetFiles ()
+		{
+			return OnGetFiles ();
+		}
+
 		public abstract event EventHandler Changed;
 		public abstract void ClearProjects ();
 		public abstract void ClearFiles ();
@@ -170,6 +198,9 @@ namespace MonoDevelop.Ide.Desktop
 		public abstract void NotifyFileRemoved (string filename);
 		public abstract void NotifyFileRenamed (string oldName, string newName);
 		
+		protected abstract IList<RecentFile> OnGetProjects ();
+		protected abstract IList<RecentFile> OnGetFiles ();
+
 		public void AddFile (string fileName, MonoDevelop.Projects.Project project)
 		{
 			var projectName = project != null? project.Name : null;
@@ -178,18 +209,43 @@ namespace MonoDevelop.Ide.Desktop
 				: Path.GetFileName (fileName);
 			AddFile (fileName, displayName);
 		}
+
+		internal void SetFavoriteFile (FilePath file, bool favorite)
+		{
+			if (favorite)
+				favoriteFiles.Add (file);
+			else
+				favoriteFiles.Remove (file);
+
+			PropertyService.Set (FavoritesConfigKey, favoriteFiles);
+			PropertyService.SaveProperties ();
+		}
+
+		internal bool IsFavoriteFile (FilePath file)
+		{
+			return favoriteFiles.Contains (file);
+		}
 	}
 	
 	public class RecentFile
 	{
 		string displayName, fileName;
 		DateTime timestamp;
-		
+
 		public RecentFile (string fileName, string displayName, DateTime timestamp)
 		{
 			this.fileName = fileName;
 			this.displayName = displayName;
 			this.timestamp = timestamp;
+		}
+
+		public bool IsFavorite {
+			get {
+				return DesktopService.RecentFiles.IsFavoriteFile (fileName);
+			}
+			set {
+				DesktopService.RecentFiles.SetFavoriteFile (fileName, value);
+			}
 		}
 
 		public string FileName { get { return fileName; } }

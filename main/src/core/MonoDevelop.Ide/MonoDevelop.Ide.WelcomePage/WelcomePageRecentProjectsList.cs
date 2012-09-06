@@ -34,15 +34,22 @@ using System.Xml.Linq;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
-	class WelcomePageRecentProjectsList : VBox
+	class WelcomePageRecentProjectsList : WelcomePageSection
 	{
 		bool destroyed;
 		EventHandler recentChangesHandler;
+		VBox box;
+		int itemCount = 7;
+		Gdk.Pixbuf openProjectIcon;
+		Gdk.Pixbuf newProjectIcon;
 		
-		int itemCount = 10;
-		
-		public WelcomePageRecentProjectsList (XElement el)
+		public WelcomePageRecentProjectsList (XElement el): base (el)
 		{
+			openProjectIcon = Gdk.Pixbuf.LoadFromResource ("open_solution.png");
+			newProjectIcon = Gdk.Pixbuf.LoadFromResource ("new_solution.png");
+
+			box = new VBox ();
+
 			var countAtt = el.Attribute ("count");
 			if (countAtt != null)
 				itemCount = (int) countAtt;
@@ -50,6 +57,11 @@ namespace MonoDevelop.Ide.WelcomePage
 			recentChangesHandler = DispatchService.GuiDispatch (new EventHandler (RecentFilesChanged));
 			DesktopService.RecentFiles.Changed += recentChangesHandler;
 			RecentFilesChanged (null, null);
+
+			SetContent (box);
+			TitleAlignment.BottomPadding = Styles.WelcomeScreen.Pad.Solutions.LargeTitleMarginBottom;
+			ContentAlignment.LeftPadding = 0;
+			ContentAlignment.RightPadding = 0;
 		}
 		
 		public override void Destroy ()
@@ -66,7 +78,7 @@ namespace MonoDevelop.Ide.WelcomePage
 				return;
 			
 			foreach (var c in Children) {
-				this.Remove (c);
+				box.Remove (c);
 				c.Destroy ();
 			}
 			
@@ -74,8 +86,10 @@ namespace MonoDevelop.Ide.WelcomePage
 			foreach (var recent in DesktopService.RecentFiles.GetProjects ().Take (itemCount)) {
 				var filename = recent.FileName;
 				var accessed = recent.TimeStamp;
-				var button = new WelcomePageLinkButton (recent.DisplayName, "project://" + filename);
-				button.Ellipsize = Pango.EllipsizeMode.Middle;
+				var pixbuf = ImageService.GetPixbuf (GetIcon (filename), IconSize.Dnd);
+				var button = new WelcomePageListButton (recent.DisplayName, System.IO.Path.GetDirectoryName (filename), pixbuf, "project://" + filename);
+				button.AllowPinning = true;
+				button.Pinned = recent.IsFavorite;
 				//FIXME: update times as needed. currently QueryTooltip causes crashes on Windows
 				//button.QueryTooltip += delegate (object o, QueryTooltipArgs args) {
 				//	args.Tooltip.Text = filename + "\n" + TimeSinceEdited (accessed);
@@ -83,10 +97,18 @@ namespace MonoDevelop.Ide.WelcomePage
 				//};
 				//button.HasTooltip = true;
 				button.TooltipText = filename + "\n" + TimeSinceEdited (accessed);
-				button.Icon = GetIcon (filename);
-				this.PackStart (button, false, false, 0);
+				box.PackStart (button, false, false, 0);
+				button.PinClicked += delegate {
+					DesktopService.RecentFiles.SetFavoriteFile (filename, button.Pinned);
+				};
 			}
 			
+			var btn = new WelcomePageListButton (GettextCatalog.GetString ("New..."), null, newProjectIcon, "monodevelop://MonoDevelop.Ide.Commands.FileCommands.NewProject");
+			box.PackStart (btn, false, false, 0);
+
+			btn = new WelcomePageListButton (GettextCatalog.GetString ("Open..."), null, openProjectIcon, "monodevelop://MonoDevelop.Ide.Commands.FileCommands.OpenFile");
+			box.PackStart (btn, false, false, 0);
+
 			this.ShowAll ();
 		}
 		

@@ -31,10 +31,11 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
-	public class WelcomePageLinksList : VBox
+	public class WelcomePageLinksList : WelcomePageSection
 	{
-		public WelcomePageLinksList (XElement el)
+		public WelcomePageLinksList (XElement el): base (el)
 		{
+			Gtk.VBox box = new VBox ();
 			IconSize iconSize = IconSize.Menu;
 			var iconSizeAtt = el.Attribute ("iconSize");
 			if (iconSizeAtt != null) {
@@ -43,14 +44,15 @@ namespace MonoDevelop.Ide.WelcomePage
 			
 			var homogeneousAtt = el.Attribute ("homogeneous");
 			if (homogeneousAtt != null)
-				this.Homogeneous = (bool) homogeneousAtt;
+				box.Homogeneous = (bool) homogeneousAtt;
 			
 			foreach (var child in el.Elements ()) {
 				if (child.Name != "Link")
 					throw new InvalidOperationException ("Unexpected child '" + child.Name + "'");
 				var button = new WelcomePageLinkButton (child, iconSize);
-				this.PackStart (button, true, false, 0);
+				box.PackStart (button, true, false, 0);
 			}
+			SetContent (box);
 		}
 	}
 }

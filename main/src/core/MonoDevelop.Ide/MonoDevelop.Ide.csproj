@@ -1006,6 +1006,36 @@
     <EmbeddedResource Include="icons\statusSteady.png">
       <LogicalName>statusSteady.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\link-chat.png">
+      <LogicalName>link-chat.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\link-cloud.png">
+      <LogicalName>link-cloud.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\link-heart.png">
+      <LogicalName>link-heart.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\link-info.png">
+      <LogicalName>link-info.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\star-normal-hover.png">
+      <LogicalName>star-normal-hover.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\star-normal.png">
+      <LogicalName>star-normal.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\star-pinned-hover.png">
+      <LogicalName>star-pinned-hover.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\star-pinned.png">
+      <LogicalName>star-pinned.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\new_solution.png">
+      <LogicalName>new_solution.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\open_solution.png">
+      <LogicalName>open_solution.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
@@ -1744,6 +1774,12 @@
     <Compile Include="MonoDevelop.Ide.CodeCompletion\TooltipInformationWindow.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\ParameterDataProvider.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\TypeSystemParser.cs" />
+    <Compile Include="MonoDevelop.Ide.WelcomePage\WelcomePageSection.cs" />
+    <Compile Include="MonoDevelop.Ide.WelcomePage\Style.cs" />
+    <Compile Include="MonoDevelop.Ide.WelcomePage\WelcomePageFeedItem.cs" />
+    <Compile Include="MonoDevelop.Ide.WelcomePage\WelcomePageListButton.cs" />
+    <Compile Include="MonoDevelop.Ide.WelcomePage\WelcomePageButtonBar.cs" />
+    <Compile Include="MonoDevelop.Ide.WelcomePage\WelcomePageBarButton.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -1799,6 +1835,7 @@
     <Folder Include="branding\" />
     <Folder Include="MonoDevelop.Components.MainToolbar\" />
     <Folder Include="MonoDevelop.Components.MainToolbar\Theme\" />
+    <Folder Include="MonoDevelop.Ide.WelcomePage\icons\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc">

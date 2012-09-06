@@ -34,15 +34,17 @@ using System.Net;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
-	class WelcomePageNewsFeed : VBox
+	class WelcomePageNewsFeed : WelcomePageSection
 	{
 		string newsUrl;
 		string id;
 		XElement defaultContent;
 		bool destroyed;
+		Gtk.VBox box;
 		
-		public WelcomePageNewsFeed (XElement el)
+		public WelcomePageNewsFeed (XElement el): base (el)
 		{
+			box = new VBox (false, Styles.WelcomeScreen.Pad.News.Item.MarginBottom);
 			newsUrl = (string) el.Attribute ("src");
 			if (string.IsNullOrEmpty (newsUrl))
 				throw new Exception ("News feed is missing src attribute");
@@ -53,6 +55,9 @@ namespace MonoDevelop.Ide.WelcomePage
 			defaultContent = el;
 			UpdateNews ();
 			LoadNews ();
+			SetContent (box);
+			ContentAlignment.TopPadding += 10;
+			WidthRequest = Styles.WelcomeScreen.Pad.News.Width;
 		}
 		
 		protected override void OnDestroyed ()
@@ -67,8 +72,8 @@ namespace MonoDevelop.Ide.WelcomePage
 			if (destroyed)
 				return;
 			
-			foreach (var c in Children) {
-				this.Remove (c);
+			foreach (var c in box.Children) {
+				box.Remove (c);
 				c.Destroy ();
 			}
 			
@@ -76,13 +81,13 @@ namespace MonoDevelop.Ide.WelcomePage
 				var news = GetNewsXml ();
 				if (news.FirstNode == null) {
 					var label = new Label (GettextCatalog.GetString ("No news found.")) { Xalign = 0, Xpad = 6 };
-					this.PackStart (label, true, false, 0);
+					box.PackStart (label, true, false, 0);
 				} else {
 					foreach (var child in news.Elements ()) {
 						if (child.Name != "link" && child.Name != "Link")
 							throw new Exception ("Unexpected child '" + child.Name + "'");
-						var button = new WelcomePageLinkButton (child);
-						this.PackStart (button, true, false, 0);
+						var button = new WelcomePageFeedItem (child);
+						box.PackStart (button, true, false, 0);
 					}
 				}
 			} catch (Exception ex) {

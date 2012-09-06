@@ -42,7 +42,8 @@ namespace MonoDevelop.Ide.WelcomePage
 		public static readonly string LinkColor = "#5a7ac7";
 		public static readonly int Spacing = 20;
 		public static readonly int LogoHeight = 90;
-		
+		public static readonly bool ShowLogo = true;
+
 		static WelcomePageBranding ()
 		{
 			try {
@@ -69,21 +70,35 @@ namespace MonoDevelop.Ide.WelcomePage
 				LinkColor = BrandingService.GetString ("WelcomePage", "LinkColor") ?? LinkColor;
 				Spacing = BrandingService.GetInt ("WelcomePage", "Spacing") ?? Spacing;
 				LogoHeight = BrandingService.GetInt ("WelcomePage", "LogoHeight") ?? LogoHeight;
+				ShowLogo = BrandingService.GetBool ("WelcomePage", "ShowLogo") ?? ShowLogo;
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while reading welcome page branding.", e);
 			}
 		}
 		
+		public static Gdk.Pixbuf GetImage (string image, bool lookInCallingAssembly=false)
+		{
+			using (var stream = BrandingService.GetStream (image, lookInCallingAssembly)) {
+				if (stream != null)
+					return new Gdk.Pixbuf (stream);
+				else
+					return null;
+			}
+		}
+
 		public static Gdk.Pixbuf GetLogoImage ()
 		{
-			using (var stream = BrandingService.GetStream ("WelcomePage_Logo.png", true))
-				return new Gdk.Pixbuf (stream);
+			return GetImage ("WelcomePage_Logo.png", true);
 		}
 		
 		public static Gdk.Pixbuf GetTopBorderImage ()
 		{
-			using (var stream = BrandingService.GetStream ("WelcomePage_TopBorderRepeat.png", true))
-				return new Gdk.Pixbuf (stream);
+			return GetImage ("WelcomePage_TopBorderRepeat.png", true);
+		}
+		
+		public static Gdk.Pixbuf GetBackgroundImage ()
+		{
+			return GetImage ("WelcomePage_Background.png", false);
 		}
 	}
 }
