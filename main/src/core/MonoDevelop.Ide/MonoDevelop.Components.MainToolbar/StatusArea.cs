@@ -503,32 +503,37 @@ namespace MonoDevelop.Components.MainToolbar
 						context.Fill ();
 					}
 					context.ResetClip ();
+				} else {
+					context.NewPath ();
 				}
 
-				int x = messageBox.Allocation.X;
-				int width = messageBox.Allocation.Width;
+				int progress_bar_x = messageBox.Allocation.X;
+				int progress_bar_width = messageBox.Allocation.Width;
 
 				if (currentPixbuf != null) {
 					int y = Allocation.Y + (Allocation.Height - currentPixbuf.Height) / 2;
-					Gdk.CairoHelper.SetSourcePixbuf (context, currentPixbuf, x, y);
+					Gdk.CairoHelper.SetSourcePixbuf (context, currentPixbuf, messageBox.Allocation.X, y);
 					context.Paint ();
-					x += currentPixbuf.Width + 4;
-					width -= currentPixbuf.Width + 4;
+					progress_bar_x += currentPixbuf.Width + Styles.ProgressBarOuterPadding;
+					progress_bar_width -= currentPixbuf.Width + Styles.ProgressBarOuterPadding;
 				}
 
 				int center = Allocation.Y + Allocation.Height / 2;
 
 				if (showingProgress || progressDisplayAlpha > 0) {
-					DrawProgressBar (context, progressFraction, new Gdk.Rectangle (x - 2, center - Styles.ProgressBarHeight / 2, width + 4, Styles.ProgressBarHeight));
+					DrawProgressBar (context, progressFraction, new Gdk.Rectangle (progress_bar_x, center - Styles.ProgressBarHeight / 2, progress_bar_width, Styles.ProgressBarHeight));
 				}
+
+				int text_x = progress_bar_x + Styles.ProgressBarInnerPadding;
+				int text_width = progress_bar_width - (Styles.ProgressBarInnerPadding * 2);
 
 				if (lastText != null) {
 					double opacity = 1.0f - textAnimTweener.Value;
-					DrawString (lastText, lastTextIsMarkup, context, x, center - (int)(textAnimTweener.Value * Allocation.Height * 0.5), width, opacity);
+					DrawString (lastText, lastTextIsMarkup, context, text_x, center - (int)(textAnimTweener.Value * Allocation.Height * 0.5), text_width, opacity);
 				}
 
 				if (currentText != null) {
-					DrawString (currentText, textIsMarkup, context, x, center + (int)((1.0f - textAnimTweener.Value) * Allocation.Height * 0.5), width, textAnimTweener.Value);
+					DrawString (currentText, textIsMarkup, context, text_x, center + (int)((1.0f - textAnimTweener.Value) * Allocation.Height * 0.5), text_width, textAnimTweener.Value);
 				}
 			}
 			return base.OnExposeEvent (evnt);
@@ -540,12 +545,18 @@ namespace MonoDevelop.Components.MainToolbar
 			context.Clip ();
 
 			CairoExtensions.RoundedRectangle (context, bounding.X + 0.5, bounding.Y + 0.5, bounding.Width - 1, bounding.Height - 1, 3);
-			context.Color = Styles.StatusBarProgressBackgroundColor;
+			context.Color = new Cairo.Color (Styles.StatusBarProgressBackgroundColor.R,
+			                                 Styles.StatusBarProgressBackgroundColor.G,
+			                                 Styles.StatusBarProgressBackgroundColor.B,
+			                                 Styles.StatusBarProgressBackgroundColor.A * progressDisplayAlpha);
 			context.FillPreserve ();
 
 			context.ResetClip ();
 
-			context.Color = Styles.StatusBarProgressOutlineColor;
+			context.Color = new Cairo.Color (Styles.StatusBarProgressOutlineColor.R,
+			                                 Styles.StatusBarProgressOutlineColor.G,
+			                                 Styles.StatusBarProgressOutlineColor.B,
+			                                 Styles.StatusBarProgressOutlineColor.A * progressDisplayAlpha);
 			context.LineWidth = 1;
 			context.Stroke ();
 		}
@@ -1014,12 +1025,13 @@ namespace MonoDevelop.Components.MainToolbar
 				var alloc = Allocation;
 				//alloc.Inflate (0, -2);
 				ctx.Rectangle (alloc.X, alloc.Y, 1, alloc.Height);
-				Cairo.LinearGradient gr = new LinearGradient (alloc.X, alloc.Y, alloc.X, alloc.Y + alloc.Height);
-				gr.AddColorStop (0, new Cairo.Color (0, 0, 0, 0));
-				gr.AddColorStop (0.5, new Cairo.Color (0, 0, 0, 0.2));
-				gr.AddColorStop (1, new Cairo.Color (0, 0, 0, 0));
-				ctx.Pattern = gr;
-				ctx.Fill ();
+				using (Cairo.LinearGradient gr = new LinearGradient (alloc.X, alloc.Y, alloc.X, alloc.Y + alloc.Height)) {
+					gr.AddColorStop (0, new Cairo.Color (0, 0, 0, 0));
+					gr.AddColorStop (0.5, new Cairo.Color (0, 0, 0, 0.2));
+					gr.AddColorStop (1, new Cairo.Color (0, 0, 0, 0));
+					ctx.Pattern = gr;
+					ctx.Fill ();
+				}
 			}
 			return true;
 		}

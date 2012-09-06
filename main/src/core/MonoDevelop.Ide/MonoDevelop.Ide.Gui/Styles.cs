@@ -101,7 +101,9 @@ namespace MonoDevelop.Ide.Gui
 
 		public static readonly Pango.FontDescription StatusFont = Pango.FontDescription.FromString ("Normal 11");
 
-		public static readonly int ProgressBarHeight = 18;
+		public static readonly int ProgressBarHeight = 16;
+		public static readonly int ProgressBarInnerPadding = 3;
+		public static readonly int ProgressBarOuterPadding = 3;
 
 		// Toolbar
 
