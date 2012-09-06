@@ -101,13 +101,15 @@ namespace MonoDevelop.Components.MainToolbar
 			runningTime.Start ();
 			timeoutHandle = GLib.Timeout.Add (Rate, () => { 
 				Value = Math.Min (1.0f, runningTime.ElapsedMilliseconds / (float) Length);
-				ValueUpdated (this, EventArgs.Empty);
+				if (ValueUpdated != null)
+					ValueUpdated (this, EventArgs.Empty);
 
 				if (Value >= 1.0f)
 				{
 					runningTime.Stop ();
 					timeoutHandle = 0;
-					Finished (this, EventArgs.Empty);
+					if (Finished != null)
+						Finished (this, EventArgs.Empty);
 					return false;
 				}
 				return true;
@@ -119,7 +121,8 @@ namespace MonoDevelop.Components.MainToolbar
 			Pause ();
 			runningTime.Reset ();
 			Value = 1.0f;
-			Finished (this, EventArgs.Empty);
+			if (Finished != null)
+				Finished (this, EventArgs.Empty);
 		}
 
 		public void Pause ()
@@ -130,6 +133,41 @@ namespace MonoDevelop.Components.MainToolbar
 				GLib.Source.Remove (timeoutHandle);
 				timeoutHandle = 0;
 			}
+		}
+	}
+
+	class MouseTracker
+	{
+		public bool Hovered { get; private set; }
+		public Gdk.Point MousePosition { get; private set; }
+
+		public event EventHandler MouseMoved;
+		public event EventHandler HoveredChanged;
+
+		public MouseTracker (Gtk.Widget owner)
+		{
+			Hovered = false;
+			MousePosition = new Gdk.Point(0, 0);
+
+			owner.Events = owner.Events | Gdk.EventMask.PointerMotionMask;
+
+			owner.MotionNotifyEvent += (object o, MotionNotifyEventArgs args) => {
+				MousePosition = new Gdk.Point ((int)args.Event.X, (int)args.Event.Y);
+				if (MouseMoved != null)
+					MouseMoved (this, EventArgs.Empty);
+			};
+
+			owner.EnterNotifyEvent += (o, args) => {
+				Hovered = true;
+				if (HoveredChanged != null)
+					HoveredChanged (this, EventArgs.Empty);
+			};
+
+			owner.LeaveNotifyEvent += (o, args) => {
+				Hovered = false;
+				if (HoveredChanged != null)
+					HoveredChanged (this, EventArgs.Empty);
+			};
 		}
 	}
 
@@ -163,7 +201,9 @@ namespace MonoDevelop.Components.MainToolbar
 		string lastText;
 		string currentText;
 
-		Tweener tweener;
+		Tweener textAnimTweener;
+		Tweener mouseHoverTweener;
+		MouseTracker tracker;
 
 		bool textIsMarkup;
 		bool lastTextIsMarkup;
@@ -293,19 +333,29 @@ namespace MonoDevelop.Components.MainToolbar
 
 			messageQueue = new Queue<Message> ();
 
-			tweener = new Tweener(250, 16);
-			tweener.Easing = new SinInOutEasing ();
-			tweener.ValueUpdated += (o, a) => {
-				QueueDraw ();
-			};
+			textAnimTweener = new Tweener(250, 16);
+			textAnimTweener.Easing = new SinInOutEasing ();
+			textAnimTweener.ValueUpdated += (o, a) => QueueDraw ();
 
-			tweener.Finished += (o, a) => {
+			textAnimTweener.Finished += (o, a) => {
 				if (messageQueue.Count > 0)
 				{
 					Message message = messageQueue.Dequeue();
 					ShowMessageInner (message.Icon, message.Text, message.IsMarkup);
 				}
 			};
+
+			mouseHoverTweener = new Tweener (250, 16);
+			mouseHoverTweener.Easing = new SinInOutEasing ();
+			mouseHoverTweener.ValueUpdated += (sender, e) => QueueDraw ();
+			mouseHoverTweener.Finished += (sender, e) => QueueDraw ();
+
+			tracker = new MouseTracker(this);
+			tracker.HoveredChanged += (sender, e) => {
+				mouseHoverTweener.Start ();
+				QueueDraw ();
+			};
+			tracker.MouseMoved += (sender, e) => QueueDraw ();
 		}
 
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
@@ -442,7 +492,36 @@ namespace MonoDevelop.Components.MainToolbar
 				CairoExtensions.RoundedRectangle (context, Allocation.X + 0.5, Allocation.Y + 0.5, Allocation.Width - 1, Allocation.Height - 1, 3);
 				context.LineWidth = 1;
 				context.Color = Styles.StatusBarBorderColor;
-				context.Stroke ();
+				context.StrokePreserve ();
+
+				if (tracker.Hovered || mouseHoverTweener.IsRunning)
+				{
+					context.Clip ();
+					int x1 = Allocation.X + tracker.MousePosition.X - 200;
+					int x2 = x1 + 400;
+					using (Cairo.LinearGradient gradient = new LinearGradient (x1, 0, x2, 0))
+					{
+						Cairo.Color targetColor = Styles.StatusBarFill1Color;
+						Cairo.Color transparentColor = targetColor;
+						targetColor.A = .7;
+						transparentColor.A = 0;
+
+						if (tracker.Hovered)
+							targetColor.A = .7 * mouseHoverTweener.Value;
+						else
+							targetColor.A = .7 * (1.0 - mouseHoverTweener.Value);
+
+						gradient.AddColorStop (0.0, transparentColor);
+						gradient.AddColorStop (0.5, targetColor);
+						gradient.AddColorStop (1.0, transparentColor);
+
+						context.Pattern = gradient;
+
+						context.Rectangle (x1, Allocation.Y, x2 - x1, Allocation.Height);
+						context.Fill ();
+					}
+					context.ResetClip ();
+				}
 
 				int x = messageBox.Allocation.X;
 				int width = messageBox.Allocation.Width;
@@ -462,12 +541,12 @@ namespace MonoDevelop.Components.MainToolbar
 				}
 
 				if (lastText != null) {
-					double opacity = 1.0f - tweener.Value;
-					DrawString (lastText, lastTextIsMarkup, context, x, center - (int)(tweener.Value * Allocation.Height * 0.5), width, opacity);
+					double opacity = 1.0f - textAnimTweener.Value;
+					DrawString (lastText, lastTextIsMarkup, context, x, center - (int)(textAnimTweener.Value * Allocation.Height * 0.5), width, opacity);
 				}
 
 				if (currentText != null) {
-					DrawString (currentText, textIsMarkup, context, x, center + (int)((1.0f - tweener.Value) * Allocation.Height * 0.5), width, tweener.Value);
+					DrawString (currentText, textIsMarkup, context, x, center + (int)((1.0f - textAnimTweener.Value) * Allocation.Height * 0.5), width, textAnimTweener.Value);
 				}
 			}
 			return base.OnExposeEvent (evnt);
@@ -742,7 +821,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public void ShowMessage (IconId image, string message, bool isMarkup)
 		{
-			if (tweener.IsRunning) {
+			if (textAnimTweener.IsRunning) {
 				messageQueue.Clear ();
 				messageQueue.Enqueue (new Message (image, message, isMarkup));
 			} else {
@@ -757,10 +836,10 @@ namespace MonoDevelop.Components.MainToolbar
 			LoadText (message, isMarkup);
 			LoadPixbuf (image);
 
-			tweener.Start ();
+			textAnimTweener.Start ();
 
 			if (currentText == lastText)
-				tweener.Stop ();
+				textAnimTweener.Stop ();
 			
 			QueueDraw ();
 		}
