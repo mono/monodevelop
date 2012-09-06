@@ -262,8 +262,10 @@ namespace Mono.TextEditor
 //						var clearSelection = data.IsSomethingSelected ? data.MainSelection.SelectionMode != SelectionMode.Block : true;
 						if (pasteBlock) {
 							using (var undo = data.OpenUndoGroup ()) {
+								var version = data.Document.Version;
 								data.DeleteSelectedText (!data.IsSomethingSelected || data.MainSelection.SelectionMode != SelectionMode.Block);
 								data.EnsureCaretIsNotVirtual ();
+								insertionOffset = version.MoveOffsetTo (data.Document.Version, insertionOffset);
 
 								data.Caret.PreserveSelection = true;
 							
@@ -335,8 +337,10 @@ namespace Mono.TextEditor
 		{
 			int inserted;
 			using (var undo = data.OpenUndoGroup ()) {
+				var version = data.Document.Version;
 				data.DeleteSelectedText (!data.IsSomethingSelected || data.MainSelection.SelectionMode != SelectionMode.Block);
 				data.EnsureCaretIsNotVirtual ();
+				offset = version.MoveOffsetTo (data.Document.Version, offset);
 				inserted = data.Insert (offset, text);
 			}
 			data.PasteText (offset, text, inserted);

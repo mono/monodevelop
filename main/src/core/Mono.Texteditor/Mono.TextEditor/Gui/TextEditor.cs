@@ -1269,9 +1269,12 @@ namespace Mono.TextEditor
 		{
 			double tmOffset = e.X - textViewMargin.XOffset;
 			if (tmOffset >= 0) {
-				DocumentLocation loc = PointToLocation (tmOffset, e.Y);
-				if (!this.IsSomethingSelected || !this.SelectionRange.Contains (Document.LocationToOffset (loc)))
-					Caret.Location = loc;
+				DocumentLocation loc;
+				if (textViewMargin.CalculateClickLocation (tmOffset, e.Y, out loc)) {
+					if (!this.IsSomethingSelected || !this.SelectionRange.Contains (Document.LocationToOffset (loc))) {
+						Caret.Location = loc;
+					}
+				}
 				DoPopupMenu (e);
 				this.ResetMouseState ();
 				return true;

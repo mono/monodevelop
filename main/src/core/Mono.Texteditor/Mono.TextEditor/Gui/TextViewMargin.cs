@@ -1669,6 +1669,25 @@ namespace Mono.TextEditor
 		}
 		MouseSelectionMode mouseSelectionMode = MouseSelectionMode.SingleChar;
 
+		internal bool CalculateClickLocation (double x, double y, out DocumentLocation clickLocation)
+		{
+			VisualLocationTranslator trans = new VisualLocationTranslator (this);
+
+			clickLocation = trans.PointToLocation (x, y);
+			if (clickLocation.Line < DocumentLocation.MinLine || clickLocation.Column < DocumentLocation.MinColumn)
+				return false;
+			DocumentLine line = Document.GetLine (clickLocation.Line);
+			if (line != null && clickLocation.Column >= line.Length + 1 && GetWidth (Document.GetTextAt (line.SegmentIncludingDelimiter) + "-") < x) {
+				clickLocation = new DocumentLocation (clickLocation.Line, line.Length + 1);
+				if (textEditor.GetTextEditorData ().HasIndentationTracker && textEditor.Options.IndentStyle == IndentStyle.Virtual) {
+					int indentationColumn = this.textEditor.GetTextEditorData ().GetVirtualIndentationColumn (clickLocation);
+					if (indentationColumn > clickLocation.Column)
+						clickLocation = new DocumentLocation (clickLocation.Line, indentationColumn);
+				}
+			}
+			return true;
+		}
+
 		protected internal override void MousePressed (MarginMouseEventArgs args)
 		{
 			base.MousePressed (args);
@@ -1688,10 +1707,9 @@ namespace Mono.TextEditor
 			}
 
 			if (args.Button == 1) {
-				VisualLocationTranslator trans = new VisualLocationTranslator (this);
-				clickLocation = trans.PointToLocation (args.X, args.Y);
-				if (clickLocation.Line < DocumentLocation.MinLine || clickLocation.Column < DocumentLocation.MinColumn)
+				if (!CalculateClickLocation (args.X, args.Y, out clickLocation))
 					return;
+
 				DocumentLine line = Document.GetLine (clickLocation.Line);
 				bool isHandled = false;
 				if (line != null) {
@@ -1705,14 +1723,6 @@ namespace Mono.TextEditor
 				}
 				if (isHandled)
 					return;
-				if (line != null && clickLocation.Column >= line.Length + 1 && GetWidth (Document.GetTextAt (line.SegmentIncludingDelimiter) + "-") < args.X) {
-					clickLocation = new DocumentLocation (clickLocation.Line, line.Length + 1);
-					if (textEditor.GetTextEditorData ().HasIndentationTracker && textEditor.Options.IndentStyle == IndentStyle.Virtual) {
-						int indentationColumn = this.textEditor.GetTextEditorData ().GetVirtualIndentationColumn (clickLocation);
-						if (indentationColumn > clickLocation.Column)
-							clickLocation = new DocumentLocation (clickLocation.Line, indentationColumn);
-					}
-				}
 
 				int offset = Document.LocationToOffset (clickLocation);
 				if (offset < 0) {
