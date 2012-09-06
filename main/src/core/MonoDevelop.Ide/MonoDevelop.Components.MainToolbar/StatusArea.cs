@@ -313,24 +313,6 @@ namespace MonoDevelop.Components.MainToolbar
 				UpdateSeparators ();
 			};
 
-			// todo: Move this to the CompletionWindowManager when it's possible.
-			StatusBarContext completionStatus = null;
-			CompletionWindowManager.WindowShown += delegate {
-				CompletionListWindow wnd = CompletionWindowManager.Wnd;
-				if (wnd != null && wnd.List != null && wnd.List.CategoryCount > 1) {
-					if (completionStatus == null)
-						completionStatus = CreateContext ();
-					completionStatus.ShowMessage (string.Format (GettextCatalog.GetString ("To toggle categorized completion mode press {0}."), IdeApp.CommandService.GetCommandInfo (MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow).AccelKey));
-				}
-			};
-			
-			CompletionWindowManager.WindowClosed += delegate {
-				if (completionStatus != null) {
-					completionStatus.Dispose ();
-					completionStatus = null;
-				}
-			};
-
 			messageQueue = new Queue<Message> ();
 
 			textAnimTweener = new Tweener(250, 16);
