@@ -2698,7 +2698,6 @@ namespace Mono.TextEditor
 			column--;
 			// calculate virtual indentation
 			if (column > 0 && line.Length == 0 && textEditor.GetTextEditorData ().HasIndentationTracker) {
-				Console.WriteLine (">"+textEditor.GetTextEditorData ().IndentationTracker.GetIndentationString (line.Offset) +"<");
 				using (var l = PangoUtil.CreateLayout (textEditor, textEditor.GetTextEditorData ().IndentationTracker.GetIndentationString (line.Offset))) {
 					l.Alignment = Pango.Alignment.Left;
 					l.FontDescription = textEditor.Options.Font;
