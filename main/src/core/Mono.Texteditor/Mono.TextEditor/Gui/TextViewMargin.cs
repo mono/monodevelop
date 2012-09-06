@@ -533,10 +533,8 @@ namespace Mono.TextEditor
 		}
 
 		#region Caret blinking
-		double caretBlinkState = 0, oldBlinkState = -1;
+		bool caretBlink = true;
 		uint blinkTimeout = 0, startBlinkTimeout = 0;
-		double blinkTime;
-		DateTime start_time;
 
 		// constants taken from gtk.
 		const int cursorOnMultiplier = 2;
@@ -546,19 +544,8 @@ namespace Mono.TextEditor
 		public void ResetCaretBlink (uint delay = 0)
 		{
 			StopCaretThread ();
-			start_time = DateTime.Now;
-			blinkTime = (Gtk.Settings.Default.CursorBlinkTime * cursorOnMultiplier / cursorDivider);
-			if (delay == 0) {
-				blinkTimeout = GLib.Timeout.Add (30, UpdateCaret);
-			} else {
-				startBlinkTimeout = GLib.Timeout.Add (delay, delegate { 
-					blinkTimeout = GLib.Timeout.Add (30, UpdateCaret);
-					startBlinkTimeout = 0;
-					return false;
-				});
-			}
-			caretBlinkState = 1.0;
-			oldBlinkState = -1;
+			blinkTimeout = GLib.Timeout.Add ((uint)(Gtk.Settings.Default.CursorBlinkTime * cursorOnMultiplier / cursorDivider), UpdateCaret);
+			caretBlink = true;
 		}
 
 		internal void StopCaretThread ()
@@ -572,28 +559,22 @@ namespace Mono.TextEditor
 				return;
 			GLib.Source.Remove (blinkTimeout);
 			blinkTimeout = 0;
-			caretBlinkState = 0.0;
+			caretBlink = false;
 		}
 
 		bool UpdateCaret ()
 		{
-			double blinkSinus = 0.5 + System.Math.Sin (1.2 * System.Math.PI * (DateTime.Now - start_time).TotalMilliseconds / blinkTime) / 2;
-
-			if (blinkSinus > 0.8) {
-				caretBlinkState = 1.0;
-			} else if (blinkSinus < 0.2) {
-				caretBlinkState = 0.0;
+			caretBlink = !caretBlink;
+			if (caretBlink) {
+				if (Caret.IsVisible)
+					DrawCaret (textEditor.GdkWindow, textEditor.Allocation);
 			} else {
-				caretBlinkState = blinkSinus;
+				textEditor.QueueDrawArea (caretRectangle.X,
+                                          (int)(caretRectangle.Y + (textEditor.VAdjustment.Value - caretVAdjustmentValue)),
+                                          caretRectangle.Width,
+                                          caretRectangle.Height);
 			}
 
-			if (oldBlinkState == caretBlinkState)
-				return true;
-			textEditor.QueueDrawArea (caretRectangle.X - (int)textEditor.Options.Zoom, 
-			                          (int)(caretRectangle.Y + (textEditor.VAdjustment.Value - caretVAdjustmentValue)),
-			                          caretRectangle.Width + (int)textEditor.Options.Zoom,
-			                          caretRectangle.Height);
-			oldBlinkState = caretBlinkState;
 			return true;
 		}
 		#endregion
@@ -652,7 +633,7 @@ namespace Mono.TextEditor
 		{
 			if (!this.textEditor.IsInDrag && !(this.caretX >= 0 && (!this.textEditor.IsSomethingSelected || this.textEditor.SelectionRange.Length == 0))) 
 				return;
-			if (win == null || Settings.Default.CursorBlink && !Caret.IsVisible || caretBlinkState == 0.0)
+			if (win == null || Settings.Default.CursorBlink && !Caret.IsVisible || !caretBlink)
 				return;
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (win)) {
 				cr.Rectangle (XOffset, 0, textEditor.Allocation.Width - XOffset, textEditor.Allocation.Height);
@@ -668,15 +649,10 @@ namespace Mono.TextEditor
 					               caretRectangle.Height + 1);
 					caretVAdjustmentValue = textEditor.VAdjustment.Value;
 				}
-				/*	var color = new Cairo.Color (caretBlinkState * textEditor.ColorStyle.Default.CairoColor.R + (1 - caretBlinkState) * textEditor.ColorStyle.Default.CairoBackgroundColor.R,
-				                             caretBlinkState * textEditor.ColorStyle.Default.CairoColor.G + (1 - caretBlinkState) * textEditor.ColorStyle.Default.CairoBackgroundColor.G,
-				                             caretBlinkState * textEditor.ColorStyle.Default.CairoColor.B + (1 - caretBlinkState) * textEditor.ColorStyle.Default.CairoBackgroundColor.B
-				                            );*/
 
-				var color = new Cairo.Color (textEditor.ColorStyle.Default.CairoColor.R,
-				                             textEditor.ColorStyle.Default.CairoColor.G,
-				                             textEditor.ColorStyle.Default.CairoColor.B,
-				                             caretBlinkState);
+
+				var color = textEditor.ColorStyle.Default.CairoColor;
+
 				switch (Caret.Mode) {
 				case CaretMode.Insert:
 					cr.DrawLine (color,
