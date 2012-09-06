@@ -500,23 +500,39 @@ namespace MonoDevelop.CSharp
 			} else {
 				result.Append (method.Name);
 			}
-			
-			if (method.TypeParameters.Count > 0) {
-				result.Append ("&lt;");
-				for (int i = 0; i < method.TypeParameters.Count; i++) {
-					if (i > 0)
-						result.Append (", ");
-					AppendVariance (result, method.TypeParameters [i].Variance);
-					result.Append (CSharpAmbience.NetToCSharpTypeName (method.TypeParameters [i].Name));
+			if (method is SpecializedMethod) {
+				var sm = (SpecializedMethod)method;
+				if (sm.TypeArguments.Count > 0) {
+					result.Append ("&lt;");
+					for (int i = 0; i < sm.TypeArguments.Count; i++) {
+						if (i > 0)
+							result.Append (", ");
+						result.Append (GetTypeReferenceString (sm.TypeArguments[i], false));
+					}
+					result.Append ("&gt;");
 				}
-				result.Append ("&gt;");
+			} else {
+				if (method.TypeParameters.Count > 0) {
+					result.Append ("&lt;");
+					for (int i = 0; i < method.TypeParameters.Count; i++) {
+						if (i > 0)
+							result.Append (", ");
+						AppendVariance (result, method.TypeParameters [i].Variance);
+						result.Append (CSharpAmbience.NetToCSharpTypeName (method.TypeParameters [i].Name));
+					}
+					result.Append ("&gt;");
+				}
 			}
 
 			if (formattingOptions.SpaceBeforeMethodDeclarationParentheses)
 				result.Append (" ");
 
 			result.Append ('(');
-			AppendParameterList (result,  method.Parameters, formattingOptions.SpaceBeforeMethodDeclarationParameterComma, formattingOptions.SpaceAfterMethodDeclarationParameterComma);
+			IList<IParameter> parameters = method.Parameters;
+			if (method.IsExtensionMethod) {
+				parameters = new List<IParameter> (method.Parameters.Skip (1));
+			}
+			AppendParameterList (result,  parameters, formattingOptions.SpaceBeforeMethodDeclarationParameterComma, formattingOptions.SpaceAfterMethodDeclarationParameterComma);
 			result.Append (')');
 			return result.ToString ();
 		}
