@@ -1292,9 +1292,12 @@ namespace Mono.Debugging.Soft
 		static MethodMirror OverloadResolve (SoftEvaluationContext ctx, string typeName, string methodName, TypeMirror[] argtypes, List<MethodMirror> candidates, bool throwIfNotFound)
 		{
 			if (candidates.Count == 0) {
-				if (throwIfNotFound)
+				if (throwIfNotFound) {
+					if (methodName == null)
+						throw new EvaluatorException ("Indexer not found in type `{0}'.", typeName);
+
 					throw new EvaluatorException ("Method `{0}' not found in type `{1}'.", methodName, typeName);
-				else
+				} else
 					return null;
 			}
 
