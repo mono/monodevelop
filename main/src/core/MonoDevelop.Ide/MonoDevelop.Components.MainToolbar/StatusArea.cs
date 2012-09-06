@@ -638,7 +638,7 @@ namespace MonoDevelop.Components.MainToolbar
 					QueueDraw ();
 				});
 			} else {
-				currentPixbuf = ImageService.GetPixbuf (image);
+				currentPixbuf = ImageService.GetPixbuf (image, Gtk.IconSize.Menu);
 			}
 
 			iconLoaded = true;
