@@ -104,7 +104,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 			
 			if (SuccessMessages.Count > 0)
-				IdeApp.Workbench.StatusBar.ShowMessage (SuccessMessages [SuccessMessages.Count - 1]);
+				IdeApp.Workbench.StatusBar.ShowMessage (MonoDevelop.Ide.Gui.Stock.StatusSuccess, SuccessMessages [SuccessMessages.Count - 1]);
 			
 			IdeApp.Workbench.StatusBar.SetMessageSourcePad (statusSourcePad);
 			base.OnCompleted ();
