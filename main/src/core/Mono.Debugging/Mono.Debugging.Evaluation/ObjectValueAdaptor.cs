@@ -412,26 +412,35 @@ namespace Mono.Debugging.Evaluation
 
 			if (IsPrimitive (ctx, obj))
 				return false;
-
-			bool showRawView = false;
 			
 			// If there is a proxy, it has to show the members of the proxy
 			object proxy = obj;
 			if (dereferenceProxy) {
 				proxy = GetProxyObject (ctx, obj);
-				if (proxy != obj) {
-					type = GetValueType (ctx, proxy);
-					showRawView = true;
-				}
+				if (proxy != obj)
+					return true;
 			}
 
-			TypeDisplayData tdata = GetTypeDisplayData (ctx, type);
 			bool groupPrivateMembers = ctx.Options.GroupPrivateMembers && (ctx.Options.GroupUserPrivateMembers || IsExternalType (ctx, type));
 			BindingFlags flattenFlag = ctx.Options.FlattenHierarchy ? (BindingFlags)0 : BindingFlags.DeclaredOnly;
-			BindingFlags nonNonPublicFlag = groupPrivateMembers || showRawView ? (BindingFlags)0 : BindingFlags.NonPublic;
 			BindingFlags staticFlag = ctx.Options.GroupStaticMembers ? (BindingFlags)0 : BindingFlags.Static;
-			BindingFlags access = BindingFlags.Public | BindingFlags.Instance | flattenFlag | nonNonPublicFlag | staticFlag;
+
+			if (ctx.Options.GroupStaticMembers && HasMembers (ctx, type, proxy, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | flattenFlag))
+				return true;
 			
+			if (groupPrivateMembers && HasMembers (ctx, type, proxy, BindingFlags.Instance | BindingFlags.NonPublic | flattenFlag | staticFlag))
+				return true;
+			
+			if (!ctx.Options.FlattenHierarchy) {
+				object baseType = GetBaseType (ctx, type, false);
+				if (baseType != null)
+					return true;
+			}
+
+			BindingFlags nonNonPublicFlag = groupPrivateMembers ? (BindingFlags)0 : BindingFlags.NonPublic;
+			BindingFlags access = BindingFlags.Public | BindingFlags.Instance | flattenFlag | nonNonPublicFlag | staticFlag;
+			TypeDisplayData tdata = GetTypeDisplayData (ctx, type);
+
 			// Load all members to a list before creating the object values,
 			// to avoid problems with objects being invalidated due to evaluations in the target,
 			List<ValueReference> list = new List<ValueReference> ();
@@ -454,21 +463,6 @@ namespace Mono.Debugging.Evaluation
 				} catch (Exception ex) {
 					ctx.WriteDebuggerError (ex);
 				}
-			}
-
-			if (IsArray (ctx, proxy))
-				return true;
-
-			if (ctx.Options.GroupStaticMembers && HasMembers (ctx, type, proxy, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | flattenFlag))
-				return true;
-
-			if (groupPrivateMembers && HasMembers (ctx, type, proxy, BindingFlags.Instance | BindingFlags.NonPublic | flattenFlag | staticFlag))
-				return true;
-
-			if (!ctx.Options.FlattenHierarchy) {
-				object baseType = GetBaseType (ctx, type, false);
-				if (baseType != null)
-					return true;
 			}
 
 			return false;
