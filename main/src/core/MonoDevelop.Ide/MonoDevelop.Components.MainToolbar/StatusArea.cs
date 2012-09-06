@@ -67,6 +67,7 @@ namespace MonoDevelop.Components.MainToolbar
 		public uint Rate { get; private set; }
 		public float Value { get; private set; }
 		public Easing Easing { get; set; }
+		public bool Loop { get; set; }
 
 		public bool IsRunning {
 			get { return runningTime.IsRunning; }
@@ -82,6 +83,7 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			Value = 0.0f;
 			Length = length;
+			Loop = false;
 			Rate = rate;
 			runningTime = new Stopwatch ();
 			Easing = new LinearEasing ();
@@ -95,10 +97,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public void Start ()
 		{
-			// reset any current running instance and reset the stopwatch.
 			Pause ();
-			runningTime.Reset ();
-			Value = 0.0f;
 
 			runningTime.Start ();
 			timeoutHandle = GLib.Timeout.Add (Rate, () => { 
@@ -108,10 +107,19 @@ namespace MonoDevelop.Components.MainToolbar
 
 				if (Value >= 1.0f)
 				{
+					if (Loop) {
+						Value = 0.0f;
+						runningTime.Reset ();
+						runningTime.Start ();
+						return true;
+					}
+
 					runningTime.Stop ();
+					runningTime.Reset ();
 					timeoutHandle = 0;
 					if (Finished != null)
 						Finished (this, EventArgs.Empty);
+					Value = 0.0f;
 					return false;
 				}
 				return true;
@@ -125,6 +133,7 @@ namespace MonoDevelop.Components.MainToolbar
 			Value = 1.0f;
 			if (Finished != null)
 				Finished (this, EventArgs.Empty);
+			Value = 0.0f;
 		}
 
 		public void Pause ()
@@ -495,10 +504,12 @@ namespace MonoDevelop.Components.MainToolbar
 						targetColor.A = .7;
 						transparentColor.A = 0;
 
+						float value = mouseHoverTweener.IsRunning ? mouseHoverTweener.Value : 1.0f;
+
 						if (tracker.Hovered)
-							targetColor.A = .7 * mouseHoverTweener.Value;
+							targetColor.A = .7 * value;
 						else
-							targetColor.A = .7 * (1.0 - mouseHoverTweener.Value);
+							targetColor.A = .7 * (1.0 - value);
 
 						gradient.AddColorStop (0.0, transparentColor);
 						gradient.AddColorStop (0.5, targetColor);
@@ -536,13 +547,15 @@ namespace MonoDevelop.Components.MainToolbar
 				int text_x = progress_bar_x + Styles.ProgressBarInnerPadding;
 				int text_width = progress_bar_width - (Styles.ProgressBarInnerPadding * 2);
 
+				float textTweenValue = textAnimTweener.IsRunning ? textAnimTweener.Value : 1.0f;
+
 				if (lastText != null) {
-					double opacity = 1.0f - textAnimTweener.Value;
-					DrawString (lastText, lastTextIsMarkup, context, text_x, center - (int)(textAnimTweener.Value * Allocation.Height * 0.3), text_width, opacity);
+					double opacity = 1.0f - textTweenValue;
+					DrawString (lastText, lastTextIsMarkup, context, text_x, center - (int)(textTweenValue * Allocation.Height * 0.3), text_width, opacity);
 				}
 
 				if (currentText != null) {
-					DrawString (currentText, textIsMarkup, context, text_x, center + (int)((1.0f - textAnimTweener.Value) * Allocation.Height * 0.3), text_width, textAnimTweener.Value);
+					DrawString (currentText, textIsMarkup, context, text_x, center + (int)((1.0f - textTweenValue) * Allocation.Height * 0.3), text_width, textTweenValue);
 				}
 
 				if (showingProgress || progressDisplayAlpha > 0)

@@ -113,6 +113,14 @@ namespace MonoDevelop.Components
                 (byte)(rgbaColor & 0x000000ff) / 255.0);
         }
 
+		public static Cairo.Color InterpolateColors (Cairo.Color start, Cairo.Color end, float amount)
+		{
+			return new Cairo.Color (start.R + (end.R - start.R) * amount,
+			                        start.G + (end.G - start.G) * amount,
+			                        start.B + (end.B - start.B) * amount,
+			                        start.A + (end.A - start.A) * amount);
+		}
+
         public static bool ColorIsDark (Cairo.Color color)
         {
             double h, s, b;
