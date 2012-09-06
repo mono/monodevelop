@@ -98,11 +98,6 @@ namespace Mono.Debugging.Evaluation
 			return new NamespaceValueReference (ctx, newNs);
 		}
 
-		public override bool HasChildren (ObjectPath path, EvaluationOptions options)
-		{
-			return true;
-		}
-
 		public override ObjectValue[] GetChildren (ObjectPath path, int index, int count, EvaluationOptions options)
 		{
 			List<ObjectValue> obs = new List<ObjectValue> ();

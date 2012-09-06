@@ -93,25 +93,6 @@ namespace Mono.Debugging.Evaluation
 			return res;
 		}
 
-		public bool HasChildren (EvaluationOptions options)
-		{
-			return HasChildren (new ObjectPath ("this"), options);
-		}
-
-		public bool HasChildren (ObjectPath path, EvaluationOptions options)
-		{
-			EvaluationContext cctx = ctx.WithOptions (options);
-
-			if (path.Length > 1) {
-				// Looking for children of an array element
-				int[] idx = StringToIndices (path [1]);
-				object obj = array.GetElement (idx);
-				return cctx.Adapter.ObjectValueHasChildren (cctx, new ArrayObjectSource (array, path[1]), obj);
-			}
-
-			return true;
-		}
-
 		public ObjectValue[] GetChildren (EvaluationOptions options)
 		{
 			return GetChildren (new ObjectPath ("this"), -1, -1, options);

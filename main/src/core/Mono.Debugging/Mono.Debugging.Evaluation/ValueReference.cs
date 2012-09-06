@@ -185,11 +185,6 @@ namespace Mono.Debugging.Evaluation
 			Value = ctx.Adapter.FromRawValue (GetContext (options), value);
 		}
 
-		bool IObjectValueSource.HasChildren (ObjectPath path, EvaluationOptions options)
-		{
-			return HasChildren (path, options);
-		}
-
 		ObjectValue[] IObjectValueSource.GetChildren (ObjectPath path, int index, int count, EvaluationOptions options)
 		{
 			return GetChildren (path, index, count, options);
@@ -198,15 +193,6 @@ namespace Mono.Debugging.Evaluation
 		public virtual string CallToString ()
 		{
 			return ctx.Adapter.CallToString (ctx, Value);
-		}
-
-		public virtual bool HasChildren (ObjectPath path, EvaluationOptions options)
-		{
-			try {
-				return ctx.Adapter.ObjectValueHasChildren (GetChildrenContext (options), this, Value);
-			} catch {
-				return false;
-			}
 		}
 
 		public virtual ObjectValue[] GetChildren (ObjectPath path, int index, int count, EvaluationOptions options)

@@ -120,54 +120,6 @@ namespace Mono.Debugging.Evaluation
 			return null;
 		}
 
-		public override bool HasChildren (ObjectPath path, EvaluationOptions options)
-		{
-			EvaluationContext ctx = GetContext (options);
-
-			try {
-				BindingFlags flattenFlag = options.FlattenHierarchy ? (BindingFlags)0 : BindingFlags.DeclaredOnly;
-				BindingFlags flags = BindingFlags.Static | BindingFlags.Public | flattenFlag;
-				bool groupPrivateMembers = options.GroupPrivateMembers && (options.GroupUserPrivateMembers || ctx.Adapter.IsExternalType (ctx, type));
-				if (!groupPrivateMembers)
-					flags |= BindingFlags.NonPublic;
-
-				TypeDisplayData tdata = ctx.Adapter.GetTypeDisplayData (ctx, type);
-				object tdataType = type;
-				
-				foreach (ValueReference val in ctx.Adapter.GetMembersSorted (ctx, this, type, null, flags)) {
-					object decType = val.DeclaringType;
-					if (decType != null && decType != tdataType) {
-						tdataType = decType;
-						tdata = ctx.Adapter.GetTypeDisplayData (ctx, decType);
-					}
-
-					DebuggerBrowsableState state = tdata.GetMemberBrowsableState (val.Name);
-					if (state == DebuggerBrowsableState.Never)
-						continue;
-
-					return true;
-				}
-
-				if (ctx.Adapter.GetNestedTypes (ctx, type).Count () > 0)
-					return true;
-				
-				if (groupPrivateMembers)
-					return true;
-				
-				if (!options.FlattenHierarchy) {
-					object baseType = ctx.Adapter.GetBaseType (ctx, type, false);
-					if (baseType != null)
-						return true;
-				}
-				
-				return false;
-			} catch (Exception ex) {
-				Console.WriteLine (ex);
-				ctx.WriteDebuggerOutput (ex.Message);
-				return false;
-			}
-		}
-
 		public override ObjectValue[] GetChildren (ObjectPath path, int index, int count, EvaluationOptions options)
 		{
 			EvaluationContext ctx = GetContext (options);

@@ -240,14 +240,6 @@ namespace MonoDevelop.Debugger.Gdb
 			return val;
 		}
 
-		public bool HasChildren (ObjectPath path, EvaluationOptions options)
-		{
-			session.SelectThread (threadId);
-			GdbCommandResult res = session.RunCommand ("-var-info-num-children", path.Join ("."));
-
-			return res.GetInt ("numchild") > 0;
-		}
-
 		public ObjectValue[] GetChildren (ObjectPath path, int index, int count, EvaluationOptions options)
 		{
 			List<ObjectValue> children = new List<ObjectValue> ();
