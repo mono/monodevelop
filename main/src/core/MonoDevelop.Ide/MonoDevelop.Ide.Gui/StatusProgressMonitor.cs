@@ -89,9 +89,9 @@ namespace MonoDevelop.Ide.Gui
 
 			if (Errors.Count > 0 || Warnings.Count > 0) {
 				if (Errors.Count > 0) {
-					IdeApp.Workbench.StatusBar.ShowMessage (Stock.Error, Errors [Errors.Count - 1]);
+					IdeApp.Workbench.StatusBar.ShowError (Errors [Errors.Count - 1]);
 				} else if (SuccessMessages.Count == 0) {
-					IdeApp.Workbench.StatusBar.ShowMessage (Stock.Warning, Warnings [Warnings.Count - 1]);
+					IdeApp.Workbench.StatusBar.ShowWarning (Warnings [Warnings.Count - 1]);
 				}
 				
 				base.OnCompleted ();

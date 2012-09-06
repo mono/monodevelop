@@ -1009,6 +1009,12 @@
     <EmbeddedResource Include="icons\statusSuccess.png">
       <LogicalName>statusSuccess.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\statusWarning.png">
+      <LogicalName>statusWarning.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\statusError.png">
+      <LogicalName>statusError.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\link-chat.png">
       <LogicalName>link-chat.png</LogicalName>
     </EmbeddedResource>

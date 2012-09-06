@@ -36,6 +36,8 @@ using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Components;
 
+using StockIcons = MonoDevelop.Ide.Gui.Stock;
+
 namespace MonoDevelop.Components.MainToolbar
 {
 	interface Easing
@@ -364,9 +366,9 @@ namespace MonoDevelop.Components.MainToolbar
 				box = new VBox ();
 			box.Spacing = 3;
 			
-			Gdk.Pixbuf errorIcon = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Error, IconSize.Menu);
+			Gdk.Pixbuf errorIcon = ImageService.GetPixbuf (StockIcons.Error, IconSize.Menu);
 			Gdk.Pixbuf noErrorIcon = ImageService.MakeGrayscale (errorIcon); // creates a new pixbuf instance
-			Gdk.Pixbuf warningIcon = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Warning, IconSize.Menu);
+			Gdk.Pixbuf warningIcon = ImageService.GetPixbuf (StockIcons.Warning, IconSize.Menu);
 			Gdk.Pixbuf noWarningIcon = ImageService.MakeGrayscale (warningIcon); // creates a new pixbuf instance
 			
 			Gtk.Image errorImage = new Gtk.Image (errorIcon);
@@ -788,13 +790,13 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public void ShowError (string error)
 		{
-			ShowMessage (MonoDevelop.Ide.Gui.Stock.Error, error);
+			ShowMessage (StockIcons.StatusError, error);
 		}
 
 		public void ShowWarning (string warning)
 		{
 			DispatchService.AssertGuiThread ();
-			ShowMessage (MonoDevelop.Ide.Gui.Stock.Warning, warning);
+			ShowMessage (StockIcons.StatusWarning, warning);
 		}
 
 		public void ShowMessage (string message)

@@ -37,6 +37,8 @@ using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Components;
 using MonoDevelop.Components.MainToolbar;
 
+using StockIcons = MonoDevelop.Ide.Gui.Stock;
+
 namespace MonoDevelop.Ide
 {
 	class MonoDevelopStatusBar : Gtk.Statusbar
@@ -328,18 +330,18 @@ namespace MonoDevelop.Ide
 		
 		public void ShowReady ()
 		{
-			ShowMessage (GettextCatalog.GetString ("Ready"));	
+			ShowMessage (GettextCatalog.GetString ("Ready"));
 		}
 		
 		public void ShowError (string error)
 		{
-			ShowMessage (new Image (MonoDevelop.Ide.Gui.Stock.Error, IconSize.Menu), error);
+			ShowMessage (new Image (StockIcons.StatusError, IconSize.Menu), error);
 		}
 		
 		public void ShowWarning (string warning)
 		{
 			DispatchService.AssertGuiThread ();
-			ShowMessage (new Gtk.Image (MonoDevelop.Ide.Gui.Stock.Warning, IconSize.Menu), warning);
+			ShowMessage (new Gtk.Image (StockIcons.StatusWarning, IconSize.Menu), warning);
 		}
 		
 		public void ShowMessage (string message)
@@ -811,12 +813,12 @@ namespace MonoDevelop.Ide
 		
 		public void ShowError (string error)
 		{
-			ShowMessage (MonoDevelop.Ide.Gui.Stock.Error, error);
+			ShowMessage (StockIcons.StatusError, error);
 		}
 		
 		public void ShowWarning (string warning)
 		{
-			ShowMessage (MonoDevelop.Ide.Gui.Stock.Warning, warning);
+			ShowMessage (StockIcons.StatusWarning, warning);
 		}
 		
 		public void ShowMessage (string message)
