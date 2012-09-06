@@ -489,7 +489,7 @@ namespace MonoDevelop.Components.MainToolbar
 			context.Stroke ();
 		}
 
-		int DrawString (string text, bool isMarkup, Cairo.Context context, int x, int y, int width, double opacity)
+		void DrawString (string text, bool isMarkup, Cairo.Context context, int x, int y, int width, double opacity)
 		{
 			Pango.Layout pl = new Pango.Layout (this.PangoContext);
 			if (isMarkup)
@@ -509,17 +509,16 @@ namespace MonoDevelop.Components.MainToolbar
 			context.Rectangle (new Rectangle (x, Allocation.Y, width, Allocation.Height));
 			context.Clip ();
 
-			context.MoveTo (x, y - h / 2);
+			// Subtract off remainder instead of drop to prefer higher centering when centering an odd number of pixels
+			context.MoveTo (x, y - h / 2 - (h % 2));
 
 			Cairo.Color finalColor = Styles.StatusBarTextColor;
 			finalColor.A = opacity;
-
 			context.Color = finalColor;
+
 			Pango.CairoHelper.ShowLayout (context, pl);
 			pl.Dispose ();
 			context.Restore ();
-
-			return h;
 		}
 
 		#region StatusBar implementation
