@@ -867,6 +867,7 @@ But I leave it in in the case I've missed something. Mike
 					                                "Found and replaced {0} occurrences", number, number));
 			}
 			textEditor.GrabFocus ();
+			textEditor.CenterToCaret ();
 		}
 
 		internal static bool inReplaceUpdate = false;
