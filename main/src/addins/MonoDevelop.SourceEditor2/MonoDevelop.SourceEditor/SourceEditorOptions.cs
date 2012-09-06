@@ -207,7 +207,7 @@ namespace MonoDevelop.SourceEditor
 			this.underlineErrors = PropertyService.Get ("UnderlineErrors", true);
 			this.indentStyle = PropertyService.Get ("IndentStyle", IndentStyle.Smart);
 			base.ShowLineNumberMargin = PropertyService.Get ("ShowLineNumberMargin", true);
-			base.ShowFoldMargin = PropertyService.Get ("ShowFoldMargin", true);
+			base.ShowFoldMargin = PropertyService.Get ("ShowFoldMargin", false);
 			base.HighlightCaretLine = PropertyService.Get ("HighlightCaretLine", false);
 			base.EnableSyntaxHighlighting = PropertyService.Get ("EnableSyntaxHighlighting", true);
 			base.HighlightMatchingBracket = PropertyService.Get ("HighlightMatchingBracket", true);
