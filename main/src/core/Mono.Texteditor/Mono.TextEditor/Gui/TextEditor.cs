@@ -1815,6 +1815,11 @@ namespace Mono.TextEditor
 						maxX += 2 * this.textViewMargin.CharWidth;
 					double width = Allocation.Width - this.TextViewMargin.XOffset;
 					var realMaxX = System.Math.Max (maxX, this.textEditorData.HAdjustment.Value + width);
+
+					foreach (var containerChild in this.containerChildren) {
+						realMaxX = System.Math.Max (realMaxX, containerChild.X + containerChild.Child.Allocation.Width);
+					}
+
 					this.textEditorData.HAdjustment.SetBounds (
 						0,
 						realMaxX,
@@ -1843,6 +1848,11 @@ namespace Mono.TextEditor
 				double maxY = textEditorData.HeightTree.TotalHeight;
 				if (maxY > allocation.Height)
 					maxY += EditorLineThreshold * this.LineHeight;
+
+				foreach (var containerChild in this.containerChildren) {
+					maxY = System.Math.Max (maxY, containerChild.Y + containerChild.Child.Allocation.Height);
+				}
+
 				if (VAdjustment.Value > maxY - allocation.Height) {
 					VAdjustment.Value = System.Math.Max (0, maxY - allocation.Height);
 					QueueDraw ();
