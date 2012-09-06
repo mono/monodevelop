@@ -53,12 +53,6 @@ namespace Mono.Debugging.Evaluation
 			val.ChildSelector = "";
 			return val;
 		}
-
-		public bool HasChildren (ObjectPath path, EvaluationOptions options)
-		{
-			EvaluationContext cctx = ctx.WithOptions (options);
-			return cctx.Adapter.ObjectValueHasChildren (cctx, objectSource, cctx.Adapter.GetValueType (cctx, obj), obj, false);
-		}
 		
 		public ObjectValue[] GetChildren (ObjectPath path, int index, int count, EvaluationOptions options)
 		{

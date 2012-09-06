@@ -402,7 +402,7 @@ namespace Mono.Debugging.Client
 				else if (IsArray)
 					return arrayCount > 0;
 				else if (IsObject)
-					return source.HasChildren (path, parentFrame.DebuggerSession.EvaluationOptions);
+					return true;
 				else
 					return false;
 			}

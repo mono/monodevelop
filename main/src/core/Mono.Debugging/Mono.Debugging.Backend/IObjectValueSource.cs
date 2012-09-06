@@ -33,7 +33,6 @@ namespace Mono.Debugging.Backend
 {
 	public interface IObjectValueSource
 	{
-		bool HasChildren (ObjectPath path, EvaluationOptions options);
 		ObjectValue[] GetChildren (ObjectPath path, int index, int count, EvaluationOptions options);
 		EvaluationResult SetValue (ObjectPath path, string value, EvaluationOptions options);
 		ObjectValue GetValue (ObjectPath path, EvaluationOptions options);

@@ -57,11 +57,6 @@ namespace Mono.Debugging.Evaluation
 		}
 		
 		#region IObjectValueSource implementation
-		public bool HasChildren (ObjectPath path, EvaluationOptions options)
-		{
-			EvaluationContext cctx = ctx.WithOptions (options);
-			return cctx.Adapter.ObjectValueHasChildren (cctx, objectSource, type, obj, false);
-		}
 
 		public ObjectValue[] GetChildren (ObjectPath path, int index, int count, EvaluationOptions options)
 		{
