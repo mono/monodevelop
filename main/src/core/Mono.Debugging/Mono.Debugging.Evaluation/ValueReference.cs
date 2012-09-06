@@ -204,7 +204,7 @@ namespace Mono.Debugging.Evaluation
 		{
 			try {
 				return ctx.Adapter.ObjectValueHasChildren (GetChildrenContext (options), this, Value);
-			} catch (Exception ex) {
+			} catch {
 				return false;
 			}
 		}
