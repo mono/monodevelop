@@ -53,6 +53,10 @@ namespace MonoDevelop.VersionControl
 
 		void HandleApplicationFocusIn (object sender, EventArgs e)
 		{
+			// This way of keeping the version control state in sync with what happens
+			// outside of MonoDevelop is too slow when many nodes are expanded. We need
+			// a better way.
+			return;
 			foreach (var ob in filePaths.Values) {
 				ITreeBuilder tb = Context.GetTreeBuilder (ob.Object);
 				if (tb != null)
