@@ -382,6 +382,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 				int width = alloc.Width;
 				int height = alloc.Height;
 				
+				context.Rectangle (args.Area.X, args.Area.Y, args.Area.Width, args.Area.Height);
+				context.Color = this.backgroundColor;
+				context.Fill ();
+
 				int lineWidth = width;
 				int xpos = iconTextSpacing;
 				int yPos = (int)-vadj.Value;
@@ -403,7 +407,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					);
 					yPos += rowHeight;
 				}
-				
+
 				//when there are no matches, display a message to indicate that the completion list is still handling input
 				if (filteredItems.Count == 0) {
 					Gdk.GC gc = new Gdk.GC (window);
@@ -530,9 +534,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 						}
 						window.DrawLayout (textGCNormal, xpos + iconWidth + 2, typos, layout);
 					} else {
-						context.Rectangle (0, ypos, Allocation.Width, rowHeight);
-						context.Color = this.backgroundColor;
-						context.Fill ();
 						if (icon != null) {
 							window.DrawPixbuf (fgGCNormal, icon, 0, 0, xpos, iypos, iconWidth, iconHeight, Gdk.RgbDither.None, 0, 0);
 							xpos += iconTextSpacing;
