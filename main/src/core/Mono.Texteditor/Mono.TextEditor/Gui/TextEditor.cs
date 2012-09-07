@@ -1375,6 +1375,7 @@ namespace Mono.TextEditor
 				Caret.PreserveSelection = true;
 				Caret.Location = defaultCaretPos;
 				Caret.PreserveSelection = false;
+				ResetMouseState ();
 				dragOver = false;
 			}
 			base.OnDragLeave (context, time_);
@@ -1388,7 +1389,7 @@ namespace Mono.TextEditor
 			}
 			base.OnDragDataGet (context, selection_data, info, time_);
 		}
-				
+
 		protected override void OnDragDataReceived (DragContext context, int x, int y, SelectionData selection_data, uint info, uint time_)
 		{
 			using (var undo = OpenUndoGroup ()) {
