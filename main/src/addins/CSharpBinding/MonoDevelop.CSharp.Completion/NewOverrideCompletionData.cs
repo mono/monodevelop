@@ -50,8 +50,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override TooltipInformation CreateTooltipInformation (bool smartWrap)
 		{
-			var tooltipInfo = new TooltipInformation ();
-			return tooltipInfo;
+			return MemberCompletionData.CreateTooltipInformation (ext, member, smartWrap);
 		}
 
 		public NewOverrideCompletionData (CSharpCompletionTextEditorExtension ext, int declarationBegin, IUnresolvedTypeDefinition type, IMember member) : base (null)
