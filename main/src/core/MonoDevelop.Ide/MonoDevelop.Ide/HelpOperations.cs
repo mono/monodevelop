@@ -79,10 +79,40 @@ namespace MonoDevelop.Ide
 			if (useExternalMonodoc)
 				ShowHelpExternal (topic);
 		}
-		
+
 		public bool CanShowHelp (string topic)
 		{
 			return topic != null;
+		}
+
+		public void ShowDocs (string path)
+		{
+			if (path == null)
+				return;
+			
+			if (Platform.IsMac) {
+				string mdapp = new FilePath (typeof (HelpOperations).Assembly.Location)
+					.ParentDirectory
+						.Combine ("..", "..", "..", "MonoDoc.app").FullPath;
+				if (Directory.Exists (mdapp))
+					System.Diagnostics.Process.Start ("open", "-a \"" + mdapp + "\" --args +\"" + path + '"');
+				return;
+			} else if (Platform.IsWindows) {
+				string mdapp = new FilePath (typeof (HelpOperations).Assembly.Location).ParentDirectory.Combine ("windoc", "WinDoc.exe").FullPath;
+				if (File.Exists (mdapp)) {
+					System.Diagnostics.Process.Start (new System.Diagnostics.ProcessStartInfo {
+						FileName = mdapp,
+						Arguments = '"' + path + '"',
+						WorkingDirectory = Path.GetDirectoryName (mdapp),
+					});
+					return;
+				}
+			}
+		}
+
+		public bool CanShowDocs (string path)
+		{
+			return path != null && path.Length != 0 && Directory.Exists (path);
 		}
 		
 		void CheckExternalMonodoc ()
