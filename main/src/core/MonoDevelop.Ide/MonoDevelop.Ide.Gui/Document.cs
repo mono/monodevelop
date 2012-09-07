@@ -524,7 +524,11 @@ namespace MonoDevelop.Ide.Gui
 			window.ActiveViewContentChanged -= OnActiveViewContentChanged;
 			if (IdeApp.Workspace != null)
 				IdeApp.Workspace.ItemRemovedFromSolution -= OnEntryRemoved;
-			
+
+			// Unsubscribe project events
+			if (window.ViewContent.Project != null)
+				window.ViewContent.Project.Modified -= HandleProjectModified;
+
 			try {
 				OnClosed (a);
 			} catch (Exception ex) {
@@ -699,6 +703,9 @@ namespace MonoDevelop.Ide.Gui
 			editorExtension = null;
 			ISupportsProjectReload pr = GetContent<ISupportsProjectReload> ();
 			if (pr != null) {
+				// Unsubscribe project events
+				if (Window.ViewContent.Project != null)
+					Window.ViewContent.Project.Modified -= HandleProjectModified;
 				Window.ViewContent.Project = project;
 				pr.Update (project);
 			}
