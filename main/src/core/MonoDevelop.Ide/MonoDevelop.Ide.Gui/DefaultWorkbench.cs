@@ -896,6 +896,9 @@ namespace MonoDevelop.Ide.Gui
 			dit.Behavior = DockItemBehavior.Locked;
 			dit.DefaultVisible = false;
 
+			if (MonoDevelop.Core.Platform.IsMac && System.Environment.OSVersion.Version.Major >= 11)
+				bar.HasResizeGrip = false;
+
 			if (MonoDevelop.Core.Platform.IsMac)
 				this.StatusBar.HasResizeGrip = true;
 			else {
