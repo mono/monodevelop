@@ -54,6 +54,7 @@ namespace MonoDevelop.SourceEditor
 		
 		SourceEditorView view;
 		ExtensionContext extensionContext;
+		Adjustment cachedHAdjustment, cachedVAdjustment;
 		
 		public ITextEditorExtension Extension {
 			get;
@@ -170,6 +171,11 @@ namespace MonoDevelop.SourceEditor
 
 		protected override void OnDestroyed ()
 		{
+			if (cachedHAdjustment != null)
+				cachedHAdjustment.ValueChanged -= HAdjustment_ValueChanged;
+			if (cachedVAdjustment != null)
+				cachedVAdjustment.ValueChanged -= VAdjustment_ValueChanged;
+
 			ExtensionContext = null;
 			view = null;
 			base.OnDestroyed ();
@@ -645,18 +651,26 @@ namespace MonoDevelop.SourceEditor
 		protected override void OnScrollAdjustmentsSet()
 		{
 			if (HAdjustment != null) {
-				HAdjustment.ValueChanged += delegate {
-					if (!isInKeyStroke) {
-						CompletionWindowManager.HideWindow ();
-						ParameterInformationWindowManager.HideWindow (null, view);
-					}
-				};
+				cachedHAdjustment = HAdjustment;
+				HAdjustment.ValueChanged += HAdjustment_ValueChanged;
 			}
 			if (VAdjustment != null) {
-				VAdjustment.ValueChanged += delegate {
-					CompletionWindowManager.HideWindow ();
-					ParameterInformationWindowManager.HideWindow (null, view);
-				};
+				cachedVAdjustment = VAdjustment;
+				VAdjustment.ValueChanged += VAdjustment_ValueChanged;
+			}
+		}
+
+		void VAdjustment_ValueChanged (object sender, EventArgs e)
+		{
+			CompletionWindowManager.HideWindow ();
+			ParameterInformationWindowManager.HideWindow (null, view);
+		}
+
+		void HAdjustment_ValueChanged (object sender, EventArgs e)
+		{
+			if (!isInKeyStroke) {
+				CompletionWindowManager.HideWindow ();
+				ParameterInformationWindowManager.HideWindow (null, view);
 			}
 		}
 		
