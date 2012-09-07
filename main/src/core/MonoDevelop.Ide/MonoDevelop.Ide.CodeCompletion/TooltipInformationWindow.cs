@@ -176,6 +176,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public void AddOverload (CompletionData data)
 		{
 			var tooltipInformation = data.CreateTooltipInformation (false);
+			if (string.IsNullOrEmpty (tooltipInformation.SignatureMarkup))
+				return;
 
 			using (var layout = new Pango.Layout (PangoContext)) {
 				var des = FontService.GetFontDescription ("Editor");

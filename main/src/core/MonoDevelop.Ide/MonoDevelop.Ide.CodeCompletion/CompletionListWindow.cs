@@ -591,6 +591,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 				}
 			}
 
+			if (declarationviewwindow.Overloads == 0) {
+				HideDeclarationView ();
+				return false;
+			}
+
 			Gdk.Rectangle rect = List.GetRowArea (selectedItem);
 			if (rect.IsEmpty)
 				return false;
