@@ -311,13 +311,13 @@ namespace Mono.TextEditor
 					}
 				}
 				
-				isFoldStart  = startFoldings.Count > 0;
+				isFoldStart = startFoldings.Count > 0;
 				isContaining = containingFoldings.Count > 0;
-				isFoldEnd    = endFoldings.Count > 0;
+				isFoldEnd = endFoldings.Count > 0;
 				
-				isStartSelected      = this.lineHover != null && IsMouseHover (startFoldings);
+				isStartSelected = this.lineHover != null && IsMouseHover (startFoldings);
 				isContainingSelected = this.lineHover != null && IsMouseHover (containingFoldings);
-				isEndSelected        = this.lineHover != null && IsMouseHover (endFoldings);
+				isEndSelected = this.lineHover != null && IsMouseHover (endFoldings);
 			}
 			
 			var bgGC = foldBgGC;
@@ -332,17 +332,18 @@ namespace Mono.TextEditor
 			cr.Rectangle (drawArea);
 			cr.Color = bgGC;
 			cr.Fill ();
-			
-			if (state == TextDocument.LineState.Changed) {
-				cr.Color = lineStateChangedGC;
-				cr.Rectangle (x + 1, y, marginWidth / 3, lineHeight);
-				cr.Fill ();
-			} else if (state == TextDocument.LineState.Dirty) {
-				cr.Color = lineStateDirtyGC;
-				cr.Rectangle (x + 1, y, marginWidth / 3, lineHeight);
-				cr.Fill ();
+			if (editor.Options.EnableQuickDiff) {
+				if (state == TextDocument.LineState.Changed) {
+					cr.Color = lineStateChangedGC;
+					cr.Rectangle (x + 1, y, marginWidth / 3, lineHeight);
+					cr.Fill ();
+				} else if (state == TextDocument.LineState.Dirty) {
+					cr.Color = lineStateDirtyGC;
+					cr.Rectangle (x + 1, y, marginWidth / 3, lineHeight);
+					cr.Fill ();
+				}
 			}
-			
+
 			if (line < editor.Document.LineCount) {
 				double foldSegmentYPos = y + System.Math.Floor (editor.LineHeight - foldSegmentSize) / 2;
 				double xPos = x + System.Math.Floor (marginWidth / 2) + 0.5;
