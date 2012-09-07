@@ -402,6 +402,9 @@ namespace MonoDevelop.Ide.Gui
 			
 			if (bringToFront)
 				content.WorkbenchWindow.SelectWindow();
+
+			// The insertion of the tab may have changed the active view (or maybe not, this is checked in OnActiveWindowChanged)
+			OnActiveWindowChanged (null, null);
 		}
 
 		void HandleProjectNameChanged (object sender, SolutionItemRenamedEventArgs e)
@@ -820,7 +823,6 @@ namespace MonoDevelop.Ide.Gui
 			// Create the notebook for the various documents.
 			tabControl = new SdiDragNotebook ();
 			tabControl.SwitchPage += OnActiveWindowChanged;
-			tabControl.PageAdded += OnActiveWindowChanged;
 			tabControl.PageRemoved += OnActiveWindowChanged;
 			tabControl.TabClosed += CloseClicked;
 		
