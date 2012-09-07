@@ -213,47 +213,29 @@ namespace Mono.TextEditor
 				cr.Fill ();
 				double a = 6 * editor.Options.Zoom;
 				var startX = x + width - a - 2 * editor.Options.Zoom;
-				if (hoverSegment.IsFolded) {
+				if (hoverSegment.IsFolded || hoverSegment.StartLine.LineNumber == line && hoverSegment.EndLine.LineNumber == line) {
+					
 					cr.Rectangle (startX - a / 2,
 					              y + lineHeight * 0.4, 
 					              a,
 					              lineHeight * 0.2);
-					cr.Color = editor.ColorStyle.FoldMarkerSpace;
+					cr.Color = new Cairo.Color (lineNumberGC.R, lineNumberGC.G, lineNumberGC.B, 0.7);
 					cr.Fill ();
 
+					
 					cr.MoveTo (startX , y);
 					cr.LineTo (startX  + a * 0.7, y + lineHeight * 0.4);
 					cr.LineTo (startX  - a * 0.7 , y + lineHeight * 0.4);
 					cr.ClosePath ();
-					cr.Color = editor.ColorStyle.FoldMarkerArrow;
+					cr.Color = new Cairo.Color (lineNumberGC.R, lineNumberGC.G, lineNumberGC.B);
 					cr.Fill ();
-					
-					cr.MoveTo (startX , y + lineHeight);
+
+					cr.MoveTo (startX , y+ lineHeight);
 					cr.LineTo (startX  + a * 0.7, y + lineHeight * 0.6);
 					cr.LineTo (startX  - a * 0.7 , y + lineHeight * 0.6);
 					cr.ClosePath ();
+					cr.Color = new Cairo.Color (lineNumberGC.R, lineNumberGC.G, lineNumberGC.B);
 					cr.Fill ();
-				} else if (hoverSegment.StartLine.LineNumber == line && hoverSegment.EndLine.LineNumber == line) {
-					cr.Rectangle (startX - a / 2,
-					              y, 
-					              a,
-					              lineHeight);
-					cr.Color = editor.ColorStyle.FoldMarkerSpace;
-					cr.Fill ();
-
-					cr.MoveTo (startX , y+ lineHeight * 0.4);
-					cr.LineTo (startX  + a * 0.7, y );
-					cr.LineTo (startX  - a * 0.7 , y );
-					cr.ClosePath ();
-					cr.Color = editor.ColorStyle.FoldMarkerArrow;
-					cr.Fill ();
-					
-					cr.MoveTo (startX , y + lineHeight * 0.6);
-					cr.LineTo (startX  + a * 0.7, y + lineHeight);
-					cr.LineTo (startX  - a * 0.7 , y + lineHeight);
-					cr.ClosePath ();
-					cr.Fill ();
-
 
 				} else if (hoverSegment.StartLine.LineNumber == line) {
 					
@@ -261,16 +243,15 @@ namespace Mono.TextEditor
 					              y + lineHeight / 2, 
 					              a,
 					              lineHeight / 2);
-					cr.Color = editor.ColorStyle.FoldMarkerSpace;
+					cr.Color = new Cairo.Color (lineNumberGC.R, lineNumberGC.G, lineNumberGC.B, 0.7);
 					cr.Fill ();
 					
-					cr.MoveTo (startX , y + lineHeight);
+					cr.MoveTo (startX , y);
 					cr.LineTo (startX  + a * 0.7, y + lineHeight / 2);
 					cr.LineTo (startX  - a * 0.7 , y + lineHeight / 2);
 					cr.ClosePath ();
-					cr.Color = editor.ColorStyle.FoldMarkerArrow;
+					cr.Color = new Cairo.Color (lineNumberGC.R, lineNumberGC.G, lineNumberGC.B);
 					cr.Fill ();
-
 					
 				} else if (hoverSegment.EndLine.LineNumber == line) {
 					
@@ -278,24 +259,23 @@ namespace Mono.TextEditor
 					              y, 
 					              a,
 					              lineHeight / 2);
-					cr.Color = editor.ColorStyle.FoldMarkerSpace;
+					cr.Color = new Cairo.Color (lineNumberGC.R, lineNumberGC.G, lineNumberGC.B, 0.7);
 					cr.Fill ();
 
-					cr.MoveTo (startX , y);
+					cr.MoveTo (startX , y + lineHeight);
 					cr.LineTo (startX  + a * 0.7, y + lineHeight / 2);
 					cr.LineTo (startX  - a * 0.7 , y + lineHeight / 2);
 					cr.ClosePath ();
-					cr.Color = editor.ColorStyle.FoldMarkerArrow;
+					cr.Color = new Cairo.Color (lineNumberGC.R, lineNumberGC.G, lineNumberGC.B);
 					cr.Fill ();
-
-
+					
 				} else {
 
 					cr.Rectangle (startX - a / 2,
 					              y, 
 					              a,
 					              lineHeight);
-					cr.Color = editor.ColorStyle.FoldMarkerSpace;
+					cr.Color = new Cairo.Color (lineNumberGC.R, lineNumberGC.G, lineNumberGC.B, 0.7);
 					cr.Fill ();
 
 				}
@@ -340,7 +320,7 @@ namespace Mono.TextEditor
 					}
 				}
 				if (containsFoldedFolding) {
-					cr.Color = editor.ColorStyle.FoldMarkerCollapsedots;
+					cr.Color = new Cairo.Color (lineNumberGC.R, lineNumberGC.G, lineNumberGC.B, 0.7);
 					var rad = 2 * editor.Options.Zoom;
 					for (int i = 0; i < 3; i++) {
 						cr.Arc (x + Width - rad * 2, y  + rad + i * lineHeight / 3, rad, 0, System.Math.PI * 2);

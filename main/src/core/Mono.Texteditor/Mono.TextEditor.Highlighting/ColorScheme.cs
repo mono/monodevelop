@@ -95,24 +95,10 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 
-		public const string FoldMarkerSpaceString = "fold.hovermarker.space";
-		public virtual Cairo.Color FoldMarkerSpace {
+		public const string FoldMarginString = "fold.margin";
+		public virtual ChunkStyle FoldMargin {
 			get {
-				return GetColorFromDefinition (FoldMarkerSpaceString);
-			}
-		}
-
-		public const string FoldMarkerArrowString = "fold.hovermarker.arrow";
-		public virtual Cairo.Color FoldMarkerArrow {
-			get {
-				return GetColorFromDefinition (FoldMarkerArrowString);
-			}
-		}
-
-		public const string FoldMarkerCollapsedotsString = "fold.collapsedots";
-		public virtual Cairo.Color FoldMarkerCollapsedots {
-			get {
-				return GetColorFromDefinition (FoldMarkerCollapsedotsString);
+				return GetChunkStyle (FoldMarginString);
 			}
 		}
 

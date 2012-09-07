@@ -120,9 +120,7 @@ THE SOFTWARE.
 	<Style name="iconbar.separator" color="#3B3A32"/>
 
 	<Style name="fold" color="#75715E" bgColor="#272822"/>
-	<Style name="fold.collapsedots" color="#75715E"/>
-	<Style name="fold.hovermarker.space" color="#49483E"/>
-	<Style name="fold.hovermarker.arrow" color="#75715E"/>
+	<Style name="fold.margin" color="white" bgColor ="#272822" />
 	
 	<Style name="comment"  weight="italic" color="#75715E">
 		<Style name="keyword" weight="bold" color="#75715E"/>

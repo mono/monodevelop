@@ -95,9 +95,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			new ColorMetaData ("iconbar.separator", GettextCatalog.GetString ("Icon bar separator"), ColorsAvailable.Fg),
 			
 			new ColorMetaData ("fold", GettextCatalog.GetString ("Folding colors"), ColorsAvailable.FgBg),
-			new ColorMetaData ("fold.collapsedots", GettextCatalog.GetString ("Fold collapsed dots"), ColorsAvailable.Fg),
-			new ColorMetaData ("fold.hovermarker.space", GettextCatalog.GetString ("Fold marker spacer"), ColorsAvailable.Fg),
-			new ColorMetaData ("fold.hovermarker.arrow", GettextCatalog.GetString ("Fold marker arrow"), ColorsAvailable.Fg),
+			new ColorMetaData ("fold.margin", GettextCatalog.GetString ("Fold margin colors"), ColorsAvailable.FgBg),
 
 			new ColorMetaData ("marker.line", GettextCatalog.GetString ("Current line marker"), ColorsAvailable.Fg),
 			new ColorMetaData ("marker.ruler", GettextCatalog.GetString ("Ruler"), ColorsAvailable.Fg),
