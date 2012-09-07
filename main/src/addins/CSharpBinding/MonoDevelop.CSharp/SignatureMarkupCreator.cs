@@ -290,31 +290,38 @@ namespace MonoDevelop.CSharp
 			bool first = true;
 			int maxLength = GetMarkupLength (result.ToString ());
 			int length = maxLength;
-			var sortedTypes = new List<IType>(t.DirectBaseTypes.Where (x => x.FullName != "System.Object"));
+			var sortedTypes = new List<IType> (t.DirectBaseTypes.Where (x => x.FullName != "System.Object"));
 			sortedTypes.Sort ((x, y) => GetTypeReferenceString (y).Length.CompareTo (GetTypeReferenceString (x).Length));
+			if (t.Kind != TypeKind.Enum) {
+				foreach (var directBaseType in sortedTypes) {
+					if (first) {
+						result.AppendLine (" :");
+						result.Append ("  ");
+						length = 2;
+					} else {
+						result.Append (", ");
+						length += 2;
+					}
+					var typeRef = GetTypeReferenceString (directBaseType, false);
 
-			foreach (var directBaseType in sortedTypes) {
-				if (first) {
+					if (!first && length + typeRef.Length >= maxLength) {
+						result.AppendLine ();
+						result.Append ("  ");
+						length = 2;
+					}
+
+					result.Append (typeRef);
+					length += GetMarkupLength (typeRef);
+					first = false;
+				}
+			} else { 
+				var enumBase = t.GetDefinition ().EnumUnderlyingType;
+				if (enumBase.Name != "Int32") {
 					result.AppendLine (" :");
 					result.Append ("  ");
-					length = 2;
-				} else {
-					result.Append (", ");
-					length += 2;
+					result.Append (GetTypeReferenceString (enumBase, false));
 				}
-				var typeRef = GetTypeReferenceString (directBaseType, false);
-
-				if (!first && length + typeRef.Length >= maxLength) {
-					result.AppendLine ();
-					result.Append ("  ");
-					length = 2;
-				}
-
-				result.Append (typeRef);
-				length += GetMarkupLength (typeRef);
-				first = false;
 			}
-			
 
 			return result.ToString ();
 		}
