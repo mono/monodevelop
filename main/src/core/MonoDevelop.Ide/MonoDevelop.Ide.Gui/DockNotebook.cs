@@ -403,6 +403,8 @@ namespace MonoDevelop.Ide.Gui
 
 		public TabStrip (DockNotebook notebook)
 		{
+			GtkWorkarounds.FixContainerLeak (this);
+
 			this.notebook = notebook;
 			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
 			Events |= Gdk.EventMask.PointerMotionMask | Gdk.EventMask.LeaveNotifyMask | Gdk.EventMask.ButtonPressMask;

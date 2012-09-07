@@ -82,6 +82,8 @@ namespace MonoDevelop.Components.PropertyGrid
 
 		public PropertyGridTable (EditorManager editorManager, PropertyGrid parentGrid)
 		{
+			Mono.TextEditor.GtkWorkarounds.FixContainerLeak (this);
+
 			this.editorManager = editorManager;
 			this.parentGrid = parentGrid;
 			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;

@@ -188,7 +188,6 @@ namespace MonoDevelop.SourceEditor
 			
 			public DecoratedScrolledWindow (SourceEditorWidget parent)
 			{
-				GtkWorkarounds.FixContainerLeak (this);
 				this.parent = parent;
 				this.strip = new QuickTaskStrip ();
 
