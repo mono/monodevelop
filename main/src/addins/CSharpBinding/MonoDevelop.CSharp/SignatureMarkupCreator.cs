@@ -153,11 +153,7 @@ namespace MonoDevelop.CSharp
 
 		void AppendModifiers (StringBuilder result, IEntity entity)
 		{
-			if (entity is IField && ((IField)entity).IsConst) {
-				result.Append (Highlight ("const ", "keyword.modifier"));
-			} else {
 
-			}
 			switch (entity.Accessibility) {
 			case Accessibility.Internal:
 				if (entity.EntityType != EntityType.TypeDefinition)
@@ -181,7 +177,9 @@ namespace MonoDevelop.CSharp
 				break;
 			}
 
-			if (entity.IsStatic) {
+			if (entity is IField && ((IField)entity).IsConst) {
+				result.Append (Highlight ("const ", "keyword.modifier"));
+			} else if (entity.IsStatic) {
 				result.Append (Highlight ("static ", "keyword.modifier"));
 			} else if (entity.IsSealed) {
 				if (!(entity is IType && ((IType)entity).Kind == TypeKind.Delegate))
