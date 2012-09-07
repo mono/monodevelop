@@ -678,7 +678,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		
 		static void ReloadAllReferences ()
 		{
-			lock (rwLock) {
+			lock (projectContentLock) {
 				foreach (var wrapper in projectContents)
 					wrapper.Value.ReloadAssemblyReferences (wrapper.Key);
 			}
@@ -1173,7 +1173,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 		}
-		
+		static object projectContentLock = new object ();
 		static Dictionary<Project, ProjectContentWrapper> projectContents = new Dictionary<Project, ProjectContentWrapper> ();
 		static Dictionary<Project, int> referenceCounter = new Dictionary<Project, int> ();
 
@@ -1181,7 +1181,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (IncLoadCount (project) != 1) 
 				return null;
-			lock (rwLock) {
+			lock (projectContentLock) {
 				if (projectContents.ContainsKey (project))
 					return null;
 				try {
@@ -1366,7 +1366,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		#region Reference Counting
 		static Dictionary<object,int> loadCount = new Dictionary<object,int> ();
 		static object rwLock = new object ();
-		
+
 		static int DecLoadCount (object ob)
 		{
 			lock (rwLock) {
@@ -1857,7 +1857,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 			#endregion
 		}
-		
+		static object assemblyContextLock = new object ();
 		static AssemblyContext LoadAssemblyContext (string fileName)
 		{
 			AssemblyContext loadedContext;
@@ -1867,34 +1867,44 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 			if (!File.Exists (fileName))
 				return null;
-			string cache = GetCacheDirectory (fileName);
-			if (cache != null) {
-				TouchCache (cache);
-				var deserialized = DeserializeObject <AssemblyContext> (Path.Combine (cache, "assembly.descriptor"));
-				if (deserialized != null) {
-					deserialized.CtxLoader = new LazyAssemblyLoader (fileName, cache);
-					CheckModifiedFile (deserialized);
-					cachedAssemblyContents [fileName] = deserialized;
-					return deserialized;
-				} else {
-					RemoveCache (cache);
+			lock (assemblyContextLock) {
+				if (cachedAssemblyContents.TryGetValue (fileName, out loadedContext)) {
+					CheckModifiedFile (loadedContext);
+					return loadedContext;
 				}
-			}
-			cache = CreateCacheDirectory (fileName);
+				var newcachedAssemblyContents = new Dictionary<string, AssemblyContext> (cachedAssemblyContents);
 
-			try {
-				var result = new AssemblyContext () {
-					FileName = fileName,
-					LastWriteTimeUtc = File.GetLastWriteTimeUtc (fileName)
-				};
-				SerializeObject (Path.Combine (cache, "assembly.descriptor"), result);
-				
-				result.CtxLoader = new LazyAssemblyLoader (fileName, cache);
-				cachedAssemblyContents [fileName] = result;
-				return result;
-			} catch (Exception ex) {
-				LoggingService.LogError ("Error loading assembly " + fileName, ex);
-				return null;
+				string cache = GetCacheDirectory (fileName);
+				if (cache != null) {
+					TouchCache (cache);
+					var deserialized = DeserializeObject <AssemblyContext> (Path.Combine (cache, "assembly.descriptor"));
+					if (deserialized != null) {
+						deserialized.CtxLoader = new LazyAssemblyLoader (fileName, cache);
+						CheckModifiedFile (deserialized);
+						newcachedAssemblyContents [fileName] = deserialized;
+						cachedAssemblyContents = newcachedAssemblyContents;
+						return deserialized;
+					} else {
+						RemoveCache (cache);
+					}
+				}
+				cache = CreateCacheDirectory (fileName);
+
+				try {
+					var result = new AssemblyContext () {
+						FileName = fileName,
+						LastWriteTimeUtc = File.GetLastWriteTimeUtc (fileName)
+					};
+					SerializeObject (Path.Combine (cache, "assembly.descriptor"), result);
+					
+					result.CtxLoader = new LazyAssemblyLoader (fileName, cache);
+					newcachedAssemblyContents [fileName] = result;
+					cachedAssemblyContents = newcachedAssemblyContents;
+					return result;
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error loading assembly " + fileName, ex);
+					return null;
+				}
 			}
 		}
 
@@ -2232,27 +2242,23 @@ namespace MonoDevelop.Ide.TypeSystem
 				LoggingService.LogError ("Error while updating assembly " + context.FileName, e);
 			}
 		}
-		
+		static object fileLock = new object ();
 		static void CheckModifiedFiles ()
 		{
 			Queue<KeyValuePair<Project, ProjectContentWrapper>> list;
-			
-			lock (rwLock) {
+
+			lock (projectContentLock) {
 				list = new Queue<KeyValuePair<Project, ProjectContentWrapper>> (projectContents);
 			}
-			
+
 			while (list.Count > 0) {
 				var readydb = list.Dequeue ();
 				var files = readydb.Key.Files.ToArray ();
 				CheckModifiedFiles (readydb.Key, files, readydb.Value);
 			}
 			
-			Queue<KeyValuePair<string, AssemblyContext>> assemblyList;
-			
-			lock (rwLock) {
-				assemblyList = new Queue<KeyValuePair<string, AssemblyContext>> (cachedAssemblyContents);
-			}
-			
+			var assemblyList = new Queue<KeyValuePair<string, AssemblyContext>> (cachedAssemblyContents);
+
 			while (assemblyList.Count > 0) {
 				var readydb = assemblyList.Dequeue ();
 				CheckModifiedFile (readydb.Value);
