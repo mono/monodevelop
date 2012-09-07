@@ -115,7 +115,9 @@ namespace MonoDevelop.Ide.WelcomePage
 			box = new VBox ();
 
 			titleLabel = new Label () { Xalign = 0 };
-			titleLabel.Wrap = true;
+			titleLabel.Wrap = false;
+			titleLabel.Ellipsize = Pango.EllipsizeMode.End;
+			titleLabel.LineWrapMode = Pango.WrapMode.Word;
 			box.PackStart (titleLabel, false, false, 0);
 
 			subtitleLabel = new Label () { Xalign = 0 };
