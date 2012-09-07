@@ -1061,7 +1061,7 @@ namespace MonoDevelop.Projects
 			if (oldHandler.GetType () != newHandler.GetType ()) {
 				// If the file format has a default resource handler different from the one
 				// choosen for this project, then all resource ids must be converted
-				foreach (ProjectFile file in Files) {
+				foreach (ProjectFile file in Files.Where (f => f.BuildAction == BuildAction.EmbeddedResource)) {
 					if (file.Subtype == Subtype.Directory)
 						continue;
 					string oldId = file.GetResourceId (oldHandler);
