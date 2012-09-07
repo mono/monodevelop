@@ -2341,7 +2341,10 @@ namespace Mono.TextEditor
 			bool isEolFolded = false;
 			restart:
 			int logicalRulerColumn = line.GetLogicalColumn (textEditor.GetTextEditorData (), textEditor.Options.RulerColumn);
-			
+
+			if ((HighlightCaretLine || textEditor.Options.HighlightCaretLine) && Caret.Line == lineNr)
+				DrawCaretLineMarker (cr, x, y, pangoPosition / Pango.Scale.PangoScale);
+
 			foreach (FoldSegment folding in foldings) {
 				int foldOffset = folding.StartLine.Offset + folding.Column - 1;
 				if (foldOffset < offset)

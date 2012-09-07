@@ -69,8 +69,17 @@ namespace Mono.TextEditor
 			layout = PangoUtil.CreateLayout (editor);
 			editor.Caret.PositionChanged += HandleEditorCaretPositionChanged;
 			editor.Document.FoldTreeUpdated += HandleEditorDocumentFoldTreeUpdated;
+			this.editor.Caret.PositionChanged += EditorCarethandlePositionChanged;
 		}
-		
+
+		void EditorCarethandlePositionChanged (object sender, DocumentLocationEventArgs e)
+		{
+			if (!editor.Options.HighlightCaretLine || e.Location.Line == editor.Caret.Line)
+				return;
+			editor.RedrawMarginLine (this, e.Location.Line);
+			editor.RedrawMarginLine (this, editor.Caret.Line);
+		}
+
 		void HandleEditorDocumentFoldTreeUpdated (object sender, EventArgs e)
 		{
 			editor.RedrawMargin (this);
@@ -319,19 +328,41 @@ namespace Mono.TextEditor
 				isContainingSelected = this.lineHover != null && IsMouseHover (containingFoldings);
 				isEndSelected = this.lineHover != null && IsMouseHover (endFoldings);
 			}
-			
-			var bgGC = foldBgGC;
-			if (editor.TextViewMargin.BackgroundRenderer != null) {
-				if (isContainingSelected || isStartSelected || isEndSelected) {
-					bgGC = foldBgGC;
-				} else {
-					bgGC = foldLineHighlightedGCBg;
+
+			if (editor.Options.HighlightCaretLine && editor.Caret.Line == line) {
+				cr.Rectangle (x, y, Width, lineHeight);
+				cr.Color = foldBgGC;
+				cr.FillPreserve ();
+
+				var color = editor.ColorStyle.LineMarker;
+				cr.Color = new Cairo.Color (color.R, color.G, color.B, 0.5);
+				cr.Fill ();
+
+				var realTopY = System.Math.Floor (y + cr.LineWidth / 2) + 0.5;
+				cr.MoveTo (x, realTopY);
+				cr.LineTo (x + Width, realTopY);
+
+				var realBottomY = System.Math.Floor (y + lineHeight - cr.LineWidth / 2) + 0.5;
+				cr.MoveTo (x, realBottomY);
+				cr.LineTo (x + Width, realBottomY);
+
+				cr.Color = color;
+				cr.Stroke ();
+			} else {
+				var bgGC = foldBgGC;
+				if (editor.TextViewMargin.BackgroundRenderer != null) {
+					if (isContainingSelected || isStartSelected || isEndSelected) {
+						bgGC = foldBgGC;
+					} else {
+						bgGC = foldLineHighlightedGCBg;
+					}
 				}
+				
+				cr.Rectangle (drawArea);
+				cr.Color = bgGC;
+				cr.Fill ();
 			}
-			
-			cr.Rectangle (drawArea);
-			cr.Color = bgGC;
-			cr.Fill ();
+
 			if (editor.Options.EnableQuickDiff) {
 				if (state == TextDocument.LineState.Changed) {
 					cr.Color = lineStateChangedGC;
