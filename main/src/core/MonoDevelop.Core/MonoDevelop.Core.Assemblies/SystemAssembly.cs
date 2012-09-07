@@ -26,13 +26,24 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace MonoDevelop.Core.Assemblies
 {
 	public class SystemAssembly
 	{
+		AssemblyName aname;
+
 		public string FullName { get; internal set; }
 		public string Location { get; private set; }
+
+		public AssemblyName AssemblyName {
+			get {
+				if (aname == null)
+					aname = AssemblyContext.ParseAssemblyName (FullName);
+				return aname;
+			}
+		}
 		
 		public SystemPackage Package { get; internal set; }
 		

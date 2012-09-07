@@ -319,7 +319,7 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			AssemblyName reqName = ParseAssemblyName (fullname);
 			foreach (KeyValuePair<string,SystemAssembly> pair in assemblyFullNameToAsm) {
-				AssemblyName foundName = ParseAssemblyName (pair.Key);
+				AssemblyName foundName = pair.Value.AssemblyName;
 				if (reqName.Name == foundName.Name && (reqName.Version == null || reqName.Version.CompareTo (foundName.Version) < 0)) {
 					SystemAssembly asm = pair.Value;
 					while (asm != null) {
@@ -531,7 +531,7 @@ namespace MonoDevelop.Core.Assemblies
 			packages.Add (package);
 		}
 
-		public AssemblyName ParseAssemblyName (string fullname)
+		public static AssemblyName ParseAssemblyName (string fullname)
 		{
 			AssemblyName aname = new AssemblyName ();
 			int i = fullname.IndexOf (',');
