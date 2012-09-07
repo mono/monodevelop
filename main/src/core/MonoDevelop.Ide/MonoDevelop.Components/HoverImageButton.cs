@@ -225,9 +225,9 @@ namespace MonoDevelop.Components
                 byte *dest_pixels = dest_pixels_orig + i * dest.Rowstride;
 
                 for(int j = 0; j < src.Width; j++) {
-                    *(dest_pixels++) = PixelClamp(*(src_pixels++) + shift);
-                    *(dest_pixels++) = PixelClamp(*(src_pixels++) + shift);
-                    *(dest_pixels++) = PixelClamp(*(src_pixels++) + shift);
+                    *(dest_pixels++) = PixelClamp(*(src_pixels++) - shift);
+                    *(dest_pixels++) = PixelClamp(*(src_pixels++) - shift);
+                    *(dest_pixels++) = PixelClamp(*(src_pixels++) - shift);
 
                     if(src.HasAlpha) {
                         *(dest_pixels++) = *(src_pixels++);
