@@ -235,7 +235,8 @@ namespace MonoDevelop.Components.MainToolbar
 
 		ItemIdentifier GetItemAt (double px, double py)
 		{
-			double maxX = 0, y = yMargin;
+			double maxX = 0;
+			double y = ChildAllocation.Y + yMargin;
 				
 			foreach (var result in results) {
 				var category = result.Item1;
@@ -262,6 +263,8 @@ namespace MonoDevelop.Components.MainToolbar
 					}
 					maxX = Math.Max (maxX, w);
 				}
+
+				y += categorySeparatorHeight;
 			}
 			return null;
 		}
