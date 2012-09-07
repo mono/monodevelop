@@ -55,13 +55,6 @@ namespace MonoDevelop.Ide.Gui.Content
 			get;
 			set;
 		}
-		
-		public CompletionTextEditorExtension ()
-		{
-			CompletionWindowManager.WindowClosed += delegate {
-				currentCompletionContext = null;
-			};
-		}
 
 		public void ShowCompletion (ICompletionDataList completionList)
 		{
@@ -390,6 +383,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		{
 			base.Initialize ();
 
+			CompletionWindowManager.WindowClosed += HandleWindowClosed;
 			CompletionWidget = Document.GetContent <ICompletionWidget> ();
 			if (CompletionWidget != null)
 				CompletionWidget.CompletionContextChanged += OnCompletionContextChanged;
@@ -399,18 +393,25 @@ namespace MonoDevelop.Ide.Gui.Content
 				};
 			}
 		}
+		
+		void HandleWindowClosed (object sender, EventArgs e)
+		{
+			currentCompletionContext = null;
+		}
 
 		bool disposed = false;
 		public override void Dispose ()
 		{
 			if (!disposed) {
 				disposed = true;
+				CompletionWindowManager.WindowClosed -= HandleWindowClosed;
 				if (CompletionWidget != null)
 					CompletionWidget.CompletionContextChanged -= OnCompletionContextChanged;
 			}
 			base.Dispose ();
 		}
 	}
+
 	public interface ITypeNameResolver
 	{
 		string ResolveName (string typeName);
