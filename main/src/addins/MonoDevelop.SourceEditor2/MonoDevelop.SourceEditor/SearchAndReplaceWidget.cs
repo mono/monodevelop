@@ -164,7 +164,7 @@ namespace MonoDevelop.SourceEditor
 			if (Platform.IsMac) {
 				foreach (var eb in new [] { eventbox2, eventbox3, eventbox4, eventbox5, eventbox6 }) {
 					eb.VisibleWindow = true;
-					eb.ModifyBg (StateType.Normal, new Gdk.Color (230, 230, 230));
+					eb.ModifyBg (StateType.Normal, new Gdk.Color (245, 245, 245));
 				}
 			}
 
