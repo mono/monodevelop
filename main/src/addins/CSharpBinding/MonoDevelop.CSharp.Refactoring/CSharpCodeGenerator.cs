@@ -99,6 +99,35 @@ namespace MonoDevelop.CSharp.Refactoring
 			result.Append ("#endregion");
 			return result.ToString ();
 		}
+
+		void AppendObsoleteAttribute (StringBuilder result, CodeGenerationOptions options, IEntity entity)
+		{
+			string reason;
+			if (!entity.IsObsolete (out reason))
+				return;
+
+			var implementingType = options.Part;
+			var loc = implementingType.Region.End;
+			
+			var pf = implementingType.UnresolvedFile;
+			var file = pf as CSharpUnresolvedFile;
+
+			result.Append ("[");
+			var obsoleteRef = ReflectionHelper.ParseReflectionName ("System.ObsoleteAttribute");
+			var resolvedType = obsoleteRef.Resolve (options.ImplementingType.Compilation);
+			var shortType = resolvedType.Kind != TypeKind.Unknown ? CreateShortType (options.ImplementingType.Compilation, file, loc, resolvedType) : null;
+			var text = shortType != null ? shortType.GetText () : "System.Obsolete";
+			if (text.EndsWith ("Attribute"))
+				text = text.Substring (0, text.Length - "Attribute".Length);
+			result.Append (text);
+			if (!string.IsNullOrEmpty (reason)) {
+				result.Append (" (\"");
+				result.Append (reason);
+				result.Append ("\")");
+			}
+			result.Append ("]");
+			result.AppendLine ();
+		}
 		
 		public override CodeGeneratorMemberResult CreateMemberImplementation (ITypeDefinition implementingType,
 		                                                                      IUnresolvedTypeDefinition part,
@@ -286,7 +315,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		CodeGeneratorMemberResult GenerateCode (IEvent evt, CodeGenerationOptions options)
 		{
 			StringBuilder result = new StringBuilder ();
-			
+			AppendObsoleteAttribute (result, options, evt);
 			AppendModifiers (result, options, evt);
 			
 			result.Append ("event ");
@@ -351,6 +380,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		{
 			int bodyStartOffset = -1, bodyEndOffset = -1;
 			StringBuilder result = new StringBuilder ();
+			AppendObsoleteAttribute (result, options, method);
 			AppendModifiers (result, options, method);
 			AppendReturnType (result, options, method.ReturnType);
 			result.Append (" ");
@@ -631,6 +661,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		{
 			var regions = new List<CodeGeneratorBodyRegion> ();
 			var result = new StringBuilder ();
+			AppendObsoleteAttribute (result, options, property);
 			AppendModifiers (result, options, property);
 			AppendReturnType (result, options, property.ReturnType);
 			result.Append (" ");
