@@ -36,7 +36,6 @@ namespace MonoDevelop.Components.PropertyGrid
 	class PropertyGridTable: Gtk.EventBox
 	{
 		EditorManager editorManager;
-		PropertyGrid parentGrid;
 		List<TableRow> rows = new List<TableRow> ();
 		Dictionary<Gtk.Widget, Gdk.Rectangle> children = new Dictionary<Gtk.Widget, Gdk.Rectangle> ();
 		EditSession editSession;
@@ -85,7 +84,6 @@ namespace MonoDevelop.Components.PropertyGrid
 			Mono.TextEditor.GtkWorkarounds.FixContainerLeak (this);
 
 			this.editorManager = editorManager;
-			this.parentGrid = parentGrid;
 			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
 			Events |= Gdk.EventMask.PointerMotionMask;
 			CanFocus = true;
