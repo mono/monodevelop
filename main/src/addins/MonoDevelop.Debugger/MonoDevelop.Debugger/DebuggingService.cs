@@ -319,7 +319,7 @@ namespace MonoDevelop.Debugger
 			session.BreakpointTraceHandler = BreakpointTraceHandler;
 			session.GetExpressionEvaluator = OnGetExpressionEvaluator;
 			session.ConnectionDialogCreator = delegate {
-				return new GtkConnectionDialog ();
+				return new StatusBarConnectionDialog ();
 			};
 
 			console.CancelRequested += OnCancelRequested;
@@ -962,6 +962,26 @@ namespace MonoDevelop.Debugger
 		{
 			DebugExecutionHandler h = new DebugExecutionHandler (engine);
 			return h.Execute (command, console);
+		}
+	}
+
+	internal class StatusBarConnectionDialog : IConnectionDialog
+	{
+
+		public event EventHandler UserCancelled;
+
+		public void SetMessage (DebuggerStartInfo dsi, string message, bool listening, int attemptNumber)
+		{
+			Gtk.Application.Invoke (delegate {
+				IdeApp.Workbench.StatusBar.ShowMessage (MonoDevelop.Ide.Gui.Stock.StatusUpload, message);
+			});
+		}
+
+		public void Dispose ()
+		{
+			Gtk.Application.Invoke (delegate {
+				IdeApp.Workbench.StatusBar.ShowReady ();
+			});
 		}
 	}
 	
