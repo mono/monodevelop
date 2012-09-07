@@ -374,11 +374,11 @@ namespace Mono.TextEditor
 					if (isFoldEnd) {
 						
 						double yMid = System.Math.Floor (drawArea.Y + drawArea.Height / 2) + 0.5;
-						cr.DrawLine (isEndSelected ? foldLineHighlightedGC : foldLineGC, xPos + 0.5, yMid, x + marginWidth - 2 + 0.5, yMid);
+						cr.DrawLine (isEndSelected ? foldLineHighlightedGC : foldLineGC, xPos, yMid, x + marginWidth - 2, yMid);
 						cr.DrawLine (isContainingSelected || isEndSelected ? foldLineHighlightedGC : foldLineGC, xPos, drawArea.Y, xPos, yMid);
 						
 						if (isContaining) 
-							cr.DrawLine (isContainingSelected ? foldLineHighlightedGC : foldLineGC, xPos, yMid + 1, xPos, drawArea.Y + drawArea.Height);
+							cr.DrawLine (isContainingSelected ? foldLineHighlightedGC : foldLineGC, xPos, yMid, xPos, drawArea.Y + drawArea.Height);
 					} else if (isContaining) {
 						cr.DrawLine (isContainingSelected ? foldLineHighlightedGC : foldLineGC, xPos, drawArea.Y, xPos, drawArea.Y + drawArea.Height);
 					}
