@@ -92,7 +92,9 @@ namespace MonoDevelop.AnalysisCore.Gui
 		{
 			if (src != null) {
 				src.Cancel ();
-				oldTask.Wait ();
+				try {
+					oldTask.Wait ();
+				} catch (TaskCanceledException) {}
 			}
 		}
 		
