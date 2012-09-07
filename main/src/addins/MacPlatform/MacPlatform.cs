@@ -542,8 +542,11 @@ end tell", directory.ToString ().Replace ("\"", "\\\"")));
 				Background = MonoDevelop.Components.CairoExtensions.LoadImage (typeof (MacPlatformService).Assembly, resource),
 				TitleBarHeight = GetTitleBarHeight ()
 			};
-			result.SearchPopupWindowCreated += delegate {
-				var popupWindow = GtkQuartz.GetWindow (result.SearchPopupWindow);
+
+			result.RemoveDecorationsWorkaround = delegate(Gtk.Window wnd) {
+				if (wnd == null)
+					throw new ArgumentNullException ("wnd");
+				var popupWindow = GtkQuartz.GetWindow (wnd);
 				popupWindow.HasShadow = false;
 			};
 			//		File.Delete (tempName);

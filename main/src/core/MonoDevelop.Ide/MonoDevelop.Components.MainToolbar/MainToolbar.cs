@@ -230,6 +230,7 @@ namespace MonoDevelop.Components.MainToolbar
 			IdeApp.CommandService.RegisterCommandBar (this);
 			this.ShowAll ();
 			this.statusArea.statusIconBox.HideAll ();
+			RemoveDecorationsWorkaround = w => { };
 		}
 
 		protected override void OnRealized ()
@@ -292,15 +293,7 @@ namespace MonoDevelop.Components.MainToolbar
 				return popup;
 			}
 		}
-		public event EventHandler SearchPopupWindowCreated;
-
-		protected virtual void OnSearchPopupWindowCreated (EventArgs e)
-		{
-			EventHandler handler = this.SearchPopupWindowCreated;
-			if (handler != null)
-				handler (this, e);
-		}
-
+	
 		void HandleSearchEntryChanged (object sender, EventArgs e)
 		{
 			if (string.IsNullOrEmpty (matchEntry.Entry.Text)){
@@ -317,7 +310,7 @@ namespace MonoDevelop.Components.MainToolbar
 				};
 				PositionPopup ();
 				popup.ShowAll ();
-				OnSearchPopupWindowCreated (EventArgs.Empty);
+				RemoveDecorationsWorkaround (popup);
 			}
 			popup.Update (matchEntry.Entry.Text);
 
@@ -536,7 +529,9 @@ namespace MonoDevelop.Components.MainToolbar
 			if (ci.Enabled)
 				IdeApp.CommandService.DispatchCommand (ci.Command.Id);
 		}
-		
+
+		public Action<Gtk.Window> RemoveDecorationsWorkaround;
+
 		#region ICommandBar implementation
 		bool toolbarEnabled = true;
 

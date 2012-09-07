@@ -104,6 +104,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					if (ForceSuggestionMode)
 						wnd.AutoSelect = false;
 					wnd.Show ();
+					IdeApp.Workbench.Toolbar.RemoveDecorationsWorkaround (wnd);
 					OnWindowShown (EventArgs.Empty);
 					return true;
 				} catch (Exception ex) {
