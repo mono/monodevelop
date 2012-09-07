@@ -110,8 +110,8 @@ THE SOFTWARE.
 	</Style>
 	
 	<Style name="bubble">
-		<Style name="warning" color="#000000" bgColor="#F3EEDA" />
-		<Style name="error" color="#FFFFFF" bgColor="#7D0000" />
+		<Style name="warning" color="#000000" bgColor="#444400" />
+		<Style name="error" color="#FFFFFF" bgColor="#440000" />
 	</Style>
 
 	<Style name="linenumber" color="#BCBCBC" bgColor="#272822"/>
