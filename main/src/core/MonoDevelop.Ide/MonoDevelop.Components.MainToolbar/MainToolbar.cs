@@ -545,6 +545,11 @@ namespace MonoDevelop.Components.MainToolbar
 				button.Sensitive = ci.Enabled;
 
 			button.Icon = operation;
+			var stopped = operation != RoundButton.OperationIcon.Stop;
+			if (configurationCombo.Sensitive != stopped) {
+				configurationCombo.Sensitive = stopped;
+				runtimeCombo.Sensitive = stopped;
+			}
 		}
 
 		void ICommandBar.SetEnabled (bool enabled)
