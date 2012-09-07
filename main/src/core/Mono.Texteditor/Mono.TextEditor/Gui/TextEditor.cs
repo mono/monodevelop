@@ -52,6 +52,8 @@ namespace Mono.TextEditor
 		
 		protected IconMargin       iconMargin;
 		protected GutterMargin     gutterMargin;
+//		protected DashedLineMargin dashedLineMargin;
+		protected FoldMarkerMargin foldMarkerMargin;
 		protected TextViewMargin   textViewMargin;
 		
 		DocumentLine longestLine      = null;
@@ -344,11 +346,15 @@ namespace Mono.TextEditor
 
 			iconMargin = new IconMargin (this);
 			gutterMargin = new GutterMargin (this);
+//			dashedLineMargin = new DashedLineMargin (this);
+			foldMarkerMargin = new FoldMarkerMargin (this);
 			textViewMargin = new TextViewMargin (this);
 
 			margins.Add (iconMargin);
 			margins.Add (gutterMargin);
-
+			margins.Add (foldMarkerMargin);
+//			margins.Add (dashedLineMargin);
+			
 			margins.Add (textViewMargin);
 			this.textEditorData.SelectionChanged += TextEditorDataSelectionChanged;
 			this.textEditorData.UpdateAdjustmentsRequested += TextEditorDatahandleUpdateAdjustmentsRequested;
@@ -927,8 +933,10 @@ namespace Mono.TextEditor
 			}
 			
 			iconMargin.IsVisible   = Options.ShowIconMargin;
-			gutterMargin.IsVisible = Options.ShowLineNumberMargin || Options.ShowFoldMargin;
-
+			gutterMargin.IsVisible     = Options.ShowLineNumberMargin;
+			foldMarkerMargin.IsVisible = Options.ShowFoldMargin;
+//			dashedLineMargin.IsVisible = foldMarkerMargin.IsVisible || gutterMargin.IsVisible;
+			
 			if (EditorOptionsChanged != null)
 				EditorOptionsChanged (this, args);
 			
