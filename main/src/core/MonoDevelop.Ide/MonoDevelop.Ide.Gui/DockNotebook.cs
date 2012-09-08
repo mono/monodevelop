@@ -65,7 +65,7 @@ namespace MonoDevelop.Ide.Gui
 
 			tabStrip.DropDownButton.MenuCreator = delegate {
 				Gtk.Menu menu = new Menu ();
-				foreach (var tab in pagesHistory) {
+				foreach (var tab in pages) {
 					var mi = new Gtk.ImageMenuItem (tab.Text);
 					menu.Insert (mi, -1);
 					var locTab = tab;
