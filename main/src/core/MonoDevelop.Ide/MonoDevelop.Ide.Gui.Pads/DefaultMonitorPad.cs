@@ -82,18 +82,18 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			DockItemToolbar toolbar = window.GetToolbar (PositionType.Right);
 
-			buttonStop = new Button (new Gtk.Image ("gtk-stop", IconSize.Menu));
+			buttonStop = new Button (new Gtk.Image (Stock.Stop, IconSize.Menu));
 			buttonStop.Clicked += new EventHandler (OnButtonStopClick);
 			buttonStop.TooltipText = GettextCatalog.GetString ("Stop");
 			toolbar.Add (buttonStop);
 
-			buttonClear = new Button (new Gtk.Image ("gtk-clear", IconSize.Menu));
+			buttonClear = new Button (new Gtk.Image (Stock.Broom, IconSize.Menu));
 			buttonClear.Clicked += new EventHandler (OnButtonClearClick);
 			buttonClear.TooltipText = GettextCatalog.GetString ("Clear console");
 			toolbar.Add (buttonClear);
 
 			buttonPin = new ToggleButton ();
-			buttonPin.Image = new Gtk.Image ((IconId)"md-pin-up", IconSize.Menu);
+			buttonPin.Image = new Gtk.Image (Stock.PinUp, IconSize.Menu);
 			buttonPin.Image.ShowAll ();
 			buttonPin.Clicked += new EventHandler (OnButtonPinClick);
 			buttonPin.TooltipText = GettextCatalog.GetString ("Pin output pad");

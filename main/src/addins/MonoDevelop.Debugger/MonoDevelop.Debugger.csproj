@@ -183,6 +183,9 @@
     <EmbeddedResource Include="icons\icoDebug-Continue.png">
       <LogicalName>icoDebug-Continue.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\bug-16.png">
+      <LogicalName>bug-16.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

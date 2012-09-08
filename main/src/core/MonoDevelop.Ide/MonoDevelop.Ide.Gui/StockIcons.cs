@@ -123,6 +123,7 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId ReplaceIcon = Gtk.Stock.FindAndReplace;
 		public static readonly IconId ReplaceInFiles = "md-replace-in-files";
 		public static readonly IconId ResourceFileIcon = "md-resource-file-icon";
+		public static readonly IconId Console = "md-console";
 		public static readonly IconId RunProgramIcon = Gtk.Stock.Execute;
 		public static readonly IconId SaveAllIcon = "md-save-all-icon";
 		public static readonly IconId SaveAsIcon = Gtk.Stock.SaveAs;
@@ -152,5 +153,12 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId StatusSuccess = "md-status-success";
 		public static readonly IconId StatusWarning = "md-status-warning";
 		public static readonly IconId StatusError = "md-status-error";
+		public static readonly IconId Broom = "md-clear";
+		public static readonly IconId Stop = "md-stop";
+		public static readonly IconId MessageLog = "md-message-log";
+		public static readonly IconId Drive = "md-drive";
+		public static readonly IconId Letters = "md-letters";
+		public static readonly IconId Hammer = "md-hammer";
+		public static readonly IconId Monkey = "md-monkey";
 	}
 }

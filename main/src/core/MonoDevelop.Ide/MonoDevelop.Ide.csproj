@@ -555,6 +555,18 @@
     <EmbeddedResource Include="icons\uncomment.png">
       <LogicalName>uncomment.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\letters-16.png">
+      <LogicalName>letters-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\hammer-16.png">
+      <LogicalName>hammer-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\drive-16.png">
+      <LogicalName>drive-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\monkey-16.png">
+      <LogicalName>monkey-16.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\user-package.png">
       <LogicalName>user-package.png</LogicalName>
     </EmbeddedResource>
@@ -985,8 +997,11 @@
     <EmbeddedResource Include="icons\statusOpen-02.png">
       <LogicalName>statusOpen-02.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\errors-pad-16.png">
-      <LogicalName>errors-pad-16.png</LogicalName>
+    <EmbeddedResource Include="icons\error-16.png">
+      <LogicalName>error-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\warning-16.png">
+      <LogicalName>warning-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\tree-popup-button-down.png">
       <LogicalName>tree-popup-button-down.png</LogicalName>
@@ -1002,6 +1017,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\tree-popup-button-hover.png">
       <LogicalName>tree-popup-button-hover.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\console-16.png">
+      <LogicalName>console-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\stop-16.png">
+      <LogicalName>stop-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\broom-16.png">
+      <LogicalName>broom-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\statusSteady.png">
       <LogicalName>statusSteady.png</LogicalName>

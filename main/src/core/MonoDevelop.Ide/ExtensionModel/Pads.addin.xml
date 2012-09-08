@@ -23,7 +23,7 @@
 <Extension path = "/MonoDevelop/Ide/Pads">
 	<Pad id = "MonoDevelop.Ide.Gui.Pads.ErrorListPad"
 		_label = "Error List"
-		icon="md-errors-pad"
+		icon="md-error"
 		class = "MonoDevelop.Ide.Gui.Pads.ErrorListPad"
 		defaultPlacement = "Bottom"
 		defaultStatus="AutoHide"
