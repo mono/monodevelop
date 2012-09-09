@@ -341,10 +341,6 @@ src/addins/MonoDevelop.HexEditor/Makefile
 src/addins/MonoDevelop.DocFood/Makefile
 src/addins/MonoDevelop.MacDev/Makefile
 tests/Makefile
-tests/UnitTests/Makefile
-tests/UserInterfaceTests/Makefile
-tests/MonoDevelop.MacDev.Tests/Makefile
-tests/MacPlatform.Tests/Makefile
 Makefile
 monodevelop
 mdtool
