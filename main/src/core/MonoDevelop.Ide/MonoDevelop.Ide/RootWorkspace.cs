@@ -536,6 +536,14 @@ namespace MonoDevelop.Ide
 					monitor.Dispose ();
 					return;
 				}
+
+				for (int i = 0; i < Items.Count; i++) {
+					if (Items[i].FileName == filename) {
+						IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem = Items[i];
+						monitor.Dispose ();
+						return;
+					}
+				}
 				
 				if (!Services.ProjectService.IsWorkspaceItemFile (filename)) {
 					if (!Services.ProjectService.IsSolutionItemFile (filename)) {
