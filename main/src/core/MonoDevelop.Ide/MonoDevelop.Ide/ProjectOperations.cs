@@ -283,7 +283,7 @@ namespace MonoDevelop.Ide
 
 			if (isCecilProjectContent && doc != null) {
 				doc.RunWhenLoaded (delegate {
-					MonoDevelop.Ide.Gui.Content.IUrlHandler handler = doc.ActiveView as MonoDevelop.Ide.Gui.Content.IUrlHandler;
+					var handler = doc.PrimaryView.GetContent<MonoDevelop.Ide.Gui.Content.IUrlHandler> ();
 					if (handler != null)
 						handler.Open (entity.GetIdString ());
 				});
