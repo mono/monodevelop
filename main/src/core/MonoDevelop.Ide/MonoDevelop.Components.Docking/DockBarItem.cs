@@ -272,6 +272,11 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 
+		public void Minimize ()
+		{
+			AutoHide (false);
+		}
+
 		void AutoShow ()
 		{
 			UnscheduleAutoHide ();

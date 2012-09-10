@@ -825,6 +825,14 @@ namespace MonoDevelop.Components.Docking
 			cDark.L *= 0.8;
 		}
 
+		protected override bool OnButtonPressEvent (EventButton evnt)
+		{
+			foreach (var it in GetItems ()) {
+				if (it.Visible && it.Status == DockItemStatus.AutoHide)
+					it.Minimize ();
+			}
+			return base.OnButtonPressEvent (evnt);
+		}
 
 		static internal bool IsWindows {
 			get { return System.IO.Path.DirectorySeparatorChar == '\\'; }

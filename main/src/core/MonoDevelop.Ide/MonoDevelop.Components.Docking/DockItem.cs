@@ -578,6 +578,11 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 
+		internal void Minimize ()
+		{
+			dockBarItem.Minimize ();
+		}
+
 		internal bool IsPositionMarker {
 			get {
 				return isPositionMarker;
