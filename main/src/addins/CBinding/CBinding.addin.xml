@@ -125,7 +125,7 @@
 		    class = "CBinding.ObjCppLanguageBinding"/>
     </Extension>
     
-	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/Other">
+	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/Projects">
 		<Section
 			id = "CBindingOptions"
 			_label = "C/C++"

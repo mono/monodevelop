@@ -6,24 +6,28 @@
 </ExtensionPoint>
 	
 <Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog">
-	<Section id = "Preferences" _label = "Preferences">
+	<Section id = "Preferences" _label = "Environment">
 		<Section id = "Style" _label = "Visual Style" icon="md-visual-style" class = "MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanel">
 			<Panel _label = "Welcome Page" class = "MonoDevelop.Ide.WelcomePage.WelcomePageOptionPanel" />
 		</Section>
 		<Section id = "KeyBindings" _label = "Key Bindings" fill="true" icon="md-keyboard-shortcuts" class = "MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel" />
-		<Section id = "LoadSave" _label = "Load/Save" icon="gtk-harddisk" class = "MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanel" />
 		<Section id = "Fonts" _label = "Fonts" fill="true" class = "MonoDevelop.Ide.Fonts.FontChooserPanel"/>
-		<Section id = "Build" _label = "Build" icon="md-build-current-selected-project" class = "MonoDevelop.Ide.Gui.OptionPanels.BuildPanel">
-			<Panel id = "BuildMessages" _label = "Errors and Warnings" class = "MonoDevelop.Ide.Gui.OptionPanels.BuildMessagePanel" />
-			<Panel id = "Directories" _label = "Assembly Folders" class = "MonoDevelop.Ide.Gui.OptionPanels.AssemblyFoldersPanel" />
-		</Section>
 		<Section id = "Updates" _label = "Updates" icon="md-software-update" class = "MonoDevelop.Ide.Gui.OptionPanels.AddInsOptionsPanel" />
 		<Section id = "TaskList" _label = "Task List" icon="md-task-list-icon" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.TasksOptionsPanel" />
 		<Section id = "ExternalTools" _label = "External Tools" icon="md-external-tools" fill="true" class = "MonoDevelop.Ide.ExternalTools.ExternalToolPane" />
 		<Section id = "GeneralAuthorInfo" _label = "Author Information" icon="md-author-information" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.GlobalAuthorInformationPanel" />
-		<Section id = "MonoRuntime" _label = ".NET Runtimes" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.MonoRuntimePanel" />
 	</Section>
 
+	<Section id = "Projects" _label = "Projects">
+		<Section id = "LoadSave" _label = "Load/Save" icon="gtk-harddisk" class = "MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanel" />
+		<Section id = "Build" _label = "Build" icon="md-build-current-selected-project" class = "MonoDevelop.Ide.Gui.OptionPanels.BuildPanel">
+			<Panel id = "BuildMessages" _label = "Errors and Warnings" class = "MonoDevelop.Ide.Gui.OptionPanels.BuildMessagePanel" />
+			<Panel id = "Directories" _label = "Assembly Folders" class = "MonoDevelop.Ide.Gui.OptionPanels.AssemblyFoldersPanel" />
+		</Section>
+		<Section id = "MonoRuntime" _label = ".NET Runtimes" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.MonoRuntimePanel" />
+		<Section id = "SdkLocations" _label = "SDK Locations" />
+	</Section>
+	
 	<Section id = "TextEditor" _label = "Text Editor">
 		<Section id = "Formatting" icon="md-formatting" _label = "Formatting" />
 		<Section id = "CodeTemplates" icon="md-code-template" _label = "Code Templates" fill="true" class = "MonoDevelop.Ide.CodeTemplates.CodeTemplatePane"/>
@@ -40,7 +44,6 @@
 	<Section id = "VersionControl" _label = "Version Control" />
 
 	<Section id = "Other" _label = "Other">
-		<Section id = "SdkLocations" _label = "SDK Locations" />
 		<Section id = "LogAgent" _label = "Log Agent" class = "MonoDevelop.Ide.Gui.OptionPanels.LogAgentOptionsPanel" />
 		<Section id = "MonoDevelopMaintenance" _label = "MonoDevelop Maintenance" class = "MonoDevelop.Ide.Gui.OptionPanels.MaintenanceOptionsPanel" />
 	</Section>

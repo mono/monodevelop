@@ -111,7 +111,7 @@
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/TextEditor/Behavior">
 		<Section id = "XmlFormattingOptions" insertbefore="Formatting" _label = "XML" fill="true" class = "MonoDevelop.XmlEditor.Gui.XmlEditorOptionsPanel"/>
 	</Extension>
-	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/Other">
+	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/TextEditor">
 		<Section id = "XmlSchemas" _label = "XML Schemas" fill="true" class = "MonoDevelop.XmlEditor.Gui.XmlSchemasPanel"/>
 	</Extension>
 	

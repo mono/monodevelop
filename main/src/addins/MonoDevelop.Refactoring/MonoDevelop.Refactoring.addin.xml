@@ -182,7 +182,7 @@
 		</Section>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/Other">
+	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/TextEditor">
 		<Section id = "Analysis" _label = "Source Analysis" fill="true"
 			class="MonoDevelop.AnalysisCore.Gui.AnalysisOptionsPanel"/>
 	</Extension>

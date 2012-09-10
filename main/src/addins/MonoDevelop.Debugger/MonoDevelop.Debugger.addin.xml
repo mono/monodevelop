@@ -240,7 +240,7 @@
 		</ItemSet>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/Preferences">
+	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/Projects">
 		<Section id = "Debugger" _label = "Debugger" icon="md-execute-debug" fill="true" class = "MonoDevelop.Debugger.DebuggerOptionsPanel" />
 	</Extension>
 </Addin>
