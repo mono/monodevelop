@@ -509,12 +509,10 @@ namespace MonoDevelop.Components.Docking
 			Widget.Show ();
 		}
 		
-		internal void ResetFloatMode ()
+		void ResetFloatMode ()
 		{
 			if (floatingWindow != null) {
-				VBox box = (VBox) floatingWindow.Child;
-				box.Remove (Widget);
-				box.Remove (TitleTab);
+				// The widgets have already been removed from the window in ResetMode
 				floatingWindow.Destroy ();
 				floatingWindow = null;
 				widget.UpdateBehavior ();
