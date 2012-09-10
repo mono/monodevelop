@@ -183,9 +183,8 @@ namespace MonoDevelop.Components.MainToolbar
 				selectedItem = topItem;
 
 				ShowTooltip ();
-				AnimatedResize (GetIdealSize ());
-				QueueDraw ();
 				isInSearch = false;
+				AnimatedResize ();
 			}
 		}
 

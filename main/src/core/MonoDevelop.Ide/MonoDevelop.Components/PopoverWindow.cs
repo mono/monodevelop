@@ -70,6 +70,8 @@ namespace MonoDevelop.Components
 		Gdk.Size animFinishSize;
 		Gdk.Size paintSize;
 
+		bool disableSizeCheck;
+
 		const int ArrowLength = 5;
 		const int ArrowWidth = 10;
 		const int MinArrowSpacing = 5;
@@ -90,6 +92,8 @@ namespace MonoDevelop.Components
 			alignment.Show ();
 			Add (alignment);
 
+			disableSizeCheck = false;
+
 			resizeTweener = new Tweener (200, 16);
 			resizeTweener.Easing = new SinInOutEasing ();
 			resizeTweener.ValueUpdated += (sender, e) => {
@@ -106,7 +110,7 @@ namespace MonoDevelop.Components
 			};
 
 			SizeRequested += (object o, SizeRequestedArgs args) => {
-				if (resizeTweener.IsRunning) {
+				if (resizeTweener.IsRunning && !disableSizeCheck) {
 					Gtk.Requisition result = new Gtk.Requisition ();
 					result.Width  = Math.Max (args.Requisition.Width, Math.Max (Allocation.Width, animFinishSize.Width));
 					result.Height = Math.Max (args.Requisition.Height, Math.Max (Allocation.Height, animFinishSize.Height));
@@ -180,20 +184,22 @@ namespace MonoDevelop.Components
 			RepositionWindow ();
 		}
 
-		public void AnimatedResize (int width, int height)
+		public void AnimatedResize ()
 		{
-			AnimatedResize (new Gdk.Size (width, height));
-		}
+			disableSizeCheck = true;
+			Gtk.Requisition sizeReq;
+			// use OnSizeRequested instead of SizeRequest to bypass internal GTK caching
+			OnSizeRequested (ref sizeReq);
+			disableSizeCheck = false;
 
-		public void AnimatedResize (Gdk.Size size)
-		{
+			Gdk.Size size = new Gdk.Size (sizeReq.Width, sizeReq.Height);
+
 			if (paintSize.Width <= 0 || paintSize.Height <= 0)
 				paintSize = size;
 
 			if (resizeTweener.IsRunning)
 				resizeTweener.Reset ();
 
-			ApplyPadding (ref size);
 			animFinishSize = size;
 			animStartSize = paintSize;
 
@@ -425,23 +431,7 @@ namespace MonoDevelop.Components
 				else if ((position & PopupPosition.Right) != 0)
 					right += ArrowLength;
 			}
-<<<<<<< HEAD
-
 			alignment.SetPadding (top, bottom, left, right);
-=======
-			ApplyPadding (ref requisition);
-		}
-
-		void ApplyPadding (ref Requisition requisition)
-		{
-			requisition.Width += padding * 2 + 2;
-			requisition.Height += padding * 2 + 2;
-		}
-
-		void ApplyPadding (ref Gdk.Size size)
-		{
-			size.Width += padding * 2 + 2;
-			size.Height += padding * 2 + 2;
 		}
 
 		protected override void OnSizeAllocated (Rectangle allocation)
@@ -450,9 +440,6 @@ namespace MonoDevelop.Components
 				paintSize = new Gdk.Size (allocation.Width, allocation.Height);
 
 			base.OnSizeAllocated (allocation);
-			if (Child != null)
-				Child.SizeAllocate (ChildAllocation);
->>>>>>> eab11d1... [UIRefresh] Implement animated popover window support and enable for search box
 		}
 
 		protected Rectangle ChildAllocation {
