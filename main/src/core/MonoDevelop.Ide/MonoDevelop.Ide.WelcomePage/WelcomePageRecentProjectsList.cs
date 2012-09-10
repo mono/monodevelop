@@ -64,10 +64,10 @@ namespace MonoDevelop.Ide.WelcomePage
 			ContentAlignment.RightPadding = 0;
 		}
 		
-		public override void Destroy ()
+		protected override void OnDestroyed ()
 		{
 			destroyed = true;
-			base.Destroy ();
+			base.OnDestroyed ();
 			DesktopService.RecentFiles.Changed -= recentChangesHandler;
 		}
 
@@ -77,7 +77,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			if (destroyed)
 				return;
 			
-			foreach (var c in Children) {
+			foreach (var c in box.Children) {
 				box.Remove (c);
 				c.Destroy ();
 			}
