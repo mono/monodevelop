@@ -194,8 +194,9 @@ namespace MonoDevelop.Components.MainToolbar
 			int ox, oy;
 			GetPosition (out ox, out oy);
 			Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (ox, oy));
-			
-			double maxX = 0, y = yMargin;
+
+			double startY = yMargin + ChildAllocation.Y;
+			double maxX = 0, y = startY;
 			
 			foreach (var result in results) {
 				//				var category = result.Item1;
@@ -216,7 +217,7 @@ namespace MonoDevelop.Components.MainToolbar
 				}
 			}
 			retVal.Width = Math.Min (geometry.Width * 4 / 5, Math.Max (480, (int)maxX + headerMarginSize + xMargin * 2));
-			if (y == yMargin) {
+			if (y == startY) {
 				layout.SetMarkup (GettextCatalog.GetString ("No matches"));
 				int w, h;
 				layout.GetPixelSize (out w, out h);
