@@ -80,7 +80,7 @@ namespace MonoDevelop.Core
 		}
 
 		static string GenericLogFile {
-			get { return "MonoDevelop.log"; }
+			get { return "Ide.log"; }
 		}
 		
 		public static DateTime LogTimestamp {
@@ -89,7 +89,7 @@ namespace MonoDevelop.Core
 
 		static string UniqueLogFile {
 			get {
-				return string.Format ("MonoDevelop.{0}.log", timestamp.ToString ("yyyy-MM-dd__HH-mm-ss"));
+				return string.Format ("Ide.{0}.log", timestamp.ToString ("yyyy-MM-dd__HH-mm-ss"));
 			}
 		}
 		
