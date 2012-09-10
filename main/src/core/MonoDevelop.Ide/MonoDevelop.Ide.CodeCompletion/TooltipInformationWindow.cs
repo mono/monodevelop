@@ -29,6 +29,7 @@ using MonoDevelop.Components;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Fonts;
+using System.Linq;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -215,7 +216,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 				if (!string.IsNullOrEmpty (o.SummaryMarkup)) {
 					descriptionBox.PackStart (CreateCategory (GettextCatalog.GetString ("Summary"), o.SummaryMarkup), true, true, 4);
 				}
-				descriptionBox.ShowAll ();
+
+				if (string.IsNullOrEmpty (o.SummaryMarkup) && !o.Categories.Any ()) {
+					descriptionBox.Hide ();
+				} else {
+					descriptionBox.ShowAll ();
+				}
 				infoBubbles.ActiveBubble = current_overload;
 			}
 		}
