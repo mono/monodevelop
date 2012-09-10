@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using System.Linq;
+using Gtk;
 
 namespace Mono.TextEditor.Tests
 {
@@ -444,6 +445,26 @@ namespace Mono.TextEditor.Tests
 			DeleteActions.Backspace (data);
 			Assert.AreEqual (new DocumentLocation (2, 3), data.Caret.Location);
 			Assert.AreEqual ("\t\tfoo\n\t\t\t\tbar", data.Document.Text);
+		}
+
+		/// <summary>
+		/// Bug 7012 - Paste does not replace entire selection made by the Shift key.
+		/// </summary>
+		[Test()]
+		public void TestBug7012 ()
+		{
+			var data = CreateData ();
+			data.Document.Text = "\n\t\tthrow new NotImplementedException();";
+			var loc1 = new DocumentLocation (1, data.IndentationTracker.GetVirtualIndentationColumn (1, 1));
+			var loc2 = new DocumentLocation (3, data.GetLine (2).Length);
+			data.Caret.Location = loc2;
+			data.SetSelection (loc1, loc2);
+			var clipboard = Clipboard.Get (Mono.TextEditor.ClipboardActions.CopyOperation.CLIPBOARD_ATOM);
+			clipboard.Text = "Console.WriteLine(\"Hello\");";
+			
+			ClipboardActions.Paste (data);
+			
+			Assert.AreEqual ("\t\tConsole.WriteLine(\"Hello\");", data.Document.Text);
 		}
 	}
 }

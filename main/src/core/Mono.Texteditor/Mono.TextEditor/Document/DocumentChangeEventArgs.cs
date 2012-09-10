@@ -51,7 +51,7 @@ namespace Mono.TextEditor
 
 		public override string ToString ()
 		{
-			return string.Format ("[ReplaceEventArgs: Offset={0}, RemovedText={1}, RemovalLength={2}, InsertedText={3}, InsertionLength={4}]", Offset, RemovedText, RemovalLength, InsertedText, InsertionLength);
+			return string.Format ("[ReplaceEventArgs: Offset={0}, RemovedText={1}, RemovalLength={2}, InsertedText={3}, InsertionLength={4}]", Offset, RemovedText != null ? RemovedText.Text : "null", RemovalLength, InsertedText != null ? InsertedText.Text : "null", InsertionLength);
 		}
 	}
 }

@@ -888,6 +888,8 @@ namespace Mono.TextEditor
 			using (var undo = OpenUndoGroup ()) {
 				EnsureCaretIsNotVirtual ();
 				foreach (Selection selection in Selections) {
+					EnsureIsNotVirtual (selection.Anchor);
+					EnsureIsNotVirtual (selection.Lead);
 					var segment = selection.GetSelectionRange (this);
 					needUpdate |= Document.OffsetToLineNumber (segment.Offset) != Document.OffsetToLineNumber (segment.EndOffset);
 					DeleteSelection (selection);
@@ -1101,22 +1103,32 @@ namespace Mono.TextEditor
 		/// </summary>
 		public int EnsureCaretIsNotVirtual ()
 		{
+			return EnsureIsNotVirtual (Caret.Location);
+		}
+
+		int EnsureIsNotVirtual (DocumentLocation loc)
+		{
+			return EnsureIsNotVirtual (loc.Line, loc.Column);
+		}
+
+		int EnsureIsNotVirtual (int line, int column)
+		{
 			Debug.Assert (document.IsInAtomicUndo);
-			DocumentLine line = Document.GetLine (Caret.Line);
-			if (line == null)
+			DocumentLine documentLine = Document.GetLine (line);
+			if (documentLine == null)
 				return 0;
-			if (Caret.Column > line.Length + 1) {
+			if (column > documentLine.Length + 1) {
 				string virtualSpace;
-				if (HasIndentationTracker && line.Length == 0) {
-					virtualSpace = GetIndentationString (Caret.Location);
+				if (HasIndentationTracker && documentLine.Length == 0) {
+					virtualSpace = GetIndentationString (line, column);
 				} else {
-					virtualSpace = new string (' ', Caret.Column - 1 - line.Length);
+					virtualSpace = new string (' ', column - 1 - documentLine.Length);
 				}
 				var oldPreserve = Caret.PreserveSelection;
 				Caret.PreserveSelection = true;
-				Insert (Caret.Offset, virtualSpace);
+				Insert (documentLine.Offset, virtualSpace);
 				Caret.PreserveSelection = oldPreserve;
-			
+				
 				// No need to reposition the caret, because it's already at the correct position
 				// The only difference is that the position is not virtual anymore.
 				return virtualSpace.Length;
