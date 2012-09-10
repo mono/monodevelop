@@ -261,7 +261,7 @@ launcher_variable (const char *app_name)
 }
 
 static void
-update_environment (const char *appDir, const char *app)
+update_environment (const char *macosDir, const char *app)
 {
 	char *value, *v1, *v2;
 	char *variable;
@@ -269,9 +269,12 @@ update_environment (const char *appDir, const char *app)
 	
 	push_env ("DYLD_FALLBACK_LIBRARY_PATH", "/Library/Frameworks/Mono.framework/Versions/Current/lib:/lib:/usr/lib");
 	
+	/* Mono "External" directory */
+	push_env ("PKG_CONFIG_PATH", "/Library/Frameworks/Mono.framework/External/pkgconfig");
+	
 	/* Enable the use of stuff bundled into the app bundle */
-	if ((v2 = str_append (appDir, "/share/pkgconfig"))) {
-		if ((v1 = str_append (appDir, "/lib/pkgconfig:"))) {
+	if ((v2 = str_append (macosDir, "/share/pkgconfig"))) {
+		if ((v1 = str_append (macosDir, "/lib/pkgconfig:"))) {
 			if ((value = str_append (v1, v2))) {
 				push_env ("PKG_CONFIG_PATH", value);
 				free (value);
@@ -283,16 +286,17 @@ update_environment (const char *appDir, const char *app)
 		free (v2);
 	}
 	
-	if ((value = str_append (appDir, "/lib"))) {
+	if ((value = str_append (macosDir, "/lib"))) {
 		push_env ("DYLD_FALLBACK_LIBRARY_PATH", value);
 		free (value);
 	}
 	
-	push_env ("MONO_GAC_PREFIX", appDir);
-	push_env ("PATH", appDir);
+	push_env ("MONO_GAC_PREFIX", macosDir);
 	
-	/* Mono "External" directory */
-	push_env ("PKG_CONFIG_PATH", "/Library/Frameworks/Mono.framework/External/pkgconfig");
+	if ((value = str_append (macosDir, "/bin"))) {
+		push_env ("PATH", macosDir);
+		free (value);
+	}
 	
 	/* Set our launcher pid so we don't recurse */
 	sprintf (buf, "%ld", (long) getpid ());
@@ -337,7 +341,7 @@ int main (int argc, char **argv)
 		basename++;
 	
 	if (is_launcher (basename)) {
-		update_environment ([appDir UTF8String], basename);
+		update_environment ([[appDir stringByAppendingPathComponent:@"Contents/MacOS"] UTF8String], basename);
 		[pool drain];
 		
 		return execv (argv[0], argv);
