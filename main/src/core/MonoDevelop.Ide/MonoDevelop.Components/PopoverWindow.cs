@@ -117,6 +117,8 @@ namespace MonoDevelop.Components
 					args.Requisition = result;
 				}
 			};
+
+			UpdatePadding ();
 		}
 
 		public Gtk.Alignment ContentBox {
