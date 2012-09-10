@@ -64,6 +64,12 @@ namespace MonoDevelop.Components
 		Gtk.Widget parent;
 		bool eventProvided;
 
+		Tweener resizeTweener;
+
+		Gdk.Size animStartSize;
+		Gdk.Size animFinishSize;
+		Gdk.Size paintSize;
+
 		const int ArrowLength = 5;
 		const int ArrowWidth = 10;
 		const int MinArrowSpacing = 5;
@@ -79,9 +85,34 @@ namespace MonoDevelop.Components
 			AppPaintable = true;
 			TypeHint = WindowTypeHint.Tooltip;
 			CheckScreenColormap ();
+
 			alignment = new Alignment (0, 0, 1f, 1f);
 			alignment.Show ();
 			Add (alignment);
+
+			resizeTweener = new Tweener (200, 16);
+			resizeTweener.Easing = new SinInOutEasing ();
+			resizeTweener.ValueUpdated += (sender, e) => {
+				paintSize = new Gdk.Size ((int)(animStartSize.Width + (animFinishSize.Width - animStartSize.Width) * resizeTweener.Value),
+				                          (int)(animStartSize.Height + (animFinishSize.Height - animStartSize.Height) * resizeTweener.Value));
+				QueueDraw ();
+			};
+
+			resizeTweener.Finished += (sender, e) => {
+				paintSize = animFinishSize;
+
+				QueueResize ();
+				QueueDraw ();
+			};
+
+			SizeRequested += (object o, SizeRequestedArgs args) => {
+				if (resizeTweener.IsRunning) {
+					Gtk.Requisition result = new Gtk.Requisition ();
+					result.Width  = Math.Max (args.Requisition.Width, Math.Max (Allocation.Width, animFinishSize.Width));
+					result.Height = Math.Max (args.Requisition.Height, Math.Max (Allocation.Height, animFinishSize.Height));
+					args.Requisition = result;
+				}
+			};
 		}
 
 		public Gtk.Alignment ContentBox {
@@ -147,6 +178,27 @@ namespace MonoDevelop.Components
 				targetWindow = parent.GdkWindow;
 
 			RepositionWindow ();
+		}
+
+		public void AnimatedResize (int width, int height)
+		{
+			AnimatedResize (new Gdk.Size (width, height));
+		}
+
+		public void AnimatedResize (Gdk.Size size)
+		{
+			if (paintSize.Width <= 0 || paintSize.Height <= 0)
+				paintSize = size;
+
+			if (resizeTweener.IsRunning)
+				resizeTweener.Reset ();
+
+			ApplyPadding (ref size);
+			animFinishSize = size;
+			animStartSize = paintSize;
+
+			resizeTweener.Start ();
+			QueueResize ();
 		}
 
 		public void RepositionWindow ()
@@ -315,7 +367,7 @@ namespace MonoDevelop.Components
 
 		protected virtual void OnDrawContent (Gdk.EventExpose evnt, Cairo.Context context)
 		{
-			context.Rectangle (Allocation.X, Allocation.Y, Allocation.Width, Allocation.Height);
+			context.Rectangle (Allocation.X, Allocation.Y, paintSize.Width, paintSize.Height);
 			context.Color = backgroundColor;
 			context.Fill ();
 		}
@@ -355,7 +407,7 @@ namespace MonoDevelop.Components
 				cr.Arc(x + r, y + r, r, Math.PI, Math.PI * 1.5);
 			}
 			else
-				CairoExtensions.RoundedRectangle (cr, 0.5, 0.5, Allocation.Width - 1, Allocation.Height - 1, r);
+				CairoExtensions.RoundedRectangle (cr, 0.5, 0.5, paintSize.Width - 1, paintSize.Height - 1, r);
 		}
 
 		void UpdatePadding ()
@@ -373,8 +425,34 @@ namespace MonoDevelop.Components
 				else if ((position & PopupPosition.Right) != 0)
 					right += ArrowLength;
 			}
+<<<<<<< HEAD
 
 			alignment.SetPadding (top, bottom, left, right);
+=======
+			ApplyPadding (ref requisition);
+		}
+
+		void ApplyPadding (ref Requisition requisition)
+		{
+			requisition.Width += padding * 2 + 2;
+			requisition.Height += padding * 2 + 2;
+		}
+
+		void ApplyPadding (ref Gdk.Size size)
+		{
+			size.Width += padding * 2 + 2;
+			size.Height += padding * 2 + 2;
+		}
+
+		protected override void OnSizeAllocated (Rectangle allocation)
+		{
+			if (!resizeTweener.IsRunning)
+				paintSize = new Gdk.Size (allocation.Width, allocation.Height);
+
+			base.OnSizeAllocated (allocation);
+			if (Child != null)
+				Child.SizeAllocate (ChildAllocation);
+>>>>>>> eab11d1... [UIRefresh] Implement animated popover window support and enable for search box
 		}
 
 		protected Rectangle ChildAllocation {
@@ -387,7 +465,7 @@ namespace MonoDevelop.Components
 
 		Rectangle BorderAllocation {
 			get {
-				var rect = Allocation;
+				var rect = new Gdk.Rectangle (Allocation.X, Allocation.Y, paintSize.Width, paintSize.Height);
 				if (showArrow) {
 					if ((position & PopupPosition.Top) != 0) {
 						rect.Y += ArrowLength;

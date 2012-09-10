@@ -126,6 +126,12 @@ namespace MonoDevelop.Components
 			Value = 0.0f;
 		}
 
+		public void Reset ()
+		{
+			runningTime.Reset ();
+			runningTime.Start ();
+		}
+
 		public void Pause ()
 		{
 			runningTime.Stop ();

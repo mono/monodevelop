@@ -183,33 +183,30 @@ namespace MonoDevelop.Components.MainToolbar
 				selectedItem = topItem;
 
 				ShowTooltip ();
-				QueueResize ();
+				AnimatedResize (GetIdealSize ());
 				QueueDraw ();
 				isInSearch = false;
 			}
 		}
 
-		const int maxItems = 8;
-
-		protected override void OnSizeRequested (ref Requisition requisition)
+		Gdk.Size GetIdealSize ()
 		{
-			base.OnSizeRequested (ref requisition);
-
+			Gdk.Size retVal = new Gdk.Size ();
 			int ox, oy;
 			GetPosition (out ox, out oy);
 			Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (ox, oy));
-
+			
 			double maxX = 0, y = yMargin;
-				
+			
 			foreach (var result in results) {
-//				var category = result.Item1;
+				//				var category = result.Item1;
 				var dataSrc = result.Item2;
 				if (dataSrc.ItemCount == 0)
 					continue;
 				
 				for (int i = 0; i < maxItems && i < dataSrc.ItemCount; i++) {
 					layout.SetMarkup (GetRowMarkup (dataSrc, i));
-
+					
 					int w, h;
 					layout.GetPixelSize (out w, out h);
 					var px = dataSrc.GetIcon (i);
@@ -219,7 +216,7 @@ namespace MonoDevelop.Components.MainToolbar
 					maxX = Math.Max (maxX, w);
 				}
 			}
-			requisition.Width = Math.Min (geometry.Width * 4 / 5, Math.Max (Allocation.Width, Math.Max (480, (int)maxX + headerMarginSize + xMargin * 2)));
+			retVal.Width = Math.Min (geometry.Width * 4 / 5, Math.Max (480, (int)maxX + headerMarginSize + xMargin * 2));
 			if (y == yMargin) {
 				layout.SetMarkup (GettextCatalog.GetString ("No matches"));
 				int w, h;
@@ -228,9 +225,21 @@ namespace MonoDevelop.Components.MainToolbar
 			} else {
 				y -= itemSeparatorHeight;
 			}
-
+			
 			var calculedHeight = Math.Min (geometry.Height * 4 / 5, (int)y + yMargin + results.Count (res => res.Item2.ItemCount > 0) * categorySeparatorHeight);
-			requisition.Height = requisition.Height + calculedHeight;
+			retVal.Height = calculedHeight;
+			return retVal;
+		}
+
+		const int maxItems = 8;
+
+		protected override void OnSizeRequested (ref Requisition requisition)
+		{
+			base.OnSizeRequested (ref requisition);
+
+			Gdk.Size idealSize = GetIdealSize ();
+			requisition.Width += idealSize.Width;
+			requisition.Height += idealSize.Height;
 		}
 
 		ItemIdentifier GetItemAt (double px, double py)
@@ -637,7 +646,6 @@ namespace MonoDevelop.Components.MainToolbar
 		Cairo.Rectangle SelectedItemRectangle {
 			get {
 				var alloc = ChildAllocation;
-				var adjustedMarginSize = alloc.X - Allocation.X  + headerMarginSize;
 				
 				var r = results.Where (res => res.Item2.ItemCount > 0).ToArray ();
 
@@ -646,7 +654,6 @@ namespace MonoDevelop.Components.MainToolbar
 				if (topItem != null) {
 
 					var category = topItem.Category;
-					var dataSrc = topItem.DataSource;
 					var i = topItem.Item;
 					headerLayout.SetText (GettextCatalog.GetString ("Top result"));
 					headerLayout.GetPixelSize (out w, out h);
