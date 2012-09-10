@@ -102,7 +102,7 @@ namespace MonoDevelop.Ide
 				if (File.Exists (mdapp)) {
 					System.Diagnostics.Process.Start (new System.Diagnostics.ProcessStartInfo {
 						FileName = mdapp,
-						Arguments = '"' + path + '"',
+						Arguments = "--docdir \"" + path + '"',
 						WorkingDirectory = Path.GetDirectoryName (mdapp),
 					});
 					return;
