@@ -94,7 +94,7 @@ namespace MonoDevelop.Components
 
 			disableSizeCheck = false;
 
-			resizeTweener = new Tweener (200, 16);
+			resizeTweener = new Tweener (150, 16);
 			resizeTweener.Easing = new SinInOutEasing ();
 			resizeTweener.ValueUpdated += (sender, e) => {
 				paintSize = new Gdk.Size ((int)(animStartSize.Width + (animFinishSize.Width - animStartSize.Width) * resizeTweener.Value),
@@ -194,7 +194,8 @@ namespace MonoDevelop.Components
 
 			Gdk.Size size = new Gdk.Size (sizeReq.Width, sizeReq.Height);
 
-			if (paintSize.Width <= 0 || paintSize.Height <= 0)
+			// ensure that our apint area is big enough for our padding
+			if (paintSize.Width <= 15 || paintSize.Height <= 15)
 				paintSize = size;
 
 			if (resizeTweener.IsRunning)
@@ -357,11 +358,12 @@ namespace MonoDevelop.Components
 				context.Paint ();
 				context.Restore ();
 
-				context.Save ();
+				OnDrawContent (evnt, context); // Draw content first so we can easily clip it
 				BorderPath (context);
-				context.Clip ();
-				OnDrawContent (evnt, context);
-				context.Restore ();
+				context.Operator = Cairo.Operator.DestIn;
+				context.SetSourceRGBA (1, 1, 1, 1);
+				context.Fill ();
+				context.Operator = Cairo.Operator.Over;
 
 				BorderPath (context);
 				context.Color = borderColor;

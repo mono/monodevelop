@@ -205,7 +205,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			ClearDescriptions ();
 
 			if (current_overload >= 0 && current_overload < overloads.Count) {
-				QueueResize ();
 				var o = overloads[current_overload];
 				headlabel.Markup = o.SignatureMarkup;
 				headlabel.Visible = true;
@@ -223,6 +222,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					descriptionBox.ShowAll ();
 				}
 				infoBubbles.ActiveBubble = current_overload;
+				AnimatedResize ();
 			}
 		}
 
