@@ -23,7 +23,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		private global::Gtk.SpinButton tabWidthSpin;
 		private global::Gtk.CheckButton tabsToSpaceCheck;
 		private global::Gtk.CheckButton tabsAfterNonTabsCheck;
-		
 		private global::Gtk.CheckButton removeTrailingWhitespaceCheck;
 		
 		protected virtual void Build ()

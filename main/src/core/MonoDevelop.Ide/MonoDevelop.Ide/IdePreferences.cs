@@ -222,16 +222,6 @@ namespace MonoDevelop.Ide
 			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.DefaultTargetRuntime", value); }
 		}
 
-		public Gtk.IconSize ToolbarSize {
-			get { return PropertyService.Get ("MonoDevelop.ToolbarSize", Gtk.IconSize.Menu); }
-			set { PropertyService.Set ("MonoDevelop.ToolbarSize", value); }
-		}
-
-		public event EventHandler<PropertyChangedEventArgs> ToolbarSizeChanged {
-			add { PropertyService.AddPropertyHandler ("MonoDevelop.ToolbarSize", value); }
-			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.ToolbarSize", value); }
-		}
-
 		public bool BuildWithMSBuild {
 			get { return PropertyService.Get ("MonoDevelop.Ide.BuildWithMSBuild", false); }
 			set { PropertyService.Set ("MonoDevelop.Ide.BuildWithMSBuild", value); }

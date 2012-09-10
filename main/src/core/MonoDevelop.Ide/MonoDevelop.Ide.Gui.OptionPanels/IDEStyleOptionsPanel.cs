@@ -94,6 +94,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				comboTheme.AppendText (t);
 			
 			comboTheme.Active = themes.IndexOf (IdeApp.Preferences.UserInterfaceTheme) + 1;
+
+			labelTheme.Visible = comboTheme.Visible = !Platform.IsMac && !Platform.IsWindows;
 			
 			documentSwitcherButton.Active = PropertyService.Get ("MonoDevelop.Core.Gui.EnableDocumentSwitchDialog", true);
 			fontCheckbox.Active = IdeApp.Preferences.CustomPadFont != null;
@@ -105,11 +107,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			
 			fontCheckbox.Toggled += new EventHandler (FontCheckboxToggled);
 			fontOutputCheckbox.Toggled += new EventHandler (FontOutputCheckboxToggled);
-
-			Gtk.IconSize curSize = IdeApp.Preferences.ToolbarSize;
-			toolbarCombobox.Active = Array.IndexOf (sizes, curSize);
-			
-			comboCompact.Active = (int) IdeApp.Preferences.WorkbenchCompactness;
 		}
 		
 		// Code for getting the list of themes based on f-spot
@@ -167,10 +164,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			else
 				IdeApp.Preferences.CustomOutputPadFont = null;
 			
-			IdeApp.Preferences.ToolbarSize = sizes [toolbarCombobox.Active];
-			
-			IdeApp.Preferences.WorkbenchCompactness = (WorkbenchCompactness) comboCompact.Active;
-
 			PropertyService.Set ("MonoDevelop.Core.Gui.EnableDocumentSwitchDialog", documentSwitcherButton.Active);
 		}
 		
