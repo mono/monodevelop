@@ -645,56 +645,21 @@ namespace MonoDevelop.CSharp.Completion
 				overloads = new Dictionary<string, CompletionData> ();
 			
 			if (overload.Entity is IMember && Entity is IMember) {
-				// filter virtual & overriden members that came from base classes
+				// filter overriden members that came from base classes
 				// note that the overload tree is traversed top down.
 				var member = Entity as IMember;
-				if ((member.IsVirtual || member.IsOverride) && member.DeclaringType != null && ((IMember)overload.Entity).DeclaringType != null && member.DeclaringType.ReflectionName != ((IMember)overload.Entity).DeclaringType.ReflectionName) {
-					string str1 = ambience.GetString (member as IMember, flags);
-					string str2 = ambience.GetString (overload.Entity as IMember, flags);
-					if (str1 == str2) {
-						if (string.IsNullOrEmpty (AmbienceService.GetDocumentationSummary ((IMember)Entity)) && !string.IsNullOrEmpty (AmbienceService.GetDocumentationSummary ((IMember)overload.Entity)))
-							SetMember (overload.Entity as IMember);
-						return;
-					}
-				}
-				
+				if (member.IsOverride)
+					return;
+
 				string MemberId = (overload.Entity as IMember).GetIdString ();
-				if (Entity is IMethod && overload.Entity is IMethod) {
-					string signature1 = ambience.GetString (Entity as IMember, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | OutputFlags.GeneralizeGenerics);
-					string signature2 = ambience.GetString (overload.Entity as IMember, OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics | OutputFlags.GeneralizeGenerics);
-					if (signature1 == signature2)
-						return;
-				}
-				
 				if (MemberId != (this.Entity as IMember).GetIdString () && !overloads.ContainsKey (MemberId)) {
-//					if (((IMethod)overload.Member).IsPartial)
-//						return;
 					overloads[MemberId] = overload;
 					
 					//if any of the overloads is obsolete, we should not mark the item obsolete
 					if (!(overload.Entity as IMember).IsObsolete ())
 						DisplayFlags &= ~DisplayFlags.Obsolete;
-/*					
-					//make sure that if there are generic overloads, we show a generic signature
-					if (overload.Member is IType && Member is IType && ((IType)Member).TypeParameters.Count == 0 && ((IType)overload.Member).TypeParameters.Count > 0) {
-						displayText = overload.DisplayText;
-					}
-					if (overload.Member is IMethod && Member is IMethod && ((IMethod)Member).TypeParameters.Count == 0 && ((IMethod)overload.Member).TypeParameters.Count > 0) {
-						displayText = overload.DisplayText;
-					}*/
 				}
 			}
-			
-			
-			// always set the member with the least type parameters as the main member.
-//			if (Member is ITypeParameterMember && overload.Member is ITypeParameterMember) {
-//				if (((ITypeParameterMember)Member).TypeParameters.Count > ((ITypeParameterMember)overload.Member).TypeParameters.Count) {
-//					INode member = Member;
-//					SetMember (overload.Member);
-//					overload.Member = member;
-//				}
-//			}
-			
 		}
 		
 		#endregion
