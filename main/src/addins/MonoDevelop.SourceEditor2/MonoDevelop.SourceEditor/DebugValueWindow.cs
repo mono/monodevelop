@@ -89,7 +89,7 @@ namespace MonoDevelop.SourceEditor
 			
 			tree = new ObjectValueTreeView ();
 			sw.Add (tree);
-			Add (sw);
+			ContentBox.Add (sw);
 			
 			tree.Frame = frame;
 			tree.CompactView = true;

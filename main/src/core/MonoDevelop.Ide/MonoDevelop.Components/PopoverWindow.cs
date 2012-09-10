@@ -56,6 +56,7 @@ namespace MonoDevelop.Components
 		int padding = 6;
 		Cairo.Color backgroundColor = new Cairo.Color (1, 1, 1);
 		Cairo.Color borderColor = new Cairo.Color (0.7, 0.7, 0.7);
+		Gtk.Alignment alignment;
 
 		Gdk.Rectangle currentCaret;
 		PopupPosition targetPosition;
@@ -78,6 +79,13 @@ namespace MonoDevelop.Components
 			AppPaintable = true;
 			TypeHint = WindowTypeHint.Tooltip;
 			CheckScreenColormap ();
+			alignment = new Alignment (0, 0, 1f, 1f);
+			alignment.Show ();
+			Add (alignment);
+		}
+
+		public Gtk.Alignment ContentBox {
+			get { return alignment; }
 		}
 
 		public bool ShowArrow {
@@ -86,7 +94,8 @@ namespace MonoDevelop.Components
 			}
 			set {
 				showArrow = value;
-				QueueResize ();
+				UpdatePadding ();
+				QueueDraw ();
 			}
 		}
 
@@ -96,6 +105,7 @@ namespace MonoDevelop.Components
 				cornerRadius = value; 
 				padding = value;
 				QueueDraw (); 
+				UpdatePadding ();
 			}
 		}
 
@@ -135,6 +145,7 @@ namespace MonoDevelop.Components
 				targetWindow = evt.Window;
 			} else
 				targetWindow = parent.GdkWindow;
+
 			RepositionWindow ();
 		}
 
@@ -150,6 +161,8 @@ namespace MonoDevelop.Components
 				return;
 			PopupPosition position = targetPosition;
 			this.position = targetPosition;
+			UpdatePadding ();
+
 			window.GetOrigin (out x, out y);
 			var alloc = parent.Allocation;
 
@@ -190,6 +203,7 @@ namespace MonoDevelop.Components
 			}
 
 			position = (PopupPosition) intPos;
+			UpdatePadding ();
 
 			// Calculate base coordinate
 
@@ -245,6 +259,7 @@ namespace MonoDevelop.Components
 			}
 
 			this.position = position;
+			UpdatePadding ();
 
 			Move (x, y);
 			Show ();
@@ -343,24 +358,23 @@ namespace MonoDevelop.Components
 				CairoExtensions.RoundedRectangle (cr, 0.5, 0.5, Allocation.Width - 1, Allocation.Height - 1, r);
 		}
 
-		protected override void OnSizeRequested (ref Requisition requisition)
+		void UpdatePadding ()
 		{
-			base.OnSizeRequested (ref requisition);
-			if (showArrow) {
-				if ((position & PopupPosition.Top) != 0 || (position & PopupPosition.Bottom) != 0)
-					requisition.Height += ArrowLength;
-				if ((position & PopupPosition.Left) != 0 || (position & PopupPosition.Right) != 0)
-					requisition.Width += ArrowLength;
-			}
-			requisition.Width += padding * 2 + 2;
-			requisition.Height += padding * 2 + 2;
-		}
+			uint top,left,bottom,right;
+			top = left = bottom = right = (uint)padding + 1;
 
-		protected override void OnSizeAllocated (Rectangle allocation)
-		{
-			base.OnSizeAllocated (allocation);
-			if (Child != null)
-				Child.SizeAllocate (ChildAllocation);
+			if (showArrow) {
+				if ((position & PopupPosition.Top) != 0)
+					top += ArrowLength;
+				else if ((position & PopupPosition.Bottom) != 0)
+					bottom += ArrowLength;
+				else if ((position & PopupPosition.Left) != 0)
+					left += ArrowLength;
+				else if ((position & PopupPosition.Right) != 0)
+					right += ArrowLength;
+			}
+
+			alignment.SetPadding (top, bottom, left, right);
 		}
 
 		protected Rectangle ChildAllocation {

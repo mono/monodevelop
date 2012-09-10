@@ -87,7 +87,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				if (args.Event.Button == 1 && args.Event.Type == Gdk.EventType.TwoButtonPress)
 					DoubleClick ();
 			};
-			Add (scrollbar);
+			ContentBox.Add (scrollbar);
 			this.AutoSelect = true;
 			this.TypeHint = WindowTypeHint.Menu;
 			CornerRadius = 4;

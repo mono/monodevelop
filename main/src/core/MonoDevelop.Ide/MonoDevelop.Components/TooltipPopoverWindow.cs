@@ -67,7 +67,7 @@ namespace MonoDevelop.Components
 				al.SetPadding (6, 6, 6, 6);
 				label = new Gtk.Label ();
 				al.Add (label);
-				Add (al);
+				ContentBox.Add (al);
 				al.ShowAll ();
 			}
 		}
