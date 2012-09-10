@@ -76,7 +76,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		public HashSet<object> ModifiedObjects {
 			get { return modifiedObjects; }
 		}
-		
+
 		public OptionsDialog (string extensionPath): this (null, null, extensionPath)
 		{
 		}
@@ -103,7 +103,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 			var fboxTree = new HeaderBox ();
 			fboxTree.SetMargins (0, 1, 0, 1);
-			fboxTree.SetPadding (6, 6, 6, 6);
+			fboxTree.SetPadding (6, 6, 0, 0);
 			fboxTree.BackgroundColor = new Gdk.Color (255, 255, 255);
 			fboxTree.Add (sw);
 			mainHBox.PackStart (fboxTree, false, false, 0);
@@ -159,7 +159,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			store = new TreeStore (typeof(OptionsDialogSection));
 			tree.Model = store;
 			tree.HeadersVisible = false;
-			
+
+			// Column 0 is used to add some padding at the left of the expander
+			TreeViewColumn col0 = new TreeViewColumn ();
+			tree.AppendColumn (col0);
+			col0.MinWidth = 6;
+			tree.AppendColumn (col0);
+
 			TreeViewColumn col = new TreeViewColumn ();
 			var crp = new CellRendererPixbuf ();
 			col.PackStart (crp, false);
@@ -168,6 +174,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			col.PackStart (crt, true);
 			col.SetCellDataFunc (crt, TextCellDataFunc);
 			tree.AppendColumn (col);
+
+			tree.ExpanderColumn = col;
 			
 			tree.Selection.Changed += OnSelectionChanged;
 			
