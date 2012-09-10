@@ -162,7 +162,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 			// Column 0 is used to add some padding at the left of the expander
 			TreeViewColumn col0 = new TreeViewColumn ();
-			tree.AppendColumn (col0);
 			col0.MinWidth = 6;
 			tree.AppendColumn (col0);
 
