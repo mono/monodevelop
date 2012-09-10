@@ -347,6 +347,7 @@ namespace MonoDevelop.Components
 
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
+			bool retVal;
 			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
 				context.Save ();
 				if (SupportsAlpha) {
@@ -359,6 +360,8 @@ namespace MonoDevelop.Components
 				context.Restore ();
 
 				OnDrawContent (evnt, context); // Draw content first so we can easily clip it
+				retVal = base.OnExposeEvent (evnt);
+
 				BorderPath (context);
 				context.Operator = Cairo.Operator.DestIn;
 				context.SetSourceRGBA (1, 1, 1, 1);
@@ -370,7 +373,8 @@ namespace MonoDevelop.Components
 				context.LineWidth = 1;
 				context.Stroke ();
 			}
-			return base.OnExposeEvent (evnt);
+
+			return retVal;
 		}
 
 		protected virtual void OnDrawContent (Gdk.EventExpose evnt, Cairo.Context context)
