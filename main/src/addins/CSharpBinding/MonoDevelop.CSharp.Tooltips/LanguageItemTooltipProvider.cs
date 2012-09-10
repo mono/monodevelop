@@ -207,83 +207,88 @@ namespace MonoDevelop.SourceEditor
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null)
 				return null;
-			OutputSettings settings = new OutputSettings (OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName | OutputFlags.IncludeKeywords | OutputFlags.IncludeMarkup | OutputFlags.UseFullName);
-			// Approximate value for usual case
-			StringBuilder s = new StringBuilder (150);
-			string documentation = null;
-			if (result is UnknownIdentifierResolveResult) {
-				s.Append (String.Format (GettextCatalog.GetString ("Unresolved identifier '{0}'"), ((UnknownIdentifierResolveResult)result).Identifier));
-			} else if (result.IsError) {
-				s.Append (GettextCatalog.GetString ("Resolve error."));
-			} else if (result is LocalResolveResult) {
-				var lr = (LocalResolveResult)result;
-				s.Append ("<small><i>");
-				s.Append (lr.IsParameter ? paramStr : localStr);
-				s.Append ("</i></small>\n");
-				s.Append (ambience.GetString (lr.Variable.Type, settings));
-				s.Append (" ");
-				s.Append (lr.Variable.Name);
-			} else if (result is MethodGroupResolveResult) {
+			try {
+				OutputSettings settings = new OutputSettings (OutputFlags.ClassBrowserEntries | OutputFlags.IncludeParameterName | OutputFlags.IncludeKeywords | OutputFlags.IncludeMarkup | OutputFlags.UseFullName);
+				// Approximate value for usual case
+				StringBuilder s = new StringBuilder (150);
+				string documentation = null;
+				if (result is UnknownIdentifierResolveResult) {
+					s.Append (String.Format (GettextCatalog.GetString ("Unresolved identifier '{0}'"), ((UnknownIdentifierResolveResult)result).Identifier));
+				} else if (result.IsError) {
+					s.Append (GettextCatalog.GetString ("Resolve error."));
+				} else if (result is LocalResolveResult) {
+					var lr = (LocalResolveResult)result;
+					s.Append ("<small><i>");
+					s.Append (lr.IsParameter ? paramStr : localStr);
+					s.Append ("</i></small>\n");
+					s.Append (ambience.GetString (lr.Variable.Type, settings));
+					s.Append (" ");
+					s.Append (lr.Variable.Name);
+				} else if (result is MethodGroupResolveResult) {
 
-				var mrr = (MethodGroupResolveResult)result;
-				s.Append ("<small><i>");
-				s.Append (methodStr);
-				s.Append ("</i></small>\n");
-				var allMethods = new List<IMethod> (mrr.Methods);
-				foreach (var l in mrr.GetExtensionMethods ()) {
-					allMethods.AddRange (l);
+					var mrr = (MethodGroupResolveResult)result;
+					s.Append ("<small><i>");
+					s.Append (methodStr);
+					s.Append ("</i></small>\n");
+					var allMethods = new List<IMethod> (mrr.Methods);
+					foreach (var l in mrr.GetExtensionMethods ()) {
+						allMethods.AddRange (l);
+					}
+					
+					var method = allMethods.FirstOrDefault ();
+					if (method != null) {
+						s.Append (GLib.Markup.EscapeText (TextEditorResolverProvider.CreateAmbience (doc, offset, method.Compilation).ConvertEntity (method)));
+						if (allMethods.Count > 1) {
+							int overloadCount = allMethods.Count - 1;
+							s.Append (string.Format (GettextCatalog.GetPluralString (" (+{0} overload)", " (+{0} overloads)", overloadCount), overloadCount));
+						}
+						documentation = AmbienceService.GetDocumentationSummary (method);
+					}
+				} else if (result is MemberResolveResult) {
+					var member = ((MemberResolveResult)result).Member;
+					s.Append ("<small><i>");
+					s.Append (GetString (member));
+					s.Append ("</i></small>\n");
+					var field = member as IField;
+					if (field != null && field.IsConst) {
+						s.Append (GLib.Markup.EscapeText (TextEditorResolverProvider.CreateAmbience (doc, offset, field.Compilation).ConvertType (field.Type)));
+						s.Append (" ");
+						s.Append (field.Name);
+						s.Append (" = ");
+						s.Append (GetConst (field.ConstantValue));
+						s.Append (";");
+					} else {
+						s.Append (GLib.Markup.EscapeText (TextEditorResolverProvider.CreateAmbience (doc, offset, member.Compilation).ConvertEntity (member)));
+					}
+					documentation = AmbienceService.GetDocumentationSummary (member);
+				} else if (result is NamespaceResolveResult) {
+					s.Append ("<small><i>");
+					s.Append (namespaceStr);
+					s.Append ("</i></small>\n");
+					s.Append (ambience.GetString (((NamespaceResolveResult)result).NamespaceName, settings));
+				} else {
+					var tr = result;
+					var typeString = GetString (tr.Type);
+					if (!string.IsNullOrEmpty (typeString)) {
+						s.Append ("<small><i>");
+						s.Append (typeString);
+						s.Append ("</i></small>\n");
+					}
+					settings.OutputFlags |= OutputFlags.UseFullName | OutputFlags.UseFullInnerTypeName;
+					s.Append (ambience.GetString (tr.Type, settings));
+					documentation = AmbienceService.GetDocumentationSummary (tr.Type.GetDefinition ());
 				}
 				
-				var method = allMethods.FirstOrDefault ();
-				if (method != null) {
-					s.Append (GLib.Markup.EscapeText (TextEditorResolverProvider.CreateAmbience (doc, offset, method.Compilation).ConvertEntity (method)));
-					if (allMethods.Count > 1) {
-						int overloadCount = allMethods.Count - 1;
-						s.Append (string.Format (GettextCatalog.GetPluralString (" (+{0} overload)", " (+{0} overloads)", overloadCount), overloadCount));
-					}
-					documentation = AmbienceService.GetDocumentationSummary (method);
+				if (!string.IsNullOrEmpty (documentation)) {
+					s.Append ("\n<small>");
+					s.Append (AmbienceService.GetDocumentationMarkup ("<summary>" + documentation + "</summary>"));
+					s.Append ("</small>");
 				}
-			} else if (result is MemberResolveResult) {
-				var member = ((MemberResolveResult)result).Member;
-				s.Append ("<small><i>");
-				s.Append (GetString (member));
-				s.Append ("</i></small>\n");
-				var field = member as IField;
-				if (field != null && field.IsConst) {
-					s.Append (GLib.Markup.EscapeText (TextEditorResolverProvider.CreateAmbience (doc, offset, field.Compilation).ConvertType (field.Type)));
-					s.Append (" ");
-					s.Append (field.Name);
-					s.Append (" = ");
-					s.Append (GetConst (field.ConstantValue));
-					s.Append (";");
-				} else {
-					s.Append (GLib.Markup.EscapeText (TextEditorResolverProvider.CreateAmbience (doc, offset, member.Compilation).ConvertEntity (member)));
-				}
-				documentation = AmbienceService.GetDocumentationSummary (member);
-			} else if (result is NamespaceResolveResult) {
-				s.Append ("<small><i>");
-				s.Append (namespaceStr);
-				s.Append ("</i></small>\n");
-				s.Append (ambience.GetString (((NamespaceResolveResult)result).NamespaceName, settings));
-			} else {
-				var tr = result;
-				var typeString = GetString (tr.Type);
-				if (!string.IsNullOrEmpty (typeString)) {
-					s.Append ("<small><i>");
-					s.Append (typeString);
-					s.Append ("</i></small>\n");
-				}
-				settings.OutputFlags |= OutputFlags.UseFullName | OutputFlags.UseFullInnerTypeName;
-				s.Append (ambience.GetString (tr.Type, settings));
-				documentation = AmbienceService.GetDocumentationSummary (tr.Type.GetDefinition ());
+				return s.ToString ();
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while creating tooltip.", e);
+				return null;
 			}
-			
-			if (!string.IsNullOrEmpty (documentation)) {
-				s.Append ("\n<small>");
-				s.Append (AmbienceService.GetDocumentationMarkup ("<summary>" + documentation + "</summary>"));
-				s.Append ("</small>");
-			}
-			return s.ToString ();
 		}
 		
 
