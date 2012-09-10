@@ -2598,7 +2598,7 @@ namespace Mono.TextEditor
 				tipX = nextTipX;
 				tipY = nextTipY;
 				tipItem = item;
-				Gtk.Window tw;
+				Gtk.Window tw = null;
 				try {
 					tw = provider.CreateTooltipWindow (this, nextTipOffset, nextTipModifierState, item);
 				} catch (Exception e) {
