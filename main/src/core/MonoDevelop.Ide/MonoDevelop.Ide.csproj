@@ -246,12 +246,6 @@
     <EmbeddedResource Include="icons\assembly-project-16.png">
       <LogicalName>assembly-project-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\author-information-16.png">
-      <LogicalName>author-information-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\author-information-24.png">
-      <LogicalName>author-information-24.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\breakpoint-16.png">
       <LogicalName>breakpoint-16.png</LogicalName>
     </EmbeddedResource>
