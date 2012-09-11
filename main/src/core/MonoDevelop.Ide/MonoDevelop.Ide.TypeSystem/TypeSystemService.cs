@@ -708,6 +708,12 @@ namespace MonoDevelop.Ide.TypeSystem
 					return assembly.AssemblyName;
 				}
 			}
+
+			public string FullAssemblyName {
+				get {
+					return assembly.FullAssemblyName;
+				}
+			}
 			
 			public string Location {
 				get {
@@ -966,6 +972,12 @@ namespace MonoDevelop.Ide.TypeSystem
 				string IUnresolvedAssembly.AssemblyName {
 					get {
 						return Content.AssemblyName;
+					}
+				}
+
+				string IUnresolvedAssembly.FullAssemblyName {
+					get {
+						return Content.FullAssemblyName;
 					}
 				}
 
@@ -1580,6 +1592,12 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 
+			string IUnresolvedAssembly.FullAssemblyName {
+				get {
+					return Ctx.FullAssemblyName;
+				}
+			}
+
 			string IUnresolvedAssembly.Location {
 				get {
 					return Ctx.Location;
@@ -1667,7 +1685,13 @@ namespace MonoDevelop.Ide.TypeSystem
 					get {
 						return Assembly.AssemblyName;
 					}
-				}				
+				}
+
+				string IAssembly.FullAssemblyName {
+					get {
+						return Assembly.FullAssemblyName;
+					}
+				}
 
 				IList<IAttribute> IAssembly.AssemblyAttributes {
 					get {
@@ -1722,6 +1746,15 @@ namespace MonoDevelop.Ide.TypeSystem
 					lock (this) {
 						EnsureAssemblyLoaded ();
 						return assembly.AssemblyName;
+					}
+				}
+			}
+
+			string IUnresolvedAssembly.FullAssemblyName {
+				get {
+					lock (this) {
+						EnsureAssemblyLoaded ();
+						return assembly.FullAssemblyName;
 					}
 				}
 			}
