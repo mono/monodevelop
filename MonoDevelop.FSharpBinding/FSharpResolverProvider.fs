@@ -38,16 +38,79 @@ type internal FSharpResolveResult(tip:DataTipText) =
 
   member x.DataTip = tip
   
-type FSharpLanguageItemTooltipProvider() = 
-  let p = new MonoDevelop.SourceEditor.LanguageItemTooltipProvider() 
-  interface ITooltipProvider with 
-    
-    member x.GetItem (editor, offset) =  p.GetItem(editor,offset)
-    member x.CreateTooltipWindow (editor, offset, modifierState, item) = p.CreateTooltipWindow (editor, offset, modifierState, item)
-    member x.GetRequiredPosition (editor, tipWindow, requiredWidth, xalign) = p.GetRequiredPosition (editor, tipWindow, &requiredWidth, &xalign)
-    member x.IsInteractive (editor, tipWindow) =  p.IsInteractive (editor, tipWindow)
-    
 
+// In Mono 3.0.4, this change https://github.com/mono/monodevelop/commit/4a95275cf7d0418250d87844550934b849b1153d
+// appears to have busted all tooltips in editor extensions?  The call to CreateTooltip in 
+//     main/src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/LanguageItemWindow.cs
+// was commented out in that change, but this means CreateTooltip is never called and no tooltips 
+// are ever created. So instead we just create the Gtk window ourselves here.
+#if CODE_BEFORE_WORKAROUND_FOR_MISSING_MONODEVELOP_TOOLTIPS_IN_3_0_4
+type FSharpLanguageItemTooltipProvider() = 
+    let p = new MonoDevelop.SourceEditor.LanguageItemTooltipProvider() 
+    interface ITooltipProvider with 
+    
+        member x.GetItem (editor, offset) =  p.GetItem(editor,offset)
+        member x.CreateTooltipWindow (editor, offset, modifierState, item) = p.CreateTooltipWindow (editor, offset, modifierState, item)
+        member x.GetRequiredPosition (editor, tipWindow, requiredWidth, xalign) = p.GetRequiredPosition (editor, tipWindow, &requiredWidth, &xalign)
+        member x.IsInteractive (editor, tipWindow) =  p.IsInteractive (editor, tipWindow)
+#else
+
+[<AllowNullLiteral>] 
+type internal FSharpLanguageItemWindow(tooltip: string) as this = 
+    inherit MonoDevelop.Components.TooltipWindow() 
+    let isEmpty = System.String.IsNullOrEmpty (tooltip)|| tooltip = "?"
+      
+    let label = 
+       if isEmpty then null else 
+       new MonoDevelop.Components.FixedWidthWrapLabel (Wrap = Pango.WrapMode.WordChar,Indent = -20,BreakOnCamelCasing = true,BreakOnPunctuation = true,Markup = tooltip)
+
+    let updateFont (label:MonoDevelop.Components.FixedWidthWrapLabel) =
+      if (label <> null) then
+          label.FontDescription <- MonoDevelop.Ide.Fonts.FontService.GetFontDescription ("LanguageTooltips")
+        
+    do 
+        if not isEmpty then 
+          this.BorderWidth <- 3u
+          this.Add label
+          updateFont label
+          this.EnableTransparencyControl <- true
+      
+    //return the real width
+    member this.SetMaxWidth (maxWidth) =
+      let label = this.Child :?> MonoDevelop.Components.FixedWidthWrapLabel
+      if (label = null) then 
+          this.Allocation.Width 
+      else
+          label.MaxWidth <- maxWidth
+          label.RealWidth
+
+    override this.OnStyleSet (previous_style: Gtk.Style) =
+      base.OnStyleSet (previous_style)
+      updateFont (this.Child :?> MonoDevelop.Components.FixedWidthWrapLabel)
+
+type FSharpLanguageItemTooltipProvider() = 
+    let p = new MonoDevelop.SourceEditor.LanguageItemTooltipProvider() 
+    interface ITooltipProvider with 
+    
+        member x.GetItem (editor, offset) =  p.GetItem(editor,offset)
+
+        member x.CreateTooltipWindow (editor, offset, modifierState, item) = 
+            let doc = IdeApp.Workbench.ActiveDocument
+            if (doc = null) then null else
+            let titem = item.Item :?> FSharpResolveResult
+            let tooltip = TipFormatter.formatTipWithHeader(titem.DataTip) 
+            let result = new FSharpLanguageItemWindow (tooltip)
+            result :> Gtk.Window
+    
+        member x.GetRequiredPosition (editor, tipWindow, requiredWidth, xalign) = 
+            let win = tipWindow :?> FSharpLanguageItemWindow
+            requiredWidth <- win.SetMaxWidth (win.Screen.Width)
+            xalign <- 0.5
+
+        member x.IsInteractive (editor, tipWindow) =  
+            false
+#endif
+    
 /// Implements "resolution" - looks for tool-tips at current locations
 type FSharpResolverProvider() =
   do Debug.tracef "Resolver" "Creating FSharpResolverProvider"
@@ -95,12 +158,9 @@ type FSharpResolverProvider() =
 
     /// Returns string with tool-tip from 'FSharpResolveResult'
     /// (which we generated in the previous method - so we simply run formatter)
-#if MONODEVELOP_3_1_OR_GREATER
     member x.CreateTooltip(document, offset, result, errorInformation, modifierState) : string = 
-#else
-    member x.CreateTooltip(unit, result, errorInformation, ambience, modifierState) : string = 
-#endif
       do Debug.tracef "Resolver" "in CreteTooltip"
       match result with
       | :? FSharpResolveResult as res -> TipFormatter.formatTipWithHeader(res.DataTip)
       | _ -> null
+
