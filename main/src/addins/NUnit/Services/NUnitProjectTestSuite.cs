@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem;
 using System;
 
 namespace MonoDevelop.NUnit
@@ -61,7 +62,7 @@ namespace MonoDevelop.NUnit
 		
 		public static NUnitProjectTestSuite CreateTest (DotNetProject project)
 		{
-			foreach (ProjectReference p in project.References)
+			foreach (var p in project.References)
 				if (p.Reference.IndexOf ("nunit.framework") != -1 || p.Reference.IndexOf ("nunit.core") != -1)
 					return new NUnitProjectTestSuite (project);
 			return null;
@@ -127,7 +128,7 @@ namespace MonoDevelop.NUnit
 				// Referenced assemblies which are not in the gac and which are not localy copied have to be preloaded
 				DotNetProject project = base.OwnerSolutionItem as DotNetProject;
 				if (project != null) {
-					foreach (ProjectReference pr in project.References) {
+					foreach (var pr in project.References) {
 						if (pr.ReferenceType != ReferenceType.Package && !pr.LocalCopy) {
 							foreach (string file in pr.GetReferencedFileNames (IdeApp.Workspace.ActiveConfiguration))
 								yield return file;

@@ -322,7 +322,7 @@ namespace MonoDevelop.DesignerSupport
 				return;
 			
 			foreach (var unresolvedCls in parsedDocument.TopLevelTypeDefinitions) {
-				var cls = document.Compilation.MainAssembly.GetTypeDefinition (unresolvedCls);
+				var cls = document.Compilation.MainAssembly.GetTypeDefinition (unresolvedCls.FullTypeName);
 				if (cls == null)
 					continue;
 				TreeIter childIter;

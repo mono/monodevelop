@@ -562,7 +562,7 @@ namespace MonoDevelop.AspNet.Gui
 			if (HasDoc && !string.IsNullOrEmpty (aspDoc.Info.InheritedClass)) {
 				projectDatabase = TypeSystemService.GetCompilation (project);
 				if (projectDatabase != null)
-					codeBehindClass = projectDatabase.FindType (aspDoc.Info.InheritedClass);
+					codeBehindClass = ReflectionHelper.ParseReflectionName (aspDoc.Info.InheritedClass).Resolve (projectDatabase);
 			}
 		}
 		
