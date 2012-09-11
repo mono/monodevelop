@@ -310,9 +310,9 @@ namespace MonoDevelop.Components.Docking
 		DockFrame frame;
 		string label;
 		
-		const int TopPadding = 7;
+		const int TopPadding = 5;
 		const int BottomPadding = 7;
-		const int TopPaddingActive = 7;
+		const int TopPaddingActive = 5;
 		const int BottomPaddingActive = 7;
 		const int HorzPadding = 11;
 		
