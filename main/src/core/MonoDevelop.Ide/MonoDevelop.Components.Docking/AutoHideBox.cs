@@ -267,6 +267,12 @@ namespace MonoDevelop.Components.Docking
 			animating = false;
 		}
 
+		protected override bool OnButtonPressEvent (EventButton evnt)
+		{
+			// Don't propagate the button press event to the parent frame,
+			// since it has a handler that hides all visible autohide pads
+			return true;
+		}
 		
 		public int Size {
 			get {
