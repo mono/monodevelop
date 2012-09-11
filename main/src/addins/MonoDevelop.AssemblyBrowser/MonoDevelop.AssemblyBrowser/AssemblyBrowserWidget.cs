@@ -397,15 +397,21 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		static void AppendTypeReference (StringBuilder result, ITypeReference type)
 		{
+			if (type is ByReferenceTypeReference) {
+				var brtr = (ByReferenceTypeReference)type;
+				AppendTypeReference (result, brtr.ElementType);
+				return;
+			}
+
 			if (type is ArrayTypeReference) {
 				var array = (ArrayTypeReference)type;
-  				AppendTypeReference (result, array.ElementType);
+				AppendTypeReference (result, array.ElementType);
 				result.Append ("[");
-				result.Append (new string (',', array.Dimensions  - 1));
+				result.Append (new string (',', array.Dimensions - 1));
 				result.Append ("]");
 				return;
 			}
-			
+
 			if (type is PointerTypeReference) {
 				var ptr = (PointerTypeReference)type;
 				AppendTypeReference (result, ptr.ElementType);
@@ -413,14 +419,15 @@ namespace MonoDevelop.AssemblyBrowser
 				return;
 			}
 
-			if (type is GetClassTypeReference){
+			if (type is GetClassTypeReference) {
 				var r = (GetClassTypeReference)type;
 				result.Append (r.Namespace + "." + r.Name);
 				return;
 			}
 
-			if (type is IUnresolvedTypeDefinition)
+			if (type is IUnresolvedTypeDefinition) {
 				result.Append (((IUnresolvedTypeDefinition)type).FullName);
+			}
 		}
 		
 		static void AppendHelpParameterList (StringBuilder result, IList<IUnresolvedParameter> parameters)
@@ -435,9 +442,12 @@ namespace MonoDevelop.AssemblyBrowser
 					var p = parameters [i];
 					if (p == null)
 						continue;
-					if (p.IsRef || p.IsOut)
-						result.Append ("&");
 					AppendTypeReference (result, p.Type);
+					if (p.IsRef)
+						result.Append ("&");
+					if (p.IsOut) {
+						result.Append ("@");
+					}
 				}
 			}
 			result.Append (')');
@@ -813,7 +823,6 @@ namespace MonoDevelop.AssemblyBrowser
 								typeList.Add (type);
 						}
 						typeDict [unit] = typeList;
-						Console.WriteLine (unit.UnresolvedAssembly.AssemblyName);
 					}
 					Gtk.Application.Invoke (delegate {
 						foreach (var kv in typeDict) {
