@@ -414,7 +414,7 @@ namespace MonoDevelop.Components.Docking
 					it.Present (true);
 				}
 			}
-			return base.OnButtonPressEvent (evnt);
+			return true;
 		}
 	}
 }
