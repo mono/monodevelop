@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{4c10f8f9-3816-4647-ba6e-85f5de39883a}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>FSharp.MonoDevelop</RootNamespace>
+    <AssemblyName>FSharpBinding</AssemblyName>
+    <Name>MonoDevelop.FSharp</Name>
+    <UsePartialTypes>false</UsePartialTypes>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <Tailcalls>false</Tailcalls>
+    <OutputPath>..\bin\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <WarningLevel>3</WarningLevel>
+    <Externalconsole>true</Externalconsole>
+    <GenerateDebugInfo>false</GenerateDebugInfo>
+    <OptimizeCode>false</OptimizeCode>
+    <GenerateXmlDoc>false</GenerateXmlDoc>
+    <GenerateTailCalls>false</GenerateTailCalls>
+  </PropertyGroup>
+  <Target Name="Clean">
+    <RemoveDir Directories="..\bin\" />
+  </Target>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <Tailcalls>true</Tailcalls>
+    <OutputPath>..\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <WarningLevel>3</WarningLevel>
+    <GenerateDebugInfo>false</GenerateDebugInfo>
+    <OptimizeCode>false</OptimizeCode>
+    <GenerateXmlDoc>false</GenerateXmlDoc>
+    <GenerateTailCalls>false</GenerateTailCalls>
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\FSharp\1.0\Microsoft.FSharp.Targets" Condition="!Exists('$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll')" />
+  <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets" Condition="Exists('$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll')" />
+  <ItemGroup>
+    <EmbeddedResource Include="icons\fsharp-icon-32.png" />
+    <EmbeddedResource Include="icons\fsharp-script-32.png" />
+    <EmbeddedResource Include="icons\fsharp-file-icon.png" />
+    <EmbeddedResource Include="icons\fsharp-project-icon.png" />
+    <EmbeddedResource Include="icons\fsharp-script-icon.png" />
+    <EmbeddedResource Include="templates\EmptyFSharpSource.xft.xml" />
+    <EmbeddedResource Include="templates\EmptyFSharpScript.xft.xml" />
+    <EmbeddedResource Include="templates\FSharpConsoleProject.xpt.xml" />
+    <EmbeddedResource Include="templates\FSharpSyntaxMode.xml" />
+    <EmbeddedResource Include="templates\FSharpLibraryProject.xpt.xml" />
+    <EmbeddedResource Include="templates\FSharpTutorialProject.xpt.xml" />
+    <EmbeddedResource Include="templates\FSharpGtkProject.xpt.xml" />
+    <EmbeddedResource Include="templates\AssemblyInfo.xft.xml" />
+    <!--<EmbeddedResource Include="templates\FSharpMoonlightLibraryProject.xpt.xml" /> -->
+    <EmbeddedResource Include="FSharpBinding.addin.xml" />
+    <Compile Include="PowerPack\CodeDomVisitor.fs" />
+    <Compile Include="PowerPack\CodeDomGenerator.fs" />
+    <Compile Include="PowerPack\CodeProvider.fs" />
+    <Compile Include="PowerPack\LazyList.fsi" />
+    <Compile Include="PowerPack\LazyList.fs" />
+    <Compile Include="Services\Mailbox.fs" />
+    <Compile Include="Services\Parameters.fs" />
+    <Compile Include="Services\Common.fs" />
+    <Compile Include="Services\CompilerLocationUtils.fs" />
+    <Compile Include="Services\FSharpCompiler.fs" />
+    <Compile Include="Services\Parser.fs" />
+    <Compile Include="Services\CompilerArguments.fs" />
+    <Compile Include="Services\LanguageService.fs" />
+    <Compile Include="Services\CompilerService.fs" />
+    <Compile Include="Services\InteractiveSession.fs" />
+    <Compile Include="FSharpInteractivePad.fs" />
+    <Compile Include="FSharpOptionsPanels.fs" />
+    <Compile Include="FSharpSyntaxMode.fs" />
+    <Compile Include="FSharpLanguageBinding.fs" />
+    <Compile Include="FSharpResourceIdBuilder.fs" />
+    <Compile Include="FSharpParser.fs" />
+    <Compile Include="FSharpTextEditorCompletion.fs" />
+    <Compile Include="FSharpResolverProvider.fs" />
+    <Compile Include="FSharpProjectServiceExtension.fs" />
+    <Compile Include="FSharpProjectFileNodeExtension.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <!-- Use these for Windows -->
+    <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="System.Core" />
+    <Reference Include="mscorlib" />
+    <Reference Include="Mono.Cairo" />
+    <Reference Include="Mono.Addins, Version=0.6.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Mono.TextEditor">
+      <HintPath>..\..\..\..\..\Applications\MonoDevelop.app\Contents\MacOS\lib\monodevelop\bin\Mono.TextEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoDevelop.Core">
+      <HintPath>..\..\..\..\..\Applications\MonoDevelop.app\Contents\MacOS\lib\monodevelop\bin\MonoDevelop.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoDevelop.Ide">
+      <HintPath>..\..\..\..\..\Applications\MonoDevelop.app\Contents\MacOS\lib\monodevelop\bin\MonoDevelop.Ide.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.NRefactory">
+      <HintPath>..\..\..\..\..\Applications\MonoDevelop.app\Contents\MacOS\lib\monodevelop\bin\ICSharpCode.NRefactory.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoDevelop.SourceEditor2">
+      <HintPath>..\..\..\..\..\Applications\MonoDevelop.app\Contents\MacOS\lib\monodevelop\AddIns\DisplayBindings\SourceEditor\MonoDevelop.SourceEditor2.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoDevelop.Refactoring">
+      <HintPath>..\..\..\..\..\Applications\MonoDevelop.app\Contents\MacOS\lib\monodevelop\AddIns\MonoDevelop.Refactoring\MonoDevelop.Refactoring.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Gui\MonoDevelop.FSharp.Gui.csproj">
+      <Project>{FD0D1033-9145-48E5-8ED8-E2365252878C}</Project>
+      <Name>MonoDevelop.FSharp.Gui</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>
