@@ -1664,9 +1664,9 @@ namespace MonoDevelop.Ide.TypeSystem
 					return Assembly.InternalsVisibleTo (assembly);
 				}				
 
-				ITypeDefinition IAssembly.GetTypeDefinition (string ns, string name, int typeParameterCount)
+				ITypeDefinition IAssembly.GetTypeDefinition (TopLevelTypeName typeName)
 				{
-					return Assembly.GetTypeDefinition (ns, name, typeParameterCount);
+					return Assembly.GetTypeDefinition (typeName);
 				}				
 
 				IUnresolvedAssembly IAssembly.UnresolvedAssembly {

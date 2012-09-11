@@ -95,6 +95,8 @@ namespace MonoDevelop.CodeIssues
 			}
 		}
 
+		Dictionary<CodeIssueProvider, Severity> severities = new Dictionary<CodeIssueProvider, Severity> ();
+
 		public void FillInspectors (string filter)
 		{
 			categories.Clear ();
@@ -112,7 +114,7 @@ namespace MonoDevelop.CodeIssues
 					var idx = title.IndexOf (filter, StringComparison.OrdinalIgnoreCase);
 					title = title.Substring (0, idx) + "<span bgcolor=\"yellow\">" + title.Substring (idx, filter.Length) + "</span>" + title.Substring (idx + filter.Length);
 				}
-				treeStore.AppendValues (iter, title, node.GetSeverity (), node);
+				treeStore.AppendValues (iter, title, severities[node], node);
 			}
 			treeviewInspections.ExpandAll ();
 		}
@@ -159,7 +161,10 @@ namespace MonoDevelop.CodeIssues
 					return;
 				do {
 					if ((string)comboBoxStore.GetValue (storeIter, 0) == args.NewText) {
-						treeStore.SetValue (iter, 1, (Severity)comboBoxStore.GetValue (storeIter, 1));
+						var provider = (CodeIssueProvider)comboBoxStore.GetValue (storeIter, 2);
+						var severity = (Severity)comboBoxStore.GetValue (storeIter, 1);
+						severities[provider] = severity;
+						treeStore.SetValue (iter, 1, severity);
 						return;
 					}
 				} while (comboBoxStore.IterNext (ref storeIter));
@@ -179,6 +184,9 @@ namespace MonoDevelop.CodeIssues
 			treeviewInspections.HeadersVisible = false;
 			treeviewInspections.Model = treeStore;
 			treeviewInspections.Selection.Changed += HandleSelectionChanged;
+			foreach (var node in RefactoringService.GetInspectors (mimeType)) {
+				severities[node] = node.GetSeverity ();
+			}
 
 			FillInspectors (null);
 		}
