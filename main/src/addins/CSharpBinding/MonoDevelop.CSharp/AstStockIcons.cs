@@ -181,7 +181,8 @@ namespace MonoDevelop.CSharp
 				return propertyIconTable [ModifierToOffset (acc)];
 			if (element is EventDeclaration || element is CustomEventDeclaration)
 				return eventIconTable [ModifierToOffset (acc)];
-
+			 if (element.Parent is TypeDeclaration && ((TypeDeclaration)element.Parent).ClassType == ClassType.Enum)
+				acc = Accessibility.Public;
 			return fieldIconTable [ModifierToOffset (acc)];
 		}
 	}
