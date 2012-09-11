@@ -271,6 +271,8 @@
 	
 	<Extension path = "/MonoDevelop/Ide/Fonts">
 		<Font name ="Editor" _displayName="Text Editor" default ="_DEFAULT_MONOSPACE"/>
+		<Font name ="Pad" _displayName="Pads" default ="_DEFAULT_SANS"/>
+		<Font name ="OutputPad" _displayName="Output Pads" default ="_DEFAULT_MONOSPACE"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/UserDataMigration">

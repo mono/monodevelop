@@ -67,8 +67,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		
 		void Load ()
 		{
-			string name = fontOutputButton.Style.FontDescription.ToString ();
-			
 			for (int n=1; n < isoCodes.Length; n += 2)
 				comboLanguage.AppendText (GettextCatalog.GetString (isoCodes [n]));
 			
@@ -98,15 +96,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			labelTheme.Visible = comboTheme.Visible = !Platform.IsMac && !Platform.IsWindows;
 			
 			documentSwitcherButton.Active = PropertyService.Get ("MonoDevelop.Core.Gui.EnableDocumentSwitchDialog", true);
-			fontCheckbox.Active = IdeApp.Preferences.CustomPadFont != null;
-			fontButton.FontName = IdeApp.Preferences.CustomPadFont ?? name;
-			fontButton.Sensitive = fontCheckbox.Active;
-			fontOutputCheckbox.Active = IdeApp.Preferences.CustomOutputPadFont != null;
-			fontOutputButton.FontName = IdeApp.Preferences.CustomOutputPadFont ?? name;
-			fontOutputButton.Sensitive = fontOutputCheckbox.Active;
-			
-			fontCheckbox.Toggled += new EventHandler (FontCheckboxToggled);
-			fontOutputCheckbox.Toggled += new EventHandler (FontOutputCheckboxToggled);
 		}
 		
 		// Code for getting the list of themes based on f-spot
@@ -123,15 +112,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				}
 			}
 			return themes;
-		}
-		
-		void FontOutputCheckboxToggled (object sender, EventArgs e)
-		{
-			fontOutputButton.Sensitive = fontOutputCheckbox.Active;
-		}
-		void FontCheckboxToggled (object sender, EventArgs e)
-		{
-			fontButton.Sensitive = fontCheckbox.Active;
 		}
 		
 		public void Store()
@@ -153,16 +133,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			
 			if (theme != Gtk.Settings.Default.ThemeName)
 				Gtk.Settings.Default.ThemeName = theme;
-			
-			if (fontCheckbox.Active)
-				IdeApp.Preferences.CustomPadFont = fontButton.FontName;
-			else
-				IdeApp.Preferences.CustomPadFont = null;
-			
-			if (fontOutputCheckbox.Active)
-				IdeApp.Preferences.CustomOutputPadFont = fontOutputButton.FontName;
-			else
-				IdeApp.Preferences.CustomOutputPadFont = null;
 			
 			PropertyService.Set ("MonoDevelop.Core.Gui.EnableDocumentSwitchDialog", documentSwitcherButton.Active);
 		}

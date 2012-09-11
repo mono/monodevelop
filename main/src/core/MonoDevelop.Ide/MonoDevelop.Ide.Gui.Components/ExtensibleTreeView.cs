@@ -69,9 +69,9 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		ExtensibleTreeViewTree tree;
 		Gtk.TreeStore store;
-		internal Gtk.TreeViewColumn complete_column;
-		internal ZoomableCellRendererPixbuf pix_render;
-		internal CustomCellRendererText text_render;
+		Gtk.TreeViewColumn complete_column;
+		ZoomableCellRendererPixbuf pix_render;
+		CustomCellRendererText text_render;
 		TreeBuilderContext builderContext;
 		Hashtable callbacks = new Hashtable ();
 		bool editingText = false;
@@ -124,29 +124,27 @@ namespace MonoDevelop.Ide.Gui.Components
 			Initialize (builders, options);
 		}
 		
-		void CustomFontPropertyChanged (object sender, MonoDevelop.Core.PropertyChangedEventArgs prop)
+		void CustomFontPropertyChanged (object sender, EventArgs a)
 		{
-			string val = (string)prop.NewValue;
-			string name = !string.IsNullOrEmpty (val) ? val : tree.Style.FontDescription.ToString ();
-			UpdateCustomFont (name);
+			UpdateCustomFont ();
 		}
+
+		Pango.FontDescription customFont;
 		
-		void UpdateCustomFont (string name)
+		void UpdateCustomFont ()
 		{
-			Pango.FontDescription customFont = Pango.FontDescription.FromString (name);
-			customFontSize = customFont.Size;
+			customFont = (IdeApp.Preferences.CustomPadFont ?? tree.Style.FontDescription).Copy ();
 			if (Zoom != 1)
 				customFont.Size = (int) (((double) customFont.Size) * Zoom);
 			text_render.Family = customFont.Family;
 			text_render.Size = customFont.Size;
-			customFont.Dispose ();
 			tree.ColumnsAutosize ();
 		}
 		
 		protected override void OnStyleSet (Gtk.Style previous_style)
 		{
 			base.OnStyleSet (previous_style);
-			UpdateCustomFont (IdeApp.Preferences.CustomPadFont ?? tree.Style.FontDescription.ToString ());
+			UpdateCustomFont ();
 		}
 		
 		public void Initialize (NodeBuilder[] builders, TreePadOption[] options)
@@ -188,13 +186,11 @@ namespace MonoDevelop.Ide.Gui.Components
 			complete_column.AddAttribute (pix_render, "image-expander-closed", ClosedIconColumn);
 			
 			text_render = new CustomCellRendererText (this);
-			var customFontName = IdeApp.Preferences.CustomPadFont;
-			if (customFontName != null) {
-				Pango.FontDescription customFont = Pango.FontDescription.FromString (customFontName);
+			var customFont = IdeApp.Preferences.CustomPadFont;
+			if (customFont != null) {
 				text_render.Family = customFont.Family;
 				text_render.Size = customFont.Size;
 				customFontSize = customFont.Size;
-				customFont.Dispose ();
 			}
 			text_render.Ypad = 0;
 			IdeApp.Preferences.CustomPadFontChanged += CustomFontPropertyChanged;;
@@ -1969,6 +1965,9 @@ namespace MonoDevelop.Ide.Gui.Components
 				builders = null;
 			}
 			builderChains.Clear ();
+
+			if (customFont != null)
+				customFont.Dispose ();
 			
 			base.OnDestroyed ();
 		}
@@ -2184,6 +2183,132 @@ namespace MonoDevelop.Ide.Gui.Components
 				}
 			}
 		}
+
+		class CustomCellRendererText: Gtk.CellRendererText
+		{
+			static Gdk.Pixbuf popupIcon;
+			static Gdk.Pixbuf popupIconDown;
+			static Gdk.Pixbuf popupIconHover;
+			bool bound;
+			ExtensibleTreeView parent;
+			Gdk.Rectangle buttonScreenRect;
+			Gdk.Rectangle buttonAllocation;
+
+			public bool Pushed { get; set; }
+
+			static CustomCellRendererText ()
+			{
+				popupIcon = Gdk.Pixbuf.LoadFromResource ("tree-popup-button.png");
+				popupIconDown = Gdk.Pixbuf.LoadFromResource ("tree-popup-button-down.png");
+				popupIconHover = Gdk.Pixbuf.LoadFromResource ("tree-popup-button-hover.png");
+			}
+
+			[GLib.Property ("text-markup")]
+			public string TextMarkup { get; set; }
+
+			[GLib.Property ("show-popup-button")]
+			public bool ShowPopupButton { get; set; }
+			
+			public CustomCellRendererText (ExtensibleTreeView parent)
+			{
+				this.parent = parent;
+			}
+
+			protected override void Render (Gdk.Drawable window, Gtk.Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, Gtk.CellRendererState flags)
+			{
+				Pango.Layout la = new Pango.Layout (widget.PangoContext);
+				int w, h;
+				la.SetMarkup (TextMarkup);
+				la.GetPixelSize (out w, out h);
+				la.FontDescription = parent.customFont;
+
+				Gtk.StateType st = Gtk.StateType.Normal;
+				if ((flags & Gtk.CellRendererState.Prelit) != 0)
+					st = Gtk.StateType.Prelight;
+				if ((flags & Gtk.CellRendererState.Focused) != 0)
+					st = Gtk.StateType.Normal;
+				if ((flags & Gtk.CellRendererState.Insensitive) != 0)
+					st = Gtk.StateType.Insensitive;
+				if ((flags & Gtk.CellRendererState.Selected) != 0)
+					st = widget.HasFocus ? Gtk.StateType.Selected : Gtk.StateType.Active;
+
+				int tx = cell_area.X + (int) Xpad;
+				int ty = cell_area.Y + (cell_area.Height - h) / 2;
+
+				window.DrawLayout (widget.Style.TextGC (st), tx, ty, la);
+
+				la.Dispose ();
+
+				if (ShowPopupButton) {
+					if (!bound) {
+						bound = true;
+						((Gtk.ScrolledWindow)widget.Parent).Hadjustment.ValueChanged += delegate {
+							foreach (var r in parent.Tree.Selection.GetSelectedRows ()) {
+								var rect = parent.Tree.GetCellArea (r, parent.Tree.Columns[0]);
+								parent.Tree.QueueDrawArea (rect.X, rect.Y, rect.Width, rect.Height);
+							}
+						};
+					}
+
+					if ((flags & Gtk.CellRendererState.Selected) != 0) {
+						var icon = Pushed ? popupIconDown : popupIcon;
+						var dy = (cell_area.Height - icon.Height) / 2;
+						var y = cell_area.Y + dy;
+						var x = cell_area.X + cell_area.Width - icon.Width - dy;
+
+						var sw = (Gtk.ScrolledWindow) widget.Parent;
+						int ox, oy, ow, oh;
+						sw.GdkWindow.GetOrigin (out ox, out oy);
+						sw.GdkWindow.GetSize (out ow, out oh);
+						ox += sw.Allocation.X;
+						oy += sw.Allocation.Y;
+						if (sw.VScrollbar.Visible)
+							ow -= sw.VScrollbar.Allocation.Width;
+
+						int cx, cy, cw, ch;
+						((Gdk.Window)window).GetOrigin (out cx, out cy);
+						((Gdk.Window)window).GetSize (out cw, out ch);
+						cx += widget.Allocation.X;
+						cy += widget.Allocation.Y;
+
+						int rp = ox + ow;
+						int diff = rp - (cx + cw);
+
+						if (diff < 0) {
+							x += diff;
+							if (x < cell_area.X + 20)
+								x = cell_area.X + 20;
+						}
+
+						buttonScreenRect = new Gdk.Rectangle (cx + x, cy + y, popupIcon.Width, popupIcon.Height);
+
+						buttonAllocation = new Gdk.Rectangle (x, y, popupIcon.Width, popupIcon.Height);
+						buttonAllocation = GtkUtil.ToScreenCoordinates (widget, ((Gdk.Window)window), buttonAllocation);
+						buttonAllocation = GtkUtil.ToWindowCoordinates (widget, widget.GdkWindow, buttonAllocation);
+
+						bool mouseOver = (flags & Gtk.CellRendererState.Prelit) != 0 && buttonScreenRect.Contains (PointerPosition);
+						if (mouseOver && !Pushed)
+							icon = popupIconHover;
+
+						using (var ctx = Gdk.CairoHelper.Create (window)) {
+							Gdk.CairoHelper.SetSourcePixbuf (ctx, icon, x, y);
+							ctx.Paint ();
+						}
+					}
+				}
+			}
+
+			public bool PointerInButton (int px, int py)
+			{
+				return buttonScreenRect.Contains (px, py);
+			}
+
+			public Gdk.Point PointerPosition { get; set; }
+
+			public Gdk.Rectangle PopupAllocation {
+				get { return buttonAllocation; }
+			}
+		}
 	}
 
 	class NodeCommandTargetChain: ICommandDelegatorRouter
@@ -2316,131 +2441,6 @@ namespace MonoDevelop.Ide.Gui.Components
 			resized = value.ScaleSimple (w, h, Gdk.InterpType.Hyper);
 			resizedCache [value] = resized;
 			return resized;
-		}
-	}
-
-	class CustomCellRendererText: Gtk.CellRendererText
-	{
-		static Gdk.Pixbuf popupIcon;
-		static Gdk.Pixbuf popupIconDown;
-		static Gdk.Pixbuf popupIconHover;
-		bool bound;
-		ExtensibleTreeView parent;
-		Gdk.Rectangle buttonScreenRect;
-		Gdk.Rectangle buttonAllocation;
-
-		public bool Pushed { get; set; }
-
-		static CustomCellRendererText ()
-		{
-			popupIcon = Gdk.Pixbuf.LoadFromResource ("tree-popup-button.png");
-			popupIconDown = Gdk.Pixbuf.LoadFromResource ("tree-popup-button-down.png");
-			popupIconHover = Gdk.Pixbuf.LoadFromResource ("tree-popup-button-hover.png");
-		}
-
-		[GLib.Property ("text-markup")]
-		public string TextMarkup { get; set; }
-
-		[GLib.Property ("show-popup-button")]
-		public bool ShowPopupButton { get; set; }
-		
-		public CustomCellRendererText (ExtensibleTreeView parent)
-		{
-			this.parent = parent;
-		}
-
-		protected override void Render (Gdk.Drawable window, Gtk.Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, Gtk.CellRendererState flags)
-		{
-			Pango.Layout la = new Pango.Layout (widget.PangoContext);
-			int w, h;
-			la.SetMarkup (TextMarkup);
-			la.GetPixelSize (out w, out h);
-
-			Gtk.StateType st = Gtk.StateType.Normal;
-			if ((flags & Gtk.CellRendererState.Prelit) != 0)
-				st = Gtk.StateType.Prelight;
-			if ((flags & Gtk.CellRendererState.Focused) != 0)
-				st = Gtk.StateType.Normal;
-			if ((flags & Gtk.CellRendererState.Insensitive) != 0)
-				st = Gtk.StateType.Insensitive;
-			if ((flags & Gtk.CellRendererState.Selected) != 0)
-				st = widget.HasFocus ? Gtk.StateType.Selected : Gtk.StateType.Active;
-
-			int tx = cell_area.X + (int) Xpad;
-			int ty = cell_area.Y + (cell_area.Height - h) / 2;
-
-			window.DrawLayout (widget.Style.TextGC (st), tx, ty, la);
-
-			la.Dispose ();
-
-			if (ShowPopupButton) {
-				if (!bound) {
-					bound = true;
-					((Gtk.ScrolledWindow)widget.Parent).Hadjustment.ValueChanged += delegate {
-						foreach (var r in parent.Tree.Selection.GetSelectedRows ()) {
-							var rect = parent.Tree.GetCellArea (r, parent.Tree.Columns[0]);
-							parent.Tree.QueueDrawArea (rect.X, rect.Y, rect.Width, rect.Height);
-						}
-					};
-				}
-
-				if ((flags & Gtk.CellRendererState.Selected) != 0) {
-					var icon = Pushed ? popupIconDown : popupIcon;
-					var dy = (cell_area.Height - icon.Height) / 2;
-					var y = cell_area.Y + dy;
-					var x = cell_area.X + cell_area.Width - icon.Width - dy;
-
-					var sw = (Gtk.ScrolledWindow) widget.Parent;
-					int ox, oy, ow, oh;
-					sw.GdkWindow.GetOrigin (out ox, out oy);
-					sw.GdkWindow.GetSize (out ow, out oh);
-					ox += sw.Allocation.X;
-					oy += sw.Allocation.Y;
-					if (sw.VScrollbar.Visible)
-						ow -= sw.VScrollbar.Allocation.Width;
-
-					int cx, cy, cw, ch;
-					((Gdk.Window)window).GetOrigin (out cx, out cy);
-					((Gdk.Window)window).GetSize (out cw, out ch);
-					cx += widget.Allocation.X;
-					cy += widget.Allocation.Y;
-
-					int rp = ox + ow;
-					int diff = rp - (cx + cw);
-
-					if (diff < 0) {
-						x += diff;
-						if (x < cell_area.X + 20)
-							x = cell_area.X + 20;
-					}
-
-					buttonScreenRect = new Gdk.Rectangle (cx + x, cy + y, popupIcon.Width, popupIcon.Height);
-
-					buttonAllocation = new Gdk.Rectangle (x, y, popupIcon.Width, popupIcon.Height);
-					buttonAllocation = GtkUtil.ToScreenCoordinates (widget, ((Gdk.Window)window), buttonAllocation);
-					buttonAllocation = GtkUtil.ToWindowCoordinates (widget, widget.GdkWindow, buttonAllocation);
-
-					bool mouseOver = (flags & Gtk.CellRendererState.Prelit) != 0 && buttonScreenRect.Contains (PointerPosition);
-					if (mouseOver && !Pushed)
-						icon = popupIconHover;
-
-					using (var ctx = Gdk.CairoHelper.Create (window)) {
-						Gdk.CairoHelper.SetSourcePixbuf (ctx, icon, x, y);
-						ctx.Paint ();
-					}
-				}
-			}
-		}
-
-		public bool PointerInButton (int px, int py)
-		{
-			return buttonScreenRect.Contains (px, py);
-		}
-
-		public Gdk.Point PointerPosition { get; set; }
-
-		public Gdk.Rectangle PopupAllocation {
-			get { return buttonAllocation; }
 		}
 	}
 

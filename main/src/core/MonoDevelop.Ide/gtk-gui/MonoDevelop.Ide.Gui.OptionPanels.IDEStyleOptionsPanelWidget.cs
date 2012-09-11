@@ -10,12 +10,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		private global::Gtk.ComboBox comboTheme;
 		private global::Gtk.Label label2;
 		private global::Gtk.Label labelTheme;
-		private global::Gtk.HBox hbox2;
-		private global::Gtk.CheckButton fontCheckbox;
-		private global::Gtk.FontButton fontButton;
-		private global::Gtk.HBox hbox3;
-		private global::Gtk.CheckButton fontOutputCheckbox;
-		private global::Gtk.FontButton fontOutputButton;
 		private global::Gtk.CheckButton documentSwitcherButton;
 		
 		protected virtual void Build ()
@@ -79,60 +73,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			w5.Expand = false;
 			w5.Fill = false;
 			// Container child vbox13.Gtk.Box+BoxChild
-			this.hbox2 = new global::Gtk.HBox ();
-			this.hbox2.Name = "hbox2";
-			this.hbox2.Spacing = 6;
-			// Container child hbox2.Gtk.Box+BoxChild
-			this.fontCheckbox = new global::Gtk.CheckButton ();
-			this.fontCheckbox.Name = "fontCheckbox";
-			this.fontCheckbox.Label = global::Mono.Unix.Catalog.GetString ("_Custom font for pads:");
-			this.fontCheckbox.DrawIndicator = true;
-			this.fontCheckbox.UseUnderline = true;
-			this.hbox2.Add (this.fontCheckbox);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.fontCheckbox]));
-			w6.Position = 0;
-			w6.Expand = false;
-			// Container child hbox2.Gtk.Box+BoxChild
-			this.fontButton = new global::Gtk.FontButton ();
-			this.fontButton.Name = "fontButton";
-			this.hbox2.Add (this.fontButton);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.fontButton]));
-			w7.Position = 1;
-			w7.Expand = false;
-			w7.Fill = false;
-			this.vbox13.Add (this.hbox2);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox13 [this.hbox2]));
-			w8.Position = 1;
-			w8.Expand = false;
-			w8.Fill = false;
-			// Container child vbox13.Gtk.Box+BoxChild
-			this.hbox3 = new global::Gtk.HBox ();
-			this.hbox3.Name = "hbox3";
-			this.hbox3.Spacing = 6;
-			// Container child hbox3.Gtk.Box+BoxChild
-			this.fontOutputCheckbox = new global::Gtk.CheckButton ();
-			this.fontOutputCheckbox.Name = "fontOutputCheckbox";
-			this.fontOutputCheckbox.Label = global::Mono.Unix.Catalog.GetString ("_Custom font for Output pads:");
-			this.fontOutputCheckbox.DrawIndicator = true;
-			this.fontOutputCheckbox.UseUnderline = true;
-			this.hbox3.Add (this.fontOutputCheckbox);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.fontOutputCheckbox]));
-			w9.Position = 0;
-			w9.Expand = false;
-			// Container child hbox3.Gtk.Box+BoxChild
-			this.fontOutputButton = new global::Gtk.FontButton ();
-			this.fontOutputButton.Name = "fontOutputButton";
-			this.hbox3.Add (this.fontOutputButton);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.fontOutputButton]));
-			w10.Position = 1;
-			w10.Expand = false;
-			w10.Fill = false;
-			this.vbox13.Add (this.hbox3);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox13 [this.hbox3]));
-			w11.Position = 2;
-			w11.Expand = false;
-			w11.Fill = false;
-			// Container child vbox13.Gtk.Box+BoxChild
 			this.documentSwitcherButton = new global::Gtk.CheckButton ();
 			this.documentSwitcherButton.CanFocus = true;
 			this.documentSwitcherButton.Name = "documentSwitcherButton";
@@ -140,10 +80,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.documentSwitcherButton.DrawIndicator = true;
 			this.documentSwitcherButton.UseUnderline = true;
 			this.vbox13.Add (this.documentSwitcherButton);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox13 [this.documentSwitcherButton]));
-			w12.Position = 3;
-			w12.Expand = false;
-			w12.Fill = false;
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox13 [this.documentSwitcherButton]));
+			w6.Position = 1;
+			w6.Expand = false;
+			w6.Fill = false;
 			this.Add (this.vbox13);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();

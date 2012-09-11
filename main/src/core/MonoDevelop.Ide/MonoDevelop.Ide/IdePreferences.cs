@@ -29,6 +29,7 @@ using System;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Ide
 {
@@ -64,6 +65,14 @@ namespace MonoDevelop.Ide
 	{
 		internal IdePreferences ()
 		{
+			FontService.RegisterFontChangedCallback ("OutputPad", delegate {
+				if (CustomOutputPadFontChanged != null)
+					CustomOutputPadFontChanged (null, EventArgs.Empty);
+			});
+			FontService.RegisterFontChangedCallback ("Pad", delegate {
+				if (CustomPadFontChanged != null)
+					CustomPadFontChanged (null, EventArgs.Empty);
+			});
 		}
 		
 		public string DefaultProjectFileFormat {
@@ -255,29 +264,21 @@ namespace MonoDevelop.Ide
 		/// <summary>
 		/// Font to use for treeview pads. Returns null if no custom font is set.
 		/// </summary>
-		public string CustomPadFont {
-			get { string res = PropertyService.Get<string> ("MonoDevelop.Ide.CustomPadFont", string.Empty); return string.IsNullOrEmpty (res) ? null : res; }
-			set { PropertyService.Set ("MonoDevelop.Ide.CustomPadFont", value ?? string.Empty); }
+		public Pango.FontDescription CustomPadFont {
+			get { return FontService.GetFontDescription ("Pad", false); }
 		}
 
-		public event EventHandler<PropertyChangedEventArgs> CustomPadFontChanged {
-			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.CustomPadFont", value); }
-			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.CustomPadFont", value); }
-		}
-		
+		public event EventHandler<EventArgs> CustomPadFontChanged;
+
 		/// <summary>
 		/// Font to use for output pads. Returns null if no custom font is set.
 		/// </summary>
-		public string CustomOutputPadFont {
-			get { string res = PropertyService.Get<string> ("MonoDevelop.Ide.CustomOutputPadFont", string.Empty); return string.IsNullOrEmpty (res) ? null : res; }
-			set { PropertyService.Set ("MonoDevelop.Ide.CustomOutputPadFont", value ?? string.Empty); }
+		public Pango.FontDescription CustomOutputPadFont {
+			get { return FontService.GetFontDescription ("OutputPad", false); }
 		}
 
-		public event EventHandler<PropertyChangedEventArgs> CustomOutputPadFontChanged {
-			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.CustomOutputPadFont", value); }
-			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.CustomOutputPadFont", value); }
-		}
-		
+		public event EventHandler CustomOutputPadFontChanged;
+
 		public string UserInterfaceLanguage {
 			get { return PropertyService.Get ("MonoDevelop.Ide.UserInterfaceLanguage", ""); }
 			set { PropertyService.Set ("MonoDevelop.Ide.UserInterfaceLanguage", value); }

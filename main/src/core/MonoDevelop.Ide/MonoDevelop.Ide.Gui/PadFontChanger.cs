@@ -37,8 +37,7 @@ namespace MonoDevelop.Ide.Gui
 		Gtk.Widget styleSource;
 		Action<FontDescription> updater;
 		Action resizer;
-		FontDescription desc;
-		
+
 		public PadFontChanger (Gtk.Widget styleSource, Action<FontDescription> updater)
 			: this (styleSource, updater, null)
 		{
@@ -54,27 +53,21 @@ namespace MonoDevelop.Ide.Gui
 				IdeApp.Preferences.CustomPadFontChanged += PropertyChanged;
 			}
 			
-			var fontName = IdeApp.Preferences.CustomPadFont;
-			if (fontName != null) {
-				Update (fontName);
-			}
+			Update ();
 		}
 		
-		void PropertyChanged (object sender, PropertyChangedEventArgs prop)
+		void PropertyChanged (object sender, EventArgs prop)
 		{
-			var name = (string)prop.NewValue ?? styleSource.Style.FontDescription.ToString ();
-			Update (name);
+			Update ();
 			if (resizer != null)
 				resizer ();
 		}
 		
-		void Update (string name)
+		void Update ()
 		{
-			if (desc != null)
-				desc.Dispose ();
-			desc = Pango.FontDescription.FromString (name);
-				if (desc != null)
-					updater (desc);
+			var font = IdeApp.Preferences.CustomPadFont;
+			if (font != null)
+				updater (font);
 		}
 		
 		public void Dispose ()
@@ -82,10 +75,6 @@ namespace MonoDevelop.Ide.Gui
 			if (styleSource != null) {
 				IdeApp.Preferences.CustomPadFontChanged -= PropertyChanged;
 				styleSource = null;
-			}
-			if (desc != null) {
-				desc.Dispose ();
-				desc = null;
 			}
 		}
 	}

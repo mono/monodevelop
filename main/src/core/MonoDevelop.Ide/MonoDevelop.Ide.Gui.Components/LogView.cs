@@ -33,6 +33,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.Execution;
 using System.IO;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
@@ -41,8 +42,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		Gtk.TextBuffer buffer;
 		Gtk.TextView textEditorControl;
 		TextMark endMark;
-		FontDescription customFont;
-		
+
 		TextTag tag;
 		TextTag bold;
 		TextTag errorTag;
@@ -87,7 +87,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			
 			endMark = buffer.CreateMark ("end-mark", buffer.EndIter, false);
 
-			UpdateCustomFont (IdeApp.Preferences.CustomOutputPadFont);
+			UpdateCustomFont ();
 			IdeApp.Preferences.CustomOutputPadFontChanged += HandleCustomFontChanged;
 			
 			outputDispatcher = new GLib.TimeoutHandler (outputDispatchHandler);
@@ -109,21 +109,14 @@ namespace MonoDevelop.Ide.Gui.Components
 			buffer.Clear();
 		}
 		
-		void HandleCustomFontChanged (object sender, PropertyChangedEventArgs e)
+		void HandleCustomFontChanged (object sender, EventArgs e)
 		{
-			UpdateCustomFont ((string)e.NewValue);
+			UpdateCustomFont ();
 		}
 		
-		void UpdateCustomFont (string name)
+		void UpdateCustomFont ()
 		{
-			if (customFont != null) {
-				customFont.Dispose ();
-				customFont = null;
-			}
-			if (!string.IsNullOrEmpty (name)) {
-				customFont = Pango.FontDescription.FromString (name);
-			}
-			textEditorControl.ModifyFont (customFont);
+			textEditorControl.ModifyFont (IdeApp.Preferences.CustomOutputPadFont ?? FontService.DefaultMonospaceFontDescription);
 		}
 		
 		//mechanism to to batch copy text when large amounts are being dumped
@@ -281,10 +274,6 @@ namespace MonoDevelop.Ide.Gui.Components
 				lastTextWrite = null;
 			}
 			IdeApp.Preferences.CustomOutputPadFontChanged -= HandleCustomFontChanged;
-			if (customFont != null) {
-				customFont.Dispose ();
-				customFont = null;
-			}
 		}
 		
 		private abstract class QueuedUpdate

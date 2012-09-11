@@ -38,8 +38,9 @@ namespace MonoDevelop.Ide.Fonts
 		static List<FontDescriptionCodon> fontDescriptions = new List<FontDescriptionCodon> ();
 		static Dictionary<string, FontDescription> loadedFonts = new Dictionary<string, FontDescription> ();
 		static Properties fontProperties;
+		static FontDescription defaultMonospaceFontDescription;
 		
-		public static IEnumerable<FontDescriptionCodon> FontDescriptions {
+		internal static IEnumerable<FontDescriptionCodon> FontDescriptions {
 			get {
 				return fontDescriptions;
 			}
@@ -63,7 +64,15 @@ namespace MonoDevelop.Ide.Fonts
 				}
 			}); 
 		}
-		
+
+		public static FontDescription DefaultMonospaceFontDescription {
+			get {
+				if (defaultMonospaceFontDescription == null)
+					defaultMonospaceFontDescription = LoadFont (DesktopService.DefaultMonospaceFont);
+				return defaultMonospaceFontDescription;
+			}
+		}
+
 		static FontDescription LoadFont (string name)
 		{
 			return Pango.FontDescription.FromString (FilterFontName (name));
@@ -95,15 +104,27 @@ namespace MonoDevelop.Ide.Fonts
 			}
 			return result;
 		}
-		
-		public static FontDescription GetFontDescription (string name)
+
+		/// <summary>
+		/// Gets the font description for the provided font id
+		/// </summary>
+		/// <returns>
+		/// The font description.
+		/// </returns>
+		/// <param name='name'>
+		/// Identifier of the font
+		/// </param>
+		/// <param name='createDefaultFont'>
+		/// If set to <c>false</c> and no custom font has been set, the method will return null.
+		/// </param>
+		public static FontDescription GetFontDescription (string name, bool createDefaultFont = true)
 		{
 			if (loadedFonts.ContainsKey (name))
 				return loadedFonts [name];
 			return loadedFonts [name] = LoadFont (GetUnderlyingFontName (name));
 		}
 		
-		public static FontDescriptionCodon GetFont (string name)
+		internal static FontDescriptionCodon GetFont (string name)
 		{
 			foreach (var d in fontDescriptions) {
 				if (d.Name == name)
