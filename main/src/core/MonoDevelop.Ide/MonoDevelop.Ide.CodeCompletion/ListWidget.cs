@@ -762,6 +762,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			this.GetSizeRequest (out lvWidth, out lvHeight);
 			
 			int rowWidth;
+			layout.SetText ("F_B");
 			layout.GetPixelSize (out rowWidth, out rowHeight);
 			rowHeight = Math.Max (1, rowHeight * 3 / 2);
 
