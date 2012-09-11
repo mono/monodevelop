@@ -1,6 +1,6 @@
 <Addin id="FSharpBinding" namespace="MonoDevelop" name="F# Language Binding"
        author="Community" copyright="Community" url="https://github.com/fsharp/fsharpbinding/wiki"
-       description="F# Language Binding" category="Language bindings" version="3.0">
+       description="F# Language Binding" category="Language bindings" version="3.1.1">
 
 	<Runtime>
     	<Import assembly="FSharpBinding.dll" />
@@ -8,10 +8,10 @@
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="3.0.2"/>
-		<Addin id="Ide" version="3.0.2"/>
-		<Addin id="SourceEditor2" version="3.0.2"/>
-    <Addin id="Refactoring" version="3.0.2"/>
+		<Addin id="Core" version="3.0.3"/>
+		<Addin id="Ide" version="3.0.3"/>
+		<Addin id="SourceEditor2" version="3.0.3"/>
+    	<Addin id="Refactoring" version="3.0.3"/>
   </Dependencies>
 
 	<Extension path="/MonoDevelop/ProjectModel/MSBuildItemTypes">
@@ -54,12 +54,15 @@
 	<Extension path="/MonoDevelop/Ide/FileTemplates">
 		<FileTemplate id="EmptyFSharpSource" resource="EmptyFSharpSource.xft.xml"/>
     	<FileTemplate id="EmptyFSharpScript" resource="EmptyFSharpScript.xft.xml"/>
+        <FileTemplate id="FSharpAssemblyInfo" resource="AssemblyInfo.xft.xml" />
   	</Extension>
 
   	<Extension path="/MonoDevelop/Ide/ProjectTemplates">
 		<ProjectTemplate id="FSharpConsoleProject" resource="FSharpConsoleProject.xpt.xml"/>
 		<ProjectTemplate id="FSharpLibraryProject" resource="FSharpLibraryProject.xpt.xml"/>
 		<ProjectTemplate id="FSharpTutorialProject" resource="FSharpTutorialProject.xpt.xml"/>
+		<ProjectTemplate id="FSharpGtkProject" resource="FSharpGtkProject.xpt.xml"/>
+		<!--<ProjectTemplate id="FSharpMoonlightLibraryProject" resource="FSharpMoonlightLibraryProject.xpt.xml"/> -->
 	</Extension>
 
   	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
