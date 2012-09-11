@@ -1069,6 +1069,9 @@
     <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\open_solution.png">
       <LogicalName>open_solution.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\locale_16x16.png">
+      <LogicalName>locale_16x16.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />

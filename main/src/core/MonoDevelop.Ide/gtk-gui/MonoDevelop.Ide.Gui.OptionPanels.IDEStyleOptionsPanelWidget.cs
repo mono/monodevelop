@@ -10,7 +10,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		private global::Gtk.ComboBox comboTheme;
 		private global::Gtk.Label label2;
 		private global::Gtk.Label labelTheme;
-		private global::Gtk.CheckButton documentSwitcherButton;
 		
 		protected virtual void Build ()
 		{
@@ -72,18 +71,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			w5.Position = 0;
 			w5.Expand = false;
 			w5.Fill = false;
-			// Container child vbox13.Gtk.Box+BoxChild
-			this.documentSwitcherButton = new global::Gtk.CheckButton ();
-			this.documentSwitcherButton.CanFocus = true;
-			this.documentSwitcherButton.Name = "documentSwitcherButton";
-			this.documentSwitcherButton.Label = global::Mono.Unix.Catalog.GetString ("_Enable document switch dialog");
-			this.documentSwitcherButton.DrawIndicator = true;
-			this.documentSwitcherButton.UseUnderline = true;
-			this.vbox13.Add (this.documentSwitcherButton);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox13 [this.documentSwitcherButton]));
-			w6.Position = 1;
-			w6.Expand = false;
-			w6.Fill = false;
 			this.Add (this.vbox13);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();

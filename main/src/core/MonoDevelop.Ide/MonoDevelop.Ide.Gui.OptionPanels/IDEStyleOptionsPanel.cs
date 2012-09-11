@@ -94,8 +94,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			comboTheme.Active = themes.IndexOf (IdeApp.Preferences.UserInterfaceTheme) + 1;
 
 			labelTheme.Visible = comboTheme.Visible = !Platform.IsMac && !Platform.IsWindows;
-			
-			documentSwitcherButton.Active = PropertyService.Get ("MonoDevelop.Core.Gui.EnableDocumentSwitchDialog", true);
 		}
 		
 		// Code for getting the list of themes based on f-spot
@@ -133,8 +131,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			
 			if (theme != Gtk.Settings.Default.ThemeName)
 				Gtk.Settings.Default.ThemeName = theme;
-			
-			PropertyService.Set ("MonoDevelop.Core.Gui.EnableDocumentSwitchDialog", documentSwitcherButton.Active);
 		}
 		
 		static string[] isoCodes = new string[] {
