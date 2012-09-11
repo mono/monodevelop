@@ -103,7 +103,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 			var fboxTree = new HeaderBox ();
 			fboxTree.SetMargins (0, 1, 0, 1);
-			fboxTree.SetPadding (6, 6, 0, 0);
+			fboxTree.SetPadding (0, 0, 0, 0);
 			fboxTree.BackgroundColor = new Gdk.Color (255, 255, 255);
 			fboxTree.Add (sw);
 			mainHBox.PackStart (fboxTree, false, false, 0);
