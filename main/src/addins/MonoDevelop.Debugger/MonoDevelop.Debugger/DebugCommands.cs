@@ -248,8 +248,12 @@ namespace MonoDevelop.Debugger
 			var dialog = new SelectFileDialog (GettextCatalog.GetString ("Application to Debug")) {
 				TransientFor = IdeApp.Workbench.RootWindow,
 			};
-			if (dialog.Run () && IdeApp.ProjectOperations.CanExecuteFile (dialog.SelectedFile))
-				IdeApp.ProjectOperations.DebugApplication (dialog.SelectedFile);
+			if (dialog.Run ()) {
+				if (IdeApp.ProjectOperations.CanDebugFile (dialog.SelectedFile))
+					IdeApp.ProjectOperations.DebugApplication (dialog.SelectedFile);
+				else
+					MessageService.ShowError (GettextCatalog.GetString ("The file '{0}' can't be debugged", dialog.SelectedFile));
+			}
 		}
 		
 		protected override void Update (CommandInfo info)

@@ -1012,8 +1012,12 @@ namespace MonoDevelop.Ide
 				tempProject.Dispose ();
 				return res;
 			}
-			else
-				return false;
+			else {
+				var cmd = Runtime.ProcessService.CreateCommand (file);
+				if (context.ExecutionHandler.CanExecute (cmd))
+					return true;
+			}
+			return false;
 		}
 		
 		public IAsyncOperation ExecuteFile (string file, IExecutionHandler handler)
