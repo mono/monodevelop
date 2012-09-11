@@ -189,7 +189,7 @@ namespace Mono.TextEditor
 			base.Dispose ();
 		}
 		
-		Cairo.Color lineNumberBgGC, lineNumberGC, lineNumberHighlightGC;
+		Cairo.Color lineNumberBgGC, lineNumberGC/*, lineNumberHighlightGC*/;
 
 		Pango.FontDescription gutterFont;
 
@@ -198,8 +198,11 @@ namespace Mono.TextEditor
 			lineNumberBgGC = editor.ColorStyle.LineNumber.CairoBackgroundColor;
 			lineNumberGC = editor.ColorStyle.LineNumber.CairoColor;
 			gutterFont = Gtk.Widget.DefaultStyle.FontDescription.Copy ();
-			gutterFont.Size = (int)(Pango.Scale.PangoScale * 11.0 * editor.Options.Zoom);
-
+			if (Platform.IsWindows) {
+				gutterFont.Size = (int)(Pango.Scale.PangoScale * 8.0 * editor.Options.Zoom);
+			} else {
+				gutterFont.Size = (int)(Pango.Scale.PangoScale * 11.0 * editor.Options.Zoom);
+			}
 			CalculateWidth ();
 		}
 

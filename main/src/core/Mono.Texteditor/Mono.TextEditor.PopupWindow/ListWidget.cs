@@ -301,7 +301,7 @@ namespace Mono.TextEditor.PopupWindow
 		
 		void CalcVisibleRows ()
 		{
-			int winHeight = 200;
+			//int winHeight = 200;
 			int lvWidth, lvHeight;
 			int rowWidth;
 			
