@@ -76,5 +76,12 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				num++;
 			}
 		}
+
+		public override string IdString {
+			get {
+				return provider.GetType ().FullName;
+			}
+		}
+
 	}
 }

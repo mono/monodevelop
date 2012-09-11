@@ -30,6 +30,7 @@ using MonoDevelop.Core;
 using System.Linq;
 using System.Text;
 using MonoDevelop.Refactoring;
+using System.Collections.Generic;
 
 namespace MonoDevelop.CodeActions
 {
@@ -53,7 +54,16 @@ namespace MonoDevelop.CodeActions
 		string mimeType;
 		
 		Gtk.TreeStore treeStore = new Gtk.TreeStore (typeof(string), typeof(bool), typeof(CodeActionProvider));
-		
+		Dictionary<CodeActionProvider, bool> providerStates = new Dictionary<CodeActionProvider, bool> ();
+
+		void GetAllProviderStates ()
+		{
+			string disabledNodes = PropertyService.Get ("ContextActions." + mimeType, "");
+			foreach (var node in RefactoringService.ContextAddinNodes.Where (n => n.MimeType == mimeType)) {
+				providerStates [node] = disabledNodes.IndexOf (node.IdString) < 0;
+			}
+		}
+
 		public ContextActionPanelWidget (string mimeType)
 		{
 			this.mimeType = mimeType;
@@ -70,8 +80,9 @@ namespace MonoDevelop.CodeActions
 				TreeIter iter;
 				if (!treeStore.GetIterFromString (out iter, args.Path)) 
 					return;
-				bool enabled = (bool)treeStore.GetValue (iter, 1);
-				treeStore.SetValue (iter, 1, !enabled);
+				var provider = (CodeActionProvider)treeStore.GetValue (iter, 2);
+				providerStates [provider] = !providerStates [provider];
+				treeStore.SetValue (iter, 1, providerStates [provider]);
 			};
 			col.PackStart (togRender, false);
 			col.AddAttribute (togRender, "active", 1);
@@ -83,7 +94,7 @@ namespace MonoDevelop.CodeActions
 			treeviewContextActions.AppendColumn (col);
 			treeviewContextActions.HeadersVisible = false;
 			treeviewContextActions.Model = treeStore;
-			
+			GetAllProviderStates ();
 			FillTreeStore (null);
 			treeviewContextActions.Selection.Changed += HandleTreeviewContextActionsSelectionChanged;
 		}
@@ -91,6 +102,23 @@ namespace MonoDevelop.CodeActions
 		void ApplyFilter (object sender, EventArgs e)
 		{
 			FillTreeStore (searchentryFilter.Entry.Text.Trim ());
+		}
+	
+		public void FillTreeStore (string filter)
+		{
+			treeStore.Clear ();
+			foreach (var node in providerStates.Keys) {
+				if (!string.IsNullOrEmpty (filter) && node.Title.IndexOf (filter, StringComparison.OrdinalIgnoreCase) < 0)
+					continue;
+				
+				var title = node.Title;
+				if (!string.IsNullOrEmpty (filter)) {
+					var idx = title.IndexOf (filter, StringComparison.OrdinalIgnoreCase);
+					title = title.Substring (0, idx) + "<span bgcolor=\"yellow\">" + title.Substring (idx, filter.Length) + "</span>" + title.Substring (idx + filter.Length);
+				}
+				
+				treeStore.AppendValues (title, providerStates [node], node);
+			}
 		}
 
 		void HandleTreeviewContextActionsSelectionChanged (object sender, EventArgs e)
@@ -103,41 +131,18 @@ namespace MonoDevelop.CodeActions
 			this.labelDescription.Markup = "<b>" + actionNode.Title + "</b>" + Environment.NewLine + actionNode.Description;
 		}
 
-		public void FillTreeStore (string filter)
-		{
-			treeStore.Clear ();
-			string disabledNodes = PropertyService.Get ("ContextActions." + mimeType, "");
-			foreach (var node in RefactoringService.ContextAddinNodes.Where (n => n.MimeType == mimeType)) {
-				if (!string.IsNullOrEmpty (filter) && node.Title.IndexOf (filter, StringComparison.OrdinalIgnoreCase) < 0)
-					continue;
-				
-				bool isEnabled = disabledNodes.IndexOf (node.IdString) < 0;
-				var title = node.Title;
-				if (!string.IsNullOrEmpty (filter)) {
-					var idx = title.IndexOf (filter, StringComparison.OrdinalIgnoreCase);
-					title = title.Substring (0, idx) + "<span bgcolor=\"yellow\">" + title.Substring (idx, filter.Length) + "</span>" + title.Substring (idx + filter.Length);
-				}
-				
-				treeStore.AppendValues (title, isEnabled, node);
-			}
-		}
-		
 		public void ApplyChanges ()
 		{
 			var sb = new StringBuilder ();
-			Gtk.TreeIter iter;
-			if (!treeStore.GetIterFirst (out iter))
-				return;
-			do {
-				bool enabled = (bool)treeStore.GetValue (iter, 1);
-				var node = (CodeActionProvider)treeStore.GetValue (iter, 2);
-				
-				if (!enabled) {
-					if (sb.Length > 0)
-						sb.Append (",");
-					sb.Append (node.IdString);
-				}
-			} while (treeStore.IterNext (ref iter));
+			foreach (var kv in providerStates) {
+				if (kv.Value)
+					continue;
+				if (sb.Length > 0)
+					sb.Append (",");
+				sb.Append (kv.Key.IdString);
+			}
+			Console.WriteLine (">>>>>>>>");
+			Console.WriteLine (sb);
 			PropertyService.Set ("ContextActions." + mimeType, sb.ToString ());
 		}
 	}

@@ -57,9 +57,17 @@ namespace MonoDevelop.CodeIssues
 	partial class CodeIssuePanelWidget : Gtk.Bin
 	{
 		readonly string mimeType;
-		Gtk.TreeStore treeStore = new Gtk.TreeStore (typeof(string), typeof(Severity), typeof(CodeIssueProvider));
-		
-		string GetDescription (Severity severity)
+		Gtk.TreeStore treeStore = new Gtk.TreeStore (typeof(string), typeof(CodeIssueProvider));
+
+		Dictionary<CodeIssueProvider, Severity> severities = new Dictionary<CodeIssueProvider, Severity> ();
+		void GetAllSeverities ()
+		{
+			foreach (var node in RefactoringService.GetInspectors (mimeType)) {
+				severities [node] = node.GetSeverity ();
+			}
+		}
+
+		static string GetDescription (Severity severity)
 		{
 			switch (severity) {
 			case Severity.None:
@@ -95,13 +103,11 @@ namespace MonoDevelop.CodeIssues
 			}
 		}
 
-		Dictionary<CodeIssueProvider, Severity> severities = new Dictionary<CodeIssueProvider, Severity> ();
-
 		public void FillInspectors (string filter)
 		{
 			categories.Clear ();
 			treeStore.Clear ();
-			foreach (var node in RefactoringService.GetInspectors (mimeType)) {
+			foreach (var node in severities.Keys) {
 				if (!string.IsNullOrEmpty (filter) && node.Title.IndexOf (filter, StringComparison.OrdinalIgnoreCase) < 0)
 					continue;
 				Gtk.TreeIter iter;
@@ -114,7 +120,7 @@ namespace MonoDevelop.CodeIssues
 					var idx = title.IndexOf (filter, StringComparison.OrdinalIgnoreCase);
 					title = title.Substring (0, idx) + "<span bgcolor=\"yellow\">" + title.Substring (idx, filter.Length) + "</span>" + title.Substring (idx + filter.Length);
 				}
-				treeStore.AppendValues (iter, title, severities[node], node);
+				treeStore.AppendValues (iter, title, node);
 			}
 			treeviewInspections.ExpandAll ();
 		}
@@ -155,28 +161,27 @@ namespace MonoDevelop.CodeIssues
 				Gtk.TreeIter iter;
 				if (!treeStore.GetIterFromString (out iter, args.Path))
 					return;
-				
+
 				Gtk.TreeIter storeIter;
 				if (!comboBoxStore.GetIterFirst (out storeIter))
 					return;
 				do {
 					if ((string)comboBoxStore.GetValue (storeIter, 0) == args.NewText) {
-						var provider = (CodeIssueProvider)comboBoxStore.GetValue (storeIter, 2);
+						var provider = (CodeIssueProvider)treeStore.GetValue (iter, 1);
 						var severity = (Severity)comboBoxStore.GetValue (storeIter, 1);
 						severities[provider] = severity;
-						treeStore.SetValue (iter, 1, severity);
 						return;
 					}
 				} while (comboBoxStore.IterNext (ref storeIter));
 			};
 			
 			col.SetCellDataFunc (comboRenderer, delegate (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter) {
-				var val = treeStore.GetValue (iter, 1);
-				if (val == null) {
+				var provider = (CodeIssueProvider)model.GetValue (iter, 1);
+				if (provider == null) {
 					comboRenderer.Visible = false;
 					return;
 				}
-				var severity = (Severity)val;
+				var severity = severities[provider];
 				comboRenderer.Visible = true;
 				comboRenderer.Text = GetDescription (severity);
 				comboRenderer.BackgroundGdk = GetColor (severity);
@@ -184,10 +189,7 @@ namespace MonoDevelop.CodeIssues
 			treeviewInspections.HeadersVisible = false;
 			treeviewInspections.Model = treeStore;
 			treeviewInspections.Selection.Changed += HandleSelectionChanged;
-			foreach (var node in RefactoringService.GetInspectors (mimeType)) {
-				severities[node] = node.GetSeverity ();
-			}
-
+			GetAllSeverities ();
 			FillInspectors (null);
 		}
 
@@ -211,27 +213,8 @@ namespace MonoDevelop.CodeIssues
 
 		public void ApplyChanges ()
 		{
-			Gtk.TreeIter iter;
-			if (treeStore.GetIterFirst (out iter))
-				ApplyChanges (iter);
-			
-		}
-
-		public void ApplyChanges (Gtk.TreeIter iter)
-		{
-			do {
-				var node = treeStore.GetValue (iter, 2) as CodeIssueProvider;
-
-				if (node != null) {
-					var severity = (Severity)treeStore.GetValue (iter, 1);
-					node.SetSeverity (severity);
-				}
-
-				TreeIter child;
-				if (treeStore.IterChildren (out child, iter)) 
-					ApplyChanges (child);
-			} while (treeStore.IterNext (ref iter));
-			MonoDevelop.SourceEditor.OptionPanels.ColorShemeEditor.RefreshAllColors ();
+			foreach (var kv in severities)
+				kv.Key.SetSeverity (kv.Value);
 		}
 	}
 }
