@@ -64,11 +64,26 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		string fileName;
 		public string FileName {
-			get;
-			set;
+			get {
+				return fileName;
+			}
+			set {
+				fileName = value;
+				OnFileNameChanged (EventArgs.Empty);
+			}
 		}	
-		
+
+		public event EventHandler FileNameChanged;
+
+		protected virtual void OnFileNameChanged (EventArgs e)
+		{
+			EventHandler handler = this.FileNameChanged;
+			if (handler != null)
+				handler (this, e);
+		}
+
 		public bool HeightChanged {
 			get;
 			set;
