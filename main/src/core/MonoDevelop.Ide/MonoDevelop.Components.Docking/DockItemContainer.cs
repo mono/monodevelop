@@ -38,17 +38,14 @@ namespace MonoDevelop.Components.Docking
 {
 	class DockItemContainer: EventBox
 	{
-		DockFrame frame;
 		DockItem item;
 		Widget widget;
 		Container borderFrame;
-		bool pointerHover;
 		Box contentBox;
 		VBox mainBox;
 
 		public DockItemContainer (DockFrame frame, DockItem item)
 		{
-			this.frame = frame;
 			this.item = item;
 
 			mainBox = new VBox ();
