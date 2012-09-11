@@ -21,7 +21,6 @@ gtk-auto-mnemonics    = 1
 
 
 style "default" {
-
     xthickness = 1
     ythickness = 1
 
@@ -99,7 +98,7 @@ style "wider" = "default" {
 
 style "button" {
     xthickness = 2
-    ythickness = 2
+    ythickness = 4
 
     bg[NORMAL]      = @bg_color
     bg[PRELIGHT]    = shade(1.1, @bg_color)
@@ -333,6 +332,8 @@ widget_class "*.GtkList.GtkButton"  style "tree-header"
 widget_class "*<GtkIconView>" style "icon-view"
 
 widget_class "*.<GtkComboBox>.*" style "combo-box"
+widget_class "*.<GtkComboBoxText>.<GtkEntry>" style "entry"
+widget_class "*.<GtkComboBoxText>.<GtkButton>" style "button"
 widget_class "*.<GtkComboBox>.*.GtkLabel" style "combo-box-label"
 
 # Comboboxes within toolbars
