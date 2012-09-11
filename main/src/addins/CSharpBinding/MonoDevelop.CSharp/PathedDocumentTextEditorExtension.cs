@@ -375,11 +375,11 @@ namespace MonoDevelop.CSharp
 			}
 				
 			if (curMember != null) {
-				result.Add (new PathEntry (ImageService.GetPixbuf (curMember.GetStockIcon (false), Gtk.IconSize.Menu), curMemberMarkup) { Tag = curMember });
+				result.Add (new PathEntry (ImageService.GetPixbuf (curMember.GetStockIcon (true), Gtk.IconSize.Menu), curMemberMarkup) { Tag = curMember });
 				if (curMember is Accessor) {
 					var parent = curMember.Parent as EntityDeclaration;
 					if (parent != null)
-						result.Insert (result.Count - 1, new PathEntry (ImageService.GetPixbuf (parent.GetStockIcon (false), Gtk.IconSize.Menu), GetEntityMarkup (parent)) { Tag = parent });
+						result.Insert (result.Count - 1, new PathEntry (ImageService.GetPixbuf (parent.GetStockIcon (true), Gtk.IconSize.Menu), GetEntityMarkup (parent)) { Tag = parent });
 				}
 			}
 				

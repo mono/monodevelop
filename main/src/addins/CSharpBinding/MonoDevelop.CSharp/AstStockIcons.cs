@@ -101,20 +101,43 @@ namespace MonoDevelop.CSharp
 				return 3;
 			return 0;
 		}
+
+		static bool GetAccessibility (EntityDeclaration element, out Accessibility acc)
+		{
+			bool result = false;
+			acc = Accessibility.Private;
+			if (element is TypeDeclaration)
+				acc = Accessibility.Internal;
+			if (element.HasModifier (Modifiers.Public)) {
+				acc = Accessibility.Public;
+				result = true;
+			} else if (element.HasModifier (Modifiers.Protected)) {
+				acc = Accessibility.Protected;
+				result = true;
+			} else if (element.HasModifier (Modifiers.Private)) {
+				acc = Accessibility.Private;
+				result = true;
+			}
+
+			return result;
+		}
 		
 		public static string GetStockIcon (this EntityDeclaration element, bool showAccessibility = true)
 		{
 			Accessibility acc = Accessibility.Public;
-			if (showAccessibility) {
-				// type accessibility
-				acc = Accessibility.Internal;
-				if (element.HasModifier (Modifiers.Public)) {
-					acc = Accessibility.Public;
-				} else if (element.HasModifier (Modifiers.Protected)) {
-					acc = Accessibility.Protected;
-				} else if (element.HasModifier (Modifiers.Private)) {
-					acc = Accessibility.Private;
+
+			
+			if (element is Accessor) {
+				if (showAccessibility) {
+					if (!GetAccessibility (element, out acc))
+						GetAccessibility (element.Parent as EntityDeclaration, out acc);
 				}
+
+				return methodIconTable [ModifierToOffset (acc)];
+			}
+
+			if (showAccessibility) {
+				GetAccessibility (element, out acc);
 			}
 
 			if (element is TypeDeclaration) {
