@@ -189,7 +189,7 @@ namespace MonoDevelop.Components
 		public void AnimatedResize ()
 		{
 			disableSizeCheck = true;
-			Gtk.Requisition sizeReq;
+			Gtk.Requisition sizeReq = Gtk.Requisition.Zero;
 			// use OnSizeRequested instead of SizeRequest to bypass internal GTK caching
 			OnSizeRequested (ref sizeReq);
 			disableSizeCheck = false;
