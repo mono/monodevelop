@@ -493,6 +493,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			// tab widths. Maybe that would work best by performing the ellipsis in the editor, instead of the parser.
 			const int TRUNC_LEN = 60;
 			
+			if (start == 0 && length == str.Length)
+				return str;
+
 			if (str.Length == 0 || length == 0)
 				return " ...";
 			
@@ -503,9 +506,9 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (wordBoundaryLen > TRUNC_LEN - 20)
 						length = wordBoundaryLen;
 				}
-				str = str.Substring (start, length);
 			}
-			
+			str = str.Substring (start, length);
+				
 			if (str [str.Length - 1] == '.')
 				return str + "..";
 			else if (char.IsPunctuation (str [str.Length - 1]))
