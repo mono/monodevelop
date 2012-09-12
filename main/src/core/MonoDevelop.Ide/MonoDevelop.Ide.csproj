@@ -1066,6 +1066,12 @@
     <EmbeddedResource Include="icons\locale_16x16.png">
       <LogicalName>locale_16x16.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\visibility-InternalAndProtected-16.png">
+      <LogicalName>visibility-InternalAndProtected-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\visibility-ProtectedOrInternal-16.png">
+      <LogicalName>visibility-ProtectedOrInternal-16.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />

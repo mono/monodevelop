@@ -32,7 +32,6 @@ namespace MonoDevelop.Ide.TypeSystem
 {
 	public static class Stock
 	{
-		static readonly IconId Error = "gtk-dialog-error";
 		static readonly IconId Class = "md-class";
 		static readonly IconId Enum = "md-enum";
 		static readonly IconId Event = "md-event";
@@ -44,6 +43,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		static readonly IconId Struct = "md-struct";
 		static readonly IconId Delegate = "md-delegate";
 		public static readonly IconId Namespace = "md-name-space";
+
 		static readonly IconId InternalClass = "md-internal-class";
 		static readonly IconId InternalDelegate = "md-internal-delegate";
 		static readonly IconId InternalEnum = "md-internal-enum";
@@ -54,6 +54,18 @@ namespace MonoDevelop.Ide.TypeSystem
 		static readonly IconId InternalExtensionMethod = "md-internal-extensionmethod";
 		static readonly IconId InternalProperty = "md-internal-property";
 		static readonly IconId InternalStruct = "md-internal-struct";
+
+		static readonly IconId InternalAndProtectedClass = "md-InternalAndProtected-class";
+		static readonly IconId InternalAndProtectedDelegate = "md-InternalAndProtected-delegate";
+		static readonly IconId InternalAndProtectedEnum = "md-InternalAndProtected-enum";
+		static readonly IconId InternalAndProtectedEvent = "md-InternalAndProtected-event";
+		static readonly IconId InternalAndProtectedField = "md-InternalAndProtected-field";
+		static readonly IconId InternalAndProtectedInterface = "md-InternalAndProtected-interface";
+		static readonly IconId InternalAndProtectedMethod = "md-InternalAndProtected-method";
+		static readonly IconId InternalAndProtectedExtensionMethod = "md-InternalAndProtected-extensionmethod";
+		static readonly IconId InternalAndProtectedProperty = "md-InternalAndProtected-property";
+		static readonly IconId InternalAndProtectedStruct = "md-InternalAndProtected-struct";
+
 		static readonly IconId PrivateClass = "md-private-class";
 		static readonly IconId PrivateDelegate = "md-private-delegate";
 		static readonly IconId PrivateEnum = "md-private-enum";
@@ -64,6 +76,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		static readonly IconId PrivateExtensionMethod = "md-private-extensionmethod";
 		static readonly IconId PrivateProperty = "md-private-property";
 		static readonly IconId PrivateStruct = "md-private-struct";
+
 		static readonly IconId ProtectedClass = "md-protected-class";
 		static readonly IconId ProtectedDelegate = "md-protected-delegate";
 		static readonly IconId ProtectedEnum = "md-protected-enum";
@@ -75,29 +88,39 @@ namespace MonoDevelop.Ide.TypeSystem
 		static readonly IconId ProtectedProperty = "md-protected-property";
 		static readonly IconId ProtectedStruct = "md-protected-struct";
 		
-		static IconId[,] typeIconTable = new IconId[,] {
-			{Class,     PrivateClass,     ProtectedClass,     InternalClass},     // class
-			{Enum,      PrivateEnum,      ProtectedEnum,      InternalEnum},      // enum
-			{Interface, PrivateInterface, ProtectedInterface, InternalInterface}, // interface
-			{Struct,    PrivateStruct,    ProtectedStruct,    InternalStruct},    // struct
-			{Delegate,  PrivateDelegate,  ProtectedDelegate,  InternalDelegate}   // delegate
-		};
-		static readonly IconId[] fieldIconTable = {Stock.Field, Stock.PrivateField, Stock.ProtectedField, Stock.InternalField};
-		static readonly IconId[] methodIconTable = {Stock.Method, Stock.PrivateMethod, Stock.ProtectedMethod, Stock.InternalMethod};
-		static readonly IconId[] extensionMethodIconTable = {Stock.ExtensionMethod, Stock.PrivateExtensionMethod, Stock.ProtectedExtensionMethod, Stock.InternalExtensionMethod};
-		static readonly IconId[] propertyIconTable = {Stock.Property, Stock.PrivateProperty, Stock.ProtectedProperty, Stock.InternalProperty};
-		static readonly IconId[] eventIconTable = {Stock.Event, Stock.PrivateEvent, Stock.ProtectedEvent, Stock.InternalEvent};
+		static readonly IconId ProtectedOrInternalClass = "md-ProtectedOrInternal-class";
+		static readonly IconId ProtectedOrInternalDelegate = "md-ProtectedOrInternal-delegate";
+		static readonly IconId ProtectedOrInternalEnum = "md-ProtectedOrInternal-enum";
+		static readonly IconId ProtectedOrInternalEvent = "md-ProtectedOrInternal-event";
+		static readonly IconId ProtectedOrInternalField = "md-ProtectedOrInternal-field";
+		static readonly IconId ProtectedOrInternalInterface = "md-ProtectedOrInternal-interface";
+		static readonly IconId ProtectedOrInternalMethod = "md-ProtectedOrInternal-method";
+		static readonly IconId ProtectedOrInternalExtensionMethod = "md-ProtectedOrInternal-extensionmethod";
+		static readonly IconId ProtectedOrInternalProperty = "md-ProtectedOrInternal-property";
+		static readonly IconId ProtectedOrInternalStruct = "md-ProtectedOrInternal-struct";
 		
-		static int ModifierToOffset (Accessibility acc)
-		{
-			if ((acc & Accessibility.Private) == Accessibility.Private)
-				return 1;
-			if ((acc & Accessibility.Protected) == Accessibility.Protected)
-				return 2;
-			if ((acc & Accessibility.Internal) == Accessibility.Internal)
-				return 3;
-			return 0;
-		}
+		static IconId[,] typeIconTable = new IconId[,] {
+			{Class,     PrivateClass,		Class,		ProtectedClass,     InternalClass,		ProtectedOrInternalClass, 		InternalAndProtectedClass},     // class
+			{Enum,      PrivateEnum,		Enum,		ProtectedEnum,      InternalEnum,		ProtectedOrInternalEnum, 		InternalAndProtectedEnum},      // enum
+			{Interface, PrivateInterface,	Interface,	ProtectedInterface, InternalInterface,	ProtectedOrInternalInterface,	InternalAndProtectedInterface}, // interface
+			{Struct,    PrivateStruct,		Struct,   	ProtectedStruct,    InternalStruct,		ProtectedOrInternalStruct,		InternalAndProtectedStruct},    // struct
+			{Delegate,  PrivateDelegate,	Delegate, 	ProtectedDelegate,  InternalDelegate,	ProtectedOrInternalDelegate,	InternalAndProtectedDelegate}   // delegate
+		};
+		static readonly IconId[] fieldIconTable = {
+			Stock.Field, Stock.PrivateField, Stock.Field, Stock.ProtectedField, Stock.InternalField, Stock.ProtectedOrInternalField, Stock.InternalAndProtectedField
+		};
+		static readonly IconId[] methodIconTable = {
+			Stock.Method, Stock.PrivateMethod, Stock.Method, Stock.ProtectedMethod, Stock.InternalMethod, Stock.ProtectedOrInternalMethod, Stock.InternalAndProtectedMethod
+		};
+		static readonly IconId[] extensionMethodIconTable = {
+			Stock.ExtensionMethod, Stock.PrivateExtensionMethod, Stock.ExtensionMethod, Stock.ProtectedExtensionMethod, Stock.InternalExtensionMethod, Stock.ProtectedOrInternalExtensionMethod, Stock.InternalAndProtectedExtensionMethod
+		};
+		static readonly IconId[] propertyIconTable = {
+			Stock.Property, Stock.PrivateProperty, Stock.Property, Stock.ProtectedProperty, Stock.InternalProperty, Stock.ProtectedOrInternalProperty, Stock.InternalAndProtectedProperty
+		};
+		static readonly IconId[] eventIconTable = {
+			Stock.Event, Stock.PrivateEvent, Stock.Event, Stock.ProtectedEvent, Stock.InternalEvent, Stock.ProtectedOrInternalEvent, Stock.InternalAndProtectedEvent
+		};
 
 		public static string GetStockIcon (this INamedElement element)
 		{
@@ -122,17 +145,17 @@ namespace MonoDevelop.Ide.TypeSystem
 				return Class;
 			switch (def.Kind) {
 			case TypeKind.Class:
-				return typeIconTable [0, ModifierToOffset (def.Accessibility)];
+				return typeIconTable [0, (int)def.Accessibility];
 			case TypeKind.Enum:
-				return typeIconTable [1, ModifierToOffset (def.Accessibility)];
+				return typeIconTable [1, (int)def.Accessibility];
 			case TypeKind.Interface:
-				return typeIconTable [2, ModifierToOffset (def.Accessibility)];
+				return typeIconTable [2, (int)def.Accessibility];
 			case TypeKind.Struct:
-				return typeIconTable [3, ModifierToOffset (def.Accessibility)];
+				return typeIconTable [3, (int)def.Accessibility];
 			case TypeKind.Delegate:
-				return typeIconTable [4, ModifierToOffset (def.Accessibility)];
+				return typeIconTable [4, (int)def.Accessibility];
 			default:
-				return typeIconTable [0, ModifierToOffset (def.Accessibility)];
+				return typeIconTable [0, (int)def.Accessibility];
 			}
 		}
 		
@@ -140,17 +163,17 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			switch (def.Kind) {
 			case TypeKind.Class:
-				return typeIconTable [0, ModifierToOffset (def.Accessibility)];
+				return typeIconTable [0, (int)def.Accessibility];
 			case TypeKind.Enum:
-				return typeIconTable [1, ModifierToOffset (def.Accessibility)];
+				return typeIconTable [1, (int)def.Accessibility];
 			case TypeKind.Interface:
-				return typeIconTable [2, ModifierToOffset (def.Accessibility)];
+				return typeIconTable [2, (int)def.Accessibility];
 			case TypeKind.Struct:
-				return typeIconTable [3, ModifierToOffset (def.Accessibility)];
+				return typeIconTable [3, (int)def.Accessibility];
 			case TypeKind.Delegate:
-				return typeIconTable [4, ModifierToOffset (def.Accessibility)];
+				return typeIconTable [4, (int)def.Accessibility];
 			default:
-				return typeIconTable [0, ModifierToOffset (def.Accessibility)];
+				return typeIconTable [0, (int)def.Accessibility];
 			}
 		}
 		
@@ -181,7 +204,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				return GetStockIcon ((IType)entity);
 			case EntityType.Field:
 				if (showAccessibility)
-					return fieldIconTable [ModifierToOffset (entity.Accessibility)];
+					return fieldIconTable [(int)entity.Accessibility];
 				else
 					return fieldIconTable [0];
 			case EntityType.Method:
@@ -190,8 +213,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			case EntityType.Operator:
 				if (showAccessibility) {
 					if (((IMethod)entity).IsExtensionMethod)
-						return extensionMethodIconTable [ModifierToOffset (entity.Accessibility)];
-					return methodIconTable [ModifierToOffset (entity.Accessibility)];
+						return extensionMethodIconTable [(int)entity.Accessibility];
+					return methodIconTable [(int)entity.Accessibility];
 				} else {
 					if (((IMethod)entity).IsExtensionMethod)
 						return extensionMethodIconTable [0];
@@ -200,12 +223,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			case EntityType.Property:
 			case EntityType.Indexer:
 				if (showAccessibility)
-					return propertyIconTable [ModifierToOffset (entity.Accessibility)];
+					return propertyIconTable [(int)entity.Accessibility];
 				else
 					return propertyIconTable [0];
 			case EntityType.Event:
 				if (showAccessibility)
-					return eventIconTable [ModifierToOffset (entity.Accessibility)];
+					return eventIconTable [(int)entity.Accessibility];
 				else
 					return eventIconTable [0];
 			}
@@ -218,7 +241,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				return GetStockIcon ((IUnresolvedTypeDefinition)entity);
 			case EntityType.Field:
 				if (showAccessibility)
-					return fieldIconTable [ModifierToOffset (entity.Accessibility)];
+					return fieldIconTable [(int)entity.Accessibility];
 				else
 					return fieldIconTable [0];
 			case EntityType.Method:
@@ -226,18 +249,18 @@ namespace MonoDevelop.Ide.TypeSystem
 			case EntityType.Destructor:
 			case EntityType.Operator:
 				if (showAccessibility)
-					return methodIconTable [ModifierToOffset (entity.Accessibility)];
+					return methodIconTable [(int)entity.Accessibility];
 				else
 					return methodIconTable [0];
 			case EntityType.Property:
 			case EntityType.Indexer:
 				if (showAccessibility)
-					return propertyIconTable [ModifierToOffset (entity.Accessibility)];
+					return propertyIconTable [(int)entity.Accessibility];
 				else
 					return propertyIconTable [0];
 			case EntityType.Event:
 				if (showAccessibility)
-					return eventIconTable [ModifierToOffset (entity.Accessibility)];
+					return eventIconTable [(int)entity.Accessibility];
 				else
 					return eventIconTable [0];
 			}
