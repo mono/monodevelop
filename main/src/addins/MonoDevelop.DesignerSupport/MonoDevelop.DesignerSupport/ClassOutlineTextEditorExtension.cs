@@ -338,9 +338,14 @@ namespace MonoDevelop.DesignerSupport
 		static void AddTreeClassContents (TreeStore store, TreeIter parent, ParsedDocument parsedDocument, ITypeDefinition cls, IUnresolvedTypeDefinition part)
 		{
 			List<object> items = new List<object> ();
-			foreach (object o in cls.GetMembers (m => part.Region.FileName == m.Region.FileName && part.Region.IsInside (m.Region.Begin)))
-				items.Add (o);
-
+			if (cls.Kind != TypeKind.Delegate) {
+				foreach (object o in cls.GetMembers (m => part.Region.FileName == m.Region.FileName && part.Region.IsInside (m.Region.Begin))) {
+					items.Add (o);
+				}
+				foreach (object o in cls.GetConstructors (m => part.Region.FileName == m.Region.FileName && part.Region.IsInside (m.Region.Begin))) {
+					items.Add (o);
+				}
+			}
 			items.Sort (ClassOutlineNodeComparer.CompareRegion);
 
 			List<FoldingRegion> regions = new List<FoldingRegion> ();
