@@ -257,7 +257,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			
 			var content = context.Document.Editor.Text;
 			
-			var types = new List<TypeDeclaration> (context.Unit.GetTypes ());
+			var types = new List<EntityDeclaration> (context.Unit.GetTypes ());
 			types.Sort ((x, y) => y.StartLocation.CompareTo (x.StartLocation));
 
 			foreach (var removeType in types) {
