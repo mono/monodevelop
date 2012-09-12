@@ -71,7 +71,7 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		public override bool IsVisible {
-			get { return !task.Completed; }
+			get { return !task.Completed && !DebuggingService.IsDebugging; }
 			set { task.Completed = !value; }
 		}
 
