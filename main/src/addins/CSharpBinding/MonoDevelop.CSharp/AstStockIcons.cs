@@ -104,20 +104,41 @@ namespace MonoDevelop.CSharp
 
 		static bool GetAccessibility (EntityDeclaration element, out Accessibility acc)
 		{
+			if (element.Parent is TypeDeclaration && ((TypeDeclaration)element.Parent).ClassType == ClassType.Interface) {
+				acc = Accessibility.Public;
+				return true;
+			}
 			bool result = false;
+
 			acc = Accessibility.Private;
-			if (element is TypeDeclaration)
+			if (element is TypeDeclaration && !(element.Parent is TypeDeclaration))
 				acc = Accessibility.Internal;
+
 			if (element.HasModifier (Modifiers.Public)) {
 				acc = Accessibility.Public;
-				result = true;
-			} else if (element.HasModifier (Modifiers.Protected)) {
-				acc = Accessibility.Protected;
 				result = true;
 			} else if (element.HasModifier (Modifiers.Private)) {
 				acc = Accessibility.Private;
 				result = true;
-			}
+			} else if (element.HasModifier (Modifiers.Protected) && element.HasModifier (Modifiers.Internal)) {
+				foreach (var mod in element.ModifierTokens) {
+					if (mod.Modifier == Modifiers.Protected) {
+						acc = Accessibility.ProtectedAndInternal;
+						break;
+					}
+					if (mod.Modifier == Modifiers.Internal) {
+						acc = Accessibility.ProtectedOrInternal;
+						break;
+					}
+				}
+				result = true;
+			} else if (element.HasModifier (Modifiers.Protected)) {
+				acc = Accessibility.Protected;
+				result = true;
+			} else if (element.HasModifier (Modifiers.Internal)) {
+				acc = Accessibility.Internal;
+				result = true;
+			} 
 
 			return result;
 		}
@@ -159,14 +180,7 @@ namespace MonoDevelop.CSharp
 				return typeIconTable [4, ModifierToOffset (acc)];
 
 			// member accessibility
-			acc = Accessibility.Private;
-			if (element.HasModifier (Modifiers.Public)) {
-				acc = Accessibility.Public;
-			} else if (element.HasModifier (Modifiers.Protected)) {
-				acc = Accessibility.Protected;
-			} else if (element.HasModifier (Modifiers.Internal)) {
-				acc = Accessibility.Internal;
-			}
+			GetAccessibility (element, out acc);
 
 			if (element is MethodDeclaration) {
 				var method = element as MethodDeclaration;
