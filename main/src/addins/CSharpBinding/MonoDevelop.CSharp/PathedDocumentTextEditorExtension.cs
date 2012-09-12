@@ -310,7 +310,7 @@ namespace MonoDevelop.CSharp
 			OnPathChanged (new DocumentPathChangedEventArgs (prev));	
 		}
 
-		TypeDeclaration lastType;
+		EntityDeclaration lastType;
 		string lastTypeMarkup;
 		EntityDeclaration lastMember;
 		string lastMemberMarkup;
@@ -335,7 +335,7 @@ namespace MonoDevelop.CSharp
 
 			var loc = Document.Editor.Caret.Location;
 
-			var curType = unit.GetNodeAt<TypeDeclaration> (loc);
+			var curType = (EntityDeclaration)unit.GetNodeAt (loc, n => n is TypeDeclaration || n is DelegateDeclaration);
 			var curMember = unit.GetNodeAt<EntityDeclaration> (loc);
 			if (curType == curMember)
 				curMember = null;
@@ -390,7 +390,7 @@ namespace MonoDevelop.CSharp
 			PathEntry noSelection = null;
 			if (curType == null) {
 				noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = unit };
-			} else if (curMember == null) { 
+			} else if (curMember == null && !(curType is DelegateDeclaration)) { 
 				noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = curType };
 			}
 
