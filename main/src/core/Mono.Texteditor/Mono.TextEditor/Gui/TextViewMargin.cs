@@ -2554,7 +2554,7 @@ namespace Mono.TextEditor
 				return false;
 			}
 
-			public DocumentLocation PointToLocation (double xp, double yp)
+			public DocumentLocation PointToLocation (double xp, double yp, bool endAtEol = false)
 			{
 				lineNumber = System.Math.Min (margin.YToLine (yp + margin.textEditor.VAdjustment.Value), margin.Document.LineCount);
 				line = lineNumber <= margin.Document.LineCount ? margin.Document.GetLine (lineNumber) : null;
@@ -2620,8 +2620,10 @@ namespace Mono.TextEditor
 					}
 					if (!done) {
 						layoutWrapper = margin.CreateLinePartLayout (mode, line, logicalRulerColumn, offset, line.Offset + line.Length - offset, -1, -1);
-						if (!ConsumeLayout ((int)(xp - xPos), 0)) 
-							return DocumentLocation.Empty; 
+						if (!ConsumeLayout ((int)(xp - xPos), 0)) {
+							if (endAtEol)
+								return DocumentLocation.Empty; 
+						}
 					}
 				} finally {
 					if (measueLayout != null)
@@ -2631,19 +2633,19 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public DocumentLocation PointToLocation (double xp, double yp)
+		public DocumentLocation PointToLocation (double xp, double yp, bool endAtEol = false)
 		{
-			return new VisualLocationTranslator (this).PointToLocation (xp, yp);
+			return new VisualLocationTranslator (this).PointToLocation (xp, yp, endAtEol);
 		}
 		
-		public DocumentLocation PointToLocation (Cairo.Point p)
+		public DocumentLocation PointToLocation (Cairo.Point p, bool endAtEol = false)
 		{
-			return new VisualLocationTranslator (this).PointToLocation (p.X, p.Y);
+			return new VisualLocationTranslator (this).PointToLocation (p.X, p.Y, endAtEol);
 		}
 		
-		public DocumentLocation PointToLocation (Cairo.PointD p)
+		public DocumentLocation PointToLocation (Cairo.PointD p, bool endAtEol = false)
 		{
-			return new VisualLocationTranslator (this).PointToLocation (p.X, p.Y);
+			return new VisualLocationTranslator (this).PointToLocation (p.X, p.Y, endAtEol);
 		}
 		
 		static bool IsNearX1 (int pos, int x1, int x2)

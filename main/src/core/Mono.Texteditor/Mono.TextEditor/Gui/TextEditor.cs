@@ -2792,7 +2792,7 @@ namespace Mono.TextEditor
 
 		void ShowTooltip (Gdk.ModifierType modifierState)
 		{
-			var loc = PointToLocation (mx, my);
+			var loc = PointToLocation (mx, my, true);
 			if (loc.IsEmpty) {
 				HideTooltip ();
 				return;
@@ -2966,9 +2966,9 @@ namespace Mono.TextEditor
 		#endregion
 		
 		#region Coordinate transformation
-		public DocumentLocation PointToLocation (double xp, double yp)
+		public DocumentLocation PointToLocation (double xp, double yp, bool endAtEol = false)
 		{
-			return TextViewMargin.PointToLocation (xp, yp);
+			return TextViewMargin.PointToLocation (xp, yp, endAtEol);
 		}
 
 		public DocumentLocation PointToLocation (Cairo.Point p)
