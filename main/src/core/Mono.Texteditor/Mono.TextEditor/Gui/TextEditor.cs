@@ -2793,9 +2793,11 @@ namespace Mono.TextEditor
 		void ShowTooltip (Gdk.ModifierType modifierState)
 		{
 			var loc = PointToLocation (mx, my);
-			if (loc.IsEmpty)
+			if (loc.IsEmpty) {
+				HideTooltip ();
 				return;
-			
+			}
+
 			// Hide editor tooltips for text marker extended regions (message bubbles)
 			double y = LineToY (loc.Line);
 			if (y + LineHeight < my) {

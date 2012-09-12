@@ -2573,56 +2573,60 @@ namespace Mono.TextEditor
 				IEnumerable<FoldSegment> foldings = margin.Document.GetStartFoldings (line);
 				bool done = false;
 				Pango.Layout measueLayout = null;
-				restart:
-				int logicalRulerColumn = line.GetLogicalColumn (margin.textEditor.GetTextEditorData (), margin.textEditor.Options.RulerColumn);
-				foreach (FoldSegment folding in foldings.Where(f => f.IsFolded)) {
-					int foldOffset = folding.StartLine.Offset + folding.Column - 1;
-					if (foldOffset < offset)
-						continue;
-					layoutWrapper = margin.CreateLinePartLayout (mode, line, logicalRulerColumn, line.Offset, foldOffset - offset, -1, -1);
-					done |= ConsumeLayout ((int)(xp - xPos), 0);
-					if (done)
-						break;
-					int height, width;
-					layoutWrapper.Layout.GetPixelSize (out width, out height);
-					xPos += width * (int)Pango.Scale.PangoScale;
-					if (measueLayout == null) {
-						measueLayout = PangoUtil.CreateLayout (margin.textEditor, folding.Description);
-						measueLayout.FontDescription = margin.textEditor.Options.Font;
-					}
+				try {
+					restart:
+					int logicalRulerColumn = line.GetLogicalColumn (margin.textEditor.GetTextEditorData (), margin.textEditor.Options.RulerColumn);
+					foreach (FoldSegment folding in foldings.Where(f => f.IsFolded)) {
+						int foldOffset = folding.StartLine.Offset + folding.Column - 1;
+						if (foldOffset < offset)
+							continue;
+						layoutWrapper = margin.CreateLinePartLayout (mode, line, logicalRulerColumn, line.Offset, foldOffset - offset, -1, -1);
+						done |= ConsumeLayout ((int)(xp - xPos), 0);
+						if (done)
+							break;
+						int height, width;
+						layoutWrapper.Layout.GetPixelSize (out width, out height);
+						xPos += width * (int)Pango.Scale.PangoScale;
+						if (measueLayout == null) {
+							measueLayout = PangoUtil.CreateLayout (margin.textEditor, folding.Description);
+							measueLayout.FontDescription = margin.textEditor.Options.Font;
+						}
 
-					int delta;
-					measueLayout.GetPixelSize (out delta, out height);
-					delta *= (int)Pango.Scale.PangoScale;
-					xPos += delta;
-					if (xPos - delta / 2 >= xp) {
-						index = foldOffset - offset;
-						done = true;
-						break;
-					}
+						int delta;
+						measueLayout.GetPixelSize (out delta, out height);
+						delta *= (int)Pango.Scale.PangoScale;
+						xPos += delta;
+						if (xPos - delta / 2 >= xp) {
+							index = foldOffset - offset;
+							done = true;
+							break;
+						}
 
-					offset = folding.EndLine.Offset + folding.EndColumn - 1;
-					DocumentLocation foldingEndLocation = margin.Document.OffsetToLocation (offset);
-					lineNumber = foldingEndLocation.Line;
-					column = foldingEndLocation.Column;
-					if (xPos >= xp) {
-						index = 0;
-						done = true;
-						break;
-					}
+						offset = folding.EndLine.Offset + folding.EndColumn - 1;
+						DocumentLocation foldingEndLocation = margin.Document.OffsetToLocation (offset);
+						lineNumber = foldingEndLocation.Line;
+						column = foldingEndLocation.Column;
+						if (xPos >= xp) {
+							index = 0;
+							done = true;
+							break;
+						}
 
-					if (folding.EndLine != line) {
-						line = folding.EndLine;
-						foldings = margin.Document.GetStartFoldings (line);
-						goto restart;
+						if (folding.EndLine != line) {
+							line = folding.EndLine;
+							foldings = margin.Document.GetStartFoldings (line);
+							goto restart;
+						}
 					}
+					if (!done) {
+						layoutWrapper = margin.CreateLinePartLayout (mode, line, logicalRulerColumn, offset, line.Offset + line.Length - offset, -1, -1);
+						if (!ConsumeLayout ((int)(xp - xPos), 0)) 
+							return DocumentLocation.Empty; 
+					}
+				} finally {
+					if (measueLayout != null)
+						measueLayout.Dispose ();
 				}
-				if (!done) {
-					layoutWrapper = margin.CreateLinePartLayout (mode, line, logicalRulerColumn, offset, line.Offset + line.Length - offset, -1, -1);
-					ConsumeLayout ((int)(xp - xPos), 0);
-				}
-				if (measueLayout != null)
-					measueLayout.Dispose ();
 				return new DocumentLocation (lineNumber, column + index);
 			}
 		}
