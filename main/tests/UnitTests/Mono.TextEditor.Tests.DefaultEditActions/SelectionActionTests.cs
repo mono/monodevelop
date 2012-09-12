@@ -146,7 +146,6 @@ namespace Mono.TextEditor.Tests.Actions
 			
 			Assert.AreEqual (data.SelectionRange.Offset, 0);
 			Assert.AreEqual (data.SelectionRange.EndOffset, data.Document.TextLength);
-			Assert.AreEqual (data.SelectionRange.EndOffset, data.Caret.Offset);
 		}
 		
 		
@@ -161,8 +160,31 @@ namespace Mono.TextEditor.Tests.Actions
 			Assert.IsFalse (data.IsSomethingSelected);
 			SelectionActions.SelectAll (data);
 			Assert.IsTrue (data.IsSomethingSelected);
-			data.Caret.Offset = 0;
+			data.Caret.Offset++;
 			Assert.IsFalse (data.IsSomethingSelected);
+		}
+
+		[Test()]
+		public void TestSelectAllCaretMovement ()
+		{
+			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
+			data.Document.Text = 
+				@"123456789
+123456789
+123456789
+123456789
+123456789
+123456789";
+			
+			Assert.IsFalse (data.IsSomethingSelected);
+			var loc = new DocumentLocation (3, 3);
+			data.Caret.Location = loc;
+			SelectionActions.SelectAll (data);
+			Assert.IsTrue (data.IsSomethingSelected);
+			
+			Assert.AreEqual (data.SelectionRange.Offset, 0);
+			Assert.AreEqual (data.SelectionRange.EndOffset, data.Document.TextLength);
+			Assert.AreEqual (loc, data.Caret.Location);
 		}
 
 		[Test()]
