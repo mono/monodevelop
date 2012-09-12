@@ -1719,8 +1719,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				#endregion
 			
-				#region IResolved implementation
-				ICompilation IResolved.Compilation {
+				#region ICompilationProvider implementation
+				ICompilation ICompilationProvider.Compilation {
 					get {
 						return Assembly.Compilation;
 					}
