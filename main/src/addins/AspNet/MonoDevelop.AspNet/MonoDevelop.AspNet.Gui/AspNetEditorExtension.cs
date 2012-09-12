@@ -473,7 +473,7 @@ namespace MonoDevelop.AspNet.Gui
 				
 				foreach (IProperty prop in GetUniqueMembers<IProperty> (controlClass.GetProperties ()))
 					if (GetPersistenceMode (prop) != System.Web.UI.PersistenceMode.Attribute)
-						list.Add (prop.Name, prop.GetStockIcon (), AmbienceService.GetDocumentationSummary (prop));
+						list.Add (prop.Name, prop.GetStockIcon (), AmbienceService.GetSummaryMarkup (prop));
 				return;
 			}
 		}
@@ -618,13 +618,13 @@ namespace MonoDevelop.AspNet.Gui
 			foreach (var prop in GetUniqueMembers<IProperty> (controlClass.GetProperties ()))
 				if (prop.Accessibility == Accessibility.Public && (existingAtts == null || !existingAtts.ContainsKey (prop.Name)))
 				if (GetPersistenceMode (prop) == System.Web.UI.PersistenceMode.Attribute)
-					list.Add (prop.Name, prop.GetStockIcon (), AmbienceService.GetDocumentationSummary (prop));
+						list.Add (prop.Name, prop.GetStockIcon (), AmbienceService.GetSummaryMarkup (prop));
 			
 			//similarly add events
 			foreach (var eve in GetUniqueMembers<IEvent> (controlClass.GetEvents ())) {
 				string eveName = "On" + eve.Name;
 				if (eve.Accessibility == Accessibility.Public && (existingAtts == null || !existingAtts.ContainsKey (eveName)))
-					list.Add (eveName, eve.GetStockIcon (), AmbienceService.GetDocumentationSummary (eve));
+					list.Add (eveName, eve.GetStockIcon (), AmbienceService.GetSummaryMarkup (eve));
 			}
 		}
 		
@@ -725,7 +725,7 @@ namespace MonoDevelop.AspNet.Gui
 				if (retCls != null && retCls.Kind == TypeKind.Enum) {
 					foreach (var enumVal in retCls.GetFields ())
 						if (enumVal.IsPublic && enumVal.IsStatic)
-							list.Add (enumVal.Name, "md-literal", AmbienceService.GetDocumentationSummary (enumVal));
+							list.Add (enumVal.Name, "md-literal", AmbienceService.GetSummaryMarkup (enumVal));
 					return;
 				}
 			}
