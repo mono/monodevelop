@@ -144,13 +144,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				return SmallText ? "<small>" + str + Environment.NewLine + "</small>" : str + Environment.NewLine;
 			}
 		}
-		
-		public static string GetSummaryMarkup (IMember member)
-		{
-			return GetDocumentationMarkup (GetDocumentationSummary (member));
-		}
-		
-		public static string GetDocumentationSummary (IEntity member)
+
+		public static string GetSummaryMarkup (IEntity member)
 		{
 			if (member == null || member.Documentation == null)
 				return null;
@@ -160,7 +155,16 @@ namespace MonoDevelop.Ide.TypeSystem
 				int idx2 = documentation.IndexOf ("</summary>");
 				string result;
 				if (idx2 >= 0 && idx1 >= 0) {
-					result = documentation.Substring (idx1 + "<summary>".Length, idx2 - idx1 - "<summary>".Length);
+					try {
+						return ParseBody (
+							new XmlTextReader (documentation.Substring (idx1, idx2 - idx1 + "</summary>".Length), XmlNodeType.Element, null),
+							"summary", 
+							DocumentationFormatOptions.Empty
+						);
+					} catch (Exception) {
+						// may happen on malformed xml.
+						result = documentation.Substring (idx1 + "<summary>".Length, idx2 - idx1 - "<summary>".Length);
+					}
 				} else if (idx1 >= 0) {
 					result = documentation.Substring (idx1 + "<summary>".Length);
 				} else if (idx2 >= 0) {
@@ -169,10 +173,10 @@ namespace MonoDevelop.Ide.TypeSystem
 					result = documentation;
 				}
 				
-				return CleanEmpty (result);
+				return GetDocumentationMarkup (CleanEmpty (result));
 			}
 			
-			return CleanEmpty (documentation);
+			return GetDocumentationMarkup (CleanEmpty (documentation));
 		}
 		
 		static string CleanEmpty (string doc)

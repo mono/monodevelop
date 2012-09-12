@@ -104,8 +104,7 @@ namespace MonoDevelop.CSharp.Completion
 			sig.HighlightParameter = currentParameter;
 			sig.BreakLineAfterReturnType = smartWrap;
 			tooltipInfo.SignatureMarkup = sig.GetMarkup (entity);
-			var plainDoc = AmbienceService.GetDocumentationSummary (entity) ?? "";
-			tooltipInfo.SummaryMarkup = AmbienceService.GetDocumentationMarkup (plainDoc);
+			tooltipInfo.SummaryMarkup = AmbienceService.GetSummaryMarkup (entity) ?? "";
 			
 			if (entity is IMethod) {
 				var method = (IMethod)entity;

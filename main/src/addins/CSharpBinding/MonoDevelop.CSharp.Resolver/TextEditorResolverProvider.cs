@@ -238,7 +238,7 @@ namespace MonoDevelop.CSharp.Resolver
 								int overloadCount = allMethods.Count - 1;
 								s.Append (string.Format (GettextCatalog.GetPluralString (" (+{0} overload)", " (+{0} overloads)", overloadCount), overloadCount));
 							}
-							documentation = AmbienceService.GetDocumentationSummary (method);
+							documentation = AmbienceService.GetSummaryMarkup (method);
 						}
 					} else if (result is MemberResolveResult) {
 						var member = ((MemberResolveResult)result).Member;
@@ -256,7 +256,7 @@ namespace MonoDevelop.CSharp.Resolver
 						} else {
 							s.Append (GLib.Markup.EscapeText (CreateAmbience (doc, offset, member.Compilation).ConvertEntity (member)));
 						}
-						documentation = AmbienceService.GetDocumentationSummary (member);
+						documentation = AmbienceService.GetSummaryMarkup (member);
 					} else if (result is NamespaceResolveResult) {
 						s.Append ("<small><i>");
 						s.Append (namespaceStr);
@@ -272,12 +272,12 @@ namespace MonoDevelop.CSharp.Resolver
 						}
 						settings.OutputFlags |= OutputFlags.UseFullName;
 						s.Append (ambience.GetString (tr.Type, settings));
-						documentation = AmbienceService.GetDocumentationSummary (tr.Type.GetDefinition ());
+						documentation = AmbienceService.GetSummaryMarkup (tr.Type.GetDefinition ());
 					}
 					
 					if (!string.IsNullOrEmpty (documentation)) {
 						s.Append ("\n<small>");
-						s.Append (AmbienceService.GetDocumentationMarkup ("<summary>" + documentation + "</summary>"));
+						s.Append (documentation);
 						s.Append ("</small>");
 					}
 				}
