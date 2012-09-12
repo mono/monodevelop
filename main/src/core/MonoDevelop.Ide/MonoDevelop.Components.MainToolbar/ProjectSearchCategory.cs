@@ -150,9 +150,12 @@ namespace MonoDevelop.Components.MainToolbar
 						newResult.isGotoFilePattern = true;
 					}
 					newResult.matcher = StringMatcher.GetMatcher (toMatch, true);
-	//				newResult.FullSearch = searchPattern.IndexOf ('.') > 0;
+					newResult.FullSearch = searchPattern.IndexOf ('.') > 0;
+					var oldLastResult = lastResult;
+					if (newResult.FullSearch && oldLastResult != null && !oldLastResult.FullSearch)
+						oldLastResult = new WorkerResult (widget);
 					var now = DateTime.Now;
-					foreach (SearchResult result in AllResults (lastResult, newResult, token)) {
+					foreach (SearchResult result in AllResults (oldLastResult, newResult, token)) {
 						newResult.results.AddResult (result);
 					}
 					if (token.IsCancellationRequested) {
