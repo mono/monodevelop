@@ -43,19 +43,19 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 
 		public override string IdString {
 			get {
-				return "refactoring.inspectors." + MimeType + "." + issueProvider.GetType ().FullName;
+				return "refactoring.codeissues." + MimeType + "." + issueProvider.GetType ().FullName;
 			}
 		}
 
 		public NRefactoryIssueProvider (ICSharpCode.NRefactory.CSharp.Refactoring.ICodeIssueProvider issue, IssueDescriptionAttribute attr)
 		{
 			issueProvider = issue;
-			MimeType = "text/x-csharp";
 			Category = GettextCatalog.GetString (attr.Category ?? "");
 			Title = GettextCatalog.GetString (attr.Title ?? "");
 			Description = GettextCatalog.GetString (attr.Description ?? "");
 			DefaultSeverity = attr.Severity;
 			IssueMarker = attr.IssueMarker;
+			MimeType = "text/x-csharp";
 		}
 
 		public override IEnumerable<CodeIssue> GetIssues (Document document, CancellationToken cancellationToken)

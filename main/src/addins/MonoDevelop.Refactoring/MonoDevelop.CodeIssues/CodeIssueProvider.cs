@@ -83,7 +83,7 @@ namespace MonoDevelop.CodeIssues
 		/// </summary>
 		public virtual string IdString {
 			get {
-				return "refactoring.inspectors." + MimeType + "." + GetType ().FullName;
+				return "refactoring.codeissues." + MimeType + "." + GetType ().FullName;
 			}
 		}
 
