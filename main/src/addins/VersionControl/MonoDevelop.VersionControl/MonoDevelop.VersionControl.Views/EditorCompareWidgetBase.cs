@@ -251,6 +251,7 @@ namespace MonoDevelop.VersionControl.Views
 
 				editor.Options.ShowFoldMargin = false;
 				editor.Options.ShowIconMargin = false;
+				editor.Options.DrawIndentationMarkers = PropertyService.Get ("DrawIndentationMarkers", false);
 			}
 		}
 		

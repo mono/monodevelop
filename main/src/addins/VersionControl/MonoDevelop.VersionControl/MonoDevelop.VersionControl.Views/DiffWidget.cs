@@ -101,6 +101,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			diffTextEditor.Options.ShowFoldMargin = false;
 			diffTextEditor.Options.ShowIconMargin = false;
+			diffTextEditor.Options.DrawIndentationMarkers = PropertyService.Get ("DrawIndentationMarkers", false);
 			diffTextEditor.Document.ReadOnly = true;
 			scrolledwindow1.Child = diffTextEditor;
 			diffTextEditor.Show ();

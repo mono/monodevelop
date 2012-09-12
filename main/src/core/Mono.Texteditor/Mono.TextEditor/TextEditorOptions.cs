@@ -420,7 +420,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		bool drawIndentationMarkers = true;
+		bool drawIndentationMarkers = false;
 		public virtual bool DrawIndentationMarkers {
 			get {
 				return drawIndentationMarkers;
