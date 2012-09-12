@@ -135,6 +135,11 @@ namespace MonoDevelop.CSharp
 				var type = e as TypeDeclaration;
 				sb.Append (type.Name);
 				AppendTypeParameter (sb, type.TypeParameters);
+			} else if (e is DelegateDeclaration) {
+				var del = e as DelegateDeclaration;
+				sb.Append (del.Name);
+				AppendTypeParameter (sb, del.TypeParameters);
+				AppendParameter (sb, del.Parameters);
 			} else if (e is Accessor) {
 				if (e.Role == PropertyDeclaration.GetterRole) {
 					sb.Append ("get");
