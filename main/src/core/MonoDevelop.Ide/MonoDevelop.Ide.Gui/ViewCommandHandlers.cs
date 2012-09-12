@@ -486,11 +486,18 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		#region Folding
+		bool IsFoldMarkerMarginEnabled {
+			get {
+				return PropertyService.Get ("ShowFoldMargin", false);
+			}
+		}
+
 		[CommandUpdateHandler (EditCommands.ToggleAllFoldings)]
 		[CommandUpdateHandler (EditCommands.FoldDefinitions)]
+		[CommandUpdateHandler (EditCommands.ToggleFolding)]
 		protected void UpdateFoldCommands (CommandInfo info)
 		{
-			info.Enabled = GetContent <IFoldable> () != null;
+			info.Enabled = GetContent <IFoldable> () != null && IsFoldMarkerMarginEnabled;
 		}
 		
 		[CommandHandler (EditCommands.ToggleAllFoldings)]
@@ -504,13 +511,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			GetContent <IFoldable> ().FoldDefinitions ();
 		}
-		
-		[CommandUpdateHandler (EditCommands.ToggleFolding)]
-		protected void UpdateToggleFolding (CommandInfo info)
-		{
-			info.Enabled = GetContent <IFoldable> () != null;
-		}
-		
+
 		[CommandHandler (EditCommands.ToggleFolding)]
 		protected void ToggleFolding ()
 		{
