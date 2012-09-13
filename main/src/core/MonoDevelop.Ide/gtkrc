@@ -21,6 +21,7 @@ gtk-auto-mnemonics    = 1
 
 
 style "default" {
+
     xthickness = 1
     ythickness = 1
 
@@ -53,6 +54,7 @@ style "default" {
     GtkWidget::new-tooltip-style = 1
 
     GtkEntry::honors-transparent-bg-hint = 1
+    GtkEntry::inner-border = { 2, 2, 2, 2 }
 
     GtkButton::child-displacement-x = 0
     GtkButton::child-displacement-y = 0
@@ -66,6 +68,7 @@ style "default" {
 
     GtkTreeView::expander-size = 8
     GtkExpander::expander-size = 8
+    GtkComboBox::arrow-size = 8
 
     engine "xamarin" {
 
@@ -207,7 +210,7 @@ style "toolbar-combo-box" = "default"
 style "combo-box" = "default"
 {
     fg[NORMAL] = "#616161"
-    xthickness = 2
+    xthickness = 4
     ythickness = 2
 
     engine "xamarin" {
@@ -310,6 +313,7 @@ class "GtkScrollbar" style "scrollbar"
 class "GtkProgressBar" style "progressbar"
 class "GtkScrolledWindow" style "scrolled-window"
 class "GtkNotebook" style "notebook"
+class "GtkButton" style "button"
 
 class "GtkRadioButton" style "radio-button"
 class "GtkCheckButton" style "check-box"
@@ -332,8 +336,12 @@ widget_class "*.GtkList.GtkButton"  style "tree-header"
 widget_class "*<GtkIconView>" style "icon-view"
 
 widget_class "*.<GtkComboBox>.*" style "combo-box"
+widget_class "*.<GtkComboBoxText>.*" style "combo-box"
+widget_class "*.<GtkComboBoxEntry>.*" style "combo-box"
 widget_class "*.<GtkComboBoxText>.<GtkEntry>" style "entry"
 widget_class "*.<GtkComboBoxText>.<GtkButton>" style "button"
+#widget_class "*.<GtkComboBoxEntry>.GtkEntry" style "entry"
+#widget_class "*.<GtkComboBoxEntry>.<GtkButton>" style "button"
 widget_class "*.<GtkComboBox>.*.GtkLabel" style "combo-box-label"
 
 # Comboboxes within toolbars
