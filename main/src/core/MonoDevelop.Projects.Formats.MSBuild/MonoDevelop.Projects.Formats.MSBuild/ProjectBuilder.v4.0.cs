@@ -153,14 +153,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 
 		Project ConfigureProject (string file, string configuration, string platform)
-		{
-			var p = engine.GetLoadedProjects (file).FirstOrDefault(pr => pr.GetPropertyValue ("Configuration") == configuration && pr.GetPropertyValue ("Platform") == platform);
-			if (p == null) {
+		{			
+			var p = engine.GetLoadedProjects (file).FirstOrDefault ();
+			if (p == null)
 				p = engine.LoadProject (file);
-				p.SetGlobalProperty ("Configuration", configuration);
-				if (!string.IsNullOrEmpty (platform))
-					p.SetGlobalProperty ("Platform", platform);
-			}
+			
+			p.SetProperty ("Configuration", configuration);
+			if (!string.IsNullOrEmpty (platform))
+				p.SetProperty ("Platform", platform);
+			else
+				p.SetProperty ("Platform", "");
+			
 			return p;
 		}
 
