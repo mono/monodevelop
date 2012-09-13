@@ -465,15 +465,6 @@
     <EmbeddedResource Include="icons\project-reference-16.png">
       <LogicalName>project-reference-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-reference-folder-16.png">
-      <LogicalName>project-reference-folder-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-reference-package-16.png">
-      <LogicalName>project-reference-package-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-reference-project-16.png">
-      <LogicalName>project-reference-project-16.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\remove-namespace-16.png">
       <LogicalName>remove-namespace-16.png</LogicalName>
     </EmbeddedResource>
@@ -787,9 +778,6 @@
     <EmbeddedResource Include="icons\closed-folder-16.png">
       <LogicalName>closed-folder-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\closed-reference-folder-16.png">
-      <LogicalName>closed-reference-folder-16.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\closed-resource-folder-16.png">
       <LogicalName>closed-resource-folder-16.png</LogicalName>
     </EmbeddedResource>
@@ -822,9 +810,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\open-project-16.png">
       <LogicalName>open-project-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\open-reference-folder-16.png">
-      <LogicalName>open-reference-folder-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\open-resource-folder-16.png">
       <LogicalName>open-resource-folder-16.png</LogicalName>
@@ -867,9 +852,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\web-search-16.png">
       <LogicalName>web-search-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\link-overlay-16.png">
-      <LogicalName>link-overlay-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\empty-file-32.png">
       <LogicalName>empty-file-32.png</LogicalName>
@@ -1050,6 +1032,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\visibility-ProtectedOrInternal-16.png">
       <LogicalName>visibility-ProtectedOrInternal-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\chain-overlay-16.png">
+      <LogicalName>chain-overlay-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-overlay-16.png">
+      <LogicalName>folder-overlay-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-overlay-16.png">
+      <LogicalName>project-overlay-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-item-group-16.png">
+      <LogicalName>project-item-group-16.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
