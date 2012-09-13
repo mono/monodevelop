@@ -132,28 +132,20 @@ namespace MonoDevelop.CSharp
 				return true;
 			}
 			bool result = false;
-
 			acc = Accessibility.Private;
 			if (element is TypeDeclaration && !(element.Parent is TypeDeclaration))
 				acc = Accessibility.Internal;
-
 			if (element.HasModifier (Modifiers.Public)) {
 				acc = Accessibility.Public;
 				result = true;
 			} else if (element.HasModifier (Modifiers.Private)) {
 				acc = Accessibility.Private;
 				result = true;
-			} else if (element.HasModifier (Modifiers.Protected) && element.HasModifier (Modifiers.Internal)) {
-				foreach (var mod in element.ModifierTokens) {
-					if (mod.Modifier == Modifiers.Protected) {
-						acc = Accessibility.ProtectedAndInternal;
-						break;
-					}
-					if (mod.Modifier == Modifiers.Internal) {
-						acc = Accessibility.ProtectedOrInternal;
-						break;
-					}
-				}
+			} else if (element.HasModifier (Modifiers.ProtectedOrInternal)) {
+				acc = Accessibility.ProtectedOrInternal;
+				result = true;
+			} else if (element.HasModifier (Modifiers.ProtectedAndInternal)) {
+				acc = Accessibility.ProtectedAndInternal;
 				result = true;
 			} else if (element.HasModifier (Modifiers.Protected)) {
 				acc = Accessibility.Protected;
@@ -162,7 +154,6 @@ namespace MonoDevelop.CSharp
 				acc = Accessibility.Internal;
 				result = true;
 			} 
-
 			return result;
 		}
 		
