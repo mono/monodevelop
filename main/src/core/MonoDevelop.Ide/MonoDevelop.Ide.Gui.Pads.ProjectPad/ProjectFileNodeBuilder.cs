@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			icon = DesktopService.GetPixbufForFile (file.FilePath, Gtk.IconSize.Menu);
 			
 			if (file.IsLink && icon != null) {
-				var overlay = ImageService.GetPixbuf ("md-link-overlay");
+				var overlay = ImageService.GetPixbuf ("md-link-overlay", Gtk.IconSize.Menu);
 				var cached = Context.GetComposedIcon (icon, overlay);
 				if (cached != null)
 					icon = cached;
