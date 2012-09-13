@@ -249,44 +249,23 @@
     <EmbeddedResource Include="icons\breakpoint-16.png">
       <LogicalName>breakpoint-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\breakpoint-22.png">
-      <LogicalName>breakpoint-22.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\breakpoint-disable-all-16.png">
       <LogicalName>breakpoint-disable-all-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\breakpoint-disable-all-22.png">
-      <LogicalName>breakpoint-disable-all-22.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\breakpoint-disabled-16.png">
       <LogicalName>breakpoint-disabled-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\breakpoint-disabled-22.png">
-      <LogicalName>breakpoint-disabled-22.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\breakpoint-invalid-16.png">
       <LogicalName>breakpoint-invalid-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\breakpoint-invalid-22.png">
-      <LogicalName>breakpoint-invalid-22.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\breakpoint-new-16.png">
       <LogicalName>breakpoint-new-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\breakpoint-new-22.png">
-      <LogicalName>breakpoint-new-22.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\breakpoint-on-off-16.png">
       <LogicalName>breakpoint-on-off-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\breakpoint-on-off-22.png">
-      <LogicalName>breakpoint-on-off-22.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\breakpoint-remove-all-16.png">
       <LogicalName>breakpoint-remove-all-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\breakpoint-remove-all-22.png">
-      <LogicalName>breakpoint-remove-all-22.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\build-project-16.png">
       <LogicalName>build-project-16.png</LogicalName>
