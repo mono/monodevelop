@@ -494,6 +494,7 @@ namespace MonoDevelop.Components.MainToolbar
 			else
 				pl.SetText (text);
 			pl.FontDescription = Styles.StatusFont;
+			pl.FontDescription.AbsoluteSize = Pango.Units.FromPixels (Styles.StatusFontPixelHeight);
 			pl.Ellipsize = Pango.EllipsizeMode.End;
 			pl.Width = Pango.Units.FromPixels(width);
 

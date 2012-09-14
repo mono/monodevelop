@@ -99,8 +99,9 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly Cairo.Color StatusBarProgressBackgroundColor = new Cairo.Color (0, 0, 0, 0.1);
 		public static readonly Cairo.Color StatusBarProgressOutlineColor = new Cairo.Color (0, 0, 0, 0.2);
 
-		public static readonly Pango.FontDescription StatusFont = Pango.FontDescription.FromString ("Normal 11");
+		public static readonly Pango.FontDescription StatusFont = Pango.FontDescription.FromString ("Normal");
 
+		public static readonly int StatusFontPixelHeight = 12;
 		public static readonly int ProgressBarHeight = 16;
 		public static readonly int ProgressBarInnerPadding = 3;
 		public static readonly int ProgressBarOuterPadding = 3;
