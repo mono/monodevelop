@@ -28,6 +28,7 @@ using System;
 using MonoDevelop.Ide.Gui.Dialogs;
 using Gtk;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.AnalysisCore.Gui
 {
@@ -56,7 +57,14 @@ namespace MonoDevelop.AnalysisCore.Gui
 		{
 			enabledCheck = new CheckButton (GettextCatalog.GetString ("Enable source analysis of open files"));
 			PackStart (enabledCheck, false, false, 0);
-			
+			if (GC.MaxGeneration == 0) {
+				HBox hb = new HBox ();
+				hb.Spacing = 6;
+				hb.PackStart (ImageService.GetImage (Stock.DialogWarning, IconSize.Dialog), false, false, 0);
+				hb.PackStart (new Label (GettextCatalog.GetString ("Note: Source analysis may be slow with the current garbage collector.\nUse a generational GC like sgen to get best performance.")), true, true, 0);
+				PackStart (hb, false, false, 32);
+			}
+
 			ShowAll ();
 		}
 		
