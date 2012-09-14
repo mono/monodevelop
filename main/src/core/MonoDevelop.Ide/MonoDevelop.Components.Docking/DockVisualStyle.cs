@@ -86,7 +86,7 @@ namespace MonoDevelop.Components.Docking
 			s.PadBackgroundColor = new Gdk.Color (0,0,0);
 			s.PadTitleLabelColor = new Gdk.Color (0,0,0);
 			s.TabStyle = DockTabStyle.Normal;
-			s.TreeBackgroundColor = new Gdk.Color (0,0,0);
+			s.TreeBackgroundColor = null;
 			s.ShowPadTitleIcon = true;
 			s.UppercaseTitles = false;
 			s.ExpandedTabs = false;
