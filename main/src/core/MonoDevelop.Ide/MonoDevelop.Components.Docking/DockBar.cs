@@ -55,7 +55,7 @@ namespace MonoDevelop.Components.Docking
 				box = new HBox ();
 			else
 				box = new VBox ();
-			
+
 			al.Add (box);
 			Add (al);
 			
@@ -103,9 +103,24 @@ namespace MonoDevelop.Components.Docking
 				return frame;
 			}
 		}
+
+		DateTime hoverActivationDelay;
+
+		void DisableHoverActivation ()
+		{
+			// Temporarily disables hover activation of items in this bar
+			// Useful to avoid accidental triggers when the bar items
+			// are reallocated
+			hoverActivationDelay = DateTime.Now + TimeSpan.FromSeconds (1.5);
+		}
+
+		internal bool HoverActivationEnabled {
+			get { return DateTime.Now >= hoverActivationDelay; }
+		}
 		
 		internal DockBarItem AddItem (DockItem item, int size)
 		{
+			DisableHoverActivation ();
 			DockBarItem it = new DockBarItem (this, item, size);
 			box.PackStart (it, false, false, 0);
 			it.ShowAll ();
@@ -117,6 +132,7 @@ namespace MonoDevelop.Components.Docking
 		
 		void OnItemVisibilityChanged (object o, EventArgs args)
 		{
+			DisableHoverActivation ();
 			UpdateVisibility ();
 		}
 		
@@ -140,12 +156,13 @@ namespace MonoDevelop.Components.Docking
 		
 		internal void RemoveItem (DockBarItem it)
 		{
+			DisableHoverActivation ();
 			box.Remove (it);
 			it.Shown -= OnItemVisibilityChanged;
 			it.Hidden -= OnItemVisibilityChanged;
 			UpdateVisibility ();
 		}
-		
+
 		internal void UpdateTitle (DockItem item)
 		{
 			foreach (Widget w in box.Children) {

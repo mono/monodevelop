@@ -87,7 +87,7 @@ namespace MonoDevelop.Components.Docking
 			bar.RemoveItem (this);
 			Destroy ();
 		}
-		
+
 		public int Size {
 			get { return size; }
 			set { size = value; }
@@ -342,7 +342,7 @@ namespace MonoDevelop.Components.Docking
 					// Don't hide the item if the mouse pointer is still inside the window. Try again later.
 					int px, py;
 					it.Widget.GetPointer (out px, out py);
-					if (it.Widget.Visible && it.Widget.IsRealized && it.Widget.Allocation.Contains (px, py) && !force)
+					if (it.Widget.Visible && it.Widget.IsRealized && it.Widget.Allocation.Contains (px + it.Widget.Allocation.X, py + it.Widget.Allocation.Y) && !force)
 						return true;
 					autoHideTimeout = uint.MaxValue;
 					AutoHide (true);
@@ -369,9 +369,11 @@ namespace MonoDevelop.Components.Docking
 		
 		protected override bool OnEnterNotifyEvent (Gdk.EventCrossing evnt)
 		{
-			ScheduleAutoShow ();
-			state = StateType.Prelight;
-			QueueDraw ();
+			if (bar.HoverActivationEnabled && autoShowFrame == null) {
+				ScheduleAutoShow ();
+				state = StateType.Prelight;
+				QueueDraw ();
+			}
 			return base.OnEnterNotifyEvent (evnt);
 		}
 		
@@ -401,6 +403,8 @@ namespace MonoDevelop.Components.Docking
 			if (args.Event.Detail != Gdk.NotifyType.Inferior)
 				ScheduleAutoHide (true);
 		}
+
+		bool itemActivated;
 		
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
@@ -408,11 +412,24 @@ namespace MonoDevelop.Components.Docking
 				it.ShowDockPopupMenu (evnt.Time);
 			} else if (evnt.Button == 1) {
 				if (evnt.Type == Gdk.EventType.TwoButtonPress) {
-					it.Status = DockItemStatus.Dockable;
+					// Instead of changing the state of the pad here, do it when the button is released.
+					// Changing the state will make this bar item to vanish before the ReleaseEvent is received, and in this
+					// case the ReleaseEvent may be fired on another widget that is taking the space of this bar item.
+					// This was happening for example with the feedback button.
+					itemActivated = true;
 				} else {
 					AutoShow ();
 					it.Present (true);
 				}
+			}
+			return true;
+		}
+
+		protected override bool OnButtonReleaseEvent (Gdk.EventButton evnt)
+		{
+			if (itemActivated) {
+				itemActivated = false;
+				it.Status = DockItemStatus.Dockable;
 			}
 			return true;
 		}

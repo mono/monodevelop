@@ -157,7 +157,10 @@ namespace MonoDevelop.Components.Docking
 					pressX = args.Event.X;
 					pressY = args.Event.Y;
 				} else if (args.Event.Type == Gdk.EventType.TwoButtonPress) {
-					Status = DockItemStatus.AutoHide;
+					if (Status == DockItemStatus.AutoHide)
+						Status = DockItemStatus.Dockable;
+					else
+						Status = DockItemStatus.AutoHide;
 				}
 			}
 		}
@@ -611,24 +614,24 @@ namespace MonoDevelop.Components.Docking
 			
 			// Hide menuitem
 			if ((Behavior & DockItemBehavior.CantClose) == 0) {
-				MenuItem mitem = new MenuItem (Catalog.GetString("Close"));
+				MenuItem mitem = new MenuItem (Catalog.GetString("Hide"));
 				mitem.Activated += delegate { Visible = false; };
 				menu.Append (mitem);
 			}
 
 			MenuItem citem;
 
-			if (Status != DockItemStatus.Dockable) {
-				// Dockable menuitem
-				citem = new MenuItem (Catalog.GetString("Dock"));
-				citem.Activated += delegate { Status = DockItemStatus.Dockable; };
-				menu.Append (citem);
-			}
-
 			// Auto Hide menuitem
 			if ((Behavior & DockItemBehavior.CantAutoHide) == 0 && Status != DockItemStatus.AutoHide) {
 				citem = new MenuItem (Catalog.GetString("Minimize"));
 				citem.Activated += delegate { Status = DockItemStatus.AutoHide; };
+				menu.Append (citem);
+			}
+
+			if (Status != DockItemStatus.Dockable) {
+				// Dockable menuitem
+				citem = new MenuItem (Catalog.GetString("Dock"));
+				citem.Activated += delegate { Status = DockItemStatus.Dockable; };
 				menu.Append (citem);
 			}
 
