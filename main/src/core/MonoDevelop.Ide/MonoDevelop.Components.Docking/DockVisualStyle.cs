@@ -27,24 +27,74 @@ using System;
 
 namespace MonoDevelop.Components.Docking
 {
-	public class DockVisualStyle
+	public sealed class DockVisualStyle
 	{
-		public static readonly Gdk.Color DefaultColor = new Gdk.Color (0,0,0);
+		public Gdk.Color? PadBackgroundColor { get; set; }
+		public Gdk.Color? PadTitleLabelColor { get; set; }
+		public DockTabStyle? TabStyle { get; set; }
+		public Gdk.Color? TreeBackgroundColor { get; set; }
+		public bool? ShowPadTitleIcon { get; set; }
+		public bool? UppercaseTitles { get; set; }
+		public bool? ExpandedTabs { get; set; }
+		public Gdk.Color? InactivePadBackgroundColor { get; set; }
+		public int? PadTitleHeight { get; set; }
 
-		public Gdk.Color PadBackgroundColor { get; set; }
-		public Gdk.Color PadTitleLabelColor { get; set; }
-		public DockTabStyle TabStyle { get; set; }
-		public Gdk.Color TreeBackgroundColor { get; set; }
-		public bool ShowPadTitleIcon { get; set; }
-		public bool UppercaseTitles { get; set; }
-		public bool ExpandedTabs { get; set; }
-		public Gdk.Color InactivePadBackgroundColor { get; set; }
-		public int PadTitleHeight { get; set; }
+		// When set, pads in a region with this style can't be stacked horizontally
+		public bool? SingleColumnMode { get; set; }
+
+		// When set, pads in a region with this style can't be stacked vertically
+		public bool? SingleRowMode { get; set; }
 
 		public DockVisualStyle ()
 		{
-			ShowPadTitleIcon = true;
-			PadTitleHeight = -1;
+		}
+
+		public DockVisualStyle Clone ()
+		{
+			return (DockVisualStyle) MemberwiseClone ();
+		}
+
+		public void CopyValuesFrom (DockVisualStyle style)
+		{
+			if (style.PadBackgroundColor != null)
+				PadBackgroundColor = style.PadBackgroundColor;
+			if (style.PadTitleLabelColor != null)
+				PadTitleLabelColor = style.PadTitleLabelColor;
+			if (style.TabStyle != null)
+				TabStyle = style.TabStyle;
+			if (style.TreeBackgroundColor != null)
+				TreeBackgroundColor = style.TreeBackgroundColor;
+			if (style.ShowPadTitleIcon != null)
+				ShowPadTitleIcon = style.ShowPadTitleIcon;
+			if (style.UppercaseTitles != null)
+				UppercaseTitles = style.UppercaseTitles;
+			if (style.ExpandedTabs != null)
+				ExpandedTabs = style.ExpandedTabs;
+			if (style.InactivePadBackgroundColor != null)
+				InactivePadBackgroundColor = style.InactivePadBackgroundColor;
+			if (style.PadTitleHeight != null)
+				PadTitleHeight = style.PadTitleHeight;
+			if (style.SingleColumnMode != null)
+				SingleColumnMode = style.SingleColumnMode;
+			if (style.SingleRowMode != null)
+				SingleRowMode = style.SingleRowMode;
+		}
+
+		public static DockVisualStyle CreateDefaultStyle ()
+		{
+			DockVisualStyle s = new DockVisualStyle ();
+			s.PadBackgroundColor = new Gdk.Color (0,0,0);
+			s.PadTitleLabelColor = new Gdk.Color (0,0,0);
+			s.TabStyle = DockTabStyle.Normal;
+			s.TreeBackgroundColor = new Gdk.Color (0,0,0);
+			s.ShowPadTitleIcon = true;
+			s.UppercaseTitles = false;
+			s.ExpandedTabs = false;
+			s.InactivePadBackgroundColor = new Gdk.Color (0,0,0);
+			s.PadTitleHeight = -1;
+			s.SingleRowMode = false;
+			s.SingleColumnMode = false;
+			return s;
 		}
 	}
 

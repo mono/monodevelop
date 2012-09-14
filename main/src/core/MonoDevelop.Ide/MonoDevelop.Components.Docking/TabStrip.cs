@@ -205,7 +205,7 @@ namespace MonoDevelop.Components.Docking
 			int[] sizes = new int[children.Length];
 			double ratio = (double) allocation.Width / (double) tabsSize;
 
-			if (ratio > 1 && visualStyle.ExpandedTabs) {
+			if (ratio > 1 && visualStyle.ExpandedTabs.Value) {
 				// The tabs have to fill all the available space. To get started, assume that all tabs with have the same size 
 				var tsize = totalWidth / children.Length;
 				// Maybe the assigned size is too small for some tabs. If it happens the extra space it requires has to be taken
@@ -282,12 +282,12 @@ namespace MonoDevelop.Components.Docking
 				if (TabStrip.VisualStyle.TabStyle == DockTabStyle.Normal) {
 					var alloc = Allocation;
 					Gdk.GC gc = new Gdk.GC (GdkWindow);
-					gc.RgbFgColor = TabStrip.VisualStyle.InactivePadBackgroundColor;
+					gc.RgbFgColor = TabStrip.VisualStyle.InactivePadBackgroundColor.Value;
 					evnt.Window.DrawRectangle (gc, true, alloc);
 					gc.Dispose ();
 		
 					Gdk.GC bgc = new Gdk.GC (GdkWindow);
-					var c = new HslColor (TabStrip.VisualStyle.PadBackgroundColor);
+					var c = new HslColor (TabStrip.VisualStyle.PadBackgroundColor.Value);
 					c.L *= 0.7;
 					bgc.RgbFgColor = c;
 					evnt.Window.DrawLine (bgc, alloc.X, alloc.Y + alloc.Height - 1, alloc.X + alloc.Width - 1, alloc.Y + alloc.Height - 1);
@@ -336,12 +336,12 @@ namespace MonoDevelop.Components.Docking
 		void UpdateVisualStyle ()
 		{
 			if (labelWidget != null && label != null) {
-				if (visualStyle.UppercaseTitles)
+				if (visualStyle.UppercaseTitles.Value)
 					labelWidget.Text = label.ToUpper ();
 				else
 					labelWidget.Text = label;
 				labelWidget.UseMarkup = true;
-				if (visualStyle.ExpandedTabs)
+				if (visualStyle.ExpandedTabs.Value)
 					labelWidget.Xalign = 0.5f;
 
 				if (!(Parent is TabStrip.TabStripBox))
@@ -349,10 +349,10 @@ namespace MonoDevelop.Components.Docking
 			}
 
 			if (tabIcon != null)
-				tabIcon.Visible = visualStyle.ShowPadTitleIcon;
+				tabIcon.Visible = visualStyle.ShowPadTitleIcon.Value;
 			if (IsRealized) {
 				if (labelWidget != null)
-					labelWidget.ModifyFg (StateType.Normal, visualStyle.PadTitleLabelColor);
+					labelWidget.ModifyFg (StateType.Normal, visualStyle.PadTitleLabelColor.Value);
 			}
 			var r = WidthRequest;
 			WidthRequest = -1;
@@ -360,7 +360,7 @@ namespace MonoDevelop.Components.Docking
 			WidthRequest = r;
 
 			if (visualStyle != null)
-				HeightRequest = visualStyle.PadTitleHeight;
+				HeightRequest = visualStyle.PadTitleHeight != null ? visualStyle.PadTitleHeight.Value : -1;
 		}
 
 		public void SetLabel (Gtk.Widget page, Gdk.Pixbuf icon, string label)
@@ -481,7 +481,7 @@ namespace MonoDevelop.Components.Docking
 			var alloc = Allocation;
 
 			Gdk.GC bgc = new Gdk.GC (GdkWindow);
-			var c = new HslColor (VisualStyle.PadBackgroundColor);
+			var c = new HslColor (VisualStyle.PadBackgroundColor.Value);
 			c.L *= 0.7;
 			bgc.RgbFgColor = c;
 			bool first = true;
@@ -497,17 +497,17 @@ namespace MonoDevelop.Components.Docking
 
 			if (Active || (first && last)) {
 				Gdk.GC gc = new Gdk.GC (GdkWindow);
-				gc.RgbFgColor = VisualStyle.PadBackgroundColor;
+				gc.RgbFgColor = VisualStyle.PadBackgroundColor.Value;
 				evnt.Window.DrawRectangle (gc, true, alloc);
 				if (!first)
 					evnt.Window.DrawLine (bgc, alloc.X, alloc.Y, alloc.X, alloc.Y + alloc.Height - 1);
-				if (!(last && first) && !(visualStyle.ExpandedTabs && last))
+				if (!(last && first) && !(visualStyle.ExpandedTabs.Value && last))
 					evnt.Window.DrawLine (bgc, alloc.X + alloc.Width - 1, alloc.Y, alloc.X + alloc.Width - 1, alloc.Y + alloc.Height - 1);
 				gc.Dispose ();
 
 			} else {
 				Gdk.GC gc = new Gdk.GC (GdkWindow);
-				gc.RgbFgColor = tabStrip != null ? tabStrip.VisualStyle.InactivePadBackgroundColor : frame.DefaultVisualStyle.InactivePadBackgroundColor;
+				gc.RgbFgColor = tabStrip != null ? tabStrip.VisualStyle.InactivePadBackgroundColor.Value : frame.DefaultVisualStyle.InactivePadBackgroundColor.Value;
 				evnt.Window.DrawRectangle (gc, true, alloc);
 				gc.Dispose ();
 				evnt.Window.DrawLine (bgc, alloc.X, alloc.Y + alloc.Height - 1, alloc.X + alloc.Width - 1, alloc.Y + alloc.Height - 1);

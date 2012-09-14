@@ -948,12 +948,12 @@ namespace MonoDevelop.Components.Docking
 		
 		internal override bool GetDockTarget (DockItem item, int px, int py, out DockDelegate dockDelegate, out Gdk.Rectangle rect)
 		{
-			if (!Allocation.Contains (px, py) || VisibleObjects.Count == 0) {
-				dockDelegate = null;
-				rect = Gdk.Rectangle.Zero;
+			dockDelegate = null;
+			rect = Gdk.Rectangle.Zero;
+
+			if (!Allocation.Contains (px, py) || VisibleObjects.Count == 0)
 				return false;
-			}
-			
+
 			if (type == DockGroupType.Tabbed) {
 				// Tabs can only contain DockGroupItems
 				var sel = boundTabStrip != null ? VisibleObjects[boundTabStrip.CurrentTab] : VisibleObjects[VisibleObjects.Count - 1];
@@ -961,6 +961,10 @@ namespace MonoDevelop.Components.Docking
 			}
 			else if (type == DockGroupType.Horizontal) {
 				if (px >= Allocation.Right - DockFrame.GroupDockSeparatorSize) {
+					// Check if the item is allowed to be docked here
+					var s = Frame.GetRegionStyleForObject (VisibleObjects[VisibleObjects.Count - 1]);
+					if (s.SingleColumnMode.Value)
+						return false;
 					// Dock to the right of the group
 					dockDelegate = delegate (DockItem it) {
 						DockTarget (it, dockObjects.Count);
@@ -969,6 +973,10 @@ namespace MonoDevelop.Components.Docking
 					return true;
 				}
 				else if (px <= Allocation.Left + DockFrame.GroupDockSeparatorSize) {
+					// Check if the item is allowed to be docked here
+					var s = Frame.GetRegionStyleForObject (VisibleObjects[0]);
+					if (s.SingleColumnMode.Value)
+						return false;
 					// Dock to the left of the group
 					dockDelegate = delegate (DockItem it) {
 						DockTarget (it, 0);
@@ -983,9 +991,13 @@ namespace MonoDevelop.Components.Docking
 					    px >= ob.Allocation.Right - DockFrame.GroupDockSeparatorSize/2 &&
 					    px <= ob.Allocation.Right + DockFrame.GroupDockSeparatorSize/2)
 					{
-						int dn = dockObjects.IndexOf (ob);
+						// Check if the item is allowed to be docked here
+						int dn = dockObjects.IndexOf (ob) + 1;
+						var s = Frame.GetRegionStyleForPosition (this, dn, true);
+						if (s.SingleColumnMode.Value)
+							return false;
 						dockDelegate = delegate (DockItem it) {
-							DockTarget (it, dn+1);
+							DockTarget (it, dn);
 						};
 						rect = new Gdk.Rectangle (ob.Allocation.Right - DockFrame.GroupDockSeparatorSize/2, Allocation.Y, DockFrame.GroupDockSeparatorSize, Allocation.Height);
 						return true;
@@ -996,6 +1008,10 @@ namespace MonoDevelop.Components.Docking
 			}
 			else if (type == DockGroupType.Vertical) {
 				if (py >= Allocation.Bottom - DockFrame.GroupDockSeparatorSize) {
+					// Check if the item is allowed to be docked here
+					var s = Frame.GetRegionStyleForObject (VisibleObjects[VisibleObjects.Count - 1]);
+					if (s.SingleRowMode.Value)
+						return false;
 					// Dock to the bottom of the group
 					dockDelegate = delegate (DockItem it) {
 						DockTarget (it, dockObjects.Count);
@@ -1004,6 +1020,10 @@ namespace MonoDevelop.Components.Docking
 					return true;
 				}
 				else if (py <= Allocation.Top + DockFrame.GroupDockSeparatorSize) {
+					// Check if the item is allowed to be docked here
+					var s = Frame.GetRegionStyleForObject (VisibleObjects[0]);
+					if (s.SingleRowMode.Value)
+						return false;
 					// Dock to the top of the group
 					dockDelegate = delegate (DockItem it) {
 						DockTarget (it, 0);
@@ -1018,9 +1038,13 @@ namespace MonoDevelop.Components.Docking
 					    py >= ob.Allocation.Bottom - DockFrame.GroupDockSeparatorSize/2 &&
 					    py <= ob.Allocation.Bottom + DockFrame.GroupDockSeparatorSize/2)
 					{
-						int dn = dockObjects.IndexOf (ob);
+						// Check if the item is allowed to be docked here
+						int dn = dockObjects.IndexOf (ob) + 1;
+						var s = Frame.GetRegionStyleForPosition (this, dn, true);
+						if (s.SingleRowMode.Value)
+							return false;
 						dockDelegate = delegate (DockItem it) {
-							DockTarget (it, dn+1);
+							DockTarget (it, dn);
 						};
 						rect = new Gdk.Rectangle (Allocation.X, ob.Allocation.Bottom - DockFrame.GroupDockSeparatorSize/2, Allocation.Width, DockFrame.GroupDockSeparatorSize);
 						return true;

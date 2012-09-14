@@ -151,9 +151,9 @@ namespace MonoDevelop.Components.Docking
 		void OnTreeRealized (object sender, EventArgs e)
 		{
 			var w = (Gtk.TreeView)sender;
-			if (!VisualStyle.TreeBackgroundColor.Equals (DockVisualStyle.DefaultColor)) {
-				w.ModifyBase (StateType.Normal, VisualStyle.TreeBackgroundColor);
-				w.ModifyBase (StateType.Insensitive, VisualStyle.TreeBackgroundColor);
+			if (VisualStyle.TreeBackgroundColor != null) {
+				w.ModifyBase (StateType.Normal, VisualStyle.TreeBackgroundColor.Value);
+				w.ModifyBase (StateType.Insensitive, VisualStyle.TreeBackgroundColor.Value);
 			} else {
 				w.ModifyBase (StateType.Normal, Parent.Style.Base (StateType.Normal));
 				w.ModifyBase (StateType.Insensitive, Parent.Style.Base (StateType.Insensitive));
@@ -168,7 +168,7 @@ namespace MonoDevelop.Components.Docking
 		{
 			if (VisualStyle.TabStyle == DockTabStyle.Normal) {
 				Gdk.GC gc = new Gdk.GC (GdkWindow);
-				gc.RgbFgColor = VisualStyle.PadBackgroundColor;
+				gc.RgbFgColor = VisualStyle.PadBackgroundColor.Value;
 				evnt.Window.DrawRectangle (gc, true, Allocation);
 				gc.Dispose ();
 			}

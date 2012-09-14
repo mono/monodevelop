@@ -79,7 +79,7 @@ namespace MonoDevelop.Components.Docking
 
 		internal void SetStyle (DockVisualStyle style)
 		{
-			topFrame.BackgroundColor = style.PadBackgroundColor;
+			topFrame.BackgroundColor = style.PadBackgroundColor.Value;
 		}
 
 		public DockItem DockItem {

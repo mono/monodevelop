@@ -60,6 +60,7 @@ namespace MonoDevelop.Components.Docking
 		
 		DockBar dockBarTop, dockBarBottom, dockBarLeft, dockBarRight;
 		VBox mainBox;
+		DockVisualStyle defaultStyle;
 
 		public DockFrame ()
 		{
@@ -114,17 +115,39 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 
-		Dictionary<string,DockVisualStyle> regionStyles = new Dictionary<string, DockVisualStyle> ();
+		// Registered region styles. We are using a list instead of a dictionary because
+		// the registering order is important
+		List<Tuple<string,DockVisualStyle>> regionStyles = new List<Tuple<string, DockVisualStyle>> ();
+
+		// Styles specific to items
 		Dictionary<string,DockVisualStyle> stylesById = new Dictionary<string, DockVisualStyle> ();
 
-		public DockVisualStyle DefaultVisualStyle { get; set; }
+		public DockVisualStyle DefaultVisualStyle {
+			get {
+				return defaultStyle;
+			}
+			set {
+				defaultStyle = DockVisualStyle.CreateDefaultStyle ();
+				defaultStyle.CopyValuesFrom (value);
+			}
+		}
 
+		/// <summary>
+		/// Sets the style for a region of the dock frame
+		/// </summary>
+		/// <param name='regionPosition'>
+		/// A region is a collection with the format: "ItemId1/Position1;ItemId2/Position2..."
+		/// ItemId is the id of a dock item. Position is one of the values of the DockPosition enumeration
+		/// </param>
+		/// <param name='style'>
+		/// Style.
+		/// </param>
 		public void SetRegionStyle (string regionPosition, DockVisualStyle style)
 		{
+			// Remove any old region style and add it
+			regionStyles.RemoveAll (s => s.Item1 == regionPosition);
 			if (style != null)
-				regionStyles [regionPosition] = style;
-			else
-				regionStyles.Remove (regionPosition);
+				regionStyles.Add (new Tuple<string,DockVisualStyle> (regionPosition, style));
 		}
 
 		public void SetDockItemStyle (string itemId, DockVisualStyle style)
@@ -140,32 +163,82 @@ namespace MonoDevelop.Components.Docking
 			obj.VisualStyle = GetRegionStyleForObject (obj);
 		}
 
+		/// <summary>
+		/// Gets the style for a dock object, which will inherit values from all region/style definitions
+		/// </summary>
 		internal DockVisualStyle GetRegionStyleForObject (DockObject obj)
 		{
+			DockVisualStyle mergedStyle = null;
 			if (obj is DockGroupItem) {
 				DockVisualStyle s;
-				if (stylesById.TryGetValue (((DockGroupItem)obj).Id, out s))
-					return s;
+				if (stylesById.TryGetValue (((DockGroupItem)obj).Id, out s)) {
+					mergedStyle = DefaultVisualStyle.Clone ();
+					mergedStyle.CopyValuesFrom (s);
+				}
 			}
 			foreach (var e in regionStyles) {
-				if (InRegion (e.Key, obj))
-					return e.Value;
+				if (InRegion (e.Item1, obj)) {
+					if (mergedStyle == null)
+						mergedStyle = DefaultVisualStyle.Clone ();
+					mergedStyle.CopyValuesFrom (e.Item2);
+				}
 			}
-			return DefaultVisualStyle;
+			return mergedStyle ?? DefaultVisualStyle;
 		}
 
 		internal DockVisualStyle GetRegionStyleForItem (DockItem item)
 		{
 			DockVisualStyle s;
-			if (stylesById.TryGetValue (item.Id, out s))
+			if (stylesById.TryGetValue (item.Id, out s)) {
+				s = DefaultVisualStyle.Clone ();
+				s.CopyValuesFrom (s);
 				return s;
+			}
 			return DefaultVisualStyle;
 		}
 
-		bool InRegion (string location, DockObject obj)
+		/// <summary>
+		/// Gets the style assigned to a specific position of the layout
+		/// </summary>
+		/// <returns>
+		/// The region style for position.
+		/// </returns>
+		/// <param name='parentGroup'>
+		/// Group which contains the position
+		/// </param>
+		/// <param name='childIndex'>
+		/// Index of the position inside the group
+		/// </param>
+		/// <param name='insertingPosition'>
+		/// If true, the position will be inserted (meaning that the objects in childIndex will be shifted 1 position)
+		/// </param>
+		internal DockVisualStyle GetRegionStyleForPosition (DockGroup parentGroup, int childIndex, bool insertingPosition)
 		{
+			DockVisualStyle mergedStyle = null;
+			foreach (var e in regionStyles) {
+				if (InRegion (e.Item1, parentGroup, childIndex, insertingPosition)) {
+					if (mergedStyle == null)
+						mergedStyle = DefaultVisualStyle.Clone ();
+					mergedStyle.CopyValuesFrom (e.Item2);
+				}
+			}
+			return mergedStyle ?? DefaultVisualStyle;
+		}
+
+		internal bool InRegion (string location, DockObject obj)
+		{
+			if (obj.ParentGroup == null)
+				return false;
+			return InRegion (location, obj.ParentGroup, obj.ParentGroup.GetObjectIndex (obj), false);
+		}
+
+		internal bool InRegion (string location, DockGroup objToFindParent, int objToFindIndex, bool insertingPosition)
+		{
+			// Checks if the object is in the specified region.
+			// A region is a collection with the format: "ItemId1/Position1;ItemId2/Position2..."
 			string[] positions = location.Split (';');
 			foreach (string pos in positions) {
+				// We individually check each entry in the region specification
 				int i = pos.IndexOf ('/');
 				if (i == -1) continue;
 				string id = pos.Substring (0,i).Trim ();
@@ -180,45 +253,64 @@ namespace MonoDevelop.Components.Docking
 					}
 
 					var refItem = g.FindDockGroupItem (id);
-					if (InRegion (g, dpos, refItem, obj))
+					if (InRegion (g, dpos, refItem, objToFindParent, objToFindIndex, insertingPosition))
 						return true;
 				}
 			}
 			return false;
 		}
 
-		bool InRegion (DockGroup grp, DockPosition pos, DockObject refObject, DockObject objToFind)
+		bool InRegion (DockGroup grp, DockPosition pos, DockObject refObject, DockGroup objToFindParent, int objToFindIndex, bool insertingPosition)
 		{
 			if (grp == null)
 				return false;
 
 			if (grp.Type == DockGroupType.Tabbed) {
-				if (pos != DockPosition.Center && pos != DockPosition.CenterBefore)
-					return InRegion (grp.ParentGroup, pos, grp, objToFind);
+				if (pos != DockPosition.Center &&  pos != DockPosition.CenterBefore)
+					return InRegion (grp.ParentGroup, pos, grp, objToFindParent, objToFindIndex, insertingPosition);
 			}
 			if (grp.Type == DockGroupType.Horizontal) {
 				if (pos != DockPosition.Left && pos != DockPosition.Right)
-					return InRegion (grp.ParentGroup, pos, grp, objToFind);
+					return InRegion (grp.ParentGroup, pos, grp, objToFindParent, objToFindIndex, insertingPosition);
 			}
 			if (grp.Type == DockGroupType.Vertical) {
 				if (pos != DockPosition.Top && pos != DockPosition.Bottom)
-					return InRegion (grp.ParentGroup, pos, grp, objToFind);
+					return InRegion (grp.ParentGroup, pos, grp, objToFindParent, objToFindIndex, insertingPosition);
 			}
 
-			bool left = true;
+			bool foundAtLeftSide = true;
 			bool findingLeft = pos == DockPosition.Left || pos == DockPosition.Top || pos == DockPosition.CenterBefore;
 
-			foreach (var ob in grp.Objects) {
-				if (ob == refObject)
-					left = false;
-				else if (ob == objToFind)
-					return left == findingLeft;
+			if (objToFindParent == grp) {
+				// Check positions beyond the current range of items
+				if (objToFindIndex < 0 && findingLeft)
+					return true;
+				if (objToFindIndex >= grp.Objects.Count && !findingLeft)
+					return true;
+			}
+
+			for (int n=0; n<grp.Objects.Count; n++) {
+				var ob = grp.Objects[n];
+
+				bool foundRefObject = ob == refObject;
+				bool foundTargetObject = objToFindParent == grp && objToFindIndex == n;
+
+				if (foundRefObject) {
+					// Found the reference object, but if insertingPosition=true it is in the position that the new item will have,
+					// so this position still has to be considered to be at the left side
+					if (foundTargetObject && insertingPosition)
+						return foundAtLeftSide == findingLeft;
+					foundAtLeftSide = false;
+				}
+				else if (foundTargetObject)
+					return foundAtLeftSide == findingLeft;
 				else if (ob is DockGroup) {
-					if (ObjectHasAncestor (objToFind, (DockGroup)ob))
-						return left == findingLeft;
+					DockGroup gob = (DockGroup)ob;
+					if (gob == objToFindParent || ObjectHasAncestor (objToFindParent, gob))
+						return foundAtLeftSide == findingLeft;
 				}
 			}
-			return InRegion (grp.ParentGroup, pos, grp, objToFind);
+			return InRegion (grp.ParentGroup, pos, grp, objToFindParent, objToFindIndex, insertingPosition);
 		}
 
 		bool ObjectHasAncestor (DockObject obj, DockGroup ancestorToFind)

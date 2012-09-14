@@ -120,9 +120,14 @@ namespace MonoDevelop.Components.Docking
 		
 		public bool GetDockTarget (DockItem item, int px, int py, Gdk.Rectangle rect, out DockDelegate dockDelegate, out Gdk.Rectangle outrect)
 		{
+			outrect = Gdk.Rectangle.Zero;
 			dockDelegate = null;
 			
 			if (item != this.item && this.item.Visible && rect.Contains (px, py)) {
+
+				// Check if the item is allowed to be docked here
+				var s = Frame.GetRegionStyleForObject (this);
+
 				int xdockMargin = (int) ((double)rect.Width * (1.0 - DockFrame.ItemDockCenterArea)) / 2;
 				int ydockMargin = (int) ((double)rect.Height * (1.0 - DockFrame.ItemDockCenterArea)) / 2;
 				DockPosition pos;
@@ -130,20 +135,28 @@ namespace MonoDevelop.Components.Docking
 /*				if (ParentGroup.Type == DockGroupType.Tabbed) {
 					rect = new Gdk.Rectangle (rect.X + xdockMargin, rect.Y + ydockMargin, rect.Width - xdockMargin*2, rect.Height - ydockMargin*2);
 					pos = DockPosition.CenterAfter;
-				}
-*/				if (px <= rect.X + xdockMargin && ParentGroup.Type != DockGroupType.Horizontal) {
+				}*/				
+				if (px <= rect.X + xdockMargin && ParentGroup.Type != DockGroupType.Horizontal) {
+					if (s.SingleColumnMode.Value)
+						return false;
 					outrect = new Gdk.Rectangle (rect.X, rect.Y, xdockMargin, rect.Height);
 					pos = DockPosition.Left;
 				}
 				else if (px >= rect.Right - xdockMargin && ParentGroup.Type != DockGroupType.Horizontal) {
+					if (s.SingleColumnMode.Value)
+						return false;
 					outrect = new Gdk.Rectangle (rect.Right - xdockMargin, rect.Y, xdockMargin, rect.Height);
 					pos = DockPosition.Right;
 				}
 				else if (py <= rect.Y + ydockMargin && ParentGroup.Type != DockGroupType.Vertical) {
+					if (s.SingleRowMode.Value)
+						return false;
 					outrect = new Gdk.Rectangle (rect.X, rect.Y, rect.Width, ydockMargin);
 					pos = DockPosition.Top;
 				}
 				else if (py >= rect.Bottom - ydockMargin && ParentGroup.Type != DockGroupType.Vertical) {
+					if (s.SingleRowMode.Value)
+						return false;
 					outrect = new Gdk.Rectangle (rect.X, rect.Bottom - ydockMargin, rect.Width, ydockMargin);
 					pos = DockPosition.Bottom;
 				}
@@ -159,7 +172,6 @@ namespace MonoDevelop.Components.Docking
 				};
 				return true;
 			}
-			outrect = Gdk.Rectangle.Zero;
 			return false;
 		}
 		
