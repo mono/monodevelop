@@ -73,9 +73,38 @@ namespace MonoDevelop.Ide.WelcomePage
 				throw new InvalidOperationException ("Link is missing title");
 			this.text = GettextCatalog.GetString (title);
 			
-			subtitle = (string) (el.Attribute ("subtitle") ?? el.Attribute ("_subtitle"));
+			subtitle = (string) el.Attribute ("pubDate");
 			if (string.IsNullOrEmpty (subtitle))
 				subtitle = "Today";
+			else {
+				DateTime date;
+				if (DateTime.TryParse (subtitle, out date)) {
+
+					// Round to begining of day. A change of day will be "yesterday", even if it happened 5 minutes ago
+					var today = DateTime.Today;
+					date = date.Date;
+
+					int days = (int)Math.Round ((today - date).TotalDays);
+					var weeks = days / 7;
+
+					if (days <= 0) {
+						subtitle = GettextCatalog.GetString ("Today");
+					}
+					else if (days == 1) {
+						subtitle = GettextCatalog.GetString ("Yesterday");
+					}
+					else if (days < 7) {
+						subtitle = GettextCatalog.GetString ("{0} days ago", days);
+					}
+					else if (weeks < 4) {
+						subtitle = GettextCatalog.GetPluralString ("{0} week ago", "{0} weeks ago", weeks, weeks);
+					}
+					else
+						subtitle = date.ToShortDateString ();
+				} else {
+					subtitle = "Today";
+				}
+			}
 
 			string href = (string) el.Attribute ("href");
 			if (string.IsNullOrEmpty (href))
