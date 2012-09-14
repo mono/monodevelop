@@ -708,7 +708,10 @@ namespace MonoDevelop.CSharp
 				break;
 			case "default":
 				result.SignatureMarkup = Highlight ("default", "keyword.selection") + keywordSign;
-				result.AddCategory ("Form", Highlight ("switch", "keyword.selection") + " (expression) { "+ Environment.NewLine +
+				result.AddCategory ("Form",
+				                    Highlight ("default", "keyword.selection") + " (Type)" + Environment.NewLine + Environment.NewLine +
+				                    "or" + Environment.NewLine + Environment.NewLine +
+				                    Highlight ("switch", "keyword.selection") + " (expression) { "+ Environment.NewLine +
 				                    "  " + Highlight ("case", "keyword.selection") + " constant-expression:" + Environment.NewLine +
 				                    "    statement"+ Environment.NewLine +
 				                    "    jump-statement" + Environment.NewLine +
