@@ -288,7 +288,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 					UpdateWordSelection ();
 					return KeyActions.Process;
 				}
-				
+				if (CompleteWithSpaceOrPunctuation && keyChar == '.')
+					list.AutoSelect = list.AutoCompleteEmptyMatch = true;
 				endOffset = CompletionWidget.CaretOffset - 1;
 				if (CompleteWithSpaceOrPunctuation && list.SelectionEnabled) {
 					return KeyActions.Complete | KeyActions.Process | KeyActions.CloseWindow;
