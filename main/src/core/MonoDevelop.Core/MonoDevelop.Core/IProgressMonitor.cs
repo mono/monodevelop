@@ -30,6 +30,8 @@
 using System;
 using System.IO;
 
+Whoops, this could be invalid c#...
+
 namespace MonoDevelop.Core
 {
 	public delegate void MonitorHandler (IProgressMonitor monitor);
