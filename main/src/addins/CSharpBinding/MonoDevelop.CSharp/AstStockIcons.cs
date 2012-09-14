@@ -141,11 +141,8 @@ namespace MonoDevelop.CSharp
 			} else if (element.HasModifier (Modifiers.Private)) {
 				acc = Accessibility.Private;
 				result = true;
-			} else if (element.HasModifier (Modifiers.ProtectedOrInternal)) {
+			} else if (element.HasModifier (Modifiers.Protected | Modifiers.Internal)) {
 				acc = Accessibility.ProtectedOrInternal;
-				result = true;
-			} else if (element.HasModifier (Modifiers.ProtectedAndInternal)) {
-				acc = Accessibility.ProtectedAndInternal;
 				result = true;
 			} else if (element.HasModifier (Modifiers.Protected)) {
 				acc = Accessibility.Protected;

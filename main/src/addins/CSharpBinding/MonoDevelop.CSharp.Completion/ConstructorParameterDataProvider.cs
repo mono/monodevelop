@@ -30,6 +30,7 @@ using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Completion;
 using ICSharpCode.NRefactory.Completion;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -38,7 +39,7 @@ namespace MonoDevelop.CSharp.Completion
 		IType type;
 		
 		
-		public ConstructorParameterDataProvider (int startOffset, CSharpCompletionTextEditorExtension ext, IType type) : base (startOffset, ext)
+		public ConstructorParameterDataProvider (int startOffset, CSharpCompletionTextEditorExtension ext, IType type, AstNode skipInitializer = null) : base (startOffset, ext)
 		{
 			this.type = type;
 			
@@ -50,12 +51,13 @@ namespace MonoDevelop.CSharp.Completion
 			if (ctx.CurrentTypeDefinition != null && typeDefinition != null) {
 				isProtectedAllowed = ctx.CurrentTypeDefinition.IsDerivedFrom (ctx.CurrentTypeDefinition.Compilation.Import (typeDefinition));
 			}
-						
 			foreach (var method in type.GetConstructors ()) {
 				if (!lookup.IsAccessible (method, isProtectedAllowed)) {
 					continue;
 				}
 				if (!method.IsBrowsable ())
+					continue;
+				if (skipInitializer != null && skipInitializer.Parent.StartLocation == method.Region.Begin)
 					continue;
 				methods.Add (method);
 			}

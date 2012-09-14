@@ -622,6 +622,11 @@ namespace MonoDevelop.CSharp.Completion
 			return new ConstructorParameterDataProvider (startOffset, this, type);
 		}
 
+		IParameterDataProvider IParameterCompletionDataFactory.CreateConstructorProvider (int startOffset, IType type, AstNode initializer)
+		{
+			return new ConstructorParameterDataProvider (startOffset, this, type, initializer);
+		}
+
 		IParameterDataProvider IParameterCompletionDataFactory.CreateMethodDataProvider (int startOffset, IEnumerable<IMethod> methods)
 		{
 			return new MethodParameterDataProvider (startOffset, this, methods);
