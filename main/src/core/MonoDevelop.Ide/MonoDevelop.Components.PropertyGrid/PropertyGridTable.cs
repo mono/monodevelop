@@ -571,6 +571,12 @@ namespace MonoDevelop.Components.PropertyGrid
 			}
 		}
 
+		protected override void OnUnrealized ()
+		{
+			HideTooltip ();
+			base.OnUnrealized ();
+		}
+
 		protected override bool OnLeaveNotifyEvent (EventCrossing evnt)
 		{
 			HideTooltip ();
