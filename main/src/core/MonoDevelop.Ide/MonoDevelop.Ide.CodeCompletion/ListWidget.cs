@@ -476,13 +476,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 							layout.SetMarkup (markup + " <span foreground=\"darkgray\">" + description + "</span>");
 						}
 					}
-					int mw, mh;
-					layout.GetPixelSize (out mw, out mh);
-					if (mw > listWidth) {
-						WidthRequest = listWidth = mw;
-						win.WidthRequest = win.Allocation.Width + mw - width;
-						win.QueueResize ();
-					}
 				
 					string text = win.DataProvider.GetText (item);
 					
@@ -512,6 +505,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 					
 					int wi, he, typos, iypos;
 					layout.GetPixelSize (out wi, out he);
+
+
 					typos = he < rowHeight ? ypos + (rowHeight - he) / 2 : ypos;
 					iypos = iconHeight < rowHeight ? ypos + (rowHeight - iconHeight) / 2 : ypos;
 					if (item == SelectedItem) {
@@ -540,6 +535,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 						}
 						window.DrawLayout (textGCNormal, xpos + iconWidth + 2, typos, layout);
 					}
+
+					if (wi + xpos + iconWidth + 2 > listWidth) {
+						WidthRequest = listWidth = wi + xpos + iconWidth + 2;
+						win.ResetSizes ();
+					}
+
 
 					layout.SetMarkup ("");
 					if (layout.Attributes != null) {
@@ -777,7 +778,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 				this.SetSizeRequest (listWidth, newHeight);
 			ScrollToSelectedItem ();
 		}
-		
 		const int spacing = 2;
 		
 		delegate void CategoryAction (Category category, int yPos);

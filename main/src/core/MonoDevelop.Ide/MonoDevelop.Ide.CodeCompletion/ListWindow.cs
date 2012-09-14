@@ -137,7 +137,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (IsRealized && !Visible)
 				Show ();
 			
-			int width = WindowWidth; //list.WidthRequest;
+			int width = list.WidthRequest + CornerRadius * 2;
 			int height = list.HeightRequest + 2 + (footer != null ? footer.Allocation.Height : 0) + CornerRadius * 2;
 			
 			SetSizeRequest (width, height);
