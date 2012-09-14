@@ -52,7 +52,7 @@ namespace MonoDevelop.Components
 		bool showArrow;
 		PopupPosition position;
 		int arrowOffset;
-		int cornerRadius = 4;
+		int cornerRadius = 0;
 		int padding = 6;
 		Cairo.Color backgroundColor = new Cairo.Color (1, 1, 1);
 		Cairo.Color borderColor = new Cairo.Color (0.7, 0.7, 0.7);
@@ -118,6 +118,9 @@ namespace MonoDevelop.Components
 				}
 			};
 
+			if (Core.Platform.IsMac)
+				cornerRadius = 4;
+
 			UpdatePadding ();
 		}
 
@@ -130,6 +133,9 @@ namespace MonoDevelop.Components
 				return showArrow;
 			}
 			set {
+				if (Core.Platform.IsWindows)
+					return;
+
 				showArrow = value;
 				UpdatePadding ();
 				QueueDraw ();
@@ -139,7 +145,10 @@ namespace MonoDevelop.Components
 		public int CornerRadius {
 			get { return cornerRadius; }
 			set {
-				cornerRadius = value; 
+				if (Core.Platform.IsWindows)
+					cornerRadius = 0;
+				else
+					cornerRadius = value; 
 				padding = value;
 				QueueDraw (); 
 				UpdatePadding ();
@@ -188,6 +197,11 @@ namespace MonoDevelop.Components
 
 		public void AnimatedResize ()
 		{
+			if (Core.Platform.IsWindows) {
+				QueueResize();
+				return;
+			}
+
 			disableSizeCheck = true;
 			Gtk.Requisition sizeReq = Gtk.Requisition.Zero;
 			// use OnSizeRequested instead of SizeRequest to bypass internal GTK caching
