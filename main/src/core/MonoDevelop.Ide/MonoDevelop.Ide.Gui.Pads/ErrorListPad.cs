@@ -195,8 +195,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			view.RowActivated += new RowActivatedHandler (OnRowActivated);
 			
-			iconWarning = sw.RenderIcon (Gtk.Stock.DialogWarning, Gtk.IconSize.Menu, "");
-			iconError = sw.RenderIcon (Gtk.Stock.DialogError, Gtk.IconSize.Menu, "");
+			iconWarning = sw.RenderIcon (Stock.Warning, Gtk.IconSize.Menu, "");
+			iconError = sw.RenderIcon (Stock.Error, Gtk.IconSize.Menu, "");
 			iconInfo = sw.RenderIcon (Gtk.Stock.DialogInfo, Gtk.IconSize.Menu, "");
 			
 			control.Add1 (sw);
