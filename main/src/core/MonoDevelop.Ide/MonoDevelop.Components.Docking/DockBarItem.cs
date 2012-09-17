@@ -49,7 +49,6 @@ namespace MonoDevelop.Components.Docking
 		uint autoHideTimeout = uint.MaxValue;
 		int size;
 		Gdk.Size lastFrameSize;
-		StateType state;
 
 		public DockBarItem (DockBar bar, DockItem it, int size)
 		{
@@ -143,7 +142,6 @@ namespace MonoDevelop.Components.Docking
 			mainBox.Add (box);
 			mainBox.ShowAll ();
 			Add (mainBox);
-			state = StateType.Normal;
 			QueueDraw ();
 		}
 		
@@ -190,7 +188,6 @@ namespace MonoDevelop.Components.Docking
 				autoShowFrame.EnterNotifyEvent += OnFrameEnter;
 				autoShowFrame.LeaveNotifyEvent += OnFrameLeave;
 				autoShowFrame.KeyPressEvent += OnFrameKeyPress;
-				state = StateType.Selected;
 				QueueDraw ();
 			}
 		}
@@ -209,7 +206,6 @@ namespace MonoDevelop.Components.Docking
 				autoShowFrame.LeaveNotifyEvent -= OnFrameLeave;
 				autoShowFrame.KeyPressEvent -= OnFrameKeyPress;
 				autoShowFrame = null;
-				state = StateType.Normal;
 				QueueDraw ();
 			}
 		}
@@ -274,7 +270,6 @@ namespace MonoDevelop.Components.Docking
 		{
 			if (bar.HoverActivationEnabled && autoShowFrame == null) {
 				ScheduleAutoShow ();
-				state = StateType.Prelight;
 				QueueDraw ();
 			}
 			return base.OnEnterNotifyEvent (evnt);
@@ -284,7 +279,6 @@ namespace MonoDevelop.Components.Docking
 		{
 			ScheduleAutoHide (true);
 			if (autoShowFrame == null) {
-				state = StateType.Normal;
 				QueueDraw ();
 			}
 			return base.OnLeaveNotifyEvent (evnt);
