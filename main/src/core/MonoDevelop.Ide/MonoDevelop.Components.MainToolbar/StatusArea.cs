@@ -41,41 +41,6 @@ using StockIcons = MonoDevelop.Ide.Gui.Stock;
 namespace MonoDevelop.Components.MainToolbar
 {
 
-	class MouseTracker
-	{
-		public bool Hovered { get; private set; }
-		public Gdk.Point MousePosition { get; private set; }
-
-		public event EventHandler MouseMoved;
-		public event EventHandler HoveredChanged;
-
-		public MouseTracker (Gtk.Widget owner)
-		{
-			Hovered = false;
-			MousePosition = new Gdk.Point(0, 0);
-
-			owner.Events = owner.Events | Gdk.EventMask.PointerMotionMask;
-
-			owner.MotionNotifyEvent += (object o, MotionNotifyEventArgs args) => {
-				MousePosition = new Gdk.Point ((int)args.Event.X, (int)args.Event.Y);
-				if (MouseMoved != null)
-					MouseMoved (this, EventArgs.Empty);
-			};
-
-			owner.EnterNotifyEvent += (o, args) => {
-				Hovered = true;
-				if (HoveredChanged != null)
-					HoveredChanged (this, EventArgs.Empty);
-			};
-
-			owner.LeaveNotifyEvent += (o, args) => {
-				Hovered = false;
-				if (HoveredChanged != null)
-					HoveredChanged (this, EventArgs.Empty);
-			};
-		}
-	}
-
 	class StatusArea : EventBox, StatusBar
 	{
 		struct Message
