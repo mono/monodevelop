@@ -469,36 +469,42 @@ namespace MonoDevelop.Ide.FindInFiles
 			int indent = line.GetIndentation (doc).Length;
 			var data = new Mono.TextEditor.TextEditorData (doc);
 			data.ColorStyle = highlightStyle;
+			var lineText = doc.GetTextAt (line.Offset + indent, line.Length - indent);
 			string markup = doc.SyntaxMode != null ?
 				data.GetMarkup (line.Offset + indent, line.Length - indent, true, !isSelected, false) :
-				GLib.Markup.EscapeText (doc.GetTextAt (line.Offset, line.Length));
-			
+				GLib.Markup.EscapeText (lineText);
+			Pango.AttrBackground attr = null;
 			if (!isSelected) {
 				int col = searchResult.Offset - line.Offset - indent;
-				string tag;
-				int pos1 = FindPosition (markup, col, out tag);
-				int pos2 = FindPosition (markup, col + searchResult.Length, out tag);
-				if (pos1 >= 0 && pos2 >= 0) {
-					markup = tag.StartsWith ("span") ? markup.Insert (pos2, "</span></span><" + tag + ">") : markup.Insert (pos2, "</span>");
-					Color searchColor = Mono.TextEditor.Highlighting.ColorScheme.ToGdkColor (highlightStyle.SearchTextBg);
-					double b1 = Mono.TextEditor.HslColor.Brightness (searchColor);
-					double b2 = Mono.TextEditor.HslColor.Brightness (AdjustColor (Style.Base (StateType.Normal), highlightStyle.Default.Color));
-					double delta = Math.Abs (b1 - b2);
-					if (delta < 0.1) {
-						Mono.TextEditor.HslColor color1 = highlightStyle.SearchTextBg;
-						if (color1.L + 0.5 > 1.0) {
-							color1.L -= 0.5;
-						} else {
-							color1.L += 0.5;
-						}
-						searchColor = color1;
+
+				Color searchColor = Mono.TextEditor.Highlighting.ColorScheme.ToGdkColor (highlightStyle.SearchTextBg);
+				double b1 = Mono.TextEditor.HslColor.Brightness (searchColor);
+				double b2 = Mono.TextEditor.HslColor.Brightness (AdjustColor (Style.Base (StateType.Normal), highlightStyle.Default.Color));
+				double delta = Math.Abs (b1 - b2);
+				if (delta < 0.1) {
+					Mono.TextEditor.HslColor color1 = highlightStyle.SearchTextBg;
+					if (color1.L + 0.5 > 1.0) {
+						color1.L -= 0.5;
+					} else {
+						color1.L += 0.5;
 					}
-					markup = markup.Insert (pos1, "<span background=\"" + SyntaxMode.ColorToPangoMarkup (searchColor) + "\">");
+					searchColor = color1;
 				}
+
+				attr = new Pango.AttrBackground (searchColor.Red, searchColor.Green, searchColor.Blue);
+
+				attr.StartIndex = (uint)TextViewMargin.TranslateIndexToUTF8 (lineText, col);
+				attr.EndIndex = (uint)TextViewMargin.TranslateIndexToUTF8 (lineText, col + searchResult.Length);
 			}
+
 			string markupText = AdjustColors (markup.Replace ("\t", new string (' ', TextEditorOptions.DefaultOptions.TabSize)));
 			try {
 				textRenderer.Markup = markupText;
+				if (attr != null) {
+					var list = textRenderer.Attributes.Copy ();
+					list.Insert (attr);
+					textRenderer.Attributes = list;
+				}
 			} catch (Exception e) {
 				LoggingService.LogError ("Error whil setting the text renderer markup to: " + markup, e);
 			}
