@@ -635,7 +635,7 @@ namespace MonoDevelop.Ide.Gui
 				if (e.IsDirectory) {
 					foreach (IViewContent content in viewContentCollection) {
 						if (content.ContentName != null && ((FilePath)content.ContentName).IsChildPathOf (e.SourceFile)) {
-							content.ContentName = e.TargetFile + content.ContentName.Substring(e.SourceFile.FileName.Length);
+							content.ContentName = e.TargetFile.Combine (((FilePath) content.ContentName).FileName);
 						}
 					}
 				} else {
