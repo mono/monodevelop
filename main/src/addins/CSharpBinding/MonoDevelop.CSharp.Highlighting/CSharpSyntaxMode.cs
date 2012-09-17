@@ -574,7 +574,8 @@ namespace MonoDevelop.CSharp.Highlighting
 							endOffset = chunk.Offset + TokenLength ((Identifier)node);
 							return "keyword.semantic.field.declaration";
 						}
-						return null;
+						if (node.Parent is IdentifierExpression && node.Parent.Parent is DirectionExpression)
+							return null;
 					}
 					
 					var id = node as IdentifierExpression;
