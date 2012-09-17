@@ -222,7 +222,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					descriptionBox.ShowAll ();
 				}
 				infoBubbles.ActiveBubble = current_overload;
-				AnimatedResize ();
+				QueueResize ();
 			}
 		}
 

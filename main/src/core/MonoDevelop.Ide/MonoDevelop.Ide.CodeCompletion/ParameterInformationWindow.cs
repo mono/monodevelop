@@ -142,7 +142,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				vb2.PackStart (helpbox, false, true, 0);
 				helpbox.ShowAll ();
 			}
-			AnimatedResize ();
+			QueueResize ();
 		}
 
 		void ClearDescriptions ()
