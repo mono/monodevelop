@@ -349,7 +349,12 @@ namespace MonoDevelop.Components.Docking
 		{
 			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
 				float value = hoverAnimTweener.IsRunning ? hoverAnimTweener.Value : 1.0f;
+				value = tracker.Hovered ? value : 1.0f - value;
 				var alloc = Allocation;
+				var siblings = (Parent as Gtk.Container).Children;
+
+				bool drawStartSeperator = siblings[0] != this || bar.AlignToEnd;
+				bool drawEndSeparator = siblings[siblings.Length - 1] != this || !bar.AlignToEnd;
 
 				Cairo.LinearGradient lg;
 
@@ -360,7 +365,7 @@ namespace MonoDevelop.Components.Docking
 				}
 
 				Cairo.Color primaryColor = Styles.DockBarPrelightColor;
-				primaryColor.A = tracker.Hovered ? value : 1.0f - value;
+				primaryColor.A = value;
 
 				Cairo.Color transparent = primaryColor;
 				transparent.A = 0;
@@ -375,8 +380,60 @@ namespace MonoDevelop.Components.Docking
 				context.Fill ();
 
 				lg.Destroy ();
+
+				if (bar.Orientation == Orientation.Horizontal) {
+					Cairo.PointD start = new Cairo.PointD (alloc.X + 0.5, alloc.Y);
+					Cairo.PointD end = new Cairo.PointD (alloc.X + 0.5, alloc.Y + alloc.Height);
+					Cairo.PointD offset = new Cairo.PointD (1, 0);
+
+					if (drawStartSeperator)
+						DrawEngravedLine (context, start, end, offset, Styles.DockBarSeparatorColorDark, Styles.DockBarSeparatorColorLight, value);
+
+					start.X += alloc.Width - 2;
+					end.X += alloc.Width - 2;
+
+					if (drawEndSeparator)
+						DrawEngravedLine (context, start, end, offset, Styles.DockBarSeparatorColorDark, Styles.DockBarSeparatorColorLight, value);
+				} else {
+					Cairo.PointD start = new Cairo.PointD (alloc.X, alloc.Y + 0.5);
+					Cairo.PointD end = new Cairo.PointD (alloc.X + alloc.Width, alloc.Y + 0.5);
+					Cairo.PointD offset = new Cairo.PointD (0, 1);
+
+					if (drawStartSeperator)
+						DrawEngravedLine (context, start, end, offset, Styles.DockBarSeparatorColorDark, Styles.DockBarSeparatorColorLight, value);
+
+					start.Y += alloc.Height - 2;
+					end.Y += alloc.Height - 2;
+
+					if (drawEndSeparator)
+						DrawEngravedLine (context, start, end, offset, Styles.DockBarSeparatorColorDark, Styles.DockBarSeparatorColorLight, value);
+				}
+
+				context.LineWidth = 1;
+				Cairo.Color strokeColor = Styles.DockBarSeparatorColorDark;
+				strokeColor.A *= value;
+				context.Color = strokeColor;
+				context.Stroke ();
 			}
 			return base.OnExposeEvent (evnt);
+		}
+
+		void DrawEngravedLine (Cairo.Context context, Cairo.PointD start, Cairo.PointD end, Cairo.PointD engraveOffset, Cairo.Color main, Cairo.Color engrave, float alpha)
+		{
+			Cairo.Color color = main;
+			color.A *= alpha;
+			context.MoveTo (start.X, start.Y);
+			context.LineTo (end.X, end.Y);
+			context.Color = color;
+			context.LineWidth = 1;
+			context.Stroke ();
+
+			color = engrave;
+			color.A *= alpha;
+			context.MoveTo (start.X + engraveOffset.X, start.Y + engraveOffset.Y);
+			context.LineTo (end.X + engraveOffset.X, end.Y + engraveOffset.Y);
+			context.Color = color;
+			context.Stroke ();
 		}
 	}
 }
