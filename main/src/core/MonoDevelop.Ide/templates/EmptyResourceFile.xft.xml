@@ -11,7 +11,7 @@
 	
 	<TemplateFiles>
 		<ProjectResource>
-			<File DefaultExtension=".resources" DefaultName="EmptyResourcefile"/>
+			<File DefaultExtension=".resx" DefaultName="EmptyResourcefile"/>
 		</ProjectResource>
 	</TemplateFiles>
 	
