@@ -27,6 +27,9 @@
 //
 
 using System;
+using Gtk;
+using Gdk;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Components.Commands
 {
@@ -41,6 +44,18 @@ namespace MonoDevelop.Components.Commands
 		
 		internal CommandManager CommandManager {
 			get { return manager; }
+		}
+
+		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+		{
+			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
+				context.Color = (HslColor)Style.Light (StateType.Normal);
+				context.Paint ();
+			}
+
+			foreach (Gtk.Widget child in Children)
+				(this as Gtk.Container).PropagateExpose (child, evnt);
+			return false;
 		}
 	}
 }
