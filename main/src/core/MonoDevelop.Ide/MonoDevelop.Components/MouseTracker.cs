@@ -32,12 +32,25 @@ namespace MonoDevelop.Components
 	{
 		public bool Hovered { get; private set; }
 		public Gdk.Point MousePosition { get; private set; }
+		public bool TrackMotion { 
+			get { return trackMotion; }
+			set { 
+				if (value == trackMotion)
+					return;
+				trackMotion = value; 
+				OnTrackMotionChanged (); 
+			} 
+		}
 
 		public event EventHandler MouseMoved;
 		public event EventHandler HoveredChanged;
 
+		bool trackMotion;
+		Gtk.Widget owner;
+
 		public MouseTracker (Gtk.Widget owner)
 		{
+			this.owner = owner;
 			Hovered = false;
 			MousePosition = new Gdk.Point(0, 0);
 
@@ -60,6 +73,15 @@ namespace MonoDevelop.Components
 				if (HoveredChanged != null)
 					HoveredChanged (this, EventArgs.Empty);
 			};
+		}
+
+		void OnTrackMotionChanged ()
+		{
+			if (TrackMotion)
+				owner.Events = owner.Events | Gdk.EventMask.PointerMotionMask;
+			else
+				owner.Events = owner.Events & ~Gdk.EventMask.PointerMotionMask;
+
 		}
 	}
 }

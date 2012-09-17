@@ -83,6 +83,8 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly Cairo.Color DockBarSeparatorColorDark = new Cairo.Color (0, 0, 0, 0.2);
 		public static readonly Cairo.Color DockBarSeparatorColorLight = new Cairo.Color (1, 1, 1, 0.3);
 
+		public static readonly Cairo.Color DockBarPrelightColor = CairoExtensions.ParseColor ("ffffff");
+
 		// Status area
 
 		public static readonly Cairo.Color WidgetBorderColor = CairoExtensions.ParseColor ("8c8c8c");
@@ -163,7 +165,12 @@ namespace MonoDevelop.Ide.Gui
 		internal static Gdk.Color IncreaseLight (Gdk.Color color, double factor)
 		{
 			return IncreaseLight (color.ToCairoColor (), factor).ToGdkColor ();
-		}		
+		}
+
+		internal static Cairo.Rectangle ToCairoRect (this Gdk.Rectangle rect)
+		{
+			return new Cairo.Rectangle (rect.X, rect.Y, rect.Width, rect.Height);
+		}
 	}
 }
 

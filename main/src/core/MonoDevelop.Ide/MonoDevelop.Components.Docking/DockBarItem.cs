@@ -33,6 +33,7 @@ using System;
 using Gtk;
 using Mono.TextEditor;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Components.Docking
 {
@@ -49,6 +50,8 @@ namespace MonoDevelop.Components.Docking
 		uint autoHideTimeout = uint.MaxValue;
 		int size;
 		Gdk.Size lastFrameSize;
+		MouseTracker tracker;
+		Tweener hoverAnimTweener;
 
 		public DockBarItem (DockBar bar, DockItem it, int size)
 		{
@@ -60,6 +63,17 @@ namespace MonoDevelop.Components.Docking
 			UpdateTab ();
 			lastFrameSize = bar.Frame.Allocation.Size;
 			bar.Frame.SizeAllocated += HandleBarFrameSizeAllocated;
+
+			tracker = new MouseTracker (this);
+			tracker.TrackMotion = false;
+			tracker.HoveredChanged += (sender, e) => {
+				hoverAnimTweener.Stop ();
+				hoverAnimTweener.Start ();
+			};
+
+			hoverAnimTweener = new Tweener (100, 16);
+			hoverAnimTweener.ValueUpdated += (sender, e) => QueueDraw ();
+			hoverAnimTweener.Finished += (sender, e) => QueueDraw ();
 		}
 		
 		void HandleBarFrameSizeAllocated (object o, SizeAllocatedArgs args)
@@ -302,7 +316,7 @@ namespace MonoDevelop.Components.Docking
 		}
 
 		bool itemActivated;
-		
+
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
 			if (evnt.TriggersContextMenu ()) {
@@ -329,6 +343,40 @@ namespace MonoDevelop.Components.Docking
 				it.Status = DockItemStatus.Dockable;
 			}
 			return true;
+		}
+
+		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+		{
+			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
+				float value = hoverAnimTweener.IsRunning ? hoverAnimTweener.Value : 1.0f;
+				var alloc = Allocation;
+
+				Cairo.LinearGradient lg;
+
+				if (bar.Orientation == Orientation.Horizontal) {
+					lg = new Cairo.LinearGradient (alloc.X, 0, alloc.X + alloc.Width, 0);
+				} else {
+					lg = new Cairo.LinearGradient (0, alloc.Y, 0, alloc.Y + alloc.Height);
+				}
+
+				Cairo.Color primaryColor = Styles.DockBarPrelightColor;
+				primaryColor.A = tracker.Hovered ? value : 1.0f - value;
+
+				Cairo.Color transparent = primaryColor;
+				transparent.A = 0;
+
+				lg.AddColorStop (0.0, transparent);
+				lg.AddColorStop (0.35, primaryColor);
+				lg.AddColorStop (0.65, primaryColor);
+				lg.AddColorStop (1.0, transparent);
+
+				context.Rectangle (alloc.ToCairoRect ());
+				context.Pattern = lg;
+				context.Fill ();
+
+				lg.Destroy ();
+			}
+			return base.OnExposeEvent (evnt);
 		}
 	}
 }
