@@ -602,7 +602,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			if (declarationViewHidden && Visible) {
 				declarationviewwindow.ShowArrow = true;
-				declarationviewwindow.ShowPopup (this, new Gdk.Rectangle (0, Math.Min (Allocation.Height, Math.Max (0, rect.Y - (int)List.vadj.Value)), Allocation.Width, rect.Height), PopupPosition.Left);
+				declarationviewwindow.ShowPopup (this, 
+				                                 new Gdk.Rectangle (Gui.Styles.TooltipInfoSpacing, 
+				                                                    Math.Min (Allocation.Height, Math.Max (0, rect.Y - (int)List.vadj.Value)), 
+				                                                    Allocation.Width, 
+				                                                    rect.Height), 
+				                                 PopupPosition.Left);
 				if (declarationViewWindowOpacityTimer != 0) 
 					GLib.Source.Remove (declarationViewWindowOpacityTimer);
 				declarationViewWindowOpacityTimer = GLib.Timeout.Add (50, new OpacityTimer (this).Timer);

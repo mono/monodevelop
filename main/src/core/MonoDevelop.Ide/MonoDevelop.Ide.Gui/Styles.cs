@@ -111,6 +111,10 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly Cairo.Color ToolbarBottomBorderColor = new Cairo.Color (0.5, 0.5, 0.5);
 		public static readonly Cairo.Color ToolbarBottomGlowColor = new Cairo.Color (1, 1, 1, 0.2);
 
+		// Code Completion
+
+		public static readonly int TooltipInfoSpacing = 1;
+
 		// Helper methods
 
 		internal static Cairo.Color Shift (Cairo.Color color, double factor)
