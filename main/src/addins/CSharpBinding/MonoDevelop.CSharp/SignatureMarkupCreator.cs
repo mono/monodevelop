@@ -586,6 +586,14 @@ namespace MonoDevelop.CSharp
 			return result.ToString ();
 		}
 
+		bool IsAccessibleOrHasSourceCode (IEntity entity)
+		{
+			if (!entity.Region.Begin.IsEmpty)
+				return true;
+			var lookup = new MemberLookup (resolver.CurrentTypeDefinition, resolver.Compilation.MainAssembly);
+			return lookup.IsAccessible (entity, false);
+		}
+
 		string GetPropertyMarkup (IProperty property)
 		{
 			if (property == null)
@@ -616,14 +624,16 @@ namespace MonoDevelop.CSharp
 			}
 			
 			result.Append (" {");
-			if (property.CanGet) {
+			if (property.CanGet && IsAccessibleOrHasSourceCode (property.Getter)) {
 				if (property.Getter.Accessibility != property.Accessibility) {
+
 					result.Append (" ");
 					AppendAccessibility (result, property.Getter);
 				}
 				result.Append (Highlight (" get", "keyword.property") + ";");
 			}
-			if (property.CanSet) {
+
+			if (property.CanSet && IsAccessibleOrHasSourceCode(property.Setter)) {
 				if (property.Setter.Accessibility != property.Accessibility) {
 					result.Append (" ");
 					AppendAccessibility (result, property.Setter);
