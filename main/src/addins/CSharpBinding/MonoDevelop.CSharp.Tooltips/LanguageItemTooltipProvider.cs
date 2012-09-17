@@ -181,29 +181,30 @@ namespace MonoDevelop.SourceEditor
 			if (doc == null)
 				return null;
 
-			if (result == null && data.Node is CSharpTokenNode) {
-				var resolver = (doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile).GetResolver (doc.Compilation, doc.Editor.Caret.Location);
-				var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
-				sig.BreakLineAfterReturnType = false;
-				return sig.GetKeywordTooltip (data.Node);
-			}
+			try {
+				if (result == null && data.Node is CSharpTokenNode) {
+					var resolver = (doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile).GetResolver (doc.Compilation, doc.Editor.Caret.Location);
+					var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
+					sig.BreakLineAfterReturnType = false;
+					return sig.GetKeywordTooltip (data.Node);
+				}
 
-			if (result is UnknownIdentifierResolveResult) {
-				return new TooltipInformation () {
-					SignatureMarkup = string.Format ("error CS0103: The name `{0}' does not exist in the current context", ((UnknownIdentifierResolveResult)result).Identifier)
-				};
-			} else if (result is UnknownMemberResolveResult) {
-				var ur = (UnknownMemberResolveResult)result;
-				if (ur.TargetType.Kind != TypeKind.Unknown) {
+				if (result is UnknownIdentifierResolveResult) {
 					return new TooltipInformation () {
-						SignatureMarkup = string.Format ("error CS0117: `{0}' does not contain a definition for `{1}'", ur.TargetType.FullName, ur.MemberName)
+						SignatureMarkup = string.Format ("error CS0103: The name `{0}' does not exist in the current context", ((UnknownIdentifierResolveResult)result).Identifier)
+					};
+				} else if (result is UnknownMemberResolveResult) {
+					var ur = (UnknownMemberResolveResult)result;
+					if (ur.TargetType.Kind != TypeKind.Unknown) {
+						return new TooltipInformation () {
+							SignatureMarkup = string.Format ("error CS0117: `{0}' does not contain a definition for `{1}'", ur.TargetType.FullName, ur.MemberName)
+						};
+					}
+				} else if (result.IsError) {
+					return new TooltipInformation () {
+						SignatureMarkup = "Unknown resolve error."
 					};
 				}
-			} else if (result.IsError) {
-				return new TooltipInformation () {
-					SignatureMarkup = "Unknown resolve error."
-				};
-			}
 
 			if (result is LocalResolveResult) {
 				var lr = (LocalResolveResult)result;
@@ -255,7 +256,11 @@ namespace MonoDevelop.SourceEditor
 					result.Type, 
 					false);
 			}
-
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while creating tooltip.", e);
+				return null;
+			}
+		
 			return null;
 		}
 		class ErrorVisitor : DepthFirstAstVisitor

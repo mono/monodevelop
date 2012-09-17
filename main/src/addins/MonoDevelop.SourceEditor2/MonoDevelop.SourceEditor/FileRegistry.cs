@@ -142,7 +142,6 @@ namespace MonoDevelop.SourceEditor
 			if (changedViews.Count == 0)
 				return;
 			if (changedViews.Count == 1) {
-				changedViews [0].WorkbenchWindow.SelectWindow ();
 				changedViews [0].SourceEditorWidget.ShowFileChangedWarning (false);
 			} else {
 				foreach (var view in changedViews) {
