@@ -383,7 +383,6 @@ namespace MonoDevelop.CSharp.Formatting
 			int end2 = end;
 			while (end2 > 1 && char.IsLetter(data.GetCharAt (end2 - 1)))
 				end2--;
-			Console.WriteLine (2);
 			if (end != end2) {
 				string token = data.GetTextBetween (end2, end + 1);
 				// guess property context
