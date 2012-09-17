@@ -178,7 +178,13 @@ namespace Mono.TextEditor
 		{
 			if (e.TextMarker is IExtendingTextLineMarker) {
 				int lineNumber = e.Line.LineNumber;
-				textEditorData.HeightTree.SetLineHeight (lineNumber, GetLineHeight (e.Line));
+				if (lineNumber <= LineCount) {
+					try {
+						textEditorData.HeightTree.SetLineHeight (lineNumber, GetLineHeight (e.Line));
+					} catch (Exception ex) {
+						Console.WriteLine (ex);
+					}
+				}
 			}
 		}
 		
