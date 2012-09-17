@@ -61,7 +61,7 @@ namespace MonoDevelop.CSharp.Completion
 					continue;
 				methods.Add (method);
 			}
-			methods.Sort ((l, r) => l.GetEditorBrowsableState ().CompareTo (r.GetEditorBrowsableState ()));
+			methods.Sort (MethodComparer);
 		}
 		
 		protected override string GetPrefix (IMethod method)

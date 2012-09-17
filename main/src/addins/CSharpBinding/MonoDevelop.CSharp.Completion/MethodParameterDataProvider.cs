@@ -76,8 +76,16 @@ namespace MonoDevelop.CSharp.Completion
 			methods.Add (method);
 		}
 		
-		static int MethodComparer (IMethod left, IMethod right)
+		protected static int MethodComparer (IMethod left, IMethod right)
 		{
+			bool lObs = left.IsObsolete ();
+			bool rObs = right.IsObsolete ();
+
+			if (lObs && !rObs)
+				return 1;
+			if (!lObs && rObs)
+				return -1;
+
 			var lstate = left.GetEditorBrowsableState ();
 			var rstate = right.GetEditorBrowsableState ();
 			if (lstate == rstate)
