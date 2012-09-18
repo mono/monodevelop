@@ -298,6 +298,15 @@ namespace MonoDevelop.Components
 			newWidget.Visible = oldWidget.Visible;
 			return newWidget;
 		}
+
+		public static bool ScreenSupportsARGB ()
+		{
+			// Some versions of windows lie
+			if (MonoDevelop.Core.Platform.IsWindows)
+				return false;
+
+			return Gdk.Screen.Default.RgbaColormap != null;
+		}
 	}
 
 	class TreeViewTooltipsData

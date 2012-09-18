@@ -133,7 +133,7 @@ namespace MonoDevelop.Components
 				return showArrow;
 			}
 			set {
-				if (Core.Platform.IsWindows)
+				if (!GtkUtil.ScreenSupportsARGB ())
 					return;
 
 				showArrow = value;
@@ -145,7 +145,7 @@ namespace MonoDevelop.Components
 		public int CornerRadius {
 			get { return cornerRadius; }
 			set {
-				if (Core.Platform.IsWindows)
+				if (!GtkUtil.ScreenSupportsARGB ())
 					cornerRadius = 0;
 				else
 					cornerRadius = value; 
@@ -197,7 +197,7 @@ namespace MonoDevelop.Components
 
 		public void AnimatedResize ()
 		{
-			if (Core.Platform.IsWindows) {
+			if (!GtkUtil.ScreenSupportsARGB ()) {
 				QueueResize();
 				return;
 			}
