@@ -59,7 +59,7 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId ExecutionMarker = "md-execution-marker";
 		public static readonly IconId Field = "md-field";
 		public static readonly IconId FileXmlIcon = "md-file-xml-icon";
-		public static readonly IconId FindIcon = Gtk.Stock.Find;
+		public static readonly IconId FindIcon = "md-magnify";
 		public static readonly IconId FindInFiles = "md-find-in-files";
 		public static readonly IconId FindNextIcon = "md-find-next-icon";
 		public static readonly IconId FullScreen = Gtk.Stock.Fullscreen;

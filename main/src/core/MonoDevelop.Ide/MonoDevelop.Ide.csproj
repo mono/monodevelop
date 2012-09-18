@@ -756,6 +756,9 @@
     <EmbeddedResource Include="icons\disclose-arrow-up.png">
       <LogicalName>disclose-arrow-up.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\magnify-16.png">
+      <LogicalName>magnify-16.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\searchbox-clear-16.png">
       <LogicalName>searchbox-clear-16.png</LogicalName>
     </EmbeddedResource>
