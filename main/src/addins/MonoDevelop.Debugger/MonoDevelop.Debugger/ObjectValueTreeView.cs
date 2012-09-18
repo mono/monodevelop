@@ -259,11 +259,10 @@ namespace MonoDevelop.Debugger
 				StoreColumnSizes ();
 			}
 		}
-		
-		
+
 		void AdjustColumnSizes ()
 		{
-			if (!IsRealized || !Visible || Allocation.Width == 0 || columnSizesUpdating || compact)
+			if (!IsRealized || !Visible || Allocation.Width <= 0 || columnSizesUpdating || compact)
 				return;
 			
 			columnSizesUpdating = true;
