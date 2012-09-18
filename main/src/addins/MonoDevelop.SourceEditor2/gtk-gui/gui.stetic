@@ -456,7 +456,7 @@
                   <widget class="Gtk.CheckButton" id="highlightMatchingBracketCheckbutton">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="Label" translatable="yes">_Highlight matching bracket</property>
+                    <property name="Label" translatable="yes">_Highlight matching braces</property>
                     <property name="DrawIndicator">True</property>
                     <property name="HasLabel">True</property>
                     <property name="UseUnderline">True</property>
@@ -504,7 +504,7 @@
                   <widget class="Gtk.CheckButton" id="enableAnimationCheckbutton1">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="Label" translatable="yes">_Animations enabled</property>
+                    <property name="Label" translatable="yes">_Enable animations</property>
                     <property name="DrawIndicator">True</property>
                     <property name="HasLabel">True</property>
                     <property name="UseUnderline">True</property>
@@ -520,7 +520,7 @@
                   <widget class="Gtk.CheckButton" id="enableHighlightUsagesCheckbutton">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="Label" translatable="yes">_Enable highlighting of usages</property>
+                    <property name="Label" translatable="yes">Highlight _identifier reuse</property>
                     <property name="DrawIndicator">True</property>
                     <property name="HasLabel">True</property>
                     <property name="UseUnderline">True</property>
@@ -536,7 +536,7 @@
                   <widget class="Gtk.CheckButton" id="drawIndentMarkersCheckbutton">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="Label" translatable="yes">_Draw indentation markers</property>
+                    <property name="Label" translatable="yes">_Show indentation guides</property>
                     <property name="DrawIndicator">True</property>
                     <property name="HasLabel">True</property>
                     <property name="UseUnderline">True</property>
@@ -552,7 +552,7 @@
                   <widget class="Gtk.CheckButton" id="enableQuickDiffCheckbutton">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="Label" translatable="yes">_Enable quick diff</property>
+                    <property name="Label" translatable="yes">_Visualize changed lines</property>
                     <property name="DrawIndicator">True</property>
                     <property name="HasLabel">True</property>
                     <property name="UseUnderline">True</property>

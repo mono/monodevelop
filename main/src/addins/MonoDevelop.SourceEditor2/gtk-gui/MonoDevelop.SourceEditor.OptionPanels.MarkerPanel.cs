@@ -78,7 +78,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.highlightMatchingBracketCheckbutton = new global::Gtk.CheckButton ();
 			this.highlightMatchingBracketCheckbutton.CanFocus = true;
 			this.highlightMatchingBracketCheckbutton.Name = "highlightMatchingBracketCheckbutton";
-			this.highlightMatchingBracketCheckbutton.Label = global::Mono.Unix.Catalog.GetString ("_Highlight matching bracket");
+			this.highlightMatchingBracketCheckbutton.Label = global::Mono.Unix.Catalog.GetString ("_Highlight matching braces");
 			this.highlightMatchingBracketCheckbutton.DrawIndicator = true;
 			this.highlightMatchingBracketCheckbutton.UseUnderline = true;
 			this.vbox3.Add (this.highlightMatchingBracketCheckbutton);
@@ -114,7 +114,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.enableAnimationCheckbutton1 = new global::Gtk.CheckButton ();
 			this.enableAnimationCheckbutton1.CanFocus = true;
 			this.enableAnimationCheckbutton1.Name = "enableAnimationCheckbutton1";
-			this.enableAnimationCheckbutton1.Label = global::Mono.Unix.Catalog.GetString ("_Animations enabled");
+			this.enableAnimationCheckbutton1.Label = global::Mono.Unix.Catalog.GetString ("Enable _animations");
 			this.enableAnimationCheckbutton1.DrawIndicator = true;
 			this.enableAnimationCheckbutton1.UseUnderline = true;
 			this.vbox3.Add (this.enableAnimationCheckbutton1);
@@ -126,7 +126,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.enableHighlightUsagesCheckbutton = new global::Gtk.CheckButton ();
 			this.enableHighlightUsagesCheckbutton.CanFocus = true;
 			this.enableHighlightUsagesCheckbutton.Name = "enableHighlightUsagesCheckbutton";
-			this.enableHighlightUsagesCheckbutton.Label = global::Mono.Unix.Catalog.GetString ("_Enable highlighting of usages");
+			this.enableHighlightUsagesCheckbutton.Label = global::Mono.Unix.Catalog.GetString ("Highlight _identifier reuse");
 			this.enableHighlightUsagesCheckbutton.DrawIndicator = true;
 			this.enableHighlightUsagesCheckbutton.UseUnderline = true;
 			this.vbox3.Add (this.enableHighlightUsagesCheckbutton);
@@ -138,7 +138,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.drawIndentMarkersCheckbutton = new global::Gtk.CheckButton ();
 			this.drawIndentMarkersCheckbutton.CanFocus = true;
 			this.drawIndentMarkersCheckbutton.Name = "drawIndentMarkersCheckbutton";
-			this.drawIndentMarkersCheckbutton.Label = global::Mono.Unix.Catalog.GetString ("_Draw indentation markers");
+			this.drawIndentMarkersCheckbutton.Label = global::Mono.Unix.Catalog.GetString ("_Show indentation guides");
 			this.drawIndentMarkersCheckbutton.DrawIndicator = true;
 			this.drawIndentMarkersCheckbutton.UseUnderline = true;
 			this.vbox3.Add (this.drawIndentMarkersCheckbutton);
@@ -150,7 +150,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.enableQuickDiffCheckbutton = new global::Gtk.CheckButton ();
 			this.enableQuickDiffCheckbutton.CanFocus = true;
 			this.enableQuickDiffCheckbutton.Name = "enableQuickDiffCheckbutton";
-			this.enableQuickDiffCheckbutton.Label = global::Mono.Unix.Catalog.GetString ("_Enable quick diff");
+			this.enableQuickDiffCheckbutton.Label = global::Mono.Unix.Catalog.GetString ("_Visualize changed lines");
 			this.enableQuickDiffCheckbutton.DrawIndicator = true;
 			this.enableQuickDiffCheckbutton.UseUnderline = true;
 			this.vbox3.Add (this.enableQuickDiffCheckbutton);
