@@ -165,7 +165,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
-			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("_Show whitespaces:");
+			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("_Show invisible characters:");
 			this.label1.UseUnderline = true;
 			this.hbox1.Add (this.label1);
 			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label1]));

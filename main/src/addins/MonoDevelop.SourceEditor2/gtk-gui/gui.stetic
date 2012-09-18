@@ -571,7 +571,7 @@
                     <child>
                       <widget class="Gtk.Label" id="label1">
                         <property name="MemberName" />
-                        <property name="LabelProp" translatable="yes">_Show whitespaces:</property>
+                        <property name="LabelProp" translatable="yes">_Show invisible characters:</property>
                         <property name="UseUnderline">True</property>
                       </widget>
                       <packing>
