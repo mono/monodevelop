@@ -414,7 +414,7 @@ namespace MonoDevelop.Ide.Gui
 				Counters.OpenDocumentTimer.Trace ("Initializing monitor");
 				IProgressMonitor pm = ProgressMonitors.GetStatusProgressMonitor (
 					GettextCatalog.GetString ("Opening {0}", uniqueName),
-					Stock.OpenFileIcon,
+					Stock.StatusSolutionOperation,
 					true
 				);
 				var openFileInfo = new FileOpenInformation () {
