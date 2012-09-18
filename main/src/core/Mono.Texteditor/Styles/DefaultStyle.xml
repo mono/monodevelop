@@ -46,12 +46,15 @@
 	<Color name="selection-bg" value="#b5d5ff"/>
 	<Color name="invalid-red" value="#C44D58"/>
 	
+	<Color name="orangesicle" value="#fdab75"/>
+	<Color name="orangesicle-light" value="#fed9c0"/>
+	
 	<!-- color styles -->
 	<Style name="text" color="text-black" bgColor="white">
 		<Style name="background" color="white">
 			<Style name="readonly" color="aluminium1"/>
-			<Style name="searchresult-main" color="butter1"/>
-			<Style name="searchresult" color="butter2"/>
+			<Style name="searchresult-main" color="orangesicle"/>
+			<Style name="searchresult" color="orangesicle-light"/>
 		</Style>
 		<Style name="selection" bgColor="selection-bg"/>
 		<Style name="selection.inactive" bgColor="aluminium2"/>
