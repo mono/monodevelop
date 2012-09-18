@@ -256,11 +256,9 @@ namespace Mono.Debugging.Evaluation
 				return new ArrayValueReference (ctx, obj, indices);
 			}
 			
-			if (ctx.Adapter.IsClassInstance (Context, obj)) {
-				ValueReference val = ctx.Adapter.GetMember (GetChildrenContext (options), this, Type, obj, name);
-				return val;
-			}
-					
+			if (ctx.Adapter.IsClassInstance (Context, obj))
+				return ctx.Adapter.GetMember (GetChildrenContext (options), this, obj, name);
+
 			return null;
 		}
 	}

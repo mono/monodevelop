@@ -137,9 +137,35 @@ namespace Mono.Debugging.Evaluation
 			if (ObjectValue is EvaluationResult) {
 				EvaluationResult exp = (EvaluationResult) ObjectValue;
 				return Mono.Debugging.Client.ObjectValue.CreateObject (this, new ObjectPath (Name), "", exp, Flags, null);
-			}
-			else
+			} else
 				return base.OnCreateObjectValue (options);
+		}
+
+		public override ValueReference GetChild (string name, EvaluationOptions options)
+		{
+			object obj = Value;
+			
+			if (obj == null)
+				return null;
+
+			if (name [0] == '[' && Context.Adapter.IsArray (Context, obj)) {
+				// Parse the array indices
+				string[] sinds = name.Substring (1, name.Length - 2).Split (',');
+				int[] indices = new int [sinds.Length];
+				for (int n=0; n<sinds.Length; n++)
+					indices [n] = int.Parse (sinds [n]);
+
+				return new ArrayValueReference (Context, obj, indices);
+			}
+
+			if (Context.Adapter.IsClassInstance (Context, obj)) {
+				// Note: This is the only difference with the default ValueReference implementation.
+				// We need this because the user may be requesting a base class's implementation, in
+				// which case 'Type' will be the BaseType instead of the actual type of the variable.
+				return Context.Adapter.GetMember (GetChildrenContext (options), this, Type, obj, name);
+			}
+
+			return null;
 		}
 	}
 }

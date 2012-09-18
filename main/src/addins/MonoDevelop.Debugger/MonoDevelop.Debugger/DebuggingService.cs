@@ -967,7 +967,6 @@ namespace MonoDevelop.Debugger
 
 	internal class StatusBarConnectionDialog : IConnectionDialog
 	{
-
 		public event EventHandler UserCancelled;
 
 		public void SetMessage (DebuggerStartInfo dsi, string message, bool listening, int attemptNumber)
