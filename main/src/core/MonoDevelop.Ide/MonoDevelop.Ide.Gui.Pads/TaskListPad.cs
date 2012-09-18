@@ -97,7 +97,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			}
 			catch (Exception e) // no codons loaded
 			{
-				LoggingService.LogError ("Loading of Task List Views failed: {0}", e.ToString ());
+				LoggingService.LogError ("Loading of Tasks Views failed: {0}", e.ToString ());
 			}
 			
 			switcherCombo = new ComboBox (switcherComboList);

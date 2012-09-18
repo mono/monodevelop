@@ -30,7 +30,7 @@
 		defaultLayout="*"/>
 		
 	<Pad id = "MonoDevelop.Ide.Gui.Pads.TaskListPad"
-		_label = "Task List"
+		_label = "Tasks"
 		icon="md-task-list-icon"
 		class = "MonoDevelop.Ide.Gui.Pads.TaskListPad"
 		defaultPlacement = "Bottom"
