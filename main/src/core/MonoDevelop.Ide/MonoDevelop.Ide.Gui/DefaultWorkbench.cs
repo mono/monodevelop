@@ -871,11 +871,16 @@ namespace MonoDevelop.Ide.Gui
 			style.PadBackgroundColor = Styles.BrowserPadBackground;
 			style.InactivePadBackgroundColor = Styles.InactiveBrowserPadBackground;
 			style.TreeBackgroundColor = Styles.BrowserPadBackground;
-//			dock.SetDockItemStyle ("ProjectPad", style);
-//			dock.SetDockItemStyle ("ClassPad", style);
+			dock.SetDockItemStyle ("ProjectPad", style);
+			dock.SetDockItemStyle ("ClassPad", style);
 
-			dock.SetRegionStyle ("Documents/Left", style);
+//			dock.SetRegionStyle ("Documents/Left", style);
 			//dock.SetRegionStyle ("Documents/Right", style);
+
+//			style = new DockVisualStyle ();
+//			style.SingleColumnMode = true;
+//			dock.SetRegionStyle ("Documents/Left;Documents/Right", style);
+//			dock.SetDockItemStyle ("Documents", style);
 
 			// Add some hiden items to be used as position reference
 			DockItem dit = dock.AddItem ("__left");
