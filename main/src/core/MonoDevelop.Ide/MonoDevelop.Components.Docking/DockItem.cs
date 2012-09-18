@@ -143,7 +143,7 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 
-		bool tabPressed;
+		bool tabPressed, tabActivated;
 		double pressX, pressY;
 
 		void HeaderButtonPress (object ob, Gtk.ButtonPressEventArgs args)
@@ -157,17 +157,21 @@ namespace MonoDevelop.Components.Docking
 					pressX = args.Event.X;
 					pressY = args.Event.Y;
 				} else if (args.Event.Type == Gdk.EventType.TwoButtonPress) {
-					if (Status == DockItemStatus.AutoHide)
-						Status = DockItemStatus.Dockable;
-					else
-						Status = DockItemStatus.AutoHide;
+					tabActivated = true;
 				}
 			}
 		}
 		
 		void HeaderButtonRelease (object ob, Gtk.ButtonReleaseEventArgs args)
 		{
-			if (!args.Event.TriggersContextMenu () && args.Event.Button == 1) {
+			if (tabActivated) {
+				tabActivated = false;
+				if (Status == DockItemStatus.AutoHide)
+					Status = DockItemStatus.Dockable;
+				else
+					Status = DockItemStatus.AutoHide;
+			}
+			else if (!args.Event.TriggersContextMenu () && args.Event.Button == 1) {
 				frame.DockInPlaceholder (this);
 				frame.HidePlaceholder ();
 				if (titleTab.GdkWindow != null)
