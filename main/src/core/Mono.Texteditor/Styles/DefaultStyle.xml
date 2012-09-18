@@ -156,9 +156,9 @@
 	<Style name="constant.language" color="skyblue2"/>
 	<Style name="constant.language.void" color="skyblue2"/>
 	
-	<Style name="keyword.semantic.extensionthis" color="#888" weight="italic" />
+	<Style name="keyword.semantic.extensionthis" color="keyword-teal" />
 	
-	<Style name="keyword.access" color="#593586" />
+	<Style name="keyword.access" color="keyword-teal" />
   <!-- text-black until we can find a good color -->
 	<Style name="keyword.semantic.field" color="text-black"/>
 
