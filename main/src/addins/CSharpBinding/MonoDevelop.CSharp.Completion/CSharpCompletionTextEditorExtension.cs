@@ -51,7 +51,7 @@ using Mono.TextEditor;
 namespace MonoDevelop.CSharp.Completion
 {
 	
-	public class CSharpCompletionTextEditorExtension : CompletionTextEditorExtension, ICompletionDataFactory, IParameterCompletionDataFactory, ITextEditorMemberPositionProvider
+	public class CSharpCompletionTextEditorExtension : CompletionTextEditorExtension, IParameterCompletionDataFactory, ITextEditorMemberPositionProvider
 	{
 		internal Mono.TextEditor.TextEditorData TextEditorData {
 			get {
@@ -222,12 +222,13 @@ namespace MonoDevelop.CSharp.Completion
 			if (Unit == null || CSharpUnresolvedFile == null)
 				return null;
 			var list = new CompletionDataList ();
+			var ctx = CSharpUnresolvedFile.GetTypeResolveContext (Document.Compilation, document.Editor.Caret.Location) as CSharpTypeResolveContext;
 			var engine = new CSharpCompletionEngine (
 				TextEditorData.Document,
 				typeSystemSegmentTree,
-				this,
+				new CompletionDataFactory (this, new CSharpResolver (ctx)),
 				Document.GetProjectContext (),
-				CSharpUnresolvedFile.GetTypeResolveContext (Document.Compilation, document.Editor.Caret.Location) as CSharpTypeResolveContext
+				ctx
 			);
 			engine.FormattingPolicy = FormattingPolicy.CreateOptions ();
 			engine.EolMarker = TextEditorData.EolMarker;
@@ -476,143 +477,187 @@ namespace MonoDevelop.CSharp.Completion
 			
 			return parentheses != 1 || bracket > 0 ? -1 : index;
 		}*/
-		
+
+
 		#region ICompletionDataFactory implementation
-		ICompletionData ICompletionDataFactory.CreateEntityCompletionData (IEntity entity)
+		class CompletionDataFactory : ICompletionDataFactory
 		{
-			return new MemberCompletionData (this, entity, OutputFlags.IncludeGenerics | OutputFlags.HideArrayBrackets | OutputFlags.IncludeParameterName) {
-				HideExtensionParameter = true
-			};
-		}
+			CSharpCompletionTextEditorExtension ext;
+			readonly CSharpResolver state;
+			readonly TypeSystemAstBuilder builder;
 
-		class GenericTooltipCompletionDate : CompletionData
-		{
-			readonly Func<bool, TooltipInformation> tooltipFunc;
-
-			public GenericTooltipCompletionDate (Func<bool, TooltipInformation> tooltipFunc, string text, string icon) : base (text, icon)
+			public CompletionDataFactory (CSharpCompletionTextEditorExtension ext, CSharpResolver state)
 			{
-				this.tooltipFunc = tooltipFunc;
+				this.state = state;
+				builder = new TypeSystemAstBuilder(state);
+				this.ext = ext;
 			}
-
-			public GenericTooltipCompletionDate (Func<bool, TooltipInformation> tooltipFunc, string text, string icon, string description, string completionText) : base (text, icon, description, completionText)
+			
+			ICompletionData ICompletionDataFactory.CreateEntityCompletionData (IEntity entity)
 			{
-				this.tooltipFunc = tooltipFunc;
+				return new MemberCompletionData (ext, entity, OutputFlags.IncludeGenerics | OutputFlags.HideArrayBrackets | OutputFlags.IncludeParameterName) {
+					HideExtensionParameter = true
+				};
 			}
 
-			public override TooltipInformation CreateTooltipInformation (bool smartWrap)
+			class GenericTooltipCompletionData : CompletionData
 			{
-				return tooltipFunc (smartWrap);
+				readonly Func<bool, TooltipInformation> tooltipFunc;
+
+				public GenericTooltipCompletionData (Func<bool, TooltipInformation> tooltipFunc, string text, string icon) : base (text, icon)
+				{
+					this.tooltipFunc = tooltipFunc;
+				}
+
+				public GenericTooltipCompletionData (Func<bool, TooltipInformation> tooltipFunc, string text, string icon, string description, string completionText) : base (text, icon, description, completionText)
+				{
+					this.tooltipFunc = tooltipFunc;
+				}
+
+				public override TooltipInformation CreateTooltipInformation (bool smartWrap)
+				{
+					return tooltipFunc (smartWrap);
+				}
+
+				List<ICompletionData> overloads;
+				public override bool HasOverloads {
+					get { return overloads != null && overloads.Count > 0; }
+				}
+
+				public override IEnumerable<ICompletionData> OverloadedData {
+					get {
+						return overloads;
+					}
+				}
+
+				public override void AddOverload (ICSharpCode.NRefactory.Completion.ICompletionData data)
+				{
+					if (overloads == null) {
+						overloads = new List<ICompletionData> ();
+						overloads.Add (this);
+					}
+					overloads.Add (data);
+				}
+
 			}
 
-			List<ICompletionData> overloads;
-			public override bool HasOverloads {
-				get { return overloads != null && overloads.Count > 0; }
-			}
+			class LazyGenericTooltipCompletionData : GenericTooltipCompletionData
+			{
+				Lazy<string> displayText;
+				public override string DisplayText {
+					get {
+						return displayText.Value;
+					}
+				}
 
-			public override IEnumerable<ICompletionData> OverloadedData {
-				get {
-					return overloads;
+				public override string CompletionText {
+					get {
+						return displayText.Value;
+					}
+				}
+
+				public LazyGenericTooltipCompletionData (Func<bool, TooltipInformation> tooltipFunc, Lazy<string> displayText, string icon) : base (tooltipFunc, null, icon)
+				{
+					this.displayText = displayText;
 				}
 			}
 
-			public override void AddOverload (ICSharpCode.NRefactory.Completion.ICompletionData data)
+			ICompletionData ICompletionDataFactory.CreateEntityCompletionData (IEntity entity, string text)
 			{
-				if (overloads == null) {
-					overloads = new List<ICompletionData> ();
-					overloads.Add (this);
-				}
-				overloads.Add (data);
+				return new GenericTooltipCompletionData (sw => MemberCompletionData.CreateTooltipInformation (ext, entity, sw), text, entity.GetStockIcon ());
+			}
+			
+			ICompletionData ICompletionDataFactory.CreateTypeCompletionData (IType type, bool showFullName, bool isInAttributeContext)
+			{
+				Lazy<string> displayText = new Lazy<string> (delegate {
+					string name = showFullName ? builder.ConvertType(type).GetText() : type.Name; 
+					if (isInAttributeContext && name.EndsWith("Attribute") && name.Length > "Attribute".Length) {
+						name = name.Substring(0, name.Length - "Attribute".Length);
+					}
+					return name;
+				});
+
+				var result = new LazyGenericTooltipCompletionData (
+					sw => type.GetDefinition () != null ? MemberCompletionData.CreateTooltipInformation (ext, type.GetDefinition (), sw) : new TooltipInformation (), 
+					displayText, 
+					type.GetStockIcon ());
+				return result;
 			}
 
-		}
+			ICompletionData ICompletionDataFactory.CreateMemberCompletionData(IType type, IEntity member)
+			{
+				Lazy<string> displayText = new Lazy<string> (delegate {
+					string name = builder.ConvertType(type).GetText(); 
+					return name + "."+ member.Name;
+				});
 
-		ICompletionData ICompletionDataFactory.CreateEntityCompletionData (IEntity entity, string text)
-		{
-			return new GenericTooltipCompletionDate (sw => MemberCompletionData.CreateTooltipInformation (this, entity, sw), text, entity.GetStockIcon ());
-		}
-		
-		ICompletionData ICompletionDataFactory.CreateTypeCompletionData (IType type, string shortType)
-		{
-			var result = new GenericTooltipCompletionDate (sw => type.GetDefinition () != null ? MemberCompletionData.CreateTooltipInformation (this, type.GetDefinition (), sw) : new TooltipInformation (), shortType, type.GetStockIcon ());
-			if (!(type is ParameterizedType) && type.TypeParameterCount > 0) {
-				var sb = new StringBuilder (shortType);
-				sb.Append ("<");
-				int startParameter = 0;
-				var dt = type.DeclaringType;
-				while (dt != null) {
-					startParameter += dt.TypeParameterCount;
-					dt = dt.DeclaringType;
-				}
-
-				for (int i = startParameter; i < type.TypeParameterCount; i++) {
-					if (i > startParameter)
-						sb.Append (", ");
-					sb.Append (GetAmbience ().GetString (type.GetDefinition ().TypeParameters[i], OutputFlags.ClassBrowserEntries));
-				}
-				sb.Append (">");
-				result.DisplayText = sb.ToString ();
+				var result = new LazyGenericTooltipCompletionData (
+					sw => new TooltipInformation (), 
+					displayText, 
+					null);
+				return result;
 			}
-			return result;
-		}
-		
-		ICompletionData ICompletionDataFactory.CreateLiteralCompletionData (string title, string description, string insertText)
-		{
-			return new GenericTooltipCompletionDate (smartWrap => {
-				var resolver = this.CSharpUnresolvedFile.GetResolver (this.Compilation, this.TextEditorData.Caret.Location);
-				var sig = new SignatureMarkupCreator (resolver, this.FormattingPolicy.CreateOptions ());
-				sig.BreakLineAfterReturnType = smartWrap;
-				return sig.GetKeywordTooltip (title);
-			}, title, "md-keyword", description, insertText ?? title);
-		}
 
-		ICompletionData ICompletionDataFactory.CreateNamespaceCompletionData (INamespace name)
-		{
-			return new CompletionData (name.Name, AstStockIcons.Namespace);
-		}
 
-		ICompletionData ICompletionDataFactory.CreateVariableCompletionData (IVariable variable)
-		{
-			return new VariableCompletionData (variable);
-		}
+			ICompletionData ICompletionDataFactory.CreateLiteralCompletionData (string title, string description, string insertText)
+			{
+				return new GenericTooltipCompletionData (smartWrap => {
+					var resolver = ext.CSharpUnresolvedFile.GetResolver (ext.Compilation, ext.TextEditorData.Caret.Location);
+					var sig = new SignatureMarkupCreator (resolver, ext.FormattingPolicy.CreateOptions ());
+					sig.BreakLineAfterReturnType = smartWrap;
+					return sig.GetKeywordTooltip (title);
+				}, title, "md-keyword", description, insertText ?? title);
+			}
 
-		ICompletionData ICompletionDataFactory.CreateVariableCompletionData (ITypeParameter parameter)
-		{
-			return new CompletionData (parameter.Name, parameter.GetStockIcon ());
-		}
+			ICompletionData ICompletionDataFactory.CreateNamespaceCompletionData (INamespace name)
+			{
+				return new CompletionData (name.Name, AstStockIcons.Namespace);
+			}
 
-		ICompletionData ICompletionDataFactory.CreateEventCreationCompletionData (string varName, IType delegateType, IEvent evt, string parameterDefinition, IUnresolvedMember currentMember, IUnresolvedTypeDefinition currentType)
-		{
-			return new EventCreationCompletionData (this, varName, delegateType, evt, parameterDefinition, currentMember, currentType);
-		}
-		
-		ICompletionData ICompletionDataFactory.CreateNewOverrideCompletionData (int declarationBegin, IUnresolvedTypeDefinition type, IMember m)
-		{
-			return new NewOverrideCompletionData (this, declarationBegin, type, m);
-		}
-		ICompletionData ICompletionDataFactory.CreateNewPartialCompletionData (int declarationBegin, IUnresolvedTypeDefinition type, IUnresolvedMember m)
-		{
-			var ctx = CSharpUnresolvedFile.GetTypeResolveContext (Compilation, document.Editor.Caret.Location);
-			return new NewOverrideCompletionData (this, declarationBegin, type, m.CreateResolved (ctx));
-		}
-		IEnumerable<ICompletionData> ICompletionDataFactory.CreateCodeTemplateCompletionData ()
-		{
-			var result = new CompletionDataList ();
-			CodeTemplateService.AddCompletionDataForMime ("text/x-csharp", result);
-			return result;
-		}
-		
-		IEnumerable<ICompletionData> ICompletionDataFactory.CreatePreProcessorDefinesCompletionData ()
-		{
-			var project = document.Project;
-			if (project == null)
-				yield break;
-			var configuration = project.GetConfiguration (MonoDevelop.Ide.IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
-			var par = configuration != null ? configuration.CompilationParameters as CSharpCompilerParameters : null;
-			if (par == null)
-				yield break;
-			foreach (var define in par.DefineSymbols.Split (';', ',', ' ', '\t').Where (s => !string.IsNullOrWhiteSpace (s)))
-				yield return new CompletionData (define, "md-keyword");
-				
+			ICompletionData ICompletionDataFactory.CreateVariableCompletionData (IVariable variable)
+			{
+				return new VariableCompletionData (variable);
+			}
+
+			ICompletionData ICompletionDataFactory.CreateVariableCompletionData (ITypeParameter parameter)
+			{
+				return new CompletionData (parameter.Name, parameter.GetStockIcon ());
+			}
+
+			ICompletionData ICompletionDataFactory.CreateEventCreationCompletionData (string varName, IType delegateType, IEvent evt, string parameterDefinition, IUnresolvedMember currentMember, IUnresolvedTypeDefinition currentType)
+			{
+				return new EventCreationCompletionData (ext, varName, delegateType, evt, parameterDefinition, currentMember, currentType);
+			}
+			
+			ICompletionData ICompletionDataFactory.CreateNewOverrideCompletionData (int declarationBegin, IUnresolvedTypeDefinition type, IMember m)
+			{
+				return new NewOverrideCompletionData (ext, declarationBegin, type, m);
+			}
+			ICompletionData ICompletionDataFactory.CreateNewPartialCompletionData (int declarationBegin, IUnresolvedTypeDefinition type, IUnresolvedMember m)
+			{
+				var ctx = ext.CSharpUnresolvedFile.GetTypeResolveContext (ext.Compilation, ext.document.Editor.Caret.Location);
+				return new NewOverrideCompletionData (ext, declarationBegin, type, m.CreateResolved (ctx));
+			}
+			IEnumerable<ICompletionData> ICompletionDataFactory.CreateCodeTemplateCompletionData ()
+			{
+				var result = new CompletionDataList ();
+				CodeTemplateService.AddCompletionDataForMime ("text/x-csharp", result);
+				return result;
+			}
+			
+			IEnumerable<ICompletionData> ICompletionDataFactory.CreatePreProcessorDefinesCompletionData ()
+			{
+				var project = ext.document.Project;
+				if (project == null)
+					yield break;
+				var configuration = project.GetConfiguration (MonoDevelop.Ide.IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
+				var par = configuration != null ? configuration.CompilationParameters as CSharpCompilerParameters : null;
+				if (par == null)
+					yield break;
+				foreach (var define in par.DefineSymbols.Split (';', ',', ' ', '\t').Where (s => !string.IsNullOrWhiteSpace (s)))
+					yield return new CompletionData (define, "md-keyword");
+					
+			}
 		}
 		#endregion
 
