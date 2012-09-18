@@ -22,28 +22,16 @@
  THE SOFTWARE. -->
 
  <EditorStyle name="Default" _description="Bright and friendly, just like Xamarin.">
-	<!-- tango palette -->
+
 	<Color name="butter1" value="#fce94f"/>
 	<Color name="butter2" value="#edd400"/>
-	<Color name="butter3" value="#c4a000"/>
-	<Color name="orange1" value="#fcaf3e"/>
-	<Color name="orange2" value="#f57900"/>
-	<Color name="orange3" value="#ce5c00"/>
-	<Color name="chocolate1" value="#e9b96e"/>
-	<Color name="chocolate2" value="#c17d11"/>
-	<Color name="chocolate3" value="#8f5902"/>
 	<Color name="chameleon1" value="#8ae234"/>
 	<Color name="chameleon2" value="#73d216"/>
 	<Color name="chameleon3" value="#4e9a06"/>
 	<Color name="skyblue1" value="#729fcf"/>
 	<Color name="skyblue2" value="#3465a4"/>
-	<Color name="skyblue3" value="#204a87"/>
-	<Color name="plum1" value="#ad7fa8"/>
 	<Color name="plum2" value="#75507b"/>
-	<Color name="plum3" value="#5c3566"/>
 	<Color name="scarletred1" value="#ef2929"/>
-	<Color name="scarletred2" value="#cc0000"/>
-	<Color name="scarletred3" value="#a40000"/>
 	<Color name="aluminium1" value="#eeeeec"/>
 	<Color name="aluminium2" value="#d3d7cf"/>
 	<Color name="aluminium3" value="#babdb6"/>
@@ -53,25 +41,10 @@
 	
 	<Color name="text-black" value="#444"/>
 	<Color name="comment-gray" value="#999988"/>
-	<Color name="string-red" value="#ce2f30"/>
 	<Color name="literal-orange" value="#F57E00"/>
 	<Color name="keyword-teal" value="#009695"/>
-	<Color name="method-purple" value="#653c98"/>
-	<Color name="field-maroon" value="#590000" />
-	<Color name="constant-purple" value="#4d16d8"/>
-	<Color name="method-cyan" value="#506f73"/>
-	<Color name="macro-brown" value="#774b31"/>
-	<Color name="linenumber-gray" value="#D5D1C6"/>
 	<Color name="selection-bg" value="#b5d5ff"/>
-	<Color name="aluminium1" value="#eeeeec"/>
-	<Color name="aluminium2" value="#d3d7cf"/>
-	<Color name="aluminium3" value="#babdb6"/>
-	<Color name="aluminium4" value="#888a85"/>
-	<Color name="aluminium5" value="#555753"/>
-	<Color name="aluminium6" value="#2e3436"/>
-	<Color name="lightgreen" value="#b4e4b4"/>
 	<Color name="invalid-red" value="#C44D58"/>
-	<Color name="bookmark-purple" value="#bfd2f9"/>
 	
 	<!-- color styles -->
 	<Style name="text" color="text-black" bgColor="white">
