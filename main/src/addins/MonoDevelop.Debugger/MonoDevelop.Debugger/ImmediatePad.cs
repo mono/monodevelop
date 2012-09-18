@@ -43,7 +43,6 @@ namespace MonoDevelop.Debugger
 			view = new ConsoleView ();
 			view.ConsoleInput += OnViewConsoleInput;
 			Pango.FontDescription font = Pango.FontDescription.FromString (DesktopService.DefaultMonospaceFont);
-			font.Size = (font.Size * 8) / 10;
 			view.SetFont (font);
 			view.ShadowType = Gtk.ShadowType.None;
 			view.ShowAll ();
