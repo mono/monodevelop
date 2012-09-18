@@ -56,6 +56,7 @@ namespace MonoDevelop.Debugger
 		bool allowAdding;
 		bool allowEditing;
 		bool allowExpanding = true;
+		bool restoringState = false;
 		bool compact;
 		StackFrame frame;
 		bool disposed;
@@ -329,7 +330,9 @@ namespace MonoDevelop.Debugger
 		
 		public void LoadState ()
 		{
+			restoringState = true;
 			state.Load ();
+			restoringState = false;
 		}
 		
 		public bool AllowAdding {
@@ -438,6 +441,16 @@ namespace MonoDevelop.Debugger
 			values.Remove (value);
 			Refresh ();
 		}
+
+		public void ReplaceValue (ObjectValue old, ObjectValue @new)
+		{
+			int idx = values.IndexOf (old);
+			if (idx == -1)
+				return;
+
+			values [idx] = @new;
+			Refresh ();
+		}
 		
 		public void ClearValues ()
 		{
@@ -467,7 +480,7 @@ namespace MonoDevelop.Debugger
 				UnregisterValue (val);
 			nodes.Clear ();
 			
-			state.Save ();
+			SaveState ();
 			
 			CleanPinIcon ();
 			store.Clear ();
@@ -494,8 +507,8 @@ namespace MonoDevelop.Debugger
 			
 			if (AllowAdding)
 				store.AppendValues (createMsg, "", "", null, true, true, null, disabledColor, disabledColor);
-			
-			state.Load ();
+
+			LoadState ();
 		}
 		
 		void RefreshRow (TreeIter it)
@@ -766,16 +779,18 @@ namespace MonoDevelop.Debugger
 		
 		protected override bool OnTestExpandRow (TreeIter iter, TreePath path)
 		{
-			if (!allowExpanding)
-				return true;
-			
-			if (GetRowExpanded (path))
-				return true;
-			
-			TreeIter parent;
-			if (store.IterParent (out parent, iter)) {
-				if (!GetRowExpanded (store.GetPath (parent)))
+			if (!restoringState) {
+				if (!allowExpanding)
 					return true;
+
+				if (GetRowExpanded (path))
+					return true;
+
+				TreeIter parent;
+				if (store.IterParent (out parent, iter)) {
+					if (!GetRowExpanded (store.GetPath (parent)))
+						return true;
+				}
 			}
 			
 			return base.OnTestExpandRow (iter, path);

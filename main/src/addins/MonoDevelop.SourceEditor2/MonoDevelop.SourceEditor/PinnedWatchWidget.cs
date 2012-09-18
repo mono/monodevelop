@@ -38,11 +38,15 @@ namespace MonoDevelop.SourceEditor
 {
 	public class PinnedWatchWidget : Gtk.EventBox
 	{
-		PinnedWatch watch;
 		ObjectValueTreeView valueTree;
+		ObjectValue objectValue;
+
+		TextEditor Editor {
+			get; set;
+		}
 		
 		public PinnedWatch Watch {
-			get { return this.watch; }
+			get; private set;
 		}
 		
 		public ObjectValue ObjectValue {
@@ -50,28 +54,24 @@ namespace MonoDevelop.SourceEditor
 				return objectValue;
 			}
 			set {
-				valueTree.ClearValues ();
-				this.objectValue = value;
-				if (objectValue != null)
-					valueTree.AddValue (objectValue);
+				if (objectValue != null && value != null) {
+					valueTree.ReplaceValue (objectValue, value);
+				} else {
+					valueTree.ClearValues ();
+					if (value != null)
+						valueTree.AddValue (value);
+				}
+
+				objectValue = value;
 			}
 		}
 		
-		ObjectValue objectValue;
-		
-		TextEditor container;
-		
-		TextEditor Editor {
-			get {
-				return container;
-			}
-		}
-		
-		public PinnedWatchWidget (TextEditor container, PinnedWatch watch)
+		public PinnedWatchWidget (TextEditor editor, PinnedWatch watch)
 		{
-			this.container = container;
-			this.watch = watch;
-			this.objectValue = watch.Value;
+			objectValue = watch.Value;
+			Editor = editor;
+			Watch = watch;
+
 			valueTree = new ObjectValueTreeView ();
 			valueTree.AllowAdding = false;
 			valueTree.AllowEditing = true;
@@ -79,8 +79,8 @@ namespace MonoDevelop.SourceEditor
 			valueTree.HeadersVisible = false;
 			valueTree.CompactView = true;
 			valueTree.PinnedWatch = watch;
-			if (watch.Value != null)
-				valueTree.AddValue (watch.Value);
+			if (objectValue != null)
+				valueTree.AddValue (objectValue);
 			
 			valueTree.ButtonPressEvent += HandleValueTreeButtonPressEvent;
 			valueTree.ButtonReleaseEvent += HandleValueTreeButtonReleaseEvent;
@@ -101,16 +101,15 @@ namespace MonoDevelop.SourceEditor
 
 		void HandleDebuggingServiceResumedEvent (object sender, EventArgs e)
 		{
+			valueTree.ChangeCheckpoint ();
 			valueTree.AllowEditing = false;
 			valueTree.AllowExpanding = false;
-			valueTree.CollapseAll ();
-			valueTree.ChangeCheckpoint ();
 		}
 
 		void HandleDebuggingServicePausedEvent (object sender, EventArgs e)
 		{
-			valueTree.AllowEditing = true;
 			valueTree.AllowExpanding = true;
+			valueTree.AllowEditing = true;
 		}
 
 		void HandleEditorOptionsChanged (object sender, EventArgs e)
@@ -154,7 +153,7 @@ namespace MonoDevelop.SourceEditor
 			Gdk.Rectangle rect = valueTree.GetCellArea (path, col);
 			if (!mousePressed && valueTree.Columns[0] == col && cx >= rect.Left) {
 				mousePressed = true;
-				container.MoveToTop (this);
+				Editor.MoveToTop (this);
 //				Gdk.Pointer.Grab (this.GdkWindow, true, Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.PointerMotionMask | Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask, null, null, Gtk.Global.CurrentEventTime);
 //				Gtk.Grab.Add (this);
 			}
@@ -175,8 +174,8 @@ namespace MonoDevelop.SourceEditor
 		void HandleValueTreeMotionNotifyEvent (object o, Gtk.MotionNotifyEventArgs args)
 		{
 			if (mousePressed) {
-				watch.OffsetX += (int)(args.Event.XRoot - originX);
-				watch.OffsetY += (int)(args.Event.YRoot - originY);
+				Watch.OffsetX += (int)(args.Event.XRoot - originX);
+				Watch.OffsetY += (int)(args.Event.YRoot - originY);
 				
 				originX = args.Event.XRoot;
 				originY = args.Event.YRoot;
