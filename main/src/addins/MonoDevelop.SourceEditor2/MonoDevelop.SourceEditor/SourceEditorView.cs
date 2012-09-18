@@ -2004,7 +2004,14 @@ namespace MonoDevelop.SourceEditor
 				formatter.CorrectIndenting (policies, editorData, TextEditor.Caret.Line);
 			}
 		}
-		
+
+		[CommandUpdateHandler (TextEditorCommands.MoveBlockUp)]
+		[CommandUpdateHandler (TextEditorCommands.MoveBlockDown)]
+		void MoveBlockUpdateHandler (CommandInfo cinfo)
+		{
+			cinfo.Enabled = widget.EditorHasFocus;
+		}
+
 		[CommandHandler (TextEditorCommands.MoveBlockUp)]
 		protected void OnMoveBlockUp ()
 		{
