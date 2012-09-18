@@ -469,9 +469,9 @@ namespace Mono.Debugging.Evaluation
 				ValueReference vref = ctx.Adapter.GetThisReference (ctx);
 				if (vref != null && ctx.Adapter.HasMethod (ctx, vref.Type, methodName, BindingFlags.Instance)) {
 					// There is an instance method for 'this', although it may not have an exact signature match. Check it now.
-					if (ctx.Adapter.HasMethod (ctx, vref.Type, methodName, argtypes, BindingFlags.Instance))
+					if (ctx.Adapter.HasMethod (ctx, vref.Type, methodName, argtypes, BindingFlags.Instance)) {
 						target = vref;
-					else {
+					} else {
 						// There isn't an instance method with exact signature match.
 						// If there isn't a static method, then use the instance method,
 						// which will report the signature match error when invoked
@@ -479,14 +479,12 @@ namespace Mono.Debugging.Evaluation
 						if (!ctx.Adapter.HasMethod (ctx, etype, methodName, argtypes, BindingFlags.Static))
 							target = vref;
 					}
-				}
-				else {
+				} else {
 					if (ctx.Adapter.HasMethod (ctx, ctx.Adapter.GetEnclosingType (ctx), methodName, argtypes, BindingFlags.Instance))
 						throw new EvaluatorException ("Can't invoke an instance method from a static method.");
 					target = null;
 				}
-			}
-			else
+			} else
 				throw CreateNotSupportedError ();
 			
 			object vtype = target != null ? target.Type : ctx.Adapter.GetEnclosingType (ctx);
