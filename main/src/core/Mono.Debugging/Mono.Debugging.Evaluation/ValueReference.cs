@@ -218,7 +218,7 @@ namespace Mono.Debugging.Evaluation
 		
 		public IObjectSource ParentSource { get; internal set; }
 
-		EvaluationContext GetChildrenContext (EvaluationOptions options)
+		protected EvaluationContext GetChildrenContext (EvaluationOptions options)
 		{
 			EvaluationContext newCtx = ctx.Clone ();
 			if (options != null)
