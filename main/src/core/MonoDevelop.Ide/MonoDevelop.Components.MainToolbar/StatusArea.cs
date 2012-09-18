@@ -731,7 +731,7 @@ namespace MonoDevelop.Components.MainToolbar
 		void LoadText (string message, bool isMarkup)
 		{
 			if (string.IsNullOrEmpty(message))
-				message = GettextCatalog.GetString("Xamarin Studio");
+				message = BrandingService.ApplicationName;
 			message = message ?? "";
 
 			lastText = currentText;
