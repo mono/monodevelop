@@ -142,9 +142,9 @@ namespace MonoDevelop.Components
 		const int iconSpacing = 4;
 		const int padding = 3;
 		const int buttonPadding = 2;
-		const int arrowLeftPadding = 4;
-		const int arrowRightPadding = 4;
-		const int arrowSize = 10;
+		const int arrowLeftPadding = 10;
+		const int arrowRightPadding = 10;
+		const int arrowSize = 6;
 		const int spacing = arrowLeftPadding + arrowRightPadding + arrowSize;
 		const int minRegionSelectorWidth = 30;
 		
@@ -301,8 +301,7 @@ namespace MonoDevelop.Components
 					} else {
 						int arrowH = Math.Min (height, arrowSize);
 						int arrowY = ypos + (height - arrowH) / 2;
-						Style.PaintArrow (Style, GdkWindow, State, ShadowType.None, evnt.Area, this, "", ArrowType.Right,
-						                  true, xpos, arrowY, arrowSize, arrowH);
+						DrawPathSeparator (ctx, xpos, arrowY, arrowH);
 					}
 					xpos += arrowSize + arrowRightPadding;
 				}
@@ -365,6 +364,16 @@ namespace MonoDevelop.Components
 			((IDisposable)ctx).Dispose ();
 
 			return true;
+		}
+
+		void DrawPathSeparator (Cairo.Context ctx, double x, double y, double size)
+		{
+			ctx.MoveTo (x, y);
+			ctx.LineTo (x + arrowSize, y + size / 2);
+			ctx.LineTo (x, y + size);
+			ctx.ClosePath ();
+			ctx.Color = CairoExtensions.ColorShade (Style.Dark (State).ToCairoColor (), 0.6);
+			ctx.Fill ();
 		}
 
 		void DrawButtonBorder (Cairo.Context ctx, double x, double width)
