@@ -402,20 +402,25 @@ namespace MonoDevelop.Components.MainToolbar
 		void UpdateCombos ()
 		{
 			configurationCombo.Changed -= HandleConfigurationChanged;
-			configurationStore.Clear ();
-			if (!IdeApp.Workspace.IsOpen)
-				return;
-			var values = new HashSet<string> ();
-			foreach (var conf in IdeApp.Workspace.GetConfigurations ()) {
-				string name;
-				string platform;
-				ItemConfiguration.ParseConfigurationId (conf, out name, out platform);
-				if (values.Contains (name))
-					continue;
-				values.Add (name);
-				configurationStore.AppendValues (name, name);
+			try {
+				configurationStore.Clear ();
+				if (!IdeApp.Workspace.IsOpen) {
+					runtimeStore.Clear ();
+					return;
+				}
+				var values = new HashSet<string> ();
+				foreach (var conf in IdeApp.Workspace.GetConfigurations ()) {
+					string name;
+					string platform;
+					ItemConfiguration.ParseConfigurationId (conf, out name, out platform);
+					if (values.Contains (name))
+						continue;
+					values.Add (name);
+					configurationStore.AppendValues (name, name);
+				}
+			} finally {
+				configurationCombo.Changed += HandleConfigurationChanged;
 			}
-			configurationCombo.Changed += HandleConfigurationChanged;
 
 			SelectActiveConfiguration ();
 		}
@@ -423,28 +428,30 @@ namespace MonoDevelop.Components.MainToolbar
 		void UpdateRuntimes ()
 		{
 			runtimeCombo.Changed -= HandleRuntimeChanged;
-			runtimeStore.Clear ();
-			if (!IdeApp.Workspace.IsOpen)
-				return;
+			try {
+				runtimeStore.Clear ();
+				if (!IdeApp.Workspace.IsOpen)
+					return;
 
-			string name;
-			string platform;
-			ItemConfiguration.ParseConfigurationId (IdeApp.Workspace.ActiveConfigurationId, out name, out platform);
-			var values = new HashSet<string> ();
-			foreach (var conf in IdeApp.Workspace.GetConfigurations ()) {
-				string curName;
-				ItemConfiguration.ParseConfigurationId (conf, out curName, out platform);
-				if (curName != name)
-					continue;
-				if (platform == null)
-					platform = "";
-				if (values.Contains (platform))
-					continue;
-				values.Add (platform);
-				runtimeStore.AppendValues (string.IsNullOrEmpty (platform) ? "Any CPU" : platform, platform);
+				string name;
+				string platform;
+				ItemConfiguration.ParseConfigurationId (IdeApp.Workspace.ActiveConfigurationId, out name, out platform);
+				var values = new HashSet<string> ();
+				foreach (var conf in IdeApp.Workspace.GetConfigurations ()) {
+					string curName;
+					ItemConfiguration.ParseConfigurationId (conf, out curName, out platform);
+					if (curName != name)
+						continue;
+					if (platform == null)
+						platform = "";
+					if (values.Contains (platform))
+						continue;
+					values.Add (platform);
+					runtimeStore.AppendValues (string.IsNullOrEmpty (platform) ? "Any CPU" : platform, platform);
+				}
+			} finally {
+				runtimeCombo.Changed += HandleRuntimeChanged;
 			}
-
-			runtimeCombo.Changed += HandleRuntimeChanged;
 		}
 
 		public void AddWidget (Gtk.Widget widget)
