@@ -207,7 +207,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 				projectItems.Remove (finfo);
 			}
 
-			string al = configuration.TargetFramework.ClrVersion == ClrVersion.Net_2_0 ? "al2" : "al";
+			string al = configuration.TargetRuntime.GetToolPath (configuration.TargetFramework, "al");
 			CompilerError err = GenerateSatelliteAssemblies (resourcesByCulture, configuration.OutputDirectory, al, Path.GetFileName (configuration.OutputAssembly), monitor);
 			if (err != null) {
 				CompilerResults cr = new CompilerResults (new TempFileCollection ());
