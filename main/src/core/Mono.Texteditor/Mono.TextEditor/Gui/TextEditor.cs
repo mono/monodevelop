@@ -273,12 +273,12 @@ namespace Mono.TextEditor
 			if (textEditorData.VAdjustment != null)
 				textEditorData.VAdjustment.ValueChanged -= VAdjustmentValueChanged;
 			
-			this.textEditorData.HAdjustment = hAdjustement;
-			this.textEditorData.VAdjustment = vAdjustement;
-			
 			if (hAdjustement == null || vAdjustement == null)
 				return;
 
+			this.textEditorData.HAdjustment = hAdjustement;
+			this.textEditorData.VAdjustment = vAdjustement;
+			
 			this.textEditorData.HAdjustment.ValueChanged += HAdjustmentValueChanged;
 			this.textEditorData.VAdjustment.ValueChanged += VAdjustmentValueChanged;
 			OnScrollAdjustmentsSet ();
