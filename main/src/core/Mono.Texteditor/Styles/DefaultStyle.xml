@@ -23,7 +23,6 @@
 
  <EditorStyle name="Default" _description="Bright and friendly, just like Xamarin.">
 
-	 <Color name="butter1" value="#fce94f"/>
 	 <Color name="butter2" value="#edd400"/>
 	 <Color name="chameleon1" value="#8ae234"/>
 	 <Color name="chameleon2" value="#73d216"/>
@@ -99,12 +98,12 @@
 
 	 <Style name="marker">
 		 <Style name="line" color="aluminium1"/>
-		 <Style name="line.changed" color="chameleon2"/>
-		 <Style name="line.dirty" color="butter2"/>
+		 <Style name="line.changed" color="orangesicle"/>
+		 <Style name="line.dirty" color="orangesicle-light"/>
 
 		 <Style name="ruler" color="aluminium3"/>
-		 <Style name="bracket" color="aluminium2" bgColor="aluminium1"/>
-		 <Style name="usages" color="aluminium1" bgColor="#f5f5f5"/>
+		 <Style name="bracket" color="orangesicle" bgColor="orangesicle-light" />
+		 <Style name="usages" color="orangesicle" bgColor="orangesicle-light" />
 
 		 <Style name="bookmark.color1" color="white"/>
 		 <Style name="bookmark.color2" color="skyblue1"/>
