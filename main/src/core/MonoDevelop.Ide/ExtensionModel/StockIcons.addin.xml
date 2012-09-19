@@ -38,7 +38,6 @@
 	<StockIcon stockid = "md-static-event" icon = "res:element-event-16.png|res:static-16.png" size="Menu"/>
 	<StockIcon stockid = "md-execution-marker" resource = "ExecutionMarker.png" size="Menu" />
 	<StockIcon stockid = "md-extensionmethod" resource = "element-extensionmethod-16.png" size="Menu" />
-	<StockIcon stockid = "md-variable" resource = "element-variable-16.png" size="Menu" />
 	<StockIcon stockid = "md-field" resource = "element-field-16.png" size="Menu" />
 	<StockIcon stockid = "md-static-field" icon = "res:element-field-16.png|res:static-16.png" size="Menu" />
 	<StockIcon stockid = "md-find-in-files" resource = "find-in-files-16.png" size="Menu" />
