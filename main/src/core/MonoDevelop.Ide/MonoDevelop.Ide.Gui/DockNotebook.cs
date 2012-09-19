@@ -763,9 +763,10 @@ namespace MonoDevelop.Ide.Gui
 					ctx.Fill ();
 				}
 
+				int lastTabIndex = CalcLastTab (firstTabIndex);
 				int x = tabStartX;
 				int y = 0;
-				for (int n = firstTabIndex; n < notebook.Tabs.Count && x < tabEndX; n++) {
+				for (int n = firstTabIndex; n <= lastTabIndex && x < tabEndX; n++) {
 					if (closingTab != null && n == closingTabIndex) {
 						DrawTab (ctx, closingTab, ref x, y, false);
 					}
@@ -777,7 +778,7 @@ namespace MonoDevelop.Ide.Gui
 						DrawActiveTab (ctx, tab, ref x, y, tab == highlightedTab);
 					else {
 						DrawTab (ctx, tab, ref x, y, tab == highlightedTab);
-						if (n + 1 < notebook.Tabs.Count && notebook.Tabs[n+1] != notebook.CurrentTab)
+						if (n < lastTabIndex && notebook.Tabs[n+1] != notebook.CurrentTab)
 							DrawSeparator (ctx, ref x);
 					}
 
