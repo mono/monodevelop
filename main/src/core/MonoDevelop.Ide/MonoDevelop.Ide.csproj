@@ -1795,6 +1795,7 @@
     <Compile Include="MonoDevelop.Components\Tweener.cs" />
     <Compile Include="MonoDevelop.Components\MouseTracker.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\SearchPopupSearchPattern.cs" />
+    <Compile Include="MonoDevelop.Components\PopoverWindowTheme.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
