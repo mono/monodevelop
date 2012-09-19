@@ -472,6 +472,10 @@ namespace MonoDevelop.Ide
 		
 		void SetupExceptionManager ()
 		{
+			System.Threading.Tasks.TaskScheduler.UnobservedTaskException += (sender, e) => {
+				HandleException (e.Exception.Flatten (), false);
+				e.SetObserved ();
+			};
 			GLib.ExceptionManager.UnhandledException += delegate (GLib.UnhandledExceptionArgs args) {
 				HandleException ((Exception)args.ExceptionObject, args.IsTerminating);
 			};
