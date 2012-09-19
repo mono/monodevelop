@@ -127,7 +127,7 @@ namespace MonoDevelop.SourceEditor
 			};
 
 			ShowArrow = true;
-			CornerRadius = 3;
+			Theme.CornerRadius = 3;
 		}
 
 //		void HandlePinWindowButtonPressEvent (object o, ButtonPressEventArgs args)

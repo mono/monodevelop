@@ -33,8 +33,8 @@ namespace MonoDevelop.Components
 
 		public TooltipPopoverWindow ()
 		{
-			BackgroundColor = new Cairo.Color (1d, 243d / 255d, 207d / 255d, 0.9d);
-			BorderColor = new Cairo.Color (128d/255d, 122d / 255d, 104d / 255d);
+			Theme.SetFlatColor (new Cairo.Color (1d, 243d / 255d, 207d / 255d, 0.9d));
+			Theme.BorderColor = new Cairo.Color (128d/255d, 122d / 255d, 104d / 255d);
 			ShowArrow = true;
 		}
 

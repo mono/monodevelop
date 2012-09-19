@@ -26,6 +26,7 @@
 using System;
 using Gtk;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui;
 using Mono.TextEditor;
 using Gdk;
 
@@ -47,15 +48,245 @@ namespace MonoDevelop.Components
 		RightBottom = 0x28
 	}
 
+	public class PopoverWindowTheme
+	{
+		int cornerRadius;
+		int padding;
+		Cairo.Color topColor;
+		Cairo.Color bottomColor;
+		Cairo.Color borderColor;
+		Pango.FontDescription font;
+		int currentPage;
+		int pages;
+		bool drawPager;
+		bool pagerVertical;
+
+		public event EventHandler RedrawNeeded;
+
+		/// <summary>
+		/// Gets or sets the color of the top of the gradient used to render the background.
+		/// </summary>
+		public Cairo.Color TopColor { 
+			get { return topColor; }
+			set { SetAndEmit (value, topColor, ref topColor); }
+		}
+
+		/// <summary>
+		/// Gets or sets the color of the bottom of the gradient used to render the background.
+		/// </summary>
+		public Cairo.Color BottomColor { 
+			get { return bottomColor; }
+			set { SetAndEmit (value, bottomColor, ref bottomColor); } 
+		}
+
+		public Cairo.Color BorderColor { 
+			get { return borderColor; }
+			set { SetAndEmit (value, borderColor, ref borderColor); } 
+		}
+
+		public Pango.FontDescription Font { 
+			get { return font; }
+			set { SetAndEmit (value, font, ref font); }
+		}
+
+		/// <summary>
+		/// Gets or sets the corner radius. Corner radius cannot be set above 0 if ARGB is not supported.
+		/// </summary>
+		public int CornerRadius { 
+			get { return cornerRadius; } 
+			set {
+				if (!GtkUtil.ScreenSupportsARGB ())
+					value = 0;
+				SetAndEmit (value, cornerRadius, ref cornerRadius);
+			} 
+		}
+
+		/// <summary>
+		/// Gets or sets the padding. Padding will always return at least the size of the CornerRadius.
+		/// </summary>
+		public int Padding { 
+			get { return Math.Max (padding, cornerRadius); } 
+			set { SetAndEmit (value, padding, ref padding); }
+		}
+
+		public bool DrawPager { 
+			get { return drawPager; }
+			set { SetAndEmit (value, drawPager, ref drawPager); }
+		}
+
+		public int CurrentPage { 
+			get { return currentPage; }
+			set { SetAndEmit (value, currentPage, ref currentPage); }
+		}
+
+		public int NumPages { 
+			get { return pages; }
+			set { SetAndEmit (value, pages, ref pages); }
+		}
+
+		public bool PagerVertical {
+			get { return pagerVertical; }
+			set { SetAndEmit (value, pagerVertical, ref pagerVertical); }
+		}
+
+		public void SetFlatColor (Cairo.Color color)
+		{
+			TopColor = color;
+			BottomColor = color;
+		}
+
+		public PopoverWindowTheme ()
+		{
+			CornerRadius = 4;
+			Padding = 6;
+			TopColor = new Cairo.Color (1, 1, 1);
+			BottomColor = new Cairo.Color (1, 1, 1);
+			BorderColor = new Cairo.Color (0.7, 0.7, 0.7);
+
+			Font = Pango.FontDescription.FromString ("Normal");
+		}
+		
+		void EmitRedrawNeeded ()
+		{
+			if (RedrawNeeded != null)
+				RedrawNeeded (this, EventArgs.Empty);
+		}
+
+		void SetAndEmit<T> (T newValue, T oldValue, ref T result)
+		{
+			if (newValue.Equals(oldValue))
+				return;
+			result = newValue;
+			EmitRedrawNeeded ();
+		}
+
+		public virtual void RenderPager (Cairo.Context context, Pango.Context pangoContext, Gdk.Rectangle region)
+		{
+			//set global clip to avoid going outside general rendering area
+			CairoExtensions.RoundedRectangle (context, region.X, region.Y, region.Width, region.Height, CornerRadius);
+			context.Clip ();
+
+			Pango.Layout layout = SetupText (context, pangoContext);
+			int textWidth, textHeight;
+			layout.GetPixelSize (out textWidth, out textHeight);
+
+			int width = textWidth + Styles.PopoverWindow.PagerTriangleSize * 2 + 20;
+			int height = Styles.PopoverWindow.PagerHeight;
+
+			Gdk.Rectangle boundingBox = new Gdk.Rectangle (region.X + region.Width - width, 0, width, height);
+			RenderPagerBackground (context, boundingBox);
+
+			int arrowPadding = 4;
+			Gdk.Rectangle arrowRect = new Gdk.Rectangle (boundingBox.X + arrowPadding, 
+			                                             boundingBox.Y + (boundingBox.Height - Styles.PopoverWindow.PagerTriangleSize) / 2,
+			                                             Styles.PopoverWindow.PagerTriangleSize,
+			                                             Styles.PopoverWindow.PagerTriangleSize);
+
+			RenderPagerArrow (context, arrowRect, PagerVertical ? ArrowType.Up : ArrowType.Left);
+			arrowRect.X = boundingBox.X + boundingBox.Width - (arrowPadding + Styles.PopoverWindow.PagerTriangleSize);
+			RenderPagerArrow (context, arrowRect, PagerVertical ? ArrowType.Down : ArrowType.Right);
+
+			RenderText (context, layout, boundingBox);
+		}
+
+		protected virtual Pango.Layout SetupText (Cairo.Context context, Pango.Context pangoContext)
+		{
+			Pango.Layout pl = new Pango.Layout (pangoContext);
+			pl.SetText (string.Format ("{0} of {1}", CurrentPage + 1, NumPages));
+			pl.FontDescription = Font;
+			pl.FontDescription.AbsoluteSize = Pango.Units.FromPixels (Styles.PopoverWindow.PagerHeight - 5);
+
+			return pl;
+		}
+
+		protected virtual void RenderText (Cairo.Context context, Pango.Layout layout, Gdk.Rectangle bounds)
+		{
+			int w, h;
+			layout.GetPixelSize (out w, out h);
+
+			context.MoveTo (bounds.X + (bounds.Width - w) / 2, bounds.Y + (bounds.Height - h) / 2);
+
+			context.Color = BorderColor;
+			PangoCairoHelper.ShowLayout (context, layout);
+
+			layout.Dispose ();
+		}
+
+		protected virtual void RenderPagerBackground (Cairo.Context context, Gdk.Rectangle bounds)
+		{
+			// draw background
+			CairoExtensions.RoundedRectangle (context, 
+			                                  bounds.X, 
+			                                  bounds.Y, 
+			                                  bounds.Width, 
+			                                  bounds.Height, 
+			                                  CornerRadius, 
+			                                  CairoCorners.BottomLeft);
+
+			using (var lg = new Cairo.LinearGradient (0, bounds.Y, 0, bounds.Y + bounds.Height)) {
+				lg.AddColorStop (0, Styles.PopoverWindow.PagerBackgroundColorTop);
+				lg.AddColorStop (1, Styles.PopoverWindow.PagerBackgroundColorBottom);
+
+				context.Pattern = lg;
+				context.Fill ();
+			}
+
+			// draw outline
+			CairoExtensions.RoundedRectangle (context, 
+			                                  bounds.X + .5, 
+			                                  bounds.Y + .5, 
+			                                  bounds.Width - 1, 
+			                                  bounds.Height - 1, 
+			                                  CornerRadius, 
+			                                  CairoCorners.BottomLeft);
+			context.LineWidth = 1;
+			context.Color = BorderColor;
+			context.Stroke ();
+		}
+
+		protected virtual void RenderPagerArrow (Cairo.Context context, Gdk.Rectangle bounds, ArrowType direction)
+		{
+			switch (direction) {
+			case ArrowType.Up:
+				context.MoveTo (bounds.X + bounds.Width / 2.0, bounds.Y);
+				context.LineTo (bounds.X, bounds.Y + bounds.Height);
+				context.LineTo (bounds.X + bounds.Width, bounds.Y + bounds.Height);
+				context.ClosePath ();
+				break;
+			case ArrowType.Down:
+				context.MoveTo (bounds.X + bounds.Width / 2.0, bounds.Y + bounds.Height);
+				context.LineTo (bounds.X, bounds.Y);
+				context.LineTo (bounds.X + bounds.Width, bounds.Y);
+				context.ClosePath ();
+				break;
+			case ArrowType.Left:
+				context.MoveTo (bounds.X, bounds.Y + bounds.Height / 2.0);
+				context.LineTo (bounds.X + bounds.Width, bounds.Y);
+				context.LineTo (bounds.X + bounds.Width, bounds.Y + bounds.Height);
+				context.ClosePath ();
+				break;
+			case ArrowType.Right:
+				context.MoveTo (bounds.X + bounds.Width, bounds.Y + bounds.Height / 2.0);
+				context.LineTo (bounds.X, bounds.Y);
+				context.LineTo (bounds.X, bounds.Y + bounds.Height);
+				context.ClosePath ();
+				break;
+			default:
+				return;
+			}
+
+			context.Color = Styles.PopoverWindow.PagerTriangleColor;
+			context.Fill ();
+		}
+	}
+
 	public class PopoverWindow : Gtk.Window
 	{
+		PopoverWindowTheme theme;
+
 		bool showArrow;
 		PopupPosition position;
 		int arrowOffset;
-		int cornerRadius = 0;
-		int padding = 6;
-		Cairo.Color backgroundColor = new Cairo.Color (1, 1, 1);
-		Cairo.Color borderColor = new Cairo.Color (0.7, 0.7, 0.7);
 		Gtk.Alignment alignment;
 
 		Gdk.Rectangle currentCaret;
@@ -118,10 +349,28 @@ namespace MonoDevelop.Components
 				}
 			};
 
-			if (Core.Platform.IsMac)
-				cornerRadius = 4;
-
 			UpdatePadding ();
+		}
+
+		public PopoverWindowTheme Theme { 
+			get { 
+				if (theme == null) {
+					theme = new PopoverWindowTheme ();
+					theme.RedrawNeeded += OnRedrawNeeded;
+				}
+				return theme; 
+			}
+			set {
+				if (theme == value)
+					return;
+
+				theme.RedrawNeeded -= OnRedrawNeeded;
+				theme = value;
+				theme.RedrawNeeded += OnRedrawNeeded;
+
+				UpdatePadding ();
+				QueueDraw ();
+			}
 		}
 
 		public Gtk.Alignment ContentBox {
@@ -140,29 +389,6 @@ namespace MonoDevelop.Components
 				UpdatePadding ();
 				QueueDraw ();
 			}
-		}
-
-		public int CornerRadius {
-			get { return cornerRadius; }
-			set {
-				if (!GtkUtil.ScreenSupportsARGB ())
-					cornerRadius = 0;
-				else
-					cornerRadius = value; 
-				padding = value;
-				QueueDraw (); 
-				UpdatePadding ();
-			}
-		}
-
-		public Cairo.Color BackgroundColor {
-			get { return backgroundColor; }
-			set { backgroundColor = value; QueueDraw (); }
-		}
-		
-		public Cairo.Color BorderColor {
-			get { return borderColor; }
-			set { borderColor = value; QueueDraw (); }
 		}
 		
 		public void ShowPopup (Gtk.Widget widget, PopupPosition position)
@@ -384,10 +610,19 @@ namespace MonoDevelop.Components
 				context.Fill ();
 				context.Operator = Cairo.Operator.Over;
 
+				// protect against overriden methods which leave in a bad state
+				context.Save ();
+				if (Theme.DrawPager)
+					Theme.RenderPager (context, 
+					                   PangoContext,
+					                   new Gdk.Rectangle (Allocation.X, Allocation.Y, paintSize.Width, paintSize.Height));
+				context.Restore ();
+
 				BorderPath (context);
-				context.Color = borderColor;
+				context.Color = Theme.BorderColor;
 				context.LineWidth = 1;
 				context.Stroke ();
+
 			}
 
 			return retVal;
@@ -395,14 +630,18 @@ namespace MonoDevelop.Components
 
 		protected virtual void OnDrawContent (Gdk.EventExpose evnt, Cairo.Context context)
 		{
-			context.Rectangle (Allocation.X, Allocation.Y, paintSize.Width, paintSize.Height);
-			context.Color = backgroundColor;
-			context.Fill ();
+			using (var lg = new Cairo.LinearGradient (0, Allocation.Y, 0, Allocation.Y + paintSize.Height)) {
+				lg.AddColorStop (0, Theme.TopColor);
+				lg.AddColorStop (1, Theme.BottomColor);
+				context.Rectangle (Allocation.X, Allocation.Y, paintSize.Width, paintSize.Height);
+				context.Pattern = lg;
+				context.Fill ();
+			}
 		}
 
 		void BorderPath (Cairo.Context cr)
 		{
-			double r = cornerRadius;
+			double r = Theme.CornerRadius;
 			if (showArrow) {
 				double apos = arrowOffset;
 				var re = BorderAllocation;
@@ -441,7 +680,7 @@ namespace MonoDevelop.Components
 		void UpdatePadding ()
 		{
 			uint top,left,bottom,right;
-			top = left = bottom = right = (uint)padding + 1;
+			top = left = bottom = right = (uint)Theme.Padding + 1;
 
 			if (showArrow) {
 				if ((position & PopupPosition.Top) != 0)
@@ -456,6 +695,11 @@ namespace MonoDevelop.Components
 			alignment.SetPadding (top, bottom, left, right);
 		}
 
+		void OnRedrawNeeded (object sender, EventArgs args)
+		{
+			QueueDraw ();
+		}
+
 		protected override void OnSizeAllocated (Rectangle allocation)
 		{
 			if (!resizeTweener.IsRunning)
@@ -467,7 +711,7 @@ namespace MonoDevelop.Components
 		protected Rectangle ChildAllocation {
 			get {
 				var rect = BorderAllocation;
-				rect.Inflate (-padding - 1, -padding - 1);
+				rect.Inflate (-Theme.Padding - 1, -Theme.Padding - 1);
 				return rect;
 			}
 		}

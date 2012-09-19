@@ -33,92 +33,6 @@ using System.Linq;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
-	class DeclarationViewArrow : Gtk.EventBox
-	{
-		readonly bool left;
-
-		public DeclarationViewArrow (bool left)
-		{
-			this.left =  left;
-			AppPaintable = true;
-			VisibleWindow = false;
-			SetSizeRequest (10, 9);
-			Show ();
-		}
-
-		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
-		{
-			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
-				var h = Allocation.Height;
-				var w = Allocation.Width;
-				context.Translate (Allocation.X, Allocation.Y);
-				if (left) {
-					context.MoveTo (0, h / 2);
-					context.LineTo (w / 2, h);
-					context.LineTo (w / 2, h * 2 / 3);
-					context.LineTo (w, h * 2 / 3);
-					context.LineTo (w, h * 1 / 3);
-					context.LineTo (w / 2, h * 1 / 3);
-					context.LineTo (w / 2, 0);
-				} else {
-					context.MoveTo (w, h / 2);
-					context.LineTo (w / 2, h);
-					context.LineTo (w / 2, h * 2 / 3);
-					context.LineTo (0, h * 2 / 3);
-					context.LineTo (0, h * 1 / 3);
-					context.LineTo (w / 2, h * 1 / 3);
-					context.LineTo (w / 2, 0);
-
-				}
-				context.ClosePath ();
-				context.Color = new Cairo.Color (0, 0, 0, 0.6);
-				context.Fill ();
-			}
-
-			return base.OnExposeEvent (evnt);
-		}
-
-	}
-
-	class DelecationViewPagerBubbles : Gtk.EventBox
-	{
-		const int bubblePadding = 1;
-		const int bubbleRadius  = 3;
-
-		public int Bubbles {
-			get;
-			set;
-		}
-
-		public int ActiveBubble {
-			get;
-			set;
-		}
-
-		public DelecationViewPagerBubbles ()
-		{
-			AppPaintable = true;
-			VisibleWindow = false;
-			Show ();
-		}
-
-		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
-		{
-			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
-				context.Translate (Allocation.X, Allocation.Y);
-				var bubbleWidth = bubbleRadius * 2 + bubblePadding;
-				double x = Math.Max (0, (Allocation.Width - (Bubbles * bubbleWidth)) / 2);
-				for (int i = 0 ; i < Bubbles; i++) {
-					context.Arc (x, Allocation.Height / 2, bubbleRadius, 0, Math.PI * 2);
-					context.Color = new Cairo.Color (0, 0, 0, i == ActiveBubble ? 0.8 : 0.3);
-					context.Fill ();
-					x += bubbleWidth;
-				}
-			}
-			return base.OnExposeEvent (evnt);
-		}
-
-	}
 
 	public class TooltipInformationWindow : PopoverWindow
 	{
@@ -144,9 +58,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 		
 		MonoDevelop.Components.FixedWidthWrapLabel headlabel;
-		HBox helpbox;
-		DelecationViewPagerBubbles infoBubbles = new DelecationViewPagerBubbles ();
-
 		public bool Multiple{
 			get {
 				return overloads.Count > 1;
@@ -158,19 +69,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (tooltipInformation == null || string.IsNullOrEmpty (tooltipInformation.SignatureMarkup))
 				return;
 			overloads.Add (tooltipInformation);
-			if (helpbox == null && overloads.Count >= 2) {
-				helpbox = new HBox (false, 0);
-				var leftArrow = new DeclarationViewArrow (true);
-				helpbox.PackStart (leftArrow, false, false, 0);
-				helpbox.PackStart (infoBubbles, true, true, 0);
-				var rightArrow = new DeclarationViewArrow (false);
-				helpbox.PackEnd (rightArrow, false, false, 0);
-				helpbox.BorderWidth = 0;
-				vb2.PackStart (helpbox, false, true, 0);
-				helpbox.ShowAll ();
+
+			if (overloads.Count > 1) {
+				Theme.DrawPager = true;
+				Theme.NumPages = overloads.Count;
 			}
-			infoBubbles.Bubbles = overloads.Count;
-			
+
 			ShowOverload ();
 		}
 
@@ -208,6 +112,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 				var o = overloads[current_overload];
 				headlabel.Markup = o.SignatureMarkup;
 				headlabel.Visible = true;
+				if (Theme.DrawPager)
+					headlabel.WidthRequest = headlabel.RealWidth + 70;
 				foreach (var cat in o.Categories) {
 					descriptionBox.PackStart (CreateCategory (cat.Item1, cat.Item2), true, true, 4);
 				}
@@ -221,7 +127,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				} else {
 					descriptionBox.ShowAll ();
 				}
-				infoBubbles.ActiveBubble = current_overload;
+				Theme.CurrentPage = current_overload;
 				QueueResize ();
 			}
 		}
@@ -261,10 +167,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			ClearDescriptions ();
 			overloads.Clear ();
-			if (helpbox != null) {
-				helpbox.Destroy ();
-				helpbox = null;
-			}
+			Theme.DrawPager = false;
 			headlabel.Markup = "";
 			current_overload = 0;
 		}
@@ -339,7 +242,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			vb2.PackStart (hb, true, true, 0);
 			ContentBox.Add (vb2);
 			var scheme = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (PropertyService.Get<string> ("ColorScheme"));
-			this.BackgroundColor = scheme.Tooltip.CairoBackgroundColor;
+			Theme.SetFlatColor (scheme.Tooltip.CairoBackgroundColor);
 
 			foreColor = scheme.Default.Color;
 			headlabel.ModifyFg (StateType.Normal, foreColor);

@@ -90,11 +90,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 			ContentBox.Add (scrollbar);
 			this.AutoSelect = true;
 			this.TypeHint = WindowTypeHint.Menu;
-			CornerRadius = 4;
+			Theme.CornerRadius = 4;
 			var style = SyntaxModeService.GetColorStyle (PropertyService.Get ("ColorScheme", "Default"));
 			var completion = style.GetChunkStyle ("completion");
 
-			this.BackgroundColor = completion.CairoBackgroundColor;
+			Theme.SetFlatColor (completion.CairoBackgroundColor);
 		}
 
 		protected virtual void DoubleClick ()
@@ -137,8 +137,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (IsRealized && !Visible)
 				Show ();
 			
-			int width = list.WidthRequest + CornerRadius * 2;
-			int height = list.HeightRequest + 2 + (footer != null ? footer.Allocation.Height : 0) + CornerRadius * 2;
+			int width = list.WidthRequest + Theme.CornerRadius * 2;
+			int height = list.HeightRequest + 2 + (footer != null ? footer.Allocation.Height : 0) + Theme.CornerRadius * 2;
 			
 			SetSizeRequest (width, height);
 			if (IsRealized) 
@@ -633,7 +633,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		protected override bool OnExposeEvent (Gdk.EventExpose args)
 		{
 			base.OnExposeEvent (args);
-			
+
 			int winWidth, winHeight;
 			this.GetSize (out winWidth, out winHeight);
 			this.GdkWindow.DrawRectangle (this.Style.ForegroundGC (StateType.Insensitive), false, 0, 0, winWidth - 1, winHeight - 1);
@@ -641,7 +641,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}*/
 		
 		public int TextOffset {
-			get { return list.TextOffset + (int)this.CornerRadius; }
+			get { return list.TextOffset + (int)Theme.CornerRadius; }
 		}
 	}
 

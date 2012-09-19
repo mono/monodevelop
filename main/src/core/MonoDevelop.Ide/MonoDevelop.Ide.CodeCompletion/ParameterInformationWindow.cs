@@ -59,13 +59,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 				widget = value;
 			}
 		}
-		
+
 		VBox descriptionBox = new VBox (false, 0);
 		VBox vb2 = new VBox (false, 0);
 		Gdk.Color foreColor;
 		MonoDevelop.Components.FixedWidthWrapLabel headlabel;
-		HBox helpbox;
-		DelecationViewPagerBubbles infoBubbles = new DelecationViewPagerBubbles ();
 
 		public ParameterInformationWindow ()
 		{
@@ -94,7 +92,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			vb2.PackStart (hb, true, true, 0);
 			ContentBox.Add (vb2);
 			var scheme = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (PropertyService.Get<string> ("ColorScheme"));
-			this.BackgroundColor = scheme.Tooltip.CairoBackgroundColor;
+			Theme.TopColor = new Cairo.Color (1, 1, 1);
+			Theme.BottomColor = scheme.Tooltip.CairoBackgroundColor;
 			
 			foreColor = scheme.Default.Color;
 			headlabel.ModifyFg (StateType.Normal, foreColor);
@@ -118,8 +117,18 @@ namespace MonoDevelop.Ide.CodeCompletion
 			lastParam = currentParam;
 			ClearDescriptions ();
 			var o = provider.CreateTooltipInformation (overload, _currentParam, false);
+
+			Theme.NumPages = provider.Count;
+			Theme.CurrentPage = overload;
+			if (provider.Count > 1) {
+				Theme.DrawPager = true;
+				Theme.PagerVertical = true;
+			}
+
 			headlabel.Markup = o.SignatureMarkup;
 			headlabel.Visible = true;
+			if (Theme.DrawPager)
+				headlabel.WidthRequest = headlabel.RealWidth + 70;
 			
 			foreach (var cat in o.Categories) {
 				descriptionBox.PackStart (CreateCategory (cat.Item1, cat.Item2), true, true, 4);
@@ -129,19 +138,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 				descriptionBox.PackStart (CreateCategory (GettextCatalog.GetString ("Summary"), o.SummaryMarkup), true, true, 4);
 			}
 			descriptionBox.ShowAll ();
-			infoBubbles.Bubbles = provider.Count;
-			infoBubbles.ActiveBubble = overload;
-			if (helpbox == null && provider.Count >= 2) {
-				helpbox = new HBox (false, 0);
-				var leftArrow = new DeclarationViewArrow (true);
-				helpbox.PackStart (leftArrow, false, false, 0);
-				helpbox.PackStart (infoBubbles, true, true, 0);
-				var rightArrow = new DeclarationViewArrow (false);
-				helpbox.PackEnd (rightArrow, false, false, 0);
-				helpbox.BorderWidth = 0;
-				vb2.PackStart (helpbox, false, true, 0);
-				helpbox.ShowAll ();
-			}
 			QueueResize ();
 		}
 
