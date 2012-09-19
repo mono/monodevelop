@@ -533,28 +533,15 @@ namespace MonoDevelop.Projects
 						LoggingService.LogWarning ("Project '{0}' referenced from '{1}' could not be found", projectReference.Reference, this.Name);
 						continue;
 					}
-
-					string refOutput = p.GetOutputFileName (configuration);
-					if (string.IsNullOrEmpty (refOutput)) {
-						LoggingService.LogWarning ("Project '{0}' referenced from '{1}' has an empty output filename", p.Name, this.Name);
-						continue;
-					}
-
-					list.Add (refOutput);
-
+					DotNetProjectConfiguration conf = p.GetConfiguration (configuration) as DotNetProjectConfiguration;
 					//VS COMPAT: recursively copy references's "local copy" files
 					//but only copy the "copy to output" files from the immediate references
-					if (processedProjects.Add (p) || supportReferDistance == 1)
-						foreach (var f in p.GetSupportFileList (configuration))
-							list.Add (f.Src, f.CopyOnlyIfNewer, f.Target);
+					if (processedProjects.Add (p) || supportReferDistance == 1) {
+						foreach (var v in p.GetOutputFiles (configuration))
+							list.Add (v, true, v.CanonicalPath.ToString ().Substring (conf.OutputDirectory.CanonicalPath.ToString ().Length + 1));
 
-					DotNetProjectConfiguration refConfig = p.GetConfiguration (configuration) as DotNetProjectConfiguration;
-
-					if (refConfig != null && refConfig.DebugMode) {
-						string mdbFile = TargetRuntime.GetAssemblyDebugInfoFile (refOutput);
-						if (File.Exists (mdbFile)) {
-							list.Add (mdbFile);
-						}
+						foreach (var v in p.GetSupportFileList (configuration))
+							list.Add (v.Src, v.CopyOnlyIfNewer, v.Target);
 					}
 				}
 				else if (projectReference.ReferenceType == ReferenceType.Assembly) {
