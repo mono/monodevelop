@@ -475,7 +475,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (data != currentData)
 				HideDeclarationView ();
 
-			declarationViewTimer = GLib.Timeout.Add (250, DelayedTooltipShow);
+			declarationViewTimer = GLib.Timeout.Add (150, DelayedTooltipShow);
 		}
 		
 		void HideDeclarationView ()
@@ -612,7 +612,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				                                 PopupPosition.Left);
 				if (declarationViewWindowOpacityTimer != 0) 
 					GLib.Source.Remove (declarationViewWindowOpacityTimer);
-				declarationViewWindowOpacityTimer = GLib.Timeout.Add (50, new OpacityTimer (this).Timer);
+				declarationViewWindowOpacityTimer = GLib.Timeout.Add (40, new OpacityTimer (this).Timer);
 				declarationViewHidden = false;
 			}
 			
