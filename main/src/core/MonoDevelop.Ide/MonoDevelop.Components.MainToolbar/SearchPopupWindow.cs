@@ -367,23 +367,41 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void SelectItemUp ()
 		{
-			if (selectedItem == null)
+			if (selectedItem == null || selectedItem == topItem)
 				return;
 			int i = SelectedCategoryIndex;
 			if (selectedItem.Item > 0) {
 				selectedItem = new ItemIdentifier (selectedItem.Category, selectedItem.DataSource, selectedItem.Item - 1);
-			} else {
-				if (i > 0) {
-					selectedItem = new ItemIdentifier (
-						results [i - 1].Item1,
-						results [i - 1].Item2,
-						Math.Min (maxItems, results [i - 1].Item2.ItemCount) - 1
-					);
+				if (i > 0 && selectedItem.Equals (topItem)) {
+					SelectItemUp ();
+					return;
 				}
-			}
-			if (i > 0 && selectedItem.Equals (topItem)) {
-				SelectItemUp ();
-				return;
+			} else {
+				if (i == 0) {
+					selectedItem = topItem;
+				} else {
+					do {
+						i--;
+						selectedItem = new ItemIdentifier (
+							results [i].Item1,
+							results [i].Item2,
+							Math.Min (maxItems, results [i].Item2.ItemCount) - 1
+						);
+						if (selectedItem.Category == topItem.Category && selectedItem.Item == topItem.Item && i > 0) {
+							i--;
+							selectedItem = new ItemIdentifier (
+								results [i].Item1,
+								results [i].Item2,
+								Math.Min (maxItems, results [i].Item2.ItemCount) - 1
+							);
+						}
+							
+					} while (i > 0 && selectedItem.DataSource.ItemCount <= 0);
+
+					if (selectedItem.DataSource.ItemCount <= 0) {
+						selectedItem = topItem;
+					}
+				}
 			}
 			ShowTooltip ();
 			QueueDraw ();
@@ -393,6 +411,25 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			if (selectedItem == null)
 				return;
+
+			if (selectedItem.Equals (topItem)) {
+				for (int j = 0; j < results.Count; j++) {
+					if (results[j].Item2.ItemCount == 0 || results[j].Item2.ItemCount == 1 && topItem.DataSource == results[j].Item2)
+						continue;
+					selectedItem = new ItemIdentifier (
+						results [j].Item1,
+						results [j].Item2,
+						0
+						);
+					if (selectedItem.Equals (topItem))
+						goto normalDown;
+					break;
+				}
+				ShowTooltip ();
+				QueueDraw ();
+				return;
+			}
+		normalDown:
 			var i = SelectedCategoryIndex;
 			var upperBound = Math.Min (maxItems, selectedItem.DataSource.ItemCount);
 			if (selectedItem.Item + 1 < upperBound) {
@@ -407,13 +444,17 @@ namespace MonoDevelop.Components.MainToolbar
 						results [j].Item1,
 						results [j].Item2,
 						0
-					);
+						);
+					if (selectedItem.Equals (topItem)) {
+						selectedItem = new ItemIdentifier (
+							results [j].Item1,
+							results [j].Item2,
+							1
+							);
+					}
+
 					break;
 				}
-			}
-			if (i < results.Count && selectedItem.Equals (topItem)) {
-				SelectItemDown ();
-				return;
 			}
 			ShowTooltip ();
 			QueueDraw ();
@@ -692,6 +733,11 @@ namespace MonoDevelop.Components.MainToolbar
 				unchecked {
 					return (Category != null ? Category.GetHashCode () : 0) ^ (DataSource != null ? DataSource.GetHashCode () : 0) ^ Item.GetHashCode ();
 				}
+			}
+
+			public override string ToString ()
+			{
+				return string.Format ("[ItemIdentifier: Category={0}, DataSource=#{1}, Item={2}]", Category.Name, DataSource.ItemCount, Item);
 			}
 		}
 
