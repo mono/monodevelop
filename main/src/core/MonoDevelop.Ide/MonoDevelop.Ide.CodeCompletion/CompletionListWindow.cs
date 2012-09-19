@@ -452,8 +452,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		void UpdateDeclarationView ()
 		{
-			if (completionDataList == null || List.SelectionFilterIndex >= completionDataList.Count || List.SelectionFilterIndex == -1)
+			if (completionDataList == null || List.SelectionFilterIndex >= completionDataList.Count || List.SelectionFilterIndex == -1) {
+				HideDeclarationView ();
 				return;
+			}
 			if (List.GdkWindow == null)
 				return;
 			RemoveDeclarationViewTimer ();

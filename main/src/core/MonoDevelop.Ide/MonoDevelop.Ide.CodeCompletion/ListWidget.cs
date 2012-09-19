@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 	public class ListWidget : Gtk.DrawingArea
 	{
 		int listWidth = 300;
-		Pango.Layout layout, categoryLayout;
+		Pango.Layout layout, categoryLayout, noMatchLayout;
 		ListWindow win;
 		int selection = 0;
 
@@ -132,7 +132,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		ChunkStyle selectedItemColor, selectedItemInactiveColor;
 		Gdk.Color textColor;
 		Gdk.Color highlightColor;
-		
+		FontDescription itemFont;
 
 		const int marginIconSpacing = 4;
 		const int iconTextSpacing = 6;
@@ -142,13 +142,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 		void SetFont ()
 		{
 			// TODO: Add font property to ICompletionWidget;
-			FontDescription des = FontService.GetFontDescription ("Editor").Copy ();
+			if (itemFont != null)
+				itemFont.Dispose ();
+			itemFont = FontService.GetFontDescription ("Editor").Copy ();
 			var provider = CompletionWidget as ITextEditorDataProvider;
 			if (provider != null) {
-				var newSize = (des.Size * provider.GetTextEditorData ().Options.Zoom);
+				var newSize = (itemFont.Size * provider.GetTextEditorData ().Options.Zoom);
 				if (newSize > 0) {
-					des.Size = (int)newSize;
-					layout.FontDescription = des;
+					itemFont.Size = (int)newSize;
+					layout.FontDescription = itemFont;
 				}
 			}
 		}
@@ -159,6 +161,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			this.Events = EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.PointerMotionMask;
 			DefaultCompletionString = "";
 			categoryLayout = new Pango.Layout (this.PangoContext);
+			noMatchLayout = new Pango.Layout (this.PangoContext);
 			layout = new Pango.Layout (this.PangoContext);
 			layout.Wrap = Pango.WrapMode.Char;
  			var style = SyntaxModeService.GetColorStyle (PropertyService.Get ("ColorScheme", "Default"));
@@ -174,6 +177,21 @@ namespace MonoDevelop.Ide.CodeCompletion
 			selectionBorderInactiveColor = style.GetChunkStyle ("completion.selection.inactive.border").CairoColor;
 		}
 
+		
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+			if (layout != null) {
+				layout.Dispose ();
+				categoryLayout.Dispose ();
+				noMatchLayout.Dispose ();
+				layout = categoryLayout = noMatchLayout = null;
+			}
+			if (itemFont != null) {
+				itemFont.Dispose ();
+				itemFont = null;
+			}
+		}
 		internal Adjustment vadj;
 
 		protected override void OnSetScrollAdjustments (Adjustment hadj, Adjustment vadj)
@@ -413,12 +431,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 					Gdk.GC gc = new Gdk.GC (window);
 					gc.RgbFgColor = backgroundColor.ToGdkColor ();
 					window.DrawRectangle (gc, true, 0, yPos, width, height - yPos);
-					layout.SetText (win.DataProvider.ItemCount == 0 ? NoSuggestionsMsg : NoMatchesMsg);
+					noMatchLayout.SetText (win.DataProvider.ItemCount == 0 ? NoSuggestionsMsg : NoMatchesMsg);
 					int lWidth, lHeight;
-					layout.GetPixelSize (out lWidth, out lHeight);
+					noMatchLayout.GetPixelSize (out lWidth, out lHeight);
 					gc.RgbFgColor = textColor;
-					window.DrawLayout (gc, (width - lWidth) / 2, yPos + (height - lHeight - yPos) / 2 - lHeight, layout);
+					window.DrawLayout (gc, (width - lWidth) / 2, yPos + (height - lHeight - yPos) / 2 - lHeight, noMatchLayout);
 					gc.Dispose ();
+
 					return false;
 				}
 
