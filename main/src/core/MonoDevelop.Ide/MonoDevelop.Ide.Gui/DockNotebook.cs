@@ -63,6 +63,8 @@ namespace MonoDevelop.Ide.Gui
 
 			ShowAll ();
 
+			tabStrip.DropDownButton.Sensitive = false;
+
 			tabStrip.DropDownButton.MenuCreator = delegate {
 				Gtk.Menu menu = new Menu ();
 				foreach (var tab in pages) {
@@ -173,6 +175,7 @@ namespace MonoDevelop.Ide.Gui
 				CurrentTab = tab;
 
 			tabStrip.Update ();
+			tabStrip.DropDownButton.Sensitive = pages.Count > 0;
 
 			if (PageAdded != null)
 				PageAdded (this, EventArgs.Empty);
@@ -211,6 +214,7 @@ namespace MonoDevelop.Ide.Gui
 			UpdateIndexes (page);
 			pagesHistory.Remove (tab);
 			tabStrip.Update ();
+			tabStrip.DropDownButton.Sensitive = pages.Count > 0;
 
 			if (PageRemoved != null)
 				PageRemoved (this, EventArgs.Empty);
