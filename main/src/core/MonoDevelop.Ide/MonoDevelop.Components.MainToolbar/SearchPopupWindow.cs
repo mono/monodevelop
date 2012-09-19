@@ -58,6 +58,48 @@ namespace MonoDevelop.Components.MainToolbar
 		Cairo.Color selectionBackgroundColor;
 
 		bool isInSearch;
+		class NullDataSource : ISearchDataSource
+		{
+			#region ISearchDataSource implementation
+			Gdk.Pixbuf ISearchDataSource.GetIcon (int item)
+			{
+				throw new NotImplementedException ();
+			}
+			string ISearchDataSource.GetMarkup (int item, bool isSelected)
+			{
+				throw new NotImplementedException ();
+			}
+			string ISearchDataSource.GetDescriptionMarkup (int item, bool isSelected)
+			{
+				throw new NotImplementedException ();
+			}
+			TooltipInformation ISearchDataSource.GetTooltip (int item)
+			{
+				throw new NotImplementedException ();
+			}
+			double ISearchDataSource.GetWeight (int item)
+			{
+				throw new NotImplementedException ();
+			}
+			DomRegion ISearchDataSource.GetRegion (int item)
+			{
+				throw new NotImplementedException ();
+			}
+			bool ISearchDataSource.CanActivate (int item)
+			{
+				throw new NotImplementedException ();
+			}
+			void ISearchDataSource.Activate (int item)
+			{
+				throw new NotImplementedException ();
+			}
+			int ISearchDataSource.ItemCount {
+				get {
+					return 0;
+				}
+			}
+			#endregion
+		}
 		public SearchPopupWindow ()
 		{
 			headerColor = CairoExtensions.ParseColor ("8c8c8c");
@@ -124,11 +166,22 @@ namespace MonoDevelop.Components.MainToolbar
 				if (string.IsNullOrEmpty (region.FileName))
 					return;
 				if (region.Begin.IsEmpty) {
-					IdeApp.Workbench.OpenDocument (region.FileName);
+					if (Pattern.LineNumber == 0) {
+						IdeApp.Workbench.OpenDocument (region.FileName);
+					} else {
+						IdeApp.Workbench.OpenDocument (region.FileName, Pattern.LineNumber, 1);
+					}
 				} else {
 					IdeApp.Workbench.OpenDocument (region.FileName, region.BeginLine, region.BeginColumn);
 				}
 				Destroy ();
+			}
+		}
+		SearchPopupSearchPattern pattern;
+
+		public SearchPopupSearchPattern Pattern {
+			get {
+				return pattern;
 			}
 		}
 
@@ -143,19 +196,20 @@ namespace MonoDevelop.Components.MainToolbar
 			if (results.Count == 0) {
 				QueueDraw ();
 			}
+			pattern = SearchPopupSearchPattern.ParsePattern (searchPattern);
 			results.Clear ();
 			foreach (var _cat in categories) {
 				var cat = _cat;
 				var token = src.Token;
-				var task = cat.GetResults (searchPattern, token);
+				var task = cat.GetResults (pattern, token);
 				task.ContinueWith (delegate {
-					if (token.IsCancellationRequested || task.Result == null) {
+					if (token.IsCancellationRequested) {
 						return;
 					}
 					Application.Invoke (delegate {
 						if (token.IsCancellationRequested)
 							return;
-						ShowResult (cat, task.Result);
+						ShowResult (cat, task.Result ?? new NullDataSource ());
 					}
 					);
 				}

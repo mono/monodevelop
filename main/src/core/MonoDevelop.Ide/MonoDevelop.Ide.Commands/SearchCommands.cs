@@ -51,7 +51,7 @@ namespace MonoDevelop.Ide.Commands
 		GotoType,
 		GotoFile,
 		GotoLineNumber,
-		
+
 		ToggleBookmark,
 		PrevBookmark,
 		NextBookmark,

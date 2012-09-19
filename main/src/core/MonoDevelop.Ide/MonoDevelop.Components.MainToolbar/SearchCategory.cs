@@ -42,9 +42,6 @@ namespace MonoDevelop.Components.MainToolbar
 			this.Name = name;
 		}
 
-		public abstract Task<ISearchDataSource> GetResults (string searchPattern, CancellationToken token);
+		public abstract Task<ISearchDataSource> GetResults (SearchPopupSearchPattern searchPattern, CancellationToken token);
 	}
-
-
-	
 }

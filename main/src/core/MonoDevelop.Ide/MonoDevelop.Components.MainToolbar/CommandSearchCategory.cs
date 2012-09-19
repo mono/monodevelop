@@ -52,14 +52,17 @@ namespace MonoDevelop.Components.MainToolbar
 		}
 
 		WorkerResult lastResult;
+		string[] validTags = new [] { "cmd"};
 
-		public override Task<ISearchDataSource> GetResults (string searchPattern, CancellationToken token)
+		public override Task<ISearchDataSource> GetResults (SearchPopupSearchPattern searchPattern, CancellationToken token)
 		{
 			return Task.Factory.StartNew (delegate {
+				if (searchPattern.Tag != null && !validTags.Contains (searchPattern.Tag) || searchPattern.HasLineNumber)
+					return null;
 				WorkerResult newResult = new WorkerResult (widget);
-				newResult.pattern = searchPattern;
+				newResult.pattern = searchPattern.Pattern;
 
-				newResult.matcher = StringMatcher.GetMatcher (searchPattern, true);
+				newResult.matcher = StringMatcher.GetMatcher (searchPattern.Pattern, true);
 				newResult.FullSearch = true;
 
 				foreach (SearchResult result in AllResults (lastResult, newResult)) {

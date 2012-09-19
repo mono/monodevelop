@@ -90,6 +90,14 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
+		void SetSearchCategory (string category)
+		{
+			matchEntry.Entry.Text = category +":";
+			matchEntry.Entry.GrabFocus ();
+			var pos = matchEntry.Entry.Text.Length;
+			matchEntry.Entry.SelectRegion (pos, pos);
+		}
+
 		/*
 		internal class SelectActiveRuntimeHandler : CommandHandler
 		{
@@ -153,17 +161,17 @@ namespace MonoDevelop.Components.MainToolbar
 
 			matchEntry = new SearchEntry ();
 
-			CheckMenuItem includeMembers = this.matchEntry.AddFilterOption (2, GettextCatalog.GetString ("Include _Members"));
-			includeMembers.DrawAsRadio = false;
-			includeMembers.Active = SearchForMembers;
-			includeMembers.Toggled += delegate {
-				SearchForMembers = !SearchForMembers;
-				if (popup != null) {
-					string entry = matchEntry.Entry.Text;
-					popup.Destroy ();
-					popup = null;
-					matchEntry.Entry.Text = entry;
-				}
+			var searchFiles = this.matchEntry.AddMenuItem (GettextCatalog.GetString ("Search Files"));
+			searchFiles.Activated += delegate {
+				SetSearchCategory ("files");
+			};
+			var searchTypes = this.matchEntry.AddMenuItem (GettextCatalog.GetString ("Search Types"));
+			searchTypes.Activated += delegate {
+				SetSearchCategory ("cls");
+			};
+			var searchMembers = this.matchEntry.AddMenuItem (GettextCatalog.GetString ("Search Members"));
+			searchMembers.Activated += delegate {
+				SetSearchCategory ("member");
 			};
 
 			matchEntry.ForceFilterButtonVisible = true;
@@ -502,6 +510,18 @@ namespace MonoDevelop.Components.MainToolbar
 		public void NavigateToCommand ()
 		{
 			matchEntry.Entry.GrabFocus ();
+		}
+
+		[CommandHandler(SearchCommands.GotoFile)]
+		public void GotoFileCommand ()
+		{
+			SetSearchCategory ("file");
+		}
+
+		[CommandHandler(SearchCommands.GotoType)]
+		public void GotoTypeCommand ()
+		{
+			SetSearchCategory ("cls");
 		}
 
 		CommandInfo GetStartButtonCommandInfo (out RoundButton.OperationIcon operation)

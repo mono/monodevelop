@@ -130,38 +130,35 @@ namespace MonoDevelop.Components.MainToolbar
 		}
 
 		WorkerResult lastResult;
+		string[] validTags = new [] { "c", "cls", "m", "member"};
 
-		public override Task<ISearchDataSource> GetResults (string searchPattern, CancellationToken token)
+		public override Task<ISearchDataSource> GetResults (SearchPopupSearchPattern searchPattern, CancellationToken token)
 		{
 			return Task.Factory.StartNew (delegate {
+				if (searchPattern.Tag != null && !validTags.Contains (searchPattern.Tag) || searchPattern.HasLineNumber)
+					return null;
 				try {
 					WorkerResult newResult = new WorkerResult (widget);
-					newResult.pattern = searchPattern;
+					newResult.pattern = searchPattern.Pattern;
 					newResult.IncludeFiles = true;
-					newResult.IncludeTypes = true;
-					newResult.IncludeMembers = widget.SearchForMembers;
+					newResult.IncludeTypes = searchPattern.Tag == null || searchPattern.Tag == "c" || searchPattern.Tag == "cls";
+					newResult.IncludeMembers = searchPattern.Tag == null || searchPattern.Tag == "m" || searchPattern.Tag == "member";
+					Console.WriteLine ("t:"+newResult.IncludeTypes+" m:"+ newResult.IncludeMembers);
 					var firstType = types.FirstOrDefault ();
 					newResult.ambience = firstType != null ? AmbienceService.GetAmbienceForFile (firstType.Region.FileName) : AmbienceService.DefaultAmbience;
 					
-					string toMatch = searchPattern;
-					int i = toMatch.IndexOf (':');
-					if (i != -1) {
-						toMatch = toMatch.Substring (0, i);
-						newResult.isGotoFilePattern = true;
-					}
+					string toMatch = searchPattern.Pattern;
 					newResult.matcher = StringMatcher.GetMatcher (toMatch, true);
-					newResult.FullSearch = searchPattern.IndexOf ('.') > 0;
+					newResult.FullSearch = toMatch.IndexOf ('.') > 0;
 					var oldLastResult = lastResult;
 					if (newResult.FullSearch && oldLastResult != null && !oldLastResult.FullSearch)
 						oldLastResult = new WorkerResult (widget);
-					var now = DateTime.Now;
 					foreach (SearchResult result in AllResults (oldLastResult, newResult, token)) {
 						newResult.results.AddResult (result);
 					}
 					if (token.IsCancellationRequested) {
 						return null;
 					}
-					now = DateTime.Now;
 					newResult.results.Sort (new DataItemComparer ());
 					lastResult = newResult;
 					return (ISearchDataSource)newResult.results;

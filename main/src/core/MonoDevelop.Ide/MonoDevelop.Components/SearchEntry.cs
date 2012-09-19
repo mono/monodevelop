@@ -480,6 +480,13 @@ namespace MonoDevelop.Components
 			return item;
 		}
 
+		public MenuItem AddMenuItem (string label)
+		{
+			var item = new MenuItem (label);
+			menu.Append (item);
+			return item;
+		}
+
 		public void AddFilterSeparator ()
 		{
 			menu.Append (new SeparatorMenuItem ());
