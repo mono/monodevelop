@@ -1168,8 +1168,11 @@ namespace MonoDevelop.Ide.TypeSystem
 							fileName = Path.GetFullPath (file);
 						}
 						ctx = LoadAssemblyContext (fileName);
-						if (ctx != null)
+						if (ctx != null) {
 							contexts.Add (ctx);
+						} else {
+							LoggingService.LogWarning ("TypeSystemService: Can't load assembly context for:" + file);
+						}
 					}
 					bool changed = WasChanged;
 					UpdateContent (c => c.RemoveAssemblyReferences (Content.AssemblyReferences));
