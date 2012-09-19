@@ -150,6 +150,12 @@ namespace MonoDevelop.Core.Assemblies
 			pinfo.FileName = Path.Combine (Path.Combine (MonoRuntimeInfo.Prefix, "bin"), "mono");
 		}
 
+		public override string GetToolPath (TargetFramework fx, string toolName)
+		{
+			if (fx.ClrVersion == ClrVersion.Net_2_0 && toolName == "al")
+				toolName = "al2";
+			return base.GetToolPath (fx, toolName);
+		}
 		
 		internal protected override IEnumerable<string> GetGacDirectories ()
 		{
