@@ -52,7 +52,7 @@ namespace MonoDevelop.Ide.Gui
 	/// <summary>
 	/// This is the a Workspace with a multiple document interface.
 	/// </summary>
-	internal class DefaultWorkbench : WorkbenchWindow, ICommandDelegatorRouter
+	internal class DefaultWorkbench : WorkbenchWindow
 	{
 		readonly static string mainMenuPath    = "/MonoDevelop/Ide/MainMenu";
 		readonly static string appMenuPath    = "/MonoDevelop/Ide/AppMenu";
@@ -1349,36 +1349,6 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		#endregion
-
-		#region ICommandDelegatorRouter implementation
-		
-		// The command route is redirected here to the active document view.
-		// This is done to make the view commands available even when the
-		// view has not the active focus, especially when the focus is
-		// on a pad. Although it may seem a bit inconsistent (because
-		// MD will not have active commands which don't directly apply to
-		// the active widget) in general it makes sense, views are the
-		// main working areas of the IDE and users often expect view commands
-		// to be available even if the focus is in a secondary Pad window.
-		//
-		// This change also fixes some issues with the property and outline
-		// pads, which depend on the current selection, and were being reset
-		// when the main view lost focus.
-		
-		object ICommandDelegatorRouter.GetNextCommandTarget ()
-		{
-			return toolbar;
-		}
-
-		object ICommandDelegatorRouter.GetDelegatedCommandTarget ()
-		{
-			// The command manager checks if an object has already been visited
-			// while scanning the command route, so if the active command
-			// route already includes the active workbench view, it won't be
-			// visited again
-			return ActiveWorkbenchWindow;
-		}
 		#endregion
 	}
 

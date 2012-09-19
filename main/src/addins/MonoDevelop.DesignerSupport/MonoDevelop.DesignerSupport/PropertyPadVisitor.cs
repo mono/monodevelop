@@ -28,27 +28,68 @@
 
 using System;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.DesignerSupport
 {
 	class PropertyPadVisitor: ICommandTargetVisitor
 	{
+		// Set to true when a property pad provider is found
+		bool found;
+
+		// Set to true if the current active document has been visited
+		bool visitedCurrentDoc;
+
+		// Set to true if the current active document is being visited
+		// on a second try
+		bool visitingCurrentDoc;
+
+		public void Start ()
+		{
+			found = false;
+			visitedCurrentDoc = false;
+		}
+
+		public void End ()
+		{
+			if (!found) {
+				if (!visitingCurrentDoc && !visitedCurrentDoc) {
+					// A provider has not been found, but the current document has not been visited
+					// (the focus may be for example in a pad).
+					// Try visiting the command route again, but this time starting at the currently
+					// active document. The visitingCurrentDoc flag is used to avoid entering in a loop.
+					var wb = (DefaultWorkbench)IdeApp.Workbench.RootWindow;
+					if (wb.ActiveWorkbenchWindow != null) {
+						visitingCurrentDoc = true;
+						IdeApp.CommandService.VisitCommandTargets (this, wb.ActiveWorkbenchWindow);
+						visitingCurrentDoc = false;
+						// All done, VisitCommandTargets will set the final state of the pad
+						return;
+					}
+				}
+				DesignerSupport.Service.ReSetPad ();
+			}
+		}
+
 		public bool Visit (object ob)
 		{
-			if (ob == null) {
-				DesignerSupport.Service.ReSetPad ();
-				return true;
-			}
-			else if (ob is PropertyPad) {
+			if (ob == ((DefaultWorkbench)IdeApp.Workbench.RootWindow).ActiveWorkbenchWindow)
+				visitedCurrentDoc = true;
+
+			if (ob is PropertyPad) {
 				// Don't change the property grid selection when the focus is inside the property grid itself
+				found = true;
 				return true;
 			}
 			else if (ob is IPropertyPadProvider) {
 				DesignerSupport.Service.SetPadContent ((IPropertyPadProvider)ob);
+				found = true;
 				return true;
 			}
 			else if (ob is ICustomPropertyPadProvider) {
 				DesignerSupport.Service.SetPadContent ((ICustomPropertyPadProvider)ob);
+				found = true;
 				return true;
 			}
 			else

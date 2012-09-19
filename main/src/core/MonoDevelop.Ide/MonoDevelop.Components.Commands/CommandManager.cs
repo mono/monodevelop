@@ -1273,16 +1273,22 @@ namespace MonoDevelop.Components.Commands
 		{
 			CommandTargetRoute targetRoute = new CommandTargetRoute (initialTarget);
 			object cmdTarget = GetFirstCommandTarget (targetRoute);
-			
-			while (cmdTarget != null)
-			{
-				if (visitor.Visit (cmdTarget))
-					return cmdTarget;
 
-				cmdTarget = GetNextCommandTarget (targetRoute, cmdTarget);
+			visitor.Start ();
+
+			try {
+				while (cmdTarget != null)
+				{
+					if (visitor.Visit (cmdTarget))
+						return cmdTarget;
+
+					cmdTarget = GetNextCommandTarget (targetRoute, cmdTarget);
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error while visiting command targets", ex);
+			} finally {
+				visitor.End ();
 			}
-			
-			visitor.Visit (null);
 			return null;
 		}
 		
