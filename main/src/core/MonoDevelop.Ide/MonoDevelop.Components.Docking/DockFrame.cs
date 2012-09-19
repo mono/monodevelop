@@ -190,9 +190,9 @@ namespace MonoDevelop.Components.Docking
 		{
 			DockVisualStyle s;
 			if (stylesById.TryGetValue (item.Id, out s)) {
-				s = DefaultVisualStyle.Clone ();
-				s.CopyValuesFrom (s);
-				return s;
+				var ds = DefaultVisualStyle.Clone ();
+				ds.CopyValuesFrom (s);
+				return ds;
 			}
 			return DefaultVisualStyle;
 		}
