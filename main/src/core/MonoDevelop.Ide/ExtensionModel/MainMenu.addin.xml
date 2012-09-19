@@ -113,9 +113,6 @@
 		<SeparatorItem id = "ViewSeparator2" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ViewList" />
 		<SeparatorItem id = "ViewSeparator3" />
-		<ItemSet id = "ViewToolbars" _label = "Toolbars">
-			<CommandItem id = "MonoDevelop.Components.Commands.CommandSystemCommands.ToolbarList" />
-		</ItemSet>
 		<SeparatorItem id = "ViewItemsSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomIn" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomOut" />
