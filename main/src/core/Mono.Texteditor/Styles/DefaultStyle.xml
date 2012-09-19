@@ -31,12 +31,12 @@
 	 <Color name="skyblue2" value="#3465a4"/>
 	 <Color name="plum2" value="#75507b"/>
 	 <Color name="scarletred1" value="#ef2929"/>
-	 <Color name="aluminium1" value="#eeeeec"/>
-	 <Color name="aluminium2" value="#d3d7cf"/>
-	 <Color name="aluminium3" value="#babdb6"/>
-	 <Color name="aluminium4" value="#888a85"/>
-	 <Color name="aluminium5" value="#555753"/>
-	 <Color name="aluminium6" value="#2e3436"/>
+	 <Color name="aluminum1" value="#eeeeec"/>
+	 <Color name="aluminum2" value="#d3d7cf"/>
+	 <Color name="aluminum3" value="#babdb6"/>
+	 <Color name="aluminum4" value="#888a85"/>
+	 <Color name="aluminum5" value="#555753"/>
+	 <Color name="aluminum6" value="#2e3436"/>
 
 	 <Color name="text-black" value="#444"/>
 	 <Color name="comment-gray" value="#999988"/>
@@ -51,14 +51,14 @@
 	 <!-- color styles -->
 	 <Style name="text" color="text-black" bgColor="white">
 		 <Style name="background" color="white">
-			 <Style name="readonly" color="aluminium1"/>
+			 <Style name="readonly" color="aluminum1"/>
 			 <Style name="searchresult-main" color="orangesicle"/>
 			 <Style name="searchresult" color="orangesicle-light"/>
 		 </Style>
 		 <Style name="selection" bgColor="selection-bg"/>
-		 <Style name="selection.inactive" bgColor="aluminium2"/>
+		 <Style name="selection.inactive" bgColor="aluminum2"/>
 		 <Style name="link" color="blue"/>
-		 <Style name="punctuation" color="aluminium6"/>
+		 <Style name="punctuation" color="aluminum6"/>
 		 <Style name="preprocessor" color="#c12dad" weight="regular">
 			 <Style name="keyword" weight="bold"/>
 		 </Style>
@@ -67,7 +67,7 @@
 		 </Style>
 	 </Style>
 
-	 <Style name="tooltip" color="black" bgColor="#feffe9"/>
+	 <Style name="tooltip" color="text-black" bgColor="#feffe9"/>
 
 	 <Style name="completion" color="#434343" bgColor="#F0F6F8">
 		 <Style name="highlight" color="#BA3373"/>
@@ -97,11 +97,11 @@
 	 </Style>
 
 	 <Style name="marker">
-		 <Style name="line" color="aluminium1"/>
+		 <Style name="line" color="aluminum1"/>
 		 <Style name="line.changed" color="orangesicle"/>
 		 <Style name="line.dirty" color="orangesicle-light"/>
 
-		 <Style name="ruler" color="aluminium3"/>
+		 <Style name="ruler" color="aluminum3"/>
 		 <Style name="bracket" color="orangesicle" bgColor="orangesicle-light" />
 		 <Style name="usages" color="orangesicle" bgColor="orangesicle-light" />
 
@@ -118,22 +118,22 @@
 		 <Style name="template">
 			 <Style name="primary_template" color="chameleon3" bgColor="chameleon2"/>
 			 <Style name="primary_highlighted_template" color="chameleon3" bgColor="chameleon1"/>
-			 <Style name="secondary_template" color="aluminium2" bgColor="white"/>
-			 <Style name="secondary_highlighted_template" color="aluminium3" bgColor="aluminium1"/>
+			 <Style name="secondary_template" color="aluminum2" bgColor="white"/>
+			 <Style name="secondary_highlighted_template" color="aluminum3" bgColor="aluminum1"/>
 		 </Style>
 	 </Style>
 
 	 <Style name="bubble">
-		 <Style name="warning" color="aluminium5" bgColor="#f4eeda"/>
-		 <Style name="error" color="aluminium5" bgColor="#f5eae7"/>
+		 <Style name="warning" color="aluminum5" bgColor="#f4eeda"/>
+		 <Style name="error" color="aluminum5" bgColor="#f5eae7"/>
 	 </Style>
 
-	 <Style name="linenumber" color="aluminium4" bgColor="white"/>
+	 <Style name="linenumber" color="aluminum4" bgColor="white"/>
 
-	 <Style name="iconbar" color="aluminium1"/>
-	 <Style name="iconbar.separator" color="aluminium3"/>
+	 <Style name="iconbar" color="aluminum1"/>
+	 <Style name="iconbar.separator" color="aluminum3"/>
 
-	 <Style name="fold" color="aluminium4" bgColor="white"/>
+	 <Style name="fold" color="aluminum4" bgColor="white"/>
 	 <Style name="fold.margin" color="#2a669a" bgColor ="#b1cce3" />
 
 	 <Style name="comment" color="comment-gray" weight="italic">
@@ -147,26 +147,22 @@
 		 </Style>
 		 <Style name="keyword" color="text-black" weight="italic bold" />
 	 </Style>
-
-
-	 <Style name="constant" color="literal-orange"/>
+	 
 	 <Style name="string" color="literal-orange"/>
+	 <Style name="constant" color="literal-orange"/>
 
 	 <Style name="keyword" color="keyword-teal"/>
+	 <Style name="keyword.access" color="keyword-teal" />
+	 <Style name="keyword.semantic.extensionthis" color="keyword-teal" />
+	 
 	 <Style name="keyword.type" color="skyblue2"/>
 	 <Style name="keyword.semantic.type" color="skyblue2"/>
 	 <Style name="constant.language" color="skyblue2"/>
 	 <Style name="constant.language.void" color="skyblue2"/>
 
-	 <Style name="keyword.semantic.extensionthis" color="keyword-teal" />
-
-	 <Style name="keyword.access" color="keyword-teal" />
-	 <!-- text-black until we can find a good color -->
 	 <Style name="keyword.semantic.field" color="text-black"/>
-
 	 <Style name="keyword.semantic.property" color="text-black"/>
 	 <Style name="keyword.semantic.property.declaration" color="text-black"/>
-
 	 <Style name="keyword.semantic.method" color="text-black"/>
 	 <Style name="keyword.semantic.method.declaration" color="text-black"/>
 
