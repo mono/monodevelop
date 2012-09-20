@@ -143,12 +143,11 @@ namespace MonoDevelop.Components.MainToolbar
 					newResult.IncludeFiles = true;
 					newResult.IncludeTypes = searchPattern.Tag == null || searchPattern.Tag == "c" || searchPattern.Tag == "cls";
 					newResult.IncludeMembers = searchPattern.Tag == null || searchPattern.Tag == "m" || searchPattern.Tag == "member";
-					Console.WriteLine ("t:"+newResult.IncludeTypes+" m:"+ newResult.IncludeMembers);
 					var firstType = types.FirstOrDefault ();
 					newResult.ambience = firstType != null ? AmbienceService.GetAmbienceForFile (firstType.Region.FileName) : AmbienceService.DefaultAmbience;
 					
 					string toMatch = searchPattern.Pattern;
-					newResult.matcher = StringMatcher.GetMatcher (toMatch, true);
+					newResult.matcher = StringMatcher.GetMatcher (toMatch, false);
 					newResult.FullSearch = toMatch.IndexOf ('.') > 0;
 					var oldLastResult = lastResult;
 					if (newResult.FullSearch && oldLastResult != null && !oldLastResult.FullSearch)
