@@ -517,6 +517,19 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				if (it != null) {
 					EntityItem.Items.Add (it);
 				}
+
+                if (it is ProjectFile) {
+                    ProjectFile file = (ProjectFile)it;
+                    if (file.IsWildcard)  {
+                        foreach (ProjectFile wildcardItem in file.ResolveWildcardItems ()) {
+                            EntityItem.Items.Add (wildcardItem);
+                            
+                            // Thanks to IsOriginatedFromWildcard, this item will not be saved back to disk.
+                            System.Diagnostics.Debug.Assert(wildcardItem.IsOriginatedFromWildcard);
+                        }
+                    }
+                }
+
 			}
 			
 			timer.Trace ("Read configurations");
@@ -1173,8 +1186,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		void SaveProjectFile (MSBuildSerializer ser, MSBuildProject msproject, ProjectFile file, Dictionary<string,ItemInfo> oldItems)
 		{
-			string itemName = (file.Subtype == Subtype.Directory)? "Folder" : file.BuildAction;
+            if (file.IsOriginatedFromWildcard) return;
 
+			string itemName = (file.Subtype == Subtype.Directory)? "Folder" : file.BuildAction;
+            
 			string path = MSBuildProjectService.ToMSBuildPath (Item.ItemDirectory, file.FilePath);
 			if (path.Length == 0)
 				return;
