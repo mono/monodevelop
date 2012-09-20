@@ -38,7 +38,7 @@ namespace MonoDevelop.Components
 	class Tabstrip : DrawingArea
 	{
 		static readonly Cairo.Color BackgroundGradientStart = new Cairo.Color (241d / 255d, 241d / 255d, 241d / 255d);
-		static readonly Cairo.Color BackgroundGradientEnd = new Cairo.Color (224d / 255d, 224d / 255d, 224d / 255d);
+		static readonly Cairo.Color BackgroundGradientEnd = BackgroundGradientStart;//new Cairo.Color (224d / 255d, 224d / 255d, 224d / 255d);
 		internal static readonly Cairo.Color ActiveGradientStart = new Cairo.Color (92d / 255d, 93d / 255d, 94d / 255d);
 		internal static readonly Cairo.Color ActiveGradientEnd = new Cairo.Color (134d / 255d, 136d / 255d, 137d / 255d);
 
