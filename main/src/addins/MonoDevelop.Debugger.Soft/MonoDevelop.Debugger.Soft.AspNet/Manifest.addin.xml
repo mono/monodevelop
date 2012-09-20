@@ -18,7 +18,7 @@
 		<DebuggerEngine
 			id="Mono.Debugger.Soft.AspNet"
 			name="Mono Soft Debugger for ASP.NET"
-			features="Breakpoints, Pause, Stepping, DebugFile, Catchpoints"
+			features="Breakpoints, Pause, Stepping, DebugFile, ConditionalBreakpoints, Tracepoints, Catchpoints, Disassembly"
 			type="MonoDevelop.Debugger.Soft.AspNet.AspNetSoftDebuggerEngine" />
 	</Extension>
 </Addin>
