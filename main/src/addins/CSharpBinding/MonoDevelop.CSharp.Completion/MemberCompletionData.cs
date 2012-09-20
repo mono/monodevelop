@@ -109,9 +109,15 @@ namespace MonoDevelop.CSharp.Completion
 		}
 		
 		public bool IsDelegateExpected { get; set; }
-		
+
+		ICompilation compilation;
+		CSharpUnresolvedFile file;
+
 		public MemberCompletionData (CSharpCompletionTextEditorExtension  editorCompletion, IEntity entity, OutputFlags flags)
 		{
+			compilation = editorCompletion.Compilation;
+			file = editorCompletion.CSharpUnresolvedFile;
+
 			this.editorCompletion = editorCompletion;
 			this.flags = flags;
 			SetMember (entity);
@@ -575,7 +581,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override TooltipInformation CreateTooltipInformation (bool smartWrap)
 		{
-			return CreateTooltipInformation (editorCompletion, Entity, smartWrap);
+			return CreateTooltipInformation (compilation, file, editorCompletion.TextEditorData, editorCompletion.FormattingPolicy, Entity, smartWrap);
 		}
 
 
