@@ -142,9 +142,9 @@ namespace MonoDevelop.CSharp.Highlighting
 						src = new CancellationTokenSource ();
 						var cancellationToken = src.Token;
 						compilation = guiDocument.Compilation;
+						var newResolver = new CSharpAstResolver (compilation, unit, parsedFile);
 						System.Threading.Tasks.Task.Factory.StartNew (delegate {
 							Thread.Sleep (100);
-							var newResolver = new CSharpAstResolver (compilation, unit, parsedFile);
 							var visitor = new QuickTaskVisitor (newResolver, cancellationToken);
 							unit.AcceptVisitor (visitor);
 							if (!cancellationToken.IsCancellationRequested) {
