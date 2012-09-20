@@ -92,10 +92,9 @@ namespace MonoDevelop.Ide
 			contexts.Add (mainContext);*/
 			
 			Frame originalFrame = (Frame)Children [0];
-//			originalFrame.WidthRequest = 8;
-//			originalFrame.Shadow = ShadowType.In;
-//			originalFrame.BorderWidth = 0;
-			
+			originalFrame.Hide ();
+			originalFrame.NoShowAll = true;
+
 			BorderWidth = 0;
 			Spacing = 0;
 
