@@ -52,7 +52,7 @@ namespace MonoDevelop.Ide.Gui
 	/// <summary>
 	/// This is the a Workspace with a multiple document interface.
 	/// </summary>
-	internal class DefaultWorkbench : WorkbenchWindow
+	internal class DefaultWorkbench : WorkbenchWindow, ICommandRouter
 	{
 		readonly static string mainMenuPath    = "/MonoDevelop/Ide/MainMenu";
 		readonly static string appMenuPath    = "/MonoDevelop/Ide/AppMenu";
@@ -1349,6 +1349,15 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
+		#endregion
+
+		#region ICommandRouter implementation
+
+		object ICommandRouter.GetNextCommandTarget ()
+		{
+			return toolbar;
+		}
+
 		#endregion
 	}
 

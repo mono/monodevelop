@@ -765,13 +765,11 @@
 			_description = "Search for and replace text in all files of a directory" />
 	
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.GotoType"
-	         defaultHandler = "MonoDevelop.Ide.NavigateToDialog.GotoTypeHandler"
 	         _label = "Go to Type..."
 			_description = "Jump to the declaration of type in the current workspace"
 	         shortcut = "Control|Shift|T"
 	         macShortcut = "Meta|Shift|T" />
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.GotoFile"
-			defaultHandler = "MonoDevelop.Ide.NavigateToDialog.GotoFileHandler"
 			_label = "Go to File..." 
 			shortcut = "Alt|Shift|O"
 			macShortcut = "Meta|Shift|D"
