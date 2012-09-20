@@ -180,6 +180,7 @@ namespace MonoDevelop.Projects
                 }
 
                 List<string> directories = new List<string> ();
+
                 RecursiveAddChildDirectories (directories, dir);
 
                 foreach (var resolvedDir in directories)
@@ -201,9 +202,10 @@ namespace MonoDevelop.Projects
 
         private void RecursiveAddChildDirectories(List<string> directories, string directory)
         {
+			directories.Add (directory);
+
             foreach (var child in Directory.GetDirectories (directory))
             {
-                directories.Add(child);
                 RecursiveAddChildDirectories (directories, child);
             }
         }

@@ -514,12 +514,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			
 			foreach (MSBuildItem buildItem in msproject.GetAllItems ()) {
 				ProjectItem it = ReadItem (ser, buildItem);
-				if (it != null) {
-					EntityItem.Items.Add (it);
-				}
+
+				if (it == null) continue;
 
                 if (it is ProjectFile) {
                     ProjectFile file = (ProjectFile)it;
+
                     if (file.IsWildcard)  {
                         foreach (ProjectFile wildcardItem in file.ResolveWildcardItems ()) {
                             EntityItem.Items.Add (wildcardItem);
@@ -527,9 +527,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
                             // Thanks to IsOriginatedFromWildcard, this item will not be saved back to disk.
                             System.Diagnostics.Debug.Assert(wildcardItem.IsOriginatedFromWildcard);
                         }
+
+						// Add to wildcard items (so it can be re-saved) instead of Items (where tools will 
+						// try to compile and display these nonstandard items
+						EntityItem.WildcardItems.Add (it);
+						continue;
                     }
                 }
 
+				EntityItem.Items.Add (it);
 			}
 			
 			timer.Trace ("Read configurations");
@@ -1054,9 +1060,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				oldItems [item.Name + "<" + item.Include] = new ItemInfo () { Item=item };
 			
 			// Add the new items
-			foreach (object ob in ((SolutionEntityItem)Item).Items)
+			foreach (object ob in ((SolutionEntityItem)Item).Items.Concat (((SolutionEntityItem)Item).WildcardItems))
 				SaveItem (monitor, ser, msproject, ob, oldItems);
-			
+
 			foreach (ItemInfo itemInfo in oldItems.Values) {
 				if (!itemInfo.Added)
 					msproject.RemoveItem (itemInfo.Item);
