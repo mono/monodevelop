@@ -72,7 +72,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			options.ShowLineNumberMargin = false;
 			options.ShowFoldMargin = false;
 			options.ShowIconMargin = false;
-			options.ColorScheme = PropertyService.Get ("ColorScheme", "Default");
+			options.ColorScheme = IdeApp.Preferences.ColorScheme;
 			textEditor.Options = options;
 			
 			HashSet<string> mimeTypes = new HashSet<string> ();

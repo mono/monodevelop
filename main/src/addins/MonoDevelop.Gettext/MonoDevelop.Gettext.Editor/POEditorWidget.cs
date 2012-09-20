@@ -241,7 +241,7 @@ namespace MonoDevelop.Gettext
 			options.ShowLineNumberMargin = false;
 			options.ShowFoldMargin = false;
 			options.ShowIconMargin = false;
-			options.ColorScheme = PropertyService.Get ("ColorScheme", "Default");
+			options.ColorScheme = IdeApp.Preferences.ColorScheme;
 			options.FontName = PropertyService.Get<string> ("FontName");
 			
 			this.scrolledwindowOriginal.Child = this.texteditorOriginal;

@@ -164,7 +164,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			noMatchLayout = new Pango.Layout (this.PangoContext);
 			layout = new Pango.Layout (this.PangoContext);
 			layout.Wrap = Pango.WrapMode.Char;
- 			var style = SyntaxModeService.GetColorStyle (PropertyService.Get ("ColorScheme", "Default"));
+			var style = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
 			SetFont ();
 			var completion = style.GetChunkStyle ("completion");
 			textColor = completion.Color;

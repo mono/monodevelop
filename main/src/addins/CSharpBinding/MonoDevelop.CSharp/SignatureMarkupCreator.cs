@@ -66,7 +66,7 @@ namespace MonoDevelop.CSharp
 
 		public SignatureMarkupCreator (CSharpResolver resolver, CSharpFormattingOptions formattingOptions)
 		{
-			this.colorStyle = SyntaxModeService.GetColorStyle (PropertyService.Get ("ColorScheme", "Default"));
+			this.colorStyle = SyntaxModeService.GetColorStyle (MonoDevelop.Ide.IdeApp.Preferences.ColorScheme);
 
 			this.resolver = resolver;
 			this.astBuilder = new TypeSystemAstBuilder (resolver) {

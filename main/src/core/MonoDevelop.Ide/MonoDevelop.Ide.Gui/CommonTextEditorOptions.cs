@@ -41,7 +41,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			PropertyService.PropertyChanged += PropertyServiceChanged;
 			base.FontName = PropertyService.Get ("FontName", MonoDevelop.Ide.DesktopService.DefaultMonospaceFont);
-			base.ColorScheme = PropertyService.Get ("ColorScheme", "Default");
+			base.ColorScheme = IdeApp.Preferences.ColorScheme;
 			base.UseAntiAliasing = PropertyService.Get ("UseAntiAliasing", true);
 			FontService.RegisterFontChangedCallback ("Editor", UpdateFont);
 		}

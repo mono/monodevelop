@@ -241,7 +241,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			vb2.Spacing = 4;
 			vb2.PackStart (hb, true, true, 0);
 			ContentBox.Add (vb2);
-			var scheme = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (PropertyService.Get<string> ("ColorScheme"));
+			var scheme = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
 			Theme.SetFlatColor (scheme.Tooltip.CairoBackgroundColor);
 
 			foreColor = scheme.Default.Color;

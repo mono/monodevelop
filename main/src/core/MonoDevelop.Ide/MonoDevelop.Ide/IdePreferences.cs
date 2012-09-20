@@ -308,6 +308,16 @@ namespace MonoDevelop.Ide
 			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.WorkbenchCompactness", value); }
 			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.WorkbenchCompactness", value); }
 		}
+		
+		public string ColorScheme {
+			get { return PropertyService.Get ("ColorScheme", "Default"); }
+			set { PropertyService.Set ("ColorScheme", value); }
+		}
+		
+		public event EventHandler<PropertyChangedEventArgs> ColorSchemeChanged {
+			add { PropertyService.AddPropertyHandler ("ColorScheme", value); }
+			remove { PropertyService.RemovePropertyHandler ("ColorScheme", value); }
+		}
 	}
 	
 	public enum BeforeCompileAction {
