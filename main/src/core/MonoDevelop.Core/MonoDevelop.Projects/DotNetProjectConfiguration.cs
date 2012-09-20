@@ -29,6 +29,7 @@
 using System;
 using System.Collections;
 using System.IO;
+using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core.Assemblies;
@@ -98,7 +99,22 @@ namespace MonoDevelop.Projects
 					return CompileTarget.Library;
 			}
 		}
-		
+
+		public override SolutionItemConfiguration FindBestMatch (SolutionItemConfigurationCollection configurations)
+		{
+			// Get all configurations with the same value for the 'DEBUG' symbol
+			var matches = configurations.OfType<DotNetProjectConfiguration> ().Where (c =>
+				c.CompilationParameters.HasDefineSymbol ("DEBUG") == compilationParameters.HasDefineSymbol ("DEBUG")
+			).ToArray ();
+
+			// If the base method can't find a direct match then try to match based on finding a configuration
+			// with a matching value for the 'DEBUG' symbol and some other heuristics
+			return base.FindBestMatch (configurations)
+				?? matches.FirstOrDefault (c => Platform == c.Platform)
+				?? matches.FirstOrDefault (c => c.Platform == "" || c.Platform == "Any CPU")
+				?? matches.FirstOrDefault ();
+		}
+
 		public TargetFramework TargetFramework {
 			get {
 				DotNetProject prj = ParentItem as DotNetProject;

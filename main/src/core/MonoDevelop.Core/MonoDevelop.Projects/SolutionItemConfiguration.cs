@@ -26,6 +26,7 @@
 //
 
 using System;
+using System.Linq;
 using System.Xml;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
@@ -50,6 +51,13 @@ namespace MonoDevelop.Projects
 			get { return parentItem; }
 		}
 		
+		public virtual SolutionItemConfiguration FindBestMatch (SolutionItemConfigurationCollection configurations)
+		{
+			var configs = configurations.Cast<SolutionItemConfiguration> ();
+			return configs.FirstOrDefault (c => Name == c.Name && Platform == c.Platform)
+				?? configs.FirstOrDefault (c => Name == c.Name && (c.Platform == "" || c.Platform == "Any CPU"));
+		}
+
 		internal void SetParentItem (SolutionEntityItem item)
 		{
 			parentItem = item;
