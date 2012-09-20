@@ -62,7 +62,7 @@ namespace MonoDevelop.Components.MainToolbar
 				WorkerResult newResult = new WorkerResult (widget);
 				newResult.pattern = searchPattern.Pattern;
 
-				newResult.matcher = StringMatcher.GetMatcher (searchPattern.Pattern, true);
+				newResult.matcher = StringMatcher.GetMatcher (searchPattern.Pattern, false);
 				newResult.FullSearch = true;
 
 				foreach (SearchResult result in AllResults (lastResult, newResult)) {

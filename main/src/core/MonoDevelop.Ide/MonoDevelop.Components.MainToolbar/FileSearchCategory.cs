@@ -87,7 +87,7 @@ namespace MonoDevelop.Components.MainToolbar
 				newResult.IncludeMembers = true;
 
 				string toMatch = searchPattern.Pattern;
-				newResult.matcher = StringMatcher.GetMatcher (toMatch, true);
+				newResult.matcher = StringMatcher.GetMatcher (toMatch, false);
 				newResult.FullSearch = true;
 
 				foreach (SearchResult result in AllResults (lastResult, newResult)) {
