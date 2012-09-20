@@ -166,15 +166,6 @@ namespace MonoDevelop.NUnit
 			buttonSuccess.Toggled += new EventHandler (OnShowSuccessfulToggled);
 			buttonSuccess.TooltipText = GettextCatalog.GetString ("Show Successful Tests");
 			toolbar.Add (buttonSuccess);
-			
-			buttonFailures = new ToggleButton ();
-			buttonFailures.Label = GettextCatalog.GetString ("Failed Tests");
-			buttonFailures.Active = true;
-			buttonFailures.Image = new Gtk.Image (CircleImage.Failure);
-			buttonFailures.Image.Show ();
-			buttonFailures.Toggled += new EventHandler (OnShowFailuresToggled);
-			buttonFailures.TooltipText = GettextCatalog.GetString ("Show Failed Tests");
-			toolbar.Add (buttonFailures);
 
 			buttonInconclusive = new ToggleButton ();
 			buttonInconclusive.Label = GettextCatalog.GetString ("Inconclusive Tests");
@@ -185,6 +176,15 @@ namespace MonoDevelop.NUnit
 			buttonInconclusive.TooltipText = GettextCatalog.GetString ("Show Inconclusive Tests");
 			toolbar.Add (buttonInconclusive);
 			
+			buttonFailures = new ToggleButton ();
+			buttonFailures.Label = GettextCatalog.GetString ("Failed Tests");
+			buttonFailures.Active = true;
+			buttonFailures.Image = new Gtk.Image (CircleImage.Failure);
+			buttonFailures.Image.Show ();
+			buttonFailures.Toggled += new EventHandler (OnShowFailuresToggled);
+			buttonFailures.TooltipText = GettextCatalog.GetString ("Show Failed Tests");
+			toolbar.Add (buttonFailures);
+
 			buttonIgnored = new ToggleButton ();
 			buttonIgnored.Label = GettextCatalog.GetString ("Ignored Tests");
 			buttonIgnored.Active = true;
