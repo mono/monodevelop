@@ -192,7 +192,7 @@ namespace MonoDevelop.Projects
             }
             else
             {
-                foreach (var resolvedFile in Directory.GetFiles (resolvedDir, file))
+                foreach (var resolvedFile in Directory.GetFiles (dir, file))
                 {
                     yield return resolvedFile;
                 }
