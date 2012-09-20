@@ -247,12 +247,12 @@
 			<End>;</End>
 		</Span>
 		
-		<Span tagColor = "comment" color = "text.markup" rule = "XmlDocumentationTag">
+		<Span tagColor = "comment" rule = "XmlDocumentationTag">
 			<Begin>&lt;/</Begin>
 			<End>&gt;</End>
 		</Span>
 		
-		<Span tagColor = "comment" color = "text.markup" rule = "XmlDocumentationTag">
+		<Span tagColor = "comment" rule = "XmlDocumentationTag">
 			<Begin>&lt;</Begin>
 			<Exit>&gt;</Exit>
 			<End>/&gt;</End>
