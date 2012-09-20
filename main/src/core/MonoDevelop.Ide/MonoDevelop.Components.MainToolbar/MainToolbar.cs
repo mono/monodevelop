@@ -333,8 +333,13 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void HandleRuntimeChanged (object sender, EventArgs e)
 		{
+			int active = runtimeCombo.Active;
+			if (active < 0) {
+				return;
+			}
+
 			TreeIter iter;
-			if (!runtimeStore.GetIterFromString (out iter, runtimeCombo.Active.ToString ()))
+			if (!runtimeStore.GetIterFromString (out iter, active.ToString ()))
 				return;
 			var runtime = (string)runtimeStore.GetValue (iter, 1);
 			string activeName;
@@ -354,8 +359,13 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void HandleConfigurationChanged (object sender, EventArgs e)
 		{
+			int active = configurationCombo.Active;
+			if (active < 0) {
+				return;
+			}
+
 			TreeIter iter;
-			if (!configurationStore.GetIterFromString (out iter, configurationCombo.Active.ToString ()))
+			if (!configurationStore.GetIterFromString (out iter, active.ToString ()))
 				return;
 			var config = (string)configurationStore.GetValue (iter, 1);
 			foreach (var conf in IdeApp.Workspace.GetConfigurations ()) {
