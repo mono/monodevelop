@@ -558,7 +558,8 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			var ec = new EntryCompletion ();
 			entry.Changed += delegate {
-				entry.GrabFocus ();
+				if (!entry.Entry.HasFocus)
+					entry.Entry.GrabFocus ();
 
 			};
 			entry.Entry.Completion = ec;
