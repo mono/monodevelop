@@ -64,6 +64,7 @@ namespace MonoDevelop.Core
 				if (args.PathChanged (addinFileSystemExtensionPath))
 					UpdateExtensions ();
 			};
+			UpdateExtensions ();
 		}
 		
 		static void UpdateExtensions ()
@@ -275,8 +276,6 @@ namespace MonoDevelop.Core
 		internal static FileSystemExtension GetFileSystemForPath (string path, bool isDirectory)
 		{
 			Debug.Assert (!String.IsNullOrEmpty (path));
-			if (fileSystemChain == null)
-				UpdateExtensions ();
 			FileSystemExtension nx = fileSystemChain;
 			while (nx != null && !nx.CanHandlePath (path, isDirectory))
 				nx = nx.Next;
