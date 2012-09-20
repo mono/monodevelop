@@ -2193,6 +2193,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			ExtensibleTreeView parent;
 			Gdk.Rectangle buttonScreenRect;
 			Gdk.Rectangle buttonAllocation;
+			string markup;
 
 			public bool Pushed { get; set; }
 
@@ -2204,7 +2205,10 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 
 			[GLib.Property ("text-markup")]
-			public string TextMarkup { get; set; }
+			public string TextMarkup {
+				get { return markup; }
+				set { Markup = markup = value; }
+			}
 
 			[GLib.Property ("show-popup-button")]
 			public bool ShowPopupButton { get; set; }
