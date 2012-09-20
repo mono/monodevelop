@@ -160,12 +160,48 @@ namespace MonoDevelop.Projects
 
         private const string RecursiveDirectoryWildcard = "**";
 
+		private string GetWildcardDirectoryName(string path)
+		{
+			int indexOfLast = path.LastIndexOfAny (new char[] {
+				Path.DirectorySeparatorChar, 
+				Path.AltDirectorySeparatorChar });
+
+			if (indexOfLast < 0) 
+			{
+				return String.Empty;
+			}
+			else
+			{
+				return path.Substring (0, indexOfLast);
+			}
+		}
+
+		private string GetWildcardFileName(string path)
+		{
+			int indexOfLast = path.LastIndexOfAny (new char[] {
+				Path.DirectorySeparatorChar, 
+				Path.AltDirectorySeparatorChar });
+			
+			if (indexOfLast < 0) 
+			{
+				return path;
+			}
+			else if(indexOfLast == path.Length)
+			{
+				return String.Empty;
+			}
+			else
+			{
+				return path.Substring (indexOfLast + 1, path.Length - (indexOfLast + 1));
+			}
+		}
+
         public IEnumerable<string> ResolveWildcardFilePath()
         {
             if (String.IsNullOrWhiteSpace(filename)) yield break;
 
-            string dir = Path.GetDirectoryName (filename);
-            string file = Path.GetFileName (filename);
+			string dir = GetWildcardDirectoryName (filename);
+			string file = GetWildcardFileName (filename);
 
             if (String.IsNullOrEmpty(dir)) yield break;
             if (String.IsNullOrEmpty(file)) yield break;
