@@ -182,7 +182,12 @@ namespace MonoDevelop.Projects
 		{
 			// Do nothing
 		}
-		
+
+		public override bool HasDefineSymbol (string symbol)
+		{
+			return false;
+		}
+
 		public override void RemoveDefineSymbol (string symbol)
 		{
 			// Do nothing

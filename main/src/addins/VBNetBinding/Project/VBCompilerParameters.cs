@@ -108,7 +108,12 @@ namespace MonoDevelop.VBNetBinding
 		{
 			DefineConstants += symbol + ";";
 		}
-		
+
+		public override bool HasDefineSymbol (string symbol)
+		{
+			return DefineConstants.Contains (symbol);
+		}
+
 		public override void RemoveDefineSymbol (string symbol)
 		{
 			DefineConstants = DefineConstants.Replace (symbol + ";", "");
