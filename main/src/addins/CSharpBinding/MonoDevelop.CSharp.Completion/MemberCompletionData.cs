@@ -600,15 +600,14 @@ namespace MonoDevelop.CSharp.Completion
 				}
 				
 				if (mx is IMethod && my is IMethod) {
-					IMethod mmx = (IMethod) mx;//, mmy = (IMethod) my;
-					result = (mmx.TypeParameters.Count).CompareTo (mmx.TypeParameters.Count);
+					IMethod mmx = (IMethod) mx, mmy = (IMethod) my;
+					result = (mmx.TypeParameters.Count).CompareTo (mmy.TypeParameters.Count);
 					if (result != 0)
 						return result;
-					result = (mmx.Parameters.Count).CompareTo (mmx.Parameters.Count);
+					result = (mmx.Parameters.Count).CompareTo (mmy.Parameters.Count);
 					if (result != 0)
 						return result;
 				}
-				
 				string sx = mx.ReflectionName;// ambience.GetString (mx, flags);
 				string sy = my.ReflectionName;// ambience.GetString (my, flags);
 				result = sx.Length.CompareTo (sy.Length);
@@ -624,6 +623,9 @@ namespace MonoDevelop.CSharp.Completion
 				var sorted = new List<ICompletionData> (overloads.Values);
 				sorted.Add (this);
 				sorted.Sort (new OverloadSorter ());
+				Console.WriteLine ("------");
+				foreach (var s in sorted)
+					Console.WriteLine (s);
 				return sorted;
 			}
 		}
@@ -669,6 +671,9 @@ namespace MonoDevelop.CSharp.Completion
 		}
 		#endregion
 
-
+		public override string ToString ()
+		{
+			return string.Format ("[MemberCompletionData: Entity={0}]", Entity);
+		}
 	}
 }
