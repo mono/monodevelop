@@ -594,7 +594,7 @@ namespace MonoDevelop.CSharp.Completion
 				var result = new LazyGenericTooltipCompletionData (
 					sw => new TooltipInformation (), 
 					displayText, 
-					null);
+					member.GetStockIcon ());
 				return result;
 			}
 
