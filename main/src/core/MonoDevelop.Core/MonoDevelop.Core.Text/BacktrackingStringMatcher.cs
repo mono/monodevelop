@@ -62,6 +62,14 @@ namespace MonoDevelop.Core.Text
 			}
 			var lane = GetMatch (name);
 			if (lane != null) {
+				if (name.Length == filterText.Length) {
+					matchRank = int.MaxValue;
+					for (int n = 0; n < name.Length; n++) {
+						if (filterText[n] != name[n])
+							matchRank--;
+					}
+					return true;
+				}
 				int capitalMatches = 0;
 				int nonCapitalMatches = 0;
 				int matching = 0;

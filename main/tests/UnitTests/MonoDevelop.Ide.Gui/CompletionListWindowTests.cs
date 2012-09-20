@@ -755,6 +755,17 @@ namespace MonoDevelop.Ide.Gui
 			Assert.AreEqual ("IOException", output);
 		}
 
+		/// <summary>
+		/// Bug 7288 - Completion not selecting the correct entry
+		/// </summary>
+		[Test]
+		public void TestBug7288 ()
+		{
+			string output = RunSimulation ("", "pages\t", true, true, false, "pages", "PageSystem");
+			Assert.AreEqual ("pages", output);
+		}
+
+
 		[TestFixtureSetUp] 
 		public void SetUp()
 		{
