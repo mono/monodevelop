@@ -70,7 +70,8 @@ namespace MonoDevelop.CSharp
 
 			this.resolver = resolver;
 			this.astBuilder = new TypeSystemAstBuilder (resolver) {
-				ConvertUnboundTypeArguments = true
+				ConvertUnboundTypeArguments = true,
+				UseAliases = false
 			};
 			this.formattingOptions = formattingOptions;
 		}
