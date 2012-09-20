@@ -1491,6 +1491,7 @@ namespace MonoDevelop.Debugger
 			IsSorted = false;
 			foreach (CompletionItem it in data.Items)
 				Add (new DebugCompletionData (it));
+			AutoSelect =true;
 		}
 		public bool AutoSelect { get; set; }
 		public string DefaultCompletionString {
