@@ -140,6 +140,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return false;
 			return wnd.PreProcessKeyEvent (key, keyChar, modifier);
 		}
+
+		public static void UpdateWordSelection (string text)
+		{
+			if (IsVisible) {
+				wnd.List.CompletionString = text;
+				wnd.UpdateWordSelection ();
+			}
+		}
 		
 		public static void PostProcessKeyEvent (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{

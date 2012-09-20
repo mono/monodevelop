@@ -590,7 +590,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			bool hasMismatches;
 			
 			int matchedIndex = FindMatchedEntry (s, out hasMismatches);
-			ResetSizes ();
+//			ResetSizes ();
 			SelectEntry (matchedIndex);
 		}
 

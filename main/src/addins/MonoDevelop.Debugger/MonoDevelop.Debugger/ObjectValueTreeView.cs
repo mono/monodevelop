@@ -947,29 +947,40 @@ namespace MonoDevelop.Debugger
 			editing = true;
 			editEntry = (Gtk.Entry) args.Editable;
 			editEntry.KeyPressEvent += OnEditKeyPress;
+			editEntry.KeyReleaseEvent += HandleChanged;
 			if (StartEditing != null)
 				StartEditing (this, EventArgs.Empty);
 		}
-		
+
+		void HandleChanged (object sender, EventArgs e)
+		{
+			if (!wasHandled)
+				CompletionWindowManager.UpdateWordSelection (editEntry.Text);
+		}
+
 		void OnEndEditing ()
 		{
 			editing = false;
 			editEntry.KeyPressEvent -= OnEditKeyPress;
+			editEntry.KeyReleaseEvent -= HandleChanged;
+
 			CompletionWindowManager.HideWindow ();
 			currentCompletionData = null;
 			if (EndEditing != null)
 				EndEditing (this, EventArgs.Empty);
 		}
-		
+		bool wasHandled = false;
 		[GLib.ConnectBeforeAttribute]
 		void OnEditKeyPress (object s, Gtk.KeyPressEventArgs args)
 		{
 			Gtk.Entry entry = (Gtk.Entry)s;
-			
+			wasHandled = false;
 			if (currentCompletionData != null) {
-				bool ret = CompletionWindowManager.PreProcessKeyEvent (args.Event.Key, (char)args.Event.Key, args.Event.State);
-				CompletionWindowManager.PostProcessKeyEvent (args.Event.Key, (char)args.Event.Key, args.Event.State);
-				args.RetVal = ret;
+				wasHandled  = CompletionWindowManager.PreProcessKeyEvent (args.Event.Key, (char)args.Event.Key, args.Event.State);
+
+				if (!wasHandled )
+					CompletionWindowManager.PostProcessKeyEvent (args.Event.Key, (char)args.Event.Key, args.Event.State);
+				args.RetVal = wasHandled ;
 			}
 			
 			Gtk.Application.Invoke (delegate {
@@ -1323,11 +1334,13 @@ namespace MonoDevelop.Debugger
 			}
 		}
 		
-		EventHandler completionContextChanged;
-		
-		event EventHandler ICompletionWidget.CompletionContextChanged {
-			add { completionContextChanged += value; }
-			remove { completionContextChanged -= value; }
+		public event EventHandler CompletionContextChanged;
+
+		protected virtual void OnCompletionContextChanged (EventArgs e)
+		{
+			EventHandler handler = this.CompletionContextChanged;
+			if (handler != null)
+				handler (this, e);
 		}
 		
 		string ICompletionWidget.GetText (int startOffset, int endOffset)
