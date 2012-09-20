@@ -667,8 +667,12 @@ namespace Mono.TextEditor
 			return rect.Y + rect.Height - 1;
 		}
 
-		static HashSet<Type> fixedContainerTypes = new HashSet<Type>();
-		static Dictionary<IntPtr,ForallDelegate> forallCallbacks = new Dictionary<IntPtr, ForallDelegate> ();
+		[DllImport ("gtksharpglue-2", CallingConvention = CallingConvention.Cdecl)]
+		static extern void gtksharp_container_leak_fixed_marker ();
+
+		static HashSet<Type> fixedContainerTypes;
+		static Dictionary<IntPtr,ForallDelegate> forallCallbacks;
+		static bool containerLeakFixed;
 		
 		// Works around BXC #3801 - Managed Container subclasses are incorrectly resurrected, then leak.
 		// It does this by registering an alternative callback for gtksharp_container_override_forall, which
@@ -678,11 +682,30 @@ namespace Mono.TextEditor
 		// per-instance delegates.
 		public static void FixContainerLeak (Gtk.Container c)
 		{
+			if (containerLeakFixed) {
+				return;
+			}
+
 			FixContainerLeak (c.GetType ());
 		}
 
 		static void FixContainerLeak (Type t)
 		{
+			if (containerLeakFixed) {
+				return;
+			}
+
+			if (fixedContainerTypes == null) {
+				try {
+					gtksharp_container_leak_fixed_marker ();
+					containerLeakFixed = true;
+					return;
+				} catch (EntryPointNotFoundException) {
+				}
+				fixedContainerTypes = new HashSet<Type>();
+				forallCallbacks = new Dictionary<IntPtr, ForallDelegate> ();
+			}
+
 			if (!fixedContainerTypes.Add (t)) {
 				return;
 			}
@@ -796,12 +819,12 @@ namespace Mono.TextEditor
 		[GLib.CDeclCallback]
 		delegate void ForallDelegate (IntPtr container, bool include_internals, IntPtr cb, IntPtr data);
 		
-		[DllImport("gtksharpglue-2", CallingConvention=CallingConvention.Cdecl)]
+		[DllImport("gtksharpglue-2", CallingConvention = CallingConvention.Cdecl)]
 		static extern void gtksharp_container_override_forall (IntPtr gtype, ForallDelegate cb);
 
 		public static string MarkupLinks (string text)
 		{
-			if (Mono.TextEditor.GtkWorkarounds.GtkMinorVersion < 18)
+			if (GtkMinorVersion < 18)
 				return text;
 			return HighlightUrlSemanticRule.UrlRegex.Replace (text, MatchToUrl);
 		}
@@ -814,7 +837,7 @@ namespace Mono.TextEditor
 
 		public static void SetLinkHandler (this Gtk.Label label, Action<string> urlHandler)
 		{
-			if (Mono.TextEditor.GtkWorkarounds.GtkMinorVersion >= 18)
+			if (GtkMinorVersion >= 18)
 				new UrlHandlerClosure (urlHandler).ConnectTo (label);
 		}
 
