@@ -35,7 +35,7 @@ namespace MonoDevelop.Ide.Navigation
 {
 	class HistoryList : IEnumerable<NavigationHistoryItem>
 	{
-		const int DEFAULT_MAX_LENGTH = 30;
+		const int DEFAULT_MAX_LENGTH = 200;
 		const int FORWARD_HISTORY_TIMEOUT_SECONDS = 60;
 		int maxLength;
 		
