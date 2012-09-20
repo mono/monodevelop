@@ -30,6 +30,7 @@ using System.IO;
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Diagnostics;
 using System.CodeDom.Compiler;
@@ -107,19 +108,33 @@ namespace MonoDevelop.Projects
 		
 		string FindMatchingConfiguration (SolutionEntityItem item)
 		{
-			if (item.Configurations [Id] != null)
-				return Id;
-			
+			SolutionItemConfiguration startupConfiguration = null;
+
+			// There are no configurations so do nothing
 			if (item.Configurations.Count == 0)
 				return null;
-			
+
+			// Direct match if there's the same name and platform
+			if (item.Configurations [Id] != null)
+				return Id;
+
 			// This configuration is not present in the project. Try to find the best match.
 			// First of all try matching name
 			foreach (SolutionItemConfiguration iconf in item.Configurations) {
-				if (iconf.Name == Name && iconf.Platform.Length == 0)
+				if (iconf.Name == Name && (iconf.Platform == "" || iconf.Platform == "Any CPU"))
 					return iconf.Id;
 			}
-			
+
+			// Run some heuristics based on the startup project if it exists
+			if (ParentSolution != null && ParentSolution.StartupItem != null) {
+				var startup = ParentSolution.StartupItem;
+				startupConfiguration = startup.GetConfiguration (Selector);
+				if (startupConfiguration != null) {
+					var match = startupConfiguration.FindBestMatch (item.Configurations);
+					if (match != null)
+						return match.Id;
+				}
+			}
 			if (Platform.Length > 0) {
 				// No name coincidence, now try matching the platform
 				foreach (SolutionItemConfiguration iconf in item.Configurations) {
