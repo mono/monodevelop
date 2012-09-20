@@ -152,7 +152,12 @@ namespace MonoDevelop.CSharp.Project
 		{
 			definesymbols += symbol + ";";
 		}
-		
+
+		public override bool HasDefineSymbol (string symbol)
+		{
+			return definesymbols.Contains (symbol);
+		}
+
 		public override void RemoveDefineSymbol (string symbol)
 		{
 			definesymbols = definesymbols.Replace (symbol + ";", "");

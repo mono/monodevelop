@@ -36,7 +36,9 @@ namespace MonoDevelop.Projects
 		DotNetProjectConfiguration configuration;
 		
 		public abstract void AddDefineSymbol (string symbol);
-		
+
+		public abstract bool HasDefineSymbol (string symbol);
+
 		public abstract void RemoveDefineSymbol (string symbol);
 		
 		public new ConfigurationParameters Clone ()
