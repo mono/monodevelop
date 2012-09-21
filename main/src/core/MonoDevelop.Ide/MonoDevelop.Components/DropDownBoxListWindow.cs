@@ -119,12 +119,15 @@ namespace MonoDevelop.Components
 			case Gdk.Key.Home:
 				list.Selection = (int)0;
 				return true;
-
 			
 			case Gdk.Key.End:
 				list.Selection = DataProvider.IconCount;
 				return true;
 							
+			case Gdk.Key.Escape:
+				Destroy ();
+				return true;
+				
 			case Gdk.Key.Return:
 			case Gdk.Key.ISO_Enter:
 			case Gdk.Key.Key_3270_Enter:
