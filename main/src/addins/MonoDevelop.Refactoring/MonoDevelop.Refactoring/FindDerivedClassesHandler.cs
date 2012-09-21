@@ -62,6 +62,8 @@ namespace MonoDevelop.Refactoring
 			ThreadPool.QueueUserWorkItem (delegate {
 				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
 					var cache = new Dictionary<string, TextEditorData> ();
+					monitor.BeginTask (GettextCatalog.GetString ("Searching for derived classes in solution..."), projects.Count);
+
 					Parallel.ForEach (projects, p => {
 						var comp = TypeSystemService.GetCompilation (p);
 						if (comp == null)
@@ -107,11 +109,13 @@ namespace MonoDevelop.Refactoring
 							}
 							monitor.ReportResult (new MonoDevelop.Ide.FindInFiles.SearchResult (new FileProvider (type.Region.FileName, p), position, 0));
 						}
+						monitor.Step (1);
 					});
 					foreach (var tf in cache.Values) {
 						if (tf.Parent == null)
 							tf.Dispose ();
 					}
+					monitor.EndTask ();
 				}
 			});
 		}
