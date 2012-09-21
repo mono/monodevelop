@@ -91,6 +91,15 @@ namespace MonoDevelop.Components
 			set { SetAndEmit (value, borderColor, ref borderColor); } 
 		}
 
+		public Cairo.Color PagerTextColor {
+			get {
+				return new Cairo.Color (BorderColor.R * .7,
+				                        BorderColor.G * .7,
+				                        BorderColor.B * .7,
+				                        BorderColor.A);
+			}
+		}
+
 		/// <summary>
 		/// Gets or sets the font description to be used for rendering of text elements inside the basic pager window.
 		/// </summary>
@@ -330,7 +339,7 @@ namespace MonoDevelop.Components
 
 			context.MoveTo (bounds.X + (bounds.Width - w) / 2, bounds.Y + (bounds.Height - h) / 2);
 
-			context.Color = BorderColor;
+			context.Color = PagerTextColor;
 			PangoCairoHelper.ShowLayout (context, layout);
 
 			layout.Dispose ();

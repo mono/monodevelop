@@ -126,6 +126,12 @@ namespace MonoDevelop.Ide.Gui
 			public static readonly Cairo.Color PagerTriangleColor = CairoExtensions.ParseColor ("737373");
 			public static readonly int PagerTriangleSize = 6;
 			public static readonly int PagerHeight = 16;
+
+			public static class ParamaterWindows
+			{
+				public static readonly Cairo.Color GradientStartColor = CairoExtensions.ParseColor ("fffee6");
+				public static readonly Cairo.Color GradientEndColor = CairoExtensions.ParseColor ("fffcd1");
+			}
 		}
 
 		// Helper methods

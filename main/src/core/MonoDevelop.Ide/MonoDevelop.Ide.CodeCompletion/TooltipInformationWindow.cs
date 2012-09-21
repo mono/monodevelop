@@ -242,7 +242,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			vb2.PackStart (hb, true, true, 0);
 			ContentBox.Add (vb2);
 			var scheme = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
-			Theme.SetFlatColor (scheme.Tooltip.CairoBackgroundColor);
+			Theme.TopColor = Gui.Styles.PopoverWindow.ParamaterWindows.GradientStartColor;
+			Theme.BottomColor = Gui.Styles.PopoverWindow.ParamaterWindows.GradientEndColor;
 
 			foreColor = scheme.Default.Color;
 			headlabel.ModifyFg (StateType.Normal, foreColor);
