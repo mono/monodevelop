@@ -122,6 +122,7 @@ namespace MonoDevelop.VersionControl.Views
 			window.FocusOutEvent += delegate {
 				DestroyWindow ();
 			};
+			window.ShowAll ();
 		}
 		
 		public void SetItem (string text, Gdk.Pixbuf icon, object currentItem)
