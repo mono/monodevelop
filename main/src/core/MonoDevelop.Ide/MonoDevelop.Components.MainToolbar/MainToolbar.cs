@@ -176,13 +176,12 @@ namespace MonoDevelop.Components.MainToolbar
 
 			matchEntry.ForceFilterButtonVisible = true;
 
-			var info = IdeApp.CommandService.GetCommand (MonoDevelop.Ide.NavigateToDialog.Commands.NavigateTo);
+			var cmd = IdeApp.CommandService.GetCommand (MonoDevelop.Ide.NavigateToDialog.Commands.NavigateTo);
+			cmd.KeyBindingChanged += delegate {
+				UpdateSearchEntryLabel ();
+			};
+			UpdateSearchEntryLabel ();
 
-			if (info != null && !string.IsNullOrEmpty (info.AccelKey)) {
-				matchEntry.EmptyMessage = GettextCatalog.GetString ("Press {0} to search", KeyBindingManager.BindingToDisplayLabel (info.AccelKey, false));
-			} else {
-				matchEntry.EmptyMessage = GettextCatalog.GetString ("Search solution");
-			}
 			matchEntry.Ready = true;
 			matchEntry.Visible = true;
 			matchEntry.IsCheckMenu = true;
@@ -239,6 +238,16 @@ namespace MonoDevelop.Components.MainToolbar
 			this.ShowAll ();
 			this.statusArea.statusIconBox.HideAll ();
 			RemoveDecorationsWorkaround = w => { };
+		}
+
+		void UpdateSearchEntryLabel ()
+		{
+			var info = IdeApp.CommandService.GetCommand (MonoDevelop.Ide.NavigateToDialog.Commands.NavigateTo);
+			if (!string.IsNullOrEmpty (info.AccelKey)) {
+				matchEntry.EmptyMessage = GettextCatalog.GetString ("Press '{0}' to search", KeyBindingManager.BindingToDisplayLabel (info.AccelKey, false));
+			} else {
+				matchEntry.EmptyMessage = GettextCatalog.GetString ("Search solution");
+			}
 		}
 
 		protected override void OnRealized ()
