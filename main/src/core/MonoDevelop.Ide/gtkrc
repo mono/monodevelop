@@ -348,6 +348,6 @@ widget_class "*.<GtkComboBox>.*.GtkLabel" style "combo-box-label"
 
 # Comboboxes within toolbars
 widget_class "*.<GtkToolbar>.*.<GtkComboBox>.*" style "toolbar-combo-box"
-widget_class "*.<GtkEventBox>.*.<GtkComboBox>.*" style "toolbar-combo-box"
+widget "*MainToolbar*.GtkComboBox.*" style "toolbar-combo-box"
 
 widget "gtk-tooltip*"       style "tooltip"
