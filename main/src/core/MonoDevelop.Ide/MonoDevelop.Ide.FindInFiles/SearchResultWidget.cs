@@ -358,7 +358,9 @@ namespace MonoDevelop.Ide.FindInFiles
 			var searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
 			if (searchResult == null)
 				return;
-			fileNamePixbufRenderer.Pixbuf = DesktopService.GetPixbufForFile (searchResult.FileName, IconSize.Menu);
+			if (searchResult.Pixbuf == null)
+				searchResult.Pixbuf = DesktopService.GetPixbufForFile (searchResult.FileName, IconSize.Menu);
+			fileNamePixbufRenderer.Pixbuf = searchResult.Pixbuf;
 		}
 
 
@@ -377,11 +379,13 @@ namespace MonoDevelop.Ide.FindInFiles
 			var searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
 			if (searchResult == null)
 				return;
-			var doc = GetDocument (searchResult);
-			if (doc == null)
-				return;
-			int lineNr = doc.OffsetToLineNumber (searchResult.Offset);
-			fileNameRenderer.Markup = MarkupText (System.IO.Path.GetFileName (searchResult.FileName) + ":" + lineNr, didRead);
+			if (searchResult.LineNumber <= 0) {
+				var doc = GetDocument (searchResult);
+				if (doc == null)
+					return;
+				searchResult.LineNumber = doc.OffsetToLineNumber (searchResult.Offset);
+			}
+			fileNameRenderer.Markup = MarkupText (System.IO.Path.GetFileName (searchResult.FileName) + ":" + searchResult.LineNumber, didRead);
 		}
 		
 		int CompareLineNumbers (TreeModel model, TreeIter first, TreeIter second)
@@ -462,11 +466,11 @@ namespace MonoDevelop.Ide.FindInFiles
 			bool isSelected = treeviewSearchResults.Selection.IterIsSelected (iter);
 
 			if (searchResult.Markup == null) {
-
-				int lineNr = doc.OffsetToLineNumber (searchResult.Offset);
-				DocumentLine line = doc.GetLine (lineNr);
+				if (searchResult.LineNumber <= 0)
+					searchResult.LineNumber = doc.OffsetToLineNumber (searchResult.Offset); 
+				DocumentLine line = doc.GetLine (searchResult.LineNumber );
 				if (line == null) {
-					textRenderer.Markup = "Invalid line number " + lineNr + " from offset: " + searchResult.Offset;
+					textRenderer.Markup = "Invalid line number " + searchResult.LineNumber + " from offset: " + searchResult.Offset;
 					return;
 				}
 				int indent = line.GetIndentation (doc).Length;

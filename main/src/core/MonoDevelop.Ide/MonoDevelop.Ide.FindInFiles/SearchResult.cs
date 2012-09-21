@@ -41,6 +41,12 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 		}
 
+		#region Cached data
+		public int LineNumber {
+			get;
+			set;
+		}
+
 		public string Markup {
 			get; 
 			set;
@@ -55,6 +61,12 @@ namespace MonoDevelop.Ide.FindInFiles
 			get;
 			set;
 		}
+
+		public Gdk.Pixbuf Pixbuf {
+			get;
+			set;
+		}
+		#endregion
 
 
 		protected SearchResult (int offset, int length)
