@@ -459,54 +459,59 @@ namespace MonoDevelop.Ide.FindInFiles
 				textRenderer.Markup = "Can't create document for:" + searchResult.FileName;
 				return;
 			}
-			int lineNr = doc.OffsetToLineNumber (searchResult.Offset);
-			DocumentLine line = doc.GetLine (lineNr);
-			if (line == null) {
-				textRenderer.Markup = "Invalid line number " + lineNr + " from offset: " + searchResult.Offset;
-				return;
-			}
 			bool isSelected = treeviewSearchResults.Selection.IterIsSelected (iter);
-			int indent = line.GetIndentation (doc).Length;
-			var data = new Mono.TextEditor.TextEditorData (doc);
-			data.ColorStyle = highlightStyle;
-			var lineText = doc.GetTextAt (line.Offset + indent, line.Length - indent);
-			string markup = doc.SyntaxMode != null ?
-				data.GetMarkup (line.Offset + indent, line.Length - indent, true, !isSelected, false) :
-				GLib.Markup.EscapeText (lineText);
-			Pango.AttrBackground attr = null;
-			if (!isSelected) {
+
+			if (searchResult.Markup == null) {
+
+				int lineNr = doc.OffsetToLineNumber (searchResult.Offset);
+				DocumentLine line = doc.GetLine (lineNr);
+				if (line == null) {
+					textRenderer.Markup = "Invalid line number " + lineNr + " from offset: " + searchResult.Offset;
+					return;
+				}
+				int indent = line.GetIndentation (doc).Length;
+				var data = new Mono.TextEditor.TextEditorData (doc);
+				data.ColorStyle = highlightStyle;
+				var lineText = doc.GetTextAt (line.Offset + indent, line.Length - indent);
+				var markup = doc.SyntaxMode != null ?
+					data.GetMarkup (line.Offset + indent, line.Length - indent, true, !isSelected, false) :
+					GLib.Markup.EscapeText (lineText);
+				searchResult.Markup = AdjustColors (markup.Replace ("\t", new string (' ', TextEditorOptions.DefaultOptions.TabSize)));
 				int col = searchResult.Offset - line.Offset - indent;
 
-				Color searchColor = Mono.TextEditor.Highlighting.ColorScheme.ToGdkColor (highlightStyle.SearchTextBg);
-				double b1 = Mono.TextEditor.HslColor.Brightness (searchColor);
-				double b2 = Mono.TextEditor.HslColor.Brightness (AdjustColor (Style.Base (StateType.Normal), highlightStyle.Default.Color));
-				double delta = Math.Abs (b1 - b2);
-				if (delta < 0.1) {
-					Mono.TextEditor.HslColor color1 = highlightStyle.SearchTextBg;
-					if (color1.L + 0.5 > 1.0) {
-						color1.L -= 0.5;
-					} else {
-						color1.L += 0.5;
-					}
-					searchColor = color1;
-				}
-
-				attr = new Pango.AttrBackground (searchColor.Red, searchColor.Green, searchColor.Blue);
-
-				attr.StartIndex = (uint)TextViewMargin.TranslateIndexToUTF8 (lineText, col);
-				attr.EndIndex = (uint)TextViewMargin.TranslateIndexToUTF8 (lineText, col + searchResult.Length);
+				searchResult.StartIndex = (uint)TextViewMargin.TranslateIndexToUTF8 (lineText, col);
+				searchResult.EndIndex = (uint)TextViewMargin.TranslateIndexToUTF8 (lineText, col + searchResult.Length);
 			}
 
-			string markupText = AdjustColors (markup.Replace ("\t", new string (' ', TextEditorOptions.DefaultOptions.TabSize)));
+
 			try {
-				textRenderer.Markup = markupText;
-				if (attr != null) {
-					var list = textRenderer.Attributes.Copy ();
-					list.Insert (attr);
-					textRenderer.Attributes = list;
+				textRenderer.Markup = searchResult.Markup;
+
+				if (!isSelected) {
+					Color searchColor = Mono.TextEditor.Highlighting.ColorScheme.ToGdkColor (highlightStyle.SearchTextBg);
+					double b1 = Mono.TextEditor.HslColor.Brightness (searchColor);
+					double b2 = Mono.TextEditor.HslColor.Brightness (AdjustColor (Style.Base (StateType.Normal), highlightStyle.Default.Color));
+					double delta = Math.Abs (b1 - b2);
+					if (delta < 0.1) {
+						Mono.TextEditor.HslColor color1 = highlightStyle.SearchTextBg;
+						if (color1.L + 0.5 > 1.0) {
+							color1.L -= 0.5;
+						} else {
+							color1.L += 0.5;
+						}
+						searchColor = color1;
+					}
+					var attr = new Pango.AttrBackground (searchColor.Red, searchColor.Green, searchColor.Blue);
+					attr.StartIndex = searchResult.StartIndex;
+					attr.EndIndex = searchResult.EndIndex;
+
+					using (var list = textRenderer.Attributes.Copy ()) {
+						list.Insert (attr);
+						textRenderer.Attributes = list;
+					}
 				}
 			} catch (Exception e) {
-				LoggingService.LogError ("Error whil setting the text renderer markup to: " + markup, e);
+				LoggingService.LogError ("Error whil setting the text renderer markup to: " + searchResult.Markup, e);
 			}
 		}
 		

@@ -34,13 +34,29 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public int Offset { get; set; }
 		public int Length { get; set; }
-		
+
 		public virtual string FileName {
 			get {
 				return FileProvider.FileName;
 			}
 		}
-		
+
+		public string Markup {
+			get; 
+			set;
+		}
+
+		public uint StartIndex {
+			get;
+			set;
+		}
+
+		public uint EndIndex {
+			get;
+			set;
+		}
+
+
 		protected SearchResult (int offset, int length)
 		{
 			Offset = offset;
