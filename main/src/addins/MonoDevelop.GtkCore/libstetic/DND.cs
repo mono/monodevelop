@@ -457,6 +457,11 @@ namespace Stetic {
 			if (widgetFaults == null)
 				return;
 			faultGroups.Remove (widget);
+			widget.Destroyed -= FaultWidgetDestroyed;
+			widget.DragMotion -= FaultDragMotion;
+			widget.DragLeave -= FaultDragLeave;
+			widget.DragDrop -= FaultDragDrop;
+			widget.DragDataReceived -= FaultDragDataReceived;
 
 			foreach (Gdk.Window win in widgetFaults.Keys)
 				win.Destroy ();
