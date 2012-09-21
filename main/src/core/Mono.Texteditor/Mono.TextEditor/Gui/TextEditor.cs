@@ -1252,6 +1252,8 @@ namespace Mono.TextEditor
 		double pressPositionX, pressPositionY;
 		protected override bool OnButtonPressEvent (Gdk.EventButton e)
 		{
+			if (e.Window != this.GdkWindow)
+				return false;
 			pressPositionX = e.X;
 			pressPositionY = e.Y;
 			base.IsFocus = true;
@@ -1337,6 +1339,8 @@ namespace Mono.TextEditor
 		
 		protected override bool OnButtonReleaseEvent (EventButton e)
 		{
+			if (e.Window != this.GdkWindow)
+				return false;
 			RemoveScrollWindowTimer ();
 			
 			//main context menu
@@ -1465,6 +1469,8 @@ namespace Mono.TextEditor
 		
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion e)
 		{
+			if (e.Window != this.GdkWindow)
+				return false;
 			try {
 				RemoveScrollWindowTimer ();
 				double x = e.X;
