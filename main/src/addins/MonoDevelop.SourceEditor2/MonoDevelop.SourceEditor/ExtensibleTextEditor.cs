@@ -369,7 +369,7 @@ namespace MonoDevelop.SourceEditor
 			char insertionChar = '\0';
 			bool insertMatchingBracket = false;
 			IDisposable undoGroup = null;
-			if (skipChar == null && Options.AutoInsertMatchingBracket && braceIndex >= 0) {
+			if (skipChar == null && Options.AutoInsertMatchingBracket && braceIndex >= 0 && !IsSomethingSelected) {
 				if (!inStringOrComment) {
 					char closingBrace = closingBrackets [braceIndex];
 					char openingBrace = openBrackets [braceIndex];

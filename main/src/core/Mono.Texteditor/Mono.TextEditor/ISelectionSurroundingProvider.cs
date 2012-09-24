@@ -132,7 +132,11 @@ namespace Mono.TextEditor
 			} else {
 				int anchorOffset = textEditorData.MainSelection.GetAnchorOffset (textEditorData);
 				int leadOffset = textEditorData.MainSelection.GetLeadOffset (textEditorData);
-				
+				if (leadOffset < anchorOffset) {
+					int tmp = anchorOffset;
+					anchorOffset = leadOffset;
+					leadOffset = tmp;
+				}
 				textEditorData.Insert (anchorOffset, start);
 				textEditorData.Insert (leadOffset >= anchorOffset ? leadOffset + start.Length : leadOffset, end);
 				textEditorData.SetSelection (anchorOffset + start.Length, leadOffset + start.Length);

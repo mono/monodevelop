@@ -118,7 +118,7 @@ namespace Mono.TextEditor
 			HideMouseCursor ();
 
 			using (var undo = Document.OpenUndoGroup ()) {
-				if (textEditorData.IsSomethingSelected && IsSpecialKeyForSelection (unicodeKey)) {
+				if (textEditorData.IsSomethingSelected && textEditorData.Options.EnableSelectionWrappingKeys && IsSpecialKeyForSelection (unicodeKey)) {
 					textEditorData.SelectionSurroundingProvider.HandleSpecialSelectionKey (textEditorData, unicodeKey);
 					return;
 				}

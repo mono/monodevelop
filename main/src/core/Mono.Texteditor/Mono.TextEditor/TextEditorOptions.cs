@@ -474,6 +474,19 @@ namespace Mono.TextEditor
 			}
 		}
 
+		bool enableSelectionWrappingKeys = true;
+		public virtual bool EnableSelectionWrappingKeys {
+			get {
+				return enableSelectionWrappingKeys;
+			}
+			set {
+				if (enableSelectionWrappingKeys != value) {
+					enableSelectionWrappingKeys = value;
+					OnChanged (EventArgs.Empty);
+				}
+			}
+		}
+
 		public virtual ColorScheme GetColorStyle ()
 		{
 			return SyntaxModeService.GetColorStyle (ColorScheme);

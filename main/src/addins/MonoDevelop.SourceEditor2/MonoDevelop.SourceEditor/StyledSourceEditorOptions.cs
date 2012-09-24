@@ -333,6 +333,11 @@ namespace MonoDevelop.SourceEditor
 			get { return DefaultSourceEditorOptions.Instance.UseViModes; }
 		}
 
+		public bool EnableSelectionWrappingKeys { 
+			get { return DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket; } 
+		}
+
+
 		#endregion
 
 		public void Dispose ()

@@ -64,6 +64,7 @@ namespace Mono.TextEditor
 		bool OverrideDocumentEolMarker { get; set; }
 		bool EnableSyntaxHighlighting { get; set; }
 		bool EnableAnimations { get; }
+		bool EnableSelectionWrappingKeys { get; }
 
 		bool EnableQuickDiff { get; set; }
 
