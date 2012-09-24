@@ -868,13 +868,12 @@ namespace Mono.TextEditor
 			imContextNeedsReset = true;
 			imContext.FocusOut ();
 			RemoveFocusOutTimerId ();
-			focusOutTimerId = GLib.Timeout.Add (10, delegate {
-				// Don't immediately hide the tooltip. Wait a bit and check if the tooltip has the focus.
-				if (tipWindow != null && !tipWindow.HasToplevelFocus)
-					HideTooltip ();
-				focusOutTimerId = 0;
-				return false;
-			});
+
+			if (tipWindow != null && currentTooltipProvider.IsInteractive (textEditorData.Parent, tipWindow))
+				DelayedHideTooltip ();
+			else
+				HideTooltip ();
+
 			TextViewMargin.StopCaretThread ();
 			Document.CommitLineUpdate (Caret.Line);
 			return result;
@@ -1593,7 +1592,6 @@ namespace Mono.TextEditor
 				DelayedHideTooltip ();
 			else
 				HideTooltip ();
-			
 			textViewMargin.HideCodeSegmentPreviewWindow ();
 			
 			if (GdkWindow != null)
@@ -2836,7 +2834,8 @@ namespace Mono.TextEditor
 			}
 			if (tipItem != null && !tipItem.ItemSegment.IsInvalid && !tipItem.ItemSegment.Contains (offset)) 
 				HideTooltip ();
-			
+			if (!HasFocus)
+				return;
 			nextTipX = xloc;
 			nextTipY = yloc;
 			nextTipOffset = offset;
@@ -2940,6 +2939,7 @@ namespace Mono.TextEditor
 			CancelScheduledHide ();
 			tipHideTimeoutId = GLib.Timeout.Add (300, delegate {
 				HideTooltip ();
+				tipHideTimeoutId = 0;
 				return false;
 			});
 		}
