@@ -151,7 +151,6 @@ namespace MonoDevelop.Ide.WelcomePage
 		void SetDate (string dateString)
 		{
 			if (string.IsNullOrEmpty (dateString)) {
-				Console.WriteLine ("Empty");
 				subtitle = "Today";
 			} else {
 				DateTime date;
@@ -179,7 +178,6 @@ namespace MonoDevelop.Ide.WelcomePage
 					else
 						subtitle = date.ToShortDateString ();
 				} else {
-					Console.WriteLine ("ParseFail");
 					subtitle = "Today";
 				}
 			}
