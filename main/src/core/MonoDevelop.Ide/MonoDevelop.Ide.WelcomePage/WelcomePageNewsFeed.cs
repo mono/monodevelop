@@ -27,8 +27,10 @@
 using Gtk;
 using System;
 using MonoDevelop.Core;
+using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Linq;
+using System.Linq;
 using System.IO;
 using System.Net;
 
@@ -38,6 +40,7 @@ namespace MonoDevelop.Ide.WelcomePage
 	{
 		string newsUrl;
 		string id;
+		int limit;
 		XElement defaultContent;
 		bool destroyed;
 		Gtk.VBox box;
@@ -51,6 +54,11 @@ namespace MonoDevelop.Ide.WelcomePage
 			id = (string) el.Attribute ("id");
 			if (string.IsNullOrEmpty (id))
 				throw new Exception ("News feed is missing id attribute");
+
+			limit = 5;
+			string limitString = (string) el.Attribute ("limit");
+			if (!string.IsNullOrEmpty (limitString))
+				limit = int.Parse (limitString);
 			
 			defaultContent = el;
 			UpdateNews ();
@@ -65,13 +73,22 @@ namespace MonoDevelop.Ide.WelcomePage
 			destroyed = true;
 			base.OnDestroyed ();
 		}
+
+		protected virtual IEnumerable<Gtk.Widget> OnLoadNews (XElement news)
+		{
+			foreach (var child in news.Elements ()) {
+				if (child.Name != "link" && child.Name != "Link")
+					throw new Exception ("Unexpected child '" + child.Name + "'");
+				yield return new WelcomePageFeedItem (child);
+			}
+		}
 		
 		void LoadNews ()
 		{
 			//can get called from async handler
 			if (destroyed)
 				return;
-			
+
 			foreach (var c in box.Children) {
 				box.Remove (c);
 				c.Destroy ();
@@ -83,15 +100,11 @@ namespace MonoDevelop.Ide.WelcomePage
 					var label = new Label (GettextCatalog.GetString ("No news found.")) { Xalign = 0, Xpad = 6 };
 					box.PackStart (label, true, false, 0);
 				} else {
-					foreach (var child in news.Elements ()) {
-						if (child.Name != "link" && child.Name != "Link")
-							throw new Exception ("Unexpected child '" + child.Name + "'");
-						var button = new WelcomePageFeedItem (child);
-						box.PackStart (button, true, false, 0);
-					}
+					foreach (var child in OnLoadNews (news).Take (limit))
+						box.PackStart (child, true, false, 0);
 				}
 			} catch (Exception ex) {
-				LoggingService.LogWarning ("Error loading welcome page news.", ex);
+				LoggingService.LogWarning ("Error loading news feed.", ex);
 			}
 			this.ShowAll ();
 		}

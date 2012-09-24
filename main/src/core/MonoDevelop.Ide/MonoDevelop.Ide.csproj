@@ -1796,6 +1796,7 @@
     <Compile Include="MonoDevelop.Components\MouseTracker.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\SearchPopupSearchPattern.cs" />
     <Compile Include="MonoDevelop.Components\PopoverWindowTheme.cs" />
+    <Compile Include="MonoDevelop.Ide.WelcomePage\WelcomePageYoutubeFeed.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

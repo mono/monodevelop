@@ -140,6 +140,9 @@ namespace MonoDevelop.Ide.WelcomePage
 				case "NewsFeed":
 					w = new WelcomePageNewsFeed (el);
 					break;
+				case "Youtube":
+					w = new WelcomePageYoutubeFeed (el);
+					break;
 				default:
 					throw new InvalidOperationException ("Unknown welcome page element '" + el.Name + "'");
 				}

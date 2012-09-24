@@ -15,6 +15,9 @@
 			<Column minWidth="200">
 				<NewsFeed _title="Xamarin News" src="http://software.xamarin.com/Service/News" id="NewsLinks" />
 			</Column>
+			<Column minWidth="200">
+				<Youtube _title="Xamarin Seminars" src="http://www.youtube.com/rss/user/XamarinHQ/videos.rss" id="XamarinSeminars" limit="4" />
+			</Column>
 		</Row>
 	</Column>
 </WelcomePage>	

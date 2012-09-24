@@ -68,52 +68,24 @@ namespace MonoDevelop.Ide.WelcomePage
 		{
 			this.iconSize = iconSize;
 			
-			string title = (string) (el.Attribute ("title") ?? el.Attribute ("_title"));
+			string title = (string)(el.Attribute ("title") ?? el.Attribute ("_title"));
 			if (string.IsNullOrEmpty (title))
 				throw new InvalidOperationException ("Link is missing title");
 			this.text = GettextCatalog.GetString (title);
 			
-			subtitle = (string) el.Attribute ("pubDate");
-			if (string.IsNullOrEmpty (subtitle))
-				subtitle = "Today";
-			else {
-				DateTime date;
-				if (DateTime.TryParse (subtitle, out date)) {
+			subtitle = (string)el.Attribute ("pubDate");
+			SetDate (subtitle);
 
-					// Round to begining of day. A change of day will be "yesterday", even if it happened 5 minutes ago
-					var today = DateTime.Today;
-					date = date.Date;
-
-					int days = (int)Math.Round ((today - date).TotalDays);
-					var weeks = days / 7;
-
-					if (days <= 0) {
-						subtitle = GettextCatalog.GetString ("Today");
-					}
-					else if (days == 1) {
-						subtitle = GettextCatalog.GetString ("Yesterday");
-					}
-					else if (days < 7) {
-						subtitle = GettextCatalog.GetString ("{0} days ago", days);
-					}
-					else if (weeks < 4) {
-						subtitle = GettextCatalog.GetPluralString ("{0} week ago", "{0} weeks ago", weeks, weeks);
-					}
-					else
-						subtitle = date.ToShortDateString ();
-				} else {
-					subtitle = "Today";
-				}
-			}
-
-			string href = (string) el.Attribute ("href");
+			string href = (string)el.Attribute ("href");
 			if (string.IsNullOrEmpty (href))
 				throw new InvalidOperationException ("Link is missing href");
 			this.LinkUrl = href;
 			
-			string desc = (string) (el.Attribute ("desc") ?? el.Attribute ("_desc"));
-			if (!string.IsNullOrEmpty (desc))
+			string desc = (string)(el.Attribute ("desc") ?? el.Attribute ("_desc"));
+			if (!string.IsNullOrEmpty (desc)) {
+				desc = desc.Replace (" [...]", "...");
 				this.desc = GettextCatalog.GetString (desc);
+			}
 			
 			string tooltip = (string) (el.Attribute ("tooltip") ?? el.Attribute ("_tooltip"));
 			if (!string.IsNullOrEmpty (tooltip))
@@ -134,6 +106,16 @@ namespace MonoDevelop.Ide.WelcomePage
 		{
 			this.text = label;
 			this.LinkUrl = link;
+			UpdateLabel (false);
+		}
+
+		public WelcomePageFeedItem (string label, string link, string description, string date)
+			: this ()
+		{
+			this.text = label;
+			this.LinkUrl = link;
+			this.desc = description;
+			SetDate (date);
 			UpdateLabel (false);
 		}
 		
@@ -165,6 +147,43 @@ namespace MonoDevelop.Ide.WelcomePage
 		}
 
 		int allocWidth;
+
+		void SetDate (string dateString)
+		{
+			if (string.IsNullOrEmpty (dateString)) {
+				Console.WriteLine ("Empty");
+				subtitle = "Today";
+			} else {
+				DateTime date;
+				if (DateTime.TryParse (dateString, out date)) {
+
+					// Round to begining of day. A change of day will be "yesterday", even if it happened 5 minutes ago
+					var today = DateTime.Today;
+					date = date.Date;
+
+					int days = (int)Math.Round ((today - date).TotalDays);
+					var weeks = days / 7;
+
+					if (days <= 0) {
+						subtitle = GettextCatalog.GetString ("Today");
+					}
+					else if (days == 1) {
+						subtitle = GettextCatalog.GetString ("Yesterday");
+					}
+					else if (days < 7) {
+						subtitle = GettextCatalog.GetString ("{0} days ago", days);
+					}
+					else if (weeks < 4) {
+						subtitle = GettextCatalog.GetPluralString ("{0} week ago", "{0} weeks ago", weeks, weeks);
+					}
+					else
+						subtitle = date.ToShortDateString ();
+				} else {
+					Console.WriteLine ("ParseFail");
+					subtitle = "Today";
+				}
+			}
+		}
 
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
