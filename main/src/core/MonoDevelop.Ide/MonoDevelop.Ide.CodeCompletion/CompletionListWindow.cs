@@ -90,17 +90,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 
-		void RemoveWindowOpacityTimer ()
-		{
-			if (windowOpacityTimer != 0) {
-				GLib.Source.Remove (windowOpacityTimer);
-				windowOpacityTimer = 0;
-			}
-		}
-
 		protected override void OnDestroyed ()
 		{
-			RemoveWindowOpacityTimer ();
 			if (declarationviewwindow != null) {
 				declarationviewwindow.Destroy ();
 				declarationviewwindow = null;
@@ -157,8 +148,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public bool PreProcessKeyEvent (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
 			if (key == Gdk.Key.Escape) {
-				RemoveWindowOpacityTimer ();
-				windowOpacityTimer = GLib.Timeout.Add (10, new WindowOpacityTimer (this, true).Timer);
 				return false;
 			}
 
@@ -264,8 +253,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 					//completionWidget.SelectedLength;
 					StartOffset = completionWidget.CaretOffset;
 					ResetSizes ();
-					Opacity = 0;
-					windowOpacityTimer = GLib.Timeout.Add (10, new WindowOpacityTimer (this, false).Timer);
 					ShowAll ();
 					UpdateWordSelection ();
 					UpdateDeclarationView ();
@@ -289,9 +276,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 					CompletionWindowManager.HideWindow ();
 					return false;
 				} else {
-
-					Opacity = 0;
-					windowOpacityTimer = GLib.Timeout.Add (10, new WindowOpacityTimer (this, false).Timer);
 					ShowAll ();
 					UpdateDeclarationView ();
 				}
@@ -445,10 +429,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 		
 		bool declarationViewHidden = true;
-		int declarationViewX = -1, declarationViewY = -1;
 		uint declarationViewTimer = 0;
-		uint declarationViewWindowOpacityTimer = 0;
-		uint windowOpacityTimer = 0;
 
 		void UpdateDeclarationView ()
 		{
@@ -483,78 +464,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 			RemoveDeclarationViewTimer ();
 			if (declarationviewwindow != null) {
 				declarationviewwindow.Hide ();
-				declarationviewwindow.Opacity = 0;
 			}
 			declarationViewHidden = true;
-			declarationViewX = declarationViewY = -1; 
 		}
 		
 		void RemoveDeclarationViewTimer ()
 		{
-			if (declarationViewWindowOpacityTimer != 0) {
-				GLib.Source.Remove (declarationViewWindowOpacityTimer);
-				declarationViewWindowOpacityTimer = 0;
-			}
 			if (declarationViewTimer != 0) {
 				GLib.Source.Remove (declarationViewTimer);
 				declarationViewTimer = 0;
-			}
-		}
-		
-		class OpacityTimer
-		{
-			public double Opacity { get; private set; }
-			
-			CompletionListWindow window;
-			//			static int num = 0;
-			//			int id;
-			public OpacityTimer (CompletionListWindow window)
-			{
-				//				id = num++;
-				this.window = window;
-				Opacity = 0.0;
-				window.declarationviewwindow.Opacity = Opacity;
-			}
-			
-			public bool Timer ()
-			{
-				Opacity = System.Math.Min (1.0, Opacity + 0.33);
-				window.declarationviewwindow.Opacity = Opacity;
-				bool result = Math.Round (Opacity * 10.0) < 10;
-				if (!result)
-					window.declarationViewWindowOpacityTimer = 0;
-				return result;
-			}
-		}
-
-		class WindowOpacityTimer
-		{
-			public double Opacity { get; private set; }
-			int runtime = 150;
-			DateTime startTime;
-			readonly bool hide;
-
-			CompletionListWindow window;
-			public WindowOpacityTimer (CompletionListWindow window, bool hide)
-			{
-				this.startTime = DateTime.Now;
-				this.window = window;
-				this.hide = hide;
-				Opacity = hide ? 1.0 : 0.0;
-				window.declarationviewwindow.Opacity = Opacity;
-			}
-			
-			public bool Timer ()
-			{
-				Opacity = Math.Min (1.0, (DateTime.Now - startTime).TotalMilliseconds / (double)runtime);
-				window.Opacity = hide ? 1.0 - Opacity : Opacity;
-				bool result = Opacity < 1.0;
-				if (!result) {
-					window.windowOpacityTimer = 0;
-					if (hide)
-						CompletionWindowManager.HideWindow ();
-				}
-				return result;
 			}
 		}
 		
@@ -610,9 +528,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 				                                                    Allocation.Width, 
 				                                                    rect.Height), 
 				                                 PopupPosition.Left);
-				if (declarationViewWindowOpacityTimer != 0) 
-					GLib.Source.Remove (declarationViewWindowOpacityTimer);
-				declarationViewWindowOpacityTimer = GLib.Timeout.Add (40, new OpacityTimer (this).Timer);
 				declarationViewHidden = false;
 			}
 			
