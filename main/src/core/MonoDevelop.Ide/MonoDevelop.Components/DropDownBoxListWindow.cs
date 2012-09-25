@@ -453,7 +453,7 @@ namespace MonoDevelop.Components
 
 				var pageStep = VisibleRows;
 				var height = Math.Max (allocation.Height, rowHeight * win.DataProvider.IconCount - allocation.Height);
-				vadj.SetBounds (0, height, RowHeight, pageStep, pageStep);
+				vadj.SetBounds (0, height, RowHeight, pageStep, allocation.Height);
 
 				UpdatePage ();
 			}
