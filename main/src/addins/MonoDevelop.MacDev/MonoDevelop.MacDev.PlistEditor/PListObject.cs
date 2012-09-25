@@ -77,6 +77,8 @@ namespace MonoDevelop.MacDev.PlistEditor
 				return new PDate (DateTime.Now);
 			case "Number":
 				return new PNumber (0);
+			case "Real":
+				return new PReal (0);
 			case "String":
 				return new PString ("");
 			}
@@ -209,6 +211,11 @@ namespace MonoDevelop.MacDev.PlistEditor
 		public static implicit operator PObject (int value)
 		{
 			return new PNumber (value);
+		}
+		
+		public static implicit operator PObject (double value)
+		{
+			return new PReal (value);
 		}
 		
 		public static implicit operator PObject (bool value)
@@ -987,6 +994,38 @@ namespace MonoDevelop.MacDev.PlistEditor
 		public override NSObject Convert ()
 		{
 			return NSNumber.FromInt32 (Value);
+		}
+	}
+
+	public class PReal : PValueObject<double>
+	{
+		public const string Type = "Real";
+		
+		public override string TypeString {
+			get {
+				return Type;
+			}
+		}
+		
+		public PReal (double value) : base(value)
+		{
+		}
+
+		public override PObject Clone ()
+		{
+			return new PReal (Value);
+		}
+		
+		public override void SetValue (string text)
+		{
+			double newValue;
+			if (double.TryParse (text, out newValue))
+				Value = newValue;
+		}
+
+		public override NSObject Convert ()
+		{
+			return NSNumber.FromDouble (Value);
 		}
 	}
 	
