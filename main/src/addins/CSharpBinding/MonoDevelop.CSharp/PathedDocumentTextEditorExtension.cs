@@ -118,7 +118,24 @@ namespace MonoDevelop.CSharp
 					}
 				} 
 
-				memberList.Sort ((x, y) => String.Compare (GetName (x), GetName(y), StringComparison.OrdinalIgnoreCase));
+				memberList.Sort ((x, y) => {
+					var result = String.Compare (GetName (x), GetName(y), StringComparison.OrdinalIgnoreCase);
+					if (result == 0)
+						result = GetTypeParameters(x).CompareTo (GetTypeParameters(y));
+					if (result == 0)
+						result = GetParameters(x).CompareTo (GetParameters(y));
+					return result;
+				});
+			}
+
+			static int GetTypeParameters (AstNode x)
+			{
+				return x.GetChildrenByRole (Roles.TypeParameter).Count ();
+			}
+
+			static int GetParameters (AstNode x)
+			{
+				return x.GetChildrenByRole (Roles.Parameter).Count ();
 			}
 
 			string GetName (AstNode node)
