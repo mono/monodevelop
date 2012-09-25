@@ -365,6 +365,8 @@
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.SaveAll"
 			defaultHandler = "MonoDevelop.Ide.Commands.SaveAllHandler"
 			icon = "md-save-all-icon" 
+			shortcut = "Control|Shift|S" 
+			macShortcut = "Meta|Shift|S"
 			_description = "Save all open files"
 			_label = "Save A_ll" />
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.NewProject" 
@@ -409,8 +411,6 @@
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.SaveAs"
 			_label = "Save _As..."
 			icon = "gtk-save-as"
-			shortcut = "Control|Shift|S" 
-			macShortcut = "Meta|Shift|S"
 			_description = "Save the current file with a different name" />
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.PrintDocument"
 			defaultHandler = "MonoDevelop.Ide.Commands.PrintHandler"
