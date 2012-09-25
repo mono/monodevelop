@@ -92,10 +92,10 @@ namespace MonoDevelop.NUnit
 				UnitTestResult res = test.GetLastResult ();
 				if (res == null)
 					icon = CircleImage.None;
-				else if (res.Inconclusive > 0)
-					icon = CircleImage.Inconclusive;
 				else if (res.ErrorsAndFailures > 0 && res.Passed > 0)
 					icon = CircleImage.SuccessAndFailure;
+				else if (res.IsInconclusive)
+					icon = CircleImage.Inconclusive;
 				else if (res.IsFailure)
 					icon = CircleImage.Failure;
 				else if (res.IsSuccess) {

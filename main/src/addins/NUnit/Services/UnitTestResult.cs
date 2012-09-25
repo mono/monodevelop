@@ -76,6 +76,14 @@ namespace MonoDevelop.NUnit
 			return res;
 		}
 		
+		public static UnitTestResult CreateInconclusive (string message)
+		{
+			UnitTestResult res = new UnitTestResult ();
+			res.status = ResultStatus.Inconclusive;
+			res.Message = message;
+			return res;
+		}
+		
 		public static UnitTestResult CreateSuccess ()
 		{
 			UnitTestResult res = new UnitTestResult ();
@@ -98,6 +106,10 @@ namespace MonoDevelop.NUnit
 
 		public bool IsSuccess {
 			get { return ErrorsAndFailures == 0 && Passed > 0; }
+		}
+
+		public bool IsInconclusive {
+			get { return Passed == 0 && ErrorsAndFailures == 0 && Inconclusive > 0; }
 		}
 
 		public bool IsNotRun {

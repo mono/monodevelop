@@ -62,6 +62,11 @@
 			type="MonoDevelop.AspNet.Mvc.AspMvc3Project"
 			insertbefore="MonoDevelop.AspNet.AspNetAppProject"
 			/>
+		<DotNetProjectSubtype
+			guid="{E3E379DF-F4C6-4180-9B81-6769533ABE47}"
+			type="MonoDevelop.AspNet.Mvc.AspMvc4Project"
+			insertbefore="MonoDevelop.AspNet.AspNetAppProject"
+			/>	
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">
@@ -112,6 +117,7 @@
 		<ProjectBinding id = "AspNetMvc1" class = "MonoDevelop.AspNet.Mvc.AspMvc1ProjectBinding" />
 		<ProjectBinding id = "AspNetMvc2" class = "MonoDevelop.AspNet.Mvc.AspMvc2ProjectBinding" />
 		<ProjectBinding id = "AspNetMvc3" class = "MonoDevelop.AspNet.Mvc.AspMvc3ProjectBinding" />
+		<ProjectBinding id = "AspNetMvc4" class = "MonoDevelop.AspNet.Mvc.AspMvc4ProjectBinding" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">

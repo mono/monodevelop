@@ -43,7 +43,8 @@ namespace MonoDevelop.NUnit
 	{
 		Success = 1,
 		Failure = 2,
-		Ignored = 4
+		Ignored = 4,
+		Inconclusive = 8
 	}
 }
 
