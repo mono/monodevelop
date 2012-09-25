@@ -131,7 +131,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		WorkerResult lastResult;
 		string[] typeTags = new [] { "type", "c", "s", "i", "e", "d"};
-		string[] memberTags = new [] { "member", "m", "p", "f"};
+		string[] memberTags = new [] { "member", "m", "p", "f", "evt"};
 
 		public override Task<ISearchDataSource> GetResults (SearchPopupSearchPattern searchPattern, CancellationToken token)
 		{
@@ -231,6 +231,8 @@ namespace MonoDevelop.Components.MainToolbar
 						if (newResult.Tag == "p" && member.EntityType != EntityType.Property)
 							continue;
 						if (newResult.Tag == "f" && member.EntityType != EntityType.Field)
+							continue;
+						if (newResult.Tag == "evt" && member.EntityType != EntityType.Event)
 							continue;
 					}
 					SearchResult curResult = newResult.CheckMember (member);
