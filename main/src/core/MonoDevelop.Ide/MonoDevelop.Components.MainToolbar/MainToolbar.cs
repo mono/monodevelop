@@ -167,7 +167,7 @@ namespace MonoDevelop.Components.MainToolbar
 			};
 			var searchTypes = this.matchEntry.AddMenuItem (GettextCatalog.GetString ("Search Types"));
 			searchTypes.Activated += delegate {
-				SetSearchCategory ("cls");
+				SetSearchCategory ("type");
 			};
 			var searchMembers = this.matchEntry.AddMenuItem (GettextCatalog.GetString ("Search Members"));
 			searchMembers.Activated += delegate {
@@ -540,7 +540,7 @@ namespace MonoDevelop.Components.MainToolbar
 		[CommandHandler(SearchCommands.GotoType)]
 		public void GotoTypeCommand ()
 		{
-			SetSearchCategory ("cls");
+			SetSearchCategory ("type");
 		}
 
 		CommandInfo GetStartButtonCommandInfo (out RoundButton.OperationIcon operation)

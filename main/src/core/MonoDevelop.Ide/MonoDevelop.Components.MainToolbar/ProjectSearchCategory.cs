@@ -130,19 +130,22 @@ namespace MonoDevelop.Components.MainToolbar
 		}
 
 		WorkerResult lastResult;
-		string[] validTags = new [] { "c", "cls", "m", "member"};
+		string[] typeTags = new [] { "type", "c", "s", "i", "e", "d"};
+		string[] memberTags = new [] { "member", "m", "p", "f"};
 
 		public override Task<ISearchDataSource> GetResults (SearchPopupSearchPattern searchPattern, CancellationToken token)
 		{
+
 			return Task.Factory.StartNew (delegate {
-				if (searchPattern.Tag != null && !validTags.Contains (searchPattern.Tag) || searchPattern.HasLineNumber)
+				if (searchPattern.Tag != null && !(typeTags.Contains (searchPattern.Tag) || memberTags.Contains (searchPattern.Tag)) || searchPattern.HasLineNumber)
 					return null;
 				try {
 					WorkerResult newResult = new WorkerResult (widget);
 					newResult.pattern = searchPattern.Pattern;
 					newResult.IncludeFiles = true;
-					newResult.IncludeTypes = searchPattern.Tag == null || searchPattern.Tag == "c" || searchPattern.Tag == "cls";
-					newResult.IncludeMembers = searchPattern.Tag == null || searchPattern.Tag == "m" || searchPattern.Tag == "member";
+					newResult.Tag = searchPattern.Tag;
+					newResult.IncludeTypes = searchPattern.Tag == null || typeTags.Contains (searchPattern.Tag) ;
+					newResult.IncludeMembers = searchPattern.Tag == null || memberTags.Contains (searchPattern.Tag);
 					var firstType = types.FirstOrDefault ();
 					newResult.ambience = firstType != null ? AmbienceService.GetAmbienceForFile (firstType.Region.FileName) : AmbienceService.DefaultAmbience;
 					
@@ -194,6 +197,18 @@ namespace MonoDevelop.Components.MainToolbar
 				foreach (var type in allTypes) {
 					if (token.IsCancellationRequested)
 						yield break;
+					if (newResult.Tag != null) {
+						if (newResult.Tag == "c" && type.Kind != TypeKind.Class)
+							continue;
+						if (newResult.Tag == "s" && type.Kind != TypeKind.Struct)
+							continue;
+						if (newResult.Tag == "i" && type.Kind != TypeKind.Interface)
+							continue;
+						if (newResult.Tag == "e" && type.Kind != TypeKind.Enum)
+							continue;
+						if (newResult.Tag == "d" && type.Kind != TypeKind.Delegate)
+							continue;
+					}
 					SearchResult curResult = newResult.CheckType (type);
 					if (curResult != null) {
 						newResult.filteredTypes.Add (type);
@@ -210,6 +225,14 @@ namespace MonoDevelop.Components.MainToolbar
 				foreach (var member in allMembers) {
 					if (token.IsCancellationRequested)
 						yield break;
+					if (newResult.Tag != null) {
+						if (newResult.Tag == "m" && member.EntityType != EntityType.Method)
+							continue;
+						if (newResult.Tag == "p" && member.EntityType != EntityType.Property)
+							continue;
+						if (newResult.Tag == "f" && member.EntityType != EntityType.Field)
+							continue;
+					}
 					SearchResult curResult = newResult.CheckMember (member);
 					if (curResult != null) {
 						newResult.filteredMembers.Add (member);
@@ -221,6 +244,11 @@ namespace MonoDevelop.Components.MainToolbar
 		
 		class WorkerResult
 		{
+			public string Tag {
+				get;
+				set;
+			}
+
 			public List<ProjectFile> filteredFiles = null;
 			public List<ITypeDefinition> filteredTypes = null;
 			public List<IMember> filteredMembers = null;
