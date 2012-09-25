@@ -359,6 +359,12 @@ namespace MonoDevelop.NUnit
 			try {
 				Status = TestStatus.Running;
 				res = OnRun (testContext);
+			} catch (global::NUnit.Framework.SuccessException) {
+				res = UnitTestResult.CreateSuccess();
+			} catch (global::NUnit.Framework.IgnoreException ex) {
+				res = UnitTestResult.CreateIgnored(ex.Message);
+			} catch (global::NUnit.Framework.InconclusiveException ex) {
+				res = UnitTestResult.CreateInconclusive(ex.Message);
 			} catch (Exception ex) {
 				res = UnitTestResult.CreateFailure (ex);
 			} finally {
