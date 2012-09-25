@@ -579,12 +579,14 @@
 			_label = "_Zoom In"
 			icon = "gtk-zoom-in" 
 			shortcut = "Control|+"
+			macShortcut = "Meta|+"
 			_description = "Zooms view in" />
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomOut"
 			defaultHandler = "MonoDevelop.Ide.Commands.ZoomOut"
 			_label = "Zoom _Out"
 			icon = "gtk-zoom-out" 
 			shortcut = "Control|-"
+			macShortcut = "Meta|-"
 			_description = "Zooms view out" />
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomReset"
 			defaultHandler = "MonoDevelop.Ide.Commands.ZoomReset"
