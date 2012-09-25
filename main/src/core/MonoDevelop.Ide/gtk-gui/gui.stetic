@@ -10553,30 +10553,7 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
                     <property name="MemberName" />
                     <property name="RightPadding">3</property>
                     <child>
-                      <widget class="Gtk.Notebook" id="mainBook">
-                        <property name="MemberName" />
-                        <property name="CurrentPage">0</property>
-                        <signal name="SwitchPage" handler="OnMainBookSwitchPage" />
-                        <child>
-                          <widget class="Gtk.Label" id="label7">
-                            <property name="MemberName" />
-                            <property name="Xalign">0</property>
-                            <property name="Yalign">0</property>
-                            <property name="LabelProp">label7</property>
-                          </widget>
-                        </child>
-                        <child>
-                          <widget class="Gtk.Label" id="label6">
-                            <property name="MemberName" />
-                            <property name="Xalign">0</property>
-                            <property name="Yalign">0</property>
-                            <property name="LabelProp">label6</property>
-                          </widget>
-                          <packing>
-                            <property name="type">tab</property>
-                          </packing>
-                        </child>
-                      </widget>
+                      <placeholder />
                     </child>
                   </widget>
                   <packing>
