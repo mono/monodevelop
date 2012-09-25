@@ -692,16 +692,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 			filteredItems.Sort (delegate (int left, int right) {
 				var lt = win.DataProvider.GetText (left);
 				var rt = win.DataProvider.GetText (right);
-/*				int r1;
-				int r2;
-				matcher.CalcMatchRank (lt, out r1);
-				matcher.CalcMatchRank (rt, out r2);
-				if (r1 == r2) {
-					if (lt.Length != rt.Length)
-						return lt.Length.CompareTo (rt.Length);*/
-					return lt.CompareTo (rt);
-/*				}
-				return r1.CompareTo (r2);*/
+				var result = lt.CompareTo (rt);
+				if (result == 0)
+					return left.CompareTo (right);
+				return result;
 			});
 			categories.Sort (delegate (Category left, Category right) {
 				return left.CompletionCategory != null ? left.CompletionCategory.CompareTo (right.CompletionCategory) : -1;
