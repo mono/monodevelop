@@ -765,6 +765,18 @@ namespace MonoDevelop.Ide.Gui
 			Assert.AreEqual ("pages", output);
 		}
 
+		/// <summary>
+		/// Bug 7420 - Prefer properties over named parameters
+		/// </summary>
+		[Test]
+		public void TestBug7420 ()
+		{
+			string output = RunSimulation ("", "val\t", true, true, false, "Value", "value:");
+			Assert.AreEqual ("Value", output);
+
+			output = RunSimulation ("", "val\t", true, true, false, "Value", "value", "value:");
+			Assert.AreEqual ("value", output);
+		}
 
 		[TestFixtureSetUp] 
 		public void SetUp()

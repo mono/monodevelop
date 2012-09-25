@@ -96,6 +96,9 @@ namespace MonoDevelop.Core.Text
 					}
 				}
 				matchRank = capitalMatches + matching - fragments + nonCapitalMatches;
+				// devalue named parameters.
+				if (name[name.Length - 1] == ':')
+					matchRank /= 2;
 				return true;
 			}
 			matchRank = int.MinValue;
