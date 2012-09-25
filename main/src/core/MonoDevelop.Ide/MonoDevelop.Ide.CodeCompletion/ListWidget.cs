@@ -694,7 +694,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				var rt = win.DataProvider.GetText (right);
 				var result = lt.CompareTo (rt);
 				if (result == 0)
-					return left.CompareTo (right);
+					return right.CompareTo (left);
 				return result;
 			});
 			categories.Sort (delegate (Category left, Category right) {
