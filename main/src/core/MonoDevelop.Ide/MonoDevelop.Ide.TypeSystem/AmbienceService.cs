@@ -156,12 +156,14 @@ namespace MonoDevelop.Ide.TypeSystem
 				string result;
 				if (idx2 >= 0 && idx1 >= 0) {
 					try {
+						var xmlText = documentation.Substring (idx1, idx2 - idx1 + "</summary>".Length);
 						return ParseBody (
-							new XmlTextReader (documentation.Substring (idx1, idx2 - idx1 + "</summary>".Length), XmlNodeType.Element, null),
+							new XmlTextReader (xmlText, XmlNodeType.Element, null),
 							"summary", 
 							DocumentationFormatOptions.Empty
 						);
-					} catch (Exception) {
+					} catch (Exception e) {
+						LoggingService.LogWarning ("Malformed documentation xml detected:" + documentation, e);
 						// may happen on malformed xml.
 						result = documentation.Substring (idx1 + "<summary>".Length, idx2 - idx1 - "<summary>".Length);
 					}
@@ -172,7 +174,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				} else {
 					result = documentation;
 				}
-				
 				return GetDocumentationMarkup (CleanEmpty (result));
 			}
 			
