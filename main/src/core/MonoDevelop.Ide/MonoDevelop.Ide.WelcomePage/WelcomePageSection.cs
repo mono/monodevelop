@@ -31,12 +31,13 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
-	public class WelcomePageSection: Alignment
+	public class WelcomePageSection: EventBox
 	{
 		string title;
 
 		static readonly string headerFormat;
 
+		Alignment root = new Alignment (0, 0, 1f, 1f);
 		protected Gtk.Alignment ContentAlignment { get; private set; }
 		protected Gtk.Alignment TitleAlignment { get; private set; }
 
@@ -46,19 +47,21 @@ namespace MonoDevelop.Ide.WelcomePage
 			headerFormat = Styles.GetFormatString (face, Styles.WelcomeScreen.Pad.LargeTitleFontSize, Styles.WelcomeScreen.Pad.LargeTitleFontColor);
 		}
 
-		public WelcomePageSection (XElement el): base (0, 0, 1f, 1f)
+		public WelcomePageSection (XElement el)
 		{
+			Add (root);
+			root.Show ();
+
 			title = (string) (el.Attribute ("title") ?? el.Attribute ("_title"));
 			if (!string.IsNullOrEmpty (title))
 				title = GettextCatalog.GetString (title);
 
 			uint p = Styles.WelcomeScreen.Pad.ShadowSize * 2;
-			SetPadding (p, p, p, p);
+			root.SetPadding (p, p, p, p);
 
 			TitleAlignment = new Alignment (0f, 0f, 1f, 1f);
 			p = Styles.WelcomeScreen.Pad.Padding;
 			TitleAlignment.SetPadding (p, Styles.WelcomeScreen.Pad.LargeTitleMarginBottom, p, p);
-
 			ContentAlignment = new Alignment (0f, 0f, 1f, 1f);
 			ContentAlignment.SetPadding (0, p, p, p);
 		}
@@ -69,7 +72,7 @@ namespace MonoDevelop.Ide.WelcomePage
 
 			if (string.IsNullOrEmpty (title)) {
 				ContentAlignment.TopPadding = Styles.WelcomeScreen.Pad.Padding;
-				Add (ContentAlignment);
+				root.Add (ContentAlignment);
 				return;
 			}
 
@@ -78,18 +81,19 @@ namespace MonoDevelop.Ide.WelcomePage
 			TitleAlignment.Add (label);
 			box.PackStart (TitleAlignment, false, false, 0);
 			box.PackStart (ContentAlignment, false, false, 0);
-			Add (box);
+			root.Add (box);
 		}
 
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
 			using (var ctx = Gdk.CairoHelper.Create (evnt.Window)) {
 				ctx.LineWidth = 1;
+				var rect = new Gdk.Rectangle (0, 0, Allocation.Width, Allocation.Height);
 
 				var shadowColor = CairoExtensions.ParseColor (Styles.WelcomeScreen.Pad.ShadowColor);
 				int inset = 2;
 				var ss = Styles.WelcomeScreen.Pad.ShadowSize; 
-				var r = new Cairo.Rectangle (Allocation.X + ss + 0.5, Allocation.Y + ss + 0.5, Allocation.Width - ss * 2 - 1, Allocation.Height - ss * 2 - 1);
+				var r = new Cairo.Rectangle (rect.X + ss + 0.5, rect.Y + ss + 0.5, rect.Width - ss * 2 - 1, rect.Height - ss * 2 - 1);
 				var sr = new Cairo.Rectangle (r.X + inset, r.Y + inset + Styles.WelcomeScreen.Pad.ShadowVerticalOffset, r.Width - inset * 2, r.Height - inset * 2);
 				int size = Styles.WelcomeScreen.Pad.ShadowSize;
 				double alpha = 0.2;
