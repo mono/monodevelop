@@ -688,7 +688,33 @@ namespace Mono.TextEditor
 //				op.InformTextReplace (args);
 //			}
 		}
-		
+
+		internal int UndoBeginOffset {
+			get {
+				if (undoStack.Count == 0)
+					return -1;
+				var op = undoStack.Peek ();
+				while (op is AtomicUndoOperation)
+					op = ((AtomicUndoOperation)op).Operations.FirstOrDefault ();
+				if (op == null)
+					return -1;
+				return ((UndoOperation)op).Args.Offset;
+			}
+		}
+
+		internal int RedoBeginOffset {
+			get {
+				if (redoStack.Count == 0)
+					return -1;
+				var op = redoStack.Peek ();
+				while (op is AtomicUndoOperation)
+					op = ((AtomicUndoOperation)op).Operations.FirstOrDefault ();
+				if (op == null)
+					return -1;
+				return ((UndoOperation)op).Args.Offset;
+			}
+		}
+
 		public bool CanUndo {
 			get {
 				return this.undoStack.Count > 0 || currentAtomicOperation != null;

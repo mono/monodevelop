@@ -1139,7 +1139,7 @@ namespace MonoDevelop.SourceEditor
 			}*/
 			if (MiscActions.CancelPreEditMode (TextEditor.GetTextEditorData ()))
 				return;
-			this.Document.Undo ();
+			MiscActions.Undo (this.TextEditor.GetTextEditorData ());
 		}
 		
 		public bool EnableRedo {
@@ -1169,7 +1169,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (MiscActions.CancelPreEditMode (TextEditor.GetTextEditorData ()))
 				return;
-			this.Document.Redo ();
+			MiscActions.Redo (this.TextEditor.GetTextEditorData ());
 		}
 		
 		public IDisposable OpenUndoGroup ()

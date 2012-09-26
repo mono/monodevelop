@@ -295,7 +295,10 @@ namespace Mono.TextEditor
 				return;
 			if (CancelPreEditMode (data))
 				return;
+			var offset = data.Document.UndoBeginOffset;
 			data.Document.Undo ();
+			if (offset >= 0)
+				data.ScrollTo (offset);
 		}
 		
 		public static bool CancelPreEditMode (TextEditorData data)
@@ -314,7 +317,10 @@ namespace Mono.TextEditor
 				return;
 			if (CancelPreEditMode (data))
 				return;
+			var offset = data.Document.RedoBeginOffset;
 			data.Document.Redo ();
+			if (offset >= 0)
+				data.ScrollTo (offset);
 		}
 		
 		public static void MoveBlockUp (TextEditorData data)
