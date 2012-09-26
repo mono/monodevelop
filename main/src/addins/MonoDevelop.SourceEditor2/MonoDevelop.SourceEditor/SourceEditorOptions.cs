@@ -237,11 +237,6 @@ namespace MonoDevelop.SourceEditor
 			set { CompletionTextEditorExtension.EnableAutoCodeCompletion.Set (value); }
 		}
 		
-		public bool CompleteWithSpaceOrPunctuation {
-			get { return CompletionTextEditorExtension.CompleteWithSpaceOrPunctuation; }
-			set { CompletionTextEditorExtension.CompleteWithSpaceOrPunctuation.Set (value); }
-		}
-		
 		bool defaultRegionsFolding;
 		public bool DefaultRegionsFolding {
 			get {

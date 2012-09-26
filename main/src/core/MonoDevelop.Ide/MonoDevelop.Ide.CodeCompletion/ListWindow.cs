@@ -234,11 +234,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			get { return list; }
 		}
 
-		public bool CompleteWithSpaceOrPunctuation {
-			get;
-			set;
-		}
-		
 		/// <summary>
 		/// Gets or sets a value indicating that shift was pressed during enter.
 		/// </summary>
@@ -290,10 +285,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 					UpdateWordSelection ();
 					return KeyActions.Process;
 				}
-				if (CompleteWithSpaceOrPunctuation && keyChar == '.')
+				if (keyChar == '.')
 					list.AutoSelect = list.AutoCompleteEmptyMatch = true;
 				endOffset = CompletionWidget.CaretOffset - 1;
-				if (CompleteWithSpaceOrPunctuation && list.SelectionEnabled) {
+				if (list.SelectionEnabled) {
 					return KeyActions.Complete | KeyActions.Process | KeyActions.CloseWindow;
 				}
 				return KeyActions.CloseWindow | KeyActions.Process;
@@ -422,7 +417,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return KeyActions.CloseWindow | KeyActions.Process;
 
 			// special case end with punctuation like 'param:' -> don't input double punctuation, otherwise we would end up with 'param::'
-			if (char.IsPunctuation (keyChar) && CompleteWithSpaceOrPunctuation) {
+			if (char.IsPunctuation (keyChar)) {
 				foreach (var item in FilteredItems) {
 					if (DataProvider.GetText (item).EndsWith (keyChar.ToString ())) {
 						list.SelectedItem = item;

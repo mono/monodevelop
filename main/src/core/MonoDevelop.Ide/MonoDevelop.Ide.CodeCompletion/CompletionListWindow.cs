@@ -227,8 +227,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			CompletionWidget = completionWidget;
 			CompletionDataList = list;
 
-			CompleteWithSpaceOrPunctuation = PropertyService.Get ("CompleteWithSpaceOrPunctuation", true);
-			
 			CodeCompletionContext = completionContext;
 			mutableList = completionDataList as IMutableCompletionDataList;
 			List.PreviewCompletionString = completionDataList.CompletionSelectionMode == CompletionSelectionMode.OwnTextField;

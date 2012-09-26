@@ -11,7 +11,7 @@
     <widget-library name="../../../../build/bin/Mono.TextEditor.dll" />
     <widget-library name="../../../../build/AddIns/DisplayBindings/SourceEditor/MonoDevelop.SourceEditor2.dll" internal="true" />
   </import>
-  <widget class="Gtk.Bin" id="MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel" design-size="454 359">
+  <widget class="Gtk.Bin" id="MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel" design-size="454 364">
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
     <child>
@@ -108,20 +108,6 @@
                         <property name="AutoSize">False</property>
                         <property name="Expand">False</property>
                         <property name="Padding">6</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="Gtk.CheckButton" id="spaceOrPunctiuationCheckbutton">
-                        <property name="MemberName" />
-                        <property name="CanFocus">True</property>
-                        <property name="Label" translatable="yes">_Commit completion list selection with space or punctuation.</property>
-                        <property name="DrawIndicator">True</property>
-                        <property name="HasLabel">True</property>
-                        <property name="UseUnderline">True</property>
-                      </widget>
-                      <packing>
-                        <property name="Position">1</property>
-                        <property name="AutoSize">True</property>
                       </packing>
                     </child>
                   </widget>

@@ -47,7 +47,6 @@ namespace MonoDevelop.Ide.Gui.Content
 		public readonly static PropertyWrapper<bool> EnableCodeCompletion = PropertyService.Wrap ("EnableCodeCompletion", true);
 		public readonly static PropertyWrapper<bool> EnableParameterInsight = PropertyService.Wrap ("EnableParameterInsight", true);
 		public readonly static PropertyWrapper<bool> EnableAutoCodeCompletion = PropertyService.Wrap ("EnableAutoCodeCompletion", true);
-		public readonly static PropertyWrapper<bool> CompleteWithSpaceOrPunctuation = PropertyService.Wrap ("CompleteWithSpaceOrPunctuation", true);
 //		public readonly static PropertyWrapper<bool> HideObsoleteItems = PropertyService.Wrap ("HideObsoleteItems", false);
 		#endregion
 
