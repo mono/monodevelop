@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace MonoDevelop.Components
@@ -51,6 +52,88 @@ namespace MonoDevelop.Components
 		}
 	}
 
+	class Animation
+	{
+		class Info
+		{
+			public Easing Easing { get; set; }
+			public uint Rate { get; set; }
+			public uint Length { get; set; }
+			public Action<float> callback;
+			public Tweener tweener;
+		}
+
+		static Dictionary<string, Info> animations;
+
+		static Animation ()
+		{
+			animations = new Dictionary<string, Info> ();
+		}
+
+		public static void Animate<T> (string name = "unknown", uint rate = 16, uint length = 250, Easing easing = null, Func<float, T> transform = null, Action<T> callback = null) 
+		{
+			if (transform == null)
+				throw new ArgumentNullException ("transform");
+			if (callback == null)
+				throw new ArgumentNullException ("callback");
+			RemoveHandle (name);
+
+			Action<float> step = f => callback (transform(f));
+
+			var info = new Info {
+				Rate = rate,
+				Length = length,
+				Easing = easing ?? new LinearEasing ()
+			};
+
+			Tweener tweener = new Tweener (info.Length, info.Rate);
+			tweener.Easing = info.Easing;
+			tweener.Handle = name;
+			tweener.ValueUpdated += HandleTweenerUpdated;
+			tweener.Finished += HandleTweenerFinished;
+
+			info.tweener = tweener;
+			info.callback = step;
+
+			animations[name] = info;
+			tweener.Start ();
+		}
+
+		public static bool RemoveHandle (string handle)
+		{
+			if (!animations.ContainsKey (handle))
+				return false;
+
+			Info info = animations[handle];
+			info.tweener.ValueUpdated -= HandleTweenerUpdated;
+			info.tweener.Finished -= HandleTweenerFinished;
+			info.tweener.Stop ();
+
+			animations.Remove (handle);
+			return true;
+		}
+
+		static void HandleTweenerUpdated (object o, EventArgs args)
+		{
+			Tweener tweener = o as Tweener;
+			Info info = animations[tweener.Handle];
+
+			info.callback (tweener.Value);
+		}
+
+		static void HandleTweenerFinished (object o, EventArgs args)
+		{
+			Tweener tweener = o as Tweener;
+			Info info = animations[tweener.Handle];
+
+			info.callback (tweener.Value);
+
+			animations.Remove (tweener.Handle);
+			tweener.ValueUpdated -= HandleTweenerUpdated;
+			tweener.Finished -= HandleTweenerFinished;
+		}
+	}
+
 	class Tweener
 	{
 		public uint Length { get; private set; }
@@ -58,6 +141,7 @@ namespace MonoDevelop.Components
 		public float Value { get; private set; }
 		public Easing Easing { get; set; }
 		public bool Loop { get; set; }
+		public string Handle { get; set; }
 
 		public bool IsRunning {
 			get { return runningTime.IsRunning; }

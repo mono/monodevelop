@@ -88,6 +88,8 @@ namespace MonoDevelop.Components.MainToolbar
 		double progressFraction;
 		bool showingProgress;
 
+		float errorAnimProgress;
+
 		IDisposable progressFadeAnimation;
 		double progressDisplayAlpha;
 
@@ -223,6 +225,14 @@ namespace MonoDevelop.Components.MainToolbar
 			base.OnSizeAllocated (allocation);
 		}
 
+		void TriggerErrorAnimation ()
+		{
+			Animation.Animate (name: "statusAreaError",
+							   length: 700,
+			                   transform: x => x, 
+			                   callback: val => { errorAnimProgress = val; QueueDraw (); });
+		}
+
 		void UpdateSeparators ()
 		{
 			statusIconSeparator.Visible = statusIconBox.Visible && buildResultWidget.Visible;
@@ -325,7 +335,7 @@ namespace MonoDevelop.Components.MainToolbar
 				context.LineWidth = 1;
 				context.Color = Styles.StatusBarShadowColor1;
 				context.Stroke ();
-				
+
 				CairoExtensions.RoundedRectangle (context, Allocation.X + 0.5, Allocation.Y + 2.5, Allocation.Width - 1, Allocation.Height - 1, 3);
 				context.LineWidth = 1;
 				context.Color = Styles.StatusBarShadowColor2;
@@ -337,9 +347,16 @@ namespace MonoDevelop.Components.MainToolbar
 					lg.AddColorStop (0.5, Styles.StatusBarFill2Color);
 					lg.AddColorStop (0.5, Styles.StatusBarFill3Color);
 					lg.AddColorStop (1, Styles.StatusBarFill4Color);
+
 					context.Pattern = lg;
+					context.FillPreserve ();
 				}
-				context.Fill ();
+
+				if (errorAnimProgress > 0.001 && errorAnimProgress < .999) {
+					DrawErrorAnimation (context);
+				} else {
+					context.NewPath ();
+				}
 
 				CairoExtensions.RoundedRectangle (context, Allocation.X + 1.5, Allocation.Y + 1.5, Allocation.Width - 3, Allocation.Height - 3, 3);
 				context.LineWidth = 1;
@@ -421,6 +438,30 @@ namespace MonoDevelop.Components.MainToolbar
 					context.ResetClip ();
 			}
 			return base.OnExposeEvent (evnt);
+		}
+
+		void DrawErrorAnimation (Cairo.Context context)
+		{
+			float opacity;
+			int progress;
+
+			if (errorAnimProgress < .5f) {
+				progress = (int) (errorAnimProgress * Allocation.Width * 2.4);
+				opacity = 1.0f;
+			} else {
+				progress = (int) (errorAnimProgress * Allocation.Width * 2.4);
+				opacity = 1.0f - (errorAnimProgress - .5f) * 2;
+			}
+
+			using (var lg = new LinearGradient (Allocation.X - 2000 + progress, 0, Allocation.X + progress, 0)) {
+				lg.AddColorStop (0.00, Styles.WithAlpha (Styles.StatusBarErrorColor, 0.2 * opacity));
+				lg.AddColorStop (0.85, Styles.WithAlpha (Styles.StatusBarErrorColor, 0.2 * opacity));
+				lg.AddColorStop (0.98, Styles.WithAlpha (Styles.StatusBarErrorColor, 1.0 * opacity));
+				lg.AddColorStop (1.00, Styles.WithAlpha (Styles.StatusBarErrorColor, 0.0 * opacity));
+
+				context.Pattern = lg;
+				context.Fill ();
+			}
 		}
 
 		void DrawProgressBar (Cairo.Context context, double progress, Gdk.Rectangle bounding)
@@ -716,6 +757,9 @@ namespace MonoDevelop.Components.MainToolbar
 		void ShowMessageInner (IconId image, string message, bool isMarkup)
 		{
 			DispatchService.AssertGuiThread ();
+
+			if (image == StockIcons.StatusError)
+				TriggerErrorAnimation ();
 
 			LoadText (message, isMarkup);
 			LoadPixbuf (image);

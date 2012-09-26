@@ -90,10 +90,14 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly Cairo.Color WidgetBorderColor = CairoExtensions.ParseColor ("8c8c8c");
 
 		public static readonly Cairo.Color StatusBarBorderColor = CairoExtensions.ParseColor ("919191");
+
 		public static readonly Cairo.Color StatusBarFill1Color = CairoExtensions.ParseColor ("f5fafc");
 		public static readonly Cairo.Color StatusBarFill2Color = CairoExtensions.ParseColor ("e9f1f3");
 		public static readonly Cairo.Color StatusBarFill3Color = CairoExtensions.ParseColor ("d8e7ea");
 		public static readonly Cairo.Color StatusBarFill4Color = CairoExtensions.ParseColor ("d1e3e7");
+
+		public static readonly Cairo.Color StatusBarErrorColor = CairoExtensions.ParseColor ("FF6363");
+
 		public static readonly Cairo.Color StatusBarInnerColor = new Cairo.Color (0,0,0, 0.08);
 		public static readonly Cairo.Color StatusBarShadowColor1 = new Cairo.Color (1,1,1, 0.2);
 		public static readonly Cairo.Color StatusBarShadowColor2 = new Cairo.Color (1,1,1, 0.1);
