@@ -317,6 +317,9 @@
     <EmbeddedResource Include="SyntaxModes\RazorSyntaxMode.xml">
       <LogicalName>RazorSyntaxMode.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="SyntaxModes\FSharpSyntaxMode.xml">
+      <LogicalName>FSharpSyntaxMode.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
