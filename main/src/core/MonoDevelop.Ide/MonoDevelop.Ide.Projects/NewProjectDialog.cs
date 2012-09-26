@@ -158,8 +158,10 @@ namespace MonoDevelop.Ide.Projects {
 			string[] cats = category.Split ('/');
 			
 			TreeIter iter;
-			if (!catStore.GetIterFirst (out iter))
+			if (!catStore.GetIterFirst (out iter)) {
+				result = TreeIter.Zero;
 				return false;
+			}
 			
 			TreeIter nextIter = iter;
 			for (int i = 0; i < cats.Length; i++) {
