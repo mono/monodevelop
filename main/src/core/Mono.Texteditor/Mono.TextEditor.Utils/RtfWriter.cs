@@ -77,7 +77,17 @@ namespace Mono.TextEditor.Utils
 						rtfText.Append (' ');
 						appendSpace = false;
 					}
-					rtfText.Append (ch);
+
+					int unicodeCh = (int)ch;
+					if (0x7F < unicodeCh && unicodeCh <= 0xFF) {
+						rtfText.Append(@"\u" + unicodeCh);
+					} else if (0xFF < unicodeCh && unicodeCh <= 0x8000) {
+						rtfText.Append(@"\uc1\u" + unicodeCh + "*");
+					} else if (0x8000 < unicodeCh && unicodeCh <= 0xFFFF) {
+						rtfText.Append(@"\uc1\u" + (unicodeCh - 0x10000) + "*");
+					} else {
+						rtfText.Append (ch);
+					}
 					break;
 				}
 			}
@@ -155,6 +165,8 @@ namespace Mono.TextEditor.Utils
 			rtf.Append (@"\cf1");
 			rtf.Append (rtfText.ToString ());
 			rtf.Append("}");
+			Console.WriteLine ("----");
+			Console.WriteLine (rtf);
 			return rtf.ToString ();
 		}
 	}

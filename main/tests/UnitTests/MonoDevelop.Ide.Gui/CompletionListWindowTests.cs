@@ -211,7 +211,6 @@ namespace MonoDevelop.Ide.Gui
 				CompletionWidget = new TestCompletionWidget (),
 				AutoSelect = settings.AutoSelect,
 				CodeCompletionContext = new CodeCompletionContext (),
-				CompleteWithSpaceOrPunctuation = settings.CompleteWithSpaceOrPunctuation,
 				AutoCompleteEmptyMatch = settings.AutoCompleteEmptyMatch,
 				DefaultCompletionString = settings.DefaultCompletionString
 			};
@@ -246,18 +245,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			Assert.AreEqual ("AbAbAb", output);
 		}
-		
-		[Test()]
-		public void TestPunctuationCompletionShouldNotComplete ()
-		{
-			string output = RunSimulation ("", "aaa ", true, false, 
-				"AbAb",
-				"AbAbAb", 
-				"AbAbAbAb");
-			
-			Assert.AreEqual (null, output);
-		}
-		
+
 		[Test()]
 		public void TestTabCompletion ()
 		{
