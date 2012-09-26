@@ -454,9 +454,9 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 
 			using (var lg = new LinearGradient (Allocation.X - 2000 + progress, 0, Allocation.X + progress, 0)) {
-				lg.AddColorStop (0.00, Styles.WithAlpha (Styles.StatusBarErrorColor, 0.2 * opacity));
-				lg.AddColorStop (0.85, Styles.WithAlpha (Styles.StatusBarErrorColor, 0.2 * opacity));
-				lg.AddColorStop (0.98, Styles.WithAlpha (Styles.StatusBarErrorColor, 1.0 * opacity));
+				lg.AddColorStop (0.00, Styles.WithAlpha (Styles.StatusBarErrorColor, 0.15 * opacity));
+				lg.AddColorStop (0.85, Styles.WithAlpha (Styles.StatusBarErrorColor, 0.15 * opacity));
+				lg.AddColorStop (0.98, Styles.WithAlpha (Styles.StatusBarErrorColor, 0.3 * opacity));
 				lg.AddColorStop (1.00, Styles.WithAlpha (Styles.StatusBarErrorColor, 0.0 * opacity));
 
 				context.Pattern = lg;
