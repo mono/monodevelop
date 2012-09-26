@@ -340,52 +340,71 @@ namespace MonoDevelop.Components.MainToolbar
 			popup.ShowPopup (matchEntry, PopupPosition.TopRight);
 		}
 
-		void HandleRuntimeChanged (object sender, EventArgs e)
+		string GetActiveConfiguration ()
+		{
+			int active = configurationCombo.Active;
+			if (active < 0)
+				return null;
+
+			TreeIter iter;
+			if (!configurationStore.GetIterFromString (out iter, active.ToString ()))
+				return null;
+			return (string)configurationStore.GetValue (iter, 1);
+		}
+
+		string GetActivePlatform ()
 		{
 			int active = runtimeCombo.Active;
-			if (active < 0) {
-				return;
-			}
+			if (active < 0)
+				return null;
 
 			TreeIter iter;
 			if (!runtimeStore.GetIterFromString (out iter, active.ToString ()))
-				return;
-			var runtime = (string)runtimeStore.GetValue (iter, 1);
-			string activeName;
-			string platform;
-			ItemConfiguration.ParseConfigurationId (IdeApp.Workspace.ActiveConfigurationId, out activeName, out platform);
-			
-			foreach (var conf in IdeApp.Workspace.GetConfigurations ()) {
-				string name;
-				ItemConfiguration.ParseConfigurationId (conf, out name, out platform);
-				if (activeName == name && platform == runtime) {
-					IdeApp.Workspace.ActiveConfigurationId = conf;
-					SelectActiveConfiguration ();
-					break;
-				}
-			}
+				return null;
+			return (string)runtimeStore.GetValue (iter, 1);
+		}
+
+		void HandleRuntimeChanged (object sender, EventArgs e)
+		{
+			NotifyConfigurationChange ();
 		}
 
 		void HandleConfigurationChanged (object sender, EventArgs e)
 		{
-			int active = configurationCombo.Active;
-			if (active < 0) {
-				return;
-			}
+			NotifyConfigurationChange ();
+		}
 
-			TreeIter iter;
-			if (!configurationStore.GetIterFromString (out iter, active.ToString ()))
+		void NotifyConfigurationChange ()
+		{
+			var currentConfig = GetActiveConfiguration ();
+			if (currentConfig == null)
 				return;
-			var config = (string)configurationStore.GetValue (iter, 1);
+			var currentPlatform = GetActivePlatform ();
+			if (currentPlatform == null)
+				return;
+
+			string newConfig = null;
+
+			// It may happen that the selected configuration/platform combination doesn't exist, for example if we
+			// change the configuration, and the current platform doesn't exist for the new configuration.
+			// In that case, we find the best match
+
 			foreach (var conf in IdeApp.Workspace.GetConfigurations ()) {
 				string name;
 				string platform;
 				ItemConfiguration.ParseConfigurationId (conf, out name, out platform);
-				if (name == config) {
-					IdeApp.Workspace.ActiveConfigurationId = conf;
-					break;
+				if (name == currentConfig) {
+					if (platform == currentPlatform) {
+						newConfig = conf;
+						break;
+					} else if (newConfig == null) {
+						// If there isn't a configuration with the same platform, set any existing configuraiton, even with another platform
+						newConfig = conf;
+					}
 				}
 			}
+			if (newConfig != null)
+				IdeApp.Workspace.ActiveConfigurationId = newConfig;
 		}
 
 		void SelectActiveConfiguration ()
