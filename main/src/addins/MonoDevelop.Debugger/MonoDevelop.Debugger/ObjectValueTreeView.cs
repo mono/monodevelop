@@ -1052,7 +1052,9 @@ namespace MonoDevelop.Debugger
 				
 				// Get the expression and value at the cursor
 				GetCursor (out path, out column);
-				Model.GetIter (out iter, path);
+				if (!Model.GetIter (out iter, path))
+					break;
+
 				val = (ObjectValue)store.GetValue (iter, ObjectCol);
 				expression = GetFullExpression (iter);
 				
