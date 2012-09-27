@@ -285,6 +285,8 @@ namespace MonoDevelop.CSharp
 
 			var typeName = GetTypeReferenceString (t, false);
 			result.Append (Highlight (typeName.ToString (), "keyword.type"));
+			if (t.Kind == TypeKind.Array)
+				return result.ToString ();
 
 			bool first = true;
 			int maxLength = GetMarkupLength (result.ToString ());
@@ -1127,28 +1129,31 @@ namespace MonoDevelop.CSharp
 			);
 		}
 
-		public string GetArrayIndexerMarkup (ArrayType property)
+		public string GetArrayIndexerMarkup (ArrayType arrayType)
 		{
-			if (property == null)
-				throw new ArgumentNullException ("property");
+			if (arrayType == null)
+				throw new ArgumentNullException ("arrayType");
 			var result = new StringBuilder ();
-			result.Append (GetTypeReferenceString (property.ElementType));
+			result.Append (GetTypeReferenceString (arrayType.ElementType));
 			if (BreakLineAfterReturnType) {
 				result.AppendLine ();
 			} else {
 				result.Append (" ");
 			}
 			result.Append (Highlight ("this", "keyword.access"));
-
 			result.Append ("[");
-			var doHighightParameter = 0 == HighlightParameter;
-			if (doHighightParameter)
-				result.Append("<u>");
+			for (int i = 0; i < arrayType.Dimensions; i++) {
+				if (i > 0)
+					result.Append (", ");
+				var doHighightParameter = i == HighlightParameter;
+				if (doHighightParameter)
+					result.Append ("<u>");
 
-			result.Append (Highlight ("int ", "keyword.type"));
-			result.Append ("index");
-			if (doHighightParameter)
-				result.Append("</u>");
+				result.Append (Highlight ("int ", "keyword.type"));
+				result.Append (arrayType.Dimensions == 1 ? "index" : "i" + (i + 1));
+				if (doHighightParameter)
+					result.Append ("</u>");
+			}
 			result.Append ("]");
 
 			result.Append (" {");
