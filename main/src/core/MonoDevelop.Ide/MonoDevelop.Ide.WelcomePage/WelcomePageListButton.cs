@@ -95,13 +95,18 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		protected override bool OnButtonReleaseEvent (Gdk.EventButton evnt)
 		{
-			if (mouseOverStar && AllowPinning) {
-				pinned = !pinned;
-				QueueDraw ();
-				if (PinClicked != null)
-					PinClicked (this, EventArgs.Empty);
-			} else
-				WelcomePageSection.DispatchLink (actionUrl);
+			if (evnt.Button == 1) {
+				if (mouseOverStar && AllowPinning) {
+					pinned = !pinned;
+					QueueDraw ();
+					if (PinClicked != null)
+						PinClicked (this, EventArgs.Empty);
+					return true;
+				} else if (mouseOver) {
+					WelcomePageSection.DispatchLink (actionUrl);
+					return true;
+				}
+			}
 			return base.OnButtonReleaseEvent (evnt);
 		}
 

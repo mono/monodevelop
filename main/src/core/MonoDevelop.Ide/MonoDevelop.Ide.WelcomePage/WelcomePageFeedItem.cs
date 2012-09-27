@@ -279,7 +279,10 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		protected override bool OnButtonReleaseEvent (Gdk.EventButton evnt)
 		{
-			WelcomePageSection.DispatchLink (LinkUrl);
+			if (evnt.Button == 1 && new Gdk.Rectangle (0, 0, Allocation.Width, Allocation.Height).Contains ((int)evnt.X, (int)evnt.Y)) {
+				WelcomePageSection.DispatchLink (LinkUrl);
+				return true;
+			}
 			return base.OnButtonReleaseEvent (evnt);
 		}
 
