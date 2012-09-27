@@ -104,6 +104,8 @@ namespace MonoDevelop.CSharp
 		
 		static void AppendEscaped (StringBuilder result, string text)
 		{
+			if (text == null)
+				return;
 			foreach (char ch in text) {
 				switch (ch) {
 				case '<':
@@ -153,7 +155,8 @@ namespace MonoDevelop.CSharp
 			} else if (e is OperatorDeclaration) {
 				var op = e as OperatorDeclaration;
 				sb.Append ("operator");
-				AppendEscaped (sb, op.OperatorTypeToken.GetText ());
+				if (!op.OperatorTypeToken.IsNull)
+					AppendEscaped (sb, op.OperatorTypeToken.GetText ());
 				AppendParameter (sb, op.Parameters);
 			} else if (e is MethodDeclaration) {
 				var method = e as MethodDeclaration;
