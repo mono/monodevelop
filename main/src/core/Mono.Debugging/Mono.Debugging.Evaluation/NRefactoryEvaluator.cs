@@ -787,7 +787,7 @@ namespace Mono.Debugging.Evaluation
 			object target, targetType;
 			object[] args;
 
-			if (ctx.Adapter.HasMethod (ctx, v1type, method, argTypes, BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy)) {
+			if (ctx.Adapter.HasMethod (ctx, v1type, method, argTypes, BindingFlags.Instance | BindingFlags.Public)) {
 				args = new object[] { v2 };
 				targetType = v1type;
 				negate = false;
@@ -800,7 +800,7 @@ namespace Mono.Debugging.Evaluation
 				target = null;
 			}
 
-			object result = ctx.Adapter.RuntimeInvoke (ctx, targetType, null, method, argTypes, args);
+			object result = ctx.Adapter.RuntimeInvoke (ctx, targetType, target, method, argTypes, args);
 			var literal = LiteralValueReference.CreateTargetObjectLiteral (ctx, "result", result);
 			bool retval = (bool) literal.ObjectValue;
 
