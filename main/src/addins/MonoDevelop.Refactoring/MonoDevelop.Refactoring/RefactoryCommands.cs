@@ -200,6 +200,11 @@ namespace MonoDevelop.Refactoring
 			}
 		}
 
+		IEnumerable<MonoDevelop.CodeActions.CodeAction> validActions;
+		MonoDevelop.Ide.TypeSystem.ParsedDocument lastDocument;
+
+		DocumentLocation lastLocation;
+
 		protected override void Update (CommandArrayInfo ainfo)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
@@ -213,7 +218,7 @@ namespace MonoDevelop.Refactoring
 			ResolveResult resolveResult;
 			object item = GetItem (doc, out resolveResult);
 			bool added = false;
-			
+
 			var options = new RefactoringOptions (doc) {
 				ResolveResult = resolveResult,
 				SelectedItem = item
@@ -252,7 +257,12 @@ namespace MonoDevelop.Refactoring
 
 			var loc = doc.Editor.Caret.Location;
 			bool first = true;
-			foreach (var fix_ in RefactoringService.GetValidActions (doc, loc).Result) {
+			if (lastDocument != doc.ParsedDocument || loc != lastLocation) {
+				validActions = RefactoringService.GetValidActions (doc, loc).Result;
+				lastLocation = loc;
+				lastDocument = doc.ParsedDocument;
+			}
+			foreach (var fix_ in validActions) {
 				var fix = fix_;
 				if (first) {
 					first = false;
