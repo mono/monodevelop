@@ -178,6 +178,9 @@ namespace MonoDevelop.Projects
 			}
 			internal set {
 				parentSolution = value;
+				if (parentFolder == null || parentFolder.ParentSolution == null) {
+					OnBoundToSolution ();
+				}
 			}
 		}
 
@@ -366,6 +369,9 @@ namespace MonoDevelop.Projects
 				parentFolder = value;
 				if (internalChildren != null)
 					internalChildren.ParentFolder = value;
+				if (parentSolution == null) {
+					OnBoundToSolution ();
+				}
 			}
 		}
 
@@ -1012,6 +1018,10 @@ namespace MonoDevelop.Projects
 		internal protected virtual bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration)
 		{
 			return false;
+		}
+
+		protected virtual void OnBoundToSolution ()
+		{
 		}
 		
 		/// <summary>
