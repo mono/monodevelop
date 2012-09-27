@@ -629,9 +629,6 @@ namespace MonoDevelop.CSharp.Completion
 				var sorted = new List<ICompletionData> (overloads.Values);
 				sorted.Add (this);
 				sorted.Sort (new OverloadSorter ());
-				Console.WriteLine ("------");
-				foreach (var s in sorted)
-					Console.WriteLine (s);
 				return sorted;
 			}
 		}
