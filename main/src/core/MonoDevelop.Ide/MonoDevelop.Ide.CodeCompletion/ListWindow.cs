@@ -252,8 +252,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (HideWhenWordDeleted && StartOffset >= CompletionWidget.CaretOffset)
 				return KeyActions.CloseWindow | KeyActions.Process;
 			switch (key) {
-			case Gdk.Key.Escape:
-				return KeyActions.CloseWindow | KeyActions.Process;
 			case Gdk.Key.BackSpace:
 				ResetSizes ();
 				UpdateWordSelection ();
@@ -395,10 +393,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			case Gdk.Key.Num_Lock:
 			case Gdk.Key.Scroll_Lock:
 				return KeyActions.Ignore;
-
-
-			case Gdk.Key.Escape:
-				return KeyActions.CloseWindow | KeyActions.Ignore;
 
 			case Gdk.Key.Control_L:
 			case Gdk.Key.Control_R:

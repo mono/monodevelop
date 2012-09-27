@@ -148,7 +148,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public bool PreProcessKeyEvent (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
 			if (key == Gdk.Key.Escape) {
-				return false;
+				CompletionWindowManager.HideWindow ();
+				return true;
 			}
 
 			KeyActions ka = KeyActions.None;
