@@ -89,6 +89,7 @@ namespace MonoDevelop.Components.MainToolbar
 		bool showingProgress;
 
 		float errorAnimProgress;
+		bool errorAnimPending;
 
 		IDisposable progressFadeAnimation;
 		double progressDisplayAlpha;
@@ -215,6 +216,15 @@ namespace MonoDevelop.Components.MainToolbar
 				QueueDraw ();
 			};
 			tracker.MouseMoved += (sender, e) => QueueDraw ();
+
+			IdeApp.CommandService.ApplicationFocusIn += delegate {
+				// If there was an error while the application didn't have the focus,
+				// trigger the error animation again when it gains the focus
+				if (errorAnimPending) {
+					errorAnimPending = false;
+					TriggerErrorAnimation ();
+				}
+			};
 		}
 
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
@@ -758,8 +768,13 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			DispatchService.AssertGuiThread ();
 
-			if (image == StockIcons.StatusError)
+			if (image == StockIcons.StatusError) {
+				// If the application doesn't have the focus, trigger the animation
+				// again when it gains the focus
+				if (!IdeApp.CommandService.ApplicationHasFocus)
+					errorAnimPending = true;
 				TriggerErrorAnimation ();
+			}
 
 			LoadText (message, isMarkup);
 			LoadPixbuf (image);

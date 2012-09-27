@@ -1800,6 +1800,10 @@ namespace MonoDevelop.Components.Commands
 			if (CommandTargetScanFinished != null)
 				CommandTargetScanFinished (this, EventArgs.Empty);
 		}
+
+		public bool ApplicationHasFocus {
+			get { return appHasFocus; }
+		}
 		
 		/// <summary>
 		/// Raised when there is an exception while executing or updating the status of a command
