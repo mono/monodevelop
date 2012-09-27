@@ -78,7 +78,7 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			if (overload >= Count)
 				return -1;
-			return 1;
+			return arrayType.Dimensions;
 		}
 		
 		public override bool AllowParameterList (int overload)
