@@ -97,9 +97,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 		void OnRemoveReference (object sender, ProjectReferenceEventArgs e)
 		{
-			ITreeBuilder tb = Context.GetTreeBuilder (e.Project);
-			if (tb != null) {
-				if (tb.FindChild (e.ProjectReference, true))
+			var p = e.Project as DotNetProject;
+			if (p != null) {
+				ITreeBuilder tb = Context.GetTreeBuilder (p.References);
+				if (tb != null && tb.FindChild (e.ProjectReference, true))
 					tb.Remove ();
 			}
 		}
@@ -109,7 +110,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			DotNetProject p = e.Project as DotNetProject;
 			if (p != null) {
 				ITreeBuilder tb = Context.GetTreeBuilder (p.References);
-				if (tb != null) tb.AddChild (e.ProjectReference);
+				if (tb != null)
+					tb.AddChild (e.ProjectReference);
 			}
 		}
 	}
