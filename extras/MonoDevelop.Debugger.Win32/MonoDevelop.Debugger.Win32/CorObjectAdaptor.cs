@@ -86,6 +86,11 @@ namespace MonoDevelop.Debugger.Win32
 			return val == null || ((val.Val is CorReferenceValue) && ((CorReferenceValue) val.Val).IsNull);
 		}
 
+		public override bool IsValueType (object type)
+		{
+			return ((CorType)type).Type == CorElementType.ELEMENT_TYPE_VALUETYPE;
+		}
+
 		public override bool IsClass (object type)
 		{
 			return ((CorType)type).Class != null;

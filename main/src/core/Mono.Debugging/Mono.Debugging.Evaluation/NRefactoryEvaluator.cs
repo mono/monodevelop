@@ -750,20 +750,61 @@ namespace Mono.Debugging.Evaluation
 			}
 		}
 
-		bool CheckEquality (object v1, object v2)
+		bool CheckReferenceEquality (object v1, object v2)
 		{
-			object targetType = ctx.Adapter.GetValueType (ctx, v1);
+			if (v1 == null && v2 == null)
+				return true;
+			
+			if (v1 == null || v2 == null)
+				return false;
+
+			object objectType = ctx.Adapter.GetType (ctx, "System.Object");
 			object[] argTypes = new object[] {
-				ctx.Adapter.GetType (ctx, "System.Object")
+				objectType, objectType
 			};
 			object[] args = new object[] {
-				v2
+				v1, v2
 			};
-
-			object result = ctx.Adapter.RuntimeInvoke (ctx, targetType, v1, "Equals", argTypes, args);
+			
+			object result = ctx.Adapter.RuntimeInvoke (ctx, objectType, null, "ReferenceEquals", argTypes, args);
 			var literal = LiteralValueReference.CreateTargetObjectLiteral (ctx, "result", result);
-
+			
 			return (bool) literal.ObjectValue;
+		}
+
+		bool CheckEquality (bool negate, object v1, object v2)
+		{
+			if (v1 == null && v2 == null)
+				return true;
+
+			if (v1 == null || v2 == null)
+				return false;
+
+			string method = negate ? "op_Inequality" : "op_Equality";
+			object v1type = ctx.Adapter.GetValueType (ctx, v1);
+			object v2type = ctx.Adapter.GetValueType (ctx, v2);
+			object[] argTypes = new object[] { v2type };
+			object target, targetType;
+			object[] args;
+
+			if (ctx.Adapter.HasMethod (ctx, v1type, method, argTypes, BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy)) {
+				args = new object[] { v2 };
+				targetType = v1type;
+				negate = false;
+				target = v1;
+			} else {
+				method = ctx.Adapter.IsValueType (v1type) ? "Equals" : "ReferenceEquals";
+				targetType = ctx.Adapter.GetType (ctx, "System.Object");
+				argTypes = new object[] { targetType, targetType };
+				args = new object[] { v1, v2 };
+				target = null;
+			}
+
+			object result = ctx.Adapter.RuntimeInvoke (ctx, targetType, null, method, argTypes, args);
+			var literal = LiteralValueReference.CreateTargetObjectLiteral (ctx, "result", result);
+			bool retval = (bool) literal.ObjectValue;
+
+			return negate ? !retval : retval;
 		}
 		
 		object EvaluateBinaryOperatorExpression (ValueReference left, ICSharpCode.OldNRefactory.Ast.Expression rightExp, BinaryOperatorType oper, object data)
@@ -819,17 +860,13 @@ namespace Mono.Debugging.Evaluation
 			if ((val1 == null || !ctx.Adapter.IsPrimitive (ctx, targetVal1)) && (val2 == null || !ctx.Adapter.IsPrimitive (ctx, targetVal2))) {
 				switch (oper) {
 				case BinaryOperatorType.Equality:
-					if (val1 == null || val2 == null)
-						return LiteralValueReference.CreateObjectLiteral (ctx, name, val1 == val2);
-					return LiteralValueReference.CreateObjectLiteral (ctx, name, CheckEquality (targetVal1, targetVal2));
+					return LiteralValueReference.CreateObjectLiteral (ctx, name, CheckEquality (false, targetVal1, targetVal2));
 				case BinaryOperatorType.InEquality:
-					if (val1 == null || val2 == null)
-						return LiteralValueReference.CreateObjectLiteral (ctx, name, val1 != val2);
-					return LiteralValueReference.CreateObjectLiteral (ctx, name, !CheckEquality (targetVal1, targetVal2));
+					return LiteralValueReference.CreateObjectLiteral (ctx, name, CheckEquality (true, targetVal1, targetVal2));
 				case BinaryOperatorType.ReferenceEquality:
-					return LiteralValueReference.CreateObjectLiteral (ctx, name, val1 == val2);
+					return LiteralValueReference.CreateObjectLiteral (ctx, name, CheckReferenceEquality (targetVal1, targetVal2));
 				case BinaryOperatorType.ReferenceInequality:
-					return LiteralValueReference.CreateObjectLiteral (ctx, name, val1 != val2);
+					return LiteralValueReference.CreateObjectLiteral (ctx, name, !CheckReferenceEquality (targetVal1, targetVal2));
 				case BinaryOperatorType.Concat:
 					throw CreateParseError ("Invalid binary operator.");
 				}

@@ -272,6 +272,7 @@ namespace Mono.Debugging.Evaluation
 		public abstract bool IsString (EvaluationContext ctx, object val);
 		public abstract bool IsArray (EvaluationContext ctx, object val);
 		public abstract bool IsEnum (EvaluationContext ctx, object val);
+		public abstract bool IsValueType (object type);
 		public abstract bool IsClass (object type);
 		public abstract object TryCast (EvaluationContext ctx, object val, object type);
 

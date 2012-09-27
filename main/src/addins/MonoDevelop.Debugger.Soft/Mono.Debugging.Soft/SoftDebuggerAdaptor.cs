@@ -1024,6 +1024,12 @@ namespace Mono.Debugging.Soft
 			return val is ArrayMirror;
 		}
 
+		public override bool IsValueType (object type)
+		{
+			TypeMirror t = type as TypeMirror;
+			return t != null && t.IsValueType;
+		}
+
 		public override bool IsClass (object type)
 		{
 			TypeMirror t = type as TypeMirror;
