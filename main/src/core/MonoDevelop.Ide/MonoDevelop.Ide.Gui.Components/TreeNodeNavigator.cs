@@ -273,7 +273,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				if (!citPath.Up ())
 					return false;
 
-				if (citPath == pitPath)
+				if (citPath.Equals(pitPath))
 					return true;
 
 				return recursive && pitPath.IsAncestor (citPath);
