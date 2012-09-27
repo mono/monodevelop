@@ -73,7 +73,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				throw new ArgumentNullException ("dnp");
 			this.dnp = dnp;
 			this.infoService = infoService;
-			AppleSdkSettings.Changed += DisableSyncing;
+			AppleSdkSettings.Changed += AppleSdkSettingsChanged;
 		}
 
 		public bool ShouldOpenInXcode (FilePath fileName)
@@ -98,6 +98,13 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		bool SyncingEnabled {
 			get { return xcode != null; }
 		}
+
+		void AppleSdkSettingsChanged ()
+		{
+			lock (xcode_lock) {
+				DisableSyncing (true);
+			}
+		}
 		
 		void EnableSyncing (IProgressMonitor monitor)
 		{
@@ -114,11 +121,6 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			dnp.FileChangedInProject += FileChangedInProject;
 			dnp.NameChanged += ProjectNameChanged;
 			MonoDevelop.Ide.IdeApp.CommandService.ApplicationFocusIn += AppRegainedFocus;
-		}
-
-		void DisableSyncing ()
-		{
-			DisableSyncing (true);
 		}
 		
 		void DisableSyncing (bool closeProject)
@@ -809,10 +811,12 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		{
 			if (disposed)
 				return;
-			
+
+			AppleSdkSettings.Changed -= AppleSdkSettingsChanged;
+			lock (xcode_lock) {
+				DisableSyncing (true);
+			}
 			disposed = true;
-			DisableSyncing (true);
-			AppleSdkSettings.Changed -= DisableSyncing;
 		}
 	}
 	
