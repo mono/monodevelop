@@ -703,7 +703,11 @@ namespace MonoDevelop.Ide
 			try {
 				WorkspaceUserData data = item.UserProperties.GetValue<WorkspaceUserData> ("MonoDevelop.Ide.Workspace");
 				if (data != null) {
-					ActiveConfigurationId = data.ActiveConfiguration;
+					if (GetConfigurations ().Contains (data.ActiveConfiguration))
+						ActiveConfigurationId = data.ActiveConfiguration;
+					else
+						ActiveConfigurationId = GetBestDefaultConfiguration ();
+
 					if (string.IsNullOrEmpty (data.ActiveRuntime))
 						UseDefaultRuntime = true;
 					else {

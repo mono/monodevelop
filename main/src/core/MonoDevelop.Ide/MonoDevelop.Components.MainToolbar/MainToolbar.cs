@@ -380,8 +380,6 @@ namespace MonoDevelop.Components.MainToolbar
 			if (currentConfig == null)
 				return;
 			var currentPlatform = GetActivePlatform ();
-			if (currentPlatform == null)
-				return;
 
 			string newConfig = null;
 
