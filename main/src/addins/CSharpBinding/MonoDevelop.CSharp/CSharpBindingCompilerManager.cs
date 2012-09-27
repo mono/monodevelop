@@ -38,6 +38,7 @@ using MonoDevelop.Core.Assemblies;
 using MonoDevelop.CSharp.Project;
 using System.Threading;
 using MonoDevelop.Ide;
+using MonoDevelop.Core.ProgressMonitoring;
 
 
 namespace MonoDevelop.CSharp
@@ -338,7 +339,7 @@ namespace MonoDevelop.CSharp
 			ExecutionEnvironment envVars = runtime.GetToolsExecutionEnvironment (project.TargetFramework);
 			string cargs = "/noconfig @\"" + responseFileName + "\"";
 
-			int exitCode = DoCompilation (compilerName, cargs, workingDir, envVars, gacRoots, ref output, ref error);
+			int exitCode = DoCompilation (monitor, compilerName, cargs, workingDir, envVars, gacRoots, ref output, ref error);
 			
 			BuildResult result = ParseOutput (output, error);
 			if (result.CompilerOutput.Trim ().Length != 0)
@@ -420,10 +421,10 @@ namespace MonoDevelop.CSharp
 			return result;
 		}
 		
-		static int DoCompilation (string compilerName, string compilerArgs, string working_dir, ExecutionEnvironment envVars, List<string> gacRoots, ref string output, ref string error) 
+		static int DoCompilation (IProgressMonitor monitor, string compilerName, string compilerArgs, string working_dir, ExecutionEnvironment envVars, List<string> gacRoots, ref string output, ref string error)
 		{
-			output = Path.GetTempFileName();
-			error = Path.GetTempFileName();
+			output = Path.GetTempFileName ();
+			error = Path.GetTempFileName ();
 			
 			StreamWriter outwr = new StreamWriter (output);
 			StreamWriter errwr = new StreamWriter (error);
@@ -447,12 +448,14 @@ namespace MonoDevelop.CSharp
 			pinfo.UseShellExecute = false;
 			pinfo.RedirectStandardOutput = true;
 			pinfo.RedirectStandardError = true;
-			
+
 			MonoDevelop.Core.Execution.ProcessWrapper pw = Runtime.ProcessService.StartProcess (pinfo, outwr, errwr, null);
-			pw.WaitForOutput();
+			using (var mon = new AggregatedOperationMonitor (monitor, pw)) {
+				pw.WaitForOutput ();
+			}
 			int exitCode = pw.ExitCode;
-			outwr.Close();
-			errwr.Close();
+			outwr.Close ();
+			errwr.Close ();
 			pw.Dispose ();
 			return exitCode;
 		}

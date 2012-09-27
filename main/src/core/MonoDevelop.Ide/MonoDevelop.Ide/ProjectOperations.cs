@@ -1219,7 +1219,9 @@ namespace MonoDevelop.Ide
 					string errorString = GettextCatalog.GetPluralString("{0} error", "{0} errors", result.ErrorCount, result.ErrorCount);
 					string warningString = GettextCatalog.GetPluralString("{0} warning", "{0} warnings", result.WarningCount, result.WarningCount);
 
-					if (result.ErrorCount == 0 && result.WarningCount == 0 && lastResult.FailedBuildCount == 0) {
+					if (monitor.IsCancelRequested) {
+						monitor.ReportError (GettextCatalog.GetString ("Build canceled."), null);
+					} else if (result.ErrorCount == 0 && result.WarningCount == 0 && lastResult.FailedBuildCount == 0) {
 						monitor.ReportSuccess (GettextCatalog.GetString ("Build successful."));
 					} else if (result.ErrorCount == 0 && result.WarningCount > 0) {
 						monitor.ReportWarning(GettextCatalog.GetString("Build: ") + errorString + ", " + warningString);
