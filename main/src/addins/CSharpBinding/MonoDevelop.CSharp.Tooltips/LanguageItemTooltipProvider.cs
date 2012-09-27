@@ -188,6 +188,12 @@ namespace MonoDevelop.SourceEditor
 					sig.BreakLineAfterReturnType = false;
 					return sig.GetKeywordTooltip (data.Node);
 				}
+				if (data.Node is PrimitiveType && ((PrimitiveType)data.Node).KnownTypeCode == KnownTypeCode.Void) {
+					var resolver = (doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile).GetResolver (doc.Compilation, doc.Editor.Caret.Location);
+					var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
+					sig.BreakLineAfterReturnType = false;
+					return sig.GetKeywordTooltip ("void");
+				}
 
 				if (result is UnknownIdentifierResolveResult) {
 					return new TooltipInformation () {

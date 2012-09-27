@@ -981,6 +981,9 @@ namespace MonoDevelop.CSharp
 				result.AddCategory ("Form", Highlight ("volatile", "keyword.modifier") + " declaration");
 				result.SummaryMarkup = "The " + Highlight ("volatile", "keyword.modifier") + " keyword indicates that a field can be modified in the program by something such as the operating system, the hardware, or a concurrently executing thread.";
 				break;
+			case "void":
+				result.SignatureMarkup = Highlight ("void", "keyword.type") + keywordSign;
+				break;
 			case "while":
 				result.SignatureMarkup = Highlight ("while", "keyword.iteration") + keywordSign;
 				result.AddCategory ("Form", Highlight ("while", "keyword.iteration") + " (expression) statement");
