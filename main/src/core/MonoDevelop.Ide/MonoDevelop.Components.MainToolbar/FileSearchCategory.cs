@@ -52,7 +52,6 @@ namespace MonoDevelop.Components.MainToolbar
 
 		IEnumerable<ProjectFile> files {
 			get {
-				HashSet<ProjectFile> list = new HashSet<ProjectFile> ();
 				foreach (Document doc in IdeApp.Workbench.Documents) {
 					// We only want to check it here if it's not part
 					// of the open combine.  Otherwise, it will get

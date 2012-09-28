@@ -354,8 +354,6 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		static StatusBarContext menuDescriptionContext;
-		
 		public static void Run ()
 		{
 			// finally run the workbench window ...

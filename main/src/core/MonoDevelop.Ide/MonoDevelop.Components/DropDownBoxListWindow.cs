@@ -405,7 +405,6 @@ namespace MonoDevelop.Components
 			
 			void CalcVisibleRows ()
 			{
-				Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtWindow (GdkWindow));
 				int lvWidth, lvHeight;
 				this.GetSizeRequest (out lvWidth, out lvHeight);
 				if (layout == null)

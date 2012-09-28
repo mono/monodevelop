@@ -1755,7 +1755,6 @@ namespace MonoDevelop.Ide.Gui.Components
 		[CommandUpdateHandler (ViewCommands.TreeDisplayOptionList)]
 		protected void BuildTreeOptionsMenu (CommandArrayInfo info)
 		{
-			ITreeNavigator tnav = GetSelectedNode ();
 			foreach (TreePadOption op in options) {
 				CommandInfo ci = new CommandInfo (op.Label);
 				ci.Checked = globalOptions [op.Id];

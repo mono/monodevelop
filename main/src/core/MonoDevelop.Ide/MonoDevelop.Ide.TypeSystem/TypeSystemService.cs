@@ -2278,7 +2278,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				LoggingService.LogError ("Error while updating assembly " + context.FileName, e);
 			}
 		}
-		static object fileLock = new object ();
+
 		static void CheckModifiedFiles ()
 		{
 			Queue<KeyValuePair<Project, ProjectContentWrapper>> list;

@@ -190,9 +190,9 @@ namespace MonoDevelop.Ide
 			
 			originalFrame.HideAll ();
 
-			StatusBarContext completionStatus = null;
-			
+
 //			// todo: Move this to the CompletionWindowManager when it's possible.
+//			StatusBarContext completionStatus = null;
 //			CompletionWindowManager.WindowShown += delegate {
 //				CompletionListWindow wnd = CompletionWindowManager.Wnd;
 //				if (wnd != null && wnd.List != null && wnd.List.CategoryCount > 1) {
@@ -655,7 +655,6 @@ namespace MonoDevelop.Ide
 		{
 			bool ret = base.OnExposeEvent (evnt);
 			if (HasResizeGrip) {
-				DefaultWorkbench wb = (DefaultWorkbench) IdeApp.Workbench.RootWindow;
 				Gdk.Rectangle rect = GetGripRect ();
 				int w = rect.Width - Style.Xthickness;
 				int h = Allocation.Height - Style.YThickness;

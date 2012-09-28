@@ -33,7 +33,6 @@ namespace MonoDevelop.Ide.WelcomePage
 	{
 		public WelcomePageButtonBar (XElement el)
 		{
-			IconSize iconSize = IconSize.Menu;
 			Spacing = Styles.WelcomeScreen.Links.LinkSeparation;
 
 			foreach (var child in el.Elements ()) {

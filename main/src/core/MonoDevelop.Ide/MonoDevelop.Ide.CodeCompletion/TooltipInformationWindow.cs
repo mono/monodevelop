@@ -36,8 +36,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 	public class TooltipInformationWindow : PopoverWindow
 	{
-		static char[] newline = { '\n' };
-		
 		List<TooltipInformation> overloads = new List<TooltipInformation> ();
 		int current_overload;
 		

@@ -40,7 +40,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	public partial class OptionsDialog : Gtk.Dialog
 	{
 		Gtk.HBox mainHBox;
-		Gtk.ScrolledWindow GtkScrolledWindow;
 		Gtk.TreeView tree;
 		Gtk.Image image;
 		Gtk.Label labelTitle;

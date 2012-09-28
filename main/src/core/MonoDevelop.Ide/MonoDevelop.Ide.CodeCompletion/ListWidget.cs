@@ -440,7 +440,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 				}
 
 
-				var textGCInsensitive = this.Style.WhiteGC;
 				var textGCNormal = new Gdk.GC (window);
 				textGCNormal.RgbFgColor = textColor;
 				var fgGCNormal = this.Style.ForegroundGC (StateType.Normal);

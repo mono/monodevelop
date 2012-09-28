@@ -57,8 +57,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 	
 	public partial class IDEStyleOptionsPanelWidget : Gtk.Bin
 	{
-		readonly Gtk.IconSize[] sizes = new Gtk.IconSize [] { Gtk.IconSize.Menu, Gtk.IconSize.SmallToolbar, Gtk.IconSize.LargeToolbar };
-				
 		public IDEStyleOptionsPanelWidget ()
 		{
 			this.Build();

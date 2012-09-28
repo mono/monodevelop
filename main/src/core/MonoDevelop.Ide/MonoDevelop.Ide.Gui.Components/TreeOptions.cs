@@ -45,7 +45,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			
 			public ExtensibleTreeView Pad { get; set ;}
 
-			public bool this [string name] {
+			public new bool this [string name] {
 				get {
 					bool val;
 					return base.TryGetValue (name, out val) && val;

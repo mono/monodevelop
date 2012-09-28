@@ -63,11 +63,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class PortableRuntimeOptionsPanelWidget : Gtk.Bin
 	{
-		PortableDotNetProject project;
-		
 		public PortableRuntimeOptionsPanelWidget (PortableDotNetProject project, IEnumerable<ItemConfiguration> configurations)
 		{
-			this.project = project;
 			this.Build ();
 			
 			SortedDictionary<string, List<Framework>> options = new SortedDictionary<string, List<Framework>> ();

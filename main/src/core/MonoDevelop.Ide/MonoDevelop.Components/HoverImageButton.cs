@@ -174,7 +174,6 @@ namespace MonoDevelop.Components
         {
             int width, height;
             Icon.SizeLookup(icon_size, out width, out height);
-            IconTheme theme = IconTheme.GetForScreen(Screen);
 
             if(normal_pixbuf != null) {
                 normal_pixbuf.Dispose();

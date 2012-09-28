@@ -240,8 +240,6 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
-		public event EventHandler<ClickEventArgs> Clicked;
-
 		#region ICommandBar implementation
 		void ICommandBar.Update (object activeTarget)
 		{

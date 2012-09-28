@@ -31,9 +31,6 @@ namespace MonoDevelop.Components.MainToolbar
 {
 	class StyledProgressBar : EventBox
 	{
-		Color borderColor;
-		Color progressColor;
-
 		double fraction;
 		public double Fraction {
 			get {
@@ -57,8 +54,6 @@ namespace MonoDevelop.Components.MainToolbar
 		}
 		public StyledProgressBar ()
 		{
-			borderColor = CairoExtensions.ParseColor ("777a7a");
-			progressColor = CairoExtensions.ParseColor ("95999a");
 			VisibleWindow = false;
 			HeightRequest = 1;
 		}
