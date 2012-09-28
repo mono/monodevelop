@@ -59,22 +59,23 @@ namespace MonoDevelop.Components
 		
 		void Load ()
 		{
+			var monitor = loadMonitor;
 			System.Threading.ThreadPool.QueueUserWorkItem (delegate {
 				try {
 					HttpWebRequest req = (HttpWebRequest) HttpWebRequest.Create (url);
 					WebResponse resp = req.GetResponse ();
 					MemoryStream ms = new MemoryStream ();
 					using (var s = resp.GetResponseStream ()) {
-						byte[] buf = new byte [8092];
-						int nr;
-						while ((nr = s.Read (buf, 0, buf.Length)) > 0)
-							ms.Write (buf, 0, nr);
+						s.CopyTo (ms);
 					}
+					var data = ms.ToArray ();
+
 					MonoDevelop.Ide.DispatchService.GuiSyncDispatch (delegate {
 						Gdk.PixbufLoader l = new Gdk.PixbufLoader (resp.ContentType);
-						l.Write (ms.ToArray ());
+						l.Write (data);
 						image = l.Pixbuf;
 						l.Close ();
+						monitor.Dispose ();
 					});
 					
 					// Replace the async operation to avoid holding references to all
@@ -82,12 +83,11 @@ namespace MonoDevelop.Components
 					loadOperation = NullAsyncOperation.Success;
 				} catch (Exception ex) {
 					loadMonitor.ReportError (null, ex);
+					Gtk.Application.Invoke (delegate {
+						monitor.Dispose ();
+					});
 					loadOperation = NullAsyncOperation.Failure;
 				}
-				var monitor = loadMonitor;
-				Gtk.Application.Invoke (delegate {
-					monitor.Dispose ();
-				});
 				loadMonitor = null;
 			});
 		}
