@@ -44,10 +44,7 @@ namespace MonoDevelop.Components
 		Gtk.Widget parent;
 		bool eventProvided;
 
-		Tweener resizeTweener;
-
-		Gdk.Size animStartSize;
-		Gdk.Size animFinishSize;
+		Gdk.Size targetSize;
 		Gdk.Size paintSize;
 
 		bool disableSizeCheck;
@@ -72,26 +69,11 @@ namespace MonoDevelop.Components
 
 			disableSizeCheck = false;
 
-			resizeTweener = new Tweener (150, 16);
-			resizeTweener.Easing = new SinInOutEasing ();
-			resizeTweener.ValueUpdated += (sender, e) => {
-				paintSize = new Gdk.Size ((int)(animStartSize.Width + (animFinishSize.Width - animStartSize.Width) * resizeTweener.Value),
-				                          (int)(animStartSize.Height + (animFinishSize.Height - animStartSize.Height) * resizeTweener.Value));
-				QueueDraw ();
-			};
-
-			resizeTweener.Finished += (sender, e) => {
-				paintSize = animFinishSize;
-
-				QueueResize ();
-				QueueDraw ();
-			};
-
 			SizeRequested += (object o, SizeRequestedArgs args) => {
-				if (resizeTweener.IsRunning && !disableSizeCheck) {
+				if (this.AnimationIsRunning("Resize") && !disableSizeCheck) {
 					Gtk.Requisition result = new Gtk.Requisition ();
-					result.Width  = Math.Max (args.Requisition.Width, Math.Max (Allocation.Width, animFinishSize.Width));
-					result.Height = Math.Max (args.Requisition.Height, Math.Max (Allocation.Height, animFinishSize.Height));
+					result.Width  = Math.Max (args.Requisition.Width, Math.Max (Allocation.Width, targetSize.Width));
+					result.Height = Math.Max (args.Requisition.Height, Math.Max (Allocation.Height, targetSize.Height));
 					args.Requisition = result;
 				}
 			};
@@ -178,13 +160,15 @@ namespace MonoDevelop.Components
 			if (paintSize.Width <= 15 || paintSize.Height <= 15)
 				paintSize = size;
 
-			if (resizeTweener.IsRunning)
-				resizeTweener.Reset ();
-
-			animFinishSize = size;
-			animStartSize = paintSize;
-
-			resizeTweener.Start ();
+			targetSize = size;
+			Func<float, Gdk.Size> transform = x => new Gdk.Size ((int)(paintSize.Width + (size.Width - paintSize.Width) * x),
+			                                                     (int)(paintSize.Height + (size.Height - paintSize.Height) * x));
+			this.Animate ("Resize",
+			              length: 150,
+			              easing: new SinInOutEasing (),
+			              transform: transform,
+			              callback: s => paintSize = s,
+			              finished: x => { QueueResize(); });
 			QueueResize ();
 		}
 
@@ -395,7 +379,7 @@ namespace MonoDevelop.Components
 
 		protected override void OnSizeAllocated (Rectangle allocation)
 		{
-			if (!resizeTweener.IsRunning)
+			if (!this.AnimationIsRunning ("Resize"))
 				paintSize = new Gdk.Size (allocation.Width, allocation.Height);
 
 			base.OnSizeAllocated (allocation);

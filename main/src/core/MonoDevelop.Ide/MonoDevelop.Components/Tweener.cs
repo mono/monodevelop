@@ -61,6 +61,7 @@ namespace MonoDevelop.Components
 			public uint Length { get; set; }
 			public Gtk.Widget Owner { get; set; }
 			public Action<float> callback;
+			public Action<float> finished;
 			public Tweener tweener;
 		}
 
@@ -77,7 +78,8 @@ namespace MonoDevelop.Components
 			return x => start + ((rise ? upper : lower) - start) * x;
 		}
 
-		public static void Animate<T> (this Gtk.Widget self, string name = "unknown", uint rate = 16, uint length = 250, Easing easing = null, Func<float, T> transform = null, Action<T> callback = null) 
+		public static void Animate<T> (this Gtk.Widget self, string name = "unknown", uint rate = 16, uint length = 250, 
+		                               Easing easing = null, Func<float, T> transform = null, Action<T> callback = null, Action<T> finished = null) 
 		{
 			if (transform == null)
 				throw new ArgumentNullException ("transform");
@@ -87,9 +89,12 @@ namespace MonoDevelop.Components
 				throw new ArgumentNullException ("widget");
 
 			name += self.GetHashCode ().ToString ();
-			RemoveHandle (name);
+			self.RemoveAnimationHandle (name);
 
 			Action<float> step = f => callback (transform(f));
+			Action<float> final = null;
+			if (finished != null)
+				final = f => finished (transform(f));
 
 			var info = new Info {
 				Rate = rate,
@@ -105,14 +110,16 @@ namespace MonoDevelop.Components
 
 			info.tweener = tweener;
 			info.callback = step;
+			info.finished = final;
 			info.Owner = self;
 
 			animations[name] = info;
 			tweener.Start ();
 		}
 
-		public static bool RemoveHandle (string handle)
+		public static bool RemoveAnimationHandle (this Gtk.Widget self, string handle)
 		{
+			handle += self.GetHashCode ().ToString ();
 			if (!animations.ContainsKey (handle))
 				return false;
 
@@ -123,6 +130,12 @@ namespace MonoDevelop.Components
 
 			animations.Remove (handle);
 			return true;
+		}
+
+		public static bool AnimationIsRunning (this Gtk.Widget self, string handle)
+		{
+			handle += self.GetHashCode ().ToString ();
+			return animations.ContainsKey (handle);
 		}
 
 		static void HandleTweenerUpdated (object o, EventArgs args)
@@ -140,6 +153,10 @@ namespace MonoDevelop.Components
 			Info info = animations[tweener.Handle];
 
 			info.callback (tweener.Value);
+
+			if (info.finished != null)
+				info.finished (tweener.Value);
+
 			info.Owner.QueueDraw ();
 
 			animations.Remove (tweener.Handle);
