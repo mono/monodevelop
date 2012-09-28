@@ -199,7 +199,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			this.vadj = vadj;
 			base.OnSetScrollAdjustments (hadj, vadj);
 			if (this.vadj != null) {
-				this.vadj.ValueChanged += (sender, e) => QueueDraw ();
 				SetAdjustments ();
 			}
 		}
@@ -329,9 +328,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 				vadj.Value = area.Y;
 				return;
 			}
-			if (vadj.Value + Allocation.Height < area.Bottom) {
+			if (vadj.Value + vadj.PageSize < area.Bottom)
 				vadj.Value = Math.Max (0, area.Bottom - vadj.PageSize + 1);
-			}
 		}
 		
 		bool autoSelect;
@@ -726,7 +724,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		protected virtual void OnWordsFiltered (EventArgs e)
 		{
 			SetAdjustments ();
-			this.vadj.Value = 0;
+			ScrollToSelectedItem ();
 			EventHandler handler = this.WordsFiltered;
 			if (handler != null)
 				handler (this, e);
