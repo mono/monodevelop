@@ -736,19 +736,25 @@ namespace MonoDevelop.Ide
 				if (MessageService.RunCustomDialog (selDialog) == (int)Gtk.ResponseType.Ok) {
 					var newRefs = selDialog.ReferenceInformations;
 					
-					ArrayList toDelete = new ArrayList ();
+					var editEventArgs = new EditReferencesEventArgs (project);
 					foreach (ProjectReference refInfo in project.References)
 						if (!newRefs.Contains (refInfo))
-							toDelete.Add (refInfo);
-					
-					foreach (ProjectReference refInfo in toDelete)
-							project.References.Remove (refInfo);
+							editEventArgs.ReferencesToRemove.Add (refInfo);
 
 					foreach (ProjectReference refInfo in selDialog.ReferenceInformations)
 						if (!project.References.Contains (refInfo))
-							project.References.Add(refInfo);
-					
-					return true;
+							editEventArgs.ReferencesToAdd.Add(refInfo);
+
+					if (BeforeEditReferences != null)
+						BeforeEditReferences (this, editEventArgs);
+
+					foreach (var reference in editEventArgs.ReferencesToRemove)
+						project.References.Remove (reference);
+
+					foreach (var reference in editEventArgs.ReferencesToAdd)
+						project.References.Add (reference);
+
+					return editEventArgs.ReferencesToAdd.Count > 0 || editEventArgs.ReferencesToRemove.Count > 0;
 				}
 				else
 					return false;
@@ -1905,6 +1911,7 @@ namespace MonoDevelop.Ide
 		public event AddEntryEventHandler AddingEntryToCombine;
 
 		public event EventHandler CurrentRunOperationChanged;
+		public event EventHandler<EditReferencesEventArgs> BeforeEditReferences;
 		protected virtual void OnCurrentRunOperationChanged (EventArgs e)
 		{
 			var handler = CurrentRunOperationChanged;
