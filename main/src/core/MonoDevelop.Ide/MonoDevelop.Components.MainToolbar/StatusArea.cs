@@ -339,31 +339,10 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
 
-				CairoExtensions.RoundedRectangle (context, Allocation.X + 0.5, Allocation.Y + 1.5, Allocation.Width - 1, Allocation.Height - 1, 3);
-				context.LineWidth = 1;
-				context.Color = Styles.StatusBarShadowColor1;
-				context.Stroke ();
-
-				CairoExtensions.RoundedRectangle (context, Allocation.X + 0.5, Allocation.Y + 2.5, Allocation.Width - 1, Allocation.Height - 1, 3);
-				context.LineWidth = 1;
-				context.Color = Styles.StatusBarShadowColor2;
-				context.Stroke ();
-				
-				CairoExtensions.RoundedRectangle (context, Allocation.X + 1, Allocation.Y + 1, Allocation.Width - 2, Allocation.Height - 2, 3);
-				using (LinearGradient lg = new LinearGradient (Allocation.X + 1, Allocation.Y + 1, Allocation.X + 1, Allocation.Y + Allocation.Height - 1)) {
-					lg.AddColorStop (0, Styles.StatusBarFill1Color);
-					lg.AddColorStop (0.5, Styles.StatusBarFill2Color);
-					lg.AddColorStop (0.5, Styles.StatusBarFill3Color);
-					lg.AddColorStop (1, Styles.StatusBarFill4Color);
-
-					context.Pattern = lg;
-					context.FillPreserve ();
-				}
+				DrawBackground (context);
 
 				if (errorAnimProgress > 0.001 && errorAnimProgress < .999) {
 					DrawErrorAnimation (context);
-				} else {
-					context.NewPath ();
 				}
 
 				CairoExtensions.RoundedRectangle (context, Allocation.X + 1.5, Allocation.Y + 1.5, Allocation.Width - 3, Allocation.Height - 3, 3);
@@ -443,6 +422,58 @@ namespace MonoDevelop.Components.MainToolbar
 			return base.OnExposeEvent (evnt);
 		}
 
+		void DrawBackground (Cairo.Context context)
+		{	
+			CairoExtensions.RoundedRectangle (context, Allocation.X + .5, Allocation.Y + .5, 
+			                                  Allocation.Width - 1, Allocation.Height - 1, 3);
+			context.ClipPreserve ();
+
+			using (LinearGradient lg = new LinearGradient (Allocation.X, Allocation.Y, Allocation.X, Allocation.Y + Allocation.Height)) {
+				lg.AddColorStop (0, Styles.StatusBarFill1Color);
+				lg.AddColorStop (1, Styles.StatusBarFill4Color);
+
+				context.Pattern = lg;
+				context.FillPreserve ();
+			}
+
+			context.Save ();
+			double midX = Allocation.X + Allocation.Width / 2.0;
+			double midY = Allocation.Y + Allocation.Height;
+			context.Translate (midX, midY);
+
+			using (RadialGradient rg = new RadialGradient (0, 0, 0, 0, 0, Allocation.Height * 1.2)) {
+				rg.AddColorStop (0, Styles.StatusBarFill1Color);
+				rg.AddColorStop (1, Styles.WithAlpha (Styles.StatusBarFill1Color, 0));
+
+				context.Scale (Allocation.Width / (double)Allocation.Height, 1.0);
+				context.Pattern = rg;
+				context.Fill ();
+			}
+			context.Restore ();
+
+			using (LinearGradient lg = new LinearGradient (0, Allocation.Y, 0, Allocation.Y + Allocation.Height)) {
+				lg.AddColorStop (0, Styles.StatusBarShadowColor1);
+				lg.AddColorStop (1, Styles.WithAlpha (Styles.StatusBarShadowColor1, Styles.StatusBarShadowColor1.A * 0.2));
+
+				CairoExtensions.RoundedRectangle (context, Allocation.X + 0.5, Allocation.Y + 1.5, Allocation.Width - 1, Allocation.Height - 3, 3);
+				context.LineWidth = 1;
+				context.Pattern = lg;
+				context.Stroke ();
+			}
+
+			using (LinearGradient lg = new LinearGradient (0, Allocation.Y, 0, Allocation.Y + Allocation.Height)) {
+				lg.AddColorStop (0, Styles.StatusBarShadowColor2);
+				lg.AddColorStop (1, Styles.WithAlpha (Styles.StatusBarShadowColor2, Styles.StatusBarShadowColor2.A * 0.2));
+
+				CairoExtensions.RoundedRectangle (context, Allocation.X + 0.5, Allocation.Y + 2.5, Allocation.Width - 1, Allocation.Height - 5, 3);
+				context.LineWidth = 1;
+				context.Pattern = lg;
+				context.Stroke ();
+			}
+
+			context.ResetClip ();
+		}
+
 		void DrawErrorAnimation (Cairo.Context context)
 		{
 			float opacity;
@@ -455,6 +486,9 @@ namespace MonoDevelop.Components.MainToolbar
 				progress = (int) (errorAnimProgress * Allocation.Width * 2.4);
 				opacity = 1.0f - (errorAnimProgress - .5f) * 2;
 			}
+
+			CairoExtensions.RoundedRectangle (context, Allocation.X + .5, Allocation.Y + .5, 
+			                                  Allocation.Width - 1, Allocation.Height - 1, 3);
 
 			using (var lg = new LinearGradient (Allocation.X - 2000 + progress, 0, Allocation.X + progress, 0)) {
 				lg.AddColorStop (0.00, Styles.WithAlpha (Styles.StatusBarErrorColor, 0.15 * opacity));

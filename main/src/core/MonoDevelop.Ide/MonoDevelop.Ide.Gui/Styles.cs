@@ -99,8 +99,8 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly Cairo.Color StatusBarErrorColor = CairoExtensions.ParseColor ("FF6363");
 
 		public static readonly Cairo.Color StatusBarInnerColor = new Cairo.Color (0,0,0, 0.08);
-		public static readonly Cairo.Color StatusBarShadowColor1 = new Cairo.Color (1,1,1, 0.2);
-		public static readonly Cairo.Color StatusBarShadowColor2 = new Cairo.Color (1,1,1, 0.1);
+		public static readonly Cairo.Color StatusBarShadowColor1 = new Cairo.Color (0,0,0, 0.06);
+		public static readonly Cairo.Color StatusBarShadowColor2 = new Cairo.Color (0,0,0, 0.03);
 		public static readonly Cairo.Color StatusBarTextColor = CairoExtensions.ParseColor ("555555");
 		public static readonly Cairo.Color StatusBarProgressBackgroundColor = new Cairo.Color (0, 0, 0, 0.1);
 		public static readonly Cairo.Color StatusBarProgressOutlineColor = new Cairo.Color (0, 0, 0, 0.2);
