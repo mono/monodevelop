@@ -157,10 +157,6 @@
       <Project>{F79A67A1-4BA2-48F8-A7DD-A72E316EF6CD}</Project>
       <Name>Autotools</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\addins\CBinding\CBinding.Autotools\CBinding.Autotools.csproj">
-      <Project>{B841F25D-4F6D-4E0D-885F-212B54381F28}</Project>
-      <Name>CBinding.Autotools</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\src\addins\CSharpBinding\AspNet\CSharpBinding.AspNet.csproj">
       <Project>{F426CBB2-77FC-4E14-9E28-E667C2D1299A}</Project>
       <Name>CSharpBinding.AspNet</Name>
