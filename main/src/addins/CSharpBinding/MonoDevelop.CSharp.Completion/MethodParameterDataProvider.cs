@@ -88,8 +88,16 @@ namespace MonoDevelop.CSharp.Completion
 
 			var lstate = left.GetEditorBrowsableState ();
 			var rstate = right.GetEditorBrowsableState ();
-			if (lstate == rstate)
-				return left.Parameters.Count - right.Parameters.Count;
+			if (lstate == rstate) {
+				if (left.Parameters.Any (p => p.IsParams) && !right.Parameters.Any (p => p.IsParams))
+					return 1;
+				if (!left.Parameters.Any (p => p.IsParams) && right.Parameters.Any (p => p.IsParams))
+					return -1;
+				var cnt = left.Parameters.Where (p => !p.IsOptional).Count () - right.Parameters.Where (p => !p.IsOptional).Count ();
+				if (cnt == 0)
+					cnt = left.Parameters.Where (p => p.IsOptional).Count () - right.Parameters.Where (p => p.IsOptional).Count ();
+				return cnt;
+			}
 			return lstate.CompareTo (rstate);
 		}
 
