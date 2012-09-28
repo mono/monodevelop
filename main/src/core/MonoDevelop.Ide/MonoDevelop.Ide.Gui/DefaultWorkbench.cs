@@ -63,6 +63,8 @@ namespace MonoDevelop.Ide.Gui
 		static string configFile = UserProfile.Current.ConfigDir.Combine ("EditingLayout.xml");
 		const string fullViewModeTag = "[FullViewMode]";
 		const int MAX_LASTACTIVEWINDOWS = 10;
+		const int MinimumWidth = 1000;
+		const int MinimumHeight = 600;
 		
 		// list of layout names for the current context, without the context prefix
 		List<string> layouts = new List<string> ();
@@ -79,7 +81,7 @@ namespace MonoDevelop.Ide.Gui
 		bool ignorePageSwitch;
 
 		bool fullscreen;
-		Rectangle normalBounds = new Rectangle(0, 0, 640, 480);
+		Rectangle normalBounds = new Rectangle(0, 0, MinimumWidth, MinimumHeight);
 		
 		Gtk.Container rootWidget;
 		DockToolbarFrame toolbarFrame;
