@@ -74,7 +74,6 @@ namespace MonoDevelop.Components.MainToolbar
 		uint animPauseHandle;
 
 		Tweener textAnimTweener;
-		Tweener mouseHoverTweener;
 		MouseTracker tracker;
 
 		bool textIsMarkup;
@@ -90,6 +89,8 @@ namespace MonoDevelop.Components.MainToolbar
 
 		float errorAnimProgress;
 		bool errorAnimPending;
+
+		float hoverProgress;
 
 		IDisposable progressFadeAnimation;
 		double progressDisplayAlpha;
@@ -205,17 +206,14 @@ namespace MonoDevelop.Components.MainToolbar
 				});	
 			};
 
-			mouseHoverTweener = new Tweener (250, 16);
-			mouseHoverTweener.Easing = new SinInOutEasing ();
-			mouseHoverTweener.ValueUpdated += (sender, e) => QueueDraw ();
-			mouseHoverTweener.Finished += (sender, e) => QueueDraw ();
-
 			tracker = new MouseTracker(this);
-			tracker.HoveredChanged += (sender, e) => {
-				mouseHoverTweener.Start ();
-				QueueDraw ();
-			};
 			tracker.MouseMoved += (sender, e) => QueueDraw ();
+			tracker.HoveredChanged += (sender, e) => {
+				this.Animate ("Hovered",
+				              easing: new SinInOutEasing (),
+				              transform: Animation.TransformFromTo (hoverProgress, tracker.Hovered),
+				              callback: x => hoverProgress = x);
+			};
 
 			IdeApp.CommandService.ApplicationFocusIn += delegate {
 				// If there was an error while the application didn't have the focus,
@@ -378,7 +376,7 @@ namespace MonoDevelop.Components.MainToolbar
 				context.Color = Styles.StatusBarBorderColor;
 				context.StrokePreserve ();
 
-				if (tracker.Hovered || mouseHoverTweener.IsRunning)
+				if (hoverProgress > 0.001f)
 				{
 					context.Clip ();
 					int x1 = Allocation.X + tracker.MousePosition.X - 200;
@@ -390,12 +388,7 @@ namespace MonoDevelop.Components.MainToolbar
 						targetColor.A = .7;
 						transparentColor.A = 0;
 
-						float value = mouseHoverTweener.IsRunning ? mouseHoverTweener.Value : 1.0f;
-
-						if (tracker.Hovered)
-							targetColor.A = .7 * value;
-						else
-							targetColor.A = .7 * (1.0 - value);
+						targetColor.A = .7 * hoverProgress;
 
 						gradient.AddColorStop (0.0, transparentColor);
 						gradient.AddColorStop (0.5, targetColor);
