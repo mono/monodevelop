@@ -1750,13 +1750,16 @@ namespace MonoDevelop.Components.Commands
 			if (hasFocus != appHasFocus) {
 				// The last focused window has been destroyed. Wait a few ms since another app's window
 				// may gain focus again
+
 				DateTime now = DateTime.Now;
-				if (now < focusCheckDelayTimeout)
-					return;
-				if (!hasFocus && !lastFocusedExists) {
+				if (focusCheckDelayTimeout == DateTime.MinValue) {
 					focusCheckDelayTimeout = now.AddMilliseconds (100);
 					return;
 				}
+
+				if (now < focusCheckDelayTimeout)
+					return;
+
 				focusCheckDelayTimeout = DateTime.MinValue;
 				
 				appHasFocus = hasFocus;
@@ -1767,7 +1770,8 @@ namespace MonoDevelop.Components.Commands
 					if (ApplicationFocusOut != null)
 						ApplicationFocusOut (this, EventArgs.Empty);
 				}
-			}
+			} else
+				focusCheckDelayTimeout = DateTime.MinValue;
 		}
 		
 		public void ReportError (object commandId, string message, Exception ex)
