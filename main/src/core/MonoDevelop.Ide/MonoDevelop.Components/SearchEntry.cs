@@ -132,7 +132,7 @@ namespace MonoDevelop.Components
 		private void BuildWidget ()
 		{
 			alignment = new Alignment (0.5f, 0.5f, 1f, 0f);
-			alignment.SetPadding (0, 0, 3, 3);
+			alignment.SetPadding (1, 1, 3, 3);
 			VisibleWindow = false;
 
 			box = new HBox ();
