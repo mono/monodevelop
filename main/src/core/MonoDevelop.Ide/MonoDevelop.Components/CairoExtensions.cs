@@ -439,4 +439,57 @@ namespace MonoDevelop.Components
 			return img;
 		}
 	}
+
+	class SurfaceWrapper
+	{
+		public Cairo.Surface Surface { get; private set; }
+		public int Width { get; private set; }
+		public int Height { get; private set; }
+
+		public SurfaceWrapper (Cairo.Context similar, int width, int height)
+		{
+			if (MonoDevelop.Core.Platform.IsMac)
+				Surface = new QuartzSurface (Cairo.Format.ARGB32, width, height);
+			else
+				Surface = similar.Target.CreateSimilar (Cairo.Content.ColorAlpha, width, height);
+			Width = width;
+			Height = height;
+		}
+
+		public SurfaceWrapper (Cairo.Context similar, Gdk.Pixbuf source)
+		{
+			Cairo.Surface surface;
+			// There is a bug in Cairo for OSX right now that prevents creating additional accellerated surfaces.
+			if (MonoDevelop.Core.Platform.IsMac)
+				surface = new QuartzSurface (Cairo.Format.ARGB32, source.Width, source.Height);
+			else
+				surface = similar.Target.CreateSimilar (Cairo.Content.ColorAlpha, source.Width, source.Height);
+
+			using (Cairo.Context context = new Cairo.Context (surface)) {
+				Gdk.CairoHelper.SetSourcePixbuf (context, source, 0, 0);
+				context.Paint ();
+			}
+
+			Surface = surface;
+			Width = source.Width;
+			Height = source.Height;
+		}
+
+		~SurfaceWrapper ()
+		{
+			Surface.Destroy ();
+			Surface.Dispose ();
+		}
+	}
+
+	public class QuartzSurface : Cairo.Surface
+	{
+		[DllImport ("libcairo-2.dll")]
+		public static extern IntPtr cairo_quartz_surface_create(Cairo.Format format, uint width, uint height);
+
+		public QuartzSurface (Cairo.Format format, int width, int height)
+			: base (cairo_quartz_surface_create (format, (uint)width, (uint)height), true)
+		{
+		}
+	}
 }

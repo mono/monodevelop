@@ -237,7 +237,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void TriggerErrorAnimation ()
 		{
-			Animation.Animate<float> (name: "statusAreaError",
+			Animation.Animate (this, name: "statusAreaError",
 							   length: 700,
 			                   transform: x => x, 
 			                   callback: val => { errorAnimProgress = val; QueueDraw (); });

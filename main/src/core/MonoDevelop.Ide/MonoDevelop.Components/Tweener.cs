@@ -70,12 +70,16 @@ namespace MonoDevelop.Components
 			animations = new Dictionary<string, Info> ();
 		}
 
-		public static void Animate<T> (string name = "unknown", uint rate = 16, uint length = 250, Easing easing = null, Func<float, T> transform = null, Action<T> callback = null) 
+		public static void Animate<T> (object self, string name = "unknown", uint rate = 16, uint length = 250, Easing easing = null, Func<float, T> transform = null, Action<T> callback = null) 
 		{
 			if (transform == null)
 				throw new ArgumentNullException ("transform");
 			if (callback == null)
 				throw new ArgumentNullException ("callback");
+			if (self == null)
+				throw new ArgumentNullException ("self");
+
+			name += self.GetHashCode ().ToString ();
 			RemoveHandle (name);
 
 			Action<float> step = f => callback (transform(f));

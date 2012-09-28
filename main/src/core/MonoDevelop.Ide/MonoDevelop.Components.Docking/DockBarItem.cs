@@ -36,7 +36,91 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
 
 namespace MonoDevelop.Components.Docking
-{
+{	
+	class CrossfadeIcon: Gtk.Image
+	{
+		// This class should be subclassed from Gtk.Misc, but there is no reasonable way to do that due to there being no bindings to gtk_widget_set_has_window
+
+		SurfaceWrapper primarySurface;
+		SurfaceWrapper secondarySurface;
+		Gdk.Pixbuf primary, secondary;
+
+		float secondaryOpacity;
+
+		public CrossfadeIcon (Gdk.Pixbuf primary, Gdk.Pixbuf secondary)
+		{
+			if (primary == null)
+				throw new ArgumentNullException ("primary");
+			if (secondary == null)
+				throw new ArgumentNullException ("secondary");
+
+			this.primary = primary.Copy ();
+			this.secondary = secondary.Copy ();
+		}
+
+		protected override void OnRealized ()
+		{
+			base.OnRealized ();
+
+			using (Cairo.Context context = Gdk.CairoHelper.Create (GdkWindow)) {
+				primarySurface = new SurfaceWrapper (context, primary);
+				secondarySurface = new SurfaceWrapper (context, secondary);
+			}
+
+			primary.Dispose ();
+			primary = null;
+
+			secondary.Dispose ();
+			secondary = null;
+		}
+
+		public void ShowPrimary ()
+		{
+			float startValue = secondaryOpacity;
+			Components.Animation.Animate (this, name: "CrossfadeIconSwap",
+			                              transform: x => startValue * (1.0f - x),
+			                              callback: x => { secondaryOpacity = x; QueueDraw (); });
+		}
+
+		public void ShowSecondary ()
+		{
+			float startValue = secondaryOpacity;
+			Components.Animation.Animate (this, name: "CrossfadeIconSwap",
+			                              transform: x => startValue + x * (1.0f - startValue),
+			                              callback: x => { secondaryOpacity = x; QueueDraw (); });
+		}
+
+		protected override void OnSizeRequested (ref Requisition requisition)
+		{
+			base.OnSizeRequested (ref requisition);
+
+			requisition.Width += primarySurface.Width;
+			requisition.Height += primarySurface.Height;
+		}
+
+		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+		{
+			using (Cairo.Context context = Gdk.CairoHelper.Create (evnt.Window)) {
+				if (secondaryOpacity < 1.0f)
+					RenderIcon (context, primarySurface, 1.0f - (float)Math.Pow (secondaryOpacity, 3.0f));
+
+				if (secondaryOpacity > 0.0f)
+					RenderIcon (context, secondarySurface, secondaryOpacity);
+			}
+
+			return false;
+		}
+
+		void RenderIcon (Cairo.Context context, SurfaceWrapper surface, float opacity)
+		{
+			context.SetSourceSurface (surface.Surface, 
+			                          Allocation.X + (Allocation.Width - surface.Width) / 2,
+			                          Allocation.Y + (Allocation.Height - surface.Height) / 2);
+
+			context.PaintWithAlpha (opacity);
+		}
+	}
+
 	class DockBarItem: EventBox
 	{
 		DockBar bar;
@@ -52,6 +136,7 @@ namespace MonoDevelop.Components.Docking
 		Gdk.Size lastFrameSize;
 		MouseTracker tracker;
 		Tweener hoverAnimTweener;
+		CrossfadeIcon crossfade;
 
 		public DockBarItem (DockBar bar, DockItem it, int size)
 		{
@@ -69,6 +154,14 @@ namespace MonoDevelop.Components.Docking
 			tracker.HoveredChanged += (sender, e) => {
 				hoverAnimTweener.Stop ();
 				hoverAnimTweener.Start ();
+
+				if (crossfade == null)
+					return;
+	
+				if (tracker.Hovered)
+					crossfade.ShowSecondary ();
+				else
+					crossfade.ShowPrimary ();
 			};
 
 			hoverAnimTweener = new Tweener (100, 16);
@@ -139,8 +232,13 @@ namespace MonoDevelop.Components.Docking
 				box.PackStart (customLabel, true, true, 0);
 			}
 			else {
-				if (it.Icon != null)
-					box.PackStart (new Gtk.Image (it.Icon), false, false, 0);
+				if (it.Icon != null) {
+					Gdk.Pixbuf desat = it.Icon.Copy ();
+					desat.SaturateAndPixelate (desat, 0.5f, false);
+					crossfade = new CrossfadeIcon (desat, it.Icon);
+					box.PackStart (crossfade, false, false, 0);
+					desat.Dispose ();
+				}
 					
 				if (!string.IsNullOrEmpty (it.Label)) {
 					label = new Gtk.Label (it.Label);
@@ -194,6 +292,7 @@ namespace MonoDevelop.Components.Docking
 
 		void AutoShow ()
 		{
+			Console.WriteLine ("Show");
 			UnscheduleAutoHide ();
 			if (autoShowFrame == null) {
 				if (hiddenFrame != null)
@@ -208,6 +307,7 @@ namespace MonoDevelop.Components.Docking
 		
 		void AutoHide (bool animate)
 		{
+			Console.WriteLine ("Hide");
 			UnscheduleAutoShow ();
 			if (autoShowFrame != null) {
 				size = autoShowFrame.Size;
