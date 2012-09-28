@@ -76,18 +76,19 @@ namespace MonoDevelop.Components.Docking
 
 		public void ShowPrimary ()
 		{
-			float startValue = secondaryOpacity;
-			Components.Animation.Animate (this, name: "CrossfadeIconSwap",
-			                              transform: x => startValue * (1.0f - x),
-			                              callback: x => { secondaryOpacity = x; QueueDraw (); });
+			AnimateCrossfade (false);
 		}
 
 		public void ShowSecondary ()
 		{
-			float startValue = secondaryOpacity;
-			Components.Animation.Animate (this, name: "CrossfadeIconSwap",
-			                              transform: x => startValue + x * (1.0f - startValue),
-			                              callback: x => { secondaryOpacity = x; QueueDraw (); });
+			AnimateCrossfade (true);
+		}
+
+		void AnimateCrossfade (bool toSecondary)
+		{
+			this.Animate (name: "CrossfadeIconSwap",
+			              transform: Components.Animation.TransformFromTo (secondaryOpacity, toSecondary),
+			              callback: x => secondaryOpacity = x);
 		}
 
 		protected override void OnSizeRequested (ref Requisition requisition)
@@ -166,10 +167,10 @@ namespace MonoDevelop.Components.Docking
 
 		void AnimateHover (bool hovered)
 		{
-			Animation.Animate (this, "Hover", 
-			                   length: 100, 
-			                   transform: Animation.TransformFromTo (hoverProgress, hovered),
-			                   callback: x => { hoverProgress = x; QueueDraw (); });
+			this.Animate ("Hover",
+			              length: 100,
+			              transform: Animation.TransformFromTo (hoverProgress, hovered),
+			              callback: x => hoverProgress = x);
 		}
 		
 		void HandleBarFrameSizeAllocated (object o, SizeAllocatedArgs args)

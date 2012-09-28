@@ -52,13 +52,14 @@ namespace MonoDevelop.Components
 		}
 	}
 
-	class Animation
+	static class Animation
 	{
 		class Info
 		{
 			public Easing Easing { get; set; }
 			public uint Rate { get; set; }
 			public uint Length { get; set; }
+			public Gtk.Widget Owner { get; set; }
 			public Action<float> callback;
 			public Tweener tweener;
 		}
@@ -76,14 +77,14 @@ namespace MonoDevelop.Components
 			return x => start + ((rise ? upper : lower) - start) * x;
 		}
 
-		public static void Animate<T> (object self, string name = "unknown", uint rate = 16, uint length = 250, Easing easing = null, Func<float, T> transform = null, Action<T> callback = null) 
+		public static void Animate<T> (this Gtk.Widget self, string name = "unknown", uint rate = 16, uint length = 250, Easing easing = null, Func<float, T> transform = null, Action<T> callback = null) 
 		{
 			if (transform == null)
 				throw new ArgumentNullException ("transform");
 			if (callback == null)
 				throw new ArgumentNullException ("callback");
 			if (self == null)
-				throw new ArgumentNullException ("self");
+				throw new ArgumentNullException ("widget");
 
 			name += self.GetHashCode ().ToString ();
 			RemoveHandle (name);
@@ -104,6 +105,7 @@ namespace MonoDevelop.Components
 
 			info.tweener = tweener;
 			info.callback = step;
+			info.Owner = self;
 
 			animations[name] = info;
 			tweener.Start ();
@@ -129,6 +131,7 @@ namespace MonoDevelop.Components
 			Info info = animations[tweener.Handle];
 
 			info.callback (tweener.Value);
+			info.Owner.QueueDraw ();
 		}
 
 		static void HandleTweenerFinished (object o, EventArgs args)
@@ -137,6 +140,7 @@ namespace MonoDevelop.Components
 			Info info = animations[tweener.Handle];
 
 			info.callback (tweener.Value);
+			info.Owner.QueueDraw ();
 
 			animations.Remove (tweener.Handle);
 			tweener.ValueUpdated -= HandleTweenerUpdated;
