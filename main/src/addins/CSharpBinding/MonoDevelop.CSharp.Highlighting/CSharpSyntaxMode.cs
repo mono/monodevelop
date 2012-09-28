@@ -68,7 +68,8 @@ namespace MonoDevelop.CSharp.Highlighting
 	
 	public class CSharpSyntaxMode : Mono.TextEditor.Highlighting.SyntaxMode, IQuickTaskProvider
 	{
-		Document guiDocument;
+		readonly Document guiDocument;
+
 		SyntaxTree unit;
 		CSharpUnresolvedFile parsedFile;
 		ICompilation compilation;
@@ -116,18 +117,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			get;
 			set;
 		}
-		
-		protected override void OnDocumentSet (EventArgs e)
-		{
-			if (guiDocument != null) {
-				guiDocument.DocumentParsed -= HandleDocumentParsed;
-				highlightedSegmentCache.RemoveListener (guiDocument.Editor.Document);
-			}
-			guiDocument = null;
-			
-			base.OnDocumentSet (e);
-		}
-		
+
 		void HandleDocumentParsed (object sender, EventArgs e)
 		{
 			if (src != null)
@@ -144,7 +134,6 @@ namespace MonoDevelop.CSharp.Highlighting
 						compilation = guiDocument.Compilation;
 						var newResolver = new CSharpAstResolver (compilation, unit, parsedFile);
 						System.Threading.Tasks.Task.Factory.StartNew (delegate {
-							Thread.Sleep (100);
 							var visitor = new QuickTaskVisitor (newResolver, cancellationToken);
 							unit.AcceptVisitor (visitor);
 							if (!cancellationToken.IsCancellationRequested) {
@@ -258,8 +247,20 @@ namespace MonoDevelop.CSharp.Highlighting
 			"equals"
 		});
 		
-		public CSharpSyntaxMode ()
+
+		public CSharpSyntaxMode (MonoDevelop.Ide.Gui.Document document)
 		{
+			this.guiDocument = document;
+			guiDocument.Closed += delegate {
+				if (src != null)
+					src.Cancel ();
+			};
+			guiDocument.DocumentParsed += HandleDocumentParsed;
+			highlightedSegmentCache = new HighlightingSegmentTree ();
+			highlightedSegmentCache.InstallListener (guiDocument.Editor.Document);
+			if (guiDocument.ParsedDocument != null)
+				HandleDocumentParsed (this, EventArgs.Empty);
+
 			var provider = new ResourceXmlProvider (typeof(IXmlProvider).Assembly, typeof(IXmlProvider).Assembly.GetManifestResourceNames ().First (s => s.Contains ("CSharpSyntaxMode")));
 			using (XmlReader reader = provider.Open ()) {
 				SyntaxMode baseMode = SyntaxMode.Read (reader);
@@ -286,40 +287,14 @@ namespace MonoDevelop.CSharp.Highlighting
 			AddSemanticRule ("XmlDocumentation", new HighlightUrlSemanticRule ("comment"));
 			AddSemanticRule ("String", new HighlightUrlSemanticRule ("string"));
 		}
-		
-		void EnsureGuiDocument ()
-		{
-			if (guiDocument != null)
-				return;
-			try {
-				if (File.Exists (Document.FileName))
-					guiDocument = IdeApp.Workbench.GetDocument (Document.FileName);
-			} catch (Exception) {
-				guiDocument = null;
-			}
-			if (guiDocument != null) {
 
-				guiDocument.Closed += delegate {
-					if (src != null)
-						src.Cancel ();
-				};
-				guiDocument.DocumentParsed += HandleDocumentParsed;
-				highlightedSegmentCache = new HighlightingSegmentTree ();
-				highlightedSegmentCache.InstallListener (guiDocument.Editor.Document);
-				if (guiDocument.ParsedDocument != null)
-					HandleDocumentParsed (this, EventArgs.Empty);
-			}
-		}
-		
 		public override SpanParser CreateSpanParser (DocumentLine line, CloneableStack<Span> spanStack)
 		{
-			EnsureGuiDocument ();
 			return new CSharpSpanParser (this, spanStack ?? line.StartSpan.Clone ());
 		}
 		
 		public override ChunkParser CreateChunkParser (SpanParser spanParser, ColorScheme style, DocumentLine line)
 		{
-			EnsureGuiDocument ();
 			return new CSharpChunkParser (this, spanParser, style, line);
 		}
 		

@@ -58,6 +58,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			textEditorData.Caret.PositionChanged += HandleTextEditorDataCaretPositionChanged;
 			textEditorData.Document.TextReplaced += HandleTextEditorDataDocumentTextReplaced;
 			textEditorData.SelectionChanged += HandleTextEditorDataSelectionChanged;
+			textEditorData.Document.SyntaxMode = new CSharpSyntaxMode (Document);
 		}
 
 		void HandleTextEditorDataSelectionChanged (object sender, EventArgs e)
