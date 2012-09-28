@@ -76,7 +76,7 @@ namespace MonoDevelop.Components
 		{
 			base.OnExposeEvent (evnt);
 
-			if (Child1 != null && Child2 != null) {
+			if (Child1 != null && Child1.Visible && Child2 != null && Child2.Visible) {
 				var gc = new Gdk.GC (evnt.Window);
 				gc.RgbFgColor = (HslColor) Styles.ThinSplitterColor;
 				var x = Child1.Allocation.X + Child1.Allocation.Width;
@@ -116,13 +116,15 @@ namespace MonoDevelop.Components
 
 		void HandleSizeAllocated (object o, Gtk.SizeAllocatedArgs args)
 		{
-			if (parent.Child1 != null && parent.Child2 != null) {
+			if (parent.Child1 != null && parent.Child1.Visible && parent.Child2 != null && parent.Child2.Visible) {
+				Show ();
 				int centerSize = Child == null ? GrabAreaSize / 2 : 0;
 				if (horizontal)
 					SizeAllocate (new Gdk.Rectangle (parent.Child1.Allocation.X + parent.Child1.Allocation.Width - centerSize, args.Allocation.Y, GrabAreaSize, args.Allocation.Height));
 				else
 					SizeAllocate (new Gdk.Rectangle (args.Allocation.X, parent.Child1.Allocation.Y + parent.Child1.Allocation.Height - centerSize, args.Allocation.Width, GrabAreaSize));
-			}
+			} else
+				Hide ();
 		}
 
 		public int GrabAreaSize {

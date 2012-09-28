@@ -63,7 +63,7 @@ namespace MonoDevelop.Components
 		{
 			base.OnExposeEvent (evnt);
 			
-			if (Child1 != null && Child2 != null) {
+			if (Child1 != null && Child1.Visible && Child2 != null && Child2.Visible) {
 				var gc = new Gdk.GC (evnt.Window);
 				gc.RgbFgColor = (HslColor) Styles.ThinSplitterColor;
 				var y = Child1.Allocation.Y + Child1.Allocation.Height;

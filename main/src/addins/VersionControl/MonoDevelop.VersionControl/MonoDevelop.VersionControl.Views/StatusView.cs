@@ -233,6 +233,7 @@ namespace MonoDevelop.VersionControl.Views
 			//commitBox.PackStart (commitMessageLabelBox, false, false, 0);
 			
 			Gtk.ScrolledWindow frame = new Gtk.ScrolledWindow ();
+			frame.HeightRequest = 75;
 			frame.ShadowType = ShadowType.None;
 			commitText = new TextView ();
 			commitText.WrapMode = WrapMode.WordChar;
