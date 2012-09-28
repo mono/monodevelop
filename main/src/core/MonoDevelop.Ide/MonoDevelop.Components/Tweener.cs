@@ -70,6 +70,12 @@ namespace MonoDevelop.Components
 			animations = new Dictionary<string, Info> ();
 		}
 
+		public static Func<float, float> TransformFromTo (float start, bool rise, float lower = 0.0f, float upper = 1.0f)
+		{
+			// Transform from start to upper if rise is true, else transform to lower
+			return x => start + ((rise ? upper : lower) - start) * x;
+		}
+
 		public static void Animate<T> (object self, string name = "unknown", uint rate = 16, uint length = 250, Easing easing = null, Func<float, T> transform = null, Action<T> callback = null) 
 		{
 			if (transform == null)

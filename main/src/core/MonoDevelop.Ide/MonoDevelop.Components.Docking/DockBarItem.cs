@@ -135,8 +135,8 @@ namespace MonoDevelop.Components.Docking
 		int size;
 		Gdk.Size lastFrameSize;
 		MouseTracker tracker;
-		Tweener hoverAnimTweener;
 		CrossfadeIcon crossfade;
+		float hoverProgress;
 
 		public DockBarItem (DockBar bar, DockItem it, int size)
 		{
@@ -152,21 +152,24 @@ namespace MonoDevelop.Components.Docking
 			tracker = new MouseTracker (this);
 			tracker.TrackMotion = false;
 			tracker.HoveredChanged += (sender, e) => {
-				hoverAnimTweener.Stop ();
-				hoverAnimTweener.Start ();
 
 				if (crossfade == null)
 					return;
 	
+				AnimateHover (tracker.Hovered);
 				if (tracker.Hovered)
 					crossfade.ShowSecondary ();
 				else
 					crossfade.ShowPrimary ();
 			};
+		}
 
-			hoverAnimTweener = new Tweener (100, 16);
-			hoverAnimTweener.ValueUpdated += (sender, e) => QueueDraw ();
-			hoverAnimTweener.Finished += (sender, e) => QueueDraw ();
+		void AnimateHover (bool hovered)
+		{
+			Animation.Animate (this, "Hover", 
+			                   length: 100, 
+			                   transform: Animation.TransformFromTo (hoverProgress, hovered),
+			                   callback: x => { hoverProgress = x; QueueDraw (); });
 		}
 		
 		void HandleBarFrameSizeAllocated (object o, SizeAllocatedArgs args)
@@ -292,7 +295,6 @@ namespace MonoDevelop.Components.Docking
 
 		void AutoShow ()
 		{
-			Console.WriteLine ("Show");
 			UnscheduleAutoHide ();
 			if (autoShowFrame == null) {
 				if (hiddenFrame != null)
@@ -307,7 +309,6 @@ namespace MonoDevelop.Components.Docking
 		
 		void AutoHide (bool animate)
 		{
-			Console.WriteLine ("Hide");
 			UnscheduleAutoShow ();
 			if (autoShowFrame != null) {
 				size = autoShowFrame.Size;
@@ -448,8 +449,6 @@ namespace MonoDevelop.Components.Docking
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
 			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
-				float value = hoverAnimTweener.IsRunning ? hoverAnimTweener.Value : 1.0f;
-				value = tracker.Hovered ? value : 1.0f - value;
 				var alloc = Allocation;
 				var siblings = (Parent as Gtk.Container).Children;
 
@@ -465,7 +464,7 @@ namespace MonoDevelop.Components.Docking
 				}
 
 				Cairo.Color primaryColor = Styles.DockBarPrelightColor;
-				primaryColor.A = value;
+				primaryColor.A = hoverProgress;
 
 				Cairo.Color transparent = primaryColor;
 				transparent.A = 0;
@@ -487,31 +486,31 @@ namespace MonoDevelop.Components.Docking
 					Cairo.PointD offset = new Cairo.PointD (1, 0);
 
 					if (drawStartSeperator)
-						DrawEngravedLine (context, start, end, offset, Styles.DockBarSeparatorColorDark, Styles.DockBarSeparatorColorLight, value);
+						DrawEngravedLine (context, start, end, offset, Styles.DockBarSeparatorColorDark, Styles.DockBarSeparatorColorLight, hoverProgress);
 
 					start.X += alloc.Width - 2;
 					end.X += alloc.Width - 2;
 
 					if (drawEndSeparator)
-						DrawEngravedLine (context, start, end, offset, Styles.DockBarSeparatorColorDark, Styles.DockBarSeparatorColorLight, value);
+						DrawEngravedLine (context, start, end, offset, Styles.DockBarSeparatorColorDark, Styles.DockBarSeparatorColorLight, hoverProgress);
 				} else {
 					Cairo.PointD start = new Cairo.PointD (alloc.X, alloc.Y + 0.5);
 					Cairo.PointD end = new Cairo.PointD (alloc.X + alloc.Width, alloc.Y + 0.5);
 					Cairo.PointD offset = new Cairo.PointD (0, 1);
 
 					if (drawStartSeperator)
-						DrawEngravedLine (context, start, end, offset, Styles.DockBarSeparatorColorDark, Styles.DockBarSeparatorColorLight, value);
+						DrawEngravedLine (context, start, end, offset, Styles.DockBarSeparatorColorDark, Styles.DockBarSeparatorColorLight, hoverProgress);
 
 					start.Y += alloc.Height - 2;
 					end.Y += alloc.Height - 2;
 
 					if (drawEndSeparator)
-						DrawEngravedLine (context, start, end, offset, Styles.DockBarSeparatorColorDark, Styles.DockBarSeparatorColorLight, value);
+						DrawEngravedLine (context, start, end, offset, Styles.DockBarSeparatorColorDark, Styles.DockBarSeparatorColorLight, hoverProgress);
 				}
 
 				context.LineWidth = 1;
 				Cairo.Color strokeColor = Styles.DockBarSeparatorColorDark;
-				strokeColor.A *= value;
+				strokeColor.A *= hoverProgress;
 				context.Color = strokeColor;
 				context.Stroke ();
 			}
