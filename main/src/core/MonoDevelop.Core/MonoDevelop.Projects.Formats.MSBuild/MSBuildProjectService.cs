@@ -389,6 +389,25 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return true;
 		}
 
+		//Regexp pattern of environment variable
+		private static readonly System.Text.RegularExpressions.Regex environmentVariablePattern = new System.Text.RegularExpressions.Regex("\\$\\(([a-zA-Z_]+\\w*)\\)");
+		
+		//Unwraps $(ENV_VAR) pattern in the input, if one found
+		public static string TryUnwrapEnvironmentVariables(string input)
+		{
+			string output = input;
+			var match = environmentVariablePattern.Match(input);
+			var envVars = Environment.GetEnvironmentVariables();
+			while (match.Success) {
+				string environmentVariableName = match.Groups[1].Value;
+				if(envVars.Contains(environmentVariableName))
+					output = output.Replace("$(" + environmentVariableName + ")", (string)envVars[environmentVariableName]);
+				
+				match = match.NextMatch();
+			}
+			return output;
+		}
+
 		//Given a filename like foo.it.resx, splits it into - foo, it, resx
 		//Returns true only if a valid culture is found
 		//Note: hand-written as this can get called lotsa times

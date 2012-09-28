@@ -699,7 +699,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				else if (buildItem.Name == "Reference" && dotNetProject != null) {
 					ProjectReference pref;
 					if (buildItem.HasMetadata ("HintPath")) {
-						string hintPath = buildItem.GetMetadata ("HintPath");
+                        string hintPath = MSBuildProjectService.TryUnwrapEnvironmentVariables(buildItem.GetMetadata("HintPath"));
 						string path;
 						if (!MSBuildProjectService.FromMSBuildPath (dotNetProject.ItemDirectory, hintPath, out path)) {
 							pref = new ProjectReference (ReferenceType.Assembly, path);
