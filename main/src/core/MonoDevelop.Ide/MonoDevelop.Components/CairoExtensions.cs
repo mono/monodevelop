@@ -478,7 +478,7 @@ namespace MonoDevelop.Components
 		~SurfaceWrapper ()
 		{
 			Surface.Destroy ();
-			Surface.Dispose ();
+			((IDisposable)Surface).Dispose ();
 		}
 	}
 
