@@ -89,10 +89,10 @@ namespace MonoDevelop.Ide.Gui
 				IdeApp.Workspace.StoringUserPreferences += OnStoringWorkspaceUserPreferences;
 				IdeApp.Workspace.LoadingUserPreferences += OnLoadingWorkspaceUserPreferences;
 				
-				IdeApp.CommandService.ApplicationFocusOut += delegate(object o, EventArgs args) {
+				IdeApp.FocusOut += delegate(object o, EventArgs args) {
 					SaveFileStatus ();
 				};
-				IdeApp.CommandService.ApplicationFocusIn += delegate(object o, EventArgs args) {
+				IdeApp.FocusIn += delegate(object o, EventArgs args) {
 					CheckFileStatus ();
 				};
 				

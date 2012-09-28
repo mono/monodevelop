@@ -215,7 +215,7 @@ namespace MonoDevelop.Components.MainToolbar
 				              callback: x => hoverProgress = x);
 			};
 
-			IdeApp.CommandService.ApplicationFocusIn += delegate {
+			IdeApp.FocusIn += delegate {
 				// If there was an error while the application didn't have the focus,
 				// trigger the error animation again when it gains the focus
 				if (errorAnimPending) {
@@ -235,7 +235,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void TriggerErrorAnimation ()
 		{
-			this.Animate (name: "statusAreaError",
+			this.Animate<float> (name: "statusAreaError",
 			              length: 700,
 			              transform: x => x,
 			              callback: val => errorAnimProgress = val);

@@ -40,13 +40,13 @@ namespace MonoDevelop.VersionControl.Git
 		protected override void Initialize ()
 		{
 			base.Initialize ();
-			IdeApp.CommandService.ApplicationFocusIn += HandleApplicationFocusIn;
+			IdeApp.FocusIn += HandleApplicationFocusIn;
 			GitRepository.BranchSelectionChanged += HandleBranchSelectionChanged;
 		}
 		
 		public override void Dispose ()
 		{
-			IdeApp.CommandService.ApplicationFocusIn -= HandleApplicationFocusIn;
+			IdeApp.FocusIn -= HandleApplicationFocusIn;
 			GitRepository.BranchSelectionChanged -= HandleBranchSelectionChanged;
 			base.Dispose ();
 		}

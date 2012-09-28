@@ -78,6 +78,29 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
+		/// <summary>
+		/// Fired when the IDE gets the focus
+		/// </summary>
+		public static event EventHandler FocusIn {
+			add { CommandService.ApplicationFocusIn += value; }
+			remove { CommandService.ApplicationFocusIn -= value; }
+		}
+		
+		/// <summary>
+		/// Fired when the IDE loses the focus
+		/// </summary>
+		public static event EventHandler FocusOut {
+			add { CommandService.ApplicationFocusOut += value; }
+			remove { CommandService.ApplicationFocusOut -= value; }
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether the IDE has the input focus
+		/// </summary>
+		public static bool HasInputFocus {
+			get { return CommandService.ApplicationHasFocus; }
+		}
+
 		static IdeApp ()
 		{
 			preferences = new IdePreferences ();

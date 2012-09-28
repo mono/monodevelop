@@ -1575,8 +1575,8 @@ namespace MonoDevelop.Components.Commands
 						newFocused = w;
 					}
 					if (w.IsActive && w.Type == Gtk.WindowType.Toplevel && !(w is Gtk.Dialog)) {
-						win = w;
-						break;
+						if (win == null)
+							win = w;
 					}
 					if (lastFocused == w) {
 						lastFocusedExists = true;
@@ -1801,7 +1801,7 @@ namespace MonoDevelop.Components.Commands
 				CommandTargetScanFinished (this, EventArgs.Empty);
 		}
 
-		public bool ApplicationHasFocus {
+		internal bool ApplicationHasFocus {
 			get { return appHasFocus; }
 		}
 		
@@ -1823,12 +1823,12 @@ namespace MonoDevelop.Components.Commands
 		/// <summary>
 		/// Fired when the application gets the focus
 		/// </summary>
-		public event EventHandler ApplicationFocusIn;
+		internal event EventHandler ApplicationFocusIn;
 		
 		/// <summary>
 		/// Fired when the application loses the focus
 		/// </summary>
-		public event EventHandler ApplicationFocusOut;
+		internal event EventHandler ApplicationFocusOut;
 		
 		/// <summary>
 		/// Fired when the command route scan starts
