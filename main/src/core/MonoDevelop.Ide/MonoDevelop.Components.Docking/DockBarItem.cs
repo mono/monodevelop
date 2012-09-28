@@ -451,7 +451,6 @@ namespace MonoDevelop.Components.Docking
 		{
 			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
 				var alloc = Allocation;
-				var siblings = (Parent as Gtk.Container).Children;
 
 				Cairo.LinearGradient lg;
 
@@ -477,12 +476,6 @@ namespace MonoDevelop.Components.Docking
 				context.Fill ();
 
 				lg.Destroy ();
-
-				context.LineWidth = 1;
-				Cairo.Color strokeColor = Styles.DockBarSeparatorColorDark;
-				strokeColor.A *= hoverProgress;
-				context.Color = strokeColor;
-				context.Stroke ();
 			}
 			return base.OnExposeEvent (evnt);
 		}
