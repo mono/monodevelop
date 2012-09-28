@@ -70,7 +70,6 @@ namespace MonoDevelop.Ide.Commands
 				ci.Icon = pad.Icon;
 				ci.UseMarkup = true;
 				ci.Description = GettextCatalog.GetString ("Show {0}", pad.Title);
-				ci.Checked = pad.Visible;
 
 				ActionCommand cmd = IdeApp.CommandService.GetActionCommand ("Pad|" + pad.Id);
 				if (cmd != null) ci.AccelKey = cmd.AccelKey; 
