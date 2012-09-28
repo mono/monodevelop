@@ -161,15 +161,29 @@ namespace MonoDevelop.Components
 				paintSize = size;
 
 			targetSize = size;
-			Func<float, Gdk.Size> transform = x => new Gdk.Size ((int)(paintSize.Width + (size.Width - paintSize.Width) * x),
-			                                                     (int)(paintSize.Height + (size.Height - paintSize.Height) * x));
+			Gdk.Size start = paintSize;
+			Func<float, Gdk.Size> transform = x => new Gdk.Size ((int)(start.Width + (size.Width - start.Width) * x),
+			                                                     (int)(start.Height + (size.Height - start.Height) * x));
 			this.Animate ("Resize",
 			              length: 150,
 			              easing: Easing.SinInOut,
 			              transform: transform,
 			              callback: s => paintSize = s,
-			              finished: x => { QueueResize(); });
+			              finished: x => { MaybeReanimate(); });
 			QueueResize ();
+		}
+
+		void MaybeReanimate ()
+		{
+			disableSizeCheck = true;
+			Gtk.Requisition sizeReq = Gtk.Requisition.Zero;
+			OnSizeRequested (ref sizeReq);
+			disableSizeCheck = false;
+
+			if (sizeReq.Width == paintSize.Width && sizeReq.Height == paintSize.Height)
+				QueueResize ();
+			else
+				AnimatedResize (); //Desired size changed mid animation
 		}
 
 		public void RepositionWindow ()

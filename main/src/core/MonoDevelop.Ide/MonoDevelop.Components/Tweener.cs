@@ -147,14 +147,13 @@ namespace MonoDevelop.Components
 
 			info.callback (tweener.Value);
 
-			if (info.finished != null)
-				info.finished (tweener.Value);
-
-			info.Owner.QueueDraw ();
-
 			animations.Remove (tweener.Handle);
 			tweener.ValueUpdated -= HandleTweenerUpdated;
 			tweener.Finished -= HandleTweenerFinished;
+
+			if (info.finished != null)
+				info.finished (tweener.Value);
+			info.Owner.QueueDraw ();
 		}
 	}
 

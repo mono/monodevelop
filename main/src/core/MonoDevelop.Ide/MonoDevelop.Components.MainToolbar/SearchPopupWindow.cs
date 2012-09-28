@@ -48,6 +48,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		List<SearchCategory> categories = new List<SearchCategory> ();
 		List<Tuple<SearchCategory, ISearchDataSource>> results = new List<Tuple<SearchCategory, ISearchDataSource>> ();
+		List<Tuple<SearchCategory, ISearchDataSource>> incompleteResults = new List<Tuple<SearchCategory, ISearchDataSource>> ();
 		Pango.Layout layout, headerLayout;
 		CancellationTokenSource src;
 		Cairo.Color headerColor;
@@ -189,7 +190,7 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			if (src != null)
 				src.Cancel ();
-			selectedItem = null;
+
 			HideTooltip ();
 			src = new CancellationTokenSource ();
 			isInSearch = true;
@@ -197,7 +198,7 @@ namespace MonoDevelop.Components.MainToolbar
 				QueueDraw ();
 			}
 			pattern = SearchPopupSearchPattern.ParsePattern (searchPattern);
-			results.Clear ();
+			incompleteResults.Clear ();
 			foreach (var _cat in categories) {
 				var cat = _cat;
 				var token = src.Token;
@@ -207,8 +208,9 @@ namespace MonoDevelop.Components.MainToolbar
 						return;
 					}
 					Application.Invoke (delegate {
-						if (token.IsCancellationRequested)
+						if (token.IsCancellationRequested) {
 							return;
+						}
 						ShowResult (cat, task.Result ?? new NullDataSource ());
 					}
 					);
@@ -219,14 +221,16 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void ShowResult (SearchCategory cat, ISearchDataSource result)
 		{
-			results.Add (Tuple.Create (cat, result));
+			incompleteResults.Add (Tuple.Create (cat, result));
 
-			results.Sort ((x, y) => {
+			incompleteResults.Sort ((x, y) => {
 				return categories.IndexOf (x.Item1).CompareTo (categories.IndexOf (y.Item1));
 			}
 			);
 
-			if (results.Count == categories.Count) {
+			if (incompleteResults.Count == categories.Count) {
+				results.Clear ();
+				results.AddRange (incompleteResults);
 				topItem = null;
 				for (int i = 0; i < results.Count; i++) {
 					if (results[i].Item2.ItemCount == 0)
