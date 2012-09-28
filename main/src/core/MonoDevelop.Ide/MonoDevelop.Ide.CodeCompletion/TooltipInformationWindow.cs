@@ -219,6 +219,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 				this.TransientFor = IdeApp.Workbench.RootWindow;
 			this.AllowShrink = false;
 			this.AllowGrow = false;
+			this.CanFocus = false;
+			this.CanDefault = false;
 			
 			headlabel = new MonoDevelop.Components.FixedWidthWrapLabel ();
 			headlabel.Indent = -20;

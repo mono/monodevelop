@@ -265,7 +265,7 @@ namespace MonoDevelop.Components.MainToolbar
 					layout.GetPixelSize (out w, out h);
 					var px = dataSrc.GetIcon (i);
 					if (px != null)
-						w += px.Width + iconTextSpacing + marginIconSpacing;
+						w += px.Width + iconTextSpacing + marginIconSpacing + 4;
 					y += h + itemSeparatorHeight;
 					maxX = Math.Max (maxX, w);
 				}
@@ -300,14 +300,21 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			double maxX = 0;
 			double y = ChildAllocation.Y + yMargin;
-				
+			if (topItem != null){
+				layout.SetMarkup (GetRowMarkup (topItem.DataSource, topItem.Item));
+				int w, h;
+				layout.GetPixelSize (out w, out h);
+				y += h + itemSeparatorHeight;
+				if (y > py)
+					return new ItemIdentifier (topItem.Category, topItem.DataSource, topItem.Item);
+			}
 			foreach (var result in results) {
 				var category = result.Item1;
 				var dataSrc = result.Item2;
-				if (dataSrc.ItemCount == 0)
-					continue;
-				
+				int itemsAdded = 0;
 				for (int i = 0; i < maxItems && i < dataSrc.ItemCount; i++) {
+					if (topItem != null && topItem.DataSource == dataSrc && topItem.Item == i)
+						continue;
 					layout.SetMarkup (GetRowMarkup (dataSrc, i));
 
 					int w, h;
@@ -325,9 +332,10 @@ namespace MonoDevelop.Components.MainToolbar
 						w += w2;
 					}
 					maxX = Math.Max (maxX, w);
+					itemsAdded++;
 				}
-
-				y += categorySeparatorHeight;
+				if (itemsAdded > 0)
+					y += categorySeparatorHeight;
 			}
 			return null;
 		}
@@ -481,16 +489,19 @@ namespace MonoDevelop.Components.MainToolbar
 				declarationviewwindow.Hide ();
 				declarationviewwindow.Opacity = 0;
 			}
+			if (tooltipSrc != null)
+				tooltipSrc.Cancel ();
 		}
 
 		CancellationTokenSource tooltipSrc = null;
 		void ShowTooltip ()
 		{
 			HideTooltip ();
-			if (selectedItem == null || selectedItem.DataSource == null)
+			var currentSelectedItem = selectedItem;
+			if (currentSelectedItem == null || currentSelectedItem.DataSource == null)
 				return;
-			var i = selectedItem.Item;
-			if (i < 0 || i >= selectedItem.DataSource.ItemCount)
+			var i = currentSelectedItem.Item;
+			if (i < 0 || i >= currentSelectedItem.DataSource.ItemCount)
 				return;
 
 			if (tooltipSrc != null)
@@ -499,7 +510,7 @@ namespace MonoDevelop.Components.MainToolbar
 			var token = tooltipSrc.Token;
 
 			Task.Factory.StartNew (delegate {
-				var tooltip = selectedItem.DataSource.GetTooltip (i);
+				var tooltip = currentSelectedItem.DataSource.GetTooltip (i);
 				if (tooltip == null || string.IsNullOrEmpty (tooltip.SignatureMarkup) || token.IsCancellationRequested)
 					return;
 				Application.Invoke (delegate {
