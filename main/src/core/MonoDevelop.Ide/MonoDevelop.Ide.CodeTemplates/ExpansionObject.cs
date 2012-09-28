@@ -255,7 +255,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 				name = name.Substring (0, idx);
 			}
 			
-			var type = CurrentContext.Compilation.LookupType (ns, name);
+			var type = new GetClassTypeReference (ns, name, 0).Resolve (CurrentContext.Compilation);
 			if (type == null || type.Kind == TypeKind.Unknown)
 				return fullTypeName;
 			var generator = CodeGenerator.CreateGenerator (CurrentContext.Document);

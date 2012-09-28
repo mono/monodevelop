@@ -741,7 +741,7 @@ namespace MonoDevelop.Ide.Gui
 				string currentParseText = editor.Text;
 				this.parsedDocument = TypeSystemService.ParseFile (Project, currentParseFile, editor.Document.MimeType, currentParseText);
 				if (Project == null && this.parsedDocument != null) {
-					singleFileContext = GetProjectContext ().UpdateProjectContent (singleFileContext.GetFile (currentParseFile), parsedDocument.ParsedFile);
+					singleFileContext = GetProjectContext ().AddOrUpdateFiles (parsedDocument.ParsedFile);
 				}
 			} finally {
 				OnDocumentParsed (EventArgs.Empty);
@@ -765,7 +765,7 @@ namespace MonoDevelop.Ide.Gui
 					singleFileContext = singleFileContext.AddAssemblyReferences (new [] { Mscorlib, System, SystemCore });
 				}
 				if (parsedDocument != null)
-					return singleFileContext.UpdateProjectContent (null, parsedDocument.ParsedFile);
+					return singleFileContext.AddOrUpdateFiles (parsedDocument.ParsedFile);
 				return singleFileContext;
 			}
 			

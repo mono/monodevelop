@@ -324,7 +324,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 					if (wrapper != null && (result.Flags & ParsedDocumentFlags.NonSerializable) != ParsedDocumentFlags.NonSerializable) {
 						var oldFile = wrapper.Content.GetFile (fileName);
-						wrapper.UpdateContent (c => c.UpdateProjectContent (c.GetFile (fileName), result.ParsedFile));
+						wrapper.UpdateContent (c => c.AddOrUpdateFiles (result.ParsedFile));
 						UpdateParsedDocument (wrapper, result);
 						if (oldFile != null)
 							wrapper.InformFileRemoved (new ParsedFileEventArgs (oldFile));
@@ -339,7 +339,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						// Use the project context because file lookup is faster there than in the project class.
 						var file = cnt.Value.Content.GetFile (fileName);
 						if (file != null) {
-							cnt.Value.UpdateContent (c => c.UpdateProjectContent (file, result.ParsedFile));
+							cnt.Value.UpdateContent (c => c.AddOrUpdateFiles (result.ParsedFile));
 							cnt.Value.InformFileRemoved (new ParsedFileEventArgs (file));
 							cnt.Value.InformFileAdded (new ParsedFileEventArgs (result.ParsedFile));
 						}
@@ -379,7 +379,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				lock (projectWrapperUpdateLock) {
 					if (wrapper != null && (result.Flags & ParsedDocumentFlags.NonSerializable) != ParsedDocumentFlags.NonSerializable) {
 						var oldFile = wrapper.Content.GetFile (fileName);
-						wrapper.UpdateContent (c => c.UpdateProjectContent (c.GetFile (fileName), result.ParsedFile));
+						wrapper.UpdateContent (c => c.AddOrUpdateFiles (result.ParsedFile));
 						UpdateParsedDocument (wrapper, result);
 						if (oldFile != null)
 							wrapper.InformFileRemoved (new ParsedFileEventArgs (oldFile));
@@ -1055,6 +1055,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					return Content.RemoveAssemblyReferences (references);
 				}
 
+#pragma warning disable 618
 				IProjectContent IProjectContent.UpdateProjectContent (IUnresolvedFile oldFile, IUnresolvedFile newFile)
 				{
 					return Content.UpdateProjectContent (oldFile, newFile);
@@ -1064,6 +1065,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				{
 					return Content.UpdateProjectContent (oldFiles, newFiles);
 				}
+#pragma warning restore 618
 
 				public IProjectContent AddOrUpdateFiles (IEnumerable<IUnresolvedFile> newFiles)
 				{
@@ -1258,7 +1260,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				var file = wrapper.Content.GetFile (fileName);
 				if (file == null)
 					continue;
-				wrapper.UpdateContent (c => c.UpdateProjectContent (c.GetFile (fileName), null));
+				wrapper.UpdateContent (c => c.RemoveFiles (fileName));
 				wrapper.InformFileRemoved (new ParsedFileEventArgs (file));
 
 				var tags = wrapper.GetExtensionObject <ProjectCommentTags> ();
@@ -1275,7 +1277,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				var file = content.Content.GetFile (fargs.OldName);
 				if (file == null)
 					continue;
-				content.UpdateContent (c => c.UpdateProjectContent (c.GetFile (fargs.OldName), null));
+				content.UpdateContent (c => c.RemoveFiles (fargs.OldName));
 				content.InformFileRemoved (new ParsedFileEventArgs (file));
 
 				QueueParseJob (content, new [] { fargs.ProjectFile });
@@ -1987,7 +1989,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				var parsedDocument = ParseFile (file, mimeType, reader);
 				
 				var content = new ICSharpCode.NRefactory.CSharp.CSharpProjectContent ();
-				return content.UpdateProjectContent (null, parsedDocument.ParsedFile);
+				return content.AddOrUpdateFiles (parsedDocument.ParsedFile);
 			}
 		}
 		
@@ -2056,7 +2058,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					var parsedDocument = parser.Parse (false, fileName, Context.Project);
 					UpdateParsedDocument (Context, parsedDocument);
 					var oldFile = Context.Content.GetFile (fileName);
-					Context.UpdateContent (c => c.UpdateProjectContent (c.GetFile (fileName), parsedDocument.ParsedFile));
+					Context.UpdateContent (c => c.AddOrUpdateFiles (parsedDocument.ParsedFile));
 					if (oldFile != null)
 						Context.InformFileRemoved (new ParsedFileEventArgs (oldFile));
 					Context.InformFileAdded (new ParsedFileEventArgs (parsedDocument.ParsedFile));
@@ -2075,7 +2077,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			tags.UpdateTags (context.Project, parsedDocument.FileName, parsedDocument.TagComments);
 		}
 
-		public static event EventHandler<ProjectFileEventArgs> FileParsed;
+//		public static event EventHandler<ProjectFileEventArgs> FileParsed;
 
 		static object parseQueueLock = new object ();
 		static AutoResetEvent parseEvent = new AutoResetEvent (false);
@@ -2243,7 +2245,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					// check if file needs to be removed from project content 
 					foreach (var file in content.Content.Files) {
 						if (project.GetProjectFile (file.FileName) == null) {
-							content.UpdateContent (c => c.UpdateProjectContent (file, null));
+							content.UpdateContent (c => c.RemoveFiles (file.FileName));
 							content.InformFileRemoved (new ParsedFileEventArgs (file));
 						}
 					}
