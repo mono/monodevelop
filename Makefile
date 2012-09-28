@@ -78,6 +78,9 @@ dist: update_submodules remove-stale-tarballs dist-recursive
 run:
 	cd main && $(MAKE) run
 
+run-sgen:
+	cd main && $(MAKE) run-sgen
+
 run-gdb:
 	cd main && $(MAKE) run-gdb
 
