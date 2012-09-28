@@ -31,32 +31,17 @@ using System.Diagnostics;
 namespace MonoDevelop.Components
 {
 
-	interface Easing
+	static class Easing
 	{
-		float Ease (float val);
-	}
-
-	class LinearEasing : Easing
-	{
-		public float Ease (float val)
-		{
-			return val;
-		}
-	}
-
-	class SinInOutEasing : Easing
-	{
-		public float Ease (float val)
-		{
-			return (float)Math.Sin (val * Math.PI * 0.5f);
-		}
+		public static readonly Func<float, float> Linear = x => x;
+		public static readonly Func<float, float> SinInOut = x => (float)Math.Sin (x * Math.PI * 0.5f);
 	}
 
 	static class Animation
 	{
 		class Info
 		{
-			public Easing Easing { get; set; }
+			public Func<float, float> Easing { get; set; }
 			public uint Rate { get; set; }
 			public uint Length { get; set; }
 			public Gtk.Widget Owner { get; set; }
@@ -79,7 +64,7 @@ namespace MonoDevelop.Components
 		}
 
 		public static void Animate<T> (this Gtk.Widget self, string name = "unknown", uint rate = 16, uint length = 250, 
-		                               Easing easing = null, Func<float, T> transform = null, Action<T> callback = null, Action<T> finished = null) 
+		                               Func<float, float> easing = null, Func<float, T> transform = null, Action<T> callback = null, Action<T> finished = null) 
 		{
 			if (transform == null)
 				throw new ArgumentNullException ("transform");
@@ -88,8 +73,8 @@ namespace MonoDevelop.Components
 			if (self == null)
 				throw new ArgumentNullException ("widget");
 
-			name += self.GetHashCode ().ToString ();
 			self.RemoveAnimationHandle (name);
+			name += self.GetHashCode ().ToString ();
 
 			Action<float> step = f => callback (transform(f));
 			Action<float> final = null;
@@ -99,7 +84,7 @@ namespace MonoDevelop.Components
 			var info = new Info {
 				Rate = rate,
 				Length = length,
-				Easing = easing ?? new LinearEasing ()
+				Easing = easing ?? Easing.Linear
 			};
 
 			Tweener tweener = new Tweener (info.Length, info.Rate);
@@ -170,7 +155,7 @@ namespace MonoDevelop.Components
 		public uint Length { get; private set; }
 		public uint Rate { get; private set; }
 		public float Value { get; private set; }
-		public Easing Easing { get; set; }
+		public Func<float, float> Easing { get; set; }
 		public bool Loop { get; set; }
 		public string Handle { get; set; }
 
@@ -191,7 +176,7 @@ namespace MonoDevelop.Components
 			Loop = false;
 			Rate = rate;
 			runningTime = new Stopwatch ();
-			Easing = new LinearEasing ();
+			Easing = Components.Easing.Linear;
 		}
 
 		~Tweener ()

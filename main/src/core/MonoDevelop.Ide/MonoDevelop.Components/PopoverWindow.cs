@@ -165,7 +165,7 @@ namespace MonoDevelop.Components
 			                                                     (int)(paintSize.Height + (size.Height - paintSize.Height) * x));
 			this.Animate ("Resize",
 			              length: 150,
-			              easing: new SinInOutEasing (),
+			              easing: Easing.SinInOut,
 			              transform: transform,
 			              callback: s => paintSize = s,
 			              finished: x => { QueueResize(); });

@@ -192,7 +192,7 @@ namespace MonoDevelop.Components.MainToolbar
 			messageQueue = new Queue<Message> ();
 
 			textAnimTweener = new Tweener(250, 16);
-			textAnimTweener.Easing = new SinInOutEasing ();
+			textAnimTweener.Easing = Easing.SinInOut;
 			textAnimTweener.ValueUpdated += (o, a) => QueueDraw ();
 
 			textAnimTweener.Finished += (o, a) => {
@@ -210,7 +210,7 @@ namespace MonoDevelop.Components.MainToolbar
 			tracker.MouseMoved += (sender, e) => QueueDraw ();
 			tracker.HoveredChanged += (sender, e) => {
 				this.Animate ("Hovered",
-				              easing: new SinInOutEasing (),
+				              easing: Easing.SinInOut,
 				              transform: Animation.TransformFromTo (hoverProgress, tracker.Hovered),
 				              callback: x => hoverProgress = x);
 			};
