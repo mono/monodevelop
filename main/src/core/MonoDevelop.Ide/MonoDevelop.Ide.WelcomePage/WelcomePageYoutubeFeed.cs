@@ -40,7 +40,6 @@ namespace MonoDevelop.Ide.WelcomePage
 	class WelcomePageYoutubeFeed : WelcomePageNewsFeed
 	{
 		const string RegexString = "[^\\s]* for this session: (Coming Soon|[^\\s]*) ";
-		const int MaxSize = 300;
 
 		public WelcomePageYoutubeFeed (XElement el): base (el)
 		{
@@ -61,13 +60,6 @@ namespace MonoDevelop.Ide.WelcomePage
 				hackIndex = descHtml.IndexOf ("</span>");
 				descHtml = descHtml.Substring (0, hackIndex);
 				descHtml = RemoveDescriptionCruft (descHtml);
-
-				if (descHtml.Length > MaxSize) {
-					int truncateIndex = descHtml.IndexOf (" ", MaxSize);
-					
-					if (truncateIndex > 0)
-						descHtml = descHtml.Substring (0, truncateIndex) + "...";
-				}
 
 				yield return new WelcomePageFeedItem (name, link, descHtml, date);
 			}

@@ -47,6 +47,8 @@ namespace MonoDevelop.Ide.WelcomePage
 		Gtk.IconSize iconSize = IconSize.Menu;
 		VBox box;
 
+		const int MaxCharacters = 200;
+
 		private static Gdk.Cursor hand_cursor = new Gdk.Cursor(Gdk.CursorType.Hand1);
 
 		static WelcomePageFeedItem ()
@@ -82,10 +84,21 @@ namespace MonoDevelop.Ide.WelcomePage
 			this.LinkUrl = href;
 			
 			string desc = (string)(el.Attribute ("desc") ?? el.Attribute ("_desc"));
+
 			if (!string.IsNullOrEmpty (desc)) {
 				desc = desc.Replace (" [...]", "...");
-				this.desc = GettextCatalog.GetString (desc);
+				desc = GettextCatalog.GetString (desc);
+
+				if (desc.Length > MaxCharacters) {
+					int truncateIndex = desc.IndexOf (" ", MaxCharacters);
+					if (truncateIndex > 0)
+						desc = desc.Substring (0, truncateIndex) + "...";
+				}
+
+				this.desc = desc;
 			}
+
+
 			
 			string tooltip = (string) (el.Attribute ("tooltip") ?? el.Attribute ("_tooltip"));
 			if (!string.IsNullOrEmpty (tooltip))
@@ -114,6 +127,12 @@ namespace MonoDevelop.Ide.WelcomePage
 		{
 			this.text = label;
 			this.LinkUrl = link;
+
+			if (description.Length > MaxCharacters) {
+				int truncateIndex = description.IndexOf (" ", MaxCharacters);
+				if (truncateIndex > 0)
+					description = description.Substring (0, truncateIndex) + "...";
+			}
 			this.desc = description;
 			SetDate (date);
 			UpdateLabel (false);
@@ -142,6 +161,10 @@ namespace MonoDevelop.Ide.WelcomePage
 			summaryLabel = new Label () { Xalign = 0 };
 			summaryLabel.Wrap = true;
 			box.PackStart (summaryLabel, true, true, 0);
+
+			Pango.AttrRise rise = new Pango.AttrRise (Pango.Units.FromPixels (7));
+			summaryLabel.Attributes = new Pango.AttrList ();
+			summaryLabel.Attributes.Insert (rise);
 
 			Add (box);
 		}
