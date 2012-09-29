@@ -81,10 +81,15 @@ namespace MonoDevelop.Components.Extensions
 				var responseEntry = new Entry (Value ?? "") {
 					Visibility = !IsPassword,
 				};
+				responseEntry.Activated += (sender, e) => {
+					md.Respond (ResponseType.Ok);
+				};
 				md.VBox.PackStart (responseEntry, false, true, 6);
 				
 				md.AddActionWidget (new Button (Gtk.Stock.Cancel), ResponseType.Cancel);
 				md.AddActionWidget (new Button (Gtk.Stock.Ok), ResponseType.Ok);
+
+				md.DefaultResponse = ResponseType.Cancel;
 				
 				md.Child.ShowAll ();
 				
