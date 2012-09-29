@@ -77,6 +77,7 @@ namespace MonoDevelop.Components.MainToolbar
 		}
 
 		StatusAreaTheme theme;
+		RenderArg renderArg;
 
 		HBox contentBox = new HBox (false, 8);
 
@@ -87,32 +88,19 @@ namespace MonoDevelop.Components.MainToolbar
 		internal readonly HBox statusIconBox = new HBox ();
 		Alignment mainAlign;
 
-		string lastText;
-		string currentText;
-
 		uint animPauseHandle;
 
 		Tweener textAnimTweener;
 		MouseTracker tracker;
 
-		bool textIsMarkup;
-		bool lastTextIsMarkup;
-
 		AnimatedIcon iconAnimation;
 		IconId currentIcon;
-		Gdk.Pixbuf currentPixbuf;
 		static Pad sourcePad;
 		IDisposable currentIconAnimation;
-		double progressFraction;
-		bool showingProgress;
 
-		float errorAnimProgress;
 		bool errorAnimPending;
 
-		float hoverProgress;
-
 		IDisposable progressFadeAnimation;
-		double progressDisplayAlpha;
 
 		MainStatusBarContextImpl mainContext;
 		StatusBarContextImpl activeContext;
@@ -128,6 +116,8 @@ namespace MonoDevelop.Components.MainToolbar
 		public StatusArea ()
 		{
 			theme = new StatusAreaTheme ();
+			renderArg = new RenderArg ();
+
 			mainContext = new MainStatusBarContextImpl (this);
 			activeContext = mainContext;
 			contexts.Add (mainContext);
@@ -140,20 +130,20 @@ namespace MonoDevelop.Components.MainToolbar
 			statusIconBox.Spacing = 3;
 			
 			ProgressBegin += delegate {
-				showingProgress = true;
-				progressFraction = 0;
+				renderArg.ShowProgressBar = true;
+				renderArg.ProgressBarFraction = 0;
 				QueueDraw ();
 			};
 			
 			ProgressEnd += delegate {
-				showingProgress = false;
+				renderArg.ShowProgressBar = false;
 				if (progressFadeAnimation != null)
 					progressFadeAnimation.Dispose ();
 				progressFadeAnimation = DispatchService.RunAnimation (delegate {
-					progressDisplayAlpha -= 0.2;
+					renderArg.ProgressBarAlpha -= 0.2f;
 					QueueDraw ();
-					if (progressDisplayAlpha <= 0) {
-						progressDisplayAlpha = 0;
+					if (renderArg.ProgressBarAlpha <= 0) {
+						renderArg.ProgressBarAlpha = 0;
 						return 0;
 					}
 					else
@@ -163,14 +153,14 @@ namespace MonoDevelop.Components.MainToolbar
 			};
 			
 			ProgressFraction += delegate(object sender, FractionEventArgs e) {
-				progressFraction = e.Work;
+				renderArg.ProgressBarFraction = (float)e.Work;
 				if (progressFadeAnimation != null)
 					progressFadeAnimation.Dispose ();
 				progressFadeAnimation = DispatchService.RunAnimation (delegate {
-					progressDisplayAlpha += 0.2;
+					renderArg.ProgressBarAlpha += 0.2f;
 					QueueDraw ();
-					if (progressDisplayAlpha >= 1) {
-						progressDisplayAlpha = 1;
+					if (renderArg.ProgressBarAlpha >= 1) {
+						renderArg.ProgressBarAlpha = 1;
 						return 0;
 					}
 					else
@@ -231,8 +221,8 @@ namespace MonoDevelop.Components.MainToolbar
 			tracker.HoveredChanged += (sender, e) => {
 				this.Animate ("Hovered",
 				              easing: Easing.SinInOut,
-				              transform: Animation.TransformFromTo (hoverProgress, tracker.Hovered),
-				              callback: x => hoverProgress = x);
+				              transform: Animation.TransformFromTo (renderArg.HoverProgress, tracker.Hovered),
+				              callback: x => renderArg.HoverProgress = x);
 			};
 
 			IdeApp.FocusIn += delegate {
@@ -258,7 +248,7 @@ namespace MonoDevelop.Components.MainToolbar
 			this.Animate<float> (name: "statusAreaError",
 			              length: 700,
 			              transform: x => x,
-			              callback: val => errorAnimProgress = val);
+			              callback: val => renderArg.ErrorAnimationProgress = val);
 		}
 
 		void UpdateSeparators ()
@@ -358,27 +348,13 @@ namespace MonoDevelop.Components.MainToolbar
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
 			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
+				renderArg.Allocation            = Allocation;
+				renderArg.ChildAllocation       = messageBox.Allocation;
+				renderArg.MousePosition         = tracker.MousePosition;
+				renderArg.Pango                 = PangoContext;
+				renderArg.TextAnimationProgress = textAnimTweener.IsRunning ? textAnimTweener.Value : 1.0f;
 
-				RenderArg arg = new RenderArg {
-					Allocation             = this.Allocation,
-					ChildAllocation        = messageBox.Allocation,
-					CurrentPixbuf          = currentPixbuf,
-					CurrentText            = currentText,
-					CurrentTextIsMarkup    = textIsMarkup,
-					ErrorAnimationProgress = errorAnimProgress,
-					HoverProgress          = hoverProgress,
-					LastText               = lastText,
-					LastTextIsMarkup       = lastTextIsMarkup,
-					LastPixbuf             = null,
-					MousePosition          = tracker.MousePosition,
-					Pango                  = PangoContext,
-					ProgressBarAlpha       = (float)progressDisplayAlpha,
-					ProgressBarFraction    = (float)progressFraction,
-					ShowProgressBar        = showingProgress,
-					TextAnimationProgress  = textAnimTweener.IsRunning ? textAnimTweener.Value : 1.0f
-				};
-
-				theme.Render (context, arg);
+				theme.Render (context, renderArg);
 			}
 			return base.OnExposeEvent (evnt);
 		}
@@ -630,7 +606,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 			textAnimTweener.Start ();
 
-			if (currentText == lastText)
+			if (renderArg.CurrentText == renderArg.LastText)
 				textAnimTweener.Stop ();
 			
 			QueueDraw ();
@@ -642,11 +618,11 @@ namespace MonoDevelop.Components.MainToolbar
 				message = BrandingService.ApplicationName;
 			message = message ?? "";
 
-			lastText = currentText;
-			currentText = message.Replace ("\n", " ").Trim ();
+			renderArg.LastText = renderArg.CurrentText;
+			renderArg.CurrentText = message.Replace ("\n", " ").Trim ();
 
-			lastTextIsMarkup = textIsMarkup;
-			textIsMarkup = isMarkup;
+			renderArg.LastTextIsMarkup = renderArg.CurrentTextIsMarkup;
+			renderArg.CurrentTextIsMarkup = isMarkup;
 		}
 
 		static bool iconLoaded = false;
@@ -672,13 +648,13 @@ namespace MonoDevelop.Components.MainToolbar
 			// load image now
 			if (ImageService.IsAnimation (image, Gtk.IconSize.Menu)) {
 				iconAnimation = ImageService.GetAnimatedIcon (image, Gtk.IconSize.Menu);
-				currentPixbuf = iconAnimation.FirstFrame;
+				renderArg.CurrentPixbuf = iconAnimation.FirstFrame;
 				currentIconAnimation = iconAnimation.StartAnimation (delegate (Gdk.Pixbuf p) {
-					currentPixbuf = p;
+					renderArg.CurrentPixbuf = p;
 					QueueDraw ();
 				});
 			} else {
-				currentPixbuf = ImageService.GetPixbuf (image, Gtk.IconSize.Menu);
+				renderArg.CurrentPixbuf = ImageService.GetPixbuf (image, Gtk.IconSize.Menu);
 			}
 
 			iconLoaded = true;
