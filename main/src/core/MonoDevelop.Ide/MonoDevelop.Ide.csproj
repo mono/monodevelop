@@ -1798,6 +1798,7 @@
     <Compile Include="MonoDevelop.Components\PopoverWindowTheme.cs" />
     <Compile Include="MonoDevelop.Ide.WelcomePage\WelcomePageYoutubeFeed.cs" />
     <Compile Include="MonoDevelop.Ide\EditReferencesEventArgs.cs" />
+    <Compile Include="MonoDevelop.Components.MainToolbar\StatusAreaTheme.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

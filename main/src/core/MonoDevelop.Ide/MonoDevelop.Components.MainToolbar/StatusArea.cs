@@ -40,7 +40,6 @@ using StockIcons = MonoDevelop.Ide.Gui.Stock;
 
 namespace MonoDevelop.Components.MainToolbar
 {
-
 	class StatusArea : EventBox, StatusBar
 	{
 		struct Message
@@ -57,7 +56,27 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
-		const int PaddingLeft = 10;
+		public struct RenderArg
+		{
+			public Gdk.Rectangle Allocation { get; set; }
+			public Gdk.Rectangle ChildAllocation { get; set; }
+			public Gdk.Pixbuf    CurrentPixbuf { get; set; }
+			public string        CurrentText { get; set; }
+			public bool          CurrentTextIsMarkup { get; set; }
+			public float         ErrorAnimationProgress { get; set; }
+			public float         HoverProgress { get; set; }
+			public string        LastText { get; set; }
+			public bool          LastTextIsMarkup { get; set; }
+			public Gdk.Pixbuf    LastPixbuf { get; set; }
+			public Gdk.Point     MousePosition { get; set; }
+			public Pango.Context Pango { get; set; }
+			public float         ProgressBarAlpha { get; set; }
+			public float         ProgressBarFraction { get; set; }
+			public bool          ShowProgressBar { get; set; }
+			public float         TextAnimationProgress { get; set; }
+		}
+
+		StatusAreaTheme theme;
 
 		HBox contentBox = new HBox (false, 8);
 
@@ -108,6 +127,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public StatusArea ()
 		{
+			theme = new StatusAreaTheme ();
 			mainContext = new MainStatusBarContextImpl (this);
 			activeContext = mainContext;
 			contexts.Add (mainContext);
@@ -339,228 +359,30 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
 
-				DrawBackground (context);
+				RenderArg arg = new RenderArg {
+					Allocation             = this.Allocation,
+					ChildAllocation        = messageBox.Allocation,
+					CurrentPixbuf          = currentPixbuf,
+					CurrentText            = currentText,
+					CurrentTextIsMarkup    = textIsMarkup,
+					ErrorAnimationProgress = errorAnimProgress,
+					HoverProgress          = hoverProgress,
+					LastText               = lastText,
+					LastTextIsMarkup       = lastTextIsMarkup,
+					LastPixbuf             = null,
+					MousePosition          = tracker.MousePosition,
+					Pango                  = PangoContext,
+					ProgressBarAlpha       = (float)progressDisplayAlpha,
+					ProgressBarFraction    = (float)progressFraction,
+					ShowProgressBar        = showingProgress,
+					TextAnimationProgress  = textAnimTweener.IsRunning ? textAnimTweener.Value : 1.0f
+				};
 
-				if (errorAnimProgress > 0.001 && errorAnimProgress < .999) {
-					DrawErrorAnimation (context);
-				}
-
-				CairoExtensions.RoundedRectangle (context, Allocation.X + 1.5, Allocation.Y + 1.5, Allocation.Width - 3, Allocation.Height - 3, 3);
-				context.LineWidth = 1;
-				context.Color = Styles.StatusBarInnerColor;
-				context.Stroke ();
-
-				CairoExtensions.RoundedRectangle (context, Allocation.X + 0.5, Allocation.Y + 0.5, Allocation.Width - 1, Allocation.Height - 1, 3);
-				context.LineWidth = 1;
-				context.Color = Styles.StatusBarBorderColor;
-				context.StrokePreserve ();
-
-				if (hoverProgress > 0.001f)
-				{
-					context.Clip ();
-					int x1 = Allocation.X + tracker.MousePosition.X - 200;
-					int x2 = x1 + 400;
-					using (Cairo.LinearGradient gradient = new LinearGradient (x1, 0, x2, 0))
-					{
-						Cairo.Color targetColor = Styles.StatusBarFill1Color;
-						Cairo.Color transparentColor = targetColor;
-						targetColor.A = .7;
-						transparentColor.A = 0;
-
-						targetColor.A = .7 * hoverProgress;
-
-						gradient.AddColorStop (0.0, transparentColor);
-						gradient.AddColorStop (0.5, targetColor);
-						gradient.AddColorStop (1.0, transparentColor);
-
-						context.Pattern = gradient;
-
-						context.Rectangle (x1, Allocation.Y, x2 - x1, Allocation.Height);
-						context.Fill ();
-					}
-					context.ResetClip ();
-				} else {
-					context.NewPath ();
-				}
-
-				int progress_bar_x = messageBox.Allocation.X;
-				int progress_bar_width = messageBox.Allocation.Width;
-
-				if (currentPixbuf != null) {
-					int y = Allocation.Y + (Allocation.Height - currentPixbuf.Height) / 2;
-					Gdk.CairoHelper.SetSourcePixbuf (context, currentPixbuf, messageBox.Allocation.X, y);
-					context.Paint ();
-					progress_bar_x += currentPixbuf.Width + Styles.ProgressBarOuterPadding;
-					progress_bar_width -= currentPixbuf.Width + Styles.ProgressBarOuterPadding;
-				}
-
-				int center = Allocation.Y + Allocation.Height / 2;
-
-				Gdk.Rectangle progressArea = new Gdk.Rectangle (progress_bar_x, center - Styles.ProgressBarHeight / 2, progress_bar_width, Styles.ProgressBarHeight);
-				if (showingProgress || progressDisplayAlpha > 0) {
-					DrawProgressBar (context, progressFraction, progressArea);
-					ClipProgressBar (context, progressArea);
-				}
-
-				int text_x = progress_bar_x + Styles.ProgressBarInnerPadding;
-				int text_width = progress_bar_width - (Styles.ProgressBarInnerPadding * 2);
-
-				float textTweenValue = textAnimTweener.IsRunning ? textAnimTweener.Value : 1.0f;
-
-				if (lastText != null) {
-					double opacity = 1.0f - textTweenValue;
-					DrawString (lastText, lastTextIsMarkup, context, text_x, center - (int)(textTweenValue * Allocation.Height * 0.3), text_width, opacity);
-				}
-
-				if (currentText != null) {
-					DrawString (currentText, textIsMarkup, context, text_x, center + (int)((1.0f - textTweenValue) * Allocation.Height * 0.3), text_width, textTweenValue);
-				}
-
-				if (showingProgress || progressDisplayAlpha > 0)
-					context.ResetClip ();
+				theme.Render (context, arg);
 			}
 			return base.OnExposeEvent (evnt);
 		}
 
-		void DrawBackground (Cairo.Context context)
-		{	
-			CairoExtensions.RoundedRectangle (context, Allocation.X + .5, Allocation.Y + .5, 
-			                                  Allocation.Width - 1, Allocation.Height - 1, 3);
-			context.ClipPreserve ();
-
-			using (LinearGradient lg = new LinearGradient (Allocation.X, Allocation.Y, Allocation.X, Allocation.Y + Allocation.Height)) {
-				lg.AddColorStop (0, Styles.StatusBarFill1Color);
-				lg.AddColorStop (1, Styles.StatusBarFill4Color);
-
-				context.Pattern = lg;
-				context.FillPreserve ();
-			}
-
-			context.Save ();
-			double midX = Allocation.X + Allocation.Width / 2.0;
-			double midY = Allocation.Y + Allocation.Height;
-			context.Translate (midX, midY);
-
-			using (RadialGradient rg = new RadialGradient (0, 0, 0, 0, 0, Allocation.Height * 1.2)) {
-				rg.AddColorStop (0, Styles.StatusBarFill1Color);
-				rg.AddColorStop (1, Styles.WithAlpha (Styles.StatusBarFill1Color, 0));
-
-				context.Scale (Allocation.Width / (double)Allocation.Height, 1.0);
-				context.Pattern = rg;
-				context.Fill ();
-			}
-			context.Restore ();
-
-			using (LinearGradient lg = new LinearGradient (0, Allocation.Y, 0, Allocation.Y + Allocation.Height)) {
-				lg.AddColorStop (0, Styles.StatusBarShadowColor1);
-				lg.AddColorStop (1, Styles.WithAlpha (Styles.StatusBarShadowColor1, Styles.StatusBarShadowColor1.A * 0.2));
-
-				CairoExtensions.RoundedRectangle (context, Allocation.X + 0.5, Allocation.Y + 1.5, Allocation.Width - 1, Allocation.Height - 3, 3);
-				context.LineWidth = 1;
-				context.Pattern = lg;
-				context.Stroke ();
-			}
-
-			using (LinearGradient lg = new LinearGradient (0, Allocation.Y, 0, Allocation.Y + Allocation.Height)) {
-				lg.AddColorStop (0, Styles.StatusBarShadowColor2);
-				lg.AddColorStop (1, Styles.WithAlpha (Styles.StatusBarShadowColor2, Styles.StatusBarShadowColor2.A * 0.2));
-
-				CairoExtensions.RoundedRectangle (context, Allocation.X + 0.5, Allocation.Y + 2.5, Allocation.Width - 1, Allocation.Height - 5, 3);
-				context.LineWidth = 1;
-				context.Pattern = lg;
-				context.Stroke ();
-			}
-
-			context.ResetClip ();
-		}
-
-		void DrawErrorAnimation (Cairo.Context context)
-		{
-			float opacity;
-			int progress;
-
-			if (errorAnimProgress < .5f) {
-				progress = (int) (errorAnimProgress * Allocation.Width * 2.4);
-				opacity = 1.0f;
-			} else {
-				progress = (int) (errorAnimProgress * Allocation.Width * 2.4);
-				opacity = 1.0f - (errorAnimProgress - .5f) * 2;
-			}
-
-			CairoExtensions.RoundedRectangle (context, Allocation.X + .5, Allocation.Y + .5, 
-			                                  Allocation.Width - 1, Allocation.Height - 1, 3);
-
-			using (var lg = new LinearGradient (Allocation.X - 2000 + progress, 0, Allocation.X + progress, 0)) {
-				lg.AddColorStop (0.00, Styles.WithAlpha (Styles.StatusBarErrorColor, 0.15 * opacity));
-				lg.AddColorStop (0.85, Styles.WithAlpha (Styles.StatusBarErrorColor, 0.15 * opacity));
-				lg.AddColorStop (0.98, Styles.WithAlpha (Styles.StatusBarErrorColor, 0.3 * opacity));
-				lg.AddColorStop (1.00, Styles.WithAlpha (Styles.StatusBarErrorColor, 0.0 * opacity));
-
-				context.Pattern = lg;
-				context.Fill ();
-			}
-		}
-
-		void DrawProgressBar (Cairo.Context context, double progress, Gdk.Rectangle bounding)
-		{
-			CairoExtensions.RoundedRectangle (context, bounding.X + 0.5, bounding.Y + 0.5, (bounding.Width - 1) * progress, bounding.Height - 1, 3);
-			context.Clip ();
-
-			CairoExtensions.RoundedRectangle (context, bounding.X + 0.5, bounding.Y + 0.5, bounding.Width - 1, bounding.Height - 1, 3);
-			context.Color = new Cairo.Color (Styles.StatusBarProgressBackgroundColor.R,
-			                                 Styles.StatusBarProgressBackgroundColor.G,
-			                                 Styles.StatusBarProgressBackgroundColor.B,
-			                                 Styles.StatusBarProgressBackgroundColor.A * progressDisplayAlpha);
-			context.FillPreserve ();
-
-			context.ResetClip ();
-
-			context.Color = new Cairo.Color (Styles.StatusBarProgressOutlineColor.R,
-			                                 Styles.StatusBarProgressOutlineColor.G,
-			                                 Styles.StatusBarProgressOutlineColor.B,
-			                                 Styles.StatusBarProgressOutlineColor.A * progressDisplayAlpha);
-			context.LineWidth = 1;
-			context.Stroke ();
-		}
-
-		void ClipProgressBar (Cairo.Context context, Gdk.Rectangle bounding)
-		{
-			CairoExtensions.RoundedRectangle (context, bounding.X + 0.5, bounding.Y + 0.5, bounding.Width - 1, bounding.Height - 1, 3);
-			context.Clip ();
-		}
-
-		void DrawString (string text, bool isMarkup, Cairo.Context context, int x, int y, int width, double opacity)
-		{
-			Pango.Layout pl = new Pango.Layout (this.PangoContext);
-			if (isMarkup)
-				pl.SetMarkup (text);
-			else
-				pl.SetText (text);
-			pl.FontDescription = Styles.StatusFont;
-			pl.FontDescription.AbsoluteSize = Pango.Units.FromPixels (Styles.StatusFontPixelHeight);
-			pl.Ellipsize = Pango.EllipsizeMode.End;
-			pl.Width = Pango.Units.FromPixels(width);
-
-			int w, h;
-			pl.GetPixelSize (out w, out h);
-
-			context.Save ();
-			// use widget height instead of message box height as message box does not have a true height when no widgets are packed in it
-			// also ensures animations work properly instead of getting clipped
-			context.Rectangle (new Rectangle (x, Allocation.Y, width, Allocation.Height));
-			context.Clip ();
-
-			// Subtract off remainder instead of drop to prefer higher centering when centering an odd number of pixels
-			context.MoveTo (x, y - h / 2 - (h % 2));
-
-			Cairo.Color finalColor = Styles.StatusBarTextColor;
-			finalColor.A = opacity;
-			context.Color = finalColor;
-
-			Pango.CairoHelper.ShowLayout (context, pl);
-			pl.Dispose ();
-			context.Restore ();
-		}
 
 		#region StatusBar implementation
 
