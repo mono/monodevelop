@@ -100,8 +100,6 @@ namespace MonoDevelop.Components.MainToolbar
 
 		bool errorAnimPending;
 
-		IDisposable progressFadeAnimation;
-
 		MainStatusBarContextImpl mainContext;
 		StatusBarContextImpl activeContext;
 
@@ -128,44 +126,28 @@ namespace MonoDevelop.Components.MainToolbar
 
 			statusIconBox.BorderWidth = 0;
 			statusIconBox.Spacing = 3;
-			
+
+			Action<bool> animateProgressBar = 
+				x => this.Animate ("ProgressBarFade",
+			                       easing: Easing.CubicInOut,
+			                       transform: Animation.TransformFromTo (renderArg.ProgressBarAlpha, x),
+			                       callback: val => renderArg.ProgressBarAlpha = val);
+
 			ProgressBegin += delegate {
 				renderArg.ShowProgressBar = true;
 				renderArg.ProgressBarFraction = 0;
 				QueueDraw ();
+				animateProgressBar (true);
 			};
 			
 			ProgressEnd += delegate {
 				renderArg.ShowProgressBar = false;
-				if (progressFadeAnimation != null)
-					progressFadeAnimation.Dispose ();
-				progressFadeAnimation = DispatchService.RunAnimation (delegate {
-					renderArg.ProgressBarAlpha -= 0.2f;
-					QueueDraw ();
-					if (renderArg.ProgressBarAlpha <= 0) {
-						renderArg.ProgressBarAlpha = 0;
-						return 0;
-					}
-					else
-						return 100;
-				});
 				QueueDraw ();
+				animateProgressBar (false);
 			};
-			
+
 			ProgressFraction += delegate(object sender, FractionEventArgs e) {
 				renderArg.ProgressBarFraction = (float)e.Work;
-				if (progressFadeAnimation != null)
-					progressFadeAnimation.Dispose ();
-				progressFadeAnimation = DispatchService.RunAnimation (delegate {
-					renderArg.ProgressBarAlpha += 0.2f;
-					QueueDraw ();
-					if (renderArg.ProgressBarAlpha >= 1) {
-						renderArg.ProgressBarAlpha = 1;
-						return 0;
-					}
-					else
-						return 100;
-				});
 				QueueDraw ();
 			};
 
