@@ -39,7 +39,7 @@ namespace MonoDevelop.CodeGeneration
 {
 	public abstract class AbstractGenerateAction : IGenerateAction
 	{
-		TreeStore store = new TreeStore (typeof(bool), typeof(Gdk.Pixbuf), typeof(string), typeof(IEntity));
+		TreeStore store = new TreeStore (typeof(bool), typeof(Gdk.Pixbuf), typeof(string), typeof(object));
 		CodeGenerationOptions options;
 		
 		public CodeGenerationOptions Options {
@@ -83,11 +83,16 @@ namespace MonoDevelop.CodeGeneration
 					Store.AppendValues (false, ImageService.GetPixbuf (member.GetStockIcon (), IconSize.Menu), ambience.GetString (member, OutputFlags.ClassBrowserEntries), member);
 					continue;
 				}
-				
+
+				var tuple = obj as Tuple<IMember, bool>;
+				if (tuple != null) {
+					Store.AppendValues (false, ImageService.GetPixbuf (tuple.Item1.GetStockIcon (), IconSize.Menu), ambience.GetString (tuple.Item1, OutputFlags.ClassBrowserEntries), tuple);
+					continue;
+				}
+
 				var variable = obj as IVariable;
 				if (variable != null)
 					Store.AppendValues (false, ImageService.GetPixbuf (variable.GetStockIcon (), IconSize.Menu), variable.Name, variable);
-				
 			}
 			
 			treeView.Model = store;

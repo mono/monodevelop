@@ -21,7 +21,9 @@
 		<Command id = "MonoDevelop.CodeGeneration.CodeGenerationCommands.ShowCodeGenerationWindow"
 				defaultHandler = "MonoDevelop.CodeGeneration.ShowCodeGenerationWindowHandler"
 				_label = "S_how Code Generation Window" 
-				shortcut = "Alt|Insert" />
+				shortcut = "Alt|Insert"
+				macShortcut = "Meta|I"
+				 />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
@@ -233,6 +235,7 @@
 		<Class class = "MonoDevelop.CodeGeneration.CreateConstructorGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.ReadonlyPropertyGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.PropertyGenerator" />
+		<Class class = "MonoDevelop.CodeGeneration.ImplementInterfaceMembersGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.OverrideMembersGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.ToStringGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.RaiseEventMethodGenerator" />
