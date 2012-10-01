@@ -48,6 +48,7 @@ using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using MonoDevelop.SourceEditor.QuickTasks;
 using System.Threading;
 using System.Diagnostics;
+using MonoDevelop.Core;
 
 
 namespace MonoDevelop.CSharp.Highlighting
@@ -135,7 +136,12 @@ namespace MonoDevelop.CSharp.Highlighting
 						var newResolver = new CSharpAstResolver (compilation, unit, parsedFile);
 						System.Threading.Tasks.Task.Factory.StartNew (delegate {
 							var visitor = new QuickTaskVisitor (newResolver, cancellationToken);
-							unit.AcceptVisitor (visitor);
+							try {
+								unit.AcceptVisitor (visitor);
+							} catch (Exception ex) {
+								LoggingService.LogError ("Error while analyzing the file for the semantic highlighting.", ex);
+								return;
+							}
 							if (!cancellationToken.IsCancellationRequested) {
 								Gtk.Application.Invoke (delegate {
 									if (cancellationToken.IsCancellationRequested)

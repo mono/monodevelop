@@ -483,12 +483,12 @@ namespace MonoDevelop.CSharp.Completion
 		class CompletionDataFactory : ICompletionDataFactory
 		{
 			CSharpCompletionTextEditorExtension ext;
-			readonly CSharpResolver state;
+//			readonly CSharpResolver state;
 			readonly TypeSystemAstBuilder builder;
 
 			public CompletionDataFactory (CSharpCompletionTextEditorExtension ext, CSharpResolver state)
 			{
-				this.state = state;
+//				this.state = state;
 				builder = new TypeSystemAstBuilder(state);
 				this.ext = ext;
 			}

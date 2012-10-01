@@ -245,7 +245,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					if (parsedFile == null) {
 						// for fallback purposes - should never happen.
 						parsedFile = unit.ToTypeSystem ();
-						content = content.UpdateProjectContent (content.GetFile (file), parsedFile);
+						content = content.AddOrUpdateFiles (parsedFile);
 						compilation = content.CreateCompilation ();
 					}
 					foreach (var scope in scopes) {

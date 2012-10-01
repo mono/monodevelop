@@ -54,9 +54,8 @@ namespace MonoDevelop.CSharp.Completion
 		OutputFlags flags;
 		bool hideExtensionParameter = true;
 		static CSharpAmbience ambience = new CSharpAmbience ();
-		bool descriptionCreated = false;
-		
-		string description, completionString;
+
+		string completionString;
 		string displayText;
 		
 		Dictionary<string, CompletionData> overloads;
@@ -261,7 +260,6 @@ namespace MonoDevelop.CSharp.Completion
 		void SetMember (IEntity entity)
 		{
 			this.Entity = entity;
-			descriptionCreated = false;
 			this.completionString = displayText = entity.Name;
 		}
 

@@ -46,12 +46,12 @@ namespace MonoDevelop.CSharp.Completion
 {
 	class IndexerParameterDataProvider : AbstractParameterDataProvider
 	{
-		AstNode resolvedExpression;
+//		AstNode resolvedExpression;
 		List<IProperty> indexers;
 
 		public IndexerParameterDataProvider (int startOffset, CSharpCompletionTextEditorExtension ext, IType type, AstNode resolvedExpression) : base (ext, startOffset)
 		{
-			this.resolvedExpression = resolvedExpression;
+//			this.resolvedExpression = resolvedExpression;
 			indexers = new List<IProperty> (type.GetProperties (p => p.IsIndexer));
 		}
 

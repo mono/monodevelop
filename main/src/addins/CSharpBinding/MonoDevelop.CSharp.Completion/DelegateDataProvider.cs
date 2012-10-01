@@ -47,13 +47,12 @@ namespace MonoDevelop.CSharp.Completion
 {
 	class DelegateDataProvider : AbstractParameterDataProvider
 	{
-		IType delegateType;
+//		IType delegateType;
 		IMethod delegateMethod;
-		CSharpAmbience ambience = new CSharpAmbience ();
 
 		public DelegateDataProvider (int startOffset, CSharpCompletionTextEditorExtension ext, IType delegateType) : base (ext, startOffset)
 		{
-			this.delegateType = delegateType;
+//			this.delegateType = delegateType;
 			this.delegateMethod = delegateType.GetDelegateInvokeMethod ();
 		}
 
