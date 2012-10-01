@@ -569,9 +569,9 @@ namespace Mono.TextEditor
 				if (Caret.IsVisible)
 					DrawCaret (textEditor.GdkWindow, textEditor.Allocation);
 			} else {
-				textEditor.QueueDrawArea (caretRectangle.X,
+				textEditor.QueueDrawArea (caretRectangle.X - (int)textEditor.Options.Zoom,
                                           (int)(caretRectangle.Y + (textEditor.VAdjustment.Value - caretVAdjustmentValue)),
-                                          caretRectangle.Width,
+				                          caretRectangle.Width + 2 * (int)textEditor.Options.Zoom,
                                           caretRectangle.Height);
 			}
 
@@ -638,7 +638,7 @@ namespace Mono.TextEditor
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (win)) {
 				cr.Rectangle (XOffset, 0, textEditor.Allocation.Width - XOffset, textEditor.Allocation.Height);
 				cr.Clip ();
-				cr.LineWidth = textEditor.Options.Zoom;
+				cr.LineWidth = System.Math.Max (1, System.Math.Floor (textEditor.Options.Zoom));
 				cr.Antialias = Cairo.Antialias.None;
 				var curRect = new Gdk.Rectangle ((int)caretX, (int)caretY, (int)this.charWidth, (int)LineHeight - 1);
 				if (curRect != caretRectangle) {
