@@ -414,7 +414,7 @@ namespace Mono.TextEditor
 		extern static bool gdk_keymap_add_virtual_modifiers (IntPtr keymap, ref Gdk.ModifierType state);
 		
 		//Custom patch in Mono Mac w/GTK+ 2.24.8+
-		[DllImport (PangoUtil.LIBGDK, CallingConvention = CallingConvention.Cdecl))]
+		[DllImport (PangoUtil.LIBGDK, CallingConvention = CallingConvention.Cdecl)]
 		extern static bool gdk_quartz_set_fix_modifiers (bool fix);
 		
 		static Gdk.Keymap keymap = Gdk.Keymap.Default;

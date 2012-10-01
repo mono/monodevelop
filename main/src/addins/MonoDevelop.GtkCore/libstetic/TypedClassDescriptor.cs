@@ -122,7 +122,7 @@ namespace Stetic
 			return (ObjectWrapper) Activator.CreateInstance (WrapperType);
 		}
 
-		[DllImport("libgobject-2.0-0.dll")]
+		[DllImport ("libgobject-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr g_object_new (IntPtr gtype, IntPtr dummy);
 
 		public override object CreateInstance (IProject proj)

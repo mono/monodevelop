@@ -370,7 +370,7 @@ namespace MonoDevelop.Components
 
         private static bool native_push_pop_exists = true;
 
-        [DllImport ("libcairo-2.dll")]
+        [DllImport ("libcairo-2.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern void cairo_push_group (IntPtr ptr);
         private static CairoInteropCall cairo_push_group_call = new CairoInteropCall ("PushGroup");
 
@@ -389,7 +389,7 @@ namespace MonoDevelop.Components
             }
         }
 
-        [DllImport ("libcairo-2.dll")]
+		[DllImport ("libcairo-2.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern void cairo_pop_group_to_source (IntPtr ptr);
         private static CairoInteropCall cairo_pop_group_to_source_call = new CairoInteropCall ("PopGroupToSource");
 
@@ -484,7 +484,7 @@ namespace MonoDevelop.Components
 
 	public class QuartzSurface : Cairo.Surface
 	{
-		[DllImport ("libcairo-2.dll")]
+		[DllImport ("libcairo-2.dll", CallingConvention = CallingConvention.Cdecl)]
 		public static extern IntPtr cairo_quartz_surface_create(Cairo.Format format, uint width, uint height);
 
 		public QuartzSurface (Cairo.Format format, int width, int height)

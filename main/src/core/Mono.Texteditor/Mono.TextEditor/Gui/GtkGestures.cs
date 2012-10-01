@@ -36,7 +36,7 @@ namespace Mono.TextEditor
 		const int GDK_GESTURE_ROTATE  = 38;
 		const int GDK_GESTURE_SWIPE   = 39;
 
-		[DllImport (PangoUtil.LIBGDK)]
+		[DllImport (PangoUtil.LIBGDK, CallingConvention = CallingConvention.Cdecl)]
 		static extern bool gdk_quartz_supports_gesture_events ();
 
 		static bool isSupported;
