@@ -80,6 +80,19 @@ namespace MonoDevelop.CSharp.Formatting
 			};
 		}
 
+		bool IsPreprocessorDirective (DocumentLine documentLine)
+		{
+			int o = documentLine.Offset;
+			for (int i = 0; i < documentLine.Length; i++) {
+				char ch = Editor.GetCharAt (o++);
+				if (ch == '#')
+					return true;
+				if (!char.IsWhiteSpace (ch)) {
+					return false;
+				}
+			}
+			return false;
+		}
 
 		void HandleTextPaste (int insertionOffset, string text, int insertedChars)
 		{
@@ -115,11 +128,17 @@ namespace MonoDevelop.CSharp.Formatting
 //					}
 //				}
 //			}
+
 				var documentLine = Editor.GetLineByOffset (insertionOffset + insertedChars);
 				while (documentLine != null && insertionOffset < documentLine.EndOffset) {
 					if (documentLine.Length > 0) {
 						stateTracker.UpdateEngine (documentLine.Offset);
-						DoReSmartIndent (documentLine.Offset);
+						// The Indent engine doesn't really handle pre processor directives very well.
+						if (IsPreprocessorDirective (documentLine)) {
+							Editor.Replace (documentLine.Offset, documentLine.Length, stateTracker.Engine.NewLineIndent + Editor.GetTextAt (documentLine).TrimStart ());
+						} else {
+							DoReSmartIndent (documentLine.Offset);
+						}
 					}
 					documentLine = documentLine.PreviousLine;
 				}
