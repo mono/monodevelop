@@ -39,16 +39,16 @@ namespace MonoDevelop.Gettext.Editor
 		static bool isSupported;
 		
 #region Native methods
-		[DllImport ("libgtkspell")]
+		[DllImport ("libgtkspell", CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr gtkspell_new_attach (IntPtr textView, string locale, IntPtr error);
 
-		[DllImport ("libgtkspell")]
+		[DllImport ("libgtkspell", CallingConvention = CallingConvention.Cdecl)]
 		static extern void gtkspell_detach (IntPtr ptr);
-		
-		[DllImport ("libgtkspell")]
+
+		[DllImport ("libgtkspell", CallingConvention = CallingConvention.Cdecl)]
 		static extern void gtkspell_recheck_all (IntPtr ptr);
-		
-		[DllImport ("libgtkspell")]
+
+		[DllImport ("libgtkspell", CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr gtkspell_get_from_text_view (IntPtr textView);
 		
 //		[DllImport ("libgtkspell")]

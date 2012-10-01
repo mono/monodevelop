@@ -125,14 +125,14 @@ namespace Stetic.Windows
 
 		[DllImport ("user32.dll")]
 		static extern int ReleaseDC (IntPtr hWnd, IntPtr hDC);
-	
-		[DllImport ("libgdk-win32-2.0-0.dll")]
+
+		[DllImport ("libgdk-win32-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr gdk_win32_drawable_get_handle (IntPtr raw);
 
-		[DllImport ("libgdk-win32-2.0-0.dll")]
+		[DllImport ("libgdk-win32-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr gdk_win32_hdc_get (IntPtr drawable, IntPtr gc, int usage);
 
-		[DllImport ("libgdk-win32-2.0-0.dll")]
+		[DllImport ("libgdk-win32-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
 		static extern void gdk_win32_hdc_release (IntPtr drawable, IntPtr gc, int usage);
 	}
 

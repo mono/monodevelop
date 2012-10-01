@@ -134,15 +134,15 @@ namespace MonoDevelop.Platform
 		}
 	}
 	
-	static class GdkWin32
+	public static class GdkWin32
 	{
-		[System.Runtime.InteropServices.DllImport ("libgdk-win32-2.0-0.dll")]
+		[System.Runtime.InteropServices.DllImport ("libgdk-win32-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr gdk_win32_drawable_get_handle (IntPtr drawable);
-		
-		[System.Runtime.InteropServices.DllImport ("libgdk-win32-2.0-0.dll")]
+
+		[System.Runtime.InteropServices.DllImport ("libgdk-win32-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr gdk_win32_hdc_get (IntPtr drawable, IntPtr gc, int usage);
 
-		[System.Runtime.InteropServices.DllImport ("libgdk-win32-2.0-0.dll")]
+		[System.Runtime.InteropServices.DllImport ("libgdk-win32-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
 		static extern void gdk_win32_hdc_release (IntPtr drawable, IntPtr gc, int usage);
 		
 		public static IntPtr HgdiobjGet (Gdk.Drawable drawable)

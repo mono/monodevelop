@@ -362,7 +362,7 @@ namespace MonoDevelop.Components
 
         private static bool native_push_pop_exists = true;
 
-        [DllImport ("libcairo-2.dll")]
+        [DllImport ("libcairo-2.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern void cairo_push_group (IntPtr ptr);
         private static CairoInteropCall cairo_push_group_call = new CairoInteropCall ("PushGroup");
 
@@ -381,7 +381,7 @@ namespace MonoDevelop.Components
             }
         }
 
-        [DllImport ("libcairo-2.dll")]
+		[DllImport ("libcairo-2.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern void cairo_pop_group_to_source (IntPtr ptr);
         private static CairoInteropCall cairo_pop_group_to_source_call = new CairoInteropCall ("PopGroupToSource");
 
@@ -399,5 +399,89 @@ namespace MonoDevelop.Components
                 native_push_pop_exists = false;
             }
         }
-    }
+
+		public static Cairo.Color ParseColor (string s, double alpha = 1)
+		{
+			if (s.StartsWith ("#"))
+				s = s.Substring (1);
+			if (s.Length == 3)
+				s = "" + s[0]+s[0]+s[1]+s[1]+s[2]+s[2];
+			double r = ((double) int.Parse (s.Substring (0,2), System.Globalization.NumberStyles.HexNumber)) / 255;
+			double g = ((double) int.Parse (s.Substring (2,2), System.Globalization.NumberStyles.HexNumber)) / 255;
+			double b = ((double) int.Parse (s.Substring (4,2), System.Globalization.NumberStyles.HexNumber)) / 255;
+			return new Cairo.Color (r, g, b, alpha);
+		}
+
+		public static ImageSurface LoadImage (Assembly assembly, string resource)
+		{
+			byte[] buffer;
+			using (var stream = assembly.GetManifestResourceStream (resource)) {
+				buffer = new byte [stream.Length];
+				stream.Read (buffer, 0, (int)stream.Length);
+			}
+/* This should work, but doesn't:
+			using (var px = new Gdk.Pixbuf (buffer)) 
+				return new ImageSurface (px.Pixels, Format.Argb32, px.Width, px.Height, px.Rowstride);*/
+
+			// Workaround: loading from file name.
+			var tmp = System.IO.Path.GetTempFileName ();
+			System.IO.File.WriteAllBytes (tmp, buffer);
+			var img = new ImageSurface (tmp);
+			System.IO.File.Delete (tmp);
+			return img;
+		}
+	}
+
+	class SurfaceWrapper
+	{
+		public Cairo.Surface Surface { get; private set; }
+		public int Width { get; private set; }
+		public int Height { get; private set; }
+
+		public SurfaceWrapper (Cairo.Context similar, int width, int height)
+		{
+			if (MonoDevelop.Core.Platform.IsMac)
+				Surface = new QuartzSurface (Cairo.Format.ARGB32, width, height);
+			else
+				Surface = similar.Target.CreateSimilar (Cairo.Content.ColorAlpha, width, height);
+			Width = width;
+			Height = height;
+		}
+
+		public SurfaceWrapper (Cairo.Context similar, Gdk.Pixbuf source)
+		{
+			Cairo.Surface surface;
+			// There is a bug in Cairo for OSX right now that prevents creating additional accellerated surfaces.
+			if (MonoDevelop.Core.Platform.IsMac)
+				surface = new QuartzSurface (Cairo.Format.ARGB32, source.Width, source.Height);
+			else
+				surface = similar.Target.CreateSimilar (Cairo.Content.ColorAlpha, source.Width, source.Height);
+
+			using (Cairo.Context context = new Cairo.Context (surface)) {
+				Gdk.CairoHelper.SetSourcePixbuf (context, source, 0, 0);
+				context.Paint ();
+			}
+
+			Surface = surface;
+			Width = source.Width;
+			Height = source.Height;
+		}
+
+		~SurfaceWrapper ()
+		{
+			Surface.Destroy ();
+			((IDisposable)Surface).Dispose ();
+		}
+	}
+
+	public class QuartzSurface : Cairo.Surface
+	{
+		[DllImport ("libcairo-2.dll", CallingConvention = CallingConvention.Cdecl)]
+		public static extern IntPtr cairo_quartz_surface_create(Cairo.Format format, uint width, uint height);
+
+		public QuartzSurface (Cairo.Format format, int width, int height)
+			: base (cairo_quartz_surface_create (format, (uint)width, (uint)height), true)
+		{
+		}
+	}
 }

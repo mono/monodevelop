@@ -115,8 +115,8 @@ namespace Stetic.Wrapper {
 			// This method disables this behavior
 			gtk_combo_box_set_button_sensitivity (c.Handle, 1);
 		}
-		
-		[DllImport("libgtk-win32-2.0-0.dll")]
+
+		[DllImport ("libgtk-win32-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
 		extern static void gtk_combo_box_set_button_sensitivity (IntPtr combo, int mode);
 	}
 }

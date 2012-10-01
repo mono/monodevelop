@@ -37,31 +37,31 @@ namespace MonoDevelop.Platform {
 		const string glib = "libglib-2.0-0.dll";
 		const string gobject = "libgobject-2.0-0.dll";
 
-		[DllImport (gio)]
+		[DllImport (gio, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr g_app_info_get_executable (IntPtr raw);
-		[DllImport (gio)]
+		[DllImport (gio, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr g_app_info_get_id (IntPtr raw);
-		[DllImport (gio)]
+		[DllImport (gio, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr g_app_info_get_name (IntPtr raw);
-		[DllImport (gio)]
+		[DllImport (gio, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr g_app_info_get_default_for_type (IntPtr content_type, bool must_support_uris);
-		[DllImport (gio)]
+		[DllImport (gio, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr g_app_info_get_all_for_type (IntPtr content_type);
-		[DllImport (gio)]
+		[DllImport (gio, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr g_content_type_from_mime_type (IntPtr mime_type);
-		[DllImport (gio)]
+		[DllImport (gio, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr g_content_type_get_description (IntPtr mime_type);
-		[DllImport (gio)]
+		[DllImport (gio, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr g_content_type_get_mime_type (IntPtr content_type);
-		[DllImport (gio)]
+		[DllImport (gio, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr g_file_info_get_content_type (IntPtr handle);
-		[DllImport (gio)]
+		[DllImport (gio, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr g_file_new_for_uri (IntPtr uri);
-		[DllImport (gio)]
+		[DllImport (gio, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr g_file_query_info (IntPtr handle, IntPtr attrs, int flags, IntPtr cancellable, out IntPtr error);
-		[DllImport (glib)]
+		[DllImport (glib, CallingConvention = CallingConvention.Cdecl)]
 		static extern void g_list_free (IntPtr raw);
-		[DllImport (gobject)]
+		[DllImport (gobject, CallingConvention = CallingConvention.Cdecl)]
 		static extern void g_object_unref (IntPtr handle);
 
 		struct GList {
