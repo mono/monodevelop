@@ -683,7 +683,7 @@ namespace MonoDevelop.Ide.Gui
 		[Test]
 		public void TestSelectFirst ()
 		{
-			string output = RunSimulation ("", "Are\t", true, true, false, "AreSame", "AreEqual", "AreDifferent");
+			string output = RunSimulation ("", "Are\t", true, true, false, "AreDifferent", "Differenx", "AreDiffereny");
 			Assert.AreEqual ("AreDifferent", output);
 		}
 
@@ -764,6 +764,16 @@ namespace MonoDevelop.Ide.Gui
 
 			output = RunSimulation ("", "val\t", true, true, false, "Value", "value", "value:");
 			Assert.AreEqual ("value", output);
+		}
+
+		/// <summary>
+		/// Bug 7522 - Code completion list should give preference to shorter words
+		/// </summary>
+		[Test]
+		public void TestBug7522 ()
+		{
+			string output = RunSimulation ("", "vis\t", true, true, false, "VisibilityNotifyEvent", "Visible");
+			Assert.AreEqual ("Visible", output);
 		}
 
 		[TestFixtureSetUp] 
