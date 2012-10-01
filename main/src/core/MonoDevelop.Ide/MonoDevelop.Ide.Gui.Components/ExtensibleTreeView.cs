@@ -1197,8 +1197,6 @@ namespace MonoDevelop.Ide.Gui.Components
 				if (editable == null)
 					return false;
 
-				int insertPos = 0;
-				editable.InsertText (nodeName, ref insertPos);
 				editable.SelectRegion (selectionStart, selectionStart + selectionLength);
 				return false;
 			});
