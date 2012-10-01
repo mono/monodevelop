@@ -435,9 +435,11 @@ namespace MonoDevelop.CSharp.Highlighting
 				}
 			}*/
 			CSharpSyntaxMode csharpSyntaxMode;
-			
+			int lineNumber, offset;
 			public CSharpChunkParser (CSharpSyntaxMode csharpSyntaxMode, SpanParser spanParser, ColorScheme style, DocumentLine line) : base (csharpSyntaxMode, spanParser, style, line)
 			{
+				lineNumber = line.LineNumber;
+				offset = line.Offset;
 				this.csharpSyntaxMode = csharpSyntaxMode;
 				foreach (var tag in CommentTag.SpecialCommentTags) {
 					tags.Add (tag.Tag);
@@ -476,7 +478,8 @@ namespace MonoDevelop.CSharp.Highlighting
 				bool found = csharpSyntaxMode.highlightedSegmentCache.GetStyle (chunk, ref endOffset, out style);
 				if (!found && !csharpSyntaxMode.highlightedSegmentCache.IsDirty) {
 					style = GetSemanticStyleFromAst (parsedDocument, chunk, ref endOffset);
-					csharpSyntaxMode.highlightedSegmentCache.AddStyle (chunk.Offset, style == null ? chunk.EndOffset : endOffset, style);
+					if (style != null)
+						csharpSyntaxMode.highlightedSegmentCache.AddStyle (chunk.Offset, style == null ? chunk.EndOffset : endOffset, style);
 				}
 				return style;
 			}
@@ -493,8 +496,11 @@ namespace MonoDevelop.CSharp.Highlighting
 				if (unit == null || csharpSyntaxMode.resolver == null)
 					return null;
 				
-				var loc = doc.OffsetToLocation (chunk.Offset);
+				var loc = new DocumentLocation (lineNumber, 1 + chunk.Offset - this.offset);
 				var node = unit.GetNodeAt (loc, n => n is Identifier || n is AstType || n is CSharpTokenNode);
+				if (node == null) {
+					return null;
+				}
 				var word = wordbuilder.ToString ();
 				string color;
 				while (node != null && !(node is Statement || node is EntityDeclaration)) {
