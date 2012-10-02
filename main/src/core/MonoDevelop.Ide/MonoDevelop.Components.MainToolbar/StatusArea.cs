@@ -590,7 +590,7 @@ namespace MonoDevelop.Components.MainToolbar
 			this.Animate ("Text", 
 			              x => renderArg.TextAnimationProgress = x,
 			              easing: Easing.SinInOut,
-			              finished: x => { animPauseHandle = GLib.Timeout.Add (1000, () => {
+			              finished: (x, b) => { animPauseHandle = GLib.Timeout.Add (1000, () => {
 					if (messageQueue.Count > 0) {
 						Message m = messageQueue.Dequeue();
 						ShowMessageInner (m.Icon, m.Text, m.IsMarkup);

@@ -54,7 +54,7 @@ namespace MonoDevelop.Components
 			public uint Length { get; set; }
 			public Gtk.Widget Owner { get; set; }
 			public Action<float> callback;
-			public Action<float> finished;
+			public Action<float, bool> finished;
 			public Tweener tweener;
 		}
 
@@ -72,19 +72,19 @@ namespace MonoDevelop.Components
 		}
 
 		public static void Animate (this Gtk.Widget self, string name, Action<float> callback, float start, float end, uint rate = 16, uint length = 250, 
-		                            Func<float, float> easing = null, Action<float> finished = null)
+		                            Func<float, float> easing = null, Action<float, bool> finished = null)
 		{
 			self.Animate<float> (name, Interpolate (start, end), callback, rate, length, easing, finished);
 		}
 
 		public static void Animate (this Gtk.Widget self, string name, Action<float> callback, uint rate = 16, uint length = 250, 
-		                               Func<float, float> easing = null, Action<float> finished = null)
+		                            Func<float, float> easing = null, Action<float, bool> finished = null)
 		{
 			self.Animate<float> (name, x => x, callback, rate, length, easing, finished);
 		}
 
 		public static void Animate<T> (this Gtk.Widget self, string name, Func<float, T> transform, Action<T> callback, uint rate = 16, uint length = 250, 
-		                               Func<float, float> easing = null, Action<T> finished = null) 
+		                               Func<float, float> easing = null, Action<T, bool> finished = null) 
 		{
 			if (transform == null)
 				throw new ArgumentNullException ("transform");
@@ -97,9 +97,9 @@ namespace MonoDevelop.Components
 			name += self.GetHashCode ().ToString ();
 
 			Action<float> step = f => callback (transform(f));
-			Action<float> final = null;
+			Action<float, bool> final = null;
 			if (finished != null)
-				final = f => finished (transform(f));
+				final = (f, b) => finished (transform(f), b);
 
 			var info = new Info {
 				Rate = rate,
@@ -137,7 +137,7 @@ namespace MonoDevelop.Components
 
 			animations.Remove (handle);
 			if (info.finished != null)
-				info.finished (1.0f);
+				info.finished (1.0f, true);
 			return true;
 		}
 
@@ -168,7 +168,7 @@ namespace MonoDevelop.Components
 			tweener.Finished -= HandleTweenerFinished;
 
 			if (info.finished != null)
-				info.finished (tweener.Value);
+				info.finished (tweener.Value, false);
 			info.Owner.QueueDraw ();
 		}
 	}

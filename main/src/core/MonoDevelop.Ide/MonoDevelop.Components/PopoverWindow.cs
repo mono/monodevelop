@@ -169,7 +169,7 @@ namespace MonoDevelop.Components
 			              easing: Easing.SinInOut,
 			              transform: transform,
 			              callback: s => paintSize = s,
-			              finished: x => { MaybeReanimate(); });
+			              finished: (x, aborted) => { if (!aborted) MaybeReanimate(); });
 			QueueResize ();
 		}
 
