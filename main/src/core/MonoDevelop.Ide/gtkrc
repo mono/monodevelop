@@ -198,8 +198,8 @@ style "toolbar-combo-box" = "default"
     text[NORMAL] = @fg_color
     bg[NORMAL] = "#fff"
     base[NORMAL] = "#fff"
-    ythickness = 2
-    xthickness = 2
+    ythickness = 4
+    xthickness = 4
 
     engine "xamarin" {
 	comboboxstyle = 0
@@ -210,8 +210,8 @@ style "toolbar-combo-box" = "default"
 style "combo-box" = "default"
 {
     fg[NORMAL] = "#616161"
-    xthickness = 2
-    ythickness = 2
+    xthickness = 4
+    ythickness = 4
 
     engine "xamarin" {
         arrowstyle = 3
@@ -291,8 +291,8 @@ style "progressbar" = "default"
 
 style "scrolled-window" = "default"
 {
-    xthickness = 0
-    ythickness = 0
+    xthickness = 1
+    ythickness = 1
 }
 
 style "scale" = "default"
@@ -324,6 +324,7 @@ widget "*GtkEntry" style:highest "entry"
 widget "*search-entry*" style "search-entry"
 
 widget_class "*<GtkButton>"     style "button"
+widget "*.GtkToggleButton"      style "button"
 
 widget_class "*<GtkMenu>*"      style "menu"
 widget_class "*<GtkMenuItem>*"  style "menu-item"
