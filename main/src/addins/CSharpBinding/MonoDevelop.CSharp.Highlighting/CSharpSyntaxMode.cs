@@ -77,6 +77,11 @@ namespace MonoDevelop.CSharp.Highlighting
 		CSharpAstResolver resolver;
 		CancellationTokenSource src = null;
 
+		public bool semanticHighlightingEnabled {
+			get;
+			set;
+		}
+
 		internal class StyledTreeSegment : TreeSegment
 		{
 			public string Style {
@@ -588,8 +593,11 @@ namespace MonoDevelop.CSharp.Highlighting
 			guiDocument.Closed += delegate {
 				if (src != null)
 					src.Cancel ();
+				MonoDevelop.Core.PropertyService.PropertyChanged -= HandlePropertyChanged;
 			};
 			guiDocument.DocumentParsed += HandleDocumentParsed;
+			semanticHighlightingEnabled = MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", true);
+			MonoDevelop.Core.PropertyService.PropertyChanged += HandlePropertyChanged;
 			if (guiDocument.ParsedDocument != null)
 				HandleDocumentParsed (this, EventArgs.Empty);
 
@@ -626,6 +634,12 @@ namespace MonoDevelop.CSharp.Highlighting
 			AddSemanticRule ("Comment", new HighlightUrlSemanticRule ("comment"));
 			AddSemanticRule ("XmlDocumentation", new HighlightUrlSemanticRule ("comment"));
 			AddSemanticRule ("String", new HighlightUrlSemanticRule ("string"));
+		}
+
+		void HandlePropertyChanged (object sender, PropertyChangedEventArgs e)
+		{
+			if (e.Key == "EnableSemanticHighlighting")
+				semanticHighlightingEnabled = MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", true);
 		}
 
 		public override SpanParser CreateSpanParser (DocumentLine line, CloneableStack<Span> spanStack)
@@ -732,6 +746,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		
 		protected class CSharpChunkParser : ChunkParser, IResolveVisitorNavigator
 		{
+
 			HashSet<string> tags = new HashSet<string> ();
 			
 			CSharpSyntaxMode csharpSyntaxMode;
@@ -778,7 +793,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			{
 				var document = csharpSyntaxMode.guiDocument;
 				var parsedDocument = document != null ? document.ParsedDocument : null;
-				if (parsedDocument != null && MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", true)) {
+				if (parsedDocument != null && csharpSyntaxMode.semanticHighlightingEnabled) {
 					int endLoc = -1;
 					string semanticStyle = null;
 					if (spanParser.CurSpan == null || spanParser.CurSpan is DefineSpan) {
