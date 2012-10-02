@@ -71,20 +71,20 @@ namespace MonoDevelop.Components
 			return x => start + (target - start) * x;
 		}
 
-		public static void Animate (this Gtk.Widget self, string name, float start, float end, uint rate = 16, uint length = 250, 
-		                            Func<float, float> easing = null, Action<float> callback = null, Action<float> finished = null)
+		public static void Animate (this Gtk.Widget self, string name, Action<float> callback, float start, float end, uint rate = 16, uint length = 250, 
+		                            Func<float, float> easing = null, Action<float> finished = null)
 		{
-			self.Animate<float> (name, rate, length, easing, Interpolate (start, end), callback, finished);
+			self.Animate<float> (name, Interpolate (start, end), callback, rate, length, easing, finished);
 		}
 
-		public static void Animate (this Gtk.Widget self, string name, uint rate = 16, uint length = 250, 
-		                               Func<float, float> easing = null, Action<float> callback = null, Action<float> finished = null)
+		public static void Animate (this Gtk.Widget self, string name, Action<float> callback, uint rate = 16, uint length = 250, 
+		                               Func<float, float> easing = null, Action<float> finished = null)
 		{
-			self.Animate<float> (name, rate, length, easing, x => x, callback, finished);
+			self.Animate<float> (name, x => x, callback, rate, length, easing, finished);
 		}
 
-		public static void Animate<T> (this Gtk.Widget self, string name, uint rate = 16, uint length = 250, 
-		                               Func<float, float> easing = null, Func<float, T> transform = null, Action<T> callback = null, Action<T> finished = null) 
+		public static void Animate<T> (this Gtk.Widget self, string name, Func<float, T> transform, Action<T> callback, uint rate = 16, uint length = 250, 
+		                               Func<float, float> easing = null, Action<T> finished = null) 
 		{
 			if (transform == null)
 				throw new ArgumentNullException ("transform");
@@ -120,6 +120,8 @@ namespace MonoDevelop.Components
 
 			animations[name] = info;
 			tweener.Start ();
+
+			info.callback (0.0f);
 		}
 
 		public static bool AbortAnimation (this Gtk.Widget self, string handle)
@@ -134,6 +136,8 @@ namespace MonoDevelop.Components
 			info.tweener.Stop ();
 
 			animations.Remove (handle);
+			if (info.finished != null)
+				info.finished (1.0f);
 			return true;
 		}
 

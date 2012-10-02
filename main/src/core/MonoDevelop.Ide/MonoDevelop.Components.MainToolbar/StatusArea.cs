@@ -90,7 +90,6 @@ namespace MonoDevelop.Components.MainToolbar
 
 		uint animPauseHandle;
 
-		Tweener textAnimTweener;
 		MouseTracker tracker;
 
 		AnimatedIcon iconAnimation;
@@ -183,21 +182,6 @@ namespace MonoDevelop.Components.MainToolbar
 			};
 
 			messageQueue = new Queue<Message> ();
-
-			textAnimTweener = new Tweener(250, 16);
-			textAnimTweener.Easing = Easing.SinInOut;
-			textAnimTweener.ValueUpdated += (o, a) => QueueDraw ();
-
-			textAnimTweener.Finished += (o, a) => {
-				animPauseHandle = GLib.Timeout.Add (1000, () => {
-					if (messageQueue.Count > 0) {
-						Message message = messageQueue.Dequeue();
-						ShowMessageInner (message.Icon, message.Text, message.IsMarkup);
-					}
-					animPauseHandle = 0;
-					return false;
-				});	
-			};
 
 			tracker = new MouseTracker(this);
 			tracker.MouseMoved += (sender, e) => QueueDraw ();
@@ -335,7 +319,6 @@ namespace MonoDevelop.Components.MainToolbar
 				renderArg.ChildAllocation       = messageBox.Allocation;
 				renderArg.MousePosition         = tracker.MousePosition;
 				renderArg.Pango                 = PangoContext;
-				renderArg.TextAnimationProgress = textAnimTweener.IsRunning ? textAnimTweener.Value : 1.0f;
 
 				theme.Render (context, renderArg);
 			}
@@ -564,7 +547,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public void ShowMessage (IconId image, string message, bool isMarkup)
 		{
-			if (textAnimTweener.IsRunning || animPauseHandle > 0) {
+			if (this.AnimationIsRunning("Text") || animPauseHandle > 0) {
 				messageQueue.Clear ();
 				messageQueue.Enqueue (new Message (image, message, isMarkup));
 			} else {
@@ -587,11 +570,21 @@ namespace MonoDevelop.Components.MainToolbar
 			LoadText (message, isMarkup);
 			LoadPixbuf (image);
 
-			textAnimTweener.Start ();
+			this.Animate ("Text", easing: Easing.SinInOut,
+			              callback: x => renderArg.TextAnimationProgress = x,
+			              finished: x => { animPauseHandle = GLib.Timeout.Add (1000, () => {
+					if (messageQueue.Count > 0) {
+						Message m = messageQueue.Dequeue();
+						ShowMessageInner (m.Icon, m.Text, m.IsMarkup);
+					}
+					animPauseHandle = 0;
+					return false;
+				});	
+			});
 
 			if (renderArg.CurrentText == renderArg.LastText)
-				textAnimTweener.Stop ();
-			
+				this.AbortAnimation ("Text");
+
 			QueueDraw ();
 		}
 
