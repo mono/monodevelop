@@ -199,6 +199,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			this.vadj = vadj;
 			base.OnSetScrollAdjustments (hadj, vadj);
 			if (this.vadj != null) {
+				this.vadj.ValueChanged += (sender, e) => QueueDraw ();
 				SetAdjustments ();
 			}
 		}
