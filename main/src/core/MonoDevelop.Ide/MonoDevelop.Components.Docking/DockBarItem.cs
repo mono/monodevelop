@@ -35,6 +35,8 @@ using Mono.TextEditor;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
 
+using Animations = MonoDevelop.Components.Animation;
+
 namespace MonoDevelop.Components.Docking
 {	
 	class CrossfadeIcon: Gtk.Image
@@ -87,7 +89,8 @@ namespace MonoDevelop.Components.Docking
 		void AnimateCrossfade (bool toSecondary)
 		{
 			this.Animate (name: "CrossfadeIconSwap",
-			              transform: Components.Animation.TransformFromTo (secondaryOpacity, toSecondary),
+			              start: secondaryOpacity,
+			              end: toSecondary ? 1.0f : 0.0f,
 			              callback: x => secondaryOpacity = x);
 		}
 
@@ -169,7 +172,8 @@ namespace MonoDevelop.Components.Docking
 		{
 			this.Animate ("Hover",
 			              length: 100,
-			              transform: Animation.TransformFromTo (hoverProgress, hovered),
+			              start: hoverProgress,
+			              end: hovered ? 1.0f : 0.0f,
 			              callback: x => hoverProgress = x);
 		}
 		

@@ -128,10 +128,11 @@ namespace MonoDevelop.Components.MainToolbar
 			statusIconBox.Spacing = 3;
 
 			Action<bool> animateProgressBar = 
-				x => this.Animate ("ProgressBarFade",
-			                       easing: Easing.CubicInOut,
-			                       transform: Animation.TransformFromTo (renderArg.ProgressBarAlpha, x),
-			                       callback: val => renderArg.ProgressBarAlpha = val);
+				showing => this.Animate ("ProgressBarFade",
+				                         easing: Easing.CubicInOut,
+				                         start: renderArg.ProgressBarAlpha,
+				                         end: showing ? 1.0f : 0.0f,
+				                         callback: val => renderArg.ProgressBarAlpha = val);
 
 			ProgressBegin += delegate {
 				renderArg.ShowProgressBar = true;
@@ -203,7 +204,8 @@ namespace MonoDevelop.Components.MainToolbar
 			tracker.HoveredChanged += (sender, e) => {
 				this.Animate ("Hovered",
 				              easing: Easing.SinInOut,
-				              transform: Animation.TransformFromTo (renderArg.HoverProgress, tracker.Hovered),
+				              start: renderArg.HoverProgress,
+				              end: tracker.Hovered ? 1.0f : 0.0f,
 				              callback: x => renderArg.HoverProgress = x);
 			};
 
@@ -227,9 +229,8 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void TriggerErrorAnimation ()
 		{
-			this.Animate<float> (name: "statusAreaError",
+			this.Animate (name: "statusAreaError",
 			              length: 700,
-			              transform: x => x,
 			              callback: val => renderArg.ErrorAnimationProgress = val);
 		}
 

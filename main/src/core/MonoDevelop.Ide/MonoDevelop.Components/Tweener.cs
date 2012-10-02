@@ -65,13 +65,25 @@ namespace MonoDevelop.Components
 			animations = new Dictionary<string, Info> ();
 		}
 
-		public static Func<float, float> TransformFromTo (float start, bool rise, float lower = 0.0f, float upper = 1.0f)
+		public static Func<float, float> Interpolate (float start, float end = 1.0f, float reverseVal = 0.0f, bool reverse = false)
 		{
-			// Transform from start to upper if rise is true, else transform to lower
-			return x => start + ((rise ? upper : lower) - start) * x;
+			float target = (reverse ? reverseVal : end);
+			return x => start + (target - start) * x;
 		}
 
-		public static void Animate<T> (this Gtk.Widget self, string name = "unknown", uint rate = 16, uint length = 250, 
+		public static void Animate (this Gtk.Widget self, string name, float start, float end, uint rate = 16, uint length = 250, 
+		                            Func<float, float> easing = null, Action<float> callback = null, Action<float> finished = null)
+		{
+			self.Animate<float> (name, rate, length, easing, Interpolate (start, end), callback, finished);
+		}
+
+		public static void Animate (this Gtk.Widget self, string name, uint rate = 16, uint length = 250, 
+		                               Func<float, float> easing = null, Action<float> callback = null, Action<float> finished = null)
+		{
+			self.Animate<float> (name, rate, length, easing, x => x, callback, finished);
+		}
+
+		public static void Animate<T> (this Gtk.Widget self, string name, uint rate = 16, uint length = 250, 
 		                               Func<float, float> easing = null, Func<float, T> transform = null, Action<T> callback = null, Action<T> finished = null) 
 		{
 			if (transform == null)
@@ -81,7 +93,7 @@ namespace MonoDevelop.Components
 			if (self == null)
 				throw new ArgumentNullException ("widget");
 
-			self.RemoveAnimationHandle (name);
+			self.AbortAnimation (name);
 			name += self.GetHashCode ().ToString ();
 
 			Action<float> step = f => callback (transform(f));
@@ -110,7 +122,7 @@ namespace MonoDevelop.Components
 			tweener.Start ();
 		}
 
-		public static bool RemoveAnimationHandle (this Gtk.Widget self, string handle)
+		public static bool AbortAnimation (this Gtk.Widget self, string handle)
 		{
 			handle += self.GetHashCode ().ToString ();
 			if (!animations.ContainsKey (handle))
