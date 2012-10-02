@@ -110,6 +110,10 @@
 		<Word>orderby</Word>
 		<Word>select</Word>
 		<Word>let</Word>
+		<Word>ascending</Word>
+		<Word>join</Word>
+		<Word>on</Word>
+		<Word>equals</Word>
 	</Keywords>
 	
 	<Keywords color = "keyword.exceptions">

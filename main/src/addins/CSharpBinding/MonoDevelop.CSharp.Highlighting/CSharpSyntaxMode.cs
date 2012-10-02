@@ -112,8 +112,8 @@ namespace MonoDevelop.CSharp.Highlighting
 			}
 		}
 		
-		HighlightingSegmentTree highlightedSegmentCache = new HighlightingSegmentTree ();
-		
+		Dictionary<DocumentLine, HighlightingVisitior> lineSegments = new Dictionary<DocumentLine, HighlightingVisitior> ();
+
 		public bool DisableConditionalHighlighting {
 			get;
 			set;
@@ -152,11 +152,14 @@ namespace MonoDevelop.CSharp.Highlighting
 									resolver = newResolver;
 									quickTasks = visitor.QuickTasks;
 									OnTasksUpdated (EventArgs.Empty);
+									foreach (var kv in lineSegments) {
+										kv.Value.tree.RemoveListener (doc);
+									}
+									lineSegments.Clear ();
 									var textEditor = editorData.Parent;
 									if (textEditor != null) {
 										var margin = textEditor.TextViewMargin;
 										if (!parsedDocument.HasErrors) {
-											highlightedSegmentCache.Clear ();
 											margin.PurgeLayoutCache ();
 											textEditor.QueueDraw ();
 										}
@@ -166,6 +169,332 @@ namespace MonoDevelop.CSharp.Highlighting
 						}, cancellationToken);
 					}
 				}
+			}
+		}
+
+		class HighlightingVisitior : DepthFirstAstVisitor
+		{
+			readonly CSharpAstResolver resolver;
+			readonly CancellationToken cancellationToken;
+			readonly int lineNumber;
+			readonly int lineOffset;
+			internal HighlightingSegmentTree tree = new HighlightingSegmentTree ();
+
+			public HighlightingVisitior (CSharpAstResolver resolver, CancellationToken cancellationToken, int lineNumber, int lineOffset)
+			{
+				this.resolver = resolver;
+				this.cancellationToken = cancellationToken;
+				this.lineNumber = lineNumber;
+				this.lineOffset = lineOffset;
+			}
+
+			void Colorize (AstNode node, string style)
+			{
+				var start = lineOffset + node.StartLocation.Column - 1;
+				var end   = lineOffset + node.EndLocation.Column - 1;
+				tree.AddStyle (start, end, style);
+			}
+
+			public override void VisitCSharpTokenNode (CSharpTokenNode token)
+			{
+				if (token.StartLocation.Line != lineNumber)
+					return;
+				var mod = token as CSharpModifierToken;
+				if (mod != null && mod.Modifier == Modifiers.Partial)
+					Colorize (token, contextualHighlightKeywords["partial"]);
+			}
+
+			protected override void VisitChildren (AstNode node)
+			{
+				for (var child = node.FirstChild; child != null; child = child.NextSibling) {
+					if (child.StartLocation.Line <= lineNumber && child.EndLocation.Line >= lineNumber)
+						child.AcceptVisitor(this);
+				}
+			}
+
+			public override void VisitConstraint (Constraint constraint)
+			{
+				base.VisitConstraint (constraint);
+				if (constraint.WhereKeyword.StartLocation.Line == lineNumber)
+					Colorize (constraint.WhereKeyword, contextualHighlightKeywords["where"]);
+			}
+
+			public override void VisitIdentifierExpression (IdentifierExpression identifierExpression)
+			{
+				if (identifierExpression.StartLocation.Line != lineNumber)
+					return;
+				if (isInAccessor && identifierExpression.Identifier == "value") {
+					Colorize (identifierExpression, contextualHighlightKeywords["value"]);
+					return;
+				}
+
+				var result = resolver.Resolve (identifierExpression, cancellationToken);
+				if (result.IsError) {
+					Colorize (identifierExpression, "keyword.semantic.error");
+					return;
+				}
+
+				if (result is MemberResolveResult) {
+					var member = ((MemberResolveResult)result).Member;
+					switch (member.EntityType) {
+					case EntityType.Field:
+						Colorize (identifierExpression, "keyword.semantic.field");
+						break;
+					case EntityType.Property:
+						Colorize (identifierExpression, "keyword.semantic.property");
+						break;
+					case EntityType.Method:
+						Colorize (identifierExpression, "keyword.semantic.method");
+						break;
+					}
+					return;
+				}
+
+				if (result is MethodGroupResolveResult) {
+					Colorize (identifierExpression, "keyword.semantic.method");
+					return;
+				}
+
+				if (result is TypeResolveResult) {
+					Colorize (identifierExpression, "keyword.semantic.type");
+					return;
+				}
+			}
+
+			bool isInAccessor;
+			public override void VisitAccessor(Accessor accessor)
+			{
+				isInAccessor = true;
+				try {
+					base.VisitAccessor(accessor);
+				} finally {
+					isInAccessor = false;
+				}
+			}
+
+			public override void VisitTypeDeclaration (TypeDeclaration typeDeclaration)
+			{
+				base.VisitTypeDeclaration (typeDeclaration);
+				if (typeDeclaration.NameToken.StartLocation.Line == lineNumber)
+					Colorize (typeDeclaration.NameToken, "keyword.semantic.type.declaration");
+			}
+
+			public override void VisitPropertyDeclaration (PropertyDeclaration propertyDeclaration)
+			{
+				base.VisitPropertyDeclaration (propertyDeclaration);
+				if (propertyDeclaration.NameToken.StartLocation.Line == lineNumber)
+					Colorize (propertyDeclaration.NameToken, "keyword.semantic.property.declaration");
+				if (!propertyDeclaration.Getter.IsNull && propertyDeclaration.Getter.FirstChild.StartLocation.Line == lineNumber)
+					Colorize (propertyDeclaration.Getter.FirstChild, contextualHighlightKeywords["get"]);
+				if (!propertyDeclaration.Setter.IsNull && propertyDeclaration.Setter.FirstChild.StartLocation.Line == lineNumber)
+					Colorize (propertyDeclaration.Setter.FirstChild, contextualHighlightKeywords["set"]);
+			}
+
+			public override void VisitCustomEventDeclaration (CustomEventDeclaration eventDeclaration)
+			{
+				base.VisitCustomEventDeclaration (eventDeclaration);
+				if (!eventDeclaration.AddAccessor.IsNull && eventDeclaration.AddAccessor.FirstChild.StartLocation.Line == lineNumber)
+					Colorize (eventDeclaration.AddAccessor.FirstChild, contextualHighlightKeywords["add"]);
+				if (!eventDeclaration.RemoveAccessor.IsNull && eventDeclaration.RemoveAccessor.FirstChild.StartLocation.Line == lineNumber)
+					Colorize (eventDeclaration.RemoveAccessor.FirstChild, contextualHighlightKeywords["remove"]);
+			}
+
+			public override void VisitMethodDeclaration (MethodDeclaration methodDeclaration)
+			{
+				base.VisitMethodDeclaration (methodDeclaration);
+				if (methodDeclaration.NameToken.StartLocation.Line == lineNumber)
+					Colorize (methodDeclaration.NameToken, "keyword.semantic.method.declaration");
+			}
+
+			public override void VisitFieldDeclaration (FieldDeclaration fieldDeclaration)
+			{
+				fieldDeclaration.ReturnType.AcceptVisitor (this);
+				foreach (var init in fieldDeclaration.Variables)
+					if (init.NameToken.StartLocation.Line == lineNumber)
+						Colorize (init.NameToken, "keyword.semantic.field.declaration");
+			}
+
+			public override void VisitFixedFieldDeclaration (FixedFieldDeclaration fixedFieldDeclaration)
+			{
+				base.VisitFixedFieldDeclaration (fixedFieldDeclaration);
+				foreach (var init in fixedFieldDeclaration.Variables)
+					if (init.NameToken.StartLocation.Line == lineNumber)
+						Colorize (init.NameToken, "keyword.semantic.field.declaration");
+			}
+
+			public override void VisitUsingDeclaration (UsingDeclaration usingDeclaration)
+			{
+			}
+
+			public override void VisitUsingAliasDeclaration (UsingAliasDeclaration usingDeclaration)
+			{
+			}
+
+			public override void VisitSimpleType (SimpleType simpleType)
+			{
+				if (simpleType.StartLocation.Line != lineNumber)
+					return;
+				base.VisitSimpleType (simpleType);
+				var result = resolver.Resolve (simpleType, cancellationToken);
+				if (result.IsError) {
+					// if csharpSyntaxMode.guiDocument.Project != null
+					Colorize (simpleType, "keyword.semantic.error");
+					return;
+				}
+				if (result is TypeResolveResult) {
+					Colorize (simpleType, "keyword.semantic.type");
+				}
+			}
+
+			public override void VisitMemberType (MemberType memberType)
+			{
+				base.VisitMemberType (memberType);
+				if (memberType.MemberNameToken.StartLocation.Line != lineNumber)
+					return;
+
+				var result = resolver.Resolve (memberType, cancellationToken);
+
+				if (result.IsError) {
+					// if && csharpSyntaxMode.guiDocument.Project != null
+					Colorize (memberType.MemberNameToken, "keyword.semantic.error");
+				}
+				if (result is TypeResolveResult) {
+					Colorize (memberType.MemberNameToken, "keyword.semantic.type");
+				}
+			}
+
+
+			public override void VisitMemberReferenceExpression (MemberReferenceExpression memberReferenceExpression)
+			{
+				base.VisitMemberReferenceExpression (memberReferenceExpression);
+				if (memberReferenceExpression.MemberNameToken.StartLocation.Line != lineNumber)
+					return;
+				var result = resolver.Resolve (memberReferenceExpression, cancellationToken);
+				if (result.IsError) {
+					// if && csharpSyntaxMode.guiDocument.Project != null
+					Colorize (memberReferenceExpression.MemberNameToken, "keyword.semantic.error");
+				}
+
+				if (result is MemberResolveResult) {
+					var member = ((MemberResolveResult)result).Member;
+					switch (member.EntityType) {
+					case EntityType.Field:
+						if (!member.IsStatic && !((IField)member).IsConst)
+							Colorize (memberReferenceExpression.MemberNameToken, "keyword.semantic.field");
+						break;
+					case EntityType.Property:
+						Colorize (memberReferenceExpression.MemberNameToken, "keyword.semantic.property");
+						break;
+					case EntityType.Method:
+						Colorize (memberReferenceExpression.MemberNameToken, "keyword.semantic.method");
+						break;
+					}
+				}
+
+				if (result is MethodGroupResolveResult) {
+					Colorize (memberReferenceExpression.MemberNameToken, "keyword.semantic.method");
+				}
+
+				if (result is TypeResolveResult) {
+					Colorize (memberReferenceExpression.MemberNameToken, "keyword.semantic.type");
+				}
+			}
+
+			public override void VisitPointerReferenceExpression (PointerReferenceExpression pointerReferenceExpression)
+			{
+				base.VisitPointerReferenceExpression (pointerReferenceExpression);
+				var result = resolver.Resolve (pointerReferenceExpression, cancellationToken);
+				if (result.IsError) {
+					// if && csharpSyntaxMode.guiDocument.Project != null
+					Colorize (pointerReferenceExpression.MemberNameToken, "keyword.semantic.error");
+				}
+
+				if (result is MemberResolveResult) {
+					var member = ((MemberResolveResult)result).Member;
+					switch (member.EntityType) {
+					case EntityType.Field:
+						if (!member.IsStatic && !((IField)member).IsConst)
+							Colorize (pointerReferenceExpression.MemberNameToken, "keyword.semantic.field");
+						break;
+					case EntityType.Property:
+						Colorize (pointerReferenceExpression.MemberNameToken, "keyword.semantic.property");
+						break;
+					case EntityType.Method:
+						Colorize (pointerReferenceExpression.MemberNameToken, "keyword.semantic.method");
+						break;
+					}
+				}
+
+				if (result is MethodGroupResolveResult) {
+					Colorize (pointerReferenceExpression.MemberNameToken, "keyword.semantic.method");
+				}
+
+				if (result is TypeResolveResult) {
+					Colorize (pointerReferenceExpression.MemberNameToken, "keyword.semantic.type");
+				}
+			}
+			public override void VisitQueryWhereClause (QueryWhereClause queryWhereClause)
+			{
+				base.VisitQueryWhereClause (queryWhereClause);
+				if (queryWhereClause.WhereKeyword.StartLocation.Line == lineNumber)
+					Colorize (queryWhereClause.WhereKeyword, contextualHighlightKeywords["where"]);
+
+			}
+			public override void VisitQueryFromClause (QueryFromClause queryFromClause)
+			{
+				base.VisitQueryFromClause (queryFromClause);
+				if (queryFromClause.FromKeyword.StartLocation.Line == lineNumber)
+					Colorize (queryFromClause.FromKeyword, contextualHighlightKeywords["from"]);
+			}
+
+			public override void VisitQuerySelectClause (QuerySelectClause querySelectClause)
+			{
+				base.VisitQuerySelectClause (querySelectClause);
+				if (querySelectClause.SelectKeyword.StartLocation.Line == lineNumber)
+					Colorize (querySelectClause.SelectKeyword, contextualHighlightKeywords["select"]);
+			}
+
+			public override void VisitQueryGroupClause (QueryGroupClause queryGroupClause)
+			{
+				base.VisitQueryGroupClause (queryGroupClause);
+				if (queryGroupClause.GroupKeyword.StartLocation.Line == lineNumber)
+					Colorize (queryGroupClause.GroupKeyword, contextualHighlightKeywords["group"]);
+				if (queryGroupClause.ByKeyword.StartLocation.Line == lineNumber)
+					Colorize (queryGroupClause.ByKeyword, contextualHighlightKeywords["by"]);
+			}
+
+			public override void VisitQueryContinuationClause (QueryContinuationClause queryContinuationClause)
+			{
+				base.VisitQueryContinuationClause (queryContinuationClause);
+				if (queryContinuationClause.IntoKeyword.StartLocation.Line == lineNumber)
+					Colorize (queryContinuationClause.IntoKeyword, contextualHighlightKeywords["into"]);
+			}
+
+			public override void VisitQueryJoinClause (QueryJoinClause queryJoinClause)
+			{
+				base.VisitQueryJoinClause (queryJoinClause);
+				if (queryJoinClause.IntoKeyword.StartLocation.Line == lineNumber)
+					Colorize (queryJoinClause.IntoKeyword, contextualHighlightKeywords["into"]);
+				if (queryJoinClause.JoinKeyword.StartLocation.Line == lineNumber)
+					Colorize (queryJoinClause.JoinKeyword, contextualHighlightKeywords["join"]);
+				if (queryJoinClause.OnKeyword.StartLocation.Line == lineNumber)
+					Colorize (queryJoinClause.OnKeyword, contextualHighlightKeywords["on"]);
+				if (queryJoinClause.EqualsKeyword.StartLocation.Line == lineNumber)
+					Colorize (queryJoinClause.EqualsKeyword, contextualHighlightKeywords["equals"]);
+			}
+
+			public override void VisitQueryLetClause (QueryLetClause queryLetClause)
+			{
+				base.VisitQueryLetClause (queryLetClause);
+				if (queryLetClause.LetKeyword.StartLocation.Line == lineNumber)
+					Colorize (queryLetClause.LetKeyword, contextualHighlightKeywords["let"]);
+			}
+
+			public override void VisitQueryOrdering (QueryOrdering queryOrdering)
+			{
+				base.VisitQueryOrdering (queryOrdering);
+				if (queryOrdering.DirectionToken.StartLocation.Line == lineNumber)
+					Colorize (queryOrdering.DirectionToken, contextualHighlightKeywords[queryOrdering.DirectionToken.GetText ()]);
 			}
 		}
 
@@ -190,7 +519,6 @@ namespace MonoDevelop.CSharp.Highlighting
 			public override void VisitIdentifierExpression (IdentifierExpression identifierExpression)
 			{
 				base.VisitIdentifierExpression (identifierExpression);
-				
 				var result = resolver.Resolve (identifierExpression, cancellationToken);
 				if (result.IsError) {
 					QuickTasks.Add (new QuickTask (string.Format ("error CS0103: The name `{0}' does not exist in the current context", identifierExpression.Identifier), identifierExpression.StartLocation, Severity.Error));
@@ -231,14 +559,14 @@ namespace MonoDevelop.CSharp.Highlighting
 			e.Document.Editor.Document.CommitUpdateAll ();
 		}
 		
-		Dictionary<string, string> contextualHighlightKeywords = new Dictionary<string, string> ();
-		static readonly string[] ContextualHighlightKeywordList = new string[] {
-			"value"
-		};
-		
-		static readonly HashSet<string> ContextualDehighlightKeywordList = new HashSet<string> (new string[] {
-			"get", "set", "add", "remove", "var", "global", "partial", 
-			"where",
+		static Dictionary<string, string> contextualHighlightKeywords;
+		static readonly string[] ContextualKeywords = new string[] {
+			"value", //*
+			"get", "set", "add", "remove",  //*
+			"var", //*
+			"global",
+			"partial", //* 
+			"where",  //*
 			"select",
 			"group",
 			"by",
@@ -251,7 +579,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			"join",
 			"on",
 			"equals"
-		});
+		};
 		
 
 		public CSharpSyntaxMode (MonoDevelop.Ide.Gui.Document document)
@@ -262,8 +590,6 @@ namespace MonoDevelop.CSharp.Highlighting
 					src.Cancel ();
 			};
 			guiDocument.DocumentParsed += HandleDocumentParsed;
-			highlightedSegmentCache = new HighlightingSegmentTree ();
-			highlightedSegmentCache.InstallListener (guiDocument.Editor.Document);
 			if (guiDocument.ParsedDocument != null)
 				HandleDocumentParsed (this, EventArgs.Empty);
 
@@ -283,9 +609,17 @@ namespace MonoDevelop.CSharp.Highlighting
 				keywordTableIgnoreCase = baseMode.keywordTableIgnoreCase;
 				properties = baseMode.Properties;
 			}
-			
-			foreach (var word in ContextualHighlightKeywordList) {
-				contextualHighlightKeywords[word] = keywordTable[word].Color;
+			if (contextualHighlightKeywords == null) {
+				contextualHighlightKeywords = new Dictionary<string, string> ();
+				foreach (var word in ContextualKeywords) {
+					if (keywordTable.ContainsKey (word)) {
+						contextualHighlightKeywords[word] = keywordTable[word].Color;
+					} else {
+						Console.WriteLine ("missing keyword:"+word);
+					}
+				}
+			}
+			foreach (var word in ContextualKeywords) {
 				keywordTable.Remove (word);
 			}
 			
@@ -399,41 +733,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		protected class CSharpChunkParser : ChunkParser, IResolveVisitorNavigator
 		{
 			HashSet<string> tags = new HashSet<string> ();
-			/*
-			sealed class SemanticResolveVisitorNavigator : IResolveVisitorNavigator
-			{
-				readonly Dictionary<AstNode, ResolveVisitorNavigationMode> dict = new Dictionary<AstNode, ResolveVisitorNavigationMode> ();
-				
-				public void AddNode (AstNode node)
-				{
-					dict [node] = ResolveVisitorNavigationMode.Resolve;
-					for (var ancestor = node.Parent; ancestor != null && !dict.ContainsKey(ancestor); ancestor = ancestor.Parent) {
-						dict.Add (ancestor, ResolveVisitorNavigationMode.Scan);
-					}
-				}
-				
-				public void ProcessConversion (Expression expression, ResolveResult result, Conversion conversion, IType targetType)
-				{
-					
-				}
-				
-				public void Resolved (AstNode node, ResolveResult result)
-				{
-
-				}
-				
-				public ResolveVisitorNavigationMode Scan (AstNode node)
-				{
-					if (node is Expression || node is AstType)
-						return ResolveVisitorNavigationMode.Resolve;
-					return ResolveVisitorNavigationMode.Scan;
-				}
-				
-				public void Reset ()
-				{
-					dict.Clear ();
-				}
-			}*/
+			
 			CSharpSyntaxMode csharpSyntaxMode;
 			int lineNumber, offset;
 			public CSharpChunkParser (CSharpSyntaxMode csharpSyntaxMode, SpanParser spanParser, ColorScheme style, DocumentLine line) : base (csharpSyntaxMode, spanParser, style, line)
@@ -450,18 +750,14 @@ namespace MonoDevelop.CSharp.Highlighting
 			#region IResolveVisitorNavigator implementation
 			ResolveVisitorNavigationMode IResolveVisitorNavigator.Scan(AstNode node)
 			{
-/*				if (node.StartLocation.Line <= lineNumber && node.EndLocation.Line >= lineNumber) {*/
-					if (node is SimpleType || node is MemberType
-					    || node is IdentifierExpression || node is MemberReferenceExpression
-					    || node is InvocationExpression)
-					{
-						return ResolveVisitorNavigationMode.Resolve;
-					} else {
-						return ResolveVisitorNavigationMode.Scan;
-					}
-/*				} else {
-					return ResolveVisitorNavigationMode.Skip;
-				}*/
+				if (node is SimpleType || node is MemberType
+				    || node is IdentifierExpression || node is MemberReferenceExpression
+				    || node is InvocationExpression)
+				{
+					return ResolveVisitorNavigationMode.Resolve;
+				} else {
+					return ResolveVisitorNavigationMode.Scan;
+				}
 			}
 			
 			void IResolveVisitorNavigator.Resolved(AstNode node, ResolveResult result)
@@ -472,263 +768,12 @@ namespace MonoDevelop.CSharp.Highlighting
 			{
 			}
 			#endregion
-			string GetSemanticStyle (ParsedDocument parsedDocument, Chunk chunk, ref int endOffset)
-			{
-				string style;
-				bool found = csharpSyntaxMode.highlightedSegmentCache.GetStyle (chunk, ref endOffset, out style);
-				if (!found && !csharpSyntaxMode.highlightedSegmentCache.IsDirty) {
-					style = GetSemanticStyleFromAst (parsedDocument, chunk, ref endOffset);
-					if (style != null)
-						csharpSyntaxMode.highlightedSegmentCache.AddStyle (chunk.Offset, style == null ? chunk.EndOffset : endOffset, style);
-				}
-				return style;
-			}
-
 			static int TokenLength (AstNode node)
 			{
 				Debug.Assert (node.StartLocation.Line == node.EndLocation.Line);
 				return node.EndLocation.Column - node.StartLocation.Column;
 			}
 
-			string GetSemanticStyleFromAst (ParsedDocument parsedDocument, Chunk chunk, ref int endOffset)
-			{
-				var unit = csharpSyntaxMode.unit;
-				if (unit == null || csharpSyntaxMode.resolver == null)
-					return null;
-				
-				var loc = new DocumentLocation (lineNumber, 1 + chunk.Offset - this.offset);
-				var node = unit.GetNodeAt (loc, n => n is Identifier || n is AstType || n is CSharpTokenNode);
-				if (node == null) {
-					return null;
-				}
-				var word = wordbuilder.ToString ();
-				string color;
-				while (node != null && !(node is Statement || node is EntityDeclaration)) {
-					if (node is CSharpTokenNode || node is ICSharpCode.NRefactory.CSharp.Comment || node is PreProcessorDirective)
-						break;
-					if (node is SimpleType) {
-						var st = (SimpleType)node;
-						
-						var result = csharpSyntaxMode.resolver.Resolve (st);
-						if (result.IsError && csharpSyntaxMode.guiDocument.Project != null) {
-							endOffset = chunk.Offset + TokenLength (st.IdentifierToken);
-							return "keyword.semantic.error";
-						}
-						if (result is TypeResolveResult && st.IdentifierToken.Contains (loc) && unit.GetNodeAt<UsingDeclaration> (loc) == null) {
-							endOffset = chunk.Offset + TokenLength (st.IdentifierToken);
-							return "keyword.semantic.type";
-						}
-						return null;
-					}
-					if (node is ICSharpCode.NRefactory.CSharp.MemberType) {
-						var mt = (ICSharpCode.NRefactory.CSharp.MemberType)node;
-						
-						var result = csharpSyntaxMode.resolver.Resolve (mt);
-						if (result.IsError && csharpSyntaxMode.guiDocument.Project != null) {
-							endOffset = chunk.Offset + TokenLength (mt.MemberNameToken);
-							return "keyword.semantic.error";
-						}
-						if (result is TypeResolveResult && mt.MemberNameToken.Contains (loc) && unit.GetNodeAt<UsingDeclaration> (loc) == null) {
-							endOffset = chunk.Offset + TokenLength (mt.MemberNameToken);
-							return "keyword.semantic.type";
-						}
-						return null;
-					}
-					
-					if (node is Identifier) {
-						if (node.Parent is TypeDeclaration && node.Role == Roles.Identifier) {
-							endOffset = chunk.Offset + TokenLength ((Identifier)node);
-							return "keyword.semantic.type.declaration";
-						} 
-
-						if (node.Parent is PropertyDeclaration) {
-							endOffset = chunk.Offset + TokenLength ((Identifier)node);
-							return "keyword.semantic.property.declaration";
-						}
-						if (node.Parent is MethodDeclaration) {
-							endOffset = chunk.Offset + TokenLength ((Identifier)node);
-							return "keyword.semantic.method.declaration";
-						}
-
-						if (node.Parent is VariableInitializer && node.Parent.Parent is FieldDeclaration) {
-							var field = node.Parent.Parent as FieldDeclaration;
-							if (field.Modifiers.HasFlag (Modifiers.Const) || field.Modifiers.HasFlag (Modifiers.Static | Modifiers.Readonly))
-								return null;
-							endOffset = chunk.Offset + TokenLength ((Identifier)node);
-							return "keyword.semantic.field.declaration";
-						}
-						if (node.Parent is FixedVariableInitializer /*|| node.Parent is EnumMemberDeclaration*/) {
-							endOffset = chunk.Offset + TokenLength ((Identifier)node);
-							return "keyword.semantic.field.declaration";
-						}
-						if (node.Parent is IdentifierExpression && node.Parent.Parent is DirectionExpression)
-							return null;
-					}
-					
-					var id = node as IdentifierExpression;
-					if (id != null) {
-						var result = csharpSyntaxMode.resolver.Resolve (id);
-						if (result.IsError && csharpSyntaxMode.guiDocument.Project != null) {
-							endOffset = chunk.Offset + TokenLength (id.IdentifierToken);
-							return "keyword.semantic.error";
-						}
-
-						if (id.Parent is DirectionExpression) {
-							endOffset = chunk.Offset + TokenLength (id.IdentifierToken);
-							return "keyword.semantic.extensionthis";
-						}
-						
-						if (result is MemberResolveResult) {
-							var member = ((MemberResolveResult)result).Member;
-							if (member is IField) {
-								var field = member as IField;
-								if (field.IsConst || field.IsStatic && field.IsReadOnly)
-									return null;
-								endOffset = chunk.Offset + TokenLength (id.IdentifierToken);
-								return "keyword.semantic.field";
-							}
-							if (member is IProperty) {
-								endOffset = chunk.Offset + TokenLength (id.IdentifierToken);
-								return "keyword.semantic.property";
-							}
-							if (member is IMethod) {
-								endOffset = chunk.Offset + TokenLength (id.IdentifierToken);
-								return "keyword.semantic.method";
-							}
-						}
-						if (result is MethodGroupResolveResult) {
-							endOffset = chunk.Offset + TokenLength (id.IdentifierToken);
-							return "keyword.semantic.method";
-						}
-						if (result is TypeResolveResult) {
-							if (!result.IsError && csharpSyntaxMode.guiDocument.Project != null) {
-								endOffset = chunk.Offset + id.Identifier.Length;
-								return "keyword.semantic.type";
-							}
-						}
-					}
-					
-					var memberReferenceExpression = node as MemberReferenceExpression;
-					if (memberReferenceExpression != null) {
-						if (!memberReferenceExpression.MemberNameToken.Contains (loc)) 
-							return null;
-						
-						var result = csharpSyntaxMode.resolver.Resolve (memberReferenceExpression);
-						if (result.IsError && csharpSyntaxMode.guiDocument.Project != null) {
-							endOffset = chunk.Offset + TokenLength (memberReferenceExpression.MemberNameToken);
-							return "keyword.semantic.error";
-						}
-						
-						if (result is MemberResolveResult) {
-							var member = ((MemberResolveResult)result).Member;
-							if (member is IField && !member.IsStatic && !((IField)member).IsConst) {
-								endOffset = chunk.Offset + TokenLength (memberReferenceExpression.MemberNameToken);
-								return "keyword.semantic.field";
-							}
-							if (member is IProperty) {
-								endOffset = chunk.Offset + TokenLength (memberReferenceExpression.MemberNameToken);
-								return "keyword.semantic.property";
-							}
-							if (member is IMethod) {
-								endOffset = chunk.Offset + TokenLength (memberReferenceExpression.MemberNameToken);
-								return "keyword.semantic.method";
-							}
-						}
-
-						if (result is MethodGroupResolveResult) {
-							endOffset = chunk.Offset + TokenLength (memberReferenceExpression.MemberNameToken);
-							return "keyword.semantic.method";
-						}
-
-						if (result is TypeResolveResult) {
-							if (!result.IsError && csharpSyntaxMode.guiDocument.Project != null) {
-								endOffset = chunk.Offset + TokenLength (memberReferenceExpression.MemberNameToken);
-								return "keyword.semantic.type";
-							}
-						}
-					}
-					var pointerReferenceExpression = node as PointerReferenceExpression;
-					if (pointerReferenceExpression != null) {
-						if (!pointerReferenceExpression.MemberNameToken.Contains (loc)) 
-							return null;
-						
-						var result = csharpSyntaxMode.resolver.Resolve (pointerReferenceExpression);
-						if (result.IsError && csharpSyntaxMode.guiDocument.Project != null) {
-							endOffset = chunk.Offset + TokenLength (pointerReferenceExpression.MemberNameToken);
-							return "keyword.semantic.error";
-						}
-						
-						if (result is MemberResolveResult) {
-							var member = ((MemberResolveResult)result).Member;
-							if (member is IField && !member.IsStatic && !((IField)member).IsConst) {
-								endOffset = chunk.Offset + TokenLength (pointerReferenceExpression.MemberNameToken);
-								return "keyword.semantic.field";
-							}
-							if (member is IProperty) {
-								endOffset = chunk.Offset + TokenLength (pointerReferenceExpression.MemberNameToken);
-								return "keyword.semantic.property";
-							}
-							if (member is IMethod) {
-								endOffset = chunk.Offset + TokenLength (pointerReferenceExpression.MemberNameToken);
-								return "keyword.semantic.method";
-							}
-						}
-						if (result is TypeResolveResult) {
-							if (!result.IsError && csharpSyntaxMode.guiDocument.Project != null) {
-								endOffset = chunk.Offset + TokenLength (pointerReferenceExpression.MemberNameToken);
-								return "keyword.semantic.type";
-							}
-						}
-					}
-					node = node.Parent;
-				}
-
-				if (csharpSyntaxMode.contextualHighlightKeywords.TryGetValue (word, out color)) {
-					if (node == null)
-						return null;
-					switch (word) {
-					case "value":
-						// highlight 'value' in property setters and event add/remove
-						var n = node.Parent;
-						while (n != null) {
-							if (n is Accessor && n.Role == PropertyDeclaration.SetterRole) {
-								endOffset = chunk.Offset + "value".Length;
-								return color;
-							}
-							n = n.Parent;
-						}
-						return null;
-					}
-					endOffset = chunk.Offset + word.Length;
-					if (node is CSharpTokenNode)
-						return color;
-					return spanParser.CurSpan != null ? spanParser.CurSpan.Color : "text";
-				}
-
-				if (ContextualDehighlightKeywordList.Contains (word)) {
-					if (node == null)
-						return null;
-					if (node is Identifier) {
-						switch (((Identifier)node).Name) {
-						case "var": 
-							if (node.Parent != null) {
-								var vds = node.Parent.Parent as VariableDeclarationStatement;
-								if (node.Parent.Parent is ForeachStatement && ((ForeachStatement)node.Parent.Parent).VariableType.StartLocation == node.StartLocation ||
-									vds != null && node.StartLocation == vds.Type.StartLocation)
-									return null;
-							}
-							endOffset = chunk.Offset + "var".Length;
-							return spanParser.CurSpan != null ? spanParser.CurSpan.Color : "text";
-						}
-					} else if (node is CSharpTokenNode)
-						return color;
-					endOffset = chunk.Offset + word.Length;
-					return spanParser.CurSpan != null ? spanParser.CurSpan.Color : "text";
-				}
-
-				return null;
-			}
-			
 			protected override void AddRealChunk (Chunk chunk)
 			{
 				var document = csharpSyntaxMode.guiDocument;
@@ -738,7 +783,17 @@ namespace MonoDevelop.CSharp.Highlighting
 					string semanticStyle = null;
 					if (spanParser.CurSpan == null || spanParser.CurSpan is DefineSpan) {
 						try {
-							semanticStyle = GetSemanticStyle (parsedDocument, chunk, ref endLoc);
+							HighlightingVisitior visitor;
+							if (!csharpSyntaxMode.lineSegments.TryGetValue (line, out visitor)) {
+								visitor = new HighlightingVisitior (csharpSyntaxMode.resolver, default (CancellationToken), lineNumber, base.line.Offset);
+								visitor.tree.InstallListener (doc);
+								csharpSyntaxMode.unit.AcceptVisitor (visitor);
+								csharpSyntaxMode.lineSegments[line] = visitor;
+							}
+							string style;
+							if (visitor.tree.GetStyle (chunk, ref endLoc, out style)) {
+								semanticStyle = style;
+							}
 						} catch (Exception e) {
 							Console.WriteLine ("Error in semantic highlighting: " + e);
 						}
