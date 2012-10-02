@@ -213,9 +213,14 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void TriggerErrorAnimation ()
 		{
-			this.Animate (name: "statusAreaError",
+/* Hack for a compiler error - csc crashes on this:
+ 			this.Animate (name: "statusAreaError",
 			              length: 700,
 			              callback: val => renderArg.ErrorAnimationProgress = val);
+*/
+			this.Animate ("statusAreaError",
+			              val => renderArg.ErrorAnimationProgress = val,
+			              length: 700);
 		}
 
 		void UpdateSeparators ()
@@ -569,7 +574,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 			LoadText (message, isMarkup);
 			LoadPixbuf (image);
-
+			/* Hack for a compiler error - csc crashes on this:
 			this.Animate ("Text", easing: Easing.SinInOut,
 			              callback: x => renderArg.TextAnimationProgress = x,
 			              finished: x => { animPauseHandle = GLib.Timeout.Add (1000, () => {
@@ -581,6 +586,20 @@ namespace MonoDevelop.Components.MainToolbar
 					return false;
 				});	
 			});
+			*/
+			this.Animate ("Text", 
+			              x => renderArg.TextAnimationProgress = x,
+			              easing: Easing.SinInOut,
+			              finished: x => { animPauseHandle = GLib.Timeout.Add (1000, () => {
+					if (messageQueue.Count > 0) {
+						Message m = messageQueue.Dequeue();
+						ShowMessageInner (m.Icon, m.Text, m.IsMarkup);
+					}
+					animPauseHandle = 0;
+					return false;
+				});	
+			});
+
 
 			if (renderArg.CurrentText == renderArg.LastText)
 				this.AbortAnimation ("Text");
