@@ -1347,9 +1347,14 @@ namespace MonoDevelop.Debugger
 		
 		string ICompletionWidget.GetText (int startOffset, int endOffset)
 		{
-			if (startOffset < 0) startOffset = 0;
-			if (endOffset > editEntry.Text.Length) endOffset = editEntry.Text.Length;
-			return editEntry.Text.Substring (startOffset, endOffset - startOffset);
+			string text = editEntry.Text;
+
+			if (startOffset < 0 || endOffset < 0 || startOffset > endOffset || startOffset >= text.Length)
+				return "";
+
+			int length = Math.Min (endOffset - startOffset, text.Length - startOffset);
+
+			return text.Substring (startOffset, length);
 		}
 		
 		void ICompletionWidget.Replace (int offset, int count, string text)
