@@ -269,20 +269,20 @@ namespace MonoDevelop.Debugger
 			
 			double width = (double) Allocation.Width;
 			
-			int texp = (int) (width * expColWidth);
+			int texp = Math.Max ((int) (width * expColWidth), 1);
 			if (texp != expCol.FixedWidth) {
 				expCol.FixedWidth = texp;
 			}
 			
 			int ttype = 0;
 			if (typeCol.Visible) {
-				ttype = (int) (width * typeColWidth);
+				ttype = Math.Max ((int) (width * typeColWidth), 1);
 				if (ttype != typeCol.FixedWidth) {
 					typeCol.FixedWidth = ttype;
 				}
 			}
 			
-			int tval = (int) (width * valueColWidth);
+			int tval = Math.Max ((int) (width * valueColWidth), 1);
 
 			if (tval != valueCol.FixedWidth) {
 				valueCol.FixedWidth = tval;
