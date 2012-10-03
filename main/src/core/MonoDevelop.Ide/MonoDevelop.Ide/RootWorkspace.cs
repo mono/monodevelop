@@ -438,9 +438,7 @@ namespace MonoDevelop.Ide
 					SavePreferences ();
 
 				if (closeProjectFiles) {
-					Document[] docs = new Document[IdeApp.Workbench.Documents.Count];
-					IdeApp.Workbench.Documents.CopyTo (docs, 0);
-					foreach (Document doc in docs) {
+					foreach (Document doc in IdeApp.Workbench.Documents.ToArray ()) {
 						if (!doc.Close ())
 							return false;
 					}
@@ -458,13 +456,27 @@ namespace MonoDevelop.Ide
 			return true;
 		}
 		
-		public void CloseWorkspaceItem (WorkspaceItem item)
+		public void CloseWorkspaceItem (WorkspaceItem item, bool closeItemFiles = true)
 		{
 			if (!Items.Contains (item))
 				throw new InvalidOperationException ("Only top level items can be closed.");
-			
-			if (RequestItemUnload (item))
+
+			if (Items.Count == 1 && closeItemFiles) {
+				// There is only one item, close the whole workspace
+				Close (true, closeItemFiles);
+				return;
+			}
+
+			if (RequestItemUnload (item)) {
+				if (closeItemFiles) {
+					var projects = item.GetAllProjects ();
+					foreach (Document doc in IdeApp.Workbench.Documents.Where (d => d.Project != null && projects.Contains (d.Project)).ToArray ()) {
+						if (!doc.Close ())
+							return;
+					}
+				}
 				Items.Remove (item);
+			}
 		}
 		
 		public bool RequestItemUnload (IBuildTarget item)
@@ -815,7 +827,7 @@ namespace MonoDevelop.Ide
 					if (item.ParentWorkspace == null) {
 						string file = item.FileName;
 						SavePreferences ();
-						CloseWorkspaceItem (item);
+						CloseWorkspaceItem (item, false);
 						OpenWorkspaceItem (file, false);
 					}
 					else {
