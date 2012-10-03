@@ -214,11 +214,12 @@ namespace MonoDevelop.Components
 
 			runningTime.Start ();
 			timeoutHandle = GLib.Timeout.Add (Rate, () => { 
-				Value = Math.Min (1.0f, runningTime.ElapsedMilliseconds / (float) Length);
+				float rawValue = Math.Min (1.0f, runningTime.ElapsedMilliseconds / (float) Length);
+				Value = Easing (rawValue);
 				if (ValueUpdated != null)
 					ValueUpdated (this, EventArgs.Empty);
 
-				if (Value >= 1.0f)
+				if (rawValue >= 1.0f)
 				{
 					if (Loop) {
 						Value = 0.0f;
