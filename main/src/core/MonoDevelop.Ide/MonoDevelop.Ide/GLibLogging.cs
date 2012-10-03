@@ -34,6 +34,9 @@ namespace MonoDevelop.Ide.Gui
 {
 	static class GLibLogging
 	{
+		// If we get more than 1MB of debug info, we don't care. 99.999% of the time we're just doing
+		// the same thing over and over and we really don't want log files which are 100gb in size
+		static int RemainingBytes = 1 * 1024 * 1024;
 		static readonly string[] domains = new string[] {"Gtk", "Gdk", "GLib", "GLib-GObject", "Pango", "GdkPixbuf" };
 		static uint[] handles;
 		
@@ -58,10 +61,13 @@ namespace MonoDevelop.Ide.Gui
 		
 		static void LogFunc (string logDomain, GLib.LogLevelFlags logLevel, string message)
 		{
+			if (RemainingBytes < 0)
+				return;
+
 			System.Diagnostics.StackTrace trace = new System.Diagnostics.StackTrace (2, true);
 			string msg = string.Format ("{0}-{1}: {2}\nStack trace: \n{3}", 
 			    logDomain, logLevel, message, trace.ToString ());
-			
+
 			switch (logLevel) {
 			case GLib.LogLevelFlags.Debug:
 				LoggingService.LogDebug (msg);
@@ -77,7 +83,11 @@ namespace MonoDevelop.Ide.Gui
 			default:
 				LoggingService.LogError (msg);
 				break;
-			}	
+			}
+			
+			RemainingBytes -= msg.Length;
+			if (RemainingBytes < 0)
+				LoggingService.LogError ("Disabling glib logging for the rest of the session");
 		}
 	}
 }
