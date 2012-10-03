@@ -202,7 +202,7 @@ namespace MonoDevelop.SourceEditor
 			this.tabIsReindent = PropertyService.Get ("TabIsReindent", false);
 			this.enableSemanticHighlighting = PropertyService.Get ("EnableSemanticHighlighting", true);
 			//			this.autoInsertTemplates        = PropertyService.Get ("AutoInsertTemplates", false);
-			this.autoInsertMatchingBracket = PropertyService.Get ("AutoInsertMatchingBracket", true);
+			this.autoInsertMatchingBracket = PropertyService.Get ("AutoInsertMatchingBracket", false);
 			this.smartSemicolonPlacement = PropertyService.Get ("SmartSemicolonPlacement", false);
 			this.underlineErrors = PropertyService.Get ("UnderlineErrors", true);
 			this.indentStyle = PropertyService.Get ("IndentStyle", IndentStyle.Smart);
