@@ -157,7 +157,7 @@ namespace MonoDevelop.CSharp.Completion
 				return;
 			var newTree = TypeSystemSegmentTree.Create (Document);
 			if (typeSystemSegmentTree != null)
-				typeSystemSegmentTree.RemoveListener (document.Editor.Document);
+				typeSystemSegmentTree.RemoveListener ();
 			typeSystemSegmentTree = newTree;
 			typeSystemSegmentTree.InstallListener (document.Editor.Document);
 			

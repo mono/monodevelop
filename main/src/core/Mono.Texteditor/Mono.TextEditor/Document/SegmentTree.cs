@@ -62,21 +62,21 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		bool isInstalled = false;
+		TextDocument ownerDocument;
 		public void InstallListener (TextDocument doc)
 		{
-			if (isInstalled)
+			if (ownerDocument != null)
 				throw new InvalidOperationException ("Segment tree already installed");
-			isInstalled = true;
+			ownerDocument = doc;
 			doc.TextReplaced += UpdateOnTextReplace;
 		}
 
-		public void RemoveListener (TextDocument doc)
+		public void RemoveListener ()
 		{
-			if (!isInstalled)
+			if (ownerDocument == null)
 				throw new InvalidOperationException ("Segment tree is not installed");
-			isInstalled = false;
-			doc.TextReplaced -= UpdateOnTextReplace;
+			ownerDocument.TextReplaced -= UpdateOnTextReplace;
+			ownerDocument = null;
 		}
 		
 		public void Clear ()

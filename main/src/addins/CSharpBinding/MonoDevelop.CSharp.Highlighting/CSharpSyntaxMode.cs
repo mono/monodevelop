@@ -158,7 +158,10 @@ namespace MonoDevelop.CSharp.Highlighting
 									quickTasks = visitor.QuickTasks;
 									OnTasksUpdated (EventArgs.Empty);
 									foreach (var kv in lineSegments) {
-										kv.Value.tree.RemoveListener (doc);
+										try {
+											kv.Value.tree.RemoveListener ();
+										} catch (Exception) {
+										}
 									}
 									lineSegments.Clear ();
 									var textEditor = editorData.Parent;
