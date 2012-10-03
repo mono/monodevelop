@@ -620,10 +620,10 @@ namespace MonoDevelop.Ide.Gui
 					notebook.OnCloseTab (t);
 					return true;
 				}
-				buttonPressedOnTab = true;
 				// Don't select the tab if we are clicking the close button
 				if (IsOverCloseButton (t, (int)evnt.X, (int)evnt.Y))
 					return true;
+				buttonPressedOnTab = true;
 				notebook.CurrentTab = t;
 				return true;
 			} else
