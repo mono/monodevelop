@@ -60,16 +60,19 @@ namespace MonoDevelop.Components
 				else if (p < (2 / 2.75f))
 				{
 					p -= (1.5f / 2.75f);
+
 					return 7.5625f * p * p + .75f;
 				}
 				else if (p < (2.5f / 2.75f))
 				{
 					p -= (2.25f / 2.75f);
+
 					return 7.5625f * p * p + .9375f;
 				}
 				else
 				{
 					p -= (2.625f / 2.75f);
+
 					return 7.5625f * p * p + .984375f;
 				}
 			};

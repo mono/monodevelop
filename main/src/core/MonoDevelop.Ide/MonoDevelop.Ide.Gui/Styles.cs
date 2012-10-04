@@ -39,8 +39,8 @@ namespace MonoDevelop.Ide.Gui
 
 		// Document tab bar
 
-		public static readonly Cairo.Color TabBarBackgroundColor = CairoExtensions.ParseColor ("f4fbfd");
-		public static readonly Cairo.Color BreadcrumbBackgroundColor = CairoExtensions.ParseColor ("ffffff");
+		public static readonly Cairo.Color TabBarBackgroundColor = new Cairo.Color (230d / 255d, 230d / 255d, 230d / 255d);
+		public static readonly Cairo.Color BreadcrumbBackgroundColor = new Cairo.Color (255d / 255d, 255d / 255d, 255d / 255d);
 		public static readonly Cairo.Color TabBarActiveTextColor = new Cairo.Color (0, 0, 0);
 
 		public static readonly Cairo.Color TabBarGradientStartColor = TabBarBackgroundColor;

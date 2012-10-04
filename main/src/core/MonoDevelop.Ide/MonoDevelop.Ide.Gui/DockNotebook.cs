@@ -375,26 +375,23 @@ namespace MonoDevelop.Ide.Gui
 		static Gdk.Pixbuf closeImage;
 		static Gdk.Pixbuf closeOverImage;
 
-		const int TabWidth = 125;
 		const int TopBarPadding = 3;
 		const int BottomBarPadding = 3;
-		const int LeftRightPadding = 10;
+		const int LeftRightPadding = 11;
+		const int LeftRightPaddingSel = 7;
 		const int TopPadding = 7;
 		const int BottomPadding = 7;
 		const int SeparatorWidth = 2;
+		const int LabelButtonSeparatorWidth = 6;
 		const double TabBorderRadius = 3;
 		const int BackgroundShadowHeight = 5;
 		const int LeftBarPadding = 58;
-		const int VerticalTextSize = 11;
-
-		const int ActiveTabVerticalOffset = 2;
-		const int TextOffset = -1;
 
 		const uint CloseAnimationFrameRate = 20;
 		const int CloseAnimationStepSize = 25;
 
 		// Vertically aligns the close image(s) with the tab label.
-		const int CloseImageTopOffset = 4;
+		const int CloseImageTopOffset = 2;
 
 		static TabStrip ()
 		{
@@ -525,13 +522,12 @@ namespace MonoDevelop.Ide.Gui
 
 		internal void InitSize (Gtk.Window window)
 		{
-			Pango.Layout la = CreateSizedLayout ();
+			Pango.Layout la = new Pango.Layout (window.PangoContext);
 			la.SetText ("H");
 			int w, h;
 			la.GetPixelSize (out w, out h);
 			
 			totalHeight = h + TopPadding + BottomPadding;
-			la.Dispose ();
 		}
 
 		public int BarHeight {
@@ -740,7 +736,7 @@ namespace MonoDevelop.Ide.Gui
 			using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
 
 				// Draw the background
-				var h = Allocation.Height;
+				var h = Allocation.Height - BottomBarPadding - BackgroundShadowHeight + 1;
 				ctx.Rectangle (0, 0, Allocation.Width, h); // +1 since background and shadow overlap 1 pixel
 				Cairo.LinearGradient gr = new LinearGradient (0, 0, 0, h);
 				gr.AddColorStop (0, Styles.TabBarGradientStartColor);
@@ -748,11 +744,12 @@ namespace MonoDevelop.Ide.Gui
 				ctx.Pattern = gr;
 				ctx.Fill ();
 
-				ctx.MoveTo (Allocation.X, 0.5);
-				ctx.LineTo (Allocation.Right, 0.5);
-				ctx.LineWidth = 1;
-				ctx.Color = CairoExtensions.ParseColor ("e0e0e0");
-				ctx.Stroke ();
+				ctx.Rectangle (0, h - 1, Allocation.Width, BackgroundShadowHeight);
+				gr = new LinearGradient (0, h, 0, h - 1 + BackgroundShadowHeight);
+				gr.AddColorStop (0, Styles.TabBarGradientMidColor);
+				gr.AddColorStop (1, Styles.TabBarGradientEndColor);
+				ctx.Pattern = gr;
+				ctx.Fill ();
 			}
 
 			foreach (var c in children)
@@ -771,23 +768,26 @@ namespace MonoDevelop.Ide.Gui
 				int y = 0;
 				for (int n = firstTabIndex; n <= lastTabIndex && x < tabEndX; n++) {
 					if (closingTab != null && n == closingTabIndex) {
-						DrawTab (ctx, closingTab, ref x, y, false, false, false);
+						DrawTab (ctx, closingTab, ref x, y, false);
 					}
 
 					int sx = x;
 					var tab = (DockNotebookTab)notebook.Tabs [n];
 
 					if (tab == notebook.CurrentTab)
-						DrawTab (ctx, tab, ref x, y, tab == highlightedTab, true, draggingTab);
-					else
-						DrawTab (ctx, tab, ref x, y, tab == highlightedTab, false, false);
+						DrawActiveTab (ctx, tab, ref x, y, tab == highlightedTab);
+					else {
+						DrawTab (ctx, tab, ref x, y, tab == highlightedTab);
+						if (n < lastTabIndex && notebook.Tabs[n+1] != notebook.CurrentTab)
+							DrawSeparator (ctx, ref x);
+					}
 
 					tab.Allocation = new Gdk.Rectangle (sx, Allocation.Y, x - sx, Allocation.Height);
 				}
 
 				if (draggingTab) {
 					// We draw the active again to make sure it is drawn over all the other tabs
-					DrawTab (ctx, (DockNotebookTab)notebook.CurrentTab, ref x, y, true, true, true);
+					DrawActiveTab (ctx, (DockNotebookTab)notebook.CurrentTab, ref x, y, true);
 				}
 
 				ctx.ResetClip ();
@@ -799,35 +799,93 @@ namespace MonoDevelop.Ide.Gui
 		{
 			var la = CreateTabLayout (tab);
 
+			int w, h;
+			la.GetPixelSize (out w, out h);
+
 			if (active) {
 				var closePix = highlight && overCloseButton ? closeSelOverImage : closeSelImage;
-				x += LeftRightPadding * 2 + TabWidth + closePix.Width;
+				x += LeftRightPaddingSel * 2 + w + LabelButtonSeparatorWidth + closePix.Width;
 			}
 			else {
 				var image = highlight && overCloseButton ? closeOverImage : closeImage;
-				x += LeftRightPadding * 2 + TabWidth + image.Width;
+				x += LeftRightPadding * 2 + w + LabelButtonSeparatorWidth + image.Width;
 			}
 
 			la.Dispose ();
 		}
 
-		void DrawTab (Cairo.Context ctx, DockNotebookTab tab, ref int x, int y, bool highlight, bool active, bool dragging)
+		void DrawSeparator (Cairo.Context ctx, ref int x)
+		{
+			var topMargin = TopBarPadding + 4;
+			ctx.Rectangle (x, topMargin, 1, Allocation.Height - BottomBarPadding - topMargin);
+			Cairo.LinearGradient gr = new LinearGradient (x, topMargin, x, Allocation.Height - BottomBarPadding - topMargin);
+			gr.AddColorStop (0, new Cairo.Color (0, 0, 0, 0));
+			gr.AddColorStop (1, new Cairo.Color (0, 0, 0, 0.3));
+			ctx.Pattern = gr;
+			ctx.Fill ();
+			x++;
+
+			ctx.Rectangle (x, topMargin, 1, Allocation.Height - BottomBarPadding - topMargin);
+			gr = new LinearGradient (x, topMargin, x, Allocation.Height - BottomBarPadding - topMargin);
+			gr.AddColorStop (0, new Cairo.Color (1, 1, 1, 0));
+			gr.AddColorStop (1, new Cairo.Color (1, 1, 1, 0.3));
+			ctx.Pattern = gr;
+			ctx.Fill ();
+			x++;
+		}
+
+		void DrawTab (Cairo.Context ctx, DockNotebookTab tab, ref int x, int y, bool highlight)
 		{
 			bool isClosing = tab == closingTab;
+
 			var la = CreateTabLayout (tab);
+			int w, h;
+			la.GetPixelSize (out w, out h);
+
+			x += LeftRightPadding;
+
+			if (isClosing) {
+				w = (int)((1d - closingTabAnimationStep) * (double)w);
+				ctx.Save ();
+				ctx.Rectangle (x, y + TopPadding, w, Allocation.Height);
+				ctx.Clip ();
+			}
+
+			ctx.MoveTo (x, y + TopPadding);
+			ctx.Color = highlight ? Styles.TabBarHoverInactiveTextColor : Styles.TabBarInactiveTextColor;
+			PangoCairoHelper.ShowLayout (ctx, la);
+
+			if (isClosing)
+				ctx.Restore ();
+
+			x += w + LabelButtonSeparatorWidth;
+
+			var image = highlight && overCloseButton ? closeOverImage : closeImage;
+			var ch = Allocation.Height - TopBarPadding - BottomBarPadding + CloseImageTopOffset;
+			var crect = new Gdk.Rectangle (x, y + TopBarPadding + (ch - image.Height) / 2, image.Width, image.Height);
+			CairoHelper.SetSourcePixbuf (ctx, image, crect.X, crect.Y);
+			ctx.Paint ();
+			crect.Inflate (2, 2);
+			tab.CloseButtonAllocation = crect;
+
+			x += image.Width + LeftRightPadding;
+
+			la.Dispose ();
+		}
+
+		void DrawActiveTab (Cairo.Context ctx, DockNotebookTab tab, ref int x, int y, bool highlight)
+		{
+			var la = CreateTabLayout (tab);
+			int w, h;
+			la.GetPixelSize (out w, out h);
 
 			var closePix = highlight && overCloseButton ? closeSelOverImage : closeSelImage;
-			int w = TabWidth - (LeftRightPadding * 2 + closePix.Width);
-			Console.WriteLine (w);
-
-			la.Ellipsize = Pango.EllipsizeMode.End;
-			la.Width = Pango.Units.FromPixels (w + 3);
 
 			int startX = x;
 
-			if (dragging) {
+			if (draggingTab) {
 				x = dragX;
-				int tabsize = LeftRightPadding + w + closePix.Width + LeftRightPadding;
+				int tabsize = LeftRightPaddingSel + w + LabelButtonSeparatorWidth + closePix.Width + LeftRightPadding;
 				if (x < tabStartX)
 					x = tabStartX;
 				else if (x + tabsize > tabEndX)
@@ -836,43 +894,37 @@ namespace MonoDevelop.Ide.Gui
 			}
 			int startXDrag = x;
 
+			int tabWidth = w + LeftRightPaddingSel * 2 + LabelButtonSeparatorWidth + closePix.Width;
 
 			ctx.LineWidth = 1;
-			DrawTabBorder (ctx, TabWidth, x, 0, active);
+			DrawTabBorder (ctx, tabWidth - 2, x, 0);
 			ctx.ClosePath ();
 			double tops = 5d / (Allocation.Bottom - TopBarPadding); // The initial gradient is 4 pixels height
 			Cairo.LinearGradient gr = new LinearGradient (x, TopBarPadding, x, Allocation.Bottom);
-			if (active) {
-				gr.AddColorStop (0, Styles.BreadcrumbGradientStartColor);
-				gr.AddColorStop (tops, Styles.BreadcrumbBackgroundColor);
-				gr.AddColorStop (1, Styles.BreadcrumbBackgroundColor);
-			} else {
-				gr.AddColorStop (0, CairoExtensions.ParseColor ("e9e9e9"));
-				gr.AddColorStop (1, CairoExtensions.ParseColor ("d1d1d1"));
-			}
+			gr.AddColorStop (0, Styles.BreadcrumbGradientStartColor);
+			gr.AddColorStop (tops, Styles.BreadcrumbBackgroundColor);
+			gr.AddColorStop (1, Styles.BreadcrumbBackgroundColor);
 			ctx.Pattern = gr;
 			ctx.Fill ();
 
-			if (isClosing)
-				w = (int)((1d - closingTabAnimationStep) *(double)w);
-
 			ctx.Color = Styles.BreadcrumbBorderColor;
-			DrawTabBorder (ctx, TabWidth, x, 0, active);
+			DrawTabBorder (ctx, tabWidth - 2, x, 0);
 			ctx.Stroke ();
 
-			x += LeftRightPadding;
+			ctx.Color = Styles.BreadcrumbInnerBorderColor;
+			DrawTabBorder (ctx, tabWidth - 4, x + 1, 1);
+			ctx.Stroke ();
 
-			ctx.MoveTo (x, y + TopPadding + ActiveTabVerticalOffset + TextOffset);
-			if (active)
-				ctx.Color = highlight ? Styles.TabBarHoverActiveTextColor : Styles.TabBarActiveTextColor;
-			else
-				ctx.Color = highlight ? Styles.TabBarHoverInactiveTextColor : Styles.TabBarInactiveTextColor;
+			x += LeftRightPaddingSel;
+
+			ctx.MoveTo (x, y + TopPadding);
+			ctx.Color = highlight ? Styles.TabBarHoverActiveTextColor : Styles.TabBarActiveTextColor;
 			PangoCairoHelper.ShowLayout (ctx, la);
 
-			x += w;
+			x += w + LabelButtonSeparatorWidth;
 
-			var ch = Allocation.Height - TopBarPadding - BottomBarPadding + CloseImageTopOffset + ActiveTabVerticalOffset;
-			var crect = new Gdk.Rectangle (x + 3, y + TopBarPadding + (ch - closePix.Height) / 2, closePix.Width, closePix.Height);
+			var ch = Allocation.Height - TopBarPadding - BottomBarPadding + CloseImageTopOffset;
+			var crect = new Gdk.Rectangle (x, y + TopBarPadding + (ch - closePix.Height) / 2, closePix.Width, closePix.Height);
 			CairoHelper.SetSourcePixbuf (ctx, closePix, crect.X, crect.Y);
 			ctx.Paint ();
 			crect.Inflate (2, 2);
@@ -880,48 +932,32 @@ namespace MonoDevelop.Ide.Gui
 
 			x += closePix.Width + LeftRightPadding;
 
-			if (dragging)
+			if (draggingTab)
 				x = startX + (x - startXDrag);
 
 			la.Dispose ();
 		}
 
-		void DrawTabBorder (Cairo.Context ctx, int contentWidth, int px, int margin, bool active = true)
+		void DrawTabBorder (Cairo.Context ctx, int contentWidth, int px, int margin)
 		{
 			double x = 0.5 + (double)px;
 			double y = (double) Allocation.Height + 0.5 - BottomBarPadding + margin;
 			double height = Allocation.Height - TopBarPadding - BottomBarPadding;
 
-			double rightx = x + contentWidth;
-			if (active) {
-				ctx.MoveTo (0, y);
-				ctx.LineTo (x, y);
-				ctx.LineTo (x, y - height);
-				ctx.LineTo (rightx, y - height);
-				ctx.LineTo (rightx, y);
-				ctx.LineTo (Allocation.Width, y);
-			} else {
-				height -= ActiveTabVerticalOffset + 1;
-				y--;
-				ctx.MoveTo (x, y);
-				ctx.LineTo (x, y - height);
-				ctx.LineTo (rightx, y - height);
-				ctx.LineTo (rightx, y);
-			}
-		}
-
-		Pango.Layout CreateSizedLayout ()
-		{
-			Pango.Layout la = new Pango.Layout (PangoContext);
-			la.FontDescription = Pango.FontDescription.FromString ("normal");
-			la.FontDescription.AbsoluteSize = Pango.Units.FromPixels (VerticalTextSize);
-
-			return la;
+			ctx.MoveTo (0, y);
+			ctx.LineTo (x, y);
+			ctx.LineTo (x, y - height + TabBorderRadius);
+			ctx.Arc (x + TabBorderRadius, y - height + TabBorderRadius, TabBorderRadius, System.Math.PI, System.Math.PI * 1.5d);
+			double rightx = x + contentWidth + 1;
+			ctx.LineTo (rightx - TabBorderRadius, y - height);
+			ctx.Arc (rightx - TabBorderRadius, y - height + TabBorderRadius, TabBorderRadius, System.Math.PI * 1.5d, System.Math.PI * 2d);
+			ctx.LineTo (rightx, y);
+			ctx.LineTo (Allocation.Width, y);
 		}
 
 		Pango.Layout CreateTabLayout (IDockNotebookTab tab)
 		{
-			Pango.Layout la = CreateSizedLayout ();
+			Pango.Layout la = new Pango.Layout (PangoContext);
 			if (!string.IsNullOrEmpty (tab.Markup))
 				la.SetMarkup (tab.Markup);
 			else if (!string.IsNullOrEmpty (tab.Text))
