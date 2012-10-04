@@ -955,7 +955,7 @@ namespace Mono.TextEditor
 			textEditorData.HeightTree.Rebuild ();
 			this.QueueResize ();
 		}
-		
+
 		void SetWidgetBgFromStyle ()
 		{
 			// This is a hack around a problem with repainting the drag widget.
@@ -978,7 +978,13 @@ namespace Mono.TextEditor
 				SetWidgetBgFromStyle ();
 			}
 		}
- 
+
+		protected override bool OnVisibilityNotifyEvent (EventVisibility evnt)
+		{
+			if (evnt.State == VisibilityState.FullyObscured)
+				HideTooltip ();
+			return base.OnVisibilityNotifyEvent (evnt);
+		}
 		protected override void OnDestroyed ()
 		{
 			if (popupWindow != null)
@@ -2785,7 +2791,7 @@ namespace Mono.TextEditor
 		int tipX, tipY;
 		uint tipHideTimeoutId = 0;
 		uint tipShowTimeoutId = 0;
-		Gtk.Window tipWindow;
+		static Gtk.Window tipWindow;
 		internal List<TooltipProvider> tooltipProviders = new List<TooltipProvider> ();
 		TooltipProvider currentTooltipProvider;
 		
@@ -2834,8 +2840,6 @@ namespace Mono.TextEditor
 			}
 			if (tipItem != null && !tipItem.ItemSegment.IsInvalid && !tipItem.ItemSegment.Contains (offset)) 
 				HideTooltip ();
-			if (!HasFocus)
-				return;
 			nextTipX = xloc;
 			nextTipY = yloc;
 			nextTipOffset = offset;
