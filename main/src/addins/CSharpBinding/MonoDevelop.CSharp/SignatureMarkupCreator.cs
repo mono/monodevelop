@@ -86,12 +86,14 @@ namespace MonoDevelop.CSharp
 			try {
 				astType = astBuilder.ConvertType (type);
 			} catch (Exception e) {
-				var def = type.GetDefinition ();
-				if (def == null) {
+				var compilation = GetCompilation (type);
+				if (compilation == null) {
+
+					Console.WriteLine ("type:"+type.GetType ());
 					Console.WriteLine ("got exception while conversion:" + e);
 					return "?";
 				}
-				astType = new TypeSystemAstBuilder (new CSharpResolver (def.Compilation)).ConvertType (type);
+				astType = new TypeSystemAstBuilder (new CSharpResolver (compilation)).ConvertType (type);
 			}
 
 			if (astType is PrimitiveType) {
@@ -99,6 +101,22 @@ namespace MonoDevelop.CSharp
 			}
 			var text = AmbienceService.EscapeText (astType.GetText (formattingOptions));
 			return highlight ? HighlightSemantically (text, "keyword.semantic.type") : text;
+		}
+
+		static ICompilation GetCompilation (IType type)
+		{
+			var def = type.GetDefinition ();
+			if (def == null) {	
+				var t = type;
+				while (t is TypeWithElementType) {
+					t = ((TypeWithElementType)t).ElementType;
+				}
+				if (t != null)
+					def = t.GetDefinition ();
+			}
+			if (def != null)
+				return def.Compilation;
+			return null;
 		}
 
 		public string GetMarkup (IType type)
