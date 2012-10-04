@@ -47,6 +47,7 @@ namespace MonoDevelop.CSharp.Highlighting
 	{
 		public readonly List<TextSegment> UsagesSegments = new List<TextSegment> ();
 			
+		CSharpSyntaxMode syntaxMode;
 		TextEditorData textEditorData;
 
 		public override void Initialize ()
@@ -58,7 +59,8 @@ namespace MonoDevelop.CSharp.Highlighting
 			textEditorData.Caret.PositionChanged += HandleTextEditorDataCaretPositionChanged;
 			textEditorData.Document.TextReplaced += HandleTextEditorDataDocumentTextReplaced;
 			textEditorData.SelectionChanged += HandleTextEditorDataSelectionChanged;
-			textEditorData.Document.SyntaxMode = new CSharpSyntaxMode (Document);
+			syntaxMode = new CSharpSyntaxMode (Document);
+			textEditorData.Document.SyntaxMode = syntaxMode;
 		}
 
 		void HandleTextEditorDataSelectionChanged (object sender, EventArgs e)
@@ -73,6 +75,11 @@ namespace MonoDevelop.CSharp.Highlighting
 		
 		public override void Dispose ()
 		{
+			if (syntaxMode != null) {
+				syntaxMode.Dispose ();
+				syntaxMode = null;
+			}
+
 			textEditorData.SelectionChanged -= HandleTextEditorDataSelectionChanged;
 			textEditorData.Caret.PositionChanged -= HandleTextEditorDataCaretPositionChanged;
 			textEditorData.Document.TextReplaced -= HandleTextEditorDataDocumentTextReplaced;

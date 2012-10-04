@@ -67,7 +67,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		}
 	}
 	
-	public class CSharpSyntaxMode : Mono.TextEditor.Highlighting.SyntaxMode, IQuickTaskProvider
+	class CSharpSyntaxMode : Mono.TextEditor.Highlighting.SyntaxMode, IQuickTaskProvider, IDisposable
 	{
 		readonly Document guiDocument;
 
@@ -588,16 +588,10 @@ namespace MonoDevelop.CSharp.Highlighting
 			"on",
 			"equals"
 		};
-		
 
 		public CSharpSyntaxMode (MonoDevelop.Ide.Gui.Document document)
 		{
 			this.guiDocument = document;
-			guiDocument.Closed += delegate {
-				if (src != null)
-					src.Cancel ();
-				MonoDevelop.Core.PropertyService.PropertyChanged -= HandlePropertyChanged;
-			};
 			guiDocument.DocumentParsed += HandleDocumentParsed;
 			semanticHighlightingEnabled = MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", true);
 			MonoDevelop.Core.PropertyService.PropertyChanged += HandlePropertyChanged;
@@ -638,6 +632,18 @@ namespace MonoDevelop.CSharp.Highlighting
 			AddSemanticRule ("XmlDocumentation", new HighlightUrlSemanticRule ("comment"));
 			AddSemanticRule ("String", new HighlightUrlSemanticRule ("string"));
 		}
+
+		#region IDisposable implementation
+
+		public void Dispose ()
+		{
+			if (src != null)
+				src.Cancel ();
+			guiDocument.DocumentParsed -= HandleDocumentParsed;
+			MonoDevelop.Core.PropertyService.PropertyChanged -= HandlePropertyChanged;
+		}
+
+		#endregion
 
 		void HandlePropertyChanged (object sender, PropertyChangedEventArgs e)
 		{
