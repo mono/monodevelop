@@ -1799,6 +1799,17 @@
     <Compile Include="MonoDevelop.Ide.WelcomePage\WelcomePageYoutubeFeed.cs" />
     <Compile Include="MonoDevelop.Ide\EditReferencesEventArgs.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\StatusAreaTheme.cs" />
+    <Compile Include="MonoDevelop.Components\PopoverWidget.cs" />
+    <Compile Include="MonoDevelop.Ide.TextEditing\TextEditorService.cs" />
+    <Compile Include="MonoDevelop.Ide.TextEditing\FileLineExtension.cs" />
+    <Compile Include="MonoDevelop.Ide.TextEditing\TopLevelWidgetExtension.cs" />
+    <Compile Include="MonoDevelop.Ide.TextEditing\VerticalAlignment.cs" />
+    <Compile Include="MonoDevelop.Ide.TextEditing\HorizontalAlignment.cs" />
+    <Compile Include="MonoDevelop.Ide.TextEditing\TextLineMarkerExtension.cs" />
+    <Compile Include="MonoDevelop.Ide.TextEditing\TextFileEventArgs.cs" />
+    <Compile Include="MonoDevelop.Ide.TextEditing\LineCountEventArgs.cs" />
+    <Compile Include="MonoDevelop.Ide.TextEditing\FileExtension.cs" />
+    <Compile Include="MonoDevelop.Ide.TextEditing\FileExtensionEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -1855,6 +1866,7 @@
     <Folder Include="MonoDevelop.Components.MainToolbar\" />
     <Folder Include="MonoDevelop.Components.MainToolbar\Theme\" />
     <Folder Include="MonoDevelop.Ide.WelcomePage\icons\" />
+    <Folder Include="MonoDevelop.Ide.TextEditing\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc">

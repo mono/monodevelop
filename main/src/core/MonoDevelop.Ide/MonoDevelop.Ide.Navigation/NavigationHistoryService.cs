@@ -33,7 +33,7 @@ using System.Collections.Generic;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Text;
+using MonoDevelop.Ide.TextEditing;
 
 namespace MonoDevelop.Ide.Navigation
 {
@@ -61,9 +61,9 @@ namespace MonoDevelop.Ide.Navigation
 			};
 			
 			//keep nav points up to date
-			MonoDevelop.Projects.Text.TextFileService.LineCountChanged += LineCountChanged;
-			MonoDevelop.Projects.Text.TextFileService.CommitCountChanges += CommitCountChanges;
-			MonoDevelop.Projects.Text.TextFileService.ResetCountChanges += ResetCountChanges;
+			TextEditorService.LineCountChanged += LineCountChanged;
+			TextEditorService.LineCountChangesCommitted += CommitCountChanges;
+			TextEditorService.LineCountChangesReset += ResetCountChanges;
 			IdeApp.Workspace.FileRenamedInProject += FileRenamed;
 			
 			IdeApp.Workbench.ActiveDocumentChanged += ActiveDocChanged;

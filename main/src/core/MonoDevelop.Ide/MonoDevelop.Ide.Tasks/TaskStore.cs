@@ -41,6 +41,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Navigation;
+using MonoDevelop.Ide.TextEditing;
 
 namespace MonoDevelop.Ide.Tasks
 {
@@ -62,12 +63,12 @@ namespace MonoDevelop.Ide.Tasks
 			IdeApp.Workspace.FileRenamedInProject += ProjectFileRenamed;
 			IdeApp.Workspace.FileRemovedFromProject += ProjectFileRemoved;
 			
-			MonoDevelop.Projects.Text.TextFileService.CommitCountChanges += delegate (object sender, MonoDevelop.Projects.Text.TextFileEventArgs args) {
+			TextEditorService.LineCountChangesCommitted += delegate (object sender, TextFileEventArgs args) {
 				foreach (Task task in GetFileTasks (args.TextFile.Name.FullPath))
 					task.SavedLine = -1;
 			};
 			
-			MonoDevelop.Projects.Text.TextFileService.ResetCountChanges += delegate (object sender, MonoDevelop.Projects.Text.TextFileEventArgs args) {
+			TextEditorService.LineCountChangesReset += delegate (object sender, TextFileEventArgs args) {
 				Task[] ctasks = GetFileTasks (args.TextFile.Name.FullPath);
 				foreach (Task task in ctasks) {
 					if (task.SavedLine != -1) {
@@ -78,7 +79,7 @@ namespace MonoDevelop.Ide.Tasks
 				NotifyTasksChanged (ctasks);
 			};
 			
-			MonoDevelop.Projects.Text.TextFileService.LineCountChanged += delegate (object sender, MonoDevelop.Projects.Text.LineCountEventArgs args) {
+			TextEditorService.LineCountChanged += delegate (object sender, LineCountEventArgs args) {
 				if (args.TextFile == null || args.TextFile.Name.IsNullOrEmpty)
 					return;
 				Task[] ctasks = GetFileTasks (args.TextFile.Name.FullPath);

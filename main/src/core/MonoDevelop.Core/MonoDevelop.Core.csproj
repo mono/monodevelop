@@ -348,7 +348,6 @@
     <Compile Include="MonoDevelop.Projects.Text\TextFile.cs" />
     <Compile Include="MonoDevelop.Projects.Text\TextEncoding.cs" />
     <Compile Include="MonoDevelop.Projects.Text\TextFileReader.cs" />
-    <Compile Include="MonoDevelop.Projects.Text\TextFileService.cs" />
     <Compile Include="MonoDevelop.Projects.Text\TextFormatter.cs" />
     <Compile Include="MonoDevelop.Projects.Utility\DiffUtility.cs" />
     <Compile Include="MonoDevelop.Core.StringParsing\IStringTagProvider.cs" />
