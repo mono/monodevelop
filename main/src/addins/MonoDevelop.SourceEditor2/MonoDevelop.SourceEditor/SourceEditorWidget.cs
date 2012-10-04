@@ -107,7 +107,7 @@ namespace MonoDevelop.SourceEditor
 			if (secondsw != null)
 				secondsw.RemoveQuickTaskProvider (provider);
 		}		
-		
+
 		
 		List<IUsageProvider> usageProvider = new List<IUsageProvider> ();
 		public void AddUsageTaskProvider (IUsageProvider provider)
@@ -226,7 +226,7 @@ namespace MonoDevelop.SourceEditor
 			{
 				if (scrolledWindow.Child != null)
 					RemoveEvents ();
-				
+
 				scrolledWindow.ButtonPressEvent -= PrepareEvent;
 				base.OnDestroyed ();
 			}
@@ -308,7 +308,11 @@ namespace MonoDevelop.SourceEditor
 				RemoveErrorUndelinesResetTimerId ();
 				StopParseInfoThread ();
 				KillWidgets ();
-				
+
+				foreach (var provider in quickTaskProvider.ToArray ()) {
+					RemoveQuickTaskProvider (provider);
+				}
+
 				this.lastActiveEditor = null;
 				this.splittedTextEditor = null;
 				view = null;
