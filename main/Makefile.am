@@ -120,7 +120,7 @@ runmd: $(PROGRAM)
 	$(MD_LAUNCH) --debug $(MD_BIN_PATH)/MonoDevelop.exe --no-redirect
 
 runmd-sgen: $(PROGRAM)
-	$(MD_LAUNCH) --gc=sgen --debug $(MD_BIN_PATH)/MonoDevelop.exe --no-redirect
+	$(MD_LAUNCH)-sgen --debug $(MD_BIN_PATH)/MonoDevelop.exe --no-redirect
 
 run-debug: $(PROGRAM)
 	MONODEVELOP_CONSOLE_LOG_LEVEL=All $(MD_LAUNCH) --debug=casts $(MD_BIN_PATH)/MonoDevelop.exe --no-redirect
