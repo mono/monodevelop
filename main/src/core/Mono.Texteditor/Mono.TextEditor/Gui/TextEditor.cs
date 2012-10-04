@@ -465,6 +465,21 @@ namespace Mono.TextEditor
 				}
 			}
 		}
+
+		/// <summary>
+		/// Returns the position of an embedded widget
+		/// </summary>
+		public void GetTopLevelWidgetPosition (Gtk.Widget widget, out int x, out int y)
+		{
+			foreach (EditorContainerChild info in containerChildren.ToArray ()) {
+				if (info.Child == widget || (info.Child is AnimatedWidget && ((AnimatedWidget)info.Child).Widget == widget)) {
+					x = info.X;
+					y = info.Y;
+					return;
+				}
+			}
+			x = y = 0;
+		}
 		
 		public void MoveToTop (Gtk.Widget widget)
 		{
@@ -1548,8 +1563,14 @@ namespace Mono.TextEditor
 				startPos = textViewMargin.XOffset;
 			} else {
 				margin = GetMarginAtX (x, out startPos);
-				if (margin != null && GdkWindow != null)
-					GdkWindow.Cursor = margin.MarginCursor;
+				if (margin != null && GdkWindow != null) {
+					if (!containerChildren.Any (w => w.Child.Allocation.Contains ((int)x, (int)y)))
+						GdkWindow.Cursor = margin.MarginCursor;
+					else {
+						// Set the default cursor when the mouse is over an embedded widget
+						GdkWindow.Cursor = null;
+					}
+				}
 			}
 
 			if (oldMargin != margin && oldMargin != null)
@@ -1666,7 +1687,14 @@ namespace Mono.TextEditor
 			
 			//	int yMargin = 1 * this.LineHeight;
 			double caretPosition = LineToY (p.Line);
-			this.textEditorData.VAdjustment.Value = caretPosition - this.textEditorData.VAdjustment.PageSize / 2;
+			caretPosition -= this.textEditorData.VAdjustment.PageSize / 2;
+
+			// Make sure the caret position is inside the bounds. This avoids an unnecessary bump of the scrollview.
+			// The adjustment does this check, but does it after assigning the value, so the value may be out of bounds for a while.
+			if (caretPosition + this.textEditorData.VAdjustment.PageSize > this.textEditorData.VAdjustment.Upper)
+				caretPosition = this.textEditorData.VAdjustment.Upper - this.textEditorData.VAdjustment.PageSize;
+
+			this.textEditorData.VAdjustment.Value = caretPosition;
 			
 			if (this.textEditorData.HAdjustment.Upper < Allocation.Width)  {
 				this.textEditorData.HAdjustment.Value = 0;
@@ -1756,6 +1784,39 @@ namespace Mono.TextEditor
 					} else if (this.textEditorData.HAdjustment.Value + textWith < caretX + TextViewMargin.CharWidth) {
 						double adjustment = System.Math.Max (0, caretX - textWith + TextViewMargin.CharWidth);
 						this.textEditorData.HAdjustment.Value = adjustment;
+					}
+				}
+			} finally {
+				inCaretScroll = false;
+			}
+		}
+
+		/// <summary>
+		/// Scrolls the editor as required for making the specified area visible 
+		/// </summary>
+		public void ScrollTo (Gdk.Rectangle rect)
+		{
+			inCaretScroll = true;
+			try {
+				var vad = this.textEditorData.VAdjustment;
+				if (vad.Upper < Allocation.Height) {
+					vad.Value = 0;
+				} else {
+					if (vad.Value >= rect.Top) {
+						vad.Value = rect.Top;
+					} else if (vad.Value + vad.PageSize - rect.Height < rect.Top) {
+						vad.Value = rect.Top - vad.PageSize + rect.Height;
+					}
+				}
+
+				var had = this.textEditorData.HAdjustment;
+				if (had.Upper < Allocation.Width)  {
+					had.Value = 0;
+				} else {
+					if (had.Value >= rect.Left) {
+						had.Value = rect.Left;
+					} else if (had.Value + had.PageSize - rect.Width < rect.Left) {
+						had.Value = rect.Left - had.PageSize + rect.Width;
 					}
 				}
 			} finally {
@@ -2027,6 +2088,10 @@ namespace Mono.TextEditor
 				
 				OnPainted (new PaintEventArgs (cr, cairoArea));
 			}
+
+			// Propagate the exposure event to the embedded widgets
+			foreach (var c in containerChildren)
+				PropagateExpose (c.Child, e);
 			
 			return false;
 		}
