@@ -160,6 +160,8 @@ namespace MonoDevelop.CSharp
 				AppendParameter (sb, op.Parameters);
 			} else if (e is MethodDeclaration) {
 				var method = e as MethodDeclaration;
+				if (!method.PrivateImplementationType.IsNull)
+					sb.Append (method.PrivateImplementationType.GetText () + ".");
 				sb.Append (method.Name);
 				AppendTypeParameter (sb, method.TypeParameters);
 				AppendParameter (sb, method.Parameters);
@@ -214,11 +216,22 @@ namespace MonoDevelop.CSharp
 				if (!evt.Variables.Any ())
 					return "";
 				sb.Append (evt.Variables.First ().Name);
+			} else if (e is PropertyDeclaration) {
+				var property = (PropertyDeclaration)e;
+				if (!property.PrivateImplementationType.IsNull)
+					sb.Append (property.PrivateImplementationType.GetText () + ".");
+				sb.Append (property.Name);
+			} else if (e is CustomEventDeclaration) {
+				var customEvent = (CustomEventDeclaration)e;
+				if (!customEvent.PrivateImplementationType.IsNull)
+					sb.Append (customEvent.PrivateImplementationType.GetText () + ".");
+				sb.Append (customEvent.Name);
 			} else if (e is EntityDeclaration) {
 				var entity = (EntityDeclaration)e;
 				sb.Append (entity.Name);
 			}
-			
+
+
 			string markup = sb.ToString ();
 			if (IsObsolete (e as EntityDeclaration))
 				return "<s>" + markup + "</s>";
