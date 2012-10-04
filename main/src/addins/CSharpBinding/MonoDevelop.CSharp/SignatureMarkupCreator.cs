@@ -154,7 +154,7 @@ namespace MonoDevelop.CSharp
 
 		void AppendModifiers (StringBuilder result, IEntity entity)
 		{
-			if (entity.DeclaringType.Kind == TypeKind.Interface)
+			if (entity.DeclaringType != null && entity.DeclaringType.Kind == TypeKind.Interface)
 				return;
 
 			switch (entity.Accessibility) {
