@@ -190,6 +190,8 @@ namespace MonoDevelop.CSharp.Highlighting
 
 			public HighlightingVisitior (CSharpAstResolver resolver, CancellationToken cancellationToken, int lineNumber, int lineOffset)
 			{
+				if (resolver == null)
+					throw new ArgumentNullException ("resolver");
 				this.resolver = resolver;
 				this.cancellationToken = cancellationToken;
 				this.lineNumber = lineNumber;
@@ -802,7 +804,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			{
 				var document = csharpSyntaxMode.guiDocument;
 				var parsedDocument = document != null ? document.ParsedDocument : null;
-				if (parsedDocument != null && csharpSyntaxMode.semanticHighlightingEnabled) {
+				if (parsedDocument != null && csharpSyntaxMode.semanticHighlightingEnabled && csharpSyntaxMode.resolver != null) {
 					int endLoc = -1;
 					string semanticStyle = null;
 					if (spanParser.CurSpan == null || spanParser.CurSpan is DefineSpan) {
