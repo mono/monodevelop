@@ -117,14 +117,14 @@ namespace MonoDevelop.Components.MainToolbar
 			float textTweenValue = arg.TextAnimationProgress;
 
 			if (arg.LastText != null) {
-				double opacity = 1.0f - textTweenValue;
+				double opacity = Math.Max (0.0f, 1.0f - textTweenValue);
 				DrawString (arg.LastText, arg.LastTextIsMarkup, context, text_x, 
 				            center - (int)(textTweenValue * arg.Allocation.Height * 0.3), text_width, opacity, arg.Pango, arg);
 			}
 
 			if (arg.CurrentText != null) {
 				DrawString (arg.CurrentText, arg.CurrentTextIsMarkup, context, text_x, 
-				            center + (int)((1.0f - textTweenValue) * arg.Allocation.Height * 0.3), text_width, textTweenValue, arg.Pango, arg);
+				            center + (int)((1.0f - textTweenValue) * arg.Allocation.Height * 0.3), text_width, Math.Min (textTweenValue, 1.0), arg.Pango, arg);
 			}
 
 			if (arg.ShowProgressBar || arg.ProgressBarAlpha > 0)

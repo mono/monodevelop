@@ -43,6 +43,42 @@ namespace MonoDevelop.Components
 		public static readonly Func<float, float> CubicOut = x => (float)Math.Pow (x - 1.0f, 3.0f) + 1.0f;
 		public static readonly Func<float, float> CubicInOut = x => x < 0.5f ? (float)Math.Pow (x * 2.0f, 3.0f) / 2.0f :
 																			   (float)(Math.Pow ((x-1)*2.0f, 3.0f) + 2.0f) / 2.0f;
+
+		public static readonly Func<float, float> BounceOut;
+		public static readonly Func<float, float> BounceIn;
+
+		public static readonly Func<float, float> SpringIn = x => x * x * ((1.70158f + 1) * x - 1.70158f);
+		public static readonly Func<float, float> SpringOut = x => (x - 1) * (x - 1) * ((1.70158f + 1) * (x - 1) + 1.70158f) + 1;
+
+		static Easing ()
+		{
+			BounceOut = p => {
+				if (p < (1 / 2.75f))
+				{
+					return 7.5625f * p * p;
+				}
+				else if (p < (2 / 2.75f))
+				{
+					p -= (1.5f / 2.75f);
+
+					return 7.5625f * p * p + .75f;
+				}
+				else if (p < (2.5f / 2.75f))
+				{
+					p -= (2.25f / 2.75f);
+
+					return 7.5625f * p * p + .9375f;
+				}
+				else
+				{
+					p -= (2.625f / 2.75f);
+
+					return 7.5625f * p * p + .984375f;
+				}
+			};
+
+			BounceIn = p => 1.0f - BounceOut (p);
+		}
 	}
 
 	static class Animation
