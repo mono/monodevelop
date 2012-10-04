@@ -196,12 +196,19 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		protected override void OnSetScrollAdjustments (Adjustment hadj, Adjustment vadj)
 		{
+			if (this.vadj != null)
+				this.vadj.ValueChanged -= HandleValueChanged;
 			this.vadj = vadj;
 			base.OnSetScrollAdjustments (hadj, vadj);
 			if (this.vadj != null) {
-				this.vadj.ValueChanged += (sender, e) => QueueDraw ();
+				this.vadj.ValueChanged += HandleValueChanged;
 				SetAdjustments ();
 			}
+		}
+
+		void HandleValueChanged (object sender, EventArgs e)
+		{
+			QueueDraw ();
 		}
 
 		public void ResetState ()
