@@ -381,7 +381,6 @@ namespace MonoDevelop.Ide.Gui
 		const int LeftRightPadding = 10;
 		const int TopPadding = 7;
 		const int BottomPadding = 7;
-		const int SeparatorWidth = 2;
 		const double TabBorderRadius = 3;
 		const int BackgroundShadowHeight = 5;
 		const int LeftBarPadding = 58;
@@ -454,8 +453,7 @@ namespace MonoDevelop.Ide.Gui
 			if (closingAnimation != 0)
 				GLib.Source.Remove (closingAnimation);
 
-			int x = 0;
-			CalcTabSize (closingTab, ref x, false, false);
+			int x = TabWidth;
 
 			this.closingTab = closingTab;
 			closingTabIndex = closingTab.Index;
@@ -723,10 +721,8 @@ namespace MonoDevelop.Ide.Gui
 			int x = 0;
 			int n;
 			for (n = startIndex; n < notebook.Tabs.Count; n++) {
-				if (n > startIndex && (n - 1 != notebook.CurrentTabIndex))
-					x += SeparatorWidth;
 				var tab = notebook.Tabs [n];
-				CalcTabSize (tab, ref x, tab == notebook.CurrentTab, tab == highlightedTab);
+				x += TabWidth;
 				if (x < maxExtent)
 					lastIncludedTabIndex = n;
 				else
@@ -793,22 +789,6 @@ namespace MonoDevelop.Ide.Gui
 				ctx.ResetClip ();
 			}
 			return base.OnExposeEvent (evnt);
-		}
-
-		void CalcTabSize (IDockNotebookTab tab, ref int x, bool active, bool highlight)
-		{
-			var la = CreateTabLayout (tab);
-
-			if (active) {
-				var closePix = highlight && overCloseButton ? closeSelOverImage : closeSelImage;
-				x += LeftRightPadding * 2 + TabWidth + closePix.Width;
-			}
-			else {
-				var image = highlight && overCloseButton ? closeOverImage : closeImage;
-				x += LeftRightPadding * 2 + TabWidth + image.Width;
-			}
-
-			la.Dispose ();
 		}
 
 		void DrawTab (Cairo.Context ctx, DockNotebookTab tab, ref int x, int y, bool highlight, bool active, bool dragging)
