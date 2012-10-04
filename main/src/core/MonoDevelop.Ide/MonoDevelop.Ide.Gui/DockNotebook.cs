@@ -818,7 +818,6 @@ namespace MonoDevelop.Ide.Gui
 
 			var closePix = highlight && overCloseButton ? closeSelOverImage : closeSelImage;
 			int w = TabWidth - (LeftRightPadding * 2 + closePix.Width);
-			Console.WriteLine (w);
 
 			la.Ellipsize = Pango.EllipsizeMode.End;
 			la.Width = Pango.Units.FromPixels (w + 3);
