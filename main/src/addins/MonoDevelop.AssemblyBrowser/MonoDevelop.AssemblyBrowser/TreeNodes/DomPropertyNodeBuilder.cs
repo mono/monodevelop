@@ -73,17 +73,11 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
 		{
-			var property = (IUnresolvedProperty)dataObject;
-			if (property.CanGet)
-				ctx.AddChild (property.Getter);
-			if (property.CanSet)
-				ctx.AddChild (property.Setter);
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			var property = (IUnresolvedProperty)dataObject;
-			return property.CanGet || property.CanSet;
+			return false;
 		}
 		
 		
