@@ -527,7 +527,7 @@ namespace MonoDevelop.SourceEditor
 			this.WorkbenchWindowChanged += delegate {
 				if (WorkbenchWindow == null)
 					return;
-				WorkbenchWindow.DocumentChanged += delegate {
+				WorkbenchWindow.DocumentChanged +=  delegate {
 					if (WorkbenchWindow.Document == null)
 						return;
 					foreach (var provider in WorkbenchWindow.Document.GetContents<IQuickTaskProvider> ()) {
@@ -536,12 +536,19 @@ namespace MonoDevelop.SourceEditor
 					foreach (var provider in WorkbenchWindow.Document.GetContents<IUsageProvider> ()) {
 						widget.AddUsageTaskProvider (provider);
 					}
-					WorkbenchWindow.Document.DocumentParsed += delegate (object sender, EventArgs e) {
-						widget.UpdateParsedDocument (WorkbenchWindow.Document.ParsedDocument);
-					};
+					ownerDocument.DocumentParsed += HandleDocumentParsed;
+					ownerDocument = WorkbenchWindow.Document;
 				};
 			};
+		}
+
+		MonoDevelop.Ide.Gui.Document ownerDocument;
+
+		void HandleDocumentParsed (object sender, EventArgs e)
+		{
+			widget.UpdateParsedDocument (ownerDocument.ParsedDocument);
 		}		
+
 		public void Load (string fileName, Encoding loadEncoding)
 		{
 			// Handle the "reload" case.
@@ -755,6 +762,10 @@ namespace MonoDevelop.SourceEditor
 			breakpointRemoved = null;
 			breakpointStatusChanged = null;
 
+			if (ownerDocument != null) {
+				ownerDocument.DocumentParsed -= HandleDocumentParsed;
+				ownerDocument = null;
+			}
 		}
 		
 		public Ambience GetAmbience ()
