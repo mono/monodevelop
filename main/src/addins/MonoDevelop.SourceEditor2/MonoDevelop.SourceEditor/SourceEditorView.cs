@@ -536,8 +536,8 @@ namespace MonoDevelop.SourceEditor
 					foreach (var provider in WorkbenchWindow.Document.GetContents<IUsageProvider> ()) {
 						widget.AddUsageTaskProvider (provider);
 					}
-					ownerDocument.DocumentParsed += HandleDocumentParsed;
 					ownerDocument = WorkbenchWindow.Document;
+					ownerDocument.DocumentParsed += HandleDocumentParsed;
 				};
 			};
 		}
