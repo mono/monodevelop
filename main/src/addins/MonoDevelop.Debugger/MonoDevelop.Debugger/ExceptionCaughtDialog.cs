@@ -25,31 +25,41 @@
 // THE SOFTWARE.
 
 using System;
-using System.Text;
-using System.Threading;
-
-using Gtk;
 using Mono.Debugging.Client;
 using MonoDevelop.Core;
+using Gtk;
+using System.Threading;
+using MonoDevelop.Components;
+using MonoDevelop.Ide.TextEditing;
 
 namespace MonoDevelop.Debugger
 {
-	public partial class ExceptionCaughtDialog : Gtk.Dialog
+	public partial class ExceptionCaughtWidget : Gtk.Bin
 	{
+		Gtk.TreeStore stackStore;
 		ExceptionInfo exception;
 		bool destroyed;
 		
-		public ExceptionCaughtDialog (ExceptionInfo exception)
+		public ExceptionCaughtWidget (ExceptionInfo exception)
 		{
 			this.Build ();
-			
-			HasSeparator = false;
+
+			stackStore = new TreeStore (typeof(string), typeof(string), typeof(int), typeof(int));
+			treeStack.Model = stackStore;
+			var crt = new CellRendererText ();
+			crt.WrapWidth = 200;
+			crt.WrapMode = Pango.WrapMode.WordChar;
+			treeStack.AppendColumn ("", crt, "markup", 0);
+			treeStack.ShowExpanders = false;
 			
 			valueView.AllowExpanding = true;
 			valueView.Frame = DebuggingService.CurrentFrame;
 			this.exception = exception;
 			
 			exception.Changed += HandleExceptionChanged;
+			treeStack.SizeAllocated += delegate(object o, SizeAllocatedArgs args) {
+				crt.WrapWidth = args.Allocation.Width;
+			};
 			
 			Fill ();
 		}
@@ -66,6 +76,7 @@ namespace MonoDevelop.Debugger
 			if (destroyed)
 				return;
 			
+			stackStore.Clear ();
 			valueView.ClearValues ();
 
 			labelType.Markup = GettextCatalog.GetString ("<b>{0}</b> has been thrown", exception.Type);
@@ -73,45 +84,43 @@ namespace MonoDevelop.Debugger
 			                    string.Empty: 
 			                    exception.Message;
 			
-			if (!exception.IsEvaluating) {
-				StringBuilder stack = new StringBuilder ();
-				ShowStackTrace (stack, exception);
-				stackTextView.Buffer.Text = stack.ToString ();
-				
-				if (exception.Instance != null) {
-					valueView.AddValue (exception.Instance);
-					valueView.ExpandRow (new TreePath ("0"), false);
+			ShowStackTrace (exception, false);
+			
+			if (!exception.IsEvaluating && exception.Instance != null) {
+				valueView.AddValue (exception.Instance);
+				valueView.ExpandRow (new TreePath ("0"), false);
+			}
+		}
+		
+		void ShowStackTrace (ExceptionInfo exc, bool showExceptionNode)
+		{
+			TreeIter it = TreeIter.Zero;
+			if (showExceptionNode) {
+				treeStack.ShowExpanders = true;
+				string tn = exc.Type + ": " + exc.Message;
+				it = stackStore.AppendValues (tn, null, 0, 0);
+			}
+
+			foreach (ExceptionStackFrame frame in exc.StackTrace) {
+				string text = GLib.Markup.EscapeText (frame.DisplayText);
+				if (!string.IsNullOrEmpty (frame.File)) {
+					text += "\n<small>" + GLib.Markup.EscapeText (frame.File);
+					if (frame.Line > 0) {
+						text += ":" + frame.Line;
+						if (frame.Column > 0)
+							text += "," + frame.Column;
+					}
+					text += "</small>";
 				}
-			}
-		}
-		
-		void ShowStackTrace (StringBuilder stack, ExceptionInfo ex)
-		{
-			ExceptionInfo inner = ex.InnerException;
-			
-			if (inner != null) {
-				stack.AppendFormat ("{0}: {1} ---> ", ex.Type, ex.Message);
-				ShowStackTrace (stack, inner);
-				stack.AppendLine ("  --- End of inner exception stack trace ---");
-			} else {
-				stack.AppendFormat ("{0}: {1}\n", ex.Type, ex.Message);
+				if (!it.Equals (TreeIter.Zero))
+					stackStore.AppendValues (it, text, frame.File, frame.Line, frame.Column);
+				else
+					stackStore.AppendValues (text, frame.File, frame.Line, frame.Column);
 			}
 			
-			foreach (ExceptionStackFrame frame in ex.StackTrace) {
-				stack.Append ("  ");
-				stack.AppendLine (frame.DisplayText);
-			}
-		}
-		
-		protected override bool OnDeleteEvent (Gdk.Event evnt)
-		{
-			Destroy ();
-			return false;
-		}
-		
-		protected virtual void OnButtonOkClicked (object sender, System.EventArgs e)
-		{
-			Destroy ();
+			ExceptionInfo inner = exc.InnerException;
+			if (inner != null)
+				ShowStackTrace (inner, true);
 		}
 		
 		protected override void OnDestroyed ()
@@ -120,7 +129,149 @@ namespace MonoDevelop.Debugger
 			exception.Changed -= HandleExceptionChanged;
 			base.OnDestroyed ();
 		}
-		
+	}
+
+	class ExceptionCaughtDialog
+	{
+		ExceptionInfo ex;
+		FilePath file;
+		int line;
+		ExceptionCaughtEditorWidget widget;
+		ExceptionCaughtButton button;
+
+		public ExceptionCaughtDialog (ExceptionInfo val, FilePath file, int line, int col)
+		{
+			ex = val;
+			this.file = file;
+			this.line = line;
+		}
+
+		public void ShowDialog ()
+		{
+			if (button != null) {
+				button.Dispose ();
+				button = null;
+			}
+			widget = new ExceptionCaughtEditorWidget (ex, this);
+			widget.File = file;
+			widget.Line = line;
+			TextEditorService.RegisterExtension (widget);
+			widget.ScrollToView ();
+		}
+
+		public void ShowButton ()
+		{
+			if (widget != null) {
+				widget.Dispose ();
+				widget = null;
+			}
+			button = new ExceptionCaughtButton (ex, this);
+			button.File = file;
+			button.Line = line;
+			TextEditorService.RegisterExtension (button);
+		}
+
+		public void Dispose ()
+		{
+			if (widget != null) {
+				widget.Dispose ();
+				widget = null;
+			}
+			if (button != null) {
+				button.Dispose ();
+				button = null;
+			}
+			if (Closed != null)
+				Closed (this, EventArgs.Empty);
+		}
+
+		public void Close ()
+		{
+			ShowButton ();
+		}
+
+		public event EventHandler Closed;
+	}
+
+	class ExceptionCaughtButton: TopLevelWidgetExtension
+	{
+		ExceptionCaughtDialog dlg;
+		ExceptionInfo val;
+
+		public ExceptionCaughtButton (ExceptionInfo val, ExceptionCaughtDialog dlg)
+		{
+			this.val = val;
+			this.dlg = dlg;
+			OffsetX = 6;
+		}
+
+		protected override void OnLineDeleted ()
+		{
+			dlg.Dispose ();
+		}
+
+		public override Widget CreateWidget ()
+		{
+			var icon = Gdk.Pixbuf.LoadFromResource ("lightning.png");
+			var image = new Gtk.Image (icon);
+			var button = new MiniButton (image);
+			button.Clicked += (sender, e) => dlg.ShowDialog ();
+
+			PopoverWidget eb = new PopoverWidget ();
+			eb.ShowArrow = true;
+			eb.EnableAnimation = true;
+			eb.PopupPosition = PopupPosition.Left;
+			eb.ContentBox.Add (button);
+			eb.ShowAll ();
+			return eb;
+		}
+	}
+
+	class ExceptionCaughtEditorWidget: TopLevelWidgetExtension
+	{
+		ExceptionInfo ex;
+		ExceptionCaughtDialog dlg;
+
+		public ExceptionCaughtEditorWidget (ExceptionInfo val, ExceptionCaughtDialog dlg)
+		{
+			ex = val;
+			this.dlg = dlg;
+			OffsetX = 6;
+		}
+
+		public override Widget CreateWidget ()
+		{
+			var w = new ExceptionCaughtWidget (ex);
+			VBox box = new VBox ();
+			box.Spacing = 6;
+			box.PackStart (w, true, true, 0);
+			HButtonBox buttonBox = new HButtonBox ();
+			buttonBox.BorderWidth = 6;
+
+			var close = new Gtk.Button (GettextCatalog.GetString ("Close"));
+			buttonBox.PackEnd (close, false, false, 0);
+			close.Clicked += (sender, e) => dlg.Close ();
+
+			var copy = new Gtk.Button (GettextCatalog.GetString ("Copy to Clipboard"));
+			buttonBox.PackStart (copy, false, false, 0);
+
+			box.PackStart (buttonBox, false, false, 0);
+
+			PopoverWidget eb = new PopoverWidget ();
+			eb.ShowArrow = true;
+			eb.EnableAnimation = true;
+			eb.PopupPosition = PopupPosition.Left;
+			eb.ContentBox.Add (box);
+			eb.WidthRequest = 500;
+			eb.HeightRequest = 300;
+			eb.ShowAll ();
+			return eb;
+		}
+
+		protected override void OnLineDeleted ()
+		{
+			dlg.Dispose ();
+		}
 	}
 }
 

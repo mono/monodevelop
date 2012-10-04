@@ -1760,14 +1760,10 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.Debugger.ExceptionCaughtDialog" design-size="541 358">
+  <widget class="Gtk.Bin" id="MonoDevelop.Debugger.ExceptionCaughtWidget" design-size="541 358">
     <property name="MemberName" />
     <property name="Visible">False</property>
-    <property name="Title" translatable="yes">Exception Caught</property>
-    <property name="WindowPosition">CenterOnParent</property>
-    <property name="Buttons">1</property>
-    <property name="HelpButton">False</property>
-    <child internal-child="VBox">
+    <child>
       <widget class="Gtk.VBox" id="dialog1_VBox">
         <property name="MemberName" />
         <property name="BorderWidth">2</property>
@@ -1782,7 +1778,6 @@
                 <property name="Xalign">0</property>
                 <property name="LabelProp">&lt;b&gt;Exception&lt;/b&gt; has been thrown</property>
                 <property name="UseMarkup">True</property>
-                <property name="Selectable">True</property>
               </widget>
               <packing>
                 <property name="Position">0</property>
@@ -1798,7 +1793,6 @@
                 <property name="Xalign">0</property>
                 <property name="LabelProp">test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test</property>
                 <property name="Wrap">True</property>
-                <property name="Selectable">True</property>
               </widget>
               <packing>
                 <property name="Position">1</property>
@@ -1816,14 +1810,13 @@
                   <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow1">
                     <property name="MemberName" />
                     <property name="ShadowType">In</property>
+                    <property name="BorderWidth">3</property>
                     <child>
-                      <widget class="Gtk.TextView" id="stackTextView">
+                      <widget class="Gtk.TreeView" id="treeStack">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
                         <property name="ShowScrollbars">True</property>
-                        <property name="Editable">False</property>
-                        <property name="CursorVisible">False</property>
-                        <property name="Text" translatable="yes" />
+                        <property name="HeadersVisible">False</property>
                       </widget>
                     </child>
                   </widget>
@@ -1880,32 +1873,6 @@
           <packing>
             <property name="Position">0</property>
             <property name="AutoSize">False</property>
-          </packing>
-        </child>
-      </widget>
-    </child>
-    <child internal-child="ActionArea">
-      <widget class="Gtk.HButtonBox" id="dialog1_ActionArea">
-        <property name="MemberName" />
-        <property name="Spacing">10</property>
-        <property name="BorderWidth">5</property>
-        <property name="Size">1</property>
-        <property name="LayoutStyle">End</property>
-        <child>
-          <widget class="Gtk.Button" id="buttonOk">
-            <property name="MemberName" />
-            <property name="CanDefault">True</property>
-            <property name="CanFocus">True</property>
-            <property name="UseStock">True</property>
-            <property name="Type">StockItem</property>
-            <property name="StockId">gtk-close</property>
-            <property name="ResponseId">-7</property>
-            <signal name="Clicked" handler="OnButtonOkClicked" />
-            <property name="label">gtk-close</property>
-          </widget>
-          <packing>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
           </packing>
         </child>
       </widget>

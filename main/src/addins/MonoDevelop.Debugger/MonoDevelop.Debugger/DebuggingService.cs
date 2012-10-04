@@ -37,7 +37,6 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Text;
 using MonoDevelop.Debugger.Viewers;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
@@ -46,6 +45,7 @@ using ICSharpCode.NRefactory.Semantics;
  * Some places we should be doing some error handling we used to toss
  * exceptions, now we error out silently, this needs a real solution.
  */
+using MonoDevelop.Ide.TextEditing;
 
 namespace MonoDevelop.Debugger
 {
@@ -93,7 +93,7 @@ namespace MonoDevelop.Debugger
 		static DebuggingService ()
 		{
 			executionHandlerFactory = new DebugExecutionHandlerFactory ();
-			TextFileService.LineCountChanged += OnLineCountChanged;
+			TextEditorService.LineCountChanged += OnLineCountChanged;
 			IdeApp.Initialized += delegate {
 				IdeApp.Workspace.StoringUserPreferences += OnStoreUserPrefs;
 				IdeApp.Workspace.LoadingUserPreferences += OnLoadUserPrefs;
@@ -291,13 +291,13 @@ namespace MonoDevelop.Debugger
 			
 			ExceptionInfo val = CurrentFrame.GetException (ops);
 			if (val != null) {
-				exceptionDialog = new ExceptionCaughtDialog (val);
-				exceptionDialog.TransientFor = IdeApp.Workbench.RootWindow;
-				MessageService.PlaceDialog (exceptionDialog, IdeApp.Workbench.RootWindow);
-				exceptionDialog.Destroyed += (o, args) => {
+				if (exceptionDialog != null)
+					exceptionDialog.Dispose ();
+				exceptionDialog = new ExceptionCaughtDialog (val, CurrentFrame.SourceLocation.FileName, CurrentFrame.SourceLocation.Line, CurrentFrame.SourceLocation.Column);
+				exceptionDialog.ShowDialog ();
+				exceptionDialog.Closed += (o, args) => {
 					exceptionDialog = null;
 				};
-				exceptionDialog.Show ();
 			}
 		}
 
@@ -351,7 +351,7 @@ namespace MonoDevelop.Debugger
 				return;
 			
 			if (exceptionDialog != null) {
-				exceptionDialog.Destroy ();
+				exceptionDialog.Dispose ();
 				exceptionDialog = null;
 			}
 			

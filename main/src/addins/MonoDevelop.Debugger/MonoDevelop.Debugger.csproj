@@ -126,13 +126,13 @@
     <Compile Include="MonoDevelop.Debugger\DebuggerEngine.cs" />
     <Compile Include="MonoDevelop.Debugger\DebuggerEngineExtensionNode.cs" />
     <Compile Include="MonoDevelop.Debugger\ExceptionCaughtDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Debugger.ExceptionCaughtDialog.cs" />
     <Compile Include="MonoDevelop.Debugger.Visualizer\ValueVisualizerDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Debugger.Viewers.ValueVisualizerDialog.cs" />
     <Compile Include="MonoDevelop.Debugger.Visualizer\TextVisualizer.cs" />
     <Compile Include="MonoDevelop.Debugger.Visualizer\PixbufVisualizer.cs" />
     <Compile Include="MonoDevelop.Debugger.Visualizer\IValueVisualizer.cs" />
     <Compile Include="MonoDevelop.Debugger\ExpressionEvaluatorExtensionNode.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Debugger.ExceptionCaughtWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Debugger.addin.xml">
@@ -185,6 +185,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\bug-16.png">
       <LogicalName>bug-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\lightning.png">
+      <LogicalName>lightning.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
