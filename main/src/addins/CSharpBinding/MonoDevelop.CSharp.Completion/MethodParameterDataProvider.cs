@@ -119,7 +119,12 @@ namespace MonoDevelop.CSharp.Completion
 			var sig = new SignatureMarkupCreator (resolver, formattingPolicy.CreateOptions ());
 			sig.HighlightParameter = currentParameter;
 			sig.BreakLineAfterReturnType = smartWrap;
-			tooltipInfo.SignatureMarkup = sig.GetMarkup (entity);
+			try {
+				tooltipInfo.SignatureMarkup = sig.GetMarkup (entity);
+			} catch (Exception e) {
+				LoggingService.LogError ("Got exception while creating markup for :" + entity, e);
+				return new TooltipInformation ();
+			}
 			tooltipInfo.SummaryMarkup = AmbienceService.GetSummaryMarkup (entity) ?? "";
 			
 			if (entity is IMethod) {

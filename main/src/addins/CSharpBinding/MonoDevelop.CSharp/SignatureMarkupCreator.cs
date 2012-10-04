@@ -1,3 +1,4 @@
+
 //
 // SignatureMarkupCreator.cs
 //
@@ -84,9 +85,13 @@ namespace MonoDevelop.CSharp
 			AstType astType;
 			try {
 				astType = astBuilder.ConvertType (type);
-			} catch (Exception) {
-
-				astType = new TypeSystemAstBuilder (new CSharpResolver (type.GetDefinition ().Compilation)).ConvertType (type);
+			} catch (Exception e) {
+				var def = type.GetDefinition ();
+				if (def == null) {
+					Console.WriteLine ("got exception while conversion:" + e);
+					return "?";
+				}
+				astType = new TypeSystemAstBuilder (new CSharpResolver (def.Compilation)).ConvertType (type);
 			}
 
 			if (astType is PrimitiveType) {

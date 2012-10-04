@@ -543,7 +543,12 @@ namespace MonoDevelop.CSharp.Completion
 			var resolver = file != null ? file.GetResolver (compilation, textEditorData.Caret.Location) : new CSharpResolver (compilation);
 			var sig = new SignatureMarkupCreator (resolver, formattingPolicy.CreateOptions ());
 			sig.BreakLineAfterReturnType = smartWrap;
-			tooltipInfo.SignatureMarkup = sig.GetMarkup (entity);
+			try {
+				tooltipInfo.SignatureMarkup = sig.GetMarkup (entity);
+			} catch (Exception e) {
+				LoggingService.LogError ("Got exception while creating markup for :" + entity, e);
+				return new TooltipInformation ();
+			}
 			tooltipInfo.SummaryMarkup = AmbienceService.GetSummaryMarkup (entity) ?? "";
 			
 			if (entity is IMember) {
@@ -568,7 +573,12 @@ namespace MonoDevelop.CSharp.Completion
 			var resolver = file != null ? file.GetResolver (compilation, textEditorData.Caret.Location) : new CSharpResolver (compilation);
 			var sig = new SignatureMarkupCreator (resolver, formattingPolicy.CreateOptions ());
 			sig.BreakLineAfterReturnType = smartWrap;
-			tooltipInfo.SignatureMarkup = sig.GetMarkup (entity);
+			try {
+				tooltipInfo.SignatureMarkup = sig.GetMarkup (entity);
+			} catch (Exception e) {
+				LoggingService.LogError ("Got exception while creating markup for :" + entity, e);
+				return new TooltipInformation ();
+			}
 			var definition = entity.GetDefinition ();
 			if (definition != null) {
 				tooltipInfo.SummaryMarkup = AmbienceService.GetSummaryMarkup (definition) ?? "";

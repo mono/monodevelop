@@ -251,7 +251,12 @@ namespace MonoDevelop.SourceEditor
 				var resolver = (doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile).GetResolver (doc.Compilation, doc.Editor.Caret.Location);
 				var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
 				sig.BreakLineAfterReturnType =  false;
-				tooltipInfo.SignatureMarkup = sig.GetMarkup (((NamespaceResolveResult)result).Namespace);
+				try {
+					tooltipInfo.SignatureMarkup = sig.GetMarkup (((NamespaceResolveResult)result).Namespace);
+				} catch (Exception e) {
+					LoggingService.LogError ("Got exception while creating markup for :" + ((NamespaceResolveResult)result).Namespace, e);
+					return new TooltipInformation ();
+				}
 				return tooltipInfo;
 			} else {
 				return MemberCompletionData.CreateTooltipInformation (
