@@ -121,7 +121,7 @@ namespace MonoDevelop.Projects
 			// This configuration is not present in the project. Try to find the best match.
 			// First of all try matching name
 			foreach (SolutionItemConfiguration iconf in item.Configurations) {
-				if (iconf.Name == Name && (iconf.Platform == "" || iconf.Platform == "AnyCPU"))
+				if (iconf.Name == Name && iconf.Platform == "")
 					return iconf.Id;
 			}
 

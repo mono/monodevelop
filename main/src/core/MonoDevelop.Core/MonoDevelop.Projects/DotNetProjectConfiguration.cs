@@ -111,7 +111,7 @@ namespace MonoDevelop.Projects
 			// with a matching value for the 'DEBUG' symbol and some other heuristics
 			return base.FindBestMatch (configurations)
 				?? matches.FirstOrDefault (c => Platform == c.Platform)
-				?? matches.FirstOrDefault (c => c.Platform == "" || c.Platform == "AnyCPU");
+				?? matches.FirstOrDefault (c => c.Platform == "");
 		}
 
 		public TargetFramework TargetFramework {
