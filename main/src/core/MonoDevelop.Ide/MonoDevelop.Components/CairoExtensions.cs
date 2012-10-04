@@ -438,13 +438,53 @@ namespace MonoDevelop.Components
 			System.IO.File.Delete (tmp);
 			return img;
 		}
+
+		public static void CachedDraw (this Cairo.Context self, ref SurfaceWrapper surface, Gdk.Point position, Gdk.Size size, 
+		                               object parameters = null, float opacity = 1.0f, Action<Cairo.Context, float> draw = null)
+		{
+			self.CachedDraw (ref surface, new Gdk.Rectangle (position, size), parameters, opacity, draw);
+		}
+
+		public static void CachedDraw (this Cairo.Context self, ref SurfaceWrapper surface, Gdk.Rectangle region, 
+		                               object parameters = null, float opacity = 1.0f, Action<Cairo.Context, float> draw = null)
+		{
+			if (!MonoDevelop.Core.Platform.IsWindows) {
+				self.Translate (region.X, region.Y);
+				draw(self, opacity);
+				self.Translate (-region.X, -region.Y);
+				return;
+			}
+
+			bool redraw = false;
+			if (surface == null || surface.Width != region.Width || surface.Height != region.Height) {
+				surface = new SurfaceWrapper (self, region.Width, region.Height);
+				redraw = true;
+			} else if ((surface.Data == null && parameters != null) || (surface.Data != null && !surface.Data.Equals (parameters))) {
+				redraw = true;
+			}
+
+
+			if (redraw) {
+				surface.Data = parameters;
+				using (var context = new Cairo.Context (surface.Surface)) {
+					context.Operator = Operator.Clear;
+					context.Paint();
+					context.Operator = Operator.Over;
+					draw(context, 1.0f);
+				}
+			}
+
+			self.SetSourceSurface (surface.Surface, region.X, region.Y);
+			self.PaintWithAlpha (opacity);
+		}
 	}
 
-	class SurfaceWrapper
+	public class SurfaceWrapper
 	{
 		public Cairo.Surface Surface { get; private set; }
 		public int Width { get; private set; }
 		public int Height { get; private set; }
+		public object Data { get; set; }
 
 		public SurfaceWrapper (Cairo.Context similar, int width, int height)
 		{

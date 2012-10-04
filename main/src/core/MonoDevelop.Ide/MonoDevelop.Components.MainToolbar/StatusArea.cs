@@ -220,7 +220,7 @@ namespace MonoDevelop.Components.MainToolbar
 */
 			this.Animate ("statusAreaError",
 			              val => renderArg.ErrorAnimationProgress = val,
-			              length: 700);
+			              length: 900);
 		}
 
 		void UpdateSeparators ()
