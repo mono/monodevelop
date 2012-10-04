@@ -76,6 +76,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		public override void Dispose ()
 		{
 			if (syntaxMode != null) {
+				textEditorData.Document.SyntaxMode = null;
 				syntaxMode.Dispose ();
 				syntaxMode = null;
 			}
