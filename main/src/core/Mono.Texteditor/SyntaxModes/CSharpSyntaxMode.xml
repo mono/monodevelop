@@ -246,11 +246,6 @@
 	
 	<Rule name = "XmlDocumentation">
 	
-		<Span color = "text.preprocessor" rule = "Comment">
-			<Begin>&amp;</Begin>
-			<End>;</End>
-		</Span>
-		
 		<Span tagColor = "comment" rule = "XmlDocumentationTag">
 			<Begin>&lt;/</Begin>
 			<End>&gt;</End>
