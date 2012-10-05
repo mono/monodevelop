@@ -27,8 +27,10 @@
 
 using System;
 using System.Collections.Generic;
+
 using Mono.TextEditor;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Components;
 using Mono.Debugging.Client;
 using TextEditor = Mono.TextEditor.TextEditor;
 using MonoDevelop.Ide.CodeCompletion;
@@ -198,9 +200,21 @@ namespace MonoDevelop.SourceEditor
 			
 		public override Gtk.Window ShowTooltipWindow (TextEditor editor, int offset, Gdk.ModifierType modifierState, int mouseX, int mouseY, TooltipItem item)
 		{
-			var win = new DebugValueWindow (editor, offset, DebuggingService.CurrentFrame, (ObjectValue) item.Item, null);
-			win.ShowPopup (editor, new Gdk.Rectangle (mouseX, mouseY - 6, 1, 12), MonoDevelop.Components.PopupPosition.TopLeft);
-			return win;
+			var tooltip = new DebugValueWindow (editor, offset, DebuggingService.CurrentFrame, (ObjectValue) item.Item, null);
+			var location = editor.OffsetToLocation (item.ItemSegment.Offset);
+			var point = editor.LocationToPoint (location);
+			int lineHeight = (int) editor.LineHeight;
+			int y = (int) point.Y;
+
+			// find the top of the line that the mouse is hovering over
+			while (y + lineHeight < mouseY)
+				y += lineHeight;
+
+			var caret = new Gdk.Rectangle (mouseX - editor.Allocation.X, y - editor.Allocation.Y, 1, lineHeight);
+
+			tooltip.ShowPopup (editor, caret, PopupPosition.TopLeft);
+
+			return tooltip;
 		}
 
 		public override bool IsInteractive (Mono.TextEditor.TextEditor editor, Gtk.Window tipWindow)
