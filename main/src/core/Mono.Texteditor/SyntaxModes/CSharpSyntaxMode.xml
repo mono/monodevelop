@@ -265,10 +265,6 @@
 	</Rule>
 
 	<Rule name = "XmlDocumentationTag">
-		<Span color = "text.preprocessor" stopateol = "true">
-			<Begin>&amp;</Begin>
-			<End>;</End>
-		</Span>
 		
 		<!-- attributes -->
 		<Match expression="([A-Za-z0-9_]+[:[A-Za-z0-9_]+]?)([\s\n\r]*=)">
