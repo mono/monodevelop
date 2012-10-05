@@ -265,7 +265,7 @@
 	</Rule>
 
 	<Rule name = "XmlDocumentationTag">
-		<Span color = "text.preprocessor">
+		<Span color = "text.preprocessor" stopateol = "true">
 			<Begin>&amp;</Begin>
 			<End>;</End>
 		</Span>
