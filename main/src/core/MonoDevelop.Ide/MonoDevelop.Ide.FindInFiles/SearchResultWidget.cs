@@ -483,8 +483,17 @@ namespace MonoDevelop.Ide.FindInFiles
 				searchResult.Markup = AdjustColors (markup.Replace ("\t", new string (' ', TextEditorOptions.DefaultOptions.TabSize)));
 				int col = searchResult.Offset - line.Offset - indent;
 
-				searchResult.StartIndex = (uint)TextViewMargin.TranslateIndexToUTF8 (lineText, col);
-				searchResult.EndIndex = (uint)TextViewMargin.TranslateIndexToUTF8 (lineText, col + searchResult.Length);
+				uint start;
+				uint end;
+				try {
+					start = (uint)TextViewMargin.TranslateIndexToUTF8 (lineText, col);
+					end = (uint)TextViewMargin.TranslateIndexToUTF8 (lineText, col + searchResult.Length);
+				} catch (Exception e) {
+					LoggingService.LogError ("Exception while translating index to utf8 (column was:" +col + " search result length:" + searchResult.Length + " line text:" + lineText + ")", e);
+					return;
+				}
+				searchResult.StartIndex = start;
+				searchResult.EndIndex = end;
 			}
 
 
