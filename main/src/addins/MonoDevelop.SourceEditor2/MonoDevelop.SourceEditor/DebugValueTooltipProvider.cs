@@ -44,16 +44,29 @@ namespace MonoDevelop.SourceEditor
 	public class DebugValueTooltipProvider: TooltipProvider, IDisposable
 	{
 		Dictionary<string,ObjectValue> cachedValues = new Dictionary<string,ObjectValue> ();
+		DebugValueWindow tooltip;
 		
-		public DebugValueTooltipProvider()
+		public DebugValueTooltipProvider ()
 		{
 			DebuggingService.CurrentFrameChanged += HandleCurrentFrameChanged;
+			DebuggingService.DebugSessionStarted += HandleDebugSessionStarted;
+		}
+
+		void HandleDebugSessionStarted (object sender, EventArgs e)
+		{
+			DebuggingService.DebuggerSession.TargetExited += HandleTargetExited;
 		}
 
 		void HandleCurrentFrameChanged (object sender, EventArgs e)
 		{
 			// Clear the cached values every time the current frame changes
 			cachedValues.Clear ();
+		}
+
+		void HandleTargetExited (object sender, EventArgs e)
+		{
+			if (tooltip != null)
+				tooltip.Hide ();
 		}
 
 		#region ITooltipProvider implementation 
@@ -200,7 +213,6 @@ namespace MonoDevelop.SourceEditor
 			
 		public override Gtk.Window ShowTooltipWindow (TextEditor editor, int offset, Gdk.ModifierType modifierState, int mouseX, int mouseY, TooltipItem item)
 		{
-			var tooltip = new DebugValueWindow (editor, offset, DebuggingService.CurrentFrame, (ObjectValue) item.Item, null);
 			var location = editor.OffsetToLocation (item.ItemSegment.Offset);
 			var point = editor.LocationToPoint (location);
 			int lineHeight = (int) editor.LineHeight;
@@ -212,6 +224,7 @@ namespace MonoDevelop.SourceEditor
 
 			var caret = new Gdk.Rectangle (mouseX - editor.Allocation.X, y - editor.Allocation.Y, 1, lineHeight);
 
+			tooltip = new DebugValueWindow (editor, offset, DebuggingService.CurrentFrame, (ObjectValue) item.Item, null);
 			tooltip.ShowPopup (editor, caret, PopupPosition.TopLeft);
 
 			return tooltip;
@@ -219,7 +232,7 @@ namespace MonoDevelop.SourceEditor
 
 		public override bool IsInteractive (Mono.TextEditor.TextEditor editor, Gtk.Window tipWindow)
 		{
-			return true;
+			return DebuggingService.IsDebugging;
 		}
 		
 		#endregion 
