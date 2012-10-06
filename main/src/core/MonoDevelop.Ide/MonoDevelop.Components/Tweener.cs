@@ -91,6 +91,7 @@ namespace MonoDevelop.Components
 			public Gtk.Widget Owner { get; set; }
 			public Action<float> callback;
 			public Action<float, bool> finished;
+			public Func<bool> repeat;
 			public Tweener tweener;
 		}
 
@@ -108,19 +109,19 @@ namespace MonoDevelop.Components
 		}
 
 		public static void Animate (this Gtk.Widget self, string name, Action<float> callback, float start, float end, uint rate = 16, uint length = 250, 
-		                            Func<float, float> easing = null, Action<float, bool> finished = null)
+		                            Func<float, float> easing = null, Action<float, bool> finished = null, Func<bool> repeat = null)
 		{
-			self.Animate<float> (name, Interpolate (start, end), callback, rate, length, easing, finished);
+			self.Animate<float> (name, Interpolate (start, end), callback, rate, length, easing, finished, repeat);
 		}
 
 		public static void Animate (this Gtk.Widget self, string name, Action<float> callback, uint rate = 16, uint length = 250, 
-		                            Func<float, float> easing = null, Action<float, bool> finished = null)
+		                            Func<float, float> easing = null, Action<float, bool> finished = null, Func<bool> repeat = null)
 		{
-			self.Animate<float> (name, x => x, callback, rate, length, easing, finished);
+			self.Animate<float> (name, x => x, callback, rate, length, easing, finished, repeat);
 		}
 
 		public static void Animate<T> (this Gtk.Widget self, string name, Func<float, T> transform, Action<T> callback, uint rate = 16, uint length = 250, 
-		                               Func<float, float> easing = null, Action<T, bool> finished = null) 
+		                               Func<float, float> easing = null, Action<T, bool> finished = null, Func<bool> repeat = null) 
 		{
 			if (transform == null)
 				throw new ArgumentNullException ("transform");
@@ -152,6 +153,7 @@ namespace MonoDevelop.Components
 			info.tweener = tweener;
 			info.callback = step;
 			info.finished = final;
+			info.repeat = repeat ?? (() => false);
 			info.Owner = self;
 
 			animations[name] = info;
@@ -197,15 +199,23 @@ namespace MonoDevelop.Components
 			Tweener tweener = o as Tweener;
 			Info info = animations[tweener.Handle];
 
+			bool repeat = info.repeat ();
+
 			info.callback (tweener.Value);
 
-			animations.Remove (tweener.Handle);
-			tweener.ValueUpdated -= HandleTweenerUpdated;
-			tweener.Finished -= HandleTweenerFinished;
+			if (!repeat) {
+				animations.Remove (tweener.Handle);
+				tweener.ValueUpdated -= HandleTweenerUpdated;
+				tweener.Finished -= HandleTweenerFinished;
+			}
 
 			if (info.finished != null)
 				info.finished (tweener.Value, false);
 			info.Owner.QueueDraw ();
+
+			if (repeat) {
+				tweener.Start ();
+			}
 		}
 	}
 

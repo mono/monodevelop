@@ -50,6 +50,9 @@ namespace MonoDevelop.Components.MainToolbar
 			                    region: arg.Allocation,
 			                    draw: (c, o) => DrawBackground (c, new Gdk.Rectangle (0, 0, arg.Allocation.Width, arg.Allocation.Height)));
 
+			if (arg.BuildAnimationOpacity > 0.001f)
+				DrawBuildEffect (context, arg.Allocation, arg.BuildAnimationProgress, arg.BuildAnimationOpacity);
+
 			if (arg.ErrorAnimationProgress > 0.001 && arg.ErrorAnimationProgress < .999) {
 				DrawErrorAnimation (context, arg);
 			}
@@ -129,6 +132,59 @@ namespace MonoDevelop.Components.MainToolbar
 
 			if (arg.ShowProgressBar || arg.ProgressBarAlpha > 0)
 				context.ResetClip ();
+		}
+
+		void DrawBuildEffect (Cairo.Context context, Gdk.Rectangle area, float progress, float opacity)
+		{
+			context.Save ();
+			CairoExtensions.RoundedRectangle (context, area.X + .5, area.Y + .5, area.Width - 1, area.Height - 1, 3);
+			context.Clip ();
+
+			Gdk.Point center = new Gdk.Point (area.Left + 19, (area.Top + area.Bottom) / 2);
+			context.Translate (center.X, center.Y);
+			var circles = new [] {
+				new { Radius = 200, Thickness = 12, Speed = 1, ArcLength = Math.PI * 1.50 },
+				new { Radius = 195, Thickness = 15, Speed = 2, ArcLength = Math.PI * 0.50 },
+				new { Radius = 160, Thickness = 17, Speed = 3, ArcLength = Math.PI * 0.75 },
+				new { Radius = 200, Thickness = 15, Speed = 2, ArcLength = Math.PI * 0.25 },
+				new { Radius = 240, Thickness = 12, Speed = 3, ArcLength = Math.PI * 1.50 },
+				new { Radius = 160, Thickness = 17, Speed = 3, ArcLength = Math.PI * 0.75 },
+				new { Radius = 200, Thickness = 15, Speed = 2, ArcLength = Math.PI * 0.25 },
+				new { Radius = 215, Thickness = 20, Speed = 2, ArcLength = Math.PI * 1.25 }
+			};
+
+			float zmod = 1.0f;
+			float zporg = progress;
+			foreach (var arc in circles) {
+				float zoom = 1.0f;
+				zoom = (float) Math.Sin (zporg * Math.PI * 2 + zmod);
+				zoom = ((zoom + 1) / 6.0f) + .05f;
+
+				context.Rotate (Math.PI * 2 * progress * arc.Speed);
+				context.MoveTo (arc.Radius * zoom, 0);
+				context.Arc (0, 0, arc.Radius * zoom, 0, arc.ArcLength);
+				context.LineWidth = arc.Thickness * zoom;
+				context.Color = CairoExtensions.ParseColor ("B1DDED", 0.35 * opacity);
+				context.Stroke ();
+				context.Rotate (Math.PI * 2 * -progress * arc.Speed);
+
+				progress = -progress;
+
+				context.Rotate (Math.PI * 2 * progress * arc.Speed);
+				context.MoveTo (arc.Radius * zoom, 0);
+				context.Arc (0, 0, arc.Radius * zoom, 0, arc.ArcLength);
+				context.LineWidth = arc.Thickness * zoom;
+				context.Stroke ();
+				context.Rotate (Math.PI * 2 * -progress * arc.Speed);
+
+				progress = -progress;
+
+				zmod += (float)Math.PI / circles.Length;
+			}
+
+			context.LineWidth = 1;
+			context.ResetClip ();
+			context.Restore ();
 		}
 
 		void DrawBackground (Cairo.Context context, Gdk.Rectangle region)
