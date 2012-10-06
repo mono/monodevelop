@@ -641,7 +641,7 @@ namespace MonoDevelop.Components.MainToolbar
 			message = message ?? "";
 
 			renderArg.LastText = renderArg.CurrentText;
-			renderArg.CurrentText = message.Replace ("\n", " ").Trim ();
+			renderArg.CurrentText = message.Replace (System.Environment.NewLine, " ").Replace ("\n", " ").Trim ();
 
 			renderArg.LastTextIsMarkup = renderArg.CurrentTextIsMarkup;
 			renderArg.CurrentTextIsMarkup = isMarkup;
