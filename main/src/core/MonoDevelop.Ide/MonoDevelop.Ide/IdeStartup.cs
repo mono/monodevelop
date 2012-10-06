@@ -293,8 +293,12 @@ namespace MonoDevelop.Ide
 		void SetupTheme ()
 		{
 			// Use the bundled gtkrc only if the Xamarin theme is installed
-			if (File.Exists (Path.Combine (Gtk.Rc.ModuleDir, "libxamarin.so")) || File.Exists (Path.Combine (Gtk.Rc.ModuleDir, "libxamarin.dll")))
-				Environment.SetEnvironmentVariable ("GTK2_RC_FILES", PropertyService.EntryAssemblyPath.Combine ("gtkrc"));
+			if (File.Exists (Path.Combine (Gtk.Rc.ModuleDir, "libxamarin.so")) || File.Exists (Path.Combine (Gtk.Rc.ModuleDir, "libxamarin.dll"))) {
+				if (Platform.IsWindows)
+					Environment.SetEnvironmentVariable ("GTK2_RC_FILES", PropertyService.EntryAssemblyPath.Combine ("gtkrc.win32"));
+				else
+					Environment.SetEnvironmentVariable ("GTK2_RC_FILES", PropertyService.EntryAssemblyPath.Combine ("gtkrc"));
+			}
 		}
 		
 		public bool Initialized {
