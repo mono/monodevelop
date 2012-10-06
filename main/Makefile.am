@@ -130,6 +130,11 @@ run-gdb: $(PROGRAM)
 	$(MD_LAUNCH_SETUP) gdb $(RUNTIME) -x gdb.commands
 	rm -f gdb.commands
 
+run-gdb-sgen: $(PROGRAM)
+	echo "run --debug $(MD_BIN_PATH)/MonoDevelop.exe" > gdb.commands
+	$(MD_LAUNCH_SETUP) gdb $(RUNTIME)-sgen -x gdb.commands
+	rm -f gdb.commands
+
 run-profile: $(PROGRAM)
 	$(MD_LAUNCH) --profile=log:calls $(MD_BIN_PATH)/MonoDevelop.exe --no-redirect
 
