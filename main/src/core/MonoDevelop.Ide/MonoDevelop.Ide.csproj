@@ -1810,6 +1810,7 @@
     <Compile Include="MonoDevelop.Ide.TextEditing\LineCountEventArgs.cs" />
     <Compile Include="MonoDevelop.Ide.TextEditing\FileExtension.cs" />
     <Compile Include="MonoDevelop.Ide.TextEditing\FileExtensionEventArgs.cs" />
+    <Compile Include="MonoDevelop.Components.MainToolbar\StatusAreaBuildTheme.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
