@@ -278,7 +278,8 @@ namespace MonoDevelop.Ide.Gui
 			
 			Assert.AreEqual ("AbAbAb", output);
 		}
-		
+
+		[Ignore("\n now always commits")]
 		[Test()]
 		public void TestReturnCompletionWithAutoSelectOff ()
 		{

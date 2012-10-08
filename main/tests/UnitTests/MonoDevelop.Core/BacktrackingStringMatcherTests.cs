@@ -95,6 +95,17 @@ namespace MonoDevelop.Core
 			Assert.AreEqual (null, match);
 		}
 
+		/// <summary>
+		/// Bug 7659 - Terrible quick search matching 
+		/// </summary>
+		[Test()]
+		public void TestBug7659 ()
+		{
+			var matcher = StringMatcher.GetMatcher ("MoDr.add", true);
+			int rank;
+			Assert.IsTrue (matcher.CalcMatchRank("MonoDevelop.MonoDroid.addin.xml", out rank));
+		}
+
 		static string GenerateString(int[] match, string str)
 		{
 			var result = new char[str.Length];

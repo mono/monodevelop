@@ -276,6 +276,7 @@
     <Compile Include="MonoDevelop.Projects\SolutionFolderTests.cs" />
     <Compile Include="MonoDevelop.Core\BacktrackingStringMatcherTests.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\SearchPopupWindowTests.cs" />
+    <Compile Include="MonoDevelop.Core\LaneStringMatcherTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />

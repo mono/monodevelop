@@ -120,8 +120,10 @@ namespace MonoDevelop.Core.Text
 			// filter char is no letter -> next char should match it - see Bug 674512 - Space doesn't commit generics
 			var flag = 1ul << i;
 			if ((filterIsNonLetter & flag) != 0) {
-				if (filterChar == text [j])
-					return j;
+				for (; j < text.Length; j++) {
+					if (filterChar == text [j])
+						return j;
+				}
 				return -1;
 			}
 			// letter case
