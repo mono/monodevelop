@@ -344,7 +344,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			case Gdk.Key.KP_Enter:
 				endOffset = CompletionWidget.CaretOffset;
 				WasShiftPressed = (modifier & ModifierType.ShiftMask) == ModifierType.ShiftMask;
-				return (!AutoSelect ? KeyActions.Process : (KeyActions.Complete | KeyActions.Ignore)) | KeyActions.CloseWindow;
+				return KeyActions.Complete | KeyActions.Ignore | KeyActions.CloseWindow;
 			case Gdk.Key.Down:
 				if ((modifier & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask) {
 					if (!SelectionEnabled /*&& !CompletionWindowManager.ForceSuggestionMode*/)
