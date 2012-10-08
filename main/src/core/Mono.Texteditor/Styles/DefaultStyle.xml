@@ -74,8 +74,8 @@
 		 <Style name="selection" color="#f8fcfc" bgColor="#dff4f0">
 			 <Style name="border" color="#C9C9C9"/>
 		 </Style>
-		 <Style name="selection.inactive" color="#f9f9f9" bgColor="white">
-			 <Style name="border" color="#111111"/>
+		 <Style name="selection.inactive" color="white" bgColor="white">
+			 <Style name="border" color="#666666"/>
 		 </Style>
 	 </Style>
 
