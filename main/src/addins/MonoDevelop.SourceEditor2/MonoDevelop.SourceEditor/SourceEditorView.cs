@@ -154,6 +154,29 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		bool wasEdited = false;
+		uint removeMarkerTimeout;
+		Queue<MessageBubbleTextMarker> markersToRemove = new Queue<MessageBubbleTextMarker> ();
+
+
+		void RemoveMarkerQueue ()
+		{
+			if (removeMarkerTimeout != 0)
+				GLib.Source.Remove (removeMarkerTimeout);
+		}
+
+		void ResetRemoveMarker ()
+		{
+			RemoveMarkerQueue ();
+			removeMarkerTimeout = GLib.Timeout.Add (2000, delegate {
+				while (markersToRemove.Count > 0) {
+					var _m = markersToRemove.Dequeue ();
+					currentErrorMarkers.Remove (_m);
+					widget.TextEditor.Document.RemoveMarker (_m);
+				}
+				removeMarkerTimeout = 0;
+				return false;
+			});
+		}
 
 		public SourceEditorView ()
 		{
@@ -184,6 +207,12 @@ namespace MonoDevelop.SourceEditor
 				int endIndex = startIndex + Math.Max (args.RemovalLength, args.InsertionLength);
 				if (TextChanged != null)
 					TextChanged (this, new TextChangedEventArgs (startIndex, endIndex));
+				foreach (var marker in currentErrorMarkers) {
+					if (marker.LineSegment.Contains (args.Offset) || marker.LineSegment.Contains (args.Offset + args.InsertionLength) || args.Offset < marker.LineSegment.Offset && marker.LineSegment.Offset < args.Offset + args.InsertionLength) {
+						markersToRemove.Enqueue (marker);
+					}
+				}
+				ResetRemoveMarker ();
 			};
 			
 			widget.TextEditor.Document.LineChanged += delegate(object sender, LineEventArgs e) {
@@ -192,6 +221,7 @@ namespace MonoDevelop.SourceEditor
 				if (messageBubbleCache != null && messageBubbleCache.RemoveLine (e.Line)) {
 					MessageBubbleTextMarker marker = currentErrorMarkers.FirstOrDefault (m => m.LineSegment == e.Line);
 					if (marker != null) {
+
 						widget.TextEditor.TextViewMargin.RemoveCachedLine (e.Line); 
 						// ensure that the line cache is renewed
 						marker.GetLineHeight (widget.TextEditor);
@@ -884,7 +914,7 @@ namespace MonoDevelop.SourceEditor
 		public Encoding SourceEncoding {
 			get { return encoding; }
 		}
-		
+
 		public override void Dispose ()
 		{
 			ClearExtensions ();
@@ -946,6 +976,8 @@ namespace MonoDevelop.SourceEditor
 				ownerDocument.DocumentParsed -= HandleDocumentParsed;
 				ownerDocument = null;
 			}
+
+			RemoveMarkerQueue ();
 		}
 		
 		public Ambience GetAmbience ()
