@@ -815,9 +815,9 @@ namespace MonoDevelop.Ide.Gui
 						width += LastTabWidthAdjustment;
 					width = (int) (width * tab.WidthModifier);
 
-					if (draggingTab && active) {
+					if (active) {
 						int tmp = x;
-						drawDrag = c => DrawTab (c, tab, new Gdk.Rectangle (tmp, y, width, Allocation.Height), true, true, true);
+						drawDrag = c => DrawTab (c, tab, new Gdk.Rectangle (tmp, y, width, Allocation.Height), true, active, draggingTab);
 					} else {
 						DrawTab (ctx, tab, new Gdk.Rectangle (x, y, width, Allocation.Height), tab == highlightedTab, active, false);
 					}
@@ -936,8 +936,7 @@ namespace MonoDevelop.Ide.Gui
 				ctx.LineTo (rightx, y);
 				ctx.LineTo (Allocation.Width, y);
 			} else {
-				height -= ActiveTabVerticalOffset + 1;
-				y--;
+				height -= ActiveTabVerticalOffset;
 				ctx.MoveTo (x, y);
 				ctx.LineTo (x, y - height);
 				ctx.LineTo (rightx, y - height);
