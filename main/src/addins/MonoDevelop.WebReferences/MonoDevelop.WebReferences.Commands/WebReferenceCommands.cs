@@ -9,6 +9,7 @@ namespace MonoDevelop.WebReferences
 		Update,
 		UpdateAll,
 		Delete,
-		DeleteAll
+		DeleteAll,
+		Configure
 	}
 }
