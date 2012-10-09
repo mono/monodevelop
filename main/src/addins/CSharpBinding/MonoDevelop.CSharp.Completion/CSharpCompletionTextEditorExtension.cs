@@ -605,7 +605,7 @@ namespace MonoDevelop.CSharp.Completion
 					var resolver = ext.CSharpUnresolvedFile.GetResolver (ext.Compilation, ext.TextEditorData.Caret.Location);
 					var sig = new SignatureMarkupCreator (resolver, ext.FormattingPolicy.CreateOptions ());
 					sig.BreakLineAfterReturnType = smartWrap;
-					return sig.GetKeywordTooltip (title);
+					return sig.GetKeywordTooltip (title, null);
 				}, title, "md-keyword", description, insertText ?? title);
 			}
 

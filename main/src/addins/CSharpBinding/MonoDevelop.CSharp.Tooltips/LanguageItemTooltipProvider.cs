@@ -192,7 +192,7 @@ namespace MonoDevelop.SourceEditor
 					var resolver = (doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile).GetResolver (doc.Compilation, doc.Editor.Caret.Location);
 					var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
 					sig.BreakLineAfterReturnType = false;
-					return sig.GetKeywordTooltip ("void");
+					return sig.GetKeywordTooltip ("void", null);
 				}
 
 				if (result is UnknownIdentifierResolveResult) {

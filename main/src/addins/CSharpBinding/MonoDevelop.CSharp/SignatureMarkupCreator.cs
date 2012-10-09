@@ -676,10 +676,10 @@ namespace MonoDevelop.CSharp
 
 		public TooltipInformation GetKeywordTooltip (AstNode node)
 		{
-			return GetKeywordTooltip (node.GetText ());
+			return GetKeywordTooltip (node.GetText (), node);
 		}
 
-		public TooltipInformation GetKeywordTooltip (string keyword)
+		public TooltipInformation GetKeywordTooltip (string keyword, AstNode hintNode)
 		{
 			var result = new TooltipInformation ();
 
@@ -693,10 +693,26 @@ namespace MonoDevelop.CSharp
 				result.SignatureMarkup = Highlight ("abstract", "keyword.modifier") + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("abstract", "keyword.modifier") + " modifier can be used with classes, methods, properties, indexers, and events.";
 				break;
+			case "add":
+				result.SignatureMarkup = Highlight ("add", "keyword.context") + keywordSign;
+				//TODO
+				break;
+			case "ascending":
+				result.SignatureMarkup = Highlight ("ascending", "keyword.context") + keywordSign;
+				//TODO
+				break;
+			case "async":
+				result.SignatureMarkup = Highlight ("async", "keyword.context") + keywordSign;
+				//TODO
+				break;
 			case "as":
 				result.SignatureMarkup = Highlight ("as", "keyword.operator") + keywordSign;
 				result.AddCategory ("Form", "expression " + Highlight ("as", "keyword.operator") + " type");
 				result.SummaryMarkup = "The " + Highlight ("as", "keyword.operator") + " operator is used to perform conversions between compatible types. ";
+				break;
+			case "await":
+				result.SignatureMarkup = Highlight ("await", "keyword.context") + keywordSign;
+				//TODO
 				break;
 			case "base":
 				result.SignatureMarkup = Highlight ("base", "keyword.access") + keywordSign;
@@ -747,6 +763,25 @@ namespace MonoDevelop.CSharp
 				break;
 			case "default":
 				result.SignatureMarkup = Highlight ("default", "keyword.selection") + keywordSign;
+				result.SummaryMarkup = "";
+				if (hintNode != null) {
+					if (hintNode.Parent is DefaultValueExpression) {
+						result.AddCategory ("Form",
+						                    Highlight ("default", "keyword.selection") + " (Type)");
+						break;
+					} else if (hintNode.Parent is CaseLabel) {
+						result.AddCategory ("Form",
+						                    Highlight ("switch", "keyword.selection") + " (expression) { "+ Environment.NewLine +
+						                    "  " + Highlight ("case", "keyword.selection") + " constant-expression:" + Environment.NewLine +
+						                    "    statement"+ Environment.NewLine +
+						                    "    jump-statement" + Environment.NewLine +
+						                    "  [" + Highlight ("default", "keyword.selection") + ":" + Environment.NewLine +
+						                    "    statement" + Environment.NewLine +
+						                    "    jump-statement]" + Environment.NewLine +
+						                    "}");
+						break;
+					}
+				}
 				result.AddCategory ("Form",
 				                    Highlight ("default", "keyword.selection") + " (Type)" + Environment.NewLine + Environment.NewLine +
 				                    "or" + Environment.NewLine + Environment.NewLine +
@@ -758,12 +793,19 @@ namespace MonoDevelop.CSharp
 				                    "    statement" + Environment.NewLine +
 				                    "    jump-statement]" + Environment.NewLine +
 				                    "}");
-				result.SummaryMarkup = "";
 				break;
 			case "delegate":
 				result.SignatureMarkup = Highlight ("delegate", "keyword.declaration") + keywordSign;
 				result.AddCategory ("Form", "[attributes] [modifiers] " + Highlight ("delegate", "keyword.declaration") + " result-type identifier ([formal-parameters]);");
 				result.SummaryMarkup = "A " + Highlight ("delegate", "keyword.declaration") + " declaration defines a reference type that can be used to encapsulate a method with a specific signature.";
+				break;
+			case "dynamic":
+				result.SignatureMarkup = Highlight ("dynamic", "keyword.context") + keywordSign;
+				//TODO
+				break;
+			case "descending":
+				result.SignatureMarkup = Highlight ("descending", "keyword.context") + keywordSign;
+				//TODO
 				break;
 			case "do":
 				result.SignatureMarkup = Highlight ("do", "keyword.iteration") + keywordSign;
@@ -817,12 +859,28 @@ namespace MonoDevelop.CSharp
 				result.AddCategory ("Form", Highlight ("foreach", "keyword.iteration") + " (type identifier " + Highlight ("in", "keyword.iteration") + " expression) statement");
 				result.SummaryMarkup = "The " + Highlight ("foreach", "keyword.iteration") + " statement repeats a group of embedded statements for each element in an array or an object collection. ";
 				break;
+			case "from":
+				result.SignatureMarkup = Highlight ("from", "keyword.context") + keywordSign;
+				//TODO
+				break;
+			case "get":
+				result.SignatureMarkup = Highlight ("get", "keyword.context") + keywordSign;
+				//TODO
+				break;
+			case "global":
+				result.SignatureMarkup = Highlight ("global", "keyword.context") + keywordSign;
+				//TODO
+				break;
 			case "goto":
 				result.SignatureMarkup = Highlight ("goto", "keyword.jump") + keywordSign;
 				result.AddCategory ("Form", Highlight ("goto", "keyword.jump") + " identifier;" + Environment.NewLine +
 					Highlight ("goto", "keyword.jump") + " " + Highlight ("case", "keyword.selection") + " constant-expression;" + Environment.NewLine +
 				                    Highlight ("goto", "keyword.jump") + " " + Highlight ("default", "keyword.selection") + ";");
 				result.SummaryMarkup = "The " + Highlight ("goto", "keyword.jump") + " statement transfers the program control directly to a labeled statement. ";
+				break;
+			case "group":
+				result.SignatureMarkup = Highlight ("group", "keyword.context") + keywordSign;
+				//TODO
 				break;
 			case "if":
 				result.SignatureMarkup = Highlight ("if", "keyword.selection") + keywordSign;
@@ -832,14 +890,39 @@ namespace MonoDevelop.CSharp
 				                    "  statement2]");
 				result.SummaryMarkup = "The " + Highlight ("if", "keyword.selection") + " statement selects a statement for execution based on the value of a Boolean expression. ";
 				break;
+			case "into":
+				result.SignatureMarkup = Highlight ("into", "keyword.context") + keywordSign;
+				//TODO
+				break;
 			case "implicit":
 				result.SignatureMarkup = Highlight ("implicit", "keyword.operator.declaration") + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("implicit", "keyword.operator.declaration") + " keyword is used to declare an implicit user-defined type conversion operator.";
 				break;
 			case "in":
 				result.SignatureMarkup = Highlight ("in", "keyword.iteration") + keywordSign;
-				result.AddCategory ("Form", Highlight ("foreach", "keyword.iteration") + " (type identifier " + Highlight ("in", "keyword.iteration") + " expression) statement");
-				result.SummaryMarkup = "";
+				if (hintNode != null) {
+					if (hintNode.Parent is ForeachStatement) {
+						result.AddCategory ("Form",
+						                    Highlight ("foreach", "keyword.iteration") + " (type identifier " + Highlight ("in", "keyword.iteration") + " expression) statement");
+						break;
+					}
+					if (hintNode.Parent is QueryFromClause) {
+						result.AddCategory ("Form",
+						                    Highlight ("from", "keyword.context") + " range-variable " + Highlight ("in", "keyword.iteration") + " data-source [query clauses] " + Highlight ("select", "keyword.context") + " product-expression");
+						break;
+					}
+					if (hintNode.Parent is TypeParameterDeclaration) {
+						result.AddCategory ("Form",
+						                    Highlight ("interface", "keyword.declaration") + " IMyInterface&lt;" + Highlight ("in", "keyword.iteration") + " T&gt; {}");
+						break;
+					}
+				}
+				result.AddCategory ("Form", Highlight ("foreach", "keyword.iteration") + " (type identifier " + Highlight ("in", "keyword.iteration") + " expression) statement"+ Environment.NewLine + Environment.NewLine +
+				                    "or" + Environment.NewLine + Environment.NewLine +
+				                    Highlight ("from", "keyword.context") + " range-variable " + Highlight ("in", "keyword.iteration") + " data-source [query clauses] " + Highlight ("select", "keyword.context") + " product-expression" + Environment.NewLine + Environment.NewLine +
+				                    "or" + Environment.NewLine + Environment.NewLine +
+				                    Highlight ("interface", "keyword.declaration") + " IMyInterface&lt;" + Highlight ("in", "keyword.iteration") + " T&gt; {}"
+				                    );
 				break;
 			case "interface":
 				result.SignatureMarkup = Highlight ("interface", "keyword.declaration") + keywordSign;
@@ -854,6 +937,14 @@ namespace MonoDevelop.CSharp
 				result.SignatureMarkup = Highlight ("is", "keyword.operator") + keywordSign;
 				result.AddCategory ("Form", "expression " + Highlight ("is", "keyword.operator") + " type");
 				result.SummaryMarkup = "The " + Highlight ("is", "keyword.operator") + " operator is used to check whether the run-time type of an object is compatible with a given type.";
+				break;
+			case "join":
+				result.SignatureMarkup = Highlight ("join", "keyword.context") + keywordSign;
+				//TODO
+				break;
+			case "let":
+				result.SignatureMarkup = Highlight ("let", "keyword.context") + keywordSign;
+				//TODO
 				break;
 			case "lock":
 				result.SignatureMarkup = Highlight ("lock", "keyword.misc") + keywordSign;
@@ -886,9 +977,31 @@ namespace MonoDevelop.CSharp
 				                    Highlight ("public static ", "keyword.modifier") + Highlight ("explicit operator", "keyword.operator.declaration") + " conv-type-out ( conv-type-in operand )");
 				result.SummaryMarkup = "The " + Highlight ("operator", "keyword.operator.declaration") + " keyword is used to declare an operator in a class or struct declaration.";
 				break;
+			case "orderby":
+				result.SignatureMarkup = Highlight ("orderby", "keyword.context") + keywordSign;
+				//TODO
+				break;
 			case "out":
 				result.SignatureMarkup = Highlight ("out", "keyword.parameter") + keywordSign;
-				result.SummaryMarkup = "The " + Highlight ("out", "keyword.parameter") + " method parameter keyword on a method parameter causes a method to refer to the same variable that was passed into the method.";
+				if (hintNode != null) {
+					if (hintNode.Parent is TypeParameterDeclaration) {
+						result.AddCategory ("Form",
+						                    Highlight ("interface", "keyword.declaration") + " IMyInterface&lt;" + Highlight ("out", "keyword.parameter") + " T&gt; {}");
+						break;
+					}
+					if (hintNode.Parent is ParameterDeclaration) {
+						result.AddCategory ("Form",
+						                    Highlight ("out", "keyword.parameter") + " parameter-name");
+						result.SummaryMarkup = "The " + Highlight ("out", "keyword.parameter") + " method parameter keyword on a method parameter causes a method to refer to the same variable that was passed into the method.";
+						break;
+					}
+				}
+
+				result.AddCategory ("Form", 
+				                    Highlight ("out", "keyword.parameter") + " parameter-name" + Environment.NewLine + Environment.NewLine +
+				                    "or" + Environment.NewLine + Environment.NewLine +
+				                    Highlight ("interface", "keyword.declaration") + " IMyInterface&lt;" + Highlight ("out", "keyword.parameter") + " T&gt; {}"
+				                    );
 				break;
 			case "override":
 				result.SignatureMarkup = Highlight ("override", "keyword.modifier") + keywordSign;
@@ -897,6 +1010,10 @@ namespace MonoDevelop.CSharp
 			case "params":
 				result.SignatureMarkup = Highlight ("params", "keyword.parameter") + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("params", "keyword.parameter") + " keyword lets you specify a method parameter that takes an argument where the number of arguments is variable.";
+				break;
+			case "partial":
+				result.SignatureMarkup = Highlight ("partial", "keyword.context") + keywordSign;
+				//TODO
 				break;
 			case "private":
 				result.SignatureMarkup = Highlight ("private", "keyword.modifier") + keywordSign;
@@ -918,14 +1035,26 @@ namespace MonoDevelop.CSharp
 				result.SignatureMarkup = Highlight ("ref", "keyword.parameter") + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("ref", "keyword.parameter") + " method parameter keyword on a method parameter causes a method to refer to the same variable that was passed into the method.";
 				break;
+			case "remove":
+				result.SignatureMarkup = Highlight ("remove", "keyword.context") + keywordSign;
+				//TODO
+				break;
 			case "return":
 				result.SignatureMarkup = Highlight ("return", "keyword.jump") + keywordSign;
 				result.AddCategory ("Form", Highlight ("return", "keyword.jump") + " [expression];");
 				result.SummaryMarkup = "The " + Highlight ("return", "keyword.jump") + " statement terminates execution of the method in which it appears and returns control to the calling method.";
 				break;
+			case "select":
+				result.SignatureMarkup = Highlight ("select", "keyword.context") + keywordSign;
+				//TODO
+				break;
 			case "sealed":
 				result.SignatureMarkup = Highlight ("sealed", "keyword.modifier") + keywordSign;
 				result.SummaryMarkup = "A sealed class cannot be inherited.";
+				break;
+			case "set":
+				result.SignatureMarkup = Highlight ("set", "keyword.context") + keywordSign;
+				//TODO
 				break;
 			case "sizeof":
 				result.SignatureMarkup = Highlight ("sizeof", "keyword.operator") + keywordSign;
@@ -1009,6 +1138,14 @@ namespace MonoDevelop.CSharp
 				break;
 			case "void":
 				result.SignatureMarkup = Highlight ("void", "keyword.type") + keywordSign;
+				break;
+			case "where":
+				result.SignatureMarkup = Highlight ("where", "keyword.context") + keywordSign;
+				//TODO
+				break;
+			case "yield":
+				result.SignatureMarkup = Highlight ("yield", "keyword.context") + keywordSign;
+				//TODO
 				break;
 			case "while":
 				result.SignatureMarkup = Highlight ("while", "keyword.iteration") + keywordSign;
