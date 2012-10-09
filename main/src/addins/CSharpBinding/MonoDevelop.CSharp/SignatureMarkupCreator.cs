@@ -353,6 +353,27 @@ namespace MonoDevelop.CSharp
 			return result.ToString ();
 		}
 
+		void AppendTypeParameters (StringBuilder result, IList<ITypeParameter> typeParameters)
+		{
+			if (typeParameters.Count == 0)
+				return;
+			result.Append ("&lt;");
+			for (int i = 0; i < typeParameters.Count; i++) {
+				if (i > 0) {
+					if (i % 5 == 0) {
+						result.AppendLine (",");
+						result.Append ("\t");
+					}
+					else {
+						result.Append (", ");
+					}
+				}
+				AppendVariance (result, typeParameters [i].Variance);
+				result.Append (CSharpAmbience.NetToCSharpTypeName (typeParameters [i].Name));
+			}
+			result.Append ("&gt;");
+		}
+
 		public string GetDelegateInfo (IType type)
 		{
 			if (type == null)
@@ -372,16 +393,7 @@ namespace MonoDevelop.CSharp
 			
 			result.Append (CSharpAmbience.FilterName (t.Name));
 			
-			if (method.TypeParameters.Count > 0) {
-				result.Append ("&lt;");
-				for (int i = 0; i < method.TypeParameters.Count; i++) {
-					if (i > 0)
-						result.Append (", ");
-					AppendVariance (result, method.TypeParameters [i].Variance);
-					result.Append (CSharpAmbience.NetToCSharpTypeName (method.TypeParameters [i].Name));
-				}
-				result.Append ("&gt;");
-			}
+			AppendTypeParameters (result, method.TypeParameters);
 			
 			if (formattingOptions.SpaceBeforeDelegateDeclarationParentheses)
 				result.Append (" ");
@@ -423,15 +435,9 @@ namespace MonoDevelop.CSharp
 				result.Append ("&gt;");
 			} else {
 				var tt = delegateType as ITypeDefinition;
+
 				if (tt != null && tt.TypeParameters.Count > 0) {
-					result.Append ("&lt;");
-					for (int i = 0; i < tt.TypeParameters.Count; i++) {
-						if (i > 0)
-							result.Append (", ");
-						AppendVariance (result, tt.TypeParameters [i].Variance);
-						result.Append (CSharpAmbience.NetToCSharpTypeName (tt.TypeParameters [i].Name));
-					}
-					result.Append ("&gt;");
+					AppendTypeParameters (result, tt.TypeParameters);
 				}
 			}
 
@@ -546,16 +552,7 @@ namespace MonoDevelop.CSharp
 					result.Append ("&gt;");
 				}
 			} else {
-				if (method.TypeParameters.Count > 0) {
-					result.Append ("&lt;");
-					for (int i = 0; i < method.TypeParameters.Count; i++) {
-						if (i > 0)
-							result.Append (", ");
-						AppendVariance (result, method.TypeParameters [i].Variance);
-						result.Append (CSharpAmbience.NetToCSharpTypeName (method.TypeParameters [i].Name));
-					}
-					result.Append ("&gt;");
-				}
+				AppendTypeParameters (result, method.TypeParameters);
 			}
 
 			if (formattingOptions.SpaceBeforeMethodDeclarationParentheses)
