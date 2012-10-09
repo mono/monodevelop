@@ -1,10 +1,11 @@
 // 
 // XcodeProjectTracker.cs
 //  
-// Author:
-//       Michael Hutchinson <mhutchinson@novell.com>
+// Authors: Michael Hutchinson <mhutchinson@novell.com>
+//          Jeffrey Stedfast <jeff@xamarin.com>
 // 
 // Copyright (c) 2011 Novell, Inc.
+// Copyright (c) 2012 Xamarin Inc.
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -248,9 +249,21 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		
 		bool IncludeInSyncedProject (ProjectFile pf)
 		{
+			if (pf.BuildAction == BuildAction.BundleResource) {
+				var ixtp = dnp as IXcodeTrackedProject;
+
+				if (ixtp == null)
+					return false;
+
+				var resource = ixtp.GetBundleResourceId (pf);
+				if (resource.ParentDirectory.IsNullOrEmpty)
+					return true;
+
+				return false;
+			}
+			
 			return (pf.BuildAction == BuildAction.Content && pf.ProjectVirtualPath.ParentDirectory.IsNullOrEmpty)
-				|| (pf.BuildAction == BuildAction.InterfaceDefinition && HasInterfaceDefinitionExtension (pf.FilePath)
-				    || pf.BuildAction == "BundleResource");
+				|| (pf.BuildAction == BuildAction.InterfaceDefinition && HasInterfaceDefinitionExtension (pf.FilePath));
 		}
 		
 		#region Project change tracking
