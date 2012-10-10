@@ -53,7 +53,7 @@ app: monostub
 	mkdir -p $(MAC_APP_DIR)/Contents/MacOS/share/monodevelop
 	cp ../../COPYING $(MAC_APP_DIR)/Contents/MacOS/share/monodevelop/COPYING.LGPL2.1
 
-	sed -e "s/@BUNDLE_VERSION@/$(BUNDLE_VERSION)/" -e "s/@ASSEMBLY_VERSION@/$(ASSEMBLY_VERSION)/" Info.plist.in > $(MAC_APP_DIR)/Contents/Info.plist
+	sed -e "s/@BUNDLE_VERSION@/$(BUNDLE_VERSION)/" -e "s/@ASSEMBLY_VERSION@/$(ASSEMBLY_VERSION)/" -e "s/@APP_NAME@/$(APP_NAME)/" Info.plist.in > $(MAC_APP_DIR)/Contents/Info.plist
 	cp ../../theme-icons/Mac/*.icns $(MAC_APP_DIR)/Contents/Resources/
 
 # copy monodevelop.pc and monodevelop-core-addins.pc to Contents/MacOS/lib/pkgconfig

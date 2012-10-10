@@ -12,7 +12,7 @@
 				<string>sln</string>
 			</array>
 			<key>CFBundleTypeName</key>
-			<string>MonoDevelop Solution</string>
+			<string>@APP_NAME@ Solution</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>LSIsAppleDefaultForType</key>
@@ -26,7 +26,7 @@
 				<string>mdw</string>
 			</array>
 			<key>CFBundleTypeName</key>
-			<string>MonoDevelop Workspace</string>
+			<string>@APP_NAME@ Workspace</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>LSIsAppleDefaultForType</key>
@@ -60,7 +60,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>MonoDevelop</string>
+	<string>@APP_NAME@</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>

@@ -4,10 +4,14 @@
  	
 pushd $(dirname $0) &>/dev/null
 
-DMG_APP=MonoDevelop.app
+DMG_APP=$1
+
+if [ -z "$DMG_APP" ]; then
+	DMG_APP=MonoDevelop.app
+fi
 
 if test ! -e "$DMG_APP" ; then
-	echo "Missing MonoDevelop.app"
+	echo "Missing $DMG_APP"
 	exit 1
 fi
 
