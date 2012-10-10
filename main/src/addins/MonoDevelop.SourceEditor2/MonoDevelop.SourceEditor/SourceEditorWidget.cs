@@ -332,8 +332,6 @@ namespace MonoDevelop.SourceEditor
 
 		void OnLostFocus ()
 		{
-			//clears search status messages
-			IdeApp.Workbench.StatusBar.ShowReady ();
 		}
 
 		void UpdateLineColOnEventHandler (object sender, EventArgs e)
