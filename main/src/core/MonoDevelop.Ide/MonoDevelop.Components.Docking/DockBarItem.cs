@@ -35,7 +35,7 @@ using Mono.TextEditor;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
 
-using Animations = MonoDevelop.Components.Animation;
+using Animations = MonoDevelop.Components.AnimationExtensions;
 
 namespace MonoDevelop.Components.Docking
 {	
