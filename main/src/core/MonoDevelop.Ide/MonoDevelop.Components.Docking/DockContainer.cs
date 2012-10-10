@@ -86,6 +86,8 @@ namespace MonoDevelop.Components.Docking
 
 		public void LoadLayout (DockLayout dl)
 		{
+			HidePlaceholder ();
+
 			// Sticky items currently selected in notebooks will remain
 			// selected after switching the layout
 			List<DockItem> sickyOnTop = new List<DockItem> ();
