@@ -233,16 +233,18 @@ namespace MonoDevelop.Ide.Gui
 				Gtk.Window.DefaultIconName = appIconName;
 				return;
 			}
-			
-			//branded icons
-			var iconsEl = BrandingService.GetElement ("ApplicationIcons");
-			if (iconsEl != null) {
-				try {
-					this.IconList = iconsEl.Elements ("Icon")
-						.Select (el => new Gdk.Pixbuf (BrandingService.GetFile ((string)el))).ToArray ();
-					return;
-				} catch (Exception ex) {
-					LoggingService.LogError ("Could not load app icons", ex);
+
+			if (!Platform.IsMac) {
+				//branded icons
+				var iconsEl = BrandingService.GetElement ("ApplicationIcons");
+				if (iconsEl != null) {
+					try {
+						this.IconList = iconsEl.Elements ("Icon")
+							.Select (el => new Gdk.Pixbuf (BrandingService.GetFile ((string)el))).ToArray ();
+						return;
+					} catch (Exception ex) {
+						LoggingService.LogError ("Could not load app icons", ex);
+					}
 				}
 			}
 			
