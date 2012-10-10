@@ -309,7 +309,7 @@ namespace MonoDevelop.Components
 
 		void CheckScreenColormap ()
 		{
-			SupportsAlpha = Screen.RgbaColormap != null;
+			SupportsAlpha = Screen.IsComposited;
 			if (SupportsAlpha) {
 				Colormap = Screen.RgbaColormap;
 			} else {

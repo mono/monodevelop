@@ -301,11 +301,7 @@ namespace MonoDevelop.Components
 
 		public static bool ScreenSupportsARGB ()
 		{
-			// Some versions of windows lie
-			if (MonoDevelop.Core.Platform.IsWindows)
-				return false;
-
-			return Gdk.Screen.Default.RgbaColormap != null;
+			return Gdk.Screen.Default.IsComposited;
 		}
 	}
 
