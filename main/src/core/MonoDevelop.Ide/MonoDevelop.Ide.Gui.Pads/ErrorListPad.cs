@@ -46,6 +46,8 @@ using Gtk;
 using System.Text;
 using MonoDevelop.Components.Docking;
 using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Commands;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {
@@ -424,6 +426,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 					return model.GetValue (iter, DataColumns.Task) as Task;
 				return null; // no one selected
 			}
+		}
+
+		[CommandHandler (EditCommands.Copy)]
+		protected void OnCopy ()
+		{
+			OnTaskCopied (null, null);
 		}
 
 		void OnTaskCopied (object o, EventArgs args)
