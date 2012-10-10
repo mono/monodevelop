@@ -227,17 +227,31 @@ namespace MonoDevelop.Ide.Gui.Content
 			currentCompletionContext = CompletionWidget.CreateCodeCompletionContext (cpos);
 			currentCompletionContext.TriggerWordLength = wlen;
 			completionList = Document.Editor.IsSomethingSelected ? ShowCodeSurroundingsCommand (currentCompletionContext) : ShowCodeTemplatesCommand (currentCompletionContext);
-			
-			if (completionList != null)
-				CompletionWindowManager.ShowWindow (this, (char)0, completionList, CompletionWidget, currentCompletionContext);
-			else
+			if (completionList == null) {
 				currentCompletionContext = null;
+				return;
+			}
+			var wnd = new CompletionListWindow (Gtk.WindowType.Toplevel);
+			wnd.Decorated = false;
+			wnd.Extension = this;
+			wnd.ShowListWindow ((char)0, completionList, CompletionWidget, currentCompletionContext);
 		}
 		
 		[CommandUpdateHandler (TextEditorCommands.ShowCodeTemplateWindow)]
 		internal void OnUpdateShowCodeTemplatesWindow (CommandInfo info)
 		{
-			info.Bypass = !CanRunCompletionCommand ();
+			ICompletionDataList completionList = null;
+			int cpos, wlen;
+			if (!GetCompletionCommandOffset (out cpos, out wlen)) {
+				cpos = Editor.Caret.Offset;
+				wlen = 0;
+			}
+			
+			currentCompletionContext = CompletionWidget.CreateCodeCompletionContext (cpos);
+			currentCompletionContext.TriggerWordLength = wlen;
+			completionList = Document.Editor.IsSomethingSelected ? ShowCodeSurroundingsCommand (currentCompletionContext) : ShowCodeTemplatesCommand (currentCompletionContext);
+
+			info.Bypass = completionList == null;
 			info.Text = Document.Editor.IsSomethingSelected ? GettextCatalog.GetString ("_Surround With...") : GettextCatalog.GetString ("I_nsert Template...");
 		}
 	
@@ -321,6 +335,8 @@ namespace MonoDevelop.Ide.Gui.Content
 		public virtual ICompletionDataList ShowCodeSurroundingsCommand (CodeCompletionContext completionContext)
 		{
 			CompletionDataList list = new CompletionDataList ();
+			list.AutoSelect = true;
+			list.AutoCompleteEmptyMatch = true;
 			list.CompletionSelectionMode = CompletionSelectionMode.OwnTextField;
 			var templateWidget = Document.GetContent<ICodeTemplateContextProvider> ();
 			CodeTemplateContext ctx = CodeTemplateContext.Standard;
@@ -338,6 +354,8 @@ namespace MonoDevelop.Ide.Gui.Content
 		public virtual ICompletionDataList ShowCodeTemplatesCommand (CodeCompletionContext completionContext)
 		{
 			CompletionDataList list = new CompletionDataList ();
+			list.AutoSelect = true;
+			list.AutoCompleteEmptyMatch = true;
 			list.CompletionSelectionMode = CompletionSelectionMode.OwnTextField;
 			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplatesForFile (Document.FileName)) {
 				if (template.CodeTemplateType != CodeTemplateType.SurroundsWith)  {

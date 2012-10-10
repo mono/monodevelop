@@ -59,7 +59,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		ListWidget list;
 		Widget footer;
-		VBox vbox;
+		protected VBox vbox;
 		
 		public CompletionTextEditorExtension Extension {
 			get;
@@ -74,7 +74,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		internal ScrolledWindow scrollbar;
 		
-		public ListWindow () : base(Gtk.WindowType.Popup)
+		public ListWindow (Gtk.WindowType type) : base(type)
 		{
 			vbox = new VBox ();
 			list = new ListWidget (this);
@@ -87,7 +87,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 				if (args.Event.Button == 1 && args.Event.Type == Gdk.EventType.TwoButtonPress)
 					DoubleClick ();
 			};
-			ContentBox.Add (scrollbar);
+			vbox.PackEnd (scrollbar, true, true, 0);
+			ContentBox.Add (vbox);
 			this.AutoSelect = true;
 			this.TypeHint = WindowTypeHint.Menu;
 			Theme.CornerRadius = 4;
@@ -213,7 +214,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 		
 		int endOffset = -1;
-		public string PartialWord {
+		public virtual string PartialWord {
 			get {
 				return CompletionWidget.GetText (StartOffset, Math.Max (StartOffset, endOffset > 0 ? endOffset : CompletionWidget.CaretOffset)); 
 			}
@@ -516,7 +517,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (!string.IsNullOrEmpty (partialWord)) {
 				for (int i = 0; i < list.filteredItems.Count; i++) {
 					int index = list.filteredItems[i];
-					string text = DataProvider.GetCompletionText (index);
+					string text = DataProvider.GetText (index);
 					int rank;
 					if (!matcher.CalcMatchRank (text, out rank))
 						continue;

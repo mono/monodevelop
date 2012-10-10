@@ -90,11 +90,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			set;
 		}
 		
-		public bool PreviewCompletionString {
-			get;
-			set;
-		}
-		
 		public bool CloseOnSquareBrackets {
 			get;
 			set;
@@ -414,24 +409,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 				int xpos = iconTextSpacing;
 				int yPos = (int)-vadj.Value;
 				
-				if (PreviewCompletionString) {
-					layout.SetText (
-						string.IsNullOrEmpty (CompletionString) ? MonoDevelop.Core.GettextCatalog.GetString ("Select template") : CompletionString
-					);
-					int wi, he;
-					layout.GetPixelSize (out wi, out he);
-					context.Rectangle (0, yPos, lineWidth, he + iconTextSpacing);
-					context.Fill ();
-
-					window.DrawLayout (
-						string.IsNullOrEmpty (CompletionString) ? this.Style.TextGC (StateType.Insensitive) : this.Style.TextGC (StateType.Normal),
-						xpos,
-						yPos,
-						layout
-					);
-					yPos += rowHeight;
-				}
-
 				//when there are no matches, display a message to indicate that the completion list is still handling input
 				if (filteredItems.Count == 0) {
 					Gdk.GC gc = new Gdk.GC (window);
@@ -672,7 +649,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			categories.Clear ();
 			var matcher = CompletionMatcher.CreateCompletionMatcher (CompletionString);
-				
 			if (oldCompletionString == null || !CompletionString.StartsWith (oldCompletionString)) {
 				filteredItems.Clear ();
 				for (int newSelection = 0; newSelection < win.DataProvider.ItemCount; newSelection++) {
@@ -741,7 +717,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		int GetRowByPosition (int ypos)
 		{
-			return GetItem (true, ((int)vadj.Value + ypos) / rowHeight - (PreviewCompletionString ? 1 : 0));
+			return GetItem (true, ((int)vadj.Value + ypos) / rowHeight);
 		}
 		
 		public Gdk.Rectangle GetRowArea (int row)
@@ -789,9 +765,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (InCategoryMode && categories.Any (cat => cat.CompletionCategory == null))
 				viewableCats--;
 			int newHeight = rowHeight * maxVisibleRows;
-			if (PreviewCompletionString) {
-				newHeight += rowHeight;
-			}
 			if (lvWidth != listWidth || lvHeight != newHeight) 
 				this.SetSizeRequest (listWidth, newHeight);
 			ScrollToSelectedItem ();

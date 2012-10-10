@@ -68,8 +68,60 @@ namespace MonoDevelop.Ide.CodeCompletion
 				this.completionDataList = value;
 			}
 		}
-		
-		public CompletionListWindow ()
+
+		bool previewCompletionString;
+		Entry previewEntry;
+		public override string PartialWord {
+			get {
+				if (previewEntry != null)
+					return previewEntry.Text;
+				return base.PartialWord;
+			}
+		}
+
+		public bool PreviewCompletionString {
+			get {
+				return previewCompletionString;
+			}
+			set {
+				if (value) {
+					previewEntry = new Entry ();
+					previewEntry.Changed += delegate (object sender, EventArgs e) {
+						List.CompletionString = previewEntry.Text;
+
+						this.UpdateWordSelection ();
+						List.QueueDraw ();
+					};
+					previewEntry.KeyPressEvent += delegate(object o, KeyPressEventArgs args) {
+						var keyAction = PreProcessKey (args.Event.Key, (char)args.Event.KeyValue, args.Event.State);
+						if (keyAction.HasFlag (KeyActions.Complete))
+							CompleteWord ();
+
+						if (keyAction.HasFlag (KeyActions.CloseWindow)) {
+							Destroy ();
+						}
+
+						args.RetVal = !keyAction.HasFlag (KeyActions.Process);
+					};
+					this.WordCompleted += delegate (object sender, CodeCompletionContextEventArgs e) {
+						Destroy ();
+					};
+					vbox.PackStart (previewEntry, false, true, 0);
+
+					previewEntry.Activated += (sender, e) => CompleteWord ();
+					previewEntry.Show ();
+					this.FocusOutEvent += (o, args) => Destroy ();
+					GLib.Timeout.Add (10, delegate {
+						previewEntry.GrabFocus ();
+						return false;
+					});
+
+				}
+				previewCompletionString = value;
+			}
+		}
+
+		public CompletionListWindow (Gtk.WindowType type = Gtk.WindowType.Popup) : base(type) 
 		{
 			if (IdeApp.Workbench != null)
 				this.TransientFor = IdeApp.Workbench.RootWindow;
@@ -210,7 +262,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			base.SelectEntry (s);
 			UpdateDeclarationView ();
 		}
-		
+
+
 		internal bool ShowListWindow (char firstChar, ICompletionDataList list, ICompletionWidget completionWidget, CodeCompletionContext completionContext)
 		{
 			if (list == null)
@@ -230,7 +283,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			CodeCompletionContext = completionContext;
 			mutableList = completionDataList as IMutableCompletionDataList;
-			List.PreviewCompletionString = completionDataList.CompletionSelectionMode == CompletionSelectionMode.OwnTextField;
+			PreviewCompletionString = completionDataList.CompletionSelectionMode == CompletionSelectionMode.OwnTextField;
 
 			if (mutableList != null) {
 				mutableList.Changing += OnCompletionDataChanging;
