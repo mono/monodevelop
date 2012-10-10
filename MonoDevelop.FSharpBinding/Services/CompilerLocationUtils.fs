@@ -20,11 +20,11 @@ type FSharpCompilerVersion =
     /// The current requested language version is a configuration setting specified by the user.
     static member CurrentRequestedVersion 
         with get() = 
-            let setting = MonoDevelop.Core.PropertyService.Get<string>("FSharpBinding.EnableFSharp30","") 
+            let setting = MonoDevelop.Core.PropertyService.Get<string>("FSharpBinding.PreferFSharp20","") 
             if System.String.Compare(setting, "true", true) = 0 then 
-                FSharpCompilerVersion.FSharp_3_0
-            else
                 FSharpCompilerVersion.FSharp_2_0
+            else
+                FSharpCompilerVersion.FSharp_3_0
                 
 
 module internal FSharpEnvironment =
