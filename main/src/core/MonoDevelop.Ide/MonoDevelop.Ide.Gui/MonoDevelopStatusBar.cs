@@ -796,9 +796,15 @@ namespace MonoDevelop.Ide
 		Pad sourcePad;
 		bool autoPulse;
 		protected StatusArea statusBar;
-		
+
+		// The last time any status bar context changed the status area message
+		static DateTime globalLastChangeTime;
+
+		// The last time this context changed the status area message
+		DateTime lastChangeTime;
+
 		internal bool StatusChanged { get; set; }
-		
+
 		internal StatusBarContextImpl (StatusArea statusBar)
 		{
 			this.statusBar = statusBar;
@@ -853,9 +859,13 @@ namespace MonoDevelop.Ide
 				return;
 			if (statusBar.IsCurrentContext (this)) {
 				OnMessageChanged ();
+				globalLastChangeTime = DateTime.Now;
 				statusBar.ShowMessage (image, message, isMarkup);
 				statusBar.SetMessageSourcePad (sourcePad);
-			}
+				if (!showProgress)
+					ResetMessage (); // Once the message is shown, don't show it again
+			} else
+				lastChangeTime = DateTime.Now;
 		}
 		
 		public void BeginProgress (string name)
@@ -902,7 +912,7 @@ namespace MonoDevelop.Ide
 		public void EndProgress ()
 		{
 			showProgress = false;
-			message = string.Empty;
+			ResetMessage ();
 			progressFraction = 0;
 			if (InitialSetup ())
 				return;
@@ -944,9 +954,20 @@ namespace MonoDevelop.Ide
 				statusBar.SetMessageSourcePad (sourcePad);
 			} else {
 				statusBar.EndProgress ();
-				statusBar.ShowMessage (image, message, isMarkup);
-				statusBar.SetMessageSourcePad (sourcePad);
+				if (globalLastChangeTime < lastChangeTime) {
+					globalLastChangeTime = lastChangeTime;
+					statusBar.ShowMessage (image, message, isMarkup);
+					statusBar.SetMessageSourcePad (sourcePad);
+					ResetMessage (); // Once the message is shown, don't show it again
+				}
 			}
+		}
+
+		void ResetMessage ()
+		{
+			image = IconId.Null;
+			message = string.Empty;
+			sourcePad = null;
 		}
 		
 		public Pad StatusSourcePad {

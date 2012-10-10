@@ -101,6 +101,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		MainStatusBarContextImpl mainContext;
 		StatusBarContextImpl activeContext;
+		bool progressBarVisible;
 
 		Queue<Message> messageQueue;
 		
@@ -702,13 +703,19 @@ namespace MonoDevelop.Components.MainToolbar
 		public void BeginProgress (string name)
 		{
 			ShowMessage (name);
-			OnProgressBegin (EventArgs.Empty);
+			if (!progressBarVisible) {
+				progressBarVisible = true;
+				OnProgressBegin (EventArgs.Empty);
+			}
 		}
 		
 		public void BeginProgress (IconId image, string name)
 		{
 			ShowMessage (image, name);
-			OnProgressBegin (EventArgs.Empty);
+			if (!progressBarVisible) {
+				progressBarVisible = true;
+				OnProgressBegin (EventArgs.Empty);
+			}
 		}
 		
 		public void SetProgressFraction (double work)
@@ -719,6 +726,10 @@ namespace MonoDevelop.Components.MainToolbar
 		
 		public void EndProgress ()
 		{
+			if (!progressBarVisible)
+				return;
+
+			progressBarVisible = false;
 			ShowMessage ("");
 			OnProgressEnd (EventArgs.Empty);
 			AutoPulse = false;
@@ -756,7 +767,7 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			return ctx == activeContext;
 		}
-		
+
 		internal void Remove (StatusBarContextImpl ctx)
 		{
 			if (ctx == mainContext)
