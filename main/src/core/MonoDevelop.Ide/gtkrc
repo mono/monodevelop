@@ -1,5 +1,8 @@
 # Mac Theme for Xamarian composed by Lanedo GmbH
-# Copyright 2012 Christian Kellner <christian.kellner@lanedo.com>
+# Copyright 2012 Xamarin Inc.
+# Authors: 
+#   Christian Kellner <christian.kellner@lanedo.com>
+#   Carlos Garnacho <carlos.garnacho@lanedo.com>
 
 gtk-color-scheme =
 "bg_color:         #f5f5f5
@@ -64,10 +67,11 @@ style "default" {
 
     GtkScrolledWindow::scrollbar-spacing = 0
     GtkScale::slider-length = 14
+    GtkRange::trough-side-details = 1
 
     GtkTreeView::expander-size = 8
     GtkExpander::expander-size = 8
-    GtkComboBox::arrow-size = 8
+    GtkComboBox::arrow-size = 20
 
     engine "xamarin" {
 
@@ -106,6 +110,7 @@ style "button" {
     bg[PRELIGHT]    = shade(1.1, @bg_color)
     bg[ACTIVE]      = @bg_color
     bg[INSENSITIVE] = @bg_color
+    GtkWidget::focus-padding = 0
 
     engine "xamarin" {
         contrast = 1.0
@@ -194,12 +199,12 @@ style "icon-view" = "default"
 
 style "toolbar-combo-box" = "default"
 {
-    fg[NORMAL] = @fg_color
+    fg[NORMAL] = "#616161"
     text[NORMAL] = @fg_color
     bg[NORMAL] = "#fff"
     base[NORMAL] = "#fff"
     ythickness = 4
-    xthickness = 4
+    xthickness = 2
 
     engine "xamarin" {
 	comboboxstyle = 0
@@ -255,6 +260,7 @@ style "entry" = "default"
     xthickness = 4
     ythickness = 4
     GtkEntry::inner-border = { 2, 2, 2, 2 }
+    base[INSENSITIVE] = shade(1.02, @bg_color)
 }
 
 style "search-entry" = "wider"
@@ -297,8 +303,18 @@ style "scrolled-window" = "default"
 
 style "scale" = "default"
 {
+    bg[SELECTED] = @selected_bg_color
+
     engine "xamarin" {
         roundness = 7
+    }
+}
+
+style "spin-button" = "wider"
+{
+    fg[NORMAL] = "#616161"
+    engine "xamarin" {
+        arrowstyle = 3
     }
 }
 
@@ -306,7 +322,7 @@ style "scale" = "default"
 class "GtkWidget"    style "default"
 
 class "GtkEntry"     style "entry"
-class "GtkSpinButton" style "wider"
+class "GtkSpinButton" style "spin-button"
 class "GtkFrame"     style "wide"
 class "GtkRange"     style "wide"
 class "GtkSeparator" style "wide"
@@ -322,6 +338,7 @@ class "GtkScale" style "scale"
 
 widget "*GtkEntry" style:highest "entry"
 widget "*search-entry*" style "search-entry"
+widget "*GtkTextView"   style "entry"
 
 widget_class "*<GtkButton>"     style "button"
 widget "*.GtkToggleButton"      style "button"
