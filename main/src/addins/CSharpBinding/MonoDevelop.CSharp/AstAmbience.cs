@@ -161,7 +161,7 @@ namespace MonoDevelop.CSharp
 			} else if (e is MethodDeclaration) {
 				var method = e as MethodDeclaration;
 				if (!method.PrivateImplementationType.IsNull)
-					sb.Append (method.PrivateImplementationType.GetText () + ".");
+					AppendEscaped (sb, method.PrivateImplementationType.GetText () + ".");
 				sb.Append (method.Name);
 				AppendTypeParameter (sb, method.TypeParameters);
 				AppendParameter (sb, method.Parameters);
@@ -219,12 +219,12 @@ namespace MonoDevelop.CSharp
 			} else if (e is PropertyDeclaration) {
 				var property = (PropertyDeclaration)e;
 				if (!property.PrivateImplementationType.IsNull)
-					sb.Append (property.PrivateImplementationType.GetText () + ".");
+					AppendEscaped (sb, property.PrivateImplementationType.GetText () + ".");
 				sb.Append (property.Name);
 			} else if (e is CustomEventDeclaration) {
 				var customEvent = (CustomEventDeclaration)e;
 				if (!customEvent.PrivateImplementationType.IsNull)
-					sb.Append (customEvent.PrivateImplementationType.GetText () + ".");
+					AppendEscaped (sb, customEvent.PrivateImplementationType.GetText () + ".");
 				sb.Append (customEvent.Name);
 			} else if (e is EntityDeclaration) {
 				var entity = (EntityDeclaration)e;
