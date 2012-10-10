@@ -96,9 +96,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			var completion = style.GetChunkStyle ("completion");
 
 			Theme.SetFlatColor (completion.CairoBackgroundColor);
-
-			// Hack around bug being seen in GTK 2.24 on some platforms where list comes up black on first draw.
-			ExposeEvent += (sender, e) => { list.QueueDraw (); };
 		}
 
 		protected virtual void DoubleClick ()

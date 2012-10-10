@@ -329,11 +329,12 @@ namespace MonoDevelop.Components
 			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
 				context.Save ();
 				if (SupportsAlpha) {
+					context.Operator = Cairo.Operator.DestIn;
 					context.SetSourceRGBA (1, 1, 1, 0);
 				} else {
+					context.Operator = Cairo.Operator.Over;
 					context.SetSourceRGB (1, 1, 1);
 				}
-				context.Operator = Cairo.Operator.DestIn;
 				context.Paint ();
 				context.Restore ();
 
