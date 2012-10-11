@@ -181,12 +181,24 @@ namespace MonoDevelop.CodeActions
 		[CommandUpdateHandler(RefactoryCommands.QuickFix)]
 		public void UpdateQuickFixCommand (CommandInfo ci)
 		{
-			ci.Enabled = widget != null && widget.Visible;
+			if (QuickTaskStrip.EnableFancyFeatures) {
+				ci.Enabled = widget != null && widget.Visible;
+			} else {
+				ci.Enabled = true;
+			}
 		}
 		
 		[CommandHandler(RefactoryCommands.QuickFix)]
 		void OnQuickFixCommand ()
 		{
+
+			if (!QuickTaskStrip.EnableFancyFeatures) {
+				var w = new CodeActionWidget (this, Document);
+				w.SetFixes (RefactoringService.GetValidActions (Document, Document.Editor.Caret.Location).Result, Document.Editor.Caret.Location);
+				w.PopupQuickFixMenu ();
+				w.Destroy ();
+				return;
+			}
 			if (widget == null || !widget.Visible)
 				return;
 			widget.PopupQuickFixMenu ();

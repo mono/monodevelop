@@ -113,7 +113,7 @@ namespace MonoDevelop.CodeActions
 			return result;
 		}
 
-		public void PopulateFixes (Gtk.Menu menu)
+		public void PopulateFixes (Gtk.Menu menu, ref int items)
 		{
 			int mnemonic = 1;
 			foreach (var fix_ in fixes.OrderByDescending (i => GetUsage (i.IdString))) {
@@ -129,6 +129,7 @@ namespace MonoDevelop.CodeActions
 					menu.Destroy ();
 				};
 				menu.Add (menuItem);
+				items++;
 			}
 			var first = true;
 			var alreadyInserted = new HashSet<CodeIssueProvider> ();
@@ -153,6 +154,7 @@ namespace MonoDevelop.CodeActions
 					menu.Destroy ();
 				};
 				menu.Add (menuItem);
+				items++;
 			}
 
 		}
@@ -164,6 +166,7 @@ namespace MonoDevelop.CodeActions
 			Gtk.Menu fixMenu = menu;
 			ResolveResult resolveResult;
 			ICSharpCode.NRefactory.CSharp.AstNode node;
+			int items = 0;
 			if (ResolveCommandHandler.ResolveAt (document, out resolveResult, out node)) {
 				var possibleNamespaces = MonoDevelop.Refactoring.ResolveCommandHandler.GetPossibleNamespaces (
 					document,
@@ -181,6 +184,7 @@ namespace MonoDevelop.CodeActions
 							menu.Destroy ();
 						};
 						menu.Add (menuItem);
+						items++;
 					}
 				}
 				
@@ -193,6 +197,7 @@ namespace MonoDevelop.CodeActions
 							menu.Destroy ();
 						};
 						menu.Add (menuItem);
+						items++;
 					}
 				}
 				if (menu.Children.Any () && fixes.Any ()) {
@@ -200,11 +205,15 @@ namespace MonoDevelop.CodeActions
 					var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("Quick Fixes"));
 					menuItem.Submenu = fixMenu;
 					menu.Add (menuItem);
+					items++;
 				}
 			}
 			
-			PopulateFixes (fixMenu);
-			
+			PopulateFixes (fixMenu, ref items);
+			if (items == 0) {
+				menu.Destroy ();
+				return;
+			}
 			menu.ShowAll ();
 			menu.SelectFirst (true);
 			menuPushed = true;
@@ -214,7 +223,15 @@ namespace MonoDevelop.CodeActions
 			};
 			var container = document.Editor.Parent;
 			var child = (TextEditor.EditorContainerChild)container [this];
-			GtkWorkarounds.ShowContextMenu (menu, document.Editor.Parent, null, new Gdk.Rectangle (child.X, child.Y + Allocation.Height - (int)document.Editor.VAdjustment.Value, 0, 0));
+
+			Gdk.Rectangle rect;
+			if (child != null) {
+				rect = new Gdk.Rectangle (child.X, child.Y + Allocation.Height - (int)document.Editor.VAdjustment.Value, 0, 0);
+			} else {
+				var p = container.LocationToPoint (document.Editor.Caret.Location);
+				rect = new Gdk.Rectangle (p.X, p.Y + (int)document.Editor.LineHeight, 0, 0);
+			}
+			GtkWorkarounds.ShowContextMenu (menu, document.Editor.Parent, null, rect);
 		}
 
 		class ContextActionRunner
