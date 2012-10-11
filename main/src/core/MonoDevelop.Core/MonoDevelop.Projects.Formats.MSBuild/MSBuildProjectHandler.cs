@@ -292,7 +292,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (globalGroup == null)
 				globalGroup = p.AddNewPropertyGroup (false);
 			
-			string itemGuid = globalGroup.GetPropertyValue ("ProjectGuid");
+			string itemGuid = globalGroup.GetPropertyValue ("ProjectGuid").ToUpper ();
 			string projectTypeGuids = globalGroup.GetPropertyValue ("ProjectTypeGuids");
 			string itemType = globalGroup.GetPropertyValue ("ItemType");
 
