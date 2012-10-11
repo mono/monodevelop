@@ -61,7 +61,7 @@ style "default" {
     GtkButton::child-displacement-x = 0
     GtkButton::child-displacement-y = 0
     GtkButton::default-border = { 0, 0, 0, 0 }
-    GtkButton::inner-border = { 2, 2, 2, 2 }
+    GtkButton::inner-border = { 2, 2, 4, 4 }
 
     GtkTreeView::odd-row-color = @base_color
 
@@ -71,7 +71,7 @@ style "default" {
 
     GtkTreeView::expander-size = 8
     GtkExpander::expander-size = 8
-    GtkComboBox::arrow-size = 20
+    GtkComboBox::arrow-size = 12
 
     engine "xamarin" {
 
@@ -265,7 +265,6 @@ style "entry" = "default"
 
 style "search-entry" = "wider"
 {
-    GtkEntry::inner-border = { 0, 0, 0, 0 }
     xthickness = 6
     ythickness = 4
     bg[NORMAL] = @base_color
@@ -277,6 +276,7 @@ style "scrollbar" = "default"
     GtkScrollbar::has-backward-stepper = 0
     GtkRange::slider-width = 10
     GtkRange::trough-border = 2
+    GtkRange::trough-side-details = 0
 
     bg[SELECTED] = @bg_color
     bg[NORMAL] = @bg_color
@@ -313,6 +313,8 @@ style "scale" = "default"
 style "spin-button" = "wider"
 {
     fg[NORMAL] = "#616161"
+    ythickness = 4
+    GtkEntry::inner-border = { 2, 2, 1, 1 }
     engine "xamarin" {
         arrowstyle = 3
     }
@@ -323,7 +325,7 @@ class "GtkWidget"    style "default"
 
 class "GtkEntry"     style "entry"
 class "GtkSpinButton" style "spin-button"
-class "GtkFrame"     style "wide"
+class "GtkFrame"     style "wider"
 class "GtkRange"     style "wide"
 class "GtkSeparator" style "wide"
 class "GtkScrollbar" style "scrollbar"
@@ -336,7 +338,7 @@ class "GtkRadioButton" style "radio-button"
 class "GtkCheckButton" style "check-box"
 class "GtkScale" style "scale"
 
-widget "*GtkEntry" style:highest "entry"
+#widget "*GtkEntry" style "entry"
 widget "*search-entry*" style "search-entry"
 widget "*GtkTextView"   style "entry"
 
@@ -359,7 +361,9 @@ widget_class "*.<GtkComboBox>.*" style "combo-box"
 widget_class "*.<GtkComboBoxText>.*" style "combo-box"
 widget_class "*.<GtkComboBoxEntry>.*" style "combo-box"
 widget_class "*.<GtkComboBoxText>.<GtkEntry>" style "entry"
-widget_class "*.<GtkComboBoxText>.<GtkButton>" style "button"
+widget_class "*.<GtkComboBoxEntry>.<GtkEntry>" style "entry"
+widget_class "*.<GtkComboBoxText>.<GtkToggleButton>" style "button"
+widget_class "*.<GtkComboBoxEntry>.<GtkToggleButton>" style "button"
 #widget_class "*.<GtkComboBoxEntry>.GtkEntry" style "entry"
 #widget_class "*.<GtkComboBoxEntry>.<GtkButton>" style "button"
 widget_class "*.<GtkComboBox>.*.GtkLabel" style "combo-box-label"
