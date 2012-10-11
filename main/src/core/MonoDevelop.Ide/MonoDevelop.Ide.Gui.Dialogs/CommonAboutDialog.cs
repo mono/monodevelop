@@ -66,6 +66,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			var copyButton = new Button () { Label = GettextCatalog.GetString ("Copy Information") };
 			copyButton.Clicked += (sender, e) => CopyBufferToClipboard ();
 			ActionArea.PackEnd (copyButton, false, false, 0);
+			copyButton.NoShowAll = true;
 
 			var backButton = new Button () { Label = GettextCatalog.GetString ("Show Details") };
 			ActionArea.PackEnd (backButton, false, false, 0);
@@ -84,7 +85,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 			AddButton (Gtk.Stock.Close, (int)ResponseType.Close);
 
-			copyButton.Hide ();
 			ShowAll ();
 		}
 
