@@ -81,7 +81,82 @@ namespace MonoDevelop.Components
 		}
 	}
 
-	static class Animation
+	public class Animation 
+	{
+		float beginAt;
+		float finishAt;
+		Func<float, float> easing;
+		Action<float> step;
+		List<Animation> children;
+
+		Animation ()
+		{
+			children = new List<Animation> ();
+		}
+
+		public static Animation Create (Action<float> callback, float start = 0.0f, float end = 1.0f, Func<float, float> easing = null)
+		{
+			Animation result = new Animation ();
+
+			var transform = AnimationExtensions.Interpolate (start, end);
+			result.easing = easing ?? Components.Easing.Linear;
+			result.step = f => callback (transform (f));
+			return result;
+		}
+
+		public static Animation Create<T> (Action<T> callback, Func<float, T> transform, Func<float, float> easing = null)
+		{
+			Animation result = new Animation ();
+
+			result.easing = easing ?? Components.Easing.Linear;
+			result.step = f => callback (transform (f));
+			return result;
+		}
+
+		public Animation WithConcurrent (Animation animation, float beginAt = 0.0f, float finishAt = 1.0f)
+		{
+			animation.beginAt = beginAt;
+			animation.finishAt = finishAt;
+			children.Add (animation);
+			return this;
+		}
+
+		public Animation WithConcurrent (Action<float> callback, float start = 0.0f, float end = 1.0f, Func<float, float> easing = null, float beginAt = 0.0f, float finishAt = 1.0f)
+		{
+			Animation child = Create (callback, start, end, easing);
+			child.beginAt = beginAt;
+			child.finishAt = finishAt;
+			children.Add (child);
+			return this;
+		}
+
+		public Animation WithConcurrent<T> (Action<T> callback, Func<float, T> transform, Func<float, float> easing = null, float beginAt = 0.0f, float finishAt = 1.0f)
+		{
+			Animation child = Create<T> (callback, transform, easing);
+			child.beginAt = beginAt;
+			child.finishAt = finishAt;
+			children.Add (child);
+			return this;
+		}
+
+		public Action<float> GetCallback ()
+		{
+			Action<float> result = f => {
+				f = easing (f);
+				step (f);
+				foreach (var animation in children) {
+					if (f >= animation.beginAt && f <= animation.finishAt) {
+						float val = (f - animation.beginAt) / (animation.finishAt - animation.beginAt);
+						var callback = animation.GetCallback ();
+						callback (val);
+					}
+				}
+			};
+			return result;
+		}
+	}
+
+	static class AnimationExtensions
 	{
 		class Info
 		{
@@ -91,14 +166,21 @@ namespace MonoDevelop.Components
 			public Gtk.Widget Owner { get; set; }
 			public Action<float> callback;
 			public Action<float, bool> finished;
+			public Func<bool> repeat;
 			public Tweener tweener;
 		}
 
 		static Dictionary<string, Info> animations;
 
-		static Animation ()
+		static AnimationExtensions ()
 		{
 			animations = new Dictionary<string, Info> ();
+		}
+
+		public static void Animate (this Gtk.Widget self, string name, Animation animation, uint rate = 16, uint length = 250, 
+		                            Func<float, float> easing = null, Action<float, bool> finished = null, Func<bool> repeat = null)
+		{
+			self.Animate (name, animation.GetCallback (), rate, length, easing, finished, repeat);
 		}
 
 		public static Func<float, float> Interpolate (float start, float end = 1.0f, float reverseVal = 0.0f, bool reverse = false)
@@ -108,19 +190,19 @@ namespace MonoDevelop.Components
 		}
 
 		public static void Animate (this Gtk.Widget self, string name, Action<float> callback, float start, float end, uint rate = 16, uint length = 250, 
-		                            Func<float, float> easing = null, Action<float, bool> finished = null)
+		                            Func<float, float> easing = null, Action<float, bool> finished = null, Func<bool> repeat = null)
 		{
-			self.Animate<float> (name, Interpolate (start, end), callback, rate, length, easing, finished);
+			self.Animate<float> (name, Interpolate (start, end), callback, rate, length, easing, finished, repeat);
 		}
 
 		public static void Animate (this Gtk.Widget self, string name, Action<float> callback, uint rate = 16, uint length = 250, 
-		                            Func<float, float> easing = null, Action<float, bool> finished = null)
+		                            Func<float, float> easing = null, Action<float, bool> finished = null, Func<bool> repeat = null)
 		{
-			self.Animate<float> (name, x => x, callback, rate, length, easing, finished);
+			self.Animate<float> (name, x => x, callback, rate, length, easing, finished, repeat);
 		}
 
 		public static void Animate<T> (this Gtk.Widget self, string name, Func<float, T> transform, Action<T> callback, uint rate = 16, uint length = 250, 
-		                               Func<float, float> easing = null, Action<T, bool> finished = null) 
+		                               Func<float, float> easing = null, Action<T, bool> finished = null, Func<bool> repeat = null) 
 		{
 			if (transform == null)
 				throw new ArgumentNullException ("transform");
@@ -152,6 +234,7 @@ namespace MonoDevelop.Components
 			info.tweener = tweener;
 			info.callback = step;
 			info.finished = final;
+			info.repeat = repeat ?? (() => false);
 			info.Owner = self;
 
 			animations[name] = info;
@@ -197,15 +280,23 @@ namespace MonoDevelop.Components
 			Tweener tweener = o as Tweener;
 			Info info = animations[tweener.Handle];
 
+			bool repeat = info.repeat ();
+
 			info.callback (tweener.Value);
 
-			animations.Remove (tweener.Handle);
-			tweener.ValueUpdated -= HandleTweenerUpdated;
-			tweener.Finished -= HandleTweenerFinished;
+			if (!repeat) {
+				animations.Remove (tweener.Handle);
+				tweener.ValueUpdated -= HandleTweenerUpdated;
+				tweener.Finished -= HandleTweenerFinished;
+			}
 
 			if (info.finished != null)
 				info.finished (tweener.Value, false);
 			info.Owner.QueueDraw ();
+
+			if (repeat) {
+				tweener.Start ();
+			}
 		}
 	}
 

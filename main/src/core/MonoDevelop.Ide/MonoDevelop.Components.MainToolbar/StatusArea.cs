@@ -59,6 +59,8 @@ namespace MonoDevelop.Components.MainToolbar
 		public struct RenderArg
 		{
 			public Gdk.Rectangle Allocation { get; set; }
+			public float         BuildAnimationProgress { get; set; }
+			public float         BuildAnimationOpacity { get; set; }
 			public Gdk.Rectangle ChildAllocation { get; set; }
 			public Gdk.Pixbuf    CurrentPixbuf { get; set; }
 			public string        CurrentText { get; set; }
@@ -135,20 +137,22 @@ namespace MonoDevelop.Components.MainToolbar
 				                         callback: val => renderArg.ProgressBarAlpha = val);
 
 			ProgressBegin += delegate {
-				renderArg.ShowProgressBar = true;
-				renderArg.ProgressBarFraction = 0;
-				QueueDraw ();
-				animateProgressBar (true);
+				//renderArg.ShowProgressBar = true;
+				StartBuildAnimation ();
+				//renderArg.ProgressBarFraction = 0;
+				//QueueDraw ();
+				//animateProgressBar (true);
 			};
 			
 			ProgressEnd += delegate {
-				renderArg.ShowProgressBar = false;
-				QueueDraw ();
-				animateProgressBar (false);
+				//renderArg.ShowProgressBar = false;
+				StopBuildAnimation ();
+				//QueueDraw ();
+				//animateProgressBar (false);
 			};
 
 			ProgressFraction += delegate(object sender, FractionEventArgs e) {
-				renderArg.ProgressBarFraction = (float)e.Work;
+				//renderArg.ProgressBarFraction = (float)e.Work;
 				QueueDraw ();
 			};
 
@@ -202,6 +206,28 @@ namespace MonoDevelop.Components.MainToolbar
 					TriggerErrorAnimation ();
 				}
 			};
+		}
+
+		void StartBuildAnimation ()
+		{
+			this.Animate ("Build",
+			              val => renderArg.BuildAnimationProgress = val,
+			              length: 5000,
+			              repeat: () => true);
+
+			this.Animate ("BuildOpacity",
+			              start: renderArg.BuildAnimationOpacity,
+			              end: 1.0f,
+			              callback: x => renderArg.BuildAnimationOpacity = x);
+		}
+
+		void StopBuildAnimation ()
+		{
+			this.Animate ("BuildOpacity",
+			              start: renderArg.BuildAnimationOpacity,
+			              end: 0.0f,
+			              callback: x => renderArg.BuildAnimationOpacity = x,
+			              finished: (val, aborted) => { if (!aborted) this.AbortAnimation ("Build"); });
 		}
 
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
@@ -615,7 +641,7 @@ namespace MonoDevelop.Components.MainToolbar
 			message = message ?? "";
 
 			renderArg.LastText = renderArg.CurrentText;
-			renderArg.CurrentText = message.Replace ("\n", " ").Trim ();
+			renderArg.CurrentText = message.Replace (System.Environment.NewLine, " ").Replace ("\n", " ").Trim ();
 
 			renderArg.LastTextIsMarkup = renderArg.CurrentTextIsMarkup;
 			renderArg.CurrentTextIsMarkup = isMarkup;

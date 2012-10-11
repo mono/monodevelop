@@ -40,7 +40,7 @@ using StockIcons = MonoDevelop.Ide.Gui.Stock;
 
 namespace MonoDevelop.Components.MainToolbar
 {
-	class StatusAreaTheme
+	internal class StatusAreaTheme
 	{
 		SurfaceWrapper backgroundSurface, errorSurface;
 
@@ -50,19 +50,14 @@ namespace MonoDevelop.Components.MainToolbar
 			                    region: arg.Allocation,
 			                    draw: (c, o) => DrawBackground (c, new Gdk.Rectangle (0, 0, arg.Allocation.Width, arg.Allocation.Height)));
 
+			if (arg.BuildAnimationOpacity > 0.001f)
+				DrawBuildEffect (context, arg.Allocation, arg.BuildAnimationProgress, arg.BuildAnimationOpacity);
+
 			if (arg.ErrorAnimationProgress > 0.001 && arg.ErrorAnimationProgress < .999) {
 				DrawErrorAnimation (context, arg);
 			}
 
-			CairoExtensions.RoundedRectangle (context, arg.Allocation.X + 1.5, arg.Allocation.Y + 1.5, arg.Allocation.Width - 3, arg.Allocation.Height - 3, 3);
-			context.LineWidth = 1;
-			context.Color = Styles.StatusBarInnerColor;
-			context.Stroke ();
-
-			CairoExtensions.RoundedRectangle (context, arg.Allocation.X + 0.5, arg.Allocation.Y + 0.5, arg.Allocation.Width - 1, arg.Allocation.Height - 1, 3);
-			context.LineWidth = 1;
-			context.Color = Styles.StatusBarBorderColor;
-			context.StrokePreserve ();
+			DrawBorder (context, arg.Allocation);
 
 			if (arg.HoverProgress > 0.001f)
 			{
@@ -131,10 +126,81 @@ namespace MonoDevelop.Components.MainToolbar
 				context.ResetClip ();
 		}
 
-		void DrawBackground (Cairo.Context context, Gdk.Rectangle region)
+		protected void LayoutRoundedRectangle (Cairo.Context context, Gdk.Rectangle region, int inflateX = 0, int inflateY = 0, float rounding = 3)
+		{
+			region.Inflate (inflateX, inflateY);
+			CairoExtensions.RoundedRectangle (context, region.X + .5, region.Y + .5, region.Width - 1, region.Height - 1, rounding);
+		}
+
+		void DrawBuildEffect (Cairo.Context context, Gdk.Rectangle area, float progress, float opacity)
+		{
+			context.Save ();
+			LayoutRoundedRectangle (context, area);
+			context.Clip ();
+
+			Gdk.Point center = new Gdk.Point (area.Left + 19, (area.Top + area.Bottom) / 2);
+			context.Translate (center.X, center.Y);
+			var circles = new [] {
+				new { Radius = 200, Thickness = 12, Speed = 1, ArcLength = Math.PI * 1.50 },
+				new { Radius = 195, Thickness = 15, Speed = 2, ArcLength = Math.PI * 0.50 },
+				new { Radius = 160, Thickness = 17, Speed = 3, ArcLength = Math.PI * 0.75 },
+				new { Radius = 200, Thickness = 15, Speed = 2, ArcLength = Math.PI * 0.25 },
+				new { Radius = 240, Thickness = 12, Speed = 3, ArcLength = Math.PI * 1.50 },
+				new { Radius = 160, Thickness = 17, Speed = 3, ArcLength = Math.PI * 0.75 },
+				new { Radius = 200, Thickness = 15, Speed = 2, ArcLength = Math.PI * 0.25 },
+				new { Radius = 215, Thickness = 20, Speed = 2, ArcLength = Math.PI * 1.25 }
+			};
+
+			float zmod = 1.0f;
+			float zporg = progress;
+			foreach (var arc in circles) {
+				float zoom = 1.0f;
+				zoom = (float) Math.Sin (zporg * Math.PI * 2 + zmod);
+				zoom = ((zoom + 1) / 6.0f) + .05f;
+
+				context.Rotate (Math.PI * 2 * progress * arc.Speed);
+				context.MoveTo (arc.Radius * zoom, 0);
+				context.Arc (0, 0, arc.Radius * zoom, 0, arc.ArcLength);
+				context.LineWidth = arc.Thickness * zoom;
+				context.Color = CairoExtensions.ParseColor ("B1DDED", 0.35 * opacity);
+				context.Stroke ();
+				context.Rotate (Math.PI * 2 * -progress * arc.Speed);
+
+				progress = -progress;
+
+				context.Rotate (Math.PI * 2 * progress * arc.Speed);
+				context.MoveTo (arc.Radius * zoom, 0);
+				context.Arc (0, 0, arc.Radius * zoom, 0, arc.ArcLength);
+				context.LineWidth = arc.Thickness * zoom;
+				context.Stroke ();
+				context.Rotate (Math.PI * 2 * -progress * arc.Speed);
+
+				progress = -progress;
+
+				zmod += (float)Math.PI / circles.Length;
+			}
+
+			context.LineWidth = 1;
+			context.ResetClip ();
+			context.Restore ();
+		}
+
+		protected virtual void DrawBorder (Cairo.Context context, Gdk.Rectangle region)
+		{
+			LayoutRoundedRectangle (context, region, -1, -1);
+			context.LineWidth = 1;
+			context.Color = Styles.StatusBarInnerColor;
+			context.Stroke ();
+
+			LayoutRoundedRectangle (context, region);
+			context.LineWidth = 1;
+			context.Color = Styles.StatusBarBorderColor;
+			context.StrokePreserve ();
+		}
+
+		protected virtual void DrawBackground (Cairo.Context context, Gdk.Rectangle region)
 		{	
-			CairoExtensions.RoundedRectangle (context, region.X + .5, region.Y + .5, 
-			                                  region.Width - 1, region.Height - 1, 3);
+			LayoutRoundedRectangle (context, region);
 			context.ClipPreserve ();
 
 			using (LinearGradient lg = new LinearGradient (region.X, region.Y, region.X, region.Y + region.Height)) {
@@ -164,7 +230,7 @@ namespace MonoDevelop.Components.MainToolbar
 				lg.AddColorStop (0, Styles.StatusBarShadowColor1);
 				lg.AddColorStop (1, Styles.WithAlpha (Styles.StatusBarShadowColor1, Styles.StatusBarShadowColor1.A * 0.2));
 
-				CairoExtensions.RoundedRectangle (context, region.X + 0.5, region.Y + 1.5, region.Width - 1, region.Height - 3, 3);
+				LayoutRoundedRectangle (context, region, 0, -1);
 				context.LineWidth = 1;
 				context.Pattern = lg;
 				context.Stroke ();
@@ -174,7 +240,7 @@ namespace MonoDevelop.Components.MainToolbar
 				lg.AddColorStop (0, Styles.StatusBarShadowColor2);
 				lg.AddColorStop (1, Styles.WithAlpha (Styles.StatusBarShadowColor2, Styles.StatusBarShadowColor2.A * 0.2));
 
-				CairoExtensions.RoundedRectangle (context, region.X + 0.5, region.Y + 2.5, region.Width - 1, region.Height - 5, 3);
+				LayoutRoundedRectangle (context, region, 0, -2);
 				context.LineWidth = 1;
 				context.Pattern = lg;
 				context.Stroke ();
@@ -197,8 +263,8 @@ namespace MonoDevelop.Components.MainToolbar
 				opacity = 1.0f - (arg.ErrorAnimationProgress - .5f) * 2;
 			}
 
-			CairoExtensions.RoundedRectangle (context, arg.Allocation.X + .5, arg.Allocation.Y + .5, 
-			                                  arg.Allocation.Width - 1, arg.Allocation.Height - 1, 3);
+			LayoutRoundedRectangle (context, arg.Allocation);
+
 			context.Clip ();
 			context.CachedDraw (surface: ref errorSurface,
 			                    position: new Gdk.Point (arg.Allocation.X - surfaceWidth + progress, arg.Allocation.Y),
@@ -221,10 +287,10 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void DrawProgressBar (Cairo.Context context, double progress, Gdk.Rectangle bounding, StatusArea.RenderArg arg)
 		{
-			CairoExtensions.RoundedRectangle (context, bounding.X + 0.5, bounding.Y + 0.5, (bounding.Width - 1) * progress, bounding.Height - 1, 3);
+			LayoutRoundedRectangle (context, new Gdk.Rectangle (bounding.X, bounding.Y, (int) (bounding.Width * progress), bounding.Height));
 			context.Clip ();
 
-			CairoExtensions.RoundedRectangle (context, bounding.X + 0.5, bounding.Y + 0.5, bounding.Width - 1, bounding.Height - 1, 3);
+			LayoutRoundedRectangle (context, bounding);
 			context.Color = Styles.WithAlpha (Styles.StatusBarProgressBackgroundColor, Styles.StatusBarProgressBackgroundColor.A * arg.ProgressBarAlpha);
 			context.FillPreserve ();
 
@@ -237,8 +303,13 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void ClipProgressBar (Cairo.Context context, Gdk.Rectangle bounding)
 		{
-			CairoExtensions.RoundedRectangle (context, bounding.X + 0.5, bounding.Y + 0.5, bounding.Width - 1, bounding.Height - 1, 3);
+			LayoutRoundedRectangle (context, bounding);
 			context.Clip ();
+		}
+
+		protected virtual Cairo.Color FontColor ()
+		{
+			return Styles.StatusBarTextColor;
 		}
 
 		void DrawString (string text, bool isMarkup, Cairo.Context context, int x, int y, int width, double opacity, Pango.Context pango, StatusArea.RenderArg arg)
@@ -264,10 +335,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 			// Subtract off remainder instead of drop to prefer higher centering when centering an odd number of pixels
 			context.MoveTo (x, y - h / 2 - (h % 2));
-
-			Cairo.Color finalColor = Styles.StatusBarTextColor;
-			finalColor.A = opacity;
-			context.Color = finalColor;
+			context.Color = Styles.WithAlpha (FontColor (), opacity);
 
 			Pango.CairoHelper.ShowLayout (context, pl);
 			pl.Dispose ();
