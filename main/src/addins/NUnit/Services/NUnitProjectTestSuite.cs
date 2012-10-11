@@ -114,6 +114,14 @@ namespace MonoDevelop.NUnit
 			if (RefreshRequired)
 				UpdateTests ();
 		}
+
+		protected override UnitTestResult OnRun (TestContext testContext)
+		{
+			TestRunnerType = (string) project.ExtendedProperties ["TestRunnerType"];
+			var asm = project.ExtendedProperties ["TestRunnerAssembly"];
+			TestRunnerAssembly = asm != null ? project.BaseDirectory.Combine (asm.ToString ()).ToString () : null;
+			return base.OnRun (testContext);
+		}
 	
 		protected override string AssemblyPath {
 			get { return project.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration); }

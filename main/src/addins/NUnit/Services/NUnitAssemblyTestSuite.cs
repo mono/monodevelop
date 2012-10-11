@@ -62,6 +62,9 @@ namespace MonoDevelop.NUnit
 			}
 		}
 
+		public string TestRunnerType { get; set; }
+		public string TestRunnerAssembly { get; set; }
+
 		public NUnitAssemblyTestSuite (string name): base (name)
 		{
 		}
@@ -386,7 +389,7 @@ namespace MonoDevelop.NUnit
 					throw new Exception (msg);
 				}
 				System.Runtime.Remoting.RemotingServices.Marshal (localMonitor, null, typeof (IRemoteEventListener));
-				result = runner.Run (localMonitor, filter, AssemblyPath, "", new List<string> (SupportAssemblies));
+				result = runner.Run (localMonitor, filter, AssemblyPath, "", new List<string> (SupportAssemblies), TestRunnerType, TestRunnerAssembly);
 				if (testName != null)
 					result = localMonitor.SingleTestResult;
 			} catch (Exception ex) {

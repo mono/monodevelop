@@ -210,4 +210,13 @@
 		<DataType class = "MonoDevelop.NUnit.NUnitAssemblyGroupProject" />
 	</Extension>
 
+	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">
+		<ItemProperty class = "MonoDevelop.Projects.SolutionItemConfiguration"
+			name = "UnitTestInformation" type = "MonoDevelop.NUnit.UnitTestOptionsSet" />
+		<ItemProperty class = "MonoDevelop.Projects.DotNetProject"
+			name = "TestRunnerType" type = "System.String" />
+		<ItemProperty class = "MonoDevelop.Projects.DotNetProject"
+			name = "TestRunnerAssembly" type = "MonoDevelop.Core.FilePath" />
+	</Extension>
+
 </Addin>

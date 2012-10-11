@@ -78,14 +78,26 @@ namespace MonoDevelop.NUnit.External
 				CoreExtensions.Host.InitializeService();
 		}
 		
-		public TestResult Run (EventListener listener, ITestFilter filter, string path, string suiteName, List<string> supportAssemblies)
+		public TestResult Run (EventListener listener, ITestFilter filter, string path, string suiteName, List<string> supportAssemblies, string testRunnerType, string testRunnerAssembly)
 		{
 			InitSupportAssemblies (supportAssemblies);
 			
 			if (filter == null)
 				filter = TestFilter.Empty;
-			
-			RemoteTestRunner tr = new RemoteTestRunner ();
+
+			TestRunner tr;
+			if (!string.IsNullOrEmpty (testRunnerType)) {
+				Type runnerType;
+				if (string.IsNullOrEmpty (testRunnerAssembly))
+					runnerType = Type.GetType (testRunnerType, true);
+				else {
+					var asm = Assembly.LoadFrom (testRunnerAssembly);
+					runnerType = asm.GetType (testRunnerType);
+				}
+				tr = (TestRunner)Activator.CreateInstance (runnerType);
+			} else
+				tr = new RemoteTestRunner ();
+
 			TestPackage package = new TestPackage (path);
 			if (!string.IsNullOrEmpty (suiteName))
 				package.TestName = suiteName;
@@ -148,9 +160,8 @@ namespace MonoDevelop.NUnit.External
 		{
 			return null;
 		}
-
 	}
-	
+
 	[Serializable]
 	public class NunitTestInfo
 	{

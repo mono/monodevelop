@@ -56,11 +56,7 @@ namespace MonoDevelop.NUnit
 			IdeApp.Workspace.WorkspaceItemClosed += OnWorkspaceChanged;
 			IdeApp.Workspace.ItemAddedToSolution += OnWorkspaceChanged;
 			IdeApp.Workspace.ItemRemovedFromSolution += OnWorkspaceChanged;
-			
-			ProjectService ps = MonoDevelop.Projects.Services.ProjectService;
-			ps.DataContext.IncludeType (typeof(UnitTestOptionsSet));
-			ps.DataContext.RegisterProperty (typeof(SolutionItemConfiguration), "UnitTestInformation", typeof(UnitTestOptionsSet));
-			
+
 			Mono.Addins.AddinManager.AddExtensionNodeHandler ("/MonoDevelop/NUnit/TestProviders", OnExtensionChange);
 		}
 		
