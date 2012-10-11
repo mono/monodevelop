@@ -137,22 +137,22 @@ namespace MonoDevelop.Components.MainToolbar
 				                         callback: val => renderArg.ProgressBarAlpha = val);
 
 			ProgressBegin += delegate {
-				//renderArg.ShowProgressBar = true;
-				StartBuildAnimation ();
-				//renderArg.ProgressBarFraction = 0;
-				//QueueDraw ();
-				//animateProgressBar (true);
+				renderArg.ShowProgressBar = true;
+//				StartBuildAnimation ();
+				renderArg.ProgressBarFraction = 0;
+				QueueDraw ();
+				animateProgressBar (true);
 			};
 			
 			ProgressEnd += delegate {
-				//renderArg.ShowProgressBar = false;
-				StopBuildAnimation ();
-				//QueueDraw ();
-				//animateProgressBar (false);
+				renderArg.ShowProgressBar = false;
+//				StopBuildAnimation ();
+				QueueDraw ();
+				animateProgressBar (false);
 			};
 
 			ProgressFraction += delegate(object sender, FractionEventArgs e) {
-				//renderArg.ProgressBarFraction = (float)e.Work;
+				renderArg.ProgressBarFraction = (float)e.Work;
 				QueueDraw ();
 			};
 

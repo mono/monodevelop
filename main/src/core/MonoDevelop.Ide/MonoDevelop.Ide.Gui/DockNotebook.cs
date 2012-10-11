@@ -719,7 +719,7 @@ namespace MonoDevelop.Ide.Gui
 		void DrawBackground (Cairo.Context ctx, Gdk.Rectangle region)
 		{
 			var h = region.Height;
-			ctx.Rectangle (0, 0, region.Width, h); // +1 since background and shadow overlap 1 pixel
+			ctx.Rectangle (0, 0, region.Width, h);
 			Cairo.LinearGradient gr = new LinearGradient (0, 0, 0, h);
 			gr.AddColorStop (0, Styles.TabBarGradientStartColor);
 			gr.AddColorStop (1, Styles.TabBarGradientMidColor);
