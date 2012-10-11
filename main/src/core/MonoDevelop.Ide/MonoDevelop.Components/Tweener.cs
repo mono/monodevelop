@@ -113,7 +113,7 @@ namespace MonoDevelop.Components
 			return result;
 		}
 
-		public Animation CoAnimate (Animation animation, float beginAt = 0.0f, float finishAt = 1.0f)
+		public Animation WithConcurrent (Animation animation, float beginAt = 0.0f, float finishAt = 1.0f)
 		{
 			animation.beginAt = beginAt;
 			animation.finishAt = finishAt;
@@ -121,7 +121,7 @@ namespace MonoDevelop.Components
 			return this;
 		}
 
-		public Animation CoAnimate (Action<float> callback, float start = 0.0f, float end = 1.0f, Func<float, float> easing = null, float beginAt = 0.0f, float finishAt = 1.0f)
+		public Animation WithConcurrent (Action<float> callback, float start = 0.0f, float end = 1.0f, Func<float, float> easing = null, float beginAt = 0.0f, float finishAt = 1.0f)
 		{
 			Animation child = Create (callback, start, end, easing);
 			child.beginAt = beginAt;
@@ -130,7 +130,7 @@ namespace MonoDevelop.Components
 			return this;
 		}
 
-		public Animation CoAnimate<T> (Action<T> callback, Func<float, T> transform, Func<float, float> easing = null, float beginAt = 0.0f, float finishAt = 1.0f)
+		public Animation WithConcurrent<T> (Action<T> callback, Func<float, T> transform, Func<float, float> easing = null, float beginAt = 0.0f, float finishAt = 1.0f)
 		{
 			Animation child = Create<T> (callback, transform, easing);
 			child.beginAt = beginAt;
