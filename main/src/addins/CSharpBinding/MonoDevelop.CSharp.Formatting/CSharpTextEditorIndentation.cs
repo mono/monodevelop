@@ -387,14 +387,27 @@ namespace MonoDevelop.CSharp.Formatting
 			return result;
 		}
 
+		static bool IsSemicolonalreadyPlaced (TextEditorData data, int caretOffset)
+		{
+			for (int pos2 = caretOffset - 1; pos2 --> 0;) {
+				var ch2 = data.Document.GetCharAt (pos2);
+				if (ch2 == ';') {
+					return true;
+				}
+				if (!char.IsWhiteSpace (ch2))
+					return false;
+			}
+			return false;
+		}
+
 		public static bool GuessSemicolonInsertionOffset (TextEditorData data, DocumentLine curLine, int caretOffset, out int outOffset)
 		{
 			int lastNonWsOffset = caretOffset;
 			char lastNonWsChar = '\0';
 			outOffset = caretOffset;
 			int max = curLine.EndOffset;
-			if (caretOffset - 2 >= curLine.Offset && data.Document.GetCharAt (caretOffset - 2) == ')')
-				return false;
+	//		if (caretOffset - 2 >= curLine.Offset && data.Document.GetCharAt (caretOffset - 2) == ')' && !IsSemicolonalreadyPlaced (data, caretOffset))
+	//			return false;
 
 			int end = caretOffset;
 			while (end > 1 && char.IsWhiteSpace (data.GetCharAt (end)))
@@ -411,6 +424,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 			bool isInString = false , isInChar= false , isVerbatimString= false;
 			bool isInLineComment = false , isInBlockComment= false;
+			bool firstChar = true;
 			for (int pos = caretOffset; pos < max; pos++) {
 				if (pos == caretOffset) {
 					if (isInString || isInChar || isVerbatimString || isInLineComment || isInBlockComment) {
@@ -420,6 +434,10 @@ namespace MonoDevelop.CSharp.Formatting
 				}
 				char ch = data.Document.GetCharAt (pos);
 				switch (ch) {
+				case '}':
+					if (firstChar && !IsSemicolonalreadyPlaced (data, caretOffset))
+						return false;
+					break;
 				case '/':
 					if (isInBlockComment) {
 						if (pos > 0 && data.Document.GetCharAt (pos - 1) == '*') 
@@ -465,6 +483,7 @@ namespace MonoDevelop.CSharp.Formatting
 					break;
 				}
 				if (!char.IsWhiteSpace (ch)) {
+					firstChar = false;
 					lastNonWsOffset = pos;
 					lastNonWsChar = ch;
 				}
@@ -472,7 +491,6 @@ namespace MonoDevelop.CSharp.Formatting
 			// if the line ends with ';' the line end is not the correct place for a new semicolon.
 			if (lastNonWsChar == ';')
 				return false;
-
 			outOffset = lastNonWsOffset;
 			return true;
 		}

@@ -227,6 +227,18 @@ namespace MonoDevelop.CSharpBinding
 		}
 
 		[Test]
+		public void TestInPropertySemicolon ()
+		{
+			TestGuessSemicolonInsertionOffset ("public bool Test { get { return false $~ } }", false);
+		}
+
+		[Test]
+		public void TestInnerMethodCall ()
+		{
+			TestGuessSemicolonInsertionOffset ("Foo(Bar()$)~");
+		}
+
+		[Test]
 		public void TestBug5353Case2 ()
 		{
 			TestGuessSemicolonInsertionOffset ("NavigationItem.RightBarButtonItem = new UIBarButtonItem(UIBarButtonSystemItem.Refresh, delegate { ReloadSummaryWrapper();$})~");
