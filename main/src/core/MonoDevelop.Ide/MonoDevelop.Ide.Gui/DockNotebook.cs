@@ -705,7 +705,7 @@ namespace MonoDevelop.Ide.Gui
 			if (adjustLast) {
 				// adjust to align close buttons properly
 				LastTabWidthAdjustment = width - (TargetWidth * notebook.Tabs.Count) + 1;
-				LastTabWidthAdjustment = Math.Abs (LastTabWidthAdjustment) < 5 ? LastTabWidthAdjustment : 0;
+				LastTabWidthAdjustment = Math.Abs (LastTabWidthAdjustment) < 50 ? LastTabWidthAdjustment : 0;
 			} else {
 				LastTabWidthAdjustment = 0;
 			}
