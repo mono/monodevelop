@@ -523,23 +523,25 @@ namespace MonoDevelop.Ide.CodeCompletion
 							context.SetDash (new double[] {4, 4}, 0);
 						context.Color = SelectionEnabled ? selectionBorderColor : selectionBorderInactiveColor;
 						context.Stroke ();
+					} 
 
-						if (icon != null) {
-							window.DrawPixbuf (fgGCNormal, icon, 0, 0, xpos, iypos, iconWidth, iconHeight, Gdk.RgbDither.None, 0, 0);
-							xpos += iconTextSpacing;
-						}
-						window.DrawLayout (textGCNormal, xpos + iconWidth + 2, typos, layout);
-					} else {
-						if (icon != null) {
-							window.DrawPixbuf (fgGCNormal, icon, 0, 0, xpos, iypos, iconWidth, iconHeight, Gdk.RgbDither.None, 0, 0);
-							xpos += iconTextSpacing;
-						}
-						window.DrawLayout (textGCNormal, xpos + iconWidth + 2, typos, layout);
+					if (icon != null) {
+						window.DrawPixbuf (fgGCNormal, icon, 0, 0, xpos, iypos, iconWidth, iconHeight, Gdk.RgbDither.None, 0, 0);
+						xpos += iconTextSpacing;
 					}
+					window.DrawLayout (textGCNormal, xpos + iconWidth + 2, typos, layout);
 
 					if (wi + xpos + iconWidth + 2 > listWidth) {
-						WidthRequest = listWidth = wi + xpos + iconWidth + 2;
+						WidthRequest = listWidth = wi + xpos + iconWidth + 2 + iconTextSpacing;
 						win.ResetSizes ();
+					} else {
+						//workaround for the vscrollbar display - the calculated width needs to be the width ofthe render region.
+						if (Allocation.Width < listWidth) {
+							if (listWidth - Allocation.Width < 30) {
+								WidthRequest = listWidth + listWidth - Allocation.Width;
+								win.ResetSizes ();
+							}
+						}
 					}
 
 
@@ -753,9 +755,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		const int maxVisibleRows = 7;
 		void CalcVisibleRows ()
 		{
-			int lvWidth, lvHeight;
-			this.GetSizeRequest (out lvWidth, out lvHeight);
-			
+
 			int rowWidth;
 			layout.SetText ("F_B");
 			layout.GetPixelSize (out rowWidth, out rowHeight);
@@ -765,7 +765,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (InCategoryMode && categories.Any (cat => cat.CompletionCategory == null))
 				viewableCats--;
 			int newHeight = rowHeight * maxVisibleRows;
-			if (lvWidth != listWidth || lvHeight != newHeight) 
+			if (Allocation.Height != listWidth || Allocation.Width != newHeight) 
 				this.SetSizeRequest (listWidth, newHeight);
 			ScrollToSelectedItem ();
 		}
