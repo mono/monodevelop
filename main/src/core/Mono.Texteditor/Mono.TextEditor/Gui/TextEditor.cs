@@ -2092,7 +2092,10 @@ namespace Mono.TextEditor
 			// Propagate the exposure event to the embedded widgets
 			foreach (var c in containerChildren)
 				PropagateExpose (c.Child, e);
-			
+
+			if (Caret.IsVisible)
+				textViewMargin.DrawCaret (e.Window, Allocation);
+
 			return false;
 		}
 		

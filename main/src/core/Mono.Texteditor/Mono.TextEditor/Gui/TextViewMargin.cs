@@ -568,15 +568,10 @@ namespace Mono.TextEditor
 		bool UpdateCaret ()
 		{
 			caretBlink = !caretBlink;
-			if (caretBlink) {
-				if (Caret.IsVisible)
-					DrawCaret (textEditor.GdkWindow, textEditor.Allocation);
-			} else {
-				textEditor.QueueDrawArea (caretRectangle.X - (int)textEditor.Options.Zoom,
-                                          (int)(caretRectangle.Y + (textEditor.VAdjustment.Value - caretVAdjustmentValue)),
-				                          caretRectangle.Width + 2 * (int)textEditor.Options.Zoom,
-                                          caretRectangle.Height);
-			}
+			textEditor.QueueDrawArea (caretRectangle.X - (int)textEditor.Options.Zoom,
+			                          (int)(caretRectangle.Y + (textEditor.VAdjustment.Value - caretVAdjustmentValue)),
+			                          caretRectangle.Width + 2 * (int)textEditor.Options.Zoom,
+			                          caretRectangle.Height);
 
 			return true;
 		}
