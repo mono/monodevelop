@@ -81,7 +81,7 @@ namespace MonoDevelop.Core.LogReporting
 						writer.WriteStartElement ("CrashLog");
 						writer.WriteAttributeString ("version", ServiceVersion);
 						
-						writer.WriteElementString ("SystemInformation", SystemInformation.ToText ());
+						writer.WriteElementString ("SystemInformation", SystemInformation.GetTextDescription ());
 						writer.WriteElementString ("Exception", ex.ToString ());
 						
 						writer.WriteEndElement ();

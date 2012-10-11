@@ -29,6 +29,7 @@ using System.Text;
 using System.IO;
 using System.Reflection;
 using Mono.Addins;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Core
 {
@@ -47,6 +48,10 @@ namespace MonoDevelop.Core
 		public static string SessionUuid {
 			get; private set;
 		}
+
+		internal SystemInformation ()
+		{
+		}
 		
 		static SystemInformation ()
 		{
@@ -60,75 +65,59 @@ namespace MonoDevelop.Core
 			SessionUuid = DateTime.UtcNow.Ticks.ToString ();
 		}
 		
-		protected abstract void AppendOperatingSystem (StringBuilder sb);
+		internal abstract void AppendOperatingSystem (StringBuilder sb);
 		
-		public override string ToString ()
+		IEnumerable<ISystemInformationProvider> InternalGetDescription ()
 		{
-			var sb = new StringBuilder ();
-			
 			foreach (var info in AddinManager.GetExtensionObjects<ISystemInformationProvider> ("/MonoDevelop/Core/SystemInformation", false)) {
-				try {
-					sb.AppendLine (info.Description);
-				} catch (Exception ex) {
-					LoggingService.LogError ("Error getting about information: ", ex);
-				}
+				yield return info;
 			}
 			
+			var sb = new StringBuilder ();
 			var biFile = ((FilePath)Assembly.GetCallingAssembly ().Location).ParentDirectory.Combine ("buildinfo");
 			if (File.Exists (biFile)) {
-				sb.AppendLine ("Build information:");
 				foreach (var line in File.ReadAllLines (biFile)){
-					if (!string.IsNullOrWhiteSpace (line)) {
-						sb.Append ("\t");
+					if (!string.IsNullOrWhiteSpace (line))
 						sb.AppendLine (line.Trim ());
-					}
 				}
 			} else {
 				sb.AppendLine ("No build info");
 			}
-			
-			sb.AppendLine ("Operating System:");
+
+			yield return new SystemInformationSection () {
+				Title = "Build Information",
+				Description = sb.ToString ()
+			};
+
+			sb.Clear ();
 			AppendOperatingSystem (sb);
-			
+
+			yield return new SystemInformationSection () {
+				Title = "Operating System",
+				Description = sb.ToString ()
+			};
+		}
+
+		public static IEnumerable<ISystemInformationProvider> GetDescription ()
+		{
+			return Instance.InternalGetDescription ();
+		}
+
+		public static string GetTextDescription ()
+		{
+			StringBuilder sb = new StringBuilder ();
+			foreach (var info in GetDescription ()) {
+				sb.Append ("=== ").Append (info.Title.Trim ()).Append (" ===\n\n");
+				sb.Append (info.Description.Trim ());
+				sb.Append ("\n\n");
+			}
 			return sb.ToString ();
 		}
+	}
 
-		public static string ToText ()
-		{
-			return Instance.ToString ();
-		}
-
-		public static string GetLoadedAssemblies ()
-		{
-			var sb = new StringBuilder ();
-
-			int nameLength = 0;
-			int versionLength = 0;
-			sb.AppendLine ("Loaded assemblies:");
-
-			foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies ()) {
-				try {
-					if (assembly.IsDynamic)
-						continue;
-					var assemblyName = assembly.GetName ();
-					nameLength = Math.Max (nameLength, assemblyName.Name.Length);
-					versionLength = Math.Max (versionLength, assemblyName.Version.ToString ().Length);
-				} catch {
-				}
-			}
-			nameLength++;
-			versionLength++;
-			foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies ()) {
-				try {
-					if (assembly.IsDynamic)
-						continue;
-					var assemblyName = assembly.GetName ();
-					sb.AppendLine (assemblyName.Name.PadRight (nameLength) + assemblyName.Version.ToString ().PadRight (versionLength) + System.IO.Path.GetFullPath (assembly.Location));
-				} catch {
-				}
-			}
-
-			return sb.ToString ();
-		}
+	class SystemInformationSection: ISystemInformationProvider
+	{
+		public string Title { get; set; }
+		public string Description { get; set; }
 	}
 }

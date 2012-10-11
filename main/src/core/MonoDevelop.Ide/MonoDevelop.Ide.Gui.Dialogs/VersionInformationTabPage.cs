@@ -35,6 +35,8 @@ using System.Text;
 using System.IO;
 using MonoDevelop.Ide.Fonts;
 using Mono.Addins;
+using System.Collections.Generic;
+using System.Linq;
 
 
 namespace MonoDevelop.Ide.Gui.Dialogs
@@ -45,15 +47,16 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		public VersionInformationTabPage ()
 		{
+			BorderWidth = 6;
 			SetLabel (GettextCatalog.GetString ("Loading..."));
 			
 			new System.Threading.Thread (() => {
 				try {
-					var text = SystemInformation.ToText ();
+					var info = SystemInformation.GetDescription ().ToArray ();
 					Gtk.Application.Invoke (delegate {
 						if (destroyed)
 							return;
-						SetText (text);
+						SetText (info);
 					});
 				} catch (Exception ex) {
 					LoggingService.LogError ("Failed to load version information", ex);
@@ -81,59 +84,62 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			ShowAll ();
 		}
 
-		void SetText (string text)
+		void SetText (IEnumerable<ISystemInformationProvider> text)
 		{
 			Clear ();
-			var buf = new TextBuffer (null);
-			buf.Text = text;
-			
+
+			var buf = new Gtk.Label ();
+			buf.Selectable = true;
+			buf.Xalign = 0;
+
+			StringBuilder sb = new StringBuilder ();
+
+			foreach (var info in text) {
+				sb.Append ("<b>").Append (GLib.Markup.EscapeText (info.Title)).Append ("</b>\n");
+				sb.Append (GLib.Markup.EscapeText (info.Description.Trim ())).Append ("\n\n");
+			}
+
+			sb.Append ("<b>Loaded Assemblies</b>");
+			buf.Markup = sb.ToString ();
+
+			var contentBox = new VBox ();
+			contentBox.BorderWidth = 4;
+			contentBox.PackStart (buf, false, false, 0);
+
+			contentBox.PackStart (CreateAssembliesTable (), false, false, 0);
+
 			var sw = new MonoDevelop.Components.CompactScrolledWindow () {
 				ShowBorderLine = true,
-				BorderWidth = 2,
-				Child = new TextView (buf) {
-					Editable = false,
-					LeftMargin = 4,
-					RightMargin = 4,
-					PixelsAboveLines = 4,
-					PixelsBelowLines = 4
-				}
+				BorderWidth = 2
 			};
-			
-			sw.Child.ModifyFont (Pango.FontDescription.FromString (DesktopService.DefaultMonospaceFont));
+			sw.AddWithViewport (contentBox);
+			sw.ShadowType = ShadowType.None;
+			((Gtk.Viewport)sw.Child).ShadowType = ShadowType.None;
+
 			PackStart (sw, true, true, 0);
-			var hb = new HBox (false, 0) {
-				BorderWidth = 2,
-			};
-			var copyButton = new Button () { Label = GettextCatalog.GetString ("Copy Version Information") };
-			copyButton.Clicked += (sender, e) => CopyBufferToClipboard (buf);
-			hb.PackStart (copyButton, true, true, 0);
-			PackEnd (hb, false, false, 0);
 			ShowAll ();
 		}
 
-		static void CopyBufferToClipboard (TextBuffer buf)
+		Gtk.Widget CreateAssembliesTable ()
 		{
-			//get current cursor state
-			TextIter s, e;
-			TextIter cursorIter = TextIter.Zero;
-			var hadSel = buf.GetSelectionBounds (out s, out e);
-			if (!hadSel) {
-				cursorIter = buf.GetIterAtOffset (buf.CursorPosition);
+			var table = new Gtk.Table (0, 0, false);
+			table.ColumnSpacing = 3;
+			uint line = 0;
+			foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies ()) {
+				try {
+					if (assembly.IsDynamic)
+						continue;
+					var assemblyName = assembly.GetName ();
+					table.Attach (new Gtk.Label (assemblyName.Name) { Xalign = 0 }, 0, 1, line, line + 1);
+					table.Attach (new Gtk.Label (assemblyName.Version.ToString ()) { Xalign = 0 }, 1, 2, line, line + 1);
+					table.Attach (new Gtk.Label (System.IO.Path.GetFullPath (assembly.Location)) { Xalign = 0 }, 2, 3, line, line + 1);
+				} catch {
+				}
+				line++;
 			}
-
-			//copy text to clipboard, let the buffer handle the details
-			buf.SelectRange (buf.StartIter, buf.EndIter);
-			Clipboard clipboard = Clipboard.Get (Mono.TextEditor.ClipboardActions.CopyOperation.CLIPBOARD_ATOM);
-			buf.CopyClipboard (clipboard);
-
-			//restore cursor state
-			if (hadSel) {
-				buf.SelectRange (s, e);
-			} else {
-				buf.PlaceCursor (cursorIter);
-			}
+			return table;
 		}
-		
+
 		public override void Destroy ()
 		{
 			base.Destroy ();

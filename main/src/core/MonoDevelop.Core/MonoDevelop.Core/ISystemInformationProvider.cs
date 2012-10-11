@@ -32,6 +32,7 @@ namespace MonoDevelop.Core
 {
 	public interface ISystemInformationProvider
 	{
+		string Title { get; }
 		string Description { get; }
 	}
 }

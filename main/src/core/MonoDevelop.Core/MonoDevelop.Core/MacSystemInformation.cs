@@ -60,9 +60,9 @@ namespace MonoDevelop.Core
 			get { return version; }
 		}
 		
-		protected override void AppendOperatingSystem (StringBuilder sb)
+		internal override void AppendOperatingSystem (StringBuilder sb)
 		{
-			sb.AppendFormat ("\tMac OS X {0}", version);
+			sb.AppendFormat ("Mac OS X {0}", version);
 			sb.AppendLine ();
 			
 			base.AppendOperatingSystem (sb);

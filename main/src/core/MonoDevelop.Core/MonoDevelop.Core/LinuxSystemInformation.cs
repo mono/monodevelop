@@ -31,7 +31,7 @@ namespace MonoDevelop.Core
 {
 	class LinuxSystemInformation : UnixSystemInformation
 	{
-		protected override void AppendOperatingSystem (StringBuilder sb)
+		internal override void AppendOperatingSystem (StringBuilder sb)
 		{
 			sb.AppendLine ("\tLinux");
 			base.AppendOperatingSystem (sb);

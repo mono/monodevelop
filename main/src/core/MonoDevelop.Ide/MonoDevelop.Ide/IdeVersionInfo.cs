@@ -86,10 +86,14 @@ namespace MonoDevelop.Ide
 
 		}
 		
+		string ISystemInformationProvider.Title {
+			get { return "MonoDevelop"; }
+		}
+
 		string ISystemInformationProvider.Description {
 			get {
 				var sb = new System.Text.StringBuilder ();
-				sb.Append ("MonoDevelop ");
+				sb.Append ("Version ");
 				sb.AppendLine (MonoDevelopVersion);
 				
 				sb.Append ("Installation UUID: ");

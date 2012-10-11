@@ -29,7 +29,7 @@ namespace MonoDevelop.Core
 {
 	class WindowsSystemInformation : SystemInformation
 	{
-		protected override void AppendOperatingSystem (System.Text.StringBuilder sb)
+		internal override void AppendOperatingSystem (System.Text.StringBuilder sb)
 		{
 			sb.Append ("\tWindows ");
 			sb.Append (Environment.OSVersion.Version.ToString ());

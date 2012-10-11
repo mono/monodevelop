@@ -29,7 +29,7 @@ namespace MonoDevelop.Core
 {
 	public class UnixSystemInformation : SystemInformation
 	{
-		protected override void AppendOperatingSystem (System.Text.StringBuilder sb)
+		internal override void AppendOperatingSystem (System.Text.StringBuilder sb)
 		{
 			var psi = new System.Diagnostics.ProcessStartInfo ("uname", "-a") {
 				RedirectStandardOutput = true,
@@ -39,7 +39,6 @@ namespace MonoDevelop.Core
 			var process = System.Diagnostics.Process.Start (psi);
 			process.WaitForExit (500);
 			if (process.HasExited && process.ExitCode == 0) {
-				sb.Append ("\t");
 				string val = process.StandardOutput.ReadLine ();
 
 				//wrap the mac value across multiple lines
@@ -48,7 +47,7 @@ namespace MonoDevelop.Core
 					for (int i = 0; i < split.Length; i++) {
 						split[i] = split[i].Trim ();
 					}
-					val = String.Join ("\n\t    ", split);
+					val = String.Join ("\n    ", split);
 				}
 
 				sb.AppendLine (val);

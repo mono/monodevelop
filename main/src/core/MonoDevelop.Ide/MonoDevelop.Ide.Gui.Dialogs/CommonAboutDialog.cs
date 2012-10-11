@@ -57,15 +57,44 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			HasSeparator = false;
 			
 			var notebook = new Notebook ();
-			notebook.BorderWidth = 0;
+			notebook.ShowTabs = false;
+			notebook.ShowBorder = false;
 			notebook.AppendPage (new AboutMonoDevelopTabPage (), new Label (Title));
 			notebook.AppendPage (new VersionInformationTabPage (), new Label (GettextCatalog.GetString ("Version Information")));
-			notebook.AppendPage (new LoadedAssembliesTabPage (), new Label (GettextCatalog.GetString ("Loaded Assemblies")));
 			VBox.PackStart (notebook, true, true, 0);
 			
+			var copyButton = new Button () { Label = GettextCatalog.GetString ("Copy Information") };
+			copyButton.Clicked += (sender, e) => CopyBufferToClipboard ();
+			ActionArea.PackEnd (copyButton, false, false, 0);
+
+			var backButton = new Button () { Label = GettextCatalog.GetString ("Show Details") };
+			ActionArea.PackEnd (backButton, false, false, 0);
+			backButton.Clicked += (sender, e) => {
+				if (notebook.Page == 0) {
+					backButton.Label = GettextCatalog.GetString ("Hide Details");
+					copyButton.Show ();
+					notebook.Page = 1;
+				}
+				else {
+					backButton.Label = GettextCatalog.GetString ("Show Details");
+					copyButton.Hide ();
+					notebook.Page = 0;
+				}
+			};
+
 			AddButton (Gtk.Stock.Close, (int)ResponseType.Close);
-			
+
+			copyButton.Hide ();
 			ShowAll ();
+		}
+
+		static void CopyBufferToClipboard ()
+		{
+			var text = SystemInformation.GetTextDescription ();
+			var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+			clipboard.Text = text.ToString ();
+			clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
+			clipboard.Text = text.ToString ();
 		}
 
 		void ChangeColor (Gtk.Widget w)
@@ -100,31 +129,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 			
 			MessageService.ShowCustomDialog (new CommonAboutDialog ());
-		}
-
-		internal class LoadedAssembliesTabPage: VBox
-		{
-			public LoadedAssembliesTabPage ()
-			{
-				var buf = new TextBuffer (null);
-				buf.Text = SystemInformation.GetLoadedAssemblies ();
-
-				var sw = new MonoDevelop.Components.CompactScrolledWindow () {
-					ShowBorderLine = true,
-					BorderWidth = 2,
-					Child = new TextView (buf) {
-						Editable = false,
-						LeftMargin = 4,
-						RightMargin = 4,
-						PixelsAboveLines = 4,
-						PixelsBelowLines = 4
-					}
-				};
-				
-				sw.Child.ModifyFont (Pango.FontDescription.FromString (DesktopService.DefaultMonospaceFont));
-				PackStart (sw, true, true, 0);
-				ShowAll ();
-			}
 		}
 	}
 }
