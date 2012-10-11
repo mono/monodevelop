@@ -882,7 +882,7 @@ namespace MonoDevelop.Ide.Gui
 			tab.CloseButtonAllocation = crect;
 			tab.CloseButtonAllocation.Inflate (2, 2);
 
-			bool closeButtonHovered = tracker.Hovered && tab.CloseButtonAllocation.Contains (tracker.MousePosition);
+			bool closeButtonHovered = tracker.Hovered && tab.CloseButtonAllocation.Contains (tracker.MousePosition) && tab.WidthModifier >= 1.0f;
 			bool drawCloseButton = region.Width > 60 || highlight || closeButtonHovered;
 			if (drawCloseButton) {
 				var closePix = closeButtonHovered ? closeSelOverImage : closeSelImage;
