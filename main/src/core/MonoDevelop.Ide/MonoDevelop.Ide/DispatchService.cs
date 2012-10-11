@@ -30,6 +30,7 @@
 using System;
 using System.Threading;
 using System.Collections;
+using System.Diagnostics;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
@@ -132,17 +133,21 @@ namespace MonoDevelop.Ide
 			// This means we pump the main loop dozens of times a second resulting in many screen
 			// redraws and significantly slow down the running task.
 
-			int n = 1000;
+			int maxLength = 20;
 			Gdk.Threads.Enter();
+			Stopwatch sw = new Stopwatch ();
+			sw.Start ();
 
 			// Check for less than zero in case there's a system time change
 			var diff = DateTime.UtcNow - lastPendingEvents;
 			if (diff > TimeSpan.FromMilliseconds (500) || diff < TimeSpan.Zero) {
 				lastPendingEvents = DateTime.UtcNow;
-				while (Gtk.Application.EventsPending () && --n > 0) {
+				while (Gtk.Application.EventsPending () && sw.ElapsedMilliseconds < maxLength) {
 					Gtk.Application.RunIteration (false);
 				}
 			}
+
+			sw.Stop ();
 
 			Gdk.Threads.Leave();
 			guiDispatcher ();
