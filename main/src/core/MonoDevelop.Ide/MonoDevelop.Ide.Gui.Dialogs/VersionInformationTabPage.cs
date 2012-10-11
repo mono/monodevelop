@@ -99,14 +99,20 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				sb.Append (GLib.Markup.EscapeText (info.Description.Trim ())).Append ("\n\n");
 			}
 
-			sb.Append ("<b>Loaded Assemblies</b>");
-			buf.Markup = sb.ToString ();
+			buf.Markup = sb.ToString ().Trim () + "\n";
 
 			var contentBox = new VBox ();
 			contentBox.BorderWidth = 4;
 			contentBox.PackStart (buf, false, false, 0);
 
-			contentBox.PackStart (CreateAssembliesTable (), false, false, 0);
+			var asmButton = new Gtk.Button ("Show loaded assemblies");
+			asmButton.Clicked += (sender, e) => {
+				asmButton.Hide ();
+				contentBox.PackStart (CreateAssembliesTable (), false, false, 0);
+			};
+			var hb = new Gtk.HBox ();
+			hb.PackStart (asmButton, false, false, 0);
+			contentBox.PackStart (hb, false, false, 0);
 
 			var sw = new MonoDevelop.Components.CompactScrolledWindow () {
 				ShowBorderLine = true,
@@ -122,6 +128,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 		Gtk.Widget CreateAssembliesTable ()
 		{
+			var box = new Gtk.VBox ();
+			box.PackStart (new Gtk.Label () {
+				Markup = "<b>LoadedAssemblies</b>",
+				Xalign = 0
+			});
 			var table = new Gtk.Table (0, 0, false);
 			table.ColumnSpacing = 3;
 			uint line = 0;
@@ -137,7 +148,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				}
 				line++;
 			}
-			return table;
+			box.PackStart (table, false, false, 0);
+			box.ShowAll ();
+			return box;
 		}
 
 		public override void Destroy ()
