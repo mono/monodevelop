@@ -694,7 +694,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				string projTypeGuid = match.Groups [1].Value.ToUpper ();
 				string projectName = match.Groups [2].Value;
 				string projectPath = match.Groups [3].Value;
-				string projectGuid = match.Groups [4].Value;
+				string projectGuid = match.Groups [4].Value.ToUpper ();
 
 				if (projTypeGuid == MSBuildProjectService.FolderTypeGuid) {
 					//Solution folder
@@ -934,7 +934,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					continue;
 				}
 
-				string projGuid = t [0];
+				string projGuid = t [0].ToUpper ();
 				string slnConfig = t [1];
 
 				if (!slnData.ItemsByGuid.ContainsKey (projGuid)) {
@@ -1060,7 +1060,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return;
 
 			for (int i = 0; i < sec.Count - 2; i ++) {
+				// Guids should be upper case for VS compatibility
 				KeyValuePair<string, string> pair = SplitKeyValue (lines [i + sec.Start + 1].Trim ());
+				pair = new KeyValuePair<string, string> (pair.Key.ToUpper (), pair.Value.ToUpper ());
 
 				SolutionItem folderItem;
 				SolutionItem item;
