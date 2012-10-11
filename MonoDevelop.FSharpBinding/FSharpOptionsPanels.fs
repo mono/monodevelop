@@ -20,13 +20,13 @@ type FSharpSettingsPanel() =
   let fscPathPropName = "FSharpBinding.FscPath"
   let fsiPathPropName = "FSharpBinding.FsiPath"
   let fsiArgumentsPropName = "FSharpBinding.FsiArguments"
-  let enableFSharp30PropName = "FSharpBinding.EnableFSharp30"
+  let preferFSharp20PropName = "FSharpBinding.PreferFSharp20"
   let fsiFontNamePropName = "FSharpBinding.FsiFontName"
   let mutable widget : FSharpSettingsWidget = null
   
   member internal x.setLanguageDisplay(enable:bool) = 
-    if widget.EnableFSharp30.Active <> enable then
-      widget.EnableFSharp30.Active <- enable
+    if widget.PreferFSharp20.Active <> enable then
+      widget.PreferFSharp20.Active <- enable
 
   member internal x.setCompilerDisplay(use_default:bool) = 
     if widget.CheckCompilerUseDefault.Active <> use_default then
@@ -77,7 +77,7 @@ type FSharpSettingsPanel() =
     let prop_interp_args = PropertyService.Get<string>(fsiArgumentsPropName, "")
     let prop_interp_font = PropertyService.Get<string>(fsiFontNamePropName,"")  
     let prop_compiler_path = PropertyService.Get<string>(fscPathPropName,"")
-    let prop_use_fsharp30 = PropertyService.Get<string>(enableFSharp30PropName,"")
+    let prop_prefer_fsharp20 = PropertyService.Get<string>(preferFSharp20PropName,"")
 
     let default_interp_path = CompilerArguments.getDefaultInteractive
     let default_interp_args = ""
@@ -85,7 +85,7 @@ type FSharpSettingsPanel() =
 
     x.setInteractiveDisplay(prop_interp_path = "" && prop_interp_args = "")
     x.setCompilerDisplay( (prop_compiler_path = "") )
-    x.setLanguageDisplay( System.String.Compare (prop_use_fsharp30, "true", true) = 0)
+    x.setLanguageDisplay( System.String.Compare (prop_prefer_fsharp20, "true", true) = 0)
     
     let fontName = MonoDevelop.Ide.DesktopService.DefaultMonospaceFont
     widget.FontInteractive.FontName <- PropertyService.Get<string>(fsiFontNamePropName, fontName)
@@ -99,9 +99,9 @@ type FSharpSettingsPanel() =
         x.setCompilerDisplay(widget.CheckCompilerUseDefault.Active))
 
     // Toggling the language version can affect the compiler locations
-    widget.EnableFSharp30.Toggled.Add(fun _ -> 
+    widget.PreferFSharp20.Toggled.Add(fun _ -> 
         // Apply the property immediately, to reflect changes in default compiler paths 
-        PropertyService.Set(enableFSharp30PropName, if widget.EnableFSharp30.Active then "true" else "false")
+        PropertyService.Set(preferFSharp20PropName, if widget.PreferFSharp20.Active then "true" else "false")
         x.setInteractiveDisplay(widget.CheckInteractiveUseDefault.Active)
         x.setCompilerDisplay(widget.CheckCompilerUseDefault.Active))
     
@@ -109,7 +109,7 @@ type FSharpSettingsPanel() =
     upcast widget 
   
   override x.ApplyChanges() =
-    PropertyService.Set(enableFSharp30PropName, if widget.EnableFSharp30.Active then "true" else "false")
+    PropertyService.Set(preferFSharp20PropName, if widget.PreferFSharp20.Active then "true" else "false")
 
     PropertyService.Set(fscPathPropName, if widget.CheckCompilerUseDefault.Active then null else widget.EntryCompilerPath.Text)
 

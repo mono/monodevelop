@@ -37,9 +37,15 @@ type FSharpCompiler(reqVersion:FSharpCompilerVersion) =
            asm,asm2,ver
          with _ -> 
            // Try getting the assemblies by partial name. 
-           let asm = Assembly.LoadWithPartialName("FSharp.Compiler, Version="+ver.ToString())
-           let asm2 = Assembly.LoadWithPartialName("FSharp.Compiler.Server.Shared, Version="+ver.ToString())
+           let checkVersion (a:System.Reflection.Assembly) = 
+               let nm = a.GetName()
+               if nm.Version.ToString() = ver.ToString() then a 
+               else failwith (sprintf "loaded %s, but had wrong version, wanted %s, got %s" nm.Name (ver.ToString()) (nm.Version.ToString()))
+           let asm = Assembly.LoadWithPartialName("FSharp.Compiler, Version="+ver.ToString()) |> checkVersion
+           let asm2 = Assembly.LoadWithPartialName("FSharp.Compiler.Server.Shared, Version="+ver.ToString()) |> checkVersion
+             
            asm,asm2,ver
+
     let asm,asm2,actualVersion = 
         try tryVersion reqVersion 
         with e -> 

@@ -20,11 +20,11 @@ type FSharpCompilerVersion =
     /// The current requested language version is a configuration setting specified by the user.
     static member CurrentRequestedVersion 
         with get() = 
-            let setting = MonoDevelop.Core.PropertyService.Get<string>("FSharpBinding.EnableFSharp30","") 
+            let setting = MonoDevelop.Core.PropertyService.Get<string>("FSharpBinding.PreferFSharp20","") 
             if System.String.Compare(setting, "true", true) = 0 then 
-                FSharpCompilerVersion.FSharp_3_0
-            else
                 FSharpCompilerVersion.FSharp_2_0
+            else
+                FSharpCompilerVersion.FSharp_3_0
                 
 
 module internal FSharpEnvironment =
@@ -239,14 +239,16 @@ module internal FSharpEnvironment =
                let safeExists f = (try File.Exists(f) with _ -> false)
                let file f = Path.Combine(Path.Combine(x,"bin"),f)
                let exists f = safeExists(file f)
-               if exists "fsc" && exists "fsi" then tryFsharpiScript (file "fsi")
-               elif exists "fsharpc" && exists "fsharpi" then tryFsharpiScript (file "fsharpi")
-               else None)
+               match (if exists "fsc" && exists "fsi" then tryFsharpiScript (file "fsi") else None) with
+               | Some res -> Some res
+               | None ->
+               match (if exists "fsharpc" && exists "fsharpi" then tryFsharpiScript (file "fsharpi") else None) with
+               | Some res -> Some res
+               | None -> None)
                 
         match result with 
         | Some _ -> result
-        | None -> 
-        None
+        | None -> None
     with e -> 
       System.Diagnostics.Debug.Assert(false, "Error while determining default location of F# compiler")
       None
@@ -316,14 +318,17 @@ module internal FSharpEnvironment =
               
                   let file f = Path.Combine(Path.Combine(possibleInstallationDir,"bin"),f)
                   let exists f = safeExists(file f)
-                  if exists "fsc" && exists "fsi" then tryFsharpiScript (file "fsi")
-                  elif exists "fsharpc" && exists "fsharpi" then tryFsharpiScript (file "fsharpi")
-                  else None)
+                  match (if exists "fsc" && exists "fsi" then tryFsharpiScript (file "fsi") else None) with
+                  | Some res -> Some res
+                  | None ->
+                  match (if exists "fsharpc" && exists "fsharpi" then tryFsharpiScript (file "fsharpi") else None) with
+                  | Some res -> Some res
+                  | None -> None)
                 
         match result with 
         | Some _ -> result
-        | None -> 
-        None
+        | None -> None
+
     with e -> 
       System.Diagnostics.Debug.Assert(false, "Error while determining default location of F# compiler")
       None

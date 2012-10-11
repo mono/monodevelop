@@ -644,7 +644,7 @@
             <child>
               <widget class="Gtk.Label" id="label4b">
                 <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">&lt;b&gt;F# 3.0&lt;/b&gt;</property>
+                <property name="LabelProp" translatable="yes">&lt;b&gt;F# 2.0&lt;/b&gt;</property>
                 <property name="UseMarkup">True</property>
               </widget>
               <packing>
@@ -655,10 +655,10 @@
               </packing>
             </child>
             <child>
-              <widget class="Gtk.CheckButton" id="enableFSharp3">
+              <widget class="Gtk.CheckButton" id="preferFSharp2">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Label" translatable="yes">Enable if available</property>
+                <property name="Label" translatable="yes">Prefer F# 2.0 if both F# 2.0 and 3.0 available</property>
                 <property name="Active">True</property>
                 <property name="DrawIndicator">True</property>
                 <property name="HasLabel">True</property>

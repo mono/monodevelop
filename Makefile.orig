@@ -80,15 +80,14 @@ REFERENCES = \
 	-r:$(MDBIN)/Mono.TextEditor.dll \
 	-r:$(MDBIN)/ICSharpCode.NRefactory.dll \
 	-r:$(MDBIN)/ICSharpCode.NRefactory.CSharp.dll \
-	-r:$(FSBIN)/FSharp.Core.dll \
-	-r:$(FSBIN)/FSharp.Compiler.dll \
-	-r:$(FSBIN)/FSharp.Compiler.Interactive.Settings.dll \
-	-r:$(FSBIN)/FSharp.Compiler.Server.Shared.dll \
 	-r:$(ATKDIR)/atk-sharp.dll \
 	-r:$(PANGODIR)/pango-sharp.dll \
 	-r:$(GTKDIR)/gtk-sharp.dll \
 	-r:$(GDKDIR)/gdk-sharp.dll \
 	-r:$(GLIBDIR)/glib-sharp.dll
+
+FS_REFERENCES= $(REFERENCES) \
+	-r:$(FSBIN)/FSharp.Core.dll
 
 OPTIONS = \
 	--resident --noframework --debug --optimize- --target:library -r:bin/FSharpBinding.Gui.dll --out:bin/FSharpBinding.dll
@@ -108,7 +107,7 @@ GUIOPTIONS = \
 	-debug+ -out:bin/FSharpBinding.Gui.dll -target:library
 
 bin/FSharpBinding.dll: bin/FSharpBinding.Gui.dll $(FILES)
-	$(FSC) $(OPTIONS) $(REFERENCES) $(RESOURCES) $(FILES) 
+	$(FSC) $(OPTIONS) $(FS_REFERENCES) $(RESOURCES) $(FILES) 
 
 bin/FSharpBinding.Gui.dll: $(GUIFILES)
 	mkdir -p bin
@@ -118,6 +117,12 @@ install: bin/FSharpBinding.dll  bin/FSharpBinding.Gui.dll
 	cp bin/FSharpBinding.* $(MDADDIN)/BackendBindings/
 	gacutil /i $(FSBIN)/FSharp.Compiler.dll
 	gacutil /i $(FSBIN)/FSharp.Compiler.Server.Shared.dll
+
+install-mac: bin/FSharpBinding.dll  bin/FSharpBinding.Gui.dll
+	-rm -fr ~/Library/Application\ Support/MonoDevelop-3.0/LocalInstall/Addins/*.FSharpBinding*
+	@-mkdir ~/Library/Application\ Support/MonoDevelop-3.0/LocalInstall/Addins/MonoDevelop.FSharpBinding.3.1.2.1
+	cp -p bin/FSharpBinding.* ~/Library/Application\ Support/MonoDevelop-3.0/LocalInstall/Addins/MonoDevelop.FSharpBinding.3.1.2.1
+
 
 uninstall:
 	rm $(MDADDIN)/BackendBindings/FSharpBinding.*
