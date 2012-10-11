@@ -111,13 +111,11 @@ namespace MonoDevelop.Ide.Gui.Content
 				return res;
 			
 			// Handle code completion
-
-			if (keyChar != '\0' && CompletionWidget != null && currentCompletionContext == null) {
+			if (keyChar != '\0' && CompletionWidget != null && !CompletionWindowManager.IsVisible) {
 				currentCompletionContext = CompletionWidget.CurrentCodeCompletionContext;
 				int triggerWordLength = currentCompletionContext.TriggerWordLength;
 				ICompletionDataList completionList = HandleCodeCompletion (currentCompletionContext, keyChar,
 				                                                           ref triggerWordLength);
-				
 				if (triggerWordLength > 0 && (triggerWordLength < Editor.Caret.Offset
 					|| (triggerWordLength == 1 && Editor.Caret.Offset == 1))) {
 					currentCompletionContext
@@ -224,17 +222,16 @@ namespace MonoDevelop.Ide.Gui.Content
 				wlen = 0;
 			}
 			
-			currentCompletionContext = CompletionWidget.CreateCodeCompletionContext (cpos);
-			currentCompletionContext.TriggerWordLength = wlen;
-			completionList = Document.Editor.IsSomethingSelected ? ShowCodeSurroundingsCommand (currentCompletionContext) : ShowCodeTemplatesCommand (currentCompletionContext);
+			var ctx = CompletionWidget.CreateCodeCompletionContext (cpos);
+			ctx.TriggerWordLength = wlen;
+			completionList = Document.Editor.IsSomethingSelected ? ShowCodeSurroundingsCommand (ctx) : ShowCodeTemplatesCommand (ctx);
 			if (completionList == null) {
-				currentCompletionContext = null;
 				return;
 			}
 			var wnd = new CompletionListWindow (Gtk.WindowType.Toplevel);
 			wnd.Decorated = false;
 			wnd.Extension = this;
-			wnd.ShowListWindow ((char)0, completionList, CompletionWidget, currentCompletionContext);
+			wnd.ShowListWindow ((char)0, completionList, CompletionWidget, ctx);
 		}
 		
 		[CommandUpdateHandler (TextEditorCommands.ShowCodeTemplateWindow)]
@@ -247,9 +244,9 @@ namespace MonoDevelop.Ide.Gui.Content
 				wlen = 0;
 			}
 			
-			currentCompletionContext = CompletionWidget.CreateCodeCompletionContext (cpos);
-			currentCompletionContext.TriggerWordLength = wlen;
-			completionList = Document.Editor.IsSomethingSelected ? ShowCodeSurroundingsCommand (currentCompletionContext) : ShowCodeTemplatesCommand (currentCompletionContext);
+			var ctx = CompletionWidget.CreateCodeCompletionContext (cpos);
+			ctx.TriggerWordLength = wlen;
+			completionList = Document.Editor.IsSomethingSelected ? ShowCodeSurroundingsCommand (ctx) : ShowCodeTemplatesCommand (ctx);
 
 			info.Bypass = completionList == null;
 			info.Text = Document.Editor.IsSomethingSelected ? GettextCatalog.GetString ("_Surround With...") : GettextCatalog.GetString ("I_nsert Template...");
