@@ -889,7 +889,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (project == null)
 					throw new ArgumentNullException ("project");
 				this.Project = project;
-				this.Content = new LazyProjectLoader (this).Content;
+				this.Content = new LazyProjectLoader (this);
 			}
 
 			public IEnumerable<Project> ReferencedProjects {
