@@ -212,6 +212,7 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			this.Animate ("Build",
 			              val => renderArg.BuildAnimationProgress = val,
+			              rate: 30,
 			              length: 5000,
 			              repeat: () => true);
 
