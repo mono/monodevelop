@@ -382,8 +382,8 @@ namespace MonoDevelop.Ide.Gui
 		const int TopBarPadding = 3;
 		const int BottomBarPadding = 3;
 		const int LeftRightPadding = 10;
-		const int TopPadding = 7;
-		const int BottomPadding = 7;
+		const int TopPadding = 8;
+		const int BottomPadding = 8;
 		const int LeftBarPadding = 58;
 		const int VerticalTextSize = 11;
 
@@ -856,15 +856,13 @@ namespace MonoDevelop.Ide.Gui
 			ctx.LineWidth = 1;
 			DrawTabBorder (ctx, region.Width, region.X, 0, active);
 			ctx.ClosePath ();
-			double tops = 5d / (Allocation.Bottom - TopBarPadding); // The initial gradient is 4 pixels height
 			Cairo.LinearGradient gr = new LinearGradient (region.X, TopBarPadding, region.X, Allocation.Bottom);
 			if (active) {
 				gr.AddColorStop (0, Styles.BreadcrumbGradientStartColor);
-				gr.AddColorStop (tops, Styles.BreadcrumbBackgroundColor);
 				gr.AddColorStop (1, Styles.BreadcrumbBackgroundColor);
 			} else {
-				gr.AddColorStop (0, CairoExtensions.ParseColor ("e9e9e9"));
-				gr.AddColorStop (1, CairoExtensions.ParseColor ("d1d1d1"));
+				gr.AddColorStop (0, CairoExtensions.ParseColor ("f0f0f0"));
+				gr.AddColorStop (1, CairoExtensions.ParseColor ("c3c3c3"));
 			}
 			ctx.Pattern = gr;
 			ctx.Fill ();

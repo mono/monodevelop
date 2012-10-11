@@ -39,8 +39,8 @@ namespace MonoDevelop.Ide.Gui
 
 		// Document tab bar
 
+
 		public static readonly Cairo.Color TabBarBackgroundColor = CairoExtensions.ParseColor ("F3FCFF");
-		public static readonly Cairo.Color BreadcrumbBackgroundColor = new Cairo.Color (255d / 255d, 255d / 255d, 255d / 255d);
 		public static readonly Cairo.Color TabBarActiveTextColor = new Cairo.Color (0, 0, 0);
 
 		public static readonly Cairo.Color TabBarGradientStartColor = TabBarBackgroundColor;
@@ -50,8 +50,9 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly Cairo.Color TabBarInactiveTextColor = Blend (new Cairo.Color (0, 0, 0), TabBarGradientStartColor, 0.4);
 		public static readonly Cairo.Color TabBarHoverInactiveTextColor = new Cairo.Color (0, 0, 0);
 
-		public static readonly Cairo.Color BreadcrumbGradientStartColor = Shift (BreadcrumbBackgroundColor, 1);
-		public static readonly Cairo.Color BreadcrumbGradientEndColor = Shift (BreadcrumbBackgroundColor, 0.95);
+		public static readonly Cairo.Color BreadcrumbGradientStartColor = CairoExtensions.ParseColor ("FFFFFF");
+		public static readonly Cairo.Color BreadcrumbBackgroundColor = Shift (BreadcrumbGradientStartColor, .95);
+		public static readonly Cairo.Color BreadcrumbGradientEndColor = Shift (BreadcrumbGradientStartColor, 0.9);
 		public static readonly Cairo.Color BreadcrumbBorderColor = Shift (BreadcrumbBackgroundColor, 0.714);
 		public static readonly Cairo.Color BreadcrumbInnerBorderColor = WithAlpha (BaseBackgroundColor, 0.1d);
 		public static readonly Gdk.Color BreadcrumbTextColor = Shift (BaseForegroundColor, 0.8).ToGdkColor ();
