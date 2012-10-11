@@ -481,8 +481,8 @@ namespace MonoDevelop.Ide.Gui
 		{
 			tab.WidthModifier = 0;
 			this.Animate ("Open" + tab.GetHashCode ().ToString (),
-			              easing: Easing.CubicOut,
-			              callback: f => tab.WidthModifier = f);
+			              f => tab.WidthModifier = f,
+			              easing: Easing.CubicOut);
 		}
 
 		public void StartCloseAnimation (DockNotebookTab closingTab)

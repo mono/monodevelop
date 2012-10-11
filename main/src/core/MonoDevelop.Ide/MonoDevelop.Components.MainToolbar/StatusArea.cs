@@ -211,8 +211,8 @@ namespace MonoDevelop.Components.MainToolbar
 		void StartBuildAnimation ()
 		{
 			this.Animate ("Build",
+			              val => renderArg.BuildAnimationProgress = val,
 			              length: 5000,
-			              callback: val => renderArg.BuildAnimationProgress = val,
 			              repeat: () => true);
 
 			this.Animate ("BuildOpacity",
