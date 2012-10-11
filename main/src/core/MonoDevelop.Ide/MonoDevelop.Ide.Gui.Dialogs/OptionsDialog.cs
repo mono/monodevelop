@@ -608,7 +608,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				foreach (PanelInstance pi in boxPanels) {
 					if (pi.Node.Grouping == PanelGrouping.Auto)
 						lastAuto = pi;
+					// HACK: This we are parenting/unparenting the widget here as a workaround
+					// for a layout issue. To properly calculate the size of the widget, the widget
+					// needs to have the style that it will have when added to the window.
+					pi.Widget.Parent = this;
 					mainPageSize += pi.Widget.SizeRequest ().Height + 6;
+					pi.Widget.Unparent ();
 				}
 				fits = mainPageSize <= pageFrame.Allocation.Height;
 				if (!fits) {
