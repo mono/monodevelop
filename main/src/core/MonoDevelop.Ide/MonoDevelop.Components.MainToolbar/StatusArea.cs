@@ -138,7 +138,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 			ProgressBegin += delegate {
 				//renderArg.ShowProgressBar = true;
-				StartBuildAnimation ();
+	//			StartBuildAnimation ();
 				//renderArg.ProgressBarFraction = 0;
 				//QueueDraw ();
 				//animateProgressBar (true);
@@ -146,7 +146,7 @@ namespace MonoDevelop.Components.MainToolbar
 			
 			ProgressEnd += delegate {
 				//renderArg.ShowProgressBar = false;
-				StopBuildAnimation ();
+	//			StopBuildAnimation ();
 				//QueueDraw ();
 				//animateProgressBar (false);
 			};
