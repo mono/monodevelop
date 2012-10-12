@@ -379,12 +379,6 @@ namespace Mono.TextEditor
 			}
 		}
 
-		protected internal virtual bool OnIMProcessedKeyPressEvent (Gdk.Key key, uint ch, Gdk.ModifierType state)
-		{
-			SimulateKeyPress (key, ch, state);
-			return true;
-		}
-
 		public void RunAction (Action<TextEditorData> action)
 		{
 			try {
@@ -581,9 +575,9 @@ namespace Mono.TextEditor
 				
 				//include the other pre-IM state *if* the post-IM char matches the pre-IM (key-mapped) one
 				 if (lastIMEventMappedChar == utf32Char && lastIMEventMappedChar == (uint)lastIMEventMappedKey) {
-					this.OnIMProcessedKeyPressEvent (lastIMEventMappedKey, lastIMEventMappedChar, lastIMEventMappedModifier);
+					editor.OnIMProcessedKeyPressEvent (lastIMEventMappedKey, lastIMEventMappedChar, lastIMEventMappedModifier);
 				} else {
-					this.OnIMProcessedKeyPressEvent ((Gdk.Key)0, (uint)utf32Char, Gdk.ModifierType.None);
+					editor.OnIMProcessedKeyPressEvent ((Gdk.Key)0, (uint)utf32Char, Gdk.ModifierType.None);
 				}
 			}
 			
@@ -964,7 +958,7 @@ namespace Mono.TextEditor
 				return true;
 			
 			//FIXME: OnIMProcessedKeyPressEvent should return false when it didn't handle the event
-			if (this.OnIMProcessedKeyPressEvent (key, unicodeChar, mod))
+			if (editor.OnIMProcessedKeyPressEvent (key, unicodeChar, mod))
 				return true;
 			
 			return base.OnKeyPressEvent (evt);
