@@ -201,10 +201,11 @@
     <Compile Include="Mono.TextEditor\Gui\GtkGestures.cs" />
     <Compile Include="Mono.TextEditor\Gui\TooltipProvider.cs" />
     <Compile Include="Mono.TextEditor\ISelectionSurroundingProvider.cs" />
-    <Compile Include="Mono.TextEditor\Gui\TextEditor.cs" />
     <Compile Include="Mono.TextEditor\TextLineMarker.cs" />
     <Compile Include="Mono.TextEditor\TextSegmentMarker.cs" />
     <Compile Include="Mono.TextEditor\Gui\FoldMarkerMargin.cs" />
+    <Compile Include="Mono.TextEditor\Gui\TextArea.cs" />
+    <Compile Include="Mono.TextEditor\Gui\TextEditor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mono.TextEditor.dll.config">
