@@ -102,7 +102,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			set {
 				inCategoryMode = value;
 				this.CalcVisibleRows ();
-				this.ScrollToSelectedItem ();
 				if (inCategoryMode)
 					SelectFirstItemInCategory ();
 			}
@@ -327,12 +326,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public void ScrollToSelectedItem ()
 		{
 			var area = GetRowArea (SelectedItem);
+			double newValue = vadj.Value;
 			if (area.Y < vadj.Value) {
-				vadj.Value = area.Y;
+				newValue = Math.Min (vadj.Upper - vadj.PageSize, area.Y);
+			} else if (vadj.Value + vadj.PageSize < area.Bottom) {
+				newValue = area.Bottom - vadj.PageSize + 1;
+			} else {
 				return;
 			}
-			if (vadj.Value + vadj.PageSize < area.Bottom)
-				vadj.Value = Math.Max (0, area.Bottom - vadj.PageSize + 1);
+			vadj.Value = Math.Min (vadj.Upper, Math.Max (vadj.Lower, newValue));
 		}
 		
 		bool autoSelect;
@@ -400,12 +402,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 				var alloc = Allocation;
 				int width = alloc.Width;
 				int height = alloc.Height;
-				
 				context.Rectangle (args.Area.X, args.Area.Y, args.Area.Width, args.Area.Height);
 				context.Color = this.backgroundColor;
 				context.Fill ();
 
-				int lineWidth = width;
 				int xpos = iconTextSpacing;
 				int yPos = (int)-vadj.Value;
 				
@@ -687,8 +687,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			SelectFirstItemInCategory ();
 			CalcVisibleRows ();
 			SetAdjustments ();
-			ScrollToSelectedItem ();
-			
+
 			OnWordsFiltered (EventArgs.Empty);
 			oldCompletionString = CompletionString;
 		}
@@ -703,13 +702,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			if (vadj == null)
 				return;
-			vadj.SetBounds (0, Math.Max (Allocation.Height, filteredItems.Count * rowHeight), rowHeight, Allocation.Height, Allocation.Height);
+			var upper = Math.Max (Allocation.Height, filteredItems.Count * rowHeight);
+			if (upper != vadj.Upper || Allocation.Height != vadj.PageSize)
+				vadj.SetBounds (0, upper, rowHeight, Allocation.Height, Allocation.Height);
+			ScrollToSelectedItem ();
 		}
 		
 		protected virtual void OnWordsFiltered (EventArgs e)
 		{
 			SetAdjustments ();
-			ScrollToSelectedItem ();
 			EventHandler handler = this.WordsFiltered;
 			if (handler != null)
 				handler (this, e);
@@ -742,7 +743,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			base.OnSizeAllocated (allocation);
 			SetAdjustments ();
-			ScrollToSelectedItem ();
 		}
 		
 		protected override void OnSizeRequested (ref Requisition requisition)
@@ -765,10 +765,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (InCategoryMode && categories.Any (cat => cat.CompletionCategory == null))
 				viewableCats--;
 			int newHeight = rowHeight * maxVisibleRows;
-			if (Allocation.Height != listWidth || Allocation.Width != newHeight) 
+			if (Allocation.Height != listWidth || Allocation.Width != newHeight)
 				this.SetSizeRequest (listWidth, newHeight);
-			ScrollToSelectedItem ();
+			SetAdjustments ();
 		}
+
 		const int spacing = 2;
 		
 		delegate void CategoryAction (Category category, int yPos);
