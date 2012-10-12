@@ -79,13 +79,11 @@ namespace MonoDevelop.Components.MainToolbar
 			get {
 				getMembersTimer.BeginTiming ();
 				try {
-					lock (members) {
-						foreach (var type in types) {
-							if (type.Kind == TypeKind.Delegate)
-								continue;
-							foreach (var m in type.Members) {
-								yield return m;
-							}
+					foreach (var type in types) {
+						if (type.Kind == TypeKind.Delegate)
+							continue;
+						foreach (var m in type.Members) {
+							yield return m;
 						}
 					}
 				} finally {
@@ -305,7 +303,7 @@ namespace MonoDevelop.Components.MainToolbar
 				return null;
 			}
 			
-			Dictionary<string, MatchResult> savedMatches = new Dictionary<string, MatchResult> ();
+			Dictionary<string, MatchResult> savedMatches = new Dictionary<string, MatchResult> (StringComparer.Ordinal);
 
 			bool MatchName (string name, out int matchRank)
 			{
