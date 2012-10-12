@@ -56,6 +56,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public override Task<ISearchDataSource> GetResults (SearchPopupSearchPattern searchPattern, CancellationToken token)
 		{
+			// NOTE: This is run on the UI thread as checking whether or not a command is enabled is not thread-safe
 			return Task.Factory.StartNew (delegate {
 				try {
 					if (searchPattern.Tag != null && !validTags.Contains (searchPattern.Tag) || searchPattern.HasLineNumber)
@@ -77,7 +78,7 @@ namespace MonoDevelop.Components.MainToolbar
 					token.ThrowIfCancellationRequested ();
 					throw;
 				}
-			}, token);
+			}, token, TaskCreationOptions.None, Xwt.Application.UITaskScheduler);
 		}
 
 		IEnumerable<SearchResult> AllResults (WorkerResult lastResult, WorkerResult newResult)
