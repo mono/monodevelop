@@ -28,21 +28,23 @@
 //#define DEBUG_EVENT_QUEUEING
 
 using System;
+using System.IO;
+using System.Net;
 using System.Linq;
+using System.Text;
 using System.Threading;
+using System.Reflection;
+using System.Net.Sockets;
+using System.Globalization;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+
 using Mono.Cecil.Mdb;
 using Mono.CompilerServices.SymbolWriter;
 using Mono.Debugging.Client;
 using Mono.Debugger.Soft;
 using Mono.Debugging.Evaluation;
 using MDB = Mono.Debugger.Soft;
-using System.Net.Sockets;
-using System.IO;
-using System.Reflection;
-using System.Text;
-using System.Net;
 
 namespace Mono.Debugging.Soft
 {
@@ -2129,6 +2131,40 @@ namespace Mono.Debugging.Soft
 			}
 			return result.ToArray ();
 		}
+
+		static string EscapeString (string text)
+		{
+			StringBuilder sb = new StringBuilder ();
+			
+			sb.Append ('"');
+			for (int i = 0; i < text.Length; i++) {
+				char c = text[i];
+				string txt;
+				switch (c) {
+				case '"': txt = "\\\""; break;
+				case '\0': txt = @"\0"; break;
+				case '\\': txt = @"\\"; break;
+				case '\a': txt = @"\a"; break;
+				case '\b': txt = @"\b"; break;
+				case '\f': txt = @"\f"; break;
+				case '\v': txt = @"\v"; break;
+				case '\n': txt = @"\n"; break;
+				case '\r': txt = @"\r"; break;
+				case '\t': txt = @"\t"; break;
+				default:
+					if (char.GetUnicodeCategory (c) == UnicodeCategory.OtherNotAssigned) {
+						sb.AppendFormat ("\\u{0:X4}", (int) c);
+					} else {
+						sb.Append (c);
+					}
+					continue;
+				}
+				sb.Append (txt);
+			}
+			sb.Append ('"');
+			
+			return sb.ToString ();
+		}
 		
 		string Disassemble (ILInstruction ins)
 		{
@@ -2139,6 +2175,8 @@ namespace Mono.Debugging.Soft
 				oper = ((TypeMirror)ins.Operand).FullName;
 			else if (ins.Operand is ILInstruction)
 				oper = ((ILInstruction)ins.Operand).Offset.ToString ("x8");
+			else if (ins.Operand is string)
+				oper = EscapeString (ins.Operand);
 			else if (ins.Operand == null)
 				oper = string.Empty;
 			else
