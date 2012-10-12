@@ -25,7 +25,7 @@
 			<Panel id = "Directories" _label = "Assembly Folders" class = "MonoDevelop.Ide.Gui.OptionPanels.AssemblyFoldersPanel" />
 		</Section>
 		<Section id = "MonoRuntime" _label = ".NET Runtimes" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.MonoRuntimePanel" />
-		<Section id = "SdkLocations" _label = "SDK Locations" />
+		<Section id = "SdkLocations" _label = "SDK Locations" icon = "sdk-locations" />
 	</Section>
 	
 	<Section id = "TextEditor" _label = "Text Editor">

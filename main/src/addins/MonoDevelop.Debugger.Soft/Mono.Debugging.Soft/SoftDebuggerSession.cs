@@ -2176,7 +2176,7 @@ namespace Mono.Debugging.Soft
 			else if (ins.Operand is ILInstruction)
 				oper = ((ILInstruction)ins.Operand).Offset.ToString ("x8");
 			else if (ins.Operand is string)
-				oper = EscapeString (ins.Operand);
+				oper = EscapeString ((string) ins.Operand);
 			else if (ins.Operand == null)
 				oper = string.Empty;
 			else

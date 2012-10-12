@@ -254,6 +254,7 @@
 	<StockIcon stockid = "md-pin-up" resource = "pinup.png" size="Menu" />
 	<StockIcon stockid = "md-pin-down" resource = "pindown.png" size="Menu" />
 	<StockIcon stockid = "system-file-manager" resource = "system-file-manager.png" size="Menu" />
+	<StockIcon stockid = "sdk-locations" resource = "sdk-locations-16.png" size="Menu" />
 	<StockIcon stockid = "md-keyboard-shortcuts" resource = "keyboard-shortcuts-16.png" size="Menu"/>
 	<StockIcon stockid = "md-keyboard-shortcuts" resource = "keyboard-shortcuts-22.png" />
 	<StockIcon stockid = "md-text-editor" resource = "text-editor-16.png" size="Menu"/>
