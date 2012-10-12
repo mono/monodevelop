@@ -1,17 +1,18 @@
 <Addin id="FSharpBinding" namespace="MonoDevelop" name="F# Language Binding"
        author="Community" copyright="Community" url="https://github.com/fsharp/fsharpbinding/wiki"
-       description="F# Language Binding" category="Language bindings" version="3.1.1">
+       description="F# Language Binding" category="Language bindings" version="3.1.3">
 
 	<Runtime>
+    	<Import assembly="FSharp.Core.dll" />
     	<Import assembly="FSharpBinding.dll" />
     	<Import assembly="FSharpBinding.Gui.dll" />
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="3.0.3"/>
-		<Addin id="Ide" version="3.0.3"/>
-		<Addin id="SourceEditor2" version="3.0.3"/>
-    	<Addin id="Refactoring" version="3.0.3"/>
+		<Addin id="Core" version="3.0.4"/>
+		<Addin id="Ide" version="3.0.4"/>
+		<Addin id="SourceEditor2" version="3.0.4"/>
+    	<Addin id="Refactoring" version="3.0.4"/>
   </Dependencies>
 
 	<Extension path="/MonoDevelop/ProjectModel/MSBuildItemTypes">
