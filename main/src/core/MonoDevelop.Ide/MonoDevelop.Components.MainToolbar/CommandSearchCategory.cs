@@ -66,11 +66,10 @@ namespace MonoDevelop.Components.MainToolbar
 				newResult.FullSearch = true;
 
 				foreach (SearchResult result in AllResults (lastResult, newResult)) {
-					if (token.IsCancellationRequested)
-						return (ISearchDataSource)newResult.results;
+					token.ThrowIfCancellationRequested ();
 					newResult.results.AddResult (result);
 				}
-				newResult.results.Sort (new DataItemComparer ());
+				newResult.results.Sort (new DataItemComparer (token));
 				lastResult = newResult;
 				return (ISearchDataSource)newResult.results;
 			}, token);
@@ -136,33 +135,6 @@ namespace MonoDevelop.Components.MainToolbar
 				return savedMatch.Match;
 			}
 		}
-
-
-		class DataItemComparer : IComparer<SearchResult>
-		{
-			public int Compare (SearchResult o1, SearchResult o2)
-			{
-				var r = o2.Rank.CompareTo (o1.Rank);
-				if (r == 0)
-					r = o1.SearchResultType.CompareTo (o2.SearchResultType);
-				if (r == 0)
-					return String.CompareOrdinal (o1.MatchedString, o2.MatchedString);
-				return r;
-			}
-		}
-
-		struct MatchResult 
-		{
-			public bool Match;
-			public int Rank;
-			
-			public MatchResult (bool match, int rank)
-			{
-				this.Match = match;
-				this.Rank = rank;
-			}
-		}
-		
 	}
 }
 

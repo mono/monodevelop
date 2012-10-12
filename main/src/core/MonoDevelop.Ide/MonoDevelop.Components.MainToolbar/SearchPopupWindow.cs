@@ -147,6 +147,8 @@ namespace MonoDevelop.Components.MainToolbar
 
 		protected override void OnDestroyed ()
 		{
+			if (src != null)
+				src.Cancel ();
 			HideTooltip ();
 			this.declarationviewwindow.Destroy ();
 			base.OnDestroyed ();
@@ -202,20 +204,11 @@ namespace MonoDevelop.Components.MainToolbar
 			foreach (var _cat in categories) {
 				var cat = _cat;
 				var token = src.Token;
-				var task = cat.GetResults (pattern, token);
-				task.ContinueWith (delegate {
-					if (token.IsCancellationRequested) {
-						return;
-					}
+				var task = cat.GetResults (pattern, token).ContinueWith (t => {
 					Application.Invoke (delegate {
-						if (token.IsCancellationRequested) {
-							return;
-						}
-						ShowResult (cat, task.Result ?? new NullDataSource ());
-					}
-					);
-				}
-				);
+						ShowResult (cat, t.Result ?? new NullDataSource ());
+					});
+				}, token);
 			}
 		}
 

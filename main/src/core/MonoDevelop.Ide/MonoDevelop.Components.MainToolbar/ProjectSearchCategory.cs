@@ -158,13 +158,11 @@ namespace MonoDevelop.Components.MainToolbar
 					foreach (SearchResult result in AllResults (oldLastResult, newResult, token)) {
 						newResult.results.AddResult (result);
 					}
-					if (token.IsCancellationRequested) {
-						return null;
-					}
-					newResult.results.Sort (new DataItemComparer ());
+					newResult.results.Sort (new DataItemComparer (token));
 					lastResult = newResult;
 					return (ISearchDataSource)newResult.results;
 				} catch (Exception e) {
+					token.ThrowIfCancellationRequested ();
 					LoggingService.LogError ("Error while retrieving search results.", e);
 					return null;
 				}
@@ -195,8 +193,7 @@ namespace MonoDevelop.Components.MainToolbar
 				bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern) && lastResult.filteredTypes != null;
 				var allTypes = startsWithLastFilter ? lastResult.filteredTypes : types;
 				foreach (var type in allTypes) {
-					if (token.IsCancellationRequested)
-						yield break;
+					token.ThrowIfCancellationRequested ();
 					if (newResult.Tag != null) {
 						if (newResult.Tag == "c" && type.Kind != TypeKind.Class)
 							continue;
@@ -223,8 +220,7 @@ namespace MonoDevelop.Components.MainToolbar
 				bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern) && lastResult.filteredMembers != null;
 				var allMembers = startsWithLastFilter ? lastResult.filteredMembers : members;
 				foreach (var member in allMembers) {
-					if (token.IsCancellationRequested)
-						yield break;
+					token.ThrowIfCancellationRequested ();
 					if (newResult.Tag != null) {
 						if (newResult.Tag == "m" && member.EntityType != EntityType.Method)
 							continue;
@@ -328,32 +324,5 @@ namespace MonoDevelop.Components.MainToolbar
 				return savedMatch.Match;
 			}
 		}
-
-		class DataItemComparer : IComparer<SearchResult>
-		{
-			public int Compare (SearchResult o1, SearchResult o2)
-			{
-				var r = o2.Rank.CompareTo (o1.Rank);
-				if (r == 0)
-					r = o1.SearchResultType.CompareTo (o2.SearchResultType);
-				if (r == 0)
-					return String.CompareOrdinal (o1.MatchedString, o2.MatchedString);
-				return r;
-			}
-		}
-
-		struct MatchResult
-		{
-			public bool Match;
-			public int Rank;
-			
-			public MatchResult (bool match, int rank)
-			{
-				this.Match = match;
-				this.Rank = rank;
-			}
-		}
-		
 	}
-	
 }

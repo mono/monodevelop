@@ -24,14 +24,57 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide.NavigateToDialog;
 
 namespace MonoDevelop.Components.MainToolbar
 {
 	abstract class SearchCategory 
 	{
+		protected class DataItemComparer : IComparer<SearchResult>
+		{
+			CancellationToken Token {
+				get; set;
+			}
+
+			public DataItemComparer ()
+			{
+			}
+
+			public DataItemComparer (CancellationToken token)
+			{
+				Token = token;
+			}
+
+			public int Compare (SearchResult o1, SearchResult o2)
+			{
+				Token.ThrowIfCancellationRequested ();
+
+				var r = o2.Rank.CompareTo (o1.Rank);
+				if (r == 0)
+					r = o1.SearchResultType.CompareTo (o2.SearchResultType);
+				if (r == 0)
+					return String.CompareOrdinal (o1.MatchedString, o2.MatchedString);
+				return r;
+			}
+		}
+
+		protected struct MatchResult
+		{
+			public bool Match;
+			public int Rank;
+
+			public MatchResult (bool match, int rank)
+			{
+				this.Match = match;
+				this.Rank = rank;
+			}
+		}
+
 		public string Name  {
 			get;
 			set;
