@@ -70,7 +70,7 @@ REFERENCES = \
 	-r:System.dll \
 	-r:System.Core.dll \
 	-r:System.Xml.dll \
-	-r:$(MONOBIN)/Mono.Posix.dll \
+	-r:$(MONOBIN)/../2.0/Mono.Posix.dll \
 	-r:$(MONOBIN)/Mono.Cairo.dll \
 	-r:$(MADIR)/Mono.Addins.dll \
 	-r:$(MDBIN)/MonoDevelop.Core.dll \

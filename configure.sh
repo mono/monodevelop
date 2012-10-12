@@ -15,7 +15,7 @@ echo "            Default value: mono"
 echo ""
 echo "  -f <fsc>  Path/name of the F# compiler executable or script"
 echo "            ('mono' is NOT automatically added to the front) "
-echo "            Default value: fsc"
+echo "            Default value: fsharpc"
 echo ""
 echo "  -c <gmcs> Path/name of the C# compiler executable or script"
 echo "            ('mono' is NOT automatically added to the front) "
@@ -31,11 +31,12 @@ read a
 GMCS=gmcs
 MONO=mono
 
-# Annoyingly, Mono 2.10 installs 'fsc' on Mac, but fresh builds on Linux
+# Annoyingly, Mono 2.10 originally installed 'fsc' on Mac, but 
+# later versions install 'fsharpc'. Fresh builds on Linux
 # and future versions of Mono will install 'fsharpc'. Even more annoyingly,
 # there can be old, crappy versions of 'fsharpc' hanging around on Mac
 # machines - these versions aren't suitable for use with MonoDevelop.
-if [ -d "/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.0" ];
+if [ ! -e "/usr/bin/fsharpc" ] && [ -e "/usr/bin/fsc" ];
 then FSC=fsc; 
 else FSC=fsharpc; 
 fi
