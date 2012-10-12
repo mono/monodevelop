@@ -57,21 +57,26 @@ namespace MonoDevelop.Components.MainToolbar
 		public override Task<ISearchDataSource> GetResults (SearchPopupSearchPattern searchPattern, CancellationToken token)
 		{
 			return Task.Factory.StartNew (delegate {
-				if (searchPattern.Tag != null && !validTags.Contains (searchPattern.Tag) || searchPattern.HasLineNumber)
-					return null;
-				WorkerResult newResult = new WorkerResult (widget);
-				newResult.pattern = searchPattern.Pattern;
+				try {
+					if (searchPattern.Tag != null && !validTags.Contains (searchPattern.Tag) || searchPattern.HasLineNumber)
+						return null;
+					WorkerResult newResult = new WorkerResult (widget);
+					newResult.pattern = searchPattern.Pattern;
 
-				newResult.matcher = StringMatcher.GetMatcher (searchPattern.Pattern, false);
-				newResult.FullSearch = true;
+					newResult.matcher = StringMatcher.GetMatcher (searchPattern.Pattern, false);
+					newResult.FullSearch = true;
 
-				foreach (SearchResult result in AllResults (lastResult, newResult)) {
+					foreach (SearchResult result in AllResults (lastResult, newResult)) {
+						token.ThrowIfCancellationRequested ();
+						newResult.results.AddResult (result);
+					}
+					newResult.results.Sort (new DataItemComparer (token));
+					lastResult = newResult;
+					return (ISearchDataSource)newResult.results;
+				} catch {
 					token.ThrowIfCancellationRequested ();
-					newResult.results.AddResult (result);
+					throw;
 				}
-				newResult.results.Sort (new DataItemComparer (token));
-				lastResult = newResult;
-				return (ISearchDataSource)newResult.results;
 			}, token);
 		}
 

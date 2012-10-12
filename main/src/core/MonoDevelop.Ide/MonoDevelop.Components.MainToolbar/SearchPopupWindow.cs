@@ -205,9 +205,13 @@ namespace MonoDevelop.Components.MainToolbar
 				var cat = _cat;
 				var token = src.Token;
 				var task = cat.GetResults (pattern, token).ContinueWith (t => {
-					Application.Invoke (delegate {
-						ShowResult (cat, t.Result ?? new NullDataSource ());
-					});
+					if (t.IsFaulted) {
+						LoggingService.LogError ("Error getting search results", t.Exception);
+					} else {
+						Application.Invoke (delegate {
+							ShowResult (cat, t.Result ?? new NullDataSource ());
+						});
+					}
 				}, token);
 			}
 		}

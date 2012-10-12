@@ -161,10 +161,9 @@ namespace MonoDevelop.Components.MainToolbar
 					newResult.results.Sort (new DataItemComparer (token));
 					lastResult = newResult;
 					return (ISearchDataSource)newResult.results;
-				} catch (Exception e) {
+				} catch {
 					token.ThrowIfCancellationRequested ();
-					LoggingService.LogError ("Error while retrieving search results.", e);
-					return null;
+					throw;
 				}
 			}, token);
 		}
