@@ -30,21 +30,30 @@ open Mono.Addins
 type FSharpCompiler(reqVersion:FSharpCompilerVersion) =      
     let otherVersion = match reqVersion with FSharp_2_0 -> FSharp_3_0 | FSharp_3_0 -> FSharp_2_0
     let tryVersion (ver:FSharpCompilerVersion) = 
+         // Somewhat surprisingly, Load() and LoadWithPartialName() can still return
+         // assemblies with the wrong version, if the right version is not available....
+         let checkVersion (a:System.Reflection.Assembly) = 
+             let nm = a.GetName()
+             if nm.Version.ToString() = ver.ToString() then a 
+             else failwith (sprintf "loaded %s, but had wrong version, wanted %s, got %s" nm.Name (ver.ToString()) (nm.Version.ToString()))
          try 
            // Try getting the assemblies using the microsoft strong name
-           let asm = Assembly.Load("FSharp.Compiler, Version="+ver.ToString()+", Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")
-           let asm2 = Assembly.Load("FSharp.Compiler.Server.Shared, Version="+ver.ToString()+", Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")
+           let asm = Assembly.Load("FSharp.Compiler, Version="+ver.ToString()+", Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a") |> checkVersion
+           let asm2 = Assembly.Load("FSharp.Compiler.Server.Shared, Version="+ver.ToString()+", Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a") |> checkVersion
            asm,asm2,ver
          with _ -> 
-           // Try getting the assemblies by partial name. 
-           let checkVersion (a:System.Reflection.Assembly) = 
-               let nm = a.GetName()
-               if nm.Version.ToString() = ver.ToString() then a 
-               else failwith (sprintf "loaded %s, but had wrong version, wanted %s, got %s" nm.Name (ver.ToString()) (nm.Version.ToString()))
-           let asm = Assembly.LoadWithPartialName("FSharp.Compiler, Version="+ver.ToString()) |> checkVersion
-           let asm2 = Assembly.LoadWithPartialName("FSharp.Compiler.Server.Shared, Version="+ver.ToString()) |> checkVersion
+           try 
+             // Try getting the assemblies by partial name. 
+             let asm = Assembly.LoadWithPartialName("FSharp.Compiler, Version="+ver.ToString()) |> checkVersion
+             let asm2 = Assembly.LoadWithPartialName("FSharp.Compiler.Server.Shared, Version="+ver.ToString()) |> checkVersion
+             asm,asm2,ver
+           with _ when FSharpEnvironment.BinFolderOfDefaultFSharpCompiler().IsSome -> 
+             // Try getting the assemblies by location
+             let dir = FSharpEnvironment.BinFolderOfDefaultFSharpCompiler().Value
+             let asm = Assembly.LoadFrom(Path.Combine(dir, "FSharp.Compiler.dll")) |> checkVersion
+             let asm2 = Assembly.LoadFrom(Path.Combine(dir, "FSharp.Compiler.Server.Shared.dll")) |> checkVersion
              
-           asm,asm2,ver
+             asm,asm2,ver
 
     let asm,asm2,actualVersion = 
         try tryVersion reqVersion 

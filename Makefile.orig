@@ -70,7 +70,7 @@ REFERENCES = \
 	-r:System.dll \
 	-r:System.Core.dll \
 	-r:System.Xml.dll \
-	-r:$(MONOBIN)/Mono.Posix.dll \
+	-r:$(MONOBIN)/../2.0/Mono.Posix.dll \
 	-r:$(MONOBIN)/Mono.Cairo.dll \
 	-r:$(MADIR)/Mono.Addins.dll \
 	-r:$(MDBIN)/MonoDevelop.Core.dll \
@@ -106,27 +106,33 @@ GUIFILES = \
 GUIOPTIONS = \
 	-debug+ -out:bin/FSharpBinding.Gui.dll -target:library
 
-bin/FSharpBinding.dll: bin/FSharpBinding.Gui.dll $(FILES)
+TARGETS = bin/FSharp.Core.dll bin/FSharpBinding.dll  bin/FSharpBinding.Gui.dll
+
+all: $(TARGETS)
+
+bin/FSharp.Core.dll: $(MONOBIN)/FSharp.Core.dll
+	@-mkdir -p bin
+	cp -p $(MONOBIN)/FSharp.Core.dll bin/FSharp.Core.dll
+
+bin/FSharpBinding.dll: bin/FSharpBinding.Gui.dll $(FILES) bin/FSharp.Core.dll MonoDevelop.FSharpBinding/FSharpBinding.addin.xml
 	$(FSC) $(OPTIONS) $(FS_REFERENCES) $(RESOURCES) $(FILES) 
 
 bin/FSharpBinding.Gui.dll: $(GUIFILES)
-	mkdir -p bin
+	@-mkdir -p bin
 	$(CSC) $(GUIOPTIONS) $(REFERENCES) $(GUIFILES) 
 
-install: bin/FSharpBinding.dll  bin/FSharpBinding.Gui.dll
-	cp bin/FSharpBinding.* $(MDADDIN)/BackendBindings/
-	gacutil /i $(FSBIN)/FSharp.Compiler.dll
-	gacutil /i $(FSBIN)/FSharp.Compiler.Server.Shared.dll
+install: $(TARGETS)
+	cp -p bin/FSharp* $(MDADDIN)/BackendBindings/
 
 install-mac: bin/FSharpBinding.dll  bin/FSharpBinding.Gui.dll
-	-rm -fr ~/Library/Application\ Support/MonoDevelop-3.0/LocalInstall/Addins/*.FSharpBinding*
-	@-mkdir ~/Library/Application\ Support/MonoDevelop-3.0/LocalInstall/Addins/MonoDevelop.FSharpBinding.3.1.2.1
-	cp -p bin/FSharpBinding.* ~/Library/Application\ Support/MonoDevelop-3.0/LocalInstall/Addins/MonoDevelop.FSharpBinding.3.1.2.1
+	-rm -fr ~/Library/Application\ Support/MonoDevelop-3.0/LocalInstall/Addins/*.FSharp*
+	@-mkdir ~/Library/Application\ Support/MonoDevelop-3.0/LocalInstall/Addins/MonoDevelop.FSharpBinding.3.1.3
+	cp -p bin/FSharp* ~/Library/Application\ Support/MonoDevelop-3.0/LocalInstall/Addins/MonoDevelop.FSharpBinding.3.1.3
 
 
 uninstall:
-	rm $(MDADDIN)/BackendBindings/FSharpBinding.*
-	rm $(MDADDIN)/BackendBindings/FSharpCompiler.dll
+	rm $(MDADDIN)/BackendBindings/FSharp*
+	-rm -fr ~/Library/Application\ Support/MonoDevelop-3.0/LocalInstall/Addins/*.FSharp*
 
 package: bin/FSharpBinding.dll  bin/FSharpBinding.Gui.dll
 	mkdir -p bin/repository
