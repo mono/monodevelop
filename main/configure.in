@@ -340,7 +340,6 @@ src/addins/MonoDevelop.DocFood/Makefile
 tests/Makefile
 tests/UnitTests/Makefile
 tests/UserInterfaceTests/Makefile
-tests/MonoDevelop.MacDev.Tests/Makefile
 tests/MacPlatform.Tests/Makefile
 Makefile
 monodevelop
