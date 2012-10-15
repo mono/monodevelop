@@ -156,12 +156,12 @@ namespace MonoDevelop.VersionControl.Views
 
 			if (editors.Length == 2) {
 				editors[0].Painted +=  delegate (object sender, PaintEventArgs args) {
-					var myEditor = (TextEditor)sender;
+					var myEditor = (TextArea)sender;
 					PaintEditorOverlay (myEditor, args, LeftDiff, true);
 				};
 
 				editors[1].Painted +=  delegate (object sender, PaintEventArgs args) {
-					var myEditor = (TextEditor)sender;
+					var myEditor = (TextArea)sender;
 					PaintEditorOverlay (myEditor, args, LeftDiff, false);
 				};
 
@@ -169,16 +169,16 @@ namespace MonoDevelop.VersionControl.Views
 				Add (rightDiffScrollBar);
 			} else {
 				editors[0].Painted +=  delegate (object sender, PaintEventArgs args) {
-					var myEditor = (TextEditor)sender;
+					var myEditor = (TextArea)sender;
 					PaintEditorOverlay (myEditor, args, LeftDiff, true);
 				};
 				editors[1].Painted +=  delegate (object sender, PaintEventArgs args) {
-					var myEditor = (TextEditor)sender;
+					var myEditor = (TextArea)sender;
 					PaintEditorOverlay (myEditor, args, LeftDiff, false);
 					PaintEditorOverlay (myEditor, args, RightDiff, false);
 				};
 				editors[2].Painted +=  delegate (object sender, PaintEventArgs args) {
-					var myEditor = (TextEditor)sender;
+					var myEditor = (TextArea)sender;
 					PaintEditorOverlay (myEditor, args, RightDiff, true);
 				};
 				rightDiffScrollBar = new DiffScrollbar (this, editors[2], false, false);
@@ -537,7 +537,7 @@ namespace MonoDevelop.VersionControl.Views
 			return result;
 		}
 		
-		void PaintEditorOverlay (TextEditor editor, PaintEventArgs args, List<Mono.TextEditor.Utils.Hunk> diff, bool paintRemoveSide)
+		void PaintEditorOverlay (TextArea editor, PaintEventArgs args, List<Mono.TextEditor.Utils.Hunk> diff, bool paintRemoveSide)
 		{
 			if (diff == null)
 				return;
