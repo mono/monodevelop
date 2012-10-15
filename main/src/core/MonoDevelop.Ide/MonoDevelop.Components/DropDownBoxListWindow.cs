@@ -195,6 +195,7 @@ namespace MonoDevelop.Components
 				int rowWidth;
 				layout.GetPixelSize (out rowWidth, out rowHeight);
 				rowHeight += padding;
+				SetBounds (Allocation);
 			}
 			
 			protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)
@@ -444,15 +445,21 @@ namespace MonoDevelop.Components
 				return w;
 			}
 
+			void SetBounds (Gdk.Rectangle allocation)
+			{
+				if (vadj == null)
+					return;
+				var height = Math.Max (allocation.Height, rowHeight * win.DataProvider.IconCount);
+				vadj.SetBounds (0, height, RowHeight, allocation.Height, allocation.Height);
+			}
+
 			protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 			{
 				base.OnSizeAllocated (allocation);
 
 				hadj.SetBounds (0, allocation.Width, 0, 0, allocation.Width);
 
-				var pageStep = VisibleRows;
-				var height = Math.Max (allocation.Height, rowHeight * win.DataProvider.IconCount - allocation.Height);
-				vadj.SetBounds (0, height, RowHeight, pageStep, allocation.Height);
+				SetBounds (allocation);
 
 				UpdatePage ();
 			}
