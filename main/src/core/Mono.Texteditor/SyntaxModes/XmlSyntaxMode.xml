@@ -41,33 +41,33 @@
 		<End>;</End>
 	</Span>
 	
-	<Span tagColor = "keyword.declaration" color = "text.markup" rule = "InTag">
+	<Span tagColor = "keyword.declaration" color = "xml" rule = "InTag">
 		<Begin>&lt;!DOCTYPE</Begin>
 		<End>&gt;</End>
 	</Span>
 	
-	<Span tagColor = "keyword.exceptions" color = "comment" rule = "Comment">
+	<Span tagColor = "xml.cdata" color = "xml.cdata" rule = "Comment">
 		<Begin>&lt;![CDATA[</Begin>
 		<End>]]&gt;</End>
 	</Span>
 	
-	<Span color = "text.markup" rule = "InJavascript" >
+	<Span color = "xml" rule = "InJavascript" >
 		<Begin>&lt;script</Begin>
 		<End>&lt;/script&gt;</End>
 	</Span>
 	
 	<!-- processing instructions -->
-	<Span tagColor = "keyword.declaration" color = "text.markup" rule = "InTag">
+	<Span tagColor = "keyword.declaration" color = "xml.tag" rule = "InTag">
 		<Begin>&lt;?</Begin>
 		<End>?&gt;</End>
 	</Span>
 	
-	<Span tagColor = "text" color = "text.markup" rule = "InTag">
+	<Span tagColor = "xml.tag" color = "xml.name" rule = "InTag">
 		<Begin>&lt;/</Begin>
 		<End>&gt;</End>
 	</Span>
 	
-	<Span tagColor = "text" color = "text.markup" rule = "InTag">
+	<Span tagColor = "xml.tag" color = "xml.name" rule = "InTag">
 		<Begin>&lt;</Begin>
 		<Exit>&gt;</Exit>
 		<End>/&gt;</End>
@@ -100,7 +100,7 @@
 		
 		<!-- attributes -->
 		<Match expression="([A-Za-z0-9_]+[:[A-Za-z0-9_]+]?)([\s\n\r]*=)">
-			<Group color = "text.markup.attribute"/>
+			<Group color = "xml.attribute"/>
 			<Group color = "text"/>
 		</Match>
 	</Rule>

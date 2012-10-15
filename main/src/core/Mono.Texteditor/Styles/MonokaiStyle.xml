@@ -45,11 +45,13 @@ THE SOFTWARE.
 		<Style name="preprocessor" color="#729fcf">
 			<Style name="keyword" color="#729fcf" weight="Italic"/>
 		</Style>
-		
-		<Style name="markup" color="#F92672">
-			<Style name="attribute" color="#98FC66" />
-			<Style name="tag" weight="Bold" />
-		</Style>
+	</Style>
+	
+	<Style name="xml" color="#F8F8F2" bgColor="#272822">
+		 <Style name="tag" color="#F8F8F2"/>
+		 <Style name="name" color="#F92672"/>
+		 <Style name="attribute" color="#98FC66"/>
+		 <Style name="cdata" color="#E6DB74"/>
 	</Style>
 	
 	<Style name="tooltip" color="black" bgColor="#272725"/>

@@ -86,7 +86,7 @@ namespace MonoDevelop.AspNet
 					Begin = new Regex ("<script");
 					End = new Regex ("</script");
 					Color = "";
-					TagColor = "text.markup.tag";
+					TagColor = "xml.name";
 				}
 			}
 			

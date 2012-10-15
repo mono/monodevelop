@@ -26,7 +26,7 @@
 <SyntaxMode name = "Changelog" mimeTypes="text/x-changelog">
 	<Match color = "string">\d{4}-\d{2}-\d{2}</Match>
 	
-	<Span color = "text.markup" rule ="InEmail">
+	<Span color = "xml.name" rule ="InEmail">
 		<Begin>&lt;</Begin>
 		<End>&gt;</End>
 	</Span>

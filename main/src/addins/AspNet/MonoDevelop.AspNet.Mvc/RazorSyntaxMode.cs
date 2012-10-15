@@ -128,14 +128,14 @@ namespace MonoDevelop.AspNet.Mvc
 				if ((!symbol.Keyword.HasValue && prevSymbol.Type == CSharpSymbolType.LessThan && (Char.IsLetterOrDigit (c) || c == '/'))
 					|| (prevSymbol.Type == CSharpSymbolType.Slash && currentState == State.InTag)) {
 					currentState = State.InTag;
-					chunks.Last ().Style = "text.markup";
-					return "text.markup";
+					chunks.Last ().Style = "xml.name";
+					return "xml.name";
 				}
 				if (symbol.Type == CSharpSymbolType.GreaterThan && currentState == State.InTag) {
 					currentState = State.None;
 					if (prevSymbol.Type == CSharpSymbolType.Slash)
-						chunks.Last ().Style = "text.markup";
-					return "text.markup";
+						chunks.Last ().Style = "xml.name";
+					return "xml.name";
 				}
 			}
 			if (symbol.Type == CSharpSymbolType.RightBrace || symbol.Type == CSharpSymbolType.RightParenthesis)

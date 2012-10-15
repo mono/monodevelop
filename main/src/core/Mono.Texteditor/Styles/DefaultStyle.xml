@@ -62,11 +62,15 @@
 		 <Style name="preprocessor" color="#c12dad" weight="regular">
 			 <Style name="keyword" weight="bold"/>
 		 </Style>
-		 <Style name="markup" color="comment-gray" weight="italic">
-			 <Style name="tag"/>
-		 </Style>
 	 </Style>
-
+	
+	<Style name="xml" color="text-black" bgColor="white">
+		 <Style name="tag" color="text-black"/>
+		 <Style name="name" color="skyblue2"/>
+		 <Style name="attribute" color="text-black"/>
+		 <Style name="cdata" color="text-black"/>
+	</Style>
+	
 	 <Style name="tooltip" color="text-black" bgColor="#feffe9"/>
 
 	 <Style name="completion" color="#434343" bgColor="#F0F6F8">

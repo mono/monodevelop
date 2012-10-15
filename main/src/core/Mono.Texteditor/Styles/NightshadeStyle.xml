@@ -151,9 +151,14 @@
 	<Style name="text.punctuation" color="StringVim"/>
 	<Style name="text.preprocessor" color="PreProcVim" weight="italic"/>
 	<Style name="text.preprocessor.keyword" color="PreProcVim" weight="bold"/>
-	<Style name="text.markup" color="PreProcVim"/>
-	<Style name="text.markup.tag" color="PreProcVim"/>
 	
+	<Style name="xml" color="NormalVim" bgColor="BlackVim">
+		 <Style name="tag" color="NormalVim"/>
+		 <Style name="name" color="PreProcVim"/>
+		 <Style name="attribute" color="PreProcVim"/>
+		 <Style name="cdata" color="PreProcVim"/>
+	</Style>
+
 	<Style name="constant" color="ConstantVim"/>
 	<Style name="constant.digit" color="NumberVim"/>
 	<Style name="constant.language" color="SpecialVim"/>

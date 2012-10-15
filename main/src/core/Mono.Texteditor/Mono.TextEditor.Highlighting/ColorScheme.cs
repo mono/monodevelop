@@ -499,9 +499,11 @@ namespace Mono.TextEditor.Highlighting
 			SetStyle ("text.link",                 0,    0,  255);
 			SetStyle ("text.preprocessor",         0,  128,    0);
 			SetStyle ("text.preprocessor.keyword", 0,  128,    0, BOLD);
-			SetStyle ("text.markup",               0, 0x8A, 0x8C);
-			SetStyle ("text.markup.tag",        0x6A, 0x5A, 0xCD);
-			
+			SetStyle ("xml",                       0, 0x8A, 0x8C);
+			SetStyle ("xml.tag",                0x6A, 0x5A, 0xCD);
+			SetStyle ("xml.name",               0x6A, 0x5A, 0xCD);
+			SetStyle ("xml.cdata",              0x6A, 0x5A, 0xCD);
+
 			SetStyle ("comment",              0,   0, 255);
 			SetStyle ("comment.line",         0,   0, 255);
 			SetStyle ("comment.block",        0,   0, 255);

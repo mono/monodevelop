@@ -64,10 +64,13 @@ THE SOFTWARE.
 		<Style name="preprocessor" color="orange">
 			<Style name="keyword" weight="italic"/>
 		</Style>
-		<Style name="markup" color="blue">
-			<Style name="attribute" color="base00" />
-			<Style name="tag"/>
-		</Style>
+	</Style>
+	
+	<Style name="xml" color="base00" bgColor="base03">
+		 <Style name="tag" color="base00"/>
+		 <Style name="name" color="blue"/>
+		 <Style name="attribute" color="base00"/>
+		 <Style name="cdata" color="cyan"/>
 	</Style>
 	
 	<Style name="tooltip" color="black" bgColor="#feffe9"/>

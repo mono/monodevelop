@@ -67,10 +67,13 @@
 		<Style name="preprocessor" color="orange2">
 			<Style name="keyword" weight="bold"/>
 		</Style>
-		<Style name="markup" color="skyblue3">
-			<Style name="attribute" weight="italic"/>
-			<Style name="tag"/>
-		</Style>
+	</Style>
+	
+	<Style name="xml" color="black" bgColor="white">
+		<Style name="tag" color="skyblue3"/>
+		<Style name="name" color="skyblue3"/>
+		<Style name="attribute" color="skyblue3" weight="italic"/>
+		<Style name="cdata" color="plum2"/>
 	</Style>
 	
 	<Style name="tooltip" color="black" bgColor="#feffe9"/>

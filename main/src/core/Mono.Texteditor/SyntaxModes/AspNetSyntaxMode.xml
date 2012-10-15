@@ -53,7 +53,7 @@
 		<End>;</End>
 	</Span>
 	
-	<Span tagColor = "keyword.declaration" color = "text.markup" rule = "InTag">
+	<Span tagColor = "keyword.declaration" color = "xml.name" rule = "InTag">
 		<Begin>&lt;!DOCTYPE</Begin>
 		<End>&gt;</End>
 	</Span>
@@ -65,13 +65,13 @@
 	</Span>
 	
 	<!-- processing instructions -->
-	<Span tagColor = "keyword.declaration" color = "text.markup" rule = "InTag">
+	<Span tagColor = "keyword.declaration" color = "xml.name" rule = "InTag">
 		<Begin>&lt;?</Begin>
 		<End>?&gt;</End>
 	</Span>
 	
 	<!-- tags -->
-	<Span color = "text.markup" rule = "InTag">
+	<Span color = "xml.name" rule = "InTag">
 		<Begin>&lt;</Begin>
 		<End>&gt;</End>
 	</Span>

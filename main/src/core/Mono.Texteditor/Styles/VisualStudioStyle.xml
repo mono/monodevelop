@@ -68,7 +68,13 @@
 	<Style name="comment" color="comment-green"/>
 
 	<Style name="text.preprocessor" color="purple"/>
-	<Style name="text.markup" color="skyblue"/>
+	
+	<Style name="xml" color="black" bgColor="white">
+		<Style name="tag" color="black"/>
+		<Style name="name" color="skyblue"/>
+		<Style name="attribute" color="skyblue"/>
+		<Style name="cdata" color="#a31515"/>
+	</Style>
 	
 	<Style name="tooltip" color="black" bgColor="#feffe9"/>
 	
