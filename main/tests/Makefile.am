@@ -1,6 +1,6 @@
 include $(top_srcdir)/Makefile.include
 
-SUBDIRS=UnitTests MacPlatform.Tests UserInterfaceTests
+SUBDIRS=UnitTests MacPlatform.Tests MonoDevelop.MacDev.Tests UserInterfaceTests
 
 MONO=mono
 HARNESS=$(top_srcdir)/external/mdtestharness/nunit-console-x86.exe -domain=multiple
