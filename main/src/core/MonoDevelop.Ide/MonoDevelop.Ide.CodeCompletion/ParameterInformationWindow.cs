@@ -67,9 +67,16 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public ParameterInformationWindow ()
 		{
+			TypeHint = Gdk.WindowTypeHint.Utility;
+			this.SkipTaskbarHint = true;
+			this.SkipPagerHint = true;
+			if (IdeApp.Workbench != null)
+				this.TransientFor = IdeApp.Workbench.RootWindow;
 			this.AllowShrink = false;
 			this.AllowGrow = false;
-			
+			this.CanFocus = false;
+			this.CanDefault = false;
+
 			headlabel = new MonoDevelop.Components.FixedWidthWrapLabel ();
 			headlabel.Indent = -20;
 			var des = FontService.GetFontDescription ("Editor");
