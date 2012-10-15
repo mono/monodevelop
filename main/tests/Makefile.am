@@ -1,5 +1,7 @@
 include $(top_srcdir)/xbuild.include
 
+SUBDIRS=UnitTests MacPlatform.Tests UserInterfaceTests
+
 MONO=mono
 HARNESS=$(top_srcdir)/external/mdtestharness/nunit-console-x86.exe -domain=multiple
 RUN_TEST=$(MD_LAUNCH_SETUP) $(MONO) $(HARNESS)
