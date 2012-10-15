@@ -39,7 +39,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		bool destroyed;
 		EventHandler recentChangesHandler;
 		VBox box;
-		int itemCount = 7;
+		int itemCount = 10;
 		Gdk.Pixbuf openProjectIcon;
 		Gdk.Pixbuf newProjectIcon;
 		
