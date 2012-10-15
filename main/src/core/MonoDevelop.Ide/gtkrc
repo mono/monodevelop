@@ -66,6 +66,7 @@ style "default" {
     GtkTreeView::odd-row-color = @base_color
 
     GtkScrolledWindow::scrollbar-spacing = 0
+    GtkScrolledWindow::scrollbars-within-bevel = 1
     GtkScale::slider-length = 14
     GtkRange::trough-side-details = 1
 
