@@ -300,6 +300,23 @@ namespace MonoDevelop.CSharp.Highlighting
 					Colorize (propertyDeclaration.Setter.FirstChild, contextualHighlightKeywords["set"]);
 			}
 
+			public override void VisitArrayInitializerExpression (ArrayInitializerExpression arrayInitializerExpression)
+			{
+				foreach (var a in arrayInitializerExpression.Elements) {
+					var namedElement = a as NamedExpression;
+					if (namedElement != null) {
+						if (namedElement.NameToken.StartLocation.Line == lineNumber) {
+							var result = resolver.Resolve (namedElement, cancellationToken);
+							if (result.IsError)
+								Colorize (namedElement.NameToken, "keyword.semantic.error");
+						}
+						namedElement.Expression.AcceptVisitor (this);
+					} else {
+						a.AcceptVisitor (this);
+					}
+				}
+			}
+
 			public override void VisitCustomEventDeclaration (CustomEventDeclaration eventDeclaration)
 			{
 				base.VisitCustomEventDeclaration (eventDeclaration);
@@ -936,7 +953,8 @@ namespace MonoDevelop.CSharp.Highlighting
 						return !result;
 					return result;
 				}
-				
+
+
 				public override object VisitPrimitiveExpression (PrimitiveExpression primitiveExpression, object data)
 				{
 					if (primitiveExpression.Value is bool)
@@ -967,6 +985,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				{
 					return parenthesizedExpression.Expression.AcceptVisitor (this, data);
 				}
+
 			}
 			
 			void ScanPreProcessorElse (ref int i)
