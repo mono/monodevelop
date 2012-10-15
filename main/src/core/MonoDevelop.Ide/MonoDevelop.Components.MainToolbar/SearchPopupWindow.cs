@@ -165,6 +165,7 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 			else {
 				var region = SelectedItemRegion;
+				Destroy ();
 
 				if (string.IsNullOrEmpty (region.FileName))
 					return;
@@ -177,7 +178,6 @@ namespace MonoDevelop.Components.MainToolbar
 				} else {
 					IdeApp.Workbench.OpenDocument (region.FileName, region.BeginLine, region.BeginColumn);
 				}
-				Destroy ();
 			}
 		}
 		SearchPopupSearchPattern pattern;
