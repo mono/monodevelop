@@ -117,6 +117,24 @@ namespace Mono.TextEditor
 				L = l
 			};
 		}
+
+		public uint ToPixel ()
+		{
+			double r, g, b;
+			ToRgb(out r, out g, out b);
+			uint rv = (uint)(r * 255);
+			uint gv = (uint)(g * 255);
+			uint bv = (uint)(b * 255);
+			return rv << 16 | gv << 8 | bv;
+		}
+
+		public static HslColor FromPixel (uint pixel)
+		{
+			var r = ((pixel >> 16) & 0xFF) / 255.0;
+			var g = ((pixel >> 8) & 0xFF) / 255.0;
+			var b = (pixel & 0xFF) / 255.0;
+			return new HslColor (r, g, b);
+		}
 		
 		public HslColor (double r, double g, double b) : this ()
 		{
