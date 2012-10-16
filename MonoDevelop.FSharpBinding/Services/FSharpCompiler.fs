@@ -32,10 +32,13 @@ type FSharpCompiler(reqVersion:FSharpCompilerVersion) =
     let tryVersion (ver:FSharpCompilerVersion) = 
          // Somewhat surprisingly, Load() and LoadWithPartialName() can still return
          // assemblies with the wrong version, if the right version is not available....
-         let checkVersion (a:System.Reflection.Assembly) = 
-             let nm = a.GetName()
-             if nm.Version.ToString() = ver.ToString() then a 
-             else failwith (sprintf "loaded %s, but had wrong version, wanted %s, got %s" nm.Name (ver.ToString()) (nm.Version.ToString()))
+         let checkVersion (ass:System.Reflection.Assembly) = 
+             if ass = null then failwith (sprintf "no assembly found, wanted verion %s" (ver.ToString())) else
+             let nm = ass.GetName()
+             if nm = null then failwith (sprintf "no assembly name found, wanted verion %s" (ver.ToString())) 
+             elif nm.Name = null then failwith (sprintf "no assembly name property Name found, nm = %s, wanted verion %s" (nm.ToString()) (ver.ToString()))
+             elif nm.Version.ToString() <> ver.ToString() then failwith (sprintf "loaded %s, but had wrong version, wanted %s, got %s" nm.Name (ver.ToString()) (nm.Version.ToString()))
+             else ass
          try 
            // Try getting the assemblies using the microsoft strong name
            let asm = Assembly.Load("FSharp.Compiler, Version="+ver.ToString()+", Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a") |> checkVersion
