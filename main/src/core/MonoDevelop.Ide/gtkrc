@@ -66,7 +66,6 @@ style "default" {
     GtkTreeView::odd-row-color = @base_color
 
     GtkScrolledWindow::scrollbar-spacing = 0
-    GtkScrolledWindow::scrollbars-within-bevel = 1
     GtkScale::slider-length = 14
     GtkRange::trough-side-details = 1
 
@@ -280,11 +279,16 @@ style "scrollbar" = "default"
 {
     GtkScrollbar::has-forward-stepper = 0
     GtkScrollbar::has-backward-stepper = 0
-    GtkRange::slider-width = 14
+    GtkRange::slider-width = 10
     GtkRange::trough-border = 2
     GtkRange::trough-side-details = 0
 
-    engine "quartz" {
+    bg[SELECTED] = @bg_color
+    bg[NORMAL] = @bg_color
+
+    engine "xamarin" {
+        trough_shades = { 0.968, 1.04 }
+        roundness = 0
     }
 }
 

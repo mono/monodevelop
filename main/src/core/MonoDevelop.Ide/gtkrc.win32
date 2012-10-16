@@ -265,10 +265,17 @@ style "search-entry" = "wider"
 
 style "scrollbar" = "default"
 {
-    GtkRange::slider-width = 7
+    GtkScrollbar::has-forward-stepper = 0
+    GtkScrollbar::has-backward-stepper = 0
+    GtkRange::slider-width = 10
     GtkRange::trough-border = 2
 
-    engine "wimp" {
+    bg[SELECTED] = @bg_color
+    bg[NORMAL] = @bg_color
+
+    engine "xamarin" {
+        trough_shades = { 0.968, 1.04 }
+        roundness = 0
     }
 }
 
