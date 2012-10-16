@@ -835,9 +835,9 @@
 			_description="Inserts a template or when something is selected surrounds selection with a template"
 			_label = "I_nsert Template..."/>
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.LineEnd"
-			_label = "Go to end of line" />
+			_label = "Go to end of line" macShortcut = "End"/>
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.LineStart"
-			_label = "Go to beginning of line" />
+			_label = "Go to beginning of line" macShortcut = "Home"/>
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DeleteLeftChar"
 			_label = "Delete left character" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DeleteRightChar"
