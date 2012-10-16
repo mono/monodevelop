@@ -294,10 +294,16 @@ namespace MonoDevelop.CSharp.Highlighting
 				base.VisitPropertyDeclaration (propertyDeclaration);
 				if (propertyDeclaration.NameToken.StartLocation.Line == lineNumber)
 					Colorize (propertyDeclaration.NameToken, "keyword.semantic.property.declaration");
-				if (!propertyDeclaration.Getter.IsNull && propertyDeclaration.Getter.FirstChild.StartLocation.Line == lineNumber)
-					Colorize (propertyDeclaration.Getter.FirstChild, contextualHighlightKeywords["get"]);
-				if (!propertyDeclaration.Setter.IsNull && propertyDeclaration.Setter.FirstChild.StartLocation.Line == lineNumber)
-					Colorize (propertyDeclaration.Setter.FirstChild, contextualHighlightKeywords["set"]);
+				if (!propertyDeclaration.Getter.IsNull) {
+					var getKeyword = propertyDeclaration.Getter.GetChildByRole (PropertyDeclaration.GetKeywordRole);
+					if (getKeyword != null && getKeyword.StartLocation.Line == lineNumber)
+						Colorize (getKeyword, contextualHighlightKeywords ["get"]);
+				}
+				if (!propertyDeclaration.Setter.IsNull) {
+					var setKeyword = propertyDeclaration.Setter.GetChildByRole (PropertyDeclaration.SetKeywordRole);
+					if (setKeyword != null &&setKeyword.StartLocation.Line == lineNumber)
+						Colorize (setKeyword, contextualHighlightKeywords ["set"]);
+				}
 			}
 
 			public override void VisitArrayInitializerExpression (ArrayInitializerExpression arrayInitializerExpression)
@@ -320,10 +326,16 @@ namespace MonoDevelop.CSharp.Highlighting
 			public override void VisitCustomEventDeclaration (CustomEventDeclaration eventDeclaration)
 			{
 				base.VisitCustomEventDeclaration (eventDeclaration);
-				if (!eventDeclaration.AddAccessor.IsNull && eventDeclaration.AddAccessor.FirstChild.StartLocation.Line == lineNumber)
-					Colorize (eventDeclaration.AddAccessor.FirstChild, contextualHighlightKeywords["add"]);
-				if (!eventDeclaration.RemoveAccessor.IsNull && eventDeclaration.RemoveAccessor.FirstChild.StartLocation.Line == lineNumber)
-					Colorize (eventDeclaration.RemoveAccessor.FirstChild, contextualHighlightKeywords["remove"]);
+				if (!eventDeclaration.AddAccessor.IsNull) {
+					var addKeyword = eventDeclaration.AddAccessor.GetChildByRole (CustomEventDeclaration.AddKeywordRole);
+					if (addKeyword != null && addKeyword.StartLocation.Line == lineNumber)
+						Colorize (addKeyword, contextualHighlightKeywords ["add"]);
+				}
+				if (!eventDeclaration.RemoveAccessor.IsNull) {
+					var removeKeyword = eventDeclaration.RemoveAccessor.GetChildByRole (CustomEventDeclaration.RemoveKeywordRole);
+					if (removeKeyword != null && removeKeyword.StartLocation.Line == lineNumber)
+						Colorize (removeKeyword, contextualHighlightKeywords ["remove"]);
+				}
 			}
 
 			public override void VisitMethodDeclaration (MethodDeclaration methodDeclaration)
