@@ -6,28 +6,28 @@
        url         = "http://www.monodevelop.com/"
        description = "CSharp Language Binding"
        category    = "Language bindings"
-       version     = "3.1.0">
-	
+       version     = "3.0.4">
+
 	<Dependencies>
-		<Addin id="Core" version="3.1.0"/>
-		<Addin id="Ide" version="3.1.0"/>
-		<Addin id="SourceEditor2" version="3.1.0"/>
-		<Addin id="Refactoring" version="3.1.0"/>
+		<Addin id="Core" version="3.0.4"/>
+		<Addin id="Ide" version="3.0.4"/>
+		<Addin id="SourceEditor2" version="3.0.4"/>
+		<Addin id="Refactoring" version="3.0.4"/>
 	</Dependencies>
-	
+
 	<ConditionType id="MSBuildTargetIsAvailable" type="MonoDevelop.Projects.Formats.MSBuild.TargetsAvailableCondition" />
-	
+
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Command id = "MonoDevelop.CodeGeneration.CodeGenerationCommands.ShowCodeGenerationWindow"
 				defaultHandler = "MonoDevelop.CodeGeneration.ShowCodeGenerationWindowHandler"
-				_label = "S_how Code Generation Window" 
+				_label = "S_how Code Generation Window"
 				shortcut = "Alt|Insert" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
-		<DotNetProject 
-			language="C#" 
-			extension="csproj" 
+		<DotNetProject
+			language="C#"
+			extension="csproj"
 			guid="{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
 			import="$(MSBuildBinPath)\Microsoft.CSharp.targets"
 			resourceHandler="MonoDevelop.CSharp.Project.CSharpResourceIdBuilder"
@@ -57,7 +57,7 @@
 			<ProjectTemplate id = "CSharpPortableLibrary" resource = "PortableLibrary.xpt.xml" />
 		</Condition>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/FileFilters">
 		<FileFilter id = "CSharp"
 		            insertbefore = "Assemblies"
@@ -80,94 +80,94 @@
 			             class = "MonoDevelop.CSharp.Project.CodeGenerationPanel"/>
 		</Condition>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/ProjectModel/LanguageBindings">
 		<LanguageBinding id    = "CSharp"
 		                 supportedextensions = ".cs"
 		                 class = "MonoDevelop.CSharp.CSharpLanguageBinding" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/ReferenceFinder">
 		<ReferenceFinder supportedmimetypes = "text/x-csharp"
 		                 class = "MonoDevelop.CSharp.Refactoring.CSharpReferenceFinder" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
 		<DataType class = "MonoDevelop.CSharp.Project.CSharpCompilerParameters" />
 		<DataType class = "MonoDevelop.CSharp.Project.CSharpProjectParameters" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
-		<!-- indent engine must be before the completion text editor engine, 
-		otherwise stuff like 
-		
+		<!-- indent engine must be before the completion text editor engine,
+		otherwise stuff like
+
 		int Foo {
 		         get;private set';'
-		
-		will end up as 
-		
+
+		will end up as
+
 		int Foo {
 		         get;
 		         privaet;
-		
+
 		-->
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Formatting.CSharpTextEditorIndentation" />
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Completion.CSharpCompletionTextEditorExtension" />
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Highlighting.HighlightUsagesExtension" />
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.PathedDocumentTextEditorExtension" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/ProjectModel/MD1SerializationMaps">
 		<SerializationMap resource="md1format.xml" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid = "md-csharp-file" resource = "C#.FileIcon" size="Menu" />
 		<StockIcon stockid = "md-csharp-project" resource = "csharp-project-16.png" size="Menu"/>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Core/MimeTypes">
 		<MimeType id="text/x-csharp" _description="C# source code" icon="md-csharp-file" isText="true">
 			<File pattern="*.cs" />
 		</MimeType>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/CodeFormatters">
 		<Formatter mimeType="text/x-csharp" class="MonoDevelop.CSharp.Formatting.CSharpFormatter" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/TypeSystem/Ambiences">
 		<Ambience mimeType="text/x-csharp" class = "MonoDevelop.CSharp.CSharpAmbience" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/TypeSystem/Parser">
 		<Parser class="MonoDevelop.CSharp.Parser.TypeSystemParser" mimeType = "text/x-csharp" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/TypeSystem/FoldingParser">
 		<Parser class = "MonoDevelop.CSharp.Parser.CSharpFoldingParser" mimeType="text/x-csharp" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/TypeSystem/CodeGenerators">
 		<Generator class="MonoDevelop.CSharp.Refactoring.CSharpCodeGenerator" mimeType = "text/x-csharp" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/SourceEditor2/CustomModes">
 		<SyntaxMode mimeTypes="text/x-csharp" class="MonoDevelop.CSharp.Highlighting.CSharpSyntaxMode"/>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/ProjectModel/PolicySets/Mono" >
 		<Policies resource="MonoCSharpPolicy.xml" />
 		<Policies resource="MonoNameConventionPolicy.xml" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/ProjectModel/PolicySets" >
 		<PolicySet id="KR" _name="K&amp;R style" allowDiffSerialize="false">
 			<Policies resource="KRCSharpPolicy.xml" />
 			<Policies resource="InvariantTextStylePolicy.xml" />
 		</PolicySet>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/ProjectModel/PolicySets" >
 		<PolicySet id="1TBS" _name="SharpDevelop style (1TBS)" allowDiffSerialize="false">
 			<Policies resource="SharpDevelopCSharpPolicy.xml" />
@@ -203,11 +203,11 @@
 			_description = "Moves current type to another file that matches the name of the type."
 			class = "MonoDevelop.CSharp.Refactoring.CodeActions.MoveTypeToFile" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/TextEditorResolver">
 		<Resolver class = "MonoDevelop.CSharp.Resolver.TextEditorResolverProvider" mimeType="text/x-csharp" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/Commands/TextEditor">
 		<Command id = "MonoDevelop.CSharp.Highlighting.MoveToUsagesCommand.PrevUsage"
 		         defaultHandler = "MonoDevelop.CSharp.Highlighting.MoveToPrevUsageHandler"
@@ -219,20 +219,20 @@
 		         shortcut = "Ctrl|Shift|Down"
 		         macShortcut = "Meta|Shift|Down"
 		         _label = "_Move to next usage"/>
-		         
+
 		<Command id = "MonoDevelop.CSharp.ExpandCommands.ExpandSelection"
 		         defaultHandler = "MonoDevelop.CSharp.ExpandSelectionHandler"
 		         shortcut = "Alt|Shift|Up"
 		         macShortcut = "Alt|Shift|Up"
 		         _label = "_Expand selection"/>
-		         
+
 		<Command id = "MonoDevelop.CSharp.ExpandCommands.ShrinkSelection"
 		         defaultHandler = "MonoDevelop.CSharp.ShrinkSelectionHandler"
 		         shortcut = "Alt|Shift|Down"
 		         macShortcut = "Alt|Shift|Down"
 		         _label = "_Expand selection"/>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Refactoring/CodeGenerators">
 		<Class class = "MonoDevelop.CodeGeneration.CreateConstructorGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.ReadonlyPropertyGenerator" />
@@ -243,15 +243,15 @@
 		<Class class = "MonoDevelop.CodeGeneration.EqualityMembersGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.WriteLineGenerator" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Refactoring/CodeActionSource">
 		<Source class ="MonoDevelop.CSharp.Refactoring.CodeActions.NRefactoryCodeActionSource"/>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Refactoring/CodeIssueSource">
 		<Source class ="MonoDevelop.CSharp.Refactoring.CodeIssues.NRefactoryCodeIssueSource"/>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/DefaultPolicyPanels/SourceCode">
 		<Section id="NameConventions" _label="Name Conventions" fill = "true" class="MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionPanel" />
 	</Extension>
@@ -261,29 +261,29 @@
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/SourceCode">
 		<Section id="NameConventions" _label="Name Conventions" fill = "true" class="MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionPanel" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">
 		<Class id="LanguageItem" class="MonoDevelop.SourceEditor.LanguageItemTooltipProvider" />
 	</Extension>
-	
+
 	<Module>
 	    <Runtime>
 	        <Import assembly="MonoDevelop.CSharpBinding.Autotools.dll"/>
 	    </Runtime>
 		<Dependencies>
-			<Addin id="Autotools" version="3.1.0"/>
+			<Addin id="Autotools" version="3.0.4"/>
 		</Dependencies>
 		<Extension path = "/MonoDevelop/Autotools/SimpleSetups">
 			<Class class="CSharpBinding.Autotools.CSharpAutotoolsSetup" />
 		</Extension>
 	</Module>
-	
+
 	<Module>
 		<Runtime>
 			<Import assembly="MonoDevelop.CSharpBinding.AspNet.dll"/>
 		</Runtime>
 		<Dependencies>
-			<Addin id="AspNet" version="3.1.0"/>
+			<Addin id="AspNet" version="3.0.4"/>
 		</Dependencies>
 		<Extension path = "/MonoDevelop/Asp/CompletionBuilders">
 			<Class class = "MonoDevelop.CSharp.Completion.AspLanguageBuilder" />

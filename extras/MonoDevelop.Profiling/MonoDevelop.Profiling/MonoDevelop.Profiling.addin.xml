@@ -6,32 +6,32 @@
 	url         = "http://www.monodevelop.com"
 	description = "MonoDevelop Profiling Addin"
 	category    = "Profiling"
-	version     = "3.1.0">
+	version     = "3.0.4">
 
 	<Runtime>
 		<Import assembly="MonoDevelop.Profiling.dll"/>
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="3.1.0"/>
-		<Addin id="Ide" version="3.1.0"/>
+		<Addin id="Core" version="3.0.4"/>
+		<Addin id="Ide" version="3.0.4"/>
 	</Dependencies>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/Profiling/ToolBar/ProfilingPad" name = "Profiling pad toolbar">
 		<Description>Profiling pad toolbar items.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/Profiling/ContextMenu/ProfilingPad/ProfilingSnapshotNodes" name = "Profiling pad 'Profiling Snapshots' node">
 		<Description>Profiling pad root node.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/Profiling/Profilers" name = "Profilers">
 		<Description>Profilers addins.</Description>
 		<ExtensionNode name="Profiler" type="MonoDevelop.Profiling.ProfilerCodon" />
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/Profiling/FileFilters" name = "File filters">
 		<Description>File filters to be shown in the Profiling Snapshot Open dialog.</Description>
 		<ExtensionNode name="FileFilter" type="MonoDevelop.Ide.Codons.FileFilterCodon"/>
@@ -60,7 +60,7 @@
 	<Extension path = "/MonoDevelop/Ide/WorkbenchContexts/Edit">
 		<ContextPad id = "MonoDevelop.Profiling.ProfilingPad"/>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Category _name = "Profiling" id = "Profiling">
 		<!-- MainMenu/Project -->
@@ -80,19 +80,19 @@
 			_label = "Profile Process..."
 			_description = "Profile Process..."
 			icon = "gtk-execute" />
-		
+
 		<!-- Profiling pad -->
-		<Command id = "MonoDevelop.Profiling.PadCommands.StopProfiling" 
+		<Command id = "MonoDevelop.Profiling.PadCommands.StopProfiling"
 			defaultHandler = "MonoDevelop.Profiling.StopProfilingHandler"
 			_label = "Stop Profiling"
 			_description = "Stop Profiling"
 			icon = "gtk-stop" />
-		<Command id = "MonoDevelop.Profiling.PadCommands.TakeSnapshot" 
+		<Command id = "MonoDevelop.Profiling.PadCommands.TakeSnapshot"
 			defaultHandler = "MonoDevelop.Profiling.TakeSnapshotHandler"
 			_label = "Take Profiling Snapshoty"
 			_description = "Take Profiling Snapshot"
 			icon = "md-prof-snapshot" />
-		<Command id = "MonoDevelop.Profiling.PadCommands.OpenSnapshot" 
+		<Command id = "MonoDevelop.Profiling.PadCommands.OpenSnapshot"
 			defaultHandler = "MonoDevelop.Profiling.OpenSnapshotHandler"
 			_label = "Open Snapshot"
 			_description = "Open Snapshot"
@@ -105,25 +105,25 @@
 			<CommandItem id = "MonoDevelop.Profiling.ProjectCommands.RunProfiledList" />
 		</ItemSet>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Tools">
 		<!--<CommandItem id = "MonoDevelop.Profiling.ToolCommands.ProfileExecutable" />-->
 		<CommandItem id = "MonoDevelop.Profiling.ToolCommands.ProfileProcess" insertbefore="OptionsSection" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Profiling/ToolBar/ProfilingPad">
 		<CommandItem id = "MonoDevelop.Profiling.PadCommands.TakeSnapshot" />
 		<CommandItem id = "MonoDevelop.Profiling.PadCommands.StopProfiling" />
 		<SeparatorItem id = "Separator1" />
 		<CommandItem id = "MonoDevelop.Profiling.PadCommands.OpenSnapshot" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/Pads">
 		<SolutionPad id = "MonoDevelop.Profiling.ProfilingPad" class = "MonoDevelop.Profiling.ProfilingPad" defaultPlacement = "Left" _label = "Profiling Snapshots" icon = "md-prof-snapshot">
 			<NodeBuilder id = "ProfilingSnapshotCollectionNodeBuilder" class = "MonoDevelop.Profiling.ProfilingSnapshotCollectionNodeBuilder"/>
 		</SolutionPad>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Profiling/ContextMenu/ProfilingPad/ProfilingSnapshotNodes">
 		<CommandItem id = "MonoDevelop.Profiling.PadCommands.OpenSnapshot" />
 	</Extension>

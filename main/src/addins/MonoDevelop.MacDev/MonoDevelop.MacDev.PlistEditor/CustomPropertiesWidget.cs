@@ -269,6 +269,7 @@ namespace MonoDevelop.MacDev.PlistEditor
 			typeModel.AppendValues (PData.Type);
 			typeModel.AppendValues (PData.Type);
 			typeModel.AppendValues (PNumber.Type);
+			typeModel.AppendValues (PReal.Type);
 			typeModel.AppendValues (PString.Type);
 			comboRenderer.Model = typeModel;
 			comboRenderer.Mode = CellRendererMode.Editable;

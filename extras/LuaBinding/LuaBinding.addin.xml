@@ -6,17 +6,17 @@
        url         = "http://www.monodevelop.com"
        description = "Lua Language Binding"
        category    = "Language bindings"
-       version     = "3.1.0">
+       version     = "3.0.4">
 
 	<Runtime>
 		<Import assembly = "LuaBinding.dll"/>
 	</Runtime>
-	
+
 	<Dependencies>
-		<Addin id="Core" version="3.1.0"/>
-		<Addin id="Ide" version="3.1.0"/>
+		<Addin id="Core" version="3.0.4"/>
+		<Addin id="Ide" version="3.0.4"/>
 	</Dependencies>
-	
+
 	<Extension path = "/MonoDevelop/Ide/FileFilters">
 		<FileFilter id = "Lua"
 		            insertbefore = "AllFiles"
@@ -31,21 +31,21 @@
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
 		<ProjectTemplate id = "WowAddin" resource = "WowAddinProject.xpt.xml"/>
 	</Extension>
-	
+
 
 	<Extension path = "/MonoDevelop/ProjectModel/LanguageBindings">
 		<LanguageBinding id = "Lua" supportedextensions = ".lua" class = "LuaBinding.LuaLanguageBinding" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
-		<DotNetProject 
-			language="Lua" 
-			extension="luaproj" 
+		<DotNetProject
+			language="Lua"
+			extension="luaproj"
 			guid="{B4EC64DC-6D44-22EE-BBA0-C4A155D89593}" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
 		<DataType class = "LuaBinding.LuaCompilerParameters" />
 	</Extension>
-	
+
 </Addin>

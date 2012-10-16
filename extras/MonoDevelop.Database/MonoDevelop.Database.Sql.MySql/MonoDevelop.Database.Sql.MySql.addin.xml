@@ -6,21 +6,21 @@
 	url		= "http://www.monodevelop.com"
 	description	= "Database Module"
 	category    = "Database"
-	version		= "3.1.0">
-    
+	version		= "3.0.4">
+
 	<Runtime>
 		<Import assembly="MonoDevelop.Database.Sql.MySql.dll"/>
 	</Runtime>
-	
+
   	<Localizer type="Gettext" catalog="monodevelop-database"/>
-	
+
 	<Dependencies>
-		<Addin id="Core" version="3.1.0"/>
-		<Addin id="Ide" version="3.1.0"/>
-		<Addin id="Database.Sql" version="3.1.0"/>
-		<Addin id="Database.Components" version="3.1.0"/>
-		<Addin id="Database.Designer" version="3.1.0"/>
-		<Addin id="SourceEditor2" version="3.1.0"/>
+		<Addin id="Core" version="3.0.4"/>
+		<Addin id="Ide" version="3.0.4"/>
+		<Addin id="Database.Sql" version="3.0.4"/>
+		<Addin id="Database.Components" version="3.0.4"/>
+		<Addin id="Database.Designer" version="3.0.4"/>
+		<Addin id="SourceEditor2" version="3.0.4"/>
 	</Dependencies>
 
 	<Extension path = "/MonoDevelop/Database/Sql">
@@ -30,5 +30,5 @@
 	<Extension path = "/MonoDevelop/SourceEditor2/SyntaxModes">
 		<Templates resource="MySqlSyntaxMode.xml" />
 	</Extension>
-	
+
 </Addin>

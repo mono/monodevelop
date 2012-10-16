@@ -7,45 +7,45 @@
        description = "Mac Platform Support for MonoDevelop"
        category    = "Platform Support"
        flags       = "Hidden"
-       version     = "3.1.0">
-	
+       version     = "3.0.4">
+
 	<Runtime>
 		<Import assembly="MonoMac.dll" />
 		<ScanExclude path="MonoMac.dll" />
 	</Runtime>
 
 	<Dependencies>
-	    <Addin id="Ide" version="3.1.0"/>
+	    <Addin id="Ide" version="3.0.4"/>
 	</Dependencies>
-	
+
 	<Extension path = "/MonoDevelop/Core/PlatformService">
 		<Class id      = "PlatformService"
 		       class   = "MonoDevelop.MacIntegration.MacPlatformService"/>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/Commands/Window">
 		<Command id  = "MonoDevelop.MacIntegration.MacIntegrationCommands.MinimizeWindow"
 				defaultHandler = "MonoDevelop.MacIntegration.MacMinimizeWindowHandler"
 				_label = "_Minimize"
-				_description = "Minimize the window" 
+				_description = "Minimize the window"
 				macShortcut = "Meta|M" />
 		<Command id  = "MonoDevelop.MacIntegration.MacIntegrationCommands.HideWindow"
 				defaultHandler = "MonoDevelop.MacIntegration.MacHideWindowHandler"
 				_label = "_Hide MonoDevelop"
-				_description = "Hide MonoDevelop" 
+				_description = "Hide MonoDevelop"
 				macShortcut = "Meta|H" />
 		<Command id  = "MonoDevelop.MacIntegration.MacIntegrationCommands.HideOthers"
 				defaultHandler = "MonoDevelop.MacIntegration.MacHideOthersHandler"
 				_label = "_Hide Others"
-				_description = "Hide other windows" 
+				_description = "Hide other windows"
 				macShortcut = "Meta|Alt|H" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Window">
 		<CommandItem id = "MonoDevelop.MacIntegration.MacIntegrationCommands.MinimizeWindow"
 		             insertbefore = "MonoDevelop.Ide.Commands.WindowCommands.NextWindow" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Components/DialogHandlers">
 		<Class class="MonoDevelop.MacIntegration.MacSelectFileDialogHandler" />
 		<Class class="MonoDevelop.MacIntegration.MacAddFileDialogHandler" />

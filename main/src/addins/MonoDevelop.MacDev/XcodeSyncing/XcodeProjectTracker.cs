@@ -1,10 +1,11 @@
 // 
 // XcodeProjectTracker.cs
 //  
-// Author:
-//       Michael Hutchinson <mhutchinson@novell.com>
+// Authors: Michael Hutchinson <mhutchinson@novell.com>
+//          Jeffrey Stedfast <jeff@xamarin.com>
 // 
 // Copyright (c) 2011 Novell, Inc.
+// Copyright (c) 2012 Xamarin Inc.
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -73,7 +74,7 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 				throw new ArgumentNullException ("dnp");
 			this.dnp = dnp;
 			this.infoService = infoService;
-			AppleSdkSettings.Changed += DisableSyncing;
+			AppleSdkSettings.Changed += AppleSdkSettingsChanged;
 		}
 
 		public bool ShouldOpenInXcode (FilePath fileName)
@@ -98,6 +99,13 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		bool SyncingEnabled {
 			get { return xcode != null; }
 		}
+
+		void AppleSdkSettingsChanged ()
+		{
+			lock (xcode_lock) {
+				DisableSyncing (true);
+			}
+		}
 		
 		void EnableSyncing (IProgressMonitor monitor)
 		{
@@ -114,11 +122,6 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 			dnp.FileChangedInProject += FileChangedInProject;
 			dnp.NameChanged += ProjectNameChanged;
 			MonoDevelop.Ide.IdeApp.CommandService.ApplicationFocusIn += AppRegainedFocus;
-		}
-
-		void DisableSyncing ()
-		{
-			DisableSyncing (true);
 		}
 		
 		void DisableSyncing (bool closeProject)
@@ -246,9 +249,21 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		
 		bool IncludeInSyncedProject (ProjectFile pf)
 		{
+			if (pf.BuildAction == BuildAction.BundleResource) {
+				var ixtp = dnp as IXcodeTrackedProject;
+
+				if (ixtp == null)
+					return false;
+
+				var resource = ixtp.GetBundleResourceId (pf);
+				if (resource.ParentDirectory.IsNullOrEmpty)
+					return true;
+
+				return false;
+			}
+			
 			return (pf.BuildAction == BuildAction.Content && pf.ProjectVirtualPath.ParentDirectory.IsNullOrEmpty)
-				|| (pf.BuildAction == BuildAction.InterfaceDefinition && HasInterfaceDefinitionExtension (pf.FilePath)
-				    || pf.BuildAction == "BundleResource");
+				|| (pf.BuildAction == BuildAction.InterfaceDefinition && HasInterfaceDefinitionExtension (pf.FilePath));
 		}
 		
 		#region Project change tracking
@@ -809,10 +824,12 @@ namespace MonoDevelop.MacDev.XcodeSyncing
 		{
 			if (disposed)
 				return;
-			
+
+			AppleSdkSettings.Changed -= AppleSdkSettingsChanged;
+			lock (xcode_lock) {
+				DisableSyncing (true);
+			}
 			disposed = true;
-			DisableSyncing (true);
-			AppleSdkSettings.Changed -= DisableSyncing;
 		}
 	}
 	

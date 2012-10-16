@@ -396,7 +396,7 @@ namespace Mono.Debugging.Evaluation
 				return oval;
 			}
 		}
-
+		
 		public ObjectValue[] GetObjectValueChildren (EvaluationContext ctx, IObjectSource objectSource, object obj, int firstItemIndex, int count)
 		{
 			return GetObjectValueChildren (ctx, objectSource, GetValueType (ctx, obj), obj, firstItemIndex, count, true);

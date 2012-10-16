@@ -2,6 +2,8 @@ include $(top_srcdir)/xbuild.include
 
 SUBDIRS=UnitTests MacPlatform.Tests UserInterfaceTests
 
+SUBDIRS=UnitTests MacPlatform.Tests MonoDevelop.MacDev.Tests UserInterfaceTests
+
 MONO=mono
 HARNESS=$(top_srcdir)/external/mdtestharness/nunit-console-x86.exe -domain=multiple
 RUN_TEST=$(MD_LAUNCH_SETUP) $(MONO) $(HARNESS)
@@ -146,4 +148,3 @@ EXTRA_DIST = \
 	test-projects/console-project/ConsoleProject/Properties/AssemblyInfo.cs \
 	test-projects/console-project/ConsoleProject/Program.cs \
 	test-projects/console-project/ConsoleProject.sln
-

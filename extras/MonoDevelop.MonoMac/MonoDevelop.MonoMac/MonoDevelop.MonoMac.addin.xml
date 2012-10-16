@@ -6,8 +6,8 @@
        url         = "http://monodevelop.com/"
        description = "Support for developing MonoMac applications"
        category    = "Mac Development"
-       version     = "3.1.0">
-	
+       version     = "3.0.4">
+
 	<Runtime>
 		<Import file = "templates/MonoMacProject.xpt.xml"/>
 		<Import file = "templates/MonoMacProjectEmpty.xpt.xml"/>
@@ -27,20 +27,20 @@
 		<Import file = "mono-version-check"/>
 		<Import file = "mmp"/>
 	</Runtime>
-	
+
 	<Dependencies>
-		<Addin id="Core" version="3.1.0"/>
-		<Addin id="Ide"  version="3.1.0"/>
-		<Addin id="MacDev" version="3.1.0"/>
-		<Addin id="MacPlatform" version="3.1.0"/>
+		<Addin id="Core" version="3.0.4"/>
+		<Addin id="Ide"  version="3.0.4"/>
+		<Addin id="MacDev" version="3.0.4"/>
+		<Addin id="MacPlatform" version="3.0.4"/>
 	</Dependencies>
-	
+
 	<Extension path = "/MonoDevelop/Core/Applications">
 		<Application id = "mac-bundle"
 			      class = "MonoDevelop.MonoMac.MonoMacPackagingTool"
 			description = "Mac application bundle and installer generator."/>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">
 		<FileTemplate id = "MonoMacPlist"
 		            file = "templates/MonoMacPlist.xft.xml"/>
@@ -71,47 +71,47 @@
 		<ProjectTemplate id = "MonoMacDocument"
 				       file = "templates/MonoMacDocument.xpt.xml"/>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
 		<DotNetProjectSubtype
 			guid="{1c533b1c-72dd-4cb1-9f6b-bf11d93bcfbe}"
 			type="MonoDevelop.MonoMac.MonoMacProject"
-			import="$(MSBuildExtensionsPath)\Mono\MonoMac\v0.0\Mono.MonoMac.targets" 
+			import="$(MSBuildExtensionsPath)\Mono\MonoMac\v0.0\Mono.MonoMac.targets"
 			migrationHandler="MonoDevelop.MonoMac.MonoMacProjectMigrationHandler" />
 		<DotNetProjectSubtype
 			guid="{948b3504-5b70-4649-8fe4-bde1fb46ec69}"
 			type="MonoDevelop.MonoMac.MonoMacProject"
 			import="$(MSBuildExtensionsPath)\Mono\MonoMac\v0.0\Mono.MonoMac.targets" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectBindings">
 		<ProjectBinding id = "MonoMac" class = "MonoDevelop.MonoMac.MonoMacProjectBinding" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
 		<Class class = "MonoDevelop.MonoMac.MonoMacBuildExtension" insertafter="MidStep" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Core/ExecutionHandlers">
 		<Condition id="Platform" value="mac">
 			<ExecutionHandler id="MonoMac" class = "MonoDevelop.MonoMac.MonoMacExecutionHandler"/>
 		</Condition>
 	</Extension>
-	
+
 	<Extension path="/MonoDevelop/Core/SupportPackages">
 		<Package name="monomac" version="0.0.0.0" targetFramework="3.5">
 			<Assembly file="MonoMac.dll" />
 		</Package>
 	</Extension>
-	
-	
+
+
 	<Extension path = "/MonoDevelop/Ide/Commands/Project">
-		<Command id = "MonoDevelop.MonoMac.MonoMacCommands.CreateMacInstaller" 
+		<Command id = "MonoDevelop.MonoMac.MonoMacCommands.CreateMacInstaller"
 			_description = "Creates a Mac Installer"
 			defaultHandler = "MonoDevelop.MonoMac.CreateMacInstallerHandler"
 			_label = "Create Mac Installer..." />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Project">
 			<CommandItem id = "MonoDevelop.MonoMac.MonoMacCommands.CreateMacInstaller"
 			             insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.ExportSolution" />
@@ -124,13 +124,13 @@
 		</Runtime>
 
 		<Dependencies>
-			<Addin id="Core" version="3.1.0"/>
-			<Addin id="Ide"  version="3.1.0"/>
-			<Addin id="Debugger" version="3.1.0"/>
-			<Addin id="Debugger.Soft" version="3.1.0"/>
-			<Addin id="MacPlatform" version="3.1.0"/>
+			<Addin id="Core" version="3.0.4"/>
+			<Addin id="Ide"  version="3.0.4"/>
+			<Addin id="Debugger" version="3.0.4"/>
+			<Addin id="Debugger.Soft" version="3.0.4"/>
+			<Addin id="MacPlatform" version="3.0.4"/>
 		</Dependencies>
-	
+
 		<Extension path="/MonoDevelop/Debugging/DebuggerEngines">
 			<Condition id="Platform" value="mac">
 				<DebuggerEngine id="Mono.Debugger.Soft.MonoMac"
@@ -140,4 +140,4 @@
 			</Condition>
 		</Extension>
 	</Module>
-</Addin> 
+</Addin>

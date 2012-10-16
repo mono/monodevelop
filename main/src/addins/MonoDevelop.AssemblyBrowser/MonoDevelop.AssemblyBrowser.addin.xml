@@ -6,39 +6,39 @@
        url         = ""
        description = "Provides an assembly browser for the MonoDevelop"
        category    = "IDE extensions"
-       version     = "3.1.0">
-	
+       version     = "3.0.4">
+
 	<Dependencies>
-		<Addin id="Core" version="3.1.0"/>
-		<Addin id="Ide" version="3.1.0"/>
-		<Addin id="Refactoring" version="3.1.0"/>
-		<Addin id="CSharpBinding" version="3.1.0"/>
+		<Addin id="Core" version="3.0.4"/>
+		<Addin id="Ide" version="3.0.4"/>
+		<Addin id="Refactoring" version="3.0.4"/>
+		<Addin id="CSharpBinding" version="3.0.4"/>
 	</Dependencies>
-	
+
 	<!-- Extension points -->
 	<ExtensionPoint path = "/MonoDevelop/AssemblyBrowser/TypeNode/ContextMenu">
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
-	
+
 	<!-- Extensions -->
-	
+
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Command id = "MonoDevelop.AssemblyBrowser.ShowAssemblyBrowser"
 		         defaultHandler = "MonoDevelop.AssemblyBrowser.AssemblyBrowserHandler"
 		         _label = "_Assembly browser..." />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
 		<DisplayBinding id = "AssemblyBrowser" class = "MonoDevelop.AssemblyBrowser.AssemblyBrowserDisplayBinding" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/AssemblyBrowser/TypeNode/ContextMenu">
 		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.FindReferences" />
 		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.FindDerivedClasses" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/MainMenu/View">
 		<CommandItem id = "MonoDevelop.AssemblyBrowser.ShowAssemblyBrowser" insertbefore="ViewSeparator3" />
 	</Extension>
-	
+
 </Addin>

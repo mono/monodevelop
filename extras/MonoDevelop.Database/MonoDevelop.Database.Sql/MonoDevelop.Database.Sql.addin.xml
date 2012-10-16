@@ -6,18 +6,18 @@
 	url		= "http://www.monodevelop.com"
 	description	= "Database Module"
 	category	= "Database"
-	version		= "3.1.0">
-    
+	version		= "3.0.4">
+
 	<Runtime>
 		<Import assembly="MonoDevelop.Database.Sql.dll"/>
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="3.1.0"/>
+		<Addin id="Core" version="3.0.4"/>
 	</Dependencies>
-	
+
   	<Localizer type="Gettext" catalog="monodevelop-database"/>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/Database/Sql" name = "MonoDevelop database providers">
 		<Description>MonoDevelop database factory addins.</Description>
 		<ExtensionNode name="DatabaseFactory" type="MonoDevelop.Database.Sql.DbFactoryCodon" />

@@ -7,15 +7,15 @@
         url = "http://www.monodevelop.com/"
         description = "Provides code metric support for monodevelop"
         category = "IDE extensions"
-        version = "3.1.0">
-	
+        version = "3.0.4">
+
 	<Runtime>
 		<Import assembly = "MonoDevelop.CodeMetrics.dll"/>
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="3.1.0"/>
-		<Addin id="Ide" version="3.1.0"/>
+		<Addin id="Core" version="3.0.4"/>
+		<Addin id="Ide" version="3.0.4"/>
 	</Dependencies>
 
 	<Extension path = "/MonoDevelop/Ide/Commands">
@@ -23,15 +23,15 @@
 				defaultHandler = "MonoDevelop.CodeMetrics.ShowMetricsHandler"
 				_label = "_Code Metrics" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Project">
 		<CommandItem id = "MonoDevelop.CodeMetrics.Commands.ShowMetrics" insertbefore="OptionsSeparator"/>
-	</Extension>	
-	
+	</Extension>
+
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
 		<NodeBuilder id = "CodeMetricsNodeExtension" class = "MonoDevelop.CodeMetrics.CodeMetricsNodeExtension"/>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Tools">
 		<Condition id="ItemType" value="Solution|SolutionFolder|Project|ProjectFile|MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectFolder">
 			<CommandItem id = "MonoDevelop.CodeMetrics.Commands.ShowMetrics" insertafter="FindInFilesSeparator" insertbefore="CombineOptionsSeparator"/>

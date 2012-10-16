@@ -6,45 +6,45 @@
        url         = "http://monodevelop.com/"
        description = "Support for developing and deploying MeeGo applications using Mono."
        category    = "Mobile Development"
-       version     = "3.1.0">
-	
+       version     = "3.0.4">
+
 	<Runtime>
 		<Import file = "Templates/MeeGoGtkProject.xpt.xml"/>
 	</Runtime>
-	
+
 	<Dependencies>
-		<Addin id="Core" version="3.1.0"/>
-		<Addin id="Ide" version="3.1.0"/>
-		<Addin id="Debugger" version="3.1.0"/>
-		<Addin id="Debugger.Soft" version="3.1.0"/>
-		<Addin id="GtkCore" version="3.1.0"/>
-		<Addin id="CSharpBinding" version="3.1.0"/>
+		<Addin id="Core" version="3.0.4"/>
+		<Addin id="Ide" version="3.0.4"/>
+		<Addin id="Debugger" version="3.0.4"/>
+		<Addin id="Debugger.Soft" version="3.0.4"/>
+		<Addin id="GtkCore" version="3.0.4"/>
+		<Addin id="CSharpBinding" version="3.0.4"/>
 	</Dependencies>
-	
+
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
 		<ProjectTemplate id       = "MeeGoGtkProject"
 		                 file     = "Templates/MeeGoGtkProject.xpt.xml" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
 		<DotNetProjectSubtype
 			guid="{3fd4c4e6-4e66-4b72-9776-a9d37f06ace0}"
 			type="MonoDevelop.MeeGo.MeeGoProject" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectBindings">
 		<ProjectBinding id = "MeeGo" class = "MonoDevelop.MeeGo.MeeGoProjectBinding" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
 		<DataType class = "MonoDevelop.MeeGo.MeeGoProject" />
 		<DataType class = "MonoDevelop.MeeGo.MeeGoProjectConfiguration" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Core/ExecutionModes">
 		<ModeSetType class="MonoDevelop.MeeGo.MeeGoExecutionModeSet"/>
 	</Extension>
-	
+
 	<Extension path="/MonoDevelop/Debugging/DebuggerEngines">
 		<DebuggerEngine
 			id="MonoDevelop.MeeGo.SoftDebugger"

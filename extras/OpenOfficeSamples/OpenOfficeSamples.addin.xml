@@ -6,8 +6,8 @@
        url         = "http://www.monodevelop.com/"
        description = "Samples for automating OpenOffice using Mono."
        category    = "Templates"
-       version     = "3.1.0">
-	
+       version     = "3.0.4">
+
 	<Runtime>
 		<Import file = "OpenOfficeSpreadsheetSample.xpt.xml"/>
 		<Import file = "OpenOfficeSpreadsheetTableSample.xpt.xml"/>
@@ -16,10 +16,10 @@
 		<Import file = "COPYING" />
 		<Import file = "README" />
 	</Runtime>
-	
+
 	<Dependencies>
-		<Addin id = "Ide" version="3.1.0"/>
-		<Addin id = "CSharpBinding" version = "3.1.0" />
+		<Addin id = "Ide" version="3.0.4"/>
+		<Addin id = "CSharpBinding" version = "3.0.4" />
 	</Dependencies>
 
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
@@ -30,7 +30,7 @@
 		<ProjectTemplate id   = "OpenOfficeSpreadsheetViewSample"
 		                 file = "OpenOfficeSpreadsheetViewSample.xpt.xml"/>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">
 		<FileTemplate id   = "OpenOfficeSpreadsheetDocHelper"
 		              file = "OpenOfficeSpreadsheetDocHelper.xft.xml"/>
