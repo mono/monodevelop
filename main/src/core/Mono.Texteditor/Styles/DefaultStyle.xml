@@ -125,6 +125,31 @@
 			 <Style name="secondary_template" color="aluminum2" bgColor="white"/>
 			 <Style name="secondary_highlighted_template" color="aluminum3" bgColor="aluminum1"/>
 		 </Style>
+		 
+		 <Style name="breakpoint" color="white"  bgColor="#7D0000">
+			 <Style name="color1" color="white"/>
+			 <Style name="color2" color="#7D0000"/>
+			 <Style name="invalid" color="#eddcdc">
+				 <Style name="color1" color="#eddcdc"/>
+				 <Style name="background" color="#eddcdc" />
+				 <Style name="border" color="#7d0000" />
+			 </Style>
+			 <Style name="disabled.background" color="#eddcdc" />
+		 </Style>
+		 
+		  <Style name="debug" color="black"  bgColor="#ffff00">
+			 <Style name="currentline" color="black"  bgColor="#ffff00">
+				 <Style name="color1" color="#ffff00"/>
+				 <Style name="color2" color="#ffffcc"/>
+				 <Style name="border" color="#666600" />
+			 </Style>
+			 <Style name="stackline" color="black"  bgColor="#80ff80">
+				 <Style name="color1" color="#80ff80"/>
+				 <Style name="color2" color="#ccffcc"/>
+				 <Style name="border" color="#336633" />
+			 </Style>
+		 </Style>
+		 
 	 </Style>
 
 	 <Style name="bubble">
