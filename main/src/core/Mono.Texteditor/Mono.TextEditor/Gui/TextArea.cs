@@ -1538,10 +1538,8 @@ namespace Mono.TextEditor
 			base.OnSizeAllocated (allocation);
 			SetAdjustments (Allocation);
 			sizeHasBeenAllocated = true;
-			if (Options.WrapLines) {
+			if (Options.WrapLines)
 				textViewMargin.PurgeLayoutCache ();
-			}
-			allocation = new Rectangle (0, 0, allocation.Width, allocation.Height);
 		}
 
 		uint lastScrollTime;
@@ -2972,7 +2970,7 @@ namespace Mono.TextEditor
 						view.CenterToCaret ();
 					if (view.TextViewMargin.XOffset == 0)
 						view.HAdjustment.Value = 0;
-					view.SizeAllocated -= Run;
+					view.TextArea.SizeAllocated -= Run;
 				} finally {
 					view.Caret.AutoScrollToCaret = true;
 					if (highlightCaretLine) {
