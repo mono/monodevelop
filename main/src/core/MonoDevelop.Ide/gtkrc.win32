@@ -65,6 +65,10 @@ style "default" {
     GtkScrolledWindow::scrollbar-spacing = 0
     GtkScale::slider-length = 14
 
+    GtkMenu::horizontal-padding = 3
+    GtkMenu::vertical-padding = 3
+    GtkSeparatorMenuItem::horizontal-padding = 2
+
     GtkTreeView::expander-size = 8
     GtkExpander::expander-size = 8
     GtkComboBox::arrow-size = 8
@@ -100,42 +104,25 @@ style "wider" = "default" {
 
 style "button" {
     xthickness = 2
-    ythickness = 4
+    ythickness = 1
 
-    bg[NORMAL]      = @bg_color
-    bg[PRELIGHT]    = shade(1.1, @bg_color)
-    bg[ACTIVE]      = @bg_color
-    bg[INSENSITIVE] = @bg_color
-
-    engine "xamarin" {
-        contrast = 1.0
-        gradient_shades     = {0.96, 0.918, 0.926, 0.858}
-        focus_color         = shade(0.6, @bg_color)
-        textstyle           = 1
-      }
-}
-
-style "menu" {
-    xthickness = 0
-    ythickness = 0
-
-    fg[PRELIGHT] = @selected_fg_color
-
-    engine "xamarin" {
-        roundness = 3
-        gradient_shades     = {1.02, 0.97, 0.92, 0.87}
+    engine "wimp" {
     }
 }
 
-style "menu-item" {
+style "menu" = "default" {
     xthickness = 0
+    ythickness = 0
+
+    engine "wimp" {
+    }
+}
+
+style "menu-item" = "default" {
+    xthickness = 5
     ythickness = 3
 
-    fg[PRELIGHT] = @selected_fg_color
-
-    engine "xamarin" {
-        roundness = 0
-        gradient_shades     = {1.02, 0.97, 0.92, 0.87}
+    engine "wimp" {
     }
 }
 
@@ -211,7 +198,7 @@ style "combo-box" = "default"
     xthickness = 4
     ythickness = 4
 
-    engine "xamarin" {
+    engine "wimp" {
         arrowstyle = 3
     }
 }
@@ -333,9 +320,6 @@ widget_class "*.<GtkComboBox>.*" style "combo-box"
 widget_class "*.<GtkComboBoxText>.*" style "combo-box"
 widget_class "*.<GtkComboBoxEntry>.*" style "combo-box"
 widget_class "*.<GtkComboBoxText>.<GtkEntry>" style "entry"
-widget_class "*.<GtkComboBoxText>.<GtkButton>" style "button"
-#widget_class "*.<GtkComboBoxEntry>.GtkEntry" style "entry"
-#widget_class "*.<GtkComboBoxEntry>.<GtkButton>" style "button"
 widget_class "*.<GtkComboBox>.*.GtkLabel" style "combo-box-label"
 
 # Comboboxes within toolbars
