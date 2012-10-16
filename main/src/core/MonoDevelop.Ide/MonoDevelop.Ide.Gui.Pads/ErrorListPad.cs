@@ -114,8 +114,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		void IPadContent.Initialize (IPadWindow window)
 		{
 			window.Title = GettextCatalog.GetString ("Errors");
-			window.Icon = MonoDevelop.Ide.Gui.Stock.Error;
-			
+
 			DockItemToolbar toolbar = window.GetToolbar (PositionType.Top);
 			
 			errorBtn = new ToggleButton ();

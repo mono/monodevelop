@@ -1051,6 +1051,9 @@
     <EmbeddedResource Include="icons\sdk-locations-16.png">
       <LogicalName>sdk-locations-16.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\errors-pad.png">
+      <LogicalName>errors-pad.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
