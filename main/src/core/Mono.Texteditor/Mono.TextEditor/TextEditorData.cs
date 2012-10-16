@@ -241,7 +241,7 @@ namespace Mono.TextEditor
 		ColorScheme colorStyle;
 		public ColorScheme ColorStyle {
 			get {
-				return colorStyle ?? ColorScheme.Empty;
+				return colorStyle ?? Mono.TextEditor.Highlighting.SyntaxModeService.DefaultColorStyle;
 			}
 			set {
 				colorStyle = value;

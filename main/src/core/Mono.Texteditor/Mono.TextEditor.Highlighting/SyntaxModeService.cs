@@ -497,6 +497,12 @@ namespace Mono.TextEditor.Highlighting
 		{
 			semanticRules.Add (Tuple.Create (mime, ruleName, rule));
 		}
+
+		public static ColorScheme DefaultColorStyle {
+			get {
+				return GetColorStyle ("Default");
+			}
+		}
 		
 		static SyntaxModeService ()
 		{

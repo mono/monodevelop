@@ -124,10 +124,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			} catch (Exception e) {
 				if (showException)
 					MessageService.ShowError ("Error while importing color style.", e.InnerException.Message);
-				var result = new Mono.TextEditor.Highlighting.DefaultStyle (Style);
-				result.Name = styleName;
-				result.Description = "Error";
-				return result;
+				return Mono.TextEditor.Highlighting.SyntaxModeService.DefaultColorStyle;
 			}
 		
 		}

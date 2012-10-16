@@ -35,8 +35,6 @@ namespace Mono.TextEditor.Highlighting
 {
 	public class ColorScheme
 	{
-		public static ColorScheme Empty = new ColorScheme ();
-		
 		Dictionary<string, ChunkStyle> styleLookupTable = new Dictionary<string, ChunkStyle> (); 
 		Dictionary<string, string> customPalette = new Dictionary<string, string> (); 
 		
@@ -407,146 +405,6 @@ namespace Mono.TextEditor.Highlighting
 		
 		protected ColorScheme ()
 		{
-			SetStyle (DefaultString, 0, 0, 0, 255, 255, 255);
-			SetStyle (ReadOnlyTextBgString, 0xFA, 0xFA, 0xF8);
-			
-			GetChunkStyle (DefaultString).ChunkProperties |= ChunkProperties.TransparentBackground;
-
-			SetStyle (LineNumberString, 172, 168, 153, 255, 255, 255);
-
-			SetStyle (IconBarBgString, 255, 255, 255);
-			SetStyle (IconBarSeperatorString, 172, 168, 153);
-			
-			SetStyle (FoldLineString, LineNumberString);
-	//		SetStyle (FoldLineHighlightedString, IconBarSeperatorString);
-	//		SetStyle (FoldToggleMarkerString, DefaultString);
-			
-			SetStyle (LineDirtyBgString, 255, 238, 98);
-			SetStyle (LineChangedBgString, 108, 226, 108);
-			
-			SetStyle (SelectionString, 255, 255, 255, 96, 87, 210);
-			SetStyle (InactiveSelectionString, 255, 255, 255, 196, 196, 196);
-			
-			SetStyle (LineMarkerString, 200, 255, 255);
-			SetStyle (RulerString, 187, 187, 187);
-
-			SetStyle (BreakpointString, 255, 255, 255, 125, 0, 0);
-			
-			SetStyle (BreakpointMarkerColor1String, 255, 255, 255);
-			SetStyle (BreakpointMarkerColor2String, 125, 0, 0);
-
-			SetStyle (DisabledBreakpointBgString, 237, 220, 220);
-			
-			SetStyle (CurrentDebugLineString, 0, 0, 0, 255, 255, 0);
-			SetStyle (CurrentDebugLineMarkerColor1String, 255, 255, 0);
-			SetStyle (CurrentDebugLineMarkerColor2String, 255, 255, 204);
-			SetStyle (CurrentDebugLineMarkerBorderString, 102, 102, 0);
-			
-			SetStyle (DebugStackLineString, 0, 0, 0, 128, 255, 128);
-			SetStyle (DebugStackLineMarkerColor1String, 128, 255, 128);
-			SetStyle (DebugStackLineMarkerColor2String, 204, 255, 204);
-			SetStyle (DebugStackLineMarkerBorderString, 51, 102, 51); 
-			
-			SetStyle (InvalidBreakpointBgString, 237, 220, 220);
-			SetStyle (InvalidBreakpointMarkerColor1String, 237, 220, 220);
-			SetStyle (InvalidBreakpointMarkerBorderString, 125, 0, 0);
-			SetStyle (SearchTextBgString, 255, 226, 185);
-			SetStyle (SearchTextMainBgString, 243, 221, 72);
-			
-			SetStyle (BracketHighlightRectangleString, 0xd3, 0xd7, 0xcf, 0xee, 0xee, 0xec);
-			SetStyle (UsagesHighlightRectangleString, 0xd3, 0xd7, 0xcf, 0xee, 0xee, 0xec);
-			
-			SetStyle (BookmarkColor1String, 255, 255, 255);
-			SetStyle (BookmarkColor2String, 105, 156, 235);
-			
-			SetStyle (ErrorUnderlineString, 255, 0, 0);
-			SetStyle (WarningUnderlineString, 255, 165, 0);
-			SetStyle (SuggestionUnderlineString, 143, 198, 143);
-			SetStyle (HintUnderlineString, 143, 143, 198);
-			
-			SetStyle ("diff.line-added", 0, 0x8B, 0x8B, ChunkProperties.None);
-			SetStyle ("diff.line-removed", 0x6A, 0x5A, 0xCD, ChunkProperties.None);
-			SetStyle ("diff.line-changed", "text.preprocessor");
-			SetStyle ("diff.header", 0, 128, 0, BOLD);
-			SetStyle ("diff.header-seperator", 0, 0, 255);
-			SetStyle ("diff.header-oldfile", "diff.header");
-			SetStyle ("diff.header-newfile", "diff.header");
-			SetStyle ("diff.location", "keyword.misc");
-			
-			SetStyle (PrimaryTemplateColorString, 0xB4, 0xE4, 0xB4, 0xB4, 0xE4, 0xB4);
-			SetStyle (PrimaryTemplateHighlightedColorString, 0, 0, 0, 0xB4, 0xE4, 0xB4);
-			 
-			SetStyle (SecondaryTemplateColorString, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
-			SetStyle (SecondaryTemplateHighlightedColorString, 0x7F, 0x7F, 0x7F, 0xFF, 0xFF, 0xFF);
-			
-			
-			SetStyleFromWeb ("bubble.warning", "black", "#f4eeda");
-			SetStyle ("bubble.warning.text", 0, 0, 0);
-			SetStyleFromWeb ("bubble.error", "black", "#f5eae7");
-			SetStyle ("bubble.error.text", 0, 0, 0);
-			
-			//regions in ASP.NET, T4, etc.
-			SetStyle ("template", "text");
-			SetStyle ("template.tag", "constant.language");
-			SetStyle ("template.directive", "constant.language");
-			
-		}
-		
-		protected void PopulateDefaults ()
-		{
-			SetStyle ("text",                      0,    0,    0);
-			SetStyle ("text.punctuation",          0,    0,    0);
-			SetStyle ("text.link",                 0,    0,  255);
-			SetStyle ("text.preprocessor",         0,  128,    0);
-			SetStyle ("text.preprocessor.keyword", 0,  128,    0, BOLD);
-			SetStyle ("xml",                       0, 0x8A, 0x8C);
-			SetStyle ("xml.tag",                0x6A, 0x5A, 0xCD);
-			SetStyle ("xml.name",               0x6A, 0x5A, 0xCD);
-			SetStyle ("xml.cdata",              0x6A, 0x5A, 0xCD);
-
-			SetStyle ("comment",              0,   0, 255);
-			SetStyle ("comment.line",         0,   0, 255);
-			SetStyle ("comment.block",        0,   0, 255);
-			SetStyle ("comment.doc",          0,   0, 255);
-			SetStyle ("comment.tag",        128, 128, 128, ITALIC);
-			SetStyle ("comment.tag.line",   128, 128, 128, ITALIC);
-			SetStyle ("comment.tag.block" , 128, 128, 128, ITALIC);
-			SetStyle ("comment.tag.doc",    128, 128, 128, ITALIC);
-			SetStyle ("comment.keyword",      0,   0, 255, ITALIC);
-			SetStyle ("comment.keyword.todo", 0,   0, 255, BOLD);
-			
-			SetStyle ("constant",               255,   0, 255);
-			SetStyle ("constant.digit",         255,   0, 255);
-			SetStyle ("constant.language",      165,  42,  42, BOLD);
-			SetStyle ("constant.language.void", 165,  42,  42, BOLD);
-			
-			SetStyle ("string",        255, 0, 255);
-			SetStyle ("string.single", 255, 0, 255);
-			SetStyle ("string.double", 255, 0, 255);
-			SetStyle ("string.other",  255, 0, 255);
-			
-			SetStyle ("keyword.semantic.type", 0, 0x8A , 0x8C);
-			
-			SetStyle ("keyword", 0, 0, 0, BOLD);
-			SetStyle ("keyword.access",      165,  42,  42, BOLD);
-			SetStyle ("keyword.operator",    165,  42,  42, BOLD);
-			SetStyle ("keyword.operator.declaration", 165,  42,  42, BOLD);
-			SetStyle ("keyword.selection",   165,  42,  42, BOLD);
-			SetStyle ("keyword.iteration",   165,  42,  42, BOLD);
-			SetStyle ("keyword.jump",        165,  42,  42, BOLD);
-			SetStyle ("keyword.context",     165,  42,  42, BOLD);
-			SetStyle ("keyword.exceptions",  165,  42,  42, BOLD);
-			SetStyle ("keyword.modifier",    165,  42,  42, BOLD);
-			SetStyle ("keyword.type",         46, 139,  87, BOLD);
-			SetStyle ("keyword.namespace",   165,  42,  42, BOLD);
-			SetStyle ("keyword.property",    165,  42,  42, BOLD);
-			SetStyle ("keyword.declaration", 165,  42,  42, BOLD);
-			SetStyle ("keyword.parameter",   165,  42,  42, BOLD);
-			SetStyle ("keyword.misc",        165,  42,  42, BOLD);
-			
-			SetStyle ("template.directive", 0x6A, 0x5A, 0xCD, 0xF0, 0xF0, 0xD0);
-			SetStyle ("template.tag",       0x6A, 0x5A, 0xCD, 0xF0, 0xF0, 0xD0);
-			SetStyle ("template",           0x00, 0x00, 0x00, 0xF0, 0xF0, 0xD0);
 		}
 		
 		const ChunkProperties BOLD   = ChunkProperties.Bold;
@@ -622,6 +480,14 @@ namespace Mono.TextEditor.Highlighting
 		{
 			if (name == null)
 				return GetDefaultChunkStyle ();
+			var style = InternalGetChunkStyle (name);
+			if (style == null)
+				style =SyntaxModeService.DefaultColorStyle.InternalGetChunkStyle (name);
+			return style ?? GetDefaultChunkStyle ();
+		}
+
+		internal ChunkStyle InternalGetChunkStyle (string name)
+		{
 			ChunkStyle style;
 			if (styleLookupTable.TryGetValue (name, out style))
 				return style;
@@ -632,14 +498,14 @@ namespace Mono.TextEditor.Highlighting
 				fallbackName = fallbackName.Substring (0, dotIndex);
 				if (styleLookupTable.TryGetValue (fallbackName, out style)) {
 					styleLookupTable[name] = style;
-				//	Console.WriteLine ("Chunk style {0} fell back to {1}", name, fallbackName);
+					//	Console.WriteLine ("Chunk style {0} fell back to {1}", name, fallbackName);
 					return style;
 				}
 				dotIndex = fallbackName.LastIndexOf ('.');
 			}
-			
-		//	Console.WriteLine ("Chunk style {0} fell back to default", name);
-			return GetDefaultChunkStyle ();
+
+			//	Console.WriteLine ("Chunk style {0} fell back to default", name);
+			return null;
 		}
 		
 		public void SetChunkStyle (string name, string weight, string foreColor, string backColor)

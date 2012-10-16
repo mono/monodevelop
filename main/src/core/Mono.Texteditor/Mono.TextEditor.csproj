@@ -71,7 +71,6 @@
     <Compile Include="Mono.TextEditor.Highlighting\Chunk.cs" />
     <Compile Include="Mono.TextEditor\TextEditorOptions.cs" />
     <Compile Include="Mono.TextEditor\TextEditorData.cs" />
-    <Compile Include="Mono.TextEditor.Highlighting\DefaultStyle.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\ChunkStyle.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\Match.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\Span.cs" />

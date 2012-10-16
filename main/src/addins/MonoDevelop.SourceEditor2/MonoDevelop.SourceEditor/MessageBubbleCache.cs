@@ -110,8 +110,6 @@ namespace MonoDevelop.SourceEditor
 		void SetColors ()
 		{
 			ColorScheme style = editor.ColorStyle;
-			if (style == null)
-				style = new DefaultStyle (editor.Style);
 			errorGc = (HslColor)(style.GetChunkStyle ("bubble.error").Color);
 			warningGc = (HslColor)(style.GetChunkStyle ("bubble.warning").Color);
 			errorMatrix = CreateColorMatrix (editor, true);
@@ -159,9 +157,6 @@ namespace MonoDevelop.SourceEditor
 			Cairo.Color[,,,,] colorMatrix = new Cairo.Color[2, 2, 3, 2, 2];
 			
 			ColorScheme style = editor.ColorStyle;
-			if (style == null)
-				style = new DefaultStyle (editor.Style);
-			
 			var baseColor = style.GetChunkStyle ("bubble." + typeString + "").CairoBackgroundColor;
 			
 			AdjustColorMatrix (colorMatrix, 0, baseColor);
