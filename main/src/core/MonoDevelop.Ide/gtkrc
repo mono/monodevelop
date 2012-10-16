@@ -121,6 +121,18 @@ style "button" {
       }
 }
 
+style "dialog-button" = "default" {
+    xthickness = 3
+    ythickness = 3
+    GtkWidget::draw-border = { 2, 2, 2, 2 }
+    GtkWidget::focus-line-width = 1
+    GtkButton::inner-border = { 8, 8, 0, 2 }
+
+    engine "quartz" {
+        buttontype = "aqua"
+    }
+}
+
 style "toggle-button" = "button" {
     bg[NORMAL] = @base_color
     bg[PRELIGHT] = shade(0.98, @base_color)
@@ -281,7 +293,7 @@ style "scrollbar" = "default"
     GtkScrollbar::has-forward-stepper = 0
     GtkScrollbar::has-backward-stepper = 0
     GtkRange::slider-width = 14
-    GtkRange::trough-border = 2
+    GtkRange::trough-border = 0
     GtkRange::trough-side-details = 0
 
     engine "quartz" {
@@ -345,6 +357,7 @@ widget "*GtkTextView"   style "entry"
 
 widget_class "*<GtkButton>"     style "button"
 widget_class "*<GtkToggleButton>" style "toggle-button"
+widget_class "*<GtkButtonBox>.<GtkButton>" style "dialog-button"
 
 widget_class "*<GtkMenu>*"      style "menu"
 widget_class "*<GtkMenuItem>*"  style "menu-item"
