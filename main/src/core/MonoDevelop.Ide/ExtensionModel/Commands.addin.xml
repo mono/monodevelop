@@ -916,9 +916,9 @@
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveDown"
 			_label = "Expand selection to next line" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveHome"
-			_label = "Expand selection to line start" />
+			_label = "Expand selection to line start" macShortcut = "Shift|Home" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveEnd"
-			_label = "Expand selection to line end" />
+			_label = "Expand selection to line end" macShortcut = "Shift|End"/>
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveToDocumentStart"
 			_label = "Expand selection to document start" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveToDocumentEnd"
