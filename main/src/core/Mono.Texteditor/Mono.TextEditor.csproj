@@ -320,6 +320,9 @@
     <EmbeddedResource Include="SyntaxModes\FSharpSyntaxMode.xml">
       <LogicalName>FSharpSyntaxMode.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="SyntaxModes\AspNetAshxSyntaxMode.xml">
+      <LogicalName>AspNetAshxSyntaxMode.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

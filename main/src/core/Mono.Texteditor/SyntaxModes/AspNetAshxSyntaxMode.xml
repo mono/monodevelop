@@ -23,9 +23,9 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE. -->
  
-<SyntaxMode name = "Asp.Net" mimeTypes="application/x-aspx;application/x-ascx;application/x-master-page">
+<SyntaxMode name = "Asp.Net ASHX" mimeTypes="application/x-ashx">
 	<!-- directives -->
-	<Span color = "template.tag" tagColor="template.tag" rule = "InTag">
+	<Span color = "template.tag" tagColor="template.tag" rule = "mode:text/x-csharp">
 		<Begin>&lt;%@</Begin>
 		<End>%&gt;</End>
 	</Span>
