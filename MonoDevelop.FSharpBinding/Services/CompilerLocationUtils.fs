@@ -174,7 +174,7 @@ module internal FSharpEnvironment =
   let internal tryFsharpiScript(url:string) =
     try
       let str = File.ReadAllText(url)
-      let reg = new Regex("mono (\/.*)\/fsi\.exe")
+      let reg = new Regex("mono (.* )?(\/.*)\/fsi\.exe")
       let res = reg.Match(str)
       if res.Success then Some(res.Groups.[1].Value) else None
     with e -> 
@@ -233,9 +233,10 @@ module internal FSharpEnvironment =
         match result with 
         | Some _ -> result
         | None -> 
-        // NOTE: we should probably probe the path here??
+
         let result = 
             BackupInstallationProbePoints |> List.tryPick (fun x -> 
+               Debug.tracef "Resolution" "BinFolderOfDefaultFSharpCore: Probing %s" x
                let safeExists f = (try File.Exists(f) with _ -> false)
                let file f = Path.Combine(Path.Combine(x,"bin"),f)
                let exists f = safeExists(file f)
@@ -251,6 +252,7 @@ module internal FSharpEnvironment =
         | None -> None
     with e -> 
       System.Diagnostics.Debug.Assert(false, "Error while determining default location of F# compiler")
+      Debug.tracef "Resolution" "BinFolderOfDefaultFSharpCore: error %s" (e.ToString())
       None
 
 
