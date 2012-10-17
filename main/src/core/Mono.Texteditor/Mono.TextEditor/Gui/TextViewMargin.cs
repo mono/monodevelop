@@ -116,6 +116,7 @@ namespace Mono.TextEditor
 			get { return charWidth; }
 		}
 
+
 		public TextViewMargin (TextEditor textEditor)
 		{
 			if (textEditor == null)
@@ -137,9 +138,20 @@ namespace Mono.TextEditor
 			textEditor.SelectionChanged += UpdateBracketHighlighting;
 			textEditor.Document.Undone += HandleUndone; 
 			textEditor.Document.Redone += HandleUndone;
-			
+			textEditor.TextArea.FocusInEvent += HandleFocusInEvent;
+			textEditor.TextArea.FocusOutEvent += HandleFocusOutEvent;
 			Caret.PositionChanged += UpdateBracketHighlighting;
 			textEditor.VScroll += HandleVAdjustmentValueChanged;
+		}
+
+		void HandleFocusInEvent (object o, FocusInEventArgs args)
+		{
+			selectionColor = ColorStyle.Selection;
+		}
+
+		void HandleFocusOutEvent (object o, FocusOutEventArgs args)
+		{
+			selectionColor = ColorStyle.InactiveSelection;
 		}
 
 		void HandleUndone (object sender, EventArgs e)
@@ -509,6 +521,8 @@ namespace Mono.TextEditor
 			textEditor.Document.Redone -= HandleUndone;
 			
 			textEditor.Document.EndUndo -= UpdateBracketHighlighting;
+			textEditor.TextArea.FocusInEvent -= HandleFocusInEvent;
+			textEditor.TextArea.FocusOutEvent -= HandleFocusOutEvent;
 			Caret.PositionChanged -= UpdateBracketHighlighting;
 
 			textEditor.GetTextEditorData ().SearchChanged -= HandleSearchChanged;
@@ -1211,9 +1225,12 @@ namespace Mono.TextEditor
 			}
 		}
 
+		ChunkStyle selectionColor;
 		ChunkStyle SelectionColor {
 			get {
-				return textEditor.HasFocus ? ColorStyle.Selection : ColorStyle.InactiveSelection;
+				if (selectionColor == null)
+					selectionColor = textEditor.HasFocus ? ColorStyle.Selection : ColorStyle.InactiveSelection;
+				return selectionColor;
 			}
 		}
 
