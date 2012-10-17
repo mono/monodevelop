@@ -368,24 +368,26 @@ type internal LanguageService private () =
       mbox.Scan(fun msg ->
         Debug.tracef "LanguageService" "Checking message %s" (msg.GetType().Name)
         match msg, typedInfo with 
-        
-        // Try forwarding request to the parser worker
         | TriggerRequest(info), _ -> Some <| async {
+          let newTypedInfo = 
+           try
             Debug.tracef "LanguageService" "TriggerRequest"
             let fileName = info.File.FullPath.ToString()        
             Debug.tracef "Worker" "Request parse received"
             // Run the untyped parsing of the file and report result...
-            let checker = getChecker()
-            let untypedInfo = checker.UntypedParse(fileName, info.Source, info.Options)
+            let checker = try getChecker() with e -> Debug.tracef "Worker" "Error in getChecker: %s" (e.ToString()); reraise ()
+            Debug.tracef "Worker" "Untyped parse..."
+            let untypedInfo = try checker.UntypedParse(fileName, info.Source, info.Options) with e -> Debug.tracef "Worker" "Error in UntypedParse: %s" (e.ToString()); reraise ()
               
             // Now run the type-checking
             let fileName = CompilerArguments.fixFileName(fileName)
-            let res = checker.TypeCheckSource( untypedInfo, fileName, 0, info.Source,info.Options, IsResultObsolete(fun () -> false) )
+            Debug.tracef "Worker" "Typecheck source..."
+            let res = try checker.TypeCheckSource( untypedInfo, fileName, 0, info.Source,info.Options, IsResultObsolete(fun () -> false) ) with e -> Debug.tracef "Worker" "Error in TypeCheckSource: %s" (e.ToString()); reraise ()
               
             // If this is 'full' request, then start background compilations too
             if info.StartFullCompile then
-              Debug.tracef "Worker" "Starting background compilations"
-              checker.StartBackgroundCompile(info.Options)
+                Debug.tracef "Worker" "Starting background compilations"
+                checker.StartBackgroundCompile(info.Options)
             Debug.tracef "Worker" "Parse completed"
 
             let file = info.File
@@ -409,7 +411,11 @@ type internal LanguageService private () =
               | _ -> 
                   Debug.tracef "LanguageService" "Update typed info - failed"
                   typedInfo
-            return! loop newTypedInfo }
+            newTypedInfo
+           with e -> 
+            Debug.tracef "Errors" "Got unexpected background error: %s" (e.ToString())
+            typedInfo
+          return! loop newTypedInfo }
 
         
         // When we receive request for information and we don't have it we trigger a 
