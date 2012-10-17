@@ -12,42 +12,42 @@
 		<Addin id="Ide" version="4.0"/>
 		<Addin id="VersionControl" version="4.0"/>
 	</Dependencies>
-	
+
 	<!-- Extension Points -->
 
 	<ExtensionPoint path = "/MonoDevelop/AddinAuthoring/ContextMenu/ProjectPad/Addin">
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/AddinAuthoring/ContextMenu/ProjectPad/AddinReference">
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/AddinAuthoring/AddinRegistries">
 		<ExtensionNode name="Registry" type="MonoDevelop.AddinAuthoring.RegistryInfo" />
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/AddinAuthoring/ContextMenu/ExtensionModelPad/ExtensionPoint">
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/AddinAuthoring/ContextMenu/ExtensionModelPad/Extension">
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/AddinAuthoring/ContextMenu/ExtensionModelPad/ExtensionNode">
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/AddinAuthoring/ContextMenu/ExtensionModelPad/Project">
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
-	
+
 	<!-- Extensions -->
-	
+
 	<Extension path = "/MonoDevelop/AddinAuthoring/AddinRegistries">
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Command id = "MonoDevelop.AddinAuthoring.Commands.AddAddinDependency"
 			_label = "Add add-in reference..." />
@@ -75,7 +75,7 @@
 	<Extension path = "/MonoDevelop/Ide/FileTemplateTypes">
 		<FileTemplateType name = "Addin" class = "MonoDevelop.AddinAuthoring.AddinFileDescriptionTemplate"/>
 	</Extension>
-	
+
 	<Extension path="/MonoDevelop/Ide/MainMenu/Edit">
 		<CommandItem id="MonoDevelop.AddinAuthoring.Commands.AddAddinDependency" insertafter="Separator5"/>
 	</Extension>
@@ -94,7 +94,7 @@
 			<CommandItem id = "MonoDevelop.AddinAuthoring.Commands.AddAddinDependency" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.AddReference"/>
 		</Condition>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
 		<NodeBuilder class = "MonoDevelop.AddinAuthoring.NodeBuilders.ReferencesFolderNodeBuilder"/>
 		<NodeBuilder class = "MonoDevelop.AddinAuthoring.NodeBuilders.AddinReferenceNodeBuilder"/>
@@ -113,32 +113,32 @@
 		<CommandItem id = "MonoDevelop.AddinAuthoring.Commands.AddAddinDependency" />
 		<CommandItem id = "MonoDevelop.AddinAuthoring.Commands.AddExtension" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/AddinAuthoring/ContextMenu/ProjectPad/AddinReference">
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Add">
 		<Condition id="ItemType" value="Project">
 			<SeparatorItem insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.AddFiles" />
 			<CommandItem id = "MonoDevelop.AddinAuthoring.Commands.AddExtension" />
 		</Condition>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
 		<Class class = "MonoDevelop.AddinAuthoring.AddinProjectExtension"  insertafter="MidStep"/>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/ProjectFeatures">
 		<Class class = "MonoDevelop.AddinAuthoring.AddinFeature" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Common">
 		<Condition id="ItemType" value="DotNetProject">
 			<Section id = "AddinAuthoring" _label = "Add-in Settings" icon="md-addin" class="MonoDevelop.AddinAuthoring.AddinOptionPanel"/>
 		</Condition>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid = "md-addinauthoring-newclass" icon = "md-class|res:flare.png" size="Menu" />
 		<StockIcon stockid = "md-addinauthoring-newinterface" icon = "md-interface|res:flare.png" size="Menu" />
@@ -156,16 +156,16 @@
 		<DataType class = "MonoDevelop.AddinAuthoring.AddinProjectReference" name = "AddinReference"/>
 		<DataType class = "MonoDevelop.AddinAuthoring.ExtensionDomain" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class class = "MonoDevelop.AddinAuthoring.CodeCompletion.CodeCompletionExtension" insertbefore="MonoDevelop.XmlEditor.XmlTextEditorExtension" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">
 		<ItemProperty class = "MonoDevelop.Projects.DotNetProject"
 			name = "ExtensionDomain" type = "System.String" external="false"/>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/WorkbenchContexts/Edit">
 		<ContextPad id = "ExtensionTreePad" />
 	</Extension>
@@ -194,7 +194,7 @@
 		</ItemSet>
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/ProjectModel/PolicySets/Mono" >
 		<Policies resource="AddinXmlPolicy.xml" />
 		<Policies resource="AddinTextStylePolicy.xml" />

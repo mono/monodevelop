@@ -15,9 +15,9 @@
 	<Dependencies>
 		<Addin id="Core" version="4.0"/>
 	</Dependencies>
-	
+
   	<Localizer type="Gettext" catalog="monodevelop-database"/>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/Database/Sql" name = "MonoDevelop database providers">
 		<Description>MonoDevelop database factory addins.</Description>
 		<ExtensionNode name="DatabaseFactory" type="MonoDevelop.Database.Sql.DbFactoryCodon" />

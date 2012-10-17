@@ -17,7 +17,7 @@
 		<Addin id="Ide" version="4.0"/>
 		<Addin id="Profiling" version="4.0"/>
 	</Dependencies>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/Profiling/ContextMenu/ProfilingPad/HeapShotProfilingSnapshotNode" name = "HeapShot snapshot node context menu">
 		<Description>HeapShot snapshot node context menu.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
@@ -26,15 +26,15 @@
 	<Extension path = "/MonoDevelop/Profiling/Profilers">
 		<Profiler class="MonoDevelop.Profiling.HeapShot.HeapShotProfiler" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Profiling/FileFilters">
 		<FileFilter id = "OMAP" insertbefore = "AllFiles" _label = "HeapShot Snapshots" extensions = "*.omap"/>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/Pads/MonoDevelop.Profiling.ProfilingPad">
 		<NodeBuilder id = "HeapShotProfilingSnapshotNodeBuilder" class = "MonoDevelop.Profiling.HeapShot.HeapShotProfilingSnapshotNodeBuilder"/>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Profiling/ContextMenu/ProfilingPad/HeapShotProfilingSnapshotNode">
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Rename"/>
 		<SeparatorItem id = "DeleteSeparator" />

@@ -11,7 +11,7 @@
     <Runtime>
         <Import assembly="MonoDeveloperExtensions.dll"/>
     </Runtime>
-	
+
 	<Dependencies>
 		<Addin id="Core" version="4.0"/>
 		<Addin id="Ide" version="4.0"/>
@@ -21,7 +21,7 @@
 		<FileFormat id = "MonoMakefile" name="Mono Makefile"
 						class = "MonoDeveloper.MonoMakefileFormat" />
 	</Extension>
-	
+
   <Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels">
     <Condition id="ItemType" value = "MonoDeveloper.MonoMakefile">
 		<Section id = "MonoMakefileOptionsPanel"

@@ -11,44 +11,44 @@
 	<Runtime>
 		<Import assembly="Mono.TextTemplating.dll" />
 	</Runtime>
-	
+
 	<Dependencies>
 		<Addin id="Core" version="4.0"/>
 		<Addin id="Ide" version="4.0"/>
 		<Addin id="SourceEditor2" version="4.0"/>
 	</Dependencies>
-	
+
 	<Extension path = "/MonoDevelop/SourceEditor2/SyntaxModes">
 		<Templates resource="T4SyntaxMode.xml" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Core/MimeTypes">
 		<MimeType id="application/t4-template" _description="Text template" icon="md-template" isText="true">
 			<File pattern="*.tt" />
 		</MimeType>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/FileFilters">
 		<FileFilter id = "T4Templates"
 		           _label = "T4 Templates"
 		           extensions = "*.tt" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/TypeSystem/Parser">
 		<Parser class = "MonoDevelop.TextTemplating.Parser.T4Parser" mimeType="application/t4-template" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class fileExtensions = ".tt" class = "MonoDevelop.TextTemplating.Gui.T4EditorExtension" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">
 		<FileTemplate id       = "T4TemplateCSharp"
 		              file     = "Templates/T4TemplateCSharp.xft.xml"/>
 		<FileTemplate id       = "T4PreprocessedTemplateCSharp"
 		              file     = "Templates/T4PreprocessedTemplateCSharp.xft.xml"/>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/CustomTools">
 		<Tool name="TextTemplatingFileGenerator" type="MonoDevelop.TextTemplating.TextTemplatingFileGenerator"/>
 		<Tool name="TextTemplatingFilePreprocessor" type="MonoDevelop.TextTemplating.TextTemplatingFilePreprocessor"/>

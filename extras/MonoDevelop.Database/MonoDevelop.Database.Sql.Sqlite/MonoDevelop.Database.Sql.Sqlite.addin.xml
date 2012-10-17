@@ -11,9 +11,9 @@
 	<Runtime>
 		<Import assembly="MonoDevelop.Database.Sql.Sqlite.dll"/>
 	</Runtime>
-	
+
   	<Localizer type="Gettext" catalog="monodevelop-database"/>
-  
+
 	<Dependencies>
 		<Addin id="Core" version="4.0"/>
 		<Addin id="Ide" version="4.0"/>
@@ -26,9 +26,9 @@
 	<Extension path = "/MonoDevelop/Database/Sql">
 		<DatabaseFactory id = "Sqlite" class = "MonoDevelop.Database.Sql.Sqlite.SqliteDbFactory" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/SourceEditor2/SyntaxModes">
 		<Templates resource="SqliteSyntaxMode.xml" />
 	</Extension>
-	
+
 </Addin>

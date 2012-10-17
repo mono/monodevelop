@@ -11,9 +11,9 @@
 	<Runtime>
 		<Import assembly="MonoDevelop.Database.CodeGenerator.dll"/>
 	</Runtime>
-	
+
   	<Localizer type="Gettext" catalog="monodevelop-database"/>
-	
+
 	<Dependencies>
 		<Addin id="Core" version="4.0"/>
 		<Addin id="Ide" version="4.0"/>
@@ -28,17 +28,17 @@
 			_label = "Generate Linq Class"
 			icon = "md-class"/>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Tools">
 		<Condition id="ItemType" value="Project|ProjectFile|MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectFolder">
 			<CommandItem id = "MonoDevelop.Database.CodeGenerator.ToolCommands.GenerateDataClasses" insertafter="FindInFilesSeparator" insertbefore="CombineOptionsSeparator"/>
 		</Condition>
 	</Extension>
-	
-	
+
+
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Tools/Database">
 		<SeparatorItem id = "DatabaseSeparator" insertafter = "MonoDevelop.Database.Query.ToolCommands.Query" />
 		<CommandItem id = "MonoDevelop.Database.CodeGenerator.ToolCommands.GenerateDataClasses" />
 	</Extension>
-	
+
 </Addin>

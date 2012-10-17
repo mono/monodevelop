@@ -26,11 +26,11 @@
 		<Addin id="DesignerSupport" version="4.0"/>
 		<Addin id="SourceEditor2" version="4.0"/>
 	</Dependencies>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/XmlEditor/XmlFileAssociations">
 		<ExtensionNode name = "Association" type = "MonoDevelop.XmlEditor.XmlFileAssociationNode"/>
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/XmlEditor/XmlSchemas">
 		<ExtensionNode name = "Schema" type = "MonoDevelop.XmlEditor.XmlSchemaNode" />
 	</ExtensionPoint>
@@ -39,12 +39,12 @@
 	<Extension path = "/MonoDevelop/XmlEditor/XmlFileAssociations">
 		<Association extension = ".build"  namespaceUri="http://nant.sf.net/release/0.85-rc3/nant.xsd" />
 		<Association extension = ".config" namespaceUri="urn:app-config" />
-		<Association extension = ".xsd"    namespaceUri="http://www.w3.org/2001/XMLSchema" namespacePrefix="xs" /> 
-		<Association extension = ".xsl"    namespaceUri="http://www.w3.org/1999/XSL/Transform" namespacePrefix="xsl" /> 
-		<Association extension = ".xslt"   namespaceUri="http://www.w3.org/1999/XSL/Transform" namespacePrefix="xsl" /> 
+		<Association extension = ".xsd"    namespaceUri="http://www.w3.org/2001/XMLSchema" namespacePrefix="xs" />
+		<Association extension = ".xsl"    namespaceUri="http://www.w3.org/1999/XSL/Transform" namespacePrefix="xsl" />
+		<Association extension = ".xslt"   namespaceUri="http://www.w3.org/1999/XSL/Transform" namespacePrefix="xsl" />
 		<Association extension = ".stetic" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/XmlEditor/XmlSchemas">
 		<Schema file="schemas/appconfig.xsd" />
 		<Schema file="schemas/MonoDevelopAddIn.xsd" />
@@ -53,11 +53,11 @@
 		<Schema file="schemas/manifest.xsd" />
 		<Schema file="schemas/nant.xsd" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class id="MonoDevelop.XmlEditor.XmlTextEditorExtension" class = "MonoDevelop.XmlEditor.XmlTextEditorExtension" />
 	</Extension>
-	
+
 	<!-- Commands -->
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Category _name = "XmlEditor" id="XmlEditor">
@@ -98,8 +98,8 @@
 			<CommandItem id = "MonoDevelop.XmlEditor.Commands.GoToSchemaDefinition" />
 			<CommandItem id = "MonoDevelop.XmlEditor.Commands.Validate" /><!--
 			<SeparatorItem id = "XPathCommandsSeparator"/>
-			<CommandItem id = "MonoDevelop.XmlEditor.Commands.OpenXPathQueryPad" />				
-			<CommandItem id = "MonoDevelop.XmlEditor.Commands.RemoveXPathHighlighting" />			
+			<CommandItem id = "MonoDevelop.XmlEditor.Commands.OpenXPathQueryPad" />
+			<CommandItem id = "MonoDevelop.XmlEditor.Commands.RemoveXPathHighlighting" />
 			<SeparatorItem id = "StylesheetCommandsSeparator"/>-->
 			<CommandItem id = "MonoDevelop.XmlEditor.Commands.AssignStylesheet"/>
 			<CommandItem id = "MonoDevelop.XmlEditor.Commands.OpenStylesheet"/>
@@ -107,47 +107,47 @@
 			<SeparatorItem/>
 		</ItemSet>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/TextEditor/Behavior">
 		<Section id = "XmlFormattingOptions" insertbefore="Formatting" _label = "XML" fill="true" class = "MonoDevelop.XmlEditor.Gui.XmlEditorOptionsPanel"/>
 	</Extension>
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/TextEditor">
 		<Section id = "XmlSchemas" _label = "XML Schemas" fill="true" class = "MonoDevelop.XmlEditor.Gui.XmlSchemasPanel"/>
 	</Extension>
-	
+
 	<!-- XPath Query pad -->
 	<!-- Bug in the DockFrame (gitem is null but code calls SetVisible
 		when visible is false) prevents us from using setting the XPathQueryPad
 		to be a pad
 	<Extension path = "/MonoDevelop/Ide/Pads">
-		<Pad id = "MonoDevelop.XmlEditor.XPathQueryPad" 
+		<Pad id = "MonoDevelop.XmlEditor.XPathQueryPad"
 		     class = "MonoDevelop.XmlEditor.XPathQueryPad"
 		     defaultPlacement = "Bottom"
 		     _label = "XPath Query"/>
 	</Extension>-->
-	
+
 	<!-- Put the XPath Query pad in the View menu -->
 	<!--<Extension path = "/SharpDevelop/Workbench/Contexts/Edit">
 		<ContextPad id = "MonoDevelop.XmlEditor.XPathQueryPad"/>
 	</Extension>-->
-	
+
 	<Extension path = "/MonoDevelop/TypeSystem/Parser">
 		<Parser class = "MonoDevelop.XmlEditor.XmlDocumentParser" mimeType = "application/xml" id = "XmlParser"/>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/CodeFormatters">
 		<Formatter mimeType="text/xml" class="MonoDevelop.Xml.Formatting.XmlFormatter" />
 		<Formatter mimeType="application/xml" class="MonoDevelop.Xml.Formatting.XmlFormatter" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/ProjectModel/PolicySets/Mono" >
 		<Policies resource="MonoXmlPolicy.xml" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/MimeTypePolicyPanels">
 		<Panel id = "XmlFormatting" _label = "XML Format" mimeType="application/xml" class = "MonoDevelop.Xml.Formatting.XmlFormattingPolicyPanel" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Core/UserDataMigration">
 		<!-- 2.4 -->
 		<Migration sourceVersion="2.4" kind="UserData" path="schemas" targetPath="XmlSchemas" isDirectory="true" />

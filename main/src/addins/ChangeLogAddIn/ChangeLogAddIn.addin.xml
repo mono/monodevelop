@@ -17,11 +17,11 @@
 		<Addin id="Ide" version="4.0"/>
 		<Addin id="VersionControl" version="4.0"/>
 	</Dependencies>
-	
+
 	<Extension path = "/MonoDevelop/VersionControl/CommitDialogExtensions">
 		<Class class="MonoDevelop.ChangeLogAddIn.CommitDialogExtensionWidget" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Command id = "MonoDevelop.ChangeLogAddIn.ChangeLogCommands.InsertEntry"
 			defaultHandler = "MonoDevelop.ChangeLogAddIn.InsertEntryHandler"
@@ -41,19 +41,19 @@
 			<Section id = "ChangeLogIntegration" _label = "ChangeLog Integration" fill="true" class="MonoDevelop.ChangeLogAddIn.ProjectOptionPanel" />
 		</ComplexCondition>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/VersionControl">
 		<Section id = "DefaultChangeLogIntegration" _label = "ChangeLog Integration" fill="true" class="MonoDevelop.ChangeLogAddIn.ProjectOptionPanel" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/DefaultPolicyPanels/VersionControl">
 		<Section id = "DefaultChangeLogIntegration" _label = "ChangeLog Integration" fill="true" class="MonoDevelop.ChangeLogAddIn.ProjectOptionPanel" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/ProjectModel/PolicySets/Mono" >
 		<Policies resource="Policies.xml"/>
 	</Extension>
-	
+
 	<!-- for MD1 migration -->
 	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">
 		<ItemProperty class = "MonoDevelop.Projects.SolutionItem"

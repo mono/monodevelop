@@ -11,9 +11,9 @@
 	<Runtime>
 		<Import assembly="MonoDevelop.Database.Sql.SqlServer.dll"/>
 	</Runtime>
-	
+
   	<Localizer type="Gettext" catalog="monodevelop-database"/>
-	
+
 	<Dependencies>
 		<Addin id="Core" version="4.0"/>
 		<Addin id="Ide" version="4.0"/>
@@ -26,9 +26,9 @@
 	<Extension path = "/MonoDevelop/Database/Sql">
 		<DatabaseFactory id = "SqlServer" class = "MonoDevelop.Database.Sql.SqlServer.SqlServerDbFactory" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/SourceEditor2/SyntaxModes">
 		<Templates resource="SqlServerSyntaxMode.xml" />
 	</Extension>
-	
+
 </Addin>

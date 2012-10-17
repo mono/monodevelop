@@ -23,15 +23,15 @@
 				defaultHandler = "MonoDevelop.CodeMetrics.ShowMetricsHandler"
 				_label = "_Code Metrics" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Project">
 		<CommandItem id = "MonoDevelop.CodeMetrics.Commands.ShowMetrics" insertbefore="OptionsSeparator"/>
-	</Extension>	
-	
+	</Extension>
+
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
 		<NodeBuilder id = "CodeMetricsNodeExtension" class = "MonoDevelop.CodeMetrics.CodeMetricsNodeExtension"/>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Tools">
 		<Condition id="ItemType" value="Solution|SolutionFolder|Project|ProjectFile|MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectFolder">
 			<CommandItem id = "MonoDevelop.CodeMetrics.Commands.ShowMetrics" insertafter="FindInFilesSeparator" insertbefore="CombineOptionsSeparator"/>

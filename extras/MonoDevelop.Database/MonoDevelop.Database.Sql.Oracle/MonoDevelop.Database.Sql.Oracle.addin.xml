@@ -11,9 +11,9 @@
 	<Runtime>
 		<Import assembly="MonoDevelop.Database.Sql.Oracle.dll"/>
 	</Runtime>
-	
+
   	<Localizer type="Gettext" catalog="monodevelop-database"/>
-	
+
 	<Dependencies>
 		<Addin id="Core" version="4.0"/>
 		<Addin id="Ide" version="4.0"/>

@@ -16,7 +16,7 @@
 		<Import file = "COPYING" />
 		<Import file = "README" />
 	</Runtime>
-	
+
 	<Dependencies>
 		<Addin id = "Ide" version="4.0"/>
 		<Addin id = "CSharpBinding" version = "4.0" />
@@ -30,7 +30,7 @@
 		<ProjectTemplate id   = "OpenOfficeSpreadsheetViewSample"
 		                 file = "OpenOfficeSpreadsheetViewSample.xpt.xml"/>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">
 		<FileTemplate id   = "OpenOfficeSpreadsheetDocHelper"
 		              file = "OpenOfficeSpreadsheetDocHelper.xft.xml"/>

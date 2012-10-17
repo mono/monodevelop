@@ -11,7 +11,7 @@
 	<Runtime>
 		<Import assembly="MonoDevelop.HexEditor.dll"/>
 	</Runtime>
-	
+
 	<Dependencies>
 		<Addin id="Core" version="4.0"/>
 		<Addin id="Ide" version="4.0"/>
@@ -21,9 +21,9 @@
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Command id = "MonoDevelop.HexEditor.Commands.ShowHexEditor" _label = "Open with _hex editor" />
 	</Extension> -->
-	
+
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
-		<DisplayBinding 
+		<DisplayBinding
 			id = "HexEditor"
 			insertafter ="AssemblyBrowser"
 			class = "MonoDevelop.HexEditor.HexEditorDisplayBinding" />
@@ -32,7 +32,7 @@
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
 		<NodeBuilder id = "HexEditorNodeExtension" class = "MonoDevelop.HexEditor.HexEditorNodeExtension"/>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Tools">
 		<Condition id="ItemType" value="ProjectFile">
 			<CommandItem id = "MonoDevelop.HexEditor.Commands.ShowHexEditor" insertafter="FindInFilesSeparator" insertbefore="CombineOptionsSeparator"/>

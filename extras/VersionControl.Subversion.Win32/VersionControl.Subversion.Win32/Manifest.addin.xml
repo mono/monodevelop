@@ -10,7 +10,7 @@
     <Copyright>GPL</Copyright>
     <Category>Version Control</Category>
   </Header>
-  
+
 	<Dependencies>
 		<Addin id="Core" version="4.0"/>
 		<Addin id="Ide" version="4.0"/>
@@ -30,4 +30,3 @@
 		<Class class = "SubversionAddinWindows.SvnSharpClient" />
 	</Extension>
 </Addin>
-

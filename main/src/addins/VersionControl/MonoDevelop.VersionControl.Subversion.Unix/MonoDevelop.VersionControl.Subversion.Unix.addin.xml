@@ -14,11 +14,10 @@
 	    <Addin id="VersionControl" version="4.0"/>
 	    <Addin id="VersionControl.Subversion" version="4.0"/>
 	</Dependencies>
-	
+
 	<Extension path = "/MonoDevelop/VersionControl/VersionControlSystems">
 		<Condition id="Platform" value="!windows">
 			<Class class = "MonoDevelop.VersionControl.Subversion.Unix.SvnClient" />
 		</Condition>
 	</Extension>
 </Addin>
-	

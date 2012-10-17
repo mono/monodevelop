@@ -1854,6 +1854,39 @@ namespace MonoDevelop.Ide.TypeSystem
 					SerializeObject (assemblyPath, assembly);
 				return assembly;
 			}
+
+			#region IAssemblyReference implementation
+
+			public IAssembly Resolve (ITypeResolveContext context)
+			{
+				return Assembly.Resolve (context);
+			}
+
+			#endregion
+
+			#region IUnresolvedAssembly implementation
+
+			public string AssemblyName {
+				get { return Assembly.AssemblyName; }
+			}
+
+			public string Location {
+				get { return Assembly.Location; }
+			}
+
+			public IEnumerable<IUnresolvedAttribute> AssemblyAttributes {
+				get { return Assembly.AssemblyAttributes; }
+			}
+
+			public IEnumerable<IUnresolvedAttribute> ModuleAttributes {
+				get { return Assembly.ModuleAttributes; }
+			}
+
+			public IEnumerable<IUnresolvedTypeDefinition> TopLevelTypeDefinitions {
+				get { return Assembly.TopLevelTypeDefinitions; }
+			}
+
+			#endregion
 		}
 		
 		[Serializable]
