@@ -1,4 +1,4 @@
-﻿<!--
+<!--
 
 MonokaiStyle.xml
  
@@ -30,28 +30,41 @@ THE SOFTWARE.
 -->
 
 <EditorStyle name="Monokai" _description="A smooth, dusky scheme from TextMate.">
-	<Color name="errorColor" value="#FF0000"/>
+	<Color name="monokai-white" value="#F8F8F2"/>
+	<Color name="monokai-selection" value="#49483E"/>
+	<Color name="monokai-background" value="#272822"/>
+	<Color name="monokai-comment" value="#75715E"/>
+	<Color name="monokai-string" value="#E6DB74"/>
+	<Color name="monokai-constant" value="#AE81FF"/>
+	<Color name="monokai-keyword" value="#F92672"/>
+	<Color name="monokai-type" value="#66d9ef"/>
+	<Color name="monokai-classname" value="#A6E22E"/>
+	<Color name="monokai-functionargument" value="#FD971F"/>
+	<Color name="monokai-invalid" value="#F8F8F0"/>
+	<Color name="monokai-invalidBackground" value="#F92672"/>
 
-	<Style name="text" color="#F8F8F2" bgColor="#272822">
+
+
+	<Style name="text" color="monokai-white" bgColor="monokai-background">
 		<Style name="background" color="white">
 			<Style name="readonly" color="#252620"/>
 			<Style name="searchresult-main" color="#FFE792"/>
 			<Style name="searchresult" color="#FFE792"/> 
 		</Style>
-		<Style name="selection" bgColor="#49483E"/>
+		<Style name="selection" bgColor="monokai-selection"/>
 		<Style name="selection.inactive" bgColor="#383830"/>
 		<Style name="link" color="#0000FF"/>
-		<Style name="punctuation" color="#F8F8F2"/>
-		<Style name="preprocessor" color="#729fcf">
-			<Style name="keyword" color="#729fcf" weight="Italic"/>
+		<Style name="punctuation" color="monokai-white"/>
+		<Style name="preprocessor" color="monokai-classname">
+			<Style name="keyword" color="monokai-classname" weight="Italic"/>
 		</Style>
 	</Style>
 	
-	<Style name="xml" color="#F8F8F2" bgColor="#272822">
-		 <Style name="tag" color="#F8F8F2"/>
-		 <Style name="name" color="#F92672"/>
-		 <Style name="attribute" color="#98FC66"/>
-		 <Style name="cdata" color="#E6DB74"/>
+	<Style name="xml" color="monokai-white" bgColor="monokai-background">
+		 <Style name="tag" color="monokai-white"/>
+		 <Style name="name" color="monokai-keyword"/>
+		 <Style name="attribute" color="monokai-classname"/>
+		 <Style name="cdata" color="monokai-string"/>
 	</Style>
 	
 	<Style name="tooltip" color="black" bgColor="#272725"/>
@@ -66,7 +79,7 @@ THE SOFTWARE.
 		</Style>
 	</Style>
 	
-	<Style name="template" color ="black" bgColor="#A6E22E">
+	<Style name="template" color ="black" bgColor="monokai-classname">
 		<Style name="tag" color="#FF00FF" />
 		<Style name="directive" color="#FF00FF" />
 	</Style>
@@ -87,16 +100,16 @@ THE SOFTWARE.
 	<Style name="marker">
 		<Style name="line" color="#3E3D31"/>
 		<Style name="line.changed" color="#A4E22E"/>
-		<Style name="line.dirty" color="#E6DB74"/>
+		<Style name="line.dirty" color="monokai-string"/>
 	
 		<Style name="ruler" color="#B3DEFD"/>
 		<Style name="bracket" color="#6699CC" bgColor="#AACCEE"/>
-		<Style name="usages" color="#49483E" bgColor="#383830"/>
+		<Style name="usages" color="monokai-selection" bgColor="#383830"/>
 		
 		<Style name="bookmark.color1" color="#FDD99B"/>
 		<Style name="bookmark.color2"  color="#816647"/>
-		<Style name="underline" color="errorColor">
-			<Style name="error" color="errorColor"/>
+		<Style name="underline" color="red">
+			<Style name="error" color="red"/>
 			<Style name="warning" color="#FFA500"/>
 			<Style name="suggestion" color="#8FC68F" />
 			<Style name="hint" color="#8F8FC6" />
@@ -116,31 +129,31 @@ THE SOFTWARE.
 		<Style name="error" color="#FFFFFF" bgColor="#440000" />
 	</Style>
 
-	<Style name="linenumber" color="#BCBCBC" bgColor="#272822"/>
+	<Style name="linenumber" color="#BCBCBC" bgColor="monokai-background"/>
 	
 	<Style name="iconbar" color="#3B3A32"/>
 	<Style name="iconbar.separator" color="#3B3A32"/>
 
-	<Style name="fold" color="#75715E" bgColor="#272822"/>
-	<Style name="fold.margin" color="white" bgColor ="#272822" />
+	<Style name="fold" color="monokai-comment" bgColor="monokai-background"/>
+	<Style name="fold.margin" color="white" bgColor ="monokai-background" />
 	
-	<Style name="comment"  weight="italic" color="#75715E">
-		<Style name="keyword" weight="bold" color="#75715E"/>
+	<Style name="comment"  weight="italic" color="monokai-comment">
+		<Style name="keyword" weight="bold" color="monokai-comment"/>
 	</Style>
 	
-	<Style name="constant" color="#AE81FF">
-		<Style name="language.void" weight="italic" color="#66D9EF"/>
+	<Style name="constant" color="monokai-constant">
+		<Style name="language.void" weight="italic" color="monokai-type"/>
 	</Style>
 	
-	<Style name="string" color="#E6DB74" />
+	<Style name="string" color="monokai-string" />
 	
-	<Style name="keyword" color="#F92672">
-		<Style name="access" color="#AE81FF"/> 
-		<Style name="type" weight="italic" color="#66D9EF"/> 
-		<Style name="semantic.type" weight="italic" color="#66D9EF"/> 
-		<Style name="semantic.field" color="#A4E22E"/>
-		<Style name="semantic.property" color="#A4E22E"/>
+	<Style name="keyword" color="monokai-keyword">
+		<Style name="access" color="monokai-constant"/> 
+		<Style name="type" weight="italic" color="monokai-type"/> 
+		<Style name="semantic.type" weight="italic" color="monokai-type"/> 
+		<Style name="semantic.field" color="monokai-functionargument"/>
+		<Style name="semantic.property" color="monokai-functionargument"/>
 		<Style name="semantic.method" color="#2EE2A6"/>
-		<Style name="semantic.error" color="errorColor"/>
+		<Style name="semantic.error" color="monokai-invalid" bgColor="monokai-invalidBackground"/>
 	</Style>
 </EditorStyle>
