@@ -206,6 +206,7 @@
     <Compile Include="Mono.TextEditor\Gui\TextArea.cs" />
     <Compile Include="Mono.TextEditor\Gui\TextEditor.cs" />
     <Compile Include="Mono.TextEditor\Standalone\StringTextSource.cs" />
+    <Compile Include="Mono.TextEditor.Utils\HtmlWriter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mono.TextEditor.dll.config">
