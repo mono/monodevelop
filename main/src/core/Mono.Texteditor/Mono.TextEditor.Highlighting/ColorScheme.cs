@@ -573,10 +573,11 @@ namespace Mono.TextEditor.Highlighting
 					return new Cairo.Color ( GetNumber (colorString, 1) / 255.0, GetNumber (colorString, 3) / 255.0, GetNumber (colorString, 5) / 255.0);
 				}
 				throw new ArgumentException ("colorString", "colorString must either be #RRGGBB (length 7) or #AARRGGBB (length 9) your string " + colorString + " is invalid because it has a length of " + colorString.Length);
-			} 
-			var color = new Gdk.Color ();
-			if (Gdk.Color.Parse (colorString, ref color))
-				return (Cairo.Color)((HslColor)color);
+			}
+
+			var color = System.Drawing.ColorTranslator.FromHtml (colorString);
+			if (!color.IsEmpty)
+				return new Cairo.Color (color.R / 255.0, color.G / 255.0, color.B / 255.0);
 			throw new Exception ("Failed to parse color or find named color '" + colorString + "'");
 		}
 		
