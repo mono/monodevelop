@@ -261,11 +261,7 @@
 
 	<Rule name = "XmlDocumentationTag">
 		
-		<!-- attributes -->
-		<Match expression="([A-Za-z0-9_]+[:[A-Za-z0-9_]+]?)([\s\n\r]*=)">
-			<Group color = "xml.attribute"/>
-			<Group color = "comment"/>
-		</Match>
+
 	</Rule>
 
 </SyntaxMode>
