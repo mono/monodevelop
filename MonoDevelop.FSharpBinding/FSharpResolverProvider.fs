@@ -77,16 +77,17 @@ type internal FSharpLanguageItemWindow(tooltip: string) as this =
       
     //return the real width
     member this.SetMaxWidth (maxWidth) =
-      let label = this.Child :?> MonoDevelop.Components.FixedWidthWrapLabel
-      if (label = null) then 
-          this.Allocation.Width 
-      else
+      match this.Child with 
+      | :? MonoDevelop.Components.FixedWidthWrapLabel as label -> 
           label.MaxWidth <- maxWidth
           label.RealWidth
+      | _ -> this.Allocation.Width 
 
-    override this.OnStyleSet (previous_style: Gtk.Style) =
-      base.OnStyleSet (previous_style)
-      updateFont (this.Child :?> MonoDevelop.Components.FixedWidthWrapLabel)
+    override this.OnStyleSet (previousStyle: Gtk.Style) =
+      base.OnStyleSet previousStyle
+      match this.Child with 
+      | :? MonoDevelop.Components.FixedWidthWrapLabel as label -> updateFont label
+      | _ -> ()
 
 type FSharpLanguageItemTooltipProvider() = 
     let p = new MonoDevelop.SourceEditor.LanguageItemTooltipProvider() 
@@ -97,15 +98,19 @@ type FSharpLanguageItemTooltipProvider() =
         member x.CreateTooltipWindow (editor, offset, modifierState, item) = 
             let doc = IdeApp.Workbench.ActiveDocument
             if (doc = null) then null else
-            let titem = item.Item :?> FSharpResolveResult
-            let tooltip = TipFormatter.formatTipWithHeader(titem.DataTip) 
-            let result = new FSharpLanguageItemWindow (tooltip)
-            result :> Gtk.Window
+            match item.Item with 
+            | :? FSharpResolveResult as titem -> 
+                let tooltip = TipFormatter.formatTipWithHeader(titem.DataTip) 
+                let result = new FSharpLanguageItemWindow (tooltip)
+                result :> Gtk.Window
+            | _ -> null
     
         member x.GetRequiredPosition (editor, tipWindow, requiredWidth, xalign) = 
-            let win = tipWindow :?> FSharpLanguageItemWindow
-            requiredWidth <- win.SetMaxWidth (win.Screen.Width)
-            xalign <- 0.5
+            match tipWindow with 
+            | :? FSharpLanguageItemWindow as win -> 
+                requiredWidth <- win.SetMaxWidth win.Screen.Width
+                xalign <- 0.5
+            | _ -> ()
 
         member x.IsInteractive (editor, tipWindow) =  
             false
