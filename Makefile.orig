@@ -29,9 +29,11 @@ RESOURCES = \
 	--resource:MonoDevelop.FSharpBinding/templates/EmptyFSharpSource.xft.xml \
 	--resource:MonoDevelop.FSharpBinding/templates/EmptyFSharpScript.xft.xml \
 	--resource:MonoDevelop.FSharpBinding/templates/FSharpConsoleProject.xpt.xml \
+    --resource:MonoDevelop.FSharpBinding/templates/FSharpSyntaxMode.xml \
   --resource:MonoDevelop.FSharpBinding/templates/FSharpLibraryProject.xpt.xml \
   --resource:MonoDevelop.FSharpBinding/templates/FSharpTutorialProject.xpt.xml \
-	--resource:MonoDevelop.FSharpBinding/templates/FSharpSyntaxMode.xml \
+  --resource:MonoDevelop.FSharpBinding/templates/FSharpGtkProject.xpt.xml \
+  --resource:MonoDevelop.FSharpBinding/templates/AssemblyInfo.xft.xml \
 	--resource:MonoDevelop.FSharpBinding/icons/fsharp-icon-32.png \
 	--resource:MonoDevelop.FSharpBinding/icons/fsharp-script-32.png \
 	--resource:MonoDevelop.FSharpBinding/icons/fsharp-file-icon.png \
