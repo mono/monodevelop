@@ -28,8 +28,15 @@
         <Reference type="Gac" refto="System.Numerics, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />	
       </References>
       <Files>
-        <File name = "Lib.fs" AddStandardHeader="True"><![CDATA[module Lib]]></File>
-            <FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
+        <FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
+        <File name = "Lib.fs" AddStandardHeader="True"><![CDATA[module ${ProjectName}.Library1
+
+module UtilityModule =
+    let utilityFunction() = 1 + 1
+
+type UtilityClass(argument) = 
+    member x.UtilityMember() = 17
+]]></File>
       </Files>
     </Project>
   </Combine>
