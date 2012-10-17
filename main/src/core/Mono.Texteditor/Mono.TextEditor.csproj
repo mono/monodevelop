@@ -205,6 +205,7 @@
     <Compile Include="Mono.TextEditor\Gui\FoldMarkerMargin.cs" />
     <Compile Include="Mono.TextEditor\Gui\TextArea.cs" />
     <Compile Include="Mono.TextEditor\Gui\TextEditor.cs" />
+    <Compile Include="Mono.TextEditor\Standalone\StringTextSource.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mono.TextEditor.dll.config">
@@ -342,12 +343,5 @@
     <Folder Include="Mono.TextEditor\Gui\" />
     <Folder Include="Mono.TextEditor\Document\" />
     <Folder Include="Mono.TextEditor\Standalone\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
-      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
-      <Name>ICSharpCode.NRefactory</Name>
-      <Private>False</Private>
-    </ProjectReference>
   </ItemGroup>
 </Project>

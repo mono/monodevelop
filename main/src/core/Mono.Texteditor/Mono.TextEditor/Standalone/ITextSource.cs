@@ -16,6 +16,7 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 #if STANDALONE
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -93,6 +94,16 @@ namespace ICSharpCode.NRefactory.Editor
 		/// </summary>
 		/// <exception cref="ArgumentOutOfRangeException">offset or length is outside the valid range.</exception>
 		string GetText(ISegment segment);
+		
+		/// <summary>
+		/// Writes the text from this document into the TextWriter.
+		/// </summary>
+		void WriteTextTo(TextWriter writer);
+		
+		/// <summary>
+		/// Writes the text from this document into the TextWriter.
+		/// </summary>
+		void WriteTextTo(TextWriter writer, int offset, int length);
 		
 		/// <summary>
 		/// Gets the index of the first occurrence of the character in the specified array.
