@@ -109,12 +109,15 @@ module CompilerArguments =
     // resolve it and add it. We look in the directories returned by getDefaultDirectories(),
     // where no includes are given.
     for assumedFile in ["mscorlib"; "FSharp.Core"] do 
-      let coreRef = files |> List.exists (fun fn -> fn.EndsWith(assumedFile + ".dll") || fn.EndsWith(assumedFile))
-      if not coreRef then
+      let coreRef = files |> List.tryFind (fun fn -> fn.EndsWith(assumedFile + ".dll") || fn.EndsWith(assumedFile))
+      match coreRef with
+      | None ->
         let dirs = ScriptOptions.getDefaultDirectories(targetFramework) 
         match ScriptOptions.resolveAssembly dirs assumedFile with
         | Some fn -> yield "-r:" + wrapf(fn)
         | None -> Debug.tracef "Resolution" "Assembly resolution failed when trying to find default reference for '%s'!" assumedFile
+      | Some r -> 
+        Debug.tracef "Resolution" "Found FSharp.Core reference '%s'" r
       
     for file in files do 
       yield "-r:" + wrapf(file) ]
