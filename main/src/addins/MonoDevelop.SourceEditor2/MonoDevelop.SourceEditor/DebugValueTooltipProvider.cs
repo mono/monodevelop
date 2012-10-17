@@ -1,9 +1,10 @@
 // DebugValueTooltipProvider.cs
 //
-// Author:
-//   Lluis Sanchez Gual <lluis@novell.com>
+// Authors: Lluis Sanchez Gual <lluis@novell.com>
+//          Jeffrey Stedfast <jeff@xamarin.com>
 //
 // Copyright (c) 2008 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2012 Xamarin Inc. (http://www.xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -48,22 +49,25 @@ namespace MonoDevelop.SourceEditor
 		
 		public DebugValueTooltipProvider ()
 		{
-			DebuggingService.CurrentFrameChanged += HandleCurrentFrameChanged;
-			DebuggingService.DebugSessionStarted += HandleDebugSessionStarted;
+			DebuggingService.CurrentFrameChanged += CurrentFrameChanged;
+			DebuggingService.DebugSessionStarted += DebugSessionStarted;
 		}
 
-		void HandleDebugSessionStarted (object sender, EventArgs e)
+		void DebugSessionStarted (object sender, EventArgs e)
 		{
-			DebuggingService.DebuggerSession.TargetExited += HandleTargetExited;
+			DebuggingService.DebuggerSession.TargetExited += TargetProcessExited;
 		}
 
-		void HandleCurrentFrameChanged (object sender, EventArgs e)
+		void CurrentFrameChanged (object sender, EventArgs e)
 		{
 			// Clear the cached values every time the current frame changes
 			cachedValues.Clear ();
+
+			if (tooltip != null)
+				tooltip.Hide ();
 		}
 
-		void HandleTargetExited (object sender, EventArgs e)
+		void TargetProcessExited (object sender, EventArgs e)
 		{
 			if (tooltip != null)
 				tooltip.Hide ();
@@ -240,7 +244,7 @@ namespace MonoDevelop.SourceEditor
 		#region IDisposable implementation
 		public void Dispose ()
 		{
-			DebuggingService.CurrentFrameChanged -= HandleCurrentFrameChanged;
+			DebuggingService.CurrentFrameChanged -= CurrentFrameChanged;
 		}
 		#endregion
 	}
