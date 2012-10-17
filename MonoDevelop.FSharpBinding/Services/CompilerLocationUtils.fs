@@ -174,7 +174,7 @@ module internal FSharpEnvironment =
   let internal tryFsharpiScript(url:string) =
     try
       let str = File.ReadAllText(url)
-      let reg = new Regex("mono (.* )?(\/.*)\/fsi\.exe")
+      let reg = new Regex("mono.* (\/.*)\/fsi\.exe")
       let res = reg.Match(str)
       if res.Success then Some(res.Groups.[1].Value) else None
     with e -> 
@@ -200,14 +200,14 @@ module internal FSharpEnvironment =
     // Check for an app.config setting to redirect the default compiler location
     // Like fsharp-compiler-location
     try 
+      // FSharp.Compiler support setting an appkey for compiler location. I've never seen this used.
+      Debug.tracef "Resolution" "BinFolderOfDefaultFSharpCore: Probing app.config"
       let result = tryAppConfig "fsharp-compiler-location"
       match result with 
       | Some _ ->  result 
       | None -> 
 
-        // Note: If the keys below change, be sure to update code in:
-        // Property pages (ApplicationPropPage.vb)
-
+        // On windows the location of the compiler is via a registry key
         let key20 = @"Software\Microsoft\.NETFramework\AssemblyFolders\Microsoft.FSharp-" + FSharpTeamVersionNumber 
         let key40 = 
             match FSharpCompilerVersion.CurrentRequestedVersion with 
@@ -218,14 +218,19 @@ module internal FSharpEnvironment =
           | None -> key20,key40 
           | Some v -> if v.Length > 1 && v.[0] <= '3' then key20,key40 else key40,key20
         
+        Debug.tracef "Resolution" "BinFolderOfDefaultFSharpCore: Probing registry key %s" key1
         let result = tryRegKey key1
         match result with 
         | Some _ ->  result 
         | None -> 
+        Debug.tracef "Resolution" "BinFolderOfDefaultFSharpCore: Probing registry key %s" key2
         let result =  tryRegKey key2
         match result with 
         | Some _ ->  result 
         | None ->
+
+        // On Unix we let you set FSHARP_COMILER_BIN. I've rarely seen this used and its not documented in the install isntructions.
+        Debug.tracef "Resolution" "BinFolderOfDefaultFSharpCore: Probing environment variable FSHARP_COMPILER_BIN"
         let result = 
             let var = System.Environment.GetEnvironmentVariable("FSHARP_COMPILER_BIN")
             if String.IsNullOrEmpty(var) then None
@@ -234,9 +239,13 @@ module internal FSharpEnvironment =
         | Some _ -> result
         | None -> 
 
+        // On Unix we probe 'bin' under various hardwired paths for the scripts 'fsharpc' and 'fsharpi'. 
+        // We then loko in the script to see the Mono location it is pointing to. 
+        // This is pretty fragile, e.g. the script lookup is done via a regular expression.
+        // Really we should just search the path or otherwise resolve the 'mono' command?
         let result = 
             BackupInstallationProbePoints |> List.tryPick (fun x -> 
-               Debug.tracef "Resolution" "BinFolderOfDefaultFSharpCore: Probing %s" x
+               Debug.tracef "Resolution" "BinFolderOfDefaultFSharpCore: Probing	 %s" x
                let safeExists f = (try File.Exists(f) with _ -> false)
                let file f = Path.Combine(Path.Combine(x,"bin"),f)
                let exists f = safeExists(file f)
@@ -258,6 +267,7 @@ module internal FSharpEnvironment =
 
   let FolderOfDefaultFSharpCore(targetFramework) = 
     try 
+      Debug.tracef "Resolution" "Determing folder of FSharp.Core for target framework '%A'" targetFramework
       let result = tryAppConfig "fsharp-core-location"
       match result with 
       | Some _ ->  result 
@@ -281,6 +291,7 @@ module internal FSharpEnvironment =
         match result with 
         | Some _ ->  result 
         | None -> 
+        Debug.tracef "Resolution" "FSharp.Core: looking in environment variable"
         let result = 
             let var = System.Environment.GetEnvironmentVariable("FSHARP_CORE_LOCATION")
             if String.IsNullOrEmpty(var) then None
