@@ -159,7 +159,6 @@
 		</Condition>
 	</Extension>
 
-<<<<<<< HEAD
 	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
 		<Condition id="FileType" fileExtensions=".cs">
 			<CommandItem id = "MonoDevelop.AspNet.Mvc.AspCommands.GoToView" insertbefore="MonoDevelop.Ide.Commands.EditCommands.Cut" />
@@ -172,8 +171,6 @@
 		</Condition>
 	</Extension>
 	
-=======
->>>>>>> 3.0-series
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
 		<NodeBuilder id="AspMvcFolderNodeBuilderExtension" class = "MonoDevelop.AspNet.Mvc.Gui.FolderNodeBuilderExtension"/>
 	</Extension>
