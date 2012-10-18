@@ -1117,39 +1117,61 @@ namespace Mono.Debugging.Soft
 			return default(T);
 		}
 		
-		public override object ForceLoadType (EvaluationContext gctx, string typeName)
+		bool IsTypeLoaded (EvaluationContext gctx, string typeName)
 		{
-			// Shortcut to avoid a target invoke in case the type is already loaded
-			object t = GetType (gctx, typeName);
-			if (t != null)
-				return t;
-			
 			SoftEvaluationContext ctx = (SoftEvaluationContext) gctx;
+			
+			return ctx.Session.GetType (typeName) != null;
+		}
+		
+		bool IsTypeLoaded (EvaluationContext ctx, object type)
+		{
+			TypeMirror tm = (TypeMirror) type;
+			
+			return IsTypeLoaded (ctx, tm.FullName);
+		}
+		
+		bool ForceLoadType (EvaluationContext gctx, object type)
+		{
+			SoftEvaluationContext ctx = (SoftEvaluationContext) gctx;
+			TypeMirror tm = (TypeMirror) type;
+
+			if (IsTypeLoaded (ctx, type))
+				return true;
+
 			if (!ctx.Options.AllowTargetInvoke)
-				return null;
-			
-			TypeMirror tm = (TypeMirror) ctx.Thread.Type.GetTypeObject ().Type;
-			TypeMirror stype = ctx.Session.GetType ("System.String");
-			if (stype == null) {
-				// If the string type is not loaded, we need to get it in another way
-				StringMirror ss = ctx.Thread.Domain.CreateString ("");
-				stype = ss.Type;
-			}
-			
-			TypeMirror[] ats = new TypeMirror[] { stype };
-			MethodMirror met = OverloadResolve (ctx, "GetType", tm, ats, false, true, true);
-			
+				return false;
+
+			MethodMirror cctor = OverloadResolve (ctx, ".cctor", tm, new TypeMirror[0], false, true, false);
+			if (cctor == null)
+				return false;
+
 			try {
-				tm.InvokeMethod (ctx.Thread, met, new Value[] {(Value) CreateValue (ctx, typeName)}, InvokeOptions.DisableBreakpoints | InvokeOptions.SingleThreaded);
+				tm.InvokeMethod (ctx.Thread, cctor, new Value[0], InvokeOptions.DisableBreakpoints | InvokeOptions.SingleThreaded);
 			} catch {
-				return null;
+				return false;
 			} finally {
 				ctx.Session.StackVersion++;
 			}
-			
-			return GetType (ctx, typeName);
-		}
 
+			return true;
+		}
+		
+		public override object ForceLoadType (EvaluationContext gctx, string typeName)
+		{
+			object t = GetType (ctx, typeName);
+
+			if (t == null || IsTypeLoaded (ctx, t))
+				return t;
+
+			if (!ctx.Options.AllowTargetInvoke)
+				return null;
+
+			if (ForceLoadType (ctx, t))
+				return t;
+
+			return null;
+		}
 		
 		static T BuildAttribute<T> (CustomAttributeDataMirror attr)
 		{
