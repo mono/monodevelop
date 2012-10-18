@@ -887,6 +887,30 @@ namespace MonoDevelop.Ide.Gui.Components
 			return false;
 		}
 		
+		[CommandHandler (ViewCommands.RefreshTree)]
+		public virtual void RefreshCurrentItem ()
+		{
+			try {
+				LockUpdates ();
+				foreach (SelectionGroup grp in GetSelectedNodesGrouped ()) {
+					NodeBuilder[] chain = grp.BuilderChain;
+					grp.SavePositions ();
+					foreach (NodeBuilder b in chain) {
+						NodeCommandHandler handler = b.CommandHandler;
+						handler.SetCurrentNodes (grp.Nodes.ToArray ());
+						if (!grp.RestorePositions ())
+							return;
+						handler.RefreshMultipleItems ();
+						if (!grp.RestorePositions ())
+							return;
+					}
+				}
+			} finally {
+				UnlockUpdates ();
+			}
+			RefreshTree ();
+		}
+		
 		protected virtual void OnCurrentItemActivated (EventArgs args)
 		{
 			if (CurrentItemActivated != null)
@@ -1779,7 +1803,6 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 		}
 
-		[CommandHandler (ViewCommands.RefreshTree)]
 		protected void RefreshTree ()
 		{
 			foreach (TreeNodeNavigator node in GetSelectedNodes ()) {

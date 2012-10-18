@@ -500,6 +500,14 @@ namespace MonoDevelop.Ide.Gui.Components
 				NodePosition pos = CurrentPosition;
 				foreach (NodeBuilder builder in node.BuilderChain) {
 					try {
+						builder.PrepareChildNodes (node.DataItem);
+					} catch (Exception ex) {
+						LoggingService.LogError (ex.ToString ());
+					}
+					MoveToPosition (pos);
+				}
+				foreach (NodeBuilder builder in node.BuilderChain) {
+					try {
 						builder.BuildChildNodes (this, node.DataItem);
 					} catch (Exception ex) {
 						LoggingService.LogError (ex.ToString ());

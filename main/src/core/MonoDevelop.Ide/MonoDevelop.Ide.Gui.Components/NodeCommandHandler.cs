@@ -205,6 +205,28 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 		}
 		
+		public virtual void RefreshItem ()
+		{
+		}
+		
+		public virtual void RefreshMultipleItems ()
+		{
+			if (currentNodes.Length == 1)
+				RefreshItem ();
+			else {
+				ITreeNavigator[] nodes = currentNodes;
+				try {
+					currentNodes = new ITreeNavigator [1];
+					foreach (ITreeNavigator nod in nodes) {
+						currentNodes [0] = nod;
+						RefreshItem ();
+					}
+				} finally {
+					currentNodes = nodes;
+				}
+			}
+		}
+		
 		public virtual DragOperation CanDragNode ()
 		{
 			return DragOperation.None;
@@ -259,7 +281,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			foreach (object ob in dataObjects)
 				OnNodeDrop (ob, operation, cachedPosition);
 		}
-		
+
 		internal class TransactedNodeHandlerAttribute: CustomCommandTargetAttribute
 		{
 			protected override void Run (object target, Command cmd)

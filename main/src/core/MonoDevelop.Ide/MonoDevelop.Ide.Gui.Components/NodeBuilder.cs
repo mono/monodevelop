@@ -81,6 +81,10 @@ namespace MonoDevelop.Ide.Gui.Components
 		{
 		}
 		
+		public virtual void PrepareChildNodes (object dataObject)
+		{
+		}
+		
 		public virtual void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
 		}

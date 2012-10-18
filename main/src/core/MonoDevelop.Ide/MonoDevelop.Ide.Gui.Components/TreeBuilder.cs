@@ -331,6 +331,14 @@ namespace MonoDevelop.Ide.Gui.Components
 				Gtk.TreeIter it = currentIter;
 				foreach (NodeBuilder builder in chain) {
 					try {
+						builder.PrepareChildNodes (dataObject);
+					} catch (Exception ex) {
+						LoggingService.LogError (ex.ToString ());
+					}
+					MoveToIter (it);
+				}
+				foreach (NodeBuilder builder in chain) {
+					try {
 						builder.BuildChildNodes (this, dataObject);
 					} catch (Exception ex) {
 						LoggingService.LogError (ex.ToString ());
