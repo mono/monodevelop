@@ -336,10 +336,41 @@ namespace Mono.Debugging.Evaluation
 		{
 			return default (object);
 		}
+
+		public virtual bool IsTypeLoaded (EvaluationContext ctx, string typeName)
+		{
+			object t = GetType (ctx, typeName);
+
+			if (t == null)
+				return false;
+
+			return IsTypeLoaded (ctx, t);
+		}
+
+		public virtual bool IsTypeLoaded (EvaluationContext ctx, object type)
+		{
+			return true;
+		}
 		
 		public virtual object ForceLoadType (EvaluationContext ctx, string typeName)
 		{
-			return GetType (ctx, typeName);
+			object t = GetType (ctx, typeName);
+
+			if (t == null || IsTypeLoaded (ctx, t))
+				return t;
+
+			if (!ctx.Options.AllowTargetInvoke)
+				return null;
+
+			if (ForceLoadType (ctx, t))
+				return t;
+
+			return null;
+		}
+
+		public virtual bool ForceLoadType (EvaluationContext ctx, object type)
+		{
+			return true;
 		}
 
 		public abstract object CreateValue (EvaluationContext ctx, object value);

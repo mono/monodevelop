@@ -96,11 +96,17 @@ namespace Mono.Debugging.Soft
 
 		public override object Value {
 			get {
-				if (obj == null)
+				if (obj == null) {
+					// Our caller is requesting the value of a static field. In order for this to work, the type's static .cctor
+					// needs to have been invoked. If the user allows implicit type loading, force the .cctor to be invoked if
+					// it hasn't already been.
+					if (Context.Options.AllowImplicitTypeLoading)
+						Context.Adapter.ForceLoadType (Context, declaringType);
+
 					return declaringType.GetValue (field);
-				else if (obj is ObjectMirror)
+				} else if (obj is ObjectMirror) {
 					return ((ObjectMirror)obj).GetValue (field);
-				else if (obj is StructMirror) {
+				} else if (obj is StructMirror) {
 					StructMirror sm = (StructMirror)obj;
 					int idx = 0;
 					foreach (FieldInfoMirror f in sm.Type.GetFields ()) {
