@@ -99,11 +99,6 @@ namespace MonoDevelop.VersionControl.Views
 		
 		delegate void DiffDataHandler (List<DiffData> diffdata);
 		
-		/// <summary>
-		/// Fired when content difference data is loaded
-		/// </summary>
-		event DiffDataHandler DiffDataLoaded;
-		
 		public static bool Show (VersionControlItemList items, bool test)
 		{
 			if (items.Count != 1)

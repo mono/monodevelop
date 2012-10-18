@@ -15,9 +15,7 @@ namespace MonoDevelop.VersionControl.Views
 	
 	public class LogView : BaseView, ILogView 
 	{
-		string filepath;
 		LogWidget widget;
-		Repository vc;
 		VersionInfo vinfo;
 		
 		ListStore changedpathstore;
@@ -71,8 +69,6 @@ namespace MonoDevelop.VersionControl.Views
 		
 		void CreateControlFromInfo ()
 		{
-			this.vc = info.Item.Repository;
-			this.filepath = info.Item.Path;
 			var lw = new LogWidget (info);
 			
 			widget = lw;
@@ -90,9 +86,6 @@ namespace MonoDevelop.VersionControl.Views
 		public LogView (string filepath, bool isDirectory, Revision [] history, Repository vc) 
 			: base (Path.GetFileName (filepath) + " Log")
 		{
-			this.vc = vc;
-			this.filepath = filepath;
-			
 			try {
 				this.vinfo = vc.GetVersionInfo (filepath, false);
 			}

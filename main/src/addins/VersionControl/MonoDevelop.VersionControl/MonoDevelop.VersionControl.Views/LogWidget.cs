@@ -375,7 +375,7 @@ namespace MonoDevelop.VersionControl.Views
 						string prevRevisionText = "";
 						try {
 							prevRevisionText = info.Repository.GetTextAtRevision (path, prevRev);
-						} catch (Exception e) {
+						} catch (Exception) {
 							// The file did not exist at this point in time, so just treat it as empty
 						}
 						

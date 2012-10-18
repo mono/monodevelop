@@ -11,13 +11,11 @@ namespace MonoDevelop.VersionControl
 		UrlBasedRepository repo;
 		bool updating;
 		List<string> protocols = new List<string> ();
-		int altProtocolIndex;
-		
+
 		public UrlBasedRepositoryEditor (UrlBasedRepository repo)
 		{
 			Build ();
 			protocols = new List<string> (repo.SupportedProtocols);
-			altProtocolIndex = protocols.Count;
 			protocols.AddRange (repo.SupportedNonUrlProtocols);
 				
 			this.repo = repo;
