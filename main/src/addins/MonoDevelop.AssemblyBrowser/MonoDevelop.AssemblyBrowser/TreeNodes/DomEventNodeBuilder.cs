@@ -82,7 +82,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			return true;
+			return false;
 		}
 		
 		#region IAssemblyBrowserNodeBuilder
