@@ -114,7 +114,11 @@ namespace MonoDevelop.VersionControl
 		public override void NotifyFilesChanged (IEnumerable<FilePath> files)
 		{
 			FileUpdateEventArgs args = new FileUpdateEventArgs ();
-			args.AddRange (files.Select (f => new FileUpdateEventInfo (GetRepository (f), f, false)));
+			args.AddRange (files.Select (f => {
+				var rep = GetRepository (f);
+				rep.ClearCachedVersionInfo (f);
+				return new FileUpdateEventInfo (rep, f, false);
+			}));
 			VersionControlService.NotifyFileStatusChanged (args);
 		}
 	}

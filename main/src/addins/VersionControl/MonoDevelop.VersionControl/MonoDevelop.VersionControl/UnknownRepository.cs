@@ -23,12 +23,12 @@ namespace MonoDevelop.VersionControl
 			return null;
 		}
 
-		public override string GetTextAtRevision (FilePath repositoryPath, Revision revision)
+		protected override string OnGetTextAtRevision (FilePath repositoryPath, Revision revision)
 		{
 			return null;
 		}
 
-		public override Revision[] GetHistory (FilePath sourcefile, Revision since)
+		protected override Revision[] OnGetHistory (FilePath sourcefile, Revision since)
 		{
 			return null;
 		}
@@ -45,52 +45,52 @@ namespace MonoDevelop.VersionControl
 		}
 
 
-		public override Repository Publish (string serverPath, FilePath localPath, FilePath[] FilePath, string message, IProgressMonitor monitor)
+		protected override Repository OnPublish (string serverPath, FilePath localPath, FilePath[] FilePath, string message, IProgressMonitor monitor)
 		{
 			return null;
 		}
 
-		public override void Update (FilePath[] paths, bool recurse, IProgressMonitor monitor)
+		protected override void OnUpdate (FilePath[] paths, bool recurse, IProgressMonitor monitor)
 		{
 		}
 		
-		public override void Commit (ChangeSet changeSet, IProgressMonitor monitor)
+		protected override void OnCommit (ChangeSet changeSet, IProgressMonitor monitor)
 		{
 		}
 
-		public override void Checkout (FilePath path, Revision rev, bool recurse, IProgressMonitor monitor)
+		protected override void OnCheckout (FilePath path, Revision rev, bool recurse, IProgressMonitor monitor)
 		{
 		}
 
-		public override void Revert (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
+		protected override void OnRevert (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
 		{
 		}
 
-		public override void RevertRevision (FilePath localPath, Revision revision, IProgressMonitor monitor)
+		protected override void OnRevertRevision (FilePath localPath, Revision revision, IProgressMonitor monitor)
 		{
 		}
 
-		public override void RevertToRevision (FilePath localPath, Revision revision, IProgressMonitor monitor)
+		protected override void OnRevertToRevision (FilePath localPath, Revision revision, IProgressMonitor monitor)
 		{
 		}
 
-		public override void Add (FilePath[] paths, bool recurse, IProgressMonitor monitor)
+		protected override void OnAdd (FilePath[] paths, bool recurse, IProgressMonitor monitor)
 		{
 		}
 
-		public override void MoveFile (FilePath srcPath, FilePath destPath, bool force, IProgressMonitor monitor)
+		protected override void OnMoveFile (FilePath srcPath, FilePath destPath, bool force, IProgressMonitor monitor)
 		{
 		}
 
-		public override void MoveDirectory (FilePath srcPath, FilePath destPath, bool force, IProgressMonitor monitor)
+		protected override void OnMoveDirectory (FilePath srcPath, FilePath destPath, bool force, IProgressMonitor monitor)
 		{
 		}
 
-		public override void DeleteFiles (FilePath[] path, bool force, IProgressMonitor monitor)
+		protected override void OnDeleteFiles (FilePath[] path, bool force, IProgressMonitor monitor)
 		{
 		}
 
-		public override void DeleteDirectories (FilePath[] path, bool force, IProgressMonitor monitor)
+		protected override void OnDeleteDirectories (FilePath[] path, bool force, IProgressMonitor monitor)
 		{
 		}
 		

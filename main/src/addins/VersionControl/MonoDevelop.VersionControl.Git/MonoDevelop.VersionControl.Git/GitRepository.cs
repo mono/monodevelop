@@ -197,7 +197,7 @@ namespace MonoDevelop.VersionControl.Git
 			});
 		}
 
-		public override Revision[] GetHistory (FilePath localFile, Revision since)
+		protected override Revision[] OnGetHistory (FilePath localFile, Revision since)
 		{
 			List<Revision> revs = new List<Revision> ();
 		
@@ -372,7 +372,7 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
-		public override Repository Publish (string serverPath, FilePath localPath, FilePath[] files, string message, IProgressMonitor monitor)
+		protected override Repository OnPublish (string serverPath, FilePath localPath, FilePath[] files, string message, IProgressMonitor monitor)
 		{
 			// Initialize the repository
 			RootRepository = GitUtil.Init (localPath, Url, monitor);
@@ -414,7 +414,7 @@ namespace MonoDevelop.VersionControl.Git
 			return this;
 		}
 		
-		public override void Update (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
+		protected override void OnUpdate (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
 		{
 			IEnumerable<DiffEntry> statusList = null;
 			
@@ -627,7 +627,7 @@ namespace MonoDevelop.VersionControl.Git
 			return res;
 		}
 
-		public override void Commit (ChangeSet changeSet, IProgressMonitor monitor)
+		protected override void OnCommit (ChangeSet changeSet, IProgressMonitor monitor)
 		{
 			string message = changeSet.GlobalComment;
 			if (string.IsNullOrEmpty (message))
@@ -687,7 +687,7 @@ namespace MonoDevelop.VersionControl.Git
 			config.Save ();
 		}
 
-		public override void Checkout (FilePath targetLocalPath, Revision rev, bool recurse, IProgressMonitor monitor)
+		protected override void OnCheckout (FilePath targetLocalPath, Revision rev, bool recurse, IProgressMonitor monitor)
 		{
 			CloneCommand cmd = NGit.Api.Git.CloneRepository ();
 			cmd.SetURI (Url);
@@ -700,7 +700,7 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
-		public override void Revert (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
+		protected override void OnRevert (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
 		{
 			foreach (var group in localPaths.GroupBy (f => GetRepository (f))) {
 				var repository = group.Key;
@@ -809,19 +809,19 @@ namespace MonoDevelop.VersionControl.Git
 			return childPath.StartsWith (basePath + "/");
 		}
 
-		public override void RevertRevision (FilePath localPath, Revision revision, IProgressMonitor monitor)
+		protected override void OnRevertRevision (FilePath localPath, Revision revision, IProgressMonitor monitor)
 		{
 			throw new System.NotImplementedException ();
 		}
 
 
-		public override void RevertToRevision (FilePath localPath, Revision revision, IProgressMonitor monitor)
+		protected override void OnRevertToRevision (FilePath localPath, Revision revision, IProgressMonitor monitor)
 		{
 			throw new System.NotImplementedException ();
 		}
 
 
-		public override void Add (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
+		protected override void OnAdd (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
 		{
 			foreach (var group in localPaths.GroupBy (p => GetRepository (p))) {
 				var repository = group.Key;
@@ -835,7 +835,7 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 		
-		public override void DeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor)
+		protected override void OnDeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor)
 		{
 			DeleteCore (localPaths, force, monitor);
 			// Untracked files are not deleted by the rm command, so delete them now
@@ -844,7 +844,7 @@ namespace MonoDevelop.VersionControl.Git
 					File.Delete (f);
 		}
 		
-		public override void DeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor)
+		protected override void OnDeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor)
 		{
 			DeleteCore (localPaths, force, monitor);
 
@@ -868,7 +868,7 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
-		public override string GetTextAtRevision (FilePath repositoryPath, Revision revision)
+		protected override string OnGetTextAtRevision (FilePath repositoryPath, Revision revision)
 		{
 			var repository = GetRepository (repositoryPath);
 			ObjectId id = repository.Resolve (revision.ToString ());
@@ -1328,7 +1328,7 @@ namespace MonoDevelop.VersionControl.Git
 			return diffs.ToArray ();
 		}
 
-		public override void MoveFile (FilePath localSrcPath, FilePath localDestPath, bool force, IProgressMonitor monitor)
+		protected override void OnMoveFile (FilePath localSrcPath, FilePath localDestPath, bool force, IProgressMonitor monitor)
 		{
 			VersionInfo vi = GetVersionInfo (localSrcPath, false);
 			if (vi == null || !vi.IsVersioned) {
@@ -1342,7 +1342,7 @@ namespace MonoDevelop.VersionControl.Git
 				Revert (localSrcPath, false, monitor);
 		}
 
-		public override void MoveDirectory (FilePath localSrcPath, FilePath localDestPath, bool force, IProgressMonitor monitor)
+		protected override void OnMoveDirectory (FilePath localSrcPath, FilePath localDestPath, bool force, IProgressMonitor monitor)
 		{
 			VersionInfo[] versionedFiles = GetDirectoryVersionInfo (localSrcPath, false, true);
 			base.MoveDirectory (localSrcPath, localDestPath, force, monitor);

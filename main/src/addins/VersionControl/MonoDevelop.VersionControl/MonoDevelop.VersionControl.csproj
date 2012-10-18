@@ -229,6 +229,7 @@
     <Compile Include="MonoDevelop.VersionControl\DiffCommand.cs" />
     <Compile Include="MonoDevelop.VersionControl\MergeCommand.cs" />
     <Compile Include="MonoDevelop.VersionControl\BlameCommand.cs" />
+    <Compile Include="MonoDevelop.VersionControl\VersionInfoCache.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
