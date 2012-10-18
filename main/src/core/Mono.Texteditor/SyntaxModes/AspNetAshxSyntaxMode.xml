@@ -23,57 +23,11 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE. -->
  
-<SyntaxMode name = "Asp.Net ASHX" mimeTypes="application/x-ashx">
+<SyntaxMode name = "Asp.Net ASHX" mimeTypes="application/x-ashx" extends="text/x-csharp">
 	<!-- directives -->
-	<Span color = "template.tag" tagColor="template.tag" rule = "mode:text/x-csharp">
+	<Span color = "template.tag" tagColor="template.tag" rule = "InTag">
 		<Begin>&lt;%@</Begin>
 		<End>%&gt;</End>
-	</Span>
-	
-	<!-- comments -->
-	<Span color = "comment.server" rule = "Comment">
-		<Begin>&lt;%--</Begin>
-		<End>--%&gt;</End>
-	</Span>
-	
-	<Span color = "comment.client" rule = "Comment">
-		<Begin>&lt;!--</Begin>
-		<End>--&gt;</End>
-	</Span>
-	
-	<!-- expressions -->
-	<Span color = "template" tagColor="template.tag">
-		<Begin>&lt;%</Begin>
-		<End>%&gt;</End>
-	</Span>
-	
-	<!-- entities -->
-	<Span color = "text.preprocessor">
-		<Begin>&amp;</Begin>
-		<End>;</End>
-	</Span>
-	
-	<Span tagColor = "keyword.declaration" color = "xml.name" rule = "InTag">
-		<Begin>&lt;!DOCTYPE</Begin>
-		<End>&gt;</End>
-	</Span>
-	
-	<!-- CDATA section -->
-	<Span tagColor = "keyword.declaration" color="text" rule = "Comment">
-		<Begin>&lt;![CDATA[</Begin>
-		<End>]]&gt;</End>
-	</Span>
-	
-	<!-- processing instructions -->
-	<Span tagColor = "keyword.declaration" color = "xml.name" rule = "InTag">
-		<Begin>&lt;?</Begin>
-		<End>?&gt;</End>
-	</Span>
-	
-	<!-- tags -->
-	<Span color = "xml.name" rule = "InTag">
-		<Begin>&lt;</Begin>
-		<End>&gt;</End>
 	</Span>
 	
 	<!-- tag definitions -->
