@@ -574,6 +574,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			if (declarationViewHidden && Visible) {
 				declarationviewwindow.ShowArrow = true;
+				int ox;
+				int oy;
+				base.GdkWindow.GetOrigin (out ox, out oy);
+				declarationviewwindow.MaximumYTopBound = oy;
 				declarationviewwindow.ShowPopup (this, 
 				                                 new Gdk.Rectangle (Gui.Styles.TooltipInfoSpacing, 
 				                                                    Math.Min (Allocation.Height, Math.Max (0, rect.Y - (int)List.vadj.Value)), 

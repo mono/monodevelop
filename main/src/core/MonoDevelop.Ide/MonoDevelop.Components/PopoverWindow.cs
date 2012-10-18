@@ -186,6 +186,15 @@ namespace MonoDevelop.Components
 				AnimatedResize (); //Desired size changed mid animation
 		}
 
+		/// <summary>
+		/// Gets or sets the maximum Y top bound. The popover window will be placed below this bound.
+		/// 0 means it's not set. Default value: 0
+		/// </summary>
+		public int MaximumYTopBound {
+			get;
+			set;
+		}
+
 		public void RepositionWindow ()
 		{
 			if (parent == null)
@@ -287,6 +296,8 @@ namespace MonoDevelop.Components
 					y = geometry.Top;
 				else if (y + request.Height > geometry.Bottom)
 					y = geometry.Bottom - request.Height;
+				if (MaximumYTopBound > 0)
+					y = Math.Max (MaximumYTopBound, y);
 
 				offset = caret.Y + caret.Height / 2 - y;
 				if (offset - Theme.ArrowWidth/2 < MinArrowSpacing)
