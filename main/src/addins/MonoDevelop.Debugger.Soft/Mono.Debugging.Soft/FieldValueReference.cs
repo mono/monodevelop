@@ -102,7 +102,7 @@ namespace Mono.Debugging.Soft
 					// needs to have been invoked. If the user allows implicit type loading, force the .cctor to be invoked if
 					// it hasn't already been.
 					if (Context.Options.AllowImplicitTypeLoading)
-						Context.Adapter.ForceLoadType (Context, declaringType);
+						Context.Adapter.ForceLoadType (Context, declaringType.FullName);
 					
 					return declaringType.GetValue (field);
 				} else if (obj is ObjectMirror) {

@@ -1124,19 +1124,16 @@ namespace Mono.Debugging.Soft
 			return ctx.Session.GetType (typeName) != null;
 		}
 		
-		bool IsTypeLoaded (EvaluationContext ctx, object type)
+		bool IsTypeLoaded (EvaluationContext ctx, TypeMirror tm)
 		{
-			TypeMirror tm = (TypeMirror) type;
-			
 			return IsTypeLoaded (ctx, tm.FullName);
 		}
 		
-		bool ForceLoadType (EvaluationContext gctx, object type)
+		bool ForceLoadType (EvaluationContext gctx, TypeMirror tm)
 		{
 			SoftEvaluationContext ctx = (SoftEvaluationContext) gctx;
-			TypeMirror tm = (TypeMirror) type;
 
-			if (IsTypeLoaded (ctx, type))
+			if (IsTypeLoaded (ctx, tm))
 				return true;
 
 			if (!ctx.Options.AllowTargetInvoke)
@@ -1157,18 +1154,18 @@ namespace Mono.Debugging.Soft
 			return true;
 		}
 		
-		public override object ForceLoadType (EvaluationContext gctx, string typeName)
+		public override object ForceLoadType (EvaluationContext ctx, string typeName)
 		{
-			object t = GetType (ctx, typeName);
+			TypeMirror tm = (TypeMirror) GetType (ctx, typeName);
 
-			if (t == null || IsTypeLoaded (ctx, t))
-				return t;
+			if (tm == null || IsTypeLoaded (ctx, tm))
+				return tm;
 
 			if (!ctx.Options.AllowTargetInvoke)
 				return null;
 
-			if (ForceLoadType (ctx, t))
-				return t;
+			if (ForceLoadType (ctx, tm))
+				return tm;
 
 			return null;
 		}
