@@ -65,6 +65,7 @@ namespace Mono.TextEditor
 			options.ShowFoldMargin = false;
 			options.ShowIconMargin = false;
 			options.Zoom = 0.8;
+			codeSegmentEditor.Document.MimeType = editor.MimeType;
 			codeSegmentEditor.Document.ReadOnly = true;
 			codeSegmentEditor.Options = options;
 			

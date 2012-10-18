@@ -1854,7 +1854,6 @@ namespace Mono.TextEditor
 			CodeSegmentEditorWindow codeSegmentEditorWindow = new CodeSegmentEditorWindow (textEditor);
 			codeSegmentEditorWindow.Move (x, y);
 			codeSegmentEditorWindow.Resize (w, h);
-			codeSegmentEditorWindow.SyntaxMode = Document.SyntaxMode;
 			int indentLength = SyntaxMode.GetIndentLength (Document, previewSegment.Offset, previewSegment.Length, false);
 
 			StringBuilder textBuilder = new StringBuilder ();
