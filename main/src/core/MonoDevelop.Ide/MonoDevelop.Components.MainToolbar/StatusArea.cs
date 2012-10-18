@@ -756,7 +756,6 @@ namespace MonoDevelop.Components.MainToolbar
 				return;
 
 			progressBarVisible = false;
-			ShowMessage ("");
 			OnProgressEnd (EventArgs.Empty);
 			AutoPulse = false;
 		}

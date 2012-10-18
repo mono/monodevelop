@@ -799,9 +799,11 @@ namespace MonoDevelop.Ide
 
 		// The last time any status bar context changed the status area message
 		static DateTime globalLastChangeTime;
+		static bool lastMessageIsTransient;
 
 		// The last time this context changed the status area message
 		DateTime lastChangeTime;
+		bool messageShownAfterProgress;
 
 		internal bool StatusChanged { get; set; }
 
@@ -852,6 +854,8 @@ namespace MonoDevelop.Ide
 		
 		public void ShowMessage (IconId image, string message, bool isMarkup)
 		{
+			if (!showProgress)
+				messageShownAfterProgress = true;
 			this.image = image;
 			this.message = message;
 			this.isMarkup = isMarkup;
@@ -862,14 +866,19 @@ namespace MonoDevelop.Ide
 				globalLastChangeTime = DateTime.Now;
 				statusBar.ShowMessage (image, message, isMarkup);
 				statusBar.SetMessageSourcePad (sourcePad);
-				if (!showProgress)
+				if (showProgress)
+					lastMessageIsTransient = true;
+				else {
+					lastMessageIsTransient = false;
 					ResetMessage (); // Once the message is shown, don't show it again
+				}
 			} else
 				lastChangeTime = DateTime.Now;
 		}
 		
 		public void BeginProgress (string name)
 		{
+			messageShownAfterProgress = false;
 			image = null;
 			isMarkup = false;
 			progressFraction = 0;
@@ -881,11 +890,13 @@ namespace MonoDevelop.Ide
 				OnMessageChanged ();
 				statusBar.BeginProgress (name);
 				statusBar.SetMessageSourcePad (sourcePad);
+				lastMessageIsTransient = true;
 			}
 		}
 		
 		public void BeginProgress (IconId image, string name)
 		{
+			messageShownAfterProgress = false;
 			this.image = image;
 			isMarkup = false;
 			progressFraction = 0;
@@ -897,6 +908,7 @@ namespace MonoDevelop.Ide
 				OnMessageChanged ();
 				statusBar.BeginProgress (name);
 				statusBar.SetMessageSourcePad (sourcePad);
+				lastMessageIsTransient = true;
 			}
 		}
 		
@@ -952,14 +964,17 @@ namespace MonoDevelop.Ide
 				statusBar.SetProgressFraction (progressFraction);
 				statusBar.AutoPulse = autoPulse;
 				statusBar.SetMessageSourcePad (sourcePad);
+				lastMessageIsTransient = true;
 			} else {
 				statusBar.EndProgress ();
-				if (globalLastChangeTime < lastChangeTime) {
+				if (globalLastChangeTime < lastChangeTime && messageShownAfterProgress) {
 					globalLastChangeTime = lastChangeTime;
 					statusBar.ShowMessage (image, message, isMarkup);
 					statusBar.SetMessageSourcePad (sourcePad);
 					ResetMessage (); // Once the message is shown, don't show it again
-				}
+					lastMessageIsTransient = !messageShownAfterProgress;
+				} else if (lastMessageIsTransient)
+					statusBar.ShowReady ();
 			}
 		}
 

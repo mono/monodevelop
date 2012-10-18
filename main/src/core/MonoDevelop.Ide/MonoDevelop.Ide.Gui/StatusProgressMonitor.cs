@@ -84,29 +84,31 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (lockGui)
 				IdeApp.Workbench.UnlockGui ();
-			
-			statusBar.Dispose ();
 
-			if (Errors.Count > 0 || Warnings.Count > 0) {
-				if (Errors.Count > 0) {
-					IdeApp.Workbench.StatusBar.ShowError (Errors [Errors.Count - 1]);
-				} else if (SuccessMessages.Count == 0) {
-					IdeApp.Workbench.StatusBar.ShowWarning (Warnings [Warnings.Count - 1]);
+			statusBar.EndProgress ();
+			try {
+				if (Errors.Count > 0 || Warnings.Count > 0) {
+					if (Errors.Count > 0) {
+						statusBar.ShowError (Errors [Errors.Count - 1]);
+					} else if (SuccessMessages.Count == 0) {
+						statusBar.ShowWarning (Warnings [Warnings.Count - 1]);
+					}
+					
+					base.OnCompleted ();
+					
+					if (showErrorDialogs)
+						ShowResultDialog ();
+					return;
 				}
 				
-				base.OnCompleted ();
+				if (SuccessMessages.Count > 0)
+					statusBar.ShowMessage (MonoDevelop.Ide.Gui.Stock.StatusSuccess, SuccessMessages [SuccessMessages.Count - 1]);
 				
-				if (showErrorDialogs)
-					ShowResultDialog ();
-				
-				IdeApp.Workbench.StatusBar.SetMessageSourcePad (statusSourcePad);
-				return;
+			} finally {
+				statusBar.StatusSourcePad = statusSourcePad;
+				statusBar.Dispose ();
 			}
-			
-			if (SuccessMessages.Count > 0)
-				IdeApp.Workbench.StatusBar.ShowMessage (MonoDevelop.Ide.Gui.Stock.StatusSuccess, SuccessMessages [SuccessMessages.Count - 1]);
-			
-			IdeApp.Workbench.StatusBar.SetMessageSourcePad (statusSourcePad);
+
 			base.OnCompleted ();
 		}
 	}
