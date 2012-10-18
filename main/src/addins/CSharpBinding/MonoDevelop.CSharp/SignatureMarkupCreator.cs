@@ -282,6 +282,64 @@ namespace MonoDevelop.CSharp
 			return result;
 		}
 
+		static bool IsObjectOrValueType(IType type)
+		{
+			var d = type.GetDefinition();
+			return d != null && (d.KnownTypeCode == KnownTypeCode.Object || d.KnownTypeCode == KnownTypeCode.ValueType);
+		}
+
+		string GetTypeParameterMarkup (IType t)
+		{
+			if (t == null)
+				throw new ArgumentNullException ("t");
+			var result = new StringBuilder ();
+			var highlightedTypeName = Highlight (t.Name, "keyword.type");
+			result.Append (highlightedTypeName);
+
+			var color = AlphaBlend (colorStyle.Default.Color, colorStyle.Default.BackgroundColor, optionalAlpha);
+			var colorString = Mono.TextEditor.HelperMethods.GetColorString (color);
+
+			result.Append ("<span foreground=\"" + colorString + "\">" + " (type parameter)</span>");
+			var tp = t as ITypeParameter;
+			if (tp != null) {
+				if (!tp.HasDefaultConstructorConstraint && !tp.HasReferenceTypeConstraint && !tp.HasValueTypeConstraint && tp.DirectBaseTypes.All (IsObjectOrValueType))
+					return result.ToString ();
+				result.AppendLine ();
+				result.Append (Highlight (" where ", "keyword.context"));
+				result.Append (highlightedTypeName);
+				result.Append (" : ");
+				int constraints = 0;
+
+				if (tp.HasReferenceTypeConstraint) {
+					constraints++;
+					result.Append (Highlight ("class", "keyword.declaration"));
+				} else if (tp.HasValueTypeConstraint) {
+					constraints++;
+					result.Append (Highlight ("struct", "keyword.declaration"));
+				}
+				foreach (var bt in tp.DirectBaseTypes) {
+					if (!IsObjectOrValueType(bt)) {
+						if (constraints > 0) {
+							result.Append (",");
+							if (constraints % 5 == 0) {
+								result.AppendLine ();
+								result.Append ("\t");
+							}
+						}
+						constraints++;
+						result.Append (GetTypeReferenceString (bt));
+					}
+				}
+				if (tp.HasDefaultConstructorConstraint) {
+					if (constraints > 0)
+						result.Append (",");
+					result.Append (Highlight ("new", "keyword.operator"));
+				}
+
+			}
+			return result.ToString ();
+		}
+
 		string GetTypeMarkup (IType t)
 		{
 			if (t == null)
@@ -289,6 +347,8 @@ namespace MonoDevelop.CSharp
 
 			if (t.Kind == TypeKind.Delegate)
 				return GetDelegateMarkup (t);
+			if (t.Kind == TypeKind.TypeParameter)
+				return GetTypeParameterMarkup (t);
 
 			var result = new StringBuilder ();
 			if (t.GetDefinition () != null)
