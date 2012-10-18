@@ -1152,7 +1152,13 @@ namespace Mono.Debugging.Soft
 			if (cctor == null)
 				return false;
 
-			tm.InvokeMethod (ctx.Thread, cctor, new Value[0], InvokeOptions.DisableBreakpoints | InvokeOptions.SingleThreaded);
+			try {
+				tm.InvokeMethod (ctx.Thread, cctor, new Value[0], InvokeOptions.DisableBreakpoints | InvokeOptions.SingleThreaded);
+			} catch {
+				return false;
+			} finally {
+				ctx.Session.StackVersion++;
+			}
 
 			return true;
 		}
