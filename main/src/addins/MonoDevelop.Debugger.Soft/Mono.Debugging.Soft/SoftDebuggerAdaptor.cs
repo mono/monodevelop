@@ -1142,7 +1142,7 @@ namespace Mono.Debugging.Soft
 			SoftEvaluationContext ctx = (SoftEvaluationContext) gctx;
 			TypeMirror tm = (TypeMirror) type;
 
-			if (IsTypeLoaded (type))
+			if (IsTypeLoaded (ctx, type))
 				return true;
 
 			if (!ctx.Options.AllowTargetInvoke)
