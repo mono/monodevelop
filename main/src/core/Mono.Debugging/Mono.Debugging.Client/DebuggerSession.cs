@@ -728,6 +728,15 @@ namespace Mono.Debugging.Client
 				}
 			});
 		}
+
+		/// <summary>
+		/// Gets a value indicating whether the debuggee is currently connected
+		/// </summary>
+		public bool IsConnected {
+			get {
+				return started;
+			}
+		}
 		
 		/// <summary>
 		/// Gets a value indicating whether the debuggee is currently running (not paused by the debugger)

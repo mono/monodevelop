@@ -402,6 +402,12 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
+		public static bool IsConnected {
+			get {
+				return IsDebugging && session.IsConnected;
+			}
+		}
+
 		public static bool IsRunning {
 			get {
 				return IsDebugging && session.IsRunning;

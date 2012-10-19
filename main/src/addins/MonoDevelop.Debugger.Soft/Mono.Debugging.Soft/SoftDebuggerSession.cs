@@ -1965,11 +1965,6 @@ namespace Mono.Debugging.Soft
 
 		protected override void OnStop ()
 		{
-			if (vm == null) {
-				EndSession ();
-				return;
-			}
-
 			vm.Suspend ();
 			
 			//emit a stop event at the current position of the most recent thread
