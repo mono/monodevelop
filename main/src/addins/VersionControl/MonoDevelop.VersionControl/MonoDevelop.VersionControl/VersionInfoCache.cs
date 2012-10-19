@@ -80,6 +80,7 @@ namespace MonoDevelop.VersionControl
 				VersionInfo vi;
 				if (fileStatus.TryGetValue (versionInfo.LocalPath, out vi) && vi.Equals (versionInfo))
 					return;
+				versionInfo.Init (repo);
 				fileStatus [versionInfo.LocalPath.CanonicalPath] = versionInfo;
 			}
 			if (notify)
@@ -94,6 +95,7 @@ namespace MonoDevelop.VersionControl
 					VersionInfo vi;
 					if (fileStatus.TryGetValue (versionInfo.LocalPath.CanonicalPath, out vi) && vi.Equals (versionInfo))
 						continue;
+					versionInfo.Init (repo);
 					fileStatus [versionInfo.LocalPath.CanonicalPath] = versionInfo;
 					var a = new FileUpdateEventArgs (repo, versionInfo.LocalPath, versionInfo.IsDirectory);
 					if (args == null)
