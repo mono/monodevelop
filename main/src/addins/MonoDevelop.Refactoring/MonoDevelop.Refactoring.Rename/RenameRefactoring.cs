@@ -83,7 +83,7 @@ namespace MonoDevelop.Refactoring.Rename
 				return;
 			}
 			using (var monitor = new NullProgressMonitor ()) {
-				var col = ReferenceFinder.FindReferences (entity, monitor);
+				var col = ReferenceFinder.FindReferences (entity, true, monitor);
 				
 				List<Change> result = new List<Change> ();
 				foreach (var memberRef in col) {
@@ -104,7 +104,7 @@ namespace MonoDevelop.Refactoring.Rename
 		public static void RenameVariable (IVariable variable, string newName)
 		{
 			using (var monitor = new NullProgressMonitor ()) {
-				var col = ReferenceFinder.FindReferences (variable, monitor);
+				var col = ReferenceFinder.FindReferences (variable, true, monitor);
 				
 				List<Change> result = new List<Change> ();
 				foreach (var memberRef in col) {
@@ -133,7 +133,7 @@ namespace MonoDevelop.Refactoring.Rename
 			}
 
 			using (var monitor = new NullProgressMonitor ()) {
-				var col = ReferenceFinder.FindReferences (typeParameter, monitor);
+				var col = ReferenceFinder.FindReferences (typeParameter, true, monitor);
 				
 				List<Change> result = new List<Change> ();
 				foreach (var memberRef in col) {
@@ -165,7 +165,7 @@ namespace MonoDevelop.Refactoring.Rename
 					return;
 				}
 
-				var col = ReferenceFinder.FindReferences (options.SelectedItem);
+				var col = ReferenceFinder.FindReferences (options.SelectedItem, true);
 				if (col == null)
 					return;
 				var data = options.Document != null ? options.GetTextEditorData () : IdeApp.Workbench.ActiveDocument.Editor;
@@ -236,7 +236,7 @@ namespace MonoDevelop.Refactoring.Rename
 			List<Change> result = new List<Change> ();
 			IEnumerable<MemberReference> col = null;
 			using (var monitor = new MessageDialogProgressMonitor (true, false, false, true)) {
-				col = ReferenceFinder.FindReferences (options.SelectedItem, monitor);
+				col = ReferenceFinder.FindReferences (options.SelectedItem, true, monitor);
 				if (col == null)
 					return result;
 					

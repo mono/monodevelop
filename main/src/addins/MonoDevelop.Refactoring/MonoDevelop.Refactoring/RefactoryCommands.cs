@@ -57,6 +57,7 @@ namespace MonoDevelop.Refactoring
 		CurrentRefactoryOperations,
 		GotoDeclaration, // in 'referenced' in IdeViMode.cs as string
 		FindReferences,
+		FindAllReferences,
 		FindDerivedClasses,
 		DeclareLocal,
 		RemoveUnusedImports,
@@ -173,15 +174,20 @@ namespace MonoDevelop.Refactoring
 		class FindRefs 
 		{
 			object obj;
-			
-			public FindRefs (object obj)
+			bool allOverloads;
+			public FindRefs (object obj, bool all)
 			{
 				this.obj = obj;
+				this.allOverloads = all;
 			}
 			
 			public void Run ()
 			{
-				FindReferencesHandler.FindRefs (obj);
+				if (allOverloads) {
+					FindAllReferencesHandler.FindRefs (obj);
+				} else {
+					FindReferencesHandler.FindRefs (obj);
+				}
 			}
 		}
 		
@@ -293,7 +299,9 @@ namespace MonoDevelop.Refactoring
 			}
 			
 			if (item is IEntity || item is ITypeParameter || item is IVariable) {
-				ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences), new System.Action (new FindRefs (item).Run));
+				ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences), new System.Action (new FindRefs (item, false).Run));
+				if (doc.HasProject && ReferenceFinder.HasOverloads (doc.Project.ParentSolution, item))
+					ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindAllReferences), new System.Action (new FindRefs (item, true).Run));
 				added = true;
 			}
 			

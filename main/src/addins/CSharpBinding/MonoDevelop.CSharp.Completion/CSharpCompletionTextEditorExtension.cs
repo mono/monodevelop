@@ -519,7 +519,7 @@ namespace MonoDevelop.CSharp.Completion
 					return tooltipFunc (smartWrap);
 				}
 
-				List<ICompletionData> overloads;
+				protected List<ICompletionData> overloads;
 				public override bool HasOverloads {
 					get { return overloads != null && overloads.Count > 0; }
 				}
@@ -562,6 +562,73 @@ namespace MonoDevelop.CSharp.Completion
 				}
 			}
 
+			class TypeCompletionData : LazyGenericTooltipCompletionData
+			{
+				IType type;
+				CSharpCompletionTextEditorExtension ext;
+
+				string IdString {
+					get {
+						return DisplayText + type.TypeParameterCount;
+					}
+				}
+
+				public override TooltipInformation CreateTooltipInformation (bool smartWrap)
+				{
+					var def = type.GetDefinition ();
+					var result = def != null ? MemberCompletionData.CreateTooltipInformation (ext, def, smartWrap)  : new TooltipInformation ();
+					if (ConflictingTypes != null) {
+						var conflicts = new StringBuilder ();
+						conflicts.Append ("Conflicts with: ");
+						var file = ext.CSharpUnresolvedFile;
+						var resolver = file != null ? file.GetResolver (ext.Compilation, ext.document.Editor.Caret.Location) : new CSharpResolver (ext.Compilation);
+						var sig = new SignatureMarkupCreator (resolver, ext.FormattingPolicy.CreateOptions ());
+						for (int i = 0; i < ConflictingTypes.Count; i++) {
+							var ct = ConflictingTypes[i];
+							if (i > 0)
+								conflicts.Append (", ");
+							if ((i + 1) % 5 == 0)
+								conflicts.Append (Environment.NewLine + "\t");
+							conflicts.Append (sig.GetTypeReferenceString (((TypeCompletionData)ct).type));
+						}
+						result.AddCategory ("Type Conflicts", conflicts.ToString ());
+					}
+					return result;
+				}
+
+				public TypeCompletionData (IType type, CSharpCompletionTextEditorExtension ext, Lazy<string> displayText, string icon) : base (null, displayText, icon)
+				{
+					this.type = type;
+					this.ext = ext;
+				}
+
+				Dictionary<string, ICSharpCode.NRefactory.Completion.ICompletionData> addedDatas = new Dictionary<string, ICSharpCode.NRefactory.Completion.ICompletionData> ();
+
+				List<ICompletionData> ConflictingTypes = null;
+
+				public override void AddOverload (ICSharpCode.NRefactory.Completion.ICompletionData data)
+				{
+					if (overloads == null)
+						addedDatas [IdString] = this;
+
+					string id = IdString;
+					ICompletionData oldData;
+					if (addedDatas.TryGetValue (id, out oldData)) {
+						var old = (TypeCompletionData)oldData;
+						if (old.ConflictingTypes == null)
+							old.ConflictingTypes = new List<ICompletionData> ();
+						old.ConflictingTypes.Add (data);
+						return;
+
+					}
+					addedDatas[id] = data;
+
+
+					base.AddOverload (data);
+				}
+
+			}
+
 			ICompletionData ICompletionDataFactory.CreateEntityCompletionData (IEntity entity, string text)
 			{
 				return new GenericTooltipCompletionData (sw => MemberCompletionData.CreateTooltipInformation (ext, entity, sw), text, entity.GetStockIcon ());
@@ -577,8 +644,7 @@ namespace MonoDevelop.CSharp.Completion
 					return name;
 				});
 
-				var result = new LazyGenericTooltipCompletionData (
-					sw => type.GetDefinition () != null ? MemberCompletionData.CreateTooltipInformation (ext, type.GetDefinition (), sw) : new TooltipInformation (), 
+				var result = new TypeCompletionData (type, ext,
 					displayText, 
 					type.GetStockIcon ());
 				return result;

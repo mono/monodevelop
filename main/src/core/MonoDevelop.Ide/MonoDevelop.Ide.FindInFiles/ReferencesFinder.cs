@@ -75,14 +75,14 @@ namespace MonoDevelop.Ide.FindInFiles
 			return codon != null ? codon.CreateFinder () : null;
 		}
 		
-		public static IEnumerable<MemberReference> FindReferences (object member, IProgressMonitor monitor = null)
+		public static IEnumerable<MemberReference> FindReferences (object member, bool searchForAllOverloads, IProgressMonitor monitor = null)
 		{
-			return FindReferences (IdeApp.ProjectOperations.CurrentSelectedSolution, member, RefactoryScope.Unknown, monitor);
+			return FindReferences (IdeApp.ProjectOperations.CurrentSelectedSolution, member, searchForAllOverloads, RefactoryScope.Unknown, monitor);
 		}
 
-		public static IEnumerable<MemberReference> FindReferences (object member, RefactoryScope scope, IProgressMonitor monitor = null)
+		public static IEnumerable<MemberReference> FindReferences (object member, bool searchForAllOverloads, RefactoryScope scope, IProgressMonitor monitor = null)
 		{
-			return FindReferences (IdeApp.ProjectOperations.CurrentSelectedSolution, member, scope, monitor);
+			return FindReferences (IdeApp.ProjectOperations.CurrentSelectedSolution, member, searchForAllOverloads, scope, monitor);
 		}
 		
 		static SearchCollector.FileList GetFileList (string fileName)
@@ -163,8 +163,16 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 			return projects;
 		}
+
+		public static bool HasOverloads (Solution solution, object item)
+		{
+			if (!(item is IMember))
+				return false;
+
+			return CollectMembers (solution, (IMember)item, RefactoryScope.Unknown).Count () > 1;
+		}
 		
-		public static IEnumerable<MemberReference> FindReferences (Solution solution, object member, RefactoryScope scope = RefactoryScope.Unknown, IProgressMonitor monitor = null)
+		public static IEnumerable<MemberReference> FindReferences (Solution solution, object member, bool searchForAllOverloads, RefactoryScope scope = RefactoryScope.Unknown, IProgressMonitor monitor = null)
 		{
 			if (member == null)
 				yield break;
@@ -183,12 +191,12 @@ namespace MonoDevelop.Ide.FindInFiles
 			} else if (member is IEntity) {
 				var e = (IEntity)member;
 				if (e.EntityType == EntityType.Destructor) {
-					foreach (var r in FindReferences (solution, e.DeclaringType, scope, monitor)) {
+					foreach (var r in FindReferences (solution, e.DeclaringType, searchForAllOverloads, scope, monitor)) {
 						yield return r;
 					}
 					yield break;
 				}
-				if (member is IMember)
+				if (member is IMember && searchForAllOverloads)
 					searchNodes = CollectMembers (solution, (IMember)member, scope).ToList<object> ();
 			}
 			// prepare references finder

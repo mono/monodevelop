@@ -45,7 +45,43 @@ namespace MonoDevelop.Refactoring
 			var solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
 			ThreadPool.QueueUserWorkItem (delegate {
 				try {
-					foreach (var mref in ReferenceFinder.FindReferences (solution, obj, ReferenceFinder.RefactoryScope.Unknown, monitor)) {
+					foreach (var mref in ReferenceFinder.FindReferences (solution, obj, false, ReferenceFinder.RefactoryScope.Unknown, monitor)) {
+						monitor.ReportResult (mref);
+					}
+				} catch (Exception ex) {
+					if (monitor != null)
+						monitor.ReportError ("Error finding references", ex);
+					else
+						LoggingService.LogError ("Error finding references", ex);
+				} finally {
+					if (monitor != null)
+						monitor.Dispose ();
+				}
+			});
+		}
+		protected override void Run (object data)
+		{
+			var doc = IdeApp.Workbench.ActiveDocument;
+			if (doc == null || doc.FileName == FilePath.Null)
+				return;
+			ResolveResult resolveResoult;
+			object item = CurrentRefactoryOperationsHandler.GetItem (doc, out resolveResoult);
+			var entity = item as IEntity;
+			if (entity == null)
+				return;
+			FindRefs (entity);
+		}
+	}
+
+	public class FindAllReferencesHandler : CommandHandler
+	{
+		public static void FindRefs (object obj)
+		{
+			var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
+			var solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
+			ThreadPool.QueueUserWorkItem (delegate {
+				try {
+					foreach (var mref in ReferenceFinder.FindReferences (solution, obj, true, ReferenceFinder.RefactoryScope.Unknown, monitor)) {
 						monitor.ReportResult (mref);
 					}
 				} catch (Exception ex) {
