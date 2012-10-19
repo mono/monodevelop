@@ -1,10 +1,11 @@
 // 
 // SoftDebuggerAdaptor.cs
 //  
-// Author:
-//       Lluis Sanchez Gual <lluis@novell.com>
+// Authors: Lluis Sanchez Gual <lluis@novell.com>
+//          Jeffrey Stedfast <jeff@xamarin.com>
 // 
 // Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2011,2012 Xamain Inc. (http://www.xamarin.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -1411,13 +1412,38 @@ namespace Mono.Debugging.Soft
 				return ((PrimitiveValue)obj).Value;
 			} else if (obj is PointerValue) {
 				return new IntPtr (((PointerValue)obj).Address);
-			} else if ((obj is StructMirror) && ((StructMirror)obj).Type.IsPrimitive) {
-				// Boxed primitive
+			} else if (obj is StructMirror) {
 				StructMirror sm = (StructMirror) obj;
-				if (sm.Type.FullName == "System.IntPtr")
-					return new IntPtr ((long)((PrimitiveValue)sm.Fields[0]).Value);
-				if (sm.Fields.Length > 0 && (sm.Fields[0] is PrimitiveValue))
-					return ((PrimitiveValue)sm.Fields[0]).Value;
+
+				if (sm.Type.IsPrimitive) {
+					// Boxed primitive
+					if (sm.Type.FullName == "System.IntPtr")
+						return new IntPtr ((long)((PrimitiveValue)sm.Fields[0]).Value);
+					if (sm.Fields.Length > 0 && (sm.Fields[0] is PrimitiveValue))
+						return ((PrimitiveValue)sm.Fields[0]).Value;
+				} else if (sm.Type.FullName == "System.Decimal") {
+					SoftEvaluationContext ctx = (SoftEvaluationContext) gctx;
+					MethodMirror method = OverloadResolve (ctx, "GetBits", sm.Type, new TypeMirror[1] { sm.Type }, false, true, false);
+					if (method != null) {
+						ArrayMirror array;
+						
+						try {
+							array = sm.Type.InvokeMethod (ctx.Thread, method, new Value[1] { sm }, InvokeOptions.DisableBreakpoints | InvokeOptions.SingleThreaded) as ArrayMirror;
+						} catch {
+							array = null;
+						} finally {
+							ctx.Session.StackVersion++;
+						}
+						
+						if (array != null) {
+							int[] bits = new int [4];
+							for (int i = 0; i < 4; i++)
+								bits[i] = (int) TargetObjectToObject (gctx, array[i]);
+							
+							return new decimal (bits);
+						}
+					}
+				}
 			}
 			return base.TargetObjectToObject (gctx, obj);
 		}
