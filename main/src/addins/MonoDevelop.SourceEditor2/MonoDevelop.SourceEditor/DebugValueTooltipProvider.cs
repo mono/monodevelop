@@ -159,7 +159,10 @@ namespace MonoDevelop.SourceEditor
 						} else if (mr.Member is IField) {
 							var field = (IField) mr.Member;
 							
-							expression = field.Name;
+							if (field.IsStatic)
+								expression = field.FullName;
+							else
+								expression = field.Name;
 						} else {
 							return null;
 						}
