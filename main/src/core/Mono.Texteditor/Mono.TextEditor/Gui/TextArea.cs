@@ -44,7 +44,7 @@ using Gtk;
 
 namespace Mono.TextEditor
 {
-	public class TextArea : Gtk.DrawingArea, ITextEditorDataProvider
+	public class TextArea : Container, ITextEditorDataProvider
 	{
 		TextEditorData textEditorData;
 		
@@ -623,15 +623,33 @@ namespace Mono.TextEditor
 			Document.CommitLineUpdate (Caret.Line);
 			return result;
 		}
-		
+
 		protected override void OnRealized ()
 		{
-			base.OnRealized ();
+			WidgetFlags |= WidgetFlags.Realized;
+			WindowAttr attributes = new WindowAttr () {
+				WindowType = Gdk.WindowType.Child,
+				X = Allocation.X,
+				Y = Allocation.Y,
+				Width = Allocation.Width,
+				Height = Allocation.Height,
+				Wclass = WindowClass.InputOutput,
+				Visual = this.Visual,
+				Colormap = this.Colormap,
+				EventMask = (int)(this.Events | Gdk.EventMask.ExposureMask),
+				Mask = this.Events | Gdk.EventMask.ExposureMask,
+			};
+			
+			WindowAttributesType mask = WindowAttributesType.X | WindowAttributesType.Y | WindowAttributesType.Colormap | WindowAttributesType.Visual;
+			GdkWindow = new Gdk.Window (ParentWindow, attributes, mask);
+			GdkWindow.UserData = Raw;
+			Style = Style.Attach (GdkWindow);
+
 			imContext.ClientWindow = this.GdkWindow;
 			OptionsChanged (this, EventArgs.Empty);
 			Caret.PositionChanged += CaretPositionChanged;
-		}
-		
+		}	
+
 		protected override void OnUnrealized ()
 		{
 			imContext.ClientWindow = null;
@@ -1540,6 +1558,7 @@ namespace Mono.TextEditor
 			sizeHasBeenAllocated = true;
 			if (Options.WrapLines)
 				textViewMargin.PurgeLayoutCache ();
+			SetChildrenPositions (allocation);
 		}
 
 		uint lastScrollTime;
@@ -3005,6 +3024,143 @@ namespace Mono.TextEditor
 				new SetCaret (editor, line, column, highlight, centerCaret).Run (null, null);
 			}
 		}
+
+		#region Container
+		public override ContainerChild this [Widget w] {
+			get {
+				return containerChildren.FirstOrDefault (info => info.Child == w || (info.Child is AnimatedWidget && ((AnimatedWidget)info.Child).Widget == w));
+			}
+		}
+
+		public class EditorContainerChild : Container.ContainerChild
+		{
+			public int X { get; set; }
+			public int Y { get; set; }
+			public bool FixedPosition { get; set; }
+			public EditorContainerChild (Container parent, Widget child) : base (parent, child)
+			{
+			}
+		}
+		
+		public override GLib.GType ChildType ()
+		{
+			return Gtk.Widget.GType;
+		}
+		
+		internal List<EditorContainerChild> containerChildren = new List<EditorContainerChild> ();
+		
+		public void AddTopLevelWidget (Gtk.Widget widget, int x, int y)
+		{
+			widget.Parent = this;
+			EditorContainerChild info = new EditorContainerChild (this, widget);
+			info.X = x;
+			info.Y = y;
+			containerChildren.Add (info);
+		}
+		
+		public void MoveTopLevelWidget (Gtk.Widget widget, int x, int y)
+		{
+			foreach (EditorContainerChild info in containerChildren.ToArray ()) {
+				if (info.Child == widget || (info.Child is AnimatedWidget && ((AnimatedWidget)info.Child).Widget == widget)) {
+					if (info.X == x && info.Y == y)
+						break;
+					info.X = x;
+					info.Y = y;
+					if (widget.Visible)
+						ResizeChild (Allocation, info);
+					break;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Returns the position of an embedded widget
+		/// </summary>
+		public void GetTopLevelWidgetPosition (Gtk.Widget widget, out int x, out int y)
+		{
+			foreach (EditorContainerChild info in containerChildren.ToArray ()) {
+				if (info.Child == widget || (info.Child is AnimatedWidget && ((AnimatedWidget)info.Child).Widget == widget)) {
+					x = info.X;
+					y = info.Y;
+					return;
+				}
+			}
+			x = y = 0;
+		}
+		
+		public void MoveToTop (Gtk.Widget widget)
+		{
+			EditorContainerChild editorContainerChild = containerChildren.FirstOrDefault (c => c.Child == widget);
+			if (editorContainerChild == null)
+				throw new Exception ("child " + widget + " not found.");
+			List<EditorContainerChild> newChilds = new List<EditorContainerChild> (containerChildren.Where (child => child != editorContainerChild));
+			newChilds.Add (editorContainerChild);
+			this.containerChildren = newChilds;
+			widget.GdkWindow.Raise ();
+		}
+		
+		protected override void OnAdded (Widget widget)
+		{
+			AddTopLevelWidget (widget, 0, 0);
+		}
+		
+		protected override void OnRemoved (Widget widget)
+		{
+			foreach (EditorContainerChild info in containerChildren.ToArray ()) {
+				if (info.Child == widget) {
+					widget.Unparent ();
+					containerChildren.Remove (info);
+					break;
+				}
+			}
+		}
+		
+		protected override void ForAll (bool include_internals, Gtk.Callback callback)
+		{
+			containerChildren.ForEach (child => callback (child.Child));
+		}
+		
+		protected override void OnMapped ()
+		{
+			WidgetFlags |= WidgetFlags.Mapped;
+			// Note: SourceEditorWidget.ShowAutoSaveWarning() might have set TextEditor.Visible to false,
+			// in which case we want to not map it (would cause a gtk+ critical error).
+			containerChildren.ForEach (child => { if (child.Child.Visible) child.Child.Map (); });
+			GdkWindow.Show ();
+		}
+		
+		protected override void OnUnmapped ()
+		{
+			WidgetFlags &= ~WidgetFlags.Mapped;
+			
+			// We hide the window first so that the user doesn't see widgets disappearing one by one.
+			GdkWindow.Hide ();
+			
+			containerChildren.ForEach (child => child.Child.Unmap ());
+		}
+
+		void ResizeChild (Rectangle allocation, EditorContainerChild child)
+		{
+			Requisition req = child.Child.SizeRequest ();
+			var childRectangle = new Gdk.Rectangle (child.X, child.Y, req.Width, req.Height);
+			if (!child.FixedPosition) {
+				double zoom = Options.Zoom;
+				childRectangle.X = (int)(child.X * zoom - HAdjustment.Value);
+				childRectangle.Y = (int)(child.Y * zoom - VAdjustment.Value);
+			}
+			//			childRectangle.X += allocation.X;
+			//			childRectangle.Y += allocation.Y;
+			child.Child.SizeAllocate (childRectangle);
+		}
+		
+		void SetChildrenPositions (Rectangle allocation)
+		{
+			foreach (EditorContainerChild child in containerChildren.ToArray ()) {
+				ResizeChild (allocation, child);
+			}
+		}
+		#endregion
+
 	}
 
 	public interface ITextEditorDataProvider
