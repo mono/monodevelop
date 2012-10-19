@@ -954,8 +954,13 @@ namespace MonoDevelop.Debugger
 
 		void HandleChanged (object sender, EventArgs e)
 		{
-			if (!wasHandled)
-				CompletionWindowManager.UpdateWordSelection (editEntry.Text);
+			Gtk.Entry entry = (Gtk.Entry)sender;
+			if (!wasHandled) {
+				string text = ctx == null ? editEntry.Text : editEntry.Text.Substring (Math.Max (0, Math.Min (ctx.TriggerOffset, editEntry.Text.Length)));
+				CompletionWindowManager.UpdateWordSelection (text);
+				CompletionWindowManager.PostProcessKeyEvent (key, keyChar, modifierState);
+				PopupCompletion (entry);
+			}
 		}
 
 		void OnEndEditing ()
@@ -970,29 +975,39 @@ namespace MonoDevelop.Debugger
 				EndEditing (this, EventArgs.Empty);
 		}
 		bool wasHandled = false;
+		CodeCompletionContext ctx;
+		Gdk.Key key;
+		char keyChar;
+		Gdk.ModifierType modifierState;
+		uint keyValue;
+
 		[GLib.ConnectBeforeAttribute]
 		void OnEditKeyPress (object s, Gtk.KeyPressEventArgs args)
 		{
-			Gtk.Entry entry = (Gtk.Entry)s;
 			wasHandled = false;
+			key = args.Event.Key;
+			keyChar =  (char)args.Event.Key;
+			modifierState = args.Event.State;
+			keyValue = args.Event.KeyValue;
 			if (currentCompletionData != null) {
-				wasHandled  = CompletionWindowManager.PreProcessKeyEvent (args.Event.Key, (char)args.Event.Key, args.Event.State);
-
-				if (!wasHandled )
-					CompletionWindowManager.PostProcessKeyEvent (args.Event.Key, (char)args.Event.Key, args.Event.State);
+				wasHandled  = CompletionWindowManager.PreProcessKeyEvent (key, keyChar, modifierState);
 				args.RetVal = wasHandled ;
 			}
-			
+		}
+
+		void PopupCompletion (Entry entry)
+		{
 			Gtk.Application.Invoke (delegate {
-				char c = (char)Gdk.Keyval.ToUnicode (args.Event.KeyValue);
+				char c = (char)Gdk.Keyval.ToUnicode (keyValue);
 				if (currentCompletionData == null && IsCompletionChar (c)) {
 					string exp = entry.Text.Substring (0, entry.CursorPosition);
 					currentCompletionData = GetCompletionData (exp);
 					if (currentCompletionData != null) {
 						DebugCompletionDataList dataList = new DebugCompletionDataList (currentCompletionData);
-						CodeCompletionContext ctx = ((ICompletionWidget)this).CreateCodeCompletionContext (entry.CursorPosition - currentCompletionData.ExpressionLenght);
+						ctx = ((ICompletionWidget)this).CreateCodeCompletionContext (entry.CursorPosition - currentCompletionData.ExpressionLenght);
 						CompletionWindowManager.ShowWindow (null, c, dataList, this, ctx);
-					} else
+					}
+					else
 						currentCompletionData = null;
 				}
 			});
