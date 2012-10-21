@@ -1,24 +1,6 @@
-F# Language Binding for MonoDevelop 3.0 and later versions, Apache 2.0 License
+# F# Language Binding for MonoDevelop 
 
-Install F# Language Binding via the MonoDeveop Add-in manager.
-
-MonoDevelop 
-      --> Add-in manager
-      --> Gallery
-      --> Language Bindings
-      --> F# Language Binding
-
-Then do this:
-
-   MonoDevelop 
-      --> Options/Preferences 
-      --> Source Code 
-      --> Code Formatting 
-      --> Text File 
-      --> Convert tabs to spaces
-
-Adds F# project support and allows you to code in F# in MonoDevelop. 
-Can create such projects as:
+Adds F# project support and allows you to code in F# in MonoDevelop. Can create such projects as:
 * Console Application
 * Library
 * Tutorial Project
@@ -30,12 +12,29 @@ Supports the following features:
 * Tooltips
 * Debugging 
 
+Requires MonoDevelop 3.0 and later versions
+
+## Installation
+
+On Mac and Linux, first build or install [the F# 3.0 compiler (open source edition)](http://fsharp.github.com/fsharp) if 'fsharpc' is not on your command line.
+
+Then install the F# Language Binding via the MonoDeveop Add-in manager.
+
+   MonoDevelop 
+        --> Add-in manager --> Gallery
+        --> Language Bindings --> F# Language Binding
+
+Then do this:
+
+   MonoDevelop 
+      --> Options/Preferences --> Source Code --> Code Formatting --> Text File --> Convert tabs to spaces
+
+
 For more information about F# and code examples see these links:
 * http://fsharp.net
 * http://tryfsharp.org
 * http://fssnip.net
 
-Join [The F# Open Source Group](http://fsharp.github.com)
-
-We use [github](http://fsharp.github.com/fsharpbinding) for tracking work items and suggestions.
+## Contribute 
+Join [The F# Open Source Group](http://fsharp.github.com). We use [github](http://fsharp.github.com/fsharpbinding) for tracking work items and suggestions.
 
