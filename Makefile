@@ -5,7 +5,9 @@ EXTRA_DIST = configure
 all: update_submodules all-recursive
 
 update_submodules:
-	git submodule update --init --recursive
+	if test -d ".git"; then \
+		git submodule update --init --recursive; \
+	fi
 
 top_srcdir=.
 include $(top_srcdir)/config.make
