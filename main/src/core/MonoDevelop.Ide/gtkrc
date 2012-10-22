@@ -338,19 +338,16 @@ class "GtkProgressBar" style "progressbar"
 class "GtkScrolledWindow" style "scrolled-window"
 class "GtkNotebook" style "notebook"
 class "GtkButton" style "button"
+class "GtkToggleButton" style "toggle-button"
 
-class "GtkRadioButton" style "radio-or-check-box"
-class "GtkCheckButton" style "radio-or-check-box"
 class "GtkScale" style "scale"
 
 #widget "*GtkEntry" style "entry"
 widget "*search-entry*" style "search-entry"
 widget "*GtkTextView"   style "entry"
 
-widget_class "*<GtkButton>"     style "button"
-widget_class "*<GtkToggleButton>" style "toggle-button"
+widget_class "<GtkDialog>*<GtkCheckButton>" style "radio-or-check-box"
 widget_class "*<GtkButtonBox>.<GtkButton>" style "dialog-button"
-widget_class "*<GtkCheckButton>"  style "radio-or-check-box"
 
 widget_class "*<GtkMenu>*"      style "menu"
 widget_class "*<GtkMenuItem>*"  style "menu-item"
