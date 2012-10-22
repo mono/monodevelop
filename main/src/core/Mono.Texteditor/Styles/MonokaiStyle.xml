@@ -151,9 +151,9 @@ THE SOFTWARE.
 		<Style name="access" color="monokai-constant"/> 
 		<Style name="type" color="monokai-type"/> 
 		<Style name="semantic.type" color="monokai-type"/> 
-		<Style name="semantic.field" color="monokai-functionargument"/>
-		<Style name="semantic.property" color="monokai-functionargument"/>
-		<Style name="semantic.method" color="#2EE2A6"/>
+		<Style name="semantic.field" color="#2EE2A6"/>
+		<Style name="semantic.property" color="#2EE2A6"/>
+		<Style name="semantic.method" color="monokai-functionargument"/>
 		<Style name="semantic.error" color="monokai-invalid" bgColor="monokai-invalidBackground"/>
 	</Style>
 </EditorStyle>
