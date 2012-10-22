@@ -145,7 +145,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				string dir = outputPathEntry.Path;
 				dir = dir.Replace ("$(Configuration)", conf.Name);
 				dir = dir.Replace ("$(Platform)", conf.Platform);
-				if (!FileService.IsValidPath (dir)) {
+				if (!string.IsNullOrEmpty (dir) && !FileService.IsValidPath (dir)) {
 					MessageService.ShowError (GettextCatalog.GetString ("Invalid output directory: {0}", dir));
 					return false;
 				}
@@ -165,7 +165,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				string dir = outputPathEntry.Path;
 				dir = dir.Replace ("$(Configuration)", conf.Name);
 				dir = dir.Replace ("$(Platform)", conf.Platform);
-				conf.OutputDirectory = dir;
+				if (!string.IsNullOrEmpty (dir))
+					conf.OutputDirectory = dir;
 			}
 		}
 	}
