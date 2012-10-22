@@ -40,12 +40,13 @@ namespace MonoDevelop.Ide.Gui
 		// Document tab bar
 
 
-		public static readonly Cairo.Color TabBarBackgroundColor = CairoExtensions.ParseColor ("F3FCFF");
+		public static readonly Cairo.Color TabBarBackgroundColor = CairoExtensions.ParseColor ("c2c2c2");
 		public static readonly Cairo.Color TabBarActiveTextColor = new Cairo.Color (0, 0, 0);
 
-		public static readonly Cairo.Color TabBarGradientStartColor = TabBarBackgroundColor;
-		public static readonly Cairo.Color TabBarGradientMidColor = Shift (TabBarBackgroundColor, 0.95);
+		public static readonly Cairo.Color TabBarGradientStartColor = Shift (TabBarBackgroundColor, 0.92);
+		public static readonly Cairo.Color TabBarGradientMidColor = TabBarBackgroundColor;
 		public static readonly Cairo.Color TabBarGradientEndColor = Shift (TabBarBackgroundColor, 0.9);
+		public static readonly Cairo.Color TabBarGradientShadowColor = Shift (TabBarBackgroundColor, 0.8);
 		public static readonly Cairo.Color TabBarHoverActiveTextColor = TabBarActiveTextColor;
 		public static readonly Cairo.Color TabBarInactiveTextColor = Blend (new Cairo.Color (0, 0, 0), TabBarGradientStartColor, 0.4);
 		public static readonly Cairo.Color TabBarHoverInactiveTextColor = new Cairo.Color (0, 0, 0);
@@ -53,7 +54,7 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly Cairo.Color BreadcrumbGradientStartColor = CairoExtensions.ParseColor ("FFFFFF");
 		public static readonly Cairo.Color BreadcrumbBackgroundColor = Shift (BreadcrumbGradientStartColor, .95);
 		public static readonly Cairo.Color BreadcrumbGradientEndColor = Shift (BreadcrumbGradientStartColor, 0.9);
-		public static readonly Cairo.Color BreadcrumbBorderColor = Shift (BreadcrumbBackgroundColor, 0.714);
+		public static readonly Cairo.Color BreadcrumbBorderColor = Shift (BreadcrumbBackgroundColor, 0.6);
 		public static readonly Cairo.Color BreadcrumbInnerBorderColor = WithAlpha (BaseBackgroundColor, 0.1d);
 		public static readonly Gdk.Color BreadcrumbTextColor = Shift (BaseForegroundColor, 0.8).ToGdkColor ();
 		public static readonly Cairo.Color BreadcrumbButtonBorderColor = Shift (BaseBackgroundColor, 0.8);

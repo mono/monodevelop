@@ -376,8 +376,6 @@ namespace MonoDevelop.Ide.Gui
 
 		static Gdk.Pixbuf closeSelImage;
 		static Gdk.Pixbuf closeSelOverImage;
-		static Gdk.Pixbuf closeImage;
-		static Gdk.Pixbuf closeOverImage;
 
 		const int TopBarPadding = 3;
 		const int BottomBarPadding = 3;
@@ -386,6 +384,8 @@ namespace MonoDevelop.Ide.Gui
 		const int BottomPadding = 8;
 		const int LeftBarPadding = 58;
 		const int VerticalTextSize = 11;
+		const int TabSpacing = 1;
+		const int Radius = 2;
 
 		const int ActiveTabVerticalOffset = 2;
 		const int TextOffset = -1;
@@ -416,8 +416,6 @@ namespace MonoDevelop.Ide.Gui
 			try {
 				closeSelImage = Gdk.Pixbuf.LoadFromResource ("MonoDevelop.Close.Selected.png");
 				closeSelOverImage = Gdk.Pixbuf.LoadFromResource ("MonoDevelop.Close.Selected.Over.png");
-				closeImage = Gdk.Pixbuf.LoadFromResource ("MonoDevelop.Close.png");
-				closeOverImage = Gdk.Pixbuf.LoadFromResource ("MonoDevelop.Close.Over.png");
 			} catch (Exception e) {
 				MonoDevelop.Core.LoggingService.LogError ("Can't create pixbuf from resource: MonoDevelop.Close.png", e);
 			}
@@ -727,9 +725,9 @@ namespace MonoDevelop.Ide.Gui
 			ctx.Fill ();
 			
 			ctx.MoveTo (region.X, 0.5);
-			ctx.LineTo (region.Right, 0.5);
+			ctx.LineTo (region.Right + 1, 0.5);
 			ctx.LineWidth = 1;
-			ctx.Color = CairoExtensions.ParseColor ("e0e0e0");
+			ctx.Color = Styles.TabBarGradientShadowColor;
 			ctx.Stroke ();
 		}
 
@@ -861,8 +859,8 @@ namespace MonoDevelop.Ide.Gui
 				gr.AddColorStop (0, Styles.BreadcrumbGradientStartColor);
 				gr.AddColorStop (1, Styles.BreadcrumbBackgroundColor);
 			} else {
-				gr.AddColorStop (0, CairoExtensions.ParseColor ("f0f0f0"));
-				gr.AddColorStop (1, CairoExtensions.ParseColor ("c3c3c3"));
+				gr.AddColorStop (0, CairoExtensions.ParseColor ("f4f4f4"));
+				gr.AddColorStop (1, CairoExtensions.ParseColor ("cecece"));
 			}
 			ctx.Pattern = gr;
 			ctx.Fill ();
@@ -900,17 +898,10 @@ namespace MonoDevelop.Ide.Gui
 			ctx.MoveTo (textStart, region.Y + TopPadding + ActiveTabVerticalOffset + TextOffset);
 			// ellipses are for space wasting ..., we cant afford that
 			using (var lg = new LinearGradient (textStart + w - 5, 0, textStart + w + 3, 0)) {
-				if (active) {
-					var color = highlight ? Styles.TabBarHoverActiveTextColor : Styles.TabBarActiveTextColor;
-					lg.AddColorStop (0, color);
-					color.A = 0;
-					lg.AddColorStop (1, color);
-				} else {
-					var color = highlight ? Styles.TabBarHoverInactiveTextColor : Styles.TabBarInactiveTextColor;
-					lg.AddColorStop (0, color);
-					color.A = 0;
-					lg.AddColorStop (1, color);
-				}
+				var color = Styles.TabBarActiveTextColor;
+				lg.AddColorStop (0, color);
+				color.A = 0;
+				lg.AddColorStop (1, color);
 				ctx.Pattern = lg;
 				PangoCairoHelper.ShowLayout (ctx, la);
 			}
@@ -925,19 +916,30 @@ namespace MonoDevelop.Ide.Gui
 			double y = (double) Allocation.Height + 0.5 - BottomBarPadding + margin;
 			double height = Allocation.Height - TopBarPadding - BottomBarPadding;
 
+			x += TabSpacing;
+			contentWidth -= TabSpacing * 2;
+
 			double rightx = x + contentWidth;
 			if (active) {
-				ctx.MoveTo (0, y);
-				ctx.LineTo (x, y);
-				ctx.LineTo (x, y - height);
-				ctx.LineTo (rightx, y - height);
-				ctx.LineTo (rightx, y);
+				ctx.MoveTo (0, y + 0.5);
+				ctx.LineTo (0, y);
+				ctx.LineTo (x - Radius, y);
+				ctx.ArcNegative (x - Radius, y - Radius, Radius, Math.PI * .5, 0);
+				ctx.LineTo (x, y + Radius - height);
+				ctx.Arc (x + Radius, y + Radius - height, Radius, Math.PI, Math.PI * 1.5);
+				ctx.LineTo (rightx - Radius, y - height);
+				ctx.Arc (rightx - Radius, y + Radius - height, Radius, Math.PI * 1.5, 0);
+				ctx.LineTo (rightx, y - Radius);
+				ctx.ArcNegative (rightx + Radius, y - Radius, Radius, Math.PI, Math.PI * .5);
 				ctx.LineTo (Allocation.Width, y);
+				ctx.LineTo (Allocation.Width, y + 0.5);
 			} else {
 				height -= ActiveTabVerticalOffset;
 				ctx.MoveTo (x, y);
-				ctx.LineTo (x, y - height);
-				ctx.LineTo (rightx, y - height);
+				ctx.LineTo (x, y + Radius - height);
+				ctx.Arc (x + Radius, y + Radius - height, Radius, Math.PI, Math.PI * 1.5);
+				ctx.LineTo (rightx - Radius, y - height);
+				ctx.Arc (rightx - Radius, y + Radius - height, Radius, Math.PI * 1.5, 0);
 				ctx.LineTo (rightx, y);
 			}
 		}
