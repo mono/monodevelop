@@ -50,7 +50,96 @@ namespace Mono.TextEditor
 				return textArea;
 			}
 		}
+		
+		/// <summary>
+		/// Gets or sets a value indicating whether this <see cref="Mono.TextEditor.TextEditor"/> converts tabs to spaces.
+		/// It is possible to overwrite the default options value for certain languages (like F#).
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if tabs to spaces should be converted; otherwise, <c>false</c>.
+		/// </value>
+		public bool TabsToSpaces {
+			get {
+				return textEditorData.TabsToSpaces;
+			}
+			set {
+				textEditorData.TabsToSpaces = value;
+			}
+		}
+		
+		public Mono.TextEditor.Caret Caret {
+			get {
+				return textEditorData.Caret;
+			}
+		}
+		
+		protected internal IMMulticontext IMContext {
+			get { return imContext; }
+		}
+		
+		public MenuItem CreateInputMethodMenuItem (string label)
+		{
+			if (GtkWorkarounds.GtkMinorVersion >= 16) {
+				bool showMenu = (bool) GtkWorkarounds.GetProperty (Settings, "gtk-show-input-method-menu").Val;
+				if (!showMenu)
+					return null;
+			}
+			MenuItem imContextMenuItem = new MenuItem (label);
+			Menu imContextMenu = new Menu ();
+			imContextMenuItem.Submenu = imContextMenu;
+			IMContext.AppendMenuitems (imContextMenu);
+			return imContextMenuItem;
+		}
 
+		[DllImport (PangoUtil.LIBGTK, CallingConvention = CallingConvention.Cdecl)]
+		static extern void gtk_im_multicontext_set_context_id (IntPtr context, string context_id);
+
+		[DllImport (PangoUtil.LIBGTK, CallingConvention = CallingConvention.Cdecl)]
+		static extern string gtk_im_multicontext_get_context_id (IntPtr context);
+		
+		[GLib.Property ("im-module")]
+		public string IMModule {
+			get {
+				if (GtkWorkarounds.GtkMinorVersion < 16 || imContext == null)
+					return null;
+				return gtk_im_multicontext_get_context_id (imContext.Handle);
+			}
+			set {
+				if (GtkWorkarounds.GtkMinorVersion < 16 || imContext == null)
+					return;
+				gtk_im_multicontext_set_context_id (imContext.Handle, value);
+			}
+		}
+		
+		public ITextEditorOptions Options {
+			get {
+				return textEditorData.Options;
+			}
+			set {
+				if (textEditorData.Options != null)
+					textEditorData.Options.Changed -= OptionsChanged;
+				textEditorData.Options = value;
+				if (textEditorData.Options != null) {
+					textEditorData.Options.Changed += OptionsChanged;
+					if (IsRealized)
+						OptionsChanged (null, null);
+				}
+			}
+		}
+		
+		
+		public string FileName {
+			get {
+				return Document.FileName;
+			}
+		}
+		
+		public string MimeType {
+			get {
+				return Document.MimeType;
+			}
+		}
+		
 		public TextEditor () : this(new TextDocument ())
 		{
 		}

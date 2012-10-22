@@ -406,7 +406,6 @@ namespace MonoDevelop.Components
             } catch (EntryPointNotFoundException) {
                 native_push_pop_exists = false;
             }
-        }
 
 		public static Cairo.Color ParseColor (string s, double alpha = 1)
 		{
@@ -531,5 +530,6 @@ namespace MonoDevelop.Components
 			: base (cairo_quartz_surface_create (format, (uint)width, (uint)height), true)
 		{
 		}
+	}
 	}
 }

@@ -334,12 +334,11 @@ namespace Mono.Debugging.Soft
 			TypeMirror t = (TypeMirror) type;
 			
 			TypeMirror[] types = new TypeMirror [args.Length];
-			for (int n=0; n<args.Length; n++)
-				types [n] = ToTypeMirror (ctx, GetValueType (ctx, args [n]));
-			
 			Value[] values = new Value[args.Length];
-			for (int n=0; n<args.Length; n++)
-				values[n] = (Value) args [n];
+			for (int n = 0; n < args.Length; n++) {
+				types[n] = ToTypeMirror (ctx, GetValueType (ctx, args[n]));
+				values[n] = (Value) args[n];
+			}
 			
 			MethodMirror ctor = OverloadResolve (cx, ".ctor", t, types, true, true, true);
 			if (ctor == null)
