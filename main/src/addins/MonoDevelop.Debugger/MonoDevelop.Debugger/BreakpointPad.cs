@@ -88,7 +88,7 @@ namespace MonoDevelop.Debugger
 			menuSet.AddItem (DebugCommands.EnableDisableBreakpoint);
 			menuSet.AddItem (DebugCommands.ClearAllBreakpoints);
 			menuSet.AddItem (DebugCommands.DisableAllBreakpoints);
-			menuSet.AddItem (EditCommands.Delete);
+			menuSet.AddItem (EditCommands.DeleteKey);
 			menuSet.AddSeparator ();
 			menuSet.Add (propertiesCmd);
 			
@@ -109,6 +109,7 @@ namespace MonoDevelop.Debugger
 			tree.RulesHint = true;
 			tree.HeadersVisible = true;
 			tree.DoPopupMenu = ShowPopup;
+			tree.KeyPressEvent += OnKeyPressEvent;
 			
 			treeState = new TreeViewState (tree, (int) Columns.Breakpoint);
 							
@@ -232,11 +233,25 @@ namespace MonoDevelop.Debugger
 		[CommandHandler (EditCommands.DeleteKey)]
 		protected void OnDeleted ()
 		{
-			TreeIter iter;
-			if (tree.Selection.GetSelected (out iter)) {
-				Breakpoint bp = (Breakpoint) store.GetValue (iter, (int) Columns.Breakpoint);	
+			bool deleted = false;
+
+			DebuggingService.Breakpoints.BreakpointRemoved -= breakpointRemovedHandler;
+
+			foreach (TreePath path in tree.Selection.GetSelectedRows ()) {
+				TreeIter iter;
+				
+				if (!store.GetIter (out iter, path))
+					continue;
+				
+				var bp = (Breakpoint) store.GetValue (iter, (int) Columns.Breakpoint);
 				bps.Remove (bp);
-			}	
+				deleted = true;
+			}
+			
+			DebuggingService.Breakpoints.BreakpointRemoved += breakpointRemovedHandler;
+			
+			if (deleted)
+				UpdateDisplay ();
 		}
 		
 		[CommandUpdateHandler (EditCommands.Delete)]
@@ -248,6 +263,41 @@ namespace MonoDevelop.Debugger
 		{
 			TreeIter iter;
 			cmd.Enabled = tree.Selection.GetSelected (out iter);
+		}
+
+		[GLib.ConnectBefore]
+		void OnKeyPressEvent (object sender, KeyPressEventArgs args)
+		{
+			// Delete the currently selected breakpoint(s) with any delete key
+			switch (args.Event.Key) {
+			case Gdk.Key.Delete:
+			case Gdk.Key.KP_Delete:
+			case Gdk.Key.BackSpace:
+				// Delete the selected breakpoints
+				bool deleted = false;
+
+				DebuggingService.Breakpoints.BreakpointRemoved -= breakpointRemovedHandler;
+
+				foreach (TreePath path in tree.Selection.GetSelectedRows ()) {
+					TreeIter iter;
+					
+					if (!store.GetIter (out iter, path))
+						continue;
+					
+					var bp = (Breakpoint) store.GetValue (iter, (int) Columns.Breakpoint);
+					bps.Remove (bp);
+					deleted = true;
+				}
+
+				DebuggingService.Breakpoints.BreakpointRemoved += breakpointRemovedHandler;
+
+				if (deleted) {
+					args.RetVal = true;
+					UpdateDisplay ();
+				}
+
+				break;
+			}
 		}
 		
 		private void ItemToggled (object o, ToggledArgs args)
@@ -330,8 +380,7 @@ namespace MonoDevelop.Debugger
 			if (control != null)
 				control.Sensitive = !DebuggingService.Breakpoints.IsReadOnly;
 		}
-		
-		
+
 		void OnRowActivated (object o, Gtk.RowActivatedArgs args)
 		{
 			OnBpJumpTo ();
