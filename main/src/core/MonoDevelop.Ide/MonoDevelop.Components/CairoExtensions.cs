@@ -394,18 +394,19 @@ namespace MonoDevelop.Components
         private static CairoInteropCall cairo_pop_group_to_source_call = new CairoInteropCall ("PopGroupToSource");
 
         public static void PopGroupToSource (Cairo.Context cr)
-        {
-            if (!native_push_pop_exists) {
-                return;
-            }
+		{
+			if (!native_push_pop_exists) {
+				return;
+			}
 
-            try {
-                if (!CallCairoMethod (cr, ref cairo_pop_group_to_source_call)) {
-                    cairo_pop_group_to_source (cr.Handle);
-                }
-            } catch (EntryPointNotFoundException) {
-                native_push_pop_exists = false;
-            }
+			try {
+				if (!CallCairoMethod (cr, ref cairo_pop_group_to_source_call)) {
+					cairo_pop_group_to_source (cr.Handle);
+				}
+			} catch (EntryPointNotFoundException) {
+				native_push_pop_exists = false;
+			}
+		}
 
 		public static Cairo.Color ParseColor (string s, double alpha = 1)
 		{
@@ -530,6 +531,5 @@ namespace MonoDevelop.Components
 			: base (cairo_quartz_surface_create (format, (uint)width, (uint)height), true)
 		{
 		}
-	}
 	}
 }
