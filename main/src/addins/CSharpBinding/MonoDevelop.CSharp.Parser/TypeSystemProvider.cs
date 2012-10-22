@@ -59,8 +59,11 @@ namespace MonoDevelop.CSharp.Parser
 					if (comment != null) {
 						VisitComment (result, comment, tagComments);
 					} else {
-						if (storeAst)
-							VisitPreprocessorDirective (result, special as SpecialsBag.PreProcessorDirective);
+						if (storeAst) {
+							var ppd = special as SpecialsBag.PreProcessorDirective;
+							if  (ppd != null)
+								VisitPreprocessorDirective (result, ppd);
+						}
 					}
 				}
 			};
