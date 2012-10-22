@@ -45,14 +45,7 @@ namespace Mono.TextEditor
 	{
 		readonly TextArea textArea;
 
-		internal TextArea TextArea {
-			get {
-				return textArea;
-			}
-		}
-
-		
-		public Widget TextAreaWidget {
+		public TextArea TextArea {
 			get {
 				return textArea;
 			}
