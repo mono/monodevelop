@@ -2,7 +2,12 @@ include main/monodevelop_version
 
 EXTRA_DIST = configure
 
-all: all-recursive
+all: update_submodules all-recursive
+
+update_submodules:
+	if test -d ".git"; then \
+		git submodule update --init --recursive; \
+	fi
 
 top_srcdir=.
 include $(top_srcdir)/config.make
