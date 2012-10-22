@@ -23,7 +23,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE. -->
  
-<SyntaxMode name = "Asp.Net ASHX" mimeTypes="application/x-ashx" extends="text/x-csharp">
+<SyntaxMode name = "ASP.NET ASHX/ASMX/ASIX" mimeTypes="application/x-ashx;application/x-asmx;application/x-asix" extends="text/x-csharp">
 	<!-- directives -->
 	<Span color = "template.tag" tagColor="template.tag" rule = "InTag">
 		<Begin>&lt;%@</Begin>
