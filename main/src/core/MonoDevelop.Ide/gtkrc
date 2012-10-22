@@ -63,6 +63,9 @@ style "default" {
     GtkButton::default-border = { 0, 0, 0, 0 }
     GtkButton::inner-border = { 2, 2, 4, 4 }
 
+    GtkButtonBox::child-min-width = 70
+    GtkButtonBox::child-min-height = 22
+
     GtkTreeView::odd-row-color = @base_color
 
     GtkScrolledWindow::scrollbar-spacing = 0
@@ -124,6 +127,8 @@ style "button" {
 style "dialog-button" = "default" {
     xthickness = 3
     ythickness = 3
+    font_name = "Lucida Grande 11"
+
     GtkWidget::draw-border = { 2, 2, 2, 2 }
     GtkWidget::focus-line-width = 1
     GtkButton::inner-border = { 8, 8, 0, 2 }
@@ -347,7 +352,7 @@ widget "*search-entry*" style "search-entry"
 widget "*GtkTextView"   style "entry"
 
 widget_class "<GtkDialog>*<GtkCheckButton>" style "radio-or-check-box"
-widget_class "*<GtkButtonBox>.<GtkButton>" style "dialog-button"
+#widget_class "*<GtkButtonBox>.<GtkButton>" style "dialog-button"
 
 widget_class "*<GtkMenu>*"      style "menu"
 widget_class "*<GtkMenuItem>*"  style "menu-item"
