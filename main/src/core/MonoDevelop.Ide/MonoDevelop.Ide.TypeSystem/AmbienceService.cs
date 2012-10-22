@@ -37,6 +37,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Extensions;
+using ICSharpCode.NRefactory.Documentation;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -157,7 +158,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (idx2 >= 0 && idx1 >= 0) {
 					try {
 						var xmlText = documentation.Substring (idx1, idx2 - idx1 + "</summary>".Length);
-						return ParseBody (
+						return ParseBody (member,
 							new XmlTextReader (xmlText, XmlNodeType.Element, null),
 							"summary", 
 							DocumentationFormatOptions.Empty
@@ -174,10 +175,10 @@ namespace MonoDevelop.Ide.TypeSystem
 				} else {
 					result = documentation;
 				}
-				return GetDocumentationMarkup (CleanEmpty (result));
+				return GetDocumentationMarkup (member, CleanEmpty (result));
 			}
 			
-			return GetDocumentationMarkup (CleanEmpty (documentation));
+			return GetDocumentationMarkup (member, CleanEmpty (documentation));
 		}
 		
 		static string CleanEmpty (string doc)
@@ -199,13 +200,20 @@ namespace MonoDevelop.Ide.TypeSystem
 			return null;
 		}
 		
-		static string GetCref (string cref)
+		static string GetCref (ITypeResolveContext ctx, string cref)
 		{
 			if (cref == null)
 				return "";
 
 			if (cref.Length < 2)
 				return cref;
+			var entity = new DocumentationComment ("", ctx).ResolveCref (cref);
+
+			if (entity != null) {
+				var ambience = new ICSharpCode.NRefactory.CSharp.CSharpAmbience ();
+				ambience.ConversionFlags = ConversionFlags.ShowParameterList | ConversionFlags.ShowParameterNames | ConversionFlags.ShowTypeParameterList;
+				return ambience.ConvertEntity (entity);
+			}
 
 			if (cref.Substring (1, 1) == ":")
 				return cref.Substring (2, cref.Length - 2);
@@ -335,16 +343,16 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 		
 		
-		public static string GetDocumentationMarkup (string doc)
+		public static string GetDocumentationMarkup (IEntity member, string doc)
 		{
-			return GetDocumentationMarkup (doc, DocumentationFormatOptions.Empty);
+			return GetDocumentationMarkup (member, doc, DocumentationFormatOptions.Empty);
 		}
 		
-		static string ParseBody (XmlTextReader xml, string endTagName, DocumentationFormatOptions options)
+		static string ParseBody (IEntity member, XmlTextReader xml, string endTagName, DocumentationFormatOptions options)
 		{
 			StringBuilder result = new StringBuilder (); 
 			bool wasWhiteSpace = true;
-			
+			ITypeResolveContext ctx = member.Compilation.TypeResolveContext;
 			while (xml.Read ()) {
 				switch (xml.NodeType) {
 				case XmlNodeType.EndElement:
@@ -354,7 +362,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				case XmlNodeType.Element:
 					switch (xml.Name.ToLower ()) {
 					case "para":
-						result.AppendLine (ParseBody (xml, xml.Name, options));
+						result.AppendLine (ParseBody (member, xml, xml.Name, options));
 						wasWhiteSpace = true;
 						break;
 					case "see":
@@ -363,7 +371,7 @@ namespace MonoDevelop.Ide.TypeSystem
 							wasWhiteSpace = true;
 						}
 						result.Append ("<i>");
-						string name = (GetCref (xml ["cref"]) + xml ["langword"]).Trim ();
+						string name = (GetCref (ctx, xml ["cref"]) + xml ["langword"]).Trim ();
 						if (options.Ambience != null)
 							name = options.Ambience.GetIntrinsicTypeName (name);
 						result.Append (EscapeText (name));
@@ -403,7 +411,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return result.ToString ().Trim ();
 		}
 		
-		public static string GetDocumentationMarkup (string doc, DocumentationFormatOptions options)
+		public static string GetDocumentationMarkup (IEntity member, string doc, DocumentationFormatOptions options)
 		{
 			if (string.IsNullOrEmpty (doc))
 				return null;
@@ -422,12 +430,12 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (xml.NodeType == XmlNodeType.Element) {
 						switch (xml.Name.ToLower ()) {
 						case "para":
-							ret.Append (options.FormatBody (ParseBody (xml, xml.Name, options)));
+							ret.Append (options.FormatBody (ParseBody (member, xml, xml.Name, options)));
 							if (summaryEnd < 0)
 								summaryEnd = ret.Length;
 							break;
 						case "summary":
-							var summary = options.FormatBody (ParseBody (xml, xml.Name, options));
+							var summary = options.FormatBody (ParseBody (member, xml, xml.Name, options));
 							if (!IsEmptyDocumentation (summary)) {
 								//							ret.AppendLine (GetHeading ("Summary:", options));
 								ret.Append (summary);
@@ -438,11 +446,11 @@ namespace MonoDevelop.Ide.TypeSystem
 						case "remarks":
 							if (string.IsNullOrEmpty (options.HighlightParameter)) {
 								ret.AppendLine (options.FormatHeading (GettextCatalog.GetString ("Remarks:")));
-								ret.Append (options.FormatBody (ParseBody (xml, xml.Name, options)));
+								ret.Append (options.FormatBody (ParseBody (member, xml, xml.Name, options)));
 								if (summaryEnd < 0)
 									summaryEnd = ret.Length;
 							} else {
-								options.FormatBody (ParseBody (xml, xml.Name, options));
+								options.FormatBody (ParseBody (member, xml, xml.Name, options));
 							}
 							break;
 						// skip <example>-nodes
@@ -455,26 +463,26 @@ namespace MonoDevelop.Ide.TypeSystem
 							if (options.SmallText)
 								exceptions.Append ("<small>");
 							exceptions.Append ("<b>");
-							exceptions.Append (EscapeText (GetCref (xml ["cref"])));
+							exceptions.Append (EscapeText (GetCref (member.Compilation.TypeResolveContext, xml ["cref"])));
 							exceptions.Append (": ");
 							exceptions.Append ("</b>");
 							if (options.SmallText)
 								exceptions.Append ("</small>");
 							
-							exceptions.AppendLine (options.FormatBody (ParseBody (xml, xml.Name, options)));
+							exceptions.AppendLine (options.FormatBody (ParseBody (member, xml, xml.Name, options)));
 							break;
 						case "returns":
 							if (string.IsNullOrEmpty (options.HighlightParameter)) {
 								ret.AppendLine (options.FormatHeading (GettextCatalog.GetString ("Returns:")));
-								ret.Append (options.FormatBody (ParseBody (xml, xml.Name, options)));
+								ret.Append (options.FormatBody (ParseBody (member, xml, xml.Name, options)));
 							} else {
-								options.FormatBody (ParseBody (xml, xml.Name, options));
+								options.FormatBody (ParseBody (member, xml, xml.Name, options));
 							}
 							break;
 						case "param":
 							string paramName = xml.GetAttribute ("name") != null ? xml ["name"].Trim () : "";
 								
-							var body = options.FormatBody (ParseBody (xml, xml.Name, options));
+							var body = options.FormatBody (ParseBody (member, xml, xml.Name, options));
 							if (!IsEmptyDocumentation (body)) {
 								paramCount++;
 								parameterBuilder.Append ("<i>");
@@ -493,12 +501,12 @@ namespace MonoDevelop.Ide.TypeSystem
 							break;
 						case "value":
 							ret.AppendLine (options.FormatHeading (GettextCatalog.GetString ("Value:")));
-							ret.AppendLine (options.FormatBody (ParseBody (xml, xml.Name, options)));
+							ret.AppendLine (options.FormatBody (ParseBody (member, xml, xml.Name, options)));
 							break;
 						case "seealso":
 							if (string.IsNullOrEmpty (options.HighlightParameter)) {
 								ret.Append (options.FormatHeading (GettextCatalog.GetString ("See also:")));
-								ret.Append (" " + EscapeText (GetCref (xml ["cref"]) + xml ["langword"]));
+								ret.Append (" " + EscapeText (GetCref (member.Compilation.TypeResolveContext, xml ["cref"]) + xml ["langword"]));
 							}
 							break;
 						}

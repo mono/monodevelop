@@ -149,7 +149,7 @@ namespace MonoDevelop.CSharp.Completion
 					Match match = paramRegex.Match (docText);
 					
 					if (match.Success) {
-						text = AmbienceService.GetDocumentationMarkup (match.Groups [1].Value);
+						text = AmbienceService.GetDocumentationMarkup (entity, match.Groups [1].Value);
 						if (!string.IsNullOrWhiteSpace (text))
 							tooltipInfo.AddCategory (GettextCatalog.GetString ("Parameter"), text);
 					}
