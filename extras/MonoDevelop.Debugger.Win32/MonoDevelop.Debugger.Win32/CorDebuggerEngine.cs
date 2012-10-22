@@ -43,7 +43,7 @@ namespace MonoDevelop.Debugger.Win32
 			AspNetExecutionCommand acmd = command as AspNetExecutionCommand;
 			if (acmd != null) {
 				DebuggerStartInfo startInfo = new DebuggerStartInfo ();
-				string xspName = (acmd.ClrVersion == ClrVersion.Net_1_1) ? "xsp" : "xsp2";
+				string xspName = AspNetExecutionHandler.GetXspName (acmd);
 				string xspPath = acmd.TargetRuntime.GetToolPath (acmd.TargetFramework, xspName);
 				if (!File.Exists (xspPath))
 					throw new UserException (string.Format ("The \"{0}\" web server cannot be started. Please ensure that it is installed.", xspName), null);
