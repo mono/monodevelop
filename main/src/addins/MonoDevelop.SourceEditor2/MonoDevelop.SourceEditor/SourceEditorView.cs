@@ -331,7 +331,7 @@ namespace MonoDevelop.SourceEditor
 				}
 
 				widgetExtensions [widgetExtension] = w;
-				widget.TextEditor.AddTopLevelWidget (w, x, y);
+				widget.TextEditor.TextArea.AddTopLevelWidget (w, x, y);
 				widgetExtension.ScrollToViewRequested += HandleScrollToViewRequested;
 			}
 			else if (extension is TextLineMarkerExtension) {
@@ -354,7 +354,7 @@ namespace MonoDevelop.SourceEditor
 			Gtk.Widget w;
 			if (widgetExtensions.TryGetValue (widgetExtension, out w)) {
 				int x, y;
-				widget.TextEditor.GetTopLevelWidgetPosition (w, out x, out y);
+				widget.TextEditor.TextArea.GetTopLevelWidgetPosition (w, out x, out y);
 				var size = w.SizeRequest ();
 				Gtk.Application.Invoke (delegate {
 					widget.TextEditor.ScrollTo (new Gdk.Rectangle (x, y, size.Width, size.Height));
@@ -370,7 +370,7 @@ namespace MonoDevelop.SourceEditor
 				if (!widgetExtensions.TryGetValue (widgetExtension, out w))
 					return;
 				widgetExtensions.Remove (widgetExtension);
-				widget.TextEditor.Remove (w);
+				widget.TextEditor.TextArea.Remove (w);
 				w.Destroy ();
 				widgetExtension.ScrollToViewRequested -= HandleScrollToViewRequested;
 			}
@@ -392,7 +392,7 @@ namespace MonoDevelop.SourceEditor
 			foreach (var e in widgetExtensions) {
 				int x,y;
 				if (CalcWidgetPosition ((TopLevelWidgetExtension)e.Key, e.Value, out x, out y))
-					widget.TextEditor.MoveTopLevelWidget (e.Value, x, y);
+					widget.TextEditor.TextArea.MoveTopLevelWidget (e.Value, x, y);
 				else
 					e.Value.Hide ();
 			}
