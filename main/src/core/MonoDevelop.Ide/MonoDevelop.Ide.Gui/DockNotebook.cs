@@ -895,7 +895,7 @@ namespace MonoDevelop.Ide.Gui
 
 			int textStart = region.X + padding;
 
-			ctx.MoveTo (textStart, region.Y + TopPadding + ActiveTabVerticalOffset + TextOffset);
+			ctx.MoveTo (textStart, region.Y + TopPadding + ActiveTabVerticalOffset + TextOffset + VerticalTextSize);
 			// ellipses are for space wasting ..., we cant afford that
 			using (var lg = new LinearGradient (textStart + w - 5, 0, textStart + w + 3, 0)) {
 				var color = Styles.TabBarActiveTextColor;
@@ -903,7 +903,7 @@ namespace MonoDevelop.Ide.Gui
 				color.A = 0;
 				lg.AddColorStop (1, color);
 				ctx.Pattern = lg;
-				PangoCairoHelper.ShowLayout (ctx, la);
+				Pango.CairoHelper.ShowLayoutLine (ctx, la.GetLine (0));
 			}
 			la.Dispose ();
 
