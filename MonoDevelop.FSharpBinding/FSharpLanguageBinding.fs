@@ -17,19 +17,21 @@ type FSharpLanguageBinding() =
   let provider = lazy new CodeDom.FSharpCodeProvider()
   
   // ------------------------------------------------------------------------------------
-  // Watch for changes that trigger a reparse 
+  // Watch for changes that trigger a reparse, but only if we're running within the IDE context
+  // and not from mdtool or something like it.
 
-  // Register handler that will reparse when the active configuration is changes
-  do IdeApp.Workspace.ActiveConfigurationChanged.Add(fun _ -> 
-         for doc in IdeApp.Workbench.Documents do
-             if doc.Editor <> null then 
-                doc.ReparseDocument ())
+  do if IdeApp.IsInitialized then
+    // Register handler that will reparse when the active configuration is changes
+      IdeApp.Workspace.ActiveConfigurationChanged.Add(fun _ -> 
+             for doc in IdeApp.Workbench.Documents do
+                 if doc.Editor <> null then 
+                   doc.ReparseDocument ())
 
-  // Register handler that will reparse when F# file is opened/closed (is this even needed?)
-  do IdeApp.Workbench.ActiveDocumentChanged.Add(fun _ ->
-    let doc = IdeApp.Workbench.ActiveDocument
-    if doc <> null && (CompilerArguments.supportedExtension(IO.Path.GetExtension(doc.FileName.ToString()))) then
-         doc.ReparseDocument())
+      // Register handler that will reparse when F# file is opened/closed (is this even needed?)
+      IdeApp.Workbench.ActiveDocumentChanged.Add(fun _ ->
+        let doc = IdeApp.Workbench.ActiveDocument
+        if doc <> null && (CompilerArguments.supportedExtension(IO.Path.GetExtension(doc.FileName.ToString()))) then
+             doc.ReparseDocument())
 
     
   
