@@ -377,7 +377,7 @@ namespace MonoDevelop.Ide.Gui
 		static Gdk.Pixbuf closeSelImage;
 		static Gdk.Pixbuf closeSelOverImage;
 
-		const int TopBarPadding = 3;
+		const int TopBarPadding = 2;
 		const int BottomBarPadding = 3;
 		const int LeftRightPadding = 10;
 		const int TopPadding = 8;
