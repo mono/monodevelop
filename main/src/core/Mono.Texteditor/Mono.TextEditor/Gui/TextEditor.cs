@@ -88,23 +88,44 @@ namespace Mono.TextEditor
 				};
 			}
 		}
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+			UnregisterAdjustments ();
+		}
 
+		void UnregisterAdjustments ()
+		{
+			if (vAdjustement != null)
+				vAdjustement.ValueChanged -= HandleAdjustmentValueChange;
+			if (hAdjustement != null)
+				hAdjustement.ValueChanged -= HandleAdjustmentValueChange;
+			vAdjustement = null;
+			hAdjustement = null;
+		}
+
+		Adjustment hAdjustement;
+		Adjustment vAdjustement;
 		protected override void OnSetScrollAdjustments (Adjustment hAdjustement, Adjustment vAdjustement)
 		{
+			UnregisterAdjustments ();
+			this.vAdjustement = vAdjustement;
+			this.hAdjustement = hAdjustement;
 			base.OnSetScrollAdjustments (hAdjustement, vAdjustement);
 			textArea.SetTextEditorScrollAdjustments (hAdjustement, vAdjustement);
 			if (hAdjustement != null) {
-				hAdjustement.ValueChanged += delegate {
-					SetChildrenPositions (Allocation);
-				};
+				hAdjustement.ValueChanged += HandleAdjustmentValueChange;
 			}
 
 			if (vAdjustement != null) {
-				vAdjustement.ValueChanged += delegate {
-					SetChildrenPositions (Allocation);
-				};
+				vAdjustement.ValueChanged += HandleAdjustmentValueChange;
 			}
 			OnScrollAdjustmentsSet ();
+		}
+
+		void HandleAdjustmentValueChange (object sender, EventArgs e)
+		{
+			SetChildrenPositions (Allocation);
 		}
 
 		protected virtual void OnScrollAdjustmentsSet ()

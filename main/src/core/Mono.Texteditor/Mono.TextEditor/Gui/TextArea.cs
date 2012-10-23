@@ -260,14 +260,19 @@ namespace Mono.TextEditor
 		public event EventHandler VScroll;
 		public event EventHandler HScroll;
 
-		internal void SetTextEditorScrollAdjustments (Adjustment hAdjustement, Adjustment vAdjustement)
+		void UnregisterAdjustments ()
 		{
-			if (textEditorData == null)
-				return;
 			if (textEditorData.HAdjustment != null)
 				textEditorData.HAdjustment.ValueChanged -= HAdjustmentValueChanged;
 			if (textEditorData.VAdjustment != null)
 				textEditorData.VAdjustment.ValueChanged -= VAdjustmentValueChanged;
+		}
+
+		internal void SetTextEditorScrollAdjustments (Adjustment hAdjustement, Adjustment vAdjustement)
+		{
+			if (textEditorData == null)
+				return;
+			UnregisterAdjustments ();
 			
 			if (hAdjustement == null || vAdjustement == null)
 				return;
@@ -755,12 +760,8 @@ namespace Mono.TextEditor
 				imContext = imContext.Kill (x => x.Commit -= IMCommit);
 			}
 
-			if (this.textEditorData.HAdjustment != null)
-				this.textEditorData.HAdjustment.ValueChanged -= HAdjustmentValueChanged;
-			
-			if (this.textEditorData.VAdjustment != null)
-				this.textEditorData.VAdjustment.ValueChanged -= VAdjustmentValueChanged;
-			
+			UnregisterAdjustments ();
+
 			foreach (Margin margin in this.margins) {
 				if (margin is IDisposable)
 					((IDisposable)margin).Dispose ();
