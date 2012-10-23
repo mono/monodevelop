@@ -145,9 +145,9 @@ namespace Mono.TextEditor
 
 		public class EditorContainerChild : Container.ContainerChild
 		{
-			public int X { get; internal set; }
-			public int Y { get; internal set; }
-			public bool FixedPosition { get; internal set; }
+			public int X { get; set; }
+			public int Y { get; set; }
+			public bool FixedPosition { get; set; }
 			public EditorContainerChild (Container parent, Widget child) : base (parent, child)
 			{
 			}
