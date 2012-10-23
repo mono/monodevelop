@@ -7,7 +7,6 @@
   <import>
     <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
     <widget-library name="../../../../build/bin/Mono.TextEditor.dll" />
-    <widget-library name="../../../../build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll" />
     <widget-library name="../../../../build/AddIns/BackendBindings/MonoDevelop.CSharpBinding.dll" />
     <widget-library name="../../../../build/AddIns/DisplayBindings/SourceEditor/MonoDevelop.SourceEditor2.dll" />
     <widget-library name="../../../../build/AddIns/DisplayBindings/AssemblyBrowser/MonoDevelop.AssemblyBrowser.dll" internal="true" />
@@ -27,21 +26,6 @@
         <property name="ShortLabel" translatable="yes">Navigate forward</property>
         <property name="StockId">gtk-go-forward</property>
         <signal name="Activated" handler="OnNavigateForwardActionActivated" />
-      </action>
-      <action id="goBackAction">
-        <property name="Type">Action</property>
-        <property name="Label" translatable="yes" />
-        <property name="StockId">gtk-go-back</property>
-      </action>
-      <action id="goForwardAction">
-        <property name="Type">Action</property>
-        <property name="Label" translatable="yes" />
-        <property name="StockId">gtk-go-forward</property>
-      </action>
-      <action id="goBackAction1">
-        <property name="Type">Action</property>
-        <property name="Label" translatable="yes" />
-        <property name="StockId">gtk-go-back</property>
       </action>
     </action-group>
     <property name="MemberName" />

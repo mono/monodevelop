@@ -7,9 +7,6 @@ namespace MonoDevelop.AssemblyBrowser
 		private global::Gtk.UIManager UIManager;
 		private global::Gtk.Action NavigateBackwardAction;
 		private global::Gtk.Action NavigateForwardAction;
-		private global::Gtk.Action goBackAction;
-		private global::Gtk.Action goForwardAction;
-		private global::Gtk.Action goBackAction1;
 		private global::Gtk.VBox vbox1;
 		private global::Gtk.HBox hbox2;
 		private global::Gtk.Button buttonBack;
@@ -45,12 +42,6 @@ namespace MonoDevelop.AssemblyBrowser
 			this.NavigateForwardAction = new global::Gtk.Action ("NavigateForwardAction", global::Mono.Unix.Catalog.GetString ("Navigate forward"), null, "gtk-go-forward");
 			this.NavigateForwardAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Navigate forward");
 			w2.Add (this.NavigateForwardAction, null);
-			this.goBackAction = new global::Gtk.Action ("goBackAction", null, null, "gtk-go-back");
-			w2.Add (this.goBackAction, null);
-			this.goForwardAction = new global::Gtk.Action ("goForwardAction", null, null, "gtk-go-forward");
-			w2.Add (this.goForwardAction, null);
-			this.goBackAction1 = new global::Gtk.Action ("goBackAction1", null, null, "gtk-go-back");
-			w2.Add (this.goBackAction1, null);
 			this.UIManager.InsertActionGroup (w2, 0);
 			this.Name = "MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget";
 			// Container child MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget.Gtk.Container+ContainerChild

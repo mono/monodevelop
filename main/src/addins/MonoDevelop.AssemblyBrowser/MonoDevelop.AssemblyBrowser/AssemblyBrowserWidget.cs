@@ -1200,6 +1200,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		protected override void OnDestroyed ()
 		{
+			ClearReferenceSegment ();
 			if (searchBackgoundWorker != null && searchBackgoundWorker.IsBusy) {
 				searchBackgoundWorker.CancelAsync ();
 				searchBackgoundWorker.Dispose ();
@@ -1207,13 +1208,15 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			
 			if (this.TreeView != null) {
-			//	Dispose (TreeView.GetRootNode ());
+				//	Dispose (TreeView.GetRootNode ());
 				TreeView.Tree.CursorChanged -= HandleCursorChanged;
 				this.TreeView.Clear ();
 				this.TreeView = null;
 			}
 			
 			if (definitions != null) {
+				foreach (var def in definitions)
+					def.Dispose ();
 				definitions.Clear ();
 				definitions = null;
 			}
@@ -1234,6 +1237,7 @@ namespace MonoDevelop.AssemblyBrowser
 				documentationPanel = null;
 			}
 			if (inspectEditor != null) {
+				inspectEditor.TextViewMargin.GetLink = null;
 				inspectEditor.LinkRequest -= InspectEditorhandleLinkRequest;
 				inspectEditor.Destroy ();
 			}
@@ -1242,11 +1246,22 @@ namespace MonoDevelop.AssemblyBrowser
 				this.UIManager.Dispose ();
 				this.UIManager = null;
 			}
+
+			this.loader = null;
 			this.languageCombobox.Changed -= LanguageComboboxhandleChanged;
 //			this.searchInCombobox.Changed -= SearchInComboboxhandleChanged;
 //			this.searchEntry.Changed -= SearchEntryhandleChanged;
 			this.searchTreeview.RowActivated -= SearchTreeviewhandleRowActivated;
 			hpaned1.ExposeEvent -= HPaneExpose;
+			if (NavigateBackwardAction != null) {
+				this.NavigateBackwardAction.Dispose ();
+				this.NavigateBackwardAction = null;
+			}
+
+			if (NavigateForwardAction != null) {
+				this.NavigateForwardAction.Dispose ();
+				this.NavigateForwardAction = null;
+			}
 			base.OnDestroyed ();
 		}
 		
