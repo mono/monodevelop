@@ -340,6 +340,14 @@ namespace MonoDevelop.Ide.Gui
 			this.notebook = notebook;
 			this.strip = strip;
 		}
+
+		internal Gdk.Rectangle SavedAllocation { get; private set; }
+		internal float SaveStrength { get; set; }
+
+		internal void SaveAllocation ()
+		{
+			SavedAllocation = Allocation;
+		}
 	}
 
 	class TabEventArgs: EventArgs
@@ -602,7 +610,15 @@ namespace MonoDevelop.Ide.Gui
 					((int)evnt.X > lastDragX && t.Index > notebook.CurrentTab.Index) ||
 					((int)evnt.X < lastDragX && t.Index < notebook.CurrentTab.Index)))
 				{
+					t.SaveAllocation ();
+					t.SaveStrength = 1;
 					notebook.ReorderTab ((DockNotebookTab)notebook.CurrentTab, t);
+
+					this.Animate ("TabMotion" + t.GetHashCode ().ToString (),
+					              f => t.SaveStrength = f,
+					              start: 1.0f,
+					              end: 0.0f,
+					              easing: Easing.CubicInOut);
 				}
 				lastDragX = (int)evnt.X;
 			}
@@ -819,6 +835,11 @@ namespace MonoDevelop.Ide.Gui
 					} else {
 						int tmp = x;
 						bool highlighted = tab == highlightedTab;
+
+						if (tab.SaveStrength > 0.0f) {
+							tmp = (int) (tab.SavedAllocation.X + (tmp - tab.SavedAllocation.X) * (1.0f - tab.SaveStrength));
+						}
+
 						drawCommands.Add (c => DrawTab (c, tab, new Gdk.Rectangle (tmp, y, width, Allocation.Height), highlighted, false, false));
 					}
 					tab.Allocation = new Gdk.Rectangle (x, Allocation.Y, width, Allocation.Height);
