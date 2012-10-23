@@ -29,11 +29,13 @@ using ICSharpCode.NRefactory.TypeSystem;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using System.IO;
+using System.Threading;
 
 namespace MonoDevelop.AssemblyBrowser
 {
-	class AssemblyLoader : IAssemblyResolver
+	class AssemblyLoader : IAssemblyResolver, IDisposable
 	{
+		readonly CancellationTokenSource src = new CancellationTokenSource ();
 		readonly AssemblyBrowserWidget widget;
 		
 		public string FileName {
@@ -41,7 +43,7 @@ namespace MonoDevelop.AssemblyBrowser
 			private set;
 		}
 		
-		readonly Task<AssemblyDefinition> assemblyLoaderTask;
+		Task<AssemblyDefinition> assemblyLoaderTask;
 		public AssemblyDefinition Assembly {
 			get {
 				return assemblyLoaderTask.Result;
@@ -69,7 +71,7 @@ namespace MonoDevelop.AssemblyBrowser
 				return AssemblyDefinition.ReadAssembly (FileName, new ReaderParameters () {
 					AssemblyResolver = this
 				});
-			});
+			}, src.Token);
 			
 			this.unresolvedAssembly = new Lazy<IUnresolvedAssembly> (delegate {
 				try {
@@ -124,5 +126,18 @@ namespace MonoDevelop.AssemblyBrowser
 				return exe;
 			return null;
 		}
+
+		#region IDisposable implementation
+
+		public void Dispose ()
+		{
+			if (assemblyLoaderTask == null)
+				return;
+			src.Cancel ();
+			src.Dispose ();
+			assemblyLoaderTask.Dispose ();
+			assemblyLoaderTask = null;
+		}
+		#endregion
 	}
 }
