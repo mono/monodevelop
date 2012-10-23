@@ -215,6 +215,7 @@ namespace MonoDevelop.CSharp
 					result.Append (Highlight ("abstract ", "keyword.modifier"));
 			}
 
+
 			if (entity.IsShadowing)
 				result.Append (Highlight ("new ", "keyword.modifier"));
 
@@ -226,7 +227,21 @@ namespace MonoDevelop.CSharp
 					result.Append (Highlight ("virtual ", "keyword.modifier"));
 				}
 			}
+			var field = entity as IField;
+			if (field != null) {
+				if (field.IsVolatile)
+					result.Append (Highlight ("volatile ", "keyword.modifier"));
+				if (field.IsReadOnly)
+					result.Append (Highlight ("readonly ", "keyword.modifier"));
+			}
 
+			var method = entity as IMethod;
+			if (method != null) {
+				if (method.IsAsync)
+					result.Append (Highlight ("async ", "keyword.modifier"));
+				if (method.IsPartial)
+					result.Append (Highlight ("partial ", "keyword.modifier"));
+			}
 		}
 
 		void AppendAccessibility (StringBuilder result, IMethod entity)
