@@ -205,6 +205,7 @@ namespace Mono.TextEditor
 			textViewMargin.HideCodeSegmentPreviewWindow ();
 			QueueDrawArea ((int)this.textViewMargin.XOffset, 0, this.Allocation.Width - (int)this.textViewMargin.XOffset, this.Allocation.Height);
 			OnHScroll (EventArgs.Empty);
+			SetChildrenPositions (Allocation);
 		}
 		
 		void VAdjustmentValueChanged (object sender, EventArgs args)
@@ -213,6 +214,7 @@ namespace Mono.TextEditor
 			alloc.X = alloc.Y = 0;
 
 			VAdjustmentValueChanged ();
+			SetChildrenPositions (alloc);
 		}
 		
 		protected virtual void VAdjustmentValueChanged ()
@@ -999,6 +1001,9 @@ namespace Mono.TextEditor
 		double pressPositionX, pressPositionY;
 		protected override bool OnButtonPressEvent (Gdk.EventButton e)
 		{
+			if (overChildWidget)
+				return true;
+
 			pressPositionX = e.X;
 			pressPositionY = e.Y;
 			base.IsFocus = true;
@@ -1209,13 +1214,20 @@ namespace Mono.TextEditor
 		}
 		
 		Margin oldMargin = null;
-		
+		bool overChildWidget;
+
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion e)
 		{
 			try {
+				// The coordinates have to be properly adjusted to the origin since
+				// the event may come from a child widget
+				int rx, ry;
+				GdkWindow.GetOrigin (out rx, out ry);
+				double x = (int) e.XRoot - rx;
+				double y = (int) e.YRoot - ry;
+				overChildWidget = containerChildren.Any (w => w.Child.Allocation.Contains ((int)x, (int)y));
+
 				RemoveScrollWindowTimer ();
-				double x = e.X;
-				double y = e.Y;
 				Gdk.ModifierType mod = e.State;
 				double startPos;
 				Margin margin = GetMarginAtX (x, out startPos);
@@ -1269,6 +1281,7 @@ namespace Mono.TextEditor
 		}
 		
 		Gdk.ModifierType lastState = ModifierType.None;
+
 		void FireMotionEvent (double x, double y, Gdk.ModifierType state)
 		{
 			lastState = state;
@@ -1285,7 +1298,12 @@ namespace Mono.TextEditor
 			} else {
 				margin = GetMarginAtX (x, out startPos);
 				if (margin != null && GdkWindow != null) {
-					GdkWindow.Cursor = margin.MarginCursor;
+					if (!overChildWidget)
+						GdkWindow.Cursor = margin.MarginCursor;
+					else {
+						// Set the default cursor when the mouse is over an embedded widget
+						GdkWindow.Cursor = null;
+					}
 				}
 			}
 
@@ -1595,7 +1613,7 @@ namespace Mono.TextEditor
 		{
 			textEditorData.HeightTree.Rebuild ();
 			
-			if (textEditorData.HAdjustment == null)
+			if (textEditorData.HAdjustment == null || Options == null)
 				return;
 			textEditorData.HAdjustment.ValueChanged -= HAdjustmentValueChanged;
 			if (Options.WrapLines) {
@@ -1608,7 +1626,7 @@ namespace Mono.TextEditor
 					double width = Allocation.Width - this.TextViewMargin.XOffset;
 					var realMaxX = System.Math.Max (maxX, this.textEditorData.HAdjustment.Value + width);
 
-					foreach (var containerChild in editor.containerChildren) {
+					foreach (var containerChild in editor.containerChildren.Concat (containerChildren)) {
 						realMaxX = System.Math.Max (realMaxX, containerChild.X + containerChild.Child.Allocation.Width);
 					}
 
@@ -1641,8 +1659,8 @@ namespace Mono.TextEditor
 				if (maxY > allocation.Height)
 					maxY += EditorLineThreshold * this.LineHeight;
 
-				foreach (var containerChild in editor.containerChildren) {
-					maxY = System.Math.Max (maxY, containerChild.Y + containerChild.Child.Allocation.Height);
+				foreach (var containerChild in editor.containerChildren.Concat (containerChildren)) {
+					maxY = System.Math.Max (maxY, containerChild.Y + containerChild.Child.SizeRequest().Height);
 				}
 
 				if (VAdjustment.Value > maxY - allocation.Height) {
@@ -1794,13 +1812,13 @@ namespace Mono.TextEditor
 				
 				OnPainted (new PaintEventArgs (cr, cairoArea));
 			}
-			/*
+
+			if (Caret.IsVisible)
+				textViewMargin.DrawCaret (e.Window, Allocation);
+
 			// Propagate the exposure event to the embedded widgets
 			foreach (var c in containerChildren)
 				PropagateExpose (c.Child, e);
-			*/
-			if (Caret.IsVisible)
-				textViewMargin.DrawCaret (e.Window, Allocation);
 
 			return false;
 		}
@@ -3035,35 +3053,29 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public class EditorContainerChild : Container.ContainerChild
-		{
-			public int X { get; set; }
-			public int Y { get; set; }
-			public bool FixedPosition { get; set; }
-			public EditorContainerChild (Container parent, Widget child) : base (parent, child)
-			{
-			}
-		}
-		
 		public override GLib.GType ChildType ()
 		{
 			return Gtk.Widget.GType;
 		}
 		
-		internal List<EditorContainerChild> containerChildren = new List<EditorContainerChild> ();
+		internal List<TextEditor.EditorContainerChild> containerChildren = new List<TextEditor.EditorContainerChild> ();
 		
 		public void AddTopLevelWidget (Gtk.Widget widget, int x, int y)
 		{
 			widget.Parent = this;
-			EditorContainerChild info = new EditorContainerChild (this, widget);
+			TextEditor.EditorContainerChild info = new TextEditor.EditorContainerChild (this, widget);
 			info.X = x;
 			info.Y = y;
 			containerChildren.Add (info);
+			if (IsRealized)
+				widget.Realize ();
+			ResizeChild (Allocation, info);
+			SetAdjustments ();
 		}
 		
 		public void MoveTopLevelWidget (Gtk.Widget widget, int x, int y)
 		{
-			foreach (EditorContainerChild info in containerChildren.ToArray ()) {
+			foreach (var info in containerChildren.ToArray ()) {
 				if (info.Child == widget || (info.Child is AnimatedWidget && ((AnimatedWidget)info.Child).Widget == widget)) {
 					if (info.X == x && info.Y == y)
 						break;
@@ -3074,6 +3086,7 @@ namespace Mono.TextEditor
 					break;
 				}
 			}
+			SetAdjustments ();
 		}
 
 		/// <summary>
@@ -3081,7 +3094,7 @@ namespace Mono.TextEditor
 		/// </summary>
 		public void GetTopLevelWidgetPosition (Gtk.Widget widget, out int x, out int y)
 		{
-			foreach (EditorContainerChild info in containerChildren.ToArray ()) {
+			foreach (var info in containerChildren.ToArray ()) {
 				if (info.Child == widget || (info.Child is AnimatedWidget && ((AnimatedWidget)info.Child).Widget == widget)) {
 					x = info.X;
 					y = info.Y;
@@ -3093,10 +3106,10 @@ namespace Mono.TextEditor
 		
 		public void MoveToTop (Gtk.Widget widget)
 		{
-			EditorContainerChild editorContainerChild = containerChildren.FirstOrDefault (c => c.Child == widget);
+			var editorContainerChild = containerChildren.FirstOrDefault (c => c.Child == widget);
 			if (editorContainerChild == null)
 				throw new Exception ("child " + widget + " not found.");
-			List<EditorContainerChild> newChilds = new List<EditorContainerChild> (containerChildren.Where (child => child != editorContainerChild));
+			var newChilds = containerChildren.Where (child => child != editorContainerChild).ToList ();
 			newChilds.Add (editorContainerChild);
 			this.containerChildren = newChilds;
 			widget.GdkWindow.Raise ();
@@ -3109,10 +3122,11 @@ namespace Mono.TextEditor
 		
 		protected override void OnRemoved (Widget widget)
 		{
-			foreach (EditorContainerChild info in containerChildren.ToArray ()) {
+			foreach (var info in containerChildren.ToArray ()) {
 				if (info.Child == widget) {
 					widget.Unparent ();
 					containerChildren.Remove (info);
+					SetAdjustments ();
 					break;
 				}
 			}
@@ -3142,7 +3156,7 @@ namespace Mono.TextEditor
 			containerChildren.ForEach (child => child.Child.Unmap ());
 		}
 
-		void ResizeChild (Rectangle allocation, EditorContainerChild child)
+		void ResizeChild (Rectangle allocation, TextEditor.EditorContainerChild child)
 		{
 			Requisition req = child.Child.SizeRequest ();
 			var childRectangle = new Gdk.Rectangle (child.X, child.Y, req.Width, req.Height);
@@ -3158,7 +3172,7 @@ namespace Mono.TextEditor
 		
 		void SetChildrenPositions (Rectangle allocation)
 		{
-			foreach (EditorContainerChild child in containerChildren.ToArray ()) {
+			foreach (var child in containerChildren.ToArray ()) {
 				ResizeChild (allocation, child);
 			}
 		}
