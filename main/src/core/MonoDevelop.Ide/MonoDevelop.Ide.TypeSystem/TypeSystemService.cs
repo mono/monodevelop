@@ -881,7 +881,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			class LazyProjectLoader : IProjectContent
 			{
 				readonly ProjectContentWrapper wrapper;
-				static ConcurrentDictionary<string, IProjectContent> projectCache = new ConcurrentDictionary<string, IProjectContent> ();
 				Task<IProjectContent> contextTask;
 
 				public Task<IProjectContent> ContextTask {
@@ -902,10 +901,6 @@ namespace MonoDevelop.Ide.TypeSystem
 					contextTask = Task.Factory.StartNew (delegate {
 	
 						IProjectContent content;
-						if (projectCache.TryGetValue (this.wrapper.Project.FileName, out content)) {
-							if (content != null)
-								return content;
-						}
 	
 						var context = LoadProjectCache (this.wrapper.Project);
 						if (context != null) {
@@ -929,11 +924,6 @@ namespace MonoDevelop.Ide.TypeSystem
 					
 					TouchCache (cacheDir);
 					var cache = DeserializeObject<IProjectContent> (Path.Combine (cacheDir, "completion.cache"));
-					if (projectCache == null) {
-						RemoveCache (cacheDir);
-					} else {
-						projectCache [project.FileName] = cache;
-					}
 					return cache;
 				}
 
