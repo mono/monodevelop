@@ -286,9 +286,11 @@ namespace Mono.TextEditor
 
 		internal TextArea (TextDocument doc, ITextEditorOptions options, EditMode initialMode)
 		{
+			GtkWorkarounds.FixContainerLeak (this);
 			this.Events = EventMask.PointerMotionMask | EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.EnterNotifyMask | EventMask.LeaveNotifyMask | EventMask.VisibilityNotifyMask | EventMask.FocusChangeMask | EventMask.ScrollMask | EventMask.KeyPressMask | EventMask.KeyReleaseMask;
 			this.DoubleBuffered = true;
 			base.CanFocus = true;
+
 		}
 
 
