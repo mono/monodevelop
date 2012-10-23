@@ -370,7 +370,7 @@ namespace MonoDevelop.CSharp.Parser
 		{
 			switch (ver) {
 			case LangVersion.Default:
-				return new Version (4, 0, 0, 0);
+				return new Version (5, 0, 0, 0);
 			case LangVersion.ISO_1:
 				return new Version (1, 0, 0, 0);
 			case LangVersion.ISO_2:
@@ -382,7 +382,7 @@ namespace MonoDevelop.CSharp.Parser
 			case LangVersion.Version5:
 				return new Version (5, 0, 0, 0);
 			}
-			return new Version (4, 0, 0, 0);;
+			return new Version (5, 0, 0, 0);;
 		}
 	}
 	
