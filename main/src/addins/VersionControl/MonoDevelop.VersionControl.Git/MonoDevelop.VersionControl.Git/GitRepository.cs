@@ -1332,10 +1332,10 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			VersionInfo vi = GetVersionInfo (localSrcPath, false);
 			if (vi == null || !vi.IsVersioned) {
-				base.MoveFile (localSrcPath, localDestPath, force, monitor);
+				base.OnMoveFile (localSrcPath, localDestPath, force, monitor);
 				return;
 			}
-			base.MoveFile (localSrcPath, localDestPath, force, monitor);
+			base.OnMoveFile (localSrcPath, localDestPath, force, monitor);
 			Add (localDestPath, false, monitor);
 			
 			if ((vi.Status & VersionStatus.ScheduledAdd) != 0)
@@ -1345,7 +1345,7 @@ namespace MonoDevelop.VersionControl.Git
 		protected override void OnMoveDirectory (FilePath localSrcPath, FilePath localDestPath, bool force, IProgressMonitor monitor)
 		{
 			VersionInfo[] versionedFiles = GetDirectoryVersionInfo (localSrcPath, false, true);
-			base.MoveDirectory (localSrcPath, localDestPath, force, monitor);
+			base.OnMoveDirectory (localSrcPath, localDestPath, force, monitor);
 			monitor.BeginTask ("Moving files", versionedFiles.Length);
 			foreach (VersionInfo vif in versionedFiles) {
 				if (vif.IsDirectory)
