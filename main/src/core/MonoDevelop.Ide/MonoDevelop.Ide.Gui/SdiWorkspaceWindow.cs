@@ -649,12 +649,12 @@ namespace MonoDevelop.Ide.Gui
 		protected virtual void OnTitleChanged(EventArgs e)
 		{
 			fileTypeCondition.SetFileName (content.ContentName ?? content.UntitledName);
-			
-			if (show_notification) {
-				tab.Markup = "<span foreground=\"blue\">" + Title + "</span>";
-			} else {
-				tab.Text = Title;
-			}
+
+			string markup = "";
+			if (show_notification) markup += " foreground=\"blue\"";
+			if (content.IsDirty) markup += " font_style=\"italic\"";
+
+			tab.Markup = "<span" + markup + ">" + Title + "</span>";
 			
 			if (content.ContentName != null && content.ContentName != "") {
 				tab.Tooltip = content.ContentName;
