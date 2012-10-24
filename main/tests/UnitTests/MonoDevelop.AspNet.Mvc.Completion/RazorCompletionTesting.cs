@@ -99,7 +99,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.Completion
 
 			var pcw = TypeSystemService.LoadProject (project);
 			TypeSystemService.ForceUpdate (pcw);
-			pcw.ReloadAssemblyReferences (project);
+			pcw.ReloadAssemblyReferences ();
 
 			sev = new TestViewContent ();
 			sev.Project = project;
