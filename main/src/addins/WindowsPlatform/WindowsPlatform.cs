@@ -143,7 +143,6 @@ namespace MonoDevelop.Platform
 		static extern IntPtr gdk_win32_hdc_get (IntPtr drawable, IntPtr gc, int usage);
 
 		[System.Runtime.InteropServices.DllImport ("libgdk-win32-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
-		[System.Runtime.InteropServices.DllImport ("libgdk-win32-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
 		static extern void gdk_win32_hdc_release (IntPtr drawable, IntPtr gc, int usage);
 		
 		public static IntPtr HgdiobjGet (Gdk.Drawable drawable)
