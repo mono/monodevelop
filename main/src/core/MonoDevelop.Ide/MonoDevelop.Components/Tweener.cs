@@ -81,7 +81,7 @@ namespace MonoDevelop.Components
 		}
 	}
 
-	public class Animation 
+	public class Animation : System.Collections.IEnumerable
 	{
 		float beginAt;
 		float finishAt;
@@ -89,28 +89,25 @@ namespace MonoDevelop.Components
 		Action<float> step;
 		List<Animation> children;
 
-		Animation ()
+		public Animation (Action<float> callback, float start = 0.0f, float end = 1.0f, Func<float, float> easing = null)
 		{
 			children = new List<Animation> ();
-		}
-
-		public static Animation Create (Action<float> callback, float start = 0.0f, float end = 1.0f, Func<float, float> easing = null)
-		{
-			Animation result = new Animation ();
+			this.easing = easing ?? Components.Easing.Linear;
 
 			var transform = AnimationExtensions.Interpolate (start, end);
-			result.easing = easing ?? Components.Easing.Linear;
-			result.step = f => callback (transform (f));
-			return result;
+			step = f => callback (transform (f));
 		}
 
-		public static Animation Create<T> (Action<T> callback, Func<float, T> transform, Func<float, float> easing = null)
+		public System.Collections.IEnumerator GetEnumerator ()
 		{
-			Animation result = new Animation ();
+			return children.GetEnumerator ();
+		}
 
-			result.easing = easing ?? Components.Easing.Linear;
-			result.step = f => callback (transform (f));
-			return result;
+		public void Add (Animation animation, float beginAt = 0.0f, float finishAt = 1.0f)
+		{
+			animation.beginAt = beginAt;
+			animation.finishAt = finishAt;
+			children.Add (animation);
 		}
 
 		public Animation WithConcurrent (Animation animation, float beginAt = 0.0f, float finishAt = 1.0f)
@@ -123,16 +120,7 @@ namespace MonoDevelop.Components
 
 		public Animation WithConcurrent (Action<float> callback, float start = 0.0f, float end = 1.0f, Func<float, float> easing = null, float beginAt = 0.0f, float finishAt = 1.0f)
 		{
-			Animation child = Create (callback, start, end, easing);
-			child.beginAt = beginAt;
-			child.finishAt = finishAt;
-			children.Add (child);
-			return this;
-		}
-
-		public Animation WithConcurrent<T> (Action<T> callback, Func<float, T> transform, Func<float, float> easing = null, float beginAt = 0.0f, float finishAt = 1.0f)
-		{
-			Animation child = Create<T> (callback, transform, easing);
+			Animation child = new Animation (callback, start, end, easing);
 			child.beginAt = beginAt;
 			child.finishAt = finishAt;
 			children.Add (child);
@@ -142,14 +130,11 @@ namespace MonoDevelop.Components
 		public Action<float> GetCallback ()
 		{
 			Action<float> result = f => {
-				f = easing (f);
-				step (f);
+				step (easing (f));
 				foreach (var animation in children) {
-					if (f >= animation.beginAt && f <= animation.finishAt) {
-						float val = (f - animation.beginAt) / (animation.finishAt - animation.beginAt);
-						var callback = animation.GetCallback ();
-						callback (val);
-					}
+					float val = Math.Max (0.0f, Math.Min (1.0f, (f - animation.beginAt) / (animation.finishAt - animation.beginAt)));
+					var callback = animation.GetCallback ();
+					callback (val);
 				}
 			};
 			return result;

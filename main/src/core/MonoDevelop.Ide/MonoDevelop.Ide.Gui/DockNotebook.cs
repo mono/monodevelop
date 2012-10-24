@@ -291,6 +291,8 @@ namespace MonoDevelop.Ide.Gui
 
 		public float WidthModifier { get; set; }
 
+		public float Opacity { get; set; }
+
 		public string Text {
 			get {
 				return this.text;
@@ -487,20 +489,26 @@ namespace MonoDevelop.Ide.Gui
 		public void StartOpenAnimation (DockNotebookTab tab)
 		{
 			tab.WidthModifier = 0;
-			this.Animate ("Open" + tab.GetHashCode ().ToString (),
-			              f => tab.WidthModifier = f,
+			var anim = new Animation (f => tab.WidthModifier = f) {
+				{ new Animation (f => tab.Opacity = f), 0.0f, 0.2f }
+			};
+
+			this.Animate ("Open" + tab.GetHashCode ().ToString (), anim, 
 			              easing: Easing.CubicOut);
 		}
 
-		public void StartCloseAnimation (DockNotebookTab closingTab)
+		public void StartCloseAnimation (DockNotebookTab tab)
 		{
-			closingTabs[closingTab.Index] = closingTab;
-			this.Animate ("Closing" + closingTab.Index,
+			closingTabs[tab.Index] = tab;
+			var anim = new Animation (f => tab.WidthModifier = f, 
+			                          start: tab.WidthModifier, 
+			                          end: 0) {
+				{ new Animation (f => tab.Opacity = f, start: tab.Opacity, end: 0), 0.8f, 1.0f }
+			};
+
+			this.Animate ("Closing" + tab.Index, anim,
 			              easing: Easing.CubicOut,
-			              start: closingTab.WidthModifier,
-			              end: 0,
-			              callback: f => closingTab.WidthModifier = f,
-			              finished: (f, a) => { if (!a) closingTabs.Remove (closingTab.Index); });
+			              finished: (f, a) => { if (!a) closingTabs.Remove (tab.Index); });
 		}
 
 		protected override void ForAll (bool include_internals, Callback callback)
@@ -868,7 +876,6 @@ namespace MonoDevelop.Ide.Gui
 				region.X = (int) (region.X + (dragX - region.X) * dragXProgress);
 				region.X = Clamp (region.X, tabStartX, tabEndX - region.Width);
 			}
-
 			int padding = LeftRightPadding;
 			padding = (int) (padding * Math.Min (1.0, Math.Max (0.5, (region.Width - 30) / 70.0)));
 
@@ -878,20 +885,20 @@ namespace MonoDevelop.Ide.Gui
 			ctx.ClosePath ();
 			Cairo.LinearGradient gr = new LinearGradient (region.X, TopBarPadding, region.X, Allocation.Bottom);
 			if (active) {
-				gr.AddColorStop (0, Styles.BreadcrumbGradientStartColor);
-				gr.AddColorStop (1, Styles.BreadcrumbBackgroundColor);
+				gr.AddColorStop (0, Styles.BreadcrumbGradientStartColor.MultiplyAlpha (tab.Opacity));
+				gr.AddColorStop (1, Styles.BreadcrumbBackgroundColor.MultiplyAlpha (tab.Opacity));
 			} else {
-				gr.AddColorStop (0, CairoExtensions.ParseColor ("f4f4f4"));
-				gr.AddColorStop (1, CairoExtensions.ParseColor ("cecece"));
+				gr.AddColorStop (0, CairoExtensions.ParseColor ("f4f4f4").MultiplyAlpha (tab.Opacity));
+				gr.AddColorStop (1, CairoExtensions.ParseColor ("cecece").MultiplyAlpha (tab.Opacity));
 			}
 			ctx.Pattern = gr;
 			ctx.Fill ();
 			
-			ctx.Color = new Cairo.Color (1, 1, 1, .5);
+			ctx.Color = new Cairo.Color (1, 1, 1, .5).MultiplyAlpha (tab.Opacity);
 			DrawTabBorder (ctx, region.Width, region.X, 1, active);
 			ctx.Stroke ();
 
-			ctx.Color = Styles.BreadcrumbBorderColor;
+			ctx.Color = Styles.BreadcrumbBorderColor.MultiplyAlpha (tab.Opacity);
 			DrawTabBorder (ctx, region.Width, region.X, 0, active);
 			ctx.Stroke ();
 
@@ -909,7 +916,7 @@ namespace MonoDevelop.Ide.Gui
 			if (drawCloseButton) {
 				var closePix = closeButtonHovered ? closeSelOverImage : closeSelImage;
 				CairoHelper.SetSourcePixbuf (ctx, closePix, crect.X, crect.Y);
-				ctx.Paint ();
+				ctx.PaintWithAlpha (tab.Opacity);
 			}
 
 			// Render Text
@@ -924,7 +931,7 @@ namespace MonoDevelop.Ide.Gui
 			ctx.MoveTo (textStart, region.Y + TopPadding + ActiveTabVerticalOffset + TextOffset + VerticalTextSize);
 			// ellipses are for space wasting ..., we cant afford that
 			using (var lg = new LinearGradient (textStart + w - 5, 0, textStart + w + 3, 0)) {
-				var color = Styles.TabBarActiveTextColor;
+				var color = Styles.TabBarActiveTextColor.MultiplyAlpha (tab.Opacity);
 				lg.AddColorStop (0, color);
 				color.A = 0;
 				lg.AddColorStop (1, color);
@@ -947,7 +954,7 @@ namespace MonoDevelop.Ide.Gui
 
 			double rightx = x + contentWidth;
 
-			int lean = LeanWidth;
+			int lean = Math.Min (LeanWidth, contentWidth / 2);
 			int halfLean = lean / 2;
 			int smoothing = 2;
 			if (active) {

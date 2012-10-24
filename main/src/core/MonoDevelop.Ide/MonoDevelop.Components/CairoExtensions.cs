@@ -439,6 +439,11 @@ namespace MonoDevelop.Components
 			return img;
 		}
 
+		public static Cairo.Color MultiplyAlpha (this Cairo.Color self, double alpha)
+		{
+			return new Cairo.Color (self.R, self.G, self.B, self.A * alpha);
+		}
+
 		public static void CachedDraw (this Cairo.Context self, ref SurfaceWrapper surface, Gdk.Point position, Gdk.Size size, 
 		                               object parameters = null, float opacity = 1.0f, Action<Cairo.Context, float> draw = null)
 		{
