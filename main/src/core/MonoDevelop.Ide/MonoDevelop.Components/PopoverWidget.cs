@@ -30,7 +30,7 @@ using Gdk;
 
 namespace MonoDevelop.Components
 {
-	public class PopoverWidget: Gtk.EventBox
+	public class PopoverWidget: Gtk.EventBox, Animatable
 	{
 		PopoverWindowTheme theme;
 

@@ -32,7 +32,7 @@ using Gdk;
 
 namespace MonoDevelop.Components
 {
-	public class PopoverWindow : Gtk.Window
+	public class PopoverWindow : Gtk.Window, Animatable
 	{
 		PopoverWindowTheme theme;
 

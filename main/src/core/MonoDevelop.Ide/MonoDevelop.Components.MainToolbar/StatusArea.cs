@@ -40,7 +40,7 @@ using StockIcons = MonoDevelop.Ide.Gui.Stock;
 
 namespace MonoDevelop.Components.MainToolbar
 {
-	class StatusArea : EventBox, StatusBar
+	class StatusArea : EventBox, StatusBar, Animatable
 	{
 		struct Message
 		{

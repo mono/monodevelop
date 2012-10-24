@@ -39,7 +39,7 @@ using Animations = MonoDevelop.Components.AnimationExtensions;
 
 namespace MonoDevelop.Components.Docking
 {	
-	class CrossfadeIcon: Gtk.Image
+	class CrossfadeIcon: Gtk.Image, Animatable
 	{
 		// This class should be subclassed from Gtk.Misc, but there is no reasonable way to do that due to there being no bindings to gtk_widget_set_has_window
 
@@ -125,7 +125,7 @@ namespace MonoDevelop.Components.Docking
 		}
 	}
 
-	class DockBarItem: EventBox
+	class DockBarItem: EventBox, Animatable
 	{
 		DockBar bar;
 		DockItem it;

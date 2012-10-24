@@ -81,6 +81,11 @@ namespace MonoDevelop.Components
 		}
 	}
 
+	public interface Animatable
+	{
+		void QueueDraw ();
+	}
+
 	public class Animation : System.Collections.IEnumerable
 	{
 		float beginAt;
@@ -157,7 +162,7 @@ namespace MonoDevelop.Components
 			public Func<float, float> Easing { get; set; }
 			public uint Rate { get; set; }
 			public uint Length { get; set; }
-			public Gtk.Widget Owner { get; set; }
+			public Animatable Owner { get; set; }
 			public Action<float> callback;
 			public Action<float, bool> finished;
 			public Func<bool> repeat;
@@ -171,7 +176,7 @@ namespace MonoDevelop.Components
 			animations = new Dictionary<string, Info> ();
 		}
 
-		public static void Animate (this Gtk.Widget self, string name, Animation animation, uint rate = 16, uint length = 250, 
+		public static void Animate (this Animatable self, string name, Animation animation, uint rate = 16, uint length = 250, 
 		                            Func<float, float> easing = null, Action<float, bool> finished = null, Func<bool> repeat = null)
 		{
 			self.Animate (name, animation.GetCallback (), rate, length, easing, finished, repeat);
@@ -183,19 +188,19 @@ namespace MonoDevelop.Components
 			return x => start + (target - start) * x;
 		}
 
-		public static void Animate (this Gtk.Widget self, string name, Action<float> callback, float start, float end, uint rate = 16, uint length = 250, 
+		public static void Animate (this Animatable self, string name, Action<float> callback, float start, float end, uint rate = 16, uint length = 250, 
 		                            Func<float, float> easing = null, Action<float, bool> finished = null, Func<bool> repeat = null)
 		{
 			self.Animate<float> (name, Interpolate (start, end), callback, rate, length, easing, finished, repeat);
 		}
 
-		public static void Animate (this Gtk.Widget self, string name, Action<float> callback, uint rate = 16, uint length = 250, 
+		public static void Animate (this Animatable self, string name, Action<float> callback, uint rate = 16, uint length = 250, 
 		                            Func<float, float> easing = null, Action<float, bool> finished = null, Func<bool> repeat = null)
 		{
 			self.Animate<float> (name, x => x, callback, rate, length, easing, finished, repeat);
 		}
 
-		public static void Animate<T> (this Gtk.Widget self, string name, Func<float, T> transform, Action<T> callback, uint rate = 16, uint length = 250, 
+		public static void Animate<T> (this Animatable self, string name, Func<float, T> transform, Action<T> callback, uint rate = 16, uint length = 250, 
 		                               Func<float, float> easing = null, Action<T, bool> finished = null, Func<bool> repeat = null) 
 		{
 			if (transform == null)
@@ -237,7 +242,7 @@ namespace MonoDevelop.Components
 			info.callback (0.0f);
 		}
 
-		public static bool AbortAnimation (this Gtk.Widget self, string handle)
+		public static bool AbortAnimation (this Animatable self, string handle)
 		{
 			handle += self.GetHashCode ().ToString ();
 			if (!animations.ContainsKey (handle))
@@ -254,7 +259,7 @@ namespace MonoDevelop.Components
 			return true;
 		}
 
-		public static bool AnimationIsRunning (this Gtk.Widget self, string handle)
+		public static bool AnimationIsRunning (this Animatable self, string handle)
 		{
 			handle += self.GetHashCode ().ToString ();
 			return animations.ContainsKey (handle);

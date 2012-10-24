@@ -293,6 +293,8 @@ namespace MonoDevelop.Ide.Gui
 
 		public float Opacity { get; set; }
 
+		public float GlowStrength { get; set; }
+
 		public string Text {
 			get {
 				return this.text;
@@ -357,11 +359,11 @@ namespace MonoDevelop.Ide.Gui
 		public DockNotebookTab Tab { get; set; }
 	}
 
-	class TabStrip: EventBox
+	class TabStrip: EventBox, Animatable
 	{
 		List<Gtk.Widget> children = new List<Widget> ();
 		DockNotebook notebook;
-		IDockNotebookTab highlightedTab;
+		DockNotebookTab highlightedTab;
 		bool overCloseButton;
 		bool buttonPressedOnTab;
 		int tabStartX, tabEndX;
@@ -476,7 +478,7 @@ namespace MonoDevelop.Ide.Gui
 
 			tracker.HoveredChanged += (sender, e) => {
 				if (!tracker.Hovered) {
-					highlightedTab = null;
+					SetHighlightedTab (null);
 					UpdateTabWidth (tabEndX - tabStartX);
 					QueueDraw ();
 				}
@@ -571,6 +573,30 @@ namespace MonoDevelop.Ide.Gui
 
 		int lastDragX = 0;
 
+		void SetHighlightedTab (DockNotebookTab tab)
+		{
+			if (highlightedTab == tab)
+				return;
+
+			if (highlightedTab != null) {
+				var tmp = highlightedTab;
+				this.Animate ("Glow" + tmp.GetHashCode ().ToString (),
+				              f => tmp.GlowStrength = f,
+				              start: tmp.GlowStrength,
+				              end: 0);
+			}
+
+			if (tab != null) {
+				this.Animate ("Glow" + tab.GetHashCode ().ToString (),
+				              f => tab.GlowStrength = f,
+				              start: tab.GlowStrength,
+				              end: 1);
+			}
+
+			highlightedTab = tab;
+			QueueDraw ();
+		}
+
 		protected override bool OnMotionNotifyEvent (EventMotion evnt)
 		{
 			string newTooltip = null;
@@ -582,11 +608,8 @@ namespace MonoDevelop.Ide.Gui
 				// tab we can end up with a null tab here
 				if (t == null)
 					return base.OnMotionNotifyEvent (evnt);;
+				SetHighlightedTab (t);
 
-				if (t != highlightedTab) {
-					highlightedTab = t;
-					QueueDraw ();
-				}
 				var newOver = IsOverCloseButton (t, (int)evnt.X, (int)evnt.Y);
 				if (newOver != overCloseButton) {
 					overCloseButton = newOver;
@@ -899,7 +922,20 @@ namespace MonoDevelop.Ide.Gui
 
 			ctx.Color = Styles.BreadcrumbBorderColor.MultiplyAlpha (tab.Opacity);
 			DrawTabBorder (ctx, region.Width, region.X, 0, active);
-			ctx.Stroke ();
+			ctx.StrokePreserve ();
+
+			if (tab.GlowStrength > 0) {
+				Gdk.Point mouse = tracker.MousePosition;
+				using (var rg = new RadialGradient (mouse.X, region.Bottom, 0, mouse.X, region.Bottom, 100)) {
+					rg.AddColorStop (0, new Cairo.Color (1, 1, 1, 0.4 * tab.Opacity * tab.GlowStrength));
+					rg.AddColorStop (1, new Cairo.Color (1, 1, 1, 0));
+					
+					ctx.Pattern = rg;
+					ctx.Fill ();
+				}
+			} else {
+				ctx.NewPath ();
+			}
 
 			// Render Close Button (do this first so we can tell how much text to render)
 			
