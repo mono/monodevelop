@@ -340,6 +340,14 @@ namespace MonoDevelop.Ide.Gui
 			this.notebook = notebook;
 			this.strip = strip;
 		}
+
+		internal Gdk.Rectangle SavedAllocation { get; private set; }
+		internal float SaveStrength { get; set; }
+
+		internal void SaveAllocation ()
+		{
+			SavedAllocation = Allocation;
+		}
 	}
 
 	class TabEventArgs: EventArgs
@@ -384,8 +392,9 @@ namespace MonoDevelop.Ide.Gui
 		const int BottomPadding = 8;
 		const int LeftBarPadding = 58;
 		const int VerticalTextSize = 11;
-		const int TabSpacing = 1;
+		const int TabSpacing = -1;
 		const int Radius = 2;
+		const int LeanWidth = 18;
 
 		const int ActiveTabVerticalOffset = 2;
 		const int TextOffset = -1;
@@ -503,7 +512,7 @@ namespace MonoDevelop.Ide.Gui
 
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
-			tabStartX = allocation.X + LeftBarPadding;
+			tabStartX = allocation.X + LeftBarPadding + LeanWidth / 2;
 			tabEndX = allocation.Width - DropDownButton.SizeRequest ().Width;
 
 			PreviousButton.SizeAllocate (new Gdk.Rectangle (
@@ -601,7 +610,15 @@ namespace MonoDevelop.Ide.Gui
 					((int)evnt.X > lastDragX && t.Index > notebook.CurrentTab.Index) ||
 					((int)evnt.X < lastDragX && t.Index < notebook.CurrentTab.Index)))
 				{
+					t.SaveAllocation ();
+					t.SaveStrength = 1;
 					notebook.ReorderTab ((DockNotebookTab)notebook.CurrentTab, t);
+
+					this.Animate ("TabMotion" + t.GetHashCode ().ToString (),
+					              f => t.SaveStrength = f,
+					              start: 1.0f,
+					              end: 0.0f,
+					              easing: Easing.CubicInOut);
 				}
 				lastDragX = (int)evnt.X;
 			}
@@ -788,10 +805,11 @@ namespace MonoDevelop.Ide.Gui
 				int x = GetRenderOffset ();
 				int y = 0;
 
-				ctx.Rectangle (tabStartX, Allocation.Y, tabArea, Allocation.Height);
+				ctx.Rectangle (tabStartX - LeanWidth / 2, Allocation.Y, tabArea + LeanWidth, Allocation.Height);
 				ctx.Clip ();
 				int n = 0;
-				Action<Cairo.Context> drawDrag = c => {};
+				Action<Cairo.Context> drawActive = c => {};
+				List<Action<Cairo.Context>> drawCommands = new List<Action<Context>> ();
 				for (; n < notebook.Tabs.Count; n++) {
 					if (x + TabWidth < tabStartX) {
 						x += TabWidth;
@@ -805,8 +823,6 @@ namespace MonoDevelop.Ide.Gui
 					var tab = (DockNotebookTab)notebook.Tabs [n];
 
 					bool active = tab == notebook.CurrentTab;
-					if (active)
-						ctx.ResetClip ();
 
 					int width = Math.Min (TabWidth, Math.Max (50, tabEndX - x - 1));
 					if (tab == notebook.Tabs.Last ())
@@ -815,26 +831,32 @@ namespace MonoDevelop.Ide.Gui
 
 					if (active) {
 						int tmp = x;
-						drawDrag = c => DrawTab (c, tab, new Gdk.Rectangle (tmp, y, width, Allocation.Height), true, active, draggingTab);
+						drawActive = c => DrawTab (c, tab, new Gdk.Rectangle (tmp, y, width, Allocation.Height), true, true, draggingTab);
 					} else {
-						DrawTab (ctx, tab, new Gdk.Rectangle (x, y, width, Allocation.Height), tab == highlightedTab, active, false);
+						int tmp = x;
+						bool highlighted = tab == highlightedTab;
+
+						if (tab.SaveStrength > 0.0f) {
+							tmp = (int) (tab.SavedAllocation.X + (tmp - tab.SavedAllocation.X) * (1.0f - tab.SaveStrength));
+						}
+
+						drawCommands.Add (c => DrawTab (c, tab, new Gdk.Rectangle (tmp, y, width, Allocation.Height), highlighted, false, false));
 					}
 					tab.Allocation = new Gdk.Rectangle (x, Allocation.Y, width, Allocation.Height);
 
-					if (active) {
-						ctx.Rectangle (tabStartX, Allocation.Y, tabArea, Allocation.Height);
-						ctx.Clip ();
-					}
-
 					x += width;
 				}
+
+				drawCommands.Reverse ();
+				foreach (var cmd in drawCommands)
+					cmd (ctx);
 
 				// make sure we got a final closing tab if it exists
 				DrawClosingTab (ctx, n, new Gdk.Rectangle (x, y, 0, Allocation.Height));
 				ctx.ResetClip ();
 
 				// Redraw the dragging tab here to be sure its on top. We drew it before to get the sizing correct, this should be fixed.
-				drawDrag (ctx);
+				drawActive (ctx);
 			}
 			return base.OnExposeEvent (evnt);
 		}
@@ -864,6 +886,10 @@ namespace MonoDevelop.Ide.Gui
 			}
 			ctx.Pattern = gr;
 			ctx.Fill ();
+			
+			ctx.Color = new Cairo.Color (1, 1, 1, .5);
+			DrawTabBorder (ctx, region.Width, region.X, 1, active);
+			ctx.Stroke ();
 
 			ctx.Color = Styles.BreadcrumbBorderColor;
 			DrawTabBorder (ctx, region.Width, region.X, 0, active);
@@ -895,7 +921,7 @@ namespace MonoDevelop.Ide.Gui
 
 			int textStart = region.X + padding;
 
-			ctx.MoveTo (textStart, region.Y + TopPadding + ActiveTabVerticalOffset + TextOffset);
+			ctx.MoveTo (textStart, region.Y + TopPadding + ActiveTabVerticalOffset + TextOffset + VerticalTextSize);
 			// ellipses are for space wasting ..., we cant afford that
 			using (var lg = new LinearGradient (textStart + w - 5, 0, textStart + w + 3, 0)) {
 				var color = Styles.TabBarActiveTextColor;
@@ -903,7 +929,7 @@ namespace MonoDevelop.Ide.Gui
 				color.A = 0;
 				lg.AddColorStop (1, color);
 				ctx.Pattern = lg;
-				PangoCairoHelper.ShowLayout (ctx, la);
+				Pango.CairoHelper.ShowLayoutLine (ctx, la.GetLine (0));
 			}
 			la.Dispose ();
 
@@ -916,31 +942,35 @@ namespace MonoDevelop.Ide.Gui
 			double y = (double) Allocation.Height + 0.5 - BottomBarPadding + margin;
 			double height = Allocation.Height - TopBarPadding - BottomBarPadding;
 
-			x += TabSpacing;
-			contentWidth -= TabSpacing * 2;
+			x += TabSpacing + margin;
+			contentWidth -= (TabSpacing + margin) * 2;
 
 			double rightx = x + contentWidth;
+
+			int lean = LeanWidth;
+			int halfLean = lean / 2;
+			int smoothing = 2;
 			if (active) {
 				ctx.MoveTo (0, y + 0.5);
 				ctx.LineTo (0, y);
-				ctx.LineTo (x - Radius, y);
-				ctx.ArcNegative (x - Radius, y - Radius, Radius, Math.PI * .5, 0);
-				ctx.LineTo (x, y + Radius - height);
-				ctx.Arc (x + Radius, y + Radius - height, Radius, Math.PI, Math.PI * 1.5);
-				ctx.LineTo (rightx - Radius, y - height);
-				ctx.Arc (rightx - Radius, y + Radius - height, Radius, Math.PI * 1.5, 0);
-				ctx.LineTo (rightx, y - Radius);
-				ctx.ArcNegative (rightx + Radius, y - Radius, Radius, Math.PI, Math.PI * .5);
+				ctx.LineTo (x - halfLean, y);
+			} else {
+				ctx.MoveTo (x - halfLean, y + 0.5);
+				ctx.LineTo (x - halfLean, y);
+			}
+			ctx.CurveTo (new PointD (x + smoothing, y),
+			             new PointD (x - smoothing, y - height),
+			             new PointD (x + halfLean, y - height));
+			ctx.LineTo (rightx - halfLean, y - height);
+			ctx.CurveTo (new PointD (rightx + smoothing, y - height),
+			             new PointD (rightx - smoothing, y),
+			             new PointD (rightx + halfLean, y));
+
+			if (active) {
 				ctx.LineTo (Allocation.Width, y);
 				ctx.LineTo (Allocation.Width, y + 0.5);
 			} else {
-				height -= ActiveTabVerticalOffset;
-				ctx.MoveTo (x, y);
-				ctx.LineTo (x, y + Radius - height);
-				ctx.Arc (x + Radius, y + Radius - height, Radius, Math.PI, Math.PI * 1.5);
-				ctx.LineTo (rightx - Radius, y - height);
-				ctx.Arc (rightx - Radius, y + Radius - height, Radius, Math.PI * 1.5, 0);
-				ctx.LineTo (rightx, y);
+				ctx.LineTo (rightx + halfLean, y + 0.5);
 			}
 		}
 

@@ -169,12 +169,19 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		protected override void OnDestroyed ()
+		void UnregisterAdjustments ()
 		{
 			if (cachedHAdjustment != null)
 				cachedHAdjustment.ValueChanged -= HAdjustment_ValueChanged;
 			if (cachedVAdjustment != null)
 				cachedVAdjustment.ValueChanged -= VAdjustment_ValueChanged;
+			cachedHAdjustment = null;
+			cachedVAdjustment = null;
+		}
+
+		protected override void OnDestroyed ()
+		{
+			UnregisterAdjustments ();
 
 			ExtensionContext = null;
 			view = null;
@@ -650,6 +657,7 @@ namespace MonoDevelop.SourceEditor
 
 		protected override void OnScrollAdjustmentsSet()
 		{
+			UnregisterAdjustments ();
 			if (HAdjustment != null) {
 				cachedHAdjustment = HAdjustment;
 				HAdjustment.ValueChanged += HAdjustment_ValueChanged;

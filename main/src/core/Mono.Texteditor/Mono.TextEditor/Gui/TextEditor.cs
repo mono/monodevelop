@@ -68,6 +68,7 @@ namespace Mono.TextEditor
 		public TextEditor (TextDocument doc, ITextEditorOptions options, EditMode initialMode) 
 		{
 			GtkWorkarounds.FixContainerLeak (this);
+			WidgetFlags |= WidgetFlags.NoWindow;
 			this.textArea = new TextArea (doc, options, initialMode);
 			this.textArea.Initialize (this, doc, options, initialMode);
 			this.textArea.EditorOptionsChanged += (sender, e) => OptionsChanged (sender, e);
@@ -75,36 +76,45 @@ namespace Mono.TextEditor
 			ShowAll ();
 
 			stage.ActorStep += OnActorStep;
-			if (Platform.IsMac) {
-				VScroll += delegate {
-					for (int i = 1; i < containerChildren.Count; i++) {
-						containerChildren[i].Child.QueueDraw ();
-					}
-				};
-				HScroll += delegate {
-					for (int i = 1; i < containerChildren.Count; i++) {
-						containerChildren[i].Child.QueueDraw ();
-					}
-				};
-			}
+		}
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+			UnregisterAdjustments ();
 		}
 
+		void UnregisterAdjustments ()
+		{
+			if (vAdjustement != null)
+				vAdjustement.ValueChanged -= HandleAdjustmentValueChange;
+			if (hAdjustement != null)
+				hAdjustement.ValueChanged -= HandleAdjustmentValueChange;
+			vAdjustement = null;
+			hAdjustement = null;
+		}
+
+		Adjustment hAdjustement;
+		Adjustment vAdjustement;
 		protected override void OnSetScrollAdjustments (Adjustment hAdjustement, Adjustment vAdjustement)
 		{
+			UnregisterAdjustments ();
+			this.vAdjustement = vAdjustement;
+			this.hAdjustement = hAdjustement;
 			base.OnSetScrollAdjustments (hAdjustement, vAdjustement);
 			textArea.SetTextEditorScrollAdjustments (hAdjustement, vAdjustement);
 			if (hAdjustement != null) {
-				hAdjustement.ValueChanged += delegate {
-					SetChildrenPositions (Allocation);
-				};
+				hAdjustement.ValueChanged += HandleAdjustmentValueChange;
 			}
 
 			if (vAdjustement != null) {
-				vAdjustement.ValueChanged += delegate {
-					SetChildrenPositions (Allocation);
-				};
+				vAdjustement.ValueChanged += HandleAdjustmentValueChange;
 			}
 			OnScrollAdjustmentsSet ();
+		}
+
+		void HandleAdjustmentValueChange (object sender, EventArgs e)
+		{
+			SetChildrenPositions (Allocation);
 		}
 
 		protected virtual void OnScrollAdjustmentsSet ()
@@ -114,36 +124,17 @@ namespace Mono.TextEditor
 		protected override void OnSizeAllocated (Rectangle allocation)
 		{
 			base.OnSizeAllocated (allocation);
-			if (this.GdkWindow != null)
-				this.GdkWindow.MoveResize (allocation);
-			allocation = new Rectangle (0, 0, allocation.Width, allocation.Height);
 			if (textArea.Allocation != allocation)
 				textArea.SizeAllocate (allocation);
 			SetChildrenPositions (allocation);
 		}
 
-		
-		protected override void OnRealized ()
+		protected override void OnSizeRequested (ref Requisition requisition)
 		{
-			WidgetFlags |= WidgetFlags.Realized;
-			WindowAttr attributes = new WindowAttr () {
-				WindowType = Gdk.WindowType.Child,
-				X = Allocation.X,
-				Y = Allocation.Y,
-				Width = Allocation.Width,
-				Height = Allocation.Height,
-				Wclass = WindowClass.InputOutput,
-				Visual = this.Visual,
-				Colormap = this.Colormap,
-				EventMask = (int)(this.Events | Gdk.EventMask.ExposureMask),
-				Mask = this.Events | Gdk.EventMask.ExposureMask,
-			};
-			
-			WindowAttributesType mask = WindowAttributesType.X | WindowAttributesType.Y | WindowAttributesType.Colormap | WindowAttributesType.Visual;
-			GdkWindow = new Gdk.Window (ParentWindow, attributes, mask);
-			GdkWindow.UserData = Raw;
-			Style = Style.Attach (GdkWindow);
-		}		
+			base.OnSizeRequested (ref requisition);
+			containerChildren.ForEach (c => c.Child.SizeRequest ());
+		}
+
 		#region Container
 		public override ContainerChild this [Widget w] {
 			get {
@@ -237,25 +228,6 @@ namespace Mono.TextEditor
 		protected override void ForAll (bool include_internals, Gtk.Callback callback)
 		{
 			containerChildren.ForEach (child => callback (child.Child));
-		}
-		
-		protected override void OnMapped ()
-		{
-			WidgetFlags |= WidgetFlags.Mapped;
-			// Note: SourceEditorWidget.ShowAutoSaveWarning() might have set TextEditor.Visible to false,
-			// in which case we want to not map it (would cause a gtk+ critical error).
-			containerChildren.ForEach (child => { if (child.Child.Visible) child.Child.Map (); });
-			GdkWindow.Show ();
-		}
-		
-		protected override void OnUnmapped ()
-		{
-			WidgetFlags &= ~WidgetFlags.Mapped;
-			
-			// We hide the window first so that the user doesn't see widgets disappearing one by one.
-			GdkWindow.Hide ();
-			
-			containerChildren.ForEach (child => child.Child.Unmap ());
 		}
 
 		void ResizeChild (Rectangle allocation, EditorContainerChild child)

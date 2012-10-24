@@ -329,7 +329,7 @@ namespace MonoDevelop.VersionControl.Subversion
 				Revert (srcPath, false, monitor);
 				if (!destIsVersioned)
 					MakeDirVersioned (Path.GetDirectoryName (destPath), monitor);
-				base.MoveFile (srcPath, destPath, force, monitor);
+				base.OnMoveFile (srcPath, destPath, force, monitor);
 				if (!destIsVersioned)
 					Add (destPath, false, monitor);
 			} else {
@@ -337,7 +337,7 @@ namespace MonoDevelop.VersionControl.Subversion
 					MakeDirVersioned (Path.GetDirectoryName (destPath), monitor);
 					Svn.Move (srcPath, destPath, force, monitor);
 				} else
-					base.MoveFile (srcPath, destPath, force, monitor);
+					base.OnMoveFile (srcPath, destPath, force, monitor);
 			}
 		}
 
@@ -420,14 +420,14 @@ namespace MonoDevelop.VersionControl.Subversion
 					// If the directory is scheduled to add, cancel it, move the directory, and schedule to add it again
 					MakeDirVersioned (Path.GetDirectoryName (destPath), monitor);
 					Revert (srcPath, true, monitor);
-					base.MoveDirectory (srcPath, destPath, force, monitor);
+					base.OnMoveDirectory (srcPath, destPath, force, monitor);
 					Add (destPath, true, monitor);
 				} else {
 					if (IsVersioned (srcPath)) {
 						MakeDirVersioned (Path.GetDirectoryName (destPath), monitor);
 						Svn.Move (srcPath, destPath, force, monitor);
 					} else
-						base.MoveDirectory (srcPath, destPath, force, monitor);
+						base.OnMoveDirectory (srcPath, destPath, force, monitor);
 				}
 			}
 		}

@@ -935,14 +935,23 @@ namespace MonoDevelop.VersionControl.Views
 				this.useLeftDiff = useLeftDiff;
 				this.paintInsert = paintInsert;
 				this.widget = widget;
-				widget.vAdjustment.ValueChanged += delegate {
-					QueueDraw ();
-				};
+				widget.vAdjustment.ValueChanged += HandleValueChanged;
 				WidthRequest = 50;
 
 				Events |= EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.ButtonMotionMask;
 
 				Show ();
+			}
+
+			protected override void OnDestroyed ()
+			{
+				base.OnDestroyed ();
+				widget.vAdjustment.ValueChanged -= HandleValueChanged;
+			}
+
+			void HandleValueChanged (object sender, EventArgs e)
+			{
+				QueueDraw ();
 			}
 
 			public void MouseMove (double y)

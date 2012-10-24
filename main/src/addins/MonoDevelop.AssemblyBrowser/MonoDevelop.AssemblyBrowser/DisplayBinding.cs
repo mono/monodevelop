@@ -53,11 +53,15 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			if (viewContent == null || viewContent.IsDisposed) {
 				viewContent = new AssemblyBrowserViewContent ();
-				viewContent.Control.Destroyed += delegate {
-					this.viewContent = null;
-				};
+				viewContent.Control.Destroyed += HandleDestroyed;
 			}
 			return viewContent;
+		}
+
+		void HandleDestroyed (object sender, EventArgs e)
+		{
+			((Gtk.Widget)sender).Destroyed -= HandleDestroyed;
+			this.viewContent = null;
 		}
 		
 		public bool CanHandle (FilePath fileName, string mimeType, Project ownerProject)

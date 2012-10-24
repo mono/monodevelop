@@ -905,7 +905,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			class LazyProjectLoader : IProjectContent
 			{
 				readonly ProjectContentWrapper wrapper;
-				static ConcurrentDictionary<string, IProjectContent> projectCache = new ConcurrentDictionary<string, IProjectContent> ();
 				Task<IProjectContent> contextTask;
 
 				public Task<IProjectContent> ContextTask {
@@ -926,10 +925,6 @@ namespace MonoDevelop.Ide.TypeSystem
 					contextTask = Task.Factory.StartNew (delegate {
 	
 						IProjectContent content;
-						if (projectCache.TryGetValue (this.wrapper.Project.FileName, out content)) {
-							if (content != null)
-								return content;
-						}
 	
 						var context = LoadProjectCache (this.wrapper.Project);
 						if (context != null) {
@@ -953,11 +948,6 @@ namespace MonoDevelop.Ide.TypeSystem
 					
 					TouchCache (cacheDir);
 					var cache = DeserializeObject<IProjectContent> (Path.Combine (cacheDir, "completion.cache"));
-					if (projectCache == null) {
-						RemoveCache (cacheDir);
-					} else {
-						projectCache [project.FileName] = cache;
-					}
 					return cache;
 				}
 
@@ -2222,23 +2212,31 @@ namespace MonoDevelop.Ide.TypeSystem
 		static void CheckModifiedFiles (Project project, ProjectFile[] projectFiles, ProjectContentWrapper content)
 		{
 			try {
+				var modifiedFiles = new List<ProjectFile> ();
+				var oldFileNewFile = new List<Tuple<ProjectFile, IUnresolvedFile>> ();
+
 				lock (projectWrapperUpdateLock) {
-					List<ProjectFile> modifiedFiles = null;
 					foreach (var file in projectFiles) {
 						if (file.BuildAction == null) 
 							continue;
-						var fileName = file.Name;
 						// if the file is already inside the content a parser exists for it, if not check if it can be parsed.
-						var oldFile = content.Content.GetFile (fileName);
+						var oldFile = content.Content.GetFile (file.Name);
+						oldFileNewFile.Add (Tuple.Create (file, oldFile));
+					}
+				}
+
+				// This is disk intensive and slow
+				oldFileNewFile.RemoveAll (t => !IsFileModified (t.Item1, t.Item2));
+
+				lock (projectWrapperUpdateLock) {
+					foreach (var v in oldFileNewFile) {
+						var file = v.Item1;
+						var oldFile = v.Item2;
 						if (oldFile == null) {
-							var parser = TypeSystemService.GetParser (DesktopService.GetMimeTypeForUri (fileName), file.BuildAction);
+							var parser = TypeSystemService.GetParser (DesktopService.GetMimeTypeForUri (file.Name), file.BuildAction);
 							if (parser == null)
 								continue;
 						}
-						if (!IsFileModified (file, oldFile))
-							continue;
-						if (modifiedFiles == null)
-							modifiedFiles = new List<ProjectFile> ();
 						modifiedFiles.Add (file);
 					}
 					
@@ -2250,9 +2248,8 @@ namespace MonoDevelop.Ide.TypeSystem
 						}
 					}
 					
-					if (modifiedFiles == null)
-						return;
-					QueueParseJob (content, modifiedFiles);
+					if (modifiedFiles.Count > 0)
+						QueueParseJob (content, modifiedFiles);
 				}
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception in check modified files.", e);

@@ -463,7 +463,7 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 */
-		static void SolutionItemAddFiles (string rootPath, SolutionItem entry, ArrayList files)
+		static void SolutionItemAddFiles (string rootPath, SolutionItem entry, HashSet<string> files)
 		{
 			if (entry is SolutionEntityItem) {
 				string file = ((SolutionEntityItem)entry).FileName;
@@ -481,26 +481,24 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 		
-		static void SolutionItemAddFile (string rootPath, ArrayList files, string file)
+		static void SolutionItemAddFile (string rootPath, HashSet<string> files, string file)
 		{
 			if (!file.StartsWith (rootPath + Path.DirectorySeparatorChar))
 			    return;
 			if (!File.Exists (file))
 				return;
-			if (files.Contains (file))
-				return;
-			string dir = Path.GetDirectoryName (file);
-			while (dir != rootPath) {
-				if (files.Contains (dir))
-					break;
-				files.Add (dir);
-				dir = Path.GetDirectoryName (dir);
+			if (files.Add (file)) {
+				string dir = Path.GetDirectoryName (file);
+				while (dir != rootPath && files.Add (dir))
+					dir = Path.GetDirectoryName (dir);
 			}
-			files.Add (file);
 		}
 		
 		static void OnEntryAdded (object o, SolutionItemEventArgs args)
 		{
+			if (args is SolutionItemChangeEventArgs && ((SolutionItemChangeEventArgs) args).Reloading)
+				return;
+
 			// handles addition of solutions and projects
 			SolutionItem parent = (SolutionItem) args.SolutionItem.ParentFolder;
 			
@@ -525,19 +523,15 @@ namespace MonoDevelop.VersionControl
 			// While we /could/ call repo.Add with `recursive = true', we don't
 			// necessarily want to add files under the project/solution directory
 			// that may not be a part of this project/solution.
-			
-			ArrayList files = new ArrayList ();
-			
-			files.Add (path);
+
+			var files = new HashSet<string> { path };
 			SolutionItemAddFiles (path, entry, files);
-			files.Sort ();
 			
 			using (IProgressMonitor monitor = GetStatusMonitor ()) {
-				string[] paths = (string[]) files.ToArray (typeof (string));
-				
-				foreach (string p in paths) {
-					if (repo.GetVersionInfo (p).CanAdd)
-						repo.Add (p, false, monitor);
+				var status = repo.GetDirectoryVersionInfo (path, false, true);
+				foreach (var v in status) {
+					if (!v.IsVersioned && files.Contains (v.LocalPath))
+						repo.Add (v.LocalPath, false, monitor);
 				}
 			}
 			
