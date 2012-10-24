@@ -186,7 +186,7 @@
       <Name>Mono.Debugging.Soft</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.Formats.MSBuild.v3.5.csproj">
-      <Project>{40a31ade-6f26-4d99-a3c7-87bb8236151d}</Project>
+      <Project>{40A31ADE-6F26-4D99-A3C7-87BB8236151D}</Project>
       <Name>MonoDevelop.Projects.Formats.MSBuild.v3.5</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\external\ngit\Sharpen.Unix\Sharpen.Unix.csproj">

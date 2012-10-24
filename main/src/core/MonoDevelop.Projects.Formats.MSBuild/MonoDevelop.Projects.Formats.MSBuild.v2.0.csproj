@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{01206ab0-8871-42e7-9355-52e4cf1b7b9a}</ProjectGuid>
+    <ProjectGuid>{01206AB0-8871-42E7-9355-52E4CF1B7B9A}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AssemblyName>MonoDevelop.Projects.Formats.MSBuild</AssemblyName>
     <RootNamespace>MonoDevelop.Projects.Formats.MSBuild</RootNamespace>
