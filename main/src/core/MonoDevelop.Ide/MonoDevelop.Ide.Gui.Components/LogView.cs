@@ -33,6 +33,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.Execution;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
@@ -58,10 +59,66 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		const int MAX_BUFFER_LENGTH = 4000 * 1024; 
 
+		/// <summary>
+		/// The log text view allows the user to jump to the source of an error/warning
+		/// by double clicking on the line in the text view.
+		/// </summary>
+		class LogTextView : TextView
+		{
+			public LogTextView (Gtk.TextBuffer buf) : base (buf)
+			{
+			}
+
+			static Regex lineRegex = new Regex ("\\b.*\\s(?<file>[/\\\\].*):(line\\s)?(?<line>\\d+)\\s*$", RegexOptions.Compiled);
+			protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
+			{
+				if (evnt.Type == Gdk.EventType.TwoButtonPress) {
+					var cursorPos = base.Buffer.GetIterAtOffset (this.Buffer.CursorPosition);
+
+					TextIter iterStart;
+					TextIter iterEnd;
+					string lineText;
+					try {
+						iterStart = Buffer.GetIterAtLine (cursorPos.Line);
+						iterEnd = Buffer.GetIterAtOffset (iterStart.Offset + iterStart.CharsInLine);
+
+						lineText = Buffer.GetText (iterStart, iterEnd, true);
+					} catch (Exception e) {
+						LoggingService.LogError ("Error in getting text of the current line.", e);
+						return base.OnButtonPressEvent (evnt);
+					}
+
+					var match = lineRegex.Match (lineText);
+					if (match.Success) {
+						string file = match.Groups["file"].Value;
+						string line = match.Groups["line"].Value;
+						if (!string.IsNullOrEmpty (file) && !string.IsNullOrEmpty (line)) {
+							bool fileExists;
+							try {
+								fileExists = File.Exists (file);
+							} catch {
+								fileExists = false;
+							}
+							if (fileExists) {
+								int lineNumber;
+								try {
+									lineNumber = int.Parse (line);
+								} catch (Exception) {
+									lineNumber = 1;
+								}
+								IdeApp.Workbench.OpenDocument (file, lineNumber, 1);
+							}
+						}
+					}
+				}
+				return base.OnButtonPressEvent (evnt);
+			}
+		}
+
 		public LogView ()
 		{
 			buffer = new Gtk.TextBuffer (new Gtk.TextTagTable ());
-			textEditorControl = new Gtk.TextView (buffer);
+			textEditorControl = new LogTextView (buffer);
 			textEditorControl.Editable = false;
 			
 			ShadowType = ShadowType.None;
