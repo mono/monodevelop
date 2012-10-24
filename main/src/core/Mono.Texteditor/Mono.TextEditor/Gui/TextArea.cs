@@ -293,8 +293,9 @@ namespace Mono.TextEditor
 			this.DoubleBuffered = true;
 			base.CanFocus = true;
 
+			// This is required to properly handle resizing and rendering of children
+			ResizeMode = ResizeMode.Queue;
 		}
-
 
 		TextEditor editor;
 		internal void Initialize (TextEditor editor, TextDocument doc, ITextEditorOptions options, EditMode initialMode)
@@ -1816,11 +1817,7 @@ namespace Mono.TextEditor
 			if (Caret.IsVisible)
 				textViewMargin.DrawCaret (e.Window, Allocation);
 
-			// Propagate the exposure event to the embedded widgets
-			foreach (var c in containerChildren)
-				PropagateExpose (c.Child, e);
-
-			return false;
+			return base.OnExposeEvent (e);
 		}
 		
 		protected virtual void OnPainted (PaintEventArgs e)
@@ -3067,8 +3064,6 @@ namespace Mono.TextEditor
 			info.X = x;
 			info.Y = y;
 			containerChildren.Add (info);
-			if (IsRealized)
-				widget.Realize ();
 			ResizeChild (Allocation, info);
 			SetAdjustments ();
 		}
