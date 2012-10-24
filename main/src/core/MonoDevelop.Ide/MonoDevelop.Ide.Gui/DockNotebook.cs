@@ -398,11 +398,10 @@ namespace MonoDevelop.Ide.Gui
 		const int Radius = 2;
 		const int LeanWidth = 18;
 
-		const int ActiveTabVerticalOffset = 2;
-		const int TextOffset = -1;
+		const int TextOffset = 1;
 
 		// Vertically aligns the close image(s) with the tab label.
-		const int CloseImageTopOffset = 4;
+		const int CloseImageTopOffset = 3;
 
 		int TabWidth { get; set; }
 		int LastTabWidthAdjustment { get; set; }
@@ -494,7 +493,7 @@ namespace MonoDevelop.Ide.Gui
 			};
 
 			this.Animate ("Open" + tab.GetHashCode ().ToString (), anim, 
-			              easing: Easing.CubicOut);
+			              easing: Easing.CubicInOut);
 		}
 
 		public void StartCloseAnimation (DockNotebookTab tab)
@@ -904,7 +903,7 @@ namespace MonoDevelop.Ide.Gui
 
 			// Render Close Button (do this first so we can tell how much text to render)
 			
-			var ch = Allocation.Height - TopBarPadding - BottomBarPadding + CloseImageTopOffset + ActiveTabVerticalOffset;
+			var ch = Allocation.Height - TopBarPadding - BottomBarPadding + CloseImageTopOffset;
 			var crect = new Gdk.Rectangle (region.Right - padding - closeSelImage.Width + 3, 
 			                               region.Y + TopBarPadding + (ch - closeSelImage.Height) / 2, 
 			                               closeSelImage.Width, closeSelImage.Height);
@@ -928,7 +927,7 @@ namespace MonoDevelop.Ide.Gui
 
 			int textStart = region.X + padding;
 
-			ctx.MoveTo (textStart, region.Y + TopPadding + ActiveTabVerticalOffset + TextOffset + VerticalTextSize);
+			ctx.MoveTo (textStart, region.Y + TopPadding + TextOffset + VerticalTextSize);
 			// ellipses are for space wasting ..., we cant afford that
 			using (var lg = new LinearGradient (textStart + w - 5, 0, textStart + w + 3, 0)) {
 				var color = Styles.TabBarActiveTextColor.MultiplyAlpha (tab.Opacity);
