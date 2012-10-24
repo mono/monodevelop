@@ -132,7 +132,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					descriptionBox.PackEnd (contentLabel, true, true, 4);
 				}
 
-				if (string.IsNullOrEmpty (o.SummaryMarkup) && !o.Categories.Any ()) {
+				if (string.IsNullOrEmpty (o.SummaryMarkup) && string.IsNullOrEmpty (o.FooterMarkup) && !o.Categories.Any ()) {
 					descriptionBox.Hide ();
 				} else {
 					descriptionBox.ShowAll ();

@@ -537,7 +537,7 @@ namespace MonoDevelop.CSharp.Completion
 			return CreateTooltipInformation (editorCompletion.Compilation, editorCompletion.CSharpUnresolvedFile, editorCompletion.TextEditorData, editorCompletion.FormattingPolicy, entity, smartWrap);
 		}
 
-		public static TooltipInformation CreateTooltipInformation (ICompilation compilation, CSharpUnresolvedFile file, TextEditorData textEditorData, MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy formattingPolicy, IEntity entity, bool smartWrap)
+		public static TooltipInformation CreateTooltipInformation (ICompilation compilation, CSharpUnresolvedFile file, TextEditorData textEditorData, MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy formattingPolicy, IEntity entity, bool smartWrap, bool createFooter = false)
 		{
 			var tooltipInfo = new TooltipInformation ();
 			var resolver = file != null ? file.GetResolver (compilation, textEditorData.Caret.Location) : new CSharpResolver (compilation);
@@ -563,27 +563,41 @@ namespace MonoDevelop.CSharp.Completion
 					tooltipInfo.AddCategory (GettextCatalog.GetString ("Extension Method from"), method.DeclaringTypeDefinition.FullName);
 				}
 			}
-			
+			if (createFooter) {
+				if (entity is IType) {
+					var type = entity as IType;
+					var def = type.GetDefinition ();
+					if (def != null) {
+						if (!string.IsNullOrEmpty(def.ParentAssembly.AssemblyName))
+							tooltipInfo.FooterMarkup = "<small>" +GettextCatalog.GetString ("From {0}", AmbienceService.EscapeText (def.ParentAssembly.AssemblyName)) + "</small>";
+					}
+
+				} else {
+					tooltipInfo.FooterMarkup = "<small>" +GettextCatalog.GetString ("Defined in {0}", AmbienceService.EscapeText (entity.DeclaringType.FullName)) + "</small>";
+
+				}
+			}
 			return tooltipInfo;
 		}
 
-		public static TooltipInformation CreateTooltipInformation (ICompilation compilation, CSharpUnresolvedFile file, TextEditorData textEditorData, MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy formattingPolicy, IType entity, bool smartWrap)
+		public static TooltipInformation CreateTooltipInformation (ICompilation compilation, CSharpUnresolvedFile file, TextEditorData textEditorData, MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy formattingPolicy, IType type, bool smartWrap, bool createFooter = false)
 		{
 			var tooltipInfo = new TooltipInformation ();
 			var resolver = file != null ? file.GetResolver (compilation, textEditorData.Caret.Location) : new CSharpResolver (compilation);
 			var sig = new SignatureMarkupCreator (resolver, formattingPolicy.CreateOptions ());
 			sig.BreakLineAfterReturnType = smartWrap;
 			try {
-				tooltipInfo.SignatureMarkup = sig.GetMarkup (entity);
+				tooltipInfo.SignatureMarkup = sig.GetMarkup (type);
 			} catch (Exception e) {
-				LoggingService.LogError ("Got exception while creating markup for :" + entity, e);
+				LoggingService.LogError ("Got exception while creating markup for :" + type, e);
 				return new TooltipInformation ();
 			}
-			var definition = entity.GetDefinition ();
-			if (definition != null) {
-				tooltipInfo.SummaryMarkup = AmbienceService.GetSummaryMarkup (definition) ?? "";
+			var def = type.GetDefinition ();
+			if (def != null) {
+				if (createFooter && !string.IsNullOrEmpty(def.ParentAssembly.AssemblyName))
+					tooltipInfo.FooterMarkup = "<small> From " + AmbienceService.EscapeText (def.ParentAssembly.AssemblyName) + "</small>";
+				tooltipInfo.SummaryMarkup = AmbienceService.GetSummaryMarkup (def) ?? "";
 			}
-
 			return tooltipInfo;
 		}
 

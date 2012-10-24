@@ -209,7 +209,8 @@ namespace MonoDevelop.CSharp
 				null,
 				new CSharpFormattingPolicy (),
 				entity,
-				false);
+				false,
+				true);
 		}
 
 		static string GetString (TypeKind classType)
