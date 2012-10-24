@@ -62,7 +62,6 @@ namespace MonoDevelop.Projects
 		}
 		
 		[Test()]
-		[Ignore ("We don't install the msbuild assemblies in the right place for this tests")]
 		public void Resources ()
 		{
 			string solFile = Util.GetSampleProject ("resources-tester", "ResourcesTester.sln");
