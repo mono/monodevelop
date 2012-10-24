@@ -119,6 +119,18 @@ namespace MonoDevelop.Ide.CodeCompletion
 				if (!string.IsNullOrEmpty (o.SummaryMarkup)) {
 					descriptionBox.PackStart (CreateCategory (GettextCatalog.GetString ("Summary"), o.SummaryMarkup), true, true, 4);
 				}
+				if (!string.IsNullOrEmpty (o.FooterMarkup)) {
+
+					var contentLabel = new MonoDevelop.Components.FixedWidthWrapLabel ();
+					contentLabel.Wrap = Pango.WrapMode.WordChar;
+					contentLabel.BreakOnCamelCasing = true;
+					contentLabel.MaxWidth = 400;
+					contentLabel.BreakOnPunctuation = true;
+					contentLabel.Markup = o.FooterMarkup.Trim ();
+					contentLabel.ModifyFg (StateType.Normal, foreColor);
+
+					descriptionBox.PackEnd (contentLabel, true, true, 4);
+				}
 
 				if (string.IsNullOrEmpty (o.SummaryMarkup) && !o.Categories.Any ()) {
 					descriptionBox.Hide ();

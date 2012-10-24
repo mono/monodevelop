@@ -71,6 +71,20 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 
+		string footerMarkup;
+
+		/// <summary>
+		/// Gets or sets the footer markup.
+		/// </summary>
+		public string FooterMarkup {
+			get {
+				return footerMarkup ?? "";
+			}
+			set {
+				footerMarkup = value;
+			}
+		}
+
 		/// <summary>
 		/// Adds a new category to the tooltip.
 		/// </summary>
