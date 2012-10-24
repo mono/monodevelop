@@ -75,6 +75,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return frameworkVersions.Contains (fx.Id) || supportsMonikers;
 		}
 
+		internal virtual bool SupportsSlnVersion (string version)
+		{
+			return version == slnVersion;
+		}
+
 		public FilePath GetValidFormatName (object obj, FilePath fileName)
 		{
 			if (slnFileFormat.CanWriteFile (obj, this))
@@ -258,7 +263,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			case "4.0":
 				return new MSBuildFileFormatVS10 ();
 			case "4.5":
-				return new MSBuildFileFormatVS11 ();
+				return new MSBuildFileFormatVS12 ();
 			}
 			throw new Exception ("Unknown ToolsVersion '" + toolsVersion + "'");
 		}
@@ -337,9 +342,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 	}
 
-	class MSBuildFileFormatVS11: MSBuildFileFormat
+	class MSBuildFileFormatVS12: MSBuildFileFormat
 	{
-		public const string Version = "11.0.0";
+		public const string Version = "12.0.0";
 		const string toolsVersion = "4.0";
 		const string slnVersion = "12.00";
 		const string productComment = "Visual Studio 2012";
@@ -357,12 +362,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		};
 		const bool supportsMonikers = true;
 		
-		public MSBuildFileFormatVS11 (): base (Version, toolsVersion, slnVersion, productComment, frameworkVersions, supportsMonikers)
+		public MSBuildFileFormatVS12 (): base (Version, toolsVersion, slnVersion, productComment, frameworkVersions, supportsMonikers)
 		{
 		}
 		
 		public override string Id {
 			get { return "MSBuild11"; }
+		}
+
+		internal override bool SupportsSlnVersion (string version)
+		{
+			return version == "11.00" || version == "12.00";
 		}
 	}
 
