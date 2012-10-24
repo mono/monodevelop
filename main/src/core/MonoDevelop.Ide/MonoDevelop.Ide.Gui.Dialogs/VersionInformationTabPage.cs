@@ -136,10 +136,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			var table = new Gtk.Table (0, 0, false);
 			table.ColumnSpacing = 3;
 			uint line = 0;
-			foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies ()) {
+			foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies ().Where (a => !a.IsDynamic).OrderBy (a => a.FullName)) {
 				try {
-					if (assembly.IsDynamic)
-						continue;
 					var assemblyName = assembly.GetName ();
 					table.Attach (new Gtk.Label (assemblyName.Name) { Xalign = 0 }, 0, 1, line, line + 1);
 					table.Attach (new Gtk.Label (assemblyName.Version.ToString ()) { Xalign = 0 }, 1, 2, line, line + 1);
