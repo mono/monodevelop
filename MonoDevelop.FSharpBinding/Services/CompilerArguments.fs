@@ -174,7 +174,10 @@ module CompilerArguments =
     [ for file in items.GetAll<ProjectFile>() do
         match file.BuildAction with
         | _ when file.Subtype = Subtype.Directory -> ()
-        | "EmbeddedResource" -> yield "--resource:" + (wrapFile(file.Name.ToString()))
+        | "EmbeddedResource" -> 
+            let fileName = file.Name.ToString()
+            let logicalResourceName = file.ProjectVirtualPath.ToString().Replace("\\",".").Replace("/",".")
+            yield "--resource:" + wrapFile fileName + "," + wrapFile logicalResourceName
         | "None" | "Content" | "Compile" -> ()
         | s -> failwith("Items of type '" + s + "' not supported") ]
 

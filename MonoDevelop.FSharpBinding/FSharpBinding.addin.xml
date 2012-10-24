@@ -58,17 +58,17 @@
   	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/FileTemplates">
-		<FileTemplate id="EmptyFSharpSource" resource="EmptyFSharpSource.xft.xml"/>
-    	<FileTemplate id="EmptyFSharpScript" resource="EmptyFSharpScript.xft.xml"/>
-        <FileTemplate id="FSharpAssemblyInfo" resource="AssemblyInfo.xft.xml" />
+            <FileTemplate id="EmptyFSharpSource" resource="templates.EmptyFSharpSource.xft.xml"/>
+            <FileTemplate id="EmptyFSharpScript" resource="templates.EmptyFSharpScript.xft.xml"/>
+            <FileTemplate id="FSharpAssemblyInfo" resource="templates.AssemblyInfo.xft.xml" />
   	</Extension>
 
   	<Extension path="/MonoDevelop/Ide/ProjectTemplates">
-		<ProjectTemplate id="FSharpConsoleProject" resource="FSharpConsoleProject.xpt.xml"/>
-		<ProjectTemplate id="FSharpLibraryProject" resource="FSharpLibraryProject.xpt.xml"/>
-		<ProjectTemplate id="FSharpTutorialProject" resource="FSharpTutorialProject.xpt.xml"/>
-		<ProjectTemplate id="FSharpGtkProject" resource="FSharpGtkProject.xpt.xml"/>
-		<!--<ProjectTemplate id="FSharpMoonlightLibraryProject" resource="FSharpMoonlightLibraryProject.xpt.xml"/> -->
+		<ProjectTemplate id="FSharpConsoleProject" resource="templates.FSharpConsoleProject.xpt.xml"/>
+		<ProjectTemplate id="FSharpLibraryProject" resource="templates.FSharpLibraryProject.xpt.xml"/>
+		<ProjectTemplate id="FSharpTutorialProject" resource="templates.FSharpTutorialProject.xpt.xml"/>
+		<ProjectTemplate id="FSharpGtkProject" resource="templates.FSharpGtkProject.xpt.xml"/>
+		<!--<ProjectTemplate id="FSharpMoonlightLibraryProject" resource="templates.FSharpMoonlightLibraryProject.xpt.xml"/> -->
 	</Extension>
 
   	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
@@ -89,11 +89,11 @@
   	</Extension>
   
 	<Extension path="/MonoDevelop/Core/StockIcons">
-    	<StockIcon stockid="md-fs-logo32" resource="fsharp-icon-32.png" />
-    	<StockIcon stockid="md-fs-script32" resource="fsharp-script-32.png" />
-    	<StockIcon stockid="md-fs-file" resource="fsharp-file-icon.png" />
-    	<StockIcon stockid="md-fs-script" resource="fsharp-script-icon.png" />
-    	<StockIcon stockid="md-fs-project" resource="fsharp-project-icon.png" />
+    	<StockIcon stockid="md-fs-logo32" resource="icons.fsharp-icon-32.png" />
+    	<StockIcon stockid="md-fs-script32" resource="icons.fsharp-script-32.png" />
+    	<StockIcon stockid="md-fs-file" resource="icons.fsharp-file-icon.png" />
+    	<StockIcon stockid="md-fs-script" resource="icons.fsharp-script-icon.png" />
+    	<StockIcon stockid="md-fs-project" resource="icons.fsharp-project-icon.png" />
   	</Extension>
 
 	<Extension path="/MonoDevelop/Core/MimeTypes">
@@ -127,7 +127,7 @@
   	</Extension>
 
   	<Extension path="/MonoDevelop/SourceEditor2/SyntaxModes">
-    	<Templates resource="FSharpSyntaxMode.xml" />
+    	<Templates resource="templates.FSharpSyntaxMode.xml" />
   	</Extension>
 
   	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">

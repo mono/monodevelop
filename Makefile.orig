@@ -29,11 +29,11 @@ RESOURCES = \
 	--resource:MonoDevelop.FSharpBinding/templates/EmptyFSharpSource.xft.xml \
 	--resource:MonoDevelop.FSharpBinding/templates/EmptyFSharpScript.xft.xml \
 	--resource:MonoDevelop.FSharpBinding/templates/FSharpConsoleProject.xpt.xml \
-    --resource:MonoDevelop.FSharpBinding/templates/FSharpSyntaxMode.xml \
-  --resource:MonoDevelop.FSharpBinding/templates/FSharpLibraryProject.xpt.xml \
-  --resource:MonoDevelop.FSharpBinding/templates/FSharpTutorialProject.xpt.xml \
-  --resource:MonoDevelop.FSharpBinding/templates/FSharpGtkProject.xpt.xml \
-  --resource:MonoDevelop.FSharpBinding/templates/AssemblyInfo.xft.xml \
+	--resource:MonoDevelop.FSharpBinding/templates/FSharpSyntaxMode.xml \
+	--resource:MonoDevelop.FSharpBinding/templates/FSharpLibraryProject.xpt.xml \
+	--resource:MonoDevelop.FSharpBinding/templates/FSharpTutorialProject.xpt.xml \
+	--resource:MonoDevelop.FSharpBinding/templates/FSharpGtkProject.xpt.xml \
+	--resource:MonoDevelop.FSharpBinding/templates/AssemblyInfo.xft.xml \
 	--resource:MonoDevelop.FSharpBinding/icons/fsharp-icon-32.png \
 	--resource:MonoDevelop.FSharpBinding/icons/fsharp-script-32.png \
 	--resource:MonoDevelop.FSharpBinding/icons/fsharp-file-icon.png \
@@ -116,7 +116,22 @@ bin/FSharp.Core.dll: $(MONOBIN)/FSharp.Core.dll
 	@-mkdir -p bin
 	cp -p $(MONOBIN)/FSharp.Core.dll bin/FSharp.Core.dll
 
-bin/FSharpBinding.dll: bin/FSharpBinding.Gui.dll $(FILES) bin/FSharp.Core.dll MonoDevelop.FSharpBinding/FSharpBinding.addin.xml
+bin/FSharpBinding.dll: bin/FSharpBinding.Gui.dll $(FILES) bin/FSharp.Core.dll \
+	MonoDevelop.FSharpBinding/FSharpBinding.addin.xml \
+	MonoDevelop.FSharpBinding/FSharpBinding.addin.xml \
+	MonoDevelop.FSharpBinding/templates/EmptyFSharpSource.xft.xml \
+	MonoDevelop.FSharpBinding/templates/EmptyFSharpScript.xft.xml \
+	MonoDevelop.FSharpBinding/templates/FSharpConsoleProject.xpt.xml \
+	MonoDevelop.FSharpBinding/templates/FSharpSyntaxMode.xml \
+	MonoDevelop.FSharpBinding/templates/FSharpLibraryProject.xpt.xml \
+	MonoDevelop.FSharpBinding/templates/FSharpTutorialProject.xpt.xml \
+	MonoDevelop.FSharpBinding/templates/FSharpGtkProject.xpt.xml \
+	MonoDevelop.FSharpBinding/templates/AssemblyInfo.xft.xml \
+	MonoDevelop.FSharpBinding/icons/fsharp-icon-32.png \
+	MonoDevelop.FSharpBinding/icons/fsharp-script-32.png \
+	MonoDevelop.FSharpBinding/icons/fsharp-file-icon.png \
+	MonoDevelop.FSharpBinding/icons/fsharp-project-icon.png \
+	MonoDevelop.FSharpBinding/icons/fsharp-script-icon.png
 	$(FSC) $(OPTIONS) $(FS_REFERENCES) $(RESOURCES) $(FILES) 
 
 bin/FSharpBinding.Gui.dll: $(GUIFILES)

@@ -15,7 +15,7 @@ type FSharpSyntaxMode() as this =
   inherit SyntaxMode()
   
   do
-    let provider = new ResourceXmlProvider(typeof<FSharpSyntaxMode>.Assembly, "FSharpSyntaxMode.xml");
+    let provider = new ResourceXmlProvider(typeof<FSharpSyntaxMode>.Assembly, "templates.FSharpSyntaxMode.xml");
     use reader = provider.Open()
     let baseMode = SyntaxMode.Read(reader)
     this.rules <- new ResizeArray<_>(baseMode.Rules)
