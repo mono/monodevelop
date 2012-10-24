@@ -211,7 +211,8 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 				}
 			};
-			IdeApp.ProjectOperations.EndBuild += HandleEndBuild;
+			if (IdeApp.IsInitialized)
+				IdeApp.ProjectOperations.EndBuild += HandleEndBuild;
 		}
 
 		static List<string> outputTrackedProjects =new List<string> ();
