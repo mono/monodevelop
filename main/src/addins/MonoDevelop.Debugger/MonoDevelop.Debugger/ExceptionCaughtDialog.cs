@@ -31,6 +31,7 @@ using Gtk;
 using System.Threading;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.TextEditing;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Debugger
 {
@@ -58,10 +59,25 @@ namespace MonoDevelop.Debugger
 			
 			exception.Changed += HandleExceptionChanged;
 			treeStack.SizeAllocated += delegate(object o, SizeAllocatedArgs args) {
-				crt.WrapWidth = args.Allocation.Width;
+				if (crt.WrapWidth != args.Allocation.Width) {
+					crt.WrapWidth = args.Allocation.Width;
+					Fill ();
+				}
 			};
 			
 			Fill ();
+			treeStack.RowActivated += HandleRowActivated;
+		}
+
+		void HandleRowActivated (object o, RowActivatedArgs args)
+		{
+			Gtk.TreeIter it;
+			if (!stackStore.GetIter (out it, args.Path))
+				return;
+			string file = (string) stackStore.GetValue (it, 1);
+			int line = (int) stackStore.GetValue (it, 2);
+			if (!string.IsNullOrEmpty (file))
+				IdeApp.Workbench.OpenDocument (file, line, 0);
 		}
 
 		void HandleExceptionChanged (object sender, EventArgs e)
@@ -80,8 +96,8 @@ namespace MonoDevelop.Debugger
 			valueView.ClearValues ();
 
 			labelType.Markup = GettextCatalog.GetString ("<b>{0}</b> has been thrown", exception.Type);
-			labelMessage.Text = string.IsNullOrEmpty (exception.Message)?
-			                    string.Empty: 
+			labelMessage.Text = string.IsNullOrEmpty (exception.Message) ?
+			                    string.Empty : 
 			                    exception.Message;
 			
 			ShowStackTrace (exception, false);
@@ -89,6 +105,9 @@ namespace MonoDevelop.Debugger
 			if (!exception.IsEvaluating && exception.Instance != null) {
 				valueView.AddValue (exception.Instance);
 				valueView.ExpandRow (new TreePath ("0"), false);
+			}
+			if (exception.StackIsEvaluating) {
+				stackStore.AppendValues ("Loading...", "", 0, 0);
 			}
 		}
 		
@@ -214,8 +233,10 @@ namespace MonoDevelop.Debugger
 		{
 			var icon = Gdk.Pixbuf.LoadFromResource ("lightning.png");
 			var image = new Gtk.Image (icon);
-			var button = new MiniButton (image);
-			button.Clicked += (sender, e) => dlg.ShowDialog ();
+			var button = new EventBox ();
+			button.VisibleWindow = false;
+			button.Add (image);
+			button.ButtonReleaseEvent += (sender, e) => dlg.ShowDialog ();
 
 			PopoverWidget eb = new PopoverWidget ();
 			eb.ShowArrow = true;
@@ -248,12 +269,13 @@ namespace MonoDevelop.Debugger
 			HButtonBox buttonBox = new HButtonBox ();
 			buttonBox.BorderWidth = 6;
 
-			var close = new Gtk.Button (GettextCatalog.GetString ("Close"));
-			buttonBox.PackEnd (close, false, false, 0);
-			close.Clicked += (sender, e) => dlg.Close ();
-
 			var copy = new Gtk.Button (GettextCatalog.GetString ("Copy to Clipboard"));
 			buttonBox.PackStart (copy, false, false, 0);
+			copy.Clicked += HandleCopyClicked;
+
+			var close = new Gtk.Button (GettextCatalog.GetString ("Close"));
+			buttonBox.PackStart (close, false, false, 0);
+			close.Clicked += (sender, e) => dlg.Close ();
 
 			box.PackStart (buttonBox, false, false, 0);
 
@@ -263,9 +285,18 @@ namespace MonoDevelop.Debugger
 			eb.PopupPosition = PopupPosition.Left;
 			eb.ContentBox.Add (box);
 			eb.WidthRequest = 500;
-			eb.HeightRequest = 300;
+			eb.HeightRequest = 350;
 			eb.ShowAll ();
 			return eb;
+		}
+
+		void HandleCopyClicked (object sender, EventArgs e)
+		{
+			var text = ex.ToString ();
+			var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+			clipboard.Text = text;
+			clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
+			clipboard.Text = text;
 		}
 
 		protected override void OnLineDeleted ()

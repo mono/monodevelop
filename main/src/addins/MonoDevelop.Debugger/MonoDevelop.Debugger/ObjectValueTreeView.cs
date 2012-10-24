@@ -251,8 +251,13 @@ namespace MonoDevelop.Debugger
 			base.OnShown ();
 			AdjustColumnSizes ();
 		}
-		
-		
+
+		protected override void OnRealized ()
+		{
+			base.OnRealized ();
+			AdjustColumnSizes ();
+		}
+
 		void OnColumnWidthChanged (object o, GLib.NotifyArgs args)
 		{
 			if (!columnSizesUpdating && allowStoreColumnSizes) {
@@ -262,7 +267,7 @@ namespace MonoDevelop.Debugger
 
 		void AdjustColumnSizes ()
 		{
-			if (!IsRealized || !Visible || Allocation.Width <= 0 || columnSizesUpdating || compact)
+			if (!Visible || Allocation.Width <= 0 || columnSizesUpdating || compact)
 				return;
 			
 			columnSizesUpdating = true;
