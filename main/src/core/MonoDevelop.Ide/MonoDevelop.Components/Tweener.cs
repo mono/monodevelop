@@ -103,8 +103,17 @@ namespace MonoDevelop.Components
 			return children.GetEnumerator ();
 		}
 
-		public void Add (Animation animation, float beginAt = 0.0f, float finishAt = 1.0f)
+		public void Add (float beginAt, float finishAt, Animation animation)
 		{
+			if (beginAt < 0 || beginAt > 1)
+				throw new ArgumentOutOfRangeException ("beginAt");
+
+			if (finishAt < 0 || finishAt > 1)
+				throw new ArgumentOutOfRangeException ("finishAt");
+
+			if (finishAt <= beginAt)
+				throw new ArgumentException ("finishAt must be greater than beginAt");
+
 			animation.beginAt = beginAt;
 			animation.finishAt = finishAt;
 			children.Add (animation);

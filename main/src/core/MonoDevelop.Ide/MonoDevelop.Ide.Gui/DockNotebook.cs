@@ -489,23 +489,23 @@ namespace MonoDevelop.Ide.Gui
 		{
 			tab.WidthModifier = 0;
 			var anim = new Animation (f => tab.WidthModifier = f) {
-				{ new Animation (f => tab.Opacity = f), 0.0f, 0.2f }
+				{ 0.0f, 0.2f, new Animation (f => tab.Opacity = f) }
 			};
 
-			this.Animate ("Open" + tab.GetHashCode ().ToString (), anim, 
+			this.Animate ("Open" + tab.GetHashCode ().ToString (), 
+			              animation: anim, 
 			              easing: Easing.CubicInOut);
 		}
 
 		public void StartCloseAnimation (DockNotebookTab tab)
 		{
 			closingTabs[tab.Index] = tab;
-			var anim = new Animation (f => tab.WidthModifier = f, 
-			                          start: tab.WidthModifier, 
-			                          end: 0) {
-				{ new Animation (f => tab.Opacity = f, start: tab.Opacity, end: 0), 0.8f, 1.0f }
+			var anim = new Animation (f => tab.WidthModifier = f, tab.WidthModifier, 0) {
+				{ 0.8f, 1.0f, new Animation (f => tab.Opacity = f, tab.Opacity, 0) }
 			};
 
-			this.Animate ("Closing" + tab.Index, anim,
+			this.Animate ("Closing" + tab.Index, 
+			              animation: anim,
 			              easing: Easing.CubicOut,
 			              finished: (f, a) => { if (!a) closingTabs.Remove (tab.Index); });
 		}
