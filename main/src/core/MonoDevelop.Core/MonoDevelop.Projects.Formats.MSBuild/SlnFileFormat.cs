@@ -57,7 +57,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (String.Compare (Path.GetExtension (file), ".sln", true) == 0) {
 				string tmp;
 				string version = GetSlnFileVersion (file, out tmp);
-				return version == format.SlnVersion;
+				return format.SupportsSlnVersion (version);
 			}
 			return false;
 		}
