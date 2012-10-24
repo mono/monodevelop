@@ -15,10 +15,15 @@
     	<Addin id="Refactoring" version="3.0.4"/>
   </Dependencies>
 
+    <!-- This is the F# 2.0 targets file. This seems the best choice at the moment -->
+    <!-- For Mono F# 3.0 and beyond, this targets file is also installed and it points to the F# 3.0 compiler -->
+    <!-- New projects will be created with this targets file. When opened with Visual Studio 2012, it will ask for a project -->
+    <!-- upgrade and replace with the F# 3.0 targets file. Project files with the F# 3.0 targets file will also work on Mono if F# 3.0 is -->
+    <!-- available. -->
 	<Extension path="/MonoDevelop/ProjectModel/MSBuildItemTypes">
 		<DotNetProject language="F#" extension="fsproj" 
 			guid="{4925A630-B079-445d-BCD4-3A9C94FE9307}" 
-			import="$(MSBuildExtensionsPath32)\FSharp\1.0\Microsoft.FSharp.Targets"
+			import="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets"
 			resourceHandler="MonoDevelop.FSharp.FSharpResourceIdBuilder"/>
 	</Extension>
 
