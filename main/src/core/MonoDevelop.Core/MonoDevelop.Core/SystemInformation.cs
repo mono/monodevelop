@@ -74,7 +74,7 @@ namespace MonoDevelop.Core
 			}
 			
 			var sb = new StringBuilder ();
-			var biFile = ((FilePath)Assembly.GetCallingAssembly ().Location).ParentDirectory.Combine ("buildinfo");
+			var biFile = ((FilePath)Assembly.GetEntryAssembly ().Location).ParentDirectory.Combine ("buildinfo");
 			if (File.Exists (biFile)) {
 				foreach (var line in File.ReadAllLines (biFile)){
 					if (!string.IsNullOrWhiteSpace (line))
