@@ -928,6 +928,7 @@ namespace MonoDevelop.VersionControl.Views
 			EditorCompareWidgetBase widget;
 			bool useLeftDiff;
 			bool paintInsert;
+			Adjustment vAdjustment;
 			
 			public DiffScrollbar (EditorCompareWidgetBase widget, TextEditor editor, bool useLeftDiff, bool paintInsert)
 			{
@@ -935,7 +936,8 @@ namespace MonoDevelop.VersionControl.Views
 				this.useLeftDiff = useLeftDiff;
 				this.paintInsert = paintInsert;
 				this.widget = widget;
-				widget.vAdjustment.ValueChanged += HandleValueChanged;
+				vAdjustment = widget.vAdjustment;
+				vAdjustment.ValueChanged += HandleValueChanged;
 				WidthRequest = 50;
 
 				Events |= EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.ButtonMotionMask;
@@ -946,7 +948,10 @@ namespace MonoDevelop.VersionControl.Views
 			protected override void OnDestroyed ()
 			{
 				base.OnDestroyed ();
-				widget.vAdjustment.ValueChanged -= HandleValueChanged;
+				if (vAdjustment != null) {
+					vAdjustment.ValueChanged -= HandleValueChanged;
+					vAdjustment = null;
+				}
 			}
 
 			void HandleValueChanged (object sender, EventArgs e)
