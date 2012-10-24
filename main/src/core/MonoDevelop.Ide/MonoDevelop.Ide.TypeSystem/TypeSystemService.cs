@@ -667,8 +667,10 @@ namespace MonoDevelop.Ide.TypeSystem
 			} else if (item is Solution) {
 				var solution = (Solution)item;
 				Parallel.ForEach (solution.GetAllProjects (), project => LoadProject (project));
+				var contents = projectContents.Values.ToArray ();
+
 				Task.Factory.StartNew (delegate {
-					ReloadAllReferences ();
+					ReloadAllReferences (contents);
 				});
 
 				solution.SolutionItemAdded += OnSolutionItemAdded;
@@ -676,12 +678,10 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 		
-		static void ReloadAllReferences ()
+		static void ReloadAllReferences (IEnumerable<ProjectContentWrapper> contents)
 		{
-			lock (projectContentLock) {
-				foreach (var wrapper in projectContents)
-					wrapper.Value.ReloadAssemblyReferences (wrapper.Key);
-			}
+			foreach (var wrapper in contents)
+				wrapper.ReloadAssemblyReferences ();
 		}
 		
 		[Serializable]
@@ -1120,9 +1120,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				return false;
 			}
 
-			public void ReloadAssemblyReferences (Project project)
+			public void ReloadAssemblyReferences ()
 			{
-				var netProject = project as DotNetProject;
+				var netProject = this.Project as DotNetProject;
 				if (netProject == null)
 					return;
 				try {
@@ -1284,7 +1284,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			projectContents.TryGetValue (project, out wrapper);
 			if (wrapper == null)
 				return;
-			ReloadAllReferences ();
+			ReloadAllReferences (projectContents.Values.ToArray ());
 		}
 		#endregion
 		
@@ -1358,7 +1358,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (args.SolutionItem is Project) {
 				var wrapper = LoadProject ((Project)args.SolutionItem);
 				if (wrapper != null)
-					wrapper.ReloadAssemblyReferences (wrapper.Project);
+					wrapper.ReloadAssemblyReferences ();
 			}
 		}
 		
