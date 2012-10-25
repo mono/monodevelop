@@ -313,6 +313,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			var parser = GetParser (mimeType);
 			if (parser == null)
 				return null;
+
+			var t = Counters.ParserService.FileParsed.BeginTiming (fileName);
 			try {
 				var result = parser.Parse (true, fileName, content, project);
 				lock (projectWrapperUpdateLock) {
@@ -347,8 +349,10 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 				return result;
 			} catch (Exception e) {
-				LoggingService.LogError ("Exception while parsing :" + e);
+				LoggingService.LogError ("Exception while parsing: " + e);
 				return null;
+			} finally {
+				t.Dispose ();
 			}
 		}
 		
@@ -374,6 +378,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			var parser = GetParser (mimeType);
 			if (parser == null)
 				return null;
+			var t = Counters.ParserService.FileParsed.BeginTiming (fileName);
 			try {
 				var result = parser.Parse (true, fileName, content);
 				lock (projectWrapperUpdateLock) {
@@ -390,6 +395,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception while parsing :" + e);
 				return null;
+			} finally {
+				t.Dispose ();
 			}
 		}
 		
@@ -525,6 +532,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		
 		static T DeserializeObject<T> (string path) where T : class
 		{
+			var t = Counters.ParserService.ObjectDeserialized.BeginTiming (path);
 			try {
 				using (var fs = new FileStream (path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.SequentialScan)) {
 					using (var reader = new BinaryReaderWith7BitEncodedInts (fs)) {
@@ -535,6 +543,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while reading type system cache.", e);
 				return default(T);
+			} finally {
+				t.Dispose ();
 			}
 		}
 		
@@ -542,6 +552,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (obj == null)
 				throw new ArgumentNullException ("obj");
+
+			var t = Counters.ParserService.ObjectSerialized.BeginTiming (path);
 			try {
 				using (var fs = new FileStream (path, FileMode.Create, FileAccess.Write)) {
 					using (var writer = new BinaryWriterWith7BitEncodedInts (fs)) {
@@ -553,6 +565,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				Console.WriteLine ("-----------------Serialize stack trace:");
 				Console.WriteLine (Environment.StackTrace);
 				LoggingService.LogError ("Error while writing type system cache. (object:" + obj.GetType () + ")", e);
+			} finally {
+				t.Dispose ();
 			}
 		}
 		
@@ -651,8 +665,10 @@ namespace MonoDevelop.Ide.TypeSystem
 		#region Project loading
 		public static void Load (WorkspaceItem item)
 		{
-			InternalLoad (item);
-			CleanupCache ();
+			using (Counters.ParserService.WorkspaceItemLoaded.BeginTiming ()) {
+				InternalLoad (item);
+				CleanupCache ();
+			}
 		}
 		
 		
@@ -1191,6 +1207,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (projectContents.ContainsKey (project))
 					return null;
 				try {
+					Counters.ParserService.ProjectsLoaded++;
 					ProjectContentWrapper wrapper;
 					projectContents [project] = wrapper = new ProjectContentWrapper (project);
 					OnProjectContentLoaded (new ProjectContentEventArgs (project, wrapper.Content));
@@ -1316,6 +1333,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			lock (projectWrapperUpdateLock) {
 				if (DecLoadCount (project) != 0)
 					return;
+				Counters.ParserService.ProjectsLoaded--;
 				project.FileAddedToProject -= OnFileAdded;
 				project.FileRemovedFromProject -= OnFileRemoved;
 				project.FileRenamedInProject -= OnFileRenamed;
