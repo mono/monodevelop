@@ -84,9 +84,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		void OnWindowChanged (object ob, EventArgs args)
 		{
-			DispatchService.GuiDispatch (new MessageHandler (SelectActiveFile));
+			Gtk.Application.Invoke (delegate {
+				SelectActiveFile ();
+			});
 		}
-		
+
 		void SelectActiveFile ()
 		{
 			Document doc = IdeApp.Workbench.ActiveDocument;
