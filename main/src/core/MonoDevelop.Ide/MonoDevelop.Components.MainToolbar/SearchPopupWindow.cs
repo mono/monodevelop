@@ -757,49 +757,47 @@ namespace MonoDevelop.Components.MainToolbar
 
 		Cairo.Rectangle SelectedItemRectangle {
 			get {
-				var alloc = ChildAllocation;
-				
-				var r = results.Where (res => res.Item2.ItemCount > 0).ToArray ();
+				if (selectedItem == null)
+					return new Cairo.Rectangle (0, 0, Allocation.Width, 16);
 
-				double y = alloc.Y + yMargin;
-				int w, h;
-				if (topItem != null) {
-
-					var category = topItem.Category;
-					var i = topItem.Item;
-					headerLayout.SetText (GettextCatalog.GetString ("Top result"));
-					headerLayout.GetPixelSize (out w, out h);
-
-					if (selectedItem != null && selectedItem.Category == category && selectedItem.Item == i) {
+				double maxX = 0;
+				double y = ChildAllocation.Y + yMargin;
+				if (topItem != null){
+					layout.SetMarkup (GetRowMarkup (topItem.DataSource, topItem.Item));
+					int w, h;
+					layout.GetPixelSize (out w, out h);
+					if (topItem.Category == selectedItem.Category && topItem.Item == selectedItem.Item)
 						return new Cairo.Rectangle (0, y, Allocation.Width, h + itemSeparatorHeight);
-					}
-
 					y += h + itemSeparatorHeight;
 				}
-				
-				foreach (var result in r) {
+				foreach (var result in results) {
 					var category = result.Item1;
 					var dataSrc = result.Item2;
-					if (dataSrc.ItemCount == 0)
-						continue;
-					if (dataSrc.ItemCount == 1 && topItem != null && topItem.DataSource == dataSrc)
-						continue;
-
+					int itemsAdded = 0;
 					for (int i = 0; i < maxItems && i < dataSrc.ItemCount; i++) {
-						if (topItem != null && topItem.Category == category && topItem.Item == i)
+						if (topItem != null && topItem.DataSource == dataSrc && topItem.Item == i)
 							continue;
 						layout.SetMarkup (GetRowMarkup (dataSrc, i));
+
+						int w, h;
 						layout.GetPixelSize (out w, out h);
 
-						if (selectedItem != null && selectedItem.Category == category && selectedItem.Item == i) {
+						if (selectedItem.Category == category && selectedItem.DataSource == dataSrc && selectedItem.Item == i)
 							return new Cairo.Rectangle (0, y, Allocation.Width, h + itemSeparatorHeight);
-						}
-
 						y += h + itemSeparatorHeight;
+
+						var region = dataSrc.GetRegion (i);
+						if (!region.Begin.IsEmpty) {
+							layout.SetMarkup (region.BeginLine.ToString ());
+							int w2, h2;
+							layout.GetPixelSize (out w2, out h2);
+							w += w2;
+						}
+						maxX = Math.Max (maxX, w);
+						itemsAdded++;
 					}
-					if (result != r.Last ()) {
+					if (itemsAdded > 0)
 						y += categorySeparatorHeight;
-					}
 				}
 				return new Cairo.Rectangle (0, 0, Allocation.Width, 16);
 			}
