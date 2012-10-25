@@ -1182,7 +1182,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 		static object projectContentLock = new object ();
 		static Dictionary<Project, ProjectContentWrapper> projectContents = new Dictionary<Project, ProjectContentWrapper> ();
-		static Dictionary<Project, int> referenceCounter = new Dictionary<Project, int> ();
 
 		public static ProjectContentWrapper LoadProject (Project project)
 		{
@@ -1194,7 +1193,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				try {
 					ProjectContentWrapper wrapper;
 					projectContents [project] = wrapper = new ProjectContentWrapper (project);
-					referenceCounter [project] = 1;
 					OnProjectContentLoaded (new ProjectContentEventArgs (project, wrapper.Content));
 					var dotNetProject = project as DotNetProject;
 					if (dotNetProject != null)
@@ -1315,22 +1313,19 @@ namespace MonoDevelop.Ide.TypeSystem
 		
 		public static void UnloadProject (Project project)
 		{
-			if (DecLoadCount (project) != 0)
-				return;
 			lock (projectWrapperUpdateLock) {
-				if (referenceCounter.ContainsKey (project) && --referenceCounter [project] <= 0) {
-					project.FileAddedToProject -= OnFileAdded;
-					project.FileRemovedFromProject -= OnFileRemoved;
-					project.FileRenamedInProject -= OnFileRenamed;
-					project.Modified -= OnProjectModified;
-					
-					var wrapper = projectContents [project];
-					projectContents.Remove (project);
-					referenceCounter.Remove (project);
+				if (DecLoadCount (project) != 0)
+					return;
+				project.FileAddedToProject -= OnFileAdded;
+				project.FileRemovedFromProject -= OnFileRemoved;
+				project.FileRenamedInProject -= OnFileRenamed;
+				project.Modified -= OnProjectModified;
+				
+				var wrapper = projectContents [project];
+				projectContents.Remove (project);
 
-					StoreProjectCache (project, wrapper);
-					OnProjectUnloaded (new ProjectUnloadEventArgs (project, wrapper));
-				}
+				StoreProjectCache (project, wrapper);
+				OnProjectUnloaded (new ProjectUnloadEventArgs (project, wrapper));
 			}
 		}
 		
@@ -1371,10 +1366,10 @@ namespace MonoDevelop.Ide.TypeSystem
 		#endregion
 
 		#region Reference Counting
-		static Dictionary<object,int> loadCount = new Dictionary<object,int> ();
+		static Dictionary<Project,int> loadCount = new Dictionary<Project,int> ();
 		static object rwLock = new object ();
 
-		static int DecLoadCount (object ob)
+		static int DecLoadCount (Project ob)
 		{
 			lock (rwLock) {
 				int c;
@@ -1391,7 +1386,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 		
-		static int IncLoadCount (object ob)
+		static int IncLoadCount (Project ob)
 		{
 			lock (rwLock) {
 				int c;
