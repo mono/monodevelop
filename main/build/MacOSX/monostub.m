@@ -323,28 +323,53 @@ is_launcher (const char *app)
 	return !strcmp (launcher, buf);
 }
 
+static bool
+env2bool (const char *env, bool defaultValue)
+{
+	const char *value;
+	bool nz = NO;
+	int i;
+	
+	if (!(value = getenv (env)))
+		return defaultValue;
+	
+	if (!strcasecmp (value, "true"))
+		return YES;
+	
+	if (!strcasecmp (value, "yes"))
+		return YES;
+	
+	/* check to see if the value is numeric. All numeric values evaluate to true *except* zero */
+	for (i = 0; value[i]; i++) {
+		if (!isdigit ((int) ((unsigned char) value[i])))
+			return NO;
+		
+		if (value[i] != '0')
+			nz = YES;
+	}
+	
+	return nz;
+}
+
 int main (int argc, char **argv)
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSString *binDir = [[NSString alloc] initWithUTF8String: "Contents/MacOS/lib/monodevelop/bin"];
 	NSString *appDir = [[NSBundle mainBundle] bundlePath];
-
-	// can be overridden with plist bool MonoUseSGen
-	bool use_sgen = YES;
-
 	// can be overridden with plist string MonoMinVersion
 	NSString *req_mono_version = @"2.10.10";
+	// can be overridden with either plist bool MonoUseSGen or MONODEVELOP_USE_SGEN env
+	bool use_sgen = YES;
 
 	NSDictionary *plist = [[NSBundle mainBundle] infoDictionary];
 	if (plist) {
 		NSNumber *sgen_obj = (NSNumber *) [plist objectForKey:@"MonoUseSGen"];
-		if (sgen_obj) {
+		if (sgen_obj)
 			use_sgen = [sgen_obj boolValue];
-		}
+		
 		NSString *version_obj = [plist objectForKey:@"MonoMinVersion"];
-		if (version_obj && [version_obj length] > 0) {
+		if (version_obj && [version_obj length] > 0)
 			req_mono_version = version_obj;
-		}
 	}
 
 	NSString *exePath, *exeName;
@@ -373,21 +398,9 @@ int main (int argc, char **argv)
 	exeName = [NSString stringWithFormat:@"%s.exe", basename];
 	exePath = [[appDir stringByAppendingPathComponent: binDir] stringByAppendingPathComponent: exeName];
 	
-	//the plist setting can be overridden with the MONODEVELOP_USE_SGEN env var
-	char *sgen_env = getenv ("MONODEVELOP_USE_SGEN");
-	if (sgen_env) {
-		switch (sgen_env[0]) {
-		case 'N': case 'n': // NO
-		case 'F': case 'f': // FALSE
-			use_sgen = NO;
-			break;
-		case 'Y': case 'y': // YES
-		case 'T': case 't': // TRUE
-			use_sgen = YES;
-			break;
-		}
-	}
-
+	// allow the MONODEVELOP_USE_SGEN environment variable to override the plist value
+	use_sgen = env2bool ("MONODEVELOP_USE_SGEN", use_sgen);
+	
 	void *libmono = dlopen (use_sgen ? MONO_LIB_PATH ("libmonosgen-2.0.dylib") : MONO_LIB_PATH ("libmono-2.0.dylib"), RTLD_LAZY);
 	
 	if (libmono == NULL) {
