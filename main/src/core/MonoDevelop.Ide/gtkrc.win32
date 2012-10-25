@@ -208,10 +208,17 @@ style "toolbar-combo-box" = "default"
 style "combo-box" = "default"
 {
     fg[NORMAL] = "#616161"
-    xthickness = 4
+    xthickness = 2
     ythickness = 4
 
     engine "xamarin" {
+        arrowstyle = 4
+    }
+}
+
+style "combo-box-entry" = "combo-box"
+{
+   	engine "xamarin" {
         arrowstyle = 3
     }
 }
@@ -337,8 +344,8 @@ widget_class "*.GtkList.GtkButton"  style "tree-header"
 widget_class "*<GtkIconView>" style "icon-view"
 
 widget_class "*.<GtkComboBox>.*" style "combo-box"
-widget_class "*.<GtkComboBoxText>.*" style "combo-box"
-widget_class "*.<GtkComboBoxEntry>.*" style "combo-box"
+widget_class "*.<GtkComboBoxText>.*" style "combo-box-entry"
+widget_class "*.<GtkComboBoxEntry>.*" style "combo-box-entry"
 widget_class "*.<GtkComboBoxText>.<GtkEntry>" style "entry"
 widget_class "*.<GtkComboBoxText>.<GtkButton>" style "button"
 #widget_class "*.<GtkComboBoxEntry>.GtkEntry" style "entry"
