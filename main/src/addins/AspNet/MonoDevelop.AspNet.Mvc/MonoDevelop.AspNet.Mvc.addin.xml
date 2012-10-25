@@ -193,10 +193,6 @@
 		</MimeType>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/SourceEditor2/CustomModes">
-		<SyntaxMode mimeTypes="text/x-cshtml" class="MonoDevelop.AspNet.Mvc.RazorSyntaxMode"/>
-	</Extension>
-
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class fileExtensions=".cshtml" class = "MonoDevelop.AspNet.Mvc.Gui.RazorCSharpEditorExtension" />
 	</Extension>
