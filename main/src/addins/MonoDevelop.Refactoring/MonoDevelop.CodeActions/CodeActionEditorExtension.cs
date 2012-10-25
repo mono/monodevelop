@@ -134,7 +134,7 @@ namespace MonoDevelop.CodeActions
 							ICSharpCode.NRefactory.Semantics.ResolveResult resolveResult;
 							ICSharpCode.NRefactory.CSharp.AstNode node;
 							if (ResolveCommandHandler.ResolveAt (document, out resolveResult, out node, token)) {
-								var possibleNamespaces = ResolveCommandHandler.GetPossibleNamespaces (document, node, resolveResult);
+								var possibleNamespaces = ResolveCommandHandler.GetPossibleNamespaces (document, node, ref resolveResult);
 								if (!possibleNamespaces.Any ()) {
 									if (widget != null)
 										Application.Invoke (delegate { RemoveWidget (); });

@@ -35,6 +35,7 @@ using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.CSharp;
 using MonoDevelop.CSharp.Completion;
 using MonoDevelop.Refactoring;
+using System.Linq;
 
 namespace MonoDevelop.CSharpBinding.Refactoring
 {
@@ -48,7 +49,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 			tww.ViewContent = content;
 			content.ContentName = "a.cs";
 			content.GetTextEditorData ().Document.MimeType = "text/x-csharp";
-
+			Mono.TextEditor.ClipboardActions.CopyOperation cp;
 			Document doc = new Document (tww);
 
 			var text = input;
@@ -67,14 +68,14 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 			return doc;
 		}
 
-		HashSet<string> GetResult (string input)
+		HashSet<Tuple<string, bool>> GetResult (string input)
 		{
 			var doc = Setup (input);
 			var location = doc.Editor.Caret.Location;
 			ResolveResult resolveResult;
 			AstNode node;
 			doc.TryResolveAt (location, out resolveResult, out node);
-			return ResolveCommandHandler.GetPossibleNamespaces (doc, node, resolveResult);
+			return ResolveCommandHandler.GetPossibleNamespaces (doc, node, ref resolveResult);
 		}
 
 		[Test ()]
@@ -86,7 +87,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 		var list = new $List<string> ();
 	}
 }");
-			Assert.IsTrue (result.Contains ("System.Collections.Generic"));
+			Assert.IsTrue (result.Any (t => t.Item1 == "System.Collections.Generic"));
 		}
 
 		[Test ()]
@@ -98,7 +99,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 		$List<string> list;
 	}
 }");
-			Assert.IsTrue (result.Contains ("System.Collections.Generic"));
+				Assert.IsTrue (result.Any (t => t.Item1 == "System.Collections.Generic"));
 		}
 
 		[Test ()]
@@ -109,7 +110,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 	{
 	}
 }");
-			Assert.IsTrue (result.Contains ("System.Collections.Generic"));
+			Assert.IsTrue (result.Any (t => t.Item1 == "System.Collections.Generic"));
 		}
 		
 		[Test ()]
@@ -118,7 +119,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 			var result = GetResult (@"class Test {
 	$List<string> list;
 }");
-			Assert.IsTrue (result.Contains ("System.Collections.Generic"));
+			Assert.IsTrue (result.Any (t => t.Item1 == "System.Collections.Generic"));
 		}
 		
 		
@@ -126,7 +127,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 		public void TestBaseType ()
 		{
 			var result = GetResult (@"class Test : $List<string> {}");
-			Assert.IsTrue (result.Contains ("System.Collections.Generic"));
+			Assert.IsTrue (result.Any (t => t.Item1 == "System.Collections.Generic"));
 		}
 		
 
@@ -150,7 +151,7 @@ class Test {
 [$Obsolete]
 class Test {
 }");
-			Assert.IsTrue (result.Contains ("System"));
+			Assert.IsTrue (result.Any (t => t.Item1 == "System"));
 		}
 		
 		[Test ()]
@@ -161,7 +162,7 @@ class Test {
 [$SerializableAttribute]
 class Test {
 }");
-			Assert.IsTrue (result.Contains ("System"));
+			Assert.IsTrue (result.Any (t => t.Item1 == "System"));
 		}
 
 		[Test ()]
@@ -186,8 +187,8 @@ namespace My
 }");
 			foreach (var a in result)
 				Console.WriteLine (a);
-			Assert.IsTrue (result.Contains ("Foo"));
-			Assert.IsTrue (result.Contains ("Foo2"));
+			Assert.IsTrue (result.Any (t => t.Item1 == "Foo"));
+			Assert.IsTrue (result.Any (t => t.Item1 == "Foo2"));
 		}
 
 		[Test ()]
@@ -202,7 +203,7 @@ namespace My
 }");
 			foreach (var a in result)
 				Console.WriteLine (a);
-			Assert.IsTrue (result.Contains ("System.Linq"));
+			Assert.IsTrue (result.Any (t => t.Item1 == "System.Linq"));
 		}
 
 
@@ -217,7 +218,7 @@ namespace My
 		return encoding.EncodingName;
 	}
 }");
-			Assert.IsTrue (result.Contains ("System.Text"));
+			Assert.IsTrue (result.Any (t => t.Item1 == "System.Text"));
 		}
 
 		[Test ()]
@@ -230,7 +231,7 @@ namespace My
 		return encoding.EncodingName;
 	}
 }");
-			Assert.IsTrue (result.Contains ("System.Text"));
+			Assert.IsTrue (result.Any (t => t.Item1 == "System.Text"));
 		}
 
 		[Test ()]
@@ -242,7 +243,7 @@ namespace My
 		$Encoding.
 	}
 }");
-			Assert.IsTrue (result.Contains ("System.Text"));
+			Assert.IsTrue (result.Any (t => t.Item1 == "System.Text"));
 		}
 
 		[Test ()]
@@ -254,7 +255,7 @@ namespace My
 		$List<string>.
 	}
 }");
-			Assert.IsTrue (result.Contains ("System.Collections.Generic"));
+			Assert.IsTrue (result.Any (t => t.Item1 == "System.Collections.Generic"));
 		}
 		#endregion
 
@@ -280,7 +281,7 @@ namespace sadfhgjhkfj
 }");
 			foreach (var a in result)
 				Console.WriteLine (a);
-			Assert.IsTrue (result.Contains ("System.Threading"));
+			Assert.IsTrue (result.Any (t => t.Item1 == "System.Threading"));
 		}
 
 		[Test ()]
@@ -302,7 +303,7 @@ namespace sadfhgjhkfj
 }");
 			foreach (var a in result)
 				Console.WriteLine (a);
-			Assert.IsTrue (result.Contains ("System.Threading"));
+			Assert.IsTrue (result.Any (t => t.Item1 == "System.Threading"));
 		}
 
 		/// <summary>
@@ -325,8 +326,8 @@ namespace sadfhgjhkfj
 }"
 			);
 
-			Assert.IsFalse (result.Contains ("System.Collections"));
-			Assert.IsTrue (result.Contains ("System.Collections.Generic"));
+			Assert.IsFalse (result.Any (t => t.Item1 == "System.Collections"));
+			Assert.IsTrue (result.Any (t => t.Item1 == "System.Collections.Generic"));
 		}
 
 
@@ -350,10 +351,30 @@ namespace TestConsole
 }"
 			);
 
-			Assert.IsTrue (result.Contains ("System.Reflection"));
+			Assert.IsTrue (result.Any (t => t.Item1 == "System.Reflection"));
 		}
 
+		/// <summary>
+		/// Bug 4749 - Resolve is incorrect for inner classes
+		/// </summary>
+		[Test ()]
+		public void TestBug4749 ()
+		{
 
+			var result = GetResult (@"namespace Test { public class Foo { public class Bar {} } }
+
+class Program
+{
+	public static void Main ()
+	{
+		$Bar bar;
+	}
+}
+");
+			foreach (var a in result)
+				Console.WriteLine (a);
+			Assert.IsTrue (result.Any (t => t.Item1 == "Test.Foo" && !t.Item2));
+		}
 
 	}
 }

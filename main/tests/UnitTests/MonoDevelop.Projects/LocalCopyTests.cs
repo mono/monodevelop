@@ -40,6 +40,7 @@ namespace MonoDevelop.Projects
 	public class LocalCopyTests : TestBase
 	{
 		[Test]
+		[Ignore ("We don't install the msbuild assemblies in the right place for this tests")]
 		public void CheckLocalCopy ()
 		{
 			string solFile = Util.GetSampleProject ("vs-local-copy", "VSLocalCopyTest.sln");

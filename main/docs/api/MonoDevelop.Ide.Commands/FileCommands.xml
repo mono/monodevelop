@@ -104,7 +104,31 @@
       <ReturnValue><ReturnType>MonoDevelop.Ide.Commands.FileCommands</ReturnType></ReturnValue>
       <Docs><summary>To be added.</summary></Docs>
     </Member>
-  <Member MemberName="OpenContainingFolder"><MemberSignature Language="C#" Value="OpenContainingFolder" /><MemberType>Field</MemberType><ReturnValue><ReturnType>MonoDevelop.Ide.Commands.FileCommands</ReturnType></ReturnValue><Docs><summary>To be added.</summary></Docs></Member><Member MemberName="OpenFileInSolution"><MemberSignature Language="C#" Value="OpenFileInSolution" /><MemberType>Field</MemberType><ReturnValue><ReturnType>MonoDevelop.Ide.Commands.FileCommands</ReturnType></ReturnValue><Docs><summary>To be added.</summary></Docs></Member><Member MemberName="OpenFolder"><MemberSignature Language="C#" Value="OpenFolder" /><MemberType>Field</MemberType><ReturnValue><ReturnType>MonoDevelop.Ide.Commands.FileCommands</ReturnType></ReturnValue><Docs><summary>To be added.</summary></Docs></Member><Member MemberName="OpenInTerminal"><MemberSignature Language="C#" Value="OpenInTerminal" /><MemberType>Field</MemberType><ReturnValue><ReturnType>MonoDevelop.Ide.Commands.FileCommands</ReturnType></ReturnValue><Docs><summary>To be added.</summary></Docs></Member></Members>
+    <Member MemberName="OpenContainingFolder">
+      <MemberSignature Language="C#" Value="OpenContainingFolder" />
+      <MemberType>Field</MemberType>
+      <ReturnValue><ReturnType>MonoDevelop.Ide.Commands.FileCommands</ReturnType></ReturnValue>
+      <Docs><summary>To be added.</summary></Docs>
+    </Member>
+    <Member MemberName="OpenFileInSolution">
+      <MemberSignature Language="C#" Value="OpenFileInSolution" />
+      <MemberType>Field</MemberType>
+      <ReturnValue><ReturnType>MonoDevelop.Ide.Commands.FileCommands</ReturnType></ReturnValue>
+      <Docs><summary>To be added.</summary></Docs>
+    </Member>
+    <Member MemberName="OpenFolder">
+      <MemberSignature Language="C#" Value="OpenFolder" />
+      <MemberType>Field</MemberType>
+      <ReturnValue><ReturnType>MonoDevelop.Ide.Commands.FileCommands</ReturnType></ReturnValue>
+      <Docs><summary>To be added.</summary></Docs>
+    </Member>
+    <Member MemberName="OpenInTerminal">
+      <MemberSignature Language="C#" Value="OpenInTerminal" />
+      <MemberType>Field</MemberType>
+      <ReturnValue><ReturnType>MonoDevelop.Ide.Commands.FileCommands</ReturnType></ReturnValue>
+      <Docs><summary>To be added.</summary></Docs>
+    </Member>
+  </Members>
   <Docs>
     <summary>To be added.</summary>
     <remarks>To be added.</remarks>

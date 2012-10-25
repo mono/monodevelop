@@ -41,6 +41,7 @@ namespace MonoDevelop.Projects
 	public class MSBuildTests: TestBase
 	{
 		[Test()]
+		[Ignore ("We don't install the msbuild assemblies in the right place for this tests")]
 		public void LoadSaveBuildConsoleProject()
 		{
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
