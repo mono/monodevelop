@@ -3,8 +3,8 @@
 <Template originator="Ihor Sihuta" created="2012/08/05">
 
 	<TemplateConfiguration>
-		<_Name>Gtk# 2.0 project</_Name>
-		<_Description>Create F# Gtk# 2.0</_Description>
+		<_Name>F# 3.0 Desktop Application (Gtk# 2.0)</_Name>
+		<_Description>Create an F# 3.0 desktop application (using Gtk# 2.0 and .NET 4.0). NOTE: you may have to manually set the target framework after creating the project. This is a known bug.</_Description>
 		<_Category>F#</_Category>
 		<LanguageName>F#</LanguageName>
 	</TemplateConfiguration>
@@ -19,10 +19,12 @@
 		</Options>
 
 		<Project name = "${ProjectName}" directory = ".">
-			<Options Target = "WinExe" />
+			<Options Target = "WinExe" TargetFrameworkVersion="4.0" />
 
 			<References>
-				<Reference type="Package" refto="System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+                <Reference type="Gac" refto="FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+				<Reference type="Package" refto="System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+                <Reference type="Package" refto="System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
 				<Reference type="Package" SpecificVersion="false" refto="gtk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
 				<Reference type="Package" SpecificVersion="false" refto="gdk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
 				<Reference type="Package" SpecificVersion="false" refto="glib-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
@@ -35,21 +37,22 @@
 
 			<!-- A window template -->
 
+				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
 				<Widget>
 					<SteticTemplate>
 					  <widget class="Gtk.Window" id="MainWindow" design-size="400 300">
 					    <property name="Title" translatable="yes">${Name}</property>
 					    <property name="WindowPosition">CenterOnParent</property>
 					    <signal name="DeleteEvent" handler="OnDeleteEvent" />
-				        <child>
-				          <placeholder />
-				        </child>
+				            <child>
+				              <placeholder />
+				            </child>
 					  </widget>			
 					</SteticTemplate>
 
 					<!-- Class bound to the window -->
 
-					<File name="MainWindow.fs" AddStandardHeader="True">
+			                <File name="MainWindow.fs">
 <![CDATA[namespace ${ProjectName}
 
     module MainWindow =
@@ -68,22 +71,24 @@
                 Application.Quit ()
                 e.RetVal <- true]]>
 				</File>
-             </Widget>
-             <File name="Main.fs" AddStandardHeader="true">
+             
+                            </Widget>
+             <File name="Main.fs">
                 <![CDATA[namespace ${ProjectName}
     module Main =
         
         open System
         open Gtk
     
-        type MainClass = 
-            static member Main() = 
-                Application.Init()
-                let mutable win = new MainWindow.MyWindow()
-                win.Show()
-                Application.Run()]]>
+        [<EntryPoint>]
+        let Main(args) = 
+            Application.Init()
+            let win = new MainWindow.MyWindow()
+            win.Show()
+            Application.Run()
+            0
+]]>
              </File>
-				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
 			</Files>
 		</Project>
 	</Combine>
