@@ -84,7 +84,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				Font = infoBox.Font.WithWeight (Xwt.Drawing.FontWeight.Bold)
 			});
 			infoBox.PackStart (new Xwt.Label () {
-				Text = string.Format ("© 2004-{0} by MonoDevelop contributors", DateTime.Now.Year),
+				Text = "© 2004-2012 by MonoDevelop contributors",
 				MarginLeft = 12
 			});
 
