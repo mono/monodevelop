@@ -1,2 +1,0 @@
-C:\Users\Sega\Documents\GitHub\fsharpbinding\src\obj\Debug\ResolveAssemblyReference.cache
-C:\Users\Sega\Documents\GitHub\fsharpbinding\MonoDevelop.FSharpBinding\obj\Debug\ResolveAssemblyReference.cache
