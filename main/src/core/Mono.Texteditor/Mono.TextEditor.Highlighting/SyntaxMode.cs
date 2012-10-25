@@ -416,9 +416,8 @@ namespace Mono.TextEditor.Highlighting
 									break;
 								}
 							}
-							if (!mismatch) {
-								escapeChars = cur.Escape.Length + 1;
-							}
+							if (!mismatch)
+								escapeChars = cur.Escape.Length;
 						}
 						if (escapeChars == 0 && ScanSpanEnd (cur, ref i))
 							continue;
