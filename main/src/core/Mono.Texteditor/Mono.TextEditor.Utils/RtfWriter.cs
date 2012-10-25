@@ -165,8 +165,6 @@ namespace Mono.TextEditor.Utils
 			rtf.Append (@"\cf1");
 			rtf.Append (rtfText.ToString ());
 			rtf.Append("}");
-			Console.WriteLine ("----");
-			Console.WriteLine (rtf);
 			return rtf.ToString ();
 		}
 	}
