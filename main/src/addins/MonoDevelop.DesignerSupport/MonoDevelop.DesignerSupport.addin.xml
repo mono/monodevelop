@@ -120,7 +120,7 @@
 		         _description = "Switch between related files, such as CodeBehind, headers, etc."
 		         defaultHandler="MonoDevelop.DesignerSupport.SwitchBetweenRelatedFilesCommand"
 		         shortcut="Control|Alt|Up"
-		         macShortcut="Meta|Alt|Up" />
+		         macShortcut="Control|Meta|Up" />
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/ContextMenu/DocumentTab">
