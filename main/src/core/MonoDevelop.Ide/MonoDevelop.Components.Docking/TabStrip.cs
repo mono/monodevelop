@@ -501,7 +501,7 @@ namespace MonoDevelop.Components.Docking
 				evnt.Window.DrawRectangle (gc, true, alloc);
 				if (!first)
 					evnt.Window.DrawLine (bgc, alloc.X, alloc.Y, alloc.X, alloc.Y + alloc.Height - 1);
-				if (!(last && first) && !(visualStyle.ExpandedTabs.Value && last))
+				if (!(last && first) && !(tabStrip != null && tabStrip.VisualStyle.ExpandedTabs.Value && last))
 					evnt.Window.DrawLine (bgc, alloc.X + alloc.Width - 1, alloc.Y, alloc.X + alloc.Width - 1, alloc.Y + alloc.Height - 1);
 				gc.Dispose ();
 
