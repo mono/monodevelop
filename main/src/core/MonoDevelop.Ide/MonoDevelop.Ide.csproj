@@ -670,9 +670,6 @@
     <EmbeddedResource Include="branding\AboutImage.png">
       <LogicalName>AboutImage.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="branding\AboutImageSep.png">
-      <LogicalName>AboutImageSep.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="branding\SplashScreen.png">
       <LogicalName>SplashScreen.png</LogicalName>
     </EmbeddedResource>

@@ -55,10 +55,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			TransientFor = IdeApp.Workbench.RootWindow;
 			AllowGrow = false;
 			HasSeparator = false;
-			
+			BorderWidth = 0;
+
 			var notebook = new Notebook ();
 			notebook.ShowTabs = false;
 			notebook.ShowBorder = false;
+			notebook.BorderWidth = 0;
 			notebook.AppendPage (new AboutMonoDevelopTabPage (), new Label (Title));
 			notebook.AppendPage (new VersionInformationTabPage (), new Label (GettextCatalog.GetString ("Version Information")));
 			VBox.PackStart (notebook, true, true, 0);

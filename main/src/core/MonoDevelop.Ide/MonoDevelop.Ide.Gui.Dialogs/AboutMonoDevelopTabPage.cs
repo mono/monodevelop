@@ -30,6 +30,7 @@ using System;
 using System.IO;
 using System.Text;
 
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 
@@ -49,35 +50,65 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 			BorderWidth = 0;
 
-			using (var stream = BrandingService.GetStream ("SplashScreen.png", true))
+			using (var stream = BrandingService.GetStream ("AboutImage.png", true))
 				imageSep = new Pixbuf (stream);
 			PackStart (new Gtk.Image (imageSep), false, false, 0);
 
-			VBox infoBox = new VBox (false, 6);
-			infoBox.BorderWidth = 12;
-			PackStart (infoBox, false, false, 0);
+			Xwt.VBox infoBox = new Xwt.VBox ();
+			infoBox.Spacing = 6;
+			infoBox.Margin = 12;
+			PackStart (infoBox.ToGtkWidget (), false, false, 0);
 
-			var label = new Label () {
-				Xalign = 0,
-				Markup = string.Format (
-					"<b>{0}</b>\n    {1}", 
-					GettextCatalog.GetString ("Version"), 
-					BuildVariables.PackageVersion == BuildVariables.PackageVersionLabel ? BuildVariables.PackageVersionLabel : String.Format ("{0} ({1})", 
-				                                                                                                                          BuildVariables.PackageVersionLabel, 
-				                                                                                                                          BuildVariables.PackageVersion))
-			};
-			infoBox.PackStart (label, false, false, 0);
-			label = new Label () {
-				Xalign = 0,
-				Markup = "<b>" + GettextCatalog.GetString ("License") + "</b>\n    " + GettextCatalog.GetString ("Released under the GNU Lesser General Public License.")
-			};
-			infoBox.PackStart (label, false, false, 0);
+			infoBox.PackStart (new Xwt.Label () {
+				Text = GettextCatalog.GetString ("Version"),
+				Font = infoBox.Font.WithWeight (Xwt.Drawing.FontWeight.Bold)
+			});
+			infoBox.PackStart (new Xwt.Label () {
+				Text = BuildVariables.PackageVersion == BuildVariables.PackageVersionLabel ? BuildVariables.PackageVersionLabel : String.Format ("{0} ({1})", 
+				                                                                                                                                 BuildVariables.PackageVersionLabel, 
+				                                                                                                                                 BuildVariables.PackageVersion),
+				MarginLeft = 12
+			});
 
-			label = new Label () {
-				Xalign = 0,
-				Markup = string.Format ("<b>Copyright</b>\n    (c) 2004-{0} by MonoDevelop contributors", DateTime.Now.Year)
+			infoBox.PackStart (new Xwt.Label () {
+				Text = GettextCatalog.GetString ("License"),
+				Font = infoBox.Font.WithWeight (Xwt.Drawing.FontWeight.Bold)
+			});
+			infoBox.PackStart (new Xwt.Label () {
+				Text = GettextCatalog.GetString ("Released under the GNU Lesser General Public License."),
+				MarginLeft = 12
+			});
+
+			infoBox.PackStart (new Xwt.Label () {
+				Text = GettextCatalog.GetString ("Copyright"),
+				Font = infoBox.Font.WithWeight (Xwt.Drawing.FontWeight.Bold)
+			});
+			infoBox.PackStart (new Xwt.Label () {
+				Text = string.Format ("© 2004-{0} by MonoDevelop contributors", DateTime.Now.Year),
+				MarginLeft = 12
+			});
+
+			var cbox = new Xwt.HBox () {
+				Spacing = 0,
+				MarginLeft = 12
 			};
-			infoBox.PackStart (label, false, false, 0);
+			cbox.PackStart (new Xwt.Label ("Some icons by "));
+			cbox.PackStart (new Xwt.LinkLabel () {
+				Text = string.Format ("Yusuke Kamiyamane"),
+				Uri = new Uri ("http://p.yusukekamiyamane.com")
+			});
+			infoBox.PackStart (cbox);
+
+			cbox = new Xwt.HBox () {
+				Spacing = 0,
+				MarginLeft = 12
+			};
+			cbox.PackStart (new Xwt.Label ("Some icons from the "));
+			cbox.PackStart (new Xwt.LinkLabel () {
+				Text = string.Format ("Silk icon set"),
+				Uri = new Uri ("http://www.famfamfam.com/")
+			});
+			infoBox.PackStart (cbox);
 
 			this.ShowAll ();
 		}

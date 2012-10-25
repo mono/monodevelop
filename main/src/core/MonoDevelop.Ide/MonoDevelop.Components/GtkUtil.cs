@@ -61,6 +61,11 @@ namespace MonoDevelop.Components
 			c.L += lightAmount;
 			return c;
 		}
+
+		public static Gtk.Widget ToGtkWidget (this Xwt.Widget widget)
+		{
+			return (Gtk.Widget) Xwt.Engine.WidgetRegistry.GetNativeWidget (widget);
+		}
 		
 		public static void EnableAutoTooltips (this Gtk.TreeView tree)
 		{
