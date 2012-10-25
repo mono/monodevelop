@@ -83,12 +83,22 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				Text = GettextCatalog.GetString ("Copyright"),
 				Font = infoBox.Font.WithWeight (Xwt.Drawing.FontWeight.Bold)
 			});
+			var cbox = new Xwt.HBox () {
+				Spacing = 0,
+				MarginLeft = 12
+			};
+			cbox.PackStart (new Xwt.Label ("© 2011-2012 "));
+			cbox.PackStart (new Xwt.LinkLabel () {
+				Text = string.Format ("Xamarin Inc."),
+				Uri = new Uri ("http://www.xamarin.com")
+			});
+			infoBox.PackStart (cbox);
 			infoBox.PackStart (new Xwt.Label () {
-				Text = "© 2004-2012 by MonoDevelop contributors",
+				Text = "© 2004-2012 MonoDevelop contributors",
 				MarginLeft = 12
 			});
 
-			var cbox = new Xwt.HBox () {
+			cbox = new Xwt.HBox () {
 				Spacing = 0,
 				MarginLeft = 12
 			};
