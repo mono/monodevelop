@@ -49,6 +49,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	class GuiBuilderService
 	{
 		static string GuiBuilderLayout = "Visual Design";
+		static int loadedGuiProjects;
 		
 #if DUMMY_STRINGS_FOR_TRANSLATION_DO_NOT_COMPILE
 		private void DoNotCompile ()
@@ -71,8 +72,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			if (IdeApp.Workbench == null)
 				return;
-			IdeApp.Workbench.ActiveDocumentChanged += new EventHandler (OnActiveDocumentChanged);
-			IdeApp.ProjectOperations.EndBuild += OnProjectCompiled;
 //			IdeApp.Workspace.ParserDatabase.AssemblyInformationChanged += (AssemblyInformationEventHandler) DispatchService.GuiDispatch (new AssemblyInformationEventHandler (OnAssemblyInfoChanged));
 			
 			IdeApp.Exited += delegate {
@@ -82,7 +81,29 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				}
 			};
 		}
-		
+
+		static void InitializeService ()
+		{
+			IdeApp.ProjectOperations.EndBuild += OnProjectCompiled;
+			IdeApp.Workbench.ActiveDocumentChanged += OnActiveDocumentChanged;
+		}
+
+		static void ShutdownService ()
+		{
+			IdeApp.ProjectOperations.EndBuild -= OnProjectCompiled;
+			IdeApp.Workbench.ActiveDocumentChanged -= OnActiveDocumentChanged;
+			if (steticApp != null) {
+				StoreConfiguration ();
+				steticApp.Dispose ();
+				steticApp = null;
+			}
+		}
+
+		public static GuiBuilderProject CreateBuilderProject (DotNetProject project, string fileName)
+		{
+			return new GuiBuilderProject (project, fileName);
+		}
+
 		public static Stetic.Application SteticApp {
 			get {
 				// Stetic is not thread safe, so all has to be done in the gui thread
@@ -97,6 +118,18 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				}
 				return steticApp;
 			}
+		}
+
+		internal static void NotifyGuiProjectLoaded ()
+		{
+			if (++loadedGuiProjects == 1)
+				InitializeService ();
+		}
+
+		internal static void NotifyGuiProjectUnloaded ()
+		{
+			if (--loadedGuiProjects == 0)
+				ShutdownService ();
 		}
 		
 		static string OnAssemblyResolve (string assemblyName)
@@ -200,13 +233,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				// being used by the IDE. This will avoid unnecessary updates.
 				if (IdeApp.Workspace.IsOpen) {
 					foreach (Project prj in IdeApp.Workspace.GetAllProjects ()) {
-						if (!HasOpenDesigners (prj, false)) {
+						if (!HasOpenDesigners (prj, false) && GtkDesignInfo.HasDesignedObjects (prj)) {
 							GtkDesignInfo info = GtkDesignInfo.FromProject (prj);
 							info.ReloadGuiBuilderProject ();
 						}
 					}
 				}
-				
+
 				SteticApp.UpdateWidgetLibraries (false);
 			}
 		}

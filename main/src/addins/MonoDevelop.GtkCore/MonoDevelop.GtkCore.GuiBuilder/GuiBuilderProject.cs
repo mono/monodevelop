@@ -71,6 +71,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			this.fileName = fileName;
 			this.project = project;
 			Counters.GuiProjectsLoaded++;
+			GuiBuilderService.NotifyGuiProjectLoaded ();
 		}
 		
 		void Load ()
@@ -247,6 +248,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			if (disposed)
 				return;
+			GuiBuilderService.NotifyGuiProjectUnloaded ();
 			Counters.GuiProjectsLoaded--;
 			disposed = true;
 			if (watcher != null)
