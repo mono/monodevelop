@@ -97,7 +97,8 @@ namespace MonoDevelop.CSharp.Project
 			iconEntry.Path = projectParameters.Win32Icon;
 			iconEntry.DefaultPath = project.BaseDirectory;
 			allowUnsafeCodeCheckButton.Active = compilerParameters.UnsafeCode;
-			
+			noStdLibCheckButton.Active = compilerParameters.NoStdLib;
+
 			ListStore langVerStore = new ListStore (typeof (string));
 			langVerStore.AppendValues (GettextCatalog.GetString ("Default"));
 			langVerStore.AppendValues ("ISO-1");
@@ -180,6 +181,7 @@ namespace MonoDevelop.CSharp.Project
 			foreach (DotNetProjectConfiguration configuration in configs) {
 				CSharpCompilerParameters compilerParameters = (CSharpCompilerParameters) configuration.CompilationParameters; 
 				compilerParameters.UnsafeCode = allowUnsafeCodeCheckButton.Active;
+				compilerParameters.NoStdLib = noStdLibCheckButton.Active;
 				compilerParameters.LangVersion = langVersion;
 			}
 		}
