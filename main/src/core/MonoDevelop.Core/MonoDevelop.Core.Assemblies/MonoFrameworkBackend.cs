@@ -139,7 +139,7 @@ namespace MonoDevelop.Core.Assemblies
 		public override string GetToolPath (string toolName)
 		{
 			if (toolName == "csc" || toolName == "mcs") {
-				if (((MonoTargetRuntime)runtime).HasMultitargetingMcs) {
+				if (targetRuntime.HasMultitargetingMcs) {
 					toolName = "mcs";
 				} else {
 					toolName = GetOldMcsName (framework.Id);
