@@ -168,13 +168,13 @@ namespace MonoDevelop.CodeActions
 				var possibleNamespaces = MonoDevelop.Refactoring.ResolveCommandHandler.GetPossibleNamespaces (
 					document,
 					node,
-					resolveResult
+					ref resolveResult
 				);
 	
 				bool addUsing = !(resolveResult is AmbiguousTypeResolveResult);
 				if (addUsing) {
-					foreach (string ns_ in possibleNamespaces) {
-						string ns = ns_;
+					foreach (var t in possibleNamespaces.Where (tp => tp.Item2)) {
+						string ns = t.Item1;
 						var menuItem = new Gtk.MenuItem (string.Format ("using {0};", ns));
 						menuItem.Activated += delegate {
 							new MonoDevelop.Refactoring.ResolveCommandHandler.AddImport (document, resolveResult, ns, true, node).Run ();
@@ -186,7 +186,8 @@ namespace MonoDevelop.CodeActions
 				
 				bool resolveDirect = !(resolveResult is UnknownMemberResolveResult);
 				if (resolveDirect) {
-					foreach (string ns in possibleNamespaces) {
+					foreach (var t in possibleNamespaces) {
+						string ns = t.Item1;
 						var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("{0}", ns + "." + document.Editor.GetTextBetween (node.StartLocation, node.EndLocation)));
 						menuItem.Activated += delegate {
 							new MonoDevelop.Refactoring.ResolveCommandHandler.AddImport (document, resolveResult, ns, false, node).Run ();

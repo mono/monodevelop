@@ -43,6 +43,7 @@ using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.TypeSystem;
 using System.Threading;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
 
 namespace MonoDevelop.Refactoring
 {
@@ -91,11 +92,12 @@ namespace MonoDevelop.Refactoring
 			var resolveMenu = new CommandInfoSet ();
 			resolveMenu.Text = GettextCatalog.GetString ("Resolve");
 			
-			var possibleNamespaces = GetPossibleNamespaces (doc, node, resolveResult);
+			var possibleNamespaces = GetPossibleNamespaces (doc, node, ref resolveResult);
 
 			bool addUsing = !(resolveResult is AmbiguousTypeResolveResult);
 			if (addUsing) {
-				foreach (string ns in possibleNamespaces) {
+				foreach (var t in possibleNamespaces.Where (tp => tp.Item2)) {
+					string ns = t.Item1;
 					var info = resolveMenu.CommandInfos.Add (
 						string.Format ("using {0};", ns),
 						new System.Action (new AddImport (doc, resolveResult, ns, true, node).Run)
@@ -110,7 +112,8 @@ namespace MonoDevelop.Refactoring
 					resolveMenu.CommandInfos.AddSeparator ();
 				if (node is ObjectCreateExpression)
 					node = ((ObjectCreateExpression)node).Type;
-				foreach (string ns in possibleNamespaces) {
+				foreach (var t in possibleNamespaces) {
+					string ns = t.Item1;
 					resolveMenu.CommandInfos.Add (string.Format ("{0}", ns + "." + doc.Editor.GetTextBetween (node.StartLocation, node.EndLocation)), new System.Action (new AddImport (doc, resolveResult, ns, false, node).Run));
 				}
 			}
@@ -171,7 +174,7 @@ namespace MonoDevelop.Refactoring
 				out node);
 		}
 
-		public static HashSet<string> GetPossibleNamespaces (Document doc, AstNode node, ResolveResult resolveResult)
+		public static HashSet<Tuple<string, bool>> GetPossibleNamespaces (Document doc, AstNode node, ref ResolveResult resolveResult)
 		{
 			var location = RefactoringService.GetCorrectResolveLocation (doc, doc.Editor.Caret.Location);
 
@@ -181,10 +184,10 @@ namespace MonoDevelop.Refactoring
 			
 			if (!(resolveResult is AmbiguousTypeResolveResult)) {
 				var usedNamespaces = RefactoringOptions.GetUsedNamespaces (doc, location);
-				foundNamespaces = foundNamespaces.Where (n => !usedNamespaces.Contains (n));
+				foundNamespaces = foundNamespaces.Where (n => !usedNamespaces.Contains (n.Item1));
 			}
 
-			return new HashSet<string> (foundNamespaces);
+			return new HashSet<Tuple<string, bool>> (foundNamespaces);
 		}
 
 		static int GetTypeParameterCount (AstNode node)
@@ -200,7 +203,7 @@ namespace MonoDevelop.Refactoring
 			return 0;
 		}
 
-		static IEnumerable<string> GetPossibleNamespaces (Document doc, AstNode node, ResolveResult resolveResult, DocumentLocation location)
+		static IEnumerable<Tuple<string, bool>> GetPossibleNamespaces (Document doc, AstNode node, ResolveResult resolveResult, DocumentLocation location)
 		{
 			var unit = doc.ParsedDocument.GetAst<SyntaxTree> ();
 			if (unit == null)
@@ -221,7 +224,7 @@ namespace MonoDevelop.Refactoring
 							if (typeDefinition.Name == aResult.Type.Name && 
 								typeDefinition.TypeParameterCount == tc &&
 								lookup.IsAccessible (typeDefinition, false)) {
-								yield return typeDefinition.Namespace;
+								yield return Tuple.Create (typeDefinition.Namespace, true);
 							}
 						}
 					}
@@ -236,7 +239,12 @@ namespace MonoDevelop.Refactoring
 				foreach (var typeDefinition in compilation.GetAllTypeDefinitions ()) {
 					if ((typeDefinition.Name == uiResult.Identifier || typeDefinition.Name == possibleAttributeName) && typeDefinition.TypeParameterCount == tc && 
 						lookup.IsAccessible (typeDefinition, false)) {
-						yield return typeDefinition.Namespace;
+						if (typeDefinition.DeclaringTypeDefinition != null) {
+							var builder = new TypeSystemAstBuilder (new CSharpResolver (doc.Compilation));
+							yield return Tuple.Create (builder.ConvertType (typeDefinition.DeclaringTypeDefinition).GetText (), false);
+						} else {
+							yield return Tuple.Create (typeDefinition.Namespace, true);
+						}
 					}
 				}
 				yield break;
@@ -254,7 +262,7 @@ namespace MonoDevelop.Refactoring
 							true,
 							out inferredTypes
 						)) {
-							yield return typeDefinition.Namespace;
+							yield return Tuple.Create (typeDefinition.Namespace, true);
 							goto skipType;
 						}
 					}
@@ -274,7 +282,7 @@ namespace MonoDevelop.Refactoring
 							if ((identifier.Name == uiResult.Identifier || identifier.Name == possibleAttributeName) && 
 							    typeDefinition.TypeParameterCount == tc && 
 							    lookup.IsAccessible (typeDefinition, false))
-								yield return typeDefinition.Namespace;
+								yield return Tuple.Create (typeDefinition.Namespace, true);
 						}
 					}
 				}
