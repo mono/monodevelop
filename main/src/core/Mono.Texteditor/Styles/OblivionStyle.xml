@@ -163,6 +163,7 @@
 	<Style name="constant.language.void" color="plum1" weight="bold"/>
 	
 	<Style name="string" color="butter2"/>
+	<Style name="string.escape" color="butter3"/>
 	<Style name="string.single" color="butter2"/>
 	<Style name="string.double" color="butter2"/>
 	<Style name="string.other" color="butter2"/>

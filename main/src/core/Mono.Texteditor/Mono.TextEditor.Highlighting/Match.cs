@@ -68,9 +68,9 @@ namespace Mono.TextEditor.Highlighting
 			string matchStr = text.Substring (matchOffset);
 			var match = regex.Match (matchStr);
 			if (match.Success) {
-				var result = new int[match.Groups.Count - 1];
+				var result = new int[match.Groups.Count];
 				for (int i = 0; i < result.Length; i++) {
-					result[i] = match.Groups[i + 1].Length;
+					result[i] = match.Groups[i].Length;
 				}
 				return result;
 			}

@@ -142,6 +142,7 @@ THE SOFTWARE.
 	</Style>
 	
 	<Style name="string" color="cyan" />
+	<Style name="string.escape" color="lightcyan" />
 	
 	<Style name="keyword" color="green">
 		<Style name="access" color="violet"/> 

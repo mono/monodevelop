@@ -119,11 +119,12 @@ namespace Mono.TextEditor.Highlighting
 		}
 		
 		string delimiter;
+		bool delimiterSet;
 		public string Delimiter {
 			get { 
-				return string.IsNullOrEmpty (delimiter) ? mode.Delimiter : delimiter; 
+				return !delimiterSet ? mode.Delimiter : delimiter; 
 			}
-			internal protected set { delimiter = value; }
+			internal protected set { delimiter = value; delimiterSet = true; }
 		}
 
 		public Marker[] PrevMarker {

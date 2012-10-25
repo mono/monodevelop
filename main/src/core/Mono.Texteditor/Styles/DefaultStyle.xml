@@ -41,6 +41,7 @@
 	 <Color name="text-black" value="#444"/>
 	 <Color name="comment-gray" value="#999988"/>
 	 <Color name="literal-orange" value="#F57E00"/>
+	 <Color name="literal-escape" value="#A53E00"/>
 	 <Color name="keyword-teal" value="#009695"/>
 	 <Color name="selection-bg" value="#b5d5ff"/>
 	 <Color name="invalid-red" value="#C44D58"/>
@@ -177,7 +178,9 @@
 		 <Style name="keyword" color="text-black" weight="italic bold" />
 	 </Style>
 	 
-	 <Style name="string" color="literal-orange"/>
+	 <Style name="string" color="literal-orange">
+		 <Style name="escape" color="literal-escape"/>
+	 </Style>
 	 <Style name="constant" color="literal-orange"/>
 
 	 <Style name="keyword" color="keyword-teal"/>

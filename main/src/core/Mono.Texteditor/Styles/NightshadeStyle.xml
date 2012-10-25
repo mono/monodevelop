@@ -165,6 +165,7 @@
 	<Style name="constant.language.void" color="SpecialVim" weight="bold"/>
 	
 	<Style name="string" color="StringVim"/>
+	<Style name="string.escape" color="StringVim"/>
 	<Style name="string.single" color="StringSingleQuoteVim"/>
 	<Style name="string.double" color="StringVim"/>
 	<Style name="string.other" color="StringVim"/>

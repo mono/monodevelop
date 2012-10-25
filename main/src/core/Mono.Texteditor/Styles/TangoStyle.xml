@@ -166,6 +166,7 @@
 	</Style>
 	
 	<Style name="string" color="plum2">
+		<Style name="escape" color="plum3"/>
 		<Style name="single"/>
 		<Style name="double"/>
 		<Style name="other"/>

@@ -403,6 +403,7 @@ namespace Mono.TextEditor.Highlighting
 				StartOffset = offset;
 				CurText = doc.GetTextAt (offset, length);
 				maxEnd = offset + length;
+				int escapeChars = 0;
 				for (int i = offset; i < maxEnd; i++) {
 					int textIndex = i - StartOffset;
 					Span cur = CurSpan;
@@ -416,18 +417,18 @@ namespace Mono.TextEditor.Highlighting
 								}
 							}
 							if (!mismatch) {
-								i += cur.Escape.Length;
-								if (cur.Escape.Length > 1)
-									i--;
-								continue;
+								escapeChars = cur.Escape.Length + 1;
 							}
 						}
-						if (ScanSpanEnd (cur, ref i))
+						if (escapeChars == 0 && ScanSpanEnd (cur, ref i))
 							continue;
 					}
-					ScanSpan (ref i);
+					if (escapeChars == 0)
+						ScanSpan (ref i);
 					if (i < doc.TextLength)
 						ParseChar (ref i, CurText [textIndex]);
+					if (escapeChars > 0)
+						escapeChars--;
 				}
 			}
 		}
@@ -592,7 +593,7 @@ namespace Mono.TextEditor.Highlighting
 
 				inWord = isWordPart;
 
-				if (cur.HasMatches && i - curChunk.Offset == 0) {
+				if (cur.HasMatches && (i - curChunk.Offset == 0 || string.IsNullOrEmpty (cur.Delimiter))) {
 					Match foundMatch = null;
 					var   foundMatchLength = new int[0];
 					foreach (Match ruleMatch in cur.Matches) {
@@ -604,11 +605,11 @@ namespace Mono.TextEditor.Highlighting
 					}
 					if (foundMatch != null) {
 						if (foundMatch.IsGroupMatch) {
-							int lastGroup = System.Math.Max (foundMatchLength.Length, foundMatch.Groups.Count);
-							for (int j = 0; j < lastGroup; j++) {
-								if (foundMatchLength[j] > 0) {
-									AddChunk (ref curChunk, foundMatchLength[j], GetChunkStyleColor (foundMatch.Groups[j]));
-									i += foundMatchLength[j] - 1;
+							for (int j = 1; j < foundMatchLength.Length; j++) {
+								var len = foundMatchLength [j];
+								if (len > 0) {
+									AddChunk (ref curChunk, len, GetChunkStyleColor (foundMatch.Groups [j - 1]));
+									i += len - 1;
 									curChunk.Length = 0;
 								}
 							}
@@ -616,7 +617,7 @@ namespace Mono.TextEditor.Highlighting
 						} else if (foundMatchLength[0] > 0) {
 							AddChunk (ref curChunk, foundMatchLength[0], GetChunkStyleColor (foundMatch.Color));
 							i += foundMatchLength[0] - 1;
-							curChunk.Length = i - curChunk.Offset + 1;
+							curChunk.Length = 0;
 							return;
 						}
 					}

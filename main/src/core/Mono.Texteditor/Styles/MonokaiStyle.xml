@@ -145,7 +145,9 @@ THE SOFTWARE.
 		<Style name="language.void" color="monokai-type"/>
 	</Style>
 	
-	<Style name="string" color="monokai-string" />
+	<Style name="string" color="monokai-string">
+		<Style name="escape" color="#A6AB34"/>
+	</Style>
 	
 	<Style name="keyword" color="monokai-keyword">
 		<Style name="access" color="monokai-constant"/> 

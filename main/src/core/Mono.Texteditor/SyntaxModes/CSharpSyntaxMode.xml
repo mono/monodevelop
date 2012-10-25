@@ -39,7 +39,7 @@
 		<End>*/</End>
 	</Span>
 	
-	<Span color = "string.other" rule="String" stopateol = "false" escape='""'>
+	<Span color = "string.other" rule="VerbatimString" stopateol = "false" escape='""'>
 		<Begin>@"</Begin>
 		<End>"</End>
 	</Span>
@@ -242,6 +242,13 @@
 	</Rule>
 	
 	<Rule name = "String">
+		<Delimiters></Delimiters>
+		<Match color ="string.escape">\\(['"\\abfnrtv]|x[0-9a-fA-F]{2,4}|0\d\d)</Match>
+	</Rule>
+	
+	<Rule name = "VerbatimString">
+		<Delimiters></Delimiters>
+		<Match color ="string.escape">""</Match>
 	</Rule>
 	
 	<Rule name = "XmlDocumentation">
