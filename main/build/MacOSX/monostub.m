@@ -328,7 +328,25 @@ int main (int argc, char **argv)
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSString *binDir = [[NSString alloc] initWithUTF8String: "Contents/MacOS/lib/monodevelop/bin"];
 	NSString *appDir = [[NSBundle mainBundle] bundlePath];
-	const char *req_mono_version = "2.10.9";
+
+	// can be overridden with plist bool MonoUseSGen
+	bool use_sgen = YES;
+
+	// can be overridden with plist string MonoMinVersion
+	NSString *req_mono_version = @"2.10.10";
+
+	NSDictionary *plist = [[NSBundle mainBundle] infoDictionary];
+	if (plist) {
+		NSNumber *sgen_obj = (NSNumber *) [plist objectForKey:@"MonoUseSGen"];
+		if (sgen_obj) {
+			use_sgen = [sgen_obj boolValue];
+		}
+		NSString *version_obj = [plist objectForKey:@"MonoMinVersion"];
+		if (version_obj && [version_obj length] > 0) {
+			req_mono_version = version_obj;
+		}
+	}
+
 	NSString *exePath, *exeName;
 	const char *basename;
 	struct rlimit limit;
@@ -355,11 +373,25 @@ int main (int argc, char **argv)
 	exeName = [NSString stringWithFormat:@"%s.exe", basename];
 	exePath = [[appDir stringByAppendingPathComponent: binDir] stringByAppendingPathComponent: exeName];
 	
-	bool sgen = getenv ("MONODEVELOP_USE_SGEN") != NULL;
-	void *libmono = dlopen (sgen ? MONO_LIB_PATH ("libmonosgen-2.0.dylib") : MONO_LIB_PATH ("libmono-2.0.dylib"), RTLD_LAZY);
+	//the plist setting can be overridden with the MONODEVELOP_USE_SGEN env var
+	char *sgen_env = getenv ("MONODEVELOP_USE_SGEN");
+	if (sgen_env) {
+		switch (sgen_env[0]) {
+		case 'N': case 'n': // NO
+		case 'F': case 'f': // FALSE
+			use_sgen = NO;
+			break;
+		case 'Y': case 'y': // YES
+		case 'T': case 't': // TRUE
+			use_sgen = YES;
+			break;
+		}
+	}
+
+	void *libmono = dlopen (use_sgen ? MONO_LIB_PATH ("libmonosgen-2.0.dylib") : MONO_LIB_PATH ("libmono-2.0.dylib"), RTLD_LAZY);
 	
 	if (libmono == NULL) {
-		fprintf (stderr, "Failed to load libmono%s-2.0.dylib: %s\n", sgen ? "sgen" : "", dlerror ());
+		fprintf (stderr, "Failed to load libmono%s-2.0.dylib: %s\n", use_sgen ? "sgen" : "", dlerror ());
 		exit_with_message ("This application requires the Mono framework.", argv[0]);
 	}
 	
@@ -382,7 +414,7 @@ int main (int argc, char **argv)
 	}
 	
 	char *mono_version = _mono_get_runtime_build_info ();
-	if (!check_mono_version (mono_version, req_mono_version))
+	if (!check_mono_version (mono_version, [req_mono_version UTF8String]))
 		exit_with_message ("This application requires a newer version of the Mono framework.", argv[0]);
 	
 	extra_argv = get_mono_env_options (&extra_argc);
