@@ -685,11 +685,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				var solution = (Solution)item;
 				Parallel.ForEach (solution.GetAllProjects (), project => LoadProject (project));
 				var contents = projectContents.Values.ToArray ();
-
-				Task.Factory.StartNew (delegate {
-					ReloadAllReferences (contents);
-				});
-
+				ReloadAllReferences (contents);
+		
 				solution.SolutionItemAdded += OnSolutionItemAdded;
 				solution.SolutionItemRemoved += OnSolutionItemRemoved;
 			}
