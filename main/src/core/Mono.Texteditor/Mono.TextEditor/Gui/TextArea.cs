@@ -2491,8 +2491,9 @@ namespace Mono.TextEditor
 				if (layout != null)
 					layout.Dispose ();
 				
-				return new Gdk.Rectangle ((int)(x1 / Pango.Scale.PangoScale + Editor.TextViewMargin.XOffset + Editor.TextViewMargin.TextStartPosition - Editor.HAdjustment.Value - spaceX),
-					(int)(y - spaceY), 
+				return new Gdk.Rectangle (
+					(int)(x1 / Pango.Scale.PangoScale + Editor.Allocation.X + Editor.TextViewMargin.XOffset + Editor.TextViewMargin.TextStartPosition - Editor.HAdjustment.Value - spaceX),
+					(int)(Editor.Allocation.Y + y - spaceY), 
 					(int)(w + spaceX * 2), 
 					(int)(Editor.LineHeight + spaceY * 2));
 			}
