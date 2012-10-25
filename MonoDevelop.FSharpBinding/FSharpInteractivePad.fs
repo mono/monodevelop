@@ -78,11 +78,18 @@ type FSharpInteractivePad() =
       | Some(_) -> ()
       | _ -> session := Some(setupSession())
 
+  //let handler = 
+  do Debug.tracef "InteracivePad" "created!"
+  do view.Destroyed.Add (fun _ ->       Debug.tracef "Interactive" "view destroyed")
+  do IdeApp.Exiting.Add (fun _ ->       Debug.tracef "Interactive" "app exiting!!")
+  do IdeApp.Exited.Add (fun _ ->       Debug.tracef "Interactive" "app exited!!")
   member x.Shutdown()  = 
+    do Debug.tracef "Interactive" "x.Shutdown()!"
     !session |> Option.iter (fun ses -> ses.Kill())
 
   interface MonoDevelop.Ide.Gui.IPadContent with
     member x.Dispose() =
+      Debug.tracef "Interactive" "disposing pad..."
       x.Shutdown()
 
     member x.Control : Gtk.Widget = view :> Gtk.Widget
