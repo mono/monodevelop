@@ -187,7 +187,18 @@ namespace MonoDevelop.CSharp.Refactoring
 			
 			foreach (var obj in searchedMembers) {
 				if (obj is IEntity) {
-					refFinder.FindReferencesInFile (refFinder.GetSearchScopes ((IEntity)obj), file, unit, doc.Compilation, (astNode, r) => {
+					var entity = (IEntity)obj;
+					if (entity.EntityType == EntityType.Constructor ||
+					    entity.EntityType == EntityType.Destructor ||
+					    entity.EntityType == EntityType.Method ||
+					    entity.EntityType == EntityType.Field ||
+					    entity.EntityType == EntityType.Property) {
+						if (entity.DeclaringTypeDefinition == null) {
+							LoggingService.LogWarning ("Entity: " + entity + " has no declaring type definiton.");
+							continue;
+						}
+					}
+					refFinder.FindReferencesInFile (refFinder.GetSearchScopes (entity), file, unit, doc.Compilation, (astNode, r) => {
 						if (IsNodeValid (obj, astNode))
 							result.Add (GetReference (r, astNode, editor.FileName, editor)); 
 					}, CancellationToken.None);
