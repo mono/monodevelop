@@ -736,7 +736,7 @@ namespace MonoDevelop.Ide.Gui
 
 			if (lastActive != null)
 				((SdiWorkspaceWindow)lastActive).OnDeactivated ();
-			
+
 			if (lastActiveWindows.Count > MAX_LASTACTIVEWINDOWS)
 				lastActiveWindows.RemoveFirst ();
 
@@ -744,7 +744,10 @@ namespace MonoDevelop.Ide.Gui
 			lastActiveWindows.AddLast (lastActive);
 			lastActive = ActiveWorkbenchWindow;
 			SetWorkbenchTitle ();
-			
+
+			if (!closeAll && ActiveWorkbenchWindow != null)
+				((SdiWorkspaceWindow)ActiveWorkbenchWindow).OnActivated ();
+
 			if (!closeAll && ActiveWorkbenchWindowChanged != null) {
 				ActiveWorkbenchWindowChanged(this, e);
 			}

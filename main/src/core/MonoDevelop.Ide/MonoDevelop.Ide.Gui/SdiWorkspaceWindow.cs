@@ -97,7 +97,6 @@ namespace MonoDevelop.Ide.Gui
 			content.DirtyChanged       += new EventHandler(SetTitleEvent);
 			content.BeforeSave         += new EventHandler(BeforeSave);
 			content.ContentChanged     += new EventHandler (OnContentChanged);
-			IdeApp.Workbench.ActiveDocumentChanged += ActiveDocumentChanged;
 			box.Show ();
 			Add (box);
 			
@@ -226,6 +225,12 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (pathBar != null)
 				pathBar.HideMenu ();
+		}
+		
+		public void OnActivated ()
+		{
+			if (subViewToolbar != null)
+				subViewToolbar.Tabs [subViewToolbar.ActiveTab].Activate ();
 		}
 		
 		public void SelectWindow()
@@ -390,7 +395,6 @@ namespace MonoDevelop.Ide.Gui
 			content.BeforeSave         -= new EventHandler(BeforeSave);
 			content.ContentChanged     -= new EventHandler (OnContentChanged);
 			content.WorkbenchWindow     = null;
-			IdeApp.Workbench.ActiveDocumentChanged -= ActiveDocumentChanged;
 			content.Dispose ();
 			
 			DetachFromPathedDocument ();
@@ -528,12 +532,6 @@ namespace MonoDevelop.Ide.Gui
 			return tab;
 		}
 		
-		
-		void ActiveDocumentChanged (object sender, EventArgs e)
-		{
-			if (subViewToolbar != null)
-				subViewToolbar.Tabs [subViewToolbar.ActiveTab].Activate ();
-		}
 		
 		#region Track and display document's "path"
 		
