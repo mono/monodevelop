@@ -658,6 +658,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		bool overCloseOnPress;
+		bool allowDoubleClick;
 		protected override bool OnButtonPressEvent (EventButton evnt)
 		{
 			var t = FindTab ((int)evnt.X, (int)evnt.Y);
@@ -674,8 +675,10 @@ namespace MonoDevelop.Ide.Gui
 				overCloseOnPress = false;
 
 				if (evnt.Type == Gdk.EventType.TwoButtonPress) {
-					notebook.OnActivateTab (t);
-					buttonPressedOnTab = false;
+					if (allowDoubleClick) {
+						notebook.OnActivateTab (t);
+						buttonPressedOnTab = false;
+					}
 					return true;
 				}
 				if (evnt.Button == 2) {
@@ -699,16 +702,19 @@ namespace MonoDevelop.Ide.Gui
 				var t = FindTab ((int)evnt.X, (int)evnt.Y);
 				if (t != null && IsOverCloseButton (t, (int)evnt.X, (int)evnt.Y)) {
 					notebook.OnCloseTab (t);
+					allowDoubleClick = false;
 					return true;
 				}
 			}
 			overCloseOnPress = false;
-			this.Animate ("EndDrag",
-			              easing: Easing.CubicOut,
-			              start: 1.0f,
-			              end: 0.0f,
-			              callback: f => dragXProgress = f,
-			              finished: (f, a) => draggingTab = false);
+			allowDoubleClick = true;
+			if (dragX != 0)
+				this.Animate ("EndDrag",
+				              easing: Easing.CubicOut,
+				              start: 1.0f,
+				              end: 0.0f,
+				              callback: f => dragXProgress = f,
+				              finished: (f, a) => draggingTab = false);
 			QueueDraw ();
 			return base.OnButtonReleaseEvent (evnt);
 		}
