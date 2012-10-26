@@ -43,8 +43,6 @@ THE SOFTWARE.
 	<Color name="monokai-invalid" value="#F8F8F0"/>
 	<Color name="monokai-invalidBackground" value="#F92672"/>
 
-
-
 	<Style name="text" color="monokai-white" bgColor="monokai-background">
 		<Style name="background" color="white">
 			<Style name="readonly" color="#252620"/>
@@ -67,6 +65,12 @@ THE SOFTWARE.
 		 <Style name="cdata" color="monokai-string"/>
 	</Style>
 	
+	 <Style name="template" color ="monokai-white" bgColor="#373832">
+		<Style name="tag" color="#FF00FF" />
+		<Style name="directive" color="#FF00FF" />
+	 </Style>
+	
+	
 	<Style name="tooltip" color="black" bgColor="#272725"/>
 	
 	<Style name="completion" color="#434343" bgColor="#F0F6F8">
@@ -77,11 +81,6 @@ THE SOFTWARE.
 		<Style name="selection.inactive" color="#f9f9f9" bgColor="#e6e6e6">
 			<Style name="border" color="#bebebe"/>
 		</Style>
-	</Style>
-	
-	<Style name="template" color ="black" bgColor="monokai-classname">
-		<Style name="tag" color="#FF00FF" />
-		<Style name="directive" color="#FF00FF" />
 	</Style>
 	
 	<Style name="diff">
@@ -116,11 +115,11 @@ THE SOFTWARE.
 		</Style>
 		
 		<Style name="template">
-			<Style name="primary_template" color="#015A01" bgColor="#98FC66"/>
-			<Style name="primary_highlighted_template" color="#015A01" bgColor="#CCFF99"/>
+			<Style name="primary_template" color="monokai-white" bgColor="#7f4a81"/>
+			<Style name="primary_highlighted_template" color="monokai-white" bgColor="#b167b3"/>
 			
-			<Style name="secondary_template" color="#FFFFFF" bgColor="#FFFFFF"/>
-			<Style name="secondary_highlighted_template" color="#D9BB7A" bgColor="#FDD99B"/>
+			<Style name="secondary_template" color="monokai-white" bgColor="#262228"/>
+			<Style name="secondary_highlighted_template" color="monokai-white" bgColor="#4e4552"/>
 		</Style>
 	</Style>
 	
