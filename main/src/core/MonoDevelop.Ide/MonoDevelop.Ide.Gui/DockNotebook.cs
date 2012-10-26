@@ -715,10 +715,23 @@ namespace MonoDevelop.Ide.Gui
 
 		DockNotebookTab FindTab (int x, int y)
 		{
-			for (int n = 0; n < notebook.Tabs.Count; n++) {
-				DockNotebookTab tab = (DockNotebookTab) notebook.Tabs[n];
-				if (tab.Allocation.Contains (x, y))
-					return tab;
+			// we will not actually draw anything, just do bounds checking
+			using (var context = Gdk.CairoHelper.Create (GdkWindow)) {
+				DockNotebookTab current = notebook.CurrentTab as DockNotebookTab;
+				if (current != null) {
+					LayoutTabBorder (context, current.Allocation.Width, current.Allocation.X, 0, false);
+					if (context.InFill (x, y))
+						return current;
+				}
+
+				context.NewPath ();
+				for (int n = 0; n < notebook.Tabs.Count; n++) {
+					DockNotebookTab tab = (DockNotebookTab) notebook.Tabs[n];
+					LayoutTabBorder (context, tab.Allocation.Width, tab.Allocation.X, 0, false);
+					if (context.InFill (x, y))
+						return tab;
+					context.NewPath ();
+				}
 			}
 			return null;
 		}
@@ -899,7 +912,7 @@ namespace MonoDevelop.Ide.Gui
 
 
 			ctx.LineWidth = 1;
-			DrawTabBorder (ctx, region.Width, region.X, 0, active);
+			LayoutTabBorder (ctx, region.Width, region.X, 0, active);
 			ctx.ClosePath ();
 			Cairo.LinearGradient gr = new LinearGradient (region.X, TopBarPadding, region.X, Allocation.Bottom);
 			if (active) {
@@ -913,11 +926,11 @@ namespace MonoDevelop.Ide.Gui
 			ctx.Fill ();
 			
 			ctx.Color = new Cairo.Color (1, 1, 1, .5).MultiplyAlpha (tab.Opacity);
-			DrawTabBorder (ctx, region.Width, region.X, 1, active);
+			LayoutTabBorder (ctx, region.Width, region.X, 1, active);
 			ctx.Stroke ();
 
 			ctx.Color = Styles.BreadcrumbBorderColor.MultiplyAlpha (tab.Opacity);
-			DrawTabBorder (ctx, region.Width, region.X, 0, active);
+			LayoutTabBorder (ctx, region.Width, region.X, 0, active);
 			ctx.StrokePreserve ();
 
 			if (tab.GlowStrength > 0) {
@@ -975,7 +988,7 @@ namespace MonoDevelop.Ide.Gui
 
 		}
 
-		void DrawTabBorder (Cairo.Context ctx, int contentWidth, int px, int margin, bool active = true)
+		void LayoutTabBorder (Cairo.Context ctx, int contentWidth, int px, int margin, bool active = true)
 		{
 			double x = 0.5 + (double)px;
 			double y = (double) Allocation.Height + 0.5 - BottomBarPadding + margin;
