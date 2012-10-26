@@ -150,21 +150,6 @@ namespace MonoDevelop.Components.MainToolbar
 			base.OnSizeRequested (ref requisition);
 		}
 
-
-		ImageSurface GetBackground()
-		{
-			switch (State) {
-				case StateType.Selected:
-					return btnPressed;
-				case StateType.Prelight:
-					return btnHover;
-				case StateType.Insensitive:
-					return btnInactive;
-				default:
-					return btnNormal;
-				}
-		}
-
 		ImageSurface GetIcon()
 		{
 			switch (icon) {
@@ -192,7 +177,7 @@ namespace MonoDevelop.Components.MainToolbar
 		protected override bool OnExposeEvent (EventExpose evnt)
 		{
 			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
-				GetBackground ().Show (context, Allocation.X, Allocation.Y);
+				DrawBackground (context, Allocation, 15, State);
 				var icon = GetIcon();
 				icon.Show (
 					context,
@@ -201,6 +186,47 @@ namespace MonoDevelop.Components.MainToolbar
 				);
 			}
 			return base.OnExposeEvent (evnt);
+		}
+
+		void DrawBackground (Cairo.Context context, Gdk.Rectangle region, int radius, StateType state)
+		{
+			double rad = radius - 0.5;
+			int centerX = region.X + region.Width / 2;
+			int centerY = region.Y + region.Height / 2;
+
+			context.MoveTo (centerX + rad, centerY);
+			context.Arc (centerX, centerY, rad, 0, Math.PI * 2);
+
+			double high;
+			double low;
+			switch (state) {
+			case StateType.Selected:
+				high = 0.85;
+				low = 1.0;
+				break;
+			case StateType.Prelight:
+				high = 1.0;
+				low = 0.9;
+				break;
+			case StateType.Insensitive:
+				high = 0.95;
+				low = 0.83;
+				break;
+			default:
+				high = 1.0;
+				low = 0.85;
+				break;
+			}
+			using (var lg = new LinearGradient (0, centerY - rad, 0, centerY +rad)) {
+				lg.AddColorStop (0, new Cairo.Color (high, high, high));
+				lg.AddColorStop (1, new Cairo.Color (low, low, low));
+				context.Pattern = lg;
+				context.FillPreserve ();
+			}
+
+			context.Color = new Cairo.Color (0, 0, 0, 0.4);
+			context.LineWidth = 1;
+			context.Stroke ();
 		}
 
 		public event EventHandler Clicked;

@@ -108,6 +108,18 @@ namespace MonoDevelop.Components
 			return children.GetEnumerator ();
 		}
 
+		public Animation Insert (float beginAt, float finishAt, Animation animation)
+		{
+			Add (beginAt, finishAt, animation);
+			return this;
+		}
+
+		public void Commit (Animatable owner, string name, uint rate = 16, uint length = 250, 
+		                    Func<float, float> easing = null, Action<float, bool> finished = null, Func<bool> repeat = null)
+		{
+			owner.Animate (name, this, rate, length, easing, finished, repeat);
+		}
+
 		public void Add (float beginAt, float finishAt, Animation animation)
 		{
 			if (beginAt < 0 || beginAt > 1)

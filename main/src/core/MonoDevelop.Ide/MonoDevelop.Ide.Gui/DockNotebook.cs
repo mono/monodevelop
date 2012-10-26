@@ -272,6 +272,7 @@ namespace MonoDevelop.Ide.Gui
 		Pixbuf Icon { get; set; }
 		Widget Content { get; set; }
 		string Tooltip { get; set; }
+		bool Notify { get; set; }
 	}
 
 	internal class DockNotebookTab: IDockNotebookTab
@@ -288,6 +289,8 @@ namespace MonoDevelop.Ide.Gui
 		internal Gdk.Rectangle CloseButtonAllocation;
 
 		public int Index { get; internal set; }
+
+		public bool Notify { get; set; }
 
 		public float WidthModifier { get; set; }
 
@@ -490,26 +493,19 @@ namespace MonoDevelop.Ide.Gui
 		public void StartOpenAnimation (DockNotebookTab tab)
 		{
 			tab.WidthModifier = 0;
-			var anim = new Animation (f => tab.WidthModifier = f) {
-				{ 0.0f, 0.2f, new Animation (f => tab.Opacity = f) }
-			};
-
-			this.Animate ("Open" + tab.GetHashCode ().ToString (), 
-			              animation: anim, 
-			              easing: Easing.CubicInOut);
+			new Animation (f => tab.WidthModifier = f)
+				.Insert (0.0f, 0.2f, new Animation (f => tab.Opacity = f))
+				.Commit (this, "Open" + tab.GetHashCode ().ToString (), easing: Easing.CubicInOut);
 		}
 
 		public void StartCloseAnimation (DockNotebookTab tab)
 		{
 			closingTabs[tab.Index] = tab;
-			var anim = new Animation (f => tab.WidthModifier = f, tab.WidthModifier, 0) {
-				{ 0.8f, 1.0f, new Animation (f => tab.Opacity = f, tab.Opacity, 0) }
-			};
-
-			this.Animate ("Closing" + tab.Index, 
-			              animation: anim,
-			              easing: Easing.CubicOut,
-			              finished: (f, a) => { if (!a) closingTabs.Remove (tab.Index); });
+			new Animation (f => tab.WidthModifier = f, tab.WidthModifier, 0)
+				.Insert (0.8f, 1.0f, new Animation (f => tab.Opacity = f, tab.Opacity, 0))
+				.Commit (this, "Closing" + tab.Index, 
+					     easing: Easing.CubicOut,
+					     finished: (f, a) => { if (!a) closingTabs.Remove (tab.Index); });
 		}
 
 		protected override void ForAll (bool include_internals, Callback callback)
@@ -966,7 +962,8 @@ namespace MonoDevelop.Ide.Gui
 			ctx.MoveTo (textStart, region.Y + TopPadding + TextOffset + VerticalTextSize);
 			// ellipses are for space wasting ..., we cant afford that
 			using (var lg = new LinearGradient (textStart + w - 5, 0, textStart + w + 3, 0)) {
-				var color = Styles.TabBarActiveTextColor.MultiplyAlpha (tab.Opacity);
+				var color = tab.Notify ? new Cairo.Color (0, 0, 1) : Styles.TabBarActiveTextColor;
+				color = color.MultiplyAlpha (tab.Opacity);
 				lg.AddColorStop (0, color);
 				color.A = 0;
 				lg.AddColorStop (1, color);
