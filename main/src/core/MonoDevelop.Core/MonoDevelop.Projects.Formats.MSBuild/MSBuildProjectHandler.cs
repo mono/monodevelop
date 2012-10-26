@@ -305,7 +305,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 			}
 			// Enable xbuild by default only for standard .NET projects - not for subtypes
-			UseXbuild = subtypeGuids.Count == 0;
+			//UseXbuild = subtypeGuids.Count == 0;
 			
 			try {
 				timer.Trace ("Create item instance");
