@@ -112,7 +112,7 @@ apidocs:
 
 MD_LAUNCH=$(MD_LAUNCH_SETUP) UBUNTU_MENUPROXY=0 exec -a "monodevelop" $(RUNTIME)
 
-run: runmd
+run: runmd-sgen
 
 run-sgen: runmd-sgen
 
