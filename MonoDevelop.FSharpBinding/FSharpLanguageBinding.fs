@@ -37,8 +37,9 @@ type FSharpLanguageBinding() =
   
   // ------------------------------------------------------------------------------------
   
-  interface IDotNetLanguageBinding 
-           with
+        // Keep the platforms combo of CodeGenerationPanelWidget in sync with this list
+  let supportedPlatforms = [| "anycpu"; "x86"; "x64"; "itanium" |]
+  interface IDotNetLanguageBinding  with
     member x.BlockCommentEndTag = "*)"
     member x.BlockCommentStartTag = "(*"
     member x.Language = LanguageName
@@ -54,10 +55,15 @@ type FSharpLanguageBinding() =
       CompilerService.Compile(items, config, configSel, monitor)
 
     override x.CreateCompilationParameters(options:XmlElement) : ConfigurationParameters =
+    
       // Debug.tracef "Config" "Creating compiler configuration parameters"
       let pars = new FSharpCompilerParameters() 
       // Set up the default options
       if options <> null then 
+          let platform = options.GetAttribute ("Platform")
+          if (supportedPlatforms |> Array.exists (fun x -> x.Contains (platform))) then
+              pars.PlatformTarget <- platform
+
           let debugAtt = options.GetAttribute ("DefineDebug")
           if (System.String.Compare ("True", debugAtt, StringComparison.OrdinalIgnoreCase) = 0) then
               pars.AddDefineSymbol "DEBUG"
@@ -80,10 +86,10 @@ type FSharpLanguageBinding() =
       new FSharpProjectParameters() :> ProjectParameters
       
     override x.GetCodeDomProvider() : CodeDomProvider =
-      null 
+      //null 
       // TODO: Simplify CodeDom provider to generate reasonable template
       // files at least for some MonoDevelop project types. Then we can recover:
-      //   provider.Value :> CodeDomProvider
+         provider.Value :> CodeDomProvider
       
     override x.GetSupportedClrVersions() =
       [| ClrVersion.Net_2_0; ClrVersion.Net_4_0; ClrVersion.Clr_2_1 |]

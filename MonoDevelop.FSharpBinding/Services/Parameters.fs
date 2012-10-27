@@ -21,9 +21,13 @@ type FSharpProjectParameters() =
 
 
 /// Serializable type respresnting F# compiler parameters
-type FSharpCompilerParameters() = 
+type FSharpCompilerParameters() as this = 
   inherit ConfigurationParameters()
+  do this.platformTarget <- "anycpu"
   
+  [<field:ItemProperty("PlatformTarget",DefaultValue="anycpu"); DefaultValue>]
+  val mutable private platformTarget : string
+        
   [<field:ItemProperty("DebugSymbols"); DefaultValue>]
   val mutable private  debugSymbols : bool
 
@@ -84,3 +88,7 @@ type FSharpCompilerParameters() =
     and set(value) = 
         x.debugSymbols <- value
         x.debugType <- (if x.DebugSymbols then (if x.optimize then "pdbonly" else "full") else "none")
+        
+  member x.PlatformTarget
+    with get() = if x.platformTarget = null then "anycpu" else x.platformTarget
+    and set(value) = x.platformTarget <- value
