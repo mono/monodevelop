@@ -4,7 +4,7 @@
 
 	<TemplateConfiguration>
 		<_Name>F# 3.0 Desktop Application (Gtk# 2.0)</_Name>
-		<_Description>Create an F# 3.0 desktop application (using Gtk# 2.0 and .NET 4.0). NOTE: you may have to manually set the target framework after creating the project. This is a known bug.</_Description>
+		<_Description>Create an F# 3.0 desktop application (using Gtk# 2.0 and .NET 4.0). Note: you may have to manually set the target framework after creating the project. This is a known bug.</_Description>
 		<_Category>F#</_Category>
 		<LanguageName>F#</LanguageName>
 	</TemplateConfiguration>

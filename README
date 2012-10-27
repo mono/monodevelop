@@ -35,6 +35,14 @@ For more information about F# and code examples see these links:
 * http://tryfsharp.org
 * http://fssnip.net
 
+## Building from scratch
+
+Normally you should get the binding from the repository. If you want to build it yourself and develop it, try this:
+
+  ./configure.sh
+  make
+  make install-mac or make install  (may need tweeking on Linux)
+
 ## Contribute 
 Join [The F# Open Source Group](http://fsharp.github.com). We use [github](http://fsharp.github.com/fsharpbinding) for tracking work items and suggestions.
 

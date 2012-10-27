@@ -2,6 +2,7 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <MDROOT Condition=" '$(MDROOT)' == ''">\Applications\MonoDevelop.app\Contents\MacOS\lib\monodevelop</MDROOT>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
@@ -10,17 +11,19 @@
     <RootNamespace>FSharp.MonoDevelop</RootNamespace>
     <AssemblyName>FSharpBinding</AssemblyName>
     <Name>MonoDevelop.FSharp</Name>
-    <UsePartialTypes>false</UsePartialTypes>
+    <!-- disable this for now, xbuild hangs if it launches the terminate-and-stay-resident server -->
+    <!-- <OtherFlags> /resident </OtherFlags> -->
+    <UsePartialTypes>False</UsePartialTypes>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <Tailcalls>false</Tailcalls>
+    <Optimize>False</Optimize>
+    <Tailcalls>False</Tailcalls>
     <OutputPath>..\bin\</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <Externalconsole>true</Externalconsole>
+    <Externalconsole>True</Externalconsole>
     <GenerateDebugInfo>false</GenerateDebugInfo>
     <OptimizeCode>false</OptimizeCode>
     <GenerateXmlDoc>false</GenerateXmlDoc>
@@ -31,8 +34,8 @@
   </Target>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <Tailcalls>true</Tailcalls>
+    <Optimize>True</Optimize>
+    <Tailcalls>True</Tailcalls>
     <OutputPath>..\bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
@@ -40,7 +43,7 @@
     <OptimizeCode>false</OptimizeCode>
     <GenerateXmlDoc>false</GenerateXmlDoc>
     <GenerateTailCalls>false</GenerateTailCalls>
-    <DebugSymbols>false</DebugSymbols>
+    <DebugSymbols>False</DebugSymbols>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\FSharp\1.0\Microsoft.FSharp.Targets" Condition="!Exists('$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll')" />
   <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets" Condition="Exists('$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll')" />
@@ -59,7 +62,10 @@
     <EmbeddedResource Include="templates\FSharpGtkProject.xpt.xml" />
     <EmbeddedResource Include="templates\AssemblyInfo.xft.xml" />
     <!--<EmbeddedResource Include="templates\FSharpMoonlightLibraryProject.xpt.xml" /> -->
-    <EmbeddedResource Include="FSharpBinding.addin.xml" />
+    <EmbeddedResource Include="FSharpBinding.addin.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <Compile Include="PowerPack\CodeDomVisitor.fs" />
     <Compile Include="PowerPack\CodeDomGenerator.fs" />
     <Compile Include="PowerPack\CodeProvider.fs" />
@@ -89,7 +95,6 @@
   <ItemGroup>
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <!-- Use these for Windows -->
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="System" />
     <Reference Include="System.Xml" />
@@ -102,22 +107,28 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Mono.TextEditor">
-      <HintPath>..\..\..\..\..\Applications\MonoDevelop.app\Contents\MacOS\lib\monodevelop\bin\Mono.TextEditor.dll</HintPath>
+      <Private>False</Private>
+      <HintPath>$(MDROOT)\bin\Mono.TextEditor.dll</HintPath>
     </Reference>
     <Reference Include="MonoDevelop.Core">
-      <HintPath>..\..\..\..\..\Applications\MonoDevelop.app\Contents\MacOS\lib\monodevelop\bin\MonoDevelop.Core.dll</HintPath>
+      <Private>False</Private>
+      <HintPath>$(MDROOT)\bin\MonoDevelop.Core.dll</HintPath>
     </Reference>
     <Reference Include="MonoDevelop.Ide">
-      <HintPath>..\..\..\..\..\Applications\MonoDevelop.app\Contents\MacOS\lib\monodevelop\bin\MonoDevelop.Ide.dll</HintPath>
+      <Private>False</Private>
+      <HintPath>$(MDROOT)\bin\MonoDevelop.Ide.dll</HintPath>
     </Reference>
     <Reference Include="ICSharpCode.NRefactory">
-      <HintPath>..\..\..\..\..\Applications\MonoDevelop.app\Contents\MacOS\lib\monodevelop\bin\ICSharpCode.NRefactory.dll</HintPath>
+      <Private>False</Private>
+      <HintPath>$(MDROOT)\bin\ICSharpCode.NRefactory.dll</HintPath>
     </Reference>
     <Reference Include="MonoDevelop.SourceEditor2">
-      <HintPath>..\..\..\..\..\Applications\MonoDevelop.app\Contents\MacOS\lib\monodevelop\AddIns\DisplayBindings\SourceEditor\MonoDevelop.SourceEditor2.dll</HintPath>
+      <Private>False</Private>
+      <HintPath>$(MDROOT)\AddIns\DisplayBindings\SourceEditor\MonoDevelop.SourceEditor2.dll</HintPath>
     </Reference>
     <Reference Include="MonoDevelop.Refactoring">
-      <HintPath>..\..\..\..\..\Applications\MonoDevelop.app\Contents\MacOS\lib\monodevelop\AddIns\MonoDevelop.Refactoring\MonoDevelop.Refactoring.dll</HintPath>
+      <Private>False</Private>
+      <HintPath>$(MDROOT)\AddIns\MonoDevelop.Refactoring\MonoDevelop.Refactoring.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -125,5 +136,6 @@
       <Project>{FD0D1033-9145-48E5-8ED8-E2365252878C}</Project>
       <Name>MonoDevelop.FSharp.Gui</Name>
     </ProjectReference>
+    <Reference Include="FSharp.Core" />
   </ItemGroup>
 </Project>

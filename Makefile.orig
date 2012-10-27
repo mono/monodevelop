@@ -5,156 +5,38 @@
 
 # Here are a few paths that need to be configured first:
 MDROOT  = INSERT_MD_ROOT
-MONOBIN = INSERT_MONO_BIN
-FSBIN = INSERT_FSHARP_BIN
-MADIR = INSERT_MA_DIR
-MDSEDIR = INSERT_MDSE_DIR
-ATKDIR = INSERT_ATK_DIR
-PANGODIR = INSERT_PANGO_DIR
-GTKDIR = INSERT_GTK_DIR
-GDKDIR = INSERT_GDK_DIR
-GLIBDIR = INSERT_GLIB_DIR
+#MONOBIN = INSERT_MONO_BIN
 
-MONO = INSERT_MONO
 MDTOOL = $(MONO) $(MDROOT)/bin/mdtool.exe 
-FSC = INSERT_FSHARP_COMPILER
-CSC = INSERT_CSHARP_COMPILER
-
-MDBIN = $(MDROOT)/bin
-MDADDIN = $(MDROOT)/AddIns
-
-# Resources and files to be compiled/included as part of the project
-RESOURCES = \
-	--resource:MonoDevelop.FSharpBinding/FSharpBinding.addin.xml \
-	--resource:MonoDevelop.FSharpBinding/templates/EmptyFSharpSource.xft.xml \
-	--resource:MonoDevelop.FSharpBinding/templates/EmptyFSharpScript.xft.xml \
-	--resource:MonoDevelop.FSharpBinding/templates/FSharpConsoleProject.xpt.xml \
-	--resource:MonoDevelop.FSharpBinding/templates/FSharpSyntaxMode.xml \
-	--resource:MonoDevelop.FSharpBinding/templates/FSharpLibraryProject.xpt.xml \
-	--resource:MonoDevelop.FSharpBinding/templates/FSharpTutorialProject.xpt.xml \
-	--resource:MonoDevelop.FSharpBinding/templates/FSharpGtkProject.xpt.xml \
-	--resource:MonoDevelop.FSharpBinding/templates/AssemblyInfo.xft.xml \
-	--resource:MonoDevelop.FSharpBinding/icons/fsharp-icon-32.png \
-	--resource:MonoDevelop.FSharpBinding/icons/fsharp-script-32.png \
-	--resource:MonoDevelop.FSharpBinding/icons/fsharp-file-icon.png \
-	--resource:MonoDevelop.FSharpBinding/icons/fsharp-project-icon.png \
-	--resource:MonoDevelop.FSharpBinding/icons/fsharp-script-icon.png
-
-FILES = \
-	MonoDevelop.FSharpBinding/PowerPack/CodeDomVisitor.fs \
-	MonoDevelop.FSharpBinding/PowerPack/CodeDomGenerator.fs \
-	MonoDevelop.FSharpBinding/PowerPack/CodeProvider.fs \
-	MonoDevelop.FSharpBinding/PowerPack/LazyList.fsi \
-	MonoDevelop.FSharpBinding/PowerPack/LazyList.fs \
-	MonoDevelop.FSharpBinding/Services/Mailbox.fs \
-	MonoDevelop.FSharpBinding/Services/Parameters.fs \
-	MonoDevelop.FSharpBinding/Services/Common.fs \
-	MonoDevelop.FSharpBinding/Services/CompilerLocationUtils.fs \
-	MonoDevelop.FSharpBinding/Services/FSharpCompiler.fs \
-	MonoDevelop.FSharpBinding/Services/Parser.fs \
-	MonoDevelop.FSharpBinding/Services/CompilerArguments.fs \
-	MonoDevelop.FSharpBinding/Services/LanguageService.fs \
-	MonoDevelop.FSharpBinding/Services/CompilerService.fs \
-	MonoDevelop.FSharpBinding/Services/InteractiveSession.fs \
-	MonoDevelop.FSharpBinding/FSharpInteractivePad.fs \
-	MonoDevelop.FSharpBinding/FSharpOptionsPanels.fs \
-	MonoDevelop.FSharpBinding/FSharpSyntaxMode.fs \
-	MonoDevelop.FSharpBinding/FSharpResourceIdBuilder.fs \
-	MonoDevelop.FSharpBinding/FSharpLanguageBinding.fs \
-	MonoDevelop.FSharpBinding/FSharpProjectFileNodeExtension.fs \
-	MonoDevelop.FSharpBinding/FSharpProjectServiceExtension.fs \
-	MonoDevelop.FSharpBinding/FSharpParser.fs \
-	MonoDevelop.FSharpBinding/FSharpTextEditorCompletion.fs \
-	MonoDevelop.FSharpBinding/FSharpResolverProvider.fs \
-
-REFERENCES = \
-	-r:$(MONOBIN)/mscorlib.dll \
-	-r:System.dll \
-	-r:System.Core.dll \
-	-r:System.Xml.dll \
-	-r:$(MONOBIN)/../2.0/Mono.Posix.dll \
-	-r:$(MONOBIN)/Mono.Cairo.dll \
-	-r:$(MADIR)/Mono.Addins.dll \
-	-r:$(MDBIN)/MonoDevelop.Core.dll \
-	-r:$(MDBIN)/MonoDevelop.Ide.dll \
-	-r:$(MDADDIN)/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll \
-	-r:$(MDSEDIR)/MonoDevelop.SourceEditor2.dll \
-	-r:$(MDBIN)/Mono.TextEditor.dll \
-	-r:$(MDBIN)/ICSharpCode.NRefactory.dll \
-	-r:$(MDBIN)/ICSharpCode.NRefactory.CSharp.dll \
-	-r:$(ATKDIR)/atk-sharp.dll \
-	-r:$(PANGODIR)/pango-sharp.dll \
-	-r:$(GTKDIR)/gtk-sharp.dll \
-	-r:$(GDKDIR)/gdk-sharp.dll \
-	-r:$(GLIBDIR)/glib-sharp.dll
-
-FS_REFERENCES= $(REFERENCES) \
-	-r:$(FSBIN)/FSharp.Core.dll
-
-OPTIONS = \
-	--resident --noframework --debug --optimize- --target:library -r:bin/FSharpBinding.Gui.dll --out:bin/FSharpBinding.dll
-
-# CSharp project that contains designer generated GTK stuff for project options
-
-GUIFILES = \
-	MonoDevelop.FSharpBinding/Gui/FSharpBuildOrderWidget.cs \
-	MonoDevelop.FSharpBinding/Gui/FSharpSettingsWidget.cs \
-	MonoDevelop.FSharpBinding/Gui/FSharpCompilerOptionsWidget.cs \
-	MonoDevelop.FSharpBinding/Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpBuildOrderWidget.cs \
-	MonoDevelop.FSharpBinding/Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpSettingsWidget.cs \
-	MonoDevelop.FSharpBinding/Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs \
-	MonoDevelop.FSharpBinding/Gui/gtk-gui/generated.cs
-
-GUIOPTIONS = \
-	-debug+ -out:bin/FSharpBinding.Gui.dll -target:library
 
 TARGETS = bin/FSharp.Core.dll bin/FSharpBinding.dll  bin/FSharpBinding.Gui.dll
 
-all: $(TARGETS)
+.PHONY: all
 
-bin/FSharp.Core.dll: $(MONOBIN)/FSharp.Core.dll
-	@-mkdir -p bin
-	cp -p $(MONOBIN)/FSharp.Core.dll bin/FSharp.Core.dll
+all: binding aspnet
 
-bin/FSharpBinding.dll: bin/FSharpBinding.Gui.dll $(FILES) bin/FSharp.Core.dll \
-	MonoDevelop.FSharpBinding/FSharpBinding.addin.xml \
-	MonoDevelop.FSharpBinding/FSharpBinding.addin.xml \
-	MonoDevelop.FSharpBinding/templates/EmptyFSharpSource.xft.xml \
-	MonoDevelop.FSharpBinding/templates/EmptyFSharpScript.xft.xml \
-	MonoDevelop.FSharpBinding/templates/FSharpConsoleProject.xpt.xml \
-	MonoDevelop.FSharpBinding/templates/FSharpSyntaxMode.xml \
-	MonoDevelop.FSharpBinding/templates/FSharpLibraryProject.xpt.xml \
-	MonoDevelop.FSharpBinding/templates/FSharpTutorialProject.xpt.xml \
-	MonoDevelop.FSharpBinding/templates/FSharpGtkProject.xpt.xml \
-	MonoDevelop.FSharpBinding/templates/AssemblyInfo.xft.xml \
-	MonoDevelop.FSharpBinding/icons/fsharp-icon-32.png \
-	MonoDevelop.FSharpBinding/icons/fsharp-script-32.png \
-	MonoDevelop.FSharpBinding/icons/fsharp-file-icon.png \
-	MonoDevelop.FSharpBinding/icons/fsharp-project-icon.png \
-	MonoDevelop.FSharpBinding/icons/fsharp-script-icon.png
-	$(FSC) $(OPTIONS) $(FS_REFERENCES) $(RESOURCES) $(FILES) 
+binding:
+	(cd MonoDevelop.FSharpBinding && xbuild MonoDevelop.FSharp.fsproj /p:MDROOT=$(MDROOT))
 
-bin/FSharpBinding.Gui.dll: $(GUIFILES)
-	@-mkdir -p bin
-	$(CSC) $(GUIOPTIONS) $(REFERENCES) $(GUIFILES) 
+aspnet:
+	(cd addins/MonoDevelop.FSharp.AspNet.Mvc && xbuild MonoDevelop.FSharp.AspNet.Mvc.fsproj /p:MDROOT=$(MDROOT))
 
-install: $(TARGETS)
-	cp -p bin/FSharp* $(MDADDIN)/BackendBindings/
+install:
+	cp -pr bin/* $(MDADDIN)/BackendBindings/
 
-install-mac: bin/FSharpBinding.dll  bin/FSharpBinding.Gui.dll
-	-rm -fr ~/Library/Application\ Support/MonoDevelop-3.0/LocalInstall/Addins/*.FSharp*
+install-mac:
+	-rm -fr ~/Library/Application\ Support/MonoDevelop-3.0/LocalInstall/Addins/*FSharp*
 	@-mkdir ~/Library/Application\ Support/MonoDevelop-3.0/LocalInstall/Addins/MonoDevelop.FSharpBinding.3.1.3
-	cp -p bin/FSharp* ~/Library/Application\ Support/MonoDevelop-3.0/LocalInstall/Addins/MonoDevelop.FSharpBinding.3.1.3
-
+	cp -pr bin/* ~/Library/Application\ Support/MonoDevelop-3.0/LocalInstall/Addins/MonoDevelop.FSharpBinding.3.1.3
 
 uninstall:
-	rm $(MDADDIN)/BackendBindings/FSharp*
-	-rm -fr ~/Library/Application\ Support/MonoDevelop-3.0/LocalInstall/Addins/*.FSharp*
+	rm -fr $(MDADDIN)/BackendBindings/FSharp*
+	rm -fr ~/Library/Application\ Support/MonoDevelop-3.0/LocalInstall/Addins/*.FSharp*
 
-package: bin/FSharpBinding.dll  bin/FSharpBinding.Gui.dll
-	mkdir -p bin/repository
-	mkdir -p repository
-	cp bin/FSharpBinding.* bin/repository
+package: $(TARGETS)
+	@mkdir -p bin/repository
+	@mkdir -p repository
+	cp $(TARGETS) bin/repository
 	cp MonoDevelop.FSharpBinding/FSharpBinding.addin.xml bin/repository
 	$(MDTOOL) setup pack bin/repository/FSharpBinding.addin.xml -d:repository
 
