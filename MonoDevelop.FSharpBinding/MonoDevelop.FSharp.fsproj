@@ -14,6 +14,8 @@
     <!-- disable this for now, xbuild hangs if it launches the terminate-and-stay-resident server -->
     <!-- <OtherFlags> /resident </OtherFlags> -->
     <UsePartialTypes>False</UsePartialTypes>
+    <!-- enable this when compiling MonoDevelop head -->
+    <!-- <DefineConstants>MONODEVELOP_HEAD;$(DefineConstants)</DefineConstants> --> 
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -21,7 +23,7 @@
     <Optimize>False</Optimize>
     <Tailcalls>False</Tailcalls>
     <OutputPath>..\bin\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;$(DefineConstants)</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <Externalconsole>True</Externalconsole>
     <GenerateDebugInfo>false</GenerateDebugInfo>
@@ -37,7 +39,7 @@
     <Optimize>True</Optimize>
     <Tailcalls>True</Tailcalls>
     <OutputPath>..\bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;$(DefineConstants)</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <GenerateDebugInfo>false</GenerateDebugInfo>
     <OptimizeCode>false</OptimizeCode>
