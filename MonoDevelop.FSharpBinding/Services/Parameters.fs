@@ -23,25 +23,34 @@ type FSharpProjectParameters() =
 /// Serializable type respresnting F# compiler parameters
 type FSharpCompilerParameters() as this = 
   inherit ConfigurationParameters()
+  let asBool (s:string) = (System.String.Compare(s, "true", System.StringComparison.InvariantCultureIgnoreCase) = 0)
+  let asString (b:bool) = if b then "true" else "false"
+   
   do this.platformTarget <- "anycpu"
   
   [<field:ItemProperty("PlatformTarget",DefaultValue="anycpu"); DefaultValue>]
   val mutable private platformTarget : string
         
   [<field:ItemProperty("DebugSymbols"); DefaultValue>]
-  val mutable private  debugSymbols : bool
+  // This is logically a boolean but we serialize as a string to always save as lower-case "true" rather than "True"
+  // This keeps the text of the project file identical to Visual Studio.
+  val mutable private  debugSymbols : string
 
   [<field:ItemProperty("DebugType"); DefaultValue>]
   val mutable private  debugType : string
 
   [<field:ItemProperty("Optimize"); DefaultValue>]
-  val mutable private optimize : bool
+  // This is logically a boolean but we serialize as a string to always save as lower-case "true" rather than "True"
+  // This keeps the text of the project file identical to Visual Studio.
+  val mutable private optimize : string
 
   [<field:ItemProperty("DocumentationFile"); DefaultValue>]
   val mutable private documentationFile : string
 
   [<field:ItemProperty("Tailcalls"); DefaultValue>]
-  val mutable private generateTailCalls : bool
+  // This is logically a boolean but we serialize as a string to always save as lower-case "true" rather than "True"
+  // This keeps the text of the project file identical to Visual Studio.
+  val mutable private generateTailCalls : string
 
   [<field:ItemProperty("DefineConstants"); DefaultValue>]
   val mutable private defineConstants : string
@@ -79,20 +88,24 @@ type FSharpCompilerParameters() as this =
     and set(value) = x.documentationFile <- value
 
   member x.GenerateTailCalls
-    with get() = x.generateTailCalls
-    and set(value) = x.generateTailCalls <- value
+    with get() = asBool x.generateTailCalls
+    and set(value) = 
+        if x.GenerateTailCalls <> value then 
+            x.generateTailCalls <- asString value 
         
   member x.Optimize
-    with get() = x.optimize
+    with get() = asBool x.optimize
     and set(value) = 
-        x.optimize <- value
-        x.debugType <- (if x.DebugSymbols then (if x.optimize then "pdbonly" else "full") else "none")
+        if x.Optimize <> value then 
+            x.optimize <- asString value
+            x.debugType <- (if x.DebugSymbols then (if x.Optimize then "pdbonly" else "full") else "none")
         
   member x.DebugSymbols
-    with get() = x.debugSymbols
+    with get() = asBool x.debugSymbols
     and set(value) = 
-        x.debugSymbols <- value
-        x.debugType <- (if x.DebugSymbols then (if x.optimize then "pdbonly" else "full") else "none")
+        if x.DebugSymbols <> value then 
+            x.debugSymbols <- asString value
+            x.debugType <- (if x.DebugSymbols then (if x.Optimize then "pdbonly" else "full") else "none")
         
   member x.PlatformTarget
     with get() = if x.platformTarget = null then "anycpu" else x.platformTarget
