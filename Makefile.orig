@@ -21,17 +21,17 @@ binding:
 aspnet:
 	(cd addins/MonoDevelop.FSharp.AspNet.Mvc && xbuild MonoDevelop.FSharp.AspNet.Mvc.fsproj /p:MDROOT=$(MDROOT))
 
-install:
-	cp -pr bin/* $(MDADDIN)/BackendBindings/
+#install:
+#	cp -pr bin/* $(MDADDIN)/BackendBindings/
 
 install-mac:
 	-rm -fr ~/Library/Application\ Support/MonoDevelop-3.0/LocalInstall/Addins/*FSharp*
-	@-mkdir ~/Library/Application\ Support/MonoDevelop-3.0/LocalInstall/Addins/MonoDevelop.FSharpBinding.3.1.3
-	cp -pr bin/* ~/Library/Application\ Support/MonoDevelop-3.0/LocalInstall/Addins/MonoDevelop.FSharpBinding.3.1.3
+	@-mkdir ~/Library/Application\ Support/MonoDevelop-3.0/LocalInstall/Addins/MonoDevelop.FSharpBinding.3.2.1
+	cp -pr bin/* ~/Library/Application\ Support/MonoDevelop-3.0/LocalInstall/Addins/MonoDevelop.FSharpBinding.3.2.1
 
-uninstall:
-	rm -fr $(MDADDIN)/BackendBindings/FSharp*
-	rm -fr ~/Library/Application\ Support/MonoDevelop-3.0/LocalInstall/Addins/*.FSharp*
+#uninstall:
+#	rm -fr $(MDADDIN)/BackendBindings/FSharp*
+#	rm -fr ~/Library/Application\ Support/MonoDevelop-3.0/LocalInstall/Addins/*.FSharp*
 
 package: $(TARGETS)
 	@mkdir -p bin/repository
