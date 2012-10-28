@@ -1,16 +1,19 @@
 # F# Language Binding for MonoDevelop 
 
-Adds F# project support and allows you to code in F# in MonoDevelop. Can create such projects as:
-* Console Application
-* Library
-* Tutorial Project
-* Gtk Project
+Adds F# support to MonoDevelop.
 
-Supports the following features:
+Features:
 * Code completion
-* Highlighting
+* Syntax highlighting
 * Tooltips
 * Debugging 
+* Target .NET 3.5, 4.0, 4.5
+* F# Interactive scripting (Alt-Enter execution)
+* Templates (Console Application, Library, Tutorial Project, Gtk Project)
+* Makefile support
+* MonoDevelop includes C# 5.0, ASP.NET and other features
+* Supports F# 3.0 type providers (requires F# 3.0)
+* xbuild support for Visual Studio .fsproj and .sln files without change (requires Mono 3.0 and F# 3.0)
 
 Requires MonoDevelop 3.0 and later versions
 
@@ -35,14 +38,18 @@ For more information about F# and code examples see these links:
 * http://tryfsharp.org
 * http://fssnip.net
 
-## Building from scratch
+## Building and installing from scratch
 
-Normally you should get the binding from the repository. If you want to build it yourself and develop it, try this:
+Normally you should get the binding from the repository. If you want to build and install it yourself and develop it, try this:
 
   ./configure.sh
   make
-  make install-mac or make install  (may need tweeking on Linux)
+  make install 
 
 ## Contribute 
 Join [The F# Open Source Group](http://fsharp.github.com). We use [github](http://fsharp.github.com/fsharpbinding) for tracking work items and suggestions.
+
+## Can't get it to work?  
+
+Don't give up! Add an issue to [the issue tracker](http://fsharp.github.com/fsharpbinding/issues). You issue will be seen by the developers,
 

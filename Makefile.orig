@@ -7,7 +7,7 @@
 MDROOT  = INSERT_MD_ROOT
 #MONOBIN = INSERT_MONO_BIN
 
-MDTOOL = $(MONO) $(MDROOT)/bin/mdtool.exe 
+MDTOOL = $(MONO) $(MDROOT)/../../mdtool
 
 TARGETS = bin/FSharp.Core.dll bin/FSharpBinding.dll  bin/FSharpBinding.Gui.dll
 
@@ -16,6 +16,7 @@ TARGETS = bin/FSharp.Core.dll bin/FSharpBinding.dll  bin/FSharpBinding.Gui.dll
 all: binding aspnet
 
 binding:
+	(cd MonoDevelop.FSharpBinding/Gui && xbuild MonoDevelop.FSharp.Gui.csproj /p:MDROOT=$(MDROOT))
 	(cd MonoDevelop.FSharpBinding && xbuild MonoDevelop.FSharp.fsproj /p:MDROOT=$(MDROOT))
 
 aspnet:
@@ -24,14 +25,19 @@ aspnet:
 #install:
 #	cp -pr bin/* $(MDADDIN)/BackendBindings/
 
-install-mac:
-	-rm -fr ~/Library/Application\ Support/MonoDevelop-3.0/LocalInstall/Addins/*FSharp*
-	@-mkdir ~/Library/Application\ Support/MonoDevelop-3.0/LocalInstall/Addins/MonoDevelop.FSharpBinding.3.2.1
-	cp -pr bin/* ~/Library/Application\ Support/MonoDevelop-3.0/LocalInstall/Addins/MonoDevelop.FSharpBinding.3.2.1
+#install:
 
-#uninstall:
-#	rm -fr $(MDADDIN)/BackendBindings/FSharp*
-#	rm -fr ~/Library/Application\ Support/MonoDevelop-3.0/LocalInstall/Addins/*.FSharp*
+VERSION=3.2.1
+
+install:
+	-rm -fr pack
+	@-mkdir pack
+	$(MDTOOL) setup pack bin/FSharpBinding.addin.xml -d:pack
+	$(MDTOOL) setup install pack/MonoDevelop.FSharpBinding_$(VERSION).mpack 
+
+uninstall:
+	$(MDTOOL) setup uninstall MonoDevelop.FSharpBinding
+
 
 package: $(TARGETS)
 	@mkdir -p bin/repository
@@ -41,4 +47,7 @@ package: $(TARGETS)
 	$(MDTOOL) setup pack bin/repository/FSharpBinding.addin.xml -d:repository
 
 clean:
-	rm -r bin
+	-rm -fr bin
+	(cd MonoDevelop.FSharpBinding && xbuild MonoDevelop.FSharp.fsproj /target:Clean /p:MDROOT=$(MDROOT))
+	(cd MonoDevelop.FSharpBinding/Gui && xbuild MonoDevelop.FSharp.Gui.csproj /target:Clean /p:MDROOT=$(MDROOT))
+	(cd addins/MonoDevelop.FSharp.AspNet.Mvc && xbuild MonoDevelop.FSharp.AspNet.Mvc.fsproj /target:Clean /p:MDROOT=$(MDROOT))
