@@ -33,7 +33,7 @@ install:
 	-rm -fr pack
 	@-mkdir pack
 	$(MDTOOL) setup pack bin/FSharpBinding.addin.xml -d:pack
-	$(MDTOOL) setup install pack/MonoDevelop.FSharpBinding_$(VERSION).mpack 
+	$(MDTOOL) setup install -y pack/MonoDevelop.FSharpBinding_$(VERSION).mpack 
 
 uninstall:
 	$(MDTOOL) setup uninstall MonoDevelop.FSharpBinding
