@@ -8,7 +8,8 @@ open MonoDevelop.Core
 
 type InteractiveSession() =
   let server = "MonoDevelop" + Guid.NewGuid().ToString("n")
-  let args = "--fsi-server:" + server + " "
+  // Turn off the console and add the remoting connection 
+  let args = "--readline- --fsi-server:" + server + " "
   
   // Get F# Interactive path and command line args from settings
   let args = args + PropertyService.Get<string>("FSharpBinding.FsiArguments", "")
