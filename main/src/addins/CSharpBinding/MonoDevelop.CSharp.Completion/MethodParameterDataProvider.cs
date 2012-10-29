@@ -285,7 +285,12 @@ namespace MonoDevelop.CSharp.Completion
 				return method.Parameters.Count - 1;
 			return method.Parameters.Count;
 		}
-		
+
+		public override string GetParameterName (int overload, int paramIndex)
+		{
+			IMethod method = methods [overload];
+			return method.Parameters[paramIndex].Name;
+		}
 		public override bool AllowParameterList (int overload)
 		{
 			if (overload >= Count)

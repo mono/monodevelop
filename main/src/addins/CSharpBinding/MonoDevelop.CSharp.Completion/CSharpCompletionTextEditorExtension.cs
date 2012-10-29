@@ -249,6 +249,63 @@ namespace MonoDevelop.CSharp.Completion
 			char ch = completionContext.TriggerOffset > 0 ? TextEditorData.GetCharAt (completionContext.TriggerOffset - 1) : '\0';
 			return InternalHandleCodeCompletion (completionContext, ch, true, ref triggerWordLength);
 		}
+
+		static bool HasAllUsedParameters (IParameterDataProvider provider, List<string> list, int n)
+		{
+			int pc = provider.GetParameterCount (n);
+			foreach (var usedParam in list) {
+				bool found = false;
+				for (int m = 0; m < pc; m++) {
+					if (usedParam == provider.GetParameterName (n, m)){
+						found = true;
+						break;
+					}
+				}
+				if (!found)
+					return false;
+			}
+			return true;
+		}
+		public override int GuessBestMethodOverload (IParameterDataProvider provider, int currentOverload)
+		{
+			var engine = new CSharpParameterCompletionEngine (
+				TextEditorData.Document,
+				typeSystemSegmentTree,
+				this,
+				Document.GetProjectContext (),
+				CSharpUnresolvedFile.GetTypeResolveContext (Document.Compilation, document.Editor.Caret.Location) as CSharpTypeResolveContext
+				);
+			List<string> list;
+			int cparam = engine.GetCurrentParameterIndex (provider.StartOffset, document.Editor.Caret.Offset, out list);
+			if (cparam > provider.GetParameterCount (currentOverload) && !provider.AllowParameterList (currentOverload) || !HasAllUsedParameters (provider, list, currentOverload)) {
+				// Look for an overload which has more parameters
+				int bestOverload = -1;
+				int bestParamCount = int.MaxValue;
+				for (int n = 0; n < provider.Count; n++) {
+					int pc = provider.GetParameterCount (n);
+					if (pc < bestParamCount && pc >= cparam) {
+
+						if (HasAllUsedParameters (provider, list, n)) {
+							bestOverload = n;
+							bestParamCount = pc;
+						}
+					}
+
+
+				}
+				if (bestOverload == -1) {
+					for (int n=0; n<provider.Count; n++) {
+						if (provider.AllowParameterList (n) && HasAllUsedParameters (provider, list, n)) {
+							bestOverload = n;
+							break;
+						}
+					}
+				}
+				return bestOverload;
+			}
+			return -1;
+		}
+
 		
 		static bool ContainsPublicConstructors (ITypeDefinition t)
 		{
@@ -430,8 +487,9 @@ namespace MonoDevelop.CSharp.Completion
 				this,
 				Document.GetProjectContext (),
 				CSharpUnresolvedFile.GetTypeResolveContext (Document.Compilation, document.Editor.Caret.Location) as CSharpTypeResolveContext
-			);
-			return engine.GetCurrentParameterIndex (startOffset, document.Editor.Caret.Offset);
+				);
+			List<string> list;
+			return engine.GetCurrentParameterIndex (startOffset, document.Editor.Caret.Offset, out list);
 		}
 		/*
 		internal int GetCurrentParameterIndex (ICompletionWidget widget, int offset, int memberStart)

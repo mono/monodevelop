@@ -80,7 +80,13 @@ namespace MonoDevelop.CSharp.Completion
 				return -1;
 			return arrayType.Dimensions;
 		}
-		
+
+		public override string GetParameterName (int overload, int paramIndex)
+		{
+			// unused
+			return "";
+		}
+
 		public override bool AllowParameterList (int overload)
 		{
 			return false;

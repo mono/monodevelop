@@ -76,7 +76,13 @@ namespace MonoDevelop.CSharp.Completion
 			var lastParam = indexers[overload].Parameters.LastOrDefault ();
 			return lastParam != null && lastParam.IsParams;
 		}
-		
+
+		public override string GetParameterName (int overload, int paramIndex)
+		{
+			var indexer = indexers[overload];
+			return indexer.Parameters[paramIndex].Name;
+		}
+
 		public override int Count {
 			get {
 				return indexers != null ? indexers.Count : 0;

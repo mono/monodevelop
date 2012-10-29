@@ -120,6 +120,13 @@ namespace MonoDevelop.CSharp.Completion
 			return type != null ? type.TypeParameterCount : 0;
 		}
 
+		public string GetParameterName (int overload, int paramIndex)
+		{
+			// unused
+			return "T";
+		}
+
+
 		public bool AllowParameterList (int overload)
 		{
 			return false;

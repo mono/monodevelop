@@ -76,6 +76,11 @@ namespace MonoDevelop.CSharp.Completion
 			var lastParam = delegateMethod.Parameters.LastOrDefault ();
 			return lastParam != null && lastParam.IsParams;
 		}
+
+		public override string GetParameterName (int overload, int paramIndex)
+		{
+			return delegateMethod.Parameters[paramIndex].Name;
+		}
 		
 		public override int Count {
 			get {

@@ -98,7 +98,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public static void PostProcessKeyEvent (CompletionTextEditorExtension ext, ICompletionWidget widget, Gdk.Key key, Gdk.ModifierType modifier)
 		{
 			// Called after the key has been processed by the editor
-		
 			if (methods.Count == 0)
 				return;
 				
@@ -170,29 +169,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 			// look for another overload with more parameters.
 			
 			MethodData md = methods [methods.Count - 1];
-			int cparam = ext.GetCurrentParameterIndex (md.MethodProvider.StartOffset);
-			
-			if (cparam > md.MethodProvider.GetParameterCount (md.CurrentOverload) && !md.MethodProvider.AllowParameterList (md.CurrentOverload)) {
-				// Look for an overload which has more parameters
-				int bestOverload = -1;
-				int bestParamCount = int.MaxValue;
-				for (int n=0; n<md.MethodProvider.Count; n++) {
-					int pc = md.MethodProvider.GetParameterCount (n);
-					if (pc < bestParamCount && pc >= cparam) {
-						bestOverload = n;
-						bestParamCount = pc;
-					}
-				}
-				if (bestOverload == -1) {
-					for (int n=0; n<md.MethodProvider.Count; n++) {
-						if (md.MethodProvider.AllowParameterList (n)) {
-							bestOverload = n;
-							break;
-						}
-					}
-				}
-				if (bestOverload != -1)
-					md.CurrentOverload = bestOverload;
+
+			int bestOverload = ext.GuessBestMethodOverload (md.MethodProvider, md.CurrentOverload);
+			if (bestOverload != -1) {
+				md.CurrentOverload = bestOverload;
+				window.ChangeOverload ();
+				UpdateWindow (ext, widget);
 			}
 		}
 		

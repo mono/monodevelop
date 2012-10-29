@@ -41,7 +41,7 @@ namespace MonoDevelop.Ide.Gui.Content
 	{
 		CodeCompletionContext currentCompletionContext;
 
-		bool autoHideCompletionWindow = true;
+		bool autoHideCompletionWindow = true, autoHideParameterWindow = true;
 
 		#region Completion related IDE
 		public readonly static PropertyWrapper<bool> EnableCodeCompletion = PropertyService.Wrap ("EnableCodeCompletion", true);
@@ -78,20 +78,24 @@ namespace MonoDevelop.Ide.Gui.Content
 				if (CompletionWindowManager.PreProcessKeyEvent (key, keyChar, modifier)) {
 					CompletionWindowManager.PostProcessKeyEvent (key, keyChar, modifier);
 					autoHideCompletionWindow = true;
+					// in named parameter case leave the parameter window open.
+					autoHideParameterWindow = keyChar != ':';
+					if (!autoHideParameterWindow && ParameterInformationWindowManager.IsWindowVisible)
+						ParameterInformationWindowManager.PostProcessKeyEvent (this, CompletionWidget, key, modifier);
+					
 					return false;
 				}
-				autoHideCompletionWindow = false;
+				autoHideCompletionWindow = autoHideParameterWindow = false;
 			}
 			
 			if (ParameterInformationWindowManager.IsWindowVisible) {
 				if (ParameterInformationWindowManager.ProcessKeyEvent (this, CompletionWidget, key, modifier))
 					return false;
-				autoHideCompletionWindow = false;
+				autoHideCompletionWindow = autoHideParameterWindow = false;
 			}
 			
 			//			int oldPos = Editor.CursorPosition;
 			//			int oldLen = Editor.TextLength;
-			
 			res = base.KeyPress (key, keyChar, modifier);
 			
 			CompletionWindowManager.PostProcessKeyEvent (key, keyChar, modifier);
@@ -102,7 +106,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			if (ParameterInformationWindowManager.IsWindowVisible) {
 				ParameterInformationWindowManager.PostProcessKeyEvent (this, CompletionWidget, key, modifier);
 			}
-			
+
 			if ((modifier & ignoreMods) != 0)
 				return res;
 			
@@ -136,9 +140,8 @@ namespace MonoDevelop.Ide.Gui.Content
 				if (paramProvider != null)
 					ParameterInformationWindowManager.ShowWindow (this, CompletionWidget, ctx, paramProvider);
 			}
-			
-			autoHideCompletionWindow = true;
-			
+/*			autoHideCompletionWindow = true;
+			autoHideParameterWindow = keyChar != ':';*/
 			return res;
 		}
 		
@@ -158,7 +161,7 @@ namespace MonoDevelop.Ide.Gui.Content
 				else
 					currentCompletionContext = null;
 			}
-			autoHideCompletionWindow = true;
+			autoHideCompletionWindow = autoHideParameterWindow = true;
 		}
 		
 		public virtual int GetCurrentParameterIndex (int startOffset)
@@ -169,10 +172,10 @@ namespace MonoDevelop.Ide.Gui.Content
 
 		protected void OnCompletionContextChanged (object o, EventArgs a)
 		{
-			if (autoHideCompletionWindow) {
+			if (autoHideCompletionWindow)
 				CompletionWindowManager.HideWindow ();
+			if (autoHideParameterWindow)
 				ParameterInformationWindowManager.HideWindow (this, CompletionWidget);
-			}
 		}
 
 		[CommandUpdateHandler (TextEditorCommands.ShowCompletionWindow)]
@@ -391,6 +394,34 @@ namespace MonoDevelop.Ide.Gui.Content
 			if (cp != null)
 				return cp;
 			return null;
+		}
+
+		public virtual int GuessBestMethodOverload (IParameterDataProvider provider, int currentOverload)
+		{
+			int cparam = GetCurrentParameterIndex (provider.StartOffset);
+
+			if (cparam > provider.GetParameterCount (currentOverload) && !provider.AllowParameterList (currentOverload)) {
+				// Look for an overload which has more parameters
+				int bestOverload = -1;
+				int bestParamCount = int.MaxValue;
+				for (int n=0; n<provider.Count; n++) {
+					int pc = provider.GetParameterCount (n);
+					if (pc < bestParamCount && pc >= cparam) {
+						bestOverload = n;
+						bestParamCount = pc;
+					}
+				}
+				if (bestOverload == -1) {
+					for (int n=0; n<provider.Count; n++) {
+						if (provider.AllowParameterList (n)) {
+							bestOverload = n;
+							break;
+						}
+					}
+				}
+				return bestOverload;
+			}
+			return -1;
 		}
 		
 		public override void Initialize ()

@@ -59,6 +59,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public abstract int GetParameterCount (int overload);
 		public abstract bool AllowParameterList (int overload);
+		public abstract string GetParameterName (int overload, int paramIndex);
+
 		public abstract int Count {
 			get;
 		}
