@@ -1169,11 +1169,10 @@ namespace MonoDevelop.CSharp.Highlighting
 				FoundSpanBegin (preprocessorSpan, i, 0);
 			}
 
-			protected override void ScanSpan (ref int i)
+			protected override bool ScanSpan (ref int i)
 			{
 				if (CSharpSyntaxMode.DisableConditionalHighlighting) {
-					base.ScanSpan (ref i);
-					return;
+					return base.ScanSpan (ref i);
 				}
 				int textOffset = i - StartOffset;
 
@@ -1188,25 +1187,25 @@ namespace MonoDevelop.CSharp.Highlighting
 	
 					if (CurText.IsAt (textOffset, "#else")) {
 						ScanPreProcessorElse (ref i);
-						return;
+						return true;
 					}
 	
 					if (CurText.IsAt (textOffset, "#if")) {
 						ScanPreProcessorIf (textOffset, ref i);
-						return;
+						return true;
 					}
 	
 					if (CurText.IsAt (textOffset, "#elif") && spanStack != null && spanStack.Any (span => span is IfBlockSpan)) {
 						ScanPreProcessorElseIf (ref i);
-						return;
+						return true;
 					}
 	
 					var preprocessorSpan = CreatePreprocessorSpan ();
 					FoundSpanBegin (preprocessorSpan, i, 1);
-					return;
+					return true;
 				}
 
-				base.ScanSpan (ref i);
+				return base.ScanSpan (ref i);
 			}
 			
 			public static Span CreatePreprocessorSpan ()

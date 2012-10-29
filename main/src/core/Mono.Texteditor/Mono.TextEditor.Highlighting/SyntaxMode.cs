@@ -319,7 +319,7 @@ namespace Mono.TextEditor.Highlighting
 			}
 		
 						
-			protected virtual void ScanSpan (ref int i)
+			protected virtual bool ScanSpan (ref int i)
 			{
 				int textOffset = i - StartOffset;
 				for (int j = 0; j < CurRule.Spans.Length; j++) {
@@ -342,14 +342,14 @@ namespace Mono.TextEditor.Highlighting
 						bool foundEnd = false;
 						for (int k = i + match.Length; k < CurText.Length; k++) {
 							if (span.Exit.TryMatch (CurText, k - StartOffset).Success)
-								return;
+								return false;
 							if (span.End.TryMatch (CurText, k - StartOffset).Success) {
 								foundEnd = true;
 								break;
 							}
 						}
 						if (!foundEnd)
-							return;
+							return false;
 					}
 					
 					bool mismatch = false;
@@ -359,8 +359,9 @@ namespace Mono.TextEditor.Highlighting
 						continue;
 					FoundSpanBegin (span, i, match.Length);
 					i += System.Math.Max (0, match.Length - 1);
-					return;
+					return true;
 				}
+				return false;
 			}
 
 			protected virtual bool ScanSpanEnd (Span cur, ref int i)
@@ -403,7 +404,6 @@ namespace Mono.TextEditor.Highlighting
 				StartOffset = offset;
 				CurText = doc.GetTextAt (offset, length);
 				maxEnd = offset + length;
-				int escapeChars = 0;
 				for (int i = offset; i < maxEnd; i++) {
 					int textIndex = i - StartOffset;
 					Span cur = CurSpan;
@@ -416,18 +416,23 @@ namespace Mono.TextEditor.Highlighting
 									break;
 								}
 							}
-							if (!mismatch)
-								escapeChars = cur.Escape.Length;
+							if (!mismatch) {
+								for (int j = 0; j < cur.Escape.Length - 1 && i < maxEnd;j++) {
+									ParseChar (ref i, CurText [textIndex]);
+									i++;
+								}
+								ScanSpanEnd (cur, ref i);
+								continue;
+							}
 						}
-						if (escapeChars == 0 && ScanSpanEnd (cur, ref i))
+						if (ScanSpanEnd (cur, ref i))
 							continue;
+
 					}
-					if (escapeChars == 0)
-						ScanSpan (ref i);
-					if (i < doc.TextLength)
-						ParseChar (ref i, CurText [textIndex]);
-					if (escapeChars > 0)
-						escapeChars--;
+					if (!ScanSpan (ref i)) {
+						if (i < doc.TextLength)
+							ParseChar (ref i, CurText [textIndex]);
+					}
 				}
 			}
 		}

@@ -137,12 +137,12 @@ namespace MonoDevelop.AspNet
 			}
 
 			
-			protected override void ScanSpan (ref int i)
+			protected override bool ScanSpan (ref int i)
 			{
 				if (!spanStack.Any (s => s is CodeDeclarationSpan || s is CodeExpressionSpan) && i + 4 < doc.TextLength && doc.GetTextAt (i, 2) == "<%" && doc.GetTextAt (i, 4) != "<%--" && doc.GetCharAt (i + 2) != '@') {
 					var span = new CodeExpressionSpan (GetDefaultMime ());
 					FoundSpanBegin (span, i, "#$=:".IndexOf (doc.GetCharAt (i + 2)) >= 0 ? 3 : 2);
-					return;
+					return true;
 				}
 				
 				if (i > 0 && doc.GetCharAt (i) == '>') {
@@ -177,12 +177,12 @@ namespace MonoDevelop.AspNet
 						if (mime != null) {
 							CodeDeclarationSpan span = new CodeDeclarationSpan (mime);
 							FoundSpanBegin (span, i, 0);
-							return;
+							return true;
 						}
 					}
 				}
 				
-				base.ScanSpan (ref i);
+				return base.ScanSpan (ref i);
 			}
 			
 			protected override bool ScanSpanEnd (Mono.TextEditor.Highlighting.Span cur, ref int i)

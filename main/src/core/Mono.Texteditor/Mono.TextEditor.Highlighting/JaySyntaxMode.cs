@@ -105,7 +105,7 @@ namespace Mono.TextEditor.Highlighting
 			{
 			}
 			
-			protected override void ScanSpan (ref int i)
+			protected override bool ScanSpan (ref int i)
 			{
 				bool hasJayDefinitonSpan = spanStack.Any (s => s is JayDefinitionSpan);
 				int textOffset = i - StartOffset;
@@ -115,12 +115,12 @@ namespace Mono.TextEditor.Highlighting
 					if (next == '{') {
 						FoundSpanBegin (new ForcedJayBlockSpan (), i, 2);
 						i++;
-						return;
+						return true;
 					}
 					
 					if (!hasJayDefinitonSpan && next == '%') {
 						FoundSpanBegin (new JayDefinitionSpan (), i, 2);
-						return;
+						return true;
 					}
 					
 					if (next == '}' && spanStack.Any (s => s is ForcedJayBlockSpan)) {
@@ -129,17 +129,17 @@ namespace Mono.TextEditor.Highlighting
 							if (span is ForcedJayBlockSpan)
 								break;
 						}
-						return;
+						return false;
 					}
 				}
 				
 				
 				if (CurSpan is JayDefinitionSpan && CurText[textOffset] == '{' && hasJayDefinitonSpan && !spanStack.Any (s => s is JayBlockSpan)) {
 					FoundSpanBegin (new JayBlockSpan (i), i, 1);
-					return;
+					return true;
 				}
 				
-				base.ScanSpan (ref i);
+				return base.ScanSpan (ref i);
 			}
 			
 			protected override bool ScanSpanEnd (Mono.TextEditor.Highlighting.Span cur, ref int i)
