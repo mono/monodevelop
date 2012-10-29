@@ -444,7 +444,7 @@ namespace MonoDevelop.CSharp
 					}
 				}
 				AppendVariance (result, typeParameters [i].Variance);
-				result.Append (CSharpAmbience.NetToCSharpTypeName (typeParameters [i].Name));
+				result.Append (HighlightSemantically (CSharpAmbience.NetToCSharpTypeName (typeParameters [i].Name), "keyword.semantic.type"));
 			}
 			result.Append ("&gt;");
 		}
@@ -504,8 +504,7 @@ namespace MonoDevelop.CSharp
 				for (int i = 0; i < pt.TypeArguments.Count; i++) {
 					if (i > 0)
 						result.Append (", ");
-					//					AppendVariance (result, pt.TypeArguments [i].Variance);
-					result.Append (GetTypeReferenceString (pt.TypeArguments [i]));
+					result.Append (HighlightSemantically (GetTypeReferenceString (pt.TypeArguments [i]), "keyword.semantic.type"));
 				}
 				result.Append ("&gt;");
 			} else {
@@ -576,7 +575,8 @@ namespace MonoDevelop.CSharp
 			} else {
 				result.Append (" ");
 			}
-			result.Append (field.Name);
+
+			result.Append (HighlightSemantically (CSharpAmbience.FilterName (field.Name), "keyword.semantic.field.declaration"));
 
 			if (field.IsConst) {
 				if (isEnum && !(field.DeclaringTypeDefinition.Attributes.Any (attr => attr.AttributeType.FullName == "System.FlagsAttribute"))) {
@@ -613,7 +613,7 @@ namespace MonoDevelop.CSharp
 				result.Append ("operator ");
 				result.Append (CSharpAmbience.GetOperator (method.Name));
 			} else {
-				result.Append (method.Name);
+				result.Append (HighlightSemantically (method.Name, "keyword.semantic.method.declaration"));
 			}
 			if (method is SpecializedMethod) {
 				var sm = (SpecializedMethod)method;
@@ -622,7 +622,7 @@ namespace MonoDevelop.CSharp
 					for (int i = 0; i < sm.TypeArguments.Count; i++) {
 						if (i > 0)
 							result.Append (", ");
-						result.Append (GetTypeReferenceString (sm.TypeArguments[i], false));
+						result.Append (HighlightSemantically (GetTypeReferenceString (sm.TypeArguments[i], false), "keyword.semantic.type"));
 					}
 					result.Append ("&gt;");
 				}
@@ -713,7 +713,7 @@ namespace MonoDevelop.CSharp
 			if (property.EntityType == EntityType.Indexer) {
 				result.Append (Highlight ("this", "keyword.access"));
 			} else {
-				result.Append (CSharpAmbience.FilterName (property.Name));
+				result.Append (HighlightSemantically (CSharpAmbience.FilterName (property.Name), "keyword.semantic.property.declaration"));
 			}
 			
 			if (property.Parameters.Count > 0) {
@@ -1243,7 +1243,7 @@ namespace MonoDevelop.CSharp
 			}
 
 			AppendExplicitInterfaces (result, evt);
-			result.Append (CSharpAmbience.FilterName (evt.Name));
+			result.Append (HighlightSemantically (CSharpAmbience.FilterName (evt.Name), "keyword.semantic.event.declaration"));
 			return result.ToString ();
 		}
 
