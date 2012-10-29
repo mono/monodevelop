@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using Cairo;
 
 namespace Mono.TextEditor
 {
@@ -58,6 +59,11 @@ namespace Mono.TextEditor
 		{
 			return baseStyle;
 		}
+	}
+
+	public interface IChunkMarker
+	{
+		void ChangeForeColor (TextEditor editor, Chunk chunk, ref Gdk.Color color);
 	}
 
 	public class UnderlineTextSegmentMarker : TextSegmentMarker

@@ -851,7 +851,6 @@ namespace Mono.TextEditor
 			}
 			var wrapper = new LayoutWrapper (PangoUtil.CreateLayout (textEditor));
 			wrapper.IsUncached = containsPreedit;
-
 			if (logicalRulerColumn < 0)
 				logicalRulerColumn = line.GetLogicalColumn (textEditor.GetTextEditorData (), textEditor.Options.RulerColumn);
 			var atts = new FastPangoAttrList ();
@@ -898,7 +897,7 @@ namespace Mono.TextEditor
 					uint startIndex = (uint)(oldEndIndex);
 					uint endIndex = (uint)(startIndex + chunk.Length);
 					oldEndIndex = endIndex;
-
+					var markers = Document.GetTextSegmentMarkersAt (line).Where (m => m.IsVisible).ToArray ();
 					HandleSelection (lineOffset, logicalRulerColumn, selectionStart, selectionEnd, chunk.Offset, chunk.EndOffset, delegate(int start, int end) {
 						if (containsPreedit) {
 							if (textEditor.preeditOffset < start)
@@ -908,7 +907,14 @@ namespace Mono.TextEditor
 						}
 						var si = TranslateToUTF8Index (lineChars, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
 						var ei = TranslateToUTF8Index (lineChars, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
-						atts.AddForegroundAttribute (chunkStyle.Color, si, ei);
+						var color = chunkStyle.Color;
+						foreach (var marker in markers) {
+							var chunkMarker = marker as IChunkMarker;
+							if (chunkMarker == null)
+								continue;
+							chunkMarker.ChangeForeColor (textEditor, chunk, ref color);
+						}
+						atts.AddForegroundAttribute (color, si, ei);
 						
 						if (!chunkStyle.TransparentBackround && GetPixel (ColorStyle.Default.BackgroundColor) != GetPixel (chunkStyle.BackgroundColor)) {
 							wrapper.AddBackground (chunkStyle.CairoBackgroundColor, (int)si, (int)ei);
@@ -932,7 +938,14 @@ namespace Mono.TextEditor
 						}
 						var si = TranslateToUTF8Index (lineChars, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
 						var ei = TranslateToUTF8Index (lineChars, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
-						atts.AddForegroundAttribute (SelectionColor.GotForegroundColorAssigned ? SelectionColor.Color : chunkStyle.Color, si, ei);
+						var color = SelectionColor.GotForegroundColorAssigned ? SelectionColor.Color : chunkStyle.Color;
+						foreach (var marker in markers) {
+							var chunkMarker = marker as IChunkMarker;
+							if (chunkMarker == null)
+								continue;
+							chunkMarker.ChangeForeColor (textEditor, chunk, ref color);
+						}
+						atts.AddForegroundAttribute (color, si, ei);
 						if (!wrapper.StartSet)
 							wrapper.SelectionStartIndex = (int)si;
 						wrapper.SelectionEndIndex = (int)ei;

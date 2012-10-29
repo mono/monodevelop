@@ -194,10 +194,19 @@ namespace MonoDevelop.AnalysisCore.Gui
 						int start = editor.LocationToOffset (currentResult.Region.Begin);
 						int end = editor.LocationToOffset (currentResult.Region.End);
 
-						var marker = new ResultMarker (currentResult, TextSegment.FromBounds (start, end));
-						marker.IsVisible = currentResult.Underline;
-						editor.Document.AddMarker (marker);
-						ext.markers.Enqueue (marker);
+						if (currentResult.InspectionMark == IssueMarker.GrayOut) {
+							var marker = new GrayOutMarker (currentResult, TextSegment.FromBounds (start, end));
+							marker.IsVisible = currentResult.Underline;
+							editor.Document.AddMarker (marker);
+							ext.markers.Enqueue (marker);
+							editor.Parent.TextViewMargin.RemoveCachedLine (editor.GetLineByOffset (start));
+							editor.Parent.QueueDraw ();
+						} else {
+							var marker = new ResultMarker (currentResult, TextSegment.FromBounds (start, end));
+							marker.IsVisible = currentResult.Underline;
+							editor.Document.AddMarker (marker);
+							ext.markers.Enqueue (marker);
+						}
 					}
 					
 					ext.tasks.Add (new QuickTask (currentResult.Message, currentResult.Region.Begin, currentResult.Level));

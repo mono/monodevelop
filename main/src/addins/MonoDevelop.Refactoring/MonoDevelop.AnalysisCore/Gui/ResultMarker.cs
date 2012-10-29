@@ -132,4 +132,31 @@ namespace MonoDevelop.AnalysisCore.Gui
 			}
 		}
 	}
+
+	class GrayOutMarker : ResultMarker, IChunkMarker
+	{
+		public GrayOutMarker (Result result, TextSegment segment) : base (result, segment)
+		{
+		}
+
+		public override void Draw (TextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
+		{
+		}
+
+		#region IChunkMarker implementation
+		void IChunkMarker.ChangeForeColor (TextEditor editor, Chunk chunk, ref Gdk.Color color)
+		{
+			int markerStart = Segment.Offset;
+			int markerEnd = Segment.EndOffset;
+			if (!(markerStart <= chunk.Offset && chunk.Offset < markerEnd)) 
+				return;
+
+			var bgc = editor.ColorStyle.Default.BackgroundColor;
+			double alpha = 0.6;
+			color.Red = (ushort)(color.Red * alpha + bgc.Red * (1.0 - alpha));
+			color.Green = (ushort)(color.Green * alpha + bgc.Green * (1.0 - alpha));
+			color.Blue = (ushort)(color.Blue * alpha + bgc.Blue * (1.0 - alpha));
+		}
+		#endregion
+	}
 }
