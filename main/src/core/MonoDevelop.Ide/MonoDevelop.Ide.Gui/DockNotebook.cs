@@ -276,7 +276,7 @@ namespace MonoDevelop.Ide.Gui
 		bool Hidden { get; set; }
 	}
 
-	internal class DockNotebookTab: IDockNotebookTab
+	internal class DockNotebookTab: IDockNotebookTab, Animatable
 	{
 		DockNotebook notebook;
 		TabStrip strip;
@@ -357,6 +357,11 @@ namespace MonoDevelop.Ide.Gui
 		internal void SaveAllocation ()
 		{
 			SavedAllocation = Allocation;
+		}
+
+		public void QueueDraw ()
+		{
+			strip.QueueDraw ();
 		}
 	}
 
@@ -501,7 +506,7 @@ namespace MonoDevelop.Ide.Gui
 			tab.WidthModifier = 0;
 			new Animation (f => tab.WidthModifier = f)
 				.Insert (0.0f, 0.2f, new Animation (f => tab.Opacity = f))
-				.Commit (this, "Open" + tab.GetHashCode ().ToString (), easing: Easing.CubicInOut);
+				.Commit (tab, "Open", easing: Easing.CubicInOut);
 		}
 
 		public void StartCloseAnimation (DockNotebookTab tab)
@@ -509,7 +514,7 @@ namespace MonoDevelop.Ide.Gui
 			closingTabs[tab.Index] = tab;
 			new Animation (f => tab.WidthModifier = f, tab.WidthModifier, 0)
 				.Insert (0.8f, 1.0f, new Animation (f => tab.Opacity = f, tab.Opacity, 0))
-				.Commit (this, "Closing" + tab.Index, 
+				.Commit (tab, "Closing", 
 					     easing: Easing.CubicOut,
 					     finished: (f, a) => { if (!a) closingTabs.Remove (tab.Index); });
 		}
@@ -582,17 +587,17 @@ namespace MonoDevelop.Ide.Gui
 
 			if (highlightedTab != null) {
 				var tmp = highlightedTab;
-				this.Animate ("Glow" + tmp.GetHashCode ().ToString (),
-				              f => tmp.GlowStrength = f,
-				              start: tmp.GlowStrength,
-				              end: 0);
+				tmp.Animate ("Glow",
+				             f => tmp.GlowStrength = f,
+				             start: tmp.GlowStrength,
+				             end: 0);
 			}
 
 			if (tab != null) {
-				this.Animate ("Glow" + tab.GetHashCode ().ToString (),
-				              f => tab.GlowStrength = f,
-				              start: tab.GlowStrength,
-				              end: 1);
+				tab.Animate ("Glow",
+				             f => tab.GlowStrength = f,
+				             start: tab.GlowStrength,
+				             end: 1);
 			}
 
 			highlightedTab = tab;
@@ -646,11 +651,11 @@ namespace MonoDevelop.Ide.Gui
 					t.SaveStrength = 1;
 					notebook.ReorderTab ((DockNotebookTab)notebook.CurrentTab, t);
 
-					this.Animate ("TabMotion" + t.GetHashCode ().ToString (),
-					              f => t.SaveStrength = f,
-					              start: 1.0f,
-					              end: 0.0f,
-					              easing: Easing.CubicInOut);
+					t.Animate ("TabMotion",
+					           f => t.SaveStrength = f,
+					           start: 1.0f,
+					           end: 0.0f,
+					           easing: Easing.CubicInOut);
 				}
 				lastDragX = (int)evnt.X;
 			}
@@ -883,6 +888,7 @@ namespace MonoDevelop.Ide.Gui
 					if (active) {
 						int tmp = x;
 						drawActive = c => DrawTab (c, tab, new Gdk.Rectangle (tmp, y, width, Allocation.Height), true, true, draggingTab);
+						tab.Allocation = new Gdk.Rectangle (tmp, Allocation.Y, width, Allocation.Height);
 					} else {
 						int tmp = x;
 						bool highlighted = tab == highlightedTab;
@@ -892,8 +898,8 @@ namespace MonoDevelop.Ide.Gui
 						}
 
 						drawCommands.Add (c => DrawTab (c, tab, new Gdk.Rectangle (tmp, y, width, Allocation.Height), highlighted, false, false));
+						tab.Allocation = new Gdk.Rectangle (tmp, Allocation.Y, width, Allocation.Height);
 					}
-					tab.Allocation = new Gdk.Rectangle (x, Allocation.Y, width, Allocation.Height);
 
 					x += width;
 				}
