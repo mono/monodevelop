@@ -44,6 +44,7 @@ namespace MonoDevelop.Ide.Gui
         bool IsFile { get; }
         bool IsDirty { get; set; }
         bool IsReadOnly { get; }
+		bool IsHidden { get; }
 		
         void Load (string fileName);
 		void LoadNew (System.IO.Stream content, string mimeType);

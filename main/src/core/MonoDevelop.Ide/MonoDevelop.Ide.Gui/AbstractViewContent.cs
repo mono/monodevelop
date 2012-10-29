@@ -73,6 +73,11 @@ namespace MonoDevelop.Ide.Gui
 			get { return false; }
 		}
 
+
+		public virtual bool IsHidden {
+			get { return false; }
+		}
+
 		public virtual bool IsViewOnly { get; set; }
 
 		public virtual bool IsFile {

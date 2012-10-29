@@ -273,6 +273,7 @@ namespace MonoDevelop.Ide.Gui
 		Widget Content { get; set; }
 		string Tooltip { get; set; }
 		bool Notify { get; set; }
+		bool Hidden { get; set; }
 	}
 
 	internal class DockNotebookTab: IDockNotebookTab
@@ -297,6 +298,8 @@ namespace MonoDevelop.Ide.Gui
 		public float Opacity { get; set; }
 
 		public float GlowStrength { get; set; }
+
+		public bool Hidden { get; set; }
 
 		public string Text {
 			get {
@@ -487,6 +490,9 @@ namespace MonoDevelop.Ide.Gui
 				}
 			};
 
+			notebook.PageAdded += (object sender, EventArgs e) => QueueResize ();
+			notebook.PageRemoved += (object sender, EventArgs e) => QueueResize ();
+
 			closingTabs = new Dictionary<int, DockNotebookTab> ();
 		}
 
@@ -548,7 +554,7 @@ namespace MonoDevelop.Ide.Gui
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
 			base.OnSizeRequested (ref requisition);
-			requisition.Height = totalHeight;
+			requisition.Height = notebook.Tabs.Any (t => !t.Hidden) ? totalHeight : 0;
 			requisition.Width = 0;
 		}
 

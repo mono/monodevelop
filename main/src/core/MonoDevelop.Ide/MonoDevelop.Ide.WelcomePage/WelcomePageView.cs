@@ -51,6 +51,10 @@ namespace MonoDevelop.Ide.WelcomePage
 		{
 		}
 
+		public override bool IsHidden {
+			get { return true; }
+		}
+
 		public override bool IsFile {
 			get { return false; }
 		}

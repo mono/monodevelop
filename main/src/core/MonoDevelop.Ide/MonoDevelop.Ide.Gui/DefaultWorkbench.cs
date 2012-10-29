@@ -398,6 +398,7 @@ namespace MonoDevelop.Ide.Gui
 			sdiWorkspaceWindow.Show ();
 
 			tab.Content = sdiWorkspaceWindow;
+			tab.Hidden = content.IsHidden;
 			if (mimeimage != null)
 				tab.Icon = mimeimage;
 
