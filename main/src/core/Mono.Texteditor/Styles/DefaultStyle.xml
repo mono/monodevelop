@@ -193,8 +193,11 @@
 	 <Style name="constant.language.void" color="skyblue2"/>
 
 	 <Style name="keyword.semantic.field" color="text-black"/>
+	 <Style name="keyword.semantic.field.declaration" color="text-black"/>
 	 <Style name="keyword.semantic.property" color="text-black"/>
 	 <Style name="keyword.semantic.property.declaration" color="text-black"/>
+	 <Style name="keyword.semantic.event" color="text-black"/>
+	 <Style name="keyword.semantic.event.declaration" color="text-black"/>
 	 <Style name="keyword.semantic.method" color="text-black"/>
 	 <Style name="keyword.semantic.method.declaration" color="text-black"/>
 

@@ -153,6 +153,7 @@ THE SOFTWARE.
 		<Style name="type" color="monokai-type"/> 
 		<Style name="semantic.type" color="monokai-type"/> 
 		<Style name="semantic.field" color="#2EE2A6"/>
+		<Style name="semantic.event" color="#FFAE81"/>
 		<Style name="semantic.property" color="#2EE2A6"/>
 		<Style name="semantic.method" color="monokai-functionargument"/>
 		<Style name="semantic.error" color="monokai-invalid" bgColor="monokai-invalidBackground"/>
