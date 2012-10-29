@@ -308,12 +308,19 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					if (p is UnknownSolutionItem)
 						continue;
 					
-					list.Add (String.Format (
-						"\t\t{0}.{1}.ActiveCfg = {2}", p.ItemId, ToSlnConfigurationId (cc), ToSlnConfigurationId (cce.ItemConfiguration)));
+                    // <ProjectGuid>...</ProjectGuid> in some Visual Studio generated F# project files 
+                    // are missing "{"..."}" in their guid. This is not generally a problem since it
+                    // is a valid GUID format. However the solution file format requires that these are present. 
+                    string itemGuid = p.ItemId;
+                    if (!itemGuid.StartsWith("{") && !itemGuid.EndWith("}")) 
+                        itemGuid = "{" + itemGuid + "}";
+
+                    list.Add (String.Format (
+                        "\t\t{0}.{1}.ActiveCfg = {2}", itemGuid, ToSlnConfigurationId (cc), ToSlnConfigurationId (cce.ItemConfiguration)));
 
 					if (cce.Build)
 						list.Add (String.Format (
-							"\t\t{0}.{1}.Build.0 = {2}", p.ItemId, ToSlnConfigurationId (cc), ToSlnConfigurationId (cce.ItemConfiguration)));
+                            "\t\t{0}.{1}.Build.0 = {2}", itemGuid, ToSlnConfigurationId (cc), ToSlnConfigurationId (cce.ItemConfiguration)));
 				}
 			}
 			
