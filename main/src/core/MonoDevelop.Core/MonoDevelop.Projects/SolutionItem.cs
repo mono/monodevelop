@@ -38,6 +38,7 @@ using MonoDevelop.Core.Collections;
 using MonoDevelop.Core.StringParsing;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Projects.Policies;
+using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Projects
 {
@@ -641,6 +642,11 @@ namespace MonoDevelop.Projects
 		{
 			return Services.ProjectService.GetExtensionChain (this).CanExecute (this, context, configuration);
 		}
+
+		public IEnumerable<ExecutionTarget> GetExecutionTargets (ConfigurationSelector configuration)
+		{
+			return Services.ProjectService.GetExtensionChain (this).GetExecutionTargets (this, configuration);
+		}
 		
 		/// <summary>
 		/// Checks if this solution item has modified files and has to be built
@@ -1018,6 +1024,11 @@ namespace MonoDevelop.Projects
 		internal protected virtual bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration)
 		{
 			return false;
+		}
+
+		internal protected virtual IEnumerable<ExecutionTarget> OnGetExecutionTargets (ConfigurationSelector configuration)
+		{
+			yield break;
 		}
 
 		protected virtual void OnBoundToSolution ()

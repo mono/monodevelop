@@ -42,6 +42,7 @@ using System.Runtime.CompilerServices;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Projects;
+using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Ide
 {
@@ -128,7 +129,9 @@ namespace MonoDevelop.Ide
 				}
 			}
 		}
-		
+
+		public ExecutionTarget ActiveExecutionTarget { get; set; }
+
 		public ConfigurationSelector ActiveConfiguration {
 			get { return new SolutionConfigurationSelector (activeConfiguration); }
 		}

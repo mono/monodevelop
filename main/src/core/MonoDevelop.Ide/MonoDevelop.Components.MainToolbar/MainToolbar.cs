@@ -39,6 +39,8 @@ using System.Collections.Generic;
 using Mono.Addins;
 using MonoDevelop.Components.Commands.ExtensionNodes;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Execution;
+using MonoDevelop.Core.Execution;
 
 
 namespace MonoDevelop.Components.MainToolbar
@@ -53,7 +55,7 @@ namespace MonoDevelop.Components.MainToolbar
 		TreeStore configurationStore = new TreeStore (typeof(string), typeof(string));
 
 		ComboBox runtimeCombo;
-		TreeStore runtimeStore = new TreeStore (typeof(string), typeof(string));
+		TreeStore runtimeStore = new TreeStore (typeof(string), typeof(string), typeof (ExecutionTarget));
 
 		StatusArea statusArea;
 
@@ -379,6 +381,18 @@ namespace MonoDevelop.Components.MainToolbar
 			return (string)runtimeStore.GetValue (iter, 1);
 		}
 
+		ExecutionTarget GetActiveTarget ()
+		{
+			int active = runtimeCombo.Active;
+			if (active < 0)
+				return null;
+
+			TreeIter iter;
+			if (!runtimeStore.GetIterFromString (out iter, active.ToString ()))
+				return null;
+			return (ExecutionTarget)runtimeStore.GetValue (iter, 2);
+		}
+
 		void HandleRuntimeChanged (object sender, EventArgs e)
 		{
 			NotifyConfigurationChange ();
@@ -395,6 +409,7 @@ namespace MonoDevelop.Components.MainToolbar
 			if (currentConfig == null)
 				return;
 			var currentPlatform = GetActivePlatform ();
+			var currentTarget = GetActiveTarget ();
 
 			string newConfig = null;
 
@@ -416,8 +431,10 @@ namespace MonoDevelop.Components.MainToolbar
 					}
 				}
 			}
-			if (newConfig != null)
+			if (newConfig != null) {
+				IdeApp.Workspace.ActiveExecutionTarget = currentTarget;
 				IdeApp.Workspace.ActiveConfigurationId = newConfig;
+			}
 		}
 
 		void SelectActiveConfiguration ()
@@ -506,11 +523,35 @@ namespace MonoDevelop.Components.MainToolbar
 					if (values.Contains (platform))
 						continue;
 					values.Add (platform);
-					runtimeStore.AppendValues (string.IsNullOrEmpty (platform) ? "Any CPU" : platform, platform);
+					string platName = string.IsNullOrEmpty (platform) ? "Any CPU" : platform;
+					if (platName == "iPhoneSimulator")
+						platName = "Simulator";
+					var targets = GetExecutionTargets (conf);
+					if (targets.Any ()) {
+						foreach (var target in targets)
+							runtimeStore.AppendValues (platName + " (" + target.Name + ")", platform, target);
+					} else {
+						runtimeStore.AppendValues (platName, platform, null);
+					}
 				}
 			} finally {
 				runtimeCombo.Changed += HandleRuntimeChanged;
 			}
+		}
+
+		IEnumerable<ExecutionTarget> GetExecutionTargets (string configuration)
+		{
+			var sol = IdeApp.ProjectOperations.CurrentSelectedSolution;
+			if (sol == null || !sol.SingleStartup || sol.StartupItem == null)
+				return new ExecutionTarget [0];
+			var conf = sol.Configurations[configuration];
+			if (conf == null)
+				return new ExecutionTarget [0];
+
+			var project = sol.StartupItem;
+			var confSelector = conf.Selector;
+
+			return project.GetExecutionTargets (confSelector);
 		}
 
 		public void AddWidget (Gtk.Widget widget)

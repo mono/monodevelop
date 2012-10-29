@@ -39,6 +39,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core.StringParsing;
+using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Projects
 {
@@ -282,7 +283,17 @@ namespace MonoDevelop.Projects
 		{
 			return Services.ProjectService.GetExtensionChain (this).CanExecute (this, context, configuration);
 		}
-		
+
+		public IEnumerable<ExecutionTarget> GetExecutionTargets (string configuration)
+		{
+			return GetExecutionTargets ((SolutionConfigurationSelector) configuration);
+		}
+
+		public IEnumerable<ExecutionTarget> GetExecutionTargets (ConfigurationSelector configuration)
+		{
+			return Services.ProjectService.GetExtensionChain (this).GetExecutionTargets (this, configuration);
+		}
+
 		public bool NeedsBuilding (string configuration)
 		{
 			return NeedsBuilding ((SolutionConfigurationSelector) configuration);
@@ -408,7 +419,12 @@ namespace MonoDevelop.Projects
 		{
 			return true;
 		}
-		
+
+		internal protected virtual IEnumerable<ExecutionTarget> OnGetExecutionTargets (ConfigurationSelector configuration)
+		{
+			yield break;
+		}
+
 		internal protected virtual bool OnGetNeedsBuilding (ConfigurationSelector configuration)
 		{
 			return false;

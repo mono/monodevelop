@@ -60,12 +60,6 @@ namespace MonoDevelop.Core.Execution
 			this.environmentVariables = environmentVariables;
 		}
 		
-		public override string CommandString {
-			get {
-				return Command;
-			}
-		}
-		
 		public string Command { get; set; }
 		
 		public string Arguments { get; set; }

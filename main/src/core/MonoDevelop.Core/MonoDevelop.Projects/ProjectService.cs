@@ -731,6 +731,17 @@ namespace MonoDevelop.Projects
 				throw new InvalidOperationException ("Unknown item type: " + item);
 		}
 		
+		public override IEnumerable<ExecutionTarget> GetExecutionTargets (IBuildTarget item, ConfigurationSelector configuration)
+		{
+			if (item is WorkspaceItem) {
+				return ((WorkspaceItem)item).OnGetExecutionTargets (configuration);
+			}
+			else if (item is SolutionItem)
+				return ((SolutionItem)item).OnGetExecutionTargets (configuration);
+			else
+				throw new InvalidOperationException ("Unknown item type: " + item);
+		}
+
 		public override bool GetNeedsBuilding (IBuildTarget item, ConfigurationSelector configuration)
 		{
 			if (item is SolutionItem) {

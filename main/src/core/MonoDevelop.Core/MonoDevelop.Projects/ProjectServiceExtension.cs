@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Extensions;
+using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Projects
 {
@@ -229,6 +230,34 @@ namespace MonoDevelop.Projects
 				return GetNext (item).CanExecute ((IBuildTarget) item, context, configuration);
 		}
 		
+		public virtual IEnumerable<ExecutionTarget> GetExecutionTargets (IBuildTarget item, ConfigurationSelector configuration)
+		{
+			if (item is SolutionEntityItem)
+				return GetExecutionTargets ((SolutionEntityItem)item, configuration);
+			else if (item is WorkspaceItem)
+				return GetExecutionTargets ((WorkspaceItem) item, configuration);
+			else 
+				return GetNext (item).GetExecutionTargets (item, configuration);
+		}
+		
+		protected virtual IEnumerable<ExecutionTarget> GetExecutionTargets (SolutionEntityItem item, ConfigurationSelector configuration)
+		{
+			return GetNext (item).GetExecutionTargets ((IBuildTarget) item, configuration);
+		}
+		
+		protected virtual IEnumerable<ExecutionTarget> GetExecutionTargets (Solution solution, ConfigurationSelector configuration)
+		{
+			return GetNext (solution).GetExecutionTargets ((IBuildTarget) solution, configuration);
+		}
+		
+		protected virtual IEnumerable<ExecutionTarget> GetExecutionTargets (WorkspaceItem item, ConfigurationSelector configuration)
+		{
+			if (item is Solution)
+				return GetExecutionTargets ((Solution) item, configuration);
+			else
+				return GetNext (item).GetExecutionTargets ((IBuildTarget) item, configuration);
+		}
+
 		public virtual bool GetNeedsBuilding (IBuildTarget item, ConfigurationSelector configuration)
 		{
 			if (item is SolutionEntityItem)

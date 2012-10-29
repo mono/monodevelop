@@ -860,6 +860,8 @@ namespace MonoDevelop.Projects
 			if (config == null)
 				return false;
 			ExecutionCommand cmd = CreateExecutionCommand (configuration, config);
+			if (context.ExecutionTarget != null)
+				cmd.Target = context.ExecutionTarget;
 
 			return (compileTarget == CompileTarget.Exe || compileTarget == CompileTarget.WinExe) && context.ExecutionHandler.CanExecute (cmd);
 		}
@@ -1137,6 +1139,8 @@ namespace MonoDevelop.Projects
 			try {
 				try {
 					ExecutionCommand executionCommand = CreateExecutionCommand (configuration, dotNetProjectConfig);
+					if (context.ExecutionTarget != null)
+						executionCommand.Target = context.ExecutionTarget;
 
 					if (!context.ExecutionHandler.CanExecute (executionCommand)) {
 						monitor.ReportError (GettextCatalog.GetString ("Can not execute \"{0}\". The selected execution mode is not supported for .NET projects.", dotNetProjectConfig.CompiledOutputName), null);
