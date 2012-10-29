@@ -99,7 +99,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		{
 			public bool GetStyle (Chunk chunk, ref int endOffset, out string style)
 			{
-				var segment = GetSegmentsAt (chunk.Offset).FirstOrDefault (s => s.Offset == chunk.Offset);
+				var segment = GetSegmentsAt (chunk.Offset).FirstOrDefault ();
 				if (segment == null) {
 					style = null;
 					return false;
@@ -202,6 +202,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			{
 				var start = lineOffset + node.StartLocation.Column - 1;
 				var end   = lineOffset + node.EndLocation.Column - 1;
+
 				tree.AddStyle (start, end, style);
 			}
 
@@ -255,6 +256,9 @@ namespace MonoDevelop.CSharp.Highlighting
 						break;
 					case EntityType.Method:
 						Colorize (identifierExpression, "keyword.semantic.method");
+						break;
+					case EntityType.Event:
+						Colorize (identifierExpression, "keyword.semantic.event");
 						break;
 					}
 					return;
@@ -323,9 +327,18 @@ namespace MonoDevelop.CSharp.Highlighting
 				}
 			}
 
+			public override void VisitEventDeclaration (EventDeclaration eventDeclaration)
+			{
+				base.VisitEventDeclaration (eventDeclaration);
+				foreach (var init in eventDeclaration.Variables)
+					if (init.NameToken.StartLocation.Line == lineNumber)
+						Colorize (init.NameToken, "keyword.semantic.event.declaration");
+			}
+
 			public override void VisitCustomEventDeclaration (CustomEventDeclaration eventDeclaration)
 			{
 				base.VisitCustomEventDeclaration (eventDeclaration);
+				Colorize (eventDeclaration.NameToken, "keyword.semantic.event.declaration");
 				if (!eventDeclaration.AddAccessor.IsNull) {
 					var addKeyword = eventDeclaration.AddAccessor.GetChildByRole (CustomEventDeclaration.AddKeywordRole);
 					if (addKeyword != null && addKeyword.StartLocation.Line == lineNumber)
@@ -336,6 +349,13 @@ namespace MonoDevelop.CSharp.Highlighting
 					if (removeKeyword != null && removeKeyword.StartLocation.Line == lineNumber)
 						Colorize (removeKeyword, contextualHighlightKeywords ["remove"]);
 				}
+			}
+
+			public override void VisitTypeParameterDeclaration (TypeParameterDeclaration typeParameterDeclaration)
+			{
+				base.VisitTypeParameterDeclaration (typeParameterDeclaration);
+				if (typeParameterDeclaration.NameToken.StartLocation.Line == lineNumber)
+					Colorize (typeParameterDeclaration.NameToken, "keyword.semantic.type.declaration");
 			}
 
 			public override void VisitMethodDeclaration (MethodDeclaration methodDeclaration)
@@ -369,11 +389,30 @@ namespace MonoDevelop.CSharp.Highlighting
 			{
 			}
 
+			public override void VisitComposedType (ComposedType composedType)
+			{
+				if (composedType.StartLocation.Line != lineNumber) {
+					base.VisitComposedType (composedType);
+					return;
+				}
+				var result = resolver.Resolve (composedType, cancellationToken);
+				if (result.IsError) {
+					// if csharpSyntaxMode.guiDocument.Project != null
+					Colorize (composedType, "keyword.semantic.error");
+					return;
+				}
+				if (result is TypeResolveResult) {
+					Colorize (composedType, "keyword.semantic.type");
+				}
+
+			}
+
 			public override void VisitSimpleType (SimpleType simpleType)
 			{
-				if (simpleType.StartLocation.Line != lineNumber)
+				if (simpleType.StartLocation.Line != lineNumber) {
+					base.VisitSimpleType (simpleType);
 					return;
-				base.VisitSimpleType (simpleType);
+				}
 				var result = resolver.Resolve (simpleType, cancellationToken);
 				if (result.IsError) {
 					// if csharpSyntaxMode.guiDocument.Project != null
@@ -383,13 +422,15 @@ namespace MonoDevelop.CSharp.Highlighting
 				if (result is TypeResolveResult) {
 					Colorize (simpleType, "keyword.semantic.type");
 				}
+
 			}
 
 			public override void VisitMemberType (MemberType memberType)
 			{
-				base.VisitMemberType (memberType);
-				if (memberType.MemberNameToken.StartLocation.Line != lineNumber)
+				if (memberType.MemberNameToken.StartLocation.Line != lineNumber) {
+					base.VisitMemberType (memberType);
 					return;
+				}
 
 				var result = resolver.Resolve (memberType, cancellationToken);
 
@@ -426,6 +467,9 @@ namespace MonoDevelop.CSharp.Highlighting
 						break;
 					case EntityType.Method:
 						Colorize (memberReferenceExpression.MemberNameToken, "keyword.semantic.method");
+						break;
+					case EntityType.Event:
+						Colorize (memberReferenceExpression.MemberNameToken, "keyword.semantic.event");
 						break;
 					}
 				}
