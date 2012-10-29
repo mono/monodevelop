@@ -53,12 +53,6 @@ namespace MonoDevelop.AspNet
 		public TargetFramework TargetFramework { get; set; }
 		
 		public IList<string> UserAssemblyPaths { get; set; }
-		
-		public override string CommandString {
-			get {
-				return "[asp-net]";
-			}
-		}
 
 		public IDictionary<string, string> EnvironmentVariables {
 			get {
