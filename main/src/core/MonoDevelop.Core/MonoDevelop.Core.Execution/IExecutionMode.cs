@@ -29,6 +29,9 @@ using System;
 
 namespace MonoDevelop.Core.Execution
 {
+	/// <summary>
+	/// A user visible mode for executing commands. It can be for example a specific debugger of profiler.
+	/// </summary>
 	public interface IExecutionMode
 	{
 		string Name { get; }

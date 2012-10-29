@@ -31,9 +31,23 @@ using MonoDevelop.Core.AddIns;
 
 namespace MonoDevelop.Core.Execution
 {
+	/// <summary>
+	/// A collection of exectution modes
+	/// </summary>
+	/// <remarks>
+	/// For example, the mode set "Debug" provides several execution modes
+	/// for all the supported debuggers
+	/// </remarks>
 	public interface IExecutionModeSet
 	{
+		/// <summary>
+		/// Name of the execution mode set
+		/// </summary>
 		string Name { get; }
+
+		/// <summary>
+		/// Execution modes provided by this set
+		/// </summary>
 		IEnumerable<IExecutionMode> ExecutionModes { get; }
 	}
 	
