@@ -6,6 +6,7 @@ namespace MonoDevelop.FSharp
 
 open Gtk
 open System
+open System.IO
 open MonoDevelop.Core
 open MonoDevelop.Projects
 open MonoDevelop.Ide.Gui.Dialogs
@@ -146,7 +147,7 @@ type CodeGenerationPanel() =
     widget.CheckOptimize.Active <- fsconfig.Optimize
     widget.CheckTailCalls.Active <- fsconfig.GenerateTailCalls
     widget.CheckXmlDocumentation.Active <- not (String.IsNullOrEmpty fsconfig.DocumentationFile)
-    widget.EntryCommandLine.Text <- fsconfig.OtherFlags
+    widget.EntryCommandLine.Text <- if (String.IsNullOrWhiteSpace fsconfig.OtherFlags) then "" else fsconfig.OtherFlags
     widget.EntryDefines.Text <- fsconfig.DefineConstants
   
   override x.ApplyChanges() =
@@ -158,10 +159,16 @@ type CodeGenerationPanel() =
     fsconfig.GenerateTailCalls <- widget.CheckTailCalls.Active
     fsconfig.DocumentationFile <- 
         if widget.CheckXmlDocumentation.Active then 
-           System.IO.Path.GetFileNameWithoutExtension(config.CompiledOutputName.ToString())+".xml" 
+           // We use '\' because that's what Visual Studio uses.
+           //
+           // We use uppercase 'XML' because that's what Visual Studio does.
+           // A shame to perpetuate that horror but cross-tool portability of project
+           // files without mucking with them needlessly is very nice.
+           config.OutputDirectory.ToRelative(x.ConfiguredProject.BaseDirectory).ToString().Replace("/","\\").TrimEnd('\\') 
+              + "\\" + Path.GetFileNameWithoutExtension(config.CompiledOutputName.ToString())+".XML" 
         else 
-           ""
-    fsconfig.OtherFlags <- widget.EntryCommandLine.Text
+           null
+    fsconfig.OtherFlags <- if (String.IsNullOrWhiteSpace widget.EntryCommandLine.Text) then null else widget.EntryCommandLine.Text
     fsconfig.DefineConstants <- widget.EntryDefines.Text
 
 
@@ -172,7 +179,7 @@ type CodeGenerationPanel() =
 /// Panel that allows the user to specify build order of F# files in the project
 /// (the order is stored separately from the MSBUILD file, because MonoDevelop
 /// doesn't provide any way to modify the project file itself).
-type BuildOrderPanel() = 
+type BuildOrderPanel() as x = 
   inherit MultiConfigItemOptionsPanel()
   
   let mutable widget : FSharpBuildOrderWidget = null
@@ -185,21 +192,26 @@ type BuildOrderPanel() =
     let cell = new Gtk.CellRendererText();
     col.PackStart(cell, true);
     col.AddAttribute(cell, "text", 0);    
-  
+
+  // Get the fullbuild order implied by the current config settings of the project
+  let getFullBuildOrder() = 
+    let config = x.CurrentConfiguration :?> DotNetProjectConfiguration
+    let fsconfig = config.ProjectParameters :?> FSharpProjectParameters
+    let sources = CompilerArguments.getSourceFiles x.ConfiguredProject.Items
+    let root = x.ConfiguredProject.BaseDirectory.FullPath.ToString()
+    let buildOrder = CompilerArguments.getItemsInOrder root sources fsconfig.BuildOrder true |> Seq.toArray   
+    buildOrder     
+
   override x.Dispose() =
     if widget <> null then
       widget.Dispose()
       
   override x.LoadConfigData() =
-    let config = x.CurrentConfiguration :?> DotNetProjectConfiguration
-    let fsconfig = config.ProjectParameters :?> FSharpProjectParameters
     let store = ref null
     initializeTreeView()    
     
-    // Get sources, drop common prefix (directory) and add them to the list
-    let sources = CompilerArguments.getSourceFiles x.ConfiguredProject.Items
-    let root = System.IO.Path.GetDirectoryName(x.ConfiguredProject.FileName.FullPath.ToString())
-    fileOrder <- CompilerArguments.getItemsInOrder root sources fsconfig.BuildOrder true |> Seq.toArray
+    // Get the full build order, drop common prefix (directory) and add them to the list
+    fileOrder <- getFullBuildOrder()
     
     // Re-generate items in the tree view list
     let updateStore () =
@@ -236,7 +248,12 @@ type BuildOrderPanel() =
   override x.ApplyChanges() =
     let config = x.CurrentConfiguration :?> DotNetProjectConfiguration
     let fsconfig = config.ProjectParameters :?> FSharpProjectParameters
-    fsconfig.BuildOrder <- fileOrder
+    let fullBuildOrder = getFullBuildOrder()
+ 
+    // Compare the implied full build order with the one from the options panel
+    // If they are different, then update with the full list.
+    if fullBuildOrder <> fileOrder then 
+        fsconfig.BuildOrder <- fileOrder
     
   override x.CreatePanelWidget() =
     widget <- new FSharpBuildOrderWidget()
