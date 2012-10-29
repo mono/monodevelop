@@ -30,6 +30,7 @@ using System.IO;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
 using System.Web.Services.Discovery;
+using System.Runtime.Serialization;
 using MonoDevelop.Projects;
 using System.Collections.Generic;
 using System.CodeDom.Compiler;
@@ -47,7 +48,7 @@ namespace MonoDevelop.WebReferences.WCF
 		MetadataSet metadata;
 		DiscoveryClientProtocol protocol;
 		ReferenceGroup refGroup;
-		
+
 		public WebServiceDiscoveryResultWCF (DiscoveryClientProtocol protocol, MetadataSet metadata, WebReferenceItem item, ReferenceGroup refGroup): base (WebReferencesService.WcfEngine, item)
 		{
 			this.refGroup = refGroup;
@@ -58,6 +59,15 @@ namespace MonoDevelop.WebReferences.WCF
 		public override FilePath GetReferencePath (DotNetProject project, string refName)
 		{
 			return project.BaseDirectory.Combine ("Service References").Combine (refName);
+		}
+
+		public ClientOptions ClientOptions {
+			get { return refGroup != null ? refGroup.ClientOptions : null; }
+		}
+
+		public ClientOptions InitialClientOptions {
+			get;
+			set;
 		}
 		
 		public override string GetDescriptionMarkup ()
@@ -103,10 +113,10 @@ namespace MonoDevelop.WebReferences.WCF
 				protocol.ResolveAll ();
 				protocol.WriteAll (basePath, "Reference.svcmap");
 				refGroup = ConvertMapFile (file);
-			}
-			else {
+			} else {
 				// TODO
 				ReferenceGroup map = new ReferenceGroup ();
+				map.ClientOptions = InitialClientOptions;
 				map.Save (file);
 				map.ID = Guid.NewGuid ().ToString ();
 				refGroup = map;
@@ -176,6 +186,12 @@ namespace MonoDevelop.WebReferences.WCF
 			list.Add (new XmlSerializerMessageContractImporter ());
 			
 			WsdlImporter importer = new WsdlImporter (mset);
+			try {
+				ConfigureImporter (importer);
+			} catch {
+				;
+			}
+
 			Collection<ContractDescription> contracts = importer.ImportAllContracts ();
 			
 			foreach (ContractDescription cd in contracts) {
@@ -198,6 +214,31 @@ namespace MonoDevelop.WebReferences.WCF
 			}
 			return fileSpec;
 		}
+
+		void ConfigureImporter (WsdlImporter importer)
+		{
+			var xsdImporter = new XsdDataContractImporter ();
+			var options = new ImportOptions ();
+
+			var listMapping = refGroup.ClientOptions.CollectionMappings.FirstOrDefault (
+				m => m.Category == "List");
+			if (listMapping != null) {
+				var listType = Dialogs.ConfigurationDialog.GetType (listMapping.TypeName);
+				if (listType != null)
+					options.ReferencedCollectionTypes.Add (listType);
+			}
+
+			var dictMapping = refGroup.ClientOptions.CollectionMappings.FirstOrDefault (
+				m => m.Category == "Dictionary");
+			if (dictMapping != null) {
+				var dictType = Dialogs.ConfigurationDialog.GetType (dictMapping.TypeName);
+				if (dictType != null)
+					options.ReferencedCollectionTypes.Add (dictType);
+			}
+
+			xsdImporter.Options = options;
+			importer.State.Add (typeof (XsdDataContractImporter), xsdImporter);
+		}
 		
 		ReferenceGroup ConvertMapFile (string mapFile)
 		{
@@ -209,8 +250,10 @@ namespace MonoDevelop.WebReferences.WCF
 			if (refGroup != null) {
 				map.ClientOptions = refGroup.ClientOptions;
 				map.ID = refGroup.ID;
-			} else
+			} else {
+				map.ClientOptions = InitialClientOptions;
 				map.ID = Guid.NewGuid ().ToString ();
+			}
 			
 			Dictionary<string,int> sources = new Dictionary<string, int> ();
 			foreach (DiscoveryClientResult res in files) {

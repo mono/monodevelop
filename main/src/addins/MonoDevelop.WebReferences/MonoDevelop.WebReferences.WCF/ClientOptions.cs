@@ -52,7 +52,7 @@ namespace MonoDevelop.WebReferences.WCF
 	    public bool GenerateInternalTypes { get; set; }
 	    public bool GenerateMessageContracts { get; set; }
 //	    string[] NamespaceMappings;
-	    List<CollectionMapping> CollectionMappings { get; set; }
+	    public List<CollectionMapping> CollectionMappings { get; set; }
 	    public bool GenerateSerializableTypes { get; set; }
 	    public string Serializer { get; set; }
 	    public bool UseSerializerForFaults { get; set; }
