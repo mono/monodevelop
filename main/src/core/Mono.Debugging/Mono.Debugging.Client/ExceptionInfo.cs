@@ -34,7 +34,8 @@ namespace Mono.Debugging.Client
 	public class ExceptionInfo
 	{
 		ObjectValue exception;
-		
+		ObjectValue messageObject;
+
 		[NonSerialized]
 		ExceptionStackFrame[] frames;
 		
@@ -60,14 +61,30 @@ namespace Mono.Debugging.Client
 				exception.ValueChanged += HandleExceptionValueChanged;
 		}
 
+		void LoadMessage ()
+		{
+			if (messageObject == null) {
+				messageObject = exception.GetChild ("Message");
+				if (messageObject != null && messageObject.IsEvaluating)
+					messageObject.ValueChanged += HandleMessageValueChanged;
+			}
+		}
+
+		void HandleMessageValueChanged (object sender, EventArgs e)
+		{
+			frames = null;
+			NotifyChanged ();
+		}
+
 		void HandleExceptionValueChanged (object sender, EventArgs e)
 		{
 			frames = null;
 			if (exception.IsEvaluatingGroup)
 				exception = exception.GetArrayItem (0);
+			LoadMessage ();
 			NotifyChanged ();
 		}
-		
+
 		void NotifyChanged ()
 		{
 			EventHandler evnt = Changed;
@@ -81,8 +98,10 @@ namespace Mono.Debugging.Client
 
 		public string Message {
 			get {
-				ObjectValue val = exception.GetChild ("Message");
-				return val != null ? val.Value : null;
+				LoadMessage ();
+				if (messageObject != null && messageObject.IsEvaluating)
+					return "Loading...";
+				return messageObject != null ? messageObject.Value : null;
 			}
 		}
 
