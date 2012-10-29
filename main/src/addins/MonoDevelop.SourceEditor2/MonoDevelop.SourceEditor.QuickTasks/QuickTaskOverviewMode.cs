@@ -461,8 +461,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		
 		protected void DrawLeftBorder (Cairo.Context cr)
 		{
-			cr.MoveTo (0.5, 1.5);
-			cr.LineTo (0.5, Allocation.Height - 1);
+			cr.MoveTo (0.5, 0);
+			cr.LineTo (0.5, Allocation.Height);
 			if (TextEditor.ColorStyle != null) {
 				var col = (HslColor)TextEditor.ColorStyle.Default.CairoBackgroundColor;
 				col.L *= 0.88;
@@ -539,14 +539,15 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 					cr.Pattern = grad;
 				}
 				cr.Fill ();
-				
+
+				/*
 				cr.Color = (HslColor)Style.Dark (State);
 				cr.MoveTo (-0.5, 0.5);
 				cr.LineTo (Allocation.Width, 0.5);
 
 				cr.MoveTo (-0.5, Allocation.Height - 0.5);
 				cr.LineTo (Allocation.Width, Allocation.Height - 0.5);
-				cr.Stroke ();
+				cr.Stroke ();*/
 
 				if (TextEditor == null)
 					return true;

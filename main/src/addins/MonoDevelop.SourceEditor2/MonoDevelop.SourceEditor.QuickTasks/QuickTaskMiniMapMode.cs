@@ -309,13 +309,13 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 							cr.Color = TextEditor.ColorStyle.Default.CairoBackgroundColor;
 						cr.Fill ();
 					}
-					
+					/*
 					cr.Color = (HslColor)Style.Dark (State);
 					cr.MoveTo (-0.5, 0.5);
 					cr.LineTo (Allocation.Width, 0.5);
 					cr.MoveTo (-0.5, Allocation.Height - 0.5);
 					cr.LineTo (Allocation.Width, Allocation.Height - 0.5);
-					cr.Stroke ();
+					cr.Stroke ();*/
 
 					if (backgroundPixbuf != null) {
 						int y = GetBufferYOffset ();
