@@ -146,7 +146,10 @@ namespace CBinding
 		{
 			return functions[overload].Parameters.Length;
 		}
-		
+		public override string GetParameterName (int overload, int paramIndex)
+		{
+			return "";
+		}
 		public override bool AllowParameterList (int overload)
 		{
 			return false;
