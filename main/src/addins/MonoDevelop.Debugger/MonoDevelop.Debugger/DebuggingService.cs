@@ -71,7 +71,7 @@ namespace MonoDevelop.Debugger
 		static Backtrace currentBacktrace;
 		static int currentFrame;
 		
-		static ExceptionCaughtDialog exceptionDialog;
+		static ExceptionCaughtMessage exceptionDialog;
 		
 		static BusyEvaluatorDialog busyDialog;
 		static bool isBusy;
@@ -293,8 +293,8 @@ namespace MonoDevelop.Debugger
 			if (val != null) {
 				if (exceptionDialog != null)
 					exceptionDialog.Dispose ();
-				exceptionDialog = new ExceptionCaughtDialog (val, CurrentFrame.SourceLocation.FileName, CurrentFrame.SourceLocation.Line, CurrentFrame.SourceLocation.Column);
-				exceptionDialog.ShowDialog ();
+				exceptionDialog = new ExceptionCaughtMessage (val, CurrentFrame.SourceLocation.FileName, CurrentFrame.SourceLocation.Line, CurrentFrame.SourceLocation.Column);
+				exceptionDialog.ShowButton ();
 				exceptionDialog.Closed += (o, args) => {
 					exceptionDialog = null;
 				};

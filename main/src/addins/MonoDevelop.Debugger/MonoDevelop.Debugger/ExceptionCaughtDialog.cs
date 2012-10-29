@@ -150,15 +150,68 @@ namespace MonoDevelop.Debugger
 		}
 	}
 
-	class ExceptionCaughtDialog
+	class ExceptionCaughtDialog: Gtk.Dialog
+	{
+		ExceptionCaughtWidget widget;
+		ExceptionInfo ex;
+		ExceptionCaughtMessage msg;
+
+		public ExceptionCaughtDialog (ExceptionInfo val, ExceptionCaughtMessage msg)
+		{
+			Title = GettextCatalog.GetString ("Exception Caught");
+			ex = val;
+			widget = new ExceptionCaughtWidget (val);
+			this.msg = msg;
+
+			VBox box = new VBox ();
+			box.Spacing = 6;
+			box.PackStart (widget, true, true, 0);
+			HButtonBox buttonBox = new HButtonBox ();
+			buttonBox.BorderWidth = 6;
+
+			var copy = new Gtk.Button (GettextCatalog.GetString ("Copy to Clipboard"));
+			buttonBox.PackStart (copy, false, false, 0);
+			copy.Clicked += HandleCopyClicked;
+
+			var close = new Gtk.Button (GettextCatalog.GetString ("Close"));
+			buttonBox.PackStart (close, false, false, 0);
+			close.Clicked += (sender, e) => msg.Close ();
+
+			box.PackStart (buttonBox, false, false, 0);
+			VBox.Add (box);
+
+			DefaultWidth = 500;
+			DefaultHeight = 350;
+
+			box.ShowAll ();
+			ActionArea.Hide ();
+		}
+
+		protected override bool OnDeleteEvent (Gdk.Event evnt)
+		{
+			msg.Close ();
+			return true;
+		}
+
+		void HandleCopyClicked (object sender, EventArgs e)
+		{
+			var text = ex.ToString ();
+			var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+			clipboard.Text = text;
+			clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
+			clipboard.Text = text;
+		}
+	}
+
+	class ExceptionCaughtMessage
 	{
 		ExceptionInfo ex;
 		FilePath file;
 		int line;
-		ExceptionCaughtEditorWidget widget;
+		ExceptionCaughtDialog dialog;
 		ExceptionCaughtButton button;
 
-		public ExceptionCaughtDialog (ExceptionInfo val, FilePath file, int line, int col)
+		public ExceptionCaughtMessage (ExceptionInfo val, FilePath file, int line, int col)
 		{
 			ex = val;
 			this.file = file;
@@ -167,34 +220,31 @@ namespace MonoDevelop.Debugger
 
 		public void ShowDialog ()
 		{
-			if (button != null) {
-				button.Dispose ();
-				button = null;
+			if (dialog == null) {
+				dialog = new ExceptionCaughtDialog (ex, this);
+				MessageService.ShowCustomDialog (dialog, IdeApp.Workbench.RootWindow);
 			}
-			widget = new ExceptionCaughtEditorWidget (ex, this);
-			widget.File = file;
-			widget.Line = line;
-			TextEditorService.RegisterExtension (widget);
-			widget.ScrollToView ();
 		}
 
 		public void ShowButton ()
 		{
-			if (widget != null) {
-				widget.Dispose ();
-				widget = null;
+			if (dialog != null) {
+				dialog.Destroy ();
+				dialog = null;
 			}
-			button = new ExceptionCaughtButton (ex, this);
-			button.File = file;
-			button.Line = line;
-			TextEditorService.RegisterExtension (button);
+			if (button == null) {
+				button = new ExceptionCaughtButton (ex, this);
+				button.File = file;
+				button.Line = line;
+				TextEditorService.RegisterExtension (button);
+			}
 		}
 
 		public void Dispose ()
 		{
-			if (widget != null) {
-				widget.Dispose ();
-				widget = null;
+			if (dialog != null) {
+				dialog.Destroy ();
+				dialog = null;
 			}
 			if (button != null) {
 				button.Dispose ();
@@ -214,12 +264,13 @@ namespace MonoDevelop.Debugger
 
 	class ExceptionCaughtButton: TopLevelWidgetExtension
 	{
-		ExceptionCaughtDialog dlg;
-		ExceptionInfo val;
+		ExceptionCaughtMessage dlg;
+		ExceptionInfo exception;
+		Gtk.Label messageLabel;
 
-		public ExceptionCaughtButton (ExceptionInfo val, ExceptionCaughtDialog dlg)
+		public ExceptionCaughtButton (ExceptionInfo val, ExceptionCaughtMessage dlg)
 		{
-			this.val = val;
+			this.exception = val;
 			this.dlg = dlg;
 			OffsetX = 6;
 		}
@@ -234,9 +285,39 @@ namespace MonoDevelop.Debugger
 			var icon = Gdk.Pixbuf.LoadFromResource ("lightning.png");
 			var image = new Gtk.Image (icon);
 			var button = new EventBox ();
+
+			HBox box = new HBox (false, 6);
+			VBox vb = new VBox ();
+			vb.PackStart (image, false, false, 0);
+			box.PackStart (vb);
+			vb = new VBox (false, 6);
+			vb.PackStart (new Gtk.Label () {
+				Markup = GettextCatalog.GetString ("<b>{0}</b> has been thrown", exception.Type),
+				Xalign = 0
+			});
+			messageLabel = new Gtk.Label () {
+				Xalign = 0,
+				NoShowAll = true
+			};
+			vb.PackStart (messageLabel);
+
+			var detailsBtn = new Gtk.Button (GettextCatalog.GetString ("Show Details"));
+			HBox hh = new HBox ();
+			detailsBtn.Clicked += (o,e) => dlg.ShowDialog ();
+			hh.PackStart (detailsBtn, false, false, 0);
+			vb.PackStart (hh, false, false, 0);
+
+			box.PackStart (vb);
+
+			exception.Changed += delegate {
+				Application.Invoke (delegate {
+					LoadData ();
+				});
+			};
+			LoadData ();
+
 			button.VisibleWindow = false;
-			button.Add (image);
-			button.ButtonReleaseEvent += (sender, e) => dlg.ShowDialog ();
+			button.Add (box);
 
 			PopoverWidget eb = new PopoverWidget ();
 			eb.ShowArrow = true;
@@ -246,62 +327,19 @@ namespace MonoDevelop.Debugger
 			eb.ShowAll ();
 			return eb;
 		}
-	}
 
-	class ExceptionCaughtEditorWidget: TopLevelWidgetExtension
-	{
-		ExceptionInfo ex;
-		ExceptionCaughtDialog dlg;
-
-		public ExceptionCaughtEditorWidget (ExceptionInfo val, ExceptionCaughtDialog dlg)
+		void LoadData ()
 		{
-			ex = val;
-			this.dlg = dlg;
-			OffsetX = 6;
-		}
-
-		public override Widget CreateWidget ()
-		{
-			var w = new ExceptionCaughtWidget (ex);
-			VBox box = new VBox ();
-			box.Spacing = 6;
-			box.PackStart (w, true, true, 0);
-			HButtonBox buttonBox = new HButtonBox ();
-			buttonBox.BorderWidth = 6;
-
-			var copy = new Gtk.Button (GettextCatalog.GetString ("Copy to Clipboard"));
-			buttonBox.PackStart (copy, false, false, 0);
-			copy.Clicked += HandleCopyClicked;
-
-			var close = new Gtk.Button (GettextCatalog.GetString ("Close"));
-			buttonBox.PackStart (close, false, false, 0);
-			close.Clicked += (sender, e) => dlg.Close ();
-
-			box.PackStart (buttonBox, false, false, 0);
-
-			PopoverWidget eb = new PopoverWidget ();
-			eb.ShowArrow = true;
-			eb.EnableAnimation = true;
-			eb.PopupPosition = PopupPosition.Left;
-			eb.ContentBox.Add (box);
-			eb.WidthRequest = 500;
-			eb.HeightRequest = 350;
-			eb.ShowAll ();
-			return eb;
-		}
-
-		void HandleCopyClicked (object sender, EventArgs e)
-		{
-			var text = ex.ToString ();
-			var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
-			clipboard.Text = text;
-			clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
-			clipboard.Text = text;
-		}
-
-		protected override void OnLineDeleted ()
-		{
-			dlg.Dispose ();
+			if (!string.IsNullOrEmpty (exception.Message)) {
+				messageLabel.Show ();
+				messageLabel.Text = exception.Message;
+				if (messageLabel.SizeRequest ().Width > 400) {
+					messageLabel.WidthRequest = 400;
+					messageLabel.Wrap = true;
+				}
+			} else {
+				messageLabel.Hide ();
+			}
 		}
 	}
 }
