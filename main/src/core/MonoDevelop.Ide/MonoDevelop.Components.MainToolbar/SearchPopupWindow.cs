@@ -122,6 +122,9 @@ namespace MonoDevelop.Components.MainToolbar
 			layout = new Pango.Layout (PangoContext);
 			headerLayout = new Pango.Layout (PangoContext);
 
+			layout.Ellipsize = Pango.EllipsizeMode.End;
+			headerLayout.Ellipsize = Pango.EllipsizeMode.End;
+
 			Events = Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonMotionMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.ExposureMask | Gdk.EventMask.PointerMotionMask;
 			ItemActivated += (sender, e) => OpenFile ();
 			SizeRequested += delegate(object o, SizeRequestedArgs args) {
@@ -251,7 +254,7 @@ namespace MonoDevelop.Components.MainToolbar
 			Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (ox, oy));
 
 			double startY = yMargin + ChildAllocation.Y;
-			double maxX = 0, y = startY;
+			double y = startY;
 			
 			foreach (var result in results) {
 				//				var category = result.Item1;
@@ -261,17 +264,12 @@ namespace MonoDevelop.Components.MainToolbar
 				
 				for (int i = 0; i < maxItems && i < dataSrc.ItemCount; i++) {
 					layout.SetMarkup (GetRowMarkup (dataSrc, i));
-					
 					int w, h;
 					layout.GetPixelSize (out w, out h);
-					var px = dataSrc.GetIcon (i);
-					if (px != null)
-						w += px.Width + iconTextSpacing + marginIconSpacing + 4;
 					y += h + itemSeparatorHeight;
-					maxX = Math.Max (maxX, w);
 				}
 			}
-			retVal.Width = Math.Min (geometry.Width * 4 / 5, Math.Max (480, (int)maxX + headerMarginSize + xMargin * 2));
+			retVal.Width = Math.Min (geometry.Width * 4 / 5, 480);
 			if (y == startY) {
 				layout.SetMarkup (GettextCatalog.GetString ("No matches"));
 				int w, h;
@@ -299,7 +297,6 @@ namespace MonoDevelop.Components.MainToolbar
 
 		ItemIdentifier GetItemAt (double px, double py)
 		{
-			double maxX = 0;
 			double y = ChildAllocation.Y + yMargin;
 			if (topItem != null){
 				layout.SetMarkup (GetRowMarkup (topItem.DataSource, topItem.Item));
@@ -332,7 +329,6 @@ namespace MonoDevelop.Components.MainToolbar
 						layout.GetPixelSize (out w2, out h2);
 						w += w2;
 					}
-					maxX = Math.Max (maxX, w);
 					itemsAdded++;
 				}
 				if (itemsAdded > 0)
@@ -760,7 +756,6 @@ namespace MonoDevelop.Components.MainToolbar
 				if (selectedItem == null)
 					return new Cairo.Rectangle (0, 0, Allocation.Width, 16);
 
-				double maxX = 0;
 				double y = ChildAllocation.Y + yMargin;
 				if (topItem != null){
 					layout.SetMarkup (GetRowMarkup (topItem.DataSource, topItem.Item));
@@ -793,7 +788,6 @@ namespace MonoDevelop.Components.MainToolbar
 							layout.GetPixelSize (out w2, out h2);
 							w += w2;
 						}
-						maxX = Math.Max (maxX, w);
 						itemsAdded++;
 					}
 					if (itemsAdded > 0)
@@ -877,6 +871,8 @@ namespace MonoDevelop.Components.MainToolbar
 				context.MoveTo (alloc.X + headerMarginSize - w - xMargin, y);
 				context.Color = headerColor;
 				Pango.CairoHelper.ShowLayout (context, headerLayout);
+
+				layout.Width = Pango.Units.FromPixels (Allocation.Width - adjustedMarginSize - 35);
 
 				for (int i = 0; i < maxItems && i < dataSrc.ItemCount; i++) {
 					if (topItem != null && topItem.Category == category && topItem.Item == i)
