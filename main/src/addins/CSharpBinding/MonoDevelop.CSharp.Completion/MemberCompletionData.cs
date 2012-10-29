@@ -568,13 +568,25 @@ namespace MonoDevelop.CSharp.Completion
 					var type = entity as IType;
 					var def = type.GetDefinition ();
 					if (def != null) {
-						if (!string.IsNullOrEmpty(def.ParentAssembly.AssemblyName))
-							tooltipInfo.FooterMarkup = "<small>" +GettextCatalog.GetString ("From {0}", AmbienceService.EscapeText (def.ParentAssembly.AssemblyName)) + "</small>";
+						if (!string.IsNullOrEmpty(def.ParentAssembly.AssemblyName)) {
+							var project = def.GetSourceProject ();
+							if (project != null) {
+								var relPath = FileService.AbsoluteToRelativePath (project.BaseDirectory, def.Region.FileName);
+								tooltipInfo.FooterMarkup = "<small>" + GettextCatalog.GetString ("Project:\t{0}", AmbienceService.EscapeText (def.ParentAssembly.AssemblyName)) + "</small>" + Environment.NewLine +
+									"<small>" + GettextCatalog.GetString ("File:\t\t{0} (line {1})", AmbienceService.EscapeText (relPath), def.Region.Begin.Line) + "</small>";
+							}
+						}
 					}
 
-				} else {
-					tooltipInfo.FooterMarkup = "<small>" +GettextCatalog.GetString ("Defined in {0}", AmbienceService.EscapeText (entity.DeclaringType.FullName)) + "</small>";
-
+				} else if (entity.DeclaringTypeDefinition != null) {
+					var project = entity.DeclaringTypeDefinition.GetSourceProject ();
+					if (project != null) {
+						var relPath = FileService.AbsoluteToRelativePath (project.BaseDirectory, entity.Region.FileName);
+						tooltipInfo.FooterMarkup = 
+							"<small>" + GettextCatalog.GetString ("Project:\t{0}", AmbienceService.EscapeText (project.Name)) + "</small>" + Environment.NewLine +
+							"<small>" + GettextCatalog.GetString ("From:\t{0}", AmbienceService.EscapeText (entity.DeclaringType.FullName)) + "</small>" + Environment.NewLine +
+							"<small>" + GettextCatalog.GetString ("File:\t\t{0} (line {1})", AmbienceService.EscapeText (relPath), entity.Region.Begin.Line) + "</small>";
+					}
 				}
 			}
 			return tooltipInfo;
