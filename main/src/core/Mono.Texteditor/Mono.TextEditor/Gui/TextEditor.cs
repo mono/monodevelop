@@ -76,6 +76,18 @@ namespace Mono.TextEditor
 			ShowAll ();
 
 			stage.ActorStep += OnActorStep;
+			if (Platform.IsMac) {
+				VScroll += delegate {
+					for (int i = 1; i < containerChildren.Count; i++) {
+						containerChildren[i].Child.QueueDraw ();
+					}
+				};
+				HScroll += delegate {
+					for (int i = 1; i < containerChildren.Count; i++) {
+						containerChildren[i].Child.QueueDraw ();
+					}
+				};
+			}
 		}
 		protected override void OnDestroyed ()
 		{
