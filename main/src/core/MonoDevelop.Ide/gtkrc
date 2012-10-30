@@ -265,6 +265,7 @@ style "notebook" = "default"
 style "radio-or-check-box"
 {
     ythickness = 6
+    GtkCheckButton::indicator-size = 14
     GtkCheckButton::indicator-spacing = 4
     engine "quartz" {
     }
