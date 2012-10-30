@@ -17,7 +17,7 @@ all: binding aspnet
 
 binding:
 	(cd MonoDevelop.FSharpBinding/Gui && xbuild MonoDevelop.FSharp.Gui.csproj /p:MDROOT=$(MDROOT))
-	(cd MonoDevelop.FSharpBinding && xbuild MonoDevelop.FSharp.fsproj /p:MDROOT=$(MDROOT))
+	(cd MonoDevelop.FSharpBinding && sed -e 's,/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop,$(MDROOT),g' < MonoDevelop.FSharp.fsproj > MonoDevelop.FSharp.tmp.fsproj  && xbuild MonoDevelop.FSharp.tmp.fsproj /p:MDROOT=$(MDROOT))
 
 aspnet:
 	(cd addins/MonoDevelop.FSharp.AspNet.Mvc && xbuild MonoDevelop.FSharp.AspNet.Mvc.fsproj /p:MDROOT=$(MDROOT))

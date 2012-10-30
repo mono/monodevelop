@@ -2,7 +2,6 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <MDROOT Condition=" '$(MDROOT)' == ''">\Applications\MonoDevelop.app\Contents\MacOS\lib\monodevelop</MDROOT>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
@@ -110,34 +109,34 @@
     </Reference>
     <Reference Include="Mono.TextEditor">
       <Private>False</Private>
-      <HintPath>$(MDROOT)\bin\Mono.TextEditor.dll</HintPath>
+      <HintPath>/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/bin/Mono.TextEditor.dll</HintPath> 
     </Reference>
     <Reference Include="MonoDevelop.Core">
       <Private>False</Private>
-      <HintPath>$(MDROOT)\bin\MonoDevelop.Core.dll</HintPath>
+      <HintPath>/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/bin/MonoDevelop.Core.dll</HintPath>
     </Reference>
     <Reference Include="MonoDevelop.Ide">
       <Private>False</Private>
-      <HintPath>$(MDROOT)\bin\MonoDevelop.Ide.dll</HintPath>
+      <HintPath>/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/bin/MonoDevelop.Ide.dll</HintPath>
     </Reference>
     <Reference Include="ICSharpCode.NRefactory">
       <Private>False</Private>
-      <HintPath>$(MDROOT)\bin\ICSharpCode.NRefactory.dll</HintPath>
+      <HintPath>/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/bin/ICSharpCode.NRefactory.dll</HintPath>
     </Reference>
     <Reference Include="MonoDevelop.SourceEditor2">
       <Private>False</Private>
-      <HintPath>$(MDROOT)\AddIns\DisplayBindings\SourceEditor\MonoDevelop.SourceEditor2.dll</HintPath>
+      <HintPath>/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/AddIns/DisplayBindings/SourceEditor\MonoDevelop.SourceEditor2.dll</HintPath>
     </Reference>
     <Reference Include="MonoDevelop.Refactoring">
       <Private>False</Private>
-      <HintPath>$(MDROOT)\AddIns\MonoDevelop.Refactoring\MonoDevelop.Refactoring.dll</HintPath>
+      <HintPath>/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll</HintPath>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="Gui\MonoDevelop.FSharp.Gui.csproj">
       <Project>{FD0D1033-9145-48E5-8ED8-E2365252878C}</Project>
       <Name>MonoDevelop.FSharp.Gui</Name>
     </ProjectReference>
-    <Reference Include="FSharp.Core" />
+    <Reference Include="FSharp.Core">
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
 </Project>
