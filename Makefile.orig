@@ -13,14 +13,14 @@ TARGETS = bin/FSharp.Core.dll bin/FSharpBinding.dll  bin/FSharpBinding.Gui.dll
 
 .PHONY: all
 
-all: binding aspnet
+all: binding
 
 binding:
 	(cd MonoDevelop.FSharpBinding/Gui && xbuild MonoDevelop.FSharp.Gui.csproj /p:MDROOT=$(MDROOT))
 	(cd MonoDevelop.FSharpBinding && xbuild MonoDevelop.FSharp.fsproj /p:MDROOT=$(MDROOT))
 
-aspnet:
-	(cd addins/MonoDevelop.FSharp.AspNet.Mvc && xbuild MonoDevelop.FSharp.AspNet.Mvc.fsproj /p:MDROOT=$(MDROOT))
+#aspnet:
+#	(cd addins/MonoDevelop.FSharp.AspNet.Mvc && xbuild MonoDevelop.FSharp.AspNet.Mvc.fsproj /p:MDROOT=$(MDROOT))
 
 #install:
 #	cp -pr bin/* $(MDADDIN)/BackendBindings/
@@ -50,4 +50,4 @@ clean:
 	-rm -fr bin
 	(cd MonoDevelop.FSharpBinding && xbuild MonoDevelop.FSharp.fsproj /target:Clean /p:MDROOT=$(MDROOT))
 	(cd MonoDevelop.FSharpBinding/Gui && xbuild MonoDevelop.FSharp.Gui.csproj /target:Clean /p:MDROOT=$(MDROOT))
-	(cd addins/MonoDevelop.FSharp.AspNet.Mvc && xbuild MonoDevelop.FSharp.AspNet.Mvc.fsproj /target:Clean /p:MDROOT=$(MDROOT))
+#	(cd addins/MonoDevelop.FSharp.AspNet.Mvc && xbuild MonoDevelop.FSharp.AspNet.Mvc.fsproj /target:Clean /p:MDROOT=$(MDROOT))
