@@ -162,7 +162,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		static void UpdateOverload (CompletionTextEditorExtension ext, ICompletionWidget widget)
 		{
-			if (methods.Count == 0)
+			if (methods.Count == 0 || window == null)
 				return;
 			
 			// If the user enters more parameters than the current overload has,
