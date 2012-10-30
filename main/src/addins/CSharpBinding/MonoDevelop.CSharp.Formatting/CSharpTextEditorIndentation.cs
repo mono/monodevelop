@@ -243,19 +243,24 @@ namespace MonoDevelop.CSharp.Formatting
 				bool retval = base.KeyPress (key, keyChar, modifier);
 				DocumentLine curLine = textEditorData.Document.GetLine (textEditorData.Caret.Line);
 				string text = textEditorData.Document.GetTextAt (curLine);
-				if (text.EndsWith (";", StringComparison.Ordinal) || text.Trim ().StartsWith ("for", StringComparison.Ordinal))
-					return retval;
-				int guessedOffset;
+				if (!(text.EndsWith (";", StringComparison.Ordinal) || text.Trim ().StartsWith ("for", StringComparison.Ordinal))) {
+					int guessedOffset;
 
-				if (GuessSemicolonInsertionOffset (textEditorData, curLine, textEditorData.Caret.Offset, out guessedOffset)) {
-					using (var undo = textEditorData.OpenUndoGroup ()) {
-						textEditorData.Remove (textEditorData.Caret.Offset - 1, 1);
-						textEditorData.Caret.Offset = guessedOffset;
-						lastInsertedSemicolon = textEditorData.Caret.Offset + 1;
-						retval = base.KeyPress (key, keyChar, modifier);
+					if (GuessSemicolonInsertionOffset (textEditorData, curLine, textEditorData.Caret.Offset, out guessedOffset)) {
+						using (var undo = textEditorData.OpenUndoGroup ()) {
+							textEditorData.Remove (textEditorData.Caret.Offset - 1, 1);
+							textEditorData.Caret.Offset = guessedOffset;
+							lastInsertedSemicolon = textEditorData.Caret.Offset + 1;
+							retval = base.KeyPress (key, keyChar, modifier);
+						}
 					}
 				}
-//				return retval;
+				using (var undo = textEditorData.OpenUndoGroup ()) {
+					if (OnTheFlyFormatting && textEditorData != null && !(textEditorData.CurrentMode is TextLinkEditMode) && !(textEditorData.CurrentMode is InsertionCursorEditMode)) {
+						OnTheFlyFormatter.FormatStatmentAt (Document, textEditorData.Caret.Location);
+					}
+				}
+				return retval;
 			}
 			
 			if (key == Gdk.Key.Tab) {
@@ -350,16 +355,11 @@ namespace MonoDevelop.CSharp.Formatting
 						DoReSmartIndent ();
 					}
 				}
-				Console.WriteLine ("kc:"+keyChar);
 				if (!skipFormatting) {
-
 					if (keyChar == ';' || keyChar == '}') {
-
 						using (var undo = textEditorData.OpenUndoGroup ()) {
 							if (OnTheFlyFormatting && textEditorData != null && !(textEditorData.CurrentMode is TextLinkEditMode) && !(textEditorData.CurrentMode is InsertionCursorEditMode)) {
-								Console.WriteLine ("format statement!");
-								var location = new DocumentLocation (textEditorData.Caret.Location.Line, textEditorData.Caret.Location.Column);
-								OnTheFlyFormatter.FormatStatmentAt (Document, location);
+								OnTheFlyFormatter.FormatStatmentAt (Document, textEditorData.Caret.Location);
 							}
 						}
 					}
