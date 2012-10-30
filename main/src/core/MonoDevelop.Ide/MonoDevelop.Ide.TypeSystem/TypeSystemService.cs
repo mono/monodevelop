@@ -1807,7 +1807,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			
 			IUnresolvedAssembly assembly;
 
-			void EnsureAssemblyLoaded ()
+			internal void EnsureAssemblyLoaded ()
 			{
 				if (assembly != null)
 					return;
@@ -1921,6 +1921,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						CheckModifiedFile (deserialized);
 						newcachedAssemblyContents [fileName] = deserialized;
 						cachedAssemblyContents = newcachedAssemblyContents;
+						OnAssemblyLoaded (new AssemblyLoadedEventArgs (deserialized.CtxLoader));
 						return deserialized;
 					} else {
 						RemoveCache (cache);
@@ -1938,12 +1939,23 @@ namespace MonoDevelop.Ide.TypeSystem
 					result.CtxLoader = new LazyAssemblyLoader (fileName, cache);
 					newcachedAssemblyContents [fileName] = result;
 					cachedAssemblyContents = newcachedAssemblyContents;
+					OnAssemblyLoaded (new AssemblyLoadedEventArgs (result.CtxLoader));
 					return result;
 				} catch (Exception ex) {
 					LoggingService.LogError ("Error loading assembly " + fileName, ex);
 					return null;
 				}
 			}
+		}
+
+
+		internal static event EventHandler<AssemblyLoadedEventArgs> AssemblyLoaded;
+
+		static  void OnAssemblyLoaded (AssemblyLoadedEventArgs e)
+		{
+			var handler = AssemblyLoaded;
+			if (handler != null)
+				handler (null, e);
 		}
 
 		public static IUnresolvedAssembly LoadAssemblyContext (MonoDevelop.Core.Assemblies.TargetRuntime runtime, MonoDevelop.Core.Assemblies.TargetFramework fx, string fileName)
@@ -2343,7 +2355,17 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 		#endregion
 	}
-	
+
+	internal sealed class AssemblyLoadedEventArgs : EventArgs
+	{
+		public readonly TypeSystemService.LazyAssemblyLoader Assembly;
+
+		public AssemblyLoadedEventArgs (TypeSystemService.LazyAssemblyLoader assembly)
+		{
+			this.Assembly = assembly;
+		}
+	}
+
 	public sealed class ProjectUnloadEventArgs : EventArgs
 	{
 		public readonly Project Project;

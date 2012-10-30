@@ -102,15 +102,18 @@ namespace MonoDevelop.Components.MainToolbar
 			matchEntry.Entry.SelectRegion (pos, pos);
 		}
 
-	/*	static MainToolbar ()
+		static MainToolbar ()
 		{
 			// load the compilations on a background thread to speed up the first time search.
-			TypeSystemService.ProjectContentLoaded += delegate(object sender, ProjectContentEventArgs e) {
-				ThreadPool.QueueUserWorkItem (delegate {
-					TypeSystemService.GetCompilation (e.Project);
+			TypeSystemService.AssemblyLoaded += delegate(object sender, AssemblyLoadedEventArgs e) {
+				GLib.Timeout.Add (100, delegate {
+					ThreadPool.QueueUserWorkItem (delegate {
+						e.Assembly.EnsureAssemblyLoaded ();
+					});
+					return false;
 				});
 			};
-		}*/
+		}
 
 		/*
 		internal class SelectActiveRuntimeHandler : CommandHandler
