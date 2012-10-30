@@ -54,7 +54,7 @@ namespace MonoDevelop.Components.MainToolbar
 		WorkerResult lastResult;
 		string[] validTags = new [] { "cmd"};
 
-		public override Task<ISearchDataSource> GetResults (SearchPopupSearchPattern searchPattern, CancellationToken token)
+		public override Task<ISearchDataSource> GetResults (SearchPopupSearchPattern searchPattern, int resultsCount, CancellationToken token)
 		{
 			// NOTE: This is run on the UI thread as checking whether or not a command is enabled is not thread-safe
 			return Task.Factory.StartNew (delegate {
@@ -67,11 +67,9 @@ namespace MonoDevelop.Components.MainToolbar
 					newResult.matcher = StringMatcher.GetMatcher (searchPattern.Pattern, false);
 					newResult.FullSearch = true;
 
-					foreach (SearchResult result in AllResults (lastResult, newResult)) {
-						token.ThrowIfCancellationRequested ();
-						newResult.results.AddResult (result);
-					}
-					newResult.results.Sort (new DataItemComparer (token));
+
+					AllResults (lastResult, newResult, token);
+					newResult.results.SortUpToN (new DataItemComparer (token), resultsCount);
 					lastResult = newResult;
 					return (ISearchDataSource)newResult.results;
 				} catch {
@@ -81,16 +79,17 @@ namespace MonoDevelop.Components.MainToolbar
 			}, token, TaskCreationOptions.None, Xwt.Application.UITaskScheduler);
 		}
 
-		IEnumerable<SearchResult> AllResults (WorkerResult lastResult, WorkerResult newResult)
+		void AllResults (WorkerResult lastResult, WorkerResult newResult, CancellationToken token)
 		{
 			newResult.filteredCommands = new List<Command> ();
 			bool startsWithLastFilter = lastResult != null && lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern) && lastResult.filteredCommands != null;
 			IEnumerable<Command> allCommands = startsWithLastFilter ? lastResult.filteredCommands : IdeApp.CommandService.GetCommands ();
 			foreach (Command cmd in allCommands) {
+				token.ThrowIfCancellationRequested ();
 				SearchResult curResult = newResult.CheckCommand (cmd);
 				if (curResult != null) {
 					newResult.filteredCommands.Add (cmd);
-					yield return curResult;
+					newResult.results.AddResult (curResult);
 				}
 			}
 		}

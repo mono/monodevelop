@@ -56,6 +56,25 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			this.widget = widget;
 		}
 
+		public void SortUpToN (MonoDevelop.Components.MainToolbar.SearchCategory.DataItemComparer cmp, int n)
+		{
+			n = Math.Min (n, Count);
+			// doesn't work for some reason :
+			// Sort (0, n, cmp);
+			for (int i = 0; i < n; i++) {
+				var maxItem = i;
+				for (int j = i + 1; j < Count; j++) {
+					if (cmp.Compare(this[j], this[maxItem]) < 0)
+						maxItem = j;
+				}
+				if (i != maxItem) {
+					var tmp = this[i];
+					this[i] = this[maxItem];
+					this[maxItem] = tmp;
+				}
+			}
+		}
+
 		#region ISearchDataSource implementation
 
 		Gdk.Pixbuf ISearchDataSource.GetIcon (int item)
@@ -130,6 +149,7 @@ return GLib.Markup.EscapeText (this[n].PlainText);
 				return bestResult;
 			}
 		}
+
 
 		public void AddResult (SearchResult res)
 		{

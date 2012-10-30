@@ -102,6 +102,7 @@ namespace MonoDevelop.Components.MainToolbar
 			matchEntry.Entry.SelectRegion (pos, pos);
 		}
 
+		/*
 		static MainToolbar ()
 		{
 			// load the compilations on a background thread to speed up the first time search.
@@ -113,7 +114,7 @@ namespace MonoDevelop.Components.MainToolbar
 					return false;
 				});
 			};
-		}
+		}*/
 
 		/*
 		internal class SelectActiveRuntimeHandler : CommandHandler

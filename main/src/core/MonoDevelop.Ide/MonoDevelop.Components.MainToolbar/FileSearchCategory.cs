@@ -74,13 +74,13 @@ namespace MonoDevelop.Components.MainToolbar
 		WorkerResult lastResult;
 		string[] validTags = new [] { "f", "file"};
 
-		public override Task<ISearchDataSource> GetResults (SearchPopupSearchPattern searchPattern, CancellationToken token)
+		public override Task<ISearchDataSource> GetResults (SearchPopupSearchPattern searchPattern, int resultsCount, CancellationToken token)
 		{
 			return Task.Factory.StartNew (delegate {
+				if (searchPattern.Tag != null && !validTags.Contains (searchPattern.Tag))
+					return null;
 				try {
-					if (searchPattern.Tag != null && !validTags.Contains (searchPattern.Tag))
-						return null;
-					WorkerResult newResult = new WorkerResult (widget);
+					var newResult = new WorkerResult (widget);
 					newResult.pattern = searchPattern.Pattern;
 					newResult.IncludeFiles = true;
 					newResult.IncludeTypes = true;
@@ -90,11 +90,8 @@ namespace MonoDevelop.Components.MainToolbar
 					newResult.matcher = StringMatcher.GetMatcher (toMatch, false);
 					newResult.FullSearch = true;
 
-					foreach (SearchResult result in AllResults (lastResult, newResult)) {
-						token.ThrowIfCancellationRequested ();
-						newResult.results.AddResult (result);
-					}
-					newResult.results.Sort (new DataItemComparer (token));
+					AllResults (lastResult, newResult, token);
+					newResult.results.SortUpToN (new DataItemComparer (token), resultsCount);
 					lastResult = newResult;
 					return (ISearchDataSource)newResult.results;
 				} catch {
@@ -104,7 +101,7 @@ namespace MonoDevelop.Components.MainToolbar
 			}, token);
 		}
 
-		IEnumerable<SearchResult> AllResults (WorkerResult lastResult, WorkerResult newResult)
+		void AllResults (WorkerResult lastResult, WorkerResult newResult, CancellationToken token)
 		{
 			// Search files
 			if (newResult.IncludeFiles) {
@@ -112,10 +109,11 @@ namespace MonoDevelop.Components.MainToolbar
 				bool startsWithLastFilter = lastResult != null && lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern) && lastResult.filteredFiles != null;
 				IEnumerable<ProjectFile> allFiles = startsWithLastFilter ? lastResult.filteredFiles : files;
 				foreach (ProjectFile file in allFiles) {
+					token.ThrowIfCancellationRequested ();
 					SearchResult curResult = newResult.CheckFile (file);
 					if (curResult != null) {
 						newResult.filteredFiles.Add (file);
-						yield return curResult;
+						newResult.results.Add (curResult);
 					}
 				}
 			}

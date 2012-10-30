@@ -35,7 +35,7 @@ namespace MonoDevelop.Components.MainToolbar
 {
 	abstract class SearchCategory 
 	{
-		protected class DataItemComparer : IComparer<SearchResult>
+		internal class DataItemComparer : IComparer<SearchResult>
 		{
 			CancellationToken Token {
 				get; set;
@@ -80,11 +80,12 @@ namespace MonoDevelop.Components.MainToolbar
 			set;
 		}
 
+
 		public SearchCategory (string name)
 		{
 			this.Name = name;
 		}
 
-		public abstract Task<ISearchDataSource> GetResults (SearchPopupSearchPattern searchPattern, CancellationToken token);
+		public abstract Task<ISearchDataSource> GetResults (SearchPopupSearchPattern searchPattern, int resultsCount, CancellationToken token);
 	}
 }

@@ -109,7 +109,7 @@ namespace MonoDevelop.Components.MainToolbar
 		string[] typeTags = new [] { "type", "c", "s", "i", "e", "d"};
 		string[] memberTags = new [] { "member", "m", "p", "f", "evt"};
 
-		public override Task<ISearchDataSource> GetResults (SearchPopupSearchPattern searchPattern, CancellationToken token)
+		public override Task<ISearchDataSource> GetResults (SearchPopupSearchPattern searchPattern, int resultsCount, CancellationToken token)
 		{
 			return Task.Factory.StartNew (delegate {
 				if (searchPattern.Tag != null && !(typeTags.Contains (searchPattern.Tag) || memberTags.Contains (searchPattern.Tag)) || searchPattern.HasLineNumber)
@@ -130,10 +130,8 @@ namespace MonoDevelop.Components.MainToolbar
 					var oldLastResult = lastResult;
 					if (newResult.FullSearch && oldLastResult != null && !oldLastResult.FullSearch)
 						oldLastResult = new WorkerResult (widget);
-					foreach (SearchResult result in AllResults (oldLastResult, newResult, token)) {
-						newResult.results.AddResult (result);
-					}
-					newResult.results.Sort (new DataItemComparer (token));
+					AllResults (oldLastResult, newResult, token);
+					newResult.results.SortUpToN (new DataItemComparer (token), resultsCount);
 					lastResult = newResult;
 					return (ISearchDataSource)newResult.results;
 				} catch {
@@ -143,11 +141,10 @@ namespace MonoDevelop.Components.MainToolbar
 			}, token);
 		}
 
-		IEnumerable<SearchResult> AllResults (WorkerResult lastResult, WorkerResult newResult, CancellationToken token)
+		void AllResults (WorkerResult lastResult, WorkerResult newResult, CancellationToken token)
 		{
-		//	DateTime now = DateTime.Now;
 			if (newResult.isGotoFilePattern)
-				yield break;
+				return;
 			
 			// Search Types
 			if (newResult.IncludeTypes && (newResult.Tag == null || typeTags.Any (t => t == newResult.Tag))) {
@@ -171,7 +168,7 @@ namespace MonoDevelop.Components.MainToolbar
 					SearchResult curResult = newResult.CheckType (type);
 					if (curResult != null) {
 						newResult.filteredTypes.Add (type);
-						yield return curResult;
+						newResult.results.AddResult (curResult);
 					}
 				}
 			}
@@ -196,11 +193,10 @@ namespace MonoDevelop.Components.MainToolbar
 					SearchResult curResult = newResult.CheckMember (member);
 					if (curResult != null) {
 						newResult.filteredMembers.Add (member);
-						yield return curResult;
+						newResult.results.AddResult (curResult);
 					}
 				}
 			}
-		//	Console.WriteLine ((now - DateTime.Now).TotalMilliseconds);
 		}
 		
 		class WorkerResult
@@ -276,9 +272,16 @@ namespace MonoDevelop.Components.MainToolbar
 				if (!savedMatches.TryGetValue (name, out savedMatch)) {
 					bool doesMatch;
 					if (pattern.Length == 1) {
-						int idx = name.IndexOf (pattern[0]);
+						char ch = pattern[0];
+						int idx = name.IndexOfAny (new [] { char.ToUpper (ch), char.ToLower (ch) });
 						doesMatch = idx >= 0;
-						matchRank = int.MaxValue - idx;
+						if (doesMatch) {
+							matchRank = int.MaxValue - (name.Length - 1) * 10 - idx;
+							if (name[idx] != ch)
+								matchRank /= 2;
+						} else {
+							matchRank = -1;
+						}
 					} else {
 						doesMatch = matcher.CalcMatchRank (name, out matchRank);
 					}
