@@ -312,7 +312,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
                     // are missing "{"..."}" in their guid. This is not generally a problem since it
                     // is a valid GUID format. However the solution file format requires that these are present. 
                     string itemGuid = p.ItemId;
-                    if (!itemGuid.StartsWith("{") && !itemGuid.EndWith("}")) 
+                    if (!itemGuid.StartsWith("{") && !itemGuid.EndsWith("}")) 
                         itemGuid = "{" + itemGuid + "}";
 
                     list.Add (String.Format (
