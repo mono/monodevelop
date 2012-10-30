@@ -41,6 +41,8 @@ using MonoDevelop.Components.Commands.ExtensionNodes;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Execution;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.Ide.TypeSystem;
+using System.Threading;
 
 
 namespace MonoDevelop.Components.MainToolbar
@@ -99,6 +101,16 @@ namespace MonoDevelop.Components.MainToolbar
 			var pos = matchEntry.Entry.Text.Length;
 			matchEntry.Entry.SelectRegion (pos, pos);
 		}
+
+	/*	static MainToolbar ()
+		{
+			// load the compilations on a background thread to speed up the first time search.
+			TypeSystemService.ProjectContentLoaded += delegate(object sender, ProjectContentEventArgs e) {
+				ThreadPool.QueueUserWorkItem (delegate {
+					TypeSystemService.GetCompilation (e.Project);
+				});
+			};
+		}*/
 
 		/*
 		internal class SelectActiveRuntimeHandler : CommandHandler

@@ -1208,7 +1208,6 @@ namespace MonoDevelop.Ide.TypeSystem
 					Counters.ParserService.ProjectsLoaded++;
 					ProjectContentWrapper wrapper;
 					projectContents [project] = wrapper = new ProjectContentWrapper (project);
-					OnProjectContentLoaded (new ProjectContentEventArgs (project, wrapper.Content));
 					var dotNetProject = project as DotNetProject;
 					if (dotNetProject != null)
 						CheckProjectOutput (dotNetProject);
@@ -1221,7 +1220,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					Task.Factory.StartNew (delegate {
 						CheckModifiedFiles (project, files, wrapper);
 					});
-
+					OnProjectContentLoaded (new ProjectContentEventArgs (project, wrapper.Content));
 					return wrapper;
 				} catch (Exception ex) {
 					LoggingService.LogError ("Parser database for project '" + project.Name + " could not be loaded", ex);

@@ -51,28 +51,6 @@ namespace MonoDevelop.Components.MainToolbar
 			this.lastResult = new WorkerResult (widget);
 		}
 
-		/*	IEnumerable<ProjectFile> files {
-			get {
-				HashSet<ProjectFile> list = new HashSet<ProjectFile> ();
-				foreach (Document doc in IdeApp.Workbench.Documents) {
-					// We only want to check it here if it's not part
-					// of the open combine.  Otherwise, it will get
-					// checked down below.
-					if (doc.Project == null && doc.IsFile)
-						yield return new ProjectFile (doc.Name);
-				}
-				
-				var projects = IdeApp.Workspace.GetAllProjects ();
-
-				foreach (Project p in projects) {
-					foreach (ProjectFile file in p.Files) {
-						if (file.Subtype != Subtype.Directory)
-							yield return file;
-					}
-				}
-			}
-		}
-		*/
 		static TimerCounter getMembersTimer = InstrumentationService.CreateTimerCounter ("Time to get all members", "NavigateToDialog");
 
 		IEnumerable<IMember> members {
@@ -133,12 +111,11 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public override Task<ISearchDataSource> GetResults (SearchPopupSearchPattern searchPattern, CancellationToken token)
 		{
-
 			return Task.Factory.StartNew (delegate {
 				if (searchPattern.Tag != null && !(typeTags.Contains (searchPattern.Tag) || memberTags.Contains (searchPattern.Tag)) || searchPattern.HasLineNumber)
 					return null;
 				try {
-					WorkerResult newResult = new WorkerResult (widget);
+					var newResult = new WorkerResult (widget);
 					newResult.pattern = searchPattern.Pattern;
 					newResult.IncludeFiles = true;
 					newResult.Tag = searchPattern.Tag;
@@ -168,26 +145,14 @@ namespace MonoDevelop.Components.MainToolbar
 
 		IEnumerable<SearchResult> AllResults (WorkerResult lastResult, WorkerResult newResult, CancellationToken token)
 		{
-//			// Search files
-//			if (newResult.IncludeFiles) {
-//				newResult.filteredFiles = new List<ProjectFile> ();
-//				bool startsWithLastFilter = lastResult != null && lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern) && lastResult.filteredFiles != null;
-//				IEnumerable<ProjectFile> allFiles = startsWithLastFilter ? lastResult.filteredFiles : files;
-//				foreach (ProjectFile file in allFiles) {
-//					SearchResult curResult = newResult.CheckFile (file);
-//					if (curResult != null) {
-//						newResult.filteredFiles.Add (file);
-//						yield return curResult;
-//					}
-//				}
-//			}
+		//	DateTime now = DateTime.Now;
 			if (newResult.isGotoFilePattern)
 				yield break;
 			
 			// Search Types
-			if (newResult.IncludeTypes) {
+			if (newResult.IncludeTypes && (newResult.Tag == null || typeTags.Any (t => t == newResult.Tag))) {
 				newResult.filteredTypes = new List<ITypeDefinition> ();
-				bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern) && lastResult.filteredTypes != null;
+				bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern, StringComparison.Ordinal) && lastResult.filteredTypes != null;
 				var allTypes = startsWithLastFilter ? lastResult.filteredTypes : types;
 				foreach (var type in allTypes) {
 					token.ThrowIfCancellationRequested ();
@@ -212,9 +177,9 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 			
 			// Search members
-			if (newResult.IncludeMembers) {
+			if (newResult.IncludeMembers && (newResult.Tag == null || memberTags.Any (t => t == newResult.Tag))) {
 				newResult.filteredMembers = new List<IMember> ();
-				bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern) && lastResult.filteredMembers != null;
+				bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern, StringComparison.Ordinal) && lastResult.filteredMembers != null;
 				var allMembers = startsWithLastFilter ? lastResult.filteredMembers : members;
 				foreach (var member in allMembers) {
 					token.ThrowIfCancellationRequested ();
@@ -235,6 +200,7 @@ namespace MonoDevelop.Components.MainToolbar
 					}
 				}
 			}
+		//	Console.WriteLine ((now - DateTime.Now).TotalMilliseconds);
 		}
 		
 		class WorkerResult
@@ -244,16 +210,16 @@ namespace MonoDevelop.Components.MainToolbar
 				set;
 			}
 
-			public List<ProjectFile> filteredFiles = null;
-			public List<ITypeDefinition> filteredTypes = null;
-			public List<IMember> filteredMembers = null;
-			public string pattern = null;
+			public List<ProjectFile> filteredFiles;
+			public List<ITypeDefinition> filteredTypes;
+			public List<IMember> filteredMembers;
+			public string pattern;
 			public bool isGotoFilePattern;
 			public ResultsDataSource results;
 			public bool FullSearch;
 			public bool IncludeFiles, IncludeTypes, IncludeMembers;
 			public Ambience ambience;
-			public StringMatcher matcher = null;
+			public StringMatcher matcher;
 			
 			public WorkerResult (Widget widget)
 			{
@@ -295,11 +261,6 @@ namespace MonoDevelop.Components.MainToolbar
 				string memberName = useDeclaringTypeName ? member.DeclaringType.Name : member.Name;
 				if (MatchName (memberName, out rank))
 					return new MemberSearchResult (pattern, memberName, rank, member, false) { Ambience = ambience };
-/*				if (!FullSearch)
-					return null;
-				memberName = useDeclaringTypeName ? member.DeclaringType.FullName : member.FullName;
-				if (MatchName (memberName, out rank))
-					return new MemberSearchResult (pattern, memberName, rank, member, true) { Ambience = ambience };*/
 				return null;
 			}
 			
@@ -313,7 +274,14 @@ namespace MonoDevelop.Components.MainToolbar
 				}
 				MatchResult savedMatch;
 				if (!savedMatches.TryGetValue (name, out savedMatch)) {
-					bool doesMatch = matcher.CalcMatchRank (name, out matchRank);
+					bool doesMatch;
+					if (pattern.Length == 1) {
+						int idx = name.IndexOf (pattern[0]);
+						doesMatch = idx >= 0;
+						matchRank = int.MaxValue - idx;
+					} else {
+						doesMatch = matcher.CalcMatchRank (name, out matchRank);
+					}
 					savedMatches [name] = savedMatch = new MatchResult (doesMatch, matchRank);
 				}
 				
