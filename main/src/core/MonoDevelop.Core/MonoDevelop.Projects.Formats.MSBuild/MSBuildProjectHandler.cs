@@ -296,19 +296,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			string projectTypeGuids = globalGroup.GetPropertyValue ("ProjectTypeGuids");
 			string itemType = globalGroup.GetPropertyValue ("ItemType");
 
-			subtypeGuids.Clear ();
-			if (projectTypeGuids != null) {
-				foreach (string guid in projectTypeGuids.Split (';')) {
-					string sguid = guid.Trim ();
-					if (sguid.Length > 0 && string.Compare (sguid, TypeGuid, true) != 0)
-						subtypeGuids.Add (guid);
-				}
-			}
+			subtypeGuids = projectTypeGuids == null ? new List<string> () : projectTypeGuids
+				.Split (';')
+				.Select (g => g.Trim ())
+				.Where (g => g.Length > 0 && string.Compare (g, TypeGuid, true) != 0)
+				.ToList ();
 			
 			try {
 				timer.Trace ("Create item instance");
 				ProjectExtensionUtil.BeginLoadOperation ();
-				Item = CreateSolutionItem (monitor, p, fileName, language, projectTypeGuids, itemType, itemClass);
+				Item = CreateSolutionItem (monitor, p, fileName, language, itemType, itemClass);
 	
 				Item.SetItemHandler (this);
 				MSBuildProjectService.SetId (Item, itemGuid);
@@ -335,13 +332,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 		
 		// All of the last 4 parameters are optional, but at least one must be provided.
-		SolutionItem CreateSolutionItem (IProgressMonitor monitor, MSBuildProject p, string fileName, string language, string typeGuids,
-			string itemType, Type itemClass)
+		SolutionItem CreateSolutionItem (IProgressMonitor monitor, MSBuildProject p, string fileName, string language,
+                                     string itemType, Type itemClass)
 		{
 			SolutionItem item = null;
-			
-			if (!string.IsNullOrEmpty (typeGuids)) {
-				DotNetProjectSubtypeNode st = MSBuildProjectService.GetDotNetProjectSubtype (typeGuids);
+
+			if (subtypeGuids.Any ()) {
+				// TODO: Is it not valid to specify multiple subtypes? Here it seems we can handle only one...
+				DotNetProjectSubtypeNode st = MSBuildProjectService.GetDotNetProjectSubtype (subtypeGuids);
 				if (st != null) {
 					item = st.CreateInstance (language);
 					useXBuild = useXBuild || st.UseXBuild;
@@ -366,7 +364,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					}
 					st.UpdateImports ((SolutionEntityItem)item, targetImports);
 				} else
-					throw new UnknownSolutionItemTypeException (typeGuids);
+					throw new UnknownSolutionItemTypeException (string.Join (";", subtypeGuids));
 			}
 			if (item == null && itemClass != null)
 				item = (SolutionItem) Activator.CreateInstance (itemClass);

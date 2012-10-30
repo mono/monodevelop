@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using System.Globalization;
+using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using Mono.Addins;
 using MonoDevelop.Core.AddIns;
@@ -152,25 +153,27 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 		
-		internal static DotNetProjectSubtypeNode GetDotNetProjectSubtype (string typeGuids)
+		internal static DotNetProjectSubtypeNode GetDotNetProjectSubtype (string subtypeGuid)
 		{
-			if (!string.IsNullOrEmpty (typeGuids)) {
-				Type ptype = null;
-				DotNetProjectSubtypeNode foundNode = null;
-				foreach (string guid in typeGuids.Split (';')) {
-					string tguid = guid.Trim ();
-					foreach (DotNetProjectSubtypeNode st in GetItemSubtypeNodes ()) {
-						if (st.SupportsType (tguid)) {
-							if (ptype == null || ptype.IsAssignableFrom (st.Type)) {
-								ptype = st.Type;
-								foundNode = st;
-							}
-						}
+			return GetDotNetProjectSubtype(new List<string> { subtypeGuid });
+		}
+
+		internal static DotNetProjectSubtypeNode GetDotNetProjectSubtype (List<string> subtypeGuids)
+		{
+			if (!subtypeGuids.Any())
+				return null;
+
+			Type ptype = null;
+			DotNetProjectSubtypeNode foundNode = null;
+			foreach (var guid in subtypeGuids) {
+				foreach (var st in GetItemSubtypeNodes ().Where (st => st.SupportsType (guid))) {
+					if (ptype == null || ptype.IsAssignableFrom (st.Type)) {
+						ptype = st.Type;
+						foundNode = st;
 					}
 				}
-				return foundNode;
 			}
-			return null;
+			return foundNode;
 		}
 		
 		static IEnumerable<ItemTypeNode> GetItemTypeNodes ()
@@ -181,7 +184,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 			yield return genericItemTypeNode;
 		}
-		
+
 		internal static IEnumerable<DotNetProjectSubtypeNode> GetItemSubtypeNodes ()
 		{
 			foreach (ExtensionNode node in AddinManager.GetExtensionNodes (ItemTypesExtensionPath)) {
