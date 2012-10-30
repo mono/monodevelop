@@ -122,7 +122,7 @@ namespace MonoDevelop.Core.Text
 		MatchLane MatchString (string text, out int totalWords)
 		{
 			totalWords = 0;
-			
+
 			if (text == null || text.Length < filterLowerCase.Length)
 				return null;
 			
@@ -182,6 +182,7 @@ namespace MonoDevelop.Core.Text
 				int laneCount = matchLanes != null ? matchLanes.Count : 0;
 	
 				if (ctLower == filterStartLower && !(filterStartIsUpper && !ctIsUpper)) {
+					// Potential start position of a match
 					MatchLane lane = CreateLane (MatchMode.Substring, tn);
 					if (filterStartIsUpper == ctIsUpper)
 						lane.ExactCaseMatches++;
@@ -237,12 +238,14 @@ namespace MonoDevelop.Core.Text
 								matchLanes [n] = null; // Kill the lane
 						}
 					}
-					else if (lane.MatchMode == MatchMode.Acronym) {
-						if (match && lane.Positions [lane.Index] == tn - 1 && !LaneExists (MatchMode.Substring, lane.MatchIndex + 1)) {
-							// Possible substring match after an acronim. Start a new lane.
+					else if (lane.MatchMode == MatchMode.Acronym && (wordStartMatch || (match && char.IsPunctuation (cfLower)))) {
+						if (!LaneExists (MatchMode.Substring, lane.MatchIndex + 1)) {
+							// This acronym match could be the start of a substring. Create a new lane to track this possibility.
 							MatchLane newLane = CloneLane (lane);
 							newLane.MatchMode = MatchMode.Substring;
-							newLane.Lengths [newLane.Index]++;
+							newLane.Index++;
+							newLane.Positions [newLane.Index] = tn;
+							newLane.Lengths [newLane.Index] = 1;
 							newLane.MatchIndex++;
 							if (exactMatch)
 								newLane.ExactCaseMatches++;
@@ -250,7 +253,7 @@ namespace MonoDevelop.Core.Text
 							if (newLane.MatchIndex == filterLowerCase.Length)
 								return newLane;
 						}
-						if ((wordStartMatch || (match && char.IsPunctuation (cfLower))) && !LaneExists (MatchMode.Acronym, lane.MatchIndex + 1)) {
+						if (!LaneExists (MatchMode.Acronym, lane.MatchIndex + 1)) {
 							// Maybe it is a false acronym start, so add a new lane to keep
 							// track of the old lane
 							MatchLane newLane = CloneLane (lane);
@@ -308,7 +311,7 @@ namespace MonoDevelop.Core.Text
 			lanePoolIndex++;
 			return lane;
 		}
-		
+
 		MatchLane CreateLane (MatchMode mode, int pos)
 		{
 			MatchLane lane = GetPoolLane ();
