@@ -34,12 +34,13 @@ namespace MonoDevelop.Ide
 	public class ThreadedRenderer
 	{
 		Gtk.Widget owner;
-		Thread drawingThread;
 		SurfaceWrapper surface;
+		ManualResetEvent runningSignal;
 
 		public ThreadedRenderer (Gtk.Widget owner)
 		{
 			this.owner = owner;
+			runningSignal = new ManualResetEvent (true);
 		}
 
 		public void QueueThreadedDraw (Action<Cairo.Context> drawCallback)
@@ -48,9 +49,7 @@ namespace MonoDevelop.Ide
 				return;
 
 			// join last draw if still running to avoid having multiple draws running at once
-			if (drawingThread != null && drawingThread.IsAlive) {
-				drawingThread.Join ();
-			}
+			runningSignal.WaitOne ();
 
 			if (surface == null || surface.Height != owner.Allocation.Height || surface.Width != owner.Allocation.Width) {
 				using (var similar = Gdk.CairoHelper.Create (owner.GdkWindow)) {
@@ -58,8 +57,8 @@ namespace MonoDevelop.Ide
 				}
 			}
 
-			drawingThread = new Thread (this.OnDraw);
-			drawingThread.Start (drawCallback);
+			runningSignal.Reset ();
+			ThreadPool.QueueUserWorkItem (new WaitCallback (this.OnDraw), drawCallback);
 			owner.QueueDraw ();
 		}
 
@@ -68,9 +67,7 @@ namespace MonoDevelop.Ide
 			if (surface == null || surface.Width != owner.Allocation.Width || surface.Height != owner.Allocation.Height)
 				return false;
 
-			if (drawingThread != null && drawingThread.IsAlive) {
-				drawingThread.Join ();
-			}
+			runningSignal.WaitOne ();
 			surface.Surface.Show (context, owner.Allocation.X, owner.Allocation.Y);
 			return true;
 		}
@@ -87,6 +84,7 @@ namespace MonoDevelop.Ide
 
 				callback (context);
 			}
+			runningSignal.Set ();
 		}
 	}
 }
