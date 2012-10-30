@@ -130,9 +130,12 @@ namespace MonoDevelop.Components.MainToolbar
 					var oldLastResult = lastResult;
 					if (newResult.FullSearch && oldLastResult != null && !oldLastResult.FullSearch)
 						oldLastResult = new WorkerResult (widget);
+//					var now = DateTime.Now;
+
 					AllResults (oldLastResult, newResult, token);
 					newResult.results.SortUpToN (new DataItemComparer (token), resultsCount);
 					lastResult = newResult;
+//					Console.WriteLine ((now - DateTime.Now).TotalMilliseconds);
 					return (ISearchDataSource)newResult.results;
 				} catch {
 					token.ThrowIfCancellationRequested ();
@@ -152,7 +155,6 @@ namespace MonoDevelop.Components.MainToolbar
 				bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern, StringComparison.Ordinal) && lastResult.filteredTypes != null;
 				var allTypes = startsWithLastFilter ? lastResult.filteredTypes : types;
 				foreach (var type in allTypes) {
-					token.ThrowIfCancellationRequested ();
 					if (newResult.Tag != null) {
 						if (newResult.Tag == "c" && type.Kind != TypeKind.Class)
 							continue;
@@ -179,7 +181,6 @@ namespace MonoDevelop.Components.MainToolbar
 				bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern, StringComparison.Ordinal) && lastResult.filteredMembers != null;
 				var allMembers = startsWithLastFilter ? lastResult.filteredMembers : members;
 				foreach (var member in allMembers) {
-					token.ThrowIfCancellationRequested ();
 					if (newResult.Tag != null) {
 						if (newResult.Tag == "m" && member.EntityType != EntityType.Method)
 							continue;
@@ -209,7 +210,23 @@ namespace MonoDevelop.Components.MainToolbar
 			public List<ProjectFile> filteredFiles;
 			public List<ITypeDefinition> filteredTypes;
 			public List<IMember> filteredMembers;
-			public string pattern;
+			string pattern2;
+			char firstChar;
+			char[] firstChars;
+			public string pattern {
+				get {
+					return pattern2;
+				}
+				set {
+					pattern2 = value;
+					if (pattern2.Length == 1) {
+						firstChar = pattern2[0];
+						firstChars = new [] { char.ToUpper (firstChar), char.ToLower (firstChar) };
+					} else {
+						firstChars = null;
+					}
+				}
+			}
 			public bool isGotoFilePattern;
 			public ResultsDataSource results;
 			public bool FullSearch;
@@ -268,23 +285,24 @@ namespace MonoDevelop.Components.MainToolbar
 					matchRank = -1;
 					return false;
 				}
+
+				bool doesMatch;
+				if (firstChars != null) {
+					int idx = name.IndexOfAny (firstChars);
+					doesMatch = idx >= 0;
+					if (doesMatch) {
+						matchRank = int.MaxValue - (name.Length - 1) * 10 - idx;
+						if (name[idx] != firstChar)
+							matchRank /= 2;
+						return true;
+					} else {
+						matchRank = -1;
+					}
+					return false;
+				}
 				MatchResult savedMatch;
 				if (!savedMatches.TryGetValue (name, out savedMatch)) {
-					bool doesMatch;
-					if (pattern.Length == 1) {
-						char ch = pattern[0];
-						int idx = name.IndexOfAny (new [] { char.ToUpper (ch), char.ToLower (ch) });
-						doesMatch = idx >= 0;
-						if (doesMatch) {
-							matchRank = int.MaxValue - (name.Length - 1) * 10 - idx;
-							if (name[idx] != ch)
-								matchRank /= 2;
-						} else {
-							matchRank = -1;
-						}
-					} else {
-						doesMatch = matcher.CalcMatchRank (name, out matchRank);
-					}
+					doesMatch = matcher.CalcMatchRank (name, out matchRank);
 					savedMatches [name] = savedMatch = new MatchResult (doesMatch, matchRank);
 				}
 				
