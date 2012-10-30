@@ -65,6 +65,10 @@ style "default" {
     GtkScrolledWindow::scrollbar-spacing = 0
     GtkScale::slider-length = 14
 
+    GtkMenu::horizontal-padding = 3
+    GtkMenu::vertical-padding = 3
+    GtkSeparatorMenuItem::horizontal-padding = 2
+
     GtkTreeView::expander-size = 8
     GtkExpander::expander-size = 8
     GtkComboBox::arrow-size = 8
@@ -100,42 +104,25 @@ style "wider" = "default" {
 
 style "button" {
     xthickness = 2
-    ythickness = 4
+    ythickness = 1
 
-    bg[NORMAL]      = @bg_color
-    bg[PRELIGHT]    = shade(1.1, @bg_color)
-    bg[ACTIVE]      = @bg_color
-    bg[INSENSITIVE] = @bg_color
-
-    engine "xamarin" {
-        contrast = 1.0
-        gradient_shades     = {0.96, 0.918, 0.926, 0.858}
-        focus_color         = shade(0.6, @bg_color)
-        textstyle           = 1
-      }
-}
-
-style "menu" {
-    xthickness = 0
-    ythickness = 0
-
-    fg[PRELIGHT] = @selected_fg_color
-
-    engine "xamarin" {
-        roundness = 3
-        gradient_shades     = {1.02, 0.97, 0.92, 0.87}
+    engine "wimp" {
     }
 }
 
-style "menu-item" {
+style "menu" = "default" {
     xthickness = 0
+    ythickness = 0
+
+    engine "wimp" {
+    }
+}
+
+style "menu-item" = "default" {
+    xthickness = 5
     ythickness = 3
 
-    fg[PRELIGHT] = @selected_fg_color
-
-    engine "xamarin" {
-        roundness = 0
-        gradient_shades     = {1.02, 0.97, 0.92, 0.87}
+    engine "wimp" {
     }
 }
 
@@ -208,17 +195,10 @@ style "toolbar-combo-box" = "default"
 style "combo-box" = "default"
 {
     fg[NORMAL] = "#616161"
-    xthickness = 2
+    xthickness = 4
     ythickness = 4
 
-    engine "xamarin" {
-        arrowstyle = 4
-    }
-}
-
-style "combo-box-entry" = "combo-box"
-{
-   	engine "xamarin" {
+    engine "wimp" {
         arrowstyle = 3
     }
 }
@@ -272,17 +252,10 @@ style "search-entry" = "wider"
 
 style "scrollbar" = "default"
 {
-    GtkScrollbar::has-forward-stepper = 0
-    GtkScrollbar::has-backward-stepper = 0
-    GtkRange::slider-width = 10
+    GtkRange::slider-width = 7
     GtkRange::trough-border = 2
 
-    bg[SELECTED] = @bg_color
-    bg[NORMAL] = @bg_color
-
-    engine "xamarin" {
-        trough_shades = { 0.968, 1.04 }
-        roundness = 0
+    engine "wimp" {
     }
 }
 
@@ -344,12 +317,9 @@ widget_class "*.GtkList.GtkButton"  style "tree-header"
 widget_class "*<GtkIconView>" style "icon-view"
 
 widget_class "*.<GtkComboBox>.*" style "combo-box"
-widget_class "*.<GtkComboBoxText>.*" style "combo-box-entry"
-widget_class "*.<GtkComboBoxEntry>.*" style "combo-box-entry"
+widget_class "*.<GtkComboBoxText>.*" style "combo-box"
+widget_class "*.<GtkComboBoxEntry>.*" style "combo-box"
 widget_class "*.<GtkComboBoxText>.<GtkEntry>" style "entry"
-widget_class "*.<GtkComboBoxText>.<GtkButton>" style "button"
-#widget_class "*.<GtkComboBoxEntry>.GtkEntry" style "entry"
-#widget_class "*.<GtkComboBoxEntry>.<GtkButton>" style "button"
 widget_class "*.<GtkComboBox>.*.GtkLabel" style "combo-box-label"
 
 # Comboboxes within toolbars

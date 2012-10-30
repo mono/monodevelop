@@ -63,9 +63,13 @@ style "default" {
     GtkButton::default-border = { 0, 0, 0, 0 }
     GtkButton::inner-border = { 2, 2, 4, 4 }
 
+    GtkButtonBox::child-min-width = 70
+    GtkButtonBox::child-min-height = 22
+
     GtkTreeView::odd-row-color = @base_color
 
     GtkScrolledWindow::scrollbar-spacing = 0
+    GtkScrolledWindow::scrollbars-within-bevel = 1
     GtkScale::slider-length = 14
     GtkRange::trough-side-details = 1
 
@@ -118,6 +122,20 @@ style "button" {
         focus_color         = shade(0.6, @bg_color)
         textstyle           = 1
       }
+}
+
+style "dialog-button" = "default" {
+    xthickness = 3
+    ythickness = 3
+    font_name = "Lucida Grande 11"
+
+    GtkWidget::draw-border = { 2, 2, 2, 2 }
+    GtkWidget::focus-line-width = 1
+    GtkButton::inner-border = { 8, 8, 0, 2 }
+
+    engine "quartz" {
+        buttontype = "aqua"
+    }
 }
 
 style "toggle-button" = "button" {
@@ -251,20 +269,13 @@ style "notebook" = "default"
     }
 }
 
-style "radio-button" = "default"
+style "radio-or-check-box"
 {
-    GtkCheckButton::indicator-size = 15
-    text[NORMAL] = lighter (@text_color)
-    base[NORMAL] = @base_color
-    text[ACTIVE] = lighter(@text_color)
-}
-
-style "check-box" = "default"
-{
-    GtkCheckButton::indicator-size = 15
-    base[NORMAL] = "#f8f8f8"
-    text[NORMAL] = "#404040"
-    text[ACTIVE] = "#404040"
+    ythickness = 6
+    GtkCheckButton::indicator-size = 14
+    GtkCheckButton::indicator-spacing = 4
+    engine "quartz" {
+    }
 }
 
 style "entry" = "default"
@@ -286,16 +297,11 @@ style "scrollbar" = "default"
 {
     GtkScrollbar::has-forward-stepper = 0
     GtkScrollbar::has-backward-stepper = 0
-    GtkRange::slider-width = 10
-    GtkRange::trough-border = 2
+    GtkRange::slider-width = 14
+    GtkRange::trough-border = 0
     GtkRange::trough-side-details = 0
 
-    bg[SELECTED] = @bg_color
-    bg[NORMAL] = @bg_color
-
-    engine "xamarin" {
-        trough_shades = { 0.968, 1.04 }
-        roundness = 0
+    engine "quartz" {
     }
 }
 
@@ -345,17 +351,16 @@ class "GtkProgressBar" style "progressbar"
 class "GtkScrolledWindow" style "scrolled-window"
 class "GtkNotebook" style "notebook"
 class "GtkButton" style "button"
+class "GtkToggleButton" style "toggle-button"
 
-class "GtkRadioButton" style "radio-button"
-class "GtkCheckButton" style "check-box"
 class "GtkScale" style "scale"
 
 #widget "*GtkEntry" style "entry"
 widget "*search-entry*" style "search-entry"
 widget "*GtkTextView"   style "entry"
 
-widget_class "*<GtkButton>"     style "button"
-widget_class "*<GtkToggleButton>" style "toggle-button"
+widget_class "<GtkDialog>*<GtkCheckButton>" style "radio-or-check-box"
+widget_class "<GtkDialog>.<GtkVBox>.<GtkButtonBox>.<GtkButton>" style "dialog-button"
 
 widget_class "*<GtkMenu>*"      style "menu"
 widget_class "*<GtkMenuItem>*"  style "menu-item"
