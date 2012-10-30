@@ -352,7 +352,7 @@ widget "*search-entry*" style "search-entry"
 widget "*GtkTextView"   style "entry"
 
 widget_class "<GtkDialog>*<GtkCheckButton>" style "radio-or-check-box"
-#widget_class "*<GtkButtonBox>.<GtkButton>" style "dialog-button"
+widget_class "*<GtkButtonBox>.<GtkButton>" style "dialog-button"
 
 widget_class "*<GtkMenu>*"      style "menu"
 widget_class "*<GtkMenuItem>*"  style "menu-item"
