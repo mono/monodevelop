@@ -137,6 +137,7 @@
     </ProjectReference>
     <Reference Include="FSharp.Core">
       <Private>True</Private>
+       <Private>True</Private>
     </Reference>
   </ItemGroup>
 </Project>
