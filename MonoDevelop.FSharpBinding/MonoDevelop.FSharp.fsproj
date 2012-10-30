@@ -132,12 +132,12 @@
       <Private>False</Private>
       <HintPath>$(MDROOT)\AddIns\MonoDevelop.Refactoring\MonoDevelop.Refactoring.dll</HintPath>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="Gui\MonoDevelop.FSharp.Gui.csproj">
       <Project>{FD0D1033-9145-48E5-8ED8-E2365252878C}</Project>
       <Name>MonoDevelop.FSharp.Gui</Name>
     </ProjectReference>
-    <Reference Include="FSharp.Core" />
+    <Reference Include="FSharp.Core">
+       <Private>True</Private>
+    </Reference>
   </ItemGroup>
 </Project>
