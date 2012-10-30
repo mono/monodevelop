@@ -380,6 +380,7 @@ namespace MonoDevelop.Ide.Gui
 		int tabStartX, tabEndX;
 
 		MouseTracker tracker;
+		ThreadedRenderer renderer;
 
 		bool draggingTab;
 		int dragX;
@@ -499,6 +500,7 @@ namespace MonoDevelop.Ide.Gui
 			notebook.PageRemoved += (object sender, EventArgs e) => QueueResize ();
 
 			closingTabs = new Dictionary<int, DockNotebookTab> ();
+			renderer = new ThreadedRenderer (this);
 		}
 
 		public void StartOpenAnimation (DockNotebookTab tab)
@@ -736,7 +738,7 @@ namespace MonoDevelop.Ide.Gui
 			using (var context = Gdk.CairoHelper.Create (GdkWindow)) {
 				DockNotebookTab current = notebook.CurrentTab as DockNotebookTab;
 				if (current != null) {
-					LayoutTabBorder (context, current.Allocation.Width, current.Allocation.X, 0, false);
+					LayoutTabBorder (context, Allocation, current.Allocation.Width, current.Allocation.X, 0, false);
 					if (context.InFill (x, y))
 						return current;
 				}
@@ -744,7 +746,7 @@ namespace MonoDevelop.Ide.Gui
 				context.NewPath ();
 				for (int n = 0; n < notebook.Tabs.Count; n++) {
 					DockNotebookTab tab = (DockNotebookTab) notebook.Tabs[n];
-					LayoutTabBorder (context, tab.Allocation.Width, tab.Allocation.X, 0, false);
+					LayoutTabBorder (context, Allocation, tab.Allocation.Width, tab.Allocation.X, 0, false);
 					if (context.InFill (x, y))
 						return tab;
 					context.NewPath ();
@@ -828,111 +830,124 @@ namespace MonoDevelop.Ide.Gui
 			return tabStartX - renderOffset;
 		}
 
-		int DrawClosingTab (Cairo.Context context, int index, Gdk.Rectangle region)
+		Action<Cairo.Context> DrawClosingTab (int index, Gdk.Rectangle region, out int width)
 		{
-			int width = 0;
+			width = 0;
 			if (closingTabs.ContainsKey (index)) {
 				DockNotebookTab closingTab = closingTabs[index];
 				width = (int) (closingTab.WidthModifier * TabWidth);
-				DrawTab (context, closingTab, new Gdk.Rectangle (region.X, region.Y, width, region.Height), false, false, false);
+				int tmp = width;
+				return (c) => DrawTab (c, closingTab, Allocation, new Gdk.Rectangle (region.X, region.Y, tmp, region.Height), false, false, false);
 			}
-			return width;
+			return (c) => {};
 		}
 
-		protected override bool OnExposeEvent (EventExpose evnt)
+		void Draw ()
 		{
-			using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
-				DrawBackground (ctx, Allocation);
+			int tabArea = tabEndX - tabStartX;
+			int x = GetRenderOffset ();
+			int y = 0;
+			int n = 0;
+			Action<Cairo.Context> drawActive = c => {};
+			List<Action<Cairo.Context>> drawCommands = new List<Action<Context>> ();
+			for (; n < notebook.Tabs.Count; n++) {
+				if (x + TabWidth < tabStartX) {
+					x += TabWidth;
+					continue;
+				}
+
+				if (x > tabEndX)
+					break;
+
+				int closingWidth;
+				var cmd = DrawClosingTab (n, new Gdk.Rectangle (x, y, 0, Allocation.Height), out closingWidth);
+				drawCommands.Add (cmd);
+				x += closingWidth;
+
+				var tab = (DockNotebookTab)notebook.Tabs [n];
+				bool active = tab == notebook.CurrentTab;
+
+				int width = Math.Min (TabWidth, Math.Max (50, tabEndX - x - 1));
+				if (tab == notebook.Tabs.Last ())
+					width += LastTabWidthAdjustment;
+				width = (int) (width * tab.WidthModifier);
+
+				if (active) {
+					int tmp = x;
+					drawActive = c => DrawTab (c, tab, Allocation, new Gdk.Rectangle (tmp, y, width, Allocation.Height), true, true, draggingTab);
+					tab.Allocation = new Gdk.Rectangle (tmp, Allocation.Y, width, Allocation.Height);
+				} else {
+					int tmp = x;
+					bool highlighted = tab == highlightedTab;
+
+					if (tab.SaveStrength > 0.0f) {
+						tmp = (int) (tab.SavedAllocation.X + (tmp - tab.SavedAllocation.X) * (1.0f - tab.SaveStrength));
+					}
+
+					drawCommands.Add (c => DrawTab (c, tab, Allocation, new Gdk.Rectangle (tmp, y, width, Allocation.Height), highlighted, false, false));
+					tab.Allocation = new Gdk.Rectangle (tmp, Allocation.Y, width, Allocation.Height);
+				}
+
+				x += width;
 			}
 
-			// Draw buttons
-			foreach (var c in children)
-				PropagateExpose (c, evnt);
+			Gdk.Rectangle allocation = Allocation;
+			int tabWidth;
+			drawCommands.Add (DrawClosingTab (n, new Gdk.Rectangle (x, y, 0, allocation.Height), out tabWidth));
+			drawCommands.Reverse ();
 
-			using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
+			renderer.QueueThreadedDraw ((ctx) => {
+				DrawBackground (ctx, allocation);
+
 				// Draw breadcrumb bar header
 				if (notebook.Tabs.Count > 0) {
-					ctx.Rectangle (0, Allocation.Height - BottomBarPadding, Allocation.Width, BottomBarPadding);
+					ctx.Rectangle (0, allocation.Height - BottomBarPadding, allocation.Width, BottomBarPadding);
 					ctx.Color = Styles.BreadcrumbBackgroundColor;
 					ctx.Fill ();
 				}
 
-				int tabArea = tabEndX - tabStartX;
-				int x = GetRenderOffset ();
-				int y = 0;
-
-				ctx.Rectangle (tabStartX - LeanWidth / 2, Allocation.Y, tabArea + LeanWidth, Allocation.Height);
+				ctx.Rectangle (tabStartX - LeanWidth / 2, allocation.Y, tabArea + LeanWidth, allocation.Height);
 				ctx.Clip ();
-				int n = 0;
-				Action<Cairo.Context> drawActive = c => {};
-				List<Action<Cairo.Context>> drawCommands = new List<Action<Context>> ();
-				for (; n < notebook.Tabs.Count; n++) {
-					if (x + TabWidth < tabStartX) {
-						x += TabWidth;
-						continue;
-					}
 
-					if (x > tabEndX)
-						break;
-
-					x += DrawClosingTab (ctx, n, new Gdk.Rectangle (x, y, 0, Allocation.Height));
-					var tab = (DockNotebookTab)notebook.Tabs [n];
-
-					bool active = tab == notebook.CurrentTab;
-
-					int width = Math.Min (TabWidth, Math.Max (50, tabEndX - x - 1));
-					if (tab == notebook.Tabs.Last ())
-						width += LastTabWidthAdjustment;
-					width = (int) (width * tab.WidthModifier);
-
-					if (active) {
-						int tmp = x;
-						drawActive = c => DrawTab (c, tab, new Gdk.Rectangle (tmp, y, width, Allocation.Height), true, true, draggingTab);
-						tab.Allocation = new Gdk.Rectangle (tmp, Allocation.Y, width, Allocation.Height);
-					} else {
-						int tmp = x;
-						bool highlighted = tab == highlightedTab;
-
-						if (tab.SaveStrength > 0.0f) {
-							tmp = (int) (tab.SavedAllocation.X + (tmp - tab.SavedAllocation.X) * (1.0f - tab.SaveStrength));
-						}
-
-						drawCommands.Add (c => DrawTab (c, tab, new Gdk.Rectangle (tmp, y, width, Allocation.Height), highlighted, false, false));
-						tab.Allocation = new Gdk.Rectangle (tmp, Allocation.Y, width, Allocation.Height);
-					}
-
-					x += width;
-				}
-
-				drawCommands.Reverse ();
 				foreach (var cmd in drawCommands)
 					cmd (ctx);
 
-				// make sure we got a final closing tab if it exists
-				DrawClosingTab (ctx, n, new Gdk.Rectangle (x, y, 0, Allocation.Height));
 				ctx.ResetClip ();
 
 				// Redraw the dragging tab here to be sure its on top. We drew it before to get the sizing correct, this should be fixed.
 				drawActive (ctx);
+			});
+		}
+
+		public new void QueueDraw ()
+		{
+			Draw ();
+		}
+
+		protected override bool OnExposeEvent (EventExpose evnt)
+		{
+			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
+				if (!renderer.Show (context))
+					Draw ();
 			}
 			return base.OnExposeEvent (evnt);
 		}
 
-		void DrawTab (Cairo.Context ctx, DockNotebookTab tab, Gdk.Rectangle region, bool highlight, bool active, bool dragging)
+		void DrawTab (Cairo.Context ctx, DockNotebookTab tab, Gdk.Rectangle allocation, Gdk.Rectangle tabBounds, bool highlight, bool active, bool dragging)
 		{
 			// This logic is stupid to have here, should be in the caller!
 			if (dragging) {
-				region.X = (int) (region.X + (dragX - region.X) * dragXProgress);
-				region.X = Clamp (region.X, tabStartX, tabEndX - region.Width);
+				tabBounds.X = (int) (tabBounds.X + (dragX - tabBounds.X) * dragXProgress);
+				tabBounds.X = Clamp (tabBounds.X, tabStartX, tabEndX - tabBounds.Width);
 			}
 			int padding = LeftRightPadding;
-			padding = (int) (padding * Math.Min (1.0, Math.Max (0.5, (region.Width - 30) / 70.0)));
+			padding = (int) (padding * Math.Min (1.0, Math.Max (0.5, (tabBounds.Width - 30) / 70.0)));
 
 
 			ctx.LineWidth = 1;
-			LayoutTabBorder (ctx, region.Width, region.X, 0, active);
+			LayoutTabBorder (ctx, allocation, tabBounds.Width, tabBounds.X, 0, active);
 			ctx.ClosePath ();
-			Cairo.LinearGradient gr = new LinearGradient (region.X, TopBarPadding, region.X, Allocation.Bottom);
+			Cairo.LinearGradient gr = new LinearGradient (tabBounds.X, TopBarPadding, tabBounds.X, allocation.Bottom);
 			if (active) {
 				gr.AddColorStop (0, Styles.BreadcrumbGradientStartColor.MultiplyAlpha (tab.Opacity));
 				gr.AddColorStop (1, Styles.BreadcrumbBackgroundColor.MultiplyAlpha (tab.Opacity));
@@ -944,16 +959,16 @@ namespace MonoDevelop.Ide.Gui
 			ctx.Fill ();
 			
 			ctx.Color = new Cairo.Color (1, 1, 1, .5).MultiplyAlpha (tab.Opacity);
-			LayoutTabBorder (ctx, region.Width, region.X, 1, active);
+			LayoutTabBorder (ctx, allocation, tabBounds.Width, tabBounds.X, 1, active);
 			ctx.Stroke ();
 
 			ctx.Color = Styles.BreadcrumbBorderColor.MultiplyAlpha (tab.Opacity);
-			LayoutTabBorder (ctx, region.Width, region.X, 0, active);
+			LayoutTabBorder (ctx, allocation, tabBounds.Width, tabBounds.X, 0, active);
 			ctx.StrokePreserve ();
 
 			if (tab.GlowStrength > 0) {
 				Gdk.Point mouse = tracker.MousePosition;
-				using (var rg = new RadialGradient (mouse.X, region.Bottom, 0, mouse.X, region.Bottom, 100)) {
+				using (var rg = new RadialGradient (mouse.X, tabBounds.Bottom, 0, mouse.X, tabBounds.Bottom, 100)) {
 					rg.AddColorStop (0, new Cairo.Color (1, 1, 1, 0.4 * tab.Opacity * tab.GlowStrength));
 					rg.AddColorStop (1, new Cairo.Color (1, 1, 1, 0));
 					
@@ -966,15 +981,15 @@ namespace MonoDevelop.Ide.Gui
 
 			// Render Close Button (do this first so we can tell how much text to render)
 			
-			var ch = Allocation.Height - TopBarPadding - BottomBarPadding + CloseImageTopOffset;
-			var crect = new Gdk.Rectangle (region.Right - padding - closeSelImage.Width + 3, 
-			                               region.Y + TopBarPadding + (ch - closeSelImage.Height) / 2, 
+			var ch = allocation.Height - TopBarPadding - BottomBarPadding + CloseImageTopOffset;
+			var crect = new Gdk.Rectangle (tabBounds.Right - padding - closeSelImage.Width + 3, 
+			                               tabBounds.Y + TopBarPadding + (ch - closeSelImage.Height) / 2, 
 			                               closeSelImage.Width, closeSelImage.Height);
 			tab.CloseButtonAllocation = crect;
 			tab.CloseButtonAllocation.Inflate (2, 2);
 
 			bool closeButtonHovered = tracker.Hovered && tab.CloseButtonAllocation.Contains (tracker.MousePosition) && tab.WidthModifier >= 1.0f;
-			bool drawCloseButton = region.Width > 60 || highlight || closeButtonHovered;
+			bool drawCloseButton = tabBounds.Width > 60 || highlight || closeButtonHovered;
 			if (drawCloseButton) {
 				var closePix = closeButtonHovered ? closeSelOverImage : closeSelImage;
 				CairoHelper.SetSourcePixbuf (ctx, closePix, crect.X, crect.Y);
@@ -984,13 +999,13 @@ namespace MonoDevelop.Ide.Gui
 			// Render Text
 
 			var la = CreateTabLayout (tab);
-			int w = region.Width - (padding * 2 + closeSelImage.Width);
+			int w = tabBounds.Width - (padding * 2 + closeSelImage.Width);
 			if (!drawCloseButton)
 				w += closeSelImage.Width;
 
-			int textStart = region.X + padding;
+			int textStart = tabBounds.X + padding;
 
-			ctx.MoveTo (textStart, region.Y + TopPadding + TextOffset + VerticalTextSize);
+			ctx.MoveTo (textStart, tabBounds.Y + TopPadding + TextOffset + VerticalTextSize);
 			// ellipses are for space wasting ..., we cant afford that
 			using (var lg = new LinearGradient (textStart + w - 5, 0, textStart + w + 3, 0)) {
 				var color = tab.Notify ? new Cairo.Color (0, 0, 1) : Styles.TabBarActiveTextColor;
@@ -1006,11 +1021,11 @@ namespace MonoDevelop.Ide.Gui
 
 		}
 
-		void LayoutTabBorder (Cairo.Context ctx, int contentWidth, int px, int margin, bool active = true)
+		void LayoutTabBorder (Cairo.Context ctx, Gdk.Rectangle allocation, int contentWidth, int px, int margin, bool active = true)
 		{
 			double x = 0.5 + (double)px;
-			double y = (double) Allocation.Height + 0.5 - BottomBarPadding + margin;
-			double height = Allocation.Height - TopBarPadding - BottomBarPadding;
+			double y = (double) allocation.Height + 0.5 - BottomBarPadding + margin;
+			double height = allocation.Height - TopBarPadding - BottomBarPadding;
 
 			x += TabSpacing + margin;
 			contentWidth -= (TabSpacing + margin) * 2;
@@ -1037,8 +1052,8 @@ namespace MonoDevelop.Ide.Gui
 			             new PointD (rightx + halfLean, y));
 
 			if (active) {
-				ctx.LineTo (Allocation.Width, y);
-				ctx.LineTo (Allocation.Width, y + 0.5);
+				ctx.LineTo (allocation.Width, y);
+				ctx.LineTo (allocation.Width, y + 0.5);
 			} else {
 				ctx.LineTo (rightx + halfLean, y + 0.5);
 			}
