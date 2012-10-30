@@ -51,5 +51,28 @@ Join [The F# Open Source Group](http://fsharp.github.com). We use [github](http:
 
 ## Can't get it to work?  
 
-Don't give up! Add an issue to [the issue tracker](http://fsharp.github.com/fsharpbinding/issues). You issue will be seen by the developers,
+Don't give up! Add an issue to [the issue tracker](http://fsharp.github.com/fsharpbinding/issues). You issue will be seen by the developers.
+
+## Notes for Developers
+
+To check things are working try a few different things somewhat at random:
+  - Check the F# templates are appearing
+  - Create a console project (NOTE: retarget it to .NET 4.0 using right-click->options->General)
+  - Check there are completion lists in the console project
+  - Check you can build the console project
+  - Check you can run the console project
+  - Check you can "debug-step-into" the console project
+  - Check you can set a break point in the console project
+  - Check there are type tips showing when you move the mouse over code identifiers
+  - Load an existing .fsproj (e.g. see MonoDevelop.FSharpBinding/tests/projects/...) and check if completion works etc.
+  - Run xbuild on a few .fsproj (this is nothing to do with the binding, it is just fsharp/fsharp)
+
+There are a couple of known issues, see https://github.com/fsharp/fsharpbinding/issues. The issue where new projects target .NET 3.5 by default is really annoying.
+
+If you make changes to the binding, then loss of completion lists etc. can be disturbing and hard to debug. There are some debugging techniques. To launch MD you can use
+   /Applications/MonoDevelop.app/Contents/MacOS/MonoDevelop --new-window --no-redirect
+
+To enable some logging you can use
+  export FSHARPBINDING_LOGGING=*
+
 
