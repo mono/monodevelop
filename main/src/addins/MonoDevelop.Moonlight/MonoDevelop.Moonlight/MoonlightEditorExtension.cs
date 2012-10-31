@@ -58,8 +58,8 @@ namespace MonoDevelop.Moonlight
 		{
 			if (database == null)
 				yield break;
-			
-			var swd = database.LookupType ("System.Windows", "DependencyObject");
+
+            var swd = ReflectionHelper.ParseReflectionName("System.Windows.DependencyObject").Resolve(database);
 			
 			//return classes if they derive from system.web.ui.control
 			foreach (var cls in namespac.Types) {
@@ -110,9 +110,21 @@ namespace MonoDevelop.Moonlight
 				var controlType = database.MainAssembly.GetTypeDefinition (namespc, attributedOb.Name.Name, 0);
 				if (controlType != null) {
 					action (controlType, database);
-					break;
+					return;
 				}
 			}
+            foreach (string namespc in namespaces)
+            {
+                foreach (IAssembly a in database.Assemblies)
+                {
+                    var controlType = a.GetTypeDefinition(namespc, attributedOb.Name.Name, 0);
+                    if (controlType != null)
+                    {
+                        action(controlType, database);
+                        return;
+                    }
+                }
+            }
 		}
 		
 		string[] namespaces = { "System.Windows.Media", "System.Windows.Media.Animation",
@@ -124,8 +136,8 @@ namespace MonoDevelop.Moonlight
 			var database = GetDb ();
 			if (database == null)
 				return;
-			
-			IType type = database.LookupType ("System.Windows", "DependencyObject");
+
+            IType type = ReflectionHelper.ParseReflectionName("System.Windows.DependencyObject").Resolve(database);
 			if (type == null)
 				return;
 			
