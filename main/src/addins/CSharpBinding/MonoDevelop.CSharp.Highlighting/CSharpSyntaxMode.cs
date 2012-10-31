@@ -358,6 +358,20 @@ namespace MonoDevelop.CSharp.Highlighting
 					Colorize (typeParameterDeclaration.NameToken, "keyword.semantic.type.declaration");
 			}
 
+			public override void VisitConstructorDeclaration (ConstructorDeclaration constructorDeclaration)
+			{
+				base.VisitConstructorDeclaration (constructorDeclaration);
+				if (constructorDeclaration.NameToken.StartLocation.Line == lineNumber)
+					Colorize (constructorDeclaration.NameToken, "keyword.semantic.type.declaration");
+			}
+
+			public override void VisitDestructorDeclaration (DestructorDeclaration destructorDeclaration)
+			{
+				base.VisitDestructorDeclaration (destructorDeclaration);
+				if (destructorDeclaration.NameToken.StartLocation.Line == lineNumber)
+					Colorize (destructorDeclaration.NameToken, "keyword.semantic.type.declaration");
+			}
+
 			public override void VisitMethodDeclaration (MethodDeclaration methodDeclaration)
 			{
 				base.VisitMethodDeclaration (methodDeclaration);
