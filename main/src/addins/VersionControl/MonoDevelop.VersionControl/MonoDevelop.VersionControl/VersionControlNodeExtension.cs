@@ -117,7 +117,7 @@ namespace MonoDevelop.VersionControl
 		void AddFolderOverlay (Repository rep, string folder, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon, bool skipVersionedOverlay)
 		{
 			Gdk.Pixbuf overlay = null;
-			VersionInfo vinfo = rep.GetVersionInfo (folder, false);
+			VersionInfo vinfo = rep.GetVersionInfo (folder);
 			if (vinfo == null || !vinfo.IsVersioned) {
 				overlay = VersionControlService.LoadOverlayIconForStatus (VersionStatus.Unversioned);
 			} else if (vinfo.IsVersioned && !vinfo.HasLocalChanges) {

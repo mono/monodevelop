@@ -144,15 +144,9 @@ namespace MonoDevelop.VersionControl
 		}
 
 		// Returns the versioning status of a file or directory
-		public VersionInfo GetVersionInfo (FilePath localPath)
+		public VersionInfo GetVersionInfo (FilePath localPath, VersionInfoQueryFlags queryFlags = VersionInfoQueryFlags.None)
 		{
-			return GetVersionInfo (localPath, false);
-		}
-		
-		// Returns the versioning status of a file or directory
-		public VersionInfo GetVersionInfo (FilePath localPath, bool getRemoteStatus)
-		{
-			VersionInfo[] infos = GetVersionInfo (new FilePath[] { localPath }, getRemoteStatus).ToArray ();
+			VersionInfo[] infos = GetVersionInfo (new FilePath[] { localPath }, queryFlags).ToArray ();
 			if (infos.Length != 1) {
 				LoggingService.LogError ("VersionControl returned {0} items for {1}", infos.Length, localPath);
 				LoggingService.LogError ("The infos were: {0}", string.Join (" ::: ", infos.Select (i => i.LocalPath)));
@@ -166,22 +160,16 @@ namespace MonoDevelop.VersionControl
 		/// <param name='paths'>
 		/// A list of files or directories
 		/// </param>
-		public IEnumerable<VersionInfo> GetVersionInfo (IEnumerable<FilePath> paths)
-		{
-			return GetVersionInfo (paths, false);
-		}
-		
-		/// <summary>
-		/// Returns the versioning status of a set of files or directories
-		/// </summary>
-		/// <param name='paths'>
-		/// A list of files or directories
-		/// </param>
 		/// <param name='getRemoteStatus'>
 		/// True if remote status information has to be included
 		/// </param>
-		public IEnumerable<VersionInfo> GetVersionInfo (IEnumerable<FilePath> paths, bool getRemoteStatus)
+		public IEnumerable<VersionInfo> GetVersionInfo (IEnumerable<FilePath> paths, VersionInfoQueryFlags queryFlags = VersionInfoQueryFlags.None)
 		{
+			if ((queryFlags & VersionInfoQueryFlags.IgnoreCache) != 0) {
+				var res = OnGetVersionInfo (paths, (queryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0);
+				infoCache.SetStatus (res);
+				return res;
+			}
 			List<FilePath> pathsToQuery = new List<FilePath> ();
 			var result = new List<VersionInfo> ();
 			foreach (var p in paths) {
@@ -199,7 +187,7 @@ namespace MonoDevelop.VersionControl
 //				Console.WriteLine ("GetVersionInfo " + string.Join (", ", paths.Select (p => p.FullPath)));
 			}
 			if (pathsToQuery.Count > 0)
-				AddQuery (new VersionInfoQuery () { Paths = pathsToQuery, GetRemoteStatus = getRemoteStatus });
+				AddQuery (new VersionInfoQuery () { Paths = pathsToQuery, QueryFlags = queryFlags });
 			return result;
 		}
 
@@ -239,7 +227,7 @@ namespace MonoDevelop.VersionControl
 		class VersionInfoQuery
 		{
 			public List<FilePath> Paths;
-			public bool GetRemoteStatus;
+			public VersionInfoQueryFlags QueryFlags;
 		}
 
 		class DirectoryInfoQuery
@@ -294,18 +282,24 @@ namespace MonoDevelop.VersionControl
 						break;
 					}
 					query = queryQueue.Dequeue ();
+					if (query is VersionInfoQuery) {
+						VersionInfoQuery q = (VersionInfoQuery) query;
+						filesInQueryQueue.ExceptWith (q.Paths);
+					}
+					else if (query is DirectoryInfoQuery) {
+						var q = (DirectoryInfoQuery) query;
+						directoriesInQueryQueue.Remove (q.Directory);
+					}
 				}
 				try {
 					if (query is VersionInfoQuery) {
 						VersionInfoQuery q = (VersionInfoQuery) query;
-						var status = OnGetVersionInfo (q.Paths, q.GetRemoteStatus);
-						filesInQueryQueue.ExceptWith (q.Paths);
+						var status = OnGetVersionInfo (q.Paths, (q.QueryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0);
 						infoCache.SetStatus (status);
 					}
 					else if (query is DirectoryInfoQuery) {
 						var q = (DirectoryInfoQuery) query;
 						var status = OnGetDirectoryVersionInfo (q.Directory, q.GetRemoteStatus, false);
-						directoriesInQueryQueue.Remove (q.Directory);
 						infoCache.SetDirectoryStatus (q.Directory, status, q.GetRemoteStatus);
 					}
 				} catch (Exception ex) {
@@ -792,5 +786,12 @@ namespace MonoDevelop.VersionControl
 		public FilePath BasePath {
 			get { return basePath; }
 		}
+	}
+
+	public enum VersionInfoQueryFlags
+	{
+		None = 0,
+		IgnoreCache = 1,
+		IncludeRemoteStatus = 2
 	}
 }

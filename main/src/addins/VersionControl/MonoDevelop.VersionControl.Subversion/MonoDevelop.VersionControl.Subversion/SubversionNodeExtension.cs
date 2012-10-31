@@ -79,7 +79,7 @@ namespace MonoDevelop.VersionControl.Subversion
 				}
 				
 				if (!vit.IsDirectory) {
-					VersionInfo vi = vit.Repository.GetVersionInfo (vit.Path, false);
+					VersionInfo vi = vit.Repository.GetVersionInfo (vit.Path);
 					if (vi != null && (vi.Status & VersionStatus.Conflicted) == 0) {
 						item.Visible = false;
 						return;

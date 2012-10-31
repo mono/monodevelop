@@ -918,7 +918,7 @@ namespace MonoDevelop.VersionControl.Views
 			VersionInfo newInfo;
 			try {
 				// Reuse remote status from old version info
-				newInfo = vc.GetVersionInfo (args.FilePath, false);
+				newInfo = vc.GetVersionInfo (args.FilePath);
 				if (found && newInfo != null) {
 					VersionInfo oldInfo = statuses [oldStatusIndex];
 					if (oldInfo != null) {

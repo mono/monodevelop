@@ -423,7 +423,7 @@ namespace MonoDevelop.VersionControl
 					Repository repo = GetRepository (repoFiles.Key);
 					if (repo == null)
 						continue;
-					var versionInfos = repo.GetVersionInfo (repoFiles.Select (f => f.ProjectFile.FilePath));
+					var versionInfos = repo.GetVersionInfo (repoFiles.Select (f => f.ProjectFile.FilePath), VersionInfoQueryFlags.IgnoreCache);
 					FilePath[] paths = versionInfos.Where (i => i.CanAdd).Select (i => i.LocalPath).ToArray ();
 					if (paths.Length > 0) {
 						if (monitor == null)

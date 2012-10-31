@@ -242,7 +242,7 @@ namespace MonoDevelop.VersionControl.Subversion
 				if (IsVersioned (path) && File.Exists (path) && !Directory.Exists (path)) {
 					if (rootPath == null)
 						throw new UserException (GettextCatalog.GetString ("Project publishing failed. There is a stale .svn folder in the path '{0}'", path.ParentDirectory));
-					VersionInfo srcInfo = GetVersionInfo (path, false);
+					VersionInfo srcInfo = GetVersionInfo (path, VersionInfoQueryFlags.IgnoreCache);
 					if (srcInfo.HasLocalChange (VersionStatus.ScheduledDelete)) {
 						// It is a file that was deleted. It can be restored now since it's going
 						// to be added again.
@@ -323,7 +323,7 @@ namespace MonoDevelop.VersionControl.Subversion
 				destIsVersioned = true;
 			}
 			
-			VersionInfo srcInfo = GetVersionInfo (srcPath, false);
+			VersionInfo srcInfo = GetVersionInfo (srcPath, VersionInfoQueryFlags.IgnoreCache);
 			if (srcInfo != null && srcInfo.HasLocalChange (VersionStatus.ScheduledAdd)) {
 				// If the file is scheduled to add, cancel it, move the file, and schedule to add again
 				Revert (srcPath, false, monitor);
@@ -345,7 +345,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		{
 			if (IsVersioned (destPath))
 			{
-				VersionInfo vinfo = GetVersionInfo (destPath, false);
+				VersionInfo vinfo = GetVersionInfo (destPath, VersionInfoQueryFlags.IgnoreCache);
 				if (!vinfo.HasLocalChange (VersionStatus.ScheduledDelete) && Directory.Exists (destPath))
 					throw new InvalidOperationException ("Cannot move directory. Destination directory already exist.");
 					
@@ -415,7 +415,7 @@ namespace MonoDevelop.VersionControl.Subversion
 				if (Directory.Exists (destPath))
 					throw new InvalidOperationException ("Cannot move directory. Destination directory already exist.");
 				
-				VersionInfo srcInfo = GetVersionInfo (srcPath, false);
+				VersionInfo srcInfo = GetVersionInfo (srcPath, VersionInfoQueryFlags.IgnoreCache);
 				if (srcInfo != null && srcInfo.HasLocalChange (VersionStatus.ScheduledAdd)) {
 					// If the directory is scheduled to add, cancel it, move the directory, and schedule to add it again
 					MakeDirVersioned (Path.GetDirectoryName (destPath), monitor);
@@ -466,7 +466,7 @@ namespace MonoDevelop.VersionControl.Subversion
 				if (IsVersioned (path))
 					Svn.Delete (path, force, monitor);
 				else {
-					VersionInfo srcInfo = GetVersionInfo (path, false);
+					VersionInfo srcInfo = GetVersionInfo (path, VersionInfoQueryFlags.IgnoreCache);
 					if (srcInfo != null && srcInfo.HasLocalChange (VersionStatus.ScheduledAdd)) {
 						// Revert the add command
 						Revert (path, false, monitor);

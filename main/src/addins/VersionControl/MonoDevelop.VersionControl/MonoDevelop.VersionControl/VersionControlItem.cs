@@ -76,7 +76,7 @@ namespace MonoDevelop.VersionControl
 			get {
 				if (versionInfo == null) {
 					try {
-						versionInfo = repository.GetVersionInfo (path, false);
+						versionInfo = repository.GetVersionInfo (path);
 						if (versionInfo == null)
 							versionInfo = new VersionInfo (path, "", isDirectory, VersionStatus.Unversioned, null, VersionStatus.Unversioned, null);
 					} catch (Exception ex) {

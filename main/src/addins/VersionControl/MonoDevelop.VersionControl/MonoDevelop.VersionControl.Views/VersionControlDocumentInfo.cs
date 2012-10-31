@@ -86,7 +86,7 @@ namespace MonoDevelop.VersionControl.Views
 				lock (updateLock) {
 					try {
 						History      = Item.Repository.GetHistory (Item.Path, null);
-						VersionInfo  = Item.Repository.GetVersionInfo (Item.Path, false);
+						VersionInfo  = Item.Repository.GetVersionInfo (Item.Path);
 					} catch (Exception ex) {
 						LoggingService.LogError ("Error retrieving history", ex);
 					}

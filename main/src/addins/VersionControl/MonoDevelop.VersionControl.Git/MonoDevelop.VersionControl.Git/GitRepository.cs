@@ -1330,7 +1330,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override void OnMoveFile (FilePath localSrcPath, FilePath localDestPath, bool force, IProgressMonitor monitor)
 		{
-			VersionInfo vi = GetVersionInfo (localSrcPath, false);
+			VersionInfo vi = GetVersionInfo (localSrcPath, VersionInfoQueryFlags.IgnoreCache);
 			if (vi == null || !vi.IsVersioned) {
 				base.OnMoveFile (localSrcPath, localDestPath, force, monitor);
 				return;

@@ -87,7 +87,7 @@ namespace MonoDevelop.VersionControl.Views
 			: base (Path.GetFileName (filepath) + " Log")
 		{
 			try {
-				this.vinfo = vc.GetVersionInfo (filepath, false);
+				this.vinfo = vc.GetVersionInfo (filepath);
 			}
 			catch (Exception ex) {
 				MessageService.ShowException (ex, GettextCatalog.GetString ("Version control command failed."));
