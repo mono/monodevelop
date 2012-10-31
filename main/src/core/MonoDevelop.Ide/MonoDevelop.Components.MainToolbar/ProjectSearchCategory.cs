@@ -60,7 +60,7 @@ namespace MonoDevelop.Components.MainToolbar
 				foreach (var type in types) {
 					if (type.Kind == TypeKind.Delegate)
 						continue;
-					foreach (var m in type.GetMembers (filter)) {
+					foreach (var m in type.GetDefinedMembers (filter)) {
 						yield return m;
 					}
 				}
