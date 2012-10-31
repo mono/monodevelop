@@ -224,7 +224,13 @@ namespace MonoDevelop.Components.MainToolbar
 						part = currentTargetPartitions.FirstOrDefault (p => p.SolutionConfigurations.Contains (currentConfig));
 					if (part != null) {
 						resolvedTarget = part.Targets.FirstOrDefault (t => !(t is DummyExecutionTarget));
-						resolvedConfig = part.Configurations.First ();
+						resolvedConfig = part.SolutionConfigurations.FirstOrDefault (c => {
+							string name, plat;
+							ItemConfiguration.ParseConfigurationId (c, out name, out plat);
+							return name == currentConfig;
+						});
+						if (resolvedConfig == null)
+							resolvedConfig = currentConfig;
 					} else {
 						resolvedTarget = null;
 						resolvedConfig = currentConfig;
