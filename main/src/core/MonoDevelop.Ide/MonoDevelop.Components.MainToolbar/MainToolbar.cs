@@ -103,24 +103,27 @@ namespace MonoDevelop.Components.MainToolbar
 			matchEntry.Entry.SelectRegion (pos, pos);
 		}
 
-//		volatile static int cnt = 0;
-//
-//		static MainToolbar ()
-//		{
-//			// load the members on a background thread to speed up the first time search.
-//			TypeSystemService.ProjectContentLoaded += delegate(object sender, ProjectContentEventArgs e) {
-//				ThreadPool.QueueUserWorkItem (delegate {
-//					var pctx = TypeSystemService.GetCompilation (e.Project);
-//					foreach (var type in pctx.MainAssembly.GetAllTypeDefinitions ()) {
-//						foreach (var m in type.Members) {
-//							unchecked {
-//								cnt++;
-//							}
-//						}
-//					}
-//				});
-//			};
-//		}
+		volatile static int cnt = 0;
+
+		static MainToolbar ()
+		{
+			// load the members on a background thread to speed up the first time search.
+			TypeSystemService.SolutionLoaded += delegate(object sender, SolutionEventArgs e) {
+				var projects = e.Solution.GetAllProjects ().ToArray ();
+				ThreadPool.QueueUserWorkItem (delegate {
+					foreach (var p in projects) {
+						var pctx = TypeSystemService.GetCompilation (p);
+						foreach (var type in pctx.MainAssembly.GetAllTypeDefinitions ()) {
+							foreach (var m in type.Members) {
+								unchecked {
+									cnt++;
+								}
+							}
+						}
+					}
+				});
+			};
+		}
 		/*
 		internal class SelectActiveRuntimeHandler : CommandHandler
 		{

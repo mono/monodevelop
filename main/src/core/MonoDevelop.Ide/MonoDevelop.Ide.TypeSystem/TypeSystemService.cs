@@ -689,9 +689,19 @@ namespace MonoDevelop.Ide.TypeSystem
 		
 				solution.SolutionItemAdded += OnSolutionItemAdded;
 				solution.SolutionItemRemoved += OnSolutionItemRemoved;
+				OnSolutionLoaded (new SolutionEventArgs (solution));
 			}
 		}
-		
+
+		public static event EventHandler<SolutionEventArgs> SolutionLoaded;
+
+		static void OnSolutionLoaded (SolutionEventArgs e)
+		{
+			var handler = SolutionLoaded;
+			if (handler != null)
+				handler (null, e);
+		}
+
 		static void ReloadAllReferences (IEnumerable<ProjectContentWrapper> contents)
 		{
 			foreach (var wrapper in contents)
