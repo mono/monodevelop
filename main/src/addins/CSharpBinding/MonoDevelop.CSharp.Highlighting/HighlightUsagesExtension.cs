@@ -260,7 +260,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			public bool DrawBackground (TextEditor editor, Cairo.Context cr, TextViewMargin.LayoutWrapper layout, int selectionStart, int selectionEnd, int startOffset, int endOffset, double y, double startXPos, double endXPos, ref bool drawBg)
 			{
 				drawBg = false;
-				if (selectionStart >= 0 || editor.CurrentMode is TextLinkEditMode)
+				if (selectionStart >= 0 || editor.CurrentMode is TextLinkEditMode || editor.TextViewMargin.SearchResultMatchCount > 0)
 					return true;
 				foreach (var usage in Usages) {
 					int markerStart = usage.Offset;
