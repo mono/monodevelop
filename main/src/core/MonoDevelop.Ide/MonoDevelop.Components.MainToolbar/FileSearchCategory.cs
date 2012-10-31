@@ -170,21 +170,6 @@ namespace MonoDevelop.Components.MainToolbar
 				return null;
 			}
 			
-			internal SearchResult CheckMember (IMember member)
-			{
-				int rank;
-				bool useDeclaringTypeName = member is IMethod && (((IMethod)member).IsConstructor || ((IMethod)member).IsDestructor);
-				string memberName = useDeclaringTypeName ? member.DeclaringType.Name : member.Name;
-				if (MatchName (memberName, out rank))
-					return new MemberSearchResult (pattern, memberName, rank, member, false) { Ambience = ambience };
-				if (!FullSearch)
-					return null;
-				memberName = useDeclaringTypeName ? member.DeclaringType.FullName : member.FullName;
-				if (MatchName (memberName, out rank))
-					return new MemberSearchResult (pattern, memberName, rank, member, true) { Ambience = ambience };
-				return null;
-			}
-			
 			Dictionary<string, MatchResult> savedMatches = new Dictionary<string, MatchResult> ();
 			bool MatchName (string name, out int matchRank)
 			{

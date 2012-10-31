@@ -53,21 +53,6 @@ namespace MonoDevelop.Components.MainToolbar
 
 		static TimerCounter getMembersTimer = InstrumentationService.CreateTimerCounter ("Time to get all members", "NavigateToDialog");
 
-		IEnumerable<IMember> GetAllMembers (Predicate<IUnresolvedMember> filter)
-		{
-			getMembersTimer.BeginTiming ();
-			try {
-				foreach (var type in types) {
-					if (type.Kind == TypeKind.Delegate)
-						continue;
-					foreach (var m in type.GetMembers (filter, GetMemberOptions.IgnoreInheritedMembers)) {
-						yield return m;
-					}
-				}
-			} finally {
-				getMembersTimer.EndTiming ();
-			}
-		}
 
 		static TimerCounter getTypesTimer = InstrumentationService.CreateTimerCounter ("Time to get all types", "NavigateToDialog");
 
@@ -175,11 +160,12 @@ namespace MonoDevelop.Components.MainToolbar
 			
 			// Search members
 			if (newResult.IncludeMembers && (newResult.Tag == null || memberTags.Any (t => t == newResult.Tag))) {
-				newResult.filteredMembers = new List<IMember> ();
+				newResult.filteredMembers = new List<Tuple<ITypeDefinition, IUnresolvedMember>> ();
 				bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern, StringComparison.Ordinal) && lastResult.filteredMembers != null;
 				List<IMember> allMembers;
 				if (startsWithLastFilter) {
-					foreach (var member in lastResult.filteredMembers) {
+					foreach (var t in lastResult.filteredMembers) {
+						var member = t.Item2;
 						if (newResult.Tag != null) {
 							if (newResult.Tag == "m" && member.EntityType != EntityType.Method)
 								continue;
@@ -190,14 +176,14 @@ namespace MonoDevelop.Components.MainToolbar
 							if (newResult.Tag == "evt" && member.EntityType != EntityType.Event)
 								continue;
 						}
-						SearchResult curResult = newResult.CheckMember (member);
+						SearchResult curResult = newResult.CheckMember (t.Item1, member);
 						if (curResult != null) {
-							newResult.filteredMembers.Add (member);
+							newResult.filteredMembers.Add (t);
 							newResult.results.AddResult (curResult);
 						}
 					}
 				} else {
-					Predicate<IUnresolvedMember> mPred = member => {
+					Func<IUnresolvedMember, bool> mPred = member => {
 						if (newResult.Tag != null) {
 							if (newResult.Tag == "m" && member.EntityType != EntityType.Method)
 								return false;
@@ -210,16 +196,25 @@ namespace MonoDevelop.Components.MainToolbar
 						}
 						return newResult.IsMatchingMember (member);
 					};
-					foreach (var member in GetAllMembers (mPred)) 
-					{
-						SearchResult curResult = newResult.CheckMember (member);
-						if (curResult != null) {
-							newResult.filteredMembers.Add (member);
-							newResult.results.AddResult (curResult);
+
+					getMembersTimer.BeginTiming ();
+					try {
+						foreach (var type in types) {
+							if (type.Kind == TypeKind.Delegate)
+								continue;
+							foreach (var p in type.Parts) {
+								foreach (var member in p.Members.Where (mPred)) {
+									SearchResult curResult = newResult.CheckMember (type, member);
+									if (curResult != null) {
+										newResult.filteredMembers.Add (Tuple.Create (type, member));
+										newResult.results.AddResult (curResult);
+									}
+								}
+							}
 						}
-
+					} finally {
+						getMembersTimer.EndTiming ();
 					}
-
 				}
 			}
 		}
@@ -233,7 +228,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 			public List<ProjectFile> filteredFiles;
 			public List<ITypeDefinition> filteredTypes;
-			public List<IMember> filteredMembers;
+			public List<Tuple<ITypeDefinition, IUnresolvedMember>> filteredMembers;
 			string pattern2;
 			char firstChar;
 			char[] firstChars;
@@ -291,13 +286,13 @@ namespace MonoDevelop.Components.MainToolbar
 				return null;
 			}
 			
-			internal SearchResult CheckMember (IMember member)
+			internal SearchResult CheckMember (ITypeDefinition declaringType, IUnresolvedMember member)
 			{
 				int rank;
-				bool useDeclaringTypeName = member is IMethod && (((IMethod)member).IsConstructor || ((IMethod)member).IsDestructor);
-				string memberName = useDeclaringTypeName ? member.DeclaringType.Name : member.Name;
+				bool useDeclaringTypeName = member is IUnresolvedMethod && (((IUnresolvedMethod)member).IsConstructor || ((IUnresolvedMethod)member).IsDestructor);
+				string memberName = useDeclaringTypeName ? member.DeclaringTypeDefinition.Name : member.Name;
 				if (MatchName (memberName, out rank))
-				return new MemberSearchResult (pattern, memberName, rank, member, false) { Ambience = ambience };
+					return new MemberSearchResult (pattern, memberName, rank, declaringType, member, false) { Ambience = ambience };
 				return null;
 			}
 

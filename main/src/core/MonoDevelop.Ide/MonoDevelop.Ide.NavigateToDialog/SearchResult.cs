@@ -196,7 +196,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			return HighlightMatch (widget, GetPlainText (type, useFullName), match);
 		}
 		
-		public TypeSearchResult (string match, string matchedString, int rank, ITypeDefinition type, bool useFullName) : base (match, matchedString, rank, null, useFullName)
+		public TypeSearchResult (string match, string matchedString, int rank, ITypeDefinition type, bool useFullName) : base (match, matchedString, rank, null, null, useFullName)
 		{
 			this.type = type;
 		}
@@ -263,8 +263,9 @@ namespace MonoDevelop.Ide.NavigateToDialog
 	class MemberSearchResult : SearchResult
 	{
 		protected bool useFullName;
-		protected IMember member;
-		
+		protected IUnresolvedMember member;
+		protected ITypeDefinition declaringType;
+
 		public override SearchResultType SearchResultType { get { return SearchResultType.Member; } }
 
 		protected virtual OutputFlags Flags {
@@ -282,7 +283,8 @@ namespace MonoDevelop.Ide.NavigateToDialog
 
 		public override MonoDevelop.Ide.CodeCompletion.TooltipInformation TooltipInformation {
 			get {
-				return Ambience.GetTooltip (member);
+				var ctx = member.DeclaringTypeDefinition.CreateResolveContext (new SimpleTypeResolveContext (declaringType));
+				return Ambience.GetTooltip (member.Resolve (ctx));
 			}
 		}
 
@@ -306,7 +308,7 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		
 		public override string Description {
 			get {
-				string loc = GettextCatalog.GetString ("type \"{0}\"", member.DeclaringType.Name);
+				string loc = GettextCatalog.GetString ("type \"{0}\"", member.DeclaringTypeDefinition.Name);
 
 				switch (member.EntityType) {
 				case EntityType.Field:
@@ -331,8 +333,9 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			}
 		}
 		
-		public MemberSearchResult (string match, string matchedString, int rank, IMember member, bool useFullName) : base (match, matchedString, rank)
+		public MemberSearchResult (string match, string matchedString, int rank, ITypeDefinition declaringType, IUnresolvedMember member, bool useFullName) : base (match, matchedString, rank)
 		{
+			this.declaringType = declaringType;
 			this.member = member;
 			this.useFullName = useFullName;
 		}
@@ -340,8 +343,8 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		public override string GetMarkupText (Widget widget)
 		{
 			if (useFullName)
-				return HighlightMatch (widget, member.EntityType == EntityType.Constructor ? member.DeclaringType.FullName :  member.FullName, match);
-			return HighlightMatch (widget, member.EntityType == EntityType.Constructor ? member.DeclaringType.Name : member.Name, match);
+				return HighlightMatch (widget, member.EntityType == EntityType.Constructor ? member.DeclaringTypeDefinition.FullName :  member.FullName, match);
+			return HighlightMatch (widget, member.EntityType == EntityType.Constructor ? member.DeclaringTypeDefinition.Name : member.Name, match);
 		}
 		
 		internal Ambience Ambience { 

@@ -103,39 +103,6 @@ namespace MonoDevelop.Components.MainToolbar
 			matchEntry.Entry.SelectRegion (pos, pos);
 		}
 
-		volatile static int cnt = 0;
-
-		static MainToolbar ()
-		{
-			// load the members on a background thread to speed up the first time search.
-			TypeSystemService.SolutionLoaded += delegate(object sender, SolutionEventArgs e) {
-				var projects = e.Solution.GetAllProjects ().ToArray ();
-				ThreadPool.QueueUserWorkItem (delegate {
-					foreach (var p in projects) {
-						var pctx = TypeSystemService.GetCompilation (p);
-						foreach (var type in pctx.MainAssembly.GetAllTypeDefinitions ()) {
-							foreach (var m in type.Members) {
-								unchecked {
-									cnt++;
-								}
-							}
-						}
-					}
-				});
-			};
-		}
-		/*
-		internal class SelectActiveRuntimeHandler : CommandHandler
-		{
-			protected override void Update (CommandArrayInfo info)
-			{
-			}
-	
-			protected override void Run (object dataItem)
-			{
-			}
-		}
-		*/
 		public MainToolbar ()
 		{
 			IdeApp.Workspace.ActiveConfigurationChanged += (sender, e) => UpdateCombos ();
