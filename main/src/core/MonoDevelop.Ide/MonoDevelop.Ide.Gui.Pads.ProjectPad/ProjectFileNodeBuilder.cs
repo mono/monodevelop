@@ -245,7 +245,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				bool move = operation == DragOperation.Move;
 				var opText = move ? GettextCatalog.GetString ("Moving file...") : GettextCatalog.GetString ("Copying file...");
 
-				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (opText, MonoDevelop.Ide.Gui.Stock.CopyIcon, true))
+				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (opText, Stock.StatusSolutionOperation, true))
 					IdeApp.ProjectOperations.TransferFiles (monitor, pf.Project, pf.FilePath, target.Project, targetPath, move, true);
 
 				pf = target.Project.Files.GetFile (targetPath);
