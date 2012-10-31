@@ -301,10 +301,10 @@ namespace MonoDevelop.Debugger
 			};
 			vb.PackStart (messageLabel);
 
-			var detailsBtn = new Gtk.Button (GettextCatalog.GetString ("Show Details"));
+			var detailsBtn = new Xwt.LinkLabel (GettextCatalog.GetString ("Show Details"));
 			HBox hh = new HBox ();
-			detailsBtn.Clicked += (o,e) => dlg.ShowDialog ();
-			hh.PackStart (detailsBtn, false, false, 0);
+			detailsBtn.NavigateToUrl += (o,e) => dlg.ShowDialog ();
+			hh.PackStart (detailsBtn.ToGtkWidget (), false, false, 0);
 			vb.PackStart (hh, false, false, 0);
 
 			box.PackStart (vb);

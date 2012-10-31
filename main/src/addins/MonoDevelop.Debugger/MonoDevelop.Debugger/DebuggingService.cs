@@ -291,13 +291,20 @@ namespace MonoDevelop.Debugger
 			
 			ExceptionInfo val = CurrentFrame.GetException (ops);
 			if (val != null) {
-				if (exceptionDialog != null)
-					exceptionDialog.Dispose ();
+				HideExceptionCaughtDialog ();
 				exceptionDialog = new ExceptionCaughtMessage (val, CurrentFrame.SourceLocation.FileName, CurrentFrame.SourceLocation.Line, CurrentFrame.SourceLocation.Column);
 				exceptionDialog.ShowButton ();
 				exceptionDialog.Closed += (o, args) => {
 					exceptionDialog = null;
 				};
+			}
+		}
+
+		static void HideExceptionCaughtDialog ()
+		{
+			if (exceptionDialog != null) {
+				exceptionDialog.Dispose ();
+				exceptionDialog = null;
 			}
 		}
 
@@ -349,12 +356,9 @@ namespace MonoDevelop.Debugger
 			
 			if (!IsDebugging)
 				return;
-			
-			if (exceptionDialog != null) {
-				exceptionDialog.Dispose ();
-				exceptionDialog = null;
-			}
-			
+
+			HideExceptionCaughtDialog ();
+
 			if (busyStatusIcon != null) {
 				busyStatusIcon.Dispose ();
 				busyStatusIcon = null;
@@ -602,6 +606,7 @@ namespace MonoDevelop.Debugger
 		{
 			currentBacktrace = null;
 			DispatchService.GuiDispatch (delegate {
+				HideExceptionCaughtDialog ();
 				if (ResumedEvent != null)
 					ResumedEvent (null, a);
 				NotifyCallStackChanged ();
