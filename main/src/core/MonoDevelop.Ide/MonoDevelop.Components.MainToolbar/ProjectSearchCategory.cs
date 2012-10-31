@@ -53,21 +53,19 @@ namespace MonoDevelop.Components.MainToolbar
 
 		static TimerCounter getMembersTimer = InstrumentationService.CreateTimerCounter ("Time to get all members", "NavigateToDialog");
 
-		IEnumerable<IMember> members {
-			get {
-				getMembersTimer.BeginTiming ();
-				try {
-					foreach (var type in types) {
-						if (type.Kind == TypeKind.Delegate)
-							continue;
-						foreach (var m in type.Members) {
-							yield return m;
-						}
+		IEnumerable<IMember> GetAllMembers (Predicate<IUnresolvedMember> filter)
+		{
+			getMembersTimer.BeginTiming ();
+			try {
+				foreach (var type in types) {
+					if (type.Kind == TypeKind.Delegate)
+						continue;
+					foreach (var m in type.GetMembers (filter)) {
+						yield return m;
 					}
-				} finally {
-					getMembersTimer.EndTiming ();
 				}
-				
+			} finally {
+				getMembersTimer.EndTiming ();
 			}
 		}
 
@@ -179,23 +177,49 @@ namespace MonoDevelop.Components.MainToolbar
 			if (newResult.IncludeMembers && (newResult.Tag == null || memberTags.Any (t => t == newResult.Tag))) {
 				newResult.filteredMembers = new List<IMember> ();
 				bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern, StringComparison.Ordinal) && lastResult.filteredMembers != null;
-				var allMembers = startsWithLastFilter ? lastResult.filteredMembers : members;
-				foreach (var member in allMembers) {
-					if (newResult.Tag != null) {
-						if (newResult.Tag == "m" && member.EntityType != EntityType.Method)
-							continue;
-						if (newResult.Tag == "p" && member.EntityType != EntityType.Property)
-							continue;
-						if (newResult.Tag == "f" && member.EntityType != EntityType.Field)
-							continue;
-						if (newResult.Tag == "evt" && member.EntityType != EntityType.Event)
-							continue;
+				List<IMember> allMembers;
+				if (startsWithLastFilter) {
+					foreach (var member in lastResult.filteredMembers) {
+						if (newResult.Tag != null) {
+							if (newResult.Tag == "m" && member.EntityType != EntityType.Method)
+								continue;
+							if (newResult.Tag == "p" && member.EntityType != EntityType.Property)
+								continue;
+							if (newResult.Tag == "f" && member.EntityType != EntityType.Field)
+								continue;
+							if (newResult.Tag == "evt" && member.EntityType != EntityType.Event)
+								continue;
+						}
+						SearchResult curResult = newResult.CheckMember (member);
+						if (curResult != null) {
+							newResult.filteredMembers.Add (member);
+							newResult.results.AddResult (curResult);
+						}
 					}
-					SearchResult curResult = newResult.CheckMember (member);
-					if (curResult != null) {
-						newResult.filteredMembers.Add (member);
-						newResult.results.AddResult (curResult);
+				} else {
+					Predicate<IUnresolvedMember> mPred = member => {
+						if (newResult.Tag != null) {
+							if (newResult.Tag == "m" && member.EntityType != EntityType.Method)
+								return false;
+							if (newResult.Tag == "p" && member.EntityType != EntityType.Property)
+								return false;
+							if (newResult.Tag == "f" && member.EntityType != EntityType.Field)
+								return false;
+							if (newResult.Tag == "evt" && member.EntityType != EntityType.Event)
+								return false;
+						}
+						return newResult.IsMatchingMember (member);
+					};
+					foreach (var member in GetAllMembers (mPred)) 
+					{
+						SearchResult curResult = newResult.CheckMember (member);
+						if (curResult != null) {
+							newResult.filteredMembers.Add (member);
+							newResult.results.AddResult (curResult);
+						}
+
 					}
+
 				}
 			}
 		}
@@ -273,10 +297,18 @@ namespace MonoDevelop.Components.MainToolbar
 				bool useDeclaringTypeName = member is IMethod && (((IMethod)member).IsConstructor || ((IMethod)member).IsDestructor);
 				string memberName = useDeclaringTypeName ? member.DeclaringType.Name : member.Name;
 				if (MatchName (memberName, out rank))
-					return new MemberSearchResult (pattern, memberName, rank, member, false) { Ambience = ambience };
+				return new MemberSearchResult (pattern, memberName, rank, member, false) { Ambience = ambience };
 				return null;
 			}
-			
+
+			internal bool IsMatchingMember (IUnresolvedMember member)
+			{
+				int rank;
+				bool useDeclaringTypeName = member is IUnresolvedMethod && (((IUnresolvedMethod)member).IsConstructor || ((IUnresolvedMethod)member).IsDestructor);
+				string memberName = useDeclaringTypeName ? member.DeclaringTypeDefinition.Name : member.Name;
+				return MatchName (memberName, out rank);
+			}
+
 			Dictionary<string, MatchResult> savedMatches = new Dictionary<string, MatchResult> (StringComparer.Ordinal);
 
 			bool MatchName (string name, out int matchRank)

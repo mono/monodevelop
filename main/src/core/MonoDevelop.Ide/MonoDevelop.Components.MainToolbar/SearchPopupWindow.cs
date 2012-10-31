@@ -108,7 +108,6 @@ namespace MonoDevelop.Components.MainToolbar
 			lightSearchBackground = CairoExtensions.ParseColor ("ffffff");
 			darkSearchBackground = CairoExtensions.ParseColor ("f7f7f7");
 			selectionBackgroundColor = CairoExtensions.ParseColor ("cccccc");
-
 			TypeHint = Gdk.WindowTypeHint.Utility;
 			this.SkipTaskbarHint = true;
 			this.SkipPagerHint = true;
@@ -506,7 +505,7 @@ namespace MonoDevelop.Components.MainToolbar
 			tooltipSrc = new CancellationTokenSource ();
 			var token = tooltipSrc.Token;
 
-			Task.Factory.StartNew (delegate {
+			ThreadPool.QueueUserWorkItem (delegate {
 				var tooltip = currentSelectedItem.DataSource.GetTooltip (i);
 				if (tooltip == null || string.IsNullOrEmpty (tooltip.SignatureMarkup) || token.IsCancellationRequested)
 					return;
