@@ -47,6 +47,9 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		public event EventHandler PinClicked;
 
+		public bool DrawLeftBorder { get; set; }
+		public bool DrawRightBorder { get; set; }
+
 		static WelcomePageListButton ()
 		{
 			starNormal = Gdk.Pixbuf.LoadFromResource ("star-normal.png");
@@ -131,6 +134,16 @@ namespace MonoDevelop.Ide.WelcomePage
 					ctx.RelLineTo (Allocation.Width, 0);
 					ctx.MoveTo (Allocation.X, Allocation.Y + Allocation.Height - 0.5);
 					ctx.RelLineTo (Allocation.Width, 0);
+
+					if (DrawRightBorder) {
+						ctx.MoveTo (Allocation.Right + 0.5, Allocation.Y + 0.5);
+						ctx.LineTo (Allocation.Right + 0.5, Allocation.Bottom - 0.5);
+					}
+					if (DrawLeftBorder) {
+						ctx.MoveTo (Allocation.Left + 0.5, Allocation.Y + 0.5);
+						ctx.LineTo (Allocation.Left + 0.5, Allocation.Bottom - 0.5);
+					}
+
 					ctx.LineWidth = 1;
 					ctx.Color = CairoExtensions.ParseColor (Styles.WelcomeScreen.Pad.Solutions.SolutionTile.HoverBorderColor);
 					ctx.Stroke ();

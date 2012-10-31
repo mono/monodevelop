@@ -41,6 +41,8 @@ namespace MonoDevelop.Ide.WelcomePage
 		string actionLink;
 		private static Gdk.Cursor hand_cursor = new Gdk.Cursor(Gdk.CursorType.Hand1);
 
+		const bool ShowImage = false;
+
 		public WelcomePageBarButton (XElement el)
 		{
 			VisibleWindow = false;
@@ -55,7 +57,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			this.actionLink = href;
 
 			string icon = (string)el.Attribute ("icon");
-			if (!string.IsNullOrEmpty (icon)) {
+			if (!string.IsNullOrEmpty (icon) && ShowImage) {
 				imageHover = WelcomePageBranding.GetImage (icon, true);
 				imageNormal = ImageService.MakeTransparent (imageHover, 0.7);
 			}

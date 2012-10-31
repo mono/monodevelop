@@ -17,9 +17,9 @@ namespace MonoDevelop.Ide.WelcomePage
 			
 			public static class Links
 			{
-				public const string Color = "#555555";
-				public const string HoverColor = "#000000";
-				public const int FontSize = 16;
+				public const string Color = "#DCDCDC";
+				public const string HoverColor = "#FFFFFF";
+				public const int FontSize = 13;
 				public const int LinkSeparation = 24;
 				public const int BottomMargin = 24;
 				public const int IconTextSpacing = 8;

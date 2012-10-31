@@ -46,7 +46,7 @@ namespace MonoDevelop.Ide.WelcomePage
 	class WelcomePageWidget : Gtk.EventBox
 	{
 		Gdk.Pixbuf topPixbuf, logoPixbuf, backgroundPixbuf;
-		Gtk.HBox colBox;
+		Gtk.VBox colBox;
 		
 		public WelcomePageWidget ()
 		{
@@ -65,12 +65,10 @@ namespace MonoDevelop.Ide.WelcomePage
 			if (WelcomePageBranding.ShowLogo) {
 				var logoHeight = WelcomePageBranding.LogoHeight;
 				mainAlignment.SetPadding ((uint)(logoHeight + WelcomePageBranding.Spacing), 0, (uint)WelcomePageBranding.Spacing, 0);
-			} else {
-				mainAlignment.SetPadding (Styles.WelcomeScreen.VerticalPadding, Styles.WelcomeScreen.VerticalPadding, Styles.WelcomeScreen.HorizontalPadding, Styles.WelcomeScreen.HorizontalPadding);
 			}
 			this.Add (mainAlignment);
 			
-			colBox = new Gtk.HBox (false, WelcomePageBranding.Spacing);
+			colBox = new Gtk.VBox (false, WelcomePageBranding.Spacing);
 			mainAlignment.Add (colBox);
 			
 			BuildContent ();
@@ -101,9 +99,12 @@ namespace MonoDevelop.Ide.WelcomePage
 			foreach (var el in root.Elements ()) {
 
 				Widget w;
+				bool fill = false;
 				switch (el.Name.LocalName) {
 				case "Column":
-					w = new Gtk.VBox (false, WelcomePageBranding.Spacing);
+					w = new Gtk.Alignment (0.5f, 0.5f, 0f, 1f);
+					var vbox = new Gtk.VBox (false, WelcomePageBranding.Spacing);
+					(w as Gtk.Alignment).Add (vbox);
 					var widthAtt = el.Attribute ("minWidth");
 					if (widthAtt != null) {
 						int width = (int) widthAtt;
@@ -113,7 +114,7 @@ namespace MonoDevelop.Ide.WelcomePage
 							args.Requisition = req;
 						};
 					}
-					BuildContent ((Gtk.Box)w, el);
+					BuildContent ((Gtk.Box)vbox, el);
 					break;
 				case "Row":
 					w = new Gtk.HBox (false, WelcomePageBranding.Spacing);
@@ -130,6 +131,7 @@ namespace MonoDevelop.Ide.WelcomePage
 					break;
 				case "ButtonBar":
 					w = new WelcomePageButtonBar (el);
+					fill = true;
 					break;
 				case "Links":
 					w = new WelcomePageLinksList (el);
@@ -147,7 +149,7 @@ namespace MonoDevelop.Ide.WelcomePage
 					throw new InvalidOperationException ("Unknown welcome page element '" + el.Name + "'");
 				}
 
-				parentBox.PackStart (w, false, false, 0);
+				parentBox.PackStart (w, false, fill, 0);
 			}
 		}
 		

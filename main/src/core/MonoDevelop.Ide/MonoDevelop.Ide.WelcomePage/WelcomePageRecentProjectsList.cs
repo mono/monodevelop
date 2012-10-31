@@ -81,6 +81,19 @@ namespace MonoDevelop.Ide.WelcomePage
 				box.Remove (c);
 				c.Destroy ();
 			}
+
+			Gtk.HBox hbox = new HBox ();
+			var btn = new WelcomePageListButton (GettextCatalog.GetString ("New..."), null, newProjectIcon, "monodevelop://MonoDevelop.Ide.Commands.FileCommands.NewProject");
+			btn.WidthRequest = Styles.WelcomeScreen.Pad.Solutions.SolutionTile.Width / 2;
+			btn.DrawRightBorder = true;
+			hbox.PackStart (btn, false, false, 0);
+
+			btn = new WelcomePageListButton (GettextCatalog.GetString ("Open..."), null, openProjectIcon, "monodevelop://MonoDevelop.Ide.Commands.FileCommands.OpenFile");
+			btn.WidthRequest = Styles.WelcomeScreen.Pad.Solutions.SolutionTile.Width / 2;
+			btn.DrawLeftBorder = true;
+			hbox.PackStart (btn, false, false, 0);
+
+			box.PackStart (hbox, false, false, 0);
 			
 			//TODO: pinned files
 			foreach (var recent in DesktopService.RecentFiles.GetProjects ().Take (itemCount)) {
@@ -103,11 +116,7 @@ namespace MonoDevelop.Ide.WelcomePage
 				};
 			}
 			
-			var btn = new WelcomePageListButton (GettextCatalog.GetString ("New..."), null, newProjectIcon, "monodevelop://MonoDevelop.Ide.Commands.FileCommands.NewProject");
-			box.PackStart (btn, false, false, 0);
 
-			btn = new WelcomePageListButton (GettextCatalog.GetString ("Open..."), null, openProjectIcon, "monodevelop://MonoDevelop.Ide.Commands.FileCommands.OpenFile");
-			box.PackStart (btn, false, false, 0);
 
 			this.ShowAll ();
 		}

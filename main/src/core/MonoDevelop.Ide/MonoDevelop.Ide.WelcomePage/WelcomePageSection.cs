@@ -100,14 +100,14 @@ namespace MonoDevelop.Ide.WelcomePage
 				double alphaDec = 0.2 / (double)size;
 				for (int n=0; n<size; n++) {
 					sr = new Cairo.Rectangle (sr.X - 1, sr.Y - 1, sr.Width + 2, sr.Height + 2);
-					ctx.Rectangle (sr);
+					CairoExtensions.RoundedRectangle (ctx, sr.X, sr.Y, sr.Width, sr.Height, 4);
 					shadowColor.A = alpha;
 					ctx.Color = shadowColor;
 					ctx.Stroke ();
 					alpha -= alphaDec;
 				}
 
-				ctx.Rectangle (r);
+				CairoExtensions.RoundedRectangle (ctx, r.X, r.Y, r.Width, r.Height, 4);
 				ctx.Color = CairoExtensions.ParseColor (Styles.WelcomeScreen.Pad.BackgroundColor);
 				ctx.FillPreserve ();
 				ctx.Color = CairoExtensions.ParseColor (Styles.WelcomeScreen.Pad.BorderColor);
