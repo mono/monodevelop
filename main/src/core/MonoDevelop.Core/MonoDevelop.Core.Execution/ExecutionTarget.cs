@@ -36,6 +36,22 @@ namespace MonoDevelop.Core.Execution
 		/// Display name of the device
 		/// </summary>
 		public abstract string Name { get; }
+
+		/// <summary>
+		/// Unique identifier of the target
+		/// </summary>
+		public abstract string Id { get; }
+
+		public override bool Equals (object obj)
+		{
+			var t = obj as ExecutionTarget;
+			return t != null && t.Id == Id;
+		}
+
+		public override int GetHashCode ()
+		{
+			return Id.GetHashCode ();
+		}
 	}
 }
 

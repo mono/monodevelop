@@ -70,6 +70,11 @@ namespace MonoDevelop.Components.MainToolbar
 
 		HashSet<string> visibleBars = new HashSet<string> ();
 
+		ConfigurationMerger configurationMerger = new ConfigurationMerger ();
+
+		Solution currentSolution;
+		bool settingGlobalConfig;
+
 		public Cairo.ImageSurface Background {
 			get;
 			set;
@@ -106,11 +111,14 @@ namespace MonoDevelop.Components.MainToolbar
 		public MainToolbar ()
 		{
 			IdeApp.Workspace.ActiveConfigurationChanged += (sender, e) => UpdateCombos ();
-			IdeApp.Workspace.ActiveRuntimeChanged += (sender, e) => UpdateCombos ();
 			IdeApp.Workspace.ConfigurationsChanged += (sender, e) => UpdateCombos ();
 
 			IdeApp.Workspace.SolutionLoaded += (sender, e) => UpdateCombos ();
 			IdeApp.Workspace.SolutionUnloaded += (sender, e) => UpdateCombos ();
+
+			IdeApp.ProjectOperations.CurrentSelectedSolutionChanged += HandleCurrentSelectedSolutionChanged;
+
+
 			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
 
 			AddWidget (button);
@@ -248,6 +256,32 @@ namespace MonoDevelop.Components.MainToolbar
 			RemoveDecorationsWorkaround = w => { };
 		}
 
+		void HandleCurrentSelectedSolutionChanged (object sender, SolutionEventArgs e)
+		{
+			if (currentSolution != null) {
+				currentSolution.StartupItemChanged -= HandleStartupItemChanged;
+				currentSolution.Saved -= HandleSolutionSaved;
+			}
+
+			currentSolution = IdeApp.ProjectOperations.CurrentSelectedSolution;
+
+			if (currentSolution != null) {
+				currentSolution.StartupItemChanged += HandleStartupItemChanged;
+				currentSolution.Saved += HandleSolutionSaved;
+			}
+			UpdateCombos ();
+		}
+
+		void HandleSolutionSaved (object sender, WorkspaceItemEventArgs e)
+		{
+			UpdateCombos ();
+		}
+
+		void HandleStartupItemChanged (object sender, EventArgs e)
+		{
+			UpdateCombos ();
+		}
+
 		void UpdateSearchEntryLabel ()
 		{
 			var info = IdeApp.CommandService.GetCommand (MonoDevelop.Ide.NavigateToDialog.Commands.NavigateTo);
@@ -360,18 +394,6 @@ namespace MonoDevelop.Components.MainToolbar
 			return (string)configurationStore.GetValue (iter, 1);
 		}
 
-		string GetActivePlatform ()
-		{
-			int active = runtimeCombo.Active;
-			if (active < 0)
-				return null;
-
-			TreeIter iter;
-			if (!runtimeStore.GetIterFromString (out iter, active.ToString ()))
-				return null;
-			return (string)runtimeStore.GetValue (iter, 1);
-		}
-
 		ExecutionTarget GetActiveTarget ()
 		{
 			int active = runtimeCombo.Active;
@@ -399,43 +421,27 @@ namespace MonoDevelop.Components.MainToolbar
 			var currentConfig = GetActiveConfiguration ();
 			if (currentConfig == null)
 				return;
-			var currentPlatform = GetActivePlatform ();
-			var currentTarget = GetActiveTarget ();
 
-			string newConfig = null;
+			string fullConfig;
+			ExecutionTarget newTarget;
 
-			// It may happen that the selected configuration/platform combination doesn't exist, for example if we
-			// change the configuration, and the current platform doesn't exist for the new configuration.
-			// In that case, we find the best match
+			configurationMerger.ResolveConfiguration (currentConfig, GetActiveTarget (), out fullConfig, out newTarget);
 
-			foreach (var conf in IdeApp.Workspace.GetConfigurations ()) {
-				string name;
-				string platform;
-				ItemConfiguration.ParseConfigurationId (conf, out name, out platform);
-				if (name == currentConfig) {
-					if (platform == currentPlatform) {
-						newConfig = conf;
-						break;
-					} else if (newConfig == null) {
-						// If there isn't a configuration with the same platform, set any existing configuraiton, even with another platform
-						newConfig = conf;
-					}
-				}
+			settingGlobalConfig = true;
+			try {
+				IdeApp.Workspace.ActiveExecutionTarget = newTarget;
+				IdeApp.Workspace.ActiveConfigurationId = fullConfig;
+			} finally {
+				settingGlobalConfig = false;
 			}
-			if (newConfig != null) {
-				IdeApp.Workspace.ActiveExecutionTarget = currentTarget;
-				IdeApp.Workspace.ActiveConfigurationId = newConfig;
-			}
+			UpdateRuntimes ();
+			SelectActiveRuntime ();
 		}
 
 		void SelectActiveConfiguration ()
 		{
-			UpdateRuntimes ();
 			configurationCombo.Changed -= HandleConfigurationChanged;
-			runtimeCombo.Changed -= HandleRuntimeChanged;
-			string name;
-			string platform;
-			ItemConfiguration.ParseConfigurationId (IdeApp.Workspace.ActiveConfigurationId, out name, out platform);
+			string name = configurationMerger.GetUnresolvedConfiguration (IdeApp.Workspace.ActiveConfigurationId);
 			int i = 0;
 			Gtk.TreeIter iter;
 			if (configurationStore.GetIterFirst (out iter)) {
@@ -449,12 +455,19 @@ namespace MonoDevelop.Components.MainToolbar
 				}
 				while (configurationStore.IterNext (ref iter));
 			}
+			configurationCombo.Changed += HandleConfigurationChanged;
+			SelectActiveRuntime ();
+		}
 
-			i = 0;
+		void SelectActiveRuntime ()
+		{
+			runtimeCombo.Changed -= HandleRuntimeChanged;
+			var i = 0;
+			Gtk.TreeIter iter;
 			if (runtimeStore.GetIterFirst (out iter)) {
 				do {
-					string val = (string)runtimeStore.GetValue (iter, 1);
-					if (platform == val || platform == null && string.IsNullOrEmpty (val)) {
+					var val = (ExecutionTarget)runtimeStore.GetValue (iter, 2);
+					if (val == IdeApp.Workspace.ActiveExecutionTarget) {
 						runtimeCombo.Active = i;
 						break;
 					}
@@ -462,12 +475,18 @@ namespace MonoDevelop.Components.MainToolbar
 				}
 				while (runtimeStore.IterNext (ref iter));
 			}
+			if (runtimeCombo.Active == -1)
+				runtimeCombo.Active = 0;
 			runtimeCombo.Changed += HandleRuntimeChanged;
-			configurationCombo.Changed += HandleConfigurationChanged;
 		}
 
 		void UpdateCombos ()
 		{
+			if (settingGlobalConfig)
+				return;
+
+			configurationMerger.Load (currentSolution);
+
 			configurationCombo.Changed -= HandleConfigurationChanged;
 			try {
 				configurationStore.Clear ();
@@ -476,19 +495,17 @@ namespace MonoDevelop.Components.MainToolbar
 					return;
 				}
 				var values = new HashSet<string> ();
-				foreach (var conf in IdeApp.Workspace.GetConfigurations ()) {
-					string name;
-					string platform;
-					ItemConfiguration.ParseConfigurationId (conf, out name, out platform);
-					if (values.Contains (name))
+				foreach (var conf in configurationMerger.SolutionConfigurations) {
+					if (!values.Add (conf))
 						continue;
-					values.Add (name);
-					configurationStore.AppendValues (name, name);
+					values.Add (conf);
+					configurationStore.AppendValues (conf.Replace ("|", " | "), conf);
 				}
 			} finally {
 				configurationCombo.Changed += HandleConfigurationChanged;
 			}
 
+			UpdateRuntimes ();
 			SelectActiveConfiguration ();
 		}
 
@@ -497,34 +514,18 @@ namespace MonoDevelop.Components.MainToolbar
 			runtimeCombo.Changed -= HandleRuntimeChanged;
 			try {
 				runtimeStore.Clear ();
-				if (!IdeApp.Workspace.IsOpen)
+				if (!IdeApp.Workspace.IsOpen || currentSolution == null || !currentSolution.SingleStartup || currentSolution.StartupItem == null)
 					return;
 
-				string name;
-				string platform;
-				ItemConfiguration.ParseConfigurationId (IdeApp.Workspace.ActiveConfigurationId, out name, out platform);
-				var values = new HashSet<string> ();
-				foreach (var conf in IdeApp.Workspace.GetConfigurations ()) {
-					string curName;
-					ItemConfiguration.ParseConfigurationId (conf, out curName, out platform);
-					if (curName != name)
-						continue;
-					if (platform == null)
-						platform = "";
-					if (values.Contains (platform))
-						continue;
-					values.Add (platform);
-					string platName = string.IsNullOrEmpty (platform) ? "Any CPU" : platform;
-					if (platName == "iPhoneSimulator")
-						platName = "Simulator";
-					var targets = GetExecutionTargets (conf);
-					if (targets.Any ()) {
-						foreach (var target in targets)
-							runtimeStore.AppendValues (platName + " (" + target.Name + ")", platform, target);
-					} else {
-						runtimeStore.AppendValues (platName, platform, null);
-					}
-				}
+				// Check that the current startup project is enabled for the current configuration
+				var solConf = currentSolution.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
+				if (solConf == null || !solConf.BuildEnabledForItem (currentSolution.StartupItem))
+					return;
+
+				var targets = configurationMerger.GetTargetsForConfiguration (IdeApp.Workspace.ActiveConfigurationId);
+				foreach (var target in targets)
+					runtimeStore.AppendValues (target.Name, target.Name, target);
+				runtimeCombo.Sensitive = targets.Count () > 1;
 			} finally {
 				runtimeCombo.Changed += HandleRuntimeChanged;
 			}

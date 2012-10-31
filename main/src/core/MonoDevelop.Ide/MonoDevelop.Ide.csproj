@@ -1825,6 +1825,7 @@
     <Compile Include="MonoDevelop.Ide.TextEditing\FileExtensionEventArgs.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\StatusAreaBuildTheme.cs" />
     <Compile Include="MonoDevelop.Components\ThreadedRenderer.cs" />
+    <Compile Include="MonoDevelop.Components.MainToolbar\ConfigurationMerger.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
