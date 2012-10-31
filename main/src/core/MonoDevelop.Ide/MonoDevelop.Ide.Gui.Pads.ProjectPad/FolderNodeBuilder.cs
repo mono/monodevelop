@@ -142,18 +142,26 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 		public override bool CanDropNode (object dataObject, DragOperation operation)
 		{
-			string targetPath = GetFolderPath (CurrentNode.DataItem);
+			string targetDirectory = GetFolderPath (CurrentNode.DataItem);
 			
 			if (dataObject is ProjectFile) {
 				ProjectFile file = (ProjectFile) dataObject;
 				var srcDir = (file.Project != null && file.IsLink)
 					? file.Project.BaseDirectory.Combine (file.ProjectVirtualPath)
 					: file.FilePath.ParentDirectory;
-				
-				return (srcDir != targetPath || operation == DragOperation.Copy) && file.DependsOnFile == null;
+
+				switch (operation) {
+				case DragOperation.Move:
+					// allow grouped files to be unlinked from their parent
+					return srcDir != targetDirectory || file.DependsOnFile != null;
+				case DragOperation.Copy:
+					return true;
+				default:
+					return false;
+				}
 			}
 			else if (dataObject is ProjectFolder) {
-				return ((ProjectFolder)dataObject).Path != targetPath || operation == DragOperation.Copy;
+				return ((ProjectFolder)dataObject).Path != targetDirectory || operation == DragOperation.Copy;
 			}
 			else if (dataObject is Gtk.SelectionData) {
 				SelectionData data = (SelectionData) dataObject;
@@ -165,15 +173,23 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public override void OnMultipleNodeDrop (object[] dataObjects, DragOperation operation)
 		{
-			Set<SolutionEntityItem> toSave = new Set<SolutionEntityItem> ();
+			var projectsToSave = new HashSet<SolutionEntityItem> ();
+			var groupedFiles = new HashSet<ProjectFile> ();
+
+			foreach (var pf in dataObjects.OfType<ProjectFile> ()) {
+				foreach (var child in pf.DependentChildren)
+					groupedFiles.Add (child);
+			}
+
 			foreach (object dataObject in dataObjects)
-				DropNode (toSave, dataObject, operation);
-			IdeApp.ProjectOperations.Save (toSave);
+				DropNode (projectsToSave, dataObject, groupedFiles, operation);
+
+			IdeApp.ProjectOperations.Save (projectsToSave);
 		}
 		
-		void DropNode (Set<SolutionEntityItem> projectsToSave, object dataObject, DragOperation operation)
+		void DropNode (HashSet<SolutionEntityItem> projectsToSave, object dataObject, HashSet<ProjectFile> groupedFiles, DragOperation operation)
 		{
-			FilePath targetPath = GetFolderPath (CurrentNode.DataItem);
+			FilePath targetDirectory = GetFolderPath (CurrentNode.DataItem);
 			FilePath source;
 			string what;
 			Project targetProject = (Project) CurrentNode.GetParentDataItem (typeof(Project), true);
@@ -187,6 +203,22 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			}
 			else if (dataObject is ProjectFile) {
 				ProjectFile file = (ProjectFile) dataObject;
+
+				// if this ProjectFile is one of the grouped files being pulled in by a parent being copied/moved, ignore it
+				if (groupedFiles.Contains (file))
+					return;
+
+				if (file.DependsOnFile != null && operation == DragOperation.Move) {
+					// unlink this file from its parent (since its parent is not being moved)
+					file.DependsOn = null;
+
+					// if moving a linked file into its containing folder, simply unlink it from its parent
+					if (file.FilePath.ParentDirectory == targetDirectory) {
+						projectsToSave.Add (targetProject);
+						return;
+					}
+				}
+
 				sourceProject = file.Project;
 				if (sourceProject != null && file.IsLink) {
 					source = sourceProject.BaseDirectory.Combine (file.ProjectVirtualPath);
@@ -201,6 +233,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				if (data.Type != "text/uri-list")
 					return;
 				string sources = System.Text.Encoding.UTF8.GetString (data.Data);
+				Console.WriteLine ("text/uri-list:\n{0}", sources);
 				string[] files = sources.Split (new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
 				for (int n=0; n<files.Length; n++) {
 					Uri uri = new Uri (files[n]);
@@ -211,25 +244,34 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					files[n] = uri.LocalPath;
 				}
 				
-				IdeApp.ProjectOperations.AddFilesToProject (targetProject, files, targetPath);
+				IdeApp.ProjectOperations.AddFilesToProject (targetProject, files, targetDirectory);
 				projectsToSave.Add (targetProject);
 				return;
 			}
 			else
 				return;
 
-			targetPath = targetPath.Combine (source.FileName);
+			var targetPath = targetDirectory.Combine (source.FileName);
 			// If copying to the same directory, make a copy with a different name
 			if (targetPath == source)
 				targetPath = ProjectOperations.GetTargetCopyName (targetPath, dataObject is ProjectFolder);
-			
+
+			var targetChildPaths = groupedChildren != null ? groupedChildren.Select (child => {
+				var targetChildPath = targetDirectory.Combine (child.FilePath.FileName);
+
+				if (targetChildPath == child.FilePath)
+					targetChildPath = ProjectOperations.GetTargetCopyName (targetChildPath, false);
+
+				return targetChildPath;
+			}).ToList () : null;
+
 			if (dataObject is ProjectFolder) {
 				string q;
 				if (operation == DragOperation.Move) {
 					if (targetPath.ParentDirectory == targetProject.BaseDirectory)
 						q = GettextCatalog.GetString ("Do you really want to move the folder '{0}' to the root folder of project '{1}'?", what, targetProject.Name);
 					else
-						q = GettextCatalog.GetString ("Do you really want to move the folder '{0}' to the folder '{1}'?", what, targetPath.ParentDirectory.FileName);
+						q = GettextCatalog.GetString ("Do you really want to move the folder '{0}' to the folder '{1}'?", what, targetDirectory.FileName);
 					if (!MessageService.Confirm (q, AlertButton.Move))
 						return;
 				}
@@ -237,17 +279,19 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					if (targetPath.ParentDirectory == targetProject.BaseDirectory)
 						q = GettextCatalog.GetString ("Do you really want to copy the folder '{0}' to the root folder of project '{1}'?", what, targetProject.Name);
 					else
-						q = GettextCatalog.GetString ("Do you really want to copy the folder '{0}' to the folder '{1}'?", what, targetPath.ParentDirectory.FileName);
+						q = GettextCatalog.GetString ("Do you really want to copy the folder '{0}' to the folder '{1}'?", what, targetDirectory.FileName);
 					if (!MessageService.Confirm (q, AlertButton.Copy))
 						return;
 				}
 			} else if (dataObject is ProjectFile) {
-				if (File.Exists (targetPath))
-					if (!MessageService.Confirm (GettextCatalog.GetString ("The file '{0}' already exists. Do you want to overwrite it?", targetPath.FileName), AlertButton.OverwriteFile))
-						return;
+				foreach (var file in new FilePath[] { targetPath }.Concat (targetChildPaths)) {
+					if (File.Exists (file))
+						if (!MessageService.Confirm (GettextCatalog.GetString ("The file '{0}' already exists. Do you want to overwrite it?", file.FileName), AlertButton.OverwriteFile))
+							return;
+				}
 			}
 			
-			ArrayList filesToSave = new ArrayList ();
+			var filesToSave = new List<Document> ();
 			foreach (Document doc in IdeApp.Workbench.Documents) {
 				if (doc.IsDirty && doc.IsFile) {
 					if (doc.Name == source || doc.Name.StartsWith (source + Path.DirectorySeparatorChar)) {
@@ -300,14 +344,17 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				projectsToSave.Add (sourceProject);
 			if (targetProject != null)
 				projectsToSave.Add (targetProject);
+
+			bool move = operation == DragOperation.Move;
+			var opText = move ? GettextCatalog.GetString ("Moving files...") : GettextCatalog.GetString ("Copying files...");
 			
-			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString("Copying files..."), MonoDevelop.Ide.Gui.Stock.CopyIcon, true))
-			{
+			using (var monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (opText, MonoDevelop.Ide.Gui.Stock.CopyIcon, true)) {
 				// If we drag and drop a node in the treeview corresponding to a directory, do not move
 				// the entire directory. We should only move the files which exist in the project. Otherwise
 				// we will need a lot of hacks all over the code to prevent us from incorrectly moving version
 				// control related files such as .svn directories
-				bool move = operation == DragOperation.Move;
+
+				// Note: if we are transferring a ProjectFile, this will copy/move the ProjectFile's DependentChildren as well.
 				IdeApp.ProjectOperations.TransferFiles (monitor, sourceProject, source, targetProject, targetPath, move, true);
 			}
 		}
