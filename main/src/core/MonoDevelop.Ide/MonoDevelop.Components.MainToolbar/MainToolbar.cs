@@ -43,6 +43,7 @@ using MonoDevelop.Ide.Execution;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide.TypeSystem;
 using System.Threading;
+using ICSharpCode.NRefactory.TypeSystem;
 
 
 namespace MonoDevelop.Components.MainToolbar
@@ -102,20 +103,24 @@ namespace MonoDevelop.Components.MainToolbar
 			matchEntry.Entry.SelectRegion (pos, pos);
 		}
 
-		/*
-		static MainToolbar ()
-		{
-			// load the compilations on a background thread to speed up the first time search.
-			TypeSystemService.AssemblyLoaded += delegate(object sender, AssemblyLoadedEventArgs e) {
-				GLib.Timeout.Add (100, delegate {
-					ThreadPool.QueueUserWorkItem (delegate {
-						e.Assembly.EnsureAssemblyLoaded ();
-					});
-					return false;
-				});
-			};
-		}*/
-
+//		volatile static int cnt = 0;
+//
+//		static MainToolbar ()
+//		{
+//			// load the members on a background thread to speed up the first time search.
+//			TypeSystemService.ProjectContentLoaded += delegate(object sender, ProjectContentEventArgs e) {
+//				ThreadPool.QueueUserWorkItem (delegate {
+//					var pctx = TypeSystemService.GetCompilation (e.Project);
+//					foreach (var type in pctx.MainAssembly.GetAllTypeDefinitions ()) {
+//						foreach (var m in type.Members) {
+//							unchecked {
+//								cnt++;
+//							}
+//						}
+//					}
+//				});
+//			};
+//		}
 		/*
 		internal class SelectActiveRuntimeHandler : CommandHandler
 		{

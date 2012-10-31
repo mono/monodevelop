@@ -23,7 +23,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
 using System.Text;
 using System.Collections;
@@ -49,29 +48,61 @@ namespace MonoDevelop.Ide.NavigateToDialog
 		Gtk.Widget widget;
 		SearchResult bestResult;
 		int bestRank = int.MinValue;
-		Dictionary<string,bool> names = new Dictionary<string,bool> ();
-		
+
 		public ResultsDataSource (Gtk.Widget widget)
 		{
 			this.widget = widget;
 		}
 
-		public void SortUpToN (MonoDevelop.Components.MainToolbar.SearchCategory.DataItemComparer cmp, int n)
+		public void SortUpToN (MonoDevelop.Components.MainToolbar.SearchCategory.DataItemComparer comparison, int n)
 		{
-			n = Math.Min (n, Count);
-			// doesn't work for some reason :
-			// Sort (0, n, cmp);
-			for (int i = 0; i < n; i++) {
-				var maxItem = i;
-				for (int j = i + 1; j < Count; j++) {
-					if (cmp.Compare(this[j], this[maxItem]) < 0)
-						maxItem = j;
+			int offset = 0;
+			// build binary heap from all items
+			for (int i = 0; i < Count; i++) {
+				int index = i;
+				var item = this [offset + i]; // use next item
+				
+				// and move it on top, if greater than parent
+				while (index > 0 &&
+				       comparison.Compare (this[offset + (index - 1) / 2], item) > 0) {
+					int top = (index - 1) / 2;
+					this [offset + index] = this [offset + top];
+					index = top;
 				}
-				if (i != maxItem) {
-					var tmp = this[i];
-					this[i] = this[maxItem];
-					this[maxItem] = tmp;
+				this [offset + index] = item;
+			}
+			
+			var bound = Math.Max (0, Count - 1 - n);
+			for (int i = Count - 1; i > bound; i--) {
+				// delete max and place it as last
+				var last = this [offset + i];
+				this [offset + i] = this [offset];
+
+				int index = 0;
+				// the last one positioned in the heap
+				while (index * 2 + 1 < i) {
+					int left = index * 2 + 1, right = left + 1;
+					
+					if (right < i && comparison.Compare (this [offset + left], this [offset + right]) > 0) {
+						if (comparison.Compare (last, this [offset + right]) < 0)
+							break;
+						
+						this [offset + index] = this [offset + right];
+						index = right;
+					} else {
+						if (comparison.Compare (last, this [offset + left]) < 0)
+							break;
+						
+						this [offset + index] = this [offset + left];
+						index = left;
+					}
 				}
+				this [offset + index] = last;
+			}
+			for (int i = 0; i < Math.Min (n, Count); i++) {
+				var tmp = this [Count - 1 - i];
+				this [Count - 1 - i] = this [i];
+				this [i] = tmp;
 			}
 		}
 
@@ -79,21 +110,21 @@ namespace MonoDevelop.Ide.NavigateToDialog
 
 		Gdk.Pixbuf ISearchDataSource.GetIcon (int item)
 		{
-			return this[item].Icon;
+			return this [item].Icon;
 		}
 
 		string ISearchDataSource.GetMarkup (int item, bool isSelected)
 		{
 			if (isSelected)
-				return GLib.Markup.EscapeText (this[item].PlainText);
-			return this[item].GetMarkupText (widget);
+				return GLib.Markup.EscapeText (this [item].PlainText);
+			return this [item].GetMarkupText (widget);
 		}
 
 		string ISearchDataSource.GetDescriptionMarkup (int item, bool isSelected)
 		{
 			if (isSelected)
-				return GLib.Markup.EscapeText (this[item].Description);
-			return this[item].GetDescriptionMarkupText (widget);
+				return GLib.Markup.EscapeText (this [item].Description);
+			return this [item].GetDescriptionMarkupText (widget);
 		}
 
 		ICSharpCode.NRefactory.TypeSystem.DomRegion ISearchDataSource.GetRegion (int item)
@@ -119,7 +150,6 @@ namespace MonoDevelop.Ide.NavigateToDialog
 			return this [item].Rank;
 		}
 
-
 		int ISearchDataSource.ItemCount {
 			get {
 				return this.Count;
@@ -128,21 +158,9 @@ namespace MonoDevelop.Ide.NavigateToDialog
 
 		TooltipInformation ISearchDataSource.GetTooltip (int item)
 		{
-			return this[item].TooltipInformation;
+			return this [item].TooltipInformation;
 		}
-		#endregion		
-/*		public string GetText (int n)
-		{
-
-		}
-		
-		public string GetSelectedText (int n)
-		{
-			string descr = this[n].Description;
-			if (string.IsNullOrEmpty (descr))
-return GLib.Markup.EscapeText (this[n].PlainText);
-			return GLib.Markup.EscapeText (this[n].PlainText) + " [" + descr + "]";
-		}*/
+		#endregion
 
 		public SearchResult BestResult {
 			get {
@@ -150,15 +168,10 @@ return GLib.Markup.EscapeText (this[n].PlainText);
 			}
 		}
 
-
 		public void AddResult (SearchResult res)
 		{
 			Add (res);
-			if (names.ContainsKey (res.MatchedString))
-				names[res.MatchedString] = true;
-			else
-				names.Add (res.MatchedString, false);
-			
+
 			if (res.Rank > bestRank) {
 				bestResult = res;
 				bestRank = res.Rank;
