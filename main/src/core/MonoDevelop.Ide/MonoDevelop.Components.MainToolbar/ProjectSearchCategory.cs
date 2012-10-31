@@ -131,13 +131,16 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			if (newResult.isGotoFilePattern)
 				return;
-			
+			uint x = 0;
 			// Search Types
 			if (newResult.IncludeTypes && (newResult.Tag == null || typeTags.Any (t => t == newResult.Tag))) {
 				newResult.filteredTypes = new List<ITypeDefinition> ();
 				bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern, StringComparison.Ordinal) && lastResult.filteredTypes != null;
 				var allTypes = startsWithLastFilter ? lastResult.filteredTypes : types;
 				foreach (var type in allTypes) {
+					if (unchecked(x++) % 100 == 0 && token.IsCancellationRequested)
+						return;
+
 					if (newResult.Tag != null) {
 						if (newResult.Tag == "c" && type.Kind != TypeKind.Class)
 							continue;
@@ -165,6 +168,8 @@ namespace MonoDevelop.Components.MainToolbar
 				List<IMember> allMembers;
 				if (startsWithLastFilter) {
 					foreach (var t in lastResult.filteredMembers) {
+						if (unchecked(x++) % 100 == 0 && token.IsCancellationRequested)
+							return;
 						var member = t.Item2;
 						if (newResult.Tag != null) {
 							if (newResult.Tag == "m" && member.EntityType != EntityType.Method)
@@ -204,6 +209,8 @@ namespace MonoDevelop.Components.MainToolbar
 								continue;
 							foreach (var p in type.Parts) {
 								foreach (var member in p.Members.Where (mPred)) {
+									if (unchecked(x++) % 100 == 0 && token.IsCancellationRequested)
+										return;
 									SearchResult curResult = newResult.CheckMember (type, member);
 									if (curResult != null) {
 										newResult.filteredMembers.Add (Tuple.Create (type, member));

@@ -50,9 +50,11 @@ namespace MonoDevelop.Components.MainToolbar
 				Token = token;
 			}
 
+			static uint compareTick;
 			public int Compare (SearchResult o1, SearchResult o2)
 			{
-				Token.ThrowIfCancellationRequested ();
+				if (unchecked(compareTick++) % 100 == 0)
+					Token.ThrowIfCancellationRequested ();
 
 				var r = o2.Rank.CompareTo (o1.Rank);
 				if (r == 0)
