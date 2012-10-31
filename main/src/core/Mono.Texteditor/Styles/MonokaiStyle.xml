@@ -46,8 +46,8 @@ THE SOFTWARE.
 	<Style name="text" color="monokai-white" bgColor="monokai-background">
 		<Style name="background" color="white">
 			<Style name="readonly" color="#252620"/>
-			<Style name="searchresult-main" color="#FFE792"/>
-			<Style name="searchresult" color="#FFE792"/> 
+			<Style name="searchresult-main" color="#008080"/>
+			<Style name="searchresult" color="#006060"/> 
 		</Style>
 		<Style name="selection" bgColor="monokai-selection"/>
 		<Style name="selection.inactive" bgColor="#383830"/>
