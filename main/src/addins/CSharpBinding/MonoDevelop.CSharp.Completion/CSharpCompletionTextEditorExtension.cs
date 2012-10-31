@@ -233,7 +233,11 @@ namespace MonoDevelop.CSharp.Completion
 			engine.FormattingPolicy = FormattingPolicy.CreateOptions ();
 			engine.EolMarker = TextEditorData.EolMarker;
 			engine.IndentString = TextEditorData.Options.IndentationString;
-			list.AddRange (engine.GetCompletionData (completionContext.TriggerOffset, ctrlSpace));
+			try {
+				list.AddRange (engine.GetCompletionData (completionContext.TriggerOffset, ctrlSpace));
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while getting completion data.", e);
+			}
 			list.AutoCompleteEmptyMatch = engine.AutoCompleteEmptyMatch;
 			list.AutoSelect = engine.AutoSelect;
 			list.DefaultCompletionString = engine.DefaultCompletionString;
