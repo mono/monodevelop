@@ -126,12 +126,12 @@ style "button" {
 
 style "dialog-button" = "default" {
     xthickness = 3
-    ythickness = 3
-    font_name = "Lucida Grande 11"
+    ythickness = 2
+    font_name = "Lucida Grande 13"
 
     GtkWidget::draw-border = { 2, 2, 2, 2 }
     GtkWidget::focus-line-width = 1
-    GtkButton::inner-border = { 8, 8, 0, 2 }
+    GtkButton::inner-border = { 8, 8, 0, 3 }
 
     engine "quartz" {
         buttontype = "aqua"
@@ -360,7 +360,7 @@ widget "*search-entry*" style "search-entry"
 widget "*GtkTextView"   style "entry"
 
 widget_class "<GtkDialog>*<GtkCheckButton>" style "radio-or-check-box"
-widget_class "<GtkDialog>.<GtkVBox>.<GtkButtonBox>.<GtkButton>" style "dialog-button"
+widget_class "<GtkDialog>.<GtkVBox>.<GtkButtonBox>.<GtkButton>*" style "dialog-button"
 
 widget_class "*<GtkMenu>*"      style "menu"
 widget_class "*<GtkMenuItem>*"  style "menu-item"
