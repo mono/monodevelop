@@ -533,11 +533,8 @@ namespace MonoDevelop.Components
 		[DllImport ("libcairo-2.dll", CallingConvention = CallingConvention.Cdecl)]
 		public static extern IntPtr cairo_get_target(IntPtr context);
 
-		[DllImport ("/System/Library/Frameworks/CoreGraphics.framework/Versions/A/Resources/BridgeSupport/CoreGraphics.dylib", CallingConvention = CallingConvention.Cdecl)]
+		[DllImport ("/System/Library/Frameworks/ApplicationServices.framework/Frameworks/CoreGraphics.framework/CoreGraphics", CallingConvention = CallingConvention.Cdecl)]
 		public static extern System.Drawing.RectangleF CGContextConvertRectToDeviceSpace (IntPtr contextRef, System.Drawing.RectangleF cgrect);
-
-		[DllImport ("/System/Library/Frameworks/ApplicationServices.framework/Frameworks/CoreGraphics.framework/Versions/A/Resources/BridgeSupport/CoreGraphics.dylib", CallingConvention = CallingConvention.Cdecl, EntryPoint = "CGContextConvertRectToDeviceSpace")]
-		public static extern System.Drawing.RectangleF CGContextConvertRectToDeviceSpaceLion (IntPtr contextRef, System.Drawing.RectangleF cgrect);
 
 		public static double GetRetinaScale (Cairo.Context context)  {
 			if (!Platform.IsMac)
@@ -547,11 +544,7 @@ namespace MonoDevelop.Components
 			var cgContext = cairo_quartz_surface_get_cg_context (cairo_get_target (context.Handle));
 			var unitRect = new System.Drawing.RectangleF (1, 1, 1, 1);
 
-			if (MacSystemInformation.OsVersion > MacSystemInformation.Lion) {
-				rect = CGContextConvertRectToDeviceSpace (cgContext, unitRect);
-			} else {
-				rect = CGContextConvertRectToDeviceSpaceLion (cgContext, unitRect);
-			}
+			rect = CGContextConvertRectToDeviceSpace (cgContext, unitRect);
 
 			return rect.X;
 		}
