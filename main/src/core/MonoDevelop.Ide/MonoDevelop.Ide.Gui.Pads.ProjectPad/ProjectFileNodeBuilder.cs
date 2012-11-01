@@ -209,9 +209,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public override bool CanDropNode (object dataObject, DragOperation operation)
 		{
+			var target = (ProjectFile) CurrentNode.DataItem;
 			var pf = dataObject as ProjectFile;
 
-			return pf != null && !pf.HasChildren;
+			return pf != null && !pf.HasChildren && target.DependsOn == null;
 		}
 
 		void Drop (ProjectFile pf, DragOperation operation, HashSet<SolutionEntityItem> projectsToSave)
