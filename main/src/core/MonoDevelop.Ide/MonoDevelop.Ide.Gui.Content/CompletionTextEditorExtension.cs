@@ -55,6 +55,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			set;
 		}
 
+
 		public void ShowCompletion (ICompletionDataList completionList)
 		{
 			currentCompletionContext = CompletionWidget.CreateCodeCompletionContext (Document.Editor.Caret.Offset);
@@ -176,6 +177,8 @@ namespace MonoDevelop.Ide.Gui.Content
 				CompletionWindowManager.HideWindow ();
 			if (autoHideParameterWindow)
 				ParameterInformationWindowManager.HideWindow (this, CompletionWidget);
+
+			ParameterInformationWindowManager.UpdateCursorPosition (this, CompletionWidget);
 		}
 
 		[CommandUpdateHandler (TextEditorCommands.ShowCompletionWindow)]
@@ -438,7 +441,7 @@ namespace MonoDevelop.Ide.Gui.Content
 				};
 			}
 		}
-		
+
 		void HandleWindowClosed (object sender, EventArgs e)
 		{
 			currentCompletionContext = null;

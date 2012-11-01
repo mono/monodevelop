@@ -97,6 +97,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		public static void PostProcessKeyEvent (CompletionTextEditorExtension ext, ICompletionWidget widget, Gdk.Key key, Gdk.ModifierType modifier)
 		{
+		}
+
+		public static void UpdateCursorPosition (CompletionTextEditorExtension ext, ICompletionWidget widget)
+		{	
 			// Called after the key has been processed by the editor
 			if (methods.Count == 0)
 				return;
@@ -167,7 +171,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			
 			// If the user enters more parameters than the current overload has,
 			// look for another overload with more parameters.
-			
 			MethodData md = methods [methods.Count - 1];
 
 			int bestOverload = ext.GuessBestMethodOverload (md.MethodProvider, md.CurrentOverload);
