@@ -448,6 +448,9 @@ namespace MonoDevelop.Ide.Gui.Content
 		public override void Dispose ()
 		{
 			if (!disposed) {
+				CompletionWindowManager.HideWindow ();
+				ParameterInformationWindowManager.HideWindow (this, CompletionWidget);
+
 				disposed = true;
 				CompletionWindowManager.WindowClosed -= HandleWindowClosed;
 				if (CompletionWidget != null)
