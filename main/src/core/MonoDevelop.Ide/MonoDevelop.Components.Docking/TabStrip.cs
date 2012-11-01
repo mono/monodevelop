@@ -405,7 +405,7 @@ namespace MonoDevelop.Components.Docking
 
 			btnDock = new MiniDockButton ();
 			btnDock.Image = pixAutoHide;
-			btnDock.TooltipText = GettextCatalog.GetString ("Minimize");
+			btnDock.TooltipText = GettextCatalog.GetString ("Auto Hide");
 			btnDock.CanFocus = false;
 //			btnDock.WidthRequest = btnDock.HeightRequest = 17;
 			btnDock.Clicked += OnClickDock;
@@ -413,7 +413,7 @@ namespace MonoDevelop.Components.Docking
 
 			btnClose = new MiniDockButton ();
 			btnClose.Image = pixClose;
-			btnClose.TooltipText = GettextCatalog.GetString ("Auto Hide");
+			btnClose.TooltipText = GettextCatalog.GetString ("Close");
 			btnClose.CanFocus = false;
 //			btnClose.WidthRequest = btnClose.HeightRequest = 17;
 			btnClose.WidthRequest = btnDock.SizeRequest ().Width;
