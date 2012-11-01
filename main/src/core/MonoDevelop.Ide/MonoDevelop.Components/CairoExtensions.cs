@@ -541,11 +541,19 @@ namespace MonoDevelop.Components
 		[DllImport ("/System/Library/Frameworks/CoreGraphics.framework/Versions/A/Resources/BridgeSupport/CoreGraphics.dylib", CallingConvention = CallingConvention.Cdecl)]
 		public static extern System.Drawing.RectangleF CGContextConvertRectToDeviceSpace (IntPtr contextRef, System.Drawing.RectangleF cgrect);
 
+		[DllImport ("/System/Library/Frameworks/ApplicationServices.framework/Frameworks/CoreGraphics.framework/Versions/A/Resources/BridgeSupport/CoreGraphics.dylib", CallingConvention = CallingConvention.Cdecl, EntryPoint = "CGContextConvertRectToDeviceSpace")]
+		public static extern System.Drawing.RectangleF CGContextConvertRectToDeviceSpaceLion (IntPtr contextRef, System.Drawing.RectangleF cgrect);
+
 		public static double GetRetinaScale (Cairo.Context context)  {
 			if (MonoDevelop.Core.Platform.IsWindows)
 				return 1;
 
-			var rect = CGContextConvertRectToDeviceSpace (cairo_quartz_surface_get_cg_context (cairo_get_target (context.Handle)), new System.Drawing.RectangleF (1, 1, 1, 1));
+			var rect = new System.Drawing.RectangleF ();
+			try {
+				rect = CGContextConvertRectToDeviceSpace (cairo_quartz_surface_get_cg_context (cairo_get_target (context.Handle)), new System.Drawing.RectangleF (1, 1, 1, 1));
+			} catch (DllNotFoundException) {
+				rect = CGContextConvertRectToDeviceSpaceLion (cairo_quartz_surface_get_cg_context (cairo_get_target (context.Handle)), new System.Drawing.RectangleF (1, 1, 1, 1));
+			}
 			return rect.X;
 		}
 
