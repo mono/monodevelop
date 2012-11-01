@@ -1,5 +1,20 @@
         Experimental support for Intellisense in Emacs
 
+October 2012
+
+This code has been imported with minor changes from Sourceforge. There are some caveats.
+
+1) There are dependencies on esense, and tooltip-help.el, available from:
+   - http://sourceforge.net/projects/esense/
+   - http://www.emacswiki.org/emacs/tooltip-help.el
+
+2) Communication between emacs and the fsintellisense.exe subprocess are working, but the results are not always interpreted correctly.
+
+I intend to update the code to remove the dependencies above, using autocomplete instead of esense, and emacs' builtin tooltips. In the fullness of time, multi-file projects should also be supported.
+
+-- Robin Neatherway
+
+
 February 2011
 
 
