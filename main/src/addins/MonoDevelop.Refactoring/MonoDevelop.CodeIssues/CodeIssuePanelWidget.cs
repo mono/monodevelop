@@ -206,7 +206,7 @@ namespace MonoDevelop.CodeIssues
 			Gtk.TreeIter iter;
 			if (!treeviewInspections.Selection.GetSelected (out iter))
 				return;
-			var actionNode = (CodeIssueProvider)treeStore.GetValue (iter, 2);
+			var actionNode = (CodeIssueProvider)treeStore.GetValue (iter, 1);
 			if (actionNode != null)
 				labelDescription.Markup = "<b>" + actionNode.Title + "</b>" + Environment.NewLine + actionNode.Description;
 		}
