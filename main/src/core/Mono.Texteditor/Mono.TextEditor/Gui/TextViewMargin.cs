@@ -2018,7 +2018,6 @@ namespace Mono.TextEditor
 				textEditor.TriggerTooltipQuery ();
 			}
 			textEditor.TooltipMarkup = hoverResult.TooltipMarkup;
-
 			if (args.Button != 1 && args.Y >= 0 && args.Y <= this.textEditor.Allocation.Height) {
 				// folding marker
 				int lineNr = args.LineNumber;
@@ -2197,7 +2196,7 @@ namespace Mono.TextEditor
 			int y = (int)(LineToY (lineNr) - textEditor.VAdjustment.Value);
 			//			Gdk.Rectangle lineArea = new Gdk.Rectangle (XOffset, y, textEditor.Allocation.Width - XOffset, LineHeight);
 			int width, height;
-			int xPos = (int)(XOffset - textEditor.HAdjustment.Value);
+			int xPos = (int)(this.XOffset + this.TextStartPosition - textEditor.HAdjustment.Value);
 
 			if (line == null) {
 				return result;
@@ -2206,27 +2205,31 @@ namespace Mono.TextEditor
 			IEnumerable<FoldSegment> foldings = Document.GetStartFoldings (line);
 			int offset = line.Offset;
 			restart:
-			//			int caretOffset = Caret.Offset;
-			foreach (FoldSegment folding in foldings) {
-				int foldOffset = folding.StartLine.Offset + folding.Column - 1;
-				if (foldOffset < offset)
-					continue;
+			using (var calcLayout = PangoUtil.CreateLayout (textEditor)) {
+				calcLayout.FontDescription = textEditor.Options.Font;
+				calcLayout.Tabs = this.tabArray;
+				foreach (FoldSegment folding in foldings) {
+					int foldOffset = folding.StartLine.Offset + folding.Column - 1;
+					if (foldOffset < offset)
+						continue;
 
-				if (folding.IsFolded) {
-					markerLayout.SetText (Document.GetTextAt (offset, System.Math.Max (0, System.Math.Min (foldOffset - offset, Document.TextLength - offset))).Replace ("\t", new string (' ', textEditor.Options.TabSize)));
-					markerLayout.GetPixelSize (out width, out height);
-					xPos += width;
-					offset = folding.EndLine.Offset + folding.EndColumn;
+					if (folding.IsFolded) {
+						var txt = Document.GetTextAt (offset, System.Math.Max (0, System.Math.Min (foldOffset - offset, Document.TextLength - offset)));
+						calcLayout.SetText (txt);
+						calcLayout.GetPixelSize (out width, out height);
+						xPos += width;
+						offset = folding.EndLine.Offset + folding.EndColumn;
 
-					markerLayout.SetText (folding.Description);
-					markerLayout.GetPixelSize (out width, out height);
-					Rectangle foldingRectangle = new Rectangle (xPos, y, (int)(width - 1 + foldMarkerXMargin * textEditor.Options.Zoom * 2), (int)this.LineHeight - 1);
-					result.Add (new KeyValuePair<Rectangle, FoldSegment> (foldingRectangle, folding));
-					xPos += width;
-					if (folding.EndLine != line) {
-						line = folding.EndLine;
-						foldings = Document.GetStartFoldings (line);
-						goto restart;
+						calcLayout.SetText (folding.Description);
+						calcLayout.GetPixelSize (out width, out height);
+						Rectangle foldingRectangle = new Rectangle (xPos, y, (int)(width - 1 + foldMarkerXMargin * textEditor.Options.Zoom * 2), (int)this.LineHeight - 1);
+						result.Add (new KeyValuePair<Rectangle, FoldSegment> (foldingRectangle, folding));
+						xPos += width;
+						if (folding.EndLine != line) {
+							line = folding.EndLine;
+							foldings = Document.GetStartFoldings (line);
+							goto restart;
+						}
 					}
 				}
 			}

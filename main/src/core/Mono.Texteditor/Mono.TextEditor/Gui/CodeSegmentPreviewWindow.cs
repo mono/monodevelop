@@ -74,6 +74,8 @@ namespace Mono.TextEditor
 			this.Segment = segment;
 			this.editor = editor;
 			this.AppPaintable = true;
+			this.SkipPagerHint = this.SkipTaskbarHint = true;
+			this.TypeHint = WindowTypeHint.Menu;
 			layout = PangoUtil.CreateLayout (this);
 			informLayout = PangoUtil.CreateLayout (this);
 			informLayout.SetText (CodeSegmentPreviewInformString);
