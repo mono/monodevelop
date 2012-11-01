@@ -129,7 +129,7 @@ namespace MonoDevelop.Components.Docking
 		internal Tab TitleTab {
 			get {
 				if (titleTab == null) {
-					titleTab = new Tab (frame);
+					titleTab = new Tab (this, frame);
 					titleTab.VisualStyle = currentVisualStyle;
 					titleTab.SetLabel (Widget, icon, label);
 					titleTab.ShowAll ();
@@ -383,8 +383,8 @@ namespace MonoDevelop.Components.Docking
 			}
 			set {
 				behavior = value;
-				if (widget != null)
-					widget.UpdateBehavior ();
+				if (titleTab != null)
+					titleTab.UpdateBehavior ();
 			}
 		}
 
@@ -512,7 +512,8 @@ namespace MonoDevelop.Components.Docking
 			floatingWindow.Move (rect.X, rect.Y);
 			floatingWindow.Resize (rect.Width, rect.Height);
 			floatingWindow.Show ();
-			Widget.UpdateBehavior ();
+			if (titleTab != null)
+				titleTab.UpdateBehavior ();
 			Widget.Show ();
 		}
 		
@@ -522,7 +523,8 @@ namespace MonoDevelop.Components.Docking
 				// The widgets have already been removed from the window in ResetMode
 				floatingWindow.Destroy ();
 				floatingWindow = null;
-				widget.UpdateBehavior ();
+				if (titleTab != null)
+					titleTab.UpdateBehavior ();
 			}
 		}
 		
@@ -560,8 +562,8 @@ namespace MonoDevelop.Components.Docking
 				}
 			}
 			dockBarItem = frame.BarDock (pos, this, size);
-			if (widget != null)
-				widget.UpdateBehavior ();
+			if (titleTab != null)
+				titleTab.UpdateBehavior ();
 
 			SetRegionStyle (frame.GetRegionStyleForItem (this));
 		}
@@ -571,8 +573,8 @@ namespace MonoDevelop.Components.Docking
 			if (dockBarItem != null) {
 				dockBarItem.Close ();
 				dockBarItem = null;
-				if (widget != null)
-					widget.UpdateBehavior ();
+				if (titleTab != null)
+					titleTab.UpdateBehavior ();
 			}
 		}
 		

@@ -732,6 +732,7 @@ namespace MonoDevelop.Components.Docking
 								((Gtk.Container)tab.Parent).Remove (tab);
 							}
 							Frame.Container.Add (tab);
+							tab.Active = true;
 						}
 						tab.ShowAll ();
 					}

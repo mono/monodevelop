@@ -109,6 +109,7 @@ namespace MonoDevelop.Components.Docking
 #endif
 			VBox itemBox = new VBox ();
 			itemBox.Show ();
+			item.TitleTab.Active = true;
 			itemBox.PackStart (item.TitleTab, false, false, 0);
 			itemBox.PackStart (item.Widget, true, true, 0);
 

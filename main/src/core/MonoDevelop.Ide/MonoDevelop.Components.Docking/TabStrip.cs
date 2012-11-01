@@ -33,6 +33,8 @@ using Gtk;
 using System;
 using MonoDevelop.Ide.Gui;
 using System.Linq;
+using MonoDevelop.Core;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Components.Docking
 {
@@ -75,13 +77,6 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 		
-		public void AddTab (Gtk.Widget page, Gdk.Pixbuf icon, string label)
-		{
-			Tab tab = new Tab (frame);
-			tab.SetLabel (page, icon, label);
-			AddTab (tab);
-		}
-
 		public void AddTab (Tab tab)
 		{
 			if (tab.Parent != null)
@@ -309,15 +304,31 @@ namespace MonoDevelop.Components.Docking
 		Image tabIcon;
 		DockFrame frame;
 		string label;
-		
+		MiniDockButton btnDock;
+		MiniDockButton btnClose;
+		DockItem item;
+
+		static Gdk.Pixbuf pixClose;
+		static Gdk.Pixbuf pixAutoHide;
+		static Gdk.Pixbuf pixDock;
+
 		const int TopPadding = 5;
 		const int BottomPadding = 7;
 		const int TopPaddingActive = 5;
 		const int BottomPaddingActive = 7;
-		const int HorzPadding = 11;
-		
-		public Tab (DockFrame frame)
+		const int LeftPadding = 11;
+		const int RightPadding = 9;
+
+		static Tab ()
 		{
+			pixClose = Gdk.Pixbuf.LoadFromResource ("stock-close-12.png");
+			pixAutoHide = Gdk.Pixbuf.LoadFromResource ("stock-auto-hide.png");
+			pixDock = Gdk.Pixbuf.LoadFromResource ("stock-dock.png");
+		}
+		
+		public Tab (DockItem item, DockFrame frame)
+		{
+			this.item = item;
 			this.frame = frame;
 			this.VisibleWindow = false;
 			UpdateVisualStyle ();
@@ -391,7 +402,34 @@ namespace MonoDevelop.Components.Docking
 			} else {
 				labelWidget = null;
 			}
-			
+
+			btnDock = new MiniDockButton ();
+			btnDock.Image = pixAutoHide;
+			btnDock.TooltipText = GettextCatalog.GetString ("Minimize");
+			btnDock.CanFocus = false;
+//			btnDock.WidthRequest = btnDock.HeightRequest = 17;
+			btnDock.Clicked += OnClickDock;
+			btnDock.WidthRequest = btnDock.SizeRequest ().Width;
+
+			btnClose = new MiniDockButton ();
+			btnClose.Image = pixClose;
+			btnClose.TooltipText = GettextCatalog.GetString ("Auto Hide");
+			btnClose.CanFocus = false;
+//			btnClose.WidthRequest = btnClose.HeightRequest = 17;
+			btnClose.WidthRequest = btnDock.SizeRequest ().Width;
+			btnClose.Clicked += delegate {
+				item.Visible = false;
+			};
+
+			Gtk.Alignment al = new Alignment (0, 0, 1, 1);
+			HBox btnBox = new HBox (false, 3);
+			btnBox.PackStart (btnDock, false, false, 0);
+			btnBox.PackStart (btnClose, false, false, 0);
+			al.Add (btnBox);
+			al.LeftPadding = 3;
+			al.TopPadding = 1;
+			box.PackEnd (al, false, false, 0);
+
 			Add (box);
 			
 			// Get the required size before setting the ellipsize property, since ellipsized labels
@@ -399,9 +437,18 @@ namespace MonoDevelop.Components.Docking
 			box.ShowAll ();
 			Show ();
 
+			UpdateBehavior ();
 			UpdateVisualStyle ();
 		}
 		
+		void OnClickDock (object s, EventArgs a)
+		{
+			if (item.Status == DockItemStatus.AutoHide || item.Status == DockItemStatus.Floating)
+				item.Status = DockItemStatus.Dockable;
+			else
+				item.Status = DockItemStatus.AutoHide;
+		}
+
 		public int LabelWidth {
 			get { return labelWidth; }
 		}
@@ -411,15 +458,42 @@ namespace MonoDevelop.Components.Docking
 				return active;
 			}
 			set {
-				active = value;
-				this.QueueResize ();
-				QueueDraw ();
+				if (active != value) {
+					active = value;
+					this.QueueResize ();
+					QueueDraw ();
+					UpdateBehavior ();
+				}
 			}
 		}
 
 		public Widget Page {
 			get {
 				return page;
+			}
+		}
+		
+		public void UpdateBehavior ()
+		{
+			if (btnClose == null)
+				return;
+
+			btnClose.Visible = (item.Behavior & DockItemBehavior.CantClose) == 0;
+			btnDock.Visible = (item.Behavior & DockItemBehavior.CantAutoHide) == 0;
+			
+			if (active) {
+				if (btnClose.Image == null)
+					btnClose.Image = pixClose;
+				if (item.Status == DockItemStatus.AutoHide || item.Status == DockItemStatus.Floating) {
+					btnDock.Image = pixDock;
+					btnDock.TooltipText = GettextCatalog.GetString ("Dock");
+				} else {
+					btnDock.Image = pixAutoHide;
+					btnDock.TooltipText = GettextCatalog.GetString ("Auto Hide");
+				}
+			} else {
+				btnDock.Image = null;
+				btnClose.Image = null;
 			}
 		}
 
@@ -433,7 +507,7 @@ namespace MonoDevelop.Components.Docking
 		{
 			if (Child != null) {
 				req = Child.SizeRequest ();
-				req.Width += HorzPadding * 2;
+				req.Width += LeftPadding + RightPadding;
 				if (active)
 					req.Height += TopPaddingActive + BottomPaddingActive;
 				else
@@ -445,14 +519,18 @@ namespace MonoDevelop.Components.Docking
 		{
 			base.OnSizeAllocated (rect);
 
-			int padding = HorzPadding;
+			int leftPadding = LeftPadding;
+			int rightPadding = RightPadding;
 			if (rect.Width < labelWidth) {
-				padding -= (labelWidth - rect.Width) / 2;
-				if (padding < 2) padding = 2;
+				int red = (labelWidth - rect.Width) / 2;
+				leftPadding -= red;
+				rightPadding -= red;
+				if (leftPadding < 2) leftPadding = 2;
+				if (rightPadding < 2) rightPadding = 2;
 			}
 			
-			rect.X += padding;
-			rect.Width -= padding * 2;
+			rect.X += leftPadding;
+			rect.Width -= leftPadding + rightPadding;
 
 			if (Child != null) {
 				if (active) {
@@ -565,4 +643,88 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 	}
+
+	class MiniDockButton: Gtk.EventBox
+	{
+		Gdk.Pixbuf image;
+		Gdk.Pixbuf inactiveImage;
+		Gtk.Image imageWidget;
+		bool hover;
+		bool pressed;
+
+		public MiniDockButton ()
+		{
+			Child = imageWidget = new Gtk.Image ();
+			Child.Show ();
+			Events |= Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask | Gdk.EventMask.ButtonReleaseMask;
+			VisibleWindow = false;
+		}
+
+		public Gdk.Pixbuf Image {
+			get { return image; }
+			set {
+				image = value;
+				var oldInactive = inactiveImage;
+				inactiveImage = image != null ? ImageService.MakeTransparent (image, 0.5) : null;
+				LoadImage ();
+				if (oldInactive != null)
+					oldInactive.Dispose ();
+			}
+		}
+
+		protected override void OnDestroyed ()
+		{
+			if (inactiveImage != null)
+				inactiveImage.Dispose ();
+			base.OnDestroyed ();
+		}
+
+		void LoadImage ()
+		{
+			if (image != null) {
+				if (hover)
+					imageWidget.Pixbuf = image;
+				else
+					imageWidget.Pixbuf = inactiveImage;
+			} else {
+				imageWidget.Pixbuf = null;
+			}
+		}
+
+		protected override bool OnEnterNotifyEvent (Gdk.EventCrossing evnt)
+		{
+			hover = true;
+			LoadImage ();
+			return base.OnEnterNotifyEvent (evnt);
+		}
+
+		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)
+		{
+			hover = false;
+			LoadImage ();
+			return base.OnLeaveNotifyEvent (evnt);
+		}
+
+		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
+		{
+			pressed = image != null;
+			return base.OnButtonPressEvent (evnt);
+		}
+
+		protected override bool OnButtonReleaseEvent (Gdk.EventButton evnt)
+		{
+			if (pressed && evnt.Button == 1 && new Gdk.Rectangle (0, 0, Allocation.Width, Allocation.Height).Contains ((int)evnt.X, (int)evnt.Y)) {
+				hover = false;
+				LoadImage ();
+				if (Clicked != null)
+					Clicked (this, EventArgs.Empty);
+				return true;
+			}
+			return base.OnButtonReleaseEvent (evnt);
+		}
+
+		public event EventHandler Clicked;
+	}
 }
+
+

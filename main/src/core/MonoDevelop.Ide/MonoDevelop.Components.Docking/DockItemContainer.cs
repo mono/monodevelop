@@ -71,8 +71,6 @@ namespace MonoDevelop.Components.Docking
 			mainBox.PackStart (hbox, true, true, 0);
 			
 			mainBox.PackStart (item.GetToolbar (PositionType.Bottom).Container, false, false, 0);
-			
-			UpdateBehavior ();
 		}
 
 		DockVisualStyle visualStyle;
@@ -160,10 +158,6 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 		
-		public void UpdateBehavior ()
-		{
-		}
-
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
 			if (VisualStyle.TabStyle == DockTabStyle.Normal) {
