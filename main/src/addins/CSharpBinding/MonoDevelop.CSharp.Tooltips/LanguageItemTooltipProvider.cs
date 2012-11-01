@@ -164,9 +164,10 @@ namespace MonoDevelop.SourceEditor
 			var hoverNode = titem.Node.GetNodeAt (editor.OffsetToLocation (offset)) ?? titem.Node;
 			var p1 = editor.LocationToPoint (hoverNode.StartLocation);
 			var p2 = editor.LocationToPoint (hoverNode.EndLocation);
-			var caret = new Gdk.Rectangle ((int)p1.X - editor.Allocation.X, (int)p2.Y - editor.Allocation.Y, (int)(p2.X - p1.X), (int)editor.LineHeight);
+			var positionWidget = editor.TextArea;
+			var caret = new Gdk.Rectangle ((int)p1.X - positionWidget.Allocation.X, (int)p2.Y - positionWidget.Allocation.Y, (int)(p2.X - p1.X), (int)editor.LineHeight);
 
-			tipWindow.ShowPopup (editor, caret, PopupPosition.Top);
+			tipWindow.ShowPopup (positionWidget, caret, PopupPosition.Top);
 			
 			lastWindow = tipWindow;
 			lastNode   = titem.Node;
