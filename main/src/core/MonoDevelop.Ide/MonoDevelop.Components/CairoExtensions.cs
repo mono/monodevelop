@@ -32,6 +32,7 @@ using System.Runtime.InteropServices;
 
 using Gdk;
 using Cairo;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components
 {
@@ -453,7 +454,7 @@ namespace MonoDevelop.Components
 		public static void CachedDraw (this Cairo.Context self, ref SurfaceWrapper surface, Gdk.Rectangle region, 
 		                               object parameters = null, float opacity = 1.0f, Action<Cairo.Context, float> draw = null)
 		{
-			if (!MonoDevelop.Core.Platform.IsWindows) {
+			if (!Platform.IsWindows) {
 				self.Translate (region.X, region.Y);
 				draw(self, opacity);
 				self.Translate (-region.X, -region.Y);
@@ -493,7 +494,7 @@ namespace MonoDevelop.Components
 
 		public SurfaceWrapper (Cairo.Context similar, int width, int height)
 		{
-			if (MonoDevelop.Core.Platform.IsMac)
+			if (Platform.IsMac)
 				Surface = new QuartzSurface (Cairo.Format.ARGB32, width, height);
 			else
 				Surface = similar.Target.CreateSimilar (Cairo.Content.ColorAlpha, width, height);
@@ -505,7 +506,7 @@ namespace MonoDevelop.Components
 		{
 			Cairo.Surface surface;
 			// There is a bug in Cairo for OSX right now that prevents creating additional accellerated surfaces.
-			if (MonoDevelop.Core.Platform.IsMac)
+			if (Platform.IsMac)
 				surface = new QuartzSurface (Cairo.Format.ARGB32, source.Width, source.Height);
 			else
 				surface = similar.Target.CreateSimilar (Cairo.Content.ColorAlpha, source.Width, source.Height);
