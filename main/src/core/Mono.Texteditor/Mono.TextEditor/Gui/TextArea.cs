@@ -2598,6 +2598,11 @@ namespace Mono.TextEditor
 
 		void ShowTooltip (Gdk.ModifierType modifierState)
 		{
+			if (mx < TextViewMargin.XOffset + TextViewMargin.TextStartPosition) {
+				HideTooltip ();
+				return;
+			}
+
 			var loc = PointToLocation (mx, my, true);
 			if (loc.IsEmpty) {
 				HideTooltip ();
