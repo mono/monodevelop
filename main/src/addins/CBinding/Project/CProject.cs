@@ -362,6 +362,7 @@ namespace CBinding
 				
 				monitor.Log.WriteLine ("The operation exited with code: {0}", op.ExitCode);
 			} catch (Exception ex) {
+				LoggingService.LogError (string.Format ("Cannot execute \"{0}\"", conf.Output), ex);
 				monitor.ReportError ("Cannot execute \"" + conf.Output + "\"", ex);
 			} finally {			
 				operationMonitor.Dispose ();			

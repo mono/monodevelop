@@ -1152,6 +1152,7 @@ namespace MonoDevelop.Projects
 					aggregatedOperationMonitor.Dispose ();
 				}
 			} catch (Exception ex) {
+				LoggingService.LogError (string.Format ("Cannot execute \"{0}\"", dotNetProjectConfig.CompiledOutputName), ex);
 				monitor.ReportError (GettextCatalog.GetString ("Cannot execute \"{0}\"", dotNetProjectConfig.CompiledOutputName), ex);
 			}
 		}
