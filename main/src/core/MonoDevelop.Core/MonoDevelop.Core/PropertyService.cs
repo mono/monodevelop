@@ -194,12 +194,15 @@ namespace MonoDevelop.Core
 			}
 			
 			//try the old unversioned MD <= 2.4 profile
-			var md24 = UserProfile.ForMD24 ();
-			if (File.Exists (md24.ConfigDir.Combine (FileName))) {
-				profile = md24;
-				version = "2.4";
-				return true;
+			if (BrandingService.ProfileDirectoryName == "MonoDevelop") {
+				var md24 = UserProfile.ForMD24 ();
+				if (File.Exists (md24.ConfigDir.Combine (FileName))) {
+					profile = md24;
+					version = "2.4";
+					return true;
+				}
 			}
+
 			return false;
 		}
 		
