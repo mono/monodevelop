@@ -1482,7 +1482,7 @@ namespace Mono.TextEditor
 							x2 /= (int)Pango.Scale.PangoScale;
 	
 							cr.Color = MainSearchResult.IsInvalid || MainSearchResult.Offset != firstSearch.Offset ? ColorStyle.SearchTextBg : ColorStyle.SearchTextMainBg;
-							FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, x1, y, System.Math.Min (10, width) * textEditor.Options.Zoom, x2 - x1, LineHeight);
+							FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, x1, y, System.Math.Min (4, width) * textEditor.Options.Zoom, x2 - x1, LineHeight);
 							cr.Fill ();
 						}
 					}, null);
