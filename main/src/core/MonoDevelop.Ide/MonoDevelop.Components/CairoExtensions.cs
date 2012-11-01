@@ -550,11 +550,15 @@ namespace MonoDevelop.Components
 				return 1;
 
 			var rect = new System.Drawing.RectangleF ();
-			try {
-				rect = CGContextConvertRectToDeviceSpace (cairo_quartz_surface_get_cg_context (cairo_get_target (context.Handle)), new System.Drawing.RectangleF (1, 1, 1, 1));
-			} catch (DllNotFoundException) {
-				rect = CGContextConvertRectToDeviceSpaceLion (cairo_quartz_surface_get_cg_context (cairo_get_target (context.Handle)), new System.Drawing.RectangleF (1, 1, 1, 1));
+			var cgContext = cairo_quartz_surface_get_cg_context (cairo_get_target (context.Handle));
+			var unitRect = new System.Drawing.RectangleF (1, 1, 1, 1);
+
+			if (MacSystemInformation.OsVersion > MacSystemInformation.Lion) {
+				rect = CGContextConvertRectToDeviceSpace (cgContext, unitRect);
+			} else {
+				rect = CGContextConvertRectToDeviceSpaceLion (cgContext, unitRect);
 			}
+
 			return rect.X;
 		}
 
