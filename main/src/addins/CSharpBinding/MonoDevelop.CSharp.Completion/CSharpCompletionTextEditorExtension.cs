@@ -215,24 +215,25 @@ namespace MonoDevelop.CSharp.Completion
 		
 		ICompletionDataList InternalHandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, bool ctrlSpace, ref int triggerWordLength)
 		{
-			if (TextEditorData.CurrentMode is TextLinkEditMode) {
-				if (((TextLinkEditMode)TextEditorData.CurrentMode).TextLinkMode == TextLinkMode.EditIdentifier)
+			var data = TextEditorData;
+			if (data.CurrentMode is TextLinkEditMode) {
+				if (((TextLinkEditMode)data.CurrentMode).TextLinkMode == TextLinkMode.EditIdentifier)
 					return null;
 			}
 			if (Unit == null || CSharpUnresolvedFile == null)
 				return null;
 			var list = new CompletionDataList ();
-			var ctx = CSharpUnresolvedFile.GetTypeResolveContext (Document.Compilation, document.Editor.Caret.Location) as CSharpTypeResolveContext;
+			var ctx = CSharpUnresolvedFile.GetTypeResolveContext (Document.Compilation, data.Caret.Location) as CSharpTypeResolveContext;
 			var engine = new CSharpCompletionEngine (
-				TextEditorData.Document,
+				data.Document,
 				typeSystemSegmentTree,
 				new CompletionDataFactory (this, new CSharpResolver (ctx)),
 				Document.GetProjectContext (),
 				ctx
 			);
 			engine.FormattingPolicy = FormattingPolicy.CreateOptions ();
-			engine.EolMarker = TextEditorData.EolMarker;
-			engine.IndentString = TextEditorData.Options.IndentationString;
+			engine.EolMarker = data.EolMarker;
+			engine.IndentString = data.Options.IndentationString;
 			try {
 				list.AddRange (engine.GetCompletionData (completionContext.TriggerOffset, ctrlSpace));
 			} catch (Exception e) {

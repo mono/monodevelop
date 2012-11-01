@@ -37,12 +37,10 @@ namespace MonoDevelop.DocFood
 {
 	public class DocFoodTextEditorExtension : TextEditorExtension
 	{
-		TextEditorData textEditorData;
-		
-		public override void Initialize ()
-		{
-			base.Initialize ();
-			textEditorData = Document.Editor;
+		TextEditorData textEditorData {
+			get {
+				return Document.Editor;
+			}
 		}
 		
 		string GenerateDocumentation (IEntity member, string indent)

@@ -282,13 +282,15 @@ namespace MonoDevelop.SourceEditor
 			this.view = view;
 			vbox.SetSizeRequest (32, 32);
 			this.lastActiveEditor = this.textEditor = new MonoDevelop.SourceEditor.ExtensibleTextEditor (view);
-			this.textEditor.FocusInEvent += (o, s) => lastActiveEditor = (ExtensibleTextEditor)o;
-			this.textEditor.FocusOutEvent += delegate {
-				if (this.splittedTextEditor == null || !splittedTextEditor.HasFocus)
+			this.textEditor.TextArea.FocusInEvent += (o, s) => {
+				lastActiveEditor = (ExtensibleTextEditor)((TextArea)o).GetTextEditorData ().Parent;
+				view.FireCompletionContextChanged ();
+			};
+			this.textEditor.TextArea.FocusOutEvent += delegate {
+				if (this.splittedTextEditor == null || !splittedTextEditor.TextArea.HasFocus)
 					OnLostFocus ();
 			};
 			mainsw = new DecoratedScrolledWindow (this);
-			this.textEditor = textEditor;
 			mainsw.SetTextEditor (textEditor);
 			
 			vbox.PackStart (mainsw, true, true, 0);
@@ -667,16 +669,18 @@ namespace MonoDevelop.SourceEditor
 			};
 			secondsw = new DecoratedScrolledWindow (this);
 			this.splittedTextEditor = new MonoDevelop.SourceEditor.ExtensibleTextEditor (view, this.textEditor.Options, textEditor.Document);
-			this.splittedTextEditor.FocusInEvent += (o, s) => lastActiveEditor = (ExtensibleTextEditor)o;
-			this.splittedTextEditor.FocusOutEvent += delegate {
-				 if (!textEditor.HasFocus)
+			this.splittedTextEditor.TextArea.FocusInEvent += (o, s) => {
+				lastActiveEditor = (ExtensibleTextEditor)((TextArea)o).GetTextEditorData ().Parent;
+				view.FireCompletionContextChanged ();
+			};
+			this.splittedTextEditor.TextArea.FocusOutEvent += delegate {
+				 if (!textEditor.TextArea.HasFocus)
 					OnLostFocus ();
 			};
 			this.splittedTextEditor.Extension = textEditor.Extension;
 			this.splittedTextEditor.GetTextEditorData ().IndentationTracker = textEditor.GetTextEditorData ().IndentationTracker;
 			this.splittedTextEditor.Document.BracketMatcher = textEditor.Document.BracketMatcher;
 
-			this.splittedTextEditor = this.splittedTextEditor;
 			secondsw.SetTextEditor (this.splittedTextEditor);
 			splitContainer.Add2 (secondsw);
 			

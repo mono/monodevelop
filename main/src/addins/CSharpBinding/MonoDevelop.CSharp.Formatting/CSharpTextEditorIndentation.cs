@@ -46,7 +46,11 @@ namespace MonoDevelop.CSharp.Formatting
 	{
 		DocumentStateTracker<CSharpIndentEngine> stateTracker;
 		int cursorPositionBeforeKeyPress;
-		TextEditorData textEditorData;
+		TextEditorData textEditorData {
+			get {
+				return document.Editor;
+			}
+		}
 		CSharpFormattingPolicy policy;
 		TextStylePolicy textStylePolicy;
 
@@ -169,7 +173,6 @@ namespace MonoDevelop.CSharp.Formatting
 				textStylePolicy = base.Document.Project.Policies.Get<TextStylePolicy> (types);
 			}
 
-			textEditorData = Document.Editor;
 			if (textEditorData != null) {
 				textEditorData.Options.Changed += delegate {
 					var project = base.Document.Project;

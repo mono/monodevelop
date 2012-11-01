@@ -292,19 +292,15 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		Mono.TextEditor.TextEditorData data = null;
+		Mono.TextEditor.ITextEditorDataProvider provider = null;
 		public Mono.TextEditor.TextEditorData Editor {
 			get {
-				if (data == null) {
-					Mono.TextEditor.ITextEditorDataProvider view = GetContent <Mono.TextEditor.ITextEditorDataProvider> ();
-					if (view != null) {
-						data = view.GetTextEditorData ();
-						if (data.IsDisposed)
-							return null;
-						data.Document.Tag = this;
-					}
+				if (provider == null) {
+					provider = GetContent <Mono.TextEditor.ITextEditorDataProvider> ();
+					if (provider == null)
+						return null;
 				}
-				return data;
+				return provider.GetTextEditorData ();
 			}
 		}
 
@@ -559,7 +555,7 @@ namespace MonoDevelop.Ide.Gui
 			}*/
 			
 			parsedDocument = null;
-			data = null;
+			provider = null;
 			Counters.OpenDocuments--;
 		}
 #region document tasks
