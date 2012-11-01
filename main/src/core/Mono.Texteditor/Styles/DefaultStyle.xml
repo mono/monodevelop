@@ -53,8 +53,8 @@
 	 <Style name="text" color="text-black" bgColor="white">
 		 <Style name="background" color="white">
 			 <Style name="readonly" color="aluminum1"/>
-			 <Style name="searchresult-main" color="orangesicle"/>
-			 <Style name="searchresult" color="orangesicle-light"/>
+			 <Style name="searchresult-main" color="#E5992F"/>
+			 <Style name="searchresult" color="#F6B94D"/>
 		 </Style>
 		 <Style name="selection" bgColor="selection-bg"/>
 		 <Style name="selection.inactive" bgColor="aluminum2"/>
@@ -127,13 +127,13 @@
 			 <Style name="secondary_highlighted_template" color="aluminum3" bgColor="aluminum1"/>
 		 </Style>
 		 
-		 <Style name="breakpoint" color="white"  bgColor="#7D0000">
+		 <Style name="breakpoint" color="white"  bgColor="#AB616B">
 			 <Style name="color1" color="white"/>
-			 <Style name="color2" color="#7D0000"/>
+			 <Style name="color2" color="#AB616B"/>
 			 <Style name="invalid" color="#eddcdc">
 				 <Style name="color1" color="#eddcdc"/>
 				 <Style name="background" color="#eddcdc" />
-				 <Style name="border" color="#7d0000" />
+				 <Style name="border" color="#AB616B" />
 			 </Style>
 			 <Style name="disabled.background" color="#eddcdc" />
 		 </Style>
