@@ -41,9 +41,7 @@ using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Resolver;
-using System.IO;
 using ICSharpCode.NRefactory.Semantics;
-using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using MonoDevelop.SourceEditor.QuickTasks;
 using System.Threading;
@@ -67,7 +65,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		}
 	}
 	
-	class CSharpSyntaxMode : Mono.TextEditor.Highlighting.SyntaxMode, IQuickTaskProvider, IDisposable
+	class CSharpSyntaxMode : SyntaxMode, IQuickTaskProvider, IDisposable
 	{
 		readonly Document guiDocument;
 
@@ -75,9 +73,9 @@ namespace MonoDevelop.CSharp.Highlighting
 		CSharpUnresolvedFile parsedFile;
 		ICompilation compilation;
 		CSharpAstResolver resolver;
-		CancellationTokenSource src = null;
+		CancellationTokenSource src;
 
-		public bool semanticHighlightingEnabled {
+		public bool SemanticHighlightingEnabled {
 			get;
 			set;
 		}
@@ -129,7 +127,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			if (src != null)
 				src.Cancel ();
 			resolver = null;
-			if (guiDocument != null && MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", true)) {
+			if (guiDocument != null && SemanticHighlightingEnabled) {
 				var parsedDocument = guiDocument.ParsedDocument;
 				if (parsedDocument != null) {
 					unit = parsedDocument.GetAst<SyntaxTree> ();
@@ -166,8 +164,8 @@ namespace MonoDevelop.CSharp.Highlighting
 									lineSegments.Clear ();
 									var textEditor = editorData.Parent;
 									if (textEditor != null) {
-										var margin = textEditor.TextViewMargin;
 										if (!parsedDocument.HasErrors) {
+											var margin = textEditor.TextViewMargin;
 											margin.PurgeLayoutCache ();
 											textEditor.QueueDraw ();
 										}
@@ -232,6 +230,9 @@ namespace MonoDevelop.CSharp.Highlighting
 
 			public override void VisitIdentifierExpression (IdentifierExpression identifierExpression)
 			{
+				foreach (var tp in identifierExpression.TypeArguments) {
+					tp.AcceptVisitor (this);
+				}
 				if (identifierExpression.StartLocation.Line != lineNumber)
 					return;
 				if (isInAccessor && identifierExpression.Identifier == "value") {
@@ -249,28 +250,28 @@ namespace MonoDevelop.CSharp.Highlighting
 					var member = ((MemberResolveResult)result).Member;
 					switch (member.EntityType) {
 					case EntityType.Field:
-						Colorize (identifierExpression, "keyword.semantic.field");
+						Colorize (identifierExpression.IdentifierToken, "keyword.semantic.field");
 						break;
 					case EntityType.Property:
-						Colorize (identifierExpression, "keyword.semantic.property");
+						Colorize (identifierExpression.IdentifierToken, "keyword.semantic.property");
 						break;
 					case EntityType.Method:
-						Colorize (identifierExpression, "keyword.semantic.method");
+						Colorize (identifierExpression.IdentifierToken, "keyword.semantic.method");
 						break;
 					case EntityType.Event:
-						Colorize (identifierExpression, "keyword.semantic.event");
+						Colorize (identifierExpression.IdentifierToken, "keyword.semantic.event");
 						break;
 					}
 					return;
 				}
 
 				if (result is MethodGroupResolveResult) {
-					Colorize (identifierExpression, "keyword.semantic.method");
+					Colorize (identifierExpression.IdentifierToken, "keyword.semantic.method");
 					return;
 				}
 
 				if (result is TypeResolveResult) {
-					Colorize (identifierExpression, "keyword.semantic.type");
+					Colorize (identifierExpression.IdentifierToken, "keyword.semantic.type");
 					return;
 				}
 			}
@@ -601,7 +602,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			readonly CSharpAstResolver resolver;
 			readonly CancellationToken cancellationToken;
 
-			public QuickTaskVisitor (ICSharpCode.NRefactory.CSharp.Resolver.CSharpAstResolver resolver, CancellationToken cancellationToken)
+			public QuickTaskVisitor (CSharpAstResolver resolver, CancellationToken cancellationToken)
 			{
 				this.resolver = resolver;
 			}
@@ -634,7 +635,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		
 		static CSharpSyntaxMode ()
 		{
-			MonoDevelop.Debugger.DebuggingService.DisableConditionalCompilation += (EventHandler<DocumentEventArgs>)DispatchService.GuiDispatch (new EventHandler<DocumentEventArgs> (OnDisableConditionalCompilation));
+			MonoDevelop.Debugger.DebuggingService.DisableConditionalCompilation += DispatchService.GuiDispatch (new EventHandler<DocumentEventArgs> (OnDisableConditionalCompilation));
 			IdeApp.Workspace.ActiveConfigurationChanged += delegate {
 				foreach (var doc in IdeApp.Workbench.Documents) {
 					TextEditorData data = doc.Editor;
@@ -647,7 +648,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			};
 		}
 		
-		static void OnDisableConditionalCompilation (object s, MonoDevelop.Ide.Gui.DocumentEventArgs e)
+		static void OnDisableConditionalCompilation (object s, DocumentEventArgs e)
 		{
 			var mode = e.Document.Editor.Document.SyntaxMode as CSharpSyntaxMode;
 			if (mode == null)
@@ -678,12 +679,12 @@ namespace MonoDevelop.CSharp.Highlighting
 			"equals"
 		};
 
-		public CSharpSyntaxMode (MonoDevelop.Ide.Gui.Document document)
+		public CSharpSyntaxMode (Document document)
 		{
 			this.guiDocument = document;
 			guiDocument.DocumentParsed += HandleDocumentParsed;
-			semanticHighlightingEnabled = MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", true);
-			MonoDevelop.Core.PropertyService.PropertyChanged += HandlePropertyChanged;
+			SemanticHighlightingEnabled = PropertyService.Get ("EnableSemanticHighlighting", true);
+			PropertyService.PropertyChanged += HandlePropertyChanged;
 			if (guiDocument.ParsedDocument != null)
 				HandleDocumentParsed (this, EventArgs.Empty);
 
@@ -729,7 +730,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			if (src != null)
 				src.Cancel ();
 			guiDocument.DocumentParsed -= HandleDocumentParsed;
-			MonoDevelop.Core.PropertyService.PropertyChanged -= HandlePropertyChanged;
+			PropertyService.PropertyChanged -= HandlePropertyChanged;
 		}
 
 		#endregion
@@ -737,7 +738,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		void HandlePropertyChanged (object sender, PropertyChangedEventArgs e)
 		{
 			if (e.Key == "EnableSemanticHighlighting")
-				semanticHighlightingEnabled = MonoDevelop.Core.PropertyService.Get ("EnableSemanticHighlighting", true);
+				SemanticHighlightingEnabled = PropertyService.Get ("EnableSemanticHighlighting", true);
 		}
 
 		public override SpanParser CreateSpanParser (DocumentLine line, CloneableStack<Span> spanStack)
@@ -864,13 +865,11 @@ namespace MonoDevelop.CSharp.Highlighting
 			ResolveVisitorNavigationMode IResolveVisitorNavigator.Scan(AstNode node)
 			{
 				if (node is SimpleType || node is MemberType
-				    || node is IdentifierExpression || node is MemberReferenceExpression
-				    || node is InvocationExpression)
-				{
+					|| node is IdentifierExpression || node is MemberReferenceExpression
+					|| node is InvocationExpression) {
 					return ResolveVisitorNavigationMode.Resolve;
-				} else {
-					return ResolveVisitorNavigationMode.Scan;
 				}
+				return ResolveVisitorNavigationMode.Scan;
 			}
 			
 			void IResolveVisitorNavigator.Resolved(AstNode node, ResolveResult result)
@@ -891,7 +890,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			{
 				var document = csharpSyntaxMode.guiDocument;
 				var parsedDocument = document != null ? document.ParsedDocument : null;
-				if (parsedDocument != null && csharpSyntaxMode.semanticHighlightingEnabled && csharpSyntaxMode.resolver != null) {
+				if (parsedDocument != null && csharpSyntaxMode.SemanticHighlightingEnabled && csharpSyntaxMode.resolver != null) {
 					int endLoc = -1;
 					string semanticStyle = null;
 					if (spanParser.CurSpan == null || spanParser.CurSpan is DefineSpan) {
@@ -945,7 +944,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			{
 				HashSet<string> symbols;
 
-				MonoDevelop.Projects.Project GetProject (Mono.TextEditor.TextDocument doc)
+				MonoDevelop.Projects.Project GetProject (TextDocument doc)
 				{
 					// There is no reference between document & higher level infrastructure,
 					// therefore it's a bit tricky to find the right project.
@@ -967,7 +966,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					return project;
 				}
 
-				public ConditinalExpressionEvaluator (Mono.TextEditor.TextDocument doc, IEnumerable<string> symbols)
+				public ConditinalExpressionEvaluator (TextDocument doc, IEnumerable<string> symbols)
 				{
 					this.symbols = new HashSet<string> (symbols);
 					var project = GetProject (doc);
@@ -1018,7 +1017,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				
 				public override object VisitUnaryOperatorExpression (UnaryOperatorExpression unaryOperatorExpression, object data)
 				{
-					bool result = (bool)(unaryOperatorExpression.Expression.AcceptVisitor (this, data) ?? (object)false);
+					bool result = (bool)(unaryOperatorExpression.Expression.AcceptVisitor (this, data) ?? false);
 					if (unaryOperatorExpression.Operator ==  UnaryOperatorType.Not)
 						return !result;
 					return result;
@@ -1028,14 +1027,14 @@ namespace MonoDevelop.CSharp.Highlighting
 				public override object VisitPrimitiveExpression (PrimitiveExpression primitiveExpression, object data)
 				{
 					if (primitiveExpression.Value is bool)
-						return (bool)primitiveExpression.Value;
+						return primitiveExpression.Value;
 					return false;
 				}
 
 				public override object VisitBinaryOperatorExpression (BinaryOperatorExpression binaryOperatorExpression, object data)
 				{
-					bool left = (bool)(binaryOperatorExpression.Left.AcceptVisitor (this, data) ?? (object)false);
-					bool right = (bool)(binaryOperatorExpression.Right.AcceptVisitor (this, data) ?? (object)false);
+					bool left = (bool)(binaryOperatorExpression.Left.AcceptVisitor (this, data) ?? false);
+					bool right = (bool)(binaryOperatorExpression.Right.AcceptVisitor (this, data) ?? false);
 					switch (binaryOperatorExpression.Operator) {
 					case BinaryOperatorType.InEquality:
 						return left != right;
@@ -1241,7 +1240,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				}
 			}
 			
-			protected override bool ScanSpanEnd (Mono.TextEditor.Highlighting.Span cur, ref int i)
+			protected override bool ScanSpanEnd (Span cur, ref int i)
 			{
 				if (cur is IfBlockSpan || cur is ElseIfBlockSpan || cur is ElseBlockSpan) {
 					int textOffset = i - StartOffset;
@@ -1279,7 +1278,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		#region IQuickTaskProvider implementation
 		public event EventHandler TasksUpdated;
 
-		protected virtual void OnTasksUpdated (System.EventArgs e)
+		protected virtual void OnTasksUpdated (EventArgs e)
 		{
 			var handler = TasksUpdated;
 			if (handler != null)
