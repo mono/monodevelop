@@ -77,6 +77,11 @@ style "default" {
     GtkExpander::expander-size = 8
     GtkComboBox::arrow-size = 12
 
+    GtkMenu::vertical-padding = 4
+    GtkMenuItem::horizontal-padding = 8
+    GtkMenuItem::toggle-spacing = 0
+    GtkSeparatorMenuItem::horizontal-padding = 2
+
     engine "xamarin" {
 
         arrowstyle = 2
@@ -146,25 +151,23 @@ style "toggle-button" = "button" {
 style "menu" {
     xthickness = 0
     ythickness = 0
+    font_name = "Lucida Grande 14"
 
+    bg[PRELIGHT] = @selected_fg_color
     fg[PRELIGHT] = @selected_fg_color
+    text[PRELIGHT] = @selected_fg_color
 
-    engine "xamarin" {
-        roundness = 3
-        gradient_shades     = {1.02, 0.97, 0.92, 0.87}
+    engine "quartz" {
     }
 }
 
-style "menu-item" {
-    xthickness = 0
+style "menu-item" = "menu" {
+    ythickness = 2
+    GtkWidget::draw-border = { 0, 0, 0, 2 }
+}
+
+style "menu-separator" = "menu-item" {
     ythickness = 3
-
-    fg[PRELIGHT] = @selected_fg_color
-
-    engine "xamarin" {
-        roundness = 0
-        gradient_shades     = {1.02, 0.97, 0.92, 0.87}
-    }
 }
 
 style "toolbar" = "default"
@@ -248,7 +251,7 @@ style "combo-box" = "default"
 
 style "combo-box-entry" = "combo-box"
 {
-   	engine "xamarin" {
+    engine "xamarin" {
         arrowstyle = 3
     }
 }
@@ -256,6 +259,10 @@ style "combo-box-entry" = "combo-box"
 style "combo-box-label" = "combo-box"
 {
     fg[NORMAL] = "#595959"
+}
+
+style "combo-box-menu" = "menu" {
+    font_name = "Lucida Grande 12"
 }
 
 style "notebook" = "default"
@@ -364,6 +371,8 @@ widget_class "<GtkDialog>.<GtkVBox>.<GtkButtonBox>.<GtkButton>*" style "dialog-b
 
 widget_class "*<GtkMenu>*"      style "menu"
 widget_class "*<GtkMenuItem>*"  style "menu-item"
+widget_class "*<GtkSeparatorMenuItem>" style "menu-separator"
+widget "*.gtk-combobox-popup-menu*" style "combo-box-menu"
 
 widget_class "*<GtkToolbar>*" style "toolbar"
 widget_class "*ToolButton*"     style "toolbar-button"
