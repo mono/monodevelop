@@ -532,6 +532,23 @@ namespace MonoDevelop.Components
 		[DllImport ("libcairo-2.dll", CallingConvention = CallingConvention.Cdecl)]
 		public static extern IntPtr cairo_quartz_surface_create(Cairo.Format format, uint width, uint height);
 
+		[DllImport ("libcairo-2.dll", CallingConvention = CallingConvention.Cdecl)]
+		public static extern IntPtr cairo_quartz_surface_get_cg_context(IntPtr surface);
+
+		[DllImport ("libcairo-2.dll", CallingConvention = CallingConvention.Cdecl)]
+		public static extern IntPtr cairo_get_target(IntPtr context);
+
+		[DllImport ("/System/Library/Frameworks/CoreGraphics.framework/Versions/A/Resources/BridgeSupport/CoreGraphics.dylib", CallingConvention = CallingConvention.Cdecl)]
+		public static extern System.Drawing.RectangleF CGContextConvertRectToDeviceSpace (IntPtr contextRef, System.Drawing.RectangleF cgrect);
+
+		public static double GetRetinaScale (Cairo.Context context)  {
+			if (MonoDevelop.Core.Platform.IsWindows)
+				return 1;
+
+			var rect = CGContextConvertRectToDeviceSpace (cairo_quartz_surface_get_cg_context (cairo_get_target (context.Handle)), new System.Drawing.RectangleF (1, 1, 1, 1));
+			return rect.X;
+		}
+
 		public QuartzSurface (Cairo.Format format, int width, int height)
 			: base (cairo_quartz_surface_create (format, (uint)width, (uint)height), true)
 		{

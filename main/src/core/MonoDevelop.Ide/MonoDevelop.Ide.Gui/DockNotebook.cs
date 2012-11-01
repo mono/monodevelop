@@ -919,16 +919,26 @@ namespace MonoDevelop.Ide.Gui
 			});
 		}
 
+		uint handle;
 		public new void QueueDraw ()
 		{
-			Draw ();
+			if (handle != 0)
+				return;
+
+			handle = GLib.Timeout.Add (0, () => {
+				Draw ();
+				handle = 0;
+				return false;
+			});
 		}
 
 		protected override bool OnExposeEvent (EventExpose evnt)
 		{
 			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
-				if (!renderer.Show (context))
+				if (!renderer.Show (context)) {
 					Draw ();
+					renderer.Show (context);
+				}
 			}
 			return base.OnExposeEvent (evnt);
 		}

@@ -35,12 +35,36 @@ namespace MonoDevelop.Ide
 	{
 		Gtk.Widget owner;
 		SurfaceWrapper surface;
-		ManualResetEvent runningSignal;
+		ManualResetEventSlim runningSignal;
 
 		public ThreadedRenderer (Gtk.Widget owner)
 		{
 			this.owner = owner;
-			runningSignal = new ManualResetEvent (true);
+			runningSignal = new ManualResetEventSlim (true);
+		}
+
+		double Scale {
+			get;
+			set;
+		}
+
+		int TargetWidth {
+			get { return (int)(owner.Allocation.Width * Scale); }
+		}
+
+		int TargetHeight {
+			get { return (int)(owner.Allocation.Height * Scale); }
+		}
+
+		void UpdateScale ()
+		{
+			if (MonoDevelop.Core.Platform.IsMac) {
+				using (var similar = Gdk.CairoHelper.Create (owner.GdkWindow)) {
+					Scale = QuartzSurface.GetRetinaScale (similar);
+				}
+			} else {
+				Scale = 1;
+			}
 		}
 
 		public void QueueThreadedDraw (Action<Cairo.Context> drawCallback)
@@ -48,12 +72,13 @@ namespace MonoDevelop.Ide
 			if (!owner.IsRealized)
 				return;
 
-			// join last draw if still running to avoid having multiple draws running at once
-			runningSignal.WaitOne ();
+			runningSignal.Wait ();
 
-			if (surface == null || surface.Height != owner.Allocation.Height || surface.Width != owner.Allocation.Width) {
+			UpdateScale ();
+
+			if (surface == null || surface.Height != TargetHeight || surface.Width != TargetWidth) {
 				using (var similar = Gdk.CairoHelper.Create (owner.GdkWindow)) {
-					surface = new SurfaceWrapper (similar, owner.Allocation.Width, owner.Allocation.Height);
+					surface = new SurfaceWrapper (similar, TargetWidth, TargetHeight);
 				}
 			}
 
@@ -64,11 +89,14 @@ namespace MonoDevelop.Ide
 
 		public bool Show (Cairo.Context context)
 		{
-			if (surface == null || surface.Width != owner.Allocation.Width || surface.Height != owner.Allocation.Height)
+			UpdateScale ();
+			if (surface == null || surface.Width != TargetWidth || surface.Height != TargetHeight)
 				return false;
 
-			runningSignal.WaitOne ();
+			runningSignal.Wait ();
+			context.Scale (1 / Scale, 1 / Scale);
 			surface.Surface.Show (context, owner.Allocation.X, owner.Allocation.Y);
+			context.Scale (Scale, Scale);
 			return true;
 		}
 
@@ -81,6 +109,8 @@ namespace MonoDevelop.Ide
 				context.Color = new Cairo.Color (0, 0, 0, 0);
 				context.Paint ();
 				context.Operator = Cairo.Operator.Over;
+
+				context.Scale (Scale, Scale);
 
 				callback (context);
 			}
