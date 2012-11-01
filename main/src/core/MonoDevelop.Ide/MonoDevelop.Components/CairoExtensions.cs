@@ -546,7 +546,7 @@ namespace MonoDevelop.Components
 		public static extern System.Drawing.RectangleF CGContextConvertRectToDeviceSpaceLion (IntPtr contextRef, System.Drawing.RectangleF cgrect);
 
 		public static double GetRetinaScale (Cairo.Context context)  {
-			if (MonoDevelop.Core.Platform.IsWindows)
+			if (!Platform.IsMac)
 				return 1;
 
 			var rect = new System.Drawing.RectangleF ();
