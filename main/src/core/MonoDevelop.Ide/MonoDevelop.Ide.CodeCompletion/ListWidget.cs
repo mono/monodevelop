@@ -24,19 +24,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using Gtk;
-using Gdk;
-using Pango;
 using System;
-using System.Linq;
-using System.Text;
 using System.Collections.Generic;
+using System.Linq;
+using Gdk;
+using Gtk;
+using Pango;
 using ICSharpCode.NRefactory.Completion;
+using Mono.TextEditor;
+using Mono.TextEditor.Highlighting;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Fonts;
-using Mono.TextEditor.Highlighting;
-using MonoDevelop.Core;
-using Mono.TextEditor;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -47,12 +45,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 		ListWindow win;
 		int selection = 0;
 
-		int rowHeight;
+		internal int rowHeight;
 		bool buttonPressed;
 		public event EventHandler SelectionChanged;
 		protected virtual void OnSelectionChanged (EventArgs e)
 		{
-			var handler = this.SelectionChanged;
+			var handler = SelectionChanged;
 			if (handler != null)
 				handler (this, e);
 		}
@@ -101,7 +99,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			get { return inCategoryMode; }
 			set {
 				inCategoryMode = value;
-				this.CalcVisibleRows ();
+				CalcVisibleRows ();
 				if (inCategoryMode)
 					SelectFirstItemInCategory ();
 			}
@@ -203,6 +201,16 @@ namespace MonoDevelop.Ide.CodeCompletion
 		void HandleValueChanged (object sender, EventArgs e)
 		{
 			QueueDraw ();
+			OnListScrolled (EventArgs.Empty);
+		}
+
+		public event EventHandler ListScrolled;
+
+		protected virtual void OnListScrolled (EventArgs e)
+		{
+			EventHandler handler = this.ListScrolled;
+			if (handler != null)
+				handler (this, e);
 		}
 
 		public void ResetState ()
@@ -242,7 +250,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					selection = value;
 					ScrollToSelectedItem ();
 					OnSelectionChanged (EventArgs.Empty);
-					this.QueueDraw ();
+					QueueDraw ();
 				}
 			}
 		}
@@ -292,7 +300,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public void MoveToCategory (int relative)
 		{
 			int current = CurrentCategory ();
-			int next = System.Math.Min (categories.Count - 1, System.Math.Max (0, current + relative));
+			int next = Math.Min (categories.Count - 1, Math.Max (0, current + relative));
 			if (next < 0 || next >= categories.Count)
 				return;
 			Category newCategory = categories[next];
@@ -326,7 +334,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public void ScrollToSelectedItem ()
 		{
 			var area = GetRowArea (SelectedItem);
-			double newValue = vadj.Value;
+			double newValue;
 			if (area.Y < vadj.Value) {
 				newValue = Math.Min (vadj.Upper - vadj.PageSize, area.Y);
 			} else if (vadj.Value + vadj.PageSize < area.Bottom) {
@@ -486,7 +494,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 							Pango.AttrList attrList = layout.Attributes ?? new Pango.AttrList ();
 							for (int newSelection = 0; newSelection < matchIndices.Length; newSelection++) {
 								int idx = matchIndices [newSelection];
-								Pango.AttrForeground fg = new Pango.AttrForeground (highlightColor.Red, highlightColor.Green, highlightColor.Blue);
+								var fg = new AttrForeground (highlightColor.Red, highlightColor.Green, highlightColor.Blue);
 								fg.StartIndex = (uint)idx;
 								fg.EndIndex = (uint)(idx + 1);
 								attrList.Insert (fg);
@@ -698,14 +706,20 @@ namespace MonoDevelop.Ide.CodeCompletion
 				selection = categories.First ().Items.First ();
 		}
 
-		void SetAdjustments ()
+		void SetAdjustments (bool scrollToSelectedItem = true)
 		{
 			if (vadj == null)
 				return;
-			var upper = Math.Max (Allocation.Height, filteredItems.Count * rowHeight);
-			if (upper != vadj.Upper || Allocation.Height != vadj.PageSize)
+			int viewableCats = InCategoryMode ? categories.Count: 0;
+			if (InCategoryMode && categories.Any (cat => cat.CompletionCategory == null))
+				viewableCats--;
+
+			var upper = Math.Max (Allocation.Height, (filteredItems.Count + viewableCats) * rowHeight);
+			if (upper != vadj.Upper || Allocation.Height != vadj.PageSize) {
 				vadj.SetBounds (0, upper, rowHeight, Allocation.Height, Allocation.Height);
-			ScrollToSelectedItem ();
+			}
+			if (scrollToSelectedItem)
+				ScrollToSelectedItem ();
 		}
 		
 		protected virtual void OnWordsFiltered (EventArgs e)
@@ -742,7 +756,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
 			base.OnSizeAllocated (allocation);
-			SetAdjustments ();
+			SetAdjustments (false);
 		}
 		
 		protected override void OnSizeRequested (ref Requisition requisition)
@@ -761,9 +775,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			layout.GetPixelSize (out rowWidth, out rowHeight);
 			rowHeight = Math.Max (1, rowHeight * 3 / 2);
 
-			int viewableCats = InCategoryMode ? categories.Count: 0;
-			if (InCategoryMode && categories.Any (cat => cat.CompletionCategory == null))
-				viewableCats--;
 			int newHeight = rowHeight * maxVisibleRows;
 			if (Allocation.Height != listWidth || Allocation.Width != newHeight)
 				this.SetSizeRequest (listWidth, newHeight);

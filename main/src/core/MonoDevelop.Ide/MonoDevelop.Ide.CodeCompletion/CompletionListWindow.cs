@@ -29,12 +29,10 @@ using System;
 using System.Collections.Generic;
 
 using Gtk;
-using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
 using System.Linq;
 using ICSharpCode.NRefactory.Completion;
-using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -57,15 +55,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public int Y { get; private set; }
 		
 		public int InitialWordLength {
-			get { return this.initialWordLength; }
+			get { return initialWordLength; }
 		}
 		
 		IMutableCompletionDataList mutableList;
 		ICompletionDataList completionDataList;
 		public ICompletionDataList CompletionDataList {
-			get { return this.completionDataList; }
+			get { return completionDataList; }
 			set {
-				this.completionDataList = value;
+				completionDataList = value;
 			}
 		}
 
@@ -89,7 +87,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					previewEntry.Changed += delegate (object sender, EventArgs e) {
 						List.CompletionString = previewEntry.Text;
 
-						this.UpdateWordSelection ();
+						UpdateWordSelection ();
 						List.QueueDraw ();
 					};
 					previewEntry.KeyPressEvent += delegate(object o, KeyPressEventArgs args) {
@@ -103,14 +101,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 						args.RetVal = !keyAction.HasFlag (KeyActions.Process);
 					};
-					this.WordCompleted += delegate (object sender, CodeCompletionContextEventArgs e) {
+					WordCompleted += delegate (object sender, CodeCompletionContextEventArgs e) {
 						Destroy ();
 					};
 					vbox.PackStart (previewEntry, false, true, 0);
 
 					previewEntry.Activated += (sender, e) => CompleteWord ();
 					previewEntry.Show ();
-					this.FocusOutEvent += (o, args) => Destroy ();
+					FocusOutEvent += (o, args) => Destroy ();
 					GLib.Timeout.Add (10, delegate {
 						previewEntry.GrabFocus ();
 						return false;
@@ -121,7 +119,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 
-		public CompletionListWindow (Gtk.WindowType type = Gtk.WindowType.Popup) : base(type) 
+		public CompletionListWindow (WindowType type = WindowType.Popup) : base(type) 
 		{
 			if (IdeApp.Workbench != null)
 				this.TransientFor = IdeApp.Workbench.RootWindow;
@@ -131,6 +129,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 			WindowTransparencyDecorator.Attach (this);
 			DataProvider = this;
 			HideDeclarationView ();
+			List.ListScrolled += (object sender, EventArgs e) => {
+				HideDeclarationView ();
+				UpdateDeclarationView ();
+			};
 		}
 
 		bool completionListClosed;
@@ -192,9 +194,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		public void ToggleCategoryMode ()
 		{
-			this.List.InCategoryMode = !this.List.InCategoryMode;
-			this.ResetSizes ();
-			this.List.QueueDraw ();
+			List.InCategoryMode = !List.InCategoryMode;
+			ResetSizes ();
+			List.QueueDraw ();
 		}
 		
 		public bool PreProcessKeyEvent (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
@@ -293,9 +295,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 					OnCompletionDataChanging (null, null);
 			}
 			if (FillList ()) {
-				this.AutoSelect = list.AutoSelect;
-				this.AutoCompleteEmptyMatch = list.AutoCompleteEmptyMatch;
-				this.CloseOnSquareBrackets = list.CloseOnSquareBrackets;
+				AutoSelect = list.AutoSelect;
+				AutoCompleteEmptyMatch = list.AutoCompleteEmptyMatch;
+				CloseOnSquareBrackets = list.CloseOnSquareBrackets;
 				// makes control-space in midle of words to work
 				string text = completionWidget.GetCompletionText (completionContext);
 				DefaultCompletionString = completionDataList.DefaultCompletionString ?? "";
@@ -327,10 +329,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 					CompleteWord ();
 					CompletionWindowManager.HideWindow ();
 					return false;
-				} else {
-					ShowAll ();
-					UpdateDeclarationView ();
 				}
+				ShowAll ();
+				UpdateDeclarationView ();
 				return true;
 			}
 			CompletionWindowManager.HideWindow ();
@@ -352,7 +353,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if ((completionDataList.Count == 0) && !IsChanging)
 				return false;
 			
-			this.Style = CompletionWidget.GtkStyle;
+			Style = CompletionWidget.GtkStyle;
 			
 			if (PropertyService.Get ("HideObsoleteItems", false)) {
 				foreach (var item in completionDataList.Where (x => x.DisplayFlags.HasFlag (DisplayFlags.Obsolete)).ToList ())
@@ -444,7 +445,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		protected virtual void OnWordCompleted (CodeCompletionContextEventArgs e)
 		{
-			EventHandler<CodeCompletionContextEventArgs> handler = this.WordCompleted;
+			var handler = WordCompleted;
 			if (handler != null)
 				handler (this, e);
 		}
@@ -481,7 +482,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 		
 		bool declarationViewHidden = true;
-		uint declarationViewTimer = 0;
+		uint declarationViewTimer;
 
 		void UpdateDeclarationView ()
 		{
@@ -544,10 +545,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 				filteredOverloads = new ICompletionData[] { data };
 			}
 
-			var overloads = new List<ICompletionData> (filteredOverloads);
 			
 			if (data != currentData) {
 				declarationviewwindow.Clear ();
+				var overloads = new List<ICompletionData> (filteredOverloads);
 				foreach (var overload in overloads) {
 					declarationviewwindow.AddOverload ((CompletionData)overload);
 				}
@@ -569,7 +570,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 
 			Gdk.Rectangle rect = List.GetRowArea (selectedItem);
-			if (rect.IsEmpty)
+			if (rect.IsEmpty || rect.Bottom < (int)List.vadj.Value || rect.Y > List.Allocation.Height + (int)List.vadj.Value)
 				return false;
 
 			if (declarationViewHidden && Visible) {
@@ -646,7 +647,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			string iconName = ((CompletionData)completionDataList[n]).Icon;
 			if (string.IsNullOrEmpty (iconName))
 				return null;
-			return ImageService.GetPixbuf (iconName, Gtk.IconSize.Menu);
+			return ImageService.GetPixbuf (iconName, IconSize.Menu);
 		}
 		
 		#endregion
@@ -658,12 +659,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 		void OnCompletionDataChanging (object s, EventArgs args)
 		{
 			if (parsingMessage == null) {
-				VBox box = new VBox ();
-				box.PackStart (new Gtk.HSeparator (), false, false, 0);
-				HBox hbox = new HBox ();
+				var box = new VBox ();
+				box.PackStart (new HSeparator (), false, false, 0);
+				var hbox = new HBox ();
 				hbox.BorderWidth = 3;
-				hbox.PackStart (new Gtk.Image ("md-parser", Gtk.IconSize.Menu), false, false, 0);
-				Gtk.Label lab = new Gtk.Label (GettextCatalog.GetString ("Gathering class information..."));
+				hbox.PackStart (new Image ("md-parser", IconSize.Menu), false, false, 0);
+				var lab = new Label (GettextCatalog.GetString ("Gathering class information..."));
 				lab.Xalign = 0;
 				hbox.PackStart (lab, true, true, 3);
 				hbox.ShowAll ();
@@ -678,17 +679,16 @@ namespace MonoDevelop.Ide.CodeCompletion
 			HideFooter ();
 			
 			//try to capture full selection state so as not to interrupt user
-			string last = null;
 
 			if (Visible) {
-				last = List.AutoSelect ? CurrentCompletionText : PartialWord;
+				string last = List.AutoSelect ? CurrentCompletionText : PartialWord;
 				//don't reset the user-entered word when refilling the list
-				var tmp = this.List.AutoSelect;
+				var tmp = List.AutoSelect;
 				// Fill the list before resetting so that we get the correct size
 				FillList ();
 				ResetSizes ();
-				this.List.AutoSelect = tmp;
-				if (last != null )
+				List.AutoSelect = tmp;
+				if (last != null)
 					SelectEntry (last);
 			}
 		}
