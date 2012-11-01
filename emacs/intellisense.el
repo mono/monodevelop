@@ -1,6 +1,6 @@
 
 ;; edit path
-(setq intellisense-wrapper "/users/robnea/dev/fsharp-emacs/FSharp.FsIntelliSense/bin/fsintellisense.sh")
+(setq intellisense-wrapper "fsintellisense.exe")
 
 ;; few bindings for the tests
 (global-set-key (kbd "<f1>") 'tool-tip)
@@ -21,8 +21,8 @@
     (insert str)
     (set-marker (process-mark proc) (point))))
   
-(ad-activate 'process-send-string)
-(ad-deactivate 'process-send-string)
+;(ad-activate 'process-send-string)
+;(ad-deactivate 'process-send-string)
 
 (defun start-intellisense ()
   (interactive)
