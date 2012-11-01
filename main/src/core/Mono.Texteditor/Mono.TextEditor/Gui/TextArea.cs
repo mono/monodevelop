@@ -196,12 +196,12 @@ namespace Mono.TextEditor
 		
 		protected virtual void HAdjustmentValueChanged ()
 		{
+			HideTooltip (false);
 			double value = this.textEditorData.HAdjustment.Value;
 			if (value != System.Math.Round (value)) {
 				this.textEditorData.HAdjustment.Value = System.Math.Round (value);
 				return;
 			}
-			HideTooltip ();
 			textViewMargin.HideCodeSegmentPreviewWindow ();
 			QueueDrawArea ((int)this.textViewMargin.XOffset, 0, this.Allocation.Width - (int)this.textViewMargin.XOffset, this.Allocation.Height);
 			OnHScroll (EventArgs.Empty);
@@ -219,7 +219,7 @@ namespace Mono.TextEditor
 		
 		protected virtual void VAdjustmentValueChanged ()
 		{
-			HideTooltip ();
+			HideTooltip (false);
 			textViewMargin.HideCodeSegmentPreviewWindow ();
 			double value = this.textEditorData.VAdjustment.Value;
 			if (value != System.Math.Round (value)) {
@@ -2708,13 +2708,13 @@ namespace Mono.TextEditor
 			return false;
 		}
 		
-		public void HideTooltip ()
+		public void HideTooltip (bool checkMouseOver = true)
 		{
 			CancelScheduledHide ();
 			CancelScheduledShow ();
 			
 			if (tipWindow != null) {
-				if (tipWindow.GdkWindow != null) {
+				if (checkMouseOver && tipWindow.GdkWindow != null) {
 					// Don't hide the tooltip window if the mouse pointer is inside it.
 					int x, y, w, h;
 					Gdk.ModifierType m;
