@@ -407,21 +407,25 @@ namespace MonoDevelop.SourceEditor
 			if (insertMatchingBracket)
 				undoGroup = Document.OpenUndoGroup ();
 
+			var oldMode = Caret.IsInInsertMode;
 			if (skipChar != null) {
-				Caret.Offset++;
+				Caret.IsInInsertMode = false;
 				skipChars.Remove (skipChar);
-			} else {
-				if (Extension != null) {
-					if (ExtensionKeyPress (key, ch, state)) 
-						result = base.OnIMProcessedKeyPressEvent (key, ch, state);
-					if (returnBetweenBraces)
-						HitReturn ();
-				} else {
-					result = base.OnIMProcessedKeyPressEvent (key, ch, state);
-					if (returnBetweenBraces)
-						HitReturn ();
-				}
 			}
+			if (Extension != null) {
+				if (ExtensionKeyPress (key, ch, state)) 
+					result = base.OnIMProcessedKeyPressEvent (key, ch, state);
+				if (returnBetweenBraces)
+					HitReturn ();
+			} else {
+				result = base.OnIMProcessedKeyPressEvent (key, ch, state);
+				if (returnBetweenBraces)
+					HitReturn ();
+			}
+			if (skipChar != null) {
+				Caret.IsInInsertMode = oldMode;
+			}
+
 			if (insertMatchingBracket) {
 				GetTextEditorData ().EnsureCaretIsNotVirtual ();
 				int offset = Caret.Offset;
