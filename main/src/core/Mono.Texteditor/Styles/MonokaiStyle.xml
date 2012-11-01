@@ -121,6 +121,17 @@ THE SOFTWARE.
 			<Style name="secondary_template" color="monokai-white" bgColor="#262228"/>
 			<Style name="secondary_highlighted_template" color="monokai-white" bgColor="#4e4552"/>
 		</Style>
+		
+		 <Style name="breakpoint" color="white"  bgColor="#762C2C">
+			 <Style name="color1" color="white"/>
+			 <Style name="color2" color="#762C2C"/>
+			 <Style name="invalid" color="#eddcdc">
+				 <Style name="color1" color="#eddcdc"/>
+				 <Style name="background" color="#eddcdc" />
+				 <Style name="border" color="#AB616B" />
+			 </Style>
+			 <Style name="disabled.background" color="#eddcdc" />
+		 </Style>
 	</Style>
 	
 	<Style name="bubble">
