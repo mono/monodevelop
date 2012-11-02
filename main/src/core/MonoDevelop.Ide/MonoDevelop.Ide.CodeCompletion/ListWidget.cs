@@ -342,7 +342,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 			} else {
 				return;
 			}
-			vadj.Value = Math.Min (vadj.Upper, Math.Max (vadj.Lower, newValue));
+			if (vadj.Upper <= vadj.PageSize) {
+				vadj.Value = 0;
+			} else {
+				vadj.Value = Math.Min (vadj.Upper, Math.Max (vadj.Lower, newValue));
+			}
 		}
 		
 		bool autoSelect;
