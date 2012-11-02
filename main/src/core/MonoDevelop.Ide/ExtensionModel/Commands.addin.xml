@@ -381,6 +381,7 @@
 			_label = "_Workspace..."
 			_description = "Create a new workspace"/>
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.CloseFile"
+			defaultHandler = "MonoDevelop.Ide.Commands.CloseFileHandler"
 			_label = "_Close File" 
 			_description = "Close active file"
 			icon = "gtk-close"

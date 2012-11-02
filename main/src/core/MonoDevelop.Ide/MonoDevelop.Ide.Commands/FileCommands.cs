@@ -162,6 +162,20 @@ namespace MonoDevelop.Ide.Commands
 		}
 	}
 
+	// MonoDevelop.Ide.Commands.FileCommands.CloseFile
+	public class CloseFileHandler: CommandHandler
+	{
+		protected override void Run ()
+		{
+			IdeApp.Workbench.ActiveDocument.Close ();
+		}
+
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = IdeApp.Workbench.ActiveDocument != null;
+		}
+	}
+
 	// MonoDevelop.Ide.Commands.FileCommands.CloseWorkspace
 	// MonoDevelop.Ide.Commands.FileCommands.CloseWorkspaceItem
 	public class CloseWorkspaceHandler : CommandHandler

@@ -59,12 +59,6 @@ namespace MonoDevelop.Ide.Gui
 			return doc.ExtendedCommandTargetChain;
 		}
 		
-		[CommandHandler (FileCommands.CloseFile)]
-		protected void OnCloseFile ()
-		{
-			((SdiWorkspaceWindow)window).CloseWindow (false, true);
-		}
-		
 		[CommandHandler (FileCommands.Save)]
 		protected void OnSaveFile ()
 		{
