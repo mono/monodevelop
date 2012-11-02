@@ -663,17 +663,24 @@ namespace Mono.TextEditor
 				}
 
 
-				var color = textEditor.ColorStyle.Default.CairoBackgroundColor;
+				var fgColor = textEditor.ColorStyle.Default.CairoColor;
+//				var bgColor = textEditor.ColorStyle.Default.CairoBackgroundColor;
 				var line = Document.GetLine (Caret.Line);
 				foreach (var marker in line.Markers) {
 					var style = marker as StyleTextLineMarker;
-					if (style == null || !style.IncludedStyles.HasFlag (StyleTextLineMarker.StyleFlag.BackgroundColor))
+					if (style == null)
 						continue;
-					color = style.BackgroundColor;
+//					if (style.IncludedStyles.HasFlag (StyleTextLineMarker.StyleFlag.BackgroundColor))
+//						bgColor = style.BackgroundColor;
+					if (style.IncludedStyles.HasFlag (StyleTextLineMarker.StyleFlag.Color))
+						fgColor = style.Color;
 				}
-				var px = ((HslColor)color).ToPixel ();
-				px ^= 0x7FFFFF;
-				color = HslColor.FromPixel (px);
+				/*
+				var foreground = ((HslColor)fgColor).ToPixel ();
+				var background = ((HslColor)color).ToPixel ();
+				var caretColor = (foreground ^ background) & 0xFFFFFF;
+				color = HslColor.FromPixel (caretColor);*/
+				var color = fgColor;
 
 				switch (Caret.Mode) {
 				case CaretMode.Insert:
