@@ -196,7 +196,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 		
-		protected int StartOffset {
+		internal int StartOffset {
 			get;
 			set;
 		}

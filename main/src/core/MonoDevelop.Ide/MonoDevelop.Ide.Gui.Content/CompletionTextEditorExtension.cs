@@ -177,7 +177,7 @@ namespace MonoDevelop.Ide.Gui.Content
 				CompletionWindowManager.HideWindow ();
 			if (autoHideParameterWindow)
 				ParameterInformationWindowManager.HideWindow (this, CompletionWidget);
-
+			CompletionWindowManager.UpdateCursorPosition ();
 			ParameterInformationWindowManager.UpdateCursorPosition (this, CompletionWidget);
 		}
 

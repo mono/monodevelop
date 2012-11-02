@@ -141,6 +141,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return wnd.PreProcessKeyEvent (key, keyChar, modifier);
 		}
 
+		public static void UpdateCursorPosition ()
+		{
+			if (!IsVisible) 
+				return;
+			if (wnd.CompletionWidget.CaretOffset < wnd.StartOffset)
+				DestroyWindow ();
+
+		}
+
 		public static void UpdateWordSelection (string text)
 		{
 			if (IsVisible) {
@@ -148,7 +157,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				wnd.UpdateWordSelection ();
 			}
 		}
-		
+
 		public static void PostProcessKeyEvent (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
 			if (!IsVisible)
