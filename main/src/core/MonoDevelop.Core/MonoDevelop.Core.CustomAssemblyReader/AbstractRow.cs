@@ -1227,6 +1227,8 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		uint flags;
 		uint name; // index into String heap
 		uint implementation; // index into File table, or AssemblyRef table, or  null; more precisely, an Implementation coded index
+		long streamOffset = -1;
+		long streamLength = -1;
 		
 		public uint Offset {
 			get {
@@ -1264,19 +1266,24 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 			}
 		}
 
-		public byte[] LoadData (AssemblyReader assembly, string fileName)
+		void GetStreamBounds (AssemblyReader assembly, string fileName)
 		{
-			using (var fs = System.IO.File.OpenRead(fileName)) {
-				return LoadData (assembly, fileName);
+			using (var fs = System.IO.File.OpenRead (fileName)) {
+				var offset = assembly.LookupRVA (assembly.CliHeader.Resources) + Offset;
+				fs.Seek (streamOffset, SeekOrigin.Begin);
+				using (var reader = new BinaryReader (fs)) {
+					streamLength = reader.ReadUInt32 ();
+					streamOffset = offset + 4;
+				}
 			}
 		}
 
-		public byte[] LoadData (AssemblyReader assembly, Stream fs)
+		public Stream Open (AssemblyReader assembly, string fileName)
 		{
-			fs.Seek (assembly.LookupRVA (assembly.CliHeader.Resources) + Offset, SeekOrigin.Begin);
-			var reader = new BinaryReader (fs);
-			var length = reader.ReadUInt32 ();
-			return reader.ReadBytes ((int)length);
+			if (streamOffset == -1)
+				GetStreamBounds (assembly, fileName);
+
+			return new BoundStream (System.IO.File.OpenRead (fileName), streamOffset, streamOffset + streamLength, true);
 		}
 
 		public override void LoadRow (MetadataTable metadataTable, BinaryReader binaryReader)

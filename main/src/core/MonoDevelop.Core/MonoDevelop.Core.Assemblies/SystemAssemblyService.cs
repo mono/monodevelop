@@ -393,21 +393,19 @@ namespace MonoDevelop.Core.Assemblies
 		public class ManifestResource
 		{
 			public string Name {
-				get;
-				private set;
+				get; private set;
 			}
 
-			Func<byte[]> dataCallback;
-			public byte[] Data {
-				get {
-					return dataCallback ();
-				}
-			}
-
-			public ManifestResource (string name, Func<byte[]> dataCallback)
+			Func<Stream> streamCallback;
+			public Stream Open ()
 			{
-				this.Name = name;
-				this.dataCallback = dataCallback;
+				return streamCallback ();
+			}
+
+			public ManifestResource (string name, Func<Stream> streamCallback)
+			{
+				this.streamCallback = streamCallback;
+				Name = name;
 			}
 		}
 
@@ -431,7 +429,7 @@ namespace MonoDevelop.Core.Assemblies
 				if (res == null)
 					continue;
 				var name = assembly.GetStringFromHeap(res.Name);
-				yield return new ManifestResource (name, () => res.LoadData (assembly, fileName));
+				yield return new ManifestResource (name, () => res.Open (assembly, fileName));
 			}
 
 			/* CECIL version:
