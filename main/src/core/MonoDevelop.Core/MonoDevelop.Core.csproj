@@ -409,6 +409,24 @@
     <Compile Include="MonoDevelop.Core.AddIns\AssemblyInstalledCondition.cs" />
     <Compile Include="MonoDevelop.Core\WebCertificateService.cs" />
     <Compile Include="MonoDevelop.Core\IWebCertificateProvider.cs" />
+    <Compile Include="MonoDevelop.Core.CustomAssemblyReader\AssemblyMetaData.cs" />
+    <Compile Include="MonoDevelop.Core.CustomAssemblyReader\AssemblyReader.cs" />
+    <Compile Include="MonoDevelop.Core.CustomAssemblyReader\CLIHeader.cs" />
+    <Compile Include="MonoDevelop.Core.CustomAssemblyReader\CodedIndex.cs" />
+    <Compile Include="MonoDevelop.Core.CustomAssemblyReader\DataDirectories.cs" />
+    <Compile Include="MonoDevelop.Core.CustomAssemblyReader\DataTypes.cs" />
+    <Compile Include="MonoDevelop.Core.CustomAssemblyReader\IAT.cs" />
+    <Compile Include="MonoDevelop.Core.CustomAssemblyReader\ImportTable.cs" />
+    <Compile Include="MonoDevelop.Core.CustomAssemblyReader\MetadataTable.cs" />
+    <Compile Include="MonoDevelop.Core.CustomAssemblyReader\MethodBody.cs" />
+    <Compile Include="MonoDevelop.Core.CustomAssemblyReader\NameTable.cs" />
+    <Compile Include="MonoDevelop.Core.CustomAssemblyReader\NTSpecificFields.cs" />
+    <Compile Include="MonoDevelop.Core.CustomAssemblyReader\PEFileHeader.cs" />
+    <Compile Include="MonoDevelop.Core.CustomAssemblyReader\AbstractRow.cs" />
+    <Compile Include="MonoDevelop.Core.CustomAssemblyReader\SectionTable.cs" />
+    <Compile Include="MonoDevelop.Core.CustomAssemblyReader\StandardFields.cs" />
+    <Compile Include="MonoDevelop.Core.CustomAssemblyReader\StreamHeader.cs" />
+    <Compile Include="MonoDevelop.Core.CustomAssemblyReader\CallingConvention.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -478,5 +496,8 @@
     <Content Include="MonoDevelop.Core.dll.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MonoDevelop.Core.CustomAssemblyReader\" />
   </ItemGroup>
 </Project>
