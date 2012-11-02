@@ -353,5 +353,42 @@ namespace MonoDevelop.Core.Assemblies
 			if (dirs != null)
 				userAssemblyContext.Directories = dirs;
 		}
+
+		/// <summary>
+		/// Simply get all assembly reference names from an assembly given it's file name.
+		/// </summary>
+		public static IEnumerable<string> GetAssemblyReferences (string fileName)
+		{
+			// Custom assembly reader. Remove when cecil can do real lazy loading
+			var assembly = new MonoDevelop.Core.CustomAssemblyReader.AssemblyReader ();
+			assembly.AddStoreTable (MonoDevelop.Core.CustomAssemblyReader.AssemblyRef.TABLE_ID);
+
+			try {
+				assembly.Load (fileName);
+			} catch {
+				yield break;
+			}
+
+			var referenceTable = assembly.GetMetadateTable<MonoDevelop.Core.CustomAssemblyReader.AssemblyRef> ();
+			for (int i = 0; i < referenceTable.Length; ++i) {
+				var reference = referenceTable [i];
+				if (reference != null) {
+					yield return assembly.GetStringFromHeap (reference.Name);
+				}
+			}
+
+			/* CECIL version:
+
+			Mono.Cecil.AssemblyDefinition adef;
+			try {
+				adef = Mono.Cecil.AssemblyDefinition.ReadAssembly (fileName);
+			} catch {
+				yield break;
+			}
+			foreach (Mono.Cecil.AssemblyNameReference aref in adef.MainModule.AssemblyReferences) {
+				yield return aref.Name;
+			}*/
+
+		}
 	}
 }

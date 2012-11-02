@@ -637,41 +637,11 @@ namespace MonoDevelop.Projects
 			
 			yield return fileName;
 
-
-			// Custom assembly reader. Remove when cecil can do real lazy loading
-			var assembly = new MonoDevelop.Core.CustomAssemblyReader.AssemblyReader ();
-			assembly.AddStoreTable (MonoDevelop.Core.CustomAssemblyReader.AssemblyRef.TABLE_ID);
-
-			try {
-				assembly.Load (fileName);
-			} catch {
-				yield break;
-			}
-
-			var referenceTable = assembly.GetMetadateTable<MonoDevelop.Core.CustomAssemblyReader.AssemblyRef> ();
-			for (int i = 0; i < referenceTable.Length; ++i) {
-				var reference = referenceTable [i];
-				if (reference != null) {
-					string asmFile = Path.Combine (Path.GetDirectoryName (fileName), assembly.GetStringFromHeap (reference.Name));
-					Console.WriteLine (asmFile);
-					foreach (string refa in GetAssemblyRefsRec (asmFile, visited))
-						yield return refa;
-				}
-			}
-
-			/* CECIL version:
-
-			Mono.Cecil.AssemblyDefinition adef;
-			try {
-				adef = Mono.Cecil.AssemblyDefinition.ReadAssembly (fileName);
-			} catch {
-				yield break;
-			}
-			foreach (Mono.Cecil.AssemblyNameReference aref in adef.MainModule.AssemblyReferences) {
-				string asmFile = Path.Combine (Path.GetDirectoryName (fileName), aref.Name);
+			foreach (var reference in SystemAssemblyService.GetAssemblyReferences (fileName)) {
+				string asmFile = Path.Combine (Path.GetDirectoryName (fileName), reference);
 				foreach (string refa in GetAssemblyRefsRec (asmFile, visited))
 					yield return refa;
-			}*/
+			}
 		}
 
 		public ProjectReference AddReference (string filename)
