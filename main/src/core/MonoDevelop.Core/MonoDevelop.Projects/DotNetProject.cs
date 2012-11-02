@@ -636,14 +636,9 @@ namespace MonoDevelop.Projects
 			}
 			
 			yield return fileName;
-			Mono.Cecil.AssemblyDefinition adef;
-			try {
-				adef = Mono.Cecil.AssemblyDefinition.ReadAssembly (fileName);
-			} catch {
-				yield break;
-			}
-			foreach (Mono.Cecil.AssemblyNameReference aref in adef.MainModule.AssemblyReferences) {
-				string asmFile = Path.Combine (Path.GetDirectoryName (fileName), aref.Name);
+
+			foreach (var reference in SystemAssemblyService.GetAssemblyReferences (fileName)) {
+				string asmFile = Path.Combine (Path.GetDirectoryName (fileName), reference);
 				foreach (string refa in GetAssemblyRefsRec (asmFile, visited))
 					yield return refa;
 			}

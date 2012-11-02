@@ -1,21 +1,23 @@
-//
-// DefaultWebCertificateProvider.cs
-//
+﻿// 
+// NTSpecificFields.cs
+//  
 // Author:
-//       Alan McGovern <alan@xamarin.com>
+//       Mike Krüger <mkrueger@novell.com>
 //
-// Copyright (c) 2012 Xamarin Inc.
+// Relicensed from SharpAssembly (c) 2003 by Mike Krüger
 //
+// Copyright (c) 2012 Novell, Inc (http://www.novell.com)
+// 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-//
+// 
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-//
+// 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -25,38 +27,40 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Core;
-using System.Collections.Generic;
-using System.Net;
+using System.IO;
 
-namespace MonoDevelop.Ide
+namespace MonoDevelop.Core.CustomAssemblyReader
 {
-	public class DefaultWebCertificateProvider : IWebCertificateProvider
+	class NTSpecificFields
 	{
-		Dictionary<string, bool> TrustedCertificates;
+		const uint IMAGE_BASE        = 0x400000;
+		const uint SECTION_ALIGNMENT = 0x2000;
 		
-		public DefaultWebCertificateProvider ()
-		{
-			TrustedCertificates = new Dictionary<string, bool> ();
-		}
+//		uint fileAlignment; // either 0x200 or 0x1000
+//		ushort osMajor;
+//		ushort osMinor;
+//		ushort userMajor;
+//		ushort userMinor;
+//		ushort subSysMajor;
+//		ushort subSysMinor;
+//		uint   reserved;
+//		uint   imageSize;
+//		uint   headerSize;
+//		uint   fileChecksum;
+//		ushort subSystem;
+//		ushort dllFlags;
+//		uint   stackReserveSize;
+//		uint   stackCommitSize;
+//		uint   heapReserveSize;
+//		uint   heapCommitSize;
+//		uint   loaderFlags;
+//		uint   numberOfDataDirectories;
 		
-		public bool GetIsCertificateTrusted (string uri, string certificateFingerprint)
+		public void LoadFrom(BinaryReader binaryReader)
 		{
-			bool value;
-			
-			if (!TrustedCertificates.TryGetValue (certificateFingerprint, out value)) {
-				DispatchService.GuiSyncDispatch (delegate {
-					value = MessageService.AskQuestion (
-						"Untrusted HTTP certificate detected",
-						string.Format ("Do you want to temporarily trust this certificate in order to" +
-						" connect to the server at {0}?", uri),
-						AlertButton.Yes, AlertButton.No) == AlertButton.Yes;
-					TrustedCertificates [certificateFingerprint] = value;
-				});
-			}
-
-			return value;
+			// not needed
+			byte[] buffer = new byte[68];
+			binaryReader.Read(buffer, 0, 68);
 		}
 	}
 }
-
