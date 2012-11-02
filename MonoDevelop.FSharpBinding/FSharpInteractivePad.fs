@@ -2,6 +2,7 @@
 namespace MonoDevelop.FSharp
 
 open System
+open System.Diagnostics
 open System.IO
 open System.Xml
 open System.CodeDom.Compiler
@@ -40,7 +41,7 @@ type FSharpInteractivePad() =
   
   and releaseHandler (ea:Gtk.KeyReleaseEventArgs) =
     if ea.Event.Key = Key.Return && view.InputLine = "" then  
-      Debug.tracef "Interactive" "Handling enter for empty line"
+      Debug.WriteLine (sprintf "Interactive: Handling enter for empty line")
       sendCommand "" true
   
   and session = 
@@ -52,7 +53,7 @@ type FSharpInteractivePad() =
     ses.Exited.Add(fun e -> 
       session := None
       DispatchService.GuiDispatch(fun () ->
-        Debug.tracef "Interactive" "process stopped"
+        Debug.WriteLine (sprintf "Interactive: process stopped")
         if lastCommand = "#q;;" || lastCommand = "#quit;;" then
           enterHandler <- view.Child.KeyReleaseEvent.Subscribe setupReleaseHandler
         else
@@ -79,17 +80,17 @@ type FSharpInteractivePad() =
       | _ -> session := Some(setupSession())
 
   //let handler = 
-  do Debug.tracef "InteracivePad" "created!"
-  do view.Destroyed.Add (fun _ ->       Debug.tracef "Interactive" "view destroyed")
-  do IdeApp.Exiting.Add (fun _ ->       Debug.tracef "Interactive" "app exiting!!")
-  do IdeApp.Exited.Add (fun _ ->       Debug.tracef "Interactive" "app exited!!")
+  do Debug.WriteLine ("InteracivePad: created!")
+  do view.Destroyed.Add (fun _ ->       Debug.WriteLine ("Interactive: view destroyed"))
+  do IdeApp.Exiting.Add (fun _ ->       Debug.WriteLine ("Interactive: app exiting!!"))
+  do IdeApp.Exited.Add (fun _ ->       Debug.WriteLine ("Interactive: app exited!!"))
   member x.Shutdown()  = 
-    do Debug.tracef "Interactive" "x.Shutdown()!"
+    do Debug.WriteLine (sprintf "Interactive: x.Shutdown()!")
     !session |> Option.iter (fun ses -> ses.Kill())
 
   interface MonoDevelop.Ide.Gui.IPadContent with
     member x.Dispose() =
-      Debug.tracef "Interactive" "disposing pad..."
+      Debug.WriteLine ("Interactive: disposing pad...")
       x.Shutdown()
 
     member x.Control : Gtk.Widget = view :> Gtk.Widget
@@ -120,7 +121,7 @@ type FSharpInteractivePad() =
   member x.UpdateFont() = 
     let fontName = DesktopService.DefaultMonospaceFont
     let fontName = PropertyService.Get<string>("FSharpBinding.FsiFontName", fontName)
-    Debug.tracef "Interactive" "Loading font '%s'" fontName
+    Debug.WriteLine (sprintf "Interactive: Loading font '%s'" fontName)
     let font = Pango.FontDescription.FromString(fontName)
     view.SetFont(font)
     
@@ -165,7 +166,7 @@ type FSharpInteractivePad() =
     let existing = 
       try IdeApp.Workbench.GetPad<FSharpInteractivePad>()
       with _ -> 
-        Debug.tracef "Interactive" "GetPad<FSharpInteractivePad>() failed, silently ignoring"
+        Debug.WriteLine (sprintf "Interactive: GetPad<FSharpInteractivePad>() failed, silently ignoring")
         null // It throws after addin is loaded (before restart)
     if existing <> null then existing
     else IdeApp.Workbench.AddPad
@@ -188,7 +189,7 @@ type ShowFSharpInteractive() =
 type SendSelection() =
   inherit CommandHandler()
   override x.Run() =
-    Debug.tracef "Interactive" "Send selection to F# interactive invoked!"
+    Debug.WriteLine (sprintf "Interactive: Send selection to F# interactive invoked!")
     FSharpInteractivePad.CurrentFsi.SendSelection()
     FSharpInteractivePad.CurrentPad.BringToFront(false)
   override x.Update(info:CommandInfo) =
@@ -199,7 +200,7 @@ type SendSelection() =
 type SendLine() =
   inherit CommandHandler()
   override x.Run() =
-    Debug.tracef "Interactive" "Send line to F# interactive invoked!"
+    Debug.WriteLine (sprintf "Interactive: Send line to F# interactive invoked!")
     FSharpInteractivePad.CurrentFsi.SendLine()
     FSharpInteractivePad.CurrentPad.BringToFront(false)
   override x.Update(info:CommandInfo) =

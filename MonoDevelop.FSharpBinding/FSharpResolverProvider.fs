@@ -5,6 +5,7 @@
 namespace MonoDevelop.FSharp
 
 open System
+open System.Diagnostics
 open System.Text
 open System.Linq
 open System.Collections.Generic
@@ -118,14 +119,14 @@ type FSharpLanguageItemTooltipProvider() =
     
 /// Implements "resolution" - looks for tool-tips at current locations
 type FSharpResolverProvider() =
-  do Debug.tracef "Resolver" "Creating FSharpResolverProvider"
+  do Debug.WriteLine (sprintf "Resolver: Creating FSharpResolverProvider")
   interface ITextEditorResolverProvider with
   
     /// Get tool-tip at the specified offset (from the start of the file)
     member x.GetLanguageItem(doc:MonoDevelop.Ide.Gui.Document, offset:int, region:DomRegion byref) : ResolveResult =
 
       try 
-        Debug.tracef "Resolver" "In GetLanguageItem"
+        Debug.WriteLine (sprintf "Resolver: In GetLanguageItem")
         if doc.Editor = null || doc.Editor.Document = null then null else
 
         let docText = doc.Editor.Text
@@ -138,33 +139,33 @@ type FSharpResolverProvider() =
 
         let req = new FilePath(doc.Editor.FileName), docText, doc.Project, config
         
-        Debug.tracef "Resolver" "Getting results of type checking"
+        Debug.WriteLine (sprintf "Resolver: Getting results of type checking")
         // Try to get typed result - with the specified timeout
         let tyRes = LanguageService.Service.GetTypedParseResult(req, timeout = ServiceSettings.blockingTimeout)
             
-        Debug.tracef "Resolver" "Getting tool tip"
+        Debug.WriteLine (sprintf "Resolver: Getting tool tip")
         // Get tool-tip from the language service
         let tip = tyRes.GetToolTip(offset, doc.Editor.Document)
         match tip with
         | DataTipText(elems) when elems |> List.forall (function DataTipElementNone -> true | _ -> false) -> 
-            Debug.tracef "Resolver" "No data found"
+            Debug.WriteLine (sprintf "Resolver: No data found")
             null
         | _ -> 
-            Debug.tracef "Resolver" "Got data"
+            Debug.WriteLine (sprintf "Resolver: Got data")
             new FSharpResolveResult(tip) :> ResolveResult
       with exn -> 
-        Debug.tracef "Resolver" "Exception: '%s'" (exn.ToString())
+        Debug.WriteLine (sprintf "Resolver: Exception: '%s'" (exn.ToString()))
         null
 
     member x.GetLanguageItem(doc:MonoDevelop.Ide.Gui.Document, offset:int, identifier:string) : ResolveResult =
-      do Debug.tracef "Resolver" "in GetLanguageItem#2"
+      do Debug.WriteLine (sprintf "Resolver: in GetLanguageItem#2")
       let (result, region) = (x :> ITextEditorResolverProvider).GetLanguageItem(doc, offset)
       result
 
     /// Returns string with tool-tip from 'FSharpResolveResult'
     /// (which we generated in the previous method - so we simply run formatter)
     member x.CreateTooltip(document, offset, result, errorInformation, modifierState) : string = 
-      do Debug.tracef "Resolver" "in CreteTooltip"
+      do Debug.WriteLine (sprintf "Resolver: in CreteTooltip")
       match result with
       | :? FSharpResolveResult as res -> TipFormatter.formatTipWithHeader(res.DataTip)
       | _ -> null

@@ -7,6 +7,7 @@ namespace MonoDevelop.FSharp
 
 open System
 open System.IO
+open System.Diagnostics
 open System.Reflection
 open System.Globalization
 open Microsoft.FSharp.Reflection
@@ -37,10 +38,10 @@ module ScriptOptions =
 
       match FSharpEnvironment.FolderOfDefaultFSharpCore(targetFramework) with 
       | Some dir -> 
-          Debug.tracef "Resolution" "Using '%A' as the location of default FSharp.Core.dll" dir
+          Debug.WriteLine(sprintf "Resolution: Using '%A' as the location of default FSharp.Core.dll" dir)
           yield dir
       | None -> 
-          Debug.tracef "Resolution" "Unable to find a default location for FSharp.Core.dll"
+          Debug.WriteLine(sprintf "Resolution: Unable to find a default location for FSharp.Core.dll")
 
       yield System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory() 
     ]
@@ -115,9 +116,9 @@ module CompilerArguments =
         let dirs = ScriptOptions.getDefaultDirectories(targetFramework) 
         match ScriptOptions.resolveAssembly dirs assumedFile with
         | Some fn -> yield "-r:" + wrapf(fn)
-        | None -> Debug.tracef "Resolution" "Assembly resolution failed when trying to find default reference for '%s'!" assumedFile
+        | None -> Debug.WriteLine(sprintf "Resolution: Assembly resolution failed when trying to find default reference for '%s'!" assumedFile)
       | Some r -> 
-        Debug.tracef "Resolution" "Found FSharp.Core reference '%s'" r
+        Debug.WriteLine(sprintf "Resolution: Found FSharp.Core reference '%s'" r)
       
     for file in files do 
       yield "-r:" + wrapf(file) ]

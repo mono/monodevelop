@@ -142,15 +142,15 @@ module CompilerService =
         new ProcessStartInfo
           (FileName = fscPath.Value, UseShellExecute = false, Arguments = args,
            RedirectStandardError = true, CreateNoWindow = true) 
-      Debug.tracef "Compiler" "Compile using: %s Arguments: %s" fscPath.Value args
+      Debug.WriteLine (sprintf "Compiler: Compile using: %s Arguments: %s" fscPath.Value args)
       let p = Process.Start(startInfo) 
       
-      Debug.tracef "Compiler" "Reading output..." 
+      Debug.WriteLine ("Compiler: Reading output..." )
       // Read all output and fold multi-line 
       let lines = 
         [ let line = ref ""
           while (line := p.StandardError.ReadLine(); !line <> null) do
-            Debug.tracef "Compiler" "OUTPUT: %s" !line 
+            Debug.WriteLine (sprintf "Compiler: OUTPUT: %s" !line)
             yield !line 
           yield "" ]    
       let messages = 
@@ -169,9 +169,9 @@ module CompilerService =
         | false, (f, l, c, n, m) -> br.AddWarning(f, l, c, n, m)
 
             
-      Debug.tracef "Compiler" "Waiting for exit..." 
+      Debug.WriteLine (sprintf "Compiler: Waiting for exit...")
       p.WaitForExit()
-      Debug.tracef "Compiler" "Done with compilation" 
+      Debug.WriteLine (sprintf "Compiler: Done with compilation" )
       br.CompilerOutput <- String.concat "\n" lines
       br
   

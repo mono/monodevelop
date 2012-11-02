@@ -31,10 +31,10 @@ type InteractiveSession() =
          RedirectStandardError = true, CreateNoWindow = true, RedirectStandardOutput = true,
          RedirectStandardInput = true) 
     try
-      Debug.tracef "Interactive" "Starting file=%s, Args=%A" path args
+      Debug.WriteLine (sprintf "Interactive: Starting file=%s, Args=%A" path args)
       Process.Start(startInfo)
     with e ->
-      Debug.tracee "Interactive" e
+      Debug.WriteLine (sprintf "Interactive: Error %s" (e.ToString()))
       reraise()
     
   let client = 
@@ -48,7 +48,7 @@ type InteractiveSession() =
     Event.merge fsiProcess.OutputDataReceived fsiProcess.ErrorDataReceived
       |> Event.filter (fun de -> de.Data <> null)
       |> Event.add (fun de -> 
-          Debug.tracef "Interactive" "received %s" de.Data
+          Debug.WriteLine (sprintf "Interactive: received %s" de.Data)
           if de.Data.Trim() = "SERVER-PROMPT>" then
             DispatchService.GuiDispatch(fun () -> promptReady.Trigger())
           elif de.Data.Trim() <> "" then
@@ -57,7 +57,7 @@ type InteractiveSession() =
     fsiProcess.EnableRaisingEvents <- true
   
   member x.Interrupt() =
-    Debug.tracef "Interactive" "Break!" 
+    Debug.WriteLine (sprintf "Interactive: Break!" )
     client.Interrupt()
     
   member x.StartReceiving() = 
@@ -72,22 +72,22 @@ type InteractiveSession() =
       x.SendCommand "#q"
       for i in 0 .. 10 do 
         if not fsiProcess.HasExited then 
-           Debug.tracef "Interactive" "waiting for process exit after #q... %d" (i*200)
+           Debug.WriteLine (sprintf "Interactive: waiting for process exit after #q... %d" (i*200))
            fsiProcess.WaitForExit(200) |> ignore
            
     if not fsiProcess.HasExited then 
       fsiProcess.Kill()
       for i in 0 .. 10 do 
         if not fsiProcess.HasExited then 
-           Debug.tracef "Interactive" "waiting for process exit after kill... %d" (i*200)
+           Debug.WriteLine (sprintf "Interactive: waiting for process exit after kill... %d" (i*200))
            fsiProcess.WaitForExit(200) |> ignore
            
     if not fsiProcess.HasExited then 
-       Debug.tracef "Interactive" "failed to get process exit after kill, may get hang on mac" 
+       Debug.WriteLine (sprintf "Interactive: failed to get process exit after kill, may get hang on mac" )
     
   member x.SendCommand(str:string) = 
     waitingForResponse <- true
-    Debug.tracef "Interactive" "sending %s" str
+    Debug.WriteLine (sprintf "Interactive: sending %s" str)
     fsiProcess.StandardInput.Write(str + ";;\n")
 
   member x.Exited = fsiProcess.Exited

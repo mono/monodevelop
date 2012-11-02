@@ -1,6 +1,7 @@
 ﻿namespace MonoDevelop.FSharp
 
 open System
+open System.Diagnostics
 open System.IO
 open MonoDevelop.Ide
 open MonoDevelop.Ide.Gui
@@ -15,7 +16,7 @@ type FSharpParsedDocument(fileName) =
 // An instance of this type is created by MonoDevelop (as defined in the .xml for the AddIn) 
 type FSharpParser() =
   inherit AbstractTypeSystemParser()
-  do Debug.tracef "Parsing" "Creating FSharpParser"
+  do Debug.WriteLine("Parsing: Creating FSharpParser")
         
   /// Holds the previous errors reported by a file. 
   let prevErrors = System.Collections.Generic.Dictionary<string,Error list>()
@@ -27,7 +28,7 @@ type FSharpParser() =
   interface ITypeSystemParser with
    override x.Parse(storeAst:bool, fileName:string, content:System.IO.TextReader, proj:MonoDevelop.Projects.Project) =
     let fileContent = content.ReadToEnd()
-    Debug.tracef "Parsing" "Update in FSharpParser.Parse"
+    Debug.WriteLine("Parsing: Update in FSharpParser.Parse")
   
     // Trigger a parse/typecheck in the background. After the parse/typecheck is completed, request another parse to report the errors.
     //
@@ -59,7 +60,7 @@ type FSharpParser() =
                       try 
                          let doc = IdeApp.Workbench.ActiveDocument
                          if doc <> null && doc.FileName.FullPath.ToString() = file then 
-                             Debug.tracef "Parsing" "Requesting re-parse of file '%s' because some errors were reported asynchronously and we should return a new document showing these" file
+                             Debug.WriteLine(sprintf "Parsing: Requesting re-parse of file '%s' because some errors were reported asynchronously and we should return a new document showing these" file)
                              doc.ReparseDocument()
                       with _ -> ()))
 
@@ -78,7 +79,7 @@ type FSharpParser() =
         | _ -> [ ] 
 
     for er in errors do 
-        Debug.tracef "Parsing" "Adding error, message '%s', region '%A'" er.Message (er.Region.BeginLine,er.Region.BeginColumn,er.Region.EndLine,er.Region.EndColumn)
+        Debug.WriteLine(sprintf "Parsing: Adding error, message '%s', region '%A'" er.Message (er.Region.BeginLine,er.Region.BeginColumn,er.Region.EndLine,er.Region.EndColumn))
         doc.Errors.Add(er)    
 
     doc.LastWriteTimeUtc <- (try File.GetLastWriteTimeUtc (fileName) with _ -> DateTime.UtcNow) 

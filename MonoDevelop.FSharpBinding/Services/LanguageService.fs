@@ -190,11 +190,10 @@ type internal TypedParseResult(info:TypeCheckInfo) =
       lookBack 
       |> Parsing.getFirst Parsing.parseBackIdentWithResidue
     
-    Debug.tracef "Result" "GetDeclarations: column: %d, ident: %A\n    Line: %s" 
-      (doc.Editor.Caret.Line - 1) (longName, residue) lineStr
+    Debug.WriteLine(sprintf "Result: GetDeclarations: column: %d, ident: %A\n    Line: %s" (doc.Editor.Caret.Line - 1) (longName, residue) lineStr)
     let res = info.GetDeclarations( (doc.Editor.Caret.Line - 1, doc.Editor.Caret.Column - 1), lineStr, (longName, residue), 0, ServiceSettings.blockingTimeout) // 0 is tokenTag, which is ignored in this case
 
-    Debug.tracef "Result" "GetDeclarations: returning %d items" res.Items.Length
+    Debug.WriteLine(sprintf "Result: GetDeclarations: returning %d items" res.Items.Length)
     res
 
   /// Get the tool-tip to be displayed at the specified offset (relatively
@@ -225,9 +224,8 @@ type internal TypedParseResult(info:TypeCheckInfo) =
          current, current::prev |> List.rev
       | [] -> "", []
 
-    Debug.tracef 
-      "Result" "Get tool tip at %d:%d (offset %d - %d)\nIdentifier: %A (Current: %s) \nLine string: %s"  
-      line col currentLine.Offset currentLine.EndOffset identIsland currentIdent lineStr
+    Debug.WriteLine(sprintf "Result: Get tool tip at %d:%d (offset %d - %d)\nIdentifier: %A (Current: %s) \nLine string: %s"  
+                          line col currentLine.Offset currentLine.EndOffset identIsland currentIdent lineStr)
 
     match identIsland with
     | [ "" ] -> 
@@ -242,12 +240,12 @@ type internal TypedParseResult(info:TypeCheckInfo) =
         | DataTipText(elems) when elems |> List.forall (function DataTipElementNone -> true | _ -> false) -> 
           // This works if we're inside "member x.Foo" and want to get 
           // tool tip for "Foo" (but I'm not sure why)
-          Debug.tracef "Result" "First attempt returned nothing"   
+          Debug.WriteLine("Result: First attempt returned nothing"   )
           let res = info.GetDataTipText((line, col + 2), lineStr, [ currentIdent ], token)
-          Debug.tracef "Result" "Returning the result of second try"   
+          Debug.WriteLine( "Result: Returning the result of second try"   )
           res
         | _ -> 
-          Debug.tracef "Result" "Got something, returning"  
+          Debug.WriteLine( "Result: Got something, returning"  )
           res 
                                
 // --------------------------------------------------------------------------------------
@@ -339,10 +337,10 @@ type internal LanguageService private () =
        InteractiveChecker.Create(fun file -> 
           DispatchService.GuiDispatch(fun () ->
                         try 
-                         Debug.tracef "Parsing" "Considering re-typcheck of file %s because compiler reports it needs it" file
+                         Debug.WriteLine(sprintf "Parsing: Considering re-typcheck of file %s because compiler reports it needs it" file)
                          let doc = IdeApp.Workbench.ActiveDocument
                          if doc <> null && doc.FileName.FullPath.ToString() = file then 
-                             Debug.tracef "Parsing" "Requesting re-parse of file '%s' because some errors were reported asynchronously and we should return a new document showing these" file
+                             Debug.WriteLine(sprintf "Parsing: Requesting re-parse of file '%s' because some errors were reported asynchronously and we should return a new document showing these" file)
                              doc.ReparseDocument()
                         with _ -> ()))
       // Nuke the checker when the current requested language version changes
@@ -366,29 +364,32 @@ type internal LanguageService private () =
     // (untyped and typed parse results)
     let rec loop typedInfo =
       mbox.Scan(fun msg ->
-        Debug.tracef "LanguageService" "Checking message %s" (msg.GetType().Name)
+        Debug.WriteLine(sprintf "Worker: Checking message %s" (msg.GetType().Name))
         match msg, typedInfo with 
         | TriggerRequest(info), _ -> Some <| async {
           let newTypedInfo = 
            try
-            Debug.tracef "LanguageService" "TriggerRequest"
+            Debug.WriteLine("Worker: TriggerRequest")
             let fileName = info.File.FullPath.ToString()        
-            Debug.tracef "Worker" "Request parse received"
+            Debug.WriteLine("Worker: Request parse received")
             // Run the untyped parsing of the file and report result...
-            let checker = try getChecker() with e -> Debug.tracef "Worker" "Error in getChecker: %s" (e.ToString()); reraise ()
-            Debug.tracef "Worker" "Untyped parse..."
-            let untypedInfo = try checker.UntypedParse(fileName, info.Source, info.Options) with e -> Debug.tracef "Worker" "Error in UntypedParse: %s" (e.ToString()); reraise ()
+            let checker = try getChecker() with e -> Debug.WriteLine(sprintf "Worker: Error in getChecker: %s" (e.ToString())); reraise ()
+            Debug.WriteLine("Worker: Untyped parse...")
+            let untypedInfo = try checker.UntypedParse(fileName, info.Source, info.Options) with e -> Debug.WriteLine(sprintf "Worker: Error in UntypedParse: %s" (e.ToString())); reraise ()
               
             // Now run the type-checking
             let fileName = CompilerArguments.fixFileName(fileName)
-            Debug.tracef "Worker" "Typecheck source..."
-            let res = try checker.TypeCheckSource( untypedInfo, fileName, 0, info.Source,info.Options, IsResultObsolete(fun () -> false) ) with e -> Debug.tracef "Worker" "Error in TypeCheckSource: %s" (e.ToString()); reraise ()
+            Debug.WriteLine("Worker: Typecheck source...")
+            let res = 
+                try
+                    checker.TypeCheckSource( untypedInfo, fileName, 0, info.Source,info.Options, IsResultObsolete(fun () -> false) ) 
+                with e -> Debug.WriteLine(sprintf "Worker: Error in TypeCheckSource: %s" (e.ToString())); reraise ()
               
             // If this is 'full' request, then start background compilations too
             if info.StartFullCompile then
-                Debug.tracef "Worker" "Starting background compilations"
+                Debug.WriteLine(sprintf "Worker: Starting background compilations")
                 checker.StartBackgroundCompile(info.Options)
-            Debug.tracef "Worker" "Parse completed"
+            Debug.WriteLine(sprintf "Worker: Parse completed")
 
             let file = info.File
             let updatedTyped = res
@@ -398,22 +399,22 @@ type internal LanguageService private () =
               match updatedTyped with
               | TypeCheckSucceeded(results) ->
                   // Handle errors on the GUI thread
-                  Debug.tracef "LanguageService" "Update typed info - is some? %A" results.TypeCheckInfo.IsSome
+                  Debug.WriteLine(sprintf "LanguageService: Update typed info - is some? %A" results.TypeCheckInfo.IsSome)
                   match info.AfterCompleteTypeCheckCallback with 
                   | None -> ()
                   | Some cb -> 
-                      Debug.tracef "Errors" "Got update for: %s" (IO.Path.GetFileName(file.FullPath.ToString()))
+                      Debug.WriteLine (sprintf "Errors: Got update for: %s" (IO.Path.GetFileName(file.FullPath.ToString())))
                       DispatchService.GuiDispatch(fun () -> cb(file, makeErrors results.Errors))
 
                   match results.TypeCheckInfo with
                   | Some(info) -> Some(TypedParseResult(info))
                   | _ -> typedInfo
               | _ -> 
-                  Debug.tracef "LanguageService" "Update typed info - failed"
+                  Debug.WriteLine("LanguageService: Update typed info - failed")
                   typedInfo
             newTypedInfo
            with e -> 
-            Debug.tracef "Errors" "Got unexpected background error: %s" (e.ToString())
+            Debug.WriteLine (sprintf "Errors: Got unexpected background error: %s" (e.ToString()))
             typedInfo
           return! loop newTypedInfo }
 
@@ -421,29 +422,25 @@ type internal LanguageService private () =
         // When we receive request for information and we don't have it we trigger a 
         // parse request and then send ourselves a message, so that we can reply later
         | UpdateAndGetTypedInfo(req, reply), _ -> Some <| async { 
-            Debug.tracef "LanguageService" "UpdateAndGetTypedInfo"
+            Debug.WriteLine ("LanguageService: UpdateAndGetTypedInfo")
             post(TriggerRequest(req))
             post(GetTypedInfoDone(reply)) 
             return! loop typedInfo }
                     
         | GetTypedInfoDone(reply), (Some typedRes) -> Some <| async {
-            Debug.tracef "LanguageService" "GetTypedInfoDone"
+            Debug.WriteLine (sprintf "LanguageService: GetTypedInfoDone")
             reply.Reply(typedRes)
             return! loop typedInfo }
 
         // We didn't have information to reply to a request - keep waiting for results!
         // The caller will probably timeout.
         | GetTypedInfoDone _, None -> 
-            Debug.tracef "Worker" "No match found for the message, leaving in queue until info is available"
+            Debug.WriteLine("Worker: No match found for the message, leaving in queue until info is available")
             None )
         
     // Start looping with no initial information        
     loop None )
 
-  // do mbox.Error.Add(fun e -> 
-  //      Debug.tracef "Worker" "LanguageService agent error"
-  //      Debug.tracee "Worker" e )
-  
   /// Constructs options for the interactive checker
   member x.GetCheckerOptions(fileName, source, proj:MonoDevelop.Projects.Project, config:ConfigurationSelector) =
     let ext = IO.Path.GetExtension(fileName)
@@ -467,22 +464,22 @@ type internal LanguageService private () =
           // TODO: In an early version, the InteractiveChecker resolution doesn't sometimes
           // include FSharp.Core and other essential assemblies, so we need to include them by hand
           let fileName = CompilerArguments.fixFileName(fileName)
-          Debug.tracef "Checkoptions" "Creating for file: '%s'" fileName 
+          Debug.WriteLine (sprintf "CheckOptions: Creating for file: '%s'" fileName )
           let checker = getChecker()
           let opts = checker.GetCheckOptionsFromScriptRoot(fileName, source, fakeDateTimeRepresentingTimeLoaded proj)
           if opts.ProjectOptions |> Seq.exists (fun s -> s.Contains("FSharp.Core.dll")) then opts
           else 
             // Add assemblies that may be missing in the standard assembly resolution
-            Debug.tracef "Checkoptions" "Adding missing core assemblies."
+            Debug.WriteLine("CheckOptions: Adding missing core assemblies.")
             let dirs = ScriptOptions.getDefaultDirectories (TargetFrameworkMoniker.NET_4_0 )
             opts.WithOptions 
               [| yield! opts.ProjectOptions; 
                  match ScriptOptions.resolveAssembly dirs "FSharp.Core" with
                  | Some fn -> yield sprintf "-r:%s" fn
-                 | None -> Debug.tracef "Resolution" "FSharp.Core assembly resolution failed!"
+                 | None -> Debug.WriteLine("Resolution: FSharp.Core assembly resolution failed!")
                  match ScriptOptions.resolveAssembly dirs "FSharp.Compiler.Interactive.Settings" with
                  | Some fn -> yield sprintf "-r:%s" fn
-                 | None -> Debug.tracef "Resolution" "FSharp.Compiler.Interactive.Settings assembly resolution failed!" |]
+                 | None -> Debug.WriteLine("Resolution: FSharp.Compiler.Interactive.Settings assembly resolution failed!") |]
 #endif        
         with e ->
           failwithf "Exception when getting check options for '%s'\n.Details: %A" fileName e
@@ -505,28 +502,28 @@ type internal LanguageService private () =
         CheckOptions.Create(projFile, files, args, false, false, fakeDateTimeRepresentingTimeLoaded proj) 
 
     // Print contents of check option for debugging purposes
-    Debug.tracef "Checkoptions" "ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A" 
-                 opts.ProjectFileName opts.ProjectFileNames opts.ProjectOptions 
-                 opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules
+    Debug.WriteLine(sprintf "Checkoptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A" 
+                         opts.ProjectFileName opts.ProjectFileNames opts.ProjectOptions 
+                         opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules)
     opts
   
   member x.TriggerParse(file:FilePath, src, proj:MonoDevelop.Projects.Project, config, afterCompleteTypeCheckCallback) = 
     let fileName = file.FullPath.ToString()
     let opts = x.GetCheckerOptions(fileName, src, proj, config)
-    Debug.tracef "Parsing" "Trigger parse (fileName=%s)" fileName
+    Debug.WriteLine(sprintf "Parsing: Trigger parse (fileName=%s)" fileName)
     mbox.Post(TriggerRequest(ParseRequest(file, src, opts, true, Some afterCompleteTypeCheckCallback)))
 
   member x.GetTypedParseResult((file:FilePath, src, proj:MonoDevelop.Projects.Project, config), ?timeout)  : TypedParseResult = 
     let fileName = file.FullPath.ToString()
     let opts = x.GetCheckerOptions(fileName, src, proj, config)
-    Debug.tracef "Parsing" "Get typed parse result (fileName=%s)" fileName
+    Debug.WriteLine(sprintf "Parsing: Get typed parse result (fileName=%s)" fileName)
     let req = ParseRequest(file, src, opts, false, None)
     let checker = getChecker()
 
     // Try to get recent results from the F# service
     match checker.TryGetRecentTypeCheckResultsForFile(fileName, req.Options) with
     | Some(untyped, typed, _) when typed.TypeCheckInfo.IsSome ->
-        Debug.tracef "Worker" "Quick parse completed - success"
+        Debug.WriteLine(sprintf "Worker: Quick parse completed - success")
         TypedParseResult(typed.TypeCheckInfo.Value)
     | _ ->
         // If we didn't get a recent set of type checking results, we put in a request and wait for at most 'timeout' for a response
