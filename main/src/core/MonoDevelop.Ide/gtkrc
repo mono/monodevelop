@@ -78,7 +78,7 @@ style "default" {
     GtkComboBox::arrow-size = 12
 
     GtkMenu::vertical-padding = 4
-    GtkMenuItem::horizontal-padding = 8
+    GtkMenuItem::horizontal-padding = 9
     GtkMenuItem::toggle-spacing = 0
     GtkSeparatorMenuItem::horizontal-padding = 2
 
