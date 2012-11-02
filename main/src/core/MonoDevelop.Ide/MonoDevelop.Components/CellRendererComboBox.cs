@@ -41,8 +41,9 @@ namespace MonoDevelop.Components
 		public CellRendererComboBox ()
 		{
 			Mode |= Gtk.CellRendererMode.Editable;
-			Entry dummyEntry = new Gtk.Entry ();
+			Gtk.ComboBox dummyEntry = Gtk.ComboBox.NewText ();
 			rowHeight = dummyEntry.SizeRequest ().Height;
+			Ypad = 0;
 		}
 
 		public string[] Values {

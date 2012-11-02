@@ -76,6 +76,12 @@ namespace MonoDevelop.Components
 		{
 			// Do nothing.
 		}
+
+		protected override void OnSizeRequested (ref Requisition requisition)
+		{
+			base.OnSizeRequested (ref requisition);
+			requisition = box.SizeRequest ();
+		}
 		
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
