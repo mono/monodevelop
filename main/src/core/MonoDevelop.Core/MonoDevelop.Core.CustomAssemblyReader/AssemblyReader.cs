@@ -34,7 +34,7 @@ using System.IO;
 
 namespace MonoDevelop.Core.CustomAssemblyReader
 {
-	public class AssemblyReader
+	class AssemblyReader
 	{
 		PEFileHeader   header;
 		CLIHeader      cliHeader;

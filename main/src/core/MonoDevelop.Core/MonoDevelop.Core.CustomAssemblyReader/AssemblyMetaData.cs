@@ -32,7 +32,7 @@ using System.IO;
 namespace MonoDevelop.Core.CustomAssemblyReader
 {
 	
-	public class AssemblyMetadata
+	class AssemblyMetadata
 	{
 		const uint MAGIC_SIGN = 0x424A5342;
 		ushort majorVersion;

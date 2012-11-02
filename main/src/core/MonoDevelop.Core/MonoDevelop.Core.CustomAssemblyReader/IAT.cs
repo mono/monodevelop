@@ -31,7 +31,7 @@ using System.IO;
 
 namespace MonoDevelop.Core.CustomAssemblyReader
 {
-	public class IAT
+	class IAT
 	{
 		uint nameTableRVA;
 		uint empty;

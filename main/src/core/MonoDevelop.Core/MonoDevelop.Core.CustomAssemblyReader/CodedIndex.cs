@@ -28,7 +28,7 @@
 
 namespace MonoDevelop.Core.CustomAssemblyReader
 {
-	public enum CodedIndex {
+	enum CodedIndex {
 		TypeDefOrRef,
 		HasConstant,
 		HasCustomAttribute,

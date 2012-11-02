@@ -31,7 +31,7 @@ using System.IO;
 
 namespace MonoDevelop.Core.CustomAssemblyReader
 {
-	public class NTSpecificFields
+	class NTSpecificFields
 	{
 		const uint IMAGE_BASE        = 0x400000;
 		const uint SECTION_ALIGNMENT = 0x2000;

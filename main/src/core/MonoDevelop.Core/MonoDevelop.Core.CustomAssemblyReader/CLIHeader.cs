@@ -31,7 +31,7 @@ using System.IO;
 
 namespace MonoDevelop.Core.CustomAssemblyReader
 {
-	public class CLIHeader
+	class CLIHeader
 	{
 		uint   cb;
 		ushort majorRuntimeVersion;

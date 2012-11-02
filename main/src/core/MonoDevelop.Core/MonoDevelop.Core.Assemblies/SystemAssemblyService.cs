@@ -388,7 +388,63 @@ namespace MonoDevelop.Core.Assemblies
 			foreach (Mono.Cecil.AssemblyNameReference aref in adef.MainModule.AssemblyReferences) {
 				yield return aref.Name;
 			}*/
-
 		}
+
+		public class ManifestResource
+		{
+			public string Name {
+				get;
+				private set;
+			}
+
+			Func<byte[]> dataCallback;
+			public byte[] Data {
+				get {
+					return dataCallback ();
+				}
+			}
+
+			public ManifestResource (string name, Func<byte[]> dataCallback)
+			{
+				this.Name = name;
+				this.dataCallback = dataCallback;
+			}
+		}
+
+		/// <summary>
+		/// Simply get all assembly manifest resources from an assembly given it's file name.
+		/// </summary>
+		public static IEnumerable<ManifestResource> GetAssemblyManifestResources (string fileName)
+		{
+			var assembly = new MonoDevelop.Core.CustomAssemblyReader.AssemblyReader ();
+			assembly.AddStoreTable (MonoDevelop.Core.CustomAssemblyReader.ManifestResource.TABLE_ID);
+
+			try {
+				assembly.Load (fileName);
+			} catch {
+				yield break;
+			}
+
+			var resourceTable = assembly.GetMetadateTable<MonoDevelop.Core.CustomAssemblyReader.ManifestResource> ();
+			for (int i = 0; i < resourceTable.Length; ++i) {
+				var res = resourceTable [i];
+				if (res == null)
+					continue;
+				var name = assembly.GetStringFromHeap(res.Name);
+				yield return new ManifestResource (name, () => res.LoadData (assembly, fileName));
+			}
+
+			/* CECIL version:
+
+		Mono.Cecil.AssemblyDefinition a = Mono.Cecil.AssemblyDefinition.ReadAssembly (asmInBundle);
+			foreach (Mono.Cecil.ModuleDefinition m in a.Modules) {
+				for (int i = 0; i < m.Resources.Count; i++) {
+					var er = m.Resources[i] as Mono.Cecil.EmbeddedResource;
+					
+					yield return new ManifestResource (er.Name, () => er.GetResourceStream ().ReadToEnd ());
+				}
+			}*/
+		}
+
 	}
 }

@@ -34,7 +34,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Core.CustomAssemblyReader
 {
-	public class MetadataTable
+	class MetadataTable
 	{
 		uint reserved;
 		byte majorVersion;

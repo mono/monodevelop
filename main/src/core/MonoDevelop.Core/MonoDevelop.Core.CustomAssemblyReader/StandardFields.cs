@@ -32,7 +32,7 @@ using System.IO;
 
 namespace MonoDevelop.Core.CustomAssemblyReader
 {
-	public class StandardFields
+	class StandardFields
 	{
 		const ushort MAGIC = 0x10B;
 		

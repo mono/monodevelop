@@ -31,7 +31,7 @@ using System.IO;
 
 namespace MonoDevelop.Core.CustomAssemblyReader
 {
-	public enum DataType
+	enum DataType
 	{
 		End            = 0x00,
 		Void           = 0x01,

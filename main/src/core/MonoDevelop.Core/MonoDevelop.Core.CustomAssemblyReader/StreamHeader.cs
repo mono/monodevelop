@@ -31,7 +31,7 @@ using System.IO;
 
 namespace MonoDevelop.Core.CustomAssemblyReader
 {
-	public class StreamHeader
+	class StreamHeader
 	{
 		uint offset;
 		uint size;

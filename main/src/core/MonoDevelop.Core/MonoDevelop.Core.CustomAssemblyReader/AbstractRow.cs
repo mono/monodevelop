@@ -31,7 +31,7 @@ using System.IO;
 
 namespace MonoDevelop.Core.CustomAssemblyReader
 {
-	public abstract class AbstractRow
+	abstract class AbstractRow
 	{
 		protected bool BaseIsFlagSet (uint flags, uint flag, uint flag_mask)
 		{
@@ -146,7 +146,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		public abstract void LoadRow (MetadataTable metadataTable, BinaryReader binaryReader);
 	}
 
-	public class Assembly : AbstractRow
+	class Assembly : AbstractRow
 	{
 		public static readonly int TABLE_ID = 0x20;
 		uint  hashAlgID;
@@ -254,7 +254,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class AssemblyOS : AbstractRow
+	class AssemblyOS : AbstractRow
 	{
 		public static readonly int TABLE_ID = 0x22;
 		uint osPlatformID;
@@ -296,7 +296,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class AssemblyProcessor : AbstractRow
+	class AssemblyProcessor : AbstractRow
 	{
 		public static readonly int TABLE_ID = 0x21;
 		uint processor;
@@ -316,7 +316,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class AssemblyRef : AbstractRow
+	class AssemblyRef : AbstractRow
 	{
 		public static readonly int TABLE_ID = 0x23;
 		ushort major;
@@ -424,7 +424,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class AssemblyRefOS : AbstractRow
+	class AssemblyRefOS : AbstractRow
 	{
 		public static readonly int TABLE_ID = 0x25;
 		uint osPlatformID;
@@ -477,7 +477,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class AssemblyRefProcessor : AbstractRow
+	class AssemblyRefProcessor : AbstractRow
 	{
 		public static readonly int TABLE_ID = 0x24;
 		uint processor;
@@ -508,7 +508,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class ClassLayout : AbstractRow
+	class ClassLayout : AbstractRow
 	{
 		public static readonly int TABLE_ID = 0x0F;
 		ushort packingSize;
@@ -550,7 +550,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class Constant : AbstractRow
+	class Constant : AbstractRow
 	{
 		public static readonly int TABLE_ID = 0x0B;
 		byte type;   // a 1 byte constant, followed by a 1-byte padding zero
@@ -596,7 +596,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class CustomAttribute : AbstractRow
+	class CustomAttribute : AbstractRow
 	{
 		public static readonly int TABLE_ID = 0x0C;
 		uint parent; // index into any metadata table, except the CustomAttribute table itself; more precisely, a HasCustomAttribute coded index
@@ -638,7 +638,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class DeclSecurity : AbstractRow
+	class DeclSecurity : AbstractRow
 	{
 		public static readonly int TABLE_ID = 0x0E;
 		ushort action;
@@ -680,7 +680,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class ENCLog : AbstractRow
+	class ENCLog : AbstractRow
 	{
 		public static readonly int TABLE_ID = 0x1E;
 		uint token;
@@ -711,7 +711,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class ENCMap : AbstractRow
+	class ENCMap : AbstractRow
 	{
 		public static readonly int TABLE_ID = 0x1F;
 		uint token;
@@ -731,7 +731,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class Event : AbstractRow
+	class Event : AbstractRow
 	{
 		public static readonly int TABLE_ID = 0x14;
 		public static readonly ushort FLAG_SPECIALNAME = 0x0200;
@@ -775,7 +775,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class EventMap : AbstractRow
+	class EventMap : AbstractRow
 	{
 		public static readonly int TABLE_ID = 0x12;
 		uint   parent;    // index into the TypeDef table
@@ -806,7 +806,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class EventPtr : AbstractRow
+	class EventPtr : AbstractRow
 	{
 		public static readonly int TABLE_ID = 19;
 		uint eventPtr;
@@ -826,7 +826,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class ExportedType : AbstractRow
+	class ExportedType : AbstractRow
 	{
 		public static readonly int TABLE_ID = 0x27;
 		uint flags;
@@ -892,7 +892,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class Field : AbstractRow
+	class Field : AbstractRow
 	{
 		public static readonly int TABLE_ID = 0x04;
 		public static readonly ushort FLAG_FIELDACCESSMASK = 0x0007;
@@ -962,7 +962,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class FieldLayout : AbstractRow
+	class FieldLayout : AbstractRow
 	{
 		public static readonly int TABLE_ID = 0x10;
 		uint offset;
@@ -993,7 +993,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class FieldMarshal : AbstractRow
+	class FieldMarshal : AbstractRow
 	{
 		public static readonly int TABLE_ID = 0x0D;
 		uint parent;     // index into Field or Param table; more precisely, a HasFieldMarshal coded index
@@ -1025,7 +1025,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class FieldPtr : AbstractRow
+	class FieldPtr : AbstractRow
 	{
 		public static readonly int TABLE_ID = 0x03;
 		uint field;
@@ -1045,7 +1045,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class FieldRVA : AbstractRow
+	class FieldRVA : AbstractRow
 	{
 		public static readonly int TABLE_ID = 0x1D;
 		uint rva;
@@ -1076,7 +1076,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class File : AbstractRow
+	class File : AbstractRow
 	{
 		public static readonly int TABLE_ID = 0x26;
 		public static readonly uint FLAG_CONTAINSMETADATA = 0x0000;
@@ -1120,7 +1120,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class ImplMap : AbstractRow
+	class ImplMap : AbstractRow
 	{
 		public static readonly int TABLE_ID = 0x1C;
 		public static readonly ushort FLAG_NOMANGLE = 0x0001;
@@ -1186,7 +1186,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class InterfaceImpl : AbstractRow
+	class InterfaceImpl : AbstractRow
 	{
 		public static readonly int TABLE_ID = 0x09;
 		uint myClass; // index into the TypeDef table
@@ -1217,7 +1217,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class ManifestResource : AbstractRow
+	class ManifestResource : AbstractRow
 	{
 		public static readonly int TABLE_ID = 0x28;
 		public static readonly uint FLAG_VISIBILITYMASK = 0x0007;
@@ -1288,7 +1288,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class MemberRef : AbstractRow
+	class MemberRef : AbstractRow
 	{
 		public static readonly int TABLE_ID = 0x0A;
 		uint myClass;    // index into the TypeRef, ModuleRef, Method, TypeSpec or TypeDef tables; more precisely, a MemberRefParent coded index
@@ -1330,7 +1330,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class Method : AbstractRow
+	class Method : AbstractRow
 	{
 		public static readonly int TABLE_ID = 0x06;
 		public static readonly ushort FLAG_MEMBERACCESSMASK = 0X0007;
@@ -1457,7 +1457,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class MethodImpl : AbstractRow
+	class MethodImpl : AbstractRow
 	{
 		public static readonly int TABLE_ID = 0x19;
 		uint myClass;           // index into TypeDef table
@@ -1499,7 +1499,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class MethodPtr : AbstractRow
+	class MethodPtr : AbstractRow
 	{
 		public static readonly int TABLE_ID = 0x05;
 		uint method;
@@ -1519,7 +1519,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class MethodSemantics : AbstractRow
+	class MethodSemantics : AbstractRow
 	{
 		public static readonly int TABLE_ID = 0x18;
 		public static readonly ushort SEM_SETTER = 0x0001;
@@ -1567,7 +1567,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class Module : AbstractRow
+	class Module : AbstractRow
 	{
 		public static readonly int TABLE_ID = 0x00;
 		ushort generation;
@@ -1631,7 +1631,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class ModuleRef : AbstractRow
+	class ModuleRef : AbstractRow
 	{
 		public static readonly int TABLE_ID = 0x1A;
 		uint name;      // index into String heap
@@ -1651,7 +1651,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class NestedClass : AbstractRow
+	class NestedClass : AbstractRow
 	{
 		public static readonly int TABLE_ID = 0x29;
 		uint nestedClass; // index into the TypeDef table
@@ -1682,7 +1682,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class Param : AbstractRow
+	class Param : AbstractRow
 	{
 		public static readonly int    TABLE_ID = 0x08;
 		public static readonly ushort FLAG_IN = 0x0001;
@@ -1735,7 +1735,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class ParamPtr : AbstractRow
+	class ParamPtr : AbstractRow
 	{
 		public static readonly int TABLE_ID = 0x07;
 		uint param;
@@ -1755,7 +1755,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class Property : AbstractRow
+	class Property : AbstractRow
 	{
 		public static readonly int TABLE_ID = 0x17;
 		public static readonly ushort FLAG_SPECIALNAME = 0x0200;
@@ -1806,7 +1806,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class PropertyMap : AbstractRow
+	class PropertyMap : AbstractRow
 	{
 		public static readonly int TABLE_ID = 0x15;
 		uint parent;       // index into the TypeDef table
@@ -1837,7 +1837,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class PropertyPtr : AbstractRow
+	class PropertyPtr : AbstractRow
 	{
 		public static readonly int TABLE_ID = 22;
 		uint property;
@@ -1857,7 +1857,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class StandAloneSig : AbstractRow
+	class StandAloneSig : AbstractRow
 	{
 		public static readonly int TABLE_ID = 0x11;
 		uint signature; // index into the Blob heap
@@ -1877,7 +1877,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class TypeDef : AbstractRow
+	class TypeDef : AbstractRow
 	{
 		public static readonly int TABLE_ID = 0x02;
 		
@@ -2006,7 +2006,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class TypeRef : AbstractRow
+	class TypeRef : AbstractRow
 	{
 		public static readonly int TABLE_ID = 0x01;
 		uint resolutionScope; // index into Module, ModuleRef, AssemblyRef or TypeRef tables, or null; more precisely, a ResolutionScope coded index
@@ -2048,7 +2048,7 @@ namespace MonoDevelop.Core.CustomAssemblyReader
 		}
 	}
 
-	public class TypeSpec : AbstractRow
+	class TypeSpec : AbstractRow
 	{
 		public static readonly int TABLE_ID = 0x1B;
 		uint signature; // index into the Blob heap

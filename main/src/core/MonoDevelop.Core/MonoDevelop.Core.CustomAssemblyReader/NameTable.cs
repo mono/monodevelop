@@ -31,7 +31,7 @@ using System.IO;
 
 namespace MonoDevelop.Core.CustomAssemblyReader
 {
-	public class NameTable
+	class NameTable
 	{
 		ushort hint;
 		string name;

@@ -31,7 +31,7 @@ using System.IO;
 
 namespace MonoDevelop.Core.CustomAssemblyReader
 {
-	public class DataDirectories
+	class DataDirectories
 	{
 		uint exportTable;
 		uint exportTableSize;

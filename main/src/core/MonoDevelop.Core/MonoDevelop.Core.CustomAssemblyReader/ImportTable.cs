@@ -31,7 +31,7 @@ using System.IO;
 
 namespace MonoDevelop.Core.CustomAssemblyReader
 {
-	public class ImportTable
+	class ImportTable
 	{
 		const int UNUSED_SIZE = 20;
 		

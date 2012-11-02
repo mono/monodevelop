@@ -31,7 +31,7 @@ using System.IO;
 
 namespace MonoDevelop.Core.CustomAssemblyReader
 {
-	public class MethodBody
+	class MethodBody
 	{
 		public const byte CorILMethod_Fat        = 0x3;
 		public const byte CorILMethod_TinyFormat = 0x2;

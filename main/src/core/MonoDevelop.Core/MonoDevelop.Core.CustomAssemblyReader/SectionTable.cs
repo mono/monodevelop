@@ -31,7 +31,7 @@ using System.IO;
 
 namespace MonoDevelop.Core.CustomAssemblyReader
 {
-	public class SectionTable
+	class SectionTable
 	{
 		const int  NAME_LEN = 8;
 		

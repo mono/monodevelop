@@ -28,7 +28,7 @@
 
 namespace MonoDevelop.Core.CustomAssemblyReader
 {
-	public enum CallingConvention : uint
+	enum CallingConvention : uint
 	{
 		Default      = 0x00,
 		

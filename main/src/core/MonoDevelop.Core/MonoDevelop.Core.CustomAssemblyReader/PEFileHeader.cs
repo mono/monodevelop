@@ -32,7 +32,7 @@ using System.IO;
 
 namespace MonoDevelop.Core.CustomAssemblyReader
 {
-	public class PEFileHeader
+	class PEFileHeader
 	{
 		const ushort machineSign = 0x14C;
 		const ushort IMAGE_FILE_DLL = 0x2000;
