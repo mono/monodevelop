@@ -426,6 +426,7 @@
     <Compile Include="MonoDevelop.Core.CustomAssemblyReader\StandardFields.cs" />
     <Compile Include="MonoDevelop.Core.CustomAssemblyReader\StreamHeader.cs" />
     <Compile Include="MonoDevelop.Core.CustomAssemblyReader\CallingConvention.cs" />
+    <Compile Include="MonoDevelop.Core.CustomAssemblyReader\BoundStream.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
