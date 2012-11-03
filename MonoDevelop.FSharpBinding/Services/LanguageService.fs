@@ -7,6 +7,7 @@ namespace MonoDevelop.FSharp
 #nowarn "40"
 
 open System
+open System.IO
 open System.Xml
 open System.Text
 open System.Threading
@@ -289,31 +290,11 @@ type internal LanguageService private () =
   // Single instance of the language service
   static let instance = Lazy.Create(fun () -> LanguageService())
 
-  // Collection of errors reported by last background check
-  let mutable errors : Error list = [ ]
-
   /// Format errors for the given line (if there are multiple, we collapse them into a single one)
   let formatError (error:ErrorInfo) =
       // Single error for this line
       let typ = if error.Severity = Severity.Error then ErrorType.Error else ErrorType.Warning
       new Error(typ, error.Message, DomRegion(error.StartLine + 1, error.StartColumn, error.EndLine + 1, error.EndColumn + 1))
-(*
-    | errors & (first::_) ->        
-        // Multiple errors - fold them
-        let msg =
-          [ for error in errors do
-              // Remove line-breaks from messages such as type mismatch (they would look ugly)
-              let msg = error.Message.Split([| '\n'; '\r' |], StringSplitOptions.RemoveEmptyEntries)
-              let msg = msg |> Array.map (fun s -> s.Trim()) |> String.concat " "
-              yield sprintf "(%d-%d) %s" (error.StartColumn+1) (error.EndColumn+1) msg ]
-          |> String.concat "\n"
-          
-        // Report as error if there is at least one error              
-        let typ = if errors |> Seq.forall (fun e -> e.Severity = Severity.Warning) then ErrorType.Warning else ErrorType.Error
-        new Error(typ, "Multiple errors\n" + msg, first.StartLine + 1, 1)
-    | _ -> failwith "Unexpected" 
-*)
-
   
   /// To be called from the language service mailbox processor (on a 
   /// GUI thread!) when new errors are reported for the specified file
@@ -354,11 +335,8 @@ type internal LanguageService private () =
           lastChecker.Value
         
 
-    // Post message to the 'LanguageService' mailbox
-  let rec post m = (mbox:SimpleMailboxProcessor<_>).Post(m)
-  
   // Mailbox of this 'LanguageService'
-  and mbox = SimpleMailboxProcessor.Start(fun mbox ->
+  let mbox = SimpleMailboxProcessor.Start(fun mbox ->
   
     // Tail-recursive loop that remembers the current state
     // (untyped and typed parse results)
@@ -423,8 +401,8 @@ type internal LanguageService private () =
         // parse request and then send ourselves a message, so that we can reply later
         | UpdateAndGetTypedInfo(req, reply), _ -> Some <| async { 
             Debug.WriteLine ("LanguageService: UpdateAndGetTypedInfo")
-            post(TriggerRequest(req))
-            post(GetTypedInfoDone(reply)) 
+            mbox.Post(TriggerRequest(req))
+            mbox.Post(GetTypedInfoDone(reply)) 
             return! loop typedInfo }
                     
         | GetTypedInfoDone(reply), (Some typedRes) -> Some <| async {
@@ -443,24 +421,13 @@ type internal LanguageService private () =
 
   /// Constructs options for the interactive checker
   member x.GetCheckerOptions(fileName, source, proj:MonoDevelop.Projects.Project, config:ConfigurationSelector) =
-    let ext = IO.Path.GetExtension(fileName)
+    let ext = Path.GetExtension(fileName)
     let opts = 
       if (proj = null || ext = ".fsx" || ext = ".fsscript") then
       
         // We are in a stand-alone file (assuming it is a script file) or we
         // are in a project, but currently editing a script file
         try
-#if CUSTOM_SCRIPT_RESOLUTION
-          // In some versions of F# InteractiveChecker doesn't implement assembly resolution
-          // correct on Mono (it throws), so this is a workaround that we can use
-          if Environment.runningOnMono then
-            // The workaround works pretty well, but we use it only on Mono, because
-            // it doesn't implement full MS BUILD resolution (e.g. Reference Assemblies),
-            // which is fine on Mono, but could be trouble on Windows
-            ScriptOptions.getScriptOptionsForFile(fileName, source)
-          else
-            checker.GetCheckOptionsFromScriptRoot(fileName, source)
-#else
           // TODO: In an early version, the InteractiveChecker resolution doesn't sometimes
           // include FSharp.Core and other essential assemblies, so we need to include them by hand
           let fileName = CompilerArguments.fixFileName(fileName)
@@ -480,7 +447,6 @@ type internal LanguageService private () =
                  match ScriptOptions.resolveAssembly dirs "FSharp.Compiler.Interactive.Settings" with
                  | Some fn -> yield sprintf "-r:%s" fn
                  | None -> Debug.WriteLine("Resolution: FSharp.Compiler.Interactive.Settings assembly resolution failed!") |]
-#endif        
         with e ->
           failwithf "Exception when getting check options for '%s'\n.Details: %A" fileName e
           
@@ -497,7 +463,7 @@ type internal LanguageService private () =
         // Order files using the configuration settings & get options
         let shouldWrap = false //It is unknown if the IntelliSense fails to load assemblies with wrapped paths.
         let args = CompilerArguments.generateCompilerOptions (fsconfig, projConfig.TargetFramework.Id, proj.Items, config, shouldWrap) |> Array.ofList
-        let root = System.IO.Path.GetDirectoryName(proj.FileName.FullPath.ToString())
+        let root = Path.GetDirectoryName(proj.FileName.FullPath.ToString())
         let files = CompilerArguments.getItemsInOrder root files fsbuild.BuildOrder false |> Array.ofList
         CheckOptions.Create(projFile, files, args, false, false, fakeDateTimeRepresentingTimeLoaded proj) 
 

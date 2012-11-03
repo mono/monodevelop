@@ -178,7 +178,6 @@ module CompilerService =
   // ------------------------------------------------------------------------------------
   
   /// Compiles the specified F# project using the current configuration
-  /// and prints command line command to the MonoDevelop output
   let Compile(items, config:DotNetProjectConfiguration, configSel, monitor) : BuildResult =
     let runtime = MonoDevelop.Core.Runtime.SystemAssemblyService.DefaultRuntime
     let framework = config.TargetFramework
@@ -190,7 +189,7 @@ module CompilerService =
           // Generate source files (sort using current configuration)
           let fsconfig = config.ProjectParameters :?> FSharpProjectParameters
           let files = CompilerArguments.getSourceFiles items
-          let root = System.IO.Path.GetDirectoryName(config.ProjectParameters.ParentProject.FileName.FullPath.ToString())
+          let root = Path.GetDirectoryName(config.ProjectParameters.ParentProject.FileName.FullPath.ToString())
           for file in CompilerArguments.getItemsInOrder root files fsconfig.BuildOrder false do 
              yield CompilerArguments.wrapFile file ]
           

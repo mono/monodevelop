@@ -123,7 +123,7 @@ type FSharpResolverProvider() =
   interface ITextEditorResolverProvider with
   
     /// Get tool-tip at the specified offset (from the start of the file)
-    member x.GetLanguageItem(doc:MonoDevelop.Ide.Gui.Document, offset:int, region:DomRegion byref) : ResolveResult =
+    member x.GetLanguageItem(doc:Document, offset:int, region:DomRegion byref) : ResolveResult =
 
       try 
         Debug.WriteLine (sprintf "Resolver: In GetLanguageItem")
@@ -157,7 +157,7 @@ type FSharpResolverProvider() =
         Debug.WriteLine (sprintf "Resolver: Exception: '%s'" (exn.ToString()))
         null
 
-    member x.GetLanguageItem(doc:MonoDevelop.Ide.Gui.Document, offset:int, identifier:string) : ResolveResult =
+    member x.GetLanguageItem(doc:Document, offset:int, identifier:string) : ResolveResult =
       do Debug.WriteLine (sprintf "Resolver: in GetLanguageItem#2")
       let (result, region) = (x :> ITextEditorResolverProvider).GetLanguageItem(doc, offset)
       result
