@@ -824,7 +824,7 @@ namespace MonoDevelop.Components.MainToolbar
 			double y = alloc.Y + yMargin;
 			int w, h;
 			if (topItem != null) {
-				headerLayout.SetText (GettextCatalog.GetString ("Top result"));
+				headerLayout.SetText (GettextCatalog.GetString ("Top Result"));
 				headerLayout.GetPixelSize (out w, out h);
 				context.MoveTo (alloc.Left + headerMarginSize - w - xMargin, y);
 				context.Color = headerColor;
