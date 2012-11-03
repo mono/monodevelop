@@ -68,8 +68,13 @@ namespace MonoDevelop.Ide.Gui
 			tabStrip.DropDownButton.MenuCreator = delegate {
 				Gtk.Menu menu = new Menu ();
 				foreach (var tab in pages) {
-					var mi = new Gtk.ImageMenuItem (tab.Text);
+					var mi = new Gtk.ImageMenuItem ("");
 					menu.Insert (mi, -1);
+					var label = (Gtk.AccelLabel) mi.Child;
+					if (tab.Markup != null)
+						label.Markup = tab.Markup;
+					else
+						label.Text = tab.Text;
 					var locTab = tab;
 					mi.Activated += delegate {
 						CurrentTab = locTab;
