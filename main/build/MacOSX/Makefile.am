@@ -1,5 +1,6 @@
 BUNDLE_VERSION=$(VERSION)
 MAC_APP_DIR=MonoDevelop.app
+APP_NAME=MonoDevelop
 MACOS=$(MAC_APP_DIR)/Contents/MacOS
 MAC_APP_LIB_DIR=$(MACOS)/lib/monodevelop
 ADDINS=$(MACOS)/lib/monodevelop/AddIns
