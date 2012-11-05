@@ -18,16 +18,8 @@ type FSharpCompilerVersion =
     // F# 3.0
     | FSharp_3_0
     override x.ToString() = match x with | FSharp_2_0 -> "4.0.0.0" | FSharp_3_0 -> "4.3.0.0"
-    /// The current requested language version is a configuration setting specified by the user.
+    /// We assume the user always requests the latest known version unless there is some project setting saying otherwise
     static member LatestKnown = FSharp_3_0
-(*
-        with get() = 
-            let setting = MonoDevelop.Core.PropertyService.Get<string>("FSharpBinding.PreferFSharp20","") 
-            if System.String.Compare(setting, "true", true) = 0 then 
-                FSharpCompilerVersion.FSharp_2_0
-            else
-                FSharpCompilerVersion.FSharp_3_0
-*)
                 
 
 module internal FSharpEnvironment =

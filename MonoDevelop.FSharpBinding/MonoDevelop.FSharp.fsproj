@@ -104,33 +104,13 @@
     <Reference Include="System.Core" />
     <Reference Include="mscorlib" />
     <Reference Include="Mono.Cairo" />
-    <Reference Include="Mono.Addins, Version=0.6.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Mono.TextEditor">
-      <Private>False</Private>
-      <HintPath>/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/bin/Mono.TextEditor.dll</HintPath> 
-    </Reference>
-    <Reference Include="MonoDevelop.Core">
-      <Private>False</Private>
-      <HintPath>/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/bin/MonoDevelop.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="MonoDevelop.Ide">
-      <Private>False</Private>
-      <HintPath>/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/bin/MonoDevelop.Ide.dll</HintPath>
-    </Reference>
-    <Reference Include="ICSharpCode.NRefactory">
-      <Private>False</Private>
-      <HintPath>/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/bin/ICSharpCode.NRefactory.dll</HintPath>
-    </Reference>
-    <Reference Include="MonoDevelop.SourceEditor2">
-      <Private>False</Private>
-      <HintPath>/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/AddIns/DisplayBindings/SourceEditor\MonoDevelop.SourceEditor2.dll</HintPath>
-    </Reference>
-    <Reference Include="MonoDevelop.Refactoring">
-      <Private>False</Private>
-      <HintPath>/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll</HintPath>
-    </Reference>
+     <Reference Include="Mono.Addins, Version=0.6.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756"><Private>False</Private><HintPath>C:\Program Files (x86)\MonoDevelop\bin\Mono.Addins.dll</HintPath></Reference>
+     <Reference Include="Mono.TextEditor"><Private>False</Private><HintPath>C:\Program Files (x86)\MonoDevelop\bin\Mono.TextEditor.dll</HintPath></Reference>
+     <Reference Include="MonoDevelop.Core"><Private>False</Private><HintPath>C:\Program Files (x86)\MonoDevelop\bin\MonoDevelop.Core.dll</HintPath></Reference>
+     <Reference Include="MonoDevelop.Ide"><Private>False</Private><HintPath>C:\Program Files (x86)\MonoDevelop\bin\MonoDevelop.Ide.dll</HintPath></Reference>
+     <Reference Include="ICSharpCode.NRefactory"><Private>False</Private><HintPath>C:\Program Files (x86)\MonoDevelop\bin\ICSharpCode.NRefactory.dll</HintPath></Reference>
+     <Reference Include="MonoDevelop.SourceEditor2"><Private>False</Private><HintPath>C:\Program Files (x86)\MonoDevelop\AddIns\DisplayBindings\SourceEditor\MonoDevelop.SourceEditor2.dll</HintPath></Reference>
+     <Reference Include="MonoDevelop.Refactoring"><Private>False</Private><HintPath>C:\Program Files (x86)\MonoDevelop\AddIns\MonoDevelop.Refactoring\MonoDevelop.Refactoring.dll</HintPath></Reference>
     <ProjectReference Include="Gui\MonoDevelop.FSharp.Gui.csproj">
       <Project>{FD0D1033-9145-48E5-8ED8-E2365252878C}</Project>
       <Name>MonoDevelop.FSharp.Gui</Name>
