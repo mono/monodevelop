@@ -72,27 +72,39 @@ namespace MonoDevelop.Core
 			foreach (var info in AddinManager.GetExtensionObjects<ISystemInformationProvider> ("/MonoDevelop/Core/SystemInformation", false)) {
 				yield return info;
 			}
-			
+
 			var sb = new StringBuilder ();
 			// First append the MonoDevelop build information
 			var biFile = ((FilePath)Assembly.GetEntryAssembly ().Location).ParentDirectory.Combine ("buildinfo");
 			if (File.Exists (biFile)) {
-				sb.Append ("Git revision: ");
-				foreach (var line in File.ReadAllLines (biFile)){
-					if (!string.IsNullOrWhiteSpace (line))
-						sb.AppendLine (line.Trim ());
+				var lines = File.ReadAllLines (biFile)
+					.Select (l => l.Trim ())
+					.Where (l => !string.IsNullOrEmpty (l))
+					.ToArray ();
+				if (lines.Length > 0) {
+					sb.Append ("Git revision: ");
+					foreach (var line in lines) {
+						sb.AppendLine (line);
+					}
 				}
-			} else {
-				sb.AppendLine ("No build info");
 			}
 
 			// Then append the Xamarin Addins information if it exists
 			biFile = ((FilePath) Assembly.GetEntryAssembly ().Location).ParentDirectory.Combine ("buildinfo_xamarin");
 			if (File.Exists (biFile)) {
-				sb.Append ("Xamarin addins: ");
-				foreach (var line in File.ReadLines (biFile))
-					sb.AppendLine (line);
+				var lines = File.ReadAllLines (biFile)
+					.Select (l => l.Trim ())
+					.Where (l => !string.IsNullOrEmpty (l))
+					.ToArray ();
+				if (lines.Length > 0) {
+					sb.Append ("Xamarin addins: ");
+					foreach (var line in lines)
+						sb.AppendLine (line);
+				}
 			}
+
+			if (sb.Length == 0)
+				sb.AppendLine ("Build information unavailable");
 
 			yield return new SystemInformationSection () {
 				Title = "Build Information",
