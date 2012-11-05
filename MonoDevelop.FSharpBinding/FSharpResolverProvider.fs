@@ -150,11 +150,9 @@ type FSharpResolverProvider() =
 
         if config = null then null else
 
-        let req = new FilePath(doc.Editor.FileName), docText, doc.Project, config
-        
         Debug.WriteLine (sprintf "Resolver: Getting results of type checking")
         // Try to get typed result - with the specified timeout
-        let tyRes = LanguageService.Service.GetTypedParseResult(req, timeout = ServiceSettings.blockingTimeout)
+        let tyRes = LanguageService.Service.GetTypedParseResult(new FilePath(doc.Editor.FileName), docText, doc.Project, config, timeout = ServiceSettings.blockingTimeout)
             
         Debug.WriteLine (sprintf "Resolver: Getting tool tip")
         // Get tool-tip from the language service
@@ -165,6 +163,7 @@ type FSharpResolverProvider() =
             null
         | _ -> 
             Debug.WriteLine (sprintf "Resolver: Got data")
+            // This is the NRefactory symbol for the item - the Region is used for goto-definition
             let ivar = 
                 { new IVariable with 
                     member x.Name = "item--item"

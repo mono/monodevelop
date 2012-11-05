@@ -67,10 +67,9 @@ type FSharpTextEditorCompletion() =
   override x.CodeCompletionCommand(context:CodeCompletionContext) : ICompletionDataList =
     try 
       let config = IdeApp.Workspace.ActiveConfiguration
-      let req = x.Document.FileName, x.Document.Editor.Text, x.Document.Project, config
       
       // Try to get typed information from LanguageService (with the specified timeout)
-      let tyRes = LanguageService.Service.GetTypedParseResult(req, timeout = ServiceSettings.blockingTimeout)
+      let tyRes = LanguageService.Service.GetTypedParseResult(x.Document.FileName, x.Document.Editor.Text, x.Document.Project, config, timeout = ServiceSettings.blockingTimeout)
       
       // Get declarations and generate list for MonoDevelop
       let meths = tyRes.GetDeclarations(x.Document) 

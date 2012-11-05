@@ -203,7 +203,7 @@ type internal TypedParseResult(info:TypeCheckInfo) =
          current, current::prev |> List.rev
       | [] -> "", []
 
-    Debug.WriteLine(sprintf "Result: Get tool tip at %d:%d (offset %d - %d)\nIdentifier: %A (Current: %s) \nLine string: %s"  
+    Debug.WriteLine(sprintf "Result: Crack symbol text at %d:%d (offset %d - %d)\nIdentifier: %A (Current: %s) \nLine string: %s"  
                           line col currentLine.Offset currentLine.EndOffset identIsland currentIdent lineStr)
 
     let token = FsParser.tagOfToken(FsParser.token.IDENT("")) 
@@ -262,7 +262,7 @@ type internal TypedParseResult(info:TypeCheckInfo) =
           let res = info.GetDeclarationLocation((line, col), lineStr, identIsland, token, true)
           Debug.WriteLine( "Result: Got something, returning"  )
           res 
-                               
+
 // --------------------------------------------------------------------------------------
 
 type internal AfterCompleteTypeCheckCallback = (FilePath * Error list -> unit) option
@@ -426,7 +426,7 @@ type internal LanguageService private () =
             do! Async.Sleep 4000
             return! loop None} )
 
-  /// Constructs options for the interactive checker
+  /// Constructs options for the interactive checker for the given file in the project under the given configuration.
   member x.GetCheckerOptions(fileName, source, proj:MonoDevelop.Projects.Project, config:ConfigurationSelector) =
     let ext = Path.GetExtension(fileName)
     let opts = 
@@ -480,13 +480,15 @@ type internal LanguageService private () =
                          opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules)
     opts
   
+  /// Parses and type-checks the given file in the given project under the given configuration. The callback
+  /// is called after the complete typecheck has been performed.
   member x.TriggerParse(file:FilePath, src, proj:MonoDevelop.Projects.Project, config, afterCompleteTypeCheckCallback) = 
     let fileName = file.FullPath.ToString()
     let opts = x.GetCheckerOptions(fileName, src, proj, config)
     Debug.WriteLine(sprintf "Parsing: Trigger parse (fileName=%s)" fileName)
     mbox.Post(TriggerRequest(ParseRequest(file, src, opts, true, Some afterCompleteTypeCheckCallback)))
 
-  member x.GetTypedParseResult((file:FilePath, src, proj:MonoDevelop.Projects.Project, config), ?timeout)  : TypedParseResult = 
+  member x.GetTypedParseResult(file:FilePath, src, proj:MonoDevelop.Projects.Project, config, timeout)  : TypedParseResult = 
     let fileName = file.FullPath.ToString()
     let opts = x.GetCheckerOptions(fileName, src, proj, config)
     Debug.WriteLine(sprintf "Parsing: Get typed parse result (fileName=%s)" fileName)
@@ -499,7 +501,7 @@ type internal LanguageService private () =
         TypedParseResult(typed.TypeCheckInfo.Value)
     | _ ->
         // If we didn't get a recent set of type checking results, we put in a request and wait for at most 'timeout' for a response
-        mbox.PostAndReply((fun repl -> UpdateAndGetTypedInfo(req, repl)), ?timeout = timeout)
+        mbox.PostAndReply((fun repl -> UpdateAndGetTypedInfo(req, repl)), timeout = timeout)
     
   /// Single instance of the language service
   static member Service = instance.Value
