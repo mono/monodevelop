@@ -32,11 +32,11 @@ module ScriptOptions =
     try File.Exists(f) with _ -> false
     
   /// Returns default directories to be used when searching for DLL files
-  let getDefaultDirectories(targetFramework) =   
+  let getDefaultDirectories(langVersion, targetFramework) =   
     // Return all known directories
     [ // Get the location of the System DLLs
 
-      match FSharpEnvironment.FolderOfDefaultFSharpCore(targetFramework) with 
+      match FSharpEnvironment.FolderOfDefaultFSharpCore(langVersion, targetFramework) with 
       | Some dir -> 
           Debug.WriteLine(sprintf "Resolution: Using '%A' as the location of default FSharp.Core.dll" dir)
           yield dir
@@ -94,7 +94,7 @@ module CompilerArguments =
 
   /// Generates references for the current project & configuration as a 
   /// list of strings of the form [ "-r:<full-path>"; ... ]
-  let generateReferences (items:ProjectItemCollection, targetFramework, configSelector, shouldWrap) = 
+  let generateReferences (items:ProjectItemCollection, langVersion, targetFramework, configSelector, shouldWrap) = 
    [ // Should we wrap references in "..."
     let wrapf = if shouldWrap then wrapFile else id
     let files = 
@@ -113,7 +113,7 @@ module CompilerArguments =
       let coreRef = files |> List.tryFind (fun fn -> fn.EndsWith(assumedFile + ".dll") || fn.EndsWith(assumedFile))
       match coreRef with
       | None ->
-        let dirs = ScriptOptions.getDefaultDirectories(targetFramework) 
+        let dirs = ScriptOptions.getDefaultDirectories(langVersion, targetFramework) 
         match ScriptOptions.resolveAssembly dirs assumedFile with
         | Some fn -> yield "-r:" + wrapf(fn)
         | None -> Debug.WriteLine(sprintf "Resolution: Assembly resolution failed when trying to find default reference for '%s'!" assumedFile)
@@ -127,8 +127,8 @@ module CompilerArguments =
   /// Generates command line options for the compiler specified by the 
   /// F# compiler options (debugging, tail-calls etc.), custom command line
   /// parameters and assemblies referenced by the project ("-r" options)
-  let generateCompilerOptions (fsconfig:FSharpCompilerParameters, targetFramework, items, configSelector, shouldWrap) =
-    let dashr = generateReferences (items, targetFramework, configSelector, shouldWrap) |> Array.ofSeq
+  let generateCompilerOptions (fsconfig:FSharpCompilerParameters, reqLangVersion, targetFramework, items, configSelector, shouldWrap) =
+    let dashr = generateReferences (items, reqLangVersion, targetFramework, configSelector, shouldWrap) |> Array.ofSeq
     let defines = fsconfig.DefineConstants.Split([| ';'; ','; ' ' |], StringSplitOptions.RemoveEmptyEntries)
     [  yield "--noframework"
        for symbol in defines do yield "--define:" + symbol
@@ -182,34 +182,34 @@ module CompilerArguments =
         | "None" | "Content" | "Compile" -> ()
         | s -> failwith("Items of type '" + s + "' not supported") ]
 
-  let getToolPath (search_paths:seq<string>) (extensions:seq<string>) (tool_name:string) =
-    let search_files = Seq.map (fun x -> tool_name + x) extensions
+  let getToolPath (pathsToSearch:seq<string>) (extensions:seq<string>) (toolName:string) =
+    let filesToSearch = Seq.map (fun x -> toolName + x) extensions
 
-    let path_and_file (search_files:seq<string>) (path:string) =
+    let tryFindPathAndFile (filesToSearch:seq<string>) (path:string) =
       try
-        let candidate_files = IO.Directory.GetFiles(path)
+        let candidateFiles = Directory.GetFiles(path)
 
-        let file_if_exists candidate_file =
-          Seq.tryFind (fun x -> Path.Combine(path,x) = candidate_file) search_files
-        match Seq.tryPick file_if_exists candidate_files with
+        let fileIfExists candidateFile =
+          Seq.tryFind (fun x -> Path.Combine(path,x) = candidateFile) filesToSearch
+        match Seq.tryPick fileIfExists candidateFiles with
           | Some x -> Some(path,x)
           | None -> None
 
       with
         | e -> None
 
-    Seq.tryPick (path_and_file search_files) search_paths
+    Seq.tryPick (tryFindPathAndFile filesToSearch) pathsToSearch
 
 
   let getShellToolPath (extensions:seq<string>) (toolName:string)  =
-    let path_variable = Environment.GetEnvironmentVariable("PATH")
-    let searchPaths = path_variable.Split [| IO.Path.PathSeparator  |]
+    let pathVariable = Environment.GetEnvironmentVariable("PATH")
+    let searchPaths = pathVariable.Split [| IO.Path.PathSeparator  |]
     getToolPath searchPaths extensions toolName
 
   /// Get full path to tool
-  let getEnvironmentToolPath (runtime:TargetRuntime) (framework:TargetFramework) (extensions:seq<string>) (tool_name:string) =
-    let search_paths = runtime.GetToolsPaths(framework)
-    getToolPath search_paths extensions tool_name
+  let getEnvironmentToolPath (runtime:TargetRuntime) (framework:TargetFramework) (extensions:seq<string>) (toolName:string) =
+    let pathsToSearch = runtime.GetToolsPaths(framework)
+    getToolPath pathsToSearch extensions toolName
 
   let getDefaultTargetFramework (runtime:TargetRuntime) =
     let newest_net_framework_folder (best:TargetFramework,best_version:int[]) (candidate_framework:TargetFramework) =
@@ -253,16 +253,16 @@ module CompilerArguments =
     match getEnvironmentToolPath runtime framework [|""; ".exe"; ".bat" |] "fsharpi" with
     | Some(dir,file)-> Some(Path.Combine(dir,file))
     | None->
-    match getShellToolPath [| ""; ".exe"; ".bat" |]"fsharpi" with
+    match getShellToolPath [| ""; ".exe"; ".bat" |] "fsharpi" with
     | Some(dir,file)-> Some(Path.Combine(dir,file))
     | None->
     match getEnvironmentToolPath runtime framework [|""; ".exe"; ".bat" |] "fsi" with
     | Some(dir,file)-> Some(Path.Combine(dir,file))
     | None->
-    match getShellToolPath [| ""; ".exe"; ".bat" |]"fsi" with
+    match getShellToolPath [| ""; ".exe"; ".bat" |] "fsi" with
     | Some(dir,file)-> Some(Path.Combine(dir,file))
     | None-> 
-    match FSharpEnvironment.BinFolderOfDefaultFSharpCompiler() with
+    match FSharpEnvironment.BinFolderOfDefaultFSharpCompiler(FSharpCompilerVersion.LatestKnown) with
     | Some(dir) when ScriptOptions.safeExists(Path.Combine(dir, "fsi.exe")) ->  
         Some(Path.Combine(dir,"fsi.exe"))
     | _ -> None
@@ -275,7 +275,9 @@ module CompilerArguments =
     | Some(dir,file) -> Some(Path.Combine(dir,file))
     | None -> None
     
-  let getDefaultDefaultCompiler() =
+  // Only used when xbuild support is not enabled. When xbuild is enabled, the .targets 
+  // file finds FSharp.Build.dll which finds the F# compiler.
+  let getDefaultFSharpCompiler() =
   
     let runtime = IdeApp.Preferences.DefaultTargetRuntime
     let framework = getDefaultTargetFramework runtime
@@ -289,7 +291,7 @@ module CompilerArguments =
     match getShellToolPath [| ""; ".exe"; ".bat" |] "fsc" with
     | Some(dir,file) -> Some(Path.Combine(dir,file))
     | None -> 
-    match FSharpEnvironment.BinFolderOfDefaultFSharpCompiler() with
+    match FSharpEnvironment.BinFolderOfDefaultFSharpCompiler(FSharpCompilerVersion.LatestKnown) with
     | Some(dir) when ScriptOptions.safeExists(Path.Combine(dir, "fsc.exe")) ->  
         Some(Path.Combine(dir,"fsc.exe"))
     | _ -> None

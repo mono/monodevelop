@@ -309,35 +309,27 @@ type internal LanguageService private () =
 
   // ------------------------------------------------------------------------------------
 
+  // Nuke the checker when the current requested language version changes
+  let reqLangVersion = FSharpCompilerVersion.LatestKnown 
+  
   // Create an instance of interactive checker. The callback is called by the F# compiler service
   // when its view of the prior-typechecking-state of the start of a file has changed, for example
   // when the background typechecker has "caught up" after some other file has been changed, 
   // and its time to re-typecheck the current file.
-  let getChecker = 
-      let create() = 
-       InteractiveChecker.Create(fun file -> 
-          DispatchService.GuiDispatch(fun () ->
-                        try 
-                         Debug.WriteLine(sprintf "Parsing: Considering re-typcheck of file %s because compiler reports it needs it" file)
-                         let doc = IdeApp.Workbench.ActiveDocument
-                         if doc <> null && doc.FileName.FullPath.ToString() = file then 
-                             Debug.WriteLine(sprintf "Parsing: Requesting re-parse of file '%s' because some errors were reported asynchronously and we should return a new document showing these" file)
-                             doc.ReparseDocument()
-                        with _ -> ()))
-      // Nuke the checker when the current requested language version changes
-      let lastVersion = ref FSharpCompilerVersion.CurrentRequestedVersion
-      let lastChecker = ref (create())
-      fun () -> 
-          let currentVer = FSharpCompilerVersion.CurrentRequestedVersion
-          if currentVer <> lastVersion.Value then 
-              lastChecker := create()
-              lastVersion := currentVer
-          lastChecker.Value
-        
+  let checker = 
+   InteractiveChecker.Create(fun file -> 
+      DispatchService.GuiDispatch(fun () ->
+                    try 
+                     Debug.WriteLine(sprintf "Parsing: Considering re-typcheck of file %s because compiler reports it needs it" file)
+                     let doc = IdeApp.Workbench.ActiveDocument
+                     if doc <> null && doc.FileName.FullPath.ToString() = file then 
+                         Debug.WriteLine(sprintf "Parsing: Requesting re-parse of file '%s' because some errors were reported asynchronously and we should return a new document showing these" file)
+                         doc.ReparseDocument()
+                    with _ -> ()))
 
   // Mailbox of this 'LanguageService'
   let mbox = SimpleMailboxProcessor.Start(fun mbox ->
-  
+    
     // Tail-recursive loop that remembers the current state
     // (untyped and typed parse results)
     let rec loop typedInfo =
@@ -351,7 +343,6 @@ type internal LanguageService private () =
             let fileName = info.File.FullPath.ToString()        
             Debug.WriteLine("Worker: Request parse received")
             // Run the untyped parsing of the file and report result...
-            let checker = try getChecker() with e -> Debug.WriteLine(sprintf "Worker: Error in getChecker: %s" (e.ToString())); reraise ()
             Debug.WriteLine("Worker: Untyped parse...")
             let untypedInfo = try checker.UntypedParse(fileName, info.Source, info.Options) with e -> Debug.WriteLine(sprintf "Worker: Error in UntypedParse: %s" (e.ToString())); reraise ()
               
@@ -417,7 +408,9 @@ type internal LanguageService private () =
             None )
         
     // Start looping with no initial information        
-    loop None )
+    async { // Delay a bit, on app startup let the projects load first
+            do! Async.Sleep 4000
+            return! loop None} )
 
   /// Constructs options for the interactive checker
   member x.GetCheckerOptions(fileName, source, proj:MonoDevelop.Projects.Project, config:ConfigurationSelector) =
@@ -432,13 +425,12 @@ type internal LanguageService private () =
           // include FSharp.Core and other essential assemblies, so we need to include them by hand
           let fileName = CompilerArguments.fixFileName(fileName)
           Debug.WriteLine (sprintf "CheckOptions: Creating for file: '%s'" fileName )
-          let checker = getChecker()
           let opts = checker.GetCheckOptionsFromScriptRoot(fileName, source, fakeDateTimeRepresentingTimeLoaded proj)
           if opts.ProjectOptions |> Seq.exists (fun s -> s.Contains("FSharp.Core.dll")) then opts
           else 
             // Add assemblies that may be missing in the standard assembly resolution
             Debug.WriteLine("CheckOptions: Adding missing core assemblies.")
-            let dirs = ScriptOptions.getDefaultDirectories (TargetFrameworkMoniker.NET_4_0 )
+            let dirs = ScriptOptions.getDefaultDirectories (FSharpCompilerVersion.LatestKnown, TargetFrameworkMoniker.NET_4_0 )
             opts.WithOptions 
               [| yield! opts.ProjectOptions; 
                  match ScriptOptions.resolveAssembly dirs "FSharp.Core" with
@@ -462,7 +454,7 @@ type internal LanguageService private () =
         
         // Order files using the configuration settings & get options
         let shouldWrap = false //It is unknown if the IntelliSense fails to load assemblies with wrapped paths.
-        let args = CompilerArguments.generateCompilerOptions (fsconfig, projConfig.TargetFramework.Id, proj.Items, config, shouldWrap) |> Array.ofList
+        let args = CompilerArguments.generateCompilerOptions (fsconfig, reqLangVersion, projConfig.TargetFramework.Id, proj.Items, config, shouldWrap) |> Array.ofList
         let root = Path.GetDirectoryName(proj.FileName.FullPath.ToString())
         let files = CompilerArguments.getItemsInOrder root files fsbuild.BuildOrder false |> Array.ofList
         CheckOptions.Create(projFile, files, args, false, false, fakeDateTimeRepresentingTimeLoaded proj) 
@@ -484,7 +476,6 @@ type internal LanguageService private () =
     let opts = x.GetCheckerOptions(fileName, src, proj, config)
     Debug.WriteLine(sprintf "Parsing: Get typed parse result (fileName=%s)" fileName)
     let req = ParseRequest(file, src, opts, false, None)
-    let checker = getChecker()
 
     // Try to get recent results from the F# service
     match checker.TryGetRecentTypeCheckResultsForFile(fileName, req.Options) with

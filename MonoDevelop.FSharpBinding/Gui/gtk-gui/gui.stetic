@@ -654,6 +654,7 @@
                 <property name="Fill">False</property>
               </packing>
             </child>
+<!--
             <child>
               <widget class="Gtk.CheckButton" id="preferFSharp2">
                 <property name="MemberName" />
@@ -669,6 +670,7 @@
                 <property name="AutoSize">True</property>
               </packing>
             </child>
+-->
           </widget>
           <packing>
             <property name="Position">5</property>

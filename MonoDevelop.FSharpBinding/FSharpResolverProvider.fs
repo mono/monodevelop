@@ -36,7 +36,7 @@ open ICSharpCode.NRefactory.Semantics
 /// (this is passed to MonoDevelop, which asks as about tooltip later)
 type internal FSharpResolveResult(tip:DataTipText) = 
   inherit ResolveResult(SpecialType.UnknownType)
-
+ // TODO: Add GetDefinitionRegion - will this implement goto-definition
   member x.DataTip = tip
   
 
@@ -120,6 +120,10 @@ type FSharpLanguageItemTooltipProvider() =
 /// Implements "resolution" - looks for tool-tips at current locations
 type FSharpResolverProvider() =
   do Debug.WriteLine (sprintf "Resolver: Creating FSharpResolverProvider")
+  // TODO: ITextEditorMemberPositionProvider
+  // TODO: ITextEditorExtension
+  // TODO: MonoDevelop.Ide.Gui.Content.CompletionTextEditorExtension (Parameter completion etc.)
+  
   interface ITextEditorResolverProvider with
   
     /// Get tool-tip at the specified offset (from the start of the file)

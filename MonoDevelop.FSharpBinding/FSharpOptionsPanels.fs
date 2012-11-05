@@ -21,19 +21,24 @@ type FSharpSettingsPanel() =
   let fscPathPropName = "FSharpBinding.FscPath"
   let fsiPathPropName = "FSharpBinding.FsiPath"
   let fsiArgumentsPropName = "FSharpBinding.FsiArguments"
+#if ALLOW_LANGUAGE_VERSION_PREFERENCE
   let preferFSharp20PropName = "FSharpBinding.PreferFSharp20"
+#endif
   let fsiFontNamePropName = "FSharpBinding.FsiFontName"
   let mutable widget : FSharpSettingsWidget = null
   
+#if ALLOW_LANGUAGE_VERSION_PREFERENCE
   member internal x.setLanguageDisplay(enable:bool) = 
-    if widget.PreferFSharp20.Active <> enable then
+   if widget.PreferFSharp20.Active <> enable then
       widget.PreferFSharp20.Active <- enable
+#endif
 
+  // NOTE: This setting is only relevant when xbuild is not being used.
   member internal x.setCompilerDisplay(use_default:bool) = 
     if widget.CheckCompilerUseDefault.Active <> use_default then
       widget.CheckCompilerUseDefault.Active <- use_default
     let prop_compiler_path = PropertyService.Get<string>(fscPathPropName,"")
-    let default_compiler_path = match CompilerArguments.getDefaultDefaultCompiler() with | Some(r) -> r | None -> ""
+    let default_compiler_path = match CompilerArguments.getDefaultFSharpCompiler() with | Some(r) -> r | None -> ""
     widget.EntryCompilerPath.Text <- if use_default || prop_compiler_path = "" then default_compiler_path else prop_compiler_path
     widget.EntryCompilerPath.Sensitive <- not use_default
     widget.ButtonCompilerBrowse.Sensitive <- not use_default
@@ -78,7 +83,9 @@ type FSharpSettingsPanel() =
     let prop_interp_args = PropertyService.Get<string>(fsiArgumentsPropName, "")
     let prop_interp_font = PropertyService.Get<string>(fsiFontNamePropName,"")  
     let prop_compiler_path = PropertyService.Get<string>(fscPathPropName,"")
+#if ALLOW_LANGUAGE_VERSION_PREFERENCE
     let prop_prefer_fsharp20 = PropertyService.Get<string>(preferFSharp20PropName,"")
+#endif
 
     let default_interp_path = CompilerArguments.getDefaultInteractive
     let default_interp_args = ""
@@ -86,7 +93,9 @@ type FSharpSettingsPanel() =
 
     x.setInteractiveDisplay(prop_interp_path = "" && prop_interp_args = "")
     x.setCompilerDisplay( (prop_compiler_path = "") )
+#if ALLOW_LANGUAGE_VERSION_PREFERENCE
     x.setLanguageDisplay( System.String.Compare (prop_prefer_fsharp20, "true", true) = 0)
+#endif
     
     let fontName = MonoDevelop.Ide.DesktopService.DefaultMonospaceFont
     widget.FontInteractive.FontName <- PropertyService.Get<string>(fsiFontNamePropName, fontName)
@@ -99,18 +108,22 @@ type FSharpSettingsPanel() =
     widget.CheckCompilerUseDefault.Toggled.Add(fun _ -> 
         x.setCompilerDisplay(widget.CheckCompilerUseDefault.Active))
 
+#if ALLOW_LANGUAGE_VERSION_PREFERENCE
     // Toggling the language version can affect the compiler locations
     widget.PreferFSharp20.Toggled.Add(fun _ -> 
         // Apply the property immediately, to reflect changes in default compiler paths 
         PropertyService.Set(preferFSharp20PropName, if widget.PreferFSharp20.Active then "true" else "false")
         x.setInteractiveDisplay(widget.CheckInteractiveUseDefault.Active)
         x.setCompilerDisplay(widget.CheckCompilerUseDefault.Active))
+#endif
     
     widget.Show()
     upcast widget 
   
   override x.ApplyChanges() =
+#if ALLOW_LANGUAGE_VERSION_PREFERENCE
     PropertyService.Set(preferFSharp20PropName, if widget.PreferFSharp20.Active then "true" else "false")
+#endif
 
     PropertyService.Set(fscPathPropName, if widget.CheckCompilerUseDefault.Active then null else widget.EntryCompilerPath.Text)
 

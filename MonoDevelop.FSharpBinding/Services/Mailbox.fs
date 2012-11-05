@@ -109,12 +109,9 @@ type SimpleMailboxProcessor<'T>(body : SimpleMailboxProcessor<'T> -> Async<unit>
       | None -> do! Async.Sleep(50)
       | Some(work) -> do! work }
    
-
-/// Static class that makes it possible to start a mailbox processor easily        
-type SimpleMailboxProcessor =
   /// Creates a new mailbx processor with the body specified as 
   /// a parameter and start it immediately after it is created
   static member Start(body) = 
-    let mb = new SimpleMailboxProcessor<_>(body)
+    let mb = new SimpleMailboxProcessor<'T>(body)
     mb.Start()
     mb

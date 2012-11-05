@@ -21,10 +21,13 @@ open Microsoft.FSharp.Compiler.CodeDom
 // --------------------------------------------------------------------------------------
 
 /// Functions that implement compilation, parsing, etc..
+//
+// NOTE: Only used when xbuild support is not enabled. When xbuild is enabled, the .targets file finds 
+// FSharp.Build.dll which finds the F# compiler and builds the compilation arguments.
 module CompilerService = 
 
   /// Generate various command line arguments for the project
-  let private generateCmdArgs (config:DotNetProjectConfiguration) items configSel = 
+  let private generateCmdArgs (config:DotNetProjectConfiguration, regLangVersion, items, configSel) = 
     [ match config.CompileTarget with
       | CompileTarget.Library  -> yield "--target:library"
       | CompileTarget.Module   -> yield "--target:module"
@@ -42,7 +45,7 @@ module CompilerService =
           yield ("--doc:" + CompilerArguments.wrapFile docFile) 
 
       let shouldWrap = true// The compiler argument paths should always be wrapped, since some paths (ie. on Windows) may contain spaces.
-      yield! CompilerArguments.generateCompilerOptions (fsconfig, config.TargetFramework.Id, items, configSel, shouldWrap) ]
+      yield! CompilerArguments.generateCompilerOptions (fsconfig, regLangVersion, config.TargetFramework.Id, items, configSel, shouldWrap) ]
 
 
   let private regParseFsOutput = Regex(@"(?<file>[^\(]*)\((?<line>[0-9]*),(?<col>[0-9]*)\):\s(?<type>[^:]*)\s(?<err>[^:]*):\s(?<msg>.*)", RegexOptions.Compiled);
@@ -90,7 +93,7 @@ module CompilerService =
 //    let nw x = if x = None then "None" else x.Value 
 //    monitor.Log.WriteLine("Env compiler: " + nw (Common.getCompilerFromEnvironment runtime framework))
 //    monitor.Log.WriteLine("Override compiler: " + PropertyService.Get<string>("FSharpBinding.FscPath"))
-//    monitor.Log.WriteLine("DefaultDefault compiler: " + (nw Common.getDefaultDefaultCompiler))
+//    monitor.Log.WriteLine("DefaultDefault compiler: " + (nw Common.getDefaultFSharpCompiler))
 //    monitor.Log.WriteLine("Runtime: " + runtime.Id)
 //    monitor.Log.WriteLine("Framework: " + framework.Id.ToString())
 //    monitor.Log.WriteLine("Default Runtime:" + IdeApp.Preferences.DefaultTargetRuntime.Id);
@@ -109,7 +112,7 @@ module CompilerService =
             br.AddWarning("No compiler found for the selected runtime; using default compiler instead.")
           Some(result)
         | _ ->
-          match CompilerArguments.getDefaultDefaultCompiler() with
+          match CompilerArguments.getDefaultFSharpCompiler() with
           | Some(result) ->
             if runtime.Id <> IdeApp.Preferences.DefaultTargetRuntime.Id then
               br.AddWarning("No compiler found for the selected runtime; using default compiler instead.")
@@ -118,19 +121,7 @@ module CompilerService =
             br.AddError("No compiler found; add a default compiler in the F# settings.")
             None
     
-// The communication with the resident compiler doesn't seem robust enough to use this on Linux
-#if USE_RESIDENT
-    // Add the "stay resident" --resident compiler option 
-    // if using "fsharpc" as the compiler, i.e. a Mono compiler that supports this option.
-    let argsList = 
-        match fscPath with 
-        | None -> argsList
-        | Some p -> if p.EndsWith "fsharpc" then "--resident" :: argsList else argsList
-#endif
-        
     let args = String.concat "\n" argsList
-
-        //monitor.Log.WriteLine("fscPath: " + nw fscPath)
 
     if fscPath = None then
       br.FailedBuildCount <- 1
@@ -179,11 +170,12 @@ module CompilerService =
   
   /// Compiles the specified F# project using the current configuration
   let Compile(items, config:DotNetProjectConfiguration, configSel, monitor) : BuildResult =
-    let runtime = MonoDevelop.Core.Runtime.SystemAssemblyService.DefaultRuntime
+    let reqLangVersion = FSharpCompilerVersion.LatestKnown
+    let runtime = config.TargetRuntime
     let framework = config.TargetFramework
     let args = 
         [ yield! [ "--noframework --nologo" ]
-          yield! generateCmdArgs config items configSel  
+          yield! generateCmdArgs(config, reqLangVersion, items, configSel)
           yield! CompilerArguments.generateOtherItems items 
       
           // Generate source files (sort using current configuration)
