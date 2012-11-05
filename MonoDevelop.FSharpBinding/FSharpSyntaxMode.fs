@@ -14,7 +14,12 @@ open Mono.TextEditor.Highlighting
 type FSharpSyntaxMode() as this =
   inherit SyntaxMode()
   
+  // We need to initialize a static listener somewhere, this seems like a good place to do it
+  static do 
+    System.Diagnostics.Debug.Listeners.Add(new System.Diagnostics.ConsoleTraceListener()) |> ignore
+    System.Diagnostics.Debug.AutoFlush <- true
   do
+    System.Diagnostics.Debug.WriteLine("Creating FSharpSyntaxMode()")
     let provider = new ResourceXmlProvider(typeof<FSharpSyntaxMode>.Assembly, "templates.FSharpSyntaxMode.xml");
     use reader = provider.Open()
     let baseMode = SyntaxMode.Read(reader)
