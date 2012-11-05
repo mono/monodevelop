@@ -24,4 +24,4 @@
 	url = git://github.com/mono/mono-addins.git
 [submodule "main/external/ikvm"]
 	path = main/external/ikvm
-	url = git://github.com/gluck/ikvm.git
+	url = git://github.com/mkrueger/ikvm.git
