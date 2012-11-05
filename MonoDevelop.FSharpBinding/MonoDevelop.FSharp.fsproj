@@ -49,20 +49,20 @@
   <Import Project="$(MSBuildExtensionsPath32)\FSharp\1.0\Microsoft.FSharp.Targets" Condition="!Exists('$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll')" />
   <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets" Condition="Exists('$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll')" />
   <ItemGroup>
-    <EmbeddedResource Include="icons\fsharp-icon-32.png" />
-    <EmbeddedResource Include="icons\fsharp-script-32.png" />
-    <EmbeddedResource Include="icons\fsharp-file-icon.png" />
-    <EmbeddedResource Include="icons\fsharp-project-icon.png" />
-    <EmbeddedResource Include="icons\fsharp-script-icon.png" />
-    <EmbeddedResource Include="templates\EmptyFSharpSource.xft.xml" />
-    <EmbeddedResource Include="templates\EmptyFSharpScript.xft.xml" />
-    <EmbeddedResource Include="templates\FSharpConsoleProject.xpt.xml" />
-    <EmbeddedResource Include="templates\FSharpSyntaxMode.xml" />
-    <EmbeddedResource Include="templates\FSharpLibraryProject.xpt.xml" />
-    <EmbeddedResource Include="templates\FSharpTutorialProject.xpt.xml" />
-    <EmbeddedResource Include="templates\FSharpGtkProject.xpt.xml" />
-    <EmbeddedResource Include="templates\AssemblyInfo.xft.xml" />
-    <!--<EmbeddedResource Include="templates\FSharpMoonlightLibraryProject.xpt.xml" /> -->
+    <EmbeddedResource Include="icons.fsharp-icon-32.png" />
+    <EmbeddedResource Include="icons.fsharp-script-32.png" />
+    <EmbeddedResource Include="icons.fsharp-file-icon.png" />
+    <EmbeddedResource Include="icons.fsharp-project-icon.png" />
+    <EmbeddedResource Include="icons.fsharp-script-icon.png" />
+    <EmbeddedResource Include="templates.EmptyFSharpSource.xft.xml" />
+    <EmbeddedResource Include="templates.EmptyFSharpScript.xft.xml" />
+    <EmbeddedResource Include="templates.FSharpConsoleProject.xpt.xml" />
+    <EmbeddedResource Include="templates.FSharpSyntaxMode.xml" />
+    <EmbeddedResource Include="templates.FSharpLibraryProject.xpt.xml" />
+    <EmbeddedResource Include="templates.FSharpTutorialProject.xpt.xml" />
+    <EmbeddedResource Include="templates.FSharpGtkProject.xpt.xml" />
+    <EmbeddedResource Include="templates.AssemblyInfo.xft.xml" />
+    <!--<EmbeddedResource Include="templates.FSharpMoonlightLibraryProject.xpt.xml" /> -->
     <EmbeddedResource Include="FSharpBinding.addin.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <SubType>Designer</SubType>
@@ -135,9 +135,8 @@
       <Project>{FD0D1033-9145-48E5-8ED8-E2365252878C}</Project>
       <Name>MonoDevelop.FSharp.Gui</Name>
     </ProjectReference>
-    <Reference Include="FSharp.Core">
+    <Reference Include="FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <Private>True</Private>
-       <Private>True</Private>
     </Reference>
   </ItemGroup>
 </Project>
