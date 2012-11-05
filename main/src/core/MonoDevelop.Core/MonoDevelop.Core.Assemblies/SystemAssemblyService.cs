@@ -359,21 +359,15 @@ namespace MonoDevelop.Core.Assemblies
 		/// </summary>
 		public static IEnumerable<string> GetAssemblyReferences (string fileName)
 		{
-			// Custom assembly reader. Remove when cecil can do real lazy loading
-			var assembly = new MonoDevelop.Core.CustomAssemblyReader.AssemblyReader ();
-			assembly.AddStoreTable (MonoDevelop.Core.CustomAssemblyReader.AssemblyRef.TABLE_ID);
-
-			try {
-				assembly.Load (fileName);
-			} catch {
-				yield break;
-			}
-
-			var referenceTable = assembly.GetMetadateTable<MonoDevelop.Core.CustomAssemblyReader.AssemblyRef> ();
-			for (int i = 0; i < referenceTable.Length; ++i) {
-				var reference = referenceTable [i];
-				if (reference != null) {
-					yield return assembly.GetStringFromHeap (reference.Name);
+			using (var universe = new IKVM.Reflection.Universe ()) {
+				IKVM.Reflection.Assembly assembly;
+				try {
+					assembly = universe.LoadFile (fileName);
+				} catch {
+					yield break;
+				}
+				foreach (var r in assembly.GetReferencedAssemblies ()) {
+					yield return r.Name;
 				}
 			}
 
@@ -414,22 +408,17 @@ namespace MonoDevelop.Core.Assemblies
 		/// </summary>
 		public static IEnumerable<ManifestResource> GetAssemblyManifestResources (string fileName)
 		{
-			var assembly = new MonoDevelop.Core.CustomAssemblyReader.AssemblyReader ();
-			assembly.AddStoreTable (MonoDevelop.Core.CustomAssemblyReader.ManifestResource.TABLE_ID);
-
-			try {
-				assembly.Load (fileName);
-			} catch {
-				yield break;
-			}
-
-			var resourceTable = assembly.GetMetadateTable<MonoDevelop.Core.CustomAssemblyReader.ManifestResource> ();
-			for (int i = 0; i < resourceTable.Length; ++i) {
-				var res = resourceTable [i];
-				if (res == null)
-					continue;
-				var name = assembly.GetStringFromHeap(res.Name);
-				yield return new ManifestResource (name, () => res.Open (assembly, fileName));
+			using (var universe = new IKVM.Reflection.Universe ()) {
+				IKVM.Reflection.Assembly assembly;
+				try {
+					assembly = universe.LoadFile (fileName);
+				} catch {
+					yield break;
+				}
+				foreach (var _r in assembly.GetManifestResourceNames ()) {
+					var r = _r;
+					yield return new ManifestResource (r, () => assembly.GetManifestResourceStream (r));
+				}
 			}
 
 			/* CECIL version:
