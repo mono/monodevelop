@@ -444,8 +444,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="BeforeBuild">
-    <Exec Command='"$(Git)" rev-parse HEAD > $(BuildInfo)' IgnoreExitCode="True" />
-    <Exec Command='"$(Git)" rev-parse HEAD > $(VcRevision)' IgnoreExitCode="True" />
+    <MakeDir Directories="$(OutputPath)" />
+    <Exec Command='"$(Git)" rev-parse HEAD > $(BuildInfo)' WorkingDirectory="$(MSBuildProjectDirectory)" IgnoreExitCode="True" />
+    <Exec Command='"$(Git)" rev-parse HEAD > $(VcRevision)' WorkingDirectory="$(MSBuildProjectDirectory)" IgnoreExitCode="True" />
   </Target>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.Formats.MSBuild.csproj">
