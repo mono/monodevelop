@@ -212,8 +212,10 @@ namespace MonoDevelop.Ide
 			return (GetDeclaredFile(item) != null);
 		}*/
 		
-		public bool CanJumpToDeclaration (ICSharpCode.NRefactory.TypeSystem.INamedElement element)
+		public bool CanJumpToDeclaration (object element)
 		{
+			if (element is ICSharpCode.NRefactory.TypeSystem.IVariable)
+				return true;
 			var entity = element as ICSharpCode.NRefactory.TypeSystem.IEntity;
 			if (entity == null && element is ICSharpCode.NRefactory.TypeSystem.IType)
 				entity = ((ICSharpCode.NRefactory.TypeSystem.IType)element).GetDefinition ();
@@ -225,8 +227,7 @@ namespace MonoDevelop.Ide
 			}
 			return true;
 		}
-		
-		
+
 		static MonoDevelop.Ide.FindInFiles.SearchResult GetJumpTypePartSearchResult (ICSharpCode.NRefactory.TypeSystem.IUnresolvedTypeDefinition part)
 		{
 			var provider = new MonoDevelop.Ide.FindInFiles.FileProvider (part.Region.FileName);
