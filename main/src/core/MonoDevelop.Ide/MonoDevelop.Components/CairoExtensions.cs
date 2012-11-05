@@ -520,6 +520,13 @@ namespace MonoDevelop.Components
 			Width = source.Width;
 			Height = source.Height;
 		}
+
+		~SurfaceWrapper ()
+		{
+			if (Surface != null)
+				Surface.Dispose ();
+			Surface = null;
+		}
 	}
 
 	public class QuartzSurface : Cairo.Surface
