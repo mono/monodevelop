@@ -326,6 +326,24 @@ module SourceCodeServices =
     else
       d.Wrapped?Item |> List.untypedMap (fun o ->
         DataTipElement(o))
+
+  type FindDeclResult(wrapped:obj) = 
+    member x.Wrapped = wrapped
+    static member NotFound = FindDeclResult(null)
+    
+  let (|DeclNotFound|DeclFound|) (d:FindDeclResult) = 
+    try 
+      if d.Wrapped <> null && d.Wrapped?IsDeclFound then
+          //d.Wrapped is a union case | DeclFound of (int * int) * string
+          let line = (d.Wrapped?Item1?Item1 : int)
+          let col = (d.Wrapped?Item1?Item2 : int)
+          let file = (d.Wrapped?Item2 : string)
+          DeclFound(line,col,file)          
+      else
+         DeclNotFound()
+    with e ->   
+      Debug.WriteLine("Error getting declaration: " +  e.ToString())
+      DeclNotFound()
     
   type NotifyFileTypeCheckStateIsDirty = string -> unit
           
@@ -415,12 +433,16 @@ module SourceCodeServices =
       let fsc = FSharpCompiler.LatestAvailable
       let names = fsc.MakeList(typeof<string>, names)
       DataTipText(wrapped?GetDataTipText(pos, line, names, tokentag))
-      
+         
     // Members that are not supported by the wrapper
       
-    // member GetF1Keyword : Position * string * Names -> string option
+    member x.GetDeclarationLocation(pos:Position, line:string, names:Names, tokentag:int, isDeclaration:bool) : FindDeclResult =
+      let fsc = FSharpCompiler.LatestAvailable
+      let names = fsc.MakeList(typeof<string>, names)
+      FindDeclResult(wrapped?GetDeclarationLocation(pos, line, names, tokentag, isDeclaration))
+
+        // member GetF1Keyword : Position * string * Names -> string option
     // member GetMethods : Position * string * Names option * (*tokentag:*)int -> MethodOverloads
-    // member GetDeclarationLocation : Position * string * Names * (*tokentag:*)int * bool -> FindDeclResult
 
   type ErrorInfo(wrapped:obj) =
     member x.StartLine : int = wrapped?StartLine

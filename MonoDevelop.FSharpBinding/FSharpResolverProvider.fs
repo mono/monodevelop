@@ -12,7 +12,6 @@ open System.Collections.Generic
 open System.Threading
 
 open Mono.TextEditor
-
 open MonoDevelop.Core
 open MonoDevelop.Ide
 open MonoDevelop.Ide.Gui
@@ -26,19 +25,29 @@ open ICSharpCode.NRefactory.TypeSystem
 
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
-open System
-open Mono.TextEditor
-open MonoDevelop.Ide.TypeSystem
-open ICSharpCode.NRefactory.Semantics
-
 /// Result of F# identifier resolution at the specified location
 /// Stores the data tip that we get from the language service
 /// (this is passed to MonoDevelop, which asks as about tooltip later)
-type internal FSharpResolveResult(tip:DataTipText) = 
-  inherit ResolveResult(SpecialType.UnknownType)
- // TODO: Add GetDefinitionRegion - will this implement goto-definition
+///
+// We resolve language items to an under-specified LocalResolveResult (with 
+// an additional field for the data tip text). Goto-definition can operate 
+// on the LocalResolveResult.
+// 
+// Other interesting ResolveResult's we may one day want to return are:
+// 
+// -- MemberResolveResult
+// -- MethodGroupResolveResult
+// -- TypeResolveResult
+//
+// or to return complete IEntity data.
+//
+// Also of interest is FindReferencesHandler.FindRefs (obj), for find-all-references and
+// renaming.
+
+type internal FSharpLocalResolveResult(tip:DataTipText, ivar:IVariable) = 
+  inherit LocalResolveResult(ivar)
   member x.DataTip = tip
-  
+
 
 // In Mono 3.0.4, this change https://github.com/mono/monodevelop/commit/4a95275cf7d0418250d87844550934b849b1153d
 // appears to have busted all tooltips in editor extensions?  The call to CreateTooltip in 
@@ -100,7 +109,7 @@ type FSharpLanguageItemTooltipProvider() =
             let doc = IdeApp.Workbench.ActiveDocument
             if (doc = null) then null else
             match item.Item with 
-            | :? FSharpResolveResult as titem -> 
+            | :? FSharpLocalResolveResult as titem -> 
                 let tooltip = TipFormatter.formatTipWithHeader(titem.DataTip) 
                 let result = new FSharpLanguageItemWindow (tooltip)
                 result :> Gtk.Window
@@ -156,7 +165,23 @@ type FSharpResolverProvider() =
             null
         | _ -> 
             Debug.WriteLine (sprintf "Resolver: Got data")
-            new FSharpResolveResult(tip) :> ResolveResult
+            let ivar = 
+                { new IVariable with 
+                    member x.Name = "item--item"
+                    member x.Region = 
+                       Debug.WriteLine("getting declaration location...")
+                       // Get the declaration location from the language service
+                       let loc = tyRes.GetDeclarationLocation(offset, doc.Editor.Document)
+                       match loc with 
+                       | DeclFound(line,col,file) -> 
+                           Debug.WriteLine("found, line = {0}, col = {1}, file = {2}", line, col, file)
+                           DomRegion(file,line+1,col+1)
+                       | _ -> DomRegion.Empty
+                    member x.Type = (SpecialType.UnknownType :> _)
+                    member x.IsConst = false
+                    member x.ConstantValue = Unchecked.defaultof<_> }
+                    
+            new FSharpLocalResolveResult(tip, ivar) :> ResolveResult
       with exn -> 
         Debug.WriteLine (sprintf "Resolver: Exception: '%s'" (exn.ToString()))
         null
@@ -166,11 +191,11 @@ type FSharpResolverProvider() =
       let (result, region) = (x :> ITextEditorResolverProvider).GetLanguageItem(doc, offset)
       result
 
-    /// Returns string with tool-tip from 'FSharpResolveResult'
+    /// Returns string with tool-tip from 'FSharpLocalResolveResult'
     /// (which we generated in the previous method - so we simply run formatter)
     member x.CreateTooltip(document, offset, result, errorInformation, modifierState) : string = 
       do Debug.WriteLine (sprintf "Resolver: in CreteTooltip")
       match result with
-      | :? FSharpResolveResult as res -> TipFormatter.formatTipWithHeader(res.DataTip)
+      | :? FSharpLocalResolveResult as res -> TipFormatter.formatTipWithHeader(res.DataTip)
       | _ -> null
 

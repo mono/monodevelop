@@ -177,29 +177,7 @@ module Parsing =
 /// Wraps the result of type-checking and provides methods for implementing
 /// various IntelliSense functions (such as completion & tool tips)
 type internal TypedParseResult(info:TypeCheckInfo) =
-
-  /// Get declarations at the current location in the specified document
-  /// (used to implement dot-completion in 'FSharpTextEditorCompletion.fs')
-  member x.GetDeclarations(doc:Document) = 
-    let lineStr = doc.Editor.GetLineText(doc.Editor.Caret.Line)
-    
-    // Get the long identifier before the current location
-    // 'residue' is the part after the last dot and 'longName' is before
-    // e.g.  System.Console.Wri  --> "Wri", [ "System"; "Console"; ]
-    let lookBack = Parsing.createBackStringReader lineStr (doc.Editor.Caret.Column - 2)
-    let residue, longName = 
-      lookBack 
-      |> Parsing.getFirst Parsing.parseBackIdentWithResidue
-    
-    Debug.WriteLine(sprintf "Result: GetDeclarations: column: %d, ident: %A\n    Line: %s" (doc.Editor.Caret.Line - 1) (longName, residue) lineStr)
-    let res = info.GetDeclarations( (doc.Editor.Caret.Line - 1, doc.Editor.Caret.Column - 1), lineStr, (longName, residue), 0, ServiceSettings.blockingTimeout) // 0 is tokenTag, which is ignored in this case
-
-    Debug.WriteLine(sprintf "Result: GetDeclarations: returning %d items" res.Items.Length)
-    res
-
-  /// Get the tool-tip to be displayed at the specified offset (relatively
-  /// from the beginning of the current document)
-  member x.GetToolTip(offset:int, doc:Mono.TextEditor.TextDocument) =
+  let crackSymbolText (offset:int, doc:Mono.TextEditor.TextDocument) = 
     let txt = doc.Text
     let sel = txt.[offset]
     
@@ -228,14 +206,40 @@ type internal TypedParseResult(info:TypeCheckInfo) =
     Debug.WriteLine(sprintf "Result: Get tool tip at %d:%d (offset %d - %d)\nIdentifier: %A (Current: %s) \nLine string: %s"  
                           line col currentLine.Offset currentLine.EndOffset identIsland currentIdent lineStr)
 
+    let token = FsParser.tagOfToken(FsParser.token.IDENT("")) 
     match identIsland with
     | [ "" ] -> 
         // There is no identifier at the current location
-        DataTipText.Empty 
+        None
     | _ -> 
-        // Assume that we are inside identifier (F# services can also handle
-        // case when we're in a string in '#r "Foo.dll"' but we don't do that)
-        let token = FsParser.tagOfToken(FsParser.token.IDENT("")) 
+        Some (line,col,lineStr,identIsland,currentIdent,token)
+        
+
+  /// Get declarations at the current location in the specified document
+  /// (used to implement dot-completion in 'FSharpTextEditorCompletion.fs')
+  member x.GetDeclarations(doc:Document) = 
+    let lineStr = doc.Editor.GetLineText(doc.Editor.Caret.Line)
+    
+    // Get the long identifier before the current location
+    // 'residue' is the part after the last dot and 'longName' is before
+    // e.g.  System.Console.Wri  --> "Wri", [ "System"; "Console"; ]
+    let lookBack = Parsing.createBackStringReader lineStr (doc.Editor.Caret.Column - 2)
+    let residue, longName = 
+      lookBack 
+      |> Parsing.getFirst Parsing.parseBackIdentWithResidue
+    
+    Debug.WriteLine(sprintf "Result: GetDeclarations: column: %d, ident: %A\n    Line: %s" (doc.Editor.Caret.Line - 1) (longName, residue) lineStr)
+    let res = info.GetDeclarations( (doc.Editor.Caret.Line - 1, doc.Editor.Caret.Column - 1), lineStr, (longName, residue), 0, ServiceSettings.blockingTimeout) // 0 is tokenTag, which is ignored in this case
+
+    Debug.WriteLine(sprintf "Result: GetDeclarations: returning %d items" res.Items.Length)
+    res
+
+  /// Get the tool-tip to be displayed at the specified offset (relatively
+  /// from the beginning of the current document)
+  member x.GetToolTip(offset:int, doc:Mono.TextEditor.TextDocument) =
+      match crackSymbolText(offset, doc) with 
+      | None -> DataTipText.Empty 
+      | Some(line,col,lineStr,identIsland,currentIdent,token) ->
         let res = info.GetDataTipText((line, col), lineStr, identIsland, token)
         match res with
         | DataTipText(elems) when elems |> List.forall (function DataTipElementNone -> true | _ -> false) -> 
@@ -246,6 +250,16 @@ type internal TypedParseResult(info:TypeCheckInfo) =
           Debug.WriteLine( "Result: Returning the result of second try"   )
           res
         | _ -> 
+          Debug.WriteLine( "Result: Got something, returning"  )
+          res 
+
+  /// Get the tool-tip to be displayed at the specified offset (relatively
+  /// from the beginning of the current document)
+  member x.GetDeclarationLocation(offset:int, doc:Mono.TextEditor.TextDocument) =
+      match crackSymbolText(offset, doc) with 
+      | None -> FindDeclResult.NotFound 
+      | Some(line,col,lineStr,identIsland,currentIdent,token) ->
+          let res = info.GetDeclarationLocation((line, col), lineStr, identIsland, token, true)
           Debug.WriteLine( "Result: Got something, returning"  )
           res 
                                
@@ -418,14 +432,14 @@ type internal LanguageService private () =
     let opts = 
       if (proj = null || ext = ".fsx" || ext = ".fsscript") then
       
-        // We are in a stand-alone file (assuming it is a script file) or we
-        // are in a project, but currently editing a script file
+        // We are in a stand-alone file or we are in a project, but currently editing a script file
         try
-          // TODO: In an early version, the InteractiveChecker resolution doesn't sometimes
-          // include FSharp.Core and other essential assemblies, so we need to include them by hand
           let fileName = CompilerArguments.fixFileName(fileName)
-          Debug.WriteLine (sprintf "CheckOptions: Creating for file: '%s'" fileName )
+          Debug.WriteLine (sprintf "CheckOptions: Creating for stand-alone file or script: '%s'" fileName )
           let opts = checker.GetCheckOptionsFromScriptRoot(fileName, source, fakeDateTimeRepresentingTimeLoaded proj)
+          
+          // The InteractiveChecker resolution doesn't sometimes
+          // include FSharp.Core and other essential assemblies, so we need to include them by hand
           if opts.ProjectOptions |> Seq.exists (fun s -> s.Contains("FSharp.Core.dll")) then opts
           else 
             // Add assemblies that may be missing in the standard assembly resolution
@@ -445,6 +459,7 @@ type internal LanguageService private () =
       // We are in a project - construct options using current properties
       else
         let projFile = proj.FileName.ToString()
+        Debug.WriteLine (sprintf "CheckOptions: Creating for file '%s' in project '%s'" fileName projFile )
         let files = CompilerArguments.getSourceFiles(proj.Items) 
         
         // Read project configuration (compiler & build)
