@@ -527,6 +527,11 @@ namespace Mono.TextEditor
 					state = (state & ~ctrlAlt) | Gdk.ModifierType.Mod2Mask;
 					group = 1;
 				}
+				// Case: Caps lock on + shift + key 
+				// See: Bug 8069 - [UI Refresh] If caps lock is on, holding the shift key prevents typed characters from appearing
+				if (state.HasFlag (Gdk.ModifierType.ShiftMask)) {
+					state &= ~Gdk.ModifierType.ShiftMask;
+				}
 			}
 			
 			keymap.TranslateKeyboardState (hardware_keycode, state, group, out keyval, out effective_group,
