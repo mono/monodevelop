@@ -21,7 +21,7 @@ vcrevision:
 	@if test -d ../.git; then \
 		version=$$(cd ..; \
 			LANG=C; export LANG; \
-			git describe --dirty --always --abbrev=0 --match nothing; \
+			git rev-parse HEAD; \
 		); \
 		echo "$$version" > "vcrevision"; \
 	else \
@@ -32,7 +32,7 @@ vcrevision:
 
 $(buildinfo): vcrevision
 	@mkdir -p "$(top_builddir)/build/bin"
-	@echo "Git revision: $$(cat $(top_srcdir)/vcrevision)" > "$@"
+	@echo "$$(cat $(top_srcdir)/vcrevision)" > "$@"
 	@echo "Build date: $$(date -u +'%Y-%m-%d %H:%M:%S%z')" >> "$@"
 	@echo "Updated build information"
 	@cat $(buildinfo)
