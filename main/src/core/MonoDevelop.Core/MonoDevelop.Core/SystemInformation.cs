@@ -74,14 +74,24 @@ namespace MonoDevelop.Core
 			}
 			
 			var sb = new StringBuilder ();
+			// First append the MonoDevelop build information
 			var biFile = ((FilePath)Assembly.GetEntryAssembly ().Location).ParentDirectory.Combine ("buildinfo");
 			if (File.Exists (biFile)) {
+				sb.Append ("Git revision: ");
 				foreach (var line in File.ReadAllLines (biFile)){
 					if (!string.IsNullOrWhiteSpace (line))
 						sb.AppendLine (line.Trim ());
 				}
 			} else {
 				sb.AppendLine ("No build info");
+			}
+
+			// Then append the Xamarin Addins information if it exists
+			biFile = ((FilePath) Assembly.GetEntryAssembly ().Location).ParentDirectory.Combine ("buildinfo_xamarin");
+			if (File.Exists (biFile)) {
+				sb.Append ("Xamarin addins: ");
+				foreach (var line in File.ReadLines (biFile))
+					sb.AppendLine (line);
 			}
 
 			yield return new SystemInformationSection () {
