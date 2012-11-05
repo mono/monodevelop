@@ -9,6 +9,11 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.Core</AssemblyName>
     <RootNamespace>MonoDevelop.Core</RootNamespace>
+    <BuildInfo>..\..\..\build\bin\buildinfo</BuildInfo>
+    <VcRevision>..\..\..\vcrevision</VcRevision>
+    <Git>git</Git>
+    <Git Condition="Exists('c:\Program Files (x86)\Git\bin\git.exe')">c:\Program Files (x86)\Git\bin\git.exe</Git>
+    <Git Condition="Exists('/usr/bin/git')">/usr/bin/git</Git>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -438,6 +443,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Target Name="BeforeBuild">
+    <Exec Command='"$(Git)" rev-parse HEAD > $(BuildInfo)' IgnoreExitCode="True" />
+    <Exec Command='"$(Git)" rev-parse HEAD > $(VcRevision)' IgnoreExitCode="True" />
+  </Target>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.Formats.MSBuild.csproj">
       <Project>{A437F1A3-78DF-4F00-8053-D32A8B1EB679}</Project>
