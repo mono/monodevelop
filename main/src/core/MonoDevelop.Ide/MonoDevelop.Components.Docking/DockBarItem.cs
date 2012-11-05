@@ -60,14 +60,13 @@ namespace MonoDevelop.Components.Docking
 			this.secondary = secondary.Copy ();
 		}
 
-		public override void Dispose ()
+		protected override void OnDestroyed ()
 		{
-			base.Dispose ();
-
 			if (primarySurface != null)
 				primarySurface.Dispose ();
 			if (secondarySurface != null)
 				secondarySurface.Dispose ();
+			base.OnDestroyed ();
 		}
 
 		protected override void OnRealized ()

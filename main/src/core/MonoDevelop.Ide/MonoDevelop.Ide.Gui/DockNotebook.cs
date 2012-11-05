@@ -508,11 +508,11 @@ namespace MonoDevelop.Ide.Gui
 			renderer = new ThreadedRenderer (this);
 		}
 
-		public override void Dispose ()
+		protected override void OnDestroyed ()
 		{
 			if (renderer != null)
 				renderer.Dispose ();
-			base.Dispose ();
+			base.OnDestroyed ();
 		}
 
 		public void StartOpenAnimation (DockNotebookTab tab)
