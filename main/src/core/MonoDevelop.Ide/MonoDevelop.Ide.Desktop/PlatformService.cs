@@ -101,6 +101,8 @@ namespace MonoDevelop.Ide.Desktop
 		
 		public bool GetMimeTypeIsText (string mimeType)
 		{
+			if (mimeType == "application/x-sln")
+				return true;
 			return GetMimeTypeIsSubtype (mimeType, "text/plain");
 		}
 		
