@@ -35,9 +35,18 @@ namespace MonoDevelop.Ide.Updater
 {
 	public static class UpdateService
 	{
+		static readonly TimeSpan AutoUpdateSpan = TimeSpan.FromDays (3);
+		static Timer autoUpdateTimer;
+
 		static UpdateService ()
 		{
 			NotifyAddinUpdates = true;
+			ScheduleUpdateRun ();
+		}
+
+		static void ScheduleUpdateRun ()
+		{
+			autoUpdateTimer = new Timer (_ => CheckForUpdates (true), null, AutoUpdateSpan, AutoUpdateSpan);
 		}
 		
 		public static bool AutoCheckForUpdates {
