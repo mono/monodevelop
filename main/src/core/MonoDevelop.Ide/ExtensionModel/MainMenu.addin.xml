@@ -144,7 +144,7 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.GotoLineNumber" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.GotoFile" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.GotoType" />
-		<CommandItem id = "MonoDevelop.Ide.NavigateToDialog.Commands.NavigateTo" />
+		<CommandItem id = "MonoDevelop.Components.MainToolbar.Commands.NavigateTo" />
 		
 		<SeparatorItem id = "ViewItemsSeparator3" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateBack" />

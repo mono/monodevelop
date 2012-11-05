@@ -29,7 +29,7 @@ using Gtk;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 
-namespace MonoDevelop.Ide.NavigateToDialog
+namespace MonoDevelop.Components.MainToolbar
 {
 	public enum Commands {
 		NavigateTo

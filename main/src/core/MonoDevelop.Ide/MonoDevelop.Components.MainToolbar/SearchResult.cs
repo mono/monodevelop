@@ -35,8 +35,9 @@ using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.CodeCompletion;
+using MonoDevelop.Ide;
 
-namespace MonoDevelop.Ide.NavigateToDialog
+namespace MonoDevelop.Components.MainToolbar
 {
 	public enum SearchResultType
 	{

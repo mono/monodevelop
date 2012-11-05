@@ -34,7 +34,6 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
-using MonoDevelop.Ide.NavigateToDialog;
 using MonoDevelop.Core.Text;
 using Gtk;
 using System.Linq;

@@ -40,7 +40,7 @@ using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Components.MainToolbar;
 using ICSharpCode.NRefactory.TypeSystem;
 
-namespace MonoDevelop.Ide.NavigateToDialog
+namespace MonoDevelop.Components.MainToolbar
 {
 	class ResultsDataSource: List<SearchResult>, ISearchDataSource
 	{

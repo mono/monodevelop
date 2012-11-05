@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.Ide.NavigateToDialog;
 
 namespace MonoDevelop.Components.MainToolbar
 {

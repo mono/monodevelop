@@ -33,7 +33,6 @@ using System.Linq;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Components;
 using Cairo;
-using MonoDevelop.Ide.NavigateToDialog;
 using MonoDevelop.Projects;
 using System.Collections.Generic;
 using Mono.Addins;
@@ -192,7 +191,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 			matchEntry.ForceFilterButtonVisible = true;
 
-			var cmd = IdeApp.CommandService.GetCommand (MonoDevelop.Ide.NavigateToDialog.Commands.NavigateTo);
+			var cmd = IdeApp.CommandService.GetCommand (Commands.NavigateTo);
 			cmd.KeyBindingChanged += delegate {
 				UpdateSearchEntryLabel ();
 			};
@@ -284,7 +283,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void UpdateSearchEntryLabel ()
 		{
-			var info = IdeApp.CommandService.GetCommand (MonoDevelop.Ide.NavigateToDialog.Commands.NavigateTo);
+			var info = IdeApp.CommandService.GetCommand (Commands.NavigateTo);
 			if (!string.IsNullOrEmpty (info.AccelKey)) {
 				matchEntry.EmptyMessage = GettextCatalog.GetString ("Press '{0}' to search", KeyBindingManager.BindingToDisplayLabel (info.AccelKey, false));
 			} else {
@@ -590,7 +589,7 @@ namespace MonoDevelop.Components.MainToolbar
 			return base.OnExposeEvent (evnt);
 		}
 
-		[CommandHandler(MonoDevelop.Ide.NavigateToDialog.Commands.NavigateTo)]
+		[CommandHandler(Commands.NavigateTo)]
 		public void NavigateToCommand ()
 		{
 			matchEntry.Entry.GrabFocus ();
