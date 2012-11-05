@@ -220,7 +220,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (project == null)
 				throw new ArgumentNullException ("project");
-			Console.WriteLine (project.ProjectType);
 			if (outputTrackedProjects.Contains (project.ProjectType, StringComparer.OrdinalIgnoreCase)) {
 				var fileName = project.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration);
 				GetProjectContentWrapper (project).UpdateTrackedOutputAssembly (fileName);
