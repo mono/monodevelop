@@ -34,6 +34,8 @@ using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.Execution;
 using System.IO;
 using System.Text.RegularExpressions;
+using MonoDevelop.Ide.Fonts;
+using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
@@ -148,6 +150,17 @@ namespace MonoDevelop.Ide.Gui.Components
 			IdeApp.Preferences.CustomOutputPadFontChanged += HandleCustomFontChanged;
 			
 			outputDispatcher = new GLib.TimeoutHandler (outputDispatchHandler);
+		}
+
+		[CommandHandler (Ide.Commands.EditCommands.Copy)]
+		void CopyText ()
+		{
+			var text = this.buffer.Text;
+			var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+			clipboard.Text = text;
+
+			clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
+			clipboard.Text = text;
 		}
 		
 		public LogViewProgressMonitor GetProgressMonitor ()
