@@ -155,12 +155,16 @@ namespace MonoDevelop.Ide.Gui.Components
 		[CommandHandler (Ide.Commands.EditCommands.Copy)]
 		void CopyText ()
 		{
-			var text = this.buffer.Text;
-			var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
-			clipboard.Text = text;
+			TextIter start;
+			TextIter end;
+			if (buffer.HasSelection && buffer.GetSelectionBounds (out start, out end)) {
+				var text = buffer.GetText (start, end, false);
+				var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+				clipboard.Text = text;
 
-			clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
-			clipboard.Text = text;
+				clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
+				clipboard.Text = text;
+			}
 		}
 		
 		public LogViewProgressMonitor GetProgressMonitor ()
