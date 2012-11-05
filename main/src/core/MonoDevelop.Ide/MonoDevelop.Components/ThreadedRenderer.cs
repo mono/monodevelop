@@ -31,7 +31,7 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide
 {
-	public class ThreadedRenderer
+	public class ThreadedRenderer : IDisposable
 	{
 		Gtk.Widget owner;
 		SurfaceWrapper surface;
@@ -41,6 +41,12 @@ namespace MonoDevelop.Ide
 		{
 			this.owner = owner;
 			runningSignal = new ManualResetEventSlim (true);
+		}
+
+		public void Dispose ()
+		{
+			if (surface != null)
+				surface.Dispose ();
 		}
 
 		double Scale {
@@ -78,6 +84,8 @@ namespace MonoDevelop.Ide
 
 			if (surface == null || surface.Height != TargetHeight || surface.Width != TargetWidth) {
 				using (var similar = Gdk.CairoHelper.Create (owner.GdkWindow)) {
+					if (surface != null)
+						surface.Dispose ();
 					surface = new SurfaceWrapper (similar, TargetWidth, TargetHeight);
 				}
 			}

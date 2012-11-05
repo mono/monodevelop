@@ -208,6 +208,13 @@ namespace MonoDevelop.Components.MainToolbar
 			};
 		}
 
+		public override void Dispose ()
+		{
+			if (theme != null)
+				theme.Dispose ();
+			base.Dispose ();
+		}
+
 		void StartBuildAnimation ()
 		{
 			this.Animate ("Build",

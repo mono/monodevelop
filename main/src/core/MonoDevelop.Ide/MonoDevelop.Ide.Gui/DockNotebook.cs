@@ -508,6 +508,13 @@ namespace MonoDevelop.Ide.Gui
 			renderer = new ThreadedRenderer (this);
 		}
 
+		public override void Dispose ()
+		{
+			if (renderer != null)
+				renderer.Dispose ();
+			base.Dispose ();
+		}
+
 		public void StartOpenAnimation (DockNotebookTab tab)
 		{
 			tab.WidthModifier = 0;

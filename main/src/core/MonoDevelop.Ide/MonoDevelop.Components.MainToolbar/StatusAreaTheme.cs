@@ -40,9 +40,17 @@ using StockIcons = MonoDevelop.Ide.Gui.Stock;
 
 namespace MonoDevelop.Components.MainToolbar
 {
-	internal class StatusAreaTheme
+	internal class StatusAreaTheme : IDisposable
 	{
 		SurfaceWrapper backgroundSurface, errorSurface;
+		
+		public void Dispose ()
+		{
+			if (backgroundSurface != null)
+				backgroundSurface.Dispose ();
+			if (errorSurface != null)
+				errorSurface.Dispose ();
+		}
 
 		public void Render (Cairo.Context context, StatusArea.RenderArg arg)
 		{

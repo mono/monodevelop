@@ -463,6 +463,8 @@ namespace MonoDevelop.Components
 
 			bool redraw = false;
 			if (surface == null || surface.Width != region.Width || surface.Height != region.Height) {
+				if (surface != null)
+					surface.Dispose ();
 				surface = new SurfaceWrapper (self, region.Width, region.Height);
 				redraw = true;
 			} else if ((surface.Data == null && parameters != null) || (surface.Data != null && !surface.Data.Equals (parameters))) {
@@ -485,7 +487,7 @@ namespace MonoDevelop.Components
 		}
 	}
 
-	public class SurfaceWrapper
+	public class SurfaceWrapper : IDisposable
 	{
 		public Cairo.Surface Surface { get; private set; }
 		public int Width { get; private set; }
@@ -521,11 +523,12 @@ namespace MonoDevelop.Components
 			Height = source.Height;
 		}
 
-		~SurfaceWrapper ()
+		public void Dispose ()
 		{
-			if (Surface != null)
-				Surface.Dispose ();
-			Surface = null;
+			if (Surface != null) {
+				Surface.Destroy ();
+				((IDisposable)Surface).Dispose ();
+			}
 		}
 	}
 
@@ -548,6 +551,7 @@ namespace MonoDevelop.Components
 				return 1;
 
 			var rect = new System.Drawing.RectangleF ();
+			// Use C call to avoid dispose bug in cairo bindings for OSX
 			var cgContext = cairo_quartz_surface_get_cg_context (cairo_get_target (context.Handle));
 			var unitRect = new System.Drawing.RectangleF (1, 1, 1, 1);
 
