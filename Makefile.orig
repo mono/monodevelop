@@ -36,27 +36,25 @@ VERSION=3.2.1
 install: install-release
 
 install-debug: debug
-	-rm -fr pack
-	@-mkdir pack
-	$(MDTOOL) setup pack bin/Release/FSharpBinding.addin.xml -d:pack
-	$(MDTOOL) setup install -y pack/MonoDevelop.FSharpBinding_$(VERSION).mpack 
+	-rm -fr pack/debug
+	@-mkdir pack/debug
+	$(MDTOOL) setup pack bin/FSharpBinding.addin.xml -d:pack/debug
+	$(MDTOOL) setup install -y pack/debug/MonoDevelop.FSharpBinding_$(VERSION).mpack 
 
 install-release: release
-	-rm -fr pack
-	@-mkdir pack
-	$(MDTOOL) setup pack bin/Release/FSharpBinding.addin.xml -d:pack
-	$(MDTOOL) setup install -y pack/MonoDevelop.FSharpBinding_$(VERSION).mpack 
+	-rm -fr pack/release
+	@-mkdir pack/release
+	$(MDTOOL) setup pack bin/Release/FSharpBinding.addin.xml -d:pack/release
+	$(MDTOOL) setup install -y pack/release/MonoDevelop.FSharpBinding_$(VERSION).mpack 
 
 uninstall:
 	$(MDTOOL) setup uninstall MonoDevelop.FSharpBinding
 
 
 package: $(TARGETS)
-	@mkdir -p bin/repository
-	@mkdir -p repository
-	cp $(TARGETS) bin/repository
-	cp MonoDevelop.FSharpBinding/FSharpBinding.addin.xml bin/repository
-	$(MDTOOL) setup pack bin/repository/FSharpBinding.addin.xml -d:repository
+	-rm -fr pack
+	@-mkdir pack
+	$(MDTOOL) setup pack bin/FSharpBinding.addin.xml -d:pack
 
 clean:
 	-rm -fr bin
