@@ -103,14 +103,15 @@ module CompilerArguments =
             // The plain reference text "FSharp.Core" is used in Visual Studio .fsproj files.
             // On MonoDevelop+windows this is incorrectly resolved. We just skip reference text of this form,
             // and rely on the default directory search below.
-            if ref.StoredReference <> "FSharp.Core" || ref.IsExactVersion then 
+            if not (file.EndsWith("FSharp.Core.dll", true, CultureInfo.InvariantCulture)) || ref.IsValid then 
                  yield file ]
     
     // If 'mscorlib.dll' and 'FSharp.Core.dll' is not in the set of references, we need to 
     // resolve it and add it. We look in the directories returned by getDefaultDirectories(),
     // where no includes are given.
     for assumedFile in ["mscorlib"; "FSharp.Core"] do 
-      let coreRef = files |> List.tryFind (fun fn -> fn.EndsWith(assumedFile + ".dll") || fn.EndsWith(assumedFile))
+      let coreRef = files |> List.tryFind (fun fn -> fn.EndsWith(assumedFile + ".dll", true, CultureInfo.InvariantCulture) || 
+                                                     fn.EndsWith(assumedFile, true, CultureInfo.InvariantCulture))
       match coreRef with
       | None ->
         let dirs = ScriptOptions.getDefaultDirectories(langVersion, targetFramework) 
@@ -118,7 +119,7 @@ module CompilerArguments =
         | Some fn -> yield "-r:" + wrapf(fn)
         | None -> Debug.WriteLine(sprintf "Resolution: Assembly resolution failed when trying to find default reference for '%s'!" assumedFile)
       | Some r -> 
-        Debug.WriteLine(sprintf "Resolution: Found FSharp.Core reference '%s'" r)
+        Debug.WriteLine(sprintf "Resolution: Found '%s' reference '%s'" assumedFile r)
       
     for file in files do 
       yield "-r:" + wrapf(file) ]
