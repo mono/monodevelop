@@ -132,7 +132,6 @@ namespace MonoDevelop.VersionControl.Views
 //			revertToButton.Sensitive = false;
 			revertToButton.Clicked += new EventHandler (RevertToRevisionClicked);
 
-			Gtk.HBox a = new Gtk.HBox ();
 			searchEntry = new SearchEntry ();
 			searchEntry.WidthRequest = 200;
 			searchEntry.ForceFilterButtonVisible = true;
@@ -140,7 +139,6 @@ namespace MonoDevelop.VersionControl.Views
 			searchEntry.Changed += HandleSearchEntryFilterChanged;
 			searchEntry.Ready = true;
 			searchEntry.Show ();
-			a.PackEnd (searchEntry, false, false, 0);
 
 			messageRenderer.Ellipsize = Pango.EllipsizeMode.End;
 			TreeViewColumn colRevMessage = new TreeViewColumn ();
