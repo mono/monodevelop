@@ -35,11 +35,10 @@ module ScriptOptions =
     
     // Translate the target framework to an enum used by FSharp.CompilerBinding
     let fsTargetFramework = 
-      match targetFramework with
-      | TargetFrameworkMoniker.NET_3_5 -> FSharpTargetFramework.NET_3_5
-      | TargetFrameworkMoniker.NET_3_0 -> FSharpTargetFramework.NET_3_0
-      | TargetFrameworkMoniker.NET_2_0 -> FSharpTargetFramework.NET_2_0
-      | _ -> FSharpTargetFramework.NET_4_0
+      if targetFramework = TargetFrameworkMoniker.NET_3_5 then FSharpTargetFramework.NET_3_5
+      elif targetFramework = TargetFrameworkMoniker.NET_3_0 then FSharpTargetFramework.NET_3_0
+      elif targetFramework = TargetFrameworkMoniker.NET_2_0 then FSharpTargetFramework.NET_2_0
+      else FSharpTargetFramework.NET_4_0
     
     // Return all known directories
     [ // Get the location of the System DLLs
