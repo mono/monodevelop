@@ -42,7 +42,7 @@ RESOURCES = \
 	--resource:MonoDevelop.FSharpBinding/icons.fsharp-project-icon.png \
 	--resource:MonoDevelop.FSharpBinding/icons.fsharp-script-icon.png
 
-FILES = \
+FILES_MFB = \
 	MonoDevelop.FSharpBinding/PowerPack/CodeDomVisitor.fs \
 	MonoDevelop.FSharpBinding/PowerPack/CodeDomGenerator.fs \
 	MonoDevelop.FSharpBinding/PowerPack/CodeProvider.fs \
@@ -50,9 +50,6 @@ FILES = \
 	MonoDevelop.FSharpBinding/PowerPack/LazyList.fs \
 	MonoDevelop.FSharpBinding/Services/Mailbox.fs \
 	MonoDevelop.FSharpBinding/Services/Parameters.fs \
-	MonoDevelop.FSharpBinding/Services/Common.fs \
-	MonoDevelop.FSharpBinding/Services/CompilerLocationUtils.fs \
-	MonoDevelop.FSharpBinding/Services/FSharpCompiler.fs \
 	MonoDevelop.FSharpBinding/Services/Parser.fs \
 	MonoDevelop.FSharpBinding/Services/CompilerArguments.fs \
 	MonoDevelop.FSharpBinding/Services/LanguageService.fs \
@@ -69,11 +66,23 @@ FILES = \
 	MonoDevelop.FSharpBinding/FSharpTextEditorCompletion.fs \
 	MonoDevelop.FSharpBinding/FSharpResolverProvider.fs \
 
+FILES_FCB = \
+	FSharp.CompilerBinding/Common.fs \
+	FSharp.CompilerBinding/CompilerLocationUtils.fs \
+	FSharp.CompilerBinding/FSharpCompiler.fs
+
+FILES_FAC = \
+	FSharp.AutoComplete/Parser.fs \
+	FSharp.AutoComplete/TipFormatter.fs \
+	FSharp.AutoComplete/Program.fs
+
 REFERENCES = \
 	-r:$(MONOBIN)/mscorlib.dll \
 	-r:System.dll \
 	-r:System.Core.dll \
 	-r:System.Xml.dll \
+
+REFERENCES_MFB = $(REFERENCES) \
 	-r:$(MONOBIN)/../2.0/Mono.Posix.dll \
 	-r:$(MONOBIN)/Mono.Cairo.dll \
 	-r:$(MADIR)/Mono.Addins.dll \
@@ -90,11 +99,14 @@ REFERENCES = \
 	-r:$(GDKDIR)/gdk-sharp.dll \
 	-r:$(GLIBDIR)/glib-sharp.dll
 
-FS_REFERENCES= $(REFERENCES) \
-	-r:$(FSBIN)/FSharp.Core.dll
+OPTIONS_MFB = \
+	--resident --noframework --debug --optimize- --target:library -r:bin/FSharpBinding.Gui.dll -r:bin/FSharp.CompilerBinding.dll --out:bin/FSharpBinding.dll
 
-OPTIONS = \
-	--resident --noframework --debug --optimize- --target:library -r:bin/FSharpBinding.Gui.dll --out:bin/FSharpBinding.dll
+OPTIONS_FCB = \
+	--resident --noframework --debug --optimize- --target:library --out:bin/FSharp.CompilerBinding.dll
+
+OPTIONS_FAC = \
+	--resident --debug --out:bin/fsautocomplete.exe -r:bin/FSharp.CompilerBinding.dll
 
 # CSharp project that contains designer generated GTK stuff for project options
 
@@ -110,15 +122,22 @@ GUIFILES = \
 GUIOPTIONS = \
 	-debug+ -out:bin/FSharpBinding.Gui.dll -target:library
 
-TARGETS = bin/FSharp.Core.dll bin/FSharpBinding.dll  bin/FSharpBinding.Gui.dll
+TARGETS = bin/FSharp.Core.dll bin/FSharpBinding.dll  bin/FSharpBinding.Gui.dll bin/FSharp.CompilerBinding.dll bin/fsautocomplete.exe
 
 all: $(TARGETS)
+
+bin/fsautocomplete.exe: $(FILES_FAC) bin/FSharp.CompilerBinding.dll
+	@-mkdir -p bin
+	$(FSC) $(OPTIONS_FAC) $(FILES_FAC) 
+
+bin/FSharp.CompilerBinding.dll: $(FILES_FCB)
+	$(FSC) $(OPTIONS_FCB) $(REFERENCES) -r:$(FSBIN)/FSharp.Core.dll $(FILES_FCB)
 
 bin/FSharp.Core.dll: $(MONOBIN)/FSharp.Core.dll
 	@-mkdir -p bin
 	cp -p $(MONOBIN)/FSharp.Core.dll bin/FSharp.Core.dll
 
-bin/FSharpBinding.dll: bin/FSharpBinding.Gui.dll $(FILES) bin/FSharp.Core.dll \
+bin/FSharpBinding.dll: bin/FSharpBinding.Gui.dll bin/FSharp.CompilerBinding.dll $(FILES_MFB) bin/FSharp.Core.dll \
 	MonoDevelop.FSharpBinding/FSharpBinding.addin.xml \
 	MonoDevelop.FSharpBinding/FSharpBinding.addin.xml \
 	MonoDevelop.FSharpBinding/templates.EmptyFSharpSource.xft.xml \
@@ -134,11 +153,11 @@ bin/FSharpBinding.dll: bin/FSharpBinding.Gui.dll $(FILES) bin/FSharp.Core.dll \
 	MonoDevelop.FSharpBinding/icons.fsharp-file-icon.png \
 	MonoDevelop.FSharpBinding/icons.fsharp-project-icon.png \
 	MonoDevelop.FSharpBinding/icons.fsharp-script-icon.png
-	$(FSC) $(OPTIONS) $(FS_REFERENCES) $(RESOURCES) $(FILES) 
+	$(FSC) $(OPTIONS_MFB) $(REFERENCES_MFB) -r:$(FSBIN)/FSharp.Core.dll $(RESOURCES) $(FILES_MFB) 
 
 bin/FSharpBinding.Gui.dll: $(GUIFILES)
 	@-mkdir -p bin
-	$(CSC) $(GUIOPTIONS) $(REFERENCES) $(GUIFILES) 
+	$(CSC) $(GUIOPTIONS) $(REFERENCES_MFB) $(GUIFILES) 
 
 clean:
 	rm -r bin

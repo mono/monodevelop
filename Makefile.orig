@@ -9,27 +9,23 @@ MDROOT  = INSERT_MD_ROOT
 
 MDTOOL = $(MONO) $(MDROOT)/../../mdtool
 
-TARGETS = bin/FSharp.Core.dll bin/FSharpBinding.dll  bin/FSharpBinding.Gui.dll
+TARGETS = bin/FSharp.Core.dll bin/FSharpBinding.dll  bin/FSharpBinding.Gui.dll bin/fsautocomplete.exe
 
 .PHONY: all
 
 all: release
 
 debug:
+	(cd FSharp.CompilerBinding && xbuild FSharp.CompilerBinding.fsproj)
+	(cd FSharp.AutoComplete && xbuild FSharp.AutoComplete.fsproj)
 	(cd MonoDevelop.FSharpBinding/Gui && xbuild MonoDevelop.FSharp.Gui.csproj)
 	(cd MonoDevelop.FSharpBinding && xbuild MonoDevelop.FSharp.fsproj)
 
 release:
+	(cd FSharp.CompilerBinding && xbuild FSharp.CompilerBinding.fsproj /p:Configuration=Release)
+	(cd FSharp.AutoComplete && xbuild FSharp.AutoComplete.fsproj /p:Configuration=Release)
 	(cd MonoDevelop.FSharpBinding/Gui && xbuild MonoDevelop.FSharp.Gui.csproj /p:Configuration=Release)
 	(cd MonoDevelop.FSharpBinding && xbuild MonoDevelop.FSharp.fsproj /p:Configuration=Release)
-
-#aspnet:
-#	(cd addins/MonoDevelop.FSharp.AspNet.Mvc && xbuild MonoDevelop.FSharp.AspNet.Mvc.fsproj /p:MDROOT=$(MDROOT))
-
-#install:
-#	cp -pr bin/* $(MDADDIN)/BackendBindings/
-
-#install:
 
 VERSION=3.2.1
 
@@ -60,4 +56,3 @@ clean:
 	-rm -fr bin
 	(cd MonoDevelop.FSharpBinding && xbuild MonoDevelop.FSharp.fsproj /target:Clean /p:MDROOT=$(MDROOT))
 	(cd MonoDevelop.FSharpBinding/Gui && xbuild MonoDevelop.FSharp.Gui.csproj /target:Clean /p:MDROOT=$(MDROOT))
-#	(cd addins/MonoDevelop.FSharp.AspNet.Mvc && xbuild MonoDevelop.FSharp.AspNet.Mvc.fsproj /target:Clean /p:MDROOT=$(MDROOT))
