@@ -679,6 +679,18 @@ namespace MonoDevelop.CSharp.Highlighting
 			"equals"
 		};
 
+		#region Syntax mode rule cache
+		static List<Rule> _rules;
+		static List<Mono.TextEditor.Highlighting.Keywords> _keywords;
+		static Span[] _spans;
+		static Match[] _matches;
+		static Marker[] _prevMarker;
+		static List<SemanticRule> _SemanticRules;
+		static Dictionary<string, Mono.TextEditor.Highlighting.Keywords> _keywordTable;
+		static Dictionary<string, Mono.TextEditor.Highlighting.Keywords> _keywordTableIgnoreCase;
+		static Dictionary<string, List<string>> _properties;
+		#endregion
+
 		public CSharpSyntaxMode (Document document)
 		{
 			this.guiDocument = document;
@@ -688,39 +700,55 @@ namespace MonoDevelop.CSharp.Highlighting
 			if (guiDocument.ParsedDocument != null)
 				HandleDocumentParsed (this, EventArgs.Empty);
 
-			var provider = new ResourceXmlProvider (typeof(IXmlProvider).Assembly, typeof(IXmlProvider).Assembly.GetManifestResourceNames ().First (s => s.Contains ("CSharpSyntaxMode")));
-			using (XmlReader reader = provider.Open ()) {
-				SyntaxMode baseMode = SyntaxMode.Read (reader);
-				rules = new List<Rule> (baseMode.Rules);
-				rules.Add (new Rule (baseMode) {
-					Name = "PreProcessorComment"
-				});
-				keywords = new List<Keywords> (baseMode.Keywords);
-				spans = new List<Span> (baseMode.Spans.Where (span => span.Begin.Pattern != "#")).ToArray ();
-				matches = baseMode.Matches;
-				prevMarker = baseMode.PrevMarker;
-				SemanticRules = new List<SemanticRule> (baseMode.SemanticRules);
-				keywordTable = baseMode.keywordTable;
-				keywordTableIgnoreCase = baseMode.keywordTableIgnoreCase;
-				properties = baseMode.Properties;
-			}
-			if (contextualHighlightKeywords == null) {
+			bool loadRules = _rules == null;
+
+			if (loadRules) {
+				var provider = new ResourceXmlProvider (typeof(IXmlProvider).Assembly, typeof(IXmlProvider).Assembly.GetManifestResourceNames ().First (s => s.Contains ("CSharpSyntaxMode")));
+				using (XmlReader reader = provider.Open ()) {
+					SyntaxMode baseMode = SyntaxMode.Read (reader);
+					_rules = new List<Rule> (baseMode.Rules);
+					_rules.Add (new Rule (baseMode) {
+						Name = "PreProcessorComment"
+					});
+					_keywords = new List<Keywords> (baseMode.Keywords);
+					_spans = new List<Span> (baseMode.Spans.Where (span => span.Begin.Pattern != "#")).ToArray ();
+					_matches = baseMode.Matches;
+					_prevMarker = baseMode.PrevMarker;
+					_SemanticRules = new List<SemanticRule> (baseMode.SemanticRules);
+					_keywordTable = baseMode.keywordTable;
+					_keywordTableIgnoreCase = baseMode.keywordTableIgnoreCase;
+					_properties = baseMode.Properties;
+				}
+
 				contextualHighlightKeywords = new Dictionary<string, string> ();
 				foreach (var word in ContextualKeywords) {
-					if (keywordTable.ContainsKey (word)) {
-						contextualHighlightKeywords[word] = keywordTable[word].Color;
+					if (_keywordTable.ContainsKey (word)) {
+						contextualHighlightKeywords[word] = _keywordTable[word].Color;
 					} else {
 						Console.WriteLine ("missing keyword:"+word);
 					}
 				}
+
+				foreach (var word in ContextualKeywords) {
+					_keywordTable.Remove (word);
+				}
 			}
-			foreach (var word in ContextualKeywords) {
-				keywordTable.Remove (word);
+
+			rules = _rules;
+			keywords = _keywords;
+			spans = _spans;
+			matches = _matches;
+			prevMarker = _prevMarker;
+			SemanticRules = _SemanticRules;
+			keywordTable = _keywordTable;
+			keywordTableIgnoreCase = _keywordTableIgnoreCase;
+			properties = _properties;
+
+			if (loadRules) {
+				AddSemanticRule ("Comment", new HighlightUrlSemanticRule ("comment"));
+				AddSemanticRule ("XmlDocumentation", new HighlightUrlSemanticRule ("comment"));
+				AddSemanticRule ("String", new HighlightUrlSemanticRule ("string"));
 			}
-			
-			AddSemanticRule ("Comment", new HighlightUrlSemanticRule ("comment"));
-			AddSemanticRule ("XmlDocumentation", new HighlightUrlSemanticRule ("comment"));
-			AddSemanticRule ("String", new HighlightUrlSemanticRule ("string"));
 		}
 
 		#region IDisposable implementation
