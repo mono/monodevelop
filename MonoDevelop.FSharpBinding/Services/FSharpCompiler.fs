@@ -19,7 +19,6 @@ open MonoDevelop.Core.Assemblies
 open MonoDevelop.Core
 open MonoDevelop.FSharp
 open MonoDevelop.FSharp.Reflection
-open Mono.Addins
     
 // --------------------------------------------------------------------------------------
 // Assembly resolution in a script file - a workaround that replaces functionality
@@ -399,9 +398,27 @@ module SourceCodeServices =
     member x.DescriptionText : DataTipText = DataTipText(wrapped?DescriptionText)
     member x.Glyph : int = wrapped?Glyph
 
+  type Parameter(wrapped:obj) = 
+    member x.Name : string = wrapped?Name
+    member x.CanonicalTypeTextForSorting : string  = wrapped?CanonicalTypeTextForSorting
+    member x.Display : string  = wrapped?Display
+    member x.Description : string  = wrapped?Description
+
+  type Method(wrapped:obj) =
+    member x.Description : DataTipText = DataTipText(wrapped?Description)
+    member x.Type : string = wrapped?Type
+    member x.Parameters : Parameter[] = wrapped?Parameters |> Array.untypedMap (fun o -> Parameter(o)) 
+    member x.IsStaticArguments : bool = wrapped?IsStaticArguments  
+
   type DeclarationSet(wrapped:obj) =
     member x.Items = 
-      wrapped?Items |> Array.untypedMap (fun o -> Declaration(o))
+      if wrapped = null then [| |] else wrapped?Items |> Array.untypedMap (fun o -> Declaration(o))
+    static member Empty = DeclarationSet null
+
+  type MethodOverloads(wrapped:obj) =
+    member x.Name : string =  wrapped?Name
+    member x.Methods : Method[] = wrapped?Methods |> Array.untypedMap (fun o -> Method(o))
+
 
   type TypeCheckInfo(wrapped:obj) =
     /// Resolve the names at the given location to a set of declarations
@@ -441,8 +458,19 @@ module SourceCodeServices =
       let names = fsc.MakeList(typeof<string>, names)
       FindDeclResult(wrapped?GetDeclarationLocation(pos, line, names, tokentag, isDeclaration))
 
+    member x.GetMethods(pos: Position, line: string, names: Names option, tokentag: int) :  MethodOverloads =
+      let fsc = FSharpCompiler.LatestAvailable
+      let stringListTy = fsc.MakeListType(typeof<string>)
+      let names = match names with None -> null | Some x -> fsc.MakeOption(stringListTy, x)
+      let meths = 
+          match fsc.ActualVersion with 
+          | FSharpCompilerVersion.FSharp_2_0 -> wrapped?GetMethods(pos, line, names, tokentag)
+          | FSharpCompilerVersion.FSharp_3_0 -> wrapped?GetMethods(pos, line, names)
+      MethodOverloads(meths)
+
+
+    // member GetExtraColorizations : unit -> (Range * TokenColorKind)[]
         // member GetF1Keyword : Position * string * Names -> string option
-    // member GetMethods : Position * string * Names option * (*tokentag:*)int -> MethodOverloads
 
   type ErrorInfo(wrapped:obj) =
     member x.StartLine : int = wrapped?StartLine
