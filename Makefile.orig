@@ -9,8 +9,6 @@ MDROOT  = INSERT_MD_ROOT
 
 MDTOOL = $(MONO) $(MDROOT)/../../mdtool
 
-TARGETS = bin/FSharp.Core.dll bin/FSharpBinding.dll  bin/FSharpBinding.Gui.dll bin/fsautocomplete.exe
-
 .PHONY: all
 
 all: release
@@ -52,7 +50,14 @@ package: $(TARGETS)
 	@-mkdir pack
 	$(MDTOOL) setup pack bin/FSharpBinding.addin.xml -d:pack
 
+autocomplete:
+	(cd FSharp.CompilerBinding && xbuild FSharp.CompilerBinding.fsproj /p:Configuration=Release)
+	(cd FSharp.AutoComplete && xbuild FSharp.AutoComplete.fsproj /p:Configuration=Release)
+
 clean:
 	-rm -fr bin
 	(cd MonoDevelop.FSharpBinding && xbuild MonoDevelop.FSharp.fsproj /target:Clean /p:MDROOT=$(MDROOT))
 	(cd MonoDevelop.FSharpBinding/Gui && xbuild MonoDevelop.FSharp.Gui.csproj /target:Clean /p:MDROOT=$(MDROOT))
+	(cd FSharp.CompilerBinding && xbuild FSharp.CompilerBinding.fsproj /target:Clean)
+	(cd FSharp.AutoComplete && xbuild FSharp.AutoComplete.fsproj /target:Clean)
+

@@ -131,6 +131,7 @@ bin/fsautocomplete.exe: $(FILES_FAC) bin/FSharp.CompilerBinding.dll
 	$(FSC) $(OPTIONS_FAC) $(FILES_FAC) 
 
 bin/FSharp.CompilerBinding.dll: $(FILES_FCB)
+	@-mkdir -p bin
 	$(FSC) $(OPTIONS_FCB) $(REFERENCES) -r:$(FSBIN)/FSharp.Core.dll $(FILES_FCB)
 
 bin/FSharp.Core.dll: $(MONOBIN)/FSharp.Core.dll
@@ -174,3 +175,4 @@ install: package
 uninstall:
 	$(MDTOOL) setup uninstall MonoDevelop.FSharpBinding
 
+autocomplete: bin/fsautocomplete.exe

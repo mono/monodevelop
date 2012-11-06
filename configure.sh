@@ -40,11 +40,20 @@ searchpaths()
 # Find all paths that we need in order to generate the make file. Paths
 # later in the list are preferred.
 
-PATHS=( /usr/lib/monodevelop /usr/local/lib/monodevelop /Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop /opt/mono/lib/monodevelop )
+PATHS=( /usr/lib/fsharp /usr/local/lib/fsharp /usr/local/lib/mono/4.0 /opt/mono/lib/mono/4.0 /Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.0 /usr/lib/mono/4.0 /usr/lib64/mono/4.0)
+searchpaths "F#" FSharp.Core.dll PATHS[@]
+FSDIR=$RESULT
+echo "Successfully found F# root directory." $FSDIR
+
+PATHS=( /usr/lib/monodevelop /usr/local/monodevelop/lib/monodevelop /usr/local/lib/monodevelop /Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop /opt/mono/lib/monodevelop )
 searchpaths "MonoDevelop" bin/MonoDevelop.Core.dll PATHS[@]
 MDDIR=$RESULT
 echo "Successfully found MonoDevelop root directory." $MDDIR
 
+# Fix the FSharpBinding project file (add HintPath to the correct MonoDevelop folders)
+sed "s,INSERT_MD_ROOT,$MDDIR,g" MonoDevelop.FSharpBinding/MonoDevelop.FSharp.orig > MonoDevelop.FSharpBinding/MonoDevelop.FSharp.1
+sed "s,INSERT_FSHARP_BIN,$FSDIR,g" MonoDevelop.FSharpBinding/MonoDevelop.FSharp.1 > MonoDevelop.FSharpBinding/MonoDevelop.FSharp.fsproj
+rm MonoDevelop.FSharpBinding/MonoDevelop.FSharp.1
 
 # ------------------------------------------------------------------------------
 # Write Makefile

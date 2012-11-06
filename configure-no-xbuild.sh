@@ -89,11 +89,6 @@ searchpaths()
 # Find all paths that we need in order to generate the make file. Paths
 # later in the list are preferred.
 
-PATHS=( /usr/lib/monodevelop /usr/local/lib/monodevelop /Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop /opt/mono/lib/monodevelop )
-searchpaths "MonoDevelop" bin/MonoDevelop.Core.dll PATHS[@]
-MDDIR=$RESULT
-echo "Successfully found MonoDevelop root directory." $MDDIR
-
 PATHS=( /usr/lib/fsharp /usr/local/lib/fsharp /usr/local/lib/mono/4.0 /opt/mono/lib/mono/4.0 /Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.0 /usr/lib/mono/4.0 /usr/lib64/mono/4.0)
 searchpaths "F#" FSharp.Core.dll PATHS[@]
 FSDIR=$RESULT
@@ -129,6 +124,20 @@ searchpaths "Pango#" pango-sharp.dll PATHS[@]
 PANGODIR=$RESULT
 echo "Successfully found Pango root directory." $PANGODIR
 
+# ------------------------------------------------------------------------------
+# If the user does not have MonoDevelop, then we do not require to
+# find MonoDevelop path and we just skip this part...
+
+echo "Do you want to configure the build of MonoDevelop components? [y/n]:"
+read CONFIGMD
+
+if [ $CONFIGMD = y ]; then
+
+PATHS=( /usr/lib/monodevelop /usr/local/monodevelop/lib/monodevelop /usr/local/lib/monodevelop /Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop /opt/mono/lib/monodevelop )
+searchpaths "MonoDevelop" bin/MonoDevelop.Core.dll PATHS[@]
+MDDIR=$RESULT
+echo "Successfully found MonoDevelop root directory." $MDDIR
+
 PATHS=( /usr/lib/mono/mono-addins /usr/lib/cli/mono-addins /Library/Frameworks/Mono.framework/Versions/Current/lib/mono/mono-addins /opt/mono/lib/mono/mono-addins /usr/lib/cli/Mono.Addins-0.2 /usr/lib64/mono/mono-addins /usr/local/lib/monodevelop)
 searchpaths "Mono.Addins" Mono.Addins.dll PATHS[@]
 MADIR=$RESULT
@@ -137,7 +146,14 @@ echo "Successfully found Mono.Addins directory." $MADIR
 PATHS=( $MDDIR/AddIns $MDDIR/AddIns/DisplayBindings/SourceEditor)
 searchpaths "MonoDevelop.SourceEditor2" MonoDevelop.SourceEditor2.dll PATHS[@]
 MDSEDIR=$RESULT
-echo "Successfully found MonoDevelop.SourceEditor2.dll directory." $MDSEDIR
+echo "Successfully found MonoDevelop.SourceEditor2.dll directory." $MDSEDIR;
+
+# Fix the FSharpBinding project file (add HintPath to the correct MonoDevelop folders)
+sed "s,INSERT_MD_ROOT,$MDDIR,g" MonoDevelop.FSharpBinding/MonoDevelop.FSharp.orig > MonoDevelop.FSharpBinding/MonoDevelop.FSharp.1
+sed "s,INSERT_FSHARP_BIN,$FSDIR,g" MonoDevelop.FSharpBinding/MonoDevelop.FSharp.1 > MonoDevelop.FSharpBinding/MonoDevelop.FSharp.fsproj
+rm MonoDevelop.FSharpBinding/MonoDevelop.FSharp.1
+
+fi
 
 echo "Using F# compiler : " $FSC
 echo "Using C# compiler : " $GMCS

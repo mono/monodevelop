@@ -32,19 +32,19 @@ type FSharpCompiler(reqVersion:FSharpCompilerVersion) =
         elif nm.Version.ToString() <> ver.ToString() then failwith (sprintf "loaded %s, but had wrong version, wanted %s, got %s" nm.Name (ver.ToString()) (nm.Version.ToString()))
         else ass
     let tryVersion (ver:FSharpCompilerVersion) = 
-         Debug.tracef "Resolution" "Loading FSharp Compiler DLL version %A" ver
+         Debug.WriteLine(sprintf "Resolution: Loading FSharp Compiler DLL version %A" ver)
          // Somewhat surprisingly, Load() and LoadWithPartialName() can still return
          // assemblies with the wrong version, if the right version is not available....
          try 
            // Try getting the assemblies using the microsoft strong name
-           Debug.tracef "Resolution" "Looking in GAC..."
+           Debug.WriteLine("Resolution: Looking in GAC...")
            let asm = Assembly.Load("FSharp.Compiler, Version="+ver.ToString()+", Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a") |> checkVersion ver
            let asm2 = Assembly.Load("FSharp.Compiler.Server.Shared, Version="+ver.ToString()+", Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a") |> checkVersion ver
            asm,asm2,ver
          with _ -> 
            try 
              // Try getting the assemblies by partial name. 
-             Debug.tracef "Resolution" "Looking with partial name..."
+             Debug.WriteLine(sprintf "Resolution: Looking with partial name...")
              let asm = Assembly.LoadWithPartialName("FSharp.Compiler, Version="+ver.ToString()) |> checkVersion ver
              let asm2 = Assembly.LoadWithPartialName("FSharp.Compiler.Server.Shared, Version="+ver.ToString()) |> checkVersion ver
              asm,asm2,ver
@@ -53,7 +53,7 @@ type FSharpCompiler(reqVersion:FSharpCompilerVersion) =
              | None -> raise err
              | Some dir -> 
              // Try getting the assemblies by location
-             Debug.tracef "Resolution" "Looking in compiler directory '%s'..." dir
+             Debug.WriteLine(sprintf "Resolution: Looking in compiler directory '%s'..." dir)
              let asm = Assembly.LoadFrom(Path.Combine(dir, "FSharp.Compiler.dll")) |> checkVersion ver
              let asm2 = Assembly.LoadFrom(Path.Combine(dir, "FSharp.Compiler.Server.Shared.dll")) |> checkVersion ver
              
@@ -150,7 +150,7 @@ type FSharpCompiler(reqVersion:FSharpCompilerVersion) =
 
     static member LatestAvailable = 
         let c = match FSharpCompilerVersion.LatestKnown with FSharp_2_0 -> v20 | FSharp_3_0 -> v30
-        try c.Force() with e -> Debug.tracee "Exception" e; reraise()
+        try c.Force() with e -> Debug.WriteLine(sprintf "Compiler Error: %s" (e.ToString())); reraise()
         
 module Parser = 
   

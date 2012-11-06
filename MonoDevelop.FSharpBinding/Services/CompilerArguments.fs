@@ -34,15 +34,12 @@ module ScriptOptions =
   let getDefaultDirectories(langVersion, targetFramework) =   
     
     // Translate the target framework to an enum used by FSharp.CompilerBinding
-    let targetFrameworkMap =       
-      [ TargetFrameworkMoniker.NET_4_0, FSharpTargetFramework.NET_4_0
-        TargetFrameworkMoniker.NET_3_5, FSharpTargetFramework.NET_3_5
-        TargetFrameworkMoniker.NET_3_0, FSharpTargetFramework.NET_3_0
-        TargetFrameworkMoniker.NET_2_0, FSharpTargetFramework.NET_2_0 ]
     let fsTargetFramework = 
-      targetFrameworkMap |> List.tryPick (fun (s, t) -> 
-        if s = targetFramework then Some t else None)
-    let fsTargetFramework = defaultArg fsTargetFramework FSharpTargetFramework.NET_4_0
+      match targetFramework with
+      | TargetFrameworkMoniker.NET_3_5 -> FSharpTargetFramework.NET_3_5
+      | TargetFrameworkMoniker.NET_3_0 -> FSharpTargetFramework.NET_3_0
+      | TargetFrameworkMoniker.NET_2_0 -> FSharpTargetFramework.NET_2_0
+      | _ -> FSharpTargetFramework.NET_4_0
     
     // Return all known directories
     [ // Get the location of the System DLLs
