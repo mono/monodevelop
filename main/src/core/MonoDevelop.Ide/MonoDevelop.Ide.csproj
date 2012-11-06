@@ -1826,6 +1826,7 @@
     <Compile Include="MonoDevelop.Components.MainToolbar\NavigateToCommand.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\ResultsDataSource.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\SearchResult.cs" />
+    <Compile Include="MonoDevelop.Components\ImageButton.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
