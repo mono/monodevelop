@@ -473,6 +473,7 @@ namespace MonoDevelop.VersionControl.Views
 			if (img.LoadOperation.IsCompleted)
 				renderer.Pixbuf = img.Pixbuf;
 			else {
+				renderer.Pixbuf = null;
 				img.LoadOperation.Completed += delegate {
 					Gtk.Application.Invoke (delegate {
 						if (logstore.IterIsValid (iter))
