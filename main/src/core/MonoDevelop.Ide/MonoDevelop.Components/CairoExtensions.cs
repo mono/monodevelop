@@ -328,6 +328,21 @@ namespace MonoDevelop.Components
             }
         }
 
+		public static void RenderTiled (this Cairo.Context self, Gdk.Pixbuf source, Gdk.Rectangle area)
+		{
+			int x = 0;
+			int y = area.Y;
+			while (y < area.Bottom) {
+				x = area.X;
+				while (x < area.Right) {
+					Gdk.CairoHelper.SetSourcePixbuf (self, source, x, y);
+					self.Paint ();
+					x += source.Width;
+				}
+				y += source.Height;
+			}
+		}
+
         public static void DisposeContext (Cairo.Context cr)
         {
             ((IDisposable)cr.Target).Dispose ();
