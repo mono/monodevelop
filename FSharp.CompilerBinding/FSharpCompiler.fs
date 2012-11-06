@@ -1,8 +1,8 @@
-﻿
-// --------------------------------------------------------------------------------------
+﻿// --------------------------------------------------------------------------------------
 // Wrapper for the APIs in 'FSharp.Compiler.dll' and 'FSharp.Compiler.Server.Shared.dll'
 // The API is currently internal, so we call it using the (?) operator and Reflection
 // --------------------------------------------------------------------------------------
+#nowarn "44" // LoadWithPartialName is deprecated (but useful!)
 
 namespace Microsoft.FSharp.Compiler
 
@@ -12,14 +12,8 @@ open System.IO
 open System.Reflection
 open System.Text
 open System.Globalization
-open MonoDevelop.Projects
-open MonoDevelop.Ide.Gui
-open MonoDevelop.Ide
-open MonoDevelop.Core.Assemblies
-open MonoDevelop.Core
-open MonoDevelop.FSharp
-open MonoDevelop.FSharp.Reflection
-open Mono.Addins
+open FSharp.CompilerBinding
+open FSharp.CompilerBinding.Reflection
     
 // --------------------------------------------------------------------------------------
 // Assembly resolution in a script file - a workaround that replaces functionality
@@ -379,13 +373,60 @@ module SourceCodeServices =
     member x.WithOptions(options:string[]) =
       CheckOptions.Create
         ( x.ProjectFileName, x.ProjectFileNames, options, x.IsIncompleteTypeCheckEnvironment, x.UseScriptResolutionRules, x.LoadTime  )
+
+  type DeclarationItemKind =
+    | NamespaceDecl
+    | ModuleFileDecl
+    | ExnDecl
+    | ModuleDecl
+    | TypeDecl
+    | MethodDecl
+    | PropertyDecl
+    | FieldDecl
+    | OtherDecl    
+
+
+  /// A start-position/end-position pair
+  type Range = Position * Position
+
+  /// Represents an item to be displayed in the navigation bar
+  type DeclarationItem(wrapped:obj) =     
+    member x.Name : string = wrapped?Name
+    member x.UniqueName : string = wrapped?UniqueName
+    member x.Glyph : int = wrapped?Glyph
+    member x.Kind : DeclarationItemKind =
+      failwith "!"
+    member x.Range : Range = wrapped?Range
+    member x.BodyRange : Range = wrapped?BodyRange
+    member x.IsSingleTopLevel : bool = wrapped?IsSingleTopLevel
+  
+  /// Represents top-level declarations (that should be in the type drop-down)
+  /// with nested declarations (that can be shown in the member drop-down)
+  type TopLevelDeclaration(wrapped:obj) =
+    member x.Declaration = DeclarationItem(wrapped?Declaration)
+    member x.Nested = 
+      let (nested:obj) = wrapped?Nested
+      let (tmp : obj[]) = Array.zeroCreate nested?Length
+      System.Array.Copy(nested :?> System.Array, tmp, (nested?Length : int))
+      [| for t in tmp -> DeclarationItem(t) |]
+
+  /// Represents result of 'GetNavigationItems' operation - this contains
+  /// all the members and currently selected indices. First level correspond to
+  /// types & modules and second level are methods etc.
+  type NavigationItems(wrapped:obj) =
+    member x.Declarations =
+      let (decls:obj) = wrapped?Declarations
+      let tmp : obj[] = Array.zeroCreate decls?Length
+      System.Array.Copy(decls :?> System.Array, tmp, (decls?Length : int))
+      [| for t in tmp -> TopLevelDeclaration(t) |]
       
   type UntypedParseInfo(wrapped:obj) =
     member x.Wrapped = wrapped
     /// Name of the file for which this information were created
-    //abstract FileName                       : string
+    member x.FileName : string = wrapped?FileName
     /// Get declaraed items and the selected item at the specified location
-    //abstract GetNavigationItems             : unit -> NavigationItems
+    member x.GetNavigationItems() = 
+      NavigationItems(wrapped?GetNavigationItems())
     /// Return the inner-most range associated with a possible breakpoint location
     //abstract ValidateBreakpointLocation : Position -> Range option
     /// When these files change then the build is invalid
@@ -441,7 +482,7 @@ module SourceCodeServices =
       let names = fsc.MakeList(typeof<string>, names)
       FindDeclResult(wrapped?GetDeclarationLocation(pos, line, names, tokentag, isDeclaration))
 
-        // member GetF1Keyword : Position * string * Names -> string option
+    // member GetF1Keyword : Position * string * Names -> string option
     // member GetMethods : Position * string * Names option * (*tokentag:*)int -> MethodOverloads
 
   type ErrorInfo(wrapped:obj) =
@@ -449,7 +490,8 @@ module SourceCodeServices =
     member x.EndLine : int = wrapped?EndLine
     member x.StartColumn : int = wrapped?StartColumn
     member x.EndColumn : int = wrapped?EndColumn
-    member x.Severity : Severity = if wrapped?Severity?IsError then Error else Warning
+    member x.Severity : Severity = 
+      if wrapped?Severity?IsError then Error else Warning
     member x.Message : string = wrapped?Message
     member x.Subcategory : string = wrapped?Subcategory
   

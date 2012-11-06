@@ -1,4 +1,4 @@
-namespace MonoDevelop.FSharp
+namespace FSharp.CompilerBinding
 
 open System
 open System.Diagnostics
@@ -6,31 +6,33 @@ open System.IO
 open System.Configuration
 open System.Reflection
 open Microsoft.Win32
-open MonoDevelop.Core.Assemblies
 open System.Runtime.InteropServices
 open System.Text.RegularExpressions
 
 #nowarn "44" // ConfigurationSettings is obsolete but the new stuff is horribly complicated. 
 
+/// Target framework (used to find the right version of F# binaries)
+type FSharpTargetFramework = 
+    | NET_2_0 = 1
+    | NET_3_0 = 2
+    | NET_3_5 = 3
+    | NET_4_0 = 4
+    
 type FSharpCompilerVersion = 
     // F# 2.0
     | FSharp_2_0 
     // F# 3.0
     | FSharp_3_0
     override x.ToString() = match x with | FSharp_2_0 -> "4.0.0.0" | FSharp_3_0 -> "4.3.0.0"
-    /// The current requested language version is a configuration setting specified by the user.
-    static member LatestKnown = FSharp_3_0
-(*
-        with get() = 
-            let setting = MonoDevelop.Core.PropertyService.Get<string>("FSharpBinding.PreferFSharp20","") 
-            if System.String.Compare(setting, "true", true) = 0 then 
-                FSharpCompilerVersion.FSharp_2_0
-            else
-                FSharpCompilerVersion.FSharp_3_0
-*)
-                
+    /// The current requested language version can be overriden by the user using environment variable.
+    static member LatestKnown = 
+        match System.Environment.GetEnvironmentVariable("FSHARP_PREFERRED_VERSION") with
+        | null -> FSharp_3_0
+        | "4.0.0.0" -> FSharp_2_0
+        | "4.3.0.0" -> FSharp_3_0
+        | _ -> FSharp_3_0
 
-module internal FSharpEnvironment =
+module FSharpEnvironment =
 
   let FSharpCoreLibRunningVersion =
     try 
@@ -281,11 +283,11 @@ module internal FSharpEnvironment =
         // the right FSharp.Core.dll.
         let result =
             match reqLangVersion, targetFramework with 
-            | FSharp_2_0, x when (x = TargetFrameworkMoniker.NET_2_0 || x = TargetFrameworkMoniker.NET_3_0 || x = TargetFrameworkMoniker.NET_3_5) -> 
+            | FSharp_2_0, x when (x = FSharpTargetFramework.NET_2_0 || x = FSharpTargetFramework.NET_3_0 || x = FSharpTargetFramework.NET_3_5) -> 
                 tryRegKey @"Software\Microsoft\.NETFramework\v2.0.50727\AssemblyFoldersEx\Microsoft Visual F# 4.0"
             | FSharp_2_0, _ -> 
                 tryRegKey @"Software\Microsoft\.NETFramework\v4.0.30319\AssemblyFoldersEx\Microsoft Visual F# 4.0"
-            | FSharp_3_0, x when (x = TargetFrameworkMoniker.NET_2_0 || x = TargetFrameworkMoniker.NET_3_0 || x = TargetFrameworkMoniker.NET_3_5) -> 
+            | FSharp_3_0, x when (x = FSharpTargetFramework.NET_2_0 || x = FSharpTargetFramework.NET_3_0 || x = FSharpTargetFramework.NET_3_5) -> 
                 tryRegKey @"Software\Microsoft\.NETFramework\v2.0.50727\AssemblyFoldersEx\F# 3.0 Core Assemblies"
             | FSharp_3_0, _ -> 
                 tryRegKey @"Software\Microsoft\.NETFramework\v4.0.30319\AssemblyFoldersEx\F# 3.0 Core Assemblies"
@@ -308,7 +310,7 @@ module internal FSharpEnvironment =
         Debug.WriteLine(sprintf "Resolution: targetFramework = %A" targetFramework)
         let ext = 
             match targetFramework with 
-            | x when (x = TargetFrameworkMoniker.NET_2_0 || x = TargetFrameworkMoniker.NET_3_0 || x = TargetFrameworkMoniker.NET_3_5) -> 
+            | x when (x = FSharpTargetFramework.NET_2_0 || x = FSharpTargetFramework.NET_3_0 || x = FSharpTargetFramework.NET_3_5) -> 
                 "2.0"
             | _ -> 
                 "4.0"

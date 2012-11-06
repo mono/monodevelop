@@ -4,6 +4,7 @@
 
 	<Runtime>
     	<Import assembly="FSharp.Core.dll" />
+    	<Import assembly="FSharp.CompilerBinding.dll" />
     	<Import assembly="FSharpBinding.dll" />
     	<Import assembly="FSharpBinding.Gui.dll" />
 	</Runtime>

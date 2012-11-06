@@ -17,3 +17,4 @@ Makefile
 *.pdb
 *.cache
 *~
+pack/*

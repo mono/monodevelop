@@ -14,7 +14,7 @@
     <!-- <OtherFlags> /resident </OtherFlags> -->
     <UsePartialTypes>False</UsePartialTypes>
     <!-- enable this when compiling MonoDevelop head -->
-    <!-- <DefineConstants>MONODEVELOP_HEAD;$(DefineConstants)</DefineConstants> --> 
+    <!-- <DefineConstants>MONODEVELOP_HEAD;$(DefineConstants)</DefineConstants> -->
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -74,9 +74,6 @@
     <Compile Include="PowerPack\LazyList.fs" />
     <Compile Include="Services\Mailbox.fs" />
     <Compile Include="Services\Parameters.fs" />
-    <Compile Include="Services\Common.fs" />
-    <Compile Include="Services\CompilerLocationUtils.fs" />
-    <Compile Include="Services\FSharpCompiler.fs" />
     <Compile Include="Services\Parser.fs" />
     <Compile Include="Services\CompilerArguments.fs" />
     <Compile Include="Services\LanguageService.fs" />
@@ -94,49 +91,72 @@
     <Compile Include="FSharpProjectFileNodeExtension.fs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Package>gtk-sharp-2.0</Package>
+    </Reference>
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Package>gtk-sharp-2.0</Package>
+    </Reference>
+    <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Package>gtk-sharp-2.0</Package>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
-    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Package>gtk-sharp-2.0</Package>
+    </Reference>
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Package>glib-sharp-2.0</Package>
+    </Reference>
     <Reference Include="System.Core" />
     <Reference Include="mscorlib" />
     <Reference Include="Mono.Cairo" />
     <Reference Include="Mono.Addins, Version=0.6.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <Private>False</Private>
-    </Reference>
-    <Reference Include="Mono.TextEditor">
-      <Private>False</Private>
-      <HintPath>/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/bin/Mono.TextEditor.dll</HintPath> 
+      <Package>mono-addins</Package>
     </Reference>
     <Reference Include="MonoDevelop.Core">
       <Private>False</Private>
+      <HintPath>..\..\..\..\..\usr\local\monodevelop\lib\monodevelop\bin\MonoDevelop.Core.dll</HintPath>
       <HintPath>/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/bin/MonoDevelop.Core.dll</HintPath>
     </Reference>
     <Reference Include="MonoDevelop.Ide">
       <Private>False</Private>
+      <HintPath>..\..\..\..\..\usr\local\monodevelop\lib\monodevelop\bin\MonoDevelop.Ide.dll</HintPath>
       <HintPath>/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/bin/MonoDevelop.Ide.dll</HintPath>
     </Reference>
     <Reference Include="ICSharpCode.NRefactory">
       <Private>False</Private>
+      <HintPath>..\..\..\..\..\usr\local\monodevelop\lib\monodevelop\bin\ICSharpCode.NRefactory.dll</HintPath>
       <HintPath>/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/bin/ICSharpCode.NRefactory.dll</HintPath>
     </Reference>
     <Reference Include="MonoDevelop.SourceEditor2">
       <Private>False</Private>
-      <HintPath>/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/AddIns/DisplayBindings/SourceEditor\MonoDevelop.SourceEditor2.dll</HintPath>
+      <HintPath>..\..\..\..\..\usr\local\monodevelop\lib\monodevelop\AddIns\DisplayBindings\SourceEditor\MonoDevelop.SourceEditor2.dll</HintPath>
+      <HintPath>/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/AddIns/DisplayBindings/SourceEditor/MonoDevelop.SourceEditor2.dll</HintPath>
     </Reference>
     <Reference Include="MonoDevelop.Refactoring">
       <Private>False</Private>
+      <HintPath>..\..\..\..\..\usr\local\monodevelop\lib\monodevelop\AddIns\MonoDevelop.Refactoring\MonoDevelop.Refactoring.dll</HintPath>
       <HintPath>/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll</HintPath>
     </Reference>
+    <Reference Include="Mono.TextEditor">
+      <Private>False</Private>
+      <HintPath>..\..\..\..\..\usr\local\monodevelop\lib\monodevelop\bin\Mono.TextEditor.dll</HintPath>
+      <HintPath>/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/bin/Mono.TextEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="FSharp.Core">
+      <HintPath>..\..\..\..\..\usr\lib\mono\4.0\FSharp.Core.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FSharp.CompilerBinding\FSharp.CompilerBinding.fsproj">
+      <Project>{88F6940F-D300-474C-B2A7-E2ECD5B04B57}</Project>
+      <Name>FSharp.CompilerBinding</Name>
+    </ProjectReference>
     <ProjectReference Include="Gui\MonoDevelop.FSharp.Gui.csproj">
       <Project>{FD0D1033-9145-48E5-8ED8-E2365252878C}</Project>
       <Name>MonoDevelop.FSharp.Gui</Name>
     </ProjectReference>
-    <Reference Include="FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Private>True</Private>
-    </Reference>
   </ItemGroup>
 </Project>

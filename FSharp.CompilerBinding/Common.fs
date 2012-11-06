@@ -1,21 +1,14 @@
-
 // --------------------------------------------------------------------------------------
 // Common utilities for environment, debugging, reflection
 // --------------------------------------------------------------------------------------
 
-namespace MonoDevelop.FSharp
+namespace FSharp.CompilerBinding
 
 open System
 open System.IO
 open System.Reflection
 open System.Globalization
 open Microsoft.FSharp.Reflection
-open MonoDevelop.Projects
-open MonoDevelop.Ide.Gui
-open MonoDevelop.Ide
-open MonoDevelop.Core.Assemblies
-open MonoDevelop.Core
-open Mono.Addins
 
 /// Implements the (?) operator that makes it possible to access internal methods
 /// and properties and contains definitions for F# assemblies
@@ -35,7 +28,7 @@ module Reflection =
         // When the 'o' object is 'System.Type', we call static methods
         let methods, instance, args = 
           let args = 
-            if argType = typeof<unit> then [| |]
+            if Object.Equals(argType, typeof<unit>) then [| |]
             elif not(FSharpType.IsTuple(argType)) then [| args |]
             else FSharpValue.GetTupleFields(args)
           if (typeof<System.Type>).IsAssignableFrom(o.GetType()) then 
@@ -48,11 +41,19 @@ module Reflection =
         // A simple overload resolution based on the name and number of parameters only
         let methods = 
           [ for m in methods do
-              if m.Name = name && m.GetParameters().Length = args.Length then yield m ]
+              if m.Name = name && m.GetParameters().Length = args.Length then yield m 
+              if m.Name = name && m.IsGenericMethod &&
+                 m.GetGenericArguments().Length + m.GetParameters().Length = args.Length then yield m ]
         match methods with 
         | [] -> failwithf "No method '%s' with %d arguments found" name args.Length
         | _::_::_ -> failwithf "Multiple methods '%s' with %d arguments found" name args.Length
         | [:? ConstructorInfo as c] -> c.Invoke(args)
+        | [ m ] when m.IsGenericMethod ->
+            let tyCount = m.GetGenericArguments().Length
+            let tyArgs = args |> Seq.take tyCount 
+            let actualArgs = args |> Seq.skip tyCount
+            let gm = (m :?> MethodInfo).MakeGenericMethod [| for a in tyArgs -> unbox a |]
+            gm.Invoke(instance, Array.ofSeq actualArgs)
         | [ m ] -> m.Invoke(instance, args) ) |> unbox<'R>
     else
       // When the 'o' object is 'System.Type', we access static properties
@@ -62,14 +63,20 @@ module Reflection =
       
       // Find a property that we can call and get the value
       let prop = typ.GetProperty(name, flags)
-      if prop = null && instance = null then 
-        // Try nested type...
-        let nested = typ.Assembly.GetType(typ.FullName + "+" + name)
-        if nested = null then 
-          failwithf "Property or nested type '%s' not found in '%s' using flags '%A'." name typ.Name flags
-        elif not ((typeof<'R>).IsAssignableFrom(typeof<System.Type>)) then
-          failwithf "Cannot return nested type '%s' as value of type '%s'." nested.Name (typeof<'R>.Name)
-        else nested |> box |> unbox<'R>
+      if Object.Equals(prop, null) then 
+        // Find a field that we can read
+        let fld = typ.GetField(name, flags)
+        if Object.Equals(fld, null) then
+          // Try nested type...
+          let nested = typ.Assembly.GetType(typ.FullName + "+" + name)
+          if Object.Equals(nested, null) then 
+            failwithf "Property, field or nested type '%s' not found in '%s' using flags '%A'." name typ.Name flags
+          elif not ((typeof<'R>).IsAssignableFrom(typeof<System.Type>)) then
+            failwithf "Cannot return nested type '%s' as value of type '%s'." nested.Name (typeof<'R>.Name)
+          else nested |> box |> unbox<'R>
+        else
+          // Get field value
+          fld.GetValue(instance) |> unbox<'R>
       else
         // Call property
         let meth = prop.GetGetMethod(true)

@@ -23,6 +23,7 @@ open MonoDevelop.Projects
 open ICSharpCode.NRefactory.TypeSystem
 open ICSharpCode.NRefactory.Completion
 
+open FSharp.CompilerBinding
 open MonoDevelop.FSharp
 open MonoDevelop.FSharp.MailBox
 
@@ -294,7 +295,7 @@ type internal LanguageServiceMessage =
   
 
 open System.Reflection
-open MonoDevelop.FSharp.Reflection
+open FSharp.CompilerBinding.Reflection
 open ICSharpCode.NRefactory.TypeSystem
 open MonoDevelop.Ide.TypeSystem
 

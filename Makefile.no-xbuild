@@ -23,6 +23,8 @@ CSC = INSERT_CSHARP_COMPILER
 MDBIN = $(MDROOT)/bin
 MDADDIN = $(MDROOT)/AddIns
 
+VERSION = 3.2.1
+
 # Resources and files to be compiled/included as part of the project
 RESOURCES = \
 	--resource:MonoDevelop.FSharpBinding/FSharpBinding.addin.xml \
@@ -138,26 +140,18 @@ bin/FSharpBinding.Gui.dll: $(GUIFILES)
 	@-mkdir -p bin
 	$(CSC) $(GUIOPTIONS) $(REFERENCES) $(GUIFILES) 
 
-install: $(TARGETS)
-	cp -p bin/FSharp* $(MDADDIN)/BackendBindings/
-
-install-mac: bin/FSharpBinding.dll  bin/FSharpBinding.Gui.dll
-	-rm -fr ~/Library/Application\ Support/MonoDevelop-3.0/LocalInstall/Addins/*.FSharp*
-	@-mkdir ~/Library/Application\ Support/MonoDevelop-3.0/LocalInstall/Addins/MonoDevelop.FSharpBinding.3.1.3
-	cp -p bin/FSharp* ~/Library/Application\ Support/MonoDevelop-3.0/LocalInstall/Addins/MonoDevelop.FSharpBinding.3.1.3
-
-
-uninstall:
-	rm $(MDADDIN)/BackendBindings/FSharp*
-	-rm -fr ~/Library/Application\ Support/MonoDevelop-3.0/LocalInstall/Addins/*.FSharp*
-
-package: bin/FSharpBinding.dll  bin/FSharpBinding.Gui.dll
-	mkdir -p bin/repository
-	mkdir -p repository
-	cp bin/FSharpBinding.* bin/repository
-	cp MonoDevelop.FSharpBinding/FSharpBinding.addin.xml bin/repository
-	$(MDTOOL) setup pack bin/repository/FSharpBinding.addin.xml -d:repository
-
 clean:
 	rm -r bin
+
+package: bin/FSharpBinding.dll  bin/FSharpBinding.Gui.dll
+	-rm -fr pack
+	@-mkdir pack
+	cp MonoDevelop.FSharpBinding/FSharpBinding.addin.xml bin/
+	$(MDTOOL) setup pack bin/FSharpBinding.addin.xml -d:pack
+
+install: package
+	$(MDTOOL) setup install -y pack/MonoDevelop.FSharpBinding_$(VERSION).mpack 
+
+uninstall:
+	$(MDTOOL) setup uninstall MonoDevelop.FSharpBinding
 
