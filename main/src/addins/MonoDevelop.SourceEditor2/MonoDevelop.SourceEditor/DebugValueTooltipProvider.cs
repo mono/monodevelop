@@ -249,6 +249,7 @@ namespace MonoDevelop.SourceEditor
 		public void Dispose ()
 		{
 			DebuggingService.CurrentFrameChanged -= CurrentFrameChanged;
+			DebuggingService.DebugSessionStarted -= DebugSessionStarted;
 		}
 		#endregion
 	}
