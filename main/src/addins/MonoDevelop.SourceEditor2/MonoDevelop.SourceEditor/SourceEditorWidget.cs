@@ -33,7 +33,6 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using MonoDevelop.Ide.Commands;
 using Document = Mono.TextEditor.TextDocument;
 using Services = MonoDevelop.Projects.Services;
 using System.Threading;
@@ -66,17 +65,17 @@ namespace MonoDevelop.SourceEditor
 //		bool canShowClassBrowser;
 		ISourceEditorOptions options {
 			get {
-				return this.textEditor.Options;
+				return textEditor.Options;
 			}
 		}
 		
-		bool isDisposed = false;
+		bool isDisposed;
 		
 		ParsedDocument parsedDocument;
 		
-		readonly MonoDevelop.SourceEditor.ExtensibleTextEditor textEditor;
-		MonoDevelop.SourceEditor.ExtensibleTextEditor splittedTextEditor;
-		MonoDevelop.SourceEditor.ExtensibleTextEditor lastActiveEditor;
+		readonly ExtensibleTextEditor textEditor;
+		ExtensibleTextEditor splittedTextEditor;
+		ExtensibleTextEditor lastActiveEditor;
 		
 		public MonoDevelop.SourceEditor.ExtensibleTextEditor TextEditor {
 			get {
@@ -92,7 +91,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public Ambience Ambience {
 			get {
-				string fileName = this.view.IsUntitled ? this.view.UntitledName : this.view.ContentName;
+				string fileName = view.IsUntitled ? view.UntitledName : view.ContentName;
 				return AmbienceService.GetAmbienceForFile (fileName);
 			}
 		}
@@ -726,16 +725,17 @@ namespace MonoDevelop.SourceEditor
 				 if (!textEditor.HasFocus)
 					OnLostFocus ();
 			};
-			this.splittedTextEditor.Extension = textEditor.Extension;
-			this.splittedTextEditor.GetTextEditorData ().IndentationTracker = textEditor.GetTextEditorData ().IndentationTracker;
-			this.splittedTextEditor.Document.BracketMatcher = textEditor.Document.BracketMatcher;
+			splittedTextEditor.Extension = textEditor.Extension;
+			if (textEditor.GetTextEditorData ().HasIndentationTracker)
+				splittedTextEditor.GetTextEditorData ().IndentationTracker = textEditor.GetTextEditorData ().IndentationTracker;
+			splittedTextEditor.Document.BracketMatcher = textEditor.Document.BracketMatcher;
 
 			this.splittedTextEditorContainer = new TextEditorContainer (this.splittedTextEditor);
 			secondsw.SetTextEditor (this.splittedTextEditorContainer);
 			splitContainer.Add2 (secondsw);
 			
 			vbox.PackStart (splitContainer, true, true, 0);
-			this.splitContainer.Position = (vSplit ? vbox.Allocation.Height : vbox.Allocation.Width) / 2 - 1;
+			splitContainer.Position = (vSplit ? vbox.Allocation.Height : vbox.Allocation.Width) / 2 - 1;
 			
 			vbox.ShowAll ();
 			secondsw.Vadjustment.Value = mainsw.Vadjustment.Value = vadjustment; 
@@ -746,16 +746,16 @@ namespace MonoDevelop.SourceEditor
 		{
 			// destroy old scrolled window to work around Bug 526721 - When splitting window vertically, 
 			// the slider under left split is not shown unitl window is resized
-			double vadjustment = this.mainsw.Vadjustment.Value;
-			double hadjustment = this.mainsw.Hadjustment.Value;
+			double vadjustment = mainsw.Vadjustment.Value;
+			double hadjustment = mainsw.Hadjustment.Value;
 			
-			var removedTextEditor = this.mainsw.RemoveTextEditor ();
-			this.mainsw.Destroy ();
+			var removedTextEditor = mainsw.RemoveTextEditor ();
+			mainsw.Destroy ();
 			
-			this.mainsw = new DecoratedScrolledWindow (this);
-			this.mainsw.SetTextEditor (removedTextEditor);
-			this.mainsw.Vadjustment.Value = vadjustment; 
-			this.mainsw.Hadjustment.Value = hadjustment;
+			mainsw = new DecoratedScrolledWindow (this);
+			mainsw.SetTextEditor (removedTextEditor);
+			mainsw.Vadjustment.Value = vadjustment; 
+			mainsw.Hadjustment.Value = hadjustment;
 			lastActiveEditor = textEditor;
 		}
 
@@ -1362,7 +1362,7 @@ namespace MonoDevelop.SourceEditor
 				}
 				string startLineText = Document.GetTextAt (startLine.Offset, startLine.Length);
 				string endLineText = Document.GetTextAt (endLine.Offset, endLine.Length);
-				if (startLineText.StartsWith (blockStart) && endLineText.EndsWith (blockEnd)) {
+				if (startLineText.StartsWith (blockStart) && endLineText.EndsWith (blockEnd, StringComparison.Ordinal)) {
 					textEditor.Remove (endLine.Offset + endLine.Length - blockEnd.Length, blockEnd.Length);
 					textEditor.Remove (startLine.Offset, blockStart.Length);
 					if (TextEditor.IsSomethingSelected) {
@@ -1397,7 +1397,7 @@ namespace MonoDevelop.SourceEditor
 					continue;
 				string text = Document.GetTextAt (line);
 				string trimmedText = text.TrimStart ();
-				if (!trimmedText.StartsWith (commentTag)) {
+				if (!trimmedText.StartsWith (commentTag, StringComparison.Ordinal)) {
 					comment = true;
 					break;
 				}
@@ -1571,7 +1571,7 @@ namespace MonoDevelop.SourceEditor
 			// may be null if no line is assigned to the error.
 			Wave = true;
 			
-			ColorName = info.ErrorType == ErrorType.Warning ? Mono.TextEditor.Highlighting.ColorScheme.WarningUnderlineString : Mono.TextEditor.Highlighting.ColorScheme.ErrorUnderlineString;
+			ColorName = info.ErrorType == ErrorType.Warning ? ColorScheme.WarningUnderlineString : ColorScheme.ErrorUnderlineString;
 			StartCol = Info.Region.BeginColumn + 1;
 			if (Info.Region.EndColumn > StartCol) {
 				EndCol = Info.Region.EndColumn;
