@@ -73,6 +73,8 @@ namespace MonoDevelop.AnalysisCore.Gui
 		
 		public override void Draw (TextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
 		{
+			if (Debugger.DebuggingService.IsDebugging)
+				return;
 			int markerStart = Segment.Offset;
 			int markerEnd = Segment.EndOffset;
 			if (markerEnd < startOffset || markerStart > endOffset) 
@@ -146,6 +148,8 @@ namespace MonoDevelop.AnalysisCore.Gui
 		#region IChunkMarker implementation
 		void IChunkMarker.ChangeForeColor (TextEditor editor, Chunk chunk, ref Gdk.Color color)
 		{
+			if (Debugger.DebuggingService.IsDebugging)
+				return;
 			int markerStart = Segment.Offset;
 			int markerEnd = Segment.EndOffset;
 			if (!(markerStart <= chunk.Offset && chunk.Offset < markerEnd)) 

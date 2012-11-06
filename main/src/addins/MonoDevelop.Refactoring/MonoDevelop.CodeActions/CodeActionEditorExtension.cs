@@ -124,7 +124,7 @@ namespace MonoDevelop.CodeActions
 		public override void CursorPositionChanged ()
 		{
 			CancelQuickFixTimer ();
-			if (QuickTaskStrip.EnableFancyFeatures &&  Document.ParsedDocument != null) {
+			if (QuickTaskStrip.EnableFancyFeatures &&  Document.ParsedDocument != null && !Debugger.DebuggingService.IsDebugging) {
 				quickFixCancellationTokenSource = new CancellationTokenSource ();
 				var token = quickFixCancellationTokenSource.Token;
 				quickFixTimeout = GLib.Timeout.Add (100, delegate {

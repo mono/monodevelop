@@ -64,7 +64,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			this.parentStrip = parent;
 			Events |= EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.ButtonMotionMask | EventMask.PointerMotionMask | EventMask.LeaveNotifyMask;
 			vadjustment = this.parentStrip.VAdjustment;
-			
+
 			vadjustment.ValueChanged += RedrawOnUpdate;
 			vadjustment.Changed += RedrawOnUpdate;
 			parentStrip.TaskProviderUpdated += RedrawOnUpdate;
@@ -556,8 +556,10 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 					DrawSearchResults (cr);
 					DrawSearchIndicator (cr);
 				} else {
-					var severity = DrawQuickTasks (cr);
-					DrawIndicator (cr, severity);
+					if (!Debugger.DebuggingService.IsDebugging) {
+						var severity = DrawQuickTasks (cr);
+						DrawIndicator (cr, severity);
+					}
 				}
 				DrawCaret (cr);
 				
