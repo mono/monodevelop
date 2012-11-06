@@ -93,11 +93,21 @@ namespace MonoDevelop.Components
 		Func<float, float> easing;
 		Action<float> step;
 		List<Animation> children;
+		Action finished;
+		bool finishedTriggered;
 
-		public Animation (Action<float> callback, float start = 0.0f, float end = 1.0f, Func<float, float> easing = null)
+		public Animation ()
+		{
+			children = new List<Animation> ();
+			easing = Easing.Linear;
+			step = f => {};
+		}
+
+		public Animation (Action<float> callback, float start = 0.0f, float end = 1.0f, Func<float, float> easing = null, Action finished = null)
 		{
 			children = new List<Animation> ();
 			this.easing = easing ?? Components.Easing.Linear;
+			this.finished = finished;
 
 			var transform = AnimationExtensions.Interpolate (start, end);
 			step = f => callback (transform (f));
@@ -158,9 +168,22 @@ namespace MonoDevelop.Components
 			Action<float> result = f => {
 				step (easing (f));
 				foreach (var animation in children) {
+					if (animation.finishedTriggered)
+						continue;
+
 					float val = Math.Max (0.0f, Math.Min (1.0f, (f - animation.beginAt) / (animation.finishAt - animation.beginAt)));
+
+					if (val <= 0.0f) // not ready to process yet
+						continue;
+
 					var callback = animation.GetCallback ();
 					callback (val);
+
+					if (val >= 1.0f) {
+						animation.finishedTriggered = true;
+						if (animation.finished != null)
+							animation.finished ();
+					}
 				}
 			};
 			return result;
