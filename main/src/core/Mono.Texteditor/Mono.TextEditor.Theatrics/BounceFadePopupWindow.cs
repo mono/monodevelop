@@ -219,4 +219,134 @@ namespace Mono.TextEditor.Theatrics
 		
 		
 	}
+
+	/// <summary>
+	/// Tooltip that "bounces", then fades away.
+	/// </summary>
+	public abstract class BounceFadePopupWidget : Gtk.Widget
+	{
+		Stage<BounceFadePopupWidget> stage = new Stage<BounceFadePopupWidget> ();
+		Gdk.Pixbuf textImage = null;
+		TextEditor editor;
+		
+		protected double scale = 0.0;
+		protected double opacity = 1.0;
+		
+		public BounceFadePopupWidget (TextEditor editor)
+		{
+			if (!IsComposited)
+				throw new InvalidOperationException ("Only works with composited screen. Check Widget.IsComposited.");
+			if (editor == null)
+				throw new ArgumentNullException ("Editor");
+			WidgetFlags |= Gtk.WidgetFlags.NoWindow;
+			this.editor = editor;
+			Events = EventMask.ExposureMask;
+			Duration = 500;
+			ExpandWidth = 12;
+			ExpandHeight = 2;
+			BounceEasing = Easing.Sine;
+			
+			var rgbaColormap = Screen.RgbaColormap;
+			if (rgbaColormap == null)
+				return;
+			Colormap = rgbaColormap;
+
+			stage.ActorStep += OnAnimationActorStep;
+			stage.Iteration += OnAnimationIteration;
+			stage.UpdateFrequency = 10;
+		}
+		
+		protected TextEditor Editor { get { return editor; } }
+		
+		/// <summary>Duration of the animation, in milliseconds.</summary>
+		public uint Duration { get; set; }
+		
+		/// <summary>The number of pixels by which the window's width will expand</summary>
+		public uint ExpandWidth { get; set; }
+		
+		/// <summary>The number of pixels by which the window's height will expand</summary>
+		public uint ExpandHeight { get; set; }
+
+		/// <summary>The easing used for the bounce part of the animation.</summary>
+		public Easing BounceEasing { get; set; }
+		
+		int x, y;
+		protected int width, height;
+		protected Rectangle bounds;
+
+		public virtual void Popup ()
+		{
+			if (editor.GdkWindow == null){
+				editor.Realized += HandleRealized;
+				return;
+			}
+	//		editor.GdkWindow.GetOrigin (out x, out y);
+			bounds = CalculateInitialBounds ();
+			x = bounds.X - (int)(ExpandWidth / 2);
+			y = bounds.Y - (int)(ExpandHeight / 2);
+
+			width = System.Math.Max (1, bounds.Width + (int)ExpandWidth);
+			height = System.Math.Max (1, bounds.Height + (int)ExpandHeight);
+			this.SetSizeRequest (width, height);
+			editor.TextArea.AddTopLevelWidget (this, x, y);
+
+			stage.AddOrReset (this, Duration);
+			stage.Play ();
+			Show ();
+		}
+
+		void HandleRealized (object sender, EventArgs e)
+		{
+			editor.Realized -= HandleRealized;
+			Popup ();
+		}
+
+		void OnAnimationIteration (object sender, EventArgs args)
+		{
+			QueueDraw ();
+		}
+		
+		protected virtual bool OnAnimationActorStep (Actor<BounceFadePopupWidget> actor)
+		{
+			if (actor.Expired) {
+				OnAnimationCompleted ();
+				return false;
+			}
+			
+			// for the first half, use an easing
+			if (actor.Percent < 0.5) {
+				scale = Choreographer.Compose (actor.Percent * 2, BounceEasing);
+				opacity = 1.0;
+			}
+			//for the second half, vary opacity linearly from 1 to 0.
+			else {
+				scale = Choreographer.Compose (1.0, BounceEasing);
+				opacity = 2.0 - actor.Percent * 2;
+			}
+			return true;
+		}
+
+		protected virtual void OnAnimationCompleted ()
+		{
+			StopPlaying ();
+		}
+		
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+			StopPlaying ();
+		}
+		
+		internal virtual void StopPlaying ()
+		{
+			stage.Playing = false;
+			
+			if (textImage != null) {
+				textImage.Dispose ();
+				textImage = null;
+			}
+		}
+
+		protected abstract Rectangle CalculateInitialBounds ();
+	}
 }

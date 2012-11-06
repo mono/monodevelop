@@ -2417,7 +2417,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		class SearchHighlightPopupWindow : BounceFadePopupWindow
+		class SearchHighlightPopupWindow : BounceFadePopupWidget
 		{
 			public SearchResult Result {
 				get;
@@ -2439,18 +2439,10 @@ namespace Mono.TextEditor
 			
 			protected override void OnAnimationCompleted ()
 			{
-				Move (Screen.Width, Screen.Height);
 				base.OnAnimationCompleted ();
-				DetachEvents ();
 				Destroy ();
 			}
 			
-			internal override void StopPlaying ()
-			{
-				Move (Screen.Width, Screen.Height);
-				base.StopPlaying ();
-			}
-
 			protected override void OnDestroyed ()
 			{
 				base.OnDestroyed ();
@@ -2484,37 +2476,32 @@ namespace Mono.TextEditor
 					Console.WriteLine ("Invalid end index :" + index);
 				}
 				
-				double y = Editor.LineToY (lineNr) - Editor.VAdjustment.Value;
+				double y2 = Editor.LineToY (lineNr);
 				double w = (x2 - x1) / Pango.Scale.PangoScale;
-				double spaceX = System.Math.Ceiling (w / 3);
-				double spaceY = Editor.LineHeight;
+				int spaceX = (int)System.Math.Ceiling (w / 3);
+				int spaceY = (int)Editor.LineHeight / 2;
 				if (layout != null)
-					layout.Dispose ();
-				
-				return new Gdk.Rectangle (
-					(int)(x1 / Pango.Scale.PangoScale + Editor.Allocation.X + Editor.TextViewMargin.XOffset + Editor.TextViewMargin.TextStartPosition - Editor.HAdjustment.Value - spaceX),
-					(int)(Editor.Allocation.Y + y - spaceY), 
-					(int)(w + spaceX * 2), 
-					(int)(Editor.LineHeight + spaceY * 2));
+				Console.WriteLine (y2 - spaceY );
+				var rx = (int)(x1 / Pango.Scale.PangoScale + Editor.TextViewMargin.XOffset + Editor.TextViewMargin.TextStartPosition - spaceX);
+				var ry = (int)(y2 - spaceY);
+				var rw = (int)(w + spaceX * 2);
+				var rh = (int)(Editor.LineHeight + spaceY * 2);
+				return new Gdk.Rectangle (rx, ry, rw, rh);
 			}
 			
 			Pango.Layout layout = null;
 			int layoutWidth, layoutHeight;
 			
-			protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+			protected override bool OnExposeEvent (EventExpose evnt)
 			{
 				try {
-					using (var cr = Gdk.CairoHelper.Create (evnt.Window)) {
-						cr.SetSourceRGBA (1, 1, 1, 0);
-						cr.Operator = Cairo.Operator.Source; 
-						cr.Paint ();
-					}
-					using (var cr = Gdk.CairoHelper.Create (evnt.Window)) {
+					using (var cr = CairoHelper.Create (evnt.Window)) {
 						if (!Editor.Options.UseAntiAliasing) 
 							cr.Antialias = Cairo.Antialias.None;
+						cr.Translate (Allocation.X, Allocation.Y);
 						cr.LineWidth = Editor.Options.Zoom;
 
-						cr.Translate (width / 2, height / 2);
+						cr.Translate (width / 2 + 1, height / 2 - 1);
 						cr.Scale (1 + scale / 2, 1 + scale / 2);
 						if (layout == null) {
 							layout = cr.CreateLayout ();
@@ -3162,9 +3149,9 @@ namespace Mono.TextEditor
 			Requisition req = child.Child.SizeRequest ();
 			var childRectangle = new Gdk.Rectangle (child.X, child.Y, req.Width, req.Height);
 			if (!child.FixedPosition) {
-				double zoom = Options.Zoom;
-				childRectangle.X = (int)(child.X * zoom - HAdjustment.Value);
-				childRectangle.Y = (int)(child.Y * zoom - VAdjustment.Value);
+//				double zoom = Options.Zoom;
+				childRectangle.X = (int)(child.X /** zoom */- HAdjustment.Value);
+				childRectangle.Y = (int)(child.Y /** zoom */- VAdjustment.Value);
 			}
 			//			childRectangle.X += allocation.X;
 			//			childRectangle.Y += allocation.Y;
