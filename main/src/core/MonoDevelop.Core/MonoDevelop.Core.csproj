@@ -12,7 +12,7 @@
     <BuildInfo>..\..\..\build\bin\buildinfo</BuildInfo>
     <VcRevision>..\..\..\vcrevision</VcRevision>
     <Git>git</Git>
-    <Git Condition="Exists('c:\Program Files\Git\bin\git.exe')">c:\Program Files (x86)\Git\bin\git.exe</Git>
+    <Git Condition="Exists('c:\Program Files\Git\bin\git.exe')">c:\Program Files\Git\bin\git.exe</Git>
     <Git Condition="Exists('c:\Program Files (x86)\Git\bin\git.exe')">c:\Program Files (x86)\Git\bin\git.exe</Git>
     <Git Condition="Exists('/usr/bin/git')">/usr/bin/git</Git>
   </PropertyGroup>
