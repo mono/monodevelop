@@ -184,9 +184,83 @@ namespace Mono.TextEditor
 			int kind = critical?  NSCriticalRequest : NSInformationalRequest;
 			objc_msgSend_int_int (sharedApp, sel_requestUserAttention, kind);
 		}
+
+		// Note: we can't reuse RectangleF because the layout is different...
+		[StructLayout (LayoutKind.Sequential)]
+		struct Rect {
+			public int Left;
+			public int Top;
+			public int Right;
+			public int Bottom;
+
+			public int X { get { return Left; } }
+			public int Y { get { return Top; } }
+			public int Width { get { return Right - Left; } }
+			public int Height { get { return Bottom - Top; } }
+		}
+
+		const int MonitorInfoFlagsPrimary = 0x01;
+
+		[StructLayout (LayoutKind.Sequential)]
+		unsafe struct MonitorInfo {
+			public int Size;
+			public Rect Frame;         // Monitor
+			public Rect VisibleFrame;  // Work
+			public int Flags;
+			public fixed byte Device[32];
+		}
+
+		[UnmanagedFunctionPointer (CallingConvention.Winapi)]
+		delegate int EnumMonitorsCallback (IntPtr hmonitor, IntPtr hdc, IntPtr prect, IntPtr user_data);
+
+		[DllImport ("User32.dll")]
+		extern static int EnumDisplayMonitors (IntPtr hdc, IntPtr clip, EnumMonitorsCallback callback, IntPtr user_data);
+
+		[DllImport ("User32.dll")]
+		extern static int GetMonitorInfoA (IntPtr hmonitor, ref MonitorInfo info);
+
+		static Gdk.Rectangle WindowsGetUsableMonitorGeometry (Gdk.Screen screen, int monitor_id)
+		{
+			Gdk.Rectangle geometry = screen.GetMonitorGeometry (monitor_id);
+			List<MonitorInfo> screens = new List<MonitorInfo> ();
+
+			EnumDisplayMonitors (IntPtr.Zero, IntPtr.Zero, delegate (IntPtr hmonitor, IntPtr hdc, IntPtr prect, IntPtr user_data) {
+				var info = new MonitorInfo ();
+
+				unsafe {
+					info.Size = sizeof (MonitorInfo);
+				}
+
+				GetMonitorInfoA (hmonitor, ref info);
+
+				// In order to keep the order the same as Gtk, we need to put the primary monitor at the beginning.
+				if ((info.Flags & MonitorInfoFlagsPrimary) != 0)
+					screens.Insert (0, info);
+				else
+					screens.Add (info);
+
+				return 1;
+			}, IntPtr.Zero);
+
+			MonitorInfo monitor = screens[monitor_id];
+			Rect visible = monitor.VisibleFrame;
+			Rect frame = monitor.Frame;
+
+			// Rebase the VisibleFrame off of Gtk's idea of this monitor's geometry (since they use different coordinate systems)
+			int x = geometry.X + (visible.Left - frame.Left);
+			int width = visible.Width;
+
+			int y = geometry.Y + (visible.Top - frame.Top);
+			int height = visible.Height;
+
+			return new Gdk.Rectangle (x, y, width, height);
+		}
 		
 		public static Gdk.Rectangle GetUsableMonitorGeometry (this Gdk.Screen screen, int monitor)
 		{
+			if (Platform.IsWindows)
+				return WindowsGetUsableMonitorGeometry (screen, monitor);
+
 			if (Platform.IsMac)
 				return MacGetUsableMonitorGeometry (screen, monitor);
 			
