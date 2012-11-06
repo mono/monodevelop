@@ -304,8 +304,8 @@ namespace MonoDevelop.Components.Docking
 		Image tabIcon;
 		DockFrame frame;
 		string label;
-		MiniDockButton btnDock;
-		MiniDockButton btnClose;
+		ImageButton btnDock;
+		ImageButton btnClose;
 		DockItem item;
 
 		static Gdk.Pixbuf pixClose;
@@ -403,7 +403,7 @@ namespace MonoDevelop.Components.Docking
 				labelWidget = null;
 			}
 
-			btnDock = new MiniDockButton ();
+			btnDock = new ImageButton ();
 			btnDock.Image = pixAutoHide;
 			btnDock.TooltipText = GettextCatalog.GetString ("Auto Hide");
 			btnDock.CanFocus = false;
@@ -411,7 +411,7 @@ namespace MonoDevelop.Components.Docking
 			btnDock.Clicked += OnClickDock;
 			btnDock.WidthRequest = btnDock.SizeRequest ().Width;
 
-			btnClose = new MiniDockButton ();
+			btnClose = new ImageButton ();
 			btnClose.Image = pixClose;
 			btnClose.TooltipText = GettextCatalog.GetString ("Close");
 			btnClose.CanFocus = false;
@@ -642,88 +642,6 @@ namespace MonoDevelop.Components.Docking
 				}
 			}
 		}
-	}
-
-	class MiniDockButton: Gtk.EventBox
-	{
-		Gdk.Pixbuf image;
-		Gdk.Pixbuf inactiveImage;
-		Gtk.Image imageWidget;
-		bool hover;
-		bool pressed;
-
-		public MiniDockButton ()
-		{
-			Child = imageWidget = new Gtk.Image ();
-			Child.Show ();
-			Events |= Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask | Gdk.EventMask.ButtonReleaseMask;
-			VisibleWindow = false;
-		}
-
-		public Gdk.Pixbuf Image {
-			get { return image; }
-			set {
-				image = value;
-				var oldInactive = inactiveImage;
-				inactiveImage = image != null ? ImageService.MakeTransparent (image, 0.5) : null;
-				LoadImage ();
-				if (oldInactive != null)
-					oldInactive.Dispose ();
-			}
-		}
-
-		protected override void OnDestroyed ()
-		{
-			if (inactiveImage != null)
-				inactiveImage.Dispose ();
-			base.OnDestroyed ();
-		}
-
-		void LoadImage ()
-		{
-			if (image != null) {
-				if (hover)
-					imageWidget.Pixbuf = image;
-				else
-					imageWidget.Pixbuf = inactiveImage;
-			} else {
-				imageWidget.Pixbuf = null;
-			}
-		}
-
-		protected override bool OnEnterNotifyEvent (Gdk.EventCrossing evnt)
-		{
-			hover = true;
-			LoadImage ();
-			return base.OnEnterNotifyEvent (evnt);
-		}
-
-		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)
-		{
-			hover = false;
-			LoadImage ();
-			return base.OnLeaveNotifyEvent (evnt);
-		}
-
-		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
-		{
-			pressed = image != null;
-			return base.OnButtonPressEvent (evnt);
-		}
-
-		protected override bool OnButtonReleaseEvent (Gdk.EventButton evnt)
-		{
-			if (pressed && evnt.Button == 1 && new Gdk.Rectangle (0, 0, Allocation.Width, Allocation.Height).Contains ((int)evnt.X, (int)evnt.Y)) {
-				hover = false;
-				LoadImage ();
-				if (Clicked != null)
-					Clicked (this, EventArgs.Empty);
-				return true;
-			}
-			return base.OnButtonReleaseEvent (evnt);
-		}
-
-		public event EventHandler Clicked;
 	}
 }
 
