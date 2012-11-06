@@ -544,25 +544,28 @@ namespace MonoDevelop.Ide.Gui
 		{
 			tabStartX = allocation.X + LeftBarPadding + LeanWidth / 2;
 			tabEndX = allocation.Width - DropDownButton.SizeRequest ().Width;
+			var height = allocation.Height - BottomBarPadding;
+			if (height < 0)
+				height = 0;
 
 			PreviousButton.SizeAllocate (new Gdk.Rectangle (
 				allocation.X,
 				allocation.Y,
 				LeftBarPadding / 2,
-				allocation.Height - BottomBarPadding
+				height
 				)
 			                             );
 			NextButton.SizeAllocate (new Gdk.Rectangle (
 				allocation.X + LeftBarPadding / 2,
 				allocation.Y,
-				LeftBarPadding / 2, allocation.Height - BottomBarPadding)
+				LeftBarPadding / 2, height)
 			                         );
 
 			DropDownButton.SizeAllocate (new Gdk.Rectangle (
 				tabEndX,
 				allocation.Y,
 				DropDownButton.SizeRequest ().Width,
-				allocation.Height - BottomBarPadding));
+				height));
 
 			base.OnSizeAllocated (allocation);
 			Update ();
