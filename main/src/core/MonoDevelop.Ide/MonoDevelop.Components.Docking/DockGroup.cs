@@ -302,7 +302,6 @@ namespace MonoDevelop.Components.Docking
 		{
 			visibleObjects = null;
 			bool visChanged;
-			CalcNewSizes ();
 			MarkForRelayout ();
 			
 			visChanged = child.Visible ? VisibleObjects.Count == 1 : VisibleObjects.Count == 0;
