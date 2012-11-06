@@ -15,7 +15,6 @@ open MonoDevelop.Ide.Gui
 open MonoDevelop.Ide
 open MonoDevelop.Core.Assemblies
 open MonoDevelop.Core
-open Mono.Addins
 
 /// Implements the (?) operator that makes it possible to access internal methods
 /// and properties and contains definitions for F# assemblies

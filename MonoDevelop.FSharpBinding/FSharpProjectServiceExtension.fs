@@ -5,7 +5,6 @@ open System.IO
 open MonoDevelop.Core
 open MonoDevelop.Ide
 open MonoDevelop.Projects
-open Mono.Addins
 
 type FSharpProjectServiceExtension() =
   inherit ProjectServiceExtension()
