@@ -16,3 +16,5 @@ Makefile
 *.dll
 *.pdb
 *.cache
+*~
+pack/*

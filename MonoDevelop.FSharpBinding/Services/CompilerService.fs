@@ -15,6 +15,7 @@ open MonoDevelop.Core
 open MonoDevelop.Core.Assemblies
 open MonoDevelop.Projects
 open MonoDevelop.Ide
+open FSharp.CompilerBinding
 
 open Microsoft.FSharp.Compiler.CodeDom
 

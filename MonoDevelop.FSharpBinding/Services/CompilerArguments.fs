@@ -1,4 +1,3 @@
-
 // --------------------------------------------------------------------------------------
 // Common utilities for environment, debugging and working with project files
 // --------------------------------------------------------------------------------------
@@ -16,7 +15,7 @@ open MonoDevelop.Ide.Gui
 open MonoDevelop.Ide
 open MonoDevelop.Core.Assemblies
 open MonoDevelop.Core
-
+open FSharp.CompilerBinding
 
 module ScriptOptions =
 
@@ -32,10 +31,17 @@ module ScriptOptions =
     
   /// Returns default directories to be used when searching for DLL files
   let getDefaultDirectories(langVersion, targetFramework) =   
+    
+    // Translate the target framework to an enum used by FSharp.CompilerBinding
+    let fsTargetFramework = 
+      if targetFramework = TargetFrameworkMoniker.NET_3_5 then FSharpTargetFramework.NET_3_5
+      elif targetFramework = TargetFrameworkMoniker.NET_3_0 then FSharpTargetFramework.NET_3_0
+      elif targetFramework = TargetFrameworkMoniker.NET_2_0 then FSharpTargetFramework.NET_2_0
+      else FSharpTargetFramework.NET_4_0
+    
     // Return all known directories
     [ // Get the location of the System DLLs
-
-      match FSharpEnvironment.FolderOfDefaultFSharpCore(langVersion, targetFramework) with 
+      match FSharpEnvironment.FolderOfDefaultFSharpCore(langVersion, fsTargetFramework) with 
       | Some dir -> 
           Debug.WriteLine(sprintf "Resolution: Using '%A' as the location of default FSharp.Core.dll" dir)
           yield dir
