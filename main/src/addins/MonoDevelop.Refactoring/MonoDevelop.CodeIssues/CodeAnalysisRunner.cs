@@ -57,15 +57,17 @@ namespace MonoDevelop.CodeIssues
 			var loc = editor.Caret.Location;
 			var result = new BlockingCollection<Result> ();
 		
-			var codeIssueProvider = RefactoringService.GetInspectors (editor.Document.MimeType);
+			var codeIssueProvider = RefactoringService.GetInspectors (editor.Document.MimeType).ToArray ();
+			var context = input.ParsedDocument.CreateRefactoringContext != null ?
+				input.ParsedDocument.CreateRefactoringContext (input, cancellationToken) : null;
 //			Console.WriteLine ("start check:"+ (DateTime.Now - now).TotalMilliseconds);
 			Parallel.ForEach (codeIssueProvider, (provider) => {
 				try {
 					var severity = provider.GetSeverity ();
 					if (severity == Severity.None)
 						return;
-//					var now2 = DateTime.Now;
-					foreach (var r in provider.GetIssues (input, cancellationToken)) {
+					var now2 = DateTime.Now;
+					foreach (var r in provider.GetIssues (input, context, cancellationToken)) {
 						var fixes = new List<GenericFix> (r.Actions.Where (a => a != null).Select (a => new GenericFix (a.Title, new System.Action (() => a.Run (input, loc)))));
 						result.Add (new InspectorResults (
 							provider, 
@@ -79,7 +81,6 @@ namespace MonoDevelop.CodeIssues
 /*					var ms = (DateTime.Now - now2).TotalMilliseconds;
 					if (ms > 1000)
 						Console.WriteLine (ms +"\t\t"+ provider.Title);*/
-
 				} catch (OperationCanceledException) {
 					//ignore
 				} catch (Exception e) {

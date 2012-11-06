@@ -34,6 +34,7 @@ using MonoDevelop.Ide.Tasks;
 using Mono.CSharp;
 using System.Linq;
 using ICSharpCode.NRefactory;
+using MonoDevelop.CSharp.Refactoring.CodeActions;
 
 namespace MonoDevelop.CSharp.Parser
 {
@@ -80,6 +81,8 @@ namespace MonoDevelop.CSharp.Parser
 			result.LastWriteTimeUtc = pf.LastWriteTime.Value;
 			result.ParsedFile = pf;
 			result.Add (GenerateFoldings (unit, result));
+			result.CreateRefactoringContext = (doc, token) => new MDRefactoringContext (doc, doc.Editor.Caret.Location, token);
+
 			if (storeAst) {
 				result.Ast = unit;
 			}

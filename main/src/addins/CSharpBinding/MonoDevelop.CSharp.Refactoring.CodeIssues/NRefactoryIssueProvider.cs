@@ -58,10 +58,10 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			MimeType = "text/x-csharp";
 		}
 
-		public override IEnumerable<CodeIssue> GetIssues (Document document, CancellationToken cancellationToken)
+		public override IEnumerable<CodeIssue> GetIssues (Document document, object ctx, CancellationToken cancellationToken)
 		{
-			var context = new MDRefactoringContext (document, document.Editor.Caret.Location, cancellationToken);
-			if (context.IsInvalid || context.RootNode == null)
+			var context = ctx as MDRefactoringContext;
+			if (context == null || context.IsInvalid || context.RootNode == null)
 				yield break;
 			int issueNum = 0;
 			foreach (var action in issueProvider.GetIssues (context)) {

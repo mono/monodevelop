@@ -239,6 +239,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			return null;
 		}
 		#endregion
+
+		public Func<MonoDevelop.Ide.Gui.Document, CancellationToken, object> CreateRefactoringContext;
 	}
 	
 	public class DefaultParsedDocument : ParsedDocument, IUnresolvedFile
