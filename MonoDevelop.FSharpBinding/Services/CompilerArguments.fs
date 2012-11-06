@@ -16,7 +16,6 @@ open MonoDevelop.Ide.Gui
 open MonoDevelop.Ide
 open MonoDevelop.Core.Assemblies
 open MonoDevelop.Core
-open Mono.Addins
 
 
 module ScriptOptions =
@@ -51,7 +50,7 @@ module ScriptOptions =
     match dirs with 
     | dir::dirs ->
         let asmPath = Path.Combine(dir, asm)
-        let any = List.tryFind safeExists [ asm; asm + ".dll"; asmPath; asmPath + ".dll" ]
+        let any = List.tryFind safeExists [ asmPath + ".dll" ]
         match any with 
         | Some(file) -> Some(file)
         | _ -> resolveAssembly dirs asm
