@@ -308,6 +308,12 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
+		internal static ExceptionCaughtMessage ExceptionCaughtMessage {
+			get {
+				return exceptionDialog;
+			}
+		}
+
 		public static void ShowExceptionsFilters ()
 		{
 			MessageService.ShowCustomDialog (new ExceptionsDialog ());

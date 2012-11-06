@@ -32,6 +32,7 @@ using System.Threading;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.TextEditing;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.Debugger
 {
@@ -176,6 +177,7 @@ namespace MonoDevelop.Debugger
 			var close = new Gtk.Button (GettextCatalog.GetString ("Close"));
 			buttonBox.PackStart (close, false, false, 0);
 			close.Clicked += (sender, e) => msg.Close ();
+			close.Activated += (sender, e) => msg.Close ();
 
 			box.PackStart (buttonBox, false, false, 0);
 			VBox.Add (box);
@@ -210,6 +212,7 @@ namespace MonoDevelop.Debugger
 		int line;
 		ExceptionCaughtDialog dialog;
 		ExceptionCaughtButton button;
+		ExceptionCaughtMiniButton miniButton;
 
 		public ExceptionCaughtMessage (ExceptionInfo val, FilePath file, int line, int col)
 		{
@@ -218,11 +221,20 @@ namespace MonoDevelop.Debugger
 			this.line = line;
 		}
 
+		public FilePath File {
+			get { return file; }
+		}
+
+		public bool IsMinimized {
+			get { return miniButton != null; }
+		}
+
 		public void ShowDialog ()
 		{
 			if (dialog == null) {
 				dialog = new ExceptionCaughtDialog (ex, this);
 				MessageService.ShowCustomDialog (dialog, IdeApp.Workbench.RootWindow);
+				dialog = null;
 			}
 		}
 
@@ -230,13 +242,34 @@ namespace MonoDevelop.Debugger
 		{
 			if (dialog != null) {
 				dialog.Destroy ();
-				dialog = null;
 			}
 			if (button == null) {
 				button = new ExceptionCaughtButton (ex, this);
 				button.File = file;
 				button.Line = line;
 				TextEditorService.RegisterExtension (button);
+			}
+			if (miniButton != null) {
+				miniButton.Dispose ();
+				miniButton = null;
+			}
+		}
+
+		public void ShowMiniButton ()
+		{
+			if (dialog != null) {
+				dialog.Destroy ();
+				dialog = null;
+			}
+			if (button != null) {
+				button.Dispose ();
+				button = null;
+			}
+			if (miniButton == null) {
+				miniButton = new ExceptionCaughtMiniButton (this);
+				miniButton.File = file;
+				miniButton.Line = line;
+				TextEditorService.RegisterExtension (miniButton);
 			}
 		}
 
@@ -249,6 +282,10 @@ namespace MonoDevelop.Debugger
 			if (button != null) {
 				button.Dispose ();
 				button = null;
+			}
+			if (miniButton != null) {
+				miniButton.Dispose ();
+				miniButton = null;
 			}
 			if (Closed != null)
 				Closed (this, EventArgs.Empty);
@@ -267,12 +304,16 @@ namespace MonoDevelop.Debugger
 		ExceptionCaughtMessage dlg;
 		ExceptionInfo exception;
 		Gtk.Label messageLabel;
+		Gdk.Pixbuf closeSelImage;
+		Gdk.Pixbuf closeSelOverImage;
 
 		public ExceptionCaughtButton (ExceptionInfo val, ExceptionCaughtMessage dlg)
 		{
 			this.exception = val;
 			this.dlg = dlg;
 			OffsetX = 6;
+			closeSelImage = Gdk.Pixbuf.LoadFromResource ("MonoDevelop.Close.Selected.png");
+			closeSelOverImage = Gdk.Pixbuf.LoadFromResource ("MonoDevelop.Close.Selected.Over.png");
 		}
 
 		protected override void OnLineDeleted ()
@@ -284,12 +325,11 @@ namespace MonoDevelop.Debugger
 		{
 			var icon = Gdk.Pixbuf.LoadFromResource ("lightning.png");
 			var image = new Gtk.Image (icon);
-			var button = new EventBox ();
 
 			HBox box = new HBox (false, 6);
 			VBox vb = new VBox ();
 			vb.PackStart (image, false, false, 0);
-			box.PackStart (vb);
+			box.PackStart (vb, false, false, 0);
 			vb = new VBox (false, 6);
 			vb.PackStart (new Gtk.Label () {
 				Markup = GettextCatalog.GetString ("<b>{0}</b> has been thrown", exception.Type),
@@ -307,7 +347,18 @@ namespace MonoDevelop.Debugger
 			hh.PackStart (detailsBtn.ToGtkWidget (), false, false, 0);
 			vb.PackStart (hh, false, false, 0);
 
-			box.PackStart (vb);
+			box.PackStart (vb, true, true, 0);
+
+			vb = new VBox ();
+			var closeButton = new ImageButton () {
+				InactiveImage = closeSelImage,
+				Image = closeSelOverImage
+			};
+			closeButton.Clicked += delegate {
+				dlg.ShowMiniButton ();
+			};
+			vb.PackStart (closeButton, false, false, 0);
+			box.PackStart (vb, false, false, 0);
 
 			exception.Changed += delegate {
 				Application.Invoke (delegate {
@@ -316,14 +367,11 @@ namespace MonoDevelop.Debugger
 			};
 			LoadData ();
 
-			button.VisibleWindow = false;
-			button.Add (box);
-
 			PopoverWidget eb = new PopoverWidget ();
 			eb.ShowArrow = true;
 			eb.EnableAnimation = true;
 			eb.PopupPosition = PopupPosition.Left;
-			eb.ContentBox.Add (button);
+			eb.ContentBox.Add (box);
 			eb.ShowAll ();
 			return eb;
 		}
@@ -340,6 +388,55 @@ namespace MonoDevelop.Debugger
 			} else {
 				messageLabel.Hide ();
 			}
+		}
+	}
+
+	class ExceptionCaughtMiniButton: TopLevelWidgetExtension
+	{
+		ExceptionCaughtMessage dlg;
+
+		public ExceptionCaughtMiniButton (ExceptionCaughtMessage dlg)
+		{
+			this.dlg = dlg;
+			OffsetX = 6;
+		}
+
+		protected override void OnLineDeleted ()
+		{
+			dlg.Dispose ();
+		}
+
+		public override Widget CreateWidget ()
+		{
+			Gtk.EventBox box = new EventBox ();
+			box.VisibleWindow = false;
+			var icon = Gdk.Pixbuf.LoadFromResource ("lightning.png");
+			box.Add (new Gtk.Image (icon));
+			box.ButtonPressEvent += (o,e) => dlg.ShowButton ();
+			PopoverWidget eb = new PopoverWidget ();
+			eb.Theme.Padding = 2;
+			eb.ShowArrow = true;
+			eb.EnableAnimation = true;
+			eb.PopupPosition = PopupPosition.Left;
+			eb.ContentBox.Add (box);
+			eb.ShowAll ();
+			return eb;
+		}
+	}
+
+	class ExceptionCaughtTextEditorExtension: TextEditorExtension
+	{
+		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+		{
+			if (key == Gdk.Key.Escape && DebuggingService.ExceptionCaughtMessage != null && 
+			    !DebuggingService.ExceptionCaughtMessage.IsMinimized && 
+			    DebuggingService.ExceptionCaughtMessage.File.CanonicalPath == Document.FileName.CanonicalPath) {
+
+				DebuggingService.ExceptionCaughtMessage.ShowMiniButton ();
+				return true;
+			}
+
+			return base.KeyPress (key, keyChar, modifier);
 		}
 	}
 }
