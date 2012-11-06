@@ -59,6 +59,9 @@ namespace MonoDevelop.Projects.Extensions
 		[NodeAttribute]
 		string migrationHandler;
 
+		[NodeAttribute]
+		bool migrationRequired = true;
+
 		Type itemType;
 
 		public string Import {
@@ -102,6 +105,10 @@ namespace MonoDevelop.Projects.Extensions
 			get { return migrationHandler != null; }
 		}
 		
+		public bool IsMigrationRequired {
+			get { return migrationRequired; }
+		}
+
 		public IDotNetSubtypeMigrationHandler MigrationHandler {
 			get { return (IDotNetSubtypeMigrationHandler) Addin.CreateInstance (migrationHandler); }
 		}
@@ -118,9 +125,14 @@ namespace MonoDevelop.Projects.Extensions
 		
 		public virtual bool CanHandleItem (SolutionEntityItem item)
 		{
-			return !IsMigration && Type.IsAssignableFrom (item.GetType ());
+			return !(IsMigration && IsMigrationRequired) && Type.IsAssignableFrom (item.GetType ());
 		}
 		
+		public virtual bool CanHandleType (Type type)
+		{
+			return !(IsMigration && IsMigrationRequired) && Type.IsAssignableFrom (type);
+		}
+
 		public virtual bool CanHandleFile (string fileName, string typeGuid)
 		{
 			if (typeGuid != null && typeGuid.ToLower().Contains(guid.ToLower()))
@@ -178,7 +190,9 @@ namespace MonoDevelop.Projects.Extensions
 	public interface IDotNetSubtypeMigrationHandler
 	{
 		IEnumerable<string> FilesToBackup (string filename);
-		bool Migrate (IProjectLoadProgressMonitor monitor, MSBuildProject project, string fileName, string language);
+		Type Migrate (IProjectLoadProgressMonitor monitor, MSBuildProject project, string fileName, string language);
+		bool CanPromptForMigration { get; }
+		MigrationType PromptForMigration ();
 	}
 	
 	public enum MigrationType {
