@@ -397,7 +397,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			download.Pressed += (sender, e) => {
 				if (model.Current == null)
 					return;
-				System.Diagnostics.Process.Start (model.Current.DownloadLink);
+				DesktopService.ShowUrl (model.Current.DownloadLink);
 			};
 
 			images = new SlidingImage (model);
