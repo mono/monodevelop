@@ -16,7 +16,6 @@ open MonoDevelop.Ide.Gui
 open MonoDevelop.Ide
 open MonoDevelop.Core.Assemblies
 open MonoDevelop.Core
-open Mono.Addins
 
 
 module ScriptOptions =

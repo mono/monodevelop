@@ -19,7 +19,6 @@ open MonoDevelop.Core.Assemblies
 open MonoDevelop.Core
 open MonoDevelop.FSharp
 open MonoDevelop.FSharp.Reflection
-open Mono.Addins
     
 // --------------------------------------------------------------------------------------
 // Assembly resolution in a script file - a workaround that replaces functionality
