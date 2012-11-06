@@ -164,7 +164,6 @@ namespace MonoDevelop.Components
 				OnDrawContent (evnt, context); // Draw content first so we can easily clip it
 				context.Restore ();
 
-				retVal = base.OnExposeEvent (evnt);
 
 				// protect against overriden methods which leave in a bad state
 				context.Save ();
@@ -178,8 +177,7 @@ namespace MonoDevelop.Components
 				context.Restore ();
 
 			}
-
-			return retVal;
+			return base.OnExposeEvent (evnt);
 		}
 
 		protected virtual void OnDrawContent (Gdk.EventExpose evnt, Cairo.Context context)
