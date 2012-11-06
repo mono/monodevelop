@@ -345,14 +345,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (!string.IsNullOrEmpty (typeGuids)) {
 				DotNetProjectSubtypeNode st = MSBuildProjectService.GetDotNetProjectSubtype (typeGuids);
 				if (st != null) {
-					item = st.CreateInstance (language);
 					useXBuild = useXBuild || st.UseXBuild;
-					if (st.IsMigration) {
-						MigrateProject (monitor, st, p, fileName, language);
-						
+					Type migratedType = null;
+
+					if (st.IsMigration && (migratedType = MigrateProject (monitor, st, p, fileName, language)) != null) {
 						var oldSt = st;
-						st = MSBuildProjectService.GetItemSubtypeNodes ()
-							.Where (t => t.CanHandleItem ((SolutionEntityItem)item)).Last ();
+						st = MSBuildProjectService.GetItemSubtypeNodes ().Last (t => t.CanHandleType (migratedType));
+
 						for (int i = 0; i < subtypeGuids.Count; i++) {
 							if (string.Equals (subtypeGuids[i], oldSt.Guid, StringComparison.OrdinalIgnoreCase)) {
 								subtypeGuids[i] = st.Guid;
@@ -360,16 +359,21 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 								break;
 							}
 						}
+
 						if (oldSt != null)
 							throw new Exception ("Unable to correct flavor GUID");
+
 						var gg = string.Join (";", subtypeGuids) + ";" + TypeGuid;
 						p.GetGlobalPropertyGroup ().SetPropertyValue ("ProjectTypeGuids", gg.ToUpper ());
 						p.Save (fileName);
 					}
+
+					item = st.CreateInstance (language);
 					st.UpdateImports ((SolutionEntityItem)item, targetImports);
 				} else
 					throw new UnknownSolutionItemTypeException (typeGuids);
 			}
+
 			if (item == null && itemClass != null)
 				item = (SolutionItem) Activator.CreateInstance (itemClass);
 			
@@ -386,10 +390,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					
 				item = (SolutionItem) Activator.CreateInstance (dt.ValueType);
 			}
+
 			return item;
 		}
 
-		void MigrateProject (IProgressMonitor monitor, DotNetProjectSubtypeNode st, MSBuildProject p, string fileName, string language)
+		Type MigrateProject (IProgressMonitor monitor, DotNetProjectSubtypeNode st, MSBuildProject p, string fileName, string language)
 		{
 			var projectLoadMonitor = monitor as IProjectLoadProgressMonitor;
 			if (projectLoadMonitor == null) {
@@ -398,10 +403,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				throw new Exception ("Could not open unmigrated project and no migrator was supplied");
 			}
 			
-			var migrationType = projectLoadMonitor.ShouldMigrateProject ();
+			var migrationType = st.MigrationHandler.CanPromptForMigration
+				? st.MigrationHandler.PromptForMigration()
+				: projectLoadMonitor.ShouldMigrateProject ();
 			if (migrationType == MigrationType.Ignore) {
-				monitor.ReportError (string.Format ("MonoDevelop cannot open the project '{0}' unless it is migrated.", Path.GetFileName (fileName)), null);
-				throw new Exception ("The user choose not to migrate the project");
+				if (st.IsMigrationRequired) {
+					monitor.ReportError (string.Format ("MonoDevelop cannot open the project '{0}' unless it is migrated.", Path.GetFileName (fileName)), null);
+					throw new Exception ("The user choose not to migrate the project");
+				} else
+					return null;
 			}
 			
 			var baseDir = (FilePath) Path.GetDirectoryName (fileName);
@@ -420,8 +430,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					File.Copy (file, Path.Combine (backupDir, Path.GetFileName (file)));
 			}
 			
-			if (!st.MigrationHandler.Migrate (projectLoadMonitor, p, fileName, language))
+			var type = st.MigrationHandler.Migrate (projectLoadMonitor, p, fileName, language);
+			if (type == null)
 				throw new Exception ("Could not migrate the project");
+
+			return type;
 		}
 		
 		FileFormat GetFileFormat ()
