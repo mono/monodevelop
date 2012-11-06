@@ -121,10 +121,10 @@ namespace MonoDevelop.Components
 		}
 
 		/// <summary>
-		/// Gets or sets the padding. Padding will always return at least the size of the CornerRadius.
+		/// Gets or sets the padding.
 		/// </summary>
 		public int Padding { 
-			get { return Math.Max (padding, cornerRadius); } 
+			get { return padding; } 
 			set { SetAndEmit (value, padding, ref padding); }
 		}
 
