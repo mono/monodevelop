@@ -48,17 +48,23 @@ namespace MonoDevelop.CodeIssues
 		{
 			if (!QuickTaskStrip.EnableFancyFeatures)
 				return Enumerable.Empty<Result> ();
+
+			var now = DateTime.Now;
+
 			var editor = input.Editor;
 			if (editor == null)
 				return Enumerable.Empty<Result> ();
 			var loc = editor.Caret.Location;
 			var result = new BlockingCollection<Result> ();
+		
 			var codeIssueProvider = RefactoringService.GetInspectors (editor.Document.MimeType);
+//			Console.WriteLine ("start check:"+ (DateTime.Now - now).TotalMilliseconds);
 			Parallel.ForEach (codeIssueProvider, (provider) => {
 				try {
 					var severity = provider.GetSeverity ();
 					if (severity == Severity.None)
 						return;
+//					var now2 = DateTime.Now;
 					foreach (var r in provider.GetIssues (input, cancellationToken)) {
 						var fixes = new List<GenericFix> (r.Actions.Where (a => a != null).Select (a => new GenericFix (a.Title, new System.Action (() => a.Run (input, loc)))));
 						result.Add (new InspectorResults (
@@ -70,12 +76,17 @@ namespace MonoDevelop.CodeIssues
 							fixes.ToArray ()
 						));
 					}
+/*					var ms = (DateTime.Now - now2).TotalMilliseconds;
+					if (ms > 1000)
+						Console.WriteLine (ms +"\t\t"+ provider.Title);*/
+
 				} catch (OperationCanceledException) {
 					//ignore
 				} catch (Exception e) {
 					LoggingService.LogError ("CodeAnalysis: Got exception in inspector '" + provider + "'", e);
 				}
 			});
+//			Console.WriteLine ("END check:"+ (DateTime.Now - now).TotalMilliseconds);
 			return result;
 		}
 	}
