@@ -1418,7 +1418,7 @@ namespace MonoDevelop.AssemblyBrowser
 						inspectEditor.GrabFocus ();
 				};
 				searchAndReplaceWidget.UpdateSearchPattern ();
-				inspectEditor.AddAnimatedWidget (popupWidgetFrame, 300, Easing.ExponentialInOut, Blocking.Downstage, inspectEditor.Allocation.Width - 400, -searchAndReplaceWidget.Allocation.Height);
+				inspectEditor.AddAnimatedWidget (popupWidgetFrame, 300, Mono.TextEditor.Theatrics.Easing.ExponentialInOut, Blocking.Downstage, inspectEditor.Allocation.Width - 400, -searchAndReplaceWidget.Allocation.Height);
 				searchAndReplaceWidget.IsReplaceMode = false;
 			}
 			
@@ -1455,7 +1455,7 @@ namespace MonoDevelop.AssemblyBrowser
 					if (inspectEditor.IsRealized)
 						inspectEditor.GrabFocus ();
 				};
-				inspectEditor.AddAnimatedWidget (popupWidgetFrame, 300, Easing.ExponentialInOut, Blocking.Downstage, inspectEditor.Allocation.Width - 400, -gotoLineNumberWidget.Allocation.Height);
+				inspectEditor.AddAnimatedWidget (popupWidgetFrame, 300, Mono.TextEditor.Theatrics.Easing.ExponentialInOut, Blocking.Downstage, inspectEditor.Allocation.Width - 400, -gotoLineNumberWidget.Allocation.Height);
 			}
 			
 			gotoLineNumberWidget.Focus ();

@@ -45,7 +45,7 @@ namespace MonoDevelop.SourceEditor
 			
 			ExpandWidth = 36;
 			ExpandHeight = 2;
-			BounceEasing = Easing.Sine;
+			BounceEasing = Mono.TextEditor.Theatrics.Easing.Sine;
 			Duration = 150;
 		}
 	
