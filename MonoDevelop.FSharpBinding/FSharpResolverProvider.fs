@@ -192,9 +192,12 @@ type FSharpResolverProvider() =
 
     /// Returns string with tool-tip from 'FSharpLocalResolveResult'
     /// (which we generated in the previous method - so we simply run formatter)
+#if MONODEVELOP_AT_MOST_3_0_3_2
+    member x.CreateTooltip(unit, result, errorInformation, ambience, modifierState) : string = 
+#else
     member x.CreateTooltip(document, offset, result, errorInformation, modifierState) : string = 
+#endif
       do Debug.WriteLine (sprintf "Resolver: in CreteTooltip")
       match result with
       | :? FSharpLocalResolveResult as res -> TipFormatter.formatTipWithHeader(res.DataTip)
       | _ -> null
-

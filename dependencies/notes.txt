@@ -1,0 +1,8 @@
+
+To fetch new monodevelop binaries use something like this:
+
+
+for f in `find . -type f`; do mkdir -p `dirname ../monodevelop.3.0.5/$f`; cp -prf /Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/$f ../monodevelop.3.0.5/$f; done;
+
+If we take new binary dependencies you may need to get an older version of monodevelop to fetch the maching new binaries
+

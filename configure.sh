@@ -50,12 +50,16 @@ searchpaths "MonoDevelop" bin/MonoDevelop.Core.dll PATHS[@]
 MDDIR=$RESULT
 echo "Successfully found MonoDevelop root directory." $MDDIR
 
-# Fix the FSharpBinding project file (add HintPath to the correct MonoDevelop folders)
-sed "s,INSERT_MD_ROOT,$MDDIR,g" MonoDevelop.FSharpBinding/MonoDevelop.FSharp.orig > MonoDevelop.FSharpBinding/MonoDevelop.FSharp.1
-sed "s,INSERT_FSHARP_BIN,$FSDIR,g" MonoDevelop.FSharpBinding/MonoDevelop.FSharp.1 > MonoDevelop.FSharpBinding/MonoDevelop.FSharp.fsproj
-rm MonoDevelop.FSharpBinding/MonoDevelop.FSharp.1
+echo "Running $MDDIR/../../MonoDevelop to determine MonoDevelop version"
+
+# e.g. 3.0.4.7
+MDVERSION4=`$MDDIR/../../MonoDevelop /? | head -n 1 | grep -o "[0-9]\+.[0-9]\+.[0-9]\+\(.[0-9]\+\)\?"`
+# e.g. 3.0.4
+MDVERSION3=`$MDDIR/../../MonoDevelop /? | head -n 1 | grep -o "[0-9]\+.[0-9]\+.[0-9]\+"`
+
+echo "Detected MonoDevelop version " $MDVERSION4
 
 # ------------------------------------------------------------------------------
 # Write Makefile
 
-sed "s,INSERT_MD_ROOT,$MDDIR,g" Makefile.orig > Makefile
+sed -e "s,INSERT_MDROOT,$MDDIR,g" -e "s,INSERT_MDVERSION3,$MDVERSION3,g" -e "s,INSERT_MDVERSION4,$MDVERSION4,g" Makefile.orig > Makefile

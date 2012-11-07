@@ -70,7 +70,7 @@ type FSharpCompilerParameters() as this =
     elif x.DefineConstants <> null then
       x.DefineConstants <- x.DefineConstants.Replace(";" + symbol, null)
      
-#if MONODEVELOP_HEAD
+#if MONODEVELOP_ATLEAST_3_0_5
   override x.HasDefineSymbol(symbol) =
     x.DefineConstants.Split(';') |> Array.exists (fun s -> symbol = s)
 #endif
