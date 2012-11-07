@@ -1,6 +1,6 @@
 <Addin id="FSharpBinding" namespace="MonoDevelop" name="F# Language Binding"
        author="F# Open Source Foundation (fsharp.org)" copyright="F# Open Source Foundation (fsharp.org)" url="http://fsharp.github.com/fsharpbinding"
-       description="F# Language Binding (for MonoDevelop 3.0.3.2). Install F# 3.0 before using." category="Language bindings" version="3.2.2">
+       description="F# Language Binding (for MonoDevelop 3.0.5). Install F# 3.0 before using." category="Language bindings" version="3.2.2">
 
 	<Runtime>
     	<Import assembly="FSharp.Core.dll" />
@@ -21,16 +21,16 @@
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="3.0.3"/>
-		<Addin id="Ide" version="3.0.3"/>
-		<Addin id="SourceEditor2" version="3.0.3"/>
-		<Addin id="Refactoring" version="3.0.3"/>
+		<Addin id="Core" version="3.0.5"/>
+		<Addin id="Ide" version="3.0.5"/>
+		<Addin id="SourceEditor2" version="3.0.5"/>
+		<Addin id="Refactoring" version="3.0.5"/>
 
         <!-- ASP.NET 
-                <Addin id="XmlEditor" version="3.0.3" />
-                <Addin id="AspNet" version="3.0.3" />
-                <Addin id="SourceEditor2" version="3.0.3" />
-                <Addin id="TextTemplating" version="3.0.3" />
+                <Addin id="XmlEditor" version="3.0.5" />
+                <Addin id="AspNet" version="3.0.5" />
+                <Addin id="SourceEditor2" version="3.0.5" />
+                <Addin id="TextTemplating" version="3.0.5" />
         ASP.NET -->
 
 
