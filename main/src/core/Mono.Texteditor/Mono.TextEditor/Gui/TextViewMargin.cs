@@ -1763,6 +1763,15 @@ namespace Mono.TextEditor
 					textEditor.MainSelection = new Selection (textEditor.Document.OffsetToLocation (mouseWordStart), textEditor.Document.OffsetToLocation (mouseWordEnd));
 					inSelectionDrag = true;
 					mouseSelectionMode = MouseSelectionMode.Word;
+
+					// folding marker
+					int lineNr = args.LineNumber;
+					foreach (KeyValuePair<Rectangle, FoldSegment> shownFolding in GetFoldRectangles (lineNr)) {
+						if (shownFolding.Key.Contains ((int)(args.X + this.XOffset), (int)args.Y)) {
+							shownFolding.Value.IsFolded = false;
+							return;
+						}
+					}
 					return;
 				} else if (args.Type == EventType.ThreeButtonPress) {
 					int lineNr = Document.OffsetToLineNumber (offset);
