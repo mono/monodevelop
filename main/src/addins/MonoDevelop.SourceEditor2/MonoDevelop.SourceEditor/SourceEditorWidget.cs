@@ -45,6 +45,7 @@ using MonoDevelop.Ide.TypeSystem;
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.SourceEditor.QuickTasks;
 using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -1248,6 +1249,18 @@ namespace MonoDevelop.SourceEditor
 		{
 			DomRegion region;
 			var res = TextEditor.GetLanguageItem (TextEditor.Caret.Offset, out region);
+			if (res is UnknownIdentifierResolveResult) {
+				var uir = (UnknownIdentifierResolveResult)res;
+				IdeApp.HelpOperations.SearchHelpFor (uir.Identifier);
+				return;
+			}
+
+			if (res is UnknownMemberResolveResult) {
+				var uir = (UnknownMemberResolveResult)res;
+				IdeApp.HelpOperations.SearchHelpFor (uir.MemberName);
+				return;
+			}
+
 			string url = HelpService.GetMonoDocHelpUrl (res);
 			if (url != null)
 				IdeApp.HelpOperations.ShowHelp (url);
@@ -1257,7 +1270,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			DomRegion region;
 			var res = TextEditor.GetLanguageItem (TextEditor.Caret.Offset, out region);
-			if (res == null || !IdeApp.HelpOperations.CanShowHelp (res))
+			if (res == null || !IdeApp.HelpOperations.CanShowHelp (res) || res is UnknownIdentifierResolveResult || res is UnknownMemberResolveResult)
 				cinfo.Bypass = true;
 		}
 		

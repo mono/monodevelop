@@ -80,6 +80,41 @@ namespace MonoDevelop.Ide
 				ShowHelpExternal (topic);
 		}
 
+		public void SearchHelpFor (string searchTerm)
+		{
+			var arg = "--search=" + searchTerm;
+
+			if (Platform.IsMac) {
+				string mdapp = new FilePath (typeof(HelpOperations).Assembly.Location)
+					.ParentDirectory
+						.Combine ("..", "..", "..", "MonoDoc.app").FullPath;
+				if (Directory.Exists (mdapp))
+					System.Diagnostics.Process.Start ("open", "-a \""  + mdapp  + "\" " + arg + " --args " + DirArgs);
+				else
+					System.Diagnostics.Process.Start ("open", arg);
+				return;
+			}
+
+			if (Platform.IsWindows) {
+				string mdapp = new FilePath (typeof(HelpOperations).Assembly.Location).ParentDirectory.Combine ("windoc", "WinDoc.exe").FullPath;
+				if (File.Exists (mdapp)) {
+					System.Diagnostics.Process.Start (new System.Diagnostics.ProcessStartInfo {
+						FileName = mdapp,
+						Arguments = '"' + arg + "\" " + DirArgs,
+						WorkingDirectory = Path.GetDirectoryName (mdapp),
+					});
+					return;
+				}
+				return;
+			}		
+
+			System.Diagnostics.Process.Start (new System.Diagnostics.ProcessStartInfo {
+				FileName = "monodoc",
+				UseShellExecute = true,
+				Arguments = '"' + arg + "\" " + DirArgs
+			});
+		}
+
 		public bool CanShowHelp (string topic)
 		{
 			return topic != null;
