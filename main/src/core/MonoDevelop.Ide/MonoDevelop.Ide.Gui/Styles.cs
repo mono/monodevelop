@@ -186,11 +186,6 @@ namespace MonoDevelop.Ide.Gui
 		{
 			return IncreaseLight (color.ToCairoColor (), factor).ToGdkColor ();
 		}
-
-		internal static Cairo.Rectangle ToCairoRect (this Gdk.Rectangle rect)
-		{
-			return new Cairo.Rectangle (rect.X, rect.Y, rect.Width, rect.Height);
-		}
 	}
 }
 

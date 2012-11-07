@@ -28,7 +28,7 @@ using Gtk;
 
 namespace MonoDevelop.Components
 {
-	class MouseTracker
+	public class MouseTracker
 	{
 		public bool Hovered { get; private set; }
 		public Gdk.Point MousePosition { get; private set; }

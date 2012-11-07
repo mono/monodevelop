@@ -31,7 +31,7 @@ using System.Diagnostics;
 namespace MonoDevelop.Components
 {
 
-	static class Easing
+	public static class Easing
 	{
 		public static readonly Func<float, float> Linear = x => x;
 

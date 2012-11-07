@@ -49,7 +49,12 @@ namespace MonoDevelop.Components
 
     public static class CairoExtensions
     {
-        public static Pango.Layout CreateLayout (Gtk.Widget widget, Cairo.Context cairo_context)
+		public static Cairo.Rectangle ToCairoRect (this Gdk.Rectangle rect)
+		{
+			return new Cairo.Rectangle (rect.X, rect.Y, rect.Width, rect.Height);
+		}
+
+		public static Pango.Layout CreateLayout (Gtk.Widget widget, Cairo.Context cairo_context)
         {
             Pango.Layout layout = PangoCairoHelper.CreateLayout (cairo_context);
             layout.FontDescription = widget.PangoContext.FontDescription.Copy ();
