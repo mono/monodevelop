@@ -312,7 +312,7 @@ namespace MonoDevelop.Refactoring
 				var loc = doc.Editor.Caret.Location;
 
 				if (!addUsing) {
-					var unit = doc.ParsedDocument.GetAst<SyntaxTree> ();
+//					var unit = doc.ParsedDocument.GetAst<SyntaxTree> ();
 					int offset = doc.Editor.LocationToOffset (node.StartLocation);
 					doc.Editor.Insert (offset, ns + ".");
 					doc.Editor.Document.CommitLineUpdate (loc.Line);

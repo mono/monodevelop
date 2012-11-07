@@ -61,6 +61,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 				CancelTask ();
 				disposed = true;
 			}
+			markers.Clear ();
 			base.Dispose ();
 		}
 		
@@ -158,7 +159,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 			
 			public void Update ()
 			{
-				if (!QuickTaskStrip.EnableFancyFeatures)
+				if (!QuickTaskStrip.EnableFancyFeatures || cancellationToken.IsCancellationRequested)
 					return;
 				ext.tasks.Clear ();
 				GLib.Idle.Add (IdleHandler);
@@ -223,8 +224,8 @@ namespace MonoDevelop.AnalysisCore.Gui
 		
 		public IList<Result> GetResultsAtOffset (int offset, CancellationToken token = default (CancellationToken))
 		{
-			var location = Editor.Document.OffsetToLocation (offset);
-			var line = Editor.GetLineByOffset (offset);
+//			var location = Editor.Document.OffsetToLocation (offset);
+//			var line = Editor.GetLineByOffset (offset);
 			
 			var list = new List<Result> ();
 			foreach (var marker in Editor.Document.GetTextSegmentMarkersAt (offset)) {

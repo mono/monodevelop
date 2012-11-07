@@ -49,7 +49,7 @@ namespace MonoDevelop.CodeIssues
 			if (!QuickTaskStrip.EnableFancyFeatures)
 				return Enumerable.Empty<Result> ();
 
-			var now = DateTime.Now;
+//			var now = DateTime.Now;
 
 			var editor = input.Editor;
 			if (editor == null)
@@ -66,7 +66,7 @@ namespace MonoDevelop.CodeIssues
 					var severity = provider.GetSeverity ();
 					if (severity == Severity.None)
 						return;
-					var now2 = DateTime.Now;
+//					var now2 = DateTime.Now;
 					foreach (var r in provider.GetIssues (input, context, cancellationToken)) {
 						var fixes = new List<GenericFix> (r.Actions.Where (a => a != null).Select (a => new GenericFix (a.Title, new System.Action (() => a.Run (input, loc)))));
 						result.Add (new InspectorResults (
