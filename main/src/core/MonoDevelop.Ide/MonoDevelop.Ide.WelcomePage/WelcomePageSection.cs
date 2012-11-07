@@ -34,7 +34,6 @@ namespace MonoDevelop.Ide.WelcomePage
 	public class WelcomePageSection: EventBox
 	{
 		string title;
-		static Gdk.Pixbuf background;
 
 		static readonly string headerFormat;
 
@@ -46,7 +45,6 @@ namespace MonoDevelop.Ide.WelcomePage
 		{
 			var face = Platform.IsMac ? Styles.WelcomeScreen.Pad.TitleFontFamilyMac : Styles.WelcomeScreen.Pad.TitleFontFamilyWindows;
 			headerFormat = Styles.GetFormatString (face, Styles.WelcomeScreen.Pad.LargeTitleFontSize, Styles.WelcomeScreen.Pad.LargeTitleFontColor);
-			background = WelcomePageBranding.GetBackgroundImage ();
 		}
 
 		public WelcomePageSection (string title = null)
@@ -87,12 +85,6 @@ namespace MonoDevelop.Ide.WelcomePage
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
 			using (var ctx = Gdk.CairoHelper.Create (evnt.Window)) {
-				if (background != null) {
-					int xOffset = Allocation.X % background.Width;
-					int yOffset = Allocation.Y % background.Height;
-					ctx.RenderTiled (background, new Gdk.Rectangle (-xOffset, -yOffset, Allocation.Width + xOffset, Allocation.Height + yOffset));
-				}
-
 				ctx.LineWidth = 1;
 				var rect = new Gdk.Rectangle (Allocation.X, Allocation.Y, Allocation.Width, Allocation.Height);
 
