@@ -91,7 +91,7 @@ namespace MonoDevelop.Core.Text
 						if (char.IsUpper (ch))
 							capitalMatches += Math.Max (1, 1000 - 100 * fragments);
 					} else {
-						var x = 300 * (i + 1) / (1 + fragments);
+						var x = 600  / (1 + fragments);
 						nonCapitalMatches += x;
 					}
 				}

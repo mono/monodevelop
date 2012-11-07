@@ -777,6 +777,16 @@ namespace MonoDevelop.Ide.Gui
 			Assert.AreEqual ("Visible", output);
 		}
 
+		/// <summary>
+		/// Bug 8257 - Incorrect entry selected in code completion list
+		/// </summary>
+		[Test]
+		public void TestBug8257 ()
+		{
+			string output = RunSimulation ("", "childr\t", true, true, false, "children", "ChildRequest");
+			Assert.AreEqual ("children", output);
+		}
+
 		[TestFixtureSetUp] 
 		public void SetUp()
 		{
