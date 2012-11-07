@@ -77,7 +77,7 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 		
-		public void AddTab (Tab tab)
+		public void AddTab (DockItemTitleTab tab)
 		{
 			if (tab.Parent != null)
 				((Gtk.Container)tab.Parent).Remove (tab);
@@ -105,7 +105,7 @@ namespace MonoDevelop.Components.Docking
 
 		public void SetTabLabel (Gtk.Widget page, Gdk.Pixbuf icon, string label)
 		{
-			foreach (Tab tab in box.Children) {
+			foreach (DockItemTitleTab tab in box.Children) {
 				if (tab.Page == page) {
 					tab.SetLabel (page, icon, label);
 					UpdateEllipsize (Allocation);
@@ -129,13 +129,13 @@ namespace MonoDevelop.Components.Docking
 				if (currentTab == value)
 					return;
 				if (currentTab != -1) {
-					Tab t = (Tab) box.Children [currentTab];
+					DockItemTitleTab t = (DockItemTitleTab) box.Children [currentTab];
 					t.Page.Hide ();
 					t.Active = false;
 				}
 				currentTab = value;
 				if (currentTab != -1) {
-					Tab t = (Tab) box.Children [currentTab];
+					DockItemTitleTab t = (DockItemTitleTab) box.Children [currentTab];
 					t.Active = true;
 					t.Page.Show ();
 				}
@@ -145,7 +145,7 @@ namespace MonoDevelop.Components.Docking
 		new public Gtk.Widget CurrentPage {
 			get {
 				if (currentTab != -1) {
-					Tab t = (Tab) box.Children [currentTab];
+					DockItemTitleTab t = (DockItemTitleTab) box.Children [currentTab];
 					return t.Page;
 				} else
 					return null;
@@ -154,7 +154,7 @@ namespace MonoDevelop.Components.Docking
 				if (value != null) {
 					Gtk.Widget[] tabs = box.Children;
 					for (int n = 0; n < tabs.Length; n++) {
-						Tab tab = (Tab) tabs [n];
+						DockItemTitleTab tab = (DockItemTitleTab) tabs [n];
 						if (tab.Page == value) {
 							CurrentTab = n;
 							return;
@@ -168,14 +168,14 @@ namespace MonoDevelop.Components.Docking
 		public void Clear ()
 		{
 			currentTab = -1;
-			foreach (Tab w in box.Children)
+			foreach (DockItemTitleTab w in box.Children)
 				box.Remove (w);
 		}
 		
 		void OnTabPress (object s, Gtk.ButtonPressEventArgs args)
 		{
 			CurrentTab = Array.IndexOf (box.Children, s);
-			Tab t = (Tab) s;
+			DockItemTitleTab t = (DockItemTitleTab) s;
 			DockItem.SetFocus (t.Page);
 			QueueDraw ();
 			args.RetVal = true;
@@ -192,7 +192,7 @@ namespace MonoDevelop.Components.Docking
 			int tabsSize = 0;
 			var children = box.Children;
 
-			foreach (Tab tab in children)
+			foreach (DockItemTitleTab tab in children)
 				tabsSize += tab.LabelWidth;
 
 			var totalWidth = allocation.Width;
@@ -207,7 +207,7 @@ namespace MonoDevelop.Components.Docking
 				// from tabs which have surplus of space. To calculate it, first get the difference beteen the assigned space
 				// and the required space.
 				for (int n=0; n<children.Length; n++)
-					sizes[n] = tsize - ((Tab)children[n]).LabelWidth;
+					sizes[n] = tsize - ((DockItemTitleTab)children[n]).LabelWidth;
 
 				// If all is positive, nothing is left to do (all tabs have enough space). If there is any negative, it means
 				// that space has to be reassigned. The negative space has to be turned into positive by reducing space from other tabs
@@ -219,14 +219,14 @@ namespace MonoDevelop.Components.Docking
 				}
 				// Now calculate the final space assignment of each tab
 				for (int n=0; n<children.Length; n++) {
-					sizes[n] += ((Tab)children[n]).LabelWidth;
+					sizes[n] += ((DockItemTitleTab)children[n]).LabelWidth;
 					totalWidth -= sizes[n];
 				}
 			} else {
 				if (ratio > 1)
 					ratio = 1;
 				for (int n=0; n<children.Length; n++) {
-					var s = (int)((double)((Tab)children[n]).LabelWidth * ratio);
+					var s = (int)((double)((DockItemTitleTab)children[n]).LabelWidth * ratio);
 					sizes[n] = s;
 					totalWidth -= s;
 				}
@@ -294,355 +294,6 @@ namespace MonoDevelop.Components.Docking
 		
 	}
 	
-	class Tab: Gtk.EventBox
-	{
-		bool active;
-		Gtk.Widget page;
-		ExtendedLabel labelWidget;
-		int labelWidth;
-		DockVisualStyle visualStyle;
-		Image tabIcon;
-		DockFrame frame;
-		string label;
-		ImageButton btnDock;
-		ImageButton btnClose;
-		DockItem item;
-
-		static Gdk.Pixbuf pixClose;
-		static Gdk.Pixbuf pixAutoHide;
-		static Gdk.Pixbuf pixDock;
-
-		const int TopPadding = 5;
-		const int BottomPadding = 7;
-		const int TopPaddingActive = 5;
-		const int BottomPaddingActive = 7;
-		const int LeftPadding = 11;
-		const int RightPadding = 9;
-
-		static Tab ()
-		{
-			pixClose = Gdk.Pixbuf.LoadFromResource ("stock-close-12.png");
-			pixAutoHide = Gdk.Pixbuf.LoadFromResource ("stock-auto-hide.png");
-			pixDock = Gdk.Pixbuf.LoadFromResource ("stock-dock.png");
-		}
-		
-		public Tab (DockItem item, DockFrame frame)
-		{
-			this.item = item;
-			this.frame = frame;
-			this.VisibleWindow = false;
-			UpdateVisualStyle ();
-			NoShowAll = true;
-		}
-
-		public DockVisualStyle VisualStyle {
-			get { return visualStyle; }
-			set {
-				visualStyle = value;
-				UpdateVisualStyle ();
-				QueueDraw ();
-			}
-		}
-
-		void UpdateVisualStyle ()
-		{
-			if (labelWidget != null && label != null) {
-				if (visualStyle.UppercaseTitles.Value)
-					labelWidget.Text = label.ToUpper ();
-				else
-					labelWidget.Text = label;
-				labelWidget.UseMarkup = true;
-				if (visualStyle.ExpandedTabs.Value)
-					labelWidget.Xalign = 0.5f;
-
-				if (!(Parent is TabStrip.TabStripBox))
-					labelWidget.Xalign = 0;
-			}
-
-			if (tabIcon != null)
-				tabIcon.Visible = visualStyle.ShowPadTitleIcon.Value;
-			if (IsRealized) {
-				if (labelWidget != null)
-					labelWidget.ModifyFg (StateType.Normal, visualStyle.PadTitleLabelColor.Value);
-			}
-			var r = WidthRequest;
-			WidthRequest = -1;
-			labelWidth = SizeRequest ().Width + 1;
-			WidthRequest = r;
-
-			if (visualStyle != null)
-				HeightRequest = visualStyle.PadTitleHeight != null ? visualStyle.PadTitleHeight.Value : -1;
-		}
-
-		public void SetLabel (Gtk.Widget page, Gdk.Pixbuf icon, string label)
-		{
-			this.label = label;
-			this.page = page;
-			if (Child != null) {
-				Gtk.Widget oc = Child;
-				Remove (oc);
-				oc.Destroy ();
-			}
-			
-			Gtk.HBox box = new HBox ();
-			box.Spacing = 2;
-			
-			if (icon != null) {
-				tabIcon = new Gtk.Image (icon);
-				tabIcon.Show ();
-				box.PackStart (tabIcon, false, false, 0);
-			} else
-				tabIcon = null;
-
-			if (!string.IsNullOrEmpty (label)) {
-				labelWidget = new ExtendedLabel (label);
-				labelWidget.DropShadowVisible = true;
-				labelWidget.UseMarkup = true;
-				box.PackStart (labelWidget, true, true, 0);
-			} else {
-				labelWidget = null;
-			}
-
-			btnDock = new ImageButton ();
-			btnDock.Image = pixAutoHide;
-			btnDock.TooltipText = GettextCatalog.GetString ("Auto Hide");
-			btnDock.CanFocus = false;
-//			btnDock.WidthRequest = btnDock.HeightRequest = 17;
-			btnDock.Clicked += OnClickDock;
-			btnDock.WidthRequest = btnDock.SizeRequest ().Width;
-
-			btnClose = new ImageButton ();
-			btnClose.Image = pixClose;
-			btnClose.TooltipText = GettextCatalog.GetString ("Close");
-			btnClose.CanFocus = false;
-//			btnClose.WidthRequest = btnClose.HeightRequest = 17;
-			btnClose.WidthRequest = btnDock.SizeRequest ().Width;
-			btnClose.Clicked += delegate {
-				item.Visible = false;
-			};
-
-			Gtk.Alignment al = new Alignment (0, 0, 1, 1);
-			HBox btnBox = new HBox (false, 3);
-			btnBox.PackStart (btnDock, false, false, 0);
-			btnBox.PackStart (btnClose, false, false, 0);
-			al.Add (btnBox);
-			al.LeftPadding = 3;
-			al.TopPadding = 1;
-			box.PackEnd (al, false, false, 0);
-
-			Add (box);
-			
-			// Get the required size before setting the ellipsize property, since ellipsized labels
-			// have a width request of 0
-			box.ShowAll ();
-			Show ();
-
-			UpdateBehavior ();
-			UpdateVisualStyle ();
-		}
-		
-		void OnClickDock (object s, EventArgs a)
-		{
-			if (item.Status == DockItemStatus.AutoHide || item.Status == DockItemStatus.Floating)
-				item.Status = DockItemStatus.Dockable;
-			else
-				item.Status = DockItemStatus.AutoHide;
-		}
-
-		public int LabelWidth {
-			get { return labelWidth; }
-		}
-		
-		public bool Active {
-			get {
-				return active;
-			}
-			set {
-				if (active != value) {
-					active = value;
-					this.QueueResize ();
-					QueueDraw ();
-					UpdateBehavior ();
-				}
-			}
-		}
-
-		public Widget Page {
-			get {
-				return page;
-			}
-		}
-		
-		public void UpdateBehavior ()
-		{
-			if (btnClose == null)
-				return;
-
-			btnClose.Visible = (item.Behavior & DockItemBehavior.CantClose) == 0;
-			btnDock.Visible = (item.Behavior & DockItemBehavior.CantAutoHide) == 0;
-			
-			if (active) {
-				if (btnClose.Image == null)
-					btnClose.Image = pixClose;
-				if (item.Status == DockItemStatus.AutoHide || item.Status == DockItemStatus.Floating) {
-					btnDock.Image = pixDock;
-					btnDock.TooltipText = GettextCatalog.GetString ("Dock");
-				} else {
-					btnDock.Image = pixAutoHide;
-					btnDock.TooltipText = GettextCatalog.GetString ("Auto Hide");
-				}
-			} else {
-				btnDock.Image = null;
-				btnClose.Image = null;
-			}
-		}
-
-		protected override void OnRealized ()
-		{
-			base.OnRealized ();
-			UpdateVisualStyle ();
-		}
-		
-		protected override void OnSizeRequested (ref Gtk.Requisition req)
-		{
-			if (Child != null) {
-				req = Child.SizeRequest ();
-				req.Width += LeftPadding + RightPadding;
-				if (active)
-					req.Height += TopPaddingActive + BottomPaddingActive;
-				else
-					req.Height += TopPadding + BottomPadding;
-			}
-		}
-					
-		protected override void OnSizeAllocated (Gdk.Rectangle rect)
-		{
-			base.OnSizeAllocated (rect);
-
-			int leftPadding = LeftPadding;
-			int rightPadding = RightPadding;
-			if (rect.Width < labelWidth) {
-				int red = (labelWidth - rect.Width) / 2;
-				leftPadding -= red;
-				rightPadding -= red;
-				if (leftPadding < 2) leftPadding = 2;
-				if (rightPadding < 2) rightPadding = 2;
-			}
-			
-			rect.X += leftPadding;
-			rect.Width -= leftPadding + rightPadding;
-
-			if (Child != null) {
-				if (active) {
-					rect.Y += TopPaddingActive;
-					rect.Height = Child.SizeRequest ().Height;
-				}
-				else {
-					rect.Y += TopPadding;
-					rect.Height = Child.SizeRequest ().Height;
-				}
-				Child.SizeAllocate (rect);
-			}
-		}
-
-		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
-		{
-			if (VisualStyle.TabStyle == DockTabStyle.Normal)
-				DrawAsBrowser (evnt);
-			else
-				DrawNormal (evnt);
-			return base.OnExposeEvent (evnt);
-		}
-
-		void DrawAsBrowser (Gdk.EventExpose evnt)
-		{
-			var alloc = Allocation;
-
-			Gdk.GC bgc = new Gdk.GC (GdkWindow);
-			var c = new HslColor (VisualStyle.PadBackgroundColor.Value);
-			c.L *= 0.7;
-			bgc.RgbFgColor = c;
-			bool first = true;
-			bool last = true;
-			TabStrip tabStrip = null;
-			if (Parent is TabStrip.TabStripBox) {
-				var tsb = (TabStrip.TabStripBox) Parent;
-				var cts = tsb.Children;
-				first = cts[0] == this;
-				last = cts[cts.Length - 1] == this;
-				tabStrip = tsb.TabStrip;
-			}
-
-			if (Active || (first && last)) {
-				Gdk.GC gc = new Gdk.GC (GdkWindow);
-				gc.RgbFgColor = VisualStyle.PadBackgroundColor.Value;
-				evnt.Window.DrawRectangle (gc, true, alloc);
-				if (!first)
-					evnt.Window.DrawLine (bgc, alloc.X, alloc.Y, alloc.X, alloc.Y + alloc.Height - 1);
-				if (!(last && first) && !(tabStrip != null && tabStrip.VisualStyle.ExpandedTabs.Value && last))
-					evnt.Window.DrawLine (bgc, alloc.X + alloc.Width - 1, alloc.Y, alloc.X + alloc.Width - 1, alloc.Y + alloc.Height - 1);
-				gc.Dispose ();
-
-			} else {
-				Gdk.GC gc = new Gdk.GC (GdkWindow);
-				gc.RgbFgColor = tabStrip != null ? tabStrip.VisualStyle.InactivePadBackgroundColor.Value : frame.DefaultVisualStyle.InactivePadBackgroundColor.Value;
-				evnt.Window.DrawRectangle (gc, true, alloc);
-				gc.Dispose ();
-				evnt.Window.DrawLine (bgc, alloc.X, alloc.Y + alloc.Height - 1, alloc.X + alloc.Width - 1, alloc.Y + alloc.Height - 1);
-			}
-			bgc.Dispose ();
-		}
-
-		void DrawNormal (Gdk.EventExpose evnt)
-		{
-			using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
-				var x = Allocation.X;
-				var y = Allocation.Y;
-
-				ctx.Rectangle (x, y + 1, Allocation.Width, Allocation.Height - 1);
-				using (var g = new Cairo.LinearGradient (x, y + 1, x, y + Allocation.Height - 1)) {
-					g.AddColorStop (0, Styles.DockTabBarGradientStart);
-					g.AddColorStop (1, Styles.DockTabBarGradientEnd);
-					ctx.Pattern = g;
-					ctx.Fill ();
-				}
-
-				ctx.MoveTo (x + 0.5, y + 0.5);
-				ctx.LineTo (x + Allocation.Width - 0.5d, y + 0.5);
-				ctx.Color = Styles.DockTabBarGradientTop;
-				ctx.Stroke ();
-
-				if (active) {
-
-					ctx.Rectangle (x, y + 1, Allocation.Width, Allocation.Height - 1);
-					using (var g = new Cairo.LinearGradient (x, y + 1, x, y + Allocation.Height - 1)) {
-						g.AddColorStop (0, new Cairo.Color (0, 0, 0, 0.01));
-						g.AddColorStop (0.5, new Cairo.Color (0, 0, 0, 0.08));
-						g.AddColorStop (1, new Cairo.Color (0, 0, 0, 0.01));
-						ctx.Pattern = g;
-						ctx.Fill ();
-					}
-
-/*					double offset = Allocation.Height * 0.25;
-					var rect = new Cairo.Rectangle (x - Allocation.Height + offset, y, Allocation.Height, Allocation.Height);
-					var cg = new Cairo.RadialGradient (rect.X + rect.Width / 2, rect.Y + rect.Height / 2, 0, rect.X, rect.Y + rect.Height / 2, rect.Height / 2);
-					cg.AddColorStop (0, Styles.DockTabBarShadowGradientStart);
-					cg.AddColorStop (1, Styles.DockTabBarShadowGradientEnd);
-					ctx.Pattern = cg;
-					ctx.Rectangle (rect);
-					ctx.Fill ();
-
-					rect = new Cairo.Rectangle (x + Allocation.Width - offset, y, Allocation.Height, Allocation.Height);
-					cg = new Cairo.RadialGradient (rect.X + rect.Width / 2, rect.Y + rect.Height / 2, 0, rect.X, rect.Y + rect.Height / 2, rect.Height / 2);
-					cg.AddColorStop (0, Styles.DockTabBarShadowGradientStart);
-					cg.AddColorStop (1, Styles.DockTabBarShadowGradientEnd);
-					ctx.Pattern = cg;
-					ctx.Rectangle (rect);
-					ctx.Fill ();*/
-				}
-			}
-		}
-	}
 }
 
 

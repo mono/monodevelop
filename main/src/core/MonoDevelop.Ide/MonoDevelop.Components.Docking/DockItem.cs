@@ -64,7 +64,7 @@ namespace MonoDevelop.Components.Docking
 		DockItemToolbar toolbarLeft;
 		DockItemToolbar toolbarRight;
 
-		Tab titleTab;
+		DockItemTitleTab titleTab;
 		bool allowPlaceholderDocking;
 		static Gdk.Cursor fleurCursor = new Gdk.Cursor (Gdk.CursorType.Fleur);
 		static Gdk.Cursor handCursor = new Gdk.Cursor (Gdk.CursorType.LeftPtr);
@@ -126,10 +126,10 @@ namespace MonoDevelop.Components.Docking
 			return frame.GetVisible (this, layout); 
 		}
 		
-		internal Tab TitleTab {
+		internal DockItemTitleTab TitleTab {
 			get {
 				if (titleTab == null) {
-					titleTab = new Tab (this, frame);
+					titleTab = new DockItemTitleTab (this, frame);
 					titleTab.VisualStyle = currentVisualStyle;
 					titleTab.SetLabel (Widget, icon, label);
 					titleTab.ShowAll ();
