@@ -1,6 +1,30 @@
-# F# Language Binding for MonoDevelop 
+# F# Language Support for Open Editors
 
-Adds F# support to MonoDevelop.
+This project contains advanced editing support for F# for a number of open editors
+* MonoDevelop
+* Emacs (in progress)
+* Vim (in progress)
+
+Join [The F# Open Source Group](http://fsharp.github.com). We use [github](http://fsharp.github.com/fsharpbinding) for tracking work items and suggestions.
+
+
+## Basic Components
+
+The core component is the FSharp.CompilerBinding.dll. This is used by both fsautocomplete.exe, a command-line utility to sit behind Emacs, Vim and other editing environments, an the MonoDevelop components.
+
+### Basic Components - Building
+
+   ./configure
+   make
+
+This produces bin/FSharp.CompilerBinding.dll and bin/fsautocomplete.exe.
+
+To understand how to use these components, see the other projects
+
+
+## MonoDevelop support
+
+Adds open source F# support to the open source editor MonoDevelop.
 
 Features:
 * Code completion
@@ -17,9 +41,10 @@ Features:
 
 Requires MonoDevelop 3.0 and later versions
 
-## Installation
 
-On Mac and Linux, first build or install [the F# 3.0 compiler (open source edition)](http://fsharp.github.com/fsharp) if 'fsharpc' is not on your command line.
+### Installation
+
+On Mac and Linux, first build or install [the F# 3.0 compiler (open source edition)](http://fsharp.github.com/fsharp) if 'fsharpc' is not on your command line. F# 2.0 can also be used.
 
 Then install the F# Language Binding via the MonoDeveop Add-in manager.
 
@@ -38,22 +63,20 @@ For more information about F# and code examples see these links:
 * http://tryfsharp.org
 * http://fssnip.net
 
-## Building and installing from scratch
+### Building and installing from scratch
 
 Normally you should get the binding from the repository. If you want to build and install it yourself and develop it, try this:
 
+  cd monodevelop
   ./configure.sh
-  make
-  make install 
+  make 
+  make install
 
-## Contribute 
-Join [The F# Open Source Group](http://fsharp.github.com). We use [github](http://fsharp.github.com/fsharpbinding) for tracking work items and suggestions.
-
-## Can't get it to work?  
+### Can't get it to work?  
 
 Don't give up! Add an issue to [the issue tracker](http://fsharp.github.com/fsharpbinding/issues). You issue will be seen by the developers.
 
-## Notes for Developers
+### Notes for Developers
 
 To check things are working try a few different things somewhat at random:
   - Check the F# templates are appearing
@@ -85,10 +108,9 @@ To enable some logging you can use
 The addin gets released to http://addins.monodevelop.com under project 'FSharp' (project index 48). Contact @sega, @tpetricek or @funnelweb to make an update.
 
 To build the .mpack files to upload to this site, use 
-    make pack-all
+    make -f Makefile.monodevelop packs
 
 The files go under pack/...
-
 
 The build process builds several versions of the addin for specific different versions of MonoDevelop.  MonoDevelop APIs can 
 change a bit and are not binary compatible. We try to keep up with 

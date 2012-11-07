@@ -1,13 +1,33 @@
 #! /bin/bash -e
 
-echo ""
-echo "MonoDevelop Makefile configuration script"
-echo "-----------------------------------------"
-echo "This will generate Makefile with correct paths for you."
-echo ""
-echo "Usage: ./configure.sh"
-echo ""
+# ------------------------------------------------------------------------------
+# Parse command line arguments and specify default values
 
+MONO=mono
+
+# Annoyingly, Mono 2.10 originally installed 'fsc' on Mac, but 
+# later versions install 'fsharpc'. Fresh builds on Linux
+# and future versions of Mono will install 'fsharpc'. Even more annoyingly,
+# there can be old, crappy versions of 'fsharpc' hanging around on Mac
+# machines - these versions aren't suitable for use with MonoDevelop.
+if [ ! -e "/usr/bin/fsharpc" ] && [ -e "/usr/bin/fsc" ];
+then FSC=fsc; 
+else FSC=fsharpc; 
+fi
+
+
+if [[ `which $FSC` == "" ]]; then FSC=fsc; else FSC=`which $FSC`; fi 
+ 
+while getopts e:f:c:n OPT; do
+  case "$OPT" in
+    e) MONO=$OPTARG
+       ;;
+    n) MONO=""
+       ;;
+    f) FSC=$OPTARG
+       ;;
+  esac
+done
 
 # ------------------------------------------------------------------------------
 # Utility function that searches specified directories for a specified file
@@ -45,21 +65,19 @@ searchpaths "F#" FSharp.Core.dll PATHS[@]
 FSDIR=$RESULT
 echo "Successfully found F# root directory." $FSDIR
 
-PATHS=( /usr/lib/monodevelop /usr/local/monodevelop/lib/monodevelop /usr/local/lib/monodevelop /Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop /opt/mono/lib/monodevelop )
-searchpaths "MonoDevelop" bin/MonoDevelop.Core.dll PATHS[@]
-MDDIR=$RESULT
-echo "Successfully found MonoDevelop root directory." $MDDIR
+PATHS=( /usr/lib/mono/4.0 /usr/local/lib/mono/4.0 /Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.0 /opt/mono/lib/mono/4.0 /usr/lib64/mono)
+searchpaths "Mono" mscorlib.dll PATHS[@]
+MONODIR=$RESULT
+echo "Successfully found Mono root directory." $MONODIR
 
-echo "Running $MDDIR/../../MonoDevelop to determine MonoDevelop version"
-
-# e.g. 3.0.4.7
-MDVERSION4=`$MDDIR/../../MonoDevelop /? | head -n 1 | grep -o "[0-9]\+.[0-9]\+.[0-9]\+\(.[0-9]\+\)\?"`
-# e.g. 3.0.4
-MDVERSION3=`$MDDIR/../../MonoDevelop /? | head -n 1 | grep -o "[0-9]\+.[0-9]\+.[0-9]\+"`
-
-echo "Detected MonoDevelop version " $MDVERSION4
+echo "Using F# compiler : " $FSC
 
 # ------------------------------------------------------------------------------
 # Write Makefile
 
-sed -e "s,INSERT_MDROOT,$MDDIR,g" -e "s,INSERT_MDVERSION3,$MDVERSION3,g" -e "s,INSERT_MDVERSION4,$MDVERSION4,g" Makefile.orig > Makefile
+
+sed -e "s,INSERT_MONO_BIN,$MONODIR,g" \
+    -e "s,INSERT_FSHARP_BIN,$FSDIR,g" \
+    -e "s,INSERT_FSHARP_COMPILER,$FSC,g" \
+    Makefile.orig > Makefile
+

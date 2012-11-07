@@ -1,115 +1,54 @@
-# Makefile for compiling, installing and packing F# MonoDevelop plugin on Mono
-#
-#   run 'make' to compile the plugin against the installed version of MonoDevelop detected by ./configure.sh
-#   run 'make install' to compile and install the plugin against the installed version of MonoDevelop detected by ./configure.sh
-#   run 'make pack-all' to create a deployment binary packages for the known set of supported MonoDevelop versions
+# Makefile for compiling and installing F# AutoComplete engine
 
-VERSION=3.2.2
+# Here are a few paths that need to be configured first:
+MONOBIN = INSERT_MONO_BIN
+FSBIN = INSERT_FSHARP_BIN
+FSC = INSERT_FSHARP_COMPILER
 
-MDTOOL = $(MONO) INSERT_MDROOT/../../mdtool
+FILES_FCB = \
+	FSharp.CompilerBinding/Common.fs \
+	FSharp.CompilerBinding/CompilerLocationUtils.fs \
+	FSharp.CompilerBinding/FSharpCompiler.fs
 
-# (MDVERSION3, MDVERSION4) can be set to something like (3.0.4, 3.0.4.7) to compile
-# against the dependencies/... binaries for a specific version of MonoDevelop. This allows
-# us to prepare new editions of the binding for several different versions of MonoDevelop.
-MDVERSION3=INSERT_MDVERSION3
-MDVERSION4=INSERT_MDVERSION4
+FILES_FAC = \
+	FSharp.AutoComplete/Parser.fs \
+	FSharp.AutoComplete/TipFormatter.fs \
+	FSharp.AutoComplete/Program.fs
 
-ifeq ($(USE_KNOWN_BINARIES),true)
-MDROOT=../dependencies/monodevelop.$(MDVERSION4)
-MDTAG=monodevelop-$(MDVERSION4)
+REFERENCES = \
+	-r:$(MONOBIN)/mscorlib.dll \
+	-r:System.dll \
+	-r:System.Core.dll \
+	-r:System.Xml.dll \
+	-r:$(FSBIN)/FSharp.Core.dll 
+
+config=Release
+
+FSC_OPTS = --resident --noframework --nologo
+
+ifeq ($(config),Debug)
+FSC_OPTS += --debug --optimize-
 else
-MDROOT=INSERT_MDROOT
-MDTAG=local
+FSC_OPTS += --debug:pdbonly --optimize
 endif
 
+TARGETS = bin/FSharp.Core.dll bin/FSharp.CompilerBinding.dll bin/fsautocomplete.exe
 
-# The default configuration is Release
-ifeq ($(CONFIG),)
-CONFIG=Release
-endif
+all: $(TARGETS)
 
-.PHONY: all
+bin/fsautocomplete.exe: $(FILES_FAC) bin/FSharp.CompilerBinding.dll
+	@-mkdir -p bin
+	$(FSC) $(FSC_OPTS) --out:bin/fsautocomplete.exe -r:bin/FSharp.CompilerBinding.dll $(REFERENCES) $(FILES_FAC) 
 
-all: build
+bin/FSharp.CompilerBinding.dll: $(FILES_FCB)
+	@-mkdir -p bin
+	$(FSC) $(FSC_OPTS) --target:library --out:bin/FSharp.CompilerBinding.dll $(REFERENCES) $(FILES_FCB)
 
-build: MonoDevelop.FSharpBinding/MonoDevelop.FSharp.$(MDTAG).fsproj MonoDevelop.FSharpBinding/FSharpBinding.$(MDTAG).addin.xml
-	(cd FSharp.CompilerBinding && xbuild FSharp.CompilerBinding.fsproj /p:Configuration=$(CONFIG))
-	(cd FSharp.AutoComplete && xbuild FSharp.AutoComplete.fsproj /p:Configuration=$(CONFIG))
-	(cd MonoDevelop.FSharpBinding/Gui && xbuild MonoDevelop.FSharp.Gui.csproj /p:Configuration=$(CONFIG))
-	(cd MonoDevelop.FSharpBinding && xbuild MonoDevelop.FSharp.$(MDTAG).fsproj /p:Configuration=$(CONFIG))
-
-
-pack: build
-	cp -pr bin/$(CONFIG)/* bin/$(MDTAG)/$(CONFIG)/
-	-rm -fr pack/$(VERSION)/$(MDTAG)/$(CONFIG)
-	@-mkdir -p pack/$(VERSION)/$(MDTAG)/$(CONFIG)
-	$(MDTOOL) setup pack bin/$(MDTAG)/$(CONFIG)/FSharpBinding.$(MDTAG).addin.xml -d:pack/$(VERSION)/$(MDTAG)/$(CONFIG)
-
-install: pack
-	$(MDTOOL) setup install -y pack/$(VERSION)/$(MDTAG)/$(CONFIG)/MonoDevelop.FSharpBinding_$(VERSION).mpack 
-
-uninstall:
-	$(MDTOOL) setup uninstall MonoDevelop.FSharpBinding
-
-pack-all: build-support
-	$(MAKE) USE_KNOWN_BINARIES=true MDVERSION3=3.0.3 MDVERSION4=3.0.3.2 CONFIG=Release pack
-	$(MAKE) USE_KNOWN_BINARIES=true MDVERSION3=3.0.4 MDVERSION4=3.0.4.7 CONFIG=Release pack
-	$(MAKE) USE_KNOWN_BINARIES=true MDVERSION3=3.0.5 MDVERSION4=3.0.5 CONFIG=Release pack
-
-autocomplete:
-	(cd FSharp.CompilerBinding && xbuild FSharp.CompilerBinding.fsproj /p:Configuration=Release)
-	(cd FSharp.AutoComplete && xbuild FSharp.AutoComplete.fsproj /p:Configuration=Release)
+bin/FSharp.Core.dll: $(FSBIN)/FSharp.Core.dll
+	@-mkdir -p  bin
+	cp -p $(FSBIN)/FSharp.Core.dll bin/FSharp.Core.dll
 
 clean:
 	-rm -fr bin
-	-rm -fr pack
-	-rm -fr MonoDevelop.FSharpBinding/FSharpBinding.*.addin.xml
-	-rm -fr MonoDevelop.FSharpBinding/MonoDevelop.FSharp.*.fsproj
-	-rm -fr MonoDevelop.FSharpBinding/obj
-	(cd MonoDevelop.FSharpBinding/Gui && xbuild MonoDevelop.FSharp.Gui.csproj /target:Clean)
-	(cd FSharp.CompilerBinding && xbuild FSharp.CompilerBinding.fsproj /target:Clean)
-	(cd FSharp.AutoComplete && xbuild FSharp.AutoComplete.fsproj /target:Clean)
 
-
-# Apply the known binding versions and MonoDevelop versions to the project file
-MonoDevelop.FSharpBinding/MonoDevelop.FSharp.$(MDTAG).fsproj: MonoDevelop.FSharpBinding/MonoDevelop.FSharp.orig
-	sed \
-		-e "s,INSERT_FSPROJ_MDROOT,$(MDROOT),g" \
-		-e "s,INSERT_FSPROJ_MDVERSION3,$(MDVERSION3),g" \
-		-e "s,INSERT_FSPROJ_MDVERSION4,$(MDVERSION4),g" \
-		-e "s,INSERT_FSPROJ_MDTAG,$(MDTAG),g" \
-		$< > $@
-
-# Apply the known binding versions and MonoDevelop versions to the addin description
-MonoDevelop.FSharpBinding/FSharpBinding.$(MDTAG).addin.xml: MonoDevelop.FSharpBinding/FSharpBinding.addin.xml.orig
-	sed \
-		-e "s,INSERT_FSPROJ_VERSION,$(VERSION),g" \
-		-e "s,INSERT_FSPROJ_MDVERSION3,$(MDVERSION3),g" \
-		-e "s,INSERT_FSPROJ_MDVERSION4,$(MDVERSION4),g" \
-		-e "s,INSERT_FSPROJ_MDTAG,$(MDTAG),g" \
-		$< > $@
-
-# Update the files for use on Windows
-MonoDevelop.FSharpBinding/MonoDevelop.FSharp.windows.fsproj: MonoDevelop.FSharpBinding/MonoDevelop.FSharp.orig
-	sed \
-		-e "s,INSERT_FSPROJ_MDROOT,c:\\\\Program Files (x86)\\\\MonoDevelop,g" \
-		-e "s,INSERT_FSPROJ_MDVERSION3,$(MDVERSION3),g" \
-		-e "s,INSERT_FSPROJ_MDVERSION4,$(MDVERSION4),g" \
-		-e "s,INSERT_FSPROJ_MDTAG,windows,g" \
-		$< > $@
-
-
-# Update the files for use on Windows
-MonoDevelop.FSharpBinding/FSharpBinding.windows.addin.xml: MonoDevelop.FSharpBinding/FSharpBinding.addin.xml.orig
-	sed \
-		-e "s,INSERT_FSPROJ_VERSION,$(VERSION),g" \
-		-e "s,INSERT_FSPROJ_MDVERSION3,$(MDVERSION3),g" \
-		-e "s,INSERT_FSPROJ_MDVERSION4,$(MDVERSION4),g" \
-		-e "s,INSERT_FSPROJ_MDTAG,windows,g" \
-		$< > $@
-
-build-support: MonoDevelop.FSharpBinding/MonoDevelop.FSharp.windows.fsproj MonoDevelop.FSharpBinding/FSharpBinding.windows.addin.xml \
-	MonoDevelop.FSharpBinding/MonoDevelop.FSharp.$(MDTAG).fsproj MonoDevelop.FSharpBinding/FSharpBinding.$(MDTAG).addin.xml
-
-
-#	(cd addins/MonoDevelop.FSharp.AspNet.Mvc && xbuild MonoDevelop.FSharp.AspNet.Mvc.fsproj /p:Configuration=$(CONFIG))
+autocomplete: bin/fsautocomplete.exe
