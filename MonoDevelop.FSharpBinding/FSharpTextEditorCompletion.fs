@@ -85,7 +85,7 @@ type FSharpTextEditorCompletion() =
 
   override x.HandleParameterCompletion(context:CodeCompletionContext, completionChar:char) : IParameterDataProvider =
     try
-      if (completionChar <> '(' && completionChar <> ',' && completionChar <> ')' ) then null else
+     if (completionChar <> '(' && completionChar <> ',' && completionChar <> ')' ) then null else
       let doc = x.Document
       let docText = doc.Editor.Text
       let offset = context.TriggerOffset
@@ -161,12 +161,13 @@ type FSharpTextEditorCompletion() =
       let cursor = editor.Caret.Offset
       let i = startOffset // the original context
       if (i < 0 || i >= editor.Length || editor.GetCharAt (i) = ')') then -1 
-      elif (i = cursor) then 0
+      elif (i + 1 = cursor && editor.Document.GetCharAt(i) = '(') then 0
       else 
           // The first character is a '('
           // Note this will be confused by comments.
           let rec loop depth i parameterIndex = 
-              if (i > cursor) then -1 
+              if (i = cursor) then parameterIndex
+              elif (i > cursor) then -1 
               elif (i >= editor.Document.TextLength) then  parameterIndex else
               let ch = editor.Document.GetCharAt(i)
               if (ch = '(' || ch = '{' || ch = '[') then loop (depth+1) (i+1) parameterIndex
@@ -174,5 +175,6 @@ type FSharpTextEditorCompletion() =
               elif (ch = ',' && depth = 1) then loop depth (i+1) (parameterIndex+1)
               elif (ch = ')') then -1
               else loop depth (i+1) parameterIndex
-          loop 0 i 1
+          let res = loop 0 i 1
+          res
 

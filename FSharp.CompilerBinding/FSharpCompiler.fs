@@ -502,14 +502,19 @@ module SourceCodeServices =
       let names = fsc.MakeList(typeof<string>, names)
       FindDeclResult(wrapped?GetDeclarationLocation(pos, line, names, tokentag, isDeclaration))
 
-    member x.GetMethods(pos: Position, line: string, names: Names option, tokentag: int) :  MethodOverloads =
+    member x.GetMethods(pos: Position, line: string, namesOpt: Names option, tokentag: int) :  MethodOverloads =
       let fsc = FSharpCompiler.LatestAvailable
       let stringListTy = fsc.MakeListType(typeof<string>)
-      let names = match names with None -> null | Some x -> fsc.MakeOption(stringListTy, x)
+      let namesOpt = 
+          match namesOpt with 
+          | None -> null 
+          | Some names -> 
+              let names = fsc.MakeList(typeof<string>, names)
+              fsc.MakeOption(stringListTy, names)
       let meths = 
           match fsc.ActualVersion with 
-          | FSharpCompilerVersion.FSharp_2_0 -> wrapped?GetMethods(pos, line, names, tokentag)
-          | FSharpCompilerVersion.FSharp_3_0 -> wrapped?GetMethods(pos, line, names)
+          | FSharpCompilerVersion.FSharp_2_0 -> wrapped?GetMethods(pos, line, namesOpt, tokentag)
+          | FSharpCompilerVersion.FSharp_3_0 -> wrapped?GetMethods(pos, line, namesOpt)
       MethodOverloads(meths)
 
 
