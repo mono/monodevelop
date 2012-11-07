@@ -145,7 +145,15 @@
 		 <Style name="cdata" color="butter2"/>
 	</Style>
 	
-	<Style name="tooltip" color="aluminium2" bgColor="aluminium5"/>
+	<Style name="tooltip" color="aluminium2" bgColor="aluminium5">
+		<Style name="border" color="aluminium1"/>
+		<Style name="pager">
+			<Style name="text" color="aluminium2"/>
+			<Style name="top" color="aluminium5"/>
+			<Style name="bottom" color="aluminium5"/>
+			<Style name="triangle" color="aluminium2"/>
+		</Style>
+	</Style>
 	
 	<Style name="completion" color="#434343" bgColor="#F0F6F8">
 		<Style name="highlight" color="#BA3373"/>

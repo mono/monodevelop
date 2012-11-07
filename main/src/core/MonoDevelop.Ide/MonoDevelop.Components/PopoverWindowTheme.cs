@@ -91,12 +91,65 @@ namespace MonoDevelop.Components
 			set { SetAndEmit (value, borderColor, ref borderColor); } 
 		}
 
+
+		Cairo.Color pagerBackgroundColorTop = CairoExtensions.ParseColor ("ffffff");
+		/// <summary>
+		/// Gets or sets the color of the top background color of the pager.
+		/// </summary>
+		public Cairo.Color PagerBackgroundColorTop {
+			get {
+				return pagerBackgroundColorTop;
+			}
+			set {
+				pagerBackgroundColorTop = value;
+			}
+		}
+
+		Cairo.Color pagerBackgroundColorBottom = CairoExtensions.ParseColor ("f5f5f5");
+		/// <summary>
+		/// Gets or sets the color of the bottom background color of the pager.
+		/// </summary>
+		public Cairo.Color PagerBackgroundColorBottom {
+			get {
+				return pagerBackgroundColorBottom;
+			}
+			set {
+				pagerBackgroundColorBottom = value;
+			}
+		}
+
+		Cairo.Color pagerTriangleColor = CairoExtensions.ParseColor ("737373");
+
+		/// <summary>
+		/// Gets or sets the color of the triangle color of the pager.
+		/// </summary>
+		public Cairo.Color PagerTriangleColor {
+			get {
+				return pagerTriangleColor;
+			}
+			set {
+				pagerTriangleColor = value;
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets the color of the text color of the pager.
+		/// </summary>
+		Cairo.Color pagerTextColor;
+		bool pagerColorSet = false;
 		public Cairo.Color PagerTextColor {
 			get {
-				return new Cairo.Color (BorderColor.R * .7,
-				                        BorderColor.G * .7,
-				                        BorderColor.B * .7,
-				                        BorderColor.A);
+				if (!pagerColorSet) {
+					return new Cairo.Color (BorderColor.R * .7,
+					                        BorderColor.G * .7,
+					                        BorderColor.B * .7,
+					                        BorderColor.A);
+				}
+				return pagerTextColor;
+			}
+			set {
+				pagerTextColor = value;
+				pagerColorSet = true;
 			}
 		}
 
@@ -209,6 +262,17 @@ namespace MonoDevelop.Components
 			BorderColor = new Cairo.Color (0.7, 0.7, 0.7);
 
 			Font = Pango.FontDescription.FromString ("Normal");
+		}
+
+		public void SetSchemeColors (Mono.TextEditor.Highlighting.ColorScheme scheme)
+		{
+			TopColor = scheme.Tooltip.BackgroundColor.AddLight (0.03).ToCairoColor ();
+			BottomColor = scheme.Tooltip.BackgroundColor.ToCairoColor ();
+			BorderColor = scheme.GetChunkStyle ("tooltip.border").CairoColor;
+			PagerTextColor = scheme.GetChunkStyle ("tooltip.pager.text").CairoColor;
+			PagerBackgroundColorTop = scheme.GetChunkStyle ("tooltip.pager.top").CairoColor;
+			PagerBackgroundColorBottom = scheme.GetChunkStyle ("tooltip.pager.bottom").CairoColor;
+			PagerTriangleColor = scheme.GetChunkStyle ("tooltip.pager.triangle").CairoColor;
 		}
 		
 		void EmitRedrawNeeded ()
@@ -358,10 +422,9 @@ namespace MonoDevelop.Components
 			                                  bounds.Height, 
 			                                  CornerRadius, 
 			                                  CairoCorners.BottomLeft);
-
 			using (var lg = new Cairo.LinearGradient (0, bounds.Y, 0, bounds.Y + bounds.Height)) {
-				lg.AddColorStop (0, Styles.PopoverWindow.PagerBackgroundColorTop);
-				lg.AddColorStop (1, Styles.PopoverWindow.PagerBackgroundColorBottom);
+				lg.AddColorStop (0, PagerBackgroundColorTop);
+				lg.AddColorStop (1, PagerBackgroundColorBottom);
 
 				context.Pattern = lg;
 				context.Fill ();
@@ -414,7 +477,7 @@ namespace MonoDevelop.Components
 				return;
 			}
 
-			context.Color = Styles.PopoverWindow.PagerTriangleColor;
+			context.Color = PagerTriangleColor;
 			context.Fill ();
 		}
 	}

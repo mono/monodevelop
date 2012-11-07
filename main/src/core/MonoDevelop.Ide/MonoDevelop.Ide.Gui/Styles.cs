@@ -127,9 +127,6 @@ namespace MonoDevelop.Ide.Gui
 
 		public static class PopoverWindow
 		{
-			public static readonly Cairo.Color PagerBackgroundColorTop = CairoExtensions.ParseColor ("ffffff");
-			public static readonly Cairo.Color PagerBackgroundColorBottom = CairoExtensions.ParseColor ("f5f5f5");
-			public static readonly Cairo.Color PagerTriangleColor = CairoExtensions.ParseColor ("737373");
 			public static readonly int PagerTriangleSize = 6;
 			public static readonly int PagerHeight = 16;
 

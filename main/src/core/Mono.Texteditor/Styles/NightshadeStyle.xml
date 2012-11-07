@@ -88,7 +88,15 @@
 	<Style name="text.background.searchresult" color="VisualBGVim"/>
 	<Style name="text.link" color="butter2"/>
 	
-	<Style name="tooltip" color="NormalVim" bgColor="#0a0a0a"/>
+	<Style name="tooltip" color="NormalVim" bgColor="#0a0a0a">
+		<Style name="border" color="#989892"/>
+		<Style name="pager">
+			<Style name="text" color="NormalVim"/>
+			<Style name="top" color="BlackVim"/>
+			<Style name="bottom" color="BlackVim"/>
+			<Style name="triangle" color="NormalVim"/>
+		</Style>
+	</Style>
 	
 	<Style name="completion" color="#434343" bgColor="#F0F6F8">
 		<Style name="highlight" color="#BA3373"/>

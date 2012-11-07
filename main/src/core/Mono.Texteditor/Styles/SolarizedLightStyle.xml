@@ -73,7 +73,15 @@ THE SOFTWARE.
 		 <Style name="cdata" color="cyan"/>
 	</Style>
 	
-	<Style name="tooltip" color="black" bgColor="#feffe9"/>
+	<Style name="tooltip" color="black" bgColor="#feffe9">
+		<Style name="border" color="base1"/>
+		<Style name="pager">
+			<Style name="text" color="base00"/>
+			<Style name="top" color="base2"/>
+			<Style name="bottom" color="base2"/>
+			<Style name="triangle" color="base00"/>
+		</Style>
+	</Style>
 	
 	<Style name="completion" color="#434343" bgColor="#F0F6F8">
 		<Style name="highlight" color="#BA3373"/>

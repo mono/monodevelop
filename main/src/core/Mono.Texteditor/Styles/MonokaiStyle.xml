@@ -71,7 +71,15 @@ THE SOFTWARE.
 	 </Style>
 	
 	
-	<Style name="tooltip" color="black" bgColor="#272725"/>
+	<Style name="tooltip" color="black" bgColor="#272725">
+		<Style name="border" color="#989892"/>
+		<Style name="pager">
+			<Style name="text" color="#C8C8C2"/>
+			<Style name="top" color="#292A25"/>
+			<Style name="bottom" color="#292A25"/>
+			<Style name="triangle" color="#C8C8C2"/>
+		</Style>
+	</Style>
 	
 	<Style name="completion" color="#434343" bgColor="#F0F6F8">
 		<Style name="highlight" color="#BA3373"/>

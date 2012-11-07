@@ -159,7 +159,14 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			new ColorMetaData ("diff.header-oldfile", GettextCatalog.GetString ("Diff line header old file"), ColorsAvailable.Text),
 			new ColorMetaData ("diff.header-newfile", GettextCatalog.GetString ("Diff line header new file"), ColorsAvailable.Text),
 			new ColorMetaData ("diff.location", GettextCatalog.GetString ("Diff line header location"), ColorsAvailable.Text),
-			
+
+			new ColorMetaData ("tooltip", GettextCatalog.GetString ("Tooltip colors"), ColorsAvailable.FgBg),
+			new ColorMetaData ("tooltip.border", GettextCatalog.GetString ("Tooltip border"), ColorsAvailable.Fg),
+			new ColorMetaData ("tooltip.pager.text", GettextCatalog.GetString ("Tooltip pager text"), ColorsAvailable.Fg),
+			new ColorMetaData ("tooltip.pager.triangle", GettextCatalog.GetString ("Tooltip pager triangle"), ColorsAvailable.Fg),
+			new ColorMetaData ("tooltip.pager.top", GettextCatalog.GetString ("Tooltip pager top color"), ColorsAvailable.Fg),
+			new ColorMetaData ("tooltip.pager.bottom", GettextCatalog.GetString ("Tooltip pager bottom color"), ColorsAvailable.Fg),
+
 			// Keywords
 			new ColorMetaData ("text.punctuation", GettextCatalog.GetString ("Punctuation"), ColorsAvailable.Text),
 			new ColorMetaData ("text.link", GettextCatalog.GetString ("Links"), ColorsAvailable.Text),

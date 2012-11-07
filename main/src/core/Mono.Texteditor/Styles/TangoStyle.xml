@@ -76,7 +76,15 @@
 		<Style name="cdata" color="plum2"/>
 	</Style>
 	
-	<Style name="tooltip" color="black" bgColor="#feffe9"/>
+	<Style name="tooltip" color="black" bgColor="#feffe9">
+		<Style name="border" color="#b2b2b2"/>
+		<Style name="pager">
+			<Style name="text" color="#828282"/>
+			<Style name="top" color="#ffffff"/>
+			<Style name="bottom" color="#f5f5f5"/>
+			<Style name="triangle" color="#737373"/>
+		</Style>
+	</Style>
 	
 	<Style name="completion" color="#434343" bgColor="#F0F6F8">
 		<Style name="highlight" color="#BA3373"/>
