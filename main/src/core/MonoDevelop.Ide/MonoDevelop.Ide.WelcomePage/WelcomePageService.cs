@@ -46,8 +46,8 @@ namespace MonoDevelop.Ide.WelcomePage
 			IdeApp.Workbench.DocumentOpened += delegate {
 				HideWelcomePage ();
 			};
-			IdeApp.Workbench.ActiveDocumentChanged += delegate {
-				if (IdeApp.Workbench.ActiveDocument == null && !IdeApp.Workspace.IsOpen)
+			IdeApp.Workbench.DocumentClosed += delegate {
+				if (IdeApp.Workbench.Documents.Count == 0 && !IdeApp.Workspace.IsOpen)
 					ShowWelcomePage ();
 			};
 		}

@@ -56,7 +56,7 @@ namespace MonoDevelop.Ide.Gui
 	/// <summary>
 	/// This is the basic interface to the workspace.
 	/// </summary>
-	public class Workbench
+	public sealed class Workbench
 	{
 		List<Document> documents = new List<Document> ();
 		List<Pad> pads;
@@ -700,9 +700,11 @@ namespace MonoDevelop.Ide.Gui
 		void OnWindowClosed (object sender, WorkbenchWindowEventArgs args)
 		{
 			IWorkbenchWindow window = (IWorkbenchWindow) sender;
+			var doc = FindDocument (window);
 			window.Closing -= OnWindowClosing;
 			window.Closed -= OnWindowClosed;
-			documents.Remove (FindDocument (window)); 
+			documents.Remove (doc); 
+			OnDocumentClosed (doc);
 		}
 		
 		// When looking for the project to which the file belongs, look first
@@ -1050,14 +1052,31 @@ namespace MonoDevelop.Ide.Gui
 			public DateTime TimeUtc;
 		}
 		
-		protected virtual void OnDocumentOpened (DocumentEventArgs e)
+		void OnDocumentOpened (DocumentEventArgs e)
 		{
-			EventHandler<DocumentEventArgs> handler = this.DocumentOpened;
-			if (handler != null)
-				handler (this, e);
+			try {
+				EventHandler<DocumentEventArgs> handler = this.DocumentOpened;
+				if (handler != null)
+					handler (this, e);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Exception while opening documents", ex);
+			}
+		}
+
+		void OnDocumentClosed (Document doc)
+		{
+			try {
+				var e = new DocumentEventArgs (doc);
+				EventHandler<DocumentEventArgs> handler = this.DocumentClosed;
+				if (handler != null)
+					handler (this, e);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Exception while closing documents", ex);
+			}
 		}
 
 		public event EventHandler<DocumentEventArgs> DocumentOpened;
+		public event EventHandler<DocumentEventArgs> DocumentClosed;
 
 		public void ReparseOpenDocuments ()
 		{

@@ -54,7 +54,7 @@ using System.Collections.ObjectModel;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public class Document : ICSharpCode.NRefactory.AbstractAnnotatable
+	public sealed class Document : ICSharpCode.NRefactory.AbstractAnnotatable
 	{
 		internal object MemoryProbe = Counters.DocumentsInMemory.CreateMemoryProbe ();
 		
@@ -204,20 +204,20 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		IProjectContent singleFileContext;
-		public  virtual IProjectContent ProjectContent {
+		public  IProjectContent ProjectContent {
 			get {
 				return Project != null ? TypeSystemService.GetProjectContext (Project) : GetProjectContext ();
 			}
 		}
 		
-		public  virtual ICompilation Compilation {
+		public  ICompilation Compilation {
 			get {
 				return Project != null ? TypeSystemService.GetCompilation (Project) : GetProjectContext ().CreateCompilation ();
 			}
 		}
 		
 		ParsedDocument parsedDocument;
-		public virtual ParsedDocument ParsedDocument {
+		public ParsedDocument ParsedDocument {
 			get {
 				return parsedDocument;
 			}
@@ -321,7 +321,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public virtual void Save ()
+		public void Save ()
 		{
 			// suspend type service "check all file loop" since we have already a parsed document.
 			// Or at least one that updates "soon".
@@ -440,7 +440,7 @@ namespace MonoDevelop.Ide.Gui
 			UpdateParseDocument ();
 		}
 		
-		public virtual bool IsBuildTarget
+		public bool IsBuildTarget
 		{
 			get
 			{
@@ -453,17 +453,17 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public virtual IAsyncOperation Build ()
+		public IAsyncOperation Build ()
 		{
 			return IdeApp.ProjectOperations.BuildFile (Window.ViewContent.ContentName);
 		}
 		
-		public virtual IAsyncOperation Rebuild ()
+		public IAsyncOperation Rebuild ()
 		{
 			return Build ();
 		}
 		
-		public virtual void Clean ()
+		public void Clean ()
 		{
 		}
 		
@@ -472,17 +472,17 @@ namespace MonoDevelop.Ide.Gui
 			return Run (Runtime.ProcessService.DefaultExecutionHandler);
 		}
 
-		public virtual IAsyncOperation Run (IExecutionHandler handler)
+		public IAsyncOperation Run (IExecutionHandler handler)
 		{
 			return IdeApp.ProjectOperations.ExecuteFile (Window.ViewContent.ContentName, handler);
 		}
 
-		public virtual bool CanRun ()
+		public bool CanRun ()
 		{
 			return CanRun (Runtime.ProcessService.DefaultExecutionHandler);
 		}
 		
-		public virtual bool CanRun (IExecutionHandler handler)
+		public bool CanRun (IExecutionHandler handler)
 		{
 			return IsBuildTarget && Window.ViewContent.ContentName != null && IdeApp.ProjectOperations.CanExecuteFile (Window.ViewContent.ContentName, handler);
 		}
@@ -492,7 +492,7 @@ namespace MonoDevelop.Ide.Gui
 			return ((SdiWorkspaceWindow)Window).CloseWindow (false, true);
 		}
 		
-		protected virtual void OnSaved (EventArgs args)
+		void OnSaved (EventArgs args)
 		{
 			if (Saved != null)
 				Saved (this, args);
@@ -590,13 +590,13 @@ namespace MonoDevelop.Ide.Gui
 			OnViewChanged (args);
 		}
 		
-		protected virtual void OnClosed (EventArgs args)
+		void OnClosed (EventArgs args)
 		{
 			if (Closed != null)
 				Closed (this, args);
 		}
 		
-		protected virtual void OnViewChanged (EventArgs args)
+		void OnViewChanged (EventArgs args)
 		{
 			if (ViewChanged != null)
 				ViewChanged (this, args);
@@ -753,7 +753,7 @@ namespace MonoDevelop.Ide.Gui
 		static IUnresolvedAssembly SystemCore { get { return systemCore.Value; } }
 		static IUnresolvedAssembly System { get { return system.Value; } }
 
-		public virtual IProjectContent GetProjectContext ()
+		public IProjectContent GetProjectContext ()
 		{
 			if (Project == null) {
 				if (singleFileContext == null) {
@@ -823,7 +823,7 @@ namespace MonoDevelop.Ide.Gui
 				window.ViewContent.Project = null;
 		}
 		
-		protected virtual void OnDocumentParsed (EventArgs e)
+		void OnDocumentParsed (EventArgs e)
 		{
 			EventHandler handler = this.DocumentParsed;
 			if (handler != null)

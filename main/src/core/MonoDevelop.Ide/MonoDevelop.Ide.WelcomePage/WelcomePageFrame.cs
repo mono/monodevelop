@@ -62,7 +62,7 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		public void UpdateProjectBar ()
 		{
-			if (IdeApp.Workspace.IsOpen) {
+			if (IdeApp.Workspace.IsOpen || IdeApp.Workbench.Documents.Count > 0) {
 				projectBar.UpdateContent ();
 				projectBar.ShowAll ();
 			}
@@ -82,13 +82,21 @@ namespace MonoDevelop.Ide.WelcomePage
 			UpdateProjectBar ();
 		}
 
+		void HandleDocumentClosed (object sender, MonoDevelop.Ide.Gui.DocumentEventArgs e)
+		{
+			UpdateProjectBar ();
+		}
+
 		protected override void OnParentSet (Widget previous_parent)
 		{
 			base.OnParentSet (previous_parent);
-			if (Parent == null)
+			if (Parent == null) {
 				IdeApp.Workspace.LastWorkspaceItemClosed -= HandleLastWorkspaceItemClosed;
-			else
+				IdeApp.Workbench.DocumentClosed -= HandleDocumentClosed;
+			} else {
 				IdeApp.Workspace.LastWorkspaceItemClosed += HandleLastWorkspaceItemClosed;
+				IdeApp.Workbench.DocumentClosed += HandleDocumentClosed;
+			}
 		}
 	}
 
@@ -111,7 +119,10 @@ namespace MonoDevelop.Ide.WelcomePage
 			box.PackEnd (closeButton, false, false, 0);
 
 			closeButton.Clicked += delegate {
-				IdeApp.Workspace.Close ();
+				if (IdeApp.Workspace.IsOpen)
+					IdeApp.Workspace.Close ();
+				else
+					IdeApp.Workbench.CloseAllDocuments (false);
 			};
 			backButton.Clicked += delegate {
 				WelcomePageService.HideWelcomePage (true);
@@ -138,6 +149,21 @@ namespace MonoDevelop.Ide.WelcomePage
 					messageLabel.Text = GettextCatalog.GetString ("A workspace is currently open");
 					backButton.Label = GettextCatalog.GetString ("Go Back to Workspace");
 					closeButton.Label = GettextCatalog.GetString ("Close Workspace");
+				}
+			} else if (IdeApp.Workbench.Documents.Count> 0) {
+				var files = IdeApp.Workbench.Documents.Where (d => d.IsFile).ToArray ();
+				if (files.Length == 1) {
+					messageLabel.Text = GettextCatalog.GetString ("The file '{0}' is currently open", files[0].FileName.FileName);
+					backButton.Label = GettextCatalog.GetString ("Go Back to File");
+					closeButton.Label = GettextCatalog.GetString ("Close File");
+				} else if (files.Length > 1) {
+					messageLabel.Text = GettextCatalog.GetString ("The file '{0}' and other are currently open", files[0].FileName.FileName);
+					backButton.Label = GettextCatalog.GetString ("Go Back to Files");
+					closeButton.Label = GettextCatalog.GetString ("Close Files");
+				} else {
+					messageLabel.Text = GettextCatalog.GetString ("Some documents are currently open");
+					backButton.Label = GettextCatalog.GetString ("Go Back to Documents");
+					closeButton.Label = GettextCatalog.GetString ("Close Documents");
 				}
 			}
 		}
