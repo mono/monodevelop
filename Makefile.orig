@@ -19,7 +19,7 @@ MDROOT=../dependencies/monodevelop.$(MDVERSION4)
 MDTAG=monodevelop-$(MDVERSION4)
 else
 MDROOT=INSERT_MDROOT
-MDTAG=monodevelop-installed-$(MDVERSION4)
+MDTAG=local
 endif
 
 
@@ -51,7 +51,7 @@ install: pack
 uninstall:
 	$(MDTOOL) setup uninstall MonoDevelop.FSharpBinding
 
-pack-all: windows-build-support
+pack-all: build-support
 	$(MAKE) USE_KNOWN_BINARIES=true MDVERSION3=3.0.3 MDVERSION4=3.0.3.2 CONFIG=Release pack
 	$(MAKE) USE_KNOWN_BINARIES=true MDVERSION3=3.0.4 MDVERSION4=3.0.4.7 CONFIG=Release pack
 	$(MAKE) USE_KNOWN_BINARIES=true MDVERSION3=3.0.5 MDVERSION4=3.0.5 CONFIG=Release pack
@@ -108,7 +108,8 @@ MonoDevelop.FSharpBinding/FSharpBinding.windows.addin.xml: MonoDevelop.FSharpBin
 		-e "s,INSERT_FSPROJ_MDTAG,windows,g" \
 		$< > $@
 
-windows-build-support: MonoDevelop.FSharpBinding/MonoDevelop.FSharp.windows.fsproj MonoDevelop.FSharpBinding/FSharpBinding.windows.addin.xml
+build-support: MonoDevelop.FSharpBinding/MonoDevelop.FSharp.windows.fsproj MonoDevelop.FSharpBinding/FSharpBinding.windows.addin.xml \
+	MonoDevelop.FSharpBinding/MonoDevelop.FSharp.$(MDTAG).fsproj MonoDevelop.FSharpBinding/FSharpBinding.$(MDTAG).addin.xml
 
 
 #	(cd addins/MonoDevelop.FSharp.AspNet.Mvc && xbuild MonoDevelop.FSharp.AspNet.Mvc.fsproj /p:Configuration=$(CONFIG))
