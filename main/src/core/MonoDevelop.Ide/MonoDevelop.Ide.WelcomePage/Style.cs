@@ -2,7 +2,7 @@ using System;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
-	static class Styles
+	public static class Styles
 	{
 		public static class WelcomeScreen
 		{
@@ -14,12 +14,13 @@ namespace MonoDevelop.Ide.WelcomePage
 			public const string InnerShadowColor = "black";
 			public const double InnerShadowOpacity = 0.4;
 			public const int InnerShadowSize = 10;
+			public static int Spacing = 20;
 			
 			public static class Links
 			{
-				public const string Color = "#DCDCDC";
-				public const string HoverColor = "#FFFFFF";
-				public const int FontSize = 13;
+				public const string Color = "#555555";
+				public const string HoverColor = "#000000";
+				public const int FontSize = 16;
 				public const int LinkSeparation = 24;
 				public const int BottomMargin = 24;
 				public const int IconTextSpacing = 8;

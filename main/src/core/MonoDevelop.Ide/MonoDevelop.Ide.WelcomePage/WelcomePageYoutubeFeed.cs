@@ -41,7 +41,7 @@ namespace MonoDevelop.Ide.WelcomePage
 	{
 		const string RegexString = "[^\\s]* for this session: (Coming Soon|[^\\s]*) ";
 
-		public WelcomePageYoutubeFeed (XElement el): base (el)
+		public WelcomePageYoutubeFeed (string title, string newsUrl, string id, int limit = 5): base (title, newsUrl, id, limit)
 		{
 		}
 

@@ -31,6 +31,7 @@
 using System;
 using System.IO;
 using System.Xml;
+using System.Linq;
 using Gdk;
 using Gtk;
 using Mono.Addins;
@@ -40,43 +41,65 @@ using MonoDevelop.Projects;
 using MonoDevelop.Ide.Desktop;
 using System.Reflection;
 using System.Xml.Linq;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
-	class WelcomePageWidget : Gtk.EventBox
+	public class WelcomePageWidget : Gtk.EventBox
 	{
-		Gdk.Pixbuf topPixbuf, logoPixbuf, backgroundPixbuf;
-		Gtk.VBox colBox;
-		
+		public Gdk.Pixbuf LogoImage { get; set; }
+		public int LogoHeight { get; set; }
+		public Gdk.Pixbuf TopBorderImage { get; set; }
+		public Gdk.Pixbuf BackgroundImage { get; set; }
+		public string BackgroundColor { get; set; }
+
+		public bool ShowScrollbars { get; set; }
+
 		public WelcomePageWidget ()
 		{
-			if (WelcomePageBranding.ShowLogo) {
-				logoPixbuf = WelcomePageBranding.GetLogoImage ();
-				topPixbuf = WelcomePageBranding.GetTopBorderImage ();
-			}
-			backgroundPixbuf = WelcomePageBranding.GetBackgroundImage ();
+			ShowScrollbars = true;
+			VisibleWindow = false;
 
-			Gdk.Color color = Gdk.Color.Zero;
-			if (!Gdk.Color.Parse (WelcomePageBranding.BackgroundColor, ref color))
-				color = Style.White;
-			ModifyBg (StateType.Normal, color);
-			
+			BackgroundColor = "white";
+			LogoHeight = 90;
+
+			var background = new WelcomePageWidgetBackground ();
+			background.Owner = this;
 			var mainAlignment = new Gtk.Alignment (0f, 0f, 1f, 1f);
-			if (WelcomePageBranding.ShowLogo) {
-				var logoHeight = WelcomePageBranding.LogoHeight;
-				mainAlignment.SetPadding ((uint)(logoHeight + WelcomePageBranding.Spacing), 0, (uint)WelcomePageBranding.Spacing, 0);
+			background.Add (mainAlignment);
+
+			BuildContent (mainAlignment);
+
+			if (ShowScrollbars) {
+				var scroller = new ScrolledWindow ();
+				scroller.AddWithViewport (background);
+				((Gtk.Viewport)scroller.Child).ShadowType = ShadowType.None;
+				scroller.ShadowType = ShadowType.None;
+				scroller.FocusChain = new Widget[] { background };
+				scroller.Show ();
+				Add (scroller);
+			} else
+				this.Add (background);
+
+			if (LogoImage != null) {
+				var logoHeight = LogoHeight;
+				mainAlignment.SetPadding ((uint)(logoHeight + Styles.WelcomeScreen.Spacing), 0, (uint)Styles.WelcomeScreen.Spacing, 0);
 			}
-			this.Add (mainAlignment);
-			
-			colBox = new Gtk.VBox (false, WelcomePageBranding.Spacing);
-			mainAlignment.Add (colBox);
-			
-			BuildContent ();
-			
+
 			ShowAll ();
 
 			IdeApp.Workbench.GuiLocked += OnLock;
 			IdeApp.Workbench.GuiUnlocked += OnUnlock;
+		}
+
+		protected override void OnRealized ()
+		{
+			Gdk.Color color = Gdk.Color.Zero;
+			if (!Gdk.Color.Parse (BackgroundColor, ref color))
+				color = Style.White;
+			ModifyBg (StateType.Normal, color);
+
+			base.OnRealized ();
 		}
 
 		void OnLock (object s, EventArgs a)
@@ -89,115 +112,58 @@ namespace MonoDevelop.Ide.WelcomePage
 			Sensitive = true;
 		}
 		
-		void BuildContent ()
+		protected virtual void BuildContent (Container parent)
 		{
-			BuildContent (colBox, WelcomePageBranding.Content.Root);
 		}
 
-		void BuildContent (Gtk.Box parentBox, XElement root)
-		{
-			foreach (var el in root.Elements ()) {
-
-				Widget w;
-				bool fill = false;
-				switch (el.Name.LocalName) {
-				case "Column":
-					w = new Gtk.Alignment (0.5f, 0.5f, 0f, 1f);
-					var vbox = new Gtk.VBox (false, WelcomePageBranding.Spacing);
-					(w as Gtk.Alignment).Add (vbox);
-					var widthAtt = el.Attribute ("minWidth");
-					if (widthAtt != null) {
-						int width = (int) widthAtt;
-						w.SizeRequested += delegate (object o, SizeRequestedArgs args) {
-							var req = args.Requisition;
-							req.Width = Math.Max (req.Width, width);
-							args.Requisition = req;
-						};
-					}
-					BuildContent ((Gtk.Box)vbox, el);
-					break;
-				case "Row":
-					w = new Gtk.HBox (false, WelcomePageBranding.Spacing);
-					var heightAtt = el.Attribute ("minHeight");
-					if (heightAtt != null) {
-						int height = (int) heightAtt;
-						w.SizeRequested += delegate (object o, SizeRequestedArgs args) {
-							var req = args.Requisition;
-							req.Height = Math.Max (req.Height, height);
-							args.Requisition = req;
-						};
-					}
-					BuildContent ((Gtk.Box)w, el);
-					break;
-				case "ButtonBar":
-					w = new WelcomePageButtonBar (el);
-					fill = true;
-					break;
-				case "Links":
-					w = new WelcomePageLinksList (el);
-					break;
-				case "RecentProjects":
-					w = new WelcomePageRecentProjectsList (el);
-					break;
-				case "NewsFeed":
-					w = new WelcomePageNewsFeed (el);
-					break;
-				case "Youtube":
-					w = new WelcomePageYoutubeFeed (el);
-					break;
-				case "Apps":
-					w = new WelcomePageApps (el);
-					break;
-				default:
-					throw new InvalidOperationException ("Unknown welcome page element '" + el.Name + "'");
-				}
-
-				parentBox.PackStart (w, false, fill, 0);
-			}
-		}
-		
-		protected override bool OnExposeEvent (EventExpose evnt)
-		{
-			//draw the background
-
-			if (backgroundPixbuf != null) {
-				var gc = Style.BackgroundGC (State);
-				var height = backgroundPixbuf.Height;
-				var width = backgroundPixbuf.Width;
-				for (int y = Allocation.Y; y < Allocation.Bottom; y += height) {
-					if (evnt.Region.RectIn (new Gdk.Rectangle (Allocation.X, y, Allocation.Width, height)) == OverlapType.Out)
-						continue;
-					for (int x = Allocation.X; x < Allocation.Right && x < evnt.Area.Right; x += width) {
-						if (x + width < evnt.Area.X)
-							continue;
-						evnt.Window.DrawPixbuf (gc, backgroundPixbuf, 0, 0, x, y, width, height, RgbDither.None, 0, 0);
-					}
-				}
-			}
-
-			if (logoPixbuf != null) {
-				var gc = Style.BackgroundGC (State);
-				var lRect = new Rectangle (Allocation.X, Allocation.Y, logoPixbuf.Width, logoPixbuf.Height);
-				if (evnt.Region.RectIn (lRect) != OverlapType.Out)
-					evnt.Window.DrawPixbuf (gc, logoPixbuf, 0, 0, lRect.X, lRect.Y, lRect.Width, lRect.Height, RgbDither.None, 0, 0);
-				
-				var bgRect = new Rectangle (Allocation.X + logoPixbuf.Width, Allocation.Y, Allocation.Width - logoPixbuf.Width, topPixbuf.Height);
-				if (evnt.Region.RectIn (bgRect) != OverlapType.Out)
-					for (int x = bgRect.X; x < bgRect.Right; x += topPixbuf.Width)
-						evnt.Window.DrawPixbuf (gc, topPixbuf, 0, 0, x, bgRect.Y, topPixbuf.Width, bgRect.Height, RgbDither.None, 0, 0);
-			}
-			
-			foreach (Widget widget in Children)
-				PropagateExpose (widget, evnt);
-			
-			return true;
-		}
 		
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
 			IdeApp.Workbench.GuiLocked -= OnLock;
 			IdeApp.Workbench.GuiUnlocked -= OnUnlock;
+		}
+
+		class WelcomePageWidgetBackground : Gtk.EventBox
+		{
+			public WelcomePageWidget Owner { get; set; }
+
+			protected override bool OnExposeEvent (EventExpose evnt)
+			{
+				//draw the background
+
+				if (Owner.BackgroundImage != null) {
+					var gc = Style.BackgroundGC (State);
+					var height = Owner.BackgroundImage.Height;
+					var width = Owner.BackgroundImage.Width;
+					for (int y = Allocation.Y; y < Allocation.Bottom; y += height) {
+						if (evnt.Region.RectIn (new Gdk.Rectangle (Allocation.X, y, Allocation.Width, height)) == OverlapType.Out)
+							continue;
+						for (int x = Allocation.X; x < Allocation.Right && x < evnt.Area.Right; x += width) {
+							if (x + width < evnt.Area.X)
+								continue;
+							evnt.Window.DrawPixbuf (gc, Owner.BackgroundImage, 0, 0, x, y, width, height, RgbDither.None, 0, 0);
+						}
+					}
+				}
+
+				if (Owner.LogoImage != null) {
+					var gc = Style.BackgroundGC (State);
+					var lRect = new Rectangle (Allocation.X, Allocation.Y, Owner.LogoImage.Width, Owner.LogoImage.Height);
+					if (evnt.Region.RectIn (lRect) != OverlapType.Out)
+						evnt.Window.DrawPixbuf (gc, Owner.LogoImage, 0, 0, lRect.X, lRect.Y, lRect.Width, lRect.Height, RgbDither.None, 0, 0);
+					
+					var bgRect = new Rectangle (Allocation.X + Owner.LogoImage.Width, Allocation.Y, Allocation.Width - Owner.LogoImage.Width, Owner.TopBorderImage.Height);
+					if (evnt.Region.RectIn (bgRect) != OverlapType.Out)
+						for (int x = bgRect.X; x < bgRect.Right; x += Owner.TopBorderImage.Width)
+							evnt.Window.DrawPixbuf (gc, Owner.TopBorderImage, 0, 0, x, bgRect.Y, Owner.TopBorderImage.Width, bgRect.Height, RgbDither.None, 0, 0);
+				}
+				
+				foreach (Widget widget in Children)
+					PropagateExpose (widget, evnt);
+				
+				return true;
+			}
 		}
 	}
 }

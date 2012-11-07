@@ -1,10 +1,10 @@
 //
-// WelcomePageButtonBar.cs
+// WelcomePageColumn.cs
 //
 // Author:
-//       lluis <${AuthorEmail}>
+//       Lluis Sanchez Gual <lluis@xamarin.com>
 //
-// Copyright (c) 2012 lluis
+// Copyright (c) 2012 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,24 +25,30 @@
 // THE SOFTWARE.
 using System;
 using Gtk;
-using System.Xml.Linq;
-
-using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
-	public class WelcomePageButtonBar: HBox
+	public class WelcomePageColumn: Gtk.VBox
 	{
-		public WelcomePageButtonBar (params WelcomePageBarButton[] buttons)
+		public WelcomePageColumn ()
 		{
-			Spacing = Styles.WelcomeScreen.Links.LinkSeparation;
+			Spacing = Styles.WelcomeScreen.Spacing;
+			MinWidth = -1;
+		}
 
-			foreach (var button in buttons) {
-				PackStart (button, false, false, 0);
-			}
-			ShowAll ();
+		public WelcomePageColumn (params Gtk.Widget[] children): this ()
+		{
+			foreach (var c in children)
+				PackStart (c, false, false, 0);
+		}
+
+		public int MinWidth { get; set; }
+
+		protected override void OnSizeRequested (ref Requisition requisition)
+		{
+			base.OnSizeRequested (ref requisition);
+			if (MinWidth != -1)
+				requisition.Width = Math.Max (requisition.Width, MinWidth);
 		}
 	}
 }

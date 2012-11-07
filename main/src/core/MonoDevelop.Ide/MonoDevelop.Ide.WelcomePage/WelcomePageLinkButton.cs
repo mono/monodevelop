@@ -31,11 +31,11 @@ using System.Xml.Linq;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
-	class WelcomePageLinkButton : Gtk.Button
+	public class WelcomePageLinkButton : Gtk.Button
 	{
-		static readonly string linkUnderlinedFormat = "<span underline=\"single\" foreground=\"" + WelcomePageBranding.LinkColor + "\">{0}</span>";
-		static readonly string linkFormat = "<span foreground=\"" + WelcomePageBranding.LinkColor + "\">{0}</span>";
-		static readonly string descFormat = "<span size=\"small\" foreground=\"" + WelcomePageBranding.TextColor + "\">{0}</span>";
+		static readonly string linkUnderlinedFormat = "<span underline=\"single\" foreground=\"" + Styles.WelcomeScreen.Links.Color + "\">{0}</span>";
+		static readonly string linkFormat = "<span foreground=\"" + Styles.WelcomeScreen.Links.Color + "\">{0}</span>";
+		static readonly string descFormat = "<span size=\"small\" foreground=\"" + Styles.WelcomeScreen.Pad.TextColor + "\">{0}</span>";
 		
 		Label label;
 		Image image;
@@ -43,37 +43,27 @@ namespace MonoDevelop.Ide.WelcomePage
 		Gtk.IconSize iconSize = IconSize.Menu;
 		HBox box;
 		
-		public WelcomePageLinkButton (XElement el)
-			: this (el, Gtk.IconSize.Menu)
-		{
-		}
-		
-		public WelcomePageLinkButton (XElement el, Gtk.IconSize iconSize)
+		public WelcomePageLinkButton (string title, string href, Gtk.IconSize iconSize = Gtk.IconSize.Menu, string icon = null, string desc = null, string tooltip = null)
 			: this ()
 		{
 			this.iconSize = iconSize;
 			
-			string title = (string) (el.Attribute ("title") ?? el.Attribute ("_title"));
 			if (string.IsNullOrEmpty (title))
 				throw new InvalidOperationException ("Link is missing title");
 			this.text = GettextCatalog.GetString (title);
 			
-			string href = (string) el.Attribute ("href");
 			if (string.IsNullOrEmpty (href))
 				throw new InvalidOperationException ("Link is missing href");
 			this.LinkUrl = href;
 			
-			string desc = (string) (el.Attribute ("desc") ?? el.Attribute ("_desc"));
 			if (!string.IsNullOrEmpty (desc))
 				this.desc = GettextCatalog.GetString (desc);
 			
-			string tooltip = (string) (el.Attribute ("tooltip") ?? el.Attribute ("_tooltip"));
 			if (!string.IsNullOrEmpty (tooltip))
 				this.TooltipText = GettextCatalog.GetString (tooltip);
 			else
 				this.TooltipText = GetLinkTooltip (href);
 			
-			string icon = (string) el.Attribute ("icon");
 			if (!string.IsNullOrEmpty (icon))
 				this.icon = icon;
 			

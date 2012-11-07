@@ -37,7 +37,7 @@ using Gdk;
 
 namespace MonoDevelop.Components.Docking
 {
-	public class DockFrame: HBox
+	public class DockFrame: HBox, Animatable
 	{
 		internal const double ItemDockCenterArea = 0.4;
 		internal const int GroupDockSeparatorSize = 40;
@@ -61,6 +61,7 @@ namespace MonoDevelop.Components.Docking
 		DockBar dockBarTop, dockBarBottom, dockBarLeft, dockBarRight;
 		VBox mainBox;
 		DockVisualStyle defaultStyle;
+		Gtk.Widget overlayWidget;
 
 		public DockFrame ()
 		{
@@ -113,6 +114,68 @@ namespace MonoDevelop.Components.Docking
 				dockBarRight.OnCompactLevelChanged ();
 				container.RelayoutWidgets ();
 			}
+		}
+
+		public void AddOverlayWidget (Widget widget, bool animate = false)
+		{
+			RemoveOverlayWidget (false);
+
+			this.overlayWidget = widget;
+			widget.Parent = this;
+			if (animate) {
+				currentOverlayPosition = Allocation.Y + Allocation.Height;
+				this.Animate (
+					"ShowOverlayWidget", 
+					ShowOverlayWidgetAnimation,
+					easing: Easing.CubicOut);
+			} else {
+				currentOverlayPosition = Allocation.Y;
+				QueueResize ();
+			}
+		}
+
+		public void RemoveOverlayWidget (bool animate = false)
+		{
+			this.AbortAnimation ("ShowOverlayWidget");
+			this.AbortAnimation ("HideOverlayWidget");
+
+			if (overlayWidget != null) {
+				if (animate) {
+					currentOverlayPosition = Allocation.Y;
+					this.Animate (
+						"HideOverlayWidget", 
+						HideOverlayWidgetAnimation,
+						finished: (a,b) => { 
+							if (overlayWidget != null) {
+								overlayWidget.Unparent ();
+								overlayWidget = null;
+							}
+						},
+						easing: Easing.SinOut);
+				} else {
+					overlayWidget.Unparent ();
+					overlayWidget = null;
+					QueueResize ();
+				}
+			}
+		}
+
+		int currentOverlayPosition;
+
+		void ShowOverlayWidgetAnimation (float value)
+		{
+			currentOverlayPosition = Allocation.Y + (int)((float)Allocation.Height * (1f - value));
+			overlayWidget.SizeAllocate (new Rectangle (Allocation.X, currentOverlayPosition, Allocation.Width, Allocation.Height));
+		}
+
+		void HideOverlayWidgetAnimation (float value)
+		{
+			currentOverlayPosition = Allocation.Y + (int)((float)Allocation.Height * value);
+			overlayWidget.SizeAllocate (new Rectangle (Allocation.X, currentOverlayPosition, Allocation.Width, Allocation.Height));
+		}
+
+		void Animatable.QueueDraw ()
+		{
 		}
 
 		// Registered region styles. We are using a list instead of a dictionary because
@@ -889,6 +952,13 @@ namespace MonoDevelop.Components.Docking
 				widget.Destroy ();
 			}
 		}
+
+		protected override void OnSizeRequested (ref Requisition requisition)
+		{
+			if (overlayWidget != null)
+				overlayWidget.SizeRequest ();
+			base.OnSizeRequested (ref requisition);
+		}
 		
 		protected override void OnSizeAllocated (Rectangle allocation)
 		{
@@ -898,6 +968,8 @@ namespace MonoDevelop.Components.Docking
 				Requisition r = tl.SizeRequest ();
 				tl.SizeAllocate (new Gdk.Rectangle (allocation.X + tl.X, allocation.Y + tl.Y, r.Width, r.Height));
 			}
+			if (overlayWidget != null)
+				overlayWidget.SizeAllocate (new Rectangle (Allocation.X, currentOverlayPosition, allocation.Width, allocation.Height));
 		}
 		
 		protected override void ForAll (bool include_internals, Callback callback)
@@ -906,6 +978,8 @@ namespace MonoDevelop.Components.Docking
 			List<DockFrameTopLevel> clone = new List<DockFrameTopLevel> (topLevels);
 			foreach (DockFrameTopLevel child in clone)
 				callback (child);
+			if (overlayWidget != null)
+				callback (overlayWidget);
 		}
 		
 		protected override void OnRealized ()

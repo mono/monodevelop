@@ -41,24 +41,23 @@ namespace MonoDevelop.Ide.WelcomePage
 		string actionLink;
 		private static Gdk.Cursor hand_cursor = new Gdk.Cursor(Gdk.CursorType.Hand1);
 
-		const bool ShowImage = false;
+		public string FontFamily { get; set; }
+		public string HoverColor { get; set; }
+		public string Color { get; set; }
+		public int FontSize { get; set; }
 
-		public WelcomePageBarButton (XElement el)
+		public WelcomePageBarButton (string title, string href, string iconResource = null)
 		{
-			VisibleWindow = false;
-			string title = (string)(el.Attribute ("title") ?? el.Attribute ("_title"));
-			if (string.IsNullOrEmpty (title))
-				throw new InvalidOperationException ("Link is missing title");
-			this.text = GettextCatalog.GetString (title);
-			
-			string href = (string)el.Attribute ("href");
-			if (string.IsNullOrEmpty (href))
-				throw new InvalidOperationException ("Link is missing href");
-			this.actionLink = href;
+			FontFamily = Platform.IsMac ? Styles.WelcomeScreen.FontFamilyMac : Styles.WelcomeScreen.FontFamilyWindows;
+			HoverColor = Styles.WelcomeScreen.Links.HoverColor;
+			Color = Styles.WelcomeScreen.Links.Color;
+			FontSize = Styles.WelcomeScreen.Links.FontSize;
 
-			string icon = (string)el.Attribute ("icon");
-			if (!string.IsNullOrEmpty (icon) && ShowImage) {
-				imageHover = WelcomePageBranding.GetImage (icon, true);
+			VisibleWindow = false;
+			this.text = GettextCatalog.GetString (title);
+			this.actionLink = href;
+			if (!string.IsNullOrEmpty (iconResource)) {
+				imageHover = Gdk.Pixbuf.LoadFromResource (iconResource);
 				imageNormal = ImageService.MakeTransparent (imageHover, 0.7);
 			}
 
@@ -102,13 +101,12 @@ namespace MonoDevelop.Ide.WelcomePage
 			return base.OnButtonReleaseEvent (evnt);
 		}
 
-		void Update ()
+		protected void Update ()
 		{
 			if (imageNormal != null)
 				image.Pixbuf = mouseOver ? imageHover : imageNormal;
-			var face = Platform.IsMac ? Styles.WelcomeScreen.FontFamilyMac : Styles.WelcomeScreen.FontFamilyWindows;
-			var color = mouseOver ? Styles.WelcomeScreen.Links.HoverColor : Styles.WelcomeScreen.Links.Color;
-			label.Markup = WelcomePageSection.FormatText (face, Styles.WelcomeScreen.Links.FontSize, color, text);
+			var color = mouseOver ? HoverColor : Color;
+			label.Markup = WelcomePageSection.FormatText (FontFamily, FontSize, color, text);
 		}
 	}
 }

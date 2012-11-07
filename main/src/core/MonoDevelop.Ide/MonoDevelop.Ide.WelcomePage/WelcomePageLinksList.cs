@@ -33,25 +33,14 @@ namespace MonoDevelop.Ide.WelcomePage
 {
 	public class WelcomePageLinksList : WelcomePageSection
 	{
-		public WelcomePageLinksList (XElement el): base (el)
+		public WelcomePageLinksList (string title = null, Gtk.IconSize iconSize = IconSize.Menu, bool homogeneous = false, params WelcomePageLinkButton[] links): base (title)
 		{
 			Gtk.VBox box = new VBox ();
-			IconSize iconSize = IconSize.Menu;
-			var iconSizeAtt = el.Attribute ("iconSize");
-			if (iconSizeAtt != null) {
-				iconSize = (IconSize) Enum.Parse (typeof (IconSize), (string) iconSizeAtt);
-			}
+			box.Homogeneous = homogeneous;
 			
-			var homogeneousAtt = el.Attribute ("homogeneous");
-			if (homogeneousAtt != null)
-				box.Homogeneous = (bool) homogeneousAtt;
-			
-			foreach (var child in el.Elements ()) {
-				if (child.Name != "Link")
-					throw new InvalidOperationException ("Unexpected child '" + child.Name + "'");
-				var button = new WelcomePageLinkButton (child, iconSize);
+			foreach (var button in links)
 				box.PackStart (button, true, false, 0);
-			}
+
 			SetContent (box);
 		}
 	}

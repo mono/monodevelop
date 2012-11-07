@@ -39,41 +39,16 @@ namespace MonoDevelop.Ide.WelcomePage
 	{
 		protected override void Run()
 		{
-			IdeApp.Workspace.FirstWorkspaceItemOpened += delegate {
-				if (WelcomePageOptions.CloseWhenSolutionOpened) {
-					var doc = ShowWelcomePageHandler.GetWelcomePageDoc ();
-					if (doc != null)
-						doc.Close ();
-				}
-			};
-			IdeApp.Workspace.LastWorkspaceItemClosed += delegate {
-				if (WelcomePageOptions.CloseWhenSolutionOpened && WelcomePageOptions.ShowOnStartup)
-					ShowWelcomePageHandler.Show ();
-			};
-			
-			if (WelcomePageOptions.ShowOnStartup)
-				IdeApp.Workbench.OpenDocument (new WelcomePageView (), true);
+			WelcomePageService.Initialize ();
+			WelcomePageService.ShowWelcomePage ();
 		}
 	}
 
 	class ShowWelcomePageHandler : CommandHandler
 	{
-		public static Document GetWelcomePageDoc ()
-		{
-			foreach (var d in IdeApp.Workbench.Documents)
-				if (d.GetContent<WelcomePageView>() != null)
-					return d;
-			return null;
-		}
-		
 		public static void Show ()
 		{
-			var wp = GetWelcomePageDoc ();
-			if (wp != null) {
-				wp.Select();
-			} else {
-				IdeApp.Workbench.OpenDocument (new WelcomePageView (), true);
-			}
+			WelcomePageService.ShowWelcomePage (true);
 		}
 		
 		protected override void Run()

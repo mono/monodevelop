@@ -36,31 +36,26 @@ using System.Net;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
-	class WelcomePageNewsFeed : WelcomePageSection
+	public class WelcomePageNewsFeed : WelcomePageSection
 	{
 		string newsUrl;
 		string id;
 		int limit;
-		XElement defaultContent;
 		bool destroyed;
 		Gtk.VBox box;
 		
-		public WelcomePageNewsFeed (XElement el): base (el)
+		public WelcomePageNewsFeed (string title, string newsUrl, string id, int limit = 5): base (title)
 		{
 			box = new VBox (false, Styles.WelcomeScreen.Pad.News.Item.MarginBottom);
-			newsUrl = (string) el.Attribute ("src");
 			if (string.IsNullOrEmpty (newsUrl))
 				throw new Exception ("News feed is missing src attribute");
-			id = (string) el.Attribute ("id");
 			if (string.IsNullOrEmpty (id))
 				throw new Exception ("News feed is missing id attribute");
 
-			limit = 5;
-			string limitString = (string) el.Attribute ("limit");
-			if (!string.IsNullOrEmpty (limitString))
-				limit = int.Parse (limitString);
-			
-			defaultContent = el;
+			this.newsUrl = newsUrl;
+			this.id = id;
+			this.limit = limit;
+
 			UpdateNews ();
 			LoadNews ();
 			SetContent (box);
@@ -239,7 +234,7 @@ namespace MonoDevelop.Ide.WelcomePage
 				}
 			}
 			
-			return defaultContent;
+			return new XElement ("News");
 		}
 	}
 }

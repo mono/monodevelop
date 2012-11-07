@@ -34,7 +34,7 @@ using System.Xml.Linq;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
-	class WelcomePageRecentProjectsList : WelcomePageSection
+	public class WelcomePageRecentProjectsList : WelcomePageSection
 	{
 		bool destroyed;
 		EventHandler recentChangesHandler;
@@ -43,16 +43,14 @@ namespace MonoDevelop.Ide.WelcomePage
 		Gdk.Pixbuf openProjectIcon;
 		Gdk.Pixbuf newProjectIcon;
 		
-		public WelcomePageRecentProjectsList (XElement el): base (el)
+		public WelcomePageRecentProjectsList (string title = null, int count = 10): base (title)
 		{
 			openProjectIcon = Gdk.Pixbuf.LoadFromResource ("open_solution.png");
 			newProjectIcon = Gdk.Pixbuf.LoadFromResource ("new_solution.png");
 
 			box = new VBox ();
 
-			var countAtt = el.Attribute ("count");
-			if (countAtt != null)
-				itemCount = (int) countAtt;
+			itemCount = count;
 			
 			recentChangesHandler = DispatchService.GuiDispatch (new EventHandler (RecentFilesChanged));
 			DesktopService.RecentFiles.Changed += recentChangesHandler;

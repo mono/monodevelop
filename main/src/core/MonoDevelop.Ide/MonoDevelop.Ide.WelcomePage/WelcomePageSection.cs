@@ -49,14 +49,12 @@ namespace MonoDevelop.Ide.WelcomePage
 			background = WelcomePageBranding.GetBackgroundImage ();
 		}
 
-		public WelcomePageSection (XElement el)
+		public WelcomePageSection (string title = null)
 		{
+			this.title = title;
+			VisibleWindow = false;
 			Add (root);
 			root.Show ();
-
-			title = (string) (el.Attribute ("title") ?? el.Attribute ("_title"));
-			if (!string.IsNullOrEmpty (title))
-				title = GettextCatalog.GetString (title);
 
 			uint p = Styles.WelcomeScreen.Pad.ShadowSize * 2;
 			root.SetPadding (p, p, p, p);
@@ -96,7 +94,7 @@ namespace MonoDevelop.Ide.WelcomePage
 				}
 
 				ctx.LineWidth = 1;
-				var rect = new Gdk.Rectangle (0, 0, Allocation.Width, Allocation.Height);
+				var rect = new Gdk.Rectangle (Allocation.X, Allocation.Y, Allocation.Width, Allocation.Height);
 
 				var shadowColor = CairoExtensions.ParseColor (Styles.WelcomeScreen.Pad.ShadowColor);
 				int inset = 2;
