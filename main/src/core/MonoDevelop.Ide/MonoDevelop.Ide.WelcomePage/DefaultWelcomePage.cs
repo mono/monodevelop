@@ -57,6 +57,9 @@ namespace MonoDevelop.Ide.WelcomePage
 				),
 				new WelcomePageColumn (
 					new WelcomePageNewsFeed ("Xamarin News", "http://software.xamarin.com/Service/News", "NewsLinks")
+				),
+				new WelcomePageColumn (
+					new WelcomePageTipOfTheDaySection ()
 				)
 			);
 			mainCol.PackStart (row2, false, false, 0);
