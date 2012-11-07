@@ -91,7 +91,8 @@ namespace MonoDevelop.Ide.Gui
 		Gtk.VBox fullViewVBox;
 		DockItem documentDockItem;
 		MainToolbar toolbar;
-		
+		MonoDevelopStatusBar bottomBar;
+
 		enum TargetList {
 			UriList = 100
 		}
@@ -124,6 +125,10 @@ namespace MonoDevelop.Ide.Gui
 
 		public Gtk.MenuBar TopMenu {
 			get { return topMenu; }
+		}
+
+		public MonoDevelopStatusBar BottomBar {
+			get { return bottomBar; }
 		}
 		
 		internal IWorkbenchWindow ActiveWorkbenchWindow {
@@ -844,9 +849,9 @@ namespace MonoDevelop.Ide.Gui
 
 			Add (fullViewVBox);
 			fullViewVBox.ShowAll ();
-			var bar = new MonoDevelopStatusBar ();
-			fullViewVBox.PackEnd (bar, false, true, 0);
-			bar.ShowAll ();
+			bottomBar = new MonoDevelopStatusBar ();
+			fullViewVBox.PackEnd (bottomBar, false, true, 0);
+			bottomBar.ShowAll ();
 			toolbarBox.PackStart (this.toolbar, true, true, 0);
 
 			// In order to get the correct bar height we need to calculate the tab size using the
@@ -912,7 +917,7 @@ namespace MonoDevelop.Ide.Gui
 			dit.DefaultVisible = false;
 
 			if ((MonoDevelop.Core.Platform.IsMac && System.Environment.OSVersion.Version.Major >= 11) || MonoDevelop.Core.Platform.IsWindows)
-				bar.HasResizeGrip = false;
+				bottomBar.HasResizeGrip = false;
 
 			if (MonoDevelop.Core.Platform.IsMac)
 				this.StatusBar.HasResizeGrip = true;

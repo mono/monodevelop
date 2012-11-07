@@ -61,6 +61,7 @@ namespace MonoDevelop.Ide.WelcomePage
 					welcomePage = new WelcomePageFrame (provider != null ? provider.CreateWidget () : new DefaultWelcomePage ());
 				}
 				welcomePage.UpdateProjectBar ();
+				((DefaultWorkbench)IdeApp.Workbench.RootWindow).BottomBar.Visible = false;
 				((DefaultWorkbench)IdeApp.Workbench.RootWindow).DockFrame.AddOverlayWidget (welcomePage, animate);
 				welcomePage.GrabFocus ();
 			}
@@ -70,6 +71,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		{
 			if (visible) {
 				visible = false;
+				((DefaultWorkbench)IdeApp.Workbench.RootWindow).BottomBar.Show ();
 				((DefaultWorkbench)IdeApp.Workbench.RootWindow).DockFrame.RemoveOverlayWidget (animate);
 			}
 		}

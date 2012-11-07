@@ -197,7 +197,10 @@ namespace MonoDevelop.Ide
 			monitor.Step (1);
 			
 			InternalLog.EnableErrorNotification ();
-			
+
+			MonoDevelop.Ide.WelcomePage.WelcomePageService.Initialize ();
+			MonoDevelop.Ide.WelcomePage.WelcomePageService.ShowWelcomePage ();
+
 			monitor.Step (1);
 
 			Counters.Initialization.Trace ("Restoring Workbench State");

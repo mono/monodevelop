@@ -92,16 +92,6 @@ namespace MonoDevelop.Ide.WelcomePage
 			IdeApp.Workbench.GuiUnlocked += OnUnlock;
 		}
 
-		protected override void OnRealized ()
-		{
-			Gdk.Color color = Gdk.Color.Zero;
-			if (!Gdk.Color.Parse (BackgroundColor, ref color))
-				color = Style.White;
-			ModifyBg (StateType.Normal, color);
-
-			base.OnRealized ();
-		}
-
 		void OnLock (object s, EventArgs a)
 		{
 			Sensitive = false;
@@ -127,6 +117,16 @@ namespace MonoDevelop.Ide.WelcomePage
 		class WelcomePageWidgetBackground : Gtk.EventBox
 		{
 			public WelcomePageWidget Owner { get; set; }
+
+			protected override void OnRealized ()
+			{
+				Gdk.Color color = Gdk.Color.Zero;
+				if (!Gdk.Color.Parse (Owner.BackgroundColor, ref color))
+					color = Style.White;
+				ModifyBg (StateType.Normal, color);
+
+				base.OnRealized ();
+			}
 
 			protected override bool OnExposeEvent (EventExpose evnt)
 			{

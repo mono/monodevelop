@@ -35,15 +35,6 @@ using System.Linq;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
-	class WelcomePageStartUp : CommandHandler
-	{
-		protected override void Run()
-		{
-			WelcomePageService.Initialize ();
-			WelcomePageService.ShowWelcomePage ();
-		}
-	}
-
 	class ShowWelcomePageHandler : CommandHandler
 	{
 		public static void Show ()
