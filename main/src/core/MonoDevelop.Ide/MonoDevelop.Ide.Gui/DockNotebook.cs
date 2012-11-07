@@ -576,7 +576,7 @@ namespace MonoDevelop.Ide.Gui
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
 			base.OnSizeRequested (ref requisition);
-			requisition.Height = notebook.Tabs.Any (t => !t.Hidden) ? totalHeight : 0;
+			requisition.Height = totalHeight;
 			requisition.Width = 0;
 		}
 
