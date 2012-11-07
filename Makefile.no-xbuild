@@ -23,7 +23,7 @@ CSC = INSERT_CSHARP_COMPILER
 MDBIN = $(MDROOT)/bin
 MDADDIN = $(MDROOT)/AddIns
 
-VERSION = 3.2.1
+VERSION = 3.2.2
 
 # Resources and files to be compiled/included as part of the project
 RESOURCES = \
