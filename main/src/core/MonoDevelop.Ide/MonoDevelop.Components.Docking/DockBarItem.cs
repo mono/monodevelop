@@ -364,6 +364,9 @@ namespace MonoDevelop.Components.Docking
 				it.Widget.FocusChild = null;
 			if (autoHideTimeout == uint.MaxValue) {
 				autoHideTimeout = GLib.Timeout.Add (force ? 0 : bar.Frame.AutoHideDelay, delegate {
+					// Don't hide if the context menu for the item is being shown.
+					if (it.ShowingContextMemu)
+						return true;
 					// Don't hide the item if it has the focus. Try again later.
 					if (it.Widget.FocusChild != null && !force)
 						return true;

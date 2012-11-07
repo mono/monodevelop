@@ -133,89 +133,8 @@ namespace MonoDevelop.Components.Docking
 					titleTab.VisualStyle = currentVisualStyle;
 					titleTab.SetLabel (Widget, icon, label);
 					titleTab.ShowAll ();
-					titleTab.ButtonPressEvent += HeaderButtonPress;
-					titleTab.ButtonReleaseEvent += HeaderButtonRelease;
-					titleTab.MotionNotifyEvent += HeaderMotion;
-					titleTab.KeyPressEvent += HeaderKeyPress;
-					titleTab.KeyReleaseEvent += HeaderKeyRelease;
 				}
 				return titleTab;
-			}
-		}
-
-		bool tabPressed, tabActivated;
-		double pressX, pressY;
-
-		void HeaderButtonPress (object ob, Gtk.ButtonPressEventArgs args)
-		{
-			if (args.Event.TriggersContextMenu ()) {
-				ShowDockPopupMenu (args.Event.Time);
-				args.RetVal = false;
-			} else if (args.Event.Button == 1) {
-				if (args.Event.Type == Gdk.EventType.ButtonPress) {
-					tabPressed = true;
-					pressX = args.Event.X;
-					pressY = args.Event.Y;
-				} else if (args.Event.Type == Gdk.EventType.TwoButtonPress) {
-					tabActivated = true;
-				}
-			}
-		}
-		
-		void HeaderButtonRelease (object ob, Gtk.ButtonReleaseEventArgs args)
-		{
-			if (tabActivated) {
-				tabActivated = false;
-				if (Status == DockItemStatus.AutoHide)
-					Status = DockItemStatus.Dockable;
-				else
-					Status = DockItemStatus.AutoHide;
-			}
-			else if (!args.Event.TriggersContextMenu () && args.Event.Button == 1) {
-				frame.DockInPlaceholder (this);
-				frame.HidePlaceholder ();
-				if (titleTab.GdkWindow != null)
-					titleTab.GdkWindow.Cursor = handCursor;
-				frame.Toplevel.KeyPressEvent -= HeaderKeyPress;
-				frame.Toplevel.KeyReleaseEvent -= HeaderKeyRelease;
-			}
-			tabPressed = false;
-		}
-		
-		void HeaderMotion (object ob, Gtk.MotionNotifyEventArgs args)
-		{
-			if (tabPressed && Math.Abs (args.Event.X - pressX) > 3 && Math.Abs (args.Event.Y - pressY) > 3) {
-				frame.ShowPlaceholder (this);
-				titleTab.GdkWindow.Cursor = fleurCursor;
-				frame.Toplevel.KeyPressEvent += HeaderKeyPress;
-				frame.Toplevel.KeyReleaseEvent += HeaderKeyRelease;
-				allowPlaceholderDocking = true;
-				tabPressed = false;
-			}
-			frame.UpdatePlaceholder (this, titleTab.Allocation.Size, allowPlaceholderDocking);
-		}
-		
-		[GLib.ConnectBeforeAttribute]
-		void HeaderKeyPress (object ob, Gtk.KeyPressEventArgs a)
-		{
-			if (a.Event.Key == Gdk.Key.Control_L || a.Event.Key == Gdk.Key.Control_R) {
-				allowPlaceholderDocking = false;
-				frame.UpdatePlaceholder (this, titleTab.Allocation.Size, false);
-			}
-			if (a.Event.Key == Gdk.Key.Escape) {
-				frame.HidePlaceholder ();
-				frame.Toplevel.KeyPressEvent -= HeaderKeyPress;
-				frame.Toplevel.KeyReleaseEvent -= HeaderKeyRelease;
-				Gdk.Pointer.Ungrab (0);
-			}
-		}
-				
-		[GLib.ConnectBeforeAttribute]
-		void HeaderKeyRelease (object ob, Gtk.KeyReleaseEventArgs a)
-		{
-			if (a.Event.Key == Gdk.Key.Control_L || a.Event.Key == Gdk.Key.Control_R) {
-				allowPlaceholderDocking = true;
-				frame.UpdatePlaceholder (this, titleTab.Allocation.Size, true);
 			}
 		}
 
@@ -613,6 +532,8 @@ namespace MonoDevelop.Components.Docking
 				return label;
 			}
 		}
+
+		internal bool ShowingContextMemu { get ; set; }
 		
 		internal void ShowDockPopupMenu (uint time)
 		{
@@ -648,7 +569,12 @@ namespace MonoDevelop.Components.Docking
 				menu.Append (citem);
 			}
 
+			ShowingContextMemu = true;
+
 			menu.ShowAll ();
+			menu.Hidden += (o,e) => {
+				ShowingContextMemu = false;
+			};
 			menu.Popup (null, null, null, 3, time);
 		}
 	}

@@ -32,6 +32,7 @@ using MonoDevelop.Ide.Gui;
 using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Components.Docking
 {
@@ -49,6 +50,10 @@ namespace MonoDevelop.Components.Docking
 		ImageButton btnDock;
 		ImageButton btnClose;
 		DockItem item;
+		bool allowPlaceholderDocking;
+
+		static Gdk.Cursor handCursor = new Gdk.Cursor (Gdk.CursorType.LeftPtr);
+		static Gdk.Cursor fleurCursor = new Gdk.Cursor (Gdk.CursorType.Fleur);
 
 		static Gdk.Pixbuf pixClose;
 		static Gdk.Pixbuf pixAutoHide;
@@ -75,6 +80,9 @@ namespace MonoDevelop.Components.Docking
 			this.VisibleWindow = false;
 			UpdateVisualStyle ();
 			NoShowAll = true;
+
+			KeyPressEvent += HeaderKeyPress;
+			KeyReleaseEvent += HeaderKeyRelease;
 		}
 
 		public DockVisualStyle VisualStyle {
@@ -236,6 +244,85 @@ namespace MonoDevelop.Components.Docking
 			} else {
 				btnDock.Image = null;
 				btnClose.Image = null;
+			}
+		}
+
+		bool tabPressed, tabActivated;
+		double pressX, pressY;
+
+		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
+		{
+			if (evnt.TriggersContextMenu ()) {
+				item.ShowDockPopupMenu (evnt.Time);
+				return false;
+			} else if (evnt.Button == 1) {
+				if (evnt.Type == Gdk.EventType.ButtonPress) {
+					tabPressed = true;
+					pressX = evnt.X;
+					pressY = evnt.Y;
+				} else if (evnt.Type == Gdk.EventType.TwoButtonPress) {
+					tabActivated = true;
+				}
+			}
+			return base.OnButtonPressEvent (evnt);
+		}
+
+		protected override bool OnButtonReleaseEvent (Gdk.EventButton evnt)
+		{
+			if (tabActivated) {
+				tabActivated = false;
+				if (item.Status == DockItemStatus.AutoHide)
+					item.Status = DockItemStatus.Dockable;
+				else
+					item.Status = DockItemStatus.AutoHide;
+			}
+			else if (!evnt.TriggersContextMenu () && evnt.Button == 1) {
+				frame.DockInPlaceholder (item);
+				frame.HidePlaceholder ();
+				if (GdkWindow != null)
+					GdkWindow.Cursor = handCursor;
+				frame.Toplevel.KeyPressEvent -= HeaderKeyPress;
+				frame.Toplevel.KeyReleaseEvent -= HeaderKeyRelease;
+			}
+			tabPressed = false;
+			return base.OnButtonReleaseEvent (evnt);
+		}
+
+		protected override bool OnMotionNotifyEvent (Gdk.EventMotion evnt)
+		{
+			if (tabPressed && Math.Abs (evnt.X - pressX) > 3 && Math.Abs (evnt.Y - pressY) > 3) {
+				frame.ShowPlaceholder (item);
+				GdkWindow.Cursor = fleurCursor;
+				frame.Toplevel.KeyPressEvent += HeaderKeyPress;
+				frame.Toplevel.KeyReleaseEvent += HeaderKeyRelease;
+				allowPlaceholderDocking = true;
+				tabPressed = false;
+			}
+			frame.UpdatePlaceholder (item, Allocation.Size, allowPlaceholderDocking);
+			return base.OnMotionNotifyEvent (evnt);
+		}
+		
+		[GLib.ConnectBeforeAttribute]
+		void HeaderKeyPress (object ob, Gtk.KeyPressEventArgs a)
+		{
+			if (a.Event.Key == Gdk.Key.Control_L || a.Event.Key == Gdk.Key.Control_R) {
+				allowPlaceholderDocking = false;
+				frame.UpdatePlaceholder (item, Allocation.Size, false);
+			}
+			if (a.Event.Key == Gdk.Key.Escape) {
+				frame.HidePlaceholder ();
+				frame.Toplevel.KeyPressEvent -= HeaderKeyPress;
+				frame.Toplevel.KeyReleaseEvent -= HeaderKeyRelease;
+				Gdk.Pointer.Ungrab (0);
+			}
+		}
+		
+		[GLib.ConnectBeforeAttribute]
+		void HeaderKeyRelease (object ob, Gtk.KeyReleaseEventArgs a)
+		{
+			if (a.Event.Key == Gdk.Key.Control_L || a.Event.Key == Gdk.Key.Control_R) {
+				allowPlaceholderDocking = true;
+				frame.UpdatePlaceholder (item, Allocation.Size, true);
 			}
 		}
 
