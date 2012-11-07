@@ -1825,7 +1825,6 @@
     <Compile Include="MonoDevelop.Ide.WelcomePage\WelcomePageRow.cs" />
     <Compile Include="MonoDevelop.Ide.WelcomePage\WelcomePageColumn.cs" />
     <Compile Include="MonoDevelop.Ide.WelcomePage\IWelcomePageProvider.cs" />
-    <Compile Include="MonoDevelop.Ide.TypeSystem\DocumentData.cs" />
     <Compile Include="MonoDevelop.Ide.WelcomePage\WelcomePageTipOfTheDaySection.cs" />
   </ItemGroup>
   <ItemGroup>
