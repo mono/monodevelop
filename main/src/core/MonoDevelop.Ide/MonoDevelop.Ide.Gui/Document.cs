@@ -54,7 +54,7 @@ using System.Collections.ObjectModel;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public sealed class Document : ICSharpCode.NRefactory.AbstractAnnotatable
+	public class Document : ICSharpCode.NRefactory.AbstractAnnotatable
 	{
 		internal object MemoryProbe = Counters.DocumentsInMemory.CreateMemoryProbe ();
 		
@@ -210,14 +210,14 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public  ICompilation Compilation {
+		public virtual ICompilation Compilation {
 			get {
 				return Project != null ? TypeSystemService.GetCompilation (Project) : GetProjectContext ().CreateCompilation ();
 			}
 		}
 		
 		ParsedDocument parsedDocument;
-		public ParsedDocument ParsedDocument {
+		public virtual ParsedDocument ParsedDocument {
 			get {
 				return parsedDocument;
 			}
@@ -753,7 +753,7 @@ namespace MonoDevelop.Ide.Gui
 		static IUnresolvedAssembly SystemCore { get { return systemCore.Value; } }
 		static IUnresolvedAssembly System { get { return system.Value; } }
 
-		public IProjectContent GetProjectContext ()
+		public virtual IProjectContent GetProjectContext ()
 		{
 			if (Project == null) {
 				if (singleFileContext == null) {

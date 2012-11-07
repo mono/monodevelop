@@ -76,10 +76,6 @@ namespace MonoDevelop.VersionControl
 			get { return false; }
 		}
 
-		bool IViewContent.IsHidden {
-			get { return false; }
-		}
-		
 		string IViewContent.PathRelativeToProject {
 			get { return ""; }
 		}
