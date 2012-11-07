@@ -224,6 +224,9 @@ namespace MonoDevelop.Components.Docking
 
 		public void RelayoutWidgets ()
 		{
+			if (layout != null)
+				layout.AddRemoveWidgets ();
+
 			needsRelayout = true;
 			QueueResize ();
 		}
