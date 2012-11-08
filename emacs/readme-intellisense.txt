@@ -4,9 +4,7 @@ October 2012
 
 This code has been imported with minor changes from Sourceforge. There are some caveats.
 
-1) There are dependencies on esense, and tooltip-help.el, available from:
-   - http://sourceforge.net/projects/esense/
-   - http://www.emacswiki.org/emacs/tooltip-help.el
+1) There are dependencies on esense, and tooltip-help.el. Modified versions are present in this directory (intellisense.el and intelli_tip.el respectively).
 
 2) Communication between emacs and the fsintellisense.exe subprocess are working, but the results are not always interpreted correctly.
 
