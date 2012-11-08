@@ -59,21 +59,65 @@ module ServiceSettings =
 /// Formatting of tool-tip information displayed in F# IntelliSense
 module internal TipFormatter = 
 
+  /// A standard memoization function
+  let memoize f = 
+      let d = new System.Collections.Generic.Dictionary<_,_>(HashIdentity.Structural)
+      fun x -> if d.ContainsKey x then d.[x] else let res = f x in d.[x] <- res; res
+
+  /// Memoize the objects that manage access to XML files.
+  ///
+  /// @todo consider if this needs to be a weak table in some way
+  let xmlDocProvider = memoize (fun x -> ICSharpCode.NRefactory.Documentation.XmlDocumentationProvider(x))
+
+  /// Return the XmlDocumentationProvider for an assembly
+  let findXmlDocProviderForAssembly file  = 
+        let tryExists s = try  if File.Exists s then Some s else None with _ -> None
+        let e = 
+            match tryExists (Path.ChangeExtension(file,"xml")) with 
+            | Some x -> Some x 
+            | None -> tryExists (Path.ChangeExtension(file,"XML"))
+        match e with 
+        | None -> None
+        | Some xmlFile ->
+        let docReader = xmlDocProvider xmlFile
+        if docReader = null then None else Some docReader
+
+
+  /// Format some of the data returned by the F# compiler
   let private buildFormatComment cmt (sb:StringBuilder) = 
     match cmt with
-    | XmlCommentText(s) -> sb.AppendLine("<i>" + GLib.Markup.EscapeText(s) + "</i>")
+    | XmlCommentText(s) -> sb.AppendLine("<i>" + GLib.Markup.EscapeText(s) + "</i>") |> ignore
     // For 'XmlCommentSignature' we could get documentation from 'xml' 
     // files, but I'm not sure whether these are available on Mono
-    | _ -> sb
+    | XmlCommentSignature(file,key) -> 
+        match findXmlDocProviderForAssembly file with 
+        | None -> ()
+        | Some docReader ->
+            let doc = docReader.GetDocumentation(key)
+            if not (System.String.IsNullOrEmpty(doc)) then 
+                let summary = 
+                    let tag1 = "<summary>"
+                    let tag2 = "</summary>"
+                    let idx1 = doc.IndexOf tag1
+                    let idx2 = doc.IndexOf tag2
+                    if (idx2 >= 0 && idx1 >= 0) then doc.Substring (idx1 + tag1.Length, idx2 - idx1 - tag1.Length)
+                    elif (idx1 >= 0) then doc.Substring (idx1 + tag1.Length)
+                    elif (idx2 >= 0) then doc.Substring (0, idx2 - 1)
+                    else doc
+                sb.AppendLine("<i>" + GLib.Markup.EscapeText(summary) + "</i>") |> ignore
+    | _ -> ()
 
-  // If 'isSingle' is true (meaning that this is the only tip displayed)
-  // then we add first line "Multiple overloads" because MD prints first
-  // int in bold (so that no overload is highlighted)
+  /// Format some of the data returned by the F# compiler
+  ///
+  /// If 'isSingle' is true (meaning that this is the only tip displayed)
+  /// then we add first line "Multiple overloads" because MD prints first
+  /// int in bold (so that no overload is highlighted)
   let private buildFormatElement isSingle el (sb:StringBuilder) =
     match el with 
-    | DataTipElementNone -> sb
+    | DataTipElementNone -> ()
     | DataTipElement(it, comment) -> 
-        sb.AppendLine(GLib.Markup.EscapeText(it)) |> buildFormatComment comment
+        sb.AppendLine(GLib.Markup.EscapeText(it)) |> ignore
+        buildFormatComment comment sb
     | DataTipElementGroup(items) -> 
         let items, msg = 
           if items.Length > 10 then 
@@ -82,24 +126,71 @@ module internal TipFormatter =
           else items, null
         if (isSingle && items.Length > 1) then
           sb.AppendLine("Multiple overloads") |> ignore
-        for (it, comment) in items do
-          sb.AppendLine(GLib.Markup.EscapeText(it)) |> buildFormatComment comment |> ignore
-        if msg <> null then sb.AppendFormat(msg) else sb
+        items |> Seq.iteri (fun i (it,comment) -> 
+          sb.AppendLine(GLib.Markup.EscapeText it)  |> ignore
+          if i = 0 then 
+              sb.Append(GLib.Markup.EscapeText "\n")  |> ignore
+              buildFormatComment comment sb |> ignore
+              sb.Append(GLib.Markup.EscapeText "\n")  |> ignore
+        )
+        if msg <> null then sb.Append(msg) |> ignore
     | DataTipElementCompositionError(err) -> 
-        sb.Append("Composition error: " + GLib.Markup.EscapeText(err))
+        sb.Append("Composition error: " + GLib.Markup.EscapeText(err)) |> ignore
       
+  /// Format some of the data returned by the F# compiler
   let private buildFormatTip tip (sb:StringBuilder) = 
     match tip with
-    | DataTipText([single]) -> sb |> buildFormatElement true single
+    | DataTipText([single]) -> buildFormatElement true single sb
     | DataTipText(its) -> 
         sb.AppendLine("Multiple items") |> ignore
-        its |> Seq.mapi (fun i it -> i = 0, it) |> Seq.fold (fun sb (first, item) ->
-          if not first then sb.AppendLine("\n--------------------\n") |> ignore
-          sb |> buildFormatElement false item) sb
+        its |> Seq.iteri (fun i item ->
+          if i <> 0 then sb.AppendLine("\n--------------------\n") |> ignore
+          buildFormatElement false item sb) 
 
   /// Format tool-tip that we get from the language service as string        
   let formatTip tip = 
-    (buildFormatTip tip (new StringBuilder())).ToString().Trim('\n', '\r')
+    let sb = new StringBuilder()
+    buildFormatTip tip sb
+    sb.ToString().Trim('\n', '\r')
+
+  /// For elements with XML docs, the paramater descriptions are buried in the XML. Fetch it.
+  let private extractParamTipFromComment paramName comment =  
+    match comment with
+    | XmlCommentText(s) -> None
+    // For 'XmlCommentSignature' we could get documentation from 'xml' 
+    // files, but I'm not sure whether these are available on Mono
+    | XmlCommentSignature(file,key) -> 
+        match findXmlDocProviderForAssembly file with 
+        | None -> None
+        | Some docReader ->
+            let doc = docReader.GetDocumentation(key)
+            if System.String.IsNullOrEmpty(doc) then  None else
+            // get the <param name="...">...</param> node
+            let summary = 
+                let tag1 = "<param name=\"" + paramName + "\">"
+                let tag2 = "</param>"
+                let idx1 = doc.IndexOf tag1
+                let idx2 = doc.IndexOf(tag2, max idx1 0) 
+                if (idx2 >= 0 && idx1 >= 0) then doc.Substring (idx1 + tag1.Length, idx2 - idx1 - tag1.Length)
+                elif (idx1 >= 0) then doc.Substring (idx1 + tag1.Length)
+                elif (idx2 >= 0) then doc.Substring (0, idx2 - 1)
+                else doc
+            // remove the <paramref name="..."> from the text
+            let summary = summary.Replace("<paramref name=\"","").Replace("\" />","").Replace("\"/>","")
+            Some (GLib.Markup.EscapeText(summary))
+    | _ -> None
+
+  /// For elements with XML docs, the paramater descriptions are buried in the XML. Fetch it.
+  let private extractParamTipFromElement paramName element = 
+      match element with 
+      | DataTipElementNone -> None
+      | DataTipElement(it, comment) -> extractParamTipFromComment paramName comment 
+      | DataTipElementGroup(items) -> List.tryPick (snd >> extractParamTipFromComment paramName) items
+      | DataTipElementCompositionError(err) -> None
+
+  /// For elements with XML docs, the paramater descriptions are buried in the XML. Fetch it.
+  let extractParamTip paramName (DataTipText elements) = 
+      List.tryPick (extractParamTipFromElement paramName) elements
 
   /// Formats tool-tip and turns the first line into heading
   /// MonoDevelop does this automatically for completion data, 
