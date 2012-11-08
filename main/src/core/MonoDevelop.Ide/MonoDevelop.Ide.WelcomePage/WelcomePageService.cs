@@ -62,7 +62,6 @@ namespace MonoDevelop.Ide.WelcomePage
 				visible = true;
 				if (welcomePage == null) {
 					var provider = AddinManager.GetExtensionObjects<IWelcomePageProvider> ().FirstOrDefault ();
-					provider = null;
 					welcomePage = new WelcomePageFrame (provider != null ? provider.CreateWidget () : new DefaultWelcomePage ());
 				}
 				welcomePage.UpdateProjectBar ();
