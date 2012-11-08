@@ -143,12 +143,6 @@ namespace MonoDevelop.Ide.WelcomePage
 				ModifyBg (StateType.Normal, color);
 
 				base.OnRealized ();
-
-				if (Owner.BackgroundImage != null) {
-					Gdk.Pixmap first, second;
-					Owner.BackgroundImage.RenderPixmapAndMask (out first, out second, 0);
-					GdkWindow.SetBackPixmap (first, false);
-				}
 			}
 
 			void DrawOverdraw (Cairo.Context context, double opacity)
@@ -159,8 +153,20 @@ namespace MonoDevelop.Ide.WelcomePage
 				context.RenderTiled (Owner.BackgroundImage, Allocation, new Gdk.Rectangle (Allocation.X, Allocation.Y + OverdrawOffset, Allocation.Width, Allocation.Height - OverdrawOffset), opacity);
 			}
 
+			void DrawBackground (Cairo.Context context)
+			{
+				if (Owner.BackgroundImage == null)
+					return;
+
+				context.RenderTiled (Owner.BackgroundImage, Allocation, Allocation, 1);
+			}
+
 			protected override bool OnExposeEvent (EventExpose evnt)
 			{
+				using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
+					DrawBackground (context);
+				}
+
 				if (Owner.LogoImage != null) {
 					var gc = Style.BackgroundGC (State);
 					var lRect = new Rectangle (Allocation.X, Allocation.Y, Owner.LogoImage.Width, Owner.LogoImage.Height);
@@ -178,8 +184,6 @@ namespace MonoDevelop.Ide.WelcomePage
 
 				if (OverdrawOpacity > 0) {
 					using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
-						context.Rectangle (Allocation.X, Allocation.Y + OverdrawOffset, Allocation.Width, Allocation.Height - OverdrawOffset);
-						context.Clip ();
 						DrawOverdraw (context, OverdrawOpacity);
 					}
 				}

@@ -35,7 +35,6 @@ namespace MonoDevelop.Ide.WelcomePage
 		Gtk.Image image;
 		Gtk.Label label;
 
-		string text;
 		Gdk.Pixbuf imageNormal, imageHover;
 		bool mouseOver;
 		string actionLink;
@@ -45,6 +44,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		public string HoverColor { get; set; }
 		public string Color { get; set; }
 		public int FontSize { get; set; }
+		protected string Text { get; set; }
 
 		public WelcomePageBarButton (string title, string href, string iconResource = null)
 		{
@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			FontSize = Styles.WelcomeScreen.Links.FontSize;
 
 			VisibleWindow = false;
-			this.text = GettextCatalog.GetString (title);
+			this.Text = GettextCatalog.GetString (title);
 			this.actionLink = href;
 			if (!string.IsNullOrEmpty (iconResource)) {
 				imageHover = Gdk.Pixbuf.LoadFromResource (iconResource);
@@ -95,10 +95,15 @@ namespace MonoDevelop.Ide.WelcomePage
 		protected override bool OnButtonReleaseEvent (Gdk.EventButton evnt)
 		{
 			if (evnt.Button == 1 && new Gdk.Rectangle (0, 0, Allocation.Width, Allocation.Height).Contains ((int)evnt.X, (int)evnt.Y)) {
-				WelcomePageSection.DispatchLink (actionLink);
+				OnClicked ();
 				return true;
 			}
 			return base.OnButtonReleaseEvent (evnt);
+		}
+
+		protected virtual void OnClicked ()
+		{
+			WelcomePageSection.DispatchLink (actionLink);
 		}
 
 		protected void Update ()
@@ -106,7 +111,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			if (imageNormal != null)
 				image.Pixbuf = mouseOver ? imageHover : imageNormal;
 			var color = mouseOver ? HoverColor : Color;
-			label.Markup = WelcomePageSection.FormatText (FontFamily, FontSize, color, text);
+			label.Markup = WelcomePageSection.FormatText (FontFamily, FontSize, color, Text);
 		}
 	}
 }
