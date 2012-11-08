@@ -852,7 +852,7 @@ namespace MonoDevelop.Ide.Gui
 				DockNotebookTab closingTab = closingTabs[index];
 				width = (int) (closingTab.WidthModifier * TabWidth);
 				int tmp = width;
-				return (c) => DrawTab (c, closingTab, Allocation, new Gdk.Rectangle (region.X, region.Y, tmp, region.Height), false, false, false);
+				return (c) => DrawTab (c, closingTab, Allocation, new Gdk.Rectangle (region.X, region.Y, tmp, region.Height), false, false, false, CreateTabLayout (closingTab));
 			}
 			return (c) => {};
 		}
@@ -889,7 +889,7 @@ namespace MonoDevelop.Ide.Gui
 
 				if (active) {
 					int tmp = x;
-					drawActive = c => DrawTab (c, tab, Allocation, new Gdk.Rectangle (tmp, y, width, Allocation.Height), true, true, draggingTab);
+					drawActive = c => DrawTab (c, tab, Allocation, new Gdk.Rectangle (tmp, y, width, Allocation.Height), true, true, draggingTab, CreateTabLayout (tab));
 					tab.Allocation = new Gdk.Rectangle (tmp, Allocation.Y, width, Allocation.Height);
 				} else {
 					int tmp = x;
@@ -899,7 +899,7 @@ namespace MonoDevelop.Ide.Gui
 						tmp = (int) (tab.SavedAllocation.X + (tmp - tab.SavedAllocation.X) * (1.0f - tab.SaveStrength));
 					}
 
-					drawCommands.Add (c => DrawTab (c, tab, Allocation, new Gdk.Rectangle (tmp, y, width, Allocation.Height), highlighted, false, false));
+					drawCommands.Add (c => DrawTab (c, tab, Allocation, new Gdk.Rectangle (tmp, y, width, Allocation.Height), highlighted, false, false, CreateTabLayout (tab)));
 					tab.Allocation = new Gdk.Rectangle (tmp, Allocation.Y, width, Allocation.Height);
 				}
 
@@ -958,7 +958,7 @@ namespace MonoDevelop.Ide.Gui
 			return base.OnExposeEvent (evnt);
 		}
 
-		void DrawTab (Cairo.Context ctx, DockNotebookTab tab, Gdk.Rectangle allocation, Gdk.Rectangle tabBounds, bool highlight, bool active, bool dragging)
+		void DrawTab (Cairo.Context ctx, DockNotebookTab tab, Gdk.Rectangle allocation, Gdk.Rectangle tabBounds, bool highlight, bool active, bool dragging, Pango.Layout la)
 		{
 			// This logic is stupid to have here, should be in the caller!
 			if (dragging) {
@@ -1022,8 +1022,6 @@ namespace MonoDevelop.Ide.Gui
 			}
 
 			// Render Text
-
-			var la = CreateTabLayout (tab);
 			int w = tabBounds.Width - (padding * 2 + closeSelImage.Width);
 			if (!drawCloseButton)
 				w += closeSelImage.Width;
@@ -1042,8 +1040,6 @@ namespace MonoDevelop.Ide.Gui
 				Pango.CairoHelper.ShowLayoutLine (ctx, la.GetLine (0));
 			}
 			la.Dispose ();
-
-
 		}
 
 		void LayoutTabBorder (Cairo.Context ctx, Gdk.Rectangle allocation, int contentWidth, int px, int margin, bool active = true)
