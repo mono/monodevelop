@@ -151,6 +151,16 @@ namespace MonoDevelop.Ide.WelcomePage
 				}
 			}
 
+			void DrawOverdraw (Cairo.Context context, double opacity)
+			{
+				if (Owner.BackgroundImage == null)
+					return;
+
+				Gdk.CairoHelper.SetSourcePixbuf (context, Owner.BackgroundImage, 0, 0);
+				context.Pattern.Extend = Cairo.Extend.Repeat;
+				context.PaintWithAlpha (opacity);
+			}
+
 			protected override bool OnExposeEvent (EventExpose evnt)
 			{
 				if (Owner.LogoImage != null) {
@@ -171,9 +181,8 @@ namespace MonoDevelop.Ide.WelcomePage
 				if (OverdrawOpacity > 0) {
 					using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
 						context.Rectangle (Allocation.X, Allocation.Y + OverdrawOffset, Allocation.Width, Allocation.Height - OverdrawOffset);
-						context.ClipPreserve ();
-						context.Color = new Cairo.Color (.95, .95, .95, OverdrawOpacity);
-						context.Fill ();
+						context.Clip ();
+						DrawOverdraw (context, OverdrawOpacity);
 					}
 				}
 				
