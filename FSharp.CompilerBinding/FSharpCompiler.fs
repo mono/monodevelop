@@ -444,7 +444,11 @@ module SourceCodeServices =
 
   type Parameter(wrapped:obj) = 
     member x.Name : string = wrapped?Name
-    member x.CanonicalTypeTextForSorting : string  = wrapped?CanonicalTypeTextForSorting
+    member x.CanonicalTypeTextForSorting : string option  = 
+      let fsc = FSharpCompiler.LatestAvailable
+      match fsc.ActualVersion with 
+      | FSharp_2_0 -> None
+      | FSharp_3_0 -> Some (wrapped?CanonicalTypeTextForSorting)
     member x.Display : string  = wrapped?Display
     member x.Description : string  = wrapped?Description
 
