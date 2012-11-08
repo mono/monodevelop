@@ -89,6 +89,12 @@ namespace Mono.TextEditor
 				};
 			}
 		}
+
+		public new void GrabFocus ()
+		{
+			TextArea.GrabFocus ();
+		}
+
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
