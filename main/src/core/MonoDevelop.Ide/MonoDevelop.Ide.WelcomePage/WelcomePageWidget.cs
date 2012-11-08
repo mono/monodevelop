@@ -157,7 +157,8 @@ namespace MonoDevelop.Ide.WelcomePage
 					return;
 
 				Gdk.CairoHelper.SetSourcePixbuf (context, Owner.BackgroundImage, 0, 0);
-				context.Pattern.Extend = Cairo.Extend.Repeat;
+				// FIXME: Gtk-sharp on windows does not expose this property, so commenting it out for now
+				//context.Pattern.Extend = Cairo.Extend.Repeat;
 				context.PaintWithAlpha (opacity);
 			}
 
