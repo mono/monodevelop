@@ -279,6 +279,7 @@ namespace MonoDevelop.Ide.Gui
 		string Tooltip { get; set; }
 		bool Notify { get; set; }
 		bool Hidden { get; set; }
+		bool Dirty { get; set; }
 	}
 
 	internal class DockNotebookTab: IDockNotebookTab, Animatable
@@ -305,6 +306,23 @@ namespace MonoDevelop.Ide.Gui
 		public float GlowStrength { get; set; }
 
 		public bool Hidden { get; set; }
+
+		public float DirtyStrength { get; set; }
+
+		bool dirty;
+		public bool Dirty {
+			get { return dirty; }
+			set { 
+				if (dirty == value)
+					return;
+				dirty = value;
+				this.Animate ("Dirty", (f) => DirtyStrength = f,
+				              easing: Easing.CubicInOut,
+				              start: DirtyStrength, end: value ? 1 : 0);
+			}
+		}
+
+
 
 		public string Text {
 			get {
@@ -403,9 +421,6 @@ namespace MonoDevelop.Ide.Gui
 		public Gtk.Button NextButton;
 		public MenuButton DropDownButton;
 
-		static Gdk.Pixbuf closeSelImage;
-		static Gdk.Pixbuf closeSelOverImage;
-
 		const int TopBarPadding = 3;
 		const int BottomBarPadding = 3;
 		const int LeftRightPadding = 10;
@@ -416,6 +431,7 @@ namespace MonoDevelop.Ide.Gui
 		const int TabSpacing = -1;
 		const int Radius = 2;
 		const int LeanWidth = 18;
+		const int CloseButtonSize = 14;
 
 		const int TextOffset = 1;
 
@@ -437,16 +453,6 @@ namespace MonoDevelop.Ide.Gui
 					              end: value,
 					              callback: f => TabWidth = (int) f);
 				}
-			}
-		}
-
-		static TabStrip ()
-		{
-			try {
-				closeSelImage = Gdk.Pixbuf.LoadFromResource ("MonoDevelop.Close.Selected.png");
-				closeSelOverImage = Gdk.Pixbuf.LoadFromResource ("MonoDevelop.Close.Selected.Over.png");
-			} catch (Exception e) {
-				MonoDevelop.Core.LoggingService.LogError ("Can't create pixbuf from resource: MonoDevelop.Close.png", e);
 			}
 		}
 
@@ -958,6 +964,59 @@ namespace MonoDevelop.Ide.Gui
 			return base.OnExposeEvent (evnt);
 		}
 
+		void DrawCloseButton (Cairo.Context context, Gdk.Point center, bool hovered, double opacity, double animationProgress)
+		{
+			if (hovered) {
+				double radius = 6;
+				context.Arc (center.X, center.Y, radius, 0, Math.PI * 2);
+				context.Color = new Cairo.Color (.6, .6, .6, opacity);
+				context.Fill ();
+
+				context.Color = new Cairo.Color (0.95, 0.95, 0.95, opacity);
+				context.LineWidth = 2;
+
+				context.MoveTo (center.X - 3, center.Y - 3);
+				context.LineTo (center.X + 3, center.Y + 3);
+				context.MoveTo (center.X - 3, center.Y + 3);
+				context.LineTo (center.X + 3, center.Y - 3);
+				context.Stroke ();
+			} else {
+				double lineColor = .63 - .1 * animationProgress;
+				double fillColor = .74;
+				
+				double heightMod = Math.Max (0, 1.0 - animationProgress * 2);
+				context.MoveTo (center.X - 3, center.Y - 3 * heightMod);
+				context.LineTo (center.X + 3, center.Y + 3 * heightMod);
+				context.MoveTo (center.X - 3, center.Y + 3 * heightMod);
+				context.LineTo (center.X + 3, center.Y - 3 * heightMod);
+				
+				context.LineWidth = 2;
+				context.Color = new Cairo.Color (lineColor, lineColor, lineColor, opacity);
+				context.Stroke ();
+				
+				if (animationProgress > 0.5) {
+					double partialProg = (animationProgress - 0.5) * 2;
+					context.MoveTo (center.X - 3, center.Y);
+					context.LineTo (center.X + 3, center.Y);
+					
+					context.LineWidth = 2 - partialProg;
+					context.Color = new Cairo.Color (lineColor, lineColor, lineColor, opacity);
+					context.Stroke ();
+					
+					
+					double radius = partialProg * 4;
+					context.Arc (center.X, center.Y, radius, 0, Math.PI * 2);
+					context.Color = new Cairo.Color (fillColor, fillColor, fillColor, opacity);
+					context.FillPreserve ();
+					
+					context.Color = new Cairo.Color (lineColor, lineColor, lineColor, opacity);
+					context.Stroke ();
+					
+					
+				}
+			}
+		}
+
 		void DrawTab (Cairo.Context ctx, DockNotebookTab tab, Gdk.Rectangle allocation, Gdk.Rectangle tabBounds, bool highlight, bool active, bool dragging, Pango.Layout la)
 		{
 			// This logic is stupid to have here, should be in the caller!
@@ -1007,24 +1066,22 @@ namespace MonoDevelop.Ide.Gui
 			// Render Close Button (do this first so we can tell how much text to render)
 			
 			var ch = allocation.Height - TopBarPadding - BottomBarPadding + CloseImageTopOffset;
-			var crect = new Gdk.Rectangle (tabBounds.Right - padding - closeSelImage.Width + 3, 
-			                               tabBounds.Y + TopBarPadding + (ch - closeSelImage.Height) / 2, 
-			                               closeSelImage.Width, closeSelImage.Height);
+			var crect = new Gdk.Rectangle (tabBounds.Right - padding - CloseButtonSize + 3, 
+			                               tabBounds.Y + TopBarPadding + (ch - CloseButtonSize) / 2, 
+			                               CloseButtonSize, CloseButtonSize);
 			tab.CloseButtonAllocation = crect;
 			tab.CloseButtonAllocation.Inflate (2, 2);
 
 			bool closeButtonHovered = tracker.Hovered && tab.CloseButtonAllocation.Contains (tracker.MousePosition) && tab.WidthModifier >= 1.0f;
 			bool drawCloseButton = tabBounds.Width > 60 || highlight || closeButtonHovered;
 			if (drawCloseButton) {
-				var closePix = closeButtonHovered ? closeSelOverImage : closeSelImage;
-				CairoHelper.SetSourcePixbuf (ctx, closePix, crect.X, crect.Y);
-				ctx.PaintWithAlpha (tab.Opacity);
+				DrawCloseButton (ctx, new Gdk.Point (crect.X + crect.Width / 2, crect.Y + crect.Height / 2), closeButtonHovered, tab.Opacity, tab.DirtyStrength);
 			}
 
 			// Render Text
-			int w = tabBounds.Width - (padding * 2 + closeSelImage.Width);
+			int w = tabBounds.Width - (padding * 2 + CloseButtonSize);
 			if (!drawCloseButton)
-				w += closeSelImage.Width;
+				w += CloseButtonSize;
 
 			int textStart = tabBounds.X + padding;
 

@@ -648,12 +648,9 @@ namespace MonoDevelop.Ide.Gui
 		{
 			fileTypeCondition.SetFileName (content.ContentName ?? content.UntitledName);
 
-			string markup = "";
-			if (content.IsDirty) 
-				markup += " font_style=\"italic\"";
-
-			tab.Markup = "<span" + markup + ">" + Title + "</span>";
+			tab.Text = Title;
 			tab.Notify = show_notification;
+			tab.Dirty = content.IsDirty;
 			
 			if (content.ContentName != null && content.ContentName != "") {
 				tab.Tooltip = content.ContentName;
