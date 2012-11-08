@@ -416,19 +416,24 @@ namespace MonoDevelop.Components
 			}
 		}
 
-		public static void RenderTiled (this Cairo.Context self, Gdk.Pixbuf source, Gdk.Rectangle area, double opacity = 1)
+		[DllImport ("libcairo-2.dll", CallingConvention = CallingConvention.Cdecl)]
+		static extern IntPtr cairo_pattern_set_extend(IntPtr pattern, CairoExtend extend);
+
+		enum CairoExtend {
+			CAIRO_EXTEND_NONE,
+			CAIRO_EXTEND_REPEAT,
+			CAIRO_EXTEND_REFLECT,
+			CAIRO_EXTEND_PAD
+		}
+
+		public static void RenderTiled (this Cairo.Context self, Gdk.Pixbuf source, Gdk.Rectangle area, Gdk.Rectangle clip, double opacity = 1)
 		{
-			int x = 0;
-			int y = area.Y;
-			while (y < area.Bottom) {
-				x = area.X;
-				while (x < area.Right) {
-					Gdk.CairoHelper.SetSourcePixbuf (self, source, x, y);
-					self.PaintWithAlpha (opacity);
-					x += source.Width;
-				}
-				y += source.Height;
-			}
+			Gdk.CairoHelper.SetSourcePixbuf (self, source, area.X, area.Y);
+			cairo_pattern_set_extend (self.Pattern.Pointer, CairoExtend.CAIRO_EXTEND_REPEAT);
+			self.Rectangle (area.ToCairoRect ());
+			self.Clip ();
+			self.PaintWithAlpha (opacity);
+			self.ResetClip ();
 		}
 
         public static void DisposeContext (Cairo.Context cr)

@@ -156,10 +156,7 @@ namespace MonoDevelop.Ide.WelcomePage
 				if (Owner.BackgroundImage == null)
 					return;
 
-				Gdk.CairoHelper.SetSourcePixbuf (context, Owner.BackgroundImage, 0, 0);
-				// FIXME: Gtk-sharp on windows does not expose this property, so commenting it out for now
-				//context.Pattern.Extend = Cairo.Extend.Repeat;
-				context.PaintWithAlpha (opacity);
+				context.RenderTiled (Owner.BackgroundImage, Allocation, new Gdk.Rectangle (Allocation.X, Allocation.Y + OverdrawOffset, Allocation.Width, Allocation.Height - OverdrawOffset), opacity);
 			}
 
 			protected override bool OnExposeEvent (EventExpose evnt)
