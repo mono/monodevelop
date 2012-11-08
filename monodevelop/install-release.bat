@@ -4,5 +4,5 @@ set MSBUILD=%WINDIR%\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe
 set MDROOT="%ProgramFiles(x86)%\MonoDevelop"
 rmdir /s /q pack
 mkdir pack\windows\Release
-%MDROOT%\bin\mdtool.exe setup pack bin\Debug\FSharpBinding.windows.addin.xml -d:pack\windows\Release
-%MDROOT%\bin\mdtool.exe setup install -y pack\windows\Release\MonoDevelop.FSharpBinding_3.2.1.mpack 
+%MDROOT%\bin\mdtool.exe setup pack bin\windows\Release\FSharpBinding.windows.addin.xml -d:pack\windows\Release
+%MDROOT%\bin\mdtool.exe setup install -y pack\windows\Release\MonoDevelop.FSharpBinding_3.2.2.mpack 
