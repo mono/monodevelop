@@ -1055,6 +1055,9 @@
     <EmbeddedResource Include="icons\errors-pad.png">
       <LogicalName>errors-pad.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\starburst.png">
+      <LogicalName>starburst.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
@@ -1827,6 +1830,7 @@
     <Compile Include="MonoDevelop.Ide.WelcomePage\IWelcomePageProvider.cs" />
     <Compile Include="MonoDevelop.Ide.WelcomePage\WelcomePageTipOfTheDaySection.cs" />
     <Compile Include="MonoDevelop.Components.Docking\DockItemTitleTab.cs" />
+    <Compile Include="MonoDevelop.Ide.WelcomePage\WelcomePageFirstRun.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

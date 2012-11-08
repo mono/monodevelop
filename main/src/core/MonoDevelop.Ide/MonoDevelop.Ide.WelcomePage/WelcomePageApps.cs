@@ -148,7 +148,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		}
 	}
 
-	public class SlidingImage : DrawingArea, Animatable
+	public class SlidingImage : EventBox, Animatable
 	{
 		AppPreviewModel model;
 		MouseTracker tracker;
@@ -176,6 +176,9 @@ namespace MonoDevelop.Ide.WelcomePage
 			set {
 				if (overLeft == value)
 					return;
+
+				GdkWindow.Cursor = value ? new Gdk.Cursor (Gdk.CursorType.Hand1) : null;
+
 				overLeft = value;
 				QueueDraw ();
 			}
@@ -189,6 +192,9 @@ namespace MonoDevelop.Ide.WelcomePage
 			set {
 				if (overRight == value)
 					return;
+
+				GdkWindow.Cursor = value ? new Gdk.Cursor (Gdk.CursorType.Hand1) : null;
+
 				overRight = value;
 				QueueDraw ();
 			}
@@ -196,6 +202,7 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		public SlidingImage (AppPreviewModel model)
 		{
+			VisibleWindow = false;
 			movement = Movement.Right;
 			HeightRequest = 320;
 			WidthRequest = 340;
@@ -306,6 +313,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
 			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
+				context.Translate (Allocation.X, Allocation.Y);
 				context.Rectangle (0, 0, Allocation.Width, Allocation.Height);
 				context.Color = new Cairo.Color (1, 1, 1);
 				context.Fill ();

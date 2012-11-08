@@ -29,6 +29,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using System.Linq;
@@ -36,12 +37,12 @@ using Gdk;
 using Gtk;
 using Mono.Addins;
 using MonoDevelop.Core;
+using MonoDevelop.Components;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Desktop;
 using System.Reflection;
 using System.Xml.Linq;
-using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
@@ -52,6 +53,18 @@ namespace MonoDevelop.Ide.WelcomePage
 		public Gdk.Pixbuf TopBorderImage { get; set; }
 		public Gdk.Pixbuf BackgroundImage { get; set; }
 		public string BackgroundColor { get; set; }
+
+		protected double OverdrawOpacity {
+			get { return Background.OverdrawOpacity; }
+			set { Background.OverdrawOpacity = value; }
+		}
+
+		protected int OverdrawOffset {
+			get { return Background.OverdrawOffset; }
+			set { Background.OverdrawOffset = value; }
+		}
+
+		WelcomePageWidgetBackground Background { get; set; }
 
 		public bool ShowScrollbars { get; set; }
 
@@ -64,6 +77,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			LogoHeight = 90;
 
 			var background = new WelcomePageWidgetBackground ();
+			Background = background;
 			background.Owner = this;
 			var mainAlignment = new Gtk.Alignment (0f, 0f, 1f, 1f);
 			background.Add (mainAlignment);
@@ -101,7 +115,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		{
 			Sensitive = true;
 		}
-		
+
 		protected virtual void BuildContent (Container parent)
 		{
 		}
@@ -114,9 +128,12 @@ namespace MonoDevelop.Ide.WelcomePage
 			IdeApp.Workbench.GuiUnlocked -= OnUnlock;
 		}
 
-		class WelcomePageWidgetBackground : Gtk.EventBox
+		public class WelcomePageWidgetBackground : Gtk.EventBox
 		{
 			public WelcomePageWidget Owner { get; set; }
+
+			public double OverdrawOpacity { get; set; }
+			public int OverdrawOffset { get; set; }
 
 			protected override void OnRealized ()
 			{
@@ -128,23 +145,18 @@ namespace MonoDevelop.Ide.WelcomePage
 				base.OnRealized ();
 			}
 
+			public void DrawBackground (Cairo.Context context, double opacity)
+			{
+				if (Owner.BackgroundImage == null)
+					return;
+				context.RenderTiled (Owner.BackgroundImage, Allocation, opacity);
+			}
+
 			protected override bool OnExposeEvent (EventExpose evnt)
 			{
 				//draw the background
-
-				if (Owner.BackgroundImage != null) {
-					var gc = Style.BackgroundGC (State);
-					var height = Owner.BackgroundImage.Height;
-					var width = Owner.BackgroundImage.Width;
-					for (int y = Allocation.Y; y < Allocation.Bottom; y += height) {
-						if (evnt.Region.RectIn (new Gdk.Rectangle (Allocation.X, y, Allocation.Width, height)) == OverlapType.Out)
-							continue;
-						for (int x = Allocation.X; x < Allocation.Right && x < evnt.Area.Right; x += width) {
-							if (x + width < evnt.Area.X)
-								continue;
-							evnt.Window.DrawPixbuf (gc, Owner.BackgroundImage, 0, 0, x, y, width, height, RgbDither.None, 0, 0);
-						}
-					}
+				using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
+					DrawBackground (context, 1);
 				}
 
 				if (Owner.LogoImage != null) {
@@ -161,6 +173,14 @@ namespace MonoDevelop.Ide.WelcomePage
 				
 				foreach (Widget widget in Children)
 					PropagateExpose (widget, evnt);
+
+				if (OverdrawOpacity > 0) {
+					using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
+						context.Rectangle (Allocation.X, Allocation.Y + OverdrawOffset, Allocation.Width, Allocation.Height - OverdrawOffset);
+						context.Clip ();
+						DrawBackground (context, OverdrawOpacity);
+					}
+				}
 				
 				return true;
 			}

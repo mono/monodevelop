@@ -263,18 +263,18 @@ namespace MonoDevelop.Components
             }
         }
 
-        public static void RoundedRectangle(Cairo.Context cr, double x, double y, double w, double h, double r)
+        public static void RoundedRectangle(this Cairo.Context cr, double x, double y, double w, double h, double r)
         {
             RoundedRectangle(cr, x, y, w, h, r, CairoCorners.All, false);
         }
 
-        public static void RoundedRectangle(Cairo.Context cr, double x, double y, double w, double h,
+		public static void RoundedRectangle(this Cairo.Context cr, double x, double y, double w, double h,
             double r, CairoCorners corners)
         {
             RoundedRectangle(cr, x, y, w, h, r, corners, false);
         }
 
-        public static void RoundedRectangle(Cairo.Context cr, double x, double y, double w, double h,
+		public static void RoundedRectangle(this Cairo.Context cr, double x, double y, double w, double h,
             double r, CairoCorners corners, bool topBottomFallsThrough)
         {
             if(topBottomFallsThrough && corners == CairoCorners.None) {
@@ -333,7 +333,90 @@ namespace MonoDevelop.Components
             }
         }
 
-		public static void RenderTiled (this Cairo.Context self, Gdk.Pixbuf source, Gdk.Rectangle area)
+		static void ShadowGradient (Cairo.Gradient lg, double strength)
+		{
+			lg.AddColorStop (0, new Cairo.Color (0, 0, 0, strength));
+			lg.AddColorStop (1.0/6.0, new Cairo.Color (0, 0, 0, .85 * strength));
+			lg.AddColorStop (2.0/6.0, new Cairo.Color (0, 0, 0, .54 * strength));
+			lg.AddColorStop (3.0/6.0, new Cairo.Color (0, 0, 0, .24 * strength));
+			lg.AddColorStop (4.0/6.0, new Cairo.Color (0, 0, 0, .07 * strength));
+			lg.AddColorStop (5.0/6.0, new Cairo.Color (0, 0, 0, .01 * strength));
+			lg.AddColorStop (1, new Cairo.Color (0, 0, 0, 0));
+		}
+
+		// VERY SLOW, only use on cached renders
+		public static void RenderOuterShadow (this Cairo.Context self, Gdk.Rectangle area, int size, int rounding, double strength)
+		{
+			area.Inflate (-1, -1);
+			size++;
+
+			int doubleRounding = rounding * 2;
+			// left side
+			self.Rectangle (area.X - size, area.Y + rounding, size, area.Height - doubleRounding - 1);
+			using (var lg = new LinearGradient (area.X, 0, area.X - size, 0)) {
+				ShadowGradient (lg, strength);
+				self.Pattern = lg;
+				self.Fill ();
+			}
+
+			// right side
+			self.Rectangle (area.Right, area.Y + rounding, size, area.Height - doubleRounding - 1);
+			using (var lg = new LinearGradient (area.Right, 0, area.Right + size, 0)) {
+				ShadowGradient (lg, strength);
+				self.Pattern = lg;
+				self.Fill ();
+			}
+
+			// top side
+			self.Rectangle (area.X + rounding, area.Y - size, area.Width - doubleRounding - 1, size);
+			using (var lg = new LinearGradient (0, area.Y, 0, area.Y - size)) {
+				ShadowGradient (lg, strength);
+				self.Pattern = lg;
+				self.Fill ();
+			}
+
+			// bottom side
+			self.Rectangle (area.X + rounding, area.Bottom, area.Width - doubleRounding - 1, size);
+			using (var lg = new LinearGradient (0, area.Bottom, 0, area.Bottom + size)) {
+				ShadowGradient (lg, strength);
+				self.Pattern = lg;
+				self.Fill ();
+			}
+
+			// top left corner
+			self.Rectangle (area.X - size, area.Y - size, size + rounding, size + rounding);
+			using (var rg = new RadialGradient (area.X + rounding, area.Y + rounding, rounding, area.X + rounding, area.Y + rounding, size + rounding)) {
+				ShadowGradient (rg, strength);
+				self.Pattern = rg;
+				self.Fill ();
+			}
+
+			// top right corner
+			self.Rectangle (area.Right - rounding, area.Y - size, size + rounding, size + rounding);
+			using (var rg = new RadialGradient (area.Right - rounding, area.Y + rounding, rounding, area.Right - rounding, area.Y + rounding, size + rounding)) {
+				ShadowGradient (rg, strength);
+				self.Pattern = rg;
+				self.Fill ();
+			}
+
+			// bottom left corner
+			self.Rectangle (area.X - size, area.Bottom - rounding, size + rounding, size + rounding);
+			using (var rg = new RadialGradient (area.X + rounding, area.Bottom - rounding, rounding, area.X + rounding, area.Bottom - rounding, size + rounding)) {
+				ShadowGradient (rg, strength);
+				self.Pattern = rg;
+				self.Fill ();
+			}
+
+			// bottom right corner
+			self.Rectangle (area.Right - rounding, area.Bottom - rounding, size + rounding, size + rounding);
+			using (var rg = new RadialGradient (area.Right - rounding, area.Bottom - rounding, rounding, area.Right - rounding, area.Bottom - rounding, size + rounding)) {
+				ShadowGradient (rg, strength);
+				self.Pattern = rg;
+				self.Fill ();
+			}
+		}
+
+		public static void RenderTiled (this Cairo.Context self, Gdk.Pixbuf source, Gdk.Rectangle area, double opacity = 1)
 		{
 			int x = 0;
 			int y = area.Y;
@@ -341,7 +424,7 @@ namespace MonoDevelop.Components
 				x = area.X;
 				while (x < area.Right) {
 					Gdk.CairoHelper.SetSourcePixbuf (self, source, x, y);
-					self.Paint ();
+					self.PaintWithAlpha (opacity);
 					x += source.Width;
 				}
 				y += source.Height;
@@ -474,18 +557,15 @@ namespace MonoDevelop.Components
 		public static void CachedDraw (this Cairo.Context self, ref SurfaceWrapper surface, Gdk.Rectangle region, 
 		                               object parameters = null, float opacity = 1.0f, Action<Cairo.Context, float> draw = null)
 		{
-			if (!Platform.IsWindows) {
-				self.Translate (region.X, region.Y);
-				draw(self, opacity);
-				self.Translate (-region.X, -region.Y);
-				return;
-			}
+			double displayScale = QuartzSurface.GetRetinaScale (self);
+			int targetWidth = (int) (region.Width * displayScale);
+			int targetHeight = (int) (region.Height * displayScale);
 
 			bool redraw = false;
-			if (surface == null || surface.Width != region.Width || surface.Height != region.Height) {
+			if (surface == null || surface.Width != targetWidth || surface.Height != targetHeight) {
 				if (surface != null)
 					surface.Dispose ();
-				surface = new SurfaceWrapper (self, region.Width, region.Height);
+				surface = new SurfaceWrapper (self, targetWidth, targetHeight);
 				redraw = true;
 			} else if ((surface.Data == null && parameters != null) || (surface.Data != null && !surface.Data.Equals (parameters))) {
 				redraw = true;
@@ -498,12 +578,19 @@ namespace MonoDevelop.Components
 					context.Operator = Operator.Clear;
 					context.Paint();
 					context.Operator = Operator.Over;
+					context.Save ();
+					context.Scale (displayScale, displayScale);
 					draw(context, 1.0f);
+					context.Restore ();
 				}
 			}
 
-			self.SetSourceSurface (surface.Surface, region.X, region.Y);
+			self.Save ();
+			self.Translate (region.X, region.Y);
+			self.Scale (1 / displayScale, 1 / displayScale);
+			self.SetSourceSurface (surface.Surface, 0, 0);
 			self.PaintWithAlpha (opacity);
+			self.Restore ();
 		}
 	}
 

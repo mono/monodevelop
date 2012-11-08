@@ -190,7 +190,7 @@ namespace MonoDevelop.Components
 		}
 	}
 
-	static class AnimationExtensions
+	public static class AnimationExtensions
 	{
 		class Info
 		{
