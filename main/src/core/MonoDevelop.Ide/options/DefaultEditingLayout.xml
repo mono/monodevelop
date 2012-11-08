@@ -4,9 +4,7 @@
     <dock floating="no" floatx="0" floaty="0" height="-1" width="-1" name="__dock_1">
       <paned position="263" locked="no" orientation="horizontal" name="__dock_18">
         <notebook page="2" locked="no" orientation="vertical" name="__dock_19">
-          <item locked="no" orientation="vertical" name="MonoDevelop.Ide.Gui.Pads.ClassPad" />
           <item locked="no" orientation="vertical" name="MonoDevelop.Ide.Gui.Pads.ProjectPad" />
-          <item locked="no" orientation="vertical" name="MonoDevelop.Ide.Gui.Pads.HelpTree" />
         </notebook>
         <paned position="645" locked="no" orientation="vertical" name="__dock_21">
           <item locked="yes" orientation="vertical" name="Documents" />
@@ -19,9 +17,7 @@
     <dock floating="no" floatx="0" floaty="0" height="-1" width="-1" name="__dock_1">
       <paned position="263" locked="no" orientation="horizontal" name="__dock_18">
         <notebook page="2" locked="no" orientation="vertical" name="__dock_19">
-          <item locked="no" orientation="vertical" name="MonoDevelop.Ide.Gui.Pads.ClassPad" />
           <item locked="no" orientation="vertical" name="MonoDevelop.Ide.Gui.Pads.ProjectPad" />
-          <item locked="no" orientation="vertical" name="MonoDevelop.Ide.Gui.Pads.HelpTree" />
         </notebook>
         <paned position="645" locked="no" orientation="vertical" name="__dock_21">
           <item locked="yes" orientation="vertical" name="Documents" />
