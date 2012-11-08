@@ -331,7 +331,7 @@ namespace MonoDevelop.Components
 				context.Arc(x + r, y + r, r, Math.PI, Math.PI * 1.5);
 			}
 			else
-				CairoExtensions.RoundedRectangle (context, 0.5, 0.5, region.Width - 1, region.Height - 1, r);
+				CairoExtensions.RoundedRectangle (context, region.X + 0.5, region.Y + 0.5, region.Width - 1, region.Height - 1, r);
 		}
 
 		/// <summary>
