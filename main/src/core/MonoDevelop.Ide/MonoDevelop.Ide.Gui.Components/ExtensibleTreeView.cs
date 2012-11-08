@@ -1764,12 +1764,14 @@ namespace MonoDevelop.Ide.Gui.Components
 				CommandEntrySet eset = IdeApp.CommandService.CreateCommandEntrySet (ctx, menuPath);
 				
 				eset.AddItem (Command.Separator);
-				CommandEntrySet opset = eset.AddItemSet (GettextCatalog.GetString ("Display Options"));
-				opset.AddItem (ViewCommands.TreeDisplayOptionList);
-				opset.AddItem (Command.Separator);
-				opset.AddItem (ViewCommands.ResetTreeDisplayOptions);
-				opset.AddItem (ViewCommands.RefreshTree);
-				opset.AddItem (ViewCommands.CollapseAllTreeNodes);
+				if (!tnav.Clone ().MoveToParent ()) {
+					CommandEntrySet opset = eset.AddItemSet (GettextCatalog.GetString ("Display Options"));
+					opset.AddItem (ViewCommands.TreeDisplayOptionList);
+					opset.AddItem (Command.Separator);
+					opset.AddItem (ViewCommands.ResetTreeDisplayOptions);
+				//	opset.AddItem (ViewCommands.CollapseAllTreeNodes);
+				}
+				eset.AddItem (ViewCommands.RefreshTree);
 				return IdeApp.CommandService.CreateMenu (eset, this);
 			}
 		}
@@ -1788,19 +1790,27 @@ namespace MonoDevelop.Ide.Gui.Components
 		protected void OptionToggled (string optionId)
 		{
 			globalOptions [optionId] = !globalOptions [optionId];
-			RefreshTree ();
+			RefreshRoots ();
 		}
-		
+
 		[CommandHandler (ViewCommands.ResetTreeDisplayOptions)]
 		protected void ResetOptions ()
 		{
-			foreach (TreeNodeNavigator node in GetSelectedNodes ()) {
-				Gtk.TreeIter it = node.CurrentPosition._iter;
-				if (store.IterIsValid (it)) {
-					ITreeBuilder tb = CreateBuilder (it);
-					tb.UpdateAll ();
-				}
-			}
+			foreach (TreePadOption op in options)
+				globalOptions [op.Id] = op.DefaultValue;
+
+			RefreshRoots ();
+		}
+
+		void RefreshRoots ()
+		{
+			Gtk.TreeIter it;
+			if (!store.GetIterFirst (out it))
+				return;
+			do {
+				ITreeBuilder tb = CreateBuilder (it);
+				tb.UpdateAll ();
+			} while (store.IterNext (ref it));
 		}
 
 		protected void RefreshTree ()
