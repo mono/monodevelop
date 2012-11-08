@@ -11,11 +11,29 @@
     <RootNamespace>MonoDevelop.Core</RootNamespace>
     <BuildInfo>..\..\..\build\bin\buildinfo</BuildInfo>
     <VcRevision>..\..\..\vcrevision</VcRevision>
-    <Git>git</Git>
-    <Git Condition="Exists('c:\Program Files\Git\bin\git.exe')">c:\Program Files\Git\bin\git.exe</Git>
-    <Git Condition="Exists('c:\Program Files (x86)\Git\bin\git.exe')">c:\Program Files (x86)\Git\bin\git.exe</Git>
-    <Git Condition="Exists('/usr/bin/git')">/usr/bin/git</Git>
   </PropertyGroup>
+  <Choose>
+    <When Condition=" Exists('c:\Program Files\Git\bin\git.exe') ">
+      <PropertyGroup>
+        <Git>c:\Program Files\Git\bin\git.exe</Git>
+      </PropertyGroup>
+    </When>
+    <When Condition=" Exists('c:\Program Files (x86)\Git\bin\git.exe') ">
+      <PropertyGroup>
+        <Git>c:\Program Files (x86)\Git\bin\git.exe</Git>
+      </PropertyGroup>
+    </When>
+    <When Condition=" Exists('/usr/bin/git') ">
+      <PropertyGroup>
+        <Git>/usr/bin/git</Git>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <PropertyGroup>
+        <Git>git</Git>
+          </PropertyGroup>
+    </Otherwise>
+  </Choose>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
