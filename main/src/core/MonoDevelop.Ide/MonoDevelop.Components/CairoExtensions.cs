@@ -430,7 +430,7 @@ namespace MonoDevelop.Components
 		{
 			Gdk.CairoHelper.SetSourcePixbuf (self, source, area.X, area.Y);
 			cairo_pattern_set_extend (self.Pattern.Pointer, CairoExtend.CAIRO_EXTEND_REPEAT);
-			self.Rectangle (area.ToCairoRect ());
+			self.Rectangle (clip.ToCairoRect ());
 			self.Clip ();
 			self.PaintWithAlpha (opacity);
 			self.ResetClip ();
