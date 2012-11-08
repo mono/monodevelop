@@ -52,12 +52,17 @@ namespace MonoDevelop.Ide.WelcomePage
 			};
 		}
 
+		public static bool WelcomePageVisible {
+			get { return visible; }
+		}
+
 		public static void ShowWelcomePage (bool animate = false)
 		{
 			if (!visible) {
 				visible = true;
 				if (welcomePage == null) {
 					var provider = AddinManager.GetExtensionObjects<IWelcomePageProvider> ().FirstOrDefault ();
+					provider = null;
 					welcomePage = new WelcomePageFrame (provider != null ? provider.CreateWidget () : new DefaultWelcomePage ());
 				}
 				welcomePage.UpdateProjectBar ();
@@ -71,6 +76,8 @@ namespace MonoDevelop.Ide.WelcomePage
 		{
 			if (visible) {
 				visible = false;
+				if (IdeApp.Workspace.IsOpen || IdeApp.Workbench.Documents.Count > 0)
+					animate = true;
 				((DefaultWorkbench)IdeApp.Workbench.RootWindow).BottomBar.Show ();
 				((DefaultWorkbench)IdeApp.Workbench.RootWindow).DockFrame.RemoveOverlayWidget (animate);
 			}

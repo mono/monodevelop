@@ -739,6 +739,8 @@ namespace MonoDevelop.Ide.Gui
 			if (lastActive == ActiveWorkbenchWindow)
 				return;
 
+			WelcomePage.WelcomePageService.HideWelcomePage ();
+
 			if (lastActive != null)
 				((SdiWorkspaceWindow)lastActive).OnDeactivated ();
 
@@ -1228,6 +1230,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void ActivatePad (PadCodon padContent, bool giveFocus)
 		{
+			WelcomePage.WelcomePageService.HideWelcomePage ();
+
 			DockItem item = GetDockItem (padContent);
 			if (item != null)
 				item.Present (giveFocus);

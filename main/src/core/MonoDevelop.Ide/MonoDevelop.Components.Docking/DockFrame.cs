@@ -116,12 +116,16 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 
+		internal bool OverlayWidgetVisible { get; set; }
+
 		public void AddOverlayWidget (Widget widget, bool animate = false)
 		{
 			RemoveOverlayWidget (false);
 
 			this.overlayWidget = widget;
 			widget.Parent = this;
+			OverlayWidgetVisible = true;
+			MinimizeAllAutohidden ();
 			if (animate) {
 				currentOverlayPosition = Allocation.Y + Allocation.Height;
 				this.Animate (
@@ -138,6 +142,7 @@ namespace MonoDevelop.Components.Docking
 		{
 			this.AbortAnimation ("ShowOverlayWidget");
 			this.AbortAnimation ("HideOverlayWidget");
+			OverlayWidgetVisible = false;
 
 			if (overlayWidget != null) {
 				if (animate) {
@@ -993,11 +998,16 @@ namespace MonoDevelop.Components.Docking
 
 		protected override bool OnButtonPressEvent (EventButton evnt)
 		{
+			MinimizeAllAutohidden ();
+			return base.OnButtonPressEvent (evnt);
+		}
+
+		void MinimizeAllAutohidden ()
+		{
 			foreach (var it in GetItems ()) {
 				if (it.Visible && it.Status == DockItemStatus.AutoHide)
 					it.Minimize ();
 			}
-			return base.OnButtonPressEvent (evnt);
 		}
 
 		static internal bool IsWindows {

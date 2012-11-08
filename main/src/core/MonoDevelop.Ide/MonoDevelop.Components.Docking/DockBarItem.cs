@@ -310,7 +310,7 @@ namespace MonoDevelop.Components.Docking
 		void AutoShow ()
 		{
 			UnscheduleAutoHide ();
-			if (autoShowFrame == null) {
+			if (autoShowFrame == null && !bar.Frame.OverlayWidgetVisible) {
 				if (hiddenFrame != null)
 					bar.Frame.AutoHide (it, hiddenFrame, false);
 				autoShowFrame = bar.Frame.AutoShow (it, bar, size);
