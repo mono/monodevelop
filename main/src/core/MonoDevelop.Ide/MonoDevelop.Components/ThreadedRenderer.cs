@@ -37,6 +37,12 @@ namespace MonoDevelop.Ide
 		SurfaceWrapper surface;
 		ManualResetEventSlim runningSignal;
 
+		static ThreadedRenderer ()
+		{
+			// Initialize enough threads for all renderers at once so they dont all stutter at the start
+			ThreadPool.SetMinThreads (20, 20);
+		}
+
 		public ThreadedRenderer (Gtk.Widget owner)
 		{
 			this.owner = owner;
@@ -89,7 +95,6 @@ namespace MonoDevelop.Ide
 					surface = new SurfaceWrapper (similar, TargetWidth, TargetHeight);
 				}
 			}
-
 			runningSignal.Reset ();
 			ThreadPool.QueueUserWorkItem (new WaitCallback (this.OnDraw), drawCallback);
 			owner.QueueDraw ();
@@ -119,7 +124,6 @@ namespace MonoDevelop.Ide
 				context.Operator = Cairo.Operator.Over;
 
 				context.Scale (Scale, Scale);
-
 				callback (context);
 			}
 			runningSignal.Set ();

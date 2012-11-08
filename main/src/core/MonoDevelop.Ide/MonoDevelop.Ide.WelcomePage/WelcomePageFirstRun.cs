@@ -39,7 +39,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		static readonly Gdk.Size WidgetSize = new Gdk.Size (880 + 2 * Padding, 460 + 2 * Padding);
 		static readonly Gdk.Point TitlePosition = new Gdk.Point (Padding + 52, Padding + 60);
 		static readonly Gdk.Point TextPosition = new Gdk.Point (Padding + 52, Padding + 120);
-		static readonly Gdk.Size ButtonSize = new Gdk.Size (150, 30);
+		static readonly Gdk.Size ButtonSize = new Gdk.Size (200, 30);
 		static readonly Gdk.Point ButtonPosistion = new Gdk.Point ((Padding + 250) - ButtonSize.Width / 2, (WidgetSize.Height - 80 - Padding) - ButtonSize.Height / 2);
 		static readonly Gdk.Point IconPosition = new Gdk.Point (WidgetSize.Width - 220 - Padding, WidgetSize.Height / 2);
 		static readonly double PreviewSize = 350;
@@ -47,6 +47,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		Gdk.Pixbuf starburst;
 		Gdk.Pixbuf brandedIcon;
 
+		ThreadedRenderer renderer;
 		MouseTracker tracker;
 
 		bool buttonHovered;
@@ -88,6 +89,8 @@ namespace MonoDevelop.Ide.WelcomePage
 			}
 
 			TitleOffset = TextOffset = IconOffset = new Gdk.Point ();
+
+			renderer = new ThreadedRenderer (this);
 
 			tracker = new MouseTracker (this);
 			tracker.MouseMoved += (sender, e) => {
@@ -299,10 +302,17 @@ namespace MonoDevelop.Ide.WelcomePage
 			}
 		}
 
-		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+		public new void QueueDraw ()
 		{
-			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
-				context.Translate (Allocation.X, Allocation.Y);
+			GLib.Timeout.Add (0, () => {
+				Draw ();
+				return false;
+			});
+		}
+
+		void Draw ()
+		{
+			renderer.QueueThreadedDraw ((context) => {
 				Gdk.Rectangle main = new Gdk.Rectangle (0, 0, Allocation.Width, Allocation.Height);
 				context.CachedDraw (ref backgroundSurface, main, opacity: (float)BackgroundOpacity,
 				                    draw: (ctx, opacity) => RenderBackground (ctx, main));
@@ -311,13 +321,23 @@ namespace MonoDevelop.Ide.WelcomePage
 				context.CachedDraw (ref textSurface, RenderTextPosition, TextSize, null, (float)TextOpacity, (ctx, alpha) => RenderText (ctx, new Gdk.Point (), alpha));
 				context.CachedDraw (ref buttonSurface, ButtonPosistion, ButtonSize, new { Hovered = ButtonHovered }, (float)ButtonOpacity, (ctx, alpha) => RenderButton (ctx, new Gdk.Point (), alpha, ButtonHovered));
 				RenderPreview (context, RenderIconPosition, IconOpacity);
+			});
+		}
+
+		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+		{
+			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
+				if (!renderer.Show (context)) {
+					Draw ();
+					renderer.Show (context);
+				}
 			}
 			return base.OnExposeEvent (evnt);
 		}
 
 		protected override bool OnButtonReleaseEvent (Gdk.EventButton evnt)
 		{
-			if (evnt.Button == 1) {
+			if (evnt.Button == 1 && ButtonHovered) {
 				this.Animate ("FadeOut", 
 				              (f) => TitleOpacity = TextOpacity = IconOpacity = ButtonOpacity = BackgroundOpacity = f, 
 				              start: 1, end: 0,
@@ -337,8 +357,8 @@ namespace MonoDevelop.Ide.WelcomePage
 			var layout = new Pango.Layout (context);
 			layout.FontDescription = Pango.FontDescription.FromString (Platform.IsMac ? Styles.WelcomeScreen.FontFamilyMac : Styles.WelcomeScreen.FontFamilyWindows);
 			layout.FontDescription.AbsoluteSize = Pango.Units.FromPixels (16);
+			layout.SetText ("Start Building Apps");
 
-			layout.SetText ("Get Started");
 			return layout;
 		}
 
