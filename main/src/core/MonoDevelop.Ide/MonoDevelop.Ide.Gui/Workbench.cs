@@ -113,7 +113,7 @@ namespace MonoDevelop.Ide.Gui
 			workbench.Memento = memento;
 			Counters.Initialization.Trace ("Making Visible");
 			RootWindow.Visible = true;
-			workbench.CurrentLayout = "Default";
+			workbench.CurrentLayout = "Solution";
 			
 			// now we have an layout set notify it
 			Counters.Initialization.Trace ("Setting layout");

@@ -1072,7 +1072,6 @@ namespace MonoDevelop.Ide
 			item.ConfigurationsChanged -= configurationsChanged;
 			
 			if (Items.Count == 0) {
-				IdeApp.Workbench.CurrentLayout = "Default";
 				if (LastWorkspaceItemClosed != null)
 					LastWorkspaceItemClosed (this, EventArgs.Empty);
 			}

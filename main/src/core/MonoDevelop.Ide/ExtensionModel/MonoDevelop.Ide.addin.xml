@@ -212,9 +212,6 @@
 	</Extension>
 	
 	<Extension path="/MonoDevelop/Ide/WorkbenchLayouts">
-		<Layout id="Default" _name="Default">
-			<LayoutPad id="ProjectPad" status="AutoHide" />
-		</Layout>
 		<Layout id="Solution" _name="Solution" />
 	</Extension>
 	
