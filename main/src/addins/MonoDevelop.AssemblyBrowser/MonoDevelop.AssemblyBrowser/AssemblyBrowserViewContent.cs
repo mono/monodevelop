@@ -32,6 +32,7 @@ using MonoDevelop.Refactoring;
 using System;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -62,6 +63,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public AssemblyBrowserViewContent()
 		{
+			ContentName = GettextCatalog.GetString ("Assembly Browser");
 			widget = new AssemblyBrowserWidget ();
 			IsDisposed = false;
 		}
