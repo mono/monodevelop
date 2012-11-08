@@ -120,7 +120,7 @@ namespace MonoDevelop.CodeActions
 				var fix = fix_;
 				var escapedLabel = fix.Title.Replace ("_", "__");
 				var label = (mnemonic <= 10)
-						? "_" + (mnemonic++ % 10).ToString () + " " + escapedLabel
+					? "_" + (mnemonic++ % 10).ToString () + " " + escapedLabel
 						: "  " + escapedLabel;
 				var menuItem = new Gtk.MenuItem (label);
 				menuItem.Activated += new ContextActionRunner (fix, document, loc).Run;
@@ -146,7 +146,7 @@ namespace MonoDevelop.CodeActions
 				if (alreadyInserted.Contains (ir.Inspector))
 					continue;
 				alreadyInserted.Add (ir.Inspector);
-			
+				
 				var label = GettextCatalog.GetString ("_Inspection options for \"{0}\"", ir.Inspector.Title);
 				var menuItem = new Gtk.MenuItem (label);
 				menuItem.Activated += analysisFix.ShowOptions;
@@ -157,6 +157,33 @@ namespace MonoDevelop.CodeActions
 				items++;
 			}
 
+			foreach (var fix_ in fixes.Where (f => f.BoundToIssue != null)) {
+				var fix = fix_;
+				foreach (var inspector_ in RefactoringService.GetInspectors (document.Editor.MimeType).Where (i => i.GetSeverity () != ICSharpCode.NRefactory.CSharp.Severity.None)) {
+					var inspector = inspector_;
+
+					if (inspector.IdString.IndexOf (fix.BoundToIssue.FullName, StringComparison.Ordinal) < 0)
+						continue;
+					if (first) {
+						menu.Add (new Gtk.SeparatorMenuItem ());
+						first = false;
+					}
+					if (alreadyInserted.Contains (inspector))
+						continue;
+					alreadyInserted.Add (inspector);
+					
+					var label = GettextCatalog.GetString ("_Inspection options for \"{0}\"", inspector.Title);
+					var menuItem = new Gtk.MenuItem (label);
+					menuItem.Activated += delegate {
+						MessageService.RunCustomDialog (new CodeIssueOptionsDialog (inspector), MessageService.RootWindow);
+						menu.Destroy ();
+					};
+					menu.Add (menuItem);
+					break;
+				}
+
+				items++;
+			}
 		}
 		
 		void PopupQuickFixMenu (Gdk.EventButton evt)

@@ -27,6 +27,7 @@ using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory;
 using System.Threading;
 using System.Collections.Generic;
+using System;
 
 namespace MonoDevelop.CodeActions
 {
@@ -55,6 +56,12 @@ namespace MonoDevelop.CodeActions
 		/// Gets or sets the description of the provider (used in the option panel).
 		/// </summary>
 		public string Description { get; set; }
+
+		/// <summary>
+		/// Gets or sets the code issue all actions are bound to. 
+		/// This allows to split the action and the issue provider.
+		/// </summary>
+		public Type BoundToIssue { get; set; }
 
 		/// <summary>
 		/// Gets the identifier string used as property ID tag.

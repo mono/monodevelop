@@ -36,16 +36,16 @@ namespace MonoDevelop.CodeIssues
 {
 	partial class CodeIssueOptionsDialog : Gtk.Dialog
 	{
-		readonly InspectorResults r;
+		readonly CodeIssueProvider inpector;
 		
-		public CodeIssueOptionsDialog (InspectorResults act)
+		public CodeIssueOptionsDialog (CodeIssueProvider inpector)
 		{
-			this.r = act;
+			this.inpector = inpector;
 			Build ();
 			HasSeparator = false;
 
-			labelInspectionTitle.Text = r.Inspector.Title;
-			var s = r.Inspector.GetSeverity ();
+			labelInspectionTitle.Text = inpector.Title;
+			var s = inpector.GetSeverity ();
 			radiobuttonHide.Active = s == Severity.None;
 			radiobuttonError.Active = s == Severity.Error;
 			radiobuttonWarning.Active = s == Severity.Warning;
@@ -62,15 +62,15 @@ namespace MonoDevelop.CodeIssues
 		void HandleClicked (object sender, EventArgs e)
 		{
 			if (radiobuttonHide.Active) {
-				r.Inspector.SetSeverity (Severity.None);
+				inpector.SetSeverity (Severity.None);
 			} else if (radiobuttonError.Active) {
-				r.Inspector.SetSeverity (Severity.Error);
+				inpector.SetSeverity (Severity.Error);
 			} else if (radiobuttonWarning.Active) {
-				r.Inspector.SetSeverity (Severity.Warning);
+				inpector.SetSeverity (Severity.Warning);
 			} else if (radiobuttonHint.Active) {
-				r.Inspector.SetSeverity (Severity.Hint);
+				inpector.SetSeverity (Severity.Hint);
 			} else if (radiobuttonSuggestion.Active) {
-				r.Inspector.SetSeverity (Severity.Suggestion);
+				inpector.SetSeverity (Severity.Suggestion);
 			}
 			MonoDevelop.SourceEditor.OptionPanels.ColorShemeEditor.RefreshAllColors ();
 			Destroy ();

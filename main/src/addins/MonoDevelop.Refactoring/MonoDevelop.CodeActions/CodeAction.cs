@@ -43,6 +43,12 @@ namespace MonoDevelop.CodeActions
 		/// </summary>
 		public string IdString { get; set; }
 
+		/// <summary>
+		/// Gets or sets the code issue this action is bound to. 
+		/// This allows to split the action and the issue provider.
+		/// </summary>
+		public Type BoundToIssue { get; set; }
+
 		public CodeAction ()
 		{
 			IdString = GetType ().FullName;

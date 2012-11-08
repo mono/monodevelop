@@ -46,7 +46,7 @@ namespace MonoDevelop.AnalysisCore.Fixes
 		public override string OptionsTitle { get { return Inspector.Title; } }
 		public override void ShowResultOptionsDialog ()
 		{
-			MessageService.RunCustomDialog (new CodeIssueOptionsDialog (this), MessageService.RootWindow);
+			MessageService.RunCustomDialog (new CodeIssueOptionsDialog (Inspector), MessageService.RootWindow);
 		}
 		
 	}

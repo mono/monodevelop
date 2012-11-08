@@ -52,6 +52,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			Description = GettextCatalog.GetString (attr.Description ?? "");
 			Category = GettextCatalog.GetString (attr.Category ?? "");
 			MimeType = "text/x-csharp";
+			BoundToIssue = attr.BoundToIssue;
 		}
 
 		public override IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions (MonoDevelop.Ide.Gui.Document document, TextLocation loc, CancellationToken cancellationToken)
@@ -72,7 +73,9 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				if (actionId.Count <= num) {
 					actionId.Add (provider.GetType ().FullName + "'" + num);
 				}
-				yield return new NRefactoryCodeAction (actionId[num], GettextCatalog.GetString (action.Description ?? ""), action);
+				yield return new NRefactoryCodeAction (actionId[num], GettextCatalog.GetString (action.Description ?? ""), action) {
+					BoundToIssue = this.BoundToIssue
+				};
 				num++;
 			}
 		}
