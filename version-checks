@@ -17,7 +17,7 @@ DEP[0]=md-addins
 DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
 DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
-DEP_NEEDED_VERSION[0]=1dcbe0cf7119e722d93cefb7cde2ffcf6d1143df
+DEP_NEEDED_VERSION[0]=129d6f8d16fe720760c40c1c6ecb249dabc357b2
 DEP_BRANCH_AND_REMOTE[0]="ui-refresh origin/ui-refresh"
 
 # heap-shot
