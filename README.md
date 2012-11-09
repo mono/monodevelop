@@ -108,7 +108,9 @@ To enable some logging you can use
 The addin gets released to http://addins.monodevelop.com under project 'FSharp' (project index 48). Contact @sega, @tpetricek or @funnelweb to make an update.
 
 To build the .mpack files to upload to this site, use 
-    make -f Makefile.monodevelop packs
+    cd monodevelop
+    ./configure.sh
+    make packs
 
 The files go under pack/...
 
