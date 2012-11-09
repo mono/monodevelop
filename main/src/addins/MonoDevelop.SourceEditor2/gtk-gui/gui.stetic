@@ -506,7 +506,7 @@
                   <widget class="Gtk.CheckButton" id="enableHighlightUsagesCheckbutton">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="Label" translatable="yes">Highlight _identifier reuse</property>
+                    <property name="Label" translatable="yes">Highlight _identifier references</property>
                     <property name="DrawIndicator">True</property>
                     <property name="HasLabel">True</property>
                     <property name="UseUnderline">True</property>

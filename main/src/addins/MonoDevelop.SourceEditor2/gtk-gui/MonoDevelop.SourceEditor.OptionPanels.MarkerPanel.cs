@@ -126,7 +126,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.enableHighlightUsagesCheckbutton = new global::Gtk.CheckButton ();
 			this.enableHighlightUsagesCheckbutton.CanFocus = true;
 			this.enableHighlightUsagesCheckbutton.Name = "enableHighlightUsagesCheckbutton";
-			this.enableHighlightUsagesCheckbutton.Label = global::Mono.Unix.Catalog.GetString ("Highlight _identifier reuse");
+			this.enableHighlightUsagesCheckbutton.Label = global::Mono.Unix.Catalog.GetString ("Highlight _identifier references");
 			this.enableHighlightUsagesCheckbutton.DrawIndicator = true;
 			this.enableHighlightUsagesCheckbutton.UseUnderline = true;
 			this.vbox3.Add (this.enableHighlightUsagesCheckbutton);
