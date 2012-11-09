@@ -50,7 +50,7 @@ namespace MonoDevelop.Debugger
 			string oldLayout = IdeApp.Workbench.CurrentLayout;
 			IdeApp.Workbench.CurrentLayout = "Debug";
 
-			ExecutionContext context = new ExecutionContext (DebuggingService.GetExecutionHandler (), IdeApp.Workbench.ProgressMonitors);
+			ExecutionContext context = new ExecutionContext (DebuggingService.GetExecutionHandler (), IdeApp.Workbench.ProgressMonitors, IdeApp.Workspace.ActiveExecutionTarget);
 
 			IAsyncOperation op = opers.Execute (entry, context);
 			op.Completed += delegate {
