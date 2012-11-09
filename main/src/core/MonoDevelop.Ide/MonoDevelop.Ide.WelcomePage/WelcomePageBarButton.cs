@@ -65,8 +65,9 @@ namespace MonoDevelop.Ide.WelcomePage
 			box.Spacing = Styles.WelcomeScreen.Links.IconTextSpacing;
 			image = new Image ();
 			label = new Label ();
-			if (imageNormal != null)
-				box.PackStart (image, false, false, 0);
+			box.PackStart (image, false, false, 0);
+			if (imageNormal == null)
+				image.NoShowAll = true;
 			box.PackStart (label, false, false, 0);
 			box.ShowAll ();
 			Add (box);
@@ -74,6 +75,22 @@ namespace MonoDevelop.Ide.WelcomePage
 			Update ();
 
 			Events |= (Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask | Gdk.EventMask.ButtonReleaseMask);
+		}
+
+		protected void SetImage (Gdk.Pixbuf normal, Gdk.Pixbuf hover)
+		{
+			imageHover = hover;
+			imageNormal = normal;
+
+			if (imageNormal == null) {
+				image.NoShowAll = true;
+				image.Hide ();
+			} else {
+				image.NoShowAll = false;
+				ShowAll ();
+			}
+
+			Update ();
 		}
 
 		protected override bool OnEnterNotifyEvent (Gdk.EventCrossing evnt)
