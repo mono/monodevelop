@@ -200,6 +200,8 @@ module internal CommandInput =
     ==================
     help               
       - display this help message
+    quit
+      - quit the program
     errors
       - get error messagaes reported by last parse
     declarations
@@ -225,9 +227,13 @@ module internal CommandInput =
     | Parse of bool
     | Error of string
     | Help
+    | Quit
 
   /// Parse 'help' command
   let help = string "help" |> Parser.map (fun _ -> Help)
+
+  /// Parse 'quit' command
+  let quit = string "quit" |> Parser.map (fun _ -> Quit)
 
   /// Parse 'declarations' command
   let declarations = string "declarations" |> Parser.map (fun _ -> Declarations)
@@ -355,9 +361,13 @@ module internal Main =
     | Help, _ ->
         Console.WriteLine(helpText)
         main state
+
     | Error(msg), _ -> 
         Console.Error.WriteLine(msg)
         main state
 
+    | Quit, _ -> 
+        exit 0
+      
   // Run the application!
   do main(State())
