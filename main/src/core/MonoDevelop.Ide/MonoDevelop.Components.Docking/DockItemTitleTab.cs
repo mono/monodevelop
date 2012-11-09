@@ -33,6 +33,7 @@ using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using Mono.TextEditor;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Components.Docking
 {
@@ -51,6 +52,7 @@ namespace MonoDevelop.Components.Docking
 		ImageButton btnClose;
 		DockItem item;
 		bool allowPlaceholderDocking;
+		bool mouseOver;
 
 		static Gdk.Cursor handCursor = new Gdk.Cursor (Gdk.CursorType.LeftPtr);
 		static Gdk.Cursor fleurCursor = new Gdk.Cursor (Gdk.CursorType.Fleur);
@@ -81,8 +83,12 @@ namespace MonoDevelop.Components.Docking
 			UpdateVisualStyle ();
 			NoShowAll = true;
 
+
+			Events |= Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask | Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.PointerMotionMask;
 			KeyPressEvent += HeaderKeyPress;
 			KeyReleaseEvent += HeaderKeyRelease;
+
+			this.SubscribeLeaveEvent (OnLeave);
 		}
 
 		public DockVisualStyle VisualStyle {
@@ -159,6 +165,7 @@ namespace MonoDevelop.Components.Docking
 			btnDock.CanFocus = false;
 //			btnDock.WidthRequest = btnDock.HeightRequest = 17;
 			btnDock.Clicked += OnClickDock;
+			btnDock.ButtonPressEvent += (o, args) => args.RetVal = true;
 			btnDock.WidthRequest = btnDock.SizeRequest ().Width;
 
 			btnClose = new ImageButton ();
@@ -170,6 +177,7 @@ namespace MonoDevelop.Components.Docking
 			btnClose.Clicked += delegate {
 				item.Visible = false;
 			};
+			btnClose.ButtonPressEvent += (o, args) => args.RetVal = true;
 
 			Gtk.Alignment al = new Alignment (0, 0, 1, 1);
 			HBox btnBox = new HBox (false, 3);
@@ -231,7 +239,7 @@ namespace MonoDevelop.Components.Docking
 			btnClose.Visible = (item.Behavior & DockItemBehavior.CantClose) == 0;
 			btnDock.Visible = (item.Behavior & DockItemBehavior.CantAutoHide) == 0;
 			
-			if (active) {
+			if (active || mouseOver) {
 				if (btnClose.Image == null)
 					btnClose.Image = pixClose;
 				if (item.Status == DockItemStatus.AutoHide || item.Status == DockItemStatus.Floating) {
@@ -301,7 +309,20 @@ namespace MonoDevelop.Components.Docking
 			frame.UpdatePlaceholder (item, Allocation.Size, allowPlaceholderDocking);
 			return base.OnMotionNotifyEvent (evnt);
 		}
-		
+
+		protected override bool OnEnterNotifyEvent (Gdk.EventCrossing evnt)
+		{
+			mouseOver = true;
+			UpdateBehavior ();
+			return base.OnEnterNotifyEvent (evnt);
+		}
+
+		void OnLeave ()
+		{
+			mouseOver = false;
+			UpdateBehavior ();
+		}
+
 		[GLib.ConnectBeforeAttribute]
 		void HeaderKeyPress (object ob, Gtk.KeyPressEventArgs a)
 		{
