@@ -455,7 +455,7 @@ namespace MonoDevelop.Components.MainToolbar
 				while (configurationStore.IterNext (ref iter));
 			}
 			var validTargets = configurationMerger.GetTargetsForConfiguration (IdeApp.Workspace.ActiveConfigurationId, false).ToArray ();
-			if (IdeApp.Workspace.ActiveExecutionTarget == null || !validTargets.Any (t => t.Id == IdeApp.Workspace.ActiveExecutionTarget.Id))
+			if (IdeApp.Workspace.PreferredActiveExecutionTarget == null || !validTargets.Any (t => t.Id == IdeApp.Workspace.PreferredActiveExecutionTarget))
 				IdeApp.Workspace.ActiveExecutionTarget = validTargets.FirstOrDefault ();
 
 			configurationCombo.Changed += HandleConfigurationChanged;
@@ -470,7 +470,7 @@ namespace MonoDevelop.Components.MainToolbar
 			if (runtimeStore.GetIterFirst (out iter)) {
 				do {
 					var val = (ExecutionTarget)runtimeStore.GetValue (iter, 2);
-					if (val.Id == IdeApp.Workspace.ActiveExecutionTarget.Id) {
+					if (val.Id == IdeApp.Workspace.PreferredActiveExecutionTarget) {
 						runtimeCombo.Active = i;
 						break;
 					}

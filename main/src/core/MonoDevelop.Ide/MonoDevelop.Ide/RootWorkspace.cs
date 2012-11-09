@@ -52,7 +52,8 @@ namespace MonoDevelop.Ide
 //		IParserDatabase parserDatabase;
 		string activeConfiguration;
 		bool useDefaultRuntime;
-		
+		string preferredActiveExecutionTarget;
+
 		ProjectFileEventHandler fileAddedToProjectHandler;
 		ProjectFileEventHandler fileRemovedFromProjectHandler;
 		ProjectFileRenamedEventHandler fileRenamedInProjectHandler;
@@ -124,13 +125,23 @@ namespace MonoDevelop.Ide
 			set {
 				if (activeConfiguration != value) {
 					activeConfiguration = value;
-					if (ActiveConfigurationChanged != null)
-						ActiveConfigurationChanged (this, EventArgs.Empty);
+					OnActiveConfigurationChanged ();
 				}
 			}
 		}
 
+		void OnActiveConfigurationChanged ()
+		{
+			if (ActiveConfigurationChanged != null)
+				ActiveConfigurationChanged (this, EventArgs.Empty);
+		}
+
 		public ExecutionTarget ActiveExecutionTarget { get; set; }
+
+		internal string PreferredActiveExecutionTarget {
+			get { return ActiveExecutionTarget != null ? ActiveExecutionTarget.Id : preferredActiveExecutionTarget; }
+			set { preferredActiveExecutionTarget = value; }
+		}
 
 		public ConfigurationSelector ActiveConfiguration {
 			get { return new SolutionConfigurationSelector (activeConfiguration); }
@@ -718,10 +729,13 @@ namespace MonoDevelop.Ide
 			try {
 				WorkspaceUserData data = item.UserProperties.GetValue<WorkspaceUserData> ("MonoDevelop.Ide.Workspace");
 				if (data != null) {
+					PreferredActiveExecutionTarget = data.PreferredExecutionTarget;
+					ActiveExecutionTarget = null;
+
 					if (GetConfigurations ().Contains (data.ActiveConfiguration))
-						ActiveConfigurationId = data.ActiveConfiguration;
+						activeConfiguration = data.ActiveConfiguration;
 					else
-						ActiveConfigurationId = GetBestDefaultConfiguration ();
+						activeConfiguration = GetBestDefaultConfiguration ();
 
 					if (string.IsNullOrEmpty (data.ActiveRuntime))
 						UseDefaultRuntime = true;
@@ -732,6 +746,7 @@ namespace MonoDevelop.Ide
 						else
 							UseDefaultRuntime = true;
 					}
+					OnActiveConfigurationChanged ();
 				}
 				else {
 					ActiveConfigurationId = GetBestDefaultConfiguration ();
@@ -783,6 +798,8 @@ namespace MonoDevelop.Ide
 			WorkspaceUserData data = new WorkspaceUserData ();
 			data.ActiveConfiguration = ActiveConfigurationId;
 			data.ActiveRuntime = UseDefaultRuntime ? null : ActiveRuntime.Id;
+			if (ActiveExecutionTarget != null)
+				data.PreferredExecutionTarget = ActiveExecutionTarget.Id;
 			item.UserProperties.SetValue ("MonoDevelop.Ide.Workspace", data);
 			
 			// Allow add-ins to fill-up data
@@ -1484,6 +1501,8 @@ namespace MonoDevelop.Ide
 		public string ActiveConfiguration;
 		[ItemProperty]
 		public string ActiveRuntime;
+		[ItemProperty]
+		public string PreferredExecutionTarget;
 	}
 	
 	public class ItemUnloadingEventArgs: EventArgs
