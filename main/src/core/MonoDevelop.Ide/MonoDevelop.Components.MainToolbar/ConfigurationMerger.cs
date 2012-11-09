@@ -105,8 +105,6 @@ namespace MonoDevelop.Components.MainToolbar
 
 				// The startup project configuration partitions are used to create solution configuration partitions
 
-				var unboundConfigs = new List<string> ();
-
 				foreach (var solConf in sol.Configurations) {
 					var pconf = solConf.GetEntryForItem (project);
 					if (pconf != null && pconf.Build) {
@@ -244,12 +242,12 @@ namespace MonoDevelop.Components.MainToolbar
 		/// <summary>
 		/// Gets the targets which are valid for a configuration
 		/// </summary>
-		public IEnumerable<ExecutionTarget> GetTargetsForConfiguration (string fullConfigurationId)
+		public IEnumerable<ExecutionTarget> GetTargetsForConfiguration (string fullConfigurationId, bool ignorePlatform)
 		{
 			string conf,plat;
 			ItemConfiguration.ParseConfigurationId (fullConfigurationId, out conf, out plat);
 
-			if (reducedConfigurations.Contains (conf)) {
+			if (ignorePlatform && reducedConfigurations.Contains (conf)) {
 				// Reduced configuration. Show all targets since they will be used to guess the implicit platform
 				return currentTargetPartitions.Where (p => p.ReducedConfigurations.Contains (conf)).SelectMany (p => p.Targets);
 			} else {
@@ -306,9 +304,24 @@ namespace MonoDevelop.Components.MainToolbar
 
 		class TargetPartition
 		{
+			/// <summary>
+			/// Targets included in this partition
+			/// </summary>
 			public HashSet<ExecutionTarget> Targets = new HashSet<ExecutionTarget> ();
+
+			/// <summary>
+			/// Project configurations included in this partition
+			/// </summary>
 			public HashSet<string> Configurations = new HashSet<string> ();
+
+			/// <summary>
+			/// Solution configurations included in this partition (configurations which are bound to the project configurations)
+			/// </summary>
 			public List<string> SolutionConfigurations = new List<string> ();
+
+			/// <summary>
+			/// Configurations (without platform) that have been reduced
+			/// </summary>
 			public HashSet<string> ReducedConfigurations = new HashSet<string> ();
 		}
 	}

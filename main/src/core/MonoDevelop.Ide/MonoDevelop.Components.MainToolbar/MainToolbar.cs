@@ -433,7 +433,7 @@ namespace MonoDevelop.Components.MainToolbar
 			} finally {
 				settingGlobalConfig = false;
 			}
-			UpdateRuntimes ();
+			FillRuntimes ();
 			SelectActiveRuntime ();
 		}
 
@@ -454,6 +454,10 @@ namespace MonoDevelop.Components.MainToolbar
 				}
 				while (configurationStore.IterNext (ref iter));
 			}
+			var validTargets = configurationMerger.GetTargetsForConfiguration (IdeApp.Workspace.ActiveConfigurationId, false).ToArray ();
+			if (IdeApp.Workspace.ActiveExecutionTarget == null || !validTargets.Any (t => t.Id == IdeApp.Workspace.ActiveExecutionTarget.Id))
+				IdeApp.Workspace.ActiveExecutionTarget = validTargets.FirstOrDefault ();
+
 			configurationCombo.Changed += HandleConfigurationChanged;
 			SelectActiveRuntime ();
 		}
@@ -466,7 +470,7 @@ namespace MonoDevelop.Components.MainToolbar
 			if (runtimeStore.GetIterFirst (out iter)) {
 				do {
 					var val = (ExecutionTarget)runtimeStore.GetValue (iter, 2);
-					if (val == IdeApp.Workspace.ActiveExecutionTarget) {
+					if (val.Id == IdeApp.Workspace.ActiveExecutionTarget.Id) {
 						runtimeCombo.Active = i;
 						break;
 					}
@@ -504,11 +508,11 @@ namespace MonoDevelop.Components.MainToolbar
 				configurationCombo.Changed += HandleConfigurationChanged;
 			}
 
-			UpdateRuntimes ();
+			FillRuntimes ();
 			SelectActiveConfiguration ();
 		}
 
-		void UpdateRuntimes ()
+		void FillRuntimes ()
 		{
 			runtimeCombo.Changed -= HandleRuntimeChanged;
 			try {
@@ -521,7 +525,7 @@ namespace MonoDevelop.Components.MainToolbar
 				if (solConf == null || !solConf.BuildEnabledForItem (currentSolution.StartupItem))
 					return;
 
-				var targets = configurationMerger.GetTargetsForConfiguration (IdeApp.Workspace.ActiveConfigurationId);
+				var targets = configurationMerger.GetTargetsForConfiguration (IdeApp.Workspace.ActiveConfigurationId, true);
 				foreach (var target in targets)
 					runtimeStore.AppendValues (target.Name, target.Name, target);
 				runtimeCombo.Sensitive = targets.Count () > 1;
