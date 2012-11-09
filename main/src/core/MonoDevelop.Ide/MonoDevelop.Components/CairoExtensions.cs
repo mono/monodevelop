@@ -554,15 +554,15 @@ namespace MonoDevelop.Components
 		}
 
 		public static void CachedDraw (this Cairo.Context self, ref SurfaceWrapper surface, Gdk.Point position, Gdk.Size size, 
-		                               object parameters = null, float opacity = 1.0f, Action<Cairo.Context, float> draw = null)
+		                               object parameters = null, float opacity = 1.0f, Action<Cairo.Context, float> draw = null, double? forceScale = null)
 		{
-			self.CachedDraw (ref surface, new Gdk.Rectangle (position, size), parameters, opacity, draw);
+			self.CachedDraw (ref surface, new Gdk.Rectangle (position, size), parameters, opacity, draw, forceScale);
 		}
 
 		public static void CachedDraw (this Cairo.Context self, ref SurfaceWrapper surface, Gdk.Rectangle region, 
-		                               object parameters = null, float opacity = 1.0f, Action<Cairo.Context, float> draw = null)
+		                               object parameters = null, float opacity = 1.0f, Action<Cairo.Context, float> draw = null, double? forceScale = null)
 		{
-			double displayScale = QuartzSurface.GetRetinaScale (self);
+			double displayScale = forceScale.HasValue ? forceScale.Value : QuartzSurface.GetRetinaScale (self);
 			int targetWidth = (int) (region.Width * displayScale);
 			int targetHeight = (int) (region.Height * displayScale);
 

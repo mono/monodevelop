@@ -312,14 +312,20 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		void Draw ()
 		{
+			double scale = 1;
+			using (var context = Gdk.CairoHelper.Create (Parent.GdkWindow)) {
+				scale = QuartzSurface.GetRetinaScale (context);
+			}
 			renderer.QueueThreadedDraw ((context) => {
 				Gdk.Rectangle main = new Gdk.Rectangle (0, 0, Allocation.Width, Allocation.Height);
-				context.CachedDraw (ref backgroundSurface, main, opacity: (float)BackgroundOpacity,
-				                    draw: (ctx, opacity) => RenderBackground (ctx, main));
+				context.CachedDraw (ref backgroundSurface, main, 
+				                    opacity: (float)BackgroundOpacity,
+				                    draw: (ctx, opacity) => RenderBackground (ctx, main),
+				                    forceScale: scale);
 
-				context.CachedDraw (ref titleSurface, RenderTitlePosition, TitleSize, null, (float)TitleOpacity, (ctx, alpha) => RenderTitle (ctx, new Gdk.Point (), alpha));
-				context.CachedDraw (ref textSurface, RenderTextPosition, TextSize, null, (float)TextOpacity, (ctx, alpha) => RenderText (ctx, new Gdk.Point (), alpha));
-				context.CachedDraw (ref buttonSurface, ButtonPosistion, ButtonSize, new { Hovered = ButtonHovered }, (float)ButtonOpacity, (ctx, alpha) => RenderButton (ctx, new Gdk.Point (), alpha, ButtonHovered));
+				context.CachedDraw (ref titleSurface, RenderTitlePosition, TitleSize, null, (float)TitleOpacity, (ctx, alpha) => RenderTitle (ctx, new Gdk.Point (), alpha), scale);
+				context.CachedDraw (ref textSurface, RenderTextPosition, TextSize, null, (float)TextOpacity, (ctx, alpha) => RenderText (ctx, new Gdk.Point (), alpha), scale);
+				context.CachedDraw (ref buttonSurface, ButtonPosistion, ButtonSize, new { Hovered = ButtonHovered }, (float)ButtonOpacity, (ctx, alpha) => RenderButton (ctx, new Gdk.Point (), alpha, ButtonHovered), scale);
 				RenderPreview (context, RenderIconPosition, IconOpacity);
 			});
 		}

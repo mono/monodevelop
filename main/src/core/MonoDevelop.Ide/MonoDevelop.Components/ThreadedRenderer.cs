@@ -108,7 +108,7 @@ namespace MonoDevelop.Ide
 
 			runningSignal.Wait ();
 			context.Scale (1 / Scale, 1 / Scale);
-			surface.Surface.Show (context, owner.Allocation.X, owner.Allocation.Y);
+			surface.Surface.Show (context, owner.Allocation.X * Scale, owner.Allocation.Y * Scale);
 			context.Scale (Scale, Scale);
 			return true;
 		}
