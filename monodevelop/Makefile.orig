@@ -23,9 +23,9 @@ MDTAG=local
 endif
 
 
-# The default configuration is Release
+# The default configuration is Debug
 ifeq ($(config),)
-config=Release
+config=Debug
 endif
 
 .PHONY: all
