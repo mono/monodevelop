@@ -44,6 +44,7 @@ namespace MonoDevelop.Components.PropertyGrid
 		bool draggingDivider;
 		Gdk.Pixbuf discloseDown;
 		Gdk.Pixbuf discloseUp;
+		bool heightMeasured;
 
 		const int CategoryTopBottomPadding = 6;
 		const int CategoryLeftPadding = 8;
@@ -138,6 +139,7 @@ namespace MonoDevelop.Components.PropertyGrid
 
 		public virtual void Clear ()
 		{
+			heightMeasured = false;
 			StopAllAnimations ();
 			EndEditing ();
 			rows.Clear ();
@@ -300,6 +302,7 @@ namespace MonoDevelop.Components.PropertyGrid
 
 		void MeasureHeight (IEnumerable<TableRow> rowList, ref int y)
 		{
+			heightMeasured = true;
 			Pango.Layout layout = new Pango.Layout (PangoContext);
 			foreach (var r in rowList) {
 				layout.SetText (r.Label);
@@ -353,6 +356,9 @@ namespace MonoDevelop.Components.PropertyGrid
 
 		void Draw (Cairo.Context ctx, List<TableRow> rowList, int dividerX, int x, ref int y)
 		{
+			if (!heightMeasured)
+				return;
+
 			Pango.Layout layout = new Pango.Layout (PangoContext);
 			TableRow lastCategory = null;
 

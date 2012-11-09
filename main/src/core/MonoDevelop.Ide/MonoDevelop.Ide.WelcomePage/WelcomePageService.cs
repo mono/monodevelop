@@ -75,8 +75,6 @@ namespace MonoDevelop.Ide.WelcomePage
 		{
 			if (visible) {
 				visible = false;
-				if (IdeApp.Workspace.IsOpen || IdeApp.Workbench.Documents.Count > 0)
-					animate = true;
 				((DefaultWorkbench)IdeApp.Workbench.RootWindow).BottomBar.Show ();
 				((DefaultWorkbench)IdeApp.Workbench.RootWindow).DockFrame.RemoveOverlayWidget (animate);
 			}
