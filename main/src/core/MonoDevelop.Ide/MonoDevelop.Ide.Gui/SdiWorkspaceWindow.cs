@@ -94,7 +94,7 @@ namespace MonoDevelop.Ide.Gui
 				box.PackStart (content.Control);
 			
 			content.ContentNameChanged += new EventHandler(SetTitleEvent);
-			content.DirtyChanged       += new EventHandler(SetTitleEvent);
+			content.DirtyChanged       += HandleDirtyChanged;
 			content.BeforeSave         += new EventHandler(BeforeSave);
 			content.ContentChanged     += new EventHandler (OnContentChanged);
 			box.Show ();
@@ -103,6 +103,11 @@ namespace MonoDevelop.Ide.Gui
 			SetTitleEvent(null, null);
 			
 			commandHandler = new ViewCommandHandlers (this);
+		}
+
+		void HandleDirtyChanged (object sender, EventArgs e)
+		{
+			OnTitleChanged (null);
 		}
 		
 		public Widget TabPage {
@@ -329,7 +334,7 @@ namespace MonoDevelop.Ide.Gui
 						found = false;
 						foreach (IViewContent windowContent in workbench.InternalViewContentCollection) {
 							string title = windowContent.WorkbenchWindow.Title;
-							if (title.EndsWith("*") || title.EndsWith("+")) {
+							if (title.EndsWith("+")) {
 								title = title.Substring(0, title.Length - 1);
 							}
 							if (title == myUntitledTitle) {
@@ -347,7 +352,6 @@ namespace MonoDevelop.Ide.Gui
 			}
 			
 			if (content.IsDirty) {
-				newTitle += "*";
 				IdeApp.ProjectOperations.MarkFileDirty (content.ContentName);
 			} else if (content.IsReadOnly) {
 				newTitle += "+";
@@ -391,7 +395,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 			
 			content.ContentNameChanged -= new EventHandler(SetTitleEvent);
-			content.DirtyChanged       -= new EventHandler(SetTitleEvent);
+			content.DirtyChanged -= HandleDirtyChanged;
 			content.BeforeSave         -= new EventHandler(BeforeSave);
 			content.ContentChanged     -= new EventHandler (OnContentChanged);
 			content.WorkbenchWindow     = null;
