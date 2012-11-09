@@ -1004,15 +1004,27 @@ namespace MonoDevelop.Ide.Gui
 					context.Stroke ();
 					
 					
-					double radius = partialProg * 4;
+					double radius = partialProg * 4.5;
+
+					// Background
 					context.Arc (center.X, center.Y, radius, 0, Math.PI * 2);
 					context.Color = new Cairo.Color (fillColor, fillColor, fillColor, opacity);
-					context.FillPreserve ();
-					
+					context.Fill ();
+
+					// Inset shadow
+					using (var lg = new Cairo.LinearGradient (0, center.Y - 5, 0, center.Y)) {
+						context.Arc (center.X, center.Y + 1, radius, 0, Math.PI * 2);
+						lg.AddColorStop (0, new Cairo.Color (0, 0, 0, 0.2 * opacity));
+						lg.AddColorStop (1, new Cairo.Color (0, 0, 0, 0));
+						context.Pattern = lg;
+						context.Stroke ();
+					}
+
+					// Outline
+					context.Arc (center.X, center.Y, radius, 0, Math.PI * 2);
 					context.Color = new Cairo.Color (lineColor, lineColor, lineColor, opacity);
 					context.Stroke ();
-					
-					
+
 				}
 			}
 		}
