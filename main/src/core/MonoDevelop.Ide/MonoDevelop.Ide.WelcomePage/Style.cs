@@ -100,9 +100,9 @@ namespace MonoDevelop.Ide.WelcomePage
 			}
 		}
 
-		public static string GetFormatString (string fontFace, int fontSize, string color)
+		public static string GetFormatString (string fontFace, int fontSize, string color, bool bold = false)
 		{
-			return "<span font=\"" + fontFace + " " + fontSize + "px\" foreground=\"" + color + "\">{0}</span>";
+			return "<span font=\"" + fontFace + " " + fontSize + "px\" foreground=\"" + color + "\" font_weight=\"" + (bold ? "bold" : "normal") + "\">{0}</span>";
 		}
 	}
 }

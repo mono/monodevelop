@@ -45,6 +45,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		public string Color { get; set; }
 		public int FontSize { get; set; }
 		protected string Text { get; set; }
+		protected bool Bold { get; set; }
 
 		public WelcomePageBarButton (string title, string href, string iconResource = null)
 		{
@@ -128,7 +129,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			if (imageNormal != null)
 				image.Pixbuf = mouseOver ? imageHover : imageNormal;
 			var color = mouseOver ? HoverColor : Color;
-			label.Markup = WelcomePageSection.FormatText (FontFamily, FontSize, color, Text);
+			label.Markup = WelcomePageSection.FormatText (FontFamily, FontSize, Bold, color, Text);
 		}
 	}
 }

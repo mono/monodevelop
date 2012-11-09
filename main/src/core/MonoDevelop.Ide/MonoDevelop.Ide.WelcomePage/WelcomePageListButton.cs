@@ -184,7 +184,7 @@ namespace MonoDevelop.Ide.WelcomePage
 				Pango.Layout titleLayout = new Pango.Layout (PangoContext);
 				titleLayout.Width = Pango.Units.FromPixels (textWidth);
 				titleLayout.Ellipsize = Pango.EllipsizeMode.End;
-				titleLayout.SetMarkup (WelcomePageSection.FormatText (face, Styles.WelcomeScreen.Pad.Solutions.SolutionTile.TitleFontSize, Styles.WelcomeScreen.Pad.MediumTitleColor, title));
+				titleLayout.SetMarkup (WelcomePageSection.FormatText (face, Styles.WelcomeScreen.Pad.Solutions.SolutionTile.TitleFontSize, false, Styles.WelcomeScreen.Pad.MediumTitleColor, title));
 
 				Pango.Layout subtitleLayout = null;
 
@@ -192,7 +192,7 @@ namespace MonoDevelop.Ide.WelcomePage
 					subtitleLayout = new Pango.Layout (PangoContext);
 					subtitleLayout.Width = Pango.Units.FromPixels (textWidth);
 					subtitleLayout.Ellipsize = Pango.EllipsizeMode.Start;
-					subtitleLayout.SetMarkup (WelcomePageSection.FormatText (face, Styles.WelcomeScreen.Pad.Solutions.SolutionTile.PathFontSize, Styles.WelcomeScreen.Pad.SmallTitleColor, subtitle));
+					subtitleLayout.SetMarkup (WelcomePageSection.FormatText (face, Styles.WelcomeScreen.Pad.Solutions.SolutionTile.PathFontSize, false, Styles.WelcomeScreen.Pad.SmallTitleColor, subtitle));
 				}
 
 				int height = 0;
