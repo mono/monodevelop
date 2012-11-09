@@ -60,7 +60,6 @@ clean:
 	-rm -fr MonoDevelop.FSharpBinding/MonoDevelop.FSharp.*.fsproj
 	-rm -fr MonoDevelop.FSharpBinding/obj
 	(cd MonoDevelop.FSharpBinding/Gui && xbuild MonoDevelop.FSharp.Gui.csproj /target:Clean)
-	make -f Makefile clean
 
 
 # Apply the known binding versions and MonoDevelop versions to the project file
