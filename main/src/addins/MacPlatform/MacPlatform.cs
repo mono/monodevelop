@@ -553,5 +553,10 @@ end tell", directory.ToString ().Replace ("\"", "\\\"")));
 			
 			return result;
 		}
+
+		protected override RecentFiles CreateRecentFilesProvider ()
+		{
+			return new FdoRecentFiles (UserProfile.Current.LocalConfigDir.Combine ("RecentlyUsed.xml"));
+		}
 	}
 }
