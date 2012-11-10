@@ -32,6 +32,7 @@ using Gtk;
 using System.Reflection;
 
 using Mono.Addins;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
@@ -40,6 +41,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		public AddinLoadErrorDialog (AddinError[] errors, bool warning)
 		{
 			Build ();
+			Title = BrandingService.ApplicationName;
 			
 			TreeStore store = new TreeStore (typeof(string));
 			errorTree.AppendColumn ("Addin", new CellRendererText (), "text", 0);
@@ -62,19 +64,29 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				}
 				if (err.Fatal) fatal = true;
 			}
-			
+
 			if (fatal) {
 				noButton.Hide ();
 				yesButton.Hide ();
-				labelContinue.Hide ();
 				closeButton.Show ();
-				labelFatal.Show ();
+				messageLabel.Text = GettextCatalog.GetString (
+					"{0} cannot start because a fatal error has been detected.",
+					BrandingService.ApplicationName
+				);
 			} else if (warning) {
 				noButton.Hide ();
 				yesButton.Hide ();
-				labelContinue.Hide ();
-				labelWarning.Show ();
 				closeButton.Show ();
+				messageLabel.Text = GettextCatalog.GetString (
+					"{0} can run without these add-ins, but the functionality they provide will be missing.",
+					BrandingService.ApplicationName
+				);
+			} else {
+				messageLabel.Text = GettextCatalog.GetString (
+					"You can start {0} without these add-ins, but the functionality they " +
+					"provide will be missing. Do you wish to continue?",
+					BrandingService.ApplicationName
+				);
 			}
 		}
 		

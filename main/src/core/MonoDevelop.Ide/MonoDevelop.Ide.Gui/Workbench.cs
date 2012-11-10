@@ -529,6 +529,10 @@ namespace MonoDevelop.Ide.Gui
 				properties,
 				"/MonoDevelop/Ide/GlobalOptionsDialog");
 
+			ops.Title = Platform.IsWindows
+				? GettextCatalog.GetString ("Options")
+				: GettextCatalog.GetString ("Preferences");
+
 			try {
 				if (panelId != null)
 					ops.SelectPanel (panelId);

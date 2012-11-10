@@ -3204,7 +3204,7 @@ Diagnostic</property>
     <property name="MemberName" />
     <property name="Visible">False</property>
     <property name="GeneratePublic">False</property>
-    <property name="Title">MonoDevelop</property>
+    <property name="Title" />
     <property name="TypeHint">Dialog</property>
     <property name="BorderWidth">6</property>
     <property name="DefaultHeight">350</property>
@@ -3269,47 +3269,15 @@ Diagnostic</property>
                   </packing>
                 </child>
                 <child>
-                  <widget class="Gtk.Label" id="labelContinue">
+                  <widget class="Gtk.Label" id="messageLabel">
                     <property name="MemberName" />
                     <property name="WidthRequest">479</property>
                     <property name="Xalign">0</property>
                     <property name="Yalign">0</property>
-                    <property name="LabelProp" translatable="yes">You can start MonoDevelop without these add-ins, but the functionality they provide will be missing. Do you wish to continue?</property>
                     <property name="Wrap">True</property>
                   </widget>
                   <packing>
                     <property name="Position">2</property>
-                    <property name="AutoSize">False</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="Gtk.Label" id="labelFatal">
-                    <property name="MemberName" />
-                    <property name="Visible">False</property>
-                    <property name="Xalign">0</property>
-                    <property name="Yalign">0</property>
-                    <property name="LabelProp" translatable="yes">MonoDevelop cannot start because a fatal error has been detected.</property>
-                  </widget>
-                  <packing>
-                    <property name="Position">3</property>
-                    <property name="AutoSize">False</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="Gtk.Label" id="labelWarning">
-                    <property name="MemberName" />
-                    <property name="Visible">False</property>
-                    <property name="Xalign">0</property>
-                    <property name="Yalign">0</property>
-                    <property name="LabelProp" translatable="yes">MonoDevelop can run without these add-ins, but the functionality they provide will be missing.</property>
-                    <property name="Wrap">True</property>
-                  </widget>
-                  <packing>
-                    <property name="Position">4</property>
                     <property name="AutoSize">False</property>
                     <property name="Expand">False</property>
                     <property name="Fill">False</property>
@@ -7186,7 +7154,7 @@ All solutions</property>
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Gui.Dialogs.ProgressDialog" design-size="544 170">
     <property name="MemberName" />
     <property name="Visible">False</property>
-    <property name="Title" translatable="yes">MonoDevelop</property>
+    <property name="Title" translatable="yes" />
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Modal">True</property>
     <property name="Buttons">1</property>

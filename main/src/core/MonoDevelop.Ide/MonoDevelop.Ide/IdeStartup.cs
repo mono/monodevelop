@@ -94,7 +94,8 @@ namespace MonoDevelop.Ide
 
 			//OSXFIXME
 			var args = options.RemainingArgs.ToArray ();
-			Gtk.Application.Init ("monodevelop", ref args);
+			var exeName = Assembly.GetEntryAssembly ().GetName ().Name;
+			Gtk.Application.Init (exeName, ref args);
 
 			FilePath p = typeof(IdeStartup).Assembly.Location;
 			Assembly.LoadFrom (p.ParentDirectory.Combine ("Xwt.Gtk.dll"));

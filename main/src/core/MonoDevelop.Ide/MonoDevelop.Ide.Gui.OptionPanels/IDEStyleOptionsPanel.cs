@@ -115,7 +115,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			string lc = isoCodes [comboLanguage.Active * 2];
 			if (lc != IdeApp.Preferences.UserInterfaceLanguage) {
 				IdeApp.Preferences.UserInterfaceLanguage = lc;
-				MessageService.ShowMessage (GettextCatalog.GetString ("The user interface language change will take effect the next time you start MonoDevelop"));
+				MessageService.ShowMessage (
+					GettextCatalog.GetString (
+						"The user interface language change will take effect the next time you start {0}",
+						BrandingService.ApplicationName
+					)
+				);
 			}
 			string theme;
 			if (comboTheme.Active == 0) {

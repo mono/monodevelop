@@ -21,7 +21,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			global::Stetic.Gui.Initialize (this);
 			// Widget MonoDevelop.Ide.Gui.Dialogs.ProgressDialog
 			this.Name = "MonoDevelop.Ide.Gui.Dialogs.ProgressDialog";
-			this.Title = global::Mono.Unix.Catalog.GetString ("MonoDevelop");
+			this.Title = "";
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			this.Modal = true;
 			// Internal child MonoDevelop.Ide.Gui.Dialogs.ProgressDialog.VBox
