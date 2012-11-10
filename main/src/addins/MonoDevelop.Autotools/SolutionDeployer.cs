@@ -99,7 +99,10 @@ namespace MonoDevelop.Autotools
 				
 				IMakefileHandler handler = AutotoolsContext.GetMakefileHandler (solution.RootFolder, mt);
 				if (handler == null)
-					throw new Exception ( GettextCatalog.GetString ("MonoDevelop does not currently support generating {0} for one (or more) child projects.", filesString) );
+					throw new Exception (string.Format (
+						"{0} does not currently support generating {1} for one (or more) child projects.",
+						filesString, BrandingService.ApplicationName
+					));
 
 				solution_name = solution.Name;
 				solution_version = AutotoolsContext.EscapeStringForAutoconf (solution.Version, true);

@@ -450,7 +450,10 @@ namespace MonoDevelop.Ide
 				bool fail2 = Addin.CompareVersions (current_gnomevfs, required_gnomevfs) == 1;
 				
 				if (fail1 || fail2) {
-					string msg = GettextCatalog.GetString ("Some packages installed in your system are not compatible with MonoDevelop:\n");
+					string msg = GettextCatalog.GetString (
+						"Some packages installed in your system are not compatible with {0}:\n",
+						BrandingService.ApplicationName
+					);
 					if (fail1)
 						msg += "\nlibgda " + current_libgda + " ("+ GettextCatalog.GetString ("version required: {0}", required_libgda) + ")";
 					if (fail2)
@@ -531,10 +534,15 @@ namespace MonoDevelop.Ide
 					if (!retry && AddinManager.IsInitialized) {
 						LoggingService.LogWarning (BrandingService.ApplicationName + " failed to start. Rebuilding addins registry.", ex);
 						AddinManager.Registry.Rebuild (new Mono.Addins.ConsoleProgressStatus (true));
-						LoggingService.LogInfo ("Addin registry rebuilt. Restarting MonoDevelop.");
+						LoggingService.LogInfo ("Addin registry rebuilt. Restarting {0}.", BrandingService.ApplicationName);
 						retry = true;
 					} else {
-						LoggingService.LogFatalError (BrandingService.ApplicationName + " failed to start. Some of the assemblies required to run MonoDevelop (for example gtk-sharp, gnome-sharp or gtkhtml-sharp) may not be properly installed in the GAC.", ex);
+						LoggingService.LogFatalError (
+							string.Format (
+								"{0} failed to start. Some of the assemblies required to run {0} (for example gtk-sharp)" +
+								"may not be properly installed in the GAC.",
+								BrandingService.ApplicationName
+							), ex);
 						retry = false;
 					}
 				} finally {

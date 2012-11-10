@@ -155,7 +155,7 @@ namespace MonoDevelop.Ide.Projects
 				}
 				string pkg = systemAssembly.Package.GetDisplayName ();
 				if (systemAssembly.Package.IsInternalPackage)
-					pkg += " " + GettextCatalog.GetString ("(Provided by MonoDevelop)");
+					pkg += " " + GettextCatalog.GetString ("(Provided by {0})", BrandingService.ApplicationName);
 				
 				store.AppendValues (name, 
 					version, 

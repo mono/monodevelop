@@ -27,7 +27,10 @@ namespace MonoDevelop.Autotools
 			lab.Wrap = true;
 			lab.Xalign = 0;
 			lab.WidthRequest = 500;
-			lab.Text = GettextCatalog.GetString ("MonoDevelop is going to create a project bound to a Makefile. Please enter the name you want to give to the new project.");
+			lab.Text = GettextCatalog.GetString (
+				"{0} is going to create a project bound to a Makefile. Please enter the name you want to give to the new project.",
+				BrandingService.ApplicationName
+			);
 			box.PackStart (lab, false, false, 0);
 			
 			HBox hb = new HBox ();

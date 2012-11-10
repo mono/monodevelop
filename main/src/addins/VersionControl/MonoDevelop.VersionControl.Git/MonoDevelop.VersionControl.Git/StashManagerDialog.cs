@@ -67,7 +67,7 @@ namespace MonoDevelop.VersionControl.Git
 				string branch = GitRepository.GetStashBranchName (name);
 				if (branch != null) {
 					if (branch == "_tmp_")
-						name = GettextCatalog.GetString ("Temporary stash created by MonoDevelop");
+						name = GettextCatalog.GetString ("Temporary stash created by {0}", BrandingService.ApplicationName);
 					else
 						name = GettextCatalog.GetString ("Local changes of branch '{0}'", branch);
 				}

@@ -509,7 +509,11 @@ namespace MonoDevelop.Ide.Gui.Components
 				return;
 			userWarned = true;
 			string title = GettextCatalog.GetString ("Console input not supported");
-			string desc = GettextCatalog.GetString ("Console input is not supported when using the MonoDevelop output console. If your applications needs to read data from the standard input, please set the 'Run in External Console' option in the project options.");
+			string desc = GettextCatalog.GetString (
+				"Console input is not supported when using the {0} output console. If your application needs to read " +
+				"data from the standard input, please set the 'Run in External Console' option in the project options.",
+				BrandingService.ApplicationName
+			);
 			MessageService.ShowWarning (title, desc);
 		}
 		

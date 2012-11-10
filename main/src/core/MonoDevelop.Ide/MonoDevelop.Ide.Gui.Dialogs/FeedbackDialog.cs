@@ -77,7 +77,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			// Body
 			
 			textEntry = new TextViewWithEmptyMessage ();
-			textEntry.EmptyMessage = GettextCatalog.GetString ("Tell us how we can make MonoDevelop better.");
+			textEntry.EmptyMessage = GettextCatalog.GetString (
+				"Tell us how we can make {0} better.",
+				BrandingService.ApplicationName
+			);
 			textEntry.AcceptsTab = false;
 			textEntry.WrapMode = Gtk.WrapMode.Word;
 			textEntry.WidthRequest = 300;

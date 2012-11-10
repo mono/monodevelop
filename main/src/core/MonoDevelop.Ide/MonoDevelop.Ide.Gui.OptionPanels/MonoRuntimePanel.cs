@@ -62,7 +62,11 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		{
 			this.Build();
 			
-			labelRunning.Markup = GettextCatalog.GetString ("MonoDevelop is currently running on <b>{0}</b>.", Runtime.SystemAssemblyService.CurrentRuntime.DisplayName);
+			labelRunning.Markup = GettextCatalog.GetString (
+				"{0} is currently running on <b>{0}</b>.",
+				BrandingService.ApplicationName,
+				Runtime.SystemAssemblyService.CurrentRuntime.DisplayName
+			);
 			store = new ListStore (typeof(string), typeof(object));
 			tree.Model = store;
 			

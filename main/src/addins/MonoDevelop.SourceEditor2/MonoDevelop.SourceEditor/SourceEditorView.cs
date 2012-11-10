@@ -607,7 +607,11 @@ namespace MonoDevelop.SourceEditor
 
 			if (warnOverwrite) {
 				if (fileName == ContentName) {
-					if (MessageService.AskQuestion (GettextCatalog.GetString ("This file {0} has been changed outside of MonoDevelop. Are you sure you want to overwrite the file?", fileName), AlertButton.Cancel, AlertButton.OverwriteFile) != AlertButton.OverwriteFile)
+					string question = GettextCatalog.GetString (
+						"This file {0} has been changed outside of {1}. Are you sure you want to overwrite the file?",
+						fileName, BrandingService.ApplicationName
+					);
+					if (MessageService.AskQuestion (question, AlertButton.Cancel, AlertButton.OverwriteFile) != AlertButton.OverwriteFile)
 						return;
 				}
 				warnOverwrite = false;

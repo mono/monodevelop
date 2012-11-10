@@ -740,9 +740,9 @@ namespace MonoDevelop.SourceEditor
 			if (messageBar == null) {
 				messageBar = new MonoDevelop.Components.InfoBar (MessageType.Warning);
 				messageBar.SetMessageLabel (GettextCatalog.GetString (
-					"<b>The file \"{0}\" has been changed outside of MonoDevelop.</b>\n" +
+					"<b>The file \"{0}\" has been changed outside of {1}.</b>\n" +
 					"Do you want to keep your changes, or reload the file from disk?",
-					EllipsizeMiddle (Document.FileName, 50)));
+					EllipsizeMiddle (Document.FileName, 50), BrandingService.ApplicationName));
 				
 				var b1 = new Button (GettextCatalog.GetString ("_Reload from disk"));
 				b1.Image = ImageService.GetImage (Gtk.Stock.Refresh, IconSize.Button);

@@ -467,13 +467,20 @@ namespace MonoDevelop.Ide
 		
 		bool AllowSave (IWorkspaceFileObject item)
 		{
-			if (HasChanged (item))
+			if (HasChanged (item)) {
 				return MessageService.Confirm (
-				    GettextCatalog.GetString ("Some project files have been changed from outside MonoDevelop. Do you want to overwrite them?"),
-				    GettextCatalog.GetString ("Changes done in those files will be overwritten by MonoDevelop."),
-				    AlertButton.OverwriteFile);
-			else
+					GettextCatalog.GetString (
+						"Some project files have been changed from outside {0}. Do you want to overwrite them?",
+						BrandingService.ApplicationName
+					),
+					GettextCatalog.GetString (
+						"Changes done in those files will be overwritten by {0}.",
+						BrandingService.ApplicationName
+					),
+					AlertButton.OverwriteFile);
+			} else {
 				return true;
+			}
 		}
 		
 		bool HasChanged (IWorkspaceFileObject item)
