@@ -153,7 +153,7 @@ namespace MonoDevelop.Ide.WelcomePage
 				context.RenderTiled (Owner.BackgroundImage, Allocation, new Gdk.Rectangle (Allocation.X, Allocation.Y + OverdrawOffset, Allocation.Width, Allocation.Height - OverdrawOffset), opacity);
 			}
 
-			void DrawBackground (Cairo.Context context)
+			void DrawBackground (Cairo.Context context, Gdk.Rectangle area)
 			{
 				if (Owner.BackgroundImage == null)
 					return;
@@ -164,7 +164,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			protected override bool OnExposeEvent (EventExpose evnt)
 			{
 				using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
-					DrawBackground (context);
+					DrawBackground (context, evnt.Area);
 				}
 
 				if (Owner.LogoImage != null) {
