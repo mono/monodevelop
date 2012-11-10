@@ -1004,7 +1004,7 @@ namespace MonoDevelop.Ide.Gui
 					context.Stroke ();
 					
 					
-					double radius = partialProg * 4.5;
+					double radius = partialProg * 3.5;
 
 					// Background
 					context.Arc (center.X, center.Y, radius, 0, Math.PI * 2);
