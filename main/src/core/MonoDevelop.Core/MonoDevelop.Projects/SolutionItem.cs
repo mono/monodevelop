@@ -177,11 +177,9 @@ namespace MonoDevelop.Projects
 					return parentFolder.ParentSolution;
 				return parentSolution; 
 			}
+			//this should only ever get set for the solution's RootFolder instance, no need to call OnBoundToSolution
 			internal set {
 				parentSolution = value;
-				if (parentFolder == null || parentFolder.ParentSolution == null) {
-					OnBoundToSolution ();
-				}
 			}
 		}
 
@@ -370,7 +368,7 @@ namespace MonoDevelop.Projects
 				parentFolder = value;
 				if (internalChildren != null)
 					internalChildren.ParentFolder = value;
-				if (parentSolution == null) {
+				if (value != null) {
 					OnBoundToSolution ();
 				}
 			}
