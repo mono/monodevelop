@@ -71,17 +71,34 @@ module internal TipFormatter =
 
   /// Return the XmlDocumentationProvider for an assembly
   let findXmlDocProviderForAssembly file  = 
-        let tryExists s = try  if File.Exists s then Some s else None with _ -> None
-        let e = 
-            match tryExists (Path.ChangeExtension(file,"xml")) with 
-            | Some x -> Some x 
-            | None -> tryExists (Path.ChangeExtension(file,"XML"))
-        match e with 
-        | None -> None
-        | Some xmlFile ->
-        let docReader = xmlDocProvider xmlFile
-        if docReader = null then None else Some docReader
+      let tryExists s = try  if File.Exists s then Some s else None with _ -> None
+      let e = 
+          match tryExists (Path.ChangeExtension(file,"xml")) with 
+          | Some x -> Some x 
+          | None -> tryExists (Path.ChangeExtension(file,"XML"))
+      match e with 
+      | None -> None
+      | Some xmlFile ->
+      let docReader = xmlDocProvider xmlFile
+      if docReader = null then None else Some docReader
 
+  let findXmlDocProviderForEntity (file, key:string)  = 
+      match findXmlDocProviderForAssembly file with 
+      | None -> None
+      | Some docReader ->
+          let doc = docReader.GetDocumentation key
+          if System.String.IsNullOrEmpty doc then None else Some doc
+  
+  let findMonoDocProviderForEntity (file, key)  = 
+      let helpTree = MonoDevelop.Projects.HelpService.HelpTree
+      if (helpTree = null) then None else
+      let doc = helpTree .GetHelpXml key 
+      if doc = null then None else Some doc.OuterXml
+
+  let findDocProviderForEntity (file, key)  = 
+      match findXmlDocProviderForEntity (file, key) with 
+      | Some doc -> Some doc
+      | None -> findMonoDocProviderForEntity (file, key)
 
   /// Format some of the data returned by the F# compiler
   let private buildFormatComment cmt (sb:StringBuilder) = 
@@ -90,21 +107,19 @@ module internal TipFormatter =
     // For 'XmlCommentSignature' we could get documentation from 'xml' 
     // files, but I'm not sure whether these are available on Mono
     | XmlCommentSignature(file,key) -> 
-        match findXmlDocProviderForAssembly file with 
+        match findDocProviderForEntity (file, key) with 
         | None -> ()
-        | Some docReader ->
-            let doc = docReader.GetDocumentation(key)
-            if not (System.String.IsNullOrEmpty(doc)) then 
-                let summary = 
-                    let tag1 = "<summary>"
-                    let tag2 = "</summary>"
-                    let idx1 = doc.IndexOf tag1
-                    let idx2 = doc.IndexOf tag2
-                    if (idx2 >= 0 && idx1 >= 0) then doc.Substring (idx1 + tag1.Length, idx2 - idx1 - tag1.Length)
-                    elif (idx1 >= 0) then doc.Substring (idx1 + tag1.Length)
-                    elif (idx2 >= 0) then doc.Substring (0, idx2 - 1)
-                    else doc
-                sb.AppendLine("<i>" + GLib.Markup.EscapeText(summary) + "</i>") |> ignore
+        | Some doc ->
+            let summary = 
+                let tag1 = "<summary>"
+                let tag2 = "</summary>"
+                let idx1 = doc.IndexOf tag1
+                let idx2 = doc.IndexOf tag2
+                if (idx2 >= 0 && idx1 >= 0) then doc.Substring (idx1 + tag1.Length, idx2 - idx1 - tag1.Length)
+                elif (idx1 >= 0) then doc.Substring (idx1 + tag1.Length)
+                elif (idx2 >= 0) then doc.Substring (0, idx2 - 1)
+                else doc
+            sb.AppendLine("<i>" + GLib.Markup.EscapeText(summary) + "</i>") |> ignore
     | _ -> ()
 
   /// Format some of the data returned by the F# compiler

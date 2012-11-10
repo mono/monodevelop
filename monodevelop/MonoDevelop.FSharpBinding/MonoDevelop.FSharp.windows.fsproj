@@ -113,6 +113,10 @@
       <Private>False</Private>
       <HintPath>c:\Program Files (x86)\MonoDevelop/bin/Mono.TextEditor.dll</HintPath>
     </Reference>
+    <Reference Include="monodoc">
+      <Private>False</Private>
+      <HintPath>c:\Program Files (x86)\MonoDevelop/bin/monodoc.dll</HintPath>
+    </Reference>
     <Reference Include="MonoDevelop.Core">
       <Private>False</Private>
       <HintPath>c:\Program Files (x86)\MonoDevelop/bin/MonoDevelop.Core.dll</HintPath>

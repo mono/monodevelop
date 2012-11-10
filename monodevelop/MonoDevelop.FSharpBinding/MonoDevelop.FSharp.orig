@@ -119,6 +119,10 @@
       <Private>False</Private>
       <HintPath>INSERT_FSPROJ_MDROOT/bin/MonoDevelop.Core.dll</HintPath>
     </Reference>
+    <Reference Include="monodoc">
+      <Private>False</Private>
+      <HintPath>INSERT_FSPROJ_MDROOT/bin/monodoc.dll</HintPath>
+    </Reference>
     <Reference Include="MonoDevelop.Ide">
       <Private>False</Private>
       <HintPath>INSERT_FSPROJ_MDROOT/bin/MonoDevelop.Ide.dll</HintPath>
