@@ -154,10 +154,15 @@ style "tooltip"
 style "treeview" = "default"
 {
     GtkTreeView::odd-row-color = "#f5f5f5"
+    
+    base[SELECTED] = "#bcd0d4"
+    base[ACTIVE] = "#bcd0d4"
+    text[SELECTED] = "#000"
 
     engine "xamarin" {
         roundness = 0
-        gradient_shades     = {1.0, 1.0, 1.0, 1.0}
+        gradient_shades     = {1.0, 0.95, 0.95, 0.90}
+        glazestyle = 1
     }
 }
 
