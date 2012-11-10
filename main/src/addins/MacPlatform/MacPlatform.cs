@@ -409,6 +409,7 @@ end tell", directory.ToString ().Replace ("\"", "\\\"")));
 			//checkUniquePath.Add (thisPath);
 			
 			checkUniqueName.Add ("MonoDevelop");
+			checkUniqueName.Add (BrandingService.ApplicationName);
 			
 			string def = CoreFoundation.GetApplicationUrl (filename, CoreFoundation.LSRolesMask.All);
 			
