@@ -22,6 +22,8 @@ open MonoDevelop.Projects
 
 open ICSharpCode.NRefactory.TypeSystem
 open ICSharpCode.NRefactory.Completion
+open ICSharpCode.NRefactory.Documentation
+open ICSharpCode.NRefactory.Editor
 
 open FSharp.CompilerBinding
 open MonoDevelop.FSharp
@@ -65,8 +67,8 @@ module internal TipFormatter =
       fun x -> if d.ContainsKey x then d.[x] else let res = f x in d.[x] <- res; res
 
   /// Memoize the objects that manage access to XML files.
-  ///
-  /// @todo consider if this needs to be a weak table in some way
+  //
+  // @todo consider if this needs to be a weak table in some way
   let xmlDocProvider = memoize (fun x -> ICSharpCode.NRefactory.Documentation.XmlDocumentationProvider(x))
 
   /// Return the XmlDocumentationProvider for an assembly
@@ -88,22 +90,109 @@ module internal TipFormatter =
       | Some docReader ->
           let doc = docReader.GetDocumentation key
           if System.String.IsNullOrEmpty doc then None else Some doc
-  
+
+  let (|MemberName|_|) (name:string) = 
+      let dotRight = name.LastIndexOf '.'
+      if dotRight < 1 || dotRight >= name.Length - 1 then None else
+      let typeName = name.[0..dotRight-1]
+      let elemName = name.[dotRight+1..]
+      Some (typeName,elemName)
+
+  let (|MethodKey|_|) (key:string) = 
+     if key.StartsWith "M:" then 
+         let key = key.[2..]
+         let name,count,args = 
+             if not (key.Contains "(") then key, 0, [| |] else
+          
+             let pieces = key.Split( [|'('; ')' |], System.StringSplitOptions.RemoveEmptyEntries)
+             if pieces.Length < 2 then key, 0, [| |] else
+             let nameAndCount = pieces.[0]
+             let argsText = pieces.[1].Replace(")","")
+             let args = argsText.Split(',')
+             if nameAndCount.Contains "`" then 
+                 let ps = nameAndCount.Split( [| '`' |],System.StringSplitOptions.RemoveEmptyEntries) 
+                 ps.[0], (try int ps.[1] with _ -> 0) , args
+             else
+                 nameAndCount, 0, args
+                 
+         match name with 
+         | MemberName(typeName,elemName) -> Some (typeName, elemName, count, args)
+         | _ -> None
+     else None
+
+  let (|SimpleKey|_|) (key:string) = 
+     if key.StartsWith "P:" || key.StartsWith "F:" || key.StartsWith "E:" then 
+         let name = key.[2..]
+        // printfn "AAA name = %A" name
+         match name with 
+         | MemberName(typeName,elemName) -> Some (typeName, elemName)
+         | _ -> None
+     else None
+
+  let trySelectOverload (nodes: XmlNodeList, argsFromKey:string[]) =
+
+      //printfn "AAA argsFromKey = %A" argsFromKey
+      if (nodes.Count = 1) then Some nodes.[0] else
+      
+      let result = 
+        [ for x in nodes -> x ] |> Seq.tryFind (fun curNode -> 
+          let paramList = curNode.SelectNodes ("Parameters/*")
+          
+          printfn "AAA paramList = %A" [ for x in paramList -> x.OuterXml ]
+          
+          (paramList <> null) &&
+          (argsFromKey.Length = paramList.Count) 
+          (* &&
+          (p, paramList) ||> Seq.forall2 (fun pi pmi -> 
+            let idString = GetTypeString pi.Type
+            (idString = pmi.Attributes ["Type"].Value)) *) )
+
+      match result with 
+      | None -> None
+      | Some node -> 
+          let docs = node.SelectSingleNode ("Docs") 
+          if docs = null then None else Some docs
+
   let findMonoDocProviderForEntity (file, key)  = 
+      //printfn "AAA key = %A" key
       let helpTree = MonoDevelop.Projects.HelpService.HelpTree
       if (helpTree = null) then None else
-      let doc = helpTree .GetHelpXml key 
-      if doc = null then None else Some doc.OuterXml
+      match key with  
+      | SimpleKey (parentId, name) -> 
+        //printfn "AAA parentId = %s, name = %s" parentId name
+        let doc = helpTree.GetHelpXml ("T:" + parentId)
+        if doc = null then None else
 
+        let docXml = doc.SelectSingleNode ("/Type/Members/Member[@MemberName='" + name + "']")
+       // printfn "AAA xml (simple) = null" 
+        if docXml = null then None else 
+        //printfn "AAA xml (simple) = <<<%s>>>" docXml.OuterXml
+        Some docXml.OuterXml
+
+      | MethodKey(parentId, name, count, args) -> 
+        //printfn "AAA MethodKey, parentId = %s, name = %s, args = %A" parentId name args
+        let doc = helpTree.GetHelpXml ("T:" + parentId)
+        if doc = null then None else
+
+        let nodeXmls = doc.SelectNodes ("/Type/Members/Member[@MemberName='" + name + "']")
+        let docXml = trySelectOverload (nodeXmls, args)
+        match docXml with 
+        | None -> None
+        | Some xml -> Some xml.OuterXml
+      | _ -> None
+      
+//  return new 
   let findDocProviderForEntity (file, key)  = 
       match findXmlDocProviderForEntity (file, key) with 
       | Some doc -> Some doc
-      | None -> findMonoDocProviderForEntity (file, key)
-
+      | None -> findMonoDocProviderForEntity (file, key) 
+  
+  let italicizeHtml s = s // "<i>" + s + "</i>"
+  
   /// Format some of the data returned by the F# compiler
   let private buildFormatComment cmt (sb:StringBuilder) = 
     match cmt with
-    | XmlCommentText(s) -> sb.AppendLine("<i>" + GLib.Markup.EscapeText(s) + "</i>") |> ignore
+    | XmlCommentText(s) -> sb.AppendLine(italicizeHtml (GLib.Markup.EscapeText s)) |> ignore
     // For 'XmlCommentSignature' we could get documentation from 'xml' 
     // files, but I'm not sure whether these are available on Mono
     | XmlCommentSignature(file,key) -> 
@@ -119,7 +208,7 @@ module internal TipFormatter =
                 elif (idx1 >= 0) then doc.Substring (idx1 + tag1.Length)
                 elif (idx2 >= 0) then doc.Substring (0, idx2 - 1)
                 else doc
-            sb.AppendLine("<i>" + GLib.Markup.EscapeText(summary) + "</i>") |> ignore
+            sb.AppendLine(MonoDevelop.Ide.TypeSystem.AmbienceService.GetDocumentationMarkup summary) |> ignore
     | _ -> ()
 
   /// Format some of the data returned by the F# compiler
