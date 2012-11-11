@@ -22,64 +22,24 @@ open FSharp.CompilerBinding.Reflection
 
 
 /// Wrapper type for the 'FSharp.Compiler.dll' assembly - expose types we use
-type FSharpCompiler(reqVersion:FSharpCompilerVersion) =      
-    let otherVersion = match reqVersion with FSharp_2_0 -> FSharp_3_0 | FSharp_3_0 -> FSharp_2_0
-    let checkVersion (ver:FSharpCompilerVersion) (ass:System.Reflection.Assembly) = 
-        if ass = null then failwith (sprintf "no assembly found, wanted verion %s" (ver.ToString())) else
-        let nm = ass.GetName()
-        if nm = null then failwith (sprintf "no assembly name found, wanted verion %s" (ver.ToString())) 
-        elif nm.Name = null then failwith (sprintf "no assembly name property Name found, nm = %s, wanted verion %s" (nm.ToString()) (ver.ToString()))
-        elif nm.Version.ToString() <> ver.ToString() then failwith (sprintf "loaded %s, but had wrong version, wanted %s, got %s" nm.Name (ver.ToString()) (nm.Version.ToString()))
-        else ass
-    let tryVersion (ver:FSharpCompilerVersion) = 
-         Debug.WriteLine(sprintf "Resolution: Loading FSharp Compiler DLL version %A" ver)
-         // Somewhat surprisingly, Load() and LoadWithPartialName() can still return
-         // assemblies with the wrong version, if the right version is not available....
-         try 
-           // Try getting the assemblies using the microsoft strong name
-           Debug.WriteLine("Resolution: Looking in GAC...")
-           let asm = Assembly.Load("FSharp.Compiler, Version="+ver.ToString()+", Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a") |> checkVersion ver
-           let asm2 = Assembly.Load("FSharp.Compiler.Server.Shared, Version="+ver.ToString()+", Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a") |> checkVersion ver
-           asm,asm2,ver
-         with _ -> 
-           try 
-             // Try getting the assemblies by partial name. 
-             Debug.WriteLine(sprintf "Resolution: Looking with partial name...")
-             let asm = Assembly.LoadWithPartialName("FSharp.Compiler, Version="+ver.ToString()) |> checkVersion ver
-             let asm2 = Assembly.LoadWithPartialName("FSharp.Compiler.Server.Shared, Version="+ver.ToString()) |> checkVersion ver
-             asm,asm2,ver
-           with err -> 
-             match FSharpEnvironment.BinFolderOfDefaultFSharpCompiler(ver) with
-             | None -> raise err
-             | Some dir -> 
-             // Try getting the assemblies by location
-             Debug.WriteLine(sprintf "Resolution: Looking in compiler directory '%s'..." dir)
-             let asm = Assembly.LoadFrom(Path.Combine(dir, "FSharp.Compiler.dll")) |> checkVersion ver
-             let asm2 = Assembly.LoadFrom(Path.Combine(dir, "FSharp.Compiler.Server.Shared.dll")) |> checkVersion ver
-             
-             asm,asm2,ver
+type FSharpCompiler(asmCompiler:Assembly, asmCompilerServer:Assembly, actualVersion) =
 
-    let asm,asm2,actualVersion = 
-        try tryVersion reqVersion 
-        with e -> 
-            match (try Some (tryVersion otherVersion) with e -> None) with 
-            | Some res -> res 
-            | None -> reraise()
-        
+    static let v20 = lazy FSharpCompiler.FromVersion(FSharp_2_0)
+    static let v30 = lazy FSharpCompiler.FromVersion(FSharp_3_0) 
 
-    static let v20 = lazy FSharpCompiler(FSharp_2_0) 
-    static let v30 = lazy FSharpCompiler(FSharp_3_0) 
-    let interactiveCheckerType = asm.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.InteractiveChecker")
-    let isResultObsoleteType = asm.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.IsResultObsolete")
-    let declarationSetType = asm.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.DeclarationSet")
-    let checkOptionsType = asm.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.CheckOptions")
-    let parserType = asm.GetType("Microsoft.FSharp.Compiler.Parser")
-    let sourceTokenizerType = asm.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.SourceTokenizer")
-    let tokenInformationType = asm.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.TokenInformation")
-    let fSharpCore = asm.GetReferencedAssemblies() |> Array.find (fun x -> x.Name = "FSharp.Core") |> fun a -> Assembly.Load(a)
-
-    let interactiveServerType = asm2.GetType("Microsoft.FSharp.Compiler.Server.Shared.FSharpInteractiveServer")
+    static let mutable currentWrapper =
+        let c = match FSharpCompilerVersion.LatestKnown with FSharp_2_0 -> v20 | FSharp_3_0 -> v30
+        try c.Force() with e -> Debug.WriteLine(sprintf "Compiler Error: %s" (e.ToString())); reraise()
     
+    let interactiveCheckerType = asmCompiler.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.InteractiveChecker")
+    let isResultObsoleteType = asmCompiler.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.IsResultObsolete")
+    let declarationSetType = asmCompiler.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.DeclarationSet")
+    let checkOptionsType = asmCompiler.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.CheckOptions")
+    let parserType = asmCompiler.GetType("Microsoft.FSharp.Compiler.Parser")
+    let sourceTokenizerType = asmCompiler.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.SourceTokenizer")
+    let tokenInformationType = asmCompiler.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.TokenInformation")
+    let fSharpCore = asmCompiler.GetReferencedAssemblies() |> Array.find (fun x -> x.Name = "FSharp.Core") |> fun a -> Assembly.Load(a)
+
     let fSharpValueType = fSharpCore.GetType("Microsoft.FSharp.Reflection.FSharpValue")
     let unitType = fSharpCore.GetType(typeof<unit>.FullName)
     let fsharpFuncType = fSharpCore.GetType("Microsoft.FSharp.Core.FSharpFunc`2")
@@ -91,12 +51,16 @@ type FSharpCompiler(reqVersion:FSharpCompilerVersion) =
     let toFSharpFunc = funcConvertType.GetMethods() |> Array.find (fun x -> x.Name = "ToFSharpFunc" && x.GetParameters().[0].ParameterType.Name = "Converter`2")
     let runSynchronously = asyncType.GetMethod "RunSynchronously"
 
+    // Interactive server is initialized lazily because it may not 
+    // be needed by all users of the 'FSharpCompiler' wrapper.
+    let interactiveServerType = lazy asmCompilerServer.GetType("Microsoft.FSharp.Compiler.Server.Shared.FSharpInteractiveServer")
+
     member __.InteractiveCheckerType = interactiveCheckerType
     member __.IsResultObsoleteType = isResultObsoleteType
     member __.CheckOptionsType = checkOptionsType
     member __.DeclarationSetType = declarationSetType
     member __.ParserType = parserType
-    member __.InteractiveServerType = interactiveServerType
+    member __.InteractiveServerType = interactiveServerType.Value
     member __.FSharpCore = fSharpCore
     member __.UnitType = unitType
     member __.AsyncType = asyncType
@@ -104,10 +68,72 @@ type FSharpCompiler(reqVersion:FSharpCompilerVersion) =
     member __.ActualVersion = actualVersion
     member __.NotifyFileTypeCheckStateIsDirtyType = 
         // only valid when version is 4.3.0.0
-        asm.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.NotifyFileTypeCheckStateIsDirty")
+        asmCompiler.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.NotifyFileTypeCheckStateIsDirty")
     member __.SourceTokenizer = sourceTokenizerType
     member __.TokenInformation = tokenInformationType
     
+    /// Set the currently loaded FSharpCompiler wrapper to a wrapper that
+    /// wraps the specified library. This allows it to be used with any library
+    /// (including non-standard builds of the F# compiler)
+    static member BindToAssembly(asmCompiler:Assembly, asmCompilerServer) =
+        // Infer the version of F# compiler from the FSharp.Compiler.dll
+        let fsVersion =
+          if null <> asmCompiler.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.NotifyFileTypeCheckStateIsDirty") 
+            then FSharp_3_0 else FSharp_2_0
+        currentWrapper <- FSharpCompiler(asmCompiler, asmCompilerServer, fsVersion)
+
+    /// Create an instance of FSharpCompiler automatically (by searching
+    /// for an appropriate assembly) using the specified required version
+    static member FromVersion(reqVersion:FSharpCompilerVersion) =      
+
+        let otherVersion = 
+            match reqVersion with FSharp_2_0 -> FSharp_3_0 | FSharp_3_0 -> FSharp_2_0
+
+        let checkVersion (ver:FSharpCompilerVersion) (ass:System.Reflection.Assembly) = 
+            if ass = null then failwith (sprintf "no assembly found, wanted verion %s" (ver.ToString())) else
+            let nm = ass.GetName()
+            if nm = null then failwith (sprintf "no assembly name found, wanted verion %s" (ver.ToString())) 
+            elif nm.Name = null then failwith (sprintf "no assembly name property Name found, nm = %s, wanted verion %s" (nm.ToString()) (ver.ToString()))
+            elif nm.Version.ToString() <> ver.ToString() then failwith (sprintf "loaded %s, but had wrong version, wanted %s, got %s" nm.Name (ver.ToString()) (nm.Version.ToString()))
+            else ass
+
+        let tryVersion (ver:FSharpCompilerVersion) = 
+             Debug.WriteLine(sprintf "Resolution: Loading FSharp Compiler DLL version %A" ver)
+             // Somewhat surprisingly, Load() and LoadWithPartialName() can still return
+             // assemblies with the wrong version, if the right version is not available....
+             try 
+               // Try getting the assemblies using the microsoft strong name
+               Debug.WriteLine("Resolution: Looking in GAC...")
+               let asmCompiler = Assembly.Load("FSharp.Compiler, Version="+ver.ToString()+", Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a") |> checkVersion ver
+               let asmCompilerServer = Assembly.Load("FSharp.Compiler.Server.Shared, Version="+ver.ToString()+", Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a") |> checkVersion ver
+               asmCompiler,asmCompilerServer,ver
+             with _ -> 
+               try 
+                 // Try getting the assemblies by partial name. 
+                 Debug.WriteLine(sprintf "Resolution: Looking with partial name...")
+                 let asmCompiler = Assembly.LoadWithPartialName("FSharp.Compiler, Version="+ver.ToString()) |> checkVersion ver
+                 let asmCompilerServer = Assembly.LoadWithPartialName("FSharp.Compiler.Server.Shared, Version="+ver.ToString()) |> checkVersion ver
+                 asmCompiler,asmCompilerServer,ver
+               with err -> 
+                 match FSharpEnvironment.BinFolderOfDefaultFSharpCompiler(ver) with
+                 | None -> raise err
+                 | Some dir -> 
+                 // Try getting the assemblies by location
+                 Debug.WriteLine(sprintf "Resolution: Looking in compiler directory '%s'..." dir)
+                 let asmCompiler = Assembly.LoadFrom(Path.Combine(dir, "FSharp.Compiler.dll")) |> checkVersion ver
+                 let asmCompilerServer = Assembly.LoadFrom(Path.Combine(dir, "FSharp.Compiler.Server.Shared.dll")) |> checkVersion ver
+             
+                 asmCompiler,asmCompilerServer,ver
+
+        let asm,asm2,actualVersion = 
+            // Try thre required version first, otherwise try other version
+            try tryVersion reqVersion 
+            with e -> 
+                match (try Some (tryVersion otherVersion) with e -> None) with 
+                | Some res -> res 
+                | None -> reraise()
+
+        FSharpCompiler(asm, asm2, actualVersion) 
 
 
     // We support multiple backend FSharp.Compiler.dll. 
@@ -148,9 +174,12 @@ type FSharpCompiler(reqVersion:FSharpCompilerVersion) =
         let optionTy = x.MakeOptionType elemTy
         optionTy?Some(elem)
 
-    static member LatestAvailable = 
-        let c = match FSharpCompilerVersion.LatestKnown with FSharp_2_0 -> v20 | FSharp_3_0 -> v30
-        try c.Force() with e -> Debug.WriteLine(sprintf "Compiler Error: %s" (e.ToString())); reraise()
+    static member Current = currentWrapper
+
+
+// --------------------------------------------------------------------------------------
+// Wrapper for the F# parser (used to get IDENT token needed for tool tips)
+// --------------------------------------------------------------------------------------
         
 module Parser = 
   
@@ -159,11 +188,11 @@ module Parser =
     | WrappedToken of obj
     /// Creates a token representing the specified identifier
     static member IDENT(name) = 
-      WrappedToken(FSharpCompiler.LatestAvailable.ParserType?token?IDENT?``.ctor``(name))
+      WrappedToken(FSharpCompiler.Current.ParserType?token?IDENT?``.ctor``(name))
   
   /// Returns the tag of the specified token
   let tagOfToken(WrappedToken token) =
-    FSharpCompiler.LatestAvailable.ParserType?tagOfToken(token) : int
+    FSharpCompiler.Current.ParserType?tagOfToken(token) : int
 
 // --------------------------------------------------------------------------------------
 // Wrapper for 'Microsoft.Compiler.Server.Shared', which contains some API for
@@ -175,7 +204,7 @@ module Server =
     
     type FSharpInteractiveServer(wrapped:obj) =
       static member StartClient(channel:string) = 
-        FSharpInteractiveServer(FSharpCompiler.LatestAvailable.InteractiveServerType?StartClient(channel))
+        FSharpInteractiveServer(FSharpCompiler.Current.InteractiveServerType?StartClient(channel))
       member x.Interrupt() : unit = wrapped?Interrupt()
 
 // --------------------------------------------------------------------------------------
@@ -223,12 +252,12 @@ module SourceCodeServices =
     member x.TriggerClass : TriggerClass = TriggerClass(wrapped?TriggerClass)
     member x.WithRightColumn(rightColumn:int) = 
       TokenInformation
-        ( FSharpCompiler.LatestAvailable.TokenInformation?``.ctor``
+        ( FSharpCompiler.Current.TokenInformation?``.ctor``
             ( x.LeftColumn, rightColumn, int x.ColorClass, int x.CharClass,
               x.TriggerClass.Wrapped, x.Tag, x.TokenName ) )
     member x.WithTokenName(tokenName:string) = 
       TokenInformation
-        ( FSharpCompiler.LatestAvailable.TokenInformation?``.ctor``
+        ( FSharpCompiler.Current.TokenInformation?``.ctor``
             ( x.LeftColumn, x.RightColumn, x.ColorClass, x.CharClass,
               x.TriggerClass.Wrapped, x.Tag, tokenName ) )
     
@@ -243,7 +272,7 @@ module SourceCodeServices =
       optInfo, newstate
       
   type SourceTokenizer(defines:string list, source:string) =
-    let wrapped = FSharpCompiler.LatestAvailable.SourceTokenizer?``.ctor``(defines, source)
+    let wrapped = FSharpCompiler.Current.SourceTokenizer?``.ctor``(defines, source)
     member x.CreateLineTokenizer(line:string) = 
       LineTokenizer(wrapped?CreateLineTokenizer(line))
 
@@ -357,13 +386,13 @@ module SourceCodeServices =
     member x.UseScriptResolutionRules : bool = wrapped?UseScriptResolutionRules
     member x.LoadTime : System.DateTime = 
           // This property only available with F# 3.0
-          let fsc = FSharpCompiler.LatestAvailable
+          let fsc = FSharpCompiler.Current
           match fsc.ActualVersion with 
           | FSharpCompilerVersion.FSharp_2_0 -> System.DateTime.Now
           | FSharpCompilerVersion.FSharp_3_0 -> try wrapped?LoadTime with _ -> System.DateTime.Now
     static member Create(fileName:string, fileNames:string[], options:string[], incomplete:bool, scriptRes:bool, loadTime:System.DateTime) =
       let res = 
-          let fsc = FSharpCompiler.LatestAvailable
+          let fsc = FSharpCompiler.Current
           match fsc.ActualVersion with 
           | FSharpCompilerVersion.FSharp_2_0 -> 
               fsc.CheckOptionsType?``.ctor``(fileName, fileNames, options, incomplete, scriptRes)
@@ -445,7 +474,7 @@ module SourceCodeServices =
   type Parameter(wrapped:obj) = 
     member x.Name : string = wrapped?Name
     member x.CanonicalTypeTextForSorting : string option  = 
-      let fsc = FSharpCompiler.LatestAvailable
+      let fsc = FSharpCompiler.Current
       match fsc.ActualVersion with 
       | FSharp_2_0 -> None
       | FSharp_3_0 -> Some (wrapped?CanonicalTypeTextForSorting)
@@ -471,7 +500,7 @@ module SourceCodeServices =
   type TypeCheckInfo(wrapped:obj) =
     /// Resolve the names at the given location to a set of declarations
     member x.GetDeclarations(pos:Position, line:string, (names,residue), tokentag:int, timeout:int) =
-      let fsc = FSharpCompiler.LatestAvailable
+      let fsc = FSharpCompiler.Current
       let names = fsc.MakeList(typeof<string>, names)
       let namesAndResidue = fsc.MakePair(fsc.MakeListType(typeof<string>), typeof<string>, names, residue)
       let res = 
@@ -495,19 +524,19 @@ module SourceCodeServices =
       
     /// Resolve the names at the given location to give a data tip 
     member x.GetDataTipText(pos:Position, line:string, names:Names, tokentag:int) : DataTipText =
-      let fsc = FSharpCompiler.LatestAvailable
+      let fsc = FSharpCompiler.Current
       let names = fsc.MakeList(typeof<string>, names)
       DataTipText(wrapped?GetDataTipText(pos, line, names, tokentag))
          
     // Members that are not supported by the wrapper
       
     member x.GetDeclarationLocation(pos:Position, line:string, names:Names, tokentag:int, isDeclaration:bool) : FindDeclResult =
-      let fsc = FSharpCompiler.LatestAvailable
+      let fsc = FSharpCompiler.Current
       let names = fsc.MakeList(typeof<string>, names)
       FindDeclResult(wrapped?GetDeclarationLocation(pos, line, names, tokentag, isDeclaration))
 
     member x.GetMethods(pos: Position, line: string, namesOpt: Names option, tokentag: int) :  MethodOverloads =
-      let fsc = FSharpCompiler.LatestAvailable
+      let fsc = FSharpCompiler.Current
       let stringListTy = fsc.MakeListType(typeof<string>)
       let namesOpt = 
           match namesOpt with 
@@ -542,7 +571,7 @@ module SourceCodeServices =
       
     /// A handle to type information gleaned from typechecking the file. 
     member x.TypeCheckInfo : TypeCheckInfo option = 
-      let fsc = FSharpCompiler.LatestAvailable
+      let fsc = FSharpCompiler.Current
       match fsc.ActualVersion with 
       | FSharp_2_0 -> 
           if wrapped?TypeCheckInfo = null then None 
@@ -574,12 +603,12 @@ module SourceCodeServices =
       /// Crate an instance of the wrapper
       static member Create (dirty:NotifyFileTypeCheckStateIsDirty) =
         let dirty : obj = 
-            let fsc = FSharpCompiler.LatestAvailable
+            let fsc = FSharpCompiler.Current
             let funcVal = fsc.MakeFunction(typeof<string>,fsc.UnitType, Converter<obj,obj>(fun obj -> dirty (obj :?> string) |> box))
             match fsc.ActualVersion with 
             | FSharp_2_0 -> funcVal (* this was just a function value in F# 2.0 *)
             | FSharp_3_0 -> fsc.NotifyFileTypeCheckStateIsDirtyType?NewNotifyFileTypeCheckStateIsDirty(funcVal)
-        InteractiveChecker(FSharpCompiler.LatestAvailable.InteractiveCheckerType?Create(dirty))
+        InteractiveChecker(FSharpCompiler.Current.InteractiveCheckerType?Create(dirty))
         
       /// Parse a source code file, returning a handle that can be used for obtaining navigation bar information
       /// To get the full information, call 'TypeCheckSource' method on the result
@@ -593,11 +622,11 @@ module SourceCodeServices =
       /// file.
       member x.TypeCheckSource( parsed:UntypedParseInfo, filename:string, fileversion:int, source:string, options:CheckOptions, (IsResultObsolete f)) =
         let isResultObsolete = 
-            let fsc = FSharpCompiler.LatestAvailable
+            let fsc = FSharpCompiler.Current
             let f2 = fsc.MakeFunction(fsc.UnitType,typeof<bool>, Converter<obj,obj>(fun obj -> f () |> box))
             fsc.IsResultObsoleteType?NewIsResultObsolete(f2)
         let res : obj = 
-            let fsc = FSharpCompiler.LatestAvailable
+            let fsc = FSharpCompiler.Current
             match fsc.ActualVersion with 
             | FSharp_2_0 -> wrapped?TypeCheckSource(parsed.Wrapped, filename, fileversion, source, options.Wrapped, isResultObsolete ) 
             | FSharp_3_0 -> wrapped?TypeCheckSource(parsed.Wrapped, filename, fileversion, source, options.Wrapped, isResultObsolete, null (* textSnapshotInfo *) ) 
@@ -606,7 +635,7 @@ module SourceCodeServices =
       /// For a given script file, get the CheckOptions implied by the #load closure
       member x.GetCheckOptionsFromScriptRoot(filename:string, source:string, loadedTimeStamp:System.DateTime) : CheckOptions =
         // GetCheckOptionsFromScriptRoot takes an extra argument in 4.3.0.0. Ignore it in 4.0.0.0
-          let fsc = FSharpCompiler.LatestAvailable
+          let fsc = FSharpCompiler.Current
           match fsc.ActualVersion with 
           | FSharp_2_0 -> CheckOptions(wrapped?GetCheckOptionsFromScriptRoot(filename, source))
           | FSharp_3_0 -> CheckOptions(wrapped?GetCheckOptionsFromScriptRoot(filename, source, loadedTimeStamp))
@@ -644,3 +673,30 @@ module SourceCodeServices =
 
       // member GetSlotsCount : options : CheckOptions -> int
       // member UntypedParseForSlot : slot:int * options : CheckOptions -> UntypedParseInfo
+
+
+module Utilities = 
+  open Reflection
+
+  /// When an exception occurs in the FSharp.Compiler.dll, we may use
+  /// various dynamic tricks to get the actual message from all the 
+  /// wrapper types - this throws a readable exception
+  let formatException e = 
+    let sb = new Text.StringBuilder()
+    let rec printe s (e:exn) = 
+      let name = e.GetType().FullName
+      Printf.bprintf sb "%s: %s (%s)\n\nStack trace: %s\n\n" s name e.Message e.StackTrace
+      if name = "Microsoft.FSharp.Compiler.ErrorLogger+Error" then
+        let (tup:obj) = e?Data0 
+        Printf.bprintf sb "Compile error (%d): %s" tup?Item1 tup?Item2
+      elif name = "Microsoft.FSharp.Compiler.ErrorLogger+InternalError" then
+        Printf.bprintf sb "Internal Error message: %s" e?Data0
+      elif name = "Microsoft.FSharp.Compiler.ErrorLogger+ReportedError" then
+        let (inner:obj) = e?Data0 
+        if inner = null then Printf.bprintf sb "Reported error is null"
+        else printe "Reported error" (inner?Value)
+      elif e.InnerException <> null then
+        printe "Inner exception" e.InnerException
+        
+    printe "Exception" e
+    sb.ToString()
