@@ -1,6 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------
 // (c) Tomas Petricek, http://tomasp.net/blog
-// This code released under the terms of the Microsoft Public License (MS-PL)
 // --------------------------------------------------------------------------------------
 #nowarn "40" // recursive references checked at runtime
 
