@@ -28,6 +28,7 @@ type FSharpCompiler(asmCompiler:Assembly, asmCompilerServer:Assembly, actualVers
     static let v30 = lazy FSharpCompiler.FromVersion(FSharp_3_0) 
 
     static let mutable currentWrapper =
+      lazy
         let c = match FSharpCompilerVersion.LatestKnown with FSharp_2_0 -> v20 | FSharp_3_0 -> v30
         try c.Force() with e -> Debug.WriteLine(sprintf "Compiler Error: %s" (e.ToString())); reraise()
     
@@ -80,7 +81,7 @@ type FSharpCompiler(asmCompiler:Assembly, asmCompilerServer:Assembly, actualVers
         let fsVersion =
           if null <> asmCompiler.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.NotifyFileTypeCheckStateIsDirty") 
             then FSharp_3_0 else FSharp_2_0
-        currentWrapper <- FSharpCompiler(asmCompiler, asmCompilerServer, fsVersion)
+        currentWrapper <- lazy (FSharpCompiler(asmCompiler, asmCompilerServer, fsVersion))
 
     /// Create an instance of FSharpCompiler automatically (by searching
     /// for an appropriate assembly) using the specified required version
@@ -174,7 +175,7 @@ type FSharpCompiler(asmCompiler:Assembly, asmCompilerServer:Assembly, actualVers
         let optionTy = x.MakeOptionType elemTy
         optionTy?Some(elem)
 
-    static member Current = currentWrapper
+    static member Current = currentWrapper.Value
 
 
 // --------------------------------------------------------------------------------------
