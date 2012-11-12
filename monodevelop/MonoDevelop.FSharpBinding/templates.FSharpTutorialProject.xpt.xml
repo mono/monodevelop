@@ -24,9 +24,10 @@
     <Project name = "${ProjectName}" directory = ".">
       <Options ExternalConsole="True" TargetFrameworkVersion="4.0" />
       <References>
+        <Reference type="Package" refto="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
         <Reference type="Gac" refto="FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-        <Reference type="Gac" refto="System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-        <Reference type="Gac" refto="System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+        <Reference type="Package" refto="System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+        <Reference type="Package" refto="System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
       </References>
       <Files>
         <File name = "Tutorial.fs" AddStandardHeader="True">
@@ -761,7 +762,7 @@ module OData =
 module BoilerPlateForForm =
     [<System.STAThread>]
     do ()
-    do System.Windows.Forms.Application.Run()
+//    do System.Windows.Forms.Application.Run()
 
 #endif
 ]]></File>
