@@ -181,8 +181,7 @@ module internal TipFormatter =
         | Some xml -> Some xml.OuterXml
       | _ -> None
       
-//  return new 
-  let findDocProviderForEntity (file, key)  = 
+  let findDocForEntity (file, key)  = 
       match findXmlDocProviderForEntity (file, key) with 
       | Some doc -> Some doc
       | None -> findMonoDocProviderForEntity (file, key) 
@@ -194,7 +193,7 @@ module internal TipFormatter =
     // For 'XmlCommentSignature' we could get documentation from 'xml' 
     // files, but I'm not sure whether these are available on Mono
     | XmlCommentSignature(file,key) -> 
-        match findDocProviderForEntity (file, key) with 
+        match findDocForEntity (file, key) with 
         | None -> ""
         | Some doc ->
             let tag1 = "<summary>"
@@ -265,7 +264,7 @@ module internal TipFormatter =
     let sb = new StringBuilder()
     buildFormatTip tip sb
     let text = sb.ToString()
-    let textSquashed =  MonoDevelop.Ide.TypeSystem.AmbienceService.BreakLines(text,80)
+    let textSquashed =  MonoDevelop.Ide.TypeSystem.AmbienceService.BreakLines(text,120)
     textSquashed.Trim('\n', '\r')
 
   /// For elements with XML docs, the paramater descriptions are buried in the XML. Fetch it.
