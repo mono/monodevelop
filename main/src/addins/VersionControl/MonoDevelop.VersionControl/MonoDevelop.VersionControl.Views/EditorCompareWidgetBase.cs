@@ -255,17 +255,20 @@ namespace MonoDevelop.VersionControl.Views
 		
 		protected abstract void CreateComponents ();
 		
-		public static Cairo.Rectangle GetDiffRectangle (TextEditor editor, int startOffset, int endOffset)
+		public static ICollection<Cairo.Rectangle> GetDiffRectangles (TextEditor editor, int startOffset, int endOffset)
 		{
-			var point = editor.LocationToPoint (editor.Document.OffsetToLocation (startOffset), true);
-			Cairo.Point point2;
-			var line = editor.GetLineByOffset (startOffset);
-			if (line.Offset + line.Length < endOffset) {
-				point2 = new Cairo.Point ((int)(point.X + editor.TextViewMargin.CharWidth * (endOffset - startOffset)), point.Y);
-			} else {
-				point2 = editor.LocationToPoint (editor.Document.OffsetToLocation (endOffset), true);
+			ICollection<Cairo.Rectangle> rectangles = new List<Cairo.Rectangle> ();
+			var startLine = editor.GetLineByOffset (startOffset);
+			var endLine = editor.GetLineByOffset (endOffset);
+			int lineCount = endLine.LineNumber - startLine.LineNumber;
+			var line = startLine;
+			for (int i = 0; i <= lineCount; i++) {
+				Cairo.Point point = editor.LocationToPoint (editor.Document.OffsetToLocation (Math.Max (startOffset, line.Offset)), true);
+				Cairo.Point point2 = editor.LocationToPoint (editor.Document.OffsetToLocation (Math.Min (line.EndOffset, endOffset)), true);
+				rectangles.Add (new Cairo.Rectangle (point.X - editor.TextViewMargin.XOffset, point.Y, point2.X - point.X, editor.LineHeight));
+				line = line.NextLine;
 			}
-			return new Cairo.Rectangle (point.X - editor.TextViewMargin.XOffset, point.Y, point2.X - point.X, editor.LineHeight);
+			return rectangles;
 		}
 		
 		Dictionary<List<Mono.TextEditor.Utils.Hunk>, Dictionary<Hunk, Tuple<List<Cairo.Rectangle>, List<Cairo.Rectangle>>>> diffCache = new Dictionary<List<Mono.TextEditor.Utils.Hunk>, Dictionary<Hunk, Tuple<List<Cairo.Rectangle>, List<Cairo.Rectangle>>>> ();
@@ -292,14 +295,14 @@ namespace MonoDevelop.VersionControl.Views
 					var word = words[start + i - 1];
 					if (endOffset != word.Offset) {
 						if (startOffset >= 0)
-							result.Add (GetDiffRectangle (editor, startOffset, endOffset));
+							result.AddRange (GetDiffRectangles (editor, startOffset, endOffset));
 						startOffset = word.Offset;
 					}
 					endOffset = word.EndOffset;
 				}
 			}
 			if (startOffset >= 0)
-				result.Add (GetDiffRectangle (editor, startOffset, endOffset));
+				result.AddRange (GetDiffRectangles (editor, startOffset, endOffset));
 			return result;
 		}
 		
