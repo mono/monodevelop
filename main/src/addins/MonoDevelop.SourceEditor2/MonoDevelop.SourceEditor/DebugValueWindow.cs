@@ -210,6 +210,8 @@ namespace MonoDevelop.SourceEditor
 				sw.HscrollbarPolicy = PolicyType.Never;
 				sw.WidthRequest = -1;
 			}
+			// Force a redraw of the whole window. This is a workaround for bug 7538
+			QueueDraw ();
 		}
 		
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
