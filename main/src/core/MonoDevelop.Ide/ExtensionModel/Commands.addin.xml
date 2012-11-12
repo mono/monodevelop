@@ -111,8 +111,8 @@
 			_description = "Convert the selected text to lowercase" 
 			_label = "_Lowercase Selection" />
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.RemoveTrailingWhiteSpaces"
-			description = "Remove trailing white spaces" 
-			_label = "_Remove trailing white spaces" />
+			description = "Remove trailing whitespace"
+			_label = "_Remove trailing whitespace" />
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.JoinWithNextLine"
 			shortcut = "Control|Shift|J"
 			_description = "Join the current line with the next line" 
