@@ -721,6 +721,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			var upper = Math.Max (Allocation.Height, (filteredItems.Count + viewableCats) * rowHeight);
 			if (upper != vadj.Upper || Allocation.Height != vadj.PageSize) {
 				vadj.SetBounds (0, upper, rowHeight, Allocation.Height, Allocation.Height);
+				if (vadj.Upper <= Allocation.Height)
+					vadj.Value = 0;
 			}
 			if (scrollToSelectedItem)
 				ScrollToSelectedItem ();
