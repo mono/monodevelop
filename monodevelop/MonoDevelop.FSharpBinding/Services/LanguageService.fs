@@ -187,29 +187,33 @@ module internal TipFormatter =
       | Some doc -> Some doc
       | None -> findMonoDocProviderForEntity (file, key) 
   
-  let italicizeHtml s = s // "<i>" + s + "</i>"
-  
   /// Format some of the data returned by the F# compiler
-  let private buildFormatComment cmt (sb:StringBuilder) = 
+  let private buildFormatComment cmt = 
     match cmt with
-    | XmlCommentText(s) -> sb.AppendLine(italicizeHtml (GLib.Markup.EscapeText s)) |> ignore
+    | XmlCommentText(s) -> GLib.Markup.EscapeText s
     // For 'XmlCommentSignature' we could get documentation from 'xml' 
     // files, but I'm not sure whether these are available on Mono
     | XmlCommentSignature(file,key) -> 
         match findDocProviderForEntity (file, key) with 
-        | None -> ()
+        | None -> ""
         | Some doc ->
+            let tag1 = "<summary>"
+            let tag2 = "</summary>"
+            // chop out the summary node only
             let summary = 
-                let tag1 = "<summary>"
-                let tag2 = "</summary>"
                 let idx1 = doc.IndexOf tag1
                 let idx2 = doc.IndexOf tag2
-                if (idx2 >= 0 && idx1 >= 0) then doc.Substring (idx1 + tag1.Length, idx2 - idx1 - tag1.Length)
-                elif (idx1 >= 0) then doc.Substring (idx1 + tag1.Length)
-                elif (idx2 >= 0) then doc.Substring (0, idx2 - 1)
+                if (idx2 >= 0 && idx1 >= 0) then tag1 + doc.Substring (idx1 + tag1.Length, idx2 - idx1 - tag1.Length) + tag2
+                elif (idx1 >= 0) then tag1 + doc.Substring (idx1 + tag1.Length) + tag2
+                elif (idx2 >= 0) then tag1 + doc.Substring (0, idx2 - 1) + tag2
                 else doc
-            sb.AppendLine(MonoDevelop.Ide.TypeSystem.AmbienceService.GetDocumentationMarkup summary) |> ignore
-    | _ -> ()
+
+            let html1 = 
+                try MonoDevelop.Ide.TypeSystem.AmbienceService.GetDocumentationMarkup summary 
+                with _ -> GLib.Markup.EscapeText summary
+            let html2 = if String.IsNullOrEmpty html1 then summary else html1
+            html2 
+    | _ -> ""
 
   /// Format some of the data returned by the F# compiler
   ///
@@ -220,8 +224,11 @@ module internal TipFormatter =
     match el with 
     | DataTipElementNone -> ()
     | DataTipElement(it, comment) -> 
-        sb.AppendLine(GLib.Markup.EscapeText(it)) |> ignore
-        buildFormatComment comment sb
+        sb.AppendLine(GLib.Markup.EscapeText it) |> ignore
+        let html = buildFormatComment comment 
+        if not (String.IsNullOrWhiteSpace html) then 
+            sb.Append(GLib.Markup.EscapeText "\n")  |> ignore
+            sb.AppendLine(html) |> ignore
     | DataTipElementGroup(items) -> 
         let items, msg = 
           if items.Length > 10 then 
@@ -233,9 +240,11 @@ module internal TipFormatter =
         items |> Seq.iteri (fun i (it,comment) -> 
           sb.AppendLine(GLib.Markup.EscapeText it)  |> ignore
           if i = 0 then 
-              sb.Append(GLib.Markup.EscapeText "\n")  |> ignore
-              buildFormatComment comment sb |> ignore
-              sb.Append(GLib.Markup.EscapeText "\n")  |> ignore
+              let html = buildFormatComment comment 
+              if not (String.IsNullOrWhiteSpace html) then 
+                  sb.Append(GLib.Markup.EscapeText "\n")  |> ignore
+                  sb.AppendLine(html) |> ignore
+                  sb.Append(GLib.Markup.EscapeText "\n")  |> ignore
         )
         if msg <> null then sb.Append(msg) |> ignore
     | DataTipElementCompositionError(err) -> 
@@ -255,7 +264,9 @@ module internal TipFormatter =
   let formatTip tip = 
     let sb = new StringBuilder()
     buildFormatTip tip sb
-    sb.ToString().Trim('\n', '\r')
+    let text = sb.ToString()
+    let textSquashed =  MonoDevelop.Ide.TypeSystem.AmbienceService.BreakLines(text,80)
+    textSquashed.Trim('\n', '\r')
 
   /// For elements with XML docs, the paramater descriptions are buried in the XML. Fetch it.
   let private extractParamTipFromComment paramName comment =  
