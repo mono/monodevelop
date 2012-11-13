@@ -982,7 +982,6 @@ namespace MonoDevelop.Ide
 		{
 			image = IconId.Null;
 			message = string.Empty;
-			sourcePad = null;
 		}
 		
 		public Pad StatusSourcePad {
