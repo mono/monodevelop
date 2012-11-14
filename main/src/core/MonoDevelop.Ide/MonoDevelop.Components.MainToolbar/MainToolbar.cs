@@ -53,6 +53,8 @@ namespace MonoDevelop.Components.MainToolbar
 
 		HBox contentBox = new HBox (false, 0);
 
+		HBox configurationCombosBox;
+
 		ComboBox configurationCombo;
 		TreeStore configurationStore = new TreeStore (typeof(string), typeof(string));
 
@@ -129,10 +131,11 @@ namespace MonoDevelop.Components.MainToolbar
 			configurationCombo.PackStart (ctx, true);
 			configurationCombo.AddAttribute (ctx, "text", 0);
 
+			configurationCombosBox = new HBox (false, 8);
+
 			var configurationComboVBox = new VBox ();
 			configurationComboVBox.PackStart (configurationCombo, true, false, 0);
-			AddWidget (configurationComboVBox);
-			AddSpace (8);
+			configurationCombosBox.PackStart (configurationComboVBox, false, false, 0);
 
 			runtimeCombo = new Gtk.ComboBox ();
 			runtimeCombo.Model = runtimeStore;
@@ -141,7 +144,8 @@ namespace MonoDevelop.Components.MainToolbar
 
 			var runtimeComboVBox = new VBox ();
 			runtimeComboVBox.PackStart (runtimeCombo, true, false, 0);
-			AddWidget (runtimeComboVBox);
+			configurationCombosBox.PackStart (runtimeComboVBox, false, false, 0);
+			AddWidget (configurationCombosBox);
 
 			buttonBarBox = new Alignment (0.5f, 0.5f, 0, 0);
 			buttonBarBox.LeftPadding = 7;
@@ -660,10 +664,8 @@ namespace MonoDevelop.Components.MainToolbar
 
 			button.Icon = operation;
 			var stopped = operation != RoundButton.OperationIcon.Stop;
-			if (configurationCombo.Sensitive != stopped) {
-				configurationCombo.Sensitive = stopped;
-				runtimeCombo.Sensitive = stopped;
-			}
+			if (configurationCombosBox.Sensitive != stopped)
+				configurationCombosBox.Sensitive = stopped;
 		}
 
 		void ICommandBar.SetEnabled (bool enabled)
