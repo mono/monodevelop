@@ -113,8 +113,8 @@
     <Compile Include="MonoDevelop.WebReferences\WebReferencesService.cs" />
     <Compile Include="MonoDevelop.WebReferences.WCF\WCFMetadata.cs" />
     <Compile Include="MonoDevelop.WebReferences.WCF\WCFMetadataStorage.cs" />
-    <Compile Include="MonoDevelop.WebReferences.Dialogs\ConfigurationDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.WebReferences.Dialogs.ConfigurationDialog.cs" />
+    <Compile Include="MonoDevelop.WebReferences.Dialogs\WCFConfigWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.WebReferences.Dialogs.WCFConfigWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.WebReferences.addin.xml">
