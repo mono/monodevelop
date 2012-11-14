@@ -528,9 +528,10 @@ namespace MonoDevelop.Ide
 				filename = new Uri(filename).LocalPath;
 
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true);
-			
+			bool reloading = IsReloading;
+
 			DispatchService.BackgroundDispatch (delegate {
-				BackgroundLoadWorkspace (monitor, filename, loadPreferences);
+				BackgroundLoadWorkspace (monitor, filename, loadPreferences, reloading);
 			});
 			return monitor.AsyncOperation;
 		}
@@ -551,12 +552,15 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		void BackgroundLoadWorkspace (IProgressMonitor monitor, string filename, bool loadPreferences)
+		void BackgroundLoadWorkspace (IProgressMonitor monitor, string filename, bool loadPreferences, bool reloading)
 		{
 			WorkspaceItem item = null;
 			ITimeTracker timer = Counters.OpenWorkspaceItemTimer.BeginTiming ();
 			
 			try {
+				if (reloading)
+					SetReloading (true);
+
 				if (!File.Exists (filename)) {
 					monitor.ReportError (GettextCatalog.GetString ("File not found: {0}", filename), null);
 					monitor.Dispose ();
@@ -609,6 +613,9 @@ namespace MonoDevelop.Ide
 				monitor.Dispose ();
 				timer.End ();
 				return;
+			} finally {
+				if (reloading)
+					SetReloading (false);
 			}
 			
 			Gtk.Application.Invoke (delegate {
@@ -832,7 +839,21 @@ namespace MonoDevelop.Ide
 					yield return file;
 			}
 		}
-		
+
+		int reloadingCount;
+
+		internal bool IsReloading {
+			get { return reloadingCount > 0; }
+		}
+
+		void SetReloading (bool doingIt)
+		{
+			if (doingIt)
+				reloadingCount++;
+			else
+				reloadingCount--;
+		}
+
 		void CheckWorkspaceItems (object sender, FileEventArgs args)
 		{
 			List<FilePath> files = args.Select (e => e.FileName.CanonicalPath).ToList ();
@@ -850,7 +871,7 @@ namespace MonoDevelop.Ide
 				OnCheckWorkspaceItem (it);
 			return true;
 		}
-		
+
 		void OnCheckWorkspaceItem (WorkspaceItem item)
 		{
 			if (item.NeedsReload) {
@@ -858,9 +879,14 @@ namespace MonoDevelop.Ide
 				if (AllowReload (item.GetAllProjects (), out closedDocs)) {
 					if (item.ParentWorkspace == null) {
 						string file = item.FileName;
-						SavePreferences ();
-						CloseWorkspaceItem (item, false);
-						OpenWorkspaceItem (file, false);
+						try {
+							SetReloading (true);
+							SavePreferences ();
+							CloseWorkspaceItem (item, false);
+							OpenWorkspaceItem (file, false, false);
+						} finally {
+							SetReloading (false);
+						}
 					}
 					else {
 						using (IProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetSaveProgressMonitor (true)) {
@@ -1031,14 +1057,16 @@ namespace MonoDevelop.Ide
 		internal void NotifyItemAdded (WorkspaceItem item)
 		{
 			if (DispatchService.IsGuiThread)
-				NotifyItemAddedGui (item);
-			else
+				NotifyItemAddedGui (item, IsReloading);
+			else {
+				bool reloading = IsReloading;
 				Gtk.Application.Invoke (delegate {
-					NotifyItemAddedGui (item);
+					NotifyItemAddedGui (item, reloading);
 				});
+			}
 		}
 		
-		void NotifyItemAddedGui (WorkspaceItem item)
+		void NotifyItemAddedGui (WorkspaceItem item, bool reloading)
 		{
 			try {
 //				Mono.Profiler.RuntimeControls.EnableProfiler ();
@@ -1062,7 +1090,7 @@ namespace MonoDevelop.Ide
 			
 			if (WorkspaceItemOpened != null)
 				WorkspaceItemOpened (this, args);
-			if (Items.Count == 1) {
+			if (Items.Count == 1 && !reloading) {
 				IdeApp.Workbench.CurrentLayout = "Solution";
 				if (FirstWorkspaceItemOpened != null)
 					FirstWorkspaceItemOpened (this, args);
@@ -1072,14 +1100,16 @@ namespace MonoDevelop.Ide
 		internal void NotifyItemRemoved (WorkspaceItem item)
 		{
 			if (DispatchService.IsGuiThread)
-				NotifyItemRemovedGui (item);
-			else
+				NotifyItemRemovedGui (item, IsReloading);
+			else {
+				bool reloading = IsReloading;
 				Gtk.Application.Invoke (delegate {
-					NotifyItemRemovedGui (item);
+					NotifyItemRemovedGui (item, reloading);
 				});
+			}
 		}
 		
-		internal void NotifyItemRemovedGui (WorkspaceItem item)
+		internal void NotifyItemRemovedGui (WorkspaceItem item, bool reloading)
 		{
 			Workspace ws = item as Workspace;
 			if (ws != null) {
@@ -1088,7 +1118,7 @@ namespace MonoDevelop.Ide
 			}
 			item.ConfigurationsChanged -= configurationsChanged;
 			
-			if (Items.Count == 0) {
+			if (Items.Count == 0 && !reloading) {
 				if (LastWorkspaceItemClosed != null)
 					LastWorkspaceItemClosed (this, EventArgs.Empty);
 			}
