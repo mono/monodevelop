@@ -66,6 +66,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.Build ();
 			checkInstr.Active = IdeApp.Preferences.EnableInstrumentation;
 			checkAutoTest.Active = IdeApp.Preferences.EnableAutomatedTesting;
+			checkInstr.Label = MonoDevelop.Core.BrandingService.BrandApplicationName (checkInstr.Label);
 		}
 		
 		public void ApplyChanges ()

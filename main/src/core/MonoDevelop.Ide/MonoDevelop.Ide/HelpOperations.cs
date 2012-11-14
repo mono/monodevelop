@@ -178,7 +178,7 @@ namespace MonoDevelop.Ide
 
 			if (!useExternalMonodoc)
 				MessageService.ShowError (
-					GettextCatalog.GetString ("You need a newer monodoc to use it externally from monodevelop. Using the integrated help viewer now."));
+					BrandingService.BrandApplicationName (GettextCatalog.GetString ("You need a newer monodoc to use it externally from MonoDevelop. Using the integrated help viewer now.")));
 		}
 		
 		string DirArgs {

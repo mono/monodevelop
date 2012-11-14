@@ -214,7 +214,7 @@ namespace MonoDevelop.Ide.Projects
 			OpenFileDialog dlg = new OpenFileDialog (GettextCatalog.GetString ("Select Policy File"));
 			dlg.Action = FileChooserAction.Open;
 			dlg.TransientFor = this;
-			dlg.AddFilter (GettextCatalog.GetString ("MonoDevelop policy files"), "*.mdpolicy");
+			dlg.AddFilter (BrandingService.BrandApplicationName (GettextCatalog.GetString ("MonoDevelop policy files")), "*.mdpolicy");
 			dlg.AddAllFilesFilter ();
 			dlg.CurrentFolder = ExportProjectPolicyDialog.DefaultFileDialogPolicyDir;
 			if (dlg.Run ()) {
@@ -271,7 +271,7 @@ namespace MonoDevelop.Ide.Projects
 			dlg.TransientFor = this;
 			dlg.InitialFileName = currentSet.Name + ".mdpolicy";
 			dlg.Action = FileChooserAction.Save;
-			dlg.AddFilter (GettextCatalog.GetString ("MonoDevelop policy files"), "*.mdpolicy");
+			dlg.AddFilter (BrandingService.BrandApplicationName (GettextCatalog.GetString ("MonoDevelop policy files")), "*.mdpolicy");
 			dlg.AddAllFilesFilter ();
 			dlg.CurrentFolder = ExportProjectPolicyDialog.DefaultFileDialogPolicyDir;
 			if (dlg.Run ()) {

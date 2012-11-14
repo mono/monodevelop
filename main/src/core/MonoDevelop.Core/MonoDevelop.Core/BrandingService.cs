@@ -164,5 +164,10 @@ namespace MonoDevelop.Core
 			
 			return null;
 		}
+
+		public static string BrandApplicationName (string s)
+		{
+			return s.Replace ("MonoDevelop", ApplicationName);
+		}
 	}
 }

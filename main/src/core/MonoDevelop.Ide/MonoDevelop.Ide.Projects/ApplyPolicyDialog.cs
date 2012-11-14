@@ -53,7 +53,7 @@ namespace MonoDevelop.Ide.Projects
 					combPolicies.AppendText (pset.Name);
 			
 			fileEntry.DefaultPath = ExportProjectPolicyDialog.DefaultFileDialogPolicyDir;
-			fileEntry.FileFilters.AddFilter (GettextCatalog.GetString ("MonoDevelop policy files"), "*.mdpolicy");
+			fileEntry.FileFilters.AddFilter (BrandingService.BrandApplicationName (GettextCatalog.GetString ("MonoDevelop policy files")), "*.mdpolicy");
 			fileEntry.FileFilters.AddAllFilesFilter ();
 			combPolicies.Active = 0;
 			OnRadioCustomToggled (null, null);

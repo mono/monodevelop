@@ -28,6 +28,7 @@
 using System;
 using Mono.Addins;
 using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Extensions
 {
@@ -59,7 +60,7 @@ namespace MonoDevelop.Ide.Extensions
 		
 		public string Label {
 			get {
-				return label;
+				return BrandingService.BrandApplicationName (label);
 			}
 			set {
 				label = value;

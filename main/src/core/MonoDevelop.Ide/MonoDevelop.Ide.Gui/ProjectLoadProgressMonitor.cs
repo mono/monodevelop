@@ -51,12 +51,12 @@ namespace MonoDevelop.Ide.Gui
 			var buttonIgnore = new AlertButton (GettextCatalog.GetString ("Ignore"));
 			var response = MessageService.AskQuestion (
 				GettextCatalog.GetString ("Migrate Project?"),
-				GettextCatalog.GetString (
+				BrandingService.BrandApplicationName (GettextCatalog.GetString (
 					"One or more projects must be migrated to a new format. " +
 					"After migration, it will not be able to be opened in " +
 					"older versions of MonoDevelop.\n\n" +
 					"If you choose to back up the project before migration, a copy of the project " +
-					"file will be saved in a 'backup' directory in the project directory."),
+					"file will be saved in a 'backup' directory in the project directory.")),
 				buttonIgnore, buttonMigrate, buttonBackupAndMigrate);
 
 			// If we get an unexpected response, the default should be to *not* migrate

@@ -906,11 +906,11 @@ namespace MonoDevelop.SourceEditor
 			TextEditor.Visible = false;
 			if (messageBar == null) {
 				messageBar = new MonoDevelop.Components.InfoBar (MessageType.Warning);
-				messageBar.SetMessageLabel (GettextCatalog.GetString (
+				messageBar.SetMessageLabel (BrandingService.BrandApplicationName (GettextCatalog.GetString (
 						"<b>An autosave file has been found for this file.</b>\n" +
 						"This could mean that another instance of MonoDevelop is editing this " +
 						"file, or that MonoDevelop crashed with unsaved changes.\n\n" +
-					    "Do you want to use the original file, or load from the autosave file?"));
+					    "Do you want to use the original file, or load from the autosave file?")));
 				
 				Button b1 = new Button (GettextCatalog.GetString("_Use original file"));
 				b1.Image = ImageService.GetImage (Gtk.Stock.Refresh, IconSize.Button);

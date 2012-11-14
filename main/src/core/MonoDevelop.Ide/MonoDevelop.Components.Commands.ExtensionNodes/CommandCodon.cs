@@ -143,9 +143,9 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 			}
 			
 			cmd.Id = ParseCommandId (this);
-			cmd.Text = StringParserService.Parse (label);
+			cmd.Text = StringParserService.Parse (BrandingService.BrandApplicationName (label));
 			if ((_description != null) && (_description.Length > 0)){
-				cmd.Description = _description;				
+				cmd.Description = BrandingService.BrandApplicationName (_description);				
 			}
 			cmd.Description = cmd.Description;
 			
@@ -163,7 +163,7 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 			
 			return cmd;
 		}
-		
+
 		internal static object ParseCommandId (ExtensionNode codon)
 		{
 			string id = codon.Id;

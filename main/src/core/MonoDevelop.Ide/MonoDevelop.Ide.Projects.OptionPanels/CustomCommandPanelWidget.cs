@@ -45,6 +45,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		public CustomCommandPanelWidget ()
 		{
 			this.Build();
+			label3.LabelProp = MonoDevelop.Core.BrandingService.BrandApplicationName (label3.LabelProp);
 		}
 		
 		public void Load (SolutionEntityItem entry, CustomCommandCollection commands, ConfigurationSelector configSelector, CustomCommandType[] supportedTypes)

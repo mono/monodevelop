@@ -250,7 +250,7 @@ namespace MonoDevelop.Ide
 			if (error != null) {
 				LoggingService.LogFatalError (null, error);
 				MessageService.ShowException (error,
-				                              GettextCatalog.GetString ("MonoDevelop failed to start. The following error has been reported: ") + error.Message);
+				                              BrandingService.BrandApplicationName (GettextCatalog.GetString ("MonoDevelop failed to start. The following error has been reported: ") + error.Message));
 				return 1;
 			}
 
@@ -401,7 +401,7 @@ namespace MonoDevelop.Ide
 						string msg = "Inotify watch limit is too low (" + n + ").\n";
 						msg += "MonoDevelop will switch to managed file watching.\n";
 						msg += "See http://monodevelop.com/Inotify_Watches_Limit for more info.";
-						LoggingService.LogWarning (msg);
+						LoggingService.LogWarning (BrandingService.BrandApplicationName (msg));
 						Runtime.ProcessService.EnvironmentVariableOverrides["MONO_MANAGED_WATCHER"] = 
 							Environment.GetEnvironmentVariable ("MONO_MANAGED_WATCHER");
 						Environment.SetEnvironmentVariable ("MONO_MANAGED_WATCHER", "1");

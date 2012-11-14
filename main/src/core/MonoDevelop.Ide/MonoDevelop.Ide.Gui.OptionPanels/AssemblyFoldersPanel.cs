@@ -53,6 +53,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		public AssemblyFoldersPanelWidget ()
 		{
 			this.Build ();
+			label1.LabelProp = MonoDevelop.Core.BrandingService.BrandApplicationName (label1.LabelProp);
 			selector.Directories = new List<string> (Runtime.SystemAssemblyService.UserAssemblyContext.Directories);
 		}
 		

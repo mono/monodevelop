@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.Projects
 			else if (policyProvider is Solution)
 				fileEntry.Path = ((Solution)policyProvider).Name + ".mdpolicy";
 			
-			fileEntry.FileFilters.AddFilter (GettextCatalog.GetString ("MonoDevelop policy files"), "*.mdpolicy");
+			fileEntry.FileFilters.AddFilter (BrandingService.BrandApplicationName (GettextCatalog.GetString ("MonoDevelop policy files")), "*.mdpolicy");
 			fileEntry.FileFilters.AddAllFilesFilter ();
 			
 			fileEntry.PathChanged += delegate {

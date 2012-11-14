@@ -49,7 +49,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 						"Compilation of projects depending on Gtk# libraries will fail. " +
 						"You may need to install development packages for gtk-sharp-2.0.");
 					monitor.Log.WriteLine ();
-					monitor.Log.WriteLine (msg);
+					monitor.Log.WriteLine (BrandingService.BrandApplicationName (msg));
 				}
 			}
 			

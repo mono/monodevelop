@@ -24,6 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.Core;
+
+
 namespace MonoDevelop.VersionControl.Git
 {
 	public partial class UserInfoConflictDialog : Gtk.Dialog
@@ -31,6 +34,8 @@ namespace MonoDevelop.VersionControl.Git
 		public UserInfoConflictDialog (string mdInfo, string gitInfo)
 		{
 			this.Build ();
+			label1.LabelProp = BrandingService.BrandApplicationName (label1.LabelProp);
+			radioMD.Label = BrandingService.BrandApplicationName (radioMD.Label);
 			labelMD.Markup = "<b>" + GLib.Markup.EscapeText (mdInfo) + "</b>";
 			labelGit.Markup = "<b>" + GLib.Markup.EscapeText (gitInfo) + "</b>";
 		}
