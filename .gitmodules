@@ -30,4 +30,4 @@
 	url = git://github.com/mono/mono-addins.git
 [submodule "main/external/ikvmfork"]
 	path = main/external/ikvmfork
-	url = git://github.com/mkrueger/ikvm.git
+	url = git://github.com/mono/ikvm.git
