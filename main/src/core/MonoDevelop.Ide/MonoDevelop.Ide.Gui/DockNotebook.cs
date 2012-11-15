@@ -130,7 +130,7 @@ namespace MonoDevelop.Ide.Gui
 					if (currentTab != null) {
 						if (currentTab.Content != null) {
 							contentBox.Add (currentTab.Content);
-							IdeApp.Workbench.ActiveDocument.Editor.SetCaretTo (IdeApp.Workbench.ActiveDocument.Editor.Caret.Line, IdeApp.Workbench.ActiveDocument.Editor.Caret.Column);
+							contentBox.ChildFocus (DirectionType.Down);
 						}
 						pagesHistory.Remove (currentTab);
 						pagesHistory.Insert (0, currentTab);
