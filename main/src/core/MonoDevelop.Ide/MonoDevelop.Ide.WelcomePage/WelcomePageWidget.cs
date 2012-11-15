@@ -164,6 +164,10 @@ namespace MonoDevelop.Ide.WelcomePage
 			protected override bool OnExposeEvent (EventExpose evnt)
 			{
 				using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
+					context.Color = new Cairo.Color (1, 1, 1);
+					context.Operator = Cairo.Operator.Source;
+					context.Paint ();
+					context.Operator = Cairo.Operator.Over;
 					DrawBackground (context, evnt.Area);
 				}
 
