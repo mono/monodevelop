@@ -128,8 +128,10 @@ namespace MonoDevelop.Ide.Gui
 						contentBox.Remove (contentBox.Child);
 
 					if (currentTab != null) {
-						if (currentTab.Content != null)
+						if (currentTab.Content != null) {
 							contentBox.Add (currentTab.Content);
+							IdeApp.Workbench.ActiveDocument.Editor.SetCaretTo (IdeApp.Workbench.ActiveDocument.Editor.Caret.Line, IdeApp.Workbench.ActiveDocument.Editor.Caret.Column);
+						}
 						pagesHistory.Remove (currentTab);
 						pagesHistory.Insert (0, currentTab);
 					}
