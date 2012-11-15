@@ -114,7 +114,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				ComboBox combo;
 				string label;
 
-				var dict = new Dictionary<string, List<TargetFramework>> ();
+				var dict = new SortedDictionary<string, List<TargetFramework>> ();
 				foreach (var sfx in versions) {
 					if (!string.IsNullOrEmpty (sfx.MinimumVersionDisplayName))
 						label = sfx.DisplayName + " " + sfx.MinimumVersionDisplayName;
@@ -129,29 +129,51 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 					targets.Add (sfx.TargetFramework);
 				}
 
-				var model = new ListStore (new Type[] { typeof (string), typeof (object) });
-				foreach (var kvp in dict)
-					model.AppendValues (kvp.Key, kvp.Value);
+				if (dict.Count > 1) {
+					var model = new ListStore (new Type[] { typeof (string), typeof (object) });
+					int current = 1;
 
-				var renderer = new CellRendererText ();
+					foreach (var kvp in dict) {
+						var display = kvp.Key;
 
-				combo = new ComboBox (model);
-				combo.PackStart (renderer, true);
-				combo.AddAttribute (renderer, "text", 0);
-				combo.Active = 0; // FIXME: select the right one...
-				combo.Changed += ComboChanged;
-				combo.Show ();
+						if (current < dict.Count)
+							display += " or later";
 
-				check = new CheckButton ();
-				check.Toggled += CheckToggled;
-				check.Show ();
+						model.AppendValues (display, kvp.Value);
+						current++;
+					}
 
-				var hbox = new HBox ();
-				hbox.PackStart (check, false, false, 0);
-				hbox.PackStart (combo, false, true, 0);
-				hbox.Show ();
+					var renderer = new CellRendererText ();
 
-				alignment.Add (hbox);
+					combo = new ComboBox (model);
+					combo.PackStart (renderer, true);
+					combo.AddAttribute (renderer, "text", 0);
+					combo.Active = 0; // FIXME: select the right one...
+					combo.Changed += ComboChanged;
+					combo.Show ();
+
+					check = new CheckButton ();
+					check.Toggled += CheckToggled;
+					check.Active = true;
+					check.Show ();
+
+					var hbox = new HBox ();
+					hbox.PackStart (check, false, false, 0);
+					hbox.PackStart (combo, false, true, 0);
+					hbox.Show ();
+
+					alignment.Add (hbox);
+				} else {
+					var kvp = dict.FirstOrDefault ();
+
+					check = new CheckButton (kvp.Key);
+					check.Toggled += CheckToggled;
+					check.Active = true;
+					check.Show ();
+
+					alignment.Add (check);
+				}
+
 				alignment.Show ();
 				
 				vbox1.PackStart (alignment, false, false, 0);
