@@ -273,6 +273,7 @@
 	<StockIcon stockid = "md-status-upload" animation = "res:statusPush-01.png;res:statusPush-02.png;res:statusPush-03.png;res:statusPush-04.png;res:statusPush-05.png;res:statusPush-06.png" size="Menu" />
 	<StockIcon stockid = "md-status-open" animation = "res:statusOpen-01.png;res:statusOpen-02.png;res:statusOpen-03.png;res:statusOpen-04.png;res:statusOpen-05.png;res:statusOpen-06.png" size="Menu" />
 	<StockIcon stockid = "md-status-search" animation = "res:statusSearch-01.png;res:statusSearch-02.png;res:statusSearch-03.png;res:statusSearch-04.png" size="Menu" />
+	<StockIcon stockid = "md-status-connecting" animation = "res:statusConnecting-01.png;res:statusConnecting-02.png;res:statusConnecting-03.png;res:statusConnecting-04.png;res:statusConnecting-05.png;res:statusConnecting-06.png" size="Menu" />
 	<StockIcon stockid = "md-status-steady" icon = "res:statusSteady.png" size="Menu" />
 	<StockIcon stockid = "md-status-success" icon = "res:statusSuccess.png" size="Menu" />
 	<StockIcon stockid = "md-status-warning" icon = "res:statusWarning.png" size="Menu" />

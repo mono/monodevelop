@@ -153,6 +153,7 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId StatusSuccess = "md-status-success";
 		public static readonly IconId StatusWarning = "md-status-warning";
 		public static readonly IconId StatusError = "md-status-error";
+		public static readonly IconId StatusConnecting = "md-status-connecting";
 		public static readonly IconId Broom = "md-clear";
 		public static readonly IconId Stop = "md-stop";
 		public static readonly IconId MessageLog = "md-message-log";

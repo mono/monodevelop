@@ -1058,6 +1058,24 @@
     <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\starburst.png">
       <LogicalName>starburst.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\statusConnecting-01.png">
+      <LogicalName>statusConnecting-01.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\statusConnecting-02.png">
+      <LogicalName>statusConnecting-02.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\statusConnecting-03.png">
+      <LogicalName>statusConnecting-03.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\statusConnecting-04.png">
+      <LogicalName>statusConnecting-04.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\statusConnecting-05.png">
+      <LogicalName>statusConnecting-05.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\statusConnecting-06.png">
+      <LogicalName>statusConnecting-06.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />

@@ -989,7 +989,7 @@ namespace MonoDevelop.Debugger
 		public void SetMessage (DebuggerStartInfo dsi, string message, bool listening, int attemptNumber)
 		{
 			Gtk.Application.Invoke (delegate {
-				IdeApp.Workbench.StatusBar.ShowMessage (MonoDevelop.Ide.Gui.Stock.StatusUpload, message);
+				IdeApp.Workbench.StatusBar.ShowMessage (MonoDevelop.Ide.Gui.Stock.StatusConnecting, message);
 			});
 		}
 
