@@ -14,10 +14,11 @@ tooltip_fg_color:  #000"
 gtk-button-images     = 0
 gtk-menu-images       = 0
 gtk-toolbar-style     = 0
-gtk-enable-mnemonics  = 0
+gtk-enable-mnemonics  = 1
 gtk-icon-sizes        = "gtk-small-toolbar=16,16:gtk-large-toolbar=22,22"
 gtk-toolbar-icon-size = large-toolbar
 gtk-auto-mnemonics    = 1
+gtk-alternative-button-order = 1
 
 
 style "default" {
@@ -67,6 +68,7 @@ style "default" {
 
     GtkMenu::horizontal-padding = 3
     GtkMenu::vertical-padding = 3
+    GtkMenuItem::horizontal-padding = 2
     GtkSeparatorMenuItem::horizontal-padding = 2
 
     GtkTreeView::expander-size = 8
