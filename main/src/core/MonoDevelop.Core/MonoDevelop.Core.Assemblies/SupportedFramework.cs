@@ -133,9 +133,6 @@ namespace MonoDevelop.Core.Assemblies
 
 			if (string.IsNullOrEmpty (fx.Identifier))
 				throw new Exception ("Framework element did not specify an Identifier attribute");
-
-			if (string.IsNullOrEmpty (fx.Profile))
-				throw new Exception ("Framework element did not specify a Profile attribute");
 			
 			return fx;
 		}
