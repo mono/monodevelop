@@ -293,6 +293,9 @@ namespace MonoDevelop.Core.Assemblies
 					case "4.0":
 						fx.clrVersion = ClrVersion.Net_4_0;
 						break;
+					case "4.5":
+						fx.clrVersion = ClrVersion.Net_4_5;
+						break;
 					default:
 						throw new Exception ("Unknown RuntimeVersion '" + runtimeVersion + "'");
 					}
@@ -309,6 +312,9 @@ namespace MonoDevelop.Core.Assemblies
 						break;
 					case "4.0":
 						fx.toolsVersion = TargetFrameworkToolsVersion.V4_0;
+						break;
+					case "4.5":
+						fx.toolsVersion = TargetFrameworkToolsVersion.V4_5;
 						break;
 					default:
 						throw new Exception ("Unknown ToolsVersion '" + runtimeVersion + "'");
@@ -446,5 +452,6 @@ namespace MonoDevelop.Core.Assemblies
 		V2_0,
 		V3_5,
 		V4_0,
+		V4_5
 	}
 }
