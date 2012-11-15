@@ -157,8 +157,12 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 					check.Active = true;
 					check.Show ();
 
-					var hbox = new HBox ();
-					hbox.PackStart (check, false, false, 0);
+					var checkAlignment = new Alignment (0.0f, 0.5f, 1.0f, 1.0f);
+					checkAlignment.Add (check);
+					checkAlignment.Show ();
+
+					var hbox = new HBox (false, 6);
+					hbox.PackStart (checkAlignment, false, false, 0);
 					hbox.PackStart (combo, false, true, 0);
 					hbox.Show ();
 
