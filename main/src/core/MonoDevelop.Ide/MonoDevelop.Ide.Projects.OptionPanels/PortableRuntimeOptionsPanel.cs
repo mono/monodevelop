@@ -87,6 +87,24 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 					list.Add (sfx);
 				}
 			}
+
+			if (options.Count == 0) {
+				var fx = Runtime.SystemAssemblyService.GetTargetFramework (TargetFrameworkMoniker.PORTABLE_4_0);
+				var net4 = new SupportedFramework (fx, ".NETFramework", ".NET Framework", "*", new Version (4, 0), "4");
+				var sl4 = new SupportedFramework (fx, "Silverlight", "Silverlight", "", new Version (4, 0), "4");
+				var wp7 = new SupportedFramework (fx, "Silverlight","Windows Phone", "WindowsPhone*", new Version (4, 0), "7");
+				var xbox = new SupportedFramework (fx, "Xbox", "Xbox 360", "*", new Version (4, 0), "");
+
+				fx.SupportedFrameworks.Add (net4);
+				fx.SupportedFrameworks.Add (sl4);
+				fx.SupportedFrameworks.Add (wp7);
+				fx.SupportedFrameworks.Add (xbox);
+
+				options.Add (net4.DisplayName, new List<SupportedFramework> () { net4 });
+				options.Add (sl4.DisplayName, new List<SupportedFramework> () { sl4 });
+				options.Add (wp7.DisplayName, new List<SupportedFramework> () { wp7 });
+				options.Add (xbox.DisplayName, new List<SupportedFramework> () { xbox });
+			}
 			
 			foreach (var opt in options) {
 				var alignment = new Alignment (0.0f, 0.5f, 1.0f, 1.0f) { LeftPadding = 18 };
@@ -120,15 +138,20 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				combo = new ComboBox (model);
 				combo.PackStart (renderer, true);
 				combo.AddAttribute (renderer, "text", 0);
+				combo.Active = 0; // FIXME: select the right one...
 				combo.Changed += ComboChanged;
 				combo.Show ();
 
 				check = new CheckButton ();
 				check.Toggled += CheckToggled;
-				check.Add (combo);
 				check.Show ();
 
-				alignment.Add (check);
+				var hbox = new HBox ();
+				hbox.PackStart (check, false, false, 0);
+				hbox.PackStart (combo, false, true, 0);
+				hbox.Show ();
+
+				alignment.Add (hbox);
 				alignment.Show ();
 				
 				vbox1.PackStart (alignment, false, false, 0);

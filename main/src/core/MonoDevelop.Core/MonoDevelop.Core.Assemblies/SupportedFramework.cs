@@ -33,7 +33,19 @@ namespace MonoDevelop.Core.Assemblies
 	{
 		public static readonly Version NoMaximumVersion = new Version (int.MaxValue, int.MaxValue, int.MaxValue, int.MaxValue);
 		public static readonly Version NoMinumumVersion = new Version (0, 0, 0, 0);
-		
+
+		public SupportedFramework (TargetFramework target, string identifier, string display, string profile, Version minVersion, string minDisplayVersion)
+		{
+			MinimumVersionDisplayName = minDisplayVersion;
+			MinimumVersion = minVersion;
+			MaximumVersion = NoMaximumVersion;
+			DisplayName = display;
+			Identifier = identifier;
+			Profile = profile;
+			
+			TargetFramework = target;
+		}
+
 		internal SupportedFramework (TargetFramework target)
 		{
 			MinimumVersionDisplayName = string.Empty;
