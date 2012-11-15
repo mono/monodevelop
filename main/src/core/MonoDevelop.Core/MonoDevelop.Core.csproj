@@ -402,13 +402,13 @@
     <Compile Include="MonoDevelop.Projects.Utility\ByteOrderMark.cs" />
     <Compile Include="MonoDevelop.Core.Instrumentation\IInstrumentationConsumer.cs" />
     <Compile Include="MonoDevelop.Projects\PortableDotNetProject.cs" />
-    <Compile Include="MonoDevelop.Core.Assemblies\Framework.cs" />
     <Compile Include="MonoDevelop.Core.AddIns\FilePathExtensionNode.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\TargetsAvailableCondition.cs" />
     <Compile Include="MonoDevelop.Projects\PortableDotNetProjectBinding.cs" />
     <Compile Include="MonoDevelop.Core.AddIns\AssemblyInstalledCondition.cs" />
     <Compile Include="MonoDevelop.Core\WebCertificateService.cs" />
     <Compile Include="MonoDevelop.Core\IWebCertificateProvider.cs" />
+    <Compile Include="MonoDevelop.Core.Assemblies\SupportedFramework.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

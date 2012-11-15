@@ -70,17 +70,17 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.project = project;
 			this.Build ();
 			
-			SortedDictionary<string, List<Framework>> options = new SortedDictionary<string, List<Framework>> ();
+			SortedDictionary<string, List<SupportedFramework>> options = new SortedDictionary<string, List<SupportedFramework>> ();
 			
 			foreach (var fx in Runtime.SystemAssemblyService.GetTargetFrameworks ()) {
 				if (fx.Hidden || fx.Id.Identifier != ".NETPortable" || !project.TargetRuntime.IsInstalled (fx))
 					continue;
 				
 				foreach (var sfx in fx.SupportedFrameworks) {
-					List<Framework> list;
+					List<SupportedFramework> list;
 					
 					if (!options.TryGetValue (sfx.DisplayName, out list)) {
-						list = new List<Framework> ();
+						list = new List<SupportedFramework> ();
 						options.Add (sfx.DisplayName, list);
 					}
 					
@@ -90,7 +90,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			
 			foreach (var opt in options) {
 				var alignment = new Alignment (0.0f, 0.5f, 1.0f, 1.0f) { LeftPadding = 18 };
-				List<Framework> versions = opt.Value;
+				List<SupportedFramework> versions = opt.Value;
 				CheckButton check;
 				
 				// FIXME: VS11 introduces comboboxes for some of these... which I suspect will need to sort based on version
@@ -112,7 +112,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			}
 		}
 		
-		static int CompareFrameworksByVersion (Framework fx1, Framework fx2)
+		static int CompareFrameworksByVersion (SupportedFramework fx1, SupportedFramework fx2)
 		{
 			if (fx1.MinimumVersion < fx2.MinimumVersion)
 				return -1;

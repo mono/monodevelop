@@ -29,12 +29,12 @@ using System.Xml;
 
 namespace MonoDevelop.Core.Assemblies
 {
-	public class Framework
+	public class SupportedFramework
 	{
 		public static readonly Version NoMaximumVersion = new Version (int.MaxValue, int.MaxValue, int.MaxValue, int.MaxValue);
 		public static readonly Version NoMinumumVersion = new Version (0, 0, 0, 0);
 		
-		internal Framework (TargetFramework target)
+		internal SupportedFramework (TargetFramework target)
 		{
 			MinimumVersionDisplayName = string.Empty;
 			MinimumVersion = NoMinumumVersion;
@@ -82,9 +82,11 @@ namespace MonoDevelop.Core.Assemblies
 			return Version.Parse (version);
 		}
 		
-		internal static Framework Load (TargetFramework target, string path)
+		internal static SupportedFramework Load (TargetFramework target, FilePath path)
 		{
-			Framework fx = new Framework (target);
+			SupportedFramework fx = new SupportedFramework (target);
+
+			fx.DisplayName = path.FileNameWithoutExtension;
 			
 			using (var reader = XmlReader.Create (path)) {
 				if (!reader.ReadToDescendant ("Framework"))
@@ -116,6 +118,12 @@ namespace MonoDevelop.Core.Assemblies
 					}
 				}
 			}
+
+			if (string.IsNullOrEmpty (fx.Identifier))
+				throw new Exception ("Framework element did not specify an Identifier attribute");
+
+			if (string.IsNullOrEmpty (fx.Profile))
+				throw new Exception ("Framework element did not specify a Profile attribute");
 			
 			return fx;
 		}
