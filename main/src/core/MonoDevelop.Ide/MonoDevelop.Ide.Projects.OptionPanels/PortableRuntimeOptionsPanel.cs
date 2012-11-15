@@ -91,25 +91,53 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			foreach (var opt in options) {
 				var alignment = new Alignment (0.0f, 0.5f, 1.0f, 1.0f) { LeftPadding = 18 };
 				List<SupportedFramework> versions = opt.Value;
+				List<TargetFramework> targets;
 				CheckButton check;
-				
-				// FIXME: VS11 introduces comboboxes for some of these... which I suspect will need to sort based on version
-				//versions.Sort (CompareFrameworksByVersion);
-				check = new CheckButton (versions[0].DisplayName + " " + versions[0].MinimumVersionDisplayName);
-				check.Sensitive = false; // Desensitize until we support changing these values...
-				foreach (var ver in versions) {
-					if (ver.TargetFramework == project.TargetFramework) {
-						check.Active = true;
-						break;
+				ComboBox combo;
+				string label;
+
+				var dict = new Dictionary<string, List<TargetFramework>> ();
+				foreach (var sfx in versions) {
+					if (!string.IsNullOrEmpty (sfx.MinimumVersionDisplayName))
+						label = sfx.DisplayName + " " + sfx.MinimumVersionDisplayName;
+					else
+						label = sfx.DisplayName;
+
+					if (!dict.TryGetValue (label, out targets)) {
+						targets = new List<TargetFramework> ();
+						dict.Add (label, targets);
 					}
+
+					targets.Add (sfx.TargetFramework);
 				}
+
+				var model = new ListStore (new Type[] { typeof (string), typeof (object) });
+				foreach (var kvp in dict)
+					model.AppendValues (kvp.Key, kvp.Value);
+				combo = new ComboBox (model);
+				combo.Changed += ComboChanged;
+				combo.Show ();
+
+				check = new CheckButton ();
+				check.Toggled += CheckToggled;
+				check.Add (combo);
 				check.Show ();
-				
+
 				alignment.Add (check);
 				alignment.Show ();
 				
 				vbox1.PackStart (alignment, false, false, 0);
 			}
+		}
+
+		void CheckToggled (object sender, EventArgs e)
+		{
+
+		}
+
+		void ComboChanged (object sender, EventArgs e)
+		{
+
 		}
 		
 		static int CompareFrameworksByVersion (SupportedFramework fx1, SupportedFramework fx2)
