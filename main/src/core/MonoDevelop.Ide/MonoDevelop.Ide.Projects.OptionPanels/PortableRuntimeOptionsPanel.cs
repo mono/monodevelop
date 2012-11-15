@@ -114,7 +114,12 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				var model = new ListStore (new Type[] { typeof (string), typeof (object) });
 				foreach (var kvp in dict)
 					model.AppendValues (kvp.Key, kvp.Value);
+
+				var renderer = new CellRendererText ();
+
 				combo = new ComboBox (model);
+				combo.PackStart (renderer, true);
+				combo.AddAttribute (renderer, "text", 0);
 				combo.Changed += ComboChanged;
 				combo.Show ();
 
