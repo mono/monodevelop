@@ -183,6 +183,20 @@ namespace Mono.Debugging.Evaluation
 	}
 
 	[Serializable]
+	public class EvaluatorAbortedException: EvaluatorException
+	{
+		protected EvaluatorAbortedException (SerializationInfo info, StreamingContext context)
+			: base (info, context)
+		{
+		}
+
+		public EvaluatorAbortedException ()
+			: base ("Aborted.")
+		{
+		}
+	}
+
+	[Serializable]
 	public class NotSupportedExpressionException: EvaluatorException
 	{
 		protected NotSupportedExpressionException (SerializationInfo info, StreamingContext context)
@@ -190,7 +204,7 @@ namespace Mono.Debugging.Evaluation
 		{
 		}
 		
-		public NotSupportedExpressionException ( )
+		public NotSupportedExpressionException ()
 			: base ("Expression not supported.")
 		{
 		}

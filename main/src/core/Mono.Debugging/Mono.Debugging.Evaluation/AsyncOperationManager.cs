@@ -56,7 +56,7 @@ namespace Mono.Debugging.Evaluation
 						ST.Monitor.PulseAll (operationsToCancel);
 					}
 					if (wasAborted)
-						throw new EvaluatorException ("Aborted.");
+						throw new EvaluatorAbortedException ();
 					else
 						throw new TimeOutException ();
 				}
@@ -69,7 +69,7 @@ namespace Mono.Debugging.Evaluation
 				operationsToCancel.Remove (methodCall);
 				ST.Monitor.PulseAll (operationsToCancel);
 				if (methodCall.Aborted) {
-					throw new EvaluatorException ("Aborted.");
+					throw new EvaluatorAbortedException ();
 				}
 			}
 
