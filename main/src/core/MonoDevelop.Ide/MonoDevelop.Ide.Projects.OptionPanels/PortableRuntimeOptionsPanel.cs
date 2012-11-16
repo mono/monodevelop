@@ -344,15 +344,12 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			TargetFramework smallest = this.target;
 			int min = Int32.MaxValue;
 
-			Console.WriteLine ("Matching TargetFrameworks:");
 			foreach (var target in list) {
-				Console.WriteLine ("\t{0}", target.Id.ToString ());
 				if (target.SupportedFrameworks.Count < min) {
 					min = target.SupportedFrameworks.Count;
 					smallest = target;
 				}
 			}
-			Console.WriteLine ();
 
 			return smallest;
 		}
