@@ -328,6 +328,12 @@ namespace MonoDevelop.Components
 			}
 		}
 
+		protected override void OnShown ()
+		{
+			base.OnShown ();
+			GtkWorkarounds.ShowNativeShadow (this, false);
+		}
+
 		protected override void OnScreenChanged (Gdk.Screen previous_screen)
 		{
 			base.OnScreenChanged (previous_screen);
