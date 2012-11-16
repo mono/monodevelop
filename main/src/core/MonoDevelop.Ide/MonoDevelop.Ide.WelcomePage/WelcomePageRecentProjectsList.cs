@@ -82,13 +82,15 @@ namespace MonoDevelop.Ide.WelcomePage
 
 			Gtk.HBox hbox = new HBox ();
 			var btn = new WelcomePageListButton (GettextCatalog.GetString ("New..."), null, newProjectIcon, "monodevelop://MonoDevelop.Ide.Commands.FileCommands.NewProject");
-			btn.WidthRequest = Styles.WelcomeScreen.Pad.Solutions.SolutionTile.Width / 2;
-			btn.DrawRightBorder = true;
+			btn.WidthRequest = (int) (Styles.WelcomeScreen.Pad.Solutions.SolutionTile.Width / 2.3);
+			btn.BorderPadding = 6;
+			btn.LeftTextPadding = 24;
 			hbox.PackStart (btn, false, false, 0);
 
 			btn = new WelcomePageListButton (GettextCatalog.GetString ("Open..."), null, openProjectIcon, "monodevelop://MonoDevelop.Ide.Commands.FileCommands.OpenFile");
-			btn.WidthRequest = Styles.WelcomeScreen.Pad.Solutions.SolutionTile.Width / 2;
-			btn.DrawLeftBorder = true;
+			btn.WidthRequest = (int) (Styles.WelcomeScreen.Pad.Solutions.SolutionTile.Width / 2.3);
+			btn.BorderPadding = 6;
+			btn.LeftTextPadding = 24;
 			hbox.PackStart (btn, false, false, 0);
 
 			box.PackStart (hbox, false, false, 0);

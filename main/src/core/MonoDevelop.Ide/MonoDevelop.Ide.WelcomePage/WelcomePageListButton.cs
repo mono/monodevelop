@@ -50,6 +50,11 @@ namespace MonoDevelop.Ide.WelcomePage
 		public bool DrawLeftBorder { get; set; }
 		public bool DrawRightBorder { get; set; }
 
+		public int BorderPadding { get; set; }
+
+		public int LeftTextPadding { get; set; }
+		public int InternalPadding { get; set; }
+
 		static WelcomePageListButton ()
 		{
 			starNormal = Gdk.Pixbuf.LoadFromResource ("star-normal.png");
@@ -68,6 +73,9 @@ namespace MonoDevelop.Ide.WelcomePage
 			WidthRequest = Styles.WelcomeScreen.Pad.Solutions.SolutionTile.Width;
 			HeightRequest = Styles.WelcomeScreen.Pad.Solutions.SolutionTile.Height + 2;
 			Events |= (Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.PointerMotionMask);
+
+			LeftTextPadding = Styles.WelcomeScreen.Pad.Solutions.SolutionTile.TextLeftPadding;
+			InternalPadding = Styles.WelcomeScreen.Pad.Padding;
 		}
 
 		public bool AllowPinning { get; set; }
@@ -127,31 +135,44 @@ namespace MonoDevelop.Ide.WelcomePage
 		{
 			using (var ctx = Gdk.CairoHelper.Create (evnt.Window)) {
 				if (mouseOver) {
-					ctx.Rectangle (Allocation.X, Allocation.Y, Allocation.Width, Allocation.Height);
-					ctx.Color = CairoExtensions.ParseColor (Styles.WelcomeScreen.Pad.Solutions.SolutionTile.HoverBackgroundColor);
-					ctx.Fill ();
-					ctx.MoveTo (Allocation.X, Allocation.Y + 0.5);
-					ctx.RelLineTo (Allocation.Width, 0);
-					ctx.MoveTo (Allocation.X, Allocation.Y + Allocation.Height - 0.5);
-					ctx.RelLineTo (Allocation.Width, 0);
+					if (BorderPadding <= 0) {
+						ctx.Rectangle (Allocation.X, Allocation.Y, Allocation.Width, Allocation.Height);
+						ctx.Color = CairoExtensions.ParseColor (Styles.WelcomeScreen.Pad.Solutions.SolutionTile.HoverBackgroundColor);
+						ctx.Fill ();
+						ctx.MoveTo (Allocation.X, Allocation.Y + 0.5);
+						ctx.RelLineTo (Allocation.Width, 0);
+						ctx.MoveTo (Allocation.X, Allocation.Y + Allocation.Height - 0.5);
+						ctx.RelLineTo (Allocation.Width, 0);
+						
+						if (DrawRightBorder) {
+							ctx.MoveTo (Allocation.Right + 0.5, Allocation.Y + 0.5);
+							ctx.LineTo (Allocation.Right + 0.5, Allocation.Bottom - 0.5);
+						}
+						if (DrawLeftBorder) {
+							ctx.MoveTo (Allocation.Left + 0.5, Allocation.Y + 0.5);
+							ctx.LineTo (Allocation.Left + 0.5, Allocation.Bottom - 0.5);
+						}
+						
+						ctx.LineWidth = 1;
+						ctx.Color = CairoExtensions.ParseColor (Styles.WelcomeScreen.Pad.Solutions.SolutionTile.HoverBorderColor);
+						ctx.Stroke ();
+					} else {
+						Gdk.Rectangle region = Allocation;
+						region.Inflate (-BorderPadding, -BorderPadding);
 
-					if (DrawRightBorder) {
-						ctx.MoveTo (Allocation.Right + 0.5, Allocation.Y + 0.5);
-						ctx.LineTo (Allocation.Right + 0.5, Allocation.Bottom - 0.5);
+						ctx.RoundedRectangle (region.X + 0.5, region.Y + 0.5, region.Width - 1, region.Height - 1, 3);
+						ctx.Color = CairoExtensions.ParseColor (Styles.WelcomeScreen.Pad.Solutions.SolutionTile.HoverBackgroundColor);
+						ctx.FillPreserve ();
+						
+						ctx.LineWidth = 1;
+						ctx.Color = CairoExtensions.ParseColor (Styles.WelcomeScreen.Pad.Solutions.SolutionTile.HoverBorderColor);
+						ctx.Stroke ();
 					}
-					if (DrawLeftBorder) {
-						ctx.MoveTo (Allocation.Left + 0.5, Allocation.Y + 0.5);
-						ctx.LineTo (Allocation.Left + 0.5, Allocation.Bottom - 0.5);
-					}
-
-					ctx.LineWidth = 1;
-					ctx.Color = CairoExtensions.ParseColor (Styles.WelcomeScreen.Pad.Solutions.SolutionTile.HoverBorderColor);
-					ctx.Stroke ();
 				}
 
 				// Draw the icon
 
-				int x = Allocation.X + Styles.WelcomeScreen.Pad.Padding;
+				int x = Allocation.X + InternalPadding;
 				int y = Allocation.Y + (Allocation.Height - icon.Height) / 2;
 				Gdk.CairoHelper.SetSourcePixbuf (ctx, icon, x, y);
 				ctx.Paint ();
@@ -178,7 +199,7 @@ namespace MonoDevelop.Ide.WelcomePage
 
 				// Draw the text
 
-				int textWidth = Allocation.Width - Styles.WelcomeScreen.Pad.Solutions.SolutionTile.TextLeftPadding - Styles.WelcomeScreen.Pad.Padding * 2;
+				int textWidth = Allocation.Width - LeftTextPadding - InternalPadding * 2;
 
 				var face = Platform.IsMac ? Styles.WelcomeScreen.Pad.TitleFontFamilyMac : Styles.WelcomeScreen.Pad.TitleFontFamilyWindows;
 				Pango.Layout titleLayout = new Pango.Layout (PangoContext);
@@ -206,7 +227,7 @@ namespace MonoDevelop.Ide.WelcomePage
 					height += h2;
 				}
 
-				int tx = Allocation.X + Styles.WelcomeScreen.Pad.Padding + Styles.WelcomeScreen.Pad.Solutions.SolutionTile.TextLeftPadding;
+				int tx = Allocation.X + InternalPadding + LeftTextPadding;
 				int ty = Allocation.Y + (Allocation.Height - height) / 2;
 				ctx.MoveTo (tx, ty);
 				Pango.CairoHelper.ShowLayout (ctx, titleLayout);
