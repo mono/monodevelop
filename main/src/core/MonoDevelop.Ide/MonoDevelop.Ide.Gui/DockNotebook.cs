@@ -755,6 +755,18 @@ namespace MonoDevelop.Ide.Gui
 			return base.OnButtonReleaseEvent (evnt);
 		}
 
+		protected override void OnUnrealized ()
+		{
+			// Cancel drag operations and animations
+			buttonPressedOnTab = false;
+			overCloseOnPress = false;
+			allowDoubleClick = true;
+			draggingTab = false;
+			dragX = 0;
+			this.AbortAnimation ("EndDrag");
+			base.OnUnrealized ();
+		}
+
 		DockNotebookTab FindTab (int x, int y)
 		{
 			// we will not actually draw anything, just do bounds checking
