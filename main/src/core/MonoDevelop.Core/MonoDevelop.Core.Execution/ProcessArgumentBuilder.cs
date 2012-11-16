@@ -91,7 +91,7 @@ namespace MonoDevelop.Core.Execution
 		/// arguments, only quoted arguments with escaped quotes.</remarks>
 		public void AddQuoted (string argument)
 		{
-			if (string.IsNullOrWhiteSpace (argument))
+			if (argument == null)
 				return;
 			if (sb.Length > 0)
 				sb.Append (' ');
