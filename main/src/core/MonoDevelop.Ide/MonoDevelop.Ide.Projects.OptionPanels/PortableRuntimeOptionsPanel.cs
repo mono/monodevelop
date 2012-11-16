@@ -67,49 +67,131 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		{
 			this.Build ();
 			
-			SortedDictionary<string, List<Framework>> options = new SortedDictionary<string, List<Framework>> ();
+			SortedDictionary<string, List<SupportedFramework>> options = new SortedDictionary<string, List<SupportedFramework>> ();
 			
 			foreach (var fx in Runtime.SystemAssemblyService.GetTargetFrameworks ()) {
 				if (fx.Hidden || fx.Id.Identifier != ".NETPortable" || !project.TargetRuntime.IsInstalled (fx))
 					continue;
 				
 				foreach (var sfx in fx.SupportedFrameworks) {
-					List<Framework> list;
+					List<SupportedFramework> list;
 					
 					if (!options.TryGetValue (sfx.DisplayName, out list)) {
-						list = new List<Framework> ();
+						list = new List<SupportedFramework> ();
 						options.Add (sfx.DisplayName, list);
 					}
 					
 					list.Add (sfx);
 				}
 			}
+
+			if (options.Count == 0) {
+				var fx = Runtime.SystemAssemblyService.GetTargetFramework (TargetFrameworkMoniker.PORTABLE_4_0);
+				var net4 = new SupportedFramework (fx, ".NETFramework", ".NET Framework", "*", new Version (4, 0), "4");
+				var sl4 = new SupportedFramework (fx, "Silverlight", "Silverlight", "", new Version (4, 0), "4");
+				var wp7 = new SupportedFramework (fx, "Silverlight","Windows Phone", "WindowsPhone*", new Version (4, 0), "7");
+				var xbox = new SupportedFramework (fx, "Xbox", "Xbox 360", "*", new Version (4, 0), "");
+
+				fx.SupportedFrameworks.Add (net4);
+				fx.SupportedFrameworks.Add (sl4);
+				fx.SupportedFrameworks.Add (wp7);
+				fx.SupportedFrameworks.Add (xbox);
+
+				options.Add (net4.DisplayName, new List<SupportedFramework> () { net4 });
+				options.Add (sl4.DisplayName, new List<SupportedFramework> () { sl4 });
+				options.Add (wp7.DisplayName, new List<SupportedFramework> () { wp7 });
+				options.Add (xbox.DisplayName, new List<SupportedFramework> () { xbox });
+			}
 			
 			foreach (var opt in options) {
 				var alignment = new Alignment (0.0f, 0.5f, 1.0f, 1.0f) { LeftPadding = 18 };
-				List<Framework> versions = opt.Value;
+				List<SupportedFramework> versions = opt.Value;
+				List<TargetFramework> targets;
 				CheckButton check;
-				
-				// FIXME: VS11 introduces comboboxes for some of these... which I suspect will need to sort based on version
-				//versions.Sort (CompareFrameworksByVersion);
-				check = new CheckButton (versions[0].DisplayName + " " + versions[0].MinimumVersionDisplayName);
-				check.Sensitive = false; // Desensitize until we support changing these values...
-				foreach (var ver in versions) {
-					if (ver.TargetFramework == project.TargetFramework) {
-						check.Active = true;
-						break;
+				ComboBox combo;
+				string label;
+
+				var dict = new SortedDictionary<string, List<TargetFramework>> ();
+				foreach (var sfx in versions) {
+					if (!string.IsNullOrEmpty (sfx.MinimumVersionDisplayName))
+						label = sfx.DisplayName + " " + sfx.MinimumVersionDisplayName;
+					else
+						label = sfx.DisplayName;
+
+					if (!dict.TryGetValue (label, out targets)) {
+						targets = new List<TargetFramework> ();
+						dict.Add (label, targets);
 					}
+
+					targets.Add (sfx.TargetFramework);
 				}
-				check.Show ();
-				
-				alignment.Add (check);
+
+				if (dict.Count > 1) {
+					var model = new ListStore (new Type[] { typeof (string), typeof (object) });
+					int current = 1;
+
+					foreach (var kvp in dict) {
+						var display = kvp.Key;
+
+						if (current < dict.Count)
+							display += " or later";
+
+						model.AppendValues (display, kvp.Value);
+						current++;
+					}
+
+					var renderer = new CellRendererText ();
+
+					combo = new ComboBox (model);
+					combo.PackStart (renderer, true);
+					combo.AddAttribute (renderer, "text", 0);
+					combo.Active = 0; // FIXME: select the right one...
+					combo.Changed += ComboChanged;
+					combo.Show ();
+
+					check = new CheckButton ();
+					check.Toggled += CheckToggled;
+					check.Active = true;
+					check.Show ();
+
+					var checkAlignment = new Alignment (0.0f, 0.5f, 1.0f, 1.0f);
+					checkAlignment.Add (check);
+					checkAlignment.Show ();
+
+					var hbox = new HBox (false, 6);
+					hbox.PackStart (checkAlignment, false, false, 0);
+					hbox.PackStart (combo, false, true, 0);
+					hbox.Show ();
+
+					alignment.Add (hbox);
+				} else {
+					var kvp = dict.FirstOrDefault ();
+
+					check = new CheckButton (kvp.Key);
+					check.Toggled += CheckToggled;
+					check.Active = true;
+					check.Show ();
+
+					alignment.Add (check);
+				}
+
 				alignment.Show ();
 				
 				vbox1.PackStart (alignment, false, false, 0);
 			}
 		}
+
+		void CheckToggled (object sender, EventArgs e)
+		{
+
+		}
+
+		void ComboChanged (object sender, EventArgs e)
+		{
+
+		}
 		
-		static int CompareFrameworksByVersion (Framework fx1, Framework fx2)
+		static int CompareFrameworksByVersion (SupportedFramework fx1, SupportedFramework fx2)
 		{
 			if (fx1.MinimumVersion < fx2.MinimumVersion)
 				return -1;
