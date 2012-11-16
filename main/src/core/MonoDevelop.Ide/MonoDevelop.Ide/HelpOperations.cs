@@ -29,6 +29,7 @@
 
 using System;
 using System.Collections;
+using System.Diagnostics;
 using Monodoc;
 using MonoDevelop.Core.Execution;
 using System.IO;
@@ -46,31 +47,50 @@ namespace MonoDevelop.Ide
 		bool firstCall = true;
 		bool useExternalMonodoc = false;
 
-		public void ShowHelp (string topic)
+		ProcessStartInfo GetStartPlatformSpecificMonoDoc (string topic, params string[] extraArgs)
 		{
-			if (topic == null || topic.Trim ().Length == 0)
-				return;
-			
+			var builder = new ProcessArgumentBuilder ();
+			extraArgs = extraArgs ?? new string[0];
+
 			if (Platform.IsMac) {
-				var url = "monodoc://" + System.Web.HttpUtility.UrlEncode (topic);
-				string mdapp = new FilePath (typeof (HelpOperations).Assembly.Location)
-					.ParentDirectory
-					.Combine ("..", "..", "..", "MonoDoc.app").FullPath;
-				if (Directory.Exists (mdapp))
-					System.Diagnostics.Process.Start ("open", "-a \"" + mdapp + "\" " + url + " --args " + DirArgs);
-				else
-					System.Diagnostics.Process.Start ("open", url);
-				return;
+				var url = topic != null ? "monodoc://" + System.Web.HttpUtility.UrlEncode (topic) : null;
+				var mdapp = new FilePath (typeof (HelpOperations).Assembly.Location).ParentDirectory.Combine ("..", "..", "..", "MonoDoc.app").FullPath;
+				if (Directory.Exists (mdapp)) {
+					builder.AddQuoted ("-a", mdapp, url, "--args");
+					AddDirArgs (builder);
+					builder.AddQuoted (extraArgs);
+				} else {
+					builder.AddQuoted (url);
+					builder.AddQuoted (extraArgs);
+				}
+				return new ProcessStartInfo ("open", builder.ToString ());
 			} else if (Platform.IsWindows) {
 				string mdapp = new FilePath (typeof (HelpOperations).Assembly.Location).ParentDirectory.Combine ("windoc", "WinDoc.exe").FullPath;
+				if (topic != null)
+					builder.AddQuoted ("--url", topic);
+				AddDirArgs (builder);
+				builder.AddQuoted (extraArgs);
 				if (File.Exists (mdapp)) {
-					System.Diagnostics.Process.Start (new System.Diagnostics.ProcessStartInfo {
+					return new System.Diagnostics.ProcessStartInfo {
 						FileName = mdapp,
-						Arguments = "--url \"" + topic + '"' + DirArgs,
+						Arguments = builder.ToString (),
 						WorkingDirectory = Path.GetDirectoryName (mdapp),
-					});
-					return;
+					};
 				}
+			}
+
+			return null;
+		}
+
+		public void ShowHelp (string topic)
+		{
+			if (topic == null || string.IsNullOrWhiteSpace (topic))
+				return;
+
+			var psi = GetStartPlatformSpecificMonoDoc (topic, null);
+			if (psi != null) {
+				Process.Start (psi);
+				return;
 			}
 	
 			if (firstCall)
@@ -79,12 +99,52 @@ namespace MonoDevelop.Ide
 			if (useExternalMonodoc)
 				ShowHelpExternal (topic);
 		}
-		
+
+		public void SearchHelpFor (string searchTerm)
+		{
+			var searchArgs = new string[] { "--search", searchTerm };
+			var psi = GetStartPlatformSpecificMonoDoc (null, searchArgs);
+			if (psi == null) {
+				var pb = new ProcessArgumentBuilder ();
+				pb.AddQuoted (searchArgs);
+				AddDirArgs (pb);
+				psi = new System.Diagnostics.ProcessStartInfo {
+					FileName = "monodoc",
+					UseShellExecute = true,
+					Arguments = pb.ToString (),
+				};
+			}
+
+			Process.Start (psi);
+		}
+
 		public bool CanShowHelp (string topic)
 		{
 			return topic != null;
 		}
-		
+
+		public void ShowDocs (string path)
+		{
+			if (path == null)
+				return;
+
+			string[] args = null;
+			if (Platform.IsMac) {
+				args = new[] { '+' + path };
+			} else if (Platform.IsWindows) {
+				args = new[] { "--docdir", path };
+			}
+
+			var psi = GetStartPlatformSpecificMonoDoc (null, args);
+			if (psi != null)
+				Process.Start (psi);
+		}
+
+		public bool CanShowDocs (string path)
+		{
+			return path != null && path.Length != 0 && Directory.Exists (path);
+		}
+
 		void CheckExternalMonodoc ()
 		{
 			firstCall = false;
@@ -118,11 +178,16 @@ namespace MonoDevelop.Ide
 		
 		string DirArgs {
 			get {
-				var sb = new System.Text.StringBuilder ();
-				foreach (var dir in HelpService.Sources)
-					sb.AppendFormat (" --docdir=\"{0}\"", dir);
-				return sb.ToString ();
+				var pb = new ProcessArgumentBuilder ();
+				AddDirArgs (pb);
+				return pb.ToString ();
 			}
+		}
+
+		void AddDirArgs (ProcessArgumentBuilder pb)
+		{
+			foreach (var dir in HelpService.Sources)
+				pb.AddQuotedFormat ("--docdir={0}", dir);
 		}
 
 		void ShowHelpExternal (string topic)
