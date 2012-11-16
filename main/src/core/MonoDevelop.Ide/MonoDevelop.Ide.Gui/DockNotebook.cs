@@ -656,7 +656,7 @@ namespace MonoDevelop.Ide.Gui
 					lastDragX = (int)evnt.X;
 				} else if (t != null)
 					newTooltip = t.Tooltip;
-			} else {
+			} else if (evnt.State.HasFlag (ModifierType.Button1Mask)) {
 				dragX = (int)evnt.X - dragOffset;
 				QueueDraw ();
 
