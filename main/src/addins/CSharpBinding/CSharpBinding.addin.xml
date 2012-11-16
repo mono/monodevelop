@@ -19,7 +19,6 @@
 
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Command id = "MonoDevelop.CodeGeneration.CodeGenerationCommands.ShowCodeGenerationWindow"
-				defaultHandler = "MonoDevelop.CodeGeneration.ShowCodeGenerationWindowHandler"
 				_label = "S_how Code Generation Window"
 				shortcut = "Alt|Insert" />
 	</Extension>

@@ -47,6 +47,8 @@ using ICSharpCode.NRefactory.Completion;
 using ICSharpCode.NRefactory.CSharp.Completion;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using Mono.TextEditor;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.CodeGeneration;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -142,6 +144,22 @@ namespace MonoDevelop.CSharp.Completion
 			Document.DocumentParsed += HandleDocumentParsed; 
 		}
 		
+		[CommandUpdateHandler (CodeGenerationCommands.ShowCodeGenerationWindow)]
+		public void CheckShowCodeGenerationWindow (CommandInfo info)
+		{
+			info.Enabled = Document.Editor != null && Document.GetContent<ICompletionWidget> () != null;
+		}
+
+		[CommandHandler (CodeGenerationCommands.ShowCodeGenerationWindow)]
+		public void ShowCodeGenerationWindow ()
+		{
+			var completionWidget = Document.GetContent<ICompletionWidget> ();
+			if (completionWidget == null)
+				return;
+			CodeCompletionContext completionContext = completionWidget.CreateCodeCompletionContext (Document.Editor.Caret.Offset);
+			GenerateCodeWindow.ShowIfValid (Document, completionContext);
+		}
+
 		public override void Dispose ()
 		{
 			unit = null;

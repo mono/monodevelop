@@ -35,26 +35,4 @@ namespace MonoDevelop.CodeGeneration
 	{
 		ShowCodeGenerationWindow
 	}
-
-	public class ShowCodeGenerationWindowHandler : CommandHandler
-	{
-		protected override void Run ()
-		{
-			Document document = IdeApp.Workbench.ActiveDocument;
-			if (document == null)
-				return;
-			var completionWidget = document.GetContent<ICompletionWidget> ();
-			if (completionWidget == null)
-				return;
-			CodeCompletionContext completionContext = completionWidget.CreateCodeCompletionContext (document.Editor.Caret.Offset);
-			GenerateCodeWindow.ShowIfValid (document, completionContext);
-		}
-		
-		protected override void Update (CommandInfo info)
-		{
-			Document document = IdeApp.Workbench.ActiveDocument;
-			info.Enabled = document != null && document.Editor != null
-				&& document.Editor.HasFocus && document.GetContent<ICompletionWidget> () != null;
-		}
-	}
 }

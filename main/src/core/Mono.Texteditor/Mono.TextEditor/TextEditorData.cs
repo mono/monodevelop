@@ -1301,12 +1301,7 @@ namespace Mono.TextEditor
 		#endregion
 		
 		#region Parent functions
-		public bool HasFocus {
-			get {
-				return Parent != null ? Parent.HasFocus : false;
-			}
-		}
-		
+
 		public void ScrollToCaret ()
 		{
 			if (Parent != null)
