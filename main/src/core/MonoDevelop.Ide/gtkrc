@@ -200,6 +200,10 @@ style "tooltip"
 
     fg[NORMAL] = @tooltip_fg_color
     bg[NORMAL] = @tooltip_bg_color
+    
+    engine "xamarin" {
+    	roundness = 0
+    }
 }
 
 style "treeview" = "default"
