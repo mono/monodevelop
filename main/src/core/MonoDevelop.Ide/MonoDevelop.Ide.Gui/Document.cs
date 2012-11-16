@@ -788,7 +788,10 @@ namespace MonoDevelop.Ide.Gui
 		
 		public string[] CommentTags {
 			get {
-				return GetCommentTags (FileName);
+				if (IsFile)
+					return GetCommentTags (FileName);
+				else
+					return null;
 			}
 		}
 		
