@@ -73,7 +73,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		PortableDotNetProject project;
 		TargetFramework target;
 
-		static PortableRuntimeOptionsPanelWidget ()
+		static void InitProfiles ()
 		{
 			// Profile 1 (.NETFramework + Silverlight + WindowsPhone + Xbox)
 			NetPortableProfile1 = Runtime.SystemAssemblyService.GetTargetFramework (new TargetFrameworkMoniker (".NETPortable", "4.0", "Profile1"));
@@ -190,6 +190,9 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 			if (count > 0)
 				yield break;
+
+			if (NetPortableProfile1 == null)
+				InitProfiles ();
 
 			yield return NetPortableProfile1;
 			yield return NetPortableProfile2;
