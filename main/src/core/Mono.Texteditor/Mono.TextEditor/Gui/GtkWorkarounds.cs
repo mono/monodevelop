@@ -61,9 +61,12 @@ namespace Mono.TextEditor
 		[DllImport (LIBOBJC, EntryPoint = "objc_msgSend_stret")]
 		static extern void objc_msgSend_RectangleF (out RectangleF rect, IntPtr klass, IntPtr selector);
 		
+		[DllImport ("libgtk-quartz-2.0.dylib")]
+		static extern IntPtr gdk_quartz_window_get_nswindow (IntPtr window);
+
 		static IntPtr cls_NSScreen;
 		static IntPtr sel_screens, sel_objectEnumerator, sel_nextObject, sel_frame, sel_visibleFrame,
-			sel_requestUserAttention;
+			sel_requestUserAttention, sel_setHasShadow;
 		static IntPtr sharedApp;
 		static IntPtr cls_NSEvent;
 		static IntPtr sel_modifierFlags;
@@ -126,6 +129,7 @@ namespace Mono.TextEditor
 			sel_frame = sel_registerName ("frame");
 			sel_requestUserAttention = sel_registerName ("requestUserAttention:");
 			sel_modifierFlags = sel_registerName ("modifierFlags");
+			sel_setHasShadow = sel_registerName ("setHasShadow:");
 			sharedApp = objc_msgSend_IntPtr (objc_getClass ("NSApplication"), sel_registerName ("sharedApplication"));
 		}
 		
@@ -744,6 +748,17 @@ namespace Mono.TextEditor
 		public static int BottomInside (this Gdk.Rectangle rect)
 		{
 			return rect.Y + rect.Height - 1;
+		}
+
+		/// <summary>
+		/// Shows or hides the shadow of the window rendered by the native toolkit
+		/// </summary>
+		public static void ShowNativeShadow (Gtk.Window window, bool show)
+		{
+			if (Platform.IsMac) {
+				var ptr = gdk_quartz_window_get_nswindow (window.GdkWindow.Handle);
+				objc_msgSend_void_bool (ptr, sel_setHasShadow, show);
+			}
 		}
 
 		[DllImport ("gtksharpglue-2", CallingConvention = CallingConvention.Cdecl)]
