@@ -66,7 +66,7 @@ namespace Mono.TextEditor
 
 		static IntPtr cls_NSScreen;
 		static IntPtr sel_screens, sel_objectEnumerator, sel_nextObject, sel_frame, sel_visibleFrame,
-			sel_requestUserAttention, sel_setHasShadow;
+			sel_requestUserAttention, sel_setHasShadow, sel_invalidateShadow;
 		static IntPtr sharedApp;
 		static IntPtr cls_NSEvent;
 		static IntPtr sel_modifierFlags;
@@ -130,6 +130,7 @@ namespace Mono.TextEditor
 			sel_requestUserAttention = sel_registerName ("requestUserAttention:");
 			sel_modifierFlags = sel_registerName ("modifierFlags");
 			sel_setHasShadow = sel_registerName ("setHasShadow:");
+			sel_invalidateShadow = sel_registerName ("invalidateShadow");
 			sharedApp = objc_msgSend_IntPtr (objc_getClass ("NSApplication"), sel_registerName ("sharedApplication"));
 		}
 		
@@ -759,6 +760,15 @@ namespace Mono.TextEditor
 				var ptr = gdk_quartz_window_get_nswindow (window.GdkWindow.Handle);
 				objc_msgSend_void_bool (ptr, sel_setHasShadow, show);
 			}
+		}
+
+		public static void UpdateNativeShadow (Gtk.Window window)
+		{
+			if (!Platform.IsMac)
+				return;
+
+			var ptr = gdk_quartz_window_get_nswindow (window.GdkWindow.Handle);
+			objc_msgSend_IntPtr (ptr, sel_invalidateShadow);
 		}
 
 		[DllImport ("gtksharpglue-2", CallingConvention = CallingConvention.Cdecl)]

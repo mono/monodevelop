@@ -328,12 +328,6 @@ namespace MonoDevelop.Components
 			}
 		}
 
-		protected override void OnShown ()
-		{
-			base.OnShown ();
-			GtkWorkarounds.ShowNativeShadow (this, false);
-		}
-
 		protected override void OnScreenChanged (Gdk.Screen previous_screen)
 		{
 			base.OnScreenChanged (previous_screen);
@@ -343,6 +337,7 @@ namespace MonoDevelop.Components
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
 			bool retVal;
+			bool changed;
 			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
 				context.Save ();
 				if (SupportsAlpha) {
@@ -358,7 +353,7 @@ namespace MonoDevelop.Components
 				OnDrawContent (evnt, context); // Draw content first so we can easily clip it
 				retVal = base.OnExposeEvent (evnt);
 
-				Theme.SetBorderPath (context, BorderAllocation, position);
+				changed = Theme.SetBorderPath (context, BorderAllocation, position);
 				context.Operator = Cairo.Operator.DestIn;
 				context.SetSourceRGBA (1, 1, 1, 1);
 				context.Fill ();
@@ -376,6 +371,9 @@ namespace MonoDevelop.Components
 				context.Restore ();
 
 			}
+
+			if (changed)
+				GtkWorkarounds.UpdateNativeShadow (this);
 
 			return retVal;
 		}

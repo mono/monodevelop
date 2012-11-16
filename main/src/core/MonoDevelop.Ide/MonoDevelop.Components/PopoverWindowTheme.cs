@@ -297,7 +297,8 @@ namespace MonoDevelop.Components
 			context.Stroke ();
 		}
 
-		public virtual void SetBorderPath (Cairo.Context context, Gdk.Rectangle region, PopupPosition arrowPosition)
+		object setBorderPathLastArgs;
+		public virtual bool SetBorderPath (Cairo.Context context, Gdk.Rectangle region, PopupPosition arrowPosition)
 		{
 			double r = CornerRadius;
 			if (ShowArrow) {
@@ -329,9 +330,21 @@ namespace MonoDevelop.Components
 					context.RelLineTo (ArrowLength, -ArrowWidth / 2);
 				}
 				context.Arc(x + r, y + r, r, Math.PI, Math.PI * 1.5);
-			}
-			else
+			} else {
 				CairoExtensions.RoundedRectangle (context, region.X + 0.5, region.Y + 0.5, region.Width - 1, region.Height - 1, r);
+			}
+
+			var args = new {
+				Region = region,
+				ArrowPostion = arrowPosition,
+				ArrowWidth = this.ArrowWidth,
+				ArrowLength = this.arrowLength,
+				ArrowOffset = this.ArrowOffset,
+			};
+
+			bool result = setBorderPathLastArgs == null ? true : setBorderPathLastArgs.Equals (args);
+			setBorderPathLastArgs = args;
+			return result;
 		}
 
 		/// <summary>
