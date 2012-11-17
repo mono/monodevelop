@@ -280,7 +280,7 @@ module internal CommandInput =
   // Parase any of the supported commands
   let parseCommand input = 
     let reader = Parsing.createForwardStringReader input 0
-    let cmds = errors <|> help <|> declarations <|> parse <|> script <|> completionOrTip <|> error
+    let cmds = errors <|> help <|> declarations <|> parse <|> script <|> completionOrTip <|> error <¦> quit
     reader |> Parsing.getFirst cmds
 
 // --------------------------------------------------------------------------------------
