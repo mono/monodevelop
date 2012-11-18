@@ -124,10 +124,9 @@
 (defun ac-fsharp-filter-output (proc str)
 
   (log-to-proc-buf proc str)
-
   (ac-fsharp-stash-partial str)
 
-  (if (string= (substring string -7 nil) "<<EOF>>")
+  (if (string= (substring str -8 nil) "<<EOF>>\n")
       (case ac-fsharp-status
         (idle
          (message "Received output when idle, ignored")
@@ -145,8 +144,9 @@
            (setq ac-fsharp-current-candidate help)
            (setq ac-fsharp-status 'acknowledged)
            (ac-start :force-init t)
-           (ac-update)
-           (setq ac-fsharp-status 'idle))))))
+           ;(ac-update)
+           ;(setq ac-fsharp-status 'idle)
+           )))))
 
 (defun ac-fsharp-candidate2 ()
   (list "lol" "biscuits" "trontastic" "trance" "biscuil"))
@@ -156,7 +156,8 @@
 
 (defun ac-fsharp-config ()
   (setq ac-sources '(ac-source-fsintellisense))
-  (setq ac-use-fuzzy nil))
+  (setq ac-use-fuzzy nil)
+  (setq ac-auto-start nil))
 
 (add-hook 'fsharp-mode-hook 'ac-fsharp-config)
 (add-hook 'fsharp-mode-hook
