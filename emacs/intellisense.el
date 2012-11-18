@@ -247,7 +247,7 @@
 
 (defun ac-fsharp-launch-completion-process ()
   (interactive)
-  (message "Launching compeltion process")
+  (message "Launching completion process")
   (setq ac-fsharp-completion-process
         (let ((process-connection-type nil))
           (start-process "fsharp-complete"
@@ -361,5 +361,7 @@
 (defvar ac-source-fsintellisense
   '((candidates . ac-fsharp-candidate)))
 
-(add-hook 'fsharp-mode (lambda () (setq 'ac-sources 'ac-source-fsintellisense)))
+
+
+(add-hook 'fsharp-mode (lambda () (setq ac-sources '(ac-source-fsintellisense))))
 (add-to-list 'ac-modes 'fsharp-mode)
