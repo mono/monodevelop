@@ -68,6 +68,8 @@ namespace MonoDevelop.VersionControl.Dialogs
 				labelTargetDir.Visible = false;
 				boxFolder.Visible = false;
 			}
+
+			repoContainer.SetFlag (WidgetFlags.NoWindow);
 		}
 		
 		public Repository Repository {
