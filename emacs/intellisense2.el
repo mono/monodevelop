@@ -61,6 +61,10 @@
   (interactive)
   (ac-fsharp-send-shutdown-command (get-process "fsharp-complete")))
 
+;; (defun ac-set-fsharp-status (st)
+;;   (message "Setting ac-fsharp-status to:")
+;;   (setq ac-fsharp-status st))
+
 (defun ac-fsharp-launch-completion-process ()
   (interactive)
   (message "Launching completion process")
@@ -75,6 +79,8 @@
   ;; Pre-parse source code.
   (ac-fsharp-send-script-file ac-fsharp-completion-process)
 
+  (setq ac-fsharp-status 'complete)
+  
   ;(add-hook 'kill-buffer-hook 'ac-fsharp-shutdown-process nil t)
   ;(add-hook 'before-save-hook 'ac-fsharp-reparse-buffer)
 
@@ -84,7 +90,7 @@
 (defun ac-fsharp-candidate ()
   (case ac-fsharp-status
     (idle
-     (message "ac-fsharp-candidate triggered - fetching candidates...")
+     (message "ac-fsharp-candidate triggered - idle (fetching candidates...)")
      (setq ac-fsharp-saved-prefix ac-prefix)
 
      ;; NOTE: although auto-complete would filter the result for us, but when there's
@@ -108,12 +114,16 @@
 
     (acknowledged
      (message "ac-fsharp-candidate triggered - ack")
-     (setq ac-fsharp-status 'idle)
+     (setq ac-fsharp-status 'complete)
      ac-fsharp-current-candidate)
 
     (preempted
      (message "fsharp-async is preempted by a critical request")
-     nil)))
+     nil)
+
+    (otherwise
+     (message "ac-fsharp-candidate triggered - otherwise")
+     ac-fsharp-current-candidate)))
 
 
 (defun ac-fsharp-stash-partial (str)
@@ -126,13 +136,19 @@
   (log-to-proc-buf proc str)
   (ac-fsharp-stash-partial str)
 
-  (if (string= (substring str -8 nil) "<<EOF>>\n")
+  (if (and
+       (>= (length str) 8)
+       (string= (substring str -8 nil) "<<EOF>>\n"))
       (case ac-fsharp-status
-        (idle
-         (message "Received output when idle, ignored")
-         (setq ac-fsharp-partial-data ""))
+        (preempted
+         (message "Received output when preempted, ignored")
+         (setq ac-fsharp-status 'idle)
+         (ac-start)
+         (ac-update)
+         ;(setq ac-fsharp-partial-data "")
+         )
         
-        (otherwise
+        (wait
          (setq str ac-fsharp-partial-data)
          (setq ac-fsharp-partial-data "")
          (setq str (replace-regexp-in-string "<<EOF>>" "" str))
@@ -146,30 +162,44 @@
            (ac-start :force-init t)
            ;(ac-update)
            ;(setq ac-fsharp-status 'idle)
-           )))))
+           ))
+        (otherwise
+         message "filter output called and found <<EOF>> while not waiting")
+        )))
 
-(defun ac-fsharp-candidate2 ()
-  (list "lol" "biscuits" "trontastic" "trance" "biscuil"))
+(defun ac-fsharp-async-preemptive ()
+  (interactive)
+;  (self-insert-command 1)
+  (if (eq ac-fsharp-status 'idle)
+      (ac-start)
+    (setq ac-fsharp-status 'preempted)))
 
 (defvar ac-source-fsintellisense
-  '((candidates . ac-fsharp-candidate)))
+  '((candidates . ac-fsharp-candidate)
+    (cache)))
 
 (defun ac-fsharp-config ()
   (setq ac-sources '(ac-source-fsintellisense))
   (setq ac-use-fuzzy nil)
-  (setq ac-auto-start nil))
+  (setq ac-auto-start nil)
+  (local-set-key (kbd "C-c .") 'ac-fsharp-async-preemptive))
 
 (add-hook 'fsharp-mode-hook 'ac-fsharp-config)
-(add-hook 'fsharp-mode-hook
-          (lambda () (setq ac-auto-start nil)))
 ;(add-hook 'fsharp-mode-hook (lambda () (auto-complete-mode)))
 ;(setq fsharp-mode-hook '())
 
 (defun ac-complete-fsintellisense ()
   (interactive)
-  (auto-complete '(ac-source-fsintellisense)))
+  ; Must have finished previous request
+  (if (eq ac-fsharp-status 'complete)
+      (progn
+        (setq ac-fsharp-status 'idle)
+        (ac-start))
+    (message "Attempted to autocomplete when not status!=complete, ignoring")))
 
-(global-set-key (kbd "C-c .") 'ac-complete-fsintellisense)
+;(setq ac-fsharp-status 'complete)
+
+;(global-set-key (kbd "C-c .") 'ac-complete-fsintellisense)
 
 (defun attempt-completion ()
   (interactive)
