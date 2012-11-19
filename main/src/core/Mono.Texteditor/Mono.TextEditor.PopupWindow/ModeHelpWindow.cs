@@ -191,6 +191,8 @@ namespace Mono.TextEditor.PopupWindow
 				}
 				gc.Dispose ();
 			}
+
+			GtkWorkarounds.UpdateNativeShadow (this);
 			return false;
 		}
 	}
