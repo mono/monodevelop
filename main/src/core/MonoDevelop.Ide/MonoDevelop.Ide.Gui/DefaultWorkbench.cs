@@ -921,13 +921,13 @@ namespace MonoDevelop.Ide.Gui
 				bottomBar.HasResizeGrip = false;
 
 			if (MonoDevelop.Core.Platform.IsMac)
-				this.StatusBar.HasResizeGrip = true;
+				bottomBar.HasResizeGrip = true;
 			else {
 				if (GdkWindow != null && GdkWindow.State == Gdk.WindowState.Maximized)
-					IdeApp.Workbench.StatusBar.HasResizeGrip = false;
+					bottomBar.HasResizeGrip = false;
 				SizeAllocated += delegate {
 					if (GdkWindow != null)
-						IdeApp.Workbench.StatusBar.HasResizeGrip = GdkWindow.State != Gdk.WindowState.Maximized;
+						bottomBar.HasResizeGrip = GdkWindow.State != Gdk.WindowState.Maximized;
 				};
 			}
 

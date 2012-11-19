@@ -1849,6 +1849,12 @@
     <Compile Include="MonoDevelop.Ide.WelcomePage\WelcomePageTipOfTheDaySection.cs" />
     <Compile Include="MonoDevelop.Components.Docking\DockItemTitleTab.cs" />
     <Compile Include="MonoDevelop.Ide.WelcomePage\WelcomePageFirstRun.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\StatusBar.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\StatusBarContextBase.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\StatusBarContext.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\StatusBarIcon.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\StatusBarContextImpl.cs" />
+    <Compile Include="MonoDevelop.Components.MainToolbar\MainStatusBarContextImpl.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
