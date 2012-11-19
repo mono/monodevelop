@@ -41,12 +41,15 @@ using StockIcons = MonoDevelop.Ide.Gui.Stock;
 
 namespace MonoDevelop.Ide
 {
-	class MonoDevelopStatusBar : Gtk.Statusbar
+	class MonoDevelopStatusBar : Gtk.HBox
 	{
 		Label modeLabel;
 		Label cursorLabel;
 		MiniButton feedbackButton;
-		
+		Gtk.Widget resizeGrip = new Gtk.Label ("");
+
+		const int ResizeGripWidth = 14;
+
 		HBox statusBox;
 
 		readonly Label statusLabel = new Label ();
@@ -73,12 +76,9 @@ namespace MonoDevelop.Ide
 
 		internal MonoDevelopStatusBar ()
 		{
-			Frame originalFrame = (Frame)Children [0];
-			originalFrame.Hide ();
-			originalFrame.NoShowAll = true;
-
 			BorderWidth = 0;
 			Spacing = 0;
+			HasResizeGrip = true;
 
 			HeaderBox hb = new HeaderBox (1, 0, 0, 0);
 			hb.BorderColor = Styles.DockSeparatorColor;
@@ -125,9 +125,14 @@ namespace MonoDevelop.Ide
 			dockBar.ShowBorder = false;
 			dockBar.NoShowAll = true;
 			mainBox.PackStart (dockBar, false, false, 0);
-			
+
+			// Resize grip
+
+			resizeGrip.WidthRequest = ResizeGripWidth;
+			resizeGrip.HeightRequest = 0;
+			mainBox.PackStart (resizeGrip, false, false, 0);
+
 			// Status panels
-			
 
 			statusBox = new HBox (false, 0);
 			statusBox.BorderWidth = 0;
@@ -157,9 +162,6 @@ namespace MonoDevelop.Ide
 			statusBox.PackEnd (eventCaretBox, false, false, 0);
 			
 			this.ShowAll ();
-
-			originalFrame.HideAll ();
-
 
 //			// todo: Move this to the CompletionWindowManager when it's possible.
 //			StatusBarContext completionStatus = null;
@@ -226,9 +228,15 @@ namespace MonoDevelop.Ide
 				modeLabel.Text = "";
 		}
 
+		bool hasResizeGrip;
+		public bool HasResizeGrip {
+			get { return hasResizeGrip; }
+			set { hasResizeGrip = value; resizeGrip.Visible = hasResizeGrip; }
+		}
+
 		Gdk.Rectangle GetGripRect ()
 		{
-			Gdk.Rectangle rect = new Gdk.Rectangle (0, 0, 18, Allocation.Height);
+			Gdk.Rectangle rect = new Gdk.Rectangle (0, 0, ResizeGripWidth, Allocation.Height);
 			if (rect.Width > Allocation.Width)
 				rect.Width = Allocation.Width;
 			rect.Y = Allocation.Y + Allocation.Height - rect.Height;
