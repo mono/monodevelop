@@ -101,6 +101,7 @@ namespace MonoDevelop.Ide.WelcomePage
 				var accessed = recent.TimeStamp;
 				var pixbuf = ImageService.GetPixbuf (GetIcon (filename), IconSize.Dnd);
 				var button = new WelcomePageListButton (recent.DisplayName, System.IO.Path.GetDirectoryName (filename), pixbuf, "project://" + filename);
+				button.BorderPadding = 2;
 				button.AllowPinning = true;
 				button.Pinned = recent.IsFavorite;
 				//FIXME: update times as needed. currently QueryTooltip causes crashes on Windows
