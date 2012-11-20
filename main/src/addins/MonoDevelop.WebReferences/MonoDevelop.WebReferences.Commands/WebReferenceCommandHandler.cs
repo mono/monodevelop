@@ -49,14 +49,6 @@ namespace MonoDevelop.WebReferences.Commands
 				if (MessageService.RunCustomDialog (dialog) != (int)Gtk.ResponseType.Ok)
 					return;
 
-				var wcfResult = dialog.SelectedService as WCF.WebServiceDiscoveryResultWCF;
-				if (ConfigurationDialog.IsSupported () && (wcfResult != null)) {
-					var options = CreateClientOptions ();
-					if (options == null)
-						return;
-					wcfResult.InitialClientOptions = options;
-				}
-
 				dialog.SelectedService.GenerateFiles (project, dialog.Namespace, dialog.ReferenceName);
 				IdeApp.ProjectOperations.Save(project);
 			} catch (Exception exception) {
@@ -66,23 +58,6 @@ namespace MonoDevelop.WebReferences.Commands
 			}
 		}
 
-		WCF.ClientOptions CreateClientOptions ()
-		{
-			var options = new WCF.ClientOptions ();
-			var dialog = new ConfigurationDialog (options);
-
-			try {
-				if (MessageService.RunCustomDialog (dialog) != (int)Gtk.ResponseType.Ok)
-					return null;
-				return options;
-			} catch (Exception exception) {
-				MessageService.ShowException (exception);
-				return null;
-			} finally {
-				dialog.Destroy ();
-			}
-		}
-		
 		[CommandUpdateHandler (MonoDevelop.WebReferences.WebReferenceCommands.Update)]
 		[CommandUpdateHandler (MonoDevelop.WebReferences.WebReferenceCommands.UpdateAll)]
 		void CanUpdateWebReferences (CommandInfo ci)
@@ -178,7 +153,7 @@ namespace MonoDevelop.WebReferences.Commands
 		void CanConfigureWebReferences (CommandInfo ci)
 		{
 			var item = (WebReferenceItem) CurrentNode.DataItem;
-			ci.Enabled = ConfigurationDialog.IsSupported (item);
+			ci.Enabled = WCFConfigWidget.IsSupported (item);
 		}
 
 		/// <summary>Execute the command for configuring a web reference in a project.</summary>
@@ -187,7 +162,7 @@ namespace MonoDevelop.WebReferences.Commands
 		{
 			var item = (WebReferenceItem) CurrentNode.DataItem;
 
-			if (!ConfigurationDialog.IsSupported (item))
+			if (!WCFConfigWidget.IsSupported (item))
 				return;
 
 			WCF.ReferenceGroup refgroup;
@@ -202,14 +177,14 @@ namespace MonoDevelop.WebReferences.Commands
 				return;
 			}
 
-			var dialog = new ConfigurationDialog (options);
+			var dialog = new WebReferenceDialog (item, options);
 
 			try {
 				if (MessageService.RunCustomDialog (dialog) != (int)Gtk.ResponseType.Ok)
 					return;
 				if (!dialog.Modified)
 					return;
-
+				
 				refgroup.Save (item.MapFile.FilePath);
 				UpdateReferences (new [] { item });
 			} catch (Exception exception) {

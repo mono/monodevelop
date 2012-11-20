@@ -67,6 +67,8 @@ namespace MonoDevelop.WebReferences
 		public abstract IEnumerable<string> GetAssemblyReferences ();
 		
 		public abstract FilePath GetReferencePath (DotNetProject project, string refName);
+
+		public abstract string GetServiceURL ();
 		
 		public abstract string ProxyGenerator { get; }
 		
