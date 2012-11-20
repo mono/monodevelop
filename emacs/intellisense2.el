@@ -11,13 +11,16 @@
 (defvar ac-fsharp-partial-data "")
 
 (defun log-to-proc-buf (proc str)
-  (when (buffer-live-p (process-buffer proc))
-    (with-current-buffer (process-buffer proc)
-      ;; Insert the text, advancing the process marker.
-      (goto-char (process-mark proc))
-      (insert str)
-      (set-marker (process-mark proc) (point))
-      (goto-char (process-mark proc)))))
+  (let ((buf (process-buffer proc)))
+    (when (buffer-live-p buf)
+      (with-current-buffer buf
+        (goto-char (process-mark proc))
+        (insert str)
+        (set-marker (process-mark proc) (point)))
+      (if (get-buffer-window buf)
+          (save-selected-window
+            (select-window (get-buffer-window buf))
+            (goto-char (process-mark proc)))))))
 
 (defun log-psendstr (proc str)
   (log-to-proc-buf proc str)
@@ -176,19 +179,20 @@
 
 (defvar ac-source-fsintellisense
   '((candidates . ac-fsharp-candidate)
-    (cache)))
+    ;(cache)
+    ))
 
 (defun ac-fsharp-config ()
   (setq ac-sources '(ac-source-fsintellisense))
   (setq ac-use-fuzzy nil)
   (setq ac-auto-start nil)
-  (local-set-key (kbd "C-c .") 'ac-fsharp-async-preemptive))
+  (local-set-key (kbd "C-c .") 'ac-fsharp-complete))
 
 (add-hook 'fsharp-mode-hook 'ac-fsharp-config)
 ;(add-hook 'fsharp-mode-hook (lambda () (auto-complete-mode)))
 ;(setq fsharp-mode-hook '())
 
-(defun ac-complete-fsintellisense ()
+(defun ac-fsharp-complete ()
   (interactive)
   ; Must have finished previous request
   (if (eq ac-fsharp-status 'complete)
