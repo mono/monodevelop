@@ -48,12 +48,14 @@ namespace MonoDevelop.WebReferences.WCF
 		MetadataSet metadata;
 		DiscoveryClientProtocol protocol;
 		ReferenceGroup refGroup;
+		ClientOptions defaultOptions;
 
-		public WebServiceDiscoveryResultWCF (DiscoveryClientProtocol protocol, MetadataSet metadata, WebReferenceItem item, ReferenceGroup refGroup): base (WebReferencesService.WcfEngine, item)
+		public WebServiceDiscoveryResultWCF (DiscoveryClientProtocol protocol, MetadataSet metadata, WebReferenceItem item, ReferenceGroup refGroup, ClientOptions defaultOptions): base (WebReferencesService.WcfEngine, item)
 		{
 			this.refGroup = refGroup;
 			this.protocol = protocol;
 			this.metadata = metadata;
+			this.defaultOptions = defaultOptions;
 		}
 
 		public override FilePath GetReferencePath (DotNetProject project, string refName)
@@ -65,11 +67,6 @@ namespace MonoDevelop.WebReferences.WCF
 			get { return refGroup != null ? refGroup.ClientOptions : null; }
 		}
 
-		public ClientOptions InitialClientOptions {
-			get;
-			set;
-		}
-		
 		public override string GetDescriptionMarkup ()
 		{
 			StringBuilder text = new StringBuilder ();
@@ -116,7 +113,7 @@ namespace MonoDevelop.WebReferences.WCF
 			} else {
 				// TODO
 				ReferenceGroup map = new ReferenceGroup ();
-				map.ClientOptions = InitialClientOptions;
+				map.ClientOptions = defaultOptions;
 				map.Save (file);
 				map.ID = Guid.NewGuid ().ToString ();
 				refGroup = map;
@@ -223,7 +220,7 @@ namespace MonoDevelop.WebReferences.WCF
 			var listMapping = refGroup.ClientOptions.CollectionMappings.FirstOrDefault (
 				m => m.Category == "List");
 			if (listMapping != null) {
-				var listType = Dialogs.ConfigurationDialog.GetType (listMapping.TypeName);
+				var listType = Dialogs.WCFConfigWidget.GetType (listMapping.TypeName);
 				if (listType != null)
 					options.ReferencedCollectionTypes.Add (listType);
 			}
@@ -231,7 +228,7 @@ namespace MonoDevelop.WebReferences.WCF
 			var dictMapping = refGroup.ClientOptions.CollectionMappings.FirstOrDefault (
 				m => m.Category == "Dictionary");
 			if (dictMapping != null) {
-				var dictType = Dialogs.ConfigurationDialog.GetType (dictMapping.TypeName);
+				var dictType = Dialogs.WCFConfigWidget.GetType (dictMapping.TypeName);
 				if (dictType != null)
 					options.ReferencedCollectionTypes.Add (dictType);
 			}
@@ -251,7 +248,7 @@ namespace MonoDevelop.WebReferences.WCF
 				map.ClientOptions = refGroup.ClientOptions;
 				map.ID = refGroup.ID;
 			} else {
-				map.ClientOptions = InitialClientOptions;
+				map.ClientOptions = defaultOptions;
 				map.ID = Guid.NewGuid ().ToString ();
 			}
 			
@@ -302,6 +299,14 @@ namespace MonoDevelop.WebReferences.WCF
 			}
 
 			return metadata;
-		}		
+		}
+
+		public override string GetServiceURL ()
+		{
+			ReferenceGroup resfile = ReferenceGroup.Read (Item.MapFile.FilePath);
+			if (resfile.MetadataSources.Count == 0)
+				return null;
+			return resfile.MetadataSources [0].Address;
+		}
 	}
 }

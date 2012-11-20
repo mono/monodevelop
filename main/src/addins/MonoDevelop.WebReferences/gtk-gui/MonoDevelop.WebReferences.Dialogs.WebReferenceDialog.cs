@@ -5,8 +5,8 @@ namespace MonoDevelop.WebReferences.Dialogs
 	internal partial class WebReferenceDialog
 	{
 		private global::Gtk.UIManager UIManager;
-		private global::Gtk.Action btnBack;
-		private global::Gtk.Action btnNext;
+		private global::Gtk.Action btnNavBack;
+		private global::Gtk.Action btnNavNext;
 		private global::Gtk.Action btnRefresh;
 		private global::Gtk.Action btnStop;
 		private global::Gtk.Action btnHome;
@@ -26,7 +26,9 @@ namespace MonoDevelop.WebReferences.Dialogs
 		private global::Gtk.Entry tbxNamespace;
 		private global::Gtk.Entry tbxReferenceName;
 		private global::Gtk.Button btnCancel;
+		private global::Gtk.Button btnBack;
 		private global::Gtk.Button btnOK;
+		private global::Gtk.Button btnConfig;
 		
 		protected virtual void Build ()
 		{
@@ -34,10 +36,10 @@ namespace MonoDevelop.WebReferences.Dialogs
 			// Widget MonoDevelop.WebReferences.Dialogs.WebReferenceDialog
 			this.UIManager = new global::Gtk.UIManager ();
 			global::Gtk.ActionGroup w1 = new global::Gtk.ActionGroup ("Default");
-			this.btnBack = new global::Gtk.Action ("btnBack", null, global::Mono.Unix.Catalog.GetString ("Go back one page"), "gtk-go-back");
-			w1.Add (this.btnBack, null);
-			this.btnNext = new global::Gtk.Action ("btnNext", null, global::Mono.Unix.Catalog.GetString ("Go forward one page"), "gtk-go-forward");
-			w1.Add (this.btnNext, null);
+			this.btnNavBack = new global::Gtk.Action ("btnNavBack", null, global::Mono.Unix.Catalog.GetString ("Go back one page"), "gtk-go-back");
+			w1.Add (this.btnNavBack, null);
+			this.btnNavNext = new global::Gtk.Action ("btnNavNext", null, global::Mono.Unix.Catalog.GetString ("Go forward one page"), "gtk-go-forward");
+			w1.Add (this.btnNavNext, null);
 			this.btnRefresh = new global::Gtk.Action ("btnRefresh", null, global::Mono.Unix.Catalog.GetString ("Reload current page"), "gtk-refresh");
 			w1.Add (this.btnRefresh, null);
 			this.btnStop = new global::Gtk.Action ("btnStop", null, global::Mono.Unix.Catalog.GetString ("Stop loading this page"), "gtk-stop");
@@ -59,7 +61,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 			this.vbxContainer = new global::Gtk.VBox ();
 			this.vbxContainer.Name = "vbxContainer";
 			// Container child vbxContainer.Gtk.Box+BoxChild
-			this.UIManager.AddUiFromString ("<ui><toolbar name='tlbNavigate'><toolitem name='btnBack' action='btnBack'/><toolitem name='btnNext' action='btnNext'/><toolitem name='btnRefresh' action='btnRefresh'/><toolitem name='btnStop' action='btnStop'/><toolitem name='btnHome' action='btnHome'/></toolbar></ui>");
+			this.UIManager.AddUiFromString ("<ui><toolbar name='tlbNavigate'><toolitem name='btnNavBack' action='btnNavBack'/><toolitem name='btnNavNext' action='btnNavNext'/><toolitem name='btnRefresh' action='btnRefresh'/><toolitem name='btnStop' action='btnStop'/><toolitem name='btnHome' action='btnHome'/></toolbar></ui>");
 			this.tlbNavigate = ((global::Gtk.Toolbar)(this.UIManager.GetWidget ("/tlbNavigate")));
 			this.tlbNavigate.Name = "tlbNavigate";
 			this.tlbNavigate.ShowArrow = false;
@@ -237,7 +239,20 @@ namespace MonoDevelop.WebReferences.Dialogs
 			w19.Expand = false;
 			w19.Fill = false;
 			// Container child pnlActionArea.Gtk.ButtonBox+ButtonBoxChild
+			this.btnBack = new global::Gtk.Button ();
+			this.btnBack.Sensitive = false;
+			this.btnBack.CanFocus = true;
+			this.btnBack.Name = "btnBack";
+			this.btnBack.UseUnderline = true;
+			this.btnBack.Label = global::Mono.Unix.Catalog.GetString ("_Back");
+			w18.Add (this.btnBack);
+			global::Gtk.ButtonBox.ButtonBoxChild w20 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w18 [this.btnBack]));
+			w20.Position = 1;
+			w20.Expand = false;
+			w20.Fill = false;
+			// Container child pnlActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.btnOK = new global::Gtk.Button ();
+			this.btnOK.Sensitive = false;
 			this.btnOK.CanDefault = true;
 			this.btnOK.CanFocus = true;
 			this.btnOK.Name = "btnOK";
@@ -245,25 +260,42 @@ namespace MonoDevelop.WebReferences.Dialogs
 			this.btnOK.UseUnderline = true;
 			this.btnOK.Label = "gtk-ok";
 			w18.Add (this.btnOK);
-			global::Gtk.ButtonBox.ButtonBoxChild w20 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w18 [this.btnOK]));
-			w20.Position = 1;
-			w20.Expand = false;
-			w20.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w21 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w18 [this.btnOK]));
+			w21.Position = 2;
+			w21.Expand = false;
+			w21.Fill = false;
+			// Container child pnlActionArea.Gtk.ButtonBox+ButtonBoxChild
+			this.btnConfig = new global::Gtk.Button ();
+			this.btnConfig.Sensitive = false;
+			this.btnConfig.CanFocus = true;
+			this.btnConfig.Name = "btnConfig";
+			this.btnConfig.UseUnderline = true;
+			this.btnConfig.Label = global::Mono.Unix.Catalog.GetString ("_Config");
+			w18.Add (this.btnConfig);
+			global::Gtk.ButtonBox.ButtonBoxChild w22 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w18 [this.btnConfig]));
+			w22.Position = 3;
+			w22.Expand = false;
+			w22.Fill = false;
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
 			this.DefaultWidth = 652;
 			this.DefaultHeight = 509;
+			this.btnBack.Hide ();
+			this.btnOK.Hide ();
+			this.btnConfig.Hide ();
 			this.Hide ();
-			this.btnBack.Activated += new global::System.EventHandler (this.Browser_BackButtonClicked);
-			this.btnNext.Activated += new global::System.EventHandler (this.Browser_NextButtonClicked);
+			this.btnNavBack.Activated += new global::System.EventHandler (this.Browser_BackButtonClicked);
+			this.btnNavNext.Activated += new global::System.EventHandler (this.Browser_NextButtonClicked);
 			this.btnRefresh.Activated += new global::System.EventHandler (this.Browser_RefreshButtonClicked);
 			this.btnStop.Activated += new global::System.EventHandler (this.Browser_StopButtonClicked);
 			this.btnHome.Activated += new global::System.EventHandler (this.Browser_HomeButtonClicked);
 			this.tbxReferenceURL.KeyReleaseEvent += new global::Gtk.KeyReleaseEventHandler (this.Browser_URLKeyReleased);
 			this.btnGO.Clicked += new global::System.EventHandler (this.Browser_GoButtonClicked);
 			this.comboModel.Changed += new global::System.EventHandler (this.OnComboModelChanged);
+			this.btnBack.Clicked += new global::System.EventHandler (this.OnBtnBackClicked);
 			this.btnOK.Clicked += new global::System.EventHandler (this.OnBtnOKClicked);
+			this.btnConfig.Clicked += new global::System.EventHandler (this.OnBtnConfigClicked);
 		}
 	}
 }

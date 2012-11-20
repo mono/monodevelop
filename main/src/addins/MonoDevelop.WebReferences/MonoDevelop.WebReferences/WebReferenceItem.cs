@@ -65,5 +65,10 @@ namespace MonoDevelop.WebReferences
 			engine.Delete (this);
 			WebReferencesService.NotifyWebReferencesChanged (project);
 		}
+
+		public WebServiceDiscoveryResult Load ()
+		{
+			return engine.Load (this);
+		}
 	}	
 }

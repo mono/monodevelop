@@ -163,5 +163,14 @@ namespace MonoDevelop.WebReferences.WS
 			
 			return fileSpec;
 		}
+
+		public override string GetServiceURL ()
+		{
+			WebReferenceUrl wru = Item.Project.Items.GetAll<WebReferenceUrl> ().FirstOrDefault (m => m.RelPath.CanonicalPath == Item.BasePath);
+			if (wru == null)
+				return null;
+
+			return wru.ServiceLocationURL;
+		}
 	}
 }

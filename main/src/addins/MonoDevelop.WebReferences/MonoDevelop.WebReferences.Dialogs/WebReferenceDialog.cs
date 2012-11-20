@@ -13,6 +13,7 @@ using MonoDevelop.WebReferences;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using MonoDevelop.WebReferences.WS;
+using MonoDevelop.WebReferences.WCF;
 
 namespace MonoDevelop.WebReferences.Dialogs
 {
@@ -23,7 +24,20 @@ namespace MonoDevelop.WebReferences.Dialogs
 		protected Widget browserWidget = null;
 		protected IWebBrowser browser = null;
 		#endregion
-		
+
+		enum DialogState {
+			Uninitialized,
+			Create,
+			Modify,
+			CreateConfig,
+			ModifyConfig
+		}
+
+		bool modified;
+		bool isWebService;
+		WCFConfigWidget wcfConfig;
+		ClientOptions wcfOptions;
+		DialogState state = DialogState.Uninitialized;
 		Label docLabel;
 		DotNetProject project;
 		
@@ -32,16 +46,16 @@ namespace MonoDevelop.WebReferences.Dialogs
 		/// <value>True if the current location of the browser is a Web Service, otherwise false.</value>
 		public bool IsWebService
 		{
-			get { return btnOK.Sensitive; }
-			set 
+			get { return isWebService; }
+			private set 
 			{
 				// Clear out the Reference and Namespace Entry
-				if (btnOK.Sensitive && !value)
+				if (isWebService && !value)
 				{
 					this.tbxReferenceName.Text = "";
 				}
-				btnOK.Sensitive = value;
-				tbxReferenceName.Sensitive = value;
+				isWebService = value;
+				ChangeState (state);
 			}
 		}
 		
@@ -132,6 +146,11 @@ namespace MonoDevelop.WebReferences.Dialogs
 		{
 			get { return System.IO.Path.Combine(BasePath, ReferenceName); }
 		}
+
+		/// Whether or not the dialog has been modified
+		public bool Modified {
+			get { return modified; }
+		}
 		#endregion
 		
 		#region Member Variables
@@ -148,39 +167,44 @@ namespace MonoDevelop.WebReferences.Dialogs
 		{
 			Build();
 			this.basePath = Library.GetWebReferencePath (project);
-			this.IsWebService = false;
+			this.isWebService = false;
 			this.project = project;
-			
-			// Add the mozilla control to the frame
-			if (WebBrowserService.CanGetWebBrowser) {
-				browser = WebBrowserService.GetWebBrowser ();
-				browserWidget = (Widget) browser;
-				browser.LocationChanged += Browser_LocationChanged;
-				browser.NetStart += Browser_StartLoading;
-				browser.NetStop += Browser_StopLoading;
-				frmBrowser.Add(browserWidget);
-				browser.LoadUrl(this.homeUrl);
-				browserWidget.Show();
-			} else {
-				tlbNavigate.Visible = false;
-				
-				ScrolledWindow sw = new ScrolledWindow ();
-				sw.ShadowType = ShadowType.In;
-				docLabel = new Label ();
-				docLabel.Xpad = 6;
-				docLabel.Ypad = 6;
-				docLabel.Xalign = 0;
-				docLabel.Yalign = 0;
-				sw.AddWithViewport (docLabel);
-				sw.ShowAll ();
-				
-				frmBrowser.Add (sw);
-				tbxReferenceURL.Text = homeUrl;
-				UpdateLocation ();
-			}
+			this.modified = true;
 
-			frmBrowser.Show();
-			this.Child.ShowAll ();
+			tbxReferenceURL.Text = homeUrl;
+
+			wcfOptions = WebReferencesService.WcfEngine.DefaultClientOptions;
+
+			ChangeState (DialogState.Create);
+			frmBrowser.Show ();
+			this.Child.Show ();
+		}
+
+		public WebReferenceDialog (WebReferenceItem item, ClientOptions options)
+		{
+			Build ();
+			this.isWebService = true;
+			this.wcfOptions = options;
+			this.namespacePrefix = item.Project.DefaultNamespace;
+
+			ChangeState (DialogState.ModifyConfig);
+			
+			var service = item.Load ();
+			var url = service.GetServiceURL ();
+
+			if (service is WebServiceDiscoveryResultWCF)
+				comboModel.Active = 0;
+			else
+				comboModel.Active = 1;
+
+			UpdateService (service, url);
+
+			tbxReferenceURL.Text = url;
+			tbxReferenceName.Text = item.Name;
+			tbxNamespace.Text = item.Project.DefaultNamespace;
+
+			frmBrowser.Show ();
+			this.Child.Show ();
 		}
 		
 		/// <summary>Execute the event when any of the buttons on the action panel has been clicked</summary>
@@ -206,8 +230,24 @@ namespace MonoDevelop.WebReferences.Dialogs
 		/// <param name="e">An EventArgs object that contains the event data.</param>
 		private void Browser_GoButtonClicked (object sender, EventArgs e)
 		{
+			modified = true;
+			switch (state) {
+			case DialogState.Create:
+			case DialogState.CreateConfig:
+				ChangeState (DialogState.Create);
+				break;
+
+			case DialogState.Modify:
+			case DialogState.ModifyConfig:
+				ChangeState (DialogState.Modify);
+				break;
+
+			default:
+				throw new InvalidOperationException ();
+			}
+
 			if (browser != null)
-				browser.LoadUrl(tbxReferenceURL.Text);
+				browser.LoadUrl (tbxReferenceURL.Text);
 			else
 				UpdateLocation ();
 		}
@@ -231,8 +271,8 @@ namespace MonoDevelop.WebReferences.Dialogs
 		{
 			if (browser != null) {
 				this.tbxReferenceURL.Text = this.browser.Location;
-				this.btnBack.Sensitive = browser.CanGoBack;
-				this.btnNext.Sensitive = browser.CanGoForward;
+				this.btnNavBack.Sensitive = browser.CanGoBack;
+				this.btnNavNext.Sensitive = browser.CanGoForward;
 				// Query the current url for services
 				ThreadPool.QueueUserWorkItem(new WaitCallback(QueryService), this.tbxReferenceURL.Text);
 			}
@@ -311,8 +351,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 		{
 			string url = param as string;
 			// Set the service url
-			lock (this)
-			{
+			lock (this) {
 				if (serviceUrl == url) 
 					return;
 				serviceUrl = url; 
@@ -362,25 +401,26 @@ namespace MonoDevelop.WebReferences.Dialogs
 			if (service == null) {
 				this.IsWebService = false;
 				this.selectedService = null;
-			}
-			else {
+			} else {
 				// Set the Default Namespace and Reference
 				this.tbxNamespace.Text = this.DefaultNamespace;
 				
-				string name = this.DefaultReferenceName;
-				
-				var items = WebReferencesService.GetWebReferenceItems (project);
-				if (items.Any (it => it.Name == name)) {
-					int num = 2;
-					while (items.Any (it => it.Name == name + "_" + num))
-						num++;
-					name = name + "_" + num;
+				if (project != null) {
+					string name = this.DefaultReferenceName;
+					
+					var items = WebReferencesService.GetWebReferenceItems (project);
+					if (items.Any (it => it.Name == name)) {
+						int num = 2;
+						while (items.Any (it => it.Name == name + "_" + num))
+							num++;
+						name = name + "_" + num;
+					}
+					this.tbxReferenceName.Text = name;
 				}
-				this.tbxReferenceName.Text = name;
 				
 				this.IsWebService = true;
 				this.selectedService = service;
-				
+
 				if (docLabel != null) {
 					docLabel.Wrap = false;
 					text.Append (service.GetDescriptionMarkup ());
@@ -398,6 +438,16 @@ namespace MonoDevelop.WebReferences.Dialogs
 		
 		protected virtual void OnBtnOKClicked (object sender, System.EventArgs e)
 		{
+			if (wcfConfig != null) {
+				wcfConfig.Update ();
+				modified |= wcfConfig.Modified;
+			}
+			
+			if (project == null) {
+				Respond (Gtk.ResponseType.Ok);
+				return;
+			}
+
 			if (WebReferencesService.GetWebReferenceItems (project).Any (r => r.Name == this.tbxReferenceName.Text)) {
 				MessageService.ShowError (GettextCatalog.GetString ("Web reference already exists"), GettextCatalog.GetString ("A web service reference with the name '{0}' already exists in the project. Please use a different name.", this.tbxReferenceName.Text));
 				return;
@@ -417,6 +467,152 @@ namespace MonoDevelop.WebReferences.Dialogs
 			serviceUrl = null;
 			ThreadPool.QueueUserWorkItem(new WaitCallback(QueryService), this.tbxReferenceURL.Text);
 		}
+
+		protected void OnBtnConfigClicked (object sender, EventArgs e)
+		{
+			switch (state) {
+			case DialogState.Create:
+				ChangeState (DialogState.CreateConfig);
+				break;
+			case DialogState.Modify:
+				ChangeState (DialogState.ModifyConfig);
+				break;
+			default:
+				throw new InvalidOperationException ();
+			}
+		}
+
+		void ChangeState (DialogState newState)
+		{
+			bool hasConfig = comboModel.Active == 0;
+
+			switch (newState) {
+			case DialogState.Create:
+				btnBack.Visible = false;
+				btnConfig.Visible = true;
+				btnConfig.Sensitive = isWebService && hasConfig;
+				btnOK.Visible = true;
+				btnOK.Sensitive = isWebService;
+				tlbNavigate.Visible = WebBrowserService.CanGetWebBrowser;
+				tbxReferenceName.Sensitive = isWebService;
+				comboModel.Sensitive = true;
+				break;
+
+			case DialogState.CreateConfig:
+				btnBack.Visible = true;
+				btnBack.Sensitive = true;
+				btnConfig.Visible = false;
+				btnOK.Visible = true;
+				btnOK.Sensitive = true;
+				tlbNavigate.Visible = false;
+				tbxReferenceName.Sensitive = false;
+				comboModel.Sensitive = false;
+				break;
+
+			case DialogState.Modify:
+				btnBack.Visible = false;
+				btnConfig.Visible = true;
+				btnConfig.Sensitive = isWebService && hasConfig;
+				btnOK.Visible = true;
+				btnOK.Sensitive = isWebService;
+				tlbNavigate.Visible = WebBrowserService.CanGetWebBrowser;
+				tbxReferenceName.Sensitive = false;
+				comboModel.Sensitive = false;
+				break;
+
+			case DialogState.ModifyConfig:
+				btnBack.Visible = false;
+				btnConfig.Visible = false;
+				btnOK.Visible = true;
+				btnOK.Sensitive = true;
+				tlbNavigate.Visible = false;
+				tbxReferenceName.Sensitive = false;
+				comboModel.Sensitive = false;
+				break;
+				
+			default:
+				throw new InvalidOperationException ();
+			}
+
+			if (wcfConfig != null)
+				wcfConfig.Update ();
+
+			if (state == newState)
+				return;
+
+			if (state != DialogState.Uninitialized)
+				frmBrowser.Forall (c => frmBrowser.Remove (c));
+
+			browser = null;
+			browserWidget = null;
+			docLabel = null;
+			wcfConfig = null;
+
+			state = newState;
+			
+			ScrolledWindow sw;
+
+			switch (state) {
+			case DialogState.Create:
+			case DialogState.Modify:
+				if (WebBrowserService.CanGetWebBrowser) {
+					browser = WebBrowserService.GetWebBrowser ();
+					browserWidget = (Widget) browser;
+					browser.LocationChanged += Browser_LocationChanged;
+					browser.NetStart += Browser_StartLoading;
+					browser.NetStop += Browser_StopLoading;
+					frmBrowser.Add (browserWidget);
+					browser.LoadUrl (tbxReferenceURL.Text);
+					browserWidget.Show ();
+				} else {
+					docLabel = new Label ();
+					docLabel.Xpad = 6;
+					docLabel.Ypad = 6;
+					docLabel.Xalign = 0;
+					docLabel.Yalign = 0;
+
+					sw = new ScrolledWindow ();
+					sw.ShadowType = ShadowType.In;
+					sw.AddWithViewport (docLabel);
+					sw.ShowAll ();
+					frmBrowser.Add (sw);
+					UpdateLocation ();
+				}
+				break;
+
+			case DialogState.ModifyConfig:
+			case DialogState.CreateConfig:
+				if (!hasConfig)
+					return;
+
+				sw = new ScrolledWindow ();
+				sw.ShadowType = ShadowType.In;
+
+				wcfConfig = new WCFConfigWidget (wcfOptions);
+				sw.AddWithViewport (wcfConfig);
+				sw.ShowAll ();
+				frmBrowser.Add (sw);
+				break;
+
+			default:
+				throw new InvalidOperationException ();
+			}
+		}
+
+		protected void OnBtnBackClicked (object sender, EventArgs e)
+		{
+			switch (state) {
+			case DialogState.CreateConfig:
+				ChangeState (DialogState.Create);
+				break;
+			case DialogState.ModifyConfig:
+				ChangeState (DialogState.Modify);
+				break;
+			default:
+				throw new InvalidOperationException ();
+			}
+		}
+
 	}
 	
 	class AskCredentials: GuiSyncObject, ICredentials
