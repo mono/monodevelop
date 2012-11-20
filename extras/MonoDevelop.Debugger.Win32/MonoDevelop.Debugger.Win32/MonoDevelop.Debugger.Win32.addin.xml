@@ -11,6 +11,7 @@
 		<Addin id="MonoDevelop.Core" version="3.0.5"/>
 		<Addin id="MonoDevelop.Ide" version="3.0.5"/>
 		<Addin id="MonoDevelop.Debugger" version="3.0.5"/>
+		<Addin id="MonoDevelop.AspNet" version="3.0.5"/>
 	</Dependencies>
 
 	<Extension path="/MonoDevelop/Debugging/DebuggerEngines">
