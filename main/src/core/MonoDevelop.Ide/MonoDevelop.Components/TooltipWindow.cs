@@ -123,14 +123,14 @@ namespace MonoDevelop.Components
 				
 				Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (x, y));
 				if (nudgeHorizontal) {
-					if (allocation.Width <= geometry.Width && x + allocation.Width >= geometry.Width - edgeGap)
+					if (allocation.Width <= geometry.Width && x + allocation.Width >= geometry.Left + geometry.Width - edgeGap)
 						x = geometry.Left + (geometry.Width - allocation.Width - edgeGap);
 					if (x <= geometry.Left + edgeGap)
 						x = geometry.Left + edgeGap;
 				}
 				
 				if (nudgeVertical) {
-					if (allocation.Height <= geometry.Height && y + allocation.Height >= geometry.Height - edgeGap)
+					if (allocation.Height <= geometry.Height && y + allocation.Height >= geometry.Top + geometry.Height - edgeGap)
 						y = geometry.Top + (geometry.Height - allocation.Height - edgeGap);
 					if (y <= geometry.Top + edgeGap)
 						y = geometry.Top + edgeGap;
