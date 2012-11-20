@@ -146,7 +146,12 @@ namespace MonoDevelop.Ide.Gui
 
 		public int CurrentTabIndex {
 			get { return currentTab != null ? currentTab.Index : -1; }
-			set { CurrentTab = pages [value]; }
+			set { 
+				if (value > pages.Count - 1)
+					CurrentTab = null;
+				else
+					CurrentTab = pages [value]; 
+			}
 		}
 
 		public int TabCount {
