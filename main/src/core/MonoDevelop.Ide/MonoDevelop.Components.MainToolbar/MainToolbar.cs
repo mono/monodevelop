@@ -259,6 +259,15 @@ namespace MonoDevelop.Components.MainToolbar
 			RemoveDecorationsWorkaround = w => { };
 		}
 
+		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
+		{
+			if (evnt.Button == 1) {
+				(Toplevel as Gtk.Window).BeginMoveDrag (1, (int)evnt.XRoot, (int)evnt.YRoot, evnt.Time);
+				return true;
+			}
+			return base.OnButtonPressEvent (evnt);
+		}
+
 		void HandleCurrentSelectedSolutionChanged (object sender, SolutionEventArgs e)
 		{
 			if (currentSolution != null) {
