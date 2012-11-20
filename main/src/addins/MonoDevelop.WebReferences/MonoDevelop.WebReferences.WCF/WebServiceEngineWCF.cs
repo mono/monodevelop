@@ -38,13 +38,19 @@ namespace MonoDevelop.WebReferences.WCF
 {
 	public class WebServiceEngineWCF: WebServiceEngine
 	{
+		ClientOptions defaultOptions = new ClientOptions ();
+
+		public ClientOptions DefaultClientOptions {
+			get { return defaultOptions; }
+		}
+		
 		public override WebServiceDiscoveryResult Discover (string url)
 		{
 			DiscoveryClientProtocol prot;
 			try {
 				prot = DiscoResolve (url);
 				if (prot != null)
-					return new WebServiceDiscoveryResultWCF (prot, null, null, null);
+					return new WebServiceDiscoveryResultWCF (prot, null, null, null, DefaultClientOptions);
 			} catch {
 				// Ignore when MEX resolver is enabled
 				throw;
@@ -129,7 +135,7 @@ namespace MonoDevelop.WebReferences.WCF
 				fs.Close ();
 				protocol.References.Add (dr.Url, dr);
 			}
-			return new WebServiceDiscoveryResultWCF (protocol, null, item, resfile);
+			return new WebServiceDiscoveryResultWCF (protocol, null, item, resfile, DefaultClientOptions);
 		}
 		
 		public override void Delete (WebReferenceItem item)

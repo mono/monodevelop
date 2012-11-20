@@ -1,10 +1,10 @@
 //
-// ConfigurationDialog.cs
+// WCFConfigWidget.cs
 //
 // Author:
 //       Martin Baulig <martin.baulig@xamarin.com>
 //
-// Copyright (c) 2012 
+// Copyright (c) 2012 Xamarin Inc. (http://www.xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -32,12 +32,25 @@ using Gtk;
 
 namespace MonoDevelop.WebReferences.Dialogs
 {
-	public partial class ConfigurationDialog : Gtk.Dialog
+	[System.ComponentModel.ToolboxItem(true)]
+	public partial class WCFConfigWidget : Gtk.Bin
 	{
+		public WCFConfigWidget (ClientOptions options)
+		{
+			this.Options = options;
+			this.Build ();
+			
+			listTypes = new List<Type> (DefaultListTypes);
+			PopulateBox (listCollection, "List", listTypes);
+			
+			dictTypes = new List<Type> (DefaultDictionaryTypes);
+			PopulateBox (dictionaryCollection, "Dictionary", dictTypes);
+		}
+		
 		public ClientOptions Options {
 			get; private set;
 		}
-
+		
 		static readonly Type[] DefaultListTypes = {
 			typeof (Array),
 			typeof (System.Collections.Generic.LinkedList<>),
@@ -46,28 +59,28 @@ namespace MonoDevelop.WebReferences.Dialogs
 			typeof (System.Collections.ObjectModel.ObservableCollection<>),
 			typeof (System.ComponentModel.BindingList<>)
 		};
-
+		
 		static readonly Type[] DefaultDictionaryTypes = {
 			typeof (System.Collections.Generic.Dictionary<,>),
 			typeof (System.Collections.Generic.SortedList<,>),
 			typeof (System.Collections.Generic.SortedDictionary<,>)
 		};
-
+		
 		public bool Modified {
 			get;
 			private set;
 		}
-
+		
 		List<Type> listTypes;
 		List<Type> dictTypes;
-
+		
 		static bool? runtimeSupport;
-
+		
 		internal static bool IsSupported ()
 		{
 			if (runtimeSupport != null)
 				return runtimeSupport.Value;
-
+			
 			try {
 				// Test runtime support.
 				var ms = new MetadataSet ();
@@ -80,26 +93,14 @@ namespace MonoDevelop.WebReferences.Dialogs
 				return false;
 			}
 		}
-
+		
 		internal static bool IsSupported (WebReferenceItem item)
 		{
 			if (!IsSupported ())
 				return false;
 			return item.MapFile.FilePath.Extension == ".svcmap";
 		}
-
-		public ConfigurationDialog (ClientOptions options)
-		{
-			this.Options = options;
-			this.Build ();
-
-			listTypes = new List<Type> (DefaultListTypes);
-			PopulateBox (listCollection, "List", listTypes);
-
-			dictTypes = new List<Type> (DefaultDictionaryTypes);
-			PopulateBox (dictionaryCollection, "Dictionary", dictTypes);
-		}
-
+		
 		internal static Type GetType (string name)
 		{
 			var type = typeof (char).Assembly.GetType (name);
@@ -110,7 +111,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 				return type;
 			return null;
 		}
-
+		
 		internal static string GetTypeName (Type type)
 		{
 			var name = type.FullName;
@@ -123,22 +124,22 @@ namespace MonoDevelop.WebReferences.Dialogs
 		void PopulateBox (ComboBox box, string category, List<Type> types)
 		{
 			var mapping = Options.CollectionMappings.FirstOrDefault (m => m.Category == category);
-
+			
 			Type current = null;
 			if (mapping != null)
 				current = GetType (mapping.TypeName);
 			if (current == null)
 				current = types [0];
-
+			
 			if (!types.Contains (current))
 				types.Add (current);
-
+			
 			foreach (var type in types)
 				box.AppendText (GetTypeName (type));
-
+			
 			box.Active = types.IndexOf (current);
 		}
-
+		
 		void UpdateBox (ComboBox box, string category, List<Type> types)
 		{
 			var mapping = Options.CollectionMappings.FirstOrDefault (m => m.Category == category);
@@ -147,18 +148,19 @@ namespace MonoDevelop.WebReferences.Dialogs
 				Options.CollectionMappings.Add (mapping);
 				Modified = true;
 			}
-
+			
 			var current = types [box.Active];
 			if (mapping.TypeName != current.FullName) {
 				mapping.TypeName = current.FullName;
 				Modified = true;
 			}
 		}
-
-		protected void OnBtnOkClicked (object sender, EventArgs e)
+		
+		internal void Update ()
 		{
 			UpdateBox (listCollection, "List", listTypes);
 			UpdateBox (dictionaryCollection, "Dictionary", dictTypes);
 		}
 	}
 }
+
