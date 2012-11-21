@@ -610,8 +610,10 @@ namespace MonoDevelop.Components
 		{
 			if (Platform.IsMac)
 				Surface = new QuartzSurface (Cairo.Format.ARGB32, width, height);
-			else
+			else if (Platform.IsWindows)
 				Surface = similar.Target.CreateSimilar (Cairo.Content.ColorAlpha, width, height);
+			else
+				Surface = new ImageSurface (Cairo.Format.ARGB32, width, height);
 			Width = width;
 			Height = height;
 		}
@@ -622,8 +624,10 @@ namespace MonoDevelop.Components
 			// There is a bug in Cairo for OSX right now that prevents creating additional accellerated surfaces.
 			if (Platform.IsMac)
 				surface = new QuartzSurface (Cairo.Format.ARGB32, source.Width, source.Height);
-			else
+			else if (Platform.IsWindows)
 				surface = similar.Target.CreateSimilar (Cairo.Content.ColorAlpha, source.Width, source.Height);
+			else
+				surface = new ImageSurface (Cairo.Format.ARGB32, source.Width, source.Height);
 
 			using (Cairo.Context context = new Cairo.Context (surface)) {
 				Gdk.CairoHelper.SetSourcePixbuf (context, source, 0, 0);
