@@ -506,7 +506,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				IntPtr svnstream = svn.stream_create (IntPtr.Zero, localpool);
 				svn.stream_set_write (svnstream, new LibSvnClient.svn_readwrite_fn_t (collector.Func));
 				LibSvnClient.Rev peg_revision = LibSvnClient.Rev.Blank;
-				CheckError (svn.client_cat2 (svnstream, pathorurl, ref peg_revision, ref revision, ctx, localpool));
+				CheckError (svn.client_cat2 (svnstream, pathorurl, ref peg_revision, ref revision, ctx, localpool), 195007);
 			} finally {
 				apr.pool_destroy (localpool);
 			}
@@ -949,23 +949,28 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		
 		internal static void CheckError (IntPtr error)
 		{
-			if (error == IntPtr.Zero)
-				return;
-			
+			CheckError (error, null);
+		}
+
+		internal static void CheckError (IntPtr error, int? allowedError)
+		{
 			string msg = null;
 			while (error != IntPtr.Zero) {
 				LibSvnClient.svn_error_t error_t = (LibSvnClient.svn_error_t) Marshal.PtrToStructure (error, typeof (LibSvnClient.svn_error_t));
+				if (allowedError.HasValue && error_t.apr_err == allowedError.Value)
+					return;
+
 				if (msg != null)
 					msg += "\n" + GetErrorMessage (error_t);
 				else
 					msg = GetErrorMessage (error_t);
 				error = error_t.svn_error_t_child;
+
+				if (msg == null)
+					msg = GettextCatalog.GetString ("Unknown error");
+				
+				throw new SubversionException (msg);
 			}
-			
-			if (msg == null)
-				msg = GettextCatalog.GetString ("Unknown error");
-			
-			throw new SubversionException (msg);
 		}
 		
 		static string GetErrorMessage (LibSvnClient.svn_error_t error)
