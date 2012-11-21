@@ -28,9 +28,6 @@ namespace MonoDevelop.FSharp.Gui
 		private global::Gtk.Alignment GtkAlignment1;
 		private global::Gtk.FontButton fontbutton1;
 		private global::Gtk.Label GtkLabel13;
-		private global::Gtk.HBox hbox2b;
-		private global::Gtk.Label label4b;
-		private global::Gtk.CheckButton preferFSharp2;
 		
 		protected virtual void Build ()
 		{
@@ -250,36 +247,6 @@ namespace MonoDevelop.FSharp.Gui
 			w21.Position = 4;
 			w21.Expand = false;
 			w21.Fill = false;
-			// Container child vbox1.Gtk.Box+BoxChild
-			this.hbox2b = new global::Gtk.HBox ();
-			this.hbox2b.Name = "hbox2b";
-			this.hbox2b.Spacing = 6;
-			// Container child hbox2b.Gtk.Box+BoxChild
-			this.label4b = new global::Gtk.Label ();
-			this.label4b.Name = "label4b";
-			this.label4b.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>F# 2.0</b>");
-			this.label4b.UseMarkup = true;
-			this.hbox2b.Add (this.label4b);
-			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.hbox2b [this.label4b]));
-			w22.Position = 0;
-			w22.Expand = false;
-			w22.Fill = false;
-			// Container child hbox2b.Gtk.Box+BoxChild
-			this.preferFSharp2 = new global::Gtk.CheckButton ();
-			this.preferFSharp2.CanFocus = true;
-			this.preferFSharp2.Name = "preferFSharp2";
-			this.preferFSharp2.Label = global::Mono.Unix.Catalog.GetString ("Prefer F# 2.0 if both F# 2.0 and 3.0 available");
-			this.preferFSharp2.Active = true;
-			this.preferFSharp2.DrawIndicator = true;
-			this.preferFSharp2.UseUnderline = true;
-			this.hbox2b.Add (this.preferFSharp2);
-			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.hbox2b [this.preferFSharp2]));
-			w23.Position = 1;
-			this.vbox1.Add (this.hbox2b);
-			global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox2b]));
-			w24.Position = 5;
-			w24.Expand = false;
-			w24.Fill = false;
 			this.Add (this.vbox1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
