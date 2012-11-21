@@ -148,10 +148,11 @@ namespace MonoDevelop.VersionControl.Subversion
 			url += serverPath;
 			
 			string[] paths = new string[] {url};
-			
+
 			CreateDirectory (paths, message, monitor);
 			Svn.Checkout (this.Url + "/" + serverPath, localPath, null, true, monitor);
 
+			rootPath = localPath;
 			Set<FilePath> dirs = new Set<FilePath> ();
 			PublishDir (dirs, localPath, false, monitor);
 
@@ -240,7 +241,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		{
 			foreach (FilePath path in paths) {
 				if (IsVersioned (path) && File.Exists (path) && !Directory.Exists (path)) {
-					if (rootPath == null)
+					if (rootPath.IsNull)
 						throw new UserException (GettextCatalog.GetString ("Project publishing failed. There is a stale .svn folder in the path '{0}'", path.ParentDirectory));
 					VersionInfo srcInfo = GetVersionInfo (path, false);
 					if (srcInfo.HasLocalChange (VersionStatus.ScheduledDelete)) {
