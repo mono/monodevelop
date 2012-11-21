@@ -331,12 +331,12 @@ namespace MonoDevelop.VersionControl.Views
 		
 		void HandleTreeviewFilesTestExpandRow (object o, TestExpandRowArgs args)
 		{
-			string[] diff = changedpathstore.GetValue (args.Iter, colDiff) as string[];
-			if (diff != null) {
-				return;
-			}
 			TreeIter iter;
 			if (changedpathstore.IterChildren (out iter, args.Iter)) {
+				string[] diff = changedpathstore.GetValue (iter, colDiff) as string[];
+				if (diff != null)
+					return;
+
 				string path = (string)changedpathstore .GetValue (args.Iter, colPath);
 				changedpathstore.SetValue (iter, colDiff, new string[] { GettextCatalog.GetString ("Loading data...") });
 				var rev = SelectedRevision;
@@ -362,25 +362,29 @@ namespace MonoDevelop.VersionControl.Views
 						return;
 					}
 					string[] lines;
-					var changedDocument = new Mono.TextEditor.TextDocument (text);
-					if (prevRev == null) {
-						lines = new string[changedDocument.LineCount];
-						for (int i = 0; i < changedDocument.LineCount; i++) {
-							lines[i] = "+ " + changedDocument.GetLineText (i + 1).TrimEnd ('\r','\n');
-						}
-						
+					// Indicator that the file was binary
+					if (text == null) {
+						lines = new [] { " Binary files differ" };
 					} else {
-						string prevRevisionText = "";
-						try {
-							prevRevisionText = info.Repository.GetTextAtRevision (path, prevRev);
-						} catch (Exception) {
-							// The file did not exist at this point in time, so just treat it as empty
+						var changedDocument = new Mono.TextEditor.TextDocument (text);
+						if (prevRev == null) {
+							lines = new string[changedDocument.LineCount];
+							for (int i = 0; i < changedDocument.LineCount; i++) {
+								lines[i] = "+ " + changedDocument.GetLineText (i + 1).TrimEnd ('\r','\n');
+							}
+						} else {
+							string prevRevisionText = "";
+							try {
+								prevRevisionText = info.Repository.GetTextAtRevision (path, prevRev);
+							} catch (Exception e) {
+								// The file did not exist at this point in time, so just treat it as empty
+							}
+							
+							var originalDocument = new Mono.TextEditor.TextDocument (prevRevisionText);
+							originalDocument.FileName = "Revision " + prevRev.ToString ();
+							changedDocument.FileName = "Revision " + rev.ToString ();
+							lines = Mono.TextEditor.Utils.Diff.GetDiffString (originalDocument, changedDocument).Split ('\n');
 						}
-						
-						var originalDocument = new Mono.TextEditor.TextDocument (prevRevisionText);
-						originalDocument.FileName = "Revision " + prevRev.ToString ();
-						changedDocument.FileName = "Revision " + rev.ToString ();
-						lines = Mono.TextEditor.Utils.Diff.GetDiffString (originalDocument, changedDocument).Split ('\n');
 					}
 					Application.Invoke (delegate {
 						changedpathstore.SetValue (iter, colDiff, lines);

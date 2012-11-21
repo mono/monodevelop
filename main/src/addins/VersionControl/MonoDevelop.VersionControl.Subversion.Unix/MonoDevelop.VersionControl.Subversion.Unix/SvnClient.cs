@@ -56,6 +56,15 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				LoggingService.LogInfo ("Subversion addin could not load libapr, so it will be disabled.");
 			}
 		}
+
+		static bool IsBinary (byte[] buffer, long length)
+		{
+			length = (int)Math.Min (50 * 1024, length);
+			for (int i = 0; i < length; i ++)
+				if (buffer [i] == 0)
+					return true;
+			return false;
+		}
 		
 		public override bool IsInstalled {
 			get {
@@ -483,13 +492,16 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		{
 			MemoryStream memstream = new MemoryStream ();
 			Cat (pathorurl, (SvnRevision) revision, memstream);
-			
+
+			var buffer = memstream.GetBuffer ();
 			try {
-				return System.Text.Encoding.UTF8.GetString (memstream.GetBuffer ());
+				if (IsBinary (buffer, memstream.Length))
+					return null;
+				return System.Text.Encoding.UTF8.GetString (buffer, 0, (int) memstream.Length);
 			} catch {
 			}
 			
-			return System.Text.Encoding.ASCII.GetString (memstream.GetBuffer ());
+			return System.Text.Encoding.ASCII.GetString (buffer, 0, (int) memstream.Length);
 		}
 		
 		public void Cat (string pathorurl, SvnRevision rev, Stream stream)
