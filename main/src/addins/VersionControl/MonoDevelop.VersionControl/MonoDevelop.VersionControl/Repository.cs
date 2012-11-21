@@ -422,6 +422,18 @@ namespace MonoDevelop.VersionControl
 			return new DiffInfo [0];
 		}
 
+		/// <summary>
+		/// Returns the text for a file at a particular revision. If the file is binary, 'null' is returned
+		/// </summary>
+		/// <returns>
+		/// The text at revision or 'null' if the file is binary.
+		/// </returns>
+		/// <param name='repositoryPath'>
+		/// Repository path.
+		/// </param>
+		/// <param name='revision'>
+		/// Revision.
+		/// </param>
 		public abstract string GetTextAtRevision (FilePath repositoryPath, Revision revision);
 
 		static protected DiffInfo[] GenerateUnifiedDiffInfo (string diffContent, FilePath basePath, FilePath[] localPaths)

@@ -943,7 +943,10 @@ namespace MonoDevelop.VersionControl.Git
 
 		string GetCommitTextContent (RevCommit c, FilePath file)
 		{
-			return Mono.TextEditor.Utils.TextFileUtility.GetText (GetCommitContent (c, file));
+			var content = GetCommitContent (c, file);
+			if (RawText.IsBinary (content))
+				return null;
+			return Mono.TextEditor.Utils.TextFileUtility.GetText (content);
 		}
 		
 		string GenerateDiff (byte[] data1, byte[] data2)

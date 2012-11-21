@@ -84,7 +84,19 @@ namespace MonoDevelop.VersionControl.Subversion
 		}
 
 		public abstract IEnumerable<SvnRevision> Log (Repository repo, FilePath path, SvnRevision revisionStart, SvnRevision revisionEnd);
-		
+
+		/// <summary>
+		/// Returns the text for a file at a particular revision. If the file is binary, 'null' is returned
+		/// </summary>
+		/// <returns>
+		/// The text at revision or 'null' if the file is binary.
+		/// </returns>
+		/// <param name='repositoryPath'>
+		/// Repository path.
+		/// </param>
+		/// <param name='revision'>
+		/// Revision.
+		/// </param>
 		public abstract string GetTextAtRevision (string repositoryPath, Revision revision);
 		
 		internal protected virtual VersionControlOperation GetSupportedOperations (Repository repo, VersionInfo vinfo, VersionControlOperation defaultValue)
