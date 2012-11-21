@@ -307,12 +307,12 @@ namespace MonoDevelop.VersionControl.Views
 		
 		void HandleTreeviewFilesTestExpandRow (object o, TestExpandRowArgs args)
 		{
-			string[] diff = changedpathstore.GetValue (args.Iter, colDiff) as string[];
-			if (diff != null) {
-				return;
-			}
 			TreeIter iter;
 			if (changedpathstore.IterChildren (out iter, args.Iter)) {
+				string[] diff = changedpathstore.GetValue (iter, colDiff) as string[];
+				if (diff != null)
+					return;
+
 				string path = (string)changedpathstore .GetValue (args.Iter, colPath);
 				changedpathstore.SetValue (iter, colDiff, new string[] { GettextCatalog.GetString ("Loading data...") });
 				var rev = SelectedRevision;
