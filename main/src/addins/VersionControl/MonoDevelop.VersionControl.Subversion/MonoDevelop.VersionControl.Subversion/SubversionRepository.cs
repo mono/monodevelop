@@ -168,18 +168,11 @@ namespace MonoDevelop.VersionControl.Subversion
 
 		void PublishDir (Set<FilePath> dirs, FilePath dir, bool rec, IProgressMonitor monitor)
 		{
-			string ndir = (string) dir;
-			while (ndir[ndir.Length - 1] == Path.DirectorySeparatorChar)
-				ndir = ndir.Substring (0, ndir.Length - 1);
-
-			dir = ndir;
-			if (dirs.Contains (dir))
-				return;
-
-			dirs.Add (dir);
-			if (rec) {
-				PublishDir (dirs, dir.ParentDirectory, true, monitor);
-				Add (dir, false, monitor);
+			if (dirs.Add (dir.CanonicalPath)) {
+				if (rec) {
+					PublishDir (dirs, dir.ParentDirectory, true, monitor);
+					Add (dir, false, monitor);
+				}
 			}
 		}
 
