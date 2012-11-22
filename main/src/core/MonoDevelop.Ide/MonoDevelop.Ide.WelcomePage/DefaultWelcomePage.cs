@@ -53,10 +53,10 @@ namespace MonoDevelop.Ide.WelcomePage
 
 			var row2 = new WelcomePageRow (
 				new WelcomePageColumn (
-					new WelcomePageRecentProjectsList ("Solutions")
+				new WelcomePageRecentProjectsList (GettextCatalog.GetString ("Solutions"))
 				),
 				new WelcomePageColumn (
-					new WelcomePageNewsFeed ("Xamarin News", "http://software.xamarin.com/Service/News", "NewsLinks")
+					new WelcomePageNewsFeed (GettextCatalog.GetString ("Xamarin News"), "http://software.xamarin.com/Service/News", "NewsLinks")
 				),
 				new WelcomePageColumn (
 					new WelcomePageTipOfTheDaySection ()
