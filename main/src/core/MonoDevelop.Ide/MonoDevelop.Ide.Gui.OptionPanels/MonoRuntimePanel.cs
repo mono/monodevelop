@@ -63,7 +63,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.Build();
 			
 			labelRunning.Markup = GettextCatalog.GetString (
-				"{0} is currently running on <b>{0}</b>.",
+				"{0} is currently running on <b>{1}</b>.",
 				BrandingService.ApplicationName,
 				Runtime.SystemAssemblyService.CurrentRuntime.DisplayName
 			);
