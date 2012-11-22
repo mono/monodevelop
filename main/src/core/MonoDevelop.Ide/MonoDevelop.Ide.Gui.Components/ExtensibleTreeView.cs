@@ -1193,6 +1193,7 @@ namespace MonoDevelop.Ide.Gui.Components
 								handler.SetCurrentNode (nav);
 								handler.RenameItem (e.NewText);
 							} catch (Exception ex) {
+								MessageService.ShowException (ex);
 								LoggingService.LogError (ex.ToString ());
 							}
 							nav.MoveToPosition (pos);
