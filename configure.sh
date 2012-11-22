@@ -5,19 +5,12 @@
 
 MONO=mono
 
-# Annoyingly, Mono 2.10 originally installed 'fsc' on Mac, but 
-# later versions install 'fsharpc'. Fresh builds on Linux
-# and future versions of Mono will install 'fsharpc'. Even more annoyingly,
-# there can be old, crappy versions of 'fsharpc' hanging around on Mac
-# machines - these versions aren't suitable for use with MonoDevelop.
-if [ ! -e "/usr/bin/fsharpc" ] && [ -e "/usr/bin/fsc" ];
-then FSC=fsc; 
-else FSC=fsharpc; 
-fi
+# The F# compiler
+FSC=fsharpc
 
 
-if [[ `which $FSC` == "" ]]; then FSC=fsc; else FSC=`which $FSC`; fi 
- 
+if [[ `which $FSC` == "" ]]; then FSC=fsharpc; else FSC=`which $FSC`; fi 
+
 while getopts e:f:c:n OPT; do
   case "$OPT" in
     e) MONO=$OPTARG

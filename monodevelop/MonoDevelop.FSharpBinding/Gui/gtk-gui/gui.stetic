@@ -5,7 +5,7 @@
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="../../../bin/FSharpBinding.Gui.dll" internal="true" />
+    <widget-library name="../../../bin/Debug/FSharpBinding.Gui.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget" design-size="300 300">
     <property name="MemberName" />
@@ -194,7 +194,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.FSharp.Gui.FSharpBuildOrderWidget" design-size="300 394">
+  <widget class="Gtk.Bin" id="MonoDevelop.FSharp.Gui.FSharpBuildOrderWidget" design-size="457 450">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <child>
@@ -288,8 +288,10 @@
         <child>
           <widget class="Gtk.Label" id="GtkLabel2">
             <property name="MemberName" />
-            <property name="LabelProp" translatable="yes">&lt;b&gt;Build order&lt;/b&gt;</property>
+            <property name="WidthRequest">400</property>
+            <property name="LabelProp" translatable="yes">&lt;b&gt;Build order&lt;/b&gt; Note: editing the build order will not have any effect when using xbuild, msbuild or Visual Studio. It is currently better to edit the project file by hand, using 'open with Source Code Editor' on the .fsproj.</property>
             <property name="UseMarkup">True</property>
+            <property name="Wrap">True</property>
           </widget>
           <packing>
             <property name="type">label_item</property>
@@ -298,7 +300,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.FSharp.Gui.FSharpSettingsWidget" design-size="369 358">
+  <widget class="Gtk.Bin" id="MonoDevelop.FSharp.Gui.FSharpSettingsWidget" design-size="369 232">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <child>
@@ -636,51 +638,6 @@
             <property name="Expand">False</property>
             <property name="Fill">False</property>
           </packing>
-        </child>
-        <child>
-          <widget class="Gtk.HBox" id="hbox2b">
-            <property name="MemberName" />
-            <property name="Spacing">6</property>
-            <child>
-              <widget class="Gtk.Label" id="label4b">
-                <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">&lt;b&gt;F# 2.0&lt;/b&gt;</property>
-                <property name="UseMarkup">True</property>
-              </widget>
-              <packing>
-                <property name="Position">0</property>
-                <property name="AutoSize">True</property>
-                <property name="Expand">False</property>
-                <property name="Fill">False</property>
-              </packing>
-            </child>
-<!--
-            <child>
-              <widget class="Gtk.CheckButton" id="preferFSharp2">
-                <property name="MemberName" />
-                <property name="CanFocus">True</property>
-                <property name="Label" translatable="yes">Prefer F# 2.0 if both F# 2.0 and 3.0 available</property>
-                <property name="Active">True</property>
-                <property name="DrawIndicator">True</property>
-                <property name="HasLabel">True</property>
-                <property name="UseUnderline">True</property>
-              </widget>
-              <packing>
-                <property name="Position">1</property>
-                <property name="AutoSize">True</property>
-              </packing>
-            </child>
--->
-          </widget>
-          <packing>
-            <property name="Position">5</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child>
-          <placeholder />
         </child>
       </widget>
     </child>
