@@ -33,7 +33,7 @@ Features:
 * Debugging 
 * Target .NET 3.5, 4.0, 4.5
 * F# Interactive scripting (Alt-Enter execution)
-* Templates (Console Application, Library, Tutorial Project, Gtk Project)
+* Templates (Console Application, Library, Tutorial Project, Gtk Project, ASP.NET MVC 4)
 * Makefile support
 * MonoDevelop includes C# 5.0, ASP.NET and other features
 * Supports F# 3.0 type providers (requires F# 3.0)
