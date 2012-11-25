@@ -96,7 +96,12 @@
 		<ProjectTemplate id="FSharpLibraryProject" resource="templates.FSharpLibraryProject.xpt.xml"/>
 		<ProjectTemplate id="FSharpTutorialProject" resource="templates.FSharpTutorialProject.xpt.xml"/>
 		<ProjectTemplate id="FSharpGtkProject" resource="templates.FSharpGtkProject.xpt.xml"/>
-		<ProjectTemplate id="FSharpMvc4Project" resource="templates.FSharpProjectMvc4Razor.xpt.xml"/>
+		<Condition id="Platform" value="windows">
+			<ProjectTemplate id="FSharpMvc4Project" resource="templates.FSharpProjectMvc4Razor.windows.xpt.xml"/>
+		</Condition>
+		<Condition id="Platform" value="!windows">
+			<ProjectTemplate id="FSharpMvc4Project" resource="templates.FSharpProjectMvc4Razor.xpt.xml"/>
+		</Condition>	
 		<!--<ProjectTemplate id="FSharpMoonlightLibraryProject" resource="templates.FSharpMoonlightLibraryProject.xpt.xml"/> -->
 
         <!-- ASP.NET 

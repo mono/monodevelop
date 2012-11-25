@@ -35,11 +35,11 @@
 				<Reference type="Package" refto="System.ComponentModel.DataAnnotations, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" SpecificVersion="false" />
 				<Reference type="Package" refto="System.Xml.Linq" />
 				<Reference type="Package" refto="System.Core" />
-				<Reference type="Assembly" refto="/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/AddIns/AspNetMvc4/System.Web.Mvc.dll" SpecificVersion = "true" LocalCopy = "true" />
-				<Reference type="Assembly" refto="/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/AddIns/AspNetMvc4/System.Web.Helpers.dll" SpecificVersion = "true" LocalCopy = "true" />
-				<Reference type="Assembly" refto="/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/AddIns/AspNetMvc4/System.Web.Razor.dll" SpecificVersion = "true" LocalCopy = "true" />
-				<Reference type="Assembly" refto="/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/AddIns/AspNetMvc4/System.Web.WebPages.Razor.dll" SpecificVersion = "true" LocalCopy = "true" />
-				<Reference type="Assembly" refto="/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/AddIns/AspNetMvc4/System.Web.WebPages.dll" SpecificVersion = "true" LocalCopy = "true" /> 
+				<Reference type="Gac" refto="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+				<Reference type="Gac" refto="System.Web.Helpers, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+				<Reference type="Gac" refto="System.Web.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+				<Reference type="Gac" refto="System.Web.WebPages.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+				<Reference type="Gac" refto="System.Web.WebPages, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
 			</References>
 			<Files>
 				<Directory name="Content" />

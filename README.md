@@ -63,6 +63,26 @@ For more information about F# and code examples see these links:
 * http://tryfsharp.org
 * http://fssnip.net
 
+### Using the ASP.NET MVC 4 Template
+
+To use the ASP.NET MVC 4 template, a little bit of additional setup is required. The steps are simple and are only required once.
+
+On the Mac, you can clone this repository and do the following:
+
+  cd monodevelop
+  ./configure.sh
+  make add-libraries
+  
+This adds all of the ASP.NET MVC 4 libraries to the MonoDevelop Addins directory. A few of these libraries have already been added to 
+Mono 3.0. If a future release of Mono includes the additional libraries, these manual process can be eliminated.
+
+On Windows, you need to install ASP.NET MVC 4 from http://www.asp.net/mvc/mvc4. You can then create a project from the template,
+build it, and run. 
+
+If, for whatever reason, the references are not found when you create a project from the template, you can clone this repo
+and copy the monodevelop/dependencies/AspNetMvc4 directory to your local project and re-add the references.   
+
+
 ### Building and installing from scratch
 
 Normally you should get the binding from the repository. If you want to build and install it yourself and develop it, try this:
