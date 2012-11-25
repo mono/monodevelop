@@ -14,8 +14,8 @@ The core component is the FSharp.CompilerBinding.dll. This is used by both fsaut
 
 ### Basic Components - Building
 
-   ./configure
-   make
+	./configure
+	make
 
 This produces bin/FSharp.CompilerBinding.dll and bin/fsautocomplete.exe.
 
