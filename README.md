@@ -76,8 +76,8 @@ On the Mac, you can clone this repository and do the following:
 This adds all of the ASP.NET MVC 4 libraries to the MonoDevelop Addins directory. A few of these libraries have already been added to 
 Mono 3.0. If a future release of Mono includes the additional libraries, these manual process can be eliminated.
 
-On Windows, you need to install ASP.NET MVC 4 from http://www.asp.net/mvc/mvc4. You can then create a project from the template,
-build it, and run. 
+On Windows, you need to install ASP.NET MVC 4 from [here](http://www.microsoft.com/en-us/download/details.aspx?id=30683). 
+You can then create a project from the template, build it, and run. 
 
 If, for whatever reason, the references are not found when you create a project from the template, you can clone this repo
 and copy the monodevelop/dependencies/AspNetMvc4 directory to your local project and re-add the references.   
