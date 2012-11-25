@@ -263,7 +263,13 @@ module SourceCodeServices =
               x.TriggerClass.Wrapped, x.Tag, tokenName ) )
     
   type LineTokenizer(wrapped:obj) = 
-    member x.StartNewLine() : unit = wrapped?StartNewLine()
+    member x.StartNewLine() : unit = 
+      // This method is no-op on F# 3.0
+      let fsc = FSharpCompiler.Current
+      match fsc.ActualVersion with 
+      | FSharp_2_0 -> wrapped?StartNewLine()
+      | FSharp_3_0 -> ()
+
     member x.ScanToken(state:int64) = 
       let tup : obj = wrapped?ScanToken(state)
       let optInfo, newstate = tup?Item1, tup?Item2
