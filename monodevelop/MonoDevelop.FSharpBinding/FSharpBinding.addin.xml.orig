@@ -31,15 +31,6 @@
 		<Addin id="Ide" version="INSERT_FSPROJ_MDVERSION3"/>
 		<Addin id="SourceEditor2" version="INSERT_FSPROJ_MDVERSION3"/>
 		<Addin id="Refactoring" version="INSERT_FSPROJ_MDVERSION3"/>
-
-        <!-- ASP.NET
-                <Addin id="XmlEditor" version="INSERT_FSPROJ_MDVERSION3" />
-                <Addin id="AspNet" version="INSERT_FSPROJ_MDVERSION3" />
-                <Addin id="SourceEditor2" version="INSERT_FSPROJ_MDVERSION3" />
-                <Addin id="TextTemplating" version="INSERT_FSPROJ_MDVERSION3" />
-        ASP.NET -->
-
-
         </Dependencies>
 
     <!-- This is the F# 2.0 targets file. This seems the best choice at the moment -->

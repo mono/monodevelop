@@ -31,15 +31,6 @@
 		<Addin id="Ide" version="3.0.5"/>
 		<Addin id="SourceEditor2" version="3.0.5"/>
 		<Addin id="Refactoring" version="3.0.5"/>
-
-        <!-- ASP.NET
-                <Addin id="XmlEditor" version="3.0.5" />
-                <Addin id="AspNet" version="3.0.5" />
-                <Addin id="SourceEditor2" version="3.0.5" />
-                <Addin id="TextTemplating" version="3.0.5" />
-        ASP.NET -->
-
-
         </Dependencies>
 
     <!-- This is the F# 2.0 targets file. This seems the best choice at the moment -->

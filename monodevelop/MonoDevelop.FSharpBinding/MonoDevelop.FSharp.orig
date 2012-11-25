@@ -61,7 +61,7 @@
     <EmbeddedResource Include="icons.fsharp-file-icon.png" />
     <EmbeddedResource Include="icons.fsharp-project-icon.png" />
     <EmbeddedResource Include="icons.fsharp-script-icon.png" />
-    <EmbeddedResource Include="templates.FSharpSyntaxMode.xml" />
+    <EmbeddedResource Include="FSharpSyntaxMode.xml" />
 
     <None Include="templates.EmptyFSharpSource.xft.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -84,11 +84,11 @@
     <None Include="templates.AssemblyInfo.xft.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="templates.FSharpProjectMvc4Razor.xpt.xml">
+    <None Include="../extras/AspNetMvc4/templates.FSharpProjectMvc4Razor.xpt.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
 
-    <None Include="templates.FSharpProjectMvc4Razor.windows.xpt.xml">
+    <None Include="../extras/AspNetMvc4/templates.FSharpProjectMvc4Razor.windows.xpt.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
 
