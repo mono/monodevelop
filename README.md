@@ -14,8 +14,8 @@ The core component is the FSharp.CompilerBinding.dll. This is used by both fsaut
 
 ### Basic Components - Building
 
-   ./configure
-   make
+	./configure
+	make
 
 This produces bin/FSharp.CompilerBinding.dll and bin/fsautocomplete.exe.
 
@@ -33,7 +33,7 @@ Features:
 * Debugging 
 * Target .NET 3.5, 4.0, 4.5
 * F# Interactive scripting (Alt-Enter execution)
-* Templates (Console Application, Library, Tutorial Project, Gtk Project)
+* Templates (Console Application, Library, Tutorial Project, Gtk Project, ASP.NET MVC 4)
 * Makefile support
 * MonoDevelop includes C# 5.0, ASP.NET and other features
 * Supports F# 3.0 type providers (requires F# 3.0)
@@ -63,14 +63,34 @@ For more information about F# and code examples see these links:
 * http://tryfsharp.org
 * http://fssnip.net
 
+### Using the ASP.NET MVC 4 Template
+
+To use the ASP.NET MVC 4 template, a little bit of additional setup is required. The steps are simple and are only required once.
+
+On the Mac, you can clone this repository and do the following:
+
+	cd monodevelop
+	./configure.sh
+	make add-libraries
+  
+This adds all of the ASP.NET MVC 4 libraries to the MonoDevelop Addins directory. A few of these libraries have already been added to 
+Mono 3.0. If a future release of Mono includes the additional libraries, these manual process can be eliminated.
+
+On Windows, you need to install ASP.NET MVC 4 from [here](http://www.microsoft.com/en-us/download/details.aspx?id=30683). 
+You can then create a project from the template, build it, and run. 
+
+If, for whatever reason, the references are not found when you create a project from the template, you can clone this repo
+and copy the monodevelop/dependencies/AspNetMvc4 directory to your local project and re-add the references.   
+
+
 ### Building and installing from scratch
 
 Normally you should get the binding from the repository. If you want to build and install it yourself and develop it, try this:
 
-  cd monodevelop
-  ./configure.sh
-  make 
-  make install
+	cd monodevelop
+	./configure.sh
+	make 
+	make install
 
 ### Can't get it to work?  
 
@@ -107,10 +127,11 @@ To enable some logging you can use
 
 The addin gets released to http://addins.monodevelop.com under project 'FSharp' (project index 48). Contact @sega, @tpetricek or @funnelweb to make an update.
 
-To build the .mpack files to upload to this site, use 
-    cd monodevelop
-    ./configure.sh
-    make packs
+To build the .mpack files to upload to this site, use:
+
+	cd monodevelop
+	./configure.sh
+	make packs
 
 The files go under pack/...
 

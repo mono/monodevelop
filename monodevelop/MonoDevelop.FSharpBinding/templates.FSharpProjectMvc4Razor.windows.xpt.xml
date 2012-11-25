@@ -1,0 +1,262 @@
+<?xml version="1.0"?>
+<Template Originator="Daniel Mohl" Created="11/25/2012" LastModified="11/25/2012">
+
+  <!-- Template Header -->
+  <TemplateConfiguration>
+    <_Name>F# ASP.NET MVC 4 (Razor)</_Name>
+    <Icon>md-project-web</Icon>
+    <_Description>Creates an F# ASP.NET MVC 4 Web Project with Razor Views.</_Description>
+    <_Category>F#/ASP.NET</_Category>
+    <LanguageName>F#</LanguageName>
+  </TemplateConfiguration>
+
+	<!-- Actions -->
+	<Actions>
+	</Actions>
+
+	<!-- Template Content -->
+	<Combine name = "${ProjectName}" directory = ".">
+		<Options>
+			<StartupProject>${ProjectName}</StartupProject>
+		</Options>
+
+		<Project name = "${ProjectName}" directory = "." type = "AspNetMvc3">
+			<Options TargetFrameworkVersion = "4.0" />
+			<References>
+				<Reference type="Package" refto="System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+				<Reference type="Package" refto="System.Web, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+				<Reference type="Package" refto="System.Xml, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+				<Reference type="Package" refto="System.Core" />
+				<Reference type="Package" refto="System.Web.Services, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+				<Reference type="Package" refto="System.Web.Routing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" SpecificVersion="false"  />
+				<Reference type="Package" refto="System.Web.Extensions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+				<Reference type="Package" refto="System.Web.Abstractions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" SpecificVersion="false"  />
+				<Reference type="Package" refto="System.Web.DynamicData, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+				<Reference type="Package" refto="System.ComponentModel.DataAnnotations, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" SpecificVersion="false" />
+				<Reference type="Package" refto="System.Xml.Linq" />
+				<Reference type="Package" refto="System.Core" />
+				<Reference type="Gac" refto="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+				<Reference type="Gac" refto="System.Web.Helpers, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+				<Reference type="Gac" refto="System.Web.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+				<Reference type="Gac" refto="System.Web.WebPages.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+				<Reference type="Gac" refto="System.Web.WebPages, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+			</References>
+			<Files>
+				<Directory name="Content" />
+                <FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />				
+				<Directory name="Controllers">
+                    <File name = "HomeController.fs" AddStandardHeader="True"><![CDATA[namespace ${Namespace}.Controllers
+open System
+open System.Collections.Generic
+open System.Linq
+open System.Web
+open System.Web.Mvc
+open System.Web.Mvc.Ajax
+
+type HomeController() =
+    inherit Controller()
+    member this.Index () =
+        base.ViewData.["Message"] <- "Welcome to F# ASP.NET MVC on Mono!"
+        this.View() :> ActionResult
+]]></File>					
+				</Directory>
+				<Directory name="Models" />
+				<Directory name="Scripts" />
+				<Directory name="Views">
+				    <File name="Web.config" BuildAction="Content"><![CDATA[<?xml version="1.0"?>
+<configuration>
+    <configSections>
+        <sectionGroup name="system.web.webPages.razor" type="System.Web.WebPages.Razor.Configuration.RazorWebSectionGroup, System.Web.WebPages.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35">
+            <section name="host" type="System.Web.WebPages.Razor.Configuration.HostSection, System.Web.WebPages.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" requirePermission="false" />
+            <section name="pages" type="System.Web.WebPages.Razor.Configuration.RazorPagesSection, System.Web.WebPages.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" requirePermission="false" />
+        </sectionGroup>
+    </configSections>
+    <system.web>
+        <httpHandlers>
+            <add path="*" verb="*" type="System.Web.HttpNotFoundHandler" />
+        </httpHandlers>
+        <!--
+            Enabling request validation in view pages would cause validation to occur
+            after the input has already been processed by the controller. By default
+            MVC performs request validation before a controller processes the input.
+            To change this behavior apply the ValidateInputAttribute to a
+            controller or action.
+        -->
+        <pages validateRequest="false" pageParserFilterType="System.Web.Mvc.ViewTypeParserFilter, System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" pageBaseType="System.Web.Mvc.ViewPage, System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" userControlBaseType="System.Web.Mvc.ViewUserControl, System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35">
+            <controls>
+                <add assembly="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" namespace="System.Web.Mvc" tagPrefix="mvc" />
+            </controls>
+        </pages>
+    </system.web>
+    <system.webServer>
+        <validation validateIntegratedModeConfiguration="false" />
+        <handlers>
+            <remove name="BlockViewHandler" />
+            <add name="BlockViewHandler" path="*" verb="*" preCondition="integratedMode" type="System.Web.HttpNotFoundHandler" />
+        </handlers>
+    </system.webServer>
+    <system.web.webPages.razor>
+        <host factoryType="System.Web.Mvc.MvcWebRazorHostFactory, System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" />
+        <pages pageBaseType="System.Web.Mvc.WebViewPage">
+            <namespaces>
+                <add namespace="System.Web.Mvc" />
+                <add namespace="System.Web.Mvc.Ajax" />
+                <add namespace="System.Web.Mvc.Html" />
+                <add namespace="System.Web.Routing" />
+            </namespaces>
+        </pages>
+    </system.web.webPages.razor>
+</configuration>
+]]></File>
+					<Directory name="Home">
+						<File name = "Index.cshtml" BuildAction="Content" AddStandardHeader="True"><![CDATA[<h2>@ViewData["Message"]</h2>]]></File>						
+					</Directory>
+					<Directory name="Shared">
+					    <File name = "_Layout.cshtml" BuildAction="Content" AddStandardHeader="True"><![CDATA[<!DOCTYPE html>
+<html>
+<head>
+    <title>@ViewBag.Title</title>
+</head>
+<body>
+	@RenderBody()
+</body>
+</html>]]></File>
+					    <File name = "Error.cshtml" BuildAction="Content" AddStandardHeader="True"><![CDATA[@model System.Web.Mvc.HandleErrorInfo
+
+<div>
+    <h2>An error occurred while processing your request.</h2>
+</div>]]></File>
+					</Directory>
+
+					<File name = "_ViewStart.cshtml" BuildAction="Content" AddStandardHeader="True"><![CDATA[@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}]]></File>
+				</Directory>
+				<File name="Web.config" BuildAction="Content"><![CDATA[<?xml version="1.0"?>
+<configuration>
+  <configSections>
+    <sectionGroup name="system.web.extensions" type="System.Web.Configuration.SystemWebExtensionsSectionGroup, System.Web.Extensions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35">
+      <sectionGroup name="scripting" type="System.Web.Configuration.ScriptingSectionGroup, System.Web.Extensions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35">
+        <section name="scriptResourceHandler" type="System.Web.Configuration.ScriptingScriptResourceHandlerSection, System.Web.Extensions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" requirePermission="false" allowDefinition="MachineToApplication" />
+        <sectionGroup name="webServices" type="System.Web.Configuration.ScriptingWebServicesSectionGroup, System.Web.Extensions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35">
+          <section name="jsonSerialization" type="System.Web.Configuration.ScriptingJsonSerializationSection, System.Web.Extensions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" requirePermission="false" allowDefinition="Everywhere" />
+          <section name="profileService" type="System.Web.Configuration.ScriptingProfileServiceSection, System.Web.Extensions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" requirePermission="false" allowDefinition="MachineToApplication" />
+          <section name="authenticationService" type="System.Web.Configuration.ScriptingAuthenticationServiceSection, System.Web.Extensions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" requirePermission="false" allowDefinition="MachineToApplication" />
+          <section name="roleService" type="System.Web.Configuration.ScriptingRoleServiceSection, System.Web.Extensions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" requirePermission="false" allowDefinition="MachineToApplication" />
+        </sectionGroup>
+      </sectionGroup>
+    </sectionGroup>
+  </configSections>
+  <system.web>
+    <!-- 
+            Set compilation debug="true" to insert debugging 
+            symbols into the compiled page. Because this 
+            affects performance, set this value to true only 
+            during development.
+        -->
+    <compilation defaultLanguage="C#" debug="false">
+      <assemblies>
+        <add assembly="System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+        <add assembly="System.Web.Routing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+        <add assembly="System.Web.Extensions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+        <add assembly="System.Web.Abstractions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+        <add assembly="System.Web.DynamicData, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+        <add assembly="System.ComponentModel.DataAnnotations, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+        <add assembly="System.Xml.Linq, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+      </assemblies>
+    </compilation>
+    <customErrors mode="RemoteOnly">
+    </customErrors>
+    <pages>
+      <controls>
+        <add tagPrefix="asp" namespace="System.Web.UI" assembly="System.Web.Extensions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" />
+        <add tagPrefix="asp" namespace="System.Web.UI.WebControls" assembly="System.Web.Extensions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" />
+      </controls>
+      <namespaces>
+        <add namespace="System.Web.Mvc" />
+        <add namespace="System.Web.Mvc.Ajax" />
+        <add namespace="System.Web.Mvc.Html" />
+        <add namespace="System.Web.Routing" />
+        <add namespace="System.Web.Helpers" />
+        <add namespace="System.Web.WebPages" />
+        <add namespace="System.Linq" />
+        <add namespace="System.Collections.Generic" />
+      </namespaces>
+    </pages>
+    <authorization>
+      <allow users="*" />
+    </authorization>
+    <httpHandlers>
+      <remove verb="*" path="*.asmx" />
+      <add verb="*" path="*.asmx" validate="false" type="System.Web.Script.Services.ScriptHandlerFactory, System.Web.Extensions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" />
+      <add verb="*" path="*_AppService.axd" validate="false" type="System.Web.Script.Services.ScriptHandlerFactory, System.Web.Extensions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" />
+      <add verb="GET,HEAD" path="ScriptResource.axd" type="System.Web.Handlers.ScriptResourceHandler, System.Web.Extensions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" validate="false" />
+      <add verb="*" path="*.mvc" validate="false" type="System.Web.Mvc.MvcHttpHandler, System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" />
+    </httpHandlers>
+    <httpModules>
+      <add name="ScriptModule" type="System.Web.Handlers.ScriptModule, System.Web.Extensions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" />
+      <add name="UrlRoutingModule" type="System.Web.Routing.UrlRoutingModule, System.Web.Routing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" />
+    </httpModules>
+    <trace enabled="false" localOnly="true" pageOutput="false" requestLimit="10" traceMode="SortByTime" />
+    <globalization requestEncoding="utf-8" responseEncoding="utf-8" />
+  </system.web>
+  <system.codedom>
+    <compilers>
+      <compiler language="c#;cs;csharp" extension=".cs" warningLevel="4" type="Microsoft.CSharp.CSharpCodeProvider, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+        <providerOption name="CompilerVersion" value="v4.0" />
+        <providerOption name="WarnAsError" value="false" />
+      </compiler>
+      <compiler language="vb;vbs;visualbasic;vbscript" extension=".vb" warningLevel="4" type="Microsoft.VisualBasic.VBCodeProvider, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+        <providerOption name="CompilerVersion" value="v4.0" />
+        <providerOption name="OptionInfer" value="true" />
+        <providerOption name="WarnAsError" value="false" />
+      </compiler>
+    </compilers>
+  </system.codedom>
+  <system.web.extensions />
+  <appSettings>
+    <add key="webpages:Version" value="2.0.0.0" />
+    <add key="ClientValidationEnabled" value="true" />
+    <add key="UnobtrusiveJavaScriptEnabled" value="true" />
+  </appSettings>
+</configuration>]]></File>
+				<File name="Global.asax" AddStandardHeader="True"><![CDATA[<%@ Application Inherits="${Namespace}.Global" Language="C#" %>
+<script Language="C#" RunAt="server">
+
+  protected void Application_Start(Object sender, EventArgs e) {
+    // Delegate event handling to the F# Application class
+    base.Start();
+  }
+
+</script>]]></File>				
+				<File name="Global.asax.fs" AddStandardHeader="True"><![CDATA[namespace ${Namespace}
+
+open System
+open System.Web
+open System.Web.Mvc
+open System.Web.Routing
+
+type Route = { 
+    controller : string
+    action : string
+    id : UrlParameter }
+
+type Global() =
+    inherit System.Web.HttpApplication() 
+
+    static member RegisterRoutes(routes:RouteCollection) =
+        routes.IgnoreRoute("{resource}.axd/{*pathInfo}")
+        routes.MapRoute(
+            "Default", // Route name
+            "{controller}/{action}/{id}", // URL with parameters
+            { controller = "Home"; action = "Index"; id = UrlParameter.Optional } // Parameter defaults
+            )
+
+    member x.Start() =
+        AreaRegistration.RegisterAllAreas()
+        Global.RegisterRoutes(RouteTable.Routes)
+]]></File>
+			</Files>
+		</Project>
+	</Combine>
+</Template>

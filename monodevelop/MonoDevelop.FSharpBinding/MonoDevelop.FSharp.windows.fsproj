@@ -66,7 +66,9 @@
     <EmbeddedResource Include="templates.FSharpLibraryProject.xpt.xml" />
     <EmbeddedResource Include="templates.FSharpTutorialProject.xpt.xml" />
     <EmbeddedResource Include="templates.FSharpGtkProject.xpt.xml" />
-    <EmbeddedResource Include="templates.AssemblyInfo.xft.xml" />
+    <EmbeddedResource Include="templates.FSharpProjectMvc4Razor.xpt.xml" />    
+    <EmbeddedResource Include="templates.FSharpProjectMvc4Razor.windows.xpt.xml" />    
+    <EmbeddedResource Include="templates.AssemblyInfo.xft.xml" />    
     <!--<EmbeddedResource Include="templates.FSharpMoonlightLibraryProject.xpt.xml" /> -->
     <EmbeddedResource Include="FSharpBinding.windows.addin.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

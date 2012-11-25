@@ -4,7 +4,7 @@
 #   run 'make install' to compile and install the plugin against the installed version of MonoDevelop detected by ./configure.sh
 #   run 'make pack-all' to create a deployment binary packages for the known set of supported MonoDevelop versions
 
-VERSION=3.2.5
+VERSION=3.2.6
 
 MDTOOL = $(MONO) INSERT_MDROOT/../../mdtool
 
@@ -43,6 +43,13 @@ pack: build
 	@-mkdir -p pack/$(VERSION)/$(MDTAG)/$(config)
 	$(MDTOOL) setup pack bin/$(MDTAG)/$(config)/FSharpBinding.$(MDTAG).addin.xml -d:pack/$(VERSION)/$(MDTAG)/$(config)
 
+add-libraries:
+	mkdir /Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/AddIns/AspNetMvc4
+	cp -pr dependencies/AspNetMvc4/* /Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/AddIns/AspNetMvc4
+
+remove-libraries:
+	rm -rf /Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/AddIns/AspNetMvc4
+
 install: pack
 	$(MDTOOL) setup install -y pack/$(VERSION)/$(MDTAG)/$(config)/MonoDevelop.FSharpBinding_$(VERSION).mpack 
 
@@ -53,7 +60,7 @@ packs: build-support
 	$(MAKE) USE_KNOWN_BINARIES=true MDVERSION3=3.0.3 MDVERSION4=3.0.3.2 config=Release pack
 	$(MAKE) USE_KNOWN_BINARIES=true MDVERSION3=3.0.4 MDVERSION4=3.0.4.7 config=Release pack
 	$(MAKE) USE_KNOWN_BINARIES=true MDVERSION3=3.0.5 MDVERSION4=3.0.5 config=Release pack
-
+            
 clean:
 	-rm -fr bin
 	-rm -fr pack
