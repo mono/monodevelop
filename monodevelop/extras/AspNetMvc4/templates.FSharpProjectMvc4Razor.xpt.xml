@@ -5,7 +5,7 @@
   <TemplateConfiguration>
     <_Name>F# ASP.NET MVC 4 (Razor)</_Name>
     <Icon>md-project-web</Icon>
-    <_Description>Creates an F# ASP.NET MVC 4 Web Project with Razor Views.</_Description>
+    <_Description>Creates an F# ASP.NET MVC 4 Web Project with Razor Views. *** NOTE NOTE On Max and Linux you may need to manually edit the project file to use v9.0/WebApplications/Microsoft.WebApplication.targets instead of v10.0. NOTE NOTE ***  </_Description>
     <_Category>F#/ASP.NET</_Category>
     <LanguageName>F#</LanguageName>
   </TemplateConfiguration>
@@ -35,17 +35,28 @@
 				<Reference type="Package" refto="System.ComponentModel.DataAnnotations, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" SpecificVersion="false" />
 				<Reference type="Package" refto="System.Xml.Linq" />
 				<Reference type="Package" refto="System.Core" />
-				<Reference type="Assembly" refto="/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/AddIns/AspNetMvc4/System.Web.Mvc.dll" SpecificVersion = "true" LocalCopy = "true" />
-				<Reference type="Assembly" refto="/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/AddIns/AspNetMvc4/System.Web.Helpers.dll" SpecificVersion = "true" LocalCopy = "true" />
-				<Reference type="Assembly" refto="/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/AddIns/AspNetMvc4/System.Web.Razor.dll" SpecificVersion = "true" LocalCopy = "true" />
-				<Reference type="Assembly" refto="/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/AddIns/AspNetMvc4/System.Web.WebPages.Razor.dll" SpecificVersion = "true" LocalCopy = "true" />
-				<Reference type="Assembly" refto="/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/AddIns/AspNetMvc4/System.Web.WebPages.dll" SpecificVersion = "true" LocalCopy = "true" /> 
+				<Reference type="Assembly" refto="packages/System.Web.Mvc.dll" SpecificVersion = "true" LocalCopy = "true" />
+				<Reference type="Assembly" refto="packages/System.Web.Helpers.dll" SpecificVersion = "true" LocalCopy = "true" />
+				<Reference type="Assembly" refto="packages/System.Web.Razor.dll" SpecificVersion = "true" LocalCopy = "true" />
+				<Reference type="Assembly" refto="packages/System.Web.WebPages.Razor.dll" SpecificVersion = "true" LocalCopy = "true" />
+				<Reference type="Assembly" refto="packages/System.Web.WebPages.dll" SpecificVersion = "true" LocalCopy = "true" /> 
 			</References>
 			<Files>
+				<Directory name="packages">
+                <RawFile src="packages/AspNetMvc4/System.Web.Mvc.dll" name="System.Web.Mvc.dll" />				
+                <RawFile src="packages/AspNetMvc4/System.Web.Helpers.dll" name="System.Web.Helpers.dll" />				
+                <RawFile src="packages/AspNetMvc4/System.Web.Razor.dll" name="System.Web.Razor.dll" />				
+                <RawFile src="packages/AspNetMvc4/System.Web.WebPages.Razor.dll" name="System.Web.WebPages.Razor.dll" />				
+                <RawFile src="packages/AspNetMvc4/System.Web.WebPages.dll" name="System.Web.WebPages.dll" />				
+				</Directory>
 				<Directory name="Content" />
                 <FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />				
 				<Directory name="Controllers">
                     <File name = "HomeController.fs" AddStandardHeader="True"><![CDATA[namespace ${Namespace}.Controllers
+
+// *** NOTE On Mac and Linux you may need to manually edit the project file to use 
+// *** NOTE v9.0/WebApplications/Microsoft.WebApplication.targets instead of v10.0
+
 open System
 open System.Collections.Generic
 open System.Linq
@@ -223,13 +234,20 @@ type HomeController() =
 				<File name="Global.asax" AddStandardHeader="True"><![CDATA[<%@ Application Inherits="${Namespace}.Global" Language="C#" %>
 <script Language="C#" RunAt="server">
 
+// *** NOTE On Mac and Linux you may need to manually edit the project file to use 
+// *** NOTE v9.0/WebApplications/Microsoft.WebApplication.targets instead of v10.0
+
   protected void Application_Start(Object sender, EventArgs e) {
     // Delegate event handling to the F# Application class
     base.Start();
   }
 
 </script>]]></File>				
-				<File name="Global.asax.fs" AddStandardHeader="True"><![CDATA[namespace ${Namespace}
+				<File name="Global.asax.fs" AddStandardHeader="True"><![CDATA[
+// *** NOTE On Mac and Linux you may need to manually edit the project file to use 
+// *** NOTE v9.0/WebApplications/Microsoft.WebApplication.targets instead of v10.0
+
+namespace ${Namespace}
 
 open System
 open System.Web

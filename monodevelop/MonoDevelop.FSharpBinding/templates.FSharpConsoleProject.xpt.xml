@@ -22,7 +22,7 @@
     </Options>
 
     <Project name = "${ProjectName}" directory = ".">
-      <Options ExternalConsole="True" TargetFrameworkVersion="4.0" />
+      <Options ExternalConsole="True" TargetFrameworkVersion="4.5" />
       <References>
         <Reference type="Package" refto="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
         <Reference type="Gac" refto="FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
@@ -32,7 +32,12 @@
       </References>
       <Files>
         <FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
-        <File name = "Program.fs" AddStandardHeader="True"><![CDATA[module Program
+        <File name = "Program.fs" AddStandardHeader="True"><![CDATA[
+// NOTE: If warnings appear, you may need to retarget this project to .NET 4.0. Show the Solution
+// Pad, right-click on the project node, choose 'Options --> Build --> General' and change the target
+// framework to .NET 4.0 or .NET 4.5.
+
+module ${ProjectName}.Main
 
 open System
 

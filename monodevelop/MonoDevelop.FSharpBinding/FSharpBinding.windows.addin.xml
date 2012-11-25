@@ -1,39 +1,36 @@
 <Addin id="FSharpBinding" namespace="MonoDevelop" name="F# Language Binding"
        author="F# Open Source Foundation (fsharp.org)" copyright="F# Open Source Foundation (fsharp.org)" url="http://fsharp.github.com/fsharpbinding"
-       description="F# Language Binding (for MonoDevelop 3.0.4). Install F# 3.0 before using." category="Language bindings" version="3.2.3">
+       description="F# Language Binding (for MonoDevelop 3.0.5). Install F# 3.0 before using." category="Language bindings" version="3.2.6">
 
 	<Runtime>
     	<Import assembly="FSharp.Core.dll" />
     	<Import assembly="FSharp.CompilerBinding.dll" />
     	<Import assembly="FSharpBinding.dll" />
     	<Import assembly="FSharpBinding.Gui.dll" />
-    	    	
-        <!-- ASP.NET 
-                <Import file = "Templates/EmptyProjectMvc3.xpt.xml" />
-                <Import file = "Templates/GlobalAsaxMvc3.xft.xml" />
-                <Import file = "Templates/WebConfigAppMvc3.xft.xml" />
-                <Import file = "Templates/WebConfigViewsMvc3.xft.xml" />
-                <Import file = "Templates/ProjectMvc3WithUnitTest.xpt.xml" />
-                <Import file = "Templates/ProjectMvc3RazorWithUnitTest.xpt.xml" />
-        ASP.NET -->
+
+        <Import file = "templates.EmptyFSharpSource.xft.xml" />
+        <Import file = "templates.EmptyFSharpScript.xft.xml" />
+        <Import file = "templates.FSharpConsoleProject.xpt.xml" />
+        <Import file = "templates.FSharpLibraryProject.xpt.xml" />
+        <Import file = "templates.FSharpTutorialProject.xpt.xml" />
+        <Import file = "templates.FSharpGtkProject.xpt.xml" />
+        <Import file = "templates.AssemblyInfo.xft.xml" />
+        <Import file = "templates.FSharpProjectMvc4Razor.xpt.xml" />
+        <Import file = "templates.FSharpProjectMvc4Razor.windows.xpt.xml" />
+    	<Import file = "packages/AspNetMvc4/System.Web.Helpers.dll" />
+    	<Import file = "packages/AspNetMvc4/System.Web.Mvc.dll" />
+    	<Import file = "packages/AspNetMvc4/System.Web.Razor.dll" />
+    	<Import file = "packages/AspNetMvc4/System.Web.WebPages.Razor.dll" />
+    	<Import file = "packages/AspNetMvc4/System.Web.WebPages.dll" />
 
 
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="3.0.4"/>
-		<Addin id="Ide" version="3.0.4"/>
-		<Addin id="SourceEditor2" version="3.0.4"/>
-		<Addin id="Refactoring" version="3.0.4"/>
-
-        <!-- ASP.NET 
-                <Addin id="XmlEditor" version="3.0.4" />
-                <Addin id="AspNet" version="3.0.4" />
-                <Addin id="SourceEditor2" version="3.0.4" />
-                <Addin id="TextTemplating" version="3.0.4" />
-        ASP.NET -->
-
-
+		<Addin id="Core" version="3.0.5"/>
+		<Addin id="Ide" version="3.0.5"/>
+		<Addin id="SourceEditor2" version="3.0.5"/>
+		<Addin id="Refactoring" version="3.0.5"/>
         </Dependencies>
 
     <!-- This is the F# 2.0 targets file. This seems the best choice at the moment -->
@@ -79,38 +76,24 @@
   	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/FileTemplates">
-            <FileTemplate id="EmptyFSharpSource" resource="templates.EmptyFSharpSource.xft.xml"/>
-            <FileTemplate id="EmptyFSharpScript" resource="templates.EmptyFSharpScript.xft.xml"/>
-            <FileTemplate id="FSharpAssemblyInfo" resource="templates.AssemblyInfo.xft.xml" />
-
-        <!-- ASP.NET 
-            <FileTemplate id="FSharpAspMvc3GlobalAsax" file     = "Templates/GlobalAsaxMvc3.xft.xml" />
-            <FileTemplate id="FSharpAspMvc3WebConfigApp" file     = "Templates/WebConfigAppMvc3.xft.xml" />
-            <FileTemplate id="FSharpAspMvc3WebConfigViews" file     = "Templates/WebConfigViewsMvc3.xft.xml" />
-        ASP.NET -->
+            <FileTemplate id="EmptyFSharpSource" file="templates.EmptyFSharpSource.xft.xml"/>
+            <FileTemplate id="EmptyFSharpScript" file="templates.EmptyFSharpScript.xft.xml"/>
+            <FileTemplate id="FSharpAssemblyInfo" file="templates.AssemblyInfo.xft.xml" />
 
   	</Extension>
 
   	<Extension path="/MonoDevelop/Ide/ProjectTemplates">
-		<ProjectTemplate id="FSharpConsoleProject" resource="templates.FSharpConsoleProject.xpt.xml"/>
-		<ProjectTemplate id="FSharpLibraryProject" resource="templates.FSharpLibraryProject.xpt.xml"/>
-		<ProjectTemplate id="FSharpTutorialProject" resource="templates.FSharpTutorialProject.xpt.xml"/>
-		<ProjectTemplate id="FSharpGtkProject" resource="templates.FSharpGtkProject.xpt.xml"/>
+		<ProjectTemplate id="FSharpConsoleProject" file="templates.FSharpConsoleProject.xpt.xml"/>
+		<ProjectTemplate id="FSharpLibraryProject" file="templates.FSharpLibraryProject.xpt.xml"/>
+		<ProjectTemplate id="FSharpTutorialProject" file="templates.FSharpTutorialProject.xpt.xml"/>
+		<ProjectTemplate id="FSharpGtkProject" file="templates.FSharpGtkProject.xpt.xml"/>
 		<Condition id="Platform" value="windows">
-			<ProjectTemplate id="FSharpMvc4Project" resource="templates.FSharpProjectMvc4Razor.windows.xpt.xml"/>
+			<ProjectTemplate id="FSharpMvc4Project" file="templates.FSharpProjectMvc4Razor.windows.xpt.xml"/>
 		</Condition>
 		<Condition id="Platform" value="!windows">
-			<ProjectTemplate id="FSharpMvc4Project" resource="templates.FSharpProjectMvc4Razor.xpt.xml"/>
-		</Condition>
-		<!--<ProjectTemplate id="FSharpMoonlightLibraryProject" resource="templates.FSharpMoonlightLibraryProject.xpt.xml"/> -->
+			<ProjectTemplate id="FSharpMvc4Project" file="templates.FSharpProjectMvc4Razor.xpt.xml"/>
+		</Condition>	
 
-        <!-- ASP.NET 
-        <ProjectTemplate id = "FSharpAspMvc3Project-Empty"             file = "Templates/EmptyProjectMvc3.xpt.xml" />
-        <ProjectTemplate id = "FSharpAspMvc3ProjectWithUnitTest"       file = "Templates/ProjectMvc3WithUnitTest.xpt.xml" />
-        <ProjectTemplate id = "FSharpAspMvc3Project-RazorWithUnitTest" file = "Templates/ProjectMvc3RazorWithUnitTest.xpt.xml" />
-        ASP.NET -->
-
-        
     	</Extension>
 
 

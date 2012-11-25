@@ -32,7 +32,12 @@
       </References>
       <Files>
         <FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
-        <File name = "Component1.fs" AddStandardHeader="True"><![CDATA[module ${ProjectName}.Library1
+        <File name = "Component1.fs" AddStandardHeader="True"><![CDATA[
+// NOTE: If warnings appear, you may need to retarget this project to .NET 4.0. Show the Solution
+// Pad, right-click on the project node, choose 'Options --> Build --> General' and change the target
+// framework to .NET 4.0 or .NET 4.5.
+
+module ${ProjectName}.Library1
 
 module UtilityModule =
     let utilityFunction() = 1 + 1

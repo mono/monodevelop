@@ -20,7 +20,7 @@ type FSharpSyntaxMode() as this =
     System.Diagnostics.Debug.AutoFlush <- true
   do
     System.Diagnostics.Debug.WriteLine("Creating FSharpSyntaxMode()")
-    let provider = new ResourceXmlProvider(typeof<FSharpSyntaxMode>.Assembly, "templates.FSharpSyntaxMode.xml");
+    let provider = new ResourceXmlProvider(typeof<FSharpSyntaxMode>.Assembly, "FSharpSyntaxMode.xml");
     use reader = provider.Open()
     let baseMode = SyntaxMode.Read(reader)
     this.rules <- new ResizeArray<_>(baseMode.Rules)

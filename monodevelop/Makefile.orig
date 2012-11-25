@@ -30,12 +30,14 @@ endif
 
 .PHONY: all
 
-all: build
+all: pack
 
 build: MonoDevelop.FSharpBinding/MonoDevelop.FSharp.$(MDTAG).fsproj MonoDevelop.FSharpBinding/FSharpBinding.$(MDTAG).addin.xml
+	rm -fr bin/$(MDTAG)/$(config)/packages
+	mkdir -p bin/$(MDTAG)/$(config)/packages
+	cp -pr dependencies/AspNetMvc4 bin/$(MDTAG)/$(config)/packages/AspNetMvc4
 	(cd MonoDevelop.FSharpBinding && xbuild MonoDevelop.FSharp.$(MDTAG).fsproj /p:Configuration=$(config))
 
-#	(cd extras/MonoDevelop.FSharp.AspNet.Mvc && xbuild MonoDevelop.FSharp.AspNet.Mvc.fsproj /p:Configuration=$(config))
 
 pack: build
 	cp -pr bin/$(config)/* bin/$(MDTAG)/$(config)/

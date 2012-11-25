@@ -61,16 +61,37 @@
     <EmbeddedResource Include="icons.fsharp-file-icon.png" />
     <EmbeddedResource Include="icons.fsharp-project-icon.png" />
     <EmbeddedResource Include="icons.fsharp-script-icon.png" />
-    <EmbeddedResource Include="templates.EmptyFSharpSource.xft.xml" />
-    <EmbeddedResource Include="templates.EmptyFSharpScript.xft.xml" />
-    <EmbeddedResource Include="templates.FSharpConsoleProject.xpt.xml" />
-    <EmbeddedResource Include="templates.FSharpSyntaxMode.xml" />
-    <EmbeddedResource Include="templates.FSharpLibraryProject.xpt.xml" />
-    <EmbeddedResource Include="templates.FSharpTutorialProject.xpt.xml" />
-    <EmbeddedResource Include="templates.FSharpGtkProject.xpt.xml" />
-    <EmbeddedResource Include="templates.FSharpProjectMvc4Razor.xpt.xml" />    
-    <EmbeddedResource Include="templates.FSharpProjectMvc4Razor.windows.xpt.xml" />    
-    <EmbeddedResource Include="templates.AssemblyInfo.xft.xml" />    
+    <EmbeddedResource Include="FSharpSyntaxMode.xml" />
+
+    <None Include="templates.EmptyFSharpSource.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="templates.EmptyFSharpScript.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="templates.FSharpConsoleProject.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="templates.FSharpLibraryProject.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="templates.FSharpTutorialProject.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="templates.FSharpGtkProject.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="templates.AssemblyInfo.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="../extras/AspNetMvc4/templates.FSharpProjectMvc4Razor.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <None Include="../extras/AspNetMvc4/templates.FSharpProjectMvc4Razor.windows.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
     <!--<EmbeddedResource Include="templates.FSharpMoonlightLibraryProject.xpt.xml" /> -->
     <EmbeddedResource Include="FSharpBinding.INSERT_FSPROJ_MDTAG.addin.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
