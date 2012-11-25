@@ -69,9 +69,9 @@ To use the ASP.NET MVC 4 template, a little bit of additional setup is required.
 
 On the Mac, you can clone this repository and do the following:
 
-  cd monodevelop
-  ./configure.sh
-  make add-libraries
+	cd monodevelop
+	./configure.sh
+	make add-libraries
   
 This adds all of the ASP.NET MVC 4 libraries to the MonoDevelop Addins directory. A few of these libraries have already been added to 
 Mono 3.0. If a future release of Mono includes the additional libraries, these manual process can be eliminated.
@@ -87,10 +87,10 @@ and copy the monodevelop/dependencies/AspNetMvc4 directory to your local project
 
 Normally you should get the binding from the repository. If you want to build and install it yourself and develop it, try this:
 
-  cd monodevelop
-  ./configure.sh
-  make 
-  make install
+	cd monodevelop
+	./configure.sh
+	make 
+	make install
 
 ### Can't get it to work?  
 
