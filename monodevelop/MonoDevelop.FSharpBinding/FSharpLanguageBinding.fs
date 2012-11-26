@@ -86,10 +86,10 @@ type FSharpLanguageBinding() =
       new FSharpProjectParameters() :> ProjectParameters
       
     override x.GetCodeDomProvider() : CodeDomProvider =
-      //null 
+      null 
       // TODO: Simplify CodeDom provider to generate reasonable template
       // files at least for some MonoDevelop project types. Then we can recover:
-         provider.Value :> CodeDomProvider
+      //   provider.Value :> CodeDomProvider
       
     override x.GetSupportedClrVersions() =
       [| ClrVersion.Net_2_0; ClrVersion.Net_4_0; ClrVersion.Clr_2_1 |]
