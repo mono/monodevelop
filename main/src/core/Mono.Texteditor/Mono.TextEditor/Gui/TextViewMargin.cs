@@ -582,7 +582,7 @@ namespace Mono.TextEditor
 		bool UpdateCaret ()
 		{
 			caretBlink = !caretBlink;
-			textEditor.QueueDrawArea (caretRectangle.X - (int)textEditor.Options.Zoom,
+			textEditor.TextArea.QueueDrawArea (caretRectangle.X - (int)textEditor.Options.Zoom,
 			                          (int)(caretRectangle.Y + (textEditor.VAdjustment.Value - caretVAdjustmentValue)),
 			                          caretRectangle.Width + 2 * (int)textEditor.Options.Zoom,
 			                          caretRectangle.Height);
@@ -655,7 +655,7 @@ namespace Mono.TextEditor
 				var curRect = new Gdk.Rectangle ((int)caretX, (int)caretY, (int)this.charWidth, (int)LineHeight - 1);
 				if (curRect != caretRectangle) {
 					caretRectangle = curRect;
-					textEditor.QueueDrawArea (caretRectangle.X - (int)textEditor.Options.Zoom,
+					textEditor.TextArea.QueueDrawArea (caretRectangle.X - (int)textEditor.Options.Zoom,
 					               (int)(caretRectangle.Y + (-textEditor.VAdjustment.Value + caretVAdjustmentValue)),
 				                    caretRectangle.Width + (int)textEditor.Options.Zoom,
 					               caretRectangle.Height + 1);
