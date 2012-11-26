@@ -238,17 +238,22 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		{
 			this.enableSemanticHighlightingCheckbutton.Sensitive = this.enableHighlightingCheckbutton.Active;
 		}
+
+		internal static void UpdateActiveDocument ()
+		{
+			if (IdeApp.Workbench.ActiveDocument != null) {
+				IdeApp.Workbench.ActiveDocument.UpdateParseDocument ();
+				IdeApp.Workbench.ActiveDocument.Editor.Parent.TextViewMargin.PurgeLayoutCache ();
+				IdeApp.Workbench.ActiveDocument.Editor.Parent.QueueDraw ();
+			}
+		}
 		
 		public virtual void ApplyChanges ()
 		{
 			DefaultSourceEditorOptions.Instance.EnableSyntaxHighlighting = this.enableHighlightingCheckbutton.Active;
 			if (DefaultSourceEditorOptions.Instance.EnableSemanticHighlighting != this.enableSemanticHighlightingCheckbutton.Active) {
 				DefaultSourceEditorOptions.Instance.EnableSemanticHighlighting = this.enableSemanticHighlightingCheckbutton.Active;
-				if (IdeApp.Workbench.ActiveDocument != null) {
-					IdeApp.Workbench.ActiveDocument.UpdateParseDocument ();
-					IdeApp.Workbench.ActiveDocument.Editor.Parent.TextViewMargin.PurgeLayoutCache ();
-					IdeApp.Workbench.ActiveDocument.Editor.Parent.QueueDraw ();
-				}
+				UpdateActiveDocument ();
 			}
 			TreeIter selectedIter;
 			if (styleTreeview.Selection.GetSelected (out selectedIter)) {
