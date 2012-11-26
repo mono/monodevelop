@@ -235,6 +235,9 @@ namespace MonoDevelop.Ide.Gui.Content
 				return;
 			}
 			var wnd = new CompletionListWindow (Gtk.WindowType.Toplevel);
+			wnd.TypeHint = Gdk.WindowTypeHint.Dialog;
+			wnd.SkipPagerHint = true;
+			wnd.SkipTaskbarHint = true;
 			wnd.Decorated = false;
 			wnd.Extension = this;
 			wnd.ShowListWindow ((char)0, completionList, CompletionWidget, ctx);
