@@ -853,6 +853,7 @@ But I leave it in in the case I've missed something. Mike
 		public void Replace ()
 		{
 			textEditor.Replace (ReplacePattern);
+			textEditor.CenterToCaret ();
 			textEditor.GrabFocus ();
 		}
 		
