@@ -56,6 +56,11 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public void SortUpToN (MonoDevelop.Components.MainToolbar.SearchCategory.DataItemComparer comparison, int n)
 		{
+			// use built-in sorting for small lists since the fast algorithm is only correct for lists larger than n * 2
+			if (Count < n * 2) {
+				this.Sort (comparison);
+				return;
+			}
 			int offset = 0;
 			// build binary heap from all items
 			for (int i = 0; i < Count; i++) {
@@ -99,7 +104,9 @@ namespace MonoDevelop.Components.MainToolbar
 				}
 				this [offset + index] = last;
 			}
-			for (int i = 0; i < Math.Min (n, Count); i++) {
+
+			// switch the lasts elements with the first ones (the last n elements are sorted)
+			for (int i = 0; i < n; i++) {
 				var tmp = this [Count - 1 - i];
 				this [Count - 1 - i] = this [i];
 				this [i] = tmp;
