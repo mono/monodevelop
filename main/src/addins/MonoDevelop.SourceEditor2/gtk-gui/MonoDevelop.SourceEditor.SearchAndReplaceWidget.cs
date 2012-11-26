@@ -59,7 +59,7 @@ namespace MonoDevelop.SourceEditor
 			this.searchEntry = new global::MonoDevelop.Components.SearchEntry ();
 			this.searchEntry.Name = "searchEntry";
 			this.searchEntry.ForceFilterButtonVisible = false;
-			this.searchEntry.HasFrame = false;
+			this.searchEntry.HasFrame = true;
 			this.searchEntry.RoundedShape = false;
 			this.searchEntry.IsCheckMenu = false;
 			this.searchEntry.ActiveFilterID = 0;

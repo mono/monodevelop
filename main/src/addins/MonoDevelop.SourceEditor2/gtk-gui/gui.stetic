@@ -1219,7 +1219,7 @@
               <widget class="MonoDevelop.Components.SearchEntry" id="searchEntry">
                 <property name="MemberName" />
                 <property name="ForceFilterButtonVisible">False</property>
-                <property name="HasFrame">False</property>
+                <property name="HasFrame">True</property>
                 <property name="RoundedShape">False</property>
                 <property name="IsCheckMenu">False</property>
                 <property name="ActiveFilterID">0</property>
