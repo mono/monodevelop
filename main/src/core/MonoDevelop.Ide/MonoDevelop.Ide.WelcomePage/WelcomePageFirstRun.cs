@@ -40,7 +40,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		static readonly Gdk.Point TitlePosition = new Gdk.Point (Padding + 52, Padding + 60);
 		static readonly Gdk.Point TextPosition = new Gdk.Point (Padding + 52, Padding + 120);
 		static readonly Gdk.Size ButtonSize = new Gdk.Size (200, 30);
-		static readonly Gdk.Point ButtonPosistion = new Gdk.Point ((Padding + 250) - ButtonSize.Width / 2, (WidgetSize.Height - 80 - Padding) - ButtonSize.Height / 2);
+		static readonly Gdk.Point ButtonPosistion = new Gdk.Point ((Padding + 250) - ButtonSize.Width / 2, (WidgetSize.Height - 60 - Padding) - ButtonSize.Height / 2);
 		static readonly Gdk.Point IconPosition = new Gdk.Point (WidgetSize.Width - 220 - Padding, WidgetSize.Height / 2);
 		static readonly double PreviewSize = 350;
 
@@ -382,7 +382,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		{
 			var layout = new Pango.Layout (context);
 			layout.FontDescription = Pango.FontDescription.FromString (Platform.IsMac ? Styles.WelcomeScreen.FontFamilyMac : Styles.WelcomeScreen.FontFamilyWindows);
-			layout.FontDescription.AbsoluteSize = Pango.Units.FromPixels (13);
+			layout.FontDescription.AbsoluteSize = Pango.Units.FromPixels (15);
 			layout.Width = Pango.Units.FromPixels (420);
 			layout.Wrap = Pango.WrapMode.Word;
 
