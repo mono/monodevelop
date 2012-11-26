@@ -254,8 +254,8 @@ namespace Mono.TextEditor
 			var childRectangle = new Gdk.Rectangle (Allocation.X + child.X, Allocation.Y + child.Y, req.Width, req.Height);
 			if (!child.FixedPosition) {
 				double zoom = Options.Zoom;
-				childRectangle.X = (int)(child.X * zoom - HAdjustment.Value);
-				childRectangle.Y = (int)(child.Y * zoom - VAdjustment.Value);
+				childRectangle.X = Allocation.X + (int)(child.X * zoom - HAdjustment.Value);
+				childRectangle.Y = Allocation.Y + (int)(child.Y * zoom - VAdjustment.Value);
 			}
 			//			childRectangle.X += allocation.X;
 			//			childRectangle.Y += allocation.Y;
