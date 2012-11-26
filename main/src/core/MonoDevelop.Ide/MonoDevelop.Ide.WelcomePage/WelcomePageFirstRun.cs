@@ -374,7 +374,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			layout.FontDescription = Pango.FontDescription.FromString (Platform.IsMac ? Styles.WelcomeScreen.FontFamilyMac : Styles.WelcomeScreen.FontFamilyWindows);
 			layout.FontDescription.AbsoluteSize = Pango.Units.FromPixels (26);
 
-			layout.SetText ("Welcome To " + BrandingService.ApplicationName + "!");
+			layout.SetText ("Welcome To " + BrandingService.SuiteName + "!");
 			return layout;
 		}
 
