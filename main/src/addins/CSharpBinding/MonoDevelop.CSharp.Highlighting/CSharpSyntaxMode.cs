@@ -921,7 +921,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				if (parsedDocument != null && csharpSyntaxMode.SemanticHighlightingEnabled && csharpSyntaxMode.resolver != null) {
 					int endLoc = -1;
 					string semanticStyle = null;
-					if (spanParser.CurSpan == null || spanParser.CurSpan is DefineSpan) {
+					if (spanParser.CurSpan == null || spanParser.CurSpan is DefineSpan || spanParser.CurSpan is AbstractBlockSpan) {
 						try {
 							HighlightingVisitior visitor;
 							if (!csharpSyntaxMode.lineSegments.TryGetValue (line, out visitor)) {
