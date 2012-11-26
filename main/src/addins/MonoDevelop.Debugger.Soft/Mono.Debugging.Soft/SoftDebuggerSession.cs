@@ -433,6 +433,8 @@ namespace Mono.Debugging.Soft
 				EventType.AssemblyUnload, EventType.UserBreak, EventType.UserLog);
 			try {
 				unhandledExceptionRequest = vm.CreateExceptionRequest (null, false, true);
+				if (assemblyFilters != null && assemblyFilters.Count > 0)
+					unhandledExceptionRequest.AssemblyFilter = assemblyFilters;
 				unhandledExceptionRequest.Enable ();
 			} catch (NotSupportedException) {
 				//Mono < 2.6.3 doesn't support catching unhandled exceptions
@@ -1916,21 +1918,28 @@ namespace Mono.Debugging.Soft
 		bool UpdateAssemblyFilters (AssemblyMirror asm)
 		{
 			var name = asm.GetName ().FullName;
+			bool found = false;
 			if (userAssemblyNames != null) {
 				//HACK: not sure how else to handle xsp-compiled pages
 				if (name.StartsWith ("App_")) {
-					assemblyFilters.Add (asm);
-					return true;
-				}
-			
-				foreach (var n in userAssemblyNames) {
-					if (n == name) {
-						assemblyFilters.Add (asm);
-						return true;
+					found = true;
+				} else {
+					foreach (var n in userAssemblyNames) {
+						if (n == name) {
+							found = true;
+						}
 					}
 				}
 			}
-			return false;
+			if (found) {
+				assemblyFilters.Add (asm);
+				unhandledExceptionRequest.Disable ();
+				unhandledExceptionRequest.AssemblyFilter = assemblyFilters;
+				unhandledExceptionRequest.Enable ();
+				return true;
+			} else {
+				return false;
+			}
 		}
 		
 		internal void WriteDebuggerOutput (bool isError, string msg)
