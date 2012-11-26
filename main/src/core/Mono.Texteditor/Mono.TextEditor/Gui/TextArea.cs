@@ -624,10 +624,12 @@ namespace Mono.TextEditor
 			imContext.FocusOut ();
 			RemoveFocusOutTimerId ();
 
-			if (tipWindow != null && currentTooltipProvider.IsInteractive (textEditorData.Parent, tipWindow))
-				DelayedHideTooltip ();
-			else
-				HideTooltip ();
+			if (currentTooltipProvider != null) {
+				if (tipWindow != null && currentTooltipProvider.IsInteractive (textEditorData.Parent, tipWindow))
+					DelayedHideTooltip ();
+				else
+					HideTooltip ();
+			}
 
 			TextViewMargin.StopCaretThread ();
 			Document.CommitLineUpdate (Caret.Line);
@@ -2614,7 +2616,8 @@ namespace Mono.TextEditor
 		void ShowTooltip (Gdk.ModifierType modifierState, int offset, int xloc, int yloc)
 		{
 			CancelScheduledShow ();
-			
+			if (currentTooltipProvider == null)
+				return;
 			if (tipWindow != null && currentTooltipProvider.IsInteractive (editor, tipWindow)) {
 				int wx, ww, wh;
 				tipWindow.GetSize (out ww, out wh);
