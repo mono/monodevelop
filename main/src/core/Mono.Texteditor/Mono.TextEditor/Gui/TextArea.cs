@@ -688,7 +688,7 @@ namespace Mono.TextEditor
 			
 			iconMargin.IsVisible   = Options.ShowIconMargin;
 			gutterMargin.IsVisible     = Options.ShowLineNumberMargin;
-			foldMarkerMargin.IsVisible = Options.ShowFoldMargin;
+			foldMarkerMargin.IsVisible = Options.ShowFoldMargin || Options.EnableQuickDiff;
 //			dashedLineMargin.IsVisible = foldMarkerMargin.IsVisible || gutterMargin.IsVisible;
 			
 			if (EditorOptionsChanged != null)
