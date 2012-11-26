@@ -1270,7 +1270,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			DomRegion region;
 			var res = TextEditor.GetLanguageItem (TextEditor.Caret.Offset, out region);
-			if (res == null || !IdeApp.HelpOperations.CanShowHelp (res) || res is UnknownIdentifierResolveResult || res is UnknownMemberResolveResult)
+			if (res == null || !IdeApp.HelpOperations.CanShowHelp (res) && !(res is UnknownIdentifierResolveResult || res is UnknownMemberResolveResult))
 				cinfo.Bypass = true;
 		}
 		
