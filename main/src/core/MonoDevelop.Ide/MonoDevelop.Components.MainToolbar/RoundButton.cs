@@ -124,7 +124,7 @@ namespace MonoDevelop.Components.MainToolbar
 			if (evnt.Button == 1 && IsInside (evnt.X, evnt.Y)) {
 				hoverState = State = StateType.Selected;
 			}
-			return base.OnButtonPressEvent (evnt);
+			return true;
 		}
 
 		protected override bool OnButtonReleaseEvent (EventButton evnt)
@@ -133,7 +133,7 @@ namespace MonoDevelop.Components.MainToolbar
 				OnClicked (EventArgs.Empty);
 			State = IsInside (evnt.X, evnt.Y) ? StateType.Prelight : StateType.Normal;;
 			hoverState = StateType.Prelight; 
-			return base.OnButtonReleaseEvent (evnt);
+			return true;
 		}
 
 		bool IsInside (double x, double y)
