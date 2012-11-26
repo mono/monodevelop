@@ -2482,10 +2482,8 @@ namespace Mono.TextEditor
 				
 				double y2 = Editor.LineToY (lineNr);
 				double w = (x2 - x1) / Pango.Scale.PangoScale;
-				int spaceX = (int)System.Math.Ceiling (w / 3);
+				int spaceX = (int)System.Math.Ceiling (w / 2);
 				int spaceY = (int)Editor.LineHeight / 2;
-				if (layout != null)
-				Console.WriteLine (y2 - spaceY );
 				var rx = (int)(x1 / Pango.Scale.PangoScale + Editor.TextViewMargin.XOffset + Editor.TextViewMargin.TextStartPosition - spaceX);
 				var ry = (int)(y2 - spaceY);
 				var rw = (int)(w + spaceX * 2);
