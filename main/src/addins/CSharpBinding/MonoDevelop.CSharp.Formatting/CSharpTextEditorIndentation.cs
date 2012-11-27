@@ -91,6 +91,9 @@ namespace MonoDevelop.CSharp.Formatting
 
 		void HandleTextPaste (int insertionOffset, string text, int insertedChars)
 		{
+			var startLine = Editor.GetLineByOffset (insertionOffset);
+			var endLine = Editor.GetLineByOffset (insertionOffset + insertedChars);
+
 			using (var undo = Editor.OpenUndoGroup ()) {
 
 //			// Trim blank spaces on text paste, see: Bug 511 - Trim blank spaces when copy-pasting
@@ -124,19 +127,42 @@ namespace MonoDevelop.CSharp.Formatting
 //				}
 //			}
 
-				var documentLine = Editor.GetLineByOffset (insertionOffset + insertedChars);
-				while (documentLine != null && insertionOffset < documentLine.EndOffset) {
-					if (documentLine.Length > 0) {
-						stateTracker.UpdateEngine (documentLine.Offset);
-						// The Indent engine doesn't really handle pre processor directives very well.
-						if (IsPreprocessorDirective (documentLine)) {
-							Editor.Replace (documentLine.Offset, documentLine.Length, stateTracker.Engine.NewLineIndent + Editor.GetTextAt (documentLine).TrimStart ());
-						} else {
-							DoReSmartIndent (documentLine.Offset);
+				var curLine = startLine;
+
+
+				while (true) {
+					var curLineOffset = curLine.Offset;
+
+					// The Indent engine doesn't really handle pre processor directives very well.
+					if (IsPreprocessorDirective (curLine)) {
+						Editor.Replace (curLineOffset, curLine.Length, stateTracker.Engine.NewLineIndent + Editor.GetTextAt (curLine).TrimStart ());
+					} else {
+						int pos = curLineOffset;
+						string curIndent = curLine.GetIndentation (textEditorData.Document);
+						int nlwsp = curIndent.Length;
+
+						stateTracker.UpdateEngine (curLineOffset);
+						if (!stateTracker.Engine.LineBeganInsideMultiLineComment || (nlwsp < curLine.LengthIncludingDelimiter && textEditorData.Document.GetCharAt (curLineOffset + nlwsp) == '*')) {
+							// Possibly replace the indent
+							stateTracker.UpdateEngine (curLineOffset + curLine.Length);
+							string newIndent = stateTracker.Engine.ThisLineIndent;
+							int newIndentLength = newIndent.Length;
+							if (newIndent != curIndent) {
+								if (CompletionWindowManager.IsVisible) {
+									if (pos < CompletionWindowManager.CodeCompletionContext.TriggerOffset)
+										CompletionWindowManager.CodeCompletionContext.TriggerOffset -= nlwsp;
+								}
+								newIndentLength = textEditorData.Replace (pos, nlwsp, newIndent);
+								textEditorData.Document.CommitLineUpdate (textEditorData.Caret.Line);
+							}
 						}
 					}
-					documentLine = documentLine.PreviousLine;
+
+					if (curLine == endLine)
+						break;
+					curLine = curLine.NextLine;
 				}
+				textEditorData.FixVirtualIndentation ();
 			}
 		} 
 
