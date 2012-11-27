@@ -285,6 +285,10 @@ namespace MonoDevelop.Platform
 				preferred_terminal = "gnome-terminal";
 				preferred_runner = GnomeTerminalRunner;
 			}
+			else if (!String.IsNullOrEmpty (Environment.GetEnvironmentVariable ("MATE_DESKTOP_SESSION_ID"))) {
+				preferred_terminal = "mate-terminal";
+				preferred_runner = GnomeTerminalRunner;
+			}
 			else {
 				preferred_terminal = fallback_terminal;
 				preferred_runner = fallback_runner;
