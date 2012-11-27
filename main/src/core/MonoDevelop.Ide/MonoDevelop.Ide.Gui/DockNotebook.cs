@@ -804,7 +804,7 @@ namespace MonoDevelop.Ide.Gui
 		void UpdateTabWidth (int width, bool adjustLast = false)
 		{
 			if (notebook.Tabs.Any ())
-				TargetWidth = Clamp (width / notebook.Tabs.Count, 50, 175);
+				TargetWidth = Clamp (width / notebook.Tabs.Count, 50, 200);
 
 			if (adjustLast) {
 				// adjust to align close buttons properly
