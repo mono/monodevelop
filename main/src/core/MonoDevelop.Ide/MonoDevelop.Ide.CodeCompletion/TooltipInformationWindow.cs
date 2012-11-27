@@ -97,9 +97,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
-			requisition.Width = Math.Min (Allocation.Width, requisition.Width);
-			requisition.Height = Math.Min (Allocation.Height, requisition.Height);
 			base.OnSizeRequested (ref requisition);
+			var w = Math.Max (headlabel.WidthRequest, headlabel.RealWidth);
+			requisition.Width = (int)Math.Max (w + ContentBox.LeftPadding + ContentBox.RightPadding, requisition.Width);
 		}
 
 		void ShowOverload ()
@@ -110,8 +110,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 				var o = overloads[current_overload];
 				headlabel.Markup = o.SignatureMarkup;
 				headlabel.Visible = true;
-				if (Theme.DrawPager)
+				if (Theme.DrawPager && overloads.Count > 1) {
 					headlabel.WidthRequest = headlabel.RealWidth + 70;
+				} else {
+					headlabel.WidthRequest = -1;
+				}
 				foreach (var cat in o.Categories) {
 					descriptionBox.PackStart (CreateCategory (cat.Item1, cat.Item2), true, true, 4);
 				}
