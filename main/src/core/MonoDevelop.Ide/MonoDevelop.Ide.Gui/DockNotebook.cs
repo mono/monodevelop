@@ -824,11 +824,12 @@ namespace MonoDevelop.Ide.Gui
 		{
 			var h = region.Height;
 			ctx.Rectangle (0, 0, region.Width, h);
-			Cairo.LinearGradient gr = new LinearGradient (0, 0, 0, h);
-			gr.AddColorStop (0, Styles.TabBarGradientStartColor);
-			gr.AddColorStop (1, Styles.TabBarGradientMidColor);
-			ctx.Pattern = gr;
-			ctx.Fill ();
+			using (Cairo.LinearGradient gr = new LinearGradient (0, 0, 0, h)) {
+				gr.AddColorStop (0, Styles.TabBarGradientStartColor);
+				gr.AddColorStop (1, Styles.TabBarGradientMidColor);
+				ctx.Pattern = gr;
+				ctx.Fill ();
+			}
 			
 			ctx.MoveTo (region.X, 0.5);
 			ctx.LineTo (region.Right + 1, 0.5);
