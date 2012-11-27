@@ -31,7 +31,7 @@
     <Otherwise>
       <PropertyGroup>
         <Git>git</Git>
-          </PropertyGroup>
+      </PropertyGroup>
     </Otherwise>
   </Choose>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -460,12 +460,15 @@
     <EmbeddedResource Include="md1format.xml">
       <LogicalName>md1format.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="frameworks\framework_NET_4_5.xml">
+      <LogicalName>framework_NET_4_5.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="BeforeBuild">
     <MakeDir Directories="$(OutputPath)" />
-    <Exec Command='"$(Git)" rev-parse HEAD > $(BuildInfo)' WorkingDirectory="$(MSBuildProjectDirectory)" IgnoreExitCode="True" />
-    <Exec Command='"$(Git)" rev-parse HEAD > $(VcRevision)' WorkingDirectory="$(MSBuildProjectDirectory)" IgnoreExitCode="True" />
+    <Exec Command="&quot;$(Git)&quot; rev-parse HEAD &gt; $(BuildInfo)" WorkingDirectory="$(MSBuildProjectDirectory)" IgnoreExitCode="True" />
+    <Exec Command="&quot;$(Git)&quot; rev-parse HEAD &gt; $(VcRevision)" WorkingDirectory="$(MSBuildProjectDirectory)" IgnoreExitCode="True" />
   </Target>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.Formats.MSBuild.csproj">

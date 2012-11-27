@@ -170,6 +170,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/Frameworks">
+		<Framework id="Net_4.5" resource="framework_NET_4_5.xml"/>
 		<Framework id="Net_4.0" resource="framework_NET_4_0.xml"/>
 		<Framework id="Net_3.5" resource="framework_NET_3_5.xml"/>
 		<Framework id="Net_3.0" resource="framework_NET_3_0.xml"/>
