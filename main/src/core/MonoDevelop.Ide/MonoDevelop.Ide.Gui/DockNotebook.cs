@@ -410,7 +410,6 @@ namespace MonoDevelop.Ide.Gui
 		int tabStartX, tabEndX;
 
 		MouseTracker tracker;
-		ThreadedRenderer renderer;
 
 		bool draggingTab;
 		int dragX;
@@ -518,14 +517,6 @@ namespace MonoDevelop.Ide.Gui
 			notebook.PageRemoved += (object sender, EventArgs e) => QueueResize ();
 
 			closingTabs = new Dictionary<int, DockNotebookTab> ();
-			renderer = new ThreadedRenderer (this);
-		}
-
-		protected override void OnDestroyed ()
-		{
-			if (renderer != null)
-				renderer.Dispose ();
-			base.OnDestroyed ();
 		}
 
 		public void StartOpenAnimation (DockNotebookTab tab)
@@ -882,7 +873,7 @@ namespace MonoDevelop.Ide.Gui
 			return (c) => {};
 		}
 
-		void Draw ()
+		void Draw (Cairo.Context ctx)
 		{
 			int tabArea = tabEndX - tabStartX;
 			int x = GetRenderOffset ();
@@ -936,49 +927,31 @@ namespace MonoDevelop.Ide.Gui
 			drawCommands.Add (DrawClosingTab (n, new Gdk.Rectangle (x, y, 0, allocation.Height), out tabWidth));
 			drawCommands.Reverse ();
 
-			renderer.QueueThreadedDraw ((ctx) => {
-				DrawBackground (ctx, allocation);
+			DrawBackground (ctx, allocation);
 
-				// Draw breadcrumb bar header
-				if (notebook.Tabs.Count > 0) {
-					ctx.Rectangle (0, allocation.Height - BottomBarPadding, allocation.Width, BottomBarPadding);
-					ctx.Color = Styles.BreadcrumbBackgroundColor;
-					ctx.Fill ();
-				}
+			// Draw breadcrumb bar header
+			if (notebook.Tabs.Count > 0) {
+				ctx.Rectangle (0, allocation.Height - BottomBarPadding, allocation.Width, BottomBarPadding);
+				ctx.Color = Styles.BreadcrumbBackgroundColor;
+				ctx.Fill ();
+			}
 
-				ctx.Rectangle (tabStartX - LeanWidth / 2, allocation.Y, tabArea + LeanWidth, allocation.Height);
-				ctx.Clip ();
+			ctx.Rectangle (tabStartX - LeanWidth / 2, allocation.Y, tabArea + LeanWidth, allocation.Height);
+			ctx.Clip ();
 
-				foreach (var cmd in drawCommands)
-					cmd (ctx);
+			foreach (var cmd in drawCommands)
+				cmd (ctx);
 
-				ctx.ResetClip ();
+			ctx.ResetClip ();
 
-				// Redraw the dragging tab here to be sure its on top. We drew it before to get the sizing correct, this should be fixed.
-				drawActive (ctx);
-			});
-		}
-
-		uint handle;
-		public new void QueueDraw ()
-		{
-			if (handle != 0)
-				return;
-
-			handle = GLib.Timeout.Add (0, () => {
-				Draw ();
-				handle = 0;
-				return false;
-			});
+			// Redraw the dragging tab here to be sure its on top. We drew it before to get the sizing correct, this should be fixed.
+			drawActive (ctx);
 		}
 
 		protected override bool OnExposeEvent (EventExpose evnt)
 		{
 			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
-				if (!renderer.Show (context)) {
-					Draw ();
-					renderer.Show (context);
-				}
+				Draw (context);
 			}
 			return base.OnExposeEvent (evnt);
 		}
