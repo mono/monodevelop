@@ -96,7 +96,8 @@ namespace MonoDevelop.Ide
 				}
 			}
 			runningSignal.Reset ();
-			ThreadPool.QueueUserWorkItem (new WaitCallback (this.OnDraw), drawCallback);
+			this.OnDraw (drawCallback);
+			//ThreadPool.QueueUserWorkItem (new WaitCallback (this.OnDraw), drawCallback);
 			owner.QueueDraw ();
 		}
 
