@@ -6,11 +6,11 @@
        url         = "http://bard.sytes.net/vbnetbinding"
        description = "VB.NET Language Binding"
 	   category    = "Language bindings"
-       version     = "3.0.5">
+       version     = "3.0.6">
 
 	<Dependencies>
-		<Addin id="Core" version="3.0.5"/>
-		<Addin id="Ide" version="3.0.5"/>
+		<Addin id="Core" version="3.0.6"/>
+		<Addin id="Ide" version="3.0.6"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
