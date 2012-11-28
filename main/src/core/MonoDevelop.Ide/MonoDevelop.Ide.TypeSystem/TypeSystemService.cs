@@ -231,7 +231,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 				}
 			};
-			if (IdeApp.IsInitialized)
+			if (IdeApp.ProjectOperations != null)
 				IdeApp.ProjectOperations.EndBuild += HandleEndBuild;
 		}
 
@@ -242,7 +242,16 @@ namespace MonoDevelop.Ide.TypeSystem
 				throw new ArgumentNullException ("project");
 			if (outputTrackedProjects.Contains (project.ProjectType, StringComparer.OrdinalIgnoreCase)) {
 				var fileName = project.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration);
-				GetProjectContentWrapper (project).UpdateTrackedOutputAssembly (fileName);
+				bool update = GetProjectContentWrapper (project).UpdateTrackedOutputAssembly (fileName);
+				if (update) {
+					foreach (var wrapper in projectContents.ToArray ()) {
+						wrapper.Value.ReloadAssemblyReferences ();
+					}
+					// update documents
+					foreach (var openDocument in IdeApp.Workbench.Documents) {
+						openDocument.ReparseDocument ();
+					}
+				}
 			}
 		}
 
@@ -902,10 +911,15 @@ namespace MonoDevelop.Ide.TypeSystem
 			[NonSerialized]
 			internal LazyAssemblyLoader OutputAssembly = null;
 
-			internal void UpdateTrackedOutputAssembly (FilePath fileName)
+			internal bool UpdateTrackedOutputAssembly (FilePath fileName)
 			{
-				if (File.Exists (fileName))
+				if (File.Exists (fileName)) {
 					OutputAssembly = new LazyAssemblyLoader (fileName, null);
+					// a clean operation could remove the assembly, thefore we need to load it.
+					OutputAssembly.EnsureAssemblyLoaded ();
+					return true;
+				}
+				return false;
 			}
 			
 			public ProjectContentWrapper (Project project)
