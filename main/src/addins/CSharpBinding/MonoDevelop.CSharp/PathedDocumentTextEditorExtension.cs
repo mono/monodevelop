@@ -124,6 +124,16 @@ namespace MonoDevelop.CSharp
 						result = GetTypeParameters(x).CompareTo (GetTypeParameters(y));
 					if (result == 0)
 						result = GetParameters(x).CompareTo (GetParameters(y));
+
+					// partial methods without body should come last
+					if (result == 0 && x is MethodDeclaration && y is MethodDeclaration) {
+						var mx = x as MethodDeclaration;
+						var my = y as MethodDeclaration;
+						if (mx.Body.IsNull && !my.Body.IsNull)
+							return 1;
+						if (!mx.Body.IsNull && my.Body.IsNull)
+							return -1;
+					}
 					return result;
 				});
 			}
