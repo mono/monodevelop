@@ -382,6 +382,8 @@ namespace MonoDevelop.CSharp.Refactoring
 			StringBuilder result = new StringBuilder ();
 			AppendObsoleteAttribute (result, options, method);
 			AppendModifiers (result, options, method);
+			if (method.IsPartial)
+				result.Append ("partial ");
 			AppendReturnType (result, options, method.ReturnType);
 			result.Append (" ");
 			if (options.ExplicitDeclaration) {
@@ -652,7 +654,7 @@ namespace MonoDevelop.CSharp.Refactoring
 //					}
 //				}
 			}
-			
+
 			if (!isFromInterface && member.IsOverridable)
 				result.Append ("override ");
 		}
