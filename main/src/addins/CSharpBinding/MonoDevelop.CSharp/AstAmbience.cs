@@ -28,6 +28,7 @@ using ICSharpCode.NRefactory.CSharp;
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp
 {
@@ -165,6 +166,15 @@ namespace MonoDevelop.CSharp
 				sb.Append (method.Name);
 				AppendTypeParameter (sb, method.TypeParameters);
 				AppendParameter (sb, method.Parameters);
+				if (method.Body.IsNull) {
+					string tag = null;
+					if (method.HasModifier (Modifiers.Abstract))
+						tag = GettextCatalog.GetString ("(abstract)");
+					if (method.HasModifier (Modifiers.Partial))
+						tag = GettextCatalog.GetString ("(partial)");
+					if (tag != null)
+						sb.Append (" <small>" + tag + "</small>");
+				}
 			} else if (e is ConstructorDeclaration) {
 				var constructor = e as ConstructorDeclaration;
 				sb.Append (constructor.Name);
@@ -230,7 +240,6 @@ namespace MonoDevelop.CSharp
 				var entity = (EntityDeclaration)e;
 				sb.Append (entity.Name);
 			}
-
 
 			string markup = sb.ToString ();
 			if (IsObsolete (e as EntityDeclaration))
