@@ -327,10 +327,17 @@ namespace MonoDevelop.Core.Assemblies
 
 				foreach (AssemblyNameReference aname in asm.MainModule.AssemblyReferences) {
 					if (aname.Name == "mscorlib") {
+						TargetFramework compatibleFramework = null;
+						// If there are several frameworks that can run the file, pick one that is installed
 						foreach (TargetFramework tf in GetCoreFrameworks ()) {
-							if (tf.GetCorlibVersion () == aname.Version.ToString ())
-								return tf.Id;
+							if (tf.GetCorlibVersion () == aname.Version.ToString ()) {
+								compatibleFramework = tf;
+								if (tr.IsInstalled (tf))
+									return tf.Id;
+							}
 						}
+						if (compatibleFramework != null)
+							return compatibleFramework.Id;
 						break;
 					}
 				}
