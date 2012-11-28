@@ -251,7 +251,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			HBox hb = new HBox (false, 0);
 			hb.PackStart (vb, true, true, 0);
-
+			WindowTransparencyDecorator.Attach (this);
 
 			vb2.Spacing = 4;
 			vb2.PackStart (hb, true, true, 0);
