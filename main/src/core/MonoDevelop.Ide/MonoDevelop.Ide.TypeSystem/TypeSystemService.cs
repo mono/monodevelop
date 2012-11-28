@@ -231,22 +231,33 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 				}
 			};
-			if (IdeApp.ProjectOperations != null)
+			if (IdeApp.ProjectOperations != null) {
 				IdeApp.ProjectOperations.EndBuild += HandleEndBuild;
+			}
+			IdeApp.Workspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
+		}
+
+		static void HandleActiveConfigurationChanged (object sender, EventArgs e)
+		{
+			foreach (var pr in projectContents.Keys.ToArray ()) {
+				var project = pr as DotNetProject;
+				if (project != null)
+					CheckProjectOutput (project, true);
+			}
 		}
 
 		static List<string> outputTrackedProjects =new List<string> ();
-		static void CheckProjectOutput (DotNetProject project)
+		static void CheckProjectOutput (DotNetProject project, bool autoUpdate)
 		{
 			if (project == null)
 				throw new ArgumentNullException ("project");
 			if (outputTrackedProjects.Contains (project.ProjectType, StringComparer.OrdinalIgnoreCase)) {
 				var fileName = project.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration);
+
 				bool update = GetProjectContentWrapper (project).UpdateTrackedOutputAssembly (fileName);
-				if (update) {
-					foreach (var wrapper in projectContents.ToArray ()) {
-						wrapper.Value.ReloadAssemblyReferences ();
-					}
+				if (autoUpdate && update) {
+					ReloadAllReferences (projectContents.Values.ToArray ());
+
 					// update documents
 					foreach (var openDocument in IdeApp.Workbench.Documents) {
 						openDocument.ReparseDocument ();
@@ -260,7 +271,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			var project = args.SolutionItem as DotNetProject;
 			if (project == null)
 				return;
-			CheckProjectOutput (project);
+			CheckProjectOutput (project, true);
 		}
 		
 		public static TypeSystemParser GetParser (string mimeType, string buildAction = BuildAction.Compile)
@@ -695,7 +706,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				Parallel.ForEach (solution.GetAllProjects (), project => LoadProject (project));
 				var contents = projectContents.Values.ToArray ();
 				ReloadAllReferences (contents);
-		
+
 				solution.SolutionItemAdded += OnSolutionItemAdded;
 				solution.SolutionItemRemoved += OnSolutionItemRemoved;
 				OnSolutionLoaded (new SolutionEventArgs (solution));
@@ -1234,7 +1245,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					projectContents [project] = wrapper = new ProjectContentWrapper (project);
 					var dotNetProject = project as DotNetProject;
 					if (dotNetProject != null)
-						CheckProjectOutput (dotNetProject);
+						CheckProjectOutput (dotNetProject, false);
 
 					project.FileAddedToProject += OnFileAdded;
 					project.FileRemovedFromProject += OnFileRemoved;
