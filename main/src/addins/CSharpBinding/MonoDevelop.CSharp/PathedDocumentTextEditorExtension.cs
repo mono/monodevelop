@@ -46,10 +46,13 @@ namespace MonoDevelop.CSharp
 			Document.Editor.Caret.PositionChanged -= UpdatePath;
 			base.Dispose ();
 		}
+
+		bool isPathSet;
 		
 		public override void Initialize ()
 		{
 			CurrentPath = new PathEntry[] { new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = null } };
+			isPathSet = false;
 			UpdatePath (null, null);
 			Document.Editor.Caret.PositionChanged += UpdatePath;
 			var ext = Document.GetContent<CSharpCompletionTextEditorExtension> ();
@@ -309,9 +312,15 @@ namespace MonoDevelop.CSharp
 			return window;
 		}
 		
+		PathEntry[] currentPath;
 		public PathEntry[] CurrentPath {
-			get;
-			private set;
+			get {
+				return currentPath;
+			}
+			private set {
+				currentPath = value;
+				isPathSet = true;
+			}
 		}
 		
 		static PathEntry GetRegionEntry (ParsedDocument unit, Mono.TextEditor.DocumentLocation loc)
@@ -366,11 +375,12 @@ namespace MonoDevelop.CSharp
 			var curMember = unit.GetNodeAt<EntityDeclaration> (loc);
 			if (curType == curMember)
 				curMember = null;
-			if (curType == lastType && lastMember == curMember)
+			if (isPathSet && curType == lastType && lastMember == curMember)
 				return;
+
 			var curTypeMakeup = GetEntityMarkup (curType);
 			var curMemberMarkup = GetEntityMarkup (curMember);
-			if (curType != null && lastType != null && curType.StartLocation == lastType.StartLocation && curTypeMakeup == lastTypeMarkup &&
+			if (isPathSet && curType != null && lastType != null && curType.StartLocation == lastType.StartLocation && curTypeMakeup == lastTypeMarkup &&
 			    curMember != null && lastMember != null && curMember.StartLocation == lastMember.StartLocation && curMemberMarkup == lastMemberMarkup)
 				return;
 
