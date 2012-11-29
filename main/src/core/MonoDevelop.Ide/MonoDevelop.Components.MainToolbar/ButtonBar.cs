@@ -120,7 +120,7 @@ namespace MonoDevelop.Components.MainToolbar
 				if (pushedButton != null && pushedButton.Enabled)
 					State = StateType.Selected;
 			}
-			return base.OnButtonPressEvent (evnt);
+			return true;
 		}
 
 		protected override bool OnButtonReleaseEvent (EventButton evnt)
@@ -130,7 +130,7 @@ namespace MonoDevelop.Components.MainToolbar
 			State = StateType.Prelight;
 			leaveState = StateType.Normal;
 			pushedButton = null;
-			return base.OnButtonReleaseEvent (evnt);
+			return true;
 		}
 
 		protected override bool OnQueryTooltip (int x, int y, bool keyboard_tooltip, Tooltip tooltip)
