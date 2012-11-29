@@ -234,7 +234,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (IdeApp.ProjectOperations != null) {
 				IdeApp.ProjectOperations.EndBuild += HandleEndBuild;
 			}
-			IdeApp.Workspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
+			if (IdeApp.Workspace != null) {
+				IdeApp.Workspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
+			}
 		}
 
 		static void HandleActiveConfigurationChanged (object sender, EventArgs e)
