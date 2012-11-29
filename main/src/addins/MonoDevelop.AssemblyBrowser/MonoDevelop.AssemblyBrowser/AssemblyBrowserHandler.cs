@@ -41,7 +41,7 @@ namespace MonoDevelop.AssemblyBrowser
 		protected override void Run ()
 		{
 			foreach (var view in IdeApp.Workbench.Documents) {
-				if (view.PrimaryView is AssemblyBrowserViewContent) {
+				if (view.GetContent<AssemblyBrowserViewContent> () != null) {
 					view.Window.SelectWindow ();
 					return;
 				}

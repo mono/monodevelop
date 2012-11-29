@@ -421,7 +421,8 @@ namespace MonoDevelop.AssemblyBrowser
 
 			if (type is GetClassTypeReference) {
 				var r = (GetClassTypeReference)type;
-				result.Append (r.Namespace + "." + r.Name);
+				var n = r.FullTypeName.TopLevelTypeName;
+				result.Append (n.Namespace + "." + n.Name);
 				return;
 			}
 
