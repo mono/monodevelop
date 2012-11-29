@@ -146,13 +146,12 @@ namespace MonoDevelop.CSharp.Formatting
 							// Possibly replace the indent
 							stateTracker.UpdateEngine (curLineOffset + curLine.Length);
 							string newIndent = stateTracker.Engine.ThisLineIndent;
-							int newIndentLength = newIndent.Length;
 							if (newIndent != curIndent) {
 								if (CompletionWindowManager.IsVisible) {
 									if (pos < CompletionWindowManager.CodeCompletionContext.TriggerOffset)
 										CompletionWindowManager.CodeCompletionContext.TriggerOffset -= nlwsp;
 								}
-								newIndentLength = textEditorData.Replace (pos, nlwsp, newIndent);
+								textEditorData.Replace (pos, nlwsp, newIndent);
 								textEditorData.Document.CommitLineUpdate (textEditorData.Caret.Line);
 							}
 						}

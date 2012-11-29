@@ -877,11 +877,10 @@ namespace MonoDevelop.CSharp.Highlighting
 			HashSet<string> tags = new HashSet<string> ();
 			
 			CSharpSyntaxMode csharpSyntaxMode;
-			int lineNumber, offset;
+			int lineNumber;
 			public CSharpChunkParser (CSharpSyntaxMode csharpSyntaxMode, SpanParser spanParser, ColorScheme style, DocumentLine line) : base (csharpSyntaxMode, spanParser, style, line)
 			{
 				lineNumber = line.LineNumber;
-				offset = line.Offset;
 				this.csharpSyntaxMode = csharpSyntaxMode;
 				foreach (var tag in CommentTag.SpecialCommentTags) {
 					tags.Add (tag.Tag);
