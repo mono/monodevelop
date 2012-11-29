@@ -974,9 +974,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				{
 					this.wrapper = wrapper;
 					contextTask = Task.Factory.StartNew (delegate {
-	
-						IProjectContent content;
-	
 						var context = LoadProjectCache (this.wrapper.Project);
 						if (context != null) {
 							return context.SetAssemblyName (this.wrapper.Project.Name) ?? context;

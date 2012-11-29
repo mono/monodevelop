@@ -156,7 +156,6 @@ namespace MonoDevelop.Components
 			else
 				theme.ArrowOffset = Allocation.Height / 2;
 
-			bool retVal;
 			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
 				context.Save ();
 				Theme.SetBorderPath (context, BorderAllocation, position);

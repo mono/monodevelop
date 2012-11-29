@@ -164,7 +164,6 @@ namespace MonoDevelop.Components.MainToolbar
 			if (newResult.IncludeMembers && (newResult.Tag == null || memberTags.Any (t => t == newResult.Tag))) {
 				newResult.filteredMembers = new List<Tuple<ITypeDefinition, IUnresolvedMember>> ();
 				bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern, StringComparison.Ordinal) && lastResult.filteredMembers != null;
-				List<IMember> allMembers;
 				if (startsWithLastFilter) {
 					foreach (var t in lastResult.filteredMembers) {
 						if (unchecked(x++) % 100 == 0 && token.IsCancellationRequested)

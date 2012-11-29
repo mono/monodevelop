@@ -206,7 +206,7 @@ namespace MonoDevelop.Components.MainToolbar
 			foreach (var _cat in categories) {
 				var cat = _cat;
 				var token = src.Token;
-				var task = cat.GetResults (pattern, maxItems, token).ContinueWith (t => {
+				cat.GetResults (pattern, maxItems, token).ContinueWith (t => {
 					if (t.IsFaulted) {
 						LoggingService.LogError ("Error getting search results", t.Exception);
 					} else {
