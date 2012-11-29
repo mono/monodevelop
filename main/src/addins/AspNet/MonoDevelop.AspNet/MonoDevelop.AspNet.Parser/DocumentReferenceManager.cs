@@ -149,7 +149,7 @@ namespace MonoDevelop.AspNet.Parser
 		
 		public IEnumerable<CompletionData> GetControlCompletionData ()
 		{
-			return GetControlCompletionData (TypeSystemService.GetCompilation (Project).LookupType ("System.Web.UI", "Control"));
+			return GetControlCompletionData (ReflectionHelper.ParseReflectionName ("System.Web.UI.Control").Resolve (TypeSystemService.GetCompilation (Project)));
 		}
 		
 		public IEnumerable<CompletionData> GetControlCompletionData (IType baseType)
@@ -209,7 +209,6 @@ namespace MonoDevelop.AspNet.Parser
 				
 				AssemblyRegisterDirective ard = rd as AssemblyRegisterDirective;
 				if (ard != null) {
-					string assembly = ard.Assembly;
 					var dom = TypeCtx.ResolveAssembly (ard.Assembly);
 					if (dom == null)
 						continue;

@@ -111,7 +111,7 @@ namespace MonoDevelop.AspNet.Gui
 			info.AspNetDocument.RootNode.AcceptVisit (v);
 			var t = new ICSharpCode.NRefactory.TypeSystem.Implementation.DefaultUnresolvedTypeDefinition (info.ClassName);
 			var dom = refman.TypeCtx.Compilation;
-			var baseType = dom.LookupType (info.BaseType);
+			var baseType = ReflectionHelper.ParseReflectionName (info.BaseType).Resolve (dom);
 			foreach (var m in CodeBehind.GetDesignerMembers (v.Members.Values, baseType, null)) {
 				t.Members.Add (new ICSharpCode.NRefactory.TypeSystem.Implementation.DefaultUnresolvedField (t, m.Name) {
 					Accessibility = Accessibility.Protected,
@@ -344,7 +344,8 @@ namespace MonoDevelop.AspNet.Gui
 			if (!HasDoc) {
 				AddAspBeginExpressions (list);
 				string aspPrefix = "asp:";
-				foreach (var cls in WebTypeContext.ListSystemControlClasses (TypeSystemService.GetCompilation (project).LookupType ("System.Web.UI", "Control"), project))
+				var type = ReflectionHelper.ParseReflectionName ("System.Web.UI.Control").Resolve (TypeSystemService.GetCompilation (project));
+				foreach (var cls in WebTypeContext.ListSystemControlClasses (type, project))
 					list.Add (new AspTagCompletionData (aspPrefix, cls));
 				
 				base.GetElementCompletions (list);
@@ -455,7 +456,8 @@ namespace MonoDevelop.AspNet.Gui
 				
 				if (meth != null) {
 					IType argType = meth.Parameters [0].Type;
-					if (argType != null && argType.IsBaseType (argType.GetDefinition ().Compilation.LookupType ("System.Web.UI", "Control"))) {
+					var type = ReflectionHelper.ParseReflectionName ("System.Web.UI.Control").Resolve (argType.GetDefinition ().Compilation);
+					if (argType != null && argType.IsBaseType (type)) {
 						list.AddRange (refman.GetControlCompletionData (argType));
 						return;
 					}
@@ -601,7 +603,7 @@ namespace MonoDevelop.AspNet.Gui
 			
 			IType controlClass = refman.GetControlType (name.Prefix, name.Name);
 			if (controlClass == null) {
-				controlClass = database.LookupType ("System.Web.UI.WebControls", "WebControl");
+				controlClass = ReflectionHelper.ParseReflectionName ("System.Web.UI.WebControls.WebControl").Resolve (database);
 				if (controlClass == null) {
 					LoggingService.LogWarning ("Could not obtain IType for System.Web.UI.WebControls.WebControl");
 					return;
@@ -639,7 +641,7 @@ namespace MonoDevelop.AspNet.Gui
 				LoggingService.LogWarning ("Could not obtain IType for {0}", tagName.FullName);
 				
 				var database = WebTypeContext.GetSystemWebDom (project);
-				controlClass = database.LookupType ("System.Web.UI.WebControls", "WebControl");
+				controlClass = ReflectionHelper.ParseReflectionName ("System.Web.UI.WebControls.WebControl").Resolve (database);
 
 				if (controlClass == null) {
 					LoggingService.LogWarning ("Could not obtain IType for System.Web.UI.WebControls.WebControl");

@@ -297,7 +297,7 @@ namespace MonoDevelop.AspNet
 		{
 			var str = HtmlControlLookup (tagName, typeAttribute);
 			if (str != null) {
-				return SystemWebDom.LookupType (str);
+				return ReflectionHelper.ParseReflectionName (str).Resolve (SystemWebDom);
 			}
 			return null;
 		}

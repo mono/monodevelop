@@ -154,7 +154,7 @@ namespace MonoDevelop.AspNet
 				return ccu;
 			
 			var dom = refman.TypeCtx.Compilation;
-			var cls = dom.LookupType (className);
+			var cls = ReflectionHelper.ParseReflectionName (className).Resolve (dom);
 			var members = GetDesignerMembers (memberList.Members.Values, cls, filename);
 			
 			//add fields for each control in the page

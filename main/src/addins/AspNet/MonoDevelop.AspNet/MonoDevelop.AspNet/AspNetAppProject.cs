@@ -708,7 +708,7 @@ namespace MonoDevelop.AspNet
 			if (typeName != null) {
 				var dom = TypeSystemService.GetCompilation (this);
 				if (dom != null)
-					return dom.LookupType (typeName);
+					return ReflectionHelper.ParseReflectionName (typeName).Resolve (dom);
 			}
 			return null;
 		}
