@@ -37,6 +37,8 @@ using MonoDevelop.Core.FileSystem;
 using System.Collections.Generic;
 using System.Threading;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Net;
 
 namespace MonoDevelop.Core
 {
@@ -592,6 +594,114 @@ namespace MonoDevelop.Core
 		{
 			Counters.FileChangeNotifications++;
 			eventQueue.RaiseEvent (() => FileChanged, null, args);
+		}
+
+		public static Task<bool> UpdateDownloadedCacheFile (string url, string cacheFile,
+			Func<Stream,bool> validateDownload = null, CancellationToken ct = new CancellationToken ())
+		{
+			var tcs = new TaskCompletionSource<bool> ();
+
+			//HACK: .NET blocks on DNS in BeginGetResponse, so use a threadpool thread
+			// see http://stackoverflow.com/questions/1232139#1232930
+			System.Threading.ThreadPool.QueueUserWorkItem ((state) => {
+				var request = (HttpWebRequest)WebRequest.Create (url);
+
+				try {
+					//check to see if the online file has been modified since it was last downloaded
+					var localNewsXml = new FileInfo (cacheFile);
+					if (localNewsXml.Exists)
+						request.IfModifiedSince = localNewsXml.LastWriteTime;
+
+					request.BeginGetResponse (HandleResponse, new CacheFileDownload {
+						Request = request,
+						Url = url,
+						CacheFile = cacheFile,
+						ValidateDownload = validateDownload,
+						CancellationToken = ct,
+						Tcs = tcs,
+					});
+				} catch (Exception ex) {
+					tcs.SetException (ex);
+				}
+			});
+
+			return tcs.Task;
+		}
+
+		class CacheFileDownload
+		{
+			public HttpWebRequest Request;
+			public string CacheFile, Url;
+			public Func<Stream,bool> ValidateDownload;
+			public CancellationToken CancellationToken;
+			public TaskCompletionSource<bool> Tcs;
+		}
+
+		static void HandleResponse (IAsyncResult ar)
+		{
+			var c = (CacheFileDownload) ar.AsyncState;
+			bool deleteTempFile = true;
+			var tempFile = c.CacheFile + ".temp";
+
+			try {
+				if (c.CancellationToken.IsCancellationRequested)
+					c.Tcs.SetCanceled ();
+
+				try {
+					//TODO: limit this size in case open wifi hotspots provide bad data
+					var response = (HttpWebResponse) c.Request.EndGetResponse (ar);
+					if (response.StatusCode == HttpStatusCode.OK) {
+						using (var fs = File.Create (tempFile))
+							response.GetResponseStream ().CopyTo (fs, 2048);
+					}
+				} catch (WebException wex) {
+					var httpResp = wex.Response as HttpWebResponse;
+					if (httpResp != null) {
+						if (httpResp.StatusCode == HttpStatusCode.NotModified) {
+							c.Tcs.SetResult (false);
+							return;
+						}
+						//is this valid? should we just return the WebException directly?
+						else if (httpResp.StatusCode == HttpStatusCode.NotFound) {
+							c.Tcs.SetException (new FileNotFoundException ("File not found on server", c.Url, wex));
+							return;
+						}
+					}
+					throw;
+				}
+
+				//check the document is valid, might get bad ones from wifi hotspots etc
+				if (c.ValidateDownload != null) {
+					if (c.CancellationToken.IsCancellationRequested)
+						c.Tcs.SetCanceled ();
+
+					using (var f = File.OpenRead (tempFile)) {
+						try {
+							if (!c.ValidateDownload (f)) {
+								c.Tcs.SetException (new Exception ("Failed to validate downloaded file"));
+								return;
+							}
+						} catch (Exception ex) {
+							c.Tcs.SetException (new Exception ("Failed to validate downloaded file", ex));
+						}
+					}
+				}
+
+				if (c.CancellationToken.IsCancellationRequested)
+					c.Tcs.SetCanceled ();
+
+				SystemRename (tempFile, c.CacheFile);
+				deleteTempFile = false;
+				c.Tcs.SetResult (true);
+			} catch (Exception ex) {
+				c.Tcs.SetException (ex);
+			} finally {
+				if (deleteTempFile) {
+					try {
+						File.Delete (tempFile);
+					} catch {}
+				}
+			}
 		}
 	}
 	
