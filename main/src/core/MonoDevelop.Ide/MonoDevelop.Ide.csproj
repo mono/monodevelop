@@ -1351,7 +1351,6 @@
     <Compile Include="MonoDevelop.Components\InvisibleFrame.cs" />
     <Compile Include="MonoDevelop.Components\ListView.cs" />
     <Compile Include="MonoDevelop.Components\TooltipWindow.cs" />
-    <Compile Include="MonoDevelop.Components\WindowTransparencyDecorator.cs" />
     <Compile Include="MonoDevelop.Components\ConsoleView.cs" />
     <Compile Include="MonoDevelop.Components\FolderListSelector.cs" />
     <Compile Include="MonoDevelop.Components\InfoBar.cs" />

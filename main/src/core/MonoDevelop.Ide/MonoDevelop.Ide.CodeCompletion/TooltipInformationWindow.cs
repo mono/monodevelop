@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Fonts;
 using System.Linq;
+using Mono.TextEditor.PopupWindow;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {

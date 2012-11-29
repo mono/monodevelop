@@ -31,6 +31,7 @@ using System;
 using MonoDevelop.Ide;
 using Gtk;
 using Gdk;
+using Mono.TextEditor.PopupWindow;
 
 namespace MonoDevelop.Components
 {

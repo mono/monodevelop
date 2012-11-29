@@ -207,6 +207,7 @@
     <Compile Include="Mono.TextEditor\Gui\TextEditor.cs" />
     <Compile Include="Mono.TextEditor\Standalone\StringTextSource.cs" />
     <Compile Include="Mono.TextEditor.Utils\HtmlWriter.cs" />
+    <Compile Include="Mono.TextEditor.PopupWindow\WindowTransparencyDecorator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mono.TextEditor.dll.config">

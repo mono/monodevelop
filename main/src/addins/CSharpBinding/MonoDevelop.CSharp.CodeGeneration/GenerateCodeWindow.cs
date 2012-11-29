@@ -31,6 +31,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Refactoring;
 using System.Collections.Generic;
 using MonoDevelop.Ide;
+using Mono.TextEditor.PopupWindow;
 
 namespace MonoDevelop.CodeGeneration
 {
