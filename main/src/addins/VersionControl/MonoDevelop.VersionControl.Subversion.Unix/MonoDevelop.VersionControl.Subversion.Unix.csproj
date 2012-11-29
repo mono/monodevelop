@@ -38,6 +38,8 @@
     <Compile Include="MonoDevelop.VersionControl.Subversion.Unix\LibApr.cs" />
     <Compile Include="MonoDevelop.VersionControl.Subversion.Unix\LibSvnClient.cs" />
     <Compile Include="MonoDevelop.VersionControl.Subversion.Unix\SvnClient.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Subversion.Unix\LibSvnClient0.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Subversion.Unix\LibSvnClient1.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
