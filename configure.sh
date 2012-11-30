@@ -20,40 +20,10 @@ done
 
 RESULT=""
 
-searchpaths()
-{
-  declare -a DIRS=("${!3}")
-  FILE=$2
-  DIR=${DIRS[0]}
-  for TRYDIR in ${DIRS[@]}
-  do
-    if [ -f $TRYDIR/$FILE ] 
-    then
-      DIR=$TRYDIR
-    fi
-  done
 
-  while [ ! -f $DIR/$FILE ]
-  do 
-    echo "File '$FILE' was not found in any of ${DIRS[@]}. Please enter $1 installation directory:"
-    read DIR
-  done
-  RESULT=$DIR
-}
+MONODIR=`pkg-config --variable=libdir mono`/mono/4.0
 
-# ------------------------------------------------------------------------------
-# Find all paths that we need in order to generate the make file. Paths
-# later in the list are preferred.
+echo "Assuming Mono root directory." $MONODIR
 
-PATHS=( /usr/lib/mono/4.0 /usr/local/lib/mono/4.0 /Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.0 /opt/mono/lib/mono/4.0 /usr/lib64/mono)
-searchpaths "Mono" mscorlib.dll PATHS[@]
-MONODIR=$RESULT
-echo "Successfully found Mono root directory." $MONODIR
-
-# ------------------------------------------------------------------------------
-# Write Makefile
-
-
-sed -e "s,INSERT_MONO_BIN,$MONODIR,g" \
-    Makefile.orig > Makefile
+sed -e "s,INSERT_MONO_BIN,$MONODIR,g" Makefile.orig > Makefile
 
