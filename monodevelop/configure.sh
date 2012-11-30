@@ -30,8 +30,7 @@ searchpaths()
 
   while [ ! -f $DIR/$FILE ]
   do 
-    echo "File '$FILE' was not found in any of ${DIRS[@]}. Please enter $1 installation directory:"
-    read DIR
+    echo "Warning: File '$FILE' was not found in any of ${DIRS[@]}. Continuing anyway."
   done
   RESULT=$DIR
 }
@@ -40,10 +39,6 @@ searchpaths()
 # Find all paths that we need in order to generate the make file. Paths
 # later in the list are preferred.
 
-PATHS=( /usr/lib/fsharp /usr/local/lib/fsharp /usr/local/lib/mono/4.0 /opt/mono/lib/mono/4.0 /Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.0 /usr/lib/mono/4.0 /usr/lib64/mono/4.0)
-searchpaths "F#" FSharp.Core.dll PATHS[@]
-FSDIR=$RESULT
-echo "Successfully found F# root directory." $FSDIR
 
 PATHS=( /usr/lib/monodevelop /usr/local/monodevelop/lib/monodevelop /usr/local/lib/monodevelop /Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop /opt/mono/lib/monodevelop )
 searchpaths "MonoDevelop" bin/MonoDevelop.Core.dll PATHS[@]
@@ -52,12 +47,19 @@ echo "Successfully found MonoDevelop root directory." $MDDIR
 
 echo "Running $MDDIR/../../MonoDevelop to determine MonoDevelop version"
 
-# e.g. 3.0.4.7
-MDVERSION4=`$MDDIR/../../MonoDevelop /? | head -n 1 | grep -o "[0-9]\+.[0-9]\+.[0-9]\+\(.[0-9]\+\)\?"`
-# e.g. 3.0.4
-MDVERSION3=`$MDDIR/../../MonoDevelop /? | head -n 1 | grep -o "[0-9]\+.[0-9]\+.[0-9]\+"`
+if [  -f $MDDIR/../../MonoDevelop ] 
+then 
+  # e.g. 3.0.4.7
+  MDVERSION4=`$MDDIR/../../MonoDevelop /? | head -n 1 | grep -o "[0-9]\+.[0-9]\+.[0-9]\+\(.[0-9]\+\)\?"`
+  # e.g. 3.0.4
+  MDVERSION3=`$MDDIR/../../MonoDevelop /? | head -n 1 | grep -o "[0-9]\+.[0-9]\+.[0-9]\+"`
+  echo "Detected MonoDevelop version " $MDVERSION4
+else
+  MDVERSION4=3.0.5.0
+  MDVERSION3=3.0.5
+  echo "Assumed MonoDevelop version " $MDVERSION4
+fi
 
-echo "Detected MonoDevelop version " $MDVERSION4
 
 # ------------------------------------------------------------------------------
 # Write Makefile

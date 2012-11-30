@@ -1,0 +1,5 @@
+fsharp -- slightly modified lib/4.0/release binaries from build of 
+        https://github.com/fsharp/fsharp (F# 3.0) tag 3.0.23
+
+Modifications are to fsharpc and fsharpi script to remove paths
+

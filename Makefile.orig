@@ -2,8 +2,8 @@
 
 # Here are a few paths that need to be configured first:
 MONOBIN = INSERT_MONO_BIN
-FSBIN = INSERT_FSHARP_BIN
-FSC = INSERT_FSHARP_COMPILER
+FSBIN = lib/fsharp
+FSC = lib/fsharp/fsharpc
 
 FILES_FCB = \
 	FSharp.CompilerBinding/Common.fs \

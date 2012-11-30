@@ -18,7 +18,6 @@
     <DefineConstants Condition="'$(MonoDevelopVersion)' == '3.0.3.2'">MONODEVELOP_AT_MOST_3_0_3_2;$(DefineConstants)</DefineConstants>
     <DefineConstants Condition="'$(MonoDevelopVersion)' == '3.0.4.7'">MONODEVELOP_AT_LEAST_3_0_4_7;$(DefineConstants)</DefineConstants>
     <DefineConstants Condition="'$(MonoDevelopVersion)' == '3.0.5'">MONODEVELOP_AT_LEAST_3_0_4_7;MONODEVELOP_AT_LEAST_3_0_5;$(DefineConstants)</DefineConstants>
-
   </PropertyGroup>
 
 
@@ -52,9 +51,7 @@
     <GenerateTailCalls>false</GenerateTailCalls>
     <DebugSymbols>False</DebugSymbols>
   </PropertyGroup>
-  <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" Condition="Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets')" />
-  <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets" Condition="(!Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets')) And (Exists('$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets'))" />
-  <Import Project="$(MSBuildExtensionsPath32)\FSharp\1.0\Microsoft.FSharp.Targets" Condition="(!Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets')) And (!Exists('$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets')) And (Exists('$(MSBuildExtensionsPath32)\FSharp\1.0\Microsoft.FSharp.Targets'))" />
+  <Import Project="$(MSBuildProjectDirectory)\..\..\lib\fsharp\Microsoft.FSharp.Targets" />
   <ItemGroup>
     <EmbeddedResource Include="icons.fsharp-icon-32.png" />
     <EmbeddedResource Include="icons.fsharp-script-32.png" />
@@ -171,7 +168,7 @@
       <Name>MonoDevelop.FSharp.Gui</Name>
     </ProjectReference>
     <Reference Include="FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <HintPath>INSERT_FSPROJ_FSHARP_BIN/FSharp.Core.dll</HintPath>
+      <HintPath>../lib/fsharp/FSharp.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
