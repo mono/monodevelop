@@ -1146,6 +1146,17 @@ namespace MonoDevelop.SourceEditor
 		void OnDebugSessionStarted (object sender, EventArgs e)
 		{
 			UpdatePinnedWatches ();
+			foreach (var marker in currentErrorMarkers) {
+				marker.IsVisible = false;
+			}
+			DebuggingService.DebuggerSession.TargetExited += HandleTargetExited;
+		}
+
+		void HandleTargetExited (object sender, EventArgs e)
+		{
+			foreach (var marker in currentErrorMarkers) {
+				marker.IsVisible = true;
+			}
 		}
 		
 		void OnWatchAdded (object s, PinnedWatchEventArgs args)

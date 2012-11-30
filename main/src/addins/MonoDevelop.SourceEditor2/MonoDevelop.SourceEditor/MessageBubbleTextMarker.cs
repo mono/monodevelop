@@ -71,7 +71,7 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		public override bool IsVisible {
-			get { return !task.Completed && !DebuggingService.IsDebugging; }
+			get { return !task.Completed; }
 			set { task.Completed = !value; }
 		}
 
@@ -330,7 +330,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public bool DrawBackground (TextEditor editor, Cairo.Context g, TextViewMargin.LayoutWrapper layout2, int selectionStart, int selectionEnd, int startOffset, int endOffset, double y, double startXPos, double endXPos, ref bool drawBg)
 		{
-			if (!IsVisible || DebuggingService.IsDebugging)
+			if (!IsVisible)
 				return true;
 			EnsureLayoutCreated (editor);
 			double x = editor.TextViewMargin.XOffset;
@@ -634,8 +634,6 @@ namespace MonoDevelop.SourceEditor
 
 		public void DrawIcon (Mono.TextEditor.TextEditor editor, Cairo.Context cr, DocumentLine line, int lineNumber, double x, double y, double width, double height)
 		{
-			if (DebuggingService.IsDebugging)
-				return;
 			editor.GdkWindow.DrawPixbuf (cache.editor.Style.BaseGC (Gtk.StateType.Normal), 
 				errors.Any (e => e.IsError) ? cache.errorPixbuf : cache.warningPixbuf, 
 				0, 0, 
