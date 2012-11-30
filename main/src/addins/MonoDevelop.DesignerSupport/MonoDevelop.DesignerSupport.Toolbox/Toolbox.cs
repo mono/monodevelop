@@ -71,7 +71,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 			filterEntry = new SearchEntry();
 			filterEntry.Ready = true;
-			filterEntry.HasFrame = false;
+			filterEntry.HasFrame = true;
 			filterEntry.WidthRequest = 150;
 			filterEntry.Changed += new EventHandler (filterTextChanged);
 			filterEntry.Show ();

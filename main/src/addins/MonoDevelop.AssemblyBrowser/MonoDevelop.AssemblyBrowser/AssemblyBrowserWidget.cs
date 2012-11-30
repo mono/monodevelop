@@ -127,7 +127,7 @@ namespace MonoDevelop.AssemblyBrowser
 
 			searchentry1 = new MonoDevelop.Components.SearchEntry ();
 			searchentry1.Ready = true;
-			searchentry1.HasFrame = false;
+			searchentry1.HasFrame = true;
 			searchentry1.WidthRequest = 200;
 			searchentry1.Visible = true;
 			searchentry1.EmptyMessage = GettextCatalog.GetString ("Search for types or members");
