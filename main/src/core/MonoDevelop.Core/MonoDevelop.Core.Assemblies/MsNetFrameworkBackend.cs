@@ -146,6 +146,7 @@ namespace MonoDevelop.Core.Assemblies
 			switch (v) {
 				case ClrVersion.Net_1_1: return "v1.1.4322";
 				case ClrVersion.Net_2_0: return "v2.0.50727";
+				case ClrVersion.Net_4_5: // The 4_5 binaries have the same version as the NET_4_0 binaries
 				case ClrVersion.Net_4_0: return "v4.0.30319";
 			}
 			return null;
