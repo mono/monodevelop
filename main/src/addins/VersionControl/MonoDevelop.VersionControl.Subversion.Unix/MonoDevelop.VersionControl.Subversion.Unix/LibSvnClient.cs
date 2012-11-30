@@ -634,7 +634,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		                                                   svn_revnum_t revision, IntPtr author, IntPtr date,
 		                                                   IntPtr message, IntPtr pool);
 		
-		public delegate IntPtr svn_readwrite_fn_t (IntPtr baton, IntPtr data, ref IntPtr len);
+		public delegate IntPtr svn_readwrite_fn_t (IntPtr baton, IntPtr data, ref size_t len);
 		
 		public delegate void svn_wc_notify_func_t (IntPtr baton, IntPtr path, NotifyAction action, svn_node_kind_t kind,
 		                                           IntPtr mime_type, NotifyState content_state, NotifyState prop_state,
