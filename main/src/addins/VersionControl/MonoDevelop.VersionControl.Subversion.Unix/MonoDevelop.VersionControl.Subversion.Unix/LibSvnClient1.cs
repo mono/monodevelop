@@ -2,9 +2,10 @@
 // LibSvnClient0.cs
 //
 // Author:
-//       alan <${AuthorEmail}>
+//       Jeffrey Stedfast <jeff@xamarin.com>
+//       Alan McGovern <alan@xamarin.com>
 //
-// Copyright (c) 2012 alan
+// Copyright (c) 2012 Xamarin Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
