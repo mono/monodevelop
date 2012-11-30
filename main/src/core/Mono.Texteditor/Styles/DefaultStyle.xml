@@ -52,7 +52,7 @@
 	 <!-- color styles -->
 	 <Style name="text" color="text-black" bgColor="white">
 		 <Style name="background" color="white">
-			 <Style name="readonly" color="aluminum1"/>
+			 <Style name="readonly" color="white"/>
 			 <Style name="searchresult-main" color="#E5992F"/>
 			 <Style name="searchresult" color="#F6B94D"/>
 		 </Style>
