@@ -728,6 +728,8 @@ namespace CBinding
 		protected virtual int ResetTriggerOffset (CodeCompletionContext completionContext)
 		{
 			int i = completionContext.TriggerOffset;
+			if (i >= Editor.Length)
+				return 0;
 			int accumulator = 0;
 			
 			for (;
