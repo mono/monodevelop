@@ -670,7 +670,7 @@ namespace MonoDevelop.SourceEditor
 			get {
 				int lineNumber = editor.Document.OffsetToLineNumber (lineSegment.Offset);
 				
-				double y = editor.LineToY (lineNumber) - (int)editor.VAdjustment.Value;
+				double y = editor.Allocation.Y + editor.LineToY (lineNumber) - (int)editor.VAdjustment.Value;
 				double height = editor.LineHeight * errors.Count;
 				if (!fitsInSameLine)
 					y += editor.LineHeight;
