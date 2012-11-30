@@ -9,6 +9,9 @@ using MonoDevelop.Core;
 using MonoDevelop.VersionControl.Subversion.Gui;
 using System.Text;
 
+using svn_revnum_t = System.Int32;
+using size_t = System.Int32;
+
 namespace MonoDevelop.VersionControl.Subversion.Unix
 {
 	class SvnClient : SubversionVersionControl
@@ -147,7 +150,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			// Load user and system configuration
 			svn.config_get_config (ref ctxstruct.config, null, pool);
 			
-			IntPtr providers = apr.array_make (pool, 1, IntPtr.Size);
+			IntPtr providers = apr.array_make (pool, 16, IntPtr.Size);
 			IntPtr item;
 			
 			// The main disk-caching auth providers, for both
@@ -155,7 +158,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			
 			item = apr.array_push (providers);
 			svn.client_get_simple_provider (item, pool);
-			
+
 			item = apr.array_push (providers);
 			svn.client_get_username_provider (item, pool);
 			
@@ -173,22 +176,22 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			// Two basic prompt providers: username/password, and just username.
 
 			item = apr.array_push (providers);
-			svn.client_get_simple_prompt_provider (item, new LibSvnClient.svn_auth_simple_prompt_func_t (OnAuthSimplePrompt), IntPtr.Zero, 2, pool);
+			svn.client_get_simple_prompt_provider (item, OnAuthSimplePromptCallback, IntPtr.Zero, 2, pool);
 			
 			item = apr.array_push (providers);
-			svn.client_get_username_prompt_provider (item, new LibSvnClient.svn_auth_username_prompt_func_t (OnAuthUsernamePrompt), IntPtr.Zero, 2, pool);
+			svn.client_get_username_prompt_provider (item, OnAuthUsernamePromptCallback, IntPtr.Zero, 2, pool);
 			
 			// Three ssl prompt providers, for server-certs, client-certs,
 			// and client-cert-passphrases.
 			
 			item = apr.array_push (providers);
-			svn.client_get_ssl_server_trust_prompt_provider (item, new LibSvnClient.svn_auth_ssl_server_trust_prompt_func_t (OnAuthSslServerTrustPrompt), IntPtr.Zero, pool);
+			svn.client_get_ssl_server_trust_prompt_provider (item, OnAuthSslServerTrustPromptCallback, IntPtr.Zero, pool);
 			
 			item = apr.array_push (providers);
-			svn.client_get_ssl_client_cert_prompt_provider (item, new LibSvnClient.svn_auth_ssl_client_cert_prompt_func_t (OnAuthSslClientCertPrompt), IntPtr.Zero, 2, pool);
+			svn.client_get_ssl_client_cert_prompt_provider (item, OnAuthSslClientCertPromptCallback, IntPtr.Zero, 2, pool);
 			
 			item = apr.array_push (providers);
-			svn.client_get_ssl_client_cert_pw_prompt_provider (item, new LibSvnClient.svn_auth_ssl_client_cert_pw_prompt_func_t (OnAuthSslClientCertPwPrompt), IntPtr.Zero, 2, pool);
+			svn.client_get_ssl_client_cert_pw_prompt_provider (item, OnAuthSslClientCertPwPromptCallback, IntPtr.Zero, 2, pool);
 			
 			// Create the authentication baton			
 			
@@ -224,42 +227,45 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			error.pool = localpool;
 			return apr.pcalloc (localpool, error);
 		}
-		
-		static IntPtr OnAuthSimplePrompt (ref IntPtr cred, IntPtr baton, [MarshalAs (UnmanagedType.LPStr)] string realm, [MarshalAs (UnmanagedType.LPStr)] string user_name, [MarshalAs (UnmanagedType.SysInt)] int may_save, IntPtr pool)
+
+		static LibSvnClient.svn_auth_simple_prompt_func_t OnAuthSimplePromptCallback = OnAuthSimplePrompt;
+		static IntPtr OnAuthSimplePrompt (ref IntPtr cred, IntPtr baton, string realm, string user_name, bool may_save, IntPtr pool)
 		{
 			LibSvnClient.svn_auth_cred_simple_t data = new LibSvnClient.svn_auth_cred_simple_t ();
 			bool ms;
-			if (SimpleAuthenticationPrompt (realm, may_save != 0, ref data.username, out data.password, out ms)) {
-				data.may_save = ms ? 1 : 0;
+			if (SimpleAuthenticationPrompt (realm, may_save, ref data.username, out data.password, out ms)) {
+				data.may_save = ms;
 				cred = apr.pcalloc (pool, data);
 				return IntPtr.Zero;
 			} else {
 				data.password = "";
 				data.username = "";
-				data.may_save = 0;
+				data.may_save = false;
 				cred = apr.pcalloc (pool, data);
 				return GetCancelError ();
 			}
 		}
-		
-		static IntPtr OnAuthUsernamePrompt (ref IntPtr cred, IntPtr baton, [MarshalAs (UnmanagedType.LPStr)] string realm, [MarshalAs (UnmanagedType.SysInt)] int may_save, IntPtr pool)
+
+		static LibSvnClient.svn_auth_username_prompt_func_t OnAuthUsernamePromptCallback = OnAuthUsernamePrompt;
+		static IntPtr OnAuthUsernamePrompt (ref IntPtr cred, IntPtr baton, string realm, bool may_save, IntPtr pool)
 		{
 			LibSvnClient.svn_auth_cred_username_t data = new LibSvnClient.svn_auth_cred_username_t ();
 			data.username = "";
 			bool ms;
-			if (UserNameAuthenticationPrompt (realm, may_save != 0, ref data.username, out ms)) {
-				data.may_save = ms ? 1 : 0;
+			if (UserNameAuthenticationPrompt (realm, may_save, ref data.username, out ms)) {
+				data.may_save = ms;
 				cred = apr.pcalloc (pool, data);
 				return IntPtr.Zero;
 			} else {
 				data.username = "";
-				data.may_save = 0;
+				data.may_save = false;
 				cred = apr.pcalloc (pool, data);
 				return GetCancelError ();
 			}
 		}
-		
-		static IntPtr OnAuthSslServerTrustPrompt (ref IntPtr cred, IntPtr baton, [MarshalAs (UnmanagedType.LPStr)] string realm, uint failures, ref LibSvnClient.svn_auth_ssl_server_cert_info_t cert_info, [MarshalAs (UnmanagedType.SysInt)] int may_save, IntPtr pool)
+
+		static LibSvnClient.svn_auth_ssl_server_trust_prompt_func_t OnAuthSslServerTrustPromptCallback = OnAuthSslServerTrustPrompt;
+		static IntPtr OnAuthSslServerTrustPrompt (ref IntPtr cred, IntPtr baton, string realm, uint failures, ref LibSvnClient.svn_auth_ssl_server_cert_info_t cert_info, bool may_save, IntPtr pool)
 		{
 			LibSvnClient.svn_auth_cred_ssl_server_trust_t data = new LibSvnClient.svn_auth_cred_ssl_server_trust_t ();
 			
@@ -273,46 +279,48 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 			SslFailure accepted_failures;
 			bool ms;
-			if (SslServerTrustAuthenticationPrompt (realm, (SslFailure) failures, may_save != 0, ci, out accepted_failures, out ms) && accepted_failures != SslFailure.None) {
-				data.may_save = ms ? 1 : 0;
+			if (SslServerTrustAuthenticationPrompt (realm, (SslFailure) failures, may_save, ci, out accepted_failures, out ms) && accepted_failures != SslFailure.None) {
+				data.may_save = ms ;
 				data.accepted_failures = (uint) accepted_failures;
 				cred = apr.pcalloc (pool, data);
 				return IntPtr.Zero;
 			} else {
 				data.accepted_failures = 0;
-				data.may_save = 0;
+				data.may_save = false;
 				cred = apr.pcalloc (pool, data);
 				return GetCancelError ();
 			}
 		}
-		
-		static IntPtr OnAuthSslClientCertPrompt (ref IntPtr cred, IntPtr baton, [MarshalAs (UnmanagedType.LPStr)] string realm, [MarshalAs (UnmanagedType.SysInt)] int may_save, IntPtr pool)
+
+		static LibSvnClient.svn_auth_ssl_client_cert_prompt_func_t OnAuthSslClientCertPromptCallback = OnAuthSslClientCertPrompt;
+		static IntPtr OnAuthSslClientCertPrompt (ref IntPtr cred, IntPtr baton, string realm, bool may_save, IntPtr pool)
 		{
 			LibSvnClient.svn_auth_cred_ssl_client_cert_t data = new LibSvnClient.svn_auth_cred_ssl_client_cert_t ();
 			bool ms;
-			if (SslClientCertAuthenticationPrompt (realm, may_save != 0, out data.cert_file, out ms)) {
-				data.may_save = ms ? 1 : 0;
+			if (SslClientCertAuthenticationPrompt (realm, may_save, out data.cert_file, out ms)) {
+				data.may_save = ms;
 				cred = apr.pcalloc (pool, data);
 				return IntPtr.Zero;
 			} else {
 				data.cert_file = "";
-				data.may_save = 0;
+				data.may_save = false;
 				cred = apr.pcalloc (pool, data);
 				return GetCancelError ();
 			}
 		}
-		
-		static IntPtr OnAuthSslClientCertPwPrompt (ref IntPtr cred, IntPtr baton, [MarshalAs (UnmanagedType.LPStr)] string realm, [MarshalAs (UnmanagedType.SysInt)] int may_save, IntPtr pool)
+
+		static LibSvnClient.svn_auth_ssl_client_cert_pw_prompt_func_t OnAuthSslClientCertPwPromptCallback = OnAuthSslClientCertPwPrompt;
+		static IntPtr OnAuthSslClientCertPwPrompt (ref IntPtr cred, IntPtr baton, string realm, bool may_save, IntPtr pool)
 		{
 			LibSvnClient.svn_auth_cred_ssl_client_cert_pw_t data;
 			bool ms;
-			if (SslClientCertPwAuthenticationPrompt (realm, may_save != 0, out data.password, out ms)) {
-				data.may_save = ms ? 1 : 0;
+			if (SslClientCertPwAuthenticationPrompt (realm, may_save, out data.password, out ms)) {
+				data.may_save = ms;
 				cred = apr.pcalloc (pool, data);
 				return IntPtr.Zero;
 			} else {
 				data.password = "";
-				data.may_save = 0;
+				data.may_save = false;
 				cred = apr.pcalloc (pool, data);
 				return GetCancelError ();
 			}
@@ -368,10 +376,10 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 					
 					DirectoryEntry dent = new DirectoryEntry ();
 					dent.Name = name;
-					dent.IsDirectory = (ent.kind.ToInt32 () == (int) LibSvnClient.NodeKind.Dir);
+					dent.IsDirectory = ent.kind == LibSvnClient.svn_node_kind_t.Dir;
 					dent.Size = ent.size;
-					dent.HasProps = ent.has_props != 0;
-					dent.CreatedRevision = ent.created_rev;
+					dent.HasProps = ent.has_props;
+					dent.CreatedRevision = (int) ent.created_rev;
 					dent.Time = new DateTime (1970, 1, 1).AddTicks(ent.time * 10);
 					dent.LastAuthor = ent.last_author;
 					items.Add (dent);
@@ -396,12 +404,13 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			IntPtr localpool = newpool (pool);
 			try {
 				string pathorurl = NormalizePath (path, localpool);
-				
 				CheckError (svn.client_status (IntPtr.Zero, pathorurl, ref revision,
-				                               new LibSvnClient.svn_wc_status_func_t (collector.Func),
-				                               IntPtr.Zero, descendDirs ? 1 : 0, 
-				                               changedItemsOnly ? 0 : 1, 
-				                               remoteStatus ? 1 : 0, 1,
+				                               collector.Func,
+				                               IntPtr.Zero, descendDirs, 
+				                               !changedItemsOnly, 
+				                               remoteStatus,
+				                               false,
+				                               false,
 				                               ctx, localpool));
 			} finally {
 				apr.pool_destroy (localpool);
@@ -432,7 +441,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				LogCollector collector = new LogCollector ((SubversionRepository)repo, ret);
 				
 				CheckError (svn.client_log (array, ref revisionStart, ref revisionEnd, 1, 0,
-				                            new LibSvnClient.svn_log_message_receiver_t (collector.Func),
+				                            collector.Func,
 				                            IntPtr.Zero, ctx, localpool));
 			} finally {
 				if (strptr != IntPtr.Zero)
@@ -460,7 +469,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			
 			try {
 				string path = NormalizePath (file.FullPath, localpool);
-				CheckError (svn.client_blame (path, ref revisionStart, ref revisionEnd, new LibSvnClient.svn_client_blame_receiver_t (collector.Func), IntPtr.Zero, ctx, localpool));
+				CheckError (svn.client_blame (path, ref revisionStart, ref revisionEnd, collector.Func, IntPtr.Zero, ctx, localpool));
 			} finally {
 				apr.pool_destroy (localpool);
 			}
@@ -516,7 +525,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				pathorurl = NormalizePath (pathorurl, localpool);
 				StreamCollector collector = new StreamCollector (stream);
 				IntPtr svnstream = svn.stream_create (IntPtr.Zero, localpool);
-				svn.stream_set_write (svnstream, new LibSvnClient.svn_readwrite_fn_t (collector.Func));
+				svn.stream_set_write (svnstream, collector.Func);
 				LibSvnClient.Rev peg_revision = LibSvnClient.Rev.Blank;
 				CheckError (svn.client_cat2 (svnstream, pathorurl, ref peg_revision, ref revision, ctx, localpool), 195007);
 			} finally {
@@ -542,7 +551,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			IntPtr localpool = newpool (pool);
 			try {
 				string pathorurl = NormalizePath (path, localpool);
-				CheckError (svn.client_update (IntPtr.Zero, pathorurl, ref rev, recurse ? 1 : 0, ctx, localpool));
+				CheckError (svn.client_update (IntPtr.Zero, pathorurl, ref rev, recurse, ctx, localpool));
 			} finally {
 				foreach (string file in updateFileList)
 					FileService.NotifyFileChanged (file);
@@ -648,13 +657,12 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 			nb = new notify_baton ();
 			updatemonitor = monitor;
-			IntPtr result_rev = IntPtr.Zero;
 			IntPtr localpool = newpool (pool);
 			try {
 				// Using Uri here because the normalization method doesn't remove the redundant port number when using https
 				url = NormalizePath (new Uri(url).ToString(), localpool);
 				string npath = NormalizePath (path, localpool);
-				CheckError (svn.client_checkout (result_rev, url, npath, ref rev, (recurse ? 1 :0), ctx, localpool));
+				CheckError (svn.client_checkout (IntPtr.Zero, url, npath, ref rev, recurse, ctx, localpool));
 			} finally {
 				apr.pool_destroy (localpool);
 				updatemonitor = null;
@@ -1001,7 +1009,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			VersionStatus rs = VersionStatus.Unversioned;
 			Revision rr = null;
 			
-			if (ent.RemoteTextStatus != LibSvnClient.VersionStatus.EMPTY) {
+			if (ent.RemoteTextStatus != LibSvnClient.svn_wc_status_kind.EMPTY) {
 				rs = ConvertStatus (LibSvnClient.NodeSchedule.Normal, ent.RemoteTextStatus);
 				rr = new SvnRevision (repo, ent.LastCommitRevision, ent.LastCommitDate,
 				                      ent.LastCommitAuthor, "(unavailable)", null);
@@ -1026,7 +1034,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			return ret;
 		}
 		
-		private VersionStatus ConvertStatus (LibSvnClient.NodeSchedule schedule, LibSvnClient.VersionStatus status) {
+		private VersionStatus ConvertStatus (LibSvnClient.NodeSchedule schedule, LibSvnClient.svn_wc_status_kind status) {
 			switch (schedule) {
 				case LibSvnClient.NodeSchedule.Add: return VersionStatus.Versioned | VersionStatus.ScheduledAdd;
 				case LibSvnClient.NodeSchedule.Delete: return VersionStatus.Versioned | VersionStatus.ScheduledDelete;
@@ -1034,17 +1042,17 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 			
 			switch (status) {
-				case LibSvnClient.VersionStatus.None: return VersionStatus.Versioned;
-				case LibSvnClient.VersionStatus.Normal: return VersionStatus.Versioned;
-				case LibSvnClient.VersionStatus.Unversioned: return VersionStatus.Unversioned;
-				case LibSvnClient.VersionStatus.Modified: return VersionStatus.Versioned | VersionStatus.Modified;
-				case LibSvnClient.VersionStatus.Merged: return VersionStatus.Versioned | VersionStatus.Modified;
-				case LibSvnClient.VersionStatus.Conflicted: return VersionStatus.Versioned | VersionStatus.Conflicted;
-				case LibSvnClient.VersionStatus.Ignored: return VersionStatus.Unversioned | VersionStatus.Ignored;
-				case LibSvnClient.VersionStatus.Obstructed: return VersionStatus.Versioned;
-				case LibSvnClient.VersionStatus.Added: return VersionStatus.Versioned | VersionStatus.ScheduledAdd;
-				case LibSvnClient.VersionStatus.Deleted: return VersionStatus.Versioned | VersionStatus.ScheduledDelete;
-				case LibSvnClient.VersionStatus.Replaced: return VersionStatus.Versioned | VersionStatus.ScheduledReplace;
+			case LibSvnClient.svn_wc_status_kind.None: return VersionStatus.Versioned;
+			case LibSvnClient.svn_wc_status_kind.Normal: return VersionStatus.Versioned;
+			case LibSvnClient.svn_wc_status_kind.Unversioned: return VersionStatus.Unversioned;
+			case LibSvnClient.svn_wc_status_kind.Modified: return VersionStatus.Versioned | VersionStatus.Modified;
+			case LibSvnClient.svn_wc_status_kind.Merged: return VersionStatus.Versioned | VersionStatus.Modified;
+			case LibSvnClient.svn_wc_status_kind.Conflicted: return VersionStatus.Versioned | VersionStatus.Conflicted;
+			case LibSvnClient.svn_wc_status_kind.Ignored: return VersionStatus.Unversioned | VersionStatus.Ignored;
+			case LibSvnClient.svn_wc_status_kind.Obstructed: return VersionStatus.Versioned;
+			case LibSvnClient.svn_wc_status_kind.Added: return VersionStatus.Versioned | VersionStatus.ScheduledAdd;
+			case LibSvnClient.svn_wc_status_kind.Deleted: return VersionStatus.Versioned | VersionStatus.ScheduledDelete;
+			case LibSvnClient.svn_wc_status_kind.Replaced: return VersionStatus.Versioned | VersionStatus.ScheduledReplace;
 			}
 			
 			return VersionStatus.Unversioned;
@@ -1243,15 +1251,24 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		
 		public class StatusCollector {
 			ArrayList statuses;
+
+			public LibSvnClient.svn_wc_status_func2_t Func {
+				get; private set;
+			}
+
+			public StatusCollector (ArrayList statuses)
+			{
+				this.statuses = statuses;
+				Func = CollectorFunc;
+			}
 			
-			public StatusCollector (ArrayList statuses) { this.statuses = statuses; }
-			
-			public void Func (IntPtr baton, IntPtr path, ref LibSvnClient.svn_wc_status_t status)
+			void CollectorFunc (IntPtr baton, IntPtr path, IntPtr statusPtr)
 			{
 				string pathstr = Marshal.PtrToStringAnsi (path);
 				/*if (status.to_svn_wc_entry_t == IntPtr.Zero)
 					return;
 				 */
+				var status = (LibSvnClient.svn_wc_status2_t) Marshal.PtrToStructure (statusPtr, typeof (LibSvnClient.svn_wc_status2_t));
 				statuses.Add (new LibSvnClient.StatusEnt (status, pathstr));
 			}
 		}
@@ -1262,10 +1279,18 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			
 			List<SvnRevision> logs;
 			SubversionRepository repo;
-			
-			public LogCollector (SubversionRepository repo, List<SvnRevision> logs) { this.repo = repo; this.logs = logs; }
-			
-			public IntPtr Func (IntPtr baton, IntPtr apr_hash_changed_paths, int revision, IntPtr author, IntPtr date, IntPtr message, IntPtr pool)
+
+			public LibSvnClient.svn_log_message_receiver_t Func {
+				get; private set;
+			}
+
+			public LogCollector (SubversionRepository repo, List<SvnRevision> logs) {
+				this.repo = repo;
+				this.logs = logs;
+				Func = CollectorFunc;
+			}
+
+			IntPtr CollectorFunc (IntPtr baton, IntPtr apr_hash_changed_paths, svn_revnum_t revision, IntPtr author, IntPtr date, IntPtr message, IntPtr pool)
 			{
 				long time;
 				svn.time_from_cstring (out time, Marshal.PtrToStringAnsi (date), pool);
@@ -1305,7 +1330,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 						items.Add (new RevisionPath (Marshal.PtrToStringAnsi (result) + "/" + name, ac, ""));
 				}
 				
-				SvnRevision ent = new SvnRevision (null, revision, Epoch.AddTicks (time * 10), Marshal.PtrToStringAnsi (author), smessage, items.ToArray ());
+				SvnRevision ent = new SvnRevision (null, (int) revision, Epoch.AddTicks (time * 10), Marshal.PtrToStringAnsi (author), smessage, items.ToArray ());
 				logs.Add (ent);
 				
 				return IntPtr.Zero;
@@ -1314,10 +1339,17 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		
 		public class StreamCollector {
 			Stream buf;
+
+			public LibSvnClient.svn_readwrite_fn_t Func {
+				get; private set;
+			}
+
+			public StreamCollector (Stream buf) {
+				this.buf = buf;
+				Func = CollectorFunc;
+			}
 			
-			public StreamCollector (Stream buf) { this.buf = buf; }
-			
-			public IntPtr Func (IntPtr baton, IntPtr data, ref IntPtr len)
+			IntPtr CollectorFunc (IntPtr baton, IntPtr data, ref size_t len)
 			{
 				unsafe {
 					byte *bp = (byte *) data;
@@ -1337,11 +1369,14 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		private class AnnotationCollector
 		{
 			Annotation[] annotations;
-			
+			public LibSvnClient.svn_client_blame_receiver_t Func {
+				get; private set;
+			}
+
 			/// <summary>
 			/// A svn_client_blame_receiver_t implementation.
 			/// </summary>
-			public IntPtr Func (IntPtr baton, long line_no, int revision, string author, string date, string line, IntPtr pool)
+			IntPtr CollectorFunc (IntPtr baton, long line_no, svn_revnum_t revision, string author, string date, string line, IntPtr pool)
 			{
 				if (line_no < annotations.Length) {
 					DateTime tdate;
@@ -1359,6 +1394,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			public AnnotationCollector (Annotation[] annotations)
 			{
 				this.annotations = annotations;
+				Func = CollectorFunc;
 			}
 		}
 		

@@ -398,6 +398,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			var projectLoadMonitor = monitor as IProjectLoadProgressMonitor;
 			if (projectLoadMonitor == null) {
+				// projectLoadMonitor will be null when running through md-tool, but
+				// this is not fatal if migration is not required, so just ignore it. --abock
+				if (!st.IsMigrationRequired)
+					return null;
+
 				LoggingService.LogError (Environment.StackTrace);
 				monitor.ReportError ("Could not open unmigrated project and no migrator was supplied", null);
 				throw new Exception ("Could not open unmigrated project and no migrator was supplied");
