@@ -1,6 +1,6 @@
 <Addin id="FSharpBinding" namespace="MonoDevelop" name="F# Language Binding"
        author="F# Open Source Foundation (fsharp.org)" copyright="F# Open Source Foundation (fsharp.org)" url="http://fsharp.github.com/fsharpbinding"
-       description="F# Language Binding (for MonoDevelop 3.0.5). Install F# 3.0 before using." category="Language bindings" version="3.2.8">
+       description="F# Language Binding (for MonoDevelop 3.0.5). Install F# 3.0 before using." category="Language bindings" version="3.2.10">
 
 	<Runtime>
     	<Import assembly="FSharp.Core.dll" />
@@ -153,7 +153,7 @@
   	</Extension>
 
   	<Extension path="/MonoDevelop/SourceEditor2/SyntaxModes">
-    	<Templates resource="templates.FSharpSyntaxMode.xml" />
+    	<Templates resource="FSharpSyntaxMode.xml" />
   	</Extension>
 
   	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
