@@ -28,10 +28,10 @@ searchpaths()
     fi
   done
 
-  while [ ! -f $DIR/$FILE ]
-  do 
+  if [ ! -f $DIR/$FILE ]
+  then 
     echo "Warning: File '$FILE' was not found in any of ${DIRS[@]}. Continuing anyway."
-  done
+  fi
   RESULT=$DIR
 }
 
