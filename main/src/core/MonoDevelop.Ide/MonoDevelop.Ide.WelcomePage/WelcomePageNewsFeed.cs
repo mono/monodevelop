@@ -139,8 +139,10 @@ namespace MonoDevelop.Ide.WelcomePage
 					if (t.IsCanceled)
 						return;
 
-					if (!t.Result)
+					if (!t.Result) {
 						LoggingService.LogInfo ("Welcome Page already up-to-date.");
+						return;
+					}
 
 					LoggingService.LogInfo ("Welcome Page updated.");
 					Gtk.Application.Invoke (delegate { LoadNews (); });
