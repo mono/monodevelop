@@ -223,10 +223,30 @@ namespace MonoDevelop.Ide.Desktop
 			else
 				return OnGetIconForType (type);
 		}
-		
+
+		static List<MimeTypeNode> mimeTypeNodes = new List<MimeTypeNode> ();
+		static PlatformService ()
+		{
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Core/MimeTypes", delegate (object sender, ExtensionNodeEventArgs args) {
+				var newList = new List<MimeTypeNode> (mimeTypeNodes);
+				var mimeTypeNode = (MimeTypeNode)args.ExtensionNode;
+				switch (args.Change) {
+				case ExtensionChange.Add:
+					// initialize child nodes.
+					var initialize = mimeTypeNode.ChildNodes;
+					newList.Add (mimeTypeNode);
+					break;
+				case ExtensionChange.Remove:
+					newList.Remove (mimeTypeNode);
+					break;
+				}
+				mimeTypeNodes = newList;
+			});
+		}
+
 		MimeTypeNode FindMimeTypeForFile (string fileName)
 		{
-			foreach (MimeTypeNode mt in AddinManager.GetExtensionNodes ("/MonoDevelop/Core/MimeTypes")) {
+			foreach (MimeTypeNode mt in mimeTypeNodes) {
 				if (mt.SupportsFile (fileName))
 					return mt;
 			}
@@ -235,7 +255,7 @@ namespace MonoDevelop.Ide.Desktop
 		
 		MimeTypeNode FindMimeType (string type)
 		{
-			foreach (MimeTypeNode mt in AddinManager.GetExtensionNodes ("/MonoDevelop/Core/MimeTypes")) {
+			foreach (MimeTypeNode mt in mimeTypeNodes) {
 				if (mt.Id == type)
 					return mt;
 			}
