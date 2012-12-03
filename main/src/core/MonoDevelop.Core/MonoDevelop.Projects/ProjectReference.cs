@@ -213,6 +213,9 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		[ItemProperty ("Aliases", DefaultValue="")]
+		public string Aliases { get; set; }
+
 		public bool IsValid {
 			get { return string.IsNullOrEmpty (ValidationErrorMessage); }
 		}

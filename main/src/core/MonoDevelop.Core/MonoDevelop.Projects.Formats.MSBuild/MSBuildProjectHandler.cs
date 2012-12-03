@@ -1811,7 +1811,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (instance is ProjectFile)
 				return prop.IsExtendedProperty (typeof(ProjectFile));
 			if (instance is ProjectReference)
-				return prop.IsExtendedProperty (typeof(ProjectReference)) || prop.Name == "Package";
+				return prop.IsExtendedProperty (typeof(ProjectReference)) || prop.Name == "Package" || prop.Name == "Aliases";
 			if (instance is DotNetProjectConfiguration)
 				if (prop.Name == "CodeGeneration")
 					return false;
