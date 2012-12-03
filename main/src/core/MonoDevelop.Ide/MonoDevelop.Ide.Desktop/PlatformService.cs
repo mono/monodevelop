@@ -227,21 +227,23 @@ namespace MonoDevelop.Ide.Desktop
 		static List<MimeTypeNode> mimeTypeNodes = new List<MimeTypeNode> ();
 		static PlatformService ()
 		{
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Core/MimeTypes", delegate (object sender, ExtensionNodeEventArgs args) {
-				var newList = new List<MimeTypeNode> (mimeTypeNodes);
-				var mimeTypeNode = (MimeTypeNode)args.ExtensionNode;
-				switch (args.Change) {
-				case ExtensionChange.Add:
-					// initialize child nodes.
-					var initialize = mimeTypeNode.ChildNodes;
-					newList.Add (mimeTypeNode);
-					break;
-				case ExtensionChange.Remove:
-					newList.Remove (mimeTypeNode);
-					break;
-				}
-				mimeTypeNodes = newList;
-			});
+			if (AddinManager.IsInitialized) {
+				AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Core/MimeTypes", delegate (object sender, ExtensionNodeEventArgs args) {
+					var newList = new List<MimeTypeNode> (mimeTypeNodes);
+					var mimeTypeNode = (MimeTypeNode)args.ExtensionNode;
+					switch (args.Change) {
+					case ExtensionChange.Add:
+							// initialize child nodes.
+						var initialize = mimeTypeNode.ChildNodes;
+						newList.Add (mimeTypeNode);
+						break;
+					case ExtensionChange.Remove:
+						newList.Remove (mimeTypeNode);
+						break;
+					}
+					mimeTypeNodes = newList;
+				});
+			}
 		}
 
 		MimeTypeNode FindMimeTypeForFile (string fileName)
