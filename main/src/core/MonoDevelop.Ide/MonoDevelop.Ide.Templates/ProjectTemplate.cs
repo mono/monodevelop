@@ -297,9 +297,16 @@ namespace MonoDevelop.Ide.Templates
 
 		public bool HasItemFeatures (SolutionFolder parentFolder, ProjectCreateInformation cinfo)
 		{
-			ISolutionItemDescriptor sid = solutionDescriptor.EntryDescriptors [0];
-			SolutionEntityItem sampleItem = sid.CreateItem (cinfo, languagename);
-			return (SolutionItemFeatures.GetFeatures (parentFolder, sampleItem).Length > 0);
+			// Disable solution item features. The project creation flow is awkward with
+			// tacking on additional features that are otherwise accessible through other
+			// means. It's especially awkward because there aren't many "features" to
+			// begin with. Want GTK? Create a new GTK project through templates.
+
+			return false;
+
+			// ISolutionItemDescriptor sid = solutionDescriptor.EntryDescriptors [0];
+			// SolutionEntityItem sampleItem = sid.CreateItem (cinfo, languagename);
+			// return (SolutionItemFeatures.GetFeatures (parentFolder, sampleItem).Length > 0);
 		}
 
 	}
