@@ -63,46 +63,57 @@ namespace MonoDevelop.Core.LogReporting
 		{
 			ReportUnhandledException (ex, willShutDown, false);
 		}
-		
+
+		static bool reporting;
+
 		public static void ReportUnhandledException (Exception ex, bool willShutDown, bool silently)
 		{
-			var oldReportCrashes = ReportCrashes;
-			
-			if (UnhandledErrorOccured != null && !silently)
-				ReportCrashes = UnhandledErrorOccured (ReportCrashes, ex, willShutDown);
-			
-			// If crash reporting has been explicitly disabled, disregard this crash
-			if (ReportCrashes.HasValue && !ReportCrashes.Value)
+			if (reporting)
 				return;
 			
-			byte[] data;
-			using (var stream = new MemoryStream ()) {
-				using (var writer = System.Xml.XmlWriter.Create (stream)) {
-						writer.WriteStartElement ("CrashLog");
-						writer.WriteAttributeString ("version", ServiceVersion);
-						
-						writer.WriteElementString ("SystemInformation", SystemInformation.ToText ());
-						writer.WriteElementString ("Exception", ex.ToString ());
-						
-						writer.WriteEndElement ();
-					}
-				data = stream.ToArray ();
-			}
-			
-			// Log to disk only if uploading fails.
-			var filename = string.Format ("{0}.{1}.{2}.crashlog", DateTime.UtcNow.ToString ("yyyy-MM-dd__HH-mm-ss"), SystemInformation.SessionUuid, Interlocked.Increment (ref CrashId));
-			ThreadPool.QueueUserWorkItem (delegate {
-				if (!TryUploadReport (filename, data)) {
-					if (!Directory.Exists (CrashLogDirectory))
-						Directory.CreateDirectory (CrashLogDirectory);
-
-					File.WriteAllBytes (CrashLogDirectory.Combine (filename), data);
+			reporting = true;
+			try {
+				var oldReportCrashes = ReportCrashes;
+				
+				if (UnhandledErrorOccured != null && !silently)
+					ReportCrashes = UnhandledErrorOccured (ReportCrashes, ex, willShutDown);
+				
+				// If crash reporting has been explicitly disabled, disregard this crash
+				if (ReportCrashes.HasValue && !ReportCrashes.Value)
+					return;
+				
+				byte[] data;
+				using (var stream = new MemoryStream ()) {
+					using (var writer = System.Xml.XmlWriter.Create (stream)) {
+							writer.WriteStartElement ("CrashLog");
+							writer.WriteAttributeString ("version", ServiceVersion);
+							
+							writer.WriteElementString ("SystemInformation", SystemInformation.ToText ());
+							writer.WriteElementString ("Exception", ex.ToString ());
+							
+							writer.WriteEndElement ();
+						}
+					data = stream.ToArray ();
 				}
-			});
-			
-			//ensure we don't lose the setting
-			if (ReportCrashes != oldReportCrashes) {
-				PropertyService.SaveProperties ();
+				
+				// Log to disk only if uploading fails.
+				var filename = string.Format ("{0}.{1}.{2}.crashlog", DateTime.UtcNow.ToString ("yyyy-MM-dd__HH-mm-ss"), SystemInformation.SessionUuid, Interlocked.Increment (ref CrashId));
+				ThreadPool.QueueUserWorkItem (delegate {
+					if (!TryUploadReport (filename, data)) {
+						if (!Directory.Exists (CrashLogDirectory))
+							Directory.CreateDirectory (CrashLogDirectory);
+
+						File.WriteAllBytes (CrashLogDirectory.Combine (filename), data);
+					}
+				});
+				
+				//ensure we don't lose the setting
+				if (ReportCrashes != oldReportCrashes) {
+					PropertyService.SaveProperties ();
+				}
+
+			} finally {
+				reporting = false;
 			}
 		}
 		
