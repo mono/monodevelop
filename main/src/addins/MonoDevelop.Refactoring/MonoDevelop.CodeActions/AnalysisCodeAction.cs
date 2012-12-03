@@ -53,7 +53,7 @@ namespace MonoDevelop.CodeActions
 			Description = result.Message;
 		}
 		
-		public override System.Collections.Generic.IEnumerable<CodeAction> GetActions (MonoDevelop.Ide.Gui.Document document, TextLocation loc, CancellationToken cancellationToken)
+		public override System.Collections.Generic.IEnumerable<CodeAction> GetActions (MonoDevelop.Ide.Gui.Document document, object refactoringContext, TextLocation loc, CancellationToken cancellationToken)
 		{
 			yield return new AnalysisCodeAction (Action, Result);
 		}

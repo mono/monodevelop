@@ -75,6 +75,6 @@ namespace MonoDevelop.CodeActions
 		/// <summary>
 		/// Gets all the code actions in document at given location.
 		/// </summary>
-		public abstract IEnumerable<CodeAction> GetActions (MonoDevelop.Ide.Gui.Document document, TextLocation loc, CancellationToken cancellationToken);
+		public abstract IEnumerable<CodeAction> GetActions (MonoDevelop.Ide.Gui.Document document, object refactoringContext, TextLocation loc, CancellationToken cancellationToken);
 	}
 }

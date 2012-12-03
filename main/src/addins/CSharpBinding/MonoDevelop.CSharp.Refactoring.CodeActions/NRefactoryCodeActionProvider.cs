@@ -55,11 +55,11 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			BoundToIssue = attr.BoundToIssue;
 		}
 
-		public override IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions (MonoDevelop.Ide.Gui.Document document, TextLocation loc, CancellationToken cancellationToken)
+		public override IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions (MonoDevelop.Ide.Gui.Document document, object _context, TextLocation loc, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 				yield break;
-			var context = new MDRefactoringContext (document, loc);
+			var context = (MDRefactoringContext)_context;
 			if (context.IsInvalid || context.RootNode == null)
 				yield break;
 			var actions = provider.GetActions (context);
