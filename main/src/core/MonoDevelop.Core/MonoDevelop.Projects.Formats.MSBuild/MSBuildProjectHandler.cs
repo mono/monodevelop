@@ -409,7 +409,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 			
 			var migrationType = st.MigrationHandler.CanPromptForMigration
-				? st.MigrationHandler.PromptForMigration()
+				? st.MigrationHandler.PromptForMigration (projectLoadMonitor, p, fileName, language)
 				: projectLoadMonitor.ShouldMigrateProject ();
 			if (migrationType == MigrationType.Ignore) {
 				if (st.IsMigrationRequired) {
