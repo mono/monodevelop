@@ -6,7 +6,7 @@ all: update_submodules all-recursive
 
 update_submodules:
 	if test -d ".git"; then \
-		git submodule update --init --recursive; \
+		git submodule update --init --recursive || exit 1; \
 	fi
 
 top_srcdir=.
