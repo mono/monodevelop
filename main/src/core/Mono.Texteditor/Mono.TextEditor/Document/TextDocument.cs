@@ -168,6 +168,7 @@ namespace Mono.TextEditor
 				var args = new DocumentChangeEventArgs (0, Text, value);
 				OnTextReplacing (args);
 				buffer.Text = value;
+				extendingTextMarkers = new List<TextMarker> ();
 				splitter.Initalize (value);
 				ClearFoldSegments ();
 				OnTextReplaced (args);
