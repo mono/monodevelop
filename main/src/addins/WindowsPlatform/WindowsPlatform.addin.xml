@@ -6,8 +6,8 @@
        url         = "http://monodevelop.com/"
        description = "Windows Platform Support for MonoDevelop"
        category    = "Platform Support"
-      version     = "4.0">
-	
+       version     = "4.0">
+
 	<Runtime>
 		<Import assembly="WindowsPlatform.dll"/>
 	</Runtime>

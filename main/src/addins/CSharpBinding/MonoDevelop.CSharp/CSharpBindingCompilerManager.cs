@@ -124,6 +124,7 @@ namespace MonoDevelop.CSharp
 			foreach (ProjectReference lib in projectItems.GetAll <ProjectReference> ()) {
 				if (lib.ReferenceType == ReferenceType.Project && !(lib.OwnerProject.ParentSolution.FindProjectByName (lib.Reference) is DotNetProject))
 					continue;
+				string refPrefix = string.IsNullOrEmpty (lib.Aliases) ? "" : lib.Aliases + "=";
 				foreach (string fileName in lib.GetReferencedFileNames (configSelector)) {
 					switch (lib.ReferenceType) {
 					case ReferenceType.Package:
@@ -135,7 +136,7 @@ namespace MonoDevelop.CSharp
 						}
 
 						if (alreadyAddedReference.Add (fileName))
-							AppendQuoted (sb, "/r:", fileName);
+							AppendQuoted (sb, "/r:", refPrefix + fileName);
 						
 						if (pkg.GacRoot != null && !gacRoots.Contains (pkg.GacRoot))
 							gacRoots.Add (pkg.GacRoot);
@@ -153,7 +154,7 @@ namespace MonoDevelop.CSharp
 						break;
 					default:
 						if (alreadyAddedReference.Add (fileName))
-							AppendQuoted (sb, "/r:", fileName);
+							AppendQuoted (sb, "/r:", refPrefix + fileName);
 						break;
 					}
 				}

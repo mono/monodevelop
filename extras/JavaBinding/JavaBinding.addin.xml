@@ -5,7 +5,7 @@
        copyright   = "GPL"
        url         = "http://www.monodevelop.com"
        description = "Java Language Binding"
-	   category    = "Language bindings"
+       category    = "Language bindings"
        version     = "4.0">
 
   <Runtime>

@@ -1,11 +1,11 @@
-<Addin id = "MonoDevelop.Debugger.Soft.Moonlight"
-       name	     = "Mono Soft Debugger Support for Moonlight"
-       author	 = "Michael Hutchinson"
-       url       = "http://www.mono-project.com"
+<Addin id          = "MonoDevelop.Debugger.Soft.Moonlight"
+       name        = "Mono Soft Debugger Support for Moonlight"
+       author      = "Michael Hutchinson"
+       url         = "http://www.mono-project.com"
        description = "Mono Soft Debugger Support for Moonlight"
        copyright   = "MIT X11"
-       category = "Debugging"
-       version   = "4.0">
+       category    = "Debugging"
+       version     = "4.0">
 
 	<Dependencies>
 		<Addin id="MonoDevelop.Core" version="4.0"/>

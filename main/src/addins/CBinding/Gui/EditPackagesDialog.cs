@@ -238,6 +238,7 @@ namespace CBinding
 			dirs.Add ("/usr/share/pkgconfig");
 			dirs.Add ("/usr/local/lib/pkgconfig");
 			dirs.Add ("/usr/local/share/pkgconfig");
+			dirs.Add ("/usr/lib/x86_64-linux-gnu/pkgconfig");
 			
 			if (pkg_var == null) return dirs.ToArray ();
 			

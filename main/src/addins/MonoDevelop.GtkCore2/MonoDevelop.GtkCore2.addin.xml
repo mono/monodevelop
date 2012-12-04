@@ -1,12 +1,12 @@
 <Addin id = "GtkCore2"
-       namespace = "MonoDevelop"
-       name	= "GTK# Visual Designer (GSOC)"
-       author	 = "Lluis Sanchez Gual, Krzysztof Marecki"
-       copyright = "X11"
-       url       = ""
+       namespace   = "MonoDevelop"
+       name        = "GTK# Visual Designer (GSOC)"
+       author      = "Lluis Sanchez Gual, Krzysztof Marecki"
+       copyright   = "X11"
+       url         = ""
        description = "Experimental GTK# visual designer developed during GSOC 2010 as a fork of stetic"
-	   category    = "IDE extensions"
-       version   = "4.0">
+       category    = "IDE extensions"
+       version     = "4.0">
 
 	<Runtime>
 		<Import assembly="libstetic2.dll"/>

@@ -185,6 +185,7 @@ namespace Mono.TextEditor
 				textSegmentMarkerTree.Clear ();
 				OnTextReplacing (args);
 				buffer.Text = value;
+				extendingTextMarkers = new List<TextMarker> ();
 				splitter.Initalize (value);
 				ClearFoldSegments ();
 				OnTextReplaced (args);

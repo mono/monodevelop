@@ -1,12 +1,12 @@
-<Addin id	 = "NUnit"
+<Addin id          = "NUnit"
        namespace   = "MonoDevelop"
-       name	 = "NUnit support"
-       author	 = "Lluis Sanchez, John Luke"
-       copyright = "MIT X11"
-       url       = "http://monodevelop.com"
+       name        = "NUnit support"
+       author      = "Lluis Sanchez, John Luke"
+       copyright   = "MIT X11"
+       url         = "http://monodevelop.com"
        description = "Integrates NUnit into the MonoDevelop IDE."
-	   category    = "Testing"
-       version   = "4.0">
+       category    = "Testing"
+       version     = "4.0">
 
 	<Runtime>
 		<Import assembly="MonoDevelop.NUnit.dll" />
