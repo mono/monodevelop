@@ -123,7 +123,7 @@ namespace MonoDevelop.Ide
 			return topic != null;
 		}
 
-		public void ShowDocs (string path, string topic = null)
+		public void ShowDocs (string path)
 		{
 			ShowDocs (path, null);
 		}
