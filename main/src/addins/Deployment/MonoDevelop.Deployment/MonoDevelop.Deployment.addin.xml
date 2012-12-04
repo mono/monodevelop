@@ -5,7 +5,7 @@
        copyright   = "MIT X11"
        url         = "http://www.monodevelop.com"
        description = "Provides basic deployment services"
-	   category    = "Deployment"
+       category    = "Deployment"
        version     = "4.0"
        flags       = "Hidden"
        compatVersion = "4.0">

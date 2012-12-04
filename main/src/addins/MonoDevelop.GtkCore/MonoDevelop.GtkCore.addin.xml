@@ -1,12 +1,12 @@
 <Addin id = "GtkCore"
-       namespace = "MonoDevelop"
-       name	= "GTK# Visual Designer"
-       author	 = "Lluis Sanchez Gual"
-       copyright = "X11"
-       url       = ""
+       namespace   = "MonoDevelop"
+       name        = "GTK# Visual Designer"
+       author      = "Lluis Sanchez Gual"
+       copyright   = "X11"
+       url         = ""
        description = "Provides support for visual design of GTK# windows, dialogs and widgets."
-	   category    = "IDE extensions"
-       version   = "4.0">
+       category    = "IDE extensions"
+       version     = "4.0">
 
 	<Runtime>
 		<Import assembly="libstetic.dll"/>

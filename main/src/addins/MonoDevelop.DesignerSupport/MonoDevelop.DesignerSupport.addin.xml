@@ -5,8 +5,8 @@
        copyright   = "MIT X11"
        url         = "http://www.monodevelop.com/"
        description = "Supporting services and pads for visual design tools."
-	   category    = "MonoDevelop Core"
-       flags = "Hidden"
+       category    = "MonoDevelop Core"
+       flags       = "Hidden"
        version     = "4.0">
 	
 	<Runtime>

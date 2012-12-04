@@ -15,8 +15,8 @@
 
 	<Dependencies>
 	    <Addin id="Core" version="4.0"/>
-		<Addin id="Ide" version="4.0"/>
-		<Addin id="Debugger" version="4.0"/>
+	    <Addin id="Ide" version="4.0"/>
+	    <Addin id="Debugger" version="4.0"/>
 	</Dependencies>
 
 	<!-- Extension points -->

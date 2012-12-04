@@ -5,7 +5,7 @@
        copyright   = "LGPL"
        url         = "http://bard.sytes.net/vbnetbinding"
        description = "VB.NET Language Binding"
-	   category    = "Language bindings"
+       category    = "Language bindings"
        version     = "4.0">
 
 	<Dependencies>

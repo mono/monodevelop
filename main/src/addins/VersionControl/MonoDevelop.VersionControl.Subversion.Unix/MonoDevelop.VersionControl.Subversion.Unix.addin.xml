@@ -7,7 +7,7 @@
        description = "Subversion support for Linux and MacOSX"
        category  = "Version Control"
        version   = "4.0">
- 
+
 	<Dependencies>
 	    <Addin id="Core" version="4.0"/>
 	    <Addin id="Ide" version="4.0"/>
