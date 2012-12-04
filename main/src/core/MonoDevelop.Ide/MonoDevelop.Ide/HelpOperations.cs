@@ -125,6 +125,11 @@ namespace MonoDevelop.Ide
 
 		public void ShowDocs (string path, string topic = null)
 		{
+			ShowDocs (path, null);
+		}
+
+		public void ShowDocs (string path, string topic)
+		{
 			if (path == null)
 				return;
 
