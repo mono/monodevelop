@@ -286,6 +286,12 @@ namespace MonoDevelop.CSharp.Highlighting
 					isInAccessor = false;
 				}
 			}
+			public override void VisitExternAliasDeclaration (ExternAliasDeclaration externAliasDeclaration)
+			{
+				base.VisitExternAliasDeclaration (externAliasDeclaration);
+				if (externAliasDeclaration.AliasToken.StartLocation.Line == lineNumber)
+					Colorize (externAliasDeclaration.AliasToken, "keyword.namespace");
+			}
 
 			public override void VisitTypeDeclaration (TypeDeclaration typeDeclaration)
 			{
