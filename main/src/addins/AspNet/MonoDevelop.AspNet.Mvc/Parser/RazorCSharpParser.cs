@@ -47,6 +47,7 @@ using System.Web.Configuration;
 using System.Web.WebPages.Razor.Configuration;
 using System.Web.WebPages.Razor;
 using System.Configuration;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.AspNet.Mvc.Parser
 {
@@ -58,7 +59,8 @@ namespace MonoDevelop.AspNet.Mvc.Parser
 		ChangeInfo lastChange;
 		string lastParsedFile;
 		TextDocument currentDocument;
-		AspMvcProject project;
+		AspMvcProject aspProject;
+		DotNetProject project;
 		IList<TextDocument> openDocuments;
 
 		public IList<TextDocument> OpenDocuments { get { return openDocuments; } }
@@ -72,10 +74,11 @@ namespace MonoDevelop.AspNet.Mvc.Parser
 		{
 			currentDocument = openDocuments.FirstOrDefault (d => d.FileName == fileName);
 			// We need document and project to be loaded to correctly initialize Razor Host.
-			if (project == null || (currentDocument == null && !TryAddDocument (fileName)))
+			this.project = project as DotNetProject;
+			if (this.project == null || (currentDocument == null && !TryAddDocument (fileName)))
 				return new RazorCSharpParsedDocument (fileName, new RazorCSharpPageInfo ());
 
-			this.project = project as AspMvcProject;
+			this.aspProject = project as AspMvcProject;
 
 			EnsureParserInitializedFor (fileName);
 
@@ -157,15 +160,17 @@ namespace MonoDevelop.AspNet.Mvc.Parser
 		RazorEngineHost CreateRazorHost (string fileName)
 		{
 			string virtualPath = "~/Views/Default.cshtml";
-			if (project != null)
-				virtualPath = project.LocalToVirtualPath (fileName);
+			if (aspProject != null)
+				virtualPath = aspProject.LocalToVirtualPath (fileName);
 
 			WebPageRazorHost host = null;
 
 			// Try to create host using web.config file
 			var webConfigMap = new WebConfigurationFileMap ();
-			var vdm = new VirtualDirectoryMapping (project.BaseDirectory.Combine ("Views"), true, "web.config");
-			webConfigMap.VirtualDirectories.Add ("/", vdm);
+			if (aspProject != null) {
+				var vdm = new VirtualDirectoryMapping (aspProject.BaseDirectory.Combine ("Views"), true, "web.config");
+				webConfigMap.VirtualDirectories.Add ("/", vdm);
+			}
 			Configuration configuration;
 			try {
 				configuration = WebConfigurationManager.OpenMappedWebConfiguration (webConfigMap, "/");
