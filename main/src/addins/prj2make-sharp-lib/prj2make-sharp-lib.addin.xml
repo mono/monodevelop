@@ -6,13 +6,13 @@
        url       = ""
        description = "Importer for VS2003 projects"
        category    = "Project Import and Export"
-       version   = "3.0.5">
+       version   = "3.1.0">
 
 	<Dependencies>
-	    <Addin id="Core" version="3.0.5"/>
-		<Addin id="Ide" version="3.0.5"/>
-		<Addin id="CSharpBinding" version="3.0.5"/>
-		<Addin id="VBBinding" version="3.0.5"/>
+	    <Addin id="Core" version="3.1.0"/>
+		<Addin id="Ide" version="3.1.0"/>
+		<Addin id="CSharpBinding" version="3.1.0"/>
+		<Addin id="VBBinding" version="3.1.0"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/FileFormats">

@@ -7,7 +7,7 @@
        description = "Mac Development Support for MonoDevelop"
        category    = "Mac Development"
        flags       = "Hidden"
-       version     = "3.0.5">
+       version     = "3.1.0">
 
 	<Runtime>
 		<Import file = "icons/application-x-mono-develop-xib-16.png"/>
@@ -22,11 +22,11 @@
 	</Runtime>
 
 	<Dependencies>
-	    <Addin id="Ide" version="3.0.5"/>
-	    <Addin id="Core" version="3.0.5"/>
-	    <Addin id="MacPlatform" version="3.0.5"/>
-	    <Addin id="DesignerSupport" version="3.0.5"/>
-	    <Addin id="VersionControl" version="3.0.5" />
+	    <Addin id="Ide" version="3.1.0"/>
+	    <Addin id="Core" version="3.1.0"/>
+	    <Addin id="MacPlatform" version="3.1.0"/>
+	    <Addin id="DesignerSupport" version="3.1.0"/>
+	    <Addin id="VersionControl" version="3.1.0" />
 	</Dependencies>
 
 	<ExtensionPoint path = "/MonoDevelop/MacDev/ContextMenu/ProjectPad/NativeReferenceFolder">

@@ -6,7 +6,7 @@
        url         = "http://monodevelop.com/"
        description = "Support for developing MonoMac applications"
        category    = "Mac Development"
-       version     = "3.0.5">
+       version     = "3.1.0">
 
 	<Runtime>
 		<Import file = "templates/MonoMacProject.xpt.xml"/>
@@ -29,10 +29,10 @@
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="3.0.5"/>
-		<Addin id="Ide"  version="3.0.5"/>
-		<Addin id="MacDev" version="3.0.5"/>
-		<Addin id="MacPlatform" version="3.0.5"/>
+		<Addin id="Core" version="3.1.0"/>
+		<Addin id="Ide"  version="3.1.0"/>
+		<Addin id="MacDev" version="3.1.0"/>
+		<Addin id="MacPlatform" version="3.1.0"/>
 	</Dependencies>
 
 	<Extension path = "/MonoDevelop/Core/Applications">
@@ -124,11 +124,11 @@
 		</Runtime>
 
 		<Dependencies>
-			<Addin id="Core" version="3.0.5"/>
-			<Addin id="Ide"  version="3.0.5"/>
-			<Addin id="Debugger" version="3.0.5"/>
-			<Addin id="Debugger.Soft" version="3.0.5"/>
-			<Addin id="MacPlatform" version="3.0.5"/>
+			<Addin id="Core" version="3.1.0"/>
+			<Addin id="Ide"  version="3.1.0"/>
+			<Addin id="Debugger" version="3.1.0"/>
+			<Addin id="Debugger.Soft" version="3.1.0"/>
+			<Addin id="MacPlatform" version="3.1.0"/>
 		</Dependencies>
 
 		<Extension path="/MonoDevelop/Debugging/DebuggerEngines">

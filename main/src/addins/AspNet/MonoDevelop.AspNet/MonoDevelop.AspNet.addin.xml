@@ -6,7 +6,7 @@
        url         = "http://www.monodevelop.com/"
        description = "Support for ASP.NET projects, including editing, compiling, previewing and deploying to remote servers."
        category    = "Web Development"
-       version     = "3.0.5">
+       version     = "3.1.0">
 
 	<Runtime>
 		<Import file="Schemas/xhtml1-strict.xsd" />
@@ -15,12 +15,12 @@
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="3.0.5"/>
-		<Addin id="Ide" version="3.0.5"/>
-		<Addin id="DesignerSupport" version="3.0.5"/>
-		<Addin id="Deployment" version="3.0.5"/>
-		<Addin id="XmlEditor" version="3.0.5" />
-		<Addin id="SourceEditor2" version="3.0.5"/>
+		<Addin id="Core" version="3.1.0"/>
+		<Addin id="Ide" version="3.1.0"/>
+		<Addin id="DesignerSupport" version="3.1.0"/>
+		<Addin id="Deployment" version="3.1.0"/>
+		<Addin id="XmlEditor" version="3.1.0" />
+		<Addin id="SourceEditor2" version="3.1.0"/>
 	</Dependencies>
 
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">

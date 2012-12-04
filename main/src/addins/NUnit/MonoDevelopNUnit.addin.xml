@@ -6,7 +6,7 @@
        url       = "http://monodevelop.com"
        description = "Integrates NUnit into the MonoDevelop IDE."
 	   category    = "Testing"
-       version   = "3.0.5">
+       version   = "3.1.0">
 
 	<Runtime>
 		<Import assembly="MonoDevelop.NUnit.dll" />
@@ -17,8 +17,8 @@
 	</Runtime>
 	
 	<Dependencies>
-		<Addin id="Core" version="3.0.5"/>
-		<Addin id="Ide" version="3.0.5"/>
+		<Addin id="Core" version="3.1.0"/>
+		<Addin id="Ide" version="3.1.0"/>
 	</Dependencies>
 	
 	<!-- Extension Points -->

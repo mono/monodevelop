@@ -6,7 +6,7 @@
        description = "Provides the core services of the MonoDevelop platform"
        category    = "MonoDevelop Core"
        isroot      = "true"
-       version     = "3.0.5"
+       version     = "3.1.0"
        compatVersion = "2.9.0">
        
 	<ConditionType id="PackageInstalled" type="MonoDevelop.Core.AddIns.PackageInstalledCondition" />

@@ -6,13 +6,13 @@
        url         = ""
        description = "Provides an assembly browser for the MonoDevelop"
        category    = "IDE extensions"
-       version     = "3.0.5">
+       version     = "3.1.0">
 
 	<Dependencies>
-		<Addin id="Core" version="3.0.5"/>
-		<Addin id="Ide" version="3.0.5"/>
-		<Addin id="Refactoring" version="3.0.5"/>
-		<Addin id="CSharpBinding" version="3.0.5"/>
+		<Addin id="Core" version="3.1.0"/>
+		<Addin id="Ide" version="3.1.0"/>
+		<Addin id="Refactoring" version="3.1.0"/>
+		<Addin id="CSharpBinding" version="3.1.0"/>
 	</Dependencies>
 
 	<!-- Extension points -->
