@@ -123,7 +123,7 @@ namespace MonoDevelop.Ide
 			return topic != null;
 		}
 
-		public void ShowDocs (string path)
+		public void ShowDocs (string path, string topic = null)
 		{
 			if (path == null)
 				return;
@@ -135,7 +135,7 @@ namespace MonoDevelop.Ide
 				args = new[] { "--docdir", path };
 			}
 
-			var psi = GetStartPlatformSpecificMonoDoc (null, args);
+			var psi = GetStartPlatformSpecificMonoDoc (topic, args);
 			if (psi != null)
 				Process.Start (psi);
 		}
