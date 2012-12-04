@@ -39,6 +39,7 @@ using Mono.TextEditor;
 using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.CSharp
 {
@@ -746,6 +747,23 @@ namespace MonoDevelop.CSharp
 			return result.ToString ();
 		}
 
+		
+		public TooltipInformation GetExternAliasTooltip (ExternAliasDeclaration externAliasDeclaration, DotNetProject project)
+		{
+			var result = new TooltipInformation ();
+			result.SignatureMarkup = Highlight ("extern ", "keyword.modifier") + Highlight ("alias ", "keyword.namespace") + externAliasDeclaration.Name;
+			if (project == null)
+				return result;
+			foreach (var r in project.References) {
+				if (!r.ExtendedProperties.Contains ("alias"))
+					continue;
+				var alias = r.ExtendedProperties["alias"].ToString ();
+				if (alias == externAliasDeclaration.Name)
+					result.AddCategory (GettextCatalog.GetString ("Reference"), alias.ToString ());
+			}
+
+			return result;
+		}
 		public TooltipInformation GetKeywordTooltip (AstNode node)
 		{
 			return GetKeywordTooltip (node.GetText (), node);
@@ -1401,6 +1419,7 @@ namespace MonoDevelop.CSharp
 			
 			return result.ToString ();
 		}
+
 
 		string Highlight (string str, string colorScheme)
 		{

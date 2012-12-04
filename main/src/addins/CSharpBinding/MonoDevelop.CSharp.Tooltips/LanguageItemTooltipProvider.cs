@@ -45,6 +45,7 @@ using MonoDevelop.CSharp.Resolver;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.CSharp.Completion;
 using MonoDevelop.Components;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -181,8 +182,13 @@ namespace MonoDevelop.SourceEditor
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null)
 				return null;
-
 			try {
+				if (data.Node is ExternAliasDeclaration) {
+					var resolver = (doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile).GetResolver (doc.Compilation, doc.Editor.Caret.Location);
+					var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
+					sig.BreakLineAfterReturnType = false;
+					return sig.GetExternAliasTooltip ((ExternAliasDeclaration)data.Node, doc.Project as DotNetProject);
+				}
 				if (result == null && data.Node is CSharpTokenNode) {
 					var resolver = (doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile).GetResolver (doc.Compilation, doc.Editor.Caret.Location);
 					var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
