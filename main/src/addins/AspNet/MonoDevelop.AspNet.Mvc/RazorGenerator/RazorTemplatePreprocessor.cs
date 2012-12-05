@@ -64,39 +64,47 @@ namespace MonoDevelop.RazorGenerator
 		public IAsyncOperation Generate (IProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result)
 		{
 			return new ThreadAsyncOperation (delegate {
-				var dnp = file.Project as DotNetProject;
-				if (dnp == null || dnp.LanguageName != "C#") {
-					var msg = "Razor templates are only supported in C# projects";
-					result.Errors.Add (new CompilerError (file.Name, -1, -1, null, msg));
-					monitor.Log.WriteLine (msg);
-					return;
-				}
-
-				var host = CreateHost (file.FilePath, file.ProjectVirtualPath);
-				host.EnableLinePragmas = true;
-
-				host.Error += (s, e) => {
-					result.Errors.Add (new CompilerError (
-						file.FilePath, e.LineNumber, e.ColumnNumber, e.ErrorCode.ToString (), e.ErrorMessage
-					));
-				};
-
-				var defaultOutputName = file.FilePath.ChangeExtension (".cs");
-				var ns = GetNamespaceHint (file, defaultOutputName);
-				host.DefaultNamespace = ns;
-
-				var code = host.GenerateCode ();
-
-				var writer = new MonoDevelop.DesignerSupport.CodeBehindWriter ();
-				writer.WriteFile (defaultOutputName, code);
-				writer.WriteOpenFiles ();
-
-				result.GeneratedFilePath = defaultOutputName;
-
-				foreach (var err in result.Errors) {
-					monitor.Log.WriteLine (err.ToString ());
+				try {
+					GenerateInternal (monitor, file, result);
+				} catch (Exception ex) {
+					result.UnhandledException = ex;
 				}
 			}, result);
+		}
+
+		void GenerateInternal (IProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result)
+		{
+			var dnp = file.Project as DotNetProject;
+			if (dnp == null || dnp.LanguageName != "C#") {
+				var msg = "Razor templates are only supported in C# projects";
+				result.Errors.Add (new CompilerError (file.Name, -1, -1, null, msg));
+				monitor.Log.WriteLine (msg);
+				return;
+			}
+
+			var host = CreateHost (file.FilePath, file.ProjectVirtualPath);
+			host.EnableLinePragmas = true;
+			host.Error += (s, e) =>  {
+				Console.WriteLine (e.ErrorMessage);
+				result.Errors.Add (new CompilerError (file.FilePath, e.LineNumber, e.ColumnNumber, e.ErrorCode.ToString (), e.ErrorMessage));
+			};
+
+			var defaultOutputName = file.FilePath.ChangeExtension (".cs");
+
+			var ns = GetNamespaceHint (file, defaultOutputName);
+			host.DefaultNamespace = ns;
+
+			var code = host.GenerateCode ();
+
+			var writer = new MonoDevelop.DesignerSupport.CodeBehindWriter ();
+			writer.WriteFile (defaultOutputName, code);
+			writer.WriteOpenFiles ();
+
+			result.GeneratedFilePath = defaultOutputName;
+
+			foreach (var err in result.Errors) {
+				monitor.Log.WriteLine (err.ToString ());
+			}
 		}
 	}
 }
