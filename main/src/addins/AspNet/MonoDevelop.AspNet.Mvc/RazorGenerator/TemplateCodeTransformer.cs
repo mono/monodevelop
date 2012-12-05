@@ -26,7 +26,6 @@ namespace RazorGenerator.Core
 		private readonly RazorCodeTransformerBase[] _codeTransforms = new RazorCodeTransformerBase[] {
 			new SetImports(_defaultImports, replaceExisting: true),
 			new AddGeneratedTemplateClassAttribute(),
-			new DirectivesBasedTransformers(),
 			new ReplaceBaseType(),
 			new FixMonoPragmas (),
 		};
