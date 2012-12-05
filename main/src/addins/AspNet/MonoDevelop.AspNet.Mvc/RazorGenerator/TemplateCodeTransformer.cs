@@ -79,28 +79,29 @@ namespace RazorGenerator.Core
 				return;
 
 			generatedClass.Members.Add (new CodeSnippetTypeMember (@"
-System.IO.TextWriter writer;
+        System.IO.TextWriter writer;
 
-private void WriteLiteral (string value)
-{
-	writer.Write (value);
-}
+        private void WriteLiteral (string value)
+        {
+            writer.Write (value);
+        }
 
-public string GenerateString ()
-{
-using (var sw = new System.IO.StringWriter ()) {
-		Generate (sw);
-		return sw.ToString();
-	}
-}
+        public string GenerateString ()
+        {
+            using (var sw = new System.IO.StringWriter ()) {
+                Generate (sw);
+                return sw.ToString();
+	        }
+        }
 
-public void Generate (System.IO.TextWriter writer)
-{
-	this.writer = writer;
-	Execute ();
-	this.writer = null;
-}
-"));
+        public void Generate (System.IO.TextWriter writer)
+        {
+            this.writer = writer;
+            Execute ();
+            this.writer = null;
+        }
+
+        "));
 		}
 
 		public override string ProcessOutput (string codeContent)
