@@ -165,7 +165,7 @@ namespace MonoDevelop.Ide.TypeSystem
 	
 	public static class TypeSystemService
 	{
-		const string CurrentVersion = "1.0.3";
+		const string CurrentVersion = "1.1.0";
 
 		static List<TypeSystemParserNode> parsers;
 		static string[] filesSkippedInParseThread = new string[0];
@@ -979,7 +979,7 @@ namespace MonoDevelop.Ide.TypeSystem
 							return context.SetAssemblyName (this.wrapper.Project.Name) ?? context;
 						}
 
-						context = new CSharpProjectContent ();
+						context = new MonoDevelopProjectContent (this.wrapper.Project);
 						context = context.SetLocation (this.wrapper.Project.FileName);
 						context = context.SetAssemblyName (this.wrapper.Project.Name);
 						QueueParseJob (this.wrapper);

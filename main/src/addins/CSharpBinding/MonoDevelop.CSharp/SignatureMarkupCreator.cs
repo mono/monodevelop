@@ -755,11 +755,12 @@ namespace MonoDevelop.CSharp
 			if (project == null)
 				return result;
 			foreach (var r in project.References) {
-				if (!r.ExtendedProperties.Contains ("alias"))
+				if (string.IsNullOrEmpty (r.Aliases))
 					continue;
-				var alias = r.ExtendedProperties["alias"].ToString ();
-				if (alias == externAliasDeclaration.Name)
-					result.AddCategory (GettextCatalog.GetString ("Reference"), alias.ToString ());
+				foreach (var alias in r.Aliases.Split (',', ';')) {
+					if (alias == externAliasDeclaration.Name)
+						result.AddCategory (GettextCatalog.GetString ("Reference"), r.StoredReference);
+				}
 			}
 
 			return result;

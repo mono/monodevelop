@@ -227,7 +227,9 @@
     <Compile Include="MonoDevelop.Projects\DotNetProjectBinding.cs" />
     <Compile Include="MonoDevelop.Projects\DotNetProjectConfiguration.cs" />
     <Compile Include="MonoDevelop.Projects\Project.cs" />
-    <Compile Include="MonoDevelop.Projects\ProjectFile.cs" />
+    <Compile Include="MonoDevelop.Projects\ProjectFile.cs">
+      <DependentUpon>ProjectFile.cs</DependentUpon>
+    </Compile>
     <Compile Include="MonoDevelop.Projects\ProjectFileEventArgs.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectReference.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectReferenceEventArgs.cs" />
