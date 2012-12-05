@@ -166,6 +166,8 @@ namespace MonoDevelop.CSharp.Highlighting
 				if (references != null) {
 					bool alphaBlend = false;
 					foreach (var r in references) {
+						if (r == null)
+							continue;
 						var marker = GetMarker (r.Region.BeginLine);
 						
 						usages.Add (r.Region.Begin);
