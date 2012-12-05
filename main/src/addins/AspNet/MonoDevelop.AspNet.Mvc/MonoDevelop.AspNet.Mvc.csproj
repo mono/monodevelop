@@ -83,6 +83,25 @@
     <Compile Include="gtk-gui\MonoDevelop.AspNet.Mvc.Gui.AddViewDialog.cs" />
     <Compile Include="Gui\AddControllerDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.AspNet.Mvc.Gui.AddControllerDialog.cs" />
+    <Compile Include="RazorGenerator\Core\EventArgs.cs" />
+    <Compile Include="RazorGenerator\Core\ICodeGenerationEventProvider.cs" />
+    <Compile Include="RazorGenerator\Core\IRazorCodeTransformer.cs" />
+    <Compile Include="RazorGenerator\Core\IRazorHost.cs" />
+    <Compile Include="RazorGenerator\CodeTransformers\AggregateCodeTransformer.cs" />
+    <Compile Include="RazorGenerator\CodeTransformers\DefaultCodeTransformers.cs" />
+    <Compile Include="RazorGenerator\CodeTransformers\DirectivesBasedTransformers.cs" />
+    <Compile Include="RazorGenerator\CodeTransformers\ExcludeFromCodeCoverage.cs" />
+    <Compile Include="RazorGenerator\CodeTransformers\RazorCodeTransformerBase.cs" />
+    <Compile Include="RazorGenerator\CodeTransformers\SetTypeNamespace.cs" />
+    <Compile Include="RazorGenerator\CodeTransformers\SetTypeVisibility.cs" />
+    <Compile Include="RazorGenerator\CodeTransformers\RewriteLinePragmas.cs" />
+    <Compile Include="RazorGenerator\RazorHost.cs" />
+    <Compile Include="RazorGenerator\TemplateCodeTransformer.cs" />
+    <Compile Include="RazorGenerator\Core\DirectivesParser.cs" />
+    <None Include="Templates\PreprocessedRazorTemplate.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Compile Include="RazorGenerator\RazorTemplatePreprocessor.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -297,5 +316,9 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="RazorGenerator\" />
+    <Folder Include="RazorGenerator\Core\" />
   </ItemGroup>
 </Project>
