@@ -138,6 +138,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 	
 	public abstract class FolderCommandHandler: NodeCommandHandler
 	{
+		// CommandHandlers are constantly re-created so it's not possible to cache data inside the instance
+		// Since 'AddExistingFolder' can only be run from the UI thread anyway we can safely just make this static.
+		static FilePath PreviousFolderPath {
+			get; set;
+		}
+
 		public abstract string GetFolderPath (object dataObject);
 
 		public override bool CanDropNode (object dataObject, DragOperation operation)
@@ -363,9 +369,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public void AddFilesToProject()
 		{
 			Project project = (Project) CurrentNode.GetParentDataItem (typeof(Project), true);
-			
+			var targetRoot = ((FilePath) GetFolderPath (CurrentNode.DataItem)).CanonicalPath;
+
 			AddFileDialog fdiag  = new AddFileDialog (GettextCatalog.GetString ("Add files"));
-			fdiag.CurrentFolder = GetFolderPath (CurrentNode.DataItem);
+			fdiag.CurrentFolder = !PreviousFolderPath.IsNullOrEmpty ? PreviousFolderPath : targetRoot;
 			fdiag.SelectMultiple = true;
 			fdiag.TransientFor = IdeApp.Workbench.RootWindow;
 			fdiag.BuildActions = project.GetBuildActions ();	
@@ -374,7 +381,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			
 			if (!fdiag.Run ())
 				return;
-			
+			PreviousFolderPath = fdiag.SelectedFiles.Select (f => f.FullPath.ParentDirectory).FirstOrDefault ();
+
 			var files = fdiag.SelectedFiles;
 			overrideAction = fdiag.OverrideAction;
 			
@@ -411,11 +419,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			var targetRoot = ((FilePath) GetFolderPath (CurrentNode.DataItem)).CanonicalPath;
 			
 			var ofdlg = new SelectFolderDialog (GettextCatalog.GetString ("Import From Folder")) {
-				CurrentFolder = targetRoot
+				CurrentFolder = !PreviousFolderPath.IsNullOrEmpty ? PreviousFolderPath : targetRoot
 			};
 			if(!ofdlg.Run ())
 				return;
-			
+			PreviousFolderPath = ofdlg.SelectedFile.CanonicalPath;
+			if (!PreviousFolderPath.ParentDirectory.IsNullOrEmpty)
+				PreviousFolderPath = PreviousFolderPath.ParentDirectory;
+
 			var srcRoot = ofdlg.SelectedFile.CanonicalPath;
 			var foundFiles = Directory.GetFiles (srcRoot, "*", SearchOption.AllDirectories);
 			
@@ -431,7 +442,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (added)
 				IdeApp.ProjectOperations.Save (project);
 		}
-		
+
 		///<summary>Adds an existing folder to the current folder</summary>
 		[CommandHandler (ProjectCommands.AddExistingFolder)]
 		public void AddExistingFolder ()
@@ -440,11 +451,17 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			var selectedFolder = ((FilePath) GetFolderPath (CurrentNode.DataItem)).CanonicalPath;
 			
 			var ofdlg = new SelectFolderDialog (GettextCatalog.GetString ("Add Existing Folder")) {
-				CurrentFolder = selectedFolder
+				CurrentFolder = !PreviousFolderPath.IsNullOrEmpty ? PreviousFolderPath : selectedFolder 
 			};
 			if(!ofdlg.Run ())
 				return;
-			
+
+			// We store the parent directory of the folder the user chooses as they will not need to add the same
+			// directory twice. We can save them navigating up one directory by doing it for them
+			PreviousFolderPath = ofdlg.SelectedFile.CanonicalPath;
+			if (!PreviousFolderPath.ParentDirectory.IsNullOrEmpty)
+				PreviousFolderPath = PreviousFolderPath.ParentDirectory;
+
 			var srcRoot = ofdlg.SelectedFile.CanonicalPath;
 			var targetRoot = selectedFolder.Combine (srcRoot.FileName);
 
