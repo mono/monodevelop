@@ -48,7 +48,7 @@ namespace RazorGenerator.Core
 	{
 		public override void ProcessGeneratedCode (CodeCompileUnit codeCompileUnit, CodeNamespace generatedNamespace, CodeTypeDeclaration generatedClass, CodeMemberMethod executeMethod)
 		{
-			string tool = "RazorTemplateGenerator";
+			string tool = "RazorTemplatePreprocessor";
 			Version version = GetType().Assembly.GetName().Version;
 			generatedClass.CustomAttributes.Add(
 				new CodeAttributeDeclaration(typeof(System.CodeDom.Compiler.GeneratedCodeAttribute).FullName,
