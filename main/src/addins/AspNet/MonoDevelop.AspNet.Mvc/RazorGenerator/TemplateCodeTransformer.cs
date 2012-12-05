@@ -101,6 +101,10 @@ namespace RazorGenerator.Core
             this.writer = null;
         }
 
+        private void Write (object value)
+        {
+            writer.Write (value.ToString ());
+        }
         "));
 		}
 
