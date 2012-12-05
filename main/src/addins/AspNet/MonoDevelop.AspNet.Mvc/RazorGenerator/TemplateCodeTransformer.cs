@@ -115,9 +115,11 @@ namespace RazorGenerator.Core
 
 	class FixMonoPragmas : RazorCodeTransformerBase
 	{
+		bool isMono = Type.GetType ("Mono.Runtime") != null;
+
 		public override string ProcessOutput (string codeContent)
 		{
-			return codeContent.Replace ("#line hiddenpublic", "#line hidden" + Environment.NewLine + "public");
+			return isMono ? codeContent.Replace ("#line hidden", "#line hidden" + Environment.NewLine) : codeContent;
 		}
 	}
 }
