@@ -27,7 +27,7 @@ namespace RazorGenerator.Core
 			new SetImports(_defaultImports, replaceExisting: true),
 			new AddGeneratedTemplateClassAttribute(),
 			new DirectivesBasedTransformers(),
-			new AddBaseType(),
+			new ReplaceBaseType(),
 			new FixMonoPragmas (),
 		};
 
@@ -59,23 +59,19 @@ namespace RazorGenerator.Core
 		}
 	}
 
-	class AddBaseType : RazorCodeTransformerBase
+	class ReplaceBaseType : RazorCodeTransformerBase
 	{
-		bool hasBaseType;
-
 		public override void Initialize (RazorHost razorHost, IDictionary<string, string> directives)
 		{
-			string baseType;
-			if ((hasBaseType = directives.TryGetValue ("Inherits", out baseType))) {
-			} else {
-				baseType = "System.Object";
-			}
-			razorHost.DefaultBaseClass = baseType;
+			razorHost.DefaultBaseClass = "System.Object";
 		}
+
+		bool hasBaseType;
 
 		public override void ProcessGeneratedCode (CodeCompileUnit codeCompileUnit, CodeNamespace generatedNamespace, CodeTypeDeclaration generatedClass, CodeMemberMethod executeMethod)
 		{
-			if (hasBaseType)
+			hasBaseType = generatedClass.BaseTypes [0].BaseType != "System.Object";
+			if (!hasBaseType)
 				return;
 
 			generatedClass.Members.Add (new CodeSnippetTypeMember (@"
