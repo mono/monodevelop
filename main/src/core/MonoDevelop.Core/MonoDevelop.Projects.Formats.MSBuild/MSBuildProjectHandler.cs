@@ -413,7 +413,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				: projectLoadMonitor.ShouldMigrateProject ();
 			if (migrationType == MigrationType.Ignore) {
 				if (st.IsMigrationRequired) {
-					monitor.ReportError (string.Format ("MonoDevelop cannot open the project '{0}' unless it is migrated.", Path.GetFileName (fileName)), null);
+					monitor.ReportError (string.Format ("{1} cannot open the project '{0}' unless it is migrated.", Path.GetFileName (fileName), BrandingService.ApplicationName), null);
 					throw new Exception ("The user choose not to migrate the project");
 				} else
 					return null;
