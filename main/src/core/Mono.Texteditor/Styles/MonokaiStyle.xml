@@ -109,7 +109,7 @@ THE SOFTWARE.
 		<Style name="line.changed" color="#A4E22E"/>
 		<Style name="line.dirty" color="monokai-string"/>
 	
-		<Style name="ruler" color="#B3DEFD"/>
+		<Style name="ruler" color="#575852"/>
 		<Style name="bracket" color="#6699CC" bgColor="#AACCEE"/>
 		<Style name="usages" color="monokai-selection" bgColor="#383830"/>
 		
