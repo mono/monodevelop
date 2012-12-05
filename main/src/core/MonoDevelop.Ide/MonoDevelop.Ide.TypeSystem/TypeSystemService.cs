@@ -996,6 +996,8 @@ namespace MonoDevelop.Ide.TypeSystem
 					
 					TouchCache (cacheDir);
 					var cache = DeserializeObject<IProjectContent> (Path.Combine (cacheDir, "completion.cache"));
+					if (cache is MonoDevelopProjectContent)
+						((MonoDevelopProjectContent)cache).Project = project;
 					return cache;
 				}
 

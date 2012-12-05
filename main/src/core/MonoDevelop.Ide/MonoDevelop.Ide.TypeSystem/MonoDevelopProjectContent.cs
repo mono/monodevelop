@@ -32,13 +32,18 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
+	[Serializable]
 	class MonoDevelopProjectContent : CSharpProjectContent
 	{
-		readonly Project project;
+		[NonSerialized]
+		Project project;
 
 		public Project Project {
 			get {
 				return project;
+			}
+			internal set {
+				project = value;
 			}
 		}
 
