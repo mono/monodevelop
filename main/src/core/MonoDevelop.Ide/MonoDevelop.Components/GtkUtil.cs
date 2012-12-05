@@ -431,8 +431,7 @@ namespace MonoDevelop.Components
 		TreeViewColumn col;
 		TreeView tree;
 		TreeIter iter;
-		bool entered;
-		
+
 		public bool MouseIsOver;
 		
 		public CellTooltipWindow (TreeView tree, TreeViewColumn col, TreePath path)
@@ -576,19 +575,12 @@ namespace MonoDevelop.Components
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)
 		{
 			MouseIsOver = false;
-			if (entered) {
-				GtkUtil.HideTooltip (tree);
-				entered = false;
-			}
+			GtkUtil.HideTooltip (tree);
 			return base.OnLeaveNotifyEvent (evnt);
 		}
 		
 		protected override bool OnEnterNotifyEvent (Gdk.EventCrossing evnt)
 		{
-			// The 'entered' flag is a workaround for mac. When the window is shown below the mouse cursor, GTK fires
-			// two pairs of Enter/Leave events. The first pair seems to be due to a bug, so we use this flag to ignore it.
-			if (evnt.Detail == Gdk.NotifyType.Ancestor)
-				entered = true;
 			MouseIsOver = true;
 			return base.OnEnterNotifyEvent (evnt);
 		}
