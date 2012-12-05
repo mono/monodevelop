@@ -74,6 +74,8 @@ namespace RazorGenerator.Core
 			if (!hasBaseType)
 				return;
 
+			executeMethod.Attributes = (executeMethod.Attributes & ~MemberAttributes.AccessMask) | MemberAttributes.Private;
+
 			generatedClass.Members.Add (new CodeSnippetTypeMember (@"
         System.IO.TextWriter writer;
 
@@ -102,14 +104,6 @@ namespace RazorGenerator.Core
             writer.Write (value.ToString ());
         }
         "));
-		}
-
-		public override string ProcessOutput (string codeContent)
-		{
-			if (hasBaseType)
-				return codeContent.Replace ("public override void Execute()", "private override void Execute()");
-
-			return codeContent.Replace ("public override void Execute()", "private void Execute()");
 		}
 	}
 
