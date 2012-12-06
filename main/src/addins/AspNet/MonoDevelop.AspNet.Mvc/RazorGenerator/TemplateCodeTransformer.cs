@@ -70,7 +70,7 @@ namespace RazorGenerator.Core
 		public override void ProcessGeneratedCode (CodeCompileUnit codeCompileUnit, CodeNamespace generatedNamespace, CodeTypeDeclaration generatedClass, CodeMemberMethod executeMethod)
 		{
 			hasBaseType = generatedClass.BaseTypes [0].BaseType != "System.Object";
-			if (!hasBaseType)
+			if (hasBaseType)
 				return;
 
 			executeMethod.Attributes = (executeMethod.Attributes & ~MemberAttributes.AccessMask) | MemberAttributes.Private;
