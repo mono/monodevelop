@@ -136,7 +136,7 @@ namespace MonoDevelop.RazorGenerator
         protected static void WriteTo (System.IO.TextWriter writer, object value)
         {
             if (value != null) {
-                System.Web.HttpUtility.HtmlEncode (value.ToString (), writer);
+                writer.Write (System.Web.HttpUtility.HtmlEncode (value.ToString ()));
             }
         }
         "));
