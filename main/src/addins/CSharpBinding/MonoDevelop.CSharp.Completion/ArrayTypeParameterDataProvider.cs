@@ -62,7 +62,7 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			var tooltipInfo = new TooltipInformation ();
 			var file = ext.CSharpUnresolvedFile;
-			var compilation = ext.Compilation;
+			var compilation = ext.UnresolvedFileCompilation;
 			var textEditorData = ext.TextEditorData;
 			var formattingPolicy = ext.FormattingPolicy;
 			var resolver = file.GetResolver (compilation, textEditorData.Caret.Location);

@@ -80,6 +80,11 @@ namespace MonoDevelop.CSharp.Completion
 				return base.document;
 			}
 		}
+
+		public ICompilation UnresolvedFileCompilation {
+			get;
+			set;
+		}
 		
 		public CSharpUnresolvedFile CSharpUnresolvedFile {
 			get;
@@ -138,6 +143,7 @@ namespace MonoDevelop.CSharp.Completion
 			var parsedDocument = document.ParsedDocument;
 			if (parsedDocument != null) {
 				this.Unit = parsedDocument.GetAst<SyntaxTree> ();
+				this.UnresolvedFileCompilation = Document.Compilation;
 				this.CSharpUnresolvedFile = parsedDocument.ParsedFile as CSharpUnresolvedFile;
 			}
 			
@@ -164,6 +170,7 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			unit = null;
 			CSharpUnresolvedFile = null;
+			UnresolvedFileCompilation = null;
 			Document.DocumentParsed -= HandleDocumentParsed; 
 			base.Dispose ();
 		}
@@ -181,6 +188,7 @@ namespace MonoDevelop.CSharp.Completion
 			
 			this.Unit = newDocument.GetAst<SyntaxTree> ();
 			this.CSharpUnresolvedFile = newDocument.ParsedFile as CSharpUnresolvedFile;
+			this.UnresolvedFileCompilation = Document.Compilation;
 			if (TypeSegmentTreeUpdated != null)
 				TypeSegmentTreeUpdated (this, EventArgs.Empty);
 		}
@@ -230,6 +238,19 @@ namespace MonoDevelop.CSharp.Completion
 				//				timer.Dispose ();
 			}
 		}
+
+		class CSharpCompletionDataList : CompletionDataList
+		{
+			public CSharpResolver Resolver {
+				get;
+				set;
+			}
+		}
+
+		interface IListData
+		{
+			CSharpCompletionDataList List { get; set; }
+		}
 		
 		ICompletionDataList InternalHandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, bool ctrlSpace, ref int triggerWordLength)
 		{
@@ -240,8 +261,9 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			if (Unit == null || CSharpUnresolvedFile == null)
 				return null;
-			var list = new CompletionDataList ();
-			var ctx = CSharpUnresolvedFile.GetTypeResolveContext (Document.Compilation, data.Caret.Location) as CSharpTypeResolveContext;
+			var list = new CSharpCompletionDataList ();
+			list.Resolver = CSharpUnresolvedFile != null ? CSharpUnresolvedFile.GetResolver (UnresolvedFileCompilation, Document.Editor.Caret.Location) : new CSharpResolver (Compilation);
+			var ctx = CSharpUnresolvedFile.GetTypeResolveContext (UnresolvedFileCompilation, data.Caret.Location) as CSharpTypeResolveContext;
 			var engine = new CSharpCompletionEngine (
 				data.Document,
 				typeSystemSegmentTree,
@@ -253,7 +275,11 @@ namespace MonoDevelop.CSharp.Completion
 			engine.EolMarker = data.EolMarker;
 			engine.IndentString = data.Options.IndentationString;
 			try {
-				list.AddRange (engine.GetCompletionData (completionContext.TriggerOffset, ctrlSpace));
+				foreach (var cd in engine.GetCompletionData (completionContext.TriggerOffset, ctrlSpace)) {
+					list.Add (cd);
+					if (cd is IListData)
+						((IListData)cd).List = list;
+				}
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while getting completion data.", e);
 			}
@@ -581,23 +607,32 @@ namespace MonoDevelop.CSharp.Completion
 				};
 			}
 
-			class GenericTooltipCompletionData : CompletionData
+			class GenericTooltipCompletionData : CompletionData, IListData
 			{
-				readonly Func<bool, TooltipInformation> tooltipFunc;
+				readonly Func<CSharpCompletionDataList, bool, TooltipInformation> tooltipFunc;
 
-				public GenericTooltipCompletionData (Func<bool, TooltipInformation> tooltipFunc, string text, string icon) : base (text, icon)
+				#region IListData implementation
+
+				public CSharpCompletionDataList List {
+					get;
+					set;
+				}
+
+				#endregion
+
+				public GenericTooltipCompletionData (Func<CSharpCompletionDataList, bool, TooltipInformation> tooltipFunc, string text, string icon) : base (text, icon)
 				{
 					this.tooltipFunc = tooltipFunc;
 				}
 
-				public GenericTooltipCompletionData (Func<bool, TooltipInformation> tooltipFunc, string text, string icon, string description, string completionText) : base (text, icon, description, completionText)
+				public GenericTooltipCompletionData (Func<CSharpCompletionDataList, bool, TooltipInformation> tooltipFunc, string text, string icon, string description, string completionText) : base (text, icon, description, completionText)
 				{
 					this.tooltipFunc = tooltipFunc;
 				}
 
 				public override TooltipInformation CreateTooltipInformation (bool smartWrap)
 				{
-					return tooltipFunc (smartWrap);
+					return tooltipFunc (List, smartWrap);
 				}
 
 				protected List<ICompletionData> overloads;
@@ -637,16 +672,19 @@ namespace MonoDevelop.CSharp.Completion
 					}
 				}
 
-				public LazyGenericTooltipCompletionData (Func<bool, TooltipInformation> tooltipFunc, Lazy<string> displayText, string icon) : base (tooltipFunc, null, icon)
+				public LazyGenericTooltipCompletionData (Func<CSharpCompletionDataList, bool, TooltipInformation> tooltipFunc, Lazy<string> displayText, string icon) : base (tooltipFunc, null, icon)
 				{
 					this.displayText = displayText;
 				}
 			}
 
-			class TypeCompletionData : LazyGenericTooltipCompletionData
+			class TypeCompletionData : LazyGenericTooltipCompletionData, IListData
 			{
 				IType type;
 				CSharpCompletionTextEditorExtension ext;
+				CSharpUnresolvedFile file;
+				ICompilation compilation;
+				CSharpResolver resolver;
 
 				string IdString {
 					get {
@@ -654,16 +692,22 @@ namespace MonoDevelop.CSharp.Completion
 					}
 				}
 
+				#region IListData implementation
+
+				public CSharpCompletionDataList List {
+					get;
+					set;
+				}
+
+				#endregion
+
 				public override TooltipInformation CreateTooltipInformation (bool smartWrap)
 				{
 					var def = type.GetDefinition ();
-					var result = def != null ? MemberCompletionData.CreateTooltipInformation (ext, def, smartWrap)  : new TooltipInformation ();
+					var result = def != null ? MemberCompletionData.CreateTooltipInformation (compilation, file, List.Resolver, ext.TextEditorData, ext.FormattingPolicy, def, smartWrap)  : new TooltipInformation ();
 					if (ConflictingTypes != null) {
 						var conflicts = new StringBuilder ();
-						conflicts.Append ("Conflicts with: ");
-						var file = ext.CSharpUnresolvedFile;
-						var resolver = file != null ? file.GetResolver (ext.Compilation, ext.document.Editor.Caret.Location) : new CSharpResolver (ext.Compilation);
-						var sig = new SignatureMarkupCreator (resolver, ext.FormattingPolicy.CreateOptions ());
+						var sig = new SignatureMarkupCreator (List.Resolver, ext.FormattingPolicy.CreateOptions ());
 						for (int i = 0; i < ConflictingTypes.Count; i++) {
 							var ct = ConflictingTypes[i];
 							if (i > 0)
@@ -681,6 +725,8 @@ namespace MonoDevelop.CSharp.Completion
 				{
 					this.type = type;
 					this.ext = ext;
+					this.file = ext.CSharpUnresolvedFile;
+					this.compilation = ext.UnresolvedFileCompilation;
 				}
 
 				Dictionary<string, ICSharpCode.NRefactory.Completion.ICompletionData> addedDatas = new Dictionary<string, ICSharpCode.NRefactory.Completion.ICompletionData> ();
@@ -712,9 +758,9 @@ namespace MonoDevelop.CSharp.Completion
 
 			ICompletionData ICompletionDataFactory.CreateEntityCompletionData (IEntity entity, string text)
 			{
-				return new GenericTooltipCompletionData (sw => MemberCompletionData.CreateTooltipInformation (ext, entity, sw), text, entity.GetStockIcon ());
+				return new GenericTooltipCompletionData ((list, sw) => MemberCompletionData.CreateTooltipInformation (ext, list.Resolver, entity, sw), text, entity.GetStockIcon ());
 			}
-			
+
 			ICompletionData ICompletionDataFactory.CreateTypeCompletionData (IType type, bool showFullName, bool isInAttributeContext)
 			{
 				Lazy<string> displayText = new Lazy<string> (delegate {
@@ -739,7 +785,7 @@ namespace MonoDevelop.CSharp.Completion
 				});
 
 				var result = new LazyGenericTooltipCompletionData (
-					sw => new TooltipInformation (), 
+					(List, sw) => new TooltipInformation (), 
 					displayText, 
 					member.GetStockIcon ());
 				return result;
@@ -748,9 +794,8 @@ namespace MonoDevelop.CSharp.Completion
 
 			ICompletionData ICompletionDataFactory.CreateLiteralCompletionData (string title, string description, string insertText)
 			{
-				return new GenericTooltipCompletionData (smartWrap => {
-					var resolver = ext.CSharpUnresolvedFile.GetResolver (ext.Compilation, ext.TextEditorData.Caret.Location);
-					var sig = new SignatureMarkupCreator (resolver, ext.FormattingPolicy.CreateOptions ());
+				return new GenericTooltipCompletionData ((list, smartWrap) => {
+					var sig = new SignatureMarkupCreator (list.Resolver, ext.FormattingPolicy.CreateOptions ());
 					sig.BreakLineAfterReturnType = smartWrap;
 					return sig.GetKeywordTooltip (title, null);
 				}, title, "md-keyword", description, insertText ?? title);
@@ -782,7 +827,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			ICompletionData ICompletionDataFactory.CreateNewPartialCompletionData (int declarationBegin, IUnresolvedTypeDefinition type, IUnresolvedMember m)
 			{
-				var ctx = ext.CSharpUnresolvedFile.GetTypeResolveContext (ext.Compilation, ext.document.Editor.Caret.Location);
+				var ctx = ext.CSharpUnresolvedFile.GetTypeResolveContext (ext.UnresolvedFileCompilation, ext.document.Editor.Caret.Location);
 				return new NewOverrideCompletionData (ext, declarationBegin, type, m.CreateResolved (ctx));
 			}
 			IEnumerable<ICompletionData> ICompletionDataFactory.CreateCodeTemplateCompletionData ()
