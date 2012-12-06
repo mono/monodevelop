@@ -99,7 +99,7 @@
     </None>
     <Compile Include="RazorGenerator\RazorTemplatePreprocessor.cs" />
     <Compile Include="RazorGenerator\PreprocessedCSharpRazorCodeParser.cs" />
-    <Compile Include="RazorGenerator\TemplateCodeTransformer.cs" />
+    <Compile Include="RazorGenerator\PreprocessedTemplateCodeTransformer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

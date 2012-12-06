@@ -12,10 +12,11 @@ using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using RazorGenerator.Core;
 
-namespace RazorGenerator.Core
+namespace MonoDevelop.RazorGenerator
 {
-	class TemplateCodeTransformer : AggregateCodeTransformer
+	class PreprocessedTemplateCodeTransformer : AggregateCodeTransformer
 	{
 		private static readonly IEnumerable<string> _defaultImports = new[] {
 			"System",
@@ -26,7 +27,7 @@ namespace RazorGenerator.Core
 
 		private readonly RazorCodeTransformerBase[] _codeTransforms;
 
-		public TemplateCodeTransformer (Dictionary<string, string> directives, List<string[]> properties)
+		public PreprocessedTemplateCodeTransformer (Dictionary<string, string> directives, List<string[]> properties)
 		{
 			_codeTransforms = new RazorCodeTransformerBase[] {
 				new SetImports(_defaultImports, replaceExisting: true),
@@ -62,7 +63,7 @@ namespace RazorGenerator.Core
 			generatedClass.CustomAttributes.Add(
 				new CodeAttributeDeclaration(typeof(System.CodeDom.Compiler.GeneratedCodeAttribute).FullName,
 					new CodeAttributeArgument(new CodePrimitiveExpression(tool)),
-			    	new CodeAttributeArgument(new CodePrimitiveExpression(version.ToString()))
+					new CodeAttributeArgument(new CodePrimitiveExpression(version.ToString()))
 			));
 		}
 	}
@@ -117,7 +118,6 @@ namespace RazorGenerator.Core
         {
             write (__razor_writer);
         }
-
         "));
 		}
 	}

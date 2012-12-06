@@ -46,7 +46,7 @@ namespace MonoDevelop.RazorGenerator
 		{
 			var directives = new Dictionary<string, string> ();
 			var properties = new List<string[]> ();
-			var codeTransformer = new TemplateCodeTransformer (directives, properties);
+			var codeTransformer = new PreprocessedTemplateCodeTransformer (directives, properties);
 			var codeDomProvider = new Microsoft.CSharp.CSharpCodeProvider ();
 			var host = new RazorHost (projectRelativePath, fullPath, codeTransformer, codeDomProvider, directives);
 			host.Parser = new PreprocessedCSharpRazorCodeParser (directives, properties);
