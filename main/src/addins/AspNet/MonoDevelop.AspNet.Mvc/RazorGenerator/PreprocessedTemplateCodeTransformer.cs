@@ -87,11 +87,6 @@ namespace MonoDevelop.RazorGenerator
 			generatedClass.Members.Add (new CodeSnippetTypeMember (@"
         System.IO.TextWriter __razor_writer;
 
-        private void WriteLiteral (string value)
-        {
-            __razor_writer.Write (value);
-        }
-
         public string GenerateString ()
         {
             using (var sw = new System.IO.StringWriter ()) {
@@ -107,24 +102,26 @@ namespace MonoDevelop.RazorGenerator
             this.__razor_writer = null;
         }
 
-        private void Write (object value)
+        protected void WriteLiteral (string value)
         {
-            __razor_writer.Write (System.Web.HttpUtility.HtmlEncode (value));
+            __razor_writer.Write (value);
         }
 
-        private void Write (Action<System.IO.TextWriter> write)
+        protected void Write (object value)
+        {
+            WriteTo (__razor_writer, value);
+        }
+
+        protected void Write (Action<System.IO.TextWriter> write)
         {
             write (__razor_writer);
         }
 
-        private static void WriteTo (System.IO.TextWriter writer, object value)
+        protected static void WriteTo (System.IO.TextWriter writer, object value)
         {
-            writer.Write (System.Web.HttpUtility.HtmlEncode (value));
-        }
-
-        private static void WriteLiteralTo (System.IO.TextWriter writer, string value)
-        {
-            writer.Write (value);
+            if (value != null) {
+                System.Web.HttpUtility.HtmlEncode (value.ToString (), writer);
+            }
         }
         "));
 		}
@@ -156,7 +153,7 @@ namespace MonoDevelop.RazorGenerator
 		{
 			return __razor_helper_writer => {
 				__razor_helper_writer.Write("<p>");
-				__razor_helper_writer.Write(i);
+				WriteTo(__razor_helper_writer, i);
 				__razor_helper_writer.Write("</p>\n");
 			};
 		}
@@ -165,6 +162,7 @@ namespace MonoDevelop.RazorGenerator
 		static string[,] replacements = new string [,] {
 			{ "public System.Web.WebPages.HelperResult " , "public static Action<System.IO.TextWriter> " },
 			{ "return new System.Web.WebPages.HelperResult(__razor_helper_writer" , "return __razor_helper_writer" },
+			{ "WriteLiteralTo(__razor_helper_writer," , "__razor_helper_writer.Write(" },
 		};
 
 		public override void ProcessGeneratedCode (CodeCompileUnit codeCompileUnit, CodeNamespace generatedNamespace, CodeTypeDeclaration generatedClass, CodeMemberMethod executeMethod)
