@@ -73,7 +73,8 @@ namespace RazorGenerator.Core
 			if (hasBaseType)
 				return;
 
-			executeMethod.Attributes = (executeMethod.Attributes & ~MemberAttributes.AccessMask) | MemberAttributes.Private;
+			executeMethod.Attributes = (executeMethod.Attributes & (~MemberAttributes.AccessMask | ~MemberAttributes.Override))
+				| MemberAttributes.Private | MemberAttributes.Final;
 
 			generatedClass.Members.Add (new CodeSnippetTypeMember (@"
         System.IO.TextWriter writer;
