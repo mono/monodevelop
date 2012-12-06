@@ -350,7 +350,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (wrapper != null && (result.Flags & ParsedDocumentFlags.NonSerializable) != ParsedDocumentFlags.NonSerializable) {
 						var oldFile = wrapper.Content.GetFile (fileName);
 						wrapper.UpdateContent (c => c.AddOrUpdateFiles (result.ParsedFile));
-						UpdateParsedDocument (wrapper, result);
+						UpdateProjectCommentTasks (wrapper, result);
 						if (oldFile != null)
 							wrapper.InformFileRemoved (new ParsedFileEventArgs (oldFile));
 						wrapper.InformFileAdded (new ParsedFileEventArgs (result.ParsedFile));
@@ -408,7 +408,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (wrapper != null && (result.Flags & ParsedDocumentFlags.NonSerializable) != ParsedDocumentFlags.NonSerializable) {
 						var oldFile = wrapper.Content.GetFile (fileName);
 						wrapper.UpdateContent (c => c.AddOrUpdateFiles (result.ParsedFile));
-						UpdateParsedDocument (wrapper, result);
+						UpdateProjectCommentTasks (wrapper, result);
 						if (oldFile != null)
 							wrapper.InformFileRemoved (new ParsedFileEventArgs (oldFile));
 						wrapper.InformFileAdded (new ParsedFileEventArgs (result.ParsedFile));
@@ -2093,6 +2093,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			{
 				TypeSystemParserNode node = null;
 				TypeSystemParser parser = null;
+				var tags = Context.GetExtensionObject <ProjectCommentTags> ();
+
 				foreach (var file in (FileList ?? Context.Project.Files)) {
 					var fileName = file.FilePath;
 					if (filesSkippedInParseThread.Any (f => f == fileName))
@@ -2104,7 +2106,8 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (parser == null)
 						continue;
 					var parsedDocument = parser.Parse (false, fileName, Context.Project);
-					UpdateParsedDocument (Context, parsedDocument);
+					if (tags != null)
+						tags.UpdateTags (Context.Project, parsedDocument.FileName, parsedDocument.TagComments);
 					var oldFile = Context.Content.GetFile (fileName);
 					Context.UpdateContent (c => c.AddOrUpdateFiles (parsedDocument.ParsedFile));
 					if (oldFile != null)
@@ -2114,15 +2117,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		static void UpdateParsedDocument (ProjectContentWrapper context, ParsedDocument parsedDocument)
+		static void UpdateProjectCommentTasks (ProjectContentWrapper context, ParsedDocument parsedDocument)
 		{
 			var tags = context.GetExtensionObject <ProjectCommentTags> ();
-			if (tags == null) {
-				tags = new ProjectCommentTags ();
-				context.UpdateExtensionObject (tags);
-				tags.Update (context.Project);
-			}
-			tags.UpdateTags (context.Project, parsedDocument.FileName, parsedDocument.TagComments);
+			if (tags != null) // When tags are not there they're updated first time the tasks are requested.
+				tags.UpdateTags (context.Project, parsedDocument.FileName, parsedDocument.TagComments);
 		}
 
 //		public static event EventHandler<ProjectFileEventArgs> FileParsed;
