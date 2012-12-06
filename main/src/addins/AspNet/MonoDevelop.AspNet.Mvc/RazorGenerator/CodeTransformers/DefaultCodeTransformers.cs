@@ -79,43 +79,4 @@ namespace RazorGenerator.Core
 			}
 		}
 	}
-
-	class MakeTypeStatic : RazorCodeTransformerBase
-	{
-		public override string ProcessOutput(string codeContent)
-		{
-			return codeContent.Replace("public class", "public static class");
-		}
-	}
-
-	class SetBaseType : RazorCodeTransformerBase
-	{
-		private readonly string _typeName;
-		public SetBaseType(string typeName)
-		{
-			_typeName = typeName;
-		}
-
-		public SetBaseType(Type type)
-			: this(type.FullName)
-		{
-		}
-
-		public override void Initialize(RazorHost razorHost, IDictionary<string, string> directives)
-		{
-			razorHost.DefaultBaseClass = _typeName;
-		}
-	}
-
-	class MakeTypeHelper : RazorCodeTransformerBase
-	{
-		public override void Initialize(RazorHost razorHost, IDictionary<string, string> directives)
-		{
-			razorHost.StaticHelpers = true;
-		}
-		public override void ProcessGeneratedCode(CodeCompileUnit codeCompileUnit, CodeNamespace generatedNamespace, CodeTypeDeclaration generatedClass, CodeMemberMethod executeMethod)
-		{
-			generatedClass.Members.Remove(executeMethod);
-		}
-	}
 }

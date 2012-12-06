@@ -89,10 +89,7 @@
     <Compile Include="RazorGenerator\Core\IRazorHost.cs" />
     <Compile Include="RazorGenerator\CodeTransformers\AggregateCodeTransformer.cs" />
     <Compile Include="RazorGenerator\CodeTransformers\DefaultCodeTransformers.cs" />
-    <Compile Include="RazorGenerator\CodeTransformers\ExcludeFromCodeCoverage.cs" />
     <Compile Include="RazorGenerator\CodeTransformers\RazorCodeTransformerBase.cs" />
-    <Compile Include="RazorGenerator\CodeTransformers\SetTypeNamespace.cs" />
-    <Compile Include="RazorGenerator\CodeTransformers\SetTypeVisibility.cs" />
     <Compile Include="RazorGenerator\RazorHost.cs" />
     <None Include="Templates\PreprocessedRazorTemplate.xft.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
