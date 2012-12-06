@@ -258,11 +258,11 @@ namespace MonoDevelop.CSharp
 		public void AppendType (StringBuilder sb, IType type, OutputSettings settings)
 		{
 			if (type.Kind == TypeKind.Unknown) {
-				sb.Append (type.Name);
+				sb.Append (settings.IncludeMarkup ? settings.Markup (type.Name) : type.Name);
 				return;
 			}
 			if (type.Kind == TypeKind.TypeParameter) {
-				sb.Append (type.Name);
+				sb.Append (settings.IncludeMarkup ? settings.Markup (type.Name) : type.Name);
 				return;
 			}
 			if (type.DeclaringType != null) {
@@ -361,9 +361,9 @@ namespace MonoDevelop.CSharp
 			var typeDef = type as ITypeDefinition ?? type.GetDefinition ();
 			if (typeDef != null) {
 				if (settings.UseFullName) {
-					sb.Append (typeDef.FullName);
+					sb.Append (settings.IncludeMarkup ? settings.Markup (typeDef.FullName) : typeDef.FullName);
 				} else {
-					sb.Append (typeDef.Name);
+					sb.Append (settings.IncludeMarkup ? settings.Markup (typeDef.Name) : typeDef.Name);
 				}
 				
 				if (typeDef.TypeParameterCount > 0) {
@@ -394,11 +394,11 @@ namespace MonoDevelop.CSharp
 				return "null";
 			var type = reference;
 			if (type.Kind == TypeKind.Unknown) {
-				return reference.Name;
+				return settings.IncludeMarkup ? settings.Markup (reference.Name) : reference.Name;
 			}
 			
 			if (reference.Kind == TypeKind.TypeParameter)
-				return reference.FullName;
+				return settings.IncludeMarkup ? settings.Markup (reference.Name) : reference.FullName;
 			
 			var sb = new StringBuilder ();
 			if (type is ITypeDefinition && ((ITypeDefinition)type).IsSynthetic && ((ITypeDefinition)type).Name == "$Anonymous$") {
@@ -408,7 +408,7 @@ namespace MonoDevelop.CSharp
 					sb.Append ("\t");
 					sb.Append (GetTypeReferenceString (property.ReturnType, settings) ?? "?");
 					sb.Append (" ");
-					sb.Append (property.Name);
+					sb.Append (settings.IncludeMarkup ? settings.Markup (property.Name) : property.Name);
 					sb.Append (";");
 				}
 				sb.AppendLine ();
@@ -423,11 +423,11 @@ namespace MonoDevelop.CSharp
 		protected override string GetTypeString (IType t, OutputSettings settings)
 		{
 			if (t.Kind == TypeKind.Unknown) {
-				return t.Name;
+				return settings.IncludeMarkup ? settings.Markup (t.Name) : t.Name;
 			}
 			
 			if (t.Kind == TypeKind.TypeParameter)
-				return t.FullName;
+				return settings.IncludeMarkup ? settings.Markup (t.FullName) : t.FullName;
 
 			var typeWithElementType = t as TypeWithElementType;
 			if (typeWithElementType != null) {
@@ -509,7 +509,7 @@ namespace MonoDevelop.CSharp
 			}
 			
 			if (settings.UseFullName && !string.IsNullOrEmpty (type.Namespace)) 
-				result.Append (type.Namespace + ".");
+				result.Append ((settings.IncludeMarkup ? settings.Markup (t.Namespace) : type.Namespace) + ".");
 			
 			if (settings.UseFullInnerTypeName && type.DeclaringTypeDefinition != null) {
 				bool includeGenerics = settings.IncludeGenerics;
@@ -520,7 +520,7 @@ namespace MonoDevelop.CSharp
 				result.Append (typeString);
 				result.Append (settings.Markup ("."));
 			}
-			result.Append (settings.EmitName (type, type.Name));
+			result.Append (settings.EmitName (type, settings.IncludeMarkup ? settings.Markup (t.Name) : type.Name));
 			if (settings.IncludeGenerics && type.TypeParameterCount > 0) {
 				result.Append (settings.Markup ("<"));
 				for (int i = 0; i < type.TypeParameterCount; i++) {
