@@ -111,12 +111,22 @@ namespace MonoDevelop.RazorGenerator
 
         private void Write (object value)
         {
-            __razor_writer.Write (value);
+            __razor_writer.Write (System.Web.HttpUtility.HtmlEncode (value));
         }
 
         private void Write (Action<System.IO.TextWriter> write)
         {
             write (__razor_writer);
+        }
+
+        private static void WriteTo (System.IO.TextWriter writer, object value)
+        {
+            writer.Write (System.Web.HttpUtility.HtmlEncode (value));
+        }
+
+        private static void WriteLiteralTo (System.IO.TextWriter writer, string value)
+        {
+            writer.Write (value);
         }
         "));
 		}
@@ -157,8 +167,6 @@ namespace MonoDevelop.RazorGenerator
 		static string[,] replacements = new string [,] {
 			{ "public System.Web.WebPages.HelperResult " , "public static Action<System.IO.TextWriter> " },
 			{ "return new System.Web.WebPages.HelperResult(__razor_helper_writer" , "return __razor_helper_writer" },
-			{ "WriteLiteralTo(__razor_helper_writer, " , "__razor_helper_writer.Write(" },
-			{ "WriteTo(__razor_helper_writer, " , "__razor_helper_writer.Write(" },
 		};
 
 		public override void ProcessGeneratedCode (CodeCompileUnit codeCompileUnit, CodeNamespace generatedNamespace, CodeTypeDeclaration generatedClass, CodeMemberMethod executeMethod)
