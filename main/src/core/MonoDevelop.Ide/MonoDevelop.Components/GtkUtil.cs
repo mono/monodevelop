@@ -64,7 +64,7 @@ namespace MonoDevelop.Components
 
 		public static Gtk.Widget ToGtkWidget (this Xwt.Widget widget)
 		{
-			return (Gtk.Widget) Xwt.Engine.WidgetRegistry.GetNativeWidget (widget);
+			return (Gtk.Widget) Xwt.Toolkit.CurrentEngine.GetNativeWidget (widget);
 		}
 		
 		public static void EnableAutoTooltips (this Gtk.TreeView tree)
