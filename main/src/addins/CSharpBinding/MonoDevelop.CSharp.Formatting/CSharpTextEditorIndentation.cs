@@ -134,27 +134,29 @@ namespace MonoDevelop.CSharp.Formatting
 					if (curLine == null)
 						break;
 					var curLineOffset = curLine.Offset;
+					stateTracker.UpdateEngine (curLineOffset);
+					if (!stateTracker.Engine.IsInsideOrdinaryCommentOrString) {
+						// The Indent engine doesn't really handle pre processor directives very well.
+						if (IsPreprocessorDirective (curLine)) {
+							Editor.Replace (curLineOffset, curLine.Length, stateTracker.Engine.NewLineIndent + Editor.GetTextAt (curLine).TrimStart ());
+						} else {
+							int pos = curLineOffset;
+							string curIndent = curLine.GetIndentation (textEditorData.Document);
+							int nlwsp = curIndent.Length;
 
-					// The Indent engine doesn't really handle pre processor directives very well.
-					if (IsPreprocessorDirective (curLine)) {
-						Editor.Replace (curLineOffset, curLine.Length, stateTracker.Engine.NewLineIndent + Editor.GetTextAt (curLine).TrimStart ());
-					} else {
-						int pos = curLineOffset;
-						string curIndent = curLine.GetIndentation (textEditorData.Document);
-						int nlwsp = curIndent.Length;
 
-						stateTracker.UpdateEngine (curLineOffset);
-						if (!stateTracker.Engine.LineBeganInsideMultiLineComment || (nlwsp < curLine.LengthIncludingDelimiter && textEditorData.Document.GetCharAt (curLineOffset + nlwsp) == '*')) {
-							// Possibly replace the indent
-							stateTracker.UpdateEngine (curLineOffset + curLine.Length);
-							string newIndent = stateTracker.Engine.ThisLineIndent;
-							if (newIndent != curIndent) {
-								if (CompletionWindowManager.IsVisible) {
-									if (pos < CompletionWindowManager.CodeCompletionContext.TriggerOffset)
-										CompletionWindowManager.CodeCompletionContext.TriggerOffset -= nlwsp;
+							if (!stateTracker.Engine.LineBeganInsideMultiLineComment || (nlwsp < curLine.LengthIncludingDelimiter && textEditorData.Document.GetCharAt (curLineOffset + nlwsp) == '*')) {
+								// Possibly replace the indent
+								stateTracker.UpdateEngine (curLineOffset + curLine.Length);
+								string newIndent = stateTracker.Engine.ThisLineIndent;
+								if (newIndent != curIndent) {
+									if (CompletionWindowManager.IsVisible) {
+										if (pos < CompletionWindowManager.CodeCompletionContext.TriggerOffset)
+											CompletionWindowManager.CodeCompletionContext.TriggerOffset -= nlwsp;
+									}
+									textEditorData.Replace (pos, nlwsp, newIndent);
+									textEditorData.Document.CommitLineUpdate (textEditorData.Caret.Line);
 								}
-								textEditorData.Replace (pos, nlwsp, newIndent);
-								textEditorData.Document.CommitLineUpdate (textEditorData.Caret.Line);
 							}
 						}
 					}
