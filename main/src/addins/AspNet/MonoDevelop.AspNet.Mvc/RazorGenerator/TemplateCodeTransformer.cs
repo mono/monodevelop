@@ -77,11 +77,11 @@ namespace RazorGenerator.Core
 				| MemberAttributes.Private | MemberAttributes.Final;
 
 			generatedClass.Members.Add (new CodeSnippetTypeMember (@"
-        System.IO.TextWriter writer;
+        System.IO.TextWriter __razor_writer;
 
         private void WriteLiteral (string value)
         {
-            writer.Write (value);
+            __razor_writer.Write (value);
         }
 
         public string GenerateString ()
@@ -94,14 +94,14 @@ namespace RazorGenerator.Core
 
         public void Generate (System.IO.TextWriter writer)
         {
-            this.writer = writer;
+            this.__razor_writer = writer;
             Execute ();
-            this.writer = null;
+            this.__razor_writer = null;
         }
 
         private void Write (object value)
         {
-            writer.Write (value.ToString ());
+            __razor_writer.Write (value);
         }
         "));
 		}
