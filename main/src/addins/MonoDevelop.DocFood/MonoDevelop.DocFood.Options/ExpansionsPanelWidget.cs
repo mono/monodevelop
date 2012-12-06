@@ -41,10 +41,19 @@ namespace MonoDevelop.DocFood.Options
 	}
 	
 		
+	/// <summary>
+	/// Expansions panel.
+	/// </summary>
 	public class ExpansionsPanel : OptionsPanel
 	{
 		ExpansionsPanelWidget panel;
-		
+
+		/// <summary>
+		/// Creates the panel widget.
+		/// </summary>
+		/// <returns>
+		/// The panel widget.
+		/// </returns>
 		public override Gtk.Widget CreatePanelWidget ()
 		{
 			panel = new ExpansionsPanelWidget (DocConfig.Instance);

@@ -154,14 +154,20 @@ namespace MonoDevelop.DocFood
 				foreach (var attr in section.Attributes) {
 					result.Append (" ");
 					result.Append (attr.Key);
-					result.Append ("='");
+					result.Append ("=\"");
 					result.Append (attr.Value);
-					result.Append ("'");
+					result.Append ("\"");
 				}
-				result.AppendLine (">");
-				
-				result.Append (indent);
-				result.Append (prefix);
+				if (section.Name == "summary")
+				{
+					result.AppendLine (">");
+					result.Append (indent);
+					result.Append (prefix);
+				}
+				else
+				{
+					result.Append (">");
+				}
 				bool inTag = false;
 				int column = indent.Length + prefix.Length;
 				StringBuilder curWord = new StringBuilder ();
@@ -195,10 +201,17 @@ namespace MonoDevelop.DocFood
 						curWord.Append (ch);
 					}
 				}
-				result.AppendLine (curWord.ToString ());
-				
-				result.Append (indent);
-				result.Append (prefix);
+				if (section.Name == "summary")
+				{
+					result.AppendLine(curWord.ToString ());
+					result.Append(indent);
+					result.Append(prefix);
+				}
+				else
+				{
+					result.Append(curWord.ToString ());
+				}
+
 				result.Append ("</");
 				result.Append (section.Name);
 				result.Append (">");
@@ -229,20 +242,28 @@ namespace MonoDevelop.DocFood
 				foreach (var attr in section.Attributes) {
 					result.Append (" ");
 					result.Append (attr.Key);
-					result.Append ("='");
+					result.Append ("=\"");
 					result.Append (attr.Value);
-					result.Append ("'");
+					result.Append ("\"");
 				}
-				result.AppendLine (">");
-				
-				result.Append (indent);
-				result.Append ("/// ");
+				if (section.Name == "summary")
+				{
+					result.AppendLine (">");
+					result.Append (indent);
+					result.Append ("/// ");
+					result.AppendLine ();
+					result.Append (indent);
+					result.Append ("/// ");
+				}
+				else
+				{
+					result.Append (">");
+				}
+
 //				bool inTag = false;
 //				int column = indent.Length + "/// ".Length;
-				
-				result.AppendLine ();
-				result.Append (indent);
-				result.Append ("/// </");
+
+				result.Append ("</");
 				result.Append (section.Name);
 				result.Append (">");
 			}
