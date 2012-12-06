@@ -131,6 +131,8 @@ namespace MonoDevelop.CSharp.Formatting
 
 
 				while (true) {
+					if (curLine == null)
+						break;
 					var curLineOffset = curLine.Offset;
 
 					// The Indent engine doesn't really handle pre processor directives very well.
