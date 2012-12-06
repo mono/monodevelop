@@ -27,7 +27,7 @@ namespace MonoDevelop.RazorGenerator
 
 		private readonly RazorCodeTransformerBase[] _codeTransforms;
 
-		public PreprocessedTemplateCodeTransformer (Dictionary<string, string> directives, List<string[]> properties)
+		public PreprocessedTemplateCodeTransformer ()
 		{
 			_codeTransforms = new RazorCodeTransformerBase[] {
 				new SetImports(_defaultImports, replaceExisting: true),
@@ -35,8 +35,6 @@ namespace MonoDevelop.RazorGenerator
 				new ReplaceBaseType(),
 				new SimplifyHelpers (),
 				new FixMonoPragmas (),
-				new DirectivesTransformer (directives),
-				new AddPropertiesTransformer (properties),
 			};
 		}
 
@@ -70,7 +68,7 @@ namespace MonoDevelop.RazorGenerator
 
 	class ReplaceBaseType : RazorCodeTransformerBase
 	{
-		public override void Initialize (RazorHost razorHost, IDictionary<string, string> directives)
+		public override void Initialize (RazorHost razorHost)
 		{
 			razorHost.DefaultBaseClass = "System.Object";
 		}
@@ -196,83 +194,6 @@ namespace MonoDevelop.RazorGenerator
 					}
 					method.Text = writer.ToString ();
 				}
-			}
-		}
-	}
-
-	class DirectivesTransformer : RazorCodeTransformerBase
-	{
-		Dictionary<string, string> directives;
-
-		public DirectivesTransformer (Dictionary<string, string> directives)
-		{
-			this.directives = directives;
-		}
-
-		public override void ProcessGeneratedCode (CodeCompileUnit codeCompileUnit, CodeNamespace generatedNamespace, CodeTypeDeclaration generatedClass, CodeMemberMethod executeMethod)
-		{
-			foreach (var d in directives) {
-				switch (d.Key) {
-				case PreprocessedCSharpRazorCodeParser.NameKeyword:
-					SetName (generatedNamespace, generatedClass, d.Value);
-					break;
-				case PreprocessedCSharpRazorCodeParser.AccessKeyword:
-					SetAccess (generatedClass, d.Value);
-					break;
-				case PreprocessedCSharpRazorCodeParser.ModelKeyword:
-					SetModel (generatedClass, d.Value);
-					break;
-				}
-			}
-		}
-
-		void SetName (CodeNamespace generatedNamespace, CodeTypeDeclaration generatedClass, string value)
-		{
-			var idx = value.LastIndexOf ('.');
-			if (idx > 0) {
-				generatedNamespace.Name = value.Substring (0, idx);
-				generatedClass.Name = value.Substring (idx + 1);
-			} else {
-				generatedClass.Name = value;
-			}
-		}
-
-		void SetAccess (CodeTypeDeclaration generatedClass, string value)
-		{
-			if (value == "public") {
-				generatedClass.TypeAttributes |= System.Reflection.TypeAttributes.Public;
-			} else {
-				generatedClass.TypeAttributes &= ~System.Reflection.TypeAttributes.Public;
-			}
-		}
-
-		void SetModel (CodeTypeDeclaration generatedClass, string value)
-		{
-			//considered adding a ctor to set this but it could cause problems with base classes
-			AddPropertiesTransformer.AddPublicAutoProperty (generatedClass, value, "Model");
-		}
-	}
-
-	class AddPropertiesTransformer : RazorCodeTransformerBase
-	{
-		List<string[]> properties;
-
-		public AddPropertiesTransformer (List<string[]> properties)
-		{
-			this.properties = properties;
-		}
-
-		public static void AddPublicAutoProperty (CodeTypeDeclaration generatedClass, string type, string name)
-		{
-			var text = string.Format ("public {0} {1} {{ get; set; }}\n", type, name);
-			generatedClass.Members.Add (new CodeSnippetTypeMember (text));
-		}
-
-		//FIXME: set location info
-		public override void ProcessGeneratedCode (CodeCompileUnit codeCompileUnit, CodeNamespace generatedNamespace, CodeTypeDeclaration generatedClass, CodeMemberMethod executeMethod)
-		{
-			foreach (var property in properties) {
-				AddPublicAutoProperty (generatedClass, property [0], property [1]);
 			}
 		}
 	}

@@ -35,7 +35,7 @@ namespace RazorGenerator.Core
 			_replaceExisting = replaceExisting;
 		}
 
-		public override void Initialize(RazorHost razorHost, IDictionary<string, string> directives)
+		public override void Initialize(RazorHost razorHost)
 		{
 			if (_replaceExisting)
 			{

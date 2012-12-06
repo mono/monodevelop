@@ -30,23 +30,16 @@ namespace RazorGenerator.Core
 		};
 
 		private readonly IRazorCodeTransformer _codeTransformer;
-		private readonly string _baseRelativePath;
 		private readonly string _fullPath;
 		private readonly CodeDomProvider _codeDomProvider;
-		private readonly IDictionary<string, string> _directives;
 		private string _defaultClassName;
 
-		public RazorHost(string baseRelativePath, string fullPath, IRazorCodeTransformer codeTransformer, CodeDomProvider codeDomProvider, IDictionary<string, string> directives)
+		public RazorHost(string fullPath, IRazorCodeTransformer codeTransformer, CodeDomProvider codeDomProvider)
 			: base(RazorCodeLanguage.GetLanguageByExtension(".cshtml"))
 		{
-
 			if (codeTransformer == null)
 			{
 				throw new ArgumentNullException("codeTransformer");
-			}
-			if (baseRelativePath == null)
-			{
-				throw new ArgumentNullException("baseRelativePath");
 			}
 			if (fullPath == null)
 			{
@@ -57,10 +50,8 @@ namespace RazorGenerator.Core
 				throw new ArgumentNullException("codeDomProvider");
 			}
 			_codeTransformer = codeTransformer;
-			_baseRelativePath = baseRelativePath;
 			_fullPath = fullPath;
 			_codeDomProvider = codeDomProvider;
-			_directives = directives;
 			base.DefaultNamespace = "ASP";
 			EnableLinePragmas = true;
 
@@ -84,11 +75,6 @@ namespace RazorGenerator.Core
 			{
 				base.NamespaceImports.Add(import);
 			}
-		}
-
-		public string ProjectRelativePath
-		{
-			get { return _baseRelativePath; }
 		}
 
 		public string FullPath
@@ -116,7 +102,7 @@ namespace RazorGenerator.Core
 			}
 		}
 
-		public ParserBase Parser { get; set; }
+		public Func<RazorHost,ParserBase> ParserFactory { get; set; }
 
 		public RazorCodeGenerator CodeGenerator { get; set; }
 
@@ -124,7 +110,7 @@ namespace RazorGenerator.Core
 
 		public string GenerateCode()
 		{
-			_codeTransformer.Initialize(this, _directives);
+			_codeTransformer.Initialize(this);
 
 			// Create the engine
 			RazorTemplateEngine engine = new RazorTemplateEngine(this);
@@ -198,7 +184,7 @@ namespace RazorGenerator.Core
 
 		public override ParserBase DecorateCodeParser(ParserBase incomingCodeParser)
 		{
-			return Parser ?? base.DecorateCodeParser(incomingCodeParser);
+			return ParserFactory != null? ParserFactory (this) : base.DecorateCodeParser(incomingCodeParser);
 		}
 
 		private void OnGenerateError(int errorCode, string errorMessage, int lineNumber, int columnNumber)
@@ -219,7 +205,7 @@ namespace RazorGenerator.Core
 
 		protected virtual string GetClassName()
 		{
-			string filename = Path.GetFileNameWithoutExtension(_baseRelativePath);
+			string filename = Path.GetFileNameWithoutExtension(_fullPath);
 			return ParserHelpers.SanitizeClassName(filename);
 		}
 	}

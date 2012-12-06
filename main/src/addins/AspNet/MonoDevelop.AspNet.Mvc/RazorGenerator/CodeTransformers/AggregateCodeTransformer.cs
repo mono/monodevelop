@@ -16,11 +16,11 @@ namespace RazorGenerator.Core
 			get;
 		}
 
-		public override void Initialize(RazorHost razorHost, IDictionary<string, string> directives)
+		public override void Initialize(RazorHost razorHost)
 		{
 			foreach (var transformer in CodeTransformers)
 			{
-				transformer.Initialize(razorHost, directives);
+				transformer.Initialize(razorHost);
 			}
 		}
 

@@ -10,7 +10,7 @@ namespace RazorGenerator.Core
 {
 	public interface IRazorCodeTransformer
 	{
-		void Initialize(IRazorHost razorHost, IDictionary<string, string> directives);
+		void Initialize(IRazorHost razorHost);
 
 		void ProcessGeneratedCode(CodeCompileUnit codeCompileUnit, CodeNamespace generatedNamespace, CodeTypeDeclaration generatedClass, CodeMemberMethod executeMethod);
 

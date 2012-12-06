@@ -42,14 +42,12 @@ namespace MonoDevelop.RazorGenerator
 {
 	class RazorTemplatePreprocessor : ISingleFileCustomTool
 	{
-		public static RazorHost CreateHost (string fullPath, string projectRelativePath)
+		public static RazorHost CreateHost (string fullPath)
 		{
-			var directives = new Dictionary<string, string> ();
-			var properties = new List<string[]> ();
-			var codeTransformer = new PreprocessedTemplateCodeTransformer (directives, properties);
+			var codeTransformer = new PreprocessedTemplateCodeTransformer ();
 			var codeDomProvider = new Microsoft.CSharp.CSharpCodeProvider ();
-			var host = new RazorHost (projectRelativePath, fullPath, codeTransformer, codeDomProvider, directives);
-			host.Parser = new PreprocessedCSharpRazorCodeParser (directives, properties);
+			var host = new RazorHost (fullPath, codeTransformer, codeDomProvider);
+			host.ParserFactory = (h) => new PreprocessedCSharpRazorCodeParser ();
 			return host;
 		}
 
@@ -85,7 +83,7 @@ namespace MonoDevelop.RazorGenerator
 				return;
 			}
 
-			var host = CreateHost (file.FilePath, file.ProjectVirtualPath);
+			var host = CreateHost (file.FilePath);
 			host.EnableLinePragmas = true;
 			host.Error += (s, e) =>  {
 				Console.WriteLine (e.ErrorMessage);
