@@ -132,7 +132,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (project != null) {
 				ProjectReference pr = new ProjectReference (project);
 				DotNetProject p = CurrentNode.GetParentDataItem (typeof(DotNetProject), false) as DotNetProject;
-				if (ProjectReferencesProject (project, p.Name))
+				// Circular dependencies are not allowed.
+				if (ProjectReferencesProject (project, p.Name)) {
+					MessageService.ShowError (GettextCatalog.GetString ("Cyclic project references are not allowed."));
+					return;
+				}
+
+				// If the reference already exists, bail out
+				if (ProjectReferencesProject (p, project.Name))
 					return;
 				p.References.Add (pr);
 				IdeApp.ProjectOperations.Save (p);
@@ -198,10 +205,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		bool ProjectReferencesProject (DotNetProject project, string targetProject)
 		{
-			if (project.Name == targetProject) {
-				MessageService.ShowError (GettextCatalog.GetString ("Cyclic project references are not allowed."));
+			if (project.Name == targetProject)
 				return true;
-			}
 			
 			foreach (ProjectReference pr in project.References) {
 				DotNetProject pref = project.ParentSolution.FindProjectByName (pr.Reference) as DotNetProject;
