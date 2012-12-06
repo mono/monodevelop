@@ -1,10 +1,12 @@
 //
-// Based on Razor Generator (http://razorgenerator.codeplex.com/)
-// Licensed under the Microsoft Public License (MS-PL)
+// Based on TemplateCodeTransformer.cs from Razor Generator (http://razorgenerator.codeplex.com/)
+//     Licensed under the Microsoft Public License (MS-PL)
 //
 // Changes:
 //     Author: Michael Hutchinson <mhutch@xamarin.com>
 //     Copyright (c) 2012 Xamarin Inc (http://xamarin.com)
+//     Licensed under the Microsoft Public License (MS-PL)
+//
 
 using System.CodeDom;
 using System.Collections.Generic;
@@ -15,7 +17,6 @@ namespace RazorGenerator.Core
 {
 	class TemplateCodeTransformer : AggregateCodeTransformer
 	{
-		private const string GenerationEnvironmentPropertyName = "GenerationEnvironment";
 		private static readonly IEnumerable<string> _defaultImports = new[] {
 			"System",
 			"System.Collections.Generic",
@@ -23,13 +24,20 @@ namespace RazorGenerator.Core
 			"System.Text"
 		};
 
-		private readonly RazorCodeTransformerBase[] _codeTransforms = new RazorCodeTransformerBase[] {
-			new SetImports(_defaultImports, replaceExisting: true),
-			new AddGeneratedTemplateClassAttribute(),
-			new ReplaceBaseType(),
-			new SimplifyHelpers (),
-			new FixMonoPragmas (),
-		};
+		private readonly RazorCodeTransformerBase[] _codeTransforms;
+
+		public TemplateCodeTransformer (Dictionary<string, string> directives, List<string[]> properties)
+		{
+			_codeTransforms = new RazorCodeTransformerBase[] {
+				new SetImports(_defaultImports, replaceExisting: true),
+				new AddGeneratedTemplateClassAttribute(),
+				new ReplaceBaseType(),
+				new SimplifyHelpers (),
+				new FixMonoPragmas (),
+				new DirectivesTransformer (directives),
+				new AddPropertiesTransformer (properties),
+			};
+		}
 
 		protected override IEnumerable<RazorCodeTransformerBase> CodeTransformers
 		{
@@ -180,6 +188,83 @@ namespace RazorGenerator.Core
 					}
 					method.Text = writer.ToString ();
 				}
+			}
+		}
+	}
+
+	class DirectivesTransformer : RazorCodeTransformerBase
+	{
+		Dictionary<string, string> directives;
+
+		public DirectivesTransformer (Dictionary<string, string> directives)
+		{
+			this.directives = directives;
+		}
+
+		public override void ProcessGeneratedCode (CodeCompileUnit codeCompileUnit, CodeNamespace generatedNamespace, CodeTypeDeclaration generatedClass, CodeMemberMethod executeMethod)
+		{
+			foreach (var d in directives) {
+				switch (d.Key) {
+				case PreprocessedCSharpRazorCodeParser.NameKeyword:
+					SetName (generatedNamespace, generatedClass, d.Value);
+					break;
+				case PreprocessedCSharpRazorCodeParser.AccessKeyword:
+					SetAccess (generatedClass, d.Value);
+					break;
+				case PreprocessedCSharpRazorCodeParser.ModelKeyword:
+					SetModel (generatedClass, d.Value);
+					break;
+				}
+			}
+		}
+
+		void SetName (CodeNamespace generatedNamespace, CodeTypeDeclaration generatedClass, string value)
+		{
+			var idx = value.LastIndexOf ('.');
+			if (idx > 0) {
+				generatedNamespace.Name = value.Substring (0, idx);
+				generatedClass.Name = value.Substring (idx + 1);
+			} else {
+				generatedClass.Name = value;
+			}
+		}
+
+		void SetAccess (CodeTypeDeclaration generatedClass, string value)
+		{
+			if (value == "public") {
+				generatedClass.TypeAttributes |= System.Reflection.TypeAttributes.Public;
+			} else {
+				generatedClass.TypeAttributes &= ~System.Reflection.TypeAttributes.Public;
+			}
+		}
+
+		void SetModel (CodeTypeDeclaration generatedClass, string value)
+		{
+			//considered adding a ctor to set this but it could cause problems with base classes
+			AddPropertiesTransformer.AddPublicAutoProperty (generatedClass, value, "Model");
+		}
+	}
+
+	class AddPropertiesTransformer : RazorCodeTransformerBase
+	{
+		List<string[]> properties;
+
+		public AddPropertiesTransformer (List<string[]> properties)
+		{
+			this.properties = properties;
+		}
+
+		public static void AddPublicAutoProperty (CodeTypeDeclaration generatedClass, string type, string name)
+		{
+			var text = string.Format ("public {0} {1} {{ get; set; }}\n", type, name);
+			generatedClass.Members.Add (new CodeSnippetTypeMember (text));
+		}
+
+		//FIXME: set location info
+		public override void ProcessGeneratedCode (CodeCompileUnit codeCompileUnit, CodeNamespace generatedNamespace, CodeTypeDeclaration generatedClass, CodeMemberMethod executeMethod)
+		{
+			foreach (var property in properties) {
+				AddPublicAutoProperty (generatedClass, property [0], property [1]);
 			}
 		}
 	}

@@ -45,9 +45,12 @@ namespace MonoDevelop.RazorGenerator
 		public IRazorHost CreateHost (string fullPath, string projectRelativePath)
 		{
 			var directives = new Dictionary<string, string> ();
-			var codeTransformer = new TemplateCodeTransformer ();
+			var properties = new List<string[]> ();
+			var codeTransformer = new TemplateCodeTransformer (directives, properties);
 			var codeDomProvider = new Microsoft.CSharp.CSharpCodeProvider ();
-			return new RazorHost (projectRelativePath, fullPath, codeTransformer, codeDomProvider, directives);
+			var host = new RazorHost (projectRelativePath, fullPath, codeTransformer, codeDomProvider, directives);
+			host.Parser = new PreprocessedCSharpRazorCodeParser (directives, properties);
+			return host;
 		}
 
 		//from TextTemplatingFilePreprocessor

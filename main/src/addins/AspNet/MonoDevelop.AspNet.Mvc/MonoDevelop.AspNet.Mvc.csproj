@@ -94,11 +94,12 @@
     <Compile Include="RazorGenerator\CodeTransformers\SetTypeNamespace.cs" />
     <Compile Include="RazorGenerator\CodeTransformers\SetTypeVisibility.cs" />
     <Compile Include="RazorGenerator\RazorHost.cs" />
-    <Compile Include="RazorGenerator\TemplateCodeTransformer.cs" />
     <None Include="Templates\PreprocessedRazorTemplate.xft.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Compile Include="RazorGenerator\RazorTemplatePreprocessor.cs" />
+    <Compile Include="RazorGenerator\PreprocessedCSharpRazorCodeParser.cs" />
+    <Compile Include="RazorGenerator\TemplateCodeTransformer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
