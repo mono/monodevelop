@@ -36,6 +36,7 @@ using RazorGenerator.Core;
 using MonoDevelop.TextTemplating;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects.Text;
+using System.Collections.Generic;
 
 namespace MonoDevelop.RazorGenerator
 {
@@ -43,8 +44,7 @@ namespace MonoDevelop.RazorGenerator
 	{
 		public IRazorHost CreateHost (string fullPath, string projectRelativePath)
 		{
-			var directives = DirectivesParser.ParseDirectives (fullPath);
-			directives ["GenerateAbsolutePathLinePragmas"] = "True";
+			var directives = new Dictionary<string, string> ();
 			var codeTransformer = new TemplateCodeTransformer ();
 			var codeDomProvider = new Microsoft.CSharp.CSharpCodeProvider ();
 			return new RazorHost (projectRelativePath, fullPath, codeTransformer, codeDomProvider, directives);

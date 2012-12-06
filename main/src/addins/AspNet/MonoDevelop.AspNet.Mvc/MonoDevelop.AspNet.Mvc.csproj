@@ -93,10 +93,8 @@
     <Compile Include="RazorGenerator\CodeTransformers\RazorCodeTransformerBase.cs" />
     <Compile Include="RazorGenerator\CodeTransformers\SetTypeNamespace.cs" />
     <Compile Include="RazorGenerator\CodeTransformers\SetTypeVisibility.cs" />
-    <Compile Include="RazorGenerator\CodeTransformers\RewriteLinePragmas.cs" />
     <Compile Include="RazorGenerator\RazorHost.cs" />
     <Compile Include="RazorGenerator\TemplateCodeTransformer.cs" />
-    <Compile Include="RazorGenerator\Core\DirectivesParser.cs" />
     <None Include="Templates\PreprocessedRazorTemplate.xft.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
