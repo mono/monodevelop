@@ -70,21 +70,37 @@ namespace MonoDevelop.RazorGenerator
 	{
 		public override void Initialize (RazorHost razorHost)
 		{
-			razorHost.DefaultBaseClass = "System.Object";
+			razorHost.DefaultBaseClass = "";
 		}
-
-		bool hasBaseType;
 
 		public override void ProcessGeneratedCode (CodeCompileUnit codeCompileUnit, CodeNamespace generatedNamespace, CodeTypeDeclaration generatedClass, CodeMemberMethod executeMethod)
 		{
-			hasBaseType = generatedClass.BaseTypes [0].BaseType != "System.Object";
-			if (hasBaseType)
+			bool generateBaseClass = generatedClass.BaseTypes.Count == 0;
+			bool integrateHelpers = !generateBaseClass && generatedClass.BaseTypes [0].BaseType == "object";
+			if (!generateBaseClass && !integrateHelpers)
 				return;
 
-			executeMethod.Attributes = (executeMethod.Attributes & (~MemberAttributes.AccessMask | ~MemberAttributes.Override))
-				| MemberAttributes.Private | MemberAttributes.Final;
+			CodeTypeDeclaration helperClass = generatedClass;
 
-			generatedClass.Members.Add (new CodeSnippetTypeMember (@"
+			if (generateBaseClass) {
+				var baseName = generatedClass.Name + "Base";
+				generatedClass.BaseTypes.Add (new CodeTypeReference (baseName));
+				helperClass = new CodeTypeDeclaration (baseName) {
+					TypeAttributes = generatedClass.TypeAttributes | System.Reflection.TypeAttributes.Abstract,
+				};
+				generatedNamespace.Types.Add (helperClass);
+				helperClass.Members.Add (new CodeMemberMethod () {
+					Name = executeMethod.Name,
+					ReturnType = executeMethod.ReturnType,
+					Attributes = (executeMethod.Attributes & ~MemberAttributes.Override) | MemberAttributes.Abstract,
+				});
+			} else {
+				generatedClass.BaseTypes [0].BaseType = "System.Object";
+				executeMethod.Attributes = (executeMethod.Attributes & (~MemberAttributes.AccessMask | ~MemberAttributes.Override))
+					| MemberAttributes.Private | MemberAttributes.Final;
+			}
+
+			helperClass.Members.Add (new CodeSnippetTypeMember (@"
         System.IO.TextWriter __razor_writer;
 
         public string GenerateString ()
