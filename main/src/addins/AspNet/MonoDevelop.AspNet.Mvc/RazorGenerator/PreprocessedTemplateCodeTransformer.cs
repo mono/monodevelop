@@ -94,6 +94,16 @@ namespace MonoDevelop.RazorGenerator
 					ReturnType = executeMethod.ReturnType,
 					Attributes = (executeMethod.Attributes & ~MemberAttributes.Override) | MemberAttributes.Abstract,
 				});
+
+				string [] comments = {
+					"NOTE: this is the default generated helper class. You may choose to extract it to a separate file ",
+					"in order to customize it or share it between multiple templates, and specify the template's base ",
+					"class via the @inherits directive.",
+				};
+
+				foreach (var c in comments) {
+					helperClass.Comments.Add (new CodeCommentStatement (c));
+				}
 			} else {
 				generatedClass.BaseTypes [0].BaseType = "System.Object";
 				executeMethod.Attributes = (executeMethod.Attributes & (~MemberAttributes.AccessMask | ~MemberAttributes.Override))
@@ -101,8 +111,13 @@ namespace MonoDevelop.RazorGenerator
 			}
 
 			helperClass.Members.Add (new CodeSnippetTypeMember (@"
+        // This field is OPTIONAL, but used by the default implementation of Generate, Write and WriteLiteral
+        //
         System.IO.TextWriter __razor_writer;
 
+        // This method is OPTIONAL
+        //
+		///<summary>Executes the template and returns the output as a string.</summary>
         public string GenerateString ()
         {
             using (var sw = new System.IO.StringWriter ()) {
@@ -111,6 +126,10 @@ namespace MonoDevelop.RazorGenerator
 	        }
         }
 
+        // This method is OPTIONAL, you may choose to implement Write and WriteLiteral without use of __razor_writer
+        // and provide another means of invoking Execute.
+        //
+		///<summary>Executes the template, writing to the provided text writer.</summary>
         public void Generate (System.IO.TextWriter writer)
         {
             this.__razor_writer = writer;
@@ -118,21 +137,34 @@ namespace MonoDevelop.RazorGenerator
             this.__razor_writer = null;
         }
 
+        // This method is REQUIRED, but you may choose to implement it differently
+        //
+		///<summary>Writes literal values to the template output without HTML escaping them.</summary>
         protected void WriteLiteral (string value)
         {
             __razor_writer.Write (value);
         }
 
+		// This method is REQUIRED, but you may choose to implement it differently
+        //
+		///<summary>Writes values to the template output, HTML escaping them if necessary.</summary>
         protected void Write (object value)
         {
             WriteTo (__razor_writer, value);
         }
 
+        // This method is REQUIRED if the template uses any Razor helpers, but you may choose to implement it differently
+        //
+		///<summary>Invokes the action to write directly to the template output.</summary>
+        ///<remarks>This is used for Razor helpers, which already perform any necessary HTML escaping.</remarks>
         protected void Write (Action<System.IO.TextWriter> write)
         {
             write (__razor_writer);
         }
 
+        // This method is REQUIRED if the template has any Razor helpers, but you may choose to implement it differently
+        //
+        ///<remarks>Used by Razor helpers to HTML escape values.</remarks>
         protected static void WriteTo (System.IO.TextWriter writer, object value)
         {
             if (value != null) {
