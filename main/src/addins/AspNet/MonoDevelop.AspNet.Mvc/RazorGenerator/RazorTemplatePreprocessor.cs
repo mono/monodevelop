@@ -42,7 +42,7 @@ namespace MonoDevelop.RazorGenerator
 {
 	class RazorTemplatePreprocessor : ISingleFileCustomTool
 	{
-		public IRazorHost CreateHost (string fullPath, string projectRelativePath)
+		public static RazorHost CreateHost (string fullPath, string projectRelativePath)
 		{
 			var directives = new Dictionary<string, string> ();
 			var properties = new List<string[]> ();

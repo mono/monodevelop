@@ -159,6 +159,13 @@ namespace MonoDevelop.AspNet.Mvc.Parser
 
 		RazorEngineHost CreateRazorHost (string fileName)
 		{
+			var projectFile = project.GetProjectFile (fileName);
+			if (projectFile != null && projectFile.Generator == "RazorTemplatePreprocessor") {
+				var h = MonoDevelop.RazorGenerator.RazorTemplatePreprocessor.CreateHost (projectFile.ProjectVirtualPath, fileName);
+				h.DesignTimeMode = true;
+				return h;
+			}
+
 			string virtualPath = "~/Views/Default.cshtml";
 			if (aspProject != null)
 				virtualPath = aspProject.LocalToVirtualPath (fileName);
