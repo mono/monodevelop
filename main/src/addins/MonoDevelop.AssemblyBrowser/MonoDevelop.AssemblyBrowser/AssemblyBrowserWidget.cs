@@ -1190,6 +1190,8 @@ namespace MonoDevelop.AssemblyBrowser
 					if (cecilObject != null) {
 						foreach (var reference in cecilObject.MainModule.AssemblyReferences) {
 							string fileName = currentAssembly.LookupAssembly (reference.FullName);
+							if (string.IsNullOrEmpty (fileName))
+								continue;
 							AddReferenceByFileName (fileName, true);
 							nav = SearchMember (url);
 							if (nav != null)
