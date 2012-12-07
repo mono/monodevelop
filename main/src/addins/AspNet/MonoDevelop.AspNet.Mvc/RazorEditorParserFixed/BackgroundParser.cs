@@ -108,7 +108,7 @@ namespace RazorEditorParserFixed
 
         private abstract class ThreadStateBase
         {
-#if DEBUG
+#if RAZOREDITOR_DEBUG
             private int _id = -1;
 #endif
             protected ThreadStateBase()
@@ -116,29 +116,29 @@ namespace RazorEditorParserFixed
             }
 
             [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "This method is only empty in Release builds. In Debug builds it contains references to instance variables")]
-            [Conditional("DEBUG")]
+            [Conditional("RAZOREDITOR_DEBUG")]
             protected void SetThreadId(int id)
             {
-#if DEBUG
+#if RAZOREDITOR_DEBUG
                 _id = id;
 #endif
             }
 
             [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "This method is only empty in Release builds. In Debug builds it contains references to instance variables")]
-            [Conditional("DEBUG")]
+            [Conditional("RAZOREDITOR_DEBUG")]
             protected void EnsureOnThread()
             {
-#if DEBUG
+#if RAZOREDITOR_DEBUG
                 Debug.Assert(_id != -1, "SetThreadId was never called!");
                 Debug.Assert(Thread.CurrentThread.ManagedThreadId == _id, "Called from an unexpected thread!");
 #endif
             }
 
             [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "This method is only empty in Release builds. In Debug builds it contains references to instance variables")]
-            [Conditional("DEBUG")]
+            [Conditional("RAZOREDITOR_DEBUG")]
             protected void EnsureNotOnThread()
             {
-#if DEBUG
+#if RAZOREDITOR_DEBUG
                 Debug.Assert(_id != -1, "SetThreadId was never called!");
                 Debug.Assert(Thread.CurrentThread.ManagedThreadId != _id, "Called from an unexpected thread!");
 #endif
