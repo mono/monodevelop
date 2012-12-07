@@ -68,6 +68,13 @@ namespace MonoDevelop.AspNet.Mvc.Parser
 		public RazorCSharpParser ()
 		{
 			openDocuments = new List<TextDocument> ();
+
+			IdeApp.Exited += delegate {
+				//HACK: workaround for Mono's not shutting downs IsBackground threads in WaitAny calls
+				if (editorParser != null) {
+					DisposeCurrentParser ();
+				}
+			};
 		}
 
 		public override ParsedDocument Parse (bool storeAst, string fileName, System.IO.TextReader content, Projects.Project project = null)
