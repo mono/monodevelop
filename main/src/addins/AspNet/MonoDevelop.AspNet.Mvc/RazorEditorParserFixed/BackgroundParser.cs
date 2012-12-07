@@ -341,7 +341,7 @@ namespace RazorEditorParserFixed
                                         var allChanges = Enumerable.Concat(
                                             _previouslyDiscarded ?? Enumerable.Empty<TextChange>(), parcel.Changes).ToList();
                                         var finalChange = allChanges.LastOrDefault();
-                                        if (finalChange != null)
+                                        if (finalChange != default (TextChange))
                                         {
 #if EDITOR_TRACING
                                             sw.Start();
