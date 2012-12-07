@@ -90,6 +90,12 @@
     <Compile Include="RazorGenerator\RazorTemplatePreprocessor.cs" />
     <Compile Include="RazorGenerator\PreprocessedCSharpRazorCodeParser.cs" />
     <Compile Include="RazorGenerator\PreprocessedTemplateCodeTransformer.cs" />
+    <Compile Include="RazorEditorParserFixed\RazorEditorParser.cs" />
+    <Compile Include="RazorEditorParserFixed\BackgroundParser.cs" />
+    <Compile Include="RazorEditorParserFixed\RazorEditorTrace.cs" />
+    <Compile Include="RazorEditorParserFixed\RazorResources.Designer.cs" />
+    <Compile Include="RazorEditorParserFixed\CommonResources.Designer.cs" />
+    <Compile Include="RazorEditorParserFixed\DisposableAction.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -307,5 +313,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="RazorGenerator\" />
+    <Folder Include="RazorEditorParserFixed\" />
   </ItemGroup>
 </Project>
