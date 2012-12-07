@@ -151,14 +151,17 @@ namespace RazorEditorParserFixed
             private ManualResetEventSlim _hasParcel = new ManualResetEventSlim(false);
             private CancellationTokenSource _currentParcelCancelSource;
 
-            [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "Field is used in debug code and may be used later")]
+#if EDITOR_TRACING
             private string _fileName;
+#endif
             private object _stateLock = new object();
             private IList<TextChange> _changes = new List<TextChange>();
 
             public MainThreadState(string fileName)
             {
+#if EDITOR_TRACING
                 _fileName = fileName;
+#endif
 
                 SetThreadId(Thread.CurrentThread.ManagedThreadId);
             }
@@ -195,7 +198,9 @@ namespace RazorEditorParserFixed
 
             public void QueueChange(TextChange change)
             {
+#if EDITOR_TRACING
                 RazorEditorTrace.TraceLine(RazorResources.Trace_QueuingParse, Path.GetFileName(_fileName), change);
+#endif
                 EnsureOnThread();
                 lock (_stateLock)
                 {
