@@ -53,7 +53,7 @@ namespace MonoDevelop.AspNet.Mvc.Parser
 {
 	public class RazorCSharpParser : AbstractTypeSystemParser
 	{
-		RazorEditorParser editorParser;
+		RazorEditorParserFixed.RazorEditorParser editorParser;
 		DocumentParseCompleteEventArgs capturedArgs;
 		AutoResetEvent parseComplete;
 		ChangeInfo lastChange;
@@ -145,7 +145,7 @@ namespace MonoDevelop.AspNet.Mvc.Parser
 
 		void CreateParserFor (string fileName)
 		{
-			editorParser = new RazorEditorParser (CreateRazorHost (fileName), fileName);
+			editorParser = new RazorEditorParserFixed.RazorEditorParser (CreateRazorHost (fileName), fileName);
 
 			parseComplete = new AutoResetEvent (false);
 			editorParser.DocumentParseComplete += (sender, args) =>
