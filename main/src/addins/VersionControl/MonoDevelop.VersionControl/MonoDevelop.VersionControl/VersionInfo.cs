@@ -46,12 +46,15 @@ namespace MonoDevelop.VersionControl
 		internal void Init (Repository repo)
 		{
 			ownerRepository = repo;
+			RequiresRefresh = false;
 		}
 		
 		public static VersionInfo CreateUnversioned (FilePath path, bool isDirectory)
 		{
 			return new VersionInfo (path, "", isDirectory, VersionStatus.Unversioned, null, VersionStatus.Unversioned, null);
 		}
+
+		internal bool RequiresRefresh { get; set; }
 		
 		public bool IsVersioned {
 			get { return (status & VersionStatus.Versioned) != 0; }

@@ -174,8 +174,12 @@ namespace MonoDevelop.VersionControl
 			var result = new List<VersionInfo> ();
 			foreach (var p in paths) {
 				var vi = infoCache.GetStatus (p);
-				if (vi != null)
+				if (vi != null) {
 					result.Add (vi);
+					// This status has been invalidated, query it asynchronously
+					if (vi.RequiresRefresh)
+						pathsToQuery.Add (p);
+				}
 				else {
 					// If there is no cached status, query it asynchronously
 					vi = new VersionInfo (p, "", Directory.Exists (p), VersionStatus.Versioned, null, VersionStatus.Versioned, null);
@@ -198,7 +202,7 @@ namespace MonoDevelop.VersionControl
 					return OnGetDirectoryVersionInfo (localDirectory, getRemoteStatus, recursive);
 
 				var status = infoCache.GetDirectoryStatus (localDirectory);
-				if (status != null && (!getRemoteStatus || status.HasRemoteStatus))
+				if (status != null && !status.RequiresRefresh && (!getRemoteStatus || status.HasRemoteStatus))
 					return status.FileInfo;
 
 				// If there is no cached status, query it asynchronously
@@ -207,7 +211,14 @@ namespace MonoDevelop.VersionControl
 					GetRemoteStatus = getRemoteStatus
 				};
 				AddQuery (q);
-				return new VersionInfo[0];
+
+				// If we have a status value but the value was invalidated (RequiresRefresh == true)
+				// then we return the invalidated value while we start an async query to get the new one
+
+				if (status != null && status.RequiresRefresh && (!getRemoteStatus || status.HasRemoteStatus))
+					return status.FileInfo;
+				else
+					return new VersionInfo[0];
 			} finally {
 				//Console.WriteLine ("GetDirectoryVersionInfo " + localDirectory + " - " + (DateTime.Now - now).TotalMilliseconds);
 			}
