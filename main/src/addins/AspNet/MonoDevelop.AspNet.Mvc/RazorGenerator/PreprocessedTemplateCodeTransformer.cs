@@ -179,10 +179,18 @@ namespace MonoDevelop.RazorGenerator
 		{
 			foreach (var method in generatedClass.Members.OfType<CodeSnippetTypeMember> ()) {
 				using (var writer = new System.IO.StringWriter (new System.Text.StringBuilder (method.Text.Length))) {
+					bool foundStart = false;
 					using (var reader = new System.IO.StringReader (method.Text)) {
 						bool lineHidden = false;
 						string line;
 						while ((line = reader.ReadLine ()) != null) {
+							if (!foundStart) {
+								if (line.StartsWith ("public System.Web.WebPages.HelperResult")) {
+									foundStart = true;
+								} else if (!string.IsNullOrWhiteSpace (line) && !line.StartsWith ("#line")) {
+									break;
+								}
+							}
 							if (line.StartsWith ("#line")) {
 								lineHidden = line == "#line hidden";
 							}
@@ -200,7 +208,9 @@ namespace MonoDevelop.RazorGenerator
 							writer.WriteLine (line);
 						}
 					}
-					method.Text = writer.ToString ();
+					if (foundStart) {
+						method.Text = writer.ToString ();
+					}
 				}
 			}
 		}
