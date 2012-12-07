@@ -10,48 +10,31 @@ using System.Web.Razor.Parser;
 using System.Web.Razor.Parser.SyntaxTree;
 using System.Web.WebPages;
 
-namespace RazorGenerator.Core
+namespace MonoDevelop.RazorGenerator
 {
-	public class RazorHost : RazorEngineHost, IRazorHost, ICodeGenerationEventProvider
-	{
-		private static readonly IEnumerable<string> _defaultImports = new[] {
-			"System",
-			"System.Collections.Generic",
-			"System.IO",
-			"System.Linq",
-			"System.Net",
-			"System.Text",
-			"System.Web",
-			"System.Web",
-			"System.Web.Security",
-			"System.Web.UI",
-			"System.Web.WebPages",
-			"System.Web.Helpers",
-		};
+	delegate void RazorCodeTransformer (
+		RazorHost host, CodeCompileUnit codeCompileUnit, CodeNamespace generatedNamespace,
+		CodeTypeDeclaration generatedClass, CodeMemberMethod executeMethod);
 
-		private readonly IRazorCodeTransformer _codeTransformer;
+	class RazorHost : RazorEngineHost
+	{
+		private readonly RazorCodeTransformer[] _transformers;
 		private readonly string _fullPath;
 		private readonly CodeDomProvider _codeDomProvider;
+		private readonly CodeGeneratorOptions _codeGeneratorOptions;
 		private string _defaultClassName;
 
-		public RazorHost(string fullPath, IRazorCodeTransformer codeTransformer, CodeDomProvider codeDomProvider)
+		public RazorHost(string fullPath, CodeDomProvider codeDomProvider = null,
+		                 RazorCodeTransformer[] transformers = null, CodeGeneratorOptions codeGeneratorOptions = null)
 			: base(RazorCodeLanguage.GetLanguageByExtension(".cshtml"))
 		{
-			if (codeTransformer == null)
-			{
-				throw new ArgumentNullException("codeTransformer");
-			}
 			if (fullPath == null)
 			{
 				throw new ArgumentNullException("fullPath");
 			}
-			if (codeDomProvider == null)
-			{
-				throw new ArgumentNullException("codeDomProvider");
-			}
-			_codeTransformer = codeTransformer;
+			_transformers = transformers;
 			_fullPath = fullPath;
-			_codeDomProvider = codeDomProvider;
+			_codeDomProvider = codeDomProvider ?? new Microsoft.CSharp.CSharpCodeProvider ();
 			base.DefaultNamespace = "ASP";
 			EnableLinePragmas = true;
 
@@ -70,21 +53,28 @@ namespace RazorGenerator.Core
 				ResolveUrlMethodName = "Href"
 			};
 
-			base.DefaultBaseClass = typeof(WebPage).FullName;
-			foreach (var import in _defaultImports)
-			{
-				base.NamespaceImports.Add(import);
-			}
+			_codeGeneratorOptions = codeGeneratorOptions ?? new CodeGeneratorOptions () {
+				// HACK: we use true, even though razor uses false, to work around a mono bug where it omits the 
+				// line ending after "#line hidden", resulting in the unparseable "#line hiddenpublic"
+				BlankLinesBetweenMembers = true,
+				BracingStyle = "C",
+				// matches Razor built-in settings
+				IndentString = String.Empty,
+			};
+		}
+
+		public CodeDomProvider CodeDomProvider {
+			get { return _codeDomProvider; }
+		}
+
+		public CodeGeneratorOptions CodeGeneratorOptions {
+			get { return _codeGeneratorOptions; }
 		}
 
 		public string FullPath
 		{
 			get { return _fullPath; }
 		}
-
-		public event EventHandler<GeneratorErrorEventArgs> Error;
-
-		public event EventHandler<ProgressEventArgs> Progress;
 
 		public override string DefaultClassName
 		{
@@ -108,9 +98,9 @@ namespace RazorGenerator.Core
 
 		public bool EnableLinePragmas { get; set; }
 
-		public string GenerateCode()
+		public string GenerateCode (out CompilerErrorCollection errors)
 		{
-			_codeTransformer.Initialize(this);
+			errors = new CompilerErrorCollection ();
 
 			// Create the engine
 			RazorTemplateEngine engine = new RazorTemplateEngine(this);
@@ -124,47 +114,28 @@ namespace RazorGenerator.Core
 				{
 					results = engine.GenerateCode(reader, className: DefaultClassName, rootNamespace: DefaultNamespace, sourceFileName: _fullPath);
 				}
-			}
-			catch (Exception e)
-			{
-				OnGenerateError(4, e.ToString(), 1, 1);
+			} catch (Exception e) {
+				errors.Add (new CompilerError (FullPath, 1, 1, null, e.ToString ()));
 				//Returning null signifies that generation has failed
 				return null;
 			}
 
 			// Output errors
-			foreach (RazorError error in results.ParserErrors)
-			{
-				OnGenerateError(4, error.Message, error.Location.LineIndex + 1, error.Location.CharacterIndex + 1);
+			foreach (RazorError error in results.ParserErrors) {
+				errors.Add (new CompilerError (FullPath, error.Location.LineIndex + 1, error.Location.CharacterIndex + 1, null, error.Message));
 			}
 
 			try
 			{
-				OnCodeCompletion(50, 100);
-
-				using (StringWriter writer = new StringWriter())
-				{
-					CodeGeneratorOptions options = new CodeGeneratorOptions();
-					options.BlankLinesBetweenMembers = false;
-					options.BracingStyle = "C";
-
+				using (StringWriter writer = new StringWriter()) {
 					//Generate the code
 					writer.WriteLine("#pragma warning disable 1591");
-					_codeDomProvider.GenerateCodeFromCompileUnit(results.GeneratedCode, writer, options);
+					_codeDomProvider.GenerateCodeFromCompileUnit(results.GeneratedCode, writer, _codeGeneratorOptions);
 					writer.WriteLine("#pragma warning restore 1591");
-
-					OnCodeCompletion(100, 100);
-					writer.Flush();
-
-					// Perform output transformations and return
-					string codeContent = writer.ToString();
-					codeContent = _codeTransformer.ProcessOutput(codeContent);
-					return codeContent;
+					return writer.ToString();
 				}
-			}
-			catch (Exception e)
-			{
-				OnGenerateError(4, e.ToString(), 1, 1);
+			} catch (Exception e) {
+				errors.Add (new CompilerError (FullPath, 1, 1, null, e.ToString ()));
 				//Returning null signifies that generation has failed
 				return null;
 			}
@@ -172,7 +143,12 @@ namespace RazorGenerator.Core
 
 		public override void PostProcessGeneratedCode(CodeGeneratorContext context)
 		{
-			_codeTransformer.ProcessGeneratedCode(context.CompileUnit, context.Namespace, context.GeneratedClass, context.TargetMethod);
+			if (_transformers == null) {
+				return;
+			}
+			foreach (var t in _transformers) {
+				t (this, context.CompileUnit, context.Namespace, context.GeneratedClass, context.TargetMethod);
+			}
 		}
 
 		public override RazorCodeGenerator DecorateCodeGenerator(RazorCodeGenerator incomingCodeGenerator)
@@ -185,22 +161,6 @@ namespace RazorGenerator.Core
 		public override ParserBase DecorateCodeParser(ParserBase incomingCodeParser)
 		{
 			return ParserFactory != null? ParserFactory (this) : base.DecorateCodeParser(incomingCodeParser);
-		}
-
-		private void OnGenerateError(int errorCode, string errorMessage, int lineNumber, int columnNumber)
-		{
-			if (Error != null)
-			{
-				Error(this, new GeneratorErrorEventArgs(errorCode, errorMessage, lineNumber, columnNumber));
-			}
-		}
-
-		private void OnCodeCompletion(uint completed, uint total)
-		{
-			if (Progress != null)
-			{
-				Progress(this, new ProgressEventArgs(completed, total));
-			}
 		}
 
 		protected virtual string GetClassName()

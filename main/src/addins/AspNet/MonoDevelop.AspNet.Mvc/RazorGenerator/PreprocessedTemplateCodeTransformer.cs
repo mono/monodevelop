@@ -12,68 +12,37 @@ using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System;
-using RazorGenerator.Core;
 
 namespace MonoDevelop.RazorGenerator
 {
-	class PreprocessedTemplateCodeTransformer : AggregateCodeTransformer
+	class PreprocessedTemplateCodeTransformers
 	{
-		private static readonly IEnumerable<string> _defaultImports = new[] {
-			"System",
-			"System.Collections.Generic",
-			"System.Linq",
-			"System.Text"
-		};
-
-		private readonly RazorCodeTransformerBase[] _codeTransforms;
-
-		public PreprocessedTemplateCodeTransformer ()
+		public static void MakePartialAndRemoveCtor (RazorHost host, CodeCompileUnit codeCompileUnit, CodeNamespace generatedNamespace, CodeTypeDeclaration generatedClass, CodeMemberMethod executeMethod)
 		{
-			_codeTransforms = new RazorCodeTransformerBase[] {
-				new SetImports(_defaultImports, replaceExisting: true),
-				new AddGeneratedTemplateClassAttribute(),
-				new ReplaceBaseType(),
-				new SimplifyHelpers (),
-				new FixMonoPragmas (),
-			};
-		}
-
-		protected override IEnumerable<RazorCodeTransformerBase> CodeTransformers
-		{
-			get { return _codeTransforms; }
-		}
-
-		public override void ProcessGeneratedCode(CodeCompileUnit codeCompileUnit, CodeNamespace generatedNamespace, CodeTypeDeclaration generatedClass, CodeMemberMethod executeMethod)
-		{
-			base.ProcessGeneratedCode(codeCompileUnit, generatedNamespace, generatedClass, executeMethod);
 			generatedClass.IsPartial = true;
 			// The generated class has a constructor in there by default.
-			generatedClass.Members.Remove(generatedClass.Members.OfType<CodeConstructor>().SingleOrDefault());
+			generatedClass.Members.Remove (generatedClass.Members.OfType<CodeConstructor> ().Single ());
 		}
-	}
 
-	class AddGeneratedTemplateClassAttribute : RazorCodeTransformerBase
-	{
-		public override void ProcessGeneratedCode (CodeCompileUnit codeCompileUnit, CodeNamespace generatedNamespace, CodeTypeDeclaration generatedClass, CodeMemberMethod executeMethod)
+		public static void AddGeneratedTemplateClassAttribute (RazorHost host, CodeCompileUnit codeCompileUnit, CodeNamespace generatedNamespace, CodeTypeDeclaration generatedClass, CodeMemberMethod executeMethod)
 		{
 			string tool = "RazorTemplatePreprocessor";
-			Version version = GetType().Assembly.GetName().Version;
+			Version version = typeof (PreprocessedTemplateCodeTransformers).Assembly.GetName().Version;
 			generatedClass.CustomAttributes.Add(
 				new CodeAttributeDeclaration(typeof(System.CodeDom.Compiler.GeneratedCodeAttribute).FullName,
 					new CodeAttributeArgument(new CodePrimitiveExpression(tool)),
 					new CodeAttributeArgument(new CodePrimitiveExpression(version.ToString()))
 			));
 		}
-	}
 
-	class ReplaceBaseType : RazorCodeTransformerBase
-	{
-		public override void Initialize (RazorHost razorHost)
+		static void AddComments (CodeTypeMember member, bool docComment, params string[] comments)
 		{
-			razorHost.DefaultBaseClass = "";
+			foreach (var c in comments) {
+				member.Comments.Add (new CodeCommentStatement (c, docComment));
+			}
 		}
 
-		public override void ProcessGeneratedCode (CodeCompileUnit codeCompileUnit, CodeNamespace generatedNamespace, CodeTypeDeclaration generatedClass, CodeMemberMethod executeMethod)
+		public static void InjectBaseClass (RazorHost host, CodeCompileUnit codeCompileUnit, CodeNamespace generatedNamespace, CodeTypeDeclaration generatedClass, CodeMemberMethod executeMethod)
 		{
 			bool generateBaseClass = generatedClass.BaseTypes.Count == 0;
 			bool integrateHelpers = !generateBaseClass && generatedClass.BaseTypes [0].BaseType == "object";
@@ -85,25 +54,32 @@ namespace MonoDevelop.RazorGenerator
 			if (generateBaseClass) {
 				var baseName = generatedClass.Name + "Base";
 				generatedClass.BaseTypes.Add (new CodeTypeReference (baseName));
+
 				helperClass = new CodeTypeDeclaration (baseName) {
 					TypeAttributes = generatedClass.TypeAttributes | System.Reflection.TypeAttributes.Abstract,
 				};
+				AddComments (helperClass, false,
+					"NOTE: this is the default generated helper class. You may choose to extract it to a separate file ",
+					"in order to customize it or share it between multiple templates, and specify the template's base ",
+					"class via the @inherits directive."
+				);
 				generatedNamespace.Types.Add (helperClass);
-				helperClass.Members.Add (new CodeMemberMethod () {
+
+				var baseExecute = new CodeMemberMethod () {
 					Name = executeMethod.Name,
 					ReturnType = executeMethod.ReturnType,
 					Attributes = (executeMethod.Attributes & ~MemberAttributes.Override) | MemberAttributes.Abstract,
-				});
-
-				string [] comments = {
-					"NOTE: this is the default generated helper class. You may choose to extract it to a separate file ",
-					"in order to customize it or share it between multiple templates, and specify the template's base ",
-					"class via the @inherits directive.",
 				};
+				AddComments (baseExecute, false,
+					" This method is REQUIRED. The generated Razor subclass will override it with the generated code.",
+					""
+				);
+				AddComments (baseExecute, true,
+					"<summary>Executes the template, writing output to the Write and WriteLiteral methods.<summary>.",
+					"<remarks>Not intended to be called directly. Call the Generate method instead.</remarks>"
+				);
 
-				foreach (var c in comments) {
-					helperClass.Comments.Add (new CodeCommentStatement (c));
-				}
+				helperClass.Members.Add (baseExecute);
 			} else {
 				generatedClass.BaseTypes [0].BaseType = "System.Object";
 				executeMethod.Attributes = (executeMethod.Attributes & (~MemberAttributes.AccessMask | ~MemberAttributes.Override))
@@ -173,20 +149,7 @@ namespace MonoDevelop.RazorGenerator
         }
         "));
 		}
-	}
 
-	class FixMonoPragmas : RazorCodeTransformerBase
-	{
-		bool isMono = Type.GetType ("Mono.Runtime") != null;
-
-		public override string ProcessOutput (string codeContent)
-		{
-			return isMono ? codeContent.Replace ("#line hidden", "#line hidden" + Environment.NewLine) : codeContent;
-		}
-	}
-
-	class SimplifyHelpers : RazorCodeTransformerBase
-	{
 		/* rewrite:
 		public System.Web.WebPages.HelperResult foo (int i)
 		{
@@ -206,14 +169,13 @@ namespace MonoDevelop.RazorGenerator
 			};
 		}
 		*/
-
 		static string[,] replacements = new string [,] {
 			{ "public System.Web.WebPages.HelperResult " , "public static Action<System.IO.TextWriter> " },
 			{ "return new System.Web.WebPages.HelperResult(__razor_helper_writer" , "return __razor_helper_writer" },
 			{ "WriteLiteralTo(__razor_helper_writer," , "__razor_helper_writer.Write(" },
 		};
 
-		public override void ProcessGeneratedCode (CodeCompileUnit codeCompileUnit, CodeNamespace generatedNamespace, CodeTypeDeclaration generatedClass, CodeMemberMethod executeMethod)
+		public static void SimplifyHelpers (RazorHost host, CodeCompileUnit codeCompileUnit, CodeNamespace generatedNamespace, CodeTypeDeclaration generatedClass, CodeMemberMethod executeMethod)
 		{
 			foreach (var method in generatedClass.Members.OfType<CodeSnippetTypeMember> ()) {
 				using (var writer = new System.IO.StringWriter (new System.Text.StringBuilder (method.Text.Length))) {

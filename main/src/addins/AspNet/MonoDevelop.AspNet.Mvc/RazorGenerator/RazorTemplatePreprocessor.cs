@@ -32,7 +32,6 @@ using System.IO;
 using Mono.TextTemplating;
 using MonoDevelop.Core;
 using System.Threading;
-using RazorGenerator.Core;
 using MonoDevelop.TextTemplating;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects.Text;
@@ -42,11 +41,27 @@ namespace MonoDevelop.RazorGenerator
 {
 	class RazorTemplatePreprocessor : ISingleFileCustomTool
 	{
+		static readonly IEnumerable<string> defaultImports = new[] {
+			"System",
+			"System.Collections.Generic",
+			"System.Linq",
+			"System.Text"
+		};
+
 		public static RazorHost CreateHost (string fullPath)
 		{
-			var codeTransformer = new PreprocessedTemplateCodeTransformer ();
-			var codeDomProvider = new Microsoft.CSharp.CSharpCodeProvider ();
-			var host = new RazorHost (fullPath, codeTransformer, codeDomProvider);
+			var transformers = new RazorCodeTransformer[] {
+				PreprocessedTemplateCodeTransformers.AddGeneratedTemplateClassAttribute,
+				PreprocessedTemplateCodeTransformers.InjectBaseClass,
+				PreprocessedTemplateCodeTransformers.SimplifyHelpers,
+				PreprocessedTemplateCodeTransformers.MakePartialAndRemoveCtor,
+			};
+			var host = new RazorHost (fullPath, transformers: transformers) {
+				DefaultBaseClass = "",
+			};
+			foreach (var import in defaultImports) {
+				host.NamespaceImports.Add (import);
+			}
 			host.ParserFactory = (h) => new PreprocessedCSharpRazorCodeParser ();
 			return host;
 		}
@@ -85,17 +100,15 @@ namespace MonoDevelop.RazorGenerator
 
 			var host = CreateHost (file.FilePath);
 			host.EnableLinePragmas = true;
-			host.Error += (s, e) =>  {
-				Console.WriteLine (e.ErrorMessage);
-				result.Errors.Add (new CompilerError (file.FilePath, e.LineNumber, e.ColumnNumber, e.ErrorCode.ToString (), e.ErrorMessage));
-			};
 
 			var defaultOutputName = file.FilePath.ChangeExtension (".cs");
 
 			var ns = GetNamespaceHint (file, defaultOutputName);
 			host.DefaultNamespace = ns;
 
-			var code = host.GenerateCode ();
+			CompilerErrorCollection errors;
+			var code = host.GenerateCode (out errors);
+			result.Errors.AddRange (errors);
 
 			var writer = new MonoDevelop.DesignerSupport.CodeBehindWriter ();
 			writer.WriteFile (defaultOutputName, code);

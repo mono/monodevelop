@@ -83,13 +83,6 @@
     <Compile Include="gtk-gui\MonoDevelop.AspNet.Mvc.Gui.AddViewDialog.cs" />
     <Compile Include="Gui\AddControllerDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.AspNet.Mvc.Gui.AddControllerDialog.cs" />
-    <Compile Include="RazorGenerator\Core\EventArgs.cs" />
-    <Compile Include="RazorGenerator\Core\ICodeGenerationEventProvider.cs" />
-    <Compile Include="RazorGenerator\Core\IRazorCodeTransformer.cs" />
-    <Compile Include="RazorGenerator\Core\IRazorHost.cs" />
-    <Compile Include="RazorGenerator\CodeTransformers\AggregateCodeTransformer.cs" />
-    <Compile Include="RazorGenerator\CodeTransformers\DefaultCodeTransformers.cs" />
-    <Compile Include="RazorGenerator\CodeTransformers\RazorCodeTransformerBase.cs" />
     <Compile Include="RazorGenerator\RazorHost.cs" />
     <None Include="Templates\PreprocessedRazorTemplate.xft.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -314,6 +307,5 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="RazorGenerator\" />
-    <Folder Include="RazorGenerator\Core\" />
   </ItemGroup>
 </Project>
