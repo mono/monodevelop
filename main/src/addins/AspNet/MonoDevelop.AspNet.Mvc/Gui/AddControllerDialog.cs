@@ -30,7 +30,6 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 {
 	public partial class AddControllerDialog : Gtk.Dialog
 	{
-		AspMvcProject project;
 		IList<string> loadedTemplateList;
 		System.CodeDom.Compiler.CodeDomProvider provider;
 
@@ -55,7 +54,6 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 
 		public AddControllerDialog (AspMvcProject project)
 		{
-			this.project = project;
 			this.Build ();
 
 			provider = project.LanguageBinding.GetCodeDomProvider ();
