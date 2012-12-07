@@ -435,6 +435,11 @@ namespace RazorEditorParserFixed
                 {
                     // Do nothing. Just shut down.
                 }
+                catch (Exception ex)
+                {
+                    MonoDevelop.Core.LoggingService.LogError ("Internal error in Razor parser", ex);
+                    MonoDevelop.Core.LogReporting.LogReportingService.ReportUnhandledException (ex, false);
+                }
                 finally
                 {
                     RazorEditorTrace.TraceLine(RazorResources.Trace_BackgroundThreadShutdown, fileNameOnly);
