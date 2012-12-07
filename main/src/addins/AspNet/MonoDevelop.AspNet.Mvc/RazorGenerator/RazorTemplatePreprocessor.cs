@@ -52,8 +52,8 @@ namespace MonoDevelop.RazorGenerator
 		{
 			var transformers = new RazorCodeTransformer[] {
 				PreprocessedTemplateCodeTransformers.AddGeneratedTemplateClassAttribute,
-				PreprocessedTemplateCodeTransformers.InjectBaseClass,
 				PreprocessedTemplateCodeTransformers.SimplifyHelpers,
+				PreprocessedTemplateCodeTransformers.InjectBaseClass,
 				PreprocessedTemplateCodeTransformers.MakePartialAndRemoveCtor,
 			};
 			var host = new RazorHost (fullPath, transformers: transformers) {
