@@ -126,6 +126,10 @@ namespace MonoDevelop.AspNet.Mvc.Parser
 					var doc = sender as Document;
 					if (doc.Editor != null && doc.Editor.Document != null)
 						openDocuments.Remove (doc.Editor.Document);
+
+					if (lastParsedFile == doc.FileName && editorParser != null) {
+						DisposeCurrentParser ();
+					}
 				};
 				return true;
 			}
