@@ -19,7 +19,7 @@ dmg: render.exe app
 	./make-dmg-bundle.sh
 
 monostub: monostub.m
-	gcc -Wall -m32 monostub.m -o monostub -framework AppKit
+	gcc -Wall -mmacosx-version-min=10.6 -m32 -o monostub monostub.m -framework AppKit
 
 clean-local:
 	rm -rf MonoDevelop.app
