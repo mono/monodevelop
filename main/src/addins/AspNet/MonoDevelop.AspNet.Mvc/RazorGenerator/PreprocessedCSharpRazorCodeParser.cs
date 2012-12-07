@@ -25,8 +25,7 @@ namespace MonoDevelop.RazorGenerator
 	{
 		public const string ModelKeyword = "model";
 		public const string PropertyKeyword = "__property";
-		public const string NameKeyword = "__name";
-		public const string AccessKeyword = "__access";
+		public const string ClassKeyword = "__class";
 
 		HashSet<string> directives = new HashSet<string> ();
 
@@ -34,57 +33,56 @@ namespace MonoDevelop.RazorGenerator
 		{
 			MapDirectives (ModelDirective, ModelKeyword);
 			MapDirectives (PropertyDirective, PropertyKeyword);
-			MapDirectives (ClassAccessDirective, AccessKeyword);
-			MapDirectives (ClassNameDirective, NameKeyword);
+			MapDirectives (ClassDirective, ClassKeyword);
 		}
 
 		void ModelDirective ()
 		{
-			ValueDirective (ModelKeyword, true, s => {
+			ValueDirective (ModelKeyword, true, (s, l) => {
 				var split = GetArgumentWords (s);
 				if (split.Length == 1) {
 					return new PropertyCodeGenerator (split[0], "Model");
 				}
-				Context.OnError (CurrentLocation, string.Format ("The '{0}' directive requires exactly one argument", ModelKeyword));
+				Context.OnError (l, string.Format ("The '{0}' directive requires exactly one argument", ModelKeyword));
 				return null;
 			});
 		}
 
 		void PropertyDirective ()
 		{
-			ValueDirective (PropertyKeyword, true, s => {
+			ValueDirective (PropertyKeyword, true, (s, l) => {
 				var split = GetArgumentWords (s);
 				if (split.Length == 2) {
 					return new PropertyCodeGenerator (split[0], split[1]);
 				}
-				Context.OnError (CurrentLocation, string.Format ("The '{0}' directive requires exactly two arguments", PropertyKeyword));
+				Context.OnError (l, string.Format ("The '{0}' directive requires exactly two arguments", PropertyKeyword));
 				return null;
 			});
 		}
 
-		void ClassNameDirective ()
+		void ClassDirective ()
 		{
-			ValueDirective (NameKeyword, true, s => {
+			ValueDirective (ClassKeyword, true, (s, l) => {
 				var split = GetArgumentWords (s);
-				if (split.Length == 1) {
-					return new ClassNameCodeGenerator (split[0]);
-				}
-				Context.OnError (CurrentLocation, string.Format ("The '{0}' directive requires exactly one argument", NameKeyword));
-				return null;
-			});
-		}
-
-		void ClassAccessDirective ()
-		{
-			ValueDirective (AccessKeyword, true, s => {
-				switch (s) {
-				case "public":
-				case "internal":
-					return new ClassAccessCodeGenerator (s);
-				default:
-					Context.OnError (CurrentLocation, "Invalid access value");
+				if (split.Length != 1 && split.Length != 2) {
+					Context.OnError (l, string.Format ("The '{0}' directive requires one or two arguments", ClassKeyword));
 					return null;
 				}
+				string name = null, access = null;
+				if (split[0] == "public" || split[0] == "internal") {
+					access = split[0];
+				} else {
+					name = split[0];
+				}
+				if (split.Length == 2) {
+					if (access == null) {
+						string err = "If '{0}' directive has two arguments, the first must be 'public' or 'internal'.";
+						Context.OnError (l, string.Format (err, ClassKeyword));
+						return null;
+					}
+					name = split[1];
+				}
+				return new ClassNameCodeGenerator (access, name);
 			});
 		}
 
@@ -94,9 +92,9 @@ namespace MonoDevelop.RazorGenerator
 			return value.Split (wordSplitChars, StringSplitOptions.RemoveEmptyEntries);
 		}
 		
-		void ValueDirective (string keyword, bool checkOne, Func<string,SpanCodeGenerator> valueParsed)
+		void ValueDirective (string keyword, bool checkOne, Func<string,SourceLocation,SpanCodeGenerator> valueParsed)
 		{
-			AssertDirective (NameKeyword);
+			AssertDirective (ClassKeyword);
 			AcceptAndMoveNext ();
 			if (checkOne && !directives.Add (keyword)) {
 				Context.OnError (
@@ -104,11 +102,12 @@ namespace MonoDevelop.RazorGenerator
 					string.Format ("Only one '{0}' directive is permitted", keyword)
 					);
 			}
+			SourceLocation location = CurrentLocation;
 			BaseTypeDirective (
-				string.Format ("The '{0}' directive must have a value", AccessKeyword),
+				string.Format ("The '{0}' directive must have a value", keyword),
 				s => {
 					if (s != null)
-						return valueParsed (s);
+						return valueParsed (s, location);
 					return null;
 				}
 			);
@@ -134,42 +133,33 @@ namespace MonoDevelop.RazorGenerator
 			}
 		}
 
-		class ClassAccessCodeGenerator : SpanCodeGenerator
-		{
-			public ClassAccessCodeGenerator (string access)
-			{
-				this.Access = access;
-			}
-
-			public string Access {get; private set; }
-
-			public override void GenerateCode (Span target, CodeGeneratorContext context)
-			{
-				if (Access == "public") {
-					context.GeneratedClass.TypeAttributes |= System.Reflection.TypeAttributes.Public;
-				} else {
-					context.GeneratedClass.TypeAttributes &= ~System.Reflection.TypeAttributes.Public;
-				}
-			}
-		}
-
 		class ClassNameCodeGenerator : SpanCodeGenerator
 		{
-			public ClassNameCodeGenerator (string name)
+			public ClassNameCodeGenerator (string access, string name)
 			{
+				this.Access = access;
 				this.Name = name;
 			}
 
 			public string Name {get; private set; }
+			public string Access {get; private set; }
 
 			public override void GenerateCode (Span target, CodeGeneratorContext context)
 			{
-				var idx = Name.LastIndexOf ('.');
-				if (idx > 0) {
-					context.Namespace.Name = Name.Substring (0, idx);
-					context.GeneratedClass.Name = Name.Substring (idx + 1);
-				} else {
-					context.GeneratedClass.Name = Name;
+				if (Name != null) {
+					var idx = Name.LastIndexOf ('.');
+					if (idx > 0) {
+						context.Namespace.Name = Name.Substring (0, idx);
+						context.GeneratedClass.Name = Name.Substring (idx + 1);
+					} else {
+						context.GeneratedClass.Name = Name;
+					}
+				}
+
+				if (Access == "public") {
+					context.GeneratedClass.TypeAttributes |= System.Reflection.TypeAttributes.Public;
+				} else if (Access == "internal") {
+					context.GeneratedClass.TypeAttributes &= ~System.Reflection.TypeAttributes.Public;
 				}
 			}
 		}
