@@ -354,21 +354,16 @@ namespace MonoDevelop.AspNet.Mvc.Parser
 		{
 			var unit = capturedArgs.GeneratorResults.GeneratedCode;
 			var provider = project.LanguageBinding.GetCodeDomProvider ();
-			string code;
 			using (var sw = new StringWriter ()) {
 				provider.GenerateCodeFromCompileUnit (unit, sw, new System.CodeDom.Compiler.CodeGeneratorOptions ()	{
-					// Values adjusted to Razor code generator
-					BlankLinesBetweenMembers = false,
+					// HACK: we use true, even though razor uses false, to work around a mono bug where it omits the 
+					// line ending after "#line hidden", resulting in the unparseable "#line hiddenpublic"
+					BlankLinesBetweenMembers = true,
+					// matches Razor built-in settings
 					IndentString = String.Empty,
 				});
-				sw.Flush ();
-				code = sw.ToString ();
+				return sw.ToString ();
 			}
-			//HACK: Add a newline between first line pragma and constructor declaration in the generated code file
-			//to correctly determine code segments and get code completion working properly on Mono.
-			//The missing newline is present only when Mono is used as a runtime.
-			code = code.Replace ("#line hiddenpublic", "#line hidden" + Environment.NewLine + "public");
-			return code;
 		}
 
 		// Creates compilation that includes underlying C# file for Razor view
