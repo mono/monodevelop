@@ -141,7 +141,7 @@ namespace MonoDevelop.RazorGenerator
 		const string baseExecuteMethodString =
 @"		// This method is REQUIRED. The generated Razor subclass will override it with the generated code.
 		//
-		///<summary>Executes the template, writing output to the Write and WriteLiteral methods.<summary>.
+		///<summary>Executes the template, writing output to the Write and WriteLiteral methods.</summary>.
 		///<remarks>Not intended to be called directly. Call the Generate method instead.</remarks>
 		public abstract void Execute ();
 ";
