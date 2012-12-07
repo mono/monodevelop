@@ -290,7 +290,9 @@ namespace RazorEditorParserFixed
             {
                 // Run on MAIN thread!
                 _main = main;
-                _backgroundThread = new Thread(WorkerLoop);
+                _backgroundThread = new Thread(WorkerLoop) {
+					IsBackground = true,
+				};
                 _shutdownToken = _main.CancelToken;
                 _host = host;
                 _fileName = fileName;
