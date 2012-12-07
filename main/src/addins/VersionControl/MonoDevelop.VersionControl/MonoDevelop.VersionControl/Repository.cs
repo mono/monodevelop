@@ -215,12 +215,13 @@ namespace MonoDevelop.VersionControl
 
 		public void ClearCachedVersionInfo (FilePath rootPath)
 		{
-			AddQuery (new VersionInfoQuery () { Paths = new List<FilePath> { rootPath } });
+			infoCache.ClearCachedVersionInfo (rootPath);
 		}
 
 		public void ClearCachedVersionInfo (params FilePath[] paths)
 		{
-			AddQuery (new VersionInfoQuery () { Paths = new List<FilePath> (paths) });
+			foreach (var p in paths)
+				infoCache.ClearCachedVersionInfo (p);
 		}
 
 		class VersionInfoQuery
