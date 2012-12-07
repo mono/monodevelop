@@ -286,12 +286,17 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			}
 		}
 
-		int defaultPosition {
-			get	{
-				return HiddenDoc.Editor.LocationToOffset (
-					razorDocument.PageInfo.CSharpParsedFile.TopLevelTypeDefinitions[0].Members.First (
-					m => m.Name == "Execute").BodyRegion.Begin) + 1;
+		int GetDefaultPosition ()
+		{
+			var type = razorDocument.PageInfo.CSharpParsedFile.TopLevelTypeDefinitions.FirstOrDefault ();
+			if (type == null) {
+				return -1;
 			}
+			var method = type.Members.First (m => m.Name == "Execute");
+			if (method == null) {
+				return -1;
+			}
+			return HiddenDoc.Editor.LocationToOffset (method.BodyRegion.Begin) + 1;
 		}
 
 		IDictionary<int, GeneratedCodeMapping> currentMappings;
@@ -312,6 +317,10 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			}
 
 			KeyValuePair<int, GeneratedCodeMapping> map;
+
+			var defaultPosition = GetDefaultPosition ();
+			if (defaultPosition < 0)
+				defaultPosition = 0;
 
 			// If it's first line of code, create a default temp mapping, and use it until next reparse
 			if (currentMappings.Count == 0) {
