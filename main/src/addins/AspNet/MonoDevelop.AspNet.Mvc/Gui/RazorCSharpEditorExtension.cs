@@ -327,7 +327,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			}
 
 			string pattern = "#line " + map.Key + " ";
-			int pos = HiddenDoc.Editor.Document.Text.IndexOf (pattern);
+			int pos = HiddenDoc.Editor.Document.IndexOf (pattern, 0, HiddenDoc.Editor.Document.TextLength, StringComparison.Ordinal);
 			if (pos == -1 || !map.Value.StartOffset.HasValue)
 				return defaultPosition;
 
