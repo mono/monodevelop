@@ -401,9 +401,10 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 					foreach (var template in templates) {
 						list.Remove (template);
 					}
-					var result = list as CompletionDataList;
-					if (previousChar == '@')
-						RazorCompletion.AddAllRazorSymbols (result);
+					var result = (CompletionDataList)list;
+					if (previousChar == '@') {
+						RazorCompletion.AddAllRazorSymbols (result, razorDocument.PageInfo.HostKind);
+					}
 					if (templates.Count > 0)
 						MonoDevelop.Ide.CodeTemplates.CodeTemplateService.AddCompletionDataForMime ("text/x-cshtml", result);
 				}
