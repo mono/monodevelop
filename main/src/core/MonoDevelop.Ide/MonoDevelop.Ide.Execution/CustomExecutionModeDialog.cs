@@ -59,8 +59,9 @@ namespace MonoDevelop.Ide.Execution
 			
 			if (modeToExecute != null) {
 				// The user is running the project and the selected mode requires arguments
+				comboTargetMode.Load (ctx, true, false);
+				comboTargetMode.SelectedMode = modeToExecute;
 				mode = modeToExecute;
-				boxModeSelector.Visible = false;
 				editMode = false;
 				buttonOk.Label = Gtk.Stock.Execute;
 			}
@@ -219,9 +220,11 @@ namespace MonoDevelop.Ide.Execution
 
 		protected virtual void OnComboTargetModeSelectionChanged (object sender, System.EventArgs e)
 		{
+			mode = comboTargetMode.SelectedMode;
+
 			if (!editMode)
 				return;
-			mode = comboTargetMode.SelectedMode;
+
 			LoadEditors ();
 			if (!nameChanged)
 				SuggestName ();
