@@ -106,6 +106,13 @@ namespace MonoDevelop.AspNet.Mvc.Parser
 			CreateCSharpParsedDocument ();
 			ClearLastChange ();
 
+			RazorHostKind kind = RazorHostKind.WebPage;
+			if (editorParser.Host is WebCodeRazorHost) {
+				kind = RazorHostKind.WebCode;
+			} else if (editorParser.Host is MonoDevelop.RazorGenerator.RazorHost) {
+				kind = RazorHostKind.Template;
+			}
+
 			var pageInfo = new RazorCSharpPageInfo () {
 				HtmlRoot = htmlParsedDocument,
 				GeneratorResults = capturedArgs.GeneratorResults,
@@ -115,7 +122,8 @@ namespace MonoDevelop.AspNet.Mvc.Parser
 				Errors = errors,
 				FoldingRegions = GetFoldingRegions (),
 				Comments = comments,
-				Compilation = CreateCompilation ()
+				Compilation = CreateCompilation (),
+				HostKind = kind,
 			};
 
 			return new RazorCSharpParsedDocument (fileName, pageInfo);

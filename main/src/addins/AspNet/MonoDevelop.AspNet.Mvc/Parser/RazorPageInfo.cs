@@ -43,6 +43,7 @@ namespace MonoDevelop.AspNet.Mvc.Parser
 		public RootNode HtmlRoot { get; set; }
 		public IEnumerable<Span> Spans { get; set; }
 		public string DocType { get; set; }
+		public RazorHostKind HostKind { get; set; }
 
 		public RazorPageInfo ()
 		{
@@ -56,5 +57,12 @@ namespace MonoDevelop.AspNet.Mvc.Parser
 		public ParsedDocumentDecorator CSharpParsedFile { get; set; }
 		public ICompilation Compilation { get; set; }
 		public string CSharpCode { get; set; }
+	}
+
+	public enum RazorHostKind
+	{
+		Template,
+		WebPage,
+		WebCode
 	}
 }
