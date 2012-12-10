@@ -39,7 +39,11 @@ namespace MonoDevelop.AspNet.Mvc.Parser
 			"sessionstate",
 			"model",
 			"layout",
-			"using"
+			"using",
+
+			//FIXME: these should be for RazorHostKind.Template only
+			"__class",
+			"__property",
 		};
 
 		// Block directives
