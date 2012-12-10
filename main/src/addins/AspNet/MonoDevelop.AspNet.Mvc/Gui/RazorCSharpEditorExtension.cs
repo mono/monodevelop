@@ -265,7 +265,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		{
 			EnsureUnderlyingDocumentSet ();
 			hiddenInfo.OriginalCaretPosition = defaultDocument.Editor.Caret.Offset;
-			hiddenInfo.CaretPosition = CalculateCaretPositon ();
+			hiddenInfo.CaretPosition = CalculateCaretPosition ();
 			HiddenDoc.Editor.Caret.Offset = hiddenInfo.CaretPosition;
 		}
 
@@ -302,7 +302,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		IDictionary<int, GeneratedCodeMapping> currentMappings;
 		CodeFragment codeFragment;
 
-		int CalculateCaretPositon ()
+		int CalculateCaretPosition ()
 		{
 			return CalculateCaretPosition (defaultDocument.Editor.Caret.Offset);
 		}
