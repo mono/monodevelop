@@ -42,7 +42,12 @@ namespace MonoDevelop.Debugger
 		
 		public void Initialize (IPadWindow container)
 		{
-			customFont = Pango.FontDescription.FromString (IdeApp.Preferences.CustomOutputPadFont);
+			var fontName = IdeApp.Preferences.CustomOutputPadFont;
+
+			if (string.IsNullOrEmpty (fontName))
+				fontName = DesktopService.DefaultMonospaceFont;
+
+			customFont = Pango.FontDescription.FromString (fontName);
 
 			view = new ConsoleView ();
 			view.ConsoleInput += OnViewConsoleInput;
