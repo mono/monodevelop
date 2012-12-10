@@ -436,6 +436,20 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			return base.HandleCodeCompletion (completionContext, forced, ref triggerWordLength);
 		}
 
+		//we override to ensure we get parent element name even if there's a razor node in between
+		protected override void GetElementCompletions (CompletionDataList list)
+		{
+			var el = Tracker.Engine.Nodes.OfType<XElement> ().FirstOrDefault ();
+			var parentName = el == null ? new XName () : el.Name;
+
+			AddHtmlTagCompletionData (list, Schema, parentName.ToLower ());
+			AddMiscBeginTags (list);
+
+			//FIXME: don't show this after any elements
+			if (DocType == null)
+				list.Add ("!DOCTYPE", "md-literal", MonoDevelop.Core.GettextCatalog.GetString ("Document type"));
+		}
+
 		public override ICompletionDataList CodeCompletionCommand (CodeCompletionContext completionContext)
 		{
 			if (hiddenInfo != null && (isInCSharpContext || Tracker.Engine.CurrentState is RazorState)
