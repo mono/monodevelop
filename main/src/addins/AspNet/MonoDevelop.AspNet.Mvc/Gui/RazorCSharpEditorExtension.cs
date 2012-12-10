@@ -292,7 +292,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			if (type == null) {
 				return -1;
 			}
-			var method = type.Members.First (m => m.Name == "Execute");
+			var method = type.Members.FirstOrDefault (m => m.Name == "Execute");
 			if (method == null) {
 				return -1;
 			}
