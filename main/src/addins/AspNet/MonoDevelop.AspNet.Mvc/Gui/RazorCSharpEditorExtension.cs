@@ -386,32 +386,51 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			char previousChar = defaultDocument.Editor.Caret.Offset > 1 ? defaultDocument.Editor.GetCharAt (
 				defaultDocument.Editor.Caret.Offset - 2) : ' ';
 
-			// Don't show completion widnow when directive's name is being typed
+			// Don't show completion window when directive's name is being typed
 			var directive = Tracker.Engine.Nodes.Peek () as RazorDirective;
 			if (directive != null && !directive.FirstBracket.HasValue)
 				return null;
 
 			if (hiddenInfo != null && isInCSharpContext) {
-				var list = completionBuilder.HandleCompletion (defaultDocument, completionContext, hiddenInfo,
-					completionChar, ref triggerWordLength);
+				var list = (CompletionDataList) completionBuilder.HandleCompletion (defaultDocument, completionContext,
+					hiddenInfo, completionChar, ref triggerWordLength);
 
 				if (list != null) {
-					var templates = list.Select (c => c as CompletionData).Where (c => c != null
-						&& (c.Icon.Name == "md-template" || c.Icon.Name == "md-template-surroundwith")).ToList ();
-					foreach (var template in templates) {
-						list.Remove (template);
-					}
-					var result = (CompletionDataList)list;
+					//filter out the C# templates, many of them are not valid
+					int oldCount = list.Count;
+					list = FilterCSharpTemplates (list);
+					int templates = list.Count - oldCount;
+
 					if (previousChar == '@') {
-						RazorCompletion.AddAllRazorSymbols (result, razorDocument.PageInfo.HostKind);
+						RazorCompletion.AddAllRazorSymbols (list, razorDocument.PageInfo.HostKind);
 					}
 					if (templates.Count > 0)
-						MonoDevelop.Ide.CodeTemplates.CodeTemplateService.AddCompletionDataForMime ("text/x-cshtml", result);
+						MonoDevelop.Ide.CodeTemplates.CodeTemplateService.AddCompletionDataForMime ("text/x-cshtml", list);
 				}
 				return list;
 			}
 
 			return base.HandleCodeCompletion (completionContext, completionChar, ref triggerWordLength);
+		}
+
+		//recreating the list is over 2x as fast as using remove operations, saves typically 10ms
+		static CompletionDataList FilterCSharpTemplates (CompletionDataList list)
+		{
+			var newList = new CompletionDataList () {
+				AutoCompleteEmptyMatch = list.AutoCompleteEmptyMatch,
+				AutoCompleteUniqueMatch = list.AutoCompleteUniqueMatch,
+				AutoSelect = list.AutoSelect,
+				CloseOnSquareBrackets = list.CloseOnSquareBrackets,
+				CompletionSelectionMode = list.CompletionSelectionMode,
+				DefaultCompletionString = list.DefaultCompletionString,
+				IsSorted = list.IsSorted,
+			};
+			foreach (var l in list) {
+				var c =  l as CompletionData;
+				if (c == null || (c.Icon.Name != "md-template" && c.Icon.Name != "md-template-surroundwith"))
+					newList.Add (c);
+			}
+			return newList;
 		}
 
 		protected override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext,
