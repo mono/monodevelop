@@ -54,6 +54,10 @@ namespace MonoDevelop.DesignerSupport
 				return provider.Supports (GeneratorSupport.PartialTypes);
 			}
 		}
+
+		public CodeBehindWriter ()
+		{
+		}
 		
 		CodeBehindWriter (IProgressMonitor monitor, CodeDomProvider provider, CodeGeneratorOptions options)
 		{

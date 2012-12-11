@@ -83,6 +83,19 @@
     <Compile Include="gtk-gui\MonoDevelop.AspNet.Mvc.Gui.AddViewDialog.cs" />
     <Compile Include="Gui\AddControllerDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.AspNet.Mvc.Gui.AddControllerDialog.cs" />
+    <Compile Include="RazorGenerator\RazorHost.cs" />
+    <None Include="Templates\PreprocessedRazorTemplate.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Compile Include="RazorGenerator\RazorTemplatePreprocessor.cs" />
+    <Compile Include="RazorGenerator\PreprocessedCSharpRazorCodeParser.cs" />
+    <Compile Include="RazorGenerator\PreprocessedTemplateCodeTransformer.cs" />
+    <Compile Include="RazorEditorParserFixed\RazorEditorParser.cs" />
+    <Compile Include="RazorEditorParserFixed\BackgroundParser.cs" />
+    <Compile Include="RazorEditorParserFixed\RazorEditorTrace.cs" />
+    <Compile Include="RazorEditorParserFixed\RazorResources.Designer.cs" />
+    <Compile Include="RazorEditorParserFixed\CommonResources.Designer.cs" />
+    <Compile Include="RazorEditorParserFixed\DisposableAction.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -297,5 +310,9 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="RazorGenerator\" />
+    <Folder Include="RazorEditorParserFixed\" />
   </ItemGroup>
 </Project>

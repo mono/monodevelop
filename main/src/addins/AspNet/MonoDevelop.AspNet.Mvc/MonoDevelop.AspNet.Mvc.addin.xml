@@ -31,6 +31,7 @@
 		<Import file = "Templates/LayoutPage.xft.xml" />
 		<Import file = "Templates/ViewPageRazor.xft.xml" />
 		<Import file = "Templates/PartialViewPageRazor.xft.xml" />
+		<Import file = "Templates/PreprocessedRazorTemplate.xft.xml" />
 		<Import file = "CodeTemplates/CSharp/AddView/Aspx/Empty.tt" />
 		<Import file = "CodeTemplates/CSharp/AddView/Razor/Empty.tt" />
 		<Import file = "CodeTemplates/CSharp/AddController/Empty.tt" />
@@ -98,6 +99,8 @@
 		              file     = "Templates/LayoutPage.xft.xml" />
 		<FileTemplate id       = "AspMvcPartialViewPageRazor"
 		              file     = "Templates/PartialViewPageRazor.xft.xml" />
+		<FileTemplate id       = "PreprocessedRazorTemplate"
+		              file     = "Templates/PreprocessedRazorTemplate.xft.xml" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
@@ -203,5 +206,10 @@
 
 	<Extension path = "/MonoDevelop/Ide/CodeFormatters">
 		<Formatter mimeType="text/x-cshtml" class="MonoDevelop.AspNet.Mvc.Formatting.RazorCSharpFormatter" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/CustomTools">
+		<!-- NOTE: we explicitly do no call this "RazorGenerator" to avoid conflicts with http://razorgenerator.codeplex.com/ -->
+		<Tool name="RazorTemplatePreprocessor" type="MonoDevelop.RazorGenerator.RazorTemplatePreprocessor"/>
 	</Extension>
 </Addin>
