@@ -1,4 +1,3 @@
-
 //
 // SignatureMarkupCreator.cs
 //
@@ -1360,6 +1359,11 @@ namespace MonoDevelop.CSharp
 				sb.Append (Highlight ("'" + constantValue + "'", "string.single"));
 				return;
 			}
+			if (constantValue is bool) {
+				sb.Append (Highlight ((bool)constantValue ? "true" : "false", "constant.language"));
+				return;
+			}
+
 			if (constantValue == null) {
 				sb.Append (Highlight ("null", "constant.language"));
 				return;
