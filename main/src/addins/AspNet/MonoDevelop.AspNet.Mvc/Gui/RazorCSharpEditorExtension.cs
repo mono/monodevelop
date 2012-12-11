@@ -319,8 +319,9 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			KeyValuePair<int, GeneratedCodeMapping> map;
 
 			var defaultPosition = GetDefaultPosition ();
-			if (defaultPosition < 0)
+			if (defaultPosition < 0) {
 				defaultPosition = 0;
+			}
 
 			// If it's first line of code, create a default temp mapping, and use it until next reparse
 			if (currentMappings.Count == 0) {
@@ -404,8 +405,9 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 					if (previousChar == '@') {
 						RazorCompletion.AddAllRazorSymbols (list, razorDocument.PageInfo.HostKind);
 					}
-					if (templates.Count > 0)
-						MonoDevelop.Ide.CodeTemplates.CodeTemplateService.AddCompletionDataForMime ("text/x-cshtml", list);
+					if (templates > 0) {
+						AddFilteredRazorTemplates (list, previousChar == '@', true);
+					}
 				}
 				return list;
 			}
@@ -431,6 +433,27 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 					newList.Add (c);
 			}
 			return newList;
+		}
+
+		static void AddFilteredRazorTemplates (CompletionDataList list, bool atTemplates, bool stripLeadingAt)
+		{
+			//add the razor templates then filter them based on whether we follow an @ char, so we don't have
+			//lots of duplicates
+			int count = list.Count;
+			MonoDevelop.Ide.CodeTemplates.CodeTemplateService.AddCompletionDataForMime ("text/x-cshtml", list);
+			for (int i = count; i < list.Count; i++) {
+				var d = (CompletionData) list[i];
+				if (atTemplates) {
+					if (d.CompletionText[0] != '@') {
+						list.RemoveAt (i);
+					} else if (stripLeadingAt) {
+						//avoid inserting a double-@, which would not expand correctly
+						d.CompletionText = d.CompletionText.Substring (1);
+					}
+				} else if (d.CompletionText[0] == '@') {
+					list.RemoveAt (i);
+				}
+			}
 		}
 
 		protected override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext,
