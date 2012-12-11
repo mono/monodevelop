@@ -5,7 +5,7 @@ This project contains advanced editing support for F# for a number of open edito
 * Emacs (in progress)
 * Vim (in progress)
 
-Join [The F# Open Source Group](http://fsharp.github.com). We use [github](http://fsharp.github.com/fsharpbinding) for tracking work items and suggestions.
+For more information about F# see [The F# Software Foundation](http://fsharp.org). Join [The F# Open Source Group](http://fsharp.github.com). We use [github](https://github.com/fsharp/fsharpbinding) for tracking work items and suggestions.
 
 
 ## Basic Components
@@ -14,74 +14,44 @@ The core component is the FSharp.CompilerBinding.dll. This is used by both fsaut
 
 ### Basic Components - Building
 
-	./configure
+	./configure.sh
 	make
 
-This produces bin/FSharp.CompilerBinding.dll and bin/fsautocomplete.exe.
-
-To understand how to use these components, see the other projects
-
+This produces bin/FSharp.CompilerBinding.dll and bin/fsautocomplete.exe. To understand how to use these components, see the other projects.
 
 ## MonoDevelop support
 
-Adds open source F# support to the open source editor MonoDevelop.
-
-Features:
+Adds open source F# support to the open source editor MonoDevelop. Features:
 * Code completion
 * Syntax highlighting
 * Tooltips
 * Debugging 
 * Target .NET 3.5, 4.0, 4.5
 * F# Interactive scripting (Alt-Enter execution)
-* Templates (Console Application, Library, Tutorial Project, Gtk Project, ASP.NET MVC 4)
+* Templates (Console Application, Library, Tutorial Project, Gtk Project, Web Programming)
 * Makefile support
-* MonoDevelop includes C# 5.0, ASP.NET and other features
 * Supports F# 3.0 type providers (requires F# 3.0)
 * xbuild support for Visual Studio .fsproj and .sln files without change (requires Mono 3.0 and F# 3.0)
+* MonoDevelop also includes C# 5.0 and other features
 
 Requires MonoDevelop 3.0 and later versions
 
-
 ### Installation
 
-On Mac and Linux, first build or install [the F# 3.0 compiler (open source edition)](http://fsharp.github.com/fsharp) if 'fsharpc' is not on your command line. F# 2.0 can also be used.
-
-Then install the F# Language Binding via the MonoDeveop Add-in manager.
+[Install F#](http://fsharp.org). Then install the F# Language Binding via the MonoDeveop Add-in manager.
 
    MonoDevelop 
-        --> Add-in manager --> Gallery
-        --> Language Bindings --> F# Language Binding
-
-Then do this:
-
-   MonoDevelop 
-      --> Options/Preferences --> Source Code --> Code Formatting --> Text File --> Convert tabs to spaces
-
-
-For more information about F# and code examples see these links:
-* http://fsharp.net
-* http://tryfsharp.org
-* http://fssnip.net
+        --> Add-in manager 
+        --> Gallery
+        --> Language Bindings 
+        --> F# Language Binding
 
 ### Using the ASP.NET MVC 4 Template
-
-To use the ASP.NET MVC 4 template, a little bit of additional setup is required. The steps are simple and are only required once.
-
-On the Mac, you can clone this repository and do the following:
-
-	cd monodevelop
-	./configure.sh
-	make add-libraries
-  
-This adds all of the ASP.NET MVC 4 libraries to the MonoDevelop Addins directory. A few of these libraries have already been added to 
-Mono 3.0. If a future release of Mono includes the additional libraries, these manual process can be eliminated.
 
 On Windows, you need to install ASP.NET MVC 4 from [here](http://www.microsoft.com/en-us/download/details.aspx?id=30683). 
 You can then create a project from the template, build it, and run. 
 
-If, for whatever reason, the references are not found when you create a project from the template, you can clone this repo
-and copy the monodevelop/dependencies/AspNetMvc4 directory to your local project and re-add the references.   
-
+On Mac and Linux the template includes a copy of the basic ASP.NET MVC 4 core DLLs.
 
 ### Building and installing from scratch
 
@@ -94,7 +64,7 @@ Normally you should get the binding from the repository. If you want to build an
 
 ### Can't get it to work?  
 
-Don't give up! Add an issue to [the issue tracker](http://fsharp.github.com/fsharpbinding/issues). You issue will be seen by the developers.
+Don't give up! Add an issue to [the issue tracker](https://github.com/fsharp/fsharpbinding/issues). You issue will be seen by the developers.
 
 ### Notes for Developers
 
