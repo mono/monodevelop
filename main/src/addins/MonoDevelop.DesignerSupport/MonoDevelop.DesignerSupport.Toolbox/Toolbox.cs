@@ -184,6 +184,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				cat.IsVisible = hasVisibleChild;
 			}
 			toolboxWidget.QueueDraw ();
+			toolboxWidget.QueueResize ();
 		}
 		
 		void toolboxAddButton_Clicked (object sender, EventArgs e)

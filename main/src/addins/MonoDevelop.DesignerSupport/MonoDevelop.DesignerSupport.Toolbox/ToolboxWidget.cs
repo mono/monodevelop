@@ -779,6 +779,10 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				                             Allocation.Height);
 				if (ypos < Allocation.Height)
 					this.vAdjustement.Value = 0;
+				if (vAdjustement.Value + vAdjustement.PageSize > vAdjustement.Upper)
+					vAdjustement.Value = vAdjustement.Upper - vAdjustement.PageSize;
+				if (vAdjustement.Value < 0)
+					vAdjustement.Value = 0;
 			}
 		}
 		
