@@ -146,7 +146,11 @@ namespace MonoDevelop.CSharp.Highlighting
 							compilation = guiDocument.Compilation;
 							var newResolver = new CSharpAstResolver (compilation, unit, parsedFile);
 							var visitor = new QuickTaskVisitor (newResolver, cancellationToken);
-							unit.AcceptVisitor (visitor);
+							try {
+								unit.AcceptVisitor (visitor);
+							} catch (Exception) {
+								return;
+							}
 							if (!cancellationToken.IsCancellationRequested) {
 								Gtk.Application.Invoke (delegate {
 									if (cancellationToken.IsCancellationRequested)
