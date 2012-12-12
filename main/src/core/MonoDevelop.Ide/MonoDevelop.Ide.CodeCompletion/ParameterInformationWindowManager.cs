@@ -301,8 +301,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return currentOverload;
 			}
 			set {
-				Console.WriteLine ("val:"+value);
-				Console.WriteLine (Environment.StackTrace);
 				currentOverload = value;
 			}
 		}
