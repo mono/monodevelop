@@ -1483,13 +1483,12 @@ namespace Mono.TextEditor
 							int l, x1, x2;
 							layout.Layout.IndexToLineX ((int)startTranslated, false, out l, out x1);
 							layout.Layout.IndexToLineX ((int)endTranslated, false, out l, out x2);
-							x1 += (int)x;
-							x2 += (int)x;
-							x1 /= (int)Pango.Scale.PangoScale;
-							x2 /= (int)Pango.Scale.PangoScale;
-	
+							int w = (int) System.Math.Ceiling ((x2 - x1) / Pango.Scale.PangoScale);
+							int s = (int) System.Math.Floor ((x1 + x) / Pango.Scale.PangoScale);
+							double corner = System.Math.Min (4, width) * textEditor.Options.Zoom;
+
 							cr.Color = MainSearchResult.IsInvalid || MainSearchResult.Offset != firstSearch.Offset ? ColorStyle.SearchTextBg : ColorStyle.SearchTextMainBg;
-							FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, x1, y, System.Math.Min (4, width) * textEditor.Options.Zoom, x2 - x1, LineHeight);
+							FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, s, y, corner, w + 1, LineHeight);
 							cr.Fill ();
 						}
 					}, null);
