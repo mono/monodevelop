@@ -381,7 +381,15 @@ namespace Mono.Debugging.Soft
 
 		public override ValueReference GetIndexerReference (EvaluationContext ctx, object target, object[] indices)
 		{
-			TypeMirror targetType = GetValueType (ctx, target) as TypeMirror;
+			object valueType = GetValueType (ctx, target);
+			TypeMirror targetType = null;
+
+			if (valueType is Type)
+				targetType = (TypeMirror) ForceLoadType (ctx, ((Type) valueType).FullName);
+			else if (valueType is TypeMirror)
+				targetType = (TypeMirror) valueType;
+			else
+				return null;
 			
 			Value[] values = new Value [indices.Length];
 			TypeMirror[] types = new TypeMirror [indices.Length];
