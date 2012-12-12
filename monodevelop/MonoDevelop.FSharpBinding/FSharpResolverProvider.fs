@@ -54,16 +54,19 @@ type internal FSharpLocalResolveResult(tip:DataTipText, ivar:IVariable) =
 //     main/src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/LanguageItemWindow.cs
 // was commented out in that change, but this means CreateTooltip is never called and no tooltips 
 // are ever created. So instead we just create the Gtk window ourselves here.
-#if CODE_BEFORE_WORKAROUND_FOR_MISSING_MONODEVELOP_TOOLTIPS_IN_3_0_4
-type FSharpLanguageItemTooltipProvider() = 
-    let p = new MonoDevelop.SourceEditor.LanguageItemTooltipProvider() 
-    interface ITooltipProvider with 
+
+#if DISABLE_THIS_SO_FAR
+
+//#if CODE_BEFORE_WORKAROUND_FOR_MISSING_MONODEVELOP_TOOLTIPS_IN_3_0_4
+//type FSharpLanguageItemTooltipProvider() = 
+//    let p = new MonoDevelop.SourceEditor.LanguageItemTooltipProvider() 
+//    interface ITooltipProvider with 
     
-        member x.GetItem (editor, offset) =  p.GetItem(editor,offset)
-        member x.CreateTooltipWindow (editor, offset, modifierState, item) = p.CreateTooltipWindow (editor, offset, modifierState, item)
-        member x.GetRequiredPosition (editor, tipWindow, requiredWidth, xalign) = p.GetRequiredPosition (editor, tipWindow, &requiredWidth, &xalign)
-        member x.IsInteractive (editor, tipWindow) =  p.IsInteractive (editor, tipWindow)
-#else
+//        member x.GetItem (editor, offset) =  p.GetItem(editor,offset)
+//        member x.CreateTooltipWindow (editor, offset, modifierState, item) = p.CreateTooltipWindow (editor, offset, modifierState, item)
+//        member x.GetRequiredPosition (editor, tipWindow, requiredWidth, xalign) = p.GetRequiredPosition (editor, tipWindow, &requiredWidth, &xalign)
+//        member x.IsInteractive (editor, tipWindow) =  p.IsInteractive (editor, tipWindow)
+//#else
 
 [<AllowNullLiteral>] 
 type internal FSharpLanguageItemWindow(tooltip: string) as this = 
@@ -100,12 +103,9 @@ type internal FSharpLanguageItemWindow(tooltip: string) as this =
       | _ -> ()
 
 type FSharpLanguageItemTooltipProvider() = 
-    let p = new MonoDevelop.SourceEditor.LanguageItemTooltipProvider() 
-    interface ITooltipProvider with 
+  inherit MonoDevelop.SourceEditor.LanguageItemTooltipProvider()
     
-        member x.GetItem (editor, offset) =  p.GetItem(editor,offset)
-
-        member x.CreateTooltipWindow (editor, offset, modifierState, item) = 
+  member x.CreateTooltipWindow (editor, offset, modifierState, item) = 
             let doc = IdeApp.Workbench.ActiveDocument
             if (doc = null) then null else
             match item.Item with 
@@ -115,16 +115,19 @@ type FSharpLanguageItemTooltipProvider() =
                 result :> Gtk.Window
             | _ -> null
     
-        member x.GetRequiredPosition (editor, tipWindow, requiredWidth, xalign) = 
+  member x.GetRequiredPosition (editor, tipWindow, requiredWidth, xalign) = 
             match tipWindow with 
             | :? FSharpLanguageItemWindow as win -> 
                 requiredWidth <- win.SetMaxWidth win.Screen.Width
                 xalign <- 0.5
             | _ -> ()
 
-        member x.IsInteractive (editor, tipWindow) =  
+  member x.IsInteractive (editor, tipWindow) =  
             false
+//#endif
+
 #endif
+
     
 /// Implements "resolution" - looks for tool-tips at current locations
 type FSharpResolverProvider() =
@@ -199,5 +202,5 @@ type FSharpResolverProvider() =
 #endif
       do Debug.WriteLine (sprintf "Resolver: in CreteTooltip")
       match result with
-      | :? FSharpLocalResolveResult as res -> TipFormatter.formatTipWithHeader(res.DataTip)
+      //| :? FSharpLocalResolveResult as res -> TipFormatter.formatTipWithHeader(res.DataTip)
       | _ -> null

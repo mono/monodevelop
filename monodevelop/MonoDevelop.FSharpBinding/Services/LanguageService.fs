@@ -208,8 +208,9 @@ module internal TipFormatter =
                 else doc
 
             let html1 = 
-                try MonoDevelop.Ide.TypeSystem.AmbienceService.GetDocumentationMarkup summary 
-                with _ -> GLib.Markup.EscapeText summary
+            //    try MonoDevelop.Ide.TypeSystem.AmbienceService.GetSummaryMarkup summary 
+            //    with _ -> GLib.Markup.EscapeText summary
+                null
             let html2 = if String.IsNullOrEmpty html1 then summary else html1
             html2 
     | _ -> ""

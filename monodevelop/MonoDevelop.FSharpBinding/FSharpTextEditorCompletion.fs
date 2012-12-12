@@ -39,15 +39,12 @@ type internal FSharpErrorCompletionData(exn:exn) =
 
 /// Provide information to the 'method overloads' windows that comes up when you type '('
 type ParameterDataProvider(nameStart: int, meths: MethodOverloads) = 
-    interface IParameterDataProvider with 
-        member x.Count = meths.Methods.Length
-
-        // Get the index into the file where the parameter completion was triggered
-        member x.StartOffset = nameStart
+    inherit MonoDevelop.Ide.CodeCompletion.ParameterDataProvider (nameStart)
+    override x.Count = meths.Methods.Length
 
         /// Returns the markup to use to represent the specified method overload
         /// in the parameter information window.
-        member x.GetHeading (overload:int, parameterMarkup:string[], currentParameter:int) = 
+    member x.GetHeading (overload:int, parameterMarkup:string[], currentParameter:int) = 
             let meth = meths.Methods.[overload]
             let text = TipFormatter.formatTip  meth.Description 
             let lines = text.Split [| '\n';'\r' |]
@@ -72,7 +69,7 @@ type ParameterDataProvider(nameStart: int, meths: MethodOverloads) =
             textL.[0] + "(" + String.Join(",", text10L) + ")" + text11
 
         /// Get the lower part of the text for the display of an overload
-        member x.GetDescription (overload:int, currentParameter:int) = 
+    member x.GetDescription (overload:int, currentParameter:int) = 
             let meth = meths.Methods.[overload]
             let text = TipFormatter.formatTip  meth.Description 
             let lines = text.Split([| '\n';'\r' |])
@@ -92,19 +89,24 @@ type ParameterDataProvider(nameStart: int, meths: MethodOverloads) =
             String.Join("\n\n", Array.append lines param)
         
         // Returns the text to use to represent the specified parameter
-        member x.GetParameterDescription (overload:int, paramIndex:int) = 
+    member x.GetParameterDescription (overload:int, paramIndex:int) = 
             let meth = meths.Methods.[overload]
             let param = meth.Parameters.[paramIndex]
             param.Name 
         
         // Returns the number of parameters of the specified method
-        member x.GetParameterCount (overload:int) = 
+    override x.GetParameterCount (overload:int) = 
             let meth = meths.Methods.[overload]
             meth.Parameters.Length
         
         // @todo should return 'true' for param-list methods
-        member x.AllowParameterList (overload: int) = 
+    override x.AllowParameterList (overload: int) = 
             false
+
+    override x.GetParameterName (overload:int, paramIndex:int) =
+            let meth = meths.Methods.[overload]
+            let prm = meth.Parameters.[paramIndex]
+            prm.Name
 
 /// Implements text editor extension for MonoDevelop that shows F# completion    
 type FSharpTextEditorCompletion() =
@@ -117,7 +119,7 @@ type FSharpTextEditorCompletion() =
   override x.Initialize() = base.Initialize()
 
   /// Provide parameter and method overload information when you type '(', ',' or ')'
-  override x.HandleParameterCompletion(context:CodeCompletionContext, completionChar:char) : IParameterDataProvider =
+  override x.HandleParameterCompletion(context:CodeCompletionContext, completionChar:char) : MonoDevelop.Ide.CodeCompletion.ParameterDataProvider =
     try
      if (completionChar <> '(' && completionChar <> ',' && completionChar <> ')' ) then null else
       let doc = x.Document
