@@ -1032,25 +1032,36 @@ namespace MonoDevelop.Debugger
 			case Gdk.Key.Delete:
 			case Gdk.Key.KP_Delete:
 			case Gdk.Key.BackSpace:
-				TreePath path;
-				TreeViewColumn column;
-				TreeIter iter;
-				ObjectValue val;
-				string expression;
-				
-				// Get the expression and value at the cursor
-				GetCursor (out path, out column);
-				Model.GetIter (out iter, path);
-				val = (ObjectValue)store.GetValue (iter, ObjectCol);
-				expression = GetFullExpression (iter);
-				
-				// Lookup and remove
-				if (val != null && values.Contains (val)) {
-					RemoveValue (val);
-					return true;
-				} else if (!string.IsNullOrEmpty (expression) && valueNames.Contains (expression)) {
-					RemoveExpression (expression);
-					return true;
+				if (Selection.CountSelectedRows () > 0) {
+					List<TreeRowReference> selected = new List<TreeRowReference> ();
+					bool deleted = false;
+					string expression;
+					ObjectValue val;
+					TreeIter iter;
+
+					// get a list of the selected rows (in reverse order so that we delete children before parents)
+					foreach (var path in Selection.GetSelectedRows ())
+						selected.Insert (0, new TreeRowReference (Model, path));
+
+					foreach (var row in selected) {
+						if (!Model.GetIter (out iter, row.Path))
+							continue;
+
+						val = (ObjectValue)store.GetValue (iter, ObjectCol);
+						expression = GetFullExpression (iter);
+
+						// Lookup and remove
+						if (val != null && values.Contains (val)) {
+							RemoveValue (val);
+							deleted = true;
+						} else if (!string.IsNullOrEmpty (expression) && valueNames.Contains (expression)) {
+							RemoveExpression (expression);
+							deleted = true;
+						}
+					}
+
+					if (deleted)
+						return true;
 				}
 				break;
 			}
