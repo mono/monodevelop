@@ -425,13 +425,16 @@ namespace MonoDevelop.Ide.Projects {
 				return false;
 			}
 			
-			ProjectCreateInformation cinfo = CreateProjectCreateInformation ();
 			
 			try {
+				ProjectCreateInformation cinfo = CreateProjectCreateInformation ();
 				if (newSolution)
 					newItem = item.CreateWorkspaceItem (cinfo);
 				else
 					newItem = item.CreateProject (parentFolder, cinfo);
+			} catch (UserException ex) {
+				MessageService.ShowError (ex.Message, ex.Details);
+				return false;
 			} catch (Exception ex) {
 				MessageService.ShowException (ex, GettextCatalog.GetString ("The project could not be created"));
 				return false;
