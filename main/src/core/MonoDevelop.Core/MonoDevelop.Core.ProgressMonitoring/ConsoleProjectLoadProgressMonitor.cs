@@ -29,6 +29,8 @@ namespace MonoDevelop.Core.ProgressMonitoring
 {
 	public class ConsoleProjectLoadProgressMonitor : WrappedProgressMonitor, IProjectLoadProgressMonitor
 	{
+		public MonoDevelop.Projects.Solution CurrentSolution { get; set; }
+
 		public ConsoleProjectLoadProgressMonitor (IProgressMonitor monitor)
 			: base (monitor)
 		{

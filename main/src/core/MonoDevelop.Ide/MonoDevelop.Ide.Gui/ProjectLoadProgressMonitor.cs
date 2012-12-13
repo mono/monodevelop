@@ -35,6 +35,8 @@ namespace MonoDevelop.Ide.Gui
 			get; set;
 		}
 		
+		public MonoDevelop.Projects.Solution CurrentSolution { get; set; }
+
 		public GtkProjectLoadProgressMonitor (IProgressMonitor monitor)
 			: base (monitor)
 		{
@@ -43,6 +45,9 @@ namespace MonoDevelop.Ide.Gui
 		
 		public MigrationType ShouldMigrateProject ()
 		{
+			if (!IdeApp.IsInitialized)
+				return MigrationType.Ignore;
+
 			if (Migration.HasValue)
 				return Migration.Value;
 
