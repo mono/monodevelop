@@ -43,6 +43,9 @@ namespace MonoDevelop.Ide.Gui
 		
 		public MigrationType ShouldMigrateProject ()
 		{
+			if (!IdeApp.IsInitialized)
+				return MigrationType.Ignore;
+
 			if (Migration.HasValue)
 				return Migration.Value;
 
