@@ -30,6 +30,7 @@ namespace MonoDevelop.Core
 {
 	public interface IProjectLoadProgressMonitor : IProgressMonitor
 	{
+		MonoDevelop.Projects.Solution CurrentSolution { get; set; }
 		MigrationType ShouldMigrateProject ();
 	}
 }

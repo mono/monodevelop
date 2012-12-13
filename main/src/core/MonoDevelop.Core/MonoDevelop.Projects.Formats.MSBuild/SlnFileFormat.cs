@@ -603,6 +603,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				ProjectExtensionUtil.BeginLoadOperation ();
 				sol = new Solution ();
 				monitor.BeginTask (string.Format (GettextCatalog.GetString ("Loading solution: {0}"), fileName), 1);
+				var projectLoadMonitor = monitor as IProjectLoadProgressMonitor;
+				if (projectLoadMonitor != null)
+					projectLoadMonitor.CurrentSolution = sol;
 				LoadSolution (sol, fileName, format, monitor);
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Could not load solution: {0}", fileName), ex);
