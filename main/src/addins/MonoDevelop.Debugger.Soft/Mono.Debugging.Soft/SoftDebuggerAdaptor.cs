@@ -1158,7 +1158,7 @@ namespace Mono.Debugging.Soft
 
 			MethodMirror cctor = OverloadResolve (ctx, ".cctor", tm, new TypeMirror[0], false, true, false);
 			if (cctor == null)
-				return false;
+				return true;
 
 			try {
 				tm.InvokeMethod (ctx.Thread, cctor, new Value[0], InvokeOptions.DisableBreakpoints | InvokeOptions.SingleThreaded);
