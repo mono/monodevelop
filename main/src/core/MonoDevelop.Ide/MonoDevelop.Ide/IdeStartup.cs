@@ -99,7 +99,7 @@ namespace MonoDevelop.Ide
 
 			FilePath p = typeof(IdeStartup).Assembly.Location;
 			Assembly.LoadFrom (p.ParentDirectory.Combine ("Xwt.Gtk.dll"));
-			Xwt.Application.Initialize ("Xwt.GtkBackend.GtkEngine, Xwt.Gtk, Version=1.0.0.0");
+			Xwt.Application.Initialize (Xwt.ToolkitType.Gtk);
 			Xwt.Engine.Toolkit.ExitUserCode (null);
 
 			//default to Windows IME on Windows
