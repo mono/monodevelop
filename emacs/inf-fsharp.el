@@ -133,6 +133,7 @@ be sent from another buffer in fsharp mode.
 ;; patched to from original run-fsharp sharing code with
 ;;  fsharp-run-process-when-needed
 
+;;;###autoload
 (defun run-fsharp (&optional cmd)
   "Run an inferior fsharp process.
 Input and output via buffer `*inferior-fsharp*'."
