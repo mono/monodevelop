@@ -88,6 +88,10 @@
       (define-key map [eval-phrase] '("Eval phrase" . fsharp-eval-phrase))
       )))
 
+
+;;;###autoload
+(add-to-list 'auto-mode-alist '("\\.fs[iylx]?$" . fsharp-mode))
+
 (defvar fsharp-mode-syntax-table nil
   "Syntax table in use in fsharp mode buffers.")
 (if fsharp-mode-syntax-table
@@ -145,6 +149,7 @@
 (defvar fsharp-mode-hook nil
   "Hook for fsharp-mode")
 
+;;;###autoload
 (defun fsharp-mode ()
   "Major mode for editing fsharp code.
 
