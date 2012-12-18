@@ -20,7 +20,7 @@
 
 ;;user customizable variables
 
-(defvar fsharp-version 0.3
+(defvar fsharp-mode-version 0.3
   "Version of this fsharp-mode")
 
 (defvar inferior-fsharp-program "fsi"
@@ -156,8 +156,8 @@
 \\{fsharp-mode-map}"
   (interactive)
 
-  (require 'fsharp-indent)
-  (require 'fsharp-font)
+  (require 'fsharp-mode-indent)
+  (require 'fsharp-mode-font)
   (kill-all-local-variables)
   (use-local-map fsharp-mode-map)
   (set-syntax-table fsharp-mode-syntax-table)
@@ -266,13 +266,13 @@
 (defun fsharp-eval-region (start end)
   "Send the current region to the inferior fsharp process."
   (interactive"r")
-  (require 'inf-fsharp)
+  (require 'inf-fsharp-mode)
   (inferior-fsharp-eval-region start end))
 
 
 (defun fsharp-show-subshell ()
   (interactive)
-  (require 'inf-fsharp)
+  (require 'inf-fsharp-mode)
   (inferior-fsharp-show-subshell))
 
 
@@ -320,10 +320,10 @@ whole string."
     (if (string-match "^\\(.*\\)\\.\\(fs\\|fsi\\)$" name)
         (shell-command (concat (match-string 1 name) ".exe")))))
 
-(defun fsharp-version ()
+(defun fsharp-mode-version ()
   "Echo the current version of `fsharp-mode' in the minibuffer."
   (interactive)
-  (message "Using `fsharp-mode' version %s" fsharp-version)
+  (message "Using `fsharp-mode' version %s" fsharp-mode-version)
   (fsharp-keep-region-active))
 
-(provide 'fsharp)
+(provide 'fsharp-mode)
