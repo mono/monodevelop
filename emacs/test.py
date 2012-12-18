@@ -2,26 +2,38 @@
 
 import re
 import sys
-import urllib
 import time
 import getopt
 import subprocess
-from pprint import pprint
+#from pprint import pprint
 
 
 
-
-text = """script /home/fsharp/test.fsx
+text = """script /Users/robnea/dev/fsharp-fsbinding/emacs/test.fs
 type Hello(who) =
   member x.Say() =
     printfn "Hello %s!" who
+    
+  member x.Try() =
+    printfn "Hello %s!" who
+    
+  member x.Bry() =
+    printfn "Hello %s!" who
 
 let hi = Hello("world")
-hi.S
+
+let hifice = 5
+
+let fufsldjafif = "bla"
+
+let fufasdfikl = "no"
+
+let x = hi.
+
 <<EOF>>
 """
 
-test = text + """completion 5 4
+test = text + """completion 19 11
 quit
 """
 
@@ -64,54 +76,6 @@ def main():
   out, err = child.communicate(test)
 
   print "output:\n%s" % out
-
-  sys.exit(0)
-
-  child.stdin.write(text)
-
-  child.stdout.flush()
-  output = child.stdout.readline()
-
-  print output
-
-  child.stdin.write("completion 5 4\n")
-
-  child.stdin.write("tip 4 5\n")
-
-  child.stdout.flush()
-  output = child.stdout.readline()
-  output = child.stdout.readline()
-  output = child.stdout.readline()
-  output = child.stdout.readline()
-  output = child.stdout.readline()
-  print output
-
-  child.terminate()
-
-  sys.exit(0)
-
-
-  child = pexpect.spawn(r"mono bin/fsintellisense.exe")
-#  child.interact()
-  child.send(text)
-  
-  # ^[[52;1R2;1R
-
-  print "sent, waiting for ack"
-
-  child.expect("DONE: Script loaded")
-  
-  print "received, asking for completion"
-
-  child.sendline("completion 5 4")
-
-  child.sendline("tip 4 5")
-
-  while True:
-    child.expect(".*")
-
-    #print "Received:\n--\n%s--" % child.after
-
   
 
 if __name__ == "__main__":
