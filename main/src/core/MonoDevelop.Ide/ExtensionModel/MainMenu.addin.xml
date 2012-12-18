@@ -224,11 +224,11 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.PrevWindow" />
 		<SeparatorItem id ="NxtPrvSeparator" /> 
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseAllFiles" />
-		<SeparatorItem id ="SplitSeparator" /> 
+<!--		<SeparatorItem id ="SplitSeparator" /> 
 		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.SplitWindowVertically" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.SplitWindowHorizontally" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.UnsplitWindow" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.SwitchSplitWindow" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.SwitchSplitWindow" />-->
 		<SeparatorItem id = "contentSep" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.OpenWindowList" />
 	</ItemSet> 
