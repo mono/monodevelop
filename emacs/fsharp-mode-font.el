@@ -198,4 +198,4 @@
 
 (add-hook 'inferior-fsharp-mode-hooks 'inferior-fsharp-mode-font-hook)
 
-(provide 'fsharp-font)
+(provide 'fsharp-mode-font)

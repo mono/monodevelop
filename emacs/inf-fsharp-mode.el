@@ -1,6 +1,6 @@
 ;(***********************************************************************)
 ;(*                                                                     *)
-;(*                           Objective fsharp                            *)
+;(*                                F#                                   *)
 ;(*                                                                     *)
 ;(*                   Xavier Leroy and Jacques Garrigue                 *)
 ;(*                                                                     *)
@@ -21,7 +21,7 @@
 ;; modified by Laurent Le Brun for F#, 2010
 
 (require 'comint)
-(require 'fsharp)
+(require 'fsharp-mode)
 
 ;; User modifiable variables
 
@@ -370,4 +370,4 @@ should lies."
   (let ((comint-input-sender 'fsharp-simple-send))
     (comint-send-input)))
 
-(provide 'inf-fsharp)
+(provide 'inf-fsharp-mode)

@@ -1633,4 +1633,4 @@ This tells add-log.el how to find the current function/method/variable."
      (progn (goto-char (point-max)))))
   (end-of-line))
 
-(provide 'fsharp-indent)
+(provide 'fsharp-mode-indent)
