@@ -41,7 +41,7 @@
     (setq font-lock-function-name-face 'MidnightBlue)
     (setq font-lock-variable-name-face 'DarkGoldenRod)
     (setq font-lock-type-face 'DarkOliveGreen)
-    (setq font-lock-reference-face 'CadetBlue)))
+    (setq font-lock-constant-face 'CadetBlue)))
   ; extra faces for documention
   (make-face 'Stop)
   (set-face-foreground 'Stop "White")
@@ -83,8 +83,43 @@
   '("//.*" . font-lock-comment-face)
 
 ;modules and constructors
-   '("`?\\<[A-Z][A-Za-z0-9_']*\\>" . font-lock-function-name-face)
+   ;; '("`?\\<[A-Z][A-Za-z0-9_']*\\>" . font-lock-function-name-face)
 ;definition
+
+  ;; functions
+  '("\\<\\(?:let\\|and\\)\s+\\(?:\\(?:inline\\|rec\\)\s+\\)?\\([A-Za-z0-9_']+\\)\\(?:\s+[A-Za-z_]\\|\s*(\\)"
+    1 font-lock-function-name-face)
+
+  ;; pattern functions
+  '("\\<\\(?:let\\|and\\)\s+\\(?:\\(?:inline\\|rec\\)\s+\\)?\\([A-Za-z0-9_']+\\)\s*=\s*function"
+    1 font-lock-function-name-face)
+
+  ;; active patterns
+  '("\\<\\(?:let\\|and\\)\s+\\(?:\\(?:inline\\|rec\\)\s+\\)?(\\(|[A-Za-z0-9_'|]+|\\))\s+[A-Za-z_(]"
+    1 font-lock-function-name-face)
+
+  ;; member functions
+  '("\\<\\(?:override\\|member\\|abstract\\)\s+\\(?:\\(?:inline\\|rec\\)\s+\\)?\\(?:[A-Za-z0-9_']+\\.\\)?\\([A-Za-z0-9_']+\\)"
+    1 font-lock-function-name-face)
+
+  ;; operator overload (!, %, &, *, +, -, ., /, <, =, >, ?, @, ^, |, and ~)
+  '("\\<\\(?:override\\|member\\|abstract\\)\s+\\(?:\\(?:inline\\|rec\\)\s+\\)?\\(([!%&*+-./<=>?@^|~]+)\\)"
+    1 font-lock-function-name-face)
+
+  ;; constructor
+  '("^\s*\\<\\(new\\) *(.*)[^=]*=" 1 font-lock-function-name-face)
+
+  ;; open namespace
+  '("\\<open\s\\([A-Za-z0-9_.]+\\)" 1 font-lock-type-face)
+
+  ;; module/namespace
+  '("\\<\\(?:module\\|namespace\\)\s\\([A-Za-z0-9_.]+\\)" 1 font-lock-type-face)
+
+  ;; type defines
+  '("^\s*\\<\\(?:type\\|and\\)\s+\\(?:private\\|internal\\|public\\)*\\([A-Za-z0-9_'.]+\\)" 1 font-lock-type-face)
+
+  ;; attributes
+  '("\\[<[A-Za-z0-9_]+>\\]" . font-lock-preprocessor-face)
 
    (cons (concat "\\(\\<"
                  (mapconcat 'identity
@@ -111,7 +146,7 @@
                               )
                             "\\>\\|\\<")
                  "\\>\\)")
-         'font-lock-type-face)
+         'font-lock-keyword-face)
 
 ;blocking
 ;;    '("\\<\\(begin\\|end\\|module\\|namespace\\|object\\|sig\\|struct\\)\\>"
@@ -121,7 +156,7 @@
           "\\<\\(asr\\|false\\|land\\|lor\\|lsl\\|lsr\\|lxor"
           "\\|mod\\|new\\|null\\|object\\|or\\|sig\\|true\\)\\>"
           "\\|\|\\|->\\|&\\|#")
-         'font-lock-reference-face)
+         'font-lock-constant-face)
 ;labels (and open)
    '("\\<\\(assert\\|open\\|include\\|module\\|namespace\\|extern\\|void\\)\\>\\|[~?][ (]*[a-z][a-zA-Z0-9_']*"
      . font-lock-variable-name-face)))

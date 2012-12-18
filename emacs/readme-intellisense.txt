@@ -1,12 +1,23 @@
         Experimental support for Intellisense in Emacs
 
+December 2012
+
+Removed old intellisense approach. File manifest now as follows:
+
+intelli_tip.el             - old tooltip generation, currently disabled
+intellisense2.el           - new intellisense, uses autocomplete
+readme-intellisense.txt    - this file
+test.fs                    - simple small test script, to be moved
+test.py                    - python script for feeding in test scripts
+
+-- Robin Neatherway
+
+
 October 2012
 
 This code has been imported with minor changes from Sourceforge. There are some caveats.
 
-1) There are dependencies on esense, and tooltip-help.el, available from:
-   - http://sourceforge.net/projects/esense/
-   - http://www.emacswiki.org/emacs/tooltip-help.el
+1) There are dependencies on esense, and tooltip-help.el. Modified versions are present in this directory (intellisense.el and intelli_tip.el respectively).
 
 2) Communication between emacs and the fsintellisense.exe subprocess are working, but the results are not always interpreted correctly.
 

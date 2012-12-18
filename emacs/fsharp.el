@@ -52,6 +52,7 @@
   (define-key fsharp-mode-map "\M-\C-x" 'fsharp-eval-phrase)
   (define-key fsharp-mode-map "\C-c\C-e" 'fsharp-eval-phrase)
   (define-key fsharp-mode-map "\C-c\C-r" 'fsharp-eval-region)
+  (define-key fsharp-mode-map "\C-c\C-f" 'fsharp-load-buffer-file)
   (define-key fsharp-mode-map "\C-c\C-s" 'fsharp-show-subshell)
   (define-key fsharp-mode-map "\M-\C-h" 'fsharp-mark-phrase)
 
@@ -269,6 +270,18 @@
   (require 'inf-fsharp)
   (inferior-fsharp-eval-region start end))
 
+(defun fsharp-load-buffer-file ()
+  "Load the filename corresponding to the present buffer in F# with #load"
+  (interactive)
+  (require 'inf-fsharp)
+  (let* ((name buffer-file-name)
+         (command (concat "#load \"" name "\"")))
+    (when (buffer-modified-p)
+      (when (y-or-n-p (concat "Do you want to save \"" name "\" before
+loading it? "))
+        (save-buffer)))
+    (save-excursion (fsharp-run-process-if-needed))
+    (save-excursion (fsharp-simple-send inferior-fsharp-buffer-name command))))
 
 (defun fsharp-show-subshell ()
   (interactive)
