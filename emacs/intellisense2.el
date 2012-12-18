@@ -179,6 +179,7 @@
 
 (defvar ac-source-fsintellisense
   '((candidates . ac-fsharp-candidate)
+    (requires . 0)
     ;(cache)
     ))
 
