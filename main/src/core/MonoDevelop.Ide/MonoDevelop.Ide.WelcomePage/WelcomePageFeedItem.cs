@@ -28,6 +28,7 @@ using System;
 using Gtk;
 using MonoDevelop.Core;
 using System.Xml.Linq;
+using System.Text.RegularExpressions;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
@@ -84,6 +85,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			this.LinkUrl = href;
 			
 			string desc = (string)(el.Attribute ("desc") ?? el.Attribute ("_desc"));
+			desc = CleanHtml (desc);
 
 			if (!string.IsNullOrEmpty (desc)) {
 				desc = desc.Replace (" [...]", "...");
@@ -284,6 +286,11 @@ namespace MonoDevelop.Ide.WelcomePage
 				box.ReorderChild (image, 0);
 			}
 			image.Pixbuf = ImageService.GetPixbuf (icon, iconSize);
+		}
+
+		string CleanHtml (string txt)
+		{
+			return Regex.Replace (txt, "<.*?>", "");
 		}
 		
 		protected override bool OnEnterNotifyEvent (Gdk.EventCrossing evnt)
