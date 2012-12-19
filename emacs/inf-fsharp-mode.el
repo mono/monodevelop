@@ -1,24 +1,28 @@
-;(***********************************************************************)
-;(*                                                                     *)
-;(*                                F#                                   *)
-;(*                                                                     *)
-;(*                   Xavier Leroy and Jacques Garrigue                 *)
-;(*                                                                     *)
-;(*  Copyright 1997 Institut National de Recherche en Informatique et   *)
-;(*  en Automatique.  All rights reserved.  This file is distributed    *)
-;(*  under the terms of the GNU General Public License.                 *)
-;(*                                                                     *)
-;(***********************************************************************)
+;;; inf-fsharp-mode.el --- Support for F# interactive
 
-;(* $Id: inf-fsharp.el,v 1.11 2004/08/20 17:04:35 doligez Exp $ *)
+;; Copyright (C) 1997 INRIA
 
-;;; inf-fsharp.el --- run the fsharp toplevel in an Emacs buffer
+;; Author: 1993-1997 Xavier Leroy, Jacques Garrigue
+;;         2010-2011 Laurent Le Brun <laurent@le-brun.eu>
+;; Maintainer: Robin Neatherway <robin.neatherway@gmail.com>
+;; Keywords: languages
 
-;; Xavier Leroy, july 1993.
+;; This file is not part of GNU Emacs.
 
-;; modified by Jacques Garrigue, july 1997.
+;; This file is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation; either version 3, or (at your option)
+;; any later version.
 
-;; modified by Laurent Le Brun for F#, 2010
+;; This file is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with GNU Emacs; see the file COPYING.  If not, write to
+;; the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+;; Boston, MA 02110-1301, USA.
 
 (require 'comint)
 (require 'fsharp-mode)
@@ -130,9 +134,6 @@ be sent from another buffer in fsharp mode.
     (setq fsharp-shell-active t)
     ))
 
-;; patched to from original run-fsharp sharing code with
-;;  fsharp-run-process-when-needed
-
 ;;;###autoload
 (defun run-fsharp (&optional cmd)
   "Run an inferior fsharp process.
@@ -153,7 +154,7 @@ Input and output via buffer `*inferior-fsharp*'."
   (interactive)
   (fsharp-run-process-if-needed)
   (display-buffer inferior-fsharp-buffer-name)
-  ; Added by Didier to move the point of inferior-fsharp to end of buffer
+
   (let ((buf (current-buffer))
         (fsharp-buf  (get-buffer inferior-fsharp-buffer-name))
         (count 0))
@@ -172,8 +173,6 @@ Input and output via buffer `*inferior-fsharp*'."
       (setq count (- count 1)))
     )
 )
-
-;; patched by Didier to move cursor after evaluation 
 
 (defun inferior-fsharp-eval-region (start end)
   "Send the current region to the inferior fsharp process."
@@ -214,8 +213,6 @@ Input and output via buffer `*inferior-fsharp*'."
     (goto-line (- loc 1))))
 ;;    (goto-char loc)))
 
-
-;;; orgininal inf-fsharp.el ended here
 
 ;; as eval-phrase, but ignores errors.
 
@@ -371,3 +368,5 @@ should lies."
     (comint-send-input)))
 
 (provide 'inf-fsharp-mode)
+
+;;; inf-sharp-mode.el ends here

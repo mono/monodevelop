@@ -261,4 +261,5 @@ Return a cons cell (X . Y)"
 
 
 (provide 'tooltip-help)
-;;;;;;;;
+
+;;; intelli_tip.el ends here

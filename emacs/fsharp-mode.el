@@ -1,22 +1,29 @@
-;(***********************************************************************)
-;(*                                                                     *)
-;(*                           Objective Caml                            *)
-;(*                                                                     *)
-;(*                Jacques Garrigue and Ian T Zimmerman                 *)
-;(*                                                                     *)
-;(*  Copyright 1997 Institut National de Recherche en Informatique et   *)
-;(*  en Automatique.  All rights reserved.  This file is distributed    *)
-;(*  under the terms of the GNU General Public License.                 *)
-;(*                                                                     *)
-;(***********************************************************************)
+;;; fsharp-mode.el --- Support for the F# programming language
 
-;(* $Id: fsharp.el,v 1.39 2005/02/04 17:19:21 remy Exp $ *)
+;; Copyright (C) 1997 INRIA
 
-;; Xavier Leroy, july 1993.
-;;copying: covered by the current FSF General Public License.
+;; Author: 1993-1997 Xavier Leroy, Jacques Garrigue and Ian T Zimmerman
+;;         2010-2011 Laurent Le Brun <laurent@le-brun.eu>
+;; Maintainer: Robin Neatherway <robin.neatherway@gmail.com>
+;; Keywords: languages
+;; Version: 0.3
 
-;; adapted for F# by Laurent Le Brun <laurent@le-brun.eu>
+;; This file is not part of GNU Emacs.
 
+;; This file is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation; either version 3, or (at your option)
+;; any later version.
+
+;; This file is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with GNU Emacs; see the file COPYING.  If not, write to
+;; the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+;; Boston, MA 02110-1301, USA.
 
 ;;user customizable variables
 
@@ -190,15 +197,12 @@
         indent-region-function  'fsharp-indent-region
         indent-line-function    'fsharp-indent-line
 
-  ;itz Fri Sep 25 13:23:49 PDT 1998
         add-log-current-defun-function 'fsharp-current-defun
-  ;itz 03-25-96
         before-change-function 'fsharp-before-change-function
         fsharp-last-noncomment-pos nil
         fsharp-last-comment-start (make-marker)
         fsharp-last-comment-end (make-marker))
 
-  ;garrigue july 97
   (if running-xemacs ; from Xemacs lisp mode
       (if (and (featurep 'menubar)
                current-menubar)
@@ -250,8 +254,6 @@
       )))
 
 (add-hook 'fsharp-mode-hook 'fsharp-set-compile-command)
-
-;;; Auxiliary function. Garrigue 96-11-01.
 
 (defun fsharp-find-alternate-file ()
   (interactive)
@@ -340,3 +342,5 @@ whole string."
   (fsharp-keep-region-active))
 
 (provide 'fsharp-mode)
+
+;;; fsharp-mode.el ends here
