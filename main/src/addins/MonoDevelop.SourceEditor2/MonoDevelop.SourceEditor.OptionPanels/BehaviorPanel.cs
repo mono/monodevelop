@@ -60,7 +60,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.checkbuttonOnTheFlyFormatting.Active = DefaultSourceEditorOptions.Instance.OnTheFlyFormatting;
 			
 			checkbuttonFormatOnSave.Active = PropertyService.Get ("AutoFormatDocumentOnSave", false);
-			checkbuttonAutoSetSearchPatternCasing.Active = PropertyService.Get ("AutoSetPatternCasing", true);
+			checkbuttonAutoSetSearchPatternCasing.Active = PropertyService.Get ("AutoSetPatternCasing", false);
 			HandleAutoInsertBraceCheckbuttonToggled (null, null);
 			return this;
 		}

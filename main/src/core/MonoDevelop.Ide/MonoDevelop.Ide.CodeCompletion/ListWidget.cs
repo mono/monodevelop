@@ -335,10 +335,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			var area = GetRowArea (SelectedItem);
 			double newValue;
-			if (area.Y < vadj.Value) {
+			if (vadj.PageSize == 1.0) {
+				newValue = Math.Min (vadj.Upper - vadj.PageSize, area.Y);
+			} else if (area.Y < vadj.Value) {
 				newValue = Math.Min (vadj.Upper - vadj.PageSize, area.Y);
 			} else if (vadj.Value + vadj.PageSize < area.Bottom) {
-				newValue = area.Bottom - vadj.PageSize + 1;
+				newValue = Math.Min (vadj.Upper - vadj.PageSize, area.Bottom - vadj.PageSize + 1);
 			} else {
 				return;
 			}

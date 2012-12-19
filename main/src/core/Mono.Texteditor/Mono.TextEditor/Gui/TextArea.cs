@@ -2452,7 +2452,7 @@ namespace Mono.TextEditor
 					layout.Dispose ();
 			}
 			
-			protected override Rectangle CalculateInitialBounds ()
+			protected override Cairo.Rectangle CalculateInitialBounds ()
 			{
 				DocumentLine line = Editor.Document.GetLineByOffset (Result.Offset);
 				int lineNr = Editor.Document.OffsetToLineNumber (Result.Offset);
@@ -2460,7 +2460,7 @@ namespace Mono.TextEditor
 				int logicalRulerColumn = line.GetLogicalColumn (Editor.GetTextEditorData (), Editor.Options.RulerColumn);
 				var lineLayout = Editor.TextViewMargin.CreateLinePartLayout (mode, line, logicalRulerColumn, line.Offset, line.Length, -1, -1);
 				if (lineLayout == null)
-					return Gdk.Rectangle.Zero;
+					return new Cairo.Rectangle ();
 				
 				int l, x1, x2;
 				int index = Result.Offset - line.Offset - 1;
@@ -2478,65 +2478,94 @@ namespace Mono.TextEditor
 					Console.WriteLine ("Invalid end index :" + index);
 				}
 				
-				double y2 = Editor.LineToY (lineNr);
+				double y = Editor.LineToY (lineNr);
 				double w = (x2 - x1) / Pango.Scale.PangoScale;
-				int spaceX = (int)System.Math.Ceiling (w / 2);
-				int spaceY = (int)Editor.LineHeight / 2;
-				var rx = (int)(x1 / Pango.Scale.PangoScale + Editor.TextViewMargin.XOffset + Editor.TextViewMargin.TextStartPosition - spaceX);
-				var ry = (int)(y2 - spaceY);
-				var rw = (int)(w + spaceX * 2);
-				var rh = (int)(Editor.LineHeight + spaceY * 2);
-				return new Gdk.Rectangle (rx, ry, rw, rh);
-			}
-			
-			Pango.Layout layout = null;
-			int layoutWidth, layoutHeight;
-			
-			protected override bool OnExposeEvent (EventExpose evnt)
-			{
-				try {
-					using (var cr = CairoHelper.Create (evnt.Window)) {
-						if (!Editor.Options.UseAntiAliasing) 
-							cr.Antialias = Cairo.Antialias.None;
-						cr.Translate (Allocation.X, Allocation.Y);
-						cr.LineWidth = Editor.Options.Zoom;
+				double x = (x1 / Pango.Scale.PangoScale + Editor.TextViewMargin.XOffset + Editor.TextViewMargin.TextStartPosition);
+				var h = Editor.LineHeight;
 
-						cr.Translate (width / 2 + 1, height / 2 - 1);
-						cr.Scale (1 + scale / 2, 1 + scale / 2);
-						if (layout == null) {
-							layout = cr.CreateLayout ();
-							layout.FontDescription = Editor.Options.Font;
-							string markup = Editor.GetTextEditorData ().GetMarkup (Result.Offset, Result.Length, true);
-							layout.SetMarkup (markup);
-							layout.GetPixelSize (out layoutWidth, out layoutHeight);
-						}
-						
-						FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, -layoutWidth / 2 - 2 + 2, -Editor.LineHeight / 2 + 2, System.Math.Min (10, layoutWidth), layoutWidth + 4, Editor.LineHeight);
-						var color = TextViewMargin.DimColor (Editor.ColorStyle.SearchTextMainBg, 0.3);
-						color.A = 0.5 * opacity;
-						cr.Color = color;
-						cr.Fill (); 
-						
-						FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, -layoutWidth / 2 -2, -Editor.LineHeight / 2, System.Math.Min (10, layoutWidth), layoutWidth + 4, Editor.LineHeight);
-						using (var gradient = new Cairo.LinearGradient (0, -Editor.LineHeight / 2, 0, Editor.LineHeight / 2)) {
-							color = TextViewMargin.DimColor (Editor.ColorStyle.SearchTextMainBg, 1.1);
-//							color.A = opacity;
-							gradient.AddColorStop (0, color);
-							color = TextViewMargin.DimColor (Editor.ColorStyle.SearchTextMainBg, 0.9);
-//							color.A = opacity;
-							gradient.AddColorStop (1, color);
-							cr.Pattern = gradient;
-							cr.Fill (); 
-						}
-						cr.Color = new Cairo.Color (0, 0, 0);
-						cr.Translate (-layoutWidth / 2, -layoutHeight / 2);
-						cr.ShowLayout (layout);
-					}
-					
-				} catch (Exception e) {
-					Console.WriteLine ("Exception in animation:" + e);
+				//adjust the width to match TextViewMargin
+				w = System.Math.Ceiling (w + 1);
+
+				//add space for the shadow
+				w += shadowOffset;
+				h += shadowOffset;
+
+				return new Cairo.Rectangle (x, y, w, h);
+			}
+
+			const int shadowOffset = 1;
+
+			Pango.Layout layout = null;
+
+			protected override void Draw (Cairo.Context cr, Cairo.Rectangle area)
+			{
+				if (!Editor.Options.UseAntiAliasing)
+					cr.Antialias = Cairo.Antialias.None;
+				cr.LineWidth = Editor.Options.Zoom;
+
+				if (layout == null) {
+					layout = cr.CreateLayout ();
+					layout.FontDescription = Editor.Options.Font;
+					string markup = Editor.GetTextEditorData ().GetMarkup (Result.Offset, Result.Length, true);
+					layout.SetMarkup (markup);
 				}
-				return true;
+
+				// subtract off the shadow again
+				var width = area.Width - shadowOffset;
+				var height = area.Height - shadowOffset;
+
+				//from TextViewMargin's actual highlighting
+				double corner = System.Math.Min (4, width) * Editor.Options.Zoom;
+
+				//fill in the highlight rect with solid white to prevent alpha blending artifacts on the corners
+				FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, 0, 0, corner, width, height);
+				cr.Color = new Cairo.Color (1, 1, 1);
+				cr.Fill ();
+
+				//draw the shadow
+				FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true,
+					shadowOffset, shadowOffset, corner, width, height);
+				var color = TextViewMargin.DimColor (Editor.ColorStyle.SearchTextMainBg, 0.3);
+				color.A = 0.5 * opacity * opacity;
+				cr.Color = color;
+				cr.Fill ();
+
+				//draw the highlight rectangle
+				FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, 0, 0, corner, width, height);
+				using (var gradient = new Cairo.LinearGradient (0, 0, 0, height)) {
+					color = ColorLerp (
+						TextViewMargin.DimColor (Editor.ColorStyle.SearchTextMainBg, 1.1),
+						Editor.ColorStyle.SearchTextMainBg,
+						1 - opacity);
+					gradient.AddColorStop (0, color);
+					color = ColorLerp (
+						TextViewMargin.DimColor (Editor.ColorStyle.SearchTextMainBg, 0.9),
+						Editor.ColorStyle.SearchTextMainBg,
+						1 - opacity);
+					gradient.AddColorStop (1, color);
+					cr.Pattern = gradient;
+					cr.Fill ();
+				}
+
+				//and finally the text
+				cr.Translate (area.X, area.Y);
+				cr.Color = new Cairo.Color (0, 0, 0);
+				cr.ShowLayout (layout);
+			}
+
+			static Cairo.Color ColorLerp (Cairo.Color from, Cairo.Color to, double scale)
+			{
+				return new Cairo.Color (
+					Lerp (from.R, to.R, scale),
+					Lerp (from.G, to.G, scale),
+					Lerp (from.B, to.B, scale),
+					Lerp (from.A, to.A, scale)
+				);
+			}
+
+			static double Lerp (double from, double to, double scale)
+			{
+				return from + scale * (to - from);
 			}
 		}
 		

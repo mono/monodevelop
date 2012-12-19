@@ -60,11 +60,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void GetNodeAttributes (ITreeNavigator treeNavigator, object dataObject, ref NodeAttributes attributes)
 		{
 			ProjectFile file = (ProjectFile) dataObject;
-			if (file.DependsOnFile != null) {
-				attributes = NodeAttributes.None;
-			} else {
-				attributes |= NodeAttributes.AllowRename;
-			}
+
+			attributes |= NodeAttributes.AllowRename;
+
 			if (!file.Visible && !treeNavigator.Options ["ShowAllFiles"])
 				attributes |= NodeAttributes.Hidden;
 		}

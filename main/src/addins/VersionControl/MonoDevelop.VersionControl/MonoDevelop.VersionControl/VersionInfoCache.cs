@@ -46,11 +46,11 @@ namespace MonoDevelop.VersionControl
 			rootPath = rootPath.CanonicalPath;
 			lock (fileStatus) {
 				foreach (var p in fileStatus.Where (e => e.Key.IsChildPathOf (rootPath) || e.Key == rootPath).ToArray ())
-					fileStatus.Remove (p.Key);
+					p.Value.RequiresRefresh = true;
 			}
 			lock (directoryStatus) {
 				foreach (var p in directoryStatus.Where (e => e.Key.IsChildPathOf (rootPath) || e.Key == rootPath).ToArray ())
-					directoryStatus.Remove (p.Key);
+					p.Value.RequiresRefresh = true;
 			}
 		}
 
@@ -78,8 +78,10 @@ namespace MonoDevelop.VersionControl
 		{
 			lock (fileStatus) {
 				VersionInfo vi;
-				if (fileStatus.TryGetValue (versionInfo.LocalPath, out vi) && vi.Equals (versionInfo))
+				if (fileStatus.TryGetValue (versionInfo.LocalPath, out vi) && vi.Equals (versionInfo)) {
+					vi.RequiresRefresh = false;
 					return;
+				}
 				versionInfo.Init (repo);
 				fileStatus [versionInfo.LocalPath.CanonicalPath] = versionInfo;
 			}
@@ -93,8 +95,10 @@ namespace MonoDevelop.VersionControl
 			lock (fileStatus) {
 				foreach (var versionInfo in versionInfos) {
 					VersionInfo vi;
-					if (fileStatus.TryGetValue (versionInfo.LocalPath.CanonicalPath, out vi) && vi.Equals (versionInfo))
+					if (fileStatus.TryGetValue (versionInfo.LocalPath.CanonicalPath, out vi) && vi.Equals (versionInfo)) {
+						vi.RequiresRefresh = false;
 						continue;
+					}
 					versionInfo.Init (repo);
 					fileStatus [versionInfo.LocalPath.CanonicalPath] = versionInfo;
 					var a = new FileUpdateEventArgs (repo, versionInfo.LocalPath, versionInfo.IsDirectory);
@@ -123,8 +127,10 @@ namespace MonoDevelop.VersionControl
 								break;
 							}
 						}
-						if (allEqual)
+						if (allEqual) {
+							vis.RequiresRefresh = false;
 							return;
+						}
 					}
 				}
 				directoryStatus [localDirectory.CanonicalPath] = new DirectoryStatus () { FileInfo = versionInfos, HasRemoteStatus = hasRemoteStatus };
@@ -137,6 +143,7 @@ namespace MonoDevelop.VersionControl
 	{
 		public VersionInfo[] FileInfo { get; set; }
 		public bool HasRemoteStatus { get; set; }
+		public bool RequiresRefresh { get; set; }
 	}
 }
 

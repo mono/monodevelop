@@ -275,7 +275,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		{
 			EnsureUnderlyingDocumentSet ();
 			hiddenInfo.OriginalCaretPosition = defaultDocument.Editor.Caret.Offset;
-			hiddenInfo.CaretPosition = CalculateCaretPositon ();
+			hiddenInfo.CaretPosition = CalculateCaretPosition ();
 			HiddenDoc.Editor.Caret.Offset = hiddenInfo.CaretPosition;
 		}
 
@@ -296,18 +296,23 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			}
 		}
 
-		int defaultPosition {
-			get	{
-				return HiddenDoc.Editor.LocationToOffset (
-					razorDocument.PageInfo.CSharpParsedFile.TopLevelTypeDefinitions[0].Members.First (
-					m => m.Name == "Execute").BodyRegion.Begin) + 1;
+		int GetDefaultPosition ()
+		{
+			var type = razorDocument.PageInfo.CSharpParsedFile.TopLevelTypeDefinitions.FirstOrDefault ();
+			if (type == null) {
+				return -1;
 			}
+			var method = type.Members.FirstOrDefault (m => m.Name == "Execute");
+			if (method == null) {
+				return -1;
+			}
+			return HiddenDoc.Editor.LocationToOffset (method.BodyRegion.Begin) + 1;
 		}
 
 		IDictionary<int, GeneratedCodeMapping> currentMappings;
 		CodeFragment codeFragment;
 
-		int CalculateCaretPositon ()
+		int CalculateCaretPosition ()
 		{
 			return CalculateCaretPosition (defaultDocument.Editor.Caret.Offset);
 		}
@@ -323,6 +328,11 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 
 			KeyValuePair<int, GeneratedCodeMapping> map;
 
+			var defaultPosition = GetDefaultPosition ();
+			if (defaultPosition < 0) {
+				defaultPosition = 0;
+			}
+
 			// If it's first line of code, create a default temp mapping, and use it until next reparse
 			if (currentMappings.Count == 0) {
 				string newLine = "\r\n#line 0 \r\n ";
@@ -337,7 +347,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			}
 
 			string pattern = "#line " + map.Key + " ";
-			int pos = HiddenDoc.Editor.Document.Text.IndexOf (pattern);
+			int pos = HiddenDoc.Editor.Document.IndexOf (pattern, 0, HiddenDoc.Editor.Document.TextLength, StringComparison.Ordinal);
 			if (pos == -1 || !map.Value.StartOffset.HasValue)
 				return defaultPosition;
 
@@ -387,31 +397,73 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			char previousChar = defaultDocument.Editor.Caret.Offset > 1 ? defaultDocument.Editor.GetCharAt (
 				defaultDocument.Editor.Caret.Offset - 2) : ' ';
 
-			// Don't show completion widnow when directive's name is being typed
+			// Don't show completion window when directive's name is being typed
 			var directive = Tracker.Engine.Nodes.Peek () as RazorDirective;
 			if (directive != null && !directive.FirstBracket.HasValue)
 				return null;
 
 			if (hiddenInfo != null && isInCSharpContext) {
-				var list = completionBuilder.HandleCompletion (defaultDocument, completionContext, hiddenInfo,
-					completionChar, ref triggerWordLength);
+				var list = (CompletionDataList) completionBuilder.HandleCompletion (defaultDocument, completionContext,
+					hiddenInfo, completionChar, ref triggerWordLength);
 
 				if (list != null) {
-					var templates = list.Select (c => c as CompletionData).Where (c => c != null
-						&& (c.Icon.Name == "md-template" || c.Icon.Name == "md-template-surroundwith")).ToList ();
-					foreach (var template in templates) {
-						list.Remove (template);
+					//filter out the C# templates, many of them are not valid
+					int oldCount = list.Count;
+					list = FilterCSharpTemplates (list);
+					int templates = list.Count - oldCount;
+
+					if (previousChar == '@') {
+						RazorCompletion.AddAllRazorSymbols (list, razorDocument.PageInfo.HostKind);
 					}
-					var result = list as CompletionDataList;
-					if (previousChar == '@')
-						RazorCompletion.AddAllRazorSymbols (result);
-					if (templates.Count > 0)
-						MonoDevelop.Ide.CodeTemplates.CodeTemplateService.AddCompletionDataForMime ("text/x-cshtml", result);
+					if (templates > 0) {
+						AddFilteredRazorTemplates (list, previousChar == '@', true);
+					}
 				}
 				return list;
 			}
 
 			return base.HandleCodeCompletion (completionContext, completionChar, ref triggerWordLength);
+		}
+
+		//recreating the list is over 2x as fast as using remove operations, saves typically 10ms
+		static CompletionDataList FilterCSharpTemplates (CompletionDataList list)
+		{
+			var newList = new CompletionDataList () {
+				AutoCompleteEmptyMatch = list.AutoCompleteEmptyMatch,
+				AutoCompleteUniqueMatch = list.AutoCompleteUniqueMatch,
+				AutoSelect = list.AutoSelect,
+				CloseOnSquareBrackets = list.CloseOnSquareBrackets,
+				CompletionSelectionMode = list.CompletionSelectionMode,
+				DefaultCompletionString = list.DefaultCompletionString,
+				IsSorted = list.IsSorted,
+			};
+			foreach (var l in list) {
+				var c =  l as CompletionData;
+				if (c == null || (c.Icon.Name != "md-template" && c.Icon.Name != "md-template-surroundwith"))
+					newList.Add (c);
+			}
+			return newList;
+		}
+
+		static void AddFilteredRazorTemplates (CompletionDataList list, bool atTemplates, bool stripLeadingAt)
+		{
+			//add the razor templates then filter them based on whether we follow an @ char, so we don't have
+			//lots of duplicates
+			int count = list.Count;
+			MonoDevelop.Ide.CodeTemplates.CodeTemplateService.AddCompletionDataForMime ("text/x-cshtml", list);
+			for (int i = count; i < list.Count; i++) {
+				var d = (CompletionData) list[i];
+				if (atTemplates) {
+					if (d.CompletionText[0] != '@') {
+						list.RemoveAt (i);
+					} else if (stripLeadingAt) {
+						//avoid inserting a double-@, which would not expand correctly
+						d.CompletionText = d.CompletionText.Substring (1);
+					}
+				} else if (d.CompletionText[0] == '@') {
+					list.RemoveAt (i);
+				}
+			}
 		}
 
 		protected override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext,
@@ -434,6 +486,20 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 				return ClosingTagCompletion (EditableBuffer, currentLocation);
 
 			return base.HandleCodeCompletion (completionContext, forced, ref triggerWordLength);
+		}
+
+		//we override to ensure we get parent element name even if there's a razor node in between
+		protected override void GetElementCompletions (CompletionDataList list)
+		{
+			var el = Tracker.Engine.Nodes.OfType<XElement> ().FirstOrDefault ();
+			var parentName = el == null ? new XName () : el.Name;
+
+			AddHtmlTagCompletionData (list, Schema, parentName.ToLower ());
+			AddMiscBeginTags (list);
+
+			//FIXME: don't show this after any elements
+			if (DocType == null)
+				list.Add ("!DOCTYPE", "md-literal", MonoDevelop.Core.GettextCatalog.GetString ("Document type"));
 		}
 
 		public override ICompletionDataList CodeCompletionCommand (CodeCompletionContext completionContext)

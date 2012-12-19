@@ -23,6 +23,11 @@
         <Git>c:\Program Files (x86)\Git\bin\git.exe</Git>
       </PropertyGroup>
     </When>
+    <When Condition=" Exists('c:\msysgit\bin\git.exe') ">
+      <PropertyGroup>
+        <Git>c:\msysgit\bin\git.exe</Git>
+      </PropertyGroup>
+    </When>
     <When Condition=" Exists('/usr/bin/git') ">
       <PropertyGroup>
         <Git>/usr/bin/git</Git>

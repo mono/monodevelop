@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<Template originator="Michael Hutchinson"
+          created="2012/12/04"
+          lastModified="2012/12/04">
+
+	<TemplateConfiguration>
+		<_Name>Preprocessed Razor Template</_Name>
+		<Icon></Icon>
+		<_Category>Text Templating</_Category>
+		<_Description>A Razor template that will be preprocessed into a C# class.</_Description>
+	</TemplateConfiguration>
+	<TemplateFiles>
+		<File name="${Name}.cshtml" BuildAction="None" CustomTool="RazorTemplatePreprocessor" />
+	</TemplateFiles>
+</Template>

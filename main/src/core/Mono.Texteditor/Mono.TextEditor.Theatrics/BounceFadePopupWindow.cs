@@ -269,10 +269,10 @@ namespace Mono.TextEditor.Theatrics
 
 		/// <summary>The easing used for the bounce part of the animation.</summary>
 		public Easing BounceEasing { get; set; }
-		
-		int x, y;
-		protected int width, height;
-		protected Rectangle bounds;
+
+		int xExpandedOffset, yExpandedOffset;
+		Cairo.Rectangle userspaceArea;
+		Cairo.Rectangle bounds;
 
 		public virtual void Popup ()
 		{
@@ -280,15 +280,25 @@ namespace Mono.TextEditor.Theatrics
 				editor.Realized += HandleRealized;
 				return;
 			}
-	//		editor.GdkWindow.GetOrigin (out x, out y);
-			bounds = CalculateInitialBounds ();
-			x = bounds.X - (int)(ExpandWidth / 2);
-			y = bounds.Y - (int)(ExpandHeight / 2);
 
-			width = System.Math.Max (1, bounds.Width + (int)ExpandWidth);
-			height = System.Math.Max (1, bounds.Height + (int)ExpandHeight);
+			bounds = CalculateInitialBounds ();
+
+			//GTK uses integer position coords, so round fractions down, we'll add them back later as draw offsets
+			int x = (int) System.Math.Floor (bounds.X);
+			int y = (int) System.Math.Floor (bounds.Y);
+
+			//capture any lost fractions to pass as an offset to Draw
+			userspaceArea = new Cairo.Rectangle (bounds.X - x, bounds.Y - y, bounds.Width, bounds.Height);
+
+			//lose half-pixels on the expansion, it's not a big deal
+			xExpandedOffset = (int) (System.Math.Floor (ExpandWidth / 2d));
+			yExpandedOffset = (int) (System.Math.Floor (ExpandHeight / 2d));
+
+			//round the width/height up to make sure we have room for restored fractions
+			int width = System.Math.Max (1, (int) (System.Math.Ceiling (bounds.Width) + ExpandWidth));
+			int height = System.Math.Max (1, (int) (System.Math.Ceiling (bounds.Height) + ExpandHeight));
 			this.SetSizeRequest (width, height);
-			editor.TextArea.AddTopLevelWidget (this, x, y);
+			editor.TextArea.AddTopLevelWidget (this, x - xExpandedOffset, y - yExpandedOffset);
 
 			stage.AddOrReset (this, Duration);
 			stage.Play ();
@@ -321,10 +331,30 @@ namespace Mono.TextEditor.Theatrics
 			//for the second half, vary opacity linearly from 1 to 0.
 			else {
 				scale = Choreographer.Compose (1.0, BounceEasing);
-				opacity = 2.0 - actor.Percent * 2;
+				opacity = 1 - 2 * (actor.Percent - 0.5);
 			}
 			return true;
 		}
+
+		protected override bool OnExposeEvent (EventExpose evnt)
+		{
+			try {
+				var alloc = Allocation;
+				using (var cr = CairoHelper.Create (evnt.Window)) {
+					cr.Translate (alloc.X, alloc.Y);
+					cr.Translate (xExpandedOffset * (1 - scale), yExpandedOffset * (1 - scale));
+					var scaleX = (alloc.Width / userspaceArea.Width - 1) * scale + 1;
+					var scaleY = (alloc.Height / userspaceArea.Height - 1) * scale + 1;
+					cr.Scale (scaleX, scaleY);
+					Draw (cr, userspaceArea);
+				}
+			} catch (Exception e) {
+				Console.WriteLine ("Exception in animation:" + e);
+			}
+			return true;
+		}
+
+		protected abstract void Draw (Cairo.Context context, Cairo.Rectangle area);
 
 		protected virtual void OnAnimationCompleted ()
 		{
@@ -347,6 +377,6 @@ namespace Mono.TextEditor.Theatrics
 			}
 		}
 
-		protected abstract Rectangle CalculateInitialBounds ();
+		protected abstract Cairo.Rectangle CalculateInitialBounds ();
 	}
 }

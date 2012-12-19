@@ -114,7 +114,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		public MemberCompletionData (CSharpCompletionTextEditorExtension  editorCompletion, IEntity entity, OutputFlags flags)
 		{
-			compilation = editorCompletion.Compilation;
+			compilation = editorCompletion.UnresolvedFileCompilation;
 			file = editorCompletion.CSharpUnresolvedFile;
 
 			this.editorCompletion = editorCompletion;
@@ -265,7 +265,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		TypeSystemAstBuilder GetBuilder (ICompilation compilation)
 		{
-			var ctx = editorCompletion.CSharpUnresolvedFile.GetTypeResolveContext (compilation, editorCompletion.Document.Editor.Caret.Location) as CSharpTypeResolveContext;
+			var ctx = editorCompletion.CSharpUnresolvedFile.GetTypeResolveContext (editorCompletion.UnresolvedFileCompilation, editorCompletion.Document.Editor.Caret.Location) as CSharpTypeResolveContext;
 			var state = new CSharpResolver (ctx);
 			var builder = new TypeSystemAstBuilder (state);
 			builder.AddAnnotations = true;
@@ -532,15 +532,21 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
-		public static TooltipInformation CreateTooltipInformation (CSharpCompletionTextEditorExtension editorCompletion, IEntity entity, bool smartWrap)
+		public static TooltipInformation CreateTooltipInformation (CSharpCompletionTextEditorExtension editorCompletion, CSharpResolver resolver, IEntity entity, bool smartWrap)
 		{
-			return CreateTooltipInformation (editorCompletion.Compilation, editorCompletion.CSharpUnresolvedFile, editorCompletion.TextEditorData, editorCompletion.FormattingPolicy, entity, smartWrap);
+			return CreateTooltipInformation (editorCompletion.UnresolvedFileCompilation, editorCompletion.CSharpUnresolvedFile, resolver, editorCompletion.TextEditorData, editorCompletion.FormattingPolicy, entity, smartWrap);
 		}
 
 		public static TooltipInformation CreateTooltipInformation (ICompilation compilation, CSharpUnresolvedFile file, TextEditorData textEditorData, MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy formattingPolicy, IEntity entity, bool smartWrap, bool createFooter = false)
 		{
+			return CreateTooltipInformation (compilation, file, null, textEditorData, formattingPolicy, entity, smartWrap, createFooter);
+		}
+
+		public static TooltipInformation CreateTooltipInformation (ICompilation compilation, CSharpUnresolvedFile file, CSharpResolver resolver, TextEditorData textEditorData, MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy formattingPolicy, IEntity entity, bool smartWrap, bool createFooter = false)
+		{
 			var tooltipInfo = new TooltipInformation ();
-			var resolver = file != null ? file.GetResolver (compilation, textEditorData.Caret.Location) : new CSharpResolver (compilation);
+			if (resolver == null)
+				resolver = file != null ? file.GetResolver (compilation, textEditorData.Caret.Location) : new CSharpResolver (compilation);
 			var sig = new SignatureMarkupCreator (resolver, formattingPolicy.CreateOptions ());
 			sig.BreakLineAfterReturnType = smartWrap;
 			try {

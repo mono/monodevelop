@@ -1,4 +1,3 @@
-
 //
 // SignatureMarkupCreator.cs
 //
@@ -551,7 +550,7 @@ namespace MonoDevelop.CSharp
 				} else {
 					result.Append ("=");
 				}
-				AppendConstant (result, variable.ConstantValue);
+				AppendConstant (result, variable.Type, variable.ConstantValue);
 			}
 			
 			return result.ToString ();
@@ -588,7 +587,7 @@ namespace MonoDevelop.CSharp
 				} else {
 					result.Append ("=");
 				}
-				AppendConstant (result, field.ConstantValue);
+				AppendConstant (result, field.Type, field.ConstantValue);
 			}
 
 			return result.ToString ();
@@ -1302,7 +1301,7 @@ namespace MonoDevelop.CSharp
 					} else {
 						result.Append ("=");
 					}
-					AppendConstant (result, parameter.ConstantValue);
+					AppendConstant (result, parameter.Type, parameter.ConstantValue);
 //					GrayOut = false;
 //					result.Append ("</span>");
 				}
@@ -1350,7 +1349,7 @@ namespace MonoDevelop.CSharp
 			}
 		}
 
-		void AppendConstant (StringBuilder sb, object constantValue)
+		void AppendConstant (StringBuilder sb, IType constantType, object constantValue)
 		{
 			if (constantValue is string) {
 				sb.Append (Highlight ("\"" + constantValue + "\"", "string.double"));
@@ -1360,8 +1359,26 @@ namespace MonoDevelop.CSharp
 				sb.Append (Highlight ("'" + constantValue + "'", "string.single"));
 				return;
 			}
+			if (constantValue is bool) {
+				sb.Append (Highlight ((bool)constantValue ? "true" : "false", "constant.language"));
+				return;
+			}
+
 			if (constantValue == null) {
 				sb.Append (Highlight ("null", "constant.language"));
+				return;
+			}
+
+			while (NullableType.IsNullable (constantType)) 
+				constantType = NullableType.GetUnderlyingType (constantType);
+			if (constantType.Kind == TypeKind.Enum) {
+				foreach (var field in constantType.GetFields ()) {
+					if (field.ConstantValue == constantValue){
+						sb.Append (GetTypeReferenceString (constantType) + "." + field.Name);
+						return;
+					}
+				}
+				sb.Append ("(" + GetTypeReferenceString (constantType) + ")" + Highlight (constantValue.ToString (), "constant.digit"));
 				return;
 			}
 

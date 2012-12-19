@@ -207,12 +207,17 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			if (cref.Length < 2)
 				return cref;
-			var entity = new DocumentationComment ("", ctx).ResolveCref (cref);
+			try {
+				var entity = new DocumentationComment ("", ctx).ResolveCref (cref);
 
-			if (entity != null) {
-				var ambience = new ICSharpCode.NRefactory.CSharp.CSharpAmbience ();
-				ambience.ConversionFlags = ConversionFlags.ShowParameterList | ConversionFlags.ShowParameterNames | ConversionFlags.ShowTypeParameterList;
-				return ambience.ConvertEntity (entity);
+				if (entity != null) {
+					var ambience = new ICSharpCode.NRefactory.CSharp.CSharpAmbience ();
+					ambience.ConversionFlags = ConversionFlags.ShowParameterList | ConversionFlags.ShowParameterNames | ConversionFlags.ShowTypeParameterList;
+					return ambience.ConvertEntity (entity);
+				}
+			} catch (Exception e) {
+				LoggingService.LogWarning ("Invalid cref:" + cref, e);
+				return "";
 			}
 
 			if (cref.Substring (1, 1) == ":")

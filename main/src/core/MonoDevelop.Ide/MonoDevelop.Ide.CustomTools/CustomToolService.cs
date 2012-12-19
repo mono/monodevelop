@@ -80,8 +80,14 @@ namespace MonoDevelop.Ide.CustomTools
 		static ISingleFileCustomTool GetGenerator (ProjectFile file)
 		{
 			CustomToolExtensionNode node;
-			if (!string.IsNullOrEmpty (file.Generator) && nodes.TryGetValue (file.Generator, out node))
-				return node.Tool;
+			if (!string.IsNullOrEmpty (file.Generator) && nodes.TryGetValue (file.Generator, out node)) {
+				try {
+					return node.Tool;
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error loading generator '" + file.Generator + "'", ex);
+					nodes.Remove (file.Generator);
+				}
+			}
 			return null;
 		}
 		
