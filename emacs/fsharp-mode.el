@@ -213,15 +213,15 @@
     (let ((offset fsharp-indent-offset))
       ;; It's okay if this fails to guess a good value
       (if (and (fsharp-safe (fsharp-guess-indent-offset))
-	       (<= fsharp-indent-offset 8)
-	       (>= fsharp-indent-offset 2))
-	  (setq offset fsharp-indent-offset))
+               (<= fsharp-indent-offset 8)
+               (>= fsharp-indent-offset 2))
+          (setq offset fsharp-indent-offset))
       (setq fsharp-indent-offset offset)
       ;; Only turn indent-tabs-mode off if tab-width !=
       ;; fsharp-indent-offset.  Never turn it on, because the user must
       ;; have explicitly turned it off.
       (if (/= tab-width fsharp-indent-offset)
-	  (setq indent-tabs-mode nil))
+          (setq indent-tabs-mode nil))
       )))
 
 (defun fsharp-set-compile-command ()
