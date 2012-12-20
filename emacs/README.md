@@ -1,89 +1,106 @@
-# Experimental support for Intellisense in Emacs
+# F# Language Support for Emacs
 
-## December 2012
+Features:
 
-Removed old intellisense approach. File manifest now as follows:
-
-intelli_tip.el             - old tooltip generation, currently disabled
-intellisense2.el           - new intellisense, uses autocomplete
-readme-intellisense.txt    - this file
-test.fs                    - simple small test script, to be moved
-test.py                    - python script for feeding in test scripts
-
--- Robin Neatherway
+- Interactive F# buffer
+- Indentation
+- Syntax highlighter
+- Experimental support for [autocompletion](README-intellisense.md) (currently only for a single file)
 
 
-## October 2012
+### Installation
 
-This code has been imported with minor changes from Sourceforge. There are some caveats.
+`fsharp-mode` is available on [MELPA](http://melpa.milkbox.net).
 
-1. There are dependencies on esense, and tooltip-help.el. Modified versions are present in this directory (intellisense.el and intelli_tip.el respectively).
+To download it,`package.el` is the built-in package manager in Emacs 24+. On Emacs 23
+you will need to get [package.el](http://bit.ly/pkg-el23) yourself if you wish to use it.
 
-2. Communication between emacs and the fsintellisense.exe subprocess are working, but the results are not always interpreted correctly.
+If you're not already using MELPA, add this to your
+`~/.emacs.d/init.el` (or equivalent) and load it with <kbd>M-x eval-buffer</kbd>.
 
-I intend to update the code to remove the dependencies above, using autocomplete instead of esense, and emacs' builtin tooltips. In the fullness of time, multi-file projects should also be supported.
+```lisp
+(require 'package)
+(add-to-list 'package-archives
+             '("melpa" . "http://melpa.milkbox.net/packages/") t)
+(package-initialize)
+```
 
--- Robin Neatherway
+And then you can install fsharp-mode with the following command:
 
+<kbd>M-x package-install [RET] fsharp-mode [RET]</kbd>
 
-## February 2011
+or by adding this bit of Emacs Lisp code to your Emacs initialization file(`.emacs` or `init.el`):
 
+```lisp
+(when (not (package-installed-p 'fsharp-mode))
+  (package-install 'fsharp-mode))
+```
 
+If the installation doesn't work try refreshing the package list:
 
-## Getting started
+<kbd>M-x package-refresh-contents [RET]</kbd>
 
+### Manual installation
 
-1. fsintellisense.exe is a program which communicates with F# compiler to
-get all the Intellisense information. The first step is to make sure you
-can run it. When you execute it, it should read commands on standard
-input. Enter a random line and you should get "ERROR: Unknown command or
-wrong arguments".
+In order to install the F# mode, you have to tell Emacs where to find it. This is done by
+adding some commands to the init file.
 
-If you get an exception, you can copy FSharp.Compiler.dll and
-FSharp.Compiler.Server.Shared.dll from F# (November release) into current
-directory.
+Copy the `fsharpbinding/emacs/` directory in your `~/.emacs.d`
+directory (or a place of your choice) and rename it to `fsharp`
+Assuming you now have a `~/.emacs.d/fsharp` directory, copy the following lines to your
+init file (usually `~/.emacs` or `init.el`).
 
-2. Edit intellisense.el and edit the intellisense-wrapper value to the actual
-path.
+```lisp
+(setq load-path (cons "~/.emacs.d/fsharp" load-path))
+(setq auto-mode-alist (cons '("\\.fs[iylx]?$" . fsharp-mode) auto-mode-alist))
+(autoload 'fsharp-mode "fsharp" "Major mode for editing F# code." t)
+(autoload 'run-fsharp "inf-fsharp" "Run an inferior F# process." t)
+```
 
-3. Load intellisense.el <kbd>M-x load-file</kbd>
+### Configuration
 
-4. Open a F# buffer. Then <kbd>M-x start-intellisense</kbd> will run
-fsintellisense.exe in background. You can play with those (temporary)
-bindings:
-  F1: display a tool-tip at point
-  F2: do completion (also appears when you enter a dot)
-  F4: display error messages from compiler
+If `fsc` and `fsi` are in your path, that's all you need. Otherwise,
+you can add these two following lines to set the path to the compiler
+and interactive F#.
 
+On Windows (adapt the path if needed):
 
-## Recompiling fsintellisense.exe
+```lisp
+(setq inferior-fsharp-program "\"c:\\Program Files\\Microsoft F#\\v4.0\\Fsi.exe\"")
+(setq fsharp-compiler "\"c:\\Program Files\\Microsoft F#\\v4.0\\Fsc.exe\"")
+```
 
-Here is the command-line I use:
-  `fsc.exe fsharpcompiler.fs tipFormatter.fs parser.fs program.fs -r "FSharp.Powerpack.dll"`
+On Unix (adapt the path if needed):
 
+```lisp
+(setq inferior-fsharp-program "mono ~/fsi.exe --readline-")
+(setq fsharp-compiler "mono ~/fsc.exe")
+```
 
+### Bindings
 
-## Documentation
+If you are new to Emacs, you might want to use the menu (call
+menu-bar-mode if you don't see it). However, it's usually faster to learn
+a few useful bindings:
 
-fsintellisense.exe is a modified version of the Compiler example you can
-get here:
+- <kbd>C-c C-r</kbd>:       Evaluate region
+- <kbd>C-c C-f</kbd>:       Load current buffer into toplevel
+- <kbd>C-c C-e</kbd>:       Evaluate current toplevel phrase
+- <kbd>C-M-x</kbd>:         Evaluate current toplevel phrase
+- <kbd>C-M-h</kbd>:         Mark current toplevel phrase
+- <kbd>C-c C-s</kbd>:       Show interactive buffer
+- <kbd>C-c C-c</kbd>:       Compile with fsc
+- <kbd>C-c x</kbd>:         Run the executable
+- <kbd>C-c C-a</kbd>:       Open alternate file (.fsi or .fs)
+- <kbd>C-c l</kbd>:         Shift region to left
+- <kbd>C-c r</kbd>:         Shift region to right
+- <kbd>C-c <up></kbd>:      Move cursor to the beginning of the block
 
-    http://fsxplat.codeplex.com
+To interrupt the interactive mode, use <kbd>C-c C-c</kbd>. This is useful if your
+code does an infinite loop or a very long computation.
 
-In particular, this documentation is very useful:
+If you want to shift the region by 2 spaces, use: <kbd>M-2 C-c r</kbd>
 
-   http://fsxplat.codeplex.com/wikipage?title=fsharp%20intellisense%20tool&referringTitle=Home
-
-
-
-## Bugs / Limitations / TODO
-
-- It's not yet possible to add references (external dll files). I think
-  the fsintellisense already handles it, so it should be easy to add.
-
-- Completion works only on current buffer. We need a way to specify a
-  project and give a list of source files.
-
-- Error messages are not reported. We should display them in the code
-  (underline errors in the buffer?)
+In the interactive buffer, use <kbd>M-RET</kbd> to send the code without
+explicitly adding the `;;` thing.
 
