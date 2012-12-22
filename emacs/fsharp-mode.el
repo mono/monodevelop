@@ -275,7 +275,7 @@
 (defun fsharp-load-buffer-file ()
   "Load the filename corresponding to the present buffer in F# with #load"
   (interactive)
-  (require 'inf-fsharp)
+  (require 'inf-fsharp-mode)
   (let* ((name buffer-file-name)
          (command (concat "#load \"" name "\"")))
     (when (buffer-modified-p)
