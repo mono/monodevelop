@@ -296,11 +296,12 @@ loading it? "))
   "Regular expression matching the error messages produced by fsc.")
 
 (if (boundp 'compilation-error-regexp-alist)
-    (or (assoc fsharp-error-regexp-fs
-               compilation-error-regexp-alist)
-        (setq compilation-error-regexp-alist
-              (cons (list fsharp-error-regexp-fs 1 2 3)
-               compilation-error-regexp-alist))))
+    (or (memq 'fsharp
+              compilation-error-regexp-alist)
+        (progn
+          (add-to-list 'compilation-error-regexp-alist 'fsharp)
+          (add-to-list 'compilation-error-regexp-alist-alist
+                       `(fsharp ,fsharp-error-regexp-fs 1 2 3)))))
 
 ;; Usual match-string doesn't work properly with font-lock-mode
 ;; on some emacs.
