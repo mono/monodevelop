@@ -221,6 +221,9 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			if (Unit == null || CSharpUnresolvedFile == null)
 				return null;
+			if(typeSystemSegmentTree == null)
+				return null;
+
 			var list = new CompletionDataList ();
 			var engine = new CSharpCompletionEngine (
 				TextEditorData.Document,

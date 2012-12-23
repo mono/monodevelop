@@ -140,15 +140,15 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Commands/TextEditor">
-		<Command id = "MonoDevelop.AspNet.Mvc.AspCommands.GoToView"
+		<Command id = "MonoDevelop.AspNet.Mvc.AspMvcCommands.GoToView"
 				_label = "Go To View"
 				defaultHandler = "MonoDevelop.AspNet.Mvc.GoToViewCommandHandler"
 				description = "Go to the corresponding view file" />
-		<Command id = "MonoDevelop.AspNet.Mvc.AspCommands.AddViewFromController"
+		<Command id = "MonoDevelop.AspNet.Mvc.AspMvcCommands.AddViewFromController"
 				_label = "Add View..."
 				defaultHandler = "MonoDevelop.AspNet.Mvc.AddViewFromControllerCommandHandler"
 				description = "Add an ASP.NET MVC view" />
-		<Command id = "MonoDevelop.AspNet.Mvc.AspCommands.GoToController"
+		<Command id = "MonoDevelop.AspNet.Mvc.AspMvcCommands.GoToController"
 				_label = "Go To Controller"
 				defaultHandler = "MonoDevelop.AspNet.Mvc.GoToControllerCommandHandler"
 				description = "Go to the corresponding controller file" />
@@ -164,12 +164,12 @@
 
 	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
 		<Condition id="FileType" fileExtensions=".cs">
-			<CommandItem id = "MonoDevelop.AspNet.Mvc.AspCommands.GoToView" insertbefore="MonoDevelop.Ide.Commands.EditCommands.Cut" />
-			<CommandItem id = "MonoDevelop.AspNet.Mvc.AspCommands.AddViewFromController" />
+			<CommandItem id = "MonoDevelop.AspNet.Mvc.AspMvcCommands.GoToView" insertbefore="MonoDevelop.Ide.Commands.EditCommands.Cut" />
+			<CommandItem id = "MonoDevelop.AspNet.Mvc.AspMvcCommands.AddViewFromController" />
 			<SeparatorItem id = "MvcSeparator1" />
 		</Condition>
 		<Condition id="FileType" fileExtensions=".cshtml,.aspx">
-			<CommandItem id = "MonoDevelop.AspNet.Mvc.AspCommands.GoToController" insertbefore="MonoDevelop.Ide.Commands.EditCommands.Cut" />
+			<CommandItem id = "MonoDevelop.AspNet.Mvc.AspMvcCommands.GoToController" insertbefore="MonoDevelop.Ide.Commands.EditCommands.Cut" />
 			<SeparatorItem id = "MvcSeparator2" />
 		</Condition>
 	</Extension>
