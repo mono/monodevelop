@@ -39,6 +39,7 @@
   <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets" Condition="(!Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets')) And (Exists('$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets'))" />
   <ItemGroup>
     <Compile Include="TipFormatter.fs" />
+    <Compile Include="ProjectParser.fs" />
     <Compile Include="Parser.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
@@ -46,13 +47,17 @@
     <Reference Include="mscorlib" />
     <Reference Include="System" />
     <Reference Include="System.Numerics" />
+    <Reference Include="Microsoft.Build" />
+    <Reference Include="Microsoft.Build.Engine" />
+    <Reference Include="Microsoft.Build.Framework" />
+    <Reference Include="Microsoft.Build.Tasks" />
+    <Reference Include="Microsoft.Build.Utilities" />
   </ItemGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-	     Other similar extension points exist, see Microsoft.Common.targets.
-	<Target Name="BeforeBuild">
-	</Target>
-	<Target Name="AfterBuild">
-	</Target>
+  <!-- To modify your build process, add your task inside one of the
+       targets below and uncomment it.  Other similar extension points
+       exist, see Microsoft.Common.targets.  <Target
+       Name="BeforeBuild"> </Target> <Target Name="AfterBuild">
+       </Target>
 	-->
   <ItemGroup>
     <ProjectReference Include="..\FSharp.CompilerBinding\FSharp.CompilerBinding.fsproj">

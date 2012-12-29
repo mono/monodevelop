@@ -214,7 +214,9 @@ module internal CommandInput =
     completion <line> <col> [timeout] 
       - trigger completion request for the specified location
     tip <line> <col> [timeout]
-      - get tool tip for the specified location"
+      - get tool tip for the specified location
+    project <filename>
+      - associates the current session with the specified project"
 
   // Command that can be entered on the command-line
   type Command =
@@ -225,6 +227,7 @@ module internal CommandInput =
     | Script of string 
     | Parse of bool
     | Error of string
+    | Project of string
     | Help
     | Quit
 
@@ -240,6 +243,12 @@ module internal CommandInput =
   /// Parse 'errors' command
   let errors = string "errors" |> Parser.map (fun _ -> GetErrors)
 
+  /// Parse 'project' command
+  let project = parser {
+    let! _ = string "project "
+    let! path = some item |> Parser.map (String.ofSeq)
+    return Project(path) }
+  
   /// Read multi-line input as a list of strings
   let rec readInput input = 
     let str = Console.ReadLine()
@@ -279,7 +288,7 @@ module internal CommandInput =
   // Parase any of the supported commands
   let parseCommand input = 
     let reader = Parsing.createForwardStringReader input 0
-    let cmds = errors <|> help <|> declarations <|> parse <|> script <|> completionOrTip <|> quit <|> error
+    let cmds = errors <|> help <|> declarations <|> parse <|> project <|> script <|> completionOrTip <|> quit <|> error
     reader |> Parsing.getFirst cmds
 
 // --------------------------------------------------------------------------------------
@@ -287,9 +296,10 @@ module internal CommandInput =
 // --------------------------------------------------------------------------------------
 
 /// Represents current state 
-type internal State(?lines, ?options) =
+type internal State(?lines, ?options, ?project) =
   member x.CurrentOptions : RequestOptions option = options
   member x.Lines : string[] = defaultArg lines [| |]
+  member x.Project : ProjectParser.ProjectResolver option = project
 
 /// Contains main loop of the application
 module internal Main = 
@@ -335,6 +345,13 @@ module internal Main =
         let opts = agent.CreateScriptOptions(file, text)
         Console.WriteLine("DONE: Script loaded")
         main (State(lines, opts))
+
+    | Project file, _ ->
+        // Load project file and store in state
+        let p = ProjectParser.load file
+        printfn "Options: %A" (ProjectParser.getOptions p)
+        Console.WriteLine("DONE: Project loaded")
+        main state 
 
     | ToolTip((line, column) as pos, timeout), Some(opts) ->
         // Trigger autocompletion (when we already loaded a file)
