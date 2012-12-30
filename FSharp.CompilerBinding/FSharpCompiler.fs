@@ -244,29 +244,41 @@ module SourceCodeServices =
     member x.Wrapped = wrapped
       
   type TokenInformation(wrapped:obj) =
+    let clone (left:int, right:int, color:TokenColorKind, 
+               char:TokenCharKind, trigger:TriggerClass, tag:int, name:string) =
+      // On F# 3.0, the constructor has an additional argument (FullMatchedLength)
+      match FSharpCompiler.Current.ActualVersion with 
+      | FSharp_2_0 -> 
+          TokenInformation
+            ( FSharpCompiler.Current.TokenInformation?``.ctor``
+                ( left, right, int color, int char, trigger.Wrapped, tag, name))
+      | FSharp_3_0 ->
+          TokenInformation
+            ( FSharpCompiler.Current.TokenInformation?``.ctor``
+                ( left, right, int color, int char, trigger.Wrapped, tag, name, (wrapped?FullMatchedLength : int)))
+  
     member x.LeftColumn : int = wrapped?LeftColumn
     member x.RightColumn : int = wrapped?RightColumn
+    member x.FullMatchedLength : int = 
+      match FSharpCompiler.Current.ActualVersion with 
+      | FSharp_2_0 -> failwith "The property 'FullMatchedLength' is only available in F# 3.0"
+      | _ -> wrapped?FullMatchedLength
     member x.Tag : int = wrapped?Tag
     member x.TokenName : string = wrapped?TokenName
     member x.ColorClass : TokenColorKind = enum<TokenColorKind>(unbox wrapped?ColorClass)
     member x.CharClass : TokenCharKind = enum<TokenCharKind>(unbox wrapped?CharClass)
     member x.TriggerClass : TriggerClass = TriggerClass(wrapped?TriggerClass)
     member x.WithRightColumn(rightColumn:int) = 
-      TokenInformation
-        ( FSharpCompiler.Current.TokenInformation?``.ctor``
-            ( x.LeftColumn, rightColumn, int x.ColorClass, int x.CharClass,
-              x.TriggerClass.Wrapped, x.Tag, x.TokenName ) )
+      clone ( x.LeftColumn, rightColumn, x.ColorClass, x.CharClass,
+              x.TriggerClass, x.Tag, x.TokenName )
     member x.WithTokenName(tokenName:string) = 
-      TokenInformation
-        ( FSharpCompiler.Current.TokenInformation?``.ctor``
-            ( x.LeftColumn, x.RightColumn, x.ColorClass, x.CharClass,
-              x.TriggerClass.Wrapped, x.Tag, tokenName ) )
+      clone ( x.LeftColumn, x.RightColumn, x.ColorClass, x.CharClass,
+              x.TriggerClass, x.Tag, tokenName )
     
   type LineTokenizer(wrapped:obj) = 
     member x.StartNewLine() : unit = 
-      // This method is no-op on F# 3.0
-      let fsc = FSharpCompiler.Current
-      match fsc.ActualVersion with 
+      // This method is no-op on F# 3.0      
+      match FSharpCompiler.Current.ActualVersion with 
       | FSharp_2_0 -> wrapped?StartNewLine()
       | FSharp_3_0 -> ()
 
