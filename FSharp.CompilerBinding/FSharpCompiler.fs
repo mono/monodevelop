@@ -245,24 +245,23 @@ module SourceCodeServices =
       
   type TokenInformation(wrapped:obj) =
     let clone (left:int, right:int, color:TokenColorKind, 
-               char:TokenCharKind, trigger:TriggerClass, tag:int, name:string) =
-      // On F# 3.0, the constructor has an additional argument (FullMatchedLength)
-      match FSharpCompiler.Current.ActualVersion with 
-      | FSharp_2_0 -> 
-          TokenInformation
-            ( FSharpCompiler.Current.TokenInformation?``.ctor``
-                ( left, right, int color, int char, trigger.Wrapped, tag, name))
-      | FSharp_3_0 ->
+               char:TokenCharKind, trigger:TriggerClass, tag:int, name:string) =      
+      // The constructor may have 7 or 8 arguments (depending on whether
+      // the record has 'FullMatchedLength' property or not), but this does
+      // not directly match with the version in 'FSharpCompiler.Current.ActualVersion'
+      let ctor = FSharpCompiler.Current.TokenInformation.GetConstructors(Reflection.ctorFlags) |> Seq.head
+      if ctor.GetParameters().Length = 8 then
           TokenInformation
             ( FSharpCompiler.Current.TokenInformation?``.ctor``
                 ( left, right, int color, int char, trigger.Wrapped, tag, name, (wrapped?FullMatchedLength : int)))
-  
+      else
+          TokenInformation
+            ( FSharpCompiler.Current.TokenInformation?``.ctor``
+                ( left, right, int color, int char, trigger.Wrapped, tag, name))
+        
     member x.LeftColumn : int = wrapped?LeftColumn
     member x.RightColumn : int = wrapped?RightColumn
-    member x.FullMatchedLength : int = 
-      match FSharpCompiler.Current.ActualVersion with 
-      | FSharp_2_0 -> failwith "The property 'FullMatchedLength' is only available in F# 3.0"
-      | _ -> wrapped?FullMatchedLength
+    member x.FullMatchedLength : int = wrapped?FullMatchedLength
     member x.Tag : int = wrapped?Tag
     member x.TokenName : string = wrapped?TokenName
     member x.ColorClass : TokenColorKind = enum<TokenColorKind>(unbox wrapped?ColorClass)
