@@ -151,7 +151,7 @@ namespace MonoDevelop.Projects
 		}
 
 		public new Project ParentItem {
-			get { return (Project) ParentItem; }
+			get { return (Project) base.ParentItem; }
 		}
 	}
 
