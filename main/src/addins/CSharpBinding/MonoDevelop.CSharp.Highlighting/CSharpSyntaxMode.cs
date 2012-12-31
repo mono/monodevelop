@@ -713,7 +713,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				using (XmlReader reader = provider.Open ()) {
 					SyntaxMode baseMode = SyntaxMode.Read (reader);
 					_rules = new List<Rule> (baseMode.Rules);
-					_rules.Add (new Rule (baseMode) {
+					_rules.Add (new Rule (this) {
 						Name = "PreProcessorComment"
 					});
 					_keywords = new List<Keywords> (baseMode.Keywords);
