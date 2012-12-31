@@ -1365,7 +1365,12 @@ namespace MonoDevelop.CSharp
 			}
 
 			if (constantValue == null) {
-				sb.Append (Highlight ("null", "constant.language"));
+				if (constantType.Kind == TypeKind.Struct) {
+					// structs can never be == null, therefore it's the default value.
+					sb.Append (Highlight ("default", "keyword.selection") + "(" + GetTypeReferenceString (constantType) + ")");
+				} else {
+					sb.Append (Highlight ("null", "constant.language"));
+				}
 				return;
 			}
 
