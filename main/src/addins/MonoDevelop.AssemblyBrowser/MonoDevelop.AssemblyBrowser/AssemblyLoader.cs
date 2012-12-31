@@ -44,6 +44,13 @@ namespace MonoDevelop.AssemblyBrowser
 		}
 		
 		Task<AssemblyDefinition> assemblyLoaderTask;
+
+		public Task<AssemblyDefinition> LoadingTask {
+			get {
+				return assemblyLoaderTask;
+			}
+		}
+
 		public AssemblyDefinition Assembly {
 			get {
 				return assemblyLoaderTask.Result;
@@ -135,7 +142,6 @@ namespace MonoDevelop.AssemblyBrowser
 				return;
 			src.Cancel ();
 			src.Dispose ();
-			assemblyLoaderTask.Dispose ();
 			assemblyLoaderTask = null;
 		}
 		#endregion

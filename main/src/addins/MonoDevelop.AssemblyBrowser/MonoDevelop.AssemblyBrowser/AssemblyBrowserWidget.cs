@@ -1367,13 +1367,20 @@ namespace MonoDevelop.AssemblyBrowser
 			result = new AssemblyLoader (this, fileName);
 			
 			definitions.Add (result);
-			ITreeBuilder builder;
-			if (definitions.Count + projects.Count == 1) {
-				builder = TreeView.LoadTree (result);
-			} else {
-				builder = TreeView.AddChild (result);
+			result.LoadingTask.ContinueWith (delegate {
+				Application.Invoke (delegate {
+					if (definitions == null)
+						return;
+					ITreeBuilder builder;
+					if (definitions.Count + projects.Count == 1) {
+						builder = TreeView.LoadTree (result);
+					} else {
+						builder = TreeView.AddChild (result);
+					}
+					builder.Selected = builder.Expanded = selectReference;
+				});
 			}
-			builder.Selected = builder.Expanded = selectReference;
+			);
 			return result;
 		}
 		
