@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 using TextEditor = Mono.TextEditor.TextEditor;
@@ -40,7 +41,7 @@ using Mono.Debugging.Client;
 
 namespace MonoDevelop.Debugger
 {
-	public class DisassemblyView: AbstractViewContent
+	public class DisassemblyView: AbstractViewContent, IClipboardHandler
 	{
 		Gtk.ScrolledWindow sw;
 		Mono.TextEditor.TextEditor editor;
@@ -354,6 +355,55 @@ namespace MonoDevelop.Debugger
 			var cf = DebuggingService.CurrentFrame;
 			ci.Enabled =  cf != null && addressLines.ContainsKey (GetAddrId (cf.Address, cf.AddressSpace));
 		}
+
+		#region IClipboardHandler implementation
+
+		void IClipboardHandler.Cut ()
+		{
+			throw new NotSupportedException ();
+		}
+
+		void IClipboardHandler.Copy ()
+		{
+			editor.RunAction (ClipboardActions.Copy);
+		}
+
+		void IClipboardHandler.Paste ()
+		{
+			throw new NotSupportedException ();
+		}
+
+		void IClipboardHandler.Delete ()
+		{
+			throw new NotSupportedException ();
+		}
+
+		void IClipboardHandler.SelectAll ()
+		{
+			editor.RunAction (SelectionActions.SelectAll);
+		}
+
+		bool IClipboardHandler.EnableCut {
+			get { return false; }
+		}
+
+		bool IClipboardHandler.EnableCopy {
+			get { return !editor.SelectionRange.IsEmpty; }
+		}
+
+		bool IClipboardHandler.EnablePaste {
+			get { return false; }
+		}
+
+		bool IClipboardHandler.EnableDelete {
+			get { return false; }
+		}
+
+		bool IClipboardHandler.EnableSelectAll {
+			get { return true; }
+		}
+
+		#endregion
 	}
 	
 	class AsmLineMarker: TextMarker
