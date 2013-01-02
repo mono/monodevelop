@@ -93,6 +93,8 @@ namespace Mono.Debugging.Evaluation
 				return CreateObjectValueImpl (ctx, source, path, obj, flags);
 			} catch (EvaluatorAbortedException ex) {
 				return ObjectValue.CreateFatalError (path.LastName, ex.Message, flags);
+			} catch (EvaluatorException ex) {
+				return ObjectValue.CreateFatalError (path.LastName, ex.Message, flags);
 			} catch (Exception ex) {
 				ctx.WriteDebuggerError (ex);
 				return ObjectValue.CreateFatalError (path.LastName, ex.Message, flags);
