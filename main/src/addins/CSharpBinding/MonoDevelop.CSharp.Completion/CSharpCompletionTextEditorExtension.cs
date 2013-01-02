@@ -854,6 +854,13 @@ namespace MonoDevelop.CSharp.Completion
 					yield return new CompletionData (define, "md-keyword");
 					
 			}
+
+			ICompletionData ICompletionDataFactory.CreateImportCompletionData(IType type, bool useFullName)
+			{
+				// atm only used in #develop
+				throw new NotImplementedException ();
+			}
+
 		}
 		#endregion
 
