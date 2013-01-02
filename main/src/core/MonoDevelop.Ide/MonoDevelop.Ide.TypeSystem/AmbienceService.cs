@@ -217,7 +217,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			} catch (Exception e) {
 				LoggingService.LogWarning ("Invalid cref:" + cref, e);
-				return "";
 			}
 
 			if (cref.Substring (1, 1) == ":")
@@ -357,6 +356,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			StringBuilder result = new StringBuilder (); 
 			bool wasWhiteSpace = true;
+			bool appendSpace = false;
 			ITypeResolveContext ctx = member.Compilation.TypeResolveContext;
 			while (xml.Read ()) {
 				switch (xml.NodeType) {
@@ -382,6 +382,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						result.Append (EscapeText (name));
 						result.Append ("</i>");
 						wasWhiteSpace = false;
+						appendSpace = true;
 						break;
 					case "paramref":
 						if (!wasWhiteSpace) {
@@ -391,6 +392,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						result.Append ("<i>");
 						result.Append (EscapeText (xml ["name"].Trim ()));
 						result.Append ("</i>");
+						appendSpace = true;
 						wasWhiteSpace = false;
 						break;
 					}
@@ -399,6 +401,10 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (IsEmptyDocumentation (xml.Value))
 						break;
 					foreach (char ch in xml.Value) {
+						if (!Char.IsWhiteSpace (ch) && appendSpace) {
+							result.Append (' ');
+							appendSpace = false;
+						}
 						if (Char.IsWhiteSpace (ch) || ch == '\n' || ch == '\r') {
 							if (!wasWhiteSpace) {
 								result.Append (' ');

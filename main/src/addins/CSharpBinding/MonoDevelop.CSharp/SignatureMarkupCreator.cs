@@ -355,6 +355,13 @@ namespace MonoDevelop.CSharp
 			return result.ToString ();
 		}
 
+		string GetNullableMarkup (IType t)
+		{
+			var result = new StringBuilder ();
+			result.Append (GetTypeReferenceString (t));
+			return result.ToString ();
+		}
+
 		string GetTypeMarkup (IType t)
 		{
 			if (t == null)
@@ -364,7 +371,8 @@ namespace MonoDevelop.CSharp
 				return GetDelegateMarkup (t);
 			if (t.Kind == TypeKind.TypeParameter)
 				return GetTypeParameterMarkup (t);
-
+			if (NullableType.IsNullable (t))
+				return GetNullableMarkup (t);
 			var result = new StringBuilder ();
 			if (t.GetDefinition () != null)
 				AppendModifiers (result, t.GetDefinition ());
