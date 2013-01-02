@@ -470,7 +470,7 @@ namespace MonoDevelop.Projects
 			// Generated satellite resource files
 			
 			FilePath outputDir = conf.OutputDirectory;
-			string satelliteAsmName = Path.GetFileNameWithoutExtension (conf.OutputAssembly) + ".resources.dll";
+			string satelliteAsmName = Path.GetFileNameWithoutExtension (conf.CompiledOutputName) + ".resources.dll";
 			
 			HashSet<string> cultures = new HashSet<string> ();
 			foreach (ProjectFile finfo in Files) {
