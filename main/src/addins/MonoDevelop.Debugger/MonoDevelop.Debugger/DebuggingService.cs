@@ -378,7 +378,6 @@ namespace MonoDevelop.Debugger
 			session.TypeResolverHandler = null;
 			session.BreakpointTraceHandler = null;
 			session.GetExpressionEvaluator = null;
-			console.CancelRequested -= OnCancelRequested;
 			
 			// Dispose the session at the end, since it may take a while.
 			DebuggerSession oldSession = session;
@@ -390,6 +389,7 @@ namespace MonoDevelop.Debugger
 			});
 			
 			if (console != null) {
+				console.CancelRequested -= OnCancelRequested;
 				console.Dispose ();
 				console = null;
 			}
