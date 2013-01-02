@@ -48,10 +48,11 @@ module ProjectParser =
     p.Load(uri)
     { project = p; rar =  mkrar () }
 
+  let getFileName (p: ProjectResolver) : string = p.project.FullFileName
+
   let getFiles (p: ProjectResolver) : string array =
     let fs = p.project.GetEvaluatedItemsByName("Compile")
     [| for f in fs do yield f.FinalItemSpec |]
-
 
   let getReferences (p: ProjectResolver) : string array =
     let convert (bi: BuildItem) : ITaskItem =

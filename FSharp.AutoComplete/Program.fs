@@ -111,6 +111,41 @@ type internal IntelliSenseAgent() =
       ( checker.GetCheckOptionsFromScriptRoot(file, source, DateTime.Now),
         file, source )
 
+  // Copy-paste from monodevelop binding LanguageService.fs and modified 
+  member x.GetCheckerOptions(fileName, source, proj:Option<ProjectParser.ProjectResolver>) =
+    let ext = Path.GetExtension(fileName)
+    let opts =
+      match proj, ext with
+      | None, _
+      | Some _, ".fsx"
+      | Some _, ".fsscript" ->
+      
+        // We are in a stand-alone file or we are in a project, but currently editing a script file
+        //Debug.WriteLine (sprintf "CheckOptions: Creating for stand-alone file or script: '%s'" fileName )
+        checker.GetCheckOptionsFromScriptRoot(fileName, source, System.DateTime.Now)
+          
+          // The InteractiveChecker resolution doesn't sometimes
+          // include FSharp.Core and other essential assemblies, so we may
+          // need to bring over some more code from the monodevelop binding to
+          // handle that situation.
+
+
+      // We are in a project - construct options using current properties
+      | Some proj, _ ->
+        let projFile = ProjectParser.getFileName proj
+         //Debug.WriteLine (sprintf "CheckOptions: Creating for file '%s' in project '%s'" fileName projFile)
+        let files = ProjectParser.getFiles proj
+        let args = ProjectParser.getOptions proj
+
+        CheckOptions.Create(projFile, files, args, false, false, System.DateTime.Now)
+
+     // Print contents of check option for debugging purposes
+     // Debug.WriteLine(sprintf "Checkoptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A" 
+    //                      opts.ProjectFileName opts.ProjectFileNames opts.ProjectOptions 
+    //                     opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules)
+    opts
+
+
   /// Get errors from the last parse request
   member x.GetErrors() = 
     agent.PostAndReply(GetErrors)
@@ -206,26 +241,25 @@ module internal CommandInput =
     declarations
       - get information about top-level declarations with location
     parse [full]
+    <filename>
       - trigger (full) background parse request; should be 
         followed by content of a file (ended with <<EOF>>)
-    script <filename>
-      - load script with specified name; should be followed
-        by content of the script (ended with <<EOF>>)
-    completion <line> <col> [timeout] 
+    completion <line> <col> [timeout]
+    <filename>
       - trigger completion request for the specified location
     tip <line> <col> [timeout]
+    <filename>
       - get tool tip for the specified location
     project <filename>
       - associates the current session with the specified project"
 
   // Command that can be entered on the command-line
   type Command =
-    | Completion of Position * int option
-    | ToolTip of Position * int option
+    | Completion of string * Position * int option
+    | ToolTip of string * Position * int option
     | Declarations
     | GetErrors
-    | Script of string 
-    | Parse of bool
+    | Parse of string * bool
     | Error of string
     | Project of string
     | Help
@@ -255,20 +289,19 @@ module internal CommandInput =
     if str = "<<EOF>>" then List.rev input
     else readInput (str::input)
 
-  // Parse 'parse [full]' command
+  // Parse 'parse [full] "<filename>"' command
   let parse = parser {
     let! _ = string "parse"
-    return! (parser { let! _ = string " full"
-                      return Parse(true) }) <|>
-            (parser { return Parse(false) }) }
+    let! full = (parser { let! _ = string " full"
+                          return true }) <|>
+                (parser { return false })
+    let! _ = many (string " ")
+    let! _ = char '"'
+    let! filename = some (sat ((<>) '"')) |> Parser.map String.ofSeq 
+    let! _ = char '"' // " // TODO: This here for Emacs syntax highlighting bug 
+    return Parse (filename, full) }
 
-  // Parse 'script <filename>' command
-  let script = parser {
-    let! _ = string "script "
-    let! path = some item |> Parser.map (String.ofSeq)
-    return Script(path) }
-
-  // Parse 'completion <line> <col> [timeout]' command
+  // Parse 'completion <line> <col> [timeout] "<filename>"' command
   let completionOrTip = parser {
     let! f = (string "completion " |> Parser.map (fun _ -> Completion)) <|>
              (string "tip " |> Parser.map (fun _ -> ToolTip))
@@ -279,7 +312,11 @@ module internal CommandInput =
       (parser { let! _ = some (string " ")
                 return! some alphanum |> Parser.map (String.ofSeq >> int >> Some) }) <|>
       (parser { return None })
-    return f((line, col), timeout) }
+    let! _ = many (string " ")
+    let! _ = char '"'
+    let! filename = some (sat ((<>) '"')) |> Parser.map String.ofSeq 
+    let! _ = char '"' // " // TODO: This here for Emacs syntax highlighting bug 
+    return f(filename, (line, col), timeout) }
 
   // Parses always and returns default error message
   let error = parser { 
@@ -288,17 +325,18 @@ module internal CommandInput =
   // Parase any of the supported commands
   let parseCommand input = 
     let reader = Parsing.createForwardStringReader input 0
-    let cmds = errors <|> help <|> declarations <|> parse <|> project <|> script <|> completionOrTip <|> quit <|> error
+    let cmds = errors <|> help <|> declarations <|> parse <|> project <|> completionOrTip <|> quit <|> error
     reader |> Parsing.getFirst cmds
 
 // --------------------------------------------------------------------------------------
 // Main application command-line loop
 // --------------------------------------------------------------------------------------
 
+open System.Collections.Generic
+
 /// Represents current state 
-type internal State(?lines, ?options, ?project) =
-  member x.CurrentOptions : RequestOptions option = options
-  member x.Lines : string[] = defaultArg lines [| |]
+type internal State(?files, ?project) =
+  member x.Files : Dictionary<string,string[]> = defaultArg files (new Dictionary<_,_>())
   member x.Project : ProjectParser.ProjectResolver option = project
 
 /// Contains main loop of the application
@@ -309,19 +347,20 @@ module internal Main =
   let agent = new IntelliSenseAgent()
 
   let rec main (state:State) =
-    match parseCommand(Console.ReadLine()), state.CurrentOptions with
-    | Declarations, Some(opts) ->
-        let decls = agent.GetDeclarations(opts) 
-        for tld in decls do
-          let (s1, e1), (s2, e2) = tld.Declaration.Range
-          printfn "[%d:%d-%d:%d] %s" s1 e1 s2 e2 tld.Declaration.Name
-          for d in tld.Nested do
-            let (s1, e1), (s2, e2) = d.Range
-            printfn "  - [%d:%d-%d:%d] %s" s1 e1 s2 e2 d.Name
-        Console.WriteLine("<<EOF>>")
-        main state
+    match parseCommand(Console.ReadLine()) with
+    | Declarations ->
+        Console.Error.WriteLine("Declarations not yet implemented")
+        // let decls = agent.GetDeclarations(opts) 
+        // for tld in decls do
+        //   let (s1, e1), (s2, e2) = tld.Declaration.Range
+        //   printfn "[%d:%d-%d:%d] %s" s1 e1 s2 e2 tld.Declaration.Name
+        //   for d in tld.Nested do
+        //     let (s1, e1), (s2, e2) = d.Range
+        //     printfn "  - [%d:%d-%d:%d] %s" s1 e1 s2 e2 d.Name
+        // Console.WriteLine("<<EOF>>")
+        // main state
 
-    | GetErrors, _ ->
+    | GetErrors ->
         let errs = agent.GetErrors() 
         for e in errs do
           printfn "[%d:%d-%d:%d] %s %s" e.StartColumn e.StartLine e.EndColumn e.EndLine
@@ -329,60 +368,58 @@ module internal Main =
         Console.WriteLine("<<EOF>>")
         main state
 
-    | Parse(full), Some(opts) ->
-        // Trigger parse request when we already loaded some file
+    | Parse(file,full) ->
+        // Trigger parse request for a particular file
         let lines = readInput [] |> Array.ofList
         let text = String.concat "\n" lines
-        let opts = opts.WithSource(text)
+        let file = Path.GetFullPath file
+        let opts = RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
+                                  file,
+                                  text)
         agent.TriggerParseRequest(opts, full)
         Console.WriteLine("DONE: Background parsing started")
-        main (State(lines, opts))
+        state.Files.[file] <- lines
+        main state
 
-    | Script(file), _ ->
-        // Load a new script file (update options in current state)
-        let lines = readInput [] |> Array.ofList
-        let text = String.concat "\n" lines
-        let opts = agent.CreateScriptOptions(file, text)
-        Console.WriteLine("DONE: Script loaded")
-        main (State(lines, opts))
-
-    | Project file, _ ->
+    | Project file ->
         // Load project file and store in state
         let p = ProjectParser.load file
         printfn "Options: %A" (ProjectParser.getOptions p)
         Console.WriteLine("DONE: Project loaded")
-        main state 
+        main (State(state.Files, p))
 
-    | ToolTip((line, column) as pos, timeout), Some(opts) ->
+    | ToolTip(file, ((line, column) as pos), timeout) ->
+        Console.Error.WriteLine("ToolTip not currently implemented")
         // Trigger autocompletion (when we already loaded a file)
-        if line >= state.Lines.Length || line < 0 then
+        // let file = Path.GetFullPath file
+        // if line >= state.Lines.Length || line < 0 then
+        //   Console.Error.WriteLine("ERROR: Line is out of range")
+        // else
+        //   agent.GetToolTip(opts, pos, text, timeout)
+        // main state
+
+    | Completion(file, ((line, column) as pos), timeout) ->
+        // Trigger autocompletion (when we already loaded a file)
+        let file = Path.GetFullPath file
+        if line >= state.Files.[file].Length || line < 0 then
           Console.Error.WriteLine("ERROR: Line is out of range")
         else
-          agent.GetToolTip(opts, pos, state.Lines.[line], timeout)
+          let text = String.concat "\n" state.Files.[file]
+          let opts = RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
+                                    file,
+                                    text)
+          agent.DoCompletion(opts, pos, state.Files.[file].[line], timeout)
         main state
 
-    | Completion((line, column) as pos, timeout), Some(opts) ->
-        // Trigger autocompletion (when we already loaded a file)
-        if line >= state.Lines.Length || line < 0 then
-          Console.Error.WriteLine("ERROR: Line is out of range")
-        else
-          agent.DoCompletion(opts, pos, state.Lines.[line], timeout)
-        main state
-
-    | Parse _, None | Completion _, None | ToolTip _, None | Declarations, None ->
-       // No file has been loaded, so we cannot process these requests
-       Console.Error.WriteLine("ERROR: No file loaded")
-       main state
-
-    | Help, _ ->
+    | Help ->
         Console.WriteLine(helpText)
         main state
 
-    | Error(msg), _ -> 
+    | Error(msg) -> 
         Console.Error.WriteLine(msg)
         main state
 
-    | Quit, _ -> 
+    | Quit -> 
         exit 0
       
   // Run the application!
