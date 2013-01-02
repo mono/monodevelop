@@ -257,9 +257,17 @@ namespace MonoDevelop.Ide.Gui
 
 		public Pad GetPad<T> ()
 		{
-			foreach (Pad pad in Pads)
-				if (typeof(T).IsInstanceOfType (pad.Content))
+			foreach (Pad pad in Pads) {
+				object content;
+				try {
+					content = pad.Content;
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while creating pad " + pad.Title + " content.", e);
+					continue;
+				}
+				if (typeof(T).IsInstanceOfType (content))
 					return pad;
+			}
 			return null;
 		}		
 		
