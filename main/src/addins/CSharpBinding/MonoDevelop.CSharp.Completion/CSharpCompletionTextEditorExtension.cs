@@ -812,7 +812,7 @@ namespace MonoDevelop.CSharp.Completion
 
 			ICompletionData ICompletionDataFactory.CreateVariableCompletionData (IVariable variable)
 			{
-				return new VariableCompletionData (variable);
+				return new VariableCompletionData (ext, variable);
 			}
 
 			ICompletionData ICompletionDataFactory.CreateVariableCompletionData (ITypeParameter parameter)
