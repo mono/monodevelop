@@ -79,8 +79,11 @@ module ProjectParser =
     let debugsymbols = getprop "DebugSymbols" |> Convert.ToBoolean
     let defines = (getprop "DefineConstants").Split([|';';',';' '|],
                                                     StringSplitOptions.RemoveEmptyEntries)
-    let otherflags = (getprop "OtherFlags").Split([|' '|],
-                                                  StringSplitOptions.RemoveEmptyEntries)
+    let otherflags = (getprop "OtherFlags")
+    let otherflags = if otherflags = null
+                     then [||]
+                     else otherflags.Split([|' '|],
+                                           StringSplitOptions.RemoveEmptyEntries)
     
     [|
       yield "--noframework"
