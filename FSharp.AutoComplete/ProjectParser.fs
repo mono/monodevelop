@@ -61,13 +61,14 @@ module ProjectParser =
         ti.SetMetadata("HintPath", bi.GetEvaluatedMetadata("HintPath"))
       ti :> ITaskItem
 
-    // TODO: For HintPath to work, should change PWD to directory of 'p'
-
+    let pwd = Environment.CurrentDirectory
+    do Environment.CurrentDirectory <- IO.Path.GetDirectoryName p.project.FullFileName
     let refs = p.project.GetEvaluatedItemsByName "Reference"
     p.rar.Assemblies <- [| for r in refs do yield convert r |]
     p.rar.TargetProcessorArchitecture <- p.project.GetEvaluatedProperty "PlatformTarget"
     // TODO: Execute may fail
     ignore <| p.rar.Execute ()
+    do Environment.CurrentDirectory <- pwd
     [| for f in p.rar.ResolvedFiles do yield f.ItemSpec |]
 
 
