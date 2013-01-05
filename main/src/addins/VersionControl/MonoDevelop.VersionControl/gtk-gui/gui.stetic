@@ -1088,6 +1088,7 @@
                   <widget class="Gtk.TreeView" id="fileList">
                     <property name="MemberName">fileList</property>
                     <property name="CanFocus">True</property>
+                    <property name="SearchColumn">2</property>
                   </widget>
                 </child>
               </widget>
