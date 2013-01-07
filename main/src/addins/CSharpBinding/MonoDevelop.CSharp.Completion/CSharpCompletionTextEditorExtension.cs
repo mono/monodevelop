@@ -885,11 +885,11 @@ namespace MonoDevelop.CSharp.Completion
 			return new DelegateDataProvider (startOffset, this, type);
 		}
 		
-		IParameterDataProvider IParameterCompletionDataFactory.CreateIndexerParameterDataProvider (int startOffset, IType type, AstNode resolvedNode)
+		IParameterDataProvider IParameterCompletionDataFactory.CreateIndexerParameterDataProvider (int startOffset, IType type, IEnumerable<IProperty> indexers, AstNode resolvedNode)
 		{
 			if (type is ArrayType)
 				return new ArrayTypeParameterDataProvider (startOffset, this, (ArrayType)type, resolvedNode);
-			return new IndexerParameterDataProvider (startOffset, this, type, resolvedNode);
+			return new IndexerParameterDataProvider (startOffset, this, type, indexers, resolvedNode);
 		}
 		
 		IParameterDataProvider IParameterCompletionDataFactory.CreateTypeParameterDataProvider (int startOffset, IEnumerable<IType> types)

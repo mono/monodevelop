@@ -53,12 +53,12 @@ namespace MonoDevelop.CSharp.Completion
 		ICompilation compilation;
 		CSharpUnresolvedFile file;
 		
-		public IndexerParameterDataProvider (int startOffset, CSharpCompletionTextEditorExtension ext, IType type, AstNode resolvedExpression) : base (ext, startOffset)
+		public IndexerParameterDataProvider (int startOffset, CSharpCompletionTextEditorExtension ext, IType type, IEnumerable<IProperty> indexers, AstNode resolvedExpression) : base (ext, startOffset)
 		{
 			compilation = ext.UnresolvedFileCompilation;
 			file = ext.CSharpUnresolvedFile;
 			//			this.resolvedExpression = resolvedExpression;
-			indexers = new List<IProperty> (type.GetProperties (p => p.IsIndexer));
+			this.indexers = new List<IProperty> (indexers);
 		}
 
 		public override TooltipInformation CreateTooltipInformation (int overload, int currentParameter, bool smartWrap)
