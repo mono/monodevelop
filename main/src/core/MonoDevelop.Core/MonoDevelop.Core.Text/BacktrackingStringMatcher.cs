@@ -70,6 +70,15 @@ namespace MonoDevelop.Core.Text
 					}
 					return true;
 				}
+				// exact named parameter case see discussion in bug #9114
+				if (name.Length - 1  == filterText.Length && name[name.Length - 1] == ':') {
+					matchRank = int.MaxValue - 1;
+					for (int n = 0; n < name.Length - 1; n++) {
+						if (filterText[n] != name[n])
+							matchRank--;
+					}
+					return true;
+				}
 				int capitalMatches = 0;
 				int nonCapitalMatches = 0;
 				int matching = 0;

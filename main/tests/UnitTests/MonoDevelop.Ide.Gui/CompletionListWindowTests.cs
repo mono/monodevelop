@@ -787,6 +787,18 @@ namespace MonoDevelop.Ide.Gui
 			Assert.AreEqual ("children", output);
 		}
 
+		
+		/// <summary>
+		/// Bug 9114 - Code completion fumbles named parameters 
+		/// </summary>
+		[Test]
+		public void TestBug9114 ()
+		{
+			string output = RunSimulation ("", "act\t", true, true, false, "act:", "Action");
+			Assert.AreEqual ("act:", output);
+		}
+
+
 		[TestFixtureSetUp] 
 		public void SetUp()
 		{
