@@ -635,6 +635,25 @@ namespace MonoDevelop.SourceEditor
 				if (File.Exists (fileName)) {
 					try {
 						attributes = DesktopService.GetFileAttributes (fileName);
+						var fileAttributes = File.GetAttributes (fileName);
+						if (fileAttributes.HasFlag (FileAttributes.ReadOnly)) {
+							var result = MessageService.AskQuestion (
+								GettextCatalog.GetString ("Can't save file"),
+								GettextCatalog.GetString ("The file was marked as read only. Should the file be overwritten?"),
+								AlertButton.Yes,
+								AlertButton.No);
+							if (result == AlertButton.Yes) {
+								try {
+									File.SetAttributes (fileName, fileAttributes & ~FileAttributes.ReadOnly);
+								} catch (Exception) {
+									MessageService.ShowError (GettextCatalog.GetString ("Error"),
+									                          GettextCatalog.GetString ("Operation failed."));
+									return;
+								}
+							} else {
+								return;
+							}
+						}
 					} catch (Exception e) {
 						LoggingService.LogWarning ("Can't get file attributes", e);
 					}
