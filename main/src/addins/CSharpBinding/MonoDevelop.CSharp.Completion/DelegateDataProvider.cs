@@ -42,6 +42,7 @@ using ICSharpCode.NRefactory.CSharp.Resolver;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.Completion;
 using System.Linq;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -50,15 +51,20 @@ namespace MonoDevelop.CSharp.Completion
 //		IType delegateType;
 		IMethod delegateMethod;
 
+		ICompilation compilation;
+		CSharpUnresolvedFile file;
+		
 		public DelegateDataProvider (int startOffset, CSharpCompletionTextEditorExtension ext, IType delegateType) : base (ext, startOffset)
 		{
-//			this.delegateType = delegateType;
+			compilation = ext.UnresolvedFileCompilation;
+			file = ext.CSharpUnresolvedFile;
+			//			this.delegateType = delegateType;
 			this.delegateMethod = delegateType.GetDelegateInvokeMethod ();
 		}
 
 		public override TooltipInformation CreateTooltipInformation (int overload, int currentParameter, bool smartWrap)
 		{
-			return MethodParameterDataProvider.CreateTooltipInformation (ext, delegateMethod, currentParameter, smartWrap);
+			return MethodParameterDataProvider.CreateTooltipInformation (ext, compilation, file, delegateMethod, currentParameter, smartWrap);
 		}
 
 		#region IParameterDataProvider implementation

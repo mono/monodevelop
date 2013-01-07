@@ -49,12 +49,19 @@ namespace MonoDevelop.CSharp.Completion
 		protected CSharpAmbience ambience = new CSharpAmbience ();
 		protected bool staticResolve = false;
 
+		ICompilation compilation;
+		CSharpUnresolvedFile file;
+
+
 		protected MethodParameterDataProvider (int startOffset, CSharpCompletionTextEditorExtension ext) : base (ext, startOffset)
 		{
 		}
 		
 		public MethodParameterDataProvider (int startOffset, CSharpCompletionTextEditorExtension ext, IEnumerable<IMethod> m) : base (ext, startOffset)
 		{
+			compilation = ext.UnresolvedFileCompilation;
+			file = ext.CSharpUnresolvedFile;
+
 			HashSet<string> alreadyAdded = new HashSet<string> ();
 			foreach (var method in m) {
 				if (method.IsConstructor)
@@ -104,12 +111,12 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override MonoDevelop.Ide.CodeCompletion.TooltipInformation CreateTooltipInformation (int overload, int currentParameter, bool smartWrap)
 		{
-			return CreateTooltipInformation (ext, methods[overload], currentParameter, smartWrap);
+			return CreateTooltipInformation (ext, compilation, file, methods[overload], currentParameter, smartWrap);
 		}
 
-		public static TooltipInformation CreateTooltipInformation (CSharpCompletionTextEditorExtension ext, IParameterizedMember entity, int currentParameter, bool smartWrap)
+		public static TooltipInformation CreateTooltipInformation (CSharpCompletionTextEditorExtension ext, ICompilation compilation, CSharpUnresolvedFile file, IParameterizedMember entity, int currentParameter, bool smartWrap)
 		{
-			return CreateTooltipInformation (ext.UnresolvedFileCompilation, ext.CSharpUnresolvedFile, ext.TextEditorData, ext.FormattingPolicy, entity, currentParameter, smartWrap);
+			return CreateTooltipInformation (compilation, file, ext.TextEditorData, ext.FormattingPolicy, entity, currentParameter, smartWrap);
 		}
 
 		public static TooltipInformation CreateTooltipInformation (ICompilation compilation, CSharpUnresolvedFile file, TextEditorData textEditorData, MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy formattingPolicy, IParameterizedMember entity, int currentParameter, bool smartWrap)

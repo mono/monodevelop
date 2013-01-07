@@ -41,6 +41,7 @@ using Mono.TextEditor;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Completion;
 using MonoDevelop.Ide.TypeSystem;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -49,15 +50,20 @@ namespace MonoDevelop.CSharp.Completion
 //		AstNode resolvedExpression;
 		List<IProperty> indexers;
 
+		ICompilation compilation;
+		CSharpUnresolvedFile file;
+		
 		public IndexerParameterDataProvider (int startOffset, CSharpCompletionTextEditorExtension ext, IType type, AstNode resolvedExpression) : base (ext, startOffset)
 		{
-//			this.resolvedExpression = resolvedExpression;
+			compilation = ext.UnresolvedFileCompilation;
+			file = ext.CSharpUnresolvedFile;
+			//			this.resolvedExpression = resolvedExpression;
 			indexers = new List<IProperty> (type.GetProperties (p => p.IsIndexer));
 		}
 
 		public override TooltipInformation CreateTooltipInformation (int overload, int currentParameter, bool smartWrap)
 		{
-			return MethodParameterDataProvider.CreateTooltipInformation (ext, indexers[overload], currentParameter, smartWrap);
+			return MethodParameterDataProvider.CreateTooltipInformation (ext, compilation, file, indexers[overload], currentParameter, smartWrap);
 		}
 
 		#region IParameterDataProvider implementation
