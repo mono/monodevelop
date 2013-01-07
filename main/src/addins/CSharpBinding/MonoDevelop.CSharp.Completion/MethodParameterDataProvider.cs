@@ -55,6 +55,8 @@ namespace MonoDevelop.CSharp.Completion
 
 		protected MethodParameterDataProvider (int startOffset, CSharpCompletionTextEditorExtension ext) : base (ext, startOffset)
 		{
+			compilation = ext.UnresolvedFileCompilation;
+			file = ext.CSharpUnresolvedFile;
 		}
 		
 		public MethodParameterDataProvider (int startOffset, CSharpCompletionTextEditorExtension ext, IEnumerable<IMethod> m) : base (ext, startOffset)
