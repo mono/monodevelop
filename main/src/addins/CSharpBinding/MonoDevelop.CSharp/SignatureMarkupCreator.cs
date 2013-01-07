@@ -392,8 +392,11 @@ namespace MonoDevelop.CSharp
 				break;
 			}
 
-			var typeName = GetTypeReferenceString (t, false);
+			var typeName = t.Name;
 			result.Append (Highlight (typeName.ToString (), "keyword.type"));
+			if (t.TypeParameterCount > 0)
+				AppendTypeParameters (result, t.GetDefinition ().TypeParameters);
+
 			if (t.Kind == TypeKind.Array)
 				return result.ToString ();
 
@@ -477,7 +480,7 @@ namespace MonoDevelop.CSharp
 			result.Append (CSharpAmbience.FilterName (t.Name));
 			
 			AppendTypeParameters (result, method.TypeParameters);
-			
+
 			if (formattingOptions.SpaceBeforeDelegateDeclarationParentheses)
 				result.Append (" ");
 			
