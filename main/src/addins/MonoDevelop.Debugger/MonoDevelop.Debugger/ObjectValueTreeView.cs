@@ -1179,21 +1179,57 @@ namespace MonoDevelop.Debugger
 			TreePath[] selected = Selection.GetSelectedRows ();
 			TreeIter iter;
 			
-			if (selected == null || selected.Length != 1)
-				return;
-			
-			if (!store.GetIter (out iter, selected[0]))
+			if (selected == null || selected.Length == 0)
 				return;
 
-			object focus = IdeApp.Workbench.RootWindow.Focus;
+			if (selected.Length == 1) {
+				object focus = IdeApp.Workbench.RootWindow.Focus;
 
-			if (focus is Gtk.Editable) {
-				((Gtk.Editable) focus).CopyClipboard ();
-				return;
+				if (focus is Gtk.Editable) {
+					((Gtk.Editable) focus).CopyClipboard ();
+					return;
+				}
 			}
-			
-			string value = (string) store.GetValue (iter, ValueCol);
-			Clipboard.Get (Gdk.Selection.Clipboard).Text = value;
+
+			var values = new List<string> ();
+			var names = new List<string> ();
+			var types = new List<string> ();
+			int maxValue = 0;
+			int maxName = 0;
+
+			for (int i = 0; i < selected.Length; i++) {
+				if (!store.GetIter (out iter, selected[i]))
+					continue;
+
+				string value = (string) store.GetValue (iter, ValueCol);
+				string name = (string) store.GetValue (iter, NameCol);
+				string type = (string) store.GetValue (iter, TypeCol);
+
+				maxValue = Math.Max (maxValue, value.Length);
+				maxName = Math.Max (maxName, name.Length);
+
+				values.Add (value);
+				names.Add (name);
+				types.Add (type);
+			}
+
+			var str = new StringBuilder ();
+			for (int i = 0; i < values.Count; i++) {
+				if (i > 0)
+					str.AppendLine ();
+
+				str.Append (names[i]);
+				if (names[i].Length < maxName)
+					str.Append (new string (' ', maxName - names[i].Length));
+				str.Append ('\t');
+				str.Append (values[i]);
+				if (values[i].Length < maxValue)
+					str.Append (new string (' ', maxValue - values[i].Length));
+				str.Append ('\t');
+				str.Append (types[i]);
+			}
+
+			Clipboard.Get (Gdk.Selection.Clipboard).Text = str.ToString ();
 		}
 		
 		[CommandHandler (EditCommands.Delete)]
