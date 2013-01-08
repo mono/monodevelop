@@ -116,7 +116,7 @@ namespace Mono.TextEditor.Highlighting
 		
 		public bool IgnoreCase {
 			get;
-			internal protected set;
+			set;
 		}
 		
 		public string DefaultColor {
@@ -130,7 +130,7 @@ namespace Mono.TextEditor.Highlighting
 			get { 
 				return !delimiterSet ? mode.Delimiter : delimiter; 
 			}
-			internal protected set { delimiter = value; delimiterSet = true; }
+			set { delimiter = value; delimiterSet = true; }
 		}
 
 		public Marker[] PrevMarker {
