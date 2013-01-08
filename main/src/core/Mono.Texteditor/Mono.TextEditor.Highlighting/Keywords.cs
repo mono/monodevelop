@@ -38,12 +38,15 @@ namespace Mono.TextEditor.Highlighting
 		
 		public string Color {
 			get;
-			private set;
+			set;
 		}
 
 		public IEnumerable<string> Words {
 			get {
 				return words;
+			}
+			set {
+				words = new List<string> (value);
 			}
 		}
 

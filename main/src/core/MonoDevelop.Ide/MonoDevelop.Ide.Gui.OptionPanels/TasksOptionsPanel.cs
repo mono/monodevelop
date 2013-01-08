@@ -74,7 +74,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			string modified = String.Empty;
 			foreach (char ch in entryToken.Text)
 			{
-				if (!Char.IsLetterOrDigit (ch))
+				if (!Char.IsLetterOrDigit (ch) && ch != '\\')
 				{
 					modified += '_';
 					continue;
