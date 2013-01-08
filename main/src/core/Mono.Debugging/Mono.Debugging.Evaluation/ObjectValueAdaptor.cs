@@ -380,20 +380,40 @@ namespace Mono.Debugging.Evaluation
 				return ObjectValue.CreateObject (source, path, GetDisplayTypeName (typeName), ctx.Evaluator.TargetObjectToExpression (ctx, obj), flags, null);
 			}
 			else {
-				TypeDisplayData tdata = GetTypeDisplayData (ctx, GetValueType (ctx, obj));
-				
-				EvaluationResult tvalue;
-				if (!string.IsNullOrEmpty (tdata.ValueDisplayString) && ctx.Options.AllowDisplayStringEvaluation)
-					tvalue = new EvaluationResult (EvaluateDisplayString (ctx, obj, tdata.ValueDisplayString));
-				else
-					tvalue = ctx.Evaluator.TargetObjectToExpression (ctx, obj);
-				
+				object type = GetValueType (ctx, obj);
+				EvaluationResult tvalue = null;
+				TypeDisplayData tdata = null;
 				string tname;
-				if (!string.IsNullOrEmpty (tdata.TypeDisplayString) && ctx.Options.AllowDisplayStringEvaluation)
-					tname = EvaluateDisplayString (ctx, obj, tdata.TypeDisplayString);
-				else
+
+				if (typeName.StartsWith ("System.Nullable`1")) {
+					ValueReference hasValue = GetMember (ctx, type, obj, "HasValue");
+					if ((bool) hasValue.ObjectValue) {
+						ValueReference value = GetMember (ctx, type, obj, "Value");
+
+						tdata = GetTypeDisplayData (ctx, value.Type);
+						obj = value.Value;
+					} else {
+						tdata = GetTypeDisplayData (ctx, type);
+						tvalue = new EvaluationResult ("null");
+					}
+
 					tname = GetDisplayTypeName (typeName);
-				
+				} else {
+					tdata = GetTypeDisplayData (ctx, type);
+
+					if (!string.IsNullOrEmpty (tdata.TypeDisplayString) && ctx.Options.AllowDisplayStringEvaluation)
+						tname = EvaluateDisplayString (ctx, obj, tdata.TypeDisplayString);
+					else
+						tname = GetDisplayTypeName (typeName);
+				}
+
+				if (tvalue == null) {
+					if (!string.IsNullOrEmpty (tdata.ValueDisplayString) && ctx.Options.AllowDisplayStringEvaluation)
+						tvalue = new EvaluationResult (EvaluateDisplayString (ctx, obj, tdata.ValueDisplayString));
+					else
+						tvalue = ctx.Evaluator.TargetObjectToExpression (ctx, obj);
+				}
+
 				ObjectValue oval = ObjectValue.CreateObject (source, path, tname, tvalue, flags, null);
 				if (!string.IsNullOrEmpty (tdata.NameDisplayString) && ctx.Options.AllowDisplayStringEvaluation)
 					oval.Name = EvaluateDisplayString (ctx, obj, tdata.NameDisplayString);
