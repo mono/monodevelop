@@ -457,9 +457,9 @@ namespace Mono.Debugging.Soft
 		
 		static bool IsHoistedThisReference (FieldInfoMirror field)
 		{
-			// mcs is "<>f__this"
+			// mcs is "<>f__this" or "$this" (if in an async compiler generated type)
 			// csc is "<>4__this"
-			return field.Name.StartsWith ("<>") && field.Name.EndsWith ("__this");
+			return (field.Name.StartsWith ("<>") && field.Name.EndsWith ("__this")) || field.Name == "$this";
 		}
 		
 		static bool IsClosureReferenceField (FieldInfoMirror field)
