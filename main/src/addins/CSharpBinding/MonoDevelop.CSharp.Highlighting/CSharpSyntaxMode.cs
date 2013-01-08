@@ -652,7 +652,15 @@ namespace MonoDevelop.CSharp.Highlighting
 					doc.ReparseDocument ();
 				}
 			};
-			CommentTag.SpecialCommentTagsChanged += (sender, e) => UpdateCommentRule ();
+			CommentTag.SpecialCommentTagsChanged += (sender, e) => {
+				UpdateCommentRule ();
+				var actDoc = IdeApp.Workbench.ActiveDocument;
+				if (actDoc != null && actDoc.Editor != null) {
+					actDoc.UpdateParseDocument ();
+					actDoc.Editor.Parent.TextViewMargin.PurgeLayoutCache ();
+					actDoc.Editor.Parent.QueueDraw ();
+				}
+			};
 		}
 		
 		static void OnDisableConditionalCompilation (object s, DocumentEventArgs e)
