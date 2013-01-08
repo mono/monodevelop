@@ -501,11 +501,11 @@ namespace MonoDevelop.SourceEditor
 			if (TextEditor != null && TextEditor.IsComposited) {
 				if (messageBubbleHighlightPopupWindow != null)
 					messageBubbleHighlightPopupWindow.Destroy ();
-				messageBubbleHighlightPopupWindow = new MessageBubbleHighlightPopupWindow (this, marker);
+			/*	messageBubbleHighlightPopupWindow = new MessageBubbleHighlightPopupWindow (this, marker);
 				messageBubbleHighlightPopupWindow.Destroyed += delegate {
 					messageBubbleHighlightPopupWindow = null;
 				};
-				messageBubbleHighlightPopupWindow.Popup ();
+				messageBubbleHighlightPopupWindow.Popup ();*/
 			}
 		}
 
