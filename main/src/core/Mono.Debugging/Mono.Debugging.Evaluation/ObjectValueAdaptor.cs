@@ -280,9 +280,14 @@ namespace Mono.Debugging.Evaluation
 		public abstract object TryCast (EvaluationContext ctx, object val, object type);
 
 		public abstract object GetValueType (EvaluationContext ctx, object val);
-		public abstract string GetTypeName (EvaluationContext ctx, object val);
+		public abstract string GetTypeName (EvaluationContext ctx, object type);
 		public abstract object[] GetTypeArgs (EvaluationContext ctx, object type);
 		public abstract object GetBaseType (EvaluationContext ctx, object type);
+
+		public virtual bool IsNullableType (EvaluationContext ctx, object type)
+		{
+			return type != null && GetTypeName (ctx, type).StartsWith ("System.Nullable`1");
+		}
 		
 		public virtual bool IsFlagsEnumType (EvaluationContext ctx, object type)
 		{
@@ -368,7 +373,8 @@ namespace Mono.Debugging.Evaluation
 
 		protected virtual ObjectValue CreateObjectValueImpl (EvaluationContext ctx, Mono.Debugging.Backend.IObjectValueSource source, ObjectPath path, object obj, ObjectValueFlags flags)
 		{
-			string typeName = obj != null ? GetValueTypeName (ctx, obj) : "";
+			object type = obj != null ? GetValueType (ctx, obj) : null;
+			string typeName = type != null ? GetTypeName (ctx, type) : "";
 
 			if (obj == null || IsNull (ctx, obj)) {
 				return ObjectValue.CreateNullObject (source, path, GetDisplayTypeName (typeName), flags);
@@ -380,12 +386,11 @@ namespace Mono.Debugging.Evaluation
 				return ObjectValue.CreateObject (source, path, GetDisplayTypeName (typeName), ctx.Evaluator.TargetObjectToExpression (ctx, obj), flags, null);
 			}
 			else {
-				object type = GetValueType (ctx, obj);
 				EvaluationResult tvalue = null;
 				TypeDisplayData tdata = null;
 				string tname;
 
-				if (typeName.StartsWith ("System.Nullable`1")) {
+				if (IsNullableType (ctx, type)) {
 					ValueReference hasValue = GetMember (ctx, type, obj, "HasValue");
 					if ((bool) hasValue.ObjectValue) {
 						ValueReference value = GetMember (ctx, type, obj, "Value");
@@ -438,6 +443,17 @@ namespace Mono.Debugging.Evaluation
 
 			if (IsPrimitive (ctx, obj))
 				return new ObjectValue[0];
+
+			if (IsNullableType (ctx, type)) {
+				ValueReference hasValue = GetMember (ctx, type, obj, "HasValue");
+				if ((bool) hasValue.ObjectValue) {
+					ValueReference value = GetMember (ctx, type, obj, "Value");
+
+					return GetObjectValueChildren (ctx, objectSource, value.Type, value.Value, firstItemIndex, count, dereferenceProxy);
+				} else {
+					return new ObjectValue[0];
+				}
+			}
 
 			bool showRawView = false;
 			
