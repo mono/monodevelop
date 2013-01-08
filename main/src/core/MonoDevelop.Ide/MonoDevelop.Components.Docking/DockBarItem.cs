@@ -437,6 +437,8 @@ namespace MonoDevelop.Components.Docking
 
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
+			if (bar.Frame.OverlayWidgetVisible)
+				return false;
 			if (evnt.TriggersContextMenu ()) {
 				it.ShowDockPopupMenu (evnt.Time);
 			} else if (evnt.Button == 1) {
