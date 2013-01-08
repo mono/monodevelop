@@ -527,18 +527,30 @@ end tell", directory.ToString ().Replace ("\"", "\\\"")));
 			return img;
 		}
 
+		internal override void SetMainWindowDecorations (Gtk.Window window)
+		{
+			NSWindow w = GtkQuartz.GetWindow (window);
+			w.IsOpaque = false;
+			
+			var resource = "maintoolbarbg.png";
+			NSImage img = LoadImage (resource);
+			w.BackgroundColor = NSColor.FromPatternImage (img);
+			w.StyleMask |= NSWindowStyle.TexturedBackground;
+		}
+
 		internal override MainToolbar CreateMainToolbar (Gtk.Window window)
 		{
 			NSApplication.Init ();
 			
 			NSWindow w = GtkQuartz.GetWindow (window);
 			w.IsOpaque = false;
-
+			
 			var resource = "maintoolbarbg.png";
 			NSImage img = LoadImage (resource);
 			var c = NSColor.FromPatternImage (img);
 			w.BackgroundColor = c;
 			w.StyleMask |= NSWindowStyle.TexturedBackground;
+
 			var result = new MainToolbar () {
 				Background = MonoDevelop.Components.CairoExtensions.LoadImage (typeof (MacPlatformService).Assembly, resource),
 				TitleBarHeight = GetTitleBarHeight ()
