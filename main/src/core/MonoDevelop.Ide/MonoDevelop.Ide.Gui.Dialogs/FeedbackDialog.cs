@@ -79,7 +79,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			textEntry = new TextViewWithEmptyMessage ();
 			textEntry.EmptyMessage = GettextCatalog.GetString (
 				"Tell us how we can make {0} better.",
-				BrandingService.ApplicationName
+				BrandingService.SuiteName
 			);
 			textEntry.AcceptsTab = false;
 			textEntry.WrapMode = Gtk.WrapMode.Word;
