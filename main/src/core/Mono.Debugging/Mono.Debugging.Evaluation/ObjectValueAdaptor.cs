@@ -288,6 +288,18 @@ namespace Mono.Debugging.Evaluation
 		{
 			return type != null && GetTypeName (ctx, type).StartsWith ("System.Nullable`1");
 		}
+
+		public virtual bool NullableHasValue (EvaluationContext ctx, object type, object obj)
+		{
+			ValueReference hasValue = GetMember (ctx, type, obj, "HasValue");
+
+			return (bool) hasValue.ObjectValue;
+		}
+
+		public virtual ValueReference NullableGetValue (EvaluationContext ctx, object type, object obj)
+		{
+			return GetMember (ctx, type, obj, "Value");
+		}
 		
 		public virtual bool IsFlagsEnumType (EvaluationContext ctx, object type)
 		{
@@ -391,9 +403,8 @@ namespace Mono.Debugging.Evaluation
 				string tname;
 
 				if (IsNullableType (ctx, type)) {
-					ValueReference hasValue = GetMember (ctx, type, obj, "HasValue");
-					if ((bool) hasValue.ObjectValue) {
-						ValueReference value = GetMember (ctx, type, obj, "Value");
+					if (NullableHasValue (ctx, type, obj)) {
+						ValueReference value = NullableGetValue (ctx, type, obj);
 
 						tdata = GetTypeDisplayData (ctx, value.Type);
 						obj = value.Value;
@@ -445,9 +456,8 @@ namespace Mono.Debugging.Evaluation
 				return new ObjectValue[0];
 
 			if (IsNullableType (ctx, type)) {
-				ValueReference hasValue = GetMember (ctx, type, obj, "HasValue");
-				if ((bool) hasValue.ObjectValue) {
-					ValueReference value = GetMember (ctx, type, obj, "Value");
+				if (NullableHasValue (ctx, type, obj)) {
+					ValueReference value = NullableGetValue (ctx, type, obj);
 
 					return GetObjectValueChildren (ctx, objectSource, value.Type, value.Value, firstItemIndex, count, dereferenceProxy);
 				} else {

@@ -361,6 +361,18 @@ namespace Mono.Debugging.Soft
 			return val;
 		}
 
+		public override bool NullableHasValue (EvaluationContext ctx, object type, object obj)
+		{
+			ValueReference hasValue = GetMember (ctx, type, obj, "has_value");
+
+			return (bool) hasValue.ObjectValue;
+		}
+
+		public override ValueReference NullableGetValue (EvaluationContext ctx, object type, object obj)
+		{
+			return GetMember (ctx, type, obj, "value");
+		}
+
 		public override object GetEnclosingType (EvaluationContext ctx)
 		{
 			SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
