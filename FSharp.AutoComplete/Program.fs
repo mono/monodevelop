@@ -28,6 +28,12 @@ type internal RequestOptions(opts, file, src) =
   member x.WithSource(source) = 
     RequestOptions(opts, file, source)
 
+  override x.ToString() =
+    sprintf "FileName: '%s'\nSource length: '%d'\nOptions: %s, %A, %A, %b, %b"
+      x.FileName x.Source.Length x.Options.ProjectFileName x.Options.ProjectFileNames
+      x.Options.ProjectOptions x.Options.IsIncompleteTypeCheckEnvironment
+      x.Options.UseScriptResolutionRules
+
 
 /// Message type that is used by 'IntelliSenseAgent'
 type internal IntelliSenseAgentMessage = 
@@ -144,7 +150,7 @@ type internal IntelliSenseAgent() =
     //                      opts.ProjectFileName opts.ProjectFileNames opts.ProjectOptions 
     //                     opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules)
     opts
-
+    
 
   /// Get errors from the last parse request
   member x.GetErrors() = 
@@ -160,6 +166,7 @@ type internal IntelliSenseAgent() =
 
   /// Invokes dot-completion request and writes information to the standard output
   member x.DoCompletion(opts, ((line, column) as pos), lineStr, time) =
+    Debug.print "DoCompletion request with options: %O" opts
     try
       try
         // Get the long identifier before the current location
@@ -296,9 +303,9 @@ module internal CommandInput =
                           return true }) <|>
                 (parser { return false })
     let! _ = many (string " ")
-    let! _ = char '"'
+    let! _ = char '"' // " //
     let! filename = some (sat ((<>) '"')) |> Parser.map String.ofSeq 
-    let! _ = char '"' // " // TODO: This here for Emacs syntax highlighting bug 
+    let! _ = char '"' // " // TODO: This here for Emacs syntax highlighting bug
     return Parse (filename, full) }
 
   // Parse 'completion <line> <col> [timeout] "<filename>"' command
@@ -313,9 +320,9 @@ module internal CommandInput =
                 return! some alphanum |> Parser.map (String.ofSeq >> int >> Some) }) <|>
       (parser { return None })
     let! _ = many (string " ")
-    let! _ = char '"'
-    let! filename = some (sat ((<>) '"')) |> Parser.map String.ofSeq 
-    let! _ = char '"' // " // TODO: This here for Emacs syntax highlighting bug 
+    let! _ = char '"' // " // TODO: This here for Emacs syntax highlighting bug
+    let! filename = some (sat ((<>) '"')) |> Parser.map String.ofSeq // "
+    let! _ = char '"' // " // TODO: This here for Emacs syntax highlighting bug
     return f(filename, (line, col), timeout) }
 
   // Parses always and returns default error message
@@ -347,6 +354,7 @@ module internal Main =
   let agent = new IntelliSenseAgent()
 
   let rec main (state:State) =
+    Debug.print "main state is: %A" state
     match parseCommand(Console.ReadLine()) with
     | Declarations ->
         Console.Error.WriteLine("Declarations not yet implemented")
@@ -421,6 +429,8 @@ module internal Main =
 
     | Quit -> 
         exit 0
+
+  do Debug.verbose := true
       
   // Run the application!
   do main(State())

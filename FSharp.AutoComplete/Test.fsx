@@ -9,6 +9,9 @@ open Microsoft.Build.Utilities
 open Microsoft.Build.Framework
 open Microsoft.Build.BuildEngine
 
+#load "ProjectParser.fs"
+open FSharp.InteractiveAutocomplete
+
 /// Reference resolution results. All paths are fully qualified.
 type ResolutionResults = {
     /// Paths to primary references
