@@ -50,18 +50,8 @@
   (log-to-proc-buf proc str)
   (process-send-string proc str))
 
-(defun ac-fsharp-send-script-file (proc)
-  (message "Sending script file")
-  (save-restriction
-    (widen)
-    (log-psendstr
-     proc
-     (format "script %s\n%s\n<<EOF>>\n"
-             (buffer-file-name)
-             (buffer-substring-no-properties (point-min) (point-max))))))
-
-(defun ac-fsharp-reparse-script-file (proc)
-  (message "Reparsing script file")
+(defun ac-fsharp-parse-file (proc)
+  (message "Parsing file")
   (save-restriction
     (widen)
     (log-psendstr
@@ -69,13 +59,21 @@
      (format "parse full\n%s\n<<EOF>>\n"
              (buffer-substring-no-properties (point-min) (point-max))))))
 
+(defun ac-fsharp-load-project ()
+  (interactive)
+  (message (format "Loading project %s" buffer-file-name))
+  (log-psendstr ac-fsharp-completion-process
+                (format "project \"%s\"\n" buffer-file-name)))
+
 (defun ac-fsharp-send-completion-request (proc)
-  (let ((request (format "completion %d %d\n"
-                               (- (line-number-at-pos) 1) (current-column))))
+  (let ((request (format "completion %d %d \"%s\"\n"
+                               (- (line-number-at-pos) 1)
+                               (current-column)
+                               (buffer-file-name))))
     (message (format "Sending completion request for: '%s' of '%s'" ac-prefix request))
     (save-restriction
       (widen)
-      (ac-fsharp-reparse-script-file proc)
+      (ac-fsharp-parse-file proc)
       (log-psendstr proc request))))
 
 
@@ -103,16 +101,15 @@
 
   (set-process-filter ac-fsharp-completion-process 'ac-fsharp-filter-output)
   (set-process-query-on-exit-flag ac-fsharp-completion-process nil)
-  ;; Pre-parse source code.
-  (ac-fsharp-send-script-file ac-fsharp-completion-process)
 
   (setq ac-fsharp-status 'complete)
-  
+
   ;(add-hook 'kill-buffer-hook 'ac-fsharp-shutdown-process nil t)
   ;(add-hook 'before-save-hook 'ac-fsharp-reparse-buffer)
 
   ;(local-set-key (kbd ".") 'ac-fsharp-async-preemptive))
   )
+
 
 (defun ac-fsharp-candidate ()
   (case ac-fsharp-status

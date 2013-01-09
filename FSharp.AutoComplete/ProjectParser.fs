@@ -42,10 +42,17 @@ module ProjectParser =
     do rar.AllowedAssemblyExtensions <- [| ".exe"; ".dll" |]
     rar
 
+  let private absToRel (s: string) : string =
+    let fromUri = new Uri(Environment.CurrentDirectory);
+    let toUri = new Uri(s);
+    let relativeUri = fromUri.MakeRelativeUri(toUri);
+    Uri.UnescapeDataString(relativeUri.ToString());
 
   let load (uri: string) : ProjectResolver =
     let p = new Project()
-    p.Load(uri)
+    //TODO: Seems to be a bug here. Cannot find files if they
+    //      start with '/'. That means absolute paths on *nix.
+    p.Load(absToRel uri)
     { project = p; rar =  mkrar () }
 
   let getFileName (p: ProjectResolver) : string = p.project.FullFileName
