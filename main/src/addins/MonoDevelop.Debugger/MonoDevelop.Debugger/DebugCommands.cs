@@ -365,8 +365,9 @@ namespace MonoDevelop.Debugger
 		protected override void Run ()
 		{
 			var bp = DebuggingService.Breakpoints.Toggle (
-			    IdeApp.Workbench.ActiveDocument.FileName,
-			    IdeApp.Workbench.ActiveDocument.Editor.Caret.Line);
+				IdeApp.Workbench.ActiveDocument.FileName,
+				IdeApp.Workbench.ActiveDocument.Editor.Caret.Line,
+				IdeApp.Workbench.ActiveDocument.Editor.Caret.Column);
 			
 			// If the breakpoint could not be inserted in the caret location, move the caret
 			// to the real line of the breakpoint, so that if the Toggle command is run again,
@@ -494,7 +495,7 @@ namespace MonoDevelop.Debugger
 	{
 		protected override void Run ()
 		{
-			Breakpoint bp = new Breakpoint (IdeApp.Workbench.ActiveDocument.FileName, IdeApp.Workbench.ActiveDocument.Editor.Caret.Line);
+			Breakpoint bp = new Breakpoint (IdeApp.Workbench.ActiveDocument.FileName, IdeApp.Workbench.ActiveDocument.Editor.Caret.Line, IdeApp.Workbench.ActiveDocument.Editor.Caret.Column);
 			if (DebuggingService.ShowBreakpointProperties (bp, true))
 				DebuggingService.Breakpoints.Add (bp);
 		}

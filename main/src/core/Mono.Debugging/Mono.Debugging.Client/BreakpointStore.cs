@@ -54,16 +54,21 @@ namespace Mono.Debugging.Client
 			}
 		}
 
+		public Breakpoint Add (string filename, int line, int column)
+		{
+			return Add (filename, line, column, true);
+		}
+
 		public Breakpoint Add (string filename, int line)
 		{
-			return Add (filename, line, true);
+			return Add (filename, line, 1, true);
 		}
 		
-		public Breakpoint Add (string filename, int line, bool activate)
+		public Breakpoint Add (string filename, int line, int column, bool activate)
 		{
 			if (IsReadOnly)
 				return null;
-			Breakpoint bp = new Breakpoint (filename, line);
+			Breakpoint bp = new Breakpoint (filename, line, column);
 			Add (bp);
 			return bp;
 		}
@@ -92,7 +97,7 @@ namespace Mono.Debugging.Client
 			return cp;
 		}
 		
-		public bool Remove (string filename, int line)
+		public bool Remove (string filename, int line, int column)
 		{
 			if (IsReadOnly)
 				return false;
@@ -100,7 +105,9 @@ namespace Mono.Debugging.Client
 			
 			for (int n=0; n<breakpoints.Count; n++) {
 				Breakpoint bp = breakpoints [n] as Breakpoint;
-				if (bp != null && FileNameEquals (bp.FileName, filename) && bp.Line == line) {
+				if (bp != null && FileNameEquals (bp.FileName, filename) &&
+				    (bp.OriginalLine == line || bp.Line == line) &&
+				    (bp.OriginalColumn == column || bp.Column == column)) {
 					breakpoints.RemoveAt (n);
 					OnBreakEventRemoved (bp);
 					n--;
@@ -134,19 +141,18 @@ namespace Mono.Debugging.Client
 				return false;
 		}
 		
-		public Breakpoint Toggle (string filename, int line)
+		public Breakpoint Toggle (string filename, int line, int column)
 		{
 			if (IsReadOnly)
 				return null;
 			
 			ReadOnlyCollection<Breakpoint> col = GetBreakpointsAtFileLine (filename, line);
 			if (col.Count > 0) {
-				foreach (Breakpoint bp in col)
-					Remove (bp);
+				// Remove only the most-recently-added breakpoint on the specified line
+				Remove (col[col.Count - 1]);
 				return null;
-			}
-			else {
-				return Add (filename, line);
+			} else {
+				return Add (filename, line, column);
 			}
 		}
 		
@@ -256,11 +262,12 @@ namespace Mono.Debugging.Client
 			NotifyBreakEventChanged (bp);
 		}
 		
-		internal void AdjustBreakpointLine (Breakpoint bp, int newLine)
+		internal void AdjustBreakpointLine (Breakpoint bp, int newLine, int newColumn)
 		{
 			if (IsReadOnly)
 				return;
-			
+
+			bp.SetAdjustedColumn (newColumn);
 			bp.SetAdjustedLine (newLine);
 			NotifyBreakEventChanged (bp);
 		}
@@ -271,8 +278,9 @@ namespace Mono.Debugging.Client
 				return;
 			
 			foreach (Breakpoint bp in breakpoints.Where (b => b is Breakpoint).ToArray ()) {
-				if (bp.HasAdjustedLine) {
+				if (bp.HasAdjustedLine || bp.HasAdjustedColumn) {
 					bp.ResetAdjustedLine ();
+					bp.ResetAdjustedColumn ();
 					NotifyBreakEventChanged (bp);
 				}
 			}

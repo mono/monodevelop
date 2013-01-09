@@ -34,6 +34,7 @@ namespace Mono.Debugging.Client
 	public class BreakEventInfo
 	{
 		DebuggerSession session;
+		int adjustedColumn = -1;
 		int adjustedLine = -1;
 		
 		/// <summary>
@@ -55,14 +56,14 @@ namespace Mono.Debugging.Client
 		/// Gets a description of the status
 		/// </summary>
 		public string StatusMessage { get; private set; }
-		
+
 		internal void AttachSession (DebuggerSession s, BreakEvent ev)
 		{
 			session = s;
 			BreakEvent = ev;
 			session.NotifyBreakEventStatusChanged (BreakEvent);
-			if (adjustedLine != -1)
-				session.AdjustBreakpointLocation ((Breakpoint)BreakEvent, adjustedLine);
+			if (adjustedLine != -1 || adjustedColumn != -1)
+				session.AdjustBreakpointLocation ((Breakpoint)BreakEvent, adjustedLine, adjustedColumn);
 		}
 
 		/// <summary>
@@ -81,12 +82,14 @@ namespace Mono.Debugging.Client
 		/// This line adjustment has effect only during the debug session, and is automatically
 		/// reset when it terminates.
 		/// </remarks>
-		public void AdjustBreakpointLocation (int newLine)
+		public void AdjustBreakpointLocation (int newLine, int newColumn)
 		{
-			if (session != null)
-				session.AdjustBreakpointLocation ((Breakpoint)BreakEvent, newLine);
-			else
+			if (session != null) {
+				session.AdjustBreakpointLocation ((Breakpoint)BreakEvent, newLine, newColumn);
+			} else {
+				adjustedColumn = newColumn;
 				adjustedLine = newLine;
+			}
 		}
 		
 		public void UpdateHitCount (int count)

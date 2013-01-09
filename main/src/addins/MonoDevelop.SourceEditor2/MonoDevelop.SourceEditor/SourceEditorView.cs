@@ -1072,14 +1072,21 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (args.LineNumber < DocumentLocation.MinLine)
 				return;
+
 			if (args.TriggersContextMenu ()) {
-				TextEditor.Caret.Line = args.LineNumber;
-				TextEditor.Caret.Column = 1;
+				if (TextEditor.Caret.Line != args.LineNumber) {
+					TextEditor.Caret.Line = args.LineNumber;
+					TextEditor.Caret.Column = 1;
+				}
+
 				IdeApp.CommandService.ShowContextMenu (TextEditor, args.RawEvent as Gdk.EventButton, "/MonoDevelop/SourceEditor2/IconContextMenu/Editor");
 			} else if (args.Button == 1) {
 				if (!string.IsNullOrEmpty (this.Document.FileName)) {
-					if (args.LineSegment != null)
-						DebuggingService.Breakpoints.Toggle (this.Document.FileName, args.LineNumber);
+					if (args.LineSegment != null) {
+						int column = TextEditor.Caret.Line == args.LineNumber ? TextEditor.Caret.Column : 1;
+
+						DebuggingService.Breakpoints.Toggle (this.Document.FileName, args.LineNumber, column);
+					}
 				}
 			}
 		}

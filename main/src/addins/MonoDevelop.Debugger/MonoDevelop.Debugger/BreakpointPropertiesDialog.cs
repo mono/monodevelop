@@ -83,7 +83,7 @@ namespace MonoDevelop.Debugger
 				entryFileFunction.ModifyBase (Gtk.StateType.Active, Style.Backgrounds [(int)Gtk.StateType.Insensitive]);
 				entryFileFunction.IsEditable = false;
 				
-				//spinColumn.Value = bp.Column;
+				spinColumn.Value = bp.Column;
 				spinLine.Value = bp.Line;
 				
 				if (!isNew) {
@@ -92,9 +92,6 @@ namespace MonoDevelop.Debugger
 					spinLine.IsEditable = false;
 					spinLine.Sensitive = false;
 				}
-				
-				// Note: We hide the column spin button for now because we don't support it yet
-				hboxColumn.Hide ();
 			}
 			
 			if (string.IsNullOrEmpty (bp.ConditionExpression)) {
@@ -206,7 +203,7 @@ namespace MonoDevelop.Debugger
 					fb.FunctionName = parsedFunction;
 					fb.ParamTypes = parsedParamTypes;
 				} else {
-					//bp.SetColumn ((int) spinColumn.Value);
+					bp.SetColumn ((int) spinColumn.Value);
 					bp.SetLine ((int) spinLine.Value);
 				}
 			}
