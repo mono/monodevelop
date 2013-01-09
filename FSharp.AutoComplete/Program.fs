@@ -287,8 +287,10 @@ module internal CommandInput =
   /// Parse 'project' command
   let project = parser {
     let! _ = string "project "
-    let! path = some item |> Parser.map (String.ofSeq)
-    return Project(path) }
+    let! _ = char '"'
+    let! filename = some (sat ((<>) '"')) |> Parser.map String.ofSeq
+    let! _ = char '"' // " // TODO: This here for Emacs syntax highlighting bug 
+    return Project(filename) }
   
   /// Read multi-line input as a list of strings
   let rec readInput input = 
