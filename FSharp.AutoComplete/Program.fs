@@ -239,7 +239,7 @@ module internal CommandInput =
   let helpText = @"
     Supported commands
     ==================
-    help               
+    help
       - display this help message
     quit
       - quit the program
@@ -247,17 +247,14 @@ module internal CommandInput =
       - get error messagaes reported by last parse
     declarations
       - get information about top-level declarations with location
-    parse [full]
-    <filename>
-      - trigger (full) background parse request; should be 
+    parse [full] \"<filename>\"
+      - trigger (full) background parse request; should be
         followed by content of a file (ended with <<EOF>>)
-    completion <line> <col> [timeout]
-    <filename>
+    completion <line> <col> [timeout] \"<filename>\"
       - trigger completion request for the specified location
-    tip <line> <col> [timeout]
-    <filename>
-      - get tool tip for the specified location
-    project <filename>
+    tip <line> <col> [timeout] \"<filename>\"
+      - get tool tip for the specified location (currently not implemented)
+    project \"<filename>\"
       - associates the current session with the specified project"
 
   // Command that can be entered on the command-line
