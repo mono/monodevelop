@@ -1220,12 +1220,12 @@ namespace Mono.Debugging.Client
 				return false;
 		}
 		
-		internal void AdjustBreakpointLocation (Breakpoint b, int newLine)
+		internal void AdjustBreakpointLocation (Breakpoint b, int newLine, int newColumn)
 		{
 			lock (breakpoints) {
 				try {
 					adjustingBreakpoints = true;
-					Breakpoints.AdjustBreakpointLine (b, newLine);
+					Breakpoints.AdjustBreakpointLine (b, newLine, newColumn);
 				} finally {
 					adjustingBreakpoints = false;
 				}
