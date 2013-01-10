@@ -3,3 +3,5 @@ fsharp -- slightly modified lib/4.0/release binaries from build of
 
 Modifications are to fsharpc and fsharpi script to remove paths
 
+ndesk-options -- binary release of 0.2.1
+
