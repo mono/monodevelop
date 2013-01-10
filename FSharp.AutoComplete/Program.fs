@@ -352,7 +352,7 @@ module internal Main =
   // Main agent that handles IntelliSense requests
   let agent = new IntelliSenseAgent()
 
-  let rec main (state:State) =
+  let rec main (state:State) : int =
     Debug.print "main state is: %A" state
     match parseCommand(Console.ReadLine()) with
     | Declarations ->
@@ -365,7 +365,7 @@ module internal Main =
         //     let (s1, e1), (s2, e2) = d.Range
         //     printfn "  - [%d:%d-%d:%d] %s" s1 e1 s2 e2 d.Name
         // Console.WriteLine("<<EOF>>")
-        // main state
+        main state
 
     | GetErrors ->
         let errs = agent.GetErrors() 
@@ -391,7 +391,6 @@ module internal Main =
     | Project file ->
         // Load project file and store in state
         let p = ProjectParser.load file
-        printfn "Options: %A" (ProjectParser.getOptions p)
         Console.WriteLine("DONE: Project loaded")
         main (State(state.Files, p))
 
@@ -403,7 +402,7 @@ module internal Main =
         //   Console.Error.WriteLine("ERROR: Line is out of range")
         // else
         //   agent.GetToolTip(opts, pos, text, timeout)
-        // main state
+        main state
 
     | Completion(file, ((line, column) as pos), timeout) ->
         // Trigger autocompletion (when we already loaded a file)
@@ -427,9 +426,14 @@ module internal Main =
         main state
 
     | Quit -> 
-        exit 0
+        (!Debug.output).Close ()
+        0
 
-  do Debug.verbose := true
-      
-  // Run the application!
-  do main(State())
+  [<EntryPoint>]
+  let entry args =
+    let extra = Options.p.Parse args
+    if extra.Count <> 0 then
+      printfn "Unrecognised arguments: %s" (String.concat "," extra)
+      1
+    else
+      main(State())

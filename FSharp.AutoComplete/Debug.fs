@@ -1,9 +1,10 @@
 ﻿module Debug
-  
+
   let verbose = ref false
   let categories : Ref<Option<Set<string>>> =
     ref None
 
+  let output = ref stdout
 
   [<Sealed>]
   type Format<'T> private () =
@@ -21,7 +22,7 @@
 
   let inline print (fmt: Printf.TextWriterFormat<'a>) : 'a =
     if !verbose then
-      printfn fmt
+      fprintfn !output fmt
     else
       Format<_>.Instance
 
@@ -29,7 +30,7 @@
     if !verbose && (match !categories with
                     | None -> true
                     | Some c -> Set.contains cat c) then
-      printf "[%s] " cat
-      printfn fmt
+      fprintf  !output "[%s] " cat
+      fprintfn !output fmt
     else
       Format<_>.Instance

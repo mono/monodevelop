@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
     <Tailcalls>False</Tailcalls>
-    <OutputPath>..\bin\Debug</OutputPath>
+    <OutputPath>bin\Debug</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
@@ -39,6 +39,7 @@
   <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets" Condition="(!Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets')) And (Exists('$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets'))" />
   <ItemGroup>
     <Compile Include="Debug.fs" />
+    <Compile Include="Options.fs" />
     <Compile Include="TipFormatter.fs" />
     <Compile Include="ProjectParser.fs" />
     <Compile Include="Parser.fs" />
@@ -53,6 +54,9 @@
     <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.Build.Tasks.v4.0" />
     <Reference Include="Microsoft.Build.Utilities.v4.0" />
+    <Reference Include="NDesk.Options">
+      <HintPath>../lib/ndesk-options/NDesk.Options.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the
        targets below and uncomment it.  Other similar extension points
