@@ -56,7 +56,8 @@
     (widen)
     (log-psendstr
      proc
-     (format "parse full\n%s\n<<EOF>>\n"
+     (format "parse full \"%s\"\n%s\n<<EOF>>\n"
+             (buffer-file-name)
              (buffer-substring-no-properties (point-min) (point-max))))))
 
 (defun ac-fsharp-load-project ()
