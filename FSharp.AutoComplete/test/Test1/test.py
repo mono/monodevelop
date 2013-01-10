@@ -20,7 +20,7 @@ test1fs = open("Test1.fsx")
 test1str = test1fs.read()
 test1fs.close()
 
-text = """project Test1.fsproj
+text = """project "Test1.fsproj"
 parse "FileTwo.fs"
 """ + filetwostr + """
 <<EOF>>
@@ -73,12 +73,12 @@ def main():
       assert False, "unhandled option"
 
 
-  child = subprocess.Popen(['mono', '../../obj/x86/Debug//fsautocomplete.exe'], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+  child = subprocess.Popen(['mono', '../../bin/Debug//fsautocomplete.exe'], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
 
   out, err = child.communicate(text)
 
-  print "output:\n%s" % out
-  
+  print "%s" % out
+
 
 if __name__ == "__main__":
   main()

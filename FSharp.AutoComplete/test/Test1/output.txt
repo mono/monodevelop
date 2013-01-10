@@ -1,61 +1,15 @@
-output:
-main state is: FSharp.InteractiveAutocomplete.State
-Options: [|"--noframework"; "--define:DEBUG"; "--define:TRACE"; "--debug+"; "--optimize-";
-  "--tailcalls-";
-  "-r:/Library/Frameworks/Mono.framework/Versions/3.0.0/lib/mono/gac/FSharp.Core/4.3.0.0__b03f5f7f11d50a3a/FSharp.Core.dll";
-  "-r:/Library/Frameworks/Mono.framework/Versions/3.0.0/lib/mono/gac/System/4.0.0.0__b77a5c561934e089/System.dll";
-  "-r:/Library/Frameworks/Mono.framework/Versions/3.0.0/lib/mono/gac/System.Core/4.0.0.0__b77a5c561934e089/System.Core.dll"|]
 DONE: Project loaded
-main state is: FSharp.InteractiveAutocomplete.State
 DONE: Background parsing started
-main state is: FSharp.InteractiveAutocomplete.State
 DONE: Background parsing started
-main state is: FSharp.InteractiveAutocomplete.State
 DONE: Background parsing started
-main state is: FSharp.InteractiveAutocomplete.State
-DoCompletion request with options: FileName: '/Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/Test1/Test1.fsx'
-Source length: '55'
-Options: /Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/Test1/Test1.fsx.fsproj, [|"/Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/Test1/Test1.fsx"|], [|"--noframework"; "--warn:3";
-  "-r:/Library/Frameworks/Mono.framework/Versions/3.0.0/lib/mono/4.0/mscorlib.dll";
-  "-r:/Library/Frameworks/Mono.framework/Versions/3.0.0/lib/mono/4.0/FSharp.Core.dll";
-  "-r:/Library/Frameworks/Mono.framework/Versions/3.0.0/lib/mono/4.0/System.Numerics.dll";
-  "-r:/Library/Frameworks/Mono.framework/Versions/3.0.0/lib/mono/4.0/System.dll";
-  "-r:/Library/Frameworks/Mono.framework/Versions/3.0.0/lib/mono/4.0/System.Xml.dll";
-  "-r:/Library/Frameworks/Mono.framework/Versions/3.0.0/lib/mono/4.0/System.Runtime.Remoting.dll";
-  "-r:/Library/Frameworks/Mono.framework/Versions/3.0.0/lib/mono/4.0/System.Runtime.Serialization.Formatters.Soap.dll";
-  "-r:/Library/Frameworks/Mono.framework/Versions/3.0.0/lib/mono/4.0/System.Data.dll";
-  "-r:/Library/Frameworks/Mono.framework/Versions/3.0.0/lib/mono/4.0/System.Drawing.dll";
-  "-r:/Library/Frameworks/Mono.framework/Versions/3.0.0/lib/mono/4.0/System.Core.dll";
-  "-r:/Library/Frameworks/Mono.framework/Versions/3.0.0/lib/mono/4.0/System.Web.dll";
-  "-r:/Library/Frameworks/Mono.framework/Versions/3.0.0/lib/mono/4.0/System.Web.Services.dll";
-  "-r:/Library/Frameworks/Mono.framework/Versions/3.0.0/lib/mono/4.0/System.Windows.Forms.dll";
-  "-r:/Library/Frameworks/Mono.framework/Versions/3.0.0/lib/mono/4.0/FSharp.Compiler.Interactive.Settings.dll"|], false, true
 func
 <<EOF>>
-main state is: FSharp.InteractiveAutocomplete.State
-DoCompletion request with options: FileName: '/Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/Test1/Program.fs'
-Source length: '192'
-Options: /Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/Test1/Test1.fsproj, [|"/Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/Test1/FileTwo.fs";
-  "/Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/Test1/Program.fs"|], [|"--noframework"; "--define:DEBUG"; "--define:TRACE"; "--debug+"; "--optimize-";
-  "--tailcalls-";
-  "-r:/Library/Frameworks/Mono.framework/Versions/3.0.0/lib/mono/gac/FSharp.Core/4.3.0.0__b03f5f7f11d50a3a/FSharp.Core.dll";
-  "-r:/Library/Frameworks/Mono.framework/Versions/3.0.0/lib/mono/gac/System/4.0.0.0__b77a5c561934e089/System.dll";
-  "-r:/Library/Frameworks/Mono.framework/Versions/3.0.0/lib/mono/gac/System.Core/4.0.0.0__b77a5c561934e089/System.Core.dll"|], false, false
 Equals
 GetHashCode
 GetType
 Terrific
 ToString
 <<EOF>>
-main state is: FSharp.InteractiveAutocomplete.State
-DoCompletion request with options: FileName: '/Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/Test1/Program.fs'
-Source length: '192'
-Options: /Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/Test1/Test1.fsproj, [|"/Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/Test1/FileTwo.fs";
-  "/Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/Test1/Program.fs"|], [|"--noframework"; "--define:DEBUG"; "--define:TRACE"; "--debug+"; "--optimize-";
-  "--tailcalls-";
-  "-r:/Library/Frameworks/Mono.framework/Versions/3.0.0/lib/mono/gac/FSharp.Core/4.3.0.0__b03f5f7f11d50a3a/FSharp.Core.dll";
-  "-r:/Library/Frameworks/Mono.framework/Versions/3.0.0/lib/mono/gac/System/4.0.0.0__b77a5c561934e089/System.dll";
-  "-r:/Library/Frameworks/Mono.framework/Versions/3.0.0/lib/mono/gac/System.Core/4.0.0.0__b77a5c561934e089/System.Core.dll"|], false, false
 Bar
 Foo
 NewObjectType
@@ -63,18 +17,7 @@ Qux
 add
 addition
 <<EOF>>
-main state is: FSharp.InteractiveAutocomplete.State
-DoCompletion request with options: FileName: '/Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/Test1/Program.fs'
-Source length: '192'
-Options: /Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/Test1/Test1.fsproj, [|"/Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/Test1/FileTwo.fs";
-  "/Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/Test1/Program.fs"|], [|"--noframework"; "--define:DEBUG"; "--define:TRACE"; "--debug+"; "--optimize-";
-  "--tailcalls-";
-  "-r:/Library/Frameworks/Mono.framework/Versions/3.0.0/lib/mono/gac/FSharp.Core/4.3.0.0__b03f5f7f11d50a3a/FSharp.Core.dll";
-  "-r:/Library/Frameworks/Mono.framework/Versions/3.0.0/lib/mono/gac/System/4.0.0.0__b77a5c561934e089/System.dll";
-  "-r:/Library/Frameworks/Mono.framework/Versions/3.0.0/lib/mono/gac/System.Core/4.0.0.0__b77a5c561934e089/System.Core.dll"|], false, false
 func
 <<EOF>>
-main state is: FSharp.InteractiveAutocomplete.State
 <<EOF>>
-main state is: FSharp.InteractiveAutocomplete.State
 
