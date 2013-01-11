@@ -119,18 +119,32 @@ namespace MonoDevelop.Projects
 			NotifyRemoved (items, true);
 			NotifyRemoved (items, false);
 		}
+
+		protected virtual void InternalAddItem (T item)
+		{
+		}
 		
 		void IItemListHandler.InternalAdd (IEnumerable<ProjectItem> objs, bool comesFromParent)
 		{
-			foreach (T t in objs)
+			foreach (T t in objs) {
+				InternalAddItem (t);
 				Items.Add (t);
+			}
+
 			NotifyAdded (objs, comesFromParent);
+		}
+
+		protected virtual void InternalRemoveItem (T item)
+		{
 		}
 		
 		void IItemListHandler.InternalRemove (IEnumerable<ProjectItem> objs, bool comesFromParent)
 		{
-			foreach (T t in objs)
+			foreach (T t in objs) {
+				InternalRemoveItem (t);
 				Items.Remove (t);
+			}
+
 			NotifyRemoved (objs, comesFromParent);
 		}
 		
