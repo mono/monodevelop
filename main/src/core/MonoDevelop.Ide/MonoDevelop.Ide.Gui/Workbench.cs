@@ -180,7 +180,10 @@ namespace MonoDevelop.Ide.Gui
 		/// </summary>
 		public bool HasToplevelFocus {
 			get {
-				var toplevel = Gtk.Window.ListToplevels ().Where (x => x.HasToplevelFocus).FirstOrDefault ();
+				var windows = Gtk.Window.ListToplevels ();
+				if (windows.Any (w => w.Modal && w.Visible))
+					return false;
+				var toplevel = windows.FirstOrDefault (x => x.HasToplevelFocus);
 				if (toplevel == null)
 					return false;
 				if (toplevel == RootWindow)
