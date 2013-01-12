@@ -1,7 +1,7 @@
 #
 # spec file for package monodevelop
 #
-# Copyright (c) 2011 SUSE LINUX Products GmbH, Nuernberg, Germany.
+# Copyright (c) 2013 SUSE LINUX Products GmbH, Nuernberg, Germany.
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -15,19 +15,30 @@
 # Please submit bugfixes or comments via http://bugs.opensuse.org/
 #
 
-# norootforbuild
-
 
 Name:           monodevelop
+BuildRequires:  gtk-sharp2
 BuildRequires:  gconf-sharp2
 BuildRequires:  glade-sharp2
 BuildRequires:  gnome-sharp2
+BuildRequires:  gtksourceview-sharp2
+# TODO: Add build requirements for ASP.NET
+#BuildRequires:  gecko-sharp2
+#BuildRequires:  jscall-sharp
 BuildRequires:  mono-addins
 BuildRequires:  mono-devel
+BuildRequires:  mono-data
+BuildRequires:  mono-data-postgresql
+BuildRequires:  mono-nunit
 BuildRequires:  mono-wcf
 BuildRequires:  monodoc-core
-Url:            http://www.go-mono.com/
-License:        GPLv2+
+# Mono.Cecil.dll requires rsync after it's build
+BuildRequires:  rsync
+BuildRequires:  autoconf
+BuildRequires:  automake
+BuildRequires:  libtool
+Url:            http://www.monodevelop.com/
+License:        GPL-2.0+
 Group:          Development/Languages/Mono
 AutoReqProv:    on
 Version:        @VERSION@
@@ -48,8 +59,6 @@ BuildRequires:  gnome-print-sharp
 %endif
 BuildRequires:  desktop-file-utils update-desktop-files
 %endif
-# TODO: Add build requirements for xulrunner/mozilla, etc... md does some checks at build time for aspnetedit
-#  (not currently enabled, but we'll need those checks when it is)
 %if 0%{?fedora_version}
 %define env_options export MONO_SHARED_DIR=/tmp
 # TODO: what to do here on fedora?
@@ -67,8 +76,6 @@ MonoDevelop is a full-featured integrated development
 environment (IDE) for mono and Gtk#. It was originally a port of
 SharpDevelop 0.98. See http://monodevelop.com/ for more information.
 
-
-
 %prep
 %setup -q
 
@@ -76,11 +83,11 @@ SharpDevelop 0.98. See http://monodevelop.com/ for more information.
 autoreconf -f -i
 %{?env_options}
 %configure \
-	    --enable-subversion \
-	    --enable-monoextensions \
-	    --enable-aspnet \
-	    --disable-update-mimedb \
-	    --disable-update-desktopdb
+           --enable-subversion \
+           --enable-git \
+           --enable-monoextensions \
+           --disable-update-mimedb \
+           --disable-update-desktopdb
 make
 
 %install
@@ -92,21 +99,18 @@ mv $RPM_BUILD_ROOT/usr/lib/pkgconfig/* $RPM_BUILD_ROOT/usr/share/pkgconfig
 %suse_update_desktop_file -N "Mono Development Environment" -G "Integrated Development Environment" -C "Develop software using Mono tools" %name "Application Development IDE"
 %find_lang %{name}
 
-%clean
-rm -rf $RPM_BUILD_ROOT
-
 %files -f %{name}.lang
 %defattr(-,root,root)
-%{_prefix}/bin/*
-%{_prefix}/share/applications/monodevelop.desktop
-%{_prefix}/share/mime/packages/monodevelop.xml
+%{_bindir}/*
+%{_datadir}/applications/monodevelop.desktop
 %{_datadir}/icons/hicolor/*/apps/monodevelop.png
 %{_datadir}/icons/hicolor/scalable/apps/monodevelop.svg
 %{_prefix}/lib/monodevelop
-%{_prefix}/share/pkgconfig/monodevelop.pc
-%{_prefix}/share/pkgconfig/monodevelop-core-addins.pc
-%{_mandir}/man1/mdtool.1.gz
-%{_mandir}/man1/monodevelop.1.gz
+%{_datadir}/pkgconfig/monodevelop.pc
+%{_datadir}/pkgconfig/monodevelop-core-addins.pc
+%{_mandir}/man1/mdtool.1%ext_man
+%{_mandir}/man1/monodevelop.1%ext_man
+%{_datadir}/mime/packages/monodevelop.xml
 
 %post
 update-mime-database /usr/share/mime >/dev/null || :
