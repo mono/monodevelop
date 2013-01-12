@@ -1,0 +1,8 @@
+DONE: Project loaded
+DONE: Background parsing started
+Errors: Program.fs Terrific called with wrong type
+FileTwo.fs addition too many parameters
+FileTwo.fs unnamed doesn't exist
+DONE: Background parsing started
+Errors: Script.fsx unnamed doesn't exist
+<<EOF>>
