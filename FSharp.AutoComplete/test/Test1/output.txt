@@ -19,4 +19,6 @@ addition
 <<EOF>>
 func
 <<EOF>>
+NewObjectType
+<<EOF>>
 <<EOF>>
