@@ -247,12 +247,12 @@ module internal CommandInput =
       - get error messagaes reported by last parse
     declarations
       - get information about top-level declarations with location
-    parse [full] ""<filename>""
+    parse ""<filename>"" [full]
       - trigger (full) background parse request; should be
         followed by content of a file (ended with <<EOF>>)
-    completion <line> <col> [timeout] ""<filename>""
+    completion ""<filename>"" <line> <col> [timeout]
       - trigger completion request for the specified location
-    tip <line> <col> [timeout] ""<filename>""
+    tip ""<filename>"" <line> <col> [timeout]
       - get tool tip for the specified location (currently not implemented)
     project ""<filename>""
       - associates the current session with the specified project"
@@ -295,22 +295,26 @@ module internal CommandInput =
     if str = "<<EOF>>" then List.rev input
     else readInput (str::input)
 
-  // Parse 'parse [full] "<filename>"' command
+  // Parse 'parse "<filename>" [full]' command
   let parse = parser {
-    let! _ = string "parse"
-    let! full = (parser { let! _ = string " full"
+    let! _ = string "parse "
+    let! _ = char '"' // " //
+    let! filename = some (sat ((<>) '"')) |> Parser.map String.ofSeq
+    let! _ = char '"' // " // TODO: This here for Emacs syntax highlighting bug
+    let! _ = many (string " ")
+    let! full = (parser { let! _ = string "full"
                           return true }) <|>
                 (parser { return false })
-    let! _ = many (string " ")
-    let! _ = char '"' // " //
-    let! filename = some (sat ((<>) '"')) |> Parser.map String.ofSeq 
-    let! _ = char '"' // " // TODO: This here for Emacs syntax highlighting bug
     return Parse (filename, full) }
 
-  // Parse 'completion <line> <col> [timeout] "<filename>"' command
+  // Parse 'completion "<filename>" <line> <col> [timeout]' command
   let completionOrTip = parser {
     let! f = (string "completion " |> Parser.map (fun _ -> Completion)) <|>
              (string "tip " |> Parser.map (fun _ -> ToolTip))
+    let! _ = char '"' // " // TODO: This here for Emacs syntax highlighting bug
+    let! filename = some (sat ((<>) '"')) |> Parser.map String.ofSeq // "
+    let! _ = char '"' // " // TODO: This here for Emacs syntax highlighting bug
+    let! _ = many (string " ")
     let! line = some alphanum |> Parser.map (String.ofSeq >> int)
     let! _ = many (string " ")
     let! col = some alphanum |> Parser.map (String.ofSeq >> int)
@@ -318,10 +322,6 @@ module internal CommandInput =
       (parser { let! _ = some (string " ")
                 return! some alphanum |> Parser.map (String.ofSeq >> int >> Some) }) <|>
       (parser { return None })
-    let! _ = many (string " ")
-    let! _ = char '"' // " // TODO: This here for Emacs syntax highlighting bug
-    let! filename = some (sat ((<>) '"')) |> Parser.map String.ofSeq // "
-    let! _ = char '"' // " // TODO: This here for Emacs syntax highlighting bug
     return f(filename, (line, col), timeout) }
 
   // Parses always and returns default error message

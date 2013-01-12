@@ -30,17 +30,12 @@ parse "Test1.fsx"
 parse "Program.fs"
 """ + programstr + """
 <<EOF>>
-completion 5 13 "Test1.fsx"
+completion "Test1.fsx" 5 13
 """
 
-text = text + """completion 7 19 "Program.fs"
-completion 3 22 "Program.fs"
-completion 5 13 "Program.fs"
-"""
-
-text2 = """completion 6 13 "Program.fs"
-completion 8 19 "Program.fs"
-completion 10 8 "Program.fs"
+text = text + """completion "Program.fs" 7 19
+completion "Program.fs" 3 22
+completion "Program.fs" 5 13
 """
 
 text = text + """errors
