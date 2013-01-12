@@ -19,6 +19,11 @@ addition
 <<EOF>>
 func
 <<EOF>>
+Bar
+Foo
 NewObjectType
+Qux
+add
+addition
 <<EOF>>
 <<EOF>>

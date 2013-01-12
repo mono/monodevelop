@@ -1,1 +1,1 @@
-Error: no such command 'badcommand'
+ERROR: Unknown command or wrong arguments
