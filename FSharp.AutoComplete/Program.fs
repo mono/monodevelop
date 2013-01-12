@@ -380,19 +380,26 @@ module internal Main =
         let lines = readInput [] |> Array.ofList
         let text = String.concat "\n" lines
         let file = Path.GetFullPath file
-        let opts = RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
-                                  file,
-                                  text)
-        agent.TriggerParseRequest(opts, full)
-        Console.WriteLine("DONE: Background parsing started")
-        state.Files.[file] <- lines
+        if File.Exists file then
+          let opts = RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
+                                    file,
+                                    text)
+          agent.TriggerParseRequest(opts, full)
+          Console.WriteLine("DONE: Background parsing started")
+          state.Files.[file] <- lines
+        else
+          Console.Error.WriteLine(sprintf "ERROR: File '%s' does not exist" file)
         main state
 
     | Project file ->
         // Load project file and store in state
-        let p = ProjectParser.load file
-        Console.WriteLine("DONE: Project loaded")
-        main (State(state.Files, p))
+        if File.Exists file then
+          let p = ProjectParser.load file
+          Console.WriteLine("DONE: Project loaded")
+          main (State(state.Files, p))
+        else
+          Console.Error.WriteLine(sprintf "ERROR: File '%s' does not exist" file)
+          main state
 
     | ToolTip(file, ((line, column) as pos), timeout) ->
         Console.Error.WriteLine("ToolTip not currently implemented")
@@ -407,14 +414,20 @@ module internal Main =
     | Completion(file, ((line, column) as pos), timeout) ->
         // Trigger autocompletion (when we already loaded a file)
         let file = Path.GetFullPath file
-        if line >= state.Files.[file].Length || line < 0 then
-          Console.Error.WriteLine("ERROR: Line is out of range")
+        if not (state.Files.ContainsKey(file))
+        then
+          Console.Error.WriteLine(sprintf "ERROR: File '%s' not parsed" file)
         else
-          let text = String.concat "\n" state.Files.[file]
-          let opts = RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
+          if line >= state.Files.[file].Length || line < 0 ||
+             column > state.Files.[file].[line].Length || column < 0
+          then
+            Console.Error.WriteLine("ERROR: Position is out of range")
+          else
+            let text = String.concat "\n" state.Files.[file]
+            let opts = RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
                                     file,
                                     text)
-          agent.DoCompletion(opts, pos, state.Files.[file].[line], timeout)
+            agent.DoCompletion(opts, pos, state.Files.[file].[line], timeout)
         main state
 
     | Help ->
