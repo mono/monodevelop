@@ -1,1 +1,2 @@
-Error: File "File.fs" has not been parsed
+DONE: Project loaded
+ERROR: File '/Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/RobustCommands/NoSuchFile.fs' not parsed
