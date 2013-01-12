@@ -1,1 +1,1 @@
-Error: Project "NoSuchProject.fsproj" not found
+ERROR: File 'NoSuchProject.fsproj' does not exist
