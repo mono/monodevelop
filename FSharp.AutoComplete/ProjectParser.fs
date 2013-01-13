@@ -89,7 +89,7 @@ module ProjectParser =
                      then [||]
                      else otherflags.Split([|' '|],
                                            StringSplitOptions.RemoveEmptyEntries)
-    
+
     [|
       yield "--noframework"
       for symbol in defines do yield "--define:" + symbol
@@ -99,4 +99,3 @@ module ProjectParser =
       yield! otherflags
       yield! (getReferences p)
      |]
-    

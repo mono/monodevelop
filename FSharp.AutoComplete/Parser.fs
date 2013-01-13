@@ -9,21 +9,21 @@ open System
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
 // --------------------------------------------------------------------------------------
-// Simple implementation of LazyList 
+// Simple implementation of LazyList
 // --------------------------------------------------------------------------------------
 
-type LazyList<'T> = 
-  | Nil 
+type LazyList<'T> =
+  | Nil
   | Cons of 'T * Lazy<LazyList<'T>>
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module LazyList =
-  let ofSeq (s:seq<'T>) = 
+  let ofSeq (s:seq<'T>) =
     let en = s.GetEnumerator()
-    let rec take() = 
-      if en.MoveNext() then 
+    let rec take() =
+      if en.MoveNext() then
         Cons(en.Current, lazy take())
-      else 
+      else
         en.Dispose()
         Nil
     take()
@@ -38,7 +38,7 @@ module Parser =
     static member ofSeq s = new String(s |> Seq.toArray)
     static member ofReversedSeq s = new String(s |> Seq.toArray |> Array.rev)
 
-  /// Parser is implemented using lazy list (so that we can use seq<_>)  
+  /// Parser is implemented using lazy list (so that we can use seq<_>)
   type Parser<'T> = P of (LazyList<char> -> ('T * LazyList<char>) list)
 
 
@@ -68,32 +68,32 @@ module Parser =
 
   let item = P(function | LazyList.Nil -> [] | LazyList.Cons(c, r) -> [c,r.Value])
 
-  let (<|>) (P p1) (P p2) = 
-    P(fun input -> 
+  let (<|>) (P p1) (P p2) =
+    P(fun input ->
         let res1 = p1 input
         let res2 = p2 input
         res1 @ res2)
 
-  let sequence (P p) (P q) = P (fun inp -> 
+  let sequence (P p) (P q) = P (fun inp ->
     [ for (pr, inp') in p inp do
-        for (qr, inp'') in q inp' do 
+        for (qr, inp'') in q inp' do
           yield (pr, qr), inp''])
 
-  let sat p = parser { 
-    let! v = item 
+  let sat p = parser {
+    let! v = item
     if (p v) then return v }
 
   let char x = sat ((=) x)
-  let digit = sat Char.IsDigit    
+  let digit = sat Char.IsDigit
   let lower = sat Char.IsLower
   let upper = sat Char.IsUpper
   let letter = sat Char.IsLetter
   let nondigit = sat (Char.IsDigit >> not)
   let whitespace = sat (Char.IsWhiteSpace)
 
-  let alphanum = parser { 
+  let alphanum = parser {
     return! letter
-    return! digit }  
+    return! digit }
 
   let rec word = parser {
     return []
@@ -102,21 +102,21 @@ module Parser =
       let! xs = word
       return x::xs } }
 
-  let string (str:string) = 
+  let string (str:string) =
     let chars = str.ToCharArray() |> List.ofSeq
     let rec string' = function
       | [] -> result []
-      | x::xs -> parser { 
+      | x::xs -> parser {
           let! y = char x
-          let! ys = string' xs 
+          let! ys = string' xs
           return y::ys }
     string' chars
 
   let rec many p = parser {
-    return! parser { 
+    return! parser {
       let! it = p
       let! res = many p
-      return it::res } 
+      return it::res }
     return [] }
 
   let rec some p = parser {
@@ -124,29 +124,29 @@ module Parser =
     let! rest = many p
     return first::rest }
 
-  let rec map f p = parser { 
-    let! v = p 
+  let rec map f p = parser {
+    let! v = p
     return f v }
-             
-  let apply (P p) (str:seq<char>) = 
+
+  let apply (P p) (str:seq<char>) =
     let res = str |> LazyList.ofSeq |> p
     res |> List.map fst
 
 // --------------------------------------------------------------------------------------
-// Parsing utilities for IntelliSense 
+// Parsing utilities for IntelliSense
 // --------------------------------------------------------------------------------------
 
 /// Parsing utilities for IntelliSense (e.g. parse identifier on the left-hand side
 /// of the current cursor location etc.)
-module Parsing = 
+module Parsing =
   open Parser
-  
+
   /// Parses F# short-identifier (i.e. not including '.'); also ignores active patterns
-  let parseIdent =  
+  let parseIdent =
     many (sat PrettyNaming.IsIdentifierPartCharacter) |> map String.ofSeq
 
   /// Parse F# short-identifier and reverse the resulting string
-  let parseBackIdent =  
+  let parseBackIdent =
     many (sat PrettyNaming.IsIdentifierPartCharacter) |> map String.ofReversedSeq
 
   /// Parse remainder of a logn identifier before '.' (e.g. "Name.space.")
@@ -157,8 +157,8 @@ module Parsing =
       let! ident = parseBackIdent
       let! rest = parseBackLongIdentRest
       return ident::rest }
-    return [] } 
-    
+    return [] }
+
   /// Parse long identifier with residue (backwards) (e.g. "Console.Wri")
   /// and returns it as a tuple (reverses the results after parsing)
   let parseBackIdentWithResidue = parser {
@@ -166,7 +166,7 @@ module Parsing =
     return! parser {
       let! long = parseBackLongIdentRest
       return residue, long |> List.rev }
-    return residue, [] }   
+    return residue, [] }
 
   /// Parse long identifier and return it as a list (backwards, reversed)
   let parseBackLongIdent = parser {
@@ -177,11 +177,11 @@ module Parsing =
     return [] }
 
   /// Create sequence that reads the string backwards
-  let createBackStringReader (str:string) from = seq { 
+  let createBackStringReader (str:string) from = seq {
     for i in (min from (str.Length - 1)) .. -1 .. 0 do yield str.[i] }
 
   /// Create sequence that reads the string forwards
-  let createForwardStringReader (str:string) from = seq { 
+  let createForwardStringReader (str:string) from = seq {
     for i in (max 0 from) .. (str.Length - 1) do yield str.[i] }
 
   /// Returns first result returned by the parser

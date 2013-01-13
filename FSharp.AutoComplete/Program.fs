@@ -16,7 +16,7 @@ module FsParser = Microsoft.FSharp.Compiler.Parser
 
 // --------------------------------------------------------------------------------------
 // IntelliSense agent - provides easier an access to F# IntelliSense service
-// We're using a simple agent, because requests should be done from a single thread 
+// We're using a simple agent, because requests should be done from a single thread
 // --------------------------------------------------------------------------------------
 
 /// Represents information needed to call the F# IntelliSense service
@@ -25,7 +25,7 @@ type internal RequestOptions(opts, file, src) =
   member x.Options : CheckOptions = opts
   member x.FileName : string = file
   member x.Source : string = src
-  member x.WithSource(source) = 
+  member x.WithSource(source) =
     RequestOptions(opts, file, source)
 
   override x.ToString() =
@@ -36,7 +36,7 @@ type internal RequestOptions(opts, file, src) =
 
 
 /// Message type that is used by 'IntelliSenseAgent'
-type internal IntelliSenseAgentMessage = 
+type internal IntelliSenseAgentMessage =
   | TriggerParseRequest of RequestOptions * bool
   | GetTypeCheckInfo of RequestOptions * int option * AsyncReplyChannel<TypeCheckInfo option>
   | GetErrors of AsyncReplyChannel<ErrorInfo[]>
@@ -45,65 +45,65 @@ type internal IntelliSenseAgentMessage =
 
 /// Provides an easy access to F# IntelliSense service
 type internal IntelliSenseAgent() =
-  
-  /// Create an F# IntelliSense service 
+
+  /// Create an F# IntelliSense service
   let checker = InteractiveChecker.Create(ignore)
 
   /// Creates an empty "Identifier" token (we need it when getting ToolTip)
-  let identToken = FsParser.tagOfToken(FsParser.token.IDENT("")) 
+  let identToken = FsParser.tagOfToken(FsParser.token.IDENT(""))
 
   /// Calls F# IntelliSense service repeatedly in an (asynchronous) loop
   /// until the type check request succeeds
   let rec waitForTypeCheck(opts:RequestOptions, untypedInfo) = async {
-    let info = 
+    let info =
       checker.TypeCheckSource
-        ( untypedInfo, opts.FileName, identToken, opts.Source, 
-          opts.Options, IsResultObsolete(fun () -> false) ) 
+        ( untypedInfo, opts.FileName, identToken, opts.Source,
+          opts.Options, IsResultObsolete(fun () -> false) )
     match info with
     | TypeCheckSucceeded(res) when res.TypeCheckInfo.IsSome ->
         return res.TypeCheckInfo.Value, res.Errors
-    | _ -> 
+    | _ ->
         do! Async.Sleep(200)
         return! waitForTypeCheck(opts, untypedInfo) }
 
   /// Start the agent - the agent remembers some state
   /// (currently just a list of errors from the last parse)
-  let agent = MailboxProcessor.Start(fun agent -> 
+  let agent = MailboxProcessor.Start(fun agent ->
     let rec loop errors = async {
       let! msg = agent.Receive()
-      match msg with 
+      match msg with
       | TriggerParseRequest(opts, full) ->
           // Start parsing and update errors with the new ones
-          let untypedInfo = checker.UntypedParse(opts.FileName, opts.Source, opts.Options) 
-          let res = 
+          let untypedInfo = checker.UntypedParse(opts.FileName, opts.Source, opts.Options)
+          let res =
             checker.TypeCheckSource
-              ( untypedInfo, opts.FileName, 0, opts.Source, 
-                opts.Options, IsResultObsolete(fun () -> false)) 
-          let errors = 
+              ( untypedInfo, opts.FileName, 0, opts.Source,
+                opts.Options, IsResultObsolete(fun () -> false))
+          let errors =
             match res with
             | TypeCheckSucceeded(res) -> res.Errors
             | _ -> errors
           // Start full background parsing if requested..
-          if full then checker.StartBackgroundCompile(opts.Options) 
-          return! loop errors 
+          if full then checker.StartBackgroundCompile(opts.Options)
+          return! loop errors
 
       | GetDeclarationsMessage(opts, repl) ->
-          let untypedInfo = checker.UntypedParse(opts.FileName, opts.Source, opts.Options) 
+          let untypedInfo = checker.UntypedParse(opts.FileName, opts.Source, opts.Options)
           repl.Reply(untypedInfo.GetNavigationItems().Declarations)
-          return! loop errors 
+          return! loop errors
 
       | GetTypeCheckInfo(opts, timeout, reply) ->
           // Try to get information for the IntelliSense (in the specified time)
-          let untypedInfo = checker.UntypedParse(opts.FileName, opts.Source, opts.Options) 
+          let untypedInfo = checker.UntypedParse(opts.FileName, opts.Source, opts.Options)
           try
-            let res, errors = 
+            let res, errors =
               Async.RunSynchronously
                 (waitForTypeCheck(opts, untypedInfo), ?timeout = timeout)
             reply.Reply(Some(res))
             return! loop errors
           with :? OperationCanceledException ->
-            reply.Reply(None) 
-            return! loop errors 
+            reply.Reply(None)
+            return! loop errors
 
       | GetErrors(reply) ->
           // Return an array with errors that were reported last time
@@ -117,7 +117,7 @@ type internal IntelliSenseAgent() =
       ( checker.GetCheckOptionsFromScriptRoot(file, source, DateTime.Now),
         file, source )
 
-  // Copy-paste from monodevelop binding LanguageService.fs and modified 
+  // Copy-paste from monodevelop binding LanguageService.fs and modified
   member x.GetCheckerOptions(fileName, source, proj:Option<ProjectParser.ProjectResolver>) =
     let ext = Path.GetExtension(fileName)
     let opts =
@@ -125,11 +125,11 @@ type internal IntelliSenseAgent() =
       | None, _
       | Some _, ".fsx"
       | Some _, ".fsscript" ->
-      
+
         // We are in a stand-alone file or we are in a project, but currently editing a script file
         //Debug.WriteLine (sprintf "CheckOptions: Creating for stand-alone file or script: '%s'" fileName )
         checker.GetCheckOptionsFromScriptRoot(fileName, source, System.DateTime.Now)
-          
+
           // The InteractiveChecker resolution doesn't sometimes
           // include FSharp.Core and other essential assemblies, so we may
           // need to bring over some more code from the monodevelop binding to
@@ -146,22 +146,22 @@ type internal IntelliSenseAgent() =
         CheckOptions.Create(projFile, files, args, false, false, System.DateTime.Now)
 
      // Print contents of check option for debugging purposes
-     // Debug.WriteLine(sprintf "Checkoptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A" 
-    //                      opts.ProjectFileName opts.ProjectFileNames opts.ProjectOptions 
+     // Debug.WriteLine(sprintf "Checkoptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A"
+    //                      opts.ProjectFileName opts.ProjectFileNames opts.ProjectOptions
     //                     opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules)
     opts
-    
+
 
   /// Get errors from the last parse request
-  member x.GetErrors() = 
+  member x.GetErrors() =
     agent.PostAndReply(GetErrors)
 
   /// Get declarations from the last parse request
-  member x.GetDeclarations(opts) = 
+  member x.GetDeclarations(opts) =
     agent.PostAndReply(fun repl -> GetDeclarationsMessage(opts, repl))
-      
+
   /// Trigger background parse request
-  member x.TriggerParseRequest(opts, full) = 
+  member x.TriggerParseRequest(opts, full) =
     agent.Post(TriggerParseRequest(opts, full))
 
   /// Invokes dot-completion request and writes information to the standard output
@@ -173,13 +173,13 @@ type internal IntelliSenseAgent() =
         // 'residue' is the part after the last dot and 'longName' is before
         // e.g.  System.Console.Wri  --> "Wri", [ "System"; "Console"; ]
         let lookBack = Parsing.createBackStringReader lineStr (column - 1)
-        let residue, longName = 
+        let residue, longName =
           lookBack |> Parsing.getFirst Parsing.parseBackIdentWithResidue
 
         // Try to get type information & run the request
         let op = agent.PostAndAsyncReply(fun r -> GetTypeCheckInfo(opts, time, r))
         let info = Async.RunSynchronously(op, ?timeout = time)
-        match info with 
+        match info with
         | Some(info) ->
             // Get items & generate output
             let decls = info.GetDeclarations(pos, lineStr, (longName, residue), 0, defaultArg time 1000)
@@ -195,7 +195,7 @@ type internal IntelliSenseAgent() =
       try
         // Try to get type information & run the request
         let op = agent.PostAndAsyncReply(fun r -> GetTypeCheckInfo(opts, time, r))
-        match Async.RunSynchronously(op, ?timeout = time) with 
+        match Async.RunSynchronously(op, ?timeout = time) with
         | None -> ()
         | Some(info) ->
             // Parsing - find the identifier around the current location
@@ -206,25 +206,25 @@ type internal IntelliSenseAgent() =
             let lookForw = Parsing.createForwardStringReader lineStr (column + 1)
             let backIdent = Parsing.getFirst Parsing.parseBackLongIdent lookBack
             let nextIdent = Parsing.getFirst Parsing.parseIdent lookForw
-    
+
             let identIsland =
               match List.rev backIdent with
               | last::prev -> (last + nextIdent)::prev |> List.rev
               | [] -> []
 
             match identIsland with
-            | [ "" ] -> 
+            | [ "" ] ->
                 // There is no identifier at the current location
                 ()
-            | _ -> 
+            | _ ->
                 // Assume that we are inside identifier (F# services can also handle
                 // case when we're in a string in '#r "Foo.dll"' but we don't do that)
                 let tip = info.GetDataTipText(pos, lineStr, identIsland, identToken)
                 match tip with
-                | DataTipText(elems) 
-                    when elems |> List.forall (function 
+                | DataTipText(elems)
+                    when elems |> List.forall (function
                       DataTipElementNone -> true | _ -> false) -> ()
-                | _ -> 
+                | _ ->
                     Console.WriteLine(TipFormatter.formatTip tip)
       with :? OperationCanceledException -> ()
     finally Console.WriteLine("<<EOF>>")
@@ -233,7 +233,7 @@ type internal IntelliSenseAgent() =
 // Utilities for parsing & processing command line input
 // --------------------------------------------------------------------------------------
 
-module internal CommandInput = 
+module internal CommandInput =
   open Parser
 
   let helpText = @"
@@ -286,11 +286,11 @@ module internal CommandInput =
     let! _ = string "project "
     let! _ = char '"'
     let! filename = some (sat ((<>) '"')) |> Parser.map String.ofSeq
-    let! _ = char '"' // " // TODO: This here for Emacs syntax highlighting bug 
+    let! _ = char '"' // " // TODO: This here for Emacs syntax highlighting bug
     return Project(filename) }
-  
+
   /// Read multi-line input as a list of strings
-  let rec readInput input = 
+  let rec readInput input =
     let str = Console.ReadLine()
     if str = "<<EOF>>" then List.rev input
     else readInput (str::input)
@@ -318,18 +318,18 @@ module internal CommandInput =
     let! line = some alphanum |> Parser.map (String.ofSeq >> int)
     let! _ = many (string " ")
     let! col = some alphanum |> Parser.map (String.ofSeq >> int)
-    let! timeout = 
+    let! timeout =
       (parser { let! _ = some (string " ")
                 return! some alphanum |> Parser.map (String.ofSeq >> int >> Some) }) <|>
       (parser { return None })
     return f(filename, (line, col), timeout) }
 
   // Parses always and returns default error message
-  let error = parser { 
+  let error = parser {
     return Error("ERROR: Unknown command or wrong arguments") }
 
   // Parase any of the supported commands
-  let parseCommand input = 
+  let parseCommand input =
     let reader = Parsing.createForwardStringReader input 0
     let cmds = errors <|> help <|> declarations <|> parse <|> project <|> completionOrTip <|> quit <|> error
     reader |> Parsing.getFirst cmds
@@ -338,7 +338,7 @@ module internal CommandInput =
 // Main application command-line loop
 // --------------------------------------------------------------------------------------
 
-/// Represents current state 
+/// Represents current state
 type internal State =
   {
     Files : Map<string,string[]>
@@ -346,7 +346,7 @@ type internal State =
   }
 
 /// Contains main loop of the application
-module internal Main = 
+module internal Main =
   open CommandInput
 
   let initialState = { Files = Map.empty; Project = None }
@@ -361,7 +361,7 @@ module internal Main =
     match parseCommand(Console.ReadLine()) with
     | Declarations ->
         Console.Error.WriteLine("Declarations not yet implemented")
-        // let decls = agent.GetDeclarations(opts) 
+        // let decls = agent.GetDeclarations(opts)
         // for tld in decls do
         //   let (s1, e1), (s2, e2) = tld.Declaration.Range
         //   printfn "[%d:%d-%d:%d] %s" s1 e1 s2 e2 tld.Declaration.Name
@@ -372,7 +372,7 @@ module internal Main =
         main state
 
     | GetErrors ->
-        let errs = agent.GetErrors() 
+        let errs = agent.GetErrors()
         for e in errs do
           printfn "[%d:%d-%d:%d] %s %s" e.StartColumn e.StartLine e.EndColumn e.EndLine
                     (if e.Severity = Severity.Error then "ERROR" else "WARNING") e.Message
@@ -439,11 +439,11 @@ module internal Main =
         Console.WriteLine(helpText)
         main state
 
-    | Error(msg) -> 
+    | Error(msg) ->
         Console.Error.WriteLine(msg)
         main state
 
-    | Quit -> 
+    | Quit ->
         (!Debug.output).Close ()
         0
 
