@@ -1,1 +1,2 @@
-Not sure exactly what output should be. Not a crash!
+DONE: Project loaded
+ERROR: File '/Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/RobustCommands/NoSuchFile.fs' does not exist

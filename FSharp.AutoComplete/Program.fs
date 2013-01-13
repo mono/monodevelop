@@ -339,19 +339,25 @@ module internal CommandInput =
 // --------------------------------------------------------------------------------------
 
 /// Represents current state 
-type internal State(?files, ?project) =
-  member x.Files : Map<string,string[]> = defaultArg files Map.empty
-  member x.Project : ProjectParser.ProjectResolver option = project
+type internal State =
+  {
+    Files : Map<string,string[]>
+    Project : Option<ProjectParser.ProjectResolver>
+  }
 
 /// Contains main loop of the application
 module internal Main = 
   open CommandInput
 
+  let initialState = { Files = Map.empty; Project = None }
+
   // Main agent that handles IntelliSense requests
   let agent = new IntelliSenseAgent()
 
   let rec main (state:State) : int =
-    Debug.print "main state is:\nfiles: %A" (Map.fold (fun ks k _ -> k::ks) [] state.Files)
+    Debug.print "main state is:\nproject: %b\nfiles: %A"
+                (Option.isSome state.Project)
+                (Map.fold (fun ks k _ -> k::ks) [] state.Files)
     match parseCommand(Console.ReadLine()) with
     | Declarations ->
         Console.Error.WriteLine("Declarations not yet implemented")
@@ -384,7 +390,7 @@ module internal Main =
                                     text)
           agent.TriggerParseRequest(opts, full)
           Console.WriteLine("DONE: Background parsing started")
-          main (State(Map.add file lines state.Files))
+          main { state with Files = Map.add file lines state.Files }
         else
           Console.Error.WriteLine(sprintf "ERROR: File '%s' does not exist" file)
           main state
@@ -394,10 +400,10 @@ module internal Main =
         if File.Exists file then
           let p = ProjectParser.load file
           Console.WriteLine("DONE: Project loaded")
-          main (State(state.Files, p))
+          main { state with Project = Some p }
         else
           Console.Error.WriteLine(sprintf "ERROR: File '%s' does not exist" file)
-          main (State(state.Files))
+          main state
 
     | ToolTip(file, ((line, column) as pos), timeout) ->
         Console.Error.WriteLine("ToolTip not currently implemented")
@@ -448,4 +454,4 @@ module internal Main =
       printfn "Unrecognised arguments: %s" (String.concat "," extra)
       1
     else
-      main(State())
+      main initialState
