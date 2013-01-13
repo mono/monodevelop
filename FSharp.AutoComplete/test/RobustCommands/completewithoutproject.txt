@@ -1,5 +1,5 @@
 DONE: Background parsing started
 func
 <<EOF>>
-Error: no project loaded
-Error: file "Program.fs" has not been parsed
+DONE: Background parsing started
+<<EOF>>

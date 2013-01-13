@@ -19,7 +19,8 @@ type FSharpAutoCompleteWrapper() =
     fprintf p.StandardInput "project \"%s\"\n" s
 
   member x.parse (s: string) : unit =
-    fprintf p.StandardInput "parse \"%s\"\n%s\n<<EOF>>\n" s (IO.File.ReadAllText(s))
+    let text = if IO.File.Exists s then IO.File.ReadAllText(s) else ""
+    fprintf p.StandardInput "parse \"%s\"\n%s\n<<EOF>>\n" s text
 
   member x.completion (fn: string) (line: int) (col: int) : unit =
     fprintf p.StandardInput "completion \"%s\" %d %d\n" fn line col

@@ -338,11 +338,9 @@ module internal CommandInput =
 // Main application command-line loop
 // --------------------------------------------------------------------------------------
 
-open System.Collections.Generic
-
 /// Represents current state 
 type internal State(?files, ?project) =
-  member x.Files : Dictionary<string,string[]> = defaultArg files (new Dictionary<_,_>())
+  member x.Files : Map<string,string[]> = defaultArg files Map.empty
   member x.Project : ProjectParser.ProjectResolver option = project
 
 /// Contains main loop of the application
@@ -353,7 +351,7 @@ module internal Main =
   let agent = new IntelliSenseAgent()
 
   let rec main (state:State) : int =
-    Debug.print "main state is: %A" state
+    Debug.print "main state is:\nfiles: %A" (Map.fold (fun ks k _ -> k::ks) [] state.Files)
     match parseCommand(Console.ReadLine()) with
     | Declarations ->
         Console.Error.WriteLine("Declarations not yet implemented")
@@ -386,10 +384,10 @@ module internal Main =
                                     text)
           agent.TriggerParseRequest(opts, full)
           Console.WriteLine("DONE: Background parsing started")
-          state.Files.[file] <- lines
+          main (State(Map.add file lines state.Files))
         else
           Console.Error.WriteLine(sprintf "ERROR: File '%s' does not exist" file)
-        main state
+          main state
 
     | Project file ->
         // Load project file and store in state
@@ -399,7 +397,7 @@ module internal Main =
           main (State(state.Files, p))
         else
           Console.Error.WriteLine(sprintf "ERROR: File '%s' does not exist" file)
-          main state
+          main (State(state.Files))
 
     | ToolTip(file, ((line, column) as pos), timeout) ->
         Console.Error.WriteLine("ToolTip not currently implemented")
@@ -414,20 +412,21 @@ module internal Main =
     | Completion(file, ((line, column) as pos), timeout) ->
         // Trigger autocompletion (when we already loaded a file)
         let file = Path.GetFullPath file
-        if not (state.Files.ContainsKey(file))
+        if not (Map.containsKey file state.Files)
         then
           Console.Error.WriteLine(sprintf "ERROR: File '%s' not parsed" file)
         else
-          if line >= state.Files.[file].Length || line < 0 ||
-             column > state.Files.[file].[line].Length || column < 0
+          let lines = state.Files.[file]
+          if line >= lines.Length || line < 0 ||
+             column > lines.[line].Length || column < 0
           then
             Console.Error.WriteLine("ERROR: Position is out of range")
           else
-            let text = String.concat "\n" state.Files.[file]
+            let text = String.concat "\n" lines
             let opts = RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
-                                    file,
-                                    text)
-            agent.DoCompletion(opts, pos, state.Files.[file].[line], timeout)
+                                      file,
+                                      text)
+            agent.DoCompletion(opts, pos, lines.[line], timeout)
         main state
 
     | Help ->

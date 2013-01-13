@@ -1,4 +1,4 @@
 DONE: Project loaded
 DONE: Background parsing started
-Error: Position (50,0) out of range in file "Program.fs"
-Error: Position (0,100) out of range in file "Program.fs"
+ERROR: Position is out of range
+ERROR: Position is out of range
