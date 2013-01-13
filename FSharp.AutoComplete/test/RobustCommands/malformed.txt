@@ -1,1 +1,50 @@
-Error: project 'Malformed.fsproj' is malformed
+
+Unhandled Exception:
+Microsoft.Build.BuildEngine.InvalidProjectFileException: /Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/RobustCommands/Malformed.fsproj: 'DebugSymbols' is expected  Line 41, position 6. ---> System.Xml.XmlException: 'DebugSymbols' is expected  Line 41, position 6.
+  at Mono.Xml2.XmlTextReader.Expect (System.String expected) [0x00000] in <filename unknown>:0 
+  at Mono.Xml2.XmlTextReader.ReadEndTag () [0x00000] in <filename unknown>:0 
+  at Mono.Xml2.XmlTextReader.ReadContent () [0x00000] in <filename unknown>:0 
+  at Mono.Xml2.XmlTextReader.Read () [0x00000] in <filename unknown>:0 
+  at System.Xml.XmlTextReader.Read () [0x00000] in <filename unknown>:0 
+  at Mono.Xml.EntityResolvingXmlReader.Read () [0x00000] in <filename unknown>:0 
+  at Mono.Xml.Schema.XsdValidatingReader.Read () [0x00000] in <filename unknown>:0 
+  at System.Xml.XmlValidatingReader.Read () [0x00000] in <filename unknown>:0 
+  at System.Xml.XmlDocument.ReadNodeCore (System.Xml.XmlReader reader) [0x00000] in <filename unknown>:0 
+  at System.Xml.XmlDocument.ReadNodeCore (System.Xml.XmlReader reader) [0x00000] in <filename unknown>:0 
+  at System.Xml.XmlDocument.ReadNodeCore (System.Xml.XmlReader reader) [0x00000] in <filename unknown>:0 
+  at System.Xml.XmlDocument.ReadNodeCore (System.Xml.XmlReader reader) [0x00000] in <filename unknown>:0 
+  at System.Xml.XmlDocument.ReadNode (System.Xml.XmlReader reader) [0x00000] in <filename unknown>:0 
+  at System.Xml.XmlDocument.Load (System.Xml.XmlReader reader) [0x00000] in <filename unknown>:0 
+  at System.Xml.XmlDocument.Load (System.IO.TextReader txtReader) [0x00000] in <filename unknown>:0 
+  at Microsoft.Build.BuildEngine.Project.DoLoad (System.IO.TextReader textReader) [0x00000] in <filename unknown>:0 
+  --- End of inner exception stack trace ---
+  at Microsoft.Build.BuildEngine.Project.DoLoad (System.IO.TextReader textReader) [0x00000] in <filename unknown>:0 
+  at Microsoft.Build.BuildEngine.Project.Load (System.String projectFileName, ProjectLoadSettings settings) [0x00000] in <filename unknown>:0 
+  at Microsoft.Build.BuildEngine.Project.Load (System.String projectFileName) [0x00000] in <filename unknown>:0 
+  at FSharp.InteractiveAutocomplete.ProjectParser.load (System.String uri) [0x00000] in <filename unknown>:0 
+  at FSharp.InteractiveAutocomplete.Main.main (FSharp.InteractiveAutocomplete.State state) [0x00000] in <filename unknown>:0 
+  at FSharp.InteractiveAutocomplete.Main.entry (System.String[] args) [0x00000] in <filename unknown>:0 
+[ERROR] FATAL UNHANDLED EXCEPTION: Microsoft.Build.BuildEngine.InvalidProjectFileException: /Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/RobustCommands/Malformed.fsproj: 'DebugSymbols' is expected  Line 41, position 6. ---> System.Xml.XmlException: 'DebugSymbols' is expected  Line 41, position 6.
+  at Mono.Xml2.XmlTextReader.Expect (System.String expected) [0x00000] in <filename unknown>:0 
+  at Mono.Xml2.XmlTextReader.ReadEndTag () [0x00000] in <filename unknown>:0 
+  at Mono.Xml2.XmlTextReader.ReadContent () [0x00000] in <filename unknown>:0 
+  at Mono.Xml2.XmlTextReader.Read () [0x00000] in <filename unknown>:0 
+  at System.Xml.XmlTextReader.Read () [0x00000] in <filename unknown>:0 
+  at Mono.Xml.EntityResolvingXmlReader.Read () [0x00000] in <filename unknown>:0 
+  at Mono.Xml.Schema.XsdValidatingReader.Read () [0x00000] in <filename unknown>:0 
+  at System.Xml.XmlValidatingReader.Read () [0x00000] in <filename unknown>:0 
+  at System.Xml.XmlDocument.ReadNodeCore (System.Xml.XmlReader reader) [0x00000] in <filename unknown>:0 
+  at System.Xml.XmlDocument.ReadNodeCore (System.Xml.XmlReader reader) [0x00000] in <filename unknown>:0 
+  at System.Xml.XmlDocument.ReadNodeCore (System.Xml.XmlReader reader) [0x00000] in <filename unknown>:0 
+  at System.Xml.XmlDocument.ReadNodeCore (System.Xml.XmlReader reader) [0x00000] in <filename unknown>:0 
+  at System.Xml.XmlDocument.ReadNode (System.Xml.XmlReader reader) [0x00000] in <filename unknown>:0 
+  at System.Xml.XmlDocument.Load (System.Xml.XmlReader reader) [0x00000] in <filename unknown>:0 
+  at System.Xml.XmlDocument.Load (System.IO.TextReader txtReader) [0x00000] in <filename unknown>:0 
+  at Microsoft.Build.BuildEngine.Project.DoLoad (System.IO.TextReader textReader) [0x00000] in <filename unknown>:0 
+  --- End of inner exception stack trace ---
+  at Microsoft.Build.BuildEngine.Project.DoLoad (System.IO.TextReader textReader) [0x00000] in <filename unknown>:0 
+  at Microsoft.Build.BuildEngine.Project.Load (System.String projectFileName, ProjectLoadSettings settings) [0x00000] in <filename unknown>:0 
+  at Microsoft.Build.BuildEngine.Project.Load (System.String projectFileName) [0x00000] in <filename unknown>:0 
+  at FSharp.InteractiveAutocomplete.ProjectParser.load (System.String uri) [0x00000] in <filename unknown>:0 
+  at FSharp.InteractiveAutocomplete.Main.main (FSharp.InteractiveAutocomplete.State state) [0x00000] in <filename unknown>:0 
+  at FSharp.InteractiveAutocomplete.Main.entry (System.String[] args) [0x00000] in <filename unknown>:0 
