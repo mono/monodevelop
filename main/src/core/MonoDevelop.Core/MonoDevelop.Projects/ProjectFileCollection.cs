@@ -34,48 +34,21 @@ using MonoDevelop.Core;
 namespace MonoDevelop.Projects
 {
 	[Serializable()]
-	public class ProjectFileCollection : ProjectItemCollection<ProjectFile>
-	{
-		Dictionary<string, ProjectFile> virtual_path_map = new Dictionary<string, ProjectFile> ();
-		Dictionary<FilePath, ProjectFile> path_map = new Dictionary<FilePath, ProjectFile> ();
-
+	public class ProjectFileCollection : ProjectItemCollection<ProjectFile> {
+	
 		public ProjectFileCollection ()
 		{
-		}
-
-		protected override void InternalAddItem (ProjectFile item)
-		{
-			virtual_path_map[item.ProjectVirtualPath] = item;
-			path_map[item.FilePath] = item;
-		}
-
-		protected override void InternalRemoveItem (ProjectFile item)
-		{
-			virtual_path_map.Remove (item.ProjectVirtualPath);
-			path_map.Remove (item.FilePath);
-		}
-
-		protected override void OnItemAdded (ProjectFile item)
-		{
-			InternalAddItem (item);
-			base.OnItemAdded (item);
-		}
-
-		protected override void OnItemRemoved (ProjectFile item)
-		{
-			InternalRemoveItem (item);
-			base.OnItemRemoved (item);
 		}
 		
 		public ProjectFile GetFile (FilePath fileName)
 		{
-			if (fileName.IsNull)
-				return null;
-
-			ProjectFile pf;
-			if (path_map.TryGetValue (fileName.FullPath, out pf))
-				return pf;
-
+			if (fileName.IsNull) return null;
+			fileName = fileName.FullPath;
+			
+			foreach (ProjectFile file in this) {
+				if (file.FilePath == fileName)
+					return file;
+			}
 			return null;
 		}
 		
@@ -84,10 +57,10 @@ namespace MonoDevelop.Projects
 			if (String.IsNullOrEmpty (virtualPath))
 				return null;
 			
-			ProjectFile pf;
-			if (virtual_path_map.TryGetValue (virtualPath, out pf))
-				return pf;
-
+			foreach (ProjectFile file in this) {
+				if (file.ProjectVirtualPath == virtualPath)
+					return file;
+			}
 			return null;
 		}
 		
