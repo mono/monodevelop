@@ -43,40 +43,28 @@ namespace MonoDevelop.Projects
 		{
 		}
 
-		void MapItem (ProjectFile item)
+		protected override void InternalAddItem (ProjectFile item)
 		{
 			virtual_path_map[item.ProjectVirtualPath] = item;
 			path_map[item.FilePath] = item;
 		}
 
-		void UnmapItem (ProjectFile item)
+		protected override void InternalRemoveItem (ProjectFile item)
 		{
 			virtual_path_map.Remove (item.ProjectVirtualPath);
 			path_map.Remove (item.FilePath);
 		}
 
-		protected override void InternalAddItem (ProjectFile item)
-		{
-			base.InternalAddItem (item);
-			MapItem (item);
-		}
-
-		protected override void InternalRemoveItem (ProjectFile item)
-		{
-			base.InternalRemoveItem (item);
-			UnmapItem (item);
-		}
-
 		protected override void OnItemAdded (ProjectFile item)
 		{
+			InternalAddItem (item);
 			base.OnItemAdded (item);
-			MapItem (item);
 		}
 
 		protected override void OnItemRemoved (ProjectFile item)
 		{
+			InternalRemoveItem (item);
 			base.OnItemRemoved (item);
-			UnmapItem (item);
 		}
 		
 		public ProjectFile GetFile (FilePath fileName)
