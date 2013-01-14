@@ -394,8 +394,14 @@ namespace MonoDevelop.CSharp
 
 			var typeName = t.Name;
 			result.Append (Highlight (typeName.ToString (), "keyword.type"));
-			if (t.TypeParameterCount > 0)
-				AppendTypeParameters (result, t.GetDefinition ().TypeParameters);
+			if (t.TypeParameterCount > 0) {
+				if (t is ParameterizedType) {
+					AppendTypeParameters (result, ((ParameterizedType)t).TypeArguments);
+
+				} else {
+					AppendTypeParameters (result, t.GetDefinition ().TypeParameters);
+				}
+			}
 
 			if (t.Kind == TypeKind.Array)
 				return result.ToString ();
@@ -456,6 +462,26 @@ namespace MonoDevelop.CSharp
 				}
 				AppendVariance (result, typeParameters [i].Variance);
 				result.Append (HighlightSemantically (CSharpAmbience.NetToCSharpTypeName (typeParameters [i].Name), "keyword.semantic.type"));
+			}
+			result.Append ("&gt;");
+		}
+
+		void AppendTypeParameters (StringBuilder result, IList<IType> typeParameters)
+		{
+			if (typeParameters.Count == 0)
+				return;
+			result.Append ("&lt;");
+			for (int i = 0; i < typeParameters.Count; i++) {
+				if (i > 0) {
+					if (i % 5 == 0) {
+						result.AppendLine (",");
+						result.Append ("\t");
+					}
+					else {
+						result.Append (", ");
+					}
+				}
+				result.Append (GetTypeReferenceString (typeParameters[i], false));
 			}
 			result.Append ("&gt;");
 		}
