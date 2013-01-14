@@ -254,14 +254,33 @@ namespace MonoDevelop.Ide.CodeTemplates
 				member = name.Substring (idx);
 				name = name.Substring (0, idx);
 			}
-			
-			var type = new GetClassTypeReference (ns, name, 0).Resolve (CurrentContext.Compilation);
+
+			var type = new GetClassTypeReference (ns, name, 0).Resolve (
+				CurrentContext.Document.ParsedDocument.GetTypeResolveContext (
+				CurrentContext.Document.Compilation, 
+				CurrentContext.Document.Editor.Caret.Location
+				)
+			);
+			bool stripAttribute = false;
+			if (type == null || type.Kind == TypeKind.Unknown) {
+				type = new GetClassTypeReference (ns, name + "Attribute", 0).Resolve (
+					CurrentContext.Document.ParsedDocument.GetTypeResolveContext (
+					CurrentContext.Document.Compilation, 
+					CurrentContext.Document.Editor.Caret.Location
+					)
+				);	
+				stripAttribute = true;
+			}
 			if (type == null || type.Kind == TypeKind.Unknown)
-				return fullTypeName;
+				return fullTypeName.Replace ("#", ".");
 			var generator = CodeGenerator.CreateGenerator (CurrentContext.Document);
-			if (generator != null)
-				return generator.GetShortTypeString (CurrentContext.Document, type) + member;
-			return fullTypeName;
+			if (generator != null) {
+				var result = generator.GetShortTypeString (CurrentContext.Document, type) + member;
+				if (stripAttribute && result.EndsWith ("Attribute", StringComparison.Ordinal))
+				    result = result.Substring (0, result.Length - "Attribute".Length);
+				return result;
+			}
+			return fullTypeName.Replace ("#", ".");
 		}
 		
 		static Regex functionRegEx = new Regex ("([^(]*)\\(([^(]*)\\)", RegexOptions.Compiled);

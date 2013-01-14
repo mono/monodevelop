@@ -220,6 +220,11 @@ namespace MonoDevelop.Ide
 			PlatformService.GrabDesktopFocus (window);
 		}
 
+		public static void SetMainWindowDecorations (Gtk.Window window)
+		{
+			PlatformService.SetMainWindowDecorations (window);
+		}
+
 		internal static MainToolbar CreateMainToolbar (Gtk.Window window)
 		{
 			return PlatformService.CreateMainToolbar (window);

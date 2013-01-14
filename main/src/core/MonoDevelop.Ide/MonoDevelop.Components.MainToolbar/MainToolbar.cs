@@ -75,6 +75,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		Solution currentSolution;
 		bool settingGlobalConfig;
+		SolutionEntityItem currentStartupProject;
 
 		public Cairo.ImageSurface Background {
 			get;
@@ -281,6 +282,28 @@ namespace MonoDevelop.Components.MainToolbar
 				currentSolution.StartupItemChanged += HandleStartupItemChanged;
 				currentSolution.Saved += HandleSolutionSaved;
 			}
+
+			TrackStartupProject ();
+
+			UpdateCombos ();
+		}
+
+		void TrackStartupProject ()
+		{
+			if (currentStartupProject != null && ((currentSolution != null && currentStartupProject != currentSolution.StartupItem) || currentSolution == null))
+				currentStartupProject.Saved -= HandleProjectSaved;
+
+			if (currentSolution != null) {
+				currentStartupProject = currentSolution.StartupItem;
+				if (currentStartupProject != null)
+					currentStartupProject.Saved += HandleProjectSaved;
+			}
+			else
+				currentStartupProject = null;
+		}
+
+		void HandleProjectSaved (object sender, SolutionItemEventArgs e)
+		{
 			UpdateCombos ();
 		}
 
@@ -291,6 +314,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void HandleStartupItemChanged (object sender, EventArgs e)
 		{
+			TrackStartupProject ();
 			UpdateCombos ();
 		}
 

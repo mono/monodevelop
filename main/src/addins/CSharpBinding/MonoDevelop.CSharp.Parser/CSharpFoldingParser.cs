@@ -112,6 +112,7 @@ namespace MonoDevelop.CSharp.Parser
 					case '#':
 						if (!inLineStart)
 							break;
+						inLineStart = false;
 						ptr++;
 
 						if (StartsIdentifier (ptr, endPtr, "region")) {
@@ -140,8 +141,10 @@ namespace MonoDevelop.CSharp.Parser
 						}
 						break;
 					case '/':
-						if (inString || inChar || inVerbatimString || inMultiLineComment || inSingleComment)
+						if (inString || inChar || inVerbatimString || inMultiLineComment || inSingleComment) {
+							inLineStart = false;
 							break;
+						}
 						if (ptr + 1 < endPtr) {
 							char nextCh = *(ptr + 1);
 							if (nextCh == '/') {
@@ -160,8 +163,10 @@ namespace MonoDevelop.CSharp.Parser
 								inMultiLineComment = true;
 							}
 						}
+						inLineStart = false;
 						break;
 					case '*':
+						inLineStart = false;
 						if (inString || inChar || inVerbatimString || inSingleComment)
 							break;
 						if (inMultiLineComment && ptr + 1 < endPtr) {
@@ -181,6 +186,7 @@ namespace MonoDevelop.CSharp.Parser
 						}
 						break;
 					case '@':
+						inLineStart = false;
 						if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment)
 							break;
 						if (ptr + 1 < endPtr && *(ptr + 1) == '"') {
@@ -190,7 +196,7 @@ namespace MonoDevelop.CSharp.Parser
 						}
 						break;
 					case '\n':
-						if (inSingleComment) {
+						if (inSingleComment && hasStartedAtLine) {
 							bool isDocumentation = *beginPtr == '/';
 							if (isDocumentation)
 								beginPtr++;
@@ -238,6 +244,9 @@ namespace MonoDevelop.CSharp.Parser
 						if (inSingleComment || inMultiLineComment || inString || inVerbatimString)
 							break;
 						inChar = !inChar;
+						break;
+					default:
+						inLineStart &= *ptr == ' ' || *ptr == '\t';
 						break;
 					}
 

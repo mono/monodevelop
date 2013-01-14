@@ -84,7 +84,7 @@
       <Name>Mono.Debugger.Soft</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\external\Mono.Cecil\Mono.Cecil.csproj">
+    <ProjectReference Include="..\..\..\..\external\cecil\Mono.Cecil.csproj">
       <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
       <Name>Mono.Cecil</Name>
       <Private>False</Private>

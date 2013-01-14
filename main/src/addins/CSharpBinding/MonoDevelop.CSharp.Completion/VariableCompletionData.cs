@@ -33,6 +33,8 @@ namespace MonoDevelop.CSharp.Completion
 {
 	public class VariableCompletionData : CompletionData, IVariableCompletionData
 	{
+		readonly CSharpCompletionTextEditorExtension ext;
+
 		public IVariable Variable {
 			get;
 			private set;
@@ -41,11 +43,16 @@ namespace MonoDevelop.CSharp.Completion
 		public override TooltipInformation CreateTooltipInformation (bool smartWrap)
 		{
 			var tooltipInfo = new TooltipInformation ();
+			var resolver = ext.CSharpUnresolvedFile.GetResolver (ext.Compilation, ext.Document.Editor.Caret.Location);
+			var sig = new SignatureMarkupCreator (resolver, ext.FormattingPolicy.CreateOptions ());
+			sig.BreakLineAfterReturnType = smartWrap;
+			tooltipInfo.SignatureMarkup = sig.GetLocalVariableMarkup (Variable);
 			return tooltipInfo;
 		}
 
-		public VariableCompletionData (IVariable variable) : base (variable.Name, variable.GetStockIcon ())
+		public VariableCompletionData (CSharpCompletionTextEditorExtension ext, IVariable variable) : base (variable.Name, variable.GetStockIcon ())
 		{
+			this.ext = ext;
 			this.Variable = variable;
 		}
 	}

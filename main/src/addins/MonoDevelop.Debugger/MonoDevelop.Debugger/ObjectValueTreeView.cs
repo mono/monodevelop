@@ -877,6 +877,9 @@ namespace MonoDevelop.Debugger
 					return;
 				
 				int i = valueNames.IndexOf (exp);
+				if (i == -1)
+					return;
+
 				if (args.NewText.Length != 0)
 					valueNames [i] = args.NewText;
 				else

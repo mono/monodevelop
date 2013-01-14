@@ -207,7 +207,7 @@ namespace MonoDevelop.MacIntegration
 			
 			IdeApp.Workbench.RootWindow.DeleteEvent += HandleDeleteEvent;
 		}
-		
+
 		static void GlobalSetup ()
 		{
 			if (initedGlobal || setupFail)
@@ -216,20 +216,33 @@ namespace MonoDevelop.MacIntegration
 			
 			//FIXME: should we remove these when finalizing?
 			try {
-				ApplicationEvents.Quit += delegate (object sender, ApplicationQuitEventArgs e) {
-					//FIXME: can we avoid replying to the message until the app quits?
-					//There's NSTerminateLate but I'm not sure how to access it from carbon, maybe
-					//we need to swizzle methods into the app's NSApplicationDelegate.
-					//Also, it stops the main CFRunLoop, hopefully GTK dialogs use a child runloop.
-					//For now, just bounce.
-					var topDialog = MessageService.GetDefaultModalParent () as Gtk.Dialog;
-					if (topDialog != null && topDialog.Modal) {
-						NSApplication.SharedApplication.RequestUserAttention (
-							NSRequestUserAttentionType.CriticalRequest);
+				ApplicationEvents.Quit += delegate (object sender, ApplicationQuitEventArgs e)
+				{
+					// Easy case, we're pretty sure a modal dialog isn't running.
+					// All our custom Cocoa dialogs use subclasses, not vanilla NSWindow.
+					// GTK uses NSWindow but we can determine whether it's modal from GTK.
+					var keyWindow = NSApplication.SharedApplication.KeyWindow;
+					if (keyWindow != null && keyWindow.ClassHandle == MonoMac.ObjCRuntime.Class.GetHandle ("NSWindow")) {
+						var windows = Gtk.Window.ListToplevels ();
+						if (!windows.Any (w => w.Modal && w.Visible)) {
+							e.UserCancelled = !IdeApp.Exit ();
+							e.Handled = true;
+							return;
+						}
 					}
-					//FIXME: delay this until all existing modal dialogs were closed
-					if (!IdeApp.Exit ())
-						e.UserCancelled = true;
+
+					// When a modal dialog is running, things are much harder. We can't just shut down MD behind the
+					// dialog, and aborting the dialog may not be appropriate.
+					//
+					// There's NSTerminateLater but I'm not sure how to access it from carbon, maybe
+					// we need to swizzle methods into the app's NSApplicationDelegate.
+					// Also, it stops the main CFRunLoop and enters a special runloop mode, not sure how that would
+					// interact with GTK+.
+
+					// For now, just bounce
+					NSApplication.SharedApplication.RequestUserAttention (NSRequestUserAttentionType.CriticalRequest);
+					// and abort the quit.
+					e.UserCancelled = true;
 					e.Handled = true;
 				};
 				
@@ -527,18 +540,30 @@ end tell", directory.ToString ().Replace ("\"", "\\\"")));
 			return img;
 		}
 
+		internal override void SetMainWindowDecorations (Gtk.Window window)
+		{
+			NSWindow w = GtkQuartz.GetWindow (window);
+			w.IsOpaque = false;
+			
+			var resource = "maintoolbarbg.png";
+			NSImage img = LoadImage (resource);
+			w.BackgroundColor = NSColor.FromPatternImage (img);
+			w.StyleMask |= NSWindowStyle.TexturedBackground;
+		}
+
 		internal override MainToolbar CreateMainToolbar (Gtk.Window window)
 		{
 			NSApplication.Init ();
 			
 			NSWindow w = GtkQuartz.GetWindow (window);
 			w.IsOpaque = false;
-
+			
 			var resource = "maintoolbarbg.png";
 			NSImage img = LoadImage (resource);
 			var c = NSColor.FromPatternImage (img);
 			w.BackgroundColor = c;
 			w.StyleMask |= NSWindowStyle.TexturedBackground;
+
 			var result = new MainToolbar () {
 				Background = MonoDevelop.Components.CairoExtensions.LoadImage (typeof (MacPlatformService).Assembly, resource),
 				TitleBarHeight = GetTitleBarHeight ()

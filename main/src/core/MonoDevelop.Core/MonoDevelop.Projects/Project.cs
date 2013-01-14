@@ -117,6 +117,24 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		[ProjectPathItemProperty ("BaseIntermediateOutputPath")]
+		FilePath baseIntermediateOutputPath;
+
+		public virtual FilePath BaseIntermediateOutputPath {
+			get {
+				if (!baseIntermediateOutputPath.IsNullOrEmpty)
+					return baseIntermediateOutputPath;
+				return BaseDirectory.Combine ("obj");
+			}
+			set {
+				if (value.IsNullOrEmpty)
+					value = FilePath.Null;
+				if (baseIntermediateOutputPath == value)
+					return;
+				NotifyModified ("BaseIntermediateOutputPath");
+			}
+		}
+
 		/// <summary>
 		/// Gets the type of the project.
 		/// </summary>

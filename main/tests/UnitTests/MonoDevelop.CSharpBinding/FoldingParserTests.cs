@@ -223,7 +223,21 @@ using System;");
 /*
 
 */]");
-		}		
+		}
+
+		// Bug 8896 - Strange "jump" behaviour when clicking on a search result, which makes the cursor go to the wrong location
+		[Test]
+		public void TestBug8896 ()
+		{
+			var doc = Test (@"class Test
+{
+	void FooBar () // this should 
+	{ // not be 
+	} // folded
+}");
+			Assert.AreEqual (0, doc.Foldings.Count ());
+		}
+
 		
 	}
 }

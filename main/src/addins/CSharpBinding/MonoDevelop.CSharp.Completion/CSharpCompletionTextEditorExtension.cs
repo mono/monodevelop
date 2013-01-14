@@ -261,9 +261,13 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			if (Unit == null || CSharpUnresolvedFile == null)
 				return null;
+			if(typeSystemSegmentTree == null)
+				return null;
+
 			var list = new CSharpCompletionDataList ();
 			list.Resolver = CSharpUnresolvedFile != null ? CSharpUnresolvedFile.GetResolver (UnresolvedFileCompilation, Document.Editor.Caret.Location) : new CSharpResolver (Compilation);
 			var ctx = CSharpUnresolvedFile.GetTypeResolveContext (UnresolvedFileCompilation, data.Caret.Location) as CSharpTypeResolveContext;
+
 			var engine = new CSharpCompletionEngine (
 				data.Document,
 				typeSystemSegmentTree,
@@ -808,7 +812,7 @@ namespace MonoDevelop.CSharp.Completion
 
 			ICompletionData ICompletionDataFactory.CreateVariableCompletionData (IVariable variable)
 			{
-				return new VariableCompletionData (variable);
+				return new VariableCompletionData (ext, variable);
 			}
 
 			ICompletionData ICompletionDataFactory.CreateVariableCompletionData (ITypeParameter parameter)
@@ -850,6 +854,13 @@ namespace MonoDevelop.CSharp.Completion
 					yield return new CompletionData (define, "md-keyword");
 					
 			}
+
+			ICompletionData ICompletionDataFactory.CreateImportCompletionData(IType type, bool useFullName)
+			{
+				// atm only used in #develop
+				throw new NotImplementedException ();
+			}
+
 		}
 		#endregion
 
@@ -874,11 +885,11 @@ namespace MonoDevelop.CSharp.Completion
 			return new DelegateDataProvider (startOffset, this, type);
 		}
 		
-		IParameterDataProvider IParameterCompletionDataFactory.CreateIndexerParameterDataProvider (int startOffset, IType type, AstNode resolvedNode)
+		IParameterDataProvider IParameterCompletionDataFactory.CreateIndexerParameterDataProvider (int startOffset, IType type, IEnumerable<IProperty> indexers, AstNode resolvedNode)
 		{
 			if (type is ArrayType)
 				return new ArrayTypeParameterDataProvider (startOffset, this, (ArrayType)type, resolvedNode);
-			return new IndexerParameterDataProvider (startOffset, this, type, resolvedNode);
+			return new IndexerParameterDataProvider (startOffset, this, type, indexers, resolvedNode);
 		}
 		
 		IParameterDataProvider IParameterCompletionDataFactory.CreateTypeParameterDataProvider (int startOffset, IEnumerable<IType> types)

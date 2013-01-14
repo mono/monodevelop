@@ -666,14 +666,16 @@ namespace Mono.TextEditor
 				var fgColor = textEditor.ColorStyle.Default.CairoColor;
 //				var bgColor = textEditor.ColorStyle.Default.CairoBackgroundColor;
 				var line = Document.GetLine (Caret.Line);
-				foreach (var marker in line.Markers) {
-					var style = marker as StyleTextLineMarker;
-					if (style == null)
-						continue;
-//					if (style.IncludedStyles.HasFlag (StyleTextLineMarker.StyleFlag.BackgroundColor))
-//						bgColor = style.BackgroundColor;
-					if (style.IncludedStyles.HasFlag (StyleTextLineMarker.StyleFlag.Color))
-						fgColor = style.Color;
+				if (line != null) {
+					foreach (var marker in line.Markers) {
+						var style = marker as StyleTextLineMarker;
+						if (style == null)
+							continue;
+	//					if (style.IncludedStyles.HasFlag (StyleTextLineMarker.StyleFlag.BackgroundColor))
+	//						bgColor = style.BackgroundColor;
+						if (style.IncludedStyles.HasFlag (StyleTextLineMarker.StyleFlag.Color))
+							fgColor = style.Color;
+					}
 				}
 				/*
 				var foreground = ((HslColor)fgColor).ToPixel ();

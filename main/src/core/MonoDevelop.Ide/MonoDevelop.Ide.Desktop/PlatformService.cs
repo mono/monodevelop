@@ -407,6 +407,10 @@ namespace MonoDevelop.Ide.Desktop
 			window.Present ();
 		}
 
+		internal virtual void SetMainWindowDecorations (Gtk.Window window)
+		{
+		}
+
 		internal virtual MainToolbar CreateMainToolbar (Gtk.Window window)
 		{
 			return new MainToolbar ();

@@ -355,6 +355,13 @@ namespace MonoDevelop.CSharp
 			return result.ToString ();
 		}
 
+		string GetNullableMarkup (IType t)
+		{
+			var result = new StringBuilder ();
+			result.Append (GetTypeReferenceString (t));
+			return result.ToString ();
+		}
+
 		string GetTypeMarkup (IType t)
 		{
 			if (t == null)
@@ -364,7 +371,8 @@ namespace MonoDevelop.CSharp
 				return GetDelegateMarkup (t);
 			if (t.Kind == TypeKind.TypeParameter)
 				return GetTypeParameterMarkup (t);
-
+			if (NullableType.IsNullable (t))
+				return GetNullableMarkup (t);
 			var result = new StringBuilder ();
 			if (t.GetDefinition () != null)
 				AppendModifiers (result, t.GetDefinition ());
@@ -384,8 +392,11 @@ namespace MonoDevelop.CSharp
 				break;
 			}
 
-			var typeName = GetTypeReferenceString (t, false);
+			var typeName = t.Name;
 			result.Append (Highlight (typeName.ToString (), "keyword.type"));
+			if (t.TypeParameterCount > 0)
+				AppendTypeParameters (result, t.GetDefinition ().TypeParameters);
+
 			if (t.Kind == TypeKind.Array)
 				return result.ToString ();
 
@@ -469,7 +480,7 @@ namespace MonoDevelop.CSharp
 			result.Append (CSharpAmbience.FilterName (t.Name));
 			
 			AppendTypeParameters (result, method.TypeParameters);
-			
+
 			if (formattingOptions.SpaceBeforeDelegateDeclarationParentheses)
 				result.Append (" ");
 			
@@ -1365,7 +1376,12 @@ namespace MonoDevelop.CSharp
 			}
 
 			if (constantValue == null) {
-				sb.Append (Highlight ("null", "constant.language"));
+				if (constantType.Kind == TypeKind.Struct) {
+					// structs can never be == null, therefore it's the default value.
+					sb.Append (Highlight ("default", "keyword.selection") + "(" + GetTypeReferenceString (constantType) + ")");
+				} else {
+					sb.Append (Highlight ("null", "constant.language"));
+				}
 				return;
 			}
 

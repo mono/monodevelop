@@ -645,7 +645,7 @@ namespace MonoDevelop.Core
 
 			try {
 				if (c.CancellationToken.IsCancellationRequested)
-					c.Tcs.SetCanceled ();
+					c.Tcs.TrySetCanceled ();
 
 				try {
 					//TODO: limit this size in case open wifi hotspots provide bad data
@@ -658,12 +658,12 @@ namespace MonoDevelop.Core
 					var httpResp = wex.Response as HttpWebResponse;
 					if (httpResp != null) {
 						if (httpResp.StatusCode == HttpStatusCode.NotModified) {
-							c.Tcs.SetResult (false);
+							c.Tcs.TrySetResult (false);
 							return;
 						}
 						//is this valid? should we just return the WebException directly?
 						else if (httpResp.StatusCode == HttpStatusCode.NotFound) {
-							c.Tcs.SetException (new FileNotFoundException ("File not found on server", c.Url, wex));
+							c.Tcs.TrySetException (new FileNotFoundException ("File not found on server", c.Url, wex));
 							return;
 						}
 					}
@@ -673,28 +673,28 @@ namespace MonoDevelop.Core
 				//check the document is valid, might get bad ones from wifi hotspots etc
 				if (c.ValidateDownload != null) {
 					if (c.CancellationToken.IsCancellationRequested)
-						c.Tcs.SetCanceled ();
+						c.Tcs.TrySetCanceled ();
 
 					using (var f = File.OpenRead (tempFile)) {
 						try {
 							if (!c.ValidateDownload (f)) {
-								c.Tcs.SetException (new Exception ("Failed to validate downloaded file"));
+								c.Tcs.TrySetException (new Exception ("Failed to validate downloaded file"));
 								return;
 							}
 						} catch (Exception ex) {
-							c.Tcs.SetException (new Exception ("Failed to validate downloaded file", ex));
+							c.Tcs.TrySetException (new Exception ("Failed to validate downloaded file", ex));
 						}
 					}
 				}
 
 				if (c.CancellationToken.IsCancellationRequested)
-					c.Tcs.SetCanceled ();
+					c.Tcs.TrySetCanceled ();
 
 				SystemRename (tempFile, c.CacheFile);
 				deleteTempFile = false;
-				c.Tcs.SetResult (true);
+				c.Tcs.TrySetResult (true);
 			} catch (Exception ex) {
-				c.Tcs.SetException (ex);
+				c.Tcs.TrySetException (ex);
 			} finally {
 				if (deleteTempFile) {
 					try {

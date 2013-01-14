@@ -154,6 +154,7 @@ namespace MonoDevelop.Ide.Gui
 					this.Fullscreen ();
 				} else {
 					this.Unfullscreen ();
+					DesktopService.SetMainWindowDecorations (this);
 				}
 			}
 		}
@@ -804,6 +805,7 @@ namespace MonoDevelop.Ide.Gui
 			InstallMenuBar ();
 			Realize ();
 			toolbar = DesktopService.CreateMainToolbar (this);
+			DesktopService.SetMainWindowDecorations (this);
 			var toolbarBox = new HBox ();
 			fullViewVBox.PackStart (toolbarBox, false, false, 0);
 			toolbarFrame = new CommandFrame (IdeApp.CommandService);

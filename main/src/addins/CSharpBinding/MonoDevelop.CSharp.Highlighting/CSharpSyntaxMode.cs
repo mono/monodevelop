@@ -652,6 +652,15 @@ namespace MonoDevelop.CSharp.Highlighting
 					doc.ReparseDocument ();
 				}
 			};
+			CommentTag.SpecialCommentTagsChanged += (sender, e) => {
+				UpdateCommentRule ();
+				var actDoc = IdeApp.Workbench.ActiveDocument;
+				if (actDoc != null && actDoc.Editor != null) {
+					actDoc.UpdateParseDocument ();
+					actDoc.Editor.Parent.TextViewMargin.PurgeLayoutCache ();
+					actDoc.Editor.Parent.QueueDraw ();
+				}
+			};
 		}
 		
 		static void OnDisableConditionalCompilation (object s, DocumentEventArgs e)
@@ -692,10 +701,25 @@ namespace MonoDevelop.CSharp.Highlighting
 		static Match[] _matches;
 		static Marker[] _prevMarker;
 		static List<SemanticRule> _SemanticRules;
+		static Rule _commentRule;
 		static Dictionary<string, Mono.TextEditor.Highlighting.Keywords> _keywordTable;
 		static Dictionary<string, Mono.TextEditor.Highlighting.Keywords> _keywordTableIgnoreCase;
 		static Dictionary<string, List<string>> _properties;
 		#endregion
+
+		static void UpdateCommentRule ()
+		{
+			if (_commentRule == null)
+				return;
+			var joinedTasks = string.Join ("", CommentTag.SpecialCommentTags.Select (t => t.Tag));
+			_commentRule.Delimiter = new string ("&()<>{}[]~!%^*-+=|\\#/:;\"' ,\t.?".Where (c => joinedTasks.IndexOf (c) < 0).ToArray ());
+			_commentRule.Keywords = new[] {
+				new Keywords {
+					Color = "comment.keyword.todo",
+					Words = CommentTag.SpecialCommentTags.Select (t => t.Tag)
+				}
+			};
+		}
 
 		public CSharpSyntaxMode (Document document)
 		{
@@ -712,10 +736,18 @@ namespace MonoDevelop.CSharp.Highlighting
 				var provider = new ResourceXmlProvider (typeof(IXmlProvider).Assembly, typeof(IXmlProvider).Assembly.GetManifestResourceNames ().First (s => s.Contains ("CSharpSyntaxMode")));
 				using (XmlReader reader = provider.Open ()) {
 					SyntaxMode baseMode = SyntaxMode.Read (reader);
-					_rules = new List<Rule> (baseMode.Rules);
-					_rules.Add (new Rule (baseMode) {
+					_rules = new List<Rule> (baseMode.Rules.Where (r => r.Name != "Comment"));
+					_rules.Add (new Rule (this) {
 						Name = "PreProcessorComment"
 					});
+
+					_commentRule = new Rule (this) {
+						Name = "Comment",
+						IgnoreCase = true
+					};
+					UpdateCommentRule ();
+
+					_rules.Add (_commentRule);
 					_keywords = new List<Keywords> (baseMode.Keywords);
 					_spans = new List<Span> (baseMode.Spans.Where (span => span.Begin.Pattern != "#")).ToArray ();
 					_matches = baseMode.Matches;

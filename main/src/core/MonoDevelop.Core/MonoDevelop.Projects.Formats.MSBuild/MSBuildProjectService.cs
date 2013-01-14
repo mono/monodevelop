@@ -29,11 +29,10 @@ using System;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.IO;
-using System.Xml;
 using System.Globalization;
 using System.Runtime.Serialization.Formatters.Binary;
 using Mono.Addins;
-using MonoDevelop.Core.AddIns;
+using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Core.Serialization;
@@ -152,6 +151,22 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 		
+		public static bool SupportsProjectType (string projectFile)
+		{
+			if (!string.IsNullOrWhiteSpace (projectFile)) {
+				// If we have a project file, try to load it.
+				try {
+					using (var monitor = new ConsoleProgressMonitor ()) {
+						return MSBuildProjectService.LoadItem (monitor, projectFile, null, null, null) != null;
+					}
+				} catch {
+					return false;
+				}
+			}
+
+			return false;
+		}
+
 		internal static DotNetProjectSubtypeNode GetDotNetProjectSubtype (string typeGuids)
 		{
 			if (!string.IsNullOrEmpty (typeGuids)) {

@@ -1,5 +1,5 @@
-[submodule "main/external/Mono.Cecil"]
-	path = main/external/Mono.Cecil
+[submodule "main/external/cecil"]
+	path = main/external/cecil
 	url = git://github.com/mono/cecil.git
 [submodule "main/external/maccore"]
 	path = main/external/maccore
