@@ -23,10 +23,9 @@
 ;; the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 ;; Boston, MA 02110-1301, USA.
 
-;; edit path
 (setq ac-fsharp-complete-executable
       (concat (file-name-directory (or load-file-name buffer-file-name))
-              "../bin/fsautocomplete.sh"))
+              "/bin/fsautocomplete.exe"))
 
 (defvar ac-fsharp-status 'idle)
 (defvar ac-fsharp-completion-process nil)
@@ -86,9 +85,15 @@
   (message "Launching completion process")
   (setq ac-fsharp-completion-process
         (let ((process-connection-type nil))
-          (start-process "fsharp-complete"
-                         "*fsharp-complete*"
-                         ac-fsharp-complete-executable)))
+          (case system-type
+            (windows-nt
+             (start-process "fsharp-complete"
+                            "*fsharp-complete*"
+                            ac-fsharp-complete-executable))
+            (otherwise
+             (start-process "fsharp-complete"
+                            "*fsharp-complete*"
+                            "mono" ac-fsharp-complete-executable)))))
 
   (set-process-filter ac-fsharp-completion-process 'ac-fsharp-filter-output)
   (set-process-query-on-exit-flag ac-fsharp-completion-process nil)
@@ -111,8 +116,9 @@
            (skip-chars-backward "^ ." (line-beginning-position))
            (point))))
     (list start end
-          (let ((ac-fsharp-status 'fetch-in-progress)
-                (ac-fsharp-data nil))
+          (progn
+            (setq ac-fsharp-status 'fetch-in-progress)
+            (setq ac-fsharp-data nil)
             (ac-fsharp-parse-file)
             (ac-fsharp-send-completion-request)
             (while (eq ac-fsharp-status 'fetch-in-progress)
@@ -124,9 +130,10 @@
 ;(set (make-local-variable 'gud-gdb-completion-function) 'gud-gdb-completions)
 
 ;(local-set-key "\C-i" 'completion-at-point)
-(local-set-key "\C-i" 'indent-for-tab-command)
+;(local-set-key "\C-i" 'indent-for-tab-command)
+
 (defun ac-fsharp-stash-partial (str)
-  (setq ac-fsharp-partial-data (concat ac-fsharp-partial-data This)))
+  (setq ac-fsharp-partial-data (concat ac-fsharp-partial-data str)))
 
 
 ; str function is called whenever fsintellisense.exe writes something on stdout
@@ -138,8 +145,8 @@
     (fetch-in-progress
      (ac-fsharp-stash-partial str)
      (if (and
-       (>= (length str) 8)
-       (string= (substring str -8 nil) "<<EOF>>\n"))
+          (>= (length str) 8)
+          (string= (substring str -8 nil) "<<EOF>>\n"))
          (progn
            (setq str ac-fsharp-partial-data)
            (setq ac-fsharp-partial-data "")
@@ -153,7 +160,7 @@
              (setq ac-fsharp-status 'idle)
              ))))
     (otherwise
-     message "filter output called and found <<EOF>> while not waiting")
-    ))
+     (message "filter output called and found <<EOF>> while not waiting")
+    )))
 
 ;;; intellisense-sync.el ends here
