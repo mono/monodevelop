@@ -12,4 +12,4 @@ p.project "Malformed.fsproj"
 p.send "quit\n"
 let output = p.finalOutput ()
 File.WriteAllText("malformed.txt", output)
-#q;;
+

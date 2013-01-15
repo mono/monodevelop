@@ -12,4 +12,4 @@ p.send "BadCommand\n"
 p.send "quit\n"
 let output = p.finalOutput ()
 File.WriteAllText("nosuchcommand.txt", output)
-#q;;
+
