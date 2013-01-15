@@ -97,8 +97,7 @@ namespace MonoDevelop.Platform
 			ProcessModule monoDevelopAssembly = Process.GetCurrentProcess ().MainModule;
 			string exePath = monoDevelopAssembly.FileName;
 			string executeString = exePath + " %1";
-			string version = monoDevelopAssembly.FileVersionInfo.ProductVersion;
-			string progId = "MonoDevelop" + version;
+			string progId = MonoDevelop.Core.BrandingService.ProfileDirectoryName + "." + IdeApp.Version;
 			string appId = progId;
 			
 			Taskbar.TaskbarManager.Instance.ApplicationId = progId;
