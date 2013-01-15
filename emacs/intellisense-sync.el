@@ -33,16 +33,28 @@
 (defvar ac-fsharp-data "")
 
 (defun log-to-proc-buf (proc str)
-  (let ((buf (process-buffer proc)))
+  (let ((buf (process-buffer proc))
+        (atend (with-current-buffer (process-buffer proc)
+                 (eq (marker-position (process-mark proc)) (point)))))
     (when (buffer-live-p buf)
       (with-current-buffer buf
         (goto-char (process-mark proc))
-        (insert str)
-        (set-marker (process-mark proc) (point)))
-      (if (get-buffer-window buf)
-          (save-selected-window
-            (select-window (get-buffer-window buf))
+        (insert-before-markers str))
+      (if atend
+          (with-current-buffer buf
             (goto-char (process-mark proc)))))))
+
+;; (process-buffer ac-fsharp-completion-process)
+;; (process-mark ac-fsharp-completion-process)
+;; (with-current-buffer
+;;     (process-buffer ac-fsharp-completion-process)
+;;   (point))
+
+;; (let ((proc ac-fsharp-completion-process)
+;;       (buf (process-buffer ac-fsharp-completion-process)))
+;;   (save-selected-window
+;;     (select-window (get-buffer-window buf))
+;;     (goto-char (process-mark proc))))
 
 (defun log-psendstr (proc str)
   (log-to-proc-buf proc str)
@@ -65,12 +77,9 @@
   (log-psendstr ac-fsharp-completion-process
                 (format "project \"%s\"\n" buffer-file-name)))
 
-(defun ac-fsharp-send-completion-request ()
-  (interactive)
+(defun ac-fsharp-send-completion-request (line col)
   (let ((request (format "completion \"%s\" %d %d\n"
-                               (buffer-file-name)
-                               (- (line-number-at-pos) 1)
-                               (current-column))))
+                               (buffer-file-name) line col)))
     (message (format "Sending completion request for: '%s' of '%s'" ac-prefix request))
       (log-psendstr ac-fsharp-completion-process request)))
 
@@ -107,24 +116,32 @@
   )
 
 
+; Consider using 'text' for filtering
+(defun fsharp-completions (line col text)
+  (message (format "fsharp-completions called for (%d,%d) and '%s'" line col text))
+  (progn
+    (setq ac-fsharp-status 'fetch-in-progress)
+    (setq ac-fsharp-data nil)
+    (ac-fsharp-parse-file)
+    (ac-fsharp-send-completion-request line col)
+    (while (eq ac-fsharp-status 'fetch-in-progress)
+      (accept-process-output ac-fsharp-completion-process))
+    ac-fsharp-data))
 
 (defun fsharp-completion-at-point ()
-  "Return the data to complete the GDB command before point."
+  "Return a function ready to interrogate the F# compiler service for completions at point."
   (let ((end (point))
         (start
          (save-excursion
            (skip-chars-backward "^ ." (line-beginning-position))
            (point))))
+    (message (format "completion-at-point called for (%d,%d)" start end))
     (list start end
-          (progn
-            (setq ac-fsharp-status 'fetch-in-progress)
-            (setq ac-fsharp-data nil)
-            (ac-fsharp-parse-file)
-            (ac-fsharp-send-completion-request)
-            (while (eq ac-fsharp-status 'fetch-in-progress)
-              (accept-process-output ac-fsharp-completion-process))
-            ac-fsharp-data
-            ))))
+          (completion-table-dynamic
+           (apply-partially #'fsharp-completions
+                            (- (line-number-at-pos) 1)
+                            (current-column))))
+            ))
 
 (add-hook 'completion-at-point-functions #'fsharp-completion-at-point)
 ;(set (make-local-variable 'gud-gdb-completion-function) 'gud-gdb-completions)
