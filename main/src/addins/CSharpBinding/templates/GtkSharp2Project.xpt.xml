@@ -14,7 +14,7 @@
 	
 	<!-- Actions -->
 	<Actions>
-		<Open filename = "Main.cs"/>
+		<Open filename = "Program.cs"/>
 	</Actions>
 	
 	<!-- Template Content -->
@@ -76,7 +76,7 @@ public partial class MainWindow: Gtk.Window
 				
 				<!-- The main class -->
 				
-				<File name="Main.cs" AddStandardHeader="True">
+				<File name="Program.cs" AddStandardHeader="True">
 <![CDATA[using System;
 using Gtk;
 
