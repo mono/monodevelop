@@ -5,6 +5,7 @@
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
+    <widget-library name="../../../../../build/AddIns/BackendBindings/MonoDevelop.CSharpBinding.dll" />
     <widget-library name="../../../../../build/AddIns/MonoDevelop.TextTemplating/MonoDevelop.TextTemplating.dll" />
     <widget-library name="../../../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll" />
     <widget-library name="../../../../../build/bin/MonoDevelop.Ide.dll" />
