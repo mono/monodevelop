@@ -62,7 +62,6 @@ namespace Mono.Debugging.Soft
 		ThreadMirror current_thread, recent_thread;
 		ProcessInfo[] procs;
 		ThreadInfo[] current_threads;
-		bool exited;
 		bool started;
 		bool autoStepInto;
 		internal int StackVersion;
@@ -108,7 +107,7 @@ namespace Mono.Debugging.Soft
 		
 		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
-			if (exited)
+			if (HasExited)
 				throw new InvalidOperationException ("Already exited");
 			
 			var dsi = (SoftDebuggerStartInfo) startInfo;
@@ -151,7 +150,7 @@ namespace Mono.Debugging.Soft
 					if (!ShouldRetryConnection (ex, attemptNumber)
 						|| !startArgs.ConnectionProvider.ShouldRetryConnection (ex)
 						|| attemptNumber == maxAttempts
-						|| Exited)
+						|| HasExited)
 					{
 						OnConnectionError (ex);
 						return;
@@ -275,7 +274,7 @@ namespace Mono.Debugging.Soft
 					return;
 				} catch (Exception ex) {
 					attemptNumber++;
-					if (!ShouldRetryConnection (ex, attemptNumber) || attemptNumber == maxAttempts || Exited) {
+					if (!ShouldRetryConnection (ex, attemptNumber) || attemptNumber == maxAttempts || HasExited) {
 						OnConnectionError (ex);
 						return;
 					}
@@ -331,7 +330,7 @@ namespace Mono.Debugging.Soft
 		protected virtual void OnConnectionError (Exception ex)
 		{
 			//if the exception was caused by cancelling the session
-			if (Exited)
+			if (HasExited)
 				return;
 			
 			if (!HandleException (new ConnectionException (ex))) {
@@ -381,15 +380,10 @@ namespace Mono.Debugging.Soft
 		
 		protected virtual void EndSession ()
 		{
-			if (!exited) {
-				exited = true;
+			if (!HasExited) {
 				EndLaunch ();
 				OnTargetEvent (new TargetEventArgs (TargetEventType.TargetExited));
 			}
-		}
-		
-		protected bool Exited {
-			get { return exited; }
 		}
 
 		public Dictionary<Tuple<TypeMirror, string>, MethodMirror[]> OverloadResolveCache {
@@ -508,7 +502,7 @@ namespace Mono.Debugging.Soft
 		{
 			try {
 				var buffer = new char [1024];
-				while (!exited) {
+				while (!HasExited) {
 					int c = reader.Read (buffer, 0, buffer.Length);
 					if (c > 0) {
 						OnTargetOutput (isError, new string (buffer, 0, c));
@@ -553,10 +547,9 @@ namespace Mono.Debugging.Soft
 		public override void Dispose ()
 		{
 			base.Dispose ();
-			if (!exited) {
-				exited = true;
+
+			if (!HasExited)
 				EndLaunch ();
-			}
 
 			foreach (var symfile in symbolFiles)
 				symfile.Value.Dispose ();
@@ -564,7 +557,7 @@ namespace Mono.Debugging.Soft
 			symbolFiles.Clear ();
 			symbolFiles = null;
 
-			if (!exited) {
+			if (!HasExited) {
 				if (vm != null) {
 					ThreadPool.QueueUserWorkItem (delegate {
 						try {
@@ -607,7 +600,7 @@ namespace Mono.Debugging.Soft
 
 		protected override void OnExit ()
 		{
-			exited = true;
+			HasExited = true;
 			EndLaunch ();
 			if (vm != null) {
 				try {
@@ -626,7 +619,7 @@ namespace Mono.Debugging.Soft
 		void QueueEnsureExited ()
 		{
 			if (vm != null) {
-				//FIXME: this might never get reached if the IDE is exited first
+				//FIXME: this might never get reached if the IDE is Exited first
 				try {
 					if (vm.Process != null) {
 						ThreadPool.QueueUserWorkItem (delegate {
@@ -743,7 +736,7 @@ namespace Mono.Debugging.Soft
 		
 		protected override BreakEventInfo OnInsertBreakEvent (BreakEvent ev)
 		{
-			if (exited)
+			if (HasExited)
 				return null;
 
 			lock (pending_bes) {
@@ -862,7 +855,7 @@ namespace Mono.Debugging.Soft
 
 		protected override void OnRemoveBreakEvent (BreakEventInfo binfo)
 		{
-			if (exited)
+			if (HasExited)
 				return;
 
 			lock (pending_bes) {
@@ -880,7 +873,7 @@ namespace Mono.Debugging.Soft
 
 		protected override void OnEnableBreakEvent (BreakEventInfo binfo, bool enable)
 		{
-			if (exited)
+			if (HasExited)
 				return;
 
 			lock (pending_bes) {
@@ -1096,15 +1089,14 @@ namespace Mono.Debugging.Soft
 					}
 					HandleEventSet (e);
 				} catch (Exception ex) {
-					if (exited) {
+					if (HasExited)
 						break;
-					}
-					if (!HandleException (ex)) {
+
+					if (!HandleException (ex))
 						OnDebuggerOutput (true, ex.ToString ());
-					}
-					if (ex is VMDisconnectedException || ex is IOException || ex is SocketException) {
+
+					if (ex is VMDisconnectedException || ex is IOException || ex is SocketException)
 						break;
-					}
 				}
 			}
 			
@@ -1116,8 +1108,7 @@ namespace Mono.Debugging.Soft
 			} catch {
 				// Ignore
 			}
-			
-			exited = true;
+
 			OnTargetEvent (new TargetEventArgs (TargetEventType.TargetExited));
 		}
 		
@@ -1189,7 +1180,7 @@ namespace Mono.Debugging.Soft
 		
 		void HandleBreakEventSet (Event[] es, bool dequeuing)
 		{
-			if (dequeuing && exited)
+			if (dequeuing && HasExited)
 				return;
 			
 			bool resume = true;
@@ -1484,7 +1475,7 @@ namespace Mono.Debugging.Soft
 
 			//firing this off in a thread prevents possible infinite recursion
 			ThreadPool.QueueUserWorkItem (delegate {
-				if (!exited) {
+				if (!HasExited) {
 					foreach (var es in dequeuing) {
 						try {
 							 HandleBreakEventSet (es.ToArray (), true);
