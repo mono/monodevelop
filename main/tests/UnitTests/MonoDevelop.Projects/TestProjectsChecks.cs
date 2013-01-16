@@ -51,11 +51,11 @@ namespace MonoDevelop.Projects
 			
 			Assert.AreEqual (2, project.Files.Count, "File count");
 			
-			ProjectFile file = project.GetProjectFile (Path.Combine (project.BaseDirectory, "Main.cs"));
-			Assert.AreEqual ("Main.cs", Path.GetFileName (file.Name));
+			ProjectFile file = project.GetProjectFile (Path.Combine (project.BaseDirectory, "Program.cs"));
+			Assert.AreEqual ("Program.cs", Path.GetFileName (file.Name));
 			Assert.AreEqual (BuildAction.Compile, file.BuildAction);
 			
-			file = project.GetProjectFile (Path.Combine (project.BaseDirectory, "AssemblyInfo.cs"));
+			file = project.GetProjectFile (Path.Combine (project.BaseDirectory, "Properties", "AssemblyInfo.cs"));
 			Assert.AreEqual ("AssemblyInfo.cs", Path.GetFileName (file.Name));
 			Assert.AreEqual (BuildAction.Compile, file.BuildAction);
 			
@@ -154,7 +154,7 @@ namespace MonoDevelop.Projects
 			project.References.Add (new ProjectReference (ReferenceType.Package, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
 			project.References.Add (new ProjectReference (ReferenceType.Package, "System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
 			project.References.Add (new ProjectReference (ReferenceType.Package, "System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
-			project.Files.Add (new ProjectFile (Path.Combine (dir, "Main.cs")));
+			project.Files.Add (new ProjectFile (Path.Combine (dir, "Program.cs")));
 			project.Files.Add (new ProjectFile (Path.Combine (dir, "Resource.xml"), BuildAction.EmbeddedResource));
 			project.Files.Add (new ProjectFile (Path.Combine (dir, "Excluded.xml"), BuildAction.Content));
 			ProjectFile pf = new ProjectFile (Path.Combine (dir, "Copy.xml"), BuildAction.Content);
@@ -175,7 +175,7 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (1, scRelease.Configurations.Count);
 			Assert.AreEqual (2, project.Configurations.Count);
 			foreach (var v in project.Files) {
-				if (v.FilePath.FileName == "Main.cs") {
+				if (v.FilePath.FileName == "Program.cs") {
 				File.WriteAllText (v.FilePath,
 				                   @"
 using System;
@@ -203,7 +203,7 @@ namespace Foo {
 			
 			DotNetProject p = (DotNetProject) sol.Items [0];
 			Assert.AreEqual (5, p.Files.Count);
-			Assert.IsTrue (p.Files.GetFile (Path.Combine (p.BaseDirectory, "Main.cs")) != null);
+			Assert.IsTrue (p.Files.GetFile (Path.Combine (p.BaseDirectory, "Program.cs")) != null);
 			Assert.IsTrue (p.Files.GetFile (Path.Combine (p.BaseDirectory, "Resource.xml")) != null);
 			Assert.IsTrue (p.Files.GetFile (Path.Combine (p.BaseDirectory, "Excluded.xml")) != null);
 			Assert.IsTrue (p.Files.GetFile (Path.Combine (p.BaseDirectory, "Copy.xml")) != null);
@@ -261,8 +261,8 @@ namespace Foo {
 			SolutionConfiguration scRelease = sol.AddConfiguration ("Release", true);
 			
 			DotNetProject project1 = CreateProject (Util.Combine (dir, "console-project"), "C#", "console-project");
-			project1.Files.Add (new ProjectFile (Path.Combine (project1.BaseDirectory, "Main.cs")));
-			project1.Files.Add (new ProjectFile (Path.Combine (project1.BaseDirectory, "AssemblyInfo.cs")));
+			project1.Files.Add (new ProjectFile (Path.Combine (project1.BaseDirectory, "Program.cs")));
+			project1.Files.Add (new ProjectFile (Path.Combine (project1.BaseDirectory, "Properties", "AssemblyInfo.cs")));
 			sol.RootFolder.Items.Add (project1);
 			
 			// nested-solution1
@@ -274,14 +274,14 @@ namespace Foo {
 			DotNetProject projectLib1 = CreateProject (Util.Combine (dir, "nested-solution1", "library1"), "C#", "library1");
 			projectLib1.References.Add (new ProjectReference (ReferenceType.Package, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
 			projectLib1.Files.Add (new ProjectFile (Path.Combine (projectLib1.BaseDirectory, "MyClass.cs")));
-			projectLib1.Files.Add (new ProjectFile (Path.Combine (projectLib1.BaseDirectory, "AssemblyInfo.cs")));
+			projectLib1.Files.Add (new ProjectFile (Path.Combine (projectLib1.BaseDirectory, "Properties", "AssemblyInfo.cs")));
 			projectLib1.CompileTarget = CompileTarget.Library;
 			folder1.Items.Add (projectLib1);
 			
 			DotNetProject projectLib2 = CreateProject (Util.Combine (dir, "nested-solution1", "library2"), "C#", "library2");
 			projectLib2.References.Add (new ProjectReference (ReferenceType.Package, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
 			projectLib2.Files.Add (new ProjectFile (Path.Combine (projectLib2.BaseDirectory, "MyClass.cs")));
-			projectLib2.Files.Add (new ProjectFile (Path.Combine (projectLib2.BaseDirectory, "AssemblyInfo.cs")));
+			projectLib2.Files.Add (new ProjectFile (Path.Combine (projectLib2.BaseDirectory, "Properties", "AssemblyInfo.cs")));
 			projectLib2.CompileTarget = CompileTarget.Library;
 			folder1.Items.Add (projectLib2);
 			
@@ -292,8 +292,8 @@ namespace Foo {
 			sol.RootFolder.Items.Add (folder2);
 			
 			DotNetProject project2 = CreateProject (Util.Combine (dir, "nested-solution2", "console-project2"), "C#", "console-project2");
-			project2.Files.Add (new ProjectFile (Path.Combine (project2.BaseDirectory, "Main.cs")));
-			project2.Files.Add (new ProjectFile (Path.Combine (project2.BaseDirectory, "AssemblyInfo.cs")));
+			project2.Files.Add (new ProjectFile (Path.Combine (project2.BaseDirectory, "Program.cs")));
+			project2.Files.Add (new ProjectFile (Path.Combine (project2.BaseDirectory, "Properties", "AssemblyInfo.cs")));
 			project2.References.Add (new ProjectReference (ReferenceType.Package, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
 			
 			// nested-solution3
@@ -304,14 +304,14 @@ namespace Foo {
 			DotNetProject projectLib3 = CreateProject (Util.Combine (dir, "nested-solution2", "nested-solution3", "library3"), "C#", "library3");
 			projectLib3.References.Add (new ProjectReference (ReferenceType.Package, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
 			projectLib3.Files.Add (new ProjectFile (Path.Combine (projectLib3.BaseDirectory, "MyClass.cs")));
-			projectLib3.Files.Add (new ProjectFile (Path.Combine (projectLib3.BaseDirectory, "AssemblyInfo.cs")));
+			projectLib3.Files.Add (new ProjectFile (Path.Combine (projectLib3.BaseDirectory, "Properties", "AssemblyInfo.cs")));
 			projectLib3.CompileTarget = CompileTarget.Library;
 			folder3.Items.Add (projectLib3);
 			
 			DotNetProject projectLib4 = CreateProject (Util.Combine (dir, "nested-solution2", "nested-solution3", "library4"), "C#", "library4");
 			projectLib4.References.Add (new ProjectReference (ReferenceType.Package, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
 			projectLib4.Files.Add (new ProjectFile (Path.Combine (projectLib4.BaseDirectory, "MyClass.cs")));
-			projectLib4.Files.Add (new ProjectFile (Path.Combine (projectLib4.BaseDirectory, "AssemblyInfo.cs")));
+			projectLib4.Files.Add (new ProjectFile (Path.Combine (projectLib4.BaseDirectory, "Properties", "AssemblyInfo.cs")));
 			projectLib4.CompileTarget = CompileTarget.Library;
 			folder3.Items.Add (projectLib4);
 			
