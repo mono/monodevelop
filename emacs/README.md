@@ -5,7 +5,7 @@ Features:
 - Interactive F# buffer
 - Indentation
 - Syntax highlighter
-- Experimental support for [autocompletion](README-intellisense.md) (currently only for a single file)
+- Experimental support for [autocompletion](README-intellisense.md)
 
 
 ### Installation
@@ -70,7 +70,7 @@ On Windows (adapt the path if needed):
 (setq fsharp-compiler "\"c:\\Program Files\\Microsoft F#\\v4.0\\Fsc.exe\"")
 ```
 
-On Unix (adapt the path if needed):
+On Unix the interactive defaults to `fsharpi --readline-`, which should work with the open source release. Otherwise (adapt the path if needed):
 
 ```lisp
 (setq inferior-fsharp-program "mono ~/fsi.exe --readline-")

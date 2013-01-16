@@ -1,4 +1,4 @@
-;;; intellisense-sync.el --- Autocompletion support for F#
+;;; fsharp-mode-completion.el --- Autocompletion support for F#
 
 ;; Copyright (C) 2012-2013 Robin Neatherway
 
@@ -23,14 +23,17 @@
 ;; the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 ;; Boston, MA 02110-1301, USA.
 
+(defvar ac-fsharp-executable "fsautocomplete.exe")
+
 (defvar ac-fsharp-complete-command
-  (let ((exe (concat (file-name-directory (or load-file-name buffer-file-name))
-                     "/bin/fsautocomplete.exe")))
+  (let ((exe
+         (if (executable-find ac-fsharp-executable)
+             (executable-find ac-fsharp-executable)
+         (concat (file-name-directory (or load-file-name buffer-file-name))
+                 "/bin/" ac-fsharp-executable))))
     (case system-type
-      (windows-nt
-       exe)
-      (otherwise
-        (list "mono" exe)))))
+      (windows-nt exe)
+      (otherwise (list "mono" exe)))))
 
 (defvar ac-fsharp-status 'idle)
 (defvar ac-fsharp-completion-process nil)
@@ -62,7 +65,9 @@
              file
              (buffer-substring-no-properties (point-min) (point-max))))))
 
+;;;###autoload
 (defun ac-fsharp-load-project (file)
+  "Load the specified F# file as a project"
   (interactive "f")
   (log-psendstr ac-fsharp-completion-process
                 (format "project \"%s\"\n" (expand-file-name file))))
@@ -71,12 +76,15 @@
   (let ((request (format "completion \"%s\" %d %d\n" file line col)))
       (log-psendstr ac-fsharp-completion-process request)))
 
-(defun ac-fsharp-send-shutdown-command ()
+;;;###autoload
+(defun ac-fsharp-quit-completion-process ()
   (interactive)
   (log-psendstr ac-fsharp-completion-process "quit\n")
   (setq ac-fsharp-completion-process nil))
 
+;;;###autoload
 (defun ac-fsharp-launch-completion-process ()
+  "Launch the F# completion process in the background"
   (interactive)
   (message "Launching completion process")
   (setq ac-fsharp-completion-process
@@ -153,4 +161,4 @@
 
 (provide 'fsharp-mode-completion)
 
-;;; intellisense-sync.el ends here
+;;; fsharp-mode-completion.el ends here
