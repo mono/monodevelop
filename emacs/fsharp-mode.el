@@ -166,6 +166,7 @@
 
   (require 'fsharp-mode-indent)
   (require 'fsharp-mode-font)
+  (require 'fsharp-mode-completion)
   (kill-all-local-variables)
   (use-local-map fsharp-mode-map)
   (set-syntax-table fsharp-mode-syntax-table)
@@ -180,6 +181,8 @@
   (make-local-variable 'parse-sexp-ignore-comments)
   (make-local-variable 'indent-line-function)
   (make-local-variable 'add-log-current-defun-function)
+
+  (add-hook 'completion-at-point-functions #'ac-fsharp-completion-at-point)
 
   (setq major-mode              'fsharp-mode
         mode-name               "fsharp"

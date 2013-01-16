@@ -1,6 +1,6 @@
 ;;; intellisense-sync.el --- Autocompletion support for F#
 
-;; Copyright (C) 2012 Robin Neatherway
+;; Copyright (C) 2012-2013 Robin Neatherway
 
 ;; Author: Robin Neatherway <robin.neatherway@gmail.com>
 ;; Maintainer: Robin Neatherway <robin.neatherway@gmail.com>
@@ -23,9 +23,14 @@
 ;; the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 ;; Boston, MA 02110-1301, USA.
 
-(setq ac-fsharp-complete-executable
-      (concat (file-name-directory (or load-file-name buffer-file-name))
-              "/bin/fsautocomplete.exe"))
+(defvar ac-fsharp-complete-command
+  (let ((exe (concat (file-name-directory (or load-file-name buffer-file-name))
+                     "/bin/fsautocomplete.exe")))
+    (case system-type
+      (windows-nt
+       exe)
+      (otherwise
+        (list "mono" exe)))))
 
 (defvar ac-fsharp-status 'idle)
 (defvar ac-fsharp-completion-process nil)
@@ -44,116 +49,83 @@
           (with-current-buffer buf
             (goto-char (process-mark proc)))))))
 
-;; (process-buffer ac-fsharp-completion-process)
-;; (process-mark ac-fsharp-completion-process)
-;; (with-current-buffer
-;;     (process-buffer ac-fsharp-completion-process)
-;;   (point))
-
-;; (let ((proc ac-fsharp-completion-process)
-;;       (buf (process-buffer ac-fsharp-completion-process)))
-;;   (save-selected-window
-;;     (select-window (get-buffer-window buf))
-;;     (goto-char (process-mark proc))))
-
 (defun log-psendstr (proc str)
   (log-to-proc-buf proc str)
   (process-send-string proc str))
 
-(defun ac-fsharp-parse-file ()
-  (interactive)
-  (message "Parsing file")
+(defun ac-fsharp-parse-file (file)
   (save-restriction
     (widen)
     (log-psendstr
      ac-fsharp-completion-process
      (format "parse \"%s\" full\n%s\n<<EOF>>\n"
-             (buffer-file-name)
+             file
              (buffer-substring-no-properties (point-min) (point-max))))))
 
-(defun ac-fsharp-load-project ()
-  (interactive)
-  (message (format "Loading project %s" buffer-file-name))
+(defun ac-fsharp-load-project (file)
+  (interactive "f")
   (log-psendstr ac-fsharp-completion-process
-                (format "project \"%s\"\n" buffer-file-name)))
+                (format "project \"%s\"\n" (expand-file-name file))))
 
-(defun ac-fsharp-send-completion-request (line col)
-  (let ((request (format "completion \"%s\" %d %d\n"
-                               (buffer-file-name) line col)))
-    (message (format "Sending completion request for: '%s' of '%s'" ac-prefix request))
+(defun ac-fsharp-send-completion-request (file line col)
+  (let ((request (format "completion \"%s\" %d %d\n" file line col)))
       (log-psendstr ac-fsharp-completion-process request)))
-
 
 (defun ac-fsharp-send-shutdown-command ()
   (interactive)
-  (message "sending shut down")
-  (log-psendstr ac-fsharp-completion-process "quit\n"))
+  (log-psendstr ac-fsharp-completion-process "quit\n")
+  (setq ac-fsharp-completion-process nil))
 
 (defun ac-fsharp-launch-completion-process ()
   (interactive)
   (message "Launching completion process")
   (setq ac-fsharp-completion-process
         (let ((process-connection-type nil))
-          (case system-type
-            (windows-nt
-             (start-process "fsharp-complete"
-                            "*fsharp-complete*"
-                            ac-fsharp-complete-executable))
-            (otherwise
-             (start-process "fsharp-complete"
-                            "*fsharp-complete*"
-                            "mono" ac-fsharp-complete-executable)))))
+          (apply 'start-process
+                 "fsharp-complete"
+                 "*fsharp-complete*"
+                 ac-fsharp-complete-command)))
 
   (set-process-filter ac-fsharp-completion-process 'ac-fsharp-filter-output)
   (set-process-query-on-exit-flag ac-fsharp-completion-process nil)
 
   (setq ac-fsharp-status 'idle)
 
-  ;(add-hook 'kill-buffer-hook 'ac-fsharp-shutdown-process nil t)
   ;(add-hook 'before-save-hook 'ac-fsharp-reparse-buffer)
-
-  ;(local-set-key (kbd ".") 'ac-fsharp-async-preemptive))
+  ;(local-set-key (kbd ".") 'completion-at-point)
   )
 
 
 ; Consider using 'text' for filtering
-(defun fsharp-completions (line col text)
-  (message (format "fsharp-completions called for (%d,%d) and '%s'" line col text))
-  (progn
-    (setq ac-fsharp-status 'fetch-in-progress)
-    (setq ac-fsharp-data nil)
-    (ac-fsharp-parse-file)
-    (ac-fsharp-send-completion-request line col)
-    (while (eq ac-fsharp-status 'fetch-in-progress)
-      (accept-process-output ac-fsharp-completion-process))
-    ac-fsharp-data))
+(defun ac-fsharp-completions (file line col text)
+  (setq ac-fsharp-status 'fetch-in-progress)
+  (setq ac-fsharp-data nil)
+  (ac-fsharp-parse-file file)
+  (ac-fsharp-send-completion-request file line col)
+  (while (eq ac-fsharp-status 'fetch-in-progress)
+    (accept-process-output ac-fsharp-completion-process))
+  ac-fsharp-data)
 
-(defun fsharp-completion-at-point ()
+(defun ac-fsharp-completion-at-point ()
   "Return a function ready to interrogate the F# compiler service for completions at point."
-  (let ((end (point))
-        (start
-         (save-excursion
-           (skip-chars-backward "^ ." (line-beginning-position))
-           (point))))
-    (message (format "completion-at-point called for (%d,%d)" start end))
-    (list start end
-          (completion-table-dynamic
-           (apply-partially #'fsharp-completions
-                            (- (line-number-at-pos) 1)
-                            (current-column))))
-            ))
-
-(add-hook 'completion-at-point-functions #'fsharp-completion-at-point)
-;(set (make-local-variable 'gud-gdb-completion-function) 'gud-gdb-completions)
-
-;(local-set-key "\C-i" 'completion-at-point)
-;(local-set-key "\C-i" 'indent-for-tab-command)
+  (if ac-fsharp-completion-process
+      (let ((end (point))
+            (start
+             (save-excursion
+               (skip-chars-backward "^ ." (line-beginning-position))
+               (point))))
+        (list start end
+              (completion-table-dynamic
+               (apply-partially #'ac-fsharp-completions
+                                (buffer-file-name)
+                                (- (line-number-at-pos) 1)
+                                (current-column))))
+        )
+    nil))
 
 (defun ac-fsharp-stash-partial (str)
   (setq ac-fsharp-partial-data (concat ac-fsharp-partial-data str)))
 
-
-; str function is called whenever fsintellisense.exe writes something on stdout
 (defun ac-fsharp-filter-output (proc str)
 
   (log-to-proc-buf proc str)
@@ -172,12 +144,13 @@
            (setq str (replace-regexp-in-string "\n\n" "\n" str))
 
            (let ((help (split-string str "[\n]+" t)))
-             (message "ac-fsharp-filter-output setting current candidate")
              (setq ac-fsharp-data help)
              (setq ac-fsharp-status 'idle)
              ))))
     (otherwise
-     (message "filter output called and found <<EOF>> while not waiting")
+     ;(message "filter output called and found <<EOF>> while not waiting")
     )))
+
+(provide 'fsharp-mode-completion)
 
 ;;; intellisense-sync.el ends here
