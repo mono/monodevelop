@@ -6,7 +6,7 @@
 ;;         2010-2011 Laurent Le Brun <laurent@le-brun.eu>
 ;; Maintainer: Robin Neatherway <robin.neatherway@gmail.com>
 ;; Keywords: languages
-;; Version: 0.4
+;; Version: 0.5
 
 ;; This file is not part of GNU Emacs.
 
@@ -27,7 +27,7 @@
 
 ;;user customizable variables
 
-(defvar fsharp-mode-version 0.4
+(defvar fsharp-mode-version 0.5
   "Version of this fsharp-mode")
 
 (defvar fsharp-compiler "fsc"
