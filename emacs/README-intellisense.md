@@ -29,7 +29,7 @@ or set the variable `ac-fsharp-complete-command`:
 
 For windows, elide the `"mono"`.
 
-Then use `M-x ac-fsharp-launch-completion-process` to start the process in the background. Use `M-x ac-fsharp-load-project` to load the `.fsproj` file for your project. At this point, things should work: you can use `C-M-i` (which calls `completion-at-point` to complete. Please be patient, it can be slow, especially on the first call. If it locks up you can use `C-g`. Remember that this is a prototype still, but feel free to send feedback.
+Then use <kbd>M-x ac-fsharp-launch-completion-process</kbd> to start the process in the background. Use <kbd>M-x ac-fsharp-load-project</kbd> to load the `.fsproj` file for your project. At this point, things should work: you can use <kbd>C-M-i</kbd> (which calls `completion-at-point` to complete. Please be patient, it can be slow, especially on the first call. If it locks up you can use <kbd>C-g</kbd>. Remember that this is a prototype still, but feel free to send feedback.
 
 --Robin Neatherway
 
