@@ -398,9 +398,11 @@ module internal Main =
     | Project file ->
         // Load project file and store in state
         if File.Exists file then
-          let p = ProjectParser.load file
-          Console.WriteLine("DONE: Project loaded")
-          main { state with Project = Some p }
+          match ProjectParser.load file with
+          | Some p -> Console.WriteLine("DONE: Project loaded")
+                      main { state with Project = Some p }
+          | None   -> Console.Error.WriteLine(sprintf "ERROR: Project file '%s' is invalid" file)
+                      main state
         else
           Console.Error.WriteLine(sprintf "ERROR: File '%s' does not exist" file)
           main state

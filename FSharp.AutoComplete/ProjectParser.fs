@@ -42,10 +42,13 @@ module ProjectParser =
     do rar.AllowedAssemblyExtensions <- [| ".exe"; ".dll" |]
     rar
 
-  let load (uri: string) : ProjectResolver =
+  let load (uri: string) : Option<ProjectResolver> =
     let p = new Project()
-    p.Load(uri)
-    { project = p; rar =  mkrar () }
+    try
+      p.Load(uri)
+      Some { project = p; rar =  mkrar () }
+    with :? InvalidProjectFileException as e ->
+      None
 
   let getFileName (p: ProjectResolver) : string = p.project.FullFileName
 
