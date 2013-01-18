@@ -75,5 +75,7 @@
 	<false/>
 	<key>NSHighResolutionCapable</key>
 	<true/>
+	<key>XamarinBuildHash</key>
+	<string>@GIT_REVISION@</string>
 </dict>
 </plist>
