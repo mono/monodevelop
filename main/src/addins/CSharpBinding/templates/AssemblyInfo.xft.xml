@@ -20,7 +20,7 @@
 
 	<!-- Template Content -->
 	<TemplateFiles>
-		<File name="AssemblyInfo.cs" AddStandardHeader="True">
+        <File name="Properties/AssemblyInfo.cs" AddStandardHeader="True">
 			<![CDATA[using System.Reflection;
 using System.Runtime.CompilerServices;
 
