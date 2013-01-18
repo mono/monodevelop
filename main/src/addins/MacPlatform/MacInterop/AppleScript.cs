@@ -30,10 +30,6 @@ namespace MonoDevelop.MacInterop
 {
 	public static class AppleScript
 	{
-		static AppleScript ()
-		{
-		}
-
 		[DllImport (Carbon.CarbonLib)]
 		static extern OsaError OSADoScript (ComponentInstance scriptingComponent, ref AEDesc sourceData,
 		                                    OsaId contextID, DescType desiredType, OsaMode modeFlags,
@@ -81,6 +77,12 @@ namespace MonoDevelop.MacInterop
 				//apparently UnicodeText doesn't work
 				AppleEvent.AECreateDescAscii (scriptSource, out sourceData);
 				return Run (true, ref sourceData);
+			} catch (AppleScriptException ex) {
+				MonoDevelop.Core.LoggingService.LogWarning (
+					"Applescript failure: {0}\n[[\n{1}\n]]",
+					ex.Message,
+					scriptSource);
+				throw;
 			} finally {
 				AppleEvent.AEDisposeDesc (ref sourceData);
 			}
@@ -142,15 +144,14 @@ namespace MonoDevelop.MacInterop
 						}
 					}
 				}
-				AEDesc errorDesc = new AEDesc ();
+				var errorDesc = new AEDesc ();
 				try {
 					AppleEvent.AECreateDescNull (out resultData);
 					if (OsaError.Success == OSAScriptError (component, OsaErrorSelector.Message, resultType, out errorDesc)) {
 						value = AppleEvent.GetStringFromAEDesc (ref errorDesc);
 						return result;
-					} else {
-						throw new InvalidOperationException (string.Format ("Unexpected result: {0}", (long) result));
 					}
+					throw new AppleScriptException (result, null);
 				} finally {
 					AppleEvent.AEDisposeDesc (ref errorDesc);
 				}
@@ -280,13 +281,28 @@ namespace MonoDevelop.MacInterop
 		FullyQualifyDescriptors = 0x00080000,
 	}
 	
-	public class AppleScriptException : Exception {
-		public AppleScriptException (OsaError error, string message) : base (message)
+	public class AppleScriptException : Exception
+	{
+		public AppleScriptException (OsaError error, string returnValue)
+			: base (GetFullMessage (error, returnValue))
 		{
 			ErrorCode = error;
+			ReturnValue = returnValue;
+		}
+
+		static string GetFullMessage (OsaError error, string returnValue)
+		{
+			if (!string.IsNullOrEmpty (returnValue)) {
+				return string.Format ("{0}: {1}", error, returnValue);
+			}
+			return error.ToString ();
 		}
 		
 		public OsaError ErrorCode {
+			get; private set;
+		}
+
+		public string ReturnValue {
 			get; private set;
 		}
 	}

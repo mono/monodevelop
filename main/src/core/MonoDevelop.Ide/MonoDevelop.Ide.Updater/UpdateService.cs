@@ -51,10 +51,10 @@ namespace MonoDevelop.Ide.Updater
 		
 		public static bool AutoCheckForUpdates {
 			get {
-				return PropertyService.Get ("MonoDevelop.Ide.AddinUpdater.CkeckForUpdates", true);
+				return PropertyService.Get ("MonoDevelop.Ide.AddinUpdater.CheckForUpdates", true);
 			}
 			set {
-				PropertyService.Set ("MonoDevelop.Ide.AddinUpdater.CkeckForUpdates", value);
+				PropertyService.Set ("MonoDevelop.Ide.AddinUpdater.CheckForUpdates", value);
 			}
 		}
 		

@@ -163,9 +163,6 @@
     <EmbeddedResource Include="icons\csharp-icon-32.png">
       <LogicalName>csharp-icon-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="gtk-gui\objects.xml">
-      <LogicalName>objects.xml</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="templates\AssemblyInfo.xft.xml">
       <LogicalName>AssemblyInfo.xft.xml</LogicalName>
     </EmbeddedResource>

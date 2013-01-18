@@ -38,8 +38,8 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 {
 	class NRefactoryIssueProvider : CodeIssueProvider
 	{
-		readonly List<List<string>> actionIdList = new List<List<string>> ();
 		ICSharpCode.NRefactory.CSharp.Refactoring.ICodeIssueProvider issueProvider;
+		readonly string providerIdString;
 
 		public override string IdString {
 			get {
@@ -50,6 +50,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 		public NRefactoryIssueProvider (ICSharpCode.NRefactory.CSharp.Refactoring.ICodeIssueProvider issue, IssueDescriptionAttribute attr)
 		{
 			issueProvider = issue;
+			providerIdString = issueProvider.GetType ().FullName;
 			Category = GettextCatalog.GetString (attr.Category ?? "");
 			Title = GettextCatalog.GetString (attr.Title ?? "");
 			Description = GettextCatalog.GetString (attr.Description ?? "");
@@ -63,7 +64,6 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			var context = ctx as MDRefactoringContext;
 			if (context == null || context.IsInvalid || context.RootNode == null)
 				yield break;
-			int issueNum = 0;
 			foreach (var action in issueProvider.GetIssues (context)) {
 				if (cancellationToken.IsCancellationRequested)
 					yield break;
@@ -71,11 +71,6 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 					LoggingService.LogError ("NRefactory actions == null in :" + Title);
 					continue;
 				}
-				if (actionIdList.Count <= issueNum)
-					actionIdList.Add (new List<string> ());
-				var actionId = actionIdList [issueNum];
-				int actionNum = 0;
-				
 				var actions = new List<MonoDevelop.CodeActions.CodeAction> ();
 				foreach (var act in action.Actions) {
 					if (cancellationToken.IsCancellationRequested)
@@ -84,10 +79,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 						LoggingService.LogError ("NRefactory issue action was null in :" + Title);
 						continue;
 					}
-					if (actionId.Count <= actionNum)
-						actionId.Add (issueProvider.GetType ().FullName + "'" + issueNum + "'" + actionNum);
-					actions.Add (new NRefactoryCodeAction (actionId[actionNum], act.Description, act));
-					actionNum++;
+					actions.Add (new NRefactoryCodeAction (providerIdString, act.Description, act));
 				}
 				var issue = new CodeIssue (
 					GettextCatalog.GetString (action.Description ?? ""),
@@ -96,7 +88,6 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 					actions
 				);
 				yield return issue;
-				issueNum ++;
 			}
 		}
 	}

@@ -129,8 +129,12 @@ namespace MonoDevelop.SourceEditor
 					expression = lr.Variable.Name;
 					length = expression.Length;
 					
-					// Calculate start offset based on the end offset because we don't want to include the type information.
-					startOffset = endOffset - length;
+					// Calculate start offset based on the variable region because we don't want to include the type information.
+					// Note: We might not actually need to do this anymore?
+					if (lr.Variable.Region.BeginLine != start.Line || lr.Variable.Region.BeginColumn != start.Column) {
+						start = new DocumentLocation (lr.Variable.Region.BeginLine, lr.Variable.Region.BeginColumn);
+						startOffset = editor.Document.LocationToOffset (start);
+					}
 				} else if (res is InvocationResolveResult) {
 					var ir = (InvocationResolveResult) res;
 					

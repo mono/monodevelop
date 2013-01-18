@@ -225,7 +225,7 @@
 		         defaultHandler = "MonoDevelop.CSharp.ShrinkSelectionHandler"
 		         shortcut = "Alt|Shift|Down"
 		         macShortcut = "Alt|Shift|Down"
-		         _label = "_Expand selection"/>
+		         _label = "_Shrink selection"/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Refactoring/CodeGenerators">

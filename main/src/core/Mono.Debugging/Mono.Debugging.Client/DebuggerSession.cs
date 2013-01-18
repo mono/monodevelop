@@ -48,8 +48,6 @@ namespace Mono.Debugging.Client
 	{
 		InternalDebuggerSession frontend;
 		Dictionary<BreakEvent,BreakEventInfo> breakpoints = new Dictionary<BreakEvent,BreakEventInfo> ();
-		bool isRunning;
-		bool started;
 		BreakpointStore breakpointStore;
 		OutputWriterDelegate outputWriter;
 		OutputWriterDelegate logWriter;
@@ -250,7 +248,7 @@ namespace Mono.Debugging.Client
 					ownedBreakpointStore = false;
 					
 					if (breakpointStore != null) {
-						if (started) {
+						if (IsConnected) {
 							foreach (BreakEvent bp in breakpointStore)
 								AddBreakEvent (bp);
 						}
@@ -503,7 +501,7 @@ namespace Mono.Debugging.Client
 		/// </summary>
 		public BreakEventStatus GetBreakEventStatus (BreakEvent be)
 		{
-			if (started) {
+			if (IsConnected) {
 				BreakEventInfo binfo;
 				lock (breakpoints) {
 					if (breakpoints.TryGetValue (be, out binfo))
@@ -512,13 +510,13 @@ namespace Mono.Debugging.Client
 			}
 			return BreakEventStatus.NotBound;
 		}
-		
+
 		/// <summary>
 		/// Returns a status message of a breakpoint for this debugger session.
 		/// </summary>
 		public string GetBreakEventStatusMessage (BreakEvent be)
 		{
-			if (started) {
+			if (IsConnected) {
 				BreakEventInfo binfo;
 				lock (breakpoints) {
 					if (breakpoints.TryGetValue (be, out binfo)) {
@@ -573,7 +571,7 @@ namespace Mono.Debugging.Client
 					try {
 						OnRemoveBreakEvent (binfo);
 					} catch (Exception ex) {
-						if (started)
+						if (IsConnected)
 							OnDebuggerOutput (false, ex.Message);
 						HandleException (ex);
 						return false;
@@ -592,7 +590,7 @@ namespace Mono.Debugging.Client
 					try {
 						OnEnableBreakEvent (binfo, be.Enabled);
 					} catch (Exception ex) {
-						if (started)
+						if (IsConnected)
 							OnDebuggerOutput (false, ex.Message);
 						HandleException (ex);
 					}
@@ -616,7 +614,7 @@ namespace Mono.Debugging.Client
 					return;
 			}
 			lock (slock) {
-				if (started)
+				if (IsConnected)
 					AddBreakEvent (args.BreakEvent);
 			}
 		}
@@ -628,7 +626,7 @@ namespace Mono.Debugging.Client
 					return;
 			}
 			lock (slock) {
-				if (started)
+				if (IsConnected)
 					RemoveBreakEvent (args.BreakEvent);
 			}
 		}
@@ -636,7 +634,7 @@ namespace Mono.Debugging.Client
 		void OnBreakpointModified (object s, BreakEventArgs args)
 		{
 			lock (slock) {
-				if (started)
+				if (IsConnected)
 					UpdateBreakEvent (args.BreakEvent);
 			}
 		}
@@ -644,7 +642,7 @@ namespace Mono.Debugging.Client
 		void OnBreakpointStatusChanged (object s, BreakEventArgs args)
 		{
 			lock (slock) {
-				if (started)
+				if (IsConnected)
 					UpdateBreakEventStatus (args.BreakEvent);
 			}
 		}
@@ -733,18 +731,21 @@ namespace Mono.Debugging.Client
 		/// Gets a value indicating whether the debuggee is currently connected
 		/// </summary>
 		public bool IsConnected {
-			get {
-				return started;
-			}
+			get; private set;
 		}
 		
 		/// <summary>
 		/// Gets a value indicating whether the debuggee is currently running (not paused by the debugger)
 		/// </summary>
 		public bool IsRunning {
-			get {
-				return isRunning;
-			}
+			get; private set;
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether the debuggee has exited.
+		/// </summary>
+		public bool HasExited {
+			get; protected set;
 		}
 		
 		/// <summary>
@@ -977,68 +978,69 @@ namespace Mono.Debugging.Client
 
 			EventHandler<TargetEventArgs> evnt = null;
 			switch (args.Type) {
-				case TargetEventType.ExceptionThrown:
-					lock (slock) {
-						isRunning = false;
-						args.IsStopEvent = true;
-					}
-					evnt = TargetExceptionThrown;
-					break;
-				case TargetEventType.TargetExited:
-					lock (slock) {
-						isRunning = false;
-						started = false;
-					}
-					EventHandler exited = TargetExited;
-					if (exited != null)
-						exited (this, args);
-					break;
-				case TargetEventType.TargetHitBreakpoint:
-					lock (slock) {
-						isRunning = false;
-						args.IsStopEvent = true;
-					}
-					evnt = TargetHitBreakpoint;
-					break;
-				case TargetEventType.TargetInterrupted:
-					lock (slock) {
-						isRunning = false;
-						args.IsStopEvent = true;
-					}
-					evnt = TargetInterrupted;
-					break;
-				case TargetEventType.TargetSignaled:
-					lock (slock) {
-						isRunning = false;
-						args.IsStopEvent = true;
-					}
-					evnt = TargetSignaled;
-					break;
-				case TargetEventType.TargetStopped:
-					lock (slock) {
-						isRunning = false;
-						args.IsStopEvent = true;
-					}
-					evnt = TargetStopped;
-					break;
-				case TargetEventType.UnhandledException:
-					lock (slock) {
-						isRunning = false;
-						args.IsStopEvent = true;
-					}
-					evnt = TargetUnhandledException;
-					break;
-				case TargetEventType.TargetReady:
-					evnt = TargetReady;
-					break;
-				case TargetEventType.ThreadStarted:
-					evnt = TargetThreadStarted;
-					break;
-				case TargetEventType.ThreadStopped:
-					evnt = TargetThreadStopped;
-					break;
+			case TargetEventType.ExceptionThrown:
+				lock (slock) {
+					IsRunning = false;
+					args.IsStopEvent = true;
+				}
+				evnt = TargetExceptionThrown;
+				break;
+			case TargetEventType.TargetExited:
+				lock (slock) {
+					IsRunning = false;
+					IsConnected = false;
+					HasExited = true;
+				}
+				EventHandler handler = TargetExited;
+				if (handler != null)
+					handler (this, args);
+				break;
+			case TargetEventType.TargetHitBreakpoint:
+				lock (slock) {
+					IsRunning = false;
+					args.IsStopEvent = true;
+				}
+				evnt = TargetHitBreakpoint;
+				break;
+			case TargetEventType.TargetInterrupted:
+				lock (slock) {
+					IsRunning = false;
+					args.IsStopEvent = true;
+				}
+				evnt = TargetInterrupted;
+				break;
+			case TargetEventType.TargetSignaled:
+				lock (slock) {
+					IsRunning = false;
+					args.IsStopEvent = true;
+				}
+				evnt = TargetSignaled;
+				break;
+			case TargetEventType.TargetStopped:
+				lock (slock) {
+					IsRunning = false;
+					args.IsStopEvent = true;
+				}
+				evnt = TargetStopped;
+				break;
+			case TargetEventType.UnhandledException:
+				lock (slock) {
+					IsRunning = false;
+					args.IsStopEvent = true;
+				}
+				evnt = TargetUnhandledException;
+				break;
+			case TargetEventType.TargetReady:
+				evnt = TargetReady;
+				break;
+			case TargetEventType.ThreadStarted:
+				evnt = TargetThreadStarted;
+				break;
+			case TargetEventType.ThreadStopped:
+				evnt = TargetThreadStopped;
+				break;
 			}
-			
+
 			if (evnt != null)
 				evnt (this, args);
 
@@ -1049,7 +1051,7 @@ namespace Mono.Debugging.Client
 		
 		internal void OnRunning ()
 		{
-			isRunning = true;
+			IsRunning = true;
 			if (TargetStarted != null)
 				TargetStarted (this, EventArgs.Empty);
 		}
@@ -1061,11 +1063,17 @@ namespace Mono.Debugging.Client
 		
 		internal protected virtual void OnStarted (ThreadInfo t)
 		{
+			if (HasExited)
+				return;
+
 			OnTargetEvent (new TargetEventArgs (TargetEventType.TargetReady) { Thread = t });
+
 			lock (slock) {
-				started = true;
-				foreach (BreakEvent bp in breakpointStore)
-					AddBreakEvent (bp);
+				if (!HasExited) {
+					IsConnected = true;
+					foreach (BreakEvent bp in breakpointStore)
+						AddBreakEvent (bp);
+				}
 			}
 		}
 		

@@ -489,6 +489,9 @@ namespace MonoDevelop.Ide
 			AppDomain.CurrentDomain.UnhandledException += delegate (object sender, UnhandledExceptionEventArgs args) {
 				HandleException ((Exception)args.ExceptionObject, args.IsTerminating);
 			};
+			Xwt.Application.UnhandledException += (sender, e) => {
+				HandleException (e.ErrorException, false);
+			};
 		}
 		
 		void HandleException (Exception ex, bool willShutdown)
