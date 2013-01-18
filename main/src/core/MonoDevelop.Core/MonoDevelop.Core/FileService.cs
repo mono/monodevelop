@@ -33,7 +33,6 @@ using System.IO;
 using System.Text;
 
 using Mono.Addins;
-using Mono.Unix.Native;
 using MonoDevelop.Core.FileSystem;
 using System.Collections.Generic;
 using System.Threading;
@@ -465,12 +464,6 @@ namespace MonoDevelop.Core
 		// Atomic rename of a file. It does not fire events.
 		public static void SystemRename (string sourceFile, string destFile)
 		{
-			if (string.IsNullOrEmpty (sourceFile))
-				throw new ArgumentException ("sourceFile");
-
-			if (string.IsNullOrEmpty (destFile))
-				throw new ArgumentException ("destFile");
-
 			//FIXME: use the atomic System.IO.File.Replace on NTFS
 			if (Platform.IsWindows) {
 				string wtmp = null;
@@ -504,22 +497,7 @@ namespace MonoDevelop.Core
 				}
 			}
 			else {
-				switch (Syscall.rename (sourceFile, destFile)) {
-				case 0: return;
-				case Errno.EACCES:
-				case Errno.EPERM:
-					throw new UnauthorizedAccessException ();
-				case Errno.EINVAL:
-					throw new InvalidOperationException ();
-				case Errno.ENOTDIR:
-					throw new DirectoryNotFoundException ();
-				case Errno.ENOENT:
-					throw new FileNotFoundException ();
-				case Errno.ENAMETOOLONG:
-					throw new PathTooLongException ();
-				default:
-					throw new IOException ();
-				}
+				Mono.Unix.Native.Syscall.rename (sourceFile, destFile);
 			}
 		}
 		
