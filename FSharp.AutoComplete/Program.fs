@@ -111,12 +111,6 @@ type internal IntelliSenseAgent() =
           return! loop errors }
     loop [||] )
 
-  /// Returns default F# compiler options for the specified script file (FSX)
-  member x.CreateScriptOptions(file, source) =
-    RequestOptions
-      ( checker.GetCheckOptionsFromScriptRoot(file, source, DateTime.Now),
-        file, source )
-
   // Copy-paste from monodevelop binding LanguageService.fs and modified
   member x.GetCheckerOptions(fileName, source, proj:Option<ProjectParser.ProjectResolver>) =
     let ext = Path.GetExtension(fileName)
@@ -127,7 +121,6 @@ type internal IntelliSenseAgent() =
       | Some _, ".fsscript" ->
 
         // We are in a stand-alone file or we are in a project, but currently editing a script file
-        //Debug.WriteLine (sprintf "CheckOptions: Creating for stand-alone file or script: '%s'" fileName )
         checker.GetCheckOptionsFromScriptRoot(fileName, source, System.DateTime.Now)
 
           // The InteractiveChecker resolution doesn't sometimes
@@ -139,7 +132,6 @@ type internal IntelliSenseAgent() =
       // We are in a project - construct options using current properties
       | Some proj, _ ->
         let projFile = ProjectParser.getFileName proj
-         //Debug.WriteLine (sprintf "CheckOptions: Creating for file '%s' in project '%s'" fileName projFile)
         let files = ProjectParser.getFiles proj
         let args = ProjectParser.getOptions proj
 
@@ -165,27 +157,38 @@ type internal IntelliSenseAgent() =
     agent.Post(TriggerParseRequest(opts, full))
 
   /// Invokes dot-completion request and writes information to the standard output
-  member x.DoCompletion(opts, ((line, column) as pos), lineStr, time) =
-    Debug.print "DoCompletion request with options: %O" opts
+  member x.DoCompletion(opts : RequestOptions, ((line, column) as pos), lineStr, time) =
+    //Debug.print "DoCompletion request with options: %O" opts
     try
-      try
-        // Get the long identifier before the current location
-        // 'residue' is the part after the last dot and 'longName' is before
-        // e.g.  System.Console.Wri  --> "Wri", [ "System"; "Console"; ]
-        let lookBack = Parsing.createBackStringReader lineStr (column - 1)
-        let residue, longName =
-          lookBack |> Parsing.getFirst Parsing.parseBackIdentWithResidue
+      let info =
+        // First check if cached results are available
+        let checkres = checker.TryGetRecentTypeCheckResultsForFile(opts.FileName, opts.Options)
+        Debug.print "Checkres: %A" checkres
+        match checkres with
+        | Some(untyped, typed, _) when typed.TypeCheckInfo.IsSome ->
+            Debug.print "Worker: Quick parse completed - success"
+            typed.TypeCheckInfo
+        | _ ->
+          Debug.print
+          try
+            // Otherwise try to get type information & run the request
+            let op = agent.PostAndAsyncReply(fun r -> GetTypeCheckInfo(opts, time, r))
+            Async.RunSynchronously(op, ?timeout = time)
+          with :? OperationCanceledException -> None
 
-        // Try to get type information & run the request
-        let op = agent.PostAndAsyncReply(fun r -> GetTypeCheckInfo(opts, time, r))
-        let info = Async.RunSynchronously(op, ?timeout = time)
-        match info with
-        | Some(info) ->
-            // Get items & generate output
-            let decls = info.GetDeclarations(pos, lineStr, (longName, residue), 0, defaultArg time 1000)
-            for d in decls.Items do Console.WriteLine(d.Name)
-        | None -> ()
-      with :? OperationCanceledException -> ()
+      match info with
+      | Some(info) ->
+          // Get the long identifier before the current location
+          // 'residue' is the part after the last dot and 'longName' is before
+          // e.g.  System.Console.Wri  --> "Wri", [ "System"; "Console"; ]
+          let lookBack = Parsing.createBackStringReader lineStr (column - 1)
+          let residue, longName =
+            lookBack |> Parsing.getFirst Parsing.parseBackIdentWithResidue
+
+          // Get items & generate output
+          let decls = info.GetDeclarations(pos, lineStr, (longName, residue), 0, defaultArg time 1000)
+          for d in decls.Items do Console.WriteLine(d.Name)
+      | None -> Debug.print "DoCompletion failed to get typed info"
     finally Console.WriteLine("<<EOF>>")
 
 
