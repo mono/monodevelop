@@ -65,9 +65,10 @@ namespace MonoDevelop.Ide.Gui
 				
 				// this does not yet work with relative paths
 				if (a[0] == '~') {
-					a = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), a.Substring (1));
+					var sf = MonoDevelop.Core.Platform.IsWindows ? Environment.SpecialFolder.UserProfile : Environment.SpecialFolder.Personal;
+					a = Path.Combine (Environment.GetFolderPath (sf), a.Substring (1));
 				}
-				
+
 				if (fileMatch != null && fileMatch.Success) {
 					string filename = fileMatch.Groups["filename"].Value;
 					if (File.Exists (filename)) {
