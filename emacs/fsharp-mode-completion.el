@@ -39,6 +39,7 @@
 (defvar ac-fsharp-completion-process nil)
 (defvar ac-fsharp-partial-data "")
 (defvar ac-fsharp-data "")
+(defvar ac-fsharp-completion-cache nil)
 
 (defun log-to-proc-buf (proc str)
   (let ((buf (process-buffer proc))
@@ -69,6 +70,7 @@
 (defun ac-fsharp-load-project (file)
   "Load the specified F# file as a project"
   (interactive "f")
+  (setq ac-fsharp-completion-cache nil)
   (log-psendstr ac-fsharp-completion-process
                 (format "project \"%s\"\n" (expand-file-name file))))
 
@@ -105,17 +107,26 @@
 
 
 ; Consider using 'text' for filtering
+; TODO: This caching is a bit optimistic. It might not always be correct
+;       to use the cached values if the line and col just happen to line up.
+;       Could dirty cache on idle, or include timestamps and ignore values
+;       older than a few seconds.
 (defun ac-fsharp-completions (file line col text)
   (setq ac-fsharp-status 'fetch-in-progress)
   (setq ac-fsharp-data nil)
-  (ac-fsharp-parse-file file)
-  (ac-fsharp-send-completion-request file line col)
-  (while (eq ac-fsharp-status 'fetch-in-progress)
-    (accept-process-output ac-fsharp-completion-process))
-  ac-fsharp-data)
+  (let ((cache (assoc file ac-fsharp-completion-cache)))
+    (if (and cache (equal (cddr cache) (list line col)))
+        (cadr cache)
+      (ac-fsharp-parse-file file)
+      (ac-fsharp-send-completion-request file line col)
+      (while (eq ac-fsharp-status 'fetch-in-progress)
+        (accept-process-output ac-fsharp-completion-process))
+      (push (list file ac-fsharp-data line col) ac-fsharp-completion-cache)
+      ac-fsharp-data)
+    ))
 
 (defun ac-fsharp-completion-at-point ()
-  "Return a function ready to interrogate the F# compiler service for completions at point."
+  "Return a function ready to interrogate the F# compiler service for completions at point."G    q
   (if ac-fsharp-completion-process
       (let ((end (point))
             (start
