@@ -17,21 +17,17 @@
 
 
 Name:           monodevelop
-BuildRequires:  gtk-sharp2
-BuildRequires:  gconf-sharp2
-BuildRequires:  glade-sharp2
-BuildRequires:  gnome-sharp2
-BuildRequires:  gtksourceview-sharp2
-# TODO: Add build requirements for ASP.NET
-#BuildRequires:  gecko-sharp2
-#BuildRequires:  jscall-sharp
-BuildRequires:  mono-addins
-BuildRequires:  mono-devel
+BuildRequires:  pkgconfig(gtk-sharp-2.0)
+BuildRequires:  pkgconfig(glade-sharp-2.0)
+BuildRequires:  pkgconfig(glib-sharp-2.0)
+BuildRequires:  pkgconfig(gnome-sharp-2.0)
+BuildRequires:  pkgconfig(mono-addins)
+BuildRequires:  pkgconfig(mono)
+BuildRequires:  pkgconfig(monodoc)
 BuildRequires:  mono-data
 BuildRequires:  mono-data-postgresql
-BuildRequires:  mono-nunit
-BuildRequires:  mono-wcf
-BuildRequires:  monodoc-core
+BuildRequires:  pkgconfig(mono-nunit)
+BuildRequires:  pkgconfig(wcf)
 # Mono.Cecil.dll requires rsync after it's build
 BuildRequires:  rsync
 BuildRequires:  autoconf
@@ -52,23 +48,18 @@ Requires:       mono-basic
 Requires:       mono-devel
 Requires:       mono-tools
 Requires:       pkgconfig
-PreReq:         shared-mime-info
-%if 0%{?suse_version}
-%if %{suse_version} > 1100
-BuildRequires:  gnome-print-sharp
+%if 0%{?suse_version} > 1100
+BuildRequires:  pkgconfig(gnome-print-sharp-2.18)
+BuildRequires:  pkgconfig(gconf-sharp-2.0)
+BuildRequires:  pkgconfig(gtksourceview-sharp-2.0)
+# TODO: Add build requirements for ASP.NET
+#BuildRequires:  pkgconfig(gecko-sharp-2.0)
+#BuildRequires:  pkgconfig(jscall-sharp)
 %endif
-BuildRequires:  desktop-file-utils update-desktop-files
-%endif
-%if 0%{?fedora_version}
+BuildRequires:  desktop-file-utils
+
+%if 0%{?fedora} || 0%{?rhel_version}
 %define env_options export MONO_SHARED_DIR=/tmp
-# TODO: what to do here on fedora?
-%define suse_update_desktop_file true
-%define run_suseconfig true
-%endif
-%if 0%{?rhel_version}
-%define env_options export MONO_SHARED_DIR=/tmp
-%define suse_update_desktop_file true
-%define run_suseconfig true
 %endif
 
 %description
@@ -92,11 +83,11 @@ make
 
 %install
 %{?env_options}
-make install DESTDIR=$RPM_BUILD_ROOT GACUTIL_FLAGS="/package monodevelop /root ${RPM_BUILD_ROOT}/usr/%_lib"
+make install DESTDIR=%{buildroot} GACUTIL_FLAGS="/package monodevelop /root %{buildroot}%{_prefix}/%{_lib}"
 #
-mkdir -p $RPM_BUILD_ROOT/usr/share/pkgconfig
-mv $RPM_BUILD_ROOT/usr/lib/pkgconfig/* $RPM_BUILD_ROOT/usr/share/pkgconfig
-%suse_update_desktop_file -N "Mono Development Environment" -G "Integrated Development Environment" -C "Develop software using Mono tools" %name "Application Development IDE"
+mkdir -p %{buildroot}%{_prefix}/share/pkgconfig
+mv %{buildroot}/usr/lib/pkgconfig/* %{buildroot}%{_datadir}/pkgconfig
+desktop-file-install --dir=%{buildroot}/%{_datadir}/applications monodevelop.desktop
 %find_lang %{name}
 
 %files -f %{name}.lang
@@ -114,15 +105,10 @@ mv $RPM_BUILD_ROOT/usr/lib/pkgconfig/* $RPM_BUILD_ROOT/usr/share/pkgconfig
 
 %post
 update-mime-database /usr/share/mime >/dev/null || :
-%run_suseconfig -m gtk2
 
 %postun
 update-mime-database /usr/share/mime >/dev/null || :
-%run_suseconfig -m gtk2
-%if 0%{?fedora_version} || 0%{?rhel_version}
-# Allows overrides of __find_provides in fedora distros... (already set to zero on newer suse distros)
-%define _use_internal_dependency_generator 0
-%endif
+
 %define __find_provides env sh -c 'filelist=($(cat)) && { printf "%s\\n" "${filelist[@]}" | /usr/lib/rpm/find-provides && printf "%s\\n" "${filelist[@]}" | /usr/bin/mono-find-provides ; } | sort | uniq'
 %define __find_requires env sh -c 'filelist=($(cat)) && { printf "%s\\n" "${filelist[@]}" | /usr/lib/rpm/find-requires && printf "%s\\n" "${filelist[@]}" | /usr/bin/mono-find-requires ; } | sort | uniq'
 
