@@ -26,7 +26,7 @@ module Reflection =
       FSharpValue.MakeFunction(typeof<'R>, fun args ->
         // We treat elements of a tuple passed as argument as a list of arguments
         // When the 'o' object is 'System.Type', we call static methods
-        let methods, instance, args = 
+        let methods, instance, args, owner = 
           let args = 
             if Object.Equals(argType, typeof<unit>) then [| |]
             elif not(FSharpType.IsTuple(argType)) then [| args |]
@@ -34,9 +34,11 @@ module Reflection =
           if (typeof<System.Type>).IsAssignableFrom(o.GetType()) then 
             let methods = (unbox<Type> o).GetMethods(staticFlags) |> Array.map asMethodBase
             let ctors = (unbox<Type> o).GetConstructors(ctorFlags) |> Array.map asMethodBase
-            Array.concat [ methods; ctors ], null, args
+            let owner = (unbox<Type> o).Name + " (static)"
+            Array.concat [ methods; ctors ], null, args, owner
           else 
-            o.GetType().GetMethods(instanceFlags) |> Array.map asMethodBase, o, args
+            let owner = o.GetType().Name + " (instance)"
+            o.GetType().GetMethods(instanceFlags) |> Array.map asMethodBase, o, args, owner
         
         // A simple overload resolution based on the name and number of parameters only
         let methods = 
@@ -45,8 +47,8 @@ module Reflection =
               if m.Name = name && m.IsGenericMethod &&
                  m.GetGenericArguments().Length + m.GetParameters().Length = args.Length then yield m ]
         match methods with 
-        | [] -> failwithf "No method '%s' with %d arguments found" name args.Length
-        | _::_::_ -> failwithf "Multiple methods '%s' with %d arguments found" name args.Length
+        | [] -> failwithf "No method '%s' with %d arguments found in %s" name args.Length owner
+        | _::_::_ -> failwithf "Multiple methods '%s' with %d arguments found %s" name args.Length owner
         | [:? ConstructorInfo as c] -> c.Invoke(args)
         | [ m ] when m.IsGenericMethod ->
             let tyCount = m.GetGenericArguments().Length
