@@ -73,12 +73,12 @@ namespace MonoDevelop.Ide.Gui
 					string filename = fileMatch.Groups["filename"].Value;
 					if (File.Exists (filename)) {
 						int line = 1, column = 1;
-						a = a.Replace (filename, Path.GetFullPath (filename));
+						filename = Path.GetFullPath (filename);
 						if (fileMatch.Groups["line"].Success)
 							int.TryParse (fileMatch.Groups["line"].Value, out line);
 						if (fileMatch.Groups["column"].Success)
 							int.TryParse (fileMatch.Groups["column"].Value, out column);
-						var file = new FileOpenInformation (a, line, column, OpenDocumentOptions.Default);
+						var file = new FileOpenInformation (filename, line, column, OpenDocumentOptions.Default);
 						requestedFileList.Add (file);
 					}
 				} else if (a[0] == '-' || a[0] == '/') {
