@@ -135,7 +135,7 @@ type internal IntelliSenseAgent() =
         let files = ProjectParser.getFiles proj
         let args = ProjectParser.getOptions proj
 
-        CheckOptions.Create(projFile, files, args, false, false, System.DateTime.Now)
+        CheckOptions.Create(projFile, files, args, false, false, ProjectParser.getLoadTime proj)
 
      // Print contents of check option for debugging purposes
      // Debug.WriteLine(sprintf "Checkoptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A"
@@ -163,7 +163,6 @@ type internal IntelliSenseAgent() =
       let info =
         // First check if cached results are available
         let checkres = checker.TryGetRecentTypeCheckResultsForFile(opts.FileName, opts.Options)
-        Debug.print "Checkres: %A" checkres
         match checkres with
         | Some(untyped, typed, _) when typed.TypeCheckInfo.IsSome ->
             Debug.print "Worker: Quick parse completed - success"
