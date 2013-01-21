@@ -1671,8 +1671,11 @@ namespace MonoDevelop.Ide
 					return;
 				}
 			}
-			
-			monitor.BeginTask (GettextCatalog.GetString ("Copying files..."), filesToMove.Count);
+
+			if (removeFromSource)
+				monitor.BeginTask (GettextCatalog.GetString ("Moving files..."), filesToMove.Count);
+			else
+				monitor.BeginTask (GettextCatalog.GetString ("Copying files..."), filesToMove.Count);
 			
 			ProjectFile targetParent = null;
 			foreach (ProjectFile file in filesToMove) {
@@ -1697,12 +1700,20 @@ namespace MonoDevelop.Ide
 						FilePath fileDir = newFile.ParentDirectory;
 						if (!Directory.Exists (fileDir) && !file.IsLink)
 							FileService.CreateDirectory (fileDir);
-						if (removeFromSource)
+						if (removeFromSource) {
+							// File.Move() does not have an overwrite argument and will fail if the destFile path exists, however, the user
+							// has already chosen to overwrite the destination file.
+							if (File.Exists (newFile))
+								File.Delete (newFile);
+
 							FileService.MoveFile (sourceFile, newFile);
-						else
+						} else
 							FileService.CopyFile (sourceFile, newFile);
 					} catch (Exception ex) {
-						monitor.ReportError (GettextCatalog.GetString ("File '{0}' could not be created.", newFile), ex);
+						if (removeFromSource)
+							monitor.ReportError (GettextCatalog.GetString ("File '{0}' could not be moved.", sourceFile), ex);
+						else
+							monitor.ReportError (GettextCatalog.GetString ("File '{0}' could not be copied.", sourceFile), ex);
 						monitor.Step (1);
 						continue;
 					}
