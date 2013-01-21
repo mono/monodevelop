@@ -34,6 +34,12 @@
 (defvar fsharp-display-when-eval t
   "*If true, display the inferior fsharp buffer when evaluating expressions.")
 
+(defvar inferior-fsharp-program
+  (case system-type
+    (windows-nt "fsi.exe")
+    (otherwise "fsharpi --readline-"))
+  "*Program name for invoking an inferior fsharp from Emacs.")
+
 
 ;; End of User modifiable variables
 
@@ -44,9 +50,6 @@
         (copy-keymap comint-mode-map)))
 
 ;; Augment fsharp mode, so you can process fsharp code in the source files.
-
-(defvar inferior-fsharp-program "fsharp"
-  "*Program name for invoking an inferior fsharp from Emacs.")
 
 (defun inferior-fsharp-mode ()
   "Major mode for interacting with an inferior fsharp process.

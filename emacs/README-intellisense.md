@@ -1,5 +1,38 @@
 # Experimental support for Intellisense in Emacs
 
+## January 2013
+
+Intellisense now currently uses standard completion-at-point interface. May go back to using the autocomplete package later.
+
+* fsharp-mode-completion.el  - new intellisense approach
+* intelli_tip.el             - old tooltip generation, currently disabled
+
+If installing this package manually, then append the following to the lisp you used to load fsharp-mode:
+
+```lisp
+(autoload 'ac-fsharp-launch-completion-process "fsharp-mode-completion" "Launch the completion process" t)
+(autoload 'ac-fsharp-quit-completion-process "fsharp-mode-completion" "Quit the completion process" t)
+(autoload 'ac-fsharp-load-project "fsharp-mode-completion" "Load the specified F# project" t)
+```
+
+The completion process expects to find `fsautocomplete.exe` in a `bin` subdirectory of the current directory. You will need to compile FSharp.AutoComplete and place the following files in `bin`:
+
+* fsautocomplete.exe
+* FSharp.CompilerBinding.dll
+* NDesk.Options.dll
+
+or set the variable `ac-fsharp-complete-command`:
+
+```lisp
+(setq ac-fsharp-complete-command '("mono" "<path>/<to>/<it>/fsautocomplete.exe"))
+```
+
+For windows, elide the `"mono"`.
+
+Then use <kbd>M-x ac-fsharp-launch-completion-process</kbd> to start the process in the background. Use <kbd>M-x ac-fsharp-load-project</kbd> to load the `.fsproj` file for your project. At this point, things should work: you can use <kbd>C-M-i</kbd> (which calls `completion-at-point` to complete. Please be patient, it can be slow, especially on the first call. If it locks up you can use <kbd>C-g</kbd>. Remember that this is a prototype still, but feel free to send feedback.
+
+--Robin Neatherway
+
 ## December 2012
 
 Removed old intellisense approach. File manifest now as follows:

@@ -1,0 +1,4 @@
+DONE: Project loaded
+DONE: Background parsing started
+ERROR: Position is out of range
+ERROR: Position is out of range

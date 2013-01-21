@@ -1,1 +1,1 @@
-(define-package "fsharp-mode" "0.4" "F# mode for Emacs")
+(define-package "fsharp-mode" "0.5" "F# mode for Emacs")

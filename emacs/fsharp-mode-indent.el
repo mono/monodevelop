@@ -43,7 +43,7 @@ regardless of where in the line point is when the TAB command is used."
   :type 'boolean
   :group 'fsharp)
 
-(defcustom fsharp-indent-offset 4
+(defcustom fsharp-indent-offset 2
   "*Amount of offset per level of indentation.
 `\\[fsharp-guess-indent-offset]' can usually guess a good value when
 you're editing someone else's Fsharp code."

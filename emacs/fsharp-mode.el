@@ -6,7 +6,7 @@
 ;;         2010-2011 Laurent Le Brun <laurent@le-brun.eu>
 ;; Maintainer: Robin Neatherway <robin.neatherway@gmail.com>
 ;; Keywords: languages
-;; Version: 0.4
+;; Version: 0.5
 
 ;; This file is not part of GNU Emacs.
 
@@ -27,11 +27,8 @@
 
 ;;user customizable variables
 
-(defvar fsharp-mode-version 0.4
+(defvar fsharp-mode-version 0.5
   "Version of this fsharp-mode")
-
-(defvar inferior-fsharp-program "fsi"
-  "Program name for invoking an inferior fsharp from Emacs.")
 
 (defvar fsharp-compiler "fsc"
   "Program name for compiling a F# file")
@@ -166,6 +163,7 @@
 
   (require 'fsharp-mode-indent)
   (require 'fsharp-mode-font)
+  (require 'fsharp-mode-completion)
   (kill-all-local-variables)
   (use-local-map fsharp-mode-map)
   (set-syntax-table fsharp-mode-syntax-table)
@@ -180,6 +178,8 @@
   (make-local-variable 'parse-sexp-ignore-comments)
   (make-local-variable 'indent-line-function)
   (make-local-variable 'add-log-current-defun-function)
+
+  (add-hook 'completion-at-point-functions #'ac-fsharp-completion-at-point)
 
   (setq major-mode              'fsharp-mode
         mode-name               "fsharp"
