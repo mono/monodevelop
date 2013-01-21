@@ -126,7 +126,7 @@
     ))
 
 (defun ac-fsharp-completion-at-point ()
-  "Return a function ready to interrogate the F# compiler service for completions at point."G    q
+  "Return a function ready to interrogate the F# compiler service for completions at point."
   (if ac-fsharp-completion-process
       (let ((end (point))
             (start
