@@ -5,7 +5,7 @@ Features:
 - Interactive F# buffer
 - Indentation
 - Syntax highlighter
-- Experimental support for [autocompletion](README-intellisense.md)
+- Experimental support for tooltips and [autocompletion](README-intellisense.md)
 
 
 ### Installation
@@ -95,6 +95,8 @@ a few useful bindings:
 - <kbd>C-c l</kbd>:         Shift region to left
 - <kbd>C-c r</kbd>:         Shift region to right
 - <kbd>C-c <up></kbd>:      Move cursor to the beginning of the block
+- <kbd>C-c C-p</kbd>:       Load a project for autocompletion and tooltips
+- <kbd>C-c C-t</kbd>:       Request a tooltip for symbol at point
 
 To interrupt the interactive mode, use <kbd>C-c C-c</kbd>. This is useful if your
 code does an infinite loop or a very long computation.

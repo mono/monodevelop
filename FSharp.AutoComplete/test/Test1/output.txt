@@ -26,4 +26,16 @@ Qux
 add
 addition
 <<EOF>>
+val add : x:int -> y:int -> int
+
+Full name: FileTwo.add
+<<EOF>>
+val func : x:int -> int
+
+Full name: Program.X.func
+<<EOF>>
+val testval : FileTwo.NewObjectType
+
+Full name: Program.testval
+<<EOF>>
 <<EOF>>

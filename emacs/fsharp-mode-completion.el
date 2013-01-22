@@ -39,6 +39,7 @@
 (defvar ac-fsharp-completion-process nil)
 (defvar ac-fsharp-partial-data "")
 (defvar ac-fsharp-data "")
+(defvar ac-fsharp-completion-cache nil)
 
 (defun log-to-proc-buf (proc str)
   (let ((buf (process-buffer proc))
@@ -69,11 +70,18 @@
 (defun ac-fsharp-load-project (file)
   "Load the specified F# file as a project"
   (interactive "f")
+  (setq ac-fsharp-completion-cache nil)
+  (unless ac-fsharp-completion-process
+    (ac-fsharp-launch-completion-process))
   (log-psendstr ac-fsharp-completion-process
                 (format "project \"%s\"\n" (expand-file-name file))))
 
 (defun ac-fsharp-send-completion-request (file line col)
   (let ((request (format "completion \"%s\" %d %d\n" file line col)))
+      (log-psendstr ac-fsharp-completion-process request)))
+
+(defun ac-fsharp-send-tooltip-request (file line col)
+  (let ((request (format "tip \"%s\" %d %d\n" file line col)))
       (log-psendstr ac-fsharp-completion-process request)))
 
 ;;;###autoload
@@ -105,14 +113,26 @@
 
 
 ; Consider using 'text' for filtering
+; TODO: This caching is a bit optimistic. It might not always be correct
+;       to use the cached values if the line and col just happen to line up.
+;       Could dirty cache on idle, or include timestamps and ignore values
+;       older than a few seconds. On the other hand it only caches the most
+;       recent position, so it's very unlikely to try that position again
+;       without the completions being the same unless another completion has
+;       been tried in between.
 (defun ac-fsharp-completions (file line col text)
   (setq ac-fsharp-status 'fetch-in-progress)
   (setq ac-fsharp-data nil)
-  (ac-fsharp-parse-file file)
-  (ac-fsharp-send-completion-request file line col)
-  (while (eq ac-fsharp-status 'fetch-in-progress)
-    (accept-process-output ac-fsharp-completion-process))
-  ac-fsharp-data)
+  (let ((cache (assoc file ac-fsharp-completion-cache)))
+    (if (and cache (equal (cddr cache) (list line col)))
+        (cadr cache)
+      (ac-fsharp-parse-file file)
+      (ac-fsharp-send-completion-request file line col)
+      (while (eq ac-fsharp-status 'fetch-in-progress)
+        (accept-process-output ac-fsharp-completion-process))
+      (push (list file ac-fsharp-data line col) ac-fsharp-completion-cache)
+      ac-fsharp-data)
+    ))
 
 (defun ac-fsharp-completion-at-point ()
   "Return a function ready to interrogate the F# compiler service for completions at point."
@@ -130,6 +150,23 @@
                                 (current-column))))
         )
     nil))
+
+;;;###autoload
+(defun ac-fsharp-tooltip-at-point ()
+  "Fetch and display F# tooltips at point"
+  (interactive)
+  (require 'pos-tip)
+  (if ac-fsharp-completion-process
+      (progn
+        (setq ac-fsharp-status 'fetch-in-progress)
+        (setq ac-fsharp-data nil)
+        (ac-fsharp-parse-file (buffer-file-name))
+        (ac-fsharp-send-tooltip-request (buffer-file-name) (- (line-number-at-pos) 1) (current-column))
+        (while (eq ac-fsharp-status 'fetch-in-progress)
+          (accept-process-output ac-fsharp-completion-process))
+        (if (eq 0 (length ac-fsharp-data))
+            (setq ac-fsharp-data '("No tooltip data available")))
+        (pos-tip-show (mapconcat 'identity ac-fsharp-data "\n")))))
 
 (defun ac-fsharp-stash-partial (str)
   (setq ac-fsharp-partial-data (concat ac-fsharp-partial-data str)))
