@@ -41,8 +41,6 @@ using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
-	
-	
 	public interface IToolboxLoader
 	{
 		//comma-separated extensions
@@ -143,7 +141,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 	{
 		public string LoadItems (string asmName, string typeName, string fileName)
 		{
-			Gtk.Application.Init ();
 			XmlDataSerializer ser = new XmlDataSerializer (MonoDevelop.Projects.Services.ProjectService.DataContext);
 			ToolboxList tl = new ToolboxList ();
 			object ob = Activator.CreateInstance (asmName, typeName).Unwrap ();
