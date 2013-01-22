@@ -78,6 +78,10 @@
   (let ((request (format "completion \"%s\" %d %d\n" file line col)))
       (log-psendstr ac-fsharp-completion-process request)))
 
+(defun ac-fsharp-send-tooltip-request (file line col)
+  (let ((request (format "tip \"%s\" %d %d\n" file line col)))
+      (log-psendstr ac-fsharp-completion-process request)))
+
 ;;;###autoload
 (defun ac-fsharp-quit-completion-process ()
   (interactive)
@@ -141,6 +145,19 @@
                                 (current-column))))
         )
     nil))
+
+(defun ac-fsharp-tooltip-at-point ()
+  "Fetch and display tooltips at point"
+  (interactive)
+  (if ac-fsharp-completion-process
+      (progn
+        (setq ac-fsharp-status 'fetch-in-progress)
+        (setq ac-fsharp-data nil)
+        (ac-fsharp-parse-file (buffer-file-name))
+        (ac-fsharp-send-tooltip-request (buffer-file-name) (- (line-number-at-pos) 1) (current-column))
+        (while (eq ac-fsharp-status 'fetch-in-progress)
+          (accept-process-output ac-fsharp-completion-process))
+        (message (prin1-to-string ac-fsharp-data)))))
 
 (defun ac-fsharp-stash-partial (str)
   (setq ac-fsharp-partial-data (concat ac-fsharp-partial-data str)))
