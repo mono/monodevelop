@@ -27,7 +27,7 @@
 
 ;;user customizable variables
 
-(require 'cl)
+(require 'fsharp-mode-indent)
 
 (defvar fsharp-mode-version 0.6
   "Version of this fsharp-mode")
