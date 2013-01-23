@@ -362,6 +362,22 @@ namespace MonoDevelop.CSharp
 			return result.ToString ();
 		}
 
+		void AppendTypeParameterList (StringBuilder result, ITypeDefinition def)
+		{
+			IEnumerable<ITypeParameter> parameters = def.TypeParameters;
+			if (def.DeclaringTypeDefinition != null)
+				parameters = parameters.Skip (def.DeclaringTypeDefinition.TypeParameterCount);
+			AppendTypeParameters (result, parameters);
+		}
+		
+		void AppendTypeParameterList (StringBuilder result, ParameterizedType def)
+		{
+			IEnumerable<IType> parameters = def.TypeArguments;
+			if (def.DeclaringType != null)
+				parameters = parameters.Skip (def.DeclaringType.TypeParameterCount);
+			AppendTypeParameters (result, parameters);
+		}
+		
 		string GetTypeMarkup (IType t)
 		{
 			if (t == null)
@@ -396,10 +412,9 @@ namespace MonoDevelop.CSharp
 			result.Append (Highlight (typeName.ToString (), "keyword.type"));
 			if (t.TypeParameterCount > 0) {
 				if (t is ParameterizedType) {
-					AppendTypeParameters (result, ((ParameterizedType)t).TypeArguments);
-
+					AppendTypeParameterList (result, (ParameterizedType)t);
 				} else {
-					AppendTypeParameters (result, t.GetDefinition ().TypeParameters);
+					AppendTypeParameterList (result, t.GetDefinition ());
 				}
 			}
 
@@ -445,12 +460,13 @@ namespace MonoDevelop.CSharp
 			return result.ToString ();
 		}
 
-		void AppendTypeParameters (StringBuilder result, IList<ITypeParameter> typeParameters)
+		void AppendTypeParameters (StringBuilder result, IEnumerable<ITypeParameter> typeParameters)
 		{
-			if (typeParameters.Count == 0)
+			if (!typeParameters.Any ())
 				return;
 			result.Append ("&lt;");
-			for (int i = 0; i < typeParameters.Count; i++) {
+			int i = 0;
+			foreach (var typeParameter in typeParameters) {
 				if (i > 0) {
 					if (i % 5 == 0) {
 						result.AppendLine (",");
@@ -460,18 +476,20 @@ namespace MonoDevelop.CSharp
 						result.Append (", ");
 					}
 				}
-				AppendVariance (result, typeParameters [i].Variance);
-				result.Append (HighlightSemantically (CSharpAmbience.NetToCSharpTypeName (typeParameters [i].Name), "keyword.semantic.type"));
+				AppendVariance (result, typeParameter.Variance);
+				result.Append (HighlightSemantically (CSharpAmbience.NetToCSharpTypeName (typeParameter.Name), "keyword.semantic.type"));
+				i++;
 			}
 			result.Append ("&gt;");
 		}
 
-		void AppendTypeParameters (StringBuilder result, IList<IType> typeParameters)
+		void AppendTypeParameters (StringBuilder result, IEnumerable<IType> typeParameters)
 		{
-			if (typeParameters.Count == 0)
+			if (!typeParameters.Any ())
 				return;
 			result.Append ("&lt;");
-			for (int i = 0; i < typeParameters.Count; i++) {
+			int i = 0;
+			foreach (var typeParameter in typeParameters) {
 				if (i > 0) {
 					if (i % 5 == 0) {
 						result.AppendLine (",");
@@ -481,7 +499,8 @@ namespace MonoDevelop.CSharp
 						result.Append (", ");
 					}
 				}
-				result.Append (GetTypeReferenceString (typeParameters[i], false));
+				result.Append (GetTypeReferenceString (typeParameter, false));
+				i++;
 			}
 			result.Append ("&gt;");
 		}
@@ -537,19 +556,9 @@ namespace MonoDevelop.CSharp
 
 			var pt = delegateType as ParameterizedType;
 			if (pt != null && pt.TypeArguments.Count > 0) {
-				result.Append ("&lt;");
-				for (int i = 0; i < pt.TypeArguments.Count; i++) {
-					if (i > 0)
-						result.Append (", ");
-					result.Append (HighlightSemantically (GetTypeReferenceString (pt.TypeArguments [i]), "keyword.semantic.type"));
-				}
-				result.Append ("&gt;");
+				AppendTypeParameterList (result, pt);
 			} else {
-				var tt = delegateType as ITypeDefinition;
-
-				if (tt != null && tt.TypeParameters.Count > 0) {
-					AppendTypeParameters (result, tt.TypeParameters);
-				}
+				AppendTypeParameterList (result, delegateType.GetDefinition ());
 			}
 
 			if (formattingOptions.SpaceBeforeMethodDeclarationParameterComma)
