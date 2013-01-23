@@ -27,6 +27,8 @@
 
 ;;user customizable variables
 
+(require 'cl)
+
 (defvar fsharp-mode-version 0.6
   "Version of this fsharp-mode")
 
