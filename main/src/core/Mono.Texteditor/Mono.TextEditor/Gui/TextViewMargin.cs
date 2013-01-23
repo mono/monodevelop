@@ -1803,9 +1803,10 @@ namespace Mono.TextEditor
 						}
 						Caret.PreserveSelection = false;
 					} else {
-						inSelectionDrag = false;
 						textEditor.ClearSelection ();
 						Caret.Location = clickLocation;
+						inSelectionDrag = true;
+						textEditor.SetSelection (clickLocation, clickLocation);
 					}
 					textEditor.RequestResetCaretBlink ();
 				}
