@@ -34,8 +34,8 @@
   <EolSpan color="comment.doc" rule="XmlDocumentation" tagColor="comment.tag.doc">///</EolSpan>
   <EolSpan color="comment.line" rule="Comment" tagColor="comment.tag.line">//</EolSpan>
 
-  <Span color="comment.block" rule="Comment" tagColor="comment.tag.block">
-    <Begin>(*</Begin>
+  <Span color="comment.block" rule="MultiComment" tagColor="comment.tag.block">
+    <Begin>(*!)</Begin>
     <End>*)</End>
   </Span>
 
@@ -216,6 +216,20 @@
   </Rule>
 
   <Rule name="Comment">
+    <Keywords color="comment.keyword.todo" ignorecase="True">
+      <Word>TODO</Word>
+      <Word>FIXME</Word>
+      <Word>HACK</Word>
+      <Word>UNDONE</Word>
+    </Keywords>
+  </Rule>
+  
+  <Rule name="MultiComment">
+    <Span color="comment.block" rule="MultiComment" tagColor="comment.tag.block">
+		<Begin>(*!)</Begin>
+		<End>*)</End>
+	</Span>
+
     <Keywords color="comment.keyword.todo" ignorecase="True">
       <Word>TODO</Word>
       <Word>FIXME</Word>

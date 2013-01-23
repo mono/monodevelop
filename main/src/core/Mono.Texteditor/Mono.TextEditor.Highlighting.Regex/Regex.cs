@@ -34,21 +34,34 @@ namespace Mono.TextEditor.Highlighting
 			foreach (string pattern in patterns) {
 				int curOffset = offset;
 				bool match = true;
+				int length = 0;
 				for (int i = 0; i < pattern.Length; i++) {
-					if (curOffset >= doc.Length) {
-						match = false;
-						break;
-					}
-					
-					if (doc [curOffset] != pattern [i]) {
-						match = false;
-						break;
+					if (pattern[i] == '!') {
+						i++;
+						if (curOffset >= doc.Length) {
+							match = true;
+							break;
+						}
+						if (pattern[i] == doc [curOffset]) {
+							match = false;
+							break;
+						}
+					} else {
+						if (curOffset >= doc.Length) {
+							match = false;
+							break;
+						}
+						if (doc [curOffset] != pattern [i]) {
+							match = false;
+							break;
+						}
+						length++;
 					}
 					curOffset++;
 					
 				}
 				if (match) 
-					return new RegexMatch (pattern.Length);
+					return new RegexMatch (length);
 			}
 			return RegexMatch.NoMatch;
 		}
