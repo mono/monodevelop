@@ -626,6 +626,10 @@ namespace Mono.TextEditor.Highlighting
 				}
 				wordbuilder.Append (ch);
 				curChunk.Length = i - curChunk.Offset + 1;
+				if (!isWordPart) {
+					AddChunk (ref curChunk, 0, curChunk.Style = GetStyle (curChunk) ?? GetSpanStyle ());
+				}
+
 			}
 
 			protected virtual string GetStyle (Chunk chunk)

@@ -59,7 +59,7 @@
 		 <Style name="selection" bgColor="selection-bg"/>
 		 <Style name="selection.inactive" bgColor="aluminum2"/>
 		 <Style name="link" color="blue"/>
-		 <Style name="punctuation" color="aluminum6"/>
+		 <Style name="punctuation" color="text-black"/>
 		 <Style name="preprocessor" color="#c12dad" weight="regular">
 			 <Style name="keyword" weight="bold"/>
 		 </Style>
@@ -190,6 +190,8 @@
 		 <Style name="escape" color="literal-escape"/>
 	 </Style>
 	 <Style name="constant" color="literal-orange"/>
+
+	 <Style name="operators" color="keyword-teal"/>
 
 	 <Style name="keyword" color="keyword-teal"/>
 	 <Style name="keyword.access" color="keyword-teal" />
