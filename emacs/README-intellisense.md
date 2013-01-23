@@ -1,5 +1,11 @@
 # Experimental support for Intellisense in Emacs
 
+## 22 January 2013
+
+Added tooltip support back in, with keybindings as in [README](README.md). When loading a project, the completion process is launched automatically if it was not already running.
+
+-- Robin Neatherway
+
 ## January 2013
 
 Intellisense now currently uses standard completion-at-point interface. May go back to using the autocomplete package later.
@@ -13,6 +19,7 @@ If installing this package manually, then append the following to the lisp you u
 (autoload 'ac-fsharp-launch-completion-process "fsharp-mode-completion" "Launch the completion process" t)
 (autoload 'ac-fsharp-quit-completion-process "fsharp-mode-completion" "Quit the completion process" t)
 (autoload 'ac-fsharp-load-project "fsharp-mode-completion" "Load the specified F# project" t)
+(autoload 'ac-fsharp-tooltip-at-point "fsharp-mode-completion" "Fetch and display F# tooltips at point" t)
 ```
 
 The completion process expects to find `fsautocomplete.exe` in a `bin` subdirectory of the current directory. You will need to compile FSharp.AutoComplete and place the following files in `bin`:

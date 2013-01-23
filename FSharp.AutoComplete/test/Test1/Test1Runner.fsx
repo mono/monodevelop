@@ -22,6 +22,9 @@ p.completion "Program.fs" 7 19
 p.completion "Program.fs" 3 22
 p.completion "Program.fs" 5 13
 p.completion "Program.fs" 9 19
+p.tooltip "FileTwo.fs" 8 6
+p.tooltip "Program.fs" 5 15
+p.tooltip "Program.fs" 3 8
 p.send "errors\n"
 p.send "quit\n"
 let output = p.finalOutput ()

@@ -13,8 +13,9 @@ module ProjectParser =
 
   type ProjectResolver =
     {
-      project: Project
-      rar:     ResolveAssemblyReference
+      project:  Project
+      rar:      ResolveAssemblyReference
+      loadtime: DateTime
     }
 
   let private mkrar () =
@@ -46,11 +47,13 @@ module ProjectParser =
     let p = new Project()
     try
       p.Load(uri)
-      Some { project = p; rar =  mkrar () }
+      Some { project = p; rar =  mkrar (); loadtime = DateTime.Now }
     with :? InvalidProjectFileException as e ->
       None
 
   let getFileName (p: ProjectResolver) : string = p.project.FullFileName
+
+  let getLoadTime (p: ProjectResolver) : DateTime = p.loadtime
 
   let getDirectory (p: ProjectResolver) : string =
     IO.Path.GetDirectoryName p.project.FullFileName

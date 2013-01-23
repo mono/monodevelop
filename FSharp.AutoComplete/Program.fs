@@ -111,12 +111,6 @@ type internal IntelliSenseAgent() =
           return! loop errors }
     loop [||] )
 
-  /// Returns default F# compiler options for the specified script file (FSX)
-  member x.CreateScriptOptions(file, source) =
-    RequestOptions
-      ( checker.GetCheckOptionsFromScriptRoot(file, source, DateTime.Now),
-        file, source )
-
   // Copy-paste from monodevelop binding LanguageService.fs and modified
   member x.GetCheckerOptions(fileName, source, proj:Option<ProjectParser.ProjectResolver>) =
     let ext = Path.GetExtension(fileName)
@@ -127,7 +121,6 @@ type internal IntelliSenseAgent() =
       | Some _, ".fsscript" ->
 
         // We are in a stand-alone file or we are in a project, but currently editing a script file
-        //Debug.WriteLine (sprintf "CheckOptions: Creating for stand-alone file or script: '%s'" fileName )
         checker.GetCheckOptionsFromScriptRoot(fileName, source, System.DateTime.Now)
 
           // The InteractiveChecker resolution doesn't sometimes
@@ -139,11 +132,10 @@ type internal IntelliSenseAgent() =
       // We are in a project - construct options using current properties
       | Some proj, _ ->
         let projFile = ProjectParser.getFileName proj
-         //Debug.WriteLine (sprintf "CheckOptions: Creating for file '%s' in project '%s'" fileName projFile)
         let files = ProjectParser.getFiles proj
         let args = ProjectParser.getOptions proj
 
-        CheckOptions.Create(projFile, files, args, false, false, System.DateTime.Now)
+        CheckOptions.Create(projFile, files, args, false, false, ProjectParser.getLoadTime proj)
 
      // Print contents of check option for debugging purposes
      // Debug.WriteLine(sprintf "Checkoptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A"
@@ -164,69 +156,74 @@ type internal IntelliSenseAgent() =
   member x.TriggerParseRequest(opts, full) =
     agent.Post(TriggerParseRequest(opts, full))
 
-  /// Invokes dot-completion request and writes information to the standard output
-  member x.DoCompletion(opts, ((line, column) as pos), lineStr, time) =
-    Debug.print "DoCompletion request with options: %O" opts
-    try
+  /// Fetch latest type check information, possibly with a background check if needed
+  member x.GetTypeCheckInfo(opts : RequestOptions, time) : Option<TypeCheckInfo> =
+    // First check if cached results are available
+    let checkres = checker.TryGetRecentTypeCheckResultsForFile(opts.FileName, opts.Options)
+    match checkres with
+    | Some(untyped, typed, _) when typed.TypeCheckInfo.IsSome ->
+      Debug.print "Worker: Quick parse completed - success"
+      typed.TypeCheckInfo
+    | _ ->
       try
-        // Get the long identifier before the current location
-        // 'residue' is the part after the last dot and 'longName' is before
-        // e.g.  System.Console.Wri  --> "Wri", [ "System"; "Console"; ]
-        let lookBack = Parsing.createBackStringReader lineStr (column - 1)
-        let residue, longName =
-          lookBack |> Parsing.getFirst Parsing.parseBackIdentWithResidue
-
-        // Try to get type information & run the request
+        // Otherwise try to get type information & run the request
         let op = agent.PostAndAsyncReply(fun r -> GetTypeCheckInfo(opts, time, r))
-        let info = Async.RunSynchronously(op, ?timeout = time)
-        match info with
-        | Some(info) ->
-            // Get items & generate output
-            let decls = info.GetDeclarations(pos, lineStr, (longName, residue), 0, defaultArg time 1000)
-            for d in decls.Items do Console.WriteLine(d.Name)
-        | None -> ()
-      with :? OperationCanceledException -> ()
+        Async.RunSynchronously(op, ?timeout = time)
+      with :? OperationCanceledException -> None
+
+  /// Invokes dot-completion request and writes information to the standard output
+  member x.DoCompletion(opts : RequestOptions, ((line, column) as pos), lineStr, time) =
+    try
+      match x.GetTypeCheckInfo(opts, time) with
+      | Some(info) ->
+          // Get the long identifier before the current location
+          // 'residue' is the part after the last dot and 'longName' is before
+          // e.g.  System.Console.Wri  --> "Wri", [ "System"; "Console"; ]
+          let lookBack = Parsing.createBackStringReader lineStr (column - 1)
+          let residue, longName =
+            lookBack |> Parsing.getFirst Parsing.parseBackIdentWithResidue
+
+          // Get items & generate output
+          let decls = info.GetDeclarations(pos, lineStr, (longName, residue), 0, defaultArg time 1000)
+          for d in decls.Items do Console.WriteLine(d.Name)
+      | None -> Debug.print "DoCompletion failed to get typed info"
     finally Console.WriteLine("<<EOF>>")
 
 
   /// Gets ToolTip for the specified location (and prints it to the output)
   member x.GetToolTip(opts, ((line, column) as pos), lineStr, time) =
     try
-      try
-        // Try to get type information & run the request
-        let op = agent.PostAndAsyncReply(fun r -> GetTypeCheckInfo(opts, time, r))
-        match Async.RunSynchronously(op, ?timeout = time) with
-        | None -> ()
-        | Some(info) ->
-            // Parsing - find the identifier around the current location
-            // (we look for full identifier in the backward direction, but only
-            // for a short identifier forward - this means that when you hover
-            // 'B' in 'A.B.C', you will get intellisense for 'A.B' module)
-            let lookBack = Parsing.createBackStringReader lineStr column
-            let lookForw = Parsing.createForwardStringReader lineStr (column + 1)
-            let backIdent = Parsing.getFirst Parsing.parseBackLongIdent lookBack
-            let nextIdent = Parsing.getFirst Parsing.parseIdent lookForw
+      match x.GetTypeCheckInfo(opts, time) with
+      | None -> ()
+      | Some(info) ->
+        // Parsing - find the identifier around the current location
+        // (we look for full identifier in the backward direction, but only
+        // for a short identifier forward - this means that when you hover
+        // 'B' in 'A.B.C', you will get intellisense for 'A.B' module)
+        let lookBack = Parsing.createBackStringReader lineStr column
+        let lookForw = Parsing.createForwardStringReader lineStr (column + 1)
+        let backIdent = Parsing.getFirst Parsing.parseBackLongIdent lookBack
+        let nextIdent = Parsing.getFirst Parsing.parseIdent lookForw
 
-            let identIsland =
-              match List.rev backIdent with
-              | last::prev -> (last + nextIdent)::prev |> List.rev
-              | [] -> []
+        let identIsland =
+          match List.rev backIdent with
+          | last::prev -> (last + nextIdent)::prev |> List.rev
+          | [] -> []
 
-            match identIsland with
-            | [ "" ] ->
-                // There is no identifier at the current location
-                ()
-            | _ ->
-                // Assume that we are inside identifier (F# services can also handle
-                // case when we're in a string in '#r "Foo.dll"' but we don't do that)
-                let tip = info.GetDataTipText(pos, lineStr, identIsland, identToken)
-                match tip with
-                | DataTipText(elems)
-                    when elems |> List.forall (function
-                      DataTipElementNone -> true | _ -> false) -> ()
-                | _ ->
-                    Console.WriteLine(TipFormatter.formatTip tip)
-      with :? OperationCanceledException -> ()
+        match identIsland with
+        | [ "" ] ->
+          // There is no identifier at the current location
+          ()
+        | _ ->
+          // Assume that we are inside identifier (F# services can also handle
+          // case when we're in a string in '#r "Foo.dll"' but we don't do that)
+          let tip = info.GetDataTipText(pos, lineStr, identIsland, identToken)
+          match tip with
+          | DataTipText(elems)
+            when elems |> List.forall (function
+              DataTipElementNone -> true | _ -> false) -> ()
+          | _ ->
+            Console.WriteLine(TipFormatter.formatTip tip)
     finally Console.WriteLine("<<EOF>>")
 
 // --------------------------------------------------------------------------------------
@@ -408,13 +405,23 @@ module internal Main =
           main state
 
     | ToolTip(file, ((line, column) as pos), timeout) ->
-        Console.Error.WriteLine("ToolTip not currently implemented")
-        // Trigger autocompletion (when we already loaded a file)
-        // let file = Path.GetFullPath file
-        // if line >= state.Lines.Length || line < 0 then
-        //   Console.Error.WriteLine("ERROR: Line is out of range")
-        // else
-        //   agent.GetToolTip(opts, pos, text, timeout)
+        // Trigger tooltip request (when we already loaded a file)
+        let file = Path.GetFullPath file
+        if not (Map.containsKey file state.Files)
+        then
+          Console.Error.WriteLine(sprintf "ERROR: File '%s' not parsed" file)
+        else
+          let lines = state.Files.[file]
+          if line >= lines.Length || line < 0 ||
+             column > lines.[line].Length || column < 0
+          then
+            Console.Error.WriteLine("ERROR: Position is out of range")
+          else
+            let text = String.concat "\n" lines
+            let opts = RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
+                                      file,
+                                      text)
+            agent.GetToolTip(opts, pos, lines.[line], timeout)
         main state
 
     | Completion(file, ((line, column) as pos), timeout) ->
