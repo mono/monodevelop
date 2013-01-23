@@ -46,7 +46,6 @@ namespace Mono.TextEditor
 			if (Platform.IsMac) {
 				try {
 					isSupported = gdk_quartz_supports_gesture_events ();
-					Console.WriteLine (isSupported);
 				} catch (EntryPointNotFoundException) {
 				}
 			}
