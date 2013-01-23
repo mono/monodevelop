@@ -23,6 +23,8 @@
 ;; the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 ;; Boston, MA 02110-1301, USA.
 
+(require 'cl)
+
 (defvar ac-fsharp-executable "fsautocomplete.exe")
 
 (defvar ac-fsharp-complete-command
