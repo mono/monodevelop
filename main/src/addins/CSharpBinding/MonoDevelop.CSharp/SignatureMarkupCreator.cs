@@ -821,7 +821,7 @@ namespace MonoDevelop.CSharp
 
 			var color = AlphaBlend (colorStyle.Default.Color, colorStyle.Default.BackgroundColor, optionalAlpha);
 			var colorString = Mono.TextEditor.HelperMethods.GetColorString (color);
-
+			
 			var keywordSign = "<span foreground=\"" + colorString + "\">" + " (keyword)</span>";
 
 			switch (keyword){
@@ -1289,6 +1289,34 @@ namespace MonoDevelop.CSharp
 				result.SummaryMarkup = "The " + Highlight ("while", "keyword.iteration") + " statement executes a statement or a block of statements until a specified expression evaluates to false. ";
 				break;
 			}
+			return result;
+		}
+
+		public TooltipInformation GetConstraintTooltip (string keyword)
+		{
+			var result = new TooltipInformation ();
+
+			var color = AlphaBlend (colorStyle.Default.Color, colorStyle.Default.BackgroundColor, optionalAlpha);
+			var colorString = Mono.TextEditor.HelperMethods.GetColorString (color);
+			
+			var keywordSign = "<span foreground=\"" + colorString + "\">" + " (keyword)</span>";
+
+			result.SignatureMarkup = Highlight (keyword, "keyword.type") + keywordSign;
+
+			switch (keyword) {
+			case "class":
+				result.AddCategory ("Constraint", "The type argument must be a reference type; this applies also to any class, interface, delegate, or array type.");
+				break;
+			case "new":
+				result.AddCategory ("Constraint", "The type argument must have a public parameterless constructor. When used together with other constraints, the new() constraint must be specified last.");
+				break;
+			case "struct":
+				result.AddCategory ("Constraint", "The type argument must be a value type. Any value type except Nullable can be specified. See Using Nullable Types (C# Programming Guide) for more information.");
+				break;
+			}
+
+
+
 			return result;
 		}
 

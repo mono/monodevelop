@@ -93,6 +93,7 @@ namespace MonoDevelop.SourceEditor
 				if (node is CSharpTokenNode) {
 					int startOffset2 = editor.LocationToOffset (node.StartLocation);
 					int endOffset2 = editor.LocationToOffset (node.EndLocation);
+
 					return new TooltipItem (new ToolTipData (unit, result, node, null), startOffset2, endOffset2 - startOffset2);
 				}
 				return null;
@@ -183,6 +184,16 @@ namespace MonoDevelop.SourceEditor
 			if (doc == null)
 				return null;
 			try {
+				if (data.Node is PrimitiveType && data.Node.Parent is Constraint) {
+					var t = (PrimitiveType)data.Node;
+					if (t.Keyword == "class" || t.Keyword == "new" || t.Keyword == "struct") {
+						var resolver = (doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile).GetResolver (doc.Compilation, doc.Editor.Caret.Location);
+						var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
+						sig.BreakLineAfterReturnType = false;
+						return sig.GetConstraintTooltip (t.Keyword);
+					}
+					return null;
+				}
 				if (data.Node is ExternAliasDeclaration) {
 					var resolver = (doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile).GetResolver (doc.Compilation, doc.Editor.Caret.Location);
 					var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
