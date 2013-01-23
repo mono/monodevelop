@@ -117,6 +117,7 @@
 	</Keywords>
 	
 	<Keywords color = "keyword.type">
+		<Word>bool</Word>
 	</Keywords>
 	
 	<Keywords color = "constant.language.void">
