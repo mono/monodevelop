@@ -47,6 +47,8 @@ namespace MonoDevelop.Ide.Gui
 		ExtensionContext ExtensionContext { get; }
 
 		void AttachViewContent (IAttachableViewContent subViewContent);
+		void InsertViewContent (int index, IAttachableViewContent subViewContent);
+
 		void SwitchView (int index);
 		void SwitchView (IAttachableViewContent subViewContent);
 		int FindView <T>();

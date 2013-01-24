@@ -105,6 +105,11 @@ namespace MonoDevelop.CSharpBinding
 			
 		}
 
+		public void InsertViewContent (int index, IAttachableViewContent subViewContent)
+		{
+			
+		}
+
 		public DocumentToolbar GetToolbar (IBaseViewContent targetView)
 		{
 			throw new NotImplementedException ();
