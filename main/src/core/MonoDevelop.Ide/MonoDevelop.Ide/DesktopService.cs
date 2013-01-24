@@ -220,6 +220,12 @@ namespace MonoDevelop.Ide
 			PlatformService.GrabDesktopFocus (window);
 		}
 
+		public static void RemoveWindowShadow (Gtk.Window window)
+		{
+			PlatformService.RemoveWindowShadow (window);
+		}
+
+
 		public static void SetMainWindowDecorations (Gtk.Window window)
 		{
 			PlatformService.SetMainWindowDecorations (window);
