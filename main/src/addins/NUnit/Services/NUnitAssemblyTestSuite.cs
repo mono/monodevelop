@@ -360,21 +360,18 @@ namespace MonoDevelop.NUnit
 			ITestFilter filter = null;
 			if (test != null) {
 				if (test is UnitTestGroup) {
-					filter = new TestNameFilter (CollectTests ((UnitTestGroup)test));
-				} else {
-					filter = new TestNameFilter (test.TestId);
-				}
-			} else {
-				NUnitCategoryOptions categoryOptions = (NUnitCategoryOptions) test.GetOptions (typeof(NUnitCategoryOptions));
-				if (categoryOptions.EnableFilter && categoryOptions.Categories.Count > 0) {
-					string[] cats = new string [categoryOptions.Categories.Count];
-					categoryOptions.Categories.CopyTo (cats, 0);
-					filter = new CategoryFilter (cats);
-					if (categoryOptions.Exclude)
-						filter = new NotFilter (filter);
+					NUnitCategoryOptions categoryOptions = (NUnitCategoryOptions)test.GetOptions (typeof(NUnitCategoryOptions));
+					if (categoryOptions != null && categoryOptions.EnableFilter && categoryOptions.Categories.Count > 0) {
+						string[] cats = new string [categoryOptions.Categories.Count];
+						categoryOptions.Categories.CopyTo (cats, 0);
+						filter = new CategoryFilter (cats);
+						if (categoryOptions.Exclude)
+							filter = new NotFilter (filter);
+					} else {
+						filter = new TestNameFilter (CollectTests ((UnitTestGroup)test));
+					}
 				}
 			}
-
 			RunData rd = new RunData ();
 			rd.Runner = runner;
 			rd.Test = this;
