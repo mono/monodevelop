@@ -26,6 +26,7 @@
 //
 
 
+using System;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
@@ -38,6 +39,7 @@ namespace MonoDevelop.Ide.Commands
 	public enum HelpCommands {
 		Help,
 		TipOfTheDay,
+		OpenLogDirectory,
 		About
 	}
 
@@ -53,6 +55,21 @@ namespace MonoDevelop.Ide.Commands
 		{
 			if (!IdeApp.HelpOperations.CanShowHelp ("root:"))
 				info.Visible = false;
+		}
+	}
+
+	// MonoDevelop.Ide.Commands.HelpCommands.OpenLogDirectory
+	public class OpenLogDirectoryHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+			try {
+				var profile = MonoDevelop.Core.UserProfile.Current;
+				if (profile != null && System.IO.Directory.Exists (profile.LogDir))
+					System.Diagnostics.Process.Start (profile.LogDir);
+			} catch (Exception ex) {
+				MonoDevelop.Core.LoggingService.LogError ("Could not open the Log Directory", ex);
+			}
 		}
 	}
 
