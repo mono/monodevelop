@@ -41,7 +41,7 @@ namespace Mono.TextEditor.Tests
 			ISyntaxMode mode = SyntaxModeService.GetSyntaxMode (data.Document, "text/x-csharp");
 			string generatedHtml = HtmlWriter.GenerateHtml (data.Document, mode, style, data.Options);
 			Assert.AreEqual (
-				@"<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.0 Transitional//EN""><HTML><BODY><FONT face = 'Mono'><SPAN style = 'color:#009695;' >class</SPAN><SPAN style = 'color:#444444;' >&nbsp;Foo&nbsp;{}</SPAN></FONT></BODY></HTML>", generatedHtml);
+				@"<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.0 Transitional//EN""><HTML><BODY><FONT face = 'Mono'><SPAN style = 'color:#009695;' >class</SPAN><SPAN style = 'color:#444444;' >&nbsp;Foo&nbsp;</SPAN><SPAN style = 'color:#444444;' >{}</SPAN></FONT></BODY></HTML>", generatedHtml);
 		}
 
 	}
