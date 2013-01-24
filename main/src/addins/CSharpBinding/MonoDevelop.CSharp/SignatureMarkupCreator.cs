@@ -39,6 +39,7 @@ using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Projects;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.CSharp
 {
@@ -377,8 +378,24 @@ namespace MonoDevelop.CSharp
 				parameters = parameters.Skip (def.DeclaringType.TypeParameterCount);
 			AppendTypeParameters (result, parameters);
 		}
+
+		string GetTypeNameWithParameters (IType t)
+		{
+			StringBuilder result = new StringBuilder ();
+			result.Append (Highlight (t.Name, "keyword.type"));
+			if (t.TypeParameterCount > 0) {
+				if (t is ParameterizedType) {
+					AppendTypeParameterList (result, (ParameterizedType)t);
+				}
+				else {
+					AppendTypeParameterList (result, t.GetDefinition ());
+				}
+			}
+			Console.WriteLine (result);
+			return result.ToString ();
+		}
 		
-		string GetTypeMarkup (IType t)
+		string GetTypeMarkup (IType t, bool includeDeclaringTypes = false)
 		{
 			if (t == null)
 				throw new ArgumentNullException ("t");
@@ -408,14 +425,17 @@ namespace MonoDevelop.CSharp
 				break;
 			}
 
-			var typeName = t.Name;
-			result.Append (Highlight (typeName.ToString (), "keyword.type"));
-			if (t.TypeParameterCount > 0) {
-				if (t is ParameterizedType) {
-					AppendTypeParameterList (result, (ParameterizedType)t);
-				} else {
-					AppendTypeParameterList (result, t.GetDefinition ());
+			if (includeDeclaringTypes) {
+				var typeNames = new List<string> ();
+				var curType = t;
+				while (curType != null) {
+					typeNames.Add (GetTypeNameWithParameters (curType));
+					curType = curType.DeclaringType;
 				}
+				typeNames.Reverse ();
+				result.Append (string.Join (".", typeNames));
+			} else {
+				result.Append (GetTypeNameWithParameters (t));
 			}
 
 			if (t.Kind == TypeKind.Array)
@@ -1315,8 +1335,17 @@ namespace MonoDevelop.CSharp
 				break;
 			}
 
+			return result;
+		}
 
-
+		public TooltipInformation GetTypeOfTooltip (TypeOfExpression typeOfExpression, TypeOfResolveResult resolveResult)
+		{
+			var result = new TooltipInformation ();
+			if (resolveResult == null) {
+				result.SignatureMarkup = AmbienceService.EscapeText (typeOfExpression.Type.ToString ());
+			} else {
+				result.SignatureMarkup = GetTypeMarkup (resolveResult.ReferencedType, true);
+			}
 			return result;
 		}
 

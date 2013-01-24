@@ -184,6 +184,12 @@ namespace MonoDevelop.SourceEditor
 			if (doc == null)
 				return null;
 			try {
+				if (data.Node is TypeOfExpression) {
+					var resolver = (doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile).GetResolver (doc.Compilation, doc.Editor.Caret.Location);
+					var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
+					sig.BreakLineAfterReturnType = false;
+					return sig.GetTypeOfTooltip ((TypeOfExpression)data.Node, result as TypeOfResolveResult);
+				}
 				if (data.Node is PrimitiveType && data.Node.Parent is Constraint) {
 					var t = (PrimitiveType)data.Node;
 					if (t.Keyword == "class" || t.Keyword == "new" || t.Keyword == "struct") {
