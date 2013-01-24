@@ -200,7 +200,6 @@ namespace MonoDevelop.CSharp.Highlighting
 			{
 				var start = lineOffset + node.StartLocation.Column - 1;
 				var end   = lineOffset + node.EndLocation.Column - 1;
-				Console.WriteLine (node.StartLocation +"---"+node.EndLocation);
 				tree.AddStyle (start, end, style);
 			}
 
