@@ -486,8 +486,12 @@ namespace MonoDevelop.Ide.FindInFiles
 				uint start;
 				uint end;
 				try {
-					start = (uint)TextViewMargin.TranslateIndexToUTF8 (lineText, col);
-					end = (uint)TextViewMargin.TranslateIndexToUTF8 (lineText, col + searchResult.Length);
+					if (col + searchResult.Length < lineText.Length) {
+						start = (uint)TextViewMargin.TranslateIndexToUTF8 (lineText, col);
+						end = (uint)TextViewMargin.TranslateIndexToUTF8 (lineText, col + searchResult.Length);
+					} else {
+						start = end = 0;
+					}
 				} catch (Exception e) {
 					LoggingService.LogError ("Exception while translating index to utf8 (column was:" +col + " search result length:" + searchResult.Length + " line text:" + lineText + ")", e);
 					return;
