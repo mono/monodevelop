@@ -1349,6 +1349,22 @@ namespace MonoDevelop.CSharp
 			return result;
 		}
 
+		public TooltipInformation GetAliasedNamespaceTooltip (AliasNamespaceResolveResult resolveResult)
+		{
+			var result = new TooltipInformation ();
+			result.SignatureMarkup = GetMarkup (resolveResult.Namespace);
+			result.AddCategory (GettextCatalog.GetString ("Alias information"), GettextCatalog.GetString ("Resolved using alias '{0}'", resolveResult.Alias));
+			return result;
+		}
+		
+		public TooltipInformation GetAliasedTypeTooltip (AliasTypeResolveResult resolveResult)
+		{
+			var result = new TooltipInformation ();
+			result.SignatureMarkup = GetTypeMarkup (resolveResult.Type, true);
+			result.AddCategory (GettextCatalog.GetString ("Alias information"), GettextCatalog.GetString ("Resolved using alias '{0}'", resolveResult.Alias));
+			return result;
+		}
+		
 		string GetEventMarkup (IEvent evt)
 		{
 			if (evt == null)
