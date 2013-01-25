@@ -331,7 +331,7 @@ namespace MonoDevelop.Debugger
 						else
 							name = fb.FunctionName;
 					} else {
-						name = ((Breakpoint) bp).FileName + ":" + bp.Line.ToString ();
+						name = string.Format ("{0}:{1},{2}", ((Breakpoint) bp).FileName, bp.Line, bp.Column);
 					}
 					
 					if (bp.Enabled)

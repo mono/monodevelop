@@ -551,6 +551,15 @@ end tell", directory.ToString ().Replace ("\"", "\\\"")));
 			w.StyleMask |= NSWindowStyle.TexturedBackground;
 		}
 
+		internal override void RemoveWindowShadow (Gtk.Window window)
+		{
+			if (window == null)
+				throw new ArgumentNullException ("window");
+			NSWindow w = GtkQuartz.GetWindow (window);
+			w.HasShadow = false;
+		}
+
+
 		internal override MainToolbar CreateMainToolbar (Gtk.Window window)
 		{
 			NSApplication.Init ();
@@ -568,15 +577,6 @@ end tell", directory.ToString ().Replace ("\"", "\\\"")));
 				Background = MonoDevelop.Components.CairoExtensions.LoadImage (typeof (MacPlatformService).Assembly, resource),
 				TitleBarHeight = GetTitleBarHeight ()
 			};
-
-			result.RemoveDecorationsWorkaround = delegate(Gtk.Window wnd) {
-				if (wnd == null)
-					throw new ArgumentNullException ("wnd");
-				var popupWindow = GtkQuartz.GetWindow (wnd);
-				popupWindow.HasShadow = false;
-			};
-			//		File.Delete (tempName);
-			
 			return result;
 		}
 

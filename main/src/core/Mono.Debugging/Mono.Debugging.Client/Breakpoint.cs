@@ -36,17 +36,21 @@ namespace Mono.Debugging.Client
 		bool breakIfConditionChanges;
 		string conditionExpression;
 		string lastConditionValue;
-		//int adjustedColumn = -1;
+		int adjustedColumn = -1;
 		int adjustedLine = -1;
 		string fileName;
-		//int column;
+		int column;
 		int line;
 		
-		public Breakpoint (string fileName, int line/*, int column*/)
+		public Breakpoint (string fileName, int line, int column)
 		{
 			FileName = fileName;
-			//Column = column;
+			Column = column;
 			Line = line;
+		}
+
+		public Breakpoint (string fileName, int line) : this (fileName, line, 1)
+		{
 		}
 		
 		internal Breakpoint (XmlElement elem): base (elem)
@@ -59,9 +63,9 @@ namespace Mono.Debugging.Client
 			if (string.IsNullOrEmpty (s) || !int.TryParse (s, out line))
 				line = 1;
 			
-			//s = elem.GetAttribute ("column");
-			//if (string.IsNullOrEmpty (s) || !int.TryParse (s, out column))
-			//	column = 1;
+			s = elem.GetAttribute ("column");
+			if (string.IsNullOrEmpty (s) || !int.TryParse (s, out column))
+				column = 1;
 			
 			s = elem.GetAttribute ("conditionExpression");
 			if (!string.IsNullOrEmpty (s))
@@ -80,7 +84,7 @@ namespace Mono.Debugging.Client
 				elem.SetAttribute ("file", fileName);
 			
 			elem.SetAttribute ("line", line.ToString ());
-			//elem.SetAttribute ("column", column.ToString ());
+			elem.SetAttribute ("column", column.ToString ());
 			
 			if (!string.IsNullOrEmpty (conditionExpression)) {
 				elem.SetAttribute ("conditionExpression", conditionExpression);
@@ -95,11 +99,15 @@ namespace Mono.Debugging.Client
 			get { return fileName; }
 			protected set { fileName = value; }
 		}
+
+		public int OriginalColumn {
+			get { return column; }
+		}
 		
-		//public int Column {
-		//	get { return adjustedColumn == -1 ? column : adjustedColumn; }
-		//	protected set { column = value; }
-		//}
+		public int Column {
+			get { return adjustedColumn == -1 ? column : adjustedColumn; }
+			protected set { column = value; }
+		}
 		
 		public int OriginalLine {
 			get { return line; }
@@ -110,11 +118,11 @@ namespace Mono.Debugging.Client
 			protected set { line = value; }
 		}
 		
-		//public void SetColumn (int newColumn)
-		//{
-		//	ResetAdjustedColumn ();
-		//	column = newColumn;
-		//}
+		public void SetColumn (int newColumn)
+		{
+			ResetAdjustedColumn ();
+			column = newColumn;
+		}
 		
 		public void SetLine (int newLine)
 		{
@@ -122,29 +130,29 @@ namespace Mono.Debugging.Client
 			line = newLine;
 		}
 		
-		//internal void SetAdjustedColumn (int newColumn)
-		//{
-		//	adjustedColumn = newColumn;
-		//}
+		internal void SetAdjustedColumn (int newColumn)
+		{
+			adjustedColumn = newColumn;
+		}
 		
 		internal void SetAdjustedLine (int newLine)
 		{
 			adjustedLine = newLine;
 		}
 		
-		//internal void ResetAdjustedColumn ()
-		//{
-		//	adjustedColumn = -1;
-		//}
+		internal void ResetAdjustedColumn ()
+		{
+			adjustedColumn = -1;
+		}
 		
 		internal void ResetAdjustedLine ()
 		{
 			adjustedLine = -1;
 		}
 		
-		//internal bool HasAdjustedColumn {
-		//	get { return adjustedColumn != -1; }
-		//}
+		internal bool HasAdjustedColumn {
+			get { return adjustedColumn != -1; }
+		}
 
 		internal bool HasAdjustedLine {
 			get { return adjustedLine != -1; }

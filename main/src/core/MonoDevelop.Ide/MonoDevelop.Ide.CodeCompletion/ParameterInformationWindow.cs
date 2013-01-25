@@ -104,7 +104,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			foreColor = scheme.Default.Color;
 			headlabel.ModifyFg (StateType.Normal, foreColor);
 			ShowAll ();
-			IdeApp.Workbench.Toolbar.RemoveDecorationsWorkaround (this);
+			DesktopService.RemoveWindowShadow (this);
+
 		}
 
 		int lastParam = -2;

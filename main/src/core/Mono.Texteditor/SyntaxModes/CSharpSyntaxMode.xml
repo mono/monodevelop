@@ -56,6 +56,36 @@
 	
 	<Match color = "constant.digit">CSharpNumber</Match>
 	
+	<Keywords color = "text.punctuation">
+		<Word>+</Word>
+		<Word>-</Word>
+		<Word>*</Word>
+		<Word>/</Word>
+		<Word>%</Word>
+		<Word>^</Word>
+		
+		<Word>?</Word>
+		<Word>:</Word>
+		
+		<Word>&amp;</Word>
+		
+		<Word>=</Word>
+		<Word>;</Word>
+		<Word>,</Word>
+		<Word>.</Word>
+	</Keywords>
+	
+	<Keywords color = "text.punctuation.brackets">
+		<Word>(</Word>
+		<Word>)</Word>
+		<Word>&lt;</Word>
+		<Word>&gt;</Word>
+		<Word>{</Word>
+		<Word>}</Word>
+		<Word>[</Word>
+		<Word>]</Word>
+	</Keywords>
+	
 	<Keywords color = "keyword.access">
 		<Word>this</Word>
 		<Word>base</Word>

@@ -311,6 +311,7 @@ namespace MonoDevelop.Components
 
 			Move (x, y);
 			Show ();
+			DesktopService.RemoveWindowShadow (this);
 		}
 		
 		public bool SupportsAlpha {

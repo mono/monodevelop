@@ -31,7 +31,7 @@ namespace Mono.Debugging.Client
 	[Serializable]
 	public class FunctionBreakpoint : Breakpoint
 	{
-		public FunctionBreakpoint (string functionName, string language) : base (null, 1/*, 1*/)
+		public FunctionBreakpoint (string functionName, string language) : base (null, 1, 1)
 		{
 			FunctionName = functionName;
 			Language = language;

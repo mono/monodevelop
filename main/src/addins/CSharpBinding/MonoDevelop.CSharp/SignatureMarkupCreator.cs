@@ -39,6 +39,7 @@ using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Projects;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.CSharp
 {
@@ -362,7 +363,39 @@ namespace MonoDevelop.CSharp
 			return result.ToString ();
 		}
 
-		string GetTypeMarkup (IType t)
+		void AppendTypeParameterList (StringBuilder result, ITypeDefinition def)
+		{
+			IEnumerable<ITypeParameter> parameters = def.TypeParameters;
+			if (def.DeclaringTypeDefinition != null)
+				parameters = parameters.Skip (def.DeclaringTypeDefinition.TypeParameterCount);
+			AppendTypeParameters (result, parameters);
+		}
+		
+		void AppendTypeParameterList (StringBuilder result, ParameterizedType def)
+		{
+			IEnumerable<IType> parameters = def.TypeArguments;
+			if (def.DeclaringType != null)
+				parameters = parameters.Skip (def.DeclaringType.TypeParameterCount);
+			AppendTypeParameters (result, parameters);
+		}
+
+		string GetTypeNameWithParameters (IType t)
+		{
+			StringBuilder result = new StringBuilder ();
+			result.Append (Highlight (t.Name, "keyword.type"));
+			if (t.TypeParameterCount > 0) {
+				if (t is ParameterizedType) {
+					AppendTypeParameterList (result, (ParameterizedType)t);
+				}
+				else {
+					AppendTypeParameterList (result, t.GetDefinition ());
+				}
+			}
+			Console.WriteLine (result);
+			return result.ToString ();
+		}
+		
+		string GetTypeMarkup (IType t, bool includeDeclaringTypes = false)
 		{
 			if (t == null)
 				throw new ArgumentNullException ("t");
@@ -392,15 +425,17 @@ namespace MonoDevelop.CSharp
 				break;
 			}
 
-			var typeName = t.Name;
-			result.Append (Highlight (typeName.ToString (), "keyword.type"));
-			if (t.TypeParameterCount > 0) {
-				if (t is ParameterizedType) {
-					AppendTypeParameters (result, ((ParameterizedType)t).TypeArguments);
-
-				} else {
-					AppendTypeParameters (result, t.GetDefinition ().TypeParameters);
+			if (includeDeclaringTypes) {
+				var typeNames = new List<string> ();
+				var curType = t;
+				while (curType != null) {
+					typeNames.Add (GetTypeNameWithParameters (curType));
+					curType = curType.DeclaringType;
 				}
+				typeNames.Reverse ();
+				result.Append (string.Join (".", typeNames));
+			} else {
+				result.Append (GetTypeNameWithParameters (t));
 			}
 
 			if (t.Kind == TypeKind.Array)
@@ -445,12 +480,13 @@ namespace MonoDevelop.CSharp
 			return result.ToString ();
 		}
 
-		void AppendTypeParameters (StringBuilder result, IList<ITypeParameter> typeParameters)
+		void AppendTypeParameters (StringBuilder result, IEnumerable<ITypeParameter> typeParameters)
 		{
-			if (typeParameters.Count == 0)
+			if (!typeParameters.Any ())
 				return;
 			result.Append ("&lt;");
-			for (int i = 0; i < typeParameters.Count; i++) {
+			int i = 0;
+			foreach (var typeParameter in typeParameters) {
 				if (i > 0) {
 					if (i % 5 == 0) {
 						result.AppendLine (",");
@@ -460,18 +496,20 @@ namespace MonoDevelop.CSharp
 						result.Append (", ");
 					}
 				}
-				AppendVariance (result, typeParameters [i].Variance);
-				result.Append (HighlightSemantically (CSharpAmbience.NetToCSharpTypeName (typeParameters [i].Name), "keyword.semantic.type"));
+				AppendVariance (result, typeParameter.Variance);
+				result.Append (HighlightSemantically (CSharpAmbience.NetToCSharpTypeName (typeParameter.Name), "keyword.semantic.type"));
+				i++;
 			}
 			result.Append ("&gt;");
 		}
 
-		void AppendTypeParameters (StringBuilder result, IList<IType> typeParameters)
+		void AppendTypeParameters (StringBuilder result, IEnumerable<IType> typeParameters)
 		{
-			if (typeParameters.Count == 0)
+			if (!typeParameters.Any ())
 				return;
 			result.Append ("&lt;");
-			for (int i = 0; i < typeParameters.Count; i++) {
+			int i = 0;
+			foreach (var typeParameter in typeParameters) {
 				if (i > 0) {
 					if (i % 5 == 0) {
 						result.AppendLine (",");
@@ -481,7 +519,8 @@ namespace MonoDevelop.CSharp
 						result.Append (", ");
 					}
 				}
-				result.Append (GetTypeReferenceString (typeParameters[i], false));
+				result.Append (GetTypeReferenceString (typeParameter, false));
+				i++;
 			}
 			result.Append ("&gt;");
 		}
@@ -537,19 +576,9 @@ namespace MonoDevelop.CSharp
 
 			var pt = delegateType as ParameterizedType;
 			if (pt != null && pt.TypeArguments.Count > 0) {
-				result.Append ("&lt;");
-				for (int i = 0; i < pt.TypeArguments.Count; i++) {
-					if (i > 0)
-						result.Append (", ");
-					result.Append (HighlightSemantically (GetTypeReferenceString (pt.TypeArguments [i]), "keyword.semantic.type"));
-				}
-				result.Append ("&gt;");
+				AppendTypeParameterList (result, pt);
 			} else {
-				var tt = delegateType as ITypeDefinition;
-
-				if (tt != null && tt.TypeParameters.Count > 0) {
-					AppendTypeParameters (result, tt.TypeParameters);
-				}
+				AppendTypeParameterList (result, delegateType.GetDefinition ());
 			}
 
 			if (formattingOptions.SpaceBeforeMethodDeclarationParameterComma)
@@ -812,7 +841,7 @@ namespace MonoDevelop.CSharp
 
 			var color = AlphaBlend (colorStyle.Default.Color, colorStyle.Default.BackgroundColor, optionalAlpha);
 			var colorString = Mono.TextEditor.HelperMethods.GetColorString (color);
-
+			
 			var keywordSign = "<span foreground=\"" + colorString + "\">" + " (keyword)</span>";
 
 			switch (keyword){
@@ -1279,6 +1308,43 @@ namespace MonoDevelop.CSharp
 				result.AddCategory ("Form", Highlight ("while", "keyword.iteration") + " (expression) statement");
 				result.SummaryMarkup = "The " + Highlight ("while", "keyword.iteration") + " statement executes a statement or a block of statements until a specified expression evaluates to false. ";
 				break;
+			}
+			return result;
+		}
+
+		public TooltipInformation GetConstraintTooltip (string keyword)
+		{
+			var result = new TooltipInformation ();
+
+			var color = AlphaBlend (colorStyle.Default.Color, colorStyle.Default.BackgroundColor, optionalAlpha);
+			var colorString = Mono.TextEditor.HelperMethods.GetColorString (color);
+			
+			var keywordSign = "<span foreground=\"" + colorString + "\">" + " (keyword)</span>";
+
+			result.SignatureMarkup = Highlight (keyword, "keyword.type") + keywordSign;
+
+			switch (keyword) {
+			case "class":
+				result.AddCategory ("Constraint", "The type argument must be a reference type; this applies also to any class, interface, delegate, or array type.");
+				break;
+			case "new":
+				result.AddCategory ("Constraint", "The type argument must have a public parameterless constructor. When used together with other constraints, the new() constraint must be specified last.");
+				break;
+			case "struct":
+				result.AddCategory ("Constraint", "The type argument must be a value type. Any value type except Nullable can be specified. See Using Nullable Types (C# Programming Guide) for more information.");
+				break;
+			}
+
+			return result;
+		}
+
+		public TooltipInformation GetTypeOfTooltip (TypeOfExpression typeOfExpression, TypeOfResolveResult resolveResult)
+		{
+			var result = new TooltipInformation ();
+			if (resolveResult == null) {
+				result.SignatureMarkup = AmbienceService.EscapeText (typeOfExpression.Type.ToString ());
+			} else {
+				result.SignatureMarkup = GetTypeMarkup (resolveResult.ReferencedType, true);
 			}
 			return result;
 		}

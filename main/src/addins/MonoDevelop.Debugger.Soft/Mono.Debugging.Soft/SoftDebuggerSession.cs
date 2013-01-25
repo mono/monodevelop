@@ -746,7 +746,7 @@ namespace Mono.Debugging.Soft
 					var fb = (FunctionBreakpoint) ev;
 					bool generic;
 
-					bi.Location = FindLocationByFunction (fb.FunctionName, fb.ParamTypes, fb.Line, out generic);
+					bi.Location = FindLocationByFunction (fb.FunctionName, fb.ParamTypes, out generic);
 					if (bi.Location != null) {
 						fb.SetResolvedFileName (bi.Location.SourceFile);
 						bi.FileName = fb.FileName;
@@ -770,7 +770,7 @@ namespace Mono.Debugging.Soft
 					bool insideLoadedRange;
 					bool generic;
 
-					bi.Location = FindLocationByFile (bp.FileName, bp.Line, out generic, out insideLoadedRange);
+					bi.Location = FindLocationByFile (bp.FileName, bp.Line, bp.Column, out generic, out insideLoadedRange);
 					bi.FileName = bp.FileName;
 
 					if (bi.Location != null) {
@@ -902,8 +902,8 @@ namespace Mono.Debugging.Soft
 			
 			breakpoints[request] = bi;
 			
-			if (bi.Location.LineNumber != bp.Line)
-				bi.AdjustBreakpointLocation (bi.Location.LineNumber);
+			if (bi.Location.LineNumber != bp.Line || bi.Location.ColumnNumber != bp.Column)
+				bi.AdjustBreakpointLocation (bi.Location.LineNumber, bi.Location.ColumnNumber);
 		}
 		
 		void InsertCatchpoint (Catchpoint cp, BreakInfo bi, TypeMirror excType)
@@ -946,7 +946,7 @@ namespace Mono.Debugging.Soft
 			return vm.Version.AtLeast (2, 12) && method.IsGenericMethod;
 		}
 		
-		Location FindLocationByFunction (string function, string[] paramTypes, int line, out bool genericTypeOrMethod)
+		Location FindLocationByFunction (string function, string[] paramTypes, out bool genericTypeOrMethod)
 		{
 			genericTypeOrMethod = false;
 			
@@ -980,7 +980,7 @@ namespace Mono.Debugging.Soft
 			return null;
 		}
 		
-		Location FindLocationByFile (string file, int line, out bool genericTypeOrMethod, out bool insideLoadedRange)
+		Location FindLocationByFile (string file, int line, int column, out bool genericTypeOrMethod, out bool insideLoadedRange)
 		{
 			genericTypeOrMethod = false;
 			insideLoadedRange = false;
@@ -1021,7 +1021,7 @@ namespace Mono.Debugging.Soft
 					bool genericMethod;
 					bool insideRange;
 					
-					target_loc = GetLocFromType (type, filename, line, out genericMethod, out insideRange);
+					target_loc = GetLocFromType (type, filename, line, column, out genericMethod, out insideRange);
 					if (insideRange)
 						insideLoadedRange = true;
 					
@@ -1685,10 +1685,10 @@ namespace Mono.Debugging.Soft
 						bool insideLoadedRange;
 						bool genericMethod;
 						
-						loc = GetLocFromType (type, s, bp.Line, out genericMethod, out insideLoadedRange);
+						loc = GetLocFromType (type, s, bp.Line, bp.Column, out genericMethod, out insideLoadedRange);
 						if (loc != null) {
-							OnDebuggerOutput (false, string.Format ("Resolved pending breakpoint at '{0}:{1}' to {2} [0x{3:x5}].\n",
-							                                        s, bp.Line, loc.Method.FullName, loc.ILOffset));
+							OnDebuggerOutput (false, string.Format ("Resolved pending breakpoint at '{0}:{1},{2}' to {3} [0x{4:x5}].\n",
+							                                        s, bp.Line, bp.Column, loc.Method.FullName, loc.ILOffset));
 							ResolvePendingBreakpoint (bi, loc);
 							
 							// Note: if the type or method is generic, there may be more instances so don't assume we are done resolving the breakpoint
@@ -1826,7 +1826,7 @@ namespace Mono.Debugging.Soft
 			return false;
 		}
 		
-		Location GetLocFromType (TypeMirror type, string file, int line, out bool genericMethod, out bool insideTypeRange)
+		Location GetLocFromType (TypeMirror type, string file, int line, int column, out bool genericMethod, out bool insideTypeRange)
 		{
 			Location target_loc = null;
 			bool fuzzy = true;
@@ -1834,8 +1834,9 @@ namespace Mono.Debugging.Soft
 			insideTypeRange = false;
 			genericMethod = false;
 			
-			//Console.WriteLine ("Trying to resolve {0}:{1} in type {2}", file, line, type.Name);
+			//Console.WriteLine ("Trying to resolve {0}:{1},{2} in type {3}", file, line, column, type.Name);
 			foreach (MethodMirror method in type.GetMethods ()) {
+				List<Location> locations = new List<Location> ();
 				int rangeFirstLine = int.MaxValue;
 				int rangeLastLine = -1;
 				
@@ -1860,22 +1861,29 @@ namespace Mono.Debugging.Soft
 									if (target_loc.LineNumber - line > location.LineNumber - line) {
 										// Grab the location closest to the requested line
 										//Console.WriteLine ("\t\tLocation is closest match. (ILOffset = 0x{0:x5})", location.ILOffset);
+										locations.Clear ();
+										locations.Add (location);
 										target_loc = location;
 									}
 								} else if (target_loc.LineNumber != line) {
 									// Previous match was a fuzzy match, but now we've found an exact line match
 									//Console.WriteLine ("\t\tLocation is exact line match. (ILOffset = 0x{0:x5})", location.ILOffset);
+									locations.Clear ();
+									locations.Add (location);
 									target_loc = location;
 									fuzzy = false;
-								} else if (location.ILOffset < target_loc.ILOffset) {
-									// Line number matches exactly, but has an earlier ILOffset
-									//Console.WriteLine ("\t\tLocation has an earlier ILOffset. (ILOffset = 0x{0:x5})", location.ILOffset);
-									target_loc = location;
+								} else {
+									// Line number matches exactly, use the location with the lowest ILOffset
+									if (location.ILOffset < target_loc.ILOffset)
+										target_loc = location;
+
+									locations.Add (location);
 									fuzzy = false;
 								}
 							} else {
 								//Console.WriteLine ("\t\tLocation is first possible match. (ILOffset = 0x{0:x5})", location.ILOffset);
 								fuzzy = location.LineNumber != line;
+								locations.Add (location);
 								target_loc = location;
 							}
 						}
@@ -1891,8 +1899,25 @@ namespace Mono.Debugging.Soft
 					// If we got a fuzzy match, then we need to make sure that there isn't a better
 					// match in another method (e.g. code might have been extracted out into another
 					// method by the compiler.
-					if (!fuzzy)
+					if (!fuzzy) {
+						// Exact line match... now find the best column match.
+						locations.Sort (new LocationComparer ());
+
+						// Find the closest-matching location based on column.
+						target_loc = locations[0];
+						for (int i = 1; i < locations.Count; i++) {
+							if (locations[i].ColumnNumber > column)
+								break;
+
+							// if the column numbers match, then target_loc should have the lower ILOffset (which we want)
+							if (target_loc.ColumnNumber == locations[i].ColumnNumber)
+								continue;
+
+							target_loc = locations[i];
+						}
+
 						return target_loc;
+					}
 				}
 			}
 			
@@ -2224,6 +2249,24 @@ namespace Mono.Debugging.Soft
 		
 		[System.Runtime.InteropServices.DllImport ("libc")]
 		static extern int uname (IntPtr buf);
+	}
+
+	class LocationComparer : IComparer<Location>
+	{
+		public int Compare (Location loc0, Location loc1)
+		{
+			if (loc0.LineNumber < loc1.LineNumber)
+				return -1;
+			else if (loc0.LineNumber > loc1.LineNumber)
+				return 1;
+
+			if (loc0.ColumnNumber < loc1.ColumnNumber)
+				return -1;
+			else if (loc0.ColumnNumber > loc1.ColumnNumber)
+				return 1;
+
+			return loc0.ILOffset - loc1.ILOffset;
+		}
 	}
 	
 	class BreakInfo: BreakEventInfo

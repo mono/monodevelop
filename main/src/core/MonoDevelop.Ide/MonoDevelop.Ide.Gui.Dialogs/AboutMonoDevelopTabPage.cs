@@ -64,9 +64,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				Font = infoBox.Font.WithWeight (Xwt.Drawing.FontWeight.Bold)
 			});
 			infoBox.PackStart (new Xwt.Label () {
-				Text = BuildVariables.PackageVersion == BuildVariables.PackageVersionLabel ? BuildVariables.PackageVersionLabel : String.Format ("{0} ({1})", 
-				                                                                                                                                 BuildVariables.PackageVersionLabel, 
-				                                                                                                                                 BuildVariables.PackageVersion),
+				Text = IdeVersionInfo.MonoDevelopVersion,
 				MarginLeft = 12
 			});
 

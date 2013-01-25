@@ -100,6 +100,11 @@ namespace MonoDevelop.Ide.Gui
 			
 		}
 
+		public void InsertViewContent (int index, MonoDevelop.Ide.Gui.IAttachableViewContent subViewContent)
+		{
+			
+		}
+
 		public DocumentToolbar GetToolbar (IBaseViewContent targetView)
 		{
 			return null;

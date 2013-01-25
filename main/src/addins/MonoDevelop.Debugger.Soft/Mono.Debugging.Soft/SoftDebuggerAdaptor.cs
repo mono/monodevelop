@@ -247,7 +247,7 @@ namespace Mono.Debugging.Soft
 						return cx.RuntimeInvoke (method, obj, new Value[0]);
 				}
 
-				if (fromType.IsGenericType && fromType.FullName.StartsWith ("System.Nullable`")) {
+				if (fromType.IsGenericType && fromType.FullName.StartsWith ("System.Nullable`1")) {
 					method = OverloadResolve (cx, "get_Value", fromType, new TypeMirror[0], true, false, false);
 					if (method != null) {
 						obj = cx.RuntimeInvoke (method, obj, new Value[0]);
@@ -359,6 +359,18 @@ namespace Mono.Debugging.Soft
 		public override object GetBaseValue (EvaluationContext ctx, object val)
 		{
 			return val;
+		}
+
+		public override bool NullableHasValue (EvaluationContext ctx, object type, object obj)
+		{
+			ValueReference hasValue = GetMember (ctx, type, obj, "has_value");
+
+			return (bool) hasValue.ObjectValue;
+		}
+
+		public override ValueReference NullableGetValue (EvaluationContext ctx, object type, object obj)
+		{
+			return GetMember (ctx, type, obj, "value");
 		}
 
 		public override object GetEnclosingType (EvaluationContext ctx)

@@ -468,7 +468,9 @@ namespace MonoDevelop.AssemblyBrowser
 				var method = (IUnresolvedMethod)member;
 				sb = new StringBuilder ();
 				sb.Append ("M:");
-				sb.Append (method.FullName);
+				sb.Append (method.DeclaringTypeDefinition.ReflectionName);
+				sb.Append (".");
+				sb.Append (method.Name);
 				if (method.TypeParameters.Count > 0) {
 					sb.Append ("`");
 					sb.Append (method.TypeParameters.Count);
@@ -486,19 +488,34 @@ namespace MonoDevelop.AssemblyBrowser
 			case EntityType.Destructor: // todo
 				return "todo";
 			case EntityType.Property:
-				return "P:" + member.FullName;
+				sb = new StringBuilder ();
+				sb.Append ("P:");
+				sb.Append (member.DeclaringTypeDefinition.ReflectionName);
+				sb.Append (".");
+				sb.Append (member.Name);
+				return sb.ToString ();
 			case EntityType.Indexer:
 				var indexer = (IUnresolvedProperty)member;
 				sb = new StringBuilder ();
 				sb.Append ("P:");
-				sb.Append (indexer.DeclaringTypeDefinition.FullName);
+				sb.Append (indexer.DeclaringTypeDefinition.ReflectionName);
 				sb.Append (".Item");
 				AppendHelpParameterList (sb, indexer.Parameters);
 				return sb.ToString ();
 			case EntityType.Field:
-				return "F:" + member.FullName;
+				sb = new StringBuilder ();
+				sb.Append ("F:");
+				sb.Append (member.DeclaringTypeDefinition.ReflectionName);
+				sb.Append (".");
+				sb.Append (member.Name);
+				return sb.ToString ();
 			case EntityType.Event:
-				return "E:" + member.FullName;
+				sb = new StringBuilder ();
+				sb.Append ("E:");
+				sb.Append (member.DeclaringTypeDefinition.ReflectionName);
+				sb.Append (".");
+				sb.Append (member.Name);
+				return sb.ToString ();
 			case EntityType.Operator: // todo
 				return "todo";
 			}

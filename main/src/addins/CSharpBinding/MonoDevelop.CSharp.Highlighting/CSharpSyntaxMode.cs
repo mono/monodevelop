@@ -200,7 +200,6 @@ namespace MonoDevelop.CSharp.Highlighting
 			{
 				var start = lineOffset + node.StartLocation.Column - 1;
 				var end   = lineOffset + node.EndLocation.Column - 1;
-
 				tree.AddStyle (start, end, style);
 			}
 
@@ -503,6 +502,18 @@ namespace MonoDevelop.CSharp.Highlighting
 					Colorize (memberReferenceExpression.MemberNameToken, "keyword.semantic.type");
 				}
 			}
+
+			public override void VisitTypeOfExpression (TypeOfExpression typeOfExpression)
+			{
+				var result = resolver.Resolve (typeOfExpression, cancellationToken) as TypeOfResolveResult;
+				if (result != null && result.ReferencedType.Kind == TypeKind.Unknown) {
+					Colorize (typeOfExpression.Type, "keyword.semantic.error");
+					return;
+				}
+				base.VisitTypeOfExpression (typeOfExpression);
+			}
+			
+			
 
 			public override void VisitPointerReferenceExpression (PointerReferenceExpression pointerReferenceExpression)
 			{

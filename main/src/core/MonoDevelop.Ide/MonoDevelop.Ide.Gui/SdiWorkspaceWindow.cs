@@ -47,26 +47,26 @@ namespace MonoDevelop.Ide.Gui
 		ExtensionContext extensionContext;
 		FileTypeCondition fileTypeCondition = new FileTypeCondition ();
 		
-		List<IAttachableViewContent> subViewContents = null;
+		List<IBaseViewContent> viewContents = new List<IBaseViewContent> ();
 		Notebook subViewNotebook = null;
 		Tabstrip subViewToolbar = null;
 		PathBar pathBar = null;
 		HBox toolbarBox = null;
 		Dictionary<IBaseViewContent,DocumentToolbar> documentToolbars = new Dictionary<IBaseViewContent, DocumentToolbar> ();
-		
+
 		VBox box;
 		IDockNotebookTab tab;
 		Widget tabPage;
 		DockNotebook tabControl;
 		
-		string myUntitledTitle     = null;
+		string myUntitledTitle = null;
 		string _titleHolder = "";
 		
 		string documentType;
 		MonoDevelop.Ide.Gui.Content.IPathedDocument pathDoc;
 		
 		bool show_notification = false;
-		
+
 		ViewCommandHandlers commandHandler;
 
 		public event EventHandler ViewsChanged;
@@ -85,12 +85,14 @@ namespace MonoDevelop.Ide.Gui
 			
 			box = new VBox ();
 
+			viewContents.Add (content);
+
 			//this fires an event that the content uses to access this object's ExtensionContext
 			content.WorkbenchWindow = this;
 
 			// The previous WorkbenchWindow property assignement may end with a call to AttachViewContent,
 			// which will add the content control to the subview notebook. In that case, we don't need to add it to box
-			if (subViewContents == null)
+			if (subViewNotebook == null)
 				box.PackStart (content.Control);
 			
 			content.ContentNameChanged += new EventHandler(SetTitleEvent);
@@ -176,7 +178,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public IEnumerable<IAttachableViewContent> SubViewContents {
 			get {
-				return (IEnumerable<IAttachableViewContent>)subViewContents ?? new IAttachableViewContent[0];
+				return viewContents.OfType<IAttachableViewContent> ();
 			}
 		}
 		
@@ -186,9 +188,8 @@ namespace MonoDevelop.Ide.Gui
 			get {
 				if (activeView != null)
 					return activeView;
-				if (subViewToolbar != null && subViewToolbar.ActiveTab - 1 >= 0) {
-					return (IBaseViewContent)subViewContents[subViewToolbar.ActiveTab - 1];
-				}
+				if (subViewToolbar != null)
+					return viewContents[subViewToolbar.ActiveTab];
 				return content;
 			}
 			set {
@@ -202,27 +203,20 @@ namespace MonoDevelop.Ide.Gui
 			if (subViewNotebook != null)
 				ShowPage (viewNumber);
 		}
-		
+
 		public void SwitchView (IAttachableViewContent view)
 		{
 			if (subViewNotebook != null)
-				// adding 1 because subviews start at the position 1 of the tab strip. Position 0 is
-				// for the main view
-				ShowPage (subViewContents.IndexOf (view) + 1);
+				ShowPage (viewContents.IndexOf (view));
 		}
 		
 		public int FindView<T> ()
 		{
-			if (ViewContent is T)
-				return 0;
-				
-			int i = 1;
-			foreach (IAttachableViewContent item in SubViewContents) {
-				if (item is T)
+			for (int i = 0; i < viewContents.Count; i++) {
+				if (viewContents[i] is T)
 					return i;
-				i++;
 			}
-			
+
 			return -1;
 		}
 
@@ -363,9 +357,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void OnContentChanged (object o, EventArgs e)
 		{
-			if (subViewContents == null)
-				return;
-			foreach (IAttachableViewContent subContent in subViewContents) {
+			foreach (IAttachableViewContent subContent in SubViewContents) {
 				subContent.BaseContentChanged ();
 			}
 		}
@@ -387,11 +379,9 @@ namespace MonoDevelop.Ide.Gui
 			workbench.RemoveTab (tab.Index, animate);
 
 			OnClosed (args);
-			
-			if (subViewContents != null) {
-				foreach (IAttachableViewContent sv in subViewContents) {
-					sv.Dispose ();
-				}
+
+			foreach (IAttachableViewContent sv in SubViewContents) {
+				sv.Dispose ();
 			}
 			
 			content.ContentNameChanged -= new EventHandler(SetTitleEvent);
@@ -452,10 +442,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		void CheckCreateSubViewContents ()
 		{
-			if (subViewContents != null)
+			if (subViewNotebook != null)
 				return;
-			
-			subViewContents = new List<IAttachableViewContent> ();
 
 			// The view may call AttachViewContent when initialized, and this
 			// may happen before the main content is added to 'box', so we
@@ -484,25 +472,34 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		#endregion
-		
-			
+
 		public void AttachViewContent (IAttachableViewContent subViewContent)
+		{
+			InsertViewContent (viewContents.Count, subViewContent);
+		}
+
+		public void InsertViewContent (int index, IAttachableViewContent subViewContent)
 		{
 			// need to create child Notebook when first IAttachableViewContent is added
 			CheckCreateSubViewContents ();
-			
-			subViewContents.Add (subViewContent);
+
+			viewContents.Insert (index, subViewContent);
 			subViewContent.WorkbenchWindow = this;
-			AddButton (subViewContent.TabPageLabel, subViewContent);
-			
+			InsertButton (index, subViewContent.TabPageLabel, subViewContent);
+
 			OnContentChanged (null, null);
 
 			if (ViewsChanged != null)
 				ViewsChanged (this, EventArgs.Empty);
 		}
-		
-		bool updating = false;
+
 		protected Tab AddButton (string label, IBaseViewContent viewContent)
+		{
+			return InsertButton (viewContents.Count, label, viewContent);
+		}
+
+		bool updating = false;
+		protected Tab InsertButton (int index, string label, IBaseViewContent viewContent)
 		{
 			CheckCreateSubViewToolbar ();
 			updating = true;
@@ -510,7 +507,7 @@ namespace MonoDevelop.Ide.Gui
 			var addedContent = subViewToolbar.TabCount == 0 && IdeApp.Workbench.ActiveDocument == Document;
 			var widgetBox = new Gtk.VBox ();
 			var tab = new Tab (subViewToolbar, label) {
-				Tag = subViewToolbar.TabCount
+				Tag = viewContent
 			};
 			
 			// If this is the current displayed document we need to add the control immediately as the tab is already active.
@@ -518,16 +515,18 @@ namespace MonoDevelop.Ide.Gui
 				widgetBox.Add (viewContent.Control);
 				widgetBox.Show ();
 			}
-			
-			subViewToolbar.AddTab (tab);
-			subViewNotebook.AppendPage (widgetBox, new Gtk.Label ());
+
+			subViewToolbar.InsertTab (index, tab);
+			subViewNotebook.InsertPage (widgetBox, new Gtk.Label (), index);
 			tab.Activated += (sender, e) => {
 				if (!addedContent) {
 					widgetBox.Add (viewContent.Control);
 					widgetBox.Show ();
+					addedContent = true;
 				}
-				addedContent = true;
-				SetCurrentView ((int)((Tab)sender).Tag);
+
+				int page = viewContents.IndexOf ((IBaseViewContent) tab.Tag);
+				SetCurrentView (page);
 				QueueDraw ();
 			};
 
@@ -595,33 +594,28 @@ namespace MonoDevelop.Ide.Gui
 			updating = false;
 		}
 		
-		int oldIndex = -1;
-		
 		void SetCurrentView (int newIndex)
 		{
+			IAttachableViewContent subViewContent;
+
+			int oldIndex = subViewNotebook.CurrentPage;
 			subViewNotebook.CurrentPage = newIndex;
-			
-			if (oldIndex > 0) {
-				IAttachableViewContent secondaryViewContent = subViewContents[oldIndex - 1] as IAttachableViewContent;
-				if (secondaryViewContent != null) {
-					secondaryViewContent.Deselected();
-				}
-			}
-			
-			if (subViewNotebook.CurrentPage > 0) {
-				IAttachableViewContent secondaryViewContent = subViewContents[subViewNotebook.CurrentPage - 1] as IAttachableViewContent;
-				if (secondaryViewContent != null) {
-					secondaryViewContent.Selected();
-				}
-			}
-			oldIndex = subViewNotebook.CurrentPage;
+
+			subViewContent = viewContents[oldIndex] as IAttachableViewContent;
+			if (subViewContent != null)
+				subViewContent.Deselected ();
+
+			subViewContent = viewContents[newIndex] as IAttachableViewContent;
+			if (subViewContent != null)
+				subViewContent.Selected ();
+
 			DetachFromPathedDocument ();
 			
 			MonoDevelop.Ide.Gui.Content.IPathedDocument pathedDocument;
-			if (oldIndex <= 0) {
+			if (newIndex < 0 || newIndex == viewContents.IndexOf (ViewContent)) {
 				pathedDocument = Document != null ? Document.GetContent<IPathedDocument> () : (IPathedDocument) ViewContent.GetContent (typeof(IPathedDocument));
 			} else {
-				pathedDocument = (IPathedDocument) subViewContents[oldIndex - 1].GetContent (typeof(IPathedDocument));
+				pathedDocument = (IPathedDocument) viewContents[newIndex].GetContent (typeof(IPathedDocument));
 			}
 
 			if (pathedDocument != null)

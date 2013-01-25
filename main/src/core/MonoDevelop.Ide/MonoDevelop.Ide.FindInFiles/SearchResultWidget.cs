@@ -477,11 +477,15 @@ namespace MonoDevelop.Ide.FindInFiles
 				var data = new Mono.TextEditor.TextEditorData (doc);
 				data.ColorStyle = highlightStyle;
 				var lineText = doc.GetTextAt (line.Offset + indent, line.Length - indent);
-				var markup = doc.SyntaxMode != null ?
-					data.GetMarkup (line.Offset + indent, line.Length - indent, true, !isSelected, false) :
-					GLib.Markup.EscapeText (lineText);
-				searchResult.Markup = AdjustColors (markup.Replace ("\t", new string (' ', TextEditorOptions.DefaultOptions.TabSize)));
 				int col = searchResult.Offset - line.Offset - indent;
+				// search result contained part of the indent.
+				if (col + searchResult.Length < lineText.Length)
+					lineText = doc.GetTextAt (line.Offset, line.Length);
+
+				var markup = doc.SyntaxMode != null ?
+				data.GetMarkup (line.Offset + indent, line.Length - indent, true, !isSelected, false) :
+				GLib.Markup.EscapeText (lineText);
+				searchResult.Markup = AdjustColors (markup.Replace ("\t", new string (' ', TextEditorOptions.DefaultOptions.TabSize)));
 
 				uint start;
 				uint end;

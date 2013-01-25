@@ -87,10 +87,22 @@ namespace MonoDevelop.Components
 		
 		public void AddTab (Tab tab)
 		{
-			tabs.Add (tab);
-			tabSizes.Add (tab.Size);
+			InsertTab (tabs.Count, tab);
+		}
+
+		public void InsertTab (int index, Tab tab)
+		{
+			if (index < 0 || index >= tabs.Count) {
+				tabs.Add (tab);
+				tabSizes.Add (tab.Size);
+			} else {
+				tabs.Insert (index, tab);
+				tabSizes.Insert (index, tab.Size);
+			}
 			if (tabs.Count == 1)
 				tab.Active = true;
+			else if (activeTab >= index)
+				activeTab++;
 			QueueResize ();
 		}
 		

@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.TextEditing
 		static TextEditorService ()
 		{
 			LineCountChanged += delegate(object sender, LineCountEventArgs e) {
-				foreach (var ext in GetFileLineExtensions (e.TextFile.Name).Where (ex => ex.TrackLinePosition)) {
+				foreach (var ext in GetFileLineExtensions (e.TextFile.Name).Where (ex => ex.TrackLinePosition).ToList ()) {
 					if (ext.Line > e.LineNumber) {
 						if (ext.Line + e.LineCount < e.LineNumber)
 							ext.NotifyDeleted ();

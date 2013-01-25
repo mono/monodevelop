@@ -82,8 +82,6 @@
 	</Keywords>
 	
 	<Keywords color = "constant.language">
-		<Word>true</Word>
-		<Word>false</Word>
 		<Word>NULL</Word>
 	</Keywords>
 	
@@ -97,7 +95,6 @@
 	</Keywords>
 	
 	<Keywords color = "keyword.type">
-		<Word>bool</Word>
 		<Word>char</Word>
 		
 		<Word>double</Word>

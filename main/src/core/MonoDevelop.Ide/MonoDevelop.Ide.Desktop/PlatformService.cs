@@ -407,6 +407,10 @@ namespace MonoDevelop.Ide.Desktop
 			window.Present ();
 		}
 
+		internal virtual void RemoveWindowShadow (Gtk.Window window)
+		{
+		}
+
 		internal virtual void SetMainWindowDecorations (Gtk.Window window)
 		{
 		}

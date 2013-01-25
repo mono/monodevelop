@@ -63,7 +63,7 @@ namespace MonoDevelop.SourceEditor
 		Widget[] replaceWidgets;
 		
 		public bool IsCaseSensitive {
-			get { return PropertyService.Get ("IsCaseSensitive", true); }
+			get { return PropertyService.Get ("IsCaseSensitive", false); }
 			set { 
 				if (IsCaseSensitive != value)
 					PropertyService.Set ("IsCaseSensitive", value); 

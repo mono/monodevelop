@@ -29,7 +29,7 @@ using System.Reflection;
 
 namespace MonoDevelop.Ide
 {
-	public class IdeVersionInfo : ISystemInformationProvider
+	class IdeVersionInfo : ISystemInformationProvider
 	{
 		static bool IsMono ()
 		{
@@ -129,9 +129,19 @@ namespace MonoDevelop.Ide
 		}
 		
 		public static string MonoDevelopVersion {
-			get { return BuildVariables.PackageVersion == BuildVariables.PackageVersionLabel
-					? BuildVariables.PackageVersionLabel
-					: string.Format ("{0} ({1})", BuildVariables.PackageVersionLabel, BuildVariables.PackageVersion);
+			get {
+				string v = "";
+				if (BuildVariables.PackageVersion != BuildVariables.PackageVersionLabel)
+					v += BuildVariables.PackageVersion;
+				if (IdeApp.Version.Revision >= 0) {
+					if (v.Length > 0)
+						v += " ";
+					v += "build " + IdeApp.Version.Revision;
+				}
+				if (v.Length == 0)
+					return BuildVariables.PackageVersionLabel;
+				else
+					return BuildVariables.PackageVersionLabel + " (" + v + ")";
 			}
 		}
 	}

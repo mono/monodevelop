@@ -53,11 +53,22 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		/// The panel's header label.
 		/// </summary>
 		public abstract string Label { get; }
-		
+
+		[Obsolete ("Use DefaultSdkLocations")]
+		public virtual FilePath DefaultSdkLocation {
+			get {
+				return FilePath.Null;
+			}
+		}
+
 		/// <summary>
-		/// The default SDK location that wil be used if the value is blank.
+		/// The default SDK locations that will be searched if the value is blank.
 		/// </summary>
-		public abstract FilePath DefaultSdkLocation { get; }
+		public virtual FilePath[] DefaultSdkLocations {
+			get {
+				return DefaultSdkLocation.IsNull? new FilePath[0] : new FilePath[] { DefaultSdkLocation };
+			}
+		}
 		
 		/// <summary>
 		/// Check whether the SDK exists at a location.
@@ -121,26 +132,46 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				if (panel.ValidateSdkLocation (location)) {
 					messageLabel.Text = GettextCatalog.GetString ("SDK found at specified location.");
 					messageIcon.Stock = Gtk.Stock.Apply;
-				} else {
-					messageLabel.Text = GettextCatalog.GetString ("No SDK found at specified location.");
-					messageIcon.Stock = Gtk.Stock.Cancel;
+					return;
 				}
-			} else if (panel.ValidateSdkLocation (panel.DefaultSdkLocation)) {
-				messageLabel.Text = GettextCatalog.GetString ("SDK found at default location.");
-				messageIcon.Stock = Gtk.Stock.Apply;
-			} else {
-				messageLabel.Text = GettextCatalog.GetString ("No SDK found at default location.");
+				messageLabel.Text = GettextCatalog.GetString ("No SDK found at specified location.");
 				messageIcon.Stock = Gtk.Stock.Cancel;
+				return;
 			}
+
+			foreach (var loc in panel.DefaultSdkLocations) {
+				if (panel.ValidateSdkLocation (loc)) {
+					messageLabel.Text = GettextCatalog.GetString ("SDK found at default location.");
+					messageIcon.Stock = Gtk.Stock.Apply;
+					return;
+				}
+			}
+
+			messageLabel.Text = GettextCatalog.GetString ("No SDK found at default location.");
+			messageIcon.Stock = Gtk.Stock.Cancel;
 		}
 		
-		string CleanPath (string path)
+		FilePath CleanPath (FilePath path)
 		{
-			if (string.IsNullOrEmpty (path))
+			if (path.IsNullOrEmpty) {
 				return null;
-			path = System.IO.Path.GetFullPath (path);
-			if (path == panel.DefaultSdkLocation)
-				return null;
+			}
+			path = path.FullPath;
+
+			//if it's a default path, blank it *unless* it overrides a higher priority default path
+			bool overridesHigherPriorityDefault = false;
+			foreach (var loc in panel.DefaultSdkLocations) {
+				if (path == loc) {
+					if (overridesHigherPriorityDefault) {
+						break;
+					}
+					return null;
+				}
+				if (panel.ValidateSdkLocation (loc)) {
+					overridesHigherPriorityDefault = true;
+				}
+			}
+
 			return path;
 		}
 		

@@ -253,16 +253,17 @@ namespace Mono.TextEditor
 				var node = interval.node;
 				int nodeStart = interval.start - node.DistanceToPrevNode;
 				int nodeEnd = interval.end - node.DistanceToPrevNode;
-				if (node.left != null) {
-					nodeStart -= node.left.TotalLength;
-					nodeEnd -= node.left.TotalLength;
+				var leftNode = node.left;
+				if (leftNode != null) {
+					nodeStart -= leftNode.TotalLength;
+					nodeEnd -= leftNode.TotalLength;
 				}
 			
 				if (node.DistanceToMaxEnd < nodeStart) 
 					continue;
 			
-				if (node.left != null)
-					intervalStack.Push (new Interval (node.left, interval.start, interval.end));
+				if (leftNode != null)
+					intervalStack.Push (new Interval (leftNode, interval.start, interval.end));
 				
 				if (nodeEnd < 0) 
 					continue;
@@ -270,8 +271,9 @@ namespace Mono.TextEditor
 				if (nodeStart <= node.Length)
 					yield return (T)node;
 			
-				if (node.right != null) 
-					intervalStack.Push (new Interval (node.right, nodeStart, nodeEnd));
+				var rightNode = node.right;
+				if (rightNode != null) 
+					intervalStack.Push (new Interval (rightNode, nodeStart, nodeEnd));
 			}
 		}
 	}
