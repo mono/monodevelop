@@ -49,6 +49,7 @@ using MonoDevelop.Core.Instrumentation;
 using Mono.TextEditor;
 using System.Diagnostics;
 using ICSharpCode.NRefactory.Documentation;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace MonoDevelop.Ide
 {
@@ -267,6 +268,9 @@ namespace MonoDevelop.Ide
 
 			if (entity == null && element is ICSharpCode.NRefactory.TypeSystem.IType)
 				entity = ((ICSharpCode.NRefactory.TypeSystem.IType)element).GetDefinition ();
+			if (entity is SpecializedMethod) {
+				entity = ((SpecializedMethod)entity).GetDefinition ();
+			}
 			if (entity == null) {
 				LoggingService.LogError ("Unknown element:" + element);
 				return;
