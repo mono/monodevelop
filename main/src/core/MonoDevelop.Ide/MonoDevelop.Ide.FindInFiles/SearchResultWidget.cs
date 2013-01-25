@@ -477,21 +477,21 @@ namespace MonoDevelop.Ide.FindInFiles
 				var data = new Mono.TextEditor.TextEditorData (doc);
 				data.ColorStyle = highlightStyle;
 				var lineText = doc.GetTextAt (line.Offset + indent, line.Length - indent);
-				var markup = doc.SyntaxMode != null ?
-					data.GetMarkup (line.Offset + indent, line.Length - indent, true, !isSelected, false) :
-					GLib.Markup.EscapeText (lineText);
-				searchResult.Markup = AdjustColors (markup.Replace ("\t", new string (' ', TextEditorOptions.DefaultOptions.TabSize)));
 				int col = searchResult.Offset - line.Offset - indent;
+				// search result contained part of the indent.
+				if (col + searchResult.Length < lineText.Length)
+					lineText = doc.GetTextAt (line.Offset, line.Length);
+
+				var markup = doc.SyntaxMode != null ?
+				data.GetMarkup (line.Offset + indent, line.Length - indent, true, !isSelected, false) :
+				GLib.Markup.EscapeText (lineText);
+				searchResult.Markup = AdjustColors (markup.Replace ("\t", new string (' ', TextEditorOptions.DefaultOptions.TabSize)));
 
 				uint start;
 				uint end;
 				try {
-					if (col + searchResult.Length < lineText.Length) {
-						start = (uint)TextViewMargin.TranslateIndexToUTF8 (lineText, col);
-						end = (uint)TextViewMargin.TranslateIndexToUTF8 (lineText, col + searchResult.Length);
-					} else {
-						start = end = 0;
-					}
+					start = (uint)TextViewMargin.TranslateIndexToUTF8 (lineText, col);
+					end = (uint)TextViewMargin.TranslateIndexToUTF8 (lineText, col + searchResult.Length);
 				} catch (Exception e) {
 					LoggingService.LogError ("Exception while translating index to utf8 (column was:" +col + " search result length:" + searchResult.Length + " line text:" + lineText + ")", e);
 					return;
