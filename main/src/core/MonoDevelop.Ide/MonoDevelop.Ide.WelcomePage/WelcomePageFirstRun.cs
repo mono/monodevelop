@@ -308,8 +308,18 @@ namespace MonoDevelop.Ide.WelcomePage
 				                    opacity: (float)BackgroundOpacity,
 				                    draw: (ctx, opacity) => RenderBackground (ctx, main));
 
-				context.CachedDraw (ref titleSurface, RenderTitlePosition, TitleSize, null, (float)TitleOpacity, (ctx, alpha) => RenderTitle (ctx, new Gdk.Point (), alpha));
-				context.CachedDraw (ref textSurface, RenderTextPosition, TextSize, null, (float)TextOpacity, (ctx, alpha) => RenderText (ctx, new Gdk.Point (), alpha));
+				context.CachedDraw (ref titleSurface, RenderTitlePosition, TitleSize, new { Surface = backgroundSurface }, (float) TitleOpacity, (ctx, alpha) => {
+					ctx.SetSourceSurface (backgroundSurface.Surface, -TitlePosition.X, -TitlePosition.Y);
+					ctx.Rectangle (0, 0, TitleSize.Width, TitleSize.Height);
+					ctx.Fill ();
+					RenderTitle (ctx, new Gdk.Point (), alpha);
+				});
+				context.CachedDraw (ref textSurface, RenderTextPosition, TextSize, new { Surface = backgroundSurface } , (float) TextOpacity, (ctx, alpha) => {
+					ctx.SetSourceSurface (backgroundSurface.Surface, -TextPosition.X, -TextPosition.Y);
+					ctx.Rectangle (0, 0, TextSize.Width, TextSize.Height);
+					ctx.Fill ();
+					RenderText (ctx, new Gdk.Point (), alpha);
+				});
 				context.CachedDraw (ref buttonSurface, ButtonPosistion, ButtonSize, new { Hovered = ButtonHovered }, (float)ButtonOpacity, (ctx, alpha) => RenderButton (ctx, new Gdk.Point (), alpha, ButtonHovered));
 				RenderPreview (context, RenderIconPosition, IconOpacity);
 			}
