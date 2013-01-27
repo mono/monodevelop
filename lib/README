@@ -5,3 +5,5 @@ Modifications are to fsharpc and fsharpi script to remove paths
 
 ndesk-options -- binary release of 0.2.1
 
+fsautocomplete -- binary release so that MELPA can download it easily
+                  to make installation out of the box
