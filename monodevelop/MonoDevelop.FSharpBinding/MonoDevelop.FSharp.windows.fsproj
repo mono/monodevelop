@@ -14,10 +14,12 @@
     <!-- <OtherFlags> /resident </OtherFlags> -->
     <UsePartialTypes>False</UsePartialTypes>
 
-    <MonoDevelopVersion>3.0.5</MonoDevelopVersion>
-    <DefineConstants Condition="'$(MonoDevelopVersion)' == '3.0.3.2'">MONODEVELOP_AT_MOST_3_0_3_2;$(DefineConstants)</DefineConstants>
-    <DefineConstants Condition="'$(MonoDevelopVersion)' == '3.0.4.7'">MONODEVELOP_AT_LEAST_3_0_4_7;$(DefineConstants)</DefineConstants>
-    <DefineConstants Condition="'$(MonoDevelopVersion)' == '3.0.5'">MONODEVELOP_AT_LEAST_3_0_4_7;MONODEVELOP_AT_LEAST_3_0_5;$(DefineConstants)</DefineConstants>
+    <MonoDevelopVersion>3.1.1</MonoDevelopVersion>
+    <DefineConstants Condition="'$(MonoDevelopVersion)' == '3.0.3.2'">MONODEVELOP_AT_MOST_3_0_3_2;MONODEVELOP_AT_MOST_3_0_6;$(DefineConstants)</DefineConstants>
+    <DefineConstants Condition="'$(MonoDevelopVersion)' == '3.0.4.7'">MONODEVELOP_AT_MOST_3_0_6;$(DefineConstants)</DefineConstants>
+    <DefineConstants Condition="'$(MonoDevelopVersion)' == '3.0.5'">MONODEVELOP_AT_MOST_3_0_6;$(DefineConstants)</DefineConstants>
+    <DefineConstants Condition="'$(MonoDevelopVersion)' == '3.0.6'">MONODEVELOP_AT_MOST_3_0_6;$(DefineConstants)</DefineConstants>
+    <DefineConstants Condition="'$(MonoDevelopVersion)' == '3.1.1'">$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 
 
