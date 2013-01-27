@@ -356,7 +356,7 @@ module internal Main =
                 (Map.fold (fun ks k _ -> k::ks) [] state.Files)
     match parseCommand(Console.ReadLine()) with
     | Declarations ->
-        Console.Error.WriteLine("Declarations not yet implemented")
+        Console.WriteLine("ERROR: Declarations not yet implemented")
         // let decls = agent.GetDeclarations(opts)
         // for tld in decls do
         //   let (s1, e1), (s2, e2) = tld.Declaration.Range
@@ -388,7 +388,7 @@ module internal Main =
           Console.WriteLine("DONE: Background parsing started")
           main { state with Files = Map.add file lines state.Files }
         else
-          Console.Error.WriteLine(sprintf "ERROR: File '%s' does not exist" file)
+          Console.WriteLine(sprintf "ERROR: File '%s' does not exist" file)
           main state
 
     | Project file ->
@@ -397,10 +397,10 @@ module internal Main =
           match ProjectParser.load file with
           | Some p -> Console.WriteLine("DONE: Project loaded")
                       main { state with Project = Some p }
-          | None   -> Console.Error.WriteLine(sprintf "ERROR: Project file '%s' is invalid" file)
+          | None   -> Console.WriteLine(sprintf "ERROR: Project file '%s' is invalid" file)
                       main state
         else
-          Console.Error.WriteLine(sprintf "ERROR: File '%s' does not exist" file)
+          Console.WriteLine(sprintf "ERROR: File '%s' does not exist" file)
           main state
 
     | ToolTip(file, ((line, column) as pos), timeout) ->
@@ -408,13 +408,15 @@ module internal Main =
         let file = Path.GetFullPath file
         if not (Map.containsKey file state.Files)
         then
-          Console.Error.WriteLine(sprintf "ERROR: File '%s' not parsed" file)
+          Console.WriteLine(sprintf "ERROR: File '%s' not parsed" file)
+          Console.WriteLine("<<EOF>>")
         else
           let lines = state.Files.[file]
           if line >= lines.Length || line < 0 ||
              column > lines.[line].Length || column < 0
           then
-            Console.Error.WriteLine("ERROR: Position is out of range")
+            Console.WriteLine("ERROR: Position is out of range")
+            Console.WriteLine("<<EOF>>")
           else
             let text = String.concat "\n" lines
             let opts = RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
@@ -428,13 +430,15 @@ module internal Main =
         let file = Path.GetFullPath file
         if not (Map.containsKey file state.Files)
         then
-          Console.Error.WriteLine(sprintf "ERROR: File '%s' not parsed" file)
+          Console.WriteLine(sprintf "ERROR: File '%s' not parsed" file)
+          Console.WriteLine("<<EOF>>")
         else
           let lines = state.Files.[file]
           if line >= lines.Length || line < 0 ||
              column > lines.[line].Length || column < 0
           then
-            Console.Error.WriteLine("ERROR: Position is out of range")
+            Console.WriteLine("ERROR: Position is out of range")
+            Console.WriteLine("<<EOF>>")
           else
             let text = String.concat "\n" lines
             let opts = RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
@@ -448,7 +452,7 @@ module internal Main =
         main state
 
     | Error(msg) ->
-        Console.Error.WriteLine(msg)
+        Console.WriteLine(msg)
         main state
 
     | Quit ->
