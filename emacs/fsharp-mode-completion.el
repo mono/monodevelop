@@ -83,7 +83,7 @@
       (log-psendstr ac-fsharp-completion-process request)))
 
 (defun ac-fsharp-send-tooltip-request (file line col)
-  (let ((request (format "tip \"%s\" %d %d\n" file line col)))
+  (let ((request (format "tooltip \"%s\" %d %d\n" file line col)))
       (log-psendstr ac-fsharp-completion-process request)))
 
 ;;;###autoload

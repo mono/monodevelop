@@ -248,7 +248,7 @@ module internal CommandInput =
         followed by content of a file (ended with <<EOF>>)
     completion ""<filename>"" <line> <col> [timeout]
       - trigger completion request for the specified location
-    tip ""<filename>"" <line> <col> [timeout]
+    tooltip ""<filename>"" <line> <col> [timeout]
       - get tool tip for the specified location (currently not implemented)
     project ""<filename>""
       - associates the current session with the specified project"
@@ -306,7 +306,7 @@ module internal CommandInput =
   // Parse 'completion "<filename>" <line> <col> [timeout]' command
   let completionOrTip = parser {
     let! f = (string "completion " |> Parser.map (fun _ -> Completion)) <|>
-             (string "tip " |> Parser.map (fun _ -> ToolTip))
+             (string "tooltip " |> Parser.map (fun _ -> ToolTip))
     let! _ = char '"' // " // TODO: This here for Emacs syntax highlighting bug
     let! filename = some (sat ((<>) '"')) |> Parser.map String.ofSeq // "
     let! _ = char '"' // " // TODO: This here for Emacs syntax highlighting bug
