@@ -33,7 +33,7 @@ REFERENCES = \
 
 config=Release
 
-FSC_OPTS = --resident --noframework --nologo
+FSC_OPTS = --noframework --nologo
 
 ifeq ($(config),Debug)
 FSC_OPTS += --debug --optimize-
