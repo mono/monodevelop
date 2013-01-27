@@ -1,6 +1,6 @@
 
 
-module X =
-  let func x = x + 1
+module XA =
+  let funky x = x + 1
 
-let val2 = X.func 2
+let val99 = XA.funky 21

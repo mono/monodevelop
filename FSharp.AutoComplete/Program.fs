@@ -242,8 +242,8 @@ module internal CommandInput =
       - quit the program
     errors
       - get error messagaes reported by last parse
-    declarations
-      - get information about top-level declarations with location
+    declarations ""filename""
+      - get information about top-level declarations in a file with location
     parse ""<filename>"" [full]
       - trigger (full) background parse request; should be
         followed by content of a file (ended with <<EOF>>)
@@ -258,7 +258,7 @@ module internal CommandInput =
   type Command =
     | Completion of string * Position * int option
     | ToolTip of string * Position * int option
-    | Declarations
+    | Declarations of string
     | GetErrors
     | Parse of string * bool
     | Error of string
@@ -273,7 +273,12 @@ module internal CommandInput =
   let quit = string "quit" |> Parser.map (fun _ -> Quit)
 
   /// Parse 'declarations' command
-  let declarations = string "declarations" |> Parser.map (fun _ -> Declarations)
+  let declarations = parser {
+    let! _ = string "declarations "
+    let! _ = char '"'
+    let! filename = some (sat ((<>) '"')) |> Parser.map String.ofSeq
+    let! _ = char '"' // " // TODO: This here for Emacs syntax highlighting bug
+    return Declarations(filename) }
 
   /// Parse 'errors' command
   let errors = string "errors" |> Parser.map (fun _ -> GetErrors)
@@ -356,18 +361,6 @@ module internal Main =
                 (Option.isSome state.Project)
                 (Map.fold (fun ks k _ -> k::ks) [] state.Files)
     match parseCommand(Console.ReadLine()) with
-    | Declarations ->
-        Console.WriteLine("ERROR: Declarations not yet implemented")
-        // let decls = agent.GetDeclarations(opts)
-        // for tld in decls do
-        //   let (s1, e1), (s2, e2) = tld.Declaration.Range
-        //   printfn "[%d:%d-%d:%d] %s" s1 e1 s2 e2 tld.Declaration.Name
-        //   for d in tld.Nested do
-        //     let (s1, e1), (s2, e2) = d.Range
-        //     printfn "  - [%d:%d-%d:%d] %s" s1 e1 s2 e2 d.Name
-        // Console.WriteLine("<<EOF>>")
-        main state
-
     | GetErrors ->
         let errs = agent.GetErrors()
         for e in errs do
@@ -403,6 +396,29 @@ module internal Main =
         else
           Console.WriteLine(sprintf "ERROR: File '%s' does not exist" file)
           main state
+
+    // TODO: Refactor error checking of next three cases
+    | Declarations file ->
+        let file = Path.GetFullPath file
+        if not (Map.containsKey file state.Files)
+        then
+          Console.WriteLine(sprintf "ERROR: File '%s' not parsed" file)
+          Console.WriteLine("<<EOF>>")
+        else
+          let lines = state.Files.[file]
+          let text = String.concat "\n" lines
+          let opts = RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
+                                    file,
+                                    text)
+          let decls = agent.GetDeclarations(opts)
+          for tld in decls do
+            let (s1, e1), (s2, e2) = tld.Declaration.Range
+            printfn "[%d:%d-%d:%d] %s" e1 s1 e2 s2 tld.Declaration.Name
+            for d in tld.Nested do
+              let (s1, e1), (s2, e2) = d.Range
+              printfn "  - [%d:%d-%d:%d] %s" e1 s1 e2 s2 d.Name
+          Console.WriteLine("<<EOF>>")
+        main state
 
     | ToolTip(file, ((line, column) as pos), timeout) ->
         // Trigger tooltip request (when we already loaded a file)

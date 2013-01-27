@@ -2,7 +2,7 @@ DONE: Project loaded
 DONE: Background parsing started
 DONE: Background parsing started
 DONE: Background parsing started
-func
+funky
 <<EOF>>
 Equals
 GetHashCode
@@ -37,5 +37,27 @@ Full name: Program.X.func
 val testval : FileTwo.NewObjectType
 
 Full name: Program.testval
+<<EOF>>
+val funky : x:int -> int
+
+Full name: Script.XA.funky
+<<EOF>>
+[1:0-19:0] Program
+  - [13:4-15:5] main
+[1:0-2:20] X
+  - [2:6-2:20] func
+<<EOF>>
+[1:0-14:5] FileTwo
+  - [9:4-9:19] add
+  - [7:4-7:24] addition
+[3:5-5:7] Foo
+  - [4:4-4:7] Bar
+  - [5:4-5:7] Qux
+[11:5-14:5] NewObjectType
+  - [13:11-14:5] Terrific
+<<EOF>>
+[3:0-10:0] Script
+[3:0-4:21] XA
+  - [4:6-4:21] funky
 <<EOF>>
 <<EOF>>
