@@ -28,6 +28,9 @@ type FSharpAutoCompleteWrapper() =
   member x.tooltip (fn: string) (line: int) (col: int) : unit =
     fprintf p.StandardInput "tooltip \"%s\" %d %d\n" fn line col
 
+  member x.declarations (fn: string) : unit =
+    fprintf p.StandardInput "declarations \"%s\"\n" fn
+
   member x.send (s: string) : unit =
     fprintf p.StandardInput "%s" s
 
