@@ -148,7 +148,7 @@ namespace MonoDevelop.CSharp
 			} else if (e is OperatorDeclaration) {
 				var op = e as OperatorDeclaration;
 				sb.Append ("operator");
-				AppendEscaped (sb, op.OperatorTypeToken.GetText ());
+				AppendEscaped (sb, op.OperatorTypeToken.GetText () ?? string.Empty);
 				AppendParameter (sb, op.Parameters);
 			} else if (e is MethodDeclaration) {
 				var method = e as MethodDeclaration;
