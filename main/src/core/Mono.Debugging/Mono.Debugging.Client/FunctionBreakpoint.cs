@@ -25,6 +25,7 @@
 
 using System;
 using System.Xml;
+using System.Collections.Generic;
 
 namespace Mono.Debugging.Client
 {
@@ -36,6 +37,58 @@ namespace Mono.Debugging.Client
 			FunctionName = functionName;
 			Language = language;
 		}
+
+		public static bool TryParseParameters (string text, int startIndex, int endIndex, out string[] paramTypes)
+		{
+			List<string> parsedParamTypes = new List<string> ();
+			int index = startIndex;
+			int depth = 0;
+			int start;
+
+			paramTypes = null;
+
+			while (index < endIndex) {
+				while (char.IsWhiteSpace (text[index]))
+					index++;
+
+				start = index;
+				while (index < endIndex) {
+					if (text[index] == '<') {
+						depth++;
+						index++;
+					} else if (text[index] == '>') {
+						if (--depth < 0)
+							return false;
+
+						index++;
+
+						// the only chars allowed after a '>' are: '>', ',', and lwsp
+						while (index < endIndex && text[index] != '>' && text[index] != ',') {
+							if (!char.IsWhiteSpace (text[index]))
+								return false;
+
+							index++;
+						}
+					} else if (depth == 0 && text[index] == ',') {
+						break;
+					} else {
+						index++;
+					}
+				}
+
+				if (depth != 0)
+					return false;
+
+				parsedParamTypes.Add (text.Substring (start, index - start).TrimEnd ());
+
+				if (index < endIndex)
+					index++;
+			}
+
+			paramTypes = parsedParamTypes.ToArray ();
+
+			return true;
+		}
 		
 		internal FunctionBreakpoint (XmlElement elem) : base (elem)
 		{
@@ -46,10 +99,16 @@ namespace Mono.Debugging.Client
 				Language = "C#";
 			else
 				Language = s;
-			
-			s = elem.GetAttribute ("params");
-			if (!string.IsNullOrEmpty (s))
-				ParamTypes = s.Split (new char [] { ',' });
+
+			if (elem.HasAttribute ("params")) {
+				s = elem.GetAttribute ("params").Trim ();
+				if (s.Length > 0)
+					ParamTypes = s.Split (new char [] { '|' });
+				else
+					ParamTypes = new string[0];
+			}
+
+			FileName = null;
 		}
 		
 		internal override XmlElement ToXml (XmlDocument doc)
@@ -60,7 +119,7 @@ namespace Mono.Debugging.Client
 			elem.SetAttribute ("language", Language);
 			
 			if (ParamTypes != null)
-				elem.SetAttribute ("params", string.Join (",", ParamTypes));
+				elem.SetAttribute ("params", string.Join ("|", ParamTypes));
 			
 			return elem;
 		}
@@ -75,11 +134,6 @@ namespace Mono.Debugging.Client
 		
 		public string[] ParamTypes {
 			get; set;
-		}
-		
-		public void SetResolvedFileName (string resolvedFileName)
-		{
-			FileName = resolvedFileName;
 		}
 		
 		public override void CopyFrom (BreakEvent ev)

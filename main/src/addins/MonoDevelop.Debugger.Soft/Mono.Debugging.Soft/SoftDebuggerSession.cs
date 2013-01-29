@@ -744,26 +744,23 @@ namespace Mono.Debugging.Soft
 
 				if (ev is FunctionBreakpoint) {
 					var fb = (FunctionBreakpoint) ev;
-					bool generic;
 
-					bi.Location = FindLocationByFunction (fb.FunctionName, fb.ParamTypes, out generic);
-					if (bi.Location != null) {
-						fb.SetResolvedFileName (bi.Location.SourceFile);
-						bi.FileName = fb.FileName;
+					foreach (var location in FindFunctionLocations (fb.FunctionName, fb.ParamTypes)) {
+						bi.FileName = location.SourceFile;
+						bi.Location = location;
 
 						InsertBreakpoint (fb, bi);
 						bi.SetStatus (BreakEventStatus.Bound, null);
+					}
 
-						// Note: if the type or method is generic, there may be more instances so don't assume we are done resolving the breakpoint
-						if (generic)
-							pending_bes.Add (bi);
-					} else {
+					if (bi.Location == null) {
+						// FIXME: handle types like GenericType<>, GenericType<SomeOtherType>, and GenericType<...>+NestedGenricType<...>
 						int dot = fb.FunctionName.LastIndexOf ('.');
 						if (dot != -1)
 							bi.TypeName = fb.FunctionName.Substring (0, dot);
 
-						pending_bes.Add (bi);
 						bi.SetStatus (BreakEventStatus.NotBound, null);
+						pending_bes.Add (bi);
 					}
 				} else if (ev is Breakpoint) {
 					var bp = (Breakpoint) ev;
@@ -917,28 +914,93 @@ namespace Mono.Debugging.Soft
 			bi.Requests.Add (request);
 		}
 		
-		bool CheckMethodParams (MethodMirror method, string[] paramTypes)
+		static bool CheckTypeName (string typeName, string name)
+		{
+			// if the name provided is empty, it matches anything.
+			if (name.Length == 0)
+				return true;
+
+			if (name.StartsWith ("global::")) {
+				if (typeName != name.Substring ("global::".Length))
+					return false;
+			} else if (name.StartsWith ("::")) {
+				if (typeName != name.Substring ("::".Length))
+					return false;
+			} else {
+				// be a little more flexible with what we match... i.e. "Console" should match "System.Console"
+				if (typeName.Length > name.Length) {
+					if (!typeName.EndsWith (name))
+						return false;
+
+					char delim = typeName[typeName.Length - name.Length];
+					if (delim != '.' && delim != '+')
+						return false;
+				} else if (typeName != name) {
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		static bool CheckTypeName (TypeMirror type, string name)
+		{
+			if (type.IsGenericType) {
+				int endIndex = name.LastIndexOf ('>');
+				int startIndex = name.IndexOf ('<');
+
+				if (startIndex == -1 || endIndex < startIndex)
+					return false;
+
+				// FIXME: need to handle pointer types, arrays, and nullables.
+				// make sure that the type name matches (minus generics)
+				string subName = name.Substring (0, startIndex);
+				string typeName = type.FullName;
+				int tick;
+
+				if ((tick = typeName.IndexOf ('`')) != -1)
+					typeName = typeName.Substring (0, tick);
+
+				if (!CheckTypeName (typeName, subName))
+					return false;
+
+				string[] paramTypes;
+				if (!FunctionBreakpoint.TryParseParameters (name, startIndex + 1, endIndex, out paramTypes))
+					return false;
+
+				TypeMirror[] argTypes = type.GetGenericArguments ();
+				if (paramTypes.Length != argTypes.Length)
+					return false;
+
+				for (int i = 0; i < paramTypes.Length; i++) {
+					if (!CheckTypeName (argTypes[i], paramTypes[i]))
+						return false;
+				}
+			} else if (!CheckTypeName (type.CSharpName, name)) {
+				if (!CheckTypeName (type.FullName, name))
+					return false;
+			}
+
+			return true;
+		}
+
+		static bool CheckMethodParams (MethodMirror method, string[] paramTypes)
 		{
 			if (paramTypes == null) {
 				// User supplied no params to match against, match anything we find.
 				return true;
 			}
-			
-			int i = 0;
-			foreach (var param in method.GetParameters ()) {
-				if (i == paramTypes.Length) {
-					// This method has too many parameters...
+
+			var parameters = method.GetParameters ();
+			if (parameters.Length != paramTypes.Length)
+				return false;
+
+			for (int i = 0; i < paramTypes.Length; i++) {
+				if (!CheckTypeName (parameters[i].ParameterType, paramTypes[i]))
 					return false;
-				}
-				
-				if (param.ParameterType.FullName != paramTypes[i] &&
-				    param.ParameterType.CSharpName != paramTypes[i])
-					return false;
-				
-				i++;
 			}
-			
-			return i == paramTypes.Length;
+
+			return true;
 		}
 		
 		bool IsGenericMethod (MethodMirror method)
@@ -946,38 +1008,36 @@ namespace Mono.Debugging.Soft
 			return vm.Version.AtLeast (2, 12) && method.IsGenericMethod;
 		}
 		
-		Location FindLocationByFunction (string function, string[] paramTypes, out bool genericTypeOrMethod)
+		IEnumerable<Location> FindFunctionLocations (string function, string[] paramTypes)
 		{
-			genericTypeOrMethod = false;
-			
 			if (!started)
-				return null;
-			
-			int dot = function.LastIndexOf ('.');
-			if (dot == -1 || dot + 1 == function.Length)
-				return null;
-			
-			string methodName = function.Substring (dot + 1);
-			string typeName = function.Substring (0, dot);
+				yield break;
 			
 			if (vm.Version.AtLeast (2, 9)) {
+				int dot = function.LastIndexOf ('.');
+				if (dot == -1 || dot + 1 == function.Length)
+					yield break;
+
+				// FIXME: handle types like GenericType<>, GenericType<SomeOtherType>, and GenericType<...>+NestedGenricType<...>
+				string methodName = function.Substring (dot + 1);
+				string typeName = function.Substring (0, dot);
+
+				// FIXME: need a way of querying all types so we can substring match typeName (e.g. user may have typed "Console" instead of "System.Console")
 				foreach (var type in vm.GetTypes (typeName, false)) {
 					ProcessType (type);
 					
-					foreach (var method in type.GetMethodsByNameFlags (methodName, BindingFlags.Default, false)) {
+					foreach (var method in type.GetMethodsByNameFlags (methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static, false)) {
 						if (!CheckMethodParams (method, paramTypes))
 							continue;
 						
 						Location location = GetLocFromMethod (method);
-						if (location != null) {
-							genericTypeOrMethod = type.IsGenericType || IsGenericMethod (method);
-							return location;
-						}
+						if (location != null)
+							yield return location;
 					}
 				}
 			}
 			
-			return null;
+			yield break;
 		}
 		
 		Location FindLocationByFile (string file, int line, int column, out bool genericTypeOrMethod, out bool insideLoadedRange)
@@ -1634,7 +1694,6 @@ namespace Mono.Debugging.Soft
 		void ResolveBreakpoints (TypeMirror type)
 		{
 			var resolved = new List<BreakInfo> ();
-			string typeName = type.FullName;
 			Location loc;
 			
 			ProcessType (type);
@@ -1642,32 +1701,25 @@ namespace Mono.Debugging.Soft
 			// First, resolve FunctionBreakpoints
 			foreach (var bi in pending_bes.Where (b => b.BreakEvent is FunctionBreakpoint)) {
 				var bp = (FunctionBreakpoint) bi.BreakEvent;
-				int dot = bp.FunctionName.LastIndexOf ('.');
-				string ftypeName = bp.FunctionName.Substring (0, dot);
-				
-				if (ftypeName == typeName) {
-					string methodName = bp.FunctionName.Substring (dot + 1);
+
+				if (CheckTypeName (type, bi.TypeName)) {
+					string methodName = bp.FunctionName.Substring (bi.TypeName.Length + 1);
 					
-					foreach (var method in type.GetMethodsByNameFlags (methodName, BindingFlags.Default, false)) {
+					foreach (var method in type.GetMethodsByNameFlags (methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static, false)) {
 						if (!CheckMethodParams (method, bp.ParamTypes))
 							continue;
 						
 						loc = GetLocFromMethod (method);
 						if (loc != null) {
-							string paramList = bp.ParamTypes != null ? "(" + string.Join (",", bp.ParamTypes) + ")" : "";
+							string paramList = "(" + string.Join (", ", bp.ParamTypes ?? GetParamTypes (method)) + ")";
 							OnDebuggerOutput (false, string.Format ("Resolved pending breakpoint for '{0}{1}' to {2}:{3} [0x{4:x5}].\n",
 							                                        bp.FunctionName, paramList, loc.SourceFile, loc.LineNumber, loc.ILOffset));
-							
-							if (bp.ParamTypes == null)
-								bp.ParamTypes = GetParamTypes (method);
-							
-							bp.SetResolvedFileName (loc.SourceFile);
+
 							ResolvePendingBreakpoint (bi, loc);
 							
 							// Note: if the type or method is generic, there may be more instances so don't assume we are done resolving the breakpoint
-							if (!type.IsGenericType && !IsGenericMethod (method))
+							if (bp.ParamTypes != null && !type.IsGenericType && !IsGenericMethod (method))
 								resolved.Add (bi);
-							break;
 						}
 					}
 				}
@@ -1679,7 +1731,7 @@ namespace Mono.Debugging.Soft
 
 			// Now resolve normal Breakpoints
 			foreach (string s in type_to_source [type]) {
-				foreach (var bi in pending_bes.Where (b => b.BreakEvent is Breakpoint)) {
+				foreach (var bi in pending_bes.Where (b => (b.BreakEvent is Breakpoint) && !(b.BreakEvent is FunctionBreakpoint))) {
 					var bp = (Breakpoint) bi.BreakEvent;
 					if (PathsAreEqual (PathToFileName (bp.FileName), s)) {
 						bool insideLoadedRange;
@@ -1710,7 +1762,7 @@ namespace Mono.Debugging.Soft
 			// Thirdly, resolve pending catchpoints
 			foreach (var bi in pending_bes.Where (b => b.BreakEvent is Catchpoint)) {
 				var cp = (Catchpoint) bi.BreakEvent;
-				if (cp.ExceptionName == typeName) {
+				if (cp.ExceptionName == type.FullName) {
 					ResolvePendingCatchpoint (bi, type);
 					resolved.Add (bi);
 				}
