@@ -79,7 +79,7 @@ namespace MonoDevelop.AspNet.Mvc.Parser
 
 		public override ParsedDocument Parse (bool storeAst, string fileName, System.IO.TextReader content, Projects.Project project = null)
 		{
-			currentDocument = openDocuments.FirstOrDefault (d => d.FileName == fileName);
+			currentDocument = openDocuments.FirstOrDefault (d => d != null && d.FileName == fileName);
 			// We need document and project to be loaded to correctly initialize Razor Host.
 			this.project = project as DotNetProject;
 			if (this.project == null || (currentDocument == null && !TryAddDocument (fileName)))
@@ -135,12 +135,19 @@ namespace MonoDevelop.AspNet.Mvc.Parser
 			if (guiDoc != null && guiDoc.Editor != null) {
 				currentDocument = guiDoc.Editor.Document;
 				currentDocument.TextReplacing += OnTextReplacing;
-				openDocuments.Add (currentDocument);
+				lock (this) {
+					var newDocs = new List<TextDocument> (openDocuments);
+					newDocs.Add (currentDocument);
+					openDocuments = newDocs;
+				}
 				guiDoc.Closed += (sender, args) =>
 				{
 					var doc = sender as Document;
-					if (doc.Editor != null && doc.Editor.Document != null)
-						openDocuments.Remove (doc.Editor.Document);
+					if (doc.Editor != null && doc.Editor.Document != null) {
+						lock (this) {
+							openDocuments = new List<TextDocument> (openDocuments.Where (d => d != doc.Editor.Document));
+						}
+					}
 
 					if (lastParsedFile == doc.FileName && editorParser != null) {
 						DisposeCurrentParser ();
