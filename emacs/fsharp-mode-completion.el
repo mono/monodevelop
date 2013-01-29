@@ -89,14 +89,15 @@
 ;;;###autoload
 (defun ac-fsharp-quit-completion-process ()
   (interactive)
-  (log-psendstr ac-fsharp-completion-process "quit\n")
+  (if (process-live-p ac-fsharp-completion-process)
+      (log-psendstr ac-fsharp-completion-process "quit\n"))
   (setq ac-fsharp-completion-process nil))
 
 ;;;###autoload
 (defun ac-fsharp-launch-completion-process ()
   "Launch the F# completion process in the background"
   (interactive)
-  (message "Launching completion process")
+  (message (format "Launching completion process: '%s'" ac-fsharp-complete-command))
   (setq ac-fsharp-completion-process
         (let ((process-connection-type nil))
           (apply 'start-process
@@ -104,10 +105,12 @@
                  "*fsharp-complete*"
                  ac-fsharp-complete-command)))
 
-  (set-process-filter ac-fsharp-completion-process 'ac-fsharp-filter-output)
-  (set-process-query-on-exit-flag ac-fsharp-completion-process nil)
-
-  (setq ac-fsharp-status 'idle)
+  (if (process-live-p ac-fsharp-completion-process)
+      (progn
+        (set-process-filter ac-fsharp-completion-process 'ac-fsharp-filter-output)
+        (set-process-query-on-exit-flag ac-fsharp-completion-process nil)
+        (setq ac-fsharp-status 'idle))
+    (setq ac-fsharp-completion-process nil))
 
   ;(add-hook 'before-save-hook 'ac-fsharp-reparse-buffer)
   ;(local-set-key (kbd ".") 'completion-at-point)
