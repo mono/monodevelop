@@ -601,13 +601,15 @@ namespace MonoDevelop.Ide.Gui
 			int oldIndex = subViewNotebook.CurrentPage;
 			subViewNotebook.CurrentPage = newIndex;
 
-			subViewContent = viewContents[oldIndex] as IAttachableViewContent;
-			if (subViewContent != null)
-				subViewContent.Deselected ();
+			if (oldIndex != -1) {
+				subViewContent = viewContents[oldIndex] as IAttachableViewContent;
+				if (subViewContent != null)
+					subViewContent.Deselected ();
 
-			subViewContent = viewContents[newIndex] as IAttachableViewContent;
-			if (subViewContent != null)
-				subViewContent.Selected ();
+				subViewContent = viewContents[newIndex] as IAttachableViewContent;
+				if (subViewContent != null)
+					subViewContent.Selected ();
+			}
 
 			DetachFromPathedDocument ();
 			
