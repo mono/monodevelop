@@ -605,11 +605,11 @@ namespace MonoDevelop.Ide.Gui
 				subViewContent = viewContents[oldIndex] as IAttachableViewContent;
 				if (subViewContent != null)
 					subViewContent.Deselected ();
-
-				subViewContent = viewContents[newIndex] as IAttachableViewContent;
-				if (subViewContent != null)
-					subViewContent.Selected ();
 			}
+
+			subViewContent = viewContents[newIndex] as IAttachableViewContent;
+			if (subViewContent != null)
+				subViewContent.Selected ();
 
 			DetachFromPathedDocument ();
 			
