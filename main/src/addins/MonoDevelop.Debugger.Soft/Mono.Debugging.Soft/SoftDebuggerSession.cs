@@ -945,14 +945,42 @@ namespace Mono.Debugging.Soft
 
 		static bool CheckTypeName (TypeMirror type, string name)
 		{
-			if (type.IsGenericType) {
-				int endIndex = name.LastIndexOf ('>');
-				int startIndex = name.IndexOf ('<');
+			if (name.Length == 0) {
+				// empty name matches anything
+				return true;
+			}
 
-				if (startIndex == -1 || endIndex < startIndex)
+			if (name[name.Length - 1] == '?') {
+				// canonicalize the user-specified nullable type
+				return CheckTypeName (type, string.Format ("System.Nullable<{0}>", name.Substring (0, name.Length - 1)));
+			} else if (type.IsArray) {
+				int startIndex = name.LastIndexOf ('[');
+				int endIndex = name.Length - 1;
+
+				if (startIndex == -1 || name[endIndex] != ']') {
+					// the user-specified type is not an array
+					return false;
+				}
+
+				var rank = name.Substring (startIndex + 1, endIndex - (startIndex + 1)).Split (new char[] { ',' });
+				if (rank.Length != type.GetArrayRank ())
 					return false;
 
-				// FIXME: need to handle pointer types, arrays, and nullables.
+				return CheckTypeName (type.GetElementType (), name.Substring (0, startIndex).TrimEnd ());
+			} else if (type.IsPointer) {
+				if (name.Length < 2 || name[name.Length - 1] != '*')
+					return false;
+
+				return CheckTypeName (type.GetElementType (), name.Substring (0, name.Length - 1).TrimEnd ());
+			} else if (type.IsGenericType) {
+				int startIndex = name.IndexOf ('<');
+				int endIndex = name.Length - 1;
+
+				if (startIndex == -1 || name[endIndex] != '>') {
+					// the user-specified type is not a generic type
+					return false;
+				}
+
 				// make sure that the type name matches (minus generics)
 				string subName = name.Substring (0, startIndex);
 				string typeName = type.FullName;
