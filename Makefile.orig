@@ -11,6 +11,9 @@ FILES_FCB = \
 	FSharp.CompilerBinding/FSharpCompiler.fs
 
 FILES_FAC = \
+	FSharp.AutoComplete/Debug.fs \
+	FSharp.AutoComplete/Options.fs \
+	FSharp.AutoComplete/ProjectParser.fs \
 	FSharp.AutoComplete/Parser.fs \
 	FSharp.AutoComplete/TipFormatter.fs \
 	FSharp.AutoComplete/Program.fs
@@ -20,6 +23,12 @@ REFERENCES = \
 	-r:System.dll \
 	-r:System.Core.dll \
 	-r:System.Xml.dll \
+	-r:Microsoft.Build.dll \
+	-r:Microsoft.Build.Engine.dll \
+	-r:Microsoft.Build.Framework.dll \
+	-r:Microsoft.Build.Tasks.v4.0.dll \
+	-r:Microsoft.Build.Utilities.v4.0.dll \
+	-r:lib/ndesk-options/NDesk.Options.dll \
 	-r:$(FSBIN)/FSharp.Core.dll 
 
 config=Release
