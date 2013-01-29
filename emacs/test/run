@@ -1,0 +1,6 @@
+#!/bin/bash
+
+pushd `dirname $0` > /dev/null
+export HOME=`pwd`
+popd > /dev/null
+emacs -batch -l basic-tests.el -f ert-run-tests-batch-and-exit
