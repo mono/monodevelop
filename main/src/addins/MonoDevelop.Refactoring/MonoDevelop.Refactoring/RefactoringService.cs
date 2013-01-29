@@ -195,8 +195,9 @@ namespace MonoDevelop.Refactoring
 				var result = new List<MonoDevelop.CodeActions.CodeAction> ();
 				try {
 					var editor = doc.Editor;
-					if (editor != null && doc.ParsedDocument != null) {
-						var ctx = doc.ParsedDocument.CreateRefactoringContext (doc, cancellationToken);
+					var parsedDocument = doc.ParsedDocument;
+					if (editor != null && parsedDocument != null && parsedDocument.CreateRefactoringContext != null) {
+						var ctx = parsedDocument.CreateRefactoringContext (doc, cancellationToken);
 						if (ctx != null) {
 							string disabledNodes = PropertyService.Get ("ContextActions." + editor.Document.MimeType, "") ?? "";
 							foreach (var provider in contextActions.Where (fix => disabledNodes.IndexOf (fix.IdString) < 0)) {
