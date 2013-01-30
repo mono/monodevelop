@@ -122,18 +122,20 @@ namespace MonoDevelop.AnalysisCore.Gui
 			var doc = Document.ParsedDocument;
 			if (doc == null)
 				return;
-			if (src != null) {
-				src.Cancel ();
-				try {
-					oldTask.Wait ();
-				} catch (AggregateException ex) {
-					ex.Handle (e => e is TaskCanceledException);
+			lock (this) {
+				if (src != null) {
+					src.Cancel ();
+					try {
+						oldTask.Wait ();
+					} catch (AggregateException ex) {
+						ex.Handle (e => e is TaskCanceledException);
+					}
 				}
+				src = new CancellationTokenSource ();
+				var treeType = new RuleTreeType ("Document", Path.GetExtension (doc.FileName));
+				var task = AnalysisService.QueueAnalysis (Document, treeType, src.Token);
+				oldTask = task.ContinueWith (t => new ResultsUpdater (this, t.Result, src.Token).Update (), src.Token);
 			}
-			src = new CancellationTokenSource ();
-			var treeType = new RuleTreeType ("Document", Path.GetExtension (doc.FileName));
-			var task = AnalysisService.QueueAnalysis (Document, treeType, src.Token);
-			oldTask = task.ContinueWith (t => new ResultsUpdater (this, t.Result, src.Token).Update (), src.Token);
 		}
 		
 		class ResultsUpdater 
