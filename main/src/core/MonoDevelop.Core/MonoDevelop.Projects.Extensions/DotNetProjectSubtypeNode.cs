@@ -148,7 +148,7 @@ namespace MonoDevelop.Projects.Extensions
 			UpdateImports (item, h.TargetImports);
 			h.SubtypeGuids.Add (guid);
 			if (UseXBuild)
-				h.UseXbuild = true;
+				h.ForceUseMSBuild = true;
 		}
 		
 		public void UpdateImports (SolutionEntityItem item, List<string> imports)

@@ -409,7 +409,7 @@ namespace MonoDevelop.Projects
 		bool UsingMSBuildEngine ()
 		{
 			var msbuildHandler = ItemHandler as MonoDevelop.Projects.Formats.MSBuild.MSBuildProjectHandler;
-			return msbuildHandler != null && msbuildHandler.UseXbuild;
+			return msbuildHandler != null && msbuildHandler.UseMSBuildEngine;
 		}
 
 		protected override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
