@@ -64,7 +64,7 @@ namespace MonoDevelop.AspNet.Mvc
 		
 		public override bool SupportsFramework (MonoDevelop.Core.Assemblies.TargetFramework framework)
 		{
-			return framework.IsCompatibleWithFramework (MonoDevelop.Core.Assemblies.TargetFrameworkMoniker.NET_3_5);
+			return framework.CanReferenceAssembliesTargetingFramework (MonoDevelop.Core.Assemblies.TargetFrameworkMoniker.NET_3_5);
 		}
 		
 		public override IEnumerable<string> GetSpecialDirectories ()
@@ -181,7 +181,7 @@ namespace MonoDevelop.AspNet.Mvc
 
 		public override bool SupportsFramework (MonoDevelop.Core.Assemblies.TargetFramework framework)
 		{
-			return framework.IsCompatibleWithFramework (MonoDevelop.Core.Assemblies.TargetFrameworkMoniker.NET_4_0);
+			return framework.CanReferenceAssembliesTargetingFramework (MonoDevelop.Core.Assemblies.TargetFrameworkMoniker.NET_4_0);
 		}
 	}
 
@@ -203,7 +203,7 @@ namespace MonoDevelop.AspNet.Mvc
 		
 		public override bool SupportsFramework (MonoDevelop.Core.Assemblies.TargetFramework framework)
 		{
-			return framework.IsCompatibleWithFramework (MonoDevelop.Core.Assemblies.TargetFrameworkMoniker.NET_4_0);
+			return framework.CanReferenceAssembliesTargetingFramework (MonoDevelop.Core.Assemblies.TargetFrameworkMoniker.NET_4_0);
 		}
 	}
 }

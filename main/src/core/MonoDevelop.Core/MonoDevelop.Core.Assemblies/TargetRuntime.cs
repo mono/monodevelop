@@ -250,7 +250,7 @@ namespace MonoDevelop.Core.Assemblies
 				if (!IsInstalled (fx)) {
 					// Look for a compatible framework which is installed
 					foreach (TargetFramework f in Runtime.SystemAssemblyService.GetTargetFrameworks ()) {
-						if (IsInstalled (f) && f.IsCompatibleWithFramework (fx.Id)) {
+						if (IsInstalled (f) && f.CanReferenceAssembliesTargetingFramework (fx)) {
 							fx = f;
 							break;
 						}

@@ -238,7 +238,7 @@ namespace MonoDevelop.Projects
 					if (ownerProject != null && ownerProject.ParentSolution != null) {
 						DotNetProject p = ownerProject.ParentSolution.FindProjectByName (reference) as DotNetProject;
 						if (p != null) {
-							if (!ownerProject.TargetFramework.IsCompatibleWithFramework (p.TargetFramework.Id))
+							if (!ownerProject.TargetFramework.CanReferenceAssembliesTargetingFramework (p.TargetFramework))
 								return GettextCatalog.GetString ("Incompatible target framework ({0})", p.TargetFramework.Name);
 						}
 					}

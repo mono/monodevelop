@@ -67,7 +67,7 @@ namespace MonoDevelop.Projects
 			if (framework.Id.Identifier == TargetFrameworkMoniker.ID_PORTABLE && framework.Id.Version == "4.0")
 				return true;
 
-			if (!framework.IsCompatibleWithFramework (TargetFrameworkMoniker.PORTABLE_4_0))
+			if (!framework.CanReferenceAssembliesTargetingFramework (TargetFrameworkMoniker.PORTABLE_4_0))
 				return false;
 
 			return base.SupportsFramework (framework);
