@@ -1,5 +1,7 @@
 DONE: Project loaded
 DONE: Background parsing started
+[14:3-21:3] ERROR The namespace or module 'FileTwo' is not defined
+[11:7-27:7] ERROR Lookup on object of indeterminate type based on information prior to this program point. A type annotation may be needed prior to this program point to constrain the type of the object. This may allow the lookup to be resolved.
 <<EOF>>
 func
 <<EOF>>
@@ -7,8 +9,7 @@ func
 [11:7-27:7] ERROR Lookup on object of indeterminate type based on information prior to this program point. A type annotation may be needed prior to this program point to constrain the type of the object. This may allow the lookup to be resolved.
 <<EOF>>
 DONE: Background parsing started
-[14:3-21:3] ERROR The namespace or module 'FileTwo' is not defined
-[11:7-27:7] ERROR Lookup on object of indeterminate type based on information prior to this program point. A type annotation may be needed prior to this program point to constrain the type of the object. This may allow the lookup to be resolved.
+[12:7-19:7] ERROR The value or constructor 'unnamed' is not defined
 <<EOF>>
 func
 <<EOF>>
