@@ -1,4 +1,6 @@
 DONE: Project loaded
 DONE: Background parsing started
 ERROR: Position is out of range
+<<EOF>>
 ERROR: Position is out of range
+<<EOF>>

@@ -1,2 +1,3 @@
 DONE: Project loaded
 ERROR: File 'test/RobustCommands/NoSuchFile.fs' not parsed
+<<EOF>>
