@@ -37,6 +37,9 @@
       (windows-nt exe)
       (otherwise (list "mono" exe)))))
 
+(defvar ac-fsharp-blocking-timeout 1)
+(defvar ac-fsharp-idle-timeout 1)
+
 (defvar ac-fsharp-status 'idle)
 (defvar ac-fsharp-completion-process nil)
 (defvar ac-fsharp-partial-data "")
@@ -59,13 +62,13 @@
   (log-to-proc-buf proc str)
   (process-send-string proc str))
 
-(defun ac-fsharp-parse-file (file)
+(defun ac-fsharp-parse-file ()
   (save-restriction
     (widen)
     (log-psendstr
      ac-fsharp-completion-process
      (format "parse \"%s\" full\n%s\n<<EOF>>\n"
-             file
+             (buffer-file-name)
              (buffer-substring-no-properties (point-min) (point-max))))))
 
 ;;;###autoload
@@ -79,12 +82,17 @@
                 (format "project \"%s\"\n" (expand-file-name file))))
 
 (defun ac-fsharp-send-completion-request (file line col)
-  (let ((request (format "completion \"%s\" %d %d\n" file line col)))
+  (let ((request (format "completion \"%s\" %d %d %d\n" file line col
+                         ac-fsharp-blocking-timeout)))
       (log-psendstr ac-fsharp-completion-process request)))
 
 (defun ac-fsharp-send-tooltip-request (file line col)
-  (let ((request (format "tooltip \"%s\" %d %d\n" file line col)))
+  (let ((request (format "tooltip \"%s\" %d %d %d\n" file line col
+                         ac-fsharp-blocking-timeout)))
       (log-psendstr ac-fsharp-completion-process request)))
+
+(defun ac-fsharp-send-error-request ()
+  (log-psendstr ac-fsharp-completion-process "errors\n"))
 
 ;;;###autoload
 (defun ac-fsharp-quit-completion-process ()
@@ -112,6 +120,11 @@
         (setq ac-fsharp-status 'idle))
     (setq ac-fsharp-completion-process nil))
 
+  ;; (run-with-idle-timer
+  ;;  ac-fsharp-idle-timeout
+  ;;  nil
+  ;; 'ac-fsharp-get-errors)
+
   ;(add-hook 'before-save-hook 'ac-fsharp-reparse-buffer)
   ;(local-set-key (kbd ".") 'completion-at-point)
   )
@@ -131,7 +144,7 @@
   (let ((cache (assoc file ac-fsharp-completion-cache)))
     (if (and cache (equal (cddr cache) (list line col)))
         (cadr cache)
-      (ac-fsharp-parse-file file)
+      (ac-fsharp-parse-file)
       (ac-fsharp-send-completion-request file line col)
       (while (eq ac-fsharp-status 'fetch-in-progress)
         (accept-process-output ac-fsharp-completion-process))
@@ -165,13 +178,26 @@
       (progn
         (setq ac-fsharp-status 'fetch-in-progress)
         (setq ac-fsharp-data nil)
-        (ac-fsharp-parse-file (buffer-file-name))
+        (ac-fsharp-parse-file)
         (ac-fsharp-send-tooltip-request (buffer-file-name) (- (line-number-at-pos) 1) (current-column))
         (while (eq ac-fsharp-status 'fetch-in-progress)
           (accept-process-output ac-fsharp-completion-process))
         (if (eq 0 (length ac-fsharp-data))
             (setq ac-fsharp-data '("No tooltip data available")))
         (pos-tip-show (mapconcat 'identity ac-fsharp-data "\n")))))
+
+(defun ac-fsharp-get-errors ()
+  (interactive)
+  (if ac-fsharp-completion-process
+      (progn
+        (setq ac-fsharp-status 'fetch-in-progress)
+        (setq ac-fsharp-data nil)
+        (ac-fsharp-parse-file)
+        (ac-fsharp-send-error-request)
+        (while (eq ac-fsharp-status 'fetch-in-progress)
+          (accept-process-output ac-fsharp-completion-process))
+        (message (format "Received errors: %s" (prin1-to-string ac-fsharp-data))))))
+
 
 (defun ac-fsharp-stash-partial (str)
   (setq ac-fsharp-partial-data (concat ac-fsharp-partial-data str)))

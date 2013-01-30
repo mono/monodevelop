@@ -363,7 +363,7 @@ module internal Main =
     | GetErrors ->
         let errs = agent.GetErrors()
         for e in errs do
-          printfn "[%d:%d-%d:%d] %s %s" e.StartColumn e.StartLine e.EndColumn e.EndLine
+          printfn "[%d:%d-%d:%d] %s %s" e.StartLine e.StartColumn e.EndLine e.EndColumn
                     (if e.Severity = Severity.Error then "ERROR" else "WARNING") e.Message
         Console.WriteLine("<<EOF>>")
         main state
