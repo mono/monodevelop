@@ -391,7 +391,6 @@ namespace MonoDevelop.CSharp
 					AppendTypeParameterList (result, t.GetDefinition ());
 				}
 			}
-			Console.WriteLine (result);
 			return result.ToString ();
 		}
 		
