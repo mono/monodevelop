@@ -151,8 +151,11 @@ namespace MonoDevelop.Core.Assemblies
 			int star = pattern.IndexOf ('*');
 
 			if (star != -1) {
-				if (string.IsNullOrEmpty (profile))
+				if (star == 0)
 					return true;
+
+				if (string.IsNullOrEmpty (profile))
+					return false;
 
 				var prefix = pattern.Substring (0, star);
 				return profile.StartsWith (prefix);
