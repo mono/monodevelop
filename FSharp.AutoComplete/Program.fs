@@ -101,9 +101,11 @@ type internal IntelliSenseAgent() =
                 (waitForTypeCheck(opts, untypedInfo), ?timeout = timeout)
             reply.Reply(Some(res))
             return! loop errors
-          with :? OperationCanceledException ->
-            reply.Reply(None)
-            return! loop errors
+          with
+            | :? OperationCanceledException
+            | :? TimeoutException ->
+                    reply.Reply(None)
+                    return! loop errors
 
       | GetErrors(reply) ->
           // Return an array with errors that were reported last time
@@ -165,11 +167,8 @@ type internal IntelliSenseAgent() =
       Debug.print "Worker: Quick parse completed - success"
       typed.TypeCheckInfo
     | _ ->
-      try
-        // Otherwise try to get type information & run the request
-        let op = agent.PostAndAsyncReply(fun r -> GetTypeCheckInfo(opts, time, r))
-        Async.RunSynchronously(op, ?timeout = time)
-      with :? OperationCanceledException -> None
+      // Otherwise try to get type information & run the request
+      agent.PostAndReply(fun r -> GetTypeCheckInfo(opts, time, r))
 
   /// Invokes dot-completion request and writes information to the standard output
   member x.DoCompletion(opts : RequestOptions, ((line, column) as pos), lineStr, time) =
@@ -312,12 +311,12 @@ module internal CommandInput =
     let! filename = some (sat ((<>) '"')) |> Parser.map String.ofSeq // "
     let! _ = char '"' // " // TODO: This here for Emacs syntax highlighting bug
     let! _ = many (string " ")
-    let! line = some alphanum |> Parser.map (String.ofSeq >> int)
+    let! line = some digit |> Parser.map (String.ofSeq >> int)
     let! _ = many (string " ")
-    let! col = some alphanum |> Parser.map (String.ofSeq >> int)
+    let! col = some digit |> Parser.map (String.ofSeq >> int)
     let! timeout =
       (parser { let! _ = some (string " ")
-                return! some alphanum |> Parser.map (String.ofSeq >> int >> Some) }) <|>
+                return! some digit |> Parser.map (String.ofSeq >> int >> Some) }) <|>
       (parser { return None })
     return f(filename, (line, col), timeout) }
 

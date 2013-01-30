@@ -1,0 +1,18 @@
+DONE: Project loaded
+DONE: Background parsing started
+<<EOF>>
+<<EOF>>
+Equals
+GetHashCode
+GetType
+Terrific
+ToString
+<<EOF>>
+Equals
+GetHashCode
+GetType
+Terrific
+ToString
+<<EOF>>
+member FileTwo.NewObjectType.Terrific : y:int -> int
+<<EOF>>
