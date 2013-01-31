@@ -667,7 +667,6 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (options.ExplicitDeclaration || options.ImplementingType.Kind == TypeKind.Interface)
 				return;
 			result.Append (GetModifiers (options.ImplementingType, options.Part, member));
-			
 			bool isFromInterface = false;
 			if (member.DeclaringType != null && member.DeclaringTypeDefinition.Kind == TypeKind.Interface) {
 				isFromInterface = true;
@@ -686,6 +685,8 @@ namespace MonoDevelop.CSharp.Refactoring
 
 			if (!isFromInterface && member.IsOverridable)
 				result.Append ("override ");
+			if (member is IMethod && ((IMethod)member).IsAsync)
+				result.Append ("async ");
 		}
 		
 		CodeGeneratorMemberResult GenerateCode (IProperty property, CodeGenerationOptions options)
