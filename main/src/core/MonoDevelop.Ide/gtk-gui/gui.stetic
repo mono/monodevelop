@@ -5399,7 +5399,6 @@ Diagnostic</property>
                     <property name="Tooltip" translatable="yes">Switch to Find in Files</property>
                     <property name="CanFocus">True</property>
                     <property name="Label" translatable="yes">Find in Files</property>
-                    <property name="Active">True</property>
                     <property name="DrawIndicator">False</property>
                     <property name="HasLabel">True</property>
                     <property name="UseUnderline">True</property>
@@ -5429,6 +5428,7 @@ Diagnostic</property>
                     <property name="Tooltip" translatable="yes">Switch to Replace in Files</property>
                     <property name="CanFocus">True</property>
                     <property name="Label" translatable="yes">Replace in Files</property>
+                    <property name="Active">True</property>
                     <property name="DrawIndicator">False</property>
                     <property name="HasLabel">True</property>
                     <property name="UseUnderline">True</property>
@@ -5592,7 +5592,7 @@ Diagnostic</property>
                   <widget class="Gtk.CheckButton" id="checkbuttonCaseSensitive">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="Label" translatable="yes">_Case sensitive</property>
+                    <property name="Label" translatable="yes">C_ase sensitive</property>
                     <property name="DrawIndicator">True</property>
                     <property name="HasLabel">True</property>
                     <property name="UseUnderline">True</property>
