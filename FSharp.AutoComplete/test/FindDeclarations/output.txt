@@ -2,13 +2,18 @@ DONE: Project loaded
 DONE: Background parsing started
 DONE: Background parsing started
 DONE: Background parsing started
-/auto/users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/FindDeclarations/Program.fs:1:6
+file stored in metadata is '/Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/FindDeclarations/Program.fs'
+/Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/FindDeclarations/Program.fs:1:6
 <<EOF>>
-/auto/users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/FindDeclarations/FileTwo.fs:12:11
+file stored in metadata is '/Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/FindDeclarations/FileTwo.fs'
+/Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/FindDeclarations/FileTwo.fs:12:11
 <<EOF>>
-/auto/users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/FindDeclarations/Program.fs:5:4
+file stored in metadata is '/Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/FindDeclarations/Program.fs'
+/Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/FindDeclarations/Program.fs:5:4
 <<EOF>>
-/auto/users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/FindDeclarations/FileTwo.fs:10:5
+file stored in metadata is '/Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/FindDeclarations/FileTwo.fs'
+/Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/FindDeclarations/FileTwo.fs:10:5
 <<EOF>>
-/auto/users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/FindDeclarations/Script.fsx:3:6
+file stored in metadata is '/Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/FindDeclarations/Script.fsx'
+/Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/FindDeclarations/Script.fsx:3:6
 <<EOF>>

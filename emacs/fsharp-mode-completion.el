@@ -37,6 +37,7 @@
       (windows-nt exe)
       (otherwise (list "mono" exe)))))
 
+; Both in seconds. Note that background process uses ms.
 (defvar ac-fsharp-blocking-timeout 1)
 (defvar ac-fsharp-idle-timeout 1)
 
@@ -81,19 +82,11 @@
   (log-psendstr ac-fsharp-completion-process
                 (format "project \"%s\"\n" (expand-file-name file))))
 
-(defun ac-fsharp-send-completion-request (file line col)
-  (let ((request (format "completion \"%s\" %d %d %d\n" file line col
-                         ac-fsharp-blocking-timeout)))
-      (log-psendstr ac-fsharp-completion-process request)))
 
-(defun ac-fsharp-send-tooltip-request (file line col)
-  (let ((request (format "tooltip \"%s\" %d %d %d\n" file line col
-                         ac-fsharp-blocking-timeout)))
-      (log-psendstr ac-fsharp-completion-process request)))
 
-(defun ac-fsharp-send-finddecl-request (file line col)
-  (let ((request (format "finddecl \"%s\" %d %d\n" file line col
-                         ac-fsharp-blocking-timeout)))
+(defun ac-fsharp-send-pos-request (cmd file line col)
+  (let ((request (format "%s \"%s\" %d %d %d\n" cmd file line col
+                         (* 1000 ac-fsharp-blocking-timeout))))
       (log-psendstr ac-fsharp-completion-process request)))
 
 (defun ac-fsharp-send-error-request ()
@@ -127,9 +120,9 @@
     (setq ac-fsharp-completion-process nil))
 
   ;; (run-with-idle-timer
-  ;;  ac-fsharp-idle-timeout
-  ;;  nil
-  ;; 'ac-fsharp-get-errors)
+  ;;    ac-fsharp-idle-timeout
+  ;;    t
+  ;;    (lambda () (with-local-quit (ac-fsharp-get-errors))))
 
   ;(add-hook 'before-save-hook 'ac-fsharp-reparse-buffer)
   ;(local-set-key (kbd ".") 'completion-at-point)
@@ -151,7 +144,7 @@
     (if (and cache (equal (cddr cache) (list line col)))
         (cadr cache)
       (ac-fsharp-parse-file)
-      (ac-fsharp-send-completion-request file line col)
+      (ac-fsharp-send-pos-request "completion" file line col)
       (while (eq ac-fsharp-status 'fetch-in-progress)
         (accept-process-output ac-fsharp-completion-process))
       (push (list file ac-fsharp-data line col) ac-fsharp-completion-cache)
@@ -185,7 +178,7 @@
         (setq ac-fsharp-status 'fetch-in-progress)
         (setq ac-fsharp-data nil)
         (ac-fsharp-parse-file)
-        (ac-fsharp-send-tooltip-request (buffer-file-name) (- (line-number-at-pos) 1) (current-column))
+        (ac-fsharp-send-pos-request "tooltip" (buffer-file-name) (- (line-number-at-pos) 1) (current-column))
         (while (eq ac-fsharp-status 'fetch-in-progress)
           (accept-process-output ac-fsharp-completion-process))
         (if (eq 0 (length ac-fsharp-data))
@@ -201,7 +194,7 @@
         (setq ac-fsharp-status 'fetch-in-progress)
         (setq ac-fsharp-data nil)
         (ac-fsharp-parse-file)
-        (ac-fsharp-send-finddecl-request (buffer-file-name) (- (line-number-at-pos) 1) (current-column))
+        (ac-fsharp-send-pos-request "finddecl" (buffer-file-name) (- (line-number-at-pos) 1) (current-column))
         (while (eq ac-fsharp-status 'fetch-in-progress)
           (accept-process-output ac-fsharp-completion-process))
         (if (eq 0 (length ac-fsharp-data))
@@ -212,15 +205,16 @@
 
 (defun ac-fsharp-get-errors ()
   (interactive)
-  (if ac-fsharp-completion-process
-      (progn
-        (setq ac-fsharp-status 'fetch-in-progress)
-        (setq ac-fsharp-data nil)
-        (ac-fsharp-parse-file)
-        (ac-fsharp-send-error-request)
-        (while (eq ac-fsharp-status 'fetch-in-progress)
-          (accept-process-output ac-fsharp-completion-process))
-        (ac-fsharp-show-errors ac-fsharp-data))))
+  (message "running ac-fsharp-get-errors")
+  (when ac-fsharp-completion-process
+    (message "and actually doing it")
+    (setq ac-fsharp-status 'fetch-in-progress)
+    (setq ac-fsharp-data nil)
+    (ac-fsharp-parse-file)
+    (ac-fsharp-send-error-request)
+    (while (eq ac-fsharp-status 'fetch-in-progress)
+      (accept-process-output ac-fsharp-completion-process))
+    (ac-fsharp-show-errors ac-fsharp-data)))
 
 
 (defun line-column-to-pos (line col)
@@ -240,26 +234,13 @@
                            (string-to-int (match-string 4 err)))
        (match-string 5 err)))))
 
-(defun ac-fsharp-show-error (p1 p2 txt)
-  "Propertize the text from p1 to p2 to indicate an error is present here.
-   The error is described by txt."
-  (add-text-properties p1 p2 `(font-lock-face error
-                               mouse-face underline
-                               help-echo ,txt)))
-
-(custom-set-faces
- '(flymake-errline ((((class color)) (:underline "red"))))
- '(flymake-warnline ((((class color)) (:underline "yellow")))))
-
 (defface fsharp-error-face
-;  '((((class color)) (:foreground "OrangeRed" :bold t :underline t))
-;    (t (:bold t)))
   '((((class color)) (:underline "Red"))
     (t (:weight bold)))
-  "Face used for marking a misspelled word in Flyspell.")
+  "Face used for marking an error in F#")
 
 (defun ac-fsharp-show-error-overlay (p1 p2 txt)
-  "Propertize the text from p1 to p2 to indicate an error is present here.
+  "Overlay the text from p1 to p2 to indicate an error is present here.
    The error is described by txt."
   (let ((over (make-overlay p1 p2)))
     ;(overlay-put over 'font-lock-face 'error)
