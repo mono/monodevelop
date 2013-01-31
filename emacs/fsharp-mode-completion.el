@@ -207,17 +207,49 @@
     (point)))
 
 (defun ac-fsharp-show-errors (errors)
+  (ac-fsharp-clear-errors)
   (dolist (err errors)
     (when (string-match "\\[\\([0-9]+\\):\\([0-9]+\\)-\\([0-9]+\\):\\([0-9]+\\)\\] ERROR \\(.*\\)" err)
-      (ac-fsharp-show-error
+      (ac-fsharp-show-error-overlay
        (line-column-to-pos (+ (string-to-int (match-string 1 err)) 1)
                            (string-to-int (match-string 2 err)))
        (line-column-to-pos (+ (string-to-int (match-string 3 err)) 1)
-                           (string-to-int (match-string 4 err)))))))
+                           (string-to-int (match-string 4 err)))
+       (match-string 5 err)))))
 
-(defun ac-fsharp-show-error (p1 p2)
-  "Propertize the text from p1 to p2 to indicate an error is present here"
-  (put-text-property p1 p2 'font-lock-face 'underline))
+(defun ac-fsharp-show-error (p1 p2 txt)
+  "Propertize the text from p1 to p2 to indicate an error is present here.
+   The error is described by txt."
+  (add-text-properties p1 p2 `(font-lock-face error
+                               mouse-face underline
+                               help-echo ,txt)))
+
+(custom-set-faces
+ '(flymake-errline ((((class color)) (:underline "red"))))
+ '(flymake-warnline ((((class color)) (:underline "yellow")))))
+
+(defface fsharp-error-face
+;  '((((class color)) (:foreground "OrangeRed" :bold t :underline t))
+;    (t (:bold t)))
+  '((((class color)) (:underline "Red"))
+    (t (:weight bold)))
+  "Face used for marking a misspelled word in Flyspell.")
+
+(defun ac-fsharp-show-error-overlay (p1 p2 txt)
+  "Propertize the text from p1 to p2 to indicate an error is present here.
+   The error is described by txt."
+  (let ((over (make-overlay p1 p2)))
+    ;(overlay-put over 'font-lock-face 'error)
+    (overlay-put over 'face 'fsharp-error-face)
+    (overlay-put over 'help-echo txt)))
+
+
+
+(defun ac-fsharp-clear-errors ()
+  (interactive)
+  (remove-overlays)
+  (remove-text-properties (point-min) (point-max)
+                          '(mouse-face nil help-echo nil font-lock-face nil)))
 
 (defun ac-fsharp-stash-partial (str)
   (setq ac-fsharp-partial-data (concat ac-fsharp-partial-data str)))

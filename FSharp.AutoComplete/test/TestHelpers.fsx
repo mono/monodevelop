@@ -28,6 +28,9 @@ type FSharpAutoCompleteWrapper() =
   member x.tooltip (fn: string) (line: int) (col: int) : unit =
     fprintf p.StandardInput "tooltip \"%s\" %d %d\n" fn line col
 
+  member x.finddeclaration (fn: string) (line: int) (col: int) : unit =
+    fprintf p.StandardInput "finddeclaration \"%s\" %d %d\n" fn line col
+
   member x.declarations (fn: string) : unit =
     fprintf p.StandardInput "declarations \"%s\"\n" fn
 

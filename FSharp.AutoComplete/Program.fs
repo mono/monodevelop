@@ -225,6 +225,40 @@ type internal IntelliSenseAgent() =
             Console.WriteLine(TipFormatter.formatTip tip)
     finally Console.WriteLine("<<EOF>>")
 
+  /// Finds the point of declaration of the symbol at pos
+  /// and writes information to the standard output
+  member x.FindDeclaration(opts : RequestOptions, ((line, column) as pos), lineStr, time) =
+    try
+      match x.GetTypeCheckInfo(opts, time) with
+      | Some(info) ->
+        // Parsing - find the identifier around the current location
+        // (we look for full identifier in the backward direction, but only
+        // for a short identifier forward - this means that when you hover
+        // 'B' in 'A.B.C', you will get intellisense for 'A.B' module)
+        let lookBack = Parsing.createBackStringReader lineStr column
+        let lookForw = Parsing.createForwardStringReader lineStr (column + 1)
+        let backIdent = Parsing.getFirst Parsing.parseBackLongIdent lookBack
+        let nextIdent = Parsing.getFirst Parsing.parseIdent lookForw
+
+        let identIsland =
+          match List.rev backIdent with
+          | last::prev -> (last + nextIdent)::prev |> List.rev
+          | [] -> []
+
+        match identIsland with
+        | [ "" ] ->
+          // There is no identifier at the current location
+          ()
+        | _ ->
+          // Assume that we are inside identifier (F# services can also handle
+          // case when we're in a string in '#r "Foo.dll"' but we don't do that)
+          // Get items & generate output
+          match info.GetDeclarationLocation(pos, lineStr, identIsland, identToken, true) with
+          | DeclFound (line,col,file) -> printfn "%s:%d:%d" file line col
+          | DeclNotFound -> Debug.print "DeclNotFound"
+      | None -> Debug.print "FindDeclaration failed to get typed info"
+    finally Console.WriteLine("<<EOF>>")
+
 // --------------------------------------------------------------------------------------
 // Utilities for parsing & processing command line input
 // --------------------------------------------------------------------------------------
@@ -249,7 +283,9 @@ module internal CommandInput =
     completion ""<filename>"" <line> <col> [timeout]
       - trigger completion request for the specified location
     tooltip ""<filename>"" <line> <col> [timeout]
-      - get tool tip for the specified location (currently not implemented)
+      - get tool tip for the specified location
+    finddeclaration ""<filename>"" <line> <col> [timeout]
+      - find the point of declaration of the object at specified position
     project ""<filename>""
       - associates the current session with the specified project"
 
@@ -257,6 +293,7 @@ module internal CommandInput =
   type Command =
     | Completion of string * Position * int option
     | ToolTip of string * Position * int option
+    | FindDeclaration of string * Position * int option
     | Declarations of string
     | GetErrors
     | Parse of string * bool
@@ -309,9 +346,10 @@ module internal CommandInput =
     return Parse (filename, full) }
 
   // Parse 'completion "<filename>" <line> <col> [timeout]' command
-  let completionOrTip = parser {
+  let completionTipOrDecl = parser {
     let! f = (string "completion " |> Parser.map (fun _ -> Completion)) <|>
-             (string "tooltip " |> Parser.map (fun _ -> ToolTip))
+             (string "tooltip " |> Parser.map (fun _ -> ToolTip)) <|>
+             (string "finddeclaration " |> Parser.map (fun _ -> FindDeclaration))
     let! _ = char '"' // " // TODO: This here for Emacs syntax highlighting bug
     let! filename = some (sat ((<>) '"')) |> Parser.map String.ofSeq // "
     let! _ = char '"' // " // TODO: This here for Emacs syntax highlighting bug
@@ -332,7 +370,7 @@ module internal CommandInput =
   // Parase any of the supported commands
   let parseCommand input =
     let reader = Parsing.createForwardStringReader input 0
-    let cmds = errors <|> help <|> declarations <|> parse <|> project <|> completionOrTip <|> quit <|> error
+    let cmds = errors <|> help <|> declarations <|> parse <|> project <|> completionTipOrDecl <|> quit <|> error
     reader |> Parsing.getFirst cmds
 
 // --------------------------------------------------------------------------------------
@@ -396,7 +434,7 @@ module internal Main =
           Console.WriteLine(sprintf "ERROR: File '%s' does not exist" file)
           main state
 
-    // TODO: Refactor error checking of next three cases
+    // TODO: Refactor error checking of next four cases
     | Declarations file ->
         let file = Path.GetFullPath file
         if not (Map.containsKey file state.Files)
@@ -463,6 +501,26 @@ module internal Main =
             agent.DoCompletion(opts, pos, lines.[line], timeout)
         main state
 
+    | FindDeclaration(file, ((line, column) as pos), timeout) ->
+        let file = Path.GetFullPath file
+        if not (Map.containsKey file state.Files)
+        then
+          Console.WriteLine(sprintf "ERROR: File '%s' not parsed" file)
+          Console.WriteLine("<<EOF>>")
+        else
+          let lines = state.Files.[file]
+          if line >= lines.Length || line < 0 ||
+             column > lines.[line].Length || column < 0
+          then
+            Console.WriteLine("ERROR: Position is out of range")
+            Console.WriteLine("<<EOF>>")
+          else
+            let text = String.concat "\n" lines
+            let opts = RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
+                                      file,
+                                      text)
+            agent.FindDeclaration(opts, pos, lines.[line], timeout)
+        main state
     | Help ->
         Console.WriteLine(helpText)
         main state
