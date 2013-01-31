@@ -105,7 +105,8 @@
 (defun ac-fsharp-launch-completion-process ()
   "Launch the F# completion process in the background"
   (interactive)
-  (message (format "Launching completion process: '%s'" ac-fsharp-complete-command))
+  (message (format "Launching completion process: '%s'"
+                   (concat ac-fsharp-complete-command)))
   (setq ac-fsharp-completion-process
         (let ((process-connection-type nil))
           (apply 'start-process
@@ -196,8 +197,27 @@
         (ac-fsharp-send-error-request)
         (while (eq ac-fsharp-status 'fetch-in-progress)
           (accept-process-output ac-fsharp-completion-process))
-        (message (format "Received errors: %s" (prin1-to-string ac-fsharp-data))))))
+        (ac-fsharp-show-errors ac-fsharp-data))))
 
+
+(defun line-column-to-pos (line col)
+  (save-excursion
+    (goto-line line)
+    (forward-char col)
+    (point)))
+
+(defun ac-fsharp-show-errors (errors)
+  (dolist (err errors)
+    (when (string-match "\\[\\([0-9]+\\):\\([0-9]+\\)-\\([0-9]+\\):\\([0-9]+\\)\\] ERROR \\(.*\\)" err)
+      (ac-fsharp-show-error
+       (line-column-to-pos (+ (string-to-int (match-string 1 err)) 1)
+                           (string-to-int (match-string 2 err)))
+       (line-column-to-pos (+ (string-to-int (match-string 3 err)) 1)
+                           (string-to-int (match-string 4 err)))))))
+
+(defun ac-fsharp-show-error (p1 p2)
+  "Propertize the text from p1 to p2 to indicate an error is present here"
+  (put-text-property p1 p2 'font-lock-face 'underline))
 
 (defun ac-fsharp-stash-partial (str)
   (setq ac-fsharp-partial-data (concat ac-fsharp-partial-data str)))
