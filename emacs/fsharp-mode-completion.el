@@ -91,6 +91,11 @@
                          ac-fsharp-blocking-timeout)))
       (log-psendstr ac-fsharp-completion-process request)))
 
+(defun ac-fsharp-send-finddecl-request (file line col)
+  (let ((request (format "finddecl \"%s\" %d %d\n" file line col
+                         ac-fsharp-blocking-timeout)))
+      (log-psendstr ac-fsharp-completion-process request)))
+
 (defun ac-fsharp-send-error-request ()
   (log-psendstr ac-fsharp-completion-process "errors\n"))
 
@@ -106,7 +111,7 @@
   "Launch the F# completion process in the background"
   (interactive)
   (message (format "Launching completion process: '%s'"
-                   (concat ac-fsharp-complete-command)))
+                   (mapconcat 'identity ac-fsharp-complete-command " ")))
   (setq ac-fsharp-completion-process
         (let ((process-connection-type nil))
           (apply 'start-process
@@ -186,6 +191,24 @@
         (if (eq 0 (length ac-fsharp-data))
             (setq ac-fsharp-data '("No tooltip data available")))
         (pos-tip-show (mapconcat 'identity ac-fsharp-data "\n")))))
+
+;;;###autoload
+(defun ac-fsharp-gotodefn-at-point ()
+  "Find the point of declaration of the symbol at point and goto it"
+  (interactive)
+  (if ac-fsharp-completion-process
+      (progn
+        (setq ac-fsharp-status 'fetch-in-progress)
+        (setq ac-fsharp-data nil)
+        (ac-fsharp-parse-file)
+        (ac-fsharp-send-finddecl-request (buffer-file-name) (- (line-number-at-pos) 1) (current-column))
+        (while (eq ac-fsharp-status 'fetch-in-progress)
+          (accept-process-output ac-fsharp-completion-process))
+        (if (eq 0 (length ac-fsharp-data))
+            (message "Unable to find definition")
+          (let ((defn (split-string (cadr ac-fsharp-data) ":")))
+            (find-file (car defn))
+            (goto-char (line-column-to-pos (+ (string-to-int (cadr defn)) 1) (string-to-int (caddr defn)))))))))
 
 (defun ac-fsharp-get-errors ()
   (interactive)

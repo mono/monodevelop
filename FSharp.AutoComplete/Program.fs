@@ -284,7 +284,7 @@ module internal CommandInput =
       - trigger completion request for the specified location
     tooltip ""<filename>"" <line> <col> [timeout]
       - get tool tip for the specified location
-    finddeclaration ""<filename>"" <line> <col> [timeout]
+    finddecl ""<filename>"" <line> <col> [timeout]
       - find the point of declaration of the object at specified position
     project ""<filename>""
       - associates the current session with the specified project"
@@ -349,7 +349,7 @@ module internal CommandInput =
   let completionTipOrDecl = parser {
     let! f = (string "completion " |> Parser.map (fun _ -> Completion)) <|>
              (string "tooltip " |> Parser.map (fun _ -> ToolTip)) <|>
-             (string "finddeclaration " |> Parser.map (fun _ -> FindDeclaration))
+             (string "finddecl " |> Parser.map (fun _ -> FindDeclaration))
     let! _ = char '"' // " // TODO: This here for Emacs syntax highlighting bug
     let! filename = some (sat ((<>) '"')) |> Parser.map String.ofSeq // "
     let! _ = char '"' // " // TODO: This here for Emacs syntax highlighting bug
