@@ -124,7 +124,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			if (IdeApp.Workbench != null)
 				this.TransientFor = IdeApp.Workbench.RootWindow;
-			TypeHint = Gdk.WindowTypeHint.Utility;
+			TypeHint = Gdk.WindowTypeHint.Combo;
 			SizeAllocated += new SizeAllocatedHandler (ListSizeChanged);
 			Events = Gdk.EventMask.PropertyChangeMask;
 			WindowTransparencyDecorator.Attach (this);

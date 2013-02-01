@@ -67,7 +67,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public ParameterInformationWindow ()
 		{
-			TypeHint = Gdk.WindowTypeHint.Utility;
+			TypeHint = Gdk.WindowTypeHint.Tooltip;
 			this.SkipTaskbarHint = true;
 			this.SkipPagerHint = true;
 			if (IdeApp.Workbench != null)
