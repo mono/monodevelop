@@ -289,6 +289,27 @@ module internal CommandInput =
     project ""<filename>""
       - associates the current session with the specified project"
 
+  let outputText = @"
+    Output format
+    =============
+
+    Messages are in one of the following three forms:
+
+    1. INFO: text
+
+       A single line with a free text field. Returns information.
+
+    2. ERROR: text
+
+       A single line with a free text field. An error has occurred.
+  
+    3. DATA: word number
+       text
+
+       Some data, where 'word' (in [a-z]+) indicates the type of data
+       and 'number' (in [0-9]+) indicates the number of bytes of free
+       text that will follow."
+
   // Command that can be entered on the command-line
   type Command =
     | Completion of string * Position * int option
@@ -394,16 +415,36 @@ module internal Main =
   let agent = new IntelliSenseAgent()
 
   let rec main (state:State) : int =
+    let parsed file =
+      let b = Map.containsKey file state.Files
+      if not b then printfn "ERROR: File '%s' not parsed" file
+      b
+
+    /// Is the specified position consistent with internal state of file?
+    let posok file line col =
+      let lines = state.Files.[file]
+      let b = line >= lines.Length || line < 0 ||
+              column > lines.[line].Length || column < 0
+      if b then Console.WriteLine("ERROR: Position is out of range")
+      b
+    
     Debug.print "main state is:\nproject: %b\nfiles: %A"
                 (Option.isSome state.Project)
                 (Map.fold (fun ks k _ -> k::ks) [] state.Files)
     match parseCommand(Console.ReadLine()) with
     | GetErrors ->
         let errs = agent.GetErrors()
-        for e in errs do
-          printfn "[%d:%d-%d:%d] %s %s" e.StartLine e.StartColumn e.EndLine e.EndColumn
-                    (if e.Severity = Severity.Error then "ERROR" else "WARNING") e.Message
-        Console.WriteLine("<<EOF>>")
+        let msg =
+          [ for e in errs do yield
+              sprintfn "[%d:%d-%d:%d] %s %s"
+                       e.StartLine
+                       e.StartColumn
+                       e.EndLine
+                       e.EndColumn
+                       (if e.Severity = Severity.Error then "ERROR" else "WARNING")
+                       e.Message ]
+          |> String.concat ""
+        printfn "DATA: errors %d %s" (String.length msg) msg
         main state
 
     | Parse(file,full) ->
@@ -416,32 +457,28 @@ module internal Main =
                                     file,
                                     text)
           agent.TriggerParseRequest(opts, full)
-          Console.WriteLine("DONE: Background parsing started")
+          Console.WriteLine("INFO: Background parsing started")
           main { state with Files = Map.add file lines state.Files }
         else
-          Console.WriteLine(sprintf "ERROR: File '%s' does not exist" file)
+          printfn "ERROR: File '%s' does not exist" file
           main state
 
     | Project file ->
         // Load project file and store in state
         if File.Exists file then
           match ProjectParser.load file with
-          | Some p -> Console.WriteLine("DONE: Project loaded")
+          | Some p -> Console.WriteLine("INFO: Project loaded")
                       main { state with Project = Some p }
-          | None   -> Console.WriteLine(sprintf "ERROR: Project file '%s' is invalid" file)
+          | None   -> printfn "ERROR: Project file '%s' is invalid" file
                       main state
         else
-          Console.WriteLine(sprintf "ERROR: File '%s' does not exist" file)
+          printfn "ERROR: File '%s' does not exist" file
           main state
 
     // TODO: Refactor error checking of next four cases
     | Declarations file ->
         let file = Path.GetFullPath file
-        if not (Map.containsKey file state.Files)
-        then
-          Console.WriteLine(sprintf "ERROR: File '%s' not parsed" file)
-          Console.WriteLine("<<EOF>>")
-        else
+        if parsed file then
           let lines = state.Files.[file]
           let text = String.concat "\n" lines
           let opts = RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
@@ -450,77 +487,41 @@ module internal Main =
           let decls = agent.GetDeclarations(opts)
           for tld in decls do
             let (s1, e1), (s2, e2) = tld.Declaration.Range
-            printfn "[%d:%d-%d:%d] %s" e1 s1 e2 s2 tld.Declaration.Name
+            sprintfn "[%d:%d-%d:%d] %s" e1 s1 e2 s2 tld.Declaration.Name
             for d in tld.Nested do
               let (s1, e1), (s2, e2) = d.Range
-              printfn "  - [%d:%d-%d:%d] %s" e1 s1 e2 s2 d.Name
-          Console.WriteLine("<<EOF>>")
+              sprintfn "  - [%d:%d-%d:%d] %s" e1 s1 e2 s2 d.Name
         main state
 
-    | ToolTip(file, ((line, column) as pos), timeout) ->
-        // Trigger tooltip request (when we already loaded a file)
+    | ToolTip(file, ((line, col) as pos), timeout) ->
         let file = Path.GetFullPath file
-        if not (Map.containsKey file state.Files)
-        then
-          Console.WriteLine(sprintf "ERROR: File '%s' not parsed" file)
-          Console.WriteLine("<<EOF>>")
-        else
-          let lines = state.Files.[file]
-          if line >= lines.Length || line < 0 ||
-             column > lines.[line].Length || column < 0
-          then
-            Console.WriteLine("ERROR: Position is out of range")
-            Console.WriteLine("<<EOF>>")
-          else
-            let text = String.concat "\n" lines
-            let opts = RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
-                                      file,
-                                      text)
-            agent.GetToolTip(opts, pos, lines.[line], timeout)
+        if parsed file and posok file line col then
+          let text = String.concat "\n" state.Files.[file]
+          let opts = RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
+                                    file,
+                                    text)
+          agent.GetToolTip(opts, pos, lines.[line], timeout)
         main state
 
     | Completion(file, ((line, column) as pos), timeout) ->
-        // Trigger autocompletion (when we already loaded a file)
         let file = Path.GetFullPath file
-        if not (Map.containsKey file state.Files)
-        then
-          Console.WriteLine(sprintf "ERROR: File '%s' not parsed" file)
-          Console.WriteLine("<<EOF>>")
-        else
-          let lines = state.Files.[file]
-          if line >= lines.Length || line < 0 ||
-             column > lines.[line].Length || column < 0
-          then
-            Console.WriteLine("ERROR: Position is out of range")
-            Console.WriteLine("<<EOF>>")
-          else
-            let text = String.concat "\n" lines
-            let opts = RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
-                                      file,
-                                      text)
-            agent.DoCompletion(opts, pos, lines.[line], timeout)
+        if parsed file and posok file line col then
+          let text = String.concat "\n" state.Files.[file]
+          let opts = RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
+                                    file,
+                                    text)
+          agent.DoCompletion(opts, pos, lines.[line], timeout)
         main state
 
     | FindDeclaration(file, ((line, column) as pos), timeout) ->
-        let file = Path.GetFullPath file
-        if not (Map.containsKey file state.Files)
-        then
-          Console.WriteLine(sprintf "ERROR: File '%s' not parsed" file)
-          Console.WriteLine("<<EOF>>")
-        else
-          let lines = state.Files.[file]
-          if line >= lines.Length || line < 0 ||
-             column > lines.[line].Length || column < 0
-          then
-            Console.WriteLine("ERROR: Position is out of range")
-            Console.WriteLine("<<EOF>>")
-          else
-            let text = String.concat "\n" lines
-            let opts = RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
-                                      file,
-                                      text)
-            agent.FindDeclaration(opts, pos, lines.[line], timeout)
+        if parsed file and posok file line col then
+          let text = String.concat "\n" state.Files.[file]
+          let opts = RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
+                                    file,
+                                    text)
+          agent.FindDeclaration(opts, pos, lines.[line], timeout)
         main state
+
     | Help ->
         Console.WriteLine(helpText)
         main state
