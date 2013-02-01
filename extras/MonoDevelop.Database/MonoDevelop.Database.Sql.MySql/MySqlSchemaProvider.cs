@@ -55,7 +55,7 @@ namespace MonoDevelop.Database.Sql.MySql
 			AddSupportedSchemaActions (SchemaType.Constraint, SchemaActions.Create | SchemaActions.Drop | SchemaActions.Rename | SchemaActions.Schema);
 			AddSupportedSchemaActions (SchemaType.User, SchemaActions.Schema);
 			
-			if (connectionPool.DatabaseVersion.Major > 4) {
+			if (connectionPool.HasVersion && connectionPool.DatabaseVersion.Major > 4) {
 				AddSupportedSchemaActions (SchemaType.Procedure, SchemaActions.All);
 				AddSupportedSchemaActions (SchemaType.ProcedureParameter, SchemaActions.Schema);
 			}
