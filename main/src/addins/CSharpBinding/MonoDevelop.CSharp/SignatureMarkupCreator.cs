@@ -701,7 +701,8 @@ namespace MonoDevelop.CSharp
 			result.Append ('(');
 			IList<IParameter> parameters = method.Parameters;
 			if (method.IsExtensionMethod) {
-				parameters = new List<IParameter> (method.Parameters.Skip (1));
+				if (method is SpecializedMethod && ((SpecializedMethod)method).IsExtendedExtensionMethod)
+					parameters = new List<IParameter> (method.Parameters.Skip (1));
 			}
 			AppendParameterList (result,  parameters, formattingOptions.SpaceBeforeMethodDeclarationParameterComma, formattingOptions.SpaceAfterMethodDeclarationParameterComma);
 			result.Append (')');
