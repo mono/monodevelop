@@ -42,6 +42,11 @@ namespace MonoDevelop.Database.Query
 	
 	public class QueryHandler : CommandHandler
 	{
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = ConnectionContextService.DatabaseConnections.Count > 0;
+		}
+
 		protected override void Run ()
 		{
 			SqlQueryView view = new SqlQueryView ();
