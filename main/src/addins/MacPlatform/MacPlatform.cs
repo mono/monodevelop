@@ -53,6 +53,8 @@ namespace MonoDevelop.MacIntegration
 {
 	public class MacPlatformService : PlatformService
 	{
+		const string monoDownloadUrl = "http://www.go-mono.com/mono-downloads/download.html";
+
 		static TimerCounter timer = InstrumentationService.CreateTimerCounter ("Mac Platform Initialization", "Platform Service");
 		static TimerCounter mimeTimer = InstrumentationService.CreateTimerCounter ("Mac Mime Database", "Platform Service");
 		
@@ -71,16 +73,48 @@ namespace MonoDevelop.MacIntegration
 			systemVersion = Carbon.Gestalt ("sysv");
 			
 			mimemap = new Lazy<Dictionary<string, string>> (LoadMimeMapAsync);
-			
+
 			//make sure the menu app name is correct even when running Mono 2.6 preview, or not running from the .app
 			Carbon.SetProcessName (BrandingService.ApplicationName);
 			
 			Cocoa.InitMonoMac ();
-			
+
+			CheckGtkVersion (2, 24, 14);
+
 			timer.Trace ("Installing App Event Handlers");
 			GlobalSetup ();
 			
 			timer.EndTiming ();
+		}
+
+		static void CheckGtkVersion (uint major, uint minor, uint micro)
+		{
+			// to require exact version, also check
+			//: || Gtk.Global.CheckVersion (major, minor, micro + 1) == null
+			//
+			if (Gtk.Global.CheckVersion (major, minor, micro) != null) {
+				
+				LoggingService.LogFatalError (
+					"GTK+ version is incompatible with required version {0}.{1}.{2}.",
+					major, minor, micro
+				);
+				
+				var downloadButton = new AlertButton ("Download Mono Framework", null);
+				if (downloadButton == MessageService.GenericAlert (
+					Stock.Error,
+					GettextCatalog.GetString ("Some dependencies need to be updated"),
+					GettextCatalog.GetString (
+						"{0} requires a newer version of GTK+, which is included with the Mono Framework. Please " +
+						"download and install the latest stable Mono Framework package and restart {0}.",
+						BrandingService.ApplicationName
+					),
+					new AlertButton ("Quit", null), downloadButton))
+				{
+					OpenUrl (monoDownloadUrl);
+				}
+				
+				Environment.Exit (1);
+			}
 		}
 
 		protected override string OnGetMimeTypeForUri (string uri)
