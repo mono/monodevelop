@@ -35,6 +35,9 @@ namespace MonoDevelop.MacInterop
 		//this may be needed to work around focusing issues in GTK/Cocoa interop
 		public static void FocusWindow (Gtk.Window widget)
 		{
+			if (widget == null) {
+				return;
+			}
 			var window = GetWindow (widget);
 			if (window != null)
 				window.MakeKeyAndOrderFront (window);
