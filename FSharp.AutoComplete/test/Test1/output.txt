@@ -1,15 +1,21 @@
-DONE: Project loaded
-DONE: Background parsing started
-DONE: Background parsing started
-DONE: Background parsing started
+DATA: project
+/Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/Test1/FileTwo.fs
+/Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/Test1/Program.fs
+<<EOF>>
+INFO: Background parsing started
+INFO: Background parsing started
+INFO: Background parsing started
+DATA: completion
 funky
 <<EOF>>
+DATA: completion
 Equals
 GetHashCode
 GetType
 Terrific
 ToString
 <<EOF>>
+DATA: completion
 Bar
 Foo
 NewObjectType
@@ -17,8 +23,10 @@ Qux
 add
 addition
 <<EOF>>
+DATA: completion
 func
 <<EOF>>
+DATA: completion
 Bar
 Foo
 NewObjectType
@@ -26,27 +34,33 @@ Qux
 add
 addition
 <<EOF>>
+DATA: tooltip
 val add : x:int -> y:int -> int
 
 Full name: FileTwo.add
 <<EOF>>
+DATA: tooltip
 val func : x:int -> int
 
 Full name: Program.X.func
 <<EOF>>
+DATA: tooltip
 val testval : FileTwo.NewObjectType
 
 Full name: Program.testval
 <<EOF>>
+DATA: tooltip
 val funky : x:int -> int
 
 Full name: Script.XA.funky
 <<EOF>>
+DATA: declarations
 [1:0-19:0] Program
   - [13:4-15:5] main
 [1:0-2:20] X
   - [2:6-2:20] func
 <<EOF>>
+DATA: declarations
 [1:0-14:5] FileTwo
   - [9:4-9:19] add
   - [7:4-7:24] addition
@@ -56,8 +70,10 @@ Full name: Script.XA.funky
 [11:5-14:5] NewObjectType
   - [13:11-14:5] Terrific
 <<EOF>>
+DATA: declarations
 [3:0-10:0] Script
 [3:0-4:21] XA
   - [4:6-4:21] funky
 <<EOF>>
+DATA: errors
 <<EOF>>

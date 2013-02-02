@@ -1,6 +1,7 @@
-DONE: Project loaded
-DONE: Background parsing started
-ERROR: Position is out of range
+DATA: project
+/Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/RobustCommands/Project/FileTwo.fs
+/Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/RobustCommands/Project/Program.fs
 <<EOF>>
+INFO: Background parsing started
 ERROR: Position is out of range
-<<EOF>>
+ERROR: Position is out of range

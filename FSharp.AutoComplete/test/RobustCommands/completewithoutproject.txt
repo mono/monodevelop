@@ -1,5 +1,7 @@
-DONE: Background parsing started
+INFO: Background parsing started
+DATA: completion
 func
 <<EOF>>
-DONE: Background parsing started
+INFO: Background parsing started
+DATA: completion
 <<EOF>>

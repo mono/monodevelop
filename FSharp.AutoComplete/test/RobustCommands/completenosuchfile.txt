@@ -1,3 +1,5 @@
-DONE: Project loaded
-ERROR: File 'test/RobustCommands/NoSuchFile.fs' not parsed
+DATA: project
+/Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/RobustCommands/Project/FileTwo.fs
+/Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/RobustCommands/Project/Program.fs
 <<EOF>>
+ERROR: File 'test/RobustCommands/NoSuchFile.fs' not parsed

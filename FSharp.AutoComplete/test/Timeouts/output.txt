@@ -1,18 +1,18 @@
-DONE: Project loaded
-DONE: Background parsing started
+DATA: project
+/Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/Timeouts/FileTwo.fs
+/Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/Timeouts/Program.fs
 <<EOF>>
-<<EOF>>
+INFO: Background parsing started
+ERROR: Could not get type information
+ERROR: Could not get type information
+ERROR: Could not get type information
+DATA: completion
 Equals
 GetHashCode
 GetType
 Terrific
 ToString
 <<EOF>>
-Equals
-GetHashCode
-GetType
-Terrific
-ToString
-<<EOF>>
+DATA: tooltip
 member FileTwo.NewObjectType.Terrific : y:int -> int
 <<EOF>>
