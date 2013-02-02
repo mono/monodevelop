@@ -177,9 +177,9 @@ namespace MonoDevelop.Projects
 					return parentFolder.ParentSolution;
 				return parentSolution; 
 			}
-			//this should only ever get set for the solution's RootFolder instance, no need to call OnBoundToSolution
 			internal set {
 				parentSolution = value;
+				NotifyBoundToSolution (true);
 			}
 		}
 
@@ -366,13 +366,35 @@ namespace MonoDevelop.Projects
 			}
 			internal set {
 				parentFolder = value;
-				if (internalChildren != null)
+				if (internalChildren != null) {
 					internalChildren.ParentFolder = value;
-				if (value != null) {
-					OnBoundToSolution ();
+				}
+				if (value != null && value.ParentSolution != null) {
+					NotifyBoundToSolution (false);
 				}
 			}
 		}
+
+		// Normally, the ParentFolder setter fires OnBoundToSolution. However, when deserializing, child
+		// ParentFolder hierarchies can become connected before the ParentSolution becomes set. This method
+		// enables us to recursively fire the OnBoundToSolution call in those cases.
+		void NotifyBoundToSolution (bool includeInternalChildren)
+		{
+			var folder = this as SolutionFolder;
+			if (folder != null) {
+				var items = folder.GetItemsWithoutCreating ();
+				if (items != null) {
+					foreach (var item in items) {
+						item.NotifyBoundToSolution (includeInternalChildren);
+					}
+				}
+			}
+			if (includeInternalChildren && internalChildren != null) {
+				internalChildren.NotifyBoundToSolution (includeInternalChildren);
+			}
+			OnBoundToSolution ();
+		}
+
 
 		/// <summary>
 		/// Gets a value indicating whether this <see cref="MonoDevelop.Projects.SolutionItem"/> has been disposed.
