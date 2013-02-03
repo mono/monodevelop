@@ -47,6 +47,8 @@
 (defvar ac-fsharp-completion-data "")
 (defvar ac-fsharp-completion-cache nil)
 (defvar ac-fsharp-project-files nil)
+(defvar ac-fsharp-idle-timer nil)
+(defvar ac-fsharp-verbose nil)
 
 (defconst eom "\n<<EOF>>\n"
   "End of message marker")
@@ -108,32 +110,36 @@
   (interactive)
   (if (process-live-p ac-fsharp-completion-process)
       (log-psendstr ac-fsharp-completion-process "quit\n"))
-  (setq ac-fsharp-completion-process nil))
+  (setq ac-fsharp-completion-process nil)
+  (ac-fsharp-clear-errors))
 
 ;;;###autoload
 (defun ac-fsharp-launch-completion-process ()
   "Launch the F# completion process in the background"
   (interactive)
-  (message (format "Launching completion process: '%s'"
-                   (mapconcat 'identity ac-fsharp-complete-command " ")))
-  (setq ac-fsharp-completion-process
-        (let ((process-connection-type nil))
-          (apply 'start-process
-                 "fsharp-complete"
-                 "*fsharp-complete*"
-                 ac-fsharp-complete-command)))
+  (if ac-fsharp-completion-process
+      (message "Completion process already running. Shutdown existing process first.")
+    (message (format "Launching completion process: '%s'"
+                     (mapconcat 'identity ac-fsharp-complete-command " ")))
+    (setq ac-fsharp-completion-process
+          (let ((process-connection-type nil))
+            (apply 'start-process
+                   "fsharp-complete"
+                   "*fsharp-complete*"
+                   ac-fsharp-complete-command)))
 
-  (if (process-live-p ac-fsharp-completion-process)
-      (progn
-        (set-process-filter ac-fsharp-completion-process 'ac-fsharp-filter-output)
-        (set-process-query-on-exit-flag ac-fsharp-completion-process nil)
-        (setq ac-fsharp-status 'idle))
-    (setq ac-fsharp-completion-process nil))
+    (if (process-live-p ac-fsharp-completion-process)
+        (progn
+          (set-process-filter ac-fsharp-completion-process 'ac-fsharp-filter-output)
+          (set-process-query-on-exit-flag ac-fsharp-completion-process nil)
+          (setq ac-fsharp-status 'idle))
+      (setq ac-fsharp-completion-process nil))
 
-  (run-with-idle-timer
-      ac-fsharp-idle-timeout
-      t
-      (lambda () (ac-fsharp-get-errors)))
+    (setq ac-fsharp-idle-timer
+          (run-with-idle-timer
+           ac-fsharp-idle-timeout
+           t
+           (lambda () (ac-fsharp-get-errors)))))
 
   ;(add-hook 'before-save-hook 'ac-fsharp-reparse-buffer)
   ;(local-set-key (kbd ".") 'completion-at-point)
@@ -180,12 +186,16 @@
   ; else
     nil))
 
+(defun ac-fsharp-can-make-request ()
+  (and ac-fsharp-completion-process
+       (member (file-truename (buffer-file-name)) ac-fsharp-project-files)))
+
 ;;;###autoload
 (defun ac-fsharp-tooltip-at-point ()
   "Fetch and display F# tooltips at point"
   (interactive)
   (require 'pos-tip)
-  (when ac-fsharp-completion-process
+  (when (ac-fsharp-can-make-request)
     (ac-fsharp-parse-current-buffer)
     (ac-fsharp-send-pos-request "tooltip"
                                 (buffer-file-name)
@@ -196,13 +206,12 @@
 (defun ac-fsharp-gotodefn-at-point ()
   "Find the point of declaration of the symbol at point and goto it"
   (interactive)
-  (when ac-fsharp-completion-process
+  (when (ac-fsharp-can-make-request)
     (ac-fsharp-parse-current-buffer)
     (ac-fsharp-send-pos-request "finddecl" (buffer-file-name) (- (line-number-at-pos) 1) (current-column))))
 
 (defun ac-fsharp-get-errors ()
-  (interactive)
-  (when ac-fsharp-completion-process
+  (when (ac-fsharp-can-make-request)
     (ac-fsharp-parse-current-buffer)
     (ac-fsharp-send-error-request)))
 
@@ -297,7 +306,8 @@
           (ac-fsharp-parse-file (car (last ac-fsharp-project-files))))
 
          ((string/starts-with msg "INFO: ")
-          (message msg))
+          (when ac-fsharp-verbose
+            (message msg)))
 
          ((string/starts-with msg "ERROR: ")
           (message msg)
