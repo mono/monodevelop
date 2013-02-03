@@ -42,6 +42,11 @@ namespace Mono.TextEditor.Vi
 			switch (c) {
 			case 'w':
 				return ViActions.InnerWord;
+			case ')':
+			case '}':
+			case ']':
+			case '>':
+				return ViActions.InnerSymbol(c);
 			}
 			return null;
 		}

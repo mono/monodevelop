@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace Mono.TextEditor.Vi
@@ -214,6 +215,83 @@ namespace Mono.TextEditor.Vi
 			var start = data.FindCurrentWordStart (data.Caret.Offset);
 			var end = data.FindCurrentWordEnd (data.Caret.Offset);
 			data.SelectionRange = new TextSegment(start, end - start);
+		}
+
+		private static readonly Dictionary<char, char> EndToBeginCharMap = new Dictionary<char, char>
+		{
+			{')', '('},
+			{'}', '{'},
+			{']', '['},
+			{'>', '<'},
+		};
+		private static readonly Dictionary<char, char> BeginToEndCharMap = new Dictionary<char, char>
+		{
+			{'(', ')'},
+			{'{', '}'},
+			{'[', ']'},
+			{'<', '>'},
+		};
+
+		public static Action<TextEditorData> InnerSymbol (char command) 
+		{
+			char end, begin;
+			if (!BeginToEndCharMap.TryGetValue (command, out end)) end = command;
+			if (!EndToBeginCharMap.TryGetValue (command, out begin)) begin = command;
+
+			return data =>
+			{
+				var offset = data.Caret.Offset;
+
+				var startTokenOffset = ParseForChar(data, offset, 0, end, begin, false);
+				var endTokenOffset = ParseForChar(data, offset, data.Length, begin, end, true);
+
+				// Use the editor's FindMatchingBrace built-in functionality. It's better at handling erroneous braces
+				// inside quotes. We still need to do the above paragraph because we needed to find the braces.
+				var matchingStartBrace = endTokenOffset.HasValue ? data.Document.GetMatchingBracketOffset(
+					endTokenOffset.GetValueOrDefault ()) : -1;
+				if (matchingStartBrace >= 0 && (!startTokenOffset.HasValue 
+				                                || matchingStartBrace != startTokenOffset.GetValueOrDefault ()))
+					startTokenOffset = matchingStartBrace;
+
+				var matchingEndBrace = startTokenOffset.HasValue && data.GetCharAt (offset) != end ? 
+					data.Document.GetMatchingBracketOffset(startTokenOffset.GetValueOrDefault ()) : -1;
+				if (matchingEndBrace >= 0 && (!endTokenOffset.HasValue 
+				                              || matchingEndBrace != endTokenOffset.GetValueOrDefault ()))
+					endTokenOffset = matchingEndBrace;
+
+				if (!startTokenOffset.HasValue || !endTokenOffset.HasValue) throw new ViModeAbortException();
+
+				var startLine = data.GetLineByOffset (startTokenOffset.GetValueOrDefault());
+				var endLine = data.GetLineByOffset (endTokenOffset.GetValueOrDefault());
+				if (startLine.LineNumber == endLine.LineNumber)
+				{
+					var selectionLength = endTokenOffset.GetValueOrDefault () - startTokenOffset.GetValueOrDefault ();
+					data.SelectionRange = new TextSegment(startTokenOffset.GetValueOrDefault () + 1, selectionLength - 1);
+				}
+				else
+				{
+					var selectionLength = endLine.PreviousLine.EndOffset - startTokenOffset.GetValueOrDefault ();
+					data.SelectionRange = new TextSegment(startTokenOffset.GetValueOrDefault () + 1, selectionLength - 1);
+				}
+			};
+		}
+
+		static int? ParseForChar(TextEditorData data, int fromOffset, int toOffset, char oppositeToken, char findToken, bool forward)
+		{
+			int increment = forward ? 1 : -1;
+			var symbolCount = 0;
+			for (int i = fromOffset; forward && i < toOffset || !forward && i >= toOffset; i += increment)
+			{
+				var c = data.GetCharAt(i);
+				if (c == oppositeToken) 
+					symbolCount++;
+				else if (c == findToken)
+				{
+					if (symbolCount == 0) return i;
+					symbolCount--;
+				}
+			}
+			return null;
 		}
 
 		public static void LineEnd (TextEditorData data)
