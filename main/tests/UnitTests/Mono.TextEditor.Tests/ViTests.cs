@@ -120,7 +120,22 @@ qrstu",
 @"   aaa aaa
    ccc ccc", mode.Text);
 		}
-		
+
+		[Test]
+		[TestCase(0, Result = " foo.bar[20]->baz_bay")]
+		[TestCase(2, Result = "iffoo.bar[20]->baz_bay")]
+		[TestCase(3, Result = "if .bar[20]->baz_bay")]
+		[TestCase(5, Result = "if .bar[20]->baz_bay")]
+		[TestCase(6, Result = "if foobar[20]->baz_bay")]
+		[TestCase(16, Result = "if foo.bar[20]->")]
+		public string ChangeInnerWord(int column) 
+		{
+			var mode = new TestViEditMode { Text = "if foo.bar[20]->baz_bay" };
+			RepeatChar('l', column, mode);
+			mode.Input ("ciw");
+			return mode.Text;
+		}
+
 		[Test]
 		public void ChangeLine ()
 		{
@@ -134,6 +149,13 @@ qrstu",
 @"   aaa aaa
    eeee
    ccc ccc", mode.Text);
+		}
+		static void RepeatChar(char c, int count, TestViEditMode mode) 
+		{
+			string input = "";
+			for (int i = 0; i < count; i++)
+				input += c;
+			mode.Input(input);
 		}
 		
 		[Ignore("FixMe")]

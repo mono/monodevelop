@@ -208,7 +208,14 @@ namespace Mono.TextEditor.Vi
 		{
 			data.Caret.Offset = data.FindCurrentWordStart (data.Caret.Offset);
 		}
-		
+
+		public static void InnerWord (TextEditorData data)
+		{
+			var start = data.FindCurrentWordStart (data.Caret.Offset);
+			var end = data.FindCurrentWordEnd (data.Caret.Offset);
+			data.SelectionRange = new TextSegment(start, end - start);
+		}
+
 		public static void LineEnd (TextEditorData data)
 		{
 			int desiredColumn = System.Math.Max (data.Caret.Column, data.Caret.DesiredColumn);

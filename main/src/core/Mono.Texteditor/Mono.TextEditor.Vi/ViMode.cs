@@ -104,6 +104,7 @@ namespace Mono.TextEditor.Vi
 		static string lastPattern;
 		static string lastReplacement;
 		State state;
+		Motion motion;
 		const string substMatch = @"^:s(?<sep>.)(?<pattern>.+?)\k<sep>(?<replacement>.*?)(\k<sep>(?<trailer>i?))?$";
 		StringBuilder commandBuffer = new StringBuilder ();
 		Dictionary<char,ViMark> marks = new Dictionary<char, ViMark>();
@@ -615,8 +616,19 @@ namespace Mono.TextEditor.Vi
 				return;
 				
 			case State.Change:
+				if (unicodeKey == 'i') {
+					motion = Motion.Inner;
+					return;
+				} else if (unicodeKey == 'a') {
+					motion = Motion.Outer;
+					return;
+				}
+
+				if (motion != Motion.None) {
+					action = ViActionMaps.GetEditObjectCharAction((char) unicodeKey, motion);
+				}
 				//copied from delete action
-				if (((modifier & (Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask)) == 0 
+				else if (((modifier & (Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask)) == 0 
 				     && unicodeKey == 'c'))
 				{
 					action = SelectionActions.LineActionFromMoveAction (CaretMoveActions.LineEnd);
@@ -1135,5 +1147,11 @@ namespace Mono.TextEditor.Vi
 			NameMacro,
 			PlayMacro
 		}
+	}
+
+	public enum Motion {
+		None = 0,
+		Inner,
+		Outer
 	}
 }
