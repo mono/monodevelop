@@ -256,6 +256,34 @@ qrstu",
 			Assert.AreEqual (expectedText, mode.Text);
 		}
 
+		[Test]
+		public void VisualInnerParen() 
+		{
+			var mode = new TestViEditMode { Text = "if (foo(baz) == bar) " };
+			RepeatChar('l', 3, mode);
+			mode.Input ("vi)");
+			mode.AssertSelection (1, 5, 1, 20);
+		}
+
+		[Test]
+		public void DeleteInnerParen() 
+		{
+			var mode = new TestViEditMode { Text = "if (foo(baz) == bar) " };
+			RepeatChar('l', 3, mode);
+			mode.Input ("di)");
+			Assert.AreEqual ("if () ", mode.Text);
+		}
+
+		[Test]
+		public void YankInnerParen() 
+		{
+			var mode = new TestViEditMode { Text = "if (foo(baz) == bar) " };
+			RepeatChar('l', 3, mode);
+			mode.Input ("yi)");
+			mode.Input ("$p"); // HACK: I can't figure out how to test the register, so just paste at the end
+			Assert.AreEqual ("if (foo(baz) == bar) foo(baz) == bar", mode.Text);
+		}
+
 		static void RepeatChar(char c, int count, TestViEditMode mode) 
 		{
 			string input = "";
