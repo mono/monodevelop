@@ -294,8 +294,6 @@
          ((string/starts-with msg "DATA: project")
           (setq ac-fsharp-project-files
                 (cdr (split-string msg "\n")))
-          (message (format "proj files are: %s" (prin1-to-string ac-fsharp-project-files)))
-          (message (format "about to parse: %s" (car (last ac-fsharp-project-files))))
           (ac-fsharp-parse-file (car (last ac-fsharp-project-files))))
 
          ((string/starts-with msg "INFO: ")
