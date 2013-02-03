@@ -186,7 +186,7 @@ type internal IntelliSenseAgent() =
         printfn "DATA: completion"
         for d in decls.Items do Console.WriteLine(d.Name)
         printfn "<<EOF>>"
-    | None -> printfn "ERROR: Could not get type information"
+    | None -> printfn "ERROR: Could not get type information\n<<EOF>>"
 
 
   /// Gets ToolTip for the specified location (and prints it to the output)
@@ -223,7 +223,7 @@ type internal IntelliSenseAgent() =
           Console.WriteLine("DATA: tooltip")
           Console.WriteLine(TipFormatter.formatTip tip)
           Console.WriteLine("<<EOF>>")
-    | None -> printfn "ERROR: Could not get type information"
+    | None -> printfn "ERROR: Could not get type information\n<<EOF>>"
 
   /// Finds the point of declaration of the symbol at pos
   /// and writes information to the standard output
@@ -252,11 +252,13 @@ type internal IntelliSenseAgent() =
         // Assume that we are inside identifier (F# services can also handle
         // case when we're in a string in '#r "Foo.dll"' but we don't do that)
         // Get items & generate output
+        // TODO: Need this first because of VS debug info coming out
+        Console.WriteLine("DATA: finddecl")
         match info.GetDeclarationLocation(pos, lineStr, identIsland, identToken, true) with
         | DeclFound (line,col,file) ->
-            printfn "DATA: finddecl\n%s:%d:%d\n<<EOF>>" file line col
-        | DeclNotFound -> printfn "ERROR: Could not find point of declaration"
-    | None -> printfn "ERROR: Could not get type information"
+            printfn "%s:%d:%d\n<<EOF>>" file line col
+        | DeclNotFound -> printfn "ERROR: Could not find point of declaration\n<<EOF>>"
+    | None -> printfn "ERROR: Could not get type information\n<<EOF>>"
 
 // --------------------------------------------------------------------------------------
 // Utilities for parsing & processing command line input
@@ -295,10 +297,12 @@ module internal CommandInput =
     Messages are in one of the following three forms:
 
     1. INFO: text
+       <<EOF>>
 
        A single line with a free text field. Returns information.
 
     2. ERROR: text
+       <<EOF>>
 
        A single line with a free text field. An error has occurred.
 
@@ -310,7 +314,7 @@ module internal CommandInput =
        followed by some lines of free text, terminated by the special
        string <<EOF>>"
 
-  // The types of commands that 
+  // The types of commands that
   type PosCommand =
     | Completion
     | ToolTip
@@ -390,7 +394,7 @@ module internal CommandInput =
 
   // Parses always and returns default error message
   let error = parser {
-    return Error("ERROR: Unknown command or wrong arguments") }
+    return Error("ERROR: Unknown command or wrong arguments\n<<EOF>>") }
 
   // Parase any of the supported commands
   let parseCommand input =
@@ -421,7 +425,7 @@ module internal Main =
   let rec main (state:State) : int =
     let parsed file =
       let ok = Map.containsKey file state.Files
-      if not ok then printfn "ERROR: File '%s' not parsed" file
+      if not ok then printfn "ERROR: File '%s' not parsed\n<<EOF>>\n" file
       ok
 
     /// Is the specified position consistent with internal state of file?
@@ -429,8 +433,10 @@ module internal Main =
       let lines = state.Files.[file]
       let ok = line < lines.Length && line >= 0 &&
                col < lines.[line].Length && col >= 0
-      if not ok then Console.WriteLine("ERROR: Position is out of range")
+      if not ok then Console.WriteLine("ERROR: Position is out of range\n<<EOF>>")
       ok
+
+
 
     Debug.print "main state is:\nproject: %b\nfiles: %A"
                 (Option.isSome state.Project)
@@ -455,10 +461,10 @@ module internal Main =
                                     file,
                                     text)
           agent.TriggerParseRequest(opts, full)
-          Console.WriteLine("INFO: Background parsing started")
+          Console.WriteLine("INFO: Background parsing started\n<<EOF>>")
           main { state with Files = Map.add file lines state.Files }
         else
-          printfn "ERROR: File '%s' does not exist" file
+          printfn "ERROR: File '%s' does not exist\n<<EOF>>" file
           main state
 
     | Project file ->
@@ -470,10 +476,10 @@ module internal Main =
                         Console.WriteLine(IO.Path.Combine(ProjectParser.getDirectory p, f))
                       Console.WriteLine("<<EOF>>")
                       main { state with Project = Some p }
-          | None   -> printfn "ERROR: Project file '%s' is invalid" file
+          | None   -> printfn "ERROR: Project file '%s' is invalid\n<<EOF>>" file
                       main state
         else
-          printfn "ERROR: File '%s' does not exist" file
+          printfn "ERROR: File '%s' does not exist\n<<EOF>>" file
           main state
 
     | Declarations file ->
@@ -501,7 +507,7 @@ module internal Main =
           let opts = RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
                                     file,
                                     text)
-          
+
           match cmd with
           | Completion -> agent.DoCompletion(opts, pos, state.Files.[file].[line], timeout)
           | ToolTip -> agent.GetToolTip(opts, pos, state.Files.[file].[line], timeout)
