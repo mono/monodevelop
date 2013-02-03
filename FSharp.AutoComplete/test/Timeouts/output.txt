@@ -3,9 +3,18 @@ DATA: project
 /Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/Timeouts/Program.fs
 <<EOF>>
 INFO: Background parsing started
+<<EOF>>
 ERROR: Could not get type information
+<<EOF>>
 ERROR: Could not get type information
-ERROR: Could not get type information
+<<EOF>>
+DATA: completion
+Equals
+GetHashCode
+GetType
+Terrific
+ToString
+<<EOF>>
 DATA: completion
 Equals
 GetHashCode

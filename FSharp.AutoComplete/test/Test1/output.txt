@@ -3,8 +3,11 @@ DATA: project
 /Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/Test1/Program.fs
 <<EOF>>
 INFO: Background parsing started
+<<EOF>>
 INFO: Background parsing started
+<<EOF>>
 INFO: Background parsing started
+<<EOF>>
 DATA: completion
 funky
 <<EOF>>

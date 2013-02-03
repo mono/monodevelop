@@ -3,6 +3,7 @@ DATA: project
 /Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/ErrorTests/Program.fs
 <<EOF>>
 INFO: Background parsing started
+<<EOF>>
 DATA: errors
 <<EOF>>
 DATA: completion
@@ -17,6 +18,7 @@ but here has type
     string    
 <<EOF>>
 INFO: Background parsing started
+<<EOF>>
 DATA: errors
 [3:14-3:21] ERROR The namespace or module 'FileTwo' is not defined
 [7:11-7:27] ERROR Lookup on object of indeterminate type based on information prior to this program point. A type annotation may be needed prior to this program point to constrain the type of the object. This may allow the lookup to be resolved.

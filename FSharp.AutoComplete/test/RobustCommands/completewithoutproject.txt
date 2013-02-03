@@ -1,7 +1,9 @@
 INFO: Background parsing started
+<<EOF>>
 DATA: completion
 func
 <<EOF>>
 INFO: Background parsing started
+<<EOF>>
 DATA: completion
 <<EOF>>
