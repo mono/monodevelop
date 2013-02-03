@@ -108,8 +108,9 @@
 ;;;###autoload
 (defun ac-fsharp-quit-completion-process ()
   (interactive)
-  (if (process-live-p ac-fsharp-completion-process)
-      (log-psendstr ac-fsharp-completion-process "quit\n"))
+  (when (process-live-p ac-fsharp-completion-process)
+    (log-psendstr ac-fsharp-completion-process "quit\n")
+    (kill-process ac-fsharp-completion-process))
   (setq ac-fsharp-completion-process nil)
   (ac-fsharp-clear-errors))
 
