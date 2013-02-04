@@ -64,9 +64,13 @@ namespace MonoDevelop.Ide.Gui.Components
 		/// The log text view allows the user to jump to the source of an error/warning
 		/// by double clicking on the line in the text view.
 		/// </summary>
-		class LogTextView : TextView
+		public class LogTextView : TextView
 		{
 			public LogTextView (Gtk.TextBuffer buf) : base (buf)
+			{
+			}
+
+			public LogTextView () 
 			{
 			}
 
