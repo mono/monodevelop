@@ -275,7 +275,7 @@ module internal CommandInput =
     quit
       - quit the program
     errors
-      - get error messagaes reported by last parse
+      - get error messages reported by last parse
     declarations ""filename""
       - get information about top-level declarations in a file with location
     parse ""<filename>"" [full]

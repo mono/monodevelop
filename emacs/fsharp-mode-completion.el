@@ -79,9 +79,9 @@
              (buffer-substring-no-properties (point-min) (point-max))))))
 
 (defun ac-fsharp-parse-file (file)
-  (save-excursion
-    (find-file file)
-    (ac-fsharp-parse-current-buffer)))
+  (view-file file)
+  (ac-fsharp-parse-current-buffer)
+  (View-quit))
 
 ;;;###autoload
 (defun ac-fsharp-load-project (file)
@@ -108,9 +108,13 @@
 ;;;###autoload
 (defun ac-fsharp-quit-completion-process ()
   (interactive)
-  (when (process-live-p ac-fsharp-completion-process)
+  (when 
+      (and ac-fsharp-completion-process
+	   (process-live-p ac-fsharp-completion-process))
     (log-psendstr ac-fsharp-completion-process "quit\n")
     (kill-process ac-fsharp-completion-process))
+  (when ac-fsharp-idle-timer
+    (cancel-timer ac-fsharp-idle-timer))
   (setq ac-fsharp-completion-process nil)
   (ac-fsharp-clear-errors))
 
@@ -162,7 +166,6 @@
         (cadr cache)
       (ac-fsharp-parse-current-buffer)
       (ac-fsharp-send-pos-request "completion" file line col)
-      (message "completion request")
       (while ac-fsharp-waiting
         (accept-process-output ac-fsharp-completion-process))
       (when ac-fsharp-completion-data
@@ -177,7 +180,6 @@
              (save-excursion
                (skip-chars-backward "^ ." (line-beginning-position))
                (point))))
-        (message "ac-fsharp-completion-at-point")
         (list start end
               (completion-table-dynamic
                (apply-partially #'ac-fsharp-completions
@@ -188,8 +190,12 @@
     nil))
 
 (defun ac-fsharp-can-make-request ()
+  (message "checking can make request, is member?")
+  (message (expand-file-name (buffer-file-name)))
+  (message (prin1-to-string ac-fsharp-project-files))
+  (message (prin1-to-string (member (expand-file-name (buffer-file-name)) ac-fsharp-project-files)))
   (and ac-fsharp-completion-process
-       (member (file-truename (buffer-file-name)) ac-fsharp-project-files)))
+       (member (expand-file-name (buffer-file-name)) ac-fsharp-project-files)))
 
 ;;;###autoload
 (defun ac-fsharp-tooltip-at-point ()
@@ -285,6 +291,9 @@
           (setq ac-fsharp-waiting nil))
 
          ((string/starts-with msg "DATA: finddecl")
+          (message "Received finddecl")
+          (message msg)
+          (message (buffer-file-name))
           (if (string-match "\\([0-9]+\\):\\([0-9]+\\)" msg)
               (goto-char
                (line-column-to-pos (+ 1
