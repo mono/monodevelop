@@ -116,7 +116,7 @@ namespace MonoDevelop.VersionControl.Git
 			var username = (CredentialItem.Username) items.FirstOrDefault (i => i is CredentialItem.Username);
 			var password = (CredentialItem.Password) items.FirstOrDefault (i => i is CredentialItem.Password);
 
-			if (items.Length == 2 && username == null && password == null) {
+			if (items.Length == 2 && username != null && password != null) {
 				passwordItem = password;
 
 				var passwordValue = PasswordService.GetWebPassword (actualUrl);
