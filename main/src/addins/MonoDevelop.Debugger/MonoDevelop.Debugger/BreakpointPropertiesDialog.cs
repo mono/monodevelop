@@ -26,6 +26,8 @@
 //
 
 using System;
+using System.Collections.Generic;
+
 using MonoDevelop.Core;
 using Mono.Debugging.Client;
 using MonoDevelop.Projects;
@@ -135,34 +137,32 @@ namespace MonoDevelop.Debugger
 			boxCondition.Sensitive = !radioBreakAlways.Active;
 		}
 		
-		bool TryParseFunction (string signature, out string function, out string[] paramTypes)
+		static bool TryParseFunction (string signature, out string function, out string[] paramTypes)
 		{
-			// FIXME: this is a hack, but it'll work until we get actual language parsers...
 			int paramListStart = signature.IndexOf ('(');
-			int paramListEnd;
-			
-			if (paramListStart == -1) {
+			int paramListEnd = signature.IndexOf (')');
+
+			if (paramListStart == -1 && paramListEnd == -1) {
 				function = signature;
 				paramTypes = null;
 				return true;
 			}
-			
-			function = signature.Substring (0, paramListStart).TrimEnd ();
-			
-			paramListStart++;
-			paramListEnd = paramListStart;
-			while (paramListEnd < signature.Length && signature[paramListEnd] != ')')
-				paramListEnd++;
-			
-			if (paramListEnd == signature.Length) {
-				function = null;
+
+			if (paramListEnd != signature.Length - 1) {
 				paramTypes = null;
+				function = null;
 				return false;
 			}
 			
-			paramTypes = signature.Substring (paramListStart, paramListEnd - paramListStart).Split (new char [] { ',' });
-			for (int i = 0; i < paramTypes.Length; i++)
-				paramTypes[i] = paramTypes[i].Trim ();
+			function = signature.Substring (0, paramListStart).Trim ();
+			
+			paramListStart++;
+
+			if (!FunctionBreakpoint.TryParseParameters (signature, paramListStart, paramListEnd, out paramTypes)) {
+				paramTypes = null;
+				function = null;
+				return false;
+			}
 			
 			return true;
 		}
@@ -170,12 +170,14 @@ namespace MonoDevelop.Debugger
 		public bool Check ()
 		{
 			if (bp is FunctionBreakpoint) {
-				if (entryFileFunction.Text.Length == 0) {
+				string text = entryFileFunction.Text.Trim ();
+
+				if (text.Length == 0) {
 					MessageService.ShowError (GettextCatalog.GetString ("Function name not specified"));
 					return false;
 				}
-				
-				if (!TryParseFunction (entryFileFunction.Text.Trim (), out parsedFunction, out parsedParamTypes)) {
+
+				if (!TryParseFunction (text, out parsedFunction, out parsedParamTypes)) {
 					MessageService.ShowError (GettextCatalog.GetString ("Invalid function syntax"));
 					return false;
 				}

@@ -140,7 +140,7 @@ namespace MonoDevelop.Core.Assemblies
 					if (fx.IncludesFramework (pkg.TargetFramework))
 						yield return pkg;
 				} else {
-					if (fx.IsCompatibleWithFramework (pkg.TargetFramework))
+					if (fx.CanReferenceAssembliesTargetingFramework (pkg.TargetFramework))
 						yield return pkg;
 				}		
 			}
@@ -306,7 +306,7 @@ namespace MonoDevelop.Core.Assemblies
 					if (fx.IncludesFramework (asm.Package.TargetFramework))
 						if (package == null || asm.Package.Name == package)
 							return asm.FullName;
-				} else if (fx.IsCompatibleWithFramework (asm.Package.TargetFramework)) {
+				} else if (fx.CanReferenceAssembliesTargetingFramework (asm.Package.TargetFramework)) {
 					if (package != null && asm.Package.Name == package)
 						return asm.FullName;
 					bestMatch = asm.FullName;
@@ -420,7 +420,7 @@ namespace MonoDevelop.Core.Assemblies
 			//if the asm is not a framework asm, we don't upgrade it automatically
 			if (!fxAsms.Any ()) {
 				// Return null if the package is not compatible with the requested version
-				if (fx.IsCompatibleWithFramework (asm.Package.TargetFramework))
+				if (fx.CanReferenceAssembliesTargetingFramework (asm.Package.TargetFramework))
 					return asm;
 				else
 					return null;

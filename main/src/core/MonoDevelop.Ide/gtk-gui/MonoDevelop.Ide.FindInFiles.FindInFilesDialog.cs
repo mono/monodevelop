@@ -165,7 +165,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.checkbuttonCaseSensitive = new global::Gtk.CheckButton ();
 			this.checkbuttonCaseSensitive.CanFocus = true;
 			this.checkbuttonCaseSensitive.Name = "checkbuttonCaseSensitive";
-			this.checkbuttonCaseSensitive.Label = global::Mono.Unix.Catalog.GetString ("_Case sensitive");
+			this.checkbuttonCaseSensitive.Label = global::Mono.Unix.Catalog.GetString ("C_ase sensitive");
 			this.checkbuttonCaseSensitive.DrawIndicator = true;
 			this.checkbuttonCaseSensitive.UseUnderline = true;
 			this.table1.Add (this.checkbuttonCaseSensitive);

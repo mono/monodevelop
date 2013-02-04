@@ -204,8 +204,8 @@ namespace MonoDevelop.Ide.Projects {
 						txt += " " + GLib.Markup.EscapeText (GettextCatalog.GetString ("(Cyclic dependencies not allowed)"));
 						allowSelecting = false;
 					}
-				    else if (!configureProject.TargetFramework.IsCompatibleWithFramework (netProject.TargetFramework.Id)) {
-						txt += " " + GLib.Markup.EscapeText (GettextCatalog.GetString ("(Incompatible target framework: v{0})", netProject.TargetFramework.Id));
+				    else if (!configureProject.TargetFramework.CanReferenceAssembliesTargetingFramework (netProject.TargetFramework)) {
+						txt += " " + GLib.Markup.EscapeText (GettextCatalog.GetString ("(Incompatible target framework: {0})", netProject.TargetFramework.Id));
 						allowSelecting = false;
 					}
 				}

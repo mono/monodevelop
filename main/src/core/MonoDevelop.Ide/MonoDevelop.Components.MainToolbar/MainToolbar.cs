@@ -195,7 +195,9 @@ namespace MonoDevelop.Components.MainToolbar
 			};
 
 			matchEntry.ForceFilterButtonVisible = true;
-
+			matchEntry.Entry.FocusOutEvent += delegate {
+				matchEntry.Entry.Text = "";
+			};
 			var cmd = IdeApp.CommandService.GetCommand (Commands.NavigateTo);
 			cmd.KeyBindingChanged += delegate {
 				UpdateSearchEntryLabel ();
@@ -261,7 +263,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
-			if (evnt.Button == 1) {
+			if (evnt.Button == 1 && evnt.Window == this.GdkWindow) {
 				(Toplevel as Gtk.Window).BeginMoveDrag (1, (int)evnt.XRoot, (int)evnt.YRoot, evnt.Time);
 				return true;
 			}

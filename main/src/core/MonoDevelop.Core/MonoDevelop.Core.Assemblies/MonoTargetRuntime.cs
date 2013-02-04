@@ -284,9 +284,9 @@ namespace MonoDevelop.Core.Assemblies
 					if (newfx == null)
 						inconsistentFrameworks = true;
 					else {
-						if (newfx.IsCompatibleWithFramework (commonFramework.Id))
+						if (newfx.CanReferenceAssembliesTargetingFramework (commonFramework))
 							commonFramework = newfx;
-						else if (!commonFramework.IsCompatibleWithFramework (newfx.Id))
+						else if (!commonFramework.CanReferenceAssembliesTargetingFramework (newfx))
 							inconsistentFrameworks = true;
 					}
 				}

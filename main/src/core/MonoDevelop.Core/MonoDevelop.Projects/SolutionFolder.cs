@@ -66,6 +66,11 @@ namespace MonoDevelop.Projects
 				return items;
 			}
 		}
+
+		internal SolutionFolderItemCollection GetItemsWithoutCreating ()
+		{
+			return items;
+		}
 		
 		[ItemProperty]
 		[ProjectPathItemProperty ("File", Scope="*")]

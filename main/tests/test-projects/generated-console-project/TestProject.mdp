@@ -14,7 +14,7 @@
     </Configuration>
   </Configurations>
   <Contents>
-    <File name="Main.cs" subtype="Code" buildaction="Compile" />
+    <File name="Program.cs" subtype="Code" buildaction="Compile" />
     <File name="Resource.xml" resource_id="TestProject.Resource.xml" subtype="Code" buildaction="EmbedAsResource" />
     <File name="Excluded.xml" subtype="Code" buildaction="Exclude" />
     <File name="Copy.xml" subtype="Code" buildaction="FileCopy" />

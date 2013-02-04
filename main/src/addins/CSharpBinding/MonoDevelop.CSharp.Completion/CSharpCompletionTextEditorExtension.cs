@@ -659,6 +659,16 @@ namespace MonoDevelop.CSharp.Completion
 					overloads.Add (data);
 				}
 
+				public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
+				{
+					var currentWord = GetCurrentWord (window);
+					if (CompletionText == "new()" && keyChar == '(') {
+						window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, currentWord, "new");
+					} else {
+						window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, currentWord, CompletionText);
+					}
+				}
+
 			}
 
 			class LazyGenericTooltipCompletionData : GenericTooltipCompletionData

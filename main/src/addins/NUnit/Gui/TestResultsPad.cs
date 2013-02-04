@@ -129,7 +129,7 @@ namespace MonoDevelop.NUnit
 			sw.Add (failuresTreeView);
 			book.Pack1 (sw, true, true);
 			
-			outputView = new TextView ();
+			outputView = new MonoDevelop.Ide.Gui.Components.LogView.LogTextView ();
 			outputView.Editable = false;
 			bold = new TextTag ("bold");
 			bold.Weight = Pango.Weight.Bold;

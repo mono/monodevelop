@@ -293,7 +293,10 @@ namespace MonoDevelop.VersionControl.Git
 				if (recursive) {
 					paths = new [] { localDirectory };
 				} else {
-					paths = Directory.GetFiles (localDirectory).Select (f => (FilePath)f).ToArray ();
+					if (Directory.Exists (localDirectory))
+						paths = Directory.GetFiles (localDirectory).Select (f => (FilePath)f).ToArray ();
+					else
+						paths = new FilePath [0];
 				}
 			} else {
 				paths = localFileNames.Select (f => f).ToArray ();
@@ -364,6 +367,8 @@ namespace MonoDevelop.VersionControl.Git
 
 		void CollectFiles (HashSet<FilePath> files, FilePath dir, bool recursive)
 		{
+			if (!Directory.Exists (dir))
+				return;
 			foreach (string file in Directory.GetFiles (dir))
 				files.Add (new FilePath (file).CanonicalPath);
 			if (recursive) {

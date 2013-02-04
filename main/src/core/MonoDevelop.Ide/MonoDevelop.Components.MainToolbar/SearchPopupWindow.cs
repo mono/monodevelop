@@ -108,7 +108,7 @@ namespace MonoDevelop.Components.MainToolbar
 			lightSearchBackground = CairoExtensions.ParseColor ("ffffff");
 			darkSearchBackground = CairoExtensions.ParseColor ("f7f7f7");
 			selectionBackgroundColor = CairoExtensions.ParseColor ("cccccc");
-			TypeHint = Gdk.WindowTypeHint.Utility;
+			TypeHint = Gdk.WindowTypeHint.Combo;
 			this.SkipTaskbarHint = true;
 			this.SkipPagerHint = true;
 			this.TransientFor = IdeApp.Workbench.RootWindow;

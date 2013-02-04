@@ -56,8 +56,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		string lastBuildRuntime;
 		string lastFileName;
 		ITimeTracker timer;
-		bool useXBuild;
-		MSBuildVerbosity verbosity;
+		bool forceUseMSBuild;
 
 		struct ItemInfo {
 			public MSBuildItem Item;
@@ -104,10 +103,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				this.targetImports.AddRange (import.Split (':'));
 			
 			Runtime.SystemAssemblyService.DefaultRuntimeChanged += OnDefaultRuntimeChanged;
-			
-			//FIXME: Update these when the properties change
-			useXBuild = PropertyService.Get ("MonoDevelop.Ide.BuildWithMSBuild", false);
-			verbosity = PropertyService.Get ("MonoDevelop.Ide.MSBuildVerbosity", MSBuildVerbosity.Normal);
 		}
 		
 		void OnDefaultRuntimeChanged (object o, EventArgs args)
@@ -145,14 +140,19 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 			return projectBuilder;
 		}
-		
-		public override void Dispose ()
+
+		void CleanupProjectBuilder ()
 		{
-			base.Dispose ();
 			if (projectBuilder != null) {
 				projectBuilder.Dispose ();
 				projectBuilder = null;
 			}
+		}
+
+		public override void Dispose ()
+		{
+			base.Dispose ();
+			CleanupProjectBuilder ();
 			Runtime.SystemAssemblyService.DefaultRuntimeChanged -= OnDefaultRuntimeChanged;
 		}
 		
@@ -189,7 +189,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		IEnumerable<string> IAssemblyReferenceHandler.GetAssemblyReferences (ConfigurationSelector configuration)
 		{
-			if (useXBuild) {
+			if (UseMSBuildEngine) {
 				// Get the references list from the msbuild project
 				SolutionEntityItem item = (SolutionEntityItem) Item;
 				RemoteProjectBuilder builder = GetProjectBuilder ();
@@ -198,6 +198,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					yield return s;
 			}
 			else {
+				CleanupProjectBuilder ();
 				DotNetProject item = Item as DotNetProject;
 				if (item == null)
 					yield break;
@@ -210,14 +211,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		public override BuildResult RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
 		{
-			if (useXBuild) {
+			if (UseMSBuildEngine) {
 				SolutionEntityItem item = Item as SolutionEntityItem;
 				if (item != null) {
 					
 					LogWriter logWriter = new LogWriter (monitor.Log);
 					RemoteProjectBuilder builder = GetProjectBuilder ();
 					var configs = GetConfigurations (item, configuration);
-					MSBuildResult[] results = builder.RunTarget (target, configs, logWriter, verbosity);
+					MSBuildResult[] results = builder.RunTarget (target, configs, logWriter, MSBuildProjectService.DefaultMSBuildVerbosity);
 					System.Runtime.Remoting.RemotingServices.Disconnect (logWriter);
 					
 					BuildResult br = new BuildResult ();
@@ -231,6 +232,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 			}
 			else {
+				CleanupProjectBuilder ();
 				if (Item is DotNetProject) {
 					MD1DotNetProjectHandler handler = new MD1DotNetProjectHandler ((DotNetProject)Item);
 					return handler.RunTarget (monitor, target, configuration);
@@ -309,7 +311,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 			}
 			// Enable xbuild by default only for standard .NET projects - not for subtypes
-			//UseXbuild = subtypeGuids.Count == 0;
+			//ForceUseMSBuild = subtypeGuids.Count == 0;
 			
 			try {
 				timer.Trace ("Create item instance");
@@ -334,10 +336,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				timer.End ();
 			}
 		}
+
+		internal bool UseMSBuildEngine {
+			get { return forceUseMSBuild || MSBuildProjectService.DefaultBuildWithMSBuild; }
+		}
 		
-		internal bool UseXbuild {
-			get { return useXBuild; }
-			set { useXBuild = value; }
+		internal bool ForceUseMSBuild {
+			get { return forceUseMSBuild; }
+			set { forceUseMSBuild = value; }
 		}
 		
 		// All of the last 4 parameters are optional, but at least one must be provided.
@@ -349,7 +355,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (!string.IsNullOrEmpty (typeGuids)) {
 				DotNetProjectSubtypeNode st = MSBuildProjectService.GetDotNetProjectSubtype (typeGuids);
 				if (st != null) {
-					useXBuild = useXBuild || st.UseXBuild;
+					forceUseMSBuild = st.UseXBuild;
 					Type migratedType = null;
 
 					if (st.IsMigration && (migratedType = MigrateProject (monitor, st, p, fileName, language)) != null) {

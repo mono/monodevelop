@@ -182,7 +182,7 @@ namespace MonoDevelop.SourceEditor
 					for (int k = 0; k < 3; k++) {
 						for (int l = 0; l < 2; l++) {
 							var color = colorMatrix [i, j, k, l, 0];
-							colorMatrix [i, j, k, l, 1] = new Cairo.Color ((color.R + selectionColor.R * 1.5) / 2.5, (color.G + selectionColor.G * 1.5) / 2.5, (color.B + selectionColor.B * 1.5) / 2.5);
+							colorMatrix [i, j, k, l, 1] = new Cairo.Color ((color.R + selectionColor.R * 2.5) / 3.5, (color.G + selectionColor.G * 2.5) / 3.5, (color.B + selectionColor.B * 2.5) / 3.5);
 						}
 					}
 				}

@@ -391,7 +391,6 @@ namespace MonoDevelop.CSharp
 					AppendTypeParameterList (result, t.GetDefinition ());
 				}
 			}
-			Console.WriteLine (result);
 			return result.ToString ();
 		}
 		
@@ -702,7 +701,8 @@ namespace MonoDevelop.CSharp
 			result.Append ('(');
 			IList<IParameter> parameters = method.Parameters;
 			if (method.IsExtensionMethod) {
-				parameters = new List<IParameter> (method.Parameters.Skip (1));
+				if (method is SpecializedMethod && ((SpecializedMethod)method).IsExtendedExtensionMethod)
+					parameters = new List<IParameter> (method.Parameters.Skip (1));
 			}
 			AppendParameterList (result,  parameters, formattingOptions.SpaceBeforeMethodDeclarationParameterComma, formattingOptions.SpaceAfterMethodDeclarationParameterComma);
 			result.Append (')');
@@ -1349,6 +1349,22 @@ namespace MonoDevelop.CSharp
 			return result;
 		}
 
+		public TooltipInformation GetAliasedNamespaceTooltip (AliasNamespaceResolveResult resolveResult)
+		{
+			var result = new TooltipInformation ();
+			result.SignatureMarkup = GetMarkup (resolveResult.Namespace);
+			result.AddCategory (GettextCatalog.GetString ("Alias information"), GettextCatalog.GetString ("Resolved using alias '{0}'", resolveResult.Alias));
+			return result;
+		}
+		
+		public TooltipInformation GetAliasedTypeTooltip (AliasTypeResolveResult resolveResult)
+		{
+			var result = new TooltipInformation ();
+			result.SignatureMarkup = GetTypeMarkup (resolveResult.Type, true);
+			result.AddCategory (GettextCatalog.GetString ("Alias information"), GettextCatalog.GetString ("Resolved using alias '{0}'", resolveResult.Alias));
+			return result;
+		}
+		
 		string GetEventMarkup (IEvent evt)
 		{
 			if (evt == null)

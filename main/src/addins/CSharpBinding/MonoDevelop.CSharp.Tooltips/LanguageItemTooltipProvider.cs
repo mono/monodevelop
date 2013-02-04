@@ -184,6 +184,21 @@ namespace MonoDevelop.SourceEditor
 			if (doc == null)
 				return null;
 			try {
+
+				if (result is AliasNamespaceResolveResult) {
+					var resolver = (doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile).GetResolver (doc.Compilation, doc.Editor.Caret.Location);
+					var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
+					sig.BreakLineAfterReturnType = false;
+					return sig.GetAliasedNamespaceTooltip ((AliasNamespaceResolveResult)result);
+				}
+				
+				if (result is AliasTypeResolveResult) {
+					var resolver = (doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile).GetResolver (doc.Compilation, doc.Editor.Caret.Location);
+					var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
+					sig.BreakLineAfterReturnType = false;
+					return sig.GetAliasedTypeTooltip ((AliasTypeResolveResult)result);
+				}
+				
 				if (data.Node is TypeOfExpression) {
 					var resolver = (doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile).GetResolver (doc.Compilation, doc.Editor.Caret.Location);
 					var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());

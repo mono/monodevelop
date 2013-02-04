@@ -91,6 +91,9 @@ namespace MonoDevelop.CSharp.Formatting
 
 		void HandleTextPaste (int insertionOffset, string text, int insertedChars)
 		{
+			if (document.Editor.Options.IndentStyle == IndentStyle.None ||
+			    document.Editor.Options.IndentStyle == IndentStyle.Auto)
+				return;
 			var startLine = Editor.GetLineByOffset (insertionOffset);
 			var endLine = Editor.GetLineByOffset (insertionOffset + insertedChars);
 

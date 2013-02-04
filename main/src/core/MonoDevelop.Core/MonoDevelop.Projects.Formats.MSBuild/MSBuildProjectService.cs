@@ -81,7 +81,23 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			Services.ProjectService.DataContextChanged += delegate {
 				dataContext = null;
 			};
+
+			PropertyService.PropertyChanged += HandlePropertyChanged;
+			DefaultBuildWithMSBuild = PropertyService.Get ("MonoDevelop.Ide.BuildWithMSBuild", false);
+			DefaultMSBuildVerbosity = PropertyService.Get ("MonoDevelop.Ide.MSBuildVerbosity", MSBuildVerbosity.Normal);
 		}
+
+		static void HandlePropertyChanged (object sender, PropertyChangedEventArgs e)
+		{
+			if (e.Key == "MonoDevelop.Ide.BuildWithMSBuild") {
+				DefaultBuildWithMSBuild = (bool) e.NewValue;
+			} else if (e.Key == "MonoDevelop.Ide.MSBuildVerbosity") {
+				DefaultMSBuildVerbosity = (MSBuildVerbosity) e.NewValue;
+			}
+		}
+
+		internal static bool DefaultBuildWithMSBuild { get; private set; }
+		internal static MSBuildVerbosity DefaultMSBuildVerbosity { get; private set; }
 		
 		public static SolutionEntityItem LoadItem (IProgressMonitor monitor, string fileName, MSBuildFileFormat expectedFormat, string typeGuid, string itemGuid)
 		{
