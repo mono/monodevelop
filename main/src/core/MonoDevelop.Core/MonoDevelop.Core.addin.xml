@@ -222,7 +222,7 @@
 			class = "MonoDevelop.Projects.Formats.MSBuild.MSBuildFileFormatVS10"
 			name = "MSBuild (Visual Studio 2010)"
 			canDefault = "true" />
-		<FileFormat id = "MSBuild11"
+		<FileFormat id = "MSBuild12"
 			class = "MonoDevelop.Projects.Formats.MSBuild.MSBuildFileFormatVS12"
 			name = "MSBuild (Visual Studio 2012)"
 			canDefault = "true" />
