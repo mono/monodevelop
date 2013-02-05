@@ -39,6 +39,7 @@ using MonoDevelop.Ide.CodeTemplates;
 using MonoDevelop.SourceEditor;
 using ICSharpCode.NRefactory.CSharp.Completion;
 using ICSharpCode.NRefactory.Editor;
+using System.Linq;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -278,8 +279,7 @@ namespace MonoDevelop.CSharp.Formatting
 						endIndex++;
 					}
 					string tag = endIndex - startIndex - 1 > 0 ? lineText.Substring (startIndex + 1, endIndex - startIndex - 2) : null;
-					if (!string.IsNullOrEmpty (tag) && CSharpCompletionEngine.CommentTags.IndexOf (tag) >= 0) {
-						Console.WriteLine ("!");
+					if (!string.IsNullOrEmpty (tag) && CSharpCompletionEngine.CommentTags.Any (t => t == tag)) {
 						Editor.Document.Insert (Editor.Caret.Offset, "</" + tag + ">", AnchorMovementType.BeforeInsertion);
 					}
 				}
