@@ -6,7 +6,7 @@
 ;;         2010-2011 Laurent Le Brun <laurent@le-brun.eu>
 ;; Maintainer: Robin Neatherway <robin.neatherway@gmail.com>
 ;; Keywords: languages
-;; Version: 0.6
+;; Version: 0.7
 
 ;; This file is not part of GNU Emacs.
 
@@ -29,7 +29,7 @@
 
 (require 'fsharp-mode-indent)
 
-(defvar fsharp-mode-version 0.6
+(defvar fsharp-mode-version 0.7
   "Version of this fsharp-mode")
 
 (defvar fsharp-compiler "fsc"
