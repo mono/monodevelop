@@ -49,6 +49,7 @@
 (defvar ac-fsharp-project-files nil)
 (defvar ac-fsharp-idle-timer nil)
 (defvar ac-fsharp-verbose nil)
+(defvar ac-fsharp-waiting nil)
 
 (defconst eom "\n<<EOF>>\n"
   "End of message marker")
@@ -116,6 +117,7 @@
   (when ac-fsharp-idle-timer
     (cancel-timer ac-fsharp-idle-timer))
   (setq ac-fsharp-completion-process nil)
+  (setq ac-fsharp-project-files nil)
   (ac-fsharp-clear-errors))
 
 ;;;###autoload
