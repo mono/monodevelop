@@ -119,5 +119,7 @@
          (while (eq (length (overlays-at (point))) 0)
            (sleep-for 1))
          (should (eq (overlay-get (car (overlays-at (point))) 'face)
-                 'fsharp-error-face)))))))
+                 'fsharp-error-face))
+         (should (string= (overlay-get (car (overlays-at (point))) 'help-echo)
+                          "Unexpected keyword 'fun' in binding. Expected incomplete structured construct at or before this point or other token.")))))))
 

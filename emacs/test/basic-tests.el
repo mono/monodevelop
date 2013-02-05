@@ -33,8 +33,8 @@
        (t ; Assume `testmode` is a package file to install
           ; TODO: Break net dependency (pos-tip) for speed?
         (init-melpa)
-        (ensure-packages '(pos-tip)))
-       (package-install-file (expand-file-name testmode))))))
+        (ensure-packages '(pos-tip))
+        (package-install-file (expand-file-name testmode)))))))
 
 (ert-deftest change-to-mode-fs ()
   "Check that loading a .fs file causes us to change to fsharp-mode"

@@ -232,14 +232,15 @@
 
 (defun ac-fsharp-show-errors (errors)
   (ac-fsharp-clear-errors)
-  (dolist (err errors)
-    (when (string-match "\\[\\([0-9]+\\):\\([0-9]+\\)-\\([0-9]+\\):\\([0-9]+\\)\\] ERROR \\(.*\\)" err)
+  (save-match-data
+    (while (string-match "\\[\\([0-9]+\\):\\([0-9]+\\)-\\([0-9]+\\):\\([0-9]+\\)\\] ERROR \\([^[]*\\)\n" errors)
       (ac-fsharp-show-error-overlay
-       (line-column-to-pos (+ (string-to-int (match-string 1 err)) 1)
-                           (string-to-int (match-string 2 err)))
-       (line-column-to-pos (+ (string-to-int (match-string 3 err)) 1)
-                           (string-to-int (match-string 4 err)))
-       (match-string 5 err)))))
+       (line-column-to-pos (+ (string-to-int (match-string 1 errors)) 1)
+                           (string-to-int (match-string 2 errors)))
+       (line-column-to-pos (+ (string-to-int (match-string 3 errors)) 1)
+                           (string-to-int (match-string 4 errors)))
+       (match-string 5 errors))
+      (setq errors (substring errors (match-end 0))))))
 
 (defface fsharp-error-face
   '((((class color)) (:underline "Red"))
@@ -304,7 +305,7 @@
 
          ((string/starts-with msg "DATA: errors")
           (ac-fsharp-show-errors
-           (split-string (replace-regexp-in-string "DATA: errors\n" "" msg) "\n")))
+           (concat (replace-regexp-in-string "DATA: errors\n" "" msg) "\n")))
 
          ((string/starts-with msg "DATA: project")
           (setq ac-fsharp-project-files
