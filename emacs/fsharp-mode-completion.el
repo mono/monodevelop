@@ -80,9 +80,8 @@
              (buffer-substring-no-properties (point-min) (point-max))))))
 
 (defun ac-fsharp-parse-file (file)
-  (view-file file)
-  (ac-fsharp-parse-current-buffer)
-  (View-quit))
+  (with-current-buffer (find-file-noselect file)
+    (ac-fsharp-parse-current-buffer)))
 
 ;;;###autoload
 (defun ac-fsharp-load-project (file)
@@ -118,6 +117,7 @@
     (cancel-timer ac-fsharp-idle-timer))
   (setq ac-fsharp-completion-process nil)
   (setq ac-fsharp-project-files nil)
+  (setq ac-fsharp-partial-data "")
   (ac-fsharp-clear-errors))
 
 ;;;###autoload
@@ -139,7 +139,9 @@
         (progn
           (set-process-filter ac-fsharp-completion-process 'ac-fsharp-filter-output)
           (set-process-query-on-exit-flag ac-fsharp-completion-process nil)
-          (setq ac-fsharp-status 'idle))
+          (setq ac-fsharp-status 'idle)
+          (setq ac-fsharp-partial-data "")
+          (setq ac-fsharp-project-files))
       (setq ac-fsharp-completion-process nil))
 
     (setq ac-fsharp-idle-timer
@@ -192,10 +194,6 @@
     nil))
 
 (defun ac-fsharp-can-make-request ()
-  (message "checking can make request, is member?")
-  (message (expand-file-name (buffer-file-name)))
-  (message (prin1-to-string ac-fsharp-project-files))
-  (message (prin1-to-string (member (expand-file-name (buffer-file-name)) ac-fsharp-project-files)))
   (and ac-fsharp-completion-process
        (member (expand-file-name (buffer-file-name)) ac-fsharp-project-files)))
 
@@ -227,7 +225,8 @@
 
 (defun line-column-to-pos (line col)
   (save-excursion
-    (goto-line line)
+    (goto-char (point-min))
+    (forward-line (- line 1))
     (forward-char col)
     (point)))
 
@@ -257,9 +256,7 @@
 
 (defun ac-fsharp-clear-errors ()
   (interactive)
-  (remove-overlays nil nil 'face 'fsharp-error-face)
-  (remove-text-properties (point-min) (point-max)
-                          '(mouse-face nil help-echo nil font-lock-face nil)))
+  (remove-overlays nil nil 'face 'fsharp-error-face))
 
 (defun ac-fsharp-stash-partial (str)
   (setq ac-fsharp-partial-data (concat ac-fsharp-partial-data str)))
@@ -293,9 +290,6 @@
           (setq ac-fsharp-waiting nil))
 
          ((string/starts-with msg "DATA: finddecl")
-          (message "Received finddecl")
-          (message msg)
-          (message (buffer-file-name))
           (if (string-match "\\([0-9]+\\):\\([0-9]+\\)" msg)
               (goto-char
                (line-column-to-pos (+ 1
