@@ -116,6 +116,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			}
 			operationsRunning++;
 			mode.StartMode ();
+			DesktopService.RemoveWindowShadow (helpWindow);
 			mode.Exited += delegate(object s, InsertionCursorEventArgs iCArgs) {
 				if (iCArgs.Success) {
 					if (iCArgs.InsertionPoint.LineAfter == NewLineInsertion.None && 
