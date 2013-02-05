@@ -1,6 +1,6 @@
 DATA: project
-/Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/RobustCommands/Project/FileTwo.fs
-/Users/robnea/dev/rneatherway-fsharpbinding/FSharp.AutoComplete/test/RobustCommands/Project/Program.fs
+<absolute path removed>/test/RobustCommands/Project/FileTwo.fs
+<absolute path removed>/test/RobustCommands/Project/Program.fs
 <<EOF>>
 INFO: Background parsing started
 <<EOF>>
