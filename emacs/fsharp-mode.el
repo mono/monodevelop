@@ -75,6 +75,7 @@
   (define-key fsharp-mode-map (kbd "C-c C-p") 'ac-fsharp-load-project)
   (define-key fsharp-mode-map (kbd "C-c C-t") 'ac-fsharp-tooltip-at-point)
   (define-key fsharp-mode-map (kbd "C-c C-d") 'ac-fsharp-gotodefn-at-point)
+  (define-key fsharp-mode-map (kbd "C-c C-q") 'ac-fsharp-quit-completion-process)
 
   (if running-xemacs nil ; if not running xemacs
     (let ((map (make-sparse-keymap "fsharp"))

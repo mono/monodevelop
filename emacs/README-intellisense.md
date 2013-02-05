@@ -1,5 +1,13 @@
 # Experimental support for Intellisense in Emacs
 
+## 5 February 2013
+
+This release adds automatic error highlighting when idle and jump to definition.
+
+There is a known bug whereby projects that depend on other projects are not correctly recognised by the background compiler bindings.
+
+-- Robin Neatherway
+
 ## 22 January 2013
 
 Added tooltip support back in, with keybindings as in [README](README.md). When loading a project, the completion process is launched automatically if it was not already running.
