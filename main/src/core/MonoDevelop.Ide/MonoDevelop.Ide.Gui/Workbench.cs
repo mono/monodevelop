@@ -95,7 +95,13 @@ namespace MonoDevelop.Ide.Gui
 				IdeApp.FocusIn += delegate(object o, EventArgs args) {
 					CheckFileStatus ();
 				};
-				
+
+				TypeSystem.TypeSystemService.ProjectContentLoaded += delegate {
+					var doc = ActiveDocument;
+					if (doc != null)
+						doc.ReparseDocument ();
+				};
+
 				pads = null;	// Make sure we get an up to date pad list.
 				monitor.Step (1);
 			} finally {
