@@ -114,7 +114,9 @@
       (and ac-fsharp-completion-process
 	   (process-live-p ac-fsharp-completion-process))
     (log-psendstr ac-fsharp-completion-process "quit\n")
-    (kill-process ac-fsharp-completion-process))
+    (sleep-for 1)
+    (when (process-live-p ac-fsharp-completion-process)
+      (kill-process ac-fsharp-completion-process)))
   (when ac-fsharp-idle-timer
     (cancel-timer ac-fsharp-idle-timer))
   (setq ac-fsharp-completion-process nil)

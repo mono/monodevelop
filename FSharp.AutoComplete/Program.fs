@@ -139,10 +139,10 @@ type internal IntelliSenseAgent() =
 
         CheckOptions.Create(projFile, files, args, false, false, ProjectParser.getLoadTime proj)
 
-     // Print contents of check option for debugging purposes
-     // Debug.WriteLine(sprintf "Checkoptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A"
-    //                      opts.ProjectFileName opts.ProjectFileNames opts.ProjectOptions
-    //                     opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules)
+    // Print contents of check option for debugging purposes
+    Debug.print "Checkoptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A"
+                         opts.ProjectFileName opts.ProjectFileNames opts.ProjectOptions
+                         opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules
     opts
 
 
@@ -439,8 +439,6 @@ module internal Main =
                col <= lines.[line].Length && col >= 0
       if not ok then Console.WriteLine("ERROR: Position is out of range\n<<EOF>>")
       ok
-
-
 
     Debug.print "main state is:\nproject: %b\nfiles: %A"
                 (Option.isSome state.Project)
