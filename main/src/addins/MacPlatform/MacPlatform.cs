@@ -337,7 +337,7 @@ namespace MonoDevelop.MacIntegration
 		static void HandleDeleteEvent (object o, Gtk.DeleteEventArgs args)
 		{
 			args.RetVal = true;
-			IdeApp.Workbench.RootWindow.Hide ();
+			MacHideOthersHandler.RunMenuCommand (CarbonCommandID.Hide);
 		}
 
 		public static Gdk.Pixbuf GetPixbufFromNSImageRep (NSImageRep rep, int width, int height)
