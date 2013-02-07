@@ -123,14 +123,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 			if (doc == null)
 				return;
 			lock (this) {
-				if (src != null) {
-					src.Cancel ();
-					try {
-						oldTask.Wait ();
-					} catch (AggregateException ex) {
-						ex.Handle (e => e is TaskCanceledException);
-					}
-				}
+				CancelTask ();
 				src = new CancellationTokenSource ();
 				var treeType = new RuleTreeType ("Document", Path.GetExtension (doc.FileName));
 				var task = AnalysisService.QueueAnalysis (Document, treeType, src.Token);
