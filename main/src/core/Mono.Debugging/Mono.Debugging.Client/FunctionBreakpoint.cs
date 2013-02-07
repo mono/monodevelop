@@ -183,6 +183,7 @@ namespace Mono.Debugging.Client
 			
 			FunctionBreakpoint bp = (FunctionBreakpoint) ev;
 			FunctionName = bp.FunctionName;
+			ParamTypes = bp.ParamTypes;
 		}
 	}
 }
