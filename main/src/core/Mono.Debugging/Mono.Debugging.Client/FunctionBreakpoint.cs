@@ -38,12 +38,63 @@ namespace Mono.Debugging.Client
 			Language = language;
 		}
 
+		static bool SkipArrayRank (string text, ref int index, int endIndex)
+		{
+			char c;
+
+			while (index < endIndex) {
+				if ((c = text[index++]) == ']')
+					return true;
+
+				if (c != ',' && !char.IsWhiteSpace (c) && !char.IsDigit (c))
+					return false;
+			}
+
+			return false;
+		}
+
+		static bool SkipGenericArgs (string text, ref int index, int endIndex)
+		{
+			char c;
+
+			while (index < endIndex) {
+				if ((c = text[index++]) == '>')
+					return true;
+
+				if (c == '<') {
+					if (!SkipGenericArgs (text, ref index, endIndex))
+						return false;
+
+					while (index < endIndex && !char.IsWhiteSpace (text[index]))
+						index++;
+
+					// the only chars allowed after a '>' are: '>', '[', and ','
+					if (">[,".IndexOf (text[index]) == -1)
+						return false;
+				} else if (c == '[') {
+					if (!SkipArrayRank (text, ref index, endIndex))
+						return false;
+
+					while (index < endIndex && !char.IsWhiteSpace (text[index]))
+						index++;
+
+					// the only chars allowed after a ']' are: '>', '[', and ','
+					if (">[,".IndexOf (text[index]) == -1)
+						return false;
+				} else if (c != '.' && c != '+' && c != ',' && !char.IsWhiteSpace (c) && !char.IsLetterOrDigit (c)) {
+					return false;
+				}
+			}
+
+			return false;
+		}
+
 		public static bool TryParseParameters (string text, int startIndex, int endIndex, out string[] paramTypes)
 		{
 			List<string> parsedParamTypes = new List<string> ();
 			int index = startIndex;
-			int depth = 0;
 			int start;
+			char c;
 
 			paramTypes = null;
 
@@ -53,31 +104,19 @@ namespace Mono.Debugging.Client
 
 				start = index;
 				while (index < endIndex) {
-					if (text[index] == '<') {
-						depth++;
-						index++;
-					} else if (text[index] == '>') {
-						if (--depth < 0)
-							return false;
-
-						index++;
-
-						// the only chars allowed after a '>' are: '>', ',', and lwsp
-						while (index < endIndex && text[index] != '>' && text[index] != ',') {
-							if (!char.IsWhiteSpace (text[index]))
-								return false;
-
-							index++;
-						}
-					} else if (depth == 0 && text[index] == ',') {
+					if ((c = text[index]) == ',')
 						break;
-					} else {
-						index++;
+
+					index++;
+
+					if (c == '<') {
+						if (!SkipGenericArgs (text, ref index, endIndex))
+							return false;
+					} else if (c == '[') {
+						if (!SkipArrayRank (text, ref index, endIndex))
+							return false;
 					}
 				}
-
-				if (depth != 0)
-					return false;
 
 				parsedParamTypes.Add (text.Substring (start, index - start).TrimEnd ());
 
@@ -94,16 +133,18 @@ namespace Mono.Debugging.Client
 		{
 			FunctionName = elem.GetAttribute ("function");
 			
-			string s = elem.GetAttribute ("language");
-			if (string.IsNullOrEmpty (s))
+			string text = elem.GetAttribute ("language");
+			if (string.IsNullOrEmpty (text))
 				Language = "C#";
 			else
-				Language = s;
+				Language = text;
 
 			if (elem.HasAttribute ("params")) {
-				s = elem.GetAttribute ("params").Trim ();
-				if (s.Length > 0)
-					ParamTypes = s.Split (new char [] { '|' });
+				string[] paramTypes;
+
+				text = elem.GetAttribute ("params").Trim ();
+				if (text.Length > 0 && TryParseParameters (text, 0, text.Length, out paramTypes))
+					ParamTypes = paramTypes;
 				else
 					ParamTypes = new string[0];
 			}
@@ -119,7 +160,7 @@ namespace Mono.Debugging.Client
 			elem.SetAttribute ("language", Language);
 			
 			if (ParamTypes != null)
-				elem.SetAttribute ("params", string.Join ("|", ParamTypes));
+				elem.SetAttribute ("params", string.Join (", ", ParamTypes));
 			
 			return elem;
 		}
