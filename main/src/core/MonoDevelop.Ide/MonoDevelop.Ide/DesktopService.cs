@@ -37,6 +37,7 @@ namespace MonoDevelop.Ide
 	public static class DesktopService
 	{
 		static PlatformService platformService;
+		static Xwt.Toolkit nativeToolkit;
 
 		static PlatformService PlatformService {
 			get {
@@ -66,6 +67,18 @@ namespace MonoDevelop.Ide
 				new EventHandler<FileCopyEventArgs> (NotifyFileRenamed));
 		}
 		
+		/// <summary>
+		/// Returns the XWT toolkit for the native toolkit (Cocoa on Mac, WPF on Windows)
+		/// </summary>
+		/// <returns>The native toolkit.</returns>
+		public static Xwt.Toolkit NativeToolkit {
+			get {
+				if (nativeToolkit == null)
+					nativeToolkit = platformService.LoadNativeToolkit ();
+				return nativeToolkit;
+			}
+		}
+
 		public static IEnumerable<DesktopApplication> GetApplications (string filename)
 		{
 			return PlatformService.GetApplications (filename);

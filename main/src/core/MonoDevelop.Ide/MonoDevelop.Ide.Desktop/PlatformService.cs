@@ -75,6 +75,15 @@ namespace MonoDevelop.Ide.Desktop
 			Process.Start (url);
 		}
 
+		/// <summary>
+		/// Loads the XWT toolkit backend for the native toolkit (Cocoa on Mac, WPF on Windows)
+		/// </summary>
+		/// <returns>The native toolkit.</returns>
+		public virtual Xwt.Toolkit LoadNativeToolkit ()
+		{
+			return Xwt.Toolkit.CurrentEngine;
+		}
+
 		public string GetMimeTypeForUri (string uri)
 		{
 			if (!String.IsNullOrEmpty (uri)) {

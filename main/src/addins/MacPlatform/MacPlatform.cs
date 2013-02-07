@@ -117,6 +117,13 @@ namespace MonoDevelop.MacIntegration
 			}
 		}
 
+		public override Xwt.Toolkit LoadNativeToolkit ()
+		{
+			var path = Path.GetDirectoryName (GetType ().Assembly.Location);
+			System.Reflection.Assembly.LoadFrom (Path.Combine (path, "Xwt.Mac.dll"));
+			return Xwt.Toolkit.Load (Xwt.ToolkitType.Cocoa);
+		}
+
 		protected override string OnGetMimeTypeForUri (string uri)
 		{
 			var ext = Path.GetExtension (uri);
