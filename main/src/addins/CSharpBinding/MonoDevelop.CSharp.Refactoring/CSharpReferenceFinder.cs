@@ -122,7 +122,6 @@ namespace MonoDevelop.CSharp.Refactoring
 			}
 			if (node is ConstructorInitializer)
 				return null;
-
 			if (node is ObjectCreateExpression)
 				node = ((ObjectCreateExpression)node).Type;
 
@@ -132,6 +131,9 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (node is MemberReferenceExpression)
 				node = ((MemberReferenceExpression)node).MemberNameToken;
 			
+			if (node is SimpleType)
+				node = ((SimpleType)node).IdentifierToken;
+
 			if (node is MemberType)
 				node = ((MemberType)node).MemberNameToken;
 			
