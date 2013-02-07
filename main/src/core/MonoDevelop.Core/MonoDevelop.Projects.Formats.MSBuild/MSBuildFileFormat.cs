@@ -367,7 +367,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 		
 		public override string Id {
-			get { return "MSBuild11"; }
+			get { return "MSBuild12"; }
 		}
 
 		internal override bool SupportsSlnVersion (string version)

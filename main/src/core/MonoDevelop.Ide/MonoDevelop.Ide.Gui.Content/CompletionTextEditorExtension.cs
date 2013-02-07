@@ -438,6 +438,10 @@ namespace MonoDevelop.Ide.Gui.Content
 			CompletionWidget = Document.GetContent <ICompletionWidget> ();
 			if (CompletionWidget != null)
 				CompletionWidget.CompletionContextChanged += OnCompletionContextChanged;
+			document.Editor.Paste += (insertionOffset, text, insertedChars) => {
+				ParameterInformationWindowManager.HideWindow (this, CompletionWidget);
+				CompletionWindowManager.HideWindow ();
+			};
 			if (document.Editor.Parent != null) {
 				document.Editor.Parent.TextArea.FocusOutEvent += delegate {
 					ParameterInformationWindowManager.HideWindow (this, CompletionWidget);

@@ -65,6 +65,7 @@ namespace MonoDevelop.Projects
 			case "MSBuild08":
 				return TargetFrameworkMoniker.NET_2_0;
 			case "MSBuild10":
+			case "MSBuild12":
 				return TargetFrameworkMoniker.NET_4_0;
 			}
 			return Services.ProjectService.DefaultTargetFramework.Id;

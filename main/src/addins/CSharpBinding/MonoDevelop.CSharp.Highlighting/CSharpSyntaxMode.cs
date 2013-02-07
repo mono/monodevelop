@@ -447,14 +447,19 @@ namespace MonoDevelop.CSharp.Highlighting
 
 			public override void VisitMemberType (MemberType memberType)
 			{
+				base.VisitMemberType (memberType);
 				if (memberType.MemberNameToken.StartLocation.Line != lineNumber) {
-					base.VisitMemberType (memberType);
 					return;
 				}
 
 				var result = resolver.Resolve (memberType, cancellationToken);
 
 				if (result.IsError) {
+					result = resolver.Resolve (memberType.Target, cancellationToken);
+					if (result.IsError) {
+						// base type is unresolved - it's already marked.
+						return;
+					}
 					// if && csharpSyntaxMode.guiDocument.Project != null
 					Colorize (memberType.MemberNameToken, "keyword.semantic.error");
 				}
@@ -471,6 +476,11 @@ namespace MonoDevelop.CSharp.Highlighting
 					return;
 				var result = resolver.Resolve (memberReferenceExpression, cancellationToken);
 				if (result.IsError) {
+					result = resolver.Resolve (memberReferenceExpression.Target, cancellationToken);
+					if (result.IsError) {
+						// target already is colorized
+						return;
+					}
 					// if && csharpSyntaxMode.guiDocument.Project != null
 					Colorize (memberReferenceExpression.MemberNameToken, "keyword.semantic.error");
 				}

@@ -412,9 +412,9 @@ namespace MonoDevelop.Components.Docking
 			if (floatingWindow == null) {
 				ResetMode ();
 				SetRegionStyle (frame.GetRegionStyleForItem (this));
-				floatingWindow = new Window (GetWindowTitle ());
-				floatingWindow.TransientFor = frame.Toplevel as Gtk.Window;
-				floatingWindow.TypeHint = Gdk.WindowTypeHint.Utility;
+
+				floatingWindow = new DockFloatingWindow ((Window)frame.Toplevel, GetWindowTitle ());
+
 				VBox box = new VBox ();
 				box.Show ();
 				box.PackStart (TitleTab, false, false, 0);
@@ -577,6 +577,24 @@ namespace MonoDevelop.Components.Docking
 			};
 			menu.Popup (null, null, null, 3, time);
 		}
+	}
+
+	// NOTE: Apparently GTK+ utility windows are not supposed to be "transient" to a parent, and things
+	// break pretty badly on MacOS, so for now we don't make it transient to the "parent". Maybe in future
+	// we should re-evaluate whether they're even Utility windows.
+	//
+	// See BXC9883 - Xamarin Studio hides when there is a nonmodal floating window and it loses focus
+	// https://bugzilla.xamarin.com/show_bug.cgi?id=9883
+	//
+	class DockFloatingWindow : Window
+	{
+		public DockFloatingWindow (Window dockParent, string title) : base (title)
+		{
+			TypeHint = Gdk.WindowTypeHint.Utility;
+			this.DockParent = dockParent;
+		}
+
+		public Window DockParent { get; private set; }
 	}
 	
 	public interface IDockItemLabelProvider

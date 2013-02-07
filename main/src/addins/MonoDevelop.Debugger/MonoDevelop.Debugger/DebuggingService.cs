@@ -363,7 +363,9 @@ namespace MonoDevelop.Debugger
 			if (!IsDebugging)
 				return;
 
-			HideExceptionCaughtDialog ();
+			DispatchService.GuiSyncDispatch (delegate {
+				HideExceptionCaughtDialog ();
+			});
 
 			if (busyStatusIcon != null) {
 				busyStatusIcon.Dispose ();

@@ -39,6 +39,7 @@ using MonoDevelop.Ide.CodeTemplates;
 using MonoDevelop.SourceEditor;
 using ICSharpCode.NRefactory.CSharp.Completion;
 using ICSharpCode.NRefactory.Editor;
+using System.Linq;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -258,6 +259,33 @@ namespace MonoDevelop.CSharp.Formatting
 
 		int lastInsertedSemicolon = -1;
 
+		void CheckXmlCommentCloseTag (char keyChar)
+		{
+			if (keyChar == '>' && stateTracker.Engine.IsInsideDocLineComment) {
+				var location = Editor.Caret.Location;
+				string lineText = Editor.GetLineText (Editor.Caret.Line);
+				int startIndex = Math.Min (location.Column - 1, lineText.Length - 1);
+				while (startIndex >= 0 && lineText [startIndex] != '<') {
+					--startIndex;
+					if (lineText [startIndex] == '/') {
+						// already closed.
+						startIndex = -1;
+						break;
+					}
+				}
+				if (startIndex >= 0) {
+					int endIndex = startIndex;
+					while (endIndex <= location.Column && endIndex < lineText.Length && !Char.IsWhiteSpace (lineText [endIndex])) {
+						endIndex++;
+					}
+					string tag = endIndex - startIndex - 1 > 0 ? lineText.Substring (startIndex + 1, endIndex - startIndex - 2) : null;
+					if (!string.IsNullOrEmpty (tag) && CSharpCompletionEngine.CommentTags.Any (t => t == tag)) {
+						Editor.Document.Insert (Editor.Caret.Offset, "</" + tag + ">", AnchorMovementType.BeforeInsertion);
+					}
+				}
+			}
+		}
+
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
 			bool skipFormatting = StateTracker.Engine.IsInsideOrdinaryCommentOrString ||
@@ -402,18 +430,22 @@ namespace MonoDevelop.CSharp.Formatting
 
 				stateTracker.UpdateEngine ();
 				lastCharInserted = '\0';
+				CheckXmlCommentCloseTag (keyChar);
 				return retval;
 			}
 
 			if (textEditorData.Options.IndentStyle == IndentStyle.Auto && DefaultSourceEditorOptions.Instance.TabIsReindent && key == Gdk.Key.Tab) {
 				bool retval = base.KeyPress (key, keyChar, modifier);
 				DoReSmartIndent ();
+				CheckXmlCommentCloseTag (keyChar);
 				return retval;
 			}
 
 			//pass through to the base class, which actually inserts the character
 			//and calls HandleCodeCompletion etc to handles completion
 			var result = base.KeyPress (key, keyChar, modifier);
+
+			CheckXmlCommentCloseTag (keyChar);
 
 			if (!skipFormatting && keyChar == '}')
 				RunFormatter (new DocumentLocation (textEditorData.Caret.Location.Line, textEditorData.Caret.Location.Column));

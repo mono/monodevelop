@@ -1163,7 +1163,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			{
 				foreach (var referencedProject in wrapper.ReferencedProjects) {
 					ProjectContentWrapper w;
-					if (referencedProject == Project || projectContents.TryGetValue (referencedProject, out w) && HasCyclicRefs (w)) {
+					if (referencedProject == Project || referencedProject == wrapper.Project || projectContents.TryGetValue (referencedProject, out w) && HasCyclicRefs (w)) {
 						return true;
 					}
 				}

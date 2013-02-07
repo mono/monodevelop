@@ -278,6 +278,7 @@ namespace MonoDevelop.Refactoring
 				mode.HelpWindow = helpWindow;
 				mode.CurIndex = mode.InsertionPoints.Count - 1;
 				mode.StartMode ();
+				DesktopService.RemoveWindowShadow (helpWindow);
 				mode.Exited += delegate(object s, InsertionCursorEventArgs args) {
 					if (args.Success)
 						args.InsertionPoint.Insert (editor.Editor, code.ToString ());
