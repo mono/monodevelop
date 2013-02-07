@@ -147,10 +147,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 				var baseTypeDef = baseType.GetDefinition();
 				if (baseTypeDef != null && baseTypeDef.Name == "IEnumerable") {
 					if (baseTypeDef.Namespace == "System.Collections.Generic" && baseTypeDef.TypeParameterCount == 1) {
-						var pt = baseType as ParameterizedType;
-						if (pt != null) {
-							return pt.TypeArguments[0];
-						}
+						if (baseType.TypeArguments.Count > 0)
+							return baseType.TypeArguments[0];
 					} else if (baseTypeDef.Namespace == "System.Collections" && baseTypeDef.TypeParameterCount == 0) {
 						return CurrentContext.Compilation.FindType (KnownTypeCode.Object);
 					}
