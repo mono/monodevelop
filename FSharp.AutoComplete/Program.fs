@@ -218,7 +218,8 @@ type internal IntelliSenseAgent() =
         match tip with
         | DataTipText(elems)
           when elems |> List.forall (function
-            DataTipElementNone -> true | _ -> false) -> ()
+            DataTipElementNone -> true | _ -> false) ->
+              printfn "ERROR: No tooltip information\n<<EOF>>"
         | _ ->
           Console.WriteLine("DATA: tooltip")
           Console.WriteLine(TipFormatter.formatTip tip)
@@ -432,7 +433,7 @@ module internal Main =
     let posok file line col =
       let lines = state.Files.[file]
       let ok = line < lines.Length && line >= 0 &&
-               col < lines.[line].Length && col >= 0
+               col <= lines.[line].Length && col >= 0
       if not ok then Console.WriteLine("ERROR: Position is out of range\n<<EOF>>")
       ok
 
