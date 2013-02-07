@@ -188,9 +188,8 @@ namespace MonoDevelop.Ide.Gui
 					return false;
 				if (toplevel == RootWindow)
 					return true;
-				//FIXME: don't depend on type name string
-				var c = toplevel.Child;
-				return c != null && c.GetType ().FullName.StartsWith ("MonoDevelop.Components.Docking");
+				var dock = toplevel as MonoDevelop.Components.Docking.DockFloatingWindow;
+				return dock != null && dock.DockParent == RootWindow;
 			}
 		}
 		

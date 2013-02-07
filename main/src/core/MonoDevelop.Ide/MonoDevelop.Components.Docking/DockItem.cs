@@ -413,7 +413,7 @@ namespace MonoDevelop.Components.Docking
 				ResetMode ();
 				SetRegionStyle (frame.GetRegionStyleForItem (this));
 
-				floatingWindow = new DockFloatingWindow (GetWindowTitle ());
+				floatingWindow = new DockFloatingWindow ((Window)frame.Toplevel, GetWindowTitle ());
 
 				VBox box = new VBox ();
 				box.Show ();
@@ -588,10 +588,13 @@ namespace MonoDevelop.Components.Docking
 	//
 	class DockFloatingWindow : Window
 	{
-		public DockFloatingWindow (string title) : base (title)
+		public DockFloatingWindow (Window dockParent, string title) : base (title)
 		{
 			TypeHint = Gdk.WindowTypeHint.Utility;
+			this.DockParent = dockParent;
 		}
+
+		public Window DockParent { get; private set; }
 	}
 	
 	public interface IDockItemLabelProvider
