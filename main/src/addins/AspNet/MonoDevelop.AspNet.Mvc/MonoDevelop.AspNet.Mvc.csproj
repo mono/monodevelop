@@ -96,6 +96,7 @@
     <Compile Include="RazorEditorParserFixed\RazorResources.Designer.cs" />
     <Compile Include="RazorEditorParserFixed\CommonResources.Designer.cs" />
     <Compile Include="RazorEditorParserFixed\DisposableAction.cs" />
+    <Compile Include="RazorGenerator\PreprocessedRazorHost.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

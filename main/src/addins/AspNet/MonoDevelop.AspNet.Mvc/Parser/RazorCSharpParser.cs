@@ -187,8 +187,9 @@ namespace MonoDevelop.AspNet.Mvc.Parser
 		{
 			var projectFile = project.GetProjectFile (fileName);
 			if (projectFile != null && projectFile.Generator == "RazorTemplatePreprocessor") {
-				var h = MonoDevelop.RazorGenerator.RazorTemplatePreprocessor.CreateHost (fileName);
+				var h = MonoDevelop.RazorGenerator.PreprocessedRazorHost.Create (fileName);
 				h.DesignTimeMode = true;
+				h.EnableLinePragmas = false;
 				return h;
 			}
 

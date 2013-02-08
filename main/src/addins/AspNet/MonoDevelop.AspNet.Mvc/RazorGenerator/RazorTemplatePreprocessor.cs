@@ -28,44 +28,13 @@ using System;
 using MonoDevelop.Ide.CustomTools;
 using System.CodeDom.Compiler;
 using MonoDevelop.Projects;
-using System.IO;
-using Mono.TextTemplating;
 using MonoDevelop.Core;
-using System.Threading;
 using MonoDevelop.TextTemplating;
-using MonoDevelop.Ide;
-using MonoDevelop.Projects.Text;
-using System.Collections.Generic;
 
 namespace MonoDevelop.RazorGenerator
 {
 	class RazorTemplatePreprocessor : ISingleFileCustomTool
 	{
-		static readonly IEnumerable<string> defaultImports = new[] {
-			"System",
-			"System.Collections.Generic",
-			"System.Linq",
-			"System.Text"
-		};
-
-		public static RazorHost CreateHost (string fullPath)
-		{
-			var transformers = new RazorCodeTransformer[] {
-				PreprocessedTemplateCodeTransformers.AddGeneratedTemplateClassAttribute,
-				PreprocessedTemplateCodeTransformers.SimplifyHelpers,
-				PreprocessedTemplateCodeTransformers.InjectBaseClass,
-				PreprocessedTemplateCodeTransformers.MakePartialAndRemoveCtor,
-			};
-			var host = new RazorHost (fullPath, transformers: transformers) {
-				DefaultBaseClass = "",
-			};
-			foreach (var import in defaultImports) {
-				host.NamespaceImports.Add (import);
-			}
-			host.ParserFactory = (h) => new PreprocessedCSharpRazorCodeParser ();
-			return host;
-		}
-
 		//from TextTemplatingFilePreprocessor
 		static string GetNamespaceHint (ProjectFile file, string outputFile)
 		{
@@ -98,8 +67,7 @@ namespace MonoDevelop.RazorGenerator
 				return;
 			}
 
-			var host = CreateHost (file.FilePath);
-			host.EnableLinePragmas = true;
+			var host = PreprocessedRazorHost.Create (file.FilePath);
 
 			var defaultOutputName = file.FilePath.ChangeExtension (".cs");
 
