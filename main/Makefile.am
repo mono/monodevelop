@@ -32,7 +32,7 @@ vcrevision:
 
 $(buildinfo): vcrevision
 	@mkdir -p "$(top_builddir)/build/bin"
-	@echo "$$(cat $(top_srcdir)/vcrevision)" > "$@"
+	@echo "Git revision: $$(cat $(top_srcdir)/vcrevision)" > "$@"
 	@echo "Build date: $$(date -u +'%Y-%m-%d %H:%M:%S%z')" >> "$@"
 	@echo "Updated build information"
 	@cat $(buildinfo)

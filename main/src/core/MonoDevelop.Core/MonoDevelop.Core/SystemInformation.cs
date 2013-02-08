@@ -82,7 +82,6 @@ namespace MonoDevelop.Core
 					.Where (l => !string.IsNullOrEmpty (l))
 					.ToArray ();
 				if (lines.Length > 0) {
-					sb.Append ("Git revision: ");
 					foreach (var line in lines) {
 						sb.AppendLine (line);
 					}
