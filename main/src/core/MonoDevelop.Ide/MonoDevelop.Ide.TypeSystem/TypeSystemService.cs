@@ -226,8 +226,9 @@ namespace MonoDevelop.Ide.TypeSystem
 							if (projectFile != null)
 								QueueParseJob (wrapper, new [] { projectFile });
 						}
-						if (cachedAssemblyContents.ContainsKey (file.FileName))
-							CheckModifiedFile (cachedAssemblyContents[file.FileName]);
+						AssemblyContext ctx;
+						if (cachedAssemblyContents.TryGetValue (file.FileName, out ctx))
+							CheckModifiedFile (ctx);
 					}
 				}
 			};
@@ -1946,7 +1947,6 @@ namespace MonoDevelop.Ide.TypeSystem
 					CheckModifiedFile (loadedContext);
 					return loadedContext;
 				}
-				var newcachedAssemblyContents = new Dictionary<string, AssemblyContext> (cachedAssemblyContents);
 
 				string cache = GetCacheDirectory (fileName);
 				if (cache != null) {
@@ -1955,6 +1955,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (deserialized != null) {
 						deserialized.CtxLoader = new LazyAssemblyLoader (fileName, cache);
 						CheckModifiedFile (deserialized);
+						var newcachedAssemblyContents = new Dictionary<string, AssemblyContext> (cachedAssemblyContents);
 						newcachedAssemblyContents [fileName] = deserialized;
 						cachedAssemblyContents = newcachedAssemblyContents;
 						OnAssemblyLoaded (new AssemblyLoadedEventArgs (deserialized.CtxLoader));
@@ -1973,6 +1974,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					SerializeObject (Path.Combine (cache, "assembly.descriptor"), result);
 					
 					result.CtxLoader = new LazyAssemblyLoader (fileName, cache);
+					var newcachedAssemblyContents = new Dictionary<string, AssemblyContext> (cachedAssemblyContents);
 					newcachedAssemblyContents [fileName] = result;
 					cachedAssemblyContents = newcachedAssemblyContents;
 					OnAssemblyLoaded (new AssemblyLoadedEventArgs (result.CtxLoader));
