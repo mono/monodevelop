@@ -30,6 +30,7 @@ using MonoDevelop.Ide;
 using Gtk;
 using Mono.TextEditor;
 using MonoDevelop.Ide.TypeSystem;
+using System.Text;
 
 namespace MonoDevelop.Components
 {
@@ -90,7 +91,18 @@ namespace MonoDevelop.Components
 			Gdk.Pointer.Ungrab (Gtk.Global.CurrentEventTime);
 			base.OnUnmapped ();
 		}
-		
+
+		void SwitchToSeletedWord ()
+		{
+			string selection = list.WordSelection.ToString ();
+			for (int i = 0; i < DataProvider.IconCount; i++) {
+				if (DataProvider.GetMarkup (i).StartsWith (selection, StringComparison.OrdinalIgnoreCase)) {
+					list.Selection = i;
+					list.WordSelection.Append (selection);
+				}
+			} 
+		}
+
 		public bool ProcessKey (Gdk.Key key, Gdk.ModifierType modifier)
 		{
 			switch (key) {
@@ -134,6 +146,13 @@ namespace MonoDevelop.Components
 			case Gdk.Key.KP_Enter:
 				list.OnSelectItem (EventArgs.Empty);
 				return true;
+			default:
+				char ch = (char)key;
+				if (char.IsLetterOrDigit (ch)) {
+					list.WordSelection.Append (ch);
+					SwitchToSeletedWord ();
+				}
+				break;
 			}
 			
 			return false;
@@ -234,7 +253,14 @@ namespace MonoDevelop.Components
 				}
 				if (SelectionChanged != null) SelectionChanged (this, EventArgs.Empty);
 			}
-			
+			StringBuilder wordSelection = new StringBuilder ();
+
+			public StringBuilder WordSelection {
+				get {
+					return wordSelection;
+				}
+			}
+
 			public int Selection
 			{
 				get {
@@ -242,6 +268,7 @@ namespace MonoDevelop.Components
 				}
 				
 				set {
+					wordSelection.Length = 0;
 					var newValue = Math.Max (0, Math.Min (value, win.DataProvider.IconCount - 1));
 					
 					if (newValue != selection) {
