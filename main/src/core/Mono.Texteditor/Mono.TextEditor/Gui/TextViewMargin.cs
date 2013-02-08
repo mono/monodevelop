@@ -500,6 +500,7 @@ namespace Mono.TextEditor
 
 			DisposeLayoutDict ();
 			chunkDict.Clear ();
+			caretX = caretY = -LineHeight;
 		}
 
 		void DisposeGCs ()
