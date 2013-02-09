@@ -37,6 +37,7 @@ using MonoDevelop.CSharp.Completion;
 using MonoDevelop.CSharp.Refactoring;
 using MonoDevelop.CSharp.Parser;
 using MonoDevelop.Core;
+using ICSharpCode.NRefactory.CSharp.Completion;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -119,8 +120,21 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 
 			memberStartOffset = sb.Length;
-			sb.Append (data.Editor.GetTextBetween (seg.Offset, endOffset));
-			
+			var text = data.Editor.GetTextBetween (seg.Offset, endOffset);
+			sb.Append (text);
+
+			var lex = new CSharpCompletionEngineBase.MiniLexer (text);
+			lex.Parse (ch => {
+				if (lex.IsInString || lex.IsInChar || lex.IsInVerbatimString || lex.IsInSingleComment || lex.IsInMultiLineComment || lex.IsInPreprocessorDirective)
+					return;
+				if (ch =='{') {
+					closingBrackets++;
+				} else if (ch =='}') {
+					closingBrackets--;
+				}
+			});
+
+
 			// Insert at least caret column eol markers otherwise the reindent of the generated closing bracket
 			// could interfere with the current indentation.
 			var endLocation = data.Editor.OffsetToLocation (endOffset);
@@ -145,7 +159,6 @@ namespace MonoDevelop.CSharp.Formatting
 						hadErrors = parser.HasErrors;
 					}
 				}
-				
 				// try it out, if the behavior is better when working only with correct code.
 				if (hadErrors) {
 					return null;
@@ -173,7 +186,6 @@ namespace MonoDevelop.CSharp.Formatting
 						}
 					}
 				}
-
 				return formattingVisitor;
 			}
 		}

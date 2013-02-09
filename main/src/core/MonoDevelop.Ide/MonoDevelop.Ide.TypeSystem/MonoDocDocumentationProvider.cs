@@ -196,8 +196,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				for (int i = 0; i < typeDef.TypeParameterCount; i++) {
 					if (i > 0)
 						result.Append (",");
-					if (t is ParameterizedType) {
-						result.Append (GetTypeString (((ParameterizedType)t).TypeArguments [i]));
+					if (t.TypeArguments.Count > 0) {
+						result.Append (GetTypeString (t.TypeArguments [i]));
 					} else {
 						result.Append (typeDef.TypeParameters [i].FullName);
 					}

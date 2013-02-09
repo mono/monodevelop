@@ -338,20 +338,19 @@ namespace MonoDevelop.CSharp
 				return;
 			}
 			
-			var pt = type as ParameterizedType;
-			if (pt != null) {
-				if (pt.Name == "Nullable" && pt.Namespace == "System" && pt.TypeParameterCount == 1) {
-					AppendType (sb, pt.TypeArguments [0], settings);
+			if (type.TypeArguments.Count > 0) {
+				if (type.Name == "Nullable" && type.Namespace == "System" && type.TypeParameterCount == 1) {
+					AppendType (sb, type.TypeArguments [0], settings);
 					sb.Append (settings.Markup ("?"));
 					return;
 				}
-				sb.Append (pt.Name);
-				if (pt.TypeParameterCount > 0) {
+				sb.Append (type.Name);
+				if (type.TypeParameterCount > 0) {
 					sb.Append (settings.Markup ("<"));
-					for (int i = 0; i < pt.TypeParameterCount; i++) {
+					for (int i = 0; i < type.TypeParameterCount; i++) {
 						if (i > 0)
 							sb.Append (settings.Markup (", "));
-						AppendType (sb, pt.TypeArguments [i], settings);
+						AppendType (sb, type.TypeArguments [i], settings);
 					}
 					sb.Append (settings.Markup (">"));
 				}
@@ -527,8 +526,8 @@ namespace MonoDevelop.CSharp
 					if (i > 0)
 						result.Append (settings.Markup (settings.HideGenericParameterNames ? "," : ", "));
 					if (!settings.HideGenericParameterNames) {
-						if (t is ParameterizedType) {
-							result.Append (GetTypeReferenceString (((ParameterizedType)t).TypeArguments [i], settings));
+						if (t.TypeArguments.Count > 0) {
+							result.Append (GetTypeReferenceString (t.TypeArguments [i], settings));
 						} else {
 							AppendVariance (result, type.TypeParameters [i].Variance);
 							result.Append (NetToCSharpTypeName (type.TypeParameters [i].FullName));

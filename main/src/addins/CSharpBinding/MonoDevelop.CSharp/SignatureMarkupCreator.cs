@@ -371,7 +371,7 @@ namespace MonoDevelop.CSharp
 			AppendTypeParameters (result, parameters);
 		}
 		
-		void AppendTypeParameterList (StringBuilder result, ParameterizedType def)
+		void AppendTypeArgumentList (StringBuilder result, IType def)
 		{
 			IEnumerable<IType> parameters = def.TypeArguments;
 			if (def.DeclaringType != null)
@@ -384,10 +384,9 @@ namespace MonoDevelop.CSharp
 			StringBuilder result = new StringBuilder ();
 			result.Append (Highlight (t.Name, "keyword.type"));
 			if (t.TypeParameterCount > 0) {
-				if (t is ParameterizedType) {
-					AppendTypeParameterList (result, (ParameterizedType)t);
-				}
-				else {
+				if (t.TypeArguments.Count > 0) {
+					AppendTypeArgumentList (result, t);
+				} else {
 					AppendTypeParameterList (result, t.GetDefinition ());
 				}
 			}
@@ -573,9 +572,8 @@ namespace MonoDevelop.CSharp
 			
 			result.Append (CSharpAmbience.FilterName (delegateType.Name));
 
-			var pt = delegateType as ParameterizedType;
-			if (pt != null && pt.TypeArguments.Count > 0) {
-				AppendTypeParameterList (result, pt);
+			if (delegateType.TypeArguments.Count > 0) {
+				AppendTypeArgumentList (result, delegateType);
 			} else {
 				AppendTypeParameterList (result, delegateType.GetDefinition ());
 			}
@@ -680,17 +678,14 @@ namespace MonoDevelop.CSharp
 			} else {
 				result.Append (HighlightSemantically (method.Name, "keyword.semantic.method.declaration"));
 			}
-			if (method is SpecializedMethod) {
-				var sm = (SpecializedMethod)method;
-				if (sm.TypeArguments.Count > 0) {
-					result.Append ("&lt;");
-					for (int i = 0; i < sm.TypeArguments.Count; i++) {
-						if (i > 0)
-							result.Append (", ");
-						result.Append (HighlightSemantically (GetTypeReferenceString (sm.TypeArguments[i], false), "keyword.semantic.type"));
-					}
-					result.Append ("&gt;");
+			if (method.TypeArguments.Count > 0) {
+				result.Append ("&lt;");
+				for (int i = 0; i < method.TypeArguments.Count; i++) {
+					if (i > 0)
+						result.Append (", ");
+					result.Append (HighlightSemantically (GetTypeReferenceString (method.TypeArguments[i], false), "keyword.semantic.type"));
 				}
+				result.Append ("&gt;");
 			} else {
 				AppendTypeParameters (result, method.TypeParameters);
 			}
