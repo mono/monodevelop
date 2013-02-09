@@ -346,7 +346,7 @@ namespace MonoDevelop.MacIntegration
 			var bitmap = rep as NSBitmapImageRep;
 			
 			if (bitmap == null) {
-				using (var cgi = rep.AsCGImage (rect, null, null))
+				using (var cgi = rep.AsCGImage (ref rect, null, null))
 					bitmap = new NSBitmapImageRep (cgi);
 			}
 			
