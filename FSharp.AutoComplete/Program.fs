@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------
+﻿﻿// --------------------------------------------------------------------------------------
 // (c) Tomas Petricek, http://tomasp.net/blog
 // --------------------------------------------------------------------------------------
 namespace FSharp.InteractiveAutocomplete
@@ -398,10 +398,13 @@ module internal CommandInput =
     return Error("ERROR: Unknown command or wrong arguments\n<<EOF>>") }
 
   // Parase any of the supported commands
-  let parseCommand input =
-    let reader = Parsing.createForwardStringReader input 0
-    let cmds = errors <|> help <|> declarations <|> parse <|> project <|> completionTipOrDecl <|> quit <|> error
-    reader |> Parsing.getFirst cmds
+  let parseCommand =
+    function
+    | null -> Quit
+    | input ->
+      let reader = Parsing.createForwardStringReader input 0
+      let cmds = errors <|> help <|> declarations <|> parse <|> project <|> completionTipOrDecl <|> quit <|> error
+      reader |> Parsing.getFirst cmds
 
 // --------------------------------------------------------------------------------------
 // Main application command-line loop
