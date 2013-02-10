@@ -216,13 +216,15 @@
   (interactive)
   (when (ac-fsharp-can-make-request)
     (ac-fsharp-parse-current-buffer)
-    (ac-fsharp-send-pos-request "finddecl" (buffer-file-name) (- (line-number-at-pos) 1) (current-column))))
+    (ac-fsharp-send-pos-request "finddecl"
+                                (buffer-file-name)
+                                (- (line-number-at-pos) 1)
+                                (current-column))))
 
 (defun ac-fsharp-get-errors ()
   (when (ac-fsharp-can-make-request)
     (ac-fsharp-parse-current-buffer)
     (ac-fsharp-send-error-request)))
-
 
 (defun line-column-to-pos (line col)
   (save-excursion
@@ -231,16 +233,27 @@
     (forward-char col)
     (point)))
 
+(defconst ac-fsharp-error-regexp
+  "\\[\\([0-9]+\\):\\([0-9]+\\)-\\([0-9]+\\):\\([0-9]+\\)\\] \\(ERROR\\|WARNING\\) \\(.*\\(?:\n[^[].*\\)*\\)"
+  "Regexp to match errors that come from fsautocomplete. Each
+starts with a character range for position and is followed by
+possibly many lines of description.")
+
+
+
 (defun ac-fsharp-show-errors (errors)
   (ac-fsharp-clear-errors)
   (save-match-data
-    (while (string-match "\\[\\([0-9]+\\):\\([0-9]+\\)-\\([0-9]+\\):\\([0-9]+\\)\\] ERROR \\([^[]*\\)\n" errors)
+    (while (string-match ac-fsharp-error-regexp errors)
       (ac-fsharp-show-error-overlay
        (line-column-to-pos (+ (string-to-int (match-string 1 errors)) 1)
                            (string-to-int (match-string 2 errors)))
        (line-column-to-pos (+ (string-to-int (match-string 3 errors)) 1)
                            (string-to-int (match-string 4 errors)))
-       (match-string 5 errors))
+       (if (string= "ERROR" (match-string 5 errors))
+           'fsharp-error-face
+         'fsharp-warning-face)
+       (match-string 6 errors))
       (setq errors (substring errors (match-end 0))))))
 
 (defface fsharp-error-face
@@ -248,12 +261,16 @@
     (t (:weight bold)))
   "Face used for marking an error in F#")
 
-(defun ac-fsharp-show-error-overlay (p1 p2 txt)
+(defface fsharp-warning-face
+  '((((class color)) (:underline "Blue"))
+    (t (:weight bold)))
+  "Face used for marking a warning in F#")
+
+(defun ac-fsharp-show-error-overlay (p1 p2 face txt)
   "Overlay the text from p1 to p2 to indicate an error is present here.
    The error is described by txt."
   (let ((over (make-overlay p1 p2)))
-    ;(overlay-put over 'font-lock-face 'error)
-    (overlay-put over 'face 'fsharp-error-face)
+    (overlay-put over 'face face)
     (overlay-put over 'help-echo txt)))
 
 (defun ac-fsharp-clear-errors ()
@@ -292,8 +309,7 @@
           (setq ac-fsharp-waiting nil))
 
          ((string/starts-with msg "DATA: finddecl")
-          (if (string-match "
-\\(.*\\):\\([0-9]+\\):\\([0-9]+\\)" msg)
+          (if (string-match "\n\\(.*\\):\\([0-9]+\\):\\([0-9]+\\)" msg)
               (let ((file (match-string 1 msg))
                     (line (+ 1 (string-to-int (match-string 2 msg))))
                     (col (string-to-int (match-string 3 msg))))

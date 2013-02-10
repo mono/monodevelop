@@ -1,20 +1,6 @@
 (require 'ert)
+(require 'test-utilities)
 
-(defun fsharp-mode-wrapper (bufs body)
-  "Load fsharp-mode and make sure any completion process is killed after test"
-  (unwind-protect
-      (progn (load-fsharp-mode)
-             (funcall body))
-    (sleep-for 1)
-    (ac-fsharp-quit-completion-process)
-    (dolist (buf bufs)
-      (when (get-buffer buf)
-        (switch-to-buffer buf)
-        (revert-buffer t t)
-        (kill-buffer buf)))
-    (when (get-buffer "*fsharp-complete*")
-      (kill-buffer "*fsharp-complete*"))
-    ))
 
 (ert-deftest start-completion-process ()
   "Check that we can start the completion process and request help"

@@ -1,4 +1,5 @@
 (require 'ert)
+(require 'test-utilities)
 
 (defconst finddeclstr1
   (let ((file (expand-file-name "Test1/Program.fs")))
@@ -35,3 +36,30 @@
 ;;   (should (string= "write this test" "now"))
 ;;   )
 
+(defconst err-brace-str
+  (mapconcat
+     'identity
+     '("DATA: errors"
+       "[11:0-11:2] WARNING Possible incorrect indentation: this token is offside of context started at position (2:16)."
+       "Try indenting this token further or using standard formatting conventions."
+       "[11:0-11:2] ERROR Unexpected symbol '[<' in expression"
+       "Followed by more stuff on this line"
+       "[12:0-12:3] WARNING Possible incorrect indentation: this token is offside of context started at position (2:16).
+Try indenting this token further or using standard formatting conventions."
+       "<<EOF>>"
+       "")
+     "\n")
+  "A list of errors containing a square bracket to check the parsing")
+
+(ert-deftest error-message-containing-brace ()
+  "Check that a errors containing a brace and newlines is parsed correctly"
+  (fsharp-mode-wrapper
+   '("Program.fs")
+   (lambda ()
+     (find-file "Test1/Program.fs")
+     (ac-fsharp-filter-output nil err-brace-str)
+     (should (string= "" ac-fsharp-partial-data))
+     (should (eq 3 (length (overlays-in (point-min) (point-max)))))
+     (should (string= (overlay-get (car (overlays-in (point-min) (point-max))) 'help-echo) "Possible incorrect indentation: this token is offside of context started at position (2:16).\nTry indenting this token further or using standard formatting conventions."))
+     (should (eq 'fsharp-error-face (overlay-get (cadr (overlays-in (point-min) (point-max))) 'face)))
+     (should (eq 'fsharp-warning-face (overlay-get (car (overlays-in (point-min) (point-max))) 'face))))))
