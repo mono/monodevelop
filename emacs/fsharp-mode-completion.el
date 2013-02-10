@@ -196,7 +196,9 @@
 
 (defun ac-fsharp-can-make-request ()
   (and ac-fsharp-completion-process
-       (member (expand-file-name (buffer-file-name)) ac-fsharp-project-files)))
+       (or
+        (member (expand-file-name (buffer-file-name)) ac-fsharp-project-files)
+        (string-match-p "\\(fsx\\|fsscript\\)" (file-name-extension (buffer-file-name))))))
 
 ;;;###autoload
 (defun ac-fsharp-tooltip-at-point ()
