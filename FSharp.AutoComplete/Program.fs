@@ -210,7 +210,7 @@ type internal IntelliSenseAgent() =
       match identIsland with
       | [ "" ] ->
         // There is no identifier at the current location
-        ()
+        printfn "DATA: tooltip\n<<EOF>>"
       | _ ->
         // Assume that we are inside identifier (F# services can also handle
         // case when we're in a string in '#r "Foo.dll"' but we don't do that)
@@ -248,7 +248,7 @@ type internal IntelliSenseAgent() =
       match identIsland with
       | [ "" ] ->
         // There is no identifier at the current location
-        ()
+        printfn "DATA: finddecl\n<<EOF>>"
       | _ ->
         // Assume that we are inside identifier (F# services can also handle
         // case when we're in a string in '#r "Foo.dll"' but we don't do that)
