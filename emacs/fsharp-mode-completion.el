@@ -55,16 +55,17 @@
   "End of message marker")
 
 (defun log-to-proc-buf (proc str)
-  (let ((buf (process-buffer proc))
-        (atend (with-current-buffer (process-buffer proc)
-                 (eq (marker-position (process-mark proc)) (point)))))
-    (when (buffer-live-p buf)
-      (with-current-buffer buf
-        (goto-char (process-mark proc))
-        (insert-before-markers str))
-      (if atend
-          (with-current-buffer buf
-            (goto-char (process-mark proc)))))))
+  (when (processp proc)
+    (let ((buf (process-buffer proc))
+          (atend (with-current-buffer (process-buffer proc)
+                   (eq (marker-position (process-mark proc)) (point)))))
+      (when (buffer-live-p buf)
+        (with-current-buffer buf
+          (goto-char (process-mark proc))
+          (insert-before-markers str))
+        (if atend
+            (with-current-buffer buf
+              (goto-char (process-mark proc))))))))
 
 (defun log-psendstr (proc str)
   (log-to-proc-buf proc str)
@@ -291,11 +292,13 @@
           (setq ac-fsharp-waiting nil))
 
          ((string/starts-with msg "DATA: finddecl")
-          (if (string-match "\\([0-9]+\\):\\([0-9]+\\)" msg)
-              (goto-char
-               (line-column-to-pos (+ 1
-                                      (string-to-int (match-string 1 msg)))
-                                   (string-to-int (match-string 2 msg))))
+          (if (string-match "
+\\(.*\\):\\([0-9]+\\):\\([0-9]+\\)" msg)
+              (let ((file (match-string 1 msg))
+                    (line (+ 1 (string-to-int (match-string 2 msg))))
+                    (col (string-to-int (match-string 3 msg))))
+                (find-file (match-string 1 msg))
+                (goto-char (line-column-to-pos line col)))
             (message "Error: unable to find definition")))
 
          ((string/starts-with msg "DATA: tooltip")
