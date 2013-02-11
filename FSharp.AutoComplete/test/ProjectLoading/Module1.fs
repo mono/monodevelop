@@ -18,5 +18,6 @@ let Test2ndLevelDepsResolution () =
   Assert.True(Option.isSome p)
   let rs = ProjectParser.getReferences p.Value
   Assert.True(6  = rs.Length, sprintf "%A" rs)
+  Assert.True(Array.exists (fun (r: string) -> r.Contains("Test1.dll")) rs)
   
 

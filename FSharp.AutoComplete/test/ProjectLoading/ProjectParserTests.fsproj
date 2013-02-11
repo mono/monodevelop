@@ -40,7 +40,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Xunit">
-      <HintPath>..\xunit-1.9.1\xunit.dll</HintPath>
+      <HintPath>..\xunit.1.9.1\lib\net20\xunit.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

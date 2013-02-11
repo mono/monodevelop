@@ -44,15 +44,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FileTwo.fs" />
-    <Compile Include="Program.fs" />
+    <Compile Include="Test2File2.fs" />
+    <Compile Include="Test2File1.fs" />
   </ItemGroup>
-<!--  <ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="Test1.fsproj">
       <Project>{116cc2f9-f987-4b3d-915a-34cac04a73da}</Project>
       <Name>Test1</Name>
     </ProjectReference>
-  </ItemGroup>-->
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\FSharp\1.0\Microsoft.FSharp.Targets" Condition="!Exists('$(MSBuildBinPath)\Microsoft.Build.Tasks.v4.0.dll')" />
   <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets" Condition=" Exists('$(MSBuildBinPath)\Microsoft.Build.Tasks.v4.0.dll')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
