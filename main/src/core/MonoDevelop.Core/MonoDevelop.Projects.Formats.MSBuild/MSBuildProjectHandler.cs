@@ -1104,22 +1104,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				bool isDefaultVersion = isDefaultIdentifier && def.Version == moniker.Version;
 				bool isDefaultProfile = isDefaultVersion && def.Profile == moniker.Profile;
 
-				// If the format only supports one fx version, or the version is the default, there is no need to store it
-				if (!isDefaultVersion && supportsMultipleFrameworks)
-					SetGroupProperty (globalGroup, "TargetFrameworkVersion", "v" + moniker.Version);
-				else
-					globalGroup.RemoveProperty ("TargetFrameworkVersion");
+				// If the format only supports one fx version, or the version is the default, there is no need to store it.
+				// However, is there is already a value set, do not remove it.
+				if (supportsMultipleFrameworks) {
+					SetIfPresentOrNotDefaultValue (globalGroup, "TargetFrameworkVersion", "v" + moniker.Version, "v" + def.Version);
+				}
 				
 				if (TargetFormat.SupportsMonikers) {
-					if (!isDefaultIdentifier && def.Identifier != moniker.Identifier)
-						SetGroupProperty (globalGroup, "TargetFrameworkIdentifier", moniker.Identifier);
-					else
-						globalGroup.RemoveProperty ("TargetFrameworkIdentifier");
-					
-					if (!isDefaultProfile && def.Profile != moniker.Profile)
-						SetGroupProperty (globalGroup, "TargetFrameworkProfile", moniker.Profile);
-					else
-						globalGroup.RemoveProperty ("TargetFrameworkProfile");
+					SetIfPresentOrNotDefaultValue (globalGroup, "TargetFrameworkIdentifier", moniker.Identifier, def.Identifier);
+					SetIfPresentOrNotDefaultValue (globalGroup, "TargetFrameworkProfile", moniker.Profile, def.Profile);
 				}
 			}
 
@@ -1156,6 +1149,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			
 			if (projectBuilder != null)
 				projectBuilder.Refresh ();
+		}
+
+		void SetIfPresentOrNotDefaultValue (MSBuildPropertySet propGroup, string name, string value, string defaultValue)
+		{
+			var prop = propGroup.GetProperty (name);
+			if (prop != null) {
+				prop.Value = value;
+			} else if (value != defaultValue) {
+				propGroup.SetPropertyValue (name, value, false);
+			}
 		}
 		
 		void ForceDefaultValueSerialization (MSBuildSerializer ser, MSBuildPropertySet baseGroup, object ob)
@@ -1562,17 +1565,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					configData.Add (new ConfigData (conf, platform, cgrp));
 			}
 			return configData;
-		}
-		
-		MSBuildProperty SetGroupProperty (MSBuildPropertySet propGroup, string name, string value, bool preserveExistingCase = false)
-		{
-			if (preserveExistingCase) {
-				var existing = propGroup.GetProperty (name);
-				if (existing != null && string.Equals (existing.Value, value, StringComparison.OrdinalIgnoreCase)) {
-					return existing;
-				}
-			}
-			return propGroup.SetPropertyValue (name, value, preserveExistingCase);
 		}
 		
 		ConfigData FindPropertyGroup (List<ConfigData> configData, SolutionItemConfiguration config)
