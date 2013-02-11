@@ -232,8 +232,10 @@
   (save-excursion
     (goto-char (point-min))
     (forward-line (- line 1))
-    (forward-char col)
-    (point)))
+    (if (< (point-max) (+ (point) col))
+        (point-max)
+      (forward-char col)
+      (point))))
 
 (defconst ac-fsharp-error-regexp
   "\\[\\([0-9]+\\):\\([0-9]+\\)-\\([0-9]+\\):\\([0-9]+\\)\\] \\(ERROR\\|WARNING\\) \\(.*\\(?:\n[^[].*\\)*\\)"
@@ -259,25 +261,47 @@ possibly many lines of description.")
       (setq errors (substring errors (match-end 0))))))
 
 (defface fsharp-error-face
-  '((((class color)) (:underline "Red"))
-    (t (:weight bold)))
+  '(
+    (((class color) (background dark))
+     :underline "Red"
+     )
+    (((class color) (background light))
+     :underline "Red"
+     ))
   "Face used for marking an error in F#")
 
 (defface fsharp-warning-face
-  '((((class color)) (:underline "Blue"))
-    (t (:weight bold)))
+  '(
+    (((class color) (background dark))
+     :underline "LightBlue1"
+     )
+    (((class color) (background light))
+     :underline "Blue"
+    ))
   "Face used for marking a warning in F#")
 
 (defun ac-fsharp-show-error-overlay (p1 p2 face txt)
   "Overlay the text from p1 to p2 to indicate an error is present here.
    The error is described by txt."
-  (let ((over (make-overlay p1 p2)))
-    (overlay-put over 'face face)
-    (overlay-put over 'help-echo txt)))
+  ; Three cases
+  ; 1. No overlays here yet: make it
+  ; 2. new warning, exists error: do nothing
+  ; 3. new error exists warning: rm warning and make it
+  (let ((ofaces (mapcar (lambda (o) (overlay-get o 'face)) (overlays-in p1 p2))))
+    (if (and (eq face 'fsharp-warning-face)
+           (memq 'fsharp-error-face ofaces))
+        nil
+      (when (and (eq face 'fsharp-error-face)
+                 (memq 'fsharp-warning-face ofaces))
+        (remove-overlays p1 p2 'face 'fsharp-warning-face))
+      (let ((over (make-overlay p1 p2)))
+        (overlay-put over 'face face)
+        (overlay-put over 'help-echo txt)))))
 
 (defun ac-fsharp-clear-errors ()
   (interactive)
-  (remove-overlays nil nil 'face 'fsharp-error-face))
+  (remove-overlays nil nil 'face 'fsharp-error-face)
+  (remove-overlays nil nil 'face 'fsharp-warning-face))
 
 (defun ac-fsharp-stash-partial (str)
   (setq ac-fsharp-partial-data (concat ac-fsharp-partial-data str)))
