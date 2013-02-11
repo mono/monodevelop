@@ -443,7 +443,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	{
 		MSBuildProperty GetProperty (string name);
 		IEnumerable<MSBuildProperty> Properties { get; }
-		void SetPropertyValue (string name, string value);
+		MSBuildProperty SetPropertyValue (string name, string value, bool preserveExistingCase);
 		string GetPropertyValue (string name);
 		bool RemoveProperty (string name);
 		void RemoveAllProperties ();
@@ -476,13 +476,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return null;
 		}
 
-		public void SetPropertyValue (string name, string value)
+		public MSBuildProperty SetPropertyValue (string name, string value, bool preserveExistingCase)
 		{
 			MSBuildProperty p = GetProperty (name);
-			if (p != null)
-				p.Value = value;
-			else
-				groups [0].SetPropertyValue (name, value);
+			if (p != null) {
+				if (!preserveExistingCase || !string.Equals (value, p.Value, StringComparison.OrdinalIgnoreCase)) {
+					p.Value = value;
+				}
+				return p;
+			}
+			return groups [0].SetPropertyValue (name, value, preserveExistingCase);
 		}
 
 		public string GetPropertyValue (string name)
@@ -585,15 +588,18 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 		
-		public void SetPropertyValue (string name, string value)
+		public MSBuildProperty SetPropertyValue (string name, string value, bool preserveExistingCase)
 		{
 			MSBuildProperty prop = GetProperty (name);
 			if (prop == null) {
 				XmlElement pelem = AddChildElement (name);
 				prop = new MSBuildProperty (pelem);
 				properties [name] = prop;
+				prop.Value = value;
+			} else if (!preserveExistingCase || !string.Equals (value, prop.Value, StringComparison.OrdinalIgnoreCase)) {
+				prop.Value = value;
 			}
-			prop.Value = value;
+			return prop;
 		}
 		
 		public string GetPropertyValue (string name)
