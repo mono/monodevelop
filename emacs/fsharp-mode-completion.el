@@ -109,6 +109,7 @@
 ;;;###autoload
 (defun ac-fsharp-quit-completion-process ()
   (interactive)
+  (message "Quitting fsharp completion process")
   (when 
       (and ac-fsharp-completion-process
 	   (process-live-p ac-fsharp-completion-process))
