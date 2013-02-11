@@ -40,7 +40,7 @@
   (mapconcat
      'identity
      '("DATA: errors"
-       "[11:0-11:2] WARNING Possible incorrect indentation: this token is offside of context started at position (2:16)."
+       "[9:0-9:2] WARNING Possible incorrect indentation: this token is offside of context started at position (2:16)."
        "Try indenting this token further or using standard formatting conventions."
        "[11:0-11:2] ERROR Unexpected symbol '[<' in expression"
        "Followed by more stuff on this line"
