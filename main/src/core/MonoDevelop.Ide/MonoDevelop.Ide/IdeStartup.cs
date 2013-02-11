@@ -527,7 +527,8 @@ namespace MonoDevelop.Ide
 			bool retry = false;
 			do {
 				try {
-					Runtime.SetProcessName (BrandingService.ApplicationName);
+					var exename = Path.GetFileNameWithoutExtension (Assembly.GetEntryAssembly ().Location);
+					Runtime.SetProcessName (exename);
 					var app = new IdeStartup ();
 					ret = app.Run (options);
 					break;
