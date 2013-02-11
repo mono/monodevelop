@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 // (c) Tomas Petricek, http://tomasp.net/blog
 // --------------------------------------------------------------------------------------
 namespace FSharp.InteractiveAutocomplete
@@ -101,9 +101,11 @@ type internal IntelliSenseAgent() =
                 (waitForTypeCheck(opts, untypedInfo), ?timeout = timeout)
             reply.Reply(Some(res))
             return! loop errors
-          with :? OperationCanceledException ->
-            reply.Reply(None)
-            return! loop errors
+          with
+            | :? OperationCanceledException
+            | :? TimeoutException ->
+                    reply.Reply(None)
+                    return! loop errors
 
       | GetErrors(reply) ->
           // Return an array with errors that were reported last time
@@ -137,10 +139,10 @@ type internal IntelliSenseAgent() =
 
         CheckOptions.Create(projFile, files, args, false, false, ProjectParser.getLoadTime proj)
 
-     // Print contents of check option for debugging purposes
-     // Debug.WriteLine(sprintf "Checkoptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A"
-    //                      opts.ProjectFileName opts.ProjectFileNames opts.ProjectOptions
-    //                     opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules)
+    // Print contents of check option for debugging purposes
+    Debug.print "Checkoptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A"
+                         opts.ProjectFileName opts.ProjectFileNames opts.ProjectOptions
+                         opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules
     opts
 
 
@@ -165,66 +167,99 @@ type internal IntelliSenseAgent() =
       Debug.print "Worker: Quick parse completed - success"
       typed.TypeCheckInfo
     | _ ->
-      try
-        // Otherwise try to get type information & run the request
-        let op = agent.PostAndAsyncReply(fun r -> GetTypeCheckInfo(opts, time, r))
-        Async.RunSynchronously(op, ?timeout = time)
-      with :? OperationCanceledException -> None
+      // Otherwise try to get type information & run the request
+      agent.PostAndReply(fun r -> GetTypeCheckInfo(opts, time, r))
 
   /// Invokes dot-completion request and writes information to the standard output
   member x.DoCompletion(opts : RequestOptions, ((line, column) as pos), lineStr, time) =
-    try
-      match x.GetTypeCheckInfo(opts, time) with
-      | Some(info) ->
-          // Get the long identifier before the current location
-          // 'residue' is the part after the last dot and 'longName' is before
-          // e.g.  System.Console.Wri  --> "Wri", [ "System"; "Console"; ]
-          let lookBack = Parsing.createBackStringReader lineStr (column - 1)
-          let residue, longName =
-            lookBack |> Parsing.getFirst Parsing.parseBackIdentWithResidue
+    match x.GetTypeCheckInfo(opts, time) with
+    | Some(info) ->
+        // Get the long identifier before the current location
+        // 'residue' is the part after the last dot and 'longName' is before
+        // e.g.  System.Console.Wri  --> "Wri", [ "System"; "Console"; ]
+        let lookBack = Parsing.createBackStringReader lineStr (column - 1)
+        let residue, longName =
+          lookBack |> Parsing.getFirst Parsing.parseBackIdentWithResidue
 
-          // Get items & generate output
-          let decls = info.GetDeclarations(pos, lineStr, (longName, residue), 0, defaultArg time 1000)
-          for d in decls.Items do Console.WriteLine(d.Name)
-      | None -> Debug.print "DoCompletion failed to get typed info"
-    finally Console.WriteLine("<<EOF>>")
+        // Get items & generate output
+        let decls = info.GetDeclarations(pos, lineStr, (longName, residue), 0, defaultArg time 1000)
+        printfn "DATA: completion"
+        for d in decls.Items do Console.WriteLine(d.Name)
+        printfn "<<EOF>>"
+    | None -> printfn "ERROR: Could not get type information\n<<EOF>>"
 
 
   /// Gets ToolTip for the specified location (and prints it to the output)
   member x.GetToolTip(opts, ((line, column) as pos), lineStr, time) =
-    try
-      match x.GetTypeCheckInfo(opts, time) with
-      | None -> ()
-      | Some(info) ->
-        // Parsing - find the identifier around the current location
-        // (we look for full identifier in the backward direction, but only
-        // for a short identifier forward - this means that when you hover
-        // 'B' in 'A.B.C', you will get intellisense for 'A.B' module)
-        let lookBack = Parsing.createBackStringReader lineStr column
-        let lookForw = Parsing.createForwardStringReader lineStr (column + 1)
-        let backIdent = Parsing.getFirst Parsing.parseBackLongIdent lookBack
-        let nextIdent = Parsing.getFirst Parsing.parseIdent lookForw
+    match x.GetTypeCheckInfo(opts, time) with
+    | Some(info) ->
+      // Parsing - find the identifier around the current location
+      // (we look for full identifier in the backward direction, but only
+      // for a short identifier forward - this means that when you hover
+      // 'B' in 'A.B.C', you will get intellisense for 'A.B' module)
+      let lookBack = Parsing.createBackStringReader lineStr column
+      let lookForw = Parsing.createForwardStringReader lineStr (column + 1)
+      let backIdent = Parsing.getFirst Parsing.parseBackLongIdent lookBack
+      let nextIdent = Parsing.getFirst Parsing.parseIdent lookForw
 
-        let identIsland =
-          match List.rev backIdent with
-          | last::prev -> (last + nextIdent)::prev |> List.rev
-          | [] -> []
+      let identIsland =
+        match List.rev backIdent with
+        | last::prev -> (last + nextIdent)::prev |> List.rev
+        | [] -> []
 
-        match identIsland with
-        | [ "" ] ->
-          // There is no identifier at the current location
-          ()
+      match identIsland with
+      | [ "" ] ->
+        // There is no identifier at the current location
+        printfn "ERROR: No identifier found at this location\n<<EOF>>"
+      | _ ->
+        // Assume that we are inside identifier (F# services can also handle
+        // case when we're in a string in '#r "Foo.dll"' but we don't do that)
+        let tip = info.GetDataTipText(pos, lineStr, identIsland, identToken)
+        match tip with
+        | DataTipText(elems)
+          when elems |> List.forall (function
+            DataTipElementNone -> true | _ -> false) ->
+              printfn "ERROR: No tooltip information\n<<EOF>>"
         | _ ->
-          // Assume that we are inside identifier (F# services can also handle
-          // case when we're in a string in '#r "Foo.dll"' but we don't do that)
-          let tip = info.GetDataTipText(pos, lineStr, identIsland, identToken)
-          match tip with
-          | DataTipText(elems)
-            when elems |> List.forall (function
-              DataTipElementNone -> true | _ -> false) -> ()
-          | _ ->
-            Console.WriteLine(TipFormatter.formatTip tip)
-    finally Console.WriteLine("<<EOF>>")
+          Console.WriteLine("DATA: tooltip")
+          Console.WriteLine(TipFormatter.formatTip tip)
+          Console.WriteLine("<<EOF>>")
+    | None -> printfn "ERROR: Could not get type information\n<<EOF>>"
+
+  /// Finds the point of declaration of the symbol at pos
+  /// and writes information to the standard output
+  member x.FindDeclaration(opts : RequestOptions, ((line, column) as pos), lineStr, time) =
+    match x.GetTypeCheckInfo(opts, time) with
+    | Some(info) ->
+      // Parsing - find the identifier around the current location
+      // (we look for full identifier in the backward direction, but only
+      // for a short identifier forward - this means that when you hover
+      // 'B' in 'A.B.C', you will get intellisense for 'A.B' module)
+      let lookBack = Parsing.createBackStringReader lineStr column
+      let lookForw = Parsing.createForwardStringReader lineStr (column + 1)
+      let backIdent = Parsing.getFirst Parsing.parseBackLongIdent lookBack
+      let nextIdent = Parsing.getFirst Parsing.parseIdent lookForw
+
+      let identIsland =
+        match List.rev backIdent with
+        | last::prev -> (last + nextIdent)::prev |> List.rev
+        | [] -> []
+
+      match identIsland with
+      | [ "" ] ->
+        // There is no identifier at the current location
+        printfn "ERROR: No identifier found at this location\n<<EOF>>"
+      | _ ->
+        // Assume that we are inside identifier (F# services can also handle
+        // case when we're in a string in '#r "Foo.dll"' but we don't do that)
+        // Get items & generate output
+        // TODO: Need this first because of VS debug info coming out
+        Console.WriteLine("DATA: finddecl")
+        match info.GetDeclarationLocation(pos, lineStr, identIsland, identToken, true) with
+        | DeclFound (line,col,file) ->
+            printfn "%s:%d:%d\n<<EOF>>" file line col
+        | DeclNotFound -> printfn "ERROR: Could not find point of declaration\n<<EOF>>"
+    | None -> printfn "ERROR: Could not get type information\n<<EOF>>"
 
 // --------------------------------------------------------------------------------------
 // Utilities for parsing & processing command line input
@@ -241,24 +276,55 @@ module internal CommandInput =
     quit
       - quit the program
     errors
-      - get error messagaes reported by last parse
-    declarations
-      - get information about top-level declarations with location
+      - get error messages reported by last parse
+    declarations ""filename""
+      - get information about top-level declarations in a file with location
     parse ""<filename>"" [full]
       - trigger (full) background parse request; should be
         followed by content of a file (ended with <<EOF>>)
     completion ""<filename>"" <line> <col> [timeout]
       - trigger completion request for the specified location
-    tip ""<filename>"" <line> <col> [timeout]
-      - get tool tip for the specified location (currently not implemented)
+    tooltip ""<filename>"" <line> <col> [timeout]
+      - get tool tip for the specified location
+    finddecl ""<filename>"" <line> <col> [timeout]
+      - find the point of declaration of the object at specified position
     project ""<filename>""
       - associates the current session with the specified project"
 
+  let outputText = @"
+    Output format
+    =============
+
+    Messages are in one of the following three forms:
+
+    1. INFO: text
+       <<EOF>>
+
+       A single line with a free text field. Returns information.
+
+    2. ERROR: text
+       <<EOF>>
+
+       A single line with a free text field. An error has occurred.
+
+    3. DATA: word
+       text
+       <<EOF>>
+
+       Some data, where 'word' (in [a-z]+) indicates the type of data
+       followed by some lines of free text, terminated by the special
+       string <<EOF>>"
+
+  // The types of commands that
+  type PosCommand =
+    | Completion
+    | ToolTip
+    | FindDeclaration
+
   // Command that can be entered on the command-line
   type Command =
-    | Completion of string * Position * int option
-    | ToolTip of string * Position * int option
-    | Declarations
+    | PosCommand of PosCommand * string * Position * int option
+    | Declarations of string
     | GetErrors
     | Parse of string * bool
     | Error of string
@@ -273,7 +339,12 @@ module internal CommandInput =
   let quit = string "quit" |> Parser.map (fun _ -> Quit)
 
   /// Parse 'declarations' command
-  let declarations = string "declarations" |> Parser.map (fun _ -> Declarations)
+  let declarations = parser {
+    let! _ = string "declarations "
+    let! _ = char '"'
+    let! filename = some (sat ((<>) '"')) |> Parser.map String.ofSeq
+    let! _ = char '"' // " // TODO: This here for Emacs syntax highlighting bug
+    return Declarations(filename) }
 
   /// Parse 'errors' command
   let errors = string "errors" |> Parser.map (fun _ -> GetErrors)
@@ -305,31 +376,35 @@ module internal CommandInput =
     return Parse (filename, full) }
 
   // Parse 'completion "<filename>" <line> <col> [timeout]' command
-  let completionOrTip = parser {
+  let completionTipOrDecl = parser {
     let! f = (string "completion " |> Parser.map (fun _ -> Completion)) <|>
-             (string "tip " |> Parser.map (fun _ -> ToolTip))
+             (string "tooltip " |> Parser.map (fun _ -> ToolTip)) <|>
+             (string "finddecl " |> Parser.map (fun _ -> FindDeclaration))
     let! _ = char '"' // " // TODO: This here for Emacs syntax highlighting bug
     let! filename = some (sat ((<>) '"')) |> Parser.map String.ofSeq // "
     let! _ = char '"' // " // TODO: This here for Emacs syntax highlighting bug
     let! _ = many (string " ")
-    let! line = some alphanum |> Parser.map (String.ofSeq >> int)
+    let! line = some digit |> Parser.map (String.ofSeq >> int)
     let! _ = many (string " ")
-    let! col = some alphanum |> Parser.map (String.ofSeq >> int)
+    let! col = some digit |> Parser.map (String.ofSeq >> int)
     let! timeout =
       (parser { let! _ = some (string " ")
-                return! some alphanum |> Parser.map (String.ofSeq >> int >> Some) }) <|>
+                return! some digit |> Parser.map (String.ofSeq >> int >> Some) }) <|>
       (parser { return None })
-    return f(filename, (line, col), timeout) }
+    return PosCommand(f, filename, (line, col), timeout) }
 
   // Parses always and returns default error message
   let error = parser {
-    return Error("ERROR: Unknown command or wrong arguments") }
+    return Error("ERROR: Unknown command or wrong arguments\n<<EOF>>") }
 
   // Parase any of the supported commands
-  let parseCommand input =
-    let reader = Parsing.createForwardStringReader input 0
-    let cmds = errors <|> help <|> declarations <|> parse <|> project <|> completionOrTip <|> quit <|> error
-    reader |> Parsing.getFirst cmds
+  let parseCommand =
+    function
+    | null -> Quit
+    | input ->
+      let reader = Parsing.createForwardStringReader input 0
+      let cmds = errors <|> help <|> declarations <|> parse <|> project <|> completionTipOrDecl <|> quit <|> error
+      reader |> Parsing.getFirst cmds
 
 // --------------------------------------------------------------------------------------
 // Main application command-line loop
@@ -352,26 +427,28 @@ module internal Main =
   let agent = new IntelliSenseAgent()
 
   let rec main (state:State) : int =
+    let parsed file =
+      let ok = Map.containsKey file state.Files
+      if not ok then printfn "ERROR: File '%s' not parsed\n<<EOF>>\n" file
+      ok
+
+    /// Is the specified position consistent with internal state of file?
+    let posok file line col =
+      let lines = state.Files.[file]
+      let ok = line < lines.Length && line >= 0 &&
+               col <= lines.[line].Length && col >= 0
+      if not ok then Console.WriteLine("ERROR: Position is out of range\n<<EOF>>")
+      ok
+
     Debug.print "main state is:\nproject: %b\nfiles: %A"
                 (Option.isSome state.Project)
                 (Map.fold (fun ks k _ -> k::ks) [] state.Files)
     match parseCommand(Console.ReadLine()) with
-    | Declarations ->
-        Console.Error.WriteLine("Declarations not yet implemented")
-        // let decls = agent.GetDeclarations(opts)
-        // for tld in decls do
-        //   let (s1, e1), (s2, e2) = tld.Declaration.Range
-        //   printfn "[%d:%d-%d:%d] %s" s1 e1 s2 e2 tld.Declaration.Name
-        //   for d in tld.Nested do
-        //     let (s1, e1), (s2, e2) = d.Range
-        //     printfn "  - [%d:%d-%d:%d] %s" s1 e1 s2 e2 d.Name
-        // Console.WriteLine("<<EOF>>")
-        main state
-
     | GetErrors ->
         let errs = agent.GetErrors()
+        printfn "DATA: errors"
         for e in errs do
-          printfn "[%d:%d-%d:%d] %s %s" e.StartColumn e.StartLine e.EndColumn e.EndLine
+          printfn "[%d:%d-%d:%d] %s %s" e.StartLine e.StartColumn e.EndLine e.EndColumn
                     (if e.Severity = Severity.Error then "ERROR" else "WARNING") e.Message
         Console.WriteLine("<<EOF>>")
         main state
@@ -386,62 +463,57 @@ module internal Main =
                                     file,
                                     text)
           agent.TriggerParseRequest(opts, full)
-          Console.WriteLine("DONE: Background parsing started")
+          Console.WriteLine("INFO: Background parsing started\n<<EOF>>")
           main { state with Files = Map.add file lines state.Files }
         else
-          Console.Error.WriteLine(sprintf "ERROR: File '%s' does not exist" file)
+          printfn "ERROR: File '%s' does not exist\n<<EOF>>" file
           main state
 
     | Project file ->
         // Load project file and store in state
         if File.Exists file then
           match ProjectParser.load file with
-          | Some p -> Console.WriteLine("DONE: Project loaded")
+          | Some p -> Console.WriteLine("DATA: project")
+                      for f in ProjectParser.getFiles p do
+                        Console.WriteLine(IO.Path.Combine(ProjectParser.getDirectory p, f))
+                      Console.WriteLine("<<EOF>>")
                       main { state with Project = Some p }
-          | None   -> Console.Error.WriteLine(sprintf "ERROR: Project file '%s' is invalid" file)
+          | None   -> printfn "ERROR: Project file '%s' is invalid\n<<EOF>>" file
                       main state
         else
-          Console.Error.WriteLine(sprintf "ERROR: File '%s' does not exist" file)
+          printfn "ERROR: File '%s' does not exist\n<<EOF>>" file
           main state
 
-    | ToolTip(file, ((line, column) as pos), timeout) ->
-        // Trigger tooltip request (when we already loaded a file)
+    | Declarations file ->
         let file = Path.GetFullPath file
-        if not (Map.containsKey file state.Files)
-        then
-          Console.Error.WriteLine(sprintf "ERROR: File '%s' not parsed" file)
-        else
-          let lines = state.Files.[file]
-          if line >= lines.Length || line < 0 ||
-             column > lines.[line].Length || column < 0
-          then
-            Console.Error.WriteLine("ERROR: Position is out of range")
-          else
-            let text = String.concat "\n" lines
-            let opts = RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
-                                      file,
-                                      text)
-            agent.GetToolTip(opts, pos, lines.[line], timeout)
+        if parsed file then
+          let text = String.concat "\n" state.Files.[file]
+          let opts = RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
+                                    file,
+                                    text)
+          let decls = agent.GetDeclarations(opts)
+          printfn "DATA: declarations"
+          for tld in decls do
+            let (s1, e1), (s2, e2) = tld.Declaration.Range
+            printfn "[%d:%d-%d:%d] %s" e1 s1 e2 s2 tld.Declaration.Name
+            for d in tld.Nested do
+              let (s1, e1), (s2, e2) = d.Range
+              printfn "  - [%d:%d-%d:%d] %s" e1 s1 e2 s2 d.Name
+          printfn "<<EOF>>"
         main state
 
-    | Completion(file, ((line, column) as pos), timeout) ->
-        // Trigger autocompletion (when we already loaded a file)
+    | PosCommand(cmd, file, ((line, col) as pos), timeout) ->
         let file = Path.GetFullPath file
-        if not (Map.containsKey file state.Files)
-        then
-          Console.Error.WriteLine(sprintf "ERROR: File '%s' not parsed" file)
-        else
-          let lines = state.Files.[file]
-          if line >= lines.Length || line < 0 ||
-             column > lines.[line].Length || column < 0
-          then
-            Console.Error.WriteLine("ERROR: Position is out of range")
-          else
-            let text = String.concat "\n" lines
-            let opts = RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
-                                      file,
-                                      text)
-            agent.DoCompletion(opts, pos, lines.[line], timeout)
+        if parsed file && posok file line col then
+          let text = String.concat "\n" state.Files.[file]
+          let opts = RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
+                                    file,
+                                    text)
+
+          match cmd with
+          | Completion -> agent.DoCompletion(opts, pos, state.Files.[file].[line], timeout)
+          | ToolTip -> agent.GetToolTip(opts, pos, state.Files.[file].[line], timeout)
+          | FindDeclaration -> agent.FindDeclaration(opts, pos, state.Files.[file].[line], timeout)
         main state
 
     | Help ->
@@ -449,7 +521,7 @@ module internal Main =
         main state
 
     | Error(msg) ->
-        Console.Error.WriteLine(msg)
+        Console.WriteLine(msg)
         main state
 
     | Quit ->

@@ -6,7 +6,7 @@ namespace FSharp.InteractiveAutocomplete
 open System
 
 module Version =
-  let string = "FSharp.AutoComplete 0.3"
+  let string = "FSharp.AutoComplete 0.4"
 
 module Options =
 

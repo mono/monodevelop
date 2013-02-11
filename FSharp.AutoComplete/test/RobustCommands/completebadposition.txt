@@ -1,4 +1,10 @@
-DONE: Project loaded
-DONE: Background parsing started
+DATA: project
+<absolute path removed>/test/RobustCommands/Project/FileTwo.fs
+<absolute path removed>/test/RobustCommands/Project/Program.fs
+<<EOF>>
+INFO: Background parsing started
+<<EOF>>
 ERROR: Position is out of range
+<<EOF>>
 ERROR: Position is out of range
+<<EOF>>

@@ -5,9 +5,9 @@ let testval = FileTwo.NewObjectType()
 
 let val2 = X.func 2
 
-let val3 = testval.Terrific "hello"
+let val3 = testval.Terrific val2
 
-let val4 = X.func "yo"
+let val4 : FileTwo.NewObjectType = testval
 
 [<EntryPoint>]
 let main args =

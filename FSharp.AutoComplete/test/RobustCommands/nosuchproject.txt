@@ -1,1 +1,2 @@
 ERROR: File 'NoSuchProject.fsproj' does not exist
+<<EOF>>

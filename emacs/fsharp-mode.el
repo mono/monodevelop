@@ -6,7 +6,7 @@
 ;;         2010-2011 Laurent Le Brun <laurent@le-brun.eu>
 ;; Maintainer: Robin Neatherway <robin.neatherway@gmail.com>
 ;; Keywords: languages
-;; Version: 0.6
+;; Version: 0.7
 
 ;; This file is not part of GNU Emacs.
 
@@ -29,7 +29,7 @@
 
 (require 'fsharp-mode-indent)
 
-(defvar fsharp-mode-version 0.6
+(defvar fsharp-mode-version 0.7
   "Version of this fsharp-mode")
 
 (defvar fsharp-compiler "fsc"
@@ -74,6 +74,8 @@
 
   (define-key fsharp-mode-map (kbd "C-c C-p") 'ac-fsharp-load-project)
   (define-key fsharp-mode-map (kbd "C-c C-t") 'ac-fsharp-tooltip-at-point)
+  (define-key fsharp-mode-map (kbd "C-c C-d") 'ac-fsharp-gotodefn-at-point)
+  (define-key fsharp-mode-map (kbd "C-c C-q") 'ac-fsharp-quit-completion-process)
 
   (if running-xemacs nil ; if not running xemacs
     (let ((map (make-sparse-keymap "fsharp"))

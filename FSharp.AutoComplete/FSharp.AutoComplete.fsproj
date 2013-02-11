@@ -55,7 +55,7 @@
     <Reference Include="Microsoft.Build.Tasks.v4.0" />
     <Reference Include="Microsoft.Build.Utilities.v4.0" />
     <Reference Include="NDesk.Options">
-      <HintPath>../lib/ndesk-options/NDesk.Options.dll</HintPath>
+      <HintPath>..\lib\ndesk-options\NDesk.Options.dll</HintPath>
     </Reference>
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the

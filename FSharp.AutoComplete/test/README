@@ -1,0 +1,13 @@
+This directory contains mainly integration tests for the project.
+
+To run the tests: `./runtests.sh`. This will run `git status` as its
+last action. The tests are considered to have passed if there are no
+changes to the various `output.txt` files. If a feature has been
+changed, then there may be acceptable changes -- think carefully and
+then commit them.
+
+For absolute paths, there is an ad-hoc `sed` command to strip off
+everything before `test`.
+
+Really this lot should probably be done with NUnit or something, but
+this was quick to set up.

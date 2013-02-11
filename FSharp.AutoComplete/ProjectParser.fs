@@ -14,40 +14,14 @@ module ProjectParser =
   type ProjectResolver =
     {
       project:  Project
-      rar:      ResolveAssemblyReference
       loadtime: DateTime
     }
-
-  let private mkrar () =
-    let x = { new IBuildEngine with
-                member be.BuildProjectFile(projectFileName, targetNames, globalProperties, argetOutputs) = true
-                member be.LogCustomEvent(e) = ()
-                member be.LogErrorEvent(e) = ()
-                member be.LogMessageEvent(e) = ()
-                member be.LogWarningEvent(e) = ()
-                member be.ColumnNumberOfTaskNode with get() = 1
-                member be.ContinueOnError with get() = true
-                member be.LineNumberOfTaskNode with get() = 1
-                member be.ProjectFileOfTaskNode with get() = "" }
-    let rar = new ResolveAssemblyReference ()
-    do rar.BuildEngine <- x
-    do rar.AllowedRelatedFileExtensions <- [| ".pdb"; ".xml"; ".optdata" |]
-    do rar.FindRelatedFiles <- true
-    do rar.SearchPaths <- [|"{CandidateAssemblyFiles}"
-                            "{HintPathFromItem}"
-                            "{TargetFrameworkDirectory}"
-                            "{AssemblyFolders}"
-                            "{GAC}"
-                            "{RawFileName}"
-                           |]
-    do rar.AllowedAssemblyExtensions <- [| ".exe"; ".dll" |]
-    rar
 
   let load (uri: string) : Option<ProjectResolver> =
     let p = new Project()
     try
       p.Load(uri)
-      Some { project = p; rar =  mkrar (); loadtime = DateTime.Now }
+      Some { project = p; loadtime = DateTime.Now }
     with :? InvalidProjectFileException as e ->
       None
 
@@ -63,39 +37,32 @@ module ProjectParser =
     let dir = getDirectory p
     [| for f in fs do yield IO.Path.Combine(dir, f.FinalItemSpec) |]
 
+  // We really want the output of ResolveAssemblyReferences. However, this
+  // needs as input ChildProjectReferences, which is populated by
+  // ResolveProjectReferences. For some reason ResolveAssemblyReferences
+  // does not depend on ResolveProjectReferences, so if we don't run it first
+  // then we won't get the dll files for imported projects in this list.
+  // We can therefore build ResolveReferences, which depends on both of them,
+  // or [|"ResolveProjectReferences";"ResolveAssemblyReferences"|]. These seem
+  // to be equivalent. See Microsoft.Common.targets if you want more info.
   let getReferences (p: ProjectResolver) : string array =
-    let convert (bi: BuildItem) : ITaskItem =
-      let ti = new TaskItem(bi.FinalItemSpec)
-      if bi.HasMetadata("HintPath") then
-        ti.SetMetadata("HintPath", bi.GetEvaluatedMetadata("HintPath"))
-      ti :> ITaskItem
-
-    let pwd = Environment.CurrentDirectory
-    do Environment.CurrentDirectory <- getDirectory p
-    let refs = p.project.GetEvaluatedItemsByName "Reference"
-    p.rar.Assemblies <- [| for r in refs do yield convert r |]
-    p.rar.TargetProcessorArchitecture <- p.project.GetEvaluatedProperty "PlatformTarget"
-    // TODO: Execute may fail
-    ignore <| p.rar.Execute ()
-    do Environment.CurrentDirectory <- pwd
-    //Array.append [|"-r:/Library/Frameworks/Mono.framework/Versions/3.0.0/lib/mono/4.0/mscorlib.dll"|]
-    //             [| for f in p.rar.ResolvedFiles do yield "-r:" + f.ItemSpec |]
-    [| for f in p.rar.ResolvedFiles do yield "-r:" + f.ItemSpec |]
+    ignore <| p.project.Build([|"ResolveReferences"|])
+    [| for i in p.project.GetEvaluatedItemsByName("ResolvedFiles")
+         do yield "-r:" + i.FinalItemSpec |]
 
   let getOptions (p: ProjectResolver) : string array =
     let getprop s = p.project.GetEvaluatedProperty s
+    let split (s: string) (cs: char[]) =
+      s.Split(cs, StringSplitOptions.RemoveEmptyEntries)
     // TODO: Robustify - convert.ToBoolean may fail
     let optimize     = getprop "Optimize" |> Convert.ToBoolean
     let tailcalls    = getprop "Tailcalls" |> Convert.ToBoolean
     let debugsymbols = getprop "DebugSymbols" |> Convert.ToBoolean
-    let defines = (getprop "DefineConstants").Split([|';';',';' '|],
-                                                    StringSplitOptions.RemoveEmptyEntries)
-    let otherflags = (getprop "OtherFlags")
-    let otherflags = if otherflags = null
+    let defines = split (getprop "DefineConstants") [|';';',';' '|]
+    let otherflags = getprop "OtherFlags"
+    let otherflags = if otherflags  = null
                      then [||]
-                     else otherflags.Split([|' '|],
-                                           StringSplitOptions.RemoveEmptyEntries)
-
+                     else split otherflags [|' '|]
     [|
       yield "--noframework"
       for symbol in defines do yield "--define:" + symbol
