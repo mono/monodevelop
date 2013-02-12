@@ -1215,7 +1215,7 @@ namespace MonoDevelop.CSharp
 				break;
 			case "static":
 				result.SignatureMarkup = Highlight ("static", "keyword.modifier") + keywordSign;
-				result.SummaryMarkup = "Use the " + Highlight ("static", "keyword.modifier") + "modifier to declare a static member, which belongs to the type itself rather than to a specific object.";
+				result.SummaryMarkup = "Use the " + Highlight ("static", "keyword.modifier") + " modifier to declare a static member, which belongs to the type itself rather than to a specific object.";
 				break;
 			case "struct":
 				result.SignatureMarkup = Highlight ("struct", "keyword.declaration") + keywordSign;
