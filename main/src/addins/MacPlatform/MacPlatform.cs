@@ -618,5 +618,32 @@ end tell", directory.ToString ().Replace ("\"", "\\\"")));
 		{
 			return new FdoRecentFiles (UserProfile.Current.LocalConfigDir.Combine ("RecentlyUsed.xml"));
 		}
+
+		public override bool GetIsFullscreen (Gtk.Window window)
+		{
+			if (MacSystemInformation.OsVersion < MacSystemInformation.Lion) {
+				return base.GetIsFullscreen (window);
+			}
+
+			NSWindow nswin = GtkQuartz.GetWindow (window);
+			return (nswin.StyleMask & NSWindowStyle.FullScreenWindow) != 0;
+		}
+
+		public override void SetIsFullscreen (Gtk.Window window, bool isFullscreen)
+		{
+			if (MacSystemInformation.OsVersion < MacSystemInformation.Lion) {
+				base.SetIsFullscreen (window, isFullscreen);
+				return;
+			}
+
+			NSWindow nswin = GtkQuartz.GetWindow (window);
+			if (isFullscreen != ((nswin.StyleMask & NSWindowStyle.FullScreenWindow) != 0)) {
+				//HACK: workaround for MonoMac not allowing null as argument
+				MonoMac.ObjCRuntime.Messaging.void_objc_msgSend_IntPtr (
+					nswin.Handle,
+					MonoMac.ObjCRuntime.Selector.GetHandle ("toggleFullScreen:"),
+					IntPtr.Zero);
+			}
+		}
 	}
 }
