@@ -259,6 +259,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			if (style.Italic)
 				markup = "<i>" + markup + "</i>";
 			renderer.Markup = markup;
+
+			/*
 			if (data.ColorsAvailable == ColorsAvailable.Text || data.ColorsAvailable == ColorsAvailable.FgBg) {
 				renderer.ForegroundGdk = style.Color;
 				renderer.BackgroundGdk = style.GotBackgroundColorAssigned ? style.BackgroundColor : Style.Base (StateType.Normal);
@@ -266,7 +268,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				var b = Math.Abs (HslColor.Brightness (style.Color) - HslColor.Brightness (Style.Text (StateType.Normal)));
 				renderer.ForegroundGdk = b < 0.4 ? Style.Background (StateType.Normal) : Style.Text (StateType.Normal);
 				renderer.BackgroundGdk = style.Color;
-			}
+			}*/
 			
 		}
 
