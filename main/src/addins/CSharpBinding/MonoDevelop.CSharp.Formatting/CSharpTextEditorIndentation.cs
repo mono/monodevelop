@@ -741,6 +741,7 @@ namespace MonoDevelop.CSharp.Formatting
 					textEditorData.Document.CommitLineUpdate (textEditorData.Caret.Line);
 					// Engine state is now invalid
 					stateTracker.ResetEngineToPosition (pos);
+					CompletionWindowManager.HideWindow ();
 				}
 				pos += newIndentLength;
 			} else {
