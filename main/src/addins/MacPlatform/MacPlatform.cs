@@ -240,6 +240,13 @@ namespace MonoDevelop.MacIntegration
 			initedApp = true;
 			
 			IdeApp.Workbench.RootWindow.DeleteEvent += HandleDeleteEvent;
+
+			if (MacSystemInformation.OsVersion >= MacSystemInformation.Lion) {
+				IdeApp.Workbench.RootWindow.MapEvent += (sender, args) => {
+					var win = GtkQuartz.GetWindow ((Gtk.Window) sender);
+					win.CollectionBehavior |= NSWindowCollectionBehavior.FullScreenPrimary;
+				};
+			}
 		}
 
 		static void GlobalSetup ()
@@ -592,7 +599,6 @@ end tell", directory.ToString ().Replace ("\"", "\\\"")));
 			NSWindow w = GtkQuartz.GetWindow (window);
 			w.HasShadow = false;
 		}
-
 
 		internal override MainToolbar CreateMainToolbar (Gtk.Window window)
 		{
