@@ -342,6 +342,9 @@ namespace MonoDevelop.DesignerSupport
 				foreach (object o in cls.GetMembers (m => part.Region.FileName == m.Region.FileName && part.Region.IsInside (m.Region.Begin))) {
 					items.Add (o);
 				}
+				foreach (object o in cls.GetNestedTypes (m => part.Region.FileName == m.Region.FileName && part.Region.IsInside (m.Region.Begin))) {
+					items.Add (o);
+				}
 				foreach (object o in cls.GetConstructors (m => part.Region.FileName == m.Region.FileName && part.Region.IsInside (m.Region.Begin))) {
 					items.Add (o);
 				}
