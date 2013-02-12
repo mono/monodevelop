@@ -419,5 +419,21 @@ namespace MonoDevelop.Ide.Desktop
 		{
 			return new MainToolbar ();
 		}
+
+		public virtual bool GetIsFullscreen (Gtk.Window window)
+		{
+			return ((bool?) window.Data ["isFullScreen"]) ?? false;
+		}
+
+		public virtual void SetIsFullscreen (Gtk.Window window, bool isFullscreen)
+		{
+			window.Data ["isFullScreen"] = isFullscreen;
+			if (isFullscreen) {
+				window.Fullscreen ();
+			} else {
+				window.Unfullscreen ();
+				SetMainWindowDecorations (window);
+			}
+		}
 	}
 }

@@ -146,16 +146,10 @@ namespace MonoDevelop.Ide.Gui
 		
 		public bool FullScreen {
 			get {
-				return fullscreen;
+				return DesktopService.GetIsFullscreen (this);
 			}
 			set {
-				fullscreen = value;
-				if (fullscreen) {
-					this.Fullscreen ();
-				} else {
-					this.Unfullscreen ();
-					DesktopService.SetMainWindowDecorations (this);
-				}
+				DesktopService.SetIsFullscreen (this, value);
 			}
 		}
 
