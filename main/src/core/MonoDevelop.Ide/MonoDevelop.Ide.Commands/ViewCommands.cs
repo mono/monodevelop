@@ -172,8 +172,13 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Update (CommandInfo info)
 		{
-			base.Update (info);
-			info.Checked = IdeApp.Workbench.FullScreen;
+			if (Platform.IsMac) {
+				info.Text = IdeApp.Workbench.FullScreen
+					? GettextCatalog.GetString ("Exit Full Screen")
+					: GettextCatalog.GetString ("Enter Full Screen");
+			} else {
+				info.Checked = IdeApp.Workbench.FullScreen;
+			}
 		}
 		
 		protected override void Run ()
