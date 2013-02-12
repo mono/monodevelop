@@ -383,18 +383,18 @@ namespace MonoDevelop.CSharp.Formatting
 				}
 
 				bool automaticReindent;
+				// need to be outside of an undo group - otherwise it interferes with other text editor extension
+				// esp. the documentation insertion undo steps.
+				retval = base.KeyPress (key, keyChar, modifier);
+				//handle inserted characters
+				if (textEditorData.Caret.Offset <= 0 || textEditorData.IsSomethingSelected)
+					return retval;
+				
+				lastCharInserted = TranslateKeyCharForIndenter (key, keyChar, textEditorData.GetCharAt (textEditorData.Caret.Offset - 1));
+				if (lastCharInserted == '\0')
+					return retval;
+
 				using (var undo = textEditorData.OpenUndoGroup ()) {
-
-					retval = base.KeyPress (key, keyChar, modifier);
-
-					//handle inserted characters
-					if (textEditorData.Caret.Offset <= 0 || textEditorData.IsSomethingSelected)
-						return retval;
-
-					lastCharInserted = TranslateKeyCharForIndenter (key, keyChar, textEditorData.GetCharAt (textEditorData.Caret.Offset - 1));
-					if (lastCharInserted == '\0')
-						return retval;
-
 					stateTracker.UpdateEngine ();
 
 					if (key == Gdk.Key.Return && modifier == Gdk.ModifierType.ControlMask) {
