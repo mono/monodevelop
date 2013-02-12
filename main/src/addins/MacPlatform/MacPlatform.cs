@@ -259,13 +259,11 @@ namespace MonoDevelop.MacIntegration
 			try {
 				ApplicationEvents.Quit += delegate (object sender, ApplicationQuitEventArgs e)
 				{
-					// Easy case, we're pretty sure a modal dialog isn't running.
-					// All our custom Cocoa dialogs use subclasses, not vanilla NSWindow.
-					// GTK uses NSWindow but we can determine whether it's modal from GTK.
+					// We can only attempt to quit safely if the key window is a GTK window and not modal.
 					var keyWindow = NSApplication.SharedApplication.KeyWindow;
-					if (keyWindow != null && keyWindow.ClassHandle == MonoMac.ObjCRuntime.Class.GetHandle ("NSWindow")) {
-						var windows = Gtk.Window.ListToplevels ();
-						if (!windows.Any (w => w.Modal && w.Visible)) {
+					if (keyWindow != null) {
+						var win = GtkQuartz.GetGtkWindow (keyWindow);
+						if (win != null && !win.Modal) {
 							e.UserCancelled = !IdeApp.Exit ();
 							e.Handled = true;
 							return;
