@@ -242,7 +242,7 @@ namespace MonoDevelop.MacIntegration
 			IdeApp.Workbench.RootWindow.DeleteEvent += HandleDeleteEvent;
 
 			if (MacSystemInformation.OsVersion >= MacSystemInformation.Lion) {
-				IdeApp.Workbench.RootWindow.MapEvent += (sender, args) => {
+				IdeApp.Workbench.RootWindow.Realized += (sender, args) => {
 					var win = GtkQuartz.GetWindow ((Gtk.Window) sender);
 					win.CollectionBehavior |= NSWindowCollectionBehavior.FullScreenPrimary;
 				};
