@@ -241,6 +241,9 @@ namespace MonoDevelop.MacIntegration
 				CommandManager.ToCommandId (ToolCommands.AddinManager));
 			
 			IdeApp.Workbench.RootWindow.DeleteEvent += HandleDeleteEvent;
+			IdeApp.Workbench.RootWindow.MapEvent += (o,e) => {
+				GtkQuartz.EnableFullScreen ((Gtk.Window) o);
+			};
 		}
 		
 		static void GlobalSetup ()
