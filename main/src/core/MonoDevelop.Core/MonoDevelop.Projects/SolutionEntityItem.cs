@@ -51,6 +51,7 @@ namespace MonoDevelop.Projects
 		internal object MemoryProbe = Counters.ItemsInMemory.CreateMemoryProbe ();
 			
 		ProjectItemCollection items;
+		ProjectItemCollection wildcardItems;
 		
 		SolutionItemEventArgs thisItemArgs;
 		
@@ -74,6 +75,7 @@ namespace MonoDevelop.Projects
 		public SolutionEntityItem ()
 		{
 			items = new ProjectItemCollection (this);
+			wildcardItems = new ProjectItemCollection (this);
 			thisItemArgs = new SolutionItemEventArgs (this);
 			configurations = new SolutionItemConfigurationCollection (this);
 			configurations.ConfigurationAdded += new ConfigurationEventHandler (OnConfigurationAddedToCollection);
@@ -89,13 +91,14 @@ namespace MonoDevelop.Projects
 			
 			Counters.ItemsLoaded--;
 			
-			foreach (var item in items) {
+			foreach (var item in items.Concat (wildcardItems)) {
 				IDisposable disp = item as IDisposable;
 				if (disp != null)
 					disp.Dispose ();
 			}
 			
 			// items = null;
+			// wildcardItems = null;
 			// thisItemArgs = null;
 			// fileStatusTracker = null;
 			// fileFormat = null;
@@ -209,7 +212,11 @@ namespace MonoDevelop.Projects
 		public ProjectItemCollection Items {
 			get { return items; }
 		}
-		
+
+		public ProjectItemCollection WildcardItems {
+			get { return wildcardItems; }
+		}
+
 		void IWorkspaceFileObject.ConvertToFormat (FileFormat format, bool convertChildren)
 		{
 			this.FileFormat = format;
