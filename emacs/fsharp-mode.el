@@ -69,6 +69,7 @@
   (define-key fsharp-mode-map "\C-c:"     'fsharp-guess-indent-offset)
   (define-key fsharp-mode-map [delete]    'fsharp-electric-delete)
   (define-key fsharp-mode-map [backspace] 'fsharp-electric-backspace)
+  (define-key fsharp-mode-map (kbd ".") 'ac-fsharp-electric-dot)
 
   (define-key fsharp-mode-map (kbd "C-c <up>") 'fsharp-goto-block-up)
 

@@ -320,6 +320,12 @@ possibly many lines of description.")
   (let ((elength (length ending)))
     (string= (substring s (- 0 elength)) ending)))
 
+(defun ac-fsharp-electric-dot ()
+  (interactive)
+  (insert ".")
+  (unless (fsharp-in-literal)
+    (completion-at-point)))
+
 (defun ac-fsharp-filter-output (proc str)
 
   (log-to-proc-buf proc str)
