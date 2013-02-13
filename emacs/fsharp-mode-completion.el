@@ -332,7 +332,7 @@ possibly many lines of description.")
          ((string/starts-with msg "DATA: completion")
           (setq ac-fsharp-completion-data
                 (split-string
-                 (replace-regexp-in-string "DATA: completion\n" "" msg)
+                 (replace-regexp-in-string "DATA: completion" "" msg)
                  "\n"
                  t))
           (setq ac-fsharp-waiting nil))
