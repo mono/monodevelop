@@ -139,28 +139,26 @@ namespace MonoDevelop.Projects
 			get { return FilePath; }
 		}
 
-        public bool IsWildcard
-        {
-            get
-            {
-                return Name.Contains("*");
-            }
-        }
+		public bool IsWildcard {
+			get {
+				return Name.Contains("*");
+			}
+		}
 
-        /// <summary>
-        /// Set to true if this ProjectFile was created at load time by
-        /// a ProjectFile containing wildcards.  If true, this instance
-        /// should not be saved to a csproj file.
-        /// </summary>
-        public bool IsOriginatedFromWildcard
-        {
-            get;
-            private set;
-        }
+		/// <summary>
+		/// Set to true if this ProjectFile was created at load time by
+		/// a ProjectFile containing wildcards.  If true, this instance
+		/// should not be saved to a csproj file.
+		/// </summary>
+		public bool IsOriginatedFromWildcard
+		{
+			get;
+			private set;
+		}
 
-        private const string RecursiveDirectoryWildcard = "**";
+		private const string RecursiveDirectoryWildcard = "**";
 
-		private string GetWildcardDirectoryName(string path)
+		private string GetWildcardDirectoryName (string path)
 		{
 			int indexOfLast = path.LastIndexOfAny (new char[] {
 				Path.DirectorySeparatorChar, 
@@ -176,7 +174,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		private string GetWildcardFileName(string path)
+		private string GetWildcardFileName (string path)
 		{
 			int indexOfLast = path.LastIndexOfAny (new char[] {
 				Path.DirectorySeparatorChar, 
@@ -196,66 +194,66 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-        public IEnumerable<string> ResolveWildcardFilePath()
-        {
-            if (String.IsNullOrWhiteSpace(filename)) yield break;
+		public IEnumerable<string> ResolveWildcardFilePath ()
+		{
+			if (String.IsNullOrWhiteSpace(filename)) yield break;
 
 			string dir = GetWildcardDirectoryName (filename);
 			string file = GetWildcardFileName (filename);
 
-            if (String.IsNullOrEmpty(dir)) yield break;
-            if (String.IsNullOrEmpty(file)) yield break;
+			if (String.IsNullOrEmpty (dir)) yield break;
+			if (String.IsNullOrEmpty (file)) yield break;
 
-            if (dir.EndsWith (RecursiveDirectoryWildcard))
-            {
-                dir = dir.Substring (0, dir.Length - RecursiveDirectoryWildcard.Length);
+			if (dir.EndsWith (RecursiveDirectoryWildcard))
+			{
+				dir = dir.Substring (0, dir.Length - RecursiveDirectoryWildcard.Length);
 
-                if (!Directory.Exists (dir))
-                {
-                    yield break; // Invalid directory
-                }
+				if (!Directory.Exists (dir))
+				{
+					yield break; // Invalid directory
+				}
 
-                List<string> directories = new List<string> ();
+				List<string> directories = new List<string> ();
 
-                RecursiveAddChildDirectories (directories, dir);
+				RecursiveAddChildDirectories (directories, dir);
 
-                foreach (var resolvedDir in directories)
-                {
-                    foreach (var resolvedFile in Directory.GetFiles (resolvedDir, file))
-                    {
-                        yield return resolvedFile;
-                    }
-                }
-            }
-            else
-            {
-                foreach (var resolvedFile in Directory.GetFiles (dir, file))
-                {
-                    yield return resolvedFile;
-                }
-            }
-        }
+				foreach (var resolvedDir in directories)
+				{
+					foreach (var resolvedFile in Directory.GetFiles (resolvedDir, file))
+					{
+						yield return resolvedFile;
+					}
+				}
+			}
+			else
+			{
+				foreach (var resolvedFile in Directory.GetFiles (dir, file))
+				{
+					yield return resolvedFile;
+				}
+			}
+		}
 
-        private void RecursiveAddChildDirectories(List<string> directories, string directory)
-        {
+		private void RecursiveAddChildDirectories (List<string> directories, string directory)
+		{
 			directories.Add (directory);
 
-            foreach (var child in Directory.GetDirectories (directory))
-            {
-                RecursiveAddChildDirectories (directories, child);
-            }
-        }
+			foreach (var child in Directory.GetDirectories (directory))
+			{
+				RecursiveAddChildDirectories (directories, child);
+			}
+		}
 
-        public IEnumerable<ProjectFile> ResolveWildcardItems()
-        {
-            foreach (var resolvedFilePath in ResolveWildcardFilePath())
-            {
-                ProjectFile projectFile = (ProjectFile) this.Clone ();
-                projectFile.Name = resolvedFilePath;
-                projectFile.IsOriginatedFromWildcard = true;
-                yield return projectFile;
-            }
-        }
+		public IEnumerable<ProjectFile> ResolveWildcardItems ()
+		{
+			foreach (var resolvedFilePath in ResolveWildcardFilePath ())
+			{
+				ProjectFile projectFile = (ProjectFile) this.Clone ();
+				projectFile.Name = resolvedFilePath;
+				projectFile.IsOriginatedFromWildcard = true;
+				yield return projectFile;
+			}
+		}
 
 		/// <summary>
 		/// The file should be treated as effectively having this relative path within the project. If the file is
