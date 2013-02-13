@@ -18,3 +18,5 @@ Makefile
 *.cache
 *~
 pack/*
+lib/NUnit.*
+lib/FsUnit.*
