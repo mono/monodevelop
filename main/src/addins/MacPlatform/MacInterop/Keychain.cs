@@ -216,7 +216,7 @@ namespace MonoDevelop.MacInterop
 				LoggingService.LogWarning ("Unexpected error retrieving certificates from keychain:\n" + GetError (searchStatus));
 			
 			CFRelease (searchRef);
-			return names;
+			return names.ToList ();
 		}
 		
 		public static IList<string> GetAllSigningIdentities ()
@@ -247,7 +247,7 @@ namespace MonoDevelop.MacInterop
 				LoggingService.LogWarning ("Unexpected error retrieving identities from keychain:\n" + GetError (searchStatus));
 			
 			CFRelease (searchRef);
-			return identities;
+			return identities.ToList ();
 		}
 		
 		public static IEnumerable<X509Certificate2> FindNamedSigningCertificates (Func<string,bool> nameCheck)
@@ -287,7 +287,7 @@ namespace MonoDevelop.MacInterop
 				LoggingService.LogWarning ("Unexpected error code retrieving signing certificates from keychain:\n" + GetError (searchStatus));
 			
 			CFRelease (searchRef);
-			return certs;
+			return certs.ToList ();
 		}
 		
 		/* 10.6 only
