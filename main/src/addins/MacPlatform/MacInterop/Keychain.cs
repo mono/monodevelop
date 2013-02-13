@@ -201,7 +201,7 @@ namespace MonoDevelop.MacInterop
 			if (res != OSStatus.Ok)
 				throw new Exception ("Could not enumerate certificates from the keychain. Error:\n" + GetError (res));
 			
-			var names = new List<string> ();
+			var names = new HashSet<string> ();
 			
 			OSStatus searchStatus;
 			while ((searchStatus = SecKeychainSearchCopyNext (searchRef, out itemRef)) == OSStatus.Ok) {
@@ -228,7 +228,7 @@ namespace MonoDevelop.MacInterop
 			if (res != OSStatus.Ok)
 				throw new Exception ("Could not enumerate certificates from the keychain. Error:\n" + GetError (res));
 			
-			var identities = new List<string> ();
+			var identities = new HashSet<string> ();
 			
 			OSStatus searchStatus;
 			while ((searchStatus = SecIdentitySearchCopyNext (searchRef, out itemRef)) == OSStatus.Ok) {
@@ -267,7 +267,7 @@ namespace MonoDevelop.MacInterop
 			if (res != OSStatus.Ok)
 				throw new Exception ("Could not enumerate certificates from the keychain. Error:\n" + GetError (res));
 			
-			var certs = new List<X509Certificate2> ();
+			var certs = new HashSet<X509Certificate2> ();
 			
 			OSStatus searchStatus;
 			while ((searchStatus = SecIdentitySearchCopyNext (searchRef, out itemRef)) == OSStatus.Ok) {
