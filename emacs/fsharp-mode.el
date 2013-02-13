@@ -185,6 +185,7 @@
   (make-local-variable 'parse-sexp-ignore-comments)
   (make-local-variable 'indent-line-function)
   (make-local-variable 'add-log-current-defun-function)
+  (make-local-variable 'underline-minimum-offset)
 
   (add-hook 'completion-at-point-functions #'ac-fsharp-completion-at-point)
 
@@ -203,6 +204,7 @@
         comment-indent-function 'fsharp-comment-indent-function
         indent-region-function  'fsharp-indent-region
         indent-line-function    'fsharp-indent-line
+        underline-minimum-offset 2
 
         add-log-current-defun-function 'fsharp-current-defun
         before-change-function 'fsharp-before-change-function
