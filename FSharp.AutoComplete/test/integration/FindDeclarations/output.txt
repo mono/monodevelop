@@ -1,6 +1,6 @@
 DATA: project
-<absolute path removed>/test/FindDeclarations/FileTwo.fs
-<absolute path removed>/test/FindDeclarations/Program.fs
+<absolute path removed>/test/integration/FindDeclarations/FileTwo.fs
+<absolute path removed>/test/integration/FindDeclarations/Program.fs
 <<EOF>>
 INFO: Background parsing started
 <<EOF>>
@@ -9,22 +9,22 @@ INFO: Background parsing started
 INFO: Background parsing started
 <<EOF>>
 DATA: finddecl
-file stored in metadata is '<absolute path removed>/test/FindDeclarations/Program.fs'
-<absolute path removed>/test/FindDeclarations/Program.fs:1:6
+file stored in metadata is '<absolute path removed>/test/integration/FindDeclarations/Program.fs'
+<absolute path removed>/test/integration/FindDeclarations/Program.fs:1:6
 <<EOF>>
 DATA: finddecl
-file stored in metadata is '<absolute path removed>/test/FindDeclarations/FileTwo.fs'
-<absolute path removed>/test/FindDeclarations/FileTwo.fs:12:11
+file stored in metadata is '<absolute path removed>/test/integration/FindDeclarations/FileTwo.fs'
+<absolute path removed>/test/integration/FindDeclarations/FileTwo.fs:12:11
 <<EOF>>
 DATA: finddecl
-file stored in metadata is '<absolute path removed>/test/FindDeclarations/Program.fs'
-<absolute path removed>/test/FindDeclarations/Program.fs:5:4
+file stored in metadata is '<absolute path removed>/test/integration/FindDeclarations/Program.fs'
+<absolute path removed>/test/integration/FindDeclarations/Program.fs:5:4
 <<EOF>>
 DATA: finddecl
-file stored in metadata is '<absolute path removed>/test/FindDeclarations/FileTwo.fs'
-<absolute path removed>/test/FindDeclarations/FileTwo.fs:10:5
+file stored in metadata is '<absolute path removed>/test/integration/FindDeclarations/FileTwo.fs'
+<absolute path removed>/test/integration/FindDeclarations/FileTwo.fs:10:5
 <<EOF>>
 DATA: finddecl
-file stored in metadata is '<absolute path removed>/test/FindDeclarations/Script.fsx'
-<absolute path removed>/test/FindDeclarations/Script.fsx:3:6
+file stored in metadata is '<absolute path removed>/test/integration/FindDeclarations/Script.fsx'
+<absolute path removed>/test/integration/FindDeclarations/Script.fsx:3:6
 <<EOF>>

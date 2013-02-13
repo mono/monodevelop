@@ -7,8 +7,9 @@ type FSharpAutoCompleteWrapper() =
 
   do
     p.StartInfo.FileName  <- "mono"
-    p.StartInfo.Arguments <- IO.Path.Combine(__SOURCE_DIRECTORY__,
-                                             "../bin/Debug/fsautocomplete.exe")
+    p.StartInfo.Arguments <-
+      IO.Path.Combine(__SOURCE_DIRECTORY__,
+                      "../../bin/Debug/fsautocomplete.exe")
     p.StartInfo.RedirectStandardOutput <- true
     p.StartInfo.RedirectStandardError  <- true
     p.StartInfo.RedirectStandardInput  <- true
