@@ -25,6 +25,8 @@
 
 (require 'cl)
 
+; User-configurable variables
+
 (defvar ac-fsharp-executable "fsautocomplete.exe")
 
 (defvar ac-fsharp-complete-command
@@ -41,6 +43,10 @@
 (defvar ac-fsharp-blocking-timeout 1)
 (defvar ac-fsharp-idle-timeout 1)
 
+(defvar ac-fsharp-use-pos-tip t)
+
+
+; Internal state
 (defvar ac-fsharp-status 'idle)
 (defvar ac-fsharp-completion-process nil)
 (defvar ac-fsharp-partial-data "")
@@ -152,12 +158,16 @@
           (run-with-idle-timer
            ac-fsharp-idle-timeout
            t
-           (lambda () (ac-fsharp-get-errors)))))
+           'ac-fsharp-idle-handler)))
 
   ;(add-hook 'before-save-hook 'ac-fsharp-reparse-buffer)
   ;(local-set-key (kbd ".") 'completion-at-point)
   )
 
+(defun ac-fsharp-idle-handler ()
+  (ac-fsharp-get-errors)
+  (unless (fsharp-in-literal)
+    (ac-fsharp-tooltip-at-point)))
 
 ; Consider using 'text' for filtering
 ; TODO: This caching is a bit optimistic. It might not always be correct
@@ -207,7 +217,6 @@
 (defun ac-fsharp-tooltip-at-point ()
   "Fetch and display F# tooltips at point"
   (interactive)
-  (require 'pos-tip)
   (when (ac-fsharp-can-make-request)
     (ac-fsharp-parse-current-buffer)
     (ac-fsharp-send-pos-request "tooltip"
@@ -306,6 +315,12 @@ possibly many lines of description.")
   (remove-overlays nil nil 'face 'fsharp-error-face)
   (remove-overlays nil nil 'face 'fsharp-warning-face))
 
+(defun ac-fsharp-show-tip (s)
+  "Display a tooltip using pos-tip if selected, and minibuffer otherwise"
+  (if ac-fsharp-use-pos-tip
+      (pos-tip-show s nil nil nil -1 80)
+    (message s)))
+
 (defun ac-fsharp-stash-partial (str)
   (setq ac-fsharp-partial-data (concat ac-fsharp-partial-data str)))
 
@@ -355,7 +370,7 @@ possibly many lines of description.")
          ((string/starts-with msg "DATA: tooltip")
           (let ((data (replace-regexp-in-string "DATA: tooltip\n" ""
                                                 msg)))
-            (pos-tip-show data)))
+            (ac-fsharp-show-tip data)))
 
          ((string/starts-with msg "DATA: errors")
           (ac-fsharp-show-errors
