@@ -281,9 +281,11 @@ possibly many lines of description.")
 (defface fsharp-error-face
   '(
     (((class color) (background dark))
+     :weight bold
      :underline "Red"
      )
     (((class color) (background light))
+     :weight bold
      :underline "Red"
      ))
   "Face used for marking an error in F#")
@@ -291,9 +293,11 @@ possibly many lines of description.")
 (defface fsharp-warning-face
   '(
     (((class color) (background dark))
+     :weight bold
      :underline "LightBlue1"
      )
     (((class color) (background light))
+     :weight bold
      :underline "Blue"
     ))
   "Face used for marking a warning in F#")
