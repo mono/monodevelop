@@ -1012,7 +1012,7 @@ namespace MonoDevelop.Debugger
 					currentCompletionData = GetCompletionData (exp);
 					if (currentCompletionData != null) {
 						DebugCompletionDataList dataList = new DebugCompletionDataList (currentCompletionData);
-						ctx = ((ICompletionWidget)this).CreateCodeCompletionContext (entry.CursorPosition - currentCompletionData.ExpressionLenght);
+						ctx = ((ICompletionWidget)this).CreateCodeCompletionContext (entry.CursorPosition - currentCompletionData.ExpressionLength);
 						CompletionWindowManager.ShowWindow (null, c, dataList, this, ctx);
 					}
 					else
@@ -1419,7 +1419,7 @@ namespace MonoDevelop.Debugger
 			c.TriggerOffset = triggerOffset;
 			c.TriggerLineOffset = c.TriggerOffset;
 			c.TriggerTextHeight = editEntry.SizeRequest ().Height;
-			c.TriggerWordLength = currentCompletionData.ExpressionLenght;
+			c.TriggerWordLength = currentCompletionData.ExpressionLength;
 			
 			int x, y;
 			int tx, ty;
