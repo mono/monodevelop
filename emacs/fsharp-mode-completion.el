@@ -318,7 +318,7 @@ possibly many lines of description.")
 (defun ac-fsharp-show-tip (s)
   "Display a tooltip using pos-tip if selected, and minibuffer otherwise"
   (if ac-fsharp-use-pos-tip
-      (pos-tip-show s nil nil nil -1 80)
+      (pos-tip-show s nil nil nil -1)
     (message s)))
 
 (defun ac-fsharp-stash-partial (str)
