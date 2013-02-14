@@ -153,7 +153,7 @@ namespace MonoDevelop.Debugger.Gdb
 						CompletionData data = new CompletionData ();
 						foreach (ObjectValue cv in val.GetAllChildren ())
 							data.Items.Add (new CompletionItem (cv.Name, cv.Flags));
-						data.ExpressionLenght = 0;
+						data.ExpressionLength = 0;
 						return data;
 					}
 					i++;
@@ -174,7 +174,7 @@ namespace MonoDevelop.Debugger.Gdb
 				string partialWord = exp.Substring (i+1);
 				
 				CompletionData cdata = new CompletionData ();
-				cdata.ExpressionLenght = partialWord.Length;
+				cdata.ExpressionLength = partialWord.Length;
 				
 				// Local variables
 				
