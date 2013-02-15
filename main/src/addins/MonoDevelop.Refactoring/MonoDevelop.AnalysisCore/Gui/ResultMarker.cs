@@ -155,7 +155,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 			if (!(markerStart <= chunk.Offset && chunk.Offset < markerEnd)) 
 				return;
 
-			var bgc = editor.ColorStyle.Default.BackgroundColor;
+			var bgc = editor.ColorStyle.Default.CairoBackgroundColor;
 			double alpha = 0.6;
 			color.Red = (ushort)(color.Red * alpha + bgc.Red * (1.0 - alpha));
 			color.Green = (ushort)(color.Green * alpha + bgc.Green * (1.0 - alpha));

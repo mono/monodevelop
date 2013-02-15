@@ -161,6 +161,10 @@ namespace Mono.TextEditor.Highlighting
 		{
 			return string.Format ("#{0:X2}{1:X2}{2:X2}", color.Red >> 8, color.Green >> 8, color.Blue >> 8);
 		}
+		public static string ColorToPangoMarkup (Cairo.Color color)
+		{
+			return ColorToPangoMarkup ((Gdk.Color)((HslColor)color));
+		}
 
 		public static int GetIndentLength (TextDocument doc, int offset, int length, bool skipFirstLine)
 		{

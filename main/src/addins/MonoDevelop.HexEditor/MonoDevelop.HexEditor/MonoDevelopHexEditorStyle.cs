@@ -75,25 +75,25 @@ namespace MonoDevelop.HexEditor
 		
 		public override Color HexDigit {
 			get {
-				return colorStyle.Default.Color;
+				return colorStyle.Default.CairoColor;
 			}
 		}
 		
 		public override Color HexDigitBg {
 			get {
-				return colorStyle.Default.BackgroundColor;
+				return colorStyle.Default.CairoBackgroundColor;
 			}
 		}
 		
 		public override Color DashedLineFg {
 			get {
-				return colorStyle.Default.Color;
+				return colorStyle.Default.CairoColor;
 			}
 		}
 		
 		public override Color DashedLineBg {
 			get {
-				return colorStyle.Default.BackgroundColor;
+				return colorStyle.Default.CairoBackgroundColor;
 			}
 		}
 		

@@ -1,9 +1,10 @@
-// Style.cs
+//
+// ColorScheme.cs
 //
 // Author:
-//   Mike Krüger <mkrueger@novell.com>
+//       Mike Krüger <mkrueger@xamarin.com>
 //
-// Copyright (c) 2007 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2013 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,667 +23,392 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-//
-
 using System;
+using System.IO;
 using System.Collections.Generic;
-using System.Xml;
-using Gdk;
-using System.Globalization;
+using System.Linq;
+using System.Xml.Linq;
+using System.Xml.XPath;
+using System.Reflection;
 
 namespace Mono.TextEditor.Highlighting
 {
 	public class ColorScheme
 	{
-		Dictionary<string, ChunkStyle> styleLookupTable = new Dictionary<string, ChunkStyle> (); 
-		Dictionary<string, string> customPalette = new Dictionary<string, string> (); 
+		public string Name { get; set; }
+		public Version Version { get; set; }
+		public string Description { get; set; }
+		public string Originator { get; set; }
+
+
+		#region Ambient Colors
+		[ColorDescription("Background(Read Only)",VSSetting="color=Plain Text/Background")]
+		public AmbientColor BackgroundReadOnly { get; private set; }
 		
-		public IEnumerable<string> ColorNames {
-			get {
-				return styleLookupTable.Keys;
-			}
-		}
+		[ColorDescription("Search result background")]
+		public AmbientColor SearchResult { get; private set; }
 		
-		public Cairo.Color GetColorFromDefinition (string colorName)
-		{
-			return this.GetChunkStyle (colorName).CairoColor;
-		}
+		[ColorDescription("Search result background (highlighted)")]
+		public AmbientColor SearchResultMain { get; private set; }
+
+		[ColorDescription("Fold Margin")]
+		public AmbientColor FoldMargin { get; private set; }
+
+		[ColorDescription("Indicator Margin")]
+		public AmbientColor IndicatorMargin { get; private set; }
+
+		[ColorDescription("Indicator Margin(Separator)")]
+		public AmbientColor IndicatorMarginSeparator { get; private set; }
+
+		[ColorDescription("Tooltip Border")]
+		public AmbientColor TooltipBorder { get; private set; }
+
+		[ColorDescription("Tooltip Pager Top")]
+		public AmbientColor TooltipPagerTop { get; private set; }
+
+		[ColorDescription("Tooltip Pager Bottom")]
+		public AmbientColor TooltipPagerBottom { get; private set; }
+
+		[ColorDescription("Tooltip Pager Triangle")]
+		public AmbientColor TooltipPagerTriangle { get; private set; }
 		
-		#region Named colors
+		[ColorDescription("Tooltip Pager Text")]
+		public AmbientColor TooltipPagerText { get; private set; }
+
+		[ColorDescription("Bookmarks")]
+		public AmbientColor Bookmarks { get; private set; }
+
+		[ColorDescription("Underline(Error)")]
+		public AmbientColor UnderlineError { get; private set; }
 		
-		public const string DefaultString = "text";
-		public virtual ChunkStyle Default {
-			get {
-				return GetChunkStyle (DefaultString);
-			}
-		}
+		[ColorDescription("Underline(Warning)")]
+		public AmbientColor UnderlineWarning { get; private set; }
 
-		public const string TooltipString = "tooltip";
-		public virtual ChunkStyle Tooltip {
-			get {
-				return GetChunkStyle (TooltipString);
-			}
-		}
+		[ColorDescription("Underline(Suggestion)")]
+		public AmbientColor UnderlineSuggestion { get; private set; }
 
-		public const string LineNumberString = "linenumber";
-		public virtual ChunkStyle LineNumber {
-			get {
-				return GetChunkStyle (LineNumberString);
-			}
-		}
+		[ColorDescription("Underline(Hint)")]
+		public AmbientColor UnderlineHint { get; private set; }
 
-		public const string IconBarBgString = "iconbar";
-		public virtual Cairo.Color IconBarBg {
-			get {
-				return GetColorFromDefinition (IconBarBgString);
-			}
-		}
+		[ColorDescription("Quick Diff(Dirty)")]
+		public AmbientColor QuickDiffDirty { get; private set; }
 
-		public const string IconBarSeperatorString = "iconbar.separator";
-		public virtual Cairo.Color IconBarSeperator {
-			get {
-				return GetColorFromDefinition (IconBarSeperatorString);
-			}
-		}
+		[ColorDescription("Quick Diff(Changed)")]
+		public AmbientColor QuickDiffChanged { get; private set; }
 
-		public const string FoldLineString = "fold";
-		public virtual ChunkStyle FoldLine {
-			get {
-				return GetChunkStyle (FoldLineString);
-			}
-		}
-
-		public const string FoldMarginString = "fold.margin";
-		public virtual ChunkStyle FoldMargin {
-			get {
-				return GetChunkStyle (FoldMarginString);
-			}
-		}
-
-		public const string LineChangedBgString = "marker.line.changed";
-		public virtual Cairo.Color LineChangedBg {
-			get {
-				return GetColorFromDefinition (LineChangedBgString);
-			}
-		}
+		[ColorDescription("Brace Matching(Rectangle)")]
+		public AmbientColor BraceMatchingRectangle { get; private set; }
 		
-		public const string LineDirtyBgString = "marker.line.dirty";
-		public virtual Cairo.Color LineDirtyBg {
-			get {
-				return GetColorFromDefinition (LineDirtyBgString);
-			}
-		}
+		[ColorDescription("Usages(Rectangle)")]
+		public AmbientColor UsagesRectangle { get; private set; }
 
-		public const string SelectionString = "text.selection";
-		public virtual ChunkStyle Selection {
-			get {
-				return GetChunkStyle (SelectionString);
-			}
-		}
+		[ColorDescription("Breakpoint Marker")]
+		public AmbientColor BreakpointMarker { get; private set; }
+
+		[ColorDescription("Breakpoint Marker(Disabled)")]
+		public AmbientColor BreakpointMarkerDisabled { get; private set; }
+
+		[ColorDescription("Debugger Current Line Marker")]
+		public AmbientColor DebuggerCurrentLineMarker { get; private set; }
+
+		[ColorDescription("Debugger Stack Line Marker")]
+		public AmbientColor DebuggerStackLineMarker { get; private set; }
 		
-		public const string InactiveSelectionString = "text.selection.inactive";
-		public virtual ChunkStyle InactiveSelection {
-			get {
-				return GetChunkStyle (InactiveSelectionString);
-			}
-		}
-
-		public const string LineMarkerString = "marker.line";
-		public virtual Cairo.Color LineMarker {
-			get {
-				return GetColorFromDefinition (LineMarkerString);
-			}
-		}
-
-		public const string RulerString = "marker.ruler";
-		public virtual Cairo.Color Ruler {
-			get {
-				return GetColorFromDefinition (RulerString);
-			}
-		}
-
-		public const string BracketHighlightRectangleString = "marker.bracket";
-
-		public virtual ChunkStyle BracketHighlightRectangle {
-			get {
-				return GetChunkStyle (BracketHighlightRectangleString);
-			}
-		}
+		[ColorDescription("Primary Link")] // not defined
+		public AmbientColor PrimaryTemplate { get; private set; }
 		
-		public const string UsagesHighlightRectangleString = "marker.usages";
-		public virtual ChunkStyle UsagesHighlightRectangle {
-			get {
-				return GetChunkStyle (UsagesHighlightRectangleString);
-			}
-		}
-		
-		public const string BookmarkColor2String = "marker.bookmark.color2";
-		public virtual Cairo.Color BookmarkColor2 {
-			get {
-				return GetColorFromDefinition (BookmarkColor2String);
-			}
-		}
-		
-		public const string BookmarkColor1String = "marker.bookmark.color1";
-		public virtual Cairo.Color BookmarkColor1 {
-			get {
-				return GetColorFromDefinition (BookmarkColor1String);
-			}
-		}
-		
-		public const string ReadOnlyTextBgString = "text.background.readonly";
-		public Cairo.Color ReadOnlyTextBg {
-			get {
-				return GetColorFromDefinition (ReadOnlyTextBgString);
-			}
-		}
-		
-		public const string SearchTextBgString = "text.background.searchresult";
-		public Cairo.Color SearchTextBg {
-			get {
-				return GetColorFromDefinition (SearchTextBgString);
-			}
-		}
-		
-		public const string SearchTextMainBgString = "text.background.searchresult-main";
-		public Cairo.Color SearchTextMainBg {
-			get {
-				return GetColorFromDefinition (SearchTextMainBgString);
-			}
-		}
+		[ColorDescription("Primary Link(Highlighted)")] // not defined
+		public AmbientColor PrimaryTemplateHighlighted { get; private set; }
 
-		public const string BreakpointString = "marker.breakpoint";
-		public Cairo.Color BreakpointFg {
-			get {
-				return GetChunkStyle (BreakpointString).CairoColor;
-			}
-		}
-		public Cairo.Color BreakpointBg {
-			get {
-				return GetChunkStyle (BreakpointString).CairoBackgroundColor;
-			}
-		}
-
-		public const string BreakpointMarkerColor2String = "marker.breakpoint.color2";
-		public Cairo.Color BreakpointMarkerColor2 {
-			get {
-				return GetColorFromDefinition (BreakpointMarkerColor2String);
-			}
-		}
-
-		public const string BreakpointMarkerColor1String = "marker.breakpoint.color1";
-		public Cairo.Color BreakpointMarkerColor1 {
-			get {
-				return GetColorFromDefinition (BreakpointMarkerColor1String);
-			}
-		}
-
-		public const string CurrentDebugLineString = "marker.debug.currentline";
-		public Cairo.Color CurrentDebugLineFg {
-			get {
-				return GetChunkStyle (CurrentDebugLineString).CairoColor;
-			}
-		}
+		[ColorDescription("Secondary Link")] // not defined
+		public AmbientColor SecondaryTemplate { get; private set; }
 		
-		public Cairo.Color CurrentDebugLineBg {
-			get {
-				return GetChunkStyle (CurrentDebugLineString).CairoBackgroundColor;
-			}
-		}
+		[ColorDescription("Secondary Link(Highlighted)")] // not defined
+		public AmbientColor SecondaryTemplateHighlighted { get; private set; }
 
-		public const string CurrentDebugLineMarkerColor2String = "marker.debug.currentline.color2";
-		public Cairo.Color CurrentDebugLineMarkerColor2 {
-			get {
-				return GetColorFromDefinition (CurrentDebugLineMarkerColor2String);
-			}
-		}
-
-		public const string CurrentDebugLineMarkerColor1String = "marker.debug.currentline.color1";
-		public Cairo.Color CurrentDebugLineMarkerColor1 {
-			get {
-				return GetColorFromDefinition (CurrentDebugLineMarkerColor1String);
-			}
-		}
-
-		public const string CurrentDebugLineMarkerBorderString = "marker.debug.currentline.border";
-		public Cairo.Color CurrentDebugLineMarkerBorder {
-			get {
-				return GetColorFromDefinition (CurrentDebugLineMarkerBorderString);
-			}
-		}
+		[ColorDescription("Current Line Marker")] // not defined
+		public AmbientColor LineMarker { get; private set; }
 		
-		public const string DebugStackLineString = "marker.debug.stackline";
-		public Cairo.Color DebugStackLineFg {
-			get {
-				return GetChunkStyle (DebugStackLineString).CairoColor;
-			}
-		}
+		[ColorDescription("Column Ruler")] // not defined
+		public AmbientColor Ruler { get; private set; }
 		
-		public Cairo.Color DebugStackLineBg {
-			get {
-				return GetChunkStyle (DebugStackLineString).CairoBackgroundColor;
-			}
-		}
-
-		public const string DebugStackLineMarkerColor2String = "marker.debug.stackline.color2";
-		public Cairo.Color DebugStackLineMarkerColor2 {
-			get {
-				return GetColorFromDefinition (DebugStackLineMarkerColor2String);
-			}
-		}
-
-		public const string DebugStackLineMarkerColor1String = "marker.debug.stackline.color1";
-		public Cairo.Color DebugStackLineMarkerColor1 {
-			get {
-				return GetColorFromDefinition (DebugStackLineMarkerColor1String);
-			}
-		}
-
-		public const string DebugStackLineMarkerBorderString = "marker.debug.stackline.border";
-		public Cairo.Color DebugStackLineMarkerBorder {
-			get {
-				return GetColorFromDefinition (DebugStackLineMarkerBorderString);
-			}
-		}
-
-		public const string InvalidBreakpointBgString = "marker.breakpoint.invalid.background";
-		public Cairo.Color InvalidBreakpointBg {
-			get {
-				return GetColorFromDefinition (InvalidBreakpointBgString);
-			}
-		}
-
-		public const string InvalidBreakpointMarkerColor1String = "marker.breakpoint.invalid.color1";
-		public Cairo.Color InvalidBreakpointMarkerColor1 {
-			get {
-				return GetColorFromDefinition (InvalidBreakpointMarkerColor1String);
-			}
-		}
-
-		public const string DisabledBreakpointBgString = "marker.breakpoint.disabled.background";
-		public Cairo.Color DisabledBreakpointBg {
-			get {
-				return GetColorFromDefinition (DisabledBreakpointBgString);
-			}
-		}
-
-		public const string InvalidBreakpointMarkerBorderString = "marker.breakpoint.invalid.border";
-		public Cairo.Color InvalidBreakpointMarkerBorder {
-			get {
-				return GetColorFromDefinition (InvalidBreakpointMarkerBorderString);
-			}
-		}
-		
-		public const string ErrorUnderlineString = "marker.underline.error";
-		public Cairo.Color ErrorUnderline {
-			get {
-				return GetColorFromDefinition (ErrorUnderlineString);
-			}
-		}
-		
-		public const string WarningUnderlineString = "marker.underline.warning";
-		public Cairo.Color WarningUnderline {
-			get {
-				return GetColorFromDefinition (WarningUnderlineString);
-			}
-		}
-		
-		public const string HintUnderlineString = "marker.underline.hint";
-		public Cairo.Color HintUnderline {
-			get {
-				return GetColorFromDefinition (HintUnderlineString);
-			}
-		}
-		
-		public const string SuggestionUnderlineString = "marker.underline.suggestion";
-		public Cairo.Color SuggestionUnderline {
-			get {
-				return GetColorFromDefinition (SuggestionUnderlineString);
-			}
-		}
-		
-		public const string PrimaryTemplateColorString = "marker.template.primary_template";
-		public virtual ChunkStyle PrimaryTemplate {
-			get {
-				return GetChunkStyle (PrimaryTemplateColorString);
-			}
-		}
-		
-		public const string PrimaryTemplateHighlightedColorString = "marker.template.primary_highlighted_template";
-		public virtual ChunkStyle PrimaryTemplateHighlighted {
-			get {
-				return GetChunkStyle (PrimaryTemplateHighlightedColorString);
-			}
-		}
-		
-		public const string SecondaryTemplateColorString = "marker.template.secondary_template";
-		public virtual ChunkStyle SecondaryTemplate {
-			get {
-				return GetChunkStyle (SecondaryTemplateColorString);
-			}
-		}
-		
-		public const string SecondaryTemplateHighlightedColorString = "marker.template.secondary_highlighted_template";
-		public virtual ChunkStyle SecondaryTemplateHighlighted {
-			get {
-				return GetChunkStyle (SecondaryTemplateHighlightedColorString);
-			}
-		}
 		#endregion
+
+		#region Text Colors
+
+		[ColorDescription("Plain Text", VSSetting = "Plain Text")]
+		public ChunkStyle Default { get; private set; }
+
+		[ColorDescription("Selected Text", VSSetting = "Selected Text")]
+		public ChunkStyle SelectedText { get; private set; }
+
+		[ColorDescription("Selected Text(Inactive)", VSSetting = "Inactive Selected Text")]
+		public ChunkStyle SelectedInactiveText { get; private set; }
+
+		[ColorDescription("Collapsed Text", VSSetting = "Collapsible Text")]
+		public ChunkStyle CollapsedText { get; private set; }
+
+		[ColorDescription("Line Numbers", VSSetting = "Line Numbers")]
+		public ChunkStyle LineNumbers { get; private set; }
+
+		[ColorDescription("Punctuation", VSSetting = "Operator")]
+		public ChunkStyle Punctuation { get; private set; }
+
+		[ColorDescription("Punctuation(Brackets)", VSSetting = "Plain Text")]
+		public ChunkStyle PunctuationForBrackets { get; private set; }
+
+		[ColorDescription("Comment(Line)", VSSetting = "Comment")]
+		public ChunkStyle CommentsSingleLine { get; private set; }
+
+		[ColorDescription("Comment(Block)", VSSetting = "Comment")]
+		public ChunkStyle CommentsMultiLine { get; private set; }
+
+		[ColorDescription("Comment(Doc)", VSSetting = "Comment")]
+		public ChunkStyle CommentsForDocumentation { get; private set; }
+
+		[ColorDescription("Comment Tag", VSSetting = "Comment")]
+		public ChunkStyle CommentTags { get; private set; }
+
+		[ColorDescription("String", VSSetting = "String")]
+		public ChunkStyle String { get; private set; }
+
+		[ColorDescription("String(Escape)", VSSetting = "String")]
+		public ChunkStyle StringEscapeSequence { get; private set; }
+
+		[ColorDescription("String(C# @ Verbatim)", VSSetting = "String(C# @ Verbatim)")]
+		public ChunkStyle StringVerbatim { get; private set; }
+
+		[ColorDescription("Number", VSSetting = "Number")]
+		public ChunkStyle Number { get; private set; }
+
+		[ColorDescription("Preprocessor", VSSetting = "Preprocessor Keyword")]
+		public ChunkStyle Preprocessor { get; private set; }
+
+		[ColorDescription("Preprocessor Keyword", VSSetting = "Preprocessor Keyword")]
+		public ChunkStyle PreprocessorKeyword { get; private set; }
+
+		[ColorDescription("Xml Text", VSSetting = "XML Text")]
+		public ChunkStyle XmlText { get; private set; }
+
+		[ColorDescription("Xml Delimiter", VSSetting = "XML Delimiter")]
+		public ChunkStyle XmlDelimiter { get; private set; }
+
+		[ColorDescription("Xml Name", VSSetting ="XML Name")]
+		public ChunkStyle XmlName { get; private set; }
+
+		[ColorDescription("Xml Attribute", VSSetting = "XML Attribute")]
+		public ChunkStyle XmlAttribute { get; private set; }
+
+		[ColorDescription("Xml CData Section", VSSetting = "XML CData Section")]
+		public ChunkStyle XmlCDataSection { get; private set; }
+
+		[ColorDescription("Tooltip Text")] // not defined in vs.net
+		public ChunkStyle TooltipText { get; private set; }
+
+		[ColorDescription("Completion Text")] //not defined in vs.net
+		public ChunkStyle CompletionText { get; private set; }
+
+		[ColorDescription("Keyword(Access)", VSSetting = "Keyword")]
+		public ChunkStyle KeywordAccessors { get; private set; }
+
+		[ColorDescription("Keyword(Type)", VSSetting = "Keyword")]
+		public ChunkStyle KeywordTypes { get; private set; }
+
+		[ColorDescription("Keyword(Operator)", VSSetting = "Keyword")]
+		public ChunkStyle KeywordOperators { get; private set; }
+
+		[ColorDescription("Keyword(Selection)", VSSetting = "Keyword")]
+		public ChunkStyle KeywordSelection { get; private set; }
+
+		[ColorDescription("Keyword(Iteration)", VSSetting = "Keyword")]
+		public ChunkStyle KeywordIteration { get; private set; }
+
+		[ColorDescription("Keyword(Jump)", VSSetting = "Keyword")]
+		public ChunkStyle KeywordJump { get; private set; }
+
+		[ColorDescription("Keyword(Context)", VSSetting = "Keyword")]
+		public ChunkStyle KeywordContext { get; private set; }
+
+		[ColorDescription("Keyword(Exception)", VSSetting = "Keyword")]
+		public ChunkStyle KeywordException { get; private set; }
 		
-		public string Name {
-			get;
-			set;
-		}
+		[ColorDescription("Keyword(Modifiers)", VSSetting = "Keyword")]
+		public ChunkStyle KeywordModifiers { get; private set; }
 		
-		public string Description {
-			get;
-			set;
-		}
+		[ColorDescription("Keyword(Constants)", VSSetting = "Keyword")]
+		public ChunkStyle KeywordConstants { get; private set; }
 		
-		public static Cairo.Color ToCairoColor (Gdk.Color color)
+		[ColorDescription("Keyword(Void)", VSSetting = "Keyword")]
+		public ChunkStyle KeywordVoid { get; private set; }
+		
+		[ColorDescription("Keyword(Namespace)", VSSetting = "Keyword")]
+		public ChunkStyle KeywordNamespace { get; private set; }
+		
+		[ColorDescription("Keyword(Property)", VSSetting = "Keyword")]
+		public ChunkStyle KeywordProperty { get; private set; }
+		
+		[ColorDescription("Keyword(Declaration)", VSSetting = "Keyword")]
+		public ChunkStyle KeywordDeclaration { get; private set; }
+		
+		[ColorDescription("Keyword(Parameter)", VSSetting = "Keyword")]
+		public ChunkStyle KeywordParameter { get; private set; }
+		
+		[ColorDescription("Keyword(Operator Declaration)", VSSetting = "Keyword")]
+		public ChunkStyle KeywordOperatorDeclaration { get; private set; }
+		
+		[ColorDescription("Keyword(Other)", VSSetting = "Keyword")]
+		public ChunkStyle KeywordOther { get; private set; }
+
+		[ColorDescription("User Types", VSSetting = "User Types")]
+		public ChunkStyle UserTypes { get; private set; }
+
+		[ColorDescription("User Types(Enums)", VSSetting = "User Types(Enums)")]
+		public ChunkStyle UserTypesEnums { get; private set; }
+		
+		[ColorDescription("User Types(Interfaces)", VSSetting = "User Types(Interfaces)")]
+		public ChunkStyle UserTypesInterfaces { get; private set; }
+		
+		[ColorDescription("User Types(Delegates)", VSSetting = "User Types(Delegates)")]
+		public ChunkStyle UserTypesDelegatess { get; private set; }
+		
+		[ColorDescription("User Types(Value types)", VSSetting = "User Types(Value types)")]
+		public ChunkStyle UserTypesValuetypes { get; private set; }
+		
+		[ColorDescription("User Field Usage", VSSetting = "Plain Text")]
+		public ChunkStyle UserFieldUsage { get; private set; }
+		
+		[ColorDescription("User Field Declaration", VSSetting = "Plain Text")]
+		public ChunkStyle UserFieldDeclaration { get; private set; }
+		
+		[ColorDescription("User Property Usage", VSSetting = "Plain Text")]
+		public ChunkStyle UserPropertyUsage { get; private set; }
+		
+		[ColorDescription("User Property Declaration", VSSetting = "Plain Text")]
+		public ChunkStyle UserPropertyDeclaration { get; private set; }
+		
+		[ColorDescription("UserEventUsage", VSSetting = "Plain Text")]
+		public ChunkStyle UserEventUsage { get; private set; }
+		
+		[ColorDescription("User Event Declaration", VSSetting = "Plain Text")]
+		public ChunkStyle UserEventDeclaration { get; private set; }
+		
+		[ColorDescription("User Method Usage", VSSetting = "Plain Text")]
+		public ChunkStyle UserMethodUsage { get; private set; }
+		
+		[ColorDescription("User Method Declaration", VSSetting = "Plain Text")]
+		public ChunkStyle UserMethodDeclaration { get; private set; }
+		
+		[ColorDescription("Syntax Error", VSSetting = "Syntax Error")]
+		public ChunkStyle SyntaxError { get; private set; }
+
+		[ColorDescription("Breakpoint Text")] // not defined
+		public ChunkStyle BreakpointText { get; private set; }
+
+		[ColorDescription("Breakpoint Text(Invalid)")] // not defined
+		public ChunkStyle BreakpointTextInvalid { get; private set; }
+
+		
+		[ColorDescription("Debugger Current Line")] // not defined
+		public ChunkStyle DebuggerCurrentLine { get; private set; }
+		
+		[ColorDescription("Debugger Stack Line")] // not defined
+		public ChunkStyle DebuggerStackLine { get; private set; }
+		#endregion
+
+		static Dictionary<string, PropertyInfo> textColors    = new Dictionary<string, PropertyInfo> ();
+		static Dictionary<string, PropertyInfo> ambientColors = new Dictionary<string, PropertyInfo> ();
+
+		static ColorScheme ()
 		{
-			return new Cairo.Color ((double)color.Red / ushort.MaxValue,
-			                        (double)color.Green / ushort.MaxValue,
-			                        (double)color.Blue / ushort.MaxValue);
-		}
-		
-		public static Gdk.Color ToGdkColor (Cairo.Color color)
-		{
-			return new Gdk.Color ((byte)(color.R  * 255),
-			                        (byte)(color.G * 255),
-			                        (byte)(color.B * 255));
-		}
-				
-		public static Cairo.Color ToCairoColor (Gdk.Color color, double alpha)
-		{
-			return new Cairo.Color ((double)color.Red / ushort.MaxValue,
-			                        (double)color.Green / ushort.MaxValue,
-			                        (double)color.Blue / ushort.MaxValue,
-			                        alpha);
-		}
-		
-		protected ColorScheme ()
-		{
-		}
-		
-		const ChunkProperties BOLD   = ChunkProperties.Bold;
-		const ChunkProperties ITALIC = ChunkProperties.Bold;
-		
-		void SetStyle (string name, ChunkStyle style)
-		{
-			styleLookupTable[name] = style;
-		}
-		
-		void SetStyle (string name, string referencedStyleName)
-		{
-			styleLookupTable[name] = new ReferencedChunkStyle (this, referencedStyleName);
-		}
-		
-		void SetStyle (string name, byte r, byte g, byte b)
-		{
-			SetStyle (name, new ChunkStyle (new Gdk.Color (r, g, b)));
-		}
-		
-		void SetStyleFromWeb (string name, string colorString)
-		{
-			var color = new Color ();
-			if (!Gdk.Color.Parse (colorString, ref color)) 
-				throw new Exception ("Can't parse color: " + colorString);
-			SetStyle (name, new ChunkStyle (color));
+			foreach (var property in typeof(ColorScheme).GetProperties ()) {
+				var description = property.GetCustomAttributes (false).FirstOrDefault (p => p is ColorDescriptionAttribute) as ColorDescriptionAttribute;
+				if (description == null)
+					continue;
+				if (property.PropertyType.Name == "TextColor") {
+					textColors.Add (description.Name, property);
+				} else {
+					ambientColors.Add (description.Name, property);
+				}
+			}
 		}
 
-		void SetStyleFromWeb (string name, string colorString, string bgColorString)
+		static Cairo.Color ParseColor (string value)
 		{
-			var color = new Color ();
-			if (!Gdk.Color.Parse (colorString, ref color)) 
-				throw new Exception ("Can't parse color: " + colorString);
-			var bgColor = new Color ();
-			if (!Gdk.Color.Parse (bgColorString, ref bgColor)) 
-				throw new Exception ("Can't parse color: " + bgColorString);
-			SetStyle (name, new ChunkStyle (color, bgColor));
+			return HslColor.Parse (value);
 		}
-		
-		void SetStyle (string name, byte r, byte g, byte b, byte bg_r, byte bg_g, byte bg_b)
+
+		public static Cairo.Color ParsePaletteColor (Dictionary<string, Cairo.Color> palette, string value)
 		{
-			SetStyle (name, new ChunkStyle (new Gdk.Color (r, g, b), new Gdk.Color (bg_r, bg_g, bg_b)));
+			Cairo.Color result;
+			if (palette.TryGetValue (value, out result))
+				return result;
+			return ParseColor (value);
 		}
-			
-		void SetStyle (string name, byte r, byte g, byte b, ChunkProperties properties)
-		{
-			SetStyle (name, new ChunkStyle (new Gdk.Color (r, g, b), properties));
-		}
-			
-/*		void SetStyle (string name, byte r, byte g, byte b, byte bg_r, byte bg_g, byte bg_b, ChunkProperties properties)
-		{
-			SetStyle (name, new ChunkStyle (new Gdk.Color (r, g, b), new Gdk.Color (bg_r, bg_g, bg_b), properties));
-		}*/
-		
-		public ChunkStyle GetDefaultChunkStyle ()
-		{
-			ChunkStyle style;
-			if (!styleLookupTable.TryGetValue (DefaultString, out style)) {
-				style = new ChunkStyle (ToGdkColor (GetColorFromDefinition (DefaultString)));
-				styleLookupTable[DefaultString] = style;
-			}
-			return style;
-		}
+
+		HashSet<string> textColorsSet;
 
 		public ChunkStyle GetChunkStyle (Chunk chunk)
 		{
-			if (chunk == null)
-				throw new ArgumentNullException ("chunk");
 			return GetChunkStyle (chunk.Style);
 		}
-		
-		public ChunkStyle GetChunkStyle (string name)
+	
+		public ChunkStyle GetChunkStyle (string color)
 		{
-			if (name == null)
-				return GetDefaultChunkStyle ();
-			var style = InternalGetChunkStyle (name);
-			if (style == null)
-				style =SyntaxModeService.DefaultColorStyle.InternalGetChunkStyle (name);
-			return style ?? GetDefaultChunkStyle ();
+			PropertyInfo val;
+			if (!textColors.TryGetValue (color, out val))
+				return null;
+			return val.GetValue (this, null) as ChunkStyle;
 		}
 
-		internal ChunkStyle InternalGetChunkStyle (string name)
-		{
-			ChunkStyle style;
-			if (styleLookupTable.TryGetValue (name, out style))
-				return style;
-			
-			int dotIndex = name.LastIndexOf ('.');
-			string fallbackName = name;
-			while (dotIndex > 1) {
-				fallbackName = fallbackName.Substring (0, dotIndex);
-				if (styleLookupTable.TryGetValue (fallbackName, out style)) {
-					styleLookupTable[name] = style;
-					//	Console.WriteLine ("Chunk style {0} fell back to {1}", name, fallbackName);
-					return style;
-				}
-				dotIndex = fallbackName.LastIndexOf ('.');
-			}
-
-			//	Console.WriteLine ("Chunk style {0} fell back to default", name);
-			return null;
-		}
-		
-		public void SetChunkStyle (string name, string weight, string foreColor, string backColor)
-		{
-			var color = !string.IsNullOrEmpty (foreColor) ? this.GetColorFromString (foreColor) : new Cairo.Color (0, 0, 0);
-			var bgColor = !string.IsNullOrEmpty (backColor) ? this.GetColorFromString (backColor) : new Cairo.Color (0, 0, 0);
-			var properties = ChunkProperties.None;
-			if (weight != null) {
-				if (weight.ToUpper ().IndexOf ("BOLD") >= 0)
-					properties |= ChunkProperties.Bold;
-				if (weight.ToUpper ().IndexOf ("ITALIC") >= 0)
-					properties |= ChunkProperties.Italic;
-				if (weight.ToUpper ().IndexOf ("UNDERLINE") >= 0)
-					properties |= ChunkProperties.Underline;
-			}
-			ChunkStyle chunkStyle;
-			if (string.IsNullOrEmpty (backColor)) {
-				chunkStyle = new ChunkStyle (color, properties);
-			} else if (string.IsNullOrEmpty (foreColor)) {
-				chunkStyle = new ChunkStyle () {
-					ChunkProperties =properties,
-					CairoBackgroundColor = bgColor
-				};
-			} else {
-				chunkStyle = new ChunkStyle (color, bgColor, properties);
-			}
-
-
-			SetStyle (name, chunkStyle);
-		}
-		
-		public void SetChunkStyle (string name, ChunkStyle style)
-		{
-			SetStyle (name, style);
-		}
-		
-		static int GetNumber (string str, int offset)
-		{
-			return int.Parse (str.Substring (offset, 2), NumberStyles.HexNumber);
-		}
-		
-		public Cairo.Color GetColorFromString (string colorString)
-		{
-			string refColorString;
-			if (customPalette.TryGetValue (colorString, out refColorString))
-				return this.GetColorFromString (refColorString);
-			ChunkStyle style;
-			if (styleLookupTable.TryGetValue (colorString, out style))
-				return style.CairoColor;
-			if (colorString.Length > 0 && colorString[0] == '#') {
-				if (colorString.Length == 4) {
-					// #RGB -> #RRGGBB
-					colorString = string.Format ("#{0}{0}{1}{1}{2}{2}", colorString[1], colorString[2], colorString[3]);
-				}
-				if (colorString.Length == 5) {
-					// #RAGB -> #AARRGGBB
-					colorString = string.Format ("#{0}{0}{1}{1}{2}{2}{3}{3}", colorString[1], colorString[2], colorString[3], colorString[4]);
-				}
-				if (colorString.Length == 9) {
-					// #AARRGGBB
-					return new Cairo.Color ( GetNumber (colorString, 3) / 255.0, GetNumber (colorString, 5) / 255.0, GetNumber (colorString, 7) / 255.0, GetNumber (colorString, 1) / 255.0);
-				}
-				if (colorString.Length == 7) {
-					// #RRGGBB
-					return new Cairo.Color ( GetNumber (colorString, 1) / 255.0, GetNumber (colorString, 3) / 255.0, GetNumber (colorString, 5) / 255.0);
-				}
-				throw new ArgumentException ("colorString", "colorString must either be #RRGGBB (length 7) or #AARRGGBB (length 9) your string " + colorString + " is invalid because it has a length of " + colorString.Length);
-			}
-
-			var color = System.Drawing.ColorTranslator.FromHtml (colorString);
-			if (!color.IsEmpty)
-				return new Cairo.Color (color.R / 255.0, color.G / 255.0, color.B / 255.0);
-			throw new Exception ("Failed to parse color or find named color '" + colorString + "'");
-		}
-		
-		public const string NameAttribute = "name";
-		
-		static void ReadStyleTree (XmlReader reader, ColorScheme result, string curName, string curWeight, string curColor, string curBgColor)
-		{
-			string name    = reader.GetAttribute ("name"); 
-			string weight  = reader.GetAttribute ("weight") ?? curWeight;
-			string color   = reader.GetAttribute ("color");
-			string bgColor = reader.GetAttribute ("bgColor");
-			string fullName;
-			if (String.IsNullOrEmpty (curName)) {
-				fullName = name;
-			} else {
-				fullName = curName + "." + name;
-			}
-			if (!string.IsNullOrEmpty (color) || !string.IsNullOrEmpty (bgColor)) {
-				result.SetChunkStyle (fullName, weight, color, bgColor);
-			}
-			
-			XmlReadHelper.ReadList (reader, "Style", delegate () {
-				switch (reader.LocalName) {
-				case "Style":
-					ReadStyleTree (reader, result, fullName, weight, color, bgColor);
-					return true;
-				}
-				return false;
-			});
-		}
-		
-		public static ColorScheme LoadFrom (XmlReader reader)
+		public static ColorScheme LoadFrom (Stream stream)
 		{
 			var result = new ColorScheme ();
-			XmlReadHelper.ReadList (reader, "EditorStyle", delegate () {
-				switch (reader.LocalName) {
-				case "EditorStyle":
-					result.Name = reader.GetAttribute (NameAttribute);
-					result.Description = reader.GetAttribute ("_description");
-					return true;
-				case "Color":
-					result.customPalette [reader.GetAttribute ("name")] = reader.GetAttribute ("value");
-					return true;
-				case "Style":
-					ReadStyleTree (reader, result, null, null, null, null);
-					return true;
-				}
-				return false;
-			});
-			result.GetChunkStyle (DefaultString).ChunkProperties |= ChunkProperties.TransparentBackground;
-			return result;
-		}
-		
-		static string GetColorString (double c)
-		{
-			int conv = (int)(c * 255.0);
-			return string.Format ("{0:X2}", conv);
-		}
-		
-		static string GetColorString (Cairo.Color cairoColor)
-		{
-			var result = new System.Text.StringBuilder ();
-			result.Append ("#");
-			if (cairoColor.A != 1.0)
-				result.Append (GetColorString (cairoColor.A));
-			result.Append (GetColorString (cairoColor.R));
-			result.Append (GetColorString (cairoColor.G));
-			result.Append (GetColorString (cairoColor.B));
+			var reader = System.Runtime.Serialization.Json.JsonReaderWriterFactory.CreateJsonReader (stream, new System.Xml.XmlDictionaryReaderQuotas ());
+
+			var root = XElement.Load(reader);
 			
-			return result.ToString ();
-		}
-		
-		public void Save (string fileName)
-		{
-			var writer = new XmlTextWriter (fileName, System.Text.UTF8Encoding.UTF8);
-			writer.Formatting = Formatting.Indented;
-			
-			writer.WriteStartElement ("EditorStyle");
-			writer.WriteAttributeString (NameAttribute, Name);
-			writer.WriteAttributeString ("_description", Description);
-			
-			foreach (var style in new Dictionary<string, ChunkStyle> (this.styleLookupTable)) {
-				writer.WriteStartElement ("Style");
-				writer.WriteAttributeString ("name", style.Key);
-				writer.WriteAttributeString ("color", GetColorString (style.Value.CairoColor));
-				if (style.Value.GotBackgroundColorAssigned)
-					writer.WriteAttributeString ("bgColor", GetColorString (style.Value.CairoBackgroundColor));
-				if ((style.Value.ChunkProperties & (ChunkProperties.Bold | ChunkProperties.Italic)) != 0)
-					writer.WriteAttributeString ("weight", style.Value.ChunkProperties.ToString ());
-				writer.WriteEndElement ();
+			// The fields we'd like to extract
+			result.Name = root.XPathSelectElement("name").Value;
+			result.Version = Version.Parse (root.XPathSelectElement("version").Value);
+			result.Description = root.XPathSelectElement("description").Value;
+			result.Originator = root.XPathSelectElement("originator").Value;
+			var palette = new Dictionary<string, Cairo.Color> ();
+			Console.WriteLine ("name:"+result.Name);
+			Console.WriteLine ("descr:"+result.Description);
+			foreach (var color in root.XPathSelectElements("palette/*")) {
+				var name = color.XPathSelectElement ("name").Value;
+				if (palette.ContainsKey (name))
+					throw new InvalidDataException ("Duplicate palette color definition for: " + name);
+				palette.Add (
+					name,
+					ParseColor (color.XPathSelectElement ("value").Value)
+				);
 			}
-			
-			writer.WriteEndElement ();
-			writer.Close ();
-		}
-		
-		public ColorScheme Clone ()
-		{
-			ColorScheme clone = (ColorScheme)MemberwiseClone ();
-			clone.styleLookupTable = new Dictionary<string, ChunkStyle> (styleLookupTable);
-			return clone;
-		}
-		
-		public virtual void UpdateFromGtkStyle (Gtk.Style style)
-		{
+			foreach (var colorElement in root.XPathSelectElements("//colors/*")) {
+				var color = AmbientColor.Create (colorElement, palette);
+				PropertyInfo info;
+				if (!ambientColors.TryGetValue (color.Name, out info)) {
+					Console.WriteLine ("Ambient color:" + color.Name + " not found.");
+					continue;
+				}
+				info.SetValue (result, color, null);
+			}
+
+			var textColorsSet = new HashSet<string> ();
+			foreach (var textColorElement in root.XPathSelectElements("//text/*")) {
+				var color = ChunkStyle.Create (textColorElement, palette);
+				PropertyInfo info;
+				if (!textColors.TryGetValue (color.Name, out info)) {
+					Console.WriteLine ("Text color:" + color.Name + " not found.");
+					continue;
+				}
+				textColorsSet.Add (color.Name);
+				info.SetValue (result, color, null);
+			}
+			result.textColorsSet = textColorsSet;
+
+			return result;
 		}
 	}
 }
+

@@ -312,7 +312,7 @@ namespace MonoDevelop.CSharp
 			var highlightedTypeName = Highlight (t.Name, "keyword.type");
 			result.Append (highlightedTypeName);
 
-			var color = AlphaBlend (colorStyle.Default.Color, colorStyle.Default.BackgroundColor, optionalAlpha);
+			var color = AlphaBlend (colorStyle.Default.CairoColor, colorStyle.Default.CairoBackgroundColor, optionalAlpha);
 			var colorString = Mono.TextEditor.HelperMethods.GetColorString (color);
 
 			result.Append ("<span foreground=\"" + colorString + "\">" + " (type parameter)</span>");
@@ -830,7 +830,7 @@ namespace MonoDevelop.CSharp
 		{
 			var result = new TooltipInformation ();
 
-			var color = AlphaBlend (colorStyle.Default.Color, colorStyle.Default.BackgroundColor, optionalAlpha);
+			var color = AlphaBlend (colorStyle.Default.CairoColor, colorStyle.Default.CairoBackgroundColor, optionalAlpha);
 			var colorString = Mono.TextEditor.HelperMethods.GetColorString (color);
 			
 			var keywordSign = "<span foreground=\"" + colorString + "\">" + " (keyword)</span>";
@@ -1307,7 +1307,7 @@ namespace MonoDevelop.CSharp
 		{
 			var result = new TooltipInformation ();
 
-			var color = AlphaBlend (colorStyle.Default.Color, colorStyle.Default.BackgroundColor, optionalAlpha);
+			var color = AlphaBlend (colorStyle.Default.CairoColor, colorStyle.Default.CairoBackgroundColor, optionalAlpha);
 			var colorString = Mono.TextEditor.HelperMethods.GetColorString (color);
 			
 			var keywordSign = "<span foreground=\"" + colorString + "\">" + " (keyword)</span>";
@@ -1558,10 +1558,10 @@ namespace MonoDevelop.CSharp
 		{
 			var style = colorStyle.GetChunkStyle (colorScheme);
 			if (style != null) {
-				var color = style.Color;
+				var color = style.CairoColor;
 				
 				if (grayOut) {
-					color = AlphaBlend (color, colorStyle.Default.BackgroundColor, optionalAlpha);
+					color = AlphaBlend (color, colorStyle.Default.CairoBackgroundColor, optionalAlpha);
 				}
 				
 				var colorString = Mono.TextEditor.HelperMethods.GetColorString (color);

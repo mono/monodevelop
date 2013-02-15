@@ -1,9 +1,10 @@
+//
 // ChunkStyle.cs
 //
 // Author:
-//   Mike Krüger <mkrueger@novell.com>
+//       Mike Krüger <mkrueger@xamarin.com>
 //
-// Copyright (c) 2007 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2013 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,177 +23,108 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-//
-using System;
 
-namespace Mono.TextEditor
+using System;
+using System.IO;
+using System.Collections.Generic;
+using System.Linq;
+using System.Xml.Linq;
+using System.Xml.XPath;
+using System.Reflection;
+
+namespace Mono.TextEditor.Highlighting
 {
-	[Flags]
-	public enum ChunkProperties {
-		None = 0,
-		Bold = 1,
-		Italic = 2,
-		Underline = 4,
-		TransparentBackground = 8
-	}
-	
+
 	public class ChunkStyle
 	{
-		public virtual Cairo.Color CairoColor {
-			get;
-			set;
-		}
-		
-		public Gdk.Color Color {
-			get {
-				return (HslColor)CairoColor;
-			}
-		}
-		
-		bool backColorIsZero = true;
-		bool foreColorIsZero = false;
-		Cairo.Color cairoBackgroundColor = new Cairo.Color (0, 0, 0, 0);
-		public virtual Cairo.Color CairoBackgroundColor {
-			get { return cairoBackgroundColor; }
-			set { cairoBackgroundColor = value; backColorIsZero = false; }
-		}
-		
-		public bool GotBackgroundColorAssigned {
-			get {
-				return !backColorIsZero;
-			}
-		}
+		public string Name { get; private set; }
+		public Cairo.Color CairoColor { get; set; }
+		public Cairo.Color CairoBackgroundColor { get; set; }
+
 		public bool GotForegroundColorAssigned {
 			get {
-				return !foreColorIsZero;
+				return CairoColor.A != 1.0;
+
 			}
 		}
-		
-		public Gdk.Color BackgroundColor {
-			get {
-				return (HslColor)CairoBackgroundColor;
-			}
-		}
-		
 		public bool TransparentBackround {
 			get {
-				return (ChunkProperties & ChunkProperties.TransparentBackground) == ChunkProperties.TransparentBackground || backColorIsZero; 
+				return CairoBackgroundColor.A == 1.0;
 			}
 		}
-		
-		public virtual ChunkProperties ChunkProperties {
-			get;
-			set;
-		}
+		public TextWeight Weight { get; set; }
 
 		public bool Bold {
 			get {
-				return (ChunkProperties & ChunkProperties.Bold) == ChunkProperties.Bold;
+				return Weight.HasFlag (TextWeight.Bold);
 			}
 		}
-
+		
 		public bool Italic {
 			get {
-				return (ChunkProperties & ChunkProperties.Italic) == ChunkProperties.Italic;
+				return Weight.HasFlag (TextWeight.Italic);
 			}
 		}
-
+		
 		public bool Underline {
 			get {
-				return (ChunkProperties & ChunkProperties.Underline) == ChunkProperties.Underline;
+				return Weight.HasFlag (TextWeight.Underline);
 			}
 		}
 
-		public virtual string Link {
-			get;
-			set;
-		}
-		
-		public ChunkStyle (ChunkStyle style)
-		{
-			CairoColor           = style.CairoColor;
-			if (!style.backColorIsZero)
-				CairoBackgroundColor = style.CairoBackgroundColor;
-			ChunkProperties      = style.ChunkProperties;
-		}
-
-		public Pango.Style GetStyle (Pango.Style defaultStyle)
-		{
-			return Italic ? Pango.Style.Italic : Pango.Style.Normal;
-		}
-		
-		public Pango.Weight GetWeight (Pango.Weight defaultWeight)
-		{
-			if (defaultWeight == Pango.Weight.Bold)
-				return Bold ? Pango.Weight.Heavy : Pango.Weight.Bold;
-			return Bold ? Pango.Weight.Bold : Pango.Weight.Normal;
-		}
-		
 		public ChunkStyle ()
 		{
-			foreColorIsZero = true;
-		}
-		
-		public ChunkStyle (Gdk.Color color)
-		{
-			this.CairoColor =(HslColor) color;
-		}
-		
-		public ChunkStyle (Gdk.Color color, ChunkProperties chunkProperties)
-		{
-			this.CairoColor      = (HslColor)color;
-			this.ChunkProperties = chunkProperties;
-		}
-		
-		public ChunkStyle (Gdk.Color color, Gdk.Color bgColor) : this (color, bgColor, ChunkProperties.None)
-		{
-		}
-		
-		public ChunkStyle (Gdk.Color color, Gdk.Color bgColor, ChunkProperties chunkProperties)
-		{
-			this.CairoColor           = (HslColor)color;
-			this.CairoBackgroundColor = (HslColor)bgColor;
-			this.ChunkProperties = chunkProperties;
-		}
-		
-		public ChunkStyle (Cairo.Color color, Cairo.Color bgColor, ChunkProperties chunkProperties)
-		{
-			this.CairoColor           = color;
-			this.CairoBackgroundColor = bgColor;
-			this.ChunkProperties = chunkProperties;
-		}
-		
-		public ChunkStyle (Cairo.Color color, ChunkProperties chunkProperties)
-		{
-			this.CairoColor           = color;
-			this.ChunkProperties = chunkProperties;
+			CairoColor = CairoBackgroundColor = new Cairo.Color (0, 0, 0, 1.0);
 		}
 
-		public override string ToString ()
+		public ChunkStyle (ChunkStyle baseStyle)
 		{
-			return string.Format ("[ChunkStyle: Color={0}, BackgroundColor={1}, TransparentBackround={2}, ChunkProperties={3}, Link={4}]", CairoColor, CairoBackgroundColor, TransparentBackround, ChunkProperties, Link);
-		}
-		
-		public override int GetHashCode ()
-		{
-			return CairoColor.GetHashCode () ^ Bold.GetHashCode ();
+			this.Name = baseStyle.Name;
+			this.CairoColor = baseStyle.CairoColor;
+			this.CairoBackgroundColor = baseStyle.CairoBackgroundColor;
+			this.Weight = baseStyle.Weight;
 		}
 
-		public override bool Equals (object o)
+		public static ChunkStyle Create (XElement element, Dictionary<string, Cairo.Color> palette)
 		{
-			ChunkStyle c = o as ChunkStyle;
-			return c != null && Bold == c.Bold && Italic == c.Italic && CairoColor.GetHashCode () == c.CairoColor.GetHashCode ();
+			var result = new ChunkStyle ();
+
+			foreach (var node in element.DescendantNodes ()) {
+				if (node.NodeType == System.Xml.XmlNodeType.Element) {
+					var el = (XElement)node;
+					switch (el.Name.LocalName) {
+					case "name":
+						result.Name = el.Value;
+						break;
+					case "fore":
+						result.CairoColor = ColorScheme.ParsePaletteColor (palette, el.Value);
+						break;
+					case "back":
+						result.CairoBackgroundColor = ColorScheme.ParsePaletteColor (palette, el.Value);
+						break;
+					case "weight":
+						TextWeight val;
+						if (!Enum.TryParse<TextWeight> (el.Value, true, out val)) 
+							throw new InvalidDataException (el.Value + " is no valid text weight values are: " + string.Join (",", Enum.GetNames (typeof(TextWeight))) );
+						break;
+					default:
+						throw new InvalidDataException ("Invalid element in text color:" + el.Name);
+					}
+				}
+			}
+
+			return result;
 		}
-		
+
 		public Gdk.GC CreateBgGC (Gdk.Drawable drawable)
 		{
-			return new Gdk.GC (drawable) { RgbBgColor = Color, RgbFgColor = BackgroundColor };
+			return new Gdk.GC (drawable) { RgbBgColor = (HslColor)CairoColor, RgbFgColor = (HslColor)CairoBackgroundColor };
 		}
 		
 		public Gdk.GC CreateFgGC (Gdk.Drawable drawable)
 		{
-			return new Gdk.GC (drawable) { RgbBgColor = BackgroundColor, RgbFgColor = Color };
+			return new Gdk.GC (drawable) { RgbBgColor = (HslColor)CairoBackgroundColor, RgbFgColor = (HslColor)CairoColor };
 		}
 	}
+	
 }
