@@ -44,6 +44,10 @@ namespace Mono.TextEditor.Highlighting
 		{
 			this.Name = name;
 		}
+
+		public override string ToString ()
+		{
+			return string.Format ("[ColorDescriptionAttribute: Name={0}, Description={1}, VSSetting={2}]", Name, Description, VSSetting);
+		}
 	}
-	
 }

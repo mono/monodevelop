@@ -77,13 +77,15 @@ namespace Mono.TextEditor.Highlighting
 		
 		public static ColorScheme GetColorStyle (string name)
 		{
+			return ds;
+			/*
 			if (styles.ContainsKey (name))
 				return styles [name];
 			if (styleLookup.ContainsKey (name)) {
 				LoadStyle (name);
 				return GetColorStyle (name);
 			}
-			return GetColorStyle ("Default");
+			return GetColorStyle ("Default");*/
 		}
 		
 		public static IXmlProvider GetProvider (SyntaxMode mode)

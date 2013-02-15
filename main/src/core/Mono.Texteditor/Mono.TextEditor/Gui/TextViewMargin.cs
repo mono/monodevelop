@@ -1315,7 +1315,9 @@ namespace Mono.TextEditor
 					while (curchunk != null && curchunk.EndOffset < offset + i)
 						curchunk = curchunk.Next;
 					if (curchunk != null && curchunk.SpanStack.Count > 0 && curchunk.SpanStack.Peek ().Color != "text") {
-						col = ColorStyle.GetChunkStyle (curchunk.SpanStack.Peek ().Color).CairoColor;
+						var chunkStyle = ColorStyle.GetChunkStyle (curchunk.SpanStack.Peek ().Color);
+						if (chunkStyle != null)
+							col = chunkStyle.CairoColor;
 					} else {
 						col = ColorStyle.Default.CairoColor;
 					}
@@ -1666,7 +1668,9 @@ namespace Mono.TextEditor
 			} else {
 				if (line != null && line.NextLine != null && line.NextLine.StartSpan != null && line.NextLine.StartSpan.Count > 0) {
 					var span = line.NextLine.StartSpan.Peek ();
-					col = ColorStyle.GetChunkStyle (span.Color).CairoColor;
+					var chunkStyle = ColorStyle.GetChunkStyle (span.Color);
+					if (chunkStyle != null)
+						col = chunkStyle.CairoColor;
 				}
 			}
 
@@ -2533,6 +2537,8 @@ namespace Mono.TextEditor
 					if (wrapper.EolSpanStack != null) {
 						foreach (var span in wrapper.EolSpanStack) {
 							var spanStyle = textEditor.ColorStyle.GetChunkStyle (span.Color);
+							if (spanStyle == null)
+								continue;
 							if (!spanStyle.TransparentBackround && GetPixel (ColorStyle.Default.CairoBackgroundColor) != GetPixel (spanStyle.CairoBackgroundColor)) {
 								DrawRectangleWithRuler (cr, x, lineArea, spanStyle.CairoBackgroundColor, false);
 								break;

@@ -158,15 +158,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 			layout.Wrap = Pango.WrapMode.Char;
 			var style = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
 			SetFont ();
-			var completion = style.GetChunkStyle ("completion");
-			textColor = completion.CairoColor;
+			textColor = style.CompletionText.CairoColor;
 
-			highlightColor = style.GetChunkStyle ("completion.highlight").CairoColor;
-			backgroundColor = completion.CairoBackgroundColor;
-			selectedItemColor = style.GetChunkStyle ("completion.selection");
-			selectedItemInactiveColor = style.GetChunkStyle ("completion.selection.inactive");
-			selectionBorderColor = style.GetChunkStyle ("completion.selection.border").CairoColor;
-			selectionBorderInactiveColor = style.GetChunkStyle ("completion.selection.inactive.border").CairoColor;
+			highlightColor = style.CompletionHighlight.GetColor ("color");
+			backgroundColor = style.CompletionText.CairoBackgroundColor;
+			selectedItemColor = style.CompletionSelectedText;
+			selectedItemInactiveColor = style.CompletionSelectedInactiveText;
+			selectionBorderColor = style.CompletionBorder.GetColor ("color");
+			selectionBorderInactiveColor = style.CompletionInactiveBorder.GetColor ("color");
 		}
 
 		

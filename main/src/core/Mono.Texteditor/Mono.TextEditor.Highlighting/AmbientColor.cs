@@ -42,6 +42,8 @@ namespace Mono.TextEditor.Highlighting
 		
 		public Cairo.Color GetColor (string name)
 		{
+			if (Colors.Count == 0)
+				return new Cairo.Color (0, 0, 0);
 			return Colors.First (t => t.Item1 == name).Item2;
 		}
 

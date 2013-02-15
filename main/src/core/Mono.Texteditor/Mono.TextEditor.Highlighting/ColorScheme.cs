@@ -137,7 +137,23 @@ namespace Mono.TextEditor.Highlighting
 
 		[ColorDescription("Column Ruler")] // not defined
 		public AmbientColor Ruler { get; private set; }
+
+		[ColorDescription("Completion Matching Substring")]
+		public AmbientColor CompletionHighlight { get; private set; }
+
+		[ColorDescription("Completion Border")]
+		public AmbientColor CompletionBorder { get; private set; }
+
+		[ColorDescription("Completion Border(Inactive)")]
+		public AmbientColor CompletionInactiveBorder { get; private set; }
 		
+		[ColorDescription("Message Bubble Error")]
+		public AmbientColor MessageBubbleError { get; private set; }
+		
+		[ColorDescription("Message Bubble Warning")]
+		public AmbientColor MessageBubbleWarning { get; private set; }
+		
+
 		#endregion
 
 		#region Text Colors
@@ -213,6 +229,12 @@ namespace Mono.TextEditor.Highlighting
 
 		[ColorDescription("Completion Text")] //not defined in vs.net
 		public ChunkStyle CompletionText { get; private set; }
+
+		[ColorDescription("Completion Selected Text")] //not defined in vs.net
+		public ChunkStyle CompletionSelectedText { get; private set; }
+
+		[ColorDescription("Completion Selected Text(Inactive)")] //not defined in vs.net
+		public ChunkStyle CompletionSelectedInactiveText { get; private set; }
 
 		[ColorDescription("Keyword(Access)", VSSetting = "Keyword")]
 		public ChunkStyle KeywordAccessors { get; private set; }
@@ -333,7 +355,7 @@ namespace Mono.TextEditor.Highlighting
 				var description = property.GetCustomAttributes (false).FirstOrDefault (p => p is ColorDescriptionAttribute) as ColorDescriptionAttribute;
 				if (description == null)
 					continue;
-				if (property.PropertyType.Name == "TextColor") {
+				if (property.PropertyType == typeof (ChunkStyle)) {
 					textColors.Add (description.Name, property);
 				} else {
 					ambientColors.Add (description.Name, property);
@@ -364,8 +386,10 @@ namespace Mono.TextEditor.Highlighting
 		public ChunkStyle GetChunkStyle (string color)
 		{
 			PropertyInfo val;
-			if (!textColors.TryGetValue (color, out val))
+			if (!textColors.TryGetValue (color, out val)) {
+				Console.WriteLine ("Chunk style : " + color + " is undefined.");
 				return null;
+			}
 			return val.GetValue (this, null) as ChunkStyle;
 		}
 
