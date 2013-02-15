@@ -289,10 +289,10 @@ namespace Mono.PkgConfig
 		
 		public void UpdateFromFile (string file)
 		{
-			Update (System.Reflection.AssemblyName.GetAssemblyName (file));
+			Update (IKVM.Reflection.AssemblyName.GetAssemblyName (file));
 		}
 		
-		public void Update (System.Reflection.AssemblyName aname)
+		public void Update (IKVM.Reflection.AssemblyName aname)
 		{
 			Name = aname.Name;
 			Version = aname.Version.ToString ();

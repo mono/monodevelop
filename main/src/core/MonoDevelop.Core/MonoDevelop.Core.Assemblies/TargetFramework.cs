@@ -27,13 +27,13 @@
 
 using System;
 using System.IO;
-using System.Reflection;
 using System.Collections.Generic;
 
 using Mono.Addins;
 using Mono.PkgConfig;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Serialization;
+using IKVM.Reflection;
 
 namespace MonoDevelop.Core.Assemblies
 {
@@ -452,7 +452,7 @@ namespace MonoDevelop.Core.Assemblies
 			Update (SystemAssemblyService.GetAssemblyNameObj (file));
 		}
 		
-		public void Update (AssemblyName aname)
+		public void Update (IKVM.Reflection.AssemblyName aname)
 		{
 			Name = aname.Name;
 			Version = aname.Version.ToString ();

@@ -545,7 +545,7 @@ namespace MonoDevelop.Core.Assemblies
 					if (File.Exists (file)) {
 						if (assembly.Version == null && IsRunning) {
 							try {
-								System.Reflection.AssemblyName aname = SystemAssemblyService.GetAssemblyNameObj (file);
+								IKVM.Reflection.AssemblyName aname = SystemAssemblyService.GetAssemblyNameObj (file);
 								assembly.Update (aname);
 							} catch {
 								// If something goes wrong when getting the name, just ignore the assembly

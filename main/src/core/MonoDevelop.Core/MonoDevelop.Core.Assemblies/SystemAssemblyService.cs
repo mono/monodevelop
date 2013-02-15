@@ -35,12 +35,12 @@ using System.Xml;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Serialization;
 using Mono.Addins;
 using Mono.Cecil;
+using IKVM.Reflection;
 
 namespace MonoDevelop.Core.Assemblies
 {
@@ -215,9 +215,9 @@ namespace MonoDevelop.Core.Assemblies
 			return null;
 		}
 
-		public static AssemblyName ParseAssemblyName (string fullname)
+		public static System.Reflection.AssemblyName ParseAssemblyName (string fullname)
 		{
-			AssemblyName aname = new AssemblyName ();
+			var aname = new System.Reflection.AssemblyName ();
 			int i = fullname.IndexOf (',');
 			if (i == -1) {
 				aname.Name = fullname.Trim ();
@@ -240,7 +240,7 @@ namespace MonoDevelop.Core.Assemblies
 		}
 		
 		static Dictionary<string, AssemblyName> assemblyNameCache = new Dictionary<string, AssemblyName> ();
-		internal static System.Reflection.AssemblyName GetAssemblyNameObj (string file)
+		internal static AssemblyName GetAssemblyNameObj (string file)
 		{
 			lock (assemblyNameCache) {
 				AssemblyName name;
@@ -248,14 +248,7 @@ namespace MonoDevelop.Core.Assemblies
 					return name;
 				
 				try {
-					/*
-					// Don't use reflection to get the name since it is a common cause for deadlocks
-					// in Mono < 2.6.
-					AssemblyDefinition asm = AssemblyDefinition.ReadAssembly (file);
-					assemblyNameCache [file] = new AssemblyName (asm.Name.FullName);
-					return assemblyNameCache [file];
-					*/
-					assemblyNameCache [file] = System.Reflection.AssemblyName.GetAssemblyName (file);
+					assemblyNameCache [file] = AssemblyName.GetAssemblyName (file);
 					return assemblyNameCache [file];
 				} catch (FileNotFoundException) {
 					// GetAssemblyName is not case insensitive in mono/windows. This is a workaround
@@ -366,8 +359,8 @@ namespace MonoDevelop.Core.Assemblies
 		/// </summary>
 		public static IEnumerable<string> GetAssemblyReferences (string fileName)
 		{
-			using (var universe = new IKVM.Reflection.Universe ()) {
-				IKVM.Reflection.Assembly assembly;
+			using (var universe = new Universe ()) {
+				Assembly assembly;
 				try {
 					assembly = universe.LoadFile (fileName);
 				} catch {
