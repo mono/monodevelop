@@ -664,7 +664,7 @@ namespace Mono.TextEditor
 				}
 
 
-				var fgColor = textEditor.ColorStyle.Default.CairoColor;
+				var fgColor = textEditor.ColorStyle.PlainText.CairoColor;
 //				var bgColor = textEditor.ColorStyle.Default.CairoBackgroundColor;
 				var line = Document.GetLine (Caret.Line);
 				if (line != null) {
@@ -703,7 +703,7 @@ namespace Mono.TextEditor
 							layout.FontDescription = textEditor.Options.Font;
 							layout.SetText (caretChar.ToString ());
 							cr.MoveTo (caretRectangle.X, caretRectangle.Y);
-							cr.Color = textEditor.ColorStyle.Default.CairoBackgroundColor;
+							cr.Color = textEditor.ColorStyle.PlainText.CairoBackgroundColor;
 							cr.ShowLayout (layout);
 						}
 					}
@@ -926,14 +926,14 @@ namespace Mono.TextEditor
 						}
 						atts.AddForegroundAttribute ((HslColor)color, si, ei);
 						
-						if (!chunkStyle.TransparentBackround && GetPixel (ColorStyle.Default.CairoBackgroundColor) != GetPixel (chunkStyle.CairoBackgroundColor)) {
+						if (!chunkStyle.TransparentBackround && GetPixel (ColorStyle.PlainText.CairoBackgroundColor) != GetPixel (chunkStyle.CairoBackgroundColor)) {
 							wrapper.AddBackground (chunkStyle.CairoBackgroundColor, (int)si, (int)ei);
 						} else if (chunk.SpanStack != null && ColorStyle != null) {
 							foreach (var span in chunk.SpanStack) {
 								if (span == null)
 									continue;
 								var spanStyle = ColorStyle.GetChunkStyle (span.Color);
-								if (!spanStyle.TransparentBackround && GetPixel (ColorStyle.Default.CairoBackgroundColor) != GetPixel (spanStyle.CairoBackgroundColor)) {
+								if (!spanStyle.TransparentBackround && GetPixel (ColorStyle.PlainText.CairoBackgroundColor) != GetPixel (spanStyle.CairoBackgroundColor)) {
 									wrapper.AddBackground (spanStyle.CairoBackgroundColor, (int)si, (int)ei);
 									break;
 								}
@@ -1319,10 +1319,10 @@ namespace Mono.TextEditor
 						if (chunkStyle != null)
 							col = chunkStyle.CairoColor;
 					} else {
-						col = ColorStyle.Default.CairoColor;
+						col = ColorStyle.PlainText.CairoColor;
 					}
 				} else {
-					col = selected ? SelectionColor.CairoColor : col = ColorStyle.Default.CairoColor;
+					col = selected ? SelectionColor.CairoColor : col = ColorStyle.PlainText.CairoColor;
 				}
 				ctx.Color = new Cairo.Color (col.R, col.G, col.B, whitespaceMarkerAlpha);
 
@@ -1661,7 +1661,7 @@ namespace Mono.TextEditor
 			}
 			cr.Save ();
 			cr.Translate (x, y + System.Math.Max (0, LineHeight - rect.Height - 1));
-			var col = ColorStyle.Default.CairoColor;
+			var col = ColorStyle.PlainText.CairoColor;
 
 			if (selected && SelectionColor.GotForegroundColorAssigned) {
 				col = SelectionColor.CairoColor;
@@ -2387,7 +2387,7 @@ namespace Mono.TextEditor
 			int width, height;
 			double pangoPosition = (x - textEditor.HAdjustment.Value + TextStartPosition) * Pango.Scale.PangoScale;
 
-			defaultBgColor = Document.ReadOnly ? ColorStyle.BackgroundReadOnly.GetColor ("color") : ColorStyle.Default.CairoBackgroundColor;
+			defaultBgColor = Document.ReadOnly ? ColorStyle.BackgroundReadOnly.GetColor ("color") : ColorStyle.PlainText.CairoBackgroundColor;
 
 			// Draw the default back color for the whole line. Colors other than the default
 			// background will be drawn when rendering the text chunks.
@@ -2539,7 +2539,7 @@ namespace Mono.TextEditor
 							var spanStyle = textEditor.ColorStyle.GetChunkStyle (span.Color);
 							if (spanStyle == null)
 								continue;
-							if (!spanStyle.TransparentBackround && GetPixel (ColorStyle.Default.CairoBackgroundColor) != GetPixel (spanStyle.CairoBackgroundColor)) {
+							if (!spanStyle.TransparentBackround && GetPixel (ColorStyle.PlainText.CairoBackgroundColor) != GetPixel (spanStyle.CairoBackgroundColor)) {
 								DrawRectangleWithRuler (cr, x, lineArea, spanStyle.CairoBackgroundColor, false);
 								break;
 							}

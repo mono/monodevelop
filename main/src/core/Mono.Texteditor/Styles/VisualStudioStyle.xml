@@ -99,18 +99,18 @@
 	</Style>
 	
 	<Style name="constant" color="black"/>
-	<Style name="constant.language" color="keyword-blue"/>
+	<Style name="Keyword(Constants)" color="keyword-blue"/>
 
 	<Style name="string" color="#a31515"/>
-	<Style name="string.single" color="#a31515"/>
-	<Style name="string.double" color="#a31515"/>
-	<Style name="string.other" color="#a31515"/>
+	<Style name="String" color="#a31515"/>
+	<Style name="String" color="#a31515"/>
+	<Style name="String" color="#a31515"/>
 	
-	<Style name="keyword.semantic.type" color="semantic-type"/>
-	<Style name="keyword.semantic.error" color="red"/>
-	<Style name="keyword.semantic.field" color="#5c3566"/>
-	<Style name="keyword.semantic.property" color="#5c3566"/>
-	<Style name="keyword.semantic.method" color="#5c3566"/>
+	<Style name="User Types" color="semantic-type"/>
+	<Style name="Syntax Error" color="red"/>
+	<Style name="User Field Usage" color="#5c3566"/>
+	<Style name="User Property Usage" color="#5c3566"/>
+	<Style name="User Method Usage" color="#5c3566"/>
 	<Style name="keyword" color="keyword-blue">
 		<Style name="access"/>
 	</Style>

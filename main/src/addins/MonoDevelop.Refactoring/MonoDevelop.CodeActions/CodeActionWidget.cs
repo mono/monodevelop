@@ -1,4 +1,4 @@
-﻿// 
+// 
 // QuickFixWidget.cs
 //  
 // Author:
@@ -314,14 +314,14 @@ namespace MonoDevelop.CodeActions
 			using (var cr = Gdk.CairoHelper.Create (evnt.Window)) {
 				cr.LineWidth = border;
 				cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
-				cr.Color = document.Editor.ColorStyle.Default.CairoBackgroundColor;
+				cr.Color = document.Editor.ColorStyle.PlainText.CairoBackgroundColor;
 				cr.Fill ();
 				
 				FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr,
 					true, true,
 					0, 0, Allocation.Width / 2, 
 					Allocation.Width, Allocation.Height);
-				cr.Color = isMouseInside || menuPushed ? document.Editor.ColorStyle.Default.CairoColor : document.Editor.ColorStyle.FoldMargin.GetColor ("color");
+				cr.Color = isMouseInside || menuPushed ? document.Editor.ColorStyle.PlainText.CairoColor : document.Editor.ColorStyle.FoldMargin.GetColor ("color");
 				cr.Stroke ();
 				
 				evnt.Window.DrawPixbuf (Style.BaseGC (State), icon, 

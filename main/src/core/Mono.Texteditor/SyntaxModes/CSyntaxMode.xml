@@ -36,7 +36,7 @@
 		<End>#endif|#else</End>
 	</Span>
 	
-	<EolSpan color = "text.preprocessor" rule="text.preprocessor" continuation="\">#</EolSpan>
+	<EolSpan color = "Preprocessor" rule="text.preprocessor" continuation="\">#</EolSpan>
 	<EolSpan color = "comment" rule="Comment">//</EolSpan>
 	
 	<Span color = "comment" rule="Comment" tagColor="comment.tag">
@@ -56,11 +56,11 @@
 	
 	<Match color = "string">CSharpNumber</Match>
 	
-	<Keywords color = "keyword.operator">
+	<Keywords color = "Keyword(Operator)">
 		<Word>sizeof</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.selection">
+	<Keywords color = "Keyword(Selection)">
 		<Word>else</Word>
 		<Word>if</Word>
 		<Word>switch</Word>
@@ -68,24 +68,24 @@
 		<Word>default</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.iteration">
+	<Keywords color = "Keyword(Iteration)">
 		<Word>do</Word>
 		<Word>for</Word>
 		<Word>while</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.jump">
+	<Keywords color = "Keyword(Jump)">
 		<Word>break</Word>
 		<Word>continue</Word>
 		<Word>goto</Word>
 		<Word>return</Word>
 	</Keywords>
 	
-	<Keywords color = "constant.language">
+	<Keywords color = "Keyword(Constants)">
 		<Word>NULL</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.modifier">
+	<Keywords color = "Keyword(Modifiers)">
 		<Word>const</Word>
 		<Word>extern</Word>
 		<Word>static</Word>
@@ -94,7 +94,7 @@
 		<Word>register</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.type">
+	<Keywords color = "Keyword(Type)">
 		<Word>char</Word>
 		
 		<Word>double</Word>
@@ -108,18 +108,18 @@
 		<Word>unsigned</Word>
 	</Keywords>
 	
-	<Keywords color = "constant.language.void">
+	<Keywords color = "Keyword(Void)">
 		<Word>void</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.declaration">
+	<Keywords color = "Keyword(Declaration)">
 		<Word>enum</Word>
 		<Word>struct</Word>
 		<Word>union</Word>
 		<Word>typedef</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.misc">
+	<Keywords color = "Keyword(Other)">
 		<Word>asm</Word>
 		<Word>auto</Word>
 		<Word>_Bool</Word>
@@ -142,7 +142,7 @@
 	</Rule>
 	
 	<Rule name = "Comment">
-		<Keywords color="comment.keyword.todo" ignorecase="True">
+		<Keywords color="Comment Tag" ignorecase="True">
 			<Word>TODO</Word>
 			<Word>FIXME</Word>
 			<Word>HACK</Word>

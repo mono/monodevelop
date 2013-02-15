@@ -96,7 +96,7 @@ namespace Mono.TextEditor.Highlighting
 		
 		protected SyntaxMode () : base (null)
 		{
-			DefaultColor = "text";
+			DefaultColor = "Plain Text";
 			Name = "<root>";
 			this.Delimiter = "&()<>{}[]~!%^*-+=|\\#/:;\"' ,\t.?";
 		}

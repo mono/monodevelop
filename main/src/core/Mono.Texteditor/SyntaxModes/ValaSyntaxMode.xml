@@ -55,17 +55,17 @@
 	
 	<Match color = "string">CSharpNumber</Match>
 	
-	<Keywords color = "keyword.access">
+	<Keywords color = "Keyword(Access)">
 		<Word>this</Word>
 		<Word>base</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.operator">
+	<Keywords color = "Keyword(Operator)">
 		<Word>as</Word>
 		<Word>new</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.selection">
+	<Keywords color = "Keyword(Selection)">
 		<Word>else</Word>
 		<Word>if</Word>
 		<Word>switch</Word>
@@ -73,7 +73,7 @@
 		<Word>default</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.iteration">
+	<Keywords color = "Keyword(Iteration)">
 		<Word>do</Word>
 		<Word>for</Word>
 		<Word>foreach</Word>
@@ -81,27 +81,27 @@
 		<Word>while</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.jump">
+	<Keywords color = "Keyword(Jump)">
 		<Word>break</Word>
 		<Word>continue</Word>
 		<Word>goto</Word>
 		<Word>return</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.exceptions">
+	<Keywords color = "Keyword(Exception)">
 		<Word>try</Word>
 		<Word>throw</Word>
 		<Word>catch</Word>
 		<Word>finally</Word>
 	</Keywords>
 	
-	<Keywords color = "constant.language">
+	<Keywords color = "Keyword(Constants)">
 		<Word>true</Word>
 		<Word>false</Word>
 		<Word>null</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.modifier">
+	<Keywords color = "Keyword(Modifiers)">
 		<Word>abstract</Word>
 		<Word>const</Word>
 		<Word>extern</Word>
@@ -116,7 +116,7 @@
 		<Word>construct</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.type">
+	<Keywords color = "Keyword(Type)">
 		<Word>bool</Word>
 		<Word>char</Word>
 		<Word>double</Word>
@@ -132,22 +132,22 @@
 		<Word>string</Word>
 	</Keywords>
 	
-	<Keywords color = "constant.language.void">
+	<Keywords color = "Keyword(Void)">
 		<Word>void</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.namespace">
+	<Keywords color = "Keyword(Namespace)">
 		<Word>namespace</Word>
 		<Word>using</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.property">		
+	<Keywords color = "Keyword(Property)">		
 		<Word>get</Word>
 		<Word>set</Word>
 		<Word>value</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.declaration">
+	<Keywords color = "Keyword(Declaration)">
 		<Word>class</Word>
 		<Word>interface</Word>
 		<Word>delegate</Word>
@@ -155,14 +155,14 @@
 		<Word>struct</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.parameter">
+	<Keywords color = "Keyword(Parameter)">
 		<Word>ref</Word>
 		<Word>out</Word>
 	</Keywords>
 	
 	
 	<Rule name = "Comment">
-		<Keywords color="comment.keyword.todo" ignorecase="True">
+		<Keywords color="Comment Tag" ignorecase="True">
 			<Word>TODO</Word>
 			<Word>FIXME</Word>
 			<Word>HACK</Word>

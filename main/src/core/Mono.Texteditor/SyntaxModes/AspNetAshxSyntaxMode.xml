@@ -43,7 +43,7 @@
 		</Span>
 		
 		<!-- attributes -->
-		<Match color = "keyword.type">[A-Za-z0-9_]+(:[A-Za-z0-9_]+)?[\s\n\r]*=</Match>
+		<Match color = "Keyword(Type)">[A-Za-z0-9_]+(:[A-Za-z0-9_]+)?[\s\n\r]*=</Match>
 		
 		<!-- comments -->
 		<Span color = "comment.server" rule = "Comment">
@@ -61,7 +61,7 @@
 	
 	<Rule name = "InLiteral">
 		<!-- entities -->
-		<Span color = "text.preprocessor">
+		<Span color = "Preprocessor">
 			<Begin>&amp;</Begin>
 			<End>;</End>
 		</Span>

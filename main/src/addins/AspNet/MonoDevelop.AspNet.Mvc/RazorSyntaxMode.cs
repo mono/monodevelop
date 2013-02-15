@@ -213,7 +213,7 @@ namespace MonoDevelop.AspNet.Mvc
 		string GetStyleForCSharpSymbol (CSharpSymbol symbol)
 		{
 			if (symbol.Content == "var" || symbol.Content == "dynamic")
-				return "keyword.type";
+				return "Keyword(Type)";
 
 			string style = "text";
 			switch (symbol.Type) {
@@ -264,17 +264,17 @@ namespace MonoDevelop.AspNet.Mvc
 				case CSharpKeyword.Static:
 				case CSharpKeyword.Virtual:
 				case CSharpKeyword.Volatile:
-					return "keyword.modifier";
+					return "Keyword(Modifiers)";
 				case CSharpKeyword.As:
 				case CSharpKeyword.Is:
 				case CSharpKeyword.New:
 				case CSharpKeyword.Sizeof:
 				case CSharpKeyword.Stackalloc:
 				case CSharpKeyword.Typeof:
-					return "keyword.operator";
+					return "Keyword(Operator)";
 				case CSharpKeyword.Base:
 				case CSharpKeyword.This:
-					return "keyword.access";
+					return "Keyword(Access)";
 				case CSharpKeyword.Bool:
 				case CSharpKeyword.Byte:
 				case CSharpKeyword.Char:
@@ -292,54 +292,54 @@ namespace MonoDevelop.AspNet.Mvc
 				case CSharpKeyword.Uint:
 				case CSharpKeyword.Ulong:
 				case CSharpKeyword.Ushort:
-					return "keyword.type";
+					return "Keyword(Type)";
 				case CSharpKeyword.Break:
 				case CSharpKeyword.Continue:
 				case CSharpKeyword.Goto:
 				case CSharpKeyword.Return:
-					return "keyword.jump";
+					return "Keyword(Jump)";
 				case CSharpKeyword.Case:
 				case CSharpKeyword.Else:
 				case CSharpKeyword.Default:
 				case CSharpKeyword.If:
 				case CSharpKeyword.Switch:
-					return "keyword.selection";
+					return "Keyword(Selection)";
 				case CSharpKeyword.Catch:
 				case CSharpKeyword.Finally:
 				case CSharpKeyword.Throw:
 				case CSharpKeyword.Try:
-					return "keyword.exceptions";
+					return "Keyword(Exception)";
 				case CSharpKeyword.Checked:
 				case CSharpKeyword.Fixed:
 				case CSharpKeyword.Lock:
 				case CSharpKeyword.Unchecked:
 				case CSharpKeyword.Unsafe:
-					return "keyword.misc";
+					return "Keyword(Other)";
 				case CSharpKeyword.Class:
 				case CSharpKeyword.Delegate:
 				case CSharpKeyword.Interface:
-					return "keyword.declaration";
+					return "Keyword(Declaration)";
 				case CSharpKeyword.Do:
 				case CSharpKeyword.For:
 				case CSharpKeyword.Foreach:
 				case CSharpKeyword.In:
 				case CSharpKeyword.While:
-					return "keyword.iteration";
+					return "Keyword(Iteration)";
 				case CSharpKeyword.Explicit:
 				case CSharpKeyword.Implicit:
 				case CSharpKeyword.Operator:
-					return "keyword.operator.declaration";
+					return "Keyword(Operator Declaration)";
 				case CSharpKeyword.False:
 				case CSharpKeyword.Null:
 				case CSharpKeyword.True:
 					return "constant.language";
 				case CSharpKeyword.Namespace:
 				case CSharpKeyword.Using:
-					return "keyword.namespace";
+					return "Keyword(Namespace)";
 				case CSharpKeyword.Out:
 				case CSharpKeyword.Params:
 				case CSharpKeyword.Ref:
-					return "keyword.parameter";
+					return "Keyword(Parameter)";
 				case CSharpKeyword.Void:
 					return "constant.language.void";
 				default:

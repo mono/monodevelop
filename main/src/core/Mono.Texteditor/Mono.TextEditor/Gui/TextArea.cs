@@ -713,7 +713,7 @@ namespace Mono.TextEditor
 			if (this.textEditorData.ColorStyle != null && GdkWindow != null) {
 				settingWidgetBg = true; //prevent infinite recusion
 				
-				this.ModifyBg (StateType.Normal, (HslColor)this.textEditorData.ColorStyle.Default.CairoBackgroundColor);
+				this.ModifyBg (StateType.Normal, (HslColor)this.textEditorData.ColorStyle.PlainText.CairoBackgroundColor);
 				settingWidgetBg = false;
 			}
 		}
@@ -2266,7 +2266,7 @@ namespace Mono.TextEditor
 				                                                    System.Math.Min (editor.TextViewMargin.charWidth / 2, width), 
 				                                                    width,
 				                                                    editor.LineHeight + 2 * extend * editor.Options.Zoom);
-				Cairo.Color color = editor.ColorStyle.Default.CairoColor;
+				Cairo.Color color = editor.ColorStyle.PlainText.CairoColor;
 				color.A = 0.8;
 				cr.LineWidth = editor.Options.Zoom;
 				cr.Color = color;
@@ -2330,7 +2330,7 @@ namespace Mono.TextEditor
 				                                                    System.Math.Min (editor.TextViewMargin.charWidth / 2, width), 
 				                                                    width,
 				                                                    (int)(region.Height + 2 * animationPosition * editor.Options.Zoom));
-				Cairo.Color color = editor.ColorStyle.Default.CairoColor;
+				Cairo.Color color = editor.ColorStyle.PlainText.CairoColor;
 				color.A = 0.8;
 				cr.LineWidth = editor.Options.Zoom;
 				cr.Color = color;

@@ -57,7 +57,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 		{
 			switch (result.Level) {
 			case Severity.None:
-				return editor.ColorStyle.Default.CairoBackgroundColor;
+				return editor.ColorStyle.PlainText.CairoBackgroundColor;
 			case Severity.Error:
 				return editor.ColorStyle.UnderlineError.GetColor ("color");
 			case Severity.Warning:
@@ -121,7 +121,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 			cr.Color = GetColor (editor, Result);
 			if (drawOverlay) {
 				cr.Rectangle (drawFrom, y, drawTo - drawFrom, editor.LineHeight);
-				var color = editor.ColorStyle.Default.CairoBackgroundColor;
+				var color = editor.ColorStyle.PlainText.CairoBackgroundColor;
 				color.A = 0.6;
 				cr.Color = color;
 				cr.Fill ();
@@ -155,7 +155,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 			if (!(markerStart <= chunk.Offset && chunk.Offset < markerEnd)) 
 				return;
 
-			var bgc = editor.ColorStyle.Default.CairoBackgroundColor;
+			var bgc = editor.ColorStyle.PlainText.CairoBackgroundColor;
 			double alpha = 0.6;
 			color = new Cairo.Color (
 				color.R * alpha + bgc.R * (1.0 - alpha),

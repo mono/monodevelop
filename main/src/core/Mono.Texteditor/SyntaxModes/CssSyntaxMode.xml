@@ -32,7 +32,7 @@
 	<Property name="StringQuote">'</Property>
 	
 	
-	<Span color = "comment.block" rule="Comment" tagColor="comment.tag.block">
+	<Span color = "Comment(Block)" rule="Comment" tagColor="comment.tag.block">
 		<Begin>/*</Begin>
 		<End>*/</End>
 	</Span>
@@ -44,17 +44,17 @@
 	
 	<Rule name="Ruleset">
 		
-		<Span color = "string.double" rule="String" stopateol = "true" escape='\'>
+		<Span color = "String" rule="String" stopateol = "true" escape='\'>
 			<Begin>"</Begin>
 			<End>"</End>
 		</Span>
 		
-		<Span color = "string.single" rule="String" stopateol = "true" escape='\'>
+		<Span color = "String" rule="String" stopateol = "true" escape='\'>
 			<Begin>'</Begin>
 			<End>'</End>
 		</Span>
 		
-		<Match color="constant.digit">\s*\d+\s*</Match>
+		<Match color="Number">\s*\d+\s*</Match>
 		
 		<Keywords color = "keyword">
 			<Word>azimuth</Word>
@@ -175,7 +175,7 @@
 	</Rule>
 	
 	<Rule name = "Comment">
-		<Keywords color="comment.keyword.todo" ignorecase="True">
+		<Keywords color="Comment Tag" ignorecase="True">
 			<Word>TODO</Word>
 			<Word>FIXME</Word>
 			<Word>HACK</Word>

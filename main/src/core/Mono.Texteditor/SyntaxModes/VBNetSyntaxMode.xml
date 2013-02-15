@@ -28,7 +28,7 @@
 	<Property name="LineComment">'</Property>
 	<Property name="StringQuote">"</Property>
 	
-	<EolSpan color = "text.preprocessor" rule="text.preprocessor">#</EolSpan>
+	<EolSpan color = "Preprocessor" rule="text.preprocessor">#</EolSpan>
 	<EolSpan color = "comment" rule="Comment">'</EolSpan>
 	<EolSpan color = "comment" rule="Comment">REM</EolSpan>
 	
@@ -42,13 +42,13 @@
 		<End>"</End>
 	</Span>
 	
-	<Keywords color = "keyword.access">
+	<Keywords color = "Keyword(Access)">
 		<Word>Me</Word>
 		<Word>MyBase</Word>
 		<Word>MyClass</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.operator">
+	<Keywords color = "Keyword(Operator)">
 		<Word>AddressOf</Word>
 		<Word>And</Word>
 		<Word>AndAlso</Word>
@@ -63,7 +63,7 @@
 		<Word>Xor</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.selection">
+	<Keywords color = "Keyword(Selection)">
 		<Word>If</Word>
 		<Word>Then</Word>
 		<Word>Else</Word>
@@ -74,7 +74,7 @@
 		<Word>Case</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.iteration">
+	<Keywords color = "Keyword(Iteration)">
 		<Word>For</Word>
 		<Word>To</Word>
 		<Word>Step</Word>
@@ -91,7 +91,7 @@
 		<Word>Wend</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.jump">
+	<Keywords color = "Keyword(Jump)">
 		<Word>GoTo</Word>
 		<Word>GoSub</Word>
 		<Word>Call</Word>
@@ -100,7 +100,7 @@
 		<Word>Return</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.context">
+	<Keywords color = "Keyword(Context)">
 		<Word>Resume</Word>
 		<Word>AddHandler</Word>
 		<Word>RemoveHandler</Word>
@@ -111,7 +111,7 @@
 		<Word>Erase</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.exceptions">
+	<Keywords color = "Keyword(Exception)">
 		<Word>Try</Word>
 		<Word>Catch</Word>
 		<Word>When</Word>
@@ -125,13 +125,13 @@
 		<Word>Exit</Word>
 	</Keywords>
 	
-	<Keywords color = "constant.language">
+	<Keywords color = "Keyword(Constants)">
 		<Word>False</Word>
 		<Word>Nothing</Word>
 		<Word>True</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.modifier">
+	<Keywords color = "Keyword(Modifiers)">
 		<Word>Friend</Word>
 		<Word>Private</Word>
 		<Word>Protected</Word>
@@ -160,7 +160,7 @@
 				
 	</Keywords>
 	
-	<Keywords color = "keyword.type">
+	<Keywords color = "Keyword(Type)">
 		<Word>Boolean</Word>
 		<Word>Byte</Word>
 		<Word>Char</Word>
@@ -181,12 +181,12 @@
 	</Keywords>
 	
 	
-	<Keywords color = "keyword.namespace">
+	<Keywords color = "Keyword(Namespace)">
 		<Word>Namespace</Word>
 		<Word>Imports</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.property">		<Word>Sub</Word>
+	<Keywords color = "Keyword(Property)">		<Word>Sub</Word>
 		<Word>Function</Word>
 		<Word>Handles</Word>
 		<Word>Declare</Word>
@@ -199,7 +199,7 @@
 		<Word>Event</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.declaration">
+	<Keywords color = "Keyword(Declaration)">
 		<Word>Class</Word>
 		<Word>Implements</Word>
 		<Word>Inherits</Word>
@@ -210,7 +210,7 @@
 		<Word>Enum</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.parameter">
+	<Keywords color = "Keyword(Parameter)">
 		<Word>ByRef</Word>
 		<Word>ByVal</Word>
 		<Word>Optional</Word>
@@ -218,7 +218,7 @@
 	</Keywords>
 	
 	
-	<Keywords color = "keyword.operator.declaration">
+	<Keywords color = "Keyword(Operator Declaration)">
 		<Word>Ansi</Word>
 		<Word>Auto</Word>
 		<Word>Unicode</Word>
@@ -226,7 +226,7 @@
 		<Word>Until</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.misc">
+	<Keywords color = "Keyword(Other)">
 		<Word>As</Word>
 		<Word>Of</Word>
 		<Word>New</Word>
@@ -269,7 +269,7 @@
 	</Rule>
 	
 	<Rule name = "Comment">
-		<Keywords color="comment.keyword.todo">
+		<Keywords color="Comment Tag">
 			<Word>TODO</Word>
 			<Word>FIXME</Word>
 			<Word>HACK</Word>

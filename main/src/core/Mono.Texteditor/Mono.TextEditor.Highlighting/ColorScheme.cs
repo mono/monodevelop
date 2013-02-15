@@ -99,7 +99,7 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("Brace Matching(Rectangle)")]
 		public AmbientColor BraceMatchingRectangle { get; private set; }
 		
-		[ColorDescription("Usages(Rectangle)")]
+		[ColorDescription("Usages(Rectangle)", VSSetting="Highlighted Reference")]
 		public AmbientColor UsagesRectangle { get; private set; }
 
 		[ColorDescription("Breakpoint Marker")]
@@ -159,7 +159,7 @@ namespace Mono.TextEditor.Highlighting
 		#region Text Colors
 
 		[ColorDescription("Plain Text", VSSetting = "Plain Text")]
-		public ChunkStyle Default { get; private set; }
+		public ChunkStyle PlainText { get; private set; }
 
 		[ColorDescription("Selected Text", VSSetting = "Selected Text")]
 		public ChunkStyle SelectedText { get; private set; }
@@ -317,7 +317,7 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("User Property Declaration", VSSetting = "Plain Text")]
 		public ChunkStyle UserPropertyDeclaration { get; private set; }
 		
-		[ColorDescription("UserEventUsage", VSSetting = "Plain Text")]
+		[ColorDescription("User Event Usage", VSSetting = "Plain Text")]
 		public ChunkStyle UserEventUsage { get; private set; }
 		
 		[ColorDescription("User Event Declaration", VSSetting = "Plain Text")]
@@ -338,8 +338,7 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("Breakpoint Text(Invalid)", VSSetting = "Breakpoint (Disabled)")]
 		public ChunkStyle BreakpointTextInvalid { get; private set; }
 
-		
-		[ColorDescription("Debugger Current Line")] // not defined
+		[ColorDescription("Debugger Current Statement", VSSetting = "Current Statement")]
 		public ChunkStyle DebuggerCurrentLine { get; private set; }
 		
 		[ColorDescription("Debugger Stack Line")] // not defined

@@ -162,7 +162,7 @@
 		{ "name": "Breakpoint Text", "fore":"white", "back":"#AB616B" },
 		{ "name": "Breakpoint Text(Invalid)", "fore":"white", "back":"#eddcdc" },
 	
-		{ "name": "Debugger Current Line", "fore":"black", "back":"#ffff00" },
+		{ "name": "Debugger Current Statement", "fore":"black", "back":"#ffff00" },
 		{ "name": "Debugger Stack Line", "fore":"black", "back":"#80ff80" }
 	]
 }

@@ -276,7 +276,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			case Severity.Hint:
 				return style.UnderlineHint.GetColor ("color");
 			case Severity.None:
-				return style.Default.CairoBackgroundColor;
+				return style.PlainText.CairoBackgroundColor;
 			default:
 				throw new ArgumentOutOfRangeException ();
 			}
@@ -409,7 +409,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			cr.LineTo (7, y);
 			cr.LineTo (0, y + 4);
 			cr.ClosePath ();
-			cr.Color = TextEditor.ColorStyle.Default.CairoColor;
+			cr.Color = TextEditor.ColorStyle.PlainText.CairoColor;
 			cr.Fill ();
 		}
 
@@ -429,7 +429,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 			foreach (var usage in AllUsages) {
 				double y = GetYPosition (usage.Line);
-				var usageColor = TextEditor.ColorStyle.Default.CairoColor;
+				var usageColor = TextEditor.ColorStyle.PlainText.CairoColor;
 				usageColor.A = 0.4;
 				cr.Color = usageColor;
 				cr.MoveTo (0, y - 3);
@@ -464,7 +464,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			cr.MoveTo (0.5, 0);
 			cr.LineTo (0.5, Allocation.Height);
 			if (TextEditor.ColorStyle != null) {
-				var col = (HslColor)TextEditor.ColorStyle.Default.CairoBackgroundColor;
+				var col = (HslColor)TextEditor.ColorStyle.PlainText.CairoBackgroundColor;
 				col.L *= 0.88;
 				cr.Color = col;
 			
@@ -499,7 +499,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				barH,
 				barWidth / 2);
 			
-			var color = (HslColor)((TextEditor.ColorStyle != null) ? TextEditor.ColorStyle.Default.CairoColor : new Cairo.Color (0, 0, 0));
+			var color = (HslColor)((TextEditor.ColorStyle != null) ? TextEditor.ColorStyle.PlainText.CairoColor : new Cairo.Color (0, 0, 0));
 			color.L = 0.5;
 			var c = (Cairo.Color)color;
 			c.A = 0.6;
@@ -531,10 +531,10 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				
 				if (TextEditor.ColorStyle != null) {
 					var grad = new Cairo.LinearGradient (0, 0, Allocation.Width, 0);
-					var col = (HslColor)TextEditor.ColorStyle.Default.CairoBackgroundColor;
+					var col = (HslColor)TextEditor.ColorStyle.PlainText.CairoBackgroundColor;
 					col.L *= 0.95;
 					grad.AddColorStop (0, col);
-					grad.AddColorStop (0.7, TextEditor.ColorStyle.Default.CairoBackgroundColor);
+					grad.AddColorStop (0.7, TextEditor.ColorStyle.PlainText.CairoBackgroundColor);
 					grad.AddColorStop (1, col);
 					cr.Pattern = grad;
 				}

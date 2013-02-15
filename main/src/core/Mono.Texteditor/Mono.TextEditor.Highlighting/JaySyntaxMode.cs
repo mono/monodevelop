@@ -69,7 +69,7 @@ namespace Mono.TextEditor.Highlighting
 				this.Rule = "mode:text/x-csharp";
 				this.Begin = new Regex ("}");
 				this.End = new Regex ("}");
-				this.TagColor = "keyword.access";
+				this.TagColor = "Keyword(Access)";
 			}
 			
 			public override string ToString ()
@@ -85,7 +85,7 @@ namespace Mono.TextEditor.Highlighting
 				this.Rule = "mode:text/x-csharp";
 				this.Begin = new Regex ("%{");
 				this.End = new Regex ("%}");
-				this.TagColor = "keyword.access";
+				this.TagColor = "Keyword(Access)";
 			}
 		}
 		
@@ -95,7 +95,7 @@ namespace Mono.TextEditor.Highlighting
 			{
 				this.Rule = "token";
 				this.Begin = this.End = new Regex ("%%");
-				this.TagColor = "keyword.access";
+				this.TagColor = "Keyword(Access)";
 			}
 		}
 		

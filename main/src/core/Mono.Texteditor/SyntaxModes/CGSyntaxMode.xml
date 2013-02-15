@@ -39,7 +39,7 @@ THE SOFTWARE.
 		<End>#endif|#else</End>
 	</Span>
 	
-	<EolSpan color = "text.preprocessor" rule="text.preprocessor" continuation="\">#</EolSpan>
+	<EolSpan color = "Preprocessor" rule="text.preprocessor" continuation="\">#</EolSpan>
 	
 	<EolSpan color = "comment" rule="Comment">//</EolSpan>
 	
@@ -60,7 +60,7 @@ THE SOFTWARE.
 	
 	<Match color = "string">CSharpNumber</Match>
 	
-	<Keywords color = "keyword.selection">
+	<Keywords color = "Keyword(Selection)">
 		<Word>asm</Word>
 		<Word>asm_fragment</Word>
 		<Word>auto</Word>
@@ -130,33 +130,33 @@ THE SOFTWARE.
 		<Word>while</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.iteration">
+	<Keywords color = "Keyword(Iteration)">
 	</Keywords>
 	
-	<Keywords color = "keyword.jump">
+	<Keywords color = "Keyword(Jump)">
 		<Word>break</Word>
 		<Word>goto</Word>
 		<Word>return</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.exceptions">
+	<Keywords color = "Keyword(Exception)">
 		<Word>catch</Word>
 		<Word>throw</Word>
 		<Word>try</Word>
 	</Keywords>
 	
-	<Keywords color = "constant.language">
+	<Keywords color = "Keyword(Constants)">
 		<Word>true</Word>
 		<Word>false</Word>
 		<Word>NULL</Word> 
 	</Keywords>
 	
-	<Keywords color = "keyword.namespace">
+	<Keywords color = "Keyword(Namespace)">
 		<Word>namespace</Word>
 		<Word>using</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.modifier">
+	<Keywords color = "Keyword(Modifiers)">
 		<Word>const</Word>
 		<Word>extern</Word>
 		<Word>in</Word>
@@ -168,7 +168,7 @@ THE SOFTWARE.
 		<Word>varying</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.type">
+	<Keywords color = "Keyword(Type)">
 		<Word>float</Word>
 		<Word>float1</Word>
 		<Word>float2</Word>
@@ -299,11 +299,11 @@ THE SOFTWARE.
 		<Word>cfloat</Word>
 	</Keywords>
 	
-	<Keywords color = "constant.language.void">
+	<Keywords color = "Keyword(Void)">
 		<Word>void</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.declaration">
+	<Keywords color = "Keyword(Declaration)">
 		<Word>enum</Word>
 		<Word>struct</Word>
 		<Word>class</Word>
@@ -312,7 +312,7 @@ THE SOFTWARE.
 		<Word>packed</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.misc">
+	<Keywords color = "Keyword(Other)">
 		<!-- Cg standard library http://http.developer.nvidia.com/Cg/index_stdlib.html -->
 		<Word>abs</Word>
 		<Word>acos</Word>
@@ -449,7 +449,7 @@ THE SOFTWARE.
 	</Rule>
 	
 	<Rule name = "Comment">
-		<Keywords color="comment.keyword.todo" ignorecase="True">
+		<Keywords color="Comment Tag" ignorecase="True">
 			<Word>TODO</Word>
 			<Word>FIXME</Word>
 			<Word>HACK</Word>

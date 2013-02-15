@@ -152,11 +152,11 @@
 	
 	<!-- highlighting -->
 	<Style name="comment" color="CommentVim"/>
-	<Style name="comment.keyword.todo" color="TodoVim" bgColor="VisualBGVim" weight="bold" />
+	<Style name="Comment Tag" color="TodoVim" bgColor="VisualBGVim" weight="bold" />
 	<Style name="comment.keyword" color="TodoVim" weight="bold" />
 	<Style name="comment.tag" color="TodoVim"/>
 	
-	<Style name="text.punctuation" color="StringVim"/>
+	<Style name="Punctuation" color="StringVim"/>
 	<Style name="text.preprocessor" color="PreProcVim" weight="italic"/>
 	<Style name="text.preprocessor.keyword" color="PreProcVim" weight="bold"/>
 	
@@ -168,37 +168,37 @@
 	</Style>
 
 	<Style name="constant" color="ConstantVim"/>
-	<Style name="constant.digit" color="NumberVim"/>
-	<Style name="constant.language" color="SpecialVim"/>
-	<Style name="constant.language.void" color="SpecialVim" weight="bold"/>
+	<Style name="Number" color="NumberVim"/>
+	<Style name="Keyword(Constants)" color="SpecialVim"/>
+	<Style name="Keyword(Void)" color="SpecialVim" weight="bold"/>
 	
 	<Style name="string" color="StringVim"/>
 	<Style name="string.escape" color="StringVim"/>
-	<Style name="string.single" color="StringSingleQuoteVim"/>
-	<Style name="string.double" color="StringVim"/>
-	<Style name="string.other" color="StringVim"/>
+	<Style name="String" color="StringSingleQuoteVim"/>
+	<Style name="String" color="StringVim"/>
+	<Style name="String" color="StringVim"/>
 	
-	<Style name="keyword.access" color="TypeVim" weight="bold" />
-	<Style name="keyword.operator" color="ConstantVim" weight="bold"/>
-	<Style name="keyword.selection" color="StatementVim" weight="bold"/>
-	<Style name="keyword.iteration" color="StatementVim" weight="bold"/>
-	<Style name="keyword.jump" color="StatementVim" weight="bold"/>
-	<Style name="keyword.context" color="StatementVim" weight="bold"/>
-	<Style name="keyword.exceptions" color="StatementVim" weight="bold"/>
+	<Style name="Keyword(Access)" color="TypeVim" weight="bold" />
+	<Style name="Keyword(Operator)" color="ConstantVim" weight="bold"/>
+	<Style name="Keyword(Selection)" color="StatementVim" weight="bold"/>
+	<Style name="Keyword(Iteration)" color="StatementVim" weight="bold"/>
+	<Style name="Keyword(Jump)" color="StatementVim" weight="bold"/>
+	<Style name="Keyword(Context)" color="StatementVim" weight="bold"/>
+	<Style name="Keyword(Exception)" color="StatementVim" weight="bold"/>
 	
-	<Style name="keyword.modifier" color="TypeVim" weight="bold"/>
-	<Style name="keyword.type" color="TypeVim" weight="bold"/>
-	<Style name="keyword.namespace" color="TypeVim" weight="bold"/>
-	<Style name="keyword.property" color="TypeVim" />
-	<Style name="keyword.declaration" color="TypeVim" weight="bold"/>
-	<Style name="keyword.parameter" color="TypeVim" />
-	<Style name="keyword.operator.declaration" color="TypeVim" weight="bold"/>
-	<Style name="keyword.misc" color="TypeVim"/>
+	<Style name="Keyword(Modifiers)" color="TypeVim" weight="bold"/>
+	<Style name="Keyword(Type)" color="TypeVim" weight="bold"/>
+	<Style name="Keyword(Namespace)" color="TypeVim" weight="bold"/>
+	<Style name="Keyword(Property)" color="TypeVim" />
+	<Style name="Keyword(Declaration)" color="TypeVim" weight="bold"/>
+	<Style name="Keyword(Parameter)" color="TypeVim" />
+	<Style name="Keyword(Operator Declaration)" color="TypeVim" weight="bold"/>
+	<Style name="Keyword(Other)" color="TypeVim"/>
 	
-	<Style name="keyword.semantic.type" color="IdentifierVim"/>
-	<Style name="keyword.semantic.field" color="NormalVim" weight="Italic"/>
-	<Style name="keyword.semantic.property" color="NormalVim" weight="Italic"/>
-	<Style name="keyword.semantic.method" color="NormalVim" weight="Italic"/>
-	<Style name="keyword.semantic.error" color="scarletred1"/>
+	<Style name="User Types" color="IdentifierVim"/>
+	<Style name="User Field Usage" color="NormalVim" weight="Italic"/>
+	<Style name="User Property Usage" color="NormalVim" weight="Italic"/>
+	<Style name="User Method Usage" color="NormalVim" weight="Italic"/>
+	<Style name="Syntax Error" color="scarletred1"/>
 	
 </EditorStyle>

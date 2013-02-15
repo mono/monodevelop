@@ -70,7 +70,7 @@ namespace Mono.TextEditor
 
 		HslColor GetColor (int i, double brightness, int colorCount)
 		{
-			HslColor hslColor = new HslColor (editor.ColorStyle.Default.CairoBackgroundColor);
+			HslColor hslColor = new HslColor (editor.ColorStyle.PlainText.CairoBackgroundColor);
 			int colorPosition = i + 1;
 			if (i == foldSegments.Count - 1)
 				return hslColor;
@@ -88,7 +88,7 @@ namespace Mono.TextEditor
 			ISyntaxMode mode = Document.SyntaxMode != null && editor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : new SyntaxMode (Document);
 
 			TextViewMargin.LayoutWrapper lineLayout = null;
-			double brightness = HslColor.Brightness (editor.ColorStyle.Default.CairoBackgroundColor);
+			double brightness = HslColor.Brightness (editor.ColorStyle.PlainText.CairoBackgroundColor);
 
 			int colorCount = foldSegments.Count + 2;
 			cr.Color = GetColor (-1, brightness, colorCount);
@@ -176,7 +176,7 @@ namespace Mono.TextEditor
 						alpha = 0.1 + (1.0 - animationState) / 5;
 					}
 
-					var bg = editor.ColorStyle.Default.CairoColor;
+					var bg = editor.ColorStyle.PlainText.CairoColor;
 					cr.Color = new Cairo.Color (bg.R, bg.G, bg.B, alpha);
 					DrawRoundRectangle (cr, true, true, rect.X - editor.HAdjustment.Value - curPadSize , rect.Y - editor.VAdjustment.Value - curPadSize, editor.LineHeight / 2, rect.Width + curPadSize * 2, rect.Height + curPadSize * 2);
 					cr.Fill ();

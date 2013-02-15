@@ -48,24 +48,24 @@
 	</Span>
 	
 	<!-- entities -->
-	<Span color = "text.preprocessor">
+	<Span color = "Preprocessor">
 		<Begin>&amp;</Begin>
 		<End>;</End>
 	</Span>
 	
-	<Span tagColor = "keyword.declaration" color = "xml.name" rule = "InTag">
+	<Span tagColor = "Keyword(Declaration)" color = "xml.name" rule = "InTag">
 		<Begin>&lt;!DOCTYPE</Begin>
 		<End>&gt;</End>
 	</Span>
 	
 	<!-- CDATA section -->
-	<Span tagColor = "keyword.declaration" color="text" rule = "Comment">
+	<Span tagColor = "Keyword(Declaration)" color="text" rule = "Comment">
 		<Begin>&lt;![CDATA[</Begin>
 		<End>]]&gt;</End>
 	</Span>
 	
 	<!-- processing instructions -->
-	<Span tagColor = "keyword.declaration" color = "xml.name" rule = "InTag">
+	<Span tagColor = "Keyword(Declaration)" color = "xml.name" rule = "InTag">
 		<Begin>&lt;?</Begin>
 		<End>?&gt;</End>
 	</Span>
@@ -89,7 +89,7 @@
 		</Span>
 		
 		<!-- attributes -->
-		<Match color = "keyword.type">[A-Za-z0-9_]+(:[A-Za-z0-9_]+)?[\s\n\r]*=</Match>
+		<Match color = "Keyword(Type)">[A-Za-z0-9_]+(:[A-Za-z0-9_]+)?[\s\n\r]*=</Match>
 		
 		<!-- comments -->
 		<Span color = "comment.server" rule = "Comment">
@@ -107,7 +107,7 @@
 	
 	<Rule name = "InLiteral">
 		<!-- entities -->
-		<Span color = "text.preprocessor">
+		<Span color = "Preprocessor">
 			<Begin>&amp;</Begin>
 			<End>;</End>
 		</Span>

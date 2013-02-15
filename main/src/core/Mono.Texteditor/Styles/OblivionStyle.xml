@@ -130,11 +130,11 @@
 	
 	<!-- highlighting -->
 	<Style name="comment" color="aluminium4"/>
-	<Style name="comment.keyword.todo" color="aluminium4" bgColor="butter1" weight="bold" />
+	<Style name="Comment Tag" color="aluminium4" bgColor="butter1" weight="bold" />
 	<Style name="comment.keyword" color="aluminium4" weight="bold" />
 	<Style name="comment.tag" color="aluminium4"/>
 	
-	<Style name="text.punctuation" color="butter2"/>
+	<Style name="Punctuation" color="butter2"/>
 	<Style name="text.preprocessor" color="skyblue1" weight="italic"/>
 	<Style name="text.preprocessor.keyword" color="skyblue1" weight="bold"/>
 	
@@ -166,37 +166,37 @@
 	</Style>
 	
 	<Style name="constant" color="butter2"/>
-	<Style name="constant.digit" color="butter2"/>
-	<Style name="constant.language" color="orange3"/>
-	<Style name="constant.language.void" color="plum1" weight="bold"/>
+	<Style name="Number" color="butter2"/>
+	<Style name="Keyword(Constants)" color="orange3"/>
+	<Style name="Keyword(Void)" color="plum1" weight="bold"/>
 	
 	<Style name="string" color="butter2"/>
 	<Style name="string.escape" color="butter3"/>
-	<Style name="string.single" color="butter2"/>
-	<Style name="string.double" color="butter2"/>
-	<Style name="string.other" color="butter2"/>
+	<Style name="String" color="butter2"/>
+	<Style name="String" color="butter2"/>
+	<Style name="String" color="butter2"/>
 	
-	<Style name="keyword.access" color="plum1" weight="bold" />
-	<Style name="keyword.operator" color="plum1" weight="bold"/>
-	<Style name="keyword.selection" color="white" weight="bold"/>
-	<Style name="keyword.iteration" color="plum1" weight="bold"/>
-	<Style name="keyword.jump" color="plum1" weight="bold"/>
-	<Style name="keyword.context" color="white" weight="bold"/>
-	<Style name="keyword.exceptions" color="white" weight="bold"/>
+	<Style name="Keyword(Access)" color="plum1" weight="bold" />
+	<Style name="Keyword(Operator)" color="plum1" weight="bold"/>
+	<Style name="Keyword(Selection)" color="white" weight="bold"/>
+	<Style name="Keyword(Iteration)" color="plum1" weight="bold"/>
+	<Style name="Keyword(Jump)" color="plum1" weight="bold"/>
+	<Style name="Keyword(Context)" color="white" weight="bold"/>
+	<Style name="Keyword(Exception)" color="white" weight="bold"/>
 	
-	<Style name="keyword.modifier" color="plum1" weight="bold"/>
-	<Style name="keyword.type" color="chameleon1" weight="bold"/>
-	<Style name="keyword.namespace" color="plum1" weight="bold"/>
-	<Style name="keyword.property" color="plum1" weight="bold"/>
-	<Style name="keyword.declaration" color="plum1" weight="bold"/>
-	<Style name="keyword.parameter" color="white" weight="bold"/>
-	<Style name="keyword.operator.declaration" color="plum1" weight="bold"/>
-	<Style name="keyword.misc" color="white" weight="bold"/>
+	<Style name="Keyword(Modifiers)" color="plum1" weight="bold"/>
+	<Style name="Keyword(Type)" color="chameleon1" weight="bold"/>
+	<Style name="Keyword(Namespace)" color="plum1" weight="bold"/>
+	<Style name="Keyword(Property)" color="plum1" weight="bold"/>
+	<Style name="Keyword(Declaration)" color="plum1" weight="bold"/>
+	<Style name="Keyword(Parameter)" color="white" weight="bold"/>
+	<Style name="Keyword(Operator Declaration)" color="plum1" weight="bold"/>
+	<Style name="Keyword(Other)" color="white" weight="bold"/>
 	
-	<Style name="keyword.semantic.type" color="chameleon1"/>
-	<Style name="keyword.semantic.field" color="aluminium2" weight="Italic"/>
-	<Style name="keyword.semantic.property" color="aluminium2" weight="Italic"/>
-	<Style name="keyword.semantic.method" color="aluminium2" weight="Italic"/>
-	<Style name="keyword.semantic.error" color="scarletred1"/>
+	<Style name="User Types" color="chameleon1"/>
+	<Style name="User Field Usage" color="aluminium2" weight="Italic"/>
+	<Style name="User Property Usage" color="aluminium2" weight="Italic"/>
+	<Style name="User Method Usage" color="aluminium2" weight="Italic"/>
+	<Style name="Syntax Error" color="scarletred1"/>
 	
 </EditorStyle>

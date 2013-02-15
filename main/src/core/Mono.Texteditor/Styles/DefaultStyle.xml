@@ -194,22 +194,22 @@
 	 <Style name="operators" color="keyword-teal"/>
 
 	 <Style name="keyword" color="keyword-teal"/>
-	 <Style name="keyword.access" color="keyword-teal" />
+	 <Style name="Keyword(Access)" color="keyword-teal" />
 	 <Style name="keyword.semantic.extensionthis" color="keyword-teal" />
 	 
-	 <Style name="keyword.type" color="skyblue2"/>
-	 <Style name="keyword.semantic.type" color="skyblue2"/>
-	 <Style name="constant.language" color="skyblue2"/>
-	 <Style name="constant.language.void" color="skyblue2"/>
+	 <Style name="Keyword(Type)" color="skyblue2"/>
+	 <Style name="User Types" color="skyblue2"/>
+	 <Style name="Keyword(Constants)" color="skyblue2"/>
+	 <Style name="Keyword(Void)" color="skyblue2"/>
 
-	 <Style name="keyword.semantic.field" color="text-black"/>
-	 <Style name="keyword.semantic.field.declaration" color="text-black"/>
-	 <Style name="keyword.semantic.property" color="text-black"/>
-	 <Style name="keyword.semantic.property.declaration" color="text-black"/>
-	 <Style name="keyword.semantic.event" color="text-black"/>
-	 <Style name="keyword.semantic.event.declaration" color="text-black"/>
-	 <Style name="keyword.semantic.method" color="text-black"/>
-	 <Style name="keyword.semantic.method.declaration" color="text-black"/>
+	 <Style name="User Field Usage" color="text-black"/>
+	 <Style name="User Field Declaration" color="text-black"/>
+	 <Style name="User Property Usage" color="text-black"/>
+	 <Style name="User Property Declaration" color="text-black"/>
+	 <Style name="User Event Usage" color="text-black"/>
+	 <Style name="User Event Declaration" color="text-black"/>
+	 <Style name="User Method Usage" color="text-black"/>
+	 <Style name="User Method Declaration" color="text-black"/>
 
-	 <Style name="keyword.semantic.error" color="invalid-red"/>
+	 <Style name="Syntax Error" color="invalid-red"/>
  </EditorStyle>
