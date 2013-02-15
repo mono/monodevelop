@@ -112,6 +112,8 @@ namespace MonoDevelop.Ide.FindInFiles
 				memberFilter = m => MatchParameters (m, member);
 
 			var declaringType = member.DeclaringTypeDefinition;
+			if (declaringType == null)
+				return new [] { member };
 			// only collect members in declaringType
 			if (matchDeclaringType)
 				return GetMembers (declaringType, member.Name, true, memberFilter);
