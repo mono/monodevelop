@@ -344,7 +344,7 @@ namespace Mono.Debugging.Evaluation
 				return new TypeValueReference (ctx, resolved);
 			}
 
-			throw ParseError ("Could not resolve type: {0}", type);
+			throw ParseError ("Could not resolve type: {0}", ResolveTypeName (type));
 		}
 
 		#region IAstVisitor implementation

@@ -77,17 +77,22 @@ namespace Mono.Debugging.Evaluation
 			return sb.ToString ();
 		}
 
-		void ResolveType (string typeName, int genericArgCount, int offset, int length)
+		void ReplaceType (string name, int offset, int length)
 		{
-			if (genericArgCount > 0)
-				typeName += "<" + new string (',', genericArgCount - 1) + ">";
-
-			string type = session.ResolveIdentifierAsType (typeName, location);
+			string type = session.ResolveIdentifierAsType (name, location);
 			if (!string.IsNullOrEmpty (type)) {
 				type = "global::" + type;
 				Replacement r = new Replacement () { Offset = offset, Length = length, NewText = type };
 				replacements.Add (r);
 			}
+		}
+
+		void ReplaceType (AstType type)
+		{
+			int length = type.EndLocation.Column - type.StartLocation.Column;
+			int offset = type.StartLocation.Column - 1;
+
+			ReplaceType (type.ToString (), offset, length);
 		}
 
 		public override void VisitIdentifierExpression (IdentifierExpression identifierExpression)
@@ -97,44 +102,30 @@ namespace Mono.Debugging.Evaluation
 			int length = identifierExpression.EndLocation.Column - identifierExpression.StartLocation.Column;
 			int offset = identifierExpression.StartLocation.Column - 1;
 
-			ResolveType (identifierExpression.Identifier, 0, offset, length);
+			ReplaceType (identifierExpression.Identifier, offset, length);
 		}
 
 		public override void VisitTypeReferenceExpression (TypeReferenceExpression typeReferenceExpression)
 		{
-			base.VisitTypeReferenceExpression (typeReferenceExpression);
+			ReplaceType (typeReferenceExpression.Type);
+		}
 
-			int length = typeReferenceExpression.EndLocation.Column - typeReferenceExpression.StartLocation.Column;
-			int offset = typeReferenceExpression.StartLocation.Column - 1;
-			int index = expression.IndexOf ('<', offset);
-			int count = 0;
+		public override void VisitComposedType (ComposedType composedType)
+		{
+			// Note: we specifically do not handle this case because the 'base' implementation will eventually
+			// call VisitMemberType() or VisitSimpleType() on the ComposedType.BaseType which is all we really
+			// care to resolve.
+			base.VisitComposedType (composedType);
+		}
 
-			if (index != -1 && index < offset + length) {
-				if (expression[offset + length - 1] != '>')
-					return;
-
-				int end = offset + length - 1;
-				int start = index + 1;
-				string[] args;
-
-				if (!FunctionBreakpoint.TryParseParameters (expression, start, end - start, out args))
-					return;
-
-				length = index - offset;
-				count = args.Length;
-			}
-
-			ResolveType (expression.Substring (offset, length), count, offset, length);
+		public override void VisitMemberType (MemberType memberType)
+		{
+			ReplaceType (memberType);
 		}
 
 		public override void VisitSimpleType (SimpleType simpleType)
 		{
-			base.VisitSimpleType (simpleType);
-
-			int length = simpleType.EndLocation.Column - simpleType.StartLocation.Column;
-			int offset = simpleType.StartLocation.Column - 1;
-
-			ResolveType (simpleType.Identifier, 0, offset, length);
+			ReplaceType (simpleType);
 		}
 	}
 }
