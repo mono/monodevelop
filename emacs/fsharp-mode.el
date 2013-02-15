@@ -170,6 +170,7 @@
 
   (require 'fsharp-mode-indent)
   (require 'fsharp-mode-font)
+  (require 'fsharp-doc)
   (require 'fsharp-mode-completion)
   (kill-all-local-variables)
   (use-local-map fsharp-mode-map)
@@ -218,6 +219,9 @@
             ;; change the global menubar
             (set-buffer-menubar current-menubar)
             (add-submenu nil fsharp-mode-xemacs-menu))))
+
+  (turn-on-fsharp-doc-mode)
+
   (run-hooks 'fsharp-mode-hook)
 
   (if fsharp-smart-indentation
@@ -236,8 +240,8 @@
       )))
 
 (defun fsharp-set-compile-command ()
-  "Hook to set compile-command locally, unless there is a Makefile in the 
-   current directory." 
+  "Hook to set compile-command locally, unless there is a Makefile in the
+   current directory."
   (interactive)
   (unless (or (null buffer-file-name)
               (file-exists-p "makefile")
