@@ -59,7 +59,6 @@
               <File Name="MonoDevelop.Ide.dll" Source="$(var.BuildRoot)\bin\MonoDevelop.Ide.dll" />
               <File Name="MonoDevelop.Projects.Formats.MSBuild.exe" Source="$(var.BuildRoot)\bin\MonoDevelop.Projects.Formats.MSBuild.exe" />
               <File Name="MonoDevelop.Projects.Formats.MSBuild.exe.config" Source="$(var.BuildRoot)\bin\MonoDevelop.Projects.Formats.MSBuild.exe.config" />
-              <File Name="OldNRefactory.dll" Source="$(var.BuildRoot)\bin\OldNRefactory.dll" />
               <File Name="ICSharpCode.Decompiler.dll" Source="$(var.BuildRoot)\bin\ICSharpCode.Decompiler.dll" />
               <File Name="ICSharpCode.NRefactory.dll" Source="$(var.BuildRoot)\bin\ICSharpCode.NRefactory.dll" />
 
