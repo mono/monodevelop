@@ -1223,7 +1223,18 @@ namespace MonoDevelop.CSharp.Highlighting
 			}
 			void ScanPreProcessorIf (int textOffset, ref int i)
 			{
-				int length = CurText.Length - textOffset;
+				var end = CurText.Length;
+				int idx = 0;
+				while ((idx = CurText.IndexOf ('/', idx)) >= 0 && idx + 1 < CurText.Length) {
+					var next = CurText [idx + 1];
+					if (next == '/') {
+						end = idx - 1;
+						break;
+					}
+					idx++;
+				}
+
+				int length = end - textOffset;
 				string parameter = CurText.Substring (textOffset + 3, length - 3);
 				AstNode expr = new CSharpParser ().ParseExpression (parameter);
 				bool result = false;
