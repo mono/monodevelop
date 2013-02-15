@@ -122,8 +122,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		Cairo.Color backgroundColor;
 		Cairo.Color selectionBorderColor, selectionBorderInactiveColor;
 		ChunkStyle selectedItemColor, selectedItemInactiveColor;
-		Gdk.Color textColor;
-		Gdk.Color highlightColor;
+		Cairo.Color textColor;
+		Cairo.Color highlightColor;
 		FontDescription itemFont;
 
 		const int marginIconSpacing = 4;
@@ -431,7 +431,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					noMatchLayout.SetText (win.DataProvider.ItemCount == 0 ? NoSuggestionsMsg : NoMatchesMsg);
 					int lWidth, lHeight;
 					noMatchLayout.GetPixelSize (out lWidth, out lHeight);
-					gc.RgbFgColor = textColor;
+					gc.RgbFgColor = (Mono.TextEditor.HslColor)textColor;
 					window.DrawLayout (gc, (width - lWidth) / 2, yPos + (height - lHeight - yPos) / 2 - lHeight, noMatchLayout);
 					gc.Dispose ();
 
@@ -440,7 +440,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 
 				var textGCNormal = new Gdk.GC (window);
-				textGCNormal.RgbFgColor = textColor;
+				textGCNormal.RgbFgColor = (Mono.TextEditor.HslColor)textColor;
 				var fgGCNormal = this.Style.ForegroundGC (StateType.Normal);
 				var matcher = CompletionMatcher.CreateCompletionMatcher (CompletionString);
 				Iterate (true, ref yPos, delegate (Category category, int ypos) {
@@ -500,7 +500,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 							Pango.AttrList attrList = layout.Attributes ?? new Pango.AttrList ();
 							for (int newSelection = 0; newSelection < matchIndices.Length; newSelection++) {
 								int idx = matchIndices [newSelection];
-								var fg = new AttrForeground (highlightColor.Red, highlightColor.Green, highlightColor.Blue);
+								var fg = new AttrForeground ((ushort)(highlightColor.R * ushort.MaxValue), (ushort)(highlightColor.G * ushort.MaxValue), (ushort)(highlightColor.B  * ushort.MaxValue));
 								fg.StartIndex = (uint)idx;
 								fg.EndIndex = (uint)(idx + 1);
 								attrList.Insert (fg);

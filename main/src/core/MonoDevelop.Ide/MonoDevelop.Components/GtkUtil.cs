@@ -62,6 +62,13 @@ namespace MonoDevelop.Components
 			return c;
 		}
 
+		public static Cairo.Color AddLight (this Cairo.Color color, double lightAmount)
+		{
+			HslColor c = color;
+			c.L += lightAmount;
+			return c;
+		}
+
 		public static Gtk.Widget ToGtkWidget (this Xwt.Widget widget)
 		{
 			return (Gtk.Widget) Xwt.Engine.WidgetRegistry.GetNativeWidget (widget);

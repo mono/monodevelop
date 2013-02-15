@@ -282,7 +282,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				do {
 					var data = (ColorMetaData)colorStore.GetValue (iter, 2);
 					var style = (ChunkStyle)colorStore.GetValue (iter, 1);
-					sheme.SetChunkStyle (data.Name, style);
+			// TODO:
+			//		sheme.SetChunkStyle (data.Name, style);
 				} while (colorStore.IterNext (ref iter));
 			}
 		}
@@ -313,8 +314,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		}
 
 		void Stylechanged (object sender, EventArgs e)
-		{
-			Gtk.TreeIter iter;
+		{//TODO:
+	/*		Gtk.TreeIter iter;
 			if (!this.treeviewColors.Selection.GetSelected (out iter))
 				return;
 			ChunkProperties prop = ChunkProperties.None;
@@ -332,38 +333,38 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.textEditor.Document.MimeType = "text/x-csharp";
 			this.textEditor.GetTextEditorData ().ColorStyle = newStyle;
 			this.textEditor.QueueDraw ();
-			
+			*/
 		}
 
 		void HandleTreeviewColorsSelectionChanged (object sender, EventArgs e)
 		{
-			this.colorbuttonBg.Sensitive = false;
-			this.colorbuttonFg.Sensitive = false;
-			this.checkbuttonBold.Sensitive = false;
-			this.checkbuttonItalic.Sensitive = false;
-			
-			Gtk.TreeIter iter;
-			if (!this.treeviewColors.Selection.GetSelected (out iter))
-				return;
-			var chunkStyle = (ChunkStyle)colorStore.GetValue (iter, 1);
-			var data = (ColorMetaData)colorStore.GetValue (iter, 2);
-			colorbuttonFg.Color = chunkStyle.CairoColor;
-			colorbuttonBg.Color = chunkStyle.CairoBackgroundColor;
-			checkbuttonBold.Active = chunkStyle.Bold;
-			checkbuttonItalic.Active = chunkStyle.Italic;
-			
-			this.label4.Visible = this.colorbuttonFg.Visible = (data.ColorsAvailable & ColorsAvailable.Fg) != 0;
-			this.colorbuttonFg.Sensitive = true;
-			
-			this.label5.Visible = this.colorbuttonBg.Visible = (data.ColorsAvailable & ColorsAvailable.Bg) != 0;
-			this.colorbuttonBg.Sensitive = true;
-			this.colorbuttonBg.Alpha = chunkStyle.GotBackgroundColorAssigned ? ushort.MaxValue : (ushort)0;
-			
-			this.checkbuttonBold.Visible = (data.ColorsAvailable & ColorsAvailable.FontAttributes) != 0;
-			this.checkbuttonBold.Sensitive = true;
-			
-			this.checkbuttonItalic.Visible = (data.ColorsAvailable & ColorsAvailable.FontAttributes) != 0;
-			this.checkbuttonItalic.Sensitive = true;
+//			this.colorbuttonBg.Sensitive = false;
+//			this.colorbuttonFg.Sensitive = false;
+//			this.checkbuttonBold.Sensitive = false;
+//			this.checkbuttonItalic.Sensitive = false;
+//			
+//			Gtk.TreeIter iter;
+//			if (!this.treeviewColors.Selection.GetSelected (out iter))
+//				return;
+//			var chunkStyle = (ChunkStyle)colorStore.GetValue (iter, 1);
+//			var data = (ColorMetaData)colorStore.GetValue (iter, 2);
+//			colorbuttonFg.Color = chunkStyle.CairoColor;
+//			colorbuttonBg.Color = chunkStyle.CairoBackgroundColor;
+//			checkbuttonBold.Active = chunkStyle.Bold;
+//			checkbuttonItalic.Active = chunkStyle.Italic;
+//			
+//			this.label4.Visible = this.colorbuttonFg.Visible = (data.ColorsAvailable & ColorsAvailable.Fg) != 0;
+//			this.colorbuttonFg.Sensitive = true;
+//			
+//			this.label5.Visible = this.colorbuttonBg.Visible = (data.ColorsAvailable & ColorsAvailable.Bg) != 0;
+//			this.colorbuttonBg.Sensitive = true;
+//			this.colorbuttonBg.Alpha = chunkStyle.GotBackgroundColorAssigned ? ushort.MaxValue : (ushort)0;
+//			
+//			this.checkbuttonBold.Visible = (data.ColorsAvailable & ColorsAvailable.FontAttributes) != 0;
+//			this.checkbuttonBold.Sensitive = true;
+//			
+//			this.checkbuttonItalic.Visible = (data.ColorsAvailable & ColorsAvailable.FontAttributes) != 0;
+//			this.checkbuttonItalic.Sensitive = true;
 		}
 		
 		public void SetSheme (ColorScheme style)

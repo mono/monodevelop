@@ -160,11 +160,11 @@ namespace MonoDevelop.Debugger
 	public class BreakpointTextMarker : DebugTextMarker
 	{
 		public override Cairo.Color BackgroundColor {
-			get { return editor.ColorStyle.BreakpointBg; }
+			get { return editor.ColorStyle.BreakpointText.CairoBackgroundColor; }
 			set {  }
 		}
 		public override Cairo.Color Color {
-			get { return editor.ColorStyle.BreakpointFg; }
+			get { return editor.ColorStyle.BreakpointText.CairoColor; }
 			set {  }
 		}
 		
@@ -178,8 +178,8 @@ namespace MonoDevelop.Debugger
 
 		protected override void DrawIcon (Cairo.Context cr, double x, double y, double size)
 		{
-			Cairo.Color color1 = editor.ColorStyle.BreakpointMarkerColor1;
-			Cairo.Color color2 = editor.ColorStyle.BreakpointMarkerColor2;
+			Cairo.Color color1 = editor.ColorStyle.BreakpointMarker.GetColor ("color");
+			Cairo.Color color2 = editor.ColorStyle.BreakpointMarker.GetColor ("secondcolor");
 			if (IsTracepoint)
 				DrawDiamond (cr, x, y, size);
 			else
@@ -192,7 +192,7 @@ namespace MonoDevelop.Debugger
 	public class DisabledBreakpointTextMarker: DebugTextMarker
 	{
 		public override Cairo.Color BackgroundColor {
-			get { return editor.ColorStyle.DisabledBreakpointBg; }
+			get { return editor.ColorStyle.BreakpointMarkerDisabled.GetColor ("color"); }
 			set {  }
 		}
 	
@@ -206,7 +206,7 @@ namespace MonoDevelop.Debugger
 		
 		protected override void DrawIcon (Cairo.Context cr, double x, double y, double size)
 		{
-			Cairo.Color border = editor.ColorStyle.InvalidBreakpointMarkerBorder;
+			Cairo.Color border = editor.ColorStyle.BreakpointTextInvalid.CairoColor;
 			if (IsTracepoint)
 				DrawDiamond (cr, x, y, size);
 			else
@@ -219,12 +219,12 @@ namespace MonoDevelop.Debugger
 	public class CurrentDebugLineTextMarker: DebugTextMarker
 	{
 		public override Cairo.Color BackgroundColor {
-			get { return editor.ColorStyle.CurrentDebugLineBg; }
+			get { return editor.ColorStyle.DebuggerCurrentLine.CairoBackgroundColor; }
 			set {  }
 		}
 		
 		public override Cairo.Color Color {
-			get { return editor.ColorStyle.CurrentDebugLineFg;  }
+			get { return editor.ColorStyle.DebuggerCurrentLine.CairoColor;  }
 			set {  }
 		}
 		
@@ -235,10 +235,10 @@ namespace MonoDevelop.Debugger
 		
 		protected override void DrawIcon (Cairo.Context cr, double x, double y, double size)
 		{
-			Cairo.Color color1 = editor.ColorStyle.CurrentDebugLineMarkerColor1;
-			Cairo.Color color2 = editor.ColorStyle.CurrentDebugLineMarkerColor2;
-			Cairo.Color border = editor.ColorStyle.CurrentDebugLineMarkerBorder;
-		
+			Cairo.Color color1 = editor.ColorStyle.DebuggerCurrentLineMarker.GetColor ("color");
+			Cairo.Color color2 = editor.ColorStyle.DebuggerCurrentLineMarker.GetColor ("secondcolor");
+			Cairo.Color border = editor.ColorStyle.DebuggerCurrentLineMarker.GetColor ("border");
+
 			DrawArrow (cr, x, y, size);
 			FillGradient (cr, color1, color2, x, y, size);
 			DrawBorder (cr, border, x, y, size);
@@ -248,12 +248,12 @@ namespace MonoDevelop.Debugger
 	public class DebugStackLineTextMarker: DebugTextMarker
 	{
 		public override Cairo.Color BackgroundColor {
-			get { return editor.ColorStyle.DebugStackLineBg; }
+			get { return editor.ColorStyle.DebuggerStackLine.CairoBackgroundColor; }
 			set {  }
 		}
 		
 		public override Cairo.Color Color {
-			get { return editor.ColorStyle.DebugStackLineFg;  }
+			get { return editor.ColorStyle.DebuggerStackLine.CairoColor;  }
 			set {  }
 		}
 		
@@ -264,10 +264,10 @@ namespace MonoDevelop.Debugger
 		
 		protected override void DrawIcon (Cairo.Context cr, double x, double y, double size)
 		{
-			Cairo.Color color1 = editor.ColorStyle.DebugStackLineMarkerColor1;
-			Cairo.Color color2 = editor.ColorStyle.DebugStackLineMarkerColor2;
-			Cairo.Color border = editor.ColorStyle.DebugStackLineMarkerBorder;
-		
+			Cairo.Color color1 = editor.ColorStyle.DebuggerStackLineMarker.GetColor ("color");
+			Cairo.Color color2 = editor.ColorStyle.DebuggerStackLineMarker.GetColor ("secondcolor");
+			Cairo.Color border = editor.ColorStyle.DebuggerStackLineMarker.GetColor ("border");
+
 			DrawArrow (cr, x, y, size);
 			FillGradient (cr, color1, color2, x, y, size);
 			DrawBorder (cr, border, x, y, size);
@@ -277,7 +277,7 @@ namespace MonoDevelop.Debugger
 	public class InvalidBreakpointTextMarker: DebugTextMarker
 	{
 		public override Cairo.Color BackgroundColor {
-			get { return editor.ColorStyle.InvalidBreakpointBg; }
+			get { return editor.ColorStyle.BreakpointTextInvalid.CairoBackgroundColor; }
 			set {  }
 		}
 		
@@ -287,10 +287,9 @@ namespace MonoDevelop.Debugger
 		}
 		
 		protected override void DrawIcon (Cairo.Context cr, double x, double y, double size)
-		{
-			Cairo.Color color1 = editor.ColorStyle.InvalidBreakpointMarkerColor1;
+		{	Cairo.Color color1 = editor.ColorStyle.InvalidBreakpointMarker.GetColor ("color");
 			Cairo.Color color2 = color1;
-			Cairo.Color border = editor.ColorStyle.InvalidBreakpointMarkerBorder;
+			Cairo.Color border = editor.ColorStyle.InvalidBreakpointMarker.GetColor ("secondcolor");
 			DrawCircle (cr, x, y, size);
 			FillGradient (cr, color1, color2, x, y, size);
 			DrawBorder (cr, border, x, y, size);
