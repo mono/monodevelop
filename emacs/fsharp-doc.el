@@ -15,8 +15,9 @@
   ;; Body
   (in-ns fsharp-doc
     (_ reset-timer)
-    (when fsharp-doc-mode (_ start-timer))
-    (run-hooks 'fsharp-doc-mode-hook)
+    (when fsharp-doc-mode
+      (_ start-timer)
+      (run-hooks 'fsharp-doc-mode-hook))
     (message "fsharp-doc-mode %s" (if fsharp-doc-mode "enabled" "disabled"))
     fsharp-doc-mode))
 
@@ -72,5 +73,4 @@
              (not (eolp))
              (not executing-kbd-macro)
              (not (eq (selected-window) (minibuffer-window))))
-    (with-local-quit
-      (ac-fsharp-tooltip-at-point))))
+    (ac-fsharp-tooltip-at-point)))
