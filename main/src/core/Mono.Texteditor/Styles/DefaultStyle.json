@@ -78,7 +78,7 @@
         { "name": "Primary Link", "color":"chameleon3", "secondcolor":"chameleon2"},
         { "name": "Primary Link(Highlighted)", "color":"chameleon3", "secondcolor":"chameleon1"},
         { "name": "Secondary Link", "color":"aluminum2", "secondcolor":"white"},
-        { "name": "Secondary Link(Highlighted)", "color":"aluminum3", "secondcolor":"aluminum1"},
+        { "name": "Secondary Link(Highlighted)", "color":"aluminum3", "secondcolor":"aluminum1"}
     ],
 
 	"text":[
@@ -140,6 +140,7 @@
 		{ "name": "User Types(Interfaces)", "fore":"skyblue2", "back":"white" },
 		{ "name": "User Types(Delegates)", "fore":"skyblue2", "back":"white" },
 		{ "name": "User Types(Value types)", "fore":"skyblue2", "back":"white" },
+		{ "name": "User Types(Type parameters)", "fore":"skyblue2", "back":"white" },
 
 		{ "name": "User Field Usage", "fore":"text-black", "back":"white" },
 		{ "name": "User Field Declaration", "fore":"text-black", "back":"white" },

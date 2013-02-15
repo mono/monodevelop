@@ -1515,7 +1515,12 @@ namespace MonoDevelop.CSharp
 				(byte)((alpha * color.Red + (1 - alpha) * color2.Red) / 256), 
 				(byte)((alpha * color.Green + (1 - alpha) * color2.Green) / 256), 
 				(byte)((alpha * color.Blue + (1 - alpha) * color2.Blue) / 256)
-			);
+				);
+		}
+
+		Gdk.Color AlphaBlend (Cairo.Color color, Cairo.Color color2, double alpha)
+		{
+			return AlphaBlend ((Gdk.Color) ((HslColor)color), (Gdk.Color) ((HslColor)color2), alpha);
 		}
 
 		public string GetArrayIndexerMarkup (ArrayType arrayType)
@@ -1558,10 +1563,10 @@ namespace MonoDevelop.CSharp
 		{
 			var style = colorStyle.GetChunkStyle (colorScheme);
 			if (style != null) {
-				var color = style.CairoColor;
+				var color = (Gdk.Color) ((HslColor)style.CairoColor);
 				
 				if (grayOut) {
-					color = AlphaBlend (color, colorStyle.Default.CairoBackgroundColor, optionalAlpha);
+					color = AlphaBlend (color, (Gdk.Color) ((HslColor)colorStyle.Default.CairoBackgroundColor), optionalAlpha);
 				}
 				
 				var colorString = Mono.TextEditor.HelperMethods.GetColorString (color);

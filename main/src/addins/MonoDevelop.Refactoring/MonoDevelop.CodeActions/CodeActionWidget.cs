@@ -321,7 +321,7 @@ namespace MonoDevelop.CodeActions
 					true, true,
 					0, 0, Allocation.Width / 2, 
 					Allocation.Width, Allocation.Height);
-				cr.Color = isMouseInside || menuPushed ? document.Editor.ColorStyle.Default.CairoColor : document.Editor.ColorStyle.FoldLine.CairoColor;
+				cr.Color = isMouseInside || menuPushed ? document.Editor.ColorStyle.Default.CairoColor : document.Editor.ColorStyle.FoldMargin.GetColor ("color");
 				cr.Stroke ();
 				
 				evnt.Window.DrawPixbuf (Style.BaseGC (State), icon, 

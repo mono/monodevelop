@@ -38,6 +38,7 @@ using MonoDevelop.Ide.Commands;
 using TextEditor = Mono.TextEditor.TextEditor;
 using Mono.TextEditor;
 using Mono.Debugging.Client;
+using Mono.TextEditor.Highlighting;
 
 namespace MonoDevelop.Debugger
 {

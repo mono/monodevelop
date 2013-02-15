@@ -249,7 +249,7 @@ namespace MonoDevelop.SourceEditor
 			void OptionsChanged (object sender, EventArgs e)
 			{
 				TextEditor editor = (TextEditor)sender;
-				scrolledWindow.ModifyBg (StateType.Normal, editor.ColorStyle.Default.CairoBackgroundColor);
+				scrolledWindow.ModifyBg (StateType.Normal, (Mono.TextEditor.HslColor)editor.ColorStyle.Default.CairoBackgroundColor);
 			}
 			
 			void RemoveEvents ()
@@ -1534,7 +1534,6 @@ namespace MonoDevelop.SourceEditor
 			// may be null if no line is assigned to the error.
 			Wave = true;
 			
-			ColorName = info.ErrorType == ErrorType.Warning ? ColorScheme.WarningUnderlineString : ColorScheme.ErrorUnderlineString;
 			StartCol = Info.Region.BeginColumn + 1;
 			if (Info.Region.EndColumn > StartCol) {
 				EndCol = Info.Region.EndColumn;
@@ -1553,6 +1552,13 @@ namespace MonoDevelop.SourceEditor
 				}
 				EndCol = Info.Region.BeginColumn + o - start + 1;
 			}
+		}
+
+		public override void Draw (TextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
+		{
+			Color = Info.ErrorType == ErrorType.Warning ? editor.ColorStyle.UnderlineWarning.GetColor ("color") : editor.ColorStyle.UnderlineError.GetColor ("color");
+
+			base.Draw (editor, cr, layout, selected, startOffset, endOffset, y, startXPos, endXPos);
 		}
 	}
 }
