@@ -381,6 +381,7 @@ possibly many lines of description.")
             (message msg)))
 
          ((string/starts-with msg "ERROR: ")
+          (message msg)
           (when ac-fsharp-waiting
             (setq ac-fsharp-completion-data nil)
             (setq ac-fsharp-waiting nil)))
