@@ -323,7 +323,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			if (checkbuttonItalic.Active)
 				prop |= ChunkProperties.Italic;
 			ChunkStyle oldStyle = (ChunkStyle)colorStore.GetValue (iter, 1);
-			bool useBgColor = colorbuttonBg.Alpha > 0 && (colorbuttonBg.Color.Pixel != oldStyle.BackgroundColor.Pixel || oldStyle.GotBackgroundColorAssigned);
+			bool useBgColor = colorbuttonBg.Alpha > 0 && (colorbuttonBg.Color.Pixel != oldStyle.CairoBackgroundColor.Pixel || oldStyle.GotBackgroundColorAssigned);
 			colorStore.SetValue (iter, 1, useBgColor? new ChunkStyle (colorbuttonFg.Color, colorbuttonBg.Color, prop) : new ChunkStyle (colorbuttonFg.Color, prop));
 			
 			var newStyle = colorSheme.Clone ();
@@ -347,8 +347,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				return;
 			var chunkStyle = (ChunkStyle)colorStore.GetValue (iter, 1);
 			var data = (ColorMetaData)colorStore.GetValue (iter, 2);
-			colorbuttonFg.Color = chunkStyle.Color;
-			colorbuttonBg.Color = chunkStyle.BackgroundColor;
+			colorbuttonFg.Color = chunkStyle.CairoColor;
+			colorbuttonBg.Color = chunkStyle.CairoBackgroundColor;
 			checkbuttonBold.Active = chunkStyle.Bold;
 			checkbuttonItalic.Active = chunkStyle.Italic;
 			

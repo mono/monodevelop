@@ -66,7 +66,7 @@ namespace Mono.TextEditor.Utils
 							htmlText.Append ("font-weight:bold;");
 						if (chunkStyle.Italic)
 							htmlText.Append ("font-style:italic;");
-						htmlText.Append ("color:" + ((HslColor)chunkStyle.Color).ToPangoString () + ";");
+						htmlText.Append ("color:" + ((HslColor)chunkStyle.CairoColor).ToPangoString () + ";");
 						htmlText.Append ("' >");
 						AppendHtmlText (htmlText, doc, options, start, end);
 						htmlText.Append ("</SPAN>");

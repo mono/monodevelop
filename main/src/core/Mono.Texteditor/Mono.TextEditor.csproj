@@ -64,6 +64,8 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="Mono.Cairo" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Mono.TextEditor.Highlighting\Rule.cs" />
@@ -71,11 +73,9 @@
     <Compile Include="Mono.TextEditor.Highlighting\Chunk.cs" />
     <Compile Include="Mono.TextEditor\TextEditorOptions.cs" />
     <Compile Include="Mono.TextEditor\TextEditorData.cs" />
-    <Compile Include="Mono.TextEditor.Highlighting\ChunkStyle.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\Match.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\Span.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\SyntaxMode.cs" />
-    <Compile Include="Mono.TextEditor.Highlighting\SyntaxModeService.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\XmlReadHelper.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\Marker.cs" />
@@ -85,7 +85,6 @@
     <Compile Include="Mono.TextEditor\ISearchEngine.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\IXmlProvider.cs" />
     <Compile Include="Mono.TextEditor\BookmarkMarker.cs" />
-    <Compile Include="Mono.TextEditor.Highlighting\ReferencedChunkStyle.cs" />
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="Mono.TextEditor\EditMode.cs" />
     <Compile Include="Mono.TextEditor\SimpleEditMode.cs" />
@@ -141,7 +140,6 @@
     <Compile Include="Mono.TextEditor\IIndentationTracker.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\ISyntaxMode.cs" />
     <Compile Include="Mono.TextEditor.Utils\TextFileUtility.cs" />
-    <Compile Include="Mono.TextEditor.Highlighting\ColorScheme.cs" />
     <Compile Include="Mono.TextEditor\Actions\BookmarkActions.cs" />
     <Compile Include="Mono.TextEditor\Actions\CaretMoveActions.cs" />
     <Compile Include="Mono.TextEditor\Actions\ClipboardActions.cs" />
@@ -208,13 +206,17 @@
     <Compile Include="Mono.TextEditor\Standalone\StringTextSource.cs" />
     <Compile Include="Mono.TextEditor.Utils\HtmlWriter.cs" />
     <Compile Include="Mono.TextEditor.PopupWindow\WindowTransparencyDecorator.cs" />
-    <Compile Include="Mono.TextEditor.Highlighting\ColorSheme2.cs" />
+    <Compile Include="Mono.TextEditor.Highlighting\SyntaxModeService.cs" />
+    <Compile Include="Mono.TextEditor.Highlighting\ChunkStyle.cs" />
+    <Compile Include="Mono.TextEditor.Highlighting\TextWeight.cs" />
+    <Compile Include="Mono.TextEditor.Highlighting\AmbientColor.cs" />
+    <Compile Include="Mono.TextEditor.Highlighting\ColorDescriptionAttribute.cs" />
+    <Compile Include="Mono.TextEditor.Highlighting\ColorScheme.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mono.TextEditor.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Styles\DefaultStyle.json" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="SyntaxModes\MakefileSyntaxMode.xml">
@@ -327,6 +329,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SyntaxModes\AspNetAshxSyntaxMode.xml">
       <LogicalName>AspNetAshxSyntaxMode.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Styles\DefaultStyle.json">
+      <LogicalName>DefaultStyle.json</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
