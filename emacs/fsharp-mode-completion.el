@@ -33,8 +33,8 @@
   (let ((exe
          (if (executable-find ac-fsharp-executable)
              (executable-find ac-fsharp-executable)
-         (concat (file-name-directory (or load-file-name buffer-file-name))
-                 "/bin/" ac-fsharp-executable))))
+           (concat (file-name-directory (or load-file-name buffer-file-name))
+                   "/bin/" ac-fsharp-executable))))
     (case system-type
       (windows-nt exe)
       (otherwise (list "mono" exe)))))
@@ -125,9 +125,15 @@
       (kill-process ac-fsharp-completion-process)))
   (when ac-fsharp-idle-timer
     (cancel-timer ac-fsharp-idle-timer))
-  (setq ac-fsharp-completion-process nil)
-  (setq ac-fsharp-project-files nil)
-  (setq ac-fsharp-partial-data "")
+  (setq ac-fsharp-status 'idle
+        ac-fsharp-completion-process nil
+        ac-fsharp-partial-data ""
+        ac-fsharp-completion-data ""
+        ac-fsharp-completion-cache nil
+        ac-fsharp-project-files nil
+        ac-fsharp-idle-timer nil
+        ac-fsharp-verbose nil
+        ac-fsharp-waiting nil)
   (ac-fsharp-clear-errors))
 
 ;;;###autoload
