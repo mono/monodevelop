@@ -247,6 +247,13 @@ namespace MonoDevelop.MacIntegration
 			initedApp = true;
 			
 			IdeApp.Workbench.RootWindow.DeleteEvent += HandleDeleteEvent;
+
+			if (MacSystemInformation.OsVersion >= MacSystemInformation.Lion) {
+				IdeApp.Workbench.RootWindow.Realized += (sender, args) => {
+					var win = GtkQuartz.GetWindow ((Gtk.Window) sender);
+					win.CollectionBehavior |= NSWindowCollectionBehavior.FullScreenPrimary;
+				};
+			}
 		}
 
 		static void GlobalSetup ()
@@ -259,13 +266,11 @@ namespace MonoDevelop.MacIntegration
 			try {
 				ApplicationEvents.Quit += delegate (object sender, ApplicationQuitEventArgs e)
 				{
-					// Easy case, we're pretty sure a modal dialog isn't running.
-					// All our custom Cocoa dialogs use subclasses, not vanilla NSWindow.
-					// GTK uses NSWindow but we can determine whether it's modal from GTK.
+					// We can only attempt to quit safely if the key window is a GTK window and not modal.
 					var keyWindow = NSApplication.SharedApplication.KeyWindow;
-					if (keyWindow != null && keyWindow.ClassHandle == MonoMac.ObjCRuntime.Class.GetHandle ("NSWindow")) {
-						var windows = Gtk.Window.ListToplevels ();
-						if (!windows.Any (w => w.Modal && w.Visible)) {
+					if (keyWindow != null) {
+						var win = GtkQuartz.GetGtkWindow (keyWindow);
+						if (win != null && !win.Modal) {
 							e.UserCancelled = !IdeApp.Exit ();
 							e.Handled = true;
 							return;
@@ -600,7 +605,6 @@ end tell", directory.ToString ().Replace ("\"", "\\\"")));
 			w.HasShadow = false;
 		}
 
-
 		internal override MainToolbar CreateMainToolbar (Gtk.Window window)
 		{
 			NSApplication.Init ();
@@ -624,6 +628,33 @@ end tell", directory.ToString ().Replace ("\"", "\\\"")));
 		protected override RecentFiles CreateRecentFilesProvider ()
 		{
 			return new FdoRecentFiles (UserProfile.Current.LocalConfigDir.Combine ("RecentlyUsed.xml"));
+		}
+
+		public override bool GetIsFullscreen (Gtk.Window window)
+		{
+			if (MacSystemInformation.OsVersion < MacSystemInformation.Lion) {
+				return base.GetIsFullscreen (window);
+			}
+
+			NSWindow nswin = GtkQuartz.GetWindow (window);
+			return (nswin.StyleMask & NSWindowStyle.FullScreenWindow) != 0;
+		}
+
+		public override void SetIsFullscreen (Gtk.Window window, bool isFullscreen)
+		{
+			if (MacSystemInformation.OsVersion < MacSystemInformation.Lion) {
+				base.SetIsFullscreen (window, isFullscreen);
+				return;
+			}
+
+			NSWindow nswin = GtkQuartz.GetWindow (window);
+			if (isFullscreen != ((nswin.StyleMask & NSWindowStyle.FullScreenWindow) != 0)) {
+				//HACK: workaround for MonoMac not allowing null as argument
+				MonoMac.ObjCRuntime.Messaging.void_objc_msgSend_IntPtr (
+					nswin.Handle,
+					MonoMac.ObjCRuntime.Selector.GetHandle ("toggleFullScreen:"),
+					IntPtr.Zero);
+			}
 		}
 	}
 }

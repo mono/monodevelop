@@ -374,7 +374,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 							throw new Exception ("Unable to correct flavor GUID");
 
 						var gg = string.Join (";", subtypeGuids) + ";" + TypeGuid;
-						p.GetGlobalPropertyGroup ().SetPropertyValue ("ProjectTypeGuids", gg.ToUpper ());
+						p.GetGlobalPropertyGroup ().SetPropertyValue ("ProjectTypeGuids", gg.ToUpper (), true);
 						p.Save (fileName);
 					}
 
@@ -689,27 +689,44 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			ClassDataType dt = (ClassDataType) ser.DataContext.GetConfigurationDataType (ob.GetType ());
 			foreach (ItemProperty prop in dt.GetProperties (ser.SerializationContext, ob)) {
 				MSBuildProperty bp = pgroup.GetProperty (prop.Name);
-				if (bp != null)
-					res.SetPropertyValue (bp.Name, bp.Value);
+				if (bp != null) {
+					var preserveCase = prop.DataType is MSBuildBoolDataType;
+					res.SetPropertyValue (bp.Name, bp.Value, preserveCase);
+				}
 			}
 			if (ob is DotNetProjectConfiguration) {
 				object cparams = ((DotNetProjectConfiguration)ob).CompilationParameters;
 				dt = (ClassDataType) ser.DataContext.GetConfigurationDataType (cparams.GetType ());
 				foreach (ItemProperty prop in dt.GetProperties (ser.SerializationContext, cparams)) {
 					MSBuildProperty bp = pgroup.GetProperty (prop.Name);
-					if (bp != null)
-						res.SetPropertyValue (bp.Name, bp.Value);
+					if (bp != null) {
+						var preserveCase = prop.DataType is MSBuildBoolDataType;
+						res.SetPropertyValue (bp.Name, bp.Value, preserveCase);
+					}
 				}
 			}
 			return res;
 		}
 		
-		IEnumerable<string> GetMergeToProjectProperties (MSBuildSerializer ser, object ob)
+		IEnumerable<MergedProperty> GetMergeToProjectProperties (MSBuildSerializer ser, object ob)
 		{
 			ClassDataType dt = (ClassDataType) ser.DataContext.GetConfigurationDataType (ob.GetType ());
 			foreach (ItemProperty prop in dt.GetProperties (ser.SerializationContext, ob)) {
-				if (IsMergeToProjectProperty (prop))
-					yield return prop.Name;
+				if (IsMergeToProjectProperty (prop)) {
+					yield return new MergedProperty (prop.Name, prop.DataType is MSBuildBoolDataType);
+				}
+			}
+		}
+
+		struct MergedProperty
+		{
+			public readonly string Name;
+			public readonly bool PreserveExistingCase;
+
+			public MergedProperty (string name, bool preserveExistingCase)
+			{
+				this.Name = name;
+				this.PreserveExistingCase = preserveExistingCase;
 			}
 		}
 
@@ -901,17 +918,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (eitem.Configurations.Count > 0) {
 				ItemConfiguration conf = eitem.Configurations.FirstOrDefault<ItemConfiguration> (c => c.Name == "Debug");
 				if (conf == null) conf = eitem.Configurations [0];
-				MSBuildProperty bprop = SetGroupProperty (globalGroup, "Configuration", conf.Name, false);
+				MSBuildProperty bprop = globalGroup.SetPropertyValue ("Configuration", conf.Name, false);
 				bprop.Condition = " '$(Configuration)' == '' ";
 				
 				string platform = conf.Platform.Length == 0 ? "AnyCPU" : conf.Platform;
-				bprop = SetGroupProperty (globalGroup, "Platform", platform, false);
+				bprop = globalGroup.SetPropertyValue ("Platform", platform, false);
 				bprop.Condition = " '$(Platform)' == '' ";
 			}
 			
 			if (TypeGuid == MSBuildProjectService.GenericItemGuid) {
 				DataType dt = MSBuildProjectService.DataContext.GetConfigurationDataType (Item.GetType ());
-				SetGroupProperty (globalGroup, "ItemType", dt.Name, false);
+				globalGroup.SetPropertyValue ("ItemType", dt.Name, false);
 			}
 
 			Item.ExtendedProperties ["ProjectGuid"] = Item.ItemId;
@@ -986,10 +1003,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			if (eitem.Configurations.Count > 0) {
 				List<ConfigData> configData = GetConfigData (msproject, true);
-				
-				Dictionary<string,string> mergeToProjectProperties = new Dictionary<string,string> ();
-				HashSet<string> mergeToProjectPropertyNames = new HashSet<string> (GetMergeToProjectProperties ( ser, eitem.Configurations [0]));
-				HashSet<string> mergeToProjectPropertyNamesCopy = new HashSet<string> (mergeToProjectPropertyNames);
+
+				var mergeToProjectPropertyValues = new Dictionary<string,MergedPropertyValue> ();
+				var mergeToProjectProperties = new HashSet<MergedProperty> (GetMergeToProjectProperties (ser, eitem.Configurations [0]));
+				var mergeToProjectPropertyNames = new HashSet<string> (mergeToProjectProperties.Select (p => p.Name));
 				
 				foreach (SolutionItemConfiguration conf in eitem.Configurations) {
 					bool newConf = false;
@@ -1037,23 +1054,23 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					
 					WritePropertyGroupMetadata (propGroup, ditem.ItemData, ser, conf, netConfig != null ? netConfig.CompilationParameters : null);
 					
-					CollectMergetoprojectProperties (propGroup, mergeToProjectPropertyNames, mergeToProjectProperties);
+					CollectMergetoprojectProperties (propGroup, mergeToProjectProperties, mergeToProjectPropertyValues);
 					
 					if (baseGroup != null)
-						propGroup.UnMerge (baseGroup, mergeToProjectPropertyNamesCopy);
+						propGroup.UnMerge (baseGroup, mergeToProjectPropertyNames);
 				}
 				
 				// Move properties with common values from configurations to the main
 				// property group
-				foreach (KeyValuePair<string,string> prop in mergeToProjectProperties)
-					globalGroup.SetPropertyValue (prop.Key, prop.Value);
-				foreach (string prop in mergeToProjectPropertyNamesCopy) {
-					if (!mergeToProjectProperties.ContainsKey (prop))
+				foreach (KeyValuePair<string,MergedPropertyValue> prop in mergeToProjectPropertyValues)
+					globalGroup.SetPropertyValue (prop.Key, prop.Value.Value, prop.Value.PreserveExistingCase);
+				foreach (string prop in mergeToProjectPropertyNames) {
+					if (!mergeToProjectPropertyValues.ContainsKey (prop))
 						globalGroup.RemoveProperty (prop);
 				}
 				foreach (SolutionItemConfiguration conf in eitem.Configurations) {
 					MSBuildPropertyGroup propGroup = FindPropertyGroup (configData, conf).Group;
-					foreach (string mp in mergeToProjectProperties.Keys)
+					foreach (string mp in mergeToProjectPropertyValues.Keys)
 						propGroup.RemoveProperty (mp);
 				}
 				
@@ -1087,22 +1104,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				bool isDefaultVersion = isDefaultIdentifier && def.Version == moniker.Version;
 				bool isDefaultProfile = isDefaultVersion && def.Profile == moniker.Profile;
 
-				// If the format only supports one fx version, or the version is the default, there is no need to store it
-				if (!isDefaultVersion && supportsMultipleFrameworks)
-					SetGroupProperty (globalGroup, "TargetFrameworkVersion", "v" + moniker.Version, false);
-				else
-					globalGroup.RemoveProperty ("TargetFrameworkVersion");
+				// If the format only supports one fx version, or the version is the default, there is no need to store it.
+				// However, is there is already a value set, do not remove it.
+				if (supportsMultipleFrameworks) {
+					SetIfPresentOrNotDefaultValue (globalGroup, "TargetFrameworkVersion", "v" + moniker.Version, "v" + def.Version);
+				}
 				
 				if (TargetFormat.SupportsMonikers) {
-					if (!isDefaultIdentifier && def.Identifier != moniker.Identifier)
-						SetGroupProperty (globalGroup, "TargetFrameworkIdentifier", moniker.Identifier, false);
-					else
-						globalGroup.RemoveProperty ("TargetFrameworkIdentifier");
-					
-					if (!isDefaultProfile && def.Profile != moniker.Profile)
-						SetGroupProperty (globalGroup, "TargetFrameworkProfile", moniker.Profile, false);
-					else
-						globalGroup.RemoveProperty ("TargetFrameworkProfile");
+					SetIfPresentOrNotDefaultValue (globalGroup, "TargetFrameworkIdentifier", moniker.Identifier, def.Identifier);
+					SetIfPresentOrNotDefaultValue (globalGroup, "TargetFrameworkProfile", moniker.Profile, def.Profile);
 				}
 			}
 
@@ -1140,6 +1150,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (projectBuilder != null)
 				projectBuilder.Refresh ();
 		}
+
+		void SetIfPresentOrNotDefaultValue (MSBuildPropertySet propGroup, string name, string value, string defaultValue)
+		{
+			var prop = propGroup.GetProperty (name);
+			if (prop != null) {
+				prop.Value = value;
+			} else if (value != defaultValue) {
+				propGroup.SetPropertyValue (name, value, false);
+			}
+		}
 		
 		void ForceDefaultValueSerialization (MSBuildSerializer ser, MSBuildPropertySet baseGroup, object ob)
 		{
@@ -1150,35 +1170,46 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
-		void CollectMergetoprojectProperties (MSBuildPropertyGroup pgroup, HashSet<string> propertyNames, Dictionary<string,string> mergeToProjectProperties)
+		void CollectMergetoprojectProperties (MSBuildPropertyGroup pgroup, HashSet<MergedProperty> properties, Dictionary<string,MergedPropertyValue> mergeToProjectProperties)
 		{
 			// This method checks every property in pgroup which has the MergeToProject flag.
 			// If the value of this property is the same as the one stored in mergeToProjectProperties
 			// it means that the property can be merged to the main project property group (so far).
 			
-			foreach (string pname in new List<String> (propertyNames)) {
-				MSBuildProperty prop = pgroup.GetProperty (pname);
+			foreach (var pinfo in new List<MergedProperty> (properties)) {
+				MSBuildProperty prop = pgroup.GetProperty (pinfo.Name);
 				
-				string mvalue;
-				if (!mergeToProjectProperties.TryGetValue (pname, out mvalue)) {
+				MergedPropertyValue mvalue;
+				if (!mergeToProjectProperties.TryGetValue (pinfo.Name, out mvalue)) {
 					if (prop != null) {
 						// This is the first time the value is checked. Just assign it.
-						mergeToProjectProperties.Add (pname, prop.Value);
+						mergeToProjectProperties.Add (pinfo.Name, new MergedPropertyValue (prop.Value, pinfo.PreserveExistingCase));
 						continue;
 					}
 					// If there is no value, it can't be merged
 				}
-				else if (prop != null && prop.Value.Equals (mvalue, StringComparison.CurrentCultureIgnoreCase))
+				else if (prop != null && string.Equals (prop.Value, mvalue.Value, StringComparison.OrdinalIgnoreCase))
 					// Same value. It can be merged.
 					continue;
 
 				// The property can't be merged because different configurations have different
 				// values for it. Remove it from the list.
-				propertyNames.Remove (pname);
-				mergeToProjectProperties.Remove (pname);
+				properties.Remove (pinfo);
+				mergeToProjectProperties.Remove (pinfo.Name);
 			}
 		}
 
+		struct MergedPropertyValue
+		{
+			public readonly string Value;
+			public readonly bool PreserveExistingCase;
+
+			public MergedPropertyValue (string value, bool preserveExistingCase)
+			{
+				this.Value = value;
+				this.PreserveExistingCase = preserveExistingCase;
+			}
+		}
 		
 		void SaveItem (MonoDevelop.Core.IProgressMonitor monitor, MSBuildSerializer ser, MSBuildProject msproject, object ob, Dictionary<string,ItemInfo> oldItems)
 		{
@@ -1479,7 +1510,21 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			foreach (DataNode node in itemData) {
 				notWrittenProps.Remove (node.Name);
 				ConvertToMsbuildFormat (node);
-				SetGroupProperty (propGroup, node.Name, GetXmlString (node), node is DataItem);
+
+				// In the other msbuild contexts (metadata, solution properties, etc) we TitleCase by default, so the node.Value is TitleCase.
+				// However, for property value, we lowercase by default and preserve existing case to reduce noise on VS-created files.
+				var boolNode = node as MSBuildBoolDataValue;
+				string value;
+				bool preserveExistingCase;
+				if (boolNode != null) {
+					value = boolNode.RawValue? "true" : "false";
+					preserveExistingCase = true;
+				} else {
+					value = GetXmlString (node);
+					preserveExistingCase = false;
+				}
+
+				propGroup.SetPropertyValue (node.Name, value, preserveExistingCase);
 			}
 			foreach (string prop in notWrittenProps)
 				propGroup.RemoveProperty (prop);
@@ -1520,12 +1565,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					configData.Add (new ConfigData (conf, platform, cgrp));
 			}
 			return configData;
-		}
-		
-		MSBuildProperty SetGroupProperty (MSBuildPropertySet propGroup, string name, string value, bool isLiteral)
-		{
-			propGroup.SetPropertyValue (name, value);
-			return propGroup.GetProperty (name);
 		}
 		
 		ConfigData FindPropertyGroup (List<ConfigData> configData, SolutionItemConfiguration config)

@@ -33,15 +33,15 @@ namespace Mono.Debugging.Client
 	[Serializable]
 	public class CompletionData
 	{
-		int expressionLenght;
+		int expressionLength;
 		List<CompletionItem> items = new List<CompletionItem> ();
 		
-		public int ExpressionLenght {
+		public int ExpressionLength {
 			get {
-				return expressionLenght;
+				return expressionLength;
 			}
 			set {
-				expressionLenght = value;
+				expressionLength = value;
 			}
 		}
 		

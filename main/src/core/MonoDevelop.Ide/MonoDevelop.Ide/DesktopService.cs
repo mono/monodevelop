@@ -248,5 +248,15 @@ namespace MonoDevelop.Ide
 		{
 			return PlatformService.CreateMainToolbar (window);
 		}
+
+		public static bool GetIsFullscreen (Gtk.Window window)
+		{
+			return PlatformService.GetIsFullscreen (window);
+		}
+
+		public static void SetIsFullscreen (Gtk.Window window, bool isFullscreen)
+		{
+			PlatformService.SetIsFullscreen (window, isFullscreen);
+		}
 	}
 }

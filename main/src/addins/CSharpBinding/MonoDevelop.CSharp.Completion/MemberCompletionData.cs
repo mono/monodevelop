@@ -605,11 +605,19 @@ namespace MonoDevelop.CSharp.Completion
 			var sig = new SignatureMarkupCreator (resolver, formattingPolicy.CreateOptions ());
 			sig.BreakLineAfterReturnType = smartWrap;
 			try {
-				tooltipInfo.SignatureMarkup = sig.GetMarkup (type);
+				tooltipInfo.SignatureMarkup = sig.GetMarkup (type.IsParameterized ? type.GetDefinition () : type);
 			} catch (Exception e) {
 				LoggingService.LogError ("Got exception while creating markup for :" + type, e);
 				return new TooltipInformation ();
 			}
+			if (type.IsParameterized) {
+				var typeInfo = new StringBuilder ();
+				for (int i = 0; i < type.TypeParameterCount; i++) {
+					typeInfo.AppendLine (type.GetDefinition ().TypeParameters [i].Name + " is " + sig.GetTypeReferenceString (type.TypeArguments [i]));
+				}
+				tooltipInfo.AddCategory ("Type Parameters", typeInfo.ToString ());
+			}
+
 			var def = type.GetDefinition ();
 			if (def != null) {
 				if (createFooter && !string.IsNullOrEmpty(def.ParentAssembly.AssemblyName))

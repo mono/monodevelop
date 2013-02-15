@@ -1343,9 +1343,7 @@
     <Compile Include="MonoDevelop.Components\CellRendererComboBox.cs" />
     <Compile Include="MonoDevelop.Components\TreeViewCellContainer.cs" />
     <Compile Include="MonoDevelop.Components\TreeViewState.cs" />
-    <Compile Include="MonoDevelop.Components\NotebookButtonBar.cs">
-      <DeployService-Deploy>True</DeployService-Deploy>
-    </Compile>
+    <Compile Include="MonoDevelop.Components\NotebookButtonBar.cs" />
     <Compile Include="MonoDevelop.Components\MenuButton.cs" />
     <Compile Include="MonoDevelop.Components\FixedWidthWrapLabel.cs" />
     <Compile Include="MonoDevelop.Components\InvisibleFrame.cs" />

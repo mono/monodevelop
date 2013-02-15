@@ -302,8 +302,13 @@ namespace MonoDevelop.CSharp.Highlighting
 			public override void VisitPropertyDeclaration (PropertyDeclaration propertyDeclaration)
 			{
 				base.VisitPropertyDeclaration (propertyDeclaration);
-				if (propertyDeclaration.NameToken.StartLocation.Line == lineNumber)
+				if (propertyDeclaration.NameToken.StartLocation.Line == lineNumber) {
+					if (!propertyDeclaration.PrivateImplementationType.IsNull) {
+						if (!CheckInterfaceImplementation (propertyDeclaration))
+							return;
+					}
 					Colorize (propertyDeclaration.NameToken, "keyword.semantic.property.declaration");
+				}
 				if (!propertyDeclaration.Getter.IsNull) {
 					var getKeyword = propertyDeclaration.Getter.GetChildByRole (PropertyDeclaration.GetKeywordRole);
 					if (getKeyword != null && getKeyword.StartLocation.Line == lineNumber)
@@ -337,14 +342,23 @@ namespace MonoDevelop.CSharp.Highlighting
 			{
 				base.VisitEventDeclaration (eventDeclaration);
 				foreach (var init in eventDeclaration.Variables)
-					if (init.NameToken.StartLocation.Line == lineNumber)
+					if (init.NameToken.StartLocation.Line == lineNumber) {
 						Colorize (init.NameToken, "keyword.semantic.event.declaration");
+					}
 			}
 
 			public override void VisitCustomEventDeclaration (CustomEventDeclaration eventDeclaration)
 			{
 				base.VisitCustomEventDeclaration (eventDeclaration);
-				Colorize (eventDeclaration.NameToken, "keyword.semantic.event.declaration");
+
+				if (eventDeclaration.NameToken.StartLocation.Line == lineNumber) {
+					if (!eventDeclaration.PrivateImplementationType.IsNull) {
+						if (!CheckInterfaceImplementation (eventDeclaration))
+							return;
+					}
+					Colorize (eventDeclaration.NameToken, "keyword.semantic.event.declaration");
+				}
+
 				if (!eventDeclaration.AddAccessor.IsNull) {
 					var addKeyword = eventDeclaration.AddAccessor.GetChildByRole (CustomEventDeclaration.AddKeywordRole);
 					if (addKeyword != null && addKeyword.StartLocation.Line == lineNumber)
@@ -378,11 +392,27 @@ namespace MonoDevelop.CSharp.Highlighting
 					Colorize (destructorDeclaration.NameToken, "keyword.semantic.type.declaration");
 			}
 
+			bool CheckInterfaceImplementation (EntityDeclaration entityDeclaration)
+			{
+				var result = resolver.Resolve (entityDeclaration, cancellationToken) as MemberResolveResult;
+				if (result.Member.ImplementedInterfaceMembers.Count == 0) {
+					Colorize (entityDeclaration.NameToken, "keyword.semantic.error");
+					return false;
+				}
+				return true;
+			}
+
 			public override void VisitMethodDeclaration (MethodDeclaration methodDeclaration)
 			{
 				base.VisitMethodDeclaration (methodDeclaration);
-				if (methodDeclaration.NameToken.StartLocation.Line == lineNumber)
+			
+				if (methodDeclaration.NameToken.StartLocation.Line == lineNumber) {
+					if (!methodDeclaration.PrivateImplementationType.IsNull) {
+						if (!CheckInterfaceImplementation (methodDeclaration))
+							return;
+					}
 					Colorize (methodDeclaration.NameToken, "keyword.semantic.method.declaration");
+				}
 			}
 
 			public override void VisitFieldDeclaration (FieldDeclaration fieldDeclaration)
@@ -1193,7 +1223,18 @@ namespace MonoDevelop.CSharp.Highlighting
 			}
 			void ScanPreProcessorIf (int textOffset, ref int i)
 			{
-				int length = CurText.Length - textOffset;
+				var end = CurText.Length;
+				int idx = 0;
+				while ((idx = CurText.IndexOf ('/', idx)) >= 0 && idx + 1 < CurText.Length) {
+					var next = CurText [idx + 1];
+					if (next == '/') {
+						end = idx - 1;
+						break;
+					}
+					idx++;
+				}
+
+				int length = end - textOffset;
 				string parameter = CurText.Substring (textOffset + 3, length - 3);
 				AstNode expr = new CSharpParser ().ParseExpression (parameter);
 				bool result = false;

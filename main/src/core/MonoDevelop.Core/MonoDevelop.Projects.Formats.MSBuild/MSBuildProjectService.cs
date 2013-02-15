@@ -620,13 +620,24 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		internal protected override DataNode OnSerialize (SerializationContext serCtx, object mapData, object value)
 		{
-			return new DataValue (Name, (bool)value ? "True" : "False");
+			return new MSBuildBoolDataValue (Name, (bool) value);
 		}
 		
 		internal protected override object OnDeserialize (SerializationContext serCtx, object mapData, DataNode data)
 		{
 			return String.Equals (((DataValue)data).Value, "true", StringComparison.OrdinalIgnoreCase);
 		}
+	}
+
+	class MSBuildBoolDataValue : DataValue
+	{
+		public MSBuildBoolDataValue (string name, bool value)
+			: base (name, value ? "True" : "False")
+		{
+			RawValue = value;
+		}
+
+		public bool RawValue { get; private set; }
 	}
 	
 	public class MSBuildResourceHandler: IResourceHandler

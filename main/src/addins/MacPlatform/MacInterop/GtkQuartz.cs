@@ -27,6 +27,7 @@
 using System;
 using System.Runtime.InteropServices;
 using MonoMac.AppKit;
+using System.Linq;
 
 namespace MonoDevelop.MacInterop
 {
@@ -41,6 +42,12 @@ namespace MonoDevelop.MacInterop
 			var window = GetWindow (widget);
 			if (window != null)
 				window.MakeKeyAndOrderFront (window);
+		}
+
+		public static Gtk.Window GetGtkWindow (NSWindow window)
+		{
+			var toplevels = Gtk.Window.ListToplevels ();
+			return toplevels.FirstOrDefault (w => gdk_quartz_window_get_nswindow (w.GdkWindow.Handle) == window.Handle);
 		}
 		
 		public static NSWindow GetWindow (Gtk.Window window)

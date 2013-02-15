@@ -51,7 +51,7 @@ namespace MonoDevelop.Components.MainToolbar
 		}
 
 		WorkerResult lastResult;
-		string[] validTags = new [] { "cmd"};
+		string[] validTags = new [] { "cmd", "command" };
 
 		public override Task<ISearchDataSource> GetResults (SearchPopupSearchPattern searchPattern, int resultsCount, CancellationToken token)
 		{

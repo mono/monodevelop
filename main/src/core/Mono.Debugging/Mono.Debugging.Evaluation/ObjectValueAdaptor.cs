@@ -26,14 +26,14 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Reflection;
+using System.Diagnostics;
+using System.Collections.Generic;
+
 using Mono.Debugging.Client;
 using Mono.Debugging.Backend;
-using System.Diagnostics;
-using System.Collections;
 
 namespace Mono.Debugging.Evaluation
 {
@@ -716,7 +716,7 @@ namespace Mono.Debugging.Evaluation
 							CompletionData data = new CompletionData ();
 							foreach (ValueReference cv in vr.GetChildReferences (ctx.Options))
 								data.Items.Add (new CompletionItem (cv.Name, cv.Flags));
-							data.ExpressionLenght = 0;
+							data.ExpressionLength = 0;
 							return data;
 						}
 					} catch (Exception ex) {
@@ -739,7 +739,7 @@ namespace Mono.Debugging.Evaluation
 				string partialWord = exp.Substring (i+1);
 				
 				CompletionData data = new CompletionData ();
-				data.ExpressionLenght = partialWord.Length;
+				data.ExpressionLength = partialWord.Length;
 				
 				// Local variables
 				

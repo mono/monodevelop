@@ -260,6 +260,9 @@
 			<Word>endregion</Word>
 			<Word>pragma</Word>
 		</Keywords>
+		
+		<EolSpan color = "comment.doc" rule="XmlDocumentation" tagColor="comment.tag.doc">///</EolSpan>
+		<EolSpan color = "comment.line" rule="Comment" tagColor="comment.tag.line">//</EolSpan>
 	</Rule>
 	
 	<Rule name = "Comment">

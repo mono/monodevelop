@@ -92,10 +92,8 @@ namespace MonoDevelop.Ide
 
 			SetupTheme ();
 
-			//OSXFIXME
 			var args = options.RemainingArgs.ToArray ();
-			var exeName = Assembly.GetEntryAssembly ().GetName ().Name;
-			Gtk.Application.Init (exeName, ref args);
+			Gtk.Application.Init (BrandingService.ApplicationName, ref args);
 
 			FilePath p = typeof(IdeStartup).Assembly.Location;
 			Assembly.LoadFrom (p.ParentDirectory.Combine ("Xwt.Gtk.dll"));
@@ -528,7 +526,8 @@ namespace MonoDevelop.Ide
 			bool retry = false;
 			do {
 				try {
-					Runtime.SetProcessName (BrandingService.ApplicationName);
+					var exename = Path.GetFileNameWithoutExtension (Assembly.GetEntryAssembly ().Location);
+					Runtime.SetProcessName (exename);
 					var app = new IdeStartup ();
 					ret = app.Run (options);
 					break;

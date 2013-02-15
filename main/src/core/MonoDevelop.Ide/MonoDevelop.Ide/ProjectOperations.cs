@@ -225,9 +225,11 @@ namespace MonoDevelop.Ide
 				entity = ((ICSharpCode.NRefactory.TypeSystem.IType)element).GetDefinition ();
 			if (entity == null)
 				return false;
-			
 			if (entity.Region.IsEmpty) {
-				return !string.IsNullOrEmpty (entity.ParentAssembly.UnresolvedAssembly.Location);
+				var parentAssembly = entity.ParentAssembly;
+				if (parentAssembly == null)
+					return false;
+				return !string.IsNullOrEmpty (parentAssembly.UnresolvedAssembly.Location);
 			}
 			return true;
 		}

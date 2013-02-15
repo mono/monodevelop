@@ -617,8 +617,10 @@ namespace MonoDevelop.VersionControl.Views
 			labelRevision.Text = GettextCatalog.GetString ("revision: {0}", rev);
 			textviewDetails.Buffer.Text = d.Message;
 			
-			if (select)
+			if (select) {
 				treeviewFiles.Selection.SelectIter (selectIter);
+				treeviewFiles.ExpandRow (treeviewFiles.Model.GetPath (selectIter), true);
+			}
 		}
 		
 		void UpdateHistory ()
