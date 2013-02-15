@@ -402,7 +402,7 @@ namespace MonoDevelop.Core.Assemblies
 			
 			var supportedFrameworksDir = dir.Combine ("SupportedFrameworks");
 			if (Directory.Exists (supportedFrameworksDir)) {
-				foreach (var sfx in Directory.EnumerateFiles (supportedFrameworksDir))
+				foreach (var sfx in Directory.GetFiles (supportedFrameworksDir))
 					fx.SupportedFrameworks.Add (SupportedFramework.Load (fx, sfx));
 			}
 			
