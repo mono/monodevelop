@@ -1,3 +1,46 @@
+;;; fsharp-doc.el -- show information for F# symbol at point.
+;;
+;; Filename: fsharp-doc.el
+;; Author: Chris Barrett <chris.d.barrett@me.com>
+;; Maintainer: Chris Barrett <chris.d.barrett@me.com>
+;; Keywords: fsharp, languages
+;;
+;; This file is not part of GNU Emacs.
+;;
+;; This program is free software; you can redistribute it and/or
+;; modify it under the terms of the GNU General Public License as
+;; published by the Free Software Foundation; either version 3, or
+;; (at your option) any later version.
+;;
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+;; General Public License for more details.
+;;
+;; You should have received a copy of the GNU General Public License
+;; along with this program; see the file COPYING.  If not, write to
+;; the Free Software Foundation, Inc., 51 Franklin Street, Fifth
+;; Floor, Boston, MA 02110-1301, USA.
+;;
+;;; Commentary:
+;;
+;; This is part of fsharp-mode for Emacs. It communicates with the F#
+;; completion process to provide information for the symbol at point.
+;;
+;; This should be loaded automatically by fsharp-mode. Otherwise, add
+;; this file to your load path, then call
+;;
+;;   (autoload 'turn-on-fsharp-doc-mode "fsharp-doc.el")
+;;   (add-hook 'fsharp-mode-hook 'turn-on-fsharp-doc-mode)
+;;
+;; This file requires `namespaces`. It is available from MELPA, or from
+;; GitHub at
+;; https://raw.github.com/chrisbarrett/elisp-namespaces/master/namespaces.el
+;;
+;;; Code:
+
+(require 'namespaces)
+
 (namespace fsharp-doc
   :export
   [ format-for-minibuffer ]
@@ -74,3 +117,6 @@
              (not executing-kbd-macro)
              (not (eq (selected-window) (minibuffer-window))))
     (ac-fsharp-tooltip-at-point)))
+
+
+;;; fsharp-doc.el ends here
