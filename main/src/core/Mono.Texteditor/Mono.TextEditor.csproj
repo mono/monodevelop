@@ -83,7 +83,6 @@
     <Compile Include="Mono.TextEditor\SearchResult.cs" />
     <Compile Include="Mono.TextEditor\Caret.cs" />
     <Compile Include="Mono.TextEditor\ISearchEngine.cs" />
-    <Compile Include="Mono.TextEditor.Highlighting\IXmlProvider.cs" />
     <Compile Include="Mono.TextEditor\BookmarkMarker.cs" />
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="Mono.TextEditor\EditMode.cs" />
@@ -209,9 +208,10 @@
     <Compile Include="Mono.TextEditor.Highlighting\SyntaxModeService.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\ChunkStyle.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\TextWeight.cs" />
-    <Compile Include="Mono.TextEditor.Highlighting\AmbientColor.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\ColorDescriptionAttribute.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\ColorScheme.cs" />
+    <Compile Include="Mono.TextEditor.Highlighting\IStreamProvider.cs" />
+    <Compile Include="Mono.TextEditor.Highlighting\AmbientColor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mono.TextEditor.dll.config">

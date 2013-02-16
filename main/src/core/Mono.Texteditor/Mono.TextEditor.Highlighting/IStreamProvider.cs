@@ -25,17 +25,18 @@
 //
 
 using System;
+using System.IO;
 using System.Reflection;
 using System.Xml;
 
 namespace Mono.TextEditor.Highlighting
 {
-	public interface IXmlProvider
+	public interface IStreamProvider
 	{
-		XmlReader Open ();
+		Stream Open ();
 	}
 	
-	public class ResourceXmlProvider : IXmlProvider
+	public class ResourceStreamProvider : IStreamProvider
 	{
 		Assembly assembly;
 		string   manifestResourceName;
@@ -52,21 +53,19 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
-		public ResourceXmlProvider (Assembly assembly, string manifestResourceName)
+		public ResourceStreamProvider (Assembly assembly, string manifestResourceName)
 		{
 			this.assembly             = assembly;
 			this.manifestResourceName = manifestResourceName;
 		}
 		
-		public XmlReader Open ()
+		public Stream Open ()
 		{
-			XmlReaderSettings settings = new XmlReaderSettings ();
-			settings.CloseInput = true;
-			return XmlTextReader.Create (this.assembly.GetManifestResourceStream (this.ManifestResourceName), settings);
+			return assembly.GetManifestResourceStream (this.ManifestResourceName);
 		}
 	}
 	
-	public class UrlXmlProvider : IXmlProvider
+	public class UrlStreamProvider : IStreamProvider
 	{
 		string  url;
 		
@@ -76,14 +75,14 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
-		public UrlXmlProvider (string url)
+		public UrlStreamProvider (string url)
 		{
 			this.url = url;
 		}
 		
-		public XmlReader Open ()
+		public Stream Open ()
 		{
-			return new XmlTextReader (url);
+			return File.OpenRead (url);
 		}
 	}
 	

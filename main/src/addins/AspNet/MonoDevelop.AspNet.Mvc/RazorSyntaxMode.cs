@@ -1,4 +1,4 @@
-﻿//
+//
 // RazorSyntaxMode.cs
 //
 // Author:
@@ -49,7 +49,7 @@ namespace MonoDevelop.AspNet.Mvc
 		{
 			this.guiDocument = doc;
 			guiDocument.DocumentParsed += HandleDocumentParsed; 
-			ResourceXmlProvider provider = new ResourceXmlProvider (typeof (IXmlProvider).Assembly, "RazorSyntaxMode.xml");
+			ResourceStreamProvider provider = new ResourceStreamProvider (typeof (IStreamProvider).Assembly, "RazorSyntaxMode.xml");
 			using (XmlReader reader = provider.Open ()) {
 				SyntaxMode baseMode = SyntaxMode.Read (reader);
 				this.rules = new List<Rule> (baseMode.Rules);

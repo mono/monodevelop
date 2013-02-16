@@ -30,6 +30,8 @@ using System.Linq;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using System.Reflection;
+using System.Text;
+using System.Xml;
 
 namespace Mono.TextEditor.Highlighting
 {
@@ -39,6 +41,7 @@ namespace Mono.TextEditor.Highlighting
 		public Version Version { get; set; }
 		public string Description { get; set; }
 		public string Originator { get; set; }
+		public string BaseScheme { get; set; }
 
 
 		#region Ambient Colors
@@ -345,8 +348,20 @@ namespace Mono.TextEditor.Highlighting
 		public ChunkStyle DebuggerStackLine { get; private set; }
 		#endregion
 
-		static Dictionary<string, PropertyInfo> textColors    = new Dictionary<string, PropertyInfo> ();
-		static Dictionary<string, PropertyInfo> ambientColors = new Dictionary<string, PropertyInfo> ();
+		class PropertyDecsription
+		{
+			public readonly PropertyInfo Info;
+			public readonly ColorDescriptionAttribute Attribute;
+
+			public PropertyDecsription (PropertyInfo info, ColorDescriptionAttribute attribute)
+			{
+				this.Info = info;
+				this.Attribute = attribute;
+			}
+		}
+
+		static Dictionary<string, PropertyDecsription> textColors    = new Dictionary<string, PropertyDecsription> ();
+		static Dictionary<string, PropertyDecsription> ambientColors = new Dictionary<string, PropertyDecsription> ();
 
 		static ColorScheme ()
 		{
@@ -355,9 +370,9 @@ namespace Mono.TextEditor.Highlighting
 				if (description == null)
 					continue;
 				if (property.PropertyType == typeof (ChunkStyle)) {
-					textColors.Add (description.Name, property);
+					textColors.Add (description.Name, new PropertyDecsription (property, description));
 				} else {
-					ambientColors.Add (description.Name, property);
+					ambientColors.Add (description.Name, new PropertyDecsription (property, description));
 				}
 			}
 		}
@@ -375,8 +390,6 @@ namespace Mono.TextEditor.Highlighting
 			return ParseColor (value);
 		}
 
-		HashSet<string> textColorsSet;
-
 		public ChunkStyle GetChunkStyle (Chunk chunk)
 		{
 			return GetChunkStyle (chunk.Style);
@@ -384,12 +397,12 @@ namespace Mono.TextEditor.Highlighting
 	
 		public ChunkStyle GetChunkStyle (string color)
 		{
-			PropertyInfo val;
+			PropertyDecsription val;
 			if (!textColors.TryGetValue (color, out val)) {
 				Console.WriteLine ("Chunk style : " + color + " is undefined.");
 				return null;
 			}
-			return val.GetValue (this, null) as ChunkStyle;
+			return val.Info.GetValue (this, null) as ChunkStyle;
 		}
 
 		public static ColorScheme LoadFrom (Stream stream)
@@ -402,8 +415,16 @@ namespace Mono.TextEditor.Highlighting
 			// The fields we'd like to extract
 			result.Name = root.XPathSelectElement("name").Value;
 			result.Version = Version.Parse (root.XPathSelectElement("version").Value);
-			result.Description = root.XPathSelectElement("description").Value;
-			result.Originator = root.XPathSelectElement("originator").Value;
+			var el = root.XPathSelectElement ("description");
+			if (el != null)
+				result.Description = el.Value;
+			el = root.XPathSelectElement ("originator");
+			if (el != null)
+				result.Originator = el.Value;
+			el = root.XPathSelectElement ("basedOn");
+			if (el != null)
+				result.BaseScheme = el.Value;
+
 			var palette = new Dictionary<string, Cairo.Color> ();
 			Console.WriteLine ("name:"+result.Name);
 			Console.WriteLine ("descr:"+result.Description);
@@ -416,36 +437,169 @@ namespace Mono.TextEditor.Highlighting
 					ParseColor (color.XPathSelectElement ("value").Value)
 				);
 			}
+
 			foreach (var colorElement in root.XPathSelectElements("//colors/*")) {
 				var color = AmbientColor.Create (colorElement, palette);
-				PropertyInfo info;
+				PropertyDecsription info;
 				if (!ambientColors.TryGetValue (color.Name, out info)) {
 					Console.WriteLine ("Ambient color:" + color.Name + " not found.");
 					continue;
 				}
-				info.SetValue (result, color, null);
+				info.Info.SetValue (result, color, null);
 			}
 
-			var textColorsSet = new HashSet<string> ();
 			foreach (var textColorElement in root.XPathSelectElements("//text/*")) {
 				var color = ChunkStyle.Create (textColorElement, palette);
-				PropertyInfo info;
+				PropertyDecsription info;
 				if (!textColors.TryGetValue (color.Name, out info)) {
 					Console.WriteLine ("Text color:" + color.Name + " not found.");
 					continue;
 				}
-				textColorsSet.Add (color.Name);
-				info.SetValue (result, color, null);
+				info.Info.SetValue (result, color, null);
 			}
-			result.textColorsSet = textColorsSet;
 
 			return result;
 		}
 
+		public static string ColorToMarkup (Cairo.Color color)
+		{
+			var r = (byte)(color.R * byte.MaxValue);
+			var g = (byte)(color.G * byte.MaxValue);
+			var b = (byte)(color.B * byte.MaxValue);
+			var a = (byte)(color.A * byte.MaxValue);
+
+			if (a == 255)
+				return string.Format ("#{0:X2}{1:X2}{2:X2}", r, g, b);
+			return string.Format ("#{0:X2}{1:X2}{2:X2}{3:X2}", r, g, b, a);
+		}
+
+
 		public void Save (string fileName)
 		{
-			throw new NotImplementedException ();
+			using (var writer = new StreamWriter (fileName)) {
+				writer.WriteLine ("{");
+				writer.WriteLine ("\t\"name\":\"{0}\",", Name);
+				writer.WriteLine ("\t\"version\":\"1.0\",");
+				if (!string.IsNullOrEmpty (Description))
+					writer.WriteLine ("\t\"description\":\"{0}\",", Description);
+				if (!string.IsNullOrEmpty (Originator))
+					writer.WriteLine ("\t\"originator\":\"{0}\",", Originator);
+				if (!string.IsNullOrEmpty (BaseScheme))
+					writer.WriteLine ("\t\"baseScheme\":\"{0}\",", BaseScheme);
+
+				var baseStyle = SyntaxModeService.GetColorStyle (BaseScheme ?? "Default");
+
+				writer.WriteLine ("\t\"colors\":[");
+				bool first = true;
+				foreach (var ambient in ambientColors) {
+					var thisValue = ambient.Value.Info.GetValue (this, null) as AmbientColor;
+					if (thisValue == null)
+						continue;
+					var baseValue = ambient.Value.Info.GetValue (baseStyle, null) as AmbientColor;
+					if (thisValue.Equals (baseValue))
+						continue;
+
+					var colorString = new StringBuilder ();
+					foreach (var color in thisValue.Colors) {
+						if (colorString.Length > 0)
+							colorString.Append (", ");
+						colorString.Append (string.Format ("\"{0}\":\"{1}\"", color.Item1, ColorToMarkup (color.Item2)));
+					}
+					if (!first) {
+						writer.WriteLine (",");
+					} else {
+						first = false;
+					}
+					writer.Write ("\t\t{ \"name\": \"{0}\", {1} }", thisValue.Name, colorString);
+				}
+
+				writer.WriteLine ("\t],");
+				first = true;
+				writer.WriteLine ("\t\"text\":[");
+				foreach (var ambient in textColors) {
+					var thisValue = ambient.Value.Info.GetValue (this, null) as ChunkStyle;
+					if (thisValue == null)
+						continue;
+					var baseValue = ambient.Value.Info.GetValue (baseStyle, null) as ChunkStyle;
+					if (thisValue.Equals (baseValue))
+						continue;
+					var colorString = new StringBuilder ();
+					if (thisValue.GotForegroundColorAssigned)
+						colorString.Append (string.Format ("\"fore\":\"{0}\"", ColorToMarkup (thisValue.CairoColor)));
+					if (!thisValue.TransparentBackround) {
+						if (colorString.Length > 0)
+							colorString.Append (", ");
+						colorString.Append (string.Format ("\"back\":\"{0}\"", ColorToMarkup (thisValue.CairoBackgroundColor)));
+					}
+					if (thisValue.Weight != TextWeight.None) {
+						if (colorString.Length > 0)
+							colorString.Append (", ");
+						colorString.Append (string.Format ("\"weight\":\"{0}\"", thisValue.Weight));
+					}
+					if (colorString.Length == 0)
+						continue;
+					if (!first) {
+						writer.WriteLine (",");
+					} else {
+						first = false;
+					}
+					writer.Write ("\t\t{");
+					writer.Write ("\"name\": \"{0}\", {1}", ambient.Value.Attribute.Name, colorString);
+					writer.Write (" }");
+				}
+				writer.WriteLine ();
+				writer.WriteLine ("\t]");
+
+				writer.WriteLine ("}");
+			}
 		}
+
+		static Cairo.Color ImportVsColor (string fore)
+		{
+			string color = "#" + fore.Substring (8, 2) + fore.Substring (6, 2) + fore.Substring (4, 2);
+			Console.WriteLine ("col:"+color);
+			return HslColor.Parse (color);
+		}
+
+		public static ColorScheme Import (string fileName)
+		{
+			var result = new ColorScheme ();
+			result.Name = Path.GetFileNameWithoutExtension (fileName);
+
+			using (var reader = XmlReader.Create (fileName)) {
+				while (reader.Read ()) {
+					if (reader.LocalName == "Item") {
+						var name = reader.GetAttribute ("Name");
+						var fore = reader.GetAttribute ("Foreground");
+						var back = reader.GetAttribute ("Background");
+						var bold = reader.GetAttribute ("BoldFont");
+						bool found = false;
+						foreach (var color in textColors) {
+							if (color.Value.Attribute.VSSetting == name) {
+								var textColor = new ChunkStyle ();
+								textColor.Name = color.Value.Attribute.Name;
+								if (!string.IsNullOrEmpty (fore))
+									textColor.CairoColor = ImportVsColor (fore);
+								if (!string.IsNullOrEmpty (back))
+									textColor.CairoBackgroundColor = ImportVsColor (back);
+								if (bold == "Yes")
+									textColor.Weight |= TextWeight.Bold;
+								Console.WriteLine ("found color:"+textColor);
+								color.Value.Info.SetValue (result, textColor, null);
+								found = true;
+								break;
+							}
+						}
+//						if (!found)
+//							Console.WriteLine (name + " not found!");
+					}
+				}
+			}
+
+			return result;
+		}
+		
+
 	}
 }
 

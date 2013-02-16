@@ -37,19 +37,19 @@ namespace Mono.TextEditor.Highlighting
 
 	public class ChunkStyle
 	{
-		public string Name { get; private set; }
+		public string Name { get; set; }
 		public Cairo.Color CairoColor { get; set; }
 		public Cairo.Color CairoBackgroundColor { get; set; }
 
 		public bool GotForegroundColorAssigned {
 			get {
-				return CairoColor.A != 1.0;
+				return CairoColor.A != 0.0;
 
 			}
 		}
 		public bool TransparentBackround {
 			get {
-				return CairoBackgroundColor.A == 1.0;
+				return CairoBackgroundColor.A == 0.0;
 			}
 		}
 		public TextWeight Weight { get; set; }
@@ -124,6 +124,16 @@ namespace Mono.TextEditor.Highlighting
 		public Gdk.GC CreateFgGC (Gdk.Drawable drawable)
 		{
 			return new Gdk.GC (drawable) { RgbBgColor = (HslColor)CairoBackgroundColor, RgbFgColor = (HslColor)CairoColor };
+		}
+
+		static string ColorToString (Cairo.Color cairoColor)
+		{
+			return "R:" + cairoColor.R + " G:" + cairoColor.G + " B:" + cairoColor.B + " A:" + cairoColor.A;
+		}
+
+		public override string ToString ()
+		{
+			return string.Format ("[ChunkStyle: Name={0}, CairoColor={1}, CairoBackgroundColor={2}, Weight={3}]", Name, ColorToString (CairoColor), ColorToString (CairoBackgroundColor), Weight);
 		}
 	}
 	

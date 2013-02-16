@@ -30,6 +30,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
+using System.IO;
 
 namespace Mono.TextEditor.Highlighting
 {
@@ -722,8 +723,9 @@ namespace Mono.TextEditor.Highlighting
 
 		public const string MimeTypesAttribute = "mimeTypes";
 
-		public static SyntaxMode Read (XmlReader reader)
+		public static SyntaxMode Read (Stream stream)
 		{
+			var reader = XmlReader.Create (stream);
 			var result = new SyntaxMode (null);
 			var matches = new List<Match> ();
 			var spanList = new List<Span> ();

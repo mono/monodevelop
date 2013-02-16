@@ -754,8 +754,8 @@ namespace MonoDevelop.CSharp.Highlighting
 			bool loadRules = _rules == null;
 
 			if (loadRules) {
-				var provider = new ResourceXmlProvider (typeof(IXmlProvider).Assembly, typeof(IXmlProvider).Assembly.GetManifestResourceNames ().First (s => s.Contains ("CSharpSyntaxMode")));
-				using (XmlReader reader = provider.Open ()) {
+				var provider = new ResourceStreamProvider (typeof(IStreamProvider).Assembly, typeof(IStreamProvider).Assembly.GetManifestResourceNames ().First (s => s.Contains ("CSharpSyntaxMode")));
+				using (var reader = provider.Open ()) {
 					SyntaxMode baseMode = SyntaxMode.Read (reader);
 					_rules = new List<Rule> (baseMode.Rules.Where (r => r.Name != "Comment"));
 					_rules.Add (new Rule (this) {
