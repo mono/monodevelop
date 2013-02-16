@@ -180,6 +180,17 @@
 		{ "name": "Breakpoint Text(Invalid)", "fore":"white", "back":"#eddcdc" },
 	
 		{ "name": "Debugger Current Statement", "fore":"black", "back":"#ffff00" },
-		{ "name": "Debugger Stack Line", "fore":"black", "back":"#80ff80" }
+		{ "name": "Debugger Stack Line", "fore":"black", "back":"#80ff80" },
+		
+		
+		{ "name": "Diff Line(Added)", "fore":"skyblue2", "back":"white"  },
+		{ "name": "Diff Line(Removed)", "fore":"scarletred1", "back":"white"  },
+		{ "name": "Diff Line(Changed)", "fore":"plum2", "back":"white"  },
+		{ "name": "Diff Header", "fore":"chameleon3", "back":"white" },
+		{ "name": "Diff Header(Separator)", "fore":"chameleon3", "back":"white", "weight":"bold"  },
+		{ "name": "Diff Header(Old)", "fore":"scarletred1", "back":"white", "weight":"bold"  },
+		{ "name": "Diff Header(New)", "fore":"skyblue2", "back":"white", "weight":"bold"  },
+		{ "name": "Diff Location", "fore":"plum2", "back":"white", "weight":"bold"  }
+
 	]
 }

@@ -360,9 +360,34 @@ namespace Mono.TextEditor.Highlighting
 
 		[ColorDescription("Debugger Current Statement", VSSetting = "Current Statement")]
 		public ChunkStyle DebuggerCurrentLine { get; private set; }
-		
+
 		[ColorDescription("Debugger Stack Line")] // not defined
 		public ChunkStyle DebuggerStackLine { get; private set; }
+
+
+		[ColorDescription("Diff Line(Added)")] //not defined
+		public ChunkStyle DiffLineAdded { get; private set; }
+
+		[ColorDescription("Diff Line(Removed)")] //not defined
+		public ChunkStyle DiffLineRemoved { get; private set; }
+
+		[ColorDescription("Diff Line(Changed)")] //not defined
+		public ChunkStyle DiffLineChanged { get; private set; }
+
+		[ColorDescription("Diff Header")] //not defined
+		public ChunkStyle DiffHeader { get; private set; }
+		
+		[ColorDescription("Diff Header(Separator)")] //not defined
+		public ChunkStyle DiffHeaderSeparator { get; private set; }
+		
+		[ColorDescription("Diff Header(Old)")] //not defined
+		public ChunkStyle DiffHeaderOld { get; private set; }
+		
+		[ColorDescription("Diff Header(New)")] //not defined
+		public ChunkStyle DiffHeaderNew { get; private set; }
+
+		[ColorDescription("Diff Location")] //not defined
+		public ChunkStyle DiffLocation { get; private set; }
 		#endregion
 
 		public class PropertyDecsription

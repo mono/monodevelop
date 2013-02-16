@@ -25,21 +25,21 @@
 
 <SyntaxMode name = "Diff" mimeTypes="text/x-patch;text/x-diff">
 	
-	<EolSpan color = "diff.header-seperator" rule ="InLocation" flags="StartsLine">====</EolSpan>
-	<EolSpan color = "diff.line-changed" rule ="InLocation" flags="StartsLine">!</EolSpan>
+	<EolSpan color = "Diff Header(Separator)" rule ="InLocation" flags="StartsLine">====</EolSpan>
+	<EolSpan color = "Diff Line(Changed)" rule ="InLocation" flags="StartsLine">!</EolSpan>
 	
-	<EolSpan color = "diff.header-newfile" rule ="InLocation" flags="StartsLine" >+++</EolSpan>
-	<EolSpan color = "diff.line-added" rule ="InLocation" flags="StartsLine">+</EolSpan>
-	<EolSpan color = "diff.line-added" rule ="InLocation" flags="StartsLine">&gt;</EolSpan>
+	<EolSpan color = "Diff Header(New)" rule ="InLocation" flags="StartsLine" >+++</EolSpan>
+	<EolSpan color = "Diff Line(Added)" rule ="InLocation" flags="StartsLine">+</EolSpan>
+	<EolSpan color = "Diff Line(Added)" rule ="InLocation" flags="StartsLine">&gt;</EolSpan>
 	
-	<EolSpan color = "diff.header-oldfile" rule ="InLocation" flags="StartsLine">---</EolSpan>
-	<EolSpan color = "diff.line-removed" rule ="InLocation" flags="StartsLine">-</EolSpan>
-	<EolSpan color = "diff.line-removed" rule ="InLocation" flags="StartsLine">&lt;</EolSpan>
+	<EolSpan color = "Diff Header(Old)" rule ="InLocation" flags="StartsLine">---</EolSpan>
+	<EolSpan color = "Diff Line(Removed)" rule ="InLocation" flags="StartsLine">-</EolSpan>
+	<EolSpan color = "Diff Line(Removed)" rule ="InLocation" flags="StartsLine">&lt;</EolSpan>
 	
-	<EolSpan color = "diff.header" rule ="InLocation" flags="StartsLine">Index:</EolSpan>
-	<EolSpan color = "diff.header" rule ="InLocation" flags="StartsLine">diff </EolSpan>
+	<EolSpan color = "Diff Header" rule ="InLocation" flags="StartsLine">Index:</EolSpan>
+	<EolSpan color = "Diff Header" rule ="InLocation" flags="StartsLine">diff </EolSpan>
 	
-	<EolSpan color = "diff.location" rule ="InLocation">@@</EolSpan>
+	<EolSpan color = "Diff Location" rule ="InLocation">@@</EolSpan>
 	
 	<Rule name = "InLocation">
 	</Rule>
