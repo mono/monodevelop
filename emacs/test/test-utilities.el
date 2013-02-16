@@ -16,11 +16,15 @@
     (let ((testmode (getenv "TESTMODE")))
       (cond
        ((eq testmode nil) ; Load from current checkout
+        (init-melpa)
+        (ensure-packages '(pos-tip namespaces))
+
         (push (expand-file-name "..") load-path)
 
         (push '("\\.fs[iylx]?$" . fsharp-mode) auto-mode-alist)
         (autoload 'fsharp-mode "fsharp-mode" "Major mode for editing F# code." t)
         (autoload 'run-fsharp "inf-fsharp-mode" "Run an inferior F# process." t)
+        (autoload 'turn-on-fsharp-doc-mode "fsharp-doc")
         (autoload 'ac-fsharp-launch-completion-process "fsharp-mode-completion" "Launch the completion process" t)
         (autoload 'ac-fsharp-quit-completion-process "fsharp-mode-completion" "Quit the completion process" t)
         (autoload 'ac-fsharp-load-project "fsharp-mode-completion" "Load the specified F# project" t))
@@ -32,7 +36,7 @@
        (t ; Assume `testmode` is a package file to install
           ; TODO: Break net dependency (pos-tip) for speed?
         (init-melpa)
-        (ensure-packages '(pos-tip))
+        (ensure-packages '(pos-tip namespaces))
         (package-install-file (expand-file-name testmode)))))))
 
 (defun fsharp-mode-wrapper (bufs body)

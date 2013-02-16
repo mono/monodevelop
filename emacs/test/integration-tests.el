@@ -73,6 +73,7 @@
    (lambda ()
      (let ((tiptext))
        (flet ((pos-tip-show (s) (setq tiptext s)))
+         (setq ac-fsharp-use-pos-tip t)
          (find-file "Test1/Program.fs")
          (ac-fsharp-load-project "Test1.fsproj")
          (while (eq nil ac-fsharp-project-files)
@@ -81,8 +82,10 @@
          (backward-char 2)
          (call-process "sleep" nil nil nil "3")
          (ac-fsharp-tooltip-at-point)
-         (while (eq nil tiptext)
-           (sleep-for 1))
+         (with-timeout (5)
+           (while (eq nil tiptext)
+             (sleep-for 1)))
+         (setq ac-fsharp-use-pos-tip nil)
          (should
           (string-match-p "val func : x:int -> int\n\nFull name: Program.X.func"
                           tiptext)))))))
@@ -113,6 +116,7 @@
    (lambda ()
      (let ((tiptext))
        (flet ((pos-tip-show (s) (setq tiptext s)))
+         (setq ac-fsharp-use-pos-tip t)
          (ac-fsharp-launch-completion-process)
          (find-file "Test1/Script.fsx")
          (ac-fsharp-parse-current-buffer)
@@ -123,6 +127,7 @@
            (while (eq nil tiptext)
              (sleep-for 1)))
          (should (stringp tiptext))
+         (setq ac-fsharp-use-pos-tip nil)
          (should
           (string-match-p "val funky : x:int -> int\n\nFull name: Script.XA.funky"
                           tiptext)))))))

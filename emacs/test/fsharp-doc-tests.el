@@ -1,5 +1,4 @@
 (provide 'fsharp-doc-tests)
-(require 'fsharp-doc)
 (require 'ert)
 
 (defmacro check (desc &rest body)
