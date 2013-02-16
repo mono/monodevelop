@@ -27,7 +27,7 @@
 	
 	<Property name="LineComment">#</Property>
 	
-	<EolSpan color = "comment" rule="Comment" tagColor="comment.tag">#</EolSpan>
+	<EolSpan color = "Comment(Line)" rule="Comment" tagColor="comment.tag">#</EolSpan>
 	
 	<Span color = "xml.name" rule="Comment">
 		<Begin>"""</Begin>
@@ -39,12 +39,12 @@
 		<End>'''</End>
 	</Span>
 	
-	<Span color = "string" rule="String" stopateol = "true" escape='\'>
+	<Span color = "String" rule="String" stopateol = "true" escape='\'>
 		<Begin>"</Begin>
 		<End>"</End>
 	</Span>
 	
-	<Span color = "string" rule="String" stopateol = "true" escape='\'>
+	<Span color = "String" rule="String" stopateol = "true" escape='\'>
 		<Begin>'</Begin>
 		<End>'</End>
 	</Span>

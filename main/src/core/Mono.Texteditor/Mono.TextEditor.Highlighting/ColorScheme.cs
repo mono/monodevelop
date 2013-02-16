@@ -397,6 +397,33 @@ namespace Mono.TextEditor.Highlighting
 
 		[ColorDescription("Diff Location")] //not defined
 		public ChunkStyle DiffLocation { get; private set; }
+
+		[ColorDescription("Html Attribute Name", VSSetting="HTML Attribute")]
+		public ChunkStyle HtmlAttributeName { get; private set; }
+		
+		[ColorDescription("Html Attribute Value", VSSetting="HTML Attribute Value")]
+		public ChunkStyle HtmlAttributeValue { get; private set; }
+		
+		[ColorDescription("Html Comment", VSSetting="HTML Comment")]
+		public ChunkStyle HtmlComment { get; private set; }
+		
+		[ColorDescription("Html Element Name", VSSetting="HTML Element Name")]
+		public ChunkStyle HtmlElementName { get; private set; }
+		
+		[ColorDescription("Html Entity", VSSetting="HTML Entity")]
+		public ChunkStyle HtmlEntity { get; private set; }
+		
+		[ColorDescription("Html Operator", VSSetting="HTML Operator")]
+		public ChunkStyle HtmlOperator { get; private set; }
+		
+		[ColorDescription("Html Server-Side Script", VSSetting="HTML Server-Side Script")]
+		public ChunkStyle HtmlServerSideScript { get; private set; }
+		
+		[ColorDescription("Html Tag Delimiter", VSSetting="HTML Tag Delimiter")]
+		public ChunkStyle HtmlTagDelimiter { get; private set; }
+		
+		[ColorDescription("Razor Code", VSSetting="Razor Code")]
+		public ChunkStyle RazorCode { get; private set; }
 		#endregion
 
 		public class PropertyDecsription

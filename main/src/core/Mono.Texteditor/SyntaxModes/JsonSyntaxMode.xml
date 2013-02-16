@@ -52,7 +52,7 @@ THE SOFTWARE.
 			<Begin>{</Begin>
 			<End>}</End>
 		</Span>
-		<Span color = "string" rule="String" escape='\'>
+		<Span color = "String" rule="String" escape='\'>
 			<Begin>"</Begin>
 			<End>"</End>
 		</Span>

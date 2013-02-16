@@ -50,12 +50,12 @@
 
 	<!-- tag definitions -->
 	<Rule name = "InTag">
-		<Span color = "string" rule="InLiteral">
+		<Span color = "String" rule="InLiteral">
 			<Begin>&quot;</Begin>
 			<End>&quot;</End>
 		</Span>
 
-		<Span color = "string" rule="InLiteral">
+		<Span color = "String" rule="InLiteral">
 			<Begin>&apos;</Begin>
 			<End>&apos;</End>
 		</Span>

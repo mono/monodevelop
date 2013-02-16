@@ -55,12 +55,12 @@
 		<End>&apos;</End>
 	</Span>
 
-	<Span color = "string" rule="String" stopateol = "false" escape='"'>
+	<Span color = "String" rule="String" stopateol = "false" escape='"'>
 		<Begin>@@/</Begin>
 		<End>/</End>
 	</Span>
 
-	<Span color = "string" rule="String" stopateol = "true" escape="\">
+	<Span color = "String" rule="String" stopateol = "true" escape="\">
 		<Begin>@/</Begin>
 		<End>/</End>
 	</Span>

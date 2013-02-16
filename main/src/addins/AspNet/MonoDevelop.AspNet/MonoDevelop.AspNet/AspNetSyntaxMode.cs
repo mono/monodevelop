@@ -73,7 +73,7 @@ namespace MonoDevelop.AspNet
 					Begin = new Regex ("<%");
 					End = new Regex ("<%");
 					Color = "template";
-					TagColor = "template.tag";
+					TagColor = "Html Server-Side Script";
 					StopAtEol = false;
 				}
 			}

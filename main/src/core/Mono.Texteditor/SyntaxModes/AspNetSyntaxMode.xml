@@ -25,7 +25,7 @@
  
 <SyntaxMode name = "Asp.Net" mimeTypes="application/x-aspx;application/x-ascx;application/x-master-page">
 	<!-- directives -->
-	<Span color = "template.tag" tagColor="template.tag" rule = "InTag">
+	<Span color = "Html Server-Side Script" tagColor="Html Server-Side Script" rule = "InTag">
 		<Begin>&lt;%@</Begin>
 		<End>%&gt;</End>
 	</Span>
@@ -42,7 +42,7 @@
 	</Span>
 	
 	<!-- expressions -->
-	<Span color = "template" tagColor="template.tag">
+	<Span color = "template" tagColor="Html Server-Side Script">
 		<Begin>&lt;%</Begin>
 		<End>%&gt;</End>
 	</Span>
@@ -78,12 +78,12 @@
 	
 	<!-- tag definitions -->
 	<Rule name = "InTag">
-		<Span color = "string" rule="InLiteral">
+		<Span color = "String" rule="InLiteral">
 			<Begin>&quot;</Begin>
 			<End>&quot;</End>
 		</Span>
 		
-		<Span color = "string" rule="InLiteral">
+		<Span color = "String" rule="InLiteral">
 			<Begin>&apos;</Begin>
 			<End>&apos;</End>
 		</Span>
@@ -98,7 +98,7 @@
 		</Span>
 	
 		<!-- expressions -->
-		<Span color = "template" tagColor="template.tag">
+		<Span color = "template" tagColor="Html Server-Side Script">
 			<Begin>&lt;%</Begin>
 			<End>%&gt;</End>
 		</Span>
@@ -113,7 +113,7 @@
 		</Span>
 		
 		<!-- expressions -->
-		<Span color = "template" tagColor="template.tag">
+		<Span color = "template" tagColor="Html Server-Side Script">
 			<Begin>&lt;%</Begin>
 			<End>%&gt;</End>
 		</Span>

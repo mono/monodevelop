@@ -31,27 +31,27 @@
 	<Property name="StringQuote">"</Property>
 	<Property name="StringQuote">'</Property>
 
-	<EolSpan color = "comment" rule="Comment">//</EolSpan>
+	<EolSpan color = "Comment(Line)" rule="Comment">//</EolSpan>
 	
 		
-	<Span color = "comment" rule="Comment" tagColor="text.preprocessor">
+	<Span color = "Comment(Line)" rule="Comment" tagColor="text.preprocessor">
 		<Begin>#if 0</Begin>
 		<End>#endif|#else</End>
 	</Span>
 	
 	<EolSpan color = "Preprocessor" rule="text.preprocessor" continuation="\">#</EolSpan>
 	
-	<Span color = "comment" rule="Comment" tagColor="comment.tag">
+	<Span color = "Comment(Line)" rule="Comment" tagColor="comment.tag">
 		<Begin>/*</Begin>
 		<End>*/</End>
 	</Span>
 	
-	<Span color = "string" rule="String" stopateol = "true" escape='\'>
+	<Span color = "String" rule="String" stopateol = "true" escape='\'>
 		<Begin>"</Begin>
 		<End>"</End>
 	</Span>
 	
-	<Span color = "string" rule="String" stopateol = "true" escape='\'>
+	<Span color = "String" rule="String" stopateol = "true" escape='\'>
 		<Begin>&apos;</Begin>
 		<End>&apos;</End>
 	</Span>

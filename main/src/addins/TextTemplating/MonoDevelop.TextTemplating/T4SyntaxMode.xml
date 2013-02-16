@@ -36,23 +36,23 @@
 
 	<Rule name="t4">
 		<!-- directives -->
-		<Span color = "template.region" tagColor="template.tag" rule = "directive">
+		<Span color = "template.region" tagColor="Html Server-Side Script" rule = "directive">
 			<Begin>&lt;#@</Begin>
 			<End>#&gt;</End>
 		</Span>
 		
 		<!-- expressions -->
-		<Span color = "template" tagColor="template.tag" rule = "csharp">
+		<Span color = "template" tagColor="Html Server-Side Script" rule = "csharp">
 			<Begin>&lt;#=</Begin>
 			<End>#&gt;</End>
 		</Span>
 		
-		<Span color = "template" tagColor="template.tag" rule = "csharp">
+		<Span color = "template" tagColor="Html Server-Side Script" rule = "csharp">
 			<Begin>&lt;#+</Begin>
 			<End>#&gt;</End>
 		</Span>
 		
-		<Span color = "template" tagColor="template.tag" rule = "csharp">
+		<Span color = "template" tagColor="Html Server-Side Script" rule = "csharp">
 			<Begin>&lt;#</Begin>
 			<End>#&gt;</End>
 		</Span>

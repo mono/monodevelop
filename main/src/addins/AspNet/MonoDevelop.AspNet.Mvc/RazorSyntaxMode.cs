@@ -164,14 +164,14 @@ namespace MonoDevelop.AspNet.Mvc
 			if (matchingOff == -1 || doc.GetCharAt (matchingOff - 1) != '@')
 				return "text";
 			else
-				return "template.tag";
+				return "Html Server-Side Script";
 		}
 
 		string GetStyleForRazorFragment (CSharpSymbol symbol)
 		{
 			if (symbol.Type == CSharpSymbolType.LeftParenthesis || symbol.Type == CSharpSymbolType.LeftBrace
 				|| RazorSymbols.IsDirective (symbol.Content))
-				return "template.tag";
+				return "Html Server-Side Script";
 			if (symbol.Type == CSharpSymbolType.Star)
 				return "comment";
 			return GetStyleForCSharpSymbol (symbol);
@@ -237,7 +237,7 @@ namespace MonoDevelop.AspNet.Mvc
 					style = "comment";
 					break;
 				case CSharpSymbolType.Transition:
-					style = "template.tag";
+					style = "Html Server-Side Script";
 					break;
 				default:
 					style = "text";

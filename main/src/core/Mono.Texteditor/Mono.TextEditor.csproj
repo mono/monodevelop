@@ -333,6 +333,9 @@
     <EmbeddedResource Include="Styles\DefaultStyle.json">
       <LogicalName>DefaultStyle.json</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="SyntaxModes\HtmlSyntaxMode.xml">
+      <LogicalName>HtmlSyntaxMode.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

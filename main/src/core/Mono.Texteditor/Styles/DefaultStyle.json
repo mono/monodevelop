@@ -48,11 +48,11 @@
 		{ "name": "Indicator Margin", "color":"aluminum1" },
 		{ "name": "Indicator Margin(Separator)", "color":"aluminum3" },
 
-		{ "name": "Tooltip Border", "color":"#b2b2b" },
-		{ "name": "Tooltip Pager Top", "color":"#fffff" },
-		{ "name": "Tooltip Pager Bottom", "color":"#f5f5f" },
-		{ "name": "Tooltip Pager Triangle", "color":"#73737" },
-		{ "name": "Tooltip Pager Text", "color":"#82828" },
+		{ "name": "Tooltip Border", "color":"#b2b2b2" },
+		{ "name": "Tooltip Pager Top", "color":"#ffffff" },
+		{ "name": "Tooltip Pager Bottom", "color":"#f5f5f5" },
+		{ "name": "Tooltip Pager Triangle", "color":"#737373" },
+		{ "name": "Tooltip Pager Text", "color":"#828282" },
 
 
 		{ "name": "Completion Matching Substring", "color":"#BA3373" },
@@ -127,8 +127,18 @@
 		{ "name": "Xml Attribute Value", "fore":"literal-orange", "back":"white" },
 		{ "name": "Xml Comment", "fore":"comment-gray", "back":"white" },
 		{ "name": "Xml CData Section", "fore":"text-black", "back":"white" },
+		
+		{ "name": "Html Attribute Name", "fore":"text-black", "back":"white" },
+		{ "name": "Html Attribute Value", "fore":"literal-orange", "back":"white" },
+		{ "name": "Html Comment", "fore":"comment-gray", "back":"white" },
+		{ "name": "Html Element Name", "fore":"text-black", "back":"white" },
+		{ "name": "Html Entity", "fore":"text-black", "back":"white" },
+		{ "name": "Html Operator", "fore":"text-black", "back":"white" },
+		{ "name": "Html Server-Side Script", "fore":"text-black", "back":"#fdfaed" },
+		{ "name": "Html Tag Delimiter", "fore":"text-black", "back":"white" },
+		{ "name": "Razor Code", "fore":"text-black", "back":"white" },
 
-		{ "name": "Tooltip Text", "fore":"text-black", "back":"#feffe" },
+		{ "name": "Tooltip Text", "fore":"text-black", "back":"#feffe9" },
 
 		{ "name": "Completion Text", "fore":"#434343", "back":"#F0F6F8" },
 		{ "name": "Completion Selected Text", "fore":"#f8fcfc", "back":"#dff4f0" },

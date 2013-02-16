@@ -24,23 +24,23 @@
  THE SOFTWARE. -->
  
 <SyntaxMode name = "ActionScript" mimeTypes="application/actionscript">
-	<EolSpan color = "comment" rule="Comment">//</EolSpan>
-	<Span color = "comment" rule="Comment">
+	<EolSpan color = "Comment(Line)" rule="Comment">//</EolSpan>
+	<Span color = "Comment(Line)" rule="Comment">
 		<Begin>/*</Begin>
 		<End>*/</End>
 	</Span>
 	
-	<Span color = "string" stopateol = "true" escape='\"'>
+	<Span color = "String" stopateol = "true" escape='\"'>
 		<Begin>"</Begin>
 		<End>"</End>
 	</Span>
 
-	<Span color = "string" stopateol = "true" escape='\"'>
+	<Span color = "String" stopateol = "true" escape='\"'>
 		<Begin>&apos;</Begin>
 		<End>&apos;</End>
 	</Span>
 	
-	<Match color = "string">CSharpNumber</Match>
+	<Match color = "String">CSharpNumber</Match>
 	
 	<Keywords color = "Keyword(Access)">
 		<Word>this</Word>
