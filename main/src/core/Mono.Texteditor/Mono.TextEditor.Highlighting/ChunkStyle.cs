@@ -43,7 +43,7 @@ namespace Mono.TextEditor.Highlighting
 
 		public bool TransparentForeground {
 			get {
-				return Foreground.A != 0.0;
+				return Foreground.A == 0.0;
 
 			}
 		}
@@ -83,6 +83,25 @@ namespace Mono.TextEditor.Highlighting
 			this.Foreground = baseStyle.Foreground;
 			this.Background = baseStyle.Background;
 			this.Weight = baseStyle.Weight;
+		}
+
+		public override bool Equals (object obj)
+		{
+			if (obj == null)
+				return false;
+			if (ReferenceEquals (this, obj))
+				return true;
+			if (obj.GetType () != typeof(ChunkStyle))
+				return false;
+			ChunkStyle other = (ChunkStyle)obj;
+			return Name == other.Name && Foreground.Equals (other.Foreground) && Background.Equals (other.Background) && Weight == other.Weight;
+		}
+
+		public override int GetHashCode ()
+		{
+			unchecked {
+				return (Name != null ? Name.GetHashCode () : 0) ^ Foreground.GetHashCode () ^ Background.GetHashCode () ^ Weight.GetHashCode ();
+			}
 		}
 
 		public static ChunkStyle Create (XElement element, Dictionary<string, Cairo.Color> palette)
@@ -134,6 +153,22 @@ namespace Mono.TextEditor.Highlighting
 		public override string ToString ()
 		{
 			return string.Format ("[ChunkStyle: Name={0}, CairoColor={1}, CairoBackgroundColor={2}, Weight={3}]", Name, ColorToString (Foreground), ColorToString (Background), Weight);
+		}
+
+		public static ChunkStyle Import (string name, ColorScheme.VSSettingColor vsc)
+		{
+			var textColor = new ChunkStyle ();
+			textColor.Name = name;
+			if (!string.IsNullOrEmpty (vsc.Foreground)) {
+				textColor.Foreground = ColorScheme.ImportVsColor (vsc.Foreground);
+				if (textColor.TransparentForeground && name != "Selected Text" && name != "Selected Text(Inactive)")
+					textColor.Foreground = new Cairo.Color (0, 0, 0);
+			}
+			if (!string.IsNullOrEmpty (vsc.Background))
+				textColor.Background = ColorScheme.ImportVsColor (vsc.Background);
+			if (vsc.BoldFont)
+				textColor.Weight |= TextWeight.Bold;
+			return textColor;
 		}
 	}
 	

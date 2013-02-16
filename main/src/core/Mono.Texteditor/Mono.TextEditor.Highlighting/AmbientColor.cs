@@ -66,6 +66,59 @@ namespace Mono.TextEditor.Highlighting
 			
 			return result;
 		}
+
+		public override bool Equals (object obj)
+		{
+			if (obj == null)
+				return false;
+			if (ReferenceEquals (this, obj))
+				return true;
+			if (obj.GetType () != typeof(AmbientColor))
+				return false;
+			AmbientColor other = (AmbientColor)obj;
+			return Colors.Equals (other.Colors) && Name == other.Name;
+		}
+
+		public override int GetHashCode ()
+		{
+			unchecked {
+				return (Colors != null ? Colors.GetHashCode () : 0) ^ (Name != null ? Name.GetHashCode () : 0);
+			}
+		}
+		
+
+		public static AmbientColor Import (Dictionary<string, ColorScheme.VSSettingColor> colors, string vsSetting)
+		{
+			var result = new AmbientColor ();
+			var attrs = vsSetting.Split (',');
+			foreach (var attr in attrs) {
+				var info = attr.Split ('=');
+				if (info.Length != 2)
+					continue;
+				var idx = info [1].LastIndexOf ('/');
+				var source = info [1].Substring (0, idx);
+				var dest   = info [1].Substring (idx + 1);
+
+				ColorScheme.VSSettingColor color;
+				if (!colors.TryGetValue (source, out color))
+					continue;
+				string colorString;
+				switch (dest) {
+				case "Foreground":
+					colorString = color.Foreground;
+					break;
+				case "Background":
+					colorString = color.Background;
+					break;
+				default:
+					throw new InvalidDataException ("Invalid attribute source: " + dest);
+				}
+				result.Colors.Add (Tuple.Create (info [0], ColorScheme.ImportVsColor (colorString)));
+			}
+			if (result.Colors.Count == 0)
+				return null;
+			return result;
+		}
 	}
 	
 }

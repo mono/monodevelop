@@ -24,7 +24,7 @@
  THE SOFTWARE. -->
  
 <SyntaxMode name = "T4" mimeTypes="application/t4-template">
-	<Span color="string" rule="t4">
+	<Span color="String" rule="t4">
 		<Begin>
 </Begin>
 		<End>qkl6ynrv7y234crtnq238rtxck3</End>
@@ -74,27 +74,27 @@
 	</Rule>
 	
 	<Rule name = "csharp">
-		<Span color = "comment.block" rule="Comment" tagColor="comment.tag.block">
+		<Span color = "Comment(Line)" rule="Comment" tagColor="Comment(Line)">
 			<Begin>/*</Begin>
 			<End>*/</End>
 		</Span>
 		
-		<Span color = "string.other" rule="String" stopateol = "false" escape='""'>
+		<Span color = "String" rule="String" stopateol = "false" escape='""'>
 			<Begin>@"</Begin>
 			<End>"</End>
 		</Span>
 	
-		<Span color = "string.double" rule="String" stopateol = "true" escape='\"'>
+		<Span color = "String" rule="String" stopateol = "true" escape='\"'>
 			<Begin>"</Begin>
 			<End>"</End>
 		</Span>
 	
-		<Span color = "string.single" rule="String" stopateol = "true" escape="\'">
+		<Span color = "String" rule="String" stopateol = "true" escape="\'">
 			<Begin>&apos;</Begin>
 			<End>&apos;</End>
 		</Span>
 		
-		<Match color = "constant.digit">CSharpNumber</Match>
+		<Match color = "Number">CSharpNumber</Match>
 		
 		<Keywords color = "Keyword(Access)">
 			<Word>this</Word>

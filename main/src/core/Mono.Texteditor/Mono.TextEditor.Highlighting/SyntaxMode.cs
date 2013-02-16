@@ -442,7 +442,7 @@ namespace Mono.TextEditor.Highlighting
 
 		public class ChunkParser
 		{
-			readonly string defaultStyle = "text";
+			readonly string defaultStyle = "Plain Text";
 			protected SpanParser spanParser;
 			protected TextDocument doc;
 			protected DocumentLine line;
@@ -592,7 +592,6 @@ namespace Mono.TextEditor.Highlighting
 			{
 				Rule cur = spanParser.CurRule;
 				bool isWordPart = cur.Delimiter.IndexOf (ch) < 0;
-
 				if (inWord && !isWordPart || !inWord && isWordPart)
 					AddChunk (ref curChunk, 0, curChunk.Style = GetStyle (curChunk) ?? GetSpanStyle ());
 

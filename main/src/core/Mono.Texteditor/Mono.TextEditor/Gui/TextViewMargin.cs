@@ -930,7 +930,7 @@ namespace Mono.TextEditor
 							wrapper.AddBackground (chunkStyle.Background, (int)si, (int)ei);
 						} else if (chunk.SpanStack != null && ColorStyle != null) {
 							foreach (var span in chunk.SpanStack) {
-								if (span == null)
+								if (span == null || string.IsNullOrEmpty (span.Color))
 									continue;
 								var spanStyle = ColorStyle.GetChunkStyle (span.Color);
 								if (!spanStyle.TransparentBackground && GetPixel (ColorStyle.PlainText.Background) != GetPixel (spanStyle.Background)) {
@@ -1397,7 +1397,7 @@ namespace Mono.TextEditor
 				cr.MoveTo (x + 0.5, y);
 				cr.LineTo (x + 0.5, y + LineHeight);
 
-				cr.Color = ColorStyle.FoldMargin.GetColor ("color");
+				cr.Color = ColorStyle.IndentationGuide.GetColor ("color");
 				cr.Stroke ();
 			}
 			cr.Restore ();
@@ -2443,9 +2443,9 @@ namespace Mono.TextEditor
 					}
 
 					if (isFoldingSelected && SelectionColor.TransparentForeground) {
-						cr.Color = ColorStyle.FoldMargin.GetColor ("color");
+						cr.Color = ColorStyle.CollapsedText.Foreground;
 					} else {
-						cr.Color = isFoldingSelected ? SelectionColor.Foreground : ColorStyle.FoldMargin.GetColor ("color");
+						cr.Color = isFoldingSelected ? SelectionColor.Foreground : ColorStyle.CollapsedText.Foreground;
 					}
 					var boundingRectangleHeight = foldingRectangle.Height - 1;
 					var boundingRectangleY = System.Math.Floor (foldingRectangle.Y + (foldingRectangle.Height - boundingRectangleHeight) / 2);

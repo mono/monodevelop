@@ -227,7 +227,7 @@ namespace Mono.TextEditor
 		internal protected override void OptionsChanged ()
 		{
 			foldBgGC = editor.ColorStyle.PlainText.Background;
-			foldLineGC = editor.ColorStyle.FoldMargin.GetColor ("color");
+			foldLineGC = editor.ColorStyle.FoldLineColor.GetColor ("color");
 			foldLineHighlightedGC = editor.ColorStyle.PlainText.Foreground;
 			
 			HslColor hslColor = new HslColor (editor.ColorStyle.PlainText.Background);
@@ -239,7 +239,7 @@ namespace Mono.TextEditor
 			}
 			
 			foldLineHighlightedGCBg = hslColor;
-			foldToggleMarkerGC = editor.ColorStyle.PlainText.Foreground;
+			foldToggleMarkerGC = editor.ColorStyle.FoldCross.GetColor ("color");
 			lineStateChangedGC = editor.ColorStyle.QuickDiffChanged.GetColor ("color");
 			lineStateDirtyGC = editor.ColorStyle.QuickDiffDirty.GetColor ("color");
 			
@@ -267,14 +267,14 @@ namespace Mono.TextEditor
 			ctx.Color = isSelected ? foldLineHighlightedGC  : foldLineGC;
 			ctx.Stroke ();
 			
-			ctx.DrawLine (foldToggleMarkerGC,
+			ctx.DrawLine (isSelected ? foldLineHighlightedGC  : foldToggleMarkerGC,
 			              drawArea.X  + drawArea.Width * 2 / 10,
 			              drawArea.Y + drawArea.Height / 2,
 			              drawArea.X + drawArea.Width - drawArea.Width * 2 / 10,
 			              drawArea.Y + drawArea.Height / 2);
 			
 			if (!isOpen)
-				ctx.DrawLine (foldToggleMarkerGC,
+				ctx.DrawLine (isSelected ? foldLineHighlightedGC  : foldToggleMarkerGC,
 				              drawArea.X + drawArea.Width / 2,
 				              drawArea.Y + drawArea.Height * 2 / 10,
 				              drawArea.X  + drawArea.Width / 2,

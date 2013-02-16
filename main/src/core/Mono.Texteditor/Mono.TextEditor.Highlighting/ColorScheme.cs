@@ -54,13 +54,19 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("Search result background (highlighted)")]
 		public AmbientColor SearchResultMain { get; private set; }
 
-		[ColorDescription("Fold Margin")]
-		public AmbientColor FoldMargin { get; private set; }
+		[ColorDescription("Fold Square", VSSetting="color=outlining.verticalrule/Foreground")]
+		public AmbientColor FoldLineColor { get; private set; }
+		
+		[ColorDescription("Fold Cross", VSSetting="color=outlining.square/Foreground")]
+		public AmbientColor FoldCross { get; private set; }
+		
+		[ColorDescription("Indentation Guide", VSSetting="color=Plain Text/Foreground")]
+		public AmbientColor IndentationGuide { get; private set; }
 
-		[ColorDescription("Indicator Margin")]
+		[ColorDescription("Indicator Margin", VSSetting="color=Indicator Margin/Background")]
 		public AmbientColor IndicatorMargin { get; private set; }
 
-		[ColorDescription("Indicator Margin(Separator)")]
+		[ColorDescription("Indicator Margin(Separator)", VSSetting="color=Indicator Margin/Background")]
 		public AmbientColor IndicatorMarginSeparator { get; private set; }
 
 		[ColorDescription("Tooltip Border")]
@@ -81,16 +87,16 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("Bookmarks")]
 		public AmbientColor Bookmarks { get; private set; }
 
-		[ColorDescription("Underline(Error)", VSSetting="compiler error")]
+		[ColorDescription("Underline(Error)", VSSetting="color=compiler error/Foreground")]
 		public AmbientColor UnderlineError { get; private set; }
 		
-		[ColorDescription("Underline(Warning)", VSSetting="compiler warning")]
+		[ColorDescription("Underline(Warning)", VSSetting="color=compiler warning/Foreground")]
 		public AmbientColor UnderlineWarning { get; private set; }
 
-		[ColorDescription("Underline(Suggestion)", VSSetting="other error")]
+		[ColorDescription("Underline(Suggestion)", VSSetting="color=other error/Foreground")]
 		public AmbientColor UnderlineSuggestion { get; private set; }
 
-		[ColorDescription("Underline(Hint)", VSSetting="other error")]
+		[ColorDescription("Underline(Hint)", VSSetting="color=other error/Foreground")]
 		public AmbientColor UnderlineHint { get; private set; }
 
 		[ColorDescription("Quick Diff(Dirty)")]
@@ -99,10 +105,10 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("Quick Diff(Changed)")]
 		public AmbientColor QuickDiffChanged { get; private set; }
 
-		[ColorDescription("Brace Matching(Rectangle)")]
+		[ColorDescription("Brace Matching(Rectangle)", VSSetting="color=Brace Matching (Rectangle)/Background,secondcolor=Brace Matching (Rectangle)/Foreground")]
 		public AmbientColor BraceMatchingRectangle { get; private set; }
 		
-		[ColorDescription("Usages(Rectangle)", VSSetting="Highlighted Reference")]
+		[ColorDescription("Usages(Rectangle)", VSSetting="color=MarkerFormatDefinition/HighlightedReference/Background,secondcolor=MarkerFormatDefinition/HighlightedReference/Background")]
 		public AmbientColor UsagesRectangle { get; private set; }
 
 		[ColorDescription("Breakpoint Marker")]
@@ -120,10 +126,10 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("Debugger Stack Line Marker")]
 		public AmbientColor DebuggerStackLineMarker { get; private set; }
 		
-		[ColorDescription("Primary Link", VSSetting = "Refactoring Dependent Field" )]
+		[ColorDescription("Primary Link", VSSetting = "color=Refactoring Dependent Field/Background" )]
 		public AmbientColor PrimaryTemplate { get; private set; }
 		
-		[ColorDescription("Primary Link(Highlighted)", VSSetting = "Refactoring Current Field")]
+		[ColorDescription("Primary Link(Highlighted)", VSSetting = "color=Refactoring Current Field/Background")]
 		public AmbientColor PrimaryTemplateHighlighted { get; private set; }
 
 		[ColorDescription("Secondary Link")] // not defined
@@ -132,10 +138,10 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("Secondary Link(Highlighted)")] // not defined
 		public AmbientColor SecondaryTemplateHighlighted { get; private set; }
 
-		[ColorDescription("Current Line Marker", VSSetting = "CurrentLineActiveFormat")]
+		[ColorDescription("Current Line Marker", VSSetting = "color=CurrentLineActiveFormat/Background,secondcolor=CurrentLineActiveFormat/Foreground")]
 		public AmbientColor LineMarker { get; private set; }
 
-		[ColorDescription("Current Line Marker(Inactive)", VSSetting = "CurrentLineInactiveFormat")]
+		[ColorDescription("Current Line Marker(Inactive)", VSSetting = "color=CurrentLineInactiveFormat/Background,secondcolor=CurrentLineInactiveFormat/Foreground")]
 		public AmbientColor LineMarkerInactive { get; private set; }
 
 		[ColorDescription("Column Ruler")] // not defined
@@ -306,30 +312,42 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("User Types(Type parameters)", VSSetting = "User Types(Type parameters)")]
 		public ChunkStyle UserTypesTypeParameters { get; private set; }
 
-		[ColorDescription("User Field Usage", VSSetting = "Plain Text")]
+		[ColorDescription("User Field Usage", VSSetting = "Identifier")]
 		public ChunkStyle UserFieldUsage { get; private set; }
 		
-		[ColorDescription("User Field Declaration", VSSetting = "Plain Text")]
+		[ColorDescription("User Field Declaration", VSSetting = "Identifier")]
 		public ChunkStyle UserFieldDeclaration { get; private set; }
 		
-		[ColorDescription("User Property Usage", VSSetting = "Plain Text")]
+		[ColorDescription("User Property Usage", VSSetting = "Identifier")]
 		public ChunkStyle UserPropertyUsage { get; private set; }
 		
-		[ColorDescription("User Property Declaration", VSSetting = "Plain Text")]
+		[ColorDescription("User Property Declaration", VSSetting = "Identifier")]
 		public ChunkStyle UserPropertyDeclaration { get; private set; }
 		
-		[ColorDescription("User Event Usage", VSSetting = "Plain Text")]
+		[ColorDescription("User Event Usage", VSSetting = "Identifier")]
 		public ChunkStyle UserEventUsage { get; private set; }
 		
-		[ColorDescription("User Event Declaration", VSSetting = "Plain Text")]
+		[ColorDescription("User Event Declaration", VSSetting = "Identifier")]
 		public ChunkStyle UserEventDeclaration { get; private set; }
 		
-		[ColorDescription("User Method Usage", VSSetting = "Plain Text")]
+		[ColorDescription("User Method Usage", VSSetting = "Identifier")]
 		public ChunkStyle UserMethodUsage { get; private set; }
-		
-		[ColorDescription("User Method Declaration", VSSetting = "Plain Text")]
+
+		[ColorDescription("User Method Declaration", VSSetting = "Identifier")]
 		public ChunkStyle UserMethodDeclaration { get; private set; }
+
+		[ColorDescription("User Parameter Usage", VSSetting = "Identifier")]
+		public ChunkStyle UserParameterUsage { get; private set; }
 		
+		[ColorDescription("User Parameter Declaration", VSSetting = "Identifier")]
+		public ChunkStyle UserParameterDeclaration { get; private set; }
+
+		[ColorDescription("User Variable Usage", VSSetting = "Identifier")]
+		public ChunkStyle UserVariableUsage { get; private set; }
+		
+		[ColorDescription("User Variable Declaration", VSSetting = "Identifier")]
+		public ChunkStyle UserVariableDeclaration { get; private set; }
+
 		[ColorDescription("Syntax Error", VSSetting = "Syntax Error")]
 		public ChunkStyle SyntaxError { get; private set; }
 
@@ -395,6 +413,8 @@ namespace Mono.TextEditor.Highlighting
 	
 		public ChunkStyle GetChunkStyle (string color)
 		{
+			if (color == null)
+				throw new ArgumentNullException ("color");
 			PropertyDecsription val;
 			if (!textColors.TryGetValue (color, out val)) {
 				Console.WriteLine ("Chunk style : " + color + " is undefined.");
@@ -506,8 +526,9 @@ namespace Mono.TextEditor.Highlighting
 					if (thisValue == null)
 						continue;
 					var baseValue = ambient.Value.Info.GetValue (baseStyle, null) as AmbientColor;
-					if (thisValue.Equals (baseValue))
+					if (thisValue.Equals (baseValue)) {
 						continue;
+					}
 
 					var colorString = new StringBuilder ();
 					foreach (var color in thisValue.Colors) {
@@ -515,24 +536,31 @@ namespace Mono.TextEditor.Highlighting
 							colorString.Append (", ");
 						colorString.Append (string.Format ("\"{0}\":\"{1}\"", color.Item1, ColorToMarkup (color.Item2)));
 					}
+					if (colorString.Length == 0) {
+						Console.WriteLine ("Invalid ambient color :" + thisValue);
+						continue;
+					}
 					if (!first) {
 						writer.WriteLine (",");
 					} else {
 						first = false;
 					}
-					writer.Write ("\t\t{ \"name\": \"{0}\", {1} }", thisValue.Name, colorString);
+					writer.Write ("\t\t{");
+					writer.Write ("\"name\": \"{0}\", {1}", ambient.Value.Attribute.Name, colorString);
+					writer.Write (" }");
 				}
 
 				writer.WriteLine ("\t],");
 				first = true;
 				writer.WriteLine ("\t\"text\":[");
-				foreach (var ambient in textColors) {
-					var thisValue = ambient.Value.Info.GetValue (this, null) as ChunkStyle;
+				foreach (var textColor in textColors) {
+					var thisValue = textColor.Value.Info.GetValue (this, null) as ChunkStyle;
 					if (thisValue == null)
 						continue;
-					var baseValue = ambient.Value.Info.GetValue (baseStyle, null) as ChunkStyle;
-					if (thisValue.Equals (baseValue))
+					var baseValue = textColor.Value.Info.GetValue (baseStyle, null) as ChunkStyle;
+					if (thisValue.Equals (baseValue)) {
 						continue;
+					}
 					var colorString = new StringBuilder ();
 					if (!thisValue.TransparentForeground)
 						colorString.Append (string.Format ("\"fore\":\"{0}\"", ColorToMarkup (thisValue.Foreground)));
@@ -546,15 +574,17 @@ namespace Mono.TextEditor.Highlighting
 							colorString.Append (", ");
 						colorString.Append (string.Format ("\"weight\":\"{0}\"", thisValue.Weight));
 					}
-					if (colorString.Length == 0)
+					if (colorString.Length == 0) {
+						Console.WriteLine ("Invalid text color :" + thisValue + "/" + thisValue.TransparentForeground + "/" + thisValue.TransparentBackground);
 						continue;
+					}
 					if (!first) {
 						writer.WriteLine (",");
 					} else {
 						first = false;
 					}
 					writer.Write ("\t\t{");
-					writer.Write ("\"name\": \"{0}\", {1}", ambient.Value.Attribute.Name, colorString);
+					writer.Write ("\"name\": \"{0}\", {1}", textColor.Value.Attribute.Name, colorString);
 					writer.Write (" }");
 				}
 				writer.WriteLine ();
@@ -564,7 +594,7 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 
-		static Cairo.Color ImportVsColor (string colorString)
+		internal static Cairo.Color ImportVsColor (string colorString)
 		{
 			if (colorString == "0x02000000")
 				return new Cairo.Color (0, 0, 0, 0);
@@ -572,49 +602,78 @@ namespace Mono.TextEditor.Highlighting
 			return HslColor.Parse (color);
 		}
 
+		public class VSSettingColor
+		{
+			public string Name { get; private set; }
+			public string Foreground { get; private set; }
+			public string Background { get; private set; }
+			public bool BoldFont { get; private set; }
+
+			public static VSSettingColor Create (XmlReader reader)
+			{
+				return new VSSettingColor {
+					Name = reader.GetAttribute ("Name"),
+					Foreground = reader.GetAttribute ("Foreground"),
+					Background = reader.GetAttribute ("Background"),
+					BoldFont = reader.GetAttribute ("BoldFont") == "Yes"
+				};
+			}
+		}
+
 		public static ColorScheme Import (string fileName)
 		{
 			var result = new ColorScheme ();
 			result.Name = Path.GetFileNameWithoutExtension (fileName);
 			result.BaseScheme = "Default";
+			result.Description = "Imported color scheme";
+			result.Originator = "Imported from " + fileName;
+
+			var defaultStyle = SyntaxModeService.GetColorStyle ("Default");
+			result.CopyValues (defaultStyle);
+
+			var colors = new Dictionary<string, VSSettingColor> ();
 			using (var reader = XmlReader.Create (fileName)) {
 				while (reader.Read ()) {
 					if (reader.LocalName == "Item") {
-						var name = reader.GetAttribute ("Name");
-						var fore = reader.GetAttribute ("Foreground");
-						var back = reader.GetAttribute ("Background");
-						var bold = reader.GetAttribute ("BoldFont");
-						bool found = false;
-						foreach (var color in textColors) {
-							if (color.Value.Attribute.VSSetting == name) {
-								var textColor = new ChunkStyle ();
-								textColor.Name = color.Value.Attribute.Name;
-								if (!string.IsNullOrEmpty (fore))
-									textColor.Foreground = ImportVsColor (fore);
-								if (!string.IsNullOrEmpty (back))
-									textColor.Background = ImportVsColor (back);
-								if (bold == "Yes")
-									textColor.Weight |= TextWeight.Bold;
-								color.Value.Info.SetValue (result, textColor, null);
-								found = true;
-							}
+						var color = VSSettingColor.Create (reader);
+						if (colors.ContainsKey (color.Name))
+							Console.WriteLine ("Warning: {0} is defined twice in vssettings.", color.Name);
+						colors[color.Name] = color;
+					}
+				}
+			}
+
+			// convert text colors
+			foreach (var vsc in colors.Values) {
+				bool found = false;
+				foreach (var color in textColors) {
+					if (color.Value.Attribute.VSSetting == vsc.Name) {
+						var textColor = ChunkStyle.Import (color.Value.Attribute.Name, vsc);
+						if (textColor != null) {
+							color.Value.Info.SetValue (result, textColor, null);
+							found = true;
 						}
-						if (!found)
-							Console.WriteLine (name + " not imported!");
+					}
+				}
+				if (!found)
+					Console.WriteLine (vsc.Name + " not imported!");
+			}
+
+
+			// convert ambient colors
+			foreach (var ambient in ambientColors.Values) {
+				if (!string.IsNullOrEmpty (ambient.Attribute.VSSetting)) {
+					var import = AmbientColor.Import (colors, ambient.Attribute.VSSetting);
+					if (import != null) {
+						ambient.Info.SetValue (result, import, null);
+						continue;
 					}
 				}
 
-				// set all undefined text colors to 'plain text'
-				foreach (var color in textColors) {
-					if (color.Value.Info.GetValue (result, null) == null)
-						color.Value.Info.SetValue (result, result.PlainText, null);
-				}
+				ambient.Info.SetValue (result, ambient.Info.GetValue (defaultStyle, null), null);
 			}
 
 			return result;
 		}
-		
-
 	}
 }
-

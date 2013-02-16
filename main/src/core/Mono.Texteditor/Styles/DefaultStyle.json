@@ -40,7 +40,10 @@
 
         { "name": "Column Ruler", "color":"aluminum3" },
         
-		{ "name": "Fold Margin", "color":"aluminum4", "secondcolor":"white" },
+		{ "name": "Fold Square", "color":"aluminum4", "secondcolor":"white" },
+		{ "name": "Fold Cross", "color":"aluminum4", "secondcolor":"white" },
+		
+		{ "name": "Indentation Guide", "color":"white" },
 
 		{ "name": "Indicator Margin", "color":"aluminum1" },
 		{ "name": "Indicator Margin(Separator)", "color":"aluminum3" },
@@ -64,8 +67,8 @@
 		{ "name": "Brace Matching(Rectangle)", "color":"orangesicle", "secondcolor":"orangesicle-light" },
 		{ "name": "Usages(Rectangle)", "color":"orangesicle", "secondcolor":"orangesicle-light" },
 		
-		{ "name": "Breakpoint Marker", "color":"white", "secondcolor":"#AB616" },
-		{ "name": "Breakpoint Marker(Disabled)", "color":"white", "secondcolor":"#AB616" },
+		{ "name": "Breakpoint Marker", "color":"white", "secondcolor":"#AB616B" },
+		{ "name": "Breakpoint Marker(Disabled)", "color":"white", "secondcolor":"#AB616B" },
 		
         { "name": "Current Line Marker", "color":"aluminum1"},
 		
@@ -156,6 +159,12 @@
 
 		{ "name": "User Method Usage", "fore":"text-black", "back":"white" },
 		{ "name": "User Method Declaration", "fore":"text-black", "back":"white" },
+		
+		{ "name": "User Parameter Usage", "fore":"text-black", "back":"white" },
+		{ "name": "User Parameter Declaration", "fore":"text-black", "back":"white" },
+
+		{ "name": "User Variable Usage", "fore":"text-black", "back":"white" },
+		{ "name": "User Variable Declaration", "fore":"text-black", "back":"white" },
 
 		{ "name": "Syntax Error", "fore":"invalid-red", "back":"white" },
 		

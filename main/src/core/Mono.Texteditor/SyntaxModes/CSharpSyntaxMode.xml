@@ -31,10 +31,10 @@
 	<Property name="StringQuote">'</Property>
 	
 	<EolSpan color = "Preprocessor" rule="text.preprocessor">#</EolSpan>
-	<EolSpan color = "Comment(Doc)" rule="XmlDocumentation" tagColor="comment.tag.doc">///</EolSpan>
-	<EolSpan color = "Comment(Line)" rule="Comment" tagColor="comment.tag.line">//</EolSpan>
+	<EolSpan color = "Comment(Doc)" rule="XmlDocumentation" tagColor="Comment(Line)">///</EolSpan>
+	<EolSpan color = "Comment(Line)" rule="Comment" tagColor="Comment(Line)">//</EolSpan>
 	
-	<Span color = "Comment(Block)" rule="Comment" tagColor="comment.tag.block">
+	<Span color = "Comment(Block)" rule="Comment" tagColor="Comment(Line)">
 		<Begin>/*</Begin>
 		<End>*/</End>
 	</Span>
