@@ -54,6 +54,11 @@
 		{ "name": "Tooltip Pager Triangle", "color":"#73737" },
 		{ "name": "Tooltip Pager Text", "color":"#82828" },
 
+
+		{ "name": "Completion Matching Substring", "color":"#BA3373" },
+		{ "name": "Completion Border", "color":"#C9C9C9" },
+		{ "name": "Completion Border(Inactive)", "color":"#666666" },
+
         { "name": "Bookmarks", "color":"white", "secondcolor":"skyblue" },
 		
 		{ "name": "Underline(Error)", "color":"invalid-red" },
@@ -102,6 +107,7 @@
 		{ "name": "Comment(Line)", "fore":"comment-gray", "back":"white", "weight":"italic" },
 		{ "name": "Comment(Block)", "fore":"comment-gray", "back":"white", "weight":"italic" },
 		{ "name": "Comment(Doc)", "fore":"comment-gray", "back":"white", "weight":"italic" },
+		{ "name": "Comment(DocTag)", "fore":"comment-gray", "back":"white", "weight":"italic" },
 		{ "name": "Comment Tag", "fore":"comment-gray", "back":"white", "weight":"bold" },
 
 		{ "name": "String", "fore":"literal-orange", "back":"white"},
@@ -122,6 +128,8 @@
 		{ "name": "Tooltip Text", "fore":"text-black", "back":"#feffe" },
 
 		{ "name": "Completion Text", "fore":"#434343", "back":"#F0F6F8" },
+		{ "name": "Completion Selected Text", "fore":"#f8fcfc", "back":"#dff4f0" },
+		{ "name": "Completion Selected Text(Inactive)", "fore":"#white", "back":"#white" },
 
 		{ "name": "Keyword(Access)", "fore":"keyword-teal", "back":"white" },
 		{ "name": "Keyword(Type)", "fore":"skyblue2", "back":"white" },

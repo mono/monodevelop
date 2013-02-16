@@ -192,9 +192,12 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("Comment(Block)", VSSetting = "Comment")]
 		public ChunkStyle CommentsMultiLine { get; private set; }
 
-		[ColorDescription("Comment(Doc)", VSSetting = "Comment")]
+		[ColorDescription("Comment(Doc)", VSSetting = "XML Doc Comment")]
 		public ChunkStyle CommentsForDocumentation { get; private set; }
-
+		
+		[ColorDescription("Comment(DocTag)", VSSetting = "XML Doc Tag")]
+		public ChunkStyle CommentsForDocumentationTags { get; private set; }
+		
 		[ColorDescription("Comment Tag", VSSetting = "Comment")]
 		public ChunkStyle CommentTags { get; private set; }
 

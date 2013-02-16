@@ -31,7 +31,7 @@
 	<Property name="StringQuote">'</Property>
 	
 	<EolSpan color = "Preprocessor" rule="text.preprocessor">#</EolSpan>
-	<EolSpan color = "Comment(Doc)" rule="XmlDocumentation" tagColor="Comment(Line)">///</EolSpan>
+	<EolSpan color = "Comment(Doc)" rule="XmlDocumentation" tagColor="Comment(DocTag)">///</EolSpan>
 	<EolSpan color = "Comment(Line)" rule="Comment" tagColor="Comment(Line)">//</EolSpan>
 	
 	<Span color = "Comment(Block)" rule="Comment" tagColor="Comment(Line)">
@@ -273,27 +273,21 @@
 	
 	<Rule name = "String">
 		<Delimiters></Delimiters>
-		<Match color ="string.escape">\\(['"\\abfnrtv]|x[0-9a-fA-F]{2,4}|0\d\d)</Match>
+		<Match color ="String(Escape)">\\(['"\\abfnrtv]|x[0-9a-fA-F]{2,4}|0\d\d)</Match>
 	</Rule>
 	
 	<Rule name = "VerbatimString">
 		<Delimiters></Delimiters>
-		<Match color ="string.escape">""</Match>
+		<Match color ="String(Escape)">""</Match>
 	</Rule>
 	
 	<Rule name = "XmlDocumentation">
-	
-		<Span tagColor = "comment" rule = "XmlDocumentationTag">
-			<Begin>&lt;/</Begin>
+		<Delimiters>&lt;&gt;</Delimiters>
+
+		<Span color = "Comment(DocTag)" rule = "XmlDocumentationTag">
+			<Begin>&lt;</Begin>
 			<End>&gt;</End>
 		</Span>
-		
-		<Span tagColor = "comment" rule = "XmlDocumentationTag">
-			<Begin>&lt;</Begin>
-			<Exit>&gt;</Exit>
-			<End>/&gt;</End>
-		</Span>
-		
 	</Rule>
 
 	<Rule name = "XmlDocumentationTag">

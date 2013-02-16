@@ -804,9 +804,9 @@ namespace MonoDevelop.CSharp.Highlighting
 			properties = _properties;
 
 			if (loadRules) {
-				AddSemanticRule ("Comment", new HighlightUrlSemanticRule ("comment"));
-				AddSemanticRule ("XmlDocumentation", new HighlightUrlSemanticRule ("comment"));
-				AddSemanticRule ("String", new HighlightUrlSemanticRule ("string"));
+				AddSemanticRule ("Comment", new HighlightUrlSemanticRule ("Comment(Line)"));
+				AddSemanticRule ("XmlDocumentation", new HighlightUrlSemanticRule ("Comment(Doc)"));
+				AddSemanticRule ("String", new HighlightUrlSemanticRule ("String"));
 			}
 		}
 
