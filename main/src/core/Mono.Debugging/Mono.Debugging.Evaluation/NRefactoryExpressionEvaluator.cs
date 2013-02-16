@@ -39,19 +39,14 @@ namespace Mono.Debugging.Evaluation
 	{
 		Dictionary<string,ValueReference> userVariables = new Dictionary<string, ValueReference> ();
 
-		public override ValueReference Evaluate (EvaluationContext ctx, string exp, object expectedType)
-		{
-			return Evaluate (ctx, exp, expectedType, false);
-		}
-
-		ValueReference Evaluate (EvaluationContext ctx, string expression, object expectedType, bool tryTypeOf)
+		public override ValueReference Evaluate (EvaluationContext ctx, string expression, object expectedType)
 		{
 			expression = expression.TrimStart ();
 
 			if (expression.StartsWith ("?"))
 				expression = expression.Substring (1).Trim ();
 
-			if (expression.StartsWith ("var") && char.IsWhiteSpace (expression[4])) {
+			if (expression.StartsWith ("var") && char.IsWhiteSpace (expression[3])) {
 				expression = expression.Substring (4).Trim (' ', '\t');
 				string variable = null;
 
@@ -83,18 +78,8 @@ namespace Mono.Debugging.Evaluation
 			if (expr == null)
 				throw new EvaluatorException ("Could not parse expression '{0}'", expression);
 
-			try {
-				var evaluator = new NRefactoryExpressionEvaluatorVisitor (ctx, expression, expectedType, userVariables, tryTypeOf);
-				return expr.AcceptVisitor<ValueReference> (evaluator);
-			} catch {
-				if (!tryTypeOf && (expr is BinaryOperatorExpression) && IsTypeName (expression)) {
-					// This is a hack to be able to parse expressions such as "List<string>". The NRefactory parser
-					// can parse a single type name, so a solution is to wrap it around a typeof(). We do it if
-					// the evaluation fails.
-					return Evaluate (ctx, "typeof(" + expression + ")", expectedType, true);
-				} else
-					throw;
-			}
+			var evaluator = new NRefactoryExpressionEvaluatorVisitor (ctx, expression, expectedType, userVariables);
+			return expr.AcceptVisitor<ValueReference> (evaluator);
 		}
 
 		public override string Resolve (DebuggerSession session, SourceLocation location, string exp)
@@ -109,7 +94,7 @@ namespace Mono.Debugging.Evaluation
 			if (expression.StartsWith ("?"))
 				return "?" + Resolve (session, location, expression.Substring (1).Trim ());
 
-			if (expression.StartsWith ("var") && char.IsWhiteSpace (expression[4]))
+			if (expression.StartsWith ("var") && char.IsWhiteSpace (expression[3]))
 				return "var " + Resolve (session, location, expression.Substring (4).Trim (' ', '\t'));
 
 			expression = ReplaceExceptionTag (expression, session.Options.EvaluationOptions.CurrentExceptionTag);
@@ -140,7 +125,7 @@ namespace Mono.Debugging.Evaluation
 			if (expression.StartsWith ("?"))
 				expression = expression.Substring (1).Trim ();
 
-			if (expression.StartsWith ("var") && char.IsWhiteSpace (expression[4]))
+			if (expression.StartsWith ("var") && char.IsWhiteSpace (expression[3]))
 				expression = expression.Substring (4).Trim ();
 
 			expression = ReplaceExceptionTag (expression, ctx.Options.CurrentExceptionTag);

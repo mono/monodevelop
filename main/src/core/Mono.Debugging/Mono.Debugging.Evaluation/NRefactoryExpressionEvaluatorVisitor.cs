@@ -41,16 +41,14 @@ namespace Mono.Debugging.Evaluation
 		EvaluationContext ctx;
 		object expectedType;
 		string expression;
-		bool tryTypeOf;
 
-		public NRefactoryExpressionEvaluatorVisitor (EvaluationContext ctx, string expression, object expectedType, Dictionary<string,ValueReference> userVariables, bool tryTypeOf)
+		public NRefactoryExpressionEvaluatorVisitor (EvaluationContext ctx, string expression, object expectedType, Dictionary<string,ValueReference> userVariables)
 		{
 			this.ctx = ctx;
 			this.expression = expression;
 			this.expectedType = expectedType;
 			this.userVariables = userVariables;
 			this.options = ctx.Options;
-			this.tryTypeOf = tryTypeOf;
 		}
 
 		static Exception ParseError (string message, params object[] args)
@@ -333,6 +331,62 @@ namespace Mono.Debugging.Evaluation
 			return LiteralValueReference.CreateObjectLiteral (ctx, expression, res);
 		}
 
+		static string ResolveType (EvaluationContext ctx, MemberReferenceExpression mre, List<object> args)
+		{
+			string parent, name;
+
+			if (mre.Target is MemberReferenceExpression) {
+				parent = ResolveType (ctx, (MemberReferenceExpression) mre.Target, args);
+			} else if (mre.Target is IdentifierExpression) {
+				parent = ((IdentifierExpression) mre.Target).Identifier;
+			} else {
+				return null;
+			}
+
+			name = parent + "." + mre.MemberName;
+			if (mre.TypeArguments.Count > 0) {
+				name += "`" + mre.TypeArguments.Count;
+				foreach (var arg in mre.TypeArguments) {
+					object resolved = arg.Resolve (ctx);
+
+					if (resolved == null)
+						return null;
+
+					args.Add (resolved);
+				}
+			}
+
+			return name;
+		}
+
+		static object ResolveType (EvaluationContext ctx, MemberReferenceExpression mre)
+		{
+			var args = new List<object> ();
+			var name = ResolveType (ctx, mre, args);
+
+			if (name == null)
+				return null;
+
+			if (args.Count > 0)
+				return ctx.Adapter.GetType (ctx, name, args.ToArray ());
+
+			return ctx.Adapter.GetType (ctx, name);
+		}
+
+		static ValueReference ResolveTypeValueReference (EvaluationContext ctx, MemberReferenceExpression mre)
+		{
+			object resolved = ResolveType (ctx, mre);
+
+			if (resolved != null) {
+				if (ctx.Options.AllowImplicitTypeLoading)
+					ctx.Adapter.ForceLoadType (ctx, resolved);
+
+				return new TypeValueReference (ctx, resolved);
+			}
+
+			throw ParseError ("Could not resolve type: {0}", mre);
+		}
+
 		static ValueReference ResolveTypeValueReference (EvaluationContext ctx, AstType type)
 		{
 			object resolved = type.Resolve (ctx);
@@ -377,6 +431,9 @@ namespace Mono.Debugging.Evaluation
 
 			var val = asExpression.Expression.AcceptVisitor<ValueReference> (this);
 			var result = ctx.Adapter.TryCast (ctx, val.Value, type.Type);
+
+			if (result == null)
+				return new NullValueReference (ctx, type.Type);
 
 			return LiteralValueReference.CreateTargetObjectLiteral (ctx, expression, result);
 		}
@@ -655,6 +712,9 @@ namespace Mono.Debugging.Evaluation
 
 		public ValueReference VisitMemberReferenceExpression (MemberReferenceExpression memberReferenceExpression)
 		{
+			if (memberReferenceExpression.TypeArguments.Count > 0)
+				return ResolveTypeValueReference (ctx, memberReferenceExpression);
+
 			var target = memberReferenceExpression.Target.AcceptVisitor<ValueReference> (this);
 			var member = target.GetChild (memberReferenceExpression.MemberName, ctx.Options);
 
@@ -740,13 +800,6 @@ namespace Mono.Debugging.Evaluation
 
 		public ValueReference VisitTypeOfExpression (TypeOfExpression typeOfExpression)
 		{
-			if (tryTypeOf) {
-				// The parser is trying to evaluate a type name, but since NRefactory has problems parsing generic types,
-				// it has to do it by wrapping it with a typeof(). In this case, it sets tryTypeOf=true, meaning that
-				// typeof in this case has to be evaluated in a special way: as a type reference.
-				return typeOfExpression.Type.AcceptVisitor<ValueReference> (this);
-			}
-
 			var name = ResolveTypeName (typeOfExpression.Type);
 			var type = typeOfExpression.Type.Resolve (ctx);
 
