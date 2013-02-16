@@ -123,6 +123,9 @@
 		{ "name": "Xml Delimiter", "fore":"text-black", "back":"white" },
 		{ "name": "Xml Name", "fore":"skyblue2", "back":"white" },
 		{ "name": "Xml Attribute", "fore":"text-black", "back":"white" },
+		{ "name": "Xml Attribute Quotes", "fore":"literal-orange", "back":"white" },
+		{ "name": "Xml Attribute Value", "fore":"literal-orange", "back":"white" },
+		{ "name": "Xml Comment", "fore":"comment-gray", "back":"white" },
 		{ "name": "Xml CData Section", "fore":"text-black", "back":"white" },
 
 		{ "name": "Tooltip Text", "fore":"text-black", "back":"#feffe" },

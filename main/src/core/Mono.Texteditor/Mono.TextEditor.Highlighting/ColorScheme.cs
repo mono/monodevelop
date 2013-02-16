@@ -228,6 +228,15 @@ namespace Mono.TextEditor.Highlighting
 
 		[ColorDescription("Xml Attribute", VSSetting = "XML Attribute")]
 		public ChunkStyle XmlAttribute { get; private set; }
+		
+		[ColorDescription("Xml Attribute Quotes", VSSetting = "XML Attribute Quotes")]
+		public ChunkStyle XmlAttributeQuotes { get; private set; }
+		
+		[ColorDescription("Xml Attribute Value", VSSetting = "XML Attribute Value")]
+		public ChunkStyle XmlAttributeValue { get; private set; }
+		
+		[ColorDescription("Xml Comment", VSSetting = "XML Comment")]
+		public ChunkStyle XmlComment { get; private set; }
 
 		[ColorDescription("Xml CData Section", VSSetting = "XML CData Section")]
 		public ChunkStyle XmlCDataSection { get; private set; }
@@ -706,6 +715,8 @@ namespace Mono.TextEditor.Highlighting
 					foreach (var s in split) {
 						if (s == vsc.Name) {
 							if (vsc.Foreground == "0x02000000" && vsc.Background == "0x02000000") {
+								color.Value.Info.SetValue (result, result.PlainText, null);
+								found = true;
 								continue;
 							}
 							var textColor = ChunkStyle.Import (color.Value.Attribute.Name, vsc);

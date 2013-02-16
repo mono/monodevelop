@@ -933,7 +933,7 @@ namespace Mono.TextEditor
 								if (span == null || string.IsNullOrEmpty (span.Color))
 									continue;
 								var spanStyle = ColorStyle.GetChunkStyle (span.Color);
-								if (!spanStyle.TransparentBackground && GetPixel (ColorStyle.PlainText.Background) != GetPixel (spanStyle.Background)) {
+								if (spanStyle != null && !spanStyle.TransparentBackground && GetPixel (ColorStyle.PlainText.Background) != GetPixel (spanStyle.Background)) {
 									wrapper.AddBackground (spanStyle.Background, (int)si, (int)ei);
 									break;
 								}

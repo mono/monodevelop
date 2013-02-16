@@ -30,44 +30,44 @@
 	<Property name="StringQuote">"</Property>
 	<Property name="StringQuote">'</Property>
 	
-	<Span color = "comment" rule = "Comment">
+	<Span tagColor = "Xml Delimiter" color = "Xml Comment" rule = "Comment">
 		<Begin>&lt;!--</Begin>
 		<End>--&gt;</End>
 	</Span>
 	
-	<Span color = "Preprocessor" rule = "Comment">
+	<Span color = "Xml Attribute" rule = "Comment">
 		<Begin>&amp;</Begin>
 	
 		<End>;</End>
 	</Span>
 	
-	<Span tagColor = "Keyword(Declaration)" color = "xml" rule = "InTag">
+	<Span tagColor = "Xml Delimiter" color = "xml" rule = "InTag">
 		<Begin>&lt;!DOCTYPE</Begin>
 		<End>&gt;</End>
 	</Span>
 	
-	<Span tagColor = "xml.cdata" color = "xml.cdata" rule = "Comment">
+	<Span tagColor = "Xml Delimiter" color = "Xml CData Section" rule = "Comment">
 		<Begin>&lt;![CDATA[</Begin>
 		<End>]]&gt;</End>
 	</Span>
 	
-	<Span color = "xml" rule = "InJavascript" >
+	<Span color = "Xml Delimiter" rule = "InJavascript" >
 		<Begin>&lt;script</Begin>
 		<End>&lt;/script&gt;</End>
 	</Span>
 	
 	<!-- processing instructions -->
-	<Span tagColor = "Keyword(Declaration)" color = "xml.tag" rule = "InTag">
+	<Span tagColor = "Keyword(Declaration)" color = "Xml Delimiter" rule = "InTag">
 		<Begin>&lt;?</Begin>
 		<End>?&gt;</End>
 	</Span>
 	
-	<Span tagColor = "xml.tag" color = "xml.name" rule = "InTag">
+	<Span tagColor = "Xml Delimiter" color = "Xml Name" rule = "InTag">
 		<Begin>&lt;/</Begin>
 		<End>&gt;</End>
 	</Span>
 	
-	<Span tagColor = "xml.tag" color = "xml.name" rule = "InTag">
+	<Span tagColor = "Xml Delimiter" color = "Xml Name" rule = "InTag">
 		<Begin>&lt;</Begin>
 		<Exit>&gt;</Exit>
 		<End>/&gt;</End>
@@ -81,18 +81,18 @@
 	</Rule>
 	
 	<Rule name = "InTag">
-		<Span color = "Preprocessor">
+		<Span color = "Xml Attribute">
 			<Begin>&amp;</Begin>
 			<End>;</End>
 		</Span>
 	
-		<Span color = "string" rule="InLiteral">
+		<Span tagColor = "Xml Attribute Quotes"  color = "Xml Attribute Value" rule="InLiteral">
 			<Begin>&quot;</Begin>
 			<Exit>&lt;</Exit>
 			<End>&quot;</End>
 		</Span>
 		
-		<Span color = "string" rule="InLiteral">
+		<Span color = "Xml Attribute" rule="InLiteral">
 			<Begin>&apos;</Begin>
 			<Exit>&lt;</Exit>
 			<End>&apos;</End>
@@ -100,13 +100,13 @@
 		
 		<!-- attributes -->
 		<Match expression="([A-Za-z0-9_]+[:[A-Za-z0-9_]+]?)([\s\n\r]*=)">
-			<Group color = "xml.attribute"/>
-			<Group color = "text"/>
+			<Group color = "Xml Attribute"/>
+			<Group color = "Xml Delimiter"/>
 		</Match>
 	</Rule>
 	
 	<Rule name = "InLiteral">
-		<Span color = "Preprocessor">
+		<Span color = "Xml Attribute">
 			<Begin>&amp;</Begin>
 			<End>;</End>
 		</Span>
