@@ -39,14 +39,14 @@
       (windows-nt exe)
       (otherwise (list "mono" exe)))))
 
+(defvar ac-fsharp-use-pos-tip (and (featurep 'pos-tip)
+                                   (display-graphic-p))
+  "If non-nil, use display tooltip pop-ups when available. Otherwise, fall back to minibuffer.")
+
 ; Both in seconds. Note that background process uses ms.
 (defvar ac-fsharp-blocking-timeout 1)
 (defvar ac-fsharp-idle-timeout 1)
 
-(defvar ac-fsharp-use-pos-tip t)
-
-
-; Internal state
 (defvar ac-fsharp-status 'idle)
 (defvar ac-fsharp-completion-process nil)
 (defvar ac-fsharp-partial-data "")
@@ -116,9 +116,9 @@
 (defun ac-fsharp-quit-completion-process ()
   (interactive)
   (message "Quitting fsharp completion process")
-  (when 
+  (when
       (and ac-fsharp-completion-process
-	   (process-live-p ac-fsharp-completion-process))
+           (process-live-p ac-fsharp-completion-process))
     (log-psendstr ac-fsharp-completion-process "quit\n")
     (sleep-for 1)
     (when (process-live-p ac-fsharp-completion-process)
@@ -164,16 +164,12 @@
           (run-with-idle-timer
            ac-fsharp-idle-timeout
            t
-           'ac-fsharp-idle-handler)))
+           (lambda () (ac-fsharp-get-errors)))))
 
   ;(add-hook 'before-save-hook 'ac-fsharp-reparse-buffer)
   ;(local-set-key (kbd ".") 'completion-at-point)
   )
 
-(defun ac-fsharp-idle-handler ()
-  (ac-fsharp-get-errors)
-  (unless (fsharp-in-literal)
-    (ac-fsharp-tooltip-at-point)))
 
 ; Consider using 'text' for filtering
 ; TODO: This caching is a bit optimistic. It might not always be correct
@@ -223,6 +219,7 @@
 (defun ac-fsharp-tooltip-at-point ()
   "Fetch and display F# tooltips at point"
   (interactive)
+  (require 'pos-tip)
   (when (ac-fsharp-can-make-request)
     (ac-fsharp-parse-current-buffer)
     (ac-fsharp-send-pos-request "tooltip"
@@ -325,12 +322,6 @@ possibly many lines of description.")
   (remove-overlays nil nil 'face 'fsharp-error-face)
   (remove-overlays nil nil 'face 'fsharp-warning-face))
 
-(defun ac-fsharp-show-tip (s)
-  "Display a tooltip using pos-tip if selected, and minibuffer otherwise"
-  (if ac-fsharp-use-pos-tip
-      (pos-tip-show s nil nil nil -1)
-    (message s)))
-
 (defun ac-fsharp-stash-partial (str)
   (setq ac-fsharp-partial-data (concat ac-fsharp-partial-data str)))
 
@@ -378,9 +369,15 @@ possibly many lines of description.")
             (message "Error: unable to find definition")))
 
          ((string/starts-with msg "DATA: tooltip")
-          (let ((data (replace-regexp-in-string "DATA: tooltip\n" ""
-                                                msg)))
-            (ac-fsharp-show-tip data)))
+          (let ((data (replace-regexp-in-string "DATA: tooltip\n" "" msg)))
+            (cond
+             ((and ac-fsharp-use-pos-tip
+                   (fboundp 'pos-tip-show))
+              (pos-tip-show data))
+             ((fboundp 'fsharp-doc/format-for-minibuffer)
+              (message (fsharp-doc/format-for-minibuffer data)))
+             (t
+              (message data)))))
 
          ((string/starts-with msg "DATA: errors")
           (ac-fsharp-show-errors

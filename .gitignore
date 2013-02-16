@@ -20,3 +20,4 @@ Makefile
 pack/*
 lib/NUnit.*
 lib/FsUnit.*
+*.elc
