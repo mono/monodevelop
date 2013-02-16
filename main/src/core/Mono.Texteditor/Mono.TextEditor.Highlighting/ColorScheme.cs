@@ -38,11 +38,9 @@ namespace Mono.TextEditor.Highlighting
 	public class ColorScheme
 	{
 		public string Name { get; set; }
-		public Version Version { get; set; }
 		public string Description { get; set; }
 		public string Originator { get; set; }
 		public string BaseScheme { get; set; }
-
 
 		#region Ambient Colors
 		[ColorDescription("Background(Read Only)",VSSetting="color=Plain Text/Background")]
@@ -367,7 +365,7 @@ namespace Mono.TextEditor.Highlighting
 		public ChunkStyle DebuggerStackLine { get; private set; }
 		#endregion
 
-		class PropertyDecsription
+		public class PropertyDecsription
 		{
 			public readonly PropertyInfo Info;
 			public readonly ColorDescriptionAttribute Attribute;
@@ -379,8 +377,21 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 
-		static Dictionary<string, PropertyDecsription> textColors    = new Dictionary<string, PropertyDecsription> ();
+		static Dictionary<string, PropertyDecsription> textColors = new Dictionary<string, PropertyDecsription> ();
+
+		public static IEnumerable<PropertyDecsription> TextColors {
+			get {
+				return textColors.Values;
+			}
+		}
+
 		static Dictionary<string, PropertyDecsription> ambientColors = new Dictionary<string, PropertyDecsription> ();
+
+		public static IEnumerable<PropertyDecsription> AmbientColors {
+			get {
+				return ambientColors.Values;
+			}
+		}
 
 		static ColorScheme ()
 		{
@@ -396,6 +407,18 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 
+		public ColorScheme Clone ()
+		{
+			var result = new ColorScheme () {
+				Name = this.Name,
+				BaseScheme = this.BaseScheme,
+				Originator = this.Originator,
+				Description = this.Description
+			};
+			result.CopyValues (this);
+			return result;
+		}
+		
 		static Cairo.Color ParseColor (string value)
 		{
 			return HslColor.Parse (value);
@@ -443,7 +466,9 @@ namespace Mono.TextEditor.Highlighting
 			
 			// The fields we'd like to extract
 			result.Name = root.XPathSelectElement("name").Value;
-			result.Version = Version.Parse (root.XPathSelectElement("version").Value);
+			var version = Version.Parse (root.XPathSelectElement("version").Value);
+			if (version.Major != 1)
+				return null;
 			var el = root.XPathSelectElement ("description");
 			if (el != null)
 				result.Description = el.Value;
