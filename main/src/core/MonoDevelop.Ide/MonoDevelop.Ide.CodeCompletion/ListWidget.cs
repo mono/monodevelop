@@ -158,10 +158,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 			layout.Wrap = Pango.WrapMode.Char;
 			var style = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
 			SetFont ();
-			textColor = style.CompletionText.CairoColor;
+			textColor = style.CompletionText.Foreground;
 
 			highlightColor = style.CompletionHighlight.GetColor ("color");
-			backgroundColor = style.CompletionText.CairoBackgroundColor;
+			backgroundColor = style.CompletionText.Background;
 			selectedItemColor = style.CompletionSelectedText;
 			selectedItemInactiveColor = style.CompletionSelectedInactiveText;
 			selectionBorderColor = style.CompletionBorder.GetColor ("color");
@@ -525,10 +525,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 					iypos = iconHeight < rowHeight ? ypos + (rowHeight - iconHeight) / 2 : ypos;
 					if (item == SelectedItem) {
 						context.Rectangle (0, ypos, Allocation.Width, rowHeight / 2);
-						context.Color = SelectionEnabled ? selectedItemColor.CairoColor : selectedItemInactiveColor.CairoColor;
+						context.Color = SelectionEnabled ? selectedItemColor.Foreground : selectedItemInactiveColor.Foreground;
 						context.Fill ();
 						context.Rectangle (0, ypos + rowHeight / 2, Allocation.Width, rowHeight / 2);
-						context.Color = SelectionEnabled ? selectedItemColor.CairoBackgroundColor : selectedItemInactiveColor.CairoBackgroundColor;
+						context.Color = SelectionEnabled ? selectedItemColor.Background : selectedItemInactiveColor.Background;
 						context.Fill ();
 
 						context.Rectangle (0.5, ypos + 0.5, Allocation.Width - 1, rowHeight - 1);

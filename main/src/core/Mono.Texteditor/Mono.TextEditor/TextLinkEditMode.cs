@@ -721,8 +721,8 @@ namespace Mono.TextEditor
 		#region IGutterMarker implementation
 		public void DrawLineNumber (TextEditor editor, double width, Cairo.Context cr, Cairo.Rectangle area, DocumentLine lineSegment, int line, double x, double y, double lineHeight)
 		{
-			var lineNumberBgGC = editor.ColorStyle.LineNumbers.CairoBackgroundColor;
-			var lineNumberGC = editor.ColorStyle.LineNumbers.CairoColor;
+			var lineNumberBgGC = editor.ColorStyle.LineNumbers.Background;
+			var lineNumberGC = editor.ColorStyle.LineNumbers.Foreground;
 
 			cr.Rectangle (x, y, width, lineHeight);
 			cr.Color = editor.Caret.Line == line ? editor.ColorStyle.LineMarker.GetColor ("color") : lineNumberGC;

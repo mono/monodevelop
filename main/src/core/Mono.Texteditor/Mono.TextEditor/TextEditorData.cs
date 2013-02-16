@@ -269,7 +269,7 @@ namespace Mono.TextEditor
 							!chunkStyle.Italic && (styleStack.Count == 0 || styleStack.Peek ().Italic);
 					bool setUnderline = chunkStyle.Underline && (styleStack.Count == 0 || !styleStack.Peek ().Underline) ||
 							!chunkStyle.Underline && (styleStack.Count == 0 || styleStack.Peek ().Underline);
-					bool setColor = styleStack.Count == 0 || TextViewMargin.GetPixel (styleStack.Peek ().CairoColor) != TextViewMargin.GetPixel (chunkStyle.CairoColor);
+					bool setColor = styleStack.Count == 0 || TextViewMargin.GetPixel (styleStack.Peek ().Foreground) != TextViewMargin.GetPixel (chunkStyle.Foreground);
 					if (setColor || setBold || setItalic || setUnderline) {
 						if (styleStack.Count > 0) {
 							result.Append ("</span>");
@@ -278,7 +278,7 @@ namespace Mono.TextEditor
 						result.Append ("<span");
 						if (useColors) {
 							result.Append (" foreground=\"");
-							result.Append (SyntaxMode.ColorToPangoMarkup (chunkStyle.CairoColor));
+							result.Append (SyntaxMode.ColorToPangoMarkup (chunkStyle.Foreground));
 							result.Append ("\"");
 						}
 						if (chunkStyle.Bold)

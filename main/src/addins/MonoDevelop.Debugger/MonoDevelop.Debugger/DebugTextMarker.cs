@@ -160,11 +160,11 @@ namespace MonoDevelop.Debugger
 	public class BreakpointTextMarker : DebugTextMarker
 	{
 		public override Cairo.Color BackgroundColor {
-			get { return editor.ColorStyle.BreakpointText.CairoBackgroundColor; }
+			get { return editor.ColorStyle.BreakpointText.Background; }
 			set {  }
 		}
 		public override Cairo.Color Color {
-			get { return editor.ColorStyle.BreakpointText.CairoColor; }
+			get { return editor.ColorStyle.BreakpointText.Foreground; }
 			set {  }
 		}
 		
@@ -206,7 +206,7 @@ namespace MonoDevelop.Debugger
 		
 		protected override void DrawIcon (Cairo.Context cr, double x, double y, double size)
 		{
-			Cairo.Color border = editor.ColorStyle.BreakpointTextInvalid.CairoColor;
+			Cairo.Color border = editor.ColorStyle.BreakpointTextInvalid.Foreground;
 			if (IsTracepoint)
 				DrawDiamond (cr, x, y, size);
 			else
@@ -219,12 +219,12 @@ namespace MonoDevelop.Debugger
 	public class CurrentDebugLineTextMarker: DebugTextMarker
 	{
 		public override Cairo.Color BackgroundColor {
-			get { return editor.ColorStyle.DebuggerCurrentLine.CairoBackgroundColor; }
+			get { return editor.ColorStyle.DebuggerCurrentLine.Background; }
 			set {  }
 		}
 		
 		public override Cairo.Color Color {
-			get { return editor.ColorStyle.DebuggerCurrentLine.CairoColor;  }
+			get { return editor.ColorStyle.DebuggerCurrentLine.Foreground;  }
 			set {  }
 		}
 		
@@ -248,12 +248,12 @@ namespace MonoDevelop.Debugger
 	public class DebugStackLineTextMarker: DebugTextMarker
 	{
 		public override Cairo.Color BackgroundColor {
-			get { return editor.ColorStyle.DebuggerStackLine.CairoBackgroundColor; }
+			get { return editor.ColorStyle.DebuggerStackLine.Background; }
 			set {  }
 		}
 		
 		public override Cairo.Color Color {
-			get { return editor.ColorStyle.DebuggerStackLine.CairoColor;  }
+			get { return editor.ColorStyle.DebuggerStackLine.Foreground;  }
 			set {  }
 		}
 		
@@ -277,7 +277,7 @@ namespace MonoDevelop.Debugger
 	public class InvalidBreakpointTextMarker: DebugTextMarker
 	{
 		public override Cairo.Color BackgroundColor {
-			get { return editor.ColorStyle.BreakpointTextInvalid.CairoBackgroundColor; }
+			get { return editor.ColorStyle.BreakpointTextInvalid.Background; }
 			set {  }
 		}
 		

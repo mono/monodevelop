@@ -130,7 +130,7 @@ namespace MonoDevelop.SourceEditor
 					
 						var atts = ResetAttributes ();
 					
-						atts.Insert (new Pango.AttrForeground ((ushort)(chunkStyle.CairoColor.R * ushort.MaxValue), (ushort)(chunkStyle.CairoColor.G * ushort.MaxValue), (ushort)(chunkStyle.CairoColor.B * ushort.MaxValue)));
+						atts.Insert (new Pango.AttrForeground ((ushort)(chunkStyle.Foreground.R * ushort.MaxValue), (ushort)(chunkStyle.Foreground.G * ushort.MaxValue), (ushort)(chunkStyle.Foreground.B * ushort.MaxValue)));
 					
 						if (chunkStyle.Bold) {
 							atts.Insert (new Pango.AttrWeight (Pango.Weight.Bold));

@@ -312,7 +312,7 @@ namespace MonoDevelop.CSharp
 			var highlightedTypeName = Highlight (t.Name, "Keyword(Type)");
 			result.Append (highlightedTypeName);
 
-			var color = AlphaBlend (colorStyle.PlainText.CairoColor, colorStyle.PlainText.CairoBackgroundColor, optionalAlpha);
+			var color = AlphaBlend (colorStyle.PlainText.Foreground, colorStyle.PlainText.Background, optionalAlpha);
 			var colorString = Mono.TextEditor.HelperMethods.GetColorString (color);
 
 			result.Append ("<span foreground=\"" + colorString + "\">" + " (type parameter)</span>");
@@ -830,7 +830,7 @@ namespace MonoDevelop.CSharp
 		{
 			var result = new TooltipInformation ();
 
-			var color = AlphaBlend (colorStyle.PlainText.CairoColor, colorStyle.PlainText.CairoBackgroundColor, optionalAlpha);
+			var color = AlphaBlend (colorStyle.PlainText.Foreground, colorStyle.PlainText.Background, optionalAlpha);
 			var colorString = Mono.TextEditor.HelperMethods.GetColorString (color);
 			
 			var keywordSign = "<span foreground=\"" + colorString + "\">" + " (keyword)</span>";
@@ -1307,7 +1307,7 @@ namespace MonoDevelop.CSharp
 		{
 			var result = new TooltipInformation ();
 
-			var color = AlphaBlend (colorStyle.PlainText.CairoColor, colorStyle.PlainText.CairoBackgroundColor, optionalAlpha);
+			var color = AlphaBlend (colorStyle.PlainText.Foreground, colorStyle.PlainText.Background, optionalAlpha);
 			var colorString = Mono.TextEditor.HelperMethods.GetColorString (color);
 			
 			var keywordSign = "<span foreground=\"" + colorString + "\">" + " (keyword)</span>";
@@ -1563,10 +1563,10 @@ namespace MonoDevelop.CSharp
 		{
 			var style = colorStyle.GetChunkStyle (colorScheme);
 			if (style != null) {
-				var color = (Gdk.Color) ((HslColor)style.CairoColor);
+				var color = (Gdk.Color) ((HslColor)style.Foreground);
 				
 				if (grayOut) {
-					color = AlphaBlend (color, (Gdk.Color) ((HslColor)colorStyle.PlainText.CairoBackgroundColor), optionalAlpha);
+					color = AlphaBlend (color, (Gdk.Color) ((HslColor)colorStyle.PlainText.Background), optionalAlpha);
 				}
 				
 				var colorString = Mono.TextEditor.HelperMethods.GetColorString (color);

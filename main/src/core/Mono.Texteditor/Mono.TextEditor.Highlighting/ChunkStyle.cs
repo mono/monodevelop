@@ -38,18 +38,18 @@ namespace Mono.TextEditor.Highlighting
 	public class ChunkStyle
 	{
 		public string Name { get; set; }
-		public Cairo.Color CairoColor { get; set; }
-		public Cairo.Color CairoBackgroundColor { get; set; }
+		public Cairo.Color Foreground { get; set; }
+		public Cairo.Color Background { get; set; }
 
-		public bool GotForegroundColorAssigned {
+		public bool TransparentForeground {
 			get {
-				return CairoColor.A != 0.0;
+				return Foreground.A != 0.0;
 
 			}
 		}
-		public bool TransparentBackround {
+		public bool TransparentBackground {
 			get {
-				return CairoBackgroundColor.A == 0.0;
+				return Background.A == 0.0;
 			}
 		}
 		public TextWeight Weight { get; set; }
@@ -74,14 +74,14 @@ namespace Mono.TextEditor.Highlighting
 
 		public ChunkStyle ()
 		{
-			CairoColor = CairoBackgroundColor = new Cairo.Color (0, 0, 0, 1.0);
+			Foreground = Background = new Cairo.Color (0, 0, 0, 0);
 		}
 
 		public ChunkStyle (ChunkStyle baseStyle)
 		{
 			this.Name = baseStyle.Name;
-			this.CairoColor = baseStyle.CairoColor;
-			this.CairoBackgroundColor = baseStyle.CairoBackgroundColor;
+			this.Foreground = baseStyle.Foreground;
+			this.Background = baseStyle.Background;
 			this.Weight = baseStyle.Weight;
 		}
 
@@ -97,10 +97,10 @@ namespace Mono.TextEditor.Highlighting
 						result.Name = el.Value;
 						break;
 					case "fore":
-						result.CairoColor = ColorScheme.ParsePaletteColor (palette, el.Value);
+						result.Foreground = ColorScheme.ParsePaletteColor (palette, el.Value);
 						break;
 					case "back":
-						result.CairoBackgroundColor = ColorScheme.ParsePaletteColor (palette, el.Value);
+						result.Background = ColorScheme.ParsePaletteColor (palette, el.Value);
 						break;
 					case "weight":
 						TextWeight val;
@@ -118,12 +118,12 @@ namespace Mono.TextEditor.Highlighting
 
 		public Gdk.GC CreateBgGC (Gdk.Drawable drawable)
 		{
-			return new Gdk.GC (drawable) { RgbBgColor = (HslColor)CairoColor, RgbFgColor = (HslColor)CairoBackgroundColor };
+			return new Gdk.GC (drawable) { RgbBgColor = (HslColor)Foreground, RgbFgColor = (HslColor)Background };
 		}
 		
 		public Gdk.GC CreateFgGC (Gdk.Drawable drawable)
 		{
-			return new Gdk.GC (drawable) { RgbBgColor = (HslColor)CairoBackgroundColor, RgbFgColor = (HslColor)CairoColor };
+			return new Gdk.GC (drawable) { RgbBgColor = (HslColor)Background, RgbFgColor = (HslColor)Foreground };
 		}
 
 		static string ColorToString (Cairo.Color cairoColor)
@@ -133,7 +133,7 @@ namespace Mono.TextEditor.Highlighting
 
 		public override string ToString ()
 		{
-			return string.Format ("[ChunkStyle: Name={0}, CairoColor={1}, CairoBackgroundColor={2}, Weight={3}]", Name, ColorToString (CairoColor), ColorToString (CairoBackgroundColor), Weight);
+			return string.Format ("[ChunkStyle: Name={0}, CairoColor={1}, CairoBackgroundColor={2}, Weight={3}]", Name, ColorToString (Foreground), ColorToString (Background), Weight);
 		}
 	}
 	

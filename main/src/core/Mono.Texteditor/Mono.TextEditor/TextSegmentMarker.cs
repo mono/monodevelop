@@ -146,9 +146,9 @@ namespace Mono.TextEditor
 			}
 			double height = editor.LineHeight / 5;
 			if (selected) {
-				cr.Color = editor.ColorStyle.SelectedText.CairoColor;
+				cr.Color = editor.ColorStyle.SelectedText.Foreground;
 			} else {
-				cr.Color = ColorName == null ? Color : editor.ColorStyle.GetChunkStyle (ColorName).CairoColor;
+				cr.Color = ColorName == null ? Color : editor.ColorStyle.GetChunkStyle (ColorName).Foreground;
 			}
 			if (Wave) {	
 				Pango.CairoHelper.ShowErrorUnderline (cr, @from, y + editor.LineHeight - height, to - @from, height);

@@ -266,8 +266,8 @@ namespace MonoDevelop.Components
 
 		public void SetSchemeColors (Mono.TextEditor.Highlighting.ColorScheme scheme)
 		{
-			TopColor = scheme.TooltipText.CairoBackgroundColor.AddLight (0.03);
-			BottomColor = scheme.TooltipText.CairoBackgroundColor;
+			TopColor = scheme.TooltipText.Background.AddLight (0.03);
+			BottomColor = scheme.TooltipText.Background;
 			BorderColor = scheme.TooltipBorder.GetColor ("color");
 			PagerTextColor = scheme.TooltipPagerText.GetColor ("color");
 			PagerBackgroundColorTop = scheme.TooltipPagerTop.GetColor ("color");

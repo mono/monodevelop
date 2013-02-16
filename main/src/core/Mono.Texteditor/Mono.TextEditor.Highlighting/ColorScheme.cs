@@ -155,8 +155,6 @@ namespace Mono.TextEditor.Highlighting
 		
 		[ColorDescription("Message Bubble Warning")]
 		public AmbientColor MessageBubbleWarning { get; private set; }
-		
-
 		#endregion
 
 		#region Text Colors
@@ -405,6 +403,14 @@ namespace Mono.TextEditor.Highlighting
 			return val.Info.GetValue (this, null) as ChunkStyle;
 		}
 
+		void CopyValues (ColorScheme baseScheme)
+		{
+			foreach (var color in textColors.Values)
+				color.Info.SetValue (this, color.Info.GetValue (baseScheme, null), null);
+			foreach (var color in ambientColors.Values)
+				color.Info.SetValue (this, color.Info.GetValue (baseScheme, null), null);
+		}
+
 		public static ColorScheme LoadFrom (Stream stream)
 		{
 			var result = new ColorScheme ();
@@ -421,13 +427,17 @@ namespace Mono.TextEditor.Highlighting
 			el = root.XPathSelectElement ("originator");
 			if (el != null)
 				result.Originator = el.Value;
-			el = root.XPathSelectElement ("basedOn");
+			el = root.XPathSelectElement ("baseScheme");
 			if (el != null)
 				result.BaseScheme = el.Value;
 
+			if (result.BaseScheme != null) {
+				var baseScheme = SyntaxModeService.GetColorStyle (result.BaseScheme);
+				if (baseScheme != null)
+					result.CopyValues (baseScheme);
+			}
+
 			var palette = new Dictionary<string, Cairo.Color> ();
-			Console.WriteLine ("name:"+result.Name);
-			Console.WriteLine ("descr:"+result.Description);
 			foreach (var color in root.XPathSelectElements("palette/*")) {
 				var name = color.XPathSelectElement ("name").Value;
 				if (palette.ContainsKey (name))
@@ -524,12 +534,12 @@ namespace Mono.TextEditor.Highlighting
 					if (thisValue.Equals (baseValue))
 						continue;
 					var colorString = new StringBuilder ();
-					if (thisValue.GotForegroundColorAssigned)
-						colorString.Append (string.Format ("\"fore\":\"{0}\"", ColorToMarkup (thisValue.CairoColor)));
-					if (!thisValue.TransparentBackround) {
+					if (!thisValue.TransparentForeground)
+						colorString.Append (string.Format ("\"fore\":\"{0}\"", ColorToMarkup (thisValue.Foreground)));
+					if (!thisValue.TransparentBackground) {
 						if (colorString.Length > 0)
 							colorString.Append (", ");
-						colorString.Append (string.Format ("\"back\":\"{0}\"", ColorToMarkup (thisValue.CairoBackgroundColor)));
+						colorString.Append (string.Format ("\"back\":\"{0}\"", ColorToMarkup (thisValue.Background)));
 					}
 					if (thisValue.Weight != TextWeight.None) {
 						if (colorString.Length > 0)
@@ -554,10 +564,11 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 
-		static Cairo.Color ImportVsColor (string fore)
+		static Cairo.Color ImportVsColor (string colorString)
 		{
-			string color = "#" + fore.Substring (8, 2) + fore.Substring (6, 2) + fore.Substring (4, 2);
-			Console.WriteLine ("col:"+color);
+			if (colorString == "0x02000000")
+				return new Cairo.Color (0, 0, 0, 0);
+			string color = "#" + colorString.Substring (8, 2) + colorString.Substring (6, 2) + colorString.Substring (4, 2);
 			return HslColor.Parse (color);
 		}
 
@@ -565,7 +576,7 @@ namespace Mono.TextEditor.Highlighting
 		{
 			var result = new ColorScheme ();
 			result.Name = Path.GetFileNameWithoutExtension (fileName);
-
+			result.BaseScheme = "Default";
 			using (var reader = XmlReader.Create (fileName)) {
 				while (reader.Read ()) {
 					if (reader.LocalName == "Item") {
@@ -579,20 +590,24 @@ namespace Mono.TextEditor.Highlighting
 								var textColor = new ChunkStyle ();
 								textColor.Name = color.Value.Attribute.Name;
 								if (!string.IsNullOrEmpty (fore))
-									textColor.CairoColor = ImportVsColor (fore);
+									textColor.Foreground = ImportVsColor (fore);
 								if (!string.IsNullOrEmpty (back))
-									textColor.CairoBackgroundColor = ImportVsColor (back);
+									textColor.Background = ImportVsColor (back);
 								if (bold == "Yes")
 									textColor.Weight |= TextWeight.Bold;
-								Console.WriteLine ("found color:"+textColor);
 								color.Value.Info.SetValue (result, textColor, null);
 								found = true;
-								break;
 							}
 						}
-//						if (!found)
-//							Console.WriteLine (name + " not found!");
+						if (!found)
+							Console.WriteLine (name + " not imported!");
 					}
+				}
+
+				// set all undefined text colors to 'plain text'
+				foreach (var color in textColors) {
+					if (color.Value.Info.GetValue (result, null) == null)
+						color.Value.Info.SetValue (result, result.PlainText, null);
 				}
 			}
 

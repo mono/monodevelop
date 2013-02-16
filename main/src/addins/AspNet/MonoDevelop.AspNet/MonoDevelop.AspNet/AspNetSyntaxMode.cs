@@ -42,7 +42,7 @@ namespace MonoDevelop.AspNet
 		public AspNetSyntaxMode ()
 		{
 			ResourceStreamProvider provider = new ResourceStreamProvider (typeof(IStreamProvider).Assembly, "AspNetSyntaxMode.xml");
-			using (XmlReader reader = provider.Open ()) {
+			using (var reader = provider.Open ()) {
 				SyntaxMode baseMode = SyntaxMode.Read (reader);
 				this.rules = new List<Rule> (baseMode.Rules);
 				this.keywords = new List<Keywords> (baseMode.Keywords);

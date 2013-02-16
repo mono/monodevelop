@@ -195,8 +195,8 @@ namespace Mono.TextEditor
 
 		internal protected override void OptionsChanged ()
 		{
-			lineNumberBgGC = editor.ColorStyle.LineNumbers.CairoBackgroundColor;
-			lineNumberGC = editor.ColorStyle.LineNumbers.CairoColor;
+			lineNumberBgGC = editor.ColorStyle.LineNumbers.Background;
+			lineNumberGC = editor.ColorStyle.LineNumbers.Foreground;
 			gutterFont = Gtk.Widget.DefaultStyle.FontDescription.Copy ();
 			if (Platform.IsWindows) {
 				gutterFont.Size = (int)(Pango.Scale.PangoScale * 8.0 * editor.Options.Zoom);

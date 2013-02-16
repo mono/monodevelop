@@ -93,7 +93,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			this.TypeHint = WindowTypeHint.Menu;
 			Theme.CornerRadius = 4;
 			var style = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
-			Theme.SetFlatColor (style.CompletionText.CairoBackgroundColor);
+			Theme.SetFlatColor (style.CompletionText.Background);
 		}
 
 		protected virtual void DoubleClick ()

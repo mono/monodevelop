@@ -189,7 +189,7 @@ namespace Mono.TextEditor
 			@from = System.Math.Max (@from, editor.TextViewMargin.XOffset);
 			to = System.Math.Max (to, editor.TextViewMargin.XOffset);
 			if (@from < to) {
-				cr.DrawLine (selected ? editor.ColorStyle.SelectedText.CairoColor : editor.ColorStyle.GetChunkStyle (style).CairoColor, @from + 0.5, y + editor.LineHeight - 1.5, to + 0.5, y + editor.LineHeight - 1.5);
+				cr.DrawLine (selected ? editor.ColorStyle.SelectedText.Foreground : editor.ColorStyle.GetChunkStyle (style).Foreground, @from + 0.5, y + editor.LineHeight - 1.5, to + 0.5, y + editor.LineHeight - 1.5);
 			}
 		}
 	}
@@ -332,9 +332,9 @@ namespace Mono.TextEditor
 			}
 			double height = editor.LineHeight / 5;
 			if (selected) {
-				cr.Color = editor.ColorStyle.SelectedText.CairoColor;
+				cr.Color = editor.ColorStyle.SelectedText.Foreground;
 			} else {
-				cr.Color = ColorName == null ? Color : editor.ColorStyle.GetChunkStyle (ColorName).CairoColor;
+				cr.Color = ColorName == null ? Color : editor.ColorStyle.GetChunkStyle (ColorName).Foreground;
 			}
 			if (Wave) {	
 				Pango.CairoHelper.ShowErrorUnderline (cr, @from, y + editor.LineHeight - height, to - @from, height);
@@ -412,10 +412,10 @@ namespace Mono.TextEditor
 		{
 			var style = new ChunkStyle (baseStyle);
 			if ((IncludedStyles & StyleFlag.Color) != 0)
-				style.CairoColor = color;
+				style.Foreground = color;
 			
 			if ((IncludedStyles & StyleFlag.BackgroundColor) != 0) {
-				style.CairoBackgroundColor = bgColor;
+				style.Background = bgColor;
 			}
 			
 			if ((IncludedStyles & StyleFlag.Bold) != 0)
