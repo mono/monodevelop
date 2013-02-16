@@ -180,7 +180,7 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("Line Numbers", VSSetting = "Line Numbers")]
 		public ChunkStyle LineNumbers { get; private set; }
 
-		[ColorDescription("Punctuation", VSSetting = "Operator")]
+		[ColorDescription("Punctuation", VSSetting = "Operator?Plain Text")]
 		public ChunkStyle Punctuation { get; private set; }
 
 		[ColorDescription("Punctuation(Brackets)", VSSetting = "Plain Text")]
@@ -312,40 +312,40 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("User Types(Type parameters)", VSSetting = "User Types(Type parameters)")]
 		public ChunkStyle UserTypesTypeParameters { get; private set; }
 
-		[ColorDescription("User Field Usage", VSSetting = "Identifier")]
+		[ColorDescription("User Field Usage", VSSetting = "Identifier?Plain Text")]
 		public ChunkStyle UserFieldUsage { get; private set; }
 		
-		[ColorDescription("User Field Declaration", VSSetting = "Identifier")]
+		[ColorDescription("User Field Declaration", VSSetting = "Identifier?Plain Text")]
 		public ChunkStyle UserFieldDeclaration { get; private set; }
 		
-		[ColorDescription("User Property Usage", VSSetting = "Identifier")]
+		[ColorDescription("User Property Usage", VSSetting = "Identifier?Plain Text")]
 		public ChunkStyle UserPropertyUsage { get; private set; }
 		
-		[ColorDescription("User Property Declaration", VSSetting = "Identifier")]
+		[ColorDescription("User Property Declaration", VSSetting = "Identifier?Plain Text")]
 		public ChunkStyle UserPropertyDeclaration { get; private set; }
 		
-		[ColorDescription("User Event Usage", VSSetting = "Identifier")]
+		[ColorDescription("User Event Usage", VSSetting = "Identifier?Plain Text")]
 		public ChunkStyle UserEventUsage { get; private set; }
 		
-		[ColorDescription("User Event Declaration", VSSetting = "Identifier")]
+		[ColorDescription("User Event Declaration", VSSetting = "Identifier?Plain Text")]
 		public ChunkStyle UserEventDeclaration { get; private set; }
 		
-		[ColorDescription("User Method Usage", VSSetting = "Identifier")]
+		[ColorDescription("User Method Usage", VSSetting = "Identifier?Plain Text")]
 		public ChunkStyle UserMethodUsage { get; private set; }
 
-		[ColorDescription("User Method Declaration", VSSetting = "Identifier")]
+		[ColorDescription("User Method Declaration", VSSetting = "Identifier?Plain Text")]
 		public ChunkStyle UserMethodDeclaration { get; private set; }
 
-		[ColorDescription("User Parameter Usage", VSSetting = "Identifier")]
+		[ColorDescription("User Parameter Usage", VSSetting = "Identifier?Plain Text")]
 		public ChunkStyle UserParameterUsage { get; private set; }
 		
-		[ColorDescription("User Parameter Declaration", VSSetting = "Identifier")]
+		[ColorDescription("User Parameter Declaration", VSSetting = "Identifier?Plain Text")]
 		public ChunkStyle UserParameterDeclaration { get; private set; }
 
-		[ColorDescription("User Variable Usage", VSSetting = "Identifier")]
+		[ColorDescription("User Variable Usage", VSSetting = "Identifier?Plain Text")]
 		public ChunkStyle UserVariableUsage { get; private set; }
 		
-		[ColorDescription("User Variable Declaration", VSSetting = "Identifier")]
+		[ColorDescription("User Variable Declaration", VSSetting = "Identifier?Plain Text")]
 		public ChunkStyle UserVariableDeclaration { get; private set; }
 
 		[ColorDescription("Syntax Error", VSSetting = "Syntax Error")]
@@ -647,11 +647,19 @@ namespace Mono.TextEditor.Highlighting
 			foreach (var vsc in colors.Values) {
 				bool found = false;
 				foreach (var color in textColors) {
-					if (color.Value.Attribute.VSSetting == vsc.Name) {
-						var textColor = ChunkStyle.Import (color.Value.Attribute.Name, vsc);
-						if (textColor != null) {
-							color.Value.Info.SetValue (result, textColor, null);
-							found = true;
+					if (color.Value.Attribute.VSSetting == null)
+						continue;
+					var split = color.Value.Attribute.VSSetting.Split ('?');
+					foreach (var s in split) {
+						if (s == vsc.Name) {
+							if (vsc.Foreground == "0x02000000" && vsc.Background == "0x02000000") {
+								continue;
+							}
+							var textColor = ChunkStyle.Import (color.Value.Attribute.Name, vsc);
+							if (textColor != null) {
+								color.Value.Info.SetValue (result, textColor, null);
+								found = true;
+							}
 						}
 					}
 				}
