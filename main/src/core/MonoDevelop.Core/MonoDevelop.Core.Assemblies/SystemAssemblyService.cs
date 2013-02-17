@@ -250,24 +250,28 @@ namespace MonoDevelop.Core.Assemblies
 		static Dictionary<string, AssemblyName> assemblyNameCache = new Dictionary<string, AssemblyName> ();
 		internal static AssemblyName GetAssemblyNameObj (string file)
 		{
+			AssemblyName name;
+
 			lock (assemblyNameCache) {
-				AssemblyName name;
 				if (assemblyNameCache.TryGetValue (file, out name))
 					return name;
-				
-				try {
-					assemblyNameCache [file] = AssemblyName.GetAssemblyName (file);
-					return assemblyNameCache [file];
-				} catch (FileNotFoundException) {
-					// GetAssemblyName is not case insensitive in mono/windows. This is a workaround
-					foreach (string f in Directory.GetFiles (Path.GetDirectoryName (file), Path.GetFileName (file))) {
-						if (f != file) {
-							assemblyNameCache [file] = GetAssemblyNameObj (f);
-							return assemblyNameCache [file];
-						}
-					}
-					throw;
+			}
+
+			try {
+				name = AssemblyName.GetAssemblyName (file);
+				lock (assemblyNameCache) {
+					assemblyNameCache [file] = name;
 				}
+				return name;
+			} catch (FileNotFoundException) {
+				// GetAssemblyName is not case insensitive in mono/windows. This is a workaround
+				foreach (string f in Directory.GetFiles (Path.GetDirectoryName (file), Path.GetFileName (file))) {
+					if (f != file) {
+						GetAssemblyNameObj (f);
+						return assemblyNameCache [file];
+					}
+				}
+				throw;
 			}
 		}
 		
