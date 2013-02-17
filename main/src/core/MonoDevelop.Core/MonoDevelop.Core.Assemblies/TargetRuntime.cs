@@ -97,13 +97,7 @@ namespace MonoDevelop.Core.Assemblies
 			backgroundInitialize = mainContext != null && mainContext.GetType () != typeof (SynchronizationContext);
 			
 			if (backgroundInitialize) {
-				// Initialize the service in a background thread.
-				initializing = true;
-				Thread t = new Thread (new ThreadStart (BackgroundInitialize)) {
-					Name = "Assembly service initialization",
-					IsBackground = true,
-				};
-				t.Start ();
+				ThreadPool.QueueUserWorkItem (BackgroundInitialize);
 			}
 		}
 		
@@ -368,7 +362,7 @@ namespace MonoDevelop.Core.Assemblies
 				if (!initialized && !initializing) {
 					if (!backgroundInitialize) {
 						initializing = true;
-						BackgroundInitialize ();
+						BackgroundInitialize (null);
 					}
 					else
 						// If we are here, that's because 1) the runtime has been initialized, or 2) the runtime is being initialized by *this* thread
@@ -383,7 +377,7 @@ namespace MonoDevelop.Core.Assemblies
 			}
 		}
 		
-		void BackgroundInitialize ()
+		void BackgroundInitialize (object state)
 		{
 			timer = Counters.TargetRuntimesLoading.BeginTiming ("Initializing Runtime " + Id);
 			lock (initLock) {
