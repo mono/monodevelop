@@ -34,6 +34,7 @@
 	],
 
 	"colors":[
+		{ "name": "Background", "color":"white" },
 		{ "name": "Background(Read Only)", "color":"white" },
 
 		{ "name": "Search result background", "color":"#F6B94D" },
@@ -96,16 +97,17 @@
 		{ "name": "Preprocessor", "fore":"#c12dad", "back":"white" },
 		{ "name": "Preprocessor Keyword", "fore":"#c12dad", "back":"white", "weight":"bold" },
 
-		{ "name": "Xml Text", "fore":"text-black", "back":"white" },
-		{ "name": "Xml Delimiter", "fore":"text-black", "back":"white" },
-		{ "name": "Xml Name", "fore":"skyblue2", "back":"white" },
-		{ "name": "Xml Attribute", "fore":"text-black", "back":"white" },
-		{ "name": "Xml CData Section", "fore":"text-black", "back":"white" },
+		{ "name": "XML Text", "fore":"text-black", "back":"white" },
+		{ "name": "XML Delimiter", "fore":"text-black", "back":"white" },
+		{ "name": "XML Name", "fore":"skyblue2", "back":"white" },
+		{ "name": "XML Attribute", "fore":"text-black", "back":"white" },
+		{ "name": "XML CData Section", "fore":"text-black", "back":"white" },
 
 		{ "name": "Tooltip Text", "fore":"text-black", "back":"#feffe" },
 
 		{ "name": "Completion Text", "fore":"#434343", "back":"#F0F6F8" },
 
+		{ "name": "Keyword", "fore":"keyword-teal", "back":"white" },
 		{ "name": "Keyword(Access)", "fore":"keyword-teal", "back":"white" },
 		{ "name": "Keyword(Type)", "fore":"skyblue2", "back":"white" },
 		{ "name": "Keyword(Operator)", "fore":"keyword-teal", "back":"white" },
