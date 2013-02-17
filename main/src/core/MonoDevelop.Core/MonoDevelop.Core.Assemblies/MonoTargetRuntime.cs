@@ -106,8 +106,15 @@ namespace MonoDevelop.Core.Assemblies
 		}
 
 		public bool HasMultitargetingMcs { get; private set; }
-		
+
 		public override IEnumerable<FilePath> GetReferenceFrameworkDirectories ()
+		{
+			//during initializion, only return the global directory once (for the running runtime) so that it doesn't
+			//get scanned multiple times
+			return GetReferenceFrameworkDirectories (IsInitialized || IsRunning);
+		}
+
+		internal IEnumerable<FilePath> GetReferenceFrameworkDirectories (bool includeMacGlobalDir)
 		{
 			//duplicate xbuild's framework folders path logic
 			//see xbuild man page
@@ -116,8 +123,11 @@ namespace MonoDevelop.Core.Assemblies
 				foreach (var dir in env.Split (new char[] { Path.PathSeparator }, StringSplitOptions.RemoveEmptyEntries))
 					yield return (FilePath) dir;
 			}
-			if (Platform.IsMac)
+
+			if (Platform.IsMac && true) {
 				yield return "/Library/Frameworks/Mono.framework/External/xbuild-frameworks";
+			}
+
 			//can't return $(TargetFrameworkRoot) MSBuild var, since that's per-project
 			yield return Path.Combine (monoDir, "xbuild-frameworks");
 		}
