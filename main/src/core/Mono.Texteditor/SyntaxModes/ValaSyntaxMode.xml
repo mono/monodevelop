@@ -178,7 +178,7 @@
 			<Begin>"</Begin>
 			<End>"</End>
 		</Span>
-		<Keywords color="comment.keyword">
+		<Keywords color="Comment(DocTag)">
 			<Word>c</Word>
 			<Word>code</Word>
 			<Word>example</Word>

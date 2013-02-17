@@ -57,7 +57,7 @@ THE SOFTWARE.
 			<End>"</End>
 		</Span>
 		<!-- this isn't quite accurate, the JSON number format is a subset of the C# format -->
-		<Match color = "constant.number">
+		<Match color = "Number">
 			CSharpNumber
 		</Match>
 		<Keywords color = "Keyword(Constants)">

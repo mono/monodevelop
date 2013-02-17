@@ -30,7 +30,7 @@
   <Property name="StringQuote">"</Property>
   <Property name="StringQuote">'</Property>
 
-  <EolSpan color="text.preprocessor" rule="text.preprocessor">#</EolSpan>
+  <EolSpan color="Preprocessor" rule="text.preprocessor">#</EolSpan>
   <EolSpan color="Comment(Doc)" rule="XmlDocumentation" tagColor="Comment(Line)">///</EolSpan>
   <EolSpan color="Comment(Line)" rule="Comment" tagColor="Comment(Line)">//</EolSpan>
 
@@ -197,7 +197,7 @@
   </Keywords>
 
   <Rule name="text.preprocessor">
-    <Keywords color="text.preprocessor.keyword">
+    <Keywords color="Preprocessor Keyword">
       <Word>if</Word>
       <Word>else</Word>
       <Word>elif</Word>
@@ -249,11 +249,11 @@
   </Rule>
 
   <Rule name="XmlDocumentationTag">
-    <Span color="string" stopateol="true" escape="\" rule="String" >
+    <Span color="String" stopateol="true" escape="\" rule="String" >
       <Begin>"</Begin>
       <End>"</End>
     </Span>
-    <Keywords color="comment.keyword">
+    <Keywords color="Comment(DocTag)">
       <Word>c</Word>
       <Word>code</Word>
       <Word>example</Word>

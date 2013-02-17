@@ -34,7 +34,7 @@ THE SOFTWARE.
 	<Property name="StringQuote">"</Property>
 	<Property name="StringQuote">'</Property>
 		
-	<Span color = "Comment(Line)" rule="Comment" tagColor="text.preprocessor">
+	<Span color = "Comment(Line)" rule="Comment" tagColor="Preprocessor">
 		<Begin>#if 0</Begin>
 		<End>#endif|#else</End>
 	</Span>
@@ -433,7 +433,7 @@ THE SOFTWARE.
 	</Keywords>
 
 	<Rule name = "text.preprocessor">
-		<Keywords color="text.preprocessor.keyword">
+		<Keywords color="Preprocessor Keyword">
 			<Word>define</Word>
 			<Word>elif</Word>
 			<Word>else</Word>

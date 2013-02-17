@@ -31,7 +31,7 @@
 	<Property name="StringQuote">"</Property>
 	<Property name="StringQuote">'</Property>
 		
-	<Span color = "Comment(Line)" rule="Comment" tagColor="text.preprocessor">
+	<Span color = "Comment(Line)" rule="Comment" tagColor="Preprocessor">
 		<Begin>#if 0</Begin>
 		<End>#endif|#else</End>
 	</Span>
@@ -129,7 +129,7 @@
 	</Keywords>
 
 	<Rule name = "text.preprocessor">
-		<Keywords color="text.preprocessor.keyword">
+		<Keywords color="Preprocessor Keyword">
 			<Word>if</Word>
 			<Word>ifn</Word>
 			<Word>else</Word>

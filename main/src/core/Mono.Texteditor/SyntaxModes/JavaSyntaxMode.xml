@@ -147,7 +147,7 @@
 			<Word>HACK</Word>
 			<Word>UNDONE</Word>
 		</Keywords>	
-		<Keywords color="comment.keyword" ignorecase="True">
+		<Keywords color="Comment Tag" ignorecase="True">
 			<Word>@author</Word>
 			<Word>@deprecated</Word>
 			<Word>@return</Word>

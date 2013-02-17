@@ -34,7 +34,7 @@
 	<EolSpan color = "Comment(Line)" rule="Comment">//</EolSpan>
 	
 		
-	<Span color = "Comment(Line)" rule="Comment" tagColor="text.preprocessor">
+	<Span color = "Comment(Line)" rule="Comment" tagColor="Preprocessor">
 		<Begin>#if 0</Begin>
 		<End>#endif|#else</End>
 	</Span>
