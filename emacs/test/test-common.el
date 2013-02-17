@@ -1,3 +1,16 @@
+(require 'ert)
+
+(defmacro check (desc &rest body)
+  "Wrap ert-deftest with a simpler interface."
+  (declare (indent 1))
+  `(ert-deftest
+       ,(intern (replace-regexp-in-string "[ .]" "-" desc)) ()
+     ,@body))
+
+(defun should-match (regex str)
+  (should (string-match-p regex str)))
+
+;;; ----------------------------------------------------------------------------
 
 (defun init-melpa ()
   (setq package-archives

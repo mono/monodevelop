@@ -1,16 +1,5 @@
-(require 'ert)
+(require 'test-common)
 
-(defmacro check (desc &rest body)
-  "Wrap ert-deftest with a simpler interface."
-  (declare (indent 1))
-  `(ert-deftest
-       ,(intern (replace-regexp-in-string "[ .]" "-" desc)) ()
-     ,@body))
-
-(defun should-match (regex str)
-  (should (string-match-p regex str)))
-
-;;; ----------------------------------------------------------------------------
 ;;; Test data
 
 (defconst val-tooltip
