@@ -26,18 +26,18 @@
 <SyntaxMode name = "Razor" mimeTypes="text/x-cshtml">
 
 	<!-- comments -->
-	<Span color = "comment.server" rule = "Comment">
+	<Span tagColor = "Xml Delimiter" color = "Xml Comment" rule = "Comment">
 		<Begin>@*</Begin>
 		<End>*@</End>
 	</Span>
 
-	<Span tagColor = "Keyword(Declaration)" color = "xml.name" rule = "InTag">
+	<Span tagColor = "Xml Delimiter" color = "Xml Text" rule = "InTag">
 		<Begin>&lt;!DOCTYPE</Begin>
 		<End>&gt;</End>
 	</Span>
 
 	<!-- CDATA section -->
-	<Span tagColor = "Keyword(Declaration)" color="text" rule = "Comment">
+	<Span tagColor = "Xml Delimiter" color = "Xml CData Section" rule = "Comment">
 		<Begin>&lt;![CDATA[</Begin>
 		<End>]]&gt;</End>
 	</Span>
@@ -50,12 +50,12 @@
 
 	<!-- tag definitions -->
 	<Rule name = "InTag">
-		<Span color = "String" rule="InLiteral">
+		<Span tagColor = "Xml Attribute Quotes"  color = "Xml Attribute Value"  rule="InLiteral">
 			<Begin>&quot;</Begin>
 			<End>&quot;</End>
 		</Span>
 
-		<Span color = "String" rule="InLiteral">
+		<Span tagColor = "Xml Attribute Quotes"  color = "Xml Attribute Value"  rule="InLiteral">
 			<Begin>&apos;</Begin>
 			<End>&apos;</End>
 		</Span>
@@ -64,7 +64,7 @@
 		<Match color = "Keyword(Type)">[A-Za-z0-9_]+(:[A-Za-z0-9_]+)?[\s\n\r]*=</Match>
 
 		<!-- comments -->
-		<Span color = "comment.server" rule = "Comment">
+		<Span tagColor = "Xml Delimiter" color = "Xml Comment" rule = "Comment">
 			<Begin>@*</Begin>
 			<End>*@</End>
 		</Span>
@@ -72,7 +72,7 @@
 
 	<Rule name = "InLiteral">
 		<!-- entities -->
-		<Span color = "Preprocessor">
+		<Span color = "Xml Attribute">
 			<Begin>&amp;</Begin>
 			<End>;</End>
 		</Span>

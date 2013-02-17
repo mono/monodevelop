@@ -50,7 +50,7 @@ namespace MonoDevelop.AspNet.Mvc
 			this.guiDocument = doc;
 			guiDocument.DocumentParsed += HandleDocumentParsed; 
 			ResourceStreamProvider provider = new ResourceStreamProvider (typeof (IStreamProvider).Assembly, "RazorSyntaxMode.xml");
-			using (XmlReader reader = provider.Open ()) {
+			using (var reader = provider.Open ()) {
 				SyntaxMode baseMode = SyntaxMode.Read (reader);
 				this.rules = new List<Rule> (baseMode.Rules);
 				this.keywords = new List<Keywords> (baseMode.Keywords);
@@ -102,7 +102,7 @@ namespace MonoDevelop.AspNet.Mvc
 					if (symbol.Content.Last () == '\'')
 						inApostrophes = true;
 					else {
-						chunks.Add (new Chunk (off, 1, "text"));
+						chunks.Add (new Chunk (off, 1, "Plain Text"));
 						off++;
 						tokenizer = new CSharpTokenizer (new SeekableTextReader (symbol.Content.Substring (1)));
 						symbol = tokenizer.NextSymbol ();
@@ -110,7 +110,7 @@ namespace MonoDevelop.AspNet.Mvc
 					}
 				}
 
-				string chunkStyle = inApostrophes ? "text" : GetStyleForChunk (symbol, prevSymbol, off);
+				string chunkStyle = inApostrophes ? "Plain Text" : GetStyleForChunk (symbol, prevSymbol, off);
 				chunks.Add (new Chunk (off, symbol.Content.Length, chunkStyle));
 				prevSymbol = symbol;
 				off += symbol.Content.Length;
@@ -127,25 +127,25 @@ namespace MonoDevelop.AspNet.Mvc
 					return GetStyleForRazorFragment (symbol);
 				// End of Razor comments
 				if (prevSymbol.Type == CSharpSymbolType.Star && symbol.Type == CSharpSymbolType.Transition) {
-					chunks.Last ().Style = "comment";
-					return "comment";
+					chunks.Last ().Style = "Xml Comment";
+					return "Xml Comment";
 				}
 				// Email addresses
 				if (symbol.Type == CSharpSymbolType.Transition && Char.IsLetterOrDigit (prevSymbol.Content.Last ()))
-					return "text";
+					return "Plain Text";
 				// Html tags
 				char c = symbol.Content.First ();
 				if ((!symbol.Keyword.HasValue && prevSymbol.Type == CSharpSymbolType.LessThan && (Char.IsLetterOrDigit (c) || c == '/'))
 					|| (prevSymbol.Type == CSharpSymbolType.Slash && currentState == State.InTag)) {
 					currentState = State.InTag;
-					chunks.Last ().Style = "xml.name";
-					return "xml.name";
+					chunks.Last ().Style = "Xml Name";
+					return "Xml Name";
 				}
 				if (symbol.Type == CSharpSymbolType.GreaterThan && currentState == State.InTag) {
 					currentState = State.None;
 					if (prevSymbol.Type == CSharpSymbolType.Slash)
-						chunks.Last ().Style = "xml.name";
-					return "xml.name";
+						chunks.Last ().Style = "Xml Name";
+					return "Xml Name";
 				}
 			}
 			if (symbol.Type == CSharpSymbolType.RightBrace || symbol.Type == CSharpSymbolType.RightParenthesis)
@@ -153,7 +153,7 @@ namespace MonoDevelop.AspNet.Mvc
 			// Text in html tags
 			if ((symbol.Keyword.HasValue || symbol.Type == CSharpSymbolType.IntegerLiteral || symbol.Type == CSharpSymbolType.RealLiteral)
 				&& IsInHtmlContext (symbol, off))
-				return "text";
+				return "Plain Text";
 
 			return GetStyleForCSharpSymbol (symbol);
 		}
@@ -162,7 +162,7 @@ namespace MonoDevelop.AspNet.Mvc
 		{
 			int matchingOff = doc.GetMatchingBracketOffset (off);
 			if (matchingOff == -1 || doc.GetCharAt (matchingOff - 1) != '@')
-				return "text";
+				return "Plain Text";
 			else
 				return "Html Server-Side Script";
 		}
@@ -173,7 +173,7 @@ namespace MonoDevelop.AspNet.Mvc
 				|| RazorSymbols.IsDirective (symbol.Content))
 				return "Html Server-Side Script";
 			if (symbol.Type == CSharpSymbolType.Star)
-				return "comment";
+				return "Xml Comment";
 			return GetStyleForCSharpSymbol (symbol);
 		}
 
@@ -215,18 +215,18 @@ namespace MonoDevelop.AspNet.Mvc
 			if (symbol.Content == "var" || symbol.Content == "dynamic")
 				return "Keyword(Type)";
 
-			string style = "text";
+			string style = "Plain Text";
 			switch (symbol.Type) {
 				case CSharpSymbolType.CharacterLiteral:
 				case CSharpSymbolType.StringLiteral:
-					style = "string";
+					style = "String";
 					break;
 				case CSharpSymbolType.Comment:
-					style = "comment";
+					style = "Xml Comment";
 					break;
 				case CSharpSymbolType.IntegerLiteral:
 				case CSharpSymbolType.RealLiteral:
-					style = "constant.digit";
+					style = "Number";
 					break;
 				case CSharpSymbolType.Keyword:
 					style = GetStyleForKeyword (symbol.Keyword);
@@ -234,13 +234,13 @@ namespace MonoDevelop.AspNet.Mvc
 				case CSharpSymbolType.RazorComment:
 				case CSharpSymbolType.RazorCommentStar:
 				case CSharpSymbolType.RazorCommentTransition:
-					style = "comment";
+					style = "Xml Comment";
 					break;
 				case CSharpSymbolType.Transition:
 					style = "Html Server-Side Script";
 					break;
 				default:
-					style = "text";
+					style = "Plain Text";
 					break;
 			}
 
@@ -264,7 +264,7 @@ namespace MonoDevelop.AspNet.Mvc
 				case CSharpKeyword.Static:
 				case CSharpKeyword.Virtual:
 				case CSharpKeyword.Volatile:
-					return "Keyword(Modifiers)";
+					return "Keyword(Modifiers)";
 				case CSharpKeyword.As:
 				case CSharpKeyword.Is:
 				case CSharpKeyword.New:
@@ -318,7 +318,7 @@ namespace MonoDevelop.AspNet.Mvc
 				case CSharpKeyword.Class:
 				case CSharpKeyword.Delegate:
 				case CSharpKeyword.Interface:
-					return "Keyword(Declaration)";
+					return "Keyword(Declaration)";
 				case CSharpKeyword.Do:
 				case CSharpKeyword.For:
 				case CSharpKeyword.Foreach:
@@ -332,7 +332,7 @@ namespace MonoDevelop.AspNet.Mvc
 				case CSharpKeyword.False:
 				case CSharpKeyword.Null:
 				case CSharpKeyword.True:
-					return "constant.language";
+					return "Keyword(Constants)";
 				case CSharpKeyword.Namespace:
 				case CSharpKeyword.Using:
 					return "Keyword(Namespace)";
@@ -341,9 +341,9 @@ namespace MonoDevelop.AspNet.Mvc
 				case CSharpKeyword.Ref:
 					return "Keyword(Parameter)";
 				case CSharpKeyword.Void:
-					return "constant.language.void";
+					return "Keyword(Void)";
 				default:
-					return "keyword";
+					return "Keyword(Other)";
 			}
 		}
 	}

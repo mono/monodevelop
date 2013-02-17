@@ -31,59 +31,69 @@
 	</Span>
 	
 	<!-- comments -->
-	<Span color = "comment.server" rule = "Comment">
+	<Span color = "Html Comment" rule = "Comment">
 		<Begin>&lt;%--</Begin>
 		<End>--%&gt;</End>
 	</Span>
 	
-	<Span color = "comment.client" rule = "Comment">
+	<Span color = "Html Comment" rule = "Comment">
 		<Begin>&lt;!--</Begin>
 		<End>--&gt;</End>
 	</Span>
 	
 	<!-- expressions -->
-	<Span color = "template" tagColor="Html Server-Side Script">
+	<Span color = "Razor Code" tagColor="Html Server-Side Script">
 		<Begin>&lt;%</Begin>
 		<End>%&gt;</End>
 	</Span>
 	
 	<!-- entities -->
-	<Span color = "Preprocessor">
+	<Span color = "Html Entity">
 		<Begin>&amp;</Begin>
 		<End>;</End>
 	</Span>
 	
-	<Span tagColor = "Keyword(Declaration)" color = "xml.name" rule = "InTag">
-		<Begin>&lt;!DOCTYPE</Begin>
+	<Span tagColor = "Html Tag Delimiter" color = "Html Attribute Name" rule = "InDocType">
+		<Begin>&lt;!</Begin>
 		<End>&gt;</End>
 	</Span>
 	
 	<!-- CDATA section -->
-	<Span tagColor = "Keyword(Declaration)" color="text" rule = "Comment">
+	<Span tagColor = "Html Tag Delimiter" color = "Xml CData Section" rule = "Comment">
 		<Begin>&lt;![CDATA[</Begin>
 		<End>]]&gt;</End>
 	</Span>
 	
 	<!-- processing instructions -->
-	<Span tagColor = "Keyword(Declaration)" color = "xml.name" rule = "InTag">
+	<Span tagColor = "Keyword(Declaration)" color = "Html Element Name" rule = "InTag">
 		<Begin>&lt;?</Begin>
 		<End>?&gt;</End>
 	</Span>
 	
 	<!-- tags -->
-	<Span color = "xml.name" rule = "InTag">
+	<Span tagColor = "Html Tag Delimiter" color = "Html Element Name" rule = "InTag">
 		<Begin>&lt;</Begin>
 		<End>&gt;</End>
 	</Span>
 	
 	<!-- tag definitions -->
+	<Rule name = "InDocType">
+		<Span color = "Xml Attribute">
+			<Begin>&amp;</Begin>
+			<End>;</End>
+		</Span>
+		<Keywords color = "Html Element Name">
+			<Word>DOCTYPE</Word>
+		</Keywords>
+	</Rule>
+	
 	<Rule name = "InTag">
-		<Span color = "String" rule="InLiteral">
+		<Span color = "Html Attribute Value" rule="InLiteral">
 			<Begin>&quot;</Begin>
 			<End>&quot;</End>
 		</Span>
 		
-		<Span color = "String" rule="InLiteral">
+		<Span color = "Html Attribute Value" rule="InLiteral">
 			<Begin>&apos;</Begin>
 			<End>&apos;</End>
 		</Span>
@@ -92,13 +102,13 @@
 		<Match color = "Keyword(Type)">[A-Za-z0-9_]+(:[A-Za-z0-9_]+)?[\s\n\r]*=</Match>
 		
 		<!-- comments -->
-		<Span color = "comment.server" rule = "Comment">
+		<Span color = "Html Comment" rule = "Comment">
 			<Begin>&lt;%--</Begin>
 			<End>--%&gt;</End>
 		</Span>
 	
 		<!-- expressions -->
-		<Span color = "template" tagColor="Html Server-Side Script">
+		<Span color = "Razor Code" tagColor="Html Server-Side Script">
 			<Begin>&lt;%</Begin>
 			<End>%&gt;</End>
 		</Span>
@@ -107,13 +117,13 @@
 	
 	<Rule name = "InLiteral">
 		<!-- entities -->
-		<Span color = "Preprocessor">
+		<Span color = "Html Entity">
 			<Begin>&amp;</Begin>
 			<End>;</End>
 		</Span>
 		
 		<!-- expressions -->
-		<Span color = "template" tagColor="Html Server-Side Script">
+		<Span color = "Razor Code" tagColor="Html Server-Side Script">
 			<Begin>&lt;%</Begin>
 			<End>%&gt;</End>
 		</Span>

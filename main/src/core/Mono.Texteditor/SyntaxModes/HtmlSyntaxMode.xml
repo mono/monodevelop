@@ -43,8 +43,8 @@ THE SOFTWARE.
 		<End>;</End>
 	</Span>
 	
-	<Span tagColor = "Html Tag Delimiter" color = "Html Attribute Name" rule = "InTag">
-		<Begin>&lt;!DOCTYPE</Begin>
+	<Span tagColor = "Html Tag Delimiter" color = "Html Attribute Name" rule = "InDocType">
+		<Begin>&lt;!</Begin>
 		<End>&gt;</End>
 	</Span>
 	
@@ -75,6 +75,16 @@ THE SOFTWARE.
 			<Begin>&amp;</Begin>
 			<End>;</End>
 		</Span>
+	</Rule>
+	
+	<Rule name = "InDocType" >
+		<Span color = "Xml Attribute">
+			<Begin>&amp;</Begin>
+			<End>;</End>
+		</Span>
+		<Keywords color = "Html Element Name">
+			<Word>DOCTYPE</Word>
+		</Keywords>
 	</Rule>
 	
 	<Rule name = "InTag">

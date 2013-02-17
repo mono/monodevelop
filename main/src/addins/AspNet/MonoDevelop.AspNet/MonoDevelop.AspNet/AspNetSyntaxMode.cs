@@ -72,7 +72,7 @@ namespace MonoDevelop.AspNet
 					Rule = "mode:" + language;
 					Begin = new Regex ("<%");
 					End = new Regex ("<%");
-					Color = "template";
+					Color = "Razor Code";
 					TagColor = "Html Server-Side Script";
 					StopAtEol = false;
 				}
@@ -86,7 +86,7 @@ namespace MonoDevelop.AspNet
 					Begin = new Regex ("<script");
 					End = new Regex ("</script");
 					Color = "";
-					TagColor = "xml.name";
+					TagColor = "Xml Name";
 				}
 			}
 			

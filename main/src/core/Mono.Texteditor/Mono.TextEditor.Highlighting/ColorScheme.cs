@@ -85,16 +85,16 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("Bookmarks")]
 		public AmbientColor Bookmarks { get; private set; }
 
-		[ColorDescription("Underline(Error)", VSSetting="color=compiler error/Foreground")]
+		[ColorDescription("Underline(Error)", VSSetting="color=Syntax Error/Foreground")]
 		public AmbientColor UnderlineError { get; private set; }
 		
-		[ColorDescription("Underline(Warning)", VSSetting="color=compiler warning/Foreground")]
+		[ColorDescription("Underline(Warning)", VSSetting="color=Warning/Foreground")]
 		public AmbientColor UnderlineWarning { get; private set; }
 
-		[ColorDescription("Underline(Suggestion)", VSSetting="color=other error/Foreground")]
+		[ColorDescription("Underline(Suggestion)", VSSetting="color=Compiler Error/Foreground")]
 		public AmbientColor UnderlineSuggestion { get; private set; }
 
-		[ColorDescription("Underline(Hint)", VSSetting="color=other error/Foreground")]
+		[ColorDescription("Underline(Hint)", VSSetting="color=Compiler Error/Foreground")]
 		public AmbientColor UnderlineHint { get; private set; }
 
 		[ColorDescription("Quick Diff(Dirty)")]
@@ -424,6 +424,26 @@ namespace Mono.TextEditor.Highlighting
 		
 		[ColorDescription("Razor Code", VSSetting="Razor Code")]
 		public ChunkStyle RazorCode { get; private set; }
+
+
+		[ColorDescription("Css Comment", VSSetting="CSS Comment")]
+		public ChunkStyle CssComment { get; private set; }
+
+		[ColorDescription("Css Property Name", VSSetting="CSS Property Name")]
+		public ChunkStyle CssPropertyName { get; private set; }
+		
+		[ColorDescription("Css Property Value", VSSetting="CSS Property Value")]
+		public ChunkStyle CssPropertyValue { get; private set; }
+		
+		[ColorDescription("Css Selector", VSSetting="CSS Selector")]
+		public ChunkStyle CssSelector { get; private set; }
+		
+		[ColorDescription("Css String Value", VSSetting="CSS String Value")]
+		public ChunkStyle CssStringValue { get; private set; }
+		
+		[ColorDescription("Css Keyword", VSSetting="CSS Keyword")]
+		public ChunkStyle CssKeyword { get; private set; }
+
 		#endregion
 
 		public class PropertyDecsription
@@ -725,11 +745,29 @@ namespace Mono.TextEditor.Highlighting
 				while (reader.Read ()) {
 					if (reader.LocalName == "Item") {
 						var color = VSSettingColor.Create (reader);
-						if (colors.ContainsKey (color.Name))
+						if (colors.ContainsKey (color.Name)) {
 							Console.WriteLine ("Warning: {0} is defined twice in vssettings.", color.Name);
+							continue;
+						}
 						colors[color.Name] = color;
 					}
 				}
+			}
+
+
+			HashSet<string> importedAmbientColors = new HashSet<string> ();
+			// convert ambient colors
+			foreach (var ambient in ambientColors.Values) {
+				if (!string.IsNullOrEmpty (ambient.Attribute.VSSetting)) {
+					var import = AmbientColor.Import (colors, ambient.Attribute.VSSetting);
+					if (import != null) {
+						importedAmbientColors.Add (import.Name);
+						ambient.Info.SetValue (result, import, null);
+						continue;
+					}
+				}
+
+				ambient.Info.SetValue (result, ambient.Info.GetValue (defaultStyle, null), null);
 			}
 
 			// convert text colors
@@ -754,23 +792,10 @@ namespace Mono.TextEditor.Highlighting
 						}
 					}
 				}
-				if (!found)
+				if (!found && !importedAmbientColors.Contains (vsc.Name))
 					Console.WriteLine (vsc.Name + " not imported!");
 			}
 
-
-			// convert ambient colors
-			foreach (var ambient in ambientColors.Values) {
-				if (!string.IsNullOrEmpty (ambient.Attribute.VSSetting)) {
-					var import = AmbientColor.Import (colors, ambient.Attribute.VSSetting);
-					if (import != null) {
-						ambient.Info.SetValue (result, import, null);
-						continue;
-					}
-				}
-
-				ambient.Info.SetValue (result, ambient.Info.GetValue (defaultStyle, null), null);
-			}
 
 			return result;
 		}

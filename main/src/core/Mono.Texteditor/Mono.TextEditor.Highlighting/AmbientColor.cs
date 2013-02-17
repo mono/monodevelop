@@ -102,6 +102,7 @@ namespace Mono.TextEditor.Highlighting
 				ColorScheme.VSSettingColor color;
 				if (!colors.TryGetValue (source, out color))
 					continue;
+				result.Name = color.Name;
 				string colorString;
 				switch (dest) {
 				case "Foreground":

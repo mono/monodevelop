@@ -29,12 +29,12 @@
 	
 	<EolSpan color = "Comment(Line)" rule="Comment" tagColor="comment.tag">#</EolSpan>
 	
-	<Span color = "xml.name" rule="Comment">
+	<Span color = "Xml Name" rule="Comment">
 		<Begin>"""</Begin>
 		<End>"""</End>
 	</Span>
 	
-	<Span color = "xml.name" rule="Comment">
+	<Span color = "Xml Name" rule="Comment">
 		<Begin>'''</Begin>
 		<End>'''</End>
 	</Span>

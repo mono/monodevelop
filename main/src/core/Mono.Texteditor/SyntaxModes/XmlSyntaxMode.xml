@@ -40,8 +40,8 @@
 		<End>;</End>
 	</Span>
 	
-	<Span tagColor = "Xml Delimiter" color = "Xml Text" rule = "InTag">
-		<Begin>&lt;!DOCTYPE</Begin>
+	<Span tagColor = "Xml Delimiter" color = "Xml Text" rule = "InDocType">
+		<Begin>&lt;!</Begin>
 		<End>&gt;</End>
 	</Span>
 	
@@ -72,6 +72,16 @@
 			<Begin>&amp;</Begin>
 			<End>;</End>
 		</Span>
+	</Rule>
+	
+	<Rule name = "InDocType" color = "Html Attribute Name" >
+		<Span color = "Xml Attribute">
+			<Begin>&amp;</Begin>
+			<End>;</End>
+		</Span>
+		<Keywords color = "Html Element Name">
+			<Word>DOCTYPE</Word>
+		</Keywords>
 	</Rule>
 	
 	<Rule name = "InTag">

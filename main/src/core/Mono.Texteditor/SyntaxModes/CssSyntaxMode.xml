@@ -32,7 +32,7 @@
 	<Property name="StringQuote">'</Property>
 	
 	
-	<Span color = "Comment(Block)" rule="Comment" tagColor="comment.tag.block">
+	<Span color = "Comment(Block)" rule="Comment" color="Css Comment">
 		<Begin>/*</Begin>
 		<End>*/</End>
 	</Span>
@@ -56,7 +56,7 @@
 		
 		<Match color="Number">\s*\d+\s*</Match>
 		
-		<Keywords color = "keyword">
+		<Keywords color = "Css Keyword">
 			<Word>azimuth</Word>
 			<Word>background</Word>
 			<Word>background-attachment</Word>

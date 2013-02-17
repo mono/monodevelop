@@ -35,7 +35,7 @@
   <EolSpan color="Comment(Line)" rule="Comment" tagColor="Comment(Line)">//</EolSpan>
 
   <Span color="Comment(Block)" rule="MultiComment" tagColor="Comment(Line)">
-    <Begin>(*!)</Begin>
+    <Begin>(*$)</Begin>
     <End>*)</End>
   </Span>
 
