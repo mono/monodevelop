@@ -1310,7 +1310,7 @@ namespace Mono.TextEditor
 					break;
 				Pango.Rectangle pos2 = layout.Layout.IndexToPos ((int)TranslateToUTF8Index (layout.LineChars, (uint)i + 1, ref curIndex, ref byteIndex));
 				double xpos2 = xPos + pos2.X / Pango.Scale.PangoScale;
-				Cairo.Color col;
+				Cairo.Color col = new Cairo.Color (0, 0, 0);
 				if (SelectionColor.TransparentForeground) {
 					while (curchunk != null && curchunk.EndOffset < offset + i)
 						curchunk = curchunk.Next;
