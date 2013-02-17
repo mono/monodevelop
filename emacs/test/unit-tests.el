@@ -1,5 +1,5 @@
 (require 'ert)
-(require 'test-utilities)
+(require 'test-common)
 
 (defconst finddeclstr1
   (let ((file (expand-file-name "Test1/Program.fs")))

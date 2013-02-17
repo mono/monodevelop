@@ -54,4 +54,4 @@
     (when (get-buffer "*fsharp-complete*")
       (kill-buffer "*fsharp-complete*"))))
 
-(provide 'test-utilities)
+(provide 'test-common)

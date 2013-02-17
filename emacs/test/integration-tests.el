@@ -1,5 +1,5 @@
 (require 'ert)
-(require 'test-utilities)
+(require 'test-common)
 
 
 (ert-deftest start-completion-process ()
