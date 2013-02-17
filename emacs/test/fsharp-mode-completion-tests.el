@@ -1,14 +1,5 @@
 (require 'test-common)
 
-(defmacro using-file (path &rest body)
-  "Open the file at PATH in a buffer, execute BODY forms, then kill the buffer."
-  (declare (indent 1))
-  `(save-excursion
-     (find-file ,path)
-     (unwind-protect
-         (progn ,@body)
-       (kill-buffer))))
-
 (defvar test-file-dir (concat (file-name-directory (or load-file-name (buffer-file-name)))
                               "Test1/")
   "The directory contains F# files for testing.")

@@ -7,6 +7,15 @@
        ,(intern (replace-regexp-in-string "[ .]" "-" desc)) ()
      ,@body))
 
+(defmacro using-file (path &rest body)
+  "Open the file at PATH in a buffer, execute BODY forms, then kill the buffer."
+  (declare (indent 1))
+  `(save-excursion
+     (find-file ,path)
+     (unwind-protect
+         (progn ,@body)
+       (kill-buffer))))
+
 (defun should-match (regex str)
   (should (string-match-p regex str)))
 
@@ -57,7 +66,11 @@
   (unwind-protect
       (progn (load-fsharp-mode)
              (funcall body))
-    (sleep-for 1)
+
+    ;; ;; This seems to be more than long enough for the process to run
+    ;; ;; successfully.
+    ; (sleep-for 0.1)
+
     (ac-fsharp-quit-completion-process)
     (dolist (buf bufs)
       (when (get-buffer buf)
