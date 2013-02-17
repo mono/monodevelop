@@ -1,4 +1,4 @@
-// TemplateCodon.cs
+// IXmlProvider.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -23,43 +23,67 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 //
-using System.IO;
+
 using System;
+using System.IO;
+using System.Reflection;
 using System.Xml;
 
-using Mono.Addins;
-using Mono.TextEditor.Highlighting;
-
-namespace MonoDevelop.SourceEditor.Extension
+namespace Mono.TextEditor.Highlighting
 {
-	[ExtensionNode (Description="A template for color and syntax shemes.")]
-	public class TemplateCodon : ExtensionNode, IStreamProvider
+	public interface IStreamProvider
 	{
-		[NodeAttribute("resource", "Name of the resource where the template is stored.")]
-		string resource;
+		Stream Open ();
+	}
+	
+	public class ResourceStreamProvider : IStreamProvider
+	{
+		Assembly assembly;
+		string   manifestResourceName;
 		
-		[NodeAttribute("file", "Name of the file where the template is stored.")]
-		string file;
+		public string ManifestResourceName {
+			get {
+				return manifestResourceName;
+			}
+		}
 		
-		public TemplateCodon ()
+		public Assembly Assembly {
+			get {
+				return assembly;
+			}
+		}
+		
+		public ResourceStreamProvider (Assembly assembly, string manifestResourceName)
 		{
-			resource = file = null;
+			this.assembly             = assembly;
+			this.manifestResourceName = manifestResourceName;
 		}
 		
 		public Stream Open ()
 		{
-			Stream stream;
-			if (!string.IsNullOrEmpty (file)) {
-				stream = File.OpenRead (Addin.GetFilePath (file));
-			} else if (!string.IsNullOrEmpty (resource)) {
-				stream = Addin.GetResource (resource);
-				if (stream == null)
-					throw new ApplicationException ("Template " + resource + " not found");
-			} else {
-				throw new InvalidOperationException ("Template file or resource not provided");
-			}
-			
-			return stream;
+			return assembly.GetManifestResourceStream (this.ManifestResourceName);
 		}
 	}
+	
+	public class UrlStreamProvider : IStreamProvider
+	{
+		string  url;
+		
+		public string Url {
+			get {
+				return url;
+			}
+		}
+		
+		public UrlStreamProvider (string url)
+		{
+			this.url = url;
+		}
+		
+		public Stream Open ()
+		{
+			return File.OpenRead (url);
+		}
+	}
+	
 }

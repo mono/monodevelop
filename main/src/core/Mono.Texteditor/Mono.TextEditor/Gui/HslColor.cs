@@ -185,6 +185,19 @@ namespace Mono.TextEditor
 			return (HslColor)col;
 		}
 
+		public static double Brightness (HslColor c)
+		{
+			return Brightness ((Cairo.Color)c);
+		}
+
+		public static double Brightness (Cairo.Color c)
+		{
+			double r = c.R;
+			double g = c.G;
+			double b = c.B;
+			return System.Math.Sqrt (r * .241 + g * .691 + b * .068);
+		}
+
 		public static double Brightness (Gdk.Color c)
 		{
 			double r = c.Red / (double)ushort.MaxValue;

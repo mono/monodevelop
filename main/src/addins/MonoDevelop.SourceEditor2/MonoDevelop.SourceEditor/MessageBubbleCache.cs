@@ -110,12 +110,12 @@ namespace MonoDevelop.SourceEditor
 		void SetColors ()
 		{
 			ColorScheme style = editor.ColorStyle;
-			errorGc = (HslColor)(style.GetChunkStyle ("bubble.error").Color);
-			warningGc = (HslColor)(style.GetChunkStyle ("bubble.warning").Color);
+			errorGc = (HslColor)(style.MessageBubbleError.GetColor ("color"));
+			warningGc = (HslColor)(style.MessageBubbleWarning.GetColor ("color"));
 			errorMatrix = CreateColorMatrix (editor, true);
 			warningMatrix = CreateColorMatrix (editor, false);
 			
-			gcSelected = (HslColor)style.Selection.Color;
+			gcSelected = (HslColor)style.SelectedText.Foreground;
 			gcLight = new Cairo.Color (1, 1, 1);
 		}
 		
@@ -153,11 +153,10 @@ namespace MonoDevelop.SourceEditor
 		
 		static Cairo.Color[,,,,] CreateColorMatrix (TextEditor editor, bool isError)
 		{
-			string typeString = isError ? "error" : "warning";
 			Cairo.Color[,,,,] colorMatrix = new Cairo.Color[2, 2, 3, 2, 2];
 			
 			ColorScheme style = editor.ColorStyle;
-			var baseColor = style.GetChunkStyle ("bubble." + typeString + "").CairoBackgroundColor;
+			var baseColor = (isError ? style.MessageBubbleError : style.MessageBubbleWarning).GetColor ("secondcolor");
 			
 			AdjustColorMatrix (colorMatrix, 0, baseColor);
 			
@@ -176,7 +175,7 @@ namespace MonoDevelop.SourceEditor
 					}
 				}
 			}
-			var selectionColor = ColorScheme.ToCairoColor (style.Selection.BackgroundColor);
+			var selectionColor = style.SelectedText.Background;
 			for (int i = 0; i < 2; i++) {
 				for (int j = 0; j < 2; j++) {
 					for (int k = 0; k < 3; k++) {

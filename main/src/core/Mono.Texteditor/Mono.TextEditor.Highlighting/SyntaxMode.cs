@@ -30,6 +30,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
+using System.IO;
 
 namespace Mono.TextEditor.Highlighting
 {
@@ -96,7 +97,7 @@ namespace Mono.TextEditor.Highlighting
 		
 		protected SyntaxMode () : base (null)
 		{
-			DefaultColor = "text";
+			DefaultColor = "Plain Text";
 			Name = "<root>";
 			this.Delimiter = "&()<>{}[]~!%^*-+=|\\#/:;\"' ,\t.?";
 		}
@@ -160,6 +161,10 @@ namespace Mono.TextEditor.Highlighting
 		public static string ColorToPangoMarkup (Gdk.Color color)
 		{
 			return string.Format ("#{0:X2}{1:X2}{2:X2}", color.Red >> 8, color.Green >> 8, color.Blue >> 8);
+		}
+		public static string ColorToPangoMarkup (Cairo.Color color)
+		{
+			return ColorToPangoMarkup ((Gdk.Color)((HslColor)color));
 		}
 
 		public static int GetIndentLength (TextDocument doc, int offset, int length, bool skipFirstLine)
@@ -437,7 +442,7 @@ namespace Mono.TextEditor.Highlighting
 
 		public class ChunkParser
 		{
-			readonly string defaultStyle = "text";
+			readonly string defaultStyle = "Plain Text";
 			protected SpanParser spanParser;
 			protected TextDocument doc;
 			protected DocumentLine line;
@@ -587,7 +592,6 @@ namespace Mono.TextEditor.Highlighting
 			{
 				Rule cur = spanParser.CurRule;
 				bool isWordPart = cur.Delimiter.IndexOf (ch) < 0;
-
 				if (inWord && !isWordPart || !inWord && isWordPart)
 					AddChunk (ref curChunk, 0, curChunk.Style = GetStyle (curChunk) ?? GetSpanStyle ());
 
@@ -718,8 +722,9 @@ namespace Mono.TextEditor.Highlighting
 
 		public const string MimeTypesAttribute = "mimeTypes";
 
-		public static SyntaxMode Read (XmlReader reader)
+		public static SyntaxMode Read (Stream stream)
 		{
+			var reader = XmlReader.Create (stream);
 			var result = new SyntaxMode (null);
 			var matches = new List<Match> ();
 			var spanList = new List<Span> ();

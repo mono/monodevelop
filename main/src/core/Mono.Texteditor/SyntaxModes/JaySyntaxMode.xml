@@ -31,22 +31,22 @@ THE SOFTWARE.
 	<Property name="BlockCommentStart">/*</Property>
 	<Property name="BlockCommentEnd">*/</Property>
 	
-	<EolSpan color = "comment.line" rule="Comment" tagColor="comment.tag.line">//</EolSpan>
+	<EolSpan color = "Comment(Line)" rule="Comment" tagColor="Comment(Line)">//</EolSpan>
 	
-	<Span color = "comment.block" rule="Comment" tagColor="comment.tag.block">
+	<Span color = "Comment(Block)" rule="Comment" tagColor="Comment(Line)">
 		<Begin>/*</Begin>
 		<End>*/</End>
 	</Span>
 	
-	<EolSpan color = "text.preprocessor" rule="token">%token</EolSpan>
-	<EolSpan color = "text.preprocessor" rule="token">%nonassoc</EolSpan>
-	<EolSpan color = "text.preprocessor" rule="token">%left</EolSpan>
-	<EolSpan color = "text.preprocessor" rule="token">%right</EolSpan>
-	<EolSpan color = "text.preprocessor" rule="token">%start</EolSpan>
-	<EolSpan color = "text.preprocessor" rule="token">%%</EolSpan>
+	<EolSpan color = "Preprocessor" rule="token">%token</EolSpan>
+	<EolSpan color = "Preprocessor" rule="token">%nonassoc</EolSpan>
+	<EolSpan color = "Preprocessor" rule="token">%left</EolSpan>
+	<EolSpan color = "Preprocessor" rule="token">%right</EolSpan>
+	<EolSpan color = "Preprocessor" rule="token">%start</EolSpan>
+	<EolSpan color = "Preprocessor" rule="token">%%</EolSpan>
 	
 	<Rule name = "Comment">
-		<Keywords color="comment.keyword.todo" ignorecase="True">
+		<Keywords color="Comment Tag" ignorecase="True">
 			<Word>TODO</Word>
 			<Word>FIXME</Word>
 			<Word>HACK</Word>
@@ -55,9 +55,9 @@ THE SOFTWARE.
 	</Rule>
 	
 	<Rule name = "token">
-		<EolSpan color = "comment.line" rule="Comment" tagColor="comment.tag.line">//</EolSpan>
+		<EolSpan color = "Comment(Line)" rule="Comment" tagColor="Comment(Line)">//</EolSpan>
 		
-		<Span color = "comment.block" rule="Comment" tagColor="comment.tag.block">
+		<Span color = "Comment(Block)" rule="Comment" tagColor="Comment(Line)">
 			<Begin>/*</Begin>
 			<End>*/</End>
 		</Span>

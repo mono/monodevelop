@@ -35,7 +35,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 	{
 		Result result;
 		
-		public ResultMarker (Result result, TextSegment segment) : base (GetColor (result), segment)
+		public ResultMarker (Result result, TextSegment segment) : base ("", segment)
 		{
 			this.result = result;
 		}
@@ -53,19 +53,19 @@ namespace MonoDevelop.AnalysisCore.Gui
 		public int ColEnd   { get { return IsOneLine (result)? (result.Region.EndColumn) : 0; } }
 		public string Message { get { return result.Message; } }
 		
-		static string GetColor (Result result)
+		static Cairo.Color GetColor (TextEditor editor, Result result)
 		{
 			switch (result.Level) {
 			case Severity.None:
-				return Mono.TextEditor.Highlighting.ColorScheme.DefaultString;
+				return editor.ColorStyle.PlainText.Background;
 			case Severity.Error:
-				return Mono.TextEditor.Highlighting.ColorScheme.ErrorUnderlineString;
+				return editor.ColorStyle.UnderlineError.GetColor ("color");
 			case Severity.Warning:
-				return Mono.TextEditor.Highlighting.ColorScheme.WarningUnderlineString;
+				return editor.ColorStyle.UnderlineWarning.GetColor ("color");
 			case Severity.Suggestion:
-				return Mono.TextEditor.Highlighting.ColorScheme.SuggestionUnderlineString;
+				return editor.ColorStyle.UnderlineSuggestion.GetColor ("color");
 			case Severity.Hint:
-				return Mono.TextEditor.Highlighting.ColorScheme.HintUnderlineString;
+				return editor.ColorStyle.UnderlineHint.GetColor ("color");
 			default:
 				throw new System.ArgumentOutOfRangeException ();
 			}
@@ -118,10 +118,10 @@ namespace MonoDevelop.AnalysisCore.Gui
 				return;
 			
 			double height = editor.LineHeight / 5;
-			cr.Color = ColorName == null ? Color : editor.ColorStyle.GetColorFromDefinition (ColorName);
+			cr.Color = GetColor (editor, Result);
 			if (drawOverlay) {
 				cr.Rectangle (drawFrom, y, drawTo - drawFrom, editor.LineHeight);
-				var color = editor.ColorStyle.Default.CairoBackgroundColor;
+				var color = editor.ColorStyle.PlainText.Background;
 				color.A = 0.6;
 				cr.Color = color;
 				cr.Fill ();
@@ -146,7 +146,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 		}
 
 		#region IChunkMarker implementation
-		void IChunkMarker.ChangeForeColor (TextEditor editor, Chunk chunk, ref Gdk.Color color)
+		void IChunkMarker.ChangeForeColor (TextEditor editor, Chunk chunk, ref Cairo.Color color)
 		{
 			if (Debugger.DebuggingService.IsDebugging)
 				return;
@@ -155,11 +155,13 @@ namespace MonoDevelop.AnalysisCore.Gui
 			if (!(markerStart <= chunk.Offset && chunk.Offset < markerEnd)) 
 				return;
 
-			var bgc = editor.ColorStyle.Default.BackgroundColor;
+			var bgc = editor.ColorStyle.PlainText.Background;
 			double alpha = 0.6;
-			color.Red = (ushort)(color.Red * alpha + bgc.Red * (1.0 - alpha));
-			color.Green = (ushort)(color.Green * alpha + bgc.Green * (1.0 - alpha));
-			color.Blue = (ushort)(color.Blue * alpha + bgc.Blue * (1.0 - alpha));
+			color = new Cairo.Color (
+				color.R * alpha + bgc.R * (1.0 - alpha),
+				color.G * alpha + bgc.G * (1.0 - alpha),
+				color.B * alpha + bgc.B * (1.0 - alpha)
+			);
 		}
 		#endregion
 	}

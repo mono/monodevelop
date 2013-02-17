@@ -32,45 +32,45 @@
 	<Property name="StringQuote">"</Property>
 	<Property name="StringQuote">'</Property>
 	
-	<EolSpan color = "comment.line" rule="Comment" tagColor="comment.tag.line">#</EolSpan>
-	<EolSpan color = "comment.line" rule="Comment" tagColor="comment.tag.line">//</EolSpan>
+	<EolSpan color = "Comment(Line)" rule="Comment" tagColor="Comment(Line)">#</EolSpan>
+	<EolSpan color = "Comment(Line)" rule="Comment" tagColor="Comment(Line)">//</EolSpan>
 	
-	<Span color = "comment.block" rule="Comment" tagColor="comment.tag.block">
+	<Span color = "Comment(Block)" rule="Comment" tagColor="Comment(Line)">
 		<Begin>/*</Begin>
 		<End>*/</End>
 	</Span>
 	
-	<Span color = "string.other" rule="String" stopateol = "false" escape='\'>
+	<Span color = "String" rule="String" stopateol = "false" escape='\'>
 		<Begin>"""</Begin>
 		<End>"""</End>
 	</Span>
 
-	<Span color = "string.double" rule="String" stopateol = "true" escape='\'>
+	<Span color = "String" rule="String" stopateol = "true" escape='\'>
 		<Begin>"</Begin>
 		<End>"</End>
 	</Span>
 
-	<Span color = "string.single" rule="String" stopateol = "true" escape="\">
+	<Span color = "String" rule="String" stopateol = "true" escape="\">
 		<Begin>&apos;</Begin>
 		<End>&apos;</End>
 	</Span>
 
-	<Span color = "string" rule="String" stopateol = "false" escape='"'>
+	<Span color = "String" rule="String" stopateol = "false" escape='"'>
 		<Begin>@@/</Begin>
 		<End>/</End>
 	</Span>
 
-	<Span color = "string" rule="String" stopateol = "true" escape="\">
+	<Span color = "String" rule="String" stopateol = "true" escape="\">
 		<Begin>@/</Begin>
 		<End>/</End>
 	</Span>
 
-	<Keywords color = "keyword.access">
+	<Keywords color = "Keyword(Access)">
 		<Word>self</Word>
 		<Word>super</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.operator">
+	<Keywords color = "Keyword(Operator)">
 		<Word>is</Word>		<Word>isa</Word>
 		<Word>and</Word>
 		<Word>or</Word>
@@ -78,7 +78,7 @@
 		
 		<Word>as</Word>		<Word>cast</Word>	</Keywords>
 	
-	<Keywords color = "keyword.selection">
+	<Keywords color = "Keyword(Selection)">
 		<Word>else</Word>
 		<Word>elif</Word>
 		<Word>if</Word>
@@ -87,20 +87,20 @@
 		<Word>unless</Word>		<Word>otherwise</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.iteration">
+	<Keywords color = "Keyword(Iteration)">
 		<Word>for</Word>
 		<Word>in</Word>
 		<Word>while</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.jump">
+	<Keywords color = "Keyword(Jump)">
 		<Word>break</Word>
 		<Word>continue</Word>		<Word>goto</Word>
 		<Word>return</Word>
 		<Word>yield</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.context">
+	<Keywords color = "Keyword(Context)">
 		<Word>pass</Word>
 
 		<Word>assert</Word>
@@ -118,7 +118,7 @@
 		<Word>__switch__</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.exceptions">
+	<Keywords color = "Keyword(Exception)">
 		<Word>try</Word>
 		<Word>raise</Word>
 		<Word>ensure</Word>
@@ -127,13 +127,13 @@
 		<Word>success</Word>
 	</Keywords>
 	
-	<Keywords color = "constant.language">
+	<Keywords color = "Keyword(Constants)">
 		<Word>true</Word>
 		<Word>false</Word>
 		<Word>null</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.modifier">
+	<Keywords color = "Keyword(Modifiers)">
 		<Word>override</Word>
 		<Word>static</Word>
 
@@ -152,7 +152,7 @@
 
 	</Keywords>
 	
-	<Keywords color = "keyword.type">
+	<Keywords color = "Keyword(Type)">
 		<Word>bool</Word>
 		<Word>byte</Word>
 		<Word>sbyte</Word>
@@ -179,22 +179,22 @@
 		<Word>of</Word>
 	</Keywords>
 	
-	<Keywords color = "constant.language.void">
+	<Keywords color = "Keyword(Void)">
 		<Word>void</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.namespace">
+	<Keywords color = "Keyword(Namespace)">
 		<Word>namespace</Word>
 		<Word>import</Word>
 		<Word>from</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.property">		<Word>get</Word>
+	<Keywords color = "Keyword(Property)">		<Word>get</Word>
 		<Word>set</Word>
 		<Word>value</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.declaration">
+	<Keywords color = "Keyword(Declaration)">
 		<Word>class</Word>
 		<Word>interface</Word>
 		<Word>delegate</Word>
@@ -204,7 +204,7 @@
 		<Word>macro</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.parameter">
+	<Keywords color = "Keyword(Parameter)">
 		<Word>ref</Word>
 		<Word>out</Word>
 
@@ -214,14 +214,14 @@
 		<Word>event</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.operator.declaration">
+	<Keywords color = "Keyword(Operator Declaration)">
 		<Word>explicit</Word>
 		<Word>implicit</Word>
 		
 		<Word>operator</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.misc">
+	<Keywords color = "Keyword(Other)">
 		<Word>checked</Word>
 		<Word>unchecked</Word>
 		<Word>fixed</Word>
@@ -237,7 +237,7 @@
 	</Keywords>
 
 	<Rule name = "Comment">
-		<Keywords color="comment.keyword.todo" ignorecase="True">
+		<Keywords color="Comment Tag" ignorecase="True">
 			<Word>TODO</Word>
 			<Word>FIXME</Word>
 			<Word>HACK</Word>

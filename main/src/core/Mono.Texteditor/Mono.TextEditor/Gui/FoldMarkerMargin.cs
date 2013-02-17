@@ -226,11 +226,11 @@ namespace Mono.TextEditor
 		
 		internal protected override void OptionsChanged ()
 		{
-			foldBgGC = editor.ColorStyle.Default.CairoBackgroundColor;
-			foldLineGC = editor.ColorStyle.FoldLine.CairoColor;
-			foldLineHighlightedGC = editor.ColorStyle.Default.CairoColor;
+			foldBgGC = editor.ColorStyle.PlainText.Background;
+			foldLineGC = editor.ColorStyle.FoldLineColor.GetColor ("color");
+			foldLineHighlightedGC = editor.ColorStyle.PlainText.Foreground;
 			
-			HslColor hslColor = new HslColor (editor.ColorStyle.Default.CairoBackgroundColor);
+			HslColor hslColor = new HslColor (editor.ColorStyle.PlainText.Background);
 			double brightness = HslColor.Brightness (hslColor);
 			if (brightness < 0.5) {
 				hslColor.L = hslColor.L * 0.85 + hslColor.L * 0.25;
@@ -239,9 +239,9 @@ namespace Mono.TextEditor
 			}
 			
 			foldLineHighlightedGCBg = hslColor;
-			foldToggleMarkerGC = editor.ColorStyle.Default.CairoColor;
-			lineStateChangedGC = editor.ColorStyle.LineChangedBg;
-			lineStateDirtyGC = editor.ColorStyle.LineDirtyBg;
+			foldToggleMarkerGC = editor.ColorStyle.FoldCross.GetColor ("color");
+			lineStateChangedGC = editor.ColorStyle.QuickDiffChanged.GetColor ("color");
+			lineStateDirtyGC = editor.ColorStyle.QuickDiffDirty.GetColor ("color");
 			
 			marginWidth = editor.LineHeight;
 		}
@@ -267,14 +267,14 @@ namespace Mono.TextEditor
 			ctx.Color = isSelected ? foldLineHighlightedGC  : foldLineGC;
 			ctx.Stroke ();
 			
-			ctx.DrawLine (foldToggleMarkerGC,
+			ctx.DrawLine (isSelected ? foldLineHighlightedGC  : foldToggleMarkerGC,
 			              drawArea.X  + drawArea.Width * 2 / 10,
 			              drawArea.Y + drawArea.Height / 2,
 			              drawArea.X + drawArea.Width - drawArea.Width * 2 / 10,
 			              drawArea.Y + drawArea.Height / 2);
 			
 			if (!isOpen)
-				ctx.DrawLine (foldToggleMarkerGC,
+				ctx.DrawLine (isSelected ? foldLineHighlightedGC  : foldToggleMarkerGC,
 				              drawArea.X + drawArea.Width / 2,
 				              drawArea.Y + drawArea.Height * 2 / 10,
 				              drawArea.X  + drawArea.Width / 2,
@@ -334,7 +334,7 @@ namespace Mono.TextEditor
 				cr.Color = foldBgGC;
 				cr.FillPreserve ();
 
-				var color = editor.ColorStyle.LineMarker;
+				var color = editor.ColorStyle.LineMarker.GetColor ("color");
 				cr.Color = new Cairo.Color (color.R, color.G, color.B, 0.5);
 				cr.Fill ();
 

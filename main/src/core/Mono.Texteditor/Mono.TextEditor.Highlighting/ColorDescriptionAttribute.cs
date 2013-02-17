@@ -1,9 +1,10 @@
-// IColorDefinition.cs
+//
+// ColorDescriptionAttribute.cs
 //
 // Author:
-//   Mike Krüger <mkrueger@novell.com>
+//       Mike Krüger <mkrueger@xamarin.com>
 //
-// Copyright (c) 2008 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2013 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,44 +23,31 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
 
 using System;
+using System.IO;
+using System.Collections.Generic;
+using System.Linq;
+using System.Xml.Linq;
+using System.Xml.XPath;
+using System.Reflection;
 
 namespace Mono.TextEditor.Highlighting
 {
-	class ReferencedChunkStyle : ChunkStyle
+	public class ColorDescriptionAttribute : Attribute
 	{
-		ColorScheme style;
-		string referencedStyle;
-		public override Cairo.Color CairoColor {
-			get {
-				return style.GetChunkStyle (referencedStyle).CairoColor;
-			}
-		}
-		
-		public override Cairo.Color CairoBackgroundColor {
-			get {
-				return style.GetChunkStyle (referencedStyle).CairoBackgroundColor;
-			}
-		}
-		
-		public override ChunkProperties ChunkProperties {
-			get {
-				return style.GetChunkStyle (referencedStyle).ChunkProperties; 
-			}
-		}
-		
-		public override string Link {
-			get {
-				return style.GetChunkStyle (referencedStyle).Link; 
-			}
-		}
-		
-		public ReferencedChunkStyle (ColorScheme style, string referencedStyle)
+		public string Name { get; private set; }
+		public string Description { get; set; }
+		public string VSSetting { get; set; }
+
+		public ColorDescriptionAttribute (string name)
 		{
-			this.style           = style;
-			this.referencedStyle = referencedStyle;
+			this.Name = name;
+		}
+
+		public override string ToString ()
+		{
+			return string.Format ("[ColorDescriptionAttribute: Name={0}, Description={1}, VSSetting={2}]", Name, Description, VSSetting);
 		}
 	}
 }

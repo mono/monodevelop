@@ -122,8 +122,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		Cairo.Color backgroundColor;
 		Cairo.Color selectionBorderColor, selectionBorderInactiveColor;
 		ChunkStyle selectedItemColor, selectedItemInactiveColor;
-		Gdk.Color textColor;
-		Gdk.Color highlightColor;
+		Cairo.Color textColor;
+		Cairo.Color highlightColor;
 		FontDescription itemFont;
 
 		const int marginIconSpacing = 4;
@@ -158,15 +158,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 			layout.Wrap = Pango.WrapMode.Char;
 			var style = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
 			SetFont ();
-			var completion = style.GetChunkStyle ("completion");
-			textColor = completion.Color;
+			textColor = style.CompletionText.Foreground;
 
-			highlightColor = style.GetChunkStyle ("completion.highlight").Color;
-			backgroundColor = completion.CairoBackgroundColor;
-			selectedItemColor = style.GetChunkStyle ("completion.selection");
-			selectedItemInactiveColor = style.GetChunkStyle ("completion.selection.inactive");
-			selectionBorderColor = style.GetChunkStyle ("completion.selection.border").CairoColor;
-			selectionBorderInactiveColor = style.GetChunkStyle ("completion.selection.inactive.border").CairoColor;
+			highlightColor = style.CompletionHighlight.GetColor ("color");
+			backgroundColor = style.CompletionText.Background;
+			selectedItemColor = style.CompletionSelectedText;
+			selectedItemInactiveColor = style.CompletionSelectedInactiveText;
+			selectionBorderColor = style.CompletionBorder.GetColor ("color");
+			selectionBorderInactiveColor = style.CompletionInactiveBorder.GetColor ("color");
 		}
 
 		
@@ -431,7 +430,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					noMatchLayout.SetText (win.DataProvider.ItemCount == 0 ? NoSuggestionsMsg : NoMatchesMsg);
 					int lWidth, lHeight;
 					noMatchLayout.GetPixelSize (out lWidth, out lHeight);
-					gc.RgbFgColor = textColor;
+					gc.RgbFgColor = (Mono.TextEditor.HslColor)textColor;
 					window.DrawLayout (gc, (width - lWidth) / 2, yPos + (height - lHeight - yPos) / 2 - lHeight, noMatchLayout);
 					gc.Dispose ();
 
@@ -440,7 +439,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 
 				var textGCNormal = new Gdk.GC (window);
-				textGCNormal.RgbFgColor = textColor;
+				textGCNormal.RgbFgColor = (Mono.TextEditor.HslColor)textColor;
 				var fgGCNormal = this.Style.ForegroundGC (StateType.Normal);
 				var matcher = CompletionMatcher.CreateCompletionMatcher (CompletionString);
 				Iterate (true, ref yPos, delegate (Category category, int ypos) {
@@ -500,7 +499,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 							Pango.AttrList attrList = layout.Attributes ?? new Pango.AttrList ();
 							for (int newSelection = 0; newSelection < matchIndices.Length; newSelection++) {
 								int idx = matchIndices [newSelection];
-								var fg = new AttrForeground (highlightColor.Red, highlightColor.Green, highlightColor.Blue);
+								var fg = new AttrForeground ((ushort)(highlightColor.R * ushort.MaxValue), (ushort)(highlightColor.G * ushort.MaxValue), (ushort)(highlightColor.B  * ushort.MaxValue));
 								fg.StartIndex = (uint)idx;
 								fg.EndIndex = (uint)(idx + 1);
 								attrList.Insert (fg);
@@ -526,10 +525,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 					iypos = iconHeight < rowHeight ? ypos + (rowHeight - iconHeight) / 2 : ypos;
 					if (item == SelectedItem) {
 						context.Rectangle (0, ypos, Allocation.Width, rowHeight / 2);
-						context.Color = SelectionEnabled ? selectedItemColor.CairoColor : selectedItemInactiveColor.CairoColor;
+						context.Color = SelectionEnabled ? selectedItemColor.Foreground : selectedItemInactiveColor.Foreground;
 						context.Fill ();
 						context.Rectangle (0, ypos + rowHeight / 2, Allocation.Width, rowHeight / 2);
-						context.Color = SelectionEnabled ? selectedItemColor.CairoBackgroundColor : selectedItemInactiveColor.CairoBackgroundColor;
+						context.Color = SelectionEnabled ? selectedItemColor.Background : selectedItemInactiveColor.Background;
 						context.Fill ();
 
 						context.Rectangle (0.5, ypos + 0.5, Allocation.Width - 1, rowHeight - 1);

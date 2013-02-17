@@ -1,9 +1,10 @@
-// IXmlProvider.cs
+//
+// TextWeight.cs
 //
 // Author:
-//   Mike Krüger <mkrueger@novell.com>
+//       Mike Krüger <mkrueger@xamarin.com>
 //
-// Copyright (c) 2008 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2013 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,69 +23,24 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
 
 using System;
+using System.IO;
+using System.Collections.Generic;
+using System.Linq;
+using System.Xml.Linq;
+using System.Xml.XPath;
 using System.Reflection;
-using System.Xml;
 
 namespace Mono.TextEditor.Highlighting
 {
-	public interface IXmlProvider
-	{
-		XmlReader Open ();
-	}
-	
-	public class ResourceXmlProvider : IXmlProvider
-	{
-		Assembly assembly;
-		string   manifestResourceName;
-		
-		public string ManifestResourceName {
-			get {
-				return manifestResourceName;
-			}
-		}
-		
-		public Assembly Assembly {
-			get {
-				return assembly;
-			}
-		}
-		
-		public ResourceXmlProvider (Assembly assembly, string manifestResourceName)
-		{
-			this.assembly             = assembly;
-			this.manifestResourceName = manifestResourceName;
-		}
-		
-		public XmlReader Open ()
-		{
-			XmlReaderSettings settings = new XmlReaderSettings ();
-			settings.CloseInput = true;
-			return XmlTextReader.Create (this.assembly.GetManifestResourceStream (this.ManifestResourceName), settings);
-		}
-	}
-	
-	public class UrlXmlProvider : IXmlProvider
-	{
-		string  url;
-		
-		public string Url {
-			get {
-				return url;
-			}
-		}
-		
-		public UrlXmlProvider (string url)
-		{
-			this.url = url;
-		}
-		
-		public XmlReader Open ()
-		{
-			return new XmlTextReader (url);
-		}
+
+	[Flags]
+	public enum TextWeight {
+		None,
+		Bold,
+		Italic,
+		Underline
 	}
 	
 }

@@ -152,10 +152,10 @@ namespace Mono.TextEditor
 		protected override bool OnExposeEvent (Gdk.EventExpose ev)
 		{
 			if (textGC == null) {
-				textGC = editor.ColorStyle.Default.CreateFgGC (ev.Window);
-				textBgGC = editor.ColorStyle.Default.CreateBgGC (ev.Window);
-				foldGC = editor.ColorStyle.FoldLine.CreateFgGC (ev.Window);
-				foldBgGC = editor.ColorStyle.FoldLine.CreateBgGC (ev.Window);
+				textGC = editor.ColorStyle.PlainText.CreateFgGC (ev.Window);
+				textBgGC = editor.ColorStyle.PlainText.CreateBgGC (ev.Window);
+				foldGC = editor.ColorStyle.CollapsedText.CreateFgGC (ev.Window);
+				foldBgGC = editor.ColorStyle.CollapsedText.CreateBgGC (ev.Window);
 			}
 			
 			ev.Window.DrawRectangle (textBgGC, true, ev.Area);

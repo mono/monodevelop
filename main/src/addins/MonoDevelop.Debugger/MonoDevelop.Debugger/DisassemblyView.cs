@@ -38,6 +38,7 @@ using MonoDevelop.Ide.Commands;
 using TextEditor = Mono.TextEditor.TextEditor;
 using Mono.TextEditor;
 using Mono.Debugging.Client;
+using Mono.TextEditor.Highlighting;
 
 namespace MonoDevelop.Debugger
 {
@@ -409,7 +410,7 @@ namespace MonoDevelop.Debugger
 		public override ChunkStyle GetStyle (ChunkStyle baseStyle)
 		{
 			ChunkStyle st = new ChunkStyle (baseStyle);
-			st.CairoColor = new Cairo.Color (125, 125, 125);
+			st.Foreground = new Cairo.Color (125, 125, 125);
 			return st;
 		}
 	}
