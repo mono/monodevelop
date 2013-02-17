@@ -21,7 +21,7 @@ test: deps
 
 deps:
 	mkdir -p deps
-	curl $(ns_url) > $(ns_script)
+	curl -# $(ns_url) > $(ns_script)
 
 clean:
 	rm -f  *.elc
