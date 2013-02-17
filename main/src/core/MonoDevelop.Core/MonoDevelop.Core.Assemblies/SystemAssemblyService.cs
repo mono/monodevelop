@@ -145,10 +145,9 @@ namespace MonoDevelop.Core.Assemblies
 				RuntimesChanged (this, EventArgs.Empty);
 		}
 		
-		internal IEnumerable<TargetFramework> GetCoreFrameworks ()
+		internal IEnumerable<TargetFramework> GetKnownFrameworks ()
 		{
-			foreach (var id in coreFrameworks)
-				yield return frameworks[id];
+			return frameworks.Values;
 		}
 
 		internal bool IsKnownFramework (TargetFrameworkMoniker moniker)
@@ -324,7 +323,6 @@ namespace MonoDevelop.Core.Assemblies
 		}
 		
 		//FIXME: this is totally broken. assemblies can't just belong to one framework
-		// also, it currently only resolves assemblies against the core frameworks
 		public TargetFrameworkMoniker GetTargetFrameworkForAssembly (TargetRuntime tr, string file)
 		{
 			try {
@@ -334,7 +332,7 @@ namespace MonoDevelop.Core.Assemblies
 					if (aname.Name == "mscorlib") {
 						TargetFramework compatibleFramework = null;
 						// If there are several frameworks that can run the file, pick one that is installed
-						foreach (TargetFramework tf in GetCoreFrameworks ()) {
+						foreach (TargetFramework tf in GetKnownFrameworks ()) {
 							if (tf.GetCorlibVersion () == aname.Version.ToString ()) {
 								compatibleFramework = tf;
 								if (tr.IsInstalled (tf))

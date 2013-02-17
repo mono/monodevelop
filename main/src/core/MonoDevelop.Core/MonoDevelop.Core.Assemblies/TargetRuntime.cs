@@ -510,7 +510,7 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			var frameworks = new HashSet<TargetFrameworkMoniker> ();
 			
-			foreach (TargetFramework fx in Runtime.SystemAssemblyService.GetCoreFrameworks ()) {
+			foreach (TargetFramework fx in Runtime.SystemAssemblyService.GetKnownFrameworks ()) {
 				// A framework is installed if the assemblies directory exists and the first
 				// assembly of the list exists.
 				if (frameworks.Add (fx.Id) && IsInstalled (fx)) {
