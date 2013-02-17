@@ -318,6 +318,12 @@ namespace MonoDevelop.Core.Assemblies
 			var universe = new IKVM.Reflection.Universe ();
 			try {
 				IKVM.Reflection.Assembly assembly = universe.LoadFile (file);
+				var att = assembly.CustomAttributes.FirstOrDefault (a =>
+					a.AttributeType.FullName == "System.Runtime.Versioning.TargetFrameworkAttribute"
+				);
+				if (att != null) {
+					return TargetFrameworkMoniker.Parse ((string)att.ConstructorArguments[0].Value);
+				}
 				foreach (var r in assembly.GetReferencedAssemblies ()) {
 					if (r.Name == "mscorlib") {
 						TargetFramework compatibleFramework = null;
