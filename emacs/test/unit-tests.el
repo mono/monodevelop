@@ -1,40 +1,60 @@
-(require 'ert)
 (require 'test-common)
 
-(defconst finddeclstr1
-  (let ((file (expand-file-name "Test1/Program.fs")))
-    (format "DATA: finddecl\nfile stored in metadata is '%s'\n%s:1:6\n<<EOF>>\n" file file))
-    "A message for jumping to a definition in the same file")
+(defmacro using-file (path &rest body)
+  "Open the file at PATH in a buffer, execute BODY forms, then kill the buffer."
+  (declare (indent 1))
+  `(save-excursion
+     (find-file ,path)
+     (unwind-protect
+         (progn ,@body)
+       (kill-buffer))))
 
-(ert-deftest jump-to-defn-same-file ()
-  "Check that we can jump to a definition in same file"
-  (load-fsharp-mode)
-  (find-file "Test1/Program.fs")
-  (ac-fsharp-filter-output nil finddeclstr1)
-  (should (string= (buffer-name) "Program.fs"))
-  (should (eq (point) 18))
-  (kill-buffer "Program.fs"))
+(defvar test-file-dir (concat (file-name-directory (or load-file-name (buffer-file-name)))
+                              "Test1/")
+  "The directory contains F# files for testing.")
+
+;;; ----------------------------------------------------------------------------
+
+;;; Jump to defn
+
+(defconst finddeclstr1
+  (let ((file (concat test-file-dir "Program.fs")))
+    (format "DATA: finddecl\nfile stored in metadata is '%s'\n%s:1:6\n<<EOF>>\n" file file))
+  "A message for jumping to a definition in the same file")
 
 (defconst finddeclstr2
-  (let ((file (expand-file-name "Test1/FileTwo.fs")))
+  (let ((file (concat test-file-dir "FileTwo.fs")))
     (format "DATA: finddecl\nfile stored in metadata is '%s'\n%s:12:11\n<<EOF>>\n" file file))
     "A message for jumping to a definition in the another file")
 
-(ert-deftest jump-to-defn-another-file ()
-  "Check that we can jump to a definition in another file"
-  (load-fsharp-mode)
-  (find-file "Test1/Program.fs")
-  (ac-fsharp-filter-output nil finddeclstr2)
-  (should (string= (buffer-name) "FileTwo.fs"))
-  (should (eq (point) 127))
-  (kill-buffer "Program.fs")
-  (kill-buffer "FileTwo.fs"))
+(check "jumping to local definition should not change buffer"
+  (let ((f (concat test-file-dir "Program.fs")))
+    (using-file f
+      (load-fsharp-mode)
+      (ac-fsharp-filter-output nil finddeclstr1)
+      (should (equal f (buffer-file-name))))))
 
-;; (ert-deftest jump-to-defn-another-project ()
-;;   "Check that we can jump to a definition an imported project"
-;;   (load-fsharp-mode)
-;;   (should (string= "write this test" "now"))
-;;   )
+(check "jumping to local definition should move point to definition"
+  (using-file (concat test-file-dir "Program.fs")
+    (load-fsharp-mode)
+    (ac-fsharp-filter-output nil finddeclstr1)
+    (should (equal (point) 18))))
+
+(check "jumping to definition in another file should open that file"
+  (let ((f1 (concat test-file-dir "Program.fs"))
+        (f2 (concat test-file-dir "FileTwo.fs")))
+    (using-file f1
+      (load-fsharp-mode)
+      (ac-fsharp-filter-output nil finddeclstr2)
+      (should (equal (buffer-file-name) f2)))))
+
+(check "jumping to definition in another file should move point to definition"
+  (using-file (concat test-file-dir "Program.fs")
+    (load-fsharp-mode)
+    (ac-fsharp-filter-output nil finddeclstr2)
+    (should (equal (point) 127))))
+
+;;; Error parsing
 
 (defconst err-brace-str
   (mapconcat
@@ -51,15 +71,39 @@ Try indenting this token further or using standard formatting conventions."
      "\n")
   "A list of errors containing a square bracket to check the parsing")
 
-(ert-deftest error-message-containing-brace ()
-  "Check that a errors containing a brace and newlines is parsed correctly"
-  (fsharp-mode-wrapper
-   '("Program.fs")
-   (lambda ()
-     (find-file "Test1/Program.fs")
-     (ac-fsharp-filter-output nil err-brace-str)
-     (should (string= "" ac-fsharp-partial-data))
-     (should (eq 3 (length (overlays-in (point-min) (point-max)))))
-     (should (string= (overlay-get (car (overlays-in (point-min) (point-max))) 'help-echo) "Possible incorrect indentation: this token is offside of context started at position (2:16).\nTry indenting this token further or using standard formatting conventions."))
-     (should (eq 'fsharp-error-face (overlay-get (cadr (overlays-in (point-min) (point-max))) 'face)))
-     (should (eq 'fsharp-warning-face (overlay-get (car (overlays-in (point-min) (point-max))) 'face))))))
+(defmacro testing-error-handling (&rest body)
+  "Run BODY forms within the context of the fsharp-mode-wrapper function."
+  (declare (indent 1))
+  `(fsharp-mode-wrapper
+    '("Program.fs")
+    (lambda ()
+      (find-file (concat test-file-dir "Program.fs"))
+      (ac-fsharp-filter-output nil err-brace-str)
+      ,@body)))
+
+(check "error clears partial data"
+  (testing-error-handling
+      (should (equal "" ac-fsharp-partial-data))))
+
+(check "errors cause overlays to be drawn"
+  (testing-error-handling
+      (should (equal 3 (length (overlays-in (point-min) (point-max)))))))
+
+(check "error overlay has expected text"
+  (testing-error-handling
+      (let* ((ov (overlays-in (point-min) (point-max)))
+             (text (overlay-get (car-safe ov) 'help-echo)))
+        (should (equal text (concat "Possible incorrect indentation: this token is offside of context started at position (2:16)."
+                                    "\nTry indenting this token further or using standard formatting conventions."))))))
+
+(check "first overlay should have the warning face"
+  (testing-error-handling
+      (let* ((ov (overlays-in (point-min) (point-max)))
+             (face (overlay-get (car ov) 'face)))
+        (should (eq 'fsharp-warning-face face)))))
+
+(check "second overlay should have the error face"
+  (testing-error-handling
+      (let* ((ov (overlays-in (point-min) (point-max)))
+             (face (overlay-get (cadr ov) 'face)))
+        (should (eq 'fsharp-error-face face)))))
