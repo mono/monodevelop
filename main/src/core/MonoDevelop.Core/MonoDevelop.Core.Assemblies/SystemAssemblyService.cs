@@ -41,6 +41,7 @@ using MonoDevelop.Core.Serialization;
 using Mono.Addins;
 using Mono.Cecil;
 using System.Reflection;
+using System.Linq;
 
 namespace MonoDevelop.Core.Assemblies
 {
@@ -95,13 +96,15 @@ namespace MonoDevelop.Core.Assemblies
 			var runtime = (TargetRuntime) sender;
 			runtime.Initialized -= HandleRuntimeInitialized;
 			lock (frameworkWriteLock) {
-				var newFxList = new Dictionary<TargetFrameworkMoniker,TargetFramework> (frameworks);
-				foreach (var fx in runtime.CustomFrameworks) {
-					if (!newFxList.ContainsKey (fx.Id))
-						newFxList[fx.Id] = fx;
+				if (runtime.CustomFrameworks.Any ()) {
+					var newFxList = new Dictionary<TargetFrameworkMoniker,TargetFramework> (frameworks);
+					foreach (var fx in runtime.CustomFrameworks) {
+						if (!newFxList.ContainsKey (fx.Id))
+							newFxList [fx.Id] = fx;
+					}
+					BuildFrameworkRelations (newFxList);
+					frameworks = newFxList;
 				}
-				BuildFrameworkRelations (newFxList);
-				frameworks = newFxList;
 			}
 		}
 		
