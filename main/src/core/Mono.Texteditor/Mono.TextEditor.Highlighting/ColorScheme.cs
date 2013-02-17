@@ -91,10 +91,10 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("Underline(Warning)", VSSetting="color=Warning/Foreground")]
 		public AmbientColor UnderlineWarning { get; private set; }
 
-		[ColorDescription("Underline(Suggestion)", VSSetting="color=Compiler Error/Foreground")]
+		[ColorDescription("Underline(Suggestion)", VSSetting="color=Other Error/Foreground")]
 		public AmbientColor UnderlineSuggestion { get; private set; }
 
-		[ColorDescription("Underline(Hint)", VSSetting="color=Compiler Error/Foreground")]
+		[ColorDescription("Underline(Hint)", VSSetting="color=Other Error/Foreground")]
 		public AmbientColor UnderlineHint { get; private set; }
 
 		[ColorDescription("Quick Diff(Dirty)")]
