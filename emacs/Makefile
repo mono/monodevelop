@@ -1,7 +1,7 @@
 # Elisp files required for tests.
 src   = $(filter-out fsharp-mode-pkg.el, $(wildcard *.el))
 tests = test/basic-tests.el test/fsharp-doc-tests.el test/unit-tests.el
-utils = test/test-utilities.el test/pos-tip-mock.el
+utils = test/test-common.el test/pos-tip-mock.el
 
 # Dependencies to be loaded.
 ns_url    = https://raw.github.com/chrisbarrett/elisp-namespaces/master/namespaces.el
