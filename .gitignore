@@ -25,3 +25,4 @@ lib/FsUnit.*
 # Emacs
 *.elc
 emacs/deps
+emacs/tmp

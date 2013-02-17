@@ -33,7 +33,7 @@ clean :
 
 # Dependencies
 
-depends      : $(deps_d) $(ns_script)
+depends      : $(deps_d) $(depends)
 $(deps_d)    :; mkdir -p $(deps_d)
 $(ns_script) :; curl -# $(ns_url) > $(ns_script)
 
