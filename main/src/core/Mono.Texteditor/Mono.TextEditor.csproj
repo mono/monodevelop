@@ -258,12 +258,6 @@
     <EmbeddedResource Include="SyntaxModes\CSyntaxMode.xml">
       <LogicalName>CSyntaxMode.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Styles\OblivionStyle.xml">
-      <LogicalName>OblivionStyle.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Styles\VisualStudioStyle.xml">
-      <LogicalName>VisualStudioStyle.xml</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
@@ -282,17 +276,11 @@
     <EmbeddedResource Include="SyntaxModes\RubySyntaxMode.xml">
       <LogicalName>RubySyntaxMode.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Styles\Styles.xsd">
-      <LogicalName>Styles.xsd</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="SyntaxModes\CssSyntaxMode.xml">
       <LogicalName>CssSyntaxMode.xml</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="SyntaxModes\JaySyntaxMode.xml">
       <LogicalName>JaySyntaxMode.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Styles\DefaultStyle.xml">
-      <LogicalName>DefaultStyle.xml</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="SyntaxModes\CGSyntaxMode.xml">
       <LogicalName>CGSyntaxMode.xml</LogicalName>
@@ -305,21 +293,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SyntaxModes\ShellScriptSyntaxMode.xml">
       <LogicalName>ShellScriptSyntaxMode.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Styles\SolarizedLightStyle.xml">
-      <LogicalName>SolarizedLightStyle.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Styles\SolarizedDarkStyle.xml">
-      <LogicalName>SolarizedDarkStyle.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Styles\MonokaiStyle.xml">
-      <LogicalName>MonokaiStyle.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Styles\NightshadeStyle.xml">
-      <LogicalName>NightshadeStyle.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Styles\TangoStyle.xml">
-      <LogicalName>TangoStyle.xml</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="SyntaxModes\RazorSyntaxMode.xml">
       <LogicalName>RazorSyntaxMode.xml</LogicalName>
@@ -335,6 +308,27 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SyntaxModes\HtmlSyntaxMode.xml">
       <LogicalName>HtmlSyntaxMode.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Styles\MonokaiStyle.json">
+      <LogicalName>MonokaiStyle.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Styles\NightshadeStyle.json">
+      <LogicalName>NightshadeStyle.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Styles\OblivionStyle.json">
+      <LogicalName>OblivionStyle.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Styles\SolarizedDarkStyle.json">
+      <LogicalName>SolarizedDarkStyle.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Styles\SolarizedLightStyle.json">
+      <LogicalName>SolarizedLightStyle.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Styles\TangoStyle.json">
+      <LogicalName>TangoStyle.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Styles\VisualStudioStyle.json">
+      <LogicalName>VisualStudioStyle.json</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

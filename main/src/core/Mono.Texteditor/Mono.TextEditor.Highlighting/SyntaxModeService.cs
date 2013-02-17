@@ -377,22 +377,9 @@ namespace Mono.TextEditor.Highlighting
 		public static List<ValidationEventArgs> ValidateStyleFile (string fileName)
 		{
 			List<ValidationEventArgs> result = new List<ValidationEventArgs> ();
-			XmlReaderSettings settings = new XmlReaderSettings ();
-			settings.ValidationType = ValidationType.Schema;
-			settings.ValidationEventHandler += delegate(object sender, ValidationEventArgs e) {
-				result.Add (e);
-			};
-			settings.Schemas.Add (null, new XmlTextReader (typeof(SyntaxModeService).Assembly.GetManifestResourceStream ("Styles.xsd")));
-			
-			using (XmlReader reader = XmlReader.Create (fileName, settings)) {
-				while (reader.Read ())
-					;
-			}
 			return result;
 		}
-		
-		
-		
+
 		public static bool IsValidSyntaxMode (string fileName)
 		{
 			if (!fileName.EndsWith ("SyntaxMode.xml", StringComparison.Ordinal))

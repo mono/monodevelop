@@ -1,0 +1,200 @@
+{
+	"name":"Monokai",
+	"version":"1.0",
+	"description": "A smooth, dusky scheme.",
+	"originator": "Xamarin Inc. (http://xamarin.com)",
+
+	"palette":[
+		{ "name":"monokai-white", "value":"#F8F8F2" },
+		{ "name":"monokai-selection", "value":"#49483E" },
+		{ "name":"monokai-background", "value":"#272822" },
+		{ "name":"monokai-comment", "value":"#75715E" },
+		{ "name":"monokai-string", "value":"#E6DB74" },
+		{ "name":"monokai-constant", "value":"#AE81FF" },
+		{ "name":"monokai-keyword", "value":"#F92672" },
+		{ "name":"monokai-type", "value":"#66d9ef" },
+		{ "name":"monokai-classname", "value":"#A6E22E" },
+		{ "name":"monokai-functionargument", "value":"#FD971F" },
+		{ "name":"monokai-invalid", "value":"#F8F8F0" },
+		{ "name":"monokai-invalidBackground", "value":"#F92672" }
+	],
+
+	"colors":[
+		{ "name": "Background(Read Only)", "color":"#252620" },
+
+		{ "name": "Search result background", "color":"#006060" },
+		{ "name": "Search result background (highlighted)", "color":"#008080" },
+
+        { "name": "Column Ruler", "color":"#575852" },
+        
+		{ "name": "Fold Square", "color":"monokai-comment", "secondcolor":"monokai-background" },
+		{ "name": "Fold Cross", "color":"white", "secondcolor":"monokai-background" },
+		
+		{ "name": "Indentation Guide", "color":"white" },
+
+		{ "name": "Indicator Margin", "color":"#3B3A32" },
+		{ "name": "Indicator Margin(Separator)", "color":"#3B3A32" },
+
+		{ "name": "Tooltip Border", "color":"#989892" },
+		{ "name": "Tooltip Pager Top", "color":"#292A25" },
+		{ "name": "Tooltip Pager Bottom", "color":"#292A25" },
+		{ "name": "Tooltip Pager Triangle", "color":"#C8C8C2" },
+		{ "name": "Tooltip Pager Text", "color":"#C8C8C2" },
+
+
+		{ "name": "Completion Matching Substring", "color":"#BA3373" },
+		{ "name": "Completion Border", "color":"#C9C9C9" },
+		{ "name": "Completion Border(Inactive)", "color":"#bebebe" },
+
+        { "name": "Bookmarks", "color":"#FDD99B", "secondcolor":"#816647 " },
+		
+		{ "name": "Underline(Error)", "color":"red" },
+		{ "name": "Underline(Warning)", "color":"#FFA500" },
+		{ "name": "Underline(Suggestion)", "color":"#8FC68F" },
+		{ "name": "Underline(Hint)", "color":"#8F8FC6" },
+		
+		{ "name": "Quick Diff(Dirty)", "color":"monokai-string" },
+		{ "name": "Quick Diff(Changed)", "color":"#A4E22E" },
+		
+		{ "name": "Brace Matching(Rectangle)", "color":"#6699CC", "secondcolor":"#AACCEE" },
+		{ "name": "Usages(Rectangle)", "color":"monokai-selection", "secondcolor":"#383830" },
+		
+		{ "name": "Breakpoint Marker", "color":"white", "secondcolor":"#762C2C" },
+		{ "name": "Breakpoint Marker(Disabled)", "color":"white", "secondcolor":"#eddcdc" },
+		
+        { "name": "Current Line Marker", "color":"#3E3D31"},
+        { "name": "Current Line Marker(Inactive)", "color":"#3E3D31"},
+		
+        { "name": "Debugger Current Line Marker", "color":"ffff00", "secondcolor":"#ffffcc", "bordercolor":"#666600" },
+        { "name": "Debugger Stack Line Marker", "color":"80ff80", "secondcolor":"#ccffcc", "bordercolor":"#336633"},
+        
+        { "name": "Primary Link", "color":"monokai-white", "secondcolor":"#7f4a81"},
+        { "name": "Primary Link(Highlighted)", "color":"monokai-white", "secondcolor":"#b167b3"},
+        { "name": "Secondary Link", "color":"monokai-white", "secondcolor":"#262228"},
+        { "name": "Secondary Link(Highlighted)", "color":"monokai-white", "secondcolor":"#4e4552"},
+        
+        { "name": "Message Bubble Error", "color":"#FFFFFF", "secondcolor":"#440000"},
+        { "name": "Message Bubble Warning", "color":"#000000", "secondcolor":"#444400"}
+    ],
+
+	"text":[
+		{ "name": "Plain Text", "fore":"monokai-white", "back":"monokai-background" },
+		{ "name": "Selected Text", "back":"monokai-selection" },
+		{ "name": "Selected Text(Inactive)", "back":"#383830" },
+
+		{ "name": "Collapsed Text", "fore":"monokai-comment", "back":"monokai-background" },
+
+		{ "name": "Line Numbers", "fore":"#BCBCBC", "back":"monokai-background"},
+
+		{ "name": "Punctuation", "fore":"monokai-white", "back":"monokai-background" },
+		{ "name": "Punctuation(Brackets)", "fore":"monokai-white", "back":"monokai-background" },
+
+		{ "name": "Comment(Line)", "fore":"monokai-comment", "back":"monokai-background", "weight":"italic" },
+		{ "name": "Comment(Block)", "fore":"monokai-comment", "back":"monokai-background", "weight":"italic" },
+		{ "name": "Comment(Doc)", "fore":"monokai-comment", "back":"monokai-background", "weight":"italic" },
+		{ "name": "Comment(DocTag)", "fore":"monokai-comment", "back":"monokai-background", "weight":"italic" },
+		{ "name": "Comment Tag", "fore":"monokai-comment", "back":"monokai-background", "weight":"bold" },
+
+		{ "name": "String", "fore":"monokai-string", "back":"monokai-background"},
+		{ "name": "String(Escape)", "fore":"#A6AB34", "back":"monokai-background"},
+		{ "name": "String(C# @ Verbatim)", "fore":"monokai-string", "back":"monokai-background"},
+
+		{ "name": "Number", "fore":"monokai-constant", "back":"monokai-background"},
+
+		{ "name": "Preprocessor", "fore":"monokai-classname", "back":"monokai-background" },
+		{ "name": "Preprocessor Keyword", "fore":"monokai-classname", "back":"monokai-background", "weight":"bold" },
+
+		{ "name": "Xml Text", "fore":"monokai-white", "back":"monokai-background" },
+		{ "name": "Xml Delimiter", "fore":"monokai-white", "back":"monokai-background" },
+		{ "name": "Xml Name", "fore":"monokai-keyword", "back":"monokai-background" },
+		{ "name": "Xml Attribute", "fore":"monokai-white", "back":"monokai-background" },
+		{ "name": "Xml Attribute Quotes", "fore":"monokai-string", "back":"monokai-background" },
+		{ "name": "Xml Attribute Value", "fore":"monokai-string", "back":"monokai-background" },
+		{ "name": "Xml Comment", "fore":"monokai-comment", "back":"monokai-background" },
+		{ "name": "Xml CData Section", "fore":"monokai-white", "back":"monokai-background" },
+		
+		{ "name": "Html Attribute Name", "fore":"monokai-white", "back":"monokai-background" },
+		{ "name": "Html Attribute Value", "fore":"monokai-string", "back":"monokai-background" },
+		{ "name": "Html Comment", "fore":"monokai-comment", "back":"monokai-background" },
+		{ "name": "Html Element Name", "fore":"monokai-keyword", "back":"monokai-background" },
+		{ "name": "Html Entity", "fore":"monokai-classname", "back":"monokai-background" },
+		{ "name": "Html Operator", "fore":"monokai-keyword", "back":"monokai-background" },
+		{ "name": "Html Server-Side Script", "fore":"monokai-white", "back":"#373832" },
+		{ "name": "Html Tag Delimiter", "fore":"monokai-white", "back":"monokai-background" },
+		{ "name": "Razor Code", "fore":"monokai-white", "back":"#373832" },
+
+		{ "name": "Tooltip Text", "fore":"black", "back":"#272725" },
+
+		{ "name": "Completion Text", "fore":"#434343", "back":"#F0F6F8" },
+		{ "name": "Completion Selected Text", "fore":"#f8fcfc", "back":"#dff4f0" },
+		{ "name": "Completion Selected Text(Inactive)", "fore":"white", "back":"white" },
+
+		{ "name": "Keyword(Access)", "fore":"monokai-constant", "back":"monokai-background" },
+		{ "name": "Keyword(Type)", "fore":"monokai-type", "back":"monokai-background" },
+		{ "name": "Keyword(Operator)", "fore":"monokai-keyword", "back":"monokai-background" },
+		{ "name": "Keyword(Selection)", "fore":"monokai-keyword", "back":"monokai-background" },
+		{ "name": "Keyword(Iteration)", "fore":"monokai-keyword", "back":"monokai-background" },
+		{ "name": "Keyword(Jump)", "fore":"monokai-keyword", "back":"monokai-background" },
+		{ "name": "Keyword(Context)", "fore":"monokai-keyword", "back":"monokai-background" },
+		{ "name": "Keyword(Exception)", "fore":"monokai-keyword", "back":"monokai-background" },
+		{ "name": "Keyword(Modifiers)", "fore":"monokai-keyword", "back":"monokai-background" },
+		{ "name": "Keyword(Constants)", "fore":"monokai-keyword", "back":"monokai-background" },
+		{ "name": "Keyword(Void)", "fore":"monokai-keyword", "back":"monokai-background" },
+		{ "name": "Keyword(Namespace)", "fore":"monokai-keyword", "back":"monokai-background" },
+		{ "name": "Keyword(Property)", "fore":"monokai-keyword", "back":"monokai-background" },
+		{ "name": "Keyword(Declaration)", "fore":"monokai-keyword", "back":"monokai-background" },
+		{ "name": "Keyword(Parameter)", "fore":"monokai-keyword", "back":"monokai-background" },
+		{ "name": "Keyword(Operator Declaration)", "fore":"monokai-keyword", "back":"monokai-background" },
+		{ "name": "Keyword(Other)", "fore":"monokai-keyword", "back":"monokai-background" },
+
+		{ "name": "User Types", "fore":"monokai-type", "back":"monokai-background" },
+		{ "name": "User Types(Enums)", "fore":"monokai-type", "back":"monokai-background" },
+		{ "name": "User Types(Interfaces)", "fore":"monokai-type", "back":"monokai-background" },
+		{ "name": "User Types(Delegates)", "fore":"monokai-type", "back":"monokai-background" },
+		{ "name": "User Types(Value types)", "fore":"monokai-type", "back":"monokai-background" },
+		{ "name": "User Types(Type parameters)", "fore":"monokai-type", "back":"monokai-background" },
+
+		{ "name": "User Field Usage", "fore":"monokai-white", "back":"monokai-background" },
+		{ "name": "User Field Declaration", "fore":"monokai-white", "back":"monokai-background" },
+
+		{ "name": "User Property Usage", "fore":"monokai-white", "back":"monokai-background" },
+		{ "name": "User Property Declaration", "fore":"monokai-white", "back":"monokai-background" },
+
+		{ "name": "User Event Usage", "fore":"monokai-white", "back":"monokai-background" },
+		{ "name": "User Event Declaration", "fore":"monokai-white", "back":"monokai-background" },
+
+		{ "name": "User Method Usage", "fore":"monokai-white", "back":"monokai-background" },
+		{ "name": "User Method Declaration", "fore":"monokai-white", "back":"monokai-background" },
+		
+		{ "name": "User Parameter Usage", "fore":"monokai-white", "back":"monokai-background" },
+		{ "name": "User Parameter Declaration", "fore":"monokai-white", "back":"monokai-background" },
+
+		{ "name": "User Variable Usage", "fore":"monokai-white", "back":"monokai-background" },
+		{ "name": "User Variable Declaration", "fore":"monokai-white", "back":"monokai-background" },
+
+		{ "name": "Syntax Error", "fore":"monokai-invalid", "back":"monokai-invalidBackground" },
+		
+		{ "name": "Breakpoint Text", "fore":"white", "back":"#AB616B" },
+		{ "name": "Breakpoint Text(Invalid)", "fore":"white", "back":"#eddcdc" },
+	
+		{ "name": "Debugger Current Statement", "fore":"black", "back":"#ffff00" },
+		{ "name": "Debugger Stack Line", "fore":"black", "back":"#80ff80" },
+		
+		
+		{ "name": "Diff Line(Added)", "fore":"#008A8B", "back":"monokai-background"  },
+		{ "name": "Diff Line(Removed)", "fore":"line-removed", "back":"monokai-background"  },
+		{ "name": "Diff Line(Changed)", "fore":"line-changed", "back":"monokai-background"  },
+		{ "name": "Diff Header", "fore":"#008000", "back":"monokai-background" },
+		{ "name": "Diff Header(Separator)", "fore":"#0000FF", "back":"monokai-background", "weight":"bold"  },
+		{ "name": "Diff Header(Old)", "fore":"#008000", "back":"monokai-background", "weight":"bold"  },
+		{ "name": "Diff Header(New)", "fore":"#008000", "back":"monokai-background", "weight":"bold"  },
+		{ "name": "Diff Location", "fore":"#FB8B00", "back":"monokai-background", "weight":"bold"  },
+		
+		{ "name": "Css Comment", "fore":"monokai-comment", "back":"monokai-background", "weight":"bold"  },
+		{ "name": "Css Property Name", "fore":"black", "back":"monokai-background", "weight":"bold"  },
+		{ "name": "Css Property Value", "fore":"monokai-string", "back":"monokai-background", "weight":"bold"  },
+		{ "name": "Css Selector", "fore":"monokai-comment", "back":"monokai-background", "weight":"bold"  },
+		{ "name": "Css String Value", "fore":"literal-orange", "back":"monokai-background", "weight":"bold"  },
+		{ "name": "Css Keyword", "fore":"monokai-keyword", "back":"monokai-background", "weight":"bold"  }
+	]
+}
