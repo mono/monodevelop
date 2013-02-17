@@ -1,6 +1,6 @@
 # Elisp files required for tests.
 src   = $(filter-out fsharp-mode-pkg.el, $(wildcard *.el))
-tests = test/basic-tests.el test/fsharp-doc-tests.el test/unit-tests.el
+tests = test/basic-tests.el test/fsharp-doc-tests.el test/unit-tests.el test/integration-tests.el
 utils = test/test-common.el test/pos-tip-mock.el
 
 # Dependencies to be loaded.
