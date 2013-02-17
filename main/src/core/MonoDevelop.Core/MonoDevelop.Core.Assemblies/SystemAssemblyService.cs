@@ -416,17 +416,6 @@ namespace MonoDevelop.Core.Assemblies
 					yield return new ManifestResource (r, () => assembly.GetManifestResourceStream (r));
 				}
 			}
-
-			/* CECIL version:
-
-		Mono.Cecil.AssemblyDefinition a = Mono.Cecil.AssemblyDefinition.ReadAssembly (asmInBundle);
-			foreach (Mono.Cecil.ModuleDefinition m in a.Modules) {
-				for (int i = 0; i < m.Resources.Count; i++) {
-					var er = m.Resources[i] as Mono.Cecil.EmbeddedResource;
-					
-					yield return new ManifestResource (er.Name, () => er.GetResourceStream ().ReadToEnd ());
-				}
-			}*/
 		}
 
 	}

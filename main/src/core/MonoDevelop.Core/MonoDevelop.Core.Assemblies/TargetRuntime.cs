@@ -61,7 +61,6 @@ namespace MonoDevelop.Core.Assemblies
 		RuntimeAssemblyContext assemblyContext;
 		ComposedAssemblyContext composedAssemblyContext;
 		ITimeTracker timer;
-		SynchronizationContext mainContext;
 		TargetFramework[] customFrameworks = new TargetFramework[0];
 		
 		protected bool ShuttingDown { get; private set; }
@@ -88,17 +87,8 @@ namespace MonoDevelop.Core.Assemblies
 		
 		internal void StartInitialization ()
 		{
-			// Store the main sync context, since we'll need later on for subscribing
-			// add-in extension points (Mono.Addins isn't currently thread safe)
-			mainContext = SynchronizationContext.Current;
-			
-			// If there is no custom threading context, we can't use background initialization since
-			// we have no main thread into which to dispatch
-			backgroundInitialize = mainContext != null && mainContext.GetType () != typeof (SynchronizationContext);
-			
-			if (backgroundInitialize) {
-				ThreadPool.QueueUserWorkItem (BackgroundInitialize);
-			}
+			backgroundInitialize = true;
+			ThreadPool.QueueUserWorkItem (BackgroundInitialize);
 		}
 		
 		/// <summary>
