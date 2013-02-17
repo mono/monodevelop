@@ -147,6 +147,11 @@ namespace MonoDevelop.Core.Assemblies
 			foreach (var id in coreFrameworks)
 				yield return frameworks[id];
 		}
+
+		internal bool IsKnownFramework (TargetFrameworkMoniker moniker)
+		{
+			return frameworks.ContainsKey (moniker);
+		}
 		
 		void EnsureRuntimesInitialized ()
 		{

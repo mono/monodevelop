@@ -579,26 +579,35 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			return GetBackend (fx).GetFrameworkPackageInfo (packageName);
 		}
-		
+
 		protected static IEnumerable<TargetFramework> FindTargetFrameworks (FilePath frameworksDirectory)
+		{
+			return FindTargetFrameworks (frameworksDirectory, false);
+		}
+
+		protected static IEnumerable<TargetFramework> FindTargetFrameworks (FilePath frameworksDirectory, bool rescanKnownFrameworks)
 		{
 			foreach (FilePath idDir in Directory.GetDirectories (frameworksDirectory)) {
 				var id = idDir.FileName;
 				foreach (FilePath versionDir in Directory.GetDirectories (idDir)) {
 					var version = versionDir.FileName;
 					var moniker = new TargetFrameworkMoniker (id, version);
-					var fx = ReadTargetFramework (moniker, versionDir);
-					if (fx != null)
-						yield return (fx);
+					if (rescanKnownFrameworks || !Runtime.SystemAssemblyService.IsKnownFramework (moniker)) {
+						var fx = ReadTargetFramework (moniker, versionDir);
+						if (fx != null)
+							yield return (fx);
+					}
 					var profileListDir = versionDir.Combine ("Profile");
 					if (!Directory.Exists (profileListDir))
 						continue;
 					foreach (FilePath profileDir in Directory.GetDirectories (profileListDir)) {
 						var profile = profileDir.FileName;
 						moniker = new TargetFrameworkMoniker (id, version, profile);
-						fx = ReadTargetFramework (moniker, profileDir);
-						if (fx != null)
-							yield return (fx);
+						if (rescanKnownFrameworks || !Runtime.SystemAssemblyService.IsKnownFramework (moniker)) {
+							var fx = ReadTargetFramework (moniker, profileDir);
+							if (fx != null)
+								yield return (fx);
+						}
 					}
 				}
 			}
