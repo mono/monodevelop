@@ -213,7 +213,6 @@
     <None Include="Mono.TextEditor.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Styles\DefaultStyle.json" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="SyntaxModes\MakefileSyntaxMode.xml">
