@@ -131,7 +131,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					contentLabel.MaxWidth = 400;
 					contentLabel.BreakOnPunctuation = true;
 					contentLabel.Markup = o.FooterMarkup.Trim ();
-					contentLabel.ModifyFg (StateType.Normal, (HslColor)foreColor);
+					contentLabel.ModifyFg (StateType.Normal, foreColor);
 
 					descriptionBox.PackEnd (contentLabel, true, true, 4);
 				}
@@ -204,7 +204,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			var catLabel = new MonoDevelop.Components.FixedWidthWrapLabel ();
 			catLabel.Text = categoryName;
-			catLabel.ModifyFg (StateType.Normal, (HslColor)foreColor);
+			catLabel.ModifyFg (StateType.Normal, foreColor);
 
 			vbox.PackStart (catLabel, false, true, 0);
 
@@ -214,7 +214,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			contentLabel.MaxWidth = 400;
 			contentLabel.BreakOnPunctuation = true;
 			contentLabel.Markup = categoryContentMarkup.Trim ();
-			contentLabel.ModifyFg (StateType.Normal, (HslColor)foreColor);
+			contentLabel.ModifyFg (StateType.Normal, foreColor);
 
 			vbox.PackStart (contentLabel, true, true, 0);
 
@@ -223,7 +223,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		VBox descriptionBox = new VBox (false, 0);
 		VBox vb2 = new VBox (false, 0);
-		Cairo.Color foreColor;
+		Gdk.Color foreColor;
 		public TooltipInformationWindow () : base ()
 		{
 			TypeHint = Gdk.WindowTypeHint.Tooltip;
@@ -260,7 +260,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			var scheme = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
 			Theme.SetSchemeColors (scheme);
 			foreColor = scheme.Default.CairoColor;
-			headlabel.ModifyFg (StateType.Normal, (HslColor)foreColor);
+			headlabel.ModifyFg (StateType.Normal, foreColor);
 			ShowAll ();
 			DesktopService.RemoveWindowShadow (this);
 		}

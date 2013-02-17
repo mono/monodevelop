@@ -199,6 +199,8 @@ namespace MonoDevelop.Ide.FindInFiles
 		protected override void OnStyleSet (Gtk.Style previousStyle)
 		{
 			base.OnStyleSet (previousStyle);
+			if (highlightStyle != null)
+				highlightStyle.UpdateFromGtkStyle (Style);
 		}
 
 		void ButtonPinClicked (object sender, EventArgs e)
@@ -503,12 +505,12 @@ namespace MonoDevelop.Ide.FindInFiles
 				textRenderer.Markup = searchResult.Markup;
 
 				if (!isSelected) {
-					var searchColor = highlightStyle.SearchResult.GetColor("color");
+					Color searchColor = Mono.TextEditor.Highlighting.ColorScheme.ToGdkColor (highlightStyle.SearchTextBg);
 					double b1 = Mono.TextEditor.HslColor.Brightness (searchColor);
-					double b2 = Mono.TextEditor.HslColor.Brightness (AdjustColor (Style.Base (StateType.Normal), (Mono.TextEditor.HslColor)highlightStyle.Default.CairoColor));
+					double b2 = Mono.TextEditor.HslColor.Brightness (AdjustColor (Style.Base (StateType.Normal), highlightStyle.Default.CairoColor));
 					double delta = Math.Abs (b1 - b2);
 					if (delta < 0.1) {
-						Mono.TextEditor.HslColor color1 = highlightStyle.SearchResult.GetColor("color");
+						Mono.TextEditor.HslColor color1 = highlightStyle.SearchTextBg;
 						if (color1.L + 0.5 > 1.0) {
 							color1.L -= 0.5;
 						} else {
@@ -516,7 +518,7 @@ namespace MonoDevelop.Ide.FindInFiles
 						}
 						searchColor = color1;
 					}
-					var attr = new Pango.AttrBackground ((ushort)(searchColor.R * ushort.MaxValue), (ushort)(searchColor.G * ushort.MaxValue), (ushort)(searchColor.B * ushort.MaxValue));
+					var attr = new Pango.AttrBackground (searchColor.Red, searchColor.Green, searchColor.Blue);
 					attr.StartIndex = searchResult.StartIndex;
 					attr.EndIndex = searchResult.EndIndex;
 

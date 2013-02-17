@@ -91,13 +91,13 @@ namespace MonoDevelop.CodeIssues
 			case Severity.None:
 				return Style.Base (StateType.Normal);
 			case Severity.Error:
-				return (HslColor)DefaultSourceEditorOptions.Instance.GetColorStyle ().UnderlineError.GetColor ("color");
+				return (HslColor)DefaultSourceEditorOptions.Instance.GetColorStyle ().ErrorUnderline;
 			case Severity.Warning:
-				return (HslColor)DefaultSourceEditorOptions.Instance.GetColorStyle ().UnderlineWarning.GetColor ("color");
+				return (HslColor)DefaultSourceEditorOptions.Instance.GetColorStyle ().WarningUnderline;
 			case Severity.Hint:
-				return (HslColor)DefaultSourceEditorOptions.Instance.GetColorStyle ().UnderlineHint.GetColor ("color");
+				return (HslColor)DefaultSourceEditorOptions.Instance.GetColorStyle ().HintUnderline;
 			case Severity.Suggestion:
-				return (HslColor)DefaultSourceEditorOptions.Instance.GetColorStyle ().UnderlineSuggestion.GetColor ("color");
+				return (HslColor)DefaultSourceEditorOptions.Instance.GetColorStyle ().SuggestionUnderline;
 			default:
 				throw new ArgumentOutOfRangeException ();
 			}

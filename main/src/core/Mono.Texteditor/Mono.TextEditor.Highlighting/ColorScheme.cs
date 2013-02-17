@@ -78,16 +78,16 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("Bookmarks")]
 		public AmbientColor Bookmarks { get; private set; }
 
-		[ColorDescription("Underline(Error)", VSSetting="compiler error")]
+		[ColorDescription("Underline(Error)")]
 		public AmbientColor UnderlineError { get; private set; }
 		
-		[ColorDescription("Underline(Warning)", VSSetting="compiler warning")]
+		[ColorDescription("Underline(Warning)")]
 		public AmbientColor UnderlineWarning { get; private set; }
 
-		[ColorDescription("Underline(Suggestion)", VSSetting="other error")]
+		[ColorDescription("Underline(Suggestion)")]
 		public AmbientColor UnderlineSuggestion { get; private set; }
 
-		[ColorDescription("Underline(Hint)", VSSetting="other error")]
+		[ColorDescription("Underline(Hint)")]
 		public AmbientColor UnderlineHint { get; private set; }
 
 		[ColorDescription("Quick Diff(Dirty)")]
@@ -105,9 +105,6 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("Breakpoint Marker")]
 		public AmbientColor BreakpointMarker { get; private set; }
 
-		[ColorDescription("Breakpoint Marker(Invalid)")]
-		public AmbientColor InvalidBreakpointMarker { get; private set; }
-
 		[ColorDescription("Breakpoint Marker(Disabled)")]
 		public AmbientColor BreakpointMarkerDisabled { get; private set; }
 
@@ -117,10 +114,10 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("Debugger Stack Line Marker")]
 		public AmbientColor DebuggerStackLineMarker { get; private set; }
 		
-		[ColorDescription("Primary Link", VSSetting = "Refactoring Dependent Field" )]
+		[ColorDescription("Primary Link")] // not defined
 		public AmbientColor PrimaryTemplate { get; private set; }
 		
-		[ColorDescription("Primary Link(Highlighted)", VSSetting = "Refactoring Current Field")]
+		[ColorDescription("Primary Link(Highlighted)")] // not defined
 		public AmbientColor PrimaryTemplateHighlighted { get; private set; }
 
 		[ColorDescription("Secondary Link")] // not defined
@@ -129,12 +126,9 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("Secondary Link(Highlighted)")] // not defined
 		public AmbientColor SecondaryTemplateHighlighted { get; private set; }
 
-		[ColorDescription("Current Line Marker", VSSetting = "CurrentLineActiveFormat")]
+		[ColorDescription("Current Line Marker")] // not defined
 		public AmbientColor LineMarker { get; private set; }
-
-		[ColorDescription("Current Line Marker(Inactive)", VSSetting = "CurrentLineInactiveFormat")]
-		public AmbientColor LineMarkerInactive { get; private set; }
-
+		
 		[ColorDescription("Column Ruler")] // not defined
 		public AmbientColor Ruler { get; private set; }
 		
@@ -278,11 +272,8 @@ namespace Mono.TextEditor.Highlighting
 		public ChunkStyle UserTypesDelegatess { get; private set; }
 		
 		[ColorDescription("User Types(Value types)", VSSetting = "User Types(Value types)")]
-		public ChunkStyle UserTypesValueTypes { get; private set; }
-
-		[ColorDescription("User Types(Type parameters)", VSSetting = "User Types(Type parameters)")]
-		public ChunkStyle UserTypesTypeParameters { get; private set; }
-
+		public ChunkStyle UserTypesValuetypes { get; private set; }
+		
 		[ColorDescription("User Field Usage", VSSetting = "Plain Text")]
 		public ChunkStyle UserFieldUsage { get; private set; }
 		
@@ -310,10 +301,10 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("Syntax Error", VSSetting = "Syntax Error")]
 		public ChunkStyle SyntaxError { get; private set; }
 
-		[ColorDescription("Breakpoint Text", VSSetting = "Breakpoint (Enabled)")]
+		[ColorDescription("Breakpoint Text")] // not defined
 		public ChunkStyle BreakpointText { get; private set; }
 
-		[ColorDescription("Breakpoint Text(Invalid)", VSSetting = "Breakpoint (Disabled)")]
+		[ColorDescription("Breakpoint Text(Invalid)")] // not defined
 		public ChunkStyle BreakpointTextInvalid { get; private set; }
 
 		
@@ -417,11 +408,6 @@ namespace Mono.TextEditor.Highlighting
 			result.textColorsSet = textColorsSet;
 
 			return result;
-		}
-
-		public void Save (string fileName)
-		{
-			throw new NotImplementedException ();
 		}
 	}
 }

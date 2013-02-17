@@ -268,15 +268,15 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				return new Cairo.Color (0, 0, 0);
 			switch (severity) {
 			case Severity.Error:
-				return style.UnderlineError.GetColor ("color");
+				return style.ErrorUnderline;
 			case Severity.Warning:
-				return style.UnderlineWarning.GetColor ("color");
+				return style.WarningUnderline;
 			case Severity.Suggestion:
-				return style.UnderlineSuggestion.GetColor ("color");
+				return style.SuggestionUnderline;
 			case Severity.Hint:
-				return style.UnderlineHint.GetColor ("color");
+				return style.HintUnderline;
 			case Severity.None:
-				return style.Default.CairoBackgroundColor;
+				return style.Default.CairoColor;
 			default:
 				throw new ArgumentOutOfRangeException ();
 			}
@@ -289,11 +289,11 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				return new Cairo.Color (0, 0, 0);
 			switch (severity) {
 			case Severity.Error:
-				return style.UnderlineError.GetColor ("color");
+				return style.ErrorUnderline;
 			case Severity.Warning:
-				return style.UnderlineWarning.GetColor ("color");
+				return style.WarningUnderline;
 			default:
-				return style.UnderlineSuggestion.GetColor ("color");
+				return style.SuggestionUnderline;
 			}
 		}
 		protected virtual double IndicatorHeight  {
@@ -365,12 +365,12 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				0, 
 				2 * Math.PI);
 			
-			var darkColor = (HslColor)TextEditor.ColorStyle.SearchResult.GetColor ("color");
+			var darkColor = (HslColor)TextEditor.ColorStyle.SearchTextBg;
 			darkColor.L *= 0.5;
 			
 			using (var pattern = new Cairo.RadialGradient (x1, y1, Allocation.Width / 2, x1 - Allocation.Width, y1 - Allocation.Width, Allocation.Width)) {
 				pattern.AddColorStop (0, darkColor);
-				pattern.AddColorStop (1, TextEditor.ColorStyle.SearchResultMain.GetColor ("color"));
+				pattern.AddColorStop (1, TextEditor.ColorStyle.SearchTextMainBg);
 				cr.Pattern = pattern;
 				cr.FillPreserve ();
 			}
@@ -515,7 +515,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				bool isMainSelection = false;
 				if (!TextEditor.TextViewMargin.MainSearchResult.IsInvalid)
 					isMainSelection = region.Offset == TextEditor.TextViewMargin.MainSearchResult.Offset;
-				cr.Color = isMainSelection ? TextEditor.ColorStyle.SearchResultMain.GetColor ("color") : TextEditor.ColorStyle.SearchResult.GetColor ("color");
+				cr.Color = isMainSelection ? TextEditor.ColorStyle.SearchTextMainBg : TextEditor.ColorStyle.SearchTextBg;
 				cr.Rectangle (3 + 0.5, y - 1 + 0.5, Allocation.Width - 5, 2);
 				cr.Fill ();
 			}

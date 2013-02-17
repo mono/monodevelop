@@ -56,30 +56,30 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		
 		void HandleButtonOkClicked (object sender, EventArgs e)
 		{
-//			Gtk.TreeIter iter;
-//			if (!store.IterNthChild (out iter, comboboxBaseStyle.Active))
-//				return;
-//			string name = (string)store.GetValue (iter, 0);
-//			
-//			var style = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (name);
-//			
-//			style = style.Clone ();
-//			style.Name = this.entryName.Text;
-//			style.Description = this.entryDescription.Text;
-//			
-//			string path = SourceEditorDisplayBinding.SyntaxModePath;
-//			string baseName = style.Name.Replace (" ", "_");
-//			
-//			while (File.Exists (System.IO.Path.Combine (path, baseName + "Style.xml"))) {
-//				baseName = baseName + "_";
-//			}
-//			string fileName = System.IO.Path.Combine (path, baseName + "Style.xml");
-//			try {
-//				style.Save (fileName);
-//				Mono.TextEditor.Highlighting.SyntaxModeService.AddStyle (fileName, style);
-//			} catch (Exception ex) {
-//				MonoDevelop.Ide.MessageService.ShowException (ex);
-//			}
+			Gtk.TreeIter iter;
+			if (!store.IterNthChild (out iter, comboboxBaseStyle.Active))
+				return;
+			string name = (string)store.GetValue (iter, 0);
+			
+			var style = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (name);
+			
+			style = style.Clone ();
+			style.Name = this.entryName.Text;
+			style.Description = this.entryDescription.Text;
+			
+			string path = SourceEditorDisplayBinding.SyntaxModePath;
+			string baseName = style.Name.Replace (" ", "_");
+			
+			while (File.Exists (System.IO.Path.Combine (path, baseName + "Style.xml"))) {
+				baseName = baseName + "_";
+			}
+			string fileName = System.IO.Path.Combine (path, baseName + "Style.xml");
+			try {
+				style.Save (fileName);
+				Mono.TextEditor.Highlighting.SyntaxModeService.AddStyle (fileName, style);
+			} catch (Exception ex) {
+				MonoDevelop.Ide.MessageService.ShowException (ex);
+			}
 		}
 	}
 }

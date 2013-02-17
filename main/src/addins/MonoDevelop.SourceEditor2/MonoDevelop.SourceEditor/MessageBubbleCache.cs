@@ -115,7 +115,7 @@ namespace MonoDevelop.SourceEditor
 			errorMatrix = CreateColorMatrix (editor, true);
 			warningMatrix = CreateColorMatrix (editor, false);
 			
-			gcSelected = (HslColor)style.SelectedText.CairoColor;
+			gcSelected = (HslColor)style.Selection.Color;
 			gcLight = new Cairo.Color (1, 1, 1);
 		}
 		
@@ -176,7 +176,7 @@ namespace MonoDevelop.SourceEditor
 					}
 				}
 			}
-			var selectionColor = style.SelectedText.CairoBackgroundColor;
+			var selectionColor = ColorScheme.ToCairoColor (style.Selection.BackgroundColor);
 			for (int i = 0; i < 2; i++) {
 				for (int j = 0; j < 2; j++) {
 					for (int k = 0; k < 3; k++) {
