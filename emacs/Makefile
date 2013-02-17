@@ -10,9 +10,8 @@ deps      = $(ns_script)
 
 # Emacs command format.
 emacs     = emacs
-command   = '(ert-run-tests-batch-and-exit)'
 files     = $(patsubst %,-l %, $(deps) $(src) $(utils) $(tests))
-test_opts = $(files) --batch --eval $(command)
+test_opts = $(files) --batch -f ert-run-tests-batch-and-exit
 
 .PHONY: test
 
