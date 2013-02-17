@@ -33,7 +33,7 @@ using Mono.TextEditor.Highlighting;
 namespace MonoDevelop.SourceEditor.Extension
 {
 	[ExtensionNode (Description="A template for color and syntax shemes.")]
-	public class TemplateCodon : ExtensionNode, IStreamProvider
+	public class TemplateCodon : ExtensionNode, Mono.TextEditor.Highlighting.IStreamProvider
 	{
 		[NodeAttribute("resource", "Name of the resource where the template is stored.")]
 		string resource;
