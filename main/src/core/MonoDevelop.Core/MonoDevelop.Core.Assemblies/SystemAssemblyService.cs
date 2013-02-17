@@ -29,17 +29,11 @@
 //
 
 using System;
-using System.Threading;
 using System.IO;
-using System.Xml;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.AddIns;
-using MonoDevelop.Core.Serialization;
 using Mono.Addins;
-using Mono.Cecil;
 using System.Reflection;
 using System.Linq;
 
@@ -321,15 +315,15 @@ namespace MonoDevelop.Core.Assemblies
 		//FIXME: this is totally broken. assemblies can't just belong to one framework
 		public TargetFrameworkMoniker GetTargetFrameworkForAssembly (TargetRuntime tr, string file)
 		{
+			var universe = new IKVM.Reflection.Universe ();
 			try {
-				AssemblyDefinition asm = AssemblyDefinition.ReadAssembly (file);
-
-				foreach (AssemblyNameReference aname in asm.MainModule.AssemblyReferences) {
-					if (aname.Name == "mscorlib") {
+				IKVM.Reflection.Assembly assembly = universe.LoadFile (file);
+				foreach (var r in assembly.GetReferencedAssemblies ()) {
+					if (r.Name == "mscorlib") {
 						TargetFramework compatibleFramework = null;
 						// If there are several frameworks that can run the file, pick one that is installed
 						foreach (TargetFramework tf in GetKnownFrameworks ()) {
-							if (tf.GetCorlibVersion () == aname.Version.ToString ()) {
+							if (tf.GetCorlibVersion () == r.Version.ToString ()) {
 								compatibleFramework = tf;
 								if (tr.IsInstalled (tf))
 									return tf.Id;
@@ -342,6 +336,8 @@ namespace MonoDevelop.Core.Assemblies
 				}
 			} catch {
 				// Ignore
+			} finally {
+				universe.Dispose ();
 			}
 			return TargetFrameworkMoniker.UNKNOWN;
 		}
@@ -376,18 +372,6 @@ namespace MonoDevelop.Core.Assemblies
 					yield return r.Name;
 				}
 			}
-
-			/* CECIL version:
-
-			Mono.Cecil.AssemblyDefinition adef;
-			try {
-				adef = Mono.Cecil.AssemblyDefinition.ReadAssembly (fileName);
-			} catch {
-				yield break;
-			}
-			foreach (Mono.Cecil.AssemblyNameReference aref in adef.MainModule.AssemblyReferences) {
-				yield return aref.Name;
-			}*/
 		}
 
 		public class ManifestResource
