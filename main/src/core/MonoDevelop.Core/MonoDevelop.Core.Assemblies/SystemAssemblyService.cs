@@ -40,7 +40,7 @@ using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Serialization;
 using Mono.Addins;
 using Mono.Cecil;
-using IKVM.Reflection;
+using System.Reflection;
 
 namespace MonoDevelop.Core.Assemblies
 {
@@ -364,8 +364,8 @@ namespace MonoDevelop.Core.Assemblies
 		/// </summary>
 		public static IEnumerable<string> GetAssemblyReferences (string fileName)
 		{
-			using (var universe = new Universe ()) {
-				Assembly assembly;
+			using (var universe = new IKVM.Reflection.Universe ()) {
+				IKVM.Reflection.Assembly assembly;
 				try {
 					assembly = universe.LoadFile (fileName);
 				} catch {
