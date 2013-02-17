@@ -14,7 +14,7 @@ command   = '(ert-run-tests-batch-and-exit)'
 files     = $(patsubst %,-l %, $(deps) $(src) $(utils) $(tests))
 test_opts = $(files) --batch --eval $(command)
 
-.PHONY: test unittest integrationtest
+.PHONY: test
 
 test: deps
 	$(emacs) $(test_opts)
