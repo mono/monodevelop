@@ -100,8 +100,10 @@ namespace MonoDevelop.Core.Assemblies
 				if (runtime.CustomFrameworks.Any ()) {
 					var newFxList = new Dictionary<TargetFrameworkMoniker,TargetFramework> (frameworks);
 					foreach (var fx in runtime.CustomFrameworks) {
-						if (!newFxList.ContainsKey (fx.Id))
+						TargetFramework existing;
+						if (!newFxList.TryGetValue (fx.Id, out existing) || existing.Assemblies.Length == 0) {
 							newFxList [fx.Id] = fx;
+						}
 					}
 					BuildFrameworkRelations (newFxList);
 					frameworks = newFxList;
