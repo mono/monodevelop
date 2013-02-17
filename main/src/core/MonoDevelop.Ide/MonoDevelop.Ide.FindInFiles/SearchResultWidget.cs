@@ -507,7 +507,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				if (!isSelected) {
 					Color searchColor = Mono.TextEditor.Highlighting.ColorScheme.ToGdkColor (highlightStyle.SearchTextBg);
 					double b1 = Mono.TextEditor.HslColor.Brightness (searchColor);
-					double b2 = Mono.TextEditor.HslColor.Brightness (AdjustColor (Style.Base (StateType.Normal), highlightStyle.Default.CairoColor));
+					double b2 = Mono.TextEditor.HslColor.Brightness (AdjustColor (Style.Base (StateType.Normal), highlightStyle.Default.Color));
 					double delta = Math.Abs (b1 - b2);
 					if (delta < 0.1) {
 						Mono.TextEditor.HslColor color1 = highlightStyle.SearchTextBg;

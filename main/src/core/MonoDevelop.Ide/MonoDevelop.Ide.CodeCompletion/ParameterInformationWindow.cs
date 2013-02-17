@@ -101,7 +101,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			var scheme = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
 			Theme.SetSchemeColors (scheme);
 
-			foreColor = scheme.Default.CairoColor;
+			foreColor = scheme.Default.Color;
 			headlabel.ModifyFg (StateType.Normal, foreColor);
 			ShowAll ();
 			DesktopService.RemoveWindowShadow (this);

@@ -1,10 +1,9 @@
-//
-// TextWeight.cs
+// IColorDefinition.cs
 //
 // Author:
-//       Mike Krüger <mkrueger@xamarin.com>
+//   Mike Krüger <mkrueger@novell.com>
 //
-// Copyright (c) 2013 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2008 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,24 +22,44 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+//
 
 using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Xml.Linq;
-using System.Xml.XPath;
-using System.Reflection;
 
 namespace Mono.TextEditor.Highlighting
 {
-
-	[Flags]
-	public enum TextWeight {
-		None,
-		Bold,
-		Italic,
-		Underline
+	class ReferencedChunkStyle : ChunkStyle
+	{
+		ColorScheme style;
+		string referencedStyle;
+		public override Cairo.Color CairoColor {
+			get {
+				return style.GetChunkStyle (referencedStyle).CairoColor;
+			}
+		}
+		
+		public override Cairo.Color CairoBackgroundColor {
+			get {
+				return style.GetChunkStyle (referencedStyle).CairoBackgroundColor;
+			}
+		}
+		
+		public override ChunkProperties ChunkProperties {
+			get {
+				return style.GetChunkStyle (referencedStyle).ChunkProperties; 
+			}
+		}
+		
+		public override string Link {
+			get {
+				return style.GetChunkStyle (referencedStyle).Link; 
+			}
+		}
+		
+		public ReferencedChunkStyle (ColorScheme style, string referencedStyle)
+		{
+			this.style           = style;
+			this.referencedStyle = referencedStyle;
+		}
 	}
-	
 }

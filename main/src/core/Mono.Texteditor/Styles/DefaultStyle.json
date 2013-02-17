@@ -6,11 +6,12 @@
 
 	"palette":[
 		{ "name":"butter2", "value":"#edd400" },
+		{ "name":"butter2", "value":"#edd400" },
 		{ "name":"chameleon1", "value":"#8ae234" },
 		{ "name":"chameleon2", "value":"#73d216" },
 		{ "name":"chameleon3", "value":"#4e9a06" },
 		{ "name":"skyblue1", "value":"#729fcf" },
-		{ "name":"skyblue2", "value":"#3465a4" },
+		{ "name":"skyblue2", "value":"#3465a4" }v
 		{ "name":"plum2", "value":"#75507b" },
 		{ "name":"scarletred1", "value":"#ef2929" },
 		{ "name":"aluminum1", "value":"#eeeeec" },
@@ -38,8 +39,6 @@
 		{ "name": "Search result background", "color":"#F6B94D" },
 		{ "name": "Search result background (highlighted)", "color":"#E5992F" },
 
-        { "name": "Column Ruler", "color":"aluminum3" },
-        
 		{ "name": "Fold Margin", "color":"aluminum4", "secondcolor":"white" },
 
 		{ "name": "Indicator Margin", "color":"aluminum1" },
@@ -51,12 +50,12 @@
 		{ "name": "Tooltip Pager Triangle", "color":"#73737" },
 		{ "name": "Tooltip Pager Text", "color":"#82828" },
 
-        { "name": "Bookmarks", "color":"white", "secondcolor":"skyblue" },
+		{ "name": "Bookmarks", "color":"white", "secondcolor":"skyblue" },
 		
 		{ "name": "Underline(Error)", "color":"invalid-red" },
 		{ "name": "Underline(Warning)", "color":"butter2" },
 		{ "name": "Underline(Suggestion)", "color":"chameleon2" },
-		{ "name": "Underline(Hint)", "color":"skyblue2" },
+		{ "name": "Underline(Hint)", "color":"skyblue2" }
 		
 		{ "name": "Quick Diff(Dirty)", "color":"orangesicle-light" },
 		{ "name": "Quick Diff(Changed)", "color":"orangesicle" },
@@ -67,19 +66,9 @@
 		{ "name": "Breakpoint Marker", "color":"white", "secondcolor":"#AB616" },
 		{ "name": "Breakpoint Marker(Disabled)", "color":"white", "secondcolor":"#AB616" },
 		
-        { "name": "Current Line Marker", "color":"aluminum1"},
-		
-        { "name": "Debugger Current Line Marker", "color":"ffff00", "secondcolor":"#ffffcc", "bordercolor":"#666600" },
-        { "name": "Debugger Stack Line Marker", "color":"80ff80", "secondcolor":"#ccffcc", "bordercolor":"#336633"},
-        
-        { "name": "Debugger Stack Line Marker", "color":"80ff80", "secondcolor":"#ccffcc", "bordercolor":"#336633"},
-        
-        
-        { "name": "Primary Link", "color":"chameleon3", "secondcolor":"chameleon2"},
-        { "name": "Primary Link(Highlighted)", "color":"chameleon3", "secondcolor":"chameleon1"},
-        { "name": "Secondary Link", "color":"aluminum2", "secondcolor":"white"},
-        { "name": "Secondary Link(Highlighted)", "color":"aluminum3", "secondcolor":"aluminum1"},
-    ],
+		{ "name": "Debugger Current Line Marker", "color":"ffff00", "secondcolor":"#ffffcc", "bordercolor":"#666600" },
+		{ "name": "Debugger Stack Line Marker", "color":"80ff80", "secondcolor":"#ccffcc", "bordercolor":"#336633"}
+	]
 
 	"text":[
 		{ "name": "Plain Text", "fore":"text-black", "back":"white" },
@@ -155,10 +144,12 @@
 
 		{ "name": "Syntax Error", "fore":"invalid-red", "back":"white" },
 		
-		{ "name": "Breakpoint Text", "fore":"white", "back":"#AB616B" },
-		{ "name": "Breakpoint Text(Invalid)", "fore":"white", "back":"#eddcdc" },
+		{ "name": "Breakpoint Text", "color":"white", "back":"#AB616B" },
+		{ "name": "Breakpoint Text(Invalid)", "color":"white", "back":"#eddcdc" },
 	
-		{ "name": "Debugger Current Line", "fore":"black", "back":"#ffff00" },
-		{ "name": "Debugger Stack Line", "fore":"black", "back":"#80ff80" }
+		{ "name": "Debugger Current Line", "color":"black", "back":"#ffff00" },
+		{ "name": "Debugger Stack Line", "color":"black", "back":"#80ff80" }
 	]
 }
+
+

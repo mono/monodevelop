@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 using System;
 using Cairo;
-using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor
 {
@@ -64,7 +63,7 @@ namespace Mono.TextEditor
 
 	public interface IChunkMarker
 	{
-		void ChangeForeColor (TextEditor editor, Chunk chunk, ref Cairo.Color color);
+		void ChangeForeColor (TextEditor editor, Chunk chunk, ref Gdk.Color color);
 	}
 
 	public class UnderlineTextSegmentMarker : TextSegmentMarker
@@ -146,9 +145,9 @@ namespace Mono.TextEditor
 			}
 			double height = editor.LineHeight / 5;
 			if (selected) {
-				cr.Color = editor.ColorStyle.SelectedText.CairoColor;
+				cr.Color = editor.ColorStyle.Selection.CairoColor;
 			} else {
-				cr.Color = ColorName == null ? Color : editor.ColorStyle.GetChunkStyle (ColorName).CairoColor;
+				cr.Color = ColorName == null ? Color : editor.ColorStyle.GetColorFromDefinition (ColorName);
 			}
 			if (Wave) {	
 				Pango.CairoHelper.ShowErrorUnderline (cr, @from, y + editor.LineHeight - height, to - @from, height);

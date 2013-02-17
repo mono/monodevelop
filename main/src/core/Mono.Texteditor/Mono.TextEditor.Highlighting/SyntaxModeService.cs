@@ -106,14 +106,14 @@ namespace Mono.TextEditor.Highlighting
 		{
 			if (!styleLookup.ContainsKey (name))
 				throw new System.ArgumentException ("Style " + name + " not found", "name");
-/*			XmlReader reader = styleLookup [name].Open ();
+			XmlReader reader = styleLookup [name].Open ();
 			try {
 				styles [name] = ColorScheme.LoadFrom (reader);
 			} catch (Exception e) {
 				throw new IOException ("Error while loading style :" + name, e);
 			} finally {
 				reader.Close ();
-			}*/
+			}
 		}
 		
 		static void LoadSyntaxMode (string mimeType)
@@ -419,23 +419,17 @@ namespace Mono.TextEditor.Highlighting
 						}
 					}
 				} else if (file.EndsWith ("Style.xml")) {
-					/*using (XmlTextReader reader =  new XmlTextReader (file)) {
+					using (XmlTextReader reader =  new XmlTextReader (file)) {
 						string styleName = Scan (reader, ColorScheme.NameAttribute);
 						styleLookup [styleName] = new UrlXmlProvider (file);
 						isLoadedFromFile [styleName] = file;
-					}*/
+					}
 				}
 			}
 		}
-		static ColorScheme ds;
 		public static void LoadStylesAndModes (Assembly assembly)
 		{
 			foreach (string resource in assembly.GetManifestResourceNames ()) {
-				if (resource.EndsWith (".json")) {
-					using (Stream stream = assembly.GetManifestResourceStream (resource)) {
-						ds = ColorScheme.LoadFrom (stream);
-					}
-				}
 				if (!resource.EndsWith (".xml")) 
 					continue;
 				if (resource.EndsWith ("SyntaxMode.xml")) {
@@ -448,11 +442,11 @@ namespace Mono.TextEditor.Highlighting
 						}
 					}
 				} else if (resource.EndsWith ("Style.xml")) {
-				/*	using (Stream stream = assembly.GetManifestResourceStream (resource)) 
+					using (Stream stream = assembly.GetManifestResourceStream (resource)) 
 					using (XmlTextReader reader = new XmlTextReader (stream)) {
 						string styleName = Scan (reader, ColorScheme.NameAttribute);
 						styleLookup [styleName] = new ResourceXmlProvider (assembly, resource);
-					}*/
+					}
 				}
 			}
 		}
@@ -484,17 +478,17 @@ namespace Mono.TextEditor.Highlighting
 		}
 		public static void AddStyle (IXmlProvider provider)
 		{
-/*			using (XmlReader reader = provider.Open ()) {
+			using (XmlReader reader = provider.Open ()) {
 				string styleName = Scan (reader, ColorScheme.NameAttribute);
 				styleLookup [styleName] = provider;
-			}*/
+			}
 		}
 		public static void RemoveStyle (IXmlProvider provider)
 		{
-/*			using (XmlReader reader = provider.Open ()) {
+			using (XmlReader reader = provider.Open ()) {
 				string styleName = Scan (reader, ColorScheme.NameAttribute);
 				styleLookup.Remove (styleName);
-			}*/
+			}
 		}
 		
 		static List<Tuple<string, string, SemanticRule>> semanticRules = new List<Tuple<string, string, SemanticRule>> ();

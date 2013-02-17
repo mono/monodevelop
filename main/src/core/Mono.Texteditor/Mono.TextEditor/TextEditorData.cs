@@ -259,17 +259,17 @@ namespace Mono.TextEditor
 			while (curOffset < offset + length && curOffset < Document.TextLength) {
 				DocumentLine line = Document.GetLineByOffset (curOffset);
 				int toOffset = System.Math.Min (line.Offset + line.Length, offset + length);
-				var styleStack = new Stack<ChunkStyle> ();
+				Stack<ChunkStyle> styleStack = new Stack<ChunkStyle> ();
 				foreach (var chunk in mode.GetChunks (ColorStyle, line, curOffset, toOffset - curOffset)) {
 
-					var chunkStyle = ColorStyle.GetChunkStyle (chunk);
+					ChunkStyle chunkStyle = ColorStyle.GetChunkStyle (chunk);
 					bool setBold = chunkStyle.Bold && (styleStack.Count == 0 || !styleStack.Peek ().Bold) ||
 							!chunkStyle.Bold && (styleStack.Count == 0 || styleStack.Peek ().Bold);
 					bool setItalic = chunkStyle.Italic && (styleStack.Count == 0 || !styleStack.Peek ().Italic) ||
 							!chunkStyle.Italic && (styleStack.Count == 0 || styleStack.Peek ().Italic);
 					bool setUnderline = chunkStyle.Underline && (styleStack.Count == 0 || !styleStack.Peek ().Underline) ||
 							!chunkStyle.Underline && (styleStack.Count == 0 || styleStack.Peek ().Underline);
-					bool setColor = styleStack.Count == 0 || TextViewMargin.GetPixel (styleStack.Peek ().CairoColor) != TextViewMargin.GetPixel (chunkStyle.CairoColor);
+					bool setColor = styleStack.Count == 0 || TextViewMargin.GetPixel (styleStack.Peek ().Color) != TextViewMargin.GetPixel (chunkStyle.Color);
 					if (setColor || setBold || setItalic || setUnderline) {
 						if (styleStack.Count > 0) {
 							result.Append ("</span>");
@@ -278,7 +278,7 @@ namespace Mono.TextEditor
 						result.Append ("<span");
 						if (useColors) {
 							result.Append (" foreground=\"");
-							result.Append (SyntaxMode.ColorToPangoMarkup (chunkStyle.CairoColor));
+							result.Append (SyntaxMode.ColorToPangoMarkup (chunkStyle.Color));
 							result.Append ("\"");
 						}
 						if (chunkStyle.Bold)

@@ -57,8 +57,8 @@ namespace Mono.TextEditor
 		
 		internal protected override void OptionsChanged ()
 		{
-			backgroundColor = editor.ColorStyle.IndicatorMargin.GetColor ("color");
-			separatorColor = editor.ColorStyle.IndicatorMarginSeparator.GetColor ("color");
+			backgroundColor = editor.ColorStyle.IconBarBg;
+			separatorColor = editor.ColorStyle.IconBarSeperator;
 			
 			layout.FontDescription = editor.Options.Font;
 			layout.SetText ("!");

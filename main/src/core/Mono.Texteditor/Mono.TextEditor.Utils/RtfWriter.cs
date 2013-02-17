@@ -31,18 +31,18 @@ namespace Mono.TextEditor.Utils
 {
 	public static class RtfWriter
 	{
-		static string CreateColorTable (List<Cairo.Color> colorList)
+		static string CreateColorTable (List<Gdk.Color> colorList)
 		{
 			var colorTable = new StringBuilder ();
 			colorTable.Append (@"{\colortbl ;");
 			for (int i = 0; i < colorList.Count; i++) {
-				var color = colorList [i];
+				Gdk.Color color = colorList [i];
 				colorTable.Append (@"\red");
-				colorTable.Append ((int)(255  * color.R));
+				colorTable.Append (color.Red / 256);
 				colorTable.Append (@"\green");
-				colorTable.Append ((int)(255  * color.G));
+				colorTable.Append (color.Green / 256);
 				colorTable.Append (@"\blue");
-				colorTable.Append ((int)(255  * color.B));
+				colorTable.Append (color.Blue / 256);
 				colorTable.Append (";");
 			}
 			colorTable.Append ("}");
@@ -95,7 +95,7 @@ namespace Mono.TextEditor.Utils
 		public static string GenerateRtf (TextDocument doc, Mono.TextEditor.Highlighting.ISyntaxMode mode, Mono.TextEditor.Highlighting.ColorScheme style, ITextEditorOptions options)
 		{
 			var rtfText = new StringBuilder ();
-			var colorList = new List<Cairo.Color> ();
+			var colorList = new List<Gdk.Color> ();
 
 			var selection = new TextSegment (0, doc.TextLength);
 			int startLineNumber = doc.OffsetToLineNumber (selection.Offset);
@@ -125,9 +125,9 @@ namespace Mono.TextEditor.Utils
 							isItalic = chunkStyle.Italic;
 							appendSpace = true;
 						}
-						if (!colorList.Contains (chunkStyle.CairoColor)) 
-							colorList.Add (chunkStyle.CairoColor);
-						int color = colorList.IndexOf (chunkStyle.CairoColor);
+						if (!colorList.Contains (chunkStyle.Color)) 
+							colorList.Add (chunkStyle.Color);
+						int color = colorList.IndexOf (chunkStyle.Color);
 						if (curColor != color) {
 							curColor = color;
 							rtfText.Append (@"\cf" + (curColor + 1));

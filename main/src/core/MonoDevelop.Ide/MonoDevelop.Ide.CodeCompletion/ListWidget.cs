@@ -159,9 +159,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			var style = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
 			SetFont ();
 			var completion = style.GetChunkStyle ("completion");
-			textColor = completion.CairoColor;
+			textColor = completion.Color;
 
-			highlightColor = style.GetChunkStyle ("completion.highlight").CairoColor;
+			highlightColor = style.GetChunkStyle ("completion.highlight").Color;
 			backgroundColor = completion.CairoBackgroundColor;
 			selectedItemColor = style.GetChunkStyle ("completion.selection");
 			selectedItemInactiveColor = style.GetChunkStyle ("completion.selection.inactive");

@@ -25,7 +25,6 @@
 
 using System;
 using Gdk;
-using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor
 {
@@ -189,7 +188,7 @@ namespace Mono.TextEditor
 			@from = System.Math.Max (@from, editor.TextViewMargin.XOffset);
 			to = System.Math.Max (to, editor.TextViewMargin.XOffset);
 			if (@from < to) {
-				cr.DrawLine (selected ? editor.ColorStyle.SelectedText.CairoColor : editor.ColorStyle.GetChunkStyle (style).CairoColor, @from + 0.5, y + editor.LineHeight - 1.5, to + 0.5, y + editor.LineHeight - 1.5);
+				cr.DrawLine (selected ? editor.ColorStyle.Selection.CairoColor : editor.ColorStyle.GetChunkStyle (style).CairoColor, @from + 0.5, y + editor.LineHeight - 1.5, to + 0.5, y + editor.LineHeight - 1.5);
 			}
 		}
 	}
@@ -332,9 +331,9 @@ namespace Mono.TextEditor
 			}
 			double height = editor.LineHeight / 5;
 			if (selected) {
-				cr.Color = editor.ColorStyle.SelectedText.CairoColor;
+				cr.Color = editor.ColorStyle.Selection.CairoColor;
 			} else {
-				cr.Color = ColorName == null ? Color : editor.ColorStyle.GetChunkStyle (ColorName).CairoColor;
+				cr.Color = ColorName == null ? Color : editor.ColorStyle.GetColorFromDefinition (ColorName);
 			}
 			if (Wave) {	
 				Pango.CairoHelper.ShowErrorUnderline (cr, @from, y + editor.LineHeight - height, to - @from, height);
@@ -410,19 +409,20 @@ namespace Mono.TextEditor
 		
 		protected virtual ChunkStyle CreateStyle (ChunkStyle baseStyle, Cairo.Color color, Cairo.Color bgColor)
 		{
-			var style = new ChunkStyle (baseStyle);
+			ChunkStyle style = new ChunkStyle (baseStyle);
 			if ((IncludedStyles & StyleFlag.Color) != 0)
 				style.CairoColor = color;
 			
 			if ((IncludedStyles & StyleFlag.BackgroundColor) != 0) {
+				style.ChunkProperties &= ~ChunkProperties.TransparentBackground;
 				style.CairoBackgroundColor = bgColor;
 			}
 			
 			if ((IncludedStyles & StyleFlag.Bold) != 0)
-				style.Weight |= TextWeight.Bold;
+				style.ChunkProperties |= ChunkProperties.Bold;
 			
 			if ((IncludedStyles & StyleFlag.Italic) != 0)
-				style.Weight |= TextWeight.Italic;
+				style.ChunkProperties |= ChunkProperties.Italic;
 			return style;
 		}
 		

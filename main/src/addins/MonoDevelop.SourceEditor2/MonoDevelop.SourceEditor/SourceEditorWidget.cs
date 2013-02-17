@@ -249,7 +249,7 @@ namespace MonoDevelop.SourceEditor
 			void OptionsChanged (object sender, EventArgs e)
 			{
 				TextEditor editor = (TextEditor)sender;
-				scrolledWindow.ModifyBg (StateType.Normal, editor.ColorStyle.Default.CairoBackgroundColor);
+				scrolledWindow.ModifyBg (StateType.Normal, editor.ColorStyle.Default.BackgroundColor);
 			}
 			
 			void RemoveEvents ()

@@ -92,9 +92,9 @@
 		</Style>
 	</Style>
 
-     <Style name="template" color ="black" bgColor="#fdfaed">
-         <Style name="tag" color ="black" bgColor="#fdf0bd"/>
-     </Style>
+	 <Style name="template" color ="black" bgColor="#fdfaed">
+		 <Style name="tag" color ="black" bgColor="#fdf0bd"/>
+	 </Style>
 
 	 <Style name="diff">
 		 <Style name="line-added" color="skyblue2"/>
@@ -110,7 +110,7 @@
 	 </Style>
 
 	 <Style name="marker">
-         <Style name="line" color="aluminum1"/>
+		 <Style name="line" color="aluminum1"/>
 		 <Style name="line.changed" color="orangesicle"/>
 		 <Style name="line.dirty" color="orangesicle-light"/>
 
