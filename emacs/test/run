@@ -1,6 +1,0 @@
-#!/bin/bash
-
-pushd `dirname $0` > /dev/null
-export HOME=`pwd`
-popd > /dev/null
-emacs -batch -l test-utilities.el -l pos-tip-mock.el -l basic-tests.el -l integration-tests.el -l unit-tests.el -l fsharp-doc-tests.el -eval "(ert-run-tests-batch-and-exit \"$1\")"
