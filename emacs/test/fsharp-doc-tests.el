@@ -1,4 +1,3 @@
-(provide 'fsharp-doc-tests)
 (require 'ert)
 
 (defmacro check (desc &rest body)
@@ -6,8 +5,10 @@
   (declare (indent 1))
   `(ert-deftest
        ,(intern (replace-regexp-in-string "[ .]" "-" desc)) ()
-     (in-ns fsharp-doc
-       ,@body)))
+     ,@body))
+
+(defun should-match (regex str)
+  (should (string-match-p regex str)))
 
 ;;; ----------------------------------------------------------------------------
 ;;; Test data
@@ -51,44 +52,59 @@ Full name: Modid.id
 ;;; ----------------------------------------------------------------------------
 ;;; Tests
 
-(check "parsed binding should be a single line"
-  (let ((lines (split-string (_ format-for-minibuffer val-tooltip) "[\n\r]")))
+(defun parse-into-lines (str)
+  (split-string (fsharp-doc/format-for-minibuffer str) "[\n\r]"))
+
+;;; Vals
+
+(check "parsed val should be a single line"
+  (let ((lines (parse-into-lines val-tooltip)))
     (should (= 1 (length lines)))))
 
-;;; vals
-
 (check "parsed val should start with 'val'"
-  (should (string-match-p "^val" (_ format-for-minibuffer val-tooltip))))
+  (should-match "^val" (fsharp-doc/format-for-minibuffer val-tooltip)))
 
 (check "parsed val should contain type signature"
-  (should (string-match-p ": x:'a -> b$" (_ format-for-minibuffer val-tooltip))))
+  (should-match ": x:'a -> b$" (fsharp-doc/format-for-minibuffer val-tooltip)))
 
 (check "parsed val should be module-qualified"
-  (should (string-match-p "^val Modid.id" (_ format-for-minibuffer val-tooltip))))
+  (should-match "^val Modid.id" (fsharp-doc/format-for-minibuffer val-tooltip)))
 
-;;; types
+;;; Types
+
+(check "parsed type should be a single line"
+  (let ((lines (parse-into-lines type-tooltip)))
+    (should (= 1 (length lines)))))
 
 (check "parsed type should start with 'type'"
-  (should (string-match-p "^type" (_ format-for-minibuffer type-tooltip))))
+  (should-match "^type" (fsharp-doc/format-for-minibuffer type-tooltip)))
 
 (check "type identifier should be module-qualified"
-  (should (string-match-p "^type Modid.id" (_ format-for-minibuffer type-tooltip))))
+  (should-match "^type Modid.id" (fsharp-doc/format-for-minibuffer type-tooltip)))
 
-;;; properties
+;;; Properties
+
+(check "parsed property should be a single line"
+  (let ((lines (parse-into-lines property-tooltip)))
+    (should (= 1 (length lines)))))
 
 (check "parsed property should start with 'property'"
-  (should (string-match-p "^property" (_ format-for-minibuffer property-tooltip))))
+  (should-match "^property" (fsharp-doc/format-for-minibuffer property-tooltip)))
 
 (check "parsed property should end with type"
-  (should (string-match-p ": a$" (_ format-for-minibuffer property-tooltip))))
+  (should-match ": a$" (fsharp-doc/format-for-minibuffer property-tooltip)))
 
 (check "property identifier should be qualified"
-  (should (string-match-p "^property Modid.id" (_ format-for-minibuffer property-tooltip))))
+  (should-match "^property Modid.id" (fsharp-doc/format-for-minibuffer property-tooltip)))
 
 ;;; Objects
 
+(check "parsed object should be a single line"
+  (let ((lines (parse-into-lines object-tooltip)))
+    (should (= 1 (length lines)))))
+
 (check "parsed object should start with 'type'"
-  (should (string-match-p "^type" (_ format-for-minibuffer object-tooltip))))
+  (should-match "^type" (fsharp-doc/format-for-minibuffer object-tooltip)))
 
 (check "parsed object should be fully qualified"
-  (should (string-match-p "^type Modid.id" (_ format-for-minibuffer object-tooltip))))
+  (should-match "^type Modid.id" (fsharp-doc/format-for-minibuffer object-tooltip)))
