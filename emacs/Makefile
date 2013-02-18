@@ -1,7 +1,7 @@
 # Directories
 base_d = $(abspath ..)/
 test_d = $(abspath test)/
-temp_d = $(abspath tmp)/
+tmp_d  = $(abspath tmp)/
 bin_d  = $(abspath bin)/
 
 # Elisp files required for tests.
@@ -23,7 +23,7 @@ ac_fsproj = $(base_d)FSharp.AutoComplete/FSharp.AutoComplete.fsproj
 ac_out    = $(base_d)FSharp.AutoComplete/bin/Debug/
 
 # Environment
-HOME     := $(temp_d)
+HOME     := $(tmp_d)
 TESTMODE := melpa
 export $(HOME) $(TESTMODE)
 
@@ -34,8 +34,8 @@ export $(HOME) $(TESTMODE)
 clean :
 	rm -f  *.elc
 	rm -f  $(test_d)*.elc
-	rm -fr $(test_d).emacs.d
-	rm -fr $(bind_d)
+	rm -fr $(bin_d)
+	rm -rf $(tmp_d)
 
 # Tests
 
