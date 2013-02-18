@@ -79,6 +79,7 @@
 		{ "name": "Breakpoint Marker(Invalid)", "color":"#eddcdc", "secondcolor":"#eddcdc" },
 		
         { "name": "Current Line Marker", "color":"aluminium1"},
+        { "name": "Current Line Marker(Inactive)", "color":"aluminium1"},
 		
         { "name": "Debugger Current Line Marker", "color":"ffff00", "secondcolor":"#ffffcc", "bordercolor":"#666600" },
         { "name": "Debugger Stack Line Marker", "color":"80ff80", "secondcolor":"#ccffcc", "bordercolor":"#336633"},
