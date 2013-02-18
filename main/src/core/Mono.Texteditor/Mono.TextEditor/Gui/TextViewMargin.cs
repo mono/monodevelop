@@ -917,7 +917,7 @@ namespace Mono.TextEditor
 						}
 						var si = TranslateToUTF8Index (lineChars, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
 						var ei = TranslateToUTF8Index (lineChars, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
-						var color = chunkStyle.Foreground;
+						var color = ColorStyle.GetForeground (chunkStyle);
 						foreach (var marker in markers) {
 							var chunkMarker = marker as IChunkMarker;
 							if (chunkMarker == null)
@@ -948,7 +948,7 @@ namespace Mono.TextEditor
 						}
 						var si = TranslateToUTF8Index (lineChars, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
 						var ei = TranslateToUTF8Index (lineChars, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
-						var color = !SelectionColor.TransparentForeground ? SelectionColor.Foreground : chunkStyle.Foreground;
+						var color = !SelectionColor.TransparentForeground ? SelectionColor.Foreground : ColorStyle.GetForeground (chunkStyle);
 						foreach (var marker in markers) {
 							var chunkMarker = marker as IChunkMarker;
 							if (chunkMarker == null)
@@ -1317,7 +1317,7 @@ namespace Mono.TextEditor
 					if (curchunk != null && curchunk.SpanStack.Count > 0 && curchunk.SpanStack.Peek ().Color != "Plain Text") {
 						var chunkStyle = ColorStyle.GetChunkStyle (curchunk.SpanStack.Peek ().Color);
 						if (chunkStyle != null)
-							col = chunkStyle.Foreground;
+							col = ColorStyle.GetForeground (chunkStyle);
 					} else {
 						col = ColorStyle.PlainText.Foreground;
 					}
@@ -1670,7 +1670,7 @@ namespace Mono.TextEditor
 					var span = line.NextLine.StartSpan.Peek ();
 					var chunkStyle = ColorStyle.GetChunkStyle (span.Color);
 					if (chunkStyle != null)
-						col = chunkStyle.Foreground;
+						col = ColorStyle.GetForeground (chunkStyle);
 				}
 			}
 
@@ -2823,7 +2823,7 @@ namespace Mono.TextEditor
 					}
 
 					HandleSelection (lineOffset, logicalRulerColumn, - 1, -1, chunk.Offset, chunk.EndOffset, delegate(int start, int end) {
-						var color = chunkStyle.Foreground;
+						var color = textEditor.ColorStyle.GetForeground (chunkStyle);
 						Pango.AttrForeground foreGround = new Pango.AttrForeground (
 							(ushort)(color.R * ushort.MaxValue),
 							(ushort)(color.G * ushort.MaxValue),
@@ -2850,7 +2850,7 @@ namespace Mono.TextEditor
 								(ushort)(color.G * ushort.MaxValue),
 								(ushort)(color.B * ushort.MaxValue));
 						} else {
-							var color = chunkStyle.Foreground;
+							var color = ColorStyle.GetForeground (chunkStyle);
 							selectedForeground = new Pango.AttrForeground (
 								(ushort)(color.R * ushort.MaxValue),
 								(ushort)(color.G * ushort.MaxValue),

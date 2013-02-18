@@ -189,7 +189,7 @@ namespace Mono.TextEditor
 			@from = System.Math.Max (@from, editor.TextViewMargin.XOffset);
 			to = System.Math.Max (to, editor.TextViewMargin.XOffset);
 			if (@from < to) {
-				cr.DrawLine (selected ? editor.ColorStyle.SelectedText.Foreground : editor.ColorStyle.GetChunkStyle (style).Foreground, @from + 0.5, y + editor.LineHeight - 1.5, to + 0.5, y + editor.LineHeight - 1.5);
+				cr.DrawLine (selected ? editor.ColorStyle.SelectedText.Foreground : editor.ColorStyle.GetForeground (editor.ColorStyle.GetChunkStyle (style)), @from + 0.5, y + editor.LineHeight - 1.5, to + 0.5, y + editor.LineHeight - 1.5);
 			}
 		}
 	}

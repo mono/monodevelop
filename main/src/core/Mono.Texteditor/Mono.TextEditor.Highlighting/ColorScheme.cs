@@ -178,7 +178,7 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("Line Numbers", VSSetting = "Line Numbers")]
 		public ChunkStyle LineNumbers { get; private set; }
 
-		[ColorDescription("Punctuation", VSSetting = "Operator?Plain Text")]
+		[ColorDescription("Punctuation", VSSetting = "Operator")]
 		public ChunkStyle Punctuation { get; private set; }
 
 		[ColorDescription("Punctuation(Brackets)", VSSetting = "Plain Text")]
@@ -322,40 +322,40 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("User Types(Type parameters)", VSSetting = "User Types(Type parameters)")]
 		public ChunkStyle UserTypesTypeParameters { get; private set; }
 
-		[ColorDescription("User Field Usage", VSSetting = "Identifier?Plain Text")]
+		[ColorDescription("User Field Usage", VSSetting = "Identifier")]
 		public ChunkStyle UserFieldUsage { get; private set; }
 		
-		[ColorDescription("User Field Declaration", VSSetting = "Identifier?Plain Text")]
+		[ColorDescription("User Field Declaration", VSSetting = "Identifier")]
 		public ChunkStyle UserFieldDeclaration { get; private set; }
 		
-		[ColorDescription("User Property Usage", VSSetting = "Identifier?Plain Text")]
+		[ColorDescription("User Property Usage", VSSetting = "Identifier")]
 		public ChunkStyle UserPropertyUsage { get; private set; }
 		
-		[ColorDescription("User Property Declaration", VSSetting = "Identifier?Plain Text")]
+		[ColorDescription("User Property Declaration", VSSetting = "Identifier")]
 		public ChunkStyle UserPropertyDeclaration { get; private set; }
 		
-		[ColorDescription("User Event Usage", VSSetting = "Identifier?Plain Text")]
+		[ColorDescription("User Event Usage", VSSetting = "Identifier")]
 		public ChunkStyle UserEventUsage { get; private set; }
 		
-		[ColorDescription("User Event Declaration", VSSetting = "Identifier?Plain Text")]
+		[ColorDescription("User Event Declaration", VSSetting = "Identifier")]
 		public ChunkStyle UserEventDeclaration { get; private set; }
 		
-		[ColorDescription("User Method Usage", VSSetting = "Identifier?Plain Text")]
+		[ColorDescription("User Method Usage", VSSetting = "Identifier")]
 		public ChunkStyle UserMethodUsage { get; private set; }
 
-		[ColorDescription("User Method Declaration", VSSetting = "Identifier?Plain Text")]
+		[ColorDescription("User Method Declaration", VSSetting = "Identifier")]
 		public ChunkStyle UserMethodDeclaration { get; private set; }
 
-		[ColorDescription("User Parameter Usage", VSSetting = "Identifier?Plain Text")]
+		[ColorDescription("User Parameter Usage", VSSetting = "Identifier")]
 		public ChunkStyle UserParameterUsage { get; private set; }
 		
-		[ColorDescription("User Parameter Declaration", VSSetting = "Identifier?Plain Text")]
+		[ColorDescription("User Parameter Declaration", VSSetting = "Identifier")]
 		public ChunkStyle UserParameterDeclaration { get; private set; }
 
-		[ColorDescription("User Variable Usage", VSSetting = "Identifier?Plain Text")]
+		[ColorDescription("User Variable Usage", VSSetting = "Identifier")]
 		public ChunkStyle UserVariableUsage { get; private set; }
 		
-		[ColorDescription("User Variable Declaration", VSSetting = "Identifier?Plain Text")]
+		[ColorDescription("User Variable Declaration", VSSetting = "Identifier")]
 		public ChunkStyle UserVariableDeclaration { get; private set; }
 
 		[ColorDescription("Syntax Error", VSSetting = "Syntax Error")]
@@ -699,17 +699,17 @@ namespace Mono.TextEditor.Highlighting
 							colorString.Append (", ");
 						colorString.Append (string.Format ("\"weight\":\"{0}\"", thisValue.Weight));
 					}
-					if (colorString.Length == 0) {
-						Console.WriteLine ("Invalid text color :" + thisValue + "/" + thisValue.TransparentForeground + "/" + thisValue.TransparentBackground);
-						continue;
-					}
 					if (!first) {
 						writer.WriteLine (",");
 					} else {
 						first = false;
 					}
 					writer.Write ("\t\t{");
-					writer.Write ("\"name\": \"{0}\", {1}", textColor.Value.Attribute.Name, colorString);
+					if (colorString.Length == 0) {
+						writer.Write ("\"name\": \"{0}\"", textColor.Value.Attribute.Name);
+					} else {
+						writer.Write ("\"name\": \"{0}\", {1}", textColor.Value.Attribute.Name, colorString);
+					}
 					writer.Write (" }");
 				}
 				writer.WriteLine ();
@@ -795,11 +795,11 @@ namespace Mono.TextEditor.Highlighting
 					var split = color.Value.Attribute.VSSetting.Split ('?');
 					foreach (var s in split) {
 						if (s == vsc.Name) {
-							if (vsc.Foreground == "0x02000000" && vsc.Background == "0x02000000") {
+						/*	if (vsc.Foreground == "0x02000000" && vsc.Background == "0x02000000") {
 								color.Value.Info.SetValue (result, result.PlainText, null);
 								found = true;
 								continue;
-							}
+							}*/
 							var textColor = ChunkStyle.Import (color.Value.Attribute.Name, vsc);
 							if (textColor != null) {
 								color.Value.Info.SetValue (result, textColor, null);
@@ -815,5 +815,13 @@ namespace Mono.TextEditor.Highlighting
 
 			return result;
 		}
+
+		public Cairo.Color GetForeground (ChunkStyle chunkStyle)
+		{
+			if (chunkStyle.TransparentForeground)
+				return PlainText.Foreground;
+			return chunkStyle.Foreground;
+		}
+
 	}
 }

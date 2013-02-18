@@ -159,12 +159,12 @@ namespace Mono.TextEditor.Highlighting
 		{
 			var textColor = new ChunkStyle ();
 			textColor.Name = name;
-			if (!string.IsNullOrEmpty (vsc.Foreground)) {
+			if (!string.IsNullOrEmpty (vsc.Foreground) && vsc.Foreground != "0x02000000") {
 				textColor.Foreground = ColorScheme.ImportVsColor (vsc.Foreground);
 				if (textColor.TransparentForeground && name != "Selected Text" && name != "Selected Text(Inactive)")
 					textColor.Foreground = new Cairo.Color (0, 0, 0);
 			}
-			if (!string.IsNullOrEmpty (vsc.Background))
+			if (!string.IsNullOrEmpty (vsc.Background) && vsc.Background != "0x02000000")
 				textColor.Background = ColorScheme.ImportVsColor (vsc.Background);
 			if (vsc.BoldFont)
 				textColor.Weight |= TextWeight.Bold;

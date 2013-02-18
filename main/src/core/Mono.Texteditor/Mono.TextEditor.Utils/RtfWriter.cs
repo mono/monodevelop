@@ -125,9 +125,10 @@ namespace Mono.TextEditor.Utils
 							isItalic = chunkStyle.Italic;
 							appendSpace = true;
 						}
-						if (!colorList.Contains (chunkStyle.Foreground)) 
-							colorList.Add (chunkStyle.Foreground);
-						int color = colorList.IndexOf (chunkStyle.Foreground);
+						var foreground = style.GetForeground (chunkStyle);
+						if (!colorList.Contains (foreground)) 
+							colorList.Add (foreground);
+						int color = colorList.IndexOf (foreground);
 						if (curColor != color) {
 							curColor = color;
 							rtfText.Append (@"\cf" + (curColor + 1));
