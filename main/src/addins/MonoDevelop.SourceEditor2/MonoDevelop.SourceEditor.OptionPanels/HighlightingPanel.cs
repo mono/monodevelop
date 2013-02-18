@@ -123,7 +123,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				return Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (styleName);
 			} catch (Exception e) {
 				if (showException)
-					MessageService.ShowError ("Error while importing color style.", e.InnerException.Message);
+					MessageService.ShowError ("Error while importing color style.", (e.InnerException ?? e).Message);
 				return Mono.TextEditor.Highlighting.SyntaxModeService.DefaultColorStyle;
 			}
 		
