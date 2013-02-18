@@ -19,7 +19,7 @@ depends   = $(ns_script)
 emacs      = emacs
 load_files = $(patsubst %,-l %, $(depends) $(src) $(utils))
 load_tests = $(patsubst %,-l %, $(tests))
-emacs_opts = --batch -f ert-run-tests-batch-and-exit
+emacs_opts = --batch -q -f ert-run-tests-batch-and-exit
 
 # ----------------------------------------------------------------------------
 

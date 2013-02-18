@@ -1,8 +1,8 @@
 (require 'test-common)
 
-(defvar test-file-dir (concat (file-name-directory (or load-file-name (buffer-file-name)))
-                              "Test1/")
-  "The directory contains F# files for testing.")
+(defvar test-file-dir
+  (concat (file-name-directory (or load-file-name (buffer-file-name))) "Test1/")
+  "The directory containing F# source files for testing.")
 
 ;;; ----------------------------------------------------------------------------
 
@@ -21,13 +21,11 @@
 (check "jumping to local definition should not change buffer"
   (let ((f (concat test-file-dir "Program.fs")))
     (using-file f
-      (load-fsharp-mode)
       (ac-fsharp-filter-output nil finddeclstr1)
       (should (equal f (buffer-file-name))))))
 
 (check "jumping to local definition should move point to definition"
   (using-file (concat test-file-dir "Program.fs")
-    (load-fsharp-mode)
     (ac-fsharp-filter-output nil finddeclstr1)
     (should (equal (point) 18))))
 
@@ -35,13 +33,11 @@
   (let ((f1 (concat test-file-dir "Program.fs"))
         (f2 (concat test-file-dir "FileTwo.fs")))
     (using-file f1
-      (load-fsharp-mode)
       (ac-fsharp-filter-output nil finddeclstr2)
       (should (equal (buffer-file-name) f2)))))
 
 (check "jumping to definition in another file should move point to definition"
   (using-file (concat test-file-dir "Program.fs")
-    (load-fsharp-mode)
     (ac-fsharp-filter-output nil finddeclstr2)
     (should (equal (point) 127))))
 

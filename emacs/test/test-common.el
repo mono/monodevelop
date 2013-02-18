@@ -16,50 +16,60 @@
          (progn ,@body)
        (kill-buffer))))
 
+(defmacro using-temp-file (name &rest body)
+  "Create a temporary file that will be deleted after executing BODY forms"
+  (declare (indent 1))
+  `(using-file (concat temporary-file-directory (symbol-name (gensym)) ,name)
+     ,@body))
+
 (defun should-match (regex str)
   (should (string-match-p regex str)))
 
 ;;; ----------------------------------------------------------------------------
+;;; Test runner functions
+
+(defconst tests-load-path
+  (mapcar 'expand-file-name `(,@load-path "." ".." "./tests")))
+
+(defconst default-dependencies '(namespaces pos-tip))
+
+(defun run-fsharp-tests ()
+  "Configure the environment for running tests, then execute tests."
+  (interactive)
+  (message "Running tests with mode: %s" (getenv "TESTMODE"))
+  (let ((var (getenv "TESTMODE")))
+    (cond
+     ((null var)          (test-configuration-default))
+     ((equal var "melpa") (test-configuration-melpa))
+     (t                   (test-configuration-package-file var))))
+  (if noninteractive
+      (ert-run-tests-batch-and-exit)
+    (ert-run-tests-interactively t)))
+
+(defun test-configuration-default ()
+  (init-melpa)
+  (mapc 'require-package default-dependencies)
+  (setq load-path tests-load-path)
+  (require 'fsharp-mode))
+
+(defun test-configuration-melpa ()
+  (init-melpa)
+  (require-package 'fsharp-mode))
+
+(defun test-configuration-package-file (pkg)
+  (mapc 'require-package default-dependencies)
+  (package-install-file (expand-file-name pkg)))
 
 (defun init-melpa ()
-  (setq package-archives
-        '(("melpa"       . "http://melpa.milkbox.net/packages/")))
+  (setq package-archives '(("melpa" . "http://melpa.milkbox.net/packages/")))
   (package-initialize)
   (unless package-archive-contents
     (package-refresh-contents)))
 
-(defun ensure-packages (packages)
-  (dolist (package packages)
-    (unless (package-installed-p package)
-      (package-install package))))
-
-(defun load-fsharp-mode ()
-  (unless (functionp 'fsharp-mode)
-    (let ((testmode (getenv "TESTMODE")))
-      (cond
-       ((eq testmode nil) ; Load from current checkout
-        (init-melpa)
-        (ensure-packages '(pos-tip namespaces))
-
-        (push (expand-file-name "..") load-path)
-
-        (push '("\\.fs[iylx]?$" . fsharp-mode) auto-mode-alist)
-        (autoload 'fsharp-mode "fsharp-mode" "Major mode for editing F# code." t)
-        (autoload 'run-fsharp "inf-fsharp-mode" "Run an inferior F# process." t)
-        (autoload 'turn-on-fsharp-doc-mode "fsharp-doc")
-        (autoload 'ac-fsharp-launch-completion-process "fsharp-mode-completion" "Launch the completion process" t)
-        (autoload 'ac-fsharp-quit-completion-process "fsharp-mode-completion" "Quit the completion process" t)
-        (autoload 'ac-fsharp-load-project "fsharp-mode-completion" "Load the specified F# project" t))
-
-       ((string= testmode "melpa") ; Install from MELPA
-        (init-melpa)
-        (ensure-packages '(fsharp-mode)))
-
-       (t ; Assume `testmode` is a package file to install
-          ; TODO: Break net dependency (pos-tip) for speed?
-        (init-melpa)
-        (ensure-packages '(pos-tip namespaces))
-        (package-install-file (expand-file-name testmode)))))))
+(defun require-package (pkg)
+  (unless (package-installed-p pkg)
+    (package-install pkg))
+  (require pkg))
 
 (defun fsharp-mode-wrapper (bufs body)
   "Load fsharp-mode and make sure any completion process is killed after test"
