@@ -764,7 +764,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			_commentRule.Delimiter = new string ("&()<>{}[]~!%^*-+=|\\#/:;\"' ,\t.?".Where (c => joinedTasks.IndexOf (c) < 0).ToArray ());
 			_commentRule.Keywords = new[] {
 				new Keywords {
-					Color = "comment.keyword.todo",
+					Color = "Comment Tag",
 					Words = CommentTag.SpecialCommentTags.Select (t => t.Tag)
 				}
 			};
@@ -892,7 +892,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			{
 				TagColor = "Preprocessor";
 				if (disabled || !IsValid) {
-					Color = "comment.block";
+					Color = "Comment(Block)";
 					Rule = "PreProcessorComment";
 				} else {
 					Color = "Plain Text";
@@ -1041,7 +1041,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			{
 				if (spanParser.CurRule.Name == "Comment") {
 					if (tags.Contains (doc.GetTextAt (chunk))) 
-						return "comment.keyword.todo";
+						return "Comment Tag";
 				}
 				return base.GetStyle (chunk);
 			}
