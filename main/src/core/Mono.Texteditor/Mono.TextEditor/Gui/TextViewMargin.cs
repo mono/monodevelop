@@ -1314,7 +1314,7 @@ namespace Mono.TextEditor
 				if (SelectionColor.TransparentForeground) {
 					while (curchunk != null && curchunk.EndOffset < offset + i)
 						curchunk = curchunk.Next;
-					if (curchunk != null && curchunk.SpanStack.Count > 0 && curchunk.SpanStack.Peek ().Color != "text") {
+					if (curchunk != null && curchunk.SpanStack.Count > 0 && curchunk.SpanStack.Peek ().Color != "Plain Text") {
 						var chunkStyle = ColorStyle.GetChunkStyle (curchunk.SpanStack.Peek ().Color);
 						if (chunkStyle != null)
 							col = chunkStyle.Foreground;

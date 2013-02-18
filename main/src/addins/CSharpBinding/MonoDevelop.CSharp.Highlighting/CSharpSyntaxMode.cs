@@ -895,7 +895,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					Color = "comment.block";
 					Rule = "PreProcessorComment";
 				} else {
-					Color = "text";
+					Color = "Plain Text";
 					Rule = "<root>";
 				}
 			}
@@ -915,7 +915,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			{
 				this.define = define;
 				StopAtEol = false;
-				Color = "text";
+				Color = "Plain Text";
 				Rule = "<root>";
 			}
 		}
