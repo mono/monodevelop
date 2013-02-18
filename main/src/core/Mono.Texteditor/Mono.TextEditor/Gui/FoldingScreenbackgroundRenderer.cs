@@ -105,10 +105,12 @@ namespace Mono.TextEditor
 
 				int curWidth = 0;
 				var endLine = segmentEndLine.NextLine;
-				for (var curLine = segmentStartLine; curLine != endLine; curLine = curLine.NextLine) {
+				var y = editor.LineToY (segmentStartLine.LineNumber);
+				for (var curLine = segmentStartLine; curLine != endLine && y < editor.Allocation.Height; curLine = curLine.NextLine) {
 					var curLayout = textViewMargin.CreateLinePartLayout (mode, curLine, curLine.Offset, curLine.Length, -1, -1);
 					var width = (int)(curLayout.PangoWidth / Pango.Scale.PangoScale);
 					curWidth = System.Math.Max (curWidth, width);
+					y += editor.GetLineHeight (curLine);
 				}
 
 				double xPos = textViewMargin.XOffset;
@@ -129,7 +131,7 @@ namespace Mono.TextEditor
 					rectangleWidth = System.Math.Max ((rectangles [i + 1].X + rectangles[i + 1].Width + rightMarginPadding) - xPos, rectangleWidth);
 				}
 
-				var y = editor.LineToY (segment.StartLine.LineNumber);
+				y = editor.LineToY (segment.StartLine.LineNumber);
 				var yEnd = editor.LineToY (segment.EndLine.LineNumber + 1);
 				if (yEnd == 0)
 					yEnd = editor.VAdjustment.Upper;
