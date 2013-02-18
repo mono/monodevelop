@@ -32,11 +32,17 @@ THE SOFTWARE.
 	</Span>
 	
 	<Rule name = "Object">
+		<Span rule="Object">
+			<Begin>{</Begin>
+			<End>}</End>
+		</Span>
+
 		<Span rule="String" color="User Types" escape='\'>
 			<Begin>"</Begin>
 			<End>"</End>
 		</Span>
-		<Span rule="Value">
+		
+		<Span rule="Value" tagColor="Plain Text">
 			<Begin>:</Begin>
 			<Exit>,|}</Exit>
 		</Span>
@@ -44,7 +50,7 @@ THE SOFTWARE.
 	
 	<Rule name = "Value">
 		<!-- array -->
-		<Span color = "Keyword(Type)" rule="Value">
+		<Span rule="Value">
 			<Begin>[</Begin>
 			<End>]</End>
 		</Span>
