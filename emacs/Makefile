@@ -49,7 +49,6 @@ test-all : unit-test integration-test
 # F# Completion Binary
 
 $(ac_exe): bin
-	xbuild $(ac_fsproj)
-	cp $(wildcard $(ac_out)*) $(bin_d)
+	xbuild $(ac_fsproj) /property:OutputPath=$(bin_d)
 
 bin :; mkdir -p $(bin_d)
