@@ -405,9 +405,10 @@ namespace Mono.TextEditor.Highlighting
 						}
 					}
 				} else if (file.EndsWith ("Style.json", StringComparison.Ordinal)) {
-					using (Stream stream = File.OpenRead (file)) {
+					using (var stream = File.OpenRead (file)) {
 						string styleName = ScanStyle (stream);
 						styleLookup [styleName] = new UrlStreamProvider (file);
+						isLoadedFromFile [styleName] = file;
 					}
 				}
 			}
