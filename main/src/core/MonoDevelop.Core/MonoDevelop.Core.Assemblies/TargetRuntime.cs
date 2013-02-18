@@ -88,6 +88,7 @@ namespace MonoDevelop.Core.Assemblies
 		internal void StartInitialization ()
 		{
 			backgroundInitialize = true;
+			initializing = true;
 			ThreadPool.QueueUserWorkItem (BackgroundInitialize);
 		}
 		
