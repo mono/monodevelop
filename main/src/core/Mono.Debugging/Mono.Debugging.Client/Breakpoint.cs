@@ -194,7 +194,7 @@ namespace Mono.Debugging.Client
 			breakIfConditionChanges = bp.breakIfConditionChanges;
 			conditionExpression = bp.conditionExpression;
 			fileName = bp.fileName;
-			//column = bp.column;
+			column = bp.column;
 			line = bp.line;
 		}
 	}
