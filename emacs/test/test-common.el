@@ -64,12 +64,12 @@
 (defconst default-dependencies '(namespaces pos-tip))
 
 (defun run-fsharp-tests ()
-  "Configure the environment for running tests, then execute tests."
+  "Configure the environment for running tests, then execute tests.
+When run interactively, this will run all current ert tests.
+When running tests in batch mode, tests should be loaded as -l arguments to emacs."
   (interactive)
   (configure-fsharp-tests)
-  ;; Load files.
   (mapc 'load-file src-files)
-  ;; Run tests.
   (if noninteractive
       (ert-run-tests-batch-and-exit)
     (ert-run-tests-interactively t)))
@@ -77,6 +77,7 @@
 ;;; Configuration
 
 (defun configure-fsharp-tests ()
+  (init-melpa)
   (let ((var (getenv "TESTMODE")))
     (cond
      ((null var)          (test-configuration-default))
@@ -84,13 +85,11 @@
      (t                   (test-configuration-package-file var)))))
 
 (defun test-configuration-default ()
-  (init-melpa)
   (mapc 'require-package default-dependencies)
   (setq load-path tests-load-path)
   (require 'fsharp-mode))
 
 (defun test-configuration-melpa ()
-  (init-melpa)
   (require-package 'fsharp-mode))
 
 (defun test-configuration-package-file (pkg)
