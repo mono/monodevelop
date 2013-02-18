@@ -1,6 +1,8 @@
 # Directories
+base_d = ../
 test_d = test/
 temp_d = tmp/
+bin_d  = bin/
 
 # Elisp files required for tests.
 integration_tests = $(test_d)integration-tests.el
@@ -13,6 +15,12 @@ load_files       = $(patsubst %,-l %, $(utils))
 load_unit_tests  = $(patsubst %,-l %, $(unit_tests))
 load_integration_tests = $(patsubst %,-l %, $(integration_tests))
 emacs_opts       = --batch -f run-fsharp-tests
+
+# HACK: Vars for manually building the ac binary.
+# We should be really able to use the makefile for this...
+ac_exe    = $(bin_d)fsautocomplete.exe
+ac_fsproj = $(base_d)FSharp.AutoComplete/FSharp.AutoComplete.fsproj
+ac_out    = $(base_d)FSharp.AutoComplete/bin/Debug/
 
 # Environment
 HOME     := $(temp_d)
@@ -27,6 +35,7 @@ clean :
 	rm -f  *.elc
 	rm -f  $(test_d)*.elc
 	rm -fr $(test_d).emacs.d
+	rm -fr $(bind_d)
 
 # Tests
 
@@ -35,6 +44,13 @@ test : unit-test integration-test
 unit-test :
 	$(emacs) $(load_files) $(load_unit_tests) $(emacs_opts)
 
-integration-test :
-	cd $(test_d)
+integration-test : $(ac_exe)
 	$(emacs) $(load_files) $(load_integration_tests) $(emacs_opts)
+
+# F# Completion Binary
+
+$(ac_exe): bin
+	xbuild $(ac_fsproj)
+	cp $(wildcard $(ac_out)*) $(bin_d)
+
+bin :; mkdir -p $(bin_d)
