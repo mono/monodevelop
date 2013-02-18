@@ -597,6 +597,22 @@ namespace Mono.TextEditor.Highlighting
 				info.Info.SetValue (result, color, null);
 			}
 
+			// Check scheme
+			bool valid = true;
+			foreach (var color in textColors.Values) {
+				if (color.Info.GetValue (result, null) == null) {
+					Console.WriteLine (color.Attribute.Name + " == null");
+					valid = false;
+				}
+			}
+			foreach (var color in ambientColors.Values) {
+				if (color.Info.GetValue (result, null) == null) {
+					Console.WriteLine (color.Attribute.Name + " == null");
+					valid = false;
+				}
+			}
+			if (!valid)
+				throw new InvalidDataException ("Scheme " + result.Name + " is not valid.");
 			return result;
 		}
 

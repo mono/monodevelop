@@ -76,6 +76,7 @@
 		
 		{ "name": "Breakpoint Marker", "color":"white", "secondcolor":"#AB616B" },
 		{ "name": "Breakpoint Marker(Disabled)", "color":"white", "secondcolor":"#AB616B" },
+		{ "name": "Breakpoint Marker(Invalid)", "color":"#eddcdc", "secondcolor":"#eddcdc" },
 		
         { "name": "Current Line Marker", "color":"aluminium7"},
         { "name": "Current Line Marker(Inactive)", "color":"aluminium7"},
