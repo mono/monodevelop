@@ -39,13 +39,13 @@ clean :
 
 # Tests
 
-test : unit-test integration-test
-
-unit-test :
+test unit-test :
 	$(emacs) $(load_files) $(load_unit_tests) $(emacs_opts)
 
 integration-test : $(ac_exe)
 	cd $(test_d) ; $(emacs) $(load_files) $(load_integration_tests) $(emacs_opts)
+
+test-all : unit-test integration-test
 
 # F# Completion Binary
 
