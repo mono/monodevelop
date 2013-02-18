@@ -479,30 +479,37 @@ namespace MonoDevelop.Components
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
 			base.OnExposeEvent (evnt);
-			Gdk.Rectangle rect = Allocation;
-			col.CellSetCellData (tree.Model, iter, false, false);
-			int x = 1;
+
+			Gdk.Rectangle expose = Allocation;
 			Gdk.Color save = Gdk.Color.Zero;
+			int x = 1;
+
+			col.CellSetCellData (tree.Model, iter, false, false);
+
 			foreach (CellRenderer cr in col.CellRenderers) {
 				if (!cr.Visible)
 					continue;
+
 				if (cr is CellRendererText) {
 					save = ((CellRendererText)cr).ForegroundGdk;
 					((CellRendererText)cr).ForegroundGdk = Style.Foreground (State);
 				}
+
 				int sp, wi, he, xo, yo;
 				col.CellGetPosition (cr, out sp, out wi);
-				Gdk.Rectangle colcrect = new Gdk.Rectangle (x, rect.Y, wi, rect.Height - 2);
-				cr.GetSize (tree, ref colcrect, out xo, out yo, out wi, out he);
-				int leftMargin = (int) ((colcrect.Width - wi) * cr.Xalign);
-				int rightMargin = (int) ((colcrect.Height - he) * cr.Yalign);
-				Gdk.Rectangle crect = new Gdk.Rectangle (colcrect.X + leftMargin, colcrect.Y + rightMargin + 1, wi, he);
-				cr.Render (this.GdkWindow, this, colcrect, crect, rect, CellRendererState.Focused);
-				x += colcrect.Width + col.Spacing + 1;
+				Gdk.Rectangle bgrect = new Gdk.Rectangle (x, expose.Y, wi, expose.Height - 2);
+				cr.GetSize (tree, ref bgrect, out xo, out yo, out wi, out he);
+				int leftMargin = (int) ((bgrect.Width - wi) * cr.Xalign);
+				int topMargin = (int) ((bgrect.Height - he) * cr.Yalign);
+				Gdk.Rectangle cellrect = new Gdk.Rectangle (bgrect.X + leftMargin, bgrect.Y + topMargin + 1, wi, he);
+				cr.Render (this.GdkWindow, this, bgrect, cellrect, expose, CellRendererState.Focused);
+				x += bgrect.Width + col.Spacing + 1;
+
 				if (cr is CellRendererText) {
 					((CellRendererText)cr).ForegroundGdk = save;
 				}
 			}
+
 			return true;
 		}
 		
