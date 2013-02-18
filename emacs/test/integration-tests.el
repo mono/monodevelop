@@ -1,6 +1,19 @@
-(require 'ert)
-(require 'test-common)
+(defun fsharp-mode-wrapper (bufs body)
+  "Load fsharp-mode and make sure any completion process is killed after test"
+  (unwind-protect
+      (progn (configure-fsharp-tests)
+             (funcall body))
 
+    (sleep-for 1)
+
+    (ac-fsharp-quit-completion-process)
+    (dolist (buf bufs)
+      (when (get-buffer buf)
+        (switch-to-buffer buf)
+        (revert-buffer t t)
+        (kill-buffer buf)))
+    (when (get-buffer "*fsharp-complete*")
+      (kill-buffer "*fsharp-complete*"))))
 
 (ert-deftest start-completion-process ()
   "Check that we can start the completion process and request help"
@@ -22,7 +35,6 @@
 (defconst sleeptime 1
   "Seconds to wait for data from background process")
 
-
 (ert-deftest check-project-files ()
   "Check the program files are set correctly"
   (fsharp-mode-wrapper '("Program.fs")
@@ -34,7 +46,6 @@
        (sleep-for 1))
      (should (string-match-p "Test1/Program.fs" (mapconcat 'identity ac-fsharp-project-files "")))
      (should (string-match-p "Test1/FileTwo.fs" (mapconcat 'identity ac-fsharp-project-files ""))))))
-
 
 (ert-deftest check-completion ()
   "Check completion-at-point works"
@@ -49,7 +60,6 @@
      (accept-process-output ac-fsharp-completion-process waittime)
      (beginning-of-line)
      (should (search-forward "X.func")))))
-
 
 (ert-deftest check-gotodefn ()
   "Check jump to definition works"

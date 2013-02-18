@@ -36,15 +36,19 @@
 (defun run-fsharp-tests ()
   "Configure the environment for running tests, then execute tests."
   (interactive)
-  (message "Running tests with mode: %s" (getenv "TESTMODE"))
+  (configure-fsharp-tests)
+  (if noninteractive
+      (ert-run-tests-batch-and-exit)
+    (ert-run-tests-interactively t)))
+
+;;; Configuration
+
+(defun configure-fsharp-tests ()
   (let ((var (getenv "TESTMODE")))
     (cond
      ((null var)          (test-configuration-default))
      ((equal var "melpa") (test-configuration-melpa))
-     (t                   (test-configuration-package-file var))))
-  (if noninteractive
-      (ert-run-tests-batch-and-exit)
-    (ert-run-tests-interactively t)))
+     (t                   (test-configuration-package-file var)))))
 
 (defun test-configuration-default ()
   (init-melpa)
@@ -70,24 +74,5 @@
   (unless (package-installed-p pkg)
     (package-install pkg))
   (require pkg))
-
-(defun fsharp-mode-wrapper (bufs body)
-  "Load fsharp-mode and make sure any completion process is killed after test"
-  (unwind-protect
-      (progn (load-fsharp-mode)
-             (funcall body))
-
-    ;; ;; This seems to be more than long enough for the process to run
-    ;; ;; successfully.
-    ; (sleep-for 0.1)
-
-    (ac-fsharp-quit-completion-process)
-    (dolist (buf bufs)
-      (when (get-buffer buf)
-        (switch-to-buffer buf)
-        (revert-buffer t t)
-        (kill-buffer buf)))
-    (when (get-buffer "*fsharp-complete*")
-      (kill-buffer "*fsharp-complete*"))))
 
 (provide 'test-common)
