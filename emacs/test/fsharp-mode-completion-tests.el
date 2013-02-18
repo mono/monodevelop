@@ -62,39 +62,36 @@ Try indenting this token further or using standard formatting conventions."
      "\n")
   "A list of errors containing a square bracket to check the parsing")
 
-(defmacro testing-error-handling (&rest body)
-  "Run BODY forms within the context of the fsharp-mode-wrapper function."
+(defmacro check-filter (desc &rest body)
+  "Test properties of filtered output from the ac-process."
   (declare (indent 1))
-  `(fsharp-mode-wrapper
-    '("Program.fs")
-    (lambda ()
-      (find-file (concat test-file-dir "Program.fs"))
-      (ac-fsharp-filter-output nil err-brace-str)
-      ,@body)))
+  `(check ,desc
+     (find-file (concat test-file-dir "Program.fs"))
+     (ac-fsharp-filter-output nil err-brace-str)
+     ,@body))
 
-(check "error clears partial data"
-  (testing-error-handling
-      (should (equal "" ac-fsharp-partial-data))))
+(check-filter "error clears partial data"
+  (should (equal "" ac-fsharp-partial-data)))
 
-(check "errors cause overlays to be drawn"
-  (testing-error-handling
-      (should (equal 3 (length (overlays-in (point-min) (point-max)))))))
+(check-filter "errors cause overlays to be drawn"
+  (should (equal 3 (length (overlays-in (point-min) (point-max))))))
 
-(check "error overlay has expected text"
-  (testing-error-handling
-      (let* ((ov (overlays-in (point-min) (point-max)))
-             (text (overlay-get (car-safe ov) 'help-echo)))
-        (should (equal text (concat "Possible incorrect indentation: this token is offside of context started at position (2:16)."
-                                    "\nTry indenting this token further or using standard formatting conventions."))))))
+(check-filter "error overlay has expected text"
+  (let* ((ov (overlays-in (point-min) (point-max)))
+         (text (overlay-get (car-safe ov) 'help-echo)))
+    (should (equal text
+                   (concat "Possible incorrect indentation: "
+                           "this token is offside of context started at "
+                           "position (2:16)."
+                           "\nTry indenting this token further or using standard "
+                           "formatting conventions.")))))
 
-(check "first overlay should have the warning face"
-  (testing-error-handling
-      (let* ((ov (overlays-in (point-min) (point-max)))
-             (face (overlay-get (car ov) 'face)))
-        (should (eq 'fsharp-warning-face face)))))
+(check-filter "first overlay should have the warning face"
+  (let* ((ov (overlays-in (point-min) (point-max)))
+         (face (overlay-get (car ov) 'face)))
+    (should (eq 'fsharp-warning-face face))))
 
-(check "second overlay should have the error face"
-  (testing-error-handling
-      (let* ((ov (overlays-in (point-min) (point-max)))
-             (face (overlay-get (cadr ov) 'face)))
-        (should (eq 'fsharp-error-face face)))))
+(check-filter "second overlay should have the error face"
+  (let* ((ov (overlays-in (point-min) (point-max)))
+         (face (overlay-get (cadr ov) 'face)))
+    (should (eq 'fsharp-error-face face))))
