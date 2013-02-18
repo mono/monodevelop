@@ -497,7 +497,7 @@ namespace MonoDevelop.Components
 				int leftMargin = (int) ((colcrect.Width - wi) * cr.Xalign);
 				int rightMargin = (int) ((colcrect.Height - he) * cr.Yalign);
 				Gdk.Rectangle crect = new Gdk.Rectangle (colcrect.X + leftMargin, colcrect.Y + rightMargin + 1, wi, he);
-				cr.Render (this.GdkWindow, tree, colcrect, crect, rect, CellRendererState.Focused);
+				cr.Render (this.GdkWindow, this, colcrect, crect, rect, CellRendererState.Focused);
 				x += colcrect.Width + col.Spacing + 1;
 				if (cr is CellRendererText) {
 					((CellRendererText)cr).ForegroundGdk = save;
