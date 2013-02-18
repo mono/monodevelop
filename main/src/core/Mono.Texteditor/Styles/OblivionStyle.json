@@ -100,7 +100,7 @@
 
 		{ "name": "Line Numbers", "fore":"aluminium5", "back":"aluminium7"},
 
-		{ "name": "Punctuation", "fore":"butter2", "back":"aluminium6" },
+		{ "name": "Punctuation", "fore":"aluminium2", "back":"aluminium6" },
 		{ "name": "Punctuation(Brackets)", "fore":"aluminium2", "back":"aluminium6" },
 
 		{ "name": "Comment(Line)", "fore":"aluminium4", "back":"aluminium6" },
