@@ -24,8 +24,7 @@ ac_out    = $(base_d)FSharp.AutoComplete/bin/Debug/
 
 # Environment
 HOME     := $(tmp_d)
-TESTMODE := melpa
-export $(HOME) $(TESTMODE)
+export HOME
 
 # ----------------------------------------------------------------------------
 

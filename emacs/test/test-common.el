@@ -69,7 +69,6 @@ When run interactively, this will run all current ert tests.
 When running tests in batch mode, tests should be loaded as -l arguments to emacs."
   (interactive)
   (configure-fsharp-tests)
-  (mapc 'load-file src-files)
   (if noninteractive
       (ert-run-tests-batch-and-exit)
     (ert-run-tests-interactively t)))
@@ -87,6 +86,7 @@ When running tests in batch mode, tests should be loaded as -l arguments to emac
 (defun test-configuration-default ()
   (mapc 'require-package default-dependencies)
   (setq load-path tests-load-path)
+  (mapc 'load-file src-files)
   (require 'fsharp-mode))
 
 (defun test-configuration-melpa ()
