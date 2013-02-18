@@ -1,43 +1,37 @@
 (require 'test-common)
 
-(defvar test-file-dir
-  (concat (file-name-directory (or load-file-name (buffer-file-name))) "Test1/")
-  "The directory containing F# source files for testing.")
-
-;;; ----------------------------------------------------------------------------
-
 ;;; Jump to defn
 
 (defconst finddeclstr1
-  (let ((file (concat test-file-dir "Program.fs")))
+  (let ((file (concat fs-file-dir "Program.fs")))
     (format "DATA: finddecl\nfile stored in metadata is '%s'\n%s:1:6\n<<EOF>>\n" file file))
   "A message for jumping to a definition in the same file")
 
 (defconst finddeclstr2
-  (let ((file (concat test-file-dir "FileTwo.fs")))
+  (let ((file (concat fs-file-dir "FileTwo.fs")))
     (format "DATA: finddecl\nfile stored in metadata is '%s'\n%s:12:11\n<<EOF>>\n" file file))
     "A message for jumping to a definition in the another file")
 
 (check "jumping to local definition should not change buffer"
-  (let ((f (concat test-file-dir "Program.fs")))
+  (let ((f (concat fs-file-dir "Program.fs")))
     (using-file f
       (ac-fsharp-filter-output nil finddeclstr1)
       (should (equal f (buffer-file-name))))))
 
 (check "jumping to local definition should move point to definition"
-  (using-file (concat test-file-dir "Program.fs")
+  (using-file (concat fs-file-dir "Program.fs")
     (ac-fsharp-filter-output nil finddeclstr1)
     (should (equal (point) 18))))
 
 (check "jumping to definition in another file should open that file"
-  (let ((f1 (concat test-file-dir "Program.fs"))
-        (f2 (concat test-file-dir "FileTwo.fs")))
+  (let ((f1 (concat fs-file-dir "Program.fs"))
+        (f2 (concat fs-file-dir "FileTwo.fs")))
     (using-file f1
       (ac-fsharp-filter-output nil finddeclstr2)
       (should (equal (buffer-file-name) f2)))))
 
 (check "jumping to definition in another file should move point to definition"
-  (using-file (concat test-file-dir "Program.fs")
+  (using-file (concat fs-file-dir "Program.fs")
     (ac-fsharp-filter-output nil finddeclstr2)
     (should (equal (point) 127))))
 
@@ -62,7 +56,7 @@ Try indenting this token further or using standard formatting conventions."
   "Test properties of filtered output from the ac-process."
   (declare (indent 1))
   `(check ,desc
-     (find-file (concat test-file-dir "Program.fs"))
+     (find-file (concat fs-file-dir "Program.fs"))
      (ac-fsharp-filter-output nil err-brace-str)
      ,@body))
 

@@ -1,4 +1,5 @@
 (require 'ert)
+(require 'cl)
 
 (defmacro check (desc &rest body)
   "Wrap ert-deftest with a simpler interface."
@@ -26,6 +27,35 @@
   (should (string-match-p regex str)))
 
 ;;; ----------------------------------------------------------------------------
+
+;;; Dirs
+
+(defconst test-dir
+  (file-name-directory (or load-file-name (buffer-file-name)))
+  "The directory containing unit-tests.")
+
+(defconst src-dir
+  (expand-file-name (concat test-dir ".."))
+  "The directory containing the elisp files under test.")
+
+(defconst fs-file-dir
+  (concat test-dir "Test1/")
+  "The directory containing F# source files for testing.")
+
+;;; Files
+
+(defun loadable-el-file-p (x)
+  "Match elisp files, except package spec files."
+  (and (equal "el" (file-name-extension x))
+       (not (string-match-p "^[#.]+" (file-name-nondirectory x)))
+       (not (string-match-p "-pkg" x))))
+
+(defun loadable-el-files (dir)
+  (remove-if-not 'loadable-el-file-p (directory-files dir t)))
+
+(defconst src-files (loadable-el-files src-dir))
+
+;;; ----------------------------------------------------------------------------
 ;;; Test runner functions
 
 (defconst tests-load-path
@@ -37,6 +67,9 @@
   "Configure the environment for running tests, then execute tests."
   (interactive)
   (configure-fsharp-tests)
+  ;; Load files.
+  (mapc 'load-file src-files)
+  ;; Run tests.
   (if noninteractive
       (ert-run-tests-batch-and-exit)
     (ert-run-tests-interactively t)))
