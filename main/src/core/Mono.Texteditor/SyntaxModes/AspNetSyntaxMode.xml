@@ -98,9 +98,6 @@
 			<End>&apos;</End>
 		</Span>
 		
-		<!-- attributes -->
-		<Match color = "Keyword(Type)">[A-Za-z0-9_]+(:[A-Za-z0-9_]+)?[\s\n\r]*=</Match>
-		
 		<!-- comments -->
 		<Span color = "Html Comment" rule = "Comment">
 			<Begin>&lt;%--</Begin>
@@ -113,6 +110,11 @@
 			<End>%&gt;</End>
 		</Span>
 		
+		<!-- attributes -->
+		<Match expression="([A-Za-z0-9_]+[:[A-Za-z0-9_]+]?)([\s\n\r]*=)">
+			<Group color = "Html Attribute Name"/>
+			<Group color = "Html Operator"/>
+		</Match>
 	</Rule>
 	
 	<Rule name = "InLiteral">
