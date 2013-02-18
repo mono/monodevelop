@@ -1,8 +1,8 @@
 # Directories
-base_d = ../
-test_d = test/
-temp_d = tmp/
-bin_d  = bin/
+base_d = $(abspath ..)/
+test_d = $(abspath test)/
+temp_d = $(abspath tmp)/
+bin_d  = $(abspath bin)/
 
 # Elisp files required for tests.
 integration_tests = $(test_d)integration-tests.el
@@ -45,7 +45,7 @@ unit-test :
 	$(emacs) $(load_files) $(load_unit_tests) $(emacs_opts)
 
 integration-test : $(ac_exe)
-	$(emacs) $(load_files) $(load_integration_tests) $(emacs_opts)
+	cd $(test_d) ; $(emacs) $(load_files) $(load_integration_tests) $(emacs_opts)
 
 # F# Completion Binary
 
