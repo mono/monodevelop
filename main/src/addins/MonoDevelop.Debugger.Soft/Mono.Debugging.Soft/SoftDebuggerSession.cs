@@ -430,8 +430,6 @@ namespace Mono.Debugging.Soft
 				EventType.AssemblyUnload, EventType.UserBreak, EventType.UserLog);
 			try {
 				unhandledExceptionRequest = vm.CreateExceptionRequest (null, false, true);
-				if (assemblyFilters != null && assemblyFilters.Count > 0)
-					unhandledExceptionRequest.AssemblyFilter = assemblyFilters;
 				unhandledExceptionRequest.Enable ();
 			} catch (NotSupportedException) {
 				//Mono < 2.6.3 doesn't support catching unhandled exceptions
@@ -1397,6 +1395,12 @@ namespace Mono.Debugging.Soft
 				case EventType.AssemblyUnload: {
 					var aue = (AssemblyUnloadEvent) e;
 
+					if (assemblyFilters != null) {
+						int index = assemblyFilters.IndexOf (aue.Assembly);
+						if (index != -1)
+							assemblyFilters.RemoveAt (index);
+					}
+
 					// Mark affected breakpoints as pending again
 					var affectedBreakpoints = new List<KeyValuePair<EventRequest, BreakInfo>> (
 						breakpoints.Where (x=> (x.Value.Location.Method.DeclaringType.Assembly.Location.Equals (aue.Assembly.Location, StringComparison.OrdinalIgnoreCase)))
@@ -1603,7 +1607,7 @@ namespace Mono.Debugging.Soft
 						return true;
 					binfo.LastConditionValue = res;
 				} else {
-					if (res != null && res.ToLower () == "false")
+					if (res == null || res.ToLowerInvariant () != "true")
 						return true;
 				}
 			}
@@ -2040,9 +2044,6 @@ namespace Mono.Debugging.Soft
 			}
 			if (found) {
 				assemblyFilters.Add (asm);
-				unhandledExceptionRequest.Disable ();
-				unhandledExceptionRequest.AssemblyFilter = assemblyFilters;
-				unhandledExceptionRequest.Enable ();
 				return true;
 			} else {
 				return false;
