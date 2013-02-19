@@ -753,12 +753,8 @@ namespace Mono.TextEditor.Highlighting
 		{
 			var result = new ColorScheme ();
 			result.Name = Path.GetFileNameWithoutExtension (fileName);
-			result.BaseScheme = "Default";
 			result.Description = "Imported color scheme";
 			result.Originator = "Imported from " + fileName;
-
-			var defaultStyle = SyntaxModeService.GetColorStyle ("Default");
-			result.CopyValues (defaultStyle);
 
 			var colors = new Dictionary<string, VSSettingColor> ();
 			using (var reader = XmlReader.Create (fileName)) {
@@ -786,8 +782,6 @@ namespace Mono.TextEditor.Highlighting
 						continue;
 					}
 				}
-
-				ambient.Info.SetValue (result, ambient.Info.GetValue (defaultStyle, null), null);
 			}
 
 			// convert text colors
@@ -819,6 +813,18 @@ namespace Mono.TextEditor.Highlighting
 			var h = (HslColor)result.TooltipText.Background;
 			h.L *= 1.1;
 			result.TooltipText.Background = h;
+
+			var defaultStyle = SyntaxModeService.GetColorStyle (HslColor.Brightness (result.PlainText.Background) < 0.5 ? "Monokai" : "Default");
+
+			foreach (var color in textColors.Values) {
+				if (color.Info.GetValue (result, null) == null)
+					color.Info.SetValue (result, color.Info.GetValue (defaultStyle, null), null);
+			}
+			foreach (var color in ambientColors.Values) {
+				if (color.Info.GetValue (result, null) == null) 
+					color.Info.SetValue (result, color.Info.GetValue (defaultStyle, null), null);
+			}
+
 			return result;
 		}
 
