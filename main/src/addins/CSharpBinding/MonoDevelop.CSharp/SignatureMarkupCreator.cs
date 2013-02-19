@@ -1561,7 +1561,7 @@ namespace MonoDevelop.CSharp
 
 		string Highlight (string str, ChunkStyle style)
 		{
-			var color = (Gdk.Color) ((HslColor)style.Foreground);
+			var color = (Gdk.Color) ((HslColor)colorStyle.GetForeground (style));
 
 			if (grayOut) {
 				color = AlphaBlend (color, (Gdk.Color) ((HslColor)colorStyle.PlainText.Background), optionalAlpha);
