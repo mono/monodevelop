@@ -106,7 +106,7 @@ namespace Mono.TextEditor
 				int curWidth = 0;
 				var endLine = segmentEndLine.NextLine;
 				var y = editor.LineToY (segmentStartLine.LineNumber);
-				for (var curLine = segmentStartLine; curLine != endLine && y < editor.Allocation.Height; curLine = curLine.NextLine) {
+				for (var curLine = segmentStartLine; curLine != endLine && y < editor.VAdjustment.Value + editor.Allocation.Height; curLine = curLine.NextLine) {
 					var curLayout = textViewMargin.CreateLinePartLayout (mode, curLine, curLine.Offset, curLine.Length, -1, -1);
 					var width = (int)(curLayout.PangoWidth / Pango.Scale.PangoScale);
 					curWidth = System.Math.Max (curWidth, width);
