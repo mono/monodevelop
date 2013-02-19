@@ -352,7 +352,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		{
 			if (pathorurl == null)
 				throw new ArgumentNullException ();
-			
+
+			TryStartOperation ();
 			LibSvnClient.Rev revision = (LibSvnClient.Rev) rev;
 			IntPtr localpool = newpool (pool);
 			List<DirectoryEntry> items = new List<DirectoryEntry> ();
@@ -386,6 +387,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				}
 			} finally {
 				apr.pool_destroy (localpool);
+				TryEndOperation ();
 			}
 			
 			return items;
@@ -400,7 +402,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			ArrayList ret = new ArrayList ();
 			
 			StatusCollector collector = new StatusCollector (ret);
-			
+
+			TryStartOperation ();
 			IntPtr localpool = newpool (pool);
 			try {
 				string pathorurl = NormalizePath (path, localpool);
@@ -414,10 +417,13 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				                               ctx, localpool));
 			} finally {
 				apr.pool_destroy (localpool);
+				TryEndOperation ();
 			}
-			
+
+			List<VersionInfo> nodes = new List<VersionInfo>();
 			foreach (LibSvnClient.StatusEnt ent in ret)
-				yield return CreateNode (ent, repo);
+				nodes.Add (CreateNode (ent, repo));
+			return nodes;
 		}
 
 		public override IEnumerable<SvnRevision> Log (Repository repo, FilePath path, SvnRevision revStart, SvnRevision revEnd)
@@ -427,7 +433,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			
 			LibSvnClient.Rev revisionStart = (LibSvnClient.Rev) revStart;
 			LibSvnClient.Rev revisionEnd = (LibSvnClient.Rev) revEnd;
-			
+
+			TryStartOperation ();
+
 			List<SvnRevision> ret = new List<SvnRevision> ();
 			IntPtr localpool = newpool (pool);
 			IntPtr strptr = IntPtr.Zero;
@@ -447,6 +455,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				if (strptr != IntPtr.Zero)
 					Marshal.FreeHGlobal (strptr);
 				apr.pool_destroy (localpool);
+				TryEndOperation ();
 			}
 			
 			return ret;
@@ -466,12 +475,14 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			AnnotationCollector collector = new AnnotationCollector (annotations);
 			
 			IntPtr localpool = newpool (pool);
-			
+
+			TryStartOperation ();
 			try {
 				string path = NormalizePath (file.FullPath, localpool);
 				CheckError (svn.client_blame (path, ref revisionStart, ref revisionEnd, collector.Func, IntPtr.Zero, ctx, localpool));
 			} finally {
 				apr.pool_destroy (localpool);
+				TryEndOperation ();
 			}
 			
 			return annotations;
@@ -518,6 +529,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			if (pathorurl == null || stream == null)
 				throw new ArgumentNullException ();
 		
+			TryStartOperation ();
 			LibSvnClient.Rev revision = (LibSvnClient.Rev) rev;
 			
 			IntPtr localpool = newpool (pool);
@@ -530,6 +542,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				CheckError (svn.client_cat2 (svnstream, pathorurl, ref peg_revision, ref revision, ctx, localpool), 195007);
 			} finally {
 				apr.pool_destroy (localpool);
+				TryEndOperation ();
 			}
 		}
 
@@ -538,11 +551,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			if (path == FilePath.Null || monitor == null)
 				throw new ArgumentNullException();
 			
-			lock (sync) {
-				if (inProgress)
-					throw new SubversionException("Another Subversion operation is already in progress.");
-				inProgress = true;
-			}
+			TryStartOperation ();
 			
 			updatemonitor = monitor;
 			updateFileList = new ArrayList ();
@@ -559,7 +568,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				
 				apr.pool_destroy (localpool);
 				updatemonitor = null;
-				inProgress = false;
+				TryEndOperation ();
 			}
 		}
 
@@ -568,11 +577,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			if (paths == null || monitor == null)
 				throw new ArgumentNullException();
 			
-			lock (sync) {
-				if (inProgress)
-					throw new SubversionException("Another Subversion operation is already in progress.");
-				inProgress = true;
-			}
+			TryStartOperation ();
 			
 			updatemonitor = monitor;
 			IntPtr localpool = newpool (pool);
@@ -590,7 +595,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			} finally {
 				apr.pool_destroy (localpool);
 				updatemonitor = null;
-				inProgress = false;
+				TryEndOperation ();
 			}
 		}
 
@@ -599,11 +604,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			if (path == FilePath.Null || monitor == null)
 				throw new ArgumentNullException();
 			
-			lock (sync) {
-				if (inProgress)
-					throw new SubversionException("Another Subversion operation is already in progress.");
-				inProgress = true;
-			}
+			TryStartOperation ();
 			
 			updatemonitor = monitor;
 			IntPtr localpool = newpool (pool);
@@ -614,7 +615,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			} finally {
 				apr.pool_destroy (localpool);
 				updatemonitor = null;
-				inProgress = false;
+				TryEndOperation ();
 			}
 		}
 
@@ -622,12 +623,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		{
 			if (path == FilePath.Null || monitor == null)
 				throw new ArgumentNullException ();
-			
-			lock (sync) {
-				if (inProgress)
-					throw new SubversionException ("Another Subversion operation is already in progress.");
-				inProgress = true;
-			}
+
+			TryStartOperation ();
+
 			nb = new notify_baton ();
 			updatemonitor = monitor;
 			IntPtr localpool = newpool (pool);
@@ -637,7 +635,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			} finally {
 				apr.pool_destroy (localpool);
 				updatemonitor = null;
-				inProgress = false;
+				TryEndOperation ();
 			}
 		}
 
@@ -650,11 +648,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				revision = SvnRevision.Head;
 			LibSvnClient.Rev rev = (LibSvnClient.Rev) revision;
 			
-			lock (sync) {
-				if (inProgress)
-					throw new SubversionException ("Another Subversion operation is already in progress.");
-				inProgress = true;
-			}
+			TryStartOperation ();
 			nb = new notify_baton ();
 			updatemonitor = monitor;
 			IntPtr localpool = newpool (pool);
@@ -666,7 +660,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			} finally {
 				apr.pool_destroy (localpool);
 				updatemonitor = null;
-				inProgress = false;
+				TryEndOperation ();
 			}
 		}
 
@@ -675,11 +669,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			if (paths == null || message == null || monitor == null)
 				throw new ArgumentNullException();
 			
-			lock (sync) {
-				if (inProgress)
-					throw new SubversionException ("Another Subversion operation is already in progress.");
-				inProgress = true;
-			}
+			TryStartOperation ();
 			
 			nb = new notify_baton ();
 			updatemonitor = monitor;
@@ -709,7 +699,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				commitmessage = null;
 				updatemonitor = null;
 				apr.pool_destroy (localpool);
-				inProgress = false;
+				TryEndOperation ();
 			}
 		}
 
@@ -718,11 +708,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			if (paths == null || monitor == null)
 				throw new ArgumentNullException ();
 		
-			lock (sync) {
-				if (inProgress)
-					throw new SubversionException ("Another Subversion operation is already in progress.");
-				inProgress = true;
-			}
+			TryStartOperation ();
 
 			nb = new notify_baton ();
 			updatemonitor = monitor;
@@ -745,7 +731,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				commitmessage = null;
 				updatemonitor = null;
 				apr.pool_destroy (localpool);
-				inProgress = false;
+				TryEndOperation ();
 			}
 		}
 
@@ -754,11 +740,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			if (path == FilePath.Null || monitor == null)
 				throw new ArgumentNullException ();
 			
-			lock (sync) {
-				if (inProgress)
-					throw new SubversionException ("Another Subversion operation is already in progress.");
-				inProgress = true;
-			}
+			TryStartOperation ();
 			
 			nb = new notify_baton ();
 			updatemonitor = monitor;
@@ -778,7 +760,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				commitmessage = null;
 				updatemonitor = null;
 				apr.pool_destroy (localpool);
-				inProgress = false;
+				TryEndOperation ();
 			}
 		}
 
@@ -789,11 +771,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			
 			LibSvnClient.Rev revision = (LibSvnClient.Rev) rev;
 			
-			lock (sync) {
-				if (inProgress)
-					throw new SubversionException ("Another Subversion operation is already in progress.");
-				inProgress = true;
-			}
+			TryStartOperation ();
 			
 			nb = new notify_baton ();
 			updatemonitor = monitor;
@@ -807,17 +785,13 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			} finally {
 				apr.pool_destroy (localpool);
 				updatemonitor = null;
-				inProgress = false;
+				TryEndOperation ();
 			}
 		}
 
 		public override void Lock (IProgressMonitor monitor, string comment, bool stealLock, params FilePath[] paths)
 		{
-			lock (sync) {
-				if (inProgress)
-					throw new SubversionException ("Another Subversion operation is already in progress.");
-				inProgress = true;
-			}
+			TryStartOperation ();
 			
 			IntPtr localpool = newpool (pool);
 			IntPtr array = apr.array_make (localpool, 0, IntPtr.Size);
@@ -840,17 +814,13 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				apr.pool_destroy (localpool);
 				lockFileList = null;
 				updatemonitor = null;
-				inProgress = false;
+				TryEndOperation ();
 			}
 		}
 		
 		public override void Unlock (IProgressMonitor monitor, bool breakLock, params FilePath[] paths)
 		{
-			lock (sync) {
-				if (inProgress)
-					throw new SubversionException ("Another Subversion operation is already in progress.");
-				inProgress = true;
-			}
+			TryStartOperation ();
 			
 			IntPtr localpool = newpool (pool);
 			IntPtr array = apr.array_make (localpool, 0, IntPtr.Size);
@@ -873,12 +843,14 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				apr.pool_destroy (localpool);
 				lockFileList = null;
 				updatemonitor = null;
-				inProgress = false;
+				TryEndOperation ();
 			}
 		}
 
 		public override string GetUnifiedDiff (FilePath path1, SvnRevision rev1, FilePath path2, SvnRevision rev2, bool recursive)
 		{
+			TryStartOperation ();
+
 			IntPtr localpool = newpool (pool);
 			IntPtr outfile = IntPtr.Zero;
 			IntPtr errfile = IntPtr.Zero;
@@ -923,6 +895,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 						FileService.DeleteFile (ferr);
 					if (fout != null)
 						FileService.DeleteFile (fout);
+
+					TryEndOperation ();
 				} catch {}
 			}
 		}
@@ -940,6 +914,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		
 		private void Merge (string path, LibSvnClient.Rev revision1, LibSvnClient.Rev revision2)
 		{
+			TryStartOperation ();
+
 			IntPtr localpool = newpool (pool);
 			try {
 				path = NormalizePath (path, localpool);
@@ -955,8 +931,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 			finally {
 				apr.pool_destroy (localpool);
+				TryEndOperation ();
 			}
-			return;
 		}
 		
 		IntPtr svn_client_get_commit_log_impl (ref IntPtr log_msg, ref IntPtr tmp_file,
@@ -966,7 +942,28 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			tmp_file = IntPtr.Zero;
 			return IntPtr.Zero;
 		}
-		
+
+		void TryStartOperation ()
+		{
+			lock (sync) {
+				Console.WriteLine ("*************************************");
+				Console.WriteLine (Environment.StackTrace);
+				Console.WriteLine ("*************************************");
+				if (inProgress)
+					throw new SubversionException ("Another Subversion operation is already in progress.");
+				inProgress = true;
+			}
+		}
+
+		void TryEndOperation ()
+		{
+			lock (sync) {
+				if (!inProgress)
+					throw new SubversionException ("No Subversion operation is in progress.");
+				inProgress = false;
+			}
+		}
+
 		internal static void CheckError (IntPtr error)
 		{
 			CheckError (error, null);
