@@ -16,6 +16,10 @@
 		{"name": "Fold Square", "color":"#A5A5A5" },
 		{"name": "Fold Cross", "color":"#555555", "secondcolor":"#E2E2E2" },
 		{"name": "Indentation Guide", "color":"aluminium2" },
+		
+		{ "name": "Quick Diff(Dirty)", "color":"yellow" },
+		{ "name": "Quick Diff(Changed)", "color":"green" },
+		
 		{"name": "Indicator Margin", "color":"#F0F0F0" },
 		{"name": "Indicator Margin(Separator)", "color":"#F0F0F0" },
 		{"name": "Underline(Error)", "color":"#FF0000" },
