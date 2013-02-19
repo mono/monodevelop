@@ -41,6 +41,7 @@
 		{"name": "Comment(Doc)", "fore":"comment-green" },
 		{"name": "Comment(DocTag)", "fore":"#808080" },
 		{"name": "Comment Tag", "fore":"comment-green" },
+		{"name": "Excluded Code", "fore":"comment-green" },
 		{"name": "String", "fore":"#A31515" },
 		{"name": "String(Escape)", "fore":"#A31515" },
 		{"name": "String(C# @ Verbatim)", "fore":"#A31515" },

@@ -110,6 +110,7 @@
 		{ "name": "Comment(Doc)", "fore":"aluminium4" },
 		{ "name": "Comment(DocTag)", "fore":"aluminium4" },
 		{ "name": "Comment Tag", "fore":"aluminium4", "back":"butter1", "weight":"bold" },
+		{ "name": "Excluded Code", "fore":"aluminium4" },
 
 		{ "name": "String", "fore":"butter2"},
 		{ "name": "String(Escape)", "fore":"butter3"},

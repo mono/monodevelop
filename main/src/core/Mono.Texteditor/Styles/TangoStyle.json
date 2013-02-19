@@ -110,6 +110,7 @@
 		{ "name": "Comment(Doc)", "fore":"chameleon3" },
 		{ "name": "Comment(DocTag)", "fore":"chameleon3" },
 		{ "name": "Comment Tag", "fore":"chameleon3" },
+		{ "name": "Excluded Code", "fore":"chameleon3" },
 
 		{ "name": "String", "fore":"plum2"},
 		{ "name": "String(Escape)", "fore":"plum3"},

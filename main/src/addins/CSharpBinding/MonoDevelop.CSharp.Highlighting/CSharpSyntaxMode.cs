@@ -954,7 +954,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			{
 				TagColor = "Preprocessor";
 				if (disabled || !IsValid) {
-					Color = "Comment(Block)";
+					Color = "Excluded Code";
 					Rule = "PreProcessorComment";
 				} else {
 					Color = "Plain Text";

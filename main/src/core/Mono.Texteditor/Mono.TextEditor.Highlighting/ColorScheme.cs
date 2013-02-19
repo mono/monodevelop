@@ -198,6 +198,9 @@ namespace Mono.TextEditor.Highlighting
 		
 		[ColorDescription("Comment Tag", VSSetting = "Comment")]
 		public ChunkStyle CommentTags { get; private set; }
+		
+		[ColorDescription("Excluded Code", VSSetting = "Excluded Code")]
+		public ChunkStyle ExcludedCode { get; private set; }
 
 		[ColorDescription("String", VSSetting = "String")]
 		public ChunkStyle String { get; private set; }

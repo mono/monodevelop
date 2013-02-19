@@ -95,6 +95,7 @@
 		{ "name": "Comment(Doc)", "fore":"monokai-comment", "weight":"italic" },
 		{ "name": "Comment(DocTag)", "fore":"monokai-comment", "weight":"italic" },
 		{ "name": "Comment Tag", "fore":"monokai-comment", "weight":"bold" },
+		{ "name": "Excluded Code", "fore":"monokai-comment" },
 
 		{ "name": "String", "fore":"monokai-string"},
 		{ "name": "String(Escape)", "fore":"#A6AB34"},

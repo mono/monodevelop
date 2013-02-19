@@ -135,6 +135,7 @@
 		{ "name": "Comment(Doc)", "fore":"CommentVim" },
 		{ "name": "Comment(DocTag)", "fore":"CommentVim"},
 		{ "name": "Comment Tag", "fore":"TodoVim", "weight":"bold" },
+		{ "name": "Excluded Code", "fore":"CommentVim" },
 
 		{ "name": "String", "fore":"StringVim"},
 		{ "name": "String(Escape)", "fore":"StringVim"},
