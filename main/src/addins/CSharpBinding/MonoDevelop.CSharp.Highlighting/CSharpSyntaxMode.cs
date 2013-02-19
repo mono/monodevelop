@@ -468,9 +468,9 @@ namespace MonoDevelop.CSharp.Highlighting
 					return;
 				}
 				if (result is TypeResolveResult) {
-					Colorize (simpleType, "User Types");
+					Colorize (simpleType.IdentifierToken, "User Types");
 				}
-
+				base.VisitSimpleType (simpleType);
 			}
 
 			public override void VisitMemberType (MemberType memberType)
