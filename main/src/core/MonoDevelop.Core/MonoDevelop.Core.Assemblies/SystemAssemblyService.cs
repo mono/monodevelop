@@ -341,11 +341,13 @@ namespace MonoDevelop.Core.Assemblies
 						break;
 					}
 				}
-			} catch {
-				// Ignore
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error to determine target framework for assembly {0}: {1}", file, ex);
+				return TargetFrameworkMoniker.UNKNOWN;
 			} finally {
 				universe.Dispose ();
 			}
+			LoggingService.LogError ("Failed to determine target framework for assembly {0}", file);
 			return TargetFrameworkMoniker.UNKNOWN;
 		}
 		
