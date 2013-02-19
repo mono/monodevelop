@@ -42,9 +42,12 @@ namespace Mono.TextEditor.Highlighting
 		
 		public Cairo.Color GetColor (string name)
 		{
-			if (Colors.Count == 0)
-				return new Cairo.Color (0, 0, 0);
-			return Colors.First (t => t.Item1 == name).Item2;
+			foreach (var color in Colors) {
+				if (color.Item1 == name)
+					return color.Item2;
+			}
+
+			return new Cairo.Color (0, 0, 0);
 		}
 
 		public static AmbientColor Create (XElement element, Dictionary<string, Cairo.Color> palette)
