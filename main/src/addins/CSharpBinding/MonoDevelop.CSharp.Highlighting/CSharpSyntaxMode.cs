@@ -442,9 +442,11 @@ namespace MonoDevelop.CSharp.Highlighting
 			public override void VisitFieldDeclaration (FieldDeclaration fieldDeclaration)
 			{
 				fieldDeclaration.ReturnType.AcceptVisitor (this);
-				foreach (var init in fieldDeclaration.Variables)
+				foreach (var init in fieldDeclaration.Variables) {
 					if (init.NameToken.StartLocation.Line == lineNumber)
 						Colorize (init.NameToken, "User Field Declaration");
+					init.Initializer.AcceptVisitor (this);
+				}
 			}
 
 			public override void VisitFixedFieldDeclaration (FixedFieldDeclaration fixedFieldDeclaration)
