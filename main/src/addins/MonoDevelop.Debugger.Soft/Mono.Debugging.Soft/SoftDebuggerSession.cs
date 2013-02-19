@@ -1601,7 +1601,7 @@ namespace Mono.Debugging.Soft
 			}
 			
 			if (!string.IsNullOrEmpty (bp.ConditionExpression)) {
-				string res = EvaluateExpression (thread, bp.ConditionExpression);
+				string res = EvaluateExpression (thread, bp.ConditionExpression, bp);
 				if (bp.BreakIfConditionChanges) {
 					if (res == binfo.LastConditionValue)
 						return true;
@@ -1642,7 +1642,7 @@ namespace Mono.Debugging.Soft
 				if (j == -1)
 					break;
 				string se = exp.Substring (i + 1, j - i - 1);
-				se = EvaluateExpression (thread, se);
+				se = EvaluateExpression (thread, se, null);
 				sb.Append (exp.Substring (last, i - last));
 				sb.Append (se);
 				last = j + 1;
@@ -1651,18 +1651,99 @@ namespace Mono.Debugging.Soft
 			sb.Append (exp.Substring (last, exp.Length - last));
 			return sb.ToString ();
 		}
-		
-		string EvaluateExpression (ThreadMirror thread, string exp)
+
+		static SourceLocation GetSourceLocation (MDB.StackFrame frame)
 		{
+			return new SourceLocation (frame.Method.Name, frame.FileName, frame.LineNumber, frame.ColumnNumber);
+		}
+
+		static string FormatSourceLocation (Breakpoint bp)
+		{
+			if (string.IsNullOrEmpty (bp.FileName))
+				return null;
+
+			var location = Path.GetFileName (bp.FileName);
+			if (bp.OriginalLine > 0) {
+				location += ":" + bp.OriginalLine;
+				if (bp.OriginalColumn > 0)
+					location += "," + bp.OriginalColumn;
+			}
+
+			return location;
+		}
+
+		static bool IsBoolean (ValueReference vr)
+		{
+			if (vr.Type is Type && ((Type) vr.Type) == typeof (bool))
+				return true;
+
+			if (vr.Type is TypeMirror && ((TypeMirror) vr.Type).FullName == "System.Boolean")
+				return true;
+
+			return false;
+		}
+		
+		string EvaluateExpression (ThreadMirror thread, string expression, Breakpoint bp)
+		{
+			MDB.StackFrame[] frames = null;
+
 			try {
-				MDB.StackFrame[] frames = thread.GetFrames ();
+				frames = thread.GetFrames ();
 				if (frames.Length == 0)
 					return string.Empty;
+
 				EvaluationOptions ops = Options.EvaluationOptions.Clone ();
 				ops.AllowTargetInvoke = true;
+
 				var ctx = new SoftEvaluationContext (this, frames[0], ops);
-				ValueReference val = ctx.Evaluator.Evaluate (ctx, exp);
+
+				if (bp != null) {
+					// validate conditional breakpoint expressions so that we can provide error reporting to the user
+					var vr = ctx.Evaluator.ValidateExpression (ctx, expression);
+					if (!vr.IsValid) {
+						string message = string.Format ("Invalid expression in conditional breakpoint. {0}", vr.Message);
+						string location = FormatSourceLocation (bp);
+
+						if (!string.IsNullOrEmpty (location))
+							message = location + ": " + message;
+
+						OnDebuggerOutput (true, message);
+						return string.Empty;
+					}
+
+					// resolve types...
+					if (ctx.SourceCodeAvailable)
+						expression = ctx.Evaluator.Resolve (this, GetSourceLocation (frames[0]), expression);
+				}
+
+				ValueReference val = ctx.Evaluator.Evaluate (ctx, expression);
+				if (bp != null && !bp.BreakIfConditionChanges && !IsBoolean (val)) {
+					string message = string.Format ("Expression in conditional breakpoint did not evaluate to a boolean value: {0}", bp.ConditionExpression);
+					string location = FormatSourceLocation (bp);
+
+					if (!string.IsNullOrEmpty (location))
+						message = location + ": " + message;
+
+					OnDebuggerOutput (true, message);
+					return string.Empty;
+				}
+
 				return val.CreateObjectValue (false).Value;
+			} catch (EvaluatorException ex) {
+				string message;
+
+				if (bp != null) {
+					message = string.Format ("Failed to evaluate expression in conditional breakpoint. {0}", ex.Message);
+					string location = FormatSourceLocation (bp);
+
+					if (!string.IsNullOrEmpty (location))
+						message = location + ": " + message;
+				} else {
+					message = ex.ToString ();
+				}
+
+				OnDebuggerOutput (true, message);
+				return string.Empty;
 			} catch (Exception ex) {
 				OnDebuggerOutput (true, ex.ToString ());
 				return string.Empty;
@@ -1772,7 +1853,7 @@ namespace Mono.Debugging.Soft
 						loc = GetLocFromType (type, s, bp.Line, bp.Column, out genericMethod, out insideLoadedRange);
 						if (loc != null) {
 							OnDebuggerOutput (false, string.Format ("Resolved pending breakpoint at '{0}:{1},{2}' to {3} [0x{4:x5}].\n",
-							                                        s, bp.Line, bp.Column, loc.Method.FullName, loc.ILOffset));
+							                                        s, bp.Line, bp.Column, loc.Method.Name, loc.ILOffset));
 							ResolvePendingBreakpoint (bi, loc);
 							
 							// Note: if the type or method is generic, there may be more instances so don't assume we are done resolving the breakpoint
