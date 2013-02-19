@@ -34,7 +34,7 @@
 		{ "name": "Fold Square", "color":"base01", "secondcolor":"base02" },
 		{ "name": "Fold Cross", "color":"base01", "secondcolor":"base02" },
 		
-		{ "name": "Indentation Guide", "color":"base00" },
+		{ "name": "Indentation Guide", "color":"#354243" },
 
 		{ "name": "Indicator Margin", "color":"base03" },
 		{ "name": "Indicator Margin(Separator)", "color":"base02" },
