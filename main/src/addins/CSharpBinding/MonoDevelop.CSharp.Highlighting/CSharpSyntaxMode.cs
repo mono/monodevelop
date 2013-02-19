@@ -478,7 +478,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					return;
 				}
 				if (result is TypeResolveResult) {
-					Colorize (composedType, GetUserTypeHighlighting(result.Type));
+					Colorize (composedType.BaseType, GetUserTypeHighlighting(result.Type));
 				}
 
 			}
