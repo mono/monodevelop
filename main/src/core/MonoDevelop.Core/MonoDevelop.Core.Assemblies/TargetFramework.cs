@@ -27,13 +27,13 @@
 
 using System;
 using System.IO;
-using System.Reflection;
 using System.Collections.Generic;
 
 using Mono.Addins;
 using Mono.PkgConfig;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Core.Serialization;
+using System.Reflection;
 
 namespace MonoDevelop.Core.Assemblies
 {
@@ -383,6 +383,9 @@ namespace MonoDevelop.Core.Assemblies
 							ainfo.InGac = reader.ReadContentAsBoolean ();
 					} while (reader.ReadToFollowing ("File"));
 				} else {
+
+					// HACK: we were using EnumerateFiles but it's broken in some Mono releases
+					// https://bugzilla.xamarin.com/show_bug.cgi?id=2975
 					var files = System.IO.Directory.GetFiles (dir, "*.dll");
 					foreach (var f in files) {
 						try {

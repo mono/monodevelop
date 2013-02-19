@@ -66,14 +66,14 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			style = style.Clone ();
 			style.Name = this.entryName.Text;
 			style.Description = this.entryDescription.Text;
-			
+			style.BaseScheme = name;
 			string path = SourceEditorDisplayBinding.SyntaxModePath;
 			string baseName = style.Name.Replace (" ", "_");
 			
-			while (File.Exists (System.IO.Path.Combine (path, baseName + "Style.xml"))) {
+			while (File.Exists (System.IO.Path.Combine (path, baseName + "Style.json"))) {
 				baseName = baseName + "_";
 			}
-			string fileName = System.IO.Path.Combine (path, baseName + "Style.xml");
+			string fileName = System.IO.Path.Combine (path, baseName + "Style.json");
 			try {
 				style.Save (fileName);
 				Mono.TextEditor.Highlighting.SyntaxModeService.AddStyle (fileName, style);

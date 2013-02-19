@@ -529,7 +529,9 @@ namespace MonoDevelop.Core
 		/// </summary>
 		public static void RemoveDirectoryIfEmpty (string directory)
 		{
-			if (Directory.Exists (directory) && !Directory.EnumerateFiles (directory).Any ())
+			// HACK: we should use EnumerateFiles but it's broken in some Mono releases
+			// https://bugzilla.xamarin.com/show_bug.cgi?id=2975
+			if (Directory.Exists (directory) && !Directory.GetFiles (directory).Any ())
 				Directory.Delete (directory);
 		}
 		

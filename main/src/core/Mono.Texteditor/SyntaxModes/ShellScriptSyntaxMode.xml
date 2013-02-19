@@ -31,27 +31,27 @@ THE SOFTWARE.
 	<Property name="StringQuote">"</Property>
 	<Property name="StringQuote">'</Property>
 	
-	<EolSpan color = "comment" rule="Comment">#</EolSpan>
+	<EolSpan color = "Comment(Line)" rule="Comment">#</EolSpan>
 	
-	<Span color = "string" rule="String" stopateol = "true" escape='\'>
+	<Span color = "String" rule="String" stopateol = "true" escape='\'>
 		<Begin>"</Begin>
 		<End>"</End>
 	</Span>
 	
-	<Span color = "string" rule="String" stopateol = "true" escape='\'>
+	<Span color = "String" rule="String" stopateol = "true" escape='\'>
 		<Begin>&apos;</Begin>
 		<End>&apos;</End>
 	</Span>
 	
-	<Span color = "text.preprocessor" rule="String" stopateol = "true" escape='\'>
+	<Span color = "Preprocessor" rule="String" stopateol = "true" escape='\'>
 		<Begin>${</Begin>
 		<End>}</End>
 	</Span>
 		
-	<Match color = "string">CSharpNumber</Match>
-	<Match color = "text.preprocessor">\$\w+</Match>
+	<Match color = "String">CSharpNumber</Match>
+	<Match color = "Preprocessor">\$\w+</Match>
 	
-	<Keywords color = "keyword.selection">
+	<Keywords color = "Keyword(Selection)">
 		<Word>if</Word>
 		<Word>then</Word>
 		<Word>elif</Word>
@@ -63,20 +63,20 @@ THE SOFTWARE.
 		<Word>local</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.iteration">
+	<Keywords color = "Keyword(Iteration)">
 		<Word>while</Word>
 		<Word>for</Word>
 		<Word>do</Word>
 		<Word>done</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.jump">
+	<Keywords color = "Keyword(Jump)">
 		<Word>return</Word>
 		<Word>continue</Word>
 	</Keywords>
 	
 	<Rule name = "Comment">
-		<Keywords color="comment.keyword.todo" ignorecase="True">
+		<Keywords color="Comment Tag" ignorecase="True">
 			<Word>TODO</Word>
 			<Word>FIXME</Word>
 			<Word>HACK</Word>
@@ -84,7 +84,7 @@ THE SOFTWARE.
 		</Keywords>	
 	</Rule>
 	<Rule name = "String">
-		<Match color = "text.preprocessor">\$\w+</Match>
+		<Match color = "Preprocessor">\$\w+</Match>
 	</Rule>
 </SyntaxMode>
 

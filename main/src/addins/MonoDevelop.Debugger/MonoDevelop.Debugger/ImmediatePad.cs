@@ -63,24 +63,28 @@ namespace MonoDevelop.Debugger
 				view.WriteOutput ("The expression can't be evaluated while the application is running.");
 			} else {
 				EvaluationOptions ops = EvaluationOptions.DefaultOptions;
+				var frame = DebuggingService.CurrentFrame;
+				string expression = e.Text;
+
 				ops.AllowMethodEvaluation = true;
 				ops.AllowToStringCalls = true;
 				ops.AllowTargetInvoke = true;
 				ops.EvaluationTimeout = 20000;
 				ops.EllipsizeStrings = false;
-				var ff = DebuggingService.CurrentFrame;
-				string tt = e.Text;
-				ValidationResult vres = ff.ValidateExpression (tt, ops);
+
+				var vres = frame.ValidateExpression (expression, ops);
 				if (!vres) {
 					view.WriteOutput (vres.Message);
 					view.Prompt (true);
 					return;
 				}
-				ObjectValue val = DebuggingService.CurrentFrame.GetExpressionValue (e.Text, ops);
+
+				var val = frame.GetExpressionValue (expression, ops);
 				if (val.IsEvaluating) {
 					WaitForCompleted (val);
 					return;
 				}
+
 				PrintValue (val);
 			}
 			view.Prompt (true);

@@ -28,53 +28,53 @@
 	<Property name="StringQuote">"</Property>
 	<Property name="StringQuote">'</Property>
 	
-	<EolSpan color = "comment" rule="Comment" tagColor="comment.tag">#</EolSpan>
+	<EolSpan color = "Comment(Line)" rule="Comment" tagColor="comment.tag">#</EolSpan>
 	
-	<Span color = "string" rule="String" stopateol = "true" escape='\'>
+	<Span color = "String" rule="String" stopateol = "true" escape='\'>
 		<Begin>"</Begin>
 		<End>"</End>
 	</Span>
 
-	<Span color = "string" rule="String" stopateol = "true" escape='\'>
+	<Span color = "String" rule="String" stopateol = "true" escape='\'>
 		<Begin>&apos;</Begin>
 		<End>&apos;</End>
 	</Span>
 	
-	<Span color = "string" rule="String" stopateol = "true" escape='\'>
+	<Span color = "String" rule="String" stopateol = "true" escape='\'>
 		<Begin>/</Begin>
 		<End>/</End>
 	</Span>
 
-	<Match color = "string">CSharpNumber</Match>
+	<Match color = "String">CSharpNumber</Match>
 
 	<!-- :symbol -->
-	<Match color = "string">(^|[^\w\d:]):[\w\d]+</Match>
+	<Match color = "String">(^|[^\w\d:]):[\w\d]+</Match>
 
 	<!-- @@class_variable -->
-	<Match color = "keyword.modifier">(^|[^@\w\d])@@\w[\w\d]*</Match>
+	<Match color = "Keyword(Modifiers)">(^|[^@\w\d])@@\w[\w\d]*</Match>
 
 	<!-- @instance_variable -->
-	<Match color = "keyword.type">(^|[^@\w\d])@\w[\w\d]*</Match>
+	<Match color = "Keyword(Type)">(^|[^@\w\d])@\w[\w\d]*</Match>
 	
 	<!-- $global_variable -->
-	<Match color = "keyword.jump">(^|[^\$\w\d])\$\w[\w\d]*</Match>
+	<Match color = "Keyword(Jump)">(^|[^\$\w\d])\$\w[\w\d]*</Match>
 	
 	<!-- CONSTant -->
-	<Match color = "constant.language">(^|[^\w\d])(?-i)[A-Z][\w\d]*</Match>
+	<Match color = "Keyword(Constants)">(^|[^\w\d])(?-i)[A-Z][\w\d]*</Match>
 
-	<Keywords color = "keyword.access">
+	<Keywords color = "Keyword(Access)">
 		<Word>self</Word>
 		<Word>super</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.operator">
+	<Keywords color = "Keyword(Operator)">
 		<Word>alias</Word>
 		<Word>and</Word>
 		<Word>or</Word>
 		<Word>not</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.selection">
+	<Keywords color = "Keyword(Selection)">
 		<Word>if</Word>
 		<Word>elsif</Word>
 		<Word>else</Word>
@@ -90,7 +90,7 @@
 		<Word>defined</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.iteration">
+	<Keywords color = "Keyword(Iteration)">
 		<Word>do</Word>
 		<Word>for</Word>
 		<Word>in</Word>
@@ -99,7 +99,7 @@
 		<Word>next</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.jump">
+	<Keywords color = "Keyword(Jump)">
 		<Word>break</Word>
 		<Word>return</Word>
 		<Word>retry</Word>
@@ -107,26 +107,26 @@
 		<Word>yield</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.exceptions">
+	<Keywords color = "Keyword(Exception)">
 		<Word>raise</Word>
 		<Word>rescue</Word>
 		<Word>ensure</Word>
 	</Keywords>
 	
-	<Keywords color = "constant.language">
+	<Keywords color = "Keyword(Constants)">
 		<Word>true</Word>
 		<Word>false</Word>
 		<Word>nil</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.modifier">
+	<Keywords color = "Keyword(Modifiers)">
 		<Word>public</Word>
 		<Word>protected</Word>
 		<Word>private</Word>
 	</Keywords>
 	
 	<!--
-	<Keywords color = "keyword.type">
+	<Keywords color = "Keyword(Type)">
 		<Word>bool</Word>
 		<Word>char</Word>
 		<Word>double</Word>
@@ -142,24 +142,24 @@
 		<Word>string</Word>
 	</Keywords>
 	
-	<Keywords color = "constant.language.void">
+	<Keywords color = "Keyword(Void)">
 		<Word>void</Word>
 	</Keywords>
 	-->
 	
-	<Keywords color = "keyword.namespace">
+	<Keywords color = "Keyword(Namespace)">
 		<Word>module</Word>
 		<Word>require</Word>
 		<Word>include</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.property">		
+	<Keywords color = "Keyword(Property)">		
 		<Word>attr_accessor</Word>
 		<Word>attr_reader</Word>
 		<Word>attr_writer</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.declaration">
+	<Keywords color = "Keyword(Declaration)">
 		<Word>class</Word>
 		<Word>def</Word>
 		<Word>undef</Word>
@@ -167,7 +167,7 @@
 	
 	
 	<Rule name = "Comment">
-		<Keywords color="comment.keyword.todo" ignorecase="True">
+		<Keywords color="Comment Tag" ignorecase="True">
 			<Word>TODO</Word>
 			<Word>FIXME</Word>
 			<Word>HACK</Word>

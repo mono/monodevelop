@@ -33,26 +33,26 @@
 	
 	<Delimiters>&amp;&lt;&gt;~!@%^*()-+=|\#/{}[]:;"' ,	?</Delimiters>
 	
-	<EolSpan color = "comment.line" rule="Comment" tagColor="comment.tag.line">//</EolSpan>
+	<EolSpan color = "Comment(Line)" rule="Comment" tagColor="Comment(Line)">//</EolSpan>
 	
-	<Span color = "comment.block" rule="Comment" tagColor="comment.tag.block">
+	<Span color = "Comment(Block)" rule="Comment" tagColor="Comment(Line)">
 		<Begin>/*</Begin>
 		<End>*/</End>
 	</Span>
 	
-	<Span color = "string.double" rule="String" stopateol = "true" escape='\'>
+	<Span color = "String" rule="String" stopateol = "true" escape='\'>
 		<Begin>"</Begin>
 		<End>"</End>
 	</Span>
 	
-	<Span color = "string.single" rule="String" stopateol = "true" escape="\">
+	<Span color = "String" rule="String" stopateol = "true" escape="\">
 		<Begin>&apos;</Begin>
 		<End>&apos;</End>
 	</Span>
 	
-	<Match color = "constant.digit">CSharpNumber</Match>
+	<Match color = "Number">CSharpNumber</Match>
 	
-	<Keywords color = "keyword.iteration">
+	<Keywords color = "Keyword(Iteration)">
 		<Word>nop</Word>
 		<Word>break</Word>
 		<Word>ldarg.0</Word>
@@ -288,7 +288,7 @@
 		<Word>prefixref</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.type">
+	<Keywords color = "Keyword(Type)">
 		<Word>void</Word>
 		<Word>object</Word>
 		<Word>bool</Word>
@@ -310,7 +310,7 @@
 		<Word>typedref</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.modifier">
+	<Keywords color = "Keyword(Modifiers)">
 		<Word>at</Word>
 		<Word>as</Word>
 		<Word>implicitcom</Word>
@@ -474,12 +474,12 @@
 		<Word>flags</Word>
 	</Keywords>
 	
-	<Keywords color = "constant.language">
+	<Keywords color = "Keyword(Constants)">
 		<Word>true</Word>
 		<Word>false</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.namespace">
+	<Keywords color = "Keyword(Namespace)">
 		<Word>.assembly</Word>
 		<Word>.cctor</Word>
 		<Word>.class</Word>
@@ -538,7 +538,7 @@
 		<Word>.typedef</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.context">
+	<Keywords color = "Keyword(Context)">
 		<Word>request</Word>
 		<Word>demand</Word>
 		<Word>assert</Word>
@@ -556,7 +556,7 @@
 		<Word>noncasinheritance</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.access">
+	<Keywords color = "Keyword(Access)">
 		<Word>#line</Word>
 		<Word>#define</Word>
 		<Word>#undef</Word>
@@ -568,7 +568,7 @@
 	</Keywords>
 	
 	<Rule name = "Comment">
-		<Keywords color="comment.keyword.todo" ignorecase="True">
+		<Keywords color="Comment Tag" ignorecase="True">
 			<Word>TODO</Word>
 			<Word>FIXME</Word>
 			<Word>HACK</Word>

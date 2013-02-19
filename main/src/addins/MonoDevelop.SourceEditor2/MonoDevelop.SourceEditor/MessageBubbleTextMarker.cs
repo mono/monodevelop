@@ -353,11 +353,11 @@ namespace MonoDevelop.SourceEditor
 			if (!fitsInSameLine) {
 				if (isEolSelected) {
 					x -= (int)editor.HAdjustment.Value;
-					editor.TextViewMargin.DrawRectangleWithRuler (g, x, new Cairo.Rectangle (x, y + editor.LineHeight, editor.TextViewMargin.TextStartPosition, editor.LineHeight), editor.ColorStyle.Default.CairoBackgroundColor, true);
-					editor.TextViewMargin.DrawRectangleWithRuler (g, x + editor.TextViewMargin.TextStartPosition, new Cairo.Rectangle (x + editor.TextViewMargin.TextStartPosition, y + editor.LineHeight, editor.Allocation.Width + (int)editor.HAdjustment.Value, editor.LineHeight), editor.ColorStyle.Selection.CairoBackgroundColor, true);
+					editor.TextViewMargin.DrawRectangleWithRuler (g, x, new Cairo.Rectangle (x, y + editor.LineHeight, editor.TextViewMargin.TextStartPosition, editor.LineHeight), editor.ColorStyle.PlainText.Background, true);
+					editor.TextViewMargin.DrawRectangleWithRuler (g, x + editor.TextViewMargin.TextStartPosition, new Cairo.Rectangle (x + editor.TextViewMargin.TextStartPosition, y + editor.LineHeight, editor.Allocation.Width + (int)editor.HAdjustment.Value, editor.LineHeight), editor.ColorStyle.SelectedText.Background, true);
 					x += (int)editor.HAdjustment.Value;
 				} else {
-					editor.TextViewMargin.DrawRectangleWithRuler (g, x, new Cairo.Rectangle (x, y + editor.LineHeight, x2, editor.LineHeight), editor.ColorStyle.Default.CairoBackgroundColor, true);
+					editor.TextViewMargin.DrawRectangleWithRuler (g, x, new Cairo.Rectangle (x, y + editor.LineHeight, x2, editor.LineHeight), editor.ColorStyle.PlainText.Background, true);
 				}
 			}
 			DrawRectangle (g, x, y, right, topSize);
@@ -580,7 +580,7 @@ namespace MonoDevelop.SourceEditor
 //				x2 = System.Math.Max (x2, fitsInSameLine ? editor.TextViewMargin.XOffset + editor.LineHeight / 2 : editor.TextViewMargin.XOffset);
 				
 				if (i > 0) {
-					editor.TextViewMargin.DrawRectangleWithRuler (g, x, new Cairo.Rectangle (x, y, right, editor.LineHeight), isEolSelected ? editor.ColorStyle.Selection.CairoBackgroundColor : editor.ColorStyle.Default.CairoBackgroundColor, true);
+					editor.TextViewMargin.DrawRectangleWithRuler (g, x, new Cairo.Rectangle (x, y, right, editor.LineHeight), isEolSelected ? editor.ColorStyle.SelectedText.Background : editor.ColorStyle.PlainText.Background, true);
 					g.MoveTo (new Cairo.PointD (x2 + 0.5, y));
 					g.LineTo (new Cairo.PointD (x2 + 0.5, y + editor.LineHeight));
 					g.LineTo (new Cairo.PointD (right, y + editor.LineHeight));

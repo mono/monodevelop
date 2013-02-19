@@ -241,7 +241,7 @@ namespace MonoDevelop.CSharp.Highlighting
 
 				var result = resolver.Resolve (identifierExpression, cancellationToken);
 				if (result.IsError) {
-					Colorize (identifierExpression, "keyword.semantic.error");
+					Colorize (identifierExpression, "Syntax Error");
 					return;
 				}
 
@@ -249,28 +249,28 @@ namespace MonoDevelop.CSharp.Highlighting
 					var member = ((MemberResolveResult)result).Member;
 					switch (member.EntityType) {
 					case EntityType.Field:
-						Colorize (identifierExpression.IdentifierToken, "keyword.semantic.field");
+						Colorize (identifierExpression.IdentifierToken, "User Field Usage");
 						break;
 					case EntityType.Property:
-						Colorize (identifierExpression.IdentifierToken, "keyword.semantic.property");
+						Colorize (identifierExpression.IdentifierToken, "User Property Usage");
 						break;
 					case EntityType.Method:
-						Colorize (identifierExpression.IdentifierToken, "keyword.semantic.method");
+						Colorize (identifierExpression.IdentifierToken, "User Method Usage");
 						break;
 					case EntityType.Event:
-						Colorize (identifierExpression.IdentifierToken, "keyword.semantic.event");
+						Colorize (identifierExpression.IdentifierToken, "User Event Usage");
 						break;
 					}
 					return;
 				}
 
 				if (result is MethodGroupResolveResult) {
-					Colorize (identifierExpression.IdentifierToken, "keyword.semantic.method");
+					Colorize (identifierExpression.IdentifierToken, "User Method Usage");
 					return;
 				}
 
 				if (result is TypeResolveResult) {
-					Colorize (identifierExpression.IdentifierToken, "keyword.semantic.type");
+					Colorize (identifierExpression.IdentifierToken, "User Types");
 					return;
 				}
 			}
@@ -289,14 +289,14 @@ namespace MonoDevelop.CSharp.Highlighting
 			{
 				base.VisitExternAliasDeclaration (externAliasDeclaration);
 				if (externAliasDeclaration.AliasToken.StartLocation.Line == lineNumber)
-					Colorize (externAliasDeclaration.AliasToken, "keyword.namespace");
+					Colorize (externAliasDeclaration.AliasToken, "Keyword(Namespace)");
 			}
 
 			public override void VisitTypeDeclaration (TypeDeclaration typeDeclaration)
 			{
 				base.VisitTypeDeclaration (typeDeclaration);
 				if (typeDeclaration.NameToken.StartLocation.Line == lineNumber)
-					Colorize (typeDeclaration.NameToken, "keyword.semantic.type.declaration");
+					Colorize (typeDeclaration.NameToken, "User Types");
 			}
 
 			public override void VisitPropertyDeclaration (PropertyDeclaration propertyDeclaration)
@@ -307,7 +307,7 @@ namespace MonoDevelop.CSharp.Highlighting
 						if (!CheckInterfaceImplementation (propertyDeclaration))
 							return;
 					}
-					Colorize (propertyDeclaration.NameToken, "keyword.semantic.property.declaration");
+					Colorize (propertyDeclaration.NameToken, "User Property Declaration");
 				}
 				if (!propertyDeclaration.Getter.IsNull) {
 					var getKeyword = propertyDeclaration.Getter.GetChildByRole (PropertyDeclaration.GetKeywordRole);
@@ -329,7 +329,7 @@ namespace MonoDevelop.CSharp.Highlighting
 						if (namedElement.NameToken.StartLocation.Line == lineNumber) {
 							var result = resolver.Resolve (namedElement, cancellationToken);
 							if (result.IsError)
-								Colorize (namedElement.NameToken, "keyword.semantic.error");
+								Colorize (namedElement.NameToken, "Syntax Error");
 						}
 						namedElement.Expression.AcceptVisitor (this);
 					} else {
@@ -343,20 +343,19 @@ namespace MonoDevelop.CSharp.Highlighting
 				base.VisitEventDeclaration (eventDeclaration);
 				foreach (var init in eventDeclaration.Variables)
 					if (init.NameToken.StartLocation.Line == lineNumber) {
-						Colorize (init.NameToken, "keyword.semantic.event.declaration");
+						Colorize (init.NameToken, "User Event Declaration");
 					}
 			}
 
 			public override void VisitCustomEventDeclaration (CustomEventDeclaration eventDeclaration)
 			{
 				base.VisitCustomEventDeclaration (eventDeclaration);
-
 				if (eventDeclaration.NameToken.StartLocation.Line == lineNumber) {
 					if (!eventDeclaration.PrivateImplementationType.IsNull) {
 						if (!CheckInterfaceImplementation (eventDeclaration))
 							return;
 					}
-					Colorize (eventDeclaration.NameToken, "keyword.semantic.event.declaration");
+					Colorize (eventDeclaration.NameToken, "User Event Declaration");
 				}
 
 				if (!eventDeclaration.AddAccessor.IsNull) {
@@ -375,21 +374,21 @@ namespace MonoDevelop.CSharp.Highlighting
 			{
 				base.VisitTypeParameterDeclaration (typeParameterDeclaration);
 				if (typeParameterDeclaration.NameToken.StartLocation.Line == lineNumber)
-					Colorize (typeParameterDeclaration.NameToken, "keyword.semantic.type.declaration");
+					Colorize (typeParameterDeclaration.NameToken, "User Types");
 			}
 
 			public override void VisitConstructorDeclaration (ConstructorDeclaration constructorDeclaration)
 			{
 				base.VisitConstructorDeclaration (constructorDeclaration);
 				if (constructorDeclaration.NameToken.StartLocation.Line == lineNumber)
-					Colorize (constructorDeclaration.NameToken, "keyword.semantic.type.declaration");
+					Colorize (constructorDeclaration.NameToken, "User Types");
 			}
 
 			public override void VisitDestructorDeclaration (DestructorDeclaration destructorDeclaration)
 			{
 				base.VisitDestructorDeclaration (destructorDeclaration);
 				if (destructorDeclaration.NameToken.StartLocation.Line == lineNumber)
-					Colorize (destructorDeclaration.NameToken, "keyword.semantic.type.declaration");
+					Colorize (destructorDeclaration.NameToken, "User Types");
 			}
 
 			bool CheckInterfaceImplementation (EntityDeclaration entityDeclaration)
@@ -405,13 +404,12 @@ namespace MonoDevelop.CSharp.Highlighting
 			public override void VisitMethodDeclaration (MethodDeclaration methodDeclaration)
 			{
 				base.VisitMethodDeclaration (methodDeclaration);
-			
 				if (methodDeclaration.NameToken.StartLocation.Line == lineNumber) {
 					if (!methodDeclaration.PrivateImplementationType.IsNull) {
 						if (!CheckInterfaceImplementation (methodDeclaration))
 							return;
 					}
-					Colorize (methodDeclaration.NameToken, "keyword.semantic.method.declaration");
+					Colorize (methodDeclaration.NameToken, "User Method Declaration");
 				}
 			}
 
@@ -420,7 +418,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				fieldDeclaration.ReturnType.AcceptVisitor (this);
 				foreach (var init in fieldDeclaration.Variables)
 					if (init.NameToken.StartLocation.Line == lineNumber)
-						Colorize (init.NameToken, "keyword.semantic.field.declaration");
+						Colorize (init.NameToken, "User Field Declaration");
 			}
 
 			public override void VisitFixedFieldDeclaration (FixedFieldDeclaration fixedFieldDeclaration)
@@ -428,7 +426,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				base.VisitFixedFieldDeclaration (fixedFieldDeclaration);
 				foreach (var init in fixedFieldDeclaration.Variables)
 					if (init.NameToken.StartLocation.Line == lineNumber)
-						Colorize (init.NameToken, "keyword.semantic.field.declaration");
+						Colorize (init.NameToken, "User Field Declaration");
 			}
 
 			public override void VisitUsingDeclaration (UsingDeclaration usingDeclaration)
@@ -448,11 +446,11 @@ namespace MonoDevelop.CSharp.Highlighting
 				var result = resolver.Resolve (composedType, cancellationToken);
 				if (result.IsError) {
 					// if csharpSyntaxMode.guiDocument.Project != null
-					Colorize (composedType, "keyword.semantic.error");
+					Colorize (composedType, "Syntax Error");
 					return;
 				}
 				if (result is TypeResolveResult) {
-					Colorize (composedType, "keyword.semantic.type");
+					Colorize (composedType, "User Types");
 				}
 
 			}
@@ -466,11 +464,11 @@ namespace MonoDevelop.CSharp.Highlighting
 				var result = resolver.Resolve (simpleType, cancellationToken);
 				if (result.IsError) {
 					// if csharpSyntaxMode.guiDocument.Project != null
-					Colorize (simpleType, "keyword.semantic.error");
+					Colorize (simpleType, "Syntax Error");
 					return;
 				}
 				if (result is TypeResolveResult) {
-					Colorize (simpleType, "keyword.semantic.type");
+					Colorize (simpleType, "User Types");
 				}
 
 			}
@@ -491,10 +489,10 @@ namespace MonoDevelop.CSharp.Highlighting
 						return;
 					}
 					// if && csharpSyntaxMode.guiDocument.Project != null
-					Colorize (memberType.MemberNameToken, "keyword.semantic.error");
+					Colorize (memberType.MemberNameToken, "Syntax Error");
 				}
 				if (result is TypeResolveResult) {
-					Colorize (memberType.MemberNameToken, "keyword.semantic.type");
+					Colorize (memberType.MemberNameToken, "User Types");
 				}
 			}
 
@@ -512,7 +510,7 @@ namespace MonoDevelop.CSharp.Highlighting
 						return;
 					}
 					// if && csharpSyntaxMode.guiDocument.Project != null
-					Colorize (memberReferenceExpression.MemberNameToken, "keyword.semantic.error");
+					Colorize (memberReferenceExpression.MemberNameToken, "Syntax Error");
 				}
 
 				if (result is MemberResolveResult) {
@@ -520,26 +518,26 @@ namespace MonoDevelop.CSharp.Highlighting
 					switch (member.EntityType) {
 					case EntityType.Field:
 						if (!member.IsStatic && !((IField)member).IsConst)
-							Colorize (memberReferenceExpression.MemberNameToken, "keyword.semantic.field");
+							Colorize (memberReferenceExpression.MemberNameToken, "User Field Usage");
 						break;
 					case EntityType.Property:
-						Colorize (memberReferenceExpression.MemberNameToken, "keyword.semantic.property");
+						Colorize (memberReferenceExpression.MemberNameToken, "User Property Usage");
 						break;
 					case EntityType.Method:
-						Colorize (memberReferenceExpression.MemberNameToken, "keyword.semantic.method");
+						Colorize (memberReferenceExpression.MemberNameToken, "User Method Usage");
 						break;
 					case EntityType.Event:
-						Colorize (memberReferenceExpression.MemberNameToken, "keyword.semantic.event");
+						Colorize (memberReferenceExpression.MemberNameToken, "User Event Usage");
 						break;
 					}
 				}
 
 				if (result is MethodGroupResolveResult) {
-					Colorize (memberReferenceExpression.MemberNameToken, "keyword.semantic.method");
+					Colorize (memberReferenceExpression.MemberNameToken, "User Method Usage");
 				}
 
 				if (result is TypeResolveResult) {
-					Colorize (memberReferenceExpression.MemberNameToken, "keyword.semantic.type");
+					Colorize (memberReferenceExpression.MemberNameToken, "User Types");
 				}
 			}
 
@@ -547,7 +545,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			{
 				var result = resolver.Resolve (typeOfExpression, cancellationToken) as TypeOfResolveResult;
 				if (result != null && result.ReferencedType.Kind == TypeKind.Unknown) {
-					Colorize (typeOfExpression.Type, "keyword.semantic.error");
+					Colorize (typeOfExpression.Type, "Syntax Error");
 					return;
 				}
 				base.VisitTypeOfExpression (typeOfExpression);
@@ -561,7 +559,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				var result = resolver.Resolve (pointerReferenceExpression, cancellationToken);
 				if (result.IsError) {
 					// if && csharpSyntaxMode.guiDocument.Project != null
-					Colorize (pointerReferenceExpression.MemberNameToken, "keyword.semantic.error");
+					Colorize (pointerReferenceExpression.MemberNameToken, "Syntax Error");
 				}
 
 				if (result is MemberResolveResult) {
@@ -569,23 +567,23 @@ namespace MonoDevelop.CSharp.Highlighting
 					switch (member.EntityType) {
 					case EntityType.Field:
 						if (!member.IsStatic && !((IField)member).IsConst)
-							Colorize (pointerReferenceExpression.MemberNameToken, "keyword.semantic.field");
+							Colorize (pointerReferenceExpression.MemberNameToken, "User Field Usage");
 						break;
 					case EntityType.Property:
-						Colorize (pointerReferenceExpression.MemberNameToken, "keyword.semantic.property");
+						Colorize (pointerReferenceExpression.MemberNameToken, "User Property Usage");
 						break;
 					case EntityType.Method:
-						Colorize (pointerReferenceExpression.MemberNameToken, "keyword.semantic.method");
+						Colorize (pointerReferenceExpression.MemberNameToken, "User Method Usage");
 						break;
 					}
 				}
 
 				if (result is MethodGroupResolveResult) {
-					Colorize (pointerReferenceExpression.MemberNameToken, "keyword.semantic.method");
+					Colorize (pointerReferenceExpression.MemberNameToken, "User Method Usage");
 				}
 
 				if (result is TypeResolveResult) {
-					Colorize (pointerReferenceExpression.MemberNameToken, "keyword.semantic.type");
+					Colorize (pointerReferenceExpression.MemberNameToken, "User Types");
 				}
 			}
 			public override void VisitQueryWhereClause (QueryWhereClause queryWhereClause)
@@ -766,7 +764,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			_commentRule.Delimiter = new string ("&()<>{}[]~!%^*-+=|\\#/:;\"' ,\t.?".Where (c => joinedTasks.IndexOf (c) < 0).ToArray ());
 			_commentRule.Keywords = new[] {
 				new Keywords {
-					Color = "comment.keyword.todo",
+					Color = "Comment Tag",
 					Words = CommentTag.SpecialCommentTags.Select (t => t.Tag)
 				}
 			};
@@ -784,8 +782,8 @@ namespace MonoDevelop.CSharp.Highlighting
 			bool loadRules = _rules == null;
 
 			if (loadRules) {
-				var provider = new ResourceXmlProvider (typeof(IXmlProvider).Assembly, typeof(IXmlProvider).Assembly.GetManifestResourceNames ().First (s => s.Contains ("CSharpSyntaxMode")));
-				using (XmlReader reader = provider.Open ()) {
+				var provider = new ResourceStreamProvider (typeof(ResourceStreamProvider).Assembly, typeof(ResourceStreamProvider).Assembly.GetManifestResourceNames ().First (s => s.Contains ("CSharpSyntaxMode")));
+				using (var reader = provider.Open ()) {
 					SyntaxMode baseMode = SyntaxMode.Read (reader);
 					_rules = new List<Rule> (baseMode.Rules.Where (r => r.Name != "Comment"));
 					_rules.Add (new Rule (this) {
@@ -834,9 +832,9 @@ namespace MonoDevelop.CSharp.Highlighting
 			properties = _properties;
 
 			if (loadRules) {
-				AddSemanticRule ("Comment", new HighlightUrlSemanticRule ("comment"));
-				AddSemanticRule ("XmlDocumentation", new HighlightUrlSemanticRule ("comment"));
-				AddSemanticRule ("String", new HighlightUrlSemanticRule ("string"));
+				AddSemanticRule ("Comment", new HighlightUrlSemanticRule ("Comment(Line)"));
+				AddSemanticRule ("XmlDocumentation", new HighlightUrlSemanticRule ("Comment(Doc)"));
+				AddSemanticRule ("String", new HighlightUrlSemanticRule ("String"));
 			}
 		}
 
@@ -892,12 +890,12 @@ namespace MonoDevelop.CSharp.Highlighting
 			
 			protected void SetColor ()
 			{
-				TagColor = "text.preprocessor";
+				TagColor = "Preprocessor";
 				if (disabled || !IsValid) {
-					Color = "comment.block";
+					Color = "Comment(Block)";
 					Rule = "PreProcessorComment";
 				} else {
-					Color = "text";
+					Color = "Plain Text";
 					Rule = "<root>";
 				}
 			}
@@ -917,7 +915,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			{
 				this.define = define;
 				StopAtEol = false;
-				Color = "text";
+				Color = "Plain Text";
 				Rule = "<root>";
 			}
 		}
@@ -1043,7 +1041,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			{
 				if (spanParser.CurRule.Name == "Comment") {
 					if (tags.Contains (doc.GetTextAt (chunk))) 
-						return "comment.keyword.todo";
+						return "Comment Tag";
 				}
 				return base.GetStyle (chunk);
 			}
@@ -1351,8 +1349,8 @@ namespace MonoDevelop.CSharp.Highlighting
 			public static Span CreatePreprocessorSpan ()
 			{
 				var result = new Span ();
-				result.TagColor = "text.preprocessor";
-				result.Color = "text.preprocessor";
+				result.TagColor = "Preprocessor";
+				result.Color = "Preprocessor";
 				result.Rule = "String";
 				result.StopAtEol = true;
 				return result;

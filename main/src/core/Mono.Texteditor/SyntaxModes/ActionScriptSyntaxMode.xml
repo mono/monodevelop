@@ -24,77 +24,77 @@
  THE SOFTWARE. -->
  
 <SyntaxMode name = "ActionScript" mimeTypes="application/actionscript">
-	<EolSpan color = "comment" rule="Comment">//</EolSpan>
-	<Span color = "comment" rule="Comment">
+	<EolSpan color = "Comment(Line)" rule="Comment">//</EolSpan>
+	<Span color = "Comment(Line)" rule="Comment">
 		<Begin>/*</Begin>
 		<End>*/</End>
 	</Span>
 	
-	<Span color = "string" stopateol = "true" escape='\"'>
+	<Span color = "String" stopateol = "true" escape='\"'>
 		<Begin>"</Begin>
 		<End>"</End>
 	</Span>
 
-	<Span color = "string" stopateol = "true" escape='\"'>
+	<Span color = "String" stopateol = "true" escape='\"'>
 		<Begin>&apos;</Begin>
 		<End>&apos;</End>
 	</Span>
 	
-	<Match color = "string">CSharpNumber</Match>
+	<Match color = "String">CSharpNumber</Match>
 	
-	<Keywords color = "keyword.access">
+	<Keywords color = "Keyword(Access)">
 		<Word>this</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.operator">
+	<Keywords color = "Keyword(Operator)">
 		<Word>new</Word>
 		<Word>typeof</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.selection">
+	<Keywords color = "Keyword(Selection)">
 		<Word>else</Word>
 		<Word>if</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.iteration">
+	<Keywords color = "Keyword(Iteration)">
 		<Word>do</Word>
 		<Word>for</Word>
 		<Word>while</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.jump">
+	<Keywords color = "Keyword(Jump)">
 		<Word>break</Word>
 		<Word>continue</Word>
 		<Word>return</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.exceptions">
+	<Keywords color = "Keyword(Exception)">
 		<Word>try</Word>
 		<Word>throw</Word>
 		<Word>catch</Word>
 		<Word>finally</Word>
 	</Keywords>
 	
-	<Keywords color = "constant.language">
+	<Keywords color = "Keyword(Constants)">
 		<Word>true</Word>
 		<Word>false</Word>
 		<Word>null</Word>
 	</Keywords>
 
-	<Keywords color = "constant.language.void">
+	<Keywords color = "Keyword(Void)">
 		<Word>void</Word>
 	</Keywords>
 		
-	<Keywords color = "keyword.type">
+	<Keywords color = "Keyword(Type)">
 		<Word>var</Word>
 	</Keywords>
 
-	<Keywords color = "keyword.declaration">
+	<Keywords color = "Keyword(Declaration)">
 		<Word>function</Word>
 		<Word>class</Word>
 	</Keywords>
 
-	<Keywords color = "keyword.modifier">
+	<Keywords color = "Keyword(Modifiers)">
 		<Word>public</Word>
 		<Word>protected</Word>
 		<Word>private</Word>
@@ -104,7 +104,7 @@
 		<Word>extends</Word>
 	</Keywords>
 
-	<Keywords color = "keyword.namespace">
+	<Keywords color = "Keyword(Namespace)">
 		<Word>package</Word>
 		<Word>import</Word>
 		<Word>use</Word>
@@ -112,7 +112,7 @@
 	</Keywords>
 	
 	<Rule name = "Comment">
-		<Keywords color="comment.keyword.todo" ignorecase="True">
+		<Keywords color="Comment Tag" ignorecase="True">
 			<Word>TODO</Word>
 			<Word>FIXME</Word>
 			<Word>HACK</Word>

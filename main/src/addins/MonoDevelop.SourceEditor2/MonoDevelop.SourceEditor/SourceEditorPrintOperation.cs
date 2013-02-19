@@ -123,14 +123,14 @@ namespace MonoDevelop.SourceEditor
 					
 					var startChunk = doc.SyntaxMode.GetChunks (style, line, line.Offset, line.LengthIncludingDelimiter);
 					foreach (Chunk chunk in startChunk) {
-						ChunkStyle chunkStyle = chunk != null ? style.GetChunkStyle (chunk) : null;
+						var chunkStyle = chunk != null ? style.GetChunkStyle (chunk) : null;
 						string text = doc.GetTextAt (chunk);
 						text = text.Replace ("\t", new string (' ', settings.TabSize));
 						layout.SetText (text);
 					
 						var atts = ResetAttributes ();
 					
-						atts.Insert (new Pango.AttrForeground (chunkStyle.Color.Red, chunkStyle.Color.Green, chunkStyle.Color.Blue));
+						atts.Insert (new Pango.AttrForeground ((ushort)(chunkStyle.Foreground.R * ushort.MaxValue), (ushort)(chunkStyle.Foreground.G * ushort.MaxValue), (ushort)(chunkStyle.Foreground.B * ushort.MaxValue)));
 					
 						if (chunkStyle.Bold) {
 							atts.Insert (new Pango.AttrWeight (Pango.Weight.Bold));

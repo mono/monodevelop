@@ -25,49 +25,51 @@
  
 <SyntaxMode name = "ASP.NET ASHX/ASMX/ASIX" mimeTypes="application/x-ashx;application/x-asmx;application/x-asix" extends="text/x-csharp">
 	<!-- directives -->
-	<Span color = "template.tag" tagColor="template.tag" rule = "InTag">
+	<Span color = "Html Server-Side Script" tagColor="Html Server-Side Script" rule = "InTag">
 		<Begin>&lt;%@</Begin>
 		<End>%&gt;</End>
 	</Span>
 	
 	<!-- tag definitions -->
 	<Rule name = "InTag">
-		<Span color = "string" rule="InLiteral">
+		<Span tagColor = "Xml Attribute Quotes"  color = "Xml Attribute Value" rule="InLiteral">
 			<Begin>&quot;</Begin>
 			<End>&quot;</End>
 		</Span>
 		
-		<Span color = "string" rule="InLiteral">
+		<Span tagColor = "Xml Attribute Quotes"  color = "Xml Attribute Value" rule="InLiteral">
 			<Begin>&apos;</Begin>
 			<End>&apos;</End>
 		</Span>
 		
-		<!-- attributes -->
-		<Match color = "keyword.type">[A-Za-z0-9_]+(:[A-Za-z0-9_]+)?[\s\n\r]*=</Match>
-		
 		<!-- comments -->
-		<Span color = "comment.server" rule = "Comment">
+		<Span tagColor = "Xml Delimiter" color = "Xml Comment" rule = "Comment">
 			<Begin>&lt;%--</Begin>
 			<End>--%&gt;</End>
 		</Span>
 	
 		<!-- expressions -->
-		<Span color = "template" tagColor="template.tag">
+		<Span color = "Razor Code" tagColor="Html Server-Side Script">
 			<Begin>&lt;%</Begin>
 			<End>%&gt;</End>
 		</Span>
 		
+		<!-- attributes -->
+		<Match expression="([A-Za-z0-9_]+[:[A-Za-z0-9_]+]?)([\s\n\r]*=)">
+			<Group color = "Html Attribute Name"/>
+			<Group color = "Html Operator"/>
+		</Match>
 	</Rule>
 	
 	<Rule name = "InLiteral">
 		<!-- entities -->
-		<Span color = "text.preprocessor">
+		<Span color = "Html Entity">
 			<Begin>&amp;</Begin>
 			<End>;</End>
 		</Span>
 		
 		<!-- expressions -->
-		<Span color = "template" tagColor="template.tag">
+		<Span color = "Razor Code" tagColor="Html Server-Side Script">
 			<Begin>&lt;%</Begin>
 			<End>%&gt;</End>
 		</Span>

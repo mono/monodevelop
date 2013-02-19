@@ -68,7 +68,6 @@ test-results/
 main/external/Makefile
 /main/contrib/Makefile
 /main/contrib/Mono.Cecil/Makefile
-/main/contrib/NRefactory/Makefile
 /main/contrib/ICSharpCode.NRefactory.CSharp/Makefile
 /main/contrib/GitSharp/Makefile
 /main/contrib/Mono.Debugger.Soft/Makefile

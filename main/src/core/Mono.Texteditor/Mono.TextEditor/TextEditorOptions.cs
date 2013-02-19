@@ -62,7 +62,7 @@ namespace Mono.TextEditor
 		bool allowTabsAfterNonTabs = true;
 		bool useAntiAliasing = true;
 		string fontName = DEFAULT_FONT;
-		string colorStyle = "text";
+		string colorStyle = "Default";
 		Pango.FontDescription font;
 		
 		double zoom = 1d;

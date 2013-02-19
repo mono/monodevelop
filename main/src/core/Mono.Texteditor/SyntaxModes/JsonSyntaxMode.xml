@@ -32,11 +32,17 @@ THE SOFTWARE.
 	</Span>
 	
 	<Rule name = "Object">
-		<Span rule="String" color="keyword.semantic.type" escape='\'>
+		<Span rule="Object">
+			<Begin>{</Begin>
+			<End>}</End>
+		</Span>
+
+		<Span rule="String" color="User Types" escape='\'>
 			<Begin>"</Begin>
 			<End>"</End>
 		</Span>
-		<Span rule="Value">
+		
+		<Span rule="Value" tagColor="Plain Text">
 			<Begin>:</Begin>
 			<Exit>,|}</Exit>
 		</Span>
@@ -44,7 +50,7 @@ THE SOFTWARE.
 	
 	<Rule name = "Value">
 		<!-- array -->
-		<Span color = "keyword.type" rule="Value">
+		<Span rule="Value">
 			<Begin>[</Begin>
 			<End>]</End>
 		</Span>
@@ -52,15 +58,15 @@ THE SOFTWARE.
 			<Begin>{</Begin>
 			<End>}</End>
 		</Span>
-		<Span color = "string" rule="String" escape='\'>
+		<Span color = "String" rule="String" escape='\'>
 			<Begin>"</Begin>
 			<End>"</End>
 		</Span>
 		<!-- this isn't quite accurate, the JSON number format is a subset of the C# format -->
-		<Match color = "constant.number">
+		<Match color = "Number">
 			CSharpNumber
 		</Match>
-		<Keywords color = "constant.language">
+		<Keywords color = "Keyword(Constants)">
 			<Word>true</Word>
 			<Word>false</Word>
 			<Word>null</Word>

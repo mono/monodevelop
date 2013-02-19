@@ -41,8 +41,8 @@ namespace MonoDevelop.AspNet
 		
 		public AspNetSyntaxMode ()
 		{
-			ResourceXmlProvider provider = new ResourceXmlProvider (typeof(IXmlProvider).Assembly, "AspNetSyntaxMode.xml");
-			using (XmlReader reader = provider.Open ()) {
+			var provider = new ResourceStreamProvider (typeof(ResourceStreamProvider).Assembly, "AspNetSyntaxMode.xml");
+			using (var reader = provider.Open ()) {
 				SyntaxMode baseMode = SyntaxMode.Read (reader);
 				this.rules = new List<Rule> (baseMode.Rules);
 				this.keywords = new List<Keywords> (baseMode.Keywords);
@@ -72,8 +72,8 @@ namespace MonoDevelop.AspNet
 					Rule = "mode:" + language;
 					Begin = new Regex ("<%");
 					End = new Regex ("<%");
-					Color = "template";
-					TagColor = "template.tag";
+					Color = "Razor Code";
+					TagColor = "Html Server-Side Script";
 					StopAtEol = false;
 				}
 			}
@@ -86,7 +86,7 @@ namespace MonoDevelop.AspNet
 					Begin = new Regex ("<script");
 					End = new Regex ("</script");
 					Color = "";
-					TagColor = "xml.name";
+					TagColor = "Xml Name";
 				}
 			}
 			

@@ -29,18 +29,13 @@
 //
 
 using System;
-using System.Threading;
 using System.IO;
-using System.Xml;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection;
-using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.AddIns;
-using MonoDevelop.Core.Serialization;
 using Mono.Addins;
-using Mono.Cecil;
+using System.Reflection;
+using System.Linq;
 
 namespace MonoDevelop.Core.Assemblies
 {
@@ -72,11 +67,13 @@ namespace MonoDevelop.Core.Assemblies
 			
 			// Don't initialize until Current and Default Runtimes are set
 			foreach (TargetRuntime runtime in runtimes) {
-				InitializeRuntime (runtime);
+				runtime.Initialized += HandleRuntimeInitialized;
 			}
-			
+
 			if (CurrentRuntime == null)
 				LoggingService.LogFatalError ("Could not create runtime info for current runtime");
+
+			CurrentRuntime.StartInitialization ();
 			
 			LoadUserAssemblyContext ();
 			userAssemblyContext.Changed += delegate {
@@ -93,15 +90,18 @@ namespace MonoDevelop.Core.Assemblies
 		void HandleRuntimeInitialized (object sender, EventArgs e)
 		{
 			var runtime = (TargetRuntime) sender;
-			runtime.Initialized -= HandleRuntimeInitialized;
 			lock (frameworkWriteLock) {
-				var newFxList = new Dictionary<TargetFrameworkMoniker,TargetFramework> (frameworks);
-				foreach (var fx in runtime.CustomFrameworks) {
-					if (!newFxList.ContainsKey (fx.Id))
-						newFxList[fx.Id] = fx;
+				if (runtime.CustomFrameworks.Any ()) {
+					var newFxList = new Dictionary<TargetFrameworkMoniker,TargetFramework> (frameworks);
+					foreach (var fx in runtime.CustomFrameworks) {
+						TargetFramework existing;
+						if (!newFxList.TryGetValue (fx.Id, out existing) || existing.Assemblies.Length == 0) {
+							newFxList [fx.Id] = fx;
+						}
+					}
+					BuildFrameworkRelations (newFxList);
+					frameworks = newFxList;
 				}
-				BuildFrameworkRelations (newFxList);
-				frameworks = newFxList;
 			}
 		}
 		
@@ -126,7 +126,7 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public void RegisterRuntime (TargetRuntime runtime)
 		{
-			InitializeRuntime (runtime);
+			runtime.Initialized += HandleRuntimeInitialized;
 			runtimes.Add (runtime);
 			if (RuntimesChanged != null)
 				RuntimesChanged (this, EventArgs.Empty);
@@ -138,25 +138,23 @@ namespace MonoDevelop.Core.Assemblies
 				return;
 			DefaultRuntime = CurrentRuntime;
 			runtimes.Remove (runtime);
+			runtime.Initialized -= HandleRuntimeInitialized;
 			if (RuntimesChanged != null)
 				RuntimesChanged (this, EventArgs.Empty);
 		}
 		
-		internal IEnumerable<TargetFramework> GetCoreFrameworks ()
+		internal IEnumerable<TargetFramework> GetKnownFrameworks ()
 		{
-			foreach (var id in coreFrameworks)
-				yield return frameworks[id];
+			return frameworks.Values;
 		}
-		
-		void EnsureRuntimesInitialized ()
+
+		internal bool IsKnownFramework (TargetFrameworkMoniker moniker)
 		{
-			foreach (var r in runtimes)
-				r.EnsureInitialized ();
+			return frameworks.ContainsKey (moniker);
 		}
 		
 		public IEnumerable<TargetFramework> GetTargetFrameworks ()
 		{
-			EnsureRuntimesInitialized ();
 			return frameworks.Values;
 		}
 		
@@ -184,7 +182,6 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public TargetFramework GetTargetFramework (TargetFrameworkMoniker id)
 		{
-			EnsureRuntimesInitialized ();
 			return GetTargetFramework (id, frameworks);
 		}
 		
@@ -215,9 +212,9 @@ namespace MonoDevelop.Core.Assemblies
 			return null;
 		}
 
-		public static AssemblyName ParseAssemblyName (string fullname)
+		public static System.Reflection.AssemblyName ParseAssemblyName (string fullname)
 		{
-			AssemblyName aname = new AssemblyName ();
+			var aname = new System.Reflection.AssemblyName ();
 			int i = fullname.IndexOf (',');
 			if (i == -1) {
 				aname.Name = fullname.Trim ();
@@ -240,33 +237,30 @@ namespace MonoDevelop.Core.Assemblies
 		}
 		
 		static Dictionary<string, AssemblyName> assemblyNameCache = new Dictionary<string, AssemblyName> ();
-		internal static System.Reflection.AssemblyName GetAssemblyNameObj (string file)
+		internal static AssemblyName GetAssemblyNameObj (string file)
 		{
+			AssemblyName name;
+
 			lock (assemblyNameCache) {
-				AssemblyName name;
 				if (assemblyNameCache.TryGetValue (file, out name))
 					return name;
-				
-				try {
-					/*
-					// Don't use reflection to get the name since it is a common cause for deadlocks
-					// in Mono < 2.6.
-					AssemblyDefinition asm = AssemblyDefinition.ReadAssembly (file);
-					assemblyNameCache [file] = new AssemblyName (asm.Name.FullName);
-					return assemblyNameCache [file];
-					*/
-					assemblyNameCache [file] = System.Reflection.AssemblyName.GetAssemblyName (file);
-					return assemblyNameCache [file];
-				} catch (FileNotFoundException) {
-					// GetAssemblyName is not case insensitive in mono/windows. This is a workaround
-					foreach (string f in Directory.GetFiles (Path.GetDirectoryName (file), Path.GetFileName (file))) {
-						if (f != file) {
-							assemblyNameCache [file] = GetAssemblyNameObj (f);
-							return assemblyNameCache [file];
-						}
-					}
-					throw;
+			}
+
+			try {
+				name = AssemblyName.GetAssemblyName (file);
+				lock (assemblyNameCache) {
+					assemblyNameCache [file] = name;
 				}
+				return name;
+			} catch (FileNotFoundException) {
+				// GetAssemblyName is not case insensitive in mono/windows. This is a workaround
+				foreach (string f in Directory.GetFiles (Path.GetDirectoryName (file), Path.GetFileName (file))) {
+					if (f != file) {
+						GetAssemblyNameObj (f);
+						return assemblyNameCache [file];
+					}
+				}
+				throw;
 			}
 		}
 		
@@ -319,18 +313,23 @@ namespace MonoDevelop.Core.Assemblies
 		}
 		
 		//FIXME: this is totally broken. assemblies can't just belong to one framework
-		// also, it currently only resolves assemblies against the core frameworks
 		public TargetFrameworkMoniker GetTargetFrameworkForAssembly (TargetRuntime tr, string file)
 		{
+			var universe = new IKVM.Reflection.Universe ();
 			try {
-				AssemblyDefinition asm = AssemblyDefinition.ReadAssembly (file);
-
-				foreach (AssemblyNameReference aname in asm.MainModule.AssemblyReferences) {
-					if (aname.Name == "mscorlib") {
+				IKVM.Reflection.Assembly assembly = universe.LoadFile (file);
+				var att = assembly.CustomAttributes.FirstOrDefault (a =>
+					a.AttributeType.FullName == "System.Runtime.Versioning.TargetFrameworkAttribute"
+				);
+				if (att != null) {
+					return TargetFrameworkMoniker.Parse ((string)att.ConstructorArguments[0].Value);
+				}
+				foreach (var r in assembly.GetReferencedAssemblies ()) {
+					if (r.Name == "mscorlib") {
 						TargetFramework compatibleFramework = null;
 						// If there are several frameworks that can run the file, pick one that is installed
-						foreach (TargetFramework tf in GetCoreFrameworks ()) {
-							if (tf.GetCorlibVersion () == aname.Version.ToString ()) {
+						foreach (TargetFramework tf in GetKnownFrameworks ()) {
+							if (tf.GetCorlibVersion () == r.Version.ToString ()) {
 								compatibleFramework = tf;
 								if (tr.IsInstalled (tf))
 									return tf.Id;
@@ -343,6 +342,8 @@ namespace MonoDevelop.Core.Assemblies
 				}
 			} catch {
 				// Ignore
+			} finally {
+				universe.Dispose ();
 			}
 			return TargetFrameworkMoniker.UNKNOWN;
 		}
@@ -377,18 +378,6 @@ namespace MonoDevelop.Core.Assemblies
 					yield return r.Name;
 				}
 			}
-
-			/* CECIL version:
-
-			Mono.Cecil.AssemblyDefinition adef;
-			try {
-				adef = Mono.Cecil.AssemblyDefinition.ReadAssembly (fileName);
-			} catch {
-				yield break;
-			}
-			foreach (Mono.Cecil.AssemblyNameReference aref in adef.MainModule.AssemblyReferences) {
-				yield return aref.Name;
-			}*/
 		}
 
 		public class ManifestResource
@@ -427,17 +416,6 @@ namespace MonoDevelop.Core.Assemblies
 					yield return new ManifestResource (r, () => assembly.GetManifestResourceStream (r));
 				}
 			}
-
-			/* CECIL version:
-
-		Mono.Cecil.AssemblyDefinition a = Mono.Cecil.AssemblyDefinition.ReadAssembly (asmInBundle);
-			foreach (Mono.Cecil.ModuleDefinition m in a.Modules) {
-				for (int i = 0; i < m.Resources.Count; i++) {
-					var er = m.Resources[i] as Mono.Cecil.EmbeddedResource;
-					
-					yield return new ManifestResource (er.Name, () => er.GetResourceStream ().ReadToEnd ());
-				}
-			}*/
 		}
 
 	}

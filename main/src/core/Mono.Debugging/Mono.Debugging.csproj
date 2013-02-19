@@ -84,7 +84,6 @@
     <Compile Include="Mono.Debugging.Evaluation\ICollectionAdaptor.cs" />
     <Compile Include="Mono.Debugging.Evaluation\LiteralValueReference.cs" />
     <Compile Include="Mono.Debugging.Evaluation\NamespaceValueReference.cs" />
-    <Compile Include="Mono.Debugging.Evaluation\NRefactoryEvaluator.cs" />
     <Compile Include="Mono.Debugging.Evaluation\NullValueReference.cs" />
     <Compile Include="Mono.Debugging.Evaluation\ObjectValueAdaptor.cs" />
     <Compile Include="Mono.Debugging.Evaluation\RawViewSource.cs" />
@@ -100,7 +99,6 @@
     <Compile Include="Mono.Debugging.Evaluation\BaseBacktrace.cs" />
     <Compile Include="Mono.Debugging.Evaluation\BaseTypeViewSource.cs" />
     <Compile Include="Mono.Debugging.Evaluation\IObjectSource.cs" />
-    <Compile Include="Mono.Debugging.Evaluation\NRefactoryResolverVisitor.cs" />
     <Compile Include="Mono.Debugging.Client\RawValue.cs" />
     <Compile Include="Mono.Debugging.Evaluation\RemoteRawValue.cs" />
     <Compile Include="Mono.Debugging.Client\ExceptionInfo.cs" />
@@ -109,16 +107,23 @@
     <Compile Include="Mono.Debugging.Client\BreakEventInfo.cs" />
     <Compile Include="Mono.Debugging.Client\FunctionBreakpoint.cs" />
     <Compile Include="Mono.Debugging.Evaluation\IStringAdaptor.cs" />
+    <Compile Include="Mono.Debugging.Evaluation\NRefactoryExpressionEvaluator.cs" />
+    <Compile Include="Mono.Debugging.Evaluation\NRefactoryExpressionEvaluatorVisitor.cs" />
+    <Compile Include="Mono.Debugging.Evaluation\NRefactoryExpressionResolverVisitor.cs" />
+    <Compile Include="Mono.Debugging.Evaluation\NRefactoryExtensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Mono.Debugging.Evaluation\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\contrib\NRefactory\Project\NRefactory.csproj">
-      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
-      <Name>NRefactory</Name>
-      <Private>False</Private>
+    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
+      <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
+      <Name>ICSharpCode.NRefactory.CSharp</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

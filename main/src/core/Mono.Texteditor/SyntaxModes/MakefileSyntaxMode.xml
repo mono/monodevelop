@@ -25,38 +25,38 @@
 
 <SyntaxMode name = "Makefile" mimeTypes="text/x-makefile">
 	
-	<EolSpan color = "comment" rule ="InLocation" flags="StartsLine">#</EolSpan>
+	<EolSpan color = "Comment(Line)" rule ="InLocation" flags="StartsLine">#</EolSpan>
 	
-	<Span color = "keyword.misc" rule="InLocation" stopateol = "true">
+	<Span color = "Keyword(Other)" rule="InLocation" stopateol = "true">
 		<Begin>$(</Begin>
 		<End>)</End>
 	</Span>
 	
-	<Span color = "keyword.misc" rule="InLocation" stopateol = "true">
+	<Span color = "Keyword(Other)" rule="InLocation" stopateol = "true">
 		<Begin>${</Begin>
 		<End>}</End>
 	</Span>
 	
-	<Span color = "string.single" rule="String" stopateol = "true" escape="\">
+	<Span color = "String" rule="String" stopateol = "true" escape="\">
 		<Begin>&apos;</Begin>
 		<End>&apos;</End>
 	</Span>
 	
-	<Span color = "string.double" rule="String" stopateol = "true" escape='\'>
+	<Span color = "String" rule="String" stopateol = "true" escape='\'>
 		<Begin>"</Begin>
 		<End>"</End>
 	</Span>
 	
-	<Span color = "string.other" rule="String" stopateol = "true" escape='\'>
+	<Span color = "String" rule="String" stopateol = "true" escape='\'>
 		<Begin>`</Begin>
 		<End>`</End>
 	</Span>
 	
-	<PrevMarker color = "keyword.property">:</PrevMarker>
+	<PrevMarker color = "Keyword(Property)">:</PrevMarker>
 	
-	<PrevMarker color = "keyword.property">=</PrevMarker>
+	<PrevMarker color = "Keyword(Property)">=</PrevMarker>
 	<!--
-	<Keywords color = "keyword.operator">
+	<Keywords color = "Keyword(Operator)">
 		<Word>define</Word>
 		<Word>else</Word>
 		<Word>endef</Word>
@@ -71,7 +71,7 @@
 		<Word>unexport</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.selection">
+	<Keywords color = "Keyword(Selection)">
 		<Word>addprefix</Word>
 		<Word>addsuffix</Word>
 		<Word>basename</Word>

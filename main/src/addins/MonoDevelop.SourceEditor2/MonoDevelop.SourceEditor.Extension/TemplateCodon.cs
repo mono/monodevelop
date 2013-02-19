@@ -33,7 +33,7 @@ using Mono.TextEditor.Highlighting;
 namespace MonoDevelop.SourceEditor.Extension
 {
 	[ExtensionNode (Description="A template for color and syntax shemes.")]
-	public class TemplateCodon : ExtensionNode, IXmlProvider
+	public class TemplateCodon : ExtensionNode, Mono.TextEditor.Highlighting.IStreamProvider
 	{
 		[NodeAttribute("resource", "Name of the resource where the template is stored.")]
 		string resource;
@@ -46,7 +46,7 @@ namespace MonoDevelop.SourceEditor.Extension
 			resource = file = null;
 		}
 		
-		public XmlReader Open ()
+		public Stream Open ()
 		{
 			Stream stream;
 			if (!string.IsNullOrEmpty (file)) {
@@ -59,9 +59,7 @@ namespace MonoDevelop.SourceEditor.Extension
 				throw new InvalidOperationException ("Template file or resource not provided");
 			}
 			
-			XmlReaderSettings settings = new XmlReaderSettings ();
-			settings.CloseInput = true;
-			return XmlTextReader.Create (stream, settings);
+			return stream;
 		}
 	}
 }

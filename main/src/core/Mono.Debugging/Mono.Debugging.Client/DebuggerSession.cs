@@ -873,7 +873,7 @@ namespace Mono.Debugging.Client
 		{
 		}
 		
-		Mono.Debugging.Evaluation.ExpressionEvaluator defaultResolver = new Mono.Debugging.Evaluation.NRefactoryEvaluator ();
+		Mono.Debugging.Evaluation.ExpressionEvaluator defaultResolver = new Mono.Debugging.Evaluation.NRefactoryExpressionEvaluator ();
 		Dictionary <string, IExpressionEvaluator> evaluators = new Dictionary <string, IExpressionEvaluator> ();
 
 		internal IExpressionEvaluator FindExpressionEvaluator (StackFrame frame)

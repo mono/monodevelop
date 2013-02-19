@@ -70,7 +70,7 @@ namespace Mono.TextEditor
 
 		HslColor GetColor (int i, double brightness, int colorCount)
 		{
-			HslColor hslColor = new HslColor (editor.ColorStyle.Default.BackgroundColor);
+			HslColor hslColor = new HslColor (editor.ColorStyle.PlainText.Background);
 			int colorPosition = i + 1;
 			if (i == foldSegments.Count - 1)
 				return hslColor;
@@ -88,7 +88,7 @@ namespace Mono.TextEditor
 			ISyntaxMode mode = Document.SyntaxMode != null && editor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : new SyntaxMode (Document);
 
 			TextViewMargin.LayoutWrapper lineLayout = null;
-			double brightness = HslColor.Brightness (editor.ColorStyle.Default.BackgroundColor);
+			double brightness = HslColor.Brightness (editor.ColorStyle.PlainText.Background);
 
 			int colorCount = foldSegments.Count + 2;
 			cr.Color = GetColor (-1, brightness, colorCount);
@@ -105,10 +105,12 @@ namespace Mono.TextEditor
 
 				int curWidth = 0;
 				var endLine = segmentEndLine.NextLine;
-				for (var curLine = segmentStartLine; curLine != endLine; curLine = curLine.NextLine) {
+				var y = editor.LineToY (segmentStartLine.LineNumber);
+				for (var curLine = segmentStartLine; curLine != endLine && y < editor.Allocation.Height; curLine = curLine.NextLine) {
 					var curLayout = textViewMargin.CreateLinePartLayout (mode, curLine, curLine.Offset, curLine.Length, -1, -1);
 					var width = (int)(curLayout.PangoWidth / Pango.Scale.PangoScale);
 					curWidth = System.Math.Max (curWidth, width);
+					y += editor.GetLineHeight (curLine);
 				}
 
 				double xPos = textViewMargin.XOffset;
@@ -129,7 +131,7 @@ namespace Mono.TextEditor
 					rectangleWidth = System.Math.Max ((rectangles [i + 1].X + rectangles[i + 1].Width + rightMarginPadding) - xPos, rectangleWidth);
 				}
 
-				var y = editor.LineToY (segment.StartLine.LineNumber);
+				y = editor.LineToY (segment.StartLine.LineNumber);
 				var yEnd = editor.LineToY (segment.EndLine.LineNumber + 1);
 				if (yEnd == 0)
 					yEnd = editor.VAdjustment.Upper;
@@ -176,7 +178,7 @@ namespace Mono.TextEditor
 						alpha = 0.1 + (1.0 - animationState) / 5;
 					}
 
-					var bg = editor.ColorStyle.Default.CairoColor;
+					var bg = editor.ColorStyle.PlainText.Foreground;
 					cr.Color = new Cairo.Color (bg.R, bg.G, bg.B, alpha);
 					DrawRoundRectangle (cr, true, true, rect.X - editor.HAdjustment.Value - curPadSize , rect.Y - editor.VAdjustment.Value - curPadSize, editor.LineHeight / 2, rect.Width + curPadSize * 2, rect.Height + curPadSize * 2);
 					cr.Fill ();

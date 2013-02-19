@@ -30,21 +30,21 @@
   <Property name="StringQuote">"</Property>
   <Property name="StringQuote">'</Property>
 
-  <EolSpan color="text.preprocessor" rule="text.preprocessor">#</EolSpan>
-  <EolSpan color="comment.doc" rule="XmlDocumentation" tagColor="comment.tag.doc">///</EolSpan>
-  <EolSpan color="comment.line" rule="Comment" tagColor="comment.tag.line">//</EolSpan>
+  <EolSpan color="Preprocessor" rule="text.preprocessor">#</EolSpan>
+  <EolSpan color="Comment(Doc)" rule="XmlDocumentation" tagColor="Comment(Line)">///</EolSpan>
+  <EolSpan color="Comment(Line)" rule="Comment" tagColor="Comment(Line)">//</EolSpan>
 
-  <Span color="comment.block" rule="MultiComment" tagColor="comment.tag.block">
-    <Begin>(*!)</Begin>
+  <Span color="Comment(Block)" rule="MultiComment" tagColor="Comment(Line)">
+    <Begin>(*$)</Begin>
     <End>*)</End>
   </Span>
 
-  <Span color="string.other" rule="String" stopateol="false" escape='""'>
+  <Span color="String" rule="String" stopateol="false" escape='""'>
     <Begin>@"</Begin>
     <End>"</End>
   </Span>
 
-  <Span color="string.double" rule="String" stopateol="true" escape='\'>
+  <Span color="String" rule="String" stopateol="true" escape='\'>
     <Begin>"</Begin>
     <End>"</End>
   </Span>
@@ -52,34 +52,34 @@
 <!-- 
   NOTE: We cannot support chars because ' is also used for type parameters...
 
-  <Span color="string.single" rule="String" stopateol="true" escape="\">
+  <Span color="String" rule="String" stopateol="true" escape="\">
     <Begin>&apos;</Begin>
     <End>&apos;</End>
   </Span>
 -->
 
-  <Match color="constant.digit">CSharpNumber</Match>
+  <Match color="Number">CSharpNumber</Match>
 
-  <Keywords color="keyword.access">
+  <Keywords color="Keyword(Access)">
   </Keywords>
 
-  <Keywords color="keyword.selection">
+  <Keywords color="Keyword(Selection)">
   </Keywords>
 
-  <Keywords color="keyword.context">
+  <Keywords color="Keyword(Context)">
   </Keywords>
 
-  <Keywords color="keyword.exceptions">
+  <Keywords color="Keyword(Exception)">
   </Keywords>
 
-  <Keywords color="keyword.modifier">
+  <Keywords color="Keyword(Modifiers)">
   </Keywords>
 
   <!-- It is really impossible to do some intelligent grouping here, because
        it looks weird no matter what we do... some things are context-sensitive,
        some things may appear in unexpected place.. so just use single color -->
        
-  <Keywords color="keyword.jump">
+  <Keywords color="Keyword(Jump)">
     <!-- expressions that create some value -->
     
     <Word>false</Word>
@@ -91,7 +91,7 @@
     <Word>new</Word>
   </Keywords>
 
-  <Keywords color="keyword.iteration">
+  <Keywords color="Keyword(Iteration)">
   
     <!-- control flow constructs -->
     <Word>finally</Word>
@@ -155,7 +155,7 @@
     
   </Keywords>
 
-  <Keywords color="keyword.operator">
+  <Keywords color="Keyword(Operator)">
     <Word>as</Word>
     <Word>assert</Word>
     <Word>or</Word>
@@ -168,36 +168,36 @@
     <Word>downcast</Word>
   </Keywords>
 
-  <Keywords color="constant.language">
+  <Keywords color="Keyword(Constants)">
   </Keywords>
 
-  <Keywords color="keyword.type">
+  <Keywords color="Keyword(Type)">
   </Keywords>
 
-  <Keywords color="constant.language.void">
+  <Keywords color="Keyword(Void)">
   </Keywords>
 
-  <Keywords color="keyword.namespace">
+  <Keywords color="Keyword(Namespace)">
   </Keywords>
 
-  <Keywords color="keyword.property">
+  <Keywords color="Keyword(Property)">
   </Keywords>
 
-  <Keywords color="keyword.declaration">
+  <Keywords color="Keyword(Declaration)">
   </Keywords>
 
-  <Keywords color="keyword.parameter">
+  <Keywords color="Keyword(Parameter)">
   </Keywords>
 
 
-  <Keywords color="keyword.operator.declaration">
+  <Keywords color="Keyword(Operator Declaration)">
   </Keywords>
 
-  <Keywords color="keyword.misc">
+  <Keywords color="Keyword(Other)">
   </Keywords>
 
   <Rule name="text.preprocessor">
-    <Keywords color="text.preprocessor.keyword">
+    <Keywords color="Preprocessor Keyword">
       <Word>if</Word>
       <Word>else</Word>
       <Word>elif</Word>
@@ -216,7 +216,7 @@
   </Rule>
 
   <Rule name="Comment">
-    <Keywords color="comment.keyword.todo" ignorecase="True">
+    <Keywords color="Comment Tag" ignorecase="True">
       <Word>TODO</Word>
       <Word>FIXME</Word>
       <Word>HACK</Word>
@@ -225,12 +225,12 @@
   </Rule>
   
   <Rule name="MultiComment">
-    <Span color="comment.block" rule="MultiComment" tagColor="comment.tag.block">
+    <Span color="Comment(Block)" rule="MultiComment" tagColor="comment.tag.block">
 		<Begin>(*!)</Begin>
 		<End>*)</End>
 	</Span>
 
-    <Keywords color="comment.keyword.todo" ignorecase="True">
+    <Keywords color="Comment Tag" ignorecase="True">
       <Word>TODO</Word>
       <Word>FIXME</Word>
       <Word>HACK</Word>
@@ -249,11 +249,11 @@
   </Rule>
 
   <Rule name="XmlDocumentationTag">
-    <Span color="string" stopateol="true" escape="\" rule="String" >
+    <Span color="String" stopateol="true" escape="\" rule="String" >
       <Begin>"</Begin>
       <End>"</End>
     </Span>
-    <Keywords color="comment.keyword">
+    <Keywords color="Comment(DocTag)">
       <Word>c</Word>
       <Word>code</Word>
       <Word>example</Word>

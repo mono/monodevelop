@@ -90,7 +90,7 @@
   <Assembly name="Microsoft.VisualBasic.Compatibility.Data" version="10.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
   <Assembly name="Microsoft.VisualBasic.Compatibility" version="10.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
   <Assembly name="mscorlib" version="4.0.0.0" publicKeyToken="b77a5c561934e089" />
-  <Assembly name="ICSharpCode.SharpZipLib" />
+  <Assembly name="ICSharpCode.SharpZipLib" version="4.84.0.0" publicKeyToken="1b03e6acf1164f73" />
   <Assembly name="Accessibility" version="4.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
   <Assembly name="cscompmgd" />
   <Assembly name="Microsoft.CSharp" version="4.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
@@ -103,24 +103,24 @@
   <Assembly name="Microsoft.Vsa" />
   <Assembly name="Microsoft.Vsa.Vb.CodeDOMProcessor" />
   <Assembly name="Mono.Data" />
-  <Assembly name="Mono.Data.Sqlite" />
+  <Assembly name="Mono.Data.Sqlite" version="4.0.0.0" publicKeyToken="0738eb9f132ed756" />
   <Assembly name="Mono.Data.SqliteClient" />
   <Assembly name="Mono.Data.SybaseClient" />
-  <Assembly name="Mono.Data.Tds" />
+  <Assembly name="Mono.Data.Tds" version="4.0.0.0" publicKeyToken="0738eb9f132ed756" />
   <Assembly name="Mono.Data.TdsClient" />
-  <Assembly name="Mono.Debugger.Soft" />
+  <Assembly name="Mono.Debugger.Soft" version="4.0.0.0" publicKeyToken="0738eb9f132ed756" />
   <Assembly name="Mono.GetOptions" />
-  <Assembly name="Mono.Posix" />
-  <Assembly name="Mono.Security" />
-  <Assembly name="Mono.WebBrowser" />
-  <Assembly name="Mono.CompilerServices.SymbolWriter" />
-  <Assembly name="Mono.Cairo" />
-  <Assembly name="Mono.Http" />
+  <Assembly name="Mono.Posix" version="4.0.0.0" publicKeyToken="0738eb9f132ed756" />
+  <Assembly name="Mono.Security" version="4.0.0.0" publicKeyToken="0738eb9f132ed756" />
+  <Assembly name="Mono.WebBrowser" version="4.0.0.0" publicKeyToken="0738eb9f132ed756" />
+  <Assembly name="Mono.CompilerServices.SymbolWriter" version="4.0.0.0" publicKeyToken="0738eb9f132ed756" />
+  <Assembly name="Mono.Cairo" version="4.0.0.0" publicKeyToken="0738eb9f132ed756" />
+  <Assembly name="Mono.Http" version="4.0.0.0" publicKeyToken="0738eb9f132ed756" />
   <Assembly name="Mono.Mozilla" />
-  <Assembly name="Mono.Security.Win32" />
+  <Assembly name="Mono.Security.Win32" version="4.0.0.0" publicKeyToken="0738eb9f132ed756" />
   <Assembly name="Mono.WebServer" />
-  <Assembly name="Novell.Directory.Ldap" />
-  <Assembly name="Npgsql" />
+  <Assembly name="Novell.Directory.Ldap" version="4.0.0.0" publicKeyToken="0738eb9f132ed756" />
+  <Assembly name="Npgsql" version="4.0.0.0" publicKeyToken="5d8b90d52f46fda7" />
   <Assembly name="System.Configuration.Install" version="4.0.0.0" publicKeyToken="b03f5f7f11d50a3a" />
   <Assembly name="System.Data" version="4.0.0.0" publicKeyToken="b77a5c561934e089" />
   <Assembly name="System.Data.OracleClient" version="4.0.0.0" publicKeyToken="b77a5c561934e089" />

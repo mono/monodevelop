@@ -10,4 +10,4 @@ MonoAddinsTestCommand=MonoDevelop.exe
 Name: MonoDevelop
 Description: Free .NET Development Environment
 Version: @VERSION@
-Libs: -r:${libdir}/bin/MonoDevelop.Core.dll -r:${libdir}/bin/MonoDevelop.Ide.dll -r:${libdir}/bin/OldNRefactory.dll -r:${libdir}/bin/ICSharpCode.NRefactory.dll -r:${libdir}/bin/ICSharpCode.NRefactory.CSharp.dll -r:${libdir}/bin/Mono.Cecil.dll -r:${libdir}/bin/Mono.TextEditor.dll -r:${libdir}/bin/Mono.Debugging.dll -r:${libdir}/bin/Newtonsoft.Json.dll -r:${libdir}/bin/Xwt.dll -r:${libdir}/bin/Xwt.Gtk.dll 
+Libs: -r:${libdir}/bin/MonoDevelop.Core.dll -r:${libdir}/bin/MonoDevelop.Ide.dll -r:${libdir}/bin/ICSharpCode.NRefactory.dll -r:${libdir}/bin/ICSharpCode.NRefactory.CSharp.dll -r:${libdir}/bin/Mono.Cecil.dll -r:${libdir}/bin/Mono.TextEditor.dll -r:${libdir}/bin/Mono.Debugging.dll -r:${libdir}/bin/Newtonsoft.Json.dll -r:${libdir}/bin/Xwt.dll -r:${libdir}/bin/Xwt.Gtk.dll 

@@ -31,35 +31,35 @@
 	<Property name="StringQuote">"</Property>
 	<Property name="StringQuote">'</Property>
 	
-	<EolSpan color = "comment" rule="Comment">//</EolSpan>
-	<Span color = "comment" rule="Comment">
+	<EolSpan color = "Comment(Line)" rule="Comment">//</EolSpan>
+	<Span color = "Comment(Line)" rule="Comment">
 		<Begin>/*</Begin>
 		<End>*/</End>
 	</Span>
 	
-	<Span color = "string" rule = "String" stopateol = "true" escape='\'>
+	<Span color = "String" rule = "String" stopateol = "true" escape='\'>
 		<Begin>"</Begin>
 		<End>"</End>
 	</Span>
 
-	<Span color = "string" stopateol = "true" escape='\'>
+	<Span color = "String" stopateol = "true" escape='\'>
 		<Begin>&apos;</Begin>
 		<End>&apos;</End>
 	</Span>
 	
-	<Match color = "string">CSharpNumber</Match>
+	<Match color = "String">CSharpNumber</Match>
 	
-	<Keywords color = "keyword.access">
+	<Keywords color = "Keyword(Access)">
 		<Word>this</Word>
 		<Word>super</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.operator">
+	<Keywords color = "Keyword(Operator)">
 		<Word>new</Word>
 		<Word>instanceof</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.selection">
+	<Keywords color = "Keyword(Selection)">
 		<Word>else</Word>
 		<Word>if</Word>
 		<Word>switch</Word>
@@ -67,33 +67,33 @@
 		<Word>default</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.iteration">
+	<Keywords color = "Keyword(Iteration)">
 		<Word>do</Word>
 		<Word>for</Word>
 		<Word>while</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.jump">
+	<Keywords color = "Keyword(Jump)">
 		<Word>break</Word>
 		<Word>continue</Word>
 		<Word>goto</Word>
 		<Word>return</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.exceptions">
+	<Keywords color = "Keyword(Exception)">
 		<Word>try</Word>
 		<Word>throw</Word>
 		<Word>catch</Word>
 		<Word>finally</Word>
 	</Keywords>
 	
-	<Keywords color = "constant.language">
+	<Keywords color = "Keyword(Constants)">
 		<Word>true</Word>
 		<Word>false</Word>
 		<Word>null</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.modifier">
+	<Keywords color = "Keyword(Modifiers)">
 		<Word>abstract</Word>
 		<Word>const</Word>
 		<Word>static</Word>
@@ -113,7 +113,7 @@
 		<Word>internal</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.type">
+	<Keywords color = "Keyword(Type)">
 		<Word>boolean</Word>
 		<Word>byte</Word>
 		<Word>char</Word>
@@ -126,28 +126,28 @@
 		<Word>object</Word>
 	</Keywords>
 	
-	<Keywords color = "constant.language.void">
+	<Keywords color = "Keyword(Void)">
 		<Word>void</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.namespace">
+	<Keywords color = "Keyword(Namespace)">
 		<Word>package</Word>
 		<Word>import</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.declaration">
+	<Keywords color = "Keyword(Declaration)">
 		<Word>class</Word>
 		<Word>interface</Word>
 	</Keywords>
 
 	<Rule name = "Comment">
-		<Keywords color="comment.keyword.todo" ignorecase="True">
+		<Keywords color="Comment Tag" ignorecase="True">
 			<Word>TODO</Word>
 			<Word>FIXME</Word>
 			<Word>HACK</Word>
 			<Word>UNDONE</Word>
 		</Keywords>	
-		<Keywords color="comment.keyword" ignorecase="True">
+		<Keywords color="Comment Tag" ignorecase="True">
 			<Word>@author</Word>
 			<Word>@deprecated</Word>
 			<Word>@return</Word>

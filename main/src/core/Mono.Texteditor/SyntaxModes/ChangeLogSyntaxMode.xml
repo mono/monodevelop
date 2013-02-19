@@ -24,14 +24,14 @@
  THE SOFTWARE. -->
 
 <SyntaxMode name = "Changelog" mimeTypes="text/x-changelog">
-	<Match color = "string">\d{4}-\d{2}-\d{2}</Match>
+	<Match color = "String">\d{4}-\d{2}-\d{2}</Match>
 	
-	<Span color = "xml.name" rule ="InEmail">
+	<Span color = "Xml Name" rule ="InEmail">
 		<Begin>&lt;</Begin>
 		<End>&gt;</End>
 	</Span>
 	
-	<Span color = "comment" rule="Comment" tagColor="text.preprocessor">
+	<Span color = "Comment(Line)" rule="Comment" tagColor="Preprocessor">
 		<Begin flags="FirstNonWs">* </Begin>
 		<End>:</End>
 	</Span>	

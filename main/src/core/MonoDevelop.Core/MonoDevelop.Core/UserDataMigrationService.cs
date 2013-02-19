@@ -168,7 +168,9 @@ namespace MonoDevelop.Core
 		
 		static void DirectoryCopy (FilePath source, FilePath target)
 		{
-			foreach (FilePath f in Directory.EnumerateFiles (source, "*", SearchOption.AllDirectories)) {
+			// HACK: we were using EnumerateFiles but it's broken in some Mono releases
+			// https://bugzilla.xamarin.com/show_bug.cgi?id=2975
+			foreach (FilePath f in Directory.GetFiles (source, "*", SearchOption.AllDirectories)) {
 				var rel = FileService.AbsoluteToRelativePath (source, f);
 				var t = target.Combine (rel);
 				var dir = t.ParentDirectory;

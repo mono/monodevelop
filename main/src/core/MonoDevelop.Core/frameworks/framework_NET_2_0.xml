@@ -30,7 +30,7 @@
   <Assembly name="Mono.Data.SybaseClient" version="2.0.0.0" publicKeyToken="0738eb9f132ed756" />
   <Assembly name="Mono.Data.Tds" version="2.0.0.0" publicKeyToken="0738eb9f132ed756" />
   <Assembly name="Mono.Data.TdsClient" version="2.0.0.0" publicKeyToken="0738eb9f132ed756" />
-  <Assembly name="Mono.Debugger.Soft" />
+  <Assembly name="Mono.Debugger.Soft"  version="2.0.0.0" publicKeyToken="0738eb9f132ed756" />
   <Assembly name="Mono.GetOptions" version="2.0.0.0" publicKeyToken="0738eb9f132ed756" />
   <Assembly name="Mono.Posix" version="2.0.0.0" publicKeyToken="0738eb9f132ed756" />
   <Assembly name="Mono.Security" version="2.0.0.0" publicKeyToken="0738eb9f132ed756" />
