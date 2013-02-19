@@ -193,8 +193,6 @@ module internal TipFormatter =
   let private buildFormatComment cmt = 
     match cmt with
     | XmlCommentText(s) -> GLib.Markup.EscapeText s
-    // For 'XmlCommentSignature' we could get documentation from 'xml' 
-    // files, but I'm not sure whether these are available on Mono
     | XmlCommentSignature(file,key) -> 
         match findDocForEntity (file, key) with 
         | None -> ""
@@ -209,12 +207,10 @@ module internal TipFormatter =
                 elif (idx1 >= 0) then tag1 + doc.Substring (idx1 + tag1.Length) + tag2
                 elif (idx2 >= 0) then tag1 + doc.Substring (0, idx2 - 1) + tag2
                 else doc
-
-            let html1 = 
-                try MonoDevelop.Ide.TypeSystem.AmbienceService.GetDocumentationMarkup summary 
-                with _ -> GLib.Markup.EscapeText summary
-            let html2 = if String.IsNullOrEmpty html1 then summary else html1
-            html2 
+            // Try and get the final markup from GetDocumentationMarkup. An empty string is returned when the docs 
+            // contains no documentation.  The best thing to do here is to return the empty sting.  
+            try MonoDevelop.Ide.TypeSystem.AmbienceService.GetDocumentationMarkup summary 
+            with _ -> GLib.Markup.EscapeText summary
     | _ -> ""
 
   /// Format some of the data returned by the F# compiler
