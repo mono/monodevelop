@@ -11,19 +11,29 @@ namespace MonoDevelop.VersionControl.Subversion
 {
 	public abstract class SubversionVersionControl : VersionControlSystem
 	{
-		public override string Name {
+		internal static string GetTextBase(string sourcefile)
+		{
+			return Path.Combine (Path.GetDirectoryName(sourcefile), ".svn", "text-base", Path.GetFileName(sourcefile) + ".svn-base");
+		}
+		
+		internal static string GetDirectoryDotSvn (string sourcepath)
+		{
+			return Path.Combine(sourcepath, ".svn");
+		}
+
+		internal static bool IsVersioned (FilePath sourcefile)
+		{
+			return File.Exists (GetTextBase (sourcefile)) || Directory.Exists (GetDirectoryDotSvn (sourcefile));
+		}
+
+		public override string Name
+		{
 			get { return "Subversion"; }
 		}
+
+		public abstract SubversionBackend CreateBackend ();
 		
-		protected override Repository OnCreateRepositoryInstance ()
-		{
-			return new SubversionRepository ();
-		}
-		
-		public override IRepositoryEditor CreateRepositoryEditor (Repository repo)
-		{
-			return new UrlBasedRepositoryEditor ((SubversionRepository)repo);
-		}
+		public abstract string GetPathUrl (FilePath path);
 
 		public override Repository GetRepositoryReference (FilePath path, string id)
 		{
@@ -39,29 +49,27 @@ namespace MonoDevelop.VersionControl.Subversion
 			}
 		}
 
-		public override void StoreRepositoryReference (Repository repo, FilePath path, string id)
+		protected override Repository OnCreateRepositoryInstance ()
 		{
-			// Nothing to do
+			return new SubversionRepository ();
 		}
 		
-		string GetTextBase(string sourcefile) {
-			return Path.Combine(
-				Path.Combine(
-					Path.Combine(
-						Path.GetDirectoryName(sourcefile),
-						 ".svn"),
-					"text-base"),
-				Path.GetFileName(sourcefile) + ".svn-base"); 
+		public override IRepositoryEditor CreateRepositoryEditor (Repository repo)
+		{
+			return new UrlBasedRepositoryEditor ((SubversionRepository)repo);
 		}
-	
-		internal static string GetDirectoryDotSvn (string sourcepath) {
-			return Path.Combine(sourcepath, ".svn");
+	}
+
+	public abstract class SubversionBackend
+	{
+		string GetTextBase (string sourcefile)
+		{
+			return SubversionVersionControl.GetTextBase (sourcefile);
 		}
 		
-		public bool IsVersioned (FilePath sourcefile)
+		string GetDirectoryDotSvn (string sourcepath)
 		{
-			return File.Exists (GetTextBase (sourcefile))
-				|| Directory.Exists (GetDirectoryDotSvn (sourcefile));
+			return SubversionVersionControl.GetDirectoryDotSvn (sourcepath);
 		}
 
 		public string GetPathToBaseText (FilePath sourcefile) {
@@ -232,9 +240,6 @@ namespace MonoDevelop.VersionControl.Subversion
 		public abstract string GetUnifiedDiff (FilePath path1, SvnRevision revision1, FilePath path2, SvnRevision revision2, bool recursive);
 		
 		public abstract string GetVersion ();
-
-		public abstract string GetPathUrl (FilePath path);
-
 
 		static protected bool SimpleAuthenticationPrompt (string realm, bool may_save, ref string user_name, out string password, out bool save)
 		{

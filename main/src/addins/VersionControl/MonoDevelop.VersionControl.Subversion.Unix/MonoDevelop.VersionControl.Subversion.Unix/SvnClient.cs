@@ -16,39 +16,73 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 {
 	class SvnClient : SubversionVersionControl
 	{
-		static LibSvnClient svn;
-		static LibApr apr;
-		static bool isInstallChecked;
-		
-		bool disposed  = false;
-		IntPtr auth_baton;
-		IntPtr pool;
-		IntPtr ctx;
-		
-		object sync = new object();
-		bool inProgress = false;
-		
-		IProgressMonitor updatemonitor;
-		ArrayList updateFileList;
-		string commitmessage = null;
-		
-		ArrayList lockFileList;
-		LibSvnClient.NotifyLockState requiredLockState;
-		
-		// retain this so the delegates aren't GC'ed
-		LibSvnClient.svn_client_ctx_t ctxstruct;
-		
-		static void CheckInstalled ()
+		internal static LibApr apr;
+		static Lazy<bool> isInstalled;
+		internal static LibSvnClient svn;
+
+		internal static void CheckError (IntPtr error)
 		{
-			isInstallChecked = true;
-			
+			CheckError (error, null);
+		}
+
+		public static void CheckError (IntPtr error, int? allowedError)
+		{
+			string msg = null;
+			while (error != IntPtr.Zero) {
+				LibSvnClient.svn_error_t error_t = (LibSvnClient.svn_error_t) Marshal.PtrToStructure (error, typeof (LibSvnClient.svn_error_t));
+				if (allowedError.HasValue && error_t.apr_err == allowedError.Value)
+					return;
+
+				if (msg != null)
+					msg += "\n" + GetErrorMessage (error_t);
+				else
+					msg = GetErrorMessage (error_t);
+				error = error_t.svn_error_t_child;
+
+				if (msg == null)
+					msg = GettextCatalog.GetString ("Unknown error");
+
+				throw new SubversionException (msg);
+			}
+		}
+		
+		static string GetErrorMessage (LibSvnClient.svn_error_t error)
+		{
+			if (error.message != null)
+				return error.message;
+			else {
+				byte[] buf = new byte [300];
+				svn.strerror (error.apr_err, buf, buf.Length);
+				return Encoding.UTF8.GetString (buf);
+			}
+		}
+
+		internal static IntPtr newpool (IntPtr parent)
+		{
+			IntPtr p;
+			apr.pool_create_ex (out p, parent, IntPtr.Zero, IntPtr.Zero);
+			if (p == IntPtr.Zero)
+				throw new InvalidOperationException ("Could not create an APR pool.");
+			return p;
+		}
+		
+		public static string NormalizePath (string pathOrUrl, IntPtr localpool)
+		{
+			if (pathOrUrl == null)
+				return null;
+			IntPtr res = svn.path_internal_style (pathOrUrl, localpool);
+			return Marshal.PtrToStringAnsi (res);
+		}
+
+		static bool CheckInstalled ()
+		{
 			// libsvn_client may be linked to libapr-0 or libapr-1, and we need to bind the LibApr class
 			// the the same library. The following code detects the required libapr version and loads it. 
 			int aprver = GetLoadAprLib (-1);
 			svn = LibSvnClient.GetLib ();
 			if (svn == null) {
 				LoggingService.LogWarning ("Subversion addin could not load libsvn_client, so it will be disabled.");
-				return;
+				return false;
 			}
 			aprver = GetLoadAprLib (aprver);
 			if (aprver != -1)
@@ -57,24 +91,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			if (apr == null) {
 				svn = null;
 				LoggingService.LogInfo ("Subversion addin could not load libapr, so it will be disabled.");
+				return false;
 			}
-		}
-
-		static bool IsBinary (byte[] buffer, long length)
-		{
-			length = (int)Math.Min (50 * 1024, length);
-			for (int i = 0; i < length; i ++)
-				if (buffer [i] == 0)
-					return true;
-			return false;
-		}
-		
-		public override bool IsInstalled {
-			get {
-				if (!isInstallChecked)
-					CheckInstalled ();
-				return svn != null;
-			}
+			return true;
 		}
 		
 		static int GetLoadAprLib (int oldVersion)
@@ -96,28 +115,102 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				return oldVersion;
 			}
 		}
-		
-		private static IntPtr newpool (IntPtr parent)
-		{
-			IntPtr p;
-			apr.pool_create_ex (out p, parent, IntPtr.Zero, IntPtr.Zero);
-			if (p == IntPtr.Zero)
-				throw new InvalidOperationException ("Could not create an APR pool.");
-			return p;
-		}
-		
+
 		public override string Id {
 			get {
 				return "MonoDevelop.VersionControl.Subversion.SubversionVersionControl";
 			}
 		}
 
-		
-		public SvnClient ()
+		public override bool IsInstalled {
+			get { return isInstalled.Value; }
+		}
+
+		static SvnClient ()
 		{
-			if (!IsInstalled)
-				return;
-			
+			isInstalled = new Lazy<bool> (CheckInstalled);
+		}
+
+		public override SubversionBackend CreateBackend ()
+		{
+			return new UnixSvnBackend ();
+		}
+
+		public override string GetPathUrl (FilePath path)
+		{
+			if (path == FilePath.Null)
+				throw new ArgumentNullException();
+
+			IntPtr ret = IntPtr.Zero;
+			IntPtr localpool = newpool (IntPtr.Zero);
+			try {
+				string npath = NormalizePath (path, localpool);
+				CheckError (svn.client_url_from_path (ref ret, npath, localpool));
+			} finally {
+				apr.pool_destroy (localpool);
+			}
+
+			if (ret == IntPtr.Zero)
+				return null;
+
+			return Marshal.PtrToStringAnsi (ret);
+		}
+	}
+
+	class UnixSvnBackend : SubversionBackend
+	{
+		protected static LibApr apr {
+			get { return SvnClient.apr; }
+		}
+		
+		protected static LibSvnClient svn {
+			get { return SvnClient.svn; }
+		}
+
+		static void CheckError (IntPtr error)
+		{
+			SvnClient.CheckError (error);
+		}
+
+		static void CheckError (IntPtr error, int? allowedError)
+		{
+			SvnClient.CheckError (error, allowedError);
+		}
+
+		static IntPtr newpool (IntPtr parent)
+		{
+			return SvnClient.newpool (parent);
+		}
+
+		bool disposed  = false;
+		IntPtr auth_baton;
+		IntPtr pool;
+		IntPtr ctx;
+
+		object sync = new object();
+		bool inProgress = false;
+
+		IProgressMonitor updatemonitor;
+		ArrayList updateFileList;
+		string commitmessage = null;
+
+		ArrayList lockFileList;
+		LibSvnClient.NotifyLockState requiredLockState;
+
+		// retain this so the delegates aren't GC'ed
+		LibSvnClient.svn_client_ctx_t ctxstruct;
+
+		static bool IsBinary (byte[] buffer, long length)
+		{
+			length = (int)Math.Min (50 * 1024, length);
+			for (int i = 0; i < length; i ++)
+				if (buffer [i] == 0)
+					return true;
+			return false;
+		}
+
+		public UnixSvnBackend ()
+		{
 			// Allocate the APR pool and the SVN client context.
 			pool = newpool (IntPtr.Zero);
 
@@ -210,7 +303,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 		}
 		
-		~SvnClient ()
+		~UnixSvnBackend ()
 		{
 			Dispose ();
 		}
@@ -340,12 +433,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			return ListUrl (path, recurse, rev);
 		}
 		
-		string NormalizePath (string pathOrUrl, IntPtr localpool)
+		static string NormalizePath (string pathOrUrl, IntPtr localpool)
 		{
-			if (pathOrUrl == null)
-				return null;
-			IntPtr res = svn.path_internal_style (pathOrUrl, localpool);
-			return Marshal.PtrToStringAnsi (res);
+			return SvnClient.NormalizePath (pathOrUrl, localpool);
 		}
 		
 		public override IEnumerable<DirectoryEntry> ListUrl (string pathorurl, bool recurse, SvnRevision rev)
@@ -488,26 +578,6 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			return annotations;
 		}
 
-		public override string GetPathUrl (FilePath path)
-		{
-			if (path == FilePath.Null)
-				throw new ArgumentNullException();
-			
-			IntPtr ret = IntPtr.Zero;
-			IntPtr localpool = newpool (pool);
-			try {
-				string npath = NormalizePath (path, localpool);
-				CheckError (svn.client_url_from_path (ref ret, npath, localpool));
-			} finally {
-				apr.pool_destroy (localpool);
-			}
-			
-			if (ret == IntPtr.Zero)
-				return null;
-			
-			return Marshal.PtrToStringAnsi (ret);
-		}
-		
 		public override string GetTextAtRevision (string pathorurl, Revision revision)
 		{
 			MemoryStream memstream = new MemoryStream ();
@@ -964,43 +1034,6 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 		}
 
-		internal static void CheckError (IntPtr error)
-		{
-			CheckError (error, null);
-		}
-
-		internal static void CheckError (IntPtr error, int? allowedError)
-		{
-			string msg = null;
-			while (error != IntPtr.Zero) {
-				LibSvnClient.svn_error_t error_t = (LibSvnClient.svn_error_t) Marshal.PtrToStructure (error, typeof (LibSvnClient.svn_error_t));
-				if (allowedError.HasValue && error_t.apr_err == allowedError.Value)
-					return;
-
-				if (msg != null)
-					msg += "\n" + GetErrorMessage (error_t);
-				else
-					msg = GetErrorMessage (error_t);
-				error = error_t.svn_error_t_child;
-
-				if (msg == null)
-					msg = GettextCatalog.GetString ("Unknown error");
-				
-				throw new SubversionException (msg);
-			}
-		}
-		
-		static string GetErrorMessage (LibSvnClient.svn_error_t error)
-		{
-			if (error.message != null)
-				return error.message;
-			else {
-				byte[] buf = new byte [300];
-				svn.strerror (error.apr_err, buf, buf.Length);
-				return Encoding.UTF8.GetString (buf);
-			}
-		}
-		
 		private VersionInfo CreateNode (LibSvnClient.StatusEnt ent, Repository repo) 
 		{
 			VersionStatus rs = VersionStatus.Unversioned;

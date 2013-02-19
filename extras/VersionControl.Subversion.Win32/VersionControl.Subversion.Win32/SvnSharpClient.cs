@@ -15,20 +15,59 @@ namespace SubversionAddinWindows
 {
 	public class SvnSharpClient: SubversionVersionControl
 	{
-		SvnClient client;
-		bool errorShown;
-		bool installError;
-
-		public SvnSharpClient ( )
+		static bool errorShown;
+		static bool installError;
+		static SvnClient client;
+		
+		static SvnSharpClient ()
 		{
 			try {
-				Init ();
-			}
-			catch (Exception ex) {
+				client = new SvnClient ();
+			} catch (Exception ex) {
 				LoggingService.LogError ("SVN client could not be initialized", ex);
 				installError = true;
 			}
 		}
+
+		public override SubversionBackend CreateBackend ()
+		{
+			return new SvnSharpBackend ();
+		}
+			
+		public override string GetPathUrl (FilePath path)
+		{
+			lock (client) {
+				Uri u = client.GetUriFromWorkingCopy (path);
+				return u != null ? u.ToString () : null;
+			}
+		}
+
+		public override bool IsInstalled
+		{
+			get
+			{
+				if (!errorShown && installError) {
+					errorShown = true;
+					AlertButton db = new AlertButton ("Go to Download Page");
+					AlertButton res = MessageService.AskQuestion ("The Subversion add-in could not be initialized", "This add-in requires the 'Microsoft Visual C++ 2005 Service Pack 1 Redistributable'. You may need to install it.", db, AlertButton.Ok);
+					if (res == db) {
+						DesktopService.ShowUrl ("http://www.microsoft.com/downloads/details.aspx?familyid=766a6af7-ec73-40ff-b072-9112bab119c2");
+					}
+				}
+				return !installError;
+			}
+		}
+	}
+
+	public class SvnSharpBackend: SubversionBackend
+	{
+		SvnClient client;
+
+		public SvnSharpBackend ()
+		{
+			Init ();
+		}
+
 		void Init ( )
 		{
 			client = new SvnClient ();
@@ -96,20 +135,6 @@ namespace SubversionAddinWindows
 			e.CertificateFile = file;
 		}
 
-		public override bool IsInstalled {
-			get {
-				if (!errorShown && installError) {
-					errorShown = true;
-					AlertButton db = new AlertButton ("Go to Download Page");
-					AlertButton res = MessageService.AskQuestion ("The Subversion add-in could not be initialized", "This add-in requires the 'Microsoft Visual C++ 2005 Service Pack 1 Redistributable'. You may need to install it.", db, AlertButton.Ok);
-					if (res == db) {
-						DesktopService.ShowUrl ("http://www.microsoft.com/downloads/details.aspx?familyid=766a6af7-ec73-40ff-b072-9112bab119c2");
-					}
-				}
-				return !installError;
-			}
-		}
-
 		public override void Add (FilePath path, bool recurse, IProgressMonitor monitor)
 		{
 			SvnAddArgs args = new SvnAddArgs ();
@@ -140,12 +165,6 @@ namespace SubversionAddinWindows
 			BindMonitor (args, monitor);
 			args.Force = force;
 			client.Delete (path, args);
-		}
-
-		public override string GetPathUrl (FilePath path)
-		{
-			Uri u = client.GetUriFromWorkingCopy (path);
-			return u != null ? u.ToString () : null;
 		}
 
 		public override string GetTextAtRevision (string repositoryPath, Revision revision)

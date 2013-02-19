@@ -47,7 +47,7 @@ namespace MonoDevelop.VersionControl.Subversion
 				
 				foreach (DirectoryEntry ent in Svn.ListUrl (Url, false)) {
 					if (ent.IsDirectory) {
-						SubversionRepository rep = new SubversionRepository (Svn, Url + "/" + ent.Name, null);
+						SubversionRepository rep = new SubversionRepository (VersionControlSystem, Url + "/" + ent.Name, null);
 						rep.Name = ent.Name;
 						list.Add (rep);
 					}
@@ -55,14 +55,24 @@ namespace MonoDevelop.VersionControl.Subversion
 				return list;
 			}
 		}
-		
-		SubversionVersionControl Svn {
-			get { return (SubversionVersionControl) VersionControlSystem; }
+
+		SubversionVersionControl VersionControlSystem {
+			get { return (SubversionVersionControl) base.VersionControlSystem;
+			}
 		}
 
-		bool IsVersioned (FilePath sourcefile)
+		SubversionBackend backend;
+		protected internal SubversionBackend Svn {
+			get {
+				if (backend == null)
+					backend = VersionControlSystem.CreateBackend ();
+				return backend;
+			}
+		}
+
+		static bool IsVersioned (FilePath sourcefile)
 		{
-			return Svn.IsVersioned (sourcefile);
+			return SubversionVersionControl.IsVersioned (sourcefile);
 		}
 		
 		public override string GetBaseText (FilePath sourcefile)
@@ -163,7 +173,7 @@ namespace MonoDevelop.VersionControl.Subversion
 
 			Svn.Commit (new FilePath[] { localPath }, message, monitor);
 			
-			return new SubversionRepository (Svn, paths[0], localPath);
+			return new SubversionRepository (VersionControlSystem, paths[0], localPath);
 		}
 
 		void PublishDir (Set<FilePath> dirs, FilePath dir, bool rec, IProgressMonitor monitor)
