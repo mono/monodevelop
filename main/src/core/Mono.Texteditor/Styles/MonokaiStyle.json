@@ -30,7 +30,7 @@
 		{ "name": "Fold Square", "color":"monokai-comment", "secondcolor":"monokai-background" },
 		{ "name": "Fold Cross", "color":"white", "secondcolor":"monokai-background" },
 		
-		{ "name": "Indentation Guide", "color":"white" },
+		{ "name": "Indentation Guide", "color":"monokai-comment" },
 
 		{ "name": "Indicator Margin", "color":"#3B3A32" },
 		{ "name": "Indicator Margin(Separator)", "color":"#3B3A32" },
