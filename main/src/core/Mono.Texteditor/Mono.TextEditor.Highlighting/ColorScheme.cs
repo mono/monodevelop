@@ -55,7 +55,7 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("Fold Square", VSSetting="color=outlining.verticalrule/Foreground")]
 		public AmbientColor FoldLineColor { get; private set; }
 		
-		[ColorDescription("Fold Cross", VSSetting="color=outlining.square/Foreground")]
+		[ColorDescription("Fold Cross", VSSetting="color=outlining.square/Foreground,secondcolor=outlining.square/Background")]
 		public AmbientColor FoldCross { get; private set; }
 		
 		[ColorDescription("Indentation Guide", VSSetting="color=Plain Text/Foreground")]

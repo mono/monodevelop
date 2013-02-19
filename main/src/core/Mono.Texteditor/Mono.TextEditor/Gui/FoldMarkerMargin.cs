@@ -240,13 +240,14 @@ namespace Mono.TextEditor
 			
 			foldLineHighlightedGCBg = hslColor;
 			foldToggleMarkerGC = editor.ColorStyle.FoldCross.GetColor ("color");
+			foldToggleMarkerBackground = editor.ColorStyle.FoldCross.GetColor ("secondcolor");
 			lineStateChangedGC = editor.ColorStyle.QuickDiffChanged.GetColor ("color");
 			lineStateDirtyGC = editor.ColorStyle.QuickDiffDirty.GetColor ("color");
 			
 			marginWidth = editor.LineHeight;
 		}
 		
-		Cairo.Color foldBgGC, foldLineGC, foldLineHighlightedGC, foldLineHighlightedGCBg, foldToggleMarkerGC;
+		Cairo.Color foldBgGC, foldLineGC, foldLineHighlightedGC, foldLineHighlightedGCBg, foldToggleMarkerGC, foldToggleMarkerBackground;
 		Cairo.Color lineStateChangedGC, lineStateDirtyGC;
 		
 		public override void Dispose ()
@@ -262,7 +263,7 @@ namespace Mono.TextEditor
 			var drawArea = new Cairo.Rectangle (System.Math.Floor (x + (Width - foldSegmentSize) / 2) + 0.5, 
 			                                    System.Math.Floor (y + (editor.LineHeight - foldSegmentSize) / 2) + 0.5, foldSegmentSize, foldSegmentSize);
 			ctx.Rectangle (drawArea);
-			ctx.Color = foldBgGC;
+			ctx.Color = isOpen ? foldBgGC : foldToggleMarkerBackground;
 			ctx.FillPreserve ();
 			ctx.Color = isSelected ? foldLineHighlightedGC  : foldLineGC;
 			ctx.Stroke ();
