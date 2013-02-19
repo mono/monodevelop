@@ -815,8 +815,10 @@ namespace Mono.TextEditor.Highlighting
 				if (!found && !importedAmbientColors.Contains (vsc.Name))
 					Console.WriteLine (vsc.Name + " not imported!");
 			}
-
-
+			result.TooltipText = result.PlainText;
+			var h = (HslColor)result.TooltipText.Background;
+			h.L *= 1.1;
+			result.TooltipText.Background = h;
 			return result;
 		}
 
