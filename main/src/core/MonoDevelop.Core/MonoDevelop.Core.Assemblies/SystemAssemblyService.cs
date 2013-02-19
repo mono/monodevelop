@@ -316,6 +316,7 @@ namespace MonoDevelop.Core.Assemblies
 		public TargetFrameworkMoniker GetTargetFrameworkForAssembly (TargetRuntime tr, string file)
 		{
 			var universe = new IKVM.Reflection.Universe ();
+			universe.EnableMissingMemberResolution ();
 			try {
 				IKVM.Reflection.Assembly assembly = universe.LoadFile (file);
 				var att = assembly.CustomAttributes.FirstOrDefault (a =>
