@@ -323,8 +323,16 @@ namespace MonoDevelop.Core.Assemblies
 					a.AttributeType.FullName == "System.Runtime.Versioning.TargetFrameworkAttribute"
 				);
 				if (att != null) {
-					return TargetFrameworkMoniker.Parse ((string)att.ConstructorArguments[0].Value);
+					if (att.ConstructorArguments.Count == 1) {
+						var v = att.ConstructorArguments[0].Value as string;
+						TargetFrameworkMoniker m;
+						if (v != null && TargetFrameworkMoniker.TryParse (v, out m)) {
+							return m;
+						}
+					}
+					LoggingService.LogError ("Invalid TargetFrameworkAttribute in assembly {0}", file);
 				}
+
 				foreach (var r in assembly.GetReferencedAssemblies ()) {
 					if (r.Name == "mscorlib") {
 						TargetFramework compatibleFramework = null;
