@@ -72,6 +72,11 @@
 	
 	<!-- tags -->
 	<Span tagColor = "Html Tag Delimiter" color = "Html Element Name" rule = "InTag">
+		<Begin>&lt;/</Begin>
+		<End>&gt;</End>
+	</Span>
+	
+	<Span tagColor = "Html Tag Delimiter" color = "Html Element Name" rule = "InTag">
 		<Begin>&lt;</Begin>
 		<End>&gt;</End>
 	</Span>
