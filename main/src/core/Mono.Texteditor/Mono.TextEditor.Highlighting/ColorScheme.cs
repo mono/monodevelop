@@ -749,7 +749,7 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 
-		public static ColorScheme Import (string fileName)
+		public static ColorScheme Import (string fileName, Stream stream)
 		{
 			var result = new ColorScheme ();
 			result.Name = Path.GetFileNameWithoutExtension (fileName);
@@ -757,7 +757,7 @@ namespace Mono.TextEditor.Highlighting
 			result.Originator = "Imported from " + fileName;
 
 			var colors = new Dictionary<string, VSSettingColor> ();
-			using (var reader = XmlReader.Create (fileName)) {
+			using (var reader = XmlReader.Create (stream)) {
 				while (reader.Read ()) {
 					if (reader.LocalName == "Item") {
 						var color = VSSettingColor.Create (reader);
