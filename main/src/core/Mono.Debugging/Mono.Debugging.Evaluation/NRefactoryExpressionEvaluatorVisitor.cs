@@ -555,26 +555,41 @@ namespace Mono.Debugging.Evaluation
 			if (var != null)
 				return var;
 
-			// Look in fields and properties
+			// Look in instance fields and properties
 
 			ValueReference self = ctx.Adapter.GetThisReference (ctx);
-			object type = self != null ? self.Type : ctx.Adapter.GetEnclosingType (ctx);
 
-			var = ctx.Adapter.GetMember (ctx, self, type, self != null ? self.Value : null, name);
-			if (var != null)
-				return var;
+			if (self != null) {
+				// check for fields and properties in this instance
+				var = ctx.Adapter.GetMember (ctx, self, self.Type, self.Value, name);
+				if (var != null)
+					return var;
+			}
+
+			// Look in static fields & properties of the enclosing type and all parent types
+
+			object type = ctx.Adapter.GetEnclosingType (ctx);
+			object vtype = type;
+
+			while (vtype != null) {
+				// check for static fields and properties
+				var = ctx.Adapter.GetMember (ctx, null, vtype, null, name);
+				if (var != null)
+					return var;
+
+				vtype = ctx.Adapter.GetParentType (ctx, vtype);
+			}
 
 			// Look in types
 
-			object vtype = ctx.Adapter.GetType (ctx, name);
+			vtype = ctx.Adapter.GetType (ctx, name);
 			if (vtype != null)
 				return new TypeValueReference (ctx, vtype);
 
 			// Look in nested types
 
-			vtype = ctx.Adapter.GetEnclosingType (ctx);
-			if (vtype != null) {
-				foreach (object ntype in ctx.Adapter.GetNestedTypes (ctx, vtype)) {
+			if (type != null) {
+				foreach (object ntype in ctx.Adapter.GetNestedTypes (ctx, type)) {
 					if (TypeValueReference.GetTypeName (ctx.Adapter.GetTypeName (ctx, ntype)) == name)
 						return new TypeValueReference (ctx, ntype);
 				}

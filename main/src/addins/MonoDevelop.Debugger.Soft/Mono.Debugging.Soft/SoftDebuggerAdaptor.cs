@@ -247,7 +247,7 @@ namespace Mono.Debugging.Soft
 						return cx.RuntimeInvoke (method, obj, new Value[0]);
 				}
 
-				if (fromType.IsGenericType && fromType.FullName.StartsWith ("System.Nullable`1")) {
+				if (fromType.IsGenericType && fromType.FullName.StartsWith ("System.Nullable`1", StringComparison.InvariantCulture)) {
 					method = OverloadResolve (cx, "get_Value", fromType, new TypeMirror[0], true, false, false);
 					if (method != null) {
 						obj = cx.RuntimeInvoke (method, obj, new Value[0]);
@@ -800,7 +800,7 @@ namespace Mono.Debugging.Soft
 			HashSet<string> namespaces = new HashSet<string> ();
 			string namspacePrefix = namspace.Length > 0 ? namspace + "." : "";
 			foreach (TypeMirror type in cx.Session.GetAllTypes ()) {
-				if (type.Namespace == namspace || type.Namespace.StartsWith (namspacePrefix)) {
+				if (type.Namespace == namspace || type.Namespace.StartsWith (namspacePrefix, StringComparison.InvariantCulture)) {
 					namespaces.Add (type.Namespace);
 					types.Add (type.FullName);
 				}
@@ -953,6 +953,19 @@ namespace Mono.Debugging.Soft
 			return null;
 		}
 
+		public override object GetParentType (EvaluationContext ctx, object type)
+		{
+			TypeMirror tm = type as TypeMirror;
+
+			if (tm != null) {
+				int plus = tm.FullName.LastIndexOf ('+');
+
+				return plus != -1 ? GetType (ctx, tm.FullName.Substring (0, plus)) : null;
+			}
+
+			return ((Type) type).DeclaringType;
+		}
+
 		public override IEnumerable<object> GetNestedTypes (EvaluationContext ctx, object type)
 		{
 			TypeMirror t = (TypeMirror) type;
@@ -960,9 +973,9 @@ namespace Mono.Debugging.Soft
 				yield return nt;
 		}
 		
-		public override string GetTypeName (EvaluationContext ctx, object val)
+		public override string GetTypeName (EvaluationContext ctx, object type)
 		{
-			TypeMirror tm = val as TypeMirror;
+			TypeMirror tm = type as TypeMirror;
 			if (tm != null) {
 				if (IsGeneratedType (tm)) {
 					// Return the name of the container-type.
@@ -971,7 +984,7 @@ namespace Mono.Debugging.Soft
 				
 				return tm.FullName;
 			} else
-				return ((Type)val).FullName;
+				return ((Type)type).FullName;
 		}
 		
 		public override object GetValueType (EvaluationContext ctx, object val)
