@@ -547,6 +547,10 @@ namespace Mono.TextEditor.Highlighting
 			
 			// The fields we'd like to extract
 			result.Name = root.XPathSelectElement("name").Value;
+
+			if (result.Name != "Default")
+				result.CopyValues (SyntaxModeService.DefaultColorStyle);
+
 			var version = Version.Parse (root.XPathSelectElement("version").Value);
 			if (version.Major != 1)
 				return null;
