@@ -86,15 +86,27 @@ namespace MonoDevelop.Core.Assemblies
 		/// Optional. A named subset of a particular framework version, e.g. "Client".
 		/// </summary>
 		public string Profile { get { return profile; } }
-		
+
 		public static TargetFrameworkMoniker Parse (string value)
 		{
-			var moniker = new TargetFrameworkMoniker ();
-			moniker.ParseInternal (value);
+			TargetFrameworkMoniker moniker;
+			if (!TryParse (value, out moniker)) {
+				throw new FormatException (string.Format ("Invalid framewokr moniker '{0}'", value));
+			}
 			return moniker;
 		}
+
+		public static bool TryParse (string value, out TargetFrameworkMoniker moniker)
+		{
+			moniker = new TargetFrameworkMoniker ();
+			if (moniker.ParseInternal (value)) {
+				return true;
+			}
+			moniker = null;
+			return false;
+		}
 		
-		void ParseInternal (string value)
+		bool ParseInternal (string value)
 		{
 			profile = null;
 			
@@ -105,31 +117,48 @@ namespace MonoDevelop.Core.Assemblies
 				if (value == "SL2.0") {
 					identifier = ID_SILVERLIGHT;
 					version = "2.0";
-				} else if (value == "SL3.0") {
+					return true;
+				}
+				if (value == "SL3.0") {
 					identifier = ID_SILVERLIGHT;
 					version = "3.0";
-				} else if (value == "IPhone") {
+					return true;
+				}
+				if (value == "IPhone") {
 					identifier = ID_MONOTOUCH;
 					version = "1.0";
-				} else {
-					if (value[0] == 'v')
-						value = value.Substring (1);
-					identifier = ID_NET_FRAMEWORK;
-					version = value;
+					return true;
 				}
-				return;
+				if (value [0] == 'v') {
+					value = value.Substring (1);
+				}
+				identifier = ID_NET_FRAMEWORK;
+				version = value;
+			} else {
+				identifier = value.Substring (0, i);
+
+				if (value.IndexOf (",Version=v", i, ",Version=v".Length, StringComparison.Ordinal) != i) {
+					return false;
+				}
+				i += ",Version=v".Length;
+
+				int i2 = value.IndexOf (',', i);
+				if (i2 < 0) {
+					version = value.Substring (i);
+				} else {
+					version = value.Substring (i, i2 - i);
+					profile = value.Substring (i2 + ",Profile=".Length);
+				}
 			}
-			
-			identifier = value.Substring (0, i);
-			i += ",Version=v".Length;
-			int i2 = value.IndexOf (',', i);
-			if (i2 < 0) {
-				version = value.Substring (i);
-				return;
+
+			Version v;
+			if (!System.Version.TryParse (version, out v)) {
+				identifier = ID_NET_FRAMEWORK;
+				version = value;
+				return false;
 			}
-			
-			version = value.Substring (i, i2 - i);
-			profile = value.Substring (i2 + ",Profile=".Length);
+
+			return true;
 		}
 		
 		internal string ToLegacyIdString ()
