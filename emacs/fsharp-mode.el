@@ -29,7 +29,9 @@
 
 (namespace fsharp-mode
   :export
-  [find-sln-or-fsproj])
+  [find-sln-or-fsproj
+   find-sln
+   find-fsproj])
 
 (defvar fsharp-mode-version 0.7
   "Version of this fsharp-mode")
