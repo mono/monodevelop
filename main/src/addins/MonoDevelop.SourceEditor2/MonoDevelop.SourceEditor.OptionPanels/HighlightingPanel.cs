@@ -197,13 +197,10 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				return;
 
 			string newFileName = SourceEditorDisplayBinding.SyntaxModePath.Combine (dialog.SelectedFile.FileName);
-			if (!newFileName.EndsWith ("Style.json", StringComparison.Ordinal))
-				newFileName = SourceEditorDisplayBinding.SyntaxModePath.Combine (dialog.SelectedFile.FileNameWithoutExtension + "Style.json");
 
 			bool success = true;
 			try {
-				var scheme = ColorScheme.Import (dialog.SelectedFile.FullPath);
-				scheme.Save (newFileName);
+				File.Copy (dialog.SelectedFile.FullPath, newFileName);
 			} catch (Exception e) {
 				success = false;
 				LoggingService.LogError ("Can't copy syntax mode file.", e);

@@ -170,6 +170,11 @@ namespace Mono.TextEditor.Highlighting
 				textColor.Weight |= TextWeight.Bold;
 			return textColor;
 		}
+
+		public ChunkStyle Clone ()
+		{
+			return (ChunkStyle)this.MemberwiseClone ();
+		}
 	}
 	
 }

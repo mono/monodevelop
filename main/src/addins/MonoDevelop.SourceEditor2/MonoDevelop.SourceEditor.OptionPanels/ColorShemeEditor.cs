@@ -104,6 +104,10 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		{
 			ApplyStyle (colorSheme);
 			try {
+				if (fileName.EndsWith (".vssettings", StringComparison.Ordinal)) {
+					System.IO.File.Delete (fileName);
+					fileName += "Style.json";
+				}
 				colorSheme.Save (fileName);
 				panel.ShowStyles ();
 			} catch (Exception ex) {

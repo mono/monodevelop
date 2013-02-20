@@ -63,7 +63,7 @@
 
         { "name": "Bookmarks", "color":"white", "secondcolor":"skyblue" },
 		
-		{ "name": "Underline(Error)", "color":"invalid-red" },
+		{ "name": "Underline(Error)", "color":"scarletred2" },
 		{ "name": "Underline(Warning)", "color":"butter2" },
 		{ "name": "Underline(Suggestion)", "color":"chameleon2" },
 		{ "name": "Underline(Hint)", "color":"skyblue2" },
@@ -71,8 +71,8 @@
 		{ "name": "Quick Diff(Dirty)", "color":"orangesicle-light" },
 		{ "name": "Quick Diff(Changed)", "color":"orangesicle" },
 		
-		{ "name": "Brace Matching(Rectangle)", "color":"orangesicle", "secondcolor":"orangesicle-light" },
-		{ "name": "Usages(Rectangle)", "color":"orangesicle", "secondcolor":"orangesicle-light" },
+		{ "name": "Brace Matching(Rectangle)", "color":"aluminium1", "secondcolor":"aluminium2" },
+		{ "name": "Usages(Rectangle)", "color":"#f5f5f5", "secondcolor":"aluminium1" },
 		
 		{ "name": "Breakpoint Marker", "color":"white", "secondcolor":"#AB616B" },
 		{ "name": "Breakpoint Marker(Disabled)", "color":"white", "secondcolor":"#AB616B" },
@@ -110,6 +110,7 @@
 		{ "name": "Comment(Doc)", "fore":"chameleon3" },
 		{ "name": "Comment(DocTag)", "fore":"chameleon3" },
 		{ "name": "Comment Tag", "fore":"chameleon3" },
+		{ "name": "Excluded Code", "fore":"chameleon3" },
 
 		{ "name": "String", "fore":"plum2"},
 		{ "name": "String(Escape)", "fore":"plum3"},

@@ -287,7 +287,7 @@ namespace Mono.Debugging.Evaluation
 
 		public virtual bool IsNullableType (EvaluationContext ctx, object type)
 		{
-			return type != null && GetTypeName (ctx, type).StartsWith ("System.Nullable`1");
+			return type != null && GetTypeName (ctx, type).StartsWith ("System.Nullable`1", StringComparison.InvariantCulture);
 		}
 
 		public virtual bool NullableHasValue (EvaluationContext ctx, object type, object obj)
@@ -744,13 +744,13 @@ namespace Mono.Debugging.Evaluation
 				// Local variables
 				
 				foreach (ValueReference vc in GetLocalVariables (ctx))
-					if (vc.Name.StartsWith (partialWord))
+					if (vc.Name.StartsWith (partialWord, StringComparison.InvariantCulture))
 						data.Items.Add (new CompletionItem (vc.Name, vc.Flags));
 				
 				// Parameters
 				
 				foreach (ValueReference vc in GetParameters (ctx))
-					if (vc.Name.StartsWith (partialWord))
+					if (vc.Name.StartsWith (partialWord, StringComparison.InvariantCulture))
 						data.Items.Add (new CompletionItem (vc.Name, vc.Flags));
 				
 				// Members
@@ -763,7 +763,7 @@ namespace Mono.Debugging.Evaluation
 				object type = GetEnclosingType (ctx);
 				
 				foreach (ValueReference vc in GetMembers (ctx, null, type, thisobj != null ? thisobj.Value : null))
-					if (vc.Name.StartsWith (partialWord))
+					if (vc.Name.StartsWith (partialWord, StringComparison.InvariantCulture))
 						data.Items.Add (new CompletionItem (vc.Name, vc.Flags));
 				
 				if (data.Items.Count > 0)
@@ -844,6 +844,17 @@ namespace Mono.Debugging.Evaluation
 		public virtual IEnumerable<object> GetNestedTypes (EvaluationContext ctx, object type)
 		{
 			yield break;
+		}
+
+		public virtual object GetParentType (EvaluationContext ctx, object type)
+		{
+			if ((type is Type))
+				return ((Type) type).DeclaringType;
+
+			var name = GetTypeName (ctx, type);
+			int plus = name.LastIndexOf ('+');
+
+			return plus != -1 ? GetType (ctx, name.Substring (0, plus)) : null;
 		}
 		
 		public virtual object CreateArray (EvaluationContext ctx, object type, object[] values)

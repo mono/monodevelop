@@ -106,9 +106,19 @@ namespace Mono.TextEditor.Highlighting
 		{
 			if (!styleLookup.ContainsKey (name))
 				throw new System.ArgumentException ("Style " + name + " not found", "name");
-			var stream = styleLookup [name].Open ();
+			var provider = styleLookup [name];
+			var stream = provider.Open ();
 			try {
-				styles [name] = ColorScheme.LoadFrom (stream);
+				if (provider is UrlStreamProvider) {
+					var usp = provider as UrlStreamProvider;
+					if (usp.Url.EndsWith (".vssettings", StringComparison.Ordinal)) {
+						styles [name] = ColorScheme.Import (usp.Url, stream);
+					} else {
+						styles [name] = ColorScheme.LoadFrom (stream);
+					}
+				} else {
+					styles [name] = ColorScheme.LoadFrom (stream);
+				}
 			} catch (Exception e) {
 				throw new IOException ("Error while loading style :" + name, e);
 			} finally {
@@ -247,7 +257,7 @@ namespace Mono.TextEditor.Highlighting
 			bool EndsWithContinuation (Span span, DocumentLine line)
 			{
 				return !span.StopAtEol || span.StopAtEol && !string.IsNullOrEmpty (span.Continuation) &&
-					line != null && doc.GetTextAt (line).Trim ().EndsWith (span.Continuation);
+					line != null && doc.GetTextAt (line).Trim ().EndsWith (span.Continuation, StringComparison.Ordinal);
 			}
 			
 			public void InnerRun ()
@@ -360,20 +370,6 @@ namespace Mono.TextEditor.Highlighting
 			return reader.GetAttribute (attribute);
 		}
 
-		public static bool IsValidStyle (string fileName)
-		{
-			if (!fileName.EndsWith ("Style.json", StringComparison.Ordinal))
-				return false;
-			try {
-				using (var stream = File.OpenRead (fileName)) {
-					string styleName = ScanStyle (stream);
-					return !String.IsNullOrEmpty (styleName);
-				}
-			} catch (Exception) {
-				return false;
-			}
-		}
-		
 		public static List<ValidationEventArgs> ValidateStyleFile (string fileName)
 		{
 			List<ValidationEventArgs> result = new List<ValidationEventArgs> ();
@@ -407,6 +403,12 @@ namespace Mono.TextEditor.Highlighting
 				} else if (file.EndsWith ("Style.json", StringComparison.Ordinal)) {
 					using (var stream = File.OpenRead (file)) {
 						string styleName = ScanStyle (stream);
+						styleLookup [styleName] = new UrlStreamProvider (file);
+						isLoadedFromFile [styleName] = file;
+					}
+				} else if (file.EndsWith (".vssettings", StringComparison.Ordinal)) {
+					using (var stream = File.OpenRead (file)) {
+						string styleName = Path.GetFileNameWithoutExtension (file);
 						styleLookup [styleName] = new UrlStreamProvider (file);
 						isLoadedFromFile [styleName] = file;
 					}

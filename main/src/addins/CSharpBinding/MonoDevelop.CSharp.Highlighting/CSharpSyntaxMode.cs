@@ -270,8 +270,17 @@ namespace MonoDevelop.CSharp.Highlighting
 				}
 
 				if (result is TypeResolveResult) {
-					Colorize (identifierExpression.IdentifierToken, "User Types");
+					Colorize (identifierExpression.IdentifierToken, GetUserTypeHighlighting (result.Type));
 					return;
+				}
+
+				var localResult = result as LocalResolveResult;
+				if (localResult != null) {
+					if (localResult.Variable is IParameter) {
+						Colorize (identifierExpression.IdentifierToken, "User Parameter Usage");
+					} else {
+						Colorize (identifierExpression.IdentifierToken, "User Variable Usage");
+					}
 				}
 			}
 
@@ -291,12 +300,15 @@ namespace MonoDevelop.CSharp.Highlighting
 				if (externAliasDeclaration.AliasToken.StartLocation.Line == lineNumber)
 					Colorize (externAliasDeclaration.AliasToken, "Keyword(Namespace)");
 			}
-
+			Stack<TypeDeclaration> typeDeclarations = new Stack<TypeDeclaration> ();
 			public override void VisitTypeDeclaration (TypeDeclaration typeDeclaration)
 			{
+				typeDeclarations.Push (typeDeclaration);
 				base.VisitTypeDeclaration (typeDeclaration);
+				typeDeclarations.Pop ();
+
 				if (typeDeclaration.NameToken.StartLocation.Line == lineNumber)
-					Colorize (typeDeclaration.NameToken, "User Types");
+					Colorize (typeDeclaration.NameToken, GetUserTypeHighlighting (typeDeclaration.ClassType));
 			}
 
 			public override void VisitPropertyDeclaration (PropertyDeclaration propertyDeclaration)
@@ -370,32 +382,53 @@ namespace MonoDevelop.CSharp.Highlighting
 				}
 			}
 
+			public override void VisitDelegateDeclaration (DelegateDeclaration delegateDeclaration)
+			{
+				base.VisitDelegateDeclaration (delegateDeclaration);
+				if (delegateDeclaration.NameToken.StartLocation.Line == lineNumber)
+					Colorize (delegateDeclaration.NameToken, "User Types(Delegates)");
+			}
+
+			public override void VisitParameterDeclaration (ParameterDeclaration parameterDeclaration)
+			{
+				base.VisitParameterDeclaration (parameterDeclaration);
+				if (parameterDeclaration.NameToken.StartLocation.Line == lineNumber)
+					Colorize (parameterDeclaration.NameToken, "User Parameter Declaration");
+			}
+
+			public override void VisitVariableInitializer (VariableInitializer variableInitializer)
+			{
+				base.VisitVariableInitializer (variableInitializer);
+				if (variableInitializer.NameToken.StartLocation.Line == lineNumber)
+					Colorize (variableInitializer.NameToken, "User Variable Declaration");
+			}
+
 			public override void VisitTypeParameterDeclaration (TypeParameterDeclaration typeParameterDeclaration)
 			{
 				base.VisitTypeParameterDeclaration (typeParameterDeclaration);
 				if (typeParameterDeclaration.NameToken.StartLocation.Line == lineNumber)
-					Colorize (typeParameterDeclaration.NameToken, "User Types");
+					Colorize (typeParameterDeclaration.NameToken, "User Types(Type parameters)");
 			}
 
 			public override void VisitConstructorDeclaration (ConstructorDeclaration constructorDeclaration)
 			{
 				base.VisitConstructorDeclaration (constructorDeclaration);
 				if (constructorDeclaration.NameToken.StartLocation.Line == lineNumber)
-					Colorize (constructorDeclaration.NameToken, "User Types");
+					Colorize (constructorDeclaration.NameToken, GetUserTypeHighlighting (this.typeDeclarations.Peek ().ClassType));
 			}
 
 			public override void VisitDestructorDeclaration (DestructorDeclaration destructorDeclaration)
 			{
 				base.VisitDestructorDeclaration (destructorDeclaration);
 				if (destructorDeclaration.NameToken.StartLocation.Line == lineNumber)
-					Colorize (destructorDeclaration.NameToken, "User Types");
+					Colorize (destructorDeclaration.NameToken, GetUserTypeHighlighting (this.typeDeclarations.Peek ().ClassType));
 			}
 
 			bool CheckInterfaceImplementation (EntityDeclaration entityDeclaration)
 			{
 				var result = resolver.Resolve (entityDeclaration, cancellationToken) as MemberResolveResult;
 				if (result.Member.ImplementedInterfaceMembers.Count == 0) {
-					Colorize (entityDeclaration.NameToken, "keyword.semantic.error");
+					Colorize (entityDeclaration.NameToken, "Syntax Error");
 					return false;
 				}
 				return true;
@@ -416,9 +449,11 @@ namespace MonoDevelop.CSharp.Highlighting
 			public override void VisitFieldDeclaration (FieldDeclaration fieldDeclaration)
 			{
 				fieldDeclaration.ReturnType.AcceptVisitor (this);
-				foreach (var init in fieldDeclaration.Variables)
+				foreach (var init in fieldDeclaration.Variables) {
 					if (init.NameToken.StartLocation.Line == lineNumber)
 						Colorize (init.NameToken, "User Field Declaration");
+					init.Initializer.AcceptVisitor (this);
+				}
 			}
 
 			public override void VisitFixedFieldDeclaration (FixedFieldDeclaration fixedFieldDeclaration)
@@ -450,9 +485,43 @@ namespace MonoDevelop.CSharp.Highlighting
 					return;
 				}
 				if (result is TypeResolveResult) {
-					Colorize (composedType, "User Types");
+					Colorize (composedType.BaseType, GetUserTypeHighlighting(result.Type));
 				}
 
+			}
+
+			static string GetUserTypeHighlighting (IType type)
+			{
+				switch (type.Kind) {
+				case TypeKind.Class:
+					return "User Types";
+				case TypeKind.Struct:
+					return "User Types(Value types)";
+				case TypeKind.Interface:
+					return "User Types(Interfaces)";
+				case TypeKind.Delegate:
+					return "User Types(Delegates)";
+				case TypeKind.Enum:
+					return "User Types(Enums)";
+				case TypeKind.TypeParameter:
+					return "User Types(Type parameters)";
+				}
+				return "User Types";
+			}
+
+			static string GetUserTypeHighlighting (ClassType classType)
+			{
+				switch (classType) {
+				case ClassType.Class:
+					return "User Types";
+				case ClassType.Struct:
+					return "User Types(Value types)";
+				case ClassType.Interface:
+					return "User Types(Interfaces)";
+				case ClassType.Enum:
+					return "User Types(Enums)";
+				}
+				return "User Types";
 			}
 
 			public override void VisitSimpleType (SimpleType simpleType)
@@ -468,9 +537,9 @@ namespace MonoDevelop.CSharp.Highlighting
 					return;
 				}
 				if (result is TypeResolveResult) {
-					Colorize (simpleType, "User Types");
+					Colorize (simpleType.IdentifierToken, GetUserTypeHighlighting (result.Type));
 				}
-
+				base.VisitSimpleType (simpleType);
 			}
 
 			public override void VisitMemberType (MemberType memberType)
@@ -492,7 +561,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					Colorize (memberType.MemberNameToken, "Syntax Error");
 				}
 				if (result is TypeResolveResult) {
-					Colorize (memberType.MemberNameToken, "User Types");
+					Colorize (memberType.MemberNameToken, GetUserTypeHighlighting (result.Type));
 				}
 			}
 
@@ -537,7 +606,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				}
 
 				if (result is TypeResolveResult) {
-					Colorize (memberReferenceExpression.MemberNameToken, "User Types");
+					Colorize (memberReferenceExpression.MemberNameToken, GetUserTypeHighlighting (result.Type));
 				}
 			}
 
@@ -583,7 +652,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				}
 
 				if (result is TypeResolveResult) {
-					Colorize (pointerReferenceExpression.MemberNameToken, "User Types");
+					Colorize (pointerReferenceExpression.MemberNameToken, GetUserTypeHighlighting (result.Type));
 				}
 			}
 			public override void VisitQueryWhereClause (QueryWhereClause queryWhereClause)
@@ -892,7 +961,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			{
 				TagColor = "Preprocessor";
 				if (disabled || !IsValid) {
-					Color = "Comment(Block)";
+					Color = "Excluded Code";
 					Rule = "PreProcessorComment";
 				} else {
 					Color = "Plain Text";

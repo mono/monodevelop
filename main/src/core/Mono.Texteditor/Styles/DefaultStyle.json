@@ -107,6 +107,7 @@
 		{ "name": "Comment(Doc)", "fore":"comment-gray", "weight":"italic" },
 		{ "name": "Comment(DocTag)", "fore":"comment-gray", "weight":"italic" },
 		{ "name": "Comment Tag", "fore":"comment-gray", "weight":"bold" },
+		{ "name": "Excluded Code", "fore":"comment-gray" },
 
 		{ "name": "String", "fore":"literal-orange"},
 		{ "name": "String(Escape)", "fore":"literal-escape"},

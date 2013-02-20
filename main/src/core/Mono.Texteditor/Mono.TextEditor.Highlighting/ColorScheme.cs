@@ -58,7 +58,7 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("Fold Cross", VSSetting="color=outlining.square/Foreground,secondcolor=outlining.square/Background")]
 		public AmbientColor FoldCross { get; private set; }
 		
-		[ColorDescription("Indentation Guide", VSSetting="color=Plain Text/Foreground")]
+		[ColorDescription("Indentation Guide")] // not defined
 		public AmbientColor IndentationGuide { get; private set; }
 
 		[ColorDescription("Indicator Margin", VSSetting="color=Indicator Margin/Background")]
@@ -198,6 +198,9 @@ namespace Mono.TextEditor.Highlighting
 		
 		[ColorDescription("Comment Tag", VSSetting = "Comment")]
 		public ChunkStyle CommentTags { get; private set; }
+		
+		[ColorDescription("Excluded Code", VSSetting = "Excluded Code")]
+		public ChunkStyle ExcludedCode { get; private set; }
 
 		[ColorDescription("String", VSSetting = "String")]
 		public ChunkStyle String { get; private set; }
@@ -749,19 +752,23 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 
-		public static ColorScheme Import (string fileName)
+		public static Cairo.Color AlphaBlend (Cairo.Color fore, Cairo.Color back, double alpha)
+		{
+			return new Cairo.Color (
+				(1.0 - alpha) * back.R + alpha * fore.R,
+				(1.0 - alpha) * back.G + alpha * fore.G,
+				(1.0 - alpha) * back.B + alpha * fore.B);
+		}
+
+		public static ColorScheme Import (string fileName, Stream stream)
 		{
 			var result = new ColorScheme ();
 			result.Name = Path.GetFileNameWithoutExtension (fileName);
-			result.BaseScheme = "Default";
 			result.Description = "Imported color scheme";
 			result.Originator = "Imported from " + fileName;
 
-			var defaultStyle = SyntaxModeService.GetColorStyle ("Default");
-			result.CopyValues (defaultStyle);
-
 			var colors = new Dictionary<string, VSSettingColor> ();
-			using (var reader = XmlReader.Create (fileName)) {
+			using (var reader = XmlReader.Create (stream)) {
 				while (reader.Read ()) {
 					if (reader.LocalName == "Item") {
 						var color = VSSettingColor.Create (reader);
@@ -786,8 +793,6 @@ namespace Mono.TextEditor.Highlighting
 						continue;
 					}
 				}
-
-				ambient.Info.SetValue (result, ambient.Info.GetValue (defaultStyle, null), null);
 			}
 
 			// convert text colors
@@ -816,7 +821,38 @@ namespace Mono.TextEditor.Highlighting
 					Console.WriteLine (vsc.Name + " not imported!");
 			}
 
+			result.IndentationGuide = new AmbientColor ();
+			result.IndentationGuide.Colors.Add (Tuple.Create ("color", AlphaBlend (result.PlainText.Foreground, result.PlainText.Background, 0.3)));
 
+			result.TooltipText = result.PlainText.Clone ();
+			var h = (HslColor)result.TooltipText.Background;
+			h.L *= 1.1;
+			result.TooltipText.Background = h;
+
+			result.TooltipPagerTop = new AmbientColor ();
+			result.TooltipPagerTop.Colors.Add (Tuple.Create ("color", result.TooltipText.Background));
+
+			result.TooltipPagerBottom = new AmbientColor ();
+			result.TooltipPagerBottom.Colors.Add (Tuple.Create ("color", result.TooltipText.Background));
+			
+			result.TooltipPagerTriangle = new AmbientColor ();
+			result.TooltipPagerTriangle.Colors.Add (Tuple.Create ("color", AlphaBlend (result.PlainText.Foreground, result.PlainText.Background, 0.8)));
+
+			result.TooltipBorder = new AmbientColor ();
+			result.TooltipBorder.Colors.Add (Tuple.Create ("color", AlphaBlend (result.PlainText.Foreground, result.PlainText.Background, 0.5)));
+
+			var defaultStyle = SyntaxModeService.GetColorStyle (HslColor.Brightness (result.PlainText.Background) < 0.5 ? "Monokai" : "Default");
+
+			foreach (var color in textColors.Values) {
+				if (color.Info.GetValue (result, null) == null)
+					color.Info.SetValue (result, color.Info.GetValue (defaultStyle, null), null);
+			}
+			foreach (var color in ambientColors.Values) {
+				if (color.Info.GetValue (result, null) == null) 
+					color.Info.SetValue (result, color.Info.GetValue (defaultStyle, null), null);
+			}
+			if (result.PlainText.TransparentForeground)
+				result.PlainText.Foreground = new Cairo.Color (0, 0, 0);
 			return result;
 		}
 

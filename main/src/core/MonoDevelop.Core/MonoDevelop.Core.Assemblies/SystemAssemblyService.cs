@@ -316,14 +316,23 @@ namespace MonoDevelop.Core.Assemblies
 		public TargetFrameworkMoniker GetTargetFrameworkForAssembly (TargetRuntime tr, string file)
 		{
 			var universe = new IKVM.Reflection.Universe ();
+			universe.EnableMissingMemberResolution ();
 			try {
 				IKVM.Reflection.Assembly assembly = universe.LoadFile (file);
 				var att = assembly.CustomAttributes.FirstOrDefault (a =>
 					a.AttributeType.FullName == "System.Runtime.Versioning.TargetFrameworkAttribute"
 				);
 				if (att != null) {
-					return TargetFrameworkMoniker.Parse ((string)att.ConstructorArguments[0].Value);
+					if (att.ConstructorArguments.Count == 1) {
+						var v = att.ConstructorArguments[0].Value as string;
+						TargetFrameworkMoniker m;
+						if (v != null && TargetFrameworkMoniker.TryParse (v, out m)) {
+							return m;
+						}
+					}
+					LoggingService.LogError ("Invalid TargetFrameworkAttribute in assembly {0}", file);
 				}
+
 				foreach (var r in assembly.GetReferencedAssemblies ()) {
 					if (r.Name == "mscorlib") {
 						TargetFramework compatibleFramework = null;
@@ -340,11 +349,13 @@ namespace MonoDevelop.Core.Assemblies
 						break;
 					}
 				}
-			} catch {
-				// Ignore
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error to determine target framework for assembly {0}: {1}", file, ex);
+				return TargetFrameworkMoniker.UNKNOWN;
 			} finally {
 				universe.Dispose ();
 			}
+			LoggingService.LogError ("Failed to determine target framework for assembly {0}", file);
 			return TargetFrameworkMoniker.UNKNOWN;
 		}
 		
