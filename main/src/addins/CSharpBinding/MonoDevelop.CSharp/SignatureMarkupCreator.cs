@@ -309,7 +309,7 @@ namespace MonoDevelop.CSharp
 			if (t == null)
 				throw new ArgumentNullException ("t");
 			var result = new StringBuilder ();
-			var highlightedTypeName = Highlight (t.Name, colorStyle.KeywordTypes);
+			var highlightedTypeName = Highlight (CSharpAmbience.FilterName (t.Name), colorStyle.KeywordTypes);
 			result.Append (highlightedTypeName);
 
 			var color = AlphaBlend (colorStyle.PlainText.Foreground, colorStyle.PlainText.Background, optionalAlpha);
@@ -382,7 +382,7 @@ namespace MonoDevelop.CSharp
 		string GetTypeNameWithParameters (IType t)
 		{
 			StringBuilder result = new StringBuilder ();
-			result.Append (Highlight (t.Name, colorStyle.KeywordTypes));
+			result.Append (Highlight (CSharpAmbience.FilterName (t.Name), colorStyle.KeywordTypes));
 			if (t.TypeParameterCount > 0) {
 				if (t.TypeArguments.Count > 0) {
 					AppendTypeArgumentList (result, t);
@@ -605,7 +605,7 @@ namespace MonoDevelop.CSharp
 				result.Append (" ");
 			}
 	
-			result.Append (variable.Name);
+			result.Append (CSharpAmbience.FilterName (variable.Name));
 			
 			if (variable.IsConst) {
 				if (formattingOptions.SpaceAroundAssignment) {
@@ -676,7 +676,7 @@ namespace MonoDevelop.CSharp
 				result.Append ("operator ");
 				result.Append (CSharpAmbience.GetOperator (method.Name));
 			} else {
-				result.Append (HighlightSemantically (method.Name, colorStyle.UserMethodDeclaration));
+				result.Append (HighlightSemantically (CSharpAmbience.FilterName (method.Name), colorStyle.UserMethodDeclaration));
 			}
 			if (method.TypeArguments.Count > 0) {
 				result.Append ("&lt;");
@@ -708,7 +708,7 @@ namespace MonoDevelop.CSharp
 			var result = new StringBuilder ();
 			AppendModifiers (result, method);
 
-			result.Append (method.DeclaringType.Name);
+			result.Append (CSharpAmbience.FilterName (method.DeclaringType.Name));
 
 			if (formattingOptions.SpaceBeforeConstructorDeclarationParentheses)
 				result.Append (" ");
@@ -733,7 +733,7 @@ namespace MonoDevelop.CSharp
 			}
 			
 			result.Append ("~");
-			result.Append (method.DeclaringType.Name);
+			result.Append (CSharpAmbience.FilterName (method.DeclaringType.Name));
 			
 			if (formattingOptions.SpaceBeforeConstructorDeclarationParentheses)
 				result.Append (" ");
@@ -1446,7 +1446,7 @@ namespace MonoDevelop.CSharp
 			}
 			result.Append (GetTypeReferenceString (parameter.Type));
 			result.Append (" ");
-			result.Append (parameter.Name);
+			result.Append (CSharpAmbience.FilterName (parameter.Name));
 		}
 
 		void AppendExplicitInterfaces (StringBuilder sb, IMember member)
@@ -1489,7 +1489,7 @@ namespace MonoDevelop.CSharp
 			if (constantType.Kind == TypeKind.Enum) {
 				foreach (var field in constantType.GetFields ()) {
 					if (field.ConstantValue == constantValue){
-						sb.Append (GetTypeReferenceString (constantType) + "." + field.Name);
+						sb.Append (GetTypeReferenceString (constantType) + "." + CSharpAmbience.FilterName (field.Name));
 						return;
 					}
 				}
