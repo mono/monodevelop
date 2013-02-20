@@ -56,8 +56,8 @@ Full name: Modid.id
 (check "parsed val should contain type signature"
   (should-match ": x:'a -> b$" (fsharp-doc/format-for-minibuffer val-tooltip)))
 
-(check "parsed val should be module-qualified"
-  (should-match "^val Modid.id" (fsharp-doc/format-for-minibuffer val-tooltip)))
+(check "parsed val should not be module-qualified"
+  (should-match "^val id" (fsharp-doc/format-for-minibuffer val-tooltip)))
 
 ;;; Types
 

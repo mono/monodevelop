@@ -91,9 +91,17 @@
     (let ((line (if (string-match-p "^Multiple" x) (car-safe xs) x))
           (name (_ extract-full-name str)))
       (_ tidy-result
-         (if name
-             (_ replace-identifier line name)
-           line)))))
+         (cond
+          ;; Don't fully-qualify let-bindings.
+          ((string-match-p "^val" line)
+           line)
+
+          ;; Extract type identifier.
+          (name
+           (_ replace-identifier line name))
+
+          (t
+           line))))))
 
 (defn extract-full-name (str)
   (string-match "Full name: \\(.*\\)$" str)
