@@ -93,7 +93,13 @@
 ;;;###autoload
 (defun ac-fsharp-load-project (file)
   "Load the specified F# file as a project"
-  (interactive "f")
+  ;; Prompt user for an fsproj, searching for a default.
+  (interactive
+   (list (read-file-name
+          "Path to project: "
+          (fsharp-mode/find-fsproj buffer-file-name)
+          (fsharp-mode/find-fsproj buffer-file-name))))
+
   (setq ac-fsharp-completion-cache nil)
   (setq ac-fsharp-partial-data nil)
   (setq ac-fsharp-project-files nil)
