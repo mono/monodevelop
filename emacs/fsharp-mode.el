@@ -233,7 +233,7 @@ and whether it is in a project directory.")
         fsharp-last-comment-start (make-marker)
         fsharp-last-comment-end (make-marker))
 
-  (if running-xemacs ; from Xemacs lisp mode
+  (if running-xemacs                    ; from Xemacs lisp mode
       (if (and (featurep 'menubar)
                current-menubar)
           (progn
@@ -242,25 +242,35 @@ and whether it is in a project directory.")
             (set-buffer-menubar current-menubar)
             (add-submenu nil fsharp-mode-xemacs-menu))))
 
-  (setq compile-command (fsharp-choose-compile-command (buffer-file-name)))
-  (turn-on-fsharp-doc-mode)
-  (run-hooks 'fsharp-mode-hook)
+  (in-ns fsharp-mode
+    (setq compile-command (_ choose-compile-command (buffer-file-name)))
+    (unless ac-fsharp-completion-process
+      (_ try-load-project (buffer-file-name)))
 
-  (if fsharp-smart-indentation
-    (let ((offset fsharp-indent-offset))
-      ;; It's okay if this fails to guess a good value
-      (if (and (fsharp-safe (fsharp-guess-indent-offset))
-               (<= fsharp-indent-offset 8)
-               (>= fsharp-indent-offset 2))
-          (setq offset fsharp-indent-offset))
-      (setq fsharp-indent-offset offset)
-      ;; Only turn indent-tabs-mode off if tab-width !=
-      ;; fsharp-indent-offset.  Never turn it on, because the user must
-      ;; have explicitly turned it off.
-      (if (/= tab-width fsharp-indent-offset)
-          (setq indent-tabs-mode nil)))))
+    (turn-on-fsharp-doc-mode)
+    (run-hooks 'fsharp-mode-hook)
 
-(defun fsharp-choose-compile-command (file)
+    (if fsharp-smart-indentation
+        (let ((offset fsharp-indent-offset))
+          ;; It's okay if this fails to guess a good value
+          (if (and (fsharp-safe (fsharp-guess-indent-offset))
+                   (<= fsharp-indent-offset 8)
+                   (>= fsharp-indent-offset 2))
+              (setq offset fsharp-indent-offset))
+          (setq fsharp-indent-offset offset)
+          ;; Only turn indent-tabs-mode off if tab-width !=
+          ;; fsharp-indent-offset.  Never turn it on, because the user must
+          ;; have explicitly turned it off.
+          (if (/= tab-width fsharp-indent-offset)
+              (setq indent-tabs-mode nil))))))
+
+(defn try-load-project (file)
+  (when file
+    (let ((proj (_ find-fsproj file)))
+      (when proj
+        (ac-fsharp-load-project proj)))))
+
+(defn choose-compile-command (file)
   "Format an appropriate compilation command, depending on several factors:
 1. The presence of a makefile
 2. The presence of a .sln or .fsproj
