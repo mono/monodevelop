@@ -140,7 +140,8 @@ namespace SubversionAddinWindows
 			SvnAddArgs args = new SvnAddArgs ();
 			BindMonitor (args, monitor);
 			args.Depth = recurse ? SvnDepth.Infinity : SvnDepth.Empty;
-			client.Add (path, args);
+			lock (client)
+				client.Add (path, args);
 		}
 
 		public override void Checkout (string url, FilePath path, Revision rev, bool recurse, IProgressMonitor monitor)
@@ -148,7 +149,8 @@ namespace SubversionAddinWindows
 			SvnCheckOutArgs args = new SvnCheckOutArgs ();
 			BindMonitor (args, monitor);
 			args.Depth = recurse ? SvnDepth.Infinity : SvnDepth.Empty;
-			client.CheckOut (new SvnUriTarget (url, GetRevision (rev)), path);
+			lock (client)
+				client.CheckOut (new SvnUriTarget (url, GetRevision (rev)), path);
 		}
 
 		public override void Commit (FilePath[] paths, string message, IProgressMonitor monitor)
@@ -156,7 +158,8 @@ namespace SubversionAddinWindows
 			SvnCommitArgs args = new SvnCommitArgs ();
 			BindMonitor (args, monitor);
 			args.LogMessage = message;
-			client.Commit (paths.ToStringArray (), args);
+			lock (client) 
+				client.Commit (paths.ToStringArray (), args);
 		}
 
 		public override void Delete (FilePath path, bool force, IProgressMonitor monitor)
@@ -164,13 +167,15 @@ namespace SubversionAddinWindows
 			SvnDeleteArgs args = new SvnDeleteArgs ();
 			BindMonitor (args, monitor);
 			args.Force = force;
-			client.Delete (path, args);
+			lock (client) 
+				client.Delete (path, args);
 		}
 
 		public override string GetTextAtRevision (string repositoryPath, Revision revision)
 		{
 			MemoryStream ms = new MemoryStream ();
-			client.Write (new SvnUriTarget (repositoryPath, GetRevision (revision)), ms);
+			lock (client) 
+				client.Write (new SvnUriTarget (repositoryPath, GetRevision (revision)), ms);
 			ms.Position = 0;
 			using (StreamReader sr = new StreamReader (ms)) {
 				return sr.ReadToEnd ();
@@ -197,7 +202,8 @@ namespace SubversionAddinWindows
 			List<DirectoryEntry> list = new List<DirectoryEntry> ();
 			SvnListArgs args = new SvnListArgs ();
 			args.Depth = recurse ? SvnDepth.Infinity : SvnDepth.Children;
-			client.List (target, args, delegate (object o, SvnListEventArgs a) {
+			lock (client) 
+				client.List (target, args, delegate (object o, SvnListEventArgs a) {
 				if (string.IsNullOrEmpty (a.Path))
 					return;
 				DirectoryEntry de = new DirectoryEntry ();
@@ -218,7 +224,8 @@ namespace SubversionAddinWindows
 			List<SvnRevision> list = new List<SvnRevision> ();
 			SvnLogArgs args = new SvnLogArgs ();
 			args.Range = new SvnRevisionRange (GetRevision (revisionStart), GetRevision (revisionEnd));
-			client.Log (path, args, delegate (object o, SvnLogEventArgs a) {
+			lock (client) 
+				client.Log (path, args, delegate (object o, SvnLogEventArgs a) {
 				List<RevisionPath> paths = new List<RevisionPath> ();
 				foreach (SvnChangeItem item in a.ChangedPaths) {
 					paths.Add (new RevisionPath (item.Path, ConvertRevisionAction (item.Action), ""));
@@ -249,7 +256,8 @@ namespace SubversionAddinWindows
 			foreach (string path in paths)
 				uris.Add (new Uri (path));
 			args.LogMessage = message;
-			client.RemoteCreateDirectories (uris, args);
+			lock (client) 
+				client.RemoteCreateDirectories (uris, args);
 		}
 
 		public override void Move (FilePath srcPath, FilePath destPath, SvnRevision rev, bool force, IProgressMonitor monitor)
@@ -257,7 +265,8 @@ namespace SubversionAddinWindows
 			SvnMoveArgs args = new SvnMoveArgs ();
 			BindMonitor (args, monitor);
 			args.Force = force;
-			client.Move (srcPath, destPath, args);
+			lock (client) 
+				client.Move (srcPath, destPath, args);
 		}
 
 		public override string GetUnifiedDiff (FilePath path1, SvnRevision revision1, FilePath path2, SvnRevision revision2, bool recursive)
@@ -267,7 +276,8 @@ namespace SubversionAddinWindows
 			SvnDiffArgs args = new SvnDiffArgs ();
 			args.Depth = recursive ? SvnDepth.Infinity : SvnDepth.Children;
 			MemoryStream ms = new MemoryStream ();
-			client.Diff (t1, t2, args, ms);
+			lock (client) 
+				client.Diff (t1, t2, args, ms);
 			ms.Position = 0;
 			using (StreamReader sr = new StreamReader (ms)) {
 				return sr.ReadToEnd ();
@@ -279,7 +289,8 @@ namespace SubversionAddinWindows
 			SvnResolveArgs args = new SvnResolveArgs ();
 			BindMonitor (args, monitor);
 			args.Depth = recurse ? SvnDepth.Infinity : SvnDepth.Children;
-			client.Resolve (path, SvnAccept.MineFull, args);
+			lock (client) 
+				client.Resolve (path, SvnAccept.MineFull, args);
 		}
 
 		public override void Revert (FilePath[] paths, bool recurse, IProgressMonitor monitor)
@@ -287,7 +298,8 @@ namespace SubversionAddinWindows
 			SvnRevertArgs args = new SvnRevertArgs ();
 			BindMonitor (args, monitor);
 			args.Depth = recurse ? SvnDepth.Infinity : SvnDepth.Children;
-			client.Revert (paths.ToStringArray (), args);
+			lock (client) 
+				client.Revert (paths.ToStringArray (), args);
 		}
 
 		public override void RevertRevision (FilePath path, Revision revision, IProgressMonitor monitor)
@@ -296,7 +308,8 @@ namespace SubversionAddinWindows
 			BindMonitor (args, monitor);
 			Revision prev = ((SvnRevision) revision).GetPrevious ();
 			SvnRevisionRange range = new SvnRevisionRange (GetRevision (revision), GetRevision (prev));
-			client.Merge (path, new SvnPathTarget (path), range, args);
+			lock (client) 
+				client.Merge (path, new SvnPathTarget (path), range, args);
 		}
 
 		public override void RevertToRevision (FilePath path, Revision revision, IProgressMonitor monitor)
@@ -304,7 +317,8 @@ namespace SubversionAddinWindows
 			SvnMergeArgs args = new SvnMergeArgs ();
 			BindMonitor (args, monitor);
 			SvnRevisionRange range = new SvnRevisionRange (GetRevision (SvnRevision.Head), GetRevision (revision));
-			client.Merge (path, new SvnPathTarget (path), range, args);
+			lock (client) 
+				client.Merge (path, new SvnPathTarget (path), range, args);
 		}
 
 		public override IEnumerable<VersionInfo> Status (Repository repo, FilePath path, SvnRevision revision, bool descendDirs, bool changedItemsOnly, bool remoteStatus)
@@ -315,7 +329,8 @@ namespace SubversionAddinWindows
 			args.Depth = descendDirs ? SvnDepth.Infinity : SvnDepth.Children;
 			args.RetrieveAllEntries = !changedItemsOnly;
 			args.RetrieveRemoteStatus = remoteStatus;
-			client.Status (path, args, delegate (object o, SvnStatusEventArgs a) {
+			lock (client) 
+				client.Status (path, args, delegate (object o, SvnStatusEventArgs a) {
 				list.Add (CreateVersionInfo (repo, a));
 			});
 			return list;
@@ -391,7 +406,8 @@ namespace SubversionAddinWindows
 			BindMonitor (args, monitor);
 			args.Comment = comment;
 			args.StealLock = stealLock;
-			client.Lock (paths.ToStringArray (), args);
+			lock (client) 
+				client.Lock (paths.ToStringArray (), args);
 		}
 
 		public override void Unlock (IProgressMonitor monitor, bool breakLock, params FilePath[] paths)
@@ -399,7 +415,8 @@ namespace SubversionAddinWindows
 			SvnUnlockArgs args = new SvnUnlockArgs ();
 			BindMonitor (args, monitor);
 			args.BreakLock = breakLock;
-			client.Unlock (paths.ToStringArray (), args);
+			lock (client) 
+				client.Unlock (paths.ToStringArray (), args);
 		}
 
 		public override void Update (FilePath path, bool recurse, IProgressMonitor monitor)
