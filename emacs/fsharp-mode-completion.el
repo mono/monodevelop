@@ -100,8 +100,6 @@
           (fsharp-mode/find-fsproj buffer-file-name)
           (fsharp-mode/find-fsproj buffer-file-name))))
 
-  (message "---> %s" file)
-
   (setq ac-fsharp-completion-cache nil)
   (setq ac-fsharp-partial-data nil)
   (setq ac-fsharp-project-files nil)
