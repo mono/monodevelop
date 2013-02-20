@@ -851,8 +851,8 @@ namespace Mono.TextEditor.Highlighting
 				if (color.Info.GetValue (result, null) == null) 
 					color.Info.SetValue (result, color.Info.GetValue (defaultStyle, null), null);
 			}
-	
-			Console.WriteLine ("PLAIN TEXT:" + ColorToMarkup (result.PlainText.Background));
+			if (result.PlainText.TransparentForeground)
+				result.PlainText.Foreground = new Cairo.Color (0, 0, 0);
 			return result;
 		}
 
