@@ -101,7 +101,8 @@
 
 (defn replace-identifier (str fullname)
   (replace-regexp-in-string
-   "^\\w+ \\(.*?\\) " fullname str 'fixcase "\1" 1))
+   "^\\w+ \\(public \\|private \\|internal \\)?\\(.*?\\) "
+   fullname str 'fixcase "\2" 2))
 
 (defn tidy-result (str)
   (replace-regexp-in-string "[ ]*=[ ]*" "" str))
