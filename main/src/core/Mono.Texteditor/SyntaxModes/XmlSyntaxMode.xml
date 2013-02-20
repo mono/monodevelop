@@ -40,14 +40,14 @@
 		<End>;</End>
 	</Span>
 	
-	<Span tagColor = "Xml Delimiter" color = "Xml Text" rule = "InDocType">
-		<Begin>&lt;!</Begin>
-		<End>&gt;</End>
-	</Span>
-	
 	<Span tagColor = "Xml Delimiter" color = "Xml CData Section" rule = "Comment">
 		<Begin>&lt;![CDATA[</Begin>
 		<End>]]&gt;</End>
+	</Span>
+	
+	<Span tagColor = "Xml Delimiter" color = "Xml Text" rule = "InDocType">
+		<Begin>&lt;!</Begin>
+		<End>&gt;</End>
 	</Span>
 	
 	<!-- processing instructions -->
@@ -57,14 +57,8 @@
 	</Span>
 	
 	<Span tagColor = "Xml Delimiter" color = "Xml Name" rule = "InTag">
-		<Begin>&lt;/</Begin>
-		<End>&gt;</End>
-	</Span>
-	
-	<Span tagColor = "Xml Delimiter" color = "Xml Name" rule = "InTag">
 		<Begin>&lt;</Begin>
-		<Exit>&gt;</Exit>
-		<End>/&gt;</End>
+		<End>&gt;</End>
 	</Span>
 	
 	<Rule name = "Comment">
@@ -101,6 +95,10 @@
 			<Exit>&lt;</Exit>
 			<End>&apos;</End>
 		</Span>
+		
+		<Keywords color = "Xml Delimiter">
+			<Word>/</Word>
+		</Keywords>
 		
 		<!-- attributes -->
 		<Match expression="([A-Za-z0-9_]+[:[A-Za-z0-9_]+]?)([\s\n\r]*=)">
