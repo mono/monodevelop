@@ -107,6 +107,13 @@
 		{"name": "Css Property Value", "fore":"keyword-blue" },
 		{"name": "Css Selector", "fore":"#800000" },
 		{"name": "Css String Value", "fore":"keyword-blue" },
-		{"name": "Css Keyword", "fore":"keyword-blue" }
+		{"name": "Css Keyword", "fore":"keyword-blue" },
+
+		{ "name": "Script Comment", "fore":"comment-green" },
+		{ "name": "Script Identifier" },
+		{ "name": "Script Keyword", "fore":"keyword-blue" },
+		{ "name": "Script Number" },
+		{ "name": "Script Operator" },
+		{ "name": "Script String" }
 	]
 }
