@@ -263,19 +263,20 @@ and whether it is in a project directory.")
 (defun fsharp-choose-compile-command (file)
   "Format an appropriate compilation command, depending on several factors:
 1. The presence of a makefile
-2. The file type
-3. The presence of an fsproj. "
+2. The presence of a .sln or .fsproj
+3. The file's type.
+"
   (let* ((fname    (file-name-nondirectory file))
          (ext      (file-name-extension file))
-         (fsproj   (fsharp-mode/find-sln-or-fsproj file))
+         (proj     (fsharp-mode/find-sln-or-fsproj file))
          (makefile (or (file-exists-p "Makefile") (file-exists-p "makefile"))))
     (cond
+     ;; Try to load
      (makefile          compile-command)
+     (proj              (concat fsharp-build-command " /nologo " proj))
+     ((equal ext "fs")  (concat fsharp-compile-command " --nologo " file))
      ((equal ext "fsl") (concat "fslex "  file))
      ((equal ext "fsy") (concat "fsyacc " file))
-     ;; For .fs files, try to find a project first.
-     (fsproj            (concat fsharp-build-command " /nologo " fsproj))
-     ((equal ext "fs")  (concat fsharp-compile-command " --nologo " file))
      (t                 compile-command))))
 
 (defun fsharp-find-alternate-file ()
