@@ -382,6 +382,13 @@ namespace MonoDevelop.CSharp.Highlighting
 				}
 			}
 
+			public override void VisitDelegateDeclaration (DelegateDeclaration delegateDeclaration)
+			{
+				base.VisitDelegateDeclaration (delegateDeclaration);
+				if (delegateDeclaration.NameToken.StartLocation.Line == lineNumber)
+					Colorize (delegateDeclaration.NameToken, "User Types(Delegates)");
+			}
+
 			public override void VisitParameterDeclaration (ParameterDeclaration parameterDeclaration)
 			{
 				base.VisitParameterDeclaration (parameterDeclaration);
