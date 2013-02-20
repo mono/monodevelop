@@ -27,13 +27,32 @@
 
 ;;user customizable variables
 
-(require 'fsharp-mode-indent)
+(namespace fsharp-mode
+  :export
+  [find-sln-or-fsproj])
 
 (defvar fsharp-mode-version 0.7
   "Version of this fsharp-mode")
 
-(defvar fsharp-compiler "fsc"
-  "Program name for compiling a F# file")
+;;; Compilation
+
+(defvar fsharp-compile-command
+  (or (executable-find "fsharpc")
+      (executable-find "fsc"))
+  "The program used to compile F# source files.")
+
+(defvar fsharp-build-command
+  (or (executable-find "xbuild")
+      (executable-find "msbuild"))
+  "The command used to build F# projects and solutions.")
+
+(defvar fsharp-compiler nil
+  "The command used to compile an individual F# buffer.
+This will be set to a sane default, depending the type of file
+and whether it is in a project directory.")
+(make-variable-buffer-local 'fsharp-compiler)
+
+;;; ----------------------------------------------------------------------------
 
 (defvar fsharp-shell-active nil
   "Non nil when a subshell is running.")
@@ -100,7 +119,6 @@
       (define-key map [eval-phrase] '("Eval phrase" . fsharp-eval-phrase))
       )))
 
-
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.fs[iylx]?$" . fsharp-mode))
 
@@ -157,7 +175,6 @@
 
 (make-variable-buffer-local 'before-change-function)
 
-
 (defvar fsharp-mode-hook nil
   "Hook for fsharp-mode")
 
@@ -187,6 +204,7 @@
   (make-local-variable 'indent-line-function)
   (make-local-variable 'add-log-current-defun-function)
   (make-local-variable 'underline-minimum-offset)
+  (make-local-variable 'compile-command)
 
   (add-hook 'completion-at-point-functions #'ac-fsharp-completion-at-point)
 
@@ -222,8 +240,8 @@
             (set-buffer-menubar current-menubar)
             (add-submenu nil fsharp-mode-xemacs-menu))))
 
+  (setq compile-command (fsharp-choose-compile-command (buffer-file-name)))
   (turn-on-fsharp-doc-mode)
-
   (run-hooks 'fsharp-mode-hook)
 
   (if fsharp-smart-indentation
@@ -238,35 +256,25 @@
       ;; fsharp-indent-offset.  Never turn it on, because the user must
       ;; have explicitly turned it off.
       (if (/= tab-width fsharp-indent-offset)
-          (setq indent-tabs-mode nil))
-      )))
+          (setq indent-tabs-mode nil)))))
 
-(defun fsharp-set-compile-command ()
-  "Hook to set compile-command locally, unless there is a Makefile in the
-   current directory."
-  (interactive)
-  (unless (or (null buffer-file-name)
-              (file-exists-p "makefile")
-              (file-exists-p "Makefile"))
-    (let* ((filename (file-name-nondirectory buffer-file-name))
-           (basename (file-name-sans-extension filename))
-           (command nil))
-      (cond
-       ((string-match ".*\\.fs\$" filename)
-        (setq command fsharp-compiler) ; (concat "fsc -o " basename)
-        )
-       ((string-match ".*\\.fsl\$" filename) ;FIXME
-        (setq command "fslex"))
-       ((string-match ".*\\.fsy\$" filename) ;FIXME
-        (setq command "fsyacc"))
-       )
-      (if command
-          (progn
-            (make-local-variable 'compile-command)
-            (setq compile-command (concat command " " filename))))
-      )))
-
-(add-hook 'fsharp-mode-hook 'fsharp-set-compile-command)
+(defun fsharp-choose-compile-command (file)
+  "Format an appropriate compilation command, depending on several factors:
+1. The presence of a makefile
+2. The file type
+3. The presence of an fsproj. "
+  (let* ((fname    (file-name-nondirectory file))
+         (ext      (file-name-extension file))
+         (fsproj   (fsharp-mode/find-sln-or-fsproj file))
+         (makefile (or (file-exists-p "Makefile") (file-exists-p "makefile"))))
+    (cond
+     (makefile          compile-command)
+     ((equal ext "fsl") (concat "fslex "  file))
+     ((equal ext "fsy") (concat "fsyacc " file))
+     ;; For .fs files, try to find a project first.
+     (fsproj            (concat fsharp-build-command " /nologo " fsproj))
+     ((equal ext "fs")  (concat fsharp-compile-command " --nologo " file))
+     (t                 compile-command))))
 
 (defun fsharp-find-alternate-file ()
   (interactive)
@@ -303,7 +311,6 @@ loading it? "))
   (require 'inf-fsharp-mode)
   (inferior-fsharp-show-subshell))
 
-
 (defconst fsharp-error-regexp-fs
   "^\\([^(\n]+\\)(\\([0-9]+\\),\\([0-9]+\\)):"
   "Regular expression matching the error messages produced by fsc.")
@@ -334,15 +341,6 @@ whole string."
     (if string (substring string begin end)
       (buffer-substring-no-properties begin end))))
 
-(defun fsharp-find-alternate-file ()
-  (interactive)
-  (let ((name (buffer-file-name)))
-    (if (string-match "^\\(.*\\)\\.\\(fs\\|fsi\\)$" name)
-        (find-file
-         (concat
-          (fsharp-match-string 1 name)
-          (if (string= "fs" (fsharp-match-string 2 name)) ".fsi" ".fs"))))))
-
 (defun fsharp-run-executable-file ()
   (interactive)
   (let ((name (buffer-file-name)))
@@ -355,6 +353,30 @@ whole string."
   (message "Using `fsharp-mode' version %s" fsharp-mode-version)
   (fsharp-keep-region-active))
 
-(provide 'fsharp-mode)
+;;; Project
+
+(defn find-sln-or-fsproj (dir-or-file)
+  "Search for a solution or F# project file in any enclosing
+folders relative to DIR-OR-FILE."
+  (or (_ find-sln dir-or-file)
+      (_ find-fsproj dir-or-file)))
+
+(defn find-sln (dir-or-file)
+  (_ search-upwards (rx (0+ nonl) ".sln" eol)
+     (file-name-directory dir-or-file)))
+
+(defn find-fsproj (dir-or-file)
+  (_ search-upwards (rx (0+ nonl) ".fsproj" eol)
+     (file-name-directory dir-or-file)))
+
+(defn search-upwards (regex dir)
+  (when dir
+    (or (car-safe (directory-files dir 'full regex))
+        (_ search-upwards regex (_ parent-dir dir)))))
+
+(defn parent-dir (dir)
+  (unless (equal "/" dir)
+    (file-name-directory (directory-file-name dir))))
+
 
 ;;; fsharp-mode.el ends here
