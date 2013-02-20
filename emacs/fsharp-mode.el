@@ -375,8 +375,9 @@ folders relative to DIR-OR-FILE."
         (_ search-upwards regex (_ parent-dir dir)))))
 
 (defn parent-dir (dir)
-  (unless (equal "/" dir)
-    (file-name-directory (directory-file-name dir))))
+  (let ((p (file-name-directory (directory-file-name dir))))
+    (unless (equal p dir)
+      p)))
 
 
 ;;; fsharp-mode.el ends here
