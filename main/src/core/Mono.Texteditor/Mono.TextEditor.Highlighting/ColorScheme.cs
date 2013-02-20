@@ -58,7 +58,7 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("Fold Cross", VSSetting="color=outlining.square/Foreground,secondcolor=outlining.square/Background")]
 		public AmbientColor FoldCross { get; private set; }
 		
-		[ColorDescription("Indentation Guide", VSSetting="color=Plain Text/Foreground")]
+		[ColorDescription("Indentation Guide")] // not defined
 		public AmbientColor IndentationGuide { get; private set; }
 
 		[ColorDescription("Indicator Margin", VSSetting="color=Indicator Margin/Background")]
@@ -752,6 +752,14 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 
+		public static Cairo.Color AlphaBlend (Cairo.Color fore, Cairo.Color back, double alpha)
+		{
+			return new Cairo.Color (
+				(1.0 - alpha) * back.R + alpha * fore.R,
+				(1.0 - alpha) * back.G + alpha * fore.G,
+				(1.0 - alpha) * back.B + alpha * fore.B);
+		}
+
 		public static ColorScheme Import (string fileName, Stream stream)
 		{
 			var result = new ColorScheme ();
@@ -812,10 +820,26 @@ namespace Mono.TextEditor.Highlighting
 				if (!found && !importedAmbientColors.Contains (vsc.Name))
 					Console.WriteLine (vsc.Name + " not imported!");
 			}
-			result.TooltipText = result.PlainText;
+
+			result.IndentationGuide = new AmbientColor ();
+			result.IndentationGuide.Colors.Add (Tuple.Create ("color", AlphaBlend (result.PlainText.Foreground, result.PlainText.Background, 0.3)));
+
+			result.TooltipText = result.PlainText.Clone ();
 			var h = (HslColor)result.TooltipText.Background;
 			h.L *= 1.1;
 			result.TooltipText.Background = h;
+
+			result.TooltipPagerTop = new AmbientColor ();
+			result.TooltipPagerTop.Colors.Add (Tuple.Create ("color", result.TooltipText.Background));
+
+			result.TooltipPagerBottom = new AmbientColor ();
+			result.TooltipPagerBottom.Colors.Add (Tuple.Create ("color", result.TooltipText.Background));
+			
+			result.TooltipPagerTriangle = new AmbientColor ();
+			result.TooltipPagerTriangle.Colors.Add (Tuple.Create ("color", AlphaBlend (result.PlainText.Foreground, result.PlainText.Background, 0.8)));
+
+			result.TooltipBorder = new AmbientColor ();
+			result.TooltipBorder.Colors.Add (Tuple.Create ("color", AlphaBlend (result.PlainText.Foreground, result.PlainText.Background, 0.5)));
 
 			var defaultStyle = SyntaxModeService.GetColorStyle (HslColor.Brightness (result.PlainText.Background) < 0.5 ? "Monokai" : "Default");
 
@@ -827,7 +851,8 @@ namespace Mono.TextEditor.Highlighting
 				if (color.Info.GetValue (result, null) == null) 
 					color.Info.SetValue (result, color.Info.GetValue (defaultStyle, null), null);
 			}
-
+	
+			Console.WriteLine ("PLAIN TEXT:" + ColorToMarkup (result.PlainText.Background));
 			return result;
 		}
 
