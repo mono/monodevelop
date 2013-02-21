@@ -141,7 +141,7 @@ namespace MonoDevelop.AspNet
 			{
 				if (!spanStack.Any (s => s is CodeDeclarationSpan || s is CodeExpressionSpan) && i + 4 < doc.TextLength && doc.GetTextAt (i, 2) == "<%" && doc.GetTextAt (i, 4) != "<%--" && doc.GetCharAt (i + 2) != '@') {
 					var span = new CodeExpressionSpan (GetDefaultMime ());
-					FoundSpanBegin (span, i, "#$=:".IndexOf (doc.GetCharAt (i + 2)) >= 0 ? 3 : 2);
+					FoundSpanBegin (span, i, 2);
 					return true;
 				}
 				
