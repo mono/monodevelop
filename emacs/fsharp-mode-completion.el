@@ -23,18 +23,20 @@
 ;; the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 ;; Boston, MA 02110-1301, USA.
 
-(require 'cl)
+(require 'namespaces)
 
-; User-configurable variables
+(namespace fsharp-mode-completion
+  :use
+  [pos-tip])
+
+;;; User-configurable variables
 
 (defvar ac-fsharp-executable "fsautocomplete.exe")
 
 (defvar ac-fsharp-complete-command
-  (let ((exe
-         (if (executable-find ac-fsharp-executable)
-             (executable-find ac-fsharp-executable)
-           (concat (file-name-directory (or load-file-name buffer-file-name))
-                   "/bin/" ac-fsharp-executable))))
+  (let ((exe (or (executable-find ac-fsharp-executable)
+                 (concat (file-name-directory (or load-file-name buffer-file-name))
+                         "bin/" ac-fsharp-executable))))
     (case system-type
       (windows-nt exe)
       (otherwise (list "mono" exe)))))
@@ -46,6 +48,8 @@
 ; Both in seconds. Note that background process uses ms.
 (defvar ac-fsharp-blocking-timeout 1)
 (defvar ac-fsharp-idle-timeout 1)
+
+;;; ----------------------------------------------------------------------------
 
 (defvar ac-fsharp-status 'idle)
 (defvar ac-fsharp-completion-process nil)
@@ -107,8 +111,6 @@
     (ac-fsharp-launch-completion-process))
   (log-psendstr ac-fsharp-completion-process
                 (format "project \"%s\"\n" (expand-file-name file))))
-
-
 
 (defun ac-fsharp-send-pos-request (cmd file line col)
   (let ((request (format "%s \"%s\" %d %d %d\n" cmd file line col
@@ -175,7 +177,6 @@
   ;(add-hook 'before-save-hook 'ac-fsharp-reparse-buffer)
   ;(local-set-key (kbd ".") 'completion-at-point)
   )
-
 
 ; Consider using 'text' for filtering
 ; TODO: This caching is a bit optimistic. It might not always be correct
@@ -263,8 +264,6 @@
   "Regexp to match errors that come from fsautocomplete. Each
 starts with a character range for position and is followed by
 possibly many lines of description.")
-
-
 
 (defun ac-fsharp-show-errors (errors)
   (ac-fsharp-clear-errors)
@@ -410,7 +409,5 @@ possibly many lines of description.")
         (setq ac-fsharp-partial-data (substring ac-fsharp-partial-data
                                                 (+ eofloc (length eom))))
         (ac-fsharp-filter-output proc "")))))
-
-(provide 'fsharp-mode-completion)
 
 ;;; fsharp-mode-completion.el ends here
