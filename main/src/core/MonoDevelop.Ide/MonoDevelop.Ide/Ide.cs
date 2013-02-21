@@ -193,6 +193,7 @@ namespace MonoDevelop.Ide
 			KeyBindingService.LoadCurrentBindings ("MD2");
 
 			commandService.CommandError += delegate (object sender, CommandErrorArgs args) {
+				LoggingService.LogError (args.ErrorMessage, args.Exception);
 				MessageService.ShowException (args.Exception, args.ErrorMessage);
 			};
 			
