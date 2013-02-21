@@ -55,19 +55,24 @@ namespace MonoDevelop.MacIntegration
 	{
 		const string monoDownloadUrl = "http://www.go-mono.com/mono-downloads/download.html";
 
-		static TimerCounter timer = InstrumentationService.CreateTimerCounter ("Mac Platform Initialization", "Platform Service");
-		static TimerCounter mimeTimer = InstrumentationService.CreateTimerCounter ("Mac Mime Database", "Platform Service");
+		TimerCounter timer = InstrumentationService.CreateTimerCounter ("Mac Platform Initialization", "Platform Service");
+		TimerCounter mimeTimer = InstrumentationService.CreateTimerCounter ("Mac Mime Database", "Platform Service");
+
+		static bool initedGlobal;
+		bool setupFail, initedApp;
 		
-		static bool setupFail, initedApp, initedGlobal;
-		
-		static Lazy<Dictionary<string, string>> mimemap;
+		Lazy<Dictionary<string, string>> mimemap;
 		
 		//this is a BCD value of the form "xxyz", where x = major, y = minor, z = bugfix
 		//eg. 0x1071 = 10.7.1
-		static int systemVersion;
+		int systemVersion;
 
-		static MacPlatformService ()
+		public MacPlatformService ()
 		{
+			if (initedGlobal)
+				throw new Exception ("Only one MacPlatformService instance allowed");
+			initedGlobal = true;
+
 			timer.BeginTiming ();
 			
 			systemVersion = Carbon.Gestalt ("sysv");
@@ -149,7 +154,7 @@ namespace MonoDevelop.MacIntegration
 			get { return "OSX"; }
 		}
 		
-		static Dictionary<string, string> LoadMimeMapAsync ()
+		Dictionary<string, string> LoadMimeMapAsync ()
 		{
 			var map = new Dictionary<string, string> ();
 			// All recent Macs should have this file; if not we'll just die silently
@@ -202,7 +207,7 @@ namespace MonoDevelop.MacIntegration
 			return true;
 		}
 		
-		static void InitApp (CommandManager commandManager)
+		void InitApp (CommandManager commandManager)
 		{
 			if (initedApp)
 				return;
@@ -249,11 +254,8 @@ namespace MonoDevelop.MacIntegration
 			}
 		}
 
-		static void GlobalSetup ()
+		void GlobalSetup ()
 		{
-			if (initedGlobal || setupFail)
-				return;
-			initedGlobal = true;
 			
 			//FIXME: should we remove these when finalizing?
 			try {
