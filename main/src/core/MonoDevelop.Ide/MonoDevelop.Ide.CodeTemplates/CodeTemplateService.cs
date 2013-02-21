@@ -52,7 +52,17 @@ namespace MonoDevelop.Ide.CodeTemplates
 			}
 			set {
 				templates = value ?? new List<CodeTemplate> ();
+				OnTemplatesChanged (EventArgs.Empty);
 			}
+		}
+
+		public static event EventHandler TemplatesChanged;
+
+		static void OnTemplatesChanged (EventArgs e)
+		{
+			var handler = TemplatesChanged;
+			if (handler != null)
+				handler (null, e);
 		}
 		
 		static CodeTemplateService ()
