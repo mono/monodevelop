@@ -27,7 +27,8 @@
 
 (namespace fsharp-mode-completion
   :use
-  [pos-tip])
+  [pos-tip
+   (fsharp-mode-indent fsharp-in-literal-p)])
 
 ;;; User-configurable variables
 
@@ -61,7 +62,7 @@
 (defvar ac-fsharp-verbose nil)
 (defvar ac-fsharp-waiting nil)
 
-(defconst eom "\n<<EOF>>\n"
+(defconst ac-fsharp-eom "\n<<EOF>>\n"
   "End of message marker")
 
 (defun log-to-proc-buf (proc str)
@@ -270,10 +271,10 @@ possibly many lines of description.")
   (save-match-data
     (while (string-match ac-fsharp-error-regexp errors)
       (ac-fsharp-show-error-overlay
-       (line-column-to-pos (+ (string-to-int (match-string 1 errors)) 1)
-                           (string-to-int (match-string 2 errors)))
-       (line-column-to-pos (+ (string-to-int (match-string 3 errors)) 1)
-                           (string-to-int (match-string 4 errors)))
+       (line-column-to-pos (+ (string-to-number (match-string 1 errors)) 1)
+                           (string-to-number (match-string 2 errors)))
+       (line-column-to-pos (+ (string-to-number (match-string 3 errors)) 1)
+                           (string-to-number (match-string 4 errors)))
        (if (string= "ERROR" (match-string 5 errors))
            'fsharp-error-face
          'fsharp-warning-face)
@@ -290,7 +291,8 @@ possibly many lines of description.")
      :weight bold
      :underline "Red"
      ))
-  "Face used for marking an error in F#")
+  "Face used for marking an error in F#"
+  :group 'fsharp)
 
 (defface fsharp-warning-face
   '(
@@ -301,8 +303,9 @@ possibly many lines of description.")
     (((class color) (background light))
      :weight bold
      :underline "Blue"
-    ))
-  "Face used for marking a warning in F#")
+     ))
+  "Face used for marking a warning in F#"
+  :group 'fsharp)
 
 (defun ac-fsharp-show-error-overlay (p1 p2 face txt)
   "Overlay the text from p1 to p2 to indicate an error is present here.
@@ -344,7 +347,7 @@ possibly many lines of description.")
 (defun ac-fsharp-electric-dot ()
   (interactive)
   (insert ".")
-  (unless (fsharp-in-literal)
+  (unless (fsharp-in-literal-p)
     (completion-at-point)))
 
 (defun ac-fsharp-filter-output (proc str)
@@ -352,7 +355,7 @@ possibly many lines of description.")
   (log-to-proc-buf proc str)
   (ac-fsharp-stash-partial str)
 
-  (let ((eofloc (string-match-p eom ac-fsharp-partial-data)))
+  (let ((eofloc (string-match-p ac-fsharp-eom ac-fsharp-partial-data)))
     (when eofloc
       (let ((msg (substring ac-fsharp-partial-data 0 eofloc)))
         (cond
@@ -367,8 +370,8 @@ possibly many lines of description.")
          ((string/starts-with msg "DATA: finddecl")
           (if (string-match "\n\\(.*\\):\\([0-9]+\\):\\([0-9]+\\)" msg)
               (let ((file (match-string 1 msg))
-                    (line (+ 1 (string-to-int (match-string 2 msg))))
-                    (col (string-to-int (match-string 3 msg))))
+                    (line (+ 1 (string-to-number (match-string 2 msg))))
+                    (col (string-to-number (match-string 3 msg))))
                 (find-file (match-string 1 msg))
                 (goto-char (line-column-to-pos line col)))
             (message "Error: unable to find definition")))
@@ -407,7 +410,7 @@ possibly many lines of description.")
           (message (format "Error unrecognised message: '%s'" msg))))
 
         (setq ac-fsharp-partial-data (substring ac-fsharp-partial-data
-                                                (+ eofloc (length eom))))
+                                                (+ eofloc (length ac-fsharp-eom))))
         (ac-fsharp-filter-output proc "")))))
 
 ;;; fsharp-mode-completion.el ends here
