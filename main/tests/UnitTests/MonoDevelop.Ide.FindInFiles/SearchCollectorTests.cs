@@ -1,4 +1,4 @@
-﻿// 
+// 
 // SearchCollectorTests.cs
 //  
 // Author:
@@ -179,7 +179,7 @@ namespace project1 {
 				project.AddFile (new ProjectFile (String.Format ("dummy{0}.cs", i)));
 				project.AddReference (typeof (object).Assembly.Location);
 				TypeSystemService.LoadProject (project);
-				TypeSystemService.GetProjectContentWrapper (project).ReloadAssemblyReferences ();
+				TypeSystemService.GetProjectContentWrapper (project).ReconnectAssemblyReferences ();
 			}
 			solution.RootFolder.AddItem (new UnknownProject { FileName = "test.csproj" });
 

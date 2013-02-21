@@ -1,4 +1,4 @@
-﻿//
+//
 // RazorCompletionTesting.cs
 //
 // Author:
@@ -99,7 +99,7 @@ namespace UnitTests.MonoDevelop.AspNet.Mvc.Completion
 
 			var pcw = TypeSystemService.LoadProject (project);
 			TypeSystemService.ForceUpdate (pcw);
-			pcw.ReloadAssemblyReferences ();
+			pcw.ReconnectAssemblyReferences ();
 
 			sev = new TestViewContent ();
 			sev.Project = project;

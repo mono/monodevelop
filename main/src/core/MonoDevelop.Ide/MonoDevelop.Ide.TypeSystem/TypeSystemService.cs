@@ -728,7 +728,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		static void ReloadAllReferences (IEnumerable<ProjectContentWrapper> contents)
 		{
 			foreach (var wrapper in contents)
-				wrapper.ReloadAssemblyReferences ();
+				wrapper.ReconnectAssemblyReferences ();
 		}
 		
 		[Serializable]
@@ -1160,28 +1160,32 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 
-			bool HasCyclicRefs (ProjectContentWrapper wrapper)
+			bool HasCyclicRefs (ProjectContentWrapper wrapper, HashSet<Project> nonCyclicCache)
 			{
+				if (nonCyclicCache.Contains (wrapper.Project))
+					return false;
 				foreach (var referencedProject in wrapper.ReferencedProjects) {
 					ProjectContentWrapper w;
-					if (referencedProject == Project || referencedProject == wrapper.Project || projectContents.TryGetValue (referencedProject, out w) && HasCyclicRefs (w)) {
+					if (referencedProject == Project || referencedProject == wrapper.Project || projectContents.TryGetValue (referencedProject, out w) && HasCyclicRefs (w, nonCyclicCache)) {
 						return true;
 					}
 				}
+				nonCyclicCache.Add (wrapper.Project);
 				return false;
 			}
 
-			public void ReloadAssemblyReferences ()
+			public void ReconnectAssemblyReferences ()
 			{
 				var netProject = this.Project as DotNetProject;
 				if (netProject == null)
 					return;
 				try {
 					var contexts = new List<IAssemblyReference> ();
+					var nonCyclicCache =new HashSet<Project> ();
 					foreach (var referencedProject in ReferencedProjects) {
 						ProjectContentWrapper wrapper;
 						if (projectContents.TryGetValue (referencedProject, out wrapper)) {
-							if (HasCyclicRefs (wrapper))
+							if (HasCyclicRefs (wrapper, nonCyclicCache))
 								continue;
 							contexts.Add (new UnresolvedAssemblyDecorator (wrapper));
 						}
@@ -1405,7 +1409,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (args.SolutionItem is Project) {
 				var wrapper = LoadProject ((Project)args.SolutionItem);
 				if (wrapper != null)
-					wrapper.ReloadAssemblyReferences ();
+					wrapper.ReconnectAssemblyReferences ();
 			}
 		}
 		
