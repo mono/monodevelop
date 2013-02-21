@@ -36,6 +36,8 @@ clean :
 	rm -fr $(bin_d)
 	rm -rf $(tmp_d)
 
+all : $(ac_exe)
+
 # Tests
 
 test unit-test :
