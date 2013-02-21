@@ -85,3 +85,29 @@ Try indenting this token further or using standard formatting conventions."
   (let* ((ov (overlays-in (point-min) (point-max)))
          (face (overlay-get (cadr ov) 'face)))
     (should (eq 'fsharp-error-face face))))
+
+;;; Project loading
+
+(defmacro check-project-loading (desc &rest body)
+  "Test fixture for loading projects, stubbing process-related functions.
+Bound vars:
+* load-cmd
+  The string passed to log-psendstr"
+  (declare (indent 1))
+  `(check ,(concat "check project loading " desc)
+     (let    (load-cmd)
+       (flet ((ac-fsharp-launch-completion-process ())
+              (log-psendstr (proc cmd) (setq load-cmd cmd)))
+         (in-ns fsharp-mode-completion
+           ,@body)))))
+
+(check-project-loading "raises error if not fsproj"
+  (should-error (_ load-project "foo")))
+
+(check-project-loading "updates the current project"
+  (_ load-project "foo.fsproj")
+  (should= "foo.fsproj" (@ current-project)))
+
+(check-project-loading "loads the specified project using the ac process"
+  (_ load-project "foo.fsproj")
+  (should-match "foo.fsproj" load-cmd))

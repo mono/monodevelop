@@ -94,7 +94,7 @@ and whether it is in a project directory.")
 
   (define-key fsharp-mode-map (kbd "C-c <up>") 'fsharp-goto-block-up)
 
-  (define-key fsharp-mode-map (kbd "C-c C-p") 'ac-fsharp-load-project)
+  (define-key fsharp-mode-map (kbd "C-c C-p") 'fsharp-mode-completion/load-project)
   (define-key fsharp-mode-map (kbd "C-c C-t") 'ac-fsharp-tooltip-at-point)
   (define-key fsharp-mode-map (kbd "C-c C-d") 'ac-fsharp-gotodefn-at-point)
   (define-key fsharp-mode-map (kbd "C-c C-q") 'ac-fsharp-quit-completion-process)
@@ -268,7 +268,7 @@ and whether it is in a project directory.")
   (when file
     (let ((proj (_ find-fsproj file)))
       (when proj
-        (ac-fsharp-load-project proj)))))
+        (fsharp-mode-completion/load-project proj)))))
 
 (defn choose-compile-command (file)
   "Format an appropriate compilation command, depending on several factors:

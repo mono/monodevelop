@@ -26,6 +26,9 @@
 (defun should-match (regex str)
   (should (string-match-p regex str)))
 
+(defun should= (x y)
+  (should (equal x y)))
+
 ;;; ----------------------------------------------------------------------------
 
 ;;; Dirs

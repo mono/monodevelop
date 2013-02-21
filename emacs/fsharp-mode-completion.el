@@ -26,6 +26,8 @@
 (require 'namespaces)
 
 (namespace fsharp-mode-completion
+  :export
+  [load-project]
   :use
   [pos-tip
    (fsharp-mode-indent fsharp-in-literal-p)])
@@ -95,9 +97,15 @@
   (with-current-buffer (find-file-noselect file)
     (ac-fsharp-parse-current-buffer)))
 
+(defmutable current-project nil
+  "Tracks the project currently used by the completion process.")
+
 ;;;###autoload
-(defun ac-fsharp-load-project (file)
+(defn load-project (file)
   "Load the specified F# file as a project"
+  (assert (equal "fsproj" (file-name-extension file))  ()
+          "The given file was not an F# project.")
+
   ;; Prompt user for an fsproj, searching for a default.
   (interactive
    (list (read-file-name
@@ -105,13 +113,18 @@
           (fsharp-mode/find-fsproj buffer-file-name)
           (fsharp-mode/find-fsproj buffer-file-name))))
 
-  (setq ac-fsharp-completion-cache nil)
-  (setq ac-fsharp-partial-data nil)
-  (setq ac-fsharp-project-files nil)
-  (unless ac-fsharp-completion-process
-    (ac-fsharp-launch-completion-process))
-  (log-psendstr ac-fsharp-completion-process
-                (format "project \"%s\"\n" (expand-file-name file))))
+  ;; Reset state.
+  (setq ac-fsharp-completion-cache nil
+        ac-fsharp-partial-data nil
+        ac-fsharp-project-files nil)
+
+  ;; Launch the completion process and update the current project.
+  (let ((f (expand-file-name file)))
+    (unless ac-fsharp-completion-process
+      (ac-fsharp-launch-completion-process))
+    (log-psendstr ac-fsharp-completion-process
+                  (format "project \"%s\"\n" (expand-file-name file)))
+    (@set current-project file)))
 
 (defun ac-fsharp-send-pos-request (cmd file line col)
   (let ((request (format "%s \"%s\" %d %d %d\n" cmd file line col
