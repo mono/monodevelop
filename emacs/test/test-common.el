@@ -64,7 +64,7 @@
 (defconst tests-load-path
   (mapcar 'expand-file-name `(,@load-path "." ".." "./tests")))
 
-(defconst default-dependencies '(namespaces pos-tip))
+(defconst default-dependencies '(namespaces popup s))
 
 (defun run-fsharp-tests ()
   "Configure the environment for running tests, then execute tests.

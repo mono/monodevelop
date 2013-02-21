@@ -715,7 +715,7 @@ it's tried again going backward."
           new-value (- (current-indentation) colon-indent))
     (goto-char start)
     (if (not found)
-        (error "Sorry, couldn't guess a value for fsharp-indent-offset")
+        (message "Unable to determine default value for fsharp-indent-offset")
       (funcall (if global 'kill-local-variable 'make-local-variable)
                'fsharp-indent-offset)
       (setq fsharp-indent-offset new-value)

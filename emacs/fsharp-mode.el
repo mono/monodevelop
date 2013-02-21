@@ -32,8 +32,6 @@
   [find-sln-or-fsproj
    find-sln
    find-fsproj]
-  :import
-  [fsharp-mode-completion]
   :use
   [fsharp-mode-completion])
 
@@ -163,10 +161,10 @@ and whether it is in a project directory.")
   "Caches last buffer position determined not inside a fsharp comment.")
 (make-variable-buffer-local 'fsharp-last-noncomment-pos)
 
-;;last-noncomment-pos can be a simple position, because we nil it
-;;anyway whenever buffer changes upstream. last-comment-start and -end
-;;have to be markers, because we preserve them when the changes' end
-;;doesn't overlap with the comment's start.
+;; last-noncomment-pos can be a simple position, because we nil it
+;; anyway whenever buffer changes upstream. last-comment-start and -end
+;; have to be markers, because we preserve them when the changes' end
+;; doesn't overlap with the comment's start.
 
 (defvar fsharp-last-comment-start nil
   "A marker caching last determined fsharp comment start.")
@@ -234,14 +232,13 @@ and whether it is in a project directory.")
         fsharp-last-comment-start (make-marker)
         fsharp-last-comment-end (make-marker))
 
-  (if running-xemacs                    ; from Xemacs lisp mode
-      (if (and (featurep 'menubar)
-               current-menubar)
-          (progn
-            ;; make a local copy of the menubar, so our modes don't
-            ;; change the global menubar
-            (set-buffer-menubar current-menubar)
-            (add-submenu nil fsharp-mode-xemacs-menu))))
+  ;; make a local copy of the menubar, so our modes don't
+  ;; change the global menubar
+  (when (and running-xemacs
+             (featurep 'menubar)
+             current-menubar)
+    (set-buffer-menubar current-menubar)
+    (add-submenu nil fsharp-mode-xemacs-menu))
 
   (in-ns fsharp-mode
     (setq compile-command (_ choose-compile-command (buffer-file-name)))
@@ -249,27 +246,13 @@ and whether it is in a project directory.")
       (_ try-load-project (buffer-file-name)))
 
     (turn-on-fsharp-doc-mode)
-    (run-hooks 'fsharp-mode-hook)
-
-    (if fsharp-smart-indentation
-        (let ((offset fsharp-indent-offset))
-          ;; It's okay if this fails to guess a good value
-          (if (and (fsharp-safe (fsharp-guess-indent-offset))
-                   (<= fsharp-indent-offset 8)
-                   (>= fsharp-indent-offset 2))
-              (setq offset fsharp-indent-offset))
-          (setq fsharp-indent-offset offset)
-          ;; Only turn indent-tabs-mode off if tab-width !=
-          ;; fsharp-indent-offset.  Never turn it on, because the user must
-          ;; have explicitly turned it off.
-          (if (/= tab-width fsharp-indent-offset)
-              (setq indent-tabs-mode nil))))))
+    (run-hooks 'fsharp-mode-hook)))
 
 (defn try-load-project (file)
   (when file
     (let ((proj (_ find-fsproj file)))
       (when proj
-        (_ load-project proj)))))
+        (fsharp-mode-completion/load-project proj)))))
 
 (defn choose-compile-command (file)
   "Format an appropriate compilation command, depending on several factors:
@@ -298,7 +281,7 @@ and whether it is in a project directory.")
           (fsharp-match-string 1 name)
           (if (string= "fs" (fsharp-match-string 2 name)) ".fsi" ".fs"))))))
 
-;;; subshell support
+;;; Subshell support
 
 (defun fsharp-eval-region (start end)
   "Send the current region to the inferior fsharp process."

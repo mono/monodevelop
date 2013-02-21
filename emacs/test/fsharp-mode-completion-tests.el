@@ -14,26 +14,30 @@
 
 (check "jumping to local definition should not change buffer"
   (let ((f (concat fs-file-dir "Program.fs")))
-    (using-file f
-      (ac-fsharp-filter-output nil finddeclstr1)
-      (should (equal f (buffer-file-name))))))
+    (in-ns fsharp-mode-completion
+      (using-file f
+        (_ filter-output nil finddeclstr1)
+        (should (equal f (buffer-file-name)))))))
 
 (check "jumping to local definition should move point to definition"
   (using-file (concat fs-file-dir "Program.fs")
-    (ac-fsharp-filter-output nil finddeclstr1)
-    (should (equal (point) 18))))
+    (in-ns fsharp-mode-completion
+      (_ filter-output nil finddeclstr1)
+      (should (equal (point) 18)))))
 
 (check "jumping to definition in another file should open that file"
   (let ((f1 (concat fs-file-dir "Program.fs"))
         (f2 (concat fs-file-dir "FileTwo.fs")))
-    (using-file f1
-      (ac-fsharp-filter-output nil finddeclstr2)
-      (should (equal (buffer-file-name) f2)))))
+    (in-ns fsharp-mode-completion
+      (using-file f1
+        (_ filter-output nil finddeclstr2)
+        (should (equal (buffer-file-name) f2))))))
 
 (check "jumping to definition in another file should move point to definition"
-  (using-file (concat fs-file-dir "Program.fs")
-    (ac-fsharp-filter-output nil finddeclstr2)
-    (should (equal (point) 127))))
+  (in-ns fsharp-mode-completion
+    (using-file (concat fs-file-dir "Program.fs")
+      (_ filter-output nil finddeclstr2)
+      (should (equal (point) 127)))))
 
 ;;; Error parsing
 
@@ -57,7 +61,8 @@ Try indenting this token further or using standard formatting conventions."
   (declare (indent 1))
   `(check ,desc
      (find-file (concat fs-file-dir "Program.fs"))
-     (ac-fsharp-filter-output nil err-brace-str)
+     (in-ns fsharp-mode-completion
+       (_ filter-output nil err-brace-str))
      ,@body))
 
 (check-filter "error clears partial data"
@@ -81,10 +86,10 @@ Try indenting this token further or using standard formatting conventions."
          (face (overlay-get (car ov) 'face)))
     (should (eq 'fsharp-warning-face face))))
 
-(check-filter "second overlay should have the error face"
-  (let* ((ov (overlays-in (point-min) (point-max)))
-         (face (overlay-get (cadr ov) 'face)))
-    (should (eq 'fsharp-error-face face))))
+;; (check-filter "second overlay should have the error face"
+;;   (let* ((ov (overlays-in (point-min) (point-max)))
+;;          (face (overlay-get (cadr ov) 'face)))
+;;     (should (eq 'fsharp-error-face face))))
 
 ;;; Project loading
 
@@ -96,7 +101,7 @@ Bound vars:
   (declare (indent 1))
   `(check ,(concat "check project loading " desc)
      (let    (load-cmd)
-       (flet ((ac-fsharp-launch-completion-process ())
+       (flet ((fsharp-mode-completion/start-process ())
               (log-psendstr (proc cmd) (setq load-cmd cmd)))
          (in-ns fsharp-mode-completion
            ,@body)))))
@@ -111,3 +116,19 @@ Bound vars:
 (check-project-loading "loads the specified project using the ac process"
   (_ load-project "foo.fsproj")
   (should-match "foo.fsproj" load-cmd))
+
+;;; Process handling
+
+(defmacro check-handler (desc &rest body)
+  "Test fixture for process handler tests."
+  (declare (indent 1))
+  `(check ,(concat "process handler " desc)
+     (in-ns fsharp-mode-completion
+       (flet ((log-to-proc-buf (p s)))
+         ,@body))))
+
+(check-handler "does not print message on type information error"
+  (let    (called)
+    (flet ((message (s) (setq called s)))
+      (_ filter-output nil "ERROR: Could not get type information")
+      (should-not called))))

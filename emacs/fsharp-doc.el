@@ -61,7 +61,6 @@
     (when fsharp-doc-mode
       (_ start-timer)
       (run-hooks 'fsharp-doc-mode-hook))
-    (message "fsharp-doc-mode %s" (if fsharp-doc-mode "enabled" "disabled"))
     fsharp-doc-mode))
 
 (defun turn-on-fsharp-doc-mode ()
@@ -121,11 +120,9 @@
   "Show tooltip info in the minibuffer."
   (interactive)
   (when (and fsharp-doc-mode
-             (not (eobp))
-             (not (eolp))
+             (thing-at-point 'symbol)
              (not executing-kbd-macro)
              (not (eq (selected-window) (minibuffer-window))))
     (ac-fsharp-tooltip-at-point)))
-
 
 ;;; fsharp-doc.el ends here
