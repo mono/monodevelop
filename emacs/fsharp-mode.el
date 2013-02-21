@@ -31,9 +31,13 @@
   :export
   [find-sln-or-fsproj
    find-sln
-   find-fsproj])
+   find-fsproj]
+  :import
+  [fsharp-mode-completion]
+  :use
+  [fsharp-mode-completion])
 
-(defvar fsharp-mode-version 0.7
+(defconst fsharp-mode-version 0.7
   "Version of this fsharp-mode")
 
 ;;; Compilation
@@ -65,8 +69,7 @@ and whether it is in a project directory.")
 (defvar fsharp-mode-map nil
   "Keymap used in fsharp mode.")
 
-(if fsharp-mode-map
-    ()
+(unless fsharp-mode-map
   (setq fsharp-mode-map (make-sparse-keymap))
   (if running-xemacs
       (define-key fsharp-mode-map 'backspace 'backward-delete-char-untabify)
@@ -99,7 +102,7 @@ and whether it is in a project directory.")
   (define-key fsharp-mode-map (kbd "C-c C-d") 'ac-fsharp-gotodefn-at-point)
   (define-key fsharp-mode-map (kbd "C-c C-q") 'ac-fsharp-quit-completion-process)
 
-  (if running-xemacs nil ; if not running xemacs
+  (unless running-xemacs
     (let ((map (make-sparse-keymap "fsharp"))
           (forms (make-sparse-keymap "Forms")))
       (define-key fsharp-mode-map [menu-bar] (make-sparse-keymap))
@@ -118,16 +121,14 @@ and whether it is in a project directory.")
       (define-key map [separator-1] '("--"))
       (define-key map [show-subshell] '("Show subshell" . fsharp-show-subshell))
       (define-key map [eval-region] '("Eval region" . fsharp-eval-region))
-      (define-key map [eval-phrase] '("Eval phrase" . fsharp-eval-phrase))
-      )))
+      (define-key map [eval-phrase] '("Eval phrase" . fsharp-eval-phrase)))))
 
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.fs[iylx]?$" . fsharp-mode))
 
 (defvar fsharp-mode-syntax-table nil
   "Syntax table in use in fsharp mode buffers.")
-(if fsharp-mode-syntax-table
-    ()
+(unless fsharp-mode-syntax-table
   (setq fsharp-mode-syntax-table (make-syntax-table))
   ; backslash is an escape sequence
   (modify-syntax-entry ?\\ "\\" fsharp-mode-syntax-table)
@@ -268,7 +269,7 @@ and whether it is in a project directory.")
   (when file
     (let ((proj (_ find-fsproj file)))
       (when proj
-        (fsharp-mode-completion/load-project proj)))))
+        (_ load-project proj)))))
 
 (defn choose-compile-command (file)
   "Format an appropriate compilation command, depending on several factors:
@@ -281,7 +282,6 @@ and whether it is in a project directory.")
          (proj     (fsharp-mode/find-sln-or-fsproj file))
          (makefile (or (file-exists-p "Makefile") (file-exists-p "makefile"))))
     (cond
-     ;; Try to load
      (makefile          compile-command)
      (proj              (concat fsharp-build-command " /nologo " proj))
      ((equal ext "fs")  (concat fsharp-compile-command " --nologo " file))
