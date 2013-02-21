@@ -49,7 +49,7 @@ namespace MonoDevelop.AspNet.Mvc
 		{
 			this.guiDocument = doc;
 			guiDocument.DocumentParsed += HandleDocumentParsed; 
-			ResourceStreamProvider provider = new ResourceStreamProvider (typeof (IStreamProvider).Assembly, "RazorSyntaxMode.xml");
+			ResourceStreamProvider provider = new ResourceStreamProvider (typeof (ResourceStreamProvider).Assembly, "RazorSyntaxMode.xml");
 			using (var reader = provider.Open ()) {
 				SyntaxMode baseMode = SyntaxMode.Read (reader);
 				this.rules = new List<Rule> (baseMode.Rules);
