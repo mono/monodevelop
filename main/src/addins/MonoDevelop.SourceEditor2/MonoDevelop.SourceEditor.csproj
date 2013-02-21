@@ -127,7 +127,6 @@
     <Compile Include="MonoDevelop.SourceEditor\MarkerOperationsHandler.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SearchAndReplaceWidget.cs" />
     <Compile Include="MonoDevelop.SourceEditor\GotoLineNumberWidget.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\LanguageItemTooltipProvider.cs" />
     <Compile Include="MonoDevelop.SourceEditor\CompileErrorTooltipProvider.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DebugValueWindow.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DebugValueTooltipProvider.cs" />
