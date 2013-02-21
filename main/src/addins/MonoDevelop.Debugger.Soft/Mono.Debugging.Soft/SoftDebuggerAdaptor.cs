@@ -579,9 +579,8 @@ namespace Mono.Debugging.Soft
 		// if the local does not have a name, constructs one from the index
 		static string GetLocalName (SoftEvaluationContext cx, LocalVariable local)
 		{
-			var name = local.Name;
 			if (!string.IsNullOrEmpty (local.Name) || cx.SourceCodeAvailable)
-				return name;
+				return local.Name;
 			return "loc" + local.Index;
 		}
 		
@@ -670,9 +669,14 @@ namespace Mono.Debugging.Soft
 			return false;
 		}
 
+		static bool IsAnonymousType (TypeMirror type)
+		{
+			return type.Name.StartsWith ("<>__AnonType", StringComparison.InvariantCulture);
+		}
+
 		protected override ValueReference GetMember (EvaluationContext ctx, object t, object co, string name)
 		{
-			TypeMirror type = (TypeMirror) t;
+			TypeMirror type = t as TypeMirror;
 
 			while (type != null) {
 				FieldInfoMirror field = FindByName (type.GetFields(), f => f.Name, name, ctx.CaseSensitive);
@@ -683,7 +687,7 @@ namespace Mono.Debugging.Soft
 				if (prop != null && (IsStatic (prop) || co != null)) {
 					// Optimization: if the property has a CompilerGenerated backing field, use that instead.
 					// This way we avoid overhead of invoking methods on the debugee when the value is requested.
-					string cgFieldName = string.Format ("<{0}>k__BackingField", prop.Name);
+					string cgFieldName = string.Format ("<{0}>{1}", prop.Name, IsAnonymousType (type) ? "" : "k__BackingField");
 					if ((field = FindByName (type.GetFields (), f => f.Name, cgFieldName, true)) != null && IsCompilerGenerated (field))
 						return new FieldValueReference (ctx, field, co, type, prop.Name, ObjectValueFlags.Property);
 

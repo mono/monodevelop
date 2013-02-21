@@ -36,7 +36,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 	public class CodeTemplateToolboxProvider : IToolboxDynamicProvider
 	{
 		static string category = MonoDevelop.Core.GettextCatalog.GetString ("Text Snippets");
-		
+
+
 		public System.Collections.Generic.IEnumerable<ItemToolboxNode> GetDynamicItems (IToolboxConsumer consumer)
 		{
 			
@@ -57,6 +58,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			yield break;
 		}
 		
-		public event EventHandler ItemsChanged;
+		public event EventHandler ItemsChanged {
+			add { CodeTemplateService.TemplatesChanged += value; }
+			remove { CodeTemplateService.TemplatesChanged -= value; }
+		}
 	}
 }

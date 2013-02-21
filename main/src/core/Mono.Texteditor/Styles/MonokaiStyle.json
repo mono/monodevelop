@@ -197,6 +197,13 @@
 		{ "name": "Css Property Value", "fore":"monokai-string", "weight":"bold"  },
 		{ "name": "Css Selector", "fore":"monokai-comment", "weight":"bold"  },
 		{ "name": "Css String Value", "fore":"literal-orange", "weight":"bold"  },
-		{ "name": "Css Keyword", "fore":"monokai-keyword", "weight":"bold"  }
+		{ "name": "Css Keyword", "fore":"monokai-keyword", "weight":"bold"  },
+
+		{ "name": "Script Comment", "fore":"monokai-comment" },
+		{ "name": "Script Identifier" },
+		{ "name": "Script Keyword", "fore":"monokai-keyword" },
+		{ "name": "Script Number", "fore":"monokai-constant" },
+		{ "name": "Script Operator" },
+		{ "name": "Script String", "fore":"monokai-string" }
 	]
 }

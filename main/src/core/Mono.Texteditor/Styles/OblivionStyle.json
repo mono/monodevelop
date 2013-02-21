@@ -212,6 +212,13 @@
 		{ "name": "Css Property Value", "fore":"butter2", "weight":"bold"  },
 		{ "name": "Css Selector", "fore":"aluminium2", "weight":"bold"  },
 		{ "name": "Css String Value", "fore":"butter2", "weight":"bold"  },
-		{ "name": "Css Keyword", "fore":"plum1", "weight":"bold"  }
+		{ "name": "Css Keyword", "fore":"plum1", "weight":"bold"  },
+
+		{ "name": "Script Comment", "fore":"aluminium4" },
+		{ "name": "Script Identifier" },
+		{ "name": "Script Keyword", "fore":"plum1" },
+		{ "name": "Script Number", "fore":"butter2" },
+		{ "name": "Script Operator" },
+		{ "name": "Script String", "fore":"butter2" }
 	]
 }

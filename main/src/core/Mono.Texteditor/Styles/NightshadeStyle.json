@@ -237,6 +237,13 @@
 		{ "name": "Css Property Value", "fore":"StringVim" },
 		{ "name": "Css Selector", "fore":"CommentVim" },
 		{ "name": "Css String Value", "fore":"StringVim" },
-		{ "name": "Css Keyword", "fore":"StatementVim" }
+		{ "name": "Css Keyword", "fore":"StatementVim" },
+
+		{ "name": "Script Comment", "fore":"CommentVim" },
+		{ "name": "Script Identifier" },
+		{ "name": "Script Keyword", "fore":"StatementVim" },
+		{ "name": "Script Number", "fore":"NumberVim" },
+		{ "name": "Script Operator" },
+		{ "name": "Script String", "fore":"StringVim" }
 	]
 }

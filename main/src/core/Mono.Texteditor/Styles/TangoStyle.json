@@ -116,7 +116,7 @@
 		{ "name": "String(Escape)", "fore":"plum3"},
 		{ "name": "String(C# @ Verbatim)", "fore":"plum2"},
 
-		{ "name": "Number", "fore":"literal-orange"},
+		{ "name": "Number", "fore":"plum2"},
 
 		{ "name": "Preprocessor", "fore":"orange2" },
 		{ "name": "Preprocessor Keyword", "fore":"orange2", "weight":"bold" },
@@ -211,6 +211,13 @@
 		{ "name": "Css Property Value", "fore":"literal-orange", "weight":"bold"  },
 		{ "name": "Css Selector", "fore":"chameleon3", "weight":"bold"  },
 		{ "name": "Css String Value", "fore":"literal-orange", "weight":"bold"  },
-		{ "name": "Css Keyword", "fore":"keyword-teal", "weight":"bold"  }
+		{ "name": "Css Keyword", "fore":"keyword-teal", "weight":"bold"  },
+
+		{ "name": "Script Comment", "fore":"chameleon3" },
+		{ "name": "Script Identifier" },
+		{ "name": "Script Keyword", "fore":"skyblue2" },
+		{ "name": "Script Number", "fore":"plum2" },
+		{ "name": "Script Operator" },
+		{ "name": "Script String", "fore":"plum2" }
 	]
 }

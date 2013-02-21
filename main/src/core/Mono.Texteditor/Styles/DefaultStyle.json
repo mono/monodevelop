@@ -203,12 +203,19 @@
 		{ "name": "Diff Header(Old)", "fore":"scarletred1", "weight":"bold"  },
 		{ "name": "Diff Header(New)", "fore":"skyblue2", "weight":"bold"  },
 		{ "name": "Diff Location", "fore":"plum2", "weight":"bold"  },
-		
+
 		{ "name": "Css Comment", "fore":"comment-gray", "weight":"bold"  },
 		{ "name": "Css Property Name", "fore":"black", "weight":"bold"  },
 		{ "name": "Css Property Value", "fore":"literal-orange", "weight":"bold"  },
 		{ "name": "Css Selector", "fore":"comment-gray", "weight":"bold"  },
 		{ "name": "Css String Value", "fore":"literal-orange", "weight":"bold"  },
-		{ "name": "Css Keyword", "fore":"keyword-teal", "weight":"bold"  }
+		{ "name": "Css Keyword", "fore":"keyword-teal", "weight":"bold"  },
+
+		{ "name": "Script Comment", "fore":"comment-gray" },
+		{ "name": "Script Identifier" },
+		{ "name": "Script Keyword", "fore":"keyword-teal" },
+		{ "name": "Script Number", "fore":"literal-orange" },
+		{ "name": "Script Operator" },
+		{ "name": "Script String", "fore":"literal-orange" }
 	]
 }

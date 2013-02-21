@@ -704,7 +704,8 @@ namespace MonoDevelop.CSharp
 		{
 			if (method == null)
 				throw new ArgumentNullException ("method");
-			
+
+
 			var result = new StringBuilder ();
 			AppendModifiers (result, method);
 
@@ -714,7 +715,13 @@ namespace MonoDevelop.CSharp
 				result.Append (" ");
 
 			result.Append ('(');
-			AppendParameterList (result,  method.Parameters, formattingOptions.SpaceBeforeConstructorDeclarationParameterComma, formattingOptions.SpaceAfterConstructorDeclarationParameterComma);
+			if (method.DeclaringType.Kind == TypeKind.Delegate) {
+				result.Append (Highlight ("delegate", colorStyle.KeywordDeclaration) + " (");
+				AppendParameterList (result, method.DeclaringType.GetDelegateInvokeMethod ().Parameters, formattingOptions.SpaceBeforeConstructorDeclarationParameterComma, formattingOptions.SpaceAfterConstructorDeclarationParameterComma);
+				result.Append (")");
+			} else {
+				AppendParameterList (result, method.Parameters, formattingOptions.SpaceBeforeConstructorDeclarationParameterComma, formattingOptions.SpaceAfterConstructorDeclarationParameterComma);
+			}
 			result.Append (')');
 			return result.ToString ();
 		}

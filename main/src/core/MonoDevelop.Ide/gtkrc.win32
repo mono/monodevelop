@@ -1,5 +1,8 @@
-# Windows Theme for Xamarian
-# Copyright 2012 Christian Kellner <christian.kellner@lanedo.com>
+# Windows Theme for Xamarin composed by Lanedo GmbH
+# Copyright 2012 Xamarin Inc.
+# Authors: 
+#   Christian Kellner <christian.kellner@lanedo.com>
+#   Carlos Garnacho <carlos.garnacho@lanedo.com>
 
 gtk-color-scheme =
 "bg_color:         #f5f5f5

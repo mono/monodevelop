@@ -39,6 +39,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		bool IsSorted { get; }
 		bool AutoCompleteUniqueMatch { get; }
 		bool AutoCompleteEmptyMatch { get; }
+		bool AutoCompleteEmptyMatchOnCurlyBrace { get; }
 		bool CloseOnSquareBrackets { get; }
 		bool AutoSelect { get; }
 		string DefaultCompletionString { get; }
@@ -72,6 +73,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public string DefaultCompletionString { get; set; }
 		public bool AutoSelect { get; set; }
 		public bool AutoCompleteEmptyMatch { get; set; }
+		public bool AutoCompleteEmptyMatchOnCurlyBrace { get; set; }
 		public CompletionSelectionMode CompletionSelectionMode { get; set; }
 		public bool CloseOnSquareBrackets { get; set; }
 		

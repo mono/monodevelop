@@ -1,4 +1,4 @@
-# Theme for Xamarin composed by Lanedo GmbH
+# Mac Theme for Xamarin composed by Lanedo GmbH
 # Copyright 2012 Xamarin Inc.
 # Authors: 
 #   Christian Kellner <christian.kellner@lanedo.com>
@@ -63,15 +63,24 @@ style "default" {
     GtkButton::default-border = { 0, 0, 0, 0 }
     GtkButton::inner-border = { 2, 2, 4, 4 }
 
+    GtkButtonBox::child-min-width = 70
+    GtkButtonBox::child-min-height = 22
+
     GtkTreeView::odd-row-color = @base_color
 
     GtkScrolledWindow::scrollbar-spacing = 0
+    GtkScrolledWindow::scrollbars-within-bevel = 1
     GtkScale::slider-length = 14
     GtkRange::trough-side-details = 1
 
     GtkTreeView::expander-size = 8
     GtkExpander::expander-size = 8
     GtkComboBox::arrow-size = 12
+
+    GtkMenu::vertical-padding = 4
+    GtkMenuItem::horizontal-padding = 9
+    GtkMenuItem::toggle-spacing = 0
+    GtkSeparatorMenuItem::horizontal-padding = 2
 
     engine "xamarin" {
 
@@ -120,33 +129,52 @@ style "button" {
       }
 }
 
+style "dialog-button" = "default" {
+    xthickness = 3
+    ythickness = 2
+    font_name = "Lucida Grande 13"
+
+    GtkWidget::draw-border = { 2, 2, 2, 2 }
+    GtkWidget::focus-line-width = 1
+    GtkButton::inner-border = { 8, 8, 0, 3 }
+
+    engine "quartz" {
+        buttontype = "aqua"
+    }
+}
+
 style "toggle-button" = "button" {
     bg[NORMAL] = @base_color
     bg[PRELIGHT] = shade(0.98, @base_color)
+
+    engine "xamarin" {
+        contrast = 1.0
+        gradient_shades     = {0.96, 0.918, 0.926, 0.858}
+        focus_color         = shade(0.6, @bg_color)
+        textstyle           = 1
+    }
 }
 
 style "menu" {
     xthickness = 0
     ythickness = 0
+    font_name = "Lucida Grande 14"
 
+    bg[PRELIGHT] = @selected_fg_color
     fg[PRELIGHT] = @selected_fg_color
+    text[PRELIGHT] = @selected_fg_color
 
-    engine "xamarin" {
-        roundness = 3
-        gradient_shades     = {1.02, 0.97, 0.92, 0.87}
+    engine "quartz" {
     }
 }
 
-style "menu-item" {
-    xthickness = 0
+style "menu-item" = "menu" {
+    ythickness = 2
+    GtkWidget::draw-border = { 0, 0, 0, 2 }
+}
+
+style "menu-separator" = "menu-item" {
     ythickness = 3
-
-    fg[PRELIGHT] = @selected_fg_color
-
-    engine "xamarin" {
-        roundness = 0
-        gradient_shades     = {1.02, 0.97, 0.92, 0.87}
-    }
 }
 
 style "toolbar" = "default"
@@ -172,15 +200,24 @@ style "tooltip"
 
     fg[NORMAL] = @tooltip_fg_color
     bg[NORMAL] = @tooltip_bg_color
+    
+    engine "xamarin" {
+    	roundness = 0
+    }
 }
 
 style "treeview" = "default"
 {
     GtkTreeView::odd-row-color = "#f5f5f5"
+    
+    base[SELECTED] = "#bcd0d4"
+    base[ACTIVE] = "#bcd0d4"
+    text[SELECTED] = "#000"
 
     engine "xamarin" {
         roundness = 0
-        gradient_shades     = {1.0, 1.0, 1.0, 1.0}
+        gradient_shades     = {1.0, 0.95, 0.95, 0.90}
+        glazestyle = 1
     }
 }
 
@@ -240,6 +277,10 @@ style "combo-box-label" = "combo-box"
     fg[NORMAL] = "#595959"
 }
 
+style "combo-box-menu" = "menu" {
+    font_name = "Lucida Grande 12"
+}
+
 style "notebook" = "default"
 {
     GtkNotebook::tab-overlap = 1
@@ -251,20 +292,13 @@ style "notebook" = "default"
     }
 }
 
-style "radio-button" = "default"
+style "radio-or-check-box"
 {
-    GtkCheckButton::indicator-size = 15
-    text[NORMAL] = lighter (@text_color)
-    base[NORMAL] = @base_color
-    text[ACTIVE] = lighter(@text_color)
-}
-
-style "check-box" = "default"
-{
-    GtkCheckButton::indicator-size = 15
-    base[NORMAL] = "#f8f8f8"
-    text[NORMAL] = "#404040"
-    text[ACTIVE] = "#404040"
+    ythickness = 6
+    GtkCheckButton::indicator-size = 14
+    GtkCheckButton::indicator-spacing = 4
+    engine "quartz" {
+    }
 }
 
 style "entry" = "default"
@@ -286,16 +320,11 @@ style "scrollbar" = "default"
 {
     GtkScrollbar::has-forward-stepper = 0
     GtkScrollbar::has-backward-stepper = 0
-    GtkRange::slider-width = 10
-    GtkRange::trough-border = 2
+    GtkRange::slider-width = 15
+    GtkRange::trough-border = 0
     GtkRange::trough-side-details = 0
 
-    bg[SELECTED] = @bg_color
-    bg[NORMAL] = @bg_color
-
-    engine "xamarin" {
-        trough_shades = { 0.968, 1.04 }
-        roundness = 0
+    engine "quartz" {
     }
 }
 
@@ -345,20 +374,23 @@ class "GtkProgressBar" style "progressbar"
 class "GtkScrolledWindow" style "scrolled-window"
 class "GtkNotebook" style "notebook"
 class "GtkButton" style "button"
+class "GtkToggleButton" style "toggle-button"
 
-class "GtkRadioButton" style "radio-button"
-class "GtkCheckButton" style "check-box"
 class "GtkScale" style "scale"
 
 #widget "*GtkEntry" style "entry"
 widget "*search-entry*" style "search-entry"
 widget "*GtkTextView"   style "entry"
 
-widget_class "*<GtkButton>"     style "button"
-widget_class "*<GtkToggleButton>" style "toggle-button"
+widget_class "<GtkDialog>*<GtkCheckButton>" style "radio-or-check-box"
+widget_class "<GtkDialog>.<GtkVBox>.<GtkButtonBox>.<GtkButton>*" style "dialog-button"
+widget "*.toggleFindInFiles" style "toggle-button"
+widget "*.toggleReplaceInFiles" style "toggle-button"
 
 widget_class "*<GtkMenu>*"      style "menu"
 widget_class "*<GtkMenuItem>*"  style "menu-item"
+widget_class "*<GtkSeparatorMenuItem>" style "menu-separator"
+widget "*.gtk-combobox-popup-menu*" style "combo-box-menu"
 
 widget_class "*<GtkToolbar>*" style "toolbar"
 widget_class "*ToolButton*"     style "toolbar-button"

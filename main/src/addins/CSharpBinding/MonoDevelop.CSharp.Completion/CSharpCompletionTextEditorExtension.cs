@@ -288,6 +288,7 @@ namespace MonoDevelop.CSharp.Completion
 				LoggingService.LogError ("Error while getting completion data.", e);
 			}
 			list.AutoCompleteEmptyMatch = engine.AutoCompleteEmptyMatch;
+			list.AutoCompleteEmptyMatchOnCurlyBrace = engine.AutoCompleteEmptyMatchOnCurlyBracket;
 			list.AutoSelect = engine.AutoSelect;
 			list.DefaultCompletionString = engine.DefaultCompletionString;
 			list.CloseOnSquareBrackets = engine.CloseOnSquareBrackets;

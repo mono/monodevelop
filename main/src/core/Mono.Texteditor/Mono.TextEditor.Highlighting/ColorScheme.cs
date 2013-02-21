@@ -447,6 +447,25 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("Css Keyword", VSSetting="CSS Keyword")]
 		public ChunkStyle CssKeyword { get; private set; }
 
+		[ColorDescription("Script Comment", VSSetting="Script Comment")]
+		public ChunkStyle ScriptComment { get; private set; }
+		
+		[ColorDescription("Script Identifier", VSSetting="Script Identifier")]
+		public ChunkStyle ScriptIdentifier { get; private set; }
+		
+		[ColorDescription("Script Keyword", VSSetting="Script Keyword")]
+		public ChunkStyle ScriptKeyword { get; private set; }
+		
+		[ColorDescription("Script Number", VSSetting="Script Number")]
+		public ChunkStyle ScriptNumber { get; private set; }
+		
+		[ColorDescription("Script Operator", VSSetting="Script Operator")]
+		public ChunkStyle ScriptOperator { get; private set; }
+
+		[ColorDescription("Script String", VSSetting="Script String")]
+		public ChunkStyle ScriptString { get; private set; }
+
+
 		#endregion
 
 		public class PropertyDecsription

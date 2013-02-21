@@ -199,6 +199,13 @@
 		{ "name": "Css Property Value", "fore":"cyan", "weight":"bold"  },
 		{ "name": "Css Selector", "fore":"base01", "weight":"bold"  },
 		{ "name": "Css String Value", "fore":"cyan", "weight":"bold"  },
-		{ "name": "Css Keyword", "fore":"keyword-teal", "weight":"bold"  }
+		{ "name": "Css Keyword", "fore":"keyword-teal", "weight":"bold"  },
+
+		{ "name": "Script Comment", "fore":"base01" },
+		{ "name": "Script Identifier" },
+		{ "name": "Script Keyword", "fore":"green" },
+		{ "name": "Script Number", "fore":"violet" },
+		{ "name": "Script Operator" },
+		{ "name": "Script String", "fore":"cyan" }
 	]
 }
