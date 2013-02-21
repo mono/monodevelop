@@ -123,6 +123,6 @@
              (thing-at-point 'symbol)
              (not executing-kbd-macro)
              (not (eq (selected-window) (minibuffer-window))))
-    (ac-fsharp-tooltip-at-point)))
+    (fsharp-mode-completion/show-typesig-at-point)))
 
 ;;; fsharp-doc.el ends here

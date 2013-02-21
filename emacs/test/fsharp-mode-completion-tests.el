@@ -120,15 +120,39 @@ Bound vars:
 ;;; Process handling
 
 (defmacro check-handler (desc &rest body)
-  "Test fixture for process handler tests."
+  "Test fixture for process handler tests.
+Stubs out functions that call on the ac process."
   (declare (indent 1))
   `(check ,(concat "process handler " desc)
      (in-ns fsharp-mode-completion
-       (flet ((log-to-proc-buf (p s)))
+       (flet ((log-to-proc-buf (p s))
+              (log-psendstr    (p s))
+              (ac-fsharp-can-make-request () t))
          ,@body))))
 
+(check-handler "prints message on error"
+  (flet ((message (s) (should-match "foo" err)))
+    (_ filter-output nil "ERROR: foo")))
+
 (check-handler "does not print message on type information error"
-  (let    (called)
-    (flet ((message (s) (setq called s)))
-      (_ filter-output nil "ERROR: Could not get type information")
-      (should-not called))))
+  (flet ((message (s) (should-not 'called)))
+    (_ filter-output nil "ERROR: Could not get type information")))
+
+;;; Tooltips and typesigs
+
+(check-handler "shows popup if tooltip is requested"
+  (flet ((popup-tip (s &rest _) (should-match "foo" s)))
+    (fsharp-mode-completion/show-tooltip-at-point)
+    (_ filter-output nil "DATA: tooltip\nfoo")))
+
+(check-handler "does not show popup if typesig is requested"
+  (let (tip)
+    (flet ((popup-tip (s &rest _) (setq tip s)))
+      (fsharp-mode-completion/show-typesig-at-point)
+      (_ filter-output nil "DATA: tooltip\nfoo")
+      (should-not tip))))
+
+(check-handler "displays typesig in minibuffer if typesig is requested"
+  (flet ((message (s) (should= "foo" s)))
+    (fsharp-mode-completion/show-typesig-at-point)
+    (_ filter-output nil "DATA: tooltip\nfoo")))

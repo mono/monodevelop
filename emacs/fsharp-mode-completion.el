@@ -28,7 +28,9 @@
 (namespace fsharp-mode-completion
   :export
   [load-project
-   start-process]
+   start-process
+   show-tooltip-at-point
+   show-typesig-at-point]
   :use
   [popup
    s
@@ -235,9 +237,18 @@
         (member (expand-file-name (buffer-file-name)) ac-fsharp-project-files)
         (string-match-p "\\(fsx\\|fsscript\\)" (file-name-extension (buffer-file-name))))))
 
+(defmutable awaiting-popup nil)
+
 ;;;###autoload
-(defun ac-fsharp-tooltip-at-point ()
-  "Fetch and display F# tooltips at point"
+(defn show-tooltip-at-point ()
+  "Display a tooltip for the F# symbol at POINT."
+  (interactive)
+  (@set awaiting-popup t)
+  (_ show-typesig-at-point))
+
+;;;###autoload
+(defn show-typesig-at-point ()
+  "Display the type signature for the F# symbol at POINT."
   (interactive)
   (when (ac-fsharp-can-make-request)
     (ac-fsharp-parse-current-buffer)
@@ -397,9 +408,13 @@ possibly many lines of description.")
    (concat (replace-regexp-in-string "DATA: errors\n" "" str) "\n")))
 
 (defn display-tooltip (str)
-  (message
-   (fsharp-doc/format-for-minibuffer
-    (replace-regexp-in-string "DATA: tooltip\n" "" str))))
+  "Display a tooltip. If the user has requested a popup tooltip,
+display using popup. Otherwise, display in the minibuffer."
+  (let ((s (replace-regexp-in-string "DATA: tooltip\n" "" str)))
+    (if (not (@ awaiting-popup))
+        (message (fsharp-doc/format-for-minibuffer s))
+      (popup-tip s)
+      (@set awaiting-popup nil))))
 
 (defn handle-project (str)
   (setq ac-fsharp-project-files (cdr (split-string str "\n")))
