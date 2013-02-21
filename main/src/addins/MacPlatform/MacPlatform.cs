@@ -256,20 +256,15 @@ namespace MonoDevelop.MacIntegration
 
 		void GlobalSetup ()
 		{
-			
 			//FIXME: should we remove these when finalizing?
 			try {
 				ApplicationEvents.Quit += delegate (object sender, ApplicationQuitEventArgs e)
 				{
-					// We can only attempt to quit safely if the key window is a GTK window and not modal.
-					var keyWindow = NSApplication.SharedApplication.KeyWindow;
-					if (keyWindow != null) {
-						var win = GtkQuartz.GetGtkWindow (keyWindow);
-						if (win != null && !win.Modal) {
-							e.UserCancelled = !IdeApp.Exit ();
-							e.Handled = true;
-							return;
-						}
+					// We can only attempt to quit safely if all windows are GTK windows and not modal
+					if (GtkQuartz.GetToplevels ().All (t => t.Value != null && (!t.Value.Visible || !t.Value.Modal))) {
+						e.UserCancelled = !IdeApp.Exit ();
+						e.Handled = true;
+						return;
 					}
 
 					// When a modal dialog is running, things are much harder. We can't just shut down MD behind the

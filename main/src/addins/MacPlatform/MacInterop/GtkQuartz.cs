@@ -28,6 +28,7 @@ using System;
 using System.Runtime.InteropServices;
 using MonoMac.AppKit;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace MonoDevelop.MacInterop
 {
@@ -48,6 +49,18 @@ namespace MonoDevelop.MacInterop
 		{
 			var toplevels = Gtk.Window.ListToplevels ();
 			return toplevels.FirstOrDefault (w => gdk_quartz_window_get_nswindow (w.GdkWindow.Handle) == window.Handle);
+		}
+
+		public static IEnumerable<KeyValuePair<NSWindow,Gtk.Window>> GetToplevels ()
+		{
+			var nsWindows = NSApplication.SharedApplication.Windows;
+			var gtkWindows = Gtk.Window.ListToplevels ();
+			foreach (var n in nsWindows) {
+				var g = gtkWindows.FirstOrDefault (w => {
+					return w.GdkWindow != null && gdk_quartz_window_get_nswindow (w.GdkWindow.Handle) == n.Handle;
+				});
+				yield return new KeyValuePair<NSWindow, Gtk.Window> (n, g);
+			}
 		}
 		
 		public static NSWindow GetWindow (Gtk.Window window)
