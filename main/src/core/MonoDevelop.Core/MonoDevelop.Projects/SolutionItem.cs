@@ -663,9 +663,22 @@ namespace MonoDevelop.Projects
 			return Services.ProjectService.GetExtensionChain (this).CanExecute (this, context, configuration);
 		}
 
+		/// <summary>
+		/// Gets the execution targets.
+		/// </summary>
+		/// <returns>The execution targets.</returns>
+		/// <param name="configuration">The configuration.</param>
 		public IEnumerable<ExecutionTarget> GetExecutionTargets (ConfigurationSelector configuration)
 		{
 			return Services.ProjectService.GetExtensionChain (this).GetExecutionTargets (this, configuration);
+		}
+
+		public event EventHandler ExecutionTargetsChanged;
+
+		protected virtual void OnExecutionTargetsChanged ()
+		{
+			if (ExecutionTargetsChanged != null)
+				ExecutionTargetsChanged (this, EventArgs.Empty);
 		}
 		
 		/// <summary>
