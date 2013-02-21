@@ -176,6 +176,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 			set { list.AutoCompleteEmptyMatch = value; }
 		}
 		
+		public bool AutoCompleteEmptyMatchOnCurlyBrace {
+			get { return list.AutoCompleteEmptyMatchOnCurlyBrace; }
+			set { list.AutoCompleteEmptyMatchOnCurlyBrace = value; }
+		}
+		
 		public string DefaultCompletionString {
 			get {
 				return list.DefaultCompletionString;
@@ -286,9 +291,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 					list.AutoSelect = list.AutoCompleteEmptyMatch = true;
 				endOffset = CompletionWidget.CaretOffset - 1;
 				if (list.SelectionEnabled) {
+					if (keyChar == '{' && !list.AutoCompleteEmptyMatchOnCurlyBrace && string.IsNullOrEmpty (list.CompletionString))
+					    return KeyActions.CloseWindow | KeyActions.Process;
 					return KeyActions.Complete | KeyActions.Process | KeyActions.CloseWindow;
 				}
-				return KeyActions.CloseWindow | KeyActions.Process;
+			    return KeyActions.CloseWindow | KeyActions.Process;
 			}
 			
 			return KeyActions.Process;

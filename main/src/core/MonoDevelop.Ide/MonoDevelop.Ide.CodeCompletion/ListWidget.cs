@@ -364,6 +364,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 			set;
 		}
 		
+		public bool AutoCompleteEmptyMatchOnCurlyBrace {
+			get;
+			set;
+		}
+
 		public bool SelectionEnabled {
 			get {
 				return AutoSelect && (AutoCompleteEmptyMatch || !string.IsNullOrEmpty (CompletionString));

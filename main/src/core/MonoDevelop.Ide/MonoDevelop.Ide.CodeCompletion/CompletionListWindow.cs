@@ -298,6 +298,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (FillList ()) {
 				AutoSelect = list.AutoSelect;
 				AutoCompleteEmptyMatch = list.AutoCompleteEmptyMatch;
+				AutoCompleteEmptyMatchOnCurlyBrace = list.AutoCompleteEmptyMatchOnCurlyBrace;
 				CloseOnSquareBrackets = list.CloseOnSquareBrackets;
 				// makes control-space in midle of words to work
 				string text = completionWidget.GetCompletionText (completionContext);

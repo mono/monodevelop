@@ -1582,7 +1582,9 @@ namespace MonoDevelop.Debugger
 		public bool AutoCompleteEmptyMatch {
 			get { return false; }
 		}
-		
+		public bool AutoCompleteEmptyMatchOnCurlyBrace {
+			get { return false; }
+		}
 		public bool CloseOnSquareBrackets {
 			get {
 				return false;
