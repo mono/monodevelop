@@ -845,7 +845,7 @@ namespace Mono.TextEditor.Highlighting
 
 			result.TooltipText = result.PlainText.Clone ();
 			var h = (HslColor)result.TooltipText.Background;
-			h.L *= 1.1;
+			h.L += 0.01;
 			result.TooltipText.Background = h;
 
 			result.TooltipPagerTop = new AmbientColor ();
