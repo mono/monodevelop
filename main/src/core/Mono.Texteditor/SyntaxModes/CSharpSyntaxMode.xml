@@ -261,8 +261,8 @@
 			<Word>pragma</Word>
 		</Keywords>
 		
-		<EolSpan color = "comment.doc" rule="XmlDocumentation" tagColor="comment.tag.doc">///</EolSpan>
-		<EolSpan color = "comment.line" rule="Comment" tagColor="comment.tag.line">//</EolSpan>
+		<EolSpan color = "Comment(Doc)" rule="XmlDocumentation" tagColor="Comment(DocTag)">///</EolSpan>
+		<EolSpan color = "Comment(Line)" rule="Comment" tagColor="Comment(Line)">//</EolSpan>
 	</Rule>
 	
 	<Rule name = "Comment">

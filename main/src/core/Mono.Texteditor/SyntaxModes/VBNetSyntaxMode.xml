@@ -32,7 +32,7 @@
 	<EolSpan color = "Comment(Line)" rule="Comment">'</EolSpan>
 	<EolSpan color = "Comment(Line)" rule="Comment">REM</EolSpan>
 	
-	<Span color = "Comment(Line)" rule="Comment" tagColor="comment.tag">
+	<Span color = "Comment(Block)" rule="Comment">
 		<Begin>/*</Begin>
 		<End>*/</End>
 	</Span>

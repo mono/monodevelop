@@ -39,7 +39,7 @@
 	<EolSpan color = "Preprocessor" rule="text.preprocessor" continuation="\">#</EolSpan>
 	<EolSpan color = "Comment(Line)" rule="Comment">//</EolSpan>
 	
-	<Span color = "Comment(Line)" rule="Comment" tagColor="comment.tag">
+	<Span color = "Comment(Line)" rule="Comment">
 		<Begin>/*</Begin>
 		<End>*/</End>
 	</Span>

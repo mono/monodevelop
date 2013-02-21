@@ -43,7 +43,7 @@ THE SOFTWARE.
 	
 	<EolSpan color = "Comment(Line)" rule="Comment">//</EolSpan>
 	
-	<Span color = "Comment(Line)" rule="Comment" tagColor="comment.tag">
+	<Span color = "Comment(Block)" rule="Comment">
 		<Begin>/*</Begin>
 		<End>*/</End>
 	</Span>
