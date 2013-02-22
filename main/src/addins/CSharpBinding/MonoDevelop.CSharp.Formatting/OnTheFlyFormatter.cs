@@ -168,8 +168,8 @@ namespace MonoDevelop.CSharp.Formatting
 				
 				var formattingVisitor = new AstFormattingVisitor (policy.CreateOptions (), stubData.Document, document.Editor.CreateNRefactoryTextEditorOptions ()) {
 					HadErrors = hadErrors,
-					FormattingRegion = formattingRegion
 				};
+				formattingVisitor.AddFormattingRegion (formattingRegion);
 
 				compilationUnit.AcceptVisitor (formattingVisitor);
 

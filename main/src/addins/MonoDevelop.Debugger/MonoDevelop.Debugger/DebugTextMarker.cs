@@ -206,7 +206,7 @@ namespace MonoDevelop.Debugger
 		
 		protected override void DrawIcon (Cairo.Context cr, double x, double y, double size)
 		{
-			Cairo.Color border = editor.ColorStyle.BreakpointTextInvalid.Foreground;
+			Cairo.Color border = editor.ColorStyle.BreakpointText.Background;
 			if (IsTracepoint)
 				DrawDiamond (cr, x, y, size);
 			else
@@ -237,7 +237,7 @@ namespace MonoDevelop.Debugger
 		{
 			Cairo.Color color1 = editor.ColorStyle.DebuggerCurrentLineMarker.GetColor ("color");
 			Cairo.Color color2 = editor.ColorStyle.DebuggerCurrentLineMarker.GetColor ("secondcolor");
-			Cairo.Color border = editor.ColorStyle.DebuggerCurrentLineMarker.GetColor ("border");
+			Cairo.Color border = editor.ColorStyle.DebuggerCurrentLineMarker.GetColor ("bordercolor");
 
 			DrawArrow (cr, x, y, size);
 			FillGradient (cr, color1, color2, x, y, size);
@@ -266,7 +266,7 @@ namespace MonoDevelop.Debugger
 		{
 			Cairo.Color color1 = editor.ColorStyle.DebuggerStackLineMarker.GetColor ("color");
 			Cairo.Color color2 = editor.ColorStyle.DebuggerStackLineMarker.GetColor ("secondcolor");
-			Cairo.Color border = editor.ColorStyle.DebuggerStackLineMarker.GetColor ("border");
+			Cairo.Color border = editor.ColorStyle.DebuggerStackLineMarker.GetColor ("bordercolor");
 
 			DrawArrow (cr, x, y, size);
 			FillGradient (cr, color1, color2, x, y, size);

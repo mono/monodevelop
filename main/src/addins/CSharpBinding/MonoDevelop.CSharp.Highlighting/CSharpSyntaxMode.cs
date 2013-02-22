@@ -210,6 +210,8 @@ namespace MonoDevelop.CSharp.Highlighting
 				var mod = token as CSharpModifierToken;
 				if (mod != null && mod.Modifier == Modifiers.Partial)
 					Colorize (token, contextualHighlightKeywords["partial"]);
+				if (mod != null && mod.Modifier == Modifiers.Async)
+					Colorize (token, contextualHighlightKeywords["async"]);
 			}
 
 			protected override void VisitChildren (AstNode node)
@@ -718,6 +720,13 @@ namespace MonoDevelop.CSharp.Highlighting
 				if (queryOrdering.DirectionToken.StartLocation.Line == lineNumber)
 					Colorize (queryOrdering.DirectionToken, contextualHighlightKeywords[queryOrdering.DirectionToken.GetText ()]);
 			}
+
+			public override void VisitUnaryOperatorExpression (UnaryOperatorExpression unaryOperatorExpression)
+			{
+				base.VisitUnaryOperatorExpression (unaryOperatorExpression);
+				if (unaryOperatorExpression.Operator == UnaryOperatorType.Await && unaryOperatorExpression.StartLocation.Line == lineNumber)
+					Colorize (unaryOperatorExpression.OperatorToken, contextualHighlightKeywords["await"]);
+			}
 		}
 
 		class QuickTaskVisitor : DepthFirstAstVisitor
@@ -792,6 +801,8 @@ namespace MonoDevelop.CSharp.Highlighting
 		
 		static Dictionary<string, string> contextualHighlightKeywords;
 		static readonly string[] ContextualKeywords = new string[] {
+			"async",
+			"await",
 			"value", //*
 			"get", "set", "add", "remove",  //*
 			"var", //*
