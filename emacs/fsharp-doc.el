@@ -103,8 +103,8 @@
            line))))))
 
 (defn extract-full-name (str)
-  (string-match "Full name: \\(.*\\)$" str)
-  (match-string 1 str))
+  (when (string-match "Full name: \\(.*\\)$" str)
+    (match-string 1 str)))
 
 (defn replace-identifier (str fullname)
   (replace-regexp-in-string

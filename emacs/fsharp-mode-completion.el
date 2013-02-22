@@ -387,8 +387,7 @@ possibly many lines of description.")
          (t
           (message "Error: unrecognised message: '%s'" msg)))
 
-        (setq ac-fsharp-partial-data part)
-        (_ filter-output proc "")))))
+        (setq ac-fsharp-partial-data part)))))
 
 (defn set-completion-data (str)
   (setq ac-fsharp-completion-data (s-split "\n" (s-replace "DATA: completion" "" str) t)
@@ -413,8 +412,8 @@ display using popup. Otherwise, display in the minibuffer."
   (let ((s (replace-regexp-in-string "DATA: tooltip\n" "" str)))
     (if (not (@ awaiting-popup))
         (message (fsharp-doc/format-for-minibuffer s))
-      (popup-tip s)
-      (@set awaiting-popup nil))))
+      (@set awaiting-popup nil)
+      (popup-tip s))))
 
 (defn handle-project (str)
   (setq ac-fsharp-project-files (cdr (split-string str "\n")))
