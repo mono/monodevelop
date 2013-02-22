@@ -66,6 +66,11 @@
 
 (defconst default-dependencies '(namespaces popup s))
 
+(defun load-packages ()
+  "Load package dependencies for fsharp-mode."
+  (init-melpa)
+  (mapc 'require-package default-dependencies))
+
 (defun run-fsharp-tests ()
   "Configure the environment for running tests, then execute tests.
 When run interactively, this will run all current ert tests.
@@ -87,7 +92,7 @@ When running tests in batch mode, tests should be loaded as -l arguments to emac
      (t                   (test-configuration-package-file var)))))
 
 (defun test-configuration-default ()
-  (mapc 'require-package default-dependencies)
+  (load-packages)
   (setq load-path tests-load-path)
   (mapc 'load-file src-files)
   (require 'fsharp-mode))
@@ -96,7 +101,7 @@ When running tests in batch mode, tests should be loaded as -l arguments to emac
   (require-package 'fsharp-mode))
 
 (defun test-configuration-package-file (pkg)
-  (mapc 'require-package default-dependencies)
+  (load-packages)
   (package-install-file (expand-file-name pkg)))
 
 (defun init-melpa ()

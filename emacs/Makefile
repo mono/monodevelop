@@ -28,17 +28,29 @@ export HOME
 
 # ----------------------------------------------------------------------------
 
-.PHONY : env test unit-test integration-test
+.PHONY : env test unit-test integration-test packages clean-elc
 
-clean :
-	rm -f  *.elc
-	rm -f  $(test_d)*.elc
+clean : clean-elc
 	rm -fr $(bin_d)
 	rm -rf $(tmp_d)
 
-all : $(ac_exe)
+clean-elc :
+	rm -f  *.elc
+	rm -f  $(test_d)*.elc
 
-# Tests
+# Building
+
+all : $(ac_exe) packages
+
+packages :
+	$(emacs) $(load_files) --batch -f load-packages
+
+$(ac_exe): bin
+	xbuild $(ac_fsproj) /property:OutputPath=$(bin_d)
+
+bin :; mkdir -p $(bin_d)
+
+# Testing
 
 test unit-test :
 	$(emacs) $(load_files) $(load_unit_tests) $(emacs_opts)
@@ -48,9 +60,3 @@ integration-test : $(ac_exe)
 
 test-all : unit-test integration-test
 
-# F# Completion Binary
-
-$(ac_exe): bin
-	xbuild $(ac_fsproj) /property:OutputPath=$(bin_d)
-
-bin :; mkdir -p $(bin_d)
