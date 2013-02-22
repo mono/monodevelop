@@ -530,7 +530,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					iypos = iconHeight < rowHeight ? ypos + (rowHeight - iconHeight) / 2 : ypos;
 					if (item == SelectedItem) {
 						context.Rectangle (0, ypos, Allocation.Width, rowHeight / 2);
-						context.Color = SelectionEnabled ? selectedItemColor.Foreground : selectedItemInactiveColor.Foreground;
+						context.Color = SelectionEnabled ? selectedItemColor.Foreground : selectedItemInactiveColor.Background;
 						context.Fill ();
 						context.Rectangle (0, ypos + rowHeight / 2, Allocation.Width, rowHeight / 2);
 						context.Color = SelectionEnabled ? selectedItemColor.Background : selectedItemInactiveColor.Background;
