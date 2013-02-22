@@ -156,9 +156,13 @@ namespace Mono.TextEditor.Highlighting
 			if (syntaxModes.ContainsKey (mimeType)) {
 				result = syntaxModes [mimeType].Create (doc);
 			} else if (syntaxModeLookup.ContainsKey (mimeType)) {
-				LoadSyntaxMode (mimeType);
+				try {
+					LoadSyntaxMode (mimeType);
+					result = GetSyntaxMode (doc, mimeType);
+				} catch (Exception e) {
+					Console.WriteLine (e);
+				}
 				syntaxModeLookup.Remove (mimeType);
-				result = GetSyntaxMode (doc, mimeType);
 			}
 			if (result != null) {
 				foreach (var rule in semanticRules.Where (r => r.Item1 == mimeType)) {
@@ -273,25 +277,40 @@ namespace Mono.TextEditor.Highlighting
 					var span = lineSegment.StartSpan;
 					if (span == null)
 						return;
+
 					var spanStack = span.Clone ();
+
 					SyntaxMode.SpanParser parser = mode.CreateSpanParser(null, spanStack);
+
 					foreach (var line in doc.GetLinesStartingAt (startLine)) {
 						if (line == null)
 							return;
+
 						if (line.Offset > endOffset) {
 							span = line.StartSpan;
 							if (span == null)
 								return;
+
 							bool equal = span.Equals(spanStack);
+
 							doUpdate |= !equal;
+
 							if (equal)
+
 								break;
+
 						}
+
 						line.StartSpan = spanStack.Clone();
+
 						parser.ParseSpans(line.Offset, line.LengthIncludingDelimiter);
+
 						while (spanStack.Count > 0 && !EndsWithContinuation(spanStack.Peek(), line))
+
 							parser.PopSpan();
+
 					}
+
 				} catch (Exception e) {
 					Console.WriteLine ("Syntax highlighting exception:" + e);
 				}

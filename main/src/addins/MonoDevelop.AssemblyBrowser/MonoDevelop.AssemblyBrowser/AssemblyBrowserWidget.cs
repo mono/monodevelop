@@ -588,6 +588,8 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		ITreeNavigator SearchMember (ITreeNavigator nav, string helpUrl)
 		{
+			if (nav == null)
+				return null;
 			bool searchType = helpUrl.StartsWith ("T:");
 			do {
 				if (IsMatch (nav, helpUrl, searchType)) {

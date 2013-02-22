@@ -31,14 +31,14 @@
 	<Property name="StringQuote">"</Property>
 	<Property name="StringQuote">'</Property>
 	
-	<EolSpan color = "Comment(Line)" rule="DoxDocumentation" tagColor="comment.tag">///</EolSpan>
-	<EolSpan color = "Comment(Line)" rule="Comment" tagColor="comment.tag">//</EolSpan>
+	<EolSpan color = "Comment(Line)" rule="DoxDocumentation" tagColor="Comment(DocTag)">///</EolSpan>
+	<EolSpan color = "Comment(Line)" rule="Comment">//</EolSpan>
 	
-	<Span color = "Comment(Line)" rule="DoxDocumentation" tagColor="comment.tag" >
+	<Span color = "Comment(Line)" rule="DoxDocumentation" tagColor="Comment(DocTag)" >
 		<Begin>/**</Begin>
 		<End>*/</End>
 	</Span>
-	<Span color = "Comment(Line)" rule="Comment" tagColor="comment.tag">
+	<Span color = "Comment(Block)" rule="Comment">
 		<Begin>/*</Begin>
 		<End>*/</End>
 	</Span>

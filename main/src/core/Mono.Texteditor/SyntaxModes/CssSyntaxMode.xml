@@ -32,7 +32,7 @@
 	<Property name="StringQuote">'</Property>
 	
 	
-	<Span color = "Comment(Block)" rule="Comment" color="Css Comment">
+	<Span rule="Comment" color="Css Comment">
 		<Begin>/*</Begin>
 		<End>*/</End>
 	</Span>

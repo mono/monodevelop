@@ -225,7 +225,7 @@
   </Rule>
   
   <Rule name="MultiComment">
-    <Span color="Comment(Block)" rule="MultiComment" tagColor="comment.tag.block">
+    <Span color="Comment(Block)" rule="MultiComment">
 		<Begin>(*!)</Begin>
 		<End>*)</End>
 	</Span>

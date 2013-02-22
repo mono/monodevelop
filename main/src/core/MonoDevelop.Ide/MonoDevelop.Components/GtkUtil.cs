@@ -57,14 +57,14 @@ namespace MonoDevelop.Components
 		/// </param>
 		public static Gdk.Color AddLight (this Gdk.Color color, double lightAmount)
 		{
-			Mono.TextEditor.HslColor c = color;
+			HslColor c = color;
 			c.L += lightAmount;
 			return c;
 		}
 
 		public static Cairo.Color AddLight (this Cairo.Color color, double lightAmount)
 		{
-			Mono.TextEditor.HslColor c = color;
+			HslColor c = color;
 			c.L += lightAmount;
 			return c;
 		}

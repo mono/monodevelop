@@ -28,7 +28,7 @@
 	<Property name="StringQuote">"</Property>
 	<Property name="StringQuote">'</Property>
 	
-	<EolSpan color = "Comment(Line)" rule="Comment" tagColor="comment.tag">#</EolSpan>
+	<EolSpan color = "Comment(Line)" rule="Comment">#</EolSpan>
 	
 	<Span color = "String" rule="String" stopateol = "true" escape='\'>
 		<Begin>"</Begin>
