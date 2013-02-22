@@ -1057,22 +1057,20 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		public string Tooltip {
 			get {
+				if (node != null)
+					return string.IsNullOrEmpty (node.Description) ? node.Name : node.Description;
 				return tooltip;
-			}
-			set {
-				tooltip = value;
 			}
 		}
 		
 		public Gdk.Pixbuf Icon {
 			get {
+				if (node != null)
+					return node.Icon;
 				return icon ?? DefaultIcon;
 			}
-			set {
-				icon = value;
-			}
 		}
-		
+
 		static Gdk.Pixbuf DefaultIcon {
 			get {
 				if (defaultIcon == null) {
@@ -1087,10 +1085,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		public string Text {
 			get {
+				if (node != null)
+					return node.Name;
 				return text;
-			}
-			set {
-				text = value;
 			}
 		}
 		
@@ -1105,13 +1102,17 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		public object Tag {
 			get {
-				return tag;
-			}
-			set {
-				tag = value;
+				return node ?? tag;
 			}
 		}
+
+		ItemToolboxNode node;
+		public Item (ItemToolboxNode node)
+		{
+			this.node = node;
+		}
 		
+
 		public Item (string text) : this (null, text, null)
 		{
 		}

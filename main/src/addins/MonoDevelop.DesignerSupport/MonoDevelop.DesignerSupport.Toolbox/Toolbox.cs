@@ -208,7 +208,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		void AddItems (IEnumerable<ItemToolboxNode> nodes)
 		{
 			foreach (ItemToolboxNode itbn in nodes) {
-				Item newItem = new Item (itbn.Icon, itbn.Name, String.IsNullOrEmpty (itbn.Description) ? itbn.Name : itbn.Description, itbn);
+				Item newItem = new Item (itbn);
 				if (!categories.ContainsKey (itbn.Category)) {
 					var cat = new Category (itbn.Category);
 					int prio;
