@@ -1571,13 +1571,12 @@ namespace Mono.Debugging.Soft
 					foreach (var es in dequeuing) {
 						try {
 							 HandleBreakEventSet (es.ToArray (), true);
-						} catch (VMDisconnectedException ex) {
-							if (!HandleException (ex))
-								OnDebuggerOutput (true, ex.ToString ());
-							break;
 						} catch (Exception ex) {
 							if (!HandleException (ex))
 								OnDebuggerOutput (true, ex.ToString ());
+
+							if (ex is VMDisconnectedException || ex is IOException || ex is SocketException)
+								break;
 						}
 					}
 				}
