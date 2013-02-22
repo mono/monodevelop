@@ -206,7 +206,7 @@ namespace MonoDevelop.Debugger
 		
 		protected override void DrawIcon (Cairo.Context cr, double x, double y, double size)
 		{
-			Cairo.Color border = editor.ColorStyle.BreakpointTextInvalid.Foreground;
+			Cairo.Color border = editor.ColorStyle.BreakpointText.Background;
 			if (IsTracepoint)
 				DrawDiamond (cr, x, y, size);
 			else

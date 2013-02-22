@@ -72,7 +72,7 @@
 		{ "name": "Usages(Rectangle)", "color":"orangesicle", "secondcolor":"orangesicle-light" },
 		
 		{ "name": "Breakpoint Marker", "color":"white", "secondcolor":"#AB616B" },
-		{ "name": "Breakpoint Marker(Disabled)", "color":"white", "secondcolor":"#AB616B" },
+		{ "name": "Breakpoint Marker(Disabled)", "color":"#AB616B", "secondcolor":"white" },
 		{ "name": "Breakpoint Marker(Invalid)", "color":"#eddcdc", "secondcolor":"#eddcdc" },
 		
         { "name": "Current Line Marker", "color":"aluminium1"},
