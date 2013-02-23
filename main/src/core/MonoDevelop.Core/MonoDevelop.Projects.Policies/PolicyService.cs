@@ -66,7 +66,7 @@ namespace MonoDevelop.Projects.Policies
 			LoadPolicies ();
 			defaultPolicyBag.ReadOnly = true;
 			
-			PolicySet pset = GetPolicySet ("Invariant");
+			PolicySet pset = GetPolicySetById ("Invariant");
 			pset.PolicyChanged += HandleInvariantPolicySetChanged;
 			foreach (var pol in pset.Policies)
 				invariantPolicies.InternalSet (pol.Key.PolicyType, pol.Key.Scope, pol.Value);
@@ -75,7 +75,7 @@ namespace MonoDevelop.Projects.Policies
 
 		static void HandleInvariantPolicySetChanged (object sender, PolicyChangedEventArgs e)
 		{
-			PolicySet pset = GetPolicySet ("Invariant");
+			PolicySet pset = GetPolicySetById ("Invariant");
 			object p = pset.Get (e.PolicyType, e.Scope);
 			if (p != null)
 				invariantPolicies.InternalSet (e.PolicyType, e.Scope, p);
@@ -250,7 +250,7 @@ namespace MonoDevelop.Projects.Policies
 			
 			item.ItemData.Remove (inheritVal);
 			
-			PolicySet set = GetSet (inheritVal.Value);
+			PolicySet set = GetPolicySetById (inheritVal.Value);
 			if (set == null)
 				throw new InvalidOperationException ("No policy set found for id '" + inheritVal.Value + "'");
 			
@@ -271,7 +271,7 @@ namespace MonoDevelop.Projects.Policies
 			return new ScopedPolicy (t, p.Policy, scopeVal != null ? scopeVal.Value : null);
 		}
 		
-		static PolicySet GetSet (string id)
+		static PolicySet GetPolicySetById (string id)
 		{
 			foreach (PolicySet s in sets)
 				if (s.Id == id)
