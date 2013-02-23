@@ -210,8 +210,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				interfaceTypeColor = "User Types(Interfaces)";
 				enumerationTypeColor = "User Types(Enums)";
 				typeParameterTypeColor = "User Types(Type parameters)";
-
-				delegateDeclarationColor = "User Types(Delegates)";
+				delegateTypeColor = "User Types(Delegates)";
 
 				methodCallColor = "User Method Usage";
 				methodDeclarationColor = "User Method Declaration";
@@ -519,22 +518,20 @@ namespace MonoDevelop.CSharp.Highlighting
 				if (parsedDocument != null && csharpSyntaxMode.SemanticHighlightingEnabled && csharpSyntaxMode.resolver != null) {
 					int endLoc = -1;
 					string semanticStyle = null;
-					if (spanParser.CurSpan == null) {
-						try {
-							HighlightingVisitior visitor;
-							if (!csharpSyntaxMode.lineSegments.TryGetValue (line, out visitor)) {
-								visitor = new HighlightingVisitior (csharpSyntaxMode.resolver, default (CancellationToken), lineNumber, base.line.Offset, line.Length);
-								visitor.tree.InstallListener (doc);
-								csharpSyntaxMode.unit.AcceptVisitor (visitor);
-								csharpSyntaxMode.lineSegments[line] = visitor;
-							}
-							string style;
-							if (visitor.tree.GetStyle (chunk, ref endLoc, out style)) {
-								semanticStyle = style;
-							}
-						} catch (Exception e) {
-							Console.WriteLine ("Error in semantic highlighting: " + e);
+					try {
+						HighlightingVisitior visitor;
+						if (!csharpSyntaxMode.lineSegments.TryGetValue (line, out visitor)) {
+							visitor = new HighlightingVisitior (csharpSyntaxMode.resolver, default (CancellationToken), lineNumber, base.line.Offset, line.Length);
+							visitor.tree.InstallListener (doc);
+							csharpSyntaxMode.unit.AcceptVisitor (visitor);
+							csharpSyntaxMode.lineSegments[line] = visitor;
 						}
+						string style;
+						if (visitor.tree.GetStyle (chunk, ref endLoc, out style)) {
+							semanticStyle = style;
+						}
+					} catch (Exception e) {
+						Console.WriteLine ("Error in semantic highlighting: " + e);
 					}
 					if (semanticStyle != null) {
 						if (endLoc < chunk.EndOffset) {
