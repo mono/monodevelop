@@ -180,7 +180,7 @@ and whether it is in a project directory.")
   "Hook for fsharp-mode")
 
 ;;;###autoload
-(defun fsharp-mode ()
+(define-derived-mode fsharp-mode prog-mode
   "Major mode for editing fsharp code.
 
 \\{fsharp-mode-map}"
@@ -190,47 +190,50 @@ and whether it is in a project directory.")
   (require 'fsharp-mode-font)
   (require 'fsharp-doc)
   (require 'fsharp-mode-completion)
+
   (kill-all-local-variables)
   (use-local-map fsharp-mode-map)
   (set-syntax-table fsharp-mode-syntax-table)
-  (make-local-variable 'paragraph-start)
-  (make-local-variable 'require-final-newline)
-  (make-local-variable 'paragraph-separate)
-  (make-local-variable 'paragraph-ignore-fill-prefix)
-  (make-local-variable 'comment-start)
-  (make-local-variable 'comment-end)
-  (make-local-variable 'comment-column)
-  (make-local-variable 'comment-start-skip)
-  (make-local-variable 'parse-sexp-ignore-comments)
-  (make-local-variable 'indent-line-function)
-  (make-local-variable 'add-log-current-defun-function)
-  (make-local-variable 'underline-minimum-offset)
-  (make-local-variable 'compile-command)
+
+  (mapc 'make-local-variable
+        '(paragraph-start
+          require-final-newline
+          paragraph-separate
+          paragraph-ignore-fill-prefix
+          comment-start
+          comment-end
+          comment-column
+          comment-start-skip
+          parse-sexp-ignore-comments
+          indent-line-function
+          add-log-current-defun-function
+          underline-minimum-offset
+          compile-command))
 
   (add-hook 'completion-at-point-functions #'ac-fsharp-completion-at-point)
 
-  (setq major-mode              'fsharp-mode
-        mode-name               "fsharp"
-        local-abbrev-table      fsharp-mode-abbrev-table
-        paragraph-start         (concat "^$\\|" page-delimiter)
-        paragraph-separate      paragraph-start
-        paragraph-ignore-fill-prefix t
-        require-final-newline   t
-        indent-tabs-mode        nil
-        comment-start           "//"
-        comment-end             ""
-        comment-column          40
-        comment-start-skip      "///* *"
-        comment-indent-function 'fsharp-comment-indent-function
-        indent-region-function  'fsharp-indent-region
-        indent-line-function    'fsharp-indent-line
-        underline-minimum-offset 2
+  (setq major-mode               'fsharp-mode
+        mode-name                "F#"
+        local-abbrev-table       fsharp-mode-abbrev-table
+        paragraph-start          (concat "^$\\|" page-delimiter)
+        paragraph-separate       paragraph-start
+        require-final-newline    t
+        indent-tabs-mode         nil
+        comment-start            "//"
+        comment-end              ""
+        comment-column           40
+        comment-start-skip       "///* *"
+        comment-indent-function  'fsharp-comment-indent-function
+        indent-region-function   'fsharp-indent-region
+        indent-line-function     'fsharp-indent-line
+        underline-minimum-offset  2
 
+        paragraph-ignore-fill-prefix   t
         add-log-current-defun-function 'fsharp-current-defun
-        before-change-function 'fsharp-before-change-function
-        fsharp-last-noncomment-pos nil
-        fsharp-last-comment-start (make-marker)
-        fsharp-last-comment-end (make-marker))
+        before-change-function         'fsharp-before-change-function
+        fsharp-last-noncomment-pos     nil
+        fsharp-last-comment-start      (make-marker)
+        fsharp-last-comment-end        (make-marker))
 
   ;; make a local copy of the menubar, so our modes don't
   ;; change the global menubar
