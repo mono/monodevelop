@@ -119,7 +119,6 @@
 		{ "name": "Number", "fore":"butter2"},
 
 		{ "name": "Preprocessor", "fore":"skyblue1", "weight":"italic"  },
-		{ "name": "Preprocessor Keyword", "fore":"skyblue1", "weight":"bold" },
 
 		{ "name": "Xml Text", "fore":"aluminium2" },
 		{ "name": "Xml Delimiter", "fore":"aluminium2" },

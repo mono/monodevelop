@@ -30,7 +30,22 @@
 	<Property name="StringQuote">"</Property>
 	<Property name="StringQuote">'</Property>
 	
-	<EolSpan color = "Preprocessor" rule="text.preprocessor">#</EolSpan>
+	<EolSpan color = "Preprocessor" rule="text.preprocessor">#if</EolSpan>
+	<EolSpan color = "Preprocessor" rule="text.preprocessor">#else</EolSpan>
+	<EolSpan color = "Preprocessor" rule="text.preprocessor">#elif</EolSpan>
+	<EolSpan color = "Preprocessor" rule="text.preprocessor">#endif</EolSpan>
+	<EolSpan tagColor = "Preprocessor" rule="text.preprocessor">#define</EolSpan>
+	<EolSpan tagColor = "Preprocessor" rule="text.preprocessor">#undef</EolSpan>
+	<EolSpan color = "Preprocessor" rule="text.preprocessor">#warning</EolSpan>
+	<EolSpan color = "Preprocessor" rule="text.preprocessor">#error</EolSpan>
+	<EolSpan tagColor = "Preprocessor" rule="text.preprocessor">#line</EolSpan>
+	<EolSpan color = "Preprocessor" rule="text.preprocessor">#if</EolSpan>
+	<EolSpan tagColor = "Preprocessor" rule="text.preprocessor">#region</EolSpan>
+	<EolSpan color = "Preprocessor" rule="text.preprocessor">#endregion</EolSpan>
+	<EolSpan color = "Preprocessor" rule="text.preprocessor">#pragma</EolSpan>
+	
+	
+	
 	<EolSpan color = "Comment(Doc)" rule="XmlDocumentation" tagColor="Comment(DocTag)">///</EolSpan>
 	<EolSpan color = "Comment(Line)" rule="Comment" tagColor="Comment(Line)">//</EolSpan>
 	
@@ -246,20 +261,6 @@
 	</Keywords>
 
 	<Rule name = "text.preprocessor">
-		<Keywords color="Preprocessor Keyword">
-			<Word>if</Word>
-			<Word>else</Word>
-			<Word>elif</Word>
-			<Word>endif</Word>
-			<Word>define</Word>
-			<Word>undef</Word>
-			<Word>warning</Word>
-			<Word>error</Word>
-			<Word>line</Word>
-			<Word>region</Word>
-			<Word>endregion</Word>
-			<Word>pragma</Word>
-		</Keywords>
 		
 		<EolSpan color = "Comment(Doc)" rule="XmlDocumentation" tagColor="Comment(DocTag)">///</EolSpan>
 		<EolSpan color = "Comment(Line)" rule="Comment" tagColor="Comment(Line)">//</EolSpan>

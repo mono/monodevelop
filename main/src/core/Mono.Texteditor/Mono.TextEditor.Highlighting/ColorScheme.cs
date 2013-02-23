@@ -217,9 +217,6 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("Preprocessor", VSSetting = "Preprocessor Keyword")]
 		public ChunkStyle Preprocessor { get; private set; }
 
-		[ColorDescription("Preprocessor Keyword", VSSetting = "Preprocessor Keyword")]
-		public ChunkStyle PreprocessorKeyword { get; private set; }
-
 		[ColorDescription("Xml Text", VSSetting = "XML Text")]
 		public ChunkStyle XmlText { get; private set; }
 

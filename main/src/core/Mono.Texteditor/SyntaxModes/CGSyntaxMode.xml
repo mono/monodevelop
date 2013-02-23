@@ -433,7 +433,7 @@ THE SOFTWARE.
 	</Keywords>
 
 	<Rule name = "text.preprocessor">
-		<Keywords color="Preprocessor Keyword">
+		<Keywords color="Preprocessor">
 			<Word>define</Word>
 			<Word>elif</Word>
 			<Word>else</Word>

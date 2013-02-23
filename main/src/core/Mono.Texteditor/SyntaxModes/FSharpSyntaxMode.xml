@@ -197,7 +197,7 @@
   </Keywords>
 
   <Rule name="text.preprocessor">
-    <Keywords color="Preprocessor Keyword">
+    <Keywords color="Preprocessor">
       <Word>if</Word>
       <Word>else</Word>
       <Word>elif</Word>

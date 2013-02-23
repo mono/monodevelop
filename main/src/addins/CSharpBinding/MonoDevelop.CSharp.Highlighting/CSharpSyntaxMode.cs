@@ -47,6 +47,8 @@ using MonoDevelop.SourceEditor.QuickTasks;
 using System.Threading;
 using System.Diagnostics;
 using MonoDevelop.Core;
+using ICSharpCode.NRefactory.CSharp.Analysis;
+using ICSharpCode.NRefactory;
 
 
 namespace MonoDevelop.CSharp.Highlighting
@@ -178,15 +180,14 @@ namespace MonoDevelop.CSharp.Highlighting
 			}
 		}
 
-		class HighlightingVisitior : DepthFirstAstVisitor
+		class HighlightingVisitior : SemanticHighlightingVisitor<string>
 		{
-			readonly CSharpAstResolver resolver;
-			readonly CancellationToken cancellationToken;
 			readonly int lineNumber;
 			readonly int lineOffset;
+			readonly int lineLength;
 			internal HighlightingSegmentTree tree = new HighlightingSegmentTree ();
 
-			public HighlightingVisitior (CSharpAstResolver resolver, CancellationToken cancellationToken, int lineNumber, int lineOffset)
+			public HighlightingVisitior (CSharpAstResolver resolver, CancellationToken cancellationToken, int lineNumber, int lineOffset, int lineLength)
 			{
 				if (resolver == null)
 					throw new ArgumentNullException ("resolver");
@@ -194,538 +195,69 @@ namespace MonoDevelop.CSharp.Highlighting
 				this.cancellationToken = cancellationToken;
 				this.lineNumber = lineNumber;
 				this.lineOffset = lineOffset;
+				this.lineLength = lineLength;
+				regionStart = new TextLocation (lineNumber, 1);
+				regionEnd  = new TextLocation (lineNumber, lineLength);
+
+				Setup ();
 			}
 
-			void Colorize (AstNode node, string style)
+			void Setup ()
 			{
-				var start = lineOffset + node.StartLocation.Column - 1;
-				var end   = lineOffset + node.EndLocation.Column - 1;
-				tree.AddStyle (start, end, style);
+				defaultTextColor = "Plain Text";
+				referenceTypeColor = "User Types";
+				valueTypeColor = "User Types(Value types)";
+				interfaceTypeColor = "User Types(Interfaces)";
+				enumerationTypeColor = "User Types(Enums)";
+				typeParameterTypeColor = "User Types(Type parameters)";
+
+				delegateDeclarationColor = "User Types(Delegates)";
+
+				methodCallColor = "User Method Usage";
+				methodDeclarationColor = "User Method Declaration";
+
+				eventDeclarationColor = "User Event Declaration";
+				eventAccessColor = "User Event Usage";
+
+				fieldDeclarationColor ="User Field Declaration";
+				fieldAccessColor = "User Field Usage";
+
+				propertyDeclarationColor = "User Property Declaration";
+				propertyAccessColor = "User Property Usage";
+
+				variableDeclarationColor = "User Variable Declaration";
+				variableAccessColor = "User Variable Usage";
+
+				parameterDeclarationColor = "User Parameter Declaration";
+				parameterAccessColor = "User Parameter Usage";
+
+				valueKeywordColor = "Keyword(Context)";
+				externAliasKeywordColor = "Keyword(Namespace)";
+
+				parameterModifierColor = "Keyword(Parameter)";
+				inactiveCodeColor = "Excluded Code";
+				syntaxErrorColor = "Syntax Error";
 			}
 
-			public override void VisitCSharpTokenNode (CSharpTokenNode token)
+			protected override void Colorize(TextLocation start, TextLocation end, string color)
 			{
-				if (token.StartLocation.Line != lineNumber)
-					return;
-				var mod = token as CSharpModifierToken;
-				if (mod != null && mod.Modifier == Modifiers.Partial)
-					Colorize (token, contextualHighlightKeywords["partial"]);
-				if (mod != null && mod.Modifier == Modifiers.Async)
-					Colorize (token, contextualHighlightKeywords["async"]);
-			}
-
-			protected override void VisitChildren (AstNode node)
-			{
-				for (var child = node.FirstChild; child != null; child = child.NextSibling) {
-					if (child.StartLocation.Line <= lineNumber && child.EndLocation.Line >= lineNumber)
-						child.AcceptVisitor(this);
-				}
-			}
-
-			public override void VisitConstraint (Constraint constraint)
-			{
-				base.VisitConstraint (constraint);
-				if (constraint.WhereKeyword.StartLocation.Line == lineNumber)
-					Colorize (constraint.WhereKeyword, contextualHighlightKeywords["where"]);
-			}
-
-			public override void VisitIdentifierExpression (IdentifierExpression identifierExpression)
-			{
-				foreach (var tp in identifierExpression.TypeArguments) {
-					tp.AcceptVisitor (this);
-				}
-				if (identifierExpression.StartLocation.Line != lineNumber)
-					return;
-				if (isInAccessor && identifierExpression.Identifier == "value") {
-					Colorize (identifierExpression, contextualHighlightKeywords["value"]);
-					return;
-				}
-
-				var result = resolver.Resolve (identifierExpression, cancellationToken);
-				if (result.IsError) {
-					Colorize (identifierExpression, "Syntax Error");
-					return;
-				}
-
-				if (result is MemberResolveResult) {
-					var member = ((MemberResolveResult)result).Member;
-					switch (member.EntityType) {
-					case EntityType.Field:
-						Colorize (identifierExpression.IdentifierToken, "User Field Usage");
-						break;
-					case EntityType.Property:
-						Colorize (identifierExpression.IdentifierToken, "User Property Usage");
-						break;
-					case EntityType.Method:
-						Colorize (identifierExpression.IdentifierToken, "User Method Usage");
-						break;
-					case EntityType.Event:
-						Colorize (identifierExpression.IdentifierToken, "User Event Usage");
-						break;
-					}
-					return;
-				}
-
-				if (result is MethodGroupResolveResult) {
-					Colorize (identifierExpression.IdentifierToken, "User Method Usage");
-					return;
-				}
-
-				if (result is TypeResolveResult) {
-					Colorize (identifierExpression.IdentifierToken, GetUserTypeHighlighting (result.Type));
-					return;
-				}
-
-				var localResult = result as LocalResolveResult;
-				if (localResult != null) {
-					if (localResult.Variable is IParameter) {
-						Colorize (identifierExpression.IdentifierToken, "User Parameter Usage");
-					} else {
-						Colorize (identifierExpression.IdentifierToken, "User Variable Usage");
-					}
-				}
-			}
-
-			bool isInAccessor;
-			public override void VisitAccessor(Accessor accessor)
-			{
-				isInAccessor = true;
-				try {
-					base.VisitAccessor(accessor);
-				} finally {
-					isInAccessor = false;
-				}
-			}
-			public override void VisitExternAliasDeclaration (ExternAliasDeclaration externAliasDeclaration)
-			{
-				base.VisitExternAliasDeclaration (externAliasDeclaration);
-				if (externAliasDeclaration.AliasToken.StartLocation.Line == lineNumber)
-					Colorize (externAliasDeclaration.AliasToken, "Keyword(Namespace)");
-			}
-			Stack<TypeDeclaration> typeDeclarations = new Stack<TypeDeclaration> ();
-			public override void VisitTypeDeclaration (TypeDeclaration typeDeclaration)
-			{
-				typeDeclarations.Push (typeDeclaration);
-				base.VisitTypeDeclaration (typeDeclaration);
-				typeDeclarations.Pop ();
-
-				if (typeDeclaration.NameToken.StartLocation.Line == lineNumber)
-					Colorize (typeDeclaration.NameToken, GetUserTypeHighlighting (typeDeclaration.ClassType));
-			}
-
-			public override void VisitPropertyDeclaration (PropertyDeclaration propertyDeclaration)
-			{
-				base.VisitPropertyDeclaration (propertyDeclaration);
-				if (propertyDeclaration.NameToken.StartLocation.Line == lineNumber) {
-					if (!propertyDeclaration.PrivateImplementationType.IsNull) {
-						if (!CheckInterfaceImplementation (propertyDeclaration))
-							return;
-					}
-					Colorize (propertyDeclaration.NameToken, "User Property Declaration");
-				}
-				if (!propertyDeclaration.Getter.IsNull) {
-					var getKeyword = propertyDeclaration.Getter.GetChildByRole (PropertyDeclaration.GetKeywordRole);
-					if (getKeyword != null && getKeyword.StartLocation.Line == lineNumber)
-						Colorize (getKeyword, contextualHighlightKeywords ["get"]);
-				}
-				if (!propertyDeclaration.Setter.IsNull) {
-					var setKeyword = propertyDeclaration.Setter.GetChildByRole (PropertyDeclaration.SetKeywordRole);
-					if (setKeyword != null &&setKeyword.StartLocation.Line == lineNumber)
-						Colorize (setKeyword, contextualHighlightKeywords ["set"]);
-				}
-			}
-
-			public override void VisitArrayInitializerExpression (ArrayInitializerExpression arrayInitializerExpression)
-			{
-				foreach (var a in arrayInitializerExpression.Elements) {
-					var namedElement = a as NamedExpression;
-					if (namedElement != null) {
-						if (namedElement.NameToken.StartLocation.Line == lineNumber) {
-							var result = resolver.Resolve (namedElement, cancellationToken);
-							if (result.IsError)
-								Colorize (namedElement.NameToken, "Syntax Error");
-						}
-						namedElement.Expression.AcceptVisitor (this);
-					} else {
-						a.AcceptVisitor (this);
-					}
-				}
-			}
-
-			public override void VisitEventDeclaration (EventDeclaration eventDeclaration)
-			{
-				base.VisitEventDeclaration (eventDeclaration);
-				foreach (var init in eventDeclaration.Variables)
-					if (init.NameToken.StartLocation.Line == lineNumber) {
-						Colorize (init.NameToken, "User Event Declaration");
-					}
-			}
-
-			public override void VisitCustomEventDeclaration (CustomEventDeclaration eventDeclaration)
-			{
-				base.VisitCustomEventDeclaration (eventDeclaration);
-				if (eventDeclaration.NameToken.StartLocation.Line == lineNumber) {
-					if (!eventDeclaration.PrivateImplementationType.IsNull) {
-						if (!CheckInterfaceImplementation (eventDeclaration))
-							return;
-					}
-					Colorize (eventDeclaration.NameToken, "User Event Declaration");
-				}
-
-				if (!eventDeclaration.AddAccessor.IsNull) {
-					var addKeyword = eventDeclaration.AddAccessor.GetChildByRole (CustomEventDeclaration.AddKeywordRole);
-					if (addKeyword != null && addKeyword.StartLocation.Line == lineNumber)
-						Colorize (addKeyword, contextualHighlightKeywords ["add"]);
-				}
-				if (!eventDeclaration.RemoveAccessor.IsNull) {
-					var removeKeyword = eventDeclaration.RemoveAccessor.GetChildByRole (CustomEventDeclaration.RemoveKeywordRole);
-					if (removeKeyword != null && removeKeyword.StartLocation.Line == lineNumber)
-						Colorize (removeKeyword, contextualHighlightKeywords ["remove"]);
-				}
-			}
-
-			public override void VisitDelegateDeclaration (DelegateDeclaration delegateDeclaration)
-			{
-				base.VisitDelegateDeclaration (delegateDeclaration);
-				if (delegateDeclaration.NameToken.StartLocation.Line == lineNumber)
-					Colorize (delegateDeclaration.NameToken, "User Types(Delegates)");
-			}
-
-			public override void VisitParameterDeclaration (ParameterDeclaration parameterDeclaration)
-			{
-				base.VisitParameterDeclaration (parameterDeclaration);
-				if (parameterDeclaration.NameToken.StartLocation.Line == lineNumber)
-					Colorize (parameterDeclaration.NameToken, "User Parameter Declaration");
-			}
-
-			public override void VisitVariableInitializer (VariableInitializer variableInitializer)
-			{
-				base.VisitVariableInitializer (variableInitializer);
-				if (variableInitializer.NameToken.StartLocation.Line == lineNumber)
-					Colorize (variableInitializer.NameToken, "User Variable Declaration");
-			}
-
-			public override void VisitTypeParameterDeclaration (TypeParameterDeclaration typeParameterDeclaration)
-			{
-				base.VisitTypeParameterDeclaration (typeParameterDeclaration);
-				if (typeParameterDeclaration.NameToken.StartLocation.Line == lineNumber)
-					Colorize (typeParameterDeclaration.NameToken, "User Types(Type parameters)");
-			}
-
-			public override void VisitConstructorDeclaration (ConstructorDeclaration constructorDeclaration)
-			{
-				base.VisitConstructorDeclaration (constructorDeclaration);
-				if (constructorDeclaration.NameToken.StartLocation.Line == lineNumber)
-					Colorize (constructorDeclaration.NameToken, GetUserTypeHighlighting (this.typeDeclarations.Peek ().ClassType));
-			}
-
-			public override void VisitDestructorDeclaration (DestructorDeclaration destructorDeclaration)
-			{
-				base.VisitDestructorDeclaration (destructorDeclaration);
-				if (destructorDeclaration.NameToken.StartLocation.Line == lineNumber)
-					Colorize (destructorDeclaration.NameToken, GetUserTypeHighlighting (this.typeDeclarations.Peek ().ClassType));
-			}
-
-			bool CheckInterfaceImplementation (EntityDeclaration entityDeclaration)
-			{
-				var result = resolver.Resolve (entityDeclaration, cancellationToken) as MemberResolveResult;
-				if (result.Member.ImplementedInterfaceMembers.Count == 0) {
-					Colorize (entityDeclaration.NameToken, "Syntax Error");
-					return false;
-				}
-				return true;
-			}
-
-			public override void VisitMethodDeclaration (MethodDeclaration methodDeclaration)
-			{
-				base.VisitMethodDeclaration (methodDeclaration);
-				if (methodDeclaration.NameToken.StartLocation.Line == lineNumber) {
-					if (!methodDeclaration.PrivateImplementationType.IsNull) {
-						if (!CheckInterfaceImplementation (methodDeclaration))
-							return;
-					}
-					Colorize (methodDeclaration.NameToken, "User Method Declaration");
-				}
-			}
-
-			public override void VisitFieldDeclaration (FieldDeclaration fieldDeclaration)
-			{
-				fieldDeclaration.ReturnType.AcceptVisitor (this);
-				foreach (var init in fieldDeclaration.Variables) {
-					if (init.NameToken.StartLocation.Line == lineNumber)
-						Colorize (init.NameToken, "User Field Declaration");
-					init.Initializer.AcceptVisitor (this);
-				}
-			}
-
-			public override void VisitFixedFieldDeclaration (FixedFieldDeclaration fixedFieldDeclaration)
-			{
-				base.VisitFixedFieldDeclaration (fixedFieldDeclaration);
-				foreach (var init in fixedFieldDeclaration.Variables)
-					if (init.NameToken.StartLocation.Line == lineNumber)
-						Colorize (init.NameToken, "User Field Declaration");
-			}
-
-			public override void VisitUsingDeclaration (UsingDeclaration usingDeclaration)
-			{
-			}
-
-			public override void VisitUsingAliasDeclaration (UsingAliasDeclaration usingDeclaration)
-			{
-			}
-
-			public override void VisitComposedType (ComposedType composedType)
-			{
-				if (composedType.StartLocation.Line != lineNumber) {
-					base.VisitComposedType (composedType);
-					return;
-				}
-				var result = resolver.Resolve (composedType, cancellationToken);
-				if (result.IsError) {
-					// if csharpSyntaxMode.guiDocument.Project != null
-					Colorize (composedType, "Syntax Error");
-					return;
-				}
-				if (result is TypeResolveResult) {
-					Colorize (composedType.BaseType, GetUserTypeHighlighting(result.Type));
-				}
-
-			}
-
-			static string GetUserTypeHighlighting (IType type)
-			{
-				switch (type.Kind) {
-				case TypeKind.Class:
-					return "User Types";
-				case TypeKind.Struct:
-					return "User Types(Value types)";
-				case TypeKind.Interface:
-					return "User Types(Interfaces)";
-				case TypeKind.Delegate:
-					return "User Types(Delegates)";
-				case TypeKind.Enum:
-					return "User Types(Enums)";
-				case TypeKind.TypeParameter:
-					return "User Types(Type parameters)";
-				}
-				return "User Types";
-			}
-
-			static string GetUserTypeHighlighting (ClassType classType)
-			{
-				switch (classType) {
-				case ClassType.Class:
-					return "User Types";
-				case ClassType.Struct:
-					return "User Types(Value types)";
-				case ClassType.Interface:
-					return "User Types(Interfaces)";
-				case ClassType.Enum:
-					return "User Types(Enums)";
-				}
-				return "User Types";
-			}
-
-			public override void VisitSimpleType (SimpleType simpleType)
-			{
-				if (simpleType.StartLocation.Line != lineNumber) {
-					base.VisitSimpleType (simpleType);
-					return;
-				}
-				var result = resolver.Resolve (simpleType, cancellationToken);
-				if (result.IsError) {
-					// if csharpSyntaxMode.guiDocument.Project != null
-					Colorize (simpleType, "Syntax Error");
-					return;
-				}
-				if (result is TypeResolveResult) {
-					Colorize (simpleType.IdentifierToken, GetUserTypeHighlighting (result.Type));
-				}
-				base.VisitSimpleType (simpleType);
-			}
-
-			public override void VisitMemberType (MemberType memberType)
-			{
-				base.VisitMemberType (memberType);
-				if (memberType.MemberNameToken.StartLocation.Line != lineNumber) {
-					return;
-				}
-
-				var result = resolver.Resolve (memberType, cancellationToken);
-
-				if (result.IsError) {
-					result = resolver.Resolve (memberType.Target, cancellationToken);
-					if (result.IsError) {
-						// base type is unresolved - it's already marked.
+				int startOffset;
+				if (start.Line == lineNumber) {
+					startOffset = lineOffset + start.Column - 1;
+				} else {
+					if (start.Line > lineNumber)
 						return;
-					}
-					// if && csharpSyntaxMode.guiDocument.Project != null
-					Colorize (memberType.MemberNameToken, "Syntax Error");
+					startOffset = lineOffset;
 				}
-				if (result is TypeResolveResult) {
-					Colorize (memberType.MemberNameToken, GetUserTypeHighlighting (result.Type));
-				}
-			}
-
-
-			public override void VisitMemberReferenceExpression (MemberReferenceExpression memberReferenceExpression)
-			{
-				base.VisitMemberReferenceExpression (memberReferenceExpression);
-				if (memberReferenceExpression.MemberNameToken.StartLocation.Line != lineNumber)
-					return;
-				var result = resolver.Resolve (memberReferenceExpression, cancellationToken);
-				if (result.IsError) {
-					result = resolver.Resolve (memberReferenceExpression.Target, cancellationToken);
-					if (result.IsError) {
-						// target already is colorized
+				int endOffset;
+				if (end.Line == lineNumber) {
+					endOffset = lineOffset +end.Column - 1;
+				} else {
+					if (end.Line < lineNumber)
 						return;
-					}
-					// if && csharpSyntaxMode.guiDocument.Project != null
-					Colorize (memberReferenceExpression.MemberNameToken, "Syntax Error");
+					endOffset = lineOffset + lineLength;
 				}
-
-				if (result is MemberResolveResult) {
-					var member = ((MemberResolveResult)result).Member;
-					switch (member.EntityType) {
-					case EntityType.Field:
-						if (!member.IsStatic && !((IField)member).IsConst)
-							Colorize (memberReferenceExpression.MemberNameToken, "User Field Usage");
-						break;
-					case EntityType.Property:
-						Colorize (memberReferenceExpression.MemberNameToken, "User Property Usage");
-						break;
-					case EntityType.Method:
-						Colorize (memberReferenceExpression.MemberNameToken, "User Method Usage");
-						break;
-					case EntityType.Event:
-						Colorize (memberReferenceExpression.MemberNameToken, "User Event Usage");
-						break;
-					}
-				}
-
-				if (result is MethodGroupResolveResult) {
-					Colorize (memberReferenceExpression.MemberNameToken, "User Method Usage");
-				}
-
-				if (result is TypeResolveResult) {
-					Colorize (memberReferenceExpression.MemberNameToken, GetUserTypeHighlighting (result.Type));
-				}
-			}
-
-			public override void VisitTypeOfExpression (TypeOfExpression typeOfExpression)
-			{
-				var result = resolver.Resolve (typeOfExpression, cancellationToken) as TypeOfResolveResult;
-				if (result != null && result.ReferencedType.Kind == TypeKind.Unknown) {
-					Colorize (typeOfExpression.Type, "Syntax Error");
-					return;
-				}
-				base.VisitTypeOfExpression (typeOfExpression);
-			}
-			
-			
-
-			public override void VisitPointerReferenceExpression (PointerReferenceExpression pointerReferenceExpression)
-			{
-				base.VisitPointerReferenceExpression (pointerReferenceExpression);
-				var result = resolver.Resolve (pointerReferenceExpression, cancellationToken);
-				if (result.IsError) {
-					// if && csharpSyntaxMode.guiDocument.Project != null
-					Colorize (pointerReferenceExpression.MemberNameToken, "Syntax Error");
-				}
-
-				if (result is MemberResolveResult) {
-					var member = ((MemberResolveResult)result).Member;
-					switch (member.EntityType) {
-					case EntityType.Field:
-						if (!member.IsStatic && !((IField)member).IsConst)
-							Colorize (pointerReferenceExpression.MemberNameToken, "User Field Usage");
-						break;
-					case EntityType.Property:
-						Colorize (pointerReferenceExpression.MemberNameToken, "User Property Usage");
-						break;
-					case EntityType.Method:
-						Colorize (pointerReferenceExpression.MemberNameToken, "User Method Usage");
-						break;
-					}
-				}
-
-				if (result is MethodGroupResolveResult) {
-					Colorize (pointerReferenceExpression.MemberNameToken, "User Method Usage");
-				}
-
-				if (result is TypeResolveResult) {
-					Colorize (pointerReferenceExpression.MemberNameToken, GetUserTypeHighlighting (result.Type));
-				}
-			}
-			public override void VisitQueryWhereClause (QueryWhereClause queryWhereClause)
-			{
-				base.VisitQueryWhereClause (queryWhereClause);
-				if (queryWhereClause.WhereKeyword.StartLocation.Line == lineNumber)
-					Colorize (queryWhereClause.WhereKeyword, contextualHighlightKeywords["where"]);
-
-			}
-			public override void VisitQueryFromClause (QueryFromClause queryFromClause)
-			{
-				base.VisitQueryFromClause (queryFromClause);
-				if (queryFromClause.FromKeyword.StartLocation.Line == lineNumber)
-					Colorize (queryFromClause.FromKeyword, contextualHighlightKeywords["from"]);
-			}
-
-			public override void VisitQuerySelectClause (QuerySelectClause querySelectClause)
-			{
-				base.VisitQuerySelectClause (querySelectClause);
-				if (querySelectClause.SelectKeyword.StartLocation.Line == lineNumber)
-					Colorize (querySelectClause.SelectKeyword, contextualHighlightKeywords["select"]);
-			}
-
-			public override void VisitQueryGroupClause (QueryGroupClause queryGroupClause)
-			{
-				base.VisitQueryGroupClause (queryGroupClause);
-				if (queryGroupClause.GroupKeyword.StartLocation.Line == lineNumber)
-					Colorize (queryGroupClause.GroupKeyword, contextualHighlightKeywords["group"]);
-				if (queryGroupClause.ByKeyword.StartLocation.Line == lineNumber)
-					Colorize (queryGroupClause.ByKeyword, contextualHighlightKeywords["by"]);
-			}
-
-			public override void VisitQueryContinuationClause (QueryContinuationClause queryContinuationClause)
-			{
-				base.VisitQueryContinuationClause (queryContinuationClause);
-				if (queryContinuationClause.IntoKeyword.StartLocation.Line == lineNumber)
-					Colorize (queryContinuationClause.IntoKeyword, contextualHighlightKeywords["into"]);
-			}
-
-			public override void VisitQueryJoinClause (QueryJoinClause queryJoinClause)
-			{
-				base.VisitQueryJoinClause (queryJoinClause);
-				if (queryJoinClause.IntoKeyword.StartLocation.Line == lineNumber)
-					Colorize (queryJoinClause.IntoKeyword, contextualHighlightKeywords["into"]);
-				if (queryJoinClause.JoinKeyword.StartLocation.Line == lineNumber)
-					Colorize (queryJoinClause.JoinKeyword, contextualHighlightKeywords["join"]);
-				if (queryJoinClause.OnKeyword.StartLocation.Line == lineNumber)
-					Colorize (queryJoinClause.OnKeyword, contextualHighlightKeywords["on"]);
-				if (queryJoinClause.EqualsKeyword.StartLocation.Line == lineNumber)
-					Colorize (queryJoinClause.EqualsKeyword, contextualHighlightKeywords["equals"]);
-			}
-
-			public override void VisitQueryLetClause (QueryLetClause queryLetClause)
-			{
-				base.VisitQueryLetClause (queryLetClause);
-				if (queryLetClause.LetKeyword.StartLocation.Line == lineNumber)
-					Colorize (queryLetClause.LetKeyword, contextualHighlightKeywords["let"]);
-			}
-
-			public override void VisitQueryOrdering (QueryOrdering queryOrdering)
-			{
-				base.VisitQueryOrdering (queryOrdering);
-				if (queryOrdering.DirectionToken.StartLocation.Line == lineNumber)
-					Colorize (queryOrdering.DirectionToken, contextualHighlightKeywords[queryOrdering.DirectionToken.GetText ()]);
-			}
-
-			public override void VisitUnaryOperatorExpression (UnaryOperatorExpression unaryOperatorExpression)
-			{
-				base.VisitUnaryOperatorExpression (unaryOperatorExpression);
-				if (unaryOperatorExpression.Operator == UnaryOperatorType.Await && unaryOperatorExpression.StartLocation.Line == lineNumber)
-					Colorize (unaryOperatorExpression.OperatorToken, contextualHighlightKeywords["await"]);
+				tree.AddStyle (startOffset, endOffset, color);
 			}
 		}
 
@@ -801,7 +333,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		
 		static Dictionary<string, string> contextualHighlightKeywords;
 		static readonly string[] ContextualKeywords = new string[] {
-			"async",
+/*			"async",
 			"await",
 			"value", //*
 			"get", "set", "add", "remove",  //*
@@ -820,7 +352,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			"let",
 			"join",
 			"on",
-			"equals"
+			"equals"*/
 		};
 
 		#region Syntax mode rule cache
@@ -866,9 +398,6 @@ namespace MonoDevelop.CSharp.Highlighting
 				using (var reader = provider.Open ()) {
 					SyntaxMode baseMode = SyntaxMode.Read (reader);
 					_rules = new List<Rule> (baseMode.Rules.Where (r => r.Name != "Comment"));
-					_rules.Add (new Rule (this) {
-						Name = "PreProcessorComment"
-					});
 
 					_commentRule = new Rule (this) {
 						Name = "Comment",
@@ -936,108 +465,11 @@ namespace MonoDevelop.CSharp.Highlighting
 				SemanticHighlightingEnabled = PropertyService.Get ("EnableSemanticHighlighting", true);
 		}
 
-		public override SpanParser CreateSpanParser (DocumentLine line, CloneableStack<Span> spanStack)
-		{
-			return new CSharpSpanParser (this, spanStack ?? line.StartSpan.Clone ());
-		}
-		
 		public override ChunkParser CreateChunkParser (SpanParser spanParser, ColorScheme style, DocumentLine line)
 		{
 			return new CSharpChunkParser (this, spanParser, style, line);
 		}
-		
-		abstract class AbstractBlockSpan : Span
-		{
-			public bool IsValid {
-				get;
-				private set;
-			}
-			
-			bool disabled;
-			
-			public bool Disabled {
-				get { return disabled; }
-				set { disabled = value; SetColor (); }
-			}
-			
-			
-			public AbstractBlockSpan (bool isValid)
-			{
-				IsValid = isValid;
-				SetColor ();
-				StopAtEol = false;
-			}
-			
-			protected void SetColor ()
-			{
-				TagColor = "Preprocessor";
-				if (disabled || !IsValid) {
-					Color = "Excluded Code";
-					Rule = "PreProcessorComment";
-				} else {
-					Color = "Plain Text";
-					Rule = "<root>";
-				}
-			}
-		}
-
-		class DefineSpan : Span
-		{
-			string define;
-
-			public string Define { 
-				get { 
-					return define;
-				}
-			}
-
-			public DefineSpan (string define)
-			{
-				this.define = define;
-				StopAtEol = false;
-				Color = "Plain Text";
-				Rule = "<root>";
-			}
-		}
-
-		class IfBlockSpan : AbstractBlockSpan
-		{
-			public IfBlockSpan (bool isValid) : base (isValid)
-			{
-			}
-			
-			public override string ToString ()
-			{
-				return string.Format("[IfBlockSpan: IsValid={0}, Disabled={3}, Color={1}, Rule={2}]", IsValid, Color, Rule, Disabled);
-			}
-		}
-		
-		class ElseIfBlockSpan : AbstractBlockSpan
-		{
-			public ElseIfBlockSpan (bool isValid) : base (isValid)
-			{
-				base.Begin = new Regex ("#elif");
-			}
-			
-			public override string ToString ()
-			{
-				return string.Format("[ElseIfBlockSpan: IsValid={0}, Disabled={3}, Color={1}, Rule={2}]", IsValid, Color, Rule, Disabled);
-			}
-		}
-		
-		class ElseBlockSpan : AbstractBlockSpan
-		{
-			public ElseBlockSpan (bool isValid) : base (isValid)
-			{
-				base.Begin = new Regex ("#else");
-			}
-			
-			public override string ToString ()
-			{
-				return string.Format("[ElseBlockSpan: IsValid={0}, Disabled={3}, Color={1}, Rule={2}]", IsValid, Color, Rule, Disabled);
-			}
-		}
-		
+	
 		protected class CSharpChunkParser : ChunkParser, IResolveVisitorNavigator
 		{
 
@@ -1087,11 +519,11 @@ namespace MonoDevelop.CSharp.Highlighting
 				if (parsedDocument != null && csharpSyntaxMode.SemanticHighlightingEnabled && csharpSyntaxMode.resolver != null) {
 					int endLoc = -1;
 					string semanticStyle = null;
-					if (spanParser.CurSpan == null || spanParser.CurSpan is DefineSpan || spanParser.CurSpan is AbstractBlockSpan) {
+					if (spanParser.CurSpan == null) {
 						try {
 							HighlightingVisitior visitor;
 							if (!csharpSyntaxMode.lineSegments.TryGetValue (line, out visitor)) {
-								visitor = new HighlightingVisitior (csharpSyntaxMode.resolver, default (CancellationToken), lineNumber, base.line.Offset);
+								visitor = new HighlightingVisitior (csharpSyntaxMode.resolver, default (CancellationToken), lineNumber, base.line.Offset, line.Length);
 								visitor.tree.InstallListener (doc);
 								csharpSyntaxMode.unit.AcceptVisitor (visitor);
 								csharpSyntaxMode.lineSegments[line] = visitor;
@@ -1124,359 +556,6 @@ namespace MonoDevelop.CSharp.Highlighting
 						return "Comment Tag";
 				}
 				return base.GetStyle (chunk);
-			}
-		}
-		
-		protected class CSharpSpanParser : SpanParser
-		{
-			CSharpSyntaxMode CSharpSyntaxMode {
-				get {
-					return (CSharpSyntaxMode)mode;
-				}
-			}
-			class ConditinalExpressionEvaluator : DepthFirstAstVisitor<object, object>
-			{
-				HashSet<string> symbols;
-
-				MonoDevelop.Projects.Project GetProject (TextDocument doc)
-				{
-					// There is no reference between document & higher level infrastructure,
-					// therefore it's a bit tricky to find the right project.
-					
-					MonoDevelop.Projects.Project project = null;
-					var view = doc.Annotation<MonoDevelop.SourceEditor.SourceEditorView> ();
-					if (view != null)
-						project = view.Project;
-					
-					if (project == null) {
-						var ideDocument = IdeApp.Workbench.GetDocument (doc.FileName);
-						if (ideDocument != null)
-							project = ideDocument.Project;
-					}
-					
-					if (project == null)
-						project = IdeApp.Workspace.GetProjectContainingFile (doc.FileName);
-					
-					return project;
-				}
-
-				public ConditinalExpressionEvaluator (TextDocument doc, IEnumerable<string> symbols)
-				{
-					this.symbols = new HashSet<string> (symbols);
-					var project = GetProject (doc);
-					
-					if (project == null) {
-						var ideDocument = IdeApp.Workbench.GetDocument (doc.FileName);
-						if (ideDocument != null)
-							project = ideDocument.Project;
-					}
-					
-					if (project == null)
-						project = IdeApp.Workspace.GetProjectContainingFile (doc.FileName);
-					
-					if (project != null) {
-						var configuration = project.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
-						if (configuration != null) {
-							var cparams = configuration.CompilationParameters as CSharpCompilerParameters;
-							if (cparams != null) {
-								string[] syms = cparams.DefineSymbols.Split (';', ',', ' ', '\t');
-								foreach (string s in syms) {
-									string ss = s.Trim ();
-									if (ss.Length > 0 && !symbols.Contains (ss))
-										this.symbols.Add (ss);
-								}
-							}
-							// Workaround for mcs defined symbol
-							if (configuration.TargetRuntime.RuntimeId == "Mono") 
-								this.symbols.Add ("__MonoCS__");
-						} else {
-							Console.WriteLine ("NO CONFIGURATION");
-						}
-					}
-/*					var parsedDocument = TypeSystemService.ParseFile (document.ProjectContent, doc.FileName, doc.MimeType, doc.Text);
-					if (parsedDocument == null)
-						parsedDocument = TypeSystemService.ParseFile (dom, doc.FileName ?? "a.cs", delegate { return doc.Text; });
-					if (parsedDocument != null) {
-						foreach (PreProcessorDefine define in parsedDocument.Defines) {
-							symbols.Add (define.Define);
-						}
-						
-					}*/
-				}
-				
-				public override object VisitIdentifierExpression (IdentifierExpression identifierExpression, object data)
-				{
-					return symbols.Contains (identifierExpression.Identifier);
-				}
-				
-				public override object VisitUnaryOperatorExpression (UnaryOperatorExpression unaryOperatorExpression, object data)
-				{
-					bool result = (bool)(unaryOperatorExpression.Expression.AcceptVisitor (this, data) ?? false);
-					if (unaryOperatorExpression.Operator ==  UnaryOperatorType.Not)
-						return !result;
-					return result;
-				}
-
-
-				public override object VisitPrimitiveExpression (PrimitiveExpression primitiveExpression, object data)
-				{
-					if (primitiveExpression.Value is bool)
-						return primitiveExpression.Value;
-					return false;
-				}
-
-				public override object VisitBinaryOperatorExpression (BinaryOperatorExpression binaryOperatorExpression, object data)
-				{
-					bool left = (bool)(binaryOperatorExpression.Left.AcceptVisitor (this, data) ?? false);
-					bool right = (bool)(binaryOperatorExpression.Right.AcceptVisitor (this, data) ?? false);
-					switch (binaryOperatorExpression.Operator) {
-					case BinaryOperatorType.InEquality:
-						return left != right;
-					case BinaryOperatorType.Equality:
-						return left == right;
-					case BinaryOperatorType.ConditionalOr:
-						return left || right;
-					case BinaryOperatorType.ConditionalAnd:
-						return left && right;
-					}
-					
-					Console.WriteLine ("Unknown operator:" + binaryOperatorExpression.Operator);
-					return left;
-				}
-
-				public override object VisitParenthesizedExpression (ParenthesizedExpression parenthesizedExpression, object data)
-				{
-					return parenthesizedExpression.Expression.AcceptVisitor (this, data);
-				}
-
-			}
-			
-			void ScanPreProcessorElse (ref int i)
-			{
-				if (!spanStack.Any (s => s is IfBlockSpan || s is ElseIfBlockSpan)) {
-					base.ScanSpan (ref i);
-					return;
-				}
-				bool previousResult = false;
-				foreach (Span span in spanStack) {
-					if (span is IfBlockSpan) {
-						previousResult = ((IfBlockSpan)span).IsValid;
-					}
-					if (span is ElseIfBlockSpan) {
-						previousResult |= ((ElseIfBlockSpan)span).IsValid;
-					}
-				}
-				//					LineSegment line = doc.GetLineByOffset (i);
-				//					int length = line.Offset + line.EditableLength - i;
-				while (spanStack.Count > 0 && !(CurSpan is IfBlockSpan || CurSpan is ElseIfBlockSpan)) {
-					spanStack.Pop ();
-				}
-				var ifBlock = CurSpan as IfBlockSpan;
-				var elseIfBlock = CurSpan as ElseIfBlockSpan;
-				var elseBlockSpan = new ElseBlockSpan (!previousResult);
-				if (ifBlock != null) {
-					elseBlockSpan.Disabled = ifBlock.Disabled;
-				} else if (elseIfBlock != null) {
-					elseBlockSpan.Disabled = elseIfBlock.Disabled;
-				}
-				FoundSpanBegin (elseBlockSpan, i, "#else".Length);
-				i += "#else".Length;
-					
-				// put pre processor eol span on stack, so that '#elif' gets the correct highlight
-				Span preprocessorSpan = CreatePreprocessorSpan ();
-				FoundSpanBegin (preprocessorSpan, i, 0);
-			}
-			IEnumerable<string> Defines {
-				get {
-					if (SpanStack == null)
-						yield break;
-					foreach (var span in SpanStack) {
-						if (span is DefineSpan) {
-							var define = ((DefineSpan)span).Define;
-							if (define != null)
-								yield return define;
-						}
-					}
-				}
-			}
-			void ScanPreProcessorIf (int textOffset, ref int i)
-			{
-				var end = CurText.Length;
-				int idx = 0;
-				while ((idx = CurText.IndexOf ('/', idx)) >= 0 && idx + 1 < CurText.Length) {
-					var next = CurText [idx + 1];
-					if (next == '/') {
-						end = idx - 1;
-						break;
-					}
-					idx++;
-				}
-
-				int length = end - textOffset;
-				string parameter = CurText.Substring (textOffset + 3, length - 3);
-				AstNode expr = new CSharpParser ().ParseExpression (parameter);
-				bool result = false;
-				if (expr != null && !expr.IsNull) {
-					object o = expr.AcceptVisitor (new ConditinalExpressionEvaluator (doc, Defines), null);
-					if (o is bool)
-						result = (bool)o;
-				}
-					
-				foreach (Span span in spanStack) {
-					if (span is IfBlockSpan) {
-						result &= ((IfBlockSpan)span).IsValid;
-					}
-					if (span is ElseIfBlockSpan) {
-						result &= ((ElseIfBlockSpan)span).IsValid;
-					}
-				}
-					
-				var ifBlockSpan = new IfBlockSpan (result);
-					
-				foreach (Span span in spanStack) {
-					if (span is AbstractBlockSpan) {
-						var parentBlock = (AbstractBlockSpan)span;
-						ifBlockSpan.Disabled = parentBlock.Disabled || !parentBlock.IsValid;
-						break;
-					}
-				}
-					
-				FoundSpanBegin (ifBlockSpan, i, length);
-				i += length - 1;
-			}
-
-			void ScanPreProcessorElseIf (ref int i)
-			{
-				DocumentLine line = doc.GetLineByOffset (i);
-				int length = line.Offset + line.Length - i;
-				string parameter = doc.GetTextAt (i + 5, length - 5);
-				AstNode expr= new CSharpParser ().ParseExpression (parameter);
-				bool result;
-				if (expr != null && !expr.IsNull) {
-					var visitResult = expr.AcceptVisitor (new ConditinalExpressionEvaluator (doc, Defines), null);
-					result = visitResult != null ? (bool)visitResult : false;
-				} else {
-					result = false;
-				}
-					
-				IfBlockSpan containingIf = null;
-				if (result) {
-					bool previousResult = false;
-					foreach (Span span in spanStack) {
-						if (span is IfBlockSpan) {
-							containingIf = (IfBlockSpan)span;
-							previousResult = ((IfBlockSpan)span).IsValid;
-							break;
-						}
-						if (span is ElseIfBlockSpan) {
-							previousResult |= ((ElseIfBlockSpan)span).IsValid;
-						}
-					}
-						
-					result = !previousResult;
-				}
-					
-				var elseIfBlockSpan = new ElseIfBlockSpan (result);
-				if (containingIf != null)
-					elseIfBlockSpan.Disabled = containingIf.Disabled;
-					
-				FoundSpanBegin (elseIfBlockSpan, i, 0);
-					
-				// put pre processor eol span on stack, so that '#elif' gets the correct highlight
-				var preprocessorSpan = CreatePreprocessorSpan ();
-				FoundSpanBegin (preprocessorSpan, i, 0);
-			}
-
-			protected override bool ScanSpan (ref int i)
-			{
-				if (CSharpSyntaxMode.DisableConditionalHighlighting) {
-					return base.ScanSpan (ref i);
-				}
-				int textOffset = i - StartOffset;
-
-				if (textOffset < CurText.Length && CurRule.Name != "Comment" && CurRule.Name != "String" && CurText [textOffset] == '#' && IsFirstNonWsChar (textOffset)) {
-
-					if (CurText.IsAt (textOffset, "#define") && (spanStack == null || !spanStack.Any (span => span is IfBlockSpan && !((IfBlockSpan)span).IsValid))) {
-						int length = CurText.Length - textOffset;
-						string parameter = CurText.Substring (textOffset + "#define".Length, length - "#define".Length).Trim ();
-						var defineSpan = new DefineSpan (parameter);
-						FoundSpanBegin (defineSpan, i, 0);
-					}
-	
-					if (CurText.IsAt (textOffset, "#else")) {
-						ScanPreProcessorElse (ref i);
-						return true;
-					}
-	
-					if (CurText.IsAt (textOffset, "#if")) {
-						ScanPreProcessorIf (textOffset, ref i);
-						return true;
-					}
-	
-					if (CurText.IsAt (textOffset, "#elif") && spanStack != null && spanStack.Any (span => span is IfBlockSpan)) {
-						ScanPreProcessorElseIf (ref i);
-						return true;
-					}
-	
-					var preprocessorSpan = CreatePreprocessorSpan ();
-					FoundSpanBegin (preprocessorSpan, i, 1);
-					return true;
-				}
-
-				return base.ScanSpan (ref i);
-			}
-			
-			public static Span CreatePreprocessorSpan ()
-			{
-				var result = new Span ();
-				result.TagColor = "Preprocessor";
-				result.Color = "Preprocessor";
-				result.Rule = "String";
-				result.StopAtEol = true;
-				return result;
-			}
-			
-			void PopCurrentIfBlock ()
-			{
-				while (spanStack.Count > 0 && (spanStack.Peek () is IfBlockSpan || spanStack.Peek () is ElseIfBlockSpan || spanStack.Peek () is ElseBlockSpan)) {
-					var poppedSpan = PopSpan ();
-					if (poppedSpan is IfBlockSpan)
-						break;
-				}
-			}
-			
-			protected override bool ScanSpanEnd (Span cur, ref int i)
-			{
-				if (cur is IfBlockSpan || cur is ElseIfBlockSpan || cur is ElseBlockSpan) {
-					int textOffset = i - StartOffset;
-					bool end = CurText.IsAt (textOffset, "#endif");
-					if (end) {
-						FoundSpanEnd (cur, i, 6); // put empty end tag in
-						
-						// if we're in a complex span stack pop it up to the if block
-						if (spanStack.Count > 0) {
-							var prev = spanStack.Peek ();
-							
-							if ((cur is ElseIfBlockSpan || cur is ElseBlockSpan) && (prev is ElseIfBlockSpan || prev is IfBlockSpan))
-								PopCurrentIfBlock ();
-						}
-					}
-					return end;
-				}
-				return base.ScanSpanEnd (cur, ref i);
-			}
-			
-	//		Span preprocessorSpan;
-	//		Rule preprocessorRule;
-			
-			public CSharpSpanParser (CSharpSyntaxMode mode, CloneableStack<Span> spanStack) : base (mode, spanStack)
-			{
-//				foreach (Span span in mode.Spans) {
-//					if (span.Rule == "text.preprocessor") {
-//						preprocessorSpan = span;
-//						preprocessorRule = GetRule (span);
-//					}
-//				}
 			}
 		}
 

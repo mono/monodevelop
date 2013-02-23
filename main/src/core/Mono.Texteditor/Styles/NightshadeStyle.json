@@ -144,7 +144,6 @@
 		{ "name": "Number", "fore":"NumberVim"},
 
 		{ "name": "Preprocessor", "fore":"PreProcVim" },
-		{ "name": "Preprocessor Keyword", "fore":"PreProcVim", "weight":"bold" },
 
 		{ "name": "Xml Text", "fore":"NormalVim" },
 		{ "name": "Xml Delimiter", "fore":"NormalVim" },

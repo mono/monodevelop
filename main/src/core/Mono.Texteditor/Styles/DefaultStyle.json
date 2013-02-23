@@ -116,7 +116,6 @@
 		{ "name": "Number", "fore":"literal-orange"},
 
 		{ "name": "Preprocessor", "fore":"#c12dad" },
-		{ "name": "Preprocessor Keyword", "fore":"#c12dad", "weight":"bold" },
 
 		{ "name": "Xml Text", "fore":"text-black" },
 		{ "name": "Xml Delimiter", "fore":"text-black" },

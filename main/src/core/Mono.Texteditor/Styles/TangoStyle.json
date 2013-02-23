@@ -119,7 +119,6 @@
 		{ "name": "Number", "fore":"plum2"},
 
 		{ "name": "Preprocessor", "fore":"orange2" },
-		{ "name": "Preprocessor Keyword", "fore":"orange2", "weight":"bold" },
 
 		{ "name": "Xml Text", "fore":"black" },
 		{ "name": "Xml Delimiter", "fore":"black" },
