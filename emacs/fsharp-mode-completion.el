@@ -411,10 +411,12 @@ possibly many lines of description.")
   "Display information from the background process. If the user
 has requested a popup tooltip, display a popup. Otherwise,
 display a short summary in the minibuffer."
-  (let ((cleaned (replace-regexp-in-string "DATA: tooltip\n" "" str)))
-    (if (@ awaiting-popup)
-        (_ display-info-popup cleaned)
-      (message (fsharp-doc/format-for-minibuffer cleaned)))))
+  ;; Do not display if the current buffer is not an fsharp buffer.
+  (when (equal major-mode 'fsharp-mode)
+    (let ((cleaned (replace-regexp-in-string "DATA: tooltip\n" "" str)))
+      (if (@ awaiting-popup)
+          (_ display-info-popup cleaned)
+        (message (fsharp-doc/format-for-minibuffer cleaned))))))
 
 (def info-buffer-name "*F# info*")
 
