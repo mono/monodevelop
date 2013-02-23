@@ -50,7 +50,8 @@
       (otherwise (list "mono" exe)))))
 
 (defvar ac-fsharp-use-popup t
-  "If non-nil, use display tooltip pop-ups when available. Otherwise, fall back to minibuffer.")
+  "Display tooltips using a popup at point. If set to nil,
+display in a help buffer instead.")
 
 ; Both in seconds. Note that background process uses ms.
 (defvar ac-fsharp-blocking-timeout 1)
@@ -378,8 +379,8 @@ possibly many lines of description.")
             (part (substring ac-fsharp-partial-data (+ eofloc (length (@ eom))))))
         (cond
          ((s-starts-with? "DATA: completion" msg) (_ set-completion-data msg))
-         ((s-starts-with? "DATA: finddecl" msg)   (_ open-declaration msg))
-         ((s-starts-with? "DATA: tooltip" msg)    (_ display-tooltip msg))
+         ((s-starts-with? "DATA: finddecl" msg)   (_ visit-definition msg))
+         ((s-starts-with? "DATA: tooltip" msg)    (_ handle-tooltip msg))
          ((s-starts-with? "DATA: errors" msg)     (_ display-parse-errors msg))
          ((s-starts-with? "DATA: project" msg)    (_ handle-project msg))
          ((s-starts-with? "ERROR: " msg)          (_ handle-process-error msg))
@@ -393,7 +394,7 @@ possibly many lines of description.")
   (setq ac-fsharp-completion-data (s-split "\n" (s-replace "DATA: completion" "" str) t)
         ac-fsharp-waiting nil))
 
-(defn open-declaration (str)
+(defn visit-definition (str)
   (if (string-match "\n\\(.*\\):\\([0-9]+\\):\\([0-9]+\\)" str)
       (let ((file (match-string 1 str))
             (line (+ 1 (string-to-number (match-string 2 str))))
@@ -406,14 +407,26 @@ possibly many lines of description.")
   (ac-fsharp-show-errors
    (concat (replace-regexp-in-string "DATA: errors\n" "" str) "\n")))
 
-(defn display-tooltip (str)
-  "Display a tooltip. If the user has requested a popup tooltip,
-display using popup. Otherwise, display in the minibuffer."
-  (let ((s (replace-regexp-in-string "DATA: tooltip\n" "" str)))
-    (if (not (@ awaiting-popup))
-        (message (fsharp-doc/format-for-minibuffer s))
-      (@set awaiting-popup nil)
-      (popup-tip s))))
+(defn handle-tooltip (str)
+  "Display information from the background process. If the user
+has requested a popup tooltip, display a popup. Otherwise,
+display a short summary in the minibuffer."
+  (let ((cleaned (replace-regexp-in-string "DATA: tooltip\n" "" str)))
+    (if (@ awaiting-popup)
+        (_ display-info-popup cleaned)
+      (message (fsharp-doc/format-for-minibuffer cleaned)))))
+
+(def info-buffer-name "*F# info*")
+
+(defn display-info-popup (str)
+  "Display the given string in a popup or help window."
+  (@set awaiting-popup nil)
+  (if ac-fsharp-use-popup
+      (popup-tip str)
+    (save-excursion
+      (let ((help-window-select t))
+        (with-help-window (@ info-buffer-name)
+          (princ str))))))
 
 (defn handle-project (str)
   (setq ac-fsharp-project-files (cdr (split-string str "\n")))
