@@ -86,7 +86,7 @@ namespace MonoDevelop.Core.Serialization
 		
 		internal protected override object OnDeserialize (SerializationContext serCtx, object mapData, DataNode data)
 		{
-			return TimeSpan.FromTicks (int.Parse (((DataValue)data).Value, CultureInfo.InvariantCulture));
+			return TimeSpan.FromTicks (long.Parse (((DataValue)data).Value, CultureInfo.InvariantCulture));
 		}
 	}
 
