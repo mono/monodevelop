@@ -139,7 +139,7 @@
 		{ "name": "Keyword(Context)", "fore":"monokai-keyword" },
 		{ "name": "Keyword(Exception)", "fore":"monokai-keyword" },
 		{ "name": "Keyword(Modifiers)", "fore":"monokai-keyword" },
-		{ "name": "Keyword(Constants)", "fore":"monokai-keyword" },
+		{ "name": "Keyword(Constants)", "fore":"monokai-constant" },
 		{ "name": "Keyword(Void)", "fore":"monokai-keyword" },
 		{ "name": "Keyword(Namespace)", "fore":"monokai-keyword" },
 		{ "name": "Keyword(Property)", "fore":"monokai-keyword" },
