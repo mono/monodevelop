@@ -115,4 +115,32 @@ namespace MonoDevelop.Core.Serialization
 			return (FilePath) file;
 		}
 	}
+
+	public class StringDataType: PrimitiveDataType
+	{
+		public StringDataType (): base (typeof (string))
+		{
+		}
+
+		internal protected override DataNode OnSerialize (SerializationContext serCtx, object mapData, object value)
+		{
+			return new DataValue (Name, (string) value);
+		}
+
+		internal protected override object OnDeserialize (SerializationContext serCtx, object mapData, DataNode data)
+		{
+			var dval = data as DataValue;
+			if (dval != null) {
+				return dval.Value;
+			}
+
+			//empty strings are serialised as empty elements, which are parsed as empty DataItems, not DataValues
+			var ditem = (DataItem) data;
+			if (ditem.HasItemData) {
+				throw new InvalidOperationException ("Found complex element, expecting primitive");
+			}
+
+			return "";
+		}
+	}
 }

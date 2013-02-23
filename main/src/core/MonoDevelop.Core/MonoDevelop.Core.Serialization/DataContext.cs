@@ -298,8 +298,10 @@ namespace MonoDevelop.Core.Serialization
 		{
 			if (type.IsEnum)
 				return new EnumDataType (type);
-			else if (type.IsPrimitive || type == typeof(string))
+			else if (type.IsPrimitive)
 				return new PrimitiveDataType (type);
+			else if (type == typeof(string))
+				return new StringDataType ();
 			else if (type == typeof(DateTime))
 				return new DateTimeDataType ();
 			else if (type == typeof(TimeSpan))
