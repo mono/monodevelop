@@ -6,7 +6,7 @@
 
 VERSION=3.2.12
 
-MDTOOL = $(MONO) INSERT_MDROOT/../../mdtool
+MDTOOL = $(MONO) 'INSERT_MDROOT/../../mdtool'
 
 # (MDVERSION3, MDVERSION4) can be set to something like (3.0.4, 3.0.4.7) to compile
 # against the dependencies/... binaries for a specific version of MonoDevelop. This allows
