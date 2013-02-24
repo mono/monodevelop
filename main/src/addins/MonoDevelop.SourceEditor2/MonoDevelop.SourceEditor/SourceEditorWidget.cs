@@ -200,6 +200,7 @@ namespace MonoDevelop.SourceEditor
 				parent.quickTaskProvider.ForEach (AddQuickTaskProvider);
 
 				QuickTaskStrip.EnableFancyFeatures.Changed += FancyFeaturesChanged;
+				FancyFeaturesChanged (null, null);
 			}
 
 			void FancyFeaturesChanged (object sender, EventArgs e)
