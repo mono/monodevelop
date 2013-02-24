@@ -148,7 +148,7 @@ THE SOFTWARE.
 	<ConditionalOperatorBeforeSeparatorSpace>True</ConditionalOperatorBeforeSeparatorSpace>
 	<ConditionalOperatorAfterSeparatorSpace>True</ConditionalOperatorAfterSeparatorSpace>
 	<SpacesWithinBrackets>False</SpacesWithinBrackets>
-	<SpacesBeforeBrackets>True</SpacesBeforeBrackets>
+	<SpacesBeforeBrackets>False</SpacesBeforeBrackets>
 	<BeforeBracketComma>False</BeforeBracketComma>
 	<AfterBracketComma>True</AfterBracketComma>
 	<SpacesBeforeForSemicolon>False</SpacesBeforeForSemicolon>
