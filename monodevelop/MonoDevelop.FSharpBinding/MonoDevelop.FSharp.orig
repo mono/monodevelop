@@ -135,10 +135,17 @@
     <Reference Include="glib-sharp">
       <HintPath>../dependencies/gtk-sharp-2.0/glib-sharp.dll</HintPath>
     </Reference>
+    <Reference Include="Xwt">
+      <HintPath>../dependencies/Xwt/Xwt.dll</HintPath>
+    </Reference>
+    <Reference Include="Xwt.Gtk">
+      <HintPath>../dependencies/Xwt/Xwt.Gtk.dll</HintPath>
+    </Reference>
 
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Xaml" />
     <Reference Include="mscorlib" />
     <Reference Include="Mono.Cairo" />
     <Reference Include="Mono.Addins, Version=0.6.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">

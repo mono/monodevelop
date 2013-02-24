@@ -1,3 +1,9 @@
+# Xamarin Fixes
+
+This fork contains a handful of fixes that work with MonoDevelop 4.0/Xamarin Studio.
+
+Once it is published, we will upstream these changes.
+
 # F# Language Support for Open Editors
 
 This project contains advanced editing support for F# for a number of open editors

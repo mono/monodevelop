@@ -1,0 +1,127 @@
+rm -fr bin/local/Debug/packages
+mkdir -p bin/local/Debug/packages
+cp -pr dependencies/AspNetMvc4 bin/local/Debug/packages/AspNetMvc4
+(cd MonoDevelop.FSharpBinding && xbuild MonoDevelop.FSharp.local.fsproj /p:Configuration=Debug)
+XBuild Engine Version 3.0.3.0
+Mono, Version 3.0.3.0
+Copyright (C) Marek Sieradzki 2005-2008, Novell 2008-2011.
+
+Build started 17/02/2013 19:13:27.
+__________________________________________________
+Project "/Users/dave/code/fsharpbinding/monodevelop/MonoDevelop.FSharpBinding/MonoDevelop.FSharp.local.fsproj" (default target(s)):
+	Target PrepareForBuild:
+		Configuration: Debug Platform: AnyCPU
+	Target ResolveAssemblyReferences:
+/Library/Frameworks/Mono.framework/Versions/3.0.3/lib/mono/4.0/Microsoft.Common.targets:  warning : Reference 'Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=5e9ce85b0923c84f' not resolved
+		For searchpath /Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/AddIns/DisplayBindings/SourceEditor
+		Considered '/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/AddIns/DisplayBindings/SourceEditor/Mono.Debugging' as a file, but the file does not exist
+		Considered '/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/AddIns/DisplayBindings/SourceEditor/Mono.Debugging.exe' as a file, but the file does not exist
+		Considered '/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/AddIns/DisplayBindings/SourceEditor/Mono.Debugging.dll' as a file, but the file does not exist
+		For searchpath {CandidateAssemblyFiles}
+		Warning: {CandidateAssemblyFiles} not supported currently
+		For searchpath {HintPathFromItem}
+		HintPath attribute not found
+		For searchpath {TargetFrameworkDirectory}
+		Considered target framework dir /Library/Frameworks/Mono.framework/Versions/3.0.3/lib/mono/4.0, assembly named 'Mono.Debugging' not found.
+		For searchpath {PkgConfig}
+		Considered Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=5e9ce85b0923c84f, but could not find in any pkg-config files.
+		For searchpath {GAC}
+		Considered Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=5e9ce85b0923c84f, but could not find in the GAC.
+		For searchpath {RawFileName}
+		Considered '/Users/dave/code/fsharpbinding/monodevelop/MonoDevelop.FSharpBinding/Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=5e9ce85b0923c84f' as a file, but the file does not exist
+		For searchpath ../bin/local/Debug/
+		Considered '/Users/dave/code/fsharpbinding/monodevelop/bin/local/Debug/Mono.Debugging' as a file, but the file does not exist
+		Considered '/Users/dave/code/fsharpbinding/monodevelop/bin/local/Debug/Mono.Debugging.exe' as a file, but the file does not exist
+		Considered '/Users/dave/code/fsharpbinding/monodevelop/bin/local/Debug/Mono.Debugging.dll' as a file, but the file does not exist
+/Library/Frameworks/Mono.framework/Versions/3.0.3/lib/mono/4.0/Microsoft.Common.targets:  warning : Reference 'MonoDevelop.Debugger, Version=2.6.0.0, Culture=neutral, PublicKeyToken=null' not resolved
+		For searchpath /Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/AddIns/DisplayBindings/SourceEditor
+		Considered '/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/AddIns/DisplayBindings/SourceEditor/MonoDevelop.Debugger' as a file, but the file does not exist
+		Considered '/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/AddIns/DisplayBindings/SourceEditor/MonoDevelop.Debugger.exe' as a file, but the file does not exist
+		Considered '/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/AddIns/DisplayBindings/SourceEditor/MonoDevelop.Debugger.dll' as a file, but the file does not exist
+		For searchpath {CandidateAssemblyFiles}
+		Warning: {CandidateAssemblyFiles} not supported currently
+		For searchpath {HintPathFromItem}
+		HintPath attribute not found
+		For searchpath {TargetFrameworkDirectory}
+		Considered target framework dir /Library/Frameworks/Mono.framework/Versions/3.0.3/lib/mono/4.0, assembly named 'MonoDevelop.Debugger' not found.
+		For searchpath {PkgConfig}
+		Considered MonoDevelop.Debugger, Version=2.6.0.0, Culture=neutral, PublicKeyToken=null, but could not find in any pkg-config files.
+		For searchpath {GAC}
+		Considered MonoDevelop.Debugger, Version=2.6.0.0, Culture=neutral, PublicKeyToken=null, but could not find in the GAC.
+		For searchpath {RawFileName}
+		Considered '/Users/dave/code/fsharpbinding/monodevelop/MonoDevelop.FSharpBinding/MonoDevelop.Debugger, Version=2.6.0.0, Culture=neutral, PublicKeyToken=null' as a file, but the file does not exist
+		For searchpath ../bin/local/Debug/
+		Considered '/Users/dave/code/fsharpbinding/monodevelop/bin/local/Debug/MonoDevelop.Debugger' as a file, but the file does not exist
+		Considered '/Users/dave/code/fsharpbinding/monodevelop/bin/local/Debug/MonoDevelop.Debugger.exe' as a file, but the file does not exist
+		Considered '/Users/dave/code/fsharpbinding/monodevelop/bin/local/Debug/MonoDevelop.Debugger.dll' as a file, but the file does not exist
+/Library/Frameworks/Mono.framework/Versions/3.0.3/lib/mono/4.0/Microsoft.Common.targets:  warning : Reference 'MonoDevelop.DesignerSupport, Version=2.6.0.0, Culture=neutral, PublicKeyToken=null' not resolved
+		For searchpath /Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/AddIns/DisplayBindings/SourceEditor
+		Considered '/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/AddIns/DisplayBindings/SourceEditor/MonoDevelop.DesignerSupport' as a file, but the file does not exist
+		Considered '/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/AddIns/DisplayBindings/SourceEditor/MonoDevelop.DesignerSupport.exe' as a file, but the file does not exist
+		Considered '/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/AddIns/DisplayBindings/SourceEditor/MonoDevelop.DesignerSupport.dll' as a file, but the file does not exist
+		For searchpath {CandidateAssemblyFiles}
+		Warning: {CandidateAssemblyFiles} not supported currently
+		For searchpath {HintPathFromItem}
+		HintPath attribute not found
+		For searchpath {TargetFrameworkDirectory}
+		Considered target framework dir /Library/Frameworks/Mono.framework/Versions/3.0.3/lib/mono/4.0, assembly named 'MonoDevelop.DesignerSupport' not found.
+		For searchpath {PkgConfig}
+		Considered MonoDevelop.DesignerSupport, Version=2.6.0.0, Culture=neutral, PublicKeyToken=null, but could not find in any pkg-config files.
+		For searchpath {GAC}
+		Considered MonoDevelop.DesignerSupport, Version=2.6.0.0, Culture=neutral, PublicKeyToken=null, but could not find in the GAC.
+		For searchpath {RawFileName}
+		Considered '/Users/dave/code/fsharpbinding/monodevelop/MonoDevelop.FSharpBinding/MonoDevelop.DesignerSupport, Version=2.6.0.0, Culture=neutral, PublicKeyToken=null' as a file, but the file does not exist
+		For searchpath ../bin/local/Debug/
+		Considered '/Users/dave/code/fsharpbinding/monodevelop/bin/local/Debug/MonoDevelop.DesignerSupport' as a file, but the file does not exist
+		Considered '/Users/dave/code/fsharpbinding/monodevelop/bin/local/Debug/MonoDevelop.DesignerSupport.exe' as a file, but the file does not exist
+		Considered '/Users/dave/code/fsharpbinding/monodevelop/bin/local/Debug/MonoDevelop.DesignerSupport.dll' as a file, but the file does not exist
+	Target GenerateSatelliteAssemblies:
+	No input files were specified for target GenerateSatelliteAssemblies, skipping.
+	Target CoreCompile:
+		Tool /Users/dave/code/fsharpbinding/lib/fsharp/fsc.exe execution started with arguments: -o:obj/Debug/FSharpBinding.dll -g --debug:full --noframework --define:TRACE --define:DEBUG --optimize- --tailcalls- --resource:obj/Debug/icons.fsharp-icon-32.png --resource:obj/Debug/icons.fsharp-script-32.png --resource:obj/Debug/icons.fsharp-file-icon.png --resource:obj/Debug/icons.fsharp-project-icon.png --resource:obj/Debug/icons.fsharp-script-icon.png --resource:obj/Debug/FSharpSyntaxMode.xml --resource:obj/Debug/FSharpBinding.local.addin.xml -r:../dependencies/gtk-sharp-2.0/pango-sharp.dll -r:../dependencies/gtk-sharp-2.0/atk-sharp.dll -r:../dependencies/gtk-sharp-2.0/gdk-sharp.dll -r:../dependencies/gtk-sharp-2.0/gtk-sharp.dll -r:../dependencies/gtk-sharp-2.0/glib-sharp.dll -r:/Library/Frameworks/Mono.framework/Versions/3.0.3/lib/mono/4.0/System.dll -r:/Library/Frameworks/Mono.framework/Versions/3.0.3/lib/mono/4.0/System.Xml.dll -r:/Library/Frameworks/Mono.framework/Versions/3.0.3/lib/mono/4.0/mscorlib.dll -r:/Library/Frameworks/Mono.framework/Versions/3.0.3/lib/mono/4.0/Mono.Cairo.dll -r:/Library/Frameworks/Mono.framework/Versions/3.0.3/lib/mono/mono-addins/Mono.Addins.dll -r:../../../../../../Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/bin/Mono.TextEditor.dll -r:../../../../../../Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/bin/MonoDevelop.Core.dll -r:/Library/Frameworks/Mono.framework/Versions/3.0.3/lib/mono/monodoc/monodoc.dll -r:../../../../../../Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/bin/MonoDevelop.Ide.dll -r:../../../../../../Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/bin/ICSharpCode.NRefactory.dll -r:../../../../../../Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/AddIns/DisplayBindings/SourceEditor/MonoDevelop.SourceEditor2.dll -r:../../../../../../Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll -r:/Library/Frameworks/Mono.framework/Versions/3.0.3/lib/mono/4.0/FSharp.Core.dll -r:../../bin/Debug/FSharp.CompilerBinding.dll -r:../bin/Debug/FSharpBinding.Gui.dll -r:/Library/Frameworks/Mono.framework/Versions/3.0.3/lib/mono/4.0/System.Core.dll --target:library --warn:3 --warnaserror:76 --fullpaths --flaterrors --highentropyva- PowerPack/CodeDomVisitor.fs PowerPack/CodeDomGenerator.fs PowerPack/CodeProvider.fs PowerPack/LazyList.fsi PowerPack/LazyList.fs Services/Mailbox.fs Services/Parameters.fs Services/Parser.fs Services/CompilerArguments.fs Services/LanguageService.fs Services/CompilerService.fs Services/InteractiveSession.fs FSharpInteractivePad.fs FSharpOptionsPanels.fs FSharpSyntaxMode.fs FSharpLanguageBinding.fs FSharpResourceIdBuilder.fs FSharpParser.fs FSharpTextEditorCompletion.fs FSharpResolverProvider.fs FSharpProjectServiceExtension.fs FSharpProjectFileNodeExtension.fs 
+		F# Compiler for F# 3.0 (Open Source Edition)
+		Freely distributed under the Apache 2.0 Open Source License
+/Users/dave/code/fsharpbinding/monodevelop/MonoDevelop.FSharpBinding/PowerPack/CodeDomGenerator.fs(259,44): warning FS0044: This construct is deprecated
+/Users/dave/code/fsharpbinding/monodevelop/MonoDevelop.FSharpBinding/Services/LanguageService.fs(166,19): warning FS0044: This construct is deprecated. Use RawGenerator directly
+	Target DeployOutputFiles:
+		Copying file from '/Users/dave/code/fsharpbinding/monodevelop/MonoDevelop.FSharpBinding/obj/Debug/FSharpBinding.dll.mdb' to '/Users/dave/code/fsharpbinding/monodevelop/bin/local/Debug/FSharpBinding.dll.mdb'
+		Copying file from '/Users/dave/code/fsharpbinding/monodevelop/MonoDevelop.FSharpBinding/obj/Debug/FSharpBinding.dll' to '/Users/dave/code/fsharpbinding/monodevelop/bin/local/Debug/FSharpBinding.dll'
+Done building project "/Users/dave/code/fsharpbinding/monodevelop/MonoDevelop.FSharpBinding/MonoDevelop.FSharp.local.fsproj".
+
+Build succeeded.
+
+Warnings:
+
+/Users/dave/code/fsharpbinding/monodevelop/MonoDevelop.FSharpBinding/MonoDevelop.FSharp.local.fsproj (default targets) ->
+/Library/Frameworks/Mono.framework/Versions/3.0.3/lib/mono/4.0/Microsoft.Common.targets (ResolveAssemblyReferences target) ->
+
+	/Library/Frameworks/Mono.framework/Versions/3.0.3/lib/mono/4.0/Microsoft.Common.targets:  warning : Reference 'Mono.Debugging, Version=0.0.0.0, Culture=neutral, PublicKeyToken=5e9ce85b0923c84f' not resolved
+	/Library/Frameworks/Mono.framework/Versions/3.0.3/lib/mono/4.0/Microsoft.Common.targets:  warning : Reference 'MonoDevelop.Debugger, Version=2.6.0.0, Culture=neutral, PublicKeyToken=null' not resolved
+	/Library/Frameworks/Mono.framework/Versions/3.0.3/lib/mono/4.0/Microsoft.Common.targets:  warning : Reference 'MonoDevelop.DesignerSupport, Version=2.6.0.0, Culture=neutral, PublicKeyToken=null' not resolved
+
+/Users/dave/code/fsharpbinding/monodevelop/MonoDevelop.FSharpBinding/MonoDevelop.FSharp.local.fsproj (default targets) ->
+/Users/dave/code/fsharpbinding/lib/fsharp/Microsoft.FSharp.Targets (CoreCompile target) ->
+
+	/Users/dave/code/fsharpbinding/monodevelop/MonoDevelop.FSharpBinding/PowerPack/CodeDomGenerator.fs(259,44): warning FS0044: This construct is deprecated
+	/Users/dave/code/fsharpbinding/monodevelop/MonoDevelop.FSharpBinding/Services/LanguageService.fs(166,19): warning FS0044: This construct is deprecated. Use RawGenerator directly
+
+	 5 Warning(s)
+	 0 Error(s)
+
+Time Elapsed 00:00:12.9607780
+cp -pr bin/Debug/* bin/local/Debug/
+rm -fr pack/3.2.12/local/Debug
+/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/../../mdtool setup pack bin/local/Debug/FSharpBinding.local.addin.xml -d:pack/3.2.12/local/Debug
+MonoDevelop Add-in Setup Utility
+Creating package MonoDevelop.FSharpBinding_3.2.12.mpack
+/Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/../../mdtool setup install -y pack/3.2.12/local/Debug/MonoDevelop.FSharpBinding_3.2.12.mpack 
+MonoDevelop Add-in Setup Utility
+Uninstalling F# Language Binding v3.2.12
+
+
+Done
+
+
+Installing F# Language Binding v3.2.12
+
+

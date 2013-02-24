@@ -207,10 +207,9 @@ module internal TipFormatter =
                 elif (idx1 >= 0) then tag1 + doc.Substring (idx1 + tag1.Length) + tag2
                 elif (idx2 >= 0) then tag1 + doc.Substring (0, idx2 - 1) + tag2
                 else doc
-            // Try and get the final markup from GetDocumentationMarkup. An empty string is returned when the docs 
-            // contains no documentation.  The best thing to do here is to return the empty sting.  
-            try MonoDevelop.Ide.TypeSystem.AmbienceService.GetDocumentationMarkup summary 
-            with _ -> GLib.Markup.EscapeText summary
+            //    try MonoDevelop.Ide.TypeSystem.AmbienceService.GetSummaryMarkup summary 
+            //    with _ -> GLib.Markup.EscapeText summary
+            summary
     | _ -> ""
 
   /// Format some of the data returned by the F# compiler
