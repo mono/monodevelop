@@ -256,7 +256,7 @@
 	</Keywords>
 
 	<Rule name = "text.preprocessor">
-		<Keywords color="Preprocessor Keyword">
+		<Keywords color="Preprocessor">
 			<Word>const</Word>
 			<Word>if</Word>
 			<Word>else</Word>

@@ -66,8 +66,8 @@
 		{ "name": "Breakpoint Marker(Disabled)", "color":"white", "secondcolor":"#AB616B" },
 		{ "name": "Breakpoint Marker(Invalid)", "color":"#eddcdc", "secondcolor":"#eddcdc" },
 		
-        { "name": "Current Line Marker", "color":"base3"},
-        { "name": "Current Line Marker(Inactive)", "color":"base3"},
+        { "name": "Current Line Marker", "color":"base3", "secondcolor":"base3"},
+        { "name": "Current Line Marker(Inactive)", "color":"base3", "secondcolor":"base3"},
 		
         { "name": "Debugger Current Line Marker", "color":"ffff00", "secondcolor":"#ffffcc", "bordercolor":"#666600" },
         { "name": "Debugger Stack Line Marker", "color":"80ff80", "secondcolor":"#ccffcc", "bordercolor":"#336633"},
@@ -107,7 +107,6 @@
 		{ "name": "Number", "fore":"violet"},
 
 		{ "name": "Preprocessor", "fore":"orange" },
-		{ "name": "Preprocessor Keyword", "fore":"orange", "weight":"italic" },
 
 		{ "name": "Xml Text", "fore":"base00" },
 		{ "name": "Xml Delimiter", "fore":"base00" },

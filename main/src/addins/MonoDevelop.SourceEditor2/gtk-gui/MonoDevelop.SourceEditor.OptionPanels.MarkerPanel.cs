@@ -17,7 +17,10 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		private global::Gtk.CheckButton enableHighlightUsagesCheckbutton;
 		private global::Gtk.CheckButton drawIndentMarkersCheckbutton;
 		private global::Gtk.CheckButton enableQuickDiffCheckbutton;
-		private global::Gtk.HBox hbox1;
+		private global::Gtk.Table table1;
+		private global::Gtk.CheckButton checkbuttonLineEndings;
+		private global::Gtk.CheckButton checkbuttonSpaces;
+		private global::Gtk.CheckButton checkbuttonTabs;
 		private global::Gtk.Label label1;
 		private global::Gtk.ComboBox showWhitespacesCombobox;
 		
@@ -114,7 +117,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.enableAnimationCheckbutton1 = new global::Gtk.CheckButton ();
 			this.enableAnimationCheckbutton1.CanFocus = true;
 			this.enableAnimationCheckbutton1.Name = "enableAnimationCheckbutton1";
-			this.enableAnimationCheckbutton1.Label = global::Mono.Unix.Catalog.GetString ("Enable _animations");
+			this.enableAnimationCheckbutton1.Label = global::Mono.Unix.Catalog.GetString ("_Enable animations");
 			this.enableAnimationCheckbutton1.DrawIndicator = true;
 			this.enableAnimationCheckbutton1.UseUnderline = true;
 			this.vbox3.Add (this.enableAnimationCheckbutton1);
@@ -159,38 +162,83 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			w10.Expand = false;
 			w10.Fill = false;
 			// Container child vbox3.Gtk.Box+BoxChild
-			this.hbox1 = new global::Gtk.HBox ();
-			this.hbox1.Name = "hbox1";
-			this.hbox1.Spacing = 6;
-			// Container child hbox1.Gtk.Box+BoxChild
+			this.table1 = new global::Gtk.Table (((uint)(4)), ((uint)(4)), false);
+			this.table1.Name = "table1";
+			this.table1.RowSpacing = ((uint)(6));
+			this.table1.ColumnSpacing = ((uint)(6));
+			// Container child table1.Gtk.Table+TableChild
+			this.checkbuttonLineEndings = new global::Gtk.CheckButton ();
+			this.checkbuttonLineEndings.CanFocus = true;
+			this.checkbuttonLineEndings.Name = "checkbuttonLineEndings";
+			this.checkbuttonLineEndings.Label = global::Mono.Unix.Catalog.GetString ("Include Line Endings");
+			this.checkbuttonLineEndings.DrawIndicator = true;
+			this.checkbuttonLineEndings.UseUnderline = true;
+			this.table1.Add (this.checkbuttonLineEndings);
+			global::Gtk.Table.TableChild w11 = ((global::Gtk.Table.TableChild)(this.table1 [this.checkbuttonLineEndings]));
+			w11.TopAttach = ((uint)(3));
+			w11.BottomAttach = ((uint)(4));
+			w11.LeftAttach = ((uint)(1));
+			w11.RightAttach = ((uint)(4));
+			w11.XOptions = ((global::Gtk.AttachOptions)(4));
+			w11.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table1.Gtk.Table+TableChild
+			this.checkbuttonSpaces = new global::Gtk.CheckButton ();
+			this.checkbuttonSpaces.CanFocus = true;
+			this.checkbuttonSpaces.Name = "checkbuttonSpaces";
+			this.checkbuttonSpaces.Label = global::Mono.Unix.Catalog.GetString ("Include _Spaces");
+			this.checkbuttonSpaces.DrawIndicator = true;
+			this.checkbuttonSpaces.UseUnderline = true;
+			this.table1.Add (this.checkbuttonSpaces);
+			global::Gtk.Table.TableChild w12 = ((global::Gtk.Table.TableChild)(this.table1 [this.checkbuttonSpaces]));
+			w12.TopAttach = ((uint)(1));
+			w12.BottomAttach = ((uint)(2));
+			w12.LeftAttach = ((uint)(1));
+			w12.RightAttach = ((uint)(4));
+			w12.XOptions = ((global::Gtk.AttachOptions)(4));
+			w12.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table1.Gtk.Table+TableChild
+			this.checkbuttonTabs = new global::Gtk.CheckButton ();
+			this.checkbuttonTabs.CanFocus = true;
+			this.checkbuttonTabs.Name = "checkbuttonTabs";
+			this.checkbuttonTabs.Label = global::Mono.Unix.Catalog.GetString ("Include Tabs");
+			this.checkbuttonTabs.DrawIndicator = true;
+			this.checkbuttonTabs.UseUnderline = true;
+			this.table1.Add (this.checkbuttonTabs);
+			global::Gtk.Table.TableChild w13 = ((global::Gtk.Table.TableChild)(this.table1 [this.checkbuttonTabs]));
+			w13.TopAttach = ((uint)(2));
+			w13.BottomAttach = ((uint)(3));
+			w13.LeftAttach = ((uint)(1));
+			w13.RightAttach = ((uint)(4));
+			w13.XOptions = ((global::Gtk.AttachOptions)(4));
+			w13.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table1.Gtk.Table+TableChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("_Show invisible characters:");
 			this.label1.UseUnderline = true;
-			this.hbox1.Add (this.label1);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label1]));
-			w11.Position = 0;
-			w11.Expand = false;
-			w11.Fill = false;
-			// Container child hbox1.Gtk.Box+BoxChild
+			this.table1.Add (this.label1);
+			global::Gtk.Table.TableChild w14 = ((global::Gtk.Table.TableChild)(this.table1 [this.label1]));
+			w14.XOptions = ((global::Gtk.AttachOptions)(4));
+			w14.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table1.Gtk.Table+TableChild
 			this.showWhitespacesCombobox = global::Gtk.ComboBox.NewText ();
 			this.showWhitespacesCombobox.Name = "showWhitespacesCombobox";
-			this.hbox1.Add (this.showWhitespacesCombobox);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.showWhitespacesCombobox]));
-			w12.Position = 1;
-			w12.Expand = false;
-			w12.Fill = false;
-			this.vbox3.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.hbox1]));
-			w13.Position = 9;
-			w13.Expand = false;
-			w13.Fill = false;
+			this.table1.Add (this.showWhitespacesCombobox);
+			global::Gtk.Table.TableChild w15 = ((global::Gtk.Table.TableChild)(this.table1 [this.showWhitespacesCombobox]));
+			w15.LeftAttach = ((uint)(1));
+			w15.RightAttach = ((uint)(4));
+			w15.XOptions = ((global::Gtk.AttachOptions)(4));
+			w15.YOptions = ((global::Gtk.AttachOptions)(4));
+			this.vbox3.Add (this.table1);
+			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.table1]));
+			w16.Position = 9;
+			w16.Fill = false;
 			this.alignment1.Add (this.vbox3);
 			this.vbox1.Add (this.alignment1);
-			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.alignment1]));
-			w15.Position = 1;
-			w15.Expand = false;
-			w15.Fill = false;
+			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.alignment1]));
+			w18.Position = 1;
+			w18.Expand = false;
+			w18.Fill = false;
 			this.Add (this.vbox1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();

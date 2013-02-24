@@ -140,11 +140,18 @@ namespace MonoDevelop.CSharp.Project
 		
 		public LangVersion LangVersion {
 			get {
-				string val = langVersion.ToString ().Replace ('-','_'); 
-				return (LangVersion) Enum.Parse (typeof(LangVersion), val); 
+				var val = TryLangVersionFromString (langVersion);
+				if (val == null) {
+					throw new Exception ("Unknown LangVersion string '" + val + "'");
+				}
+				return val.Value;
 			}
 			set {
-				langVersion = value.ToString ().Replace ('_','-'); 
+				var v = TryLangVersionToString (value);
+				if (v == null) {
+					throw new ArgumentOutOfRangeException ("Unknown LangVersion enum value '" + value + "'");
+				}
+				langVersion = v;
 			}
 		}
 		
@@ -267,5 +274,31 @@ namespace MonoDevelop.CSharp.Project
 			}
 		}
 #endregion
+
+		static LangVersion? TryLangVersionFromString (string value)
+		{
+			switch (value) {
+			case "Default": return LangVersion.Default;
+			case "ISO-1": return LangVersion.ISO_1;
+			case "ISO-2": return LangVersion.ISO_2;
+			case "3": return LangVersion.Version3;
+			case "4": return LangVersion.Version4;
+			case "5": return LangVersion.Version5;
+			default: return null;
+			}
+		}
+
+		internal static string TryLangVersionToString (LangVersion value)
+		{
+			switch (value) {
+			case LangVersion.Default: return "Default";
+			case LangVersion.ISO_1: return "ISO-1";
+			case LangVersion.ISO_2: return "ISO-2";
+			case LangVersion.Version3: return "3";
+			case LangVersion.Version4: return "4";
+			case LangVersion.Version5: return "5";
+			default: return null;
+			}
+		}
 	}
 }

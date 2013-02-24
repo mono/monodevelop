@@ -180,30 +180,16 @@ namespace MonoDevelop.CSharp
 //				sb.AppendLine ("/debug:+");
 				sb.AppendLine ("/debug:full");
 			}
-			
-			switch (compilerParameters.LangVersion) {
-			case LangVersion.Default:
-				break;
-			case LangVersion.ISO_1:
-				sb.AppendLine ("/langversion:ISO-1");
-				break;
-			case LangVersion.ISO_2:
-				sb.AppendLine ("/langversion:ISO-2");
-				break;
-			case LangVersion.Version3:
-				sb.AppendLine ("/langversion:3");
-				break;
-			case LangVersion.Version4:
-				sb.AppendLine ("/langversion:4");
-				break;
-			case LangVersion.Version5:
-				sb.AppendLine ("/langversion:5");
-				break;
-			default:
-				string message = "Invalid LangVersion enum value '" + compilerParameters.LangVersion.ToString () + "'";
-				monitor.ReportError (message, null);
-				LoggingService.LogError (message);
-				return null;
+
+			if (compilerParameters.LangVersion != LangVersion.Default) {
+				var langVersionString = CSharpCompilerParameters.TryLangVersionToString (compilerParameters.LangVersion);
+				if (langVersionString == null) {
+					string message = "Invalid LangVersion enum value '" + compilerParameters.LangVersion.ToString () + "'";
+					monitor.ReportError (message, null);
+					LoggingService.LogError (message);
+					return null;
+				}
+				sb.AppendLine ("/langversion:" + langVersionString);
 			}
 			
 			// mcs default is + but others might not be

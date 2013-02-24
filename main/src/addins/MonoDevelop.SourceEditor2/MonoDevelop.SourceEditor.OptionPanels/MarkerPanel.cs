@@ -52,6 +52,9 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.showWhitespacesCombobox.AppendText (GettextCatalog.GetString ("Selection"));
 			this.showWhitespacesCombobox.AppendText (GettextCatalog.GetString ("Always"));
 			this.showWhitespacesCombobox.Active = (int)DefaultSourceEditorOptions.Instance.ShowWhitespaces;
+			this.checkbuttonSpaces.Active = DefaultSourceEditorOptions.Instance.IncludeWhitespaces.HasFlag (IncludeWhitespaces.Space);
+			this.checkbuttonTabs.Active = DefaultSourceEditorOptions.Instance.IncludeWhitespaces.HasFlag (IncludeWhitespaces.Tab);
+			this.checkbuttonLineEndings.Active = DefaultSourceEditorOptions.Instance.IncludeWhitespaces.HasFlag (IncludeWhitespaces.LineEndings);
 			this.enableQuickDiffCheckbutton.Active = DefaultSourceEditorOptions.Instance.EnableQuickDiff;
 			return this;
 		}
@@ -68,6 +71,15 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			DefaultSourceEditorOptions.Instance.DrawIndentationMarkers = this.drawIndentMarkersCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.ShowWhitespaces = (ShowWhitespaces) this.showWhitespacesCombobox.Active;
 			DefaultSourceEditorOptions.Instance.EnableQuickDiff = this.enableQuickDiffCheckbutton.Active;
+
+			var include = IncludeWhitespaces.None;
+			if (checkbuttonSpaces.Active)
+				include |= IncludeWhitespaces.Space;
+			if (checkbuttonTabs.Active)
+				include |= IncludeWhitespaces.Tab;
+			if (checkbuttonLineEndings.Active)
+				include |= IncludeWhitespaces.LineEndings;
+			DefaultSourceEditorOptions.Instance.IncludeWhitespaces = include;
 		}
 
 		public void Initialize (OptionsDialog dialog, object dataObject)

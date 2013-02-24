@@ -81,12 +81,12 @@ namespace MonoDevelop.Core.Serialization
 		
 		internal protected override DataNode OnSerialize (SerializationContext serCtx, object mapData, object value)
 		{
-			return new DataValue (Name, ((TimeSpan)value).Ticks.ToString ());
+			return new DataValue (Name, ((TimeSpan)value).Ticks.ToString (CultureInfo.InvariantCulture));
 		}
 		
 		internal protected override object OnDeserialize (SerializationContext serCtx, object mapData, DataNode data)
 		{
-			return TimeSpan.FromTicks (int.Parse (((DataValue)data).Value));
+			return TimeSpan.FromTicks (long.Parse (((DataValue)data).Value, CultureInfo.InvariantCulture));
 		}
 	}
 
@@ -113,6 +113,34 @@ namespace MonoDevelop.Core.Serialization
 					file = file.Replace (serCtx.DirectorySeparatorChar, Path.DirectorySeparatorChar);
 			}
 			return (FilePath) file;
+		}
+	}
+
+	public class StringDataType: PrimitiveDataType
+	{
+		public StringDataType (): base (typeof (string))
+		{
+		}
+
+		internal protected override DataNode OnSerialize (SerializationContext serCtx, object mapData, object value)
+		{
+			return new DataValue (Name, (string) value);
+		}
+
+		internal protected override object OnDeserialize (SerializationContext serCtx, object mapData, DataNode data)
+		{
+			var dval = data as DataValue;
+			if (dval != null) {
+				return dval.Value;
+			}
+
+			//empty strings are serialised as empty elements, which are parsed as empty DataItems, not DataValues
+			var ditem = (DataItem) data;
+			if (ditem.HasItemData) {
+				throw new InvalidOperationException ("Found complex element, expecting primitive");
+			}
+
+			return "";
 		}
 	}
 }

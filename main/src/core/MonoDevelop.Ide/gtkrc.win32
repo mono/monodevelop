@@ -209,8 +209,6 @@ style "toolbar-combo-box" = "default"
 style "combo-box" = "default"
 {
     fg[NORMAL] = "#616161"
-    xthickness = 4
-    ythickness = 4
 
     engine "wimp" {
         arrowstyle = 3
@@ -330,6 +328,7 @@ widget_class "*.GtkList.GtkButton"  style "tree-header"
 
 widget_class "*<GtkIconView>" style "icon-view"
 
+class "GtkComboBox" style "combo-box"
 widget_class "*.<GtkComboBox>.*" style "combo-box"
 widget_class "*.<GtkComboBoxText>.*" style "combo-box"
 widget_class "*.<GtkComboBoxEntry>.*" style "combo-box"

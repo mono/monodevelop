@@ -20,6 +20,10 @@ obj/
 /main/build/tests
 /main/monodevelop_version
 
+#VS writes these sometimes even when it doesn't change anything
+/main/_UpgradeReport_Files
+/main/UpgradeLog.*
+
 # globs
 Makefile.in
 *.DS_Store

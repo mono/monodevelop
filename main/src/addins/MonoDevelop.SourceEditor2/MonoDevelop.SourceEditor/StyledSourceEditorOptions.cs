@@ -252,6 +252,11 @@ namespace MonoDevelop.SourceEditor
 			set { DefaultSourceEditorOptions.Instance.ShowWhitespaces = value; }
 		}
 
+		public IncludeWhitespaces IncludeWhitespaces {
+			get { return DefaultSourceEditorOptions.Instance.IncludeWhitespaces; }
+			set { DefaultSourceEditorOptions.Instance.IncludeWhitespaces = value; }
+		}
+
 		public bool WrapLines {
 			get { return DefaultSourceEditorOptions.Instance.WrapLines; }
 			set { DefaultSourceEditorOptions.Instance.WrapLines = value; }

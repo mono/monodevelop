@@ -47,6 +47,8 @@ using MonoDevelop.SourceEditor.QuickTasks;
 using System.Threading;
 using System.Diagnostics;
 using MonoDevelop.Core;
+using ICSharpCode.NRefactory.CSharp.Analysis;
+using ICSharpCode.NRefactory;
 
 
 namespace MonoDevelop.CSharp.Highlighting
@@ -178,15 +180,14 @@ namespace MonoDevelop.CSharp.Highlighting
 			}
 		}
 
-		class HighlightingVisitior : DepthFirstAstVisitor
+		class HighlightingVisitior : SemanticHighlightingVisitor<string>
 		{
-			readonly CSharpAstResolver resolver;
-			readonly CancellationToken cancellationToken;
 			readonly int lineNumber;
 			readonly int lineOffset;
+			readonly int lineLength;
 			internal HighlightingSegmentTree tree = new HighlightingSegmentTree ();
 
-			public HighlightingVisitior (CSharpAstResolver resolver, CancellationToken cancellationToken, int lineNumber, int lineOffset)
+			public HighlightingVisitior (CSharpAstResolver resolver, CancellationToken cancellationToken, int lineNumber, int lineOffset, int lineLength)
 			{
 				if (resolver == null)
 					throw new ArgumentNullException ("resolver");
@@ -194,538 +195,68 @@ namespace MonoDevelop.CSharp.Highlighting
 				this.cancellationToken = cancellationToken;
 				this.lineNumber = lineNumber;
 				this.lineOffset = lineOffset;
+				this.lineLength = lineLength;
+				regionStart = new TextLocation (lineNumber, 1);
+				regionEnd  = new TextLocation (lineNumber, lineLength);
+
+				Setup ();
 			}
 
-			void Colorize (AstNode node, string style)
+			void Setup ()
 			{
-				var start = lineOffset + node.StartLocation.Column - 1;
-				var end   = lineOffset + node.EndLocation.Column - 1;
-				tree.AddStyle (start, end, style);
+				defaultTextColor = "Plain Text";
+				referenceTypeColor = "User Types";
+				valueTypeColor = "User Types(Value types)";
+				interfaceTypeColor = "User Types(Interfaces)";
+				enumerationTypeColor = "User Types(Enums)";
+				typeParameterTypeColor = "User Types(Type parameters)";
+				delegateTypeColor = "User Types(Delegates)";
+
+				methodCallColor = "User Method Usage";
+				methodDeclarationColor = "User Method Declaration";
+
+				eventDeclarationColor = "User Event Declaration";
+				eventAccessColor = "User Event Usage";
+
+				fieldDeclarationColor ="User Field Declaration";
+				fieldAccessColor = "User Field Usage";
+
+				propertyDeclarationColor = "User Property Declaration";
+				propertyAccessColor = "User Property Usage";
+
+				variableDeclarationColor = "User Variable Declaration";
+				variableAccessColor = "User Variable Usage";
+
+				parameterDeclarationColor = "User Parameter Declaration";
+				parameterAccessColor = "User Parameter Usage";
+
+				valueKeywordColor = "Keyword(Context)";
+				externAliasKeywordColor = "Keyword(Namespace)";
+
+				parameterModifierColor = "Keyword(Parameter)";
+				inactiveCodeColor = "Excluded Code";
+				syntaxErrorColor = "Syntax Error";
 			}
 
-			public override void VisitCSharpTokenNode (CSharpTokenNode token)
+			protected override void Colorize(TextLocation start, TextLocation end, string color)
 			{
-				if (token.StartLocation.Line != lineNumber)
-					return;
-				var mod = token as CSharpModifierToken;
-				if (mod != null && mod.Modifier == Modifiers.Partial)
-					Colorize (token, contextualHighlightKeywords["partial"]);
-				if (mod != null && mod.Modifier == Modifiers.Async)
-					Colorize (token, contextualHighlightKeywords["async"]);
-			}
-
-			protected override void VisitChildren (AstNode node)
-			{
-				for (var child = node.FirstChild; child != null; child = child.NextSibling) {
-					if (child.StartLocation.Line <= lineNumber && child.EndLocation.Line >= lineNumber)
-						child.AcceptVisitor(this);
-				}
-			}
-
-			public override void VisitConstraint (Constraint constraint)
-			{
-				base.VisitConstraint (constraint);
-				if (constraint.WhereKeyword.StartLocation.Line == lineNumber)
-					Colorize (constraint.WhereKeyword, contextualHighlightKeywords["where"]);
-			}
-
-			public override void VisitIdentifierExpression (IdentifierExpression identifierExpression)
-			{
-				foreach (var tp in identifierExpression.TypeArguments) {
-					tp.AcceptVisitor (this);
-				}
-				if (identifierExpression.StartLocation.Line != lineNumber)
-					return;
-				if (isInAccessor && identifierExpression.Identifier == "value") {
-					Colorize (identifierExpression, contextualHighlightKeywords["value"]);
-					return;
-				}
-
-				var result = resolver.Resolve (identifierExpression, cancellationToken);
-				if (result.IsError) {
-					Colorize (identifierExpression, "Syntax Error");
-					return;
-				}
-
-				if (result is MemberResolveResult) {
-					var member = ((MemberResolveResult)result).Member;
-					switch (member.EntityType) {
-					case EntityType.Field:
-						Colorize (identifierExpression.IdentifierToken, "User Field Usage");
-						break;
-					case EntityType.Property:
-						Colorize (identifierExpression.IdentifierToken, "User Property Usage");
-						break;
-					case EntityType.Method:
-						Colorize (identifierExpression.IdentifierToken, "User Method Usage");
-						break;
-					case EntityType.Event:
-						Colorize (identifierExpression.IdentifierToken, "User Event Usage");
-						break;
-					}
-					return;
-				}
-
-				if (result is MethodGroupResolveResult) {
-					Colorize (identifierExpression.IdentifierToken, "User Method Usage");
-					return;
-				}
-
-				if (result is TypeResolveResult) {
-					Colorize (identifierExpression.IdentifierToken, GetUserTypeHighlighting (result.Type));
-					return;
-				}
-
-				var localResult = result as LocalResolveResult;
-				if (localResult != null) {
-					if (localResult.Variable is IParameter) {
-						Colorize (identifierExpression.IdentifierToken, "User Parameter Usage");
-					} else {
-						Colorize (identifierExpression.IdentifierToken, "User Variable Usage");
-					}
-				}
-			}
-
-			bool isInAccessor;
-			public override void VisitAccessor(Accessor accessor)
-			{
-				isInAccessor = true;
-				try {
-					base.VisitAccessor(accessor);
-				} finally {
-					isInAccessor = false;
-				}
-			}
-			public override void VisitExternAliasDeclaration (ExternAliasDeclaration externAliasDeclaration)
-			{
-				base.VisitExternAliasDeclaration (externAliasDeclaration);
-				if (externAliasDeclaration.AliasToken.StartLocation.Line == lineNumber)
-					Colorize (externAliasDeclaration.AliasToken, "Keyword(Namespace)");
-			}
-			Stack<TypeDeclaration> typeDeclarations = new Stack<TypeDeclaration> ();
-			public override void VisitTypeDeclaration (TypeDeclaration typeDeclaration)
-			{
-				typeDeclarations.Push (typeDeclaration);
-				base.VisitTypeDeclaration (typeDeclaration);
-				typeDeclarations.Pop ();
-
-				if (typeDeclaration.NameToken.StartLocation.Line == lineNumber)
-					Colorize (typeDeclaration.NameToken, GetUserTypeHighlighting (typeDeclaration.ClassType));
-			}
-
-			public override void VisitPropertyDeclaration (PropertyDeclaration propertyDeclaration)
-			{
-				base.VisitPropertyDeclaration (propertyDeclaration);
-				if (propertyDeclaration.NameToken.StartLocation.Line == lineNumber) {
-					if (!propertyDeclaration.PrivateImplementationType.IsNull) {
-						if (!CheckInterfaceImplementation (propertyDeclaration))
-							return;
-					}
-					Colorize (propertyDeclaration.NameToken, "User Property Declaration");
-				}
-				if (!propertyDeclaration.Getter.IsNull) {
-					var getKeyword = propertyDeclaration.Getter.GetChildByRole (PropertyDeclaration.GetKeywordRole);
-					if (getKeyword != null && getKeyword.StartLocation.Line == lineNumber)
-						Colorize (getKeyword, contextualHighlightKeywords ["get"]);
-				}
-				if (!propertyDeclaration.Setter.IsNull) {
-					var setKeyword = propertyDeclaration.Setter.GetChildByRole (PropertyDeclaration.SetKeywordRole);
-					if (setKeyword != null &&setKeyword.StartLocation.Line == lineNumber)
-						Colorize (setKeyword, contextualHighlightKeywords ["set"]);
-				}
-			}
-
-			public override void VisitArrayInitializerExpression (ArrayInitializerExpression arrayInitializerExpression)
-			{
-				foreach (var a in arrayInitializerExpression.Elements) {
-					var namedElement = a as NamedExpression;
-					if (namedElement != null) {
-						if (namedElement.NameToken.StartLocation.Line == lineNumber) {
-							var result = resolver.Resolve (namedElement, cancellationToken);
-							if (result.IsError)
-								Colorize (namedElement.NameToken, "Syntax Error");
-						}
-						namedElement.Expression.AcceptVisitor (this);
-					} else {
-						a.AcceptVisitor (this);
-					}
-				}
-			}
-
-			public override void VisitEventDeclaration (EventDeclaration eventDeclaration)
-			{
-				base.VisitEventDeclaration (eventDeclaration);
-				foreach (var init in eventDeclaration.Variables)
-					if (init.NameToken.StartLocation.Line == lineNumber) {
-						Colorize (init.NameToken, "User Event Declaration");
-					}
-			}
-
-			public override void VisitCustomEventDeclaration (CustomEventDeclaration eventDeclaration)
-			{
-				base.VisitCustomEventDeclaration (eventDeclaration);
-				if (eventDeclaration.NameToken.StartLocation.Line == lineNumber) {
-					if (!eventDeclaration.PrivateImplementationType.IsNull) {
-						if (!CheckInterfaceImplementation (eventDeclaration))
-							return;
-					}
-					Colorize (eventDeclaration.NameToken, "User Event Declaration");
-				}
-
-				if (!eventDeclaration.AddAccessor.IsNull) {
-					var addKeyword = eventDeclaration.AddAccessor.GetChildByRole (CustomEventDeclaration.AddKeywordRole);
-					if (addKeyword != null && addKeyword.StartLocation.Line == lineNumber)
-						Colorize (addKeyword, contextualHighlightKeywords ["add"]);
-				}
-				if (!eventDeclaration.RemoveAccessor.IsNull) {
-					var removeKeyword = eventDeclaration.RemoveAccessor.GetChildByRole (CustomEventDeclaration.RemoveKeywordRole);
-					if (removeKeyword != null && removeKeyword.StartLocation.Line == lineNumber)
-						Colorize (removeKeyword, contextualHighlightKeywords ["remove"]);
-				}
-			}
-
-			public override void VisitDelegateDeclaration (DelegateDeclaration delegateDeclaration)
-			{
-				base.VisitDelegateDeclaration (delegateDeclaration);
-				if (delegateDeclaration.NameToken.StartLocation.Line == lineNumber)
-					Colorize (delegateDeclaration.NameToken, "User Types(Delegates)");
-			}
-
-			public override void VisitParameterDeclaration (ParameterDeclaration parameterDeclaration)
-			{
-				base.VisitParameterDeclaration (parameterDeclaration);
-				if (parameterDeclaration.NameToken.StartLocation.Line == lineNumber)
-					Colorize (parameterDeclaration.NameToken, "User Parameter Declaration");
-			}
-
-			public override void VisitVariableInitializer (VariableInitializer variableInitializer)
-			{
-				base.VisitVariableInitializer (variableInitializer);
-				if (variableInitializer.NameToken.StartLocation.Line == lineNumber)
-					Colorize (variableInitializer.NameToken, "User Variable Declaration");
-			}
-
-			public override void VisitTypeParameterDeclaration (TypeParameterDeclaration typeParameterDeclaration)
-			{
-				base.VisitTypeParameterDeclaration (typeParameterDeclaration);
-				if (typeParameterDeclaration.NameToken.StartLocation.Line == lineNumber)
-					Colorize (typeParameterDeclaration.NameToken, "User Types(Type parameters)");
-			}
-
-			public override void VisitConstructorDeclaration (ConstructorDeclaration constructorDeclaration)
-			{
-				base.VisitConstructorDeclaration (constructorDeclaration);
-				if (constructorDeclaration.NameToken.StartLocation.Line == lineNumber)
-					Colorize (constructorDeclaration.NameToken, GetUserTypeHighlighting (this.typeDeclarations.Peek ().ClassType));
-			}
-
-			public override void VisitDestructorDeclaration (DestructorDeclaration destructorDeclaration)
-			{
-				base.VisitDestructorDeclaration (destructorDeclaration);
-				if (destructorDeclaration.NameToken.StartLocation.Line == lineNumber)
-					Colorize (destructorDeclaration.NameToken, GetUserTypeHighlighting (this.typeDeclarations.Peek ().ClassType));
-			}
-
-			bool CheckInterfaceImplementation (EntityDeclaration entityDeclaration)
-			{
-				var result = resolver.Resolve (entityDeclaration, cancellationToken) as MemberResolveResult;
-				if (result.Member.ImplementedInterfaceMembers.Count == 0) {
-					Colorize (entityDeclaration.NameToken, "Syntax Error");
-					return false;
-				}
-				return true;
-			}
-
-			public override void VisitMethodDeclaration (MethodDeclaration methodDeclaration)
-			{
-				base.VisitMethodDeclaration (methodDeclaration);
-				if (methodDeclaration.NameToken.StartLocation.Line == lineNumber) {
-					if (!methodDeclaration.PrivateImplementationType.IsNull) {
-						if (!CheckInterfaceImplementation (methodDeclaration))
-							return;
-					}
-					Colorize (methodDeclaration.NameToken, "User Method Declaration");
-				}
-			}
-
-			public override void VisitFieldDeclaration (FieldDeclaration fieldDeclaration)
-			{
-				fieldDeclaration.ReturnType.AcceptVisitor (this);
-				foreach (var init in fieldDeclaration.Variables) {
-					if (init.NameToken.StartLocation.Line == lineNumber)
-						Colorize (init.NameToken, "User Field Declaration");
-					init.Initializer.AcceptVisitor (this);
-				}
-			}
-
-			public override void VisitFixedFieldDeclaration (FixedFieldDeclaration fixedFieldDeclaration)
-			{
-				base.VisitFixedFieldDeclaration (fixedFieldDeclaration);
-				foreach (var init in fixedFieldDeclaration.Variables)
-					if (init.NameToken.StartLocation.Line == lineNumber)
-						Colorize (init.NameToken, "User Field Declaration");
-			}
-
-			public override void VisitUsingDeclaration (UsingDeclaration usingDeclaration)
-			{
-			}
-
-			public override void VisitUsingAliasDeclaration (UsingAliasDeclaration usingDeclaration)
-			{
-			}
-
-			public override void VisitComposedType (ComposedType composedType)
-			{
-				if (composedType.StartLocation.Line != lineNumber) {
-					base.VisitComposedType (composedType);
-					return;
-				}
-				var result = resolver.Resolve (composedType, cancellationToken);
-				if (result.IsError) {
-					// if csharpSyntaxMode.guiDocument.Project != null
-					Colorize (composedType, "Syntax Error");
-					return;
-				}
-				if (result is TypeResolveResult) {
-					Colorize (composedType.BaseType, GetUserTypeHighlighting(result.Type));
-				}
-
-			}
-
-			static string GetUserTypeHighlighting (IType type)
-			{
-				switch (type.Kind) {
-				case TypeKind.Class:
-					return "User Types";
-				case TypeKind.Struct:
-					return "User Types(Value types)";
-				case TypeKind.Interface:
-					return "User Types(Interfaces)";
-				case TypeKind.Delegate:
-					return "User Types(Delegates)";
-				case TypeKind.Enum:
-					return "User Types(Enums)";
-				case TypeKind.TypeParameter:
-					return "User Types(Type parameters)";
-				}
-				return "User Types";
-			}
-
-			static string GetUserTypeHighlighting (ClassType classType)
-			{
-				switch (classType) {
-				case ClassType.Class:
-					return "User Types";
-				case ClassType.Struct:
-					return "User Types(Value types)";
-				case ClassType.Interface:
-					return "User Types(Interfaces)";
-				case ClassType.Enum:
-					return "User Types(Enums)";
-				}
-				return "User Types";
-			}
-
-			public override void VisitSimpleType (SimpleType simpleType)
-			{
-				if (simpleType.StartLocation.Line != lineNumber) {
-					base.VisitSimpleType (simpleType);
-					return;
-				}
-				var result = resolver.Resolve (simpleType, cancellationToken);
-				if (result.IsError) {
-					// if csharpSyntaxMode.guiDocument.Project != null
-					Colorize (simpleType, "Syntax Error");
-					return;
-				}
-				if (result is TypeResolveResult) {
-					Colorize (simpleType.IdentifierToken, GetUserTypeHighlighting (result.Type));
-				}
-				base.VisitSimpleType (simpleType);
-			}
-
-			public override void VisitMemberType (MemberType memberType)
-			{
-				base.VisitMemberType (memberType);
-				if (memberType.MemberNameToken.StartLocation.Line != lineNumber) {
-					return;
-				}
-
-				var result = resolver.Resolve (memberType, cancellationToken);
-
-				if (result.IsError) {
-					result = resolver.Resolve (memberType.Target, cancellationToken);
-					if (result.IsError) {
-						// base type is unresolved - it's already marked.
+				int startOffset;
+				if (start.Line == lineNumber) {
+					startOffset = lineOffset + start.Column - 1;
+				} else {
+					if (start.Line > lineNumber)
 						return;
-					}
-					// if && csharpSyntaxMode.guiDocument.Project != null
-					Colorize (memberType.MemberNameToken, "Syntax Error");
+					startOffset = lineOffset;
 				}
-				if (result is TypeResolveResult) {
-					Colorize (memberType.MemberNameToken, GetUserTypeHighlighting (result.Type));
-				}
-			}
-
-
-			public override void VisitMemberReferenceExpression (MemberReferenceExpression memberReferenceExpression)
-			{
-				base.VisitMemberReferenceExpression (memberReferenceExpression);
-				if (memberReferenceExpression.MemberNameToken.StartLocation.Line != lineNumber)
-					return;
-				var result = resolver.Resolve (memberReferenceExpression, cancellationToken);
-				if (result.IsError) {
-					result = resolver.Resolve (memberReferenceExpression.Target, cancellationToken);
-					if (result.IsError) {
-						// target already is colorized
+				int endOffset;
+				if (end.Line == lineNumber) {
+					endOffset = lineOffset +end.Column - 1;
+				} else {
+					if (end.Line < lineNumber)
 						return;
-					}
-					// if && csharpSyntaxMode.guiDocument.Project != null
-					Colorize (memberReferenceExpression.MemberNameToken, "Syntax Error");
+					endOffset = lineOffset + lineLength;
 				}
-
-				if (result is MemberResolveResult) {
-					var member = ((MemberResolveResult)result).Member;
-					switch (member.EntityType) {
-					case EntityType.Field:
-						if (!member.IsStatic && !((IField)member).IsConst)
-							Colorize (memberReferenceExpression.MemberNameToken, "User Field Usage");
-						break;
-					case EntityType.Property:
-						Colorize (memberReferenceExpression.MemberNameToken, "User Property Usage");
-						break;
-					case EntityType.Method:
-						Colorize (memberReferenceExpression.MemberNameToken, "User Method Usage");
-						break;
-					case EntityType.Event:
-						Colorize (memberReferenceExpression.MemberNameToken, "User Event Usage");
-						break;
-					}
-				}
-
-				if (result is MethodGroupResolveResult) {
-					Colorize (memberReferenceExpression.MemberNameToken, "User Method Usage");
-				}
-
-				if (result is TypeResolveResult) {
-					Colorize (memberReferenceExpression.MemberNameToken, GetUserTypeHighlighting (result.Type));
-				}
-			}
-
-			public override void VisitTypeOfExpression (TypeOfExpression typeOfExpression)
-			{
-				var result = resolver.Resolve (typeOfExpression, cancellationToken) as TypeOfResolveResult;
-				if (result != null && result.ReferencedType.Kind == TypeKind.Unknown) {
-					Colorize (typeOfExpression.Type, "Syntax Error");
-					return;
-				}
-				base.VisitTypeOfExpression (typeOfExpression);
-			}
-			
-			
-
-			public override void VisitPointerReferenceExpression (PointerReferenceExpression pointerReferenceExpression)
-			{
-				base.VisitPointerReferenceExpression (pointerReferenceExpression);
-				var result = resolver.Resolve (pointerReferenceExpression, cancellationToken);
-				if (result.IsError) {
-					// if && csharpSyntaxMode.guiDocument.Project != null
-					Colorize (pointerReferenceExpression.MemberNameToken, "Syntax Error");
-				}
-
-				if (result is MemberResolveResult) {
-					var member = ((MemberResolveResult)result).Member;
-					switch (member.EntityType) {
-					case EntityType.Field:
-						if (!member.IsStatic && !((IField)member).IsConst)
-							Colorize (pointerReferenceExpression.MemberNameToken, "User Field Usage");
-						break;
-					case EntityType.Property:
-						Colorize (pointerReferenceExpression.MemberNameToken, "User Property Usage");
-						break;
-					case EntityType.Method:
-						Colorize (pointerReferenceExpression.MemberNameToken, "User Method Usage");
-						break;
-					}
-				}
-
-				if (result is MethodGroupResolveResult) {
-					Colorize (pointerReferenceExpression.MemberNameToken, "User Method Usage");
-				}
-
-				if (result is TypeResolveResult) {
-					Colorize (pointerReferenceExpression.MemberNameToken, GetUserTypeHighlighting (result.Type));
-				}
-			}
-			public override void VisitQueryWhereClause (QueryWhereClause queryWhereClause)
-			{
-				base.VisitQueryWhereClause (queryWhereClause);
-				if (queryWhereClause.WhereKeyword.StartLocation.Line == lineNumber)
-					Colorize (queryWhereClause.WhereKeyword, contextualHighlightKeywords["where"]);
-
-			}
-			public override void VisitQueryFromClause (QueryFromClause queryFromClause)
-			{
-				base.VisitQueryFromClause (queryFromClause);
-				if (queryFromClause.FromKeyword.StartLocation.Line == lineNumber)
-					Colorize (queryFromClause.FromKeyword, contextualHighlightKeywords["from"]);
-			}
-
-			public override void VisitQuerySelectClause (QuerySelectClause querySelectClause)
-			{
-				base.VisitQuerySelectClause (querySelectClause);
-				if (querySelectClause.SelectKeyword.StartLocation.Line == lineNumber)
-					Colorize (querySelectClause.SelectKeyword, contextualHighlightKeywords["select"]);
-			}
-
-			public override void VisitQueryGroupClause (QueryGroupClause queryGroupClause)
-			{
-				base.VisitQueryGroupClause (queryGroupClause);
-				if (queryGroupClause.GroupKeyword.StartLocation.Line == lineNumber)
-					Colorize (queryGroupClause.GroupKeyword, contextualHighlightKeywords["group"]);
-				if (queryGroupClause.ByKeyword.StartLocation.Line == lineNumber)
-					Colorize (queryGroupClause.ByKeyword, contextualHighlightKeywords["by"]);
-			}
-
-			public override void VisitQueryContinuationClause (QueryContinuationClause queryContinuationClause)
-			{
-				base.VisitQueryContinuationClause (queryContinuationClause);
-				if (queryContinuationClause.IntoKeyword.StartLocation.Line == lineNumber)
-					Colorize (queryContinuationClause.IntoKeyword, contextualHighlightKeywords["into"]);
-			}
-
-			public override void VisitQueryJoinClause (QueryJoinClause queryJoinClause)
-			{
-				base.VisitQueryJoinClause (queryJoinClause);
-				if (queryJoinClause.IntoKeyword.StartLocation.Line == lineNumber)
-					Colorize (queryJoinClause.IntoKeyword, contextualHighlightKeywords["into"]);
-				if (queryJoinClause.JoinKeyword.StartLocation.Line == lineNumber)
-					Colorize (queryJoinClause.JoinKeyword, contextualHighlightKeywords["join"]);
-				if (queryJoinClause.OnKeyword.StartLocation.Line == lineNumber)
-					Colorize (queryJoinClause.OnKeyword, contextualHighlightKeywords["on"]);
-				if (queryJoinClause.EqualsKeyword.StartLocation.Line == lineNumber)
-					Colorize (queryJoinClause.EqualsKeyword, contextualHighlightKeywords["equals"]);
-			}
-
-			public override void VisitQueryLetClause (QueryLetClause queryLetClause)
-			{
-				base.VisitQueryLetClause (queryLetClause);
-				if (queryLetClause.LetKeyword.StartLocation.Line == lineNumber)
-					Colorize (queryLetClause.LetKeyword, contextualHighlightKeywords["let"]);
-			}
-
-			public override void VisitQueryOrdering (QueryOrdering queryOrdering)
-			{
-				base.VisitQueryOrdering (queryOrdering);
-				if (queryOrdering.DirectionToken.StartLocation.Line == lineNumber)
-					Colorize (queryOrdering.DirectionToken, contextualHighlightKeywords[queryOrdering.DirectionToken.GetText ()]);
-			}
-
-			public override void VisitUnaryOperatorExpression (UnaryOperatorExpression unaryOperatorExpression)
-			{
-				base.VisitUnaryOperatorExpression (unaryOperatorExpression);
-				if (unaryOperatorExpression.Operator == UnaryOperatorType.Await && unaryOperatorExpression.StartLocation.Line == lineNumber)
-					Colorize (unaryOperatorExpression.OperatorToken, contextualHighlightKeywords["await"]);
+				tree.AddStyle (startOffset, endOffset, color);
 			}
 		}
 
@@ -764,6 +295,10 @@ namespace MonoDevelop.CSharp.Highlighting
 					QuickTasks.Add (new QuickTask (string.Format ("error CS0117: `{0}' does not contain a definition for `{1}'", result.TargetType.FullName, memberReferenceExpression.MemberName), memberReferenceExpression.MemberNameToken.StartLocation, Severity.Error));
 				}
 			}
+
+			public override void VisitComment (ICSharpCode.NRefactory.CSharp.Comment comment)
+			{
+			}
 		}
 		
 		static CSharpSyntaxMode ()
@@ -801,7 +336,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		
 		static Dictionary<string, string> contextualHighlightKeywords;
 		static readonly string[] ContextualKeywords = new string[] {
-			"async",
+/*			"async",
 			"await",
 			"value", //*
 			"get", "set", "add", "remove",  //*
@@ -820,7 +355,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			"let",
 			"join",
 			"on",
-			"equals"
+			"equals"*/
 		};
 
 		#region Syntax mode rule cache
@@ -1087,22 +622,25 @@ namespace MonoDevelop.CSharp.Highlighting
 				if (parsedDocument != null && csharpSyntaxMode.SemanticHighlightingEnabled && csharpSyntaxMode.resolver != null) {
 					int endLoc = -1;
 					string semanticStyle = null;
-					if (spanParser.CurSpan == null || spanParser.CurSpan is DefineSpan || spanParser.CurSpan is AbstractBlockSpan) {
-						try {
-							HighlightingVisitior visitor;
-							if (!csharpSyntaxMode.lineSegments.TryGetValue (line, out visitor)) {
-								visitor = new HighlightingVisitior (csharpSyntaxMode.resolver, default (CancellationToken), lineNumber, base.line.Offset);
-								visitor.tree.InstallListener (doc);
-								csharpSyntaxMode.unit.AcceptVisitor (visitor);
-								csharpSyntaxMode.lineSegments[line] = visitor;
-							}
-							string style;
-							if (visitor.tree.GetStyle (chunk, ref endLoc, out style)) {
-								semanticStyle = style;
-							}
-						} catch (Exception e) {
-							Console.WriteLine ("Error in semantic highlighting: " + e);
+					if (spanParser.CurSpan != null && (spanParser.CurSpan.Rule == "Comment" || spanParser.CurSpan.Rule == "PreProcessorComment")) {
+						base.AddRealChunk (chunk);
+						return;
+					}
+
+					try {
+						HighlightingVisitior visitor;
+						if (!csharpSyntaxMode.lineSegments.TryGetValue (line, out visitor)) {
+							visitor = new HighlightingVisitior (csharpSyntaxMode.resolver, default (CancellationToken), lineNumber, base.line.Offset, line.Length);
+							visitor.tree.InstallListener (doc);
+							csharpSyntaxMode.unit.AcceptVisitor (visitor);
+							csharpSyntaxMode.lineSegments[line] = visitor;
 						}
+						string style;
+						if (visitor.tree.GetStyle (chunk, ref endLoc, out style)) {
+							semanticStyle = style;
+						}
+					} catch (Exception e) {
+						Console.WriteLine ("Error in semantic highlighting: " + e);
 					}
 					if (semanticStyle != null) {
 						if (endLoc < chunk.EndOffset) {
@@ -1417,10 +955,6 @@ namespace MonoDevelop.CSharp.Highlighting
 						ScanPreProcessorElseIf (ref i);
 						return true;
 					}
-	
-					var preprocessorSpan = CreatePreprocessorSpan ();
-					FoundSpanBegin (preprocessorSpan, i, 1);
-					return true;
 				}
 
 				return base.ScanSpan (ref i);

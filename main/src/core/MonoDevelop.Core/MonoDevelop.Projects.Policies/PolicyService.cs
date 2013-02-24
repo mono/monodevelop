@@ -37,6 +37,7 @@ using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Core.Serialization;
 using System.Text;
 using System.Xml;
+using System.Globalization;
 
 namespace MonoDevelop.Projects.Policies
 {
@@ -65,7 +66,7 @@ namespace MonoDevelop.Projects.Policies
 			LoadPolicies ();
 			defaultPolicyBag.ReadOnly = true;
 			
-			PolicySet pset = GetPolicySet ("Invariant");
+			PolicySet pset = GetPolicySetById ("Invariant");
 			pset.PolicyChanged += HandleInvariantPolicySetChanged;
 			foreach (var pol in pset.Policies)
 				invariantPolicies.InternalSet (pol.Key.PolicyType, pol.Key.Scope, pol.Value);
@@ -74,7 +75,7 @@ namespace MonoDevelop.Projects.Policies
 
 		static void HandleInvariantPolicySetChanged (object sender, PolicyChangedEventArgs e)
 		{
-			PolicySet pset = GetPolicySet ("Invariant");
+			PolicySet pset = GetPolicySetById ("Invariant");
 			object p = pset.Get (e.PolicyType, e.Scope);
 			if (p != null)
 				invariantPolicies.InternalSet (e.PolicyType, e.Scope, p);
@@ -249,7 +250,7 @@ namespace MonoDevelop.Projects.Policies
 			
 			item.ItemData.Remove (inheritVal);
 			
-			PolicySet set = GetSet (inheritVal.Value);
+			PolicySet set = GetPolicySetById (inheritVal.Value);
 			if (set == null)
 				throw new InvalidOperationException ("No policy set found for id '" + inheritVal.Value + "'");
 			
@@ -270,7 +271,7 @@ namespace MonoDevelop.Projects.Policies
 			return new ScopedPolicy (t, p.Policy, scopeVal != null ? scopeVal.Value : null);
 		}
 		
-		static PolicySet GetSet (string id)
+		static PolicySet GetPolicySetById (string id)
 		{
 			foreach (PolicySet s in sets)
 				if (s.Id == id)
@@ -352,7 +353,7 @@ namespace MonoDevelop.Projects.Policies
 						if (n != null)
 							toRemove.Add (n);
 					} else {
-						int n = int.Parse (removed);
+						int n = int.Parse (removed, CultureInfo.InvariantCulture);
 						if (n < baseline.ItemData.Count )
 							toRemove.Add (baseline.ItemData [n]);
 					}
@@ -375,7 +376,7 @@ namespace MonoDevelop.Projects.Policies
 						DataValue val = item.ItemData.Extract ("__value") as DataValue;
 						if (val != null)
 							newNode = new DataValue (node.Name, val.Value);
-						int pos = int.Parse (added.Value);
+						int pos = int.Parse (added.Value, CultureInfo.InvariantCulture);
 						if (pos > baseline.ItemData.Count)
 							pos = baseline.ItemData.Count;
 						baseline.ItemData.Insert (pos, newNode);
@@ -383,7 +384,7 @@ namespace MonoDevelop.Projects.Policies
 					}
 					DataValue index = item.ItemData.Extract ("__index") as DataValue;
 					if (index != null) {
-						int n = int.Parse (index.Value);
+						int n = int.Parse (index.Value, CultureInfo.InvariantCulture);
 						baselineNode = baseline.ItemData [n];
 						DataValue val = item.ItemData.Extract ("__value") as DataValue;
 						if (val != null) {
@@ -450,14 +451,14 @@ namespace MonoDevelop.Projects.Policies
 				if (overlayNode == null) {
 					// The node is new.
 					if (node is DataItem) {
-						((DataItem)node).ItemData.Add (new DataValue ("__added",n.ToString ()) {StoreAsAttribute = true});
+						((DataItem)node).ItemData.Add (new DataValue ("__added", n.ToString (CultureInfo.InvariantCulture)) {StoreAsAttribute = true});
 						newItem.ItemData.Add (node);
 					}
 					else {
 						DataItem nval = new DataItem ();
 						nval.Name = node.Name;
-						nval.ItemData.Add (new DataValue ("__added",n.ToString ()) {StoreAsAttribute = true});
-						nval.ItemData.Add (new DataValue ("__value",((DataValue)node).Value) {StoreAsAttribute = true});
+						nval.ItemData.Add (new DataValue ("__added", n.ToString (CultureInfo.InvariantCulture)) {StoreAsAttribute = true});
+						nval.ItemData.Add (new DataValue ("__value", ((DataValue)node).Value) {StoreAsAttribute = true});
 						newItem.ItemData.Add (nval);
 					}
 					continue;
@@ -476,7 +477,7 @@ namespace MonoDevelop.Projects.Policies
 						else {
 							DataItem nval = new DataItem ();
 							nval.Name = node.Name;
-							nval.ItemData.Add (new DataValue ("__index", index.ToString ()) {StoreAsAttribute = true});
+							nval.ItemData.Add (new DataValue ("__index", index.ToString (CultureInfo.InvariantCulture)) {StoreAsAttribute = true});
 							nval.ItemData.Add (new DataValue ("__value", ((DataValue)node).Value) {StoreAsAttribute = true});
 							newItem.ItemData.Add (nval);
 						}
@@ -487,7 +488,7 @@ namespace MonoDevelop.Projects.Policies
 						size += childItem.Name.Length + childItem.Name.Length;
 						newItem.ItemData.Add (childItem);
 						if (index != -1)
-							childItem.ItemData.Add (new DataValue ("__index", index.ToString ()) {StoreAsAttribute = true});
+							childItem.ItemData.Add (new DataValue ("__index", index.ToString (CultureInfo.InvariantCulture)) {StoreAsAttribute = true});
 					}
 				}
 			}
@@ -501,7 +502,7 @@ namespace MonoDevelop.Projects.Policies
 					if (baseline.UniqueNames && node is DataValue)
 						removed.Append ("@" + node.Name);
 					else
-						removed.Append (n.ToString ());
+						removed.Append (n.ToString (CultureInfo.InvariantCulture));
 				}
 			}
 			
