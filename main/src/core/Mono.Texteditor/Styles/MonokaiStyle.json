@@ -63,8 +63,8 @@
 		{ "name": "Breakpoint Marker(Disabled)", "color":"white", "secondcolor":"#eddcdc" },
 		{ "name": "Breakpoint Marker(Invalid)", "color":"#eddcdc", "secondcolor":"#eddcdc" },
 		
-        { "name": "Current Line Marker", "color":"#3E3D31"},
-        { "name": "Current Line Marker(Inactive)", "color":"#3E3D31"},
+        { "name": "Current Line Marker", "color":"#3E3D31", "secondcolor":"#3E3D31"},
+        { "name": "Current Line Marker(Inactive)", "color":"#323229", "secondcolor":"#323229"},
 		
         { "name": "Debugger Current Line Marker", "color":"ffff00", "secondcolor":"#ffffcc", "bordercolor":"#666600" },
         { "name": "Debugger Stack Line Marker", "color":"80ff80", "secondcolor":"#ccffcc", "bordercolor":"#336633"},

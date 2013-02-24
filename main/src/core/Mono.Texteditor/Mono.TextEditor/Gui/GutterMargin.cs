@@ -214,24 +214,7 @@ namespace Mono.TextEditor
 				return;
 			}
 			if (editor.Caret.Line == line) {
-				cr.Rectangle (x, y, Width, lineHeight);
-				cr.Color = lineNumberBgGC;
-				cr.FillPreserve ();
-
-				var color = editor.ColorStyle.LineMarker.GetColor ("color");
-				cr.Color = new Cairo.Color (color.R, color.G, color.B, 0.5);
-				cr.Fill ();
-
-				var realTopY = System.Math.Floor (y + cr.LineWidth / 2) + 0.5;
-				cr.MoveTo (x, realTopY);
-				cr.LineTo (x + Width, realTopY);
-
-				var realBottomY = System.Math.Floor (y + lineHeight - cr.LineWidth / 2) + 0.5;
-				cr.MoveTo (x, realBottomY);
-				cr.LineTo (x + Width, realBottomY);
-
-				cr.Color = color;
-				cr.Stroke ();
+				editor.TextViewMargin.DrawCaretLineMarker (cr, x, y, Width, lineHeight);
 			} else {
 				cr.Rectangle (x, y, Width, lineHeight);
 				cr.Color = lineNumberBgGC;
