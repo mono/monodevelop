@@ -185,7 +185,7 @@ namespace MonoDevelop.SourceEditor
 					return scrolledWindow.Vadjustment;
 				}
 			}
-			
+
 			public DecoratedScrolledWindow (SourceEditorWidget parent)
 			{
 				this.parent = parent;
@@ -197,7 +197,34 @@ namespace MonoDevelop.SourceEditor
 				strip.VAdjustment = scrolledWindow.Vadjustment;
 				PackEnd (strip, false, true, 0);
 
-				parent.quickTaskProvider.ForEach (p => AddQuickTaskProvider (p));
+				parent.quickTaskProvider.ForEach (AddQuickTaskProvider);
+
+				QuickTaskStrip.EnableFancyFeatures.Changed += FancyFeaturesChanged;
+			}
+
+			void FancyFeaturesChanged (object sender, EventArgs e)
+			{
+				if (QuickTaskStrip.EnableFancyFeatures) {
+					scrolledWindow.VScrollbar.SizeRequested += SuppressSize;
+					scrolledWindow.VScrollbar.ExposeEvent += SuppressExpose;
+				} else {
+					scrolledWindow.VScrollbar.SizeRequested -= SuppressSize;
+					scrolledWindow.VScrollbar.ExposeEvent -= SuppressExpose;
+				}
+				QueueResize ();
+			}
+
+			[GLib.ConnectBefore]
+			static void SuppressExpose (object o, ExposeEventArgs args)
+			{
+				args.RetVal = true;
+			}
+
+			[GLib.ConnectBefore]
+			static void SuppressSize (object o, SizeRequestedArgs args)
+			{
+				args.Requisition = Requisition.Zero;
+				args.RetVal = true;
 			}
 			
 			public void AddQuickTaskProvider (IQuickTaskProvider p)
@@ -227,6 +254,7 @@ namespace MonoDevelop.SourceEditor
 				if (scrolledWindow.Child != null)
 					RemoveEvents ();
 
+				QuickTaskStrip.EnableFancyFeatures.Changed -= FancyFeaturesChanged;
 				scrolledWindow.ButtonPressEvent -= PrepareEvent;
 				base.OnDestroyed ();
 			}
