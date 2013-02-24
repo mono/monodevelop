@@ -1407,7 +1407,7 @@ namespace Mono.TextEditor
 			cr.SetDash (dotted, (int)y + textEditor.VAdjustment.Value);
 			var top = y;
 			var bottom = y + LineHeight;
-			if (Caret.Line == line.LineNumber) {
+			if (Caret.Line == line.LineNumber && textEditor.Options.HighlightCaretLine) {
 				top += textEditor.Options.Zoom;
 				bottom -= textEditor.Options.Zoom;
 			}
