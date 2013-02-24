@@ -37,6 +37,10 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 {
 	public class QuickTaskOverviewMode : DrawingArea
 	{
+		const int indicatorPadding = 3;
+		bool flatStyle = Platform.IsWindows;
+		int barPadding = Platform.IsWindows? 1 : 3;
+
 		readonly QuickTaskStrip parentStrip;
 		protected readonly Adjustment vadjustment;
 		
@@ -339,7 +343,12 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 		protected void DrawIndicator (Cairo.Context cr, Severity severity)
 		{
-			cr.Rectangle (4, Allocation.Height - IndicatorHeight + 3, Allocation.Width - 6, IndicatorHeight - 6);
+			cr.Rectangle (
+				indicatorPadding + 0.5,
+				Allocation.Height - IndicatorHeight + indicatorPadding + 0.5,
+				Allocation.Width - indicatorPadding * 2,
+				IndicatorHeight - indicatorPadding * 2
+			);
 			
 			var darkColor = (HslColor)GetIndicatorColor (severity);
 			darkColor.L *= 0.5;
@@ -357,22 +366,31 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 		protected void DrawSearchIndicator (Cairo.Context cr)
 		{
-			var x1 = 1 + Allocation.Width / 2;
-			var y1 = Allocation.Height - IndicatorHeight / 2;
-			cr.Arc (x1, 
-				y1, 
-				(IndicatorHeight - 1) / 2, 
-				0, 
-				2 * Math.PI);
+			int diameter = Math.Min (Allocation.Width, (int)IndicatorHeight) - indicatorPadding * 2;
+			var x1 = Math.Round (Allocation.Width / 2d);
+			var y1 = Allocation.Height - Math.Floor (IndicatorHeight / 2d);
+			if (diameter % 2 == 0) {
+				x1 += 0.5;
+				y1 += 0.5;
+			}
+
+			cr.Arc (x1, y1, diameter / 2d, 0, 2 * Math.PI);
 			
 			var darkColor = (HslColor)TextEditor.ColorStyle.SearchResult.GetColor ("color");
 			darkColor.L *= 0.5;
-			
-			using (var pattern = new Cairo.RadialGradient (x1, y1, Allocation.Width / 2, x1 - Allocation.Width, y1 - Allocation.Width, Allocation.Width)) {
-				pattern.AddColorStop (0, darkColor);
-				pattern.AddColorStop (1, TextEditor.ColorStyle.SearchResultMain.GetColor ("color"));
-				cr.Pattern = pattern;
-				cr.FillPreserve ();
+
+			if (flatStyle) {
+				using (var pattern = new Cairo.SolidPattern (TextEditor.ColorStyle.SearchResultMain.GetColor ("color"))) {
+					cr.Pattern = pattern;
+					cr.FillPreserve ();
+				}
+			} else {
+				using (var pattern = new Cairo.RadialGradient (x1, y1, Allocation.Width / 2, x1 - Allocation.Width, y1 - Allocation.Width, Allocation.Width)) {
+					pattern.AddColorStop (0, darkColor);
+					pattern.AddColorStop (1, TextEditor.ColorStyle.SearchResultMain.GetColor ("color"));
+					cr.Pattern = pattern;
+					cr.FillPreserve ();
+				}
 			}
 			
 			cr.Color = darkColor;
@@ -426,7 +444,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		protected Severity DrawQuickTasks (Cairo.Context cr)
 		{
 			Severity severity = Severity.None;
-
+			/*
 			foreach (var usage in AllUsages) {
 				double y = GetYPosition (usage.Line);
 				var usageColor = TextEditor.ColorStyle.PlainText.Foreground;
@@ -438,12 +456,12 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				cr.ClosePath ();
 				cr.Fill ();
 			}
-
+*/
 			foreach (var task in AllTasks) {
 				double y = GetYPosition (task.Location.Line);
 
 				cr.Color = GetBarColor (task.Severity);
-				cr.Rectangle (3 + 0.5, y - 1 + 0.5, Allocation.Width - 5, 2);
+				cr.Rectangle (barPadding, Math.Round (y) - 1, Allocation.Width - barPadding * 2, 2);
 				cr.Fill ();
 
 				switch (task.Severity) {
@@ -465,12 +483,12 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			cr.LineTo (0.5, Allocation.Height);
 			if (TextEditor.ColorStyle != null) {
 				var col = (HslColor)TextEditor.ColorStyle.PlainText.Background;
-				col.L *= 0.88;
+				if (!flatStyle) {
+					col.L *= 0.88;
+				}
 				cr.Color = col;
-			
 			}
 			cr.Stroke ();
-			
 		}
 
 		protected override void OnSizeAllocated (Rectangle allocation)
@@ -484,23 +502,21 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			if (vadjustment == null || vadjustment.Upper <= vadjustment.PageSize) 
 				return;
 
-			int barPadding = 3;
+			int barWidth = Allocation.Width - barPadding - barPadding;
 			var allocH = Allocation.Height - (int) IndicatorHeight;
 			var adjUpper = vadjustment.Upper;
-			var barY = allocH * vadjustment.Value / adjUpper + barPadding;
+			var barY = Math.Round (allocH * vadjustment.Value / adjUpper) + barPadding;
 			const int minBarHeight = 16;
-			var barH = Math.Max (minBarHeight, allocH * (vadjustment.PageSize / adjUpper) - barPadding - barPadding);
-			int barWidth = Allocation.Width - barPadding - barPadding;
-			
-			MonoDevelop.Components.CairoExtensions.RoundedRectangle (cr, 
-				barPadding,
-				barY,
-				barWidth,
-				barH,
-				barWidth / 2);
+			var barH = Math.Max (minBarHeight, Math.Round (allocH * (vadjustment.PageSize / adjUpper)) - barPadding - barPadding);
+
+			if (flatStyle) {
+				cr.Rectangle (barPadding, barY, barWidth, barH);
+			} else {
+				MonoDevelop.Components.CairoExtensions.RoundedRectangle (cr, barPadding, barY, barWidth, barH, barWidth / 2);
+			}
 			
 			var color = (HslColor)((TextEditor.ColorStyle != null) ? TextEditor.ColorStyle.PlainText.Foreground : new Cairo.Color (0, 0, 0));
-			color.L = 0.5;
+			color.L = flatStyle? 0.7 : 0.5;
 			var c = (Cairo.Color)color;
 			c.A = 0.6;
 			cr.Color = c;
@@ -516,7 +532,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				if (!TextEditor.TextViewMargin.MainSearchResult.IsInvalid)
 					isMainSelection = region.Offset == TextEditor.TextViewMargin.MainSearchResult.Offset;
 				cr.Color = isMainSelection ? TextEditor.ColorStyle.SearchResultMain.GetColor ("color") : TextEditor.ColorStyle.SearchResult.GetColor ("color");
-				cr.Rectangle (3 + 0.5, y - 1 + 0.5, Allocation.Width - 5, 2);
+				cr.Rectangle (barPadding, Math.Round (y) - 1, Allocation.Width - barPadding * 2, 2);
 				cr.Fill ();
 			}
 		}
@@ -530,13 +546,17 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
 				
 				if (TextEditor.ColorStyle != null) {
-					var grad = new Cairo.LinearGradient (0, 0, Allocation.Width, 0);
 					var col = (HslColor)TextEditor.ColorStyle.PlainText.Background;
 					col.L *= 0.95;
-					grad.AddColorStop (0, col);
-					grad.AddColorStop (0.7, TextEditor.ColorStyle.PlainText.Background);
-					grad.AddColorStop (1, col);
-					cr.Pattern = grad;
+					if (flatStyle) {
+						cr.Pattern = new Cairo.SolidPattern (col);
+					} else {
+						var grad = new Cairo.LinearGradient (0, 0, Allocation.Width, 0);
+						grad.AddColorStop (0, col);
+						grad.AddColorStop (0.7, TextEditor.ColorStyle.PlainText.Background);
+						grad.AddColorStop (1, col);
+						cr.Pattern = grad;
+					}
 				}
 				cr.Fill ();
 
