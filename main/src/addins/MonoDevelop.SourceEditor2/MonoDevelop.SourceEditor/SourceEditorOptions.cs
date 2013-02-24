@@ -223,11 +223,12 @@ namespace MonoDevelop.SourceEditor
 			base.EnableAnimations = PropertyService.Get ("EnableAnimations", true);
 			base.UseAntiAliasing = PropertyService.Get ("UseAntiAliasing", true);
 			this.EnableHighlightUsages = PropertyService.Get ("EnableHighlightUsages", false);
-			this.DrawIndentationMarkers = PropertyService.Get ("DrawIndentationMarkers", false);
+			base.DrawIndentationMarkers = PropertyService.Get ("DrawIndentationMarkers", false);
 			this.lineEndingConversion = PropertyService.Get ("LineEndingConversion", LineEndingConversion.Ask);
-			this.ShowWhitespaces = PropertyService.Get ("ShowWhitespaces", Mono.TextEditor.ShowWhitespaces.Never);
-			this.WrapLines = PropertyService.Get ("WrapLines", false);
-			this.EnableQuickDiff = PropertyService.Get ("EnableQuickDiff", false);
+			base.ShowWhitespaces = PropertyService.Get ("ShowWhitespaces", Mono.TextEditor.ShowWhitespaces.Never);
+			base.IncludeWhitespaces = PropertyService.Get ("IncludeWhitespaces", Mono.TextEditor.IncludeWhitespaces.All);
+			base.WrapLines = PropertyService.Get ("WrapLines", false);
+			base.EnableQuickDiff = PropertyService.Get ("EnableQuickDiff", false);
 		}
 		
 		#region new options
@@ -615,6 +616,13 @@ namespace MonoDevelop.SourceEditor
 			set {
 				PropertyService.Set ("ShowWhitespaces", value);
 				base.ShowWhitespaces = value;
+			}
+		}
+
+		public override IncludeWhitespaces IncludeWhitespaces {
+			set {
+				PropertyService.Set ("IncludeWhitespaces", value);
+				base.IncludeWhitespaces = value;
 			}
 		}
 

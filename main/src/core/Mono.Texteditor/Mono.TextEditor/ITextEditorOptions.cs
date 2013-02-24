@@ -35,6 +35,15 @@ namespace Mono.TextEditor
 		Always
 	}
 
+	[Flags]
+	public enum IncludeWhitespaces {
+		None        = 0,
+		Space       = 1,
+		Tab         = 2,
+		LineEndings = 4,
+		All         = Space | Tab | LineEndings
+	}
+	
 	public interface ITextEditorOptions : IDisposable
 	{
 		double Zoom { get; set; }
@@ -79,7 +88,7 @@ namespace Mono.TextEditor
 		string DefaultEolMarker { get; set; }
 
 		ShowWhitespaces ShowWhitespaces { get; set; }
-
+		IncludeWhitespaces IncludeWhitespaces { get; set; }
 		ColorScheme GetColorStyle ();
 		
 		event EventHandler Changed;

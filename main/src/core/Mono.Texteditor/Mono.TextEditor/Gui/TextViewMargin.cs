@@ -1297,6 +1297,10 @@ namespace Mono.TextEditor
 				char ch = layout.LineChars [i];
 				if (ch != ' ' && ch != '\t')
 					continue;
+				if (ch == ' ' && !textEditor.Options.IncludeWhitespaces.HasFlag (IncludeWhitespaces.Space))
+					continue;
+				if (ch == '\t' && !textEditor.Options.IncludeWhitespaces.HasFlag (IncludeWhitespaces.Tab))
+					continue;
 				bool selected = selectionStart <= offset + i && offset + i < selectionEnd;
 				if (first || oldSelected != selected) {
 					first = false;
@@ -1635,6 +1639,9 @@ namespace Mono.TextEditor
 
 		void DrawEolMarker (Cairo.Context cr, DocumentLine line, bool selected, double x, double y)
 		{
+			if (!textEditor.Options.IncludeWhitespaces.HasFlag (IncludeWhitespaces.LineEndings))
+				return;
+
 			Pango.Layout layout;
 			Pango.Rectangle rect;
 			switch (line.DelimiterLength) {
