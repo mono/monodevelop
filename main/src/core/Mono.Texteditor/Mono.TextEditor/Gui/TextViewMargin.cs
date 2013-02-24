@@ -469,16 +469,16 @@ namespace Mono.TextEditor
 
 			unixEolLayout.SetText ("\\n");
 			Pango.Rectangle logRect;
-			unixEolLayout.GetPixelExtents (out unixEolLayoutRect, out logRect);
+			unixEolLayout.GetPixelExtents (out logRect, out unixEolLayoutRect);
 
 			macEolLayout.SetText ("\\r");
-			macEolLayout.GetPixelExtents (out macEolLayoutRect, out logRect);
+			macEolLayout.GetPixelExtents (out logRect, out macEolLayoutRect);
 
 			windowsEolLayout.SetText ("\\r\\n");
-			windowsEolLayout.GetPixelExtents (out windowsEolLayoutRect, out logRect);
+			windowsEolLayout.GetPixelExtents (out logRect, out windowsEolLayoutRect);
 
 			eofEolLayout.SetText ("<EOF>");
-			eofEolLayout.GetPixelExtents (out eofEolLayoutRect, out logRect);
+			eofEolLayout.GetPixelExtents (out logRect, out eofEolLayoutRect);
 
 			DecorateLineBg -= DecorateMatchingBracket;
 			if (textEditor.Options.HighlightMatchingBracket && !Document.ReadOnly)
