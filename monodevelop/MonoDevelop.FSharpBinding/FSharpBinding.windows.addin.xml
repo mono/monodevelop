@@ -1,6 +1,6 @@
 <Addin id="FSharpBinding" namespace="MonoDevelop" name="F# Language Binding"
        author="F# Open Source Foundation (fsharp.org)" copyright="F# Open Source Foundation (fsharp.org)" url="http://fsharp.github.com/fsharpbinding"
-       description="F# Language Binding (for MonoDevelop 4.0.0.0). Install F# 3.0 before using." category="Language bindings" version="3.2.13">
+       description="F# Language Binding (for MonoDevelop 4.0.0.0). Install F# 3.0 before using." category="Language bindings" version="3.2.14">
 
 	<Runtime>
     	<Import assembly="FSharp.Core.dll" />
