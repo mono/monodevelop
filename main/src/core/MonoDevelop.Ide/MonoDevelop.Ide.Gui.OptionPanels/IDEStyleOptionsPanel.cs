@@ -74,7 +74,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			return themes;
 		});
 
-		public static IEnumerable<string> InstalledThemes {
+		public static IList<string> InstalledThemes {
 			get {
 				return themes.Value;
 			}

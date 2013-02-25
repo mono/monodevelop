@@ -392,8 +392,9 @@ namespace MonoDevelop.Ide
 					AlertButton res = MessageService.GenericAlert (Gtk.Stock.DialogWarning, msg, desc, AlertButton.Cancel, AlertButton.Proceed);
 					if (res == AlertButton.Cancel)
 						return false;
-					Console.WriteLine ("theme:"+MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.InstalledThemes.FirstOrDefault ());
-					Gtk.Settings.Default.ThemeName = MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.InstalledThemes.FirstOrDefault () ?? "Gilouche";
+					var themes = MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.InstalledThemes;
+					const string defaultTheme = "Clearlooks";
+					Gtk.Settings.Default.ThemeName = themes.Contains (defaultTheme) ? defaultTheme : themes.FirstOrDefault ();
 				}
 			}
 
