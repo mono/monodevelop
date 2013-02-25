@@ -101,9 +101,18 @@ type internal FSharpLanguageItemWindow(tooltip: string) as this =
       | _ -> ()
 
 type FSharpLanguageItemTooltipProvider() = 
-  inherit MonoDevelop.SourceEditor.LanguageItemTooltipProvider()
+#if MONODEVELOP_AT_MOST_3_1_1
+  let p = new MonoDevelop.SourceEditor.LanguageItemTooltipProvider() 
+  interface ITooltipProvider with 
+#else
+    inherit MonoDevelop.SourceEditor.LanguageItemTooltipProvider()
+#endif
     
-  member x.CreateTooltipWindow (editor, offset, modifierState, item : Mono.TextEditor.TooltipItem) = 
+#if MONODEVELOP_AT_MOST_3_1_1
+    member x.GetItem (editor, offset) =  p.GetItem(editor,offset)
+#endif
+
+    member x.CreateTooltipWindow (editor, offset, modifierState, item : Mono.TextEditor.TooltipItem) = 
             let doc = IdeApp.Workbench.ActiveDocument
             if (doc = null) then null else
             match item.Item with 
@@ -112,18 +121,19 @@ type FSharpLanguageItemTooltipProvider() =
                 let result = new FSharpLanguageItemWindow (tooltip)
                 result :> Gtk.Window
             | _ -> null
+
     
-  member x.GetRequiredPosition (editor, tipWindow : Gtk.Window, requiredWidth : int byref, xalign : double byref) = 
+    member x.GetRequiredPosition (editor, tipWindow : Gtk.Window, requiredWidth : int byref, xalign : double byref) = 
             match tipWindow with 
             | :? FSharpLanguageItemWindow as win -> 
                 requiredWidth <- win.SetMaxWidth win.Screen.Width
                 xalign <- 0.5
             | _ -> ()
 
-  member x.IsInteractive (editor, tipWindow) =  
+    member x.IsInteractive (editor, tipWindow) =  
             false
-#endif
 
+#endif
     
 /// Implements "resolution" - looks for tool-tips at current locations
 type FSharpResolverProvider() =
