@@ -137,10 +137,10 @@
       <HintPath>../dependencies/gtk-sharp-2.0/glib-sharp.dll</HintPath>
     </Reference>
     <Reference Include="Xwt">
-      <HintPath>../dependencies/Xwt/Xwt.dll</HintPath>
+      <HintPath>../dependencies/xwt/Xwt.dll</HintPath>
     </Reference>
     <Reference Include="Xwt.Gtk">
-      <HintPath>../dependencies/Xwt/Xwt.Gtk.dll</HintPath>
+      <HintPath>../dependencies/xwt/Xwt.Gtk.dll</HintPath>
     </Reference>
 
     <Reference Include="System" />
