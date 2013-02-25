@@ -126,7 +126,7 @@ namespace Mono.Debugging.Soft
 		
 		void StartConnection (SoftDebuggerStartInfo dsi)
 		{
-			this.startArgs = dsi.StartArgs;
+			startArgs = dsi.StartArgs;
 			
 			RegisterUserAssemblies (dsi);
 			
@@ -573,7 +573,7 @@ namespace Mono.Debugging.Soft
 
 		protected override void OnAttachToProcess (long processId)
 		{
-			throw new System.NotSupportedException ();
+			throw new NotSupportedException ();
 		}
 
 		protected override void OnContinue ()
@@ -593,7 +593,7 @@ namespace Mono.Debugging.Soft
 
 		protected override void OnDetach ()
 		{
-			throw new System.NotSupportedException ();
+			throw new NotSupportedException ();
 		}
 
 		protected override void OnExit ()
@@ -603,10 +603,12 @@ namespace Mono.Debugging.Soft
 			if (vm != null) {
 				try {
 					vm.Exit (0);
+				} catch (VMDisconnectedException ex) {
+					// The VM was already disconnected, ignore.
 				} catch (SocketException se) {
 					// This will often happen during normal operation
 					LoggingService.LogError ("Error closing debugger session", se);
-				}catch (IOException ex) {
+				} catch (IOException ex) {
 					// This will often happen during normal operation
 					LoggingService.LogError ("Error closing debugger session", ex);
 				}
