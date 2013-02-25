@@ -46,7 +46,12 @@ namespace Mono.TextEditor.Vi
 			case '}':
 			case ']':
 			case '>':
-				return ViActions.InnerSymbol (c);
+				if (motion == Motion.Inner)
+					return ViActions.InnerSymbol (c);
+				else if (motion == Motion.Outer)
+					return ViActions.OuterSymbol (c);
+				else
+					return null;
 			case '"':
 			case '\'':
 			case '`':

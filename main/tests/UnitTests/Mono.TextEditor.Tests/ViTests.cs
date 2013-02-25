@@ -300,7 +300,7 @@ qrstu",
 		[TestCase(30, '\'', Result = @"'hello' 'world\'s' ''")]
 		[TestCase(31, '\'', Result = @"'hello' 'world\'s' ''")]
 		[TestCase(1, '"', Result = @""""" ""world\""s"" ""worlder\\""s""")]
-		[TestCase(31, '`', Result = @"`hello` `world\`s' ``")]
+		[TestCase(31, '`', Result = @"`hello` `world\`s` ``")]
 		public string ChangeInnerQuote (int col, char quote)
 		{
 			var mode = new TestViEditMode { Text = @"'hello' 'world\'s' 'worlder\\'s'".Replace ('\'', quote) };
@@ -316,6 +316,25 @@ qrstu",
 			RepeatChar('l', 3, mode);
 			mode.Input ("ca'");
 			Assert.That (mode.Text, Is.Empty);
+		}
+
+		[Test]
+		public void ChangeOuterParen() 
+		{
+			var mode = new TestViEditMode { Text = "((hello))" };
+			RepeatChar('l', 3, mode);
+			mode.Input ("ca)");
+			Assert.That (mode.Text, Is.EqualTo ("()"));
+		}
+
+		[Test]
+		public void ChangeOuterParen_Multiline() 
+		{
+			var mode = new TestViEditMode { Text = "((\n\thello\n))" };
+			RepeatChar('j', 1, mode);
+			RepeatChar('l', 4, mode);
+			mode.Input ("ca)");
+			Assert.That (mode.Text, Is.EqualTo ("()"));
 		}
 
 		static void RepeatChar(char c, int count, TestViEditMode mode) 
