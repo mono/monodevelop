@@ -14,7 +14,7 @@
     <!-- <OtherFlags> /resident </OtherFlags> -->
     <UsePartialTypes>False</UsePartialTypes>
 
-    <MonoDevelopVersion>3.1.1</MonoDevelopVersion>
+    <MonoDevelopVersion>4.0.0.0</MonoDevelopVersion>
     <DefineConstants Condition="'$(MonoDevelopVersion)' == '3.0.3.2'">MONODEVELOP_AT_MOST_3_0_3_2;MONODEVELOP_AT_MOST_3_0_6;$(DefineConstants)</DefineConstants>
     <DefineConstants Condition="'$(MonoDevelopVersion)' == '3.0.4.7'">MONODEVELOP_AT_MOST_3_0_6;$(DefineConstants)</DefineConstants>
     <DefineConstants Condition="'$(MonoDevelopVersion)' == '3.0.5'">MONODEVELOP_AT_MOST_3_0_6;$(DefineConstants)</DefineConstants>
@@ -28,7 +28,7 @@
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
     <Tailcalls>False</Tailcalls>
-    <OutputPath>..\bin\windows\Debug\</OutputPath>
+    <OutputPath>..\bin\local\Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG;$(DefineConstants)</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <Externalconsole>True</Externalconsole>
@@ -44,7 +44,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>True</Optimize>
     <Tailcalls>True</Tailcalls>
-    <OutputPath>..\bin\windows\Release\</OutputPath>
+    <OutputPath>..\bin\local\Release\</OutputPath>
     <DefineConstants>TRACE;$(DefineConstants)</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <GenerateDebugInfo>false</GenerateDebugInfo>
@@ -92,7 +92,7 @@
     </None>
 
     <!--<EmbeddedResource Include="templates.FSharpMoonlightLibraryProject.xpt.xml" /> -->
-    <EmbeddedResource Include="FSharpBinding.windows.addin.xml">
+    <EmbeddedResource Include="FSharpBinding.local.addin.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -135,10 +135,17 @@
     <Reference Include="glib-sharp">
       <HintPath>../dependencies/gtk-sharp-2.0/glib-sharp.dll</HintPath>
     </Reference>
+    <Reference Include="Xwt">
+      <HintPath>../dependencies/Xwt/Xwt.dll</HintPath>
+    </Reference>
+    <Reference Include="Xwt.Gtk">
+      <HintPath>../dependencies/Xwt/Xwt.Gtk.dll</HintPath>
+    </Reference>
 
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Xaml" />
     <Reference Include="mscorlib" />
     <Reference Include="Mono.Cairo" />
     <Reference Include="Mono.Addins, Version=0.6.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
@@ -146,31 +153,31 @@
     </Reference>
     <Reference Include="Mono.TextEditor">
       <Private>False</Private>
-      <HintPath>c:\Program Files (x86)\MonoDevelop/bin/Mono.TextEditor.dll</HintPath> 
+      <HintPath>/Applications/Xamarin Studio.app/Contents/MacOS/lib/monodevelop/bin/Mono.TextEditor.dll</HintPath> 
     </Reference>
     <Reference Include="MonoDevelop.Core">
       <Private>False</Private>
-      <HintPath>c:\Program Files (x86)\MonoDevelop/bin/MonoDevelop.Core.dll</HintPath>
+      <HintPath>/Applications/Xamarin Studio.app/Contents/MacOS/lib/monodevelop/bin/MonoDevelop.Core.dll</HintPath>
     </Reference>
     <Reference Include="monodoc">
       <Private>False</Private>
-      <HintPath>c:\Program Files (x86)\MonoDevelop/bin/monodoc.dll</HintPath>
+      <HintPath>/Applications/Xamarin Studio.app/Contents/MacOS/lib/monodevelop/bin/monodoc.dll</HintPath>
     </Reference>
     <Reference Include="MonoDevelop.Ide">
       <Private>False</Private>
-      <HintPath>c:\Program Files (x86)\MonoDevelop/bin/MonoDevelop.Ide.dll</HintPath>
+      <HintPath>/Applications/Xamarin Studio.app/Contents/MacOS/lib/monodevelop/bin/MonoDevelop.Ide.dll</HintPath>
     </Reference>
     <Reference Include="ICSharpCode.NRefactory">
       <Private>False</Private>
-      <HintPath>c:\Program Files (x86)\MonoDevelop/bin/ICSharpCode.NRefactory.dll</HintPath>
+      <HintPath>/Applications/Xamarin Studio.app/Contents/MacOS/lib/monodevelop/bin/ICSharpCode.NRefactory.dll</HintPath>
     </Reference>
     <Reference Include="MonoDevelop.SourceEditor2">
       <Private>False</Private>
-      <HintPath>c:\Program Files (x86)\MonoDevelop/AddIns/DisplayBindings/SourceEditor\MonoDevelop.SourceEditor2.dll</HintPath>
+      <HintPath>/Applications/Xamarin Studio.app/Contents/MacOS/lib/monodevelop/AddIns/DisplayBindings/SourceEditor\MonoDevelop.SourceEditor2.dll</HintPath>
     </Reference>
     <Reference Include="MonoDevelop.Refactoring">
       <Private>False</Private>
-      <HintPath>c:\Program Files (x86)\MonoDevelop/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll</HintPath>
+      <HintPath>/Applications/Xamarin Studio.app/Contents/MacOS/lib/monodevelop/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll</HintPath>
     </Reference>
     <ProjectReference Include="..\..\FSharp.CompilerBinding\FSharp.CompilerBinding.fsproj">
       <Project>{88F6940F-D300-474C-B2A7-E2ECD5B04B57}</Project>

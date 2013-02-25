@@ -65,7 +65,7 @@ module CompilerService =
       if m.Success then 
           let errNo = match get "err" with None -> "" | Some v -> v
           let file = match get "file" with None -> "unknown-file"  | Some v -> v
-          let line = match get "line" with None -> 1 | Some v -> printfn "v.Value = <<<%s>>>" v; int32 v
+          let line = match get "line" with None -> 1 | Some v -> Debug.WriteLine (sprintf "v.Value = <<<%s>>>" v); int32 v
           let col = match get "col" with None -> 1 | Some v -> int32 v
           let msg = match get "msg" with None -> "" | Some v -> v
           let isError = match get "type" with None -> true | Some v -> (v <> "warning")

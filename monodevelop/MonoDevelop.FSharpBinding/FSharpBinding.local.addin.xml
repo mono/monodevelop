@@ -1,6 +1,6 @@
 <Addin id="FSharpBinding" namespace="MonoDevelop" name="F# Language Binding"
        author="F# Open Source Foundation (fsharp.org)" copyright="F# Open Source Foundation (fsharp.org)" url="http://fsharp.github.com/fsharpbinding"
-       description="F# Language Binding (for MonoDevelop 3.0.5). Install F# 3.0 before using." category="Language bindings" version="3.2.10">
+       description="F# Language Binding (for MonoDevelop 4.0.0.0). Install F# 3.0 before using." category="Language bindings" version="3.2.12">
 
 	<Runtime>
     	<Import assembly="FSharp.Core.dll" />
@@ -27,10 +27,10 @@
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="3.0.5"/>
-		<Addin id="Ide" version="3.0.5"/>
-		<Addin id="SourceEditor2" version="3.0.5"/>
-		<Addin id="Refactoring" version="3.0.5"/>
+		<Addin id="Core" version="4.0"/>
+		<Addin id="Ide" version="4.0"/>
+		<Addin id="SourceEditor2" version="4.0"/>
+		<Addin id="Refactoring" version="4.0"/>
         </Dependencies>
 
     <!-- This is the F# 2.0 targets file. This seems the best choice at the moment -->

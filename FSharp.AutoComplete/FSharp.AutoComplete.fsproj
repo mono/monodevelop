@@ -9,7 +9,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>FSharp.AutoComplete</RootNamespace>
     <AssemblyName>fsautocomplete</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <Name>FSharp.InteractiveAutocomplete</Name>
     <UsePartialTypes>False</UsePartialTypes>
   </PropertyGroup>

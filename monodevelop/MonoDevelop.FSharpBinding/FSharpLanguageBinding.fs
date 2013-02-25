@@ -31,10 +31,7 @@ type FSharpLanguageBinding() =
       IdeApp.Workbench.ActiveDocumentChanged.Add(fun _ ->
         let doc = IdeApp.Workbench.ActiveDocument
         if doc <> null && (CompilerArguments.supportedExtension(IO.Path.GetExtension(doc.FileName.ToString()))) then
-#if MONODEVELOP_AT_MOST_3_0_3_2
-#else
              doc.Editor.TabsToSpaces <- true
-#endif
              doc.ReparseDocument())
 
     

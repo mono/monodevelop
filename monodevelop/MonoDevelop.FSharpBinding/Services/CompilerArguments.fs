@@ -186,7 +186,7 @@ module CompilerArguments =
             let logicalResourceName = file.ProjectVirtualPath.ToString().Replace("\\",".").Replace("/",".")
             yield "--resource:" + wrapFile fileName + "," + wrapFile logicalResourceName
         | "None" | "Content" | "Compile" -> ()
-        | s -> failwith("Items of type '" + s + "' not supported") ]
+        | s -> ()] // failwith("Items of type '" + s + "' not supported") ]
 
   let getToolPath (pathsToSearch:seq<string>) (extensions:seq<string>) (toolName:string) =
     let filesToSearch = Seq.map (fun x -> toolName + x) extensions
