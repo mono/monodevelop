@@ -39,8 +39,15 @@ type internal FSharpErrorCompletionData(exn:exn) =
 
 /// Provide information to the 'method overloads' windows that comes up when you type '('
 type ParameterDataProvider(nameStart: int, meths: MethodOverloads) = 
+#if MONODEVELOP_AT_MOST_3_1_1
+  interface IParameterDataProvider with 
+    member x.Count = meths.Methods.Length
+    // Get the index into the file where the parameter completion was triggered
+    member x.StartOffset = nameStart
+#else
     inherit MonoDevelop.Ide.CodeCompletion.ParameterDataProvider (nameStart)
     override x.Count = meths.Methods.Length
+#endif
 
         /// Returns the markup to use to represent the specified method overload
         /// in the parameter information window.
@@ -103,10 +110,13 @@ type ParameterDataProvider(nameStart: int, meths: MethodOverloads) =
     override x.AllowParameterList (overload: int) = 
             false
 
+#if MONODEVELOP_AT_MOST_3_1_1
+#else
     override x.GetParameterName (overload:int, paramIndex:int) =
             let meth = meths.Methods.[overload]
             let prm = meth.Parameters.[paramIndex]
             prm.Name
+#endif
 
 /// Implements text editor extension for MonoDevelop that shows F# completion    
 type FSharpTextEditorCompletion() =
@@ -119,7 +129,11 @@ type FSharpTextEditorCompletion() =
   override x.Initialize() = base.Initialize()
 
   /// Provide parameter and method overload information when you type '(', ',' or ')'
+#if MONODEVELOP_AT_MOST_3_1_1
+  override x.HandleParameterCompletion(context:CodeCompletionContext, completionChar:char) : IParameterDataProvider =
+#else
   override x.HandleParameterCompletion(context:CodeCompletionContext, completionChar:char) : MonoDevelop.Ide.CodeCompletion.ParameterDataProvider =
+#endif
     try
      if (completionChar <> '(' && completionChar <> ',' && completionChar <> ')' ) then null else
       let doc = x.Document
