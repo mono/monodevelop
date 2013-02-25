@@ -49,6 +49,7 @@ namespace Mono.TextEditor.Vi
 				return ViActions.InnerSymbol (c);
 			case '"':
 			case '\'':
+			case '`':
 				if (motion == Motion.Inner)
 					return ViActions.InnerQuote (c);
 				else if (motion == Motion.Outer)
