@@ -112,7 +112,7 @@ type FSharpLanguageItemTooltipProvider() =
     member x.GetItem (editor, offset) =  p.GetItem(editor,offset)
 #endif
 
-    member x.CreateTooltipWindow (editor, offset, modifierState, item : Mono.TextEditor.TooltipItem) = 
+    override x.CreateTooltipWindow (editor, offset, modifierState, item : Mono.TextEditor.TooltipItem) = 
             let doc = IdeApp.Workbench.ActiveDocument
             if (doc = null) then null else
             match item.Item with 
@@ -123,14 +123,14 @@ type FSharpLanguageItemTooltipProvider() =
             | _ -> null
 
     
-    member x.GetRequiredPosition (editor, tipWindow : Gtk.Window, requiredWidth : int byref, xalign : double byref) = 
+    override x.GetRequiredPosition (editor, tipWindow : Gtk.Window, requiredWidth : int byref, xalign : double byref) = 
             match tipWindow with 
             | :? FSharpLanguageItemWindow as win -> 
                 requiredWidth <- win.SetMaxWidth win.Screen.Width
                 xalign <- 0.5
             | _ -> ()
 
-    member x.IsInteractive (editor, tipWindow) =  
+    override x.IsInteractive (editor, tipWindow) =  
             false
 
 #endif

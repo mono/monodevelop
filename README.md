@@ -86,11 +86,19 @@ On windows, use the file MonoDevelop.FSharpBinding\MonoDevelop.FSharp.windows.fs
 
 On Mac/Linux, please develop using  the 'Makefile' with Mono 3.0 and FSharp 3.0. There is an old Makefile for the days before xbuild works, but this is not used to prepare distributions.
 
-If you make changes to the binding, then loss of completion lists etc. can be disturbing and hard to debug. There are some debugging techniques. To launch MD you can use
+On Mac/Linux, if you make changes to the binding, then loss of completion lists etc. can be disturbing and hard to debug. There are some debugging techniques. To launch MD you can use
+
    /Applications/MonoDevelop.app/Contents/MacOS/MonoDevelop --new-window --no-redirect
 
-To enable some logging you can use
+to enable some logging you can use
+
   export FSHARPBINDING_LOGGING=*
+
+On Windows you can generally use Visual Studio to help develop the binding. 
+You can start Xamarin Studio or MonoDevelop under the debugger using the normal technique:
+
+  devenv /debugexe "c:\Program Files (x86)\Xamarin Studio\bin\XamarinStudio.exe"
+
 
 ## Notes for People Preparing Releases
 

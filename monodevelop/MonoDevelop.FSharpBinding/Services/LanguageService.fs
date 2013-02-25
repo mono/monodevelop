@@ -203,21 +203,22 @@ module internal TipFormatter =
             let summary = 
                 let idx1 = doc.IndexOf tag1
                 let idx2 = doc.IndexOf tag2
-                if (idx2 >= 0 && idx1 >= 0) then tag1 + doc.Substring (idx1 + tag1.Length, idx2 - idx1 - tag1.Length) + tag2
-                elif (idx1 >= 0) then tag1 + doc.Substring (idx1 + tag1.Length) + tag2
-                elif (idx2 >= 0) then tag1 + doc.Substring (0, idx2 - 1) + tag2
+                if (idx2 >= 0 && idx1 >= 0) then (* tag1 + *) doc.Substring (idx1 + tag1.Length, idx2 - idx1 - tag1.Length) (* + tag2 *) 
+                elif (idx1 >= 0) then (* tag1 + *) doc.Substring (idx1 + tag1.Length) (* + tag2 *) 
+                elif (idx2 >= 0) then (* tag1 + *) doc.Substring (0, idx2 - 1) (* + tag2 *) 
                 else doc
             //    try MonoDevelop.Ide.TypeSystem.AmbienceService.GetSummaryMarkup summary 
             //    with _ -> GLib.Markup.EscapeText summary
-            summary
+            let summary = summary.Replace("\n","").Replace("\r","")
+            GLib.Markup.EscapeText summary
     | _ -> ""
 
   /// Format some of the data returned by the F# compiler
   ///
-  /// If 'isSingle' is true (meaning that this is the only tip displayed)
+  /// If 'canAddHeader' is true (meaning that this is the only tip displayed)
   /// then we add first line "Multiple overloads" because MD prints first
   /// int in bold (so that no overload is highlighted)
-  let private buildFormatElement isSingle el (sb:StringBuilder) =
+  let private buildFormatElement canAddHeader el (sb:StringBuilder) =
     match el with 
     | DataTipElementNone -> ()
     | DataTipElement(it, comment) -> 
@@ -232,7 +233,7 @@ module internal TipFormatter =
             (items |> Seq.take 10 |> List.ofSeq), 
              sprintf "   <i>(+%d other overloads)</i>" (items.Length - 10) 
           else items, null
-        if (isSingle && items.Length > 1) then
+        if (canAddHeader && items.Length > 1) then
           sb.AppendLine("Multiple overloads") |> ignore
         items |> Seq.iteri (fun i (it,comment) -> 
           sb.AppendLine(GLib.Markup.EscapeText it)  |> ignore
@@ -248,19 +249,20 @@ module internal TipFormatter =
         sb.Append("Composition error: " + GLib.Markup.EscapeText(err)) |> ignore
       
   /// Format some of the data returned by the F# compiler
-  let private buildFormatTip tip (sb:StringBuilder) = 
+  let private buildFormatTip canAddHeader tip (sb:StringBuilder) = 
     match tip with
     | DataTipText([single]) -> buildFormatElement true single sb
     | DataTipText(its) -> 
-        sb.AppendLine("Multiple items") |> ignore
+        if canAddHeader then 
+            sb.AppendLine("Multiple items") |> ignore
         its |> Seq.iteri (fun i item ->
           if i <> 0 then sb.AppendLine("\n--------------------\n") |> ignore
           buildFormatElement false item sb) 
 
   /// Format tool-tip that we get from the language service as string        
-  let formatTip tip = 
+  let formatTip canAddHeader tip = 
     let sb = new StringBuilder()
-    buildFormatTip tip sb
+    buildFormatTip canAddHeader tip sb
     let text = sb.ToString()
     let textSquashed =  MonoDevelop.Ide.TypeSystem.AmbienceService.BreakLines(text,120)
     textSquashed.Trim('\n', '\r')
@@ -308,7 +310,7 @@ module internal TipFormatter =
   /// MonoDevelop does this automatically for completion data, 
   /// so we do the same thing explicitly for hover tool-tips
   let formatTipWithHeader tip = 
-    let str = formatTip tip
+    let str = formatTip true tip
     let parts = str.Split([| '\n' |], 2)
     "<b>" + parts.[0] + "</b>" +
       (if parts.Length > 1 then "<small>\n" + parts.[1] + "</small>" else "")
