@@ -299,12 +299,22 @@ qrstu",
 		[TestCase(29, '\'', Result = @"'hello' 'world\'s' ''")]
 		[TestCase(30, '\'', Result = @"'hello' 'world\'s' ''")]
 		[TestCase(31, '\'', Result = @"'hello' 'world\'s' ''")]
+		[TestCase(1, '"', Result = @""""" ""world\""s"" ""worlder\\""s""")]
 		public string ChangeInnerQuote (int col, char quote)
 		{
 			var mode = new TestViEditMode { Text = @"'hello' 'world\'s' 'worlder\\'s'".Replace ('\'', quote) };
 			RepeatChar('l', col, mode);
 			mode.Input ("ci" + quote);
 			return mode.Text;
+		}
+
+		[Test]
+		public void ChangeOuterQuote() 
+		{
+			var mode = new TestViEditMode { Text = "'hello'" };
+			RepeatChar('l', 3, mode);
+			mode.Input ("ca'");
+			Assert.That (mode.Text, Is.Empty);
 		}
 
 		static void RepeatChar(char c, int count, TestViEditMode mode) 

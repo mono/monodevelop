@@ -298,31 +298,46 @@ namespace Mono.TextEditor.Vi
 		{
 			return data => 
 			{
-				var currentOffset = data.Caret.Offset;
-				var lineText = data.Document.GetLineText (data.Caret.Line);
-				var line = data.Document.GetLine (data.Caret.Line);
-				var lineOffset = currentOffset - line.Offset;
-
-				var beginOffset = ParseForQuote (lineText, lineOffset - 1, c, false);
-				if (!beginOffset.HasValue && lineText[lineOffset] == c)
-					beginOffset = lineOffset;
-				if (!beginOffset.HasValue) return;
-				var hasOddPrevQuotes = HasOddNumberOfQuoteMatches (lineText, beginOffset.GetValueOrDefault(), c);
-				var startEndSearchAt = beginOffset.GetValueOrDefault () == lineOffset ? lineOffset + 1 : lineOffset;
-				var endOffset = ParseForQuote (lineText, startEndSearchAt, c, true);
-				if (!endOffset.HasValue) return;
-				var length = endOffset.GetValueOrDefault () - beginOffset.GetValueOrDefault ();
-
-				data.SelectionRange = new TextSegment (beginOffset.GetValueOrDefault () + line.Offset + 1, length - 1);
+				int beginOffset, length;
+				if (TryFindInnerQuote (data, c, out beginOffset, out length))
+					data.SelectionRange = new TextSegment (beginOffset, length);
 			};
 		}
 
-		static bool HasOddNumberOfQuoteMatches (string text, int startingQuote, char quoteType)
+		static bool TryFindInnerQuote (TextEditorData data, char c, out int begin, out int length)
 		{
-			int count = 1;
-			for (int i = startingQuote - 1; ParseForQuote (text, i, quoteType, false).HasValue; i--)
-				count ++;
-			return count % 2 == 1;
+			begin = 0;
+			length = 0;
+			var currentOffset = data.Caret.Offset;
+			var lineText = data.Document.GetLineText (data.Caret.Line);
+			var line = data.Document.GetLine (data.Caret.Line);
+			var lineOffset = currentOffset - line.Offset;
+
+			var beginOffset = ParseForQuote (lineText, lineOffset - 1, c, false);
+			if (!beginOffset.HasValue && lineText[lineOffset] == c)
+				beginOffset = lineOffset;
+			if (!beginOffset.HasValue) return false;
+			var startEndSearchAt = beginOffset.GetValueOrDefault () == lineOffset ? lineOffset + 1 : lineOffset;
+			var endOffset = ParseForQuote (lineText, startEndSearchAt, c, true);
+			if (!endOffset.HasValue) return false;
+
+			begin = beginOffset.GetValueOrDefault () + line.Offset + 1;
+			length = endOffset.GetValueOrDefault () - beginOffset.GetValueOrDefault () - 1;
+			return true;
+		}
+
+		public static Action<TextEditorData> OuterQuote (char c)
+		{
+			return data => 
+			{
+				int beginOffset, length;
+				if (TryFindInnerQuote (data, c, out beginOffset, out length))
+				{
+					beginOffset--;
+					length += 2;
+					data.SelectionRange = new TextSegment (beginOffset, length);
+				}
+			};
 		}
 
 		static int? ParseForQuote (string text, int start, char charToFind, bool forward) 
