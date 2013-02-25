@@ -1,6 +1,6 @@
 <Addin id="FSharpBinding" namespace="MonoDevelop" name="F# Language Binding"
        author="F# Open Source Foundation (fsharp.org)" copyright="F# Open Source Foundation (fsharp.org)" url="http://fsharp.github.com/fsharpbinding"
-       description="F# Language Binding (for MonoDevelop 4.0.0.0). Install F# 3.0 before using." category="Language bindings" version="3.2.12">
+       description="F# Language Binding (for MonoDevelop 4.0.0.0). Install F# 3.0 before using." category="Language bindings" version="3.2.13">
 
 	<Runtime>
     	<Import assembly="FSharp.Core.dll" />
@@ -188,7 +188,7 @@
 					_label = "Send selection to F# Interactive"
 					_description="Send the selected text to F# Interactive"
 					shortcut="Ctrl|Return"
-					macShortcut="Alt|Return"
+					macShortcut="Ctrl|Return"
 					defaultHandler="MonoDevelop.FSharp.SendSelection" />
 
 			 <Command id="MonoDevelop.FSharp.FSharpCommands.SendLine"
