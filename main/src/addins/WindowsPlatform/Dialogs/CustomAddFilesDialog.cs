@@ -17,6 +17,9 @@ namespace MonoDevelop.Platform
         {
             InitializeComponent();
             Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+
+			// Use the classic dialogs, as the new ones (WPF based) can't handle child controls.
+			FileDialog.AutoUpgradeEnabled = false;
         }
 
         protected override void OnLoad(EventArgs e)

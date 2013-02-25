@@ -57,6 +57,11 @@ namespace MonoDevelop.Platform
 			Initialize (data);
 			
 			StartLocation = AddonWindowLocation.Bottom;
+
+			// Use the classic dialogs, as the new ones (WPF based) can't handle child controls.
+			if (data.ShowEncodingSelector || data.ShowViewerSelector) {
+				dialog.AutoUpgradeEnabled = false;
+			}
 		}
 
 
