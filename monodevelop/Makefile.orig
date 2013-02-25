@@ -4,7 +4,7 @@
 #   run 'make install' to compile and install the plugin against the installed version of MonoDevelop detected by ./configure.sh
 #   run 'make pack-all' to create a deployment binary packages for the known set of supported MonoDevelop versions
 
-VERSION=3.2.13
+VERSION=3.2.14
 
 MDTOOL = $(MONO) 'INSERT_MDROOT/../../mdtool'
 
