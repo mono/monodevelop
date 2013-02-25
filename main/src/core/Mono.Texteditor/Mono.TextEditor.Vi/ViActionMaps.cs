@@ -46,9 +46,13 @@ namespace Mono.TextEditor.Vi
 			case '}':
 			case ']':
 			case '>':
-				return ViActions.InnerSymbol(c);
+				return ViActions.InnerSymbol (c);
+			case '"':
+			case '\'':
+				return ViActions.InnerQuote (c);
+			default:
+				return null;
 			}
-			return null;
 		}
 
 		public static Action<TextEditorData> GetEditObjectCharAction (char c)

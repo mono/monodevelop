@@ -294,6 +294,50 @@ namespace Mono.TextEditor.Vi
 			return null;
 		}
 
+		public static Action<TextEditorData> InnerQuote (char c)
+		{
+			return data => 
+			{
+				var currentOffset = data.Caret.Offset;
+				var lineText = data.Document.GetLineText (data.Caret.Line);
+				var line = data.Document.GetLine (data.Caret.Line);
+				var lineOffset = currentOffset - line.Offset;
+
+				var beginOffset = ParseForQuote (lineText, lineOffset - 1, c, false);
+				if (!beginOffset.HasValue && lineText[lineOffset] == c)
+					beginOffset = lineOffset;
+				if (!beginOffset.HasValue) return;
+				var hasOddPrevQuotes = HasOddNumberOfQuoteMatches (lineText, beginOffset.GetValueOrDefault(), c);
+				var startEndSearchAt = beginOffset.GetValueOrDefault () == lineOffset ? lineOffset + 1 : lineOffset;
+				var endOffset = ParseForQuote (lineText, startEndSearchAt, c, true);
+				if (!endOffset.HasValue) return;
+				var length = endOffset.GetValueOrDefault () - beginOffset.GetValueOrDefault ();
+
+				data.SelectionRange = new TextSegment (beginOffset.GetValueOrDefault () + line.Offset + 1, length - 1);
+			};
+		}
+
+		static bool HasOddNumberOfQuoteMatches (string text, int startingQuote, char quoteType)
+		{
+			int count = 1;
+			for (int i = startingQuote - 1; ParseForQuote (text, i, quoteType, false).HasValue; i--)
+				count ++;
+			return count % 2 == 1;
+		}
+
+		static int? ParseForQuote (string text, int start, char charToFind, bool forward) 
+		{
+			int increment = forward ? 1 : -1;
+			for (int i = start; forward && i < text.Length || !forward && i >= 0; i += increment)
+			{
+				if (text[i] == charToFind &&
+					(i < 1 || text[i-1] != '\\') &&
+					(i < 2 || text[i-2] != '\\'))
+					return i;
+			}
+			return null;
+		}
+
 		public static void LineEnd (TextEditorData data)
 		{
 			int desiredColumn = System.Math.Max (data.Caret.Column, data.Caret.DesiredColumn);

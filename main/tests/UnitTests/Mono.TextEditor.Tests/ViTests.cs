@@ -284,6 +284,29 @@ qrstu",
 			Assert.AreEqual ("if (foo(baz) == bar) foo(baz) == bar", mode.Text);
 		}
 
+		[Test]
+		[TestCase(0, '\'', Result = @"'' 'world\'s' 'worlder\\'s'")]
+		[TestCase(1, '\'', Result = @"'' 'world\'s' 'worlder\\'s'")]
+		[TestCase(5, '\'', Result = @"'' 'world\'s' 'worlder\\'s'")]
+		[TestCase(6, '\'', Result = @"'' 'world\'s' 'worlder\\'s'")]
+		[TestCase(7, '\'', Result = @"'hello''world\'s' 'worlder\\'s'")]
+		[TestCase(8, '\'', Result = @"'hello' '' 'worlder\\'s'", IgnoreReason = "Advanced scenario")]
+		[TestCase(9, '\'', Result = @"'hello' '' 'worlder\\'s'")]
+		[TestCase(16, '\'', Result = @"'hello' '' 'worlder\\'s'")]
+		[TestCase(17, '\'', Result = @"'hello' '' 'worlder\\'s'")]
+		[TestCase(18, '\'', Result = @"'hello' 'world\'s''worlder\\'s'")]
+		[TestCase(19, '\'', Result = @"'hello' 'world\'s' ''", IgnoreReason = "Advanced scenario")]
+		[TestCase(29, '\'', Result = @"'hello' 'world\'s' ''")]
+		[TestCase(30, '\'', Result = @"'hello' 'world\'s' ''")]
+		[TestCase(31, '\'', Result = @"'hello' 'world\'s' ''")]
+		public string ChangeInnerQuote (int col, char quote)
+		{
+			var mode = new TestViEditMode { Text = @"'hello' 'world\'s' 'worlder\\'s'".Replace ('\'', quote) };
+			RepeatChar('l', col, mode);
+			mode.Input ("ci" + quote);
+			return mode.Text;
+		}
+
 		static void RepeatChar(char c, int count, TestViEditMode mode) 
 		{
 			string input = "";
