@@ -1101,7 +1101,7 @@ namespace MonoDevelop.AssemblyBrowser
 				string text = inspectEditor.GetTextAt (seg);
 				if (text != null && text.Length == 1 && !(char.IsLetter (text [0]) || text [0] == '…'))
 					continue;
-				var marker = new UnderlineMarker ("blue", 1 + seg.Offset - line.Offset, 1 + seg.EndOffset - line.Offset);
+				var marker = new UnderlineMarker (new Cairo.Color (0, 0, 1.0), 1 + seg.Offset - line.Offset, 1 + seg.EndOffset - line.Offset);
 				marker.Wave = false;
 				underlineMarkers.Add (marker);
 				inspectEditor.Document.AddMarker (line, marker);
