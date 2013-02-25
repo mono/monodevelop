@@ -66,11 +66,6 @@ type ParameterDataProvider(nameStart: int, meths: MethodOverloads) =
     member x.Count = meths.Methods.Length
     // Get the index into the file where the parameter completion was triggered
     member x.StartOffset = nameStart
-#else
-    inherit MonoDevelop.Ide.CodeCompletion.ParameterDataProvider (nameStart)
-    override x.Count = meths.Methods.Length
-#endif
-
         /// Returns the markup to use to represent the specified method overload
         /// in the parameter information window.
     member x.GetHeading (overload:int, parameterMarkup:string[], currentParameter:int) = 
@@ -122,22 +117,92 @@ type ParameterDataProvider(nameStart: int, meths: MethodOverloads) =
             let meth = meths.Methods.[overload]
             let param = meth.Parameters.[paramIndex]
             param.Name 
-        
         // Returns the number of parameters of the specified method
-    override x.GetParameterCount (overload:int) = 
+    member x.GetParameterCount (overload:int) = 
             let meth = meths.Methods.[overload]
             meth.Parameters.Length
         
         // @todo should return 'true' for param-list methods
-    override x.AllowParameterList (overload: int) = 
+    member x.AllowParameterList (overload: int) = 
             false
 
-#if MONODEVELOP_AT_MOST_3_1_1
 #else
-    override x.GetParameterName (overload:int, paramIndex:int) =
+    inherit MonoDevelop.Ide.CodeCompletion.ParameterDataProvider (nameStart)
+    override x.Count = meths.Methods.Length
+        /// Returns the markup to use to represent the specified method overload
+        /// in the parameter information window.
+    override x.CreateTooltipInformation (overload:int, currentParameter:int, smartWrap:bool) = 
+        // Get the lower part of the text for the display of an overload
+        let description = 
             let meth = meths.Methods.[overload]
-            let prm = meth.Parameters.[paramIndex]
-            prm.Name
+            let text = TipFormatter.formatTip  false meth.Description 
+            let lines = text.Split([| '\n';'\r' |])
+            let lines = if lines.Length <= 1 then [| "" |] else lines.[1..] 
+            let param = 
+                meth.Parameters |> Array.mapi (fun i param -> 
+                    let paramDesc = 
+                        // Sometimes the parameter decription is hidden in the XML docs
+                        match TipFormatter.extractParamTip param.Name meth.Description  with 
+                        | Some tip -> tip
+                        | None -> param.Description
+                    let name = param.Name
+                    let name = if i = currentParameter then  "<b>" + name + "</b>" else name
+                    let text = name + ": " + GLib.Markup.EscapeText  paramDesc
+                    text
+                    )
+            String.Join("\n\n", Array.append lines param)
+        
+        // Returns the text to use to represent the specified parameter
+        let paramDescription = 
+            let meth = meths.Methods.[overload]
+            if currentParameter < 0 || currentParameter >= meth.Parameters.Length  then "" else 
+            let param = meth.Parameters.[currentParameter]
+            param.Name 
+
+        let heading = 
+            let meth = meths.Methods.[overload]
+            let text = TipFormatter.formatTip  false  meth.Description 
+            let lines = text.Split [| '\n';'\r' |]
+
+            // Try to highlight the current parameter in bold. Hack apart the text based on (, comma, and ), then
+            // put it back together again.
+            //
+            // @todo This will not be perfect when the text contains generic types with more than one type parameter
+            // since they will have extra commas. 
+
+            let text = if lines.Length = 0 then meths.Name else  lines.[0]
+            let textL = text.Split '('
+            if textL.Length <> 2 then text else
+            let text0 = textL.[0]
+            let text1 = textL.[1]
+            let text1L = text1.Split ')'
+            if text1L.Length <> 2 then text else
+            let text10 = text1L.[0]
+            let text11 = text1L.[1]
+            let text10L =  text10.Split ','
+            let text10L = text10L |> Array.mapi (fun i x -> if i = currentParameter then "<b>" + x + "</b>" else x)
+            textL.[0] + "(" + String.Join(",", text10L) + ")" + text11
+
+        let tooltipInfo = new TooltipInformation ()
+        tooltipInfo.SummaryMarkup <- description
+        tooltipInfo.SignatureMarkup <- heading
+        tooltipInfo.FooterMarkup <- paramDescription
+        tooltipInfo
+
+        
+        // Returns the number of parameters of the specified method
+    override x.GetParameterCount (overload:int) = 
+        let meth = meths.Methods.[overload]
+        meth.Parameters.Length
+        
+        // @todo should return 'true' for param-list methods
+    override x.AllowParameterList (overload: int) = 
+        false
+
+    override x.GetParameterName (overload:int, paramIndex:int) =
+        let meth = meths.Methods.[overload]
+        let prm = meth.Parameters.[paramIndex]
+        prm.Name
 #endif
 
 /// Implements text editor extension for MonoDevelop that shows F# completion    
