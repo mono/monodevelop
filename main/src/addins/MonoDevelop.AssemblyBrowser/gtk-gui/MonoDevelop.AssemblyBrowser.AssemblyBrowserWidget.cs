@@ -120,7 +120,7 @@ namespace MonoDevelop.AssemblyBrowser
 				this.Child.ShowAll ();
 			}
 			w1.SetUiManager (UIManager);
-			this.Show ();
+			this.Hide ();
 			this.NavigateBackwardAction.Activated += new global::System.EventHandler (this.OnNavigateBackwardActionActivated);
 			this.NavigateForwardAction.Activated += new global::System.EventHandler (this.OnNavigateForwardActionActivated);
 		}

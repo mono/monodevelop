@@ -236,7 +236,6 @@ namespace MonoDevelop.AssemblyBrowser
 			this.inspectEditor.LinkRequest += InspectEditorhandleLinkRequest;
 			var scrolledWindow = new CompactScrolledWindow ();
 			scrolledWindow.Add (inspectEditor);
-			scrolledWindow.ShowAll ();
 			notebookInspection.Add (scrolledWindow);
 			var notebookChild = ((Notebook.NotebookChild)(notebookInspection [scrolledWindow]));
 			notebookChild.Position = 1;
