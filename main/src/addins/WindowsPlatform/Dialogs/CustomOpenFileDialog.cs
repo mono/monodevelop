@@ -89,6 +89,7 @@ namespace MonoDevelop.Platform
 					Top = y,
 					SelectedEncodingId = data.Encoding != null ? data.Encoding.CodePage : 0,
 				};
+				encodingBox.Anchor = AnchorStyles.Left | AnchorStyles.Right;
 				
 				Controls.AddRange (new Control [] { encodingLabel, encodingBox });
 
@@ -107,6 +108,7 @@ namespace MonoDevelop.Platform
 					DropDownStyle = ComboBoxStyle.DropDownList,
 					Enabled = false
 				};
+				viewerBox.Anchor = AnchorStyles.Left | AnchorStyles.Right;
 				
 				y += Math.Max (viewerLabel.Height, viewerBox.Height) + padding;
 				

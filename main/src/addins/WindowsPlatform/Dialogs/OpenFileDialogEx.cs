@@ -475,25 +475,34 @@ namespace CustomControls.Controls
                                 }
                             }
 
-                            RECT currentSize;
+                            RECT currentSize = new RECT();
+                            Win32.GetClientRect(mOpenDialogHandle, ref currentSize);
+
                             switch(mSourceControl.StartLocation)
                             {
-                                case AddonWindowLocation.Right:
-                                    currentSize = new RECT();
-                                    Win32.GetClientRect(mOpenDialogHandle, ref currentSize);
-                                    mSourceControl.Height = (int) currentSize.Height; 
+                                case AddonWindowLocation.Right: {
+                                    var loc = new Point((int)(currentSize.Width - mSourceControl.Width), 0);
+                                    if (mSourceControl.Location != loc)
+                                        mSourceControl.Location = loc;
+                                    if (mSourceControl.Height != (int) currentSize.Height)
+                                        mSourceControl.Height = (int) currentSize.Height;
                                     break;
-                                case AddonWindowLocation.Bottom:
-                                    currentSize = new RECT();
-                                    Win32.GetClientRect(mOpenDialogHandle, ref currentSize);
-                                    mSourceControl.Width = (int) currentSize.Width; 
+                                }
+                                case AddonWindowLocation.Bottom: {
+                                    var loc = new Point(0, (int)(currentSize.Height - mSourceControl.Height));
+                                    if (mSourceControl.Location != loc)
+                                        mSourceControl.Location = loc;
+                                    if (mSourceControl.Width != (int) currentSize.Width)
+                                        mSourceControl.Width = (int) currentSize.Width;
                                     break;
-                                case AddonWindowLocation.None:
-                                    currentSize = new RECT();
-                                    Win32.GetClientRect(mOpenDialogHandle, ref currentSize);
-                                    mSourceControl.Width = (int) currentSize.Width; 
-                                    mSourceControl.Height = (int) currentSize.Height; 
+                                }
+                                case AddonWindowLocation.None: {
+                                    if (mSourceControl.Width != (int) currentSize.Width)
+                                        mSourceControl.Width = (int) currentSize.Width;
+                                    if (mSourceControl.Height != (int) currentSize.Height)
+                                        mSourceControl.Height = (int) currentSize.Height;
                                     break;
+                                }
                             }
                         }
                         break;
