@@ -1577,8 +1577,10 @@ namespace Mono.Debugging.Soft
 							if (!HandleException (ex))
 								OnDebuggerOutput (true, ex.ToString ());
 
-							if (ex is VMDisconnectedException || ex is IOException || ex is SocketException)
+							if (ex is VMDisconnectedException || ex is IOException || ex is SocketException) {
+								OnTargetEvent (new TargetEventArgs (TargetEventType.TargetExited));
 								break;
+							}
 						}
 					}
 				}
