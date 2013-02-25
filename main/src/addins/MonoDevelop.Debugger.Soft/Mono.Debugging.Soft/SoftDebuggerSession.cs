@@ -142,7 +142,7 @@ namespace Mono.Debugging.Soft
 					string appName;
 					VirtualMachine vm;
 					startArgs.ConnectionProvider.EndConnect (ar, out vm, out appName);
-					this.remoteProcessName = appName;
+					remoteProcessName = appName;
 					ConnectionStarted (vm);
 					return;
 				} catch (Exception ex) {
@@ -158,7 +158,7 @@ namespace Mono.Debugging.Soft
 				}
 				try {
 					if (timeBetweenAttempts > 0)
-						System.Threading.Thread.Sleep (timeBetweenAttempts);
+						Thread.Sleep (timeBetweenAttempts);
 					ConnectionStarting (startArgs.ConnectionProvider.BeginConnect (dsi, callback), dsi, false, 0);
 				} catch (Exception ex2) {
 					OnConnectionError (ex2);
