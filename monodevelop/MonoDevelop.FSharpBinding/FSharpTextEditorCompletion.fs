@@ -21,8 +21,30 @@ type internal FSharpMemberCompletionData(mi:Declaration) =
     inherit CompletionData(CompletionText = (if mi.Name |> String.forall (fun c -> System.Char.IsLetterOrDigit c || c = '_') then mi.Name else "``" + mi.Name + "``"), 
                            DisplayText = mi.Name, 
                            DisplayFlags = DisplayFlags.DescriptionHasMarkup)
-    override x.Description = TipFormatter.formatTip mi.DescriptionText    
+    override x.Description = TipFormatter.formatTip false mi.DescriptionText    
     override x.Icon = new MonoDevelop.Core.IconId(ServiceUtils.getIcon mi.Glyph)
+
+#if MONODEVELOP_AT_MOST_3_1_1
+#else
+    // TODO: what does 'smartWrap' indicate?
+    override x.CreateTooltipInformation (smartWrap: bool) = 
+      let description = TipFormatter.formatTip false mi.DescriptionText
+      let lines = description.Split('\n','\r')
+      let lines = if lines.Length >= 1 then  lines else [| "" |]
+      // Include the indented format of the item in the 'signature'
+      let signatureLines = 
+          [| yield lines.[0]
+             yield! lines.[1..] |> Seq.takeWhile (fun s -> s.StartsWith(" ")) |]
+      // Skip the indented format of the item for the 'summary'
+      let summaryLines = 
+          [|  yield! lines.[1..] |> Seq.skipWhile (fun s -> s.StartsWith(" ")) |]
+      let summaryLines =  summaryLines |> Array.filter (String.IsNullOrEmpty >> not) 
+      let tooltipInfo = new TooltipInformation ()
+      tooltipInfo.SummaryMarkup <- summaryLines |> String.concat "\n"
+      tooltipInfo.SignatureMarkup <- signatureLines |> String.concat "\n"
+      tooltipInfo
+#endif
+
 
 /// Completion data representing a delayed fetch of completion data
 type internal FSharpTryAgainMemberCompletionData() =
@@ -53,7 +75,7 @@ type ParameterDataProvider(nameStart: int, meths: MethodOverloads) =
         /// in the parameter information window.
     member x.GetHeading (overload:int, parameterMarkup:string[], currentParameter:int) = 
             let meth = meths.Methods.[overload]
-            let text = TipFormatter.formatTip  meth.Description 
+            let text = TipFormatter.formatTip  false  meth.Description 
             let lines = text.Split [| '\n';'\r' |]
 
             // Try to highlight the current parameter in bold. Hack apart the text based on (, comma, and ), then
@@ -78,7 +100,7 @@ type ParameterDataProvider(nameStart: int, meths: MethodOverloads) =
         /// Get the lower part of the text for the display of an overload
     member x.GetDescription (overload:int, currentParameter:int) = 
             let meth = meths.Methods.[overload]
-            let text = TipFormatter.formatTip  meth.Description 
+            let text = TipFormatter.formatTip  false meth.Description 
             let lines = text.Split([| '\n';'\r' |])
             let lines = if lines.Length <= 1 then [| "" |] else lines.[1..] 
             let param = 
