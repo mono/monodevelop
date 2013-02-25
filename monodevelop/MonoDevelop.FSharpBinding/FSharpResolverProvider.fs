@@ -123,11 +123,7 @@ type FSharpLanguageItemTooltipProvider() =
             | _ -> null
 
     
-//#if MONODEVELOP_AT_MOST_3_1_1
-//    member x.GetRequiredPosition (editor, tipWindow, requiredWidth, xalign) = 
-//#else
     member x.GetRequiredPosition (editor, tipWindow : Gtk.Window, requiredWidth : int byref, xalign : double byref) = 
-//#endif
             match tipWindow with 
             | :? FSharpLanguageItemWindow as win -> 
                 requiredWidth <- win.SetMaxWidth win.Screen.Width
