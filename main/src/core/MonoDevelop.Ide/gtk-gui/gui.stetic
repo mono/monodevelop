@@ -9743,6 +9743,7 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
                         <property name="Label" translatable="yes" />
                         <property name="UseUnderline">True</property>
                         <property name="Relief">None</property>
+                        <signal name="Clicked" handler="OnAddFileButtonClicked" />
                       </widget>
                       <packing>
                         <property name="Position">0</property>

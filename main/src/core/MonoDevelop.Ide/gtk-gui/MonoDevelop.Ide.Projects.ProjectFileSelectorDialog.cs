@@ -175,6 +175,7 @@ namespace MonoDevelop.Ide.Projects
 			this.label2.MnemonicWidget = this.fileTypeCombo;
 			this.typeBox.Hide ();
 			this.Hide ();
+			this.AddFileButton.Clicked += new global::System.EventHandler (this.OnAddFileButtonClicked);
 		}
 	}
 }
