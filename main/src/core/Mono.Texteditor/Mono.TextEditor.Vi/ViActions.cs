@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace Mono.TextEditor.Vi
@@ -208,7 +209,183 @@ namespace Mono.TextEditor.Vi
 		{
 			data.Caret.Offset = data.FindCurrentWordStart (data.Caret.Offset);
 		}
-		
+
+		public static void InnerWord (TextEditorData data)
+		{
+			var start = data.FindCurrentWordStart (data.Caret.Offset);
+			var end = data.FindCurrentWordEnd (data.Caret.Offset);
+			data.SelectionRange = new TextSegment(start, end - start);
+		}
+
+		private static readonly Dictionary<char, char> EndToBeginCharMap = new Dictionary<char, char>
+		{
+			{')', '('},
+			{'}', '{'},
+			{']', '['},
+			{'>', '<'},
+		};
+		private static readonly Dictionary<char, char> BeginToEndCharMap = new Dictionary<char, char>
+		{
+			{'(', ')'},
+			{'{', '}'},
+			{'[', ']'},
+			{'<', '>'},
+		};
+
+		public static Action<TextEditorData> OuterSymbol (char command) 
+		{
+			return data =>
+			{
+				SymbolBlock result;
+				if (!TryFindSymbolBlock (data, command, out result)) return;
+
+				data.SelectionRange = result.GetOuterTextSegment ();
+			};
+		}
+
+		public static Action<TextEditorData> InnerSymbol (char command) 
+		{
+			return data =>
+			{
+				SymbolBlock result;
+				if (!TryFindSymbolBlock (data, command, out result)) return;
+
+				data.SelectionRange = result.GetInnerTextSegment ();
+			};
+		}
+
+		struct SymbolBlock
+		{
+			public int StartOffset, EndOffset;
+			public DocumentLine StartLine, EndLine;
+			bool IsSameLine { get { return StartLine == EndLine; } }
+
+			public TextSegment GetInnerTextSegment()
+			{
+				var length = IsSameLine ? EndOffset - StartOffset : EndLine.PreviousLine.EndOffset - StartOffset;
+				return new TextSegment (StartOffset + 1, length - 1);
+			}
+
+			public TextSegment GetOuterTextSegment ()
+			{
+				return new TextSegment (StartOffset, (EndOffset - StartOffset) + 1);
+			}
+		}
+
+		static bool TryFindSymbolBlock (TextEditorData data, char command, out SymbolBlock result)
+		{
+			char end, begin;
+			if (!BeginToEndCharMap.TryGetValue (command, out end)) end = command;
+			if (!EndToBeginCharMap.TryGetValue (command, out begin)) begin = command;
+
+			var offset = data.Caret.Offset;
+
+			var startTokenOffset = ParseForChar(data, offset, 0, end, begin, false);
+			var endTokenOffset = ParseForChar(data, offset, data.Length, begin, end, true);
+
+			// Use the editor's FindMatchingBrace built-in functionality. It's better at handling erroneous braces
+			// inside quotes. We still need to do the above paragraph because we needed to find the braces.
+			var matchingStartBrace = endTokenOffset.HasValue ? data.Document.GetMatchingBracketOffset(
+				endTokenOffset.GetValueOrDefault ()) : -1;
+			if (matchingStartBrace >= 0 && (!startTokenOffset.HasValue 
+			                                || matchingStartBrace != startTokenOffset.GetValueOrDefault ()))
+				startTokenOffset = matchingStartBrace;
+
+			var matchingEndBrace = startTokenOffset.HasValue && data.GetCharAt (offset) != end ? 
+				data.Document.GetMatchingBracketOffset(startTokenOffset.GetValueOrDefault ()) : -1;
+			if (matchingEndBrace >= 0 && (!endTokenOffset.HasValue 
+			                              || matchingEndBrace != endTokenOffset.GetValueOrDefault ()))
+				endTokenOffset = matchingEndBrace;
+
+			if (!startTokenOffset.HasValue || !endTokenOffset.HasValue) throw new ViModeAbortException();
+
+			result = new SymbolBlock 
+			{ 
+				StartOffset = startTokenOffset.GetValueOrDefault (),
+				EndOffset = endTokenOffset.GetValueOrDefault (),
+				StartLine = data.GetLineByOffset (startTokenOffset.GetValueOrDefault()),
+				EndLine = data.GetLineByOffset (endTokenOffset.GetValueOrDefault()),
+			};
+			return true;
+		}
+
+		static int? ParseForChar(TextEditorData data, int fromOffset, int toOffset, char oppositeToken, char findToken, bool forward)
+		{
+			int increment = forward ? 1 : -1;
+			var symbolCount = 0;
+			for (int i = fromOffset; forward && i < toOffset || !forward && i >= toOffset; i += increment)
+			{
+				var c = data.GetCharAt(i);
+				if (c == oppositeToken) 
+					symbolCount++;
+				else if (c == findToken)
+				{
+					if (symbolCount == 0) return i;
+					symbolCount--;
+				}
+			}
+			return null;
+		}
+
+		public static Action<TextEditorData> InnerQuote (char c)
+		{
+			return data => 
+			{
+				int beginOffset, length;
+				if (TryFindInnerQuote (data, c, out beginOffset, out length))
+					data.SelectionRange = new TextSegment (beginOffset, length);
+			};
+		}
+
+		static bool TryFindInnerQuote (TextEditorData data, char c, out int begin, out int length)
+		{
+			begin = 0;
+			length = 0;
+			var currentOffset = data.Caret.Offset;
+			var lineText = data.Document.GetLineText (data.Caret.Line);
+			var line = data.Document.GetLine (data.Caret.Line);
+			var lineOffset = currentOffset - line.Offset;
+
+			var beginOffset = ParseForQuote (lineText, lineOffset - 1, c, false);
+			if (!beginOffset.HasValue && lineText[lineOffset] == c)
+				beginOffset = lineOffset;
+			if (!beginOffset.HasValue) return false;
+			var startEndSearchAt = beginOffset.GetValueOrDefault () == lineOffset ? lineOffset + 1 : lineOffset;
+			var endOffset = ParseForQuote (lineText, startEndSearchAt, c, true);
+			if (!endOffset.HasValue) return false;
+
+			begin = beginOffset.GetValueOrDefault () + line.Offset + 1;
+			length = endOffset.GetValueOrDefault () - beginOffset.GetValueOrDefault () - 1;
+			return true;
+		}
+
+		public static Action<TextEditorData> OuterQuote (char c)
+		{
+			return data => 
+			{
+				int beginOffset, length;
+				if (TryFindInnerQuote (data, c, out beginOffset, out length))
+				{
+					beginOffset--;
+					length += 2;
+					data.SelectionRange = new TextSegment (beginOffset, length);
+				}
+			};
+		}
+
+		static int? ParseForQuote (string text, int start, char charToFind, bool forward) 
+		{
+			int increment = forward ? 1 : -1;
+			for (int i = start; forward && i < text.Length || !forward && i >= 0; i += increment)
+			{
+				if (text[i] == charToFind &&
+					(i < 1 || text[i-1] != '\\') &&
+					(i < 2 || text[i-2] != '\\'))
+					return i;
+			}
+			return null;
+		}
+
 		public static void LineEnd (TextEditorData data)
 		{
 			int desiredColumn = System.Math.Max (data.Caret.Column, data.Caret.DesiredColumn);

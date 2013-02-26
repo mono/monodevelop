@@ -35,6 +35,37 @@ namespace Mono.TextEditor.Vi
 	public static class ViActionMaps
 	{
 	
+		public static Action<TextEditorData> GetEditObjectCharAction (char c, Motion motion)
+		{
+			if (motion == Motion.None) return GetEditObjectCharAction(c);
+
+			switch (c) {
+			case 'w':
+				return ViActions.InnerWord;
+			case ')':
+			case '}':
+			case ']':
+			case '>':
+				if (motion == Motion.Inner)
+					return ViActions.InnerSymbol (c);
+				else if (motion == Motion.Outer)
+					return ViActions.OuterSymbol (c);
+				else
+					return null;
+			case '"':
+			case '\'':
+			case '`':
+				if (motion == Motion.Inner)
+					return ViActions.InnerQuote (c);
+				else if (motion == Motion.Outer)
+					return ViActions.OuterQuote (c);
+				else
+					return null;
+			default:
+				return null;
+			}
+		}
+
 		public static Action<TextEditorData> GetEditObjectCharAction (char c)
 		{
 			switch (c) {
