@@ -38,7 +38,7 @@ using MonoDevelop.Ide.Gui;
 namespace MonoDevelop.ValaBinding.Parser.Afrodite
 {
 	/// <summary>
-	/// Afrodite completion engine - interface for queueing source and getting ASTs
+	/// Afrodite completion engine - interface for queueing source and getting CodeDOMs
 	/// </summary>
 	internal class CompletionEngine
 	{
@@ -64,21 +64,21 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 		}
 		
 		/// <summary>
-		/// Attempt to acquire the current AST
+		/// Attempt to acquire the current CodeDOM
 		/// </summary>
 		/// <returns>
-		/// A <see cref="Ast"/>: null if unable to acquire
+		/// A <see cref="CodeDom"/>: null if unable to acquire
 		/// </returns>
-		public Ast TryAcquireAst ()
+		public CodeDom TryAcquireCodeDom ()
 		{
-			IntPtr ast = afrodite_completion_engine_get_ast (instance);
-			return (ast == IntPtr.Zero)? null: new Ast (ast, this);
+			IntPtr codeDom = afrodite_completion_engine_get_codedom (instance);
+			return (codeDom == IntPtr.Zero)? null: new CodeDom (codeDom, this);
 		}
 		
 		/// <summary>
-		/// Release the given AST (required for continued parsing)
+		/// Release the given CodeDOM (required for continued parsing)
 		/// </summary>
-		public void ReleaseAst (Ast ast)
+		public void ReleaseCodeDom (CodeDom codeDom)
 		{
 			// Obsolete
 		}
@@ -95,7 +95,7 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 		                                                                bool is_vapi, bool is_glib);
 		                                                                
 		[DllImport("afrodite")]
-		static extern IntPtr afrodite_completion_engine_get_ast (IntPtr instance);
+		static extern IntPtr afrodite_completion_engine_get_codedom (IntPtr instance);
 		
 		#endregion
 	}
@@ -129,10 +129,10 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 		/// <summary>
 		/// The type of this symbol
 		/// </summary>
-		public DataType DataType {
+		public DataType SymbolType {
 			get { 
-				IntPtr datatype = afrodite_symbol_get_symbol_data_type (instance);
-				return (IntPtr.Zero == datatype)? null: new DataType (afrodite_symbol_get_symbol_data_type (instance));
+				IntPtr datatype = afrodite_symbol_get_symbol_type (instance);
+				return (IntPtr.Zero == datatype)? null: new DataType (afrodite_symbol_get_symbol_type (instance));
 			}
 		}
 		
@@ -142,7 +142,7 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 		public DataType ReturnType {
 			get { 
 				IntPtr datatype = afrodite_symbol_get_return_type (instance);
-				return (IntPtr.Zero == datatype)? null: new DataType (afrodite_symbol_get_symbol_data_type (instance));
+				return (IntPtr.Zero == datatype)? null: new DataType (afrodite_symbol_get_return_type (instance));
 			}
 		}
 		
@@ -189,8 +189,8 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 		/// <summary>
 		/// The symbol type (class, method, ...) of this symbol
 		/// </summary>
-		public string SymbolType {
-			get{ return Utils.GetSymbolType (afrodite_symbol_get_symbol_type (instance)); }
+		public string MemberType {
+			get{ return Utils.GetMemberType (afrodite_symbol_get_member_type (instance)); }
 		}
 		
 		/// <summary>
@@ -220,7 +220,7 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 		/// The icon to be used for this symbol
 		/// </summary>
 		public string Icon {
-			get{ return GetIconForType (SymbolType, Accessibility); }
+			get{ return GetIconForType (MemberType, Accessibility); }
 		}
 		
 		/// <summary>
@@ -352,10 +352,10 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 		static extern IntPtr afrodite_symbol_get_parameters (IntPtr instance);
 		
 		[DllImport("afrodite")]
-		static extern int afrodite_symbol_get_symbol_type (IntPtr instance);
+		static extern int afrodite_symbol_get_member_type (IntPtr instance);
 		
 		[DllImport("afrodite")]
-		static extern IntPtr afrodite_symbol_get_symbol_data_type (IntPtr instance);
+		static extern IntPtr afrodite_symbol_get_symbol_type (IntPtr instance);
 		
 		[DllImport("afrodite")]
 		static extern IntPtr afrodite_symbol_get_return_type (IntPtr instance);
@@ -364,25 +364,25 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 	}
 	
 	/// <summary>
-	/// Represents a Vala AST
+	/// Represents a Vala CodeDOM
 	/// </summary>
 	/// <remarks>
 	/// MUST be disposed for parsing to continue
 	/// </remarks>
-	internal class Ast: IDisposable
+	internal class CodeDom: IDisposable
 	{
 		CompletionEngine engine;
 		
 		/// <summary>
-		/// Create a new AST wrapper
+		/// Create a new CodeDOM wrapper
 		/// </summary>
 		/// <param name="instance">
-		/// A <see cref="IntPtr"/>: The native pointer for this AST
+		/// A <see cref="IntPtr"/>: The native pointer for this CodeDOM
 		/// </param>
 		/// <param name="engine">
-		/// A <see cref="CompletionEngine"/>: The completion engine to which this AST belongs
+		/// A <see cref="CompletionEngine"/>: The completion engine to which this CodeDOM belongs
 		/// </param>
-		public Ast (IntPtr instance, CompletionEngine engine)
+		public CodeDom (IntPtr instance, CompletionEngine engine)
 		{
 			this.instance = instance;
 			this.engine = engine;
@@ -390,7 +390,7 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 		
 		public QueryResult GetSymbolsForPath (string path)
 		{
-			return new QueryResult (afrodite_ast_get_symbols_for_path (instance, new QueryOptions ().Instance, path));
+			return new QueryResult (afrodite_code_dom_get_symbols_for_path (instance, new QueryOptions ().Instance, path));
 		}
 		
 		/// <summary>
@@ -398,7 +398,7 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 		/// </summary>
 		public Symbol LookupSymbolAt (string filename, int line, int column)
 		{
-			IntPtr symbol = afrodite_ast_lookup_symbol_at (instance, filename, line, column);
+			IntPtr symbol = afrodite_code_dom_lookup_symbol_at (instance, filename, line, column);
 			return (IntPtr.Zero == symbol)? null: new Symbol (symbol);
 		}
 		
@@ -410,7 +410,7 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 			IntPtr parentInstance = IntPtr.Zero,
 			       result = IntPtr.Zero;
 			
-			result = afrodite_ast_lookup (instance, fully_qualified_name, out parentInstance);
+			result = afrodite_code_dom_lookup (instance, fully_qualified_name, out parentInstance);
 			parent = (IntPtr.Zero == parentInstance)? null: new Symbol (parentInstance);
 			return (IntPtr.Zero == result)? null: new Symbol (result);
 		}
@@ -420,7 +420,7 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 		/// </summary>
 		public Symbol GetSymbolForNameAndPath (string name, string path, int line, int column)
 		{
-			IntPtr result = afrodite_ast_get_symbol_for_name_and_path (instance, QueryOptions.Standard ().Instance,
+			IntPtr result = afrodite_code_dom_get_symbol_for_name_and_path (instance, QueryOptions.Standard ().Instance,
 			                                                           name, path, line, column);
 			if (IntPtr.Zero != result) {
 				QueryResult qresult = new QueryResult (result);
@@ -432,12 +432,12 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 		}
 		
 		/// <summary>
-		/// Get the source files used to create this AST
+		/// Get the source files used to create this CodeDOM
 		/// </summary>
 		public List<SourceFile> SourceFiles {
 			get {
 				List<SourceFile> files = new List<SourceFile> ();
-				IntPtr sourceFiles = afrodite_ast_get_source_files (instance);
+				IntPtr sourceFiles = afrodite_code_dom_get_source_files (instance);
 				
 				if (IntPtr.Zero != sourceFiles) {
 					ValaList list = new ValaList (sourceFiles);
@@ -453,7 +453,7 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 		/// </summary>
 		public SourceFile LookupSourceFile (string filename)
 		{
-			IntPtr sourceFile = afrodite_ast_lookup_source_file (instance, filename);
+			IntPtr sourceFile = afrodite_code_dom_lookup_source_file (instance, filename);
 			return (IntPtr.Zero == sourceFile)? null: new SourceFile (sourceFile);
 		}
 		
@@ -466,53 +466,53 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 		}
 		
 		[DllImport("afrodite")]
-		static extern IntPtr afrodite_ast_get_symbols_for_path (IntPtr instance, IntPtr options, string path);
+		static extern IntPtr afrodite_code_dom_get_symbols_for_path (IntPtr instance, IntPtr options, string path);
 		
 		[DllImport("afrodite")]
-		static extern IntPtr afrodite_ast_lookup_symbol_at (IntPtr instance, string filename, int line, int column);
+		static extern IntPtr afrodite_code_dom_lookup_symbol_at (IntPtr instance, string filename, int line, int column);
 		
 		[DllImport("afrodite")]
-		static extern IntPtr afrodite_ast_lookup (IntPtr instance, string fully_qualified_name, out IntPtr parent);
+		static extern IntPtr afrodite_code_dom_lookup (IntPtr instance, string fully_qualified_name, out IntPtr parent);
 		
 		[DllImport("afrodite")]
-		static extern IntPtr afrodite_ast_get_symbol_for_name_and_path (IntPtr instance, IntPtr options,
+		static extern IntPtr afrodite_code_dom_get_symbol_for_name_and_path (IntPtr instance, IntPtr options,
 		                                                                string symbol_qualified_name, string path,
 		                                                                int line, int column);
 		
 		[DllImport("afrodite")]
-		static extern IntPtr afrodite_ast_get_source_files (IntPtr instance);
+		static extern IntPtr afrodite_code_dom_get_source_files (IntPtr instance);
 		
 		[DllImport("afrodite")]
-		static extern IntPtr afrodite_ast_lookup_source_file (IntPtr instance, string filename);
+		static extern IntPtr afrodite_code_dom_lookup_source_file (IntPtr instance, string filename);
 		
 		#endregion
 		
 		#region IDisposable implementation
 		
 		/// <summary>
-		/// Release this AST for reuse
+		/// Release this CodeDOM for reuse
 		/// </summary>
 		public void Dispose ()
 		{
-			engine.ReleaseAst (this);
+			engine.ReleaseCodeDom (this);
 		}
 		
 		#endregion
 	}
 	
 	/// <summary>
-	/// Utility class for dumping an AST to Console.Out
+	/// Utility class for dumping a CodeDOM to Console.Out
 	/// </summary>
-	internal class AstDumper
+	internal class CodeDomDumper
 	{
-		public AstDumper ()
+		public CodeDomDumper ()
 		{
 			instance = afrodite_ast_dumper_new ();
 		}
 		
-		public void Dump (Ast ast, string filterSymbol)
+		public void Dump (CodeDom codeDom, string filterSymbol)
 		{
-			afrodite_ast_dumper_dump (instance, ast.Instance, filterSymbol);
+			afrodite_ast_dumper_dump (instance, codeDom.Instance, filterSymbol);
 		}
 		
 		#region P/Invokes
@@ -523,7 +523,7 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 		static extern IntPtr afrodite_ast_dumper_new ();
 		
 		[DllImport("afrodite")]
-		static extern void afrodite_ast_dumper_dump (IntPtr instance, IntPtr ast, string filterSymbol);
+		static extern void afrodite_ast_dumper_dump (IntPtr instance, IntPtr codeDom, string filterSymbol);
 		
 		#endregion
 	}
@@ -600,7 +600,7 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 	}
 	
 	/// <summary>
-	/// Options for querying an AST
+	/// Options for querying a CodeDOM
 	/// </summary>
 	internal class QueryOptions
 	{
@@ -846,7 +846,7 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 	}
 	
 	/// <summary>
-	/// Class to represent an AST source file
+	/// Class to represent a CodeDOM source file
 	/// </summary>
 	internal class SourceFile
 	{
@@ -1161,16 +1161,16 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 			return list;
 		}
 		
-		public static string GetSymbolType (int symbolType)
+		public static string GetMemberType (int memberType)
 		{
-			return Marshal.PtrToStringAuto (afrodite_utils_symbols_get_symbol_type_description (symbolType));
+			return Marshal.PtrToStringAuto (afrodite_utils_symbols_get_symbol_type_description (memberType));
 		}
 		
 		[DllImport("afrodite")]
 		static extern IntPtr afrodite_utils_get_package_paths (string package, IntPtr codeContext, string[] vapiDirs);
 		
 		[DllImport("afrodite")]
-		static extern IntPtr afrodite_utils_symbols_get_symbol_type_description (int symbolType);
+		static extern IntPtr afrodite_utils_symbols_get_symbol_type_description (int memberType);
 	}
 }
 
