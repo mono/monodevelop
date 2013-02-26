@@ -30,13 +30,14 @@ using MonoDevelop.Ide.Gui;
 using Mono.MHex;
 using Mono.MHex.Data;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.HexEditor
 {
 	public class HexEditorView : AbstractViewContent, IUndoHandler, IBookmarkBuffer, IZoomable
 	{
 		Mono.MHex.HexEditor hexEditor = new Mono.MHex.HexEditor ();
-		Gtk.ScrolledWindow window = new Gtk.ScrolledWindow ();
+		CompactScrolledWindow window = new CompactScrolledWindow ();
 		
 		public override Gtk.Widget Control {
 			get {

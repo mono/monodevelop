@@ -126,7 +126,7 @@ namespace Mono.Debugging.Soft
 		
 		void StartConnection (SoftDebuggerStartInfo dsi)
 		{
-			this.startArgs = dsi.StartArgs;
+			startArgs = dsi.StartArgs;
 			
 			RegisterUserAssemblies (dsi);
 			
@@ -142,7 +142,7 @@ namespace Mono.Debugging.Soft
 					string appName;
 					VirtualMachine vm;
 					startArgs.ConnectionProvider.EndConnect (ar, out vm, out appName);
-					this.remoteProcessName = appName;
+					remoteProcessName = appName;
 					ConnectionStarted (vm);
 					return;
 				} catch (Exception ex) {
@@ -158,7 +158,7 @@ namespace Mono.Debugging.Soft
 				}
 				try {
 					if (timeBetweenAttempts > 0)
-						System.Threading.Thread.Sleep (timeBetweenAttempts);
+						Thread.Sleep (timeBetweenAttempts);
 					ConnectionStarting (startArgs.ConnectionProvider.BeginConnect (dsi, callback), dsi, false, 0);
 				} catch (Exception ex2) {
 					OnConnectionError (ex2);
@@ -573,7 +573,7 @@ namespace Mono.Debugging.Soft
 
 		protected override void OnAttachToProcess (long processId)
 		{
-			throw new System.NotSupportedException ();
+			throw new NotSupportedException ();
 		}
 
 		protected override void OnContinue ()
@@ -593,7 +593,7 @@ namespace Mono.Debugging.Soft
 
 		protected override void OnDetach ()
 		{
-			throw new System.NotSupportedException ();
+			throw new NotSupportedException ();
 		}
 
 		protected override void OnExit ()
@@ -603,10 +603,12 @@ namespace Mono.Debugging.Soft
 			if (vm != null) {
 				try {
 					vm.Exit (0);
+				} catch (VMDisconnectedException ex) {
+					// The VM was already disconnected, ignore.
 				} catch (SocketException se) {
 					// This will often happen during normal operation
 					LoggingService.LogError ("Error closing debugger session", se);
-				}catch (IOException ex) {
+				} catch (IOException ex) {
 					// This will often happen during normal operation
 					LoggingService.LogError ("Error closing debugger session", ex);
 				}
@@ -1575,8 +1577,10 @@ namespace Mono.Debugging.Soft
 							if (!HandleException (ex))
 								OnDebuggerOutput (true, ex.ToString ());
 
-							if (ex is VMDisconnectedException || ex is IOException || ex is SocketException)
+							if (ex is VMDisconnectedException || ex is IOException || ex is SocketException) {
+								OnTargetEvent (new TargetEventArgs (TargetEventType.TargetExited));
 								break;
+							}
 						}
 					}
 				}

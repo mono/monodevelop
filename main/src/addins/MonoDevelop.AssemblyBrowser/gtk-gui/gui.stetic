@@ -7,6 +7,7 @@
   <import>
     <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
     <widget-library name="../../../../build/bin/Mono.TextEditor.dll" />
+    <widget-library name="../../../../build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll" />
     <widget-library name="../../../../build/AddIns/BackendBindings/MonoDevelop.CSharpBinding.dll" />
     <widget-library name="../../../../build/AddIns/DisplayBindings/SourceEditor/MonoDevelop.SourceEditor2.dll" />
     <widget-library name="../../../../build/AddIns/DisplayBindings/AssemblyBrowser/MonoDevelop.AssemblyBrowser.dll" internal="true" />
@@ -29,6 +30,7 @@
       </action>
     </action-group>
     <property name="MemberName" />
+    <property name="Visible">False</property>
     <property name="GeneratePublic">False</property>
     <child>
       <widget class="Gtk.VBox" id="vbox1">
@@ -61,39 +63,10 @@
                     <property name="CurrentPage">0</property>
                     <property name="ShowBorder">False</property>
                     <child>
-                      <widget class="Gtk.Notebook" id="notebookInspection">
+                      <widget class="MonoDevelop.Components.CompactScrolledWindow" id="documentationScrolledWindow">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
-                        <property name="CurrentPage">1</property>
-                        <property name="ShowBorder">False</property>
-                        <child>
-                          <widget class="MonoDevelop.Components.CompactScrolledWindow" id="documentationScrolledWindow">
-                            <property name="MemberName" />
-                            <property name="CanFocus">True</property>
-                            <property name="ShowBorderLine">False</property>
-                          </widget>
-                        </child>
-                        <child>
-                          <widget class="Gtk.Label" id="label4">
-                            <property name="MemberName" />
-                            <property name="LabelProp" translatable="yes">summary</property>
-                          </widget>
-                          <packing>
-                            <property name="type">tab</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <placeholder />
-                        </child>
-                        <child>
-                          <widget class="Gtk.Label" id="label5">
-                            <property name="MemberName" />
-                            <property name="LabelProp" translatable="yes">decompiler</property>
-                          </widget>
-                          <packing>
-                            <property name="type">tab</property>
-                          </packing>
-                        </child>
+                        <property name="ShowBorderLine">False</property>
                       </widget>
                     </child>
                     <child>

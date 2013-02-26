@@ -60,10 +60,8 @@ namespace MonoDevelop.Debugger
 			
 			exception.Changed += HandleExceptionChanged;
 			treeStack.SizeAllocated += delegate(object o, SizeAllocatedArgs args) {
-				if (crt.WrapWidth != args.Allocation.Width) {
+				if (crt.WrapWidth != args.Allocation.Width)
 					crt.WrapWidth = args.Allocation.Width;
-					Fill ();
-				}
 			};
 			
 			Fill ();

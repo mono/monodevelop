@@ -927,8 +927,8 @@ namespace Mono.Debugging.Client
 		{
 			if (TypeResolverHandler != null)
 				return TypeResolverHandler (identifier, location);
-			else
-				return null;
+
+			return null;
 		}
 		
 		internal ThreadInfo[] GetThreads (long processId)
@@ -1216,8 +1216,8 @@ namespace Mono.Debugging.Client
 		{
 			if (exceptionHandler != null)
 				return exceptionHandler (ex);
-			else
-				return false;
+
+			return false;
 		}
 		
 		internal void AdjustBreakpointLocation (Breakpoint b, int newLine, int newColumn)

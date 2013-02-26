@@ -139,8 +139,12 @@ namespace MonoDevelop.Ide
 			Counters.Initialization.Trace ("Initializing theme and splash window");
 
 			DefaultTheme = Gtk.Settings.Default.ThemeName;
-			if (!string.IsNullOrEmpty (IdeApp.Preferences.UserInterfaceTheme))
-				Gtk.Settings.Default.ThemeName = IdeApp.Preferences.UserInterfaceTheme;
+			if (!string.IsNullOrEmpty (IdeApp.Preferences.UserInterfaceTheme)) {
+				string theme;
+				if (!ValidateGtkTheme (IdeApp.Preferences.UserInterfaceTheme, out theme))
+					return 1;
+				Gtk.Settings.Default.ThemeName = theme;
+			}
 			
 			//don't show the splash screen on the Mac, so instead we get the expected "Dock bounce" effect
 			//this also enables the Mac platform service to subscribe to open document events before the GUI loop starts.
@@ -202,9 +206,6 @@ namespace MonoDevelop.Ide
 			if (!CheckBug77135 ())
 				return 1;
 			
-			if (!CheckQtCurve ())
-				return 1;
-
 			CheckFileWatcher ();
 			
 			Exception error = null;
@@ -376,17 +377,45 @@ namespace MonoDevelop.Ide
 			IdeApp.Workbench.Present ();
 			return false;
 		}
-		
-		bool CheckQtCurve ()
+
+		internal readonly static string[] FailingGtkThemes = new string[] {
+			"QtCurve",
+			"oxygen-gtk"
+		};
+
+		internal static string[] gtkThemeFallbacks = new string[] {
+			"Gilouche", // SUSE
+			"Mint-X", // MINT
+			"Clearlooks" // GTK theme
+		};
+
+		bool ValidateGtkTheme (string requestedTheme, out string validTheme)
 		{
-			if (Gtk.Settings.Default.ThemeName == "QtCurve") {
-				string msg = "QtCurve theme not supported";
-				string desc = "Your system is using the QtCurve GTK+ theme. This theme is known to cause stability issues in MonoDevelop. Please select another theme in the GTK+ Theme Selector.\n\nIf you click on Proceed, MonoDevelop will switch to the default GTK+ theme.";
-				AlertButton res = MessageService.GenericAlert (Gtk.Stock.DialogWarning, msg, desc, AlertButton.Cancel, AlertButton.Proceed);
-				if (res == AlertButton.Cancel)
-					return false;
-				Gtk.Settings.Default.ThemeName = "Gilouche";
+			foreach (var theme in FailingGtkThemes) {
+				if (requestedTheme == theme) {
+					string msg = theme +" theme not supported";
+					string desc = "Your system is using the " + theme + " GTK+ theme. This theme is known to cause stability issues in MonoDevelop. Please select another theme in the GTK+ Theme Selector.\n\nIf you click on Proceed, MonoDevelop will switch to the default GTK+ theme.";
+					AlertButton res = MessageService.GenericAlert (Gtk.Stock.DialogWarning, msg, desc, AlertButton.Cancel, AlertButton.Proceed);
+					if (res == AlertButton.Cancel) {
+						validTheme = null;
+						return false;
+					}
+					var themes = MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.InstalledThemes;
+					string fallback = null;
+					foreach (string fb in gtkThemeFallbacks) {
+						var foundTheme = themes.FirstOrDefault (t => string.Compare (fb, t, StringComparison.OrdinalIgnoreCase) == 0);
+						if (foundTheme != null) {
+							fallback = foundTheme;
+							break;
+						}
+					}
+
+					validTheme = fallback ?? themes.FirstOrDefault () ?? requestedTheme;
+					return validTheme != null;
+				}
 			}
+
+			validTheme = requestedTheme;
 			return true;
 		}
 		
