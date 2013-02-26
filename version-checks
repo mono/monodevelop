@@ -17,7 +17,7 @@ DEP[0]=md-addins
 DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
 DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
-DEP_NEEDED_VERSION[0]=f5341c5c5fb45c0ba7ee7b54b5cab2bb11352c9b
+DEP_NEEDED_VERSION[0]=57f5a2e23e69bcae056d05efc0f9271e7485d926
 DEP_BRANCH_AND_REMOTE[0]="bigsplash origin/bigsplash"
 
 # heap-shot
