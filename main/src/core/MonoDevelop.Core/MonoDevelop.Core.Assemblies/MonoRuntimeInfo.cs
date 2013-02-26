@@ -150,7 +150,8 @@ namespace MonoDevelop.Core.Assemblies
 			
 			MonoRuntimeInfo rt = new MonoRuntimeInfo ();
 			
-			string ver = (string) t.InvokeMember ("GetDisplayName", BindingFlags.InvokeMethod | BindingFlags.Static | BindingFlags.NonPublic, null, null, null);
+			// Since Mono 3.0.5/ee035e3eb463816a9590b09f65842503640c6337 GetDisplayName is public
+			string ver = (string) t.InvokeMember ("GetDisplayName", BindingFlags.InvokeMethod | BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public, null, null, null);
 			
 			//not sure which version this old scheme applies to
 			int i = ver.IndexOf ("/branches/mono-");
