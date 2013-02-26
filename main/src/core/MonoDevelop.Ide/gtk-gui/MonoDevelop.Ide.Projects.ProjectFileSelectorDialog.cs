@@ -6,8 +6,11 @@ namespace MonoDevelop.Ide.Projects
 	{
 		private global::Gtk.VBox vbox2;
 		private global::Gtk.HPaned hpaned1;
+		private global::Gtk.VBox vbox3;
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
 		private global::Gtk.TreeView projectTree;
+		private global::Gtk.HBox hbox2;
+		private global::Gtk.Button AddFileButton;
 		private global::Gtk.ScrolledWindow GtkScrolledWindow1;
 		private global::Gtk.TreeView fileList;
 		private global::Gtk.HBox typeBox;
@@ -38,6 +41,10 @@ namespace MonoDevelop.Ide.Projects
 			this.hpaned1.Name = "hpaned1";
 			this.hpaned1.Position = 182;
 			// Container child hpaned1.Gtk.Paned+PanedChild
+			this.vbox3 = new global::Gtk.VBox ();
+			this.vbox3.Name = "vbox3";
+			this.vbox3.Spacing = 6;
+			// Container child vbox3.Gtk.Box+BoxChild
 			this.GtkScrolledWindow = new global::Gtk.ScrolledWindow ();
 			this.GtkScrolledWindow.Name = "GtkScrolledWindow";
 			this.GtkScrolledWindow.ShadowType = ((global::Gtk.ShadowType)(1));
@@ -46,9 +53,34 @@ namespace MonoDevelop.Ide.Projects
 			this.projectTree.CanFocus = true;
 			this.projectTree.Name = "projectTree";
 			this.GtkScrolledWindow.Add (this.projectTree);
-			this.hpaned1.Add (this.GtkScrolledWindow);
-			global::Gtk.Paned.PanedChild w3 = ((global::Gtk.Paned.PanedChild)(this.hpaned1 [this.GtkScrolledWindow]));
-			w3.Resize = false;
+			this.vbox3.Add (this.GtkScrolledWindow);
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.GtkScrolledWindow]));
+			w3.Position = 0;
+			// Container child vbox3.Gtk.Box+BoxChild
+			this.hbox2 = new global::Gtk.HBox ();
+			this.hbox2.Name = "hbox2";
+			this.hbox2.Spacing = 6;
+			// Container child hbox2.Gtk.Box+BoxChild
+			this.AddFileButton = new global::Gtk.Button ();
+			this.AddFileButton.TooltipMarkup = "Add existing files to the project";
+			this.AddFileButton.CanFocus = true;
+			this.AddFileButton.Name = "AddFileButton";
+			this.AddFileButton.UseStock = true;
+			this.AddFileButton.UseUnderline = true;
+			this.AddFileButton.Label = "gtk-add";
+			this.hbox2.Add (this.AddFileButton);
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.AddFileButton]));
+			w4.Position = 0;
+			w4.Expand = false;
+			w4.Fill = false;
+			this.vbox3.Add (this.hbox2);
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.hbox2]));
+			w5.Position = 1;
+			w5.Expand = false;
+			w5.Fill = false;
+			this.hpaned1.Add (this.vbox3);
+			global::Gtk.Paned.PanedChild w6 = ((global::Gtk.Paned.PanedChild)(this.hpaned1 [this.vbox3]));
+			w6.Resize = false;
 			// Container child hpaned1.Gtk.Paned+PanedChild
 			this.GtkScrolledWindow1 = new global::Gtk.ScrolledWindow ();
 			this.GtkScrolledWindow1.Name = "GtkScrolledWindow1";
@@ -60,8 +92,8 @@ namespace MonoDevelop.Ide.Projects
 			this.GtkScrolledWindow1.Add (this.fileList);
 			this.hpaned1.Add (this.GtkScrolledWindow1);
 			this.vbox2.Add (this.hpaned1);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hpaned1]));
-			w6.Position = 0;
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hpaned1]));
+			w9.Position = 0;
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.typeBox = new global::Gtk.HBox ();
 			this.typeBox.Name = "typeBox";
@@ -72,32 +104,32 @@ namespace MonoDevelop.Ide.Projects
 			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("File _type:");
 			this.label2.UseUnderline = true;
 			this.typeBox.Add (this.label2);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.typeBox [this.label2]));
-			w7.Position = 0;
-			w7.Expand = false;
-			w7.Fill = false;
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.typeBox [this.label2]));
+			w10.Position = 0;
+			w10.Expand = false;
+			w10.Fill = false;
 			// Container child typeBox.Gtk.Box+BoxChild
 			this.fileTypeCombo = global::Gtk.ComboBox.NewText ();
 			this.fileTypeCombo.Name = "fileTypeCombo";
 			this.typeBox.Add (this.fileTypeCombo);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.typeBox [this.fileTypeCombo]));
-			w8.Position = 1;
-			w8.Expand = false;
-			w8.Fill = false;
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.typeBox [this.fileTypeCombo]));
+			w11.Position = 1;
+			w11.Expand = false;
+			w11.Fill = false;
 			this.vbox2.Add (this.typeBox);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.typeBox]));
-			w9.Position = 1;
-			w9.Expand = false;
-			w9.Fill = false;
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.typeBox]));
+			w12.Position = 1;
+			w12.Expand = false;
+			w12.Fill = false;
 			w1.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox2]));
-			w10.Position = 0;
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox2]));
+			w13.Position = 0;
 			// Internal child MonoDevelop.Ide.Projects.ProjectFileSelectorDialog.ActionArea
-			global::Gtk.HButtonBox w11 = this.ActionArea;
-			w11.Name = "dialog1_ActionArea";
-			w11.Spacing = 6;
-			w11.BorderWidth = ((uint)(5));
-			w11.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
+			global::Gtk.HButtonBox w14 = this.ActionArea;
+			w14.Name = "dialog1_ActionArea";
+			w14.Spacing = 6;
+			w14.BorderWidth = ((uint)(5));
+			w14.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.buttonCancel = new global::Gtk.Button ();
 			this.buttonCancel.CanDefault = true;
@@ -107,9 +139,9 @@ namespace MonoDevelop.Ide.Projects
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
 			this.AddActionWidget (this.buttonCancel, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w12 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w11 [this.buttonCancel]));
-			w12.Expand = false;
-			w12.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w15 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w14 [this.buttonCancel]));
+			w15.Expand = false;
+			w15.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.buttonOk = new global::Gtk.Button ();
 			this.buttonOk.CanDefault = true;
@@ -119,10 +151,10 @@ namespace MonoDevelop.Ide.Projects
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-ok";
 			this.AddActionWidget (this.buttonOk, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w13 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w11 [this.buttonOk]));
-			w13.Position = 1;
-			w13.Expand = false;
-			w13.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w16 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w14 [this.buttonOk]));
+			w16.Position = 1;
+			w16.Expand = false;
+			w16.Fill = false;
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
@@ -131,6 +163,7 @@ namespace MonoDevelop.Ide.Projects
 			this.label2.MnemonicWidget = this.fileTypeCombo;
 			this.typeBox.Hide ();
 			this.Hide ();
+			this.AddFileButton.Clicked += new global::System.EventHandler (this.OnAddFileButtonClicked);
 		}
 	}
 }
