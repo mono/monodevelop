@@ -31,6 +31,7 @@ using MonoDevelop.AspNet.Parser;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Xml.StateEngine;
 
 namespace MonoDevelop.AspNet
 {
@@ -42,8 +43,8 @@ namespace MonoDevelop.AspNet
 			if (fileName == null)
 				return;
 			
-			tags["AspNetMaster"] = "";
-			tags["AspNetMasterContent"] = "";
+			tags ["AspNetMaster"] = "";
+			tags ["AspNetMasterContent"] = "";
 			
 			AspNetAppProject aspProj = project as AspNetAppProject;
 			if (aspProj == null)
@@ -54,17 +55,16 @@ namespace MonoDevelop.AspNet
 			var dialog = new MonoDevelop.Ide.Projects.ProjectFileSelectorDialog (aspProj, null, "*.master");
 			try {
 				dialog.Title = GettextCatalog.GetString ("Select a Master Page...");
-				int response =  MonoDevelop.Ide.MessageService.RunCustomDialog (dialog);
+				int response = MonoDevelop.Ide.MessageService.RunCustomDialog (dialog);
 				if (response == (int)Gtk.ResponseType.Ok)
 					masterPage = dialog.SelectedFile;
-			}
-			finally {
+			} finally {
 				dialog.Destroy ();
 			}
 			if (masterPage == null)
 				return;
 			
-			tags["AspNetMaster"] = aspProj.LocalToVirtualPath (masterPage);
+			tags ["AspNetMaster"] = aspProj.LocalToVirtualPath (masterPage);
 			
 			try {
 				var pd = TypeSystemService.ParseFile (project, masterPage.FilePath)
@@ -72,11 +72,14 @@ namespace MonoDevelop.AspNet
 				if (pd == null)
 					return;
 				
-				var visitor = new ContentPlaceHolderVisitor ();
-				pd.RootNode.AcceptVisit (visitor);
+				//var visitor = new ContentPlaceHolderVisitor ();
+				//pd.RootNode.AcceptVisit (visitor);
+				
+				List<string> placeHolderIds = new List<string> ();
+				BuildPlaceholderList (placeHolderIds, pd.XDocument);
 				
 				var sb = new System.Text.StringBuilder ();
-				foreach (string id in visitor.PlaceHolders) {
+				foreach (string id in placeHolderIds) {
 					sb.Append ("<asp:Content ContentPlaceHolderID=\"");
 					sb.Append (id);
 					sb.Append ("\" ID=\"");
@@ -90,6 +93,33 @@ namespace MonoDevelop.AspNet
 				//no big loss if we just insert blank space
 				//it's just a template for the user to start editing
 				LoggingService.LogWarning ("Error generating AspNetMasterContent for template", ex);
+			}
+		}
+		
+		void BuildPlaceholderList (List<string> placeHolderIds, XDocument xDoc)
+		{
+			AddPlaceholderElement (placeHolderIds, xDoc.RootElement);
+		}
+		
+		void AddPlaceholderElement (List<string> list, XElement el)
+		{
+			if (0 == string.Compare (el.Name.FullName, "asp:ContentPlaceHolder", true)) {
+				string id = string.Empty;
+				
+				foreach (XAttribute att in el.Attributes) {
+					if (0 == string.Compare (att.Name.Name, "id", true)) {
+						id = att.Value;
+						break;
+					}	
+				}
+				
+				if (id != string.Empty)
+					list.Add (id);
+			}
+			
+			foreach (XNode node in el.Nodes) {
+				if (node is XElement)
+					AddPlaceholderElement (list, node as XElement);
 			}
 		}
 	}

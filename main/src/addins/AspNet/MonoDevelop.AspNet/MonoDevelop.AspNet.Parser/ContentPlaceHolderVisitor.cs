@@ -2,9 +2,9 @@
 // ContentPlaceHolderVisitor.cs
 //  
 // Author:
-//       Michael Hutchinson <mhutchinson@novell.com>
+//       Petar Dodev
 // 
-// Copyright (c) 2009 Novell, Inc. (http://www.novell.com)
+// Copyright (c) 2012 dodo
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,30 +23,21 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
 using System.Collections.Generic;
 using MonoDevelop.AspNet.Parser.Dom;
 
 namespace MonoDevelop.AspNet.Parser
 {
-	
-	
+	[Obsolete ("Traverse the XDocument property instead")]
 	public class ContentPlaceHolderVisitor : Visitor
 	{
-		List<string> placeholders = new List<string> ();
-		
-		public override void Visit (TagNode node)
+		public List<string> PlaceHolders { get; private set; }
+
+		public ContentPlaceHolderVisitor ()
 		{
-			if (0 == String.Compare (node.TagName, "asp:ContentPlaceHolder", StringComparison.OrdinalIgnoreCase)
-			    && node.Attributes.IsRunAtServer ())
-			{
-				string id = node.Attributes["id"] as string;
-				if (!String.IsNullOrEmpty (id))
-					placeholders.Add (id);
-			}
+			PlaceHolders = new List<string> ();
 		}
-		
-		public IList<string> PlaceHolders { get { return placeholders; } }
 	}
 }
+

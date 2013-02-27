@@ -29,12 +29,13 @@
 using System;
 using System.IO;
 
-using MonoDevelop.AspNet.Parser.Dom;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Projects;
+using MonoDevelop.Xml.StateEngine;
+using MonoDevelop.AspNet.StateEngine;
 
 namespace MonoDevelop.AspNet.Parser
 {
@@ -42,22 +43,27 @@ namespace MonoDevelop.AspNet.Parser
 	{
 		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader tr, Project project = null)
 		{
-				var info = new PageInfo ();
-			var rootNode = new RootNode ();
+			var info = new PageInfo ();
 			var errors = new List<Error> ();
+
+			Xml.StateEngine.Parser parser = new Xml.StateEngine.Parser (
+				new AspNetFreeState (),
+				true
+			);
 			
 			try {
-				rootNode.Parse (fileName, tr);
+				parser.Parse (tr);
 			} catch (Exception ex) {
 				LoggingService.LogError ("Unhandled error parsing ASP.NET document '" + (fileName ?? "") + "'", ex);
 				errors.Add (new Error (ErrorType.Error, "Unhandled error parsing ASP.NET document: " + ex.Message));
 			}
-			
-			
-			foreach (var pe in rootNode.ParseErrors)
-				errors.Add (new Error (ErrorType.Error, pe.Message, pe.Location.BeginLine, pe.Location.BeginColumn));
-			
-			info.Populate (rootNode, errors);
+
+			// get the errors from the StateEngine parser
+			errors.AddRange (parser.Errors);
+
+			// populating the PageInfo instance
+			XDocument xDoc = parser.Nodes.GetRoot ();
+			info.Populate (xDoc, errors);
 			
 			var type = AspNetAppProject.DetermineWebSubtype (fileName);
 			if (type != info.Subtype) {
@@ -69,7 +75,7 @@ namespace MonoDevelop.AspNet.Parser
 				}
 			}
 			
-			var result = new AspNetParsedDocument (fileName, type, rootNode, info);
+			var result = new AspNetParsedDocument (fileName, type, info, xDoc);
 			result.Add (errors);
 							
 			/*
@@ -88,18 +94,6 @@ namespace MonoDevelop.AspNet.Parser
 			}*/
 			
 			return result;
-		}
-		
-		internal void AddError (ErrorType type, ILocation location, string message)
-		{
-			
-		}
-		
-		void Init (TextReader sr)
-		{
-			
-			
-			
 		}
 	}
 }

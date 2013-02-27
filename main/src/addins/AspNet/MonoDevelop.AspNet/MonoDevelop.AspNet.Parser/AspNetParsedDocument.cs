@@ -1,5 +1,5 @@
 // 
-// AspNetCompilationUnit.cs
+// AspNetParsedDocument.cs
 // 
 // Author:
 //   Michael Hutchinson <mhutchinson@novell.com>
@@ -31,36 +31,92 @@ using System.Collections.Generic;
 
 using MonoDevelop.AspNet.Parser.Dom;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Xml.StateEngine;
+using MonoDevelop.AspNet.StateEngine;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.AspNet.Parser
 {
-	public class AspNetParsedDocument : DefaultParsedDocument
+	public class AspNetParsedDocument : XmlParsedDocument
 	{
-		
-		public AspNetParsedDocument (string fileName, WebSubtype type, RootNode rootNode, PageInfo info) : base (fileName)
+		// Constructor used for testing the XDOM
+		public AspNetParsedDocument (string fileName, WebSubtype type, PageInfo info, XDocument xDoc) : 
+			base (fileName)
 		{
 			Flags |= ParsedDocumentFlags.NonSerializable;
 			Info = info;
-			RootNode = rootNode;
+			RootNode = new RootNode ();
 			Type = type;
+			XDocument = xDoc;
 		}
 		
 		public PageInfo Info { get; private set; }
-		public RootNode RootNode { get; private set; }
+		// dummy RootNode instance, left for keeping the API of the addin
+		[Obsolete ("The RootNode property has been deprecated. Use AspNetParsedDocument.XDocument instead")]
+		public RootNode RootNode { get; private set; } 
 		public WebSubtype Type { get; private set; }
 		
 		public override IEnumerable<FoldingRegion> Foldings {
-			get {
-				if (RootNode != null) {
-					var regions = new List<FoldingRegion> ();
-					var cuVisitor = new CompilationUnitVisitor (regions);
-					RootNode.AcceptVisit (cuVisitor);
+			get {				
+				if (XDocument == null)
+					yield break;
+				foreach (XNode node in XDocument.AllDescendentNodes) {
+					if (node is MonoDevelop.Xml.StateEngine.XElement) {
+						var el = node as XElement;
+						
+						if (el.IsClosed && (el.ClosingTag.Region.BeginLine - el.Region.EndLine) > 2) {
+							// display the ID tags for ASP.NET list controls
+							string controlId = string.Empty;
+							if (el.Name.HasPrefix && (el.Name.Prefix == "asp")) {
+								XName idAttr = new XName ("id");
+								foreach (XAttribute attr in el.Attributes) {
+									if (attr.Name.ToLower () == idAttr)
+										controlId = string.Format (" ID=\"{0}\"", attr.Value);
+								}
+							}
+							
+							yield return new FoldingRegion (
+								string.Format ("<{0}{1}... >", el.Name.FullName, controlId),
+							    new DomRegion (el.Region.Begin, el.ClosingTag.Region.End));       
+						}
+					} else if (node is XDocType) {
+						XDocType dt = (XDocType)node;
+						string id = !String.IsNullOrEmpty (dt.PublicFpi) ? dt.PublicFpi
+									: !String.IsNullOrEmpty (dt.Uri) ? dt.Uri : null;
 
-					foreach (var region in Comments.ToFolds ()) 
-						regions.Add (region);
-					return regions;
+						if (id != null && dt.Region.EndLine - dt.Region.BeginLine > 2) {
+							if (id.Length > 50)
+								id = id.Substring (0, 47) + "...";
+
+							FoldingRegion fr = new FoldingRegion (string.Format ("<!DOCTYPE {0}>", id), dt.Region);
+							fr.IsFoldedByDefault = true;
+							yield return fr;
+						}
+					} else if (node is XComment) {
+						if (node.Region.EndLine - node.Region.BeginLine > 2)
+							yield return new FoldingRegion ("<!-- -->", node.Region);
+						
+					} else if (node is AspNetServerComment) {
+						var cnode = node as AspNetServerComment;
+						if ((cnode.Region.EndLine - cnode.Region.BeginLine) > 2)
+							yield return new FoldingRegion (cnode.FriendlyPathRepresentation, cnode.Region);
+						
+					} else if (node is AspNetDirective) {
+						var cnode = node as AspNetDirective;
+						if ((cnode.Region.EndLine - cnode.Region.BeginLine) > 2)
+							yield return new FoldingRegion (cnode.FriendlyPathRepresentation, cnode.Region);
+						
+					} else if (node is AspNetExpression) {
+						var cnode = node as AspNetExpression;
+						if ((cnode.Region.EndLine - cnode.Region.BeginLine) > 2)
+							yield return new FoldingRegion (cnode.FriendlyPathRepresentation, cnode.Region);
+						
+					} else if (node is AspNetRenderBlock) {
+						var cnode = node as AspNetRenderBlock;
+						if ((cnode.Region.EndLine - cnode.Region.BeginLine) > 2)
+							yield return new FoldingRegion (cnode.FriendlyPathRepresentation, cnode.Region);
+					}
 				}
-				return new FoldingRegion [0];
 			}
 		}
 	}
