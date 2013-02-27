@@ -446,6 +446,19 @@ namespace Mono.TextEditor
 			}
 		}
 
+		IncludeWhitespaces includeWhitespaces = IncludeWhitespaces.All;
+		public virtual IncludeWhitespaces IncludeWhitespaces {
+			get {
+				return includeWhitespaces;
+			}
+			set {
+				if (includeWhitespaces != value) {
+					includeWhitespaces = value;
+					OnChanged (EventArgs.Empty);
+				}
+			}
+		}
+
 		bool wrapLines = false;
 		public virtual bool WrapLines {
 			get {
@@ -515,6 +528,7 @@ namespace Mono.TextEditor
 			useAntiAliasing = other.useAntiAliasing;
 			drawIndentationMarkers = other.drawIndentationMarkers;
 			showWhitespaces = other.showWhitespaces;
+			includeWhitespaces = other.includeWhitespaces;
 			DisposeFont ();
 			OnChanged (EventArgs.Empty);
 		}

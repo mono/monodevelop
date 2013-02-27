@@ -186,8 +186,7 @@ namespace MonoDevelop.AssemblyBrowser
 			TreeView.ShowBorderLine = false;
 			TreeView.Zoom = 1.0;
 			treeViewPlaceholder.Add (TreeView);
-			treeViewPlaceholder.ShowAll ();
-			
+
 //			this.descriptionLabel.ModifyFont (Pango.FontDescription.FromString ("Sans 9"));
 //			this.documentationLabel.ModifyFont (Pango.FontDescription.FromString ("Sans 12"));
 //			this.documentationLabel.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (255, 255, 225));
@@ -234,32 +233,15 @@ namespace MonoDevelop.AssemblyBrowser
 				return referencedSegment.Reference.ToString ();
 			};
 			this.inspectEditor.LinkRequest += InspectEditorhandleLinkRequest;
-			var scrolledWindow = new CompactScrolledWindow ();
-			scrolledWindow.Add (inspectEditor);
-			scrolledWindow.ShowAll ();
-			notebookInspection.Add (scrolledWindow);
-			var notebookChild = ((Notebook.NotebookChild)(notebookInspection [scrolledWindow]));
-			notebookChild.Position = 1;
+			documentationScrolledWindow.Add (inspectEditor);
 
-//			this.inspectLabel.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (255, 255, 250));
-			
-//			this.vpaned1.ExposeEvent += VPaneExpose;
 			this.hpaned1.ExposeEvent += HPaneExpose;
 			hpaned1 = hpaned1.ReplaceWithWidget (new HPanedThin (), true);
 			hpaned1.Position = 271;
 
-/*			this.notebook1.SwitchPage += delegate {
-				// Hack for the switch page select all bug.
-//				this.inspectLabel.Selectable = false;
-			};*/
-
-			/*
-			this.searchInCombobox.Active = 0;
-			this.searchInCombobox.Changed += SearchInComboboxhandleChanged;
-			*/
 			this.notebook1.SetTabLabel (this.documentationScrolledWindow, new Label (GettextCatalog.GetString ("Documentation")));
-			this.notebook1.SetTabLabel (this.notebookInspection, new Label (GettextCatalog.GetString ("Inspect")));
 			this.notebook1.SetTabLabel (this.searchWidget, new Label (GettextCatalog.GetString ("Search")));
+			notebook1.Page = 0;
 			//this.searchWidget.Visible = false;
 				
 			typeListStore = new Gtk.ListStore (typeof(Gdk.Pixbuf), // type image
@@ -276,11 +258,9 @@ namespace MonoDevelop.AssemblyBrowser
 				                               typeof(IMember)
 			                                  );
 			CreateColumns ();
-			SetInspectWidget ();
 //			this.searchEntry.Changed += SearchEntryhandleChanged;
 			this.searchTreeview.RowActivated += SearchTreeviewhandleRowActivated;
 			this.notebook1.ShowTabs = false;
-			this.notebookInspection.ShowTabs = false;
 			this.ShowAll ();
 		}
 
@@ -354,7 +334,6 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			this.notebook1.Page = 0;
 			PropertyService.Set ("AssemblyBrowser.InspectLanguage", this.languageCombobox.Active);
-			SetInspectWidget ();
 			FillInspectLabel ();
 		}
 
@@ -1069,15 +1048,6 @@ namespace MonoDevelop.AssemblyBrowser
 			return result.ToString ();
 		}
 		
-		void SetInspectWidget ()
-		{
-			if (this.languageCombobox.Active <= 0) {
-				notebookInspection.Page = 0;
-			} else {
-				notebookInspection.Page = 1;
-			}
-		}
-		
 		List<ReferenceSegment> ReferencedSegments = new List<ReferenceSegment>();
 		List<UnderlineMarker> underlineMarkers = new List<UnderlineMarker> ();
 		
@@ -1101,7 +1071,7 @@ namespace MonoDevelop.AssemblyBrowser
 				string text = inspectEditor.GetTextAt (seg);
 				if (text != null && text.Length == 1 && !(char.IsLetter (text [0]) || text [0] == '…'))
 					continue;
-				var marker = new UnderlineMarker ("blue", 1 + seg.Offset - line.Offset, 1 + seg.EndOffset - line.Offset);
+				var marker = new UnderlineMarker (new Cairo.Color (0, 0, 1.0), 1 + seg.Offset - line.Offset, 1 + seg.EndOffset - line.Offset);
 				marker.Wave = false;
 				underlineMarkers.Add (marker);
 				inspectEditor.Document.AddMarker (line, marker);

@@ -12,10 +12,7 @@ namespace MonoDevelop.AssemblyBrowser
 		private global::Gtk.Alignment treeViewPlaceholder;
 		private global::Gtk.VBox vbox3;
 		private global::Gtk.Notebook notebook1;
-		private global::Gtk.Notebook notebookInspection;
 		private global::MonoDevelop.Components.CompactScrolledWindow documentationScrolledWindow;
-		private global::Gtk.Label label4;
-		private global::Gtk.Label label5;
 		private global::Gtk.VBox searchWidget;
 		private global::Gtk.ScrolledWindow scrolledwindow1;
 		private global::Gtk.TreeView searchTreeview;
@@ -61,33 +58,11 @@ namespace MonoDevelop.AssemblyBrowser
 			this.notebook1.CurrentPage = 0;
 			this.notebook1.ShowBorder = false;
 			// Container child notebook1.Gtk.Notebook+NotebookChild
-			this.notebookInspection = new global::Gtk.Notebook ();
-			this.notebookInspection.CanFocus = true;
-			this.notebookInspection.Name = "notebookInspection";
-			this.notebookInspection.CurrentPage = 1;
-			this.notebookInspection.ShowBorder = false;
-			// Container child notebookInspection.Gtk.Notebook+NotebookChild
 			this.documentationScrolledWindow = new global::MonoDevelop.Components.CompactScrolledWindow ();
 			this.documentationScrolledWindow.CanFocus = true;
 			this.documentationScrolledWindow.Name = "documentationScrolledWindow";
 			this.documentationScrolledWindow.ShowBorderLine = false;
-			this.notebookInspection.Add (this.documentationScrolledWindow);
-			// Notebook tab
-			this.label4 = new global::Gtk.Label ();
-			this.label4.Name = "label4";
-			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("summary");
-			this.notebookInspection.SetTabLabel (this.documentationScrolledWindow, this.label4);
-			this.label4.ShowAll ();
-			// Notebook tab
-			global::Gtk.Label w5 = new global::Gtk.Label ();
-			w5.Visible = true;
-			this.notebookInspection.Add (w5);
-			this.label5 = new global::Gtk.Label ();
-			this.label5.Name = "label5";
-			this.label5.LabelProp = global::Mono.Unix.Catalog.GetString ("decompiler");
-			this.notebookInspection.SetTabLabel (w5, this.label5);
-			this.label5.ShowAll ();
-			this.notebook1.Add (this.notebookInspection);
+			this.notebook1.Add (this.documentationScrolledWindow);
 			// Container child notebook1.Gtk.Notebook+NotebookChild
 			this.searchWidget = new global::Gtk.VBox ();
 			this.searchWidget.Name = "searchWidget";
@@ -103,24 +78,24 @@ namespace MonoDevelop.AssemblyBrowser
 			this.searchTreeview.Name = "searchTreeview";
 			this.scrolledwindow1.Add (this.searchTreeview);
 			this.searchWidget.Add (this.scrolledwindow1);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.searchWidget [this.scrolledwindow1]));
-			w8.Position = 0;
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.searchWidget [this.scrolledwindow1]));
+			w6.Position = 0;
 			this.notebook1.Add (this.searchWidget);
-			global::Gtk.Notebook.NotebookChild w9 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1 [this.searchWidget]));
-			w9.Position = 1;
+			global::Gtk.Notebook.NotebookChild w7 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1 [this.searchWidget]));
+			w7.Position = 1;
 			this.vbox3.Add (this.notebook1);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.notebook1]));
-			w10.Position = 0;
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.notebook1]));
+			w8.Position = 0;
 			this.hpaned1.Add (this.vbox3);
 			this.vbox1.Add (this.hpaned1);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hpaned1]));
-			w12.Position = 0;
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hpaned1]));
+			w10.Position = 0;
 			this.Add (this.vbox1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
 			w1.SetUiManager (UIManager);
-			this.Show ();
+			this.Hide ();
 			this.NavigateBackwardAction.Activated += new global::System.EventHandler (this.OnNavigateBackwardActionActivated);
 			this.NavigateForwardAction.Activated += new global::System.EventHandler (this.OnNavigateForwardActionActivated);
 		}

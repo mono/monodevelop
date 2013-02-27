@@ -229,7 +229,12 @@ namespace MonoDevelop.Ide
 		
 		public bool CanShowHelp (ResolveResult result)
 		{
-			return CanShowHelp (HelpService.GetMonoDocHelpUrl (result));
+			try {
+				return CanShowHelp (HelpService.GetMonoDocHelpUrl (result));
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while trying to get monodoc help.", e);
+				return false;
+			}
 		}
 	}
 }

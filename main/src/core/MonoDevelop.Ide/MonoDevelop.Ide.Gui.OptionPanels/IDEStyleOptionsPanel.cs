@@ -40,7 +40,7 @@ using System.Linq;
 
 namespace MonoDevelop.Ide.Gui.OptionPanels
 {
-	internal class IDEStyleOptionsPanel : OptionsPanel
+	class IDEStyleOptionsPanel : OptionsPanel
 	{
 		IDEStyleOptionsPanelWidget widget;
 
@@ -57,6 +57,30 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 	
 	public partial class IDEStyleOptionsPanelWidget : Gtk.Bin
 	{
+		static Lazy<List<string>> themes = new Lazy<List<string>> (() => {
+			var searchDirs = new List<string> ();
+
+			string prefix = Environment.GetEnvironmentVariable ("MONO_INSTALL_PREFIX");
+			FilePath homeDir = Environment.GetFolderPath (Environment.SpecialFolder.Personal);
+
+			searchDirs.Add (homeDir.Combine (".themes"));
+			searchDirs.Add (Gtk.Rc.ThemeDir);
+			if (!string.IsNullOrEmpty (prefix))
+				searchDirs.Add (new FilePath (prefix).Combine ("share").Combine ("themes"));
+			
+
+			var themes = FindThemes (searchDirs).ToList ();
+			themes.Sort ();
+			return themes;
+		});
+
+		public static IList<string> InstalledThemes {
+			get {
+				return themes.Value;
+			}
+		}
+		
+
 		public IDEStyleOptionsPanelWidget ()
 		{
 			this.Build();
@@ -74,28 +98,16 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			
 			comboTheme.AppendText (GettextCatalog.GetString ("(Default)"));
 
-			string prefix = Environment.GetEnvironmentVariable ("MONO_INSTALL_PREFIX");
-			FilePath homeDir = Environment.GetFolderPath (Environment.SpecialFolder.Personal);
-
-			var searchDirs = new List<string> ();
-			searchDirs.Add (homeDir.Combine (".themes"));
-			searchDirs.Add (Gtk.Rc.ThemeDir);
-			if (!string.IsNullOrEmpty (prefix))
-				searchDirs.Add (new FilePath (prefix).Combine ("share").Combine ("themes"));
-
-			var themes = FindThemes (searchDirs).ToList ();
-			themes.Sort ();
-			
-			foreach (string t in themes)
+			foreach (string t in InstalledThemes)
 				comboTheme.AppendText (t);
 			
-			comboTheme.Active = themes.IndexOf (IdeApp.Preferences.UserInterfaceTheme) + 1;
+			comboTheme.Active = themes.Value.IndexOf (IdeApp.Preferences.UserInterfaceTheme) + 1;
 
 			labelTheme.Visible = comboTheme.Visible = !Platform.IsMac && !Platform.IsWindows;
 		}
 		
 		// Code for getting the list of themes based on f-spot
-		ICollection<string> FindThemes (IEnumerable<string> themeDirs)
+		static ICollection<string> FindThemes (IEnumerable<string> themeDirs)
 		{
 			var themes = new HashSet<string> ();
 			string gtkrc = System.IO.Path.Combine ("gtk-2.0", "gtkrc");
@@ -103,8 +115,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				if (string.IsNullOrEmpty (themeDir) || !System.IO.Directory.Exists (themeDir))
 					continue;
 				foreach (FilePath dir in System.IO.Directory.GetDirectories (themeDir)) {
-					if (System.IO.File.Exists (dir.Combine (gtkrc)))
-						themes.Add (dir.FileName);
+					if (System.IO.File.Exists (dir.Combine (gtkrc))) {
+						if (!IdeStartup.FailingGtkThemes.Any (t => t == dir.FileName))
+							themes.Add (dir.FileName);
+					}
 				}
 			}
 			return themes;

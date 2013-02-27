@@ -2598,9 +2598,9 @@ namespace Mono.TextEditor
 		uint tipHideTimeoutId = 0;
 		uint tipShowTimeoutId = 0;
 		static Gtk.Window tipWindow;
+		static TooltipProvider currentTooltipProvider;
 		internal List<TooltipProvider> tooltipProviders = new List<TooltipProvider> ();
-		TooltipProvider currentTooltipProvider;
-		
+
 		// Data for the next tooltip to be shown
 		int nextTipOffset = 0;
 		int nextTipX=0; int nextTipY=0;

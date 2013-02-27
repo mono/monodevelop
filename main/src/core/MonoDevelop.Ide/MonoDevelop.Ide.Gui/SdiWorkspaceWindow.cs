@@ -504,7 +504,7 @@ namespace MonoDevelop.Ide.Gui
 			CheckCreateSubViewToolbar ();
 			updating = true;
 
-			var addedContent = subViewToolbar.TabCount == 0 && IdeApp.Workbench.ActiveDocument == Document;
+			var addedContent = (index == 0 || subViewToolbar.TabCount == 0) && IdeApp.Workbench.ActiveDocument == Document;
 			var widgetBox = new Gtk.VBox ();
 			var tab = new Tab (subViewToolbar, label) {
 				Tag = viewContent
@@ -532,9 +532,12 @@ namespace MonoDevelop.Ide.Gui
 
 			EnsureToolbarBoxSeparator ();
 			updating = false;
+
+			if (index == 0)
+				ShowPage (0);
+
 			return tab;
 		}
-		
 		
 		#region Track and display document's "path"
 		

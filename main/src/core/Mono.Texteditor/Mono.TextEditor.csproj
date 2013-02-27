@@ -46,18 +46,23 @@
     <Reference Include="Mono.Posix" />
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>glib-sharp-2.0</Package>
     </Reference>
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System" />
@@ -93,7 +98,6 @@
     <Compile Include="Mono.TextEditor\HelperMethods.cs" />
     <Compile Include="Mono.TextEditor\LinkEventArgs.cs" />
     <Compile Include="Mono.TextEditor\SearchRequest.cs" />
-    <Compile Include="Mono.TextEditor\ITextEditorOptions.cs" />
     <Compile Include="Mono.TextEditor\TextLinkEditMode.cs" />
     <Compile Include="Mono.TextEditor.PopupWindow\TooltipWindow.cs" />
     <Compile Include="Mono.TextEditor.PopupWindow\ListWindow.cs" />
@@ -212,6 +216,8 @@
     <Compile Include="Mono.TextEditor.Highlighting\ColorScheme.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\IStreamProvider.cs" />
     <Compile Include="Mono.TextEditor.Highlighting\AmbientColor.cs" />
+    <Compile Include="Mono.TextEditor\ITextEditorOptions.cs" />
+    <Compile Include="Mono.TextEditor.Vi\ViModeAbortException.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mono.TextEditor.dll.config">

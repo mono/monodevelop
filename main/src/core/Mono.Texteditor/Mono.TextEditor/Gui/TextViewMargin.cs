@@ -147,11 +147,13 @@ namespace Mono.TextEditor
 		void HandleFocusInEvent (object o, FocusInEventArgs args)
 		{
 			selectionColor = ColorStyle.SelectedText;
+			currentLineColor = ColorStyle.LineMarker;
 		}
 
 		void HandleFocusOutEvent (object o, FocusOutEventArgs args)
 		{
 			selectionColor = ColorStyle.SelectedInactiveText;
+			currentLineColor = ColorStyle.LineMarkerInactive;
 		}
 
 		void HandleUndone (object sender, EventArgs e)
@@ -469,16 +471,16 @@ namespace Mono.TextEditor
 
 			unixEolLayout.SetText ("\\n");
 			Pango.Rectangle logRect;
-			unixEolLayout.GetPixelExtents (out unixEolLayoutRect, out logRect);
+			unixEolLayout.GetPixelExtents (out logRect, out unixEolLayoutRect);
 
 			macEolLayout.SetText ("\\r");
-			macEolLayout.GetPixelExtents (out macEolLayoutRect, out logRect);
+			macEolLayout.GetPixelExtents (out logRect, out macEolLayoutRect);
 
 			windowsEolLayout.SetText ("\\r\\n");
-			windowsEolLayout.GetPixelExtents (out windowsEolLayoutRect, out logRect);
+			windowsEolLayout.GetPixelExtents (out logRect, out windowsEolLayoutRect);
 
 			eofEolLayout.SetText ("<EOF>");
-			eofEolLayout.GetPixelExtents (out eofEolLayoutRect, out logRect);
+			eofEolLayout.GetPixelExtents (out logRect, out eofEolLayoutRect);
 
 			DecorateLineBg -= DecorateMatchingBracket;
 			if (textEditor.Options.HighlightMatchingBracket && !Document.ReadOnly)
@@ -1257,6 +1259,15 @@ namespace Mono.TextEditor
 			}
 		}
 
+		AmbientColor currentLineColor;
+		AmbientColor CurrentLineColor {
+			get {
+				if (currentLineColor == null)
+					currentLineColor = textEditor.HasFocus ? ColorStyle.LineMarker : ColorStyle.LineMarkerInactive;
+				return currentLineColor;
+			}
+		}
+
 		public LayoutWrapper CreateLinePartLayout (ISyntaxMode mode, DocumentLine line, int offset, int length, int selectionStart, int selectionEnd)
 		{
 			return CreateLinePartLayout (mode, line, -1, offset, length, selectionStart, selectionEnd);
@@ -1296,6 +1307,10 @@ namespace Mono.TextEditor
 			for (int i = index; i < layout.LineChars.Length; i++) {
 				char ch = layout.LineChars [i];
 				if (ch != ' ' && ch != '\t')
+					continue;
+				if (ch == ' ' && !textEditor.Options.IncludeWhitespaces.HasFlag (IncludeWhitespaces.Space))
+					continue;
+				if (ch == '\t' && !textEditor.Options.IncludeWhitespaces.HasFlag (IncludeWhitespaces.Tab))
 					continue;
 				bool selected = selectionStart <= offset + i && offset + i < selectionEnd;
 				if (first || oldSelected != selected) {
@@ -1358,20 +1373,19 @@ namespace Mono.TextEditor
 			return CreateLinePartLayout (mode, line, line.Offset, line.Length, -1, -1);
 		}
 
-		public void DrawCaretLineMarker (Cairo.Context cr, double xPos, double y, double width)
+		public void DrawCaretLineMarker (Cairo.Context cr, double xPos, double y, double width, double lineHeight)
 		{
 			xPos = System.Math.Floor (xPos);
-		
-			cr.Rectangle (xPos, y, width, LineHeight);
-			var color = ColorStyle.LineMarker.GetColor ("color");
-			cr.Color = new Cairo.Color (color.R, color.G, color.B, 0.5);
+			cr.Rectangle (xPos, y, width, lineHeight);
+			var color = CurrentLineColor;
+			cr.Color = color.GetColor ("color");
 			cr.Fill ();
 			double halfLine = (cr.LineWidth / 2.0);
 			cr.MoveTo (xPos, y + halfLine);
 			cr.LineTo (xPos + width, y + halfLine);
-			cr.MoveTo (xPos, y + LineHeight - halfLine);
-			cr.LineTo (xPos + width, y + LineHeight - halfLine);
-			cr.Color = color;
+			cr.MoveTo (xPos, y + lineHeight - halfLine);
+			cr.LineTo (xPos + width, y + lineHeight - halfLine);
+			cr.Color = color.GetColor ("secondcolor");
 			cr.Stroke ();
 		}
 
@@ -1391,11 +1405,16 @@ namespace Mono.TextEditor
 			cr.Save ();
 			var dotted = new [] { textEditor.Options.Zoom };
 			cr.SetDash (dotted, (int)y + textEditor.VAdjustment.Value);
+			var top = y;
+			var bottom = y + LineHeight;
+			if (Caret.Line == line.LineNumber && textEditor.Options.HighlightCaretLine) {
+				top += textEditor.Options.Zoom;
+				bottom -= textEditor.Options.Zoom;
+			}
 			for (int i = 0; i < layout.IndentSize; i += textEditor.Options.IndentationSize) {
 				var x = System.Math.Floor (xPos + i * charWidth);
-
-				cr.MoveTo (x + 0.5, y);
-				cr.LineTo (x + 0.5, y + LineHeight);
+				cr.MoveTo (x + 0.5, top);
+				cr.LineTo (x + 0.5, bottom);
 
 				cr.Color = ColorStyle.IndentationGuide.GetColor ("color");
 				cr.Stroke ();
@@ -1448,7 +1467,7 @@ namespace Mono.TextEditor
 				DecorateLineBg (cr, layout, offset, length, xPos, y, selectionStart, selectionEnd);
 			
 			if ((HighlightCaretLine || textEditor.Options.HighlightCaretLine) && Caret.Line == lineNumber) {
-				DrawCaretLineMarker (cr, xPos, y, layout.PangoWidth / Pango.Scale.PangoScale);
+				DrawCaretLineMarker (cr, xPos, y, layout.PangoWidth / Pango.Scale.PangoScale, _lineHeight);
 			}
 
 			if (!isSelectionDrawn && (layout.StartSet || selectionStart == offset + length) && BackgroundRenderer == null) {
@@ -1549,7 +1568,7 @@ namespace Mono.TextEditor
 						var virtualSpaceMod = selectionStart < caretOffset ? 0 : virtualSpace.Length;
 
 						if ((!textEditor.IsSomethingSelected || (selectionStart >= offset && selectionStart != selectionEnd)) && (HighlightCaretLine || textEditor.Options.HighlightCaretLine) && Caret.Line == lineNumber)
-							DrawCaretLineMarker (cr, pangoPosition / Pango.Scale.PangoScale, y, vx / Pango.Scale.PangoScale);
+							DrawCaretLineMarker (cr, pangoPosition / Pango.Scale.PangoScale, y, vx / Pango.Scale.PangoScale, _lineHeight);
 
 						if (DecorateLineBg != null)
 							DecorateLineBg (cr, wrapper, offset, length, xPos, y, selectionStart + virtualSpaceMod, selectionEnd + virtualSpace.Length);
@@ -1635,6 +1654,9 @@ namespace Mono.TextEditor
 
 		void DrawEolMarker (Cairo.Context cr, DocumentLine line, bool selected, double x, double y)
 		{
+			if (!textEditor.Options.IncludeWhitespaces.HasFlag (IncludeWhitespaces.LineEndings))
+				return;
+
 			Pango.Layout layout;
 			Pango.Rectangle rect;
 			switch (line.DelimiterLength) {
@@ -2411,7 +2433,7 @@ namespace Mono.TextEditor
 			int logicalRulerColumn = line.GetLogicalColumn (textEditor.GetTextEditorData (), textEditor.Options.RulerColumn);
 
 			if ((HighlightCaretLine || textEditor.Options.HighlightCaretLine) && Caret.Line == lineNr)
-				DrawCaretLineMarker (cr, x, y, pangoPosition / Pango.Scale.PangoScale);
+				DrawCaretLineMarker (cr, x, y, TextStartPosition, _lineHeight);
 
 			foreach (FoldSegment folding in foldings) {
 				int foldOffset = folding.StartLine.Offset + folding.Column - 1;
@@ -2547,7 +2569,7 @@ namespace Mono.TextEditor
 					}
 				} else {
 					double xPos = pangoPosition / Pango.Scale.PangoScale;
-					DrawCaretLineMarker (cr, xPos, y, lineArea.X + lineArea.Width - xPos);
+					DrawCaretLineMarker (cr, xPos, y, lineArea.X + lineArea.Width - xPos, _lineHeight);
 				}
 			}
 

@@ -104,6 +104,7 @@ namespace Mono.TextEditor.Vi
 		static string lastPattern;
 		static string lastReplacement;
 		State state;
+		Motion motion;
 		const string substMatch = @"^:s(?<sep>.)(?<pattern>.+?)\k<sep>(?<replacement>.*?)(\k<sep>(?<trailer>i?))?$";
 		StringBuilder commandBuffer = new StringBuilder ();
 		Dictionary<char,ViMark> marks = new Dictionary<char, ViMark>();
@@ -560,7 +561,12 @@ namespace Mono.TextEditor.Vi
 				return;
 				
 			case State.Delete:
-				if (((modifier & (Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask)) == 0 
+				if (IsInnerOrOuterMotionKey (unicodeKey, ref motion)) return;
+
+				if (motion != Motion.None) {
+					action = ViActionMaps.GetEditObjectCharAction((char) unicodeKey, motion);
+				}
+				else if (((modifier & (Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask)) == 0 
 				     && unicodeKey == 'd'))
 				{
 					action = SelectionActions.LineActionFromMoveAction (CaretMoveActions.LineEnd);
@@ -586,9 +592,13 @@ namespace Mono.TextEditor.Vi
 				return;
 
 			case State.Yank:
+				if (IsInnerOrOuterMotionKey (unicodeKey, ref motion)) return;
 				int offset = Caret.Offset;
-				
-				if (((modifier & (Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask)) == 0 
+
+				if (motion != Motion.None) {
+					action = ViActionMaps.GetEditObjectCharAction((char) unicodeKey, motion);
+				}
+				else if (((modifier & (Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask)) == 0
 				     && unicodeKey == 'y'))
 				{
 					action = SelectionActions.LineActionFromMoveAction (CaretMoveActions.LineEnd);
@@ -615,8 +625,13 @@ namespace Mono.TextEditor.Vi
 				return;
 				
 			case State.Change:
+				if (IsInnerOrOuterMotionKey (unicodeKey, ref motion)) return;
+
+				if (motion != Motion.None) {
+					action = ViActionMaps.GetEditObjectCharAction((char) unicodeKey, motion);
+				}
 				//copied from delete action
-				if (((modifier & (Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask)) == 0 
+				else if (((modifier & (Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask)) == 0 
 				     && unicodeKey == 'c'))
 				{
 					action = SelectionActions.LineActionFromMoveAction (CaretMoveActions.LineEnd);
@@ -681,6 +696,16 @@ namespace Mono.TextEditor.Vi
 				return;
 
 			case State.Visual:
+				if (IsInnerOrOuterMotionKey (unicodeKey, ref motion)) return;
+
+				if (motion != Motion.None) {
+					action = ViActionMaps.GetEditObjectCharAction((char) unicodeKey, motion);
+					if (action != null) {
+						RunAction (action);
+						return;
+					}
+				}
+
 				if (key == Gdk.Key.Delete)
 					unicodeKey = 'x';
 				switch ((char)unicodeKey) {
@@ -906,6 +931,19 @@ namespace Mono.TextEditor.Vi
 					
 				return;
 			}
+		}
+
+		static bool IsInnerOrOuterMotionKey (uint unicodeKey, ref Motion motion)
+		{
+			if (unicodeKey == 'i') {
+				motion = Motion.Inner;
+				return true;
+			} 
+			if (unicodeKey == 'a') {
+				motion = Motion.Outer;
+				return true;
+			}
+			return false;
 		}
 
 		/// <summary>
@@ -1135,5 +1173,11 @@ namespace Mono.TextEditor.Vi
 			NameMacro,
 			PlayMacro
 		}
+	}
+
+	public enum Motion {
+		None = 0,
+		Inner,
+		Outer
 	}
 }

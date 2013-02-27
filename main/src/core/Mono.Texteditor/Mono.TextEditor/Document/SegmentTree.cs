@@ -183,6 +183,8 @@ namespace Mono.TextEditor
 			var result = SearchNode (ref startOffset);
 			while (startOffset == 0) {
 				var pre = result == null ? tree.Root.GetOuterRight () : result.GetPrevNode ();
+				if (pre == null)
+					return null;
 				startOffset += pre.DistanceToPrevNode;
 				result = pre;
 			}

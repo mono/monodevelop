@@ -20,6 +20,9 @@
 		{ "name": "Quick Diff(Dirty)", "color":"yellow" },
 		{ "name": "Quick Diff(Changed)", "color":"green" },
 		
+        { "name": "Current Line Marker", "color":"white", "secondcolor":"gray"},
+        { "name": "Current Line Marker(Inactive)", "color":"white", "secondcolor":"gray"},
+		
 		{"name": "Indicator Margin", "color":"#F0F0F0" },
 		{"name": "Indicator Margin(Separator)", "color":"#F0F0F0" },
 		{"name": "Underline(Error)", "color":"#FF0000" },

@@ -120,7 +120,22 @@ qrstu",
 @"   aaa aaa
    ccc ccc", mode.Text);
 		}
-		
+
+		[Test]
+		[TestCase(0, Result = " foo.bar[20]->baz_bay")]
+		[TestCase(2, Result = "iffoo.bar[20]->baz_bay")]
+		[TestCase(3, Result = "if .bar[20]->baz_bay")]
+		[TestCase(5, Result = "if .bar[20]->baz_bay")]
+		[TestCase(6, Result = "if foobar[20]->baz_bay")]
+		[TestCase(16, Result = "if foo.bar[20]->")]
+		public string ChangeInnerWord(int column) 
+		{
+			var mode = new TestViEditMode { Text = "if foo.bar[20]->baz_bay" };
+			RepeatChar('l', column, mode);
+			mode.Input ("ciw");
+			return mode.Text;
+		}
+
 		[Test]
 		public void ChangeLine ()
 		{
@@ -134,6 +149,200 @@ qrstu",
 @"   aaa aaa
    eeee
    ccc ccc", mode.Text);
+		}
+
+		[Test]
+		[TestCase(0, Result = "if (foo(baz) == bar) ")]
+		[TestCase(2, Result = "if (foo(baz) == bar) ")]
+		[TestCase(3, Result = "if () ")]
+		[TestCase(6, Result = "if () ")]
+		[TestCase(7, Result = "if (foo() == bar) ", Ignore = true)] // IBracketMatcher is misbehaving for test mode
+		[TestCase(9, Result = "if (foo() == bar) ")]
+		[TestCase(10, Result = "if (foo() == bar) ")]
+		[TestCase(11, Result = "if (foo() == bar) ")]
+		[TestCase(12, Result = "if () ")]
+		[TestCase(18, Result = "if () ")]
+		[TestCase(19, Result = "if () ")]
+		[TestCase(20, Result = "if (foo(baz) == bar) ")]
+		public string ChangeInnerParen(int column) 
+		{
+			var mode = new TestViEditMode { Text = "if (foo(baz) == bar) " };
+			RepeatChar('l', column, mode);
+			mode.Input ("ci)");
+			return mode.Text;
+		}
+
+		[Test]
+		[TestCase(0, 2, Result = "do { \n\tfoo\n} forever;")]
+		[TestCase(0, 3, Result = "do {\n} forever;")]
+		[TestCase(0, 4, Result = "do {\n} forever;")]
+		[TestCase(1, 0, Result = "do {\n} forever;")]
+		[TestCase(2, 0, Result = "do {\n} forever;")]
+		[TestCase(2, 1, Result = "do { \n\tfoo\n} forever;")]
+		public string ChangeInnerBrace (int row, int column)
+		{
+			var mode = new TestViEditMode { Text = 
+@"do { 
+	foo
+} forever;" };
+			RepeatChar ('j', row, mode);
+			RepeatChar ('l', column, mode);
+			mode.Input ("ci}");
+			return mode.Text;
+		}
+
+		[Test]
+		[TestCase(0, 0, Result = "{\n}")]
+		[TestCase(1, 0, Result = "{\n}")]
+		[TestCase(2, 0, Result = "{\n}")]
+		[TestCase(3, 0, Result = "{\n\tdo\n\t{\n\t}\n\tdo {\n\t\tbar\n\t}\n}")]
+		[TestCase(4, 0, Result = "{\n\tdo\n\t{\n\t}\n\tdo {\n\t\tbar\n\t}\n}")]
+		[TestCase(5, 0, Result = "{\n}")]
+		[TestCase(6, 0, Result = "{\n\tdo\n\t{\n\t\tfoo\n\t}\n\tdo {\n\t}\n}")]
+		[TestCase(7, 0, Result = "{\n\tdo\n\t{\n\t\tfoo\n\t}\n\tdo {\n\t}\n}")]
+		[TestCase(8, 0, Result = "{\n}")]
+		public string ChangeInnerBrace_WithNestedMatchingBraces(int row, int column)
+		{
+			var mode = new TestViEditMode { Text = 
+@"{
+	do
+	{
+		foo
+	}
+	do {
+		bar
+	}
+}" };
+			RepeatChar('j', row, mode);
+			RepeatChar('l', column, mode);
+			mode.Input ("ci}");
+			return mode.Text;
+		}
+
+		[Test]
+		[Ignore("IBracketMatcher is misbehaving for test mode, this really does work.")]
+		[TestCase('(', ')', '"')]
+		[TestCase('{', '}', '"')]
+		[TestCase('[', ']', '"')]
+		[TestCase('<', '>', '"')]
+		[TestCase('(', ')', '\'')]
+		[TestCase('{', '}', '\'')]
+		[TestCase('[', ']', '\'')]
+		[TestCase('<', '>', '\'')]
+		public void ChangeInnerBrace_IsntConfusedByQuotes (char startBrace, char endBrace, char quote)
+		{
+			var text = string.Format ("if {0}{2}{1}{2} == bar{1} ", startBrace, endBrace, quote);
+			var mode = new TestViEditMode { Text = text };
+			RepeatChar ('l', 4, mode);
+
+			// Validate that our setups work. Use a specific case (the rest proved correct via induction).
+			if (startBrace == '(' && quote == '\'') {
+				Assert.AreEqual ("if (')' == bar) ", text, 
+				                 "Validating that our test input because it's a bit too generic to be easy to read.");
+
+				var plusMinusOneCharContext = "" + mode.GetChar(mode.Caret.Offset-1) + mode.GetChar(mode.Caret.Offset) 
+					+ mode.GetChar(mode.Caret.Offset+1);
+				Assert.AreEqual ("(')", plusMinusOneCharContext, "The cursor is where we expect it to be.");
+
+				Assert.NotNull(mode.Document.BracketMatcher);
+				Assert.IsInstanceOf<DefaultBracketMatcher>(mode.Document.BracketMatcher);
+
+				var matchingParen = mode.Document.GetMatchingBracketOffset (3);
+				Assert.AreEqual (14, matchingParen, "Validate setup correctly enabled mode.Document functionality.");
+			}
+
+			mode.Input ("ci" + endBrace);
+			var expectedText = string.Format ("if {0}{1} ", startBrace, endBrace, quote);
+			Assert.AreEqual (expectedText, mode.Text);
+		}
+
+		[Test]
+		public void VisualInnerParen() 
+		{
+			var mode = new TestViEditMode { Text = "if (foo(baz) == bar) " };
+			RepeatChar('l', 3, mode);
+			mode.Input ("vi)");
+			mode.AssertSelection (1, 5, 1, 20);
+		}
+
+		[Test]
+		public void DeleteInnerParen() 
+		{
+			var mode = new TestViEditMode { Text = "if (foo(baz) == bar) " };
+			RepeatChar('l', 3, mode);
+			mode.Input ("di)");
+			Assert.AreEqual ("if () ", mode.Text);
+		}
+
+		[Test]
+		public void YankInnerParen() 
+		{
+			var mode = new TestViEditMode { Text = "if (foo(baz) == bar) " };
+			RepeatChar('l', 3, mode);
+			mode.Input ("yi)");
+			mode.Input ("$p"); // HACK: I can't figure out how to test the register, so just paste at the end
+			Assert.AreEqual ("if (foo(baz) == bar) foo(baz) == bar", mode.Text);
+		}
+
+		[Test]
+		[TestCase(0, '\'', Result = @"'' 'world\'s' 'worlder\\'s'")]
+		[TestCase(1, '\'', Result = @"'' 'world\'s' 'worlder\\'s'")]
+		[TestCase(5, '\'', Result = @"'' 'world\'s' 'worlder\\'s'")]
+		[TestCase(6, '\'', Result = @"'' 'world\'s' 'worlder\\'s'")]
+		[TestCase(7, '\'', Result = @"'hello''world\'s' 'worlder\\'s'")]
+		[TestCase(8, '\'', Result = @"'hello' '' 'worlder\\'s'", IgnoreReason = "Advanced scenario")]
+		[TestCase(9, '\'', Result = @"'hello' '' 'worlder\\'s'")]
+		[TestCase(16, '\'', Result = @"'hello' '' 'worlder\\'s'")]
+		[TestCase(17, '\'', Result = @"'hello' '' 'worlder\\'s'")]
+		[TestCase(18, '\'', Result = @"'hello' 'world\'s''worlder\\'s'")]
+		[TestCase(19, '\'', Result = @"'hello' 'world\'s' ''", IgnoreReason = "Advanced scenario")]
+		[TestCase(29, '\'', Result = @"'hello' 'world\'s' ''")]
+		[TestCase(30, '\'', Result = @"'hello' 'world\'s' ''")]
+		[TestCase(31, '\'', Result = @"'hello' 'world\'s' ''")]
+		[TestCase(1, '"', Result = @""""" ""world\""s"" ""worlder\\""s""")]
+		[TestCase(31, '`', Result = @"`hello` `world\`s` ``")]
+		public string ChangeInnerQuote (int col, char quote)
+		{
+			var mode = new TestViEditMode { Text = @"'hello' 'world\'s' 'worlder\\'s'".Replace ('\'', quote) };
+			RepeatChar('l', col, mode);
+			mode.Input ("ci" + quote);
+			return mode.Text;
+		}
+
+		[Test]
+		public void ChangeOuterQuote() 
+		{
+			var mode = new TestViEditMode { Text = "'hello'" };
+			RepeatChar('l', 3, mode);
+			mode.Input ("ca'");
+			Assert.That (mode.Text, Is.Empty);
+		}
+
+		[Test]
+		public void ChangeOuterParen() 
+		{
+			var mode = new TestViEditMode { Text = "((hello))" };
+			RepeatChar('l', 3, mode);
+			mode.Input ("ca)");
+			Assert.That (mode.Text, Is.EqualTo ("()"));
+		}
+
+		[Test]
+		public void ChangeOuterParen_Multiline() 
+		{
+			var mode = new TestViEditMode { Text = "((\n\thello\n))" };
+			RepeatChar('j', 1, mode);
+			RepeatChar('l', 4, mode);
+			mode.Input ("ca)");
+			Assert.That (mode.Text, Is.EqualTo ("()"));
+		}
+
+		static void RepeatChar(char c, int count, TestViEditMode mode) 
+		{
+			string input = "";
+			for (int i = 0; i < count; i++)
+				input += c;
+			mode.Input(input);
 		}
 		
 		[Ignore("FixMe")]
