@@ -227,6 +227,25 @@ dddddd$dddd
 eeeeeeeeee
 ffffffffff");
 		}
+
+		[Test()]
+		public void TestDuplicateSelectedText ()
+		{
+			var data = Create (@"aaaaaaaaa
+bbbbbbbbbb
+cccccccc<-cc
+dddddd->$dddd
+eeeeeeeeee
+ffffffffff");
+			MiscActions.DuplicateLine (data);
+			Check (data, @"aaaaaaaaa
+bbbbbbbbbb
+cccccccccc
+ddddddcc
+dddddd$dddd
+eeeeeeeeee
+ffffffffff");
+		}
 	}
 }
 
