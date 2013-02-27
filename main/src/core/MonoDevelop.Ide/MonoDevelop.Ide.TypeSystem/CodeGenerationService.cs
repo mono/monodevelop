@@ -66,8 +66,10 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (newMember is CodeMemberMethod)
 				options.BracingStyle = "C";
 			generator.GenerateCodeFromMember (newMember, sw, options);
-			
-			suitableInsertionPoint.Insert (data, sw.ToString ());
+
+			var code = sw.ToString ();
+			if (!string.IsNullOrEmpty (code))
+				suitableInsertionPoint.Insert (data, code);
 			if (!isOpen) {
 				try {
 					File.WriteAllText (type.Region.FileName, data.Text);
