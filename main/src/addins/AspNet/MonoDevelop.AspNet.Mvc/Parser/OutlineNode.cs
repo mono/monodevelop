@@ -29,8 +29,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.AspNet.Parser.Dom;
 using System.Web.Razor.Parser.SyntaxTree;
+using MonoDevelop.Xml.StateEngine;
 
 namespace MonoDevelop.AspNet.Mvc.Parser
 {
@@ -43,23 +43,20 @@ namespace MonoDevelop.AspNet.Mvc.Parser
 		{
 		}
 
-		public OutlineNode (TagNode node)
+		static XName idName = new XName ("id");
+
+		public OutlineNode (XElement node)
 		{
-			Name = node.TagName;
-			string att = null;
+			Name = node.Name.FullName;
+			XAttribute att = null;
 			if (node.Attributes != null)
-				att = node.Attributes["id"] as string;
-			if (att != null)
+				att = node.Attributes[idName];
+			if (att != null && att.Value != null)
 				Name = "<" + Name + "#" + att + ">";
 			else
 				Name = "<" + Name + ">";
 
-			ILocation start = node.Location, end;
-			if (node.EndLocation != null)
-				end = node.EndLocation;
-			else
-				end = start;
-			Location = new DomRegion (start.BeginLine, start.BeginColumn + 1, end.EndLine, end.EndColumn + 1);
+			Location = node.Region;
 		}
 
 		public OutlineNode (Block block)

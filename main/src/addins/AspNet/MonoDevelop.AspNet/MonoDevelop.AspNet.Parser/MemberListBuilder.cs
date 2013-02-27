@@ -34,12 +34,9 @@ using System;
 using System.Collections.Generic;
 
 using MonoDevelop.Core;
-using MonoDevelop.AspNet.Parser.Dom;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory;
 using MonoDevelop.Xml.StateEngine;
-using MonoDevelop.AspNet.StateEngine;
 
 namespace MonoDevelop.AspNet.Parser
 {

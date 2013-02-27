@@ -29,7 +29,6 @@
 using System;
 using System.Collections.Generic;
 
-using MonoDevelop.AspNet.Parser.Dom;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Xml.StateEngine;
 using MonoDevelop.AspNet.StateEngine;
@@ -45,15 +44,11 @@ namespace MonoDevelop.AspNet.Parser
 		{
 			Flags |= ParsedDocumentFlags.NonSerializable;
 			Info = info;
-			RootNode = new RootNode ();
 			Type = type;
 			XDocument = xDoc;
 		}
 		
 		public PageInfo Info { get; private set; }
-		// dummy RootNode instance, left for keeping the API of the addin
-		[Obsolete ("The RootNode property has been deprecated. Use AspNetParsedDocument.XDocument instead")]
-		public RootNode RootNode { get; private set; } 
 		public WebSubtype Type { get; private set; }
 		
 		public override IEnumerable<FoldingRegion> Foldings {
@@ -61,9 +56,8 @@ namespace MonoDevelop.AspNet.Parser
 				if (XDocument == null)
 					yield break;
 				foreach (XNode node in XDocument.AllDescendentNodes) {
-					if (node is MonoDevelop.Xml.StateEngine.XElement) {
-						var el = node as XElement;
-						
+					var el = node as XElement;
+					if (el != null) {
 						if (el.IsClosed && (el.ClosingTag.Region.BeginLine - el.Region.EndLine) > 2) {
 							// display the ID tags for ASP.NET list controls
 							string controlId = string.Empty;
@@ -76,11 +70,13 @@ namespace MonoDevelop.AspNet.Parser
 							}
 							
 							yield return new FoldingRegion (
-								string.Format ("<{0}{1}... >", el.Name.FullName, controlId),
+								string.Format ("<{0}#{1}... >", el.Name.FullName, controlId),
 							    new DomRegion (el.Region.Begin, el.ClosingTag.Region.End));       
 						}
-					} else if (node is XDocType) {
-						XDocType dt = (XDocType)node;
+						continue;
+					}
+					var dt = (XDocType)node;
+					if (dt != null ){
 						string id = !String.IsNullOrEmpty (dt.PublicFpi) ? dt.PublicFpi
 									: !String.IsNullOrEmpty (dt.Uri) ? dt.Uri : null;
 
@@ -92,29 +88,12 @@ namespace MonoDevelop.AspNet.Parser
 							fr.IsFoldedByDefault = true;
 							yield return fr;
 						}
-					} else if (node is XComment) {
-						if (node.Region.EndLine - node.Region.BeginLine > 2)
-							yield return new FoldingRegion ("<!-- -->", node.Region);
-						
-					} else if (node is AspNetServerComment) {
-						var cnode = node as AspNetServerComment;
-						if ((cnode.Region.EndLine - cnode.Region.BeginLine) > 2)
-							yield return new FoldingRegion (cnode.FriendlyPathRepresentation, cnode.Region);
-						
-					} else if (node is AspNetDirective) {
-						var cnode = node as AspNetDirective;
-						if ((cnode.Region.EndLine - cnode.Region.BeginLine) > 2)
-							yield return new FoldingRegion (cnode.FriendlyPathRepresentation, cnode.Region);
-						
-					} else if (node is AspNetExpression) {
-						var cnode = node as AspNetExpression;
-						if ((cnode.Region.EndLine - cnode.Region.BeginLine) > 2)
-							yield return new FoldingRegion (cnode.FriendlyPathRepresentation, cnode.Region);
-						
-					} else if (node is AspNetRenderBlock) {
-						var cnode = node as AspNetRenderBlock;
-						if ((cnode.Region.EndLine - cnode.Region.BeginLine) > 2)
-							yield return new FoldingRegion (cnode.FriendlyPathRepresentation, cnode.Region);
+						continue;
+					}
+					if (node is XComment || node is AspNetServerComment || node is AspNetDirective || node is AspNetExpression || node is AspNetRenderBlock) {
+						if ((node.Region.EndLine - node.Region.BeginLine) > 2)
+							yield return new FoldingRegion (node.FriendlyPathRepresentation, node.Region);
+						continue;
 					}
 				}
 			}

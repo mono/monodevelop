@@ -77,21 +77,6 @@ namespace MonoDevelop.AspNet.Parser
 			
 			var result = new AspNetParsedDocument (fileName, type, info, xDoc);
 			result.Add (errors);
-							
-			/*
-			if (MonoDevelop.Core.LoggingService.IsLevelEnabled (MonoDevelop.Core.Logging.LogLevel.Debug)) {
-				DebugStringVisitor dbg = new DebugStringVisitor ();
-				rootNode.AcceptVisit (dbg);
-				System.Text.StringBuilder sb = new System.Text.StringBuilder ();
-				sb.AppendLine ("Parsed AspNet file:");
-				sb.AppendLine (dbg.DebugString);
-				if (errors.Count > 0) {
-					sb.AppendLine ("Errors:");
-					foreach (ParserException ex in errors)
-						sb.AppendLine (ex.ToString ());
-				}
-				MonoDevelop.Core.LoggingService.LogDebug (sb.ToString ());
-			}*/
 			
 			return result;
 		}

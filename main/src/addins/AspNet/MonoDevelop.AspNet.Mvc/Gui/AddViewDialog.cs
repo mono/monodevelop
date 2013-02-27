@@ -37,6 +37,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Components;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Xml.StateEngine;
 
 namespace MonoDevelop.AspNet.Mvc.Gui
 {
@@ -233,9 +234,22 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			
 			if (pd != null) {
 				try {
-					var visitor = new ContentPlaceHolderVisitor ();
-					pd.RootNode.AcceptVisit (visitor);
-					ContentPlaceHolders.AddRange (visitor.PlaceHolders);
+					var name = new XName ("asp", "ContentPlaceHolder");
+					var idName = new XName ("id");
+					var runatName = new XName ("runat");
+					var placeholders = pd.XDocument.AllDescendentNodes.OfType<XElement> ().Select (x => {
+						if (x.Name != name)
+							return null;
+						var runatAtt = x.Attributes[runatName];
+						if (runatAtt == null || !string.Equals (runatAtt.Value, "server", StringComparison.OrdinalIgnoreCase))
+							return null;
+						var idAtt = x.Attributes[idName];
+						if (idAtt == null || string.IsNullOrEmpty (idAtt.Value))
+							return null;
+						return idAtt.Value;
+					}).Where (n => n!= null);
+
+					ContentPlaceHolders.AddRange (placeholders);
 					
 					for (int i = 0; i < ContentPlaceHolders.Count; i++) {
 						string placeholder = ContentPlaceHolders[i];

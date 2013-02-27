@@ -215,25 +215,6 @@
     <Compile Include="MonoDevelop.AspNet\AspNetAppProjectBinding.cs" />
     <Compile Include="MonoDevelop.AspNet\AspNetAppProjectConfiguration.cs" />
     <Compile Include="MonoDevelop.AspNet\AspNetFileDescriptionTemplate.cs" />
-    <Compile Include="MonoDevelop.AspNet.Parser.Internal\AspParser.cs" />
-    <Compile Include="MonoDevelop.AspNet.Parser.Internal\AspTokenizer.cs" />
-    <Compile Include="MonoDevelop.AspNet.Parser.Internal\Location.cs" />
-    <Compile Include="MonoDevelop.AspNet.Parser.Internal\StrUtils.cs" />
-    <Compile Include="MonoDevelop.AspNet.Parser.Internal\ParseException.cs" />
-    <Compile Include="MonoDevelop.AspNet.Parser.Internal\Directive.cs" />
-    <Compile Include="MonoDevelop.AspNet.Parser.Internal\TagType.cs" />
-    <Compile Include="MonoDevelop.AspNet.Parser.Dom\DirectiveNode.cs" />
-    <Compile Include="MonoDevelop.AspNet.Parser.Dom\RootNode.cs" />
-    <Compile Include="MonoDevelop.AspNet.Parser.Dom\ExpressionNode.cs" />
-    <Compile Include="MonoDevelop.AspNet.Parser.Dom\TagNode.cs" />
-    <Compile Include="MonoDevelop.AspNet.Parser.Dom\Node.cs" />
-    <Compile Include="MonoDevelop.AspNet.Parser.Dom\Visitor.cs" />
-    <Compile Include="MonoDevelop.AspNet.Parser.Dom\ServerIncludeNode.cs" />
-    <Compile Include="MonoDevelop.AspNet.Parser.Dom\TextNode.cs" />
-    <Compile Include="MonoDevelop.AspNet.Parser.Dom\ParentNode.cs" />
-    <Compile Include="MonoDevelop.AspNet.Parser.Dom\ILocation.cs" />
-    <Compile Include="MonoDevelop.AspNet.Parser.Internal\TagAttributes.cs" />
-    <Compile Include="MonoDevelop.AspNet.Parser.Dom\ServerCommentNode.cs" />
     <Compile Include="MonoDevelop.AspNet.Parser\WebFormReferenceManager.cs" />
     <Compile Include="MonoDevelop.AspNet\XspParameters.cs" />
     <Compile Include="MonoDevelop.AspNet.Gui\XspOptionsPanel.cs" />
@@ -261,9 +242,7 @@
     <Compile Include="MonoDevelop.AspNet.Deployment\WebDeployResolver.cs" />
     <Compile Include="MonoDevelop.AspNet\WebTypeManager.cs" />
     <Compile Include="MonoDevelop.AspNet.Parser\DocumentReferenceManager.cs" />
-    <Compile Include="MonoDevelop.AspNet.Parser\LocatedParserException.cs" />
     <Compile Include="MonoDevelop.AspNet\IAspNetLanguageBinding.cs" />
-    <Compile Include="MonoDevelop.AspNet.Parser\DebugStringVisitor.cs" />
     <Compile Include="gtk-gui\MonoDevelop.AspNet.Gui.AspNetConfigurationPanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.AspNet.Gui.XspOptionsPanelWidget.cs" />
     <Compile Include="MonoDevelop.AspNet.Gui\AspNetEditorExtension.cs" />
@@ -278,7 +257,6 @@
     <Compile Include="MonoDevelop.Html\HtmlCompletionDataProvider.cs" />
     <Compile Include="MonoDevelop.AspNet.Parser\AspNetParser.cs" />
     <Compile Include="MonoDevelop.AspNet.Parser\AspNetParsedDocument.cs" />
-    <Compile Include="MonoDevelop.AspNet.Parser\CompilationUnitVisitor.cs" />
     <Compile Include="MonoDevelop.AspNet.Parser\PageInfo.cs" />
     <Compile Include="MonoDevelop.AspNet\AspNetToolboxLoader.cs" />
     <Compile Include="MonoDevelop.AspNet\AspNetToolboxNode.cs" />
@@ -313,7 +291,6 @@
     <Compile Include="MonoDevelop.AspNet.StateEngine\HtmlScriptBodyState.cs" />
     <Compile Include="MonoDevelop.AspNet.Gui\TypeResolveContextDecorator.cs" />
     <Compile Include="MonoDevelop.AspNet.Parser\MemberListBuilder.cs" />
-    <Compile Include="MonoDevelop.AspNet.Parser\ContentPlaceHolderVisitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

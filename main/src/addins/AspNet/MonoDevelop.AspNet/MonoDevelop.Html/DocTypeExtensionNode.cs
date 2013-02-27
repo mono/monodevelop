@@ -31,9 +31,10 @@ using Mono.Addins;
 
 namespace MonoDevelop.Html
 {
-	
 	public class DocTypeExtensionNode : ExtensionNode
 	{
+#pragma warning disable 0649
+
 		[NodeAttribute("name", true, Description = "The human-readable name of the schema. It's expected to be a substring of the full doctype declaration that's uniquely identifiable." )]
 		string name;
 		
@@ -45,6 +46,8 @@ namespace MonoDevelop.Html
 		
 		[NodeAttribute("completionDocTypeName", false, Description = "The name of another doctype declaration that can be used to provide useful code completion for for documents using this doctype.")]
 		string completionDocTypeName;
+
+#pragma warning restore 0649
 		
 		public string Name {
 			get { return name; }

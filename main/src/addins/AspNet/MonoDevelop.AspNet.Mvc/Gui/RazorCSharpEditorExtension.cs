@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.AspNet.Gui;
 using MonoDevelop.Ide.TypeSystem;
-using MonoDevelop.AspNet.Parser.Dom;
 using MonoDevelop.AspNet.Mvc.Parser;
 using ICSharpCode.NRefactory.TypeSystem;
 using Mono.TextEditor;
@@ -576,12 +575,13 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			SelectNode ((OutlineNode)selection);
 		}
 
-		void BuildTreeChildren (Gtk.TreeStore store, Gtk.TreeIter parent, ParentNode p, IList<Block> blocks)
+		void BuildTreeChildren (Gtk.TreeStore store, Gtk.TreeIter parent, XContainer p, IList<Block> blocks)
 		{
-			foreach (Node node in p) {
-				if (!(node is TagNode)) {
-					var startLoc = new TextLocation (node.Location.BeginLine, node.Location.BeginColumn);
-					var endLoc = new TextLocation (node.Location.EndLine, node.Location.EndColumn);
+			foreach (XNode node in p.Nodes) {
+				var el = node as XElement;
+				if (el == null) {
+					var startLoc = node.Region.Begin;
+					var endLoc = node.Region.End;
 					var doc = defaultDocument.Editor.Document;
 
 					var blocksBetween = blocks.Where (n => n.Start.AbsoluteIndex >= doc.GetOffset (startLoc)
@@ -602,13 +602,11 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 
 				Gtk.TreeIter childIter;
 				if (!parent.Equals (Gtk.TreeIter.Zero))
-					childIter = store.AppendValues (parent, new OutlineNode(node as TagNode));
+					childIter = store.AppendValues (parent, new OutlineNode(el));
 				else
-					childIter = store.AppendValues (new OutlineNode(node as TagNode));
+					childIter = store.AppendValues (new OutlineNode(el));
 
-				ParentNode pChild = node as ParentNode;
-				if (pChild != null)
-					BuildTreeChildren (store, childIter, pChild, blocks);
+				BuildTreeChildren (store, childIter, el, blocks);
 			}
 		}
 

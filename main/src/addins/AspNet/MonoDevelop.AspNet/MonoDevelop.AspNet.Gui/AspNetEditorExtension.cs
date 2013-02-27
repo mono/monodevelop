@@ -32,25 +32,19 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 using MonoDevelop.Core;
-using MonoDevelop.Projects;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui.Content;
 
 using MonoDevelop.AspNet;
 using MonoDevelop.AspNet.Parser;
-using MonoDevelop.Html;
 using MonoDevelop.DesignerSupport;
 
-//I initially aliased this as SE, which (unintentionally) looked a little odd with the XDOM types :-)
 using S = MonoDevelop.Xml.StateEngine; 
 using MonoDevelop.AspNet.StateEngine;
-using System.Text;
 using System.Text.RegularExpressions;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Completion;
 
 namespace MonoDevelop.AspNet.Gui
 {
@@ -202,9 +196,7 @@ namespace MonoDevelop.AspNet.Gui
 		//case insensitive, no prefix
 		static S.XAttribute GetHtmlAtt (S.XElement el, string name)
 		{
-			return el.Attributes
-				.Where (a => a.IsNamed && !a.Name.HasPrefix && a.Name.Name.Equals (name, StringComparison.OrdinalIgnoreCase))
-				.FirstOrDefault ();
+			return el.Attributes.FirstOrDefault (a => a.IsNamed && !a.Name.HasPrefix && a.Name.Name.Equals (name, StringComparison.OrdinalIgnoreCase));
 		}
 		
 		public void InitializeCodeCompletion (char ch)
@@ -217,11 +209,7 @@ namespace MonoDevelop.AspNet.Gui
 			if (ch != '\0')
 				sourceText += ch;
 			string textAfterCaret = Document.Editor.GetTextBetween (caretOffset, Math.Min (Document.Editor.Length, Math.Max (caretOffset, Tracker.Engine.Position + Tracker.Engine.CurrentStateLength - 2)));
-			
-			var loc = new MonoDevelop.AspNet.Parser.Internal.Location ();
-			var docLoc = Document.Editor.Document.OffsetToLocation (start);
-			loc.EndLine = loc.BeginLine = docLoc.Line;
-			loc.EndColumn = loc.BeginColumn = docLoc.Column;
+
 			if (documentBuilder == null){
 				localDocumentInfo = null;
 				return;
