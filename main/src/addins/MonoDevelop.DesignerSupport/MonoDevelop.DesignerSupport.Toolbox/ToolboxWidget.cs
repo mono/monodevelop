@@ -139,6 +139,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			categories.Add (category);
 			foreach (Item item in category.Items) {
+				if (item.Icon == null)
+					continue;
+
 				this.iconSize.Width  = Math.Max (this.iconSize.Width,  item.Icon.Width);
 				this.iconSize.Height  = Math.Max (this.iconSize.Height,  item.Icon.Height);
 			}
