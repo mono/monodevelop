@@ -82,6 +82,9 @@ namespace MonoDevelop.Ide
 			}
 			
 			Counters.Initialization.Trace ("Initializing GTK");
+			if (Platform.IsWindows) {
+				CheckWindowsGtk ();
+			}
 			SetupExceptionManager ();
 			
 			try {
@@ -302,6 +305,32 @@ namespace MonoDevelop.Ide
 				}
 				Environment.SetEnvironmentVariable ("GTK2_RC_FILES", PropertyService.EntryAssemblyPath.Combine (gtkrc));
 			}
+		}
+
+		[System.Runtime.InteropServices.DllImport("kernel32.dll", CharSet = System.Runtime.InteropServices.CharSet.Unicode, SetLastError = true)]
+		[return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]
+		static extern bool SetDllDirectory (string lpPathName);
+
+		static void CheckWindowsGtk ()
+		{
+			string location = null;
+			using (var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Xamarin\GtkSharp\InstallFolder")) {
+				if (key != null) {
+					location = key.GetValue (null) as string;
+				}
+			}
+			if (location == null || !File.Exists (Path.Combine (location, "bin", "libgtk-win32-2.0-0.dll"))) {
+				LoggingService.LogError ("Did not find registered GTK# installation");
+				return;
+			}
+			var path = Path.Combine (location, @"bin");
+			try {
+				if (SetDllDirectory (path)) {
+					return;
+				}
+			} catch (EntryPointNotFoundException) {
+			}
+			LoggingService.LogError ("Unable to set GTK# dll directory");
 		}
 		
 		public bool Initialized {
