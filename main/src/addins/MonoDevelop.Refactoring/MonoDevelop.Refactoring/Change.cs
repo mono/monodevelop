@@ -125,8 +125,12 @@ namespace MonoDevelop.Refactoring
 			
 			TextEditorData textEditorData = this.TextEditorData;
 			bool saveEditor = false;
+			bool hadBom = true;
+			System.Text.Encoding encoding = System.Text.Encoding.UTF8;
+
 			if (textEditorData == null) {
-				textEditorData = TextFileProvider.Instance.GetTextEditorData (FileName);
+				bool open;
+				textEditorData = TextFileProvider.Instance.GetTextEditorData (FileName, out hadBom, out encoding, out open);
 				saveEditor = true;
 			}
 		
@@ -145,7 +149,7 @@ namespace MonoDevelop.Refactoring
 			}
 			
 			if (saveEditor)
-				System.IO.File.WriteAllText (FileName, textEditorData.Text);
+				Mono.TextEditor.Utils.TextFileUtility.WriteText (FileName, textEditorData.Text, encoding, hadBom);
 		}
 		
 		public override string ToString ()

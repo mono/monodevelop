@@ -50,6 +50,7 @@ using Mono.TextEditor;
 using System.Diagnostics;
 using ICSharpCode.NRefactory.Documentation;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using System.Text;
 
 namespace MonoDevelop.Ide
 {
@@ -2072,17 +2073,26 @@ namespace MonoDevelop.Ide
 
 		public TextEditorData GetTextEditorData (FilePath filePath, out bool isOpen)
 		{
+			bool hadBom;
+			Encoding encoding;
+			return GetTextEditorData (filePath, out hadBom, out encoding, out isOpen);
+		}
+
+		public TextEditorData GetTextEditorData (FilePath filePath, out bool hadBom, out Encoding encoding, out bool isOpen)
+		{
 			foreach (var doc in IdeApp.Workbench.Documents) {
 				if (doc.FileName == filePath) {
 					isOpen = true;
+					hadBom = false;
+					encoding = Encoding.Default;
 					return doc.Editor;
 				}
 			}
-			
-			TextFile file = TextFile.ReadFile (filePath);
+
+			var text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText (filePath, out hadBom, out encoding);
 			TextEditorData data = new TextEditorData ();
 			data.Document.FileName = filePath;
-			data.Text = file.Text;
+			data.Text = text;
 			isOpen = false;
 			return data;
 		}
