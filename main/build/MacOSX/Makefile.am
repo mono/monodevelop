@@ -1,4 +1,3 @@
-BUNDLE_VERSION=$(VERSION)
 MAC_APP_DIR=MonoDevelop.app
 APP_NAME=MonoDevelop
 MACOS=$(MAC_APP_DIR)/Contents/MacOS
@@ -20,8 +19,10 @@ PACKAGE_VERSION_REV=0$(word 3, $(subst ., ,$(VERSION)))
 PACKAGE_VERSION_BUILD=$(num_commits_since_version_change)
 PACKAGE_UPDATE_ID=$(shell echo $(PACKAGE_VERSION_MAJOR) $(PACKAGE_VERSION_MINOR) $(PACKAGE_VERSION_REV) $(PACKAGE_VERSION_BUILD) | awk '{printf "%d%02d%02d%04d",$$1,$$2,$$3,$$4}')
 
+BUNDLE_VERSION=$(VERSION).$(num_commits_since_version_change)
+
 CLEANFILES = render.exe
-#DISTCLEANFILES = 
+#DISTCLEANFILES =
 EXTRA_DIST = dmg-bg.png DS_Store Info.plist.in make-dmg-bundle.sh render.exe
 
 all: app
@@ -66,7 +67,7 @@ app: monostub
 	cp -pR ../locale $(MAC_APP_DIR)/Contents/MacOS/share
 	mkdir -p $(MAC_APP_DIR)/Contents/MacOS/share/monodevelop
 	cp ../../COPYING $(MAC_APP_DIR)/Contents/MacOS/share/monodevelop/COPYING.LGPL2.1
-	
+
 	sed -e "s/@BUNDLE_VERSION@/$(BUNDLE_VERSION)/" -e "s/@ASSEMBLY_VERSION@/$(ASSEMBLY_VERSION)/" -e "s/@APP_NAME@/$(APP_NAME)/" -e "s|@RELEASE_ID@|$(PACKAGE_UPDATE_ID)|" Info.plist.in > $(MAC_APP_DIR)/Contents/Info.plist
 	cp ../../theme-icons/Mac/*.icns $(MAC_APP_DIR)/Contents/Resources/
 
