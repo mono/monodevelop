@@ -99,9 +99,6 @@ display in a help buffer instead.")
   (with-current-buffer (find-file-noselect file)
     (ac-fsharp-parse-current-buffer)))
 
-(defmutable current-project nil
-  "Tracks the project currently used by the completion process.")
-
 ;;;###autoload
 (defn load-project (file)
   "Load the specified F# file as a project"
@@ -125,8 +122,7 @@ display in a help buffer instead.")
     (unless ac-fsharp-completion-process
       (_ start-process))
     (log-psendstr ac-fsharp-completion-process
-                  (format "project \"%s\"\n" (expand-file-name file)))
-    (@set current-project file)))
+                  (format "project \"%s\"\n" (expand-file-name file)))))
 
 (defun ac-fsharp-send-pos-request (cmd file line col)
   (let ((request (format "%s \"%s\" %d %d %d\n" cmd file line col

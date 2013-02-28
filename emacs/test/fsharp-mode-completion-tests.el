@@ -109,10 +109,6 @@ Bound vars:
 (check-project-loading "raises error if not fsproj"
   (should-error (_ load-project "foo")))
 
-(check-project-loading "updates the current project"
-  (_ load-project "foo.fsproj")
-  (should= "foo.fsproj" (@ current-project)))
-
 (check-project-loading "loads the specified project using the ac process"
   (_ load-project "foo.fsproj")
   (should-match "foo.fsproj" load-cmd))
@@ -124,35 +120,69 @@ Bound vars:
 Stubs out functions that call on the ac process."
   (declare (indent 1))
   `(check ,(concat "process handler " desc)
+     (setq major-mode 'fsharp-mode)
      (in-ns fsharp-mode-completion
        (flet ((log-to-proc-buf (p s))
               (log-psendstr    (p s))
               (ac-fsharp-can-make-request () t))
          ,@body))))
 
+(defmacro stub-fn (sym var &rest body)
+  "Stub the given unary function, with the argument to the
+function bound to VAR in BODY. "
+  (declare (indent 2))
+  `(let (,var)
+     (flet ((,sym (x &rest xs) (setq ,var x)))
+       ,@body)))
+
+(defun format-output (header &optional content)
+  (concat header "\n" content
+          (in-ns fsharp-mode-completion (@ eom))))
+
 (check-handler "prints message on error"
-  (flet ((message (s) (should-match "foo" err)))
-    (_ filter-output nil "ERROR: foo")))
+  (stub-fn message err
+    (_ filter-output nil (format-output "ERROR: foo"))
+    (should-match "foo" err)))
 
 (check-handler "does not print message on type information error"
-  (flet ((message (s) (should-not 'called)))
-    (_ filter-output nil "ERROR: Could not get type information")))
+  (stub-fn message called
+    (_ filter-output nil (format-output "ERROR: could not get type information"))
+    (should-not called)))
 
 ;;; Tooltips and typesigs
 
 (check-handler "shows popup if tooltip is requested"
-  (flet ((popup-tip (s &rest _) (should-match "foo" s)))
+  (setq ac-fsharp-use-popup t)
+  (stub-fn popup-tip tip
     (fsharp-mode-completion/show-tooltip-at-point)
-    (_ filter-output nil "DATA: tooltip\nfoo")))
+    (_ filter-output nil (format-output "DATA: tooltip" "foo"))
+    (should-match "foo" tip)))
 
 (check-handler "does not show popup if typesig is requested"
-  (let (tip)
-    (flet ((popup-tip (s &rest _) (setq tip s)))
-      (fsharp-mode-completion/show-typesig-at-point)
-      (_ filter-output nil "DATA: tooltip\nfoo")
-      (should-not tip))))
+  (setq ac-fsharp-use-popup t)
+  (stub-fn popup-tip called
+    (fsharp-mode-completion/show-typesig-at-point)
+    (_ filter-output nil (format-output "DATA: tooltip" "foo"))
+    (should-not called)))
+
+(check-handler "does not show popup if use-popup is nil"
+  (setq ac-fsharp-use-popup nil)
+  (stub-fn popup-tip called
+    (fsharp-mode-completion/show-tooltip-at-point)
+    (_ filter-output nil (format-output "DATA: tooltip" "foo"))
+    (should-not called)))
+
+(check-handler "displays tooltip in fsharp help-window if use-popup is nil"
+  (setq ac-fsharp-use-popup nil)
+  ;; HACK: stub internals of with-help-window.
+  ;; with-help-window is a macro and macrolet and labels don't seem to work.
+  (stub-fn help-window-setup win
+    (fsharp-mode-completion/show-tooltip-at-point)
+    (_ filter-output nil (format-output "DATA: tooltip" "foo"))
+    (should-match "F# info" (buffer-name (window-buffer win)))))
 
 (check-handler "displays typesig in minibuffer if typesig is requested"
-  (flet ((message (s) (should= "foo" s)))
+  (stub-fn message sig
     (fsharp-mode-completion/show-typesig-at-point)
-    (_ filter-output nil "DATA: tooltip\nfoo")))
+    (_ filter-output nil (format-output "DATA: tooltip" "foo"))
+    (should= "foo" sig)))
