@@ -67,6 +67,11 @@ namespace MonoDevelop.TextTemplating
 			return base.ResolveDirectiveProcessor (processorName);
 		}
 		
+		protected override string ResolvePath (string path)
+		{
+			return base.ResolvePath (SubstitutePlaceholders (path));
+		}
+
 		protected virtual string SubstitutePlaceholders (string value)
 		{
 			return StringParserService.Parse (value);
