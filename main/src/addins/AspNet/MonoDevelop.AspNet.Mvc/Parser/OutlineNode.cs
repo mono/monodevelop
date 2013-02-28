@@ -31,6 +31,7 @@ using System.Text;
 using ICSharpCode.NRefactory.TypeSystem;
 using System.Web.Razor.Parser.SyntaxTree;
 using MonoDevelop.Xml.StateEngine;
+using MonoDevelop.AspNet.StateEngine;
 
 namespace MonoDevelop.AspNet.Mvc.Parser
 {
@@ -39,24 +40,16 @@ namespace MonoDevelop.AspNet.Mvc.Parser
 		public string Name { get; set; }
 		public DomRegion Location { get; set; }
 
-		public OutlineNode ()
+		public OutlineNode (XElement el)
 		{
-		}
-
-		static XName idName = new XName ("id");
-
-		public OutlineNode (XElement node)
-		{
-			Name = node.Name.FullName;
-			XAttribute att = null;
-			if (node.Attributes != null)
-				att = node.Attributes[idName];
-			if (att != null && att.Value != null)
-				Name = "<" + Name + "#" + att + ">";
+			Name = el.Name.FullName;
+			string id = el.GetId ();
+			if (!string.IsNullOrEmpty (id))
+				Name = "<" + Name + "#" + id + ">";
 			else
 				Name = "<" + Name + ">";
 
-			Location = node.Region;
+			Location = el.Region;
 		}
 
 		public OutlineNode (Block block)

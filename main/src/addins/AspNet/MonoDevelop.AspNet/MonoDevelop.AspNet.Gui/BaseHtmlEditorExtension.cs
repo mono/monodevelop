@@ -100,7 +100,7 @@ namespace MonoDevelop.AspNet.Gui
 		protected override void GetElementCompletions (CompletionDataList list)
 		{
 			XName parentName = GetParentElementName (0);
-			AddHtmlTagCompletionData (list, Schema, parentName.ToLower ());
+			AddHtmlTagCompletionData (list, Schema, parentName);
 			AddMiscBeginTags (list);
 			
 			//FIXME: don't show this after any elements
@@ -144,7 +144,7 @@ namespace MonoDevelop.AspNet.Gui
 				return;
 			
 			if (parentName.IsValid) {
-				list.AddRange (schema.CompletionProvider.GetChildElementCompletionData (parentName.FullName));
+				list.AddRange (schema.CompletionProvider.GetChildElementCompletionData (parentName.FullName.ToLower ()));
 			} else {
 				list.AddRange (schema.CompletionProvider.GetElementCompletionData ());
 			}			
@@ -154,7 +154,7 @@ namespace MonoDevelop.AspNet.Gui
 		    XName tagName, Dictionary<string, string> existingAtts)
 		{
 			//add atts only if they're not aready in the tag
-			foreach (CompletionData datum in schema.CompletionProvider.GetAttributeCompletionData (tagName.FullName))
+			foreach (var datum in schema.CompletionProvider.GetAttributeCompletionData (tagName.FullName.ToLower ()))
 				if (existingAtts == null || !existingAtts.ContainsKey (datum.DisplayText))
 					list.Add (datum);
 		}

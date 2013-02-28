@@ -62,11 +62,9 @@ namespace MonoDevelop.AspNet.Parser
 							// display the ID tags for ASP.NET list controls
 							string controlId = string.Empty;
 							if (el.Name.HasPrefix && (el.Name.Prefix == "asp")) {
-								XName idAttr = new XName ("id");
-								foreach (XAttribute attr in el.Attributes) {
-									if (attr.Name.ToLower () == idAttr)
-										controlId = string.Format (" ID=\"{0}\"", attr.Value);
-								}
+								var id = el.GetId ();
+								if (id != null)
+									controlId = string.Format (" ID=\"{0}\"", id);
 							}
 							
 							yield return new FoldingRegion (

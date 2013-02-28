@@ -28,6 +28,7 @@ using System;
 using System.Linq;
 using System.IO;
 using System.Collections.Generic;
+using MonoDevelop.AspNet.StateEngine;
 using PP = System.IO.Path;
 
 using MonoDevelop.AspNet.Gui;
@@ -234,22 +235,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			
 			if (pd != null) {
 				try {
-					var name = new XName ("asp", "ContentPlaceHolder");
-					var idName = new XName ("id");
-					var runatName = new XName ("runat");
-					var placeholders = pd.XDocument.AllDescendentNodes.OfType<XElement> ().Select (x => {
-						if (x.Name != name)
-							return null;
-						var runatAtt = x.Attributes[runatName];
-						if (runatAtt == null || !string.Equals (runatAtt.Value, "server", StringComparison.OrdinalIgnoreCase))
-							return null;
-						var idAtt = x.Attributes[idName];
-						if (idAtt == null || string.IsNullOrEmpty (idAtt.Value))
-							return null;
-						return idAtt.Value;
-					}).Where (n => n!= null);
-
-					ContentPlaceHolders.AddRange (placeholders);
+					ContentPlaceHolders.AddRange (pd.XDocument.GetAllPlaceholderIds ());
 					
 					for (int i = 0; i < ContentPlaceHolders.Count; i++) {
 						string placeholder = ContentPlaceHolders[i];

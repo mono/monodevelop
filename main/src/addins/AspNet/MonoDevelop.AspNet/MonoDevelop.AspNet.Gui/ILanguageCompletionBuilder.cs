@@ -150,23 +150,10 @@ namespace MonoDevelop.AspNet.Gui
 				if (el == null) {
 					continue;
 				}
-				if (IsServerScriptTag (el)) {
+				if (el.IsServerScriptTag ()) {
 					XScriptBlocks.Add (el);	
 				}
 			}
-		}
-		
-		bool IsServerScriptTag (S.XElement el)
-		{
-			if (el.Name.FullName == "script") {
-				//TODO: could use an extension method for this...
-				S.XName runat = new S.XName ("runat");
-				foreach (S.XAttribute attr in el.Attributes) {
-					if ((attr.Name.ToLower () == runat) && (attr.Value.ToLower () == "server"))
-						return true;
-				}
-			}
-			return false;
 		}
 		
 		#endregion

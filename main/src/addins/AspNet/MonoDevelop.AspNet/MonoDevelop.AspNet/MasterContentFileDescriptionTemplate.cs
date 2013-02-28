@@ -32,6 +32,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Xml.StateEngine;
+using MonoDevelop.AspNet.StateEngine;
+using System.Linq;
 
 namespace MonoDevelop.AspNet
 {
@@ -72,14 +74,8 @@ namespace MonoDevelop.AspNet
 				if (pd == null)
 					return;
 				
-				//var visitor = new ContentPlaceHolderVisitor ();
-				//pd.RootNode.AcceptVisit (visitor);
-				
-				List<string> placeHolderIds = new List<string> ();
-				BuildPlaceholderList (placeHolderIds, pd.XDocument);
-				
 				var sb = new System.Text.StringBuilder ();
-				foreach (string id in placeHolderIds) {
+				foreach (string id in pd.XDocument.GetAllPlaceholderIds ()) {
 					sb.Append ("<asp:Content ContentPlaceHolderID=\"");
 					sb.Append (id);
 					sb.Append ("\" ID=\"");
@@ -93,33 +89,6 @@ namespace MonoDevelop.AspNet
 				//no big loss if we just insert blank space
 				//it's just a template for the user to start editing
 				LoggingService.LogWarning ("Error generating AspNetMasterContent for template", ex);
-			}
-		}
-		
-		void BuildPlaceholderList (List<string> placeHolderIds, XDocument xDoc)
-		{
-			AddPlaceholderElement (placeHolderIds, xDoc.RootElement);
-		}
-		
-		void AddPlaceholderElement (List<string> list, XElement el)
-		{
-			if (0 == string.Compare (el.Name.FullName, "asp:ContentPlaceHolder", true)) {
-				string id = string.Empty;
-				
-				foreach (XAttribute att in el.Attributes) {
-					if (0 == string.Compare (att.Name.Name, "id", true)) {
-						id = att.Value;
-						break;
-					}	
-				}
-				
-				if (id != string.Empty)
-					list.Add (id);
-			}
-			
-			foreach (XNode node in el.Nodes) {
-				if (node is XElement)
-					AddPlaceholderElement (list, node as XElement);
 			}
 		}
 	}

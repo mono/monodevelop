@@ -170,8 +170,7 @@ namespace MonoDevelop.AspNet.Gui
 			if (Tracker.Engine.CurrentState is HtmlScriptBodyState) {
 				var el = Tracker.Engine.Nodes.Peek () as S.XElement;
 				if (el != null) {
-					var att = GetHtmlAtt (el, "runat");
-					if (att != null && "server".Equals (att.Value, StringComparison.OrdinalIgnoreCase)) {
+					if (el.IsRunatServer ()) {
 						if (documentBuilder != null) {
 							// TODO: C# completion
 						}
@@ -504,8 +503,7 @@ namespace MonoDevelop.AspNet.Gui
 			var list = base.GetAttributeValueCompletions (ob, att) ?? new CompletionDataList ();
 			if (ob is S.XElement) {
 				if (ob.Name.HasPrefix) {
-					S.XAttribute idAtt = ob.Attributes[new S.XName ("id")];
-					string id = idAtt == null? null : idAtt.Value;
+					string id = ob.GetId ();
 					if (string.IsNullOrEmpty (id) || string.IsNullOrEmpty (id.Trim ()))
 						id = null;
 					AddAspAttributeValueCompletionData (list, ob.Name, att.Name, id);

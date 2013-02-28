@@ -149,7 +149,7 @@ namespace MonoDevelop.Xml.StateEngine
 	{
 		string prefix;
 		string name;
-		
+
 		public XName (string prefix, string name)
 		{
 			this.prefix = prefix;
@@ -203,23 +203,13 @@ namespace MonoDevelop.Xml.StateEngine
 			return hash;
 		}
 		
-		public XName ToLower ()
-		{
-			string lowerName = name == null? null : name.ToLower ();
-			return prefix == null
-				? new XName (lowerName)
-				: new XName (prefix.ToLower (), lowerName);
-		}
-		
-		public XName ToUpper ()
-		{
-			string upperName = name == null? null : name.ToUpper ();
-			return prefix == null
-				? new XName (upperName)
-				: new XName (prefix.ToUpper (), upperName);
-		}
-		
 		#endregion
+
+		public static bool Equals (XName a, XName b, bool ignoreCase)
+		{
+			StringComparison comp = ignoreCase? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+			return string.Equals (a.prefix, b.prefix, comp) && string.Equals (a.name, b.name, comp);
+		}
 	}
 	
 	public abstract class XContainer : XNode
@@ -500,6 +490,23 @@ namespace MonoDevelop.Xml.StateEngine
 				}
 				return null;
 			}
+		}
+
+		public XAttribute Get (XName name, bool ignoreCase)
+		{
+			XAttribute current = firstChild;
+			while (current != null) {
+				if (XName.Equals (current.Name, name, ignoreCase))
+					return current;
+				current = current.NextSibling;
+			}
+			return null;
+		}
+
+		public string GetValue (XName name, bool ignoreCase)
+		{
+			var att = Get (name, ignoreCase);
+			return att != null? att.Value : null;
 		}
 		
 		public void AddAttribute (XAttribute newChild)

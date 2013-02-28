@@ -301,9 +301,7 @@ namespace MonoDevelop.CSharp.Completion
 			
 			WriteUsings (info.Imports, document);
 
-			XName scriptElName = new XName ("script");
-			XName runatName = new XName ("runat");
-			foreach (var node in info.AspNetDocument.XDocument.AllDescendentNodes.OfType<XElement> ()) {
+			foreach (var node in info.XScriptBlocks) {
 				var start = data.Document.LocationToOffset (node.Region.Begin.Line, node.Region.Begin.Column) + 2;
 				var end = data.Document.LocationToOffset (node.Region.End.Line, node.Region.End.Column) - 2;
 				if (offsetInfos != null)

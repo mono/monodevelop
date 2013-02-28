@@ -493,7 +493,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			var el = Tracker.Engine.Nodes.OfType<XElement> ().FirstOrDefault ();
 			var parentName = el == null ? new XName () : el.Name;
 
-			AddHtmlTagCompletionData (list, Schema, parentName.ToLower ());
+			AddHtmlTagCompletionData (list, Schema, parentName);
 			AddMiscBeginTags (list);
 
 			//FIXME: don't show this after any elements

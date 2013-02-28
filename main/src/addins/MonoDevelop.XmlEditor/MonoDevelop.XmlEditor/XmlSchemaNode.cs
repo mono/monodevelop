@@ -32,8 +32,10 @@ namespace MonoDevelop.XmlEditor
 {
 	class XmlSchemaNode : ExtensionNode
 	{
+#pragma warning disable 0649
 		[NodeAttribute ("file", true)]
 		string file;
+#pragma warning restore 0649
 		
 		public FilePath File {
 			get {

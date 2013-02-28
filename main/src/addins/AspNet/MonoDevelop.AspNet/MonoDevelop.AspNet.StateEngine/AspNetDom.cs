@@ -35,6 +35,7 @@ using MonoDevelop.Xml.StateEngine;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory;
+using System.Linq;
 
 namespace MonoDevelop.AspNet.StateEngine
 {
@@ -228,6 +229,43 @@ namespace MonoDevelop.AspNet.StateEngine
 		
 		public override string FriendlyPathRepresentation {
 			get { return "<% %>"; }
+		}
+	}
+
+	public static class AspNetDomExtensions
+	{
+		static XName scriptName = new XName ("script");
+		static XName runatName = new XName ("runat");
+		static XName idName = new XName ("id");
+
+		public static bool IsRunatServer (this XElement el)
+		{
+			var val = el.Attributes.GetValue (runatName, true);
+			return string.Equals (val, "server", StringComparison.OrdinalIgnoreCase);
+		}
+
+		public static string GetId (this IAttributedXObject el)
+		{
+			return el.Attributes.GetValue (idName, true);
+		}
+
+		public static bool IsServerScriptTag (this XElement el)
+		{
+			return XName.Equals (el.Name, scriptName, true) && IsRunatServer (el);
+		}
+
+		public static IEnumerable<T> WithName<T> (this IEnumerable<XNode> nodes, XName name, bool ignoreCase) where T : XNode, INamedXObject
+		{
+			return nodes.OfType<T> ().Where (el => XName.Equals (el.Name, name, true));
+		}
+
+		public static IEnumerable<string> GetAllPlaceholderIds (this XDocument doc)
+		{
+			return doc.AllDescendentNodes
+				.WithName<XElement> (new XName ("asp", "ContentPlaceHolder"), true)
+				.Where (x => x.IsRunatServer ())
+				.Select (x => x.GetId ())
+				.Where (id => !string.IsNullOrEmpty (id));
 		}
 	}
 }

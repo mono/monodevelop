@@ -80,13 +80,7 @@ namespace MonoDevelop.AspNet.Parser
 
 		string GetAttributeValueCI (XAttributeCollection attributes, string key)
 		{
-			XName nameKey = new XName (key.ToLowerInvariant ());
-
-			foreach (XAttribute attr in attributes) {
-				if (attr.Name.ToLower () == nameKey)
-					return attr.Value;
-			}
-			return string.Empty;
+			return attributes.GetValue (new XName (key), true) ?? string.Empty;
 		}
 
 		void HandleDirective (AspNetDirective directive, List<Error> errors)

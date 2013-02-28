@@ -37,6 +37,7 @@ using MonoDevelop.Core;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory;
 using MonoDevelop.Xml.StateEngine;
+using MonoDevelop.AspNet.StateEngine;
 
 namespace MonoDevelop.AspNet.Parser
 {
@@ -69,8 +70,8 @@ namespace MonoDevelop.AspNet.Parser
 		
 		void AddMember (XElement element)
 		{
-			string id = GetAttributeValueCI (element.Attributes, "id");
-			if (IsRunatServer (element) && (id != string.Empty)) {
+			string id;
+			if (element.IsRunatServer () && !string.IsNullOrEmpty (id = element.GetId ())) {
 				
 				if (Members.ContainsKey (id)) {
 					Errors.Add (new Error (
@@ -80,7 +81,7 @@ namespace MonoDevelop.AspNet.Parser
 					)
 					);
 				} else {
-					string controlType = GetAttributeValueCI (element.Attributes, "type");
+					string controlType = element.Attributes.GetValue (new XName ("type"), true);
 					IType type = docRefMan.GetType (element.Name.Prefix, element.Name.Name, controlType);
 	
 					if (type == null) {
@@ -103,27 +104,6 @@ namespace MonoDevelop.AspNet.Parser
 				if (node is XElement)
 					AddMember (node as XElement);
 			}
-		}
-		
-		bool IsRunatServer (XElement el)
-		{
-			XName runat = new XName ("runat");
-			foreach (XAttribute attr in el.Attributes) {
-				if ((attr.Name.ToLower () == runat) && (attr.Value.ToLower () == "server"))
-					return true;
-			}
-			return false;
-		}
-		
-		string GetAttributeValueCI (XAttributeCollection attributes, string key)
-		{
-			XName nameKey = new XName (key.ToLowerInvariant ());
-
-			foreach (XAttribute attr in attributes) {
-				if (attr.Name.ToLower () == nameKey)
-					return attr.Value;
-			}
-			return string.Empty;
 		}
 	}
 	
