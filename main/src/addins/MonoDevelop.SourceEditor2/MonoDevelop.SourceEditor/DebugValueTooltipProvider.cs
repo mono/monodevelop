@@ -234,8 +234,7 @@ namespace MonoDevelop.SourceEditor
 			while (y + lineHeight < mouseY)
 				y += lineHeight;
 
-			var caret = new Gdk.Rectangle (mouseX - editor.Allocation.X, y - editor.Allocation.Y, 1, lineHeight);
-
+			var caret = new Gdk.Rectangle (mouseX, y, 1, lineHeight);
 			tooltip = new DebugValueWindow (editor, offset, DebuggingService.CurrentFrame, (ObjectValue) item.Item, null);
 			tooltip.ShowPopup (editor, caret, PopupPosition.TopLeft);
 
