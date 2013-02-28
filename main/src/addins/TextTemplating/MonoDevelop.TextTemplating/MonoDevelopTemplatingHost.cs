@@ -30,14 +30,21 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.TextTemplating
 {
-	class MonoDevelopTemplatingHost : TemplateGenerator, IDisposable
+	public class MonoDevelopTemplatingHost : TemplateGenerator, IDisposable
 	{
 		TemplatingAppDomainRecycler.Handle domainHandle;
+
+		public MonoDevelopTemplatingHost ()
+		{
+			Imports.Add ("MonoDevelop.TextTemplating");
+			Refs.Add (typeof (MonoDevelopTemplatingHost).Assembly.Location);
+		}
 		
 		public override AppDomain ProvideTemplatingAppDomain (string content)
 		{
 			if (domainHandle == null) {
 				domainHandle = TextTemplatingService.GetTemplatingDomain ();
+				domainHandle.AddAssembly (GetType ().Assembly);
 			}
 			return domainHandle.Domain;
 		}
@@ -62,6 +69,7 @@ namespace MonoDevelop.TextTemplating
 			return base.ResolveDirectiveProcessor (processorName);
 		}
 		
+
 		public void Dispose ()
 		{
 			if (domainHandle != null) {

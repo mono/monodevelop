@@ -26,12 +26,8 @@
 
 using System;
 using MonoDevelop.Ide.CustomTools;
-using System.CodeDom.Compiler;
 using MonoDevelop.Projects;
-using System.IO;
-using Mono.TextTemplating;
 using MonoDevelop.Core;
-using System.Threading;
 
 namespace MonoDevelop.TextTemplating
 {
@@ -52,7 +48,7 @@ namespace MonoDevelop.TextTemplating
 					result.Errors.AddRange (host.Errors);
 					
 					foreach (var err in host.Errors)
-						monitor.Log.WriteLine (err.ToString ());
+						monitor.Log.WriteLine (err);
 				}
 			}, result);
 		}
