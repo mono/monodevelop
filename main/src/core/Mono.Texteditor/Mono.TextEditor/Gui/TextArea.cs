@@ -678,8 +678,6 @@ namespace Mono.TextEditor
 
 		protected virtual void OptionsChanged (object sender, EventArgs args)
 		{
-			Console.WriteLine ("----");
-			Console.WriteLine (Environment.StackTrace);
 			if (Options == null)
 				return;
 			if (currentStyleName != Options.ColorScheme) {
