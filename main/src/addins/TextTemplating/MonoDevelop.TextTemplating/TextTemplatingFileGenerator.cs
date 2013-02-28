@@ -36,7 +36,7 @@ namespace MonoDevelop.TextTemplating
 		public IAsyncOperation Generate (IProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result)
 		{
 			return new ThreadAsyncOperation (delegate {
-				using (var host = new MonoDevelopTemplatingHost ()) {
+				using (var host = new ProjectFileTemplatingHost (file)) {
 					
 					var defaultOutputName = file.FilePath.ChangeExtension (".cs"); //cs extension for VS compat
 					
