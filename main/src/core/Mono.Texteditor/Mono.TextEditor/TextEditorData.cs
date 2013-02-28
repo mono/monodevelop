@@ -124,7 +124,34 @@ namespace Mono.TextEditor
 				customTabsToSpaces = value;
 			}
 		}
+		#region Tooltip providers
+		internal List<TooltipProvider> tooltipProviders = new List<TooltipProvider> ();
+		public IEnumerable<TooltipProvider> TooltipProviders {
+			get { return tooltipProviders; }
+		}
+
+		public void ClearTooltipProviders ()
+		{
+			foreach (var tp in tooltipProviders) {
+				var disposableProvider = tp as IDisposable;
+				if (disposableProvider == null)
+					continue;
+				disposableProvider.Dispose ();
+			}
+			tooltipProviders.Clear ();
+		}
 		
+		public void AddTooltipProvider (TooltipProvider provider)
+		{
+			tooltipProviders.Add (provider);
+		}
+		
+		public void RemoveTooltipProvider (TooltipProvider provider)
+		{
+			tooltipProviders.Remove (provider);
+		}
+		#endregion
+
 		public TextEditorData () : this (new TextDocument ())
 		{
 		}

@@ -773,7 +773,7 @@ namespace Mono.TextEditor
 				if (margin is IDisposable)
 					((IDisposable)margin).Dispose ();
 			}
-			ClearTooltipProviders ();
+			textEditorData.ClearTooltipProviders ();
 			
 			this.textEditorData.SelectionChanged -= TextEditorDataSelectionChanged;
 			this.textEditorData.Dispose (); 
@@ -781,27 +781,24 @@ namespace Mono.TextEditor
 			base.OnDestroyed ();
 		}
 		
+		[Obsolete("This method has been moved to TextEditorData. Will be removed in future versions.")]
 		public void ClearTooltipProviders ()
 		{
-			foreach (var tp in tooltipProviders) {
-				var disposableProvider = tp as IDisposable;
-				if (disposableProvider == null)
-					continue;
-				disposableProvider.Dispose ();
-			}
-			tooltipProviders.Clear ();
+			textEditorData.ClearTooltipProviders ();
 		}
-
+		
+		[Obsolete("This method has been moved to TextEditorData. Will be removed in future versions.")]
 		public void AddTooltipProvider (TooltipProvider provider)
 		{
-			tooltipProviders.Add (provider);
+			textEditorData.AddTooltipProvider (provider);
 		}
 		
+		[Obsolete("This method has been moved to TextEditorData. Will be removed in future versions.")]
 		public void RemoveTooltipProvider (TooltipProvider provider)
 		{
-			tooltipProviders.Remove (provider);
+			textEditorData.RemoveTooltipProvider (provider);
 		}
-		
+
 		internal void RedrawMargin (Margin margin)
 		{
 			if (isDisposed)
@@ -2590,7 +2587,11 @@ namespace Mono.TextEditor
 		#endregion
 	
 		#region Tooltips
-		
+		[Obsolete("This property has been moved to TextEditorData.  Will be removed in future versions.")]
+		public IEnumerable<TooltipProvider> TooltipProviders {
+			get { return textEditorData.TooltipProviders; }
+		}
+
 		// Tooltip fields
 		const int TooltipTimeout = 650;
 		TooltipItem tipItem;
@@ -2600,7 +2601,6 @@ namespace Mono.TextEditor
 		uint tipShowTimeoutId = 0;
 		static Gtk.Window tipWindow;
 		static TooltipProvider currentTooltipProvider;
-		internal List<TooltipProvider> tooltipProviders = new List<TooltipProvider> ();
 
 		// Data for the next tooltip to be shown
 		int nextTipOffset = 0;
@@ -2608,11 +2608,6 @@ namespace Mono.TextEditor
 		Gdk.ModifierType nextTipModifierState = ModifierType.None;
 		DateTime nextTipScheduledTime; // Time at which we want the tooltip to show
 		
-		public IEnumerable<TooltipProvider> TooltipProviders {
-			get { return tooltipProviders; }
-		}
-		
-
 		void ShowTooltip (Gdk.ModifierType modifierState)
 		{
 			if (mx < TextViewMargin.XOffset + TextViewMargin.TextStartPosition) {
@@ -2682,7 +2677,7 @@ namespace Mono.TextEditor
 			TooltipProvider provider = null;
 			TooltipItem item = null;
 			
-			foreach (TooltipProvider tp in tooltipProviders) {
+			foreach (TooltipProvider tp in textEditorData.tooltipProviders) {
 				try {
 					item = tp.GetItem (editor, nextTipOffset);
 				} catch (Exception e) {
