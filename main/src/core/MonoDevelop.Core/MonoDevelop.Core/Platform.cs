@@ -42,7 +42,7 @@ namespace MonoDevelop.Core
 			IsMac = !IsWindows && IsRunningOnMac ();
 
 			// needed to make sure various p/invokes work
-			if (Platform.IsMac) {
+			if (Platform.IsWindows) {
 				InitWindowsNativeLibs ();
 			} else if (Platform.IsMac) {
 				InitMacFoundation ();
