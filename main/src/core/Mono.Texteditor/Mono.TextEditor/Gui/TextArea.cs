@@ -387,6 +387,7 @@ namespace Mono.TextEditor
 					Options.Zoom += Options.Zoom * (args.Magnification / 4d);
 				});
 			}
+			OptionsChanged (this, EventArgs.Empty);
 		}
 
 		public void RunAction (Action<TextEditorData> action)
@@ -656,7 +657,6 @@ namespace Mono.TextEditor
 			Style = Style.Attach (GdkWindow);
 
 			imContext.ClientWindow = this.GdkWindow;
-			OptionsChanged (this, EventArgs.Empty);
 			Caret.PositionChanged += CaretPositionChanged;
 		}	
 
@@ -678,6 +678,8 @@ namespace Mono.TextEditor
 
 		protected virtual void OptionsChanged (object sender, EventArgs args)
 		{
+			Console.WriteLine ("----");
+			Console.WriteLine (Environment.StackTrace);
 			if (Options == null)
 				return;
 			if (currentStyleName != Options.ColorScheme) {
@@ -775,8 +777,7 @@ namespace Mono.TextEditor
 			
 			this.textEditorData.SelectionChanged -= TextEditorDataSelectionChanged;
 			this.textEditorData.Dispose (); 
-			this.Realized -= OptionsChanged;
-			
+
 			base.OnDestroyed ();
 		}
 		
