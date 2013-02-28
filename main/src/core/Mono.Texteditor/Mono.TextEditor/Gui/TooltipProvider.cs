@@ -62,8 +62,8 @@ namespace Mono.TextEditor
 			GetRequiredPosition (editor, tipWindow, out w, out xalign);
 			w += 10;
 
-			int x = mouseX + ox;
-			int y = mouseY + oy;
+			int x = mouseX + ox + editor.Allocation.X;
+			int y = mouseY + oy + editor.Allocation.Y;
 			Gdk.Rectangle geometry = editor.Screen.GetUsableMonitorGeometry (editor.Screen.GetMonitorAtPoint (x, y));
 			
 			x -= (int) ((double) w * xalign);
