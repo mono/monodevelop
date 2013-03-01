@@ -213,7 +213,7 @@ and whether it is in a project directory.")
   (add-hook 'completion-at-point-functions #'ac-fsharp-completion-at-point)
 
   (setq major-mode               'fsharp-mode
-        mode-name                "F#"
+        mode-name                "fsharp"
         local-abbrev-table       fsharp-mode-abbrev-table
         paragraph-start          (concat "^$\\|" page-delimiter)
         paragraph-separate       paragraph-start
