@@ -102,10 +102,10 @@
 		{ "name": "Punctuation", "fore":"text-black" },
 		{ "name": "Punctuation(Brackets)", "fore":"text-black" },
 
-		{ "name": "Comment(Line)", "fore":"comment-gray", "weight":"italic" },
-		{ "name": "Comment(Block)", "fore":"comment-gray", "weight":"italic" },
-		{ "name": "Comment(Doc)", "fore":"comment-gray", "weight":"italic" },
-		{ "name": "Comment(DocTag)", "fore":"comment-gray", "weight":"italic" },
+		{ "name": "Comment(Line)", "fore":"comment-gray", "style":"italic" },
+		{ "name": "Comment(Block)", "fore":"comment-gray", "style":"italic" },
+		{ "name": "Comment(Doc)", "fore":"comment-gray", "style":"italic" },
+		{ "name": "Comment(DocTag)", "fore":"comment-gray", "style":"italic" },
 		{ "name": "Comment Tag", "fore":"comment-gray", "weight":"bold" },
 		{ "name": "Excluded Code", "fore":"comment-gray" },
 

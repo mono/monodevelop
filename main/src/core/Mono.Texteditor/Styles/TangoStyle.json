@@ -123,7 +123,7 @@
 		{ "name": "Xml Text", "fore":"black" },
 		{ "name": "Xml Delimiter", "fore":"black" },
 		{ "name": "Xml Name", "fore":"skyblue3" },
-		{ "name": "Xml Attribute", "fore":"skyblue3", "weight":"italic" },
+		{ "name": "Xml Attribute", "fore":"skyblue3", "style":"italic" },
 		{ "name": "Xml Attribute Quotes", "fore":"plum2" },
 		{ "name": "Xml Attribute Value", "fore":"plum2" },
 		{ "name": "Xml Comment", "fore":"chameleon3" },

@@ -966,11 +966,11 @@ namespace Mono.TextEditor
 					var translatedStartIndex = TranslateToUTF8Index (lineChars, (uint)startIndex, ref curChunkIndex, ref byteChunkIndex);
 					var translatedEndIndex = TranslateToUTF8Index (lineChars, (uint)endIndex, ref curChunkIndex, ref byteChunkIndex);
 
-					if (chunkStyle.Bold)
-						atts.AddWeightAttribute (Pango.Weight.Bold, translatedStartIndex, translatedEndIndex);
+					if (chunkStyle.FontWeight != Xwt.Drawing.FontWeight.Normal)
+						atts.AddWeightAttribute ((Pango.Weight)chunkStyle.FontWeight, translatedStartIndex, translatedEndIndex);
 
-					if (chunkStyle.Italic)
-						atts.AddStyleAttribute (Pango.Style.Italic, translatedStartIndex, translatedEndIndex);
+					if (chunkStyle.FontStyle != Xwt.Drawing.FontStyle.Normal)
+						atts.AddStyleAttribute ((Pango.Style)chunkStyle.FontStyle, translatedStartIndex, translatedEndIndex);
 
 					if (chunkStyle.Underline)
 						atts.AddUnderlineAttribute (Pango.Underline.Single, translatedStartIndex, translatedEndIndex);
@@ -2886,15 +2886,15 @@ namespace Mono.TextEditor
 					var translatedStartIndex = TranslateToUTF8Index (lineChars, (uint)startIndex, ref curChunkIndex, ref byteChunkIndex);
 					var translatedEndIndex = TranslateToUTF8Index (lineChars, (uint)endIndex, ref curChunkIndex, ref byteChunkIndex);
 
-					if (chunkStyle.Bold) {
-						Pango.AttrWeight attrWeight = new Pango.AttrWeight (Pango.Weight.Bold);
+					if (chunkStyle.FontWeight != Xwt.Drawing.FontWeight.Normal) {
+						Pango.AttrWeight attrWeight = new Pango.AttrWeight ((Pango.Weight)chunkStyle.FontWeight);
 						attrWeight.StartIndex = translatedStartIndex;
 						attrWeight.EndIndex = translatedEndIndex;
 						attributes.Add (attrWeight);
 					}
 
-					if (chunkStyle.Italic) {
-						Pango.AttrStyle attrStyle = new Pango.AttrStyle (Pango.Style.Italic);
+					if (chunkStyle.FontStyle != Xwt.Drawing.FontStyle.Normal) {
+						Pango.AttrStyle attrStyle = new Pango.AttrStyle ((Pango.Style)chunkStyle.FontStyle);
 						attrStyle.StartIndex = translatedStartIndex;
 						attrStyle.EndIndex = translatedEndIndex;
 						attributes.Add (attrStyle);

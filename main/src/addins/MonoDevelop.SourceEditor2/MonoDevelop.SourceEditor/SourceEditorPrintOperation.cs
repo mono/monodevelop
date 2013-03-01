@@ -132,11 +132,11 @@ namespace MonoDevelop.SourceEditor
 					
 						atts.Insert (new Pango.AttrForeground ((ushort)(chunkStyle.Foreground.R * ushort.MaxValue), (ushort)(chunkStyle.Foreground.G * ushort.MaxValue), (ushort)(chunkStyle.Foreground.B * ushort.MaxValue)));
 					
-						if (chunkStyle.Bold) {
-							atts.Insert (new Pango.AttrWeight (Pango.Weight.Bold));
+						if (chunkStyle.FontWeight != Xwt.Drawing.FontWeight.Normal) {
+							atts.Insert (new Pango.AttrWeight ((Pango.Weight)chunkStyle.FontWeight));
 						}
-						if (chunkStyle.Italic) {
-							atts.Insert (new Pango.AttrStyle (Pango.Style.Italic));
+						if (chunkStyle.FontStyle != Xwt.Drawing.FontStyle.Normal) {
+							atts.Insert (new Pango.AttrStyle ((Pango.Style)chunkStyle.FontStyle));
 						}
 						if (chunkStyle.Underline) {
 							atts.Insert (new Pango.AttrUnderline (Pango.Underline.Single));

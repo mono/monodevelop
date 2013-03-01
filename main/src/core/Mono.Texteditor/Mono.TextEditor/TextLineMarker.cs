@@ -419,10 +419,10 @@ namespace Mono.TextEditor
 			}
 			
 			if ((IncludedStyles & StyleFlag.Bold) != 0)
-				style.Weight |= TextWeight.Bold;
+				style.FontWeight = Xwt.Drawing.FontWeight.Bold;
 			
 			if ((IncludedStyles & StyleFlag.Italic) != 0)
-				style.Weight |= TextWeight.Italic;
+				style.FontStyle = Xwt.Drawing.FontStyle.Italic;
 			return style;
 		}
 		

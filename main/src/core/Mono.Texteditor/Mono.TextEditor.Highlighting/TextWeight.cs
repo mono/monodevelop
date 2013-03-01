@@ -34,7 +34,7 @@ using System.Reflection;
 
 namespace Mono.TextEditor.Highlighting
 {
-
+	[Obsolete("Will be removed - use FontWeight")]
 	[Flags]
 	public enum TextWeight {
 		None,
