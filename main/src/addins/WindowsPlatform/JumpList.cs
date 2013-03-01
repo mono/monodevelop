@@ -43,7 +43,12 @@ namespace MonoDevelop.Platform
 			
 			this.recentFiles = DesktopService.RecentFiles;
 			this.recentFiles.Changed += this.OnRecentFilesChanged;
-			this.UpdateJumpList ();
+
+			try {
+				UpdateJumpList();
+			} catch (Exception ex) {
+				MonoDevelop.Core.LoggingService.LogError ("Could not update jumplists", ex);
+			}
 		}
 
 		private void OnRecentFilesChanged (object sender, EventArgs args)
@@ -58,7 +63,11 @@ namespace MonoDevelop.Platform
 
 		private void OnUpdateTimerEllapsed (object sender, EventArgs args)
 		{
-			this.UpdateJumpList ();
+			try {
+				UpdateJumpList();
+			} catch (Exception ex) {
+				MonoDevelop.Core.LoggingService.LogError ("Could not update jumplists", ex);
+			}
 		}
 
 		private void UpdateJumpList ()
