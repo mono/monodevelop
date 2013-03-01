@@ -151,35 +151,44 @@ function bound to VAR in BODY. "
 
 ;;; Tooltips and typesigs
 
-(check-handler "shows popup if tooltip is requested"
-  (setq ac-fsharp-use-popup t)
-  (stub-fn popup-tip tip
-    (fsharp-mode-completion/show-tooltip-at-point)
-    (_ filter-output nil (format-output "DATA: tooltip" "foo"))
-    (should-match "foo" tip)))
+(check-handler "uses popup in terminal if tooltip is requested"
+  (let ((ac-fsharp-use-popup t))
+    (flet ((display-graphic-p () nil))
+      (stub-fn popup-tip tip
+        (fsharp-mode-completion/show-tooltip-at-point)
+        (_ filter-output nil (format-output "DATA: tooltip" "foo"))
+        (should-match "foo" tip)))))
+
+(check-handler "uses pos-tip in GUI if tooltip is requested"
+  (let ((ac-fsharp-use-popup t))
+    (flet ((display-graphic-p () t))
+      (stub-fn pos-tip-show tip
+        (fsharp-mode-completion/show-tooltip-at-point)
+        (_ filter-output nil (format-output "DATA: tooltip" "foo"))
+        (should-match "foo" tip)))))
 
 (check-handler "does not show popup if typesig is requested"
-  (setq ac-fsharp-use-popup t)
-  (stub-fn popup-tip called
-    (fsharp-mode-completion/show-typesig-at-point)
-    (_ filter-output nil (format-output "DATA: tooltip" "foo"))
-    (should-not called)))
+  (let ((ac-fsharp-use-popup t))
+    (stub-fn popup-tip called
+      (fsharp-mode-completion/show-typesig-at-point)
+      (_ filter-output nil (format-output "DATA: tooltip" "foo"))
+      (should-not called))))
 
 (check-handler "does not show popup if use-popup is nil"
-  (setq ac-fsharp-use-popup nil)
-  (stub-fn popup-tip called
-    (fsharp-mode-completion/show-tooltip-at-point)
-    (_ filter-output nil (format-output "DATA: tooltip" "foo"))
-    (should-not called)))
+  (let ((ac-fsharp-use-popup nil))
+    (stub-fn popup-tip called
+      (fsharp-mode-completion/show-tooltip-at-point)
+      (_ filter-output nil (format-output "DATA: tooltip" "foo"))
+      (should-not called))))
 
-(check-handler "displays tooltip in fsharp help-window if use-popup is nil"
-  (setq ac-fsharp-use-popup nil)
-  ;; HACK: stub internals of with-help-window.
-  ;; with-help-window is a macro and macrolet and labels don't seem to work.
-  (stub-fn help-window-setup win
-    (fsharp-mode-completion/show-tooltip-at-point)
-    (_ filter-output nil (format-output "DATA: tooltip" "foo"))
-    (should-match "F# info" (buffer-name (window-buffer win)))))
+(check-handler "displays tooltip in info window if use-popup is nil"
+  (let ((ac-fsharp-use-popup nil))
+    ;; HACK: stub internals of with-help-window.
+    ;; with-help-window is a macro and macrolet and labels don't seem to work.
+    (stub-fn help-window-setup win
+      (fsharp-mode-completion/show-tooltip-at-point)
+      (_ filter-output nil (format-output "DATA: tooltip" "foo"))
+      (should-match "fsharp info" (buffer-name (window-buffer win))))))
 
 (check-handler "displays typesig in minibuffer if typesig is requested"
   (stub-fn message sig

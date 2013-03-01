@@ -32,7 +32,8 @@
    show-tooltip-at-point
    show-typesig-at-point]
   :use
-  [popup
+  [(popup popup-tip)
+   (pos-tip pos-tip-show)
    s
    (fsharp-doc fsharp-doc/format-for-minibuffer)
    (fsharp-mode-indent fsharp-in-literal-p)])
@@ -234,13 +235,13 @@ display in a help buffer instead.")
         (member (expand-file-name (buffer-file-name)) ac-fsharp-project-files)
         (string-match-p "\\(fsx\\|fsscript\\)" (file-name-extension (buffer-file-name))))))
 
-(defmutable awaiting-popup nil)
+(defmutable awaiting-tooltip nil)
 
 ;;;###autoload
 (defn show-tooltip-at-point ()
   "Display a tooltip for the F# symbol at POINT."
   (interactive)
-  (@set awaiting-popup t)
+  (@set awaiting-tooltip t)
   (_ show-typesig-at-point))
 
 ;;;###autoload
@@ -410,21 +411,27 @@ display a short summary in the minibuffer."
   ;; Do not display if the current buffer is not an fsharp buffer.
   (when (equal major-mode 'fsharp-mode)
     (let ((cleaned (replace-regexp-in-string "DATA: tooltip\n" "" str)))
-      (if (@ awaiting-popup)
-          (_ display-info-popup cleaned)
+
+      (if (@ awaiting-tooltip)
+          (progn
+            (@set awaiting-tooltip nil)
+            (if ac-fsharp-use-popup
+                (_ show-popup cleaned)
+              (_ show-info-window cleaned)))
         (message (fsharp-doc/format-for-minibuffer cleaned))))))
 
-(def info-buffer-name "*F# info*")
+(defn show-popup (str)
+  (if (display-graphic-p)
+      (pos-tip-show str)
+    (popup-tip str)))
 
-(defn display-info-popup (str)
-  "Display the given string in a popup or help window."
-  (@set awaiting-popup nil)
-  (if ac-fsharp-use-popup
-      (popup-tip str)
-    (save-excursion
-      (let ((help-window-select t))
-        (with-help-window (@ info-buffer-name)
-          (princ str))))))
+(def info-buffer-name "*fsharp info*")
+
+(defn show-info-window (str)
+  (save-excursion
+    (let ((help-window-select t))
+      (with-help-window (@ info-buffer-name)
+        (princ str)))))
 
 (defn handle-project (str)
   (setq ac-fsharp-project-files (cdr (split-string str "\n")))
