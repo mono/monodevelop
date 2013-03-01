@@ -517,6 +517,8 @@ namespace MonoDevelop.CSharp
 						result.Append (", ");
 					}
 				}
+				if (typeParameter is ITypeParameter)
+					AppendVariance (result, ((ITypeParameter)typeParameter).Variance);
 				result.Append (GetTypeReferenceString (typeParameter, false));
 				i++;
 			}
