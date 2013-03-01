@@ -371,7 +371,7 @@ namespace Mono.TextEditor
 		{
 			if (!data.CanEditSelection)
 				return;
-			PasteFrom (Clipboard.Get (CopyOperation.CLIPBOARD_ATOM), data, true, data.IsSomethingSelected ? data.SelectionRange.Offset : data.Caret.Offset);
+			PasteFrom (Clipboard.Get (CopyOperation.CLIPBOARD_ATOM), data, false, data.IsSomethingSelected ? data.SelectionRange.Offset : data.Caret.Offset);
 		}
 	}
 }
