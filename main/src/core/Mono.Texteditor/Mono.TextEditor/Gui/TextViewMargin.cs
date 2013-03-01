@@ -1854,6 +1854,7 @@ namespace Mono.TextEditor
 				int offset = Document.LocationToOffset (docLocation);
 				if (selection != null)
 					selectionRange = selection.GetSelectionRange (this.textEditor.GetTextEditorData ());
+				var oldVersion = textEditor.Document.Version;
 
 				bool autoScroll = textEditor.Caret.AutoScrollToCaret;
 				textEditor.Caret.AutoScrollToCaret = false;
@@ -1863,13 +1864,10 @@ namespace Mono.TextEditor
 					return;
 				}
 
-				int length = ClipboardActions.PasteFromPrimary (textEditor.GetTextEditorData (), offset);
+				ClipboardActions.PasteFromPrimary (textEditor.GetTextEditorData (), offset);
 				textEditor.Caret.Offset = oldOffset;
-				if (selection != null) {
-					if (offset < selectionRange.EndOffset) {
-						textEditor.SelectionRange = new TextSegment (selectionRange.Offset + length, selectionRange.Length);
-					}
-				}
+				if (!selectionRange.IsInvalid)
+					textEditor.SelectionRange = new TextSegment (oldVersion.MoveOffsetTo (Document.Version, selectionRange.Offset), selectionRange.Length);
 
 				if (autoScroll)
 					textEditor.Caret.ActivateAutoScrollWithoutMove ();
