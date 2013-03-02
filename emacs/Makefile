@@ -43,11 +43,13 @@ clean-elc :
 # Building
 
 install : $(ac_exe) $(dest_root) $(dest_bin)
-
+# Install elisp packages
+	$(emacs) $(load_files) --batch -f load-packages
+# Copy files
 	for f in $(src_files); do \
 		cp $$f $(dest_root) ;\
 	done
-
+# Copy bin folder.
 	cp -R $(bin_d) $(dest_bin)
 
 
