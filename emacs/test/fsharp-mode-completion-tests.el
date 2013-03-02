@@ -97,12 +97,12 @@ Try indenting this token further or using standard formatting conventions."
   "Test fixture for loading projects, stubbing process-related functions.
 Bound vars:
 * load-cmd
-  The string passed to log-psendstr"
+  The string passed to process-send-string"
   (declare (indent 1))
   `(check ,(concat "check project loading " desc)
      (let    (load-cmd)
        (flet ((fsharp-mode-completion/start-process ())
-              (log-psendstr (proc cmd) (setq load-cmd cmd)))
+              (process-send-string (proc cmd) (setq load-cmd cmd)))
          (in-ns fsharp-mode-completion
            ,@body)))))
 
@@ -123,7 +123,7 @@ Stubs out functions that call on the ac process."
      (setq major-mode 'fsharp-mode)
      (in-ns fsharp-mode-completion
        (flet ((log-to-proc-buf (p s))
-              (log-psendstr    (p s))
+              (process-send-string   (p s))
               (ac-fsharp-can-make-request () t))
          ,@body))))
 
