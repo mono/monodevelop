@@ -44,6 +44,7 @@
 	<EolSpan tagColor = "Preprocessor" rule="text.preprocessor">#help</EolSpan>
 	<EolSpan tagColor = "Preprocessor" rule="text.preprocessor">#include</EolSpan>
 	<EolSpan tagColor = "Preprocessor" rule="text.preprocessor">#I</EolSpan>
+	<EolSpan tagColor = "Preprocessor" rule="text.preprocessor">#light</EolSpan>
 
 	<EolSpan color="Comment(Doc)" rule="XmlDocumentation" tagColor="Comment(DocTag)">///</EolSpan>
 	<EolSpan color="Comment(Line)" rule="Comment" tagColor="Comment(Line)">//</EolSpan>
@@ -138,9 +139,6 @@
 		<Word>default</Word>
 		<Word>inherit</Word>
 		<Word>member</Word>
-		<Word>module</Word>
-		<Word>namespace</Word>
-		<Word>open</Word>
 		<Word>type</Word>
 
 		<Word>of</Word>
@@ -169,6 +167,10 @@
 		<Word>false</Word>
 		<Word>null</Word>
 		<Word>true</Word>
+		
+		<Word>__LINE__</Word>
+		<Word>__SOURCE_DIRECTORY__</Word>
+		<Word>__SOURCE_FILE__</Word>
 	</Keywords>
 
 	<Keywords color="Keyword(Type)">
@@ -178,6 +180,9 @@
 	</Keywords>
 
 	<Keywords color="Keyword(Namespace)">
+		<Word>module</Word>
+		<Word>namespace</Word>
+		<Word>open</Word>
 	</Keywords>
 
 	<Keywords color="Keyword(Property)">
