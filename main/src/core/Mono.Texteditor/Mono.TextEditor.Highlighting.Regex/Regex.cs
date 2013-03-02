@@ -36,7 +36,7 @@ namespace Mono.TextEditor.Highlighting
 				bool match = true;
 				int length = 0;
 				for (int i = 0; i < pattern.Length; i++) {
-					if (pattern[i] == '$' && i == 0 && i + 1 < pattern.Length) {
+					if (pattern[i] == '\u00AE' && i + 1 < pattern.Length) {
 						i++;
 						if (curOffset >= doc.Length) {
 							match = true;
