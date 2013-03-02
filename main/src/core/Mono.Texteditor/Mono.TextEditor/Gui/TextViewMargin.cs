@@ -1956,14 +1956,17 @@ namespace Mono.TextEditor
 					
 				int ox = 0, oy = 0;
 				this.textEditor.GdkWindow.GetOrigin (out ox, out oy);
+				ox += textEditor.Allocation.X;
+				oy += textEditor.Allocation.Y;
 
-				int x = hintRectangle.X + hintRectangle.Width;
-				int y = hintRectangle.Y + hintRectangle.Height;
+				int x = hintRectangle.Right;
+				int y = hintRectangle.Bottom;
 				previewWindow.CalculateSize ();
-				int w = previewWindow.SizeRequest ().Width;
-				int h = previewWindow.SizeRequest ().Height;
+				var req = previewWindow.SizeRequest ();
+				int w = req.Width;
+				int h = req.Height;
 
-				Gdk.Rectangle geometry = this.textEditor.Screen.GetUsableMonitorGeometry (this.textEditor.Screen.GetMonitorAtPoint (ox + x, oy + y));
+				var geometry = this.textEditor.Screen.GetUsableMonitorGeometry (this.textEditor.Screen.GetMonitorAtPoint (ox + x, oy + y));
 
 				if (x + ox + w > geometry.X + geometry.Width)
 					x = hintRectangle.Left - w;
@@ -2069,7 +2072,7 @@ namespace Mono.TextEditor
 			if (args.Button != 1 && args.Y >= 0 && args.Y <= this.textEditor.Allocation.Height) {
 				// folding marker
 				int lineNr = args.LineNumber;
-				foreach (KeyValuePair<Rectangle, FoldSegment> shownFolding in GetFoldRectangles (lineNr)) {
+				foreach (var shownFolding in GetFoldRectangles (lineNr)) {
 					if (shownFolding.Key.Contains ((int)(args.X + this.XOffset), (int)args.Y)) {
 						ShowTooltip (shownFolding.Value.Segment, shownFolding.Key);
 						return;
@@ -2235,7 +2238,7 @@ namespace Mono.TextEditor
 
 		List<System.Collections.Generic.KeyValuePair<Gdk.Rectangle, FoldSegment>> GetFoldRectangles (int lineNr)
 		{
-			List<System.Collections.Generic.KeyValuePair<Gdk.Rectangle, FoldSegment>> result = new List<System.Collections.Generic.KeyValuePair<Gdk.Rectangle, FoldSegment>> ();
+			var result = new List<KeyValuePair<Gdk.Rectangle, FoldSegment>> ();
 			if (lineNr < 0)
 				return result;
 
@@ -2254,7 +2257,7 @@ namespace Mono.TextEditor
 			int offset = line.Offset;
 			restart:
 			using (var calcLayout = PangoUtil.CreateLayout (textEditor)) {
-				calcLayout.FontDescription = textEditor.Options.Font;
+				calcLayout.FontDescription = markerLayout.FontDescription;
 				calcLayout.Tabs = this.tabArray;
 				foreach (FoldSegment folding in foldings) {
 					int foldOffset = folding.StartLine.Offset + folding.Column - 1;
