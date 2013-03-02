@@ -39,29 +39,26 @@ If you're not already using MELPA, add the following to your init.el:
 #### Manual installation
 
 1. Install 3rd party dependencies. These are listed in the [package manifest](fsharp-mode-pkg.el):
-
   - [pos-tip](https://github.com/syohex/pos-tip)
   - [popup](https://github.com/auto-complete/popup-el)
   - [s](https://github.com/magnars/s.el)
   - [Namespaces](https://github.com/chrisbarrett/elisp-namespaces)
 
 2. Clone this repo and run `make install`:
-
-```
-git clone git://github.com/fsharp/fsharpbinding.git
-cd fsharpbinding/emacs
-make install
-```
+    ```
+    git clone git://github.com/fsharp/fsharpbinding.git
+    cd fsharpbinding/emacs
+    make install
+    ```
 
 3. Add the following to your init.el:
+    ```lisp
+    (add-to-list 'load-path "~/.emacs.d/fsharp-mode/")
 
-```lisp
-(add-to-list 'load-path "~/.emacs.d/fsharp-mode/")
-
-(autoload 'fsharp-mode "fsharp-mode"     "Major mode for editing F# code." t)
-(autoload 'run-fsharp  "inf-fsharp-mode" "Run an inferior F# process." t)
-(add-to-list 'auto-mode-alist '("\\.fs[iylx]?$" . fsharp-mode))
-```
+    (autoload 'fsharp-mode "fsharp-mode"     "Major mode for editing F# code." t)
+    (autoload 'run-fsharp  "inf-fsharp-mode" "Run an inferior F# process." t)
+    (add-to-list 'auto-mode-alist '("\\.fs[iylx]?$" . fsharp-mode))
+    ```
 
 ### Usage
 
