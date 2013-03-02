@@ -423,7 +423,10 @@ display a short summary in the minibuffer."
 (defn show-popup (str)
   (if (display-graphic-p)
       (pos-tip-show str)
-    (popup-tip str)))
+    ;; Use unoptimized calculation for popup, making it less likely to
+    ;; wrap lines.
+    (let ((popup-use-optimized-column-computation nil) )
+      (popup-tip str))))
 
 (def info-buffer-name "*fsharp info*")
 
