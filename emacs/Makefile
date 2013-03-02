@@ -32,15 +32,10 @@ dest_bin  = $(HOME)/.emacs.d/fsharp-mode/bin/
 
 .PHONY : env test unit-test integration-test packages clean-elc install
 
-clean : clean-elc
-	rm -fr $(bin_d)
-	rm -rf $(tmp_d)
-
-clean-elc :
-	rm -f  *.elc
-	rm -f  $(test_d)*.elc
-
 # Building
+
+$(ac_exe) : $(bin_d)
+	xbuild $(ac_fsproj) /property:OutputPath=$(bin_d)
 
 install : $(ac_exe) $(dest_root) $(dest_bin)
 # Install elisp packages
@@ -53,12 +48,19 @@ install : $(ac_exe) $(dest_root) $(dest_bin)
 	cp -R $(bin_d) $(dest_bin)
 
 
-$(ac_exe) : $(bin_d)
-	xbuild $(ac_fsproj) /property:OutputPath=$(bin_d)
-
 $(dest_root) :; mkdir -p $(dest_root)
 $(dest_bin)  :; mkdir -p $(dest_bin)
 $(bin_d)     :; mkdir -p $(bin_d)
+
+# Cleaning
+
+clean : clean-elc
+	rm -fr $(bin_d)
+	rm -rf $(tmp_d)
+
+clean-elc :
+	rm -f  *.elc
+	rm -f  $(test_d)*.elc
 
 # Testing
 
