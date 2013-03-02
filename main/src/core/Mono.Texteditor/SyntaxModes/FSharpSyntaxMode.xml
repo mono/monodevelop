@@ -53,12 +53,12 @@
 		<End>*)</End>
 	</Span>
 	
-	<Span color="String" rule="String" stopateol="false" escape='""'>
+	<Span color="String(C# @ Verbatim)" rule="VerbatimString" stopateol="false" escape='""'>
 		<Begin>@"</Begin>
 		<End>"</End>
 	</Span>
 
-	<Span color="String" rule="String" stopateol="true" escape='\'>
+	<Span color="String" rule="String" stopateol="true">
 		<Begin>"</Begin>
 		<End>"</End>
 	</Span>
@@ -249,6 +249,13 @@
 	</Rule>
 
 	<Rule name="String">
+		<Delimiters></Delimiters>
+		<Match color ="String(Escape)">\\(["\\'ntbrafv]|u[0-9a-fA-F]{4,4}|U[0-9a-fA-F]{8,8}|\d\d\d)</Match>
+	</Rule>
+	
+	<Rule name = "VerbatimString">
+		<Delimiters></Delimiters>
+		<Match color ="String(Escape)">""</Match>
 	</Rule>
 
 	<Rule name="XmlDocumentation">
