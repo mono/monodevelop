@@ -261,7 +261,7 @@ This function does not modify point or mark."
         (point)
       (goto-char here))))
 
-(defun fsharp-in-literal (&optional lim)
+(defun fsharp-in-literal-p (&optional lim)
   "Return non-nil if point is in a Fsharp literal (a comment or string).
 Optional argument LIM indicates the beginning of the containing form,
 i.e. the limit on how far back to scan."
@@ -279,13 +279,13 @@ i.e. the limit on how far back to scan."
 ;; XEmacs has a built-in function that should make this much quicker.
 ;; In this case, lim is ignored
 (defun fsharp-fast-in-literal (&optional lim)
-  "Fast version of `fsharp-in-literal', used only by XEmacs.
+  "Fast version of `fsharp-in-literal-p', used only by XEmacs.
 Optional LIM is ignored."
   ;; don't have to worry about context == 'block-comment
   (buffer-syntactic-context))
 
 (if (fboundp 'buffer-syntactic-context)
-    (defalias 'fsharp-in-literal 'fsharp-fast-in-literal))
+    (defalias 'fsharp-in-literal-p 'fsharp-fast-in-literal))
 
 
 
@@ -696,7 +696,7 @@ it's tried again going backward."
     (fsharp-goto-initial-line)
     (while (not (or found (eobp)))
       (when (and (re-search-forward fsharp-block-opening-re nil 'move)
-                 (not (fsharp-in-literal restart)))
+                 (not (fsharp-in-literal-p restart)))
         (setq restart (point))
         (fsharp-goto-initial-line)
         (if (fsharp-statement-opens-block-p)
@@ -1505,7 +1505,7 @@ does not include blank lines, comments, or continuation lines."
     (fsharp-goto-beyond-final-line)
     (while (and
             (or (looking-at fsharp-blank-or-comment-re)
-                (fsharp-in-literal))
+                (fsharp-in-literal-p))
             (not (eobp)))
       (forward-line 1))
     (if (eobp)
@@ -1567,7 +1567,7 @@ This tells add-log.el how to find the current function/method/variable."
     (fsharp-goto-initial-line)
     (back-to-indentation)
     (while (and (or (looking-at fsharp-blank-or-comment-re)
-                    (fsharp-in-literal))
+                    (fsharp-in-literal-p))
                 (not (bobp)))
       (backward-to-indentation 1))
     (fsharp-goto-initial-line)
