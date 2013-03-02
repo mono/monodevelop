@@ -104,6 +104,8 @@ namespace Mono.TextEditor.Highlighting
 		public ChunkStyle ()
 		{
 			Foreground = Background = new Cairo.Color (0, 0, 0, 0);
+			FontWeight = FontWeight.Normal;
+			FontStyle = FontStyle.Normal;
 		}
 
 		public ChunkStyle (ChunkStyle baseStyle)
@@ -112,6 +114,8 @@ namespace Mono.TextEditor.Highlighting
 			this.Foreground = baseStyle.Foreground;
 			this.Background = baseStyle.Background;
 			this.FontWeight = baseStyle.FontWeight;
+			this.FontStyle = baseStyle.FontStyle;
+			this.Underline = baseStyle.Underline;
 		}
 
 		public override bool Equals (object obj)
