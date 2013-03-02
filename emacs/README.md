@@ -4,18 +4,18 @@ Provides support for the F# language in Emacs. Includes the following features:
 
 - Support for F# Interactive
 - Displays type signatures and tooltips
-- Provides syntax highlighting and indentation
+- Provides syntax highlighting and indentation.
 
 The following features are under development:
 
 - Intelligent indentation
-- Experimental [intellisense support](README-intellisense.md)
+- Experimental [intellisense support](README-intellisense.md).
 
 Requires Emacs 24+.
 
-### Installation
+## Installation
 
-#### Package
+### Package
 
 `fsharp-mode` is available on [MELPA](http://melpa.milkbox.net) and can
 be installed using the built-in package manager.
@@ -36,7 +36,7 @@ If you're not already using MELPA, add the following to your init.el:
 (require 'fsharp-mode)
 ```
 
-#### Manual installation
+### Manual installation
 
 1. Clone this repo and run `make install`:
     ```
@@ -54,7 +54,7 @@ If you're not already using MELPA, add the following to your init.el:
     (add-to-list 'auto-mode-alist '("\\.fs[iylx]?$" . fsharp-mode))
     ```
 
-### Usage
+## Usage
 
 fsharp-mode should launch automatically whenever you open an F#
 buffer. It will automatically display type information and provide
@@ -63,9 +63,9 @@ tooltips if the current file is part of an F# project.
 To display a tooltip, move the cursor to a symbol and press
 <kbd>C-c C-t</kbd> (default).
 
-### Configuration
+## Configuration
 
-#### Compiler and REPL paths
+### Compiler and REPL paths
 
 The F# compiler and interpreter should be set to good defaults for your
 OS. If you have a non-standard setup you may need to configure these
@@ -86,7 +86,7 @@ Interactive will work correctly with Emacs.
 (setq fsharp-compiler "mono path/to/fsharpc.exe")
 ```
 
-#### Behavior
+### Behavior
 
 There are a few variables you can adjust to change how fsharp-mode behaves:
 
@@ -96,7 +96,7 @@ There are a few variables you can adjust to change how fsharp-mode behaves:
 - `fsharp-doc-idle-delay`: Set the time (in seconds) to wait before
   showing type information in the minibuffer.
 
-#### Key Bindings
+### Key Bindings
 
 If you are new to Emacs, you might want to use the menu (call
 menu-bar-mode if you don't see it). However, it's usually faster to learn
@@ -127,7 +127,7 @@ If you want to shift the region by 2 spaces, use: <kbd>M-2 C-c r</kbd>
 In the interactive buffer, use <kbd>M-RET</kbd> to send the code without
 explicitly adding the `;;` thing.
 
-### Contributing
+## Contributing
 
 This project is maintained by the
 [F# Software Foundation](http://fsharp.org/), with the repository hosted
