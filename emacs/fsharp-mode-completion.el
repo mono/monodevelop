@@ -90,7 +90,7 @@ display in a help buffer instead.")
 (defun ac-fsharp-parse-current-buffer ()
   (save-restriction
     (widen)
-    (log-psendstr
+    (process-send-string
      ac-fsharp-completion-process
      (format "parse \"%s\" full\n%s\n<<EOF>>\n"
              (buffer-file-name)
@@ -371,7 +371,7 @@ possibly many lines of description.")
   (ac-fsharp-stash-partial str)
 
   (let ((eofloc (string-match-p (@ eom) ac-fsharp-partial-data)))
-    (when eofloc
+    (while eofloc
       (let ((msg  (substring ac-fsharp-partial-data 0 eofloc))
             (part (substring ac-fsharp-partial-data (+ eofloc (length (@ eom))))))
         (cond
@@ -385,7 +385,8 @@ possibly many lines of description.")
          (t
           (message "Error: unrecognised message: '%s'" msg)))
 
-        (setq ac-fsharp-partial-data part)))))
+        (setq ac-fsharp-partial-data part))
+      (setq eofloc (string-match-p (@ eom) ac-fsharp-partial-data)))))
 
 (defn set-completion-data (str)
   (setq ac-fsharp-completion-data (s-split "\n" (s-replace "DATA: completion" "" str) t)
