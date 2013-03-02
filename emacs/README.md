@@ -1,92 +1,111 @@
-# F# Language Support for Emacs
+# fsharp-mode
 
-Features:
+Provides support for the F# language in Emacs. Includes the following features:
 
-- Interactive F# buffer
-- Indentation
-- Syntax highlighter
+- Support for F# Interactive
+- Displays type signatures and tooltips
+- Provides syntax highlighting and indentation
+
+The following features are under development:
+
+- Intelligent indentation
 - Experimental [intellisense support](README-intellisense.md)
 
+Requires Emacs 24+.
 
 ### Installation
 
-`fsharp-mode` is available on [MELPA](http://melpa.milkbox.net).
+#### Package
 
-To download it,`package.el` is the built-in package manager in Emacs 24+. On Emacs 23
-you will need to get [package.el](http://bit.ly/pkg-el23) yourself if you wish to use it.
+`fsharp-mode` is available on [MELPA](http://melpa.milkbox.net) and can
+be installed using the built-in package manager.
 
-If you're not already using MELPA, add this to your
-`~/.emacs.d/init.el` (or equivalent) and load it with <kbd>M-x eval-buffer</kbd>.
+If you're not already using MELPA, add the following to your init.el:
 
 ```lisp
+;;; Initialize MELPA
 (require 'package)
-(add-to-list 'package-archives
-             '("melpa" . "http://melpa.milkbox.net/packages/") t)
+(add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/"))
+(unless package-archive-contents (package-refresh-contents))
 (package-initialize)
-```
 
-And then you can install fsharp-mode with the following command:
-
-<kbd>M-x package-install [RET] fsharp-mode [RET]</kbd>
-
-or by adding this bit of Emacs Lisp code to your Emacs
-initialization file(`.emacs` or `init.el`):
-
-```lisp
-(when (not (package-installed-p 'fsharp-mode))
+;;; Install fsharp-mode
+(unless (package-installed-p 'fsharp-mode)
   (package-install 'fsharp-mode))
+
+(require 'fsharp-mode)
 ```
 
-If the installation doesn't work try refreshing the package list:
+#### Manual installation
 
-<kbd>M-x package-refresh-contents [RET]</kbd>
+1. Install 3rd party dependencies. These are listed in the [package manifest](fsharp-mode-pkg.el):
 
-### Manual installation
+  - [pos-tip](https://github.com/syohex/pos-tip)
+  - [popup](https://github.com/auto-complete/popup-el)
+  - [s](https://github.com/magnars/s.el)
+  - [Namespaces](https://github.com/chrisbarrett/elisp-namespaces)
 
-F# mode depends on the `pos-tip` package, so make sure you have installed
-this first. You then have to tell Emacs where to find F# mode itself. This
-is done by adding some commands to the init file.
+2. Clone this repo and run `make install`:
 
-Copy the `fsharpbinding/emacs/` directory in your `~/.emacs.d`
-directory (or a place of your choice) and rename it to `fsharp`
-Assuming you now have a `~/.emacs.d/fsharp` directory, copy the following lines
-to your init file (usually `~/.emacs` or `init.el`).
+```
+git clone git://github.com/fsharp/fsharpbinding.git
+cd fsharpbinding/emacs
+make install
+```
+
+3. Add the following to your init.el:
 
 ```lisp
-(setq load-path (cons "~/.emacs.d/fsharp" load-path))
-(setq auto-mode-alist (cons '("\\.fs[iylx]?$" . fsharp-mode) auto-mode-alist))
-(autoload 'fsharp-mode "fsharp" "Major mode for editing F# code." t)
-(autoload 'run-fsharp "inf-fsharp" "Run an inferior F# process." t)
- 
-(autoload 'ac-fsharp-launch-completion-process "fsharp-mode-completion" "Launch the completion process" t)
-(autoload 'ac-fsharp-quit-completion-process "fsharp-mode-completion" "Quit the completion process" t)
-(autoload 'ac-fsharp-load-project "fsharp-mode-completion" "Load the specified F# project" t)
-(autoload 'ac-fsharp-tooltip-at-point "fsharp-mode-completion" "Fetch and display F# tooltips at point" t)
-(autoload 'ac-fsharp-gotodefn-at-point "fsharp-mode-completion" "Fetch and display F# tooltips at point" t)
+(add-to-list 'load-path "~/.emacs.d/fsharp-mode/")
+
+(autoload 'fsharp-mode "fsharp-mode"     "Major mode for editing F# code." t)
+(autoload 'run-fsharp  "inf-fsharp-mode" "Run an inferior F# process." t)
+(add-to-list 'auto-mode-alist '("\\.fs[iylx]?$" . fsharp-mode))
 ```
+
+### Usage
+
+fsharp-mode should launch automatically whenever you open an F#
+buffer. It will automatically display type information and provide
+tooltips if the current file is part of an F# project.
+
+To display a tooltip, move the cursor to a symbol and press
+<kbd>C-c C-t</kbd> (default).
 
 ### Configuration
 
-If `fsc` and `fsi` are in your path, that's all you need. Otherwise,
-you can add these two following lines to set the path to the compiler
-and interactive F#.
+#### Compiler and REPL paths
 
-On Windows (adapt the path if needed):
+The F# compiler and interpreter should be set to good defaults for your
+OS. If you have a non-standard setup you may need to configure these
+paths manually.
 
-```lisp
-(setq inferior-fsharp-program "\"c:\\Program Files\\Microsoft F#\\v4.0\\Fsi.exe\"")
-(setq fsharp-compiler "\"c:\\Program Files\\Microsoft F#\\v4.0\\Fsc.exe\"")
-```
-
-On Unix the interactive defaults to `fsharpi --readline-`, which should work
-with the open source release. Otherwise (adapt the path if needed):
+On Windows:
 
 ```lisp
-(setq inferior-fsharp-program "mono ~/fsi.exe --readline-")
-(setq fsharp-compiler "mono ~/fsc.exe")
+(setq inferior-fsharp-program "\"c:\\Path\To\Fsi.exe\"")
+(setq fsharp-compiler "\"c:\\Path\To\Fsc.exe\"")
 ```
 
-### Bindings
+On Unix-like systems, you must use the *readline* flag to ensure F#
+Interactive will work correctly with Emacs.
+
+```lisp
+(setq inferior-fsharp-program "mono path/to/fsharpi.exe --readline-")
+(setq fsharp-compiler "mono path/to/fsharpc.exe")
+```
+
+#### Behavior
+
+There are a few variables you can adjust to change how fsharp-mode behaves:
+
+- `ac-fsharp-use-popup`: Show tooltips using a popup at the cursor
+  position. If set to nil, display the tooltip in a split window.
+
+- `fsharp-doc-idle-delay`: Set the time (in seconds) to wait before
+  showing type information in the minibuffer.
+
+#### Key Bindings
 
 If you are new to Emacs, you might want to use the menu (call
 menu-bar-mode if you don't see it). However, it's usually faster to learn
@@ -117,3 +136,11 @@ If you want to shift the region by 2 spaces, use: <kbd>M-2 C-c r</kbd>
 In the interactive buffer, use <kbd>M-RET</kbd> to send the code without
 explicitly adding the `;;` thing.
 
+### Contributing
+
+This project is maintained by the
+[F# Software Foundation](http://fsharp.org/), with the repository hosted
+on [GitHub](https://github.com/fsharp/fsharpbinding).
+
+Pull requests are welcome. Please run the test-suite with `make
+test-all` before submitting a pull request.
