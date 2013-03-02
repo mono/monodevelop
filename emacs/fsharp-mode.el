@@ -88,7 +88,8 @@ and whether it is in a project directory.")
   (define-key fsharp-mode-map "\C-c:"     'fsharp-guess-indent-offset)
   (define-key fsharp-mode-map [delete]    'fsharp-electric-delete)
   (define-key fsharp-mode-map [backspace] 'fsharp-electric-backspace)
-  (define-key fsharp-mode-map (kbd ".") 'fsharp-ac/electric-dot)
+  ;(define-key fsharp-mode-map (kbd ".") 'fsharp-ac/electric-dot)
+  (define-key fsharp-mode-map (kbd ".") 'self-insert-command)
 
   (define-key fsharp-mode-map (kbd "C-c <up>") 'fsharp-goto-block-up)
 
@@ -202,9 +203,12 @@ and whether it is in a project directory.")
           indent-line-function
           add-log-current-defun-function
           underline-minimum-offset
-          compile-command))
+          compile-command
 
-  (add-hook 'completion-at-point-functions #'fsharp-ac/completion-at-point)
+          ac-sources
+          ac-auto-start
+          ac-use-comphist
+          ac-auto-show-menu))
 
   (setq major-mode               'fsharp-mode
         mode-name                "fsharp"
@@ -226,7 +230,12 @@ and whether it is in a project directory.")
         add-log-current-defun-function 'fsharp-current-defun
         fsharp-last-noncomment-pos     nil
         fsharp-last-comment-start      (make-marker)
-        fsharp-last-comment-end        (make-marker))
+        fsharp-last-comment-end        (make-marker)
+
+        ac-sources '(fsharp-ac-source)
+        ac-auto-start nil
+        ac-use-comphist nil
+        ac-auto-show-menu 0.2)
 
   ;; Error navigation
   (setq next-error-function 'fsharp-ac/next-error)
@@ -253,7 +262,8 @@ and whether it is in a project directory.")
 If FILE is part of an F# project, load the project.
 Otherwise, treat as a stand-alone file."
   (or (fsharp-ac/load-project (fsharp-mode/find-fsproj file))
-      (fsharp-ac/load-file file)))
+      (fsharp-ac/load-file file))
+  (auto-complete-mode 1))
 
 (defun fsharp-mode-choose-compile-command (file)
   "Format an appropriate compilation command, depending on several factors:

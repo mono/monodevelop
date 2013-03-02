@@ -27,6 +27,8 @@
 (require 'dash)
 (require 'fsharp-mode-indent)
 (require 'pos-tip)
+(require 'auto-complete)
+(require 'cl)
 
 ;;; User-configurable variables
 
@@ -44,6 +46,9 @@
   "Display tooltips using a popup at point. If set to nil,
 display in a help buffer instead.")
 
+(defvar fsharp-ac-autocompletion-automatically t
+  "Whether autocompletion is automatically triggered on '.'")
+
 (defface fsharp-error-face
   '((t :inherit error))
   "Face used for marking an error in F#"
@@ -55,20 +60,18 @@ display in a help buffer instead.")
   :group 'fsharp)
 
 ;;; Both in seconds. Note that background process uses ms.
-(defvar fsharp-ac-blocking-timeout 1)
+(defvar fsharp-ac-blocking-timeout 0.4)
 (defvar fsharp-ac-idle-timeout 1)
 
 ;;; ----------------------------------------------------------------------------
 
+(defconst fsharp-ac--debug t)
 (defvar fsharp-ac-status 'idle)
 (defvar fsharp-ac-completion-process nil)
 (defvar fsharp-ac-partial-data "")
-(defvar fsharp-ac-completion-data "")
-(defvar fsharp-ac-completion-cache nil)
 (defvar fsharp-ac-project-files nil)
 (defvar fsharp-ac-idle-timer nil)
 (defvar fsharp-ac-verbose nil)
-(defvar fsharp-ac-waiting nil)
 
 (defun log-to-proc-buf (proc str)
   (when (processp proc)
@@ -84,17 +87,21 @@ display in a help buffer instead.")
               (goto-char (process-mark proc))))))))
 
 (defun log-psendstr (proc str)
-  (log-to-proc-buf proc str)
+  (when fsharp-ac--debug
+    (log-to-proc-buf proc str))
   (process-send-string proc str))
 
 (defun fsharp-ac-parse-current-buffer ()
   (save-restriction
-    (widen)
-    (process-send-string
-     fsharp-ac-completion-process
-     (format "parse \"%s\" full\n%s\n<<EOF>>\n"
-             (buffer-file-name)
-             (buffer-substring-no-properties (point-min) (point-max))))))
+    (let ((file (expand-file-name (buffer-file-name))))
+      (widen)
+      (log-to-proc-buf fsharp-ac-completion-process
+                       (format "Parsing \"%s\"\n" file))
+      (process-send-string
+       fsharp-ac-completion-process
+       (format "parse \"%s\" full\n%s\n<<EOF>>\n"
+               file
+               (buffer-substring-no-properties (point-min) (point-max)))))))
 
 (defun fsharp-ac-parse-file (file)
   (with-current-buffer (find-file-noselect file)
@@ -115,7 +122,7 @@ display in a help buffer instead.")
   (when (fsharp-ac--valid-project-p file)
     (fsharp-ac--reset)
     (when (not (fsharp-ac--process-live-p))
-      (fsharp-ac-start-process))
+      (fsharp-ac/start-process))
     ;; Load given project.
     (log-psendstr fsharp-ac-completion-process
                   (format "project \"%s\"\n" (expand-file-name file)))
@@ -126,7 +133,7 @@ display in a help buffer instead.")
   (when (fsharp-ac--script-file-p file)
     (if (file-exists-p file)
         (when (not (fsharp-ac--process-live-p))
-          (fsharp-ac-start-process))
+          (fsharp-ac/start-process))
       (add-hook 'after-save-hook 'fsharp-ac--load-after-save nil 'local))))
 
 (defun fsharp-ac--load-after-save ()
@@ -144,9 +151,10 @@ display in a help buffer instead.")
                        (file-name-extension file))))
 
 (defun fsharp-ac--reset ()
-  (setq fsharp-ac-completion-cache nil
-        fsharp-ac-partial-data nil
-        fsharp-ac-project-files nil)
+  (setq fsharp-ac-partial-data nil
+        fsharp-ac-project-files nil
+        fsharp-ac-status 'idle
+        fsharp-ac-current-candidate nil)
   (fsharp-ac-clear-errors))
 
 ;;; ----------------------------------------------------------------------------
@@ -175,15 +183,12 @@ display in a help buffer instead.")
   (setq fsharp-ac-status 'idle
         fsharp-ac-completion-process nil
         fsharp-ac-partial-data ""
-        fsharp-ac-completion-data ""
-        fsharp-ac-completion-cache nil
         fsharp-ac-project-files nil
         fsharp-ac-idle-timer nil
-        fsharp-ac-verbose nil
-        fsharp-ac-waiting nil)
+        fsharp-ac-verbose nil)
   (fsharp-ac-clear-errors))
 
-(defun fsharp-ac-start-process ()
+(defun fsharp-ac/start-process ()
   "Launch the F# completion process in the background"
   (interactive)
 
@@ -203,51 +208,59 @@ display in a help buffer instead.")
       (setq fsharp-ac-status 'idle
             fsharp-ac-partial-data ""
             fsharp-ac-project-files nil)
+      (local-set-key (kbd ".") 'fsharp-ac/electric-key)
+      (add-to-list 'ac-modes 'fsharp-mode)
+      ;(setq ac-modes (delq 'fsharp-mode ac-modes))
       proc)))
 
 (defun fsharp-ac--reset-timer ()
   (when fsharp-ac-idle-timer
     (cancel-timer fsharp-ac-idle-timer))
   (setq fsharp-ac-idle-timer
-        (run-with-idle-timer fsharp-ac-idle-timeout t 'fsharp-ac-request-errors)))
+        (run-with-idle-timer fsharp-ac-idle-timeout
+                             t
+                             'fsharp-ac-request-errors)))
 
-; Consider using 'text' for filtering
-; TODO: This caching is a bit optimistic. It might not always be correct
-;       to use the cached values if the line and col just happen to line up.
-;       Could dirty cache on idle, or include timestamps and ignore values
-;       older than a few seconds. On the other hand it only caches the most
-;       recent position, so it's very unlikely to try that position again
-;       without the completions being the same unless another completion has
-;       been tried in between.
-(defun fsharp-ac-completions (file line col text)
-  (setq fsharp-ac-waiting t)
-  (let ((cache (assoc file fsharp-ac-completion-cache)))
-    (if (and cache (equal (cddr cache) (list line col)))
-        (cadr cache)
-      (fsharp-ac-parse-current-buffer)
-      (fsharp-ac-send-pos-request "completion" file line col)
-      (while fsharp-ac-waiting
-        (accept-process-output fsharp-ac-completion-process))
-      (when fsharp-ac-completion-data
-        (push (list file fsharp-ac-completion-data line col) fsharp-ac-completion-cache))
-      fsharp-ac-completion-data)))
 
-(defun fsharp-ac/completion-at-point ()
-  "Return a function ready to interrogate the F# compiler service for completions at point."
-  (if fsharp-ac-completion-process
-      (let ((end (point))
-            (start
-             (save-excursion
-               (skip-chars-backward "^ ." (line-beginning-position))
-               (point))))
-        (list start end
-              (completion-table-dynamic
-               (apply-partially #'fsharp-ac-completions
-                                (buffer-file-name)
-                                (- (line-number-at-pos) 1)
-                                (current-column)))))
-  ; else
-    nil))
+(defvar fsharp-ac-source
+  '((candidates . fsharp-ac-candidate)
+    (prefix . fsharp-ac-prefix)
+    (requires . 0)
+    ;(document . fsharp-ac-document)
+    ;(action . fsharp-ac-action)
+    (cache) ; this prevents multiple re-calls, critical
+    ))
+
+(defun fsharp-ac-candidate ()
+  (interactive)
+  (case fsharp-ac-status
+    (idle
+     (setq fsharp-ac-status 'wait)
+     (setq fsharp-ac-current-candidate nil)
+     
+     (fsharp-ac-parse-current-buffer)
+     (fsharp-ac-send-pos-request
+      "completion"
+      (expand-file-name (buffer-file-name (current-buffer)))
+      (- (line-number-at-pos) 1)
+      (current-column)))
+     
+    (wait
+     fsharp-ac-current-candidate)
+
+    (acknowledged
+     (setq fsharp-ac-status 'idle)
+     fsharp-ac-current-candidate)
+
+    (preempted
+     nil)))
+
+(defun fsharp-ac-prefix ()
+  (or (ac-prefix-symbol)
+      (let ((c (char-before)))
+        (when (eq ?\. c)
+          (point)))))
+
 
 (defun fsharp-ac-can-make-request ()
   (and (fsharp-ac--process-live-p)
@@ -284,11 +297,15 @@ display in a help buffer instead.")
                                 (- (line-number-at-pos) 1)
                                 (current-column))))
 
-(defun fsharp-ac/electric-dot ()
+(defun fsharp-ac/electric-key ()
   (interactive)
-  (insert ".")
-  (unless (fsharp-in-literal-p)
-    (completion-at-point)))
+  (self-insert-command 1)
+  (if (and (fsharp-ac-can-make-request)
+           (eq fsharp-ac-status 'idle)
+           fsharp-ac-autocompletion-automatically)
+      (ac-start)
+    (setq fsharp-ac-status 'preempted)))
+
 
 ;;; ----------------------------------------------------------------------------
 ;;; Errors and Overlays
@@ -307,7 +324,8 @@ possibly many lines of description.")
 (defun fsharp-ac-request-errors ()
   (when (fsharp-ac-can-make-request)
     (fsharp-ac-parse-current-buffer)
-    (log-psendstr fsharp-ac-completion-process "errors\n")))
+    (log-psendstr fsharp-ac-completion-process "errors\n")
+    ))
 
 (defun fsharp-ac-line-column-to-pos (line col)
   (save-excursion
@@ -442,7 +460,7 @@ around to the start of the buffer."
       (let ((msg  (substring fsharp-ac-partial-data 0 eofloc))
             (part (substring fsharp-ac-partial-data (+ eofloc (length fsharp-ac-eom)))))
         (cond
-         ((s-starts-with? "DATA: completion" msg) (fsharp-ac-set-completion-data msg))
+         ((s-starts-with? "DATA: completion" msg) (fsharp-ac-handle-completion msg))
          ((s-starts-with? "DATA: finddecl" msg)   (fsharp-ac-visit-definition msg))
          ((s-starts-with? "DATA: tooltip" msg)    (fsharp-ac-handle-tooltip msg))
          ((s-starts-with? "DATA: errors" msg)     (fsharp-ac-handle-errors msg))
@@ -455,9 +473,21 @@ around to the start of the buffer."
         (setq fsharp-ac-partial-data part))
       (setq eofloc (string-match-p fsharp-ac-eom fsharp-ac-partial-data)))))
 
-(defun fsharp-ac-set-completion-data (str)
-  (setq fsharp-ac-completion-data (s-split "\n" (s-replace "DATA: completion" "" str) t)
-        fsharp-ac-waiting nil))
+(defun fsharp-ac-handle-completion (str)
+  (setq str
+        (s-split "\n" (s-replace "DATA: completion" "" str) t))
+  (case fsharp-ac-status
+    (preempted
+     (setq fsharp-ac-status 'idle)
+     (ac-start)
+     (ac-update))
+
+    (otherwise
+     (setq fsharp-ac-current-candidate str
+           fsharp-ac-status 'acknowledged)
+     (ac-start :force-init t)
+     (ac-update)
+     (setq fsharp-ac-status 'idle))))
 
 (defun fsharp-ac-visit-definition (str)
   (if (string-match "\n\\(.*\\):\\([0-9]+\\):\\([0-9]+\\)" str)
@@ -516,9 +546,9 @@ display a short summary in the minibuffer."
 (defun fsharp-ac-handle-process-error (str)
   (unless (s-matches? "Could not get type information" str)
     (fsharp-ac-message-safely str))
-  (when fsharp-ac-waiting
-    (setq fsharp-ac-completion-data nil)
-    (setq fsharp-ac-waiting nil)))
+  (when (not (eq fsharp-ac-status 'idle))
+    (setq fsharp-ac-status 'idle
+          fsharp-ac-current-candidate nil)))
 
 (provide 'fsharp-mode-completion)
 
