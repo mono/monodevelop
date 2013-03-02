@@ -59,7 +59,6 @@ namespace MonoDevelop.Debugger
 			checkStepOverPropertiesAndOperators.Active = options.StepOverPropertiesAndOperators;
 			checkAllowEval.Active = options.EvaluationOptions.AllowTargetInvoke;
 			checkAllowToString.Active = options.EvaluationOptions.AllowToStringCalls;
-			checkAllowTypeLoad.Active = options.EvaluationOptions.AllowImplicitTypeLoading;
 			checkShowBaseGroup.Active = !options.EvaluationOptions.FlattenHierarchy;
 			checkGroupPrivate.Active = options.EvaluationOptions.GroupPrivateMembers;
 			checkGroupStatic.Active = options.EvaluationOptions.GroupStaticMembers;
@@ -81,7 +80,6 @@ namespace MonoDevelop.Debugger
 
 			ops.AllowTargetInvoke = checkAllowEval.Active;
 			ops.AllowToStringCalls = checkAllowToString.Active;
-			ops.AllowImplicitTypeLoading = checkAllowTypeLoad.Active;
 			ops.FlattenHierarchy = !checkShowBaseGroup.Active;
 			ops.GroupPrivateMembers = checkGroupPrivate.Active;
 			ops.GroupStaticMembers = checkGroupStatic.Active;

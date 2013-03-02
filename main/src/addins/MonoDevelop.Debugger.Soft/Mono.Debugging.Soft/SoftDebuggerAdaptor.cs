@@ -1170,7 +1170,10 @@ namespace Mono.Debugging.Soft
 		public override bool IsTypeLoaded (EvaluationContext ctx, object type)
 		{
 			TypeMirror tm = (TypeMirror) type;
-			
+
+			if (tm.VirtualMachine.Version.AtLeast (2, 23))
+				return tm.IsInitialized;
+
 			return IsTypeLoaded (ctx, tm.FullName);
 		}
 		
@@ -1179,10 +1182,13 @@ namespace Mono.Debugging.Soft
 			SoftEvaluationContext ctx = (SoftEvaluationContext) gctx;
 			TypeMirror tm = (TypeMirror) type;
 
-			if (IsTypeLoaded (ctx, type))
+			if (!tm.VirtualMachine.Version.AtLeast (2, 23))
+				return IsTypeLoaded (gctx, tm.FullName);
+
+			if (tm.IsInitialized)
 				return true;
 
-			if (!ctx.Options.AllowTargetInvoke)
+			if (!tm.Attributes.HasFlag (TypeAttributes.BeforeFieldInit))
 				return false;
 
 			MethodMirror cctor = OverloadResolve (ctx, ".cctor", tm, new TypeMirror[0], false, true, false);

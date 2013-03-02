@@ -378,8 +378,7 @@ namespace Mono.Debugging.Evaluation
 			object resolved = ResolveType (ctx, mre);
 
 			if (resolved != null) {
-				if (ctx.Options.AllowImplicitTypeLoading)
-					ctx.Adapter.ForceLoadType (ctx, resolved);
+				ctx.Adapter.ForceLoadType (ctx, resolved);
 
 				return new TypeValueReference (ctx, resolved);
 			}
@@ -392,8 +391,7 @@ namespace Mono.Debugging.Evaluation
 			object resolved = type.Resolve (ctx);
 
 			if (resolved != null) {
-				if (ctx.Options.AllowImplicitTypeLoading)
-					ctx.Adapter.ForceLoadType (ctx, resolved);
+				ctx.Adapter.ForceLoadType (ctx, resolved);
 
 				return new TypeValueReference (ctx, resolved);
 			}
@@ -599,7 +597,7 @@ namespace Mono.Debugging.Evaluation
 					// Look in namespaces
 					foreach (string ns in namespaces) {
 						string nm = ns + "." + name;
-						vtype = ctx.Options.AllowImplicitTypeLoading ? ctx.Adapter.ForceLoadType (ctx, nm) : ctx.Adapter.GetType (ctx, nm);
+						vtype = ctx.Adapter.ForceLoadType (ctx, nm);
 						if (vtype != null)
 							return new TypeValueReference (ctx, vtype);
 					}
@@ -833,26 +831,15 @@ namespace Mono.Debugging.Evaluation
 			var type = typeReferenceExpression.Type.Resolve (ctx);
 
 			if (type != null) {
-				if (ctx.Options.AllowImplicitTypeLoading)
-					ctx.Adapter.ForceLoadType (ctx, type);
+				ctx.Adapter.ForceLoadType (ctx, type);
 
 				return new TypeValueReference (ctx, type);
 			}
 
 			var name = ResolveTypeName (typeReferenceExpression.Type);
 
-			if (!ctx.Options.AllowImplicitTypeLoading) {
-				// Look in namespaces
-				foreach (string ns in ctx.Adapter.GetImportedNamespaces (ctx)) {
-					if (name == ns || ns.StartsWith (name + "."))
-						return new NamespaceValueReference (ctx, name);
-				}
-			} else {
-				// Assume it is a namespace.
-				return new NamespaceValueReference (ctx, name);
-			}
-
-			throw NotSupported ();
+			// Assume it is a namespace.
+			return new NamespaceValueReference (ctx, name);
 		}
 
 		public ValueReference VisitUnaryOperatorExpression (UnaryOperatorExpression unaryOperatorExpression)
