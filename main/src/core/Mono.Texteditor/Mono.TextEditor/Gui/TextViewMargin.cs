@@ -1799,9 +1799,9 @@ namespace Mono.TextEditor
 
 					// folding marker
 					int lineNr = args.LineNumber;
-					foreach (KeyValuePair<Rectangle, FoldSegment> shownFolding in GetFoldRectangles (lineNr)) {
-						if (shownFolding.Key.Contains ((int)(args.X + this.XOffset), (int)args.Y)) {
-							shownFolding.Value.IsFolded = false;
+					foreach (var shownFolding in GetFoldRectangles (lineNr)) {
+						if (shownFolding.Item1.Contains ((int)(args.X + this.XOffset), (int)args.Y)) {
+							shownFolding.Item2.IsFolded = false;
 							return;
 						}
 					}
@@ -2073,8 +2073,8 @@ namespace Mono.TextEditor
 				// folding marker
 				int lineNr = args.LineNumber;
 				foreach (var shownFolding in GetFoldRectangles (lineNr)) {
-					if (shownFolding.Key.Contains ((int)(args.X + this.XOffset), (int)args.Y)) {
-						ShowTooltip (shownFolding.Value.Segment, shownFolding.Key);
+					if (shownFolding.Item1.Contains ((int)(args.X + this.XOffset), (int)args.Y)) {
+						ShowTooltip (shownFolding.Item2.Segment, shownFolding.Item1);
 						return;
 					}
 				}
@@ -2236,46 +2236,53 @@ namespace Mono.TextEditor
 			cr.Fill ();
 		}
 
-		List<System.Collections.Generic.KeyValuePair<Gdk.Rectangle, FoldSegment>> GetFoldRectangles (int lineNr)
+		IEnumerable<Tuple<Gdk.Rectangle, FoldSegment>> GetFoldRectangles (int lineNr)
 		{
-			var result = new List<KeyValuePair<Gdk.Rectangle, FoldSegment>> ();
 			if (lineNr < 0)
-				return result;
+				yield break;
 
-			DocumentLine line = lineNr <= Document.LineCount ? Document.GetLine (lineNr) : null;
+			var line = lineNr <= Document.LineCount ? Document.GetLine (lineNr) : null;
 			//			int xStart = XOffset;
 			int y = (int)(LineToY (lineNr) - textEditor.VAdjustment.Value);
 			//			Gdk.Rectangle lineArea = new Gdk.Rectangle (XOffset, y, textEditor.Allocation.Width - XOffset, LineHeight);
 			int width, height;
-			int xPos = (int)(this.XOffset + this.TextStartPosition - textEditor.HAdjustment.Value);
+			var xPos = this.XOffset + this.TextStartPosition - textEditor.HAdjustment.Value;
 
-			if (line == null) {
-				return result;
-			}
+			if (line == null)
+				yield break;
 
-			IEnumerable<FoldSegment> foldings = Document.GetStartFoldings (line);
+			var foldings = Document.GetStartFoldings (line);
 			int offset = line.Offset;
+			double foldXMargin = foldMarkerXMargin * textEditor.Options.Zoom;
 			restart:
-			using (var calcLayout = PangoUtil.CreateLayout (textEditor)) {
-				calcLayout.FontDescription = markerLayout.FontDescription;
-				calcLayout.Tabs = this.tabArray;
-				foreach (FoldSegment folding in foldings) {
+			using (var calcTextLayout = PangoUtil.CreateLayout (textEditor))
+			using (var calcFoldingLayout = PangoUtil.CreateLayout (textEditor)) {
+				calcTextLayout.FontDescription = textEditor.Options.Font;
+				calcTextLayout.Tabs = this.tabArray;
+
+				calcFoldingLayout.FontDescription = markerLayout.FontDescription;
+				calcFoldingLayout.Tabs = this.tabArray;
+				foreach (var folding in foldings) {
 					int foldOffset = folding.StartLine.Offset + folding.Column - 1;
 					if (foldOffset < offset)
 						continue;
 
 					if (folding.IsFolded) {
 						var txt = Document.GetTextAt (offset, System.Math.Max (0, System.Math.Min (foldOffset - offset, Document.TextLength - offset)));
-						calcLayout.SetText (txt);
-						calcLayout.GetPixelSize (out width, out height);
-						xPos += width;
+						calcTextLayout.SetText (txt);
+						calcTextLayout.GetSize (out width, out height);
+						xPos += width / Pango.Scale.PangoScale;
 						offset = folding.EndLine.Offset + folding.EndColumn;
 
-						calcLayout.SetText (folding.Description);
-						calcLayout.GetPixelSize (out width, out height);
-						Rectangle foldingRectangle = new Rectangle (xPos, y, (int)(width - 1 + foldMarkerXMargin * textEditor.Options.Zoom * 2), (int)this.LineHeight - 1);
-						result.Add (new KeyValuePair<Rectangle, FoldSegment> (foldingRectangle, folding));
-						xPos += width;
+						calcFoldingLayout.SetText (folding.Description);
+
+						calcFoldingLayout.GetSize (out width, out height);
+
+						var pixelWidth = width / Pango.Scale.PangoScale + foldXMargin * 2;
+
+						var foldingRectangle = new Rectangle ((int)xPos, y, (int)pixelWidth, (int)LineHeight - 1);
+						yield return Tuple.Create (foldingRectangle, folding);
+						xPos += pixelWidth;
 						if (folding.EndLine != line) {
 							line = folding.EndLine;
 							foldings = Document.GetStartFoldings (line);
@@ -2284,7 +2291,6 @@ namespace Mono.TextEditor
 					}
 				}
 			}
-			return result;
 		}
 
 		List<TextSegment> selectedRegions = new List<TextSegment> ();
