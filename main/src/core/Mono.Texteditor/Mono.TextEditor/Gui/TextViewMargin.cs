@@ -966,11 +966,11 @@ namespace Mono.TextEditor
 					var translatedStartIndex = TranslateToUTF8Index (lineChars, (uint)startIndex, ref curChunkIndex, ref byteChunkIndex);
 					var translatedEndIndex = TranslateToUTF8Index (lineChars, (uint)endIndex, ref curChunkIndex, ref byteChunkIndex);
 
-					if (chunkStyle.Bold)
-						atts.AddWeightAttribute (Pango.Weight.Bold, translatedStartIndex, translatedEndIndex);
+					if (chunkStyle.FontWeight != Xwt.Drawing.FontWeight.Normal)
+						atts.AddWeightAttribute ((Pango.Weight)chunkStyle.FontWeight, translatedStartIndex, translatedEndIndex);
 
-					if (chunkStyle.Italic)
-						atts.AddStyleAttribute (Pango.Style.Italic, translatedStartIndex, translatedEndIndex);
+					if (chunkStyle.FontStyle != Xwt.Drawing.FontStyle.Normal)
+						atts.AddStyleAttribute ((Pango.Style)chunkStyle.FontStyle, translatedStartIndex, translatedEndIndex);
 
 					if (chunkStyle.Underline)
 						atts.AddUnderlineAttribute (Pango.Underline.Single, translatedStartIndex, translatedEndIndex);
@@ -1439,6 +1439,10 @@ namespace Mono.TextEditor
 			double width = layout.PangoWidth / Pango.Scale.PangoScale;
 			double xPos = pangoPosition / Pango.Scale.PangoScale;
 
+			// The caret line marker must be drawn below the text markers otherwise the're invisible
+			if ((HighlightCaretLine || textEditor.Options.HighlightCaretLine) && Caret.Line == lineNumber)
+				DrawCaretLineMarker (cr, xPos, y, layout.PangoWidth / Pango.Scale.PangoScale, _lineHeight);
+
 			//		if (!(HighlightCaretLine || textEditor.Options.HighlightCaretLine) || Document.GetLine(Caret.Line) != line) {
 			if (BackgroundRenderer == null) {
 				foreach (var bg in layout.BackgroundColors) {
@@ -1451,7 +1455,7 @@ namespace Mono.TextEditor
 						bg.Color, true);
 				}
 			}
-			//		}
+
 
 			bool drawBg = true;
 			bool drawText = true;
@@ -1466,9 +1470,6 @@ namespace Mono.TextEditor
 			if (DecorateLineBg != null)
 				DecorateLineBg (cr, layout, offset, length, xPos, y, selectionStart, selectionEnd);
 			
-			if ((HighlightCaretLine || textEditor.Options.HighlightCaretLine) && Caret.Line == lineNumber) {
-				DrawCaretLineMarker (cr, xPos, y, layout.PangoWidth / Pango.Scale.PangoScale, _lineHeight);
-			}
 
 			if (!isSelectionDrawn && (layout.StartSet || selectionStart == offset + length) && BackgroundRenderer == null) {
 				double startX;
@@ -1799,9 +1800,9 @@ namespace Mono.TextEditor
 
 					// folding marker
 					int lineNr = args.LineNumber;
-					foreach (KeyValuePair<Rectangle, FoldSegment> shownFolding in GetFoldRectangles (lineNr)) {
-						if (shownFolding.Key.Contains ((int)(args.X + this.XOffset), (int)args.Y)) {
-							shownFolding.Value.IsFolded = false;
+					foreach (var shownFolding in GetFoldRectangles (lineNr)) {
+						if (shownFolding.Item1.Contains ((int)(args.X + this.XOffset), (int)args.Y)) {
+							shownFolding.Item2.IsFolded = false;
 							return;
 						}
 					}
@@ -1854,6 +1855,7 @@ namespace Mono.TextEditor
 				int offset = Document.LocationToOffset (docLocation);
 				if (selection != null)
 					selectionRange = selection.GetSelectionRange (this.textEditor.GetTextEditorData ());
+				var oldVersion = textEditor.Document.Version;
 
 				bool autoScroll = textEditor.Caret.AutoScrollToCaret;
 				textEditor.Caret.AutoScrollToCaret = false;
@@ -1863,13 +1865,10 @@ namespace Mono.TextEditor
 					return;
 				}
 
-				int length = ClipboardActions.PasteFromPrimary (textEditor.GetTextEditorData (), offset);
+				ClipboardActions.PasteFromPrimary (textEditor.GetTextEditorData (), offset);
 				textEditor.Caret.Offset = oldOffset;
-				if (selection != null) {
-					if (offset < selectionRange.EndOffset) {
-						textEditor.SelectionRange = new TextSegment (selectionRange.Offset + length, selectionRange.Length);
-					}
-				}
+				if (!selectionRange.IsInvalid)
+					textEditor.SelectionRange = new TextSegment (oldVersion.MoveOffsetTo (Document.Version, selectionRange.Offset), selectionRange.Length);
 
 				if (autoScroll)
 					textEditor.Caret.ActivateAutoScrollWithoutMove ();
@@ -1958,14 +1957,17 @@ namespace Mono.TextEditor
 					
 				int ox = 0, oy = 0;
 				this.textEditor.GdkWindow.GetOrigin (out ox, out oy);
+				ox += textEditor.Allocation.X;
+				oy += textEditor.Allocation.Y;
 
-				int x = hintRectangle.X + hintRectangle.Width;
-				int y = hintRectangle.Y + hintRectangle.Height;
+				int x = hintRectangle.Right;
+				int y = hintRectangle.Bottom;
 				previewWindow.CalculateSize ();
-				int w = previewWindow.SizeRequest ().Width;
-				int h = previewWindow.SizeRequest ().Height;
+				var req = previewWindow.SizeRequest ();
+				int w = req.Width;
+				int h = req.Height;
 
-				Gdk.Rectangle geometry = this.textEditor.Screen.GetUsableMonitorGeometry (this.textEditor.Screen.GetMonitorAtPoint (ox + x, oy + y));
+				var geometry = this.textEditor.Screen.GetUsableMonitorGeometry (this.textEditor.Screen.GetMonitorAtPoint (ox + x, oy + y));
 
 				if (x + ox + w > geometry.X + geometry.Width)
 					x = hintRectangle.Left - w;
@@ -2071,9 +2073,9 @@ namespace Mono.TextEditor
 			if (args.Button != 1 && args.Y >= 0 && args.Y <= this.textEditor.Allocation.Height) {
 				// folding marker
 				int lineNr = args.LineNumber;
-				foreach (KeyValuePair<Rectangle, FoldSegment> shownFolding in GetFoldRectangles (lineNr)) {
-					if (shownFolding.Key.Contains ((int)(args.X + this.XOffset), (int)args.Y)) {
-						ShowTooltip (shownFolding.Value.Segment, shownFolding.Key);
+				foreach (var shownFolding in GetFoldRectangles (lineNr)) {
+					if (shownFolding.Item1.Contains ((int)(args.X + this.XOffset), (int)args.Y)) {
+						ShowTooltip (shownFolding.Item2.Segment, shownFolding.Item1);
 						return;
 					}
 				}
@@ -2235,46 +2237,53 @@ namespace Mono.TextEditor
 			cr.Fill ();
 		}
 
-		List<System.Collections.Generic.KeyValuePair<Gdk.Rectangle, FoldSegment>> GetFoldRectangles (int lineNr)
+		IEnumerable<Tuple<Gdk.Rectangle, FoldSegment>> GetFoldRectangles (int lineNr)
 		{
-			List<System.Collections.Generic.KeyValuePair<Gdk.Rectangle, FoldSegment>> result = new List<System.Collections.Generic.KeyValuePair<Gdk.Rectangle, FoldSegment>> ();
 			if (lineNr < 0)
-				return result;
+				yield break;
 
-			DocumentLine line = lineNr <= Document.LineCount ? Document.GetLine (lineNr) : null;
+			var line = lineNr <= Document.LineCount ? Document.GetLine (lineNr) : null;
 			//			int xStart = XOffset;
 			int y = (int)(LineToY (lineNr) - textEditor.VAdjustment.Value);
 			//			Gdk.Rectangle lineArea = new Gdk.Rectangle (XOffset, y, textEditor.Allocation.Width - XOffset, LineHeight);
 			int width, height;
-			int xPos = (int)(this.XOffset + this.TextStartPosition - textEditor.HAdjustment.Value);
+			var xPos = this.XOffset + this.TextStartPosition - textEditor.HAdjustment.Value;
 
-			if (line == null) {
-				return result;
-			}
+			if (line == null)
+				yield break;
 
-			IEnumerable<FoldSegment> foldings = Document.GetStartFoldings (line);
+			var foldings = Document.GetStartFoldings (line);
 			int offset = line.Offset;
+			double foldXMargin = foldMarkerXMargin * textEditor.Options.Zoom;
 			restart:
-			using (var calcLayout = PangoUtil.CreateLayout (textEditor)) {
-				calcLayout.FontDescription = textEditor.Options.Font;
-				calcLayout.Tabs = this.tabArray;
-				foreach (FoldSegment folding in foldings) {
+			using (var calcTextLayout = PangoUtil.CreateLayout (textEditor))
+			using (var calcFoldingLayout = PangoUtil.CreateLayout (textEditor)) {
+				calcTextLayout.FontDescription = textEditor.Options.Font;
+				calcTextLayout.Tabs = this.tabArray;
+
+				calcFoldingLayout.FontDescription = markerLayout.FontDescription;
+				calcFoldingLayout.Tabs = this.tabArray;
+				foreach (var folding in foldings) {
 					int foldOffset = folding.StartLine.Offset + folding.Column - 1;
 					if (foldOffset < offset)
 						continue;
 
 					if (folding.IsFolded) {
 						var txt = Document.GetTextAt (offset, System.Math.Max (0, System.Math.Min (foldOffset - offset, Document.TextLength - offset)));
-						calcLayout.SetText (txt);
-						calcLayout.GetPixelSize (out width, out height);
-						xPos += width;
+						calcTextLayout.SetText (txt);
+						calcTextLayout.GetSize (out width, out height);
+						xPos += width / Pango.Scale.PangoScale;
 						offset = folding.EndLine.Offset + folding.EndColumn;
 
-						calcLayout.SetText (folding.Description);
-						calcLayout.GetPixelSize (out width, out height);
-						Rectangle foldingRectangle = new Rectangle (xPos, y, (int)(width - 1 + foldMarkerXMargin * textEditor.Options.Zoom * 2), (int)this.LineHeight - 1);
-						result.Add (new KeyValuePair<Rectangle, FoldSegment> (foldingRectangle, folding));
-						xPos += width;
+						calcFoldingLayout.SetText (folding.Description);
+
+						calcFoldingLayout.GetSize (out width, out height);
+
+						var pixelWidth = width / Pango.Scale.PangoScale + foldXMargin * 2;
+
+						var foldingRectangle = new Rectangle ((int)xPos, y, (int)pixelWidth, (int)LineHeight - 1);
+						yield return Tuple.Create (foldingRectangle, folding);
+						xPos += pixelWidth;
 						if (folding.EndLine != line) {
 							line = folding.EndLine;
 							foldings = Document.GetStartFoldings (line);
@@ -2283,7 +2292,6 @@ namespace Mono.TextEditor
 					}
 				}
 			}
-			return result;
 		}
 
 		List<TextSegment> selectedRegions = new List<TextSegment> ();
@@ -2886,15 +2894,15 @@ namespace Mono.TextEditor
 					var translatedStartIndex = TranslateToUTF8Index (lineChars, (uint)startIndex, ref curChunkIndex, ref byteChunkIndex);
 					var translatedEndIndex = TranslateToUTF8Index (lineChars, (uint)endIndex, ref curChunkIndex, ref byteChunkIndex);
 
-					if (chunkStyle.Bold) {
-						Pango.AttrWeight attrWeight = new Pango.AttrWeight (Pango.Weight.Bold);
+					if (chunkStyle.FontWeight != Xwt.Drawing.FontWeight.Normal) {
+						Pango.AttrWeight attrWeight = new Pango.AttrWeight ((Pango.Weight)chunkStyle.FontWeight);
 						attrWeight.StartIndex = translatedStartIndex;
 						attrWeight.EndIndex = translatedEndIndex;
 						attributes.Add (attrWeight);
 					}
 
-					if (chunkStyle.Italic) {
-						Pango.AttrStyle attrStyle = new Pango.AttrStyle (Pango.Style.Italic);
+					if (chunkStyle.FontStyle != Xwt.Drawing.FontStyle.Normal) {
+						Pango.AttrStyle attrStyle = new Pango.AttrStyle ((Pango.Style)chunkStyle.FontStyle);
 						attrStyle.StartIndex = translatedStartIndex;
 						attrStyle.EndIndex = translatedEndIndex;
 						attributes.Add (attrStyle);

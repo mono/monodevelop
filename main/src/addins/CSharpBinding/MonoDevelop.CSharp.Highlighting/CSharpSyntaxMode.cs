@@ -861,11 +861,17 @@ namespace MonoDevelop.CSharp.Highlighting
 				}
 					
 				foreach (Span span in spanStack) {
+					if (span is ElseBlockSpan) {
+						result &= ((ElseBlockSpan)span).IsValid;
+						break;
+					}
 					if (span is IfBlockSpan) {
 						result &= ((IfBlockSpan)span).IsValid;
+						break;
 					}
 					if (span is ElseIfBlockSpan) {
 						result &= ((ElseIfBlockSpan)span).IsValid;
+						break;
 					}
 				}
 					

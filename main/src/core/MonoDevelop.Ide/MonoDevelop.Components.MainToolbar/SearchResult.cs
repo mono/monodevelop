@@ -58,7 +58,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public virtual string GetDescriptionMarkupText (Widget widget)
 		{
-			return GLib.Markup.EscapeText (Description);
+			return AmbienceService.EscapeText (Description);
 		}
 
 

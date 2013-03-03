@@ -109,13 +109,13 @@ namespace MonoDevelop.ValaBinding.Parser
 			List<Afrodite.Symbol> nodes = new List<Afrodite.Symbol> ();
 			if (!DepsInstalled){ return nodes; }
 			
-			using (Afrodite.Ast parseTree = engine.TryAcquireAst ()) {
+			using (Afrodite.CodeDom parseTree = engine.TryAcquireCodeDom ()) {
 				if (null != parseTree) {
 					Afrodite.Symbol symbol = parseTree.GetSymbolForNameAndPath (typename, filename, linenum, column);
 					if (null == symbol){ LoggingService.LogDebug ("CompleteType: Unable to lookup {0} in {1} at {2}:{3}", typename, filename, linenum, column); }
 					else{ nodes = symbol.Children; }
 				} else {
-					LoggingService.LogDebug ("CompleteType: Unable to acquire ast");
+					LoggingService.LogDebug ("CompleteType: Unable to acquire codedom");
 				}
 			}
 			
@@ -170,7 +170,7 @@ namespace MonoDevelop.ValaBinding.Parser
 			if (!DepsInstalled){ return nodes; }
 			
 			
-			using (Afrodite.Ast parseTree = engine.TryAcquireAst ()) {
+			using (Afrodite.CodeDom parseTree = engine.TryAcquireCodeDom ()) {
 				if (null != parseTree) {
 					LoggingService.LogDebug ("Complete: Looking up symbol at {0}:{1}:{2}", filename, line, column);
 					Afrodite.Symbol sym = parseTree.GetSymbolForNameAndPath (symbol, filename, line, column);
@@ -180,7 +180,7 @@ namespace MonoDevelop.ValaBinding.Parser
 						AddResults (nodes, results);
 					}
 				} else {
-					LoggingService.LogDebug ("Complete: Unable to acquire ast");
+					LoggingService.LogDebug ("Complete: Unable to acquire codedom");
 				}
 			}
 			
@@ -191,14 +191,14 @@ namespace MonoDevelop.ValaBinding.Parser
 		{
 			if (!DepsInstalled){ return null; }
 			
-			using (Afrodite.Ast parseTree = engine.TryAcquireAst ()) {
+			using (Afrodite.CodeDom parseTree = engine.TryAcquireCodeDom ()) {
 				if (null != parseTree) {
 					LoggingService.LogDebug ("GetFunction: Looking up symbol at {0}:{1}:{2}", filename, line, column);
 					Afrodite.Symbol symbol = parseTree.GetSymbolForNameAndPath (name, filename, line, column);
 					LoggingService.LogDebug ("GetFunction: Got {0}", (null == symbol)? "null": symbol.Name);
 					return symbol;
 				} else {
-					LoggingService.LogDebug ("GetFunction: Unable to acquire ast");
+					LoggingService.LogDebug ("GetFunction: Unable to acquire codedom");
 				}
 			}
 
@@ -212,16 +212,16 @@ namespace MonoDevelop.ValaBinding.Parser
 		{
 			if (!DepsInstalled){ return symbol; }
 			
-			using (Afrodite.Ast parseTree = engine.TryAcquireAst ()) {
+			using (Afrodite.CodeDom parseTree = engine.TryAcquireCodeDom ()) {
 				if (null != parseTree) {
 					LoggingService.LogDebug ("GetExpressionType: Looking up symbol at {0}:{1}:{2}", filename, line, column);
 					Afrodite.Symbol sym = parseTree.LookupSymbolAt (filename, line, column);
 					if (null != sym) {
-						LoggingService.LogDebug ("Got {0}", sym.DataType.TypeName);
-						return sym.DataType.TypeName;
+						LoggingService.LogDebug ("Got {0}", sym.SymbolType.TypeName);
+						return sym.SymbolType.TypeName;
 					}
 				} else {
-					LoggingService.LogDebug ("GetExpressionType: Unable to acquire ast");
+					LoggingService.LogDebug ("GetExpressionType: Unable to acquire codedom");
 				}
 			}
 
@@ -236,12 +236,12 @@ namespace MonoDevelop.ValaBinding.Parser
 			List<Afrodite.Symbol> overloads = new List<Afrodite.Symbol> ();
 			if (!DepsInstalled){ return overloads; }
 			
-			using (Afrodite.Ast parseTree = engine.TryAcquireAst ()) {
+			using (Afrodite.CodeDom parseTree = engine.TryAcquireCodeDom ()) {
 				if (null != parseTree) {
 					Afrodite.Symbol symbol = parseTree.GetSymbolForNameAndPath (name, filename, line, column);
 					overloads = new List<Afrodite.Symbol> (){ symbol };
 				} else {
-					LoggingService.LogDebug ("GetOverloads: Unable to acquire ast");
+					LoggingService.LogDebug ("GetOverloads: Unable to acquire codedom");
 				}
 			}
 			
@@ -255,8 +255,8 @@ namespace MonoDevelop.ValaBinding.Parser
 		{
 			List<Afrodite.Symbol> functions = new List<Afrodite.Symbol> ();
 			foreach (Afrodite.Symbol node in CompleteType (typename, filename, line, column, null)) {
-				if ("constructor".Equals (node.SymbolType, StringComparison.OrdinalIgnoreCase) || 
-				      "creationmethod".Equals (node.SymbolType, StringComparison.OrdinalIgnoreCase)) {
+				if ("constructor".Equals (node.MemberType, StringComparison.OrdinalIgnoreCase) || 
+				      "creationmethod".Equals (node.MemberType, StringComparison.OrdinalIgnoreCase)) {
 					functions.Add (node);
 				}
 			}
@@ -292,12 +292,12 @@ namespace MonoDevelop.ValaBinding.Parser
 				     parent = parent.Parent)
 				{
 					AddResults (parent.Children.FindAll (delegate (Afrodite.Symbol sym){
-						return 0 <= Array.IndexOf (containerTypes, sym.SymbolType.ToLower ());
+						return 0 <= Array.IndexOf (containerTypes, sym.MemberType.ToLower ());
 					}), results);
 				}
 			}
 				
-			using (Afrodite.Ast parseTree = engine.TryAcquireAst ()) {
+			using (Afrodite.CodeDom parseTree = engine.TryAcquireCodeDom ()) {
 				if (null == parseTree){ return; }
 				
 				AddResults (GetNamespacesForFile (filename), results);
@@ -306,13 +306,14 @@ namespace MonoDevelop.ValaBinding.Parser
 				if (null != file) {
 					Afrodite.Symbol parent;
 					foreach (Afrodite.DataType directive in file.UsingDirectives) {
+						if (directive.Symbol == null) { continue; }
 						Afrodite.Symbol ns = parseTree.Lookup (directive.Symbol.FullyQualifiedName, out parent);
 						if (null != ns) {
 							containers = new List<Afrodite.Symbol> ();
 							AddResults (new Afrodite.Symbol[]{ ns }, results);
 							foreach (Afrodite.Symbol child in ns.Children) {
 								foreach (string containerType in containerTypes) {
-									if (containerType.Equals (child.SymbolType, StringComparison.OrdinalIgnoreCase))
+									if (containerType.Equals (child.MemberType, StringComparison.OrdinalIgnoreCase))
 										containers.Add (child);
 								}
 							}
@@ -387,7 +388,7 @@ namespace MonoDevelop.ValaBinding.Parser
 			
 			if (!DepsInstalled){ return classes; }
 			
-			using (Afrodite.Ast parseTree = engine.TryAcquireAst ()) {
+			using (Afrodite.CodeDom parseTree = engine.TryAcquireCodeDom ()) {
 				if (null != parseTree){
 					Afrodite.SourceFile sourceFile = parseTree.LookupSourceFile (file);
 					if (null != sourceFile) {
@@ -395,7 +396,7 @@ namespace MonoDevelop.ValaBinding.Parser
 						if (null != symbols) {
 							foreach (Afrodite.Symbol symbol in symbols) {
 								foreach (string containerType in desiredTypes) {
-									if (containerType.Equals (symbol.SymbolType, StringComparison.OrdinalIgnoreCase))
+									if (containerType.Equals (symbol.MemberType, StringComparison.OrdinalIgnoreCase))
 										classes.Add (symbol);
 								}
 							}
@@ -404,7 +405,7 @@ namespace MonoDevelop.ValaBinding.Parser
 						LoggingService.LogDebug ("GetClassesForFile: Unable to lookup source file {0}", file);
 					}
 				} else {
-					LoggingService.LogDebug ("GetClassesForFile: Unable to acquire ast");
+					LoggingService.LogDebug ("GetClassesForFile: Unable to acquire codedom");
 				}
 				
 			}

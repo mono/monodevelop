@@ -40,8 +40,23 @@ namespace MonoDevelop.Core
 		{
 			IsWindows = Path.DirectorySeparatorChar == '\\';
 			IsMac = !IsWindows && IsRunningOnMac ();
+
+			// needed to make sure various p/invokes work
+			if (Platform.IsWindows) {
+				InitWindowsNativeLibs ();
+			} else if (Platform.IsMac) {
+				InitMacFoundation ();
+			}
 		}
-		
+
+		public static void Initialize ()
+		{
+			//no-op, triggers static ctor
+		}
+
+		[DllImport ("libc")]
+		static extern int uname (IntPtr buf);
+
 		//From Managed.Windows.Forms/XplatUI
 		static bool IsRunningOnMac ()
 		{
@@ -50,19 +65,50 @@ namespace MonoDevelop.Core
 				buf = Marshal.AllocHGlobal (8192);
 				// This is a hacktastic way of getting sysname from uname ()
 				if (uname (buf) == 0) {
-					string os = System.Runtime.InteropServices.Marshal.PtrToStringAnsi (buf);
+					string os = Marshal.PtrToStringAnsi (buf);
 					if (os == "Darwin")
 						return true;
 				}
 			} catch {
 			} finally {
 				if (buf != IntPtr.Zero)
-					System.Runtime.InteropServices.Marshal.FreeHGlobal (buf);
+					Marshal.FreeHGlobal (buf);
 			}
 			return false;
 		}
-		
+
 		[DllImport ("libc")]
-		static extern int uname (IntPtr buf);
+		extern static IntPtr dlopen (string name, int mode);
+
+		static void InitMacFoundation ()
+		{
+			dlopen ("/System/Library/Frameworks/Foundation.framework/Foundation", 0x1);
+		}
+
+		[DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		static extern bool SetDllDirectory (string lpPathName);
+
+		static void InitWindowsNativeLibs ()
+		{
+			string location = null;
+			using (var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Xamarin\GtkSharp\InstallFolder")) {
+				if (key != null) {
+					location = key.GetValue (null) as string;
+				}
+			}
+			if (location == null || !File.Exists (Path.Combine (location, "bin", "libgtk-win32-2.0-0.dll"))) {
+				LoggingService.LogError ("Did not find registered GTK# installation");
+				return;
+			}
+			var path = Path.Combine (location, @"bin");
+			try {
+				if (SetDllDirectory (path)) {
+					return;
+				}
+			} catch (EntryPointNotFoundException) {
+			}
+			LoggingService.LogError ("Unable to set GTK# dll directory");
+		}
 	}
 }

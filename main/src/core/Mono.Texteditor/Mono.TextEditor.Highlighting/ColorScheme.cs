@@ -32,6 +32,7 @@ using System.Xml.XPath;
 using System.Reflection;
 using System.Text;
 using System.Xml;
+using Xwt.Drawing;
 
 namespace Mono.TextEditor.Highlighting
 {
@@ -717,10 +718,15 @@ namespace Mono.TextEditor.Highlighting
 							colorString.Append (", ");
 						colorString.Append (string.Format ("\"back\":\"{0}\"", ColorToMarkup (thisValue.Background)));
 					}
-					if (thisValue.Weight != TextWeight.None) {
+					if (thisValue.FontWeight != FontWeight.Normal) {
 						if (colorString.Length > 0)
 							colorString.Append (", ");
-						colorString.Append (string.Format ("\"weight\":\"{0}\"", thisValue.Weight));
+						colorString.Append (string.Format ("\"weight\":\"{0}\"", thisValue.FontWeight));
+					}
+					if (thisValue.FontStyle != FontStyle.Normal) {
+						if (colorString.Length > 0)
+							colorString.Append (", ");
+						colorString.Append (string.Format ("\"style\":\"{0}\"", thisValue.FontStyle));
 					}
 					if (!first) {
 						writer.WriteLine (",");

@@ -29,14 +29,15 @@ using System.Collections.Generic;
 using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using MonoDevelop.Components.Extensions;
 
 namespace MonoDevelop.Ide.Projects
 {
 	public partial class ProjectFileSelectorDialog : Gtk.Dialog
 	{
-		List<string> filters;
-		string defaultFilterName;
-		string defaultFilterPattern;
+		List<SelectFileDialogFilter> filters;
+		SelectFileDialogFilter defaultFilter;
+		string [] buildActions;
 		Project project;
 		TreeStore dirStore = new TreeStore (typeof (string), typeof (FilePath));
 		ListStore fileStore = new ListStore (typeof (ProjectFile), typeof (Gdk.Pixbuf));
@@ -49,12 +50,17 @@ namespace MonoDevelop.Ide.Projects
 			: this (project, GettextCatalog.GetString ("All files"), "*")
 		{
 		}
-		
+
 		public ProjectFileSelectorDialog (Project project, string defaultFilterName, string defaultFilterPattern)
+			: this (project, defaultFilterName, defaultFilterPattern, null)
+		{
+		}
+
+		public ProjectFileSelectorDialog (Project project, string defaultFilterName, string defaultFilterPattern, string [] buildActions)
 		{
 			this.project = project;
-			this.defaultFilterName = defaultFilterName;
-			this.defaultFilterPattern = defaultFilterPattern ?? "*";
+			this.defaultFilter = new SelectFileDialogFilter (defaultFilterName, defaultFilterPattern ?? "*");
+			this.buildActions = buildActions;
 			
 			this.Build();
 			
@@ -215,16 +221,16 @@ namespace MonoDevelop.Ide.Projects
 		public void AddFileFilter (string name, string pattern)
 		{
 			if (filters == null) {
-				filters = new List<string> ();
-				if (defaultFilterPattern != null) {
-					filters.Add (defaultFilterPattern);
-					fileTypeCombo.AppendText (defaultFilterName);
+				filters = new List<SelectFileDialogFilter> ();
+				if (defaultFilter != null) {
+					filters.Add (defaultFilter);
+					fileTypeCombo.AppendText (defaultFilter.Name);
 				}
 				typeBox.Visible = false;
 				typeBox.ShowAll ();
 			}
-			
-			filters.Add (name);
+
+			filters.Add (new SelectFileDialogFilter (name, pattern));
 			fileTypeCombo.AppendText (pattern);
 		}
 		
@@ -246,9 +252,9 @@ namespace MonoDevelop.Ide.Projects
 		{
 			fileStore.Clear ();
 			
-			string pattern = defaultFilterPattern;
+			string pattern = defaultFilter.Patterns [0];
 			if (filters != null) {
-				pattern = filters[fileTypeCombo.Active];
+				pattern = filters[fileTypeCombo.Active].Patterns [0];
 			}
 			pattern = System.Text.RegularExpressions.Regex.Escape (pattern);
 			pattern = pattern.Replace ("\\*",".*");
@@ -285,6 +291,37 @@ namespace MonoDevelop.Ide.Projects
 			buttonOk.Sensitive = selected;
 			this.DefaultResponse = selected? ResponseType.Ok : ResponseType.Cancel;
 			SelectedFile = selected? (ProjectFile) fileStore.GetValue (iter, 0) : null;
+		}
+
+		protected void OnAddFileButtonClicked (object sender, EventArgs e)
+		{
+			var baseDirectory = GetSelectedDirectory ();
+			var fileDialog = new AddFileDialog (GettextCatalog.GetString ("Add files")) {
+				CurrentFolder = baseDirectory,
+				SelectMultiple = true,
+				TransientFor = IdeApp.Workbench.RootWindow,
+				BuildActions = buildActions ?? project.GetBuildActions ()
+			};
+
+			if (defaultFilter != null) {
+				fileDialog.Filters.Clear ();
+				fileDialog.Filters.Add (defaultFilter);
+				fileDialog.DefaultFilter = defaultFilter;
+			}
+
+			if (!fileDialog.Run ())
+				return;
+
+			var buildAction = fileDialog.OverrideAction;
+			if (buildActions != null && buildActions.Length > 0 && String.IsNullOrEmpty (buildAction))
+				buildAction = buildActions [0];
+
+			IdeApp.ProjectOperations.AddFilesToProject (project,
+				fileDialog.SelectedFiles, baseDirectory, buildAction);
+
+			IdeApp.ProjectOperations.Save (project);
+
+			UpdateFileList (sender, e);
 		}
 	}
 }

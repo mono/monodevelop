@@ -29,42 +29,42 @@
 </Begin>
 		<End>qkl6ynrv7y234crtnq238rtxck3</End>
 	</Span>
-	<Span color = "template.directive" tagColor="template.directive" rule = "directive">
+	<Span color = "Razor Code" tagColor="Html Server-Side Script" rule = "directive">
 		<Begin>&lt;#@</Begin>
 		<End>#&gt;</End>
 	</Span>
 
 	<Rule name="t4">
 		<!-- directives -->
-		<Span color = "template.region" tagColor="Html Server-Side Script" rule = "directive">
+		<Span color = "Razor Code" tagColor="Html Server-Side Script" rule = "directive">
 			<Begin>&lt;#@</Begin>
 			<End>#&gt;</End>
 		</Span>
 		
 		<!-- expressions -->
-		<Span color = "template" tagColor="Html Server-Side Script" rule = "csharp">
+		<Span color = "Razor Code" tagColor="Html Server-Side Script" rule = "csharp">
 			<Begin>&lt;#=</Begin>
 			<End>#&gt;</End>
 		</Span>
 		
-		<Span color = "template" tagColor="Html Server-Side Script" rule = "csharp">
+		<Span color = "Razor Code" tagColor="Html Server-Side Script" rule = "csharp">
 			<Begin>&lt;#+</Begin>
 			<End>#&gt;</End>
 		</Span>
 		
-		<Span color = "template" tagColor="Html Server-Side Script" rule = "csharp">
+		<Span color = "Razor Code" tagColor="Html Server-Side Script" rule = "csharp">
 			<Begin>&lt;#</Begin>
 			<End>#&gt;</End>
 		</Span>
 	</Rule>
 	
 	<Rule name = "directive">
-		<Span color = "string" rule="InLiteral">
+		<Span color = "String" rule="InLiteral">
 			<Begin>&quot;</Begin>
 			<End>&quot;</End>
 		</Span>
 		
-		<Span color = "string" rule="InLiteral">
+		<Span color = "String" rule="InLiteral">
 			<Begin>&apos;</Begin>
 			<End>&apos;</End>
 		</Span>

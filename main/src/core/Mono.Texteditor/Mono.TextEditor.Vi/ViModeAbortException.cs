@@ -1,10 +1,10 @@
 //
-// TextWeight.cs
+// ViModeAbortException.cs
 //
 // Author:
-//       Mike Krüger <mkrueger@xamarin.com>
+//       Tim Kellogg <timothy.kellogg@gmail.com>
 //
-// Copyright (c) 2013 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2013 Tim Kellogg
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,24 +23,32 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Xml.Linq;
-using System.Xml.XPath;
-using System.Reflection;
 
-namespace Mono.TextEditor.Highlighting
+namespace Mono.TextEditor.Vi
 {
-	[Obsolete("Will be removed - use FontWeight")]
-	[Flags]
-	public enum TextWeight {
-		None,
-		Bold,
-		Italic,
-		Underline
+	/// <summary>
+	/// Thrown to indicate that the vi parser was unable to recognize the key
+	/// sequence and should abort quietly.
+	/// </summary>
+	public class ViModeAbortException : Exception
+	{
+		/// <summary>
+		/// Thrown to indicate that the vi parser was unable to recognize the key
+		/// sequence and should abort quietly.
+		/// </summary>
+		public ViModeAbortException ()
+		{
+		}
+
+		/// <summary>
+		/// Thrown to indicate that the vi parser was unable to recognize the key
+		/// sequence and should abort quietly.
+		/// </summary>
+		/// <param name="reason">The reason for the abort. May be displayed to the user</param>
+		public ViModeAbortException (string reason) : base(reason)
+		{
+		}
 	}
-	
 }
+

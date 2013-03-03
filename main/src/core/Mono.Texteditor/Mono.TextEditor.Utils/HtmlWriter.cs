@@ -62,10 +62,10 @@ namespace Mono.TextEditor.Utils
 					var chunkStyle = style.GetChunkStyle (chunk);
 					if (start < end) {
 						htmlText.Append ("<SPAN style = '");
-						if (chunkStyle.Bold)
-							htmlText.Append ("font-weight:bold;");
-						if (chunkStyle.Italic)
-							htmlText.Append ("font-style:italic;");
+						if (chunkStyle.FontWeight != Xwt.Drawing.FontWeight.Normal)
+							htmlText.Append ("font-weight:" + ((int)chunkStyle.FontWeight) + ";");
+						if (chunkStyle.FontStyle != Xwt.Drawing.FontStyle.Normal)
+							htmlText.Append ("font-style:" + chunkStyle.FontStyle.ToString ().ToLower () + ";");
 						htmlText.Append ("color:" + ((HslColor)chunkStyle.Foreground).ToPangoString () + ";");
 						htmlText.Append ("' >");
 						AppendHtmlText (htmlText, doc, options, start, end);

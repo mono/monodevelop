@@ -134,15 +134,15 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			                                       colorbuttonBg.Alpha / (double)ushort.MaxValue);
 
 			if (checkbuttonBold.Active) {
-				newStyle.Weight |= TextWeight.Bold;
+				newStyle.FontWeight = Xwt.Drawing.FontWeight.Bold;
 			} else {
-				newStyle.Weight &= ~TextWeight.Bold;
+				newStyle.FontWeight = Xwt.Drawing.FontWeight.Normal;
 			}
 
 			if (checkbuttonItalic.Active) {
-				newStyle.Weight |= TextWeight.Italic;
+				newStyle.FontStyle = Xwt.Drawing.FontStyle.Italic;
 			} else {
-				newStyle.Weight &= ~TextWeight.Italic;
+				newStyle.FontStyle = Xwt.Drawing.FontStyle.Normal;
 			}
 
 			colorStore.SetValue (iter, 2, newStyle);
@@ -169,8 +169,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			var chunkStyle = (ChunkStyle)colorStore.GetValue (iter, 2);
 			colorbuttonFg.Color = (HslColor)chunkStyle.Foreground;
 			colorbuttonBg.Color = (HslColor)chunkStyle.Background;
-			checkbuttonBold.Active = chunkStyle.Bold;
-			checkbuttonItalic.Active = chunkStyle.Italic;
+			checkbuttonBold.Active = chunkStyle.FontWeight == Xwt.Drawing.FontWeight.Bold;
+			checkbuttonItalic.Active = chunkStyle.FontStyle == Xwt.Drawing.FontStyle.Italic;
 			
 			this.label4.Visible = this.colorbuttonFg.Visible = true;
 			this.colorbuttonFg.Sensitive = true;

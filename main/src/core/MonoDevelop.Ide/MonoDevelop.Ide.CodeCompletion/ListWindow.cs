@@ -417,9 +417,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return KeyActions.CloseWindow | KeyActions.Process;
 
 			// special case end with punctuation like 'param:' -> don't input double punctuation, otherwise we would end up with 'param::'
-			if (char.IsPunctuation (keyChar)) {
+			if (char.IsPunctuation (keyChar) && keyChar != '_') {
 				foreach (var item in FilteredItems) {
-					if (DataProvider.GetText (item).EndsWith (keyChar.ToString ())) {
+					if (DataProvider.GetText (item).EndsWith (keyChar.ToString (), StringComparison.Ordinal)) {
 						list.SelectedItem = item;
 						return KeyActions.Complete | KeyActions.CloseWindow | KeyActions.Ignore;
 					}

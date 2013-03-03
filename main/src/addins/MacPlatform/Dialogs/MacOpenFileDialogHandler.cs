@@ -73,15 +73,17 @@ namespace MonoDevelop.MacIntegration
 				
 				if (!directoryMode) {
 					var filterPopup = MacSelectFileDialogHandler.CreateFileFilterPopup (data, panel);
-					
-					var filterLabel = new MDAlignment (new MDLabel (GettextCatalog.GetString ("Show files:")), true);
-					var filterBox = new MDBox (LayoutDirection.Horizontal, 2, 0) {
-						{ filterLabel },
-						{ new MDAlignment (filterPopup, true) { MinWidth = 200 } }
-					};
-					labels.Add (filterLabel);
-					box.Add (filterBox);
-					
+
+					if (filterPopup != null) {
+						var filterLabel = new MDAlignment (new MDLabel (GettextCatalog.GetString ("Show files:")), true);
+						var filterBox = new MDBox (LayoutDirection.Horizontal, 2, 0) {
+							{ filterLabel },
+							{ new MDAlignment (filterPopup, true) { MinWidth = 200 } }
+						};
+						labels.Add (filterLabel);
+						box.Add (filterBox);
+					}
+
 					if (data.ShowEncodingSelector) {
 						encodingSelector = new SelectEncodingPopUpButton (data.Action != Gtk.FileChooserAction.Save);
 						encodingSelector.SelectedEncodingId = data.Encoding != null ? data.Encoding.CodePage : 0;

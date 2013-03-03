@@ -90,10 +90,10 @@
 		{ "name": "Punctuation", "fore":"monokai-white" },
 		{ "name": "Punctuation(Brackets)", "fore":"monokai-white" },
 
-		{ "name": "Comment(Line)", "fore":"monokai-comment", "weight":"italic" },
-		{ "name": "Comment(Block)", "fore":"monokai-comment", "weight":"italic" },
-		{ "name": "Comment(Doc)", "fore":"monokai-comment", "weight":"italic" },
-		{ "name": "Comment(DocTag)", "fore":"monokai-comment", "weight":"italic" },
+		{ "name": "Comment(Line)", "fore":"monokai-comment" },
+		{ "name": "Comment(Block)", "fore":"monokai-comment" },
+		{ "name": "Comment(Doc)", "fore":"monokai-comment" },
+		{ "name": "Comment(DocTag)", "fore":"monokai-comment" },
 		{ "name": "Comment Tag", "fore":"monokai-comment", "weight":"bold" },
 		{ "name": "Excluded Code", "fore":"monokai-comment" },
 

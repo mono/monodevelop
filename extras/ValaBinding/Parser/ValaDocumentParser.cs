@@ -66,7 +66,7 @@ namespace MonoDevelop.ValaBinding.Parser
 					    child.SourceReferences[0].File != node.SourceReferences[0].File){ continue; }
 					lastLine = Math.Max (lastLine, child.SourceReferences[0].LastLine+1);
 					
-					switch (child.SymbolType.ToLower ()) {
+					switch (child.MemberType.ToLower ()) {
 					case "class":
 						members.Add (new DomType (new CompilationUnit (fileName), ClassType.Class, child.Name, new DomLocation (child.SourceReferences[0].FirstLine, 1), string.Empty, new DomRegion (child.SourceReferences[0].FirstLine, int.MaxValue, child.SourceReferences[0].LastLine, int.MaxValue), new List<IMember> ()));
 						break;
@@ -103,7 +103,7 @@ namespace MonoDevelop.ValaBinding.Parser
 						members.Add (new DomEvent (child.Name, Modifiers.None, new DomLocation (child.SourceReferences[0].FirstLine, 1), new DomReturnType ()));
 						break;
 					default:
-						MonoDevelop.Core.LoggingService.LogDebug ("ValaDocumentParser: Unsupported member type: {0}", child.SymbolType);
+						MonoDevelop.Core.LoggingService.LogDebug ("ValaDocumentParser: Unsupported member type: {0}", child.MemberType);
 						break;
 					}// Switch on node type
 				}// Collect members

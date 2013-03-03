@@ -231,6 +231,19 @@ namespace MonoDevelop.Ide.TypeSystem
 							CheckModifiedFile (ctx);
 					}
 				}
+
+				foreach (var content in projectContents.Values.ToArray ()) {
+					var files = new List<ProjectFile> ();
+					foreach (var file in e) {
+						var f = content.Project.GetProjectFile (file.FileName);
+						if (f == null || f.BuildAction != BuildAction.Compile)
+							continue;
+						files.Add (f);
+					}
+					if (files.Count > 0)
+						QueueParseJob (content, files);
+				}
+
 			};
 			if (IdeApp.ProjectOperations != null) {
 				IdeApp.ProjectOperations.EndBuild += HandleEndBuild;

@@ -102,10 +102,10 @@
 		{ "name": "Punctuation", "fore":"text-black" },
 		{ "name": "Punctuation(Brackets)", "fore":"text-black" },
 
-		{ "name": "Comment(Line)", "fore":"comment-gray", "weight":"italic" },
-		{ "name": "Comment(Block)", "fore":"comment-gray", "weight":"italic" },
-		{ "name": "Comment(Doc)", "fore":"comment-gray", "weight":"italic" },
-		{ "name": "Comment(DocTag)", "fore":"comment-gray", "weight":"italic" },
+		{ "name": "Comment(Line)", "fore":"comment-gray", "style":"italic" },
+		{ "name": "Comment(Block)", "fore":"comment-gray", "style":"italic" },
+		{ "name": "Comment(Doc)", "fore":"comment-gray", "style":"italic" },
+		{ "name": "Comment(DocTag)", "fore":"comment-gray", "style":"italic" },
 		{ "name": "Comment Tag", "fore":"comment-gray", "weight":"bold" },
 		{ "name": "Excluded Code", "fore":"comment-gray" },
 
@@ -140,7 +140,7 @@
 
 		{ "name": "Completion Text", "fore":"#434343", "back":"#F0F6F8" },
 		{ "name": "Completion Selected Text", "fore":"#f8fcfc", "back":"#dff4f0" },
-		{ "name": "Completion Selected Text(Inactive)", "fore":"#434343", "back":"white" },
+		{ "name": "Completion Selected Text(Inactive)", "fore":"#434343", "back":"#FFFFFF" },
 
 		{ "name": "Keyword(Access)", "fore":"keyword-teal" },
 		{ "name": "Keyword(Type)", "fore":"skyblue2" },

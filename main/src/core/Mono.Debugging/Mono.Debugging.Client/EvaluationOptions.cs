@@ -48,7 +48,6 @@ namespace Mono.Debugging.Client
 				ops.GroupPrivateMembers = true;
 				ops.GroupStaticMembers = true;
 				ops.GroupUserPrivateMembers = false;
-				ops.AllowImplicitTypeLoading = true;
 				ops.UseExternalTypeResolver = true;
 				ops.IntegerDisplayFormat = IntegerDisplayFormat.Decimal;
 				ops.CurrentExceptionTag = "$exception";
@@ -100,8 +99,9 @@ namespace Mono.Debugging.Client
 		public bool GroupStaticMembers { get; set; }
 		
 		public bool UseExternalTypeResolver { get; set; }
-		
-		public bool AllowImplicitTypeLoading { get; set; }
+
+		[Obsolete ("Use the type's BeforeFieldInit attribute instead")]
+		public bool AllowImplicitTypeLoading { get { return true; } set { } }
 		
 		public IntegerDisplayFormat IntegerDisplayFormat { get; set; }
 		
