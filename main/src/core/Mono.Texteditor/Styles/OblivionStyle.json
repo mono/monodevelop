@@ -118,7 +118,7 @@
 
 		{ "name": "Number", "fore":"butter2"},
 
-		{ "name": "Preprocessor", "fore":"skyblue1", "weight":"italic"  },
+		{ "name": "Preprocessor", "fore":"skyblue1", "style":"italic"  },
 
 		{ "name": "Xml Text", "fore":"aluminium2" },
 		{ "name": "Xml Delimiter", "fore":"aluminium2" },
@@ -170,17 +170,17 @@
 		{ "name": "User Types(Value types)", "fore":"chameleon1" },
 		{ "name": "User Types(Type parameters)", "fore":"chameleon1" },
 
-		{ "name": "User Field Usage", "fore":"aluminium2", "weight":"italic" },
-		{ "name": "User Field Declaration", "fore":"aluminium2", "weight":"italic" },
+		{ "name": "User Field Usage", "fore":"aluminium2", "style":"italic" },
+		{ "name": "User Field Declaration", "fore":"aluminium2", "style":"italic" },
 
-		{ "name": "User Property Usage", "fore":"aluminium2", "weight":"italic" },
-		{ "name": "User Property Declaration", "fore":"aluminium2", "weight":"italic" },
+		{ "name": "User Property Usage", "fore":"aluminium2", "style":"italic" },
+		{ "name": "User Property Declaration", "fore":"aluminium2", "style":"italic" },
 
-		{ "name": "User Event Usage", "fore":"aluminium2", "weight":"italic" },
-		{ "name": "User Event Declaration", "fore":"aluminium2", "weight":"italic" },
+		{ "name": "User Event Usage", "fore":"aluminium2", "style":"italic" },
+		{ "name": "User Event Declaration", "fore":"aluminium2", "style":"italic" },
 
-		{ "name": "User Method Usage", "fore":"aluminium2", "weight":"italic" },
-		{ "name": "User Method Declaration", "fore":"aluminium2", "weight":"italic" },
+		{ "name": "User Method Usage", "fore":"aluminium2", "style":"italic" },
+		{ "name": "User Method Declaration", "fore":"aluminium2", "style":"italic" },
 		
 		{ "name": "User Parameter Usage", "fore":"aluminium2" },
 		{ "name": "User Parameter Declaration", "fore":"aluminium2" },

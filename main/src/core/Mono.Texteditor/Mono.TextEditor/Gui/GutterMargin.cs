@@ -198,6 +198,9 @@ namespace Mono.TextEditor
 			lineNumberBgGC = editor.ColorStyle.LineNumbers.Background;
 			lineNumberGC = editor.ColorStyle.LineNumbers.Foreground;
 			gutterFont = Gtk.Widget.DefaultStyle.FontDescription.Copy ();
+			gutterFont.Weight = (Pango.Weight)editor.ColorStyle.LineNumbers.FontWeight;
+			gutterFont.Style =  (Pango.Style)editor.ColorStyle.LineNumbers.FontStyle;
+
 			if (Platform.IsWindows) {
 				gutterFont.Size = (int)(Pango.Scale.PangoScale * 8.0 * editor.Options.Zoom);
 			} else {
@@ -226,7 +229,6 @@ namespace Mono.TextEditor
 				// otherwise I get pango exceptions.
 				using (var layout = PangoUtil.CreateLayout (editor)) {
 					layout.FontDescription = gutterFont;
-
 					layout.Width = (int)Width;
 					layout.Alignment = Pango.Alignment.Right;
 					layout.SetText (line.ToString ());

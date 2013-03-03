@@ -235,6 +235,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			this.AllowGrow = false;
 			this.CanFocus = false;
 			this.CanDefault = false;
+			this.Events |= Gdk.EventMask.EnterNotifyMask; 
 			
 			headlabel = new MonoDevelop.Components.FixedWidthWrapLabel ();
 			headlabel.Indent = -20;

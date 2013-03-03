@@ -216,24 +216,26 @@ namespace MonoDevelop.SourceEditor
 		
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
-			const int edgeGap = 2;
-			int oldY, x, y;
-			
-			this.GetPosition (out x, out y);
-			oldY = y;
-			
-			Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (x, y));
-			if (allocation.Height <= geometry.Height && y + allocation.Height >= geometry.Y + geometry.Height - edgeGap)
-				y = geometry.Top + (geometry.Height - allocation.Height - edgeGap);
-			if (y < geometry.Top + edgeGap)
-				y = geometry.Top + edgeGap;
-			
-			if (y != oldY) {
-				Move (x, y);
-				// If the window is moved, hide the arrow since it will be pointing to the wrong place
-				ShowArrow = false;
+			if (MonoDevelop.Core.Platform.IsMac || MonoDevelop.Core.Platform.IsWindows) {
+				// fails on linux see: Bug 8481 - Debug value tooltips very often appear at the top-left corner of the screen instead of near the element to inspect 
+				const int edgeGap = 2;
+				int oldY, x, y;
+				
+				this.GetPosition (out x, out y);
+				oldY = y;
+				
+				Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (x, y));
+				if (allocation.Height <= geometry.Height && y + allocation.Height >= geometry.Y + geometry.Height - edgeGap)
+					y = geometry.Top + (geometry.Height - allocation.Height - edgeGap);
+				if (y < geometry.Top + edgeGap)
+					y = geometry.Top + edgeGap;
+				
+				if (y != oldY) {
+					Move (x, y);
+					// If the window is moved, hide the arrow since it will be pointing to the wrong place
+					ShowArrow = false;
+				}
 			}
-			
 			base.OnSizeAllocated (allocation);
 		}
 	}

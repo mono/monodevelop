@@ -80,6 +80,9 @@ namespace MonoDevelop.Ide
 				LoggingService.LogInfo ("Logging instrumentation service data to file: " + logFile);
 				InstrumentationService.StartAutoSave (logFile, 1000);
 			}
+
+			//ensure native libs initialized before we hit anything that p/invokes
+			Platform.Initialize ();
 			
 			Counters.Initialization.Trace ("Initializing GTK");
 			if (Platform.IsWindows) {
@@ -416,6 +419,7 @@ namespace MonoDevelop.Ide
 		internal static string[] gtkThemeFallbacks = new string[] {
 			"Gilouche", // SUSE
 			"Mint-X", // MINT
+			"Radiance", // Ubuntu 'light' theme (MD looks better with the light theme in 4.0 - if that changes switch this one)
 			"Clearlooks" // GTK theme
 		};
 

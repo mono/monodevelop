@@ -40,7 +40,6 @@ namespace Mono.Debugging.Evaluation
 		public RemoteRawValue (EvaluationContext gctx, IObjectSource source, object targetObject)
 		{
 			this.ctx = gctx.Clone ();
-			ctx.Options.AllowImplicitTypeLoading = true;
 			ctx.Options.AllowTargetInvoke = true;
 			ctx.Options.AllowMethodEvaluation = true;
 			this.targetObject = targetObject;

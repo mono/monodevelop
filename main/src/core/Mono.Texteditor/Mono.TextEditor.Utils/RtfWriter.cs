@@ -115,14 +115,14 @@ namespace Mono.TextEditor.Utils
 					int end = System.Math.Min (chunk.EndOffset, selection.EndOffset);
 					var chunkStyle = style.GetChunkStyle (chunk);
 					if (start < end) {
-						if (isBold != chunkStyle.Bold) {
-							rtfText.Append (chunkStyle.Bold ? @"\b" : @"\b0");
-							isBold = chunkStyle.Bold;
+						if (isBold != (chunkStyle.FontWeight == Xwt.Drawing.FontWeight.Bold)) {
+							isBold = chunkStyle.FontWeight == Xwt.Drawing.FontWeight.Bold;
+							rtfText.Append (isBold ? @"\b" : @"\b0");
 							appendSpace = true;
 						}
-						if (isItalic != chunkStyle.Italic) {
-							rtfText.Append (chunkStyle.Italic ? @"\i" : @"\i0");
-							isItalic = chunkStyle.Italic;
+						if (isItalic != (chunkStyle.FontStyle == Xwt.Drawing.FontStyle.Italic)) {
+							isItalic = chunkStyle.FontStyle == Xwt.Drawing.FontStyle.Italic;
+							rtfText.Append (isItalic ? @"\i" : @"\i0");
 							appendSpace = true;
 						}
 						var foreground = style.GetForeground (chunkStyle);

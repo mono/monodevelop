@@ -26,44 +26,16 @@
 
 using System;
 using System.Collections.Generic;
+using MonoDevelop.TextTemplating;
 
 namespace MonoDevelop.AspNet.Mvc.TextTemplating
 {
-	
-	public class MvcTextTemplateHost : Mono.TextTemplating.TemplateGenerator
+	public class MvcTextTemplateHost : MonoDevelopTemplatingHost
 	{
-		
 		public MvcTextTemplateHost ()
 		{
 			Imports.Add ("MonoDevelop.AspNet.Mvc.TextTemplating");
 			Refs.Add (typeof (MvcTextTemplateHost).Assembly.Location);
-		}
-		
-		public static MvcTextTemplateHost Create (AppDomain domain)
-		{
-			if (domain == null)
-				return new MvcTextTemplateHost ();
-
-			// HACK: get rid of InvalidCastException - Unable to cast transparent proxy to type
-			AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
-
-			var host = (MvcTextTemplateHost) domain.CreateInstanceAndUnwrap (
-				typeof (MvcTextTemplateHost).Assembly.FullName,
-				typeof (MvcTextTemplateHost).FullName);
-
-			AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomain_AssemblyResolve;
-
-			return host;
-
-		}
-
-		static System.Reflection.Assembly CurrentDomain_AssemblyResolve (object sender, ResolveEventArgs args)
-		{
-			foreach (System.Reflection.Assembly asm in AppDomain.CurrentDomain.GetAssemblies ()) {
-				if (asm.GetName ().FullName == args.Name)
-					return asm;
-			}
-			return null;
 		}
 		
 		public string ItemName { get; set; }

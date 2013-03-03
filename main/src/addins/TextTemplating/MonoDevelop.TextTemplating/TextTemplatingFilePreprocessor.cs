@@ -41,7 +41,7 @@ namespace MonoDevelop.TextTemplating
 		public IAsyncOperation Generate (IProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result)
 		{
 			return new ThreadAsyncOperation (delegate {
-				var host = new MonoDevelopTemplatingHost ();
+				var host = new ProjectFileTemplatingHost (file);
 				
 				var dnp = file.Project as DotNetProject;
 				if (dnp == null) {

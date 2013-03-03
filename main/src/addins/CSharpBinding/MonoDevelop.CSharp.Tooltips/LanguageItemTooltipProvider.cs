@@ -168,7 +168,9 @@ namespace MonoDevelop.SourceEditor
 			var caret = new Gdk.Rectangle ((int)p1.X - positionWidget.Allocation.X, (int)p2.Y - positionWidget.Allocation.Y, (int)(p2.X - p1.X), (int)editor.LineHeight);
 
 			tipWindow.ShowPopup (positionWidget, caret, PopupPosition.Top);
-			
+			tipWindow.EnterNotifyEvent += delegate {
+				editor.HideTooltip (false);
+			};
 			lastWindow = tipWindow;
 			lastNode = titem.Node;
 			return tipWindow;

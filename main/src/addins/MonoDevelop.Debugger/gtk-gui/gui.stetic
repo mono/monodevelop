@@ -1275,7 +1275,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.Debugger.DebuggerOptionsPanelWidget" design-size="523 270">
+  <widget class="Gtk.Bin" id="MonoDevelop.Debugger.DebuggerOptionsPanelWidget" design-size="523 241">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <child>
@@ -1289,7 +1289,7 @@
             <property name="Spacing">6</property>
             <property name="BorderWidth">9</property>
             <child>
-              <widget class="Gtk.CheckButton" id="projectCodeOnly">
+              <widget class="Gtk.CheckButton" id="checkProjectCodeOnly">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="Label" translatable="yes">Debug project code only; do not step into framework code.</property>
@@ -1306,7 +1306,7 @@
               </packing>
             </child>
             <child>
-              <widget class="Gtk.CheckButton" id="stepOverPropertiesAndOperators">
+              <widget class="Gtk.CheckButton" id="checkStepOverPropertiesAndOperators">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="Label" translatable="yes">Step over properties and operators</property>
@@ -1341,13 +1341,21 @@
               </packing>
             </child>
             <child>
-              <widget class="Gtk.CheckButton" id="checkToString">
+              <widget class="Gtk.Alignment" id="alignmentAllowToString">
                 <property name="MemberName" />
-                <property name="CanFocus">True</property>
-                <property name="Label" translatable="yes">Use ToString() to get the string value of objects</property>
-                <property name="DrawIndicator">True</property>
-                <property name="HasLabel">True</property>
-                <property name="UseUnderline">True</property>
+                <property name="Xalign">0</property>
+                <property name="LeftPadding">18</property>
+                <child>
+                  <widget class="Gtk.CheckButton" id="checkAllowToString">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="Label" translatable="yes">Call string-conversion function on objects in variables windows</property>
+                    <property name="Active">True</property>
+                    <property name="DrawIndicator">True</property>
+                    <property name="HasLabel">True</property>
+                    <property name="UseUnderline">True</property>
+                  </widget>
+                </child>
               </widget>
               <packing>
                 <property name="Position">3</property>
@@ -1360,7 +1368,7 @@
               <widget class="Gtk.CheckButton" id="checkShowBaseGroup">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Label" translatable="yes">Shown inherited class members in a base class group</property>
+                <property name="Label" translatable="yes">Show inherited class members in a base class group</property>
                 <property name="DrawIndicator">True</property>
                 <property name="HasLabel">True</property>
                 <property name="UseUnderline">True</property>
@@ -1430,7 +1438,7 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="Gtk.Label" id="label60">
+                  <widget class="Gtk.Label" id="labelEvalTimeout">
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
                     <property name="LabelProp" translatable="yes">Evaluation Timeout:</property>
@@ -1496,11 +1504,11 @@
             <property name="Spacing">6</property>
             <property name="BorderWidth">6</property>
             <child>
-              <widget class="Gtk.Label" id="label2">
+              <widget class="Gtk.Label" id="labelPriorityList">
                 <property name="MemberName" />
                 <property name="WidthRequest">417</property>
                 <property name="Xalign">0</property>
-                <property name="LabelProp" translatable="yes">This priority list will be used by MonoDevelop when selecting the engine to be used for debugging an application.</property>
+                <property name="LabelProp" translatable="yes">This priority list will be used when selecting the engine to be used for debugging an application.</property>
                 <property name="Wrap">True</property>
               </widget>
               <packing>
@@ -1525,7 +1533,7 @@
           </packing>
         </child>
         <child>
-          <widget class="Gtk.Label" id="label1">
+          <widget class="Gtk.Label" id="labelPreferredDebuggers">
             <property name="MemberName" />
             <property name="LabelProp" translatable="yes">Preferred Debuggers</property>
           </widget>

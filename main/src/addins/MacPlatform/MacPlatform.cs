@@ -138,12 +138,16 @@ namespace MonoDevelop.MacIntegration
 		
 		internal static void OpenUrl (string url)
 		{
-			NSWorkspace.SharedWorkspace.OpenUrl (new NSUrl (url));
+			Gtk.Application.Invoke (delegate {
+				NSWorkspace.SharedWorkspace.OpenUrl (new NSUrl (url));
+			});
 		}
 		
 		public override void OpenFile (string filename)
 		{
-			NSWorkspace.SharedWorkspace.OpenFile (filename);
+			Gtk.Application.Invoke (delegate {
+				NSWorkspace.SharedWorkspace.OpenFile (filename);
+			});
 		}
 
 		public override string DefaultMonospaceFont {

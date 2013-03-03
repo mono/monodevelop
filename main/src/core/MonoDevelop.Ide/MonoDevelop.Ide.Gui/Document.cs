@@ -707,7 +707,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 			if (project != null)
 				project.Modified += HandleProjectModified;
-			OnDocumentAttached ();
+			StartReparseThread ();
 		}
 
 		void HandleProjectModified (object sender, SolutionItemModifiedEventArgs e)

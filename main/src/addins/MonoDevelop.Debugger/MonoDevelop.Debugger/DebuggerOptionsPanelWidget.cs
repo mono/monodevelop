@@ -55,14 +55,14 @@ namespace MonoDevelop.Debugger
 		{
 			this.Build ();
 			options = DebuggingService.GetUserOptions ();
-			projectCodeOnly.Active = options.ProjectAssembliesOnly;
-			stepOverPropertiesAndOperators.Active = options.StepOverPropertiesAndOperators;
+			checkProjectCodeOnly.Active = options.ProjectAssembliesOnly;
+			checkStepOverPropertiesAndOperators.Active = options.StepOverPropertiesAndOperators;
 			checkAllowEval.Active = options.EvaluationOptions.AllowTargetInvoke;
-			checkToString.Active = options.EvaluationOptions.AllowToStringCalls;
+			checkAllowToString.Active = options.EvaluationOptions.AllowToStringCalls;
 			checkShowBaseGroup.Active = !options.EvaluationOptions.FlattenHierarchy;
 			checkGroupPrivate.Active = options.EvaluationOptions.GroupPrivateMembers;
 			checkGroupStatic.Active = options.EvaluationOptions.GroupStaticMembers;
-			checkToString.Sensitive = checkAllowEval.Active;
+			checkAllowToString.Sensitive = checkAllowEval.Active;
 			spinTimeout.Value = options.EvaluationOptions.EvaluationTimeout;
 
 			// Debugger priorities
@@ -77,16 +77,16 @@ namespace MonoDevelop.Debugger
 		public void Store ()
 		{
 			EvaluationOptions ops = options.EvaluationOptions;
+
 			ops.AllowTargetInvoke = checkAllowEval.Active;
-			ops.AllowToStringCalls = checkToString.Active;
+			ops.AllowToStringCalls = checkAllowToString.Active;
 			ops.FlattenHierarchy = !checkShowBaseGroup.Active;
 			ops.GroupPrivateMembers = checkGroupPrivate.Active;
 			ops.GroupStaticMembers = checkGroupStatic.Active;
-			int t = (int) spinTimeout.Value;
-			ops.EvaluationTimeout = t;
-			
-			options.StepOverPropertiesAndOperators = stepOverPropertiesAndOperators.Active;
-			options.ProjectAssembliesOnly = projectCodeOnly.Active;
+			ops.EvaluationTimeout = (int) spinTimeout.Value;
+
+			options.StepOverPropertiesAndOperators = checkStepOverPropertiesAndOperators.Active;
+			options.ProjectAssembliesOnly = checkProjectCodeOnly.Active;
 			options.EvaluationOptions = ops;
 
 			DebuggingService.SetUserOptions (options);
@@ -104,7 +104,7 @@ namespace MonoDevelop.Debugger
 
 		protected virtual void OnCheckAllowEvalToggled (object sender, System.EventArgs e)
 		{
-			checkToString.Sensitive = checkAllowEval.Active;
+			checkAllowToString.Sensitive = checkAllowEval.Active;
 		}
 	}
 }

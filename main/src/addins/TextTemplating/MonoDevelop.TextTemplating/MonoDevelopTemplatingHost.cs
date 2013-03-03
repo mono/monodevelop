@@ -30,14 +30,21 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.TextTemplating
 {
-	class MonoDevelopTemplatingHost : TemplateGenerator, IDisposable
+	public class MonoDevelopTemplatingHost : TemplateGenerator, IDisposable
 	{
 		TemplatingAppDomainRecycler.Handle domainHandle;
+
+		public MonoDevelopTemplatingHost ()
+		{
+			Imports.Add ("MonoDevelop.TextTemplating");
+			Refs.Add (typeof (MonoDevelopTemplatingHost).Assembly.Location);
+		}
 		
 		public override AppDomain ProvideTemplatingAppDomain (string content)
 		{
 			if (domainHandle == null) {
 				domainHandle = TextTemplatingService.GetTemplatingDomain ();
+				domainHandle.AddAssembly (GetType ().Assembly);
 			}
 			return domainHandle.Domain;
 		}
@@ -45,15 +52,13 @@ namespace MonoDevelop.TextTemplating
 		protected override string ResolveAssemblyReference (string assemblyReference)
 		{
 			//FIXME: resolve from addins
-			var substituted = StringParserService.Parse (assemblyReference);
-			return base.ResolveAssemblyReference (substituted);
+			return base.ResolveAssemblyReference (SubstitutePlaceholders (assemblyReference));
 		}
 		
 		protected override bool LoadIncludeText (string requestFileName, out string content, out string location)
 		{
-			//FIXME: resolve from addins
-			var substituted = StringParserService.Parse (requestFileName);
-			return base.LoadIncludeText (substituted, out content, out location);
+			//FIXME: allow registering include directories
+			return base.LoadIncludeText (SubstitutePlaceholders (requestFileName), out content, out location);
 		}
 		
 		protected override Type ResolveDirectiveProcessor (string processorName)
@@ -62,6 +67,16 @@ namespace MonoDevelop.TextTemplating
 			return base.ResolveDirectiveProcessor (processorName);
 		}
 		
+		protected override string ResolvePath (string path)
+		{
+			return base.ResolvePath (SubstitutePlaceholders (path));
+		}
+
+		protected virtual string SubstitutePlaceholders (string value)
+		{
+			return StringParserService.Parse (value);
+		}
+
 		public void Dispose ()
 		{
 			if (domainHandle != null) {

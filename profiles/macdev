@@ -1,2 +1,0 @@
-main --disable-update-mimedb --disable-update-desktopdb --disable-gnomeplatform --enable-macplatform --enable-tests
-extras/MonoDevelop.Database

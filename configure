@@ -132,6 +132,16 @@ select_packages ()
 	done
 }
 
+handle_config_error ()
+{
+	if test `uname` = "Darwin"; then
+		echo ""
+		echo "Have you followed http://monodevelop.com/Developers/Mac_Support/Building_MonoDevelop_on_OS_X ?"
+		echo ""
+	fi
+	exit 1
+}
+
 configure_packages ()
 {
 	rm -f local-config/*
@@ -159,7 +169,7 @@ configure_packages ()
 			exit 1
 		fi
 		pushd $path > /dev/null
-		PKG_CONFIG_PATH=$localconf:$PKG_CONFIG_PATH $sct --prefix=$prefix $ops || exit 1
+		PKG_CONFIG_PATH=$localconf:$PKG_CONFIG_PATH $sct --prefix=$prefix $ops || handle_config_error
 		popd > /dev/null
 		create_local_config $path
 		packages="$packages $path"

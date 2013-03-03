@@ -31,6 +31,7 @@ using System.IO;
 using System.Diagnostics;
 using Mono.TextEditor.Highlighting;
 using ICSharpCode.NRefactory.Editor;
+using Xwt.Drawing;
 
 namespace Mono.TextEditor
 {
@@ -124,7 +125,34 @@ namespace Mono.TextEditor
 				customTabsToSpaces = value;
 			}
 		}
+		#region Tooltip providers
+		internal List<TooltipProvider> tooltipProviders = new List<TooltipProvider> ();
+		public IEnumerable<TooltipProvider> TooltipProviders {
+			get { return tooltipProviders; }
+		}
+
+		public void ClearTooltipProviders ()
+		{
+			foreach (var tp in tooltipProviders) {
+				var disposableProvider = tp as IDisposable;
+				if (disposableProvider == null)
+					continue;
+				disposableProvider.Dispose ();
+			}
+			tooltipProviders.Clear ();
+		}
 		
+		public void AddTooltipProvider (TooltipProvider provider)
+		{
+			tooltipProviders.Add (provider);
+		}
+		
+		public void RemoveTooltipProvider (TooltipProvider provider)
+		{
+			tooltipProviders.Remove (provider);
+		}
+		#endregion
+
 		public TextEditorData () : this (new TextDocument ())
 		{
 		}
@@ -260,13 +288,13 @@ namespace Mono.TextEditor
 				DocumentLine line = Document.GetLineByOffset (curOffset);
 				int toOffset = System.Math.Min (line.Offset + line.Length, offset + length);
 				var styleStack = new Stack<ChunkStyle> ();
-				foreach (var chunk in mode.GetChunks (ColorStyle, line, curOffset, toOffset - curOffset)) {
 
+				foreach (var chunk in mode.GetChunks (ColorStyle, line, curOffset, toOffset - curOffset)) {
 					var chunkStyle = ColorStyle.GetChunkStyle (chunk);
-					bool setBold = chunkStyle.Bold && (styleStack.Count == 0 || !styleStack.Peek ().Bold) ||
-							!chunkStyle.Bold && (styleStack.Count == 0 || styleStack.Peek ().Bold);
-					bool setItalic = chunkStyle.Italic && (styleStack.Count == 0 || !styleStack.Peek ().Italic) ||
-							!chunkStyle.Italic && (styleStack.Count == 0 || styleStack.Peek ().Italic);
+					bool setBold = (styleStack.Count > 0 && styleStack.Peek ().FontWeight != chunkStyle.FontWeight) || 
+						chunkStyle.FontWeight != FontWeight.Normal;
+					bool setItalic = (styleStack.Count > 0 && styleStack.Peek ().FontStyle != chunkStyle.FontStyle) || 
+						chunkStyle.FontStyle != FontStyle.Normal;
 					bool setUnderline = chunkStyle.Underline && (styleStack.Count == 0 || !styleStack.Peek ().Underline) ||
 							!chunkStyle.Underline && (styleStack.Count == 0 || styleStack.Peek ().Underline);
 					bool setColor = styleStack.Count == 0 || TextViewMargin.GetPixel (styleStack.Peek ().Foreground) != TextViewMargin.GetPixel (chunkStyle.Foreground);
@@ -281,10 +309,10 @@ namespace Mono.TextEditor
 							result.Append (SyntaxMode.ColorToPangoMarkup (chunkStyle.Foreground));
 							result.Append ("\"");
 						}
-						if (chunkStyle.Bold)
-							result.Append (" weight=\"bold\"");
-						if (chunkStyle.Italic)
-							result.Append (" style=\"italic\"");
+						if (chunkStyle.FontWeight != Xwt.Drawing.FontWeight.Normal)
+							result.Append (" weight=\"" + chunkStyle.FontWeight + "\"");
+						if (chunkStyle.FontStyle != Xwt.Drawing.FontStyle.Normal)
+							result.Append (" style=\"" + chunkStyle.FontStyle + "\"");
 						if (chunkStyle.Underline)
 							result.Append (" underline=\"single\"");
 						result.Append (">");

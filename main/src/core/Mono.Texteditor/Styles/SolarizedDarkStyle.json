@@ -97,7 +97,7 @@
 		{ "name": "Comment(Block)", "fore":"base01" },
 		{ "name": "Comment(Doc)", "fore":"base01" },
 		{ "name": "Comment(DocTag)", "fore":"base01" },
-		{ "name": "Comment Tag", "fore":"base01", "weight":"italic" },
+		{ "name": "Comment Tag", "fore":"base01", "style":"italic" },
 		{ "name": "Excluded Code", "fore":"base01" },
 
 		{ "name": "String", "fore":"cyan"},

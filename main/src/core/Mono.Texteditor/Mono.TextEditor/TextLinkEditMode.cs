@@ -195,7 +195,7 @@ namespace Mono.TextEditor
 			this.baseOffset = baseOffset;
 			this.endOffset = editor.Caret.Offset;
 			tooltipProvider = new TextLinkTooltipProvider (this);
-			this.Editor.tooltipProviders.Insert (0, tooltipProvider);
+			this.Editor.GetTextEditorData ().tooltipProviders.Insert (0, tooltipProvider);
 			this.SetCaretPosition = true;
 			this.SelectPrimaryLink = true;
 		}
