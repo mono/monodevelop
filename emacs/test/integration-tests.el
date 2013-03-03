@@ -26,7 +26,7 @@
         (autoload 'run-fsharp "inf-fsharp-mode" "Run an inferior F# process." t)
         (autoload 'turn-on-fsharp-doc-mode "fsharp-doc")
         (autoload 'fsharp-mode-completion/start-process "fsharp-mode-completion" "Launch the completion process" t)
-        (autoload 'ac-fsharp-quit-completion-process "fsharp-mode-completion" "Quit the completion process" t)
+        (autoload 'fsharp-mode-completion/stop-process "fsharp-mode-completion" "Quit the completion process" t)
         (autoload 'fsharp-mode-completion/load-project "fsharp-mode-completion" "Load the specified F# project" t))
 
        ((string= testmode "melpa") ; Install from MELPA
@@ -50,7 +50,7 @@
         (switch-to-buffer buf)
         (revert-buffer t t)
         (kill-buffer buf)))
-    (ac-fsharp-quit-completion-process)
+    (fsharp-mode-completion/stop-process)
     (when (get-buffer "*fsharp-complete*")
       (kill-buffer "*fsharp-complete*"))))
 

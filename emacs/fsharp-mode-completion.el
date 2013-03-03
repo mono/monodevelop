@@ -29,6 +29,7 @@
   :export
   [load-project
    start-process
+   stop-process
    show-tooltip-at-point
    show-typesig-at-point]
   :use
@@ -134,7 +135,7 @@ display in a help buffer instead.")
   (log-psendstr ac-fsharp-completion-process "errors\n"))
 
 ;;;###autoload
-(defun ac-fsharp-quit-completion-process ()
+(defn stop-process ()
   (interactive)
   (message "Quitting fsharp completion process")
   (when
