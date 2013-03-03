@@ -14,6 +14,7 @@ open System.Threading
 open Mono.TextEditor
 open MonoDevelop.Core
 open MonoDevelop.Ide
+open MonoDevelop.Ide.CodeCompletion
 open MonoDevelop.Ide.Gui
 open MonoDevelop.Ide.Gui.Content
 open MonoDevelop.Ide.TypeSystem
@@ -118,20 +119,31 @@ type FSharpLanguageItemTooltipProvider() =
             match item.Item with 
             | :? FSharpLocalResolveResult as titem -> 
                 let tooltip = TipFormatter.formatTipWithHeader(titem.DataTip) 
+#if MONODEVELOP_AT_MOST_3_1_1           
                 let result = new FSharpLanguageItemWindow (tooltip)
+#else                
+                let result = new TooltipInformationWindow(ShowArrow = true)
+                let toolTipInfo = new TooltipInformation(SignatureMarkup = tooltip)
+                result.AddOverload(toolTipInfo)
+                result.RepositionWindow ()
+#endif                    
                 result :> Gtk.Window
-            | _ -> null
+            | _ -> Debug.WriteLine("** not a FSharpLocalResolveResult!"); null
 
-    
     override x.GetRequiredPosition (editor, tipWindow : Gtk.Window, requiredWidth : int byref, xalign : double byref) = 
             match tipWindow with 
+#if MONODEVELOP_AT_MOST_3_1_1
             | :? FSharpLanguageItemWindow as win -> 
                 requiredWidth <- win.SetMaxWidth win.Screen.Width
+#else
+            | :? TooltipInformationWindow as win -> 
+                requiredWidth <- win.Allocation.Width
+#endif
                 xalign <- 0.5
             | _ -> ()
-
-    override x.IsInteractive (editor, tipWindow) =  
-            false
+#if MONODEVELOP_AT_MOST_3_1_1
+    override x.IsInteractive (editor, tipWindow) = false
+#endif
 
 #endif
     
@@ -159,7 +171,7 @@ type FSharpResolverProvider() =
 
         if config = null then null else
 
-        Debug.WriteLine (sprintf "Resolver: Getting results of type checking")
+        Debug.WriteLine(sprintf "Resolver: Getting results of type checking")
         // Try to get typed result - with the specified timeout
         let tyRes = LanguageService.Service.GetTypedParseResult(new FilePath(doc.Editor.FileName), docText, doc.Project, config, timeout = ServiceSettings.blockingTimeout)
             
