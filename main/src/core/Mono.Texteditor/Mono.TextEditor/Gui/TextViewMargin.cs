@@ -1439,6 +1439,10 @@ namespace Mono.TextEditor
 			double width = layout.PangoWidth / Pango.Scale.PangoScale;
 			double xPos = pangoPosition / Pango.Scale.PangoScale;
 
+			// The caret line marker must be drawn below the text markers otherwise the're invisible
+			if ((HighlightCaretLine || textEditor.Options.HighlightCaretLine) && Caret.Line == lineNumber)
+				DrawCaretLineMarker (cr, xPos, y, layout.PangoWidth / Pango.Scale.PangoScale, _lineHeight);
+
 			//		if (!(HighlightCaretLine || textEditor.Options.HighlightCaretLine) || Document.GetLine(Caret.Line) != line) {
 			if (BackgroundRenderer == null) {
 				foreach (var bg in layout.BackgroundColors) {
@@ -1451,7 +1455,7 @@ namespace Mono.TextEditor
 						bg.Color, true);
 				}
 			}
-			//		}
+
 
 			bool drawBg = true;
 			bool drawText = true;
@@ -1466,9 +1470,6 @@ namespace Mono.TextEditor
 			if (DecorateLineBg != null)
 				DecorateLineBg (cr, layout, offset, length, xPos, y, selectionStart, selectionEnd);
 			
-			if ((HighlightCaretLine || textEditor.Options.HighlightCaretLine) && Caret.Line == lineNumber) {
-				DrawCaretLineMarker (cr, xPos, y, layout.PangoWidth / Pango.Scale.PangoScale, _lineHeight);
-			}
 
 			if (!isSelectionDrawn && (layout.StartSet || selectionStart == offset + length) && BackgroundRenderer == null) {
 				double startX;
