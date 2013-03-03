@@ -390,6 +390,7 @@ namespace MonoDevelop.Ide
 		internal static string[] gtkThemeFallbacks = new string[] {
 			"Gilouche", // SUSE
 			"Mint-X", // MINT
+			"Radiance", // Ubuntu 'light' theme (MD looks better with the light theme in 4.0 - if that changes switch this one)
 			"Clearlooks" // GTK theme
 		};
 
