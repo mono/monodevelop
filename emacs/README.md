@@ -78,7 +78,7 @@ On Windows:
 (setq fsharp-compiler "\"c:\\Path\To\Fsc.exe\"")
 ```
 
-On Unix-like systems, you must use the *readline* flag to ensure F#
+On Unix-like systems, you must use the *--readline-* flag to ensure F#
 Interactive will work correctly with Emacs.
 
 ```lisp
