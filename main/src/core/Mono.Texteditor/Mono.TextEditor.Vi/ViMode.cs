@@ -110,7 +110,10 @@ namespace Mono.TextEditor.Vi
 			}
 			set {
 				curState = value;
-				viTextEditor.Caret.IsVisible = curState != State.Command;
+				if (viTextEditor != null) {
+					viTextEditor.Caret.IsVisible = curState != State.Command;
+					viTextEditor.RequestResetCaretBlink ();
+				}
 			}
 		}
 
@@ -139,7 +142,11 @@ namespace Mono.TextEditor.Vi
 				} else {
 					statusText = value + " recording";
 				}
-				statusArea.QueueDraw ();
+
+				if (curState == State.Command && viTextEditor != null) {
+				    viTextEditor.RequestResetCaretBlink ();
+					statusArea.QueueDraw ();
+				}
 			}
 		}
 		
