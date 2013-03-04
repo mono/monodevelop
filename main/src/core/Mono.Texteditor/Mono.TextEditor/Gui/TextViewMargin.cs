@@ -553,7 +553,7 @@ namespace Mono.TextEditor
 		}
 
 		#region Caret blinking
-		bool caretBlink = true;
+		internal bool caretBlink = true;
 		uint blinkTimeout = 0, startBlinkTimeout = 0;
 
 		// constants taken from gtk.
@@ -589,8 +589,16 @@ namespace Mono.TextEditor
 			                          (int)(caretRectangle.Y + (textEditor.VAdjustment.Value - caretVAdjustmentValue)),
 			                          caretRectangle.Width + 2 * (int)textEditor.Options.Zoom,
 			                          caretRectangle.Height);
-
+			OnCaretBlink (EventArgs.Empty);
 			return true;
+		}
+
+		internal event EventHandler CaretBlink;
+		void OnCaretBlink (EventArgs e)
+		{
+			var handler = CaretBlink;
+			if (handler != null)
+				handler (this, e);
 		}
 		#endregion
 		

@@ -142,8 +142,7 @@ namespace Mono.TextEditor
 		protected override void OnSizeAllocated (Rectangle allocation)
 		{
 			base.OnSizeAllocated (allocation);
-			if (textArea.Allocation != allocation)
-				textArea.SizeAllocate (allocation);
+			CurrentMode.AllocateTextArea (this, textArea, allocation);
 			SetChildrenPositions (allocation);
 		}
 

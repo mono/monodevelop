@@ -58,16 +58,7 @@ namespace MonoDevelop.SourceEditor
 			this.editor = editor;
 			tabAction = new TabAction (editor);
 		}
-		
-		public override string Status {
-			get { return base.Status; }
-			protected set {
-				base.Status = value;
-				// For the (recording) display.
-				IdeApp.Workbench.StatusBar.ShowMessage (base.Status);
-			}
-		}
-		
+
 		protected override Action<TextEditorData> GetInsertAction (Gdk.Key key, Gdk.ModifierType modifier)
 		{
 			if (modifier == Gdk.ModifierType.None) {
