@@ -292,6 +292,8 @@ namespace Mono.TextEditor.Vi
 			viTextEditor = data.Parent;
 			statusArea = new ViStatusArea (viTextEditor, this);
 			viTextEditor.AddTopLevelWidget (statusArea, 0, 0);
+			((TextEditor.EditorContainerChild)viTextEditor[statusArea]).FixedPosition = true;
+
 			statusArea.Show ();
 
 		}
