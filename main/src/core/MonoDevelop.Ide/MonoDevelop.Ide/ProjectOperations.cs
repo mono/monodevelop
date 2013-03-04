@@ -2066,12 +2066,12 @@ namespace MonoDevelop.Ide
 		}
 
 		/// <summary>
-		/// Performs an operation on a text file regardless of it's open in the IDE or not.
+		/// Performs an edit operation on a text file regardless of it's open in the IDE or not.
 		/// </summary>
 		/// <returns><c>true</c>, if file operation was saved, <c>false</c> otherwise.</returns>
 		/// <param name="filePath">File path.</param>
 		/// <param name="operation">The operation.</param>
-		public bool DoFileOperation (FilePath filePath, Action<TextEditorData> operation)
+		public bool EditFile (FilePath filePath, Action<TextEditorData> operation)
 		{
 			if (operation == null)
 				throw new ArgumentNullException ("operation");
