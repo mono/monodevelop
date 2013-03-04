@@ -290,12 +290,12 @@ namespace Mono.TextEditor.Vi
 			ViActions.RetreatFromLineEnd (data);
 
 			viTextEditor = data.Parent;
-			statusArea = new ViStatusArea (viTextEditor, this);
-			viTextEditor.AddTopLevelWidget (statusArea, 0, 0);
-			((TextEditor.EditorContainerChild)viTextEditor[statusArea]).FixedPosition = true;
-
-			statusArea.Show ();
-
+			if (viTextEditor != null) {
+				statusArea = new ViStatusArea (viTextEditor, this);
+				viTextEditor.AddTopLevelWidget (statusArea, 0, 0);
+				((TextEditor.EditorContainerChild)viTextEditor[statusArea]).FixedPosition = true;
+				statusArea.Show ();
+			}
 		}
 		
 		protected override void OnRemovedFromEditor (TextEditorData data)
