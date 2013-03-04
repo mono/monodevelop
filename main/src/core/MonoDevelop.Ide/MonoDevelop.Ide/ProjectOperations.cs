@@ -2064,7 +2064,33 @@ namespace MonoDevelop.Ide
 			
 			return new ProviderProxy (data, file.SourceEncoding, file.HadBOM);
 		}
-		
+
+		/// <summary>
+		/// Performs an operation on a text file regardless of it's open in the IDE or not.
+		/// </summary>
+		/// <returns><c>true</c>, if file operation was saved, <c>false</c> otherwise.</returns>
+		/// <param name="filePath">File path.</param>
+		/// <param name="operation">The operation.</param>
+		public bool DoFileOperation (FilePath filePath, Action<TextEditorData> operation)
+		{
+			if (operation == null)
+				throw new ArgumentNullException ("operation");
+			bool hadBom;
+			Encoding encoding;
+			bool isOpen;
+			var data = GetTextEditorData (filePath, out hadBom, out encoding, out isOpen);
+			operation (data);
+			if (isOpen) {
+				try { 
+					Mono.TextEditor.Utils.TextFileUtility.WriteText (filePath, data.Text, encoding, hadBom);
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while saving changes to : " + filePath, e);
+					return false;
+				}
+			}
+			return true;
+		}
+
 		public TextEditorData GetTextEditorData (FilePath filePath)
 		{
 			bool isOpen;
