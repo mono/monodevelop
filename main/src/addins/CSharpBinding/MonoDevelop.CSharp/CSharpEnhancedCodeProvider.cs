@@ -84,9 +84,7 @@ namespace MonoDevelop.CSharp
 
 			var convertVisitor = new CodeDomConvertVisitor ();
 		
-			CodeCompileUnit ccu = convertVisitor.Convert (Compilation.Value, tree, tree.ToTypeSystem ());
-			new CSharpCodeProvider ().GenerateCodeFromCompileUnit (ccu, Console.Out, new CodeGeneratorOptions ());
-			return ccu;
+			return convertVisitor.Convert (Compilation.Value, tree, tree.ToTypeSystem ());
 		}
 		
 		private class CodeParser : ICodeParser
