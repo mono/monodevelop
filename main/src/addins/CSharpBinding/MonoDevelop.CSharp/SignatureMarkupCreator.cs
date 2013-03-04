@@ -82,7 +82,8 @@ namespace MonoDevelop.CSharp
 		{
 			if (type == null)
 				throw new ArgumentNullException ("type");
-
+			if (type.Kind == TypeKind.Null)
+				return highlight ? Highlight ("object", colorStyle.KeywordTypes) : "object";
 			AstType astType;
 			try {
 				astType = astBuilder.ConvertType (type);
@@ -398,6 +399,8 @@ namespace MonoDevelop.CSharp
 			if (t == null)
 				throw new ArgumentNullException ("t");
 
+			if (t.Kind == TypeKind.Null)
+				return GetTypeMarkup (resolver.Compilation.FindType (KnownTypeCode.Object), includeDeclaringTypes);
 			if (t.Kind == TypeKind.Delegate)
 				return GetDelegateMarkup (t);
 			if (t.Kind == TypeKind.TypeParameter)
@@ -596,9 +599,8 @@ namespace MonoDevelop.CSharp
 			
 			var result = new StringBuilder ();
 
-			if (variable.IsConst) {
+			if (variable.IsConst)
 				result.Append (Highlight ("const", colorStyle.KeywordModifiers));
-			}
 
 			result.Append (GetTypeReferenceString (variable.Type));
 			if (BreakLineAfterReturnType) {
