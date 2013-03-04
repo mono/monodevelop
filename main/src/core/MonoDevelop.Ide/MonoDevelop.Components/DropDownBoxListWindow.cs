@@ -435,22 +435,20 @@ namespace MonoDevelop.Components
 					return Allocation.Height / rowHeight;
 				}
 			}
-			
+
+			const int maxVisibleRows = 8;
 			void CalcVisibleRows ()
 			{
 				int lvWidth, lvHeight;
 				this.GetSizeRequest (out lvWidth, out lvHeight);
 				if (layout == null)
 					return;
-				
-				int visibleRows = 8;
+
 				int newHeight;
-	
-				if (this.win.DataProvider.IconCount > visibleRows)
-					newHeight = (rowHeight * visibleRows) + margin * 2;
+				if (this.win.DataProvider.IconCount > maxVisibleRows)
+					newHeight = (rowHeight * maxVisibleRows) + margin * 2;
 				else
 					newHeight = (rowHeight * this.win.DataProvider.IconCount) + margin * 2;
-
 				listWidth = Math.Min (450, CalcWidth ());
 				this.SetSizeRequest (listWidth, newHeight);
 			} 
@@ -481,8 +479,13 @@ namespace MonoDevelop.Components
 			{
 				if (vadj == null)
 					return;
-				var height = Math.Max (allocation.Height, rowHeight * win.DataProvider.IconCount);
-				vadj.SetBounds (0, height, RowHeight, allocation.Height, allocation.Height);
+				var h = allocation.Height;
+				var height = Math.Max (h, rowHeight * win.DataProvider.IconCount);
+				if (this.win.DataProvider.IconCount < maxVisibleRows) {
+					vadj.SetBounds (0, h, 0, 0, h);
+				} else {
+					vadj.SetBounds (0, height, RowHeight, h, h);
+				}
 			}
 
 			protected override void OnSizeAllocated (Gdk.Rectangle allocation)
