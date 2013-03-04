@@ -156,6 +156,16 @@ namespace MonoDevelop.SourceEditor
 		public Gtk.VBox Vbox {
 			get { return this.vbox; }
 		}
+
+		public bool SearchWidgetHasFocus {
+			get {
+				if (searchAndReplaceWidget != null && searchAndReplaceWidget.FocusChild != null && searchAndReplaceWidget.FocusChild.HasFocus)
+					return true;
+				if (gotoLineNumberWidget != null && gotoLineNumberWidget.FocusChild != null && gotoLineNumberWidget.FocusChild.HasFocus)
+					return true;
+				return false;
+			}
+		}
 		
 		public class Border : Gtk.DrawingArea
 		{
