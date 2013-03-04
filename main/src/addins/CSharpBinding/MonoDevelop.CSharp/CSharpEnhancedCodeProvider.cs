@@ -77,13 +77,12 @@ namespace MonoDevelop.CSharp
 
 		static CodeCompileUnit ParseInternal (TextReader codeStream)
 		{
-			var tree = SyntaxTree.Parse (codeStream);
-
+			var tree = SyntaxTree.Parse (codeStream, "a.cs");
 			if (tree.Errors.Count > 0)
 				throw new ArgumentException ("Stream contained errors.");
 
 			var convertVisitor = new CodeDomConvertVisitor ();
-
+		
 			CodeCompileUnit ccu = convertVisitor.Convert (Compilation.Value, tree, tree.ToTypeSystem ());
 			
 			//C# parser seems to insist on putting imports in the "Global" namespace; fix it up
