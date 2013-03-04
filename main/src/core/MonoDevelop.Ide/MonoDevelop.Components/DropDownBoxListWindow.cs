@@ -61,6 +61,11 @@ namespace MonoDevelop.Components
 			};
 			SetSizeRequest (list.WidthRequest, list.HeightRequest);
 			vScrollbar = new ScrolledWindow ();
+			vScrollbar.VScrollbar.SizeAllocated += (object o, SizeAllocatedArgs args) => {
+				var minWidth = list.WidthRequest + args.Allocation.Width;
+				if (this.Allocation.Width < minWidth)
+					SetSizeRequest (minWidth, list.HeightRequest);
+			};
 			vScrollbar.Child = list;
 			var vbox = new VBox ();
 			vbox.PackStart (vScrollbar, true, true, 0);
