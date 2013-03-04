@@ -137,7 +137,8 @@ namespace MonoDevelop.AspNet.Gui
 					return DirectiveCompletion.GetDirectives (aspDoc.Type);
 				}
 				return null;
-			} else if (Tracker.Engine.CurrentState is S.XmlNameState && Tracker.Engine.CurrentState.Parent is AspNetDirectiveState) {
+			}
+			if (Tracker.Engine.CurrentState is S.XmlNameState && Tracker.Engine.CurrentState.Parent is AspNetDirectiveState) {
 				var directive = Tracker.Engine.Nodes.Peek () as AspNetDirective;
 				if (HasDoc && directive != null && directive.Region.BeginLine == completionContext.TriggerLine &&
 				    directive.Region.BeginColumn + 4 == completionContext.TriggerLineOffset && char.IsLetter (currentChar))
@@ -390,13 +391,11 @@ namespace MonoDevelop.AspNet.Gui
 					LoggingService.LogWarning ("IType {0} does not have a SourceProjectDom", controlClass);
 					return;
 				}
-				
+
 				string propName = defaultProp ?? parentName.Name;
-				IProperty property =
-					controlClass.GetProperties ()
-						.Where (x => string.Compare (propName, x.Name, StringComparison.OrdinalIgnoreCase) == 0)
-						.FirstOrDefault ();
-				
+				IProperty property = controlClass.GetProperties ()
+					.FirstOrDefault (x => string.Equals (propName, x.Name, StringComparison.OrdinalIgnoreCase));
+
 				if (property == null)
 					return;
 				
@@ -437,8 +436,7 @@ namespace MonoDevelop.AspNet.Gui
 				}
 				
 				string addStr = "Add";
-				IMethod meth = collectionType.GetMethods ()
-					.Where (m => m.Parameters.Count == 1 && m.Name == addStr).FirstOrDefault ();
+				IMethod meth = collectionType.GetMethods ().FirstOrDefault (m => m.Parameters.Count == 1 && m.Name == addStr);
 				
 				if (meth != null) {
 					IType argType = meth.Parameters [0].Type;
@@ -640,7 +638,7 @@ namespace MonoDevelop.AspNet.Gui
 			GetCodeBehind (out codeBehindClass, out projectDatabase);
 			
 			//if it's an event, suggest compatible methods 
-			if (codeBehindClass != null && attName.Name.StartsWith ("On")) {
+			if (codeBehindClass != null && attName.Name.StartsWith ("On", StringComparison.Ordinal)) {
 				string eventName = attName.Name.Substring (2);
 				
 				foreach (IEvent ev in controlClass.GetEvents ()) {
@@ -751,8 +749,7 @@ namespace MonoDevelop.AspNet.Gui
 					
 					return (System.Web.UI.PersistenceMode) expr.ConstantValue;
 				}
-				else if (att.AttributeType.ReflectionName == "System.Web.UI.TemplateContainerAttribute")
-				{
+				if (att.AttributeType.ReflectionName == "System.Web.UI.TemplateContainerAttribute") {
 					return System.Web.UI.PersistenceMode.InnerProperty;
 				}
 			}
