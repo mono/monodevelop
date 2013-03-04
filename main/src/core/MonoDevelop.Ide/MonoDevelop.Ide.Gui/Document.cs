@@ -530,17 +530,8 @@ namespace MonoDevelop.Ide.Gui
 			} catch (Exception ex) {
 				LoggingService.LogError ("Exception while calling OnClosed.", ex);
 			}
-			
-			while (editorExtension != null) {
-				try {
-					editorExtension.Dispose ();
-				} catch (Exception ex) {
-					LoggingService.LogError ("Exception while disposing extension:" + editorExtension, ex);
-				}
-				editorExtension = editorExtension.Next as TextEditorExtension;
-			}
-			editorExtension = null;
-			
+			DetachExtensionChain ();
+
 			// Parse the file when the document is closed. In this way if the document
 			// is closed without saving the changes, the saved compilation unit
 			// information will be restored
@@ -603,7 +594,45 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		bool wasEdited;
-		
+
+		void InitializeExtensionChain ()
+		{
+			DetachExtensionChain ();
+			var editor = GetContent<IExtensibleTextEditor> ();
+
+			ExtensionNodeList extensions = window.ExtensionContext.GetExtensionNodes ("/MonoDevelop/Ide/TextEditorExtensions", typeof(TextEditorExtensionNode));
+			editorExtension = null;
+			TextEditorExtension last = null;
+			foreach (TextEditorExtensionNode extNode in extensions) {
+				if (!extNode.Supports (FileName))
+					continue;
+				TextEditorExtension ext = (TextEditorExtension)extNode.CreateInstance ();
+				if (ext.ExtendsEditor (this, editor)) {
+					if (editorExtension == null)
+						editorExtension = ext;
+					if (last != null)
+						last.Next = ext;
+					last = ext;
+					ext.Initialize (this);
+				}
+			}
+			if (editorExtension != null)
+				last.Next = editor.AttachExtension (editorExtension);
+		}
+
+		void DetachExtensionChain ()
+		{
+			while (editorExtension != null) {
+				try {
+					editorExtension.Dispose ();
+				} catch (Exception ex) {
+					LoggingService.LogError ("Exception while disposing extension:" + editorExtension, ex);
+				}
+				editorExtension = editorExtension.Next as TextEditorExtension;
+			}
+			editorExtension = null;
+		}
+
 		void InitializeEditor (IExtensibleTextEditor editor)
 		{
 			Editor.Document.TextReplaced += (o, a) => {
@@ -627,31 +656,8 @@ namespace MonoDevelop.Ide.Gui
 			};
 			Editor.Document.Undone += (o, a) => StartReparseThread ();
 			Editor.Document.Redone += (o, a) => StartReparseThread ();
-			
-			// If the new document is a text editor, attach the extensions
-			
-			ExtensionNodeList extensions = window.ExtensionContext.GetExtensionNodes ("/MonoDevelop/Ide/TextEditorExtensions", typeof(TextEditorExtensionNode));
-			editorExtension = null;
-			TextEditorExtension last = null;
-			foreach (TextEditorExtensionNode extNode in extensions) {
-				if (!extNode.Supports (FileName))
-					continue;
-				
-				TextEditorExtension ext = (TextEditorExtension)extNode.CreateInstance ();
-				if (ext.ExtendsEditor (this, editor)) {
-					if (editorExtension == null)
-						editorExtension = ext;
-					
-					if (last != null)
-						last.Next = ext;
-					
-					last = ext;
-					ext.Initialize (this);
-				}
-			}
-			
-			if (editorExtension != null)
-				last.Next = editor.AttachExtension (editorExtension);
+
+			InitializeExtensionChain ();
 		}
 		
 		internal void OnDocumentAttached ()
@@ -659,7 +665,7 @@ namespace MonoDevelop.Ide.Gui
 			IExtensibleTextEditor editor = GetContent<IExtensibleTextEditor> ();
 			if (editor != null) {
 				InitializeEditor (editor);
-				RunWhenLoaded (() => ReparseDocument ());
+				RunWhenLoaded (ReparseDocument);
 			}
 			
 			window.Document = this;
@@ -688,15 +694,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (Window.ViewContent.Project == project)
 				return;
-			while (editorExtension != null) {
-				try {
-					editorExtension.Dispose ();
-				} catch (Exception ex) {
-					LoggingService.LogError ("Exception while disposing extension:" + editorExtension, ex);
-				}
-				editorExtension = editorExtension.Next as TextEditorExtension;
-			}
-			editorExtension = null;
+			DetachExtensionChain ();
 			ISupportsProjectReload pr = GetContent<ISupportsProjectReload> ();
 			if (pr != null) {
 				// Unsubscribe project events
@@ -707,6 +705,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 			if (project != null)
 				project.Modified += HandleProjectModified;
+			InitializeExtensionChain ();
 			StartReparseThread ();
 		}
 

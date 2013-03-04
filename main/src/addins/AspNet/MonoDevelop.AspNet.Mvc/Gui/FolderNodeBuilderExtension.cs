@@ -84,7 +84,6 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 
 			string outputFile = null;
 			MvcTextTemplateHost host = null;
-			Mono.TextTemplating.TemplatingAppDomainRecycler.Handle handle = null;
 			AddControllerDialog dialog = null;
 
 			try {
@@ -110,21 +109,18 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 						break;
 				}
 
-				handle = MonoDevelop.TextTemplating.TextTemplatingService.GetTemplatingDomain ();
-				handle.AddAssembly (typeof (MvcTextTemplateHost).Assembly);
-
-				host = MvcTextTemplateHost.Create (handle.Domain);
-
-				host.LanguageExtension = provider.FileExtension;
-				host.ItemName = dialog.ControllerName;
-				host.NameSpace = project.DefaultNamespace + ".Controllers";
+				host = new MvcTextTemplateHost {
+					LanguageExtension = provider.FileExtension,
+					ItemName = dialog.ControllerName,
+					NameSpace = project.DefaultNamespace + ".Controllers"
+				};
 
 				host.ProcessTemplate (dialog.TemplateFile, outputFile);
 				MonoDevelop.TextTemplating.TextTemplatingService.ShowTemplateHostErrors (host.Errors);
 
 			} finally {
-				if (handle != null)
-					handle.Dispose ();
+				if (host != null)
+					host.Dispose ();
 				if (dialog != null)
 					dialog.Destroy ();
 			}
@@ -170,7 +166,6 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			
 			string outputFile = null;
 			MvcTextTemplateHost host = null;
-			Mono.TextTemplating.TemplatingAppDomainRecycler.Handle handle = null;
 			AddViewDialog dialog = null;
 			
 			try {
@@ -200,16 +195,13 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 							!= AlertButton.Cancel;
 					} else
 						break;
-				}	
+				}
 				
-				handle = MonoDevelop.TextTemplating.TextTemplatingService.GetTemplatingDomain ();
-				handle.AddAssembly (typeof (MvcTextTemplateHost).Assembly);
-				
-				host = MvcTextTemplateHost.Create (handle.Domain);
-				
-				host.LanguageExtension = provider.FileExtension;
-				host.ItemName = dialog.ViewName;
-				host.ViewDataTypeString = "";
+				host = new MvcTextTemplateHost {
+					LanguageExtension = provider.FileExtension,
+					ItemName = dialog.ViewName,
+					ViewDataTypeString = ""
+				};
 				
 				if (dialog.HasMaster) {
 					host.IsViewContentPage = true;
@@ -229,8 +221,8 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 				MonoDevelop.TextTemplating.TextTemplatingService.ShowTemplateHostErrors (host.Errors);
 				
 			} finally {
-				if (handle != null)
-					handle.Dispose ();
+				if (host != null)
+					host.Dispose ();
 				if (dialog != null)
 					dialog.Destroy ();
 			}

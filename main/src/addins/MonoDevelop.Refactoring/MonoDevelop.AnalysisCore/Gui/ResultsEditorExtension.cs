@@ -56,13 +56,16 @@ namespace MonoDevelop.AnalysisCore.Gui
 		
 		public override void Dispose ()
 		{
-			if (!disposed) {
-				AnalysisOptions.AnalysisEnabled.Changed -= AnalysisOptionsChanged;
-				CancelTask ();
-				disposed = true;
-			}
-			markers.Clear ();
-			base.Dispose ();
+			if (disposed) 
+				return;
+			enabled = false;
+			Document.DocumentParsed -= OnDocumentParsed;
+			CancelTask ();
+			AnalysisOptions.AnalysisEnabled.Changed -= AnalysisOptionsChanged;
+			while (markers.Count > 0)
+				Document.Editor.Document.RemoveMarker (markers.Dequeue ());
+			tasks.Clear ();
+			disposed = true;
 		}
 		
 		bool enabled;

@@ -148,6 +148,8 @@ namespace Mono.TextEditor
 				return;
 			int ox, oy;
 			editor.GdkWindow.GetOrigin (out ox, out oy);
+			ox += editor.Allocation.X;
+			oy += editor.Allocation.Y;
 			editor.Destroyed += HandleEditorDestroy;
 			var geometry = editor.Screen.GetUsableMonitorGeometry (editor.Screen.GetMonitorAtPoint (ox, oy));
 			var req = HelpWindow.SizeRequest ();
@@ -162,6 +164,8 @@ namespace Mono.TextEditor
 				return;
 			int ox, oy;
 			editor.GdkWindow.GetOrigin (out ox, out oy);
+			ox += editor.Allocation.X;
+			oy += editor.Allocation.Y;
 			editor.Destroyed += HandleEditorDestroy;
 			var geometry = editor.Screen.GetUsableMonitorGeometry (editor.Screen.GetMonitorAtPoint (ox, oy));
 			var req = HelpWindow.SizeRequest ();

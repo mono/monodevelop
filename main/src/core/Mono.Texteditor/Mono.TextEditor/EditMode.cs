@@ -263,5 +263,13 @@ namespace Mono.TextEditor
 			if (editor != null)
 				editor.HideMouseCursor ();
 		}
+
+		#region TextAreaControl
+		public virtual void AllocateTextArea (TextEditor textEditor, TextArea textArea, Rectangle allocation)
+		{
+			if (textArea.Allocation != allocation)
+				textArea.SizeAllocate (allocation);
+		}
+		#endregion
 	}
 }

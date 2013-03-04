@@ -134,10 +134,6 @@ namespace MonoDevelop.Ide.Gui.Content
 		
 		public virtual void Dispose ()
 		{
-			if (Next != null) {
-				Next.Dispose ();
-				Next = null;
-			}
 		}
 		
 		void CheckInitialized ()

@@ -227,6 +227,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				tle.Exited += (sender, e) => DisposeOnClose (); 
 				tle.StartMode ();
 				document.Editor.CurrentMode = tle;
+				document.ReparseDocument ();
 			}
 			return tcs.Task;
 		}

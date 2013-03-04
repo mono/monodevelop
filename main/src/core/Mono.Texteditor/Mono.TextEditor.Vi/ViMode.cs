@@ -103,7 +103,17 @@ namespace Mono.TextEditor.Vi
 		bool searchBackward;
 		static string lastPattern;
 		static string lastReplacement;
-		State state;
+		State curState;
+		State CurState {
+			get {
+				return curState;
+			}
+			set {
+				curState = value;
+				viTextEditor.Caret.IsVisible = curState != State.Command;
+			}
+		}
+
 		Motion motion;
 		const string substMatch = @"^:s(?<sep>.)(?<pattern>.+?)\k<sep>(?<replacement>.*?)(\k<sep>(?<trailer>i?))?$";
 		StringBuilder commandBuffer = new StringBuilder ();
@@ -129,8 +139,8 @@ namespace Mono.TextEditor.Vi
 				} else {
 					statusText = value + " recording";
 				}
+				statusArea.QueueDraw ();
 			}
-	
 		}
 		
 		protected virtual string RunExCommand (string command)
@@ -215,38 +225,41 @@ namespace Mono.TextEditor.Vi
 		
 		public override bool WantsToPreemptIM {
 			get {
-				return state != State.Insert && state != State.Replace;
+				return CurState != State.Insert && CurState != State.Replace;
 			}
 		}
 		
 		protected override void SelectionChanged ()
 		{
 			if (Data.IsSomethingSelected) {
-				state = ViEditMode.State.Visual;
+				CurState = ViEditMode.State.Visual;
 				Status = "-- VISUAL --";
-			} else if (state == State.Visual && !Data.IsSomethingSelected) {
+			} else if (CurState == State.Visual && !Data.IsSomethingSelected) {
 				Reset ("");
 			}
 		}
 		
 		protected override void CaretPositionChanged ()
 		{
-			if (state == State.Replace || state == State.Insert || state == State.Visual)
+			if (CurState == State.Replace || CurState == State.Insert || CurState == State.Visual)
 				return;
-			else if (state == ViEditMode.State.Normal || state == ViEditMode.State.Unknown)
+			else if (CurState == ViEditMode.State.Normal || CurState == ViEditMode.State.Unknown)
 				ViActions.RetreatFromLineEnd (Data);
 			else
 				Reset ("");
 		}
-		
+
+		ViStatusArea statusArea;
+		TextEditor viTextEditor;
+
 		void CheckVisualMode ()
 		{
-			if (state == ViEditMode.State.Visual || state == ViEditMode.State.Visual) {
+			if (CurState == ViEditMode.State.Visual || CurState == ViEditMode.State.Visual) {
 				if (!Data.IsSomethingSelected)
-					state = ViEditMode.State.Normal;
+					CurState = ViEditMode.State.Normal;
 			} else {
 				if (Data.IsSomethingSelected) {
-					state = ViEditMode.State.Visual;
+					CurState = ViEditMode.State.Visual;
 					Status = "-- VISUAL --";
 				}
 			}
@@ -275,16 +288,31 @@ namespace Mono.TextEditor.Vi
 		{
 			data.Caret.Mode = CaretMode.Block;
 			ViActions.RetreatFromLineEnd (data);
+
+			viTextEditor = data.Parent;
+			if (viTextEditor != null) {
+				statusArea = new ViStatusArea (viTextEditor, this);
+				viTextEditor.AddTopLevelWidget (statusArea, 0, 0);
+				((TextEditor.EditorContainerChild)viTextEditor[statusArea]).FixedPosition = true;
+				statusArea.Show ();
+			}
 		}
 		
 		protected override void OnRemovedFromEditor (TextEditorData data)
 		{
 			data.Caret.Mode = CaretMode.Insert;
+			if (viTextEditor != null) {
+				viTextEditor.Remove (statusArea);
+				statusArea.Destroy ();
+				statusArea = null;
+				viTextEditor = null;
+			}
+
 		}
 		
 		void Reset (string status)
 		{
-			state = State.Normal;
+			CurState = State.Normal;
 			ResetEditorState (Data);
 			
 			commandBuffer.Length = 0;
@@ -331,7 +359,7 @@ namespace Mono.TextEditor.Vi
 			Action<TextEditorData> action = null;
 			bool lineAction = false;
 			
-			switch (state) {
+			switch (CurState) {
 			case State.Unknown:
 				Reset (string.Empty);
 				goto case State.Normal;
@@ -343,7 +371,7 @@ namespace Mono.TextEditor.Vi
 					case '?':
 					case '/':
 					case ':':
-						state = State.Command;
+						CurState = State.Command;
 						commandBuffer.Append ((char)unicodeKey);
 						Status = commandBuffer.ToString ();
 						return;
@@ -363,39 +391,39 @@ namespace Mono.TextEditor.Vi
 					case 'i':
 						Caret.Mode = CaretMode.Insert;
 						Status = "-- INSERT --";
-						state = State.Insert;
+						CurState = State.Insert;
 						return;
 						
 					case 'R':
 						Caret.Mode = CaretMode.Underscore;
 						Status = "-- REPLACE --";
-						state = State.Replace;
+						CurState = State.Replace;
 						return;
 
 					case 'V':
 						Status = "-- VISUAL LINE --";
 						Data.SetSelectLines (Caret.Line, Caret.Line);
-						state = State.VisualLine;
+						CurState = State.VisualLine;
 						return;
 						
 					case 'v':
 						Status = "-- VISUAL --";
-						state = State.Visual;
+						CurState = State.Visual;
 						RunAction (ViActions.VisualSelectionFromMoveAction (ViActions.Right));
 						return;
 						
 					case 'd':
 						Status = "d";
-						state = State.Delete;
+						CurState = State.Delete;
 						return;
 						
 					case 'y':
 						Status = "y";
-						state = State.Yank;
+						CurState = State.Yank;
 						return;
 
 					case 'Y':
-						state = State.Yank;
+						CurState = State.Yank;
 						HandleKeypress (Gdk.Key.y, (int)'y', Gdk.ModifierType.None);
 						return;
 						
@@ -410,13 +438,13 @@ namespace Mono.TextEditor.Vi
 					case 'r':
 						Caret.Mode = CaretMode.Underscore;
 						Status = "-- REPLACE --";
-						state = State.WriteChar;
+						CurState = State.WriteChar;
 						return;
 						
 					case 'c':
 						Caret.Mode = CaretMode.Insert;
 						Status = "c";
-						state = State.Change;
+						CurState = State.Change;
 						return;
 						
 					case 'x':
@@ -450,12 +478,12 @@ namespace Mono.TextEditor.Vi
 						
 					case '>':
 						Status = ">";
-						state = State.Indent;
+						CurState = State.Indent;
 						return;
 						
 					case '<':
 						Status = "<";
-						state = State.Unindent;
+						CurState = State.Unindent;
 						return;
 					case 'n':
 						Search ();
@@ -485,7 +513,7 @@ namespace Mono.TextEditor.Vi
 						
 					case 'g':
 						Status = "g";
-						state = State.G;
+						CurState = State.G;
 						return;
 						
 					case 'H':
@@ -513,28 +541,28 @@ namespace Mono.TextEditor.Vi
 						
 					case 'z':
 						Status = "z";
-						state = State.Fold;
+						CurState = State.Fold;
 						return;
 						
 					case 'm':
 						Status = "m";
-						state = State.Mark;
+						CurState = State.Mark;
 						return;
 						
 					case '`':
 						Status = "`";
-						state = State.GoToMark;
+						CurState = State.GoToMark;
 						return;
 						
 					case '@':
 						Status = "@";
-						state = State.PlayMacro;
+						CurState = State.PlayMacro;
 						return;
 	
 					case 'q':
 						if (currentMacro == null) {
 							Status = "q";
-							state = State.NameMacro;
+							CurState = State.NameMacro;
 							return;
 						} 
 						currentMacro = null;
@@ -650,7 +678,7 @@ namespace Mono.TextEditor.Vi
 					else
 						RunActions (action, ClipboardActions.Cut);
 					Status = "-- INSERT --";
-					state = State.Insert;
+					CurState = State.Insert;
 					Caret.Mode = CaretMode.Insert;
 				} else {
 					Reset ("Unrecognised motion");
@@ -737,7 +765,7 @@ namespace Mono.TextEditor.Vi
 				case Gdk.Key.KP_Enter:
 					Status = RunExCommand (commandBuffer.ToString ());
 					commandBuffer.Length = 0;
-					state = State.Normal;
+					CurState = State.Normal;
 					break;
 				case Gdk.Key.BackSpace:
 				case Gdk.Key.Delete:
@@ -1009,7 +1037,7 @@ namespace Mono.TextEditor.Vi
 				case 'c':
 					RunAction (ClipboardActions.Cut);
 					Caret.Mode = CaretMode.Insert;
-					state = State.Insert;
+					CurState = State.Insert;
 					Status = "-- INSERT --";
 					return;
 				case 'S':
@@ -1029,7 +1057,7 @@ namespace Mono.TextEditor.Vi
 				case ':':
 					commandBuffer.Append (":");
 					Status = commandBuffer.ToString ();
-					state = State.Command;
+					CurState = State.Command;
 					break;
 				case 'J':
 					RunAction (ViActions.Join);
@@ -1172,6 +1200,67 @@ namespace Mono.TextEditor.Vi
 			GoToMark,
 			NameMacro,
 			PlayMacro
+		}
+
+		public override void AllocateTextArea (TextEditor textEditor, TextArea textArea, Gdk.Rectangle allocation)
+		{
+			if (!statusArea.Visible)
+				statusArea.Show ();
+			allocation.Height -= (int)textArea.LineHeight;
+			if (textArea.Allocation != allocation)
+				textArea.SizeAllocate (allocation);
+			statusArea.SetSizeRequest (allocation.Width, (int)viTextEditor.LineHeight);
+			viTextEditor.MoveTopLevelWidget (statusArea, 0, allocation.Height);
+		}
+
+		class ViStatusArea : Gtk.DrawingArea
+		{
+			TextEditor editor;
+			ViEditMode editMode;
+
+			public ViStatusArea (TextEditor editor, ViEditMode editMode)
+			{
+				this.editor = editor;
+				this.editMode = editMode;
+				editor.TextViewMargin.CaretBlink += HandleCaretBlink;
+			}
+
+			void HandleCaretBlink (object sender, EventArgs e)
+			{
+				QueueDraw ();
+			}
+
+			protected override void OnDestroyed ()
+			{
+				editor.TextViewMargin.CaretBlink -= HandleCaretBlink;
+				base.OnDestroyed ();
+			}
+			
+			protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+			{
+				using (Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
+					cr.Rectangle (evnt.Region.Clipbox.X, evnt.Region.Clipbox.Y, evnt.Region.Clipbox.Width, evnt.Region.Clipbox.Height);
+					cr.Color = editor.ColorStyle.PlainText.Background;
+					cr.Fill ();
+					using (var layout = PangoUtil.CreateLayout (editor)) {
+						layout.FontDescription = editor.Options.Font;
+						layout.SetText (editMode.Status);
+
+						cr.MoveTo (0, 0);
+						cr.Color = editor.ColorStyle.PlainText.Foreground;
+						cr.ShowLayout (layout);
+						int w, h;
+						layout.GetPixelSize (out w, out h);
+						if (editMode.CurState == ViEditMode.State.Command) {
+							if (editor.TextViewMargin.caretBlink) {
+								cr.Rectangle (w, 0, (int)editor.TextViewMargin.CharWidth, (int)editor.LineHeight);
+								cr.Fill ();
+							}
+						}
+					}
+				}
+				return true;
+			}
 		}
 	}
 

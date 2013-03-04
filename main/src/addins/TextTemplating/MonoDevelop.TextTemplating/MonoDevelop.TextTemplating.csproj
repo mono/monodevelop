@@ -46,6 +46,7 @@
     <Compile Include="TextTemplatingFileGenerator.cs" />
     <Compile Include="MonoDevelopTemplatingHost.cs" />
     <Compile Include="ThreadAsyncOperation.cs" />
+    <Compile Include="ProjectFileTemplatingHost.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
