@@ -50,13 +50,20 @@ namespace MonoDevelop.AspNet.Gui
 {
 	public class AspNetEditorExtension : BaseHtmlEditorExtension
 	{
+		static readonly Regex DocTypeRegex = new Regex (@"(?:PUBLIC|public)\s+""(?<fpi>[^""]*)""\s+""(?<uri>[^""]*)""");
+
 		AspNetParsedDocument aspDoc;
 		AspNetAppProject project;
 		DocumentReferenceManager refman;
+
+		ILanguageCompletionBuilder documentBuilder;
+		LocalDocumentInfo localDocumentInfo;
+		DocumentInfo documentInfo;
+
+		ICompletionWidget defaultCompletionWidget;
+		MonoDevelop.Ide.Gui.Document defaultDocument;
 		
-		bool HasDoc { get { return aspDoc != null; } }
-		 
-		Regex DocTypeRegex = new Regex (@"(?:PUBLIC|public)\s+""(?<fpi>[^""]*)""\s+""(?<uri>[^""]*)""");
+		bool HasDoc { get { return aspDoc != null; } } 
 		
 		#region Setup and teardown
 		
@@ -88,13 +95,10 @@ namespace MonoDevelop.AspNet.Gui
 			documentBuilder = HasDoc ? LanguageCompletionBuilderService.GetBuilder (aspDoc.Info.Language) : null;
 			
 			if (documentBuilder != null) {
-				var usings = refman.GetUsings ();
-				documentInfo = new DocumentInfo (document.Compilation, aspDoc, usings, refman.GetDoms ());
-				documentInfo.ParsedDocument = documentBuilder.BuildDocument (documentInfo, Editor);
-				documentInfo.CodeBesideClass = CreateCodeBesideClass (documentInfo, refman);
-/*				var domWrapper = new AspProjectDomWrapper (documentInfo);
-				if (localDocumentInfo != null)
-					localDocumentInfo.HiddenDocument.HiddenContext = domWrapper;*/
+				documentInfo = new DocumentInfo (document.Compilation, aspDoc, refman.GetUsings (), refman.GetDoms ()) {
+					ParsedDocument = documentBuilder.BuildDocument (documentInfo, Editor),
+					CodeBesideClass = CreateCodeBesideClass (documentInfo, refman)
+				};
 			}
 		}
 		
@@ -113,12 +117,7 @@ namespace MonoDevelop.AspNet.Gui
 			}
 			return t;
 		}
-		
-		ILanguageCompletionBuilder documentBuilder;
-		LocalDocumentInfo localDocumentInfo;
-		DocumentInfo documentInfo;
-		
-		
+
 		protected override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext,
 		                                                            bool forced, ref int triggerWordLength)
 		{
@@ -241,10 +240,7 @@ namespace MonoDevelop.AspNet.Gui
 			}
 			return base.CodeCompletionCommand (completionContext);
 		}
-		
-		ICompletionWidget defaultCompletionWidget;
-		MonoDevelop.Ide.Gui.Document defaultDocument;
-//		AspProjectDomWrapper domWrapper;
+
 		public override void Initialize ()
 		{
 			base.Initialize ();
@@ -593,7 +589,7 @@ namespace MonoDevelop.AspNet.Gui
 				list.Add ("%$", "md-literal", GettextCatalog.GetString ("ASP.NET resource expression"));
 			}
 			
-			//valid on 2.0+ runtime only
+			//valid on 4.0+ runtime only
 			if (ProjClrVersion != ClrVersion.Net_4_0) {
 				list.Add ("%:", "md-literal", GettextCatalog.GetString ("ASP.NET HTML encoded expression"));
 			}
