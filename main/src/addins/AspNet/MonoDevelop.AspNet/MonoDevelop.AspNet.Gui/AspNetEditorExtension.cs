@@ -253,8 +253,35 @@ namespace MonoDevelop.AspNet.Gui
 			defaultDocument.Editor.Caret.PositionChanged += delegate {
 				OnCompletionContextChanged (CompletionWidget, EventArgs.Empty);
 			};
+			defaultDocument.Saved += AsyncUpdateDesignerFile;
 		}
-		
+
+		void AsyncUpdateDesignerFile (object sender, EventArgs e)
+		{
+			if (project == null)
+				return;
+
+			var file = project.GetProjectFile (FileName);
+			if (file == null)
+				return;
+
+			var designerFile = CodeBehind.GetDesignerFile (file);
+			if (designerFile == null)
+				return;
+
+			System.Threading.ThreadPool.QueueUserWorkItem (r => {
+				using (var monitor = MonoDevelop.Ide.IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (
+					GettextCatalog.GetString ("Updating ASP.NET Designer File..."), null, false))
+				{
+					var writer = CodeBehindWriter.CreateForProject (monitor, project);
+					var result = CodeBehind.UpdateDesignerFile (writer, project, file, designerFile);
+					//don't worry about reporting error's here for now
+					//if the user wants to see errors, they can compile
+					if (!result.Failed)
+						writer.WriteOpenFiles ();
+				}
+			});
+		}
 		
 		public override ICompletionDataList HandleCodeCompletion (
 		    CodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)

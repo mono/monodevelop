@@ -46,8 +46,6 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.AspNet
 {
-	
-	
 	public static class CodeBehind
 	{
 		public static string GetCodeBehindClassName (ProjectFile file)
@@ -57,44 +55,77 @@ namespace MonoDevelop.AspNet
 				return null;
 			return proj.GetCodebehindTypeName (file.Name);
 		}
-		
-		static void AddFail (List<CodeBehindWarning> errors, AspNetParsedDocument document, Error err)
+
+		public static ProjectFile GetDesignerFile (ProjectFile file)
 		{
-			errors.Add (new CodeBehindWarning (GettextCatalog.GetString (
-					"Parser failed with error {0}. CodeBehind members for this file will not be added.", err.Message),
-					document.FileName, err.Region.BeginLine, err.Region.BeginColumn));
+			var project = file.Project as AspNetAppProject;
+
+			var type = AspNetAppProject.DetermineWebSubtype (file.FilePath);
+			if (type != WebSubtype.WebForm && type != WebSubtype.WebControl && type != WebSubtype.MasterPage)
+				return null;
+
+			var dfName = project.LanguageBinding.GetFileName (file.FilePath + ".designer");
+			return project.Files.GetFile (dfName);
+		}
+
+		public static BuildResult UpdateDesignerFile (
+			CodeBehindWriter writer,
+			AspNetAppProject project,
+			ProjectFile file, ProjectFile designerFile
+		)
+		{
+			var result = new BuildResult ();
+
+			//parse the ASP.NET file
+			var parsedDocument = TypeSystemService.ParseFile (project, file.FilePath) as AspNetParsedDocument;
+			if (parsedDocument == null) {
+				result.AddError (string.Format ("Failed to parse file '{0}'", file.Name));
+				return result;
+			}
+
+			//TODO: ensure type system is up to date
+
+			CodeCompileUnit ccu;
+			result.Append (GenerateCodeBehind (project, designerFile.FilePath, parsedDocument, out ccu));
+			if (ccu != null) {
+				writer.WriteFile (designerFile.FilePath, ccu);
+			}
+
+			return result;
 		}
 		
-		public static System.CodeDom.CodeCompileUnit GenerateCodeBehind (AspNetAppProject project,
-		                                                                 string filename,
-		                                                                 AspNetParsedDocument document, 
-		                                                                 List<CodeBehindWarning> errors)
+		public static BuildResult GenerateCodeBehind (
+			AspNetAppProject project,
+			string filename,
+			AspNetParsedDocument document,
+			out CodeCompileUnit ccu)
 		{
+			ccu = null;
+			var result = new BuildResult ();
 			string className = document.Info.InheritedClass;
-			
-			if (document.HasErrors) {
-				AddFail (errors, document, document.Errors.Where (x => x.ErrorType == ErrorType.Error).First ());
-				return null;
-			}
+
+			foreach (var err in document.Errors)
+				result.AddError (filename, err.Region.BeginLine, err.Region.BeginColumn, null, err.Message);
+			if (result.ErrorCount > 0)
+				return result;
 			
 			if (string.IsNullOrEmpty (className))
-				return null;
+				return result;
 			
 			var refman = new DocumentReferenceManager (project) { Doc = document };
 			var memberList = new MemberListBuilder (refman, document.XDocument);
 			memberList.Build ();
-			
-			var err = memberList.Errors.Where (x => x.ErrorType == ErrorType.Error).FirstOrDefault ();
-			if (err != null) {
-				AddFail (errors, document, err);
-				return null;
-			}
+
+			foreach (var err in memberList.Errors)
+				result.AddError (filename, err.Region.BeginLine, err.Region.BeginColumn, null, err.Message);
+			if (result.ErrorCount > 0)
+				return result;
 			
 			//initialise the generated type
-			var ccu = new CodeCompileUnit ();
+			ccu = new CodeCompileUnit ();
 			var namespac = new CodeNamespace ();
 			ccu.Namespaces.Add (namespac); 
-			var typeDecl = new System.CodeDom.CodeTypeDeclaration () {
+			var typeDecl = new CodeTypeDeclaration {
 				IsClass = true,
 				IsPartial = true,
 			};
@@ -118,40 +149,36 @@ namespace MonoDevelop.AspNet
 					AspNetParsedDocument masterParsedDocument = null;
 					if (resolvedMaster != null)
 						masterParsedDocument = TypeSystemService.ParseFile (project, resolvedMaster.FilePath) as AspNetParsedDocument;
-					if (masterParsedDocument != null && !String.IsNullOrEmpty (masterParsedDocument.Info.InheritedClass)) {
+					if (masterParsedDocument != null && !String.IsNullOrEmpty (masterParsedDocument.Info.InheritedClass))
 						masterTypeName = masterParsedDocument.Info.InheritedClass;
-					} else {
-						errors.Add (new CodeBehindWarning (String.Format ("Could not find type for master '{0}'",
-						                                                  document.Info.MasterPageTypeVPath),
-						                                   document.FileName));
-					}
 				} catch (Exception ex) {
-					errors.Add (new CodeBehindWarning (String.Format ("Could not find type for master '{0}'",
-					                                                  document.Info.MasterPageTypeVPath),
-					                                   document.FileName));
 					LoggingService.LogWarning ("Error resolving master page type", ex);
+				}
+				if (string.IsNullOrEmpty (masterTypeName)) {
+					var msg = string.Format ("Could not find type for master '{0}'", document.Info.MasterPageTypeVPath);
+					result.AddError (filename, msg);
+					return result;
 				}
 			}
 			
 			if (masterTypeName != null) {
-				var masterProp = new CodeMemberProperty () {
+				var masterProp = new CodeMemberProperty {
 					Name = "Master",
 					Type = new CodeTypeReference (masterTypeName),
 					HasGet = true,
 					HasSet = false,
-					Attributes = System.CodeDom.MemberAttributes.Public | System.CodeDom.MemberAttributes.New 
-						| System.CodeDom.MemberAttributes.Final,
+					Attributes = MemberAttributes.Public | MemberAttributes.New | MemberAttributes.Final,
 				};
-				masterProp.GetStatements.Add (new System.CodeDom.CodeMethodReturnStatement (
-						new System.CodeDom.CodeCastExpression (masterTypeName, 
-							new System.CodeDom.CodePropertyReferenceExpression (
-								new System.CodeDom.CodeBaseReferenceExpression (), "Master"))));
+				masterProp.GetStatements.Add (new CodeMethodReturnStatement (
+						new CodeCastExpression (masterTypeName, 
+							new CodePropertyReferenceExpression (
+								new CodeBaseReferenceExpression (), "Master"))));
 				typeDecl.Members.Add (masterProp);
 			}
 			
 			//shortcut building the existing members type map
 			if (memberList.Members.Count == 0)
-				return ccu;
+				return result;
 			
 			var dom = refman.TypeCtx.Compilation;
 			var cls = ReflectionHelper.ParseReflectionName (className).Resolve (dom);
@@ -163,7 +190,7 @@ namespace MonoDevelop.AspNet
 				var type = new CodeTypeReference (member.Type.FullName);
 				typeDecl.Members.Add (new CodeMemberField (type, member.Name) { Attributes = MemberAttributes.Family });
 			}
-			return ccu;
+			return result;
 		}
 		
 		/// <summary>Filters out members whose names conflict with existing accessible members</summary>
