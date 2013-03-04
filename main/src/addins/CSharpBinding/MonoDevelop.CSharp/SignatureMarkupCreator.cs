@@ -83,7 +83,7 @@ namespace MonoDevelop.CSharp
 			if (type == null)
 				throw new ArgumentNullException ("type");
 			if (type.Kind == TypeKind.Null)
-				return highlight ? Highlight ("object", colorStyle.KeywordTypes) : "object";
+				return "?";
 			AstType astType;
 			try {
 				astType = astBuilder.ConvertType (type);
@@ -400,7 +400,7 @@ namespace MonoDevelop.CSharp
 				throw new ArgumentNullException ("t");
 
 			if (t.Kind == TypeKind.Null)
-				return GetTypeMarkup (resolver.Compilation.FindType (KnownTypeCode.Object), includeDeclaringTypes);
+				return "Type can not be resolved.";
 			if (t.Kind == TypeKind.Delegate)
 				return GetDelegateMarkup (t);
 			if (t.Kind == TypeKind.TypeParameter)
