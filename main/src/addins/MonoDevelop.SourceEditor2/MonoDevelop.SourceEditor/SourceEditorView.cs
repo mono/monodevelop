@@ -1622,6 +1622,8 @@ namespace MonoDevelop.SourceEditor
 		#region IClipboardHandler
 		public bool EnableCut {
 			get {
+				if (widget.SearchWidgetHasFocus)
+					return false;
 				return widget.TextEditor.HasFocus || widget.TextEditor.IsSomethingSelected;
 			}
 		}
@@ -1634,7 +1636,7 @@ namespace MonoDevelop.SourceEditor
 
 		public bool EnablePaste {
 			get {
-				return true;
+				return EnableCut;
 			}
 		}
 
@@ -1646,7 +1648,7 @@ namespace MonoDevelop.SourceEditor
 
 		public bool EnableSelectAll {
 			get {
-				return true;
+				return EnableCut;
 			}
 		}
 		
