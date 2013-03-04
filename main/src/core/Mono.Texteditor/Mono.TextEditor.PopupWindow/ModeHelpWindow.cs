@@ -38,7 +38,11 @@ namespace Mono.TextEditor.PopupWindow
 			get;
 			set;
 		}
-		
+
+		public bool SupportsAlpha {
+			get;
+			private set;
+		}
 
 		public ModeHelpWindow () : base (Gtk.WindowType.Popup)
 		{
@@ -50,11 +54,25 @@ namespace Mono.TextEditor.PopupWindow
 			this.DestroyWithParent = true;
 			
 			Items = new List<KeyValuePair<string, string>> ();
-			
-			var rgbaColormap = Screen.RgbaColormap;
-			if (rgbaColormap != null)
-				Colormap = rgbaColormap;
+			CheckScreenColormap ();
 		}
+
+		void CheckScreenColormap ()
+		{
+			SupportsAlpha = Screen.IsComposited;
+			if (SupportsAlpha) {
+				Colormap = Screen.RgbaColormap;
+			} else {
+				Colormap = Screen.RgbColormap;
+			}
+		}
+		
+		protected override void OnScreenChanged (Gdk.Screen previous_screen)
+		{
+			base.OnScreenChanged (previous_screen);
+			CheckScreenColormap ();
+		}
+
 	}
 
 	public class TableLayoutModeHelpWindow : ModeHelpWindow
@@ -264,54 +282,66 @@ namespace Mono.TextEditor.PopupWindow
 
 		protected override bool OnExposeEvent (Gdk.EventExpose args)
 		{
-			using (var g = Gdk.CairoHelper.Create (args.Window)) {
-				g.SetSourceRGBA (1, 1, 1, 0);
-				g.Operator = Cairo.Operator.Source;
-				g.Paint ();
+			if (SupportsAlpha) {
+				using (var g = Gdk.CairoHelper.Create (args.Window)) {
+					g.SetSourceRGBA (1, 1, 1, 0);
+					g.Operator = Cairo.Operator.Source;
+					g.Paint ();
+				}	
 			}
-
 			using (var g = Gdk.CairoHelper.Create (args.Window)) {
 				g.LineWidth = 1.5;
 				titleLayout.SetMarkup (TitleText);
 				int width, height;
 				titleLayout.GetPixelSize (out width, out height);
-				
+				var tw = SupportsAlpha ? triangleWidth : 0;
+				var th = SupportsAlpha ? triangleHeight : 0;
 				width += xDescriptionBorder * 2;
-				FoldingScreenbackgroundRenderer.DrawRoundRectangle (g, true, false, triangleWidth + 0.5, 0.5, height + yTitleBorder * 2 + 1.5, Allocation.Width - 1 - triangleWidth, height + yTitleBorder * 2);
+				if (SupportsAlpha) {
+					FoldingScreenbackgroundRenderer.DrawRoundRectangle (g, true, false, tw + 0.5, 0.5, height + yTitleBorder * 2 + 1.5, Allocation.Width - 1 - tw, height + yTitleBorder * 2);
+				} else {
+					g.Rectangle (0, 0, Allocation.Width, height + yTitleBorder * 2);
+				}
 				g.Color = titleBgColor;
 				g.FillPreserve ();
 				g.Color = borderColor;
 				g.Stroke ();
 				
 
-				g.MoveTo (triangleWidth + xDescriptionBorder, yTitleBorder);
+				g.MoveTo (tw + xDescriptionBorder, yTitleBorder);
 				g.Color = titleTextColor;
 				g.ShowLayout (titleLayout);
 
-				FoldingScreenbackgroundRenderer.DrawRoundRectangle (g, false, true, triangleWidth + 0.5, height + yTitleBorder * 2 + 0.5, height, Allocation.Width - 1 - triangleWidth, Allocation.Height - height - yTitleBorder * 2 - 1);
+				if (SupportsAlpha) {
+					FoldingScreenbackgroundRenderer.DrawRoundRectangle (g, false, true, tw + 0.5, height + yTitleBorder * 2 + 0.5, height, Allocation.Width - 1 - tw, Allocation.Height - height - yTitleBorder * 2 - 1);
+				} else {
+					g.Rectangle (0, height + yTitleBorder * 2, Allocation.Width, Allocation.Height - height - yTitleBorder * 2);
+				}
 				g.Color = bgColor;
 				g.FillPreserve ();
 				g.Color = borderColor;
 				g.Stroke ();
 
+				if (SupportsAlpha) {
 
-				g.MoveTo (triangleWidth, Allocation.Height / 2 - triangleHeight / 2);
-				g.LineTo (0, Allocation.Height / 2);
-				g.LineTo (triangleWidth, Allocation.Height / 2 + triangleHeight / 2);
-				g.LineTo (triangleWidth + 5, Allocation.Height / 2 + triangleHeight / 2);
-				g.LineTo (triangleWidth + 5, Allocation.Height / 2 - triangleHeight / 2);
-				g.ClosePath ();
-				g.Color = bgColor;
-				g.Fill ();
-				
-				g.MoveTo (triangleWidth, Allocation.Height / 2 - triangleHeight / 2);
-				g.LineTo (0, Allocation.Height / 2);
-				g.LineTo (triangleWidth, Allocation.Height / 2 + triangleHeight / 2);
-				g.Color = borderColor;
-				g.Stroke ();
+					g.MoveTo (tw, Allocation.Height / 2 - th / 2);
+					g.LineTo (0, Allocation.Height / 2);
+					g.LineTo (tw, Allocation.Height / 2 + th / 2);
+					g.LineTo (tw + 5, Allocation.Height / 2 + th / 2);
+					g.LineTo (tw + 5, Allocation.Height / 2 - th / 2);
+					g.ClosePath ();
+					g.Color = bgColor;
+					g.Fill ();
+					
+					g.MoveTo (tw, Allocation.Height / 2 - th / 2);
+					g.LineTo (0, Allocation.Height / 2);
+					g.LineTo (tw, Allocation.Height / 2 + th / 2);
+					g.Color = borderColor;
+					g.Stroke ();
+				}
 
 				int y = height + yTitleBorder * 2 + yDescriptionBorder;
-				g.MoveTo (triangleWidth + xDescriptionBorder, y);
+				g.MoveTo (tw + xDescriptionBorder, y);
 				g.Color = textColor;
 				g.ShowLayout (descriptionLayout);
 			}
