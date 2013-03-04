@@ -2080,7 +2080,7 @@ namespace MonoDevelop.Ide
 			bool isOpen;
 			var data = GetTextEditorData (filePath, out hadBom, out encoding, out isOpen);
 			operation (data);
-			if (isOpen) {
+			if (!isOpen) {
 				try { 
 					Mono.TextEditor.Utils.TextFileUtility.WriteText (filePath, data.Text, encoding, hadBom);
 				} catch (Exception e) {
