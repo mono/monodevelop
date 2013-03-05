@@ -154,10 +154,6 @@
   	</Extension>
   -->
 
-  	<Extension path="/MonoDevelop/SourceEditor2/SyntaxModes">
-    	<Templates resource="FSharpSyntaxMode.xml" />
-  	</Extension>
-
   	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
     	<Class fileExtensions=".fs,.fsi,.fsx,.fsscript" class="MonoDevelop.FSharp.FSharpTextEditorCompletion" />
   	</Extension>
