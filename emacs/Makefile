@@ -45,7 +45,7 @@ install : $(ac_exe) $(dest_root) $(dest_bin)
 		cp $$f $(dest_root) ;\
 	done
 # Copy bin folder.
-	cp -R $(bin_d) $(dest_bin)
+	cp -R $(bin_d) $(dest_root)
 
 
 $(dest_root) :; mkdir -p $(dest_root)
