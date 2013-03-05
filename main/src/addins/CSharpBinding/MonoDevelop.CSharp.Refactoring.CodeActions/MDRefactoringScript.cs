@@ -90,6 +90,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			var helpWindow = new Mono.TextEditor.PopupWindow.InsertionCursorLayoutModeHelpWindow ();
 			helpWindow.TransientFor = MonoDevelop.Ide.IdeApp.Workbench.RootWindow;
 			helpWindow.TitleText = operation;
+			helpWindow.Shown += (s, a) => DesktopService.RemoveWindowShadow (helpWindow);
 			mode.HelpWindow = helpWindow;
 			
 			switch (defaultPosition) {
@@ -179,6 +180,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				var helpWindow = new Mono.TextEditor.PopupWindow.InsertionCursorLayoutModeHelpWindow ();
 				helpWindow.TransientFor = MonoDevelop.Ide.IdeApp.Workbench.RootWindow;
 				helpWindow.TitleText = operation;
+				helpWindow.Shown += (s, a) => DesktopService.RemoveWindowShadow (helpWindow);
 				mode.HelpWindow = helpWindow;
 				
 				mode.CurIndex = 0;

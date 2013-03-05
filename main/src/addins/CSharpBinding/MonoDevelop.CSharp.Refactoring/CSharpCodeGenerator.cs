@@ -90,7 +90,7 @@ namespace MonoDevelop.CSharp.Refactoring
 
 			public string GetShortType (string ns, string name, int typeArguments = 0)
 			{
-				if (Document.ParsedDocument == null)
+				if (Document == null || Document.ParsedDocument == null)
 					return ns + "." + name;
 				var typeDef = new GetClassTypeReference (ns, name, typeArguments).Resolve (Document.Compilation.TypeResolveContext);
 				if (typeDef == null)

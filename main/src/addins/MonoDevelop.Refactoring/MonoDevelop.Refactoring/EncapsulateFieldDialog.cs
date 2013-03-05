@@ -408,8 +408,9 @@ namespace MonoDevelop.Refactoring {
 				data.Add (new FieldData (field, propertyName, read_only, mod));
 			} while (store.IterNext (ref iter));
 			
-			InsertionCursorEditMode mode = new InsertionCursorEditMode (editor.Editor.Parent, CodeGenerationService.GetInsertionPoints (editor, declaringType));
-			ModeHelpWindow helpWindow = new ModeHelpWindow ();
+			var mode = new InsertionCursorEditMode (editor.Editor.Parent, CodeGenerationService.GetInsertionPoints (editor, declaringType));
+			var helpWindow = new ModeHelpWindow ();
+			helpWindow.Shown += (s, a) => DesktopService.RemoveWindowShadow (helpWindow);
 			helpWindow.TransientFor = IdeApp.Workbench.RootWindow;
 			helpWindow.TitleText = GettextCatalog.GetString ("<b>Encapsulate Field -- Targeting</b>");
 			helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Key</b>"), GettextCatalog.GetString ("<b>Behavior</b>")));
@@ -430,7 +431,6 @@ namespace MonoDevelop.Refactoring {
 			if (idx >= 0)
 				mode.CurIndex = idx + 1;
 			mode.StartMode ();
-			DesktopService.RemoveWindowShadow (helpWindow);
 			mode.Exited += delegate(object s, InsertionCursorEventArgs args) {
 				if (args.Success) {
 					CodeGenerator generator =  CodeGenerator.CreateGenerator (editor.Editor.Document.MimeType, editor.Editor.TabsToSpaces, editor.Editor.Options.TabSize, editor.Editor.EolMarker);

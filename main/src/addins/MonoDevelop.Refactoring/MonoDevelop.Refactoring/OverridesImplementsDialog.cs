@@ -266,8 +266,9 @@ namespace MonoDevelop.Refactoring
 					}
 				}
 				
-				InsertionCursorEditMode mode = new InsertionCursorEditMode (editor.Editor.Parent, CodeGenerationService.GetInsertionPoints (editor, this.cls));
-				ModeHelpWindow helpWindow = new ModeHelpWindow ();
+				var mode = new InsertionCursorEditMode (editor.Editor.Parent, CodeGenerationService.GetInsertionPoints (editor, this.cls));
+				var helpWindow = new ModeHelpWindow ();
+				helpWindow.Shown += (s, a) => DesktopService.RemoveWindowShadow (helpWindow);
 				helpWindow.TransientFor = IdeApp.Workbench.RootWindow;
 				helpWindow.TitleText = GettextCatalog.GetString ("<b>Override -- Targeting</b>");
 				helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Key</b>"), GettextCatalog.GetString ("<b>Behavior</b>")));
@@ -278,7 +279,6 @@ namespace MonoDevelop.Refactoring
 				mode.HelpWindow = helpWindow;
 				mode.CurIndex = mode.InsertionPoints.Count - 1;
 				mode.StartMode ();
-				DesktopService.RemoveWindowShadow (helpWindow);
 				mode.Exited += delegate(object s, InsertionCursorEventArgs args) {
 					if (args.Success)
 						args.InsertionPoint.Insert (editor.Editor, code.ToString ());
