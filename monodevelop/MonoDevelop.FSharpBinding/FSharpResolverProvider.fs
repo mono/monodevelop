@@ -106,12 +106,18 @@ type FSharpLanguageItemTooltipProvider() =
   let p = new MonoDevelop.SourceEditor.LanguageItemTooltipProvider() 
   interface ITooltipProvider with 
 #else
-    inherit MonoDevelop.SourceEditor.LanguageItemTooltipProvider()
+    inherit Mono.TextEditor.TooltipProvider()
 #endif
     
 #if MONODEVELOP_AT_MOST_3_1_1
     member x.GetItem (editor, offset) =  p.GetItem(editor,offset)
 #endif
+    override x.GetItem (editor, offset) = 
+            let extEditor = editor :?> MonoDevelop.SourceEditor.ExtensibleTextEditor 
+            let (resolveResult, region) = extEditor.GetLanguageItem (offset)
+            if (resolveResult = null) then null else
+                let segment = new TextSegment (editor.LocationToOffset (region.BeginLine, region.BeginColumn), region.EndColumn - region.BeginColumn)
+                TooltipItem (resolveResult, segment)
 
     override x.CreateTooltipWindow (editor, offset, modifierState, item : Mono.TextEditor.TooltipItem) = 
             let doc = IdeApp.Workbench.ActiveDocument
