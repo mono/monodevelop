@@ -96,7 +96,7 @@ namespace MonoDevelop.SourceEditor
 				startOffset = ed.SelectionRange.Offset;
 				length = ed.SelectionRange.Length;
 			} else {
-				ICSharpCode.NRefactory.TypeSystem.DomRegion expressionRegion;
+				DomRegion expressionRegion;
 				ResolveResult res = ed.GetLanguageItem (offset, out expressionRegion);
 				
 				if (res == null || res.IsError || res.GetType () == typeof (ResolveResult))
