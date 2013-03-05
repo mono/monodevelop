@@ -1622,9 +1622,7 @@ namespace MonoDevelop.SourceEditor
 		#region IClipboardHandler
 		public bool EnableCut {
 			get {
-				if (widget.SearchWidgetHasFocus)
-					return false;
-				return widget.TextEditor.HasFocus || widget.TextEditor.IsSomethingSelected;
+				return !widget.SearchWidgetHasFocus;
 			}
 		}
 
