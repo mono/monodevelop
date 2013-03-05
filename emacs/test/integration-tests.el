@@ -56,20 +56,6 @@
 
 (require 'ert)
 
-(ert-deftest start-completion-process ()
-  "Check that we can start the completion process and request help"
-  (fsharp-mode-wrapper '("Program.fs")
-   (lambda ()
-     (find-file "Test1/Program.fs")
-     (should (buffer-live-p (get-buffer "*fsharp-complete*")))
-     (should (process-live-p ac-fsharp-completion-process))
-     (process-send-string ac-fsharp-completion-process "help\n")
-     (switch-to-buffer "*fsharp-complete*")
-     (with-timeout (waittime)
-       (while (< (length (buffer-string)) 100)
-         (accept-process-output ac-fsharp-completion-process)))
-     (should (search-backward "trigger completion request" nil t)))))
-
 (defconst waittime 5
   "Seconds to wait for data from background process")
 (defconst sleeptime 1

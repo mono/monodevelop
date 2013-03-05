@@ -9,7 +9,7 @@ Provides support for the F# language in Emacs. Includes the following features:
 The following features are under development:
 
 - Intelligent indentation
-- Experimental [intellisense support](README-intellisense.md).
+- Intellisense support.
 
 Requires Emacs 24+.
 
@@ -48,11 +48,14 @@ If you're not already using MELPA, add the following to your init.el:
 2. Add the following to your init.el:
     ```lisp
     (add-to-list 'load-path "~/.emacs.d/fsharp-mode/")
-
     (autoload 'fsharp-mode "fsharp-mode"     "Major mode for editing F# code." t)
     (autoload 'run-fsharp  "inf-fsharp-mode" "Run an inferior F# process." t)
     (add-to-list 'auto-mode-alist '("\\.fs[iylx]?$" . fsharp-mode))
     ```
+
+Note that if you do not use `make install`, which attempts to download
+the dependencies from MELPA for you, then you must ensure that you have
+installed them yourself. These can be found in `fsharp-mode-pkg.el`.
 
 ## Usage
 
@@ -62,6 +65,10 @@ tooltips if the current file is part of an F# project.
 
 To display a tooltip, move the cursor to a symbol and press
 <kbd>C-c C-t</kbd> (default).
+
+Completion will be invoked automatically on dot, as in Visual Studio.
+It may be invoked manually using `completion-at-point`, often bound to
+<kbd>M-TAB</kbd> and <kbd>C-M-i</kbd>.
 
 ## Configuration
 
@@ -79,11 +86,12 @@ On Windows:
 ```
 
 On Unix-like systems, you must use the *--readline-* flag to ensure F#
-Interactive will work correctly with Emacs.
+Interactive will work correctly with Emacs. Typically `fsi` and `fsc` are
+invoked through the shell scripts `fsharpi` and `fsharpc`.
 
 ```lisp
-(setq inferior-fsharp-program "mono path/to/fsharpi.exe --readline-")
-(setq fsharp-compiler "mono path/to/fsharpc.exe")
+(setq inferior-fsharp-program "path/to/fsharpi --readline-")
+(setq fsharp-compiler "path/to/fsharpc")
 ```
 
 ### Behavior
