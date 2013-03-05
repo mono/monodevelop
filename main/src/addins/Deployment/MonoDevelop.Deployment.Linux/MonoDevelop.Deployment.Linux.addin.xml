@@ -6,7 +6,7 @@
        url         = "http://www.monodevelop.com"
        description = "Provides basic deployment services for Linux"
        category    = "Deployment"
-       version     = "4.0"
+       version     = "4.0.2"
        flags       = "Hidden"
        compatVersion = "4.0">
 
@@ -15,9 +15,9 @@
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="4.0"/>
-		<Addin id="Ide" version="4.0"/>
-		<Addin id="Deployment" version="4.0"/>
+		<Addin id="Core" version="4.0.2"/>
+		<Addin id="Ide" version="4.0.2"/>
+		<Addin id="Deployment" version="4.0.2"/>
 	</Dependencies>
 
 	<Extension path = "/MonoDevelop/Ide/Commands">
