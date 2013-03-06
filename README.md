@@ -2,7 +2,7 @@
 
 This project contains advanced editing support for F# for a number of open editors
 * [MonoDevelop](#monodevelop-support)
-* [Emacs (in progress)](fsharpbinding/blob/master/emacs/README.md)
+* [Emacs (in progress)](emacs/README.md)
 * Vim (in progress)
 
 For more information about F# see [The F# Software Foundation](http://fsharp.org). Join [The F# Open Source Group](http://fsharp.github.com). We use [github](https://github.com/fsharp/fsharpbinding) for tracking work items and suggestions.
