@@ -447,7 +447,8 @@ namespace Mono.Debugging.Soft
 			HandleEventSet (vm.GetNextEventSet ());
 			
 			eventHandler = new Thread (EventHandler);
-			eventHandler.Name = "SDB event handler";
+			eventHandler.Name = "SDB Event Handler";
+			eventHandler.IsBackground = true;
 			eventHandler.Start ();
 		}
 		

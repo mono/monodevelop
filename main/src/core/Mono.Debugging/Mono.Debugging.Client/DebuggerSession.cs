@@ -265,7 +265,7 @@ namespace Mono.Debugging.Client
 		void Dispatch (Action action)
 		{
 			if (UseOperationThread) {
-				System.Threading.ThreadPool.QueueUserWorkItem (delegate {
+				ThreadPool.QueueUserWorkItem (delegate {
 					lock (slock) {
 						action ();
 					}
