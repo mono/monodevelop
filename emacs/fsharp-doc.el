@@ -116,13 +116,17 @@
 
 ;;; ----------------------------------------------------------------------------
 
+(defmutable prevpoint nil)
+
 (defn show-tooltip ()
   "Show tooltip info in the minibuffer."
   (interactive)
   (when (and fsharp-doc-mode
              (thing-at-point 'symbol)
              (not executing-kbd-macro)
-             (not (eq (selected-window) (minibuffer-window))))
+             (not (eq (selected-window) (minibuffer-window)))
+             (not (eq (point) (@ prevpoint))))
+    (@set prevpoint (point))
     (fsharp-mode-completion/show-typesig-at-point)))
 
 ;;; fsharp-doc.el ends here
