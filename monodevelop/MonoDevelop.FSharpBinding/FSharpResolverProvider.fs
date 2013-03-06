@@ -14,6 +14,7 @@ open System.Threading
 open Mono.TextEditor
 open MonoDevelop.Core
 open MonoDevelop.Ide
+open MonoDevelop.Ide.CodeCompletion
 open MonoDevelop.Ide.Gui
 open MonoDevelop.Ide.Gui.Content
 open MonoDevelop.Ide.TypeSystem
@@ -54,6 +55,7 @@ type internal FSharpLocalResolveResult(tip:DataTipText, ivar:IVariable) =
 //     main/src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/LanguageItemWindow.cs
 // was commented out in that change, but this means CreateTooltip is never called and no tooltips 
 // are ever created. So instead we just create the Gtk window ourselves here.
+
 #if CODE_BEFORE_WORKAROUND_FOR_MISSING_MONODEVELOP_TOOLTIPS_IN_3_0_4
 type FSharpLanguageItemTooltipProvider() = 
     let p = new MonoDevelop.SourceEditor.LanguageItemTooltipProvider() 
@@ -100,30 +102,49 @@ type internal FSharpLanguageItemWindow(tooltip: string) as this =
       | _ -> ()
 
 type FSharpLanguageItemTooltipProvider() = 
-    let p = new MonoDevelop.SourceEditor.LanguageItemTooltipProvider() 
-    interface ITooltipProvider with 
+#if MONODEVELOP_AT_MOST_3_1_1
+  let p = new MonoDevelop.SourceEditor.LanguageItemTooltipProvider() 
+  interface ITooltipProvider with 
+#else
+    inherit MonoDevelop.SourceEditor.LanguageItemTooltipProvider()
+#endif
     
-        member x.GetItem (editor, offset) =  p.GetItem(editor,offset)
+#if MONODEVELOP_AT_MOST_3_1_1
+    member x.GetItem (editor, offset) =  p.GetItem(editor,offset)
+#endif
 
-        member x.CreateTooltipWindow (editor, offset, modifierState, item) = 
+    override x.CreateTooltipWindow (editor, offset, modifierState, item : Mono.TextEditor.TooltipItem) = 
             let doc = IdeApp.Workbench.ActiveDocument
             if (doc = null) then null else
             match item.Item with 
             | :? FSharpLocalResolveResult as titem -> 
                 let tooltip = TipFormatter.formatTipWithHeader(titem.DataTip) 
+#if MONODEVELOP_AT_MOST_3_1_1           
                 let result = new FSharpLanguageItemWindow (tooltip)
+#else                
+                let result = new TooltipInformationWindow(ShowArrow = true)
+                let toolTipInfo = new TooltipInformation(SignatureMarkup = tooltip)
+                result.AddOverload(toolTipInfo)
+                result.RepositionWindow ()
+#endif                    
                 result :> Gtk.Window
-            | _ -> null
-    
-        member x.GetRequiredPosition (editor, tipWindow, requiredWidth, xalign) = 
+            | _ -> Debug.WriteLine("** not a FSharpLocalResolveResult!"); null
+
+    override x.GetRequiredPosition (editor, tipWindow : Gtk.Window, requiredWidth : int byref, xalign : double byref) = 
             match tipWindow with 
+#if MONODEVELOP_AT_MOST_3_1_1
             | :? FSharpLanguageItemWindow as win -> 
                 requiredWidth <- win.SetMaxWidth win.Screen.Width
+#else
+            | :? TooltipInformationWindow as win -> 
+                requiredWidth <- win.Allocation.Width
+#endif
                 xalign <- 0.5
             | _ -> ()
+#if MONODEVELOP_AT_MOST_3_1_1
+    override x.IsInteractive (editor, tipWindow) = false
+#endif
 
-        member x.IsInteractive (editor, tipWindow) =  
-            false
 #endif
     
 /// Implements "resolution" - looks for tool-tips at current locations
@@ -150,7 +171,7 @@ type FSharpResolverProvider() =
 
         if config = null then null else
 
-        Debug.WriteLine (sprintf "Resolver: Getting results of type checking")
+        Debug.WriteLine(sprintf "Resolver: Getting results of type checking")
         // Try to get typed result - with the specified timeout
         let tyRes = LanguageService.Service.GetTypedParseResult(new FilePath(doc.Editor.FileName), docText, doc.Project, config, timeout = ServiceSettings.blockingTimeout)
             
@@ -199,5 +220,5 @@ type FSharpResolverProvider() =
 #endif
       do Debug.WriteLine (sprintf "Resolver: in CreteTooltip")
       match result with
-      | :? FSharpLocalResolveResult as res -> TipFormatter.formatTipWithHeader(res.DataTip)
+      //| :? FSharpLocalResolveResult as res -> TipFormatter.formatTipWithHeader(res.DataTip)
       | _ -> null

@@ -153,33 +153,36 @@ module internal TipFormatter =
           let docs = node.SelectSingleNode ("Docs") 
           if docs = null then None else Some docs
 
-  let findMonoDocProviderForEntity (file, key)  = 
-      //printfn "AAA key = %A" key
-      let helpTree = MonoDevelop.Projects.HelpService.HelpTree
-      if (helpTree = null) then None else
+  ///check helpxml exist
+  let tryGetDoc key = 
+    let helpTree = MonoDevelop.Projects.HelpService.HelpTree
+    if helpTree = null then None 
+    else try Some(helpTree.GetHelpXml(key)) 
+         with ex -> Debug.WriteLine (sprintf "GetHelpXml failed for key %s:\r\n\t%A" key ex)
+                    None  
+                  
+  let findMonoDocProviderForEntity (file, key) = 
+      Debug.WriteLine (sprintf "key= %A, File= %A" key file) 
+      let typeMemberFormatter name = "/Type/Members/Member[@MemberName='" + name + "']" 
       match key with  
       | SimpleKey (parentId, name) -> 
-        //printfn "AAA parentId = %s, name = %s" parentId name
-        let doc = helpTree.GetHelpXml ("T:" + parentId)
-        if doc = null then None else
-
-        let docXml = doc.SelectSingleNode ("/Type/Members/Member[@MemberName='" + name + "']")
-       // printfn "AAA xml (simple) = null" 
-        if docXml = null then None else 
-        //printfn "AAA xml (simple) = <<<%s>>>" docXml.OuterXml
-        Some docXml.OuterXml
-
+          Debug.WriteLine (sprintf "SimpleKey parentId= %s, name= %s" parentId name )
+          match tryGetDoc ("T:" + parentId) with
+          | Some doc -> let docXml = doc.SelectSingleNode (typeMemberFormatter name)
+                        Debug.WriteLine (sprintf "SimpleKey xml (simple)= null" )
+                        if docXml = null then None else 
+                        Debug.WriteLine (sprintf "Simple xml (simple)= <<<%s>>>" docXml.OuterXml )
+                        Some docXml.OuterXml
+          | None -> None
       | MethodKey(parentId, name, count, args) -> 
-        //printfn "AAA MethodKey, parentId = %s, name = %s, args = %A" parentId name args
-        let doc = helpTree.GetHelpXml ("T:" + parentId)
-        if doc = null then None else
-
-        let nodeXmls = doc.SelectNodes ("/Type/Members/Member[@MemberName='" + name + "']")
-        let docXml = trySelectOverload (nodeXmls, args)
-        match docXml with 
-        | None -> None
-        | Some xml -> Some xml.OuterXml
-      | _ -> None
+          Debug.WriteLine (sprintf "MethodKey, parentId= %s, name= %s, count= %i args= %A" parentId name count args )
+          match tryGetDoc ("T:" + parentId) with
+          | Some doc -> let nodeXmls = doc.SelectNodes (typeMemberFormatter name)
+                        let docXml = trySelectOverload (nodeXmls, args)
+                        docXml |> Option.map (fun xml -> xml.OuterXml) 
+          | None -> None
+      | _ -> Debug.WriteLine (sprintf "**No match for key = %s" key)
+             None
       
   let findDocForEntity (file, key)  = 
       match findXmlDocProviderForEntity (file, key) with 
@@ -190,8 +193,6 @@ module internal TipFormatter =
   let private buildFormatComment cmt = 
     match cmt with
     | XmlCommentText(s) -> GLib.Markup.EscapeText s
-    // For 'XmlCommentSignature' we could get documentation from 'xml' 
-    // files, but I'm not sure whether these are available on Mono
     | XmlCommentSignature(file,key) -> 
         match findDocForEntity (file, key) with 
         | None -> ""
@@ -202,24 +203,22 @@ module internal TipFormatter =
             let summary = 
                 let idx1 = doc.IndexOf tag1
                 let idx2 = doc.IndexOf tag2
-                if (idx2 >= 0 && idx1 >= 0) then tag1 + doc.Substring (idx1 + tag1.Length, idx2 - idx1 - tag1.Length) + tag2
-                elif (idx1 >= 0) then tag1 + doc.Substring (idx1 + tag1.Length) + tag2
-                elif (idx2 >= 0) then tag1 + doc.Substring (0, idx2 - 1) + tag2
+                if (idx2 >= 0 && idx1 >= 0) then (* tag1 + *) doc.Substring (idx1 + tag1.Length, idx2 - idx1 - tag1.Length) (* + tag2 *) 
+                elif (idx1 >= 0) then (* tag1 + *) doc.Substring (idx1 + tag1.Length) (* + tag2 *) 
+                elif (idx2 >= 0) then (* tag1 + *) doc.Substring (0, idx2 - 1) (* + tag2 *) 
                 else doc
-
-            let html1 = 
-                try MonoDevelop.Ide.TypeSystem.AmbienceService.GetDocumentationMarkup summary 
-                with _ -> GLib.Markup.EscapeText summary
-            let html2 = if String.IsNullOrEmpty html1 then summary else html1
-            html2 
+            //    try MonoDevelop.Ide.TypeSystem.AmbienceService.GetSummaryMarkup summary 
+            //    with _ -> GLib.Markup.EscapeText summary
+            let summary = summary.Replace("\n","").Replace("\r","")
+            GLib.Markup.EscapeText summary
     | _ -> ""
 
   /// Format some of the data returned by the F# compiler
   ///
-  /// If 'isSingle' is true (meaning that this is the only tip displayed)
+  /// If 'canAddHeader' is true (meaning that this is the only tip displayed)
   /// then we add first line "Multiple overloads" because MD prints first
   /// int in bold (so that no overload is highlighted)
-  let private buildFormatElement isSingle el (sb:StringBuilder) =
+  let private buildFormatElement canAddHeader el (sb:StringBuilder) =
     match el with 
     | DataTipElementNone -> ()
     | DataTipElement(it, comment) -> 
@@ -234,7 +233,7 @@ module internal TipFormatter =
             (items |> Seq.take 10 |> List.ofSeq), 
              sprintf "   <i>(+%d other overloads)</i>" (items.Length - 10) 
           else items, null
-        if (isSingle && items.Length > 1) then
+        if (canAddHeader && items.Length > 1) then
           sb.AppendLine("Multiple overloads") |> ignore
         items |> Seq.iteri (fun i (it,comment) -> 
           sb.AppendLine(GLib.Markup.EscapeText it)  |> ignore
@@ -250,19 +249,20 @@ module internal TipFormatter =
         sb.Append("Composition error: " + GLib.Markup.EscapeText(err)) |> ignore
       
   /// Format some of the data returned by the F# compiler
-  let private buildFormatTip tip (sb:StringBuilder) = 
+  let private buildFormatTip canAddHeader tip (sb:StringBuilder) = 
     match tip with
     | DataTipText([single]) -> buildFormatElement true single sb
     | DataTipText(its) -> 
-        sb.AppendLine("Multiple items") |> ignore
+        if canAddHeader then 
+            sb.AppendLine("Multiple items") |> ignore
         its |> Seq.iteri (fun i item ->
           if i <> 0 then sb.AppendLine("\n--------------------\n") |> ignore
           buildFormatElement false item sb) 
 
   /// Format tool-tip that we get from the language service as string        
-  let formatTip tip = 
+  let formatTip canAddHeader tip = 
     let sb = new StringBuilder()
-    buildFormatTip tip sb
+    buildFormatTip canAddHeader tip sb
     let text = sb.ToString()
     let textSquashed =  MonoDevelop.Ide.TypeSystem.AmbienceService.BreakLines(text,120)
     textSquashed.Trim('\n', '\r')
@@ -310,7 +310,7 @@ module internal TipFormatter =
   /// MonoDevelop does this automatically for completion data, 
   /// so we do the same thing explicitly for hover tool-tips
   let formatTipWithHeader tip = 
-    let str = formatTip tip
+    let str = formatTip true tip
     let parts = str.Split([| '\n' |], 2)
     "<b>" + parts.[0] + "</b>" +
       (if parts.Length > 1 then "<small>\n" + parts.[1] + "</small>" else "")
@@ -335,7 +335,6 @@ module Parsing =
         let! res = many (if x.IsSome then (whitespace <|> fsharpIdentCharacter) else fsharpIdentCharacter) |> map String.ofReversedSeq 
         let! _ = optional (string "``") 
         return res }
-
 
   /// Parse remainder of a logn identifier before '.' (e.g. "Name.space.")
   /// (designed to look backwards - reverses the results after parsing)
