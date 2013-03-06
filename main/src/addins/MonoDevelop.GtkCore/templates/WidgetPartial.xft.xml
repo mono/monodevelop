@@ -6,6 +6,7 @@
 		<Icon>md-gui-file</Icon>
 		<_Category>Gtk</_Category>
 		<LanguageName>*</LanguageName>
+		<ProjectType>DotNet</ProjectType>
 		<_Description>Creates a custom Gtk Widget.</_Description>
 	</TemplateConfiguration>
 	
