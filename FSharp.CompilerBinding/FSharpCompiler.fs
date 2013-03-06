@@ -47,6 +47,10 @@ type FSharpCompiler(asmCompiler:Assembly, asmCompilerServer:Assembly, actualVers
     let asyncType = fSharpCore.GetType("Microsoft.FSharp.Control.FSharpAsync")
     let fsharpListType = fSharpCore.GetType("Microsoft.FSharp.Collections.FSharpList`1")
     let fsharpOptionType = fSharpCore.GetType("Microsoft.FSharp.Core.FSharpOption`1")
+
+    let dataTipText = asmCompiler.GetType(   "Microsoft.FSharp.Compiler.SourceCodeServices.DataTipText")
+    let dataTipElement = asmCompiler.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.DataTipElement")
+    let xmlComment = asmCompiler.GetType(    "Microsoft.FSharp.Compiler.SourceCodeServices.XmlComment")
     
     let funcConvertType = fSharpCore.GetType("Microsoft.FSharp.Core.FuncConvert")
     let toFSharpFunc = funcConvertType.GetMethods() |> Array.find (fun x -> x.Name = "ToFSharpFunc" && x.GetParameters().[0].ParameterType.Name = "Converter`2")
@@ -72,6 +76,10 @@ type FSharpCompiler(asmCompiler:Assembly, asmCompilerServer:Assembly, actualVers
         asmCompiler.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.NotifyFileTypeCheckStateIsDirty")
     member __.SourceTokenizer = sourceTokenizerType
     member __.TokenInformation = tokenInformationType
+
+    member __.DataTipText = dataTipText
+    member __.DataTipElement = dataTipElement
+    member __.XmlComment = xmlComment
     
     /// Set the currently loaded FSharpCompiler wrapper to a wrapper that
     /// wraps the specified library. This allows it to be used with any library
@@ -341,7 +349,7 @@ module SourceCodeServices =
 
   type DataTipElement(wrapped:obj) = 
     member x.Wrapped = wrapped
-
+      
   let (|DataTipElementNone|DataTipElement|DataTipElementGroup|DataTipElementCompositionError|) (el:DataTipElement) = 
     if el.Wrapped?IsDataTipElementNone then 
       DataTipElementNone
@@ -363,6 +371,16 @@ module SourceCodeServices =
   type DataTipText(wrapped:obj) = 
     member x.Wrapped = wrapped
     static member Empty = DataTipText(null)
+    static member Create(line:string) = 
+      let fsc =  FSharpCompiler.Current
+
+      let dte = fsc.DataTipElement
+      let comment = fsc.XmlComment?XmlCommentNone
+      let datatipelement : obj = dte?DataTipElement?``.ctor``(line, comment)
+      
+      let parameters = fsc.MakeList(fsc.DataTipElement, [datatipelement])
+      let datatiptext = fsc.DataTipText?NewDataTipText(parameters)
+      DataTipText(datatiptext)
 
   let (|DataTipText|) (d:DataTipText) = 
     if d.Wrapped = null then []
