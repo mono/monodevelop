@@ -419,6 +419,9 @@ namespace MonoDevelop.Components
 		[DllImport ("libcairo-2.dll", CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr cairo_pattern_set_extend(IntPtr pattern, CairoExtend extend);
 
+		[DllImport ("libcairo-2.dll", CallingConvention=CallingConvention.Cdecl)]
+		internal static extern IntPtr cairo_get_source (IntPtr cr);
+
 		enum CairoExtend {
 			CAIRO_EXTEND_NONE,
 			CAIRO_EXTEND_REPEAT,
@@ -429,7 +432,9 @@ namespace MonoDevelop.Components
 		public static void RenderTiled (this Cairo.Context self, Gdk.Pixbuf source, Gdk.Rectangle area, Gdk.Rectangle clip, double opacity = 1)
 		{
 			Gdk.CairoHelper.SetSourcePixbuf (self, source, area.X, area.Y);
-			cairo_pattern_set_extend (self.Pattern.Pointer, CairoExtend.CAIRO_EXTEND_REPEAT);
+			//NOTE: Mono.Cairo.Context.Pattern returns an object than cannot be safely disposed, so P/Invoke directly
+			var pattern = cairo_get_source (self.Handle);
+			cairo_pattern_set_extend (pattern, CairoExtend.CAIRO_EXTEND_REPEAT);
 			self.Rectangle (clip.ToCairoRect ());
 			self.Clip ();
 			self.PaintWithAlpha (opacity);
@@ -642,7 +647,6 @@ namespace MonoDevelop.Components
 		public void Dispose ()
 		{
 			if (Surface != null) {
-				Surface.Destroy ();
 				((IDisposable)Surface).Dispose ();
 			}
 		}

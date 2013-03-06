@@ -1036,15 +1036,16 @@ namespace MonoDevelop.Ide.Gui
 			ctx.LineWidth = 1;
 			LayoutTabBorder (ctx, allocation, tabBounds.Width, tabBounds.X, 0, active);
 			ctx.ClosePath ();
-			Cairo.LinearGradient gr = new LinearGradient (tabBounds.X, TopBarPadding, tabBounds.X, allocation.Bottom);
-			if (active) {
-				gr.AddColorStop (0, Styles.BreadcrumbGradientStartColor.MultiplyAlpha (tab.Opacity));
-				gr.AddColorStop (1, Styles.BreadcrumbBackgroundColor.MultiplyAlpha (tab.Opacity));
-			} else {
-				gr.AddColorStop (0, CairoExtensions.ParseColor ("f4f4f4").MultiplyAlpha (tab.Opacity));
-				gr.AddColorStop (1, CairoExtensions.ParseColor ("cecece").MultiplyAlpha (tab.Opacity));
+			using (LinearGradient gr = new LinearGradient (tabBounds.X, TopBarPadding, tabBounds.X, allocation.Bottom)) {
+				if (active) {
+					gr.AddColorStop (0, Styles.BreadcrumbGradientStartColor.MultiplyAlpha (tab.Opacity));
+					gr.AddColorStop (1, Styles.BreadcrumbBackgroundColor.MultiplyAlpha (tab.Opacity));
+				} else {
+					gr.AddColorStop (0, CairoExtensions.ParseColor ("f4f4f4").MultiplyAlpha (tab.Opacity));
+					gr.AddColorStop (1, CairoExtensions.ParseColor ("cecece").MultiplyAlpha (tab.Opacity));
+				}
+				ctx.Pattern = gr;
 			}
-			ctx.Pattern = gr;
 			ctx.Fill ();
 			
 			ctx.Color = new Cairo.Color (1, 1, 1, .5).MultiplyAlpha (tab.Opacity);
