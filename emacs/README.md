@@ -49,34 +49,45 @@ If you're not already using MELPA, add the following to your init.el:
     ```lisp
     (add-to-list 'load-path "~/.emacs.d/fsharp-mode/")
     (autoload 'fsharp-mode "fsharp-mode"     "Major mode for editing F# code." t)
-    (autoload 'run-fsharp  "inf-fsharp-mode" "Run an inferior F# process." t)
     (add-to-list 'auto-mode-alist '("\\.fs[iylx]?$" . fsharp-mode))
     ```
 
 Note that if you do not use `make install`, which attempts to download
 the dependencies from MELPA for you, then you must ensure that you have
-installed them yourself. These can be found in `fsharp-mode-pkg.el`.
+installed them yourself. A list can be found in `fsharp-mode-pkg.el`.
 
 ## Usage
 
 fsharp-mode should launch automatically whenever you open an F#
-buffer. It will automatically display type information and provide
-tooltips if the current file is part of an F# project.
+buffer. If a the current file is part of an F# project, and the
+intellisense process is not running, it will be launched, and
+the current project loaded.
 
-To display a tooltip, move the cursor to a symbol and press
-<kbd>C-c C-t</kbd> (default).
+Currently intellisense features can be offered for just one project at
+a time. To load a new F# project, use <kbd>C-c C-p</kbd>.
 
-Completion will be invoked automatically on dot, as in Visual Studio.
-It may be invoked manually using `completion-at-point`, often bound to
-<kbd>M-TAB</kbd> and <kbd>C-M-i</kbd>.
+While a project is loaded, the following features will be available:
+
+1. Type information for symbol at point will be displayed in the minibuffer
+2. Errors and warnings will be automatically highlighted, with mouseover
+   text.
+3. To display a tooltip, move the cursor to a symbol and press
+   <kbd>C-c C-t</kbd> (default).
+4. To jump to the definition of a symbol at point, use <kbd>C-c C-d</kbd>.
+5. Completion will be invoked automatically on dot, as in Visual Studio.
+   It may be invoked manually using `completion-at-point`, often bound to
+   <kbd>M-TAB</kbd> and <kbd>C-M-i</kbd>.
+6. To stop the intellisense process for any reason, use <kbd>C-c C-q</kbd>.
+
+In the event of any trouble, please open an issue on [Github](https://github.com/fsharp/fsharpbinding/) with the label `Emacs`.
 
 ## Configuration
 
 ### Compiler and REPL paths
 
 The F# compiler and interpreter should be set to good defaults for your
-OS. If you have a non-standard setup you may need to configure these
-paths manually.
+OS as long as the relevant executables can be found on your PATH. If you 
+have a non-standard setup you may need to configure these paths manually.
 
 On Windows:
 
@@ -134,6 +145,16 @@ If you want to shift the region by 2 spaces, use: <kbd>M-2 C-c r</kbd>
 
 In the interactive buffer, use <kbd>M-RET</kbd> to send the code without
 explicitly adding the `;;` thing.
+
+For key bindings that will be more familiar to users of Visual Studio, adding
+the following to your `init.el` may be a good start:
+
+```lisp
+(add-hook 'fsharp-mode-hook
+ (lambda ()
+   (define-key fsharp-mode-map (kbd "M-RET") 'fsharp-eval-region)
+   (define-key fsharp-mode-map (kbd "C-SPC") 'completion-at-point)))
+```
 
 ## Contributing
 
