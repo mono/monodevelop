@@ -132,11 +132,6 @@ namespace MonoDevelop.SourceEditor
 					endOffset = editor.Document.LocationToOffset (end);
 
 					expression = ed.GetTextBetween (startOffset, endOffset);
-					if (char.IsWhiteSpace (expression[0])) {
-						// FIXME: Mike: if I have "var @class = ...", why does GetTextBetween() return " @clas" ???
-						expression = ed.GetTextBetween (startOffset + 1, endOffset + 1);
-					}
-
 					length = expression.Length;
 				} else if (res is InvocationResolveResult) {
 					var ir = (InvocationResolveResult) res;
