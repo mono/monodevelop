@@ -23,11 +23,7 @@
 
         (push '("\\.fs[iylx]?$" . fsharp-mode) auto-mode-alist)
         (autoload 'fsharp-mode "fsharp-mode" "Major mode for editing F# code." t)
-        (autoload 'run-fsharp "inf-fsharp-mode" "Run an inferior F# process." t)
-        (autoload 'turn-on-fsharp-doc-mode "fsharp-doc")
-        (autoload 'fsharp-mode-completion/start-process "fsharp-mode-completion" "Launch the completion process" t)
-        (autoload 'fsharp-mode-completion/stop-process "fsharp-mode-completion" "Quit the completion process" t)
-        (autoload 'fsharp-mode-completion/load-project "fsharp-mode-completion" "Load the specified F# project" t))
+        (autoload 'turn-on-fsharp-doc-mode "fsharp-doc"))
 
        ((string= testmode "melpa") ; Install from MELPA
         (init-melpa)

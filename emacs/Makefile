@@ -9,7 +9,7 @@ bin_d  = $(abspath bin)/
 src_files         = $(wildcard ./*.el)
 integration_tests = $(test_d)integration-tests.el
 unit_tests        = $(filter-out $(integration_tests), $(wildcard $(test_d)*tests.el))
-utils             = $(test_d)test-common.el $(test_d)pos-tip-mock.el
+utils             = $(test_d)test-common.el
 
 # Emacs command format.
 emacs            = emacs
