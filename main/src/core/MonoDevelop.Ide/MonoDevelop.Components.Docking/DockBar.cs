@@ -215,9 +215,11 @@ namespace MonoDevelop.Components.Docking
 					gr = new Cairo.LinearGradient (alloc.X, alloc.Y, alloc.X + alloc.Width, alloc.Y);
 				else
 					gr = new Cairo.LinearGradient (alloc.X, alloc.Y, alloc.X, alloc.Y + alloc.Height);
-				gr.AddColorStop (0, Styles.DockBarBackground1);
-				gr.AddColorStop (1, Styles.DockBarBackground2);
-				ctx.Pattern = gr;
+				using (gr) {
+					gr.AddColorStop (0, Styles.DockBarBackground1);
+					gr.AddColorStop (1, Styles.DockBarBackground2);
+					ctx.Pattern = gr;
+				}
 				ctx.Fill ();
 
 				// Light shadow

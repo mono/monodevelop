@@ -181,10 +181,11 @@ namespace MonoDevelop.Components
 		{
 			using (var cr = Gdk.CairoHelper.Create (evnt.Window)) {
 				cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
-				Cairo.LinearGradient gr = new LinearGradient (0, 0, 0, Allocation.Height);
-				gr.AddColorStop (0, BackgroundGradientStart);
-				gr.AddColorStop (1, BackgroundGradientEnd);
-				cr.Pattern = gr;
+				using (LinearGradient gr = new LinearGradient (0, 0, 0, Allocation.Height)) {
+					gr.AddColorStop (0, BackgroundGradientStart);
+					gr.AddColorStop (1, BackgroundGradientEnd);
+					cr.Pattern = gr;
+				}
 				cr.Fill ();
 
 				cr.MoveTo (0.5, 0.5);
@@ -310,10 +311,11 @@ namespace MonoDevelop.Components
 			if (Active || HoverPosition.X >= 0) {
 				if (Active) {
 					cr.Rectangle (rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
-					Cairo.LinearGradient gr = new LinearGradient (rectangle.X, rectangle.Y, rectangle.X, rectangle.Y + rectangle.Height);
-					gr.AddColorStop (0, Tabstrip.ActiveGradientStart);
-					gr.AddColorStop (1, Tabstrip.ActiveGradientEnd);
-					cr.Pattern = gr;
+					using (var gr = new LinearGradient (rectangle.X, rectangle.Y, rectangle.X, rectangle.Y + rectangle.Height)) {
+						gr.AddColorStop (0, Tabstrip.ActiveGradientStart);
+						gr.AddColorStop (1, Tabstrip.ActiveGradientEnd);
+						cr.Pattern = gr;
+					}
 					cr.Fill ();
 					cr.Rectangle (rectangle.X + 0.5, rectangle.Y + 0.5, rectangle.Width - 1, rectangle.Height - 1);
 					cr.Color = new Cairo.Color (1, 1, 1, 0.05);
@@ -321,14 +323,15 @@ namespace MonoDevelop.Components
 					cr.Stroke ();
 				} else if (HoverPosition.X >= 0) {
 					cr.Rectangle (rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
-					Cairo.LinearGradient gr = new LinearGradient (rectangle.X, rectangle.Y, rectangle.X, rectangle.Y + rectangle.Height);
-					var c1 = Tabstrip.ActiveGradientStart;
-					var c2 = Tabstrip.ActiveGradientEnd;
-					c1.A = 0.2;
-					c2.A = 0.2;
-					gr.AddColorStop (0, c1);
-					gr.AddColorStop (1, c2);
-					cr.Pattern = gr;
+					using (var gr = new LinearGradient (rectangle.X, rectangle.Y, rectangle.X, rectangle.Y + rectangle.Height)) {
+						var c1 = Tabstrip.ActiveGradientStart;
+						var c2 = Tabstrip.ActiveGradientEnd;
+						c1.A = 0.2;
+						c2.A = 0.2;
+						gr.AddColorStop (0, c1);
+						gr.AddColorStop (1, c2);
+						cr.Pattern = gr;
+					}
 					cr.Fill ();
 				}
 			}

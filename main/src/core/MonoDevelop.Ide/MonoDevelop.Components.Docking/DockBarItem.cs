@@ -60,13 +60,13 @@ namespace MonoDevelop.Components.Docking
 			this.secondary = secondary.Copy ();
 		}
 
-		protected override void OnDestroyed ()
+		protected override void OnUnrealized ()
 		{
 			if (primarySurface != null)
 				primarySurface.Dispose ();
 			if (secondarySurface != null)
 				secondarySurface.Dispose ();
-			base.OnDestroyed ();
+			base.OnUnrealized ();
 		}
 
 		protected override void OnRealized ()
@@ -478,19 +478,21 @@ namespace MonoDevelop.Components.Docking
 					lg = new Cairo.LinearGradient (0, alloc.Y, 0, alloc.Y + alloc.Height);
 				}
 
-				Cairo.Color primaryColor = Styles.DockBarPrelightColor;
-				primaryColor.A = hoverProgress;
+				using (lg) {
+					Cairo.Color primaryColor = Styles.DockBarPrelightColor;
+					primaryColor.A = hoverProgress;
 
-				Cairo.Color transparent = primaryColor;
-				transparent.A = 0;
+					Cairo.Color transparent = primaryColor;
+					transparent.A = 0;
 
-				lg.AddColorStop (0.0, transparent);
-				lg.AddColorStop (0.35, primaryColor);
-				lg.AddColorStop (0.65, primaryColor);
-				lg.AddColorStop (1.0, transparent);
+					lg.AddColorStop (0.0, transparent);
+					lg.AddColorStop (0.35, primaryColor);
+					lg.AddColorStop (0.65, primaryColor);
+					lg.AddColorStop (1.0, transparent);
 
-				context.Rectangle (alloc.ToCairoRect ());
-				context.Pattern = lg;
+					context.Rectangle (alloc.ToCairoRect ());
+					context.Pattern = lg;
+				}
 				context.Fill ();
 
 				lg.Destroy ();

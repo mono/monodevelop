@@ -96,7 +96,7 @@ namespace MonoDevelop.SourceEditor
 				startOffset = ed.SelectionRange.Offset;
 				length = ed.SelectionRange.Length;
 			} else {
-				ICSharpCode.NRefactory.TypeSystem.DomRegion expressionRegion;
+				DomRegion expressionRegion;
 				ResolveResult res = ed.GetLanguageItem (offset, out expressionRegion);
 				
 				if (res == null || res.IsError || res.GetType () == typeof (ResolveResult))
@@ -125,16 +125,19 @@ namespace MonoDevelop.SourceEditor
 				if (res is LocalResolveResult) {
 					var lr = (LocalResolveResult) res;
 					
-					// Capture only the local variable portion of the expression...
-					expression = lr.Variable.Name;
-					length = expression.Length;
-					
-					// Calculate start offset based on the variable region because we don't want to include the type information.
-					// Note: We might not actually need to do this anymore?
-					if (lr.Variable.Region.BeginLine != start.Line || lr.Variable.Region.BeginColumn != start.Column) {
-						start = new DocumentLocation (lr.Variable.Region.BeginLine, lr.Variable.Region.BeginColumn);
-						startOffset = editor.Document.LocationToOffset (start);
+					// Use the start and end offsets of the variable region so that we get the "@" in variable names like "@class"
+					start = new DocumentLocation (lr.Variable.Region.BeginLine, lr.Variable.Region.BeginColumn);
+					end = new DocumentLocation (lr.Variable.Region.EndLine, lr.Variable.Region.EndColumn);
+					startOffset = editor.Document.LocationToOffset (start);
+					endOffset = editor.Document.LocationToOffset (end);
+
+					expression = ed.GetTextBetween (startOffset, endOffset);
+					if (char.IsWhiteSpace (expression[0])) {
+						// FIXME: Mike: if I have "var @class = ...", why does GetTextBetween() return " @clas" ???
+						expression = ed.GetTextBetween (startOffset + 1, endOffset + 1);
 					}
+
+					length = expression.Length;
 				} else if (res is InvocationResolveResult) {
 					var ir = (InvocationResolveResult) res;
 					
