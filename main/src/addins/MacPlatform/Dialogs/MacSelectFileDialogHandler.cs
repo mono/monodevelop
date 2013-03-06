@@ -25,8 +25,10 @@
 // THE SOFTWARE.
 
 using System;
+using System.Text;
 using System.Drawing;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using MonoMac.Foundation;
 using MonoMac.AppKit;
@@ -163,12 +165,12 @@ namespace MonoDevelop.MacIntegration
 		}
 		
 		//based on MonoDevelop.Ide.Extensions.MimeTypeNode
-		static System.Text.RegularExpressions.Regex CreateGlobRegex (IEnumerable<string> globs)
+		static Regex CreateGlobRegex (IEnumerable<string> globs)
 		{
-			var globalPattern = new System.Text.StringBuilder ();
+			var globalPattern = new StringBuilder ();
 			
 			foreach (var glob in globs) {
-				string pattern = System.Text.RegularExpressions.Regex.Escape (glob);
+				string pattern = Regex.Escape (glob);
 				pattern = pattern.Replace ("\\*",".*");
 				pattern = pattern.Replace ("\\?",".");
 				pattern = pattern.Replace ("\\|","$|^");
@@ -177,8 +179,8 @@ namespace MonoDevelop.MacIntegration
 					globalPattern.Append ('|');
 				globalPattern.Append (pattern);
 			}
-			return new System.Text.RegularExpressions.Regex (globalPattern.ToString (),
-				System.Text.RegularExpressions.RegexOptions.Compiled);
+
+			return new Regex (globalPattern.ToString (), RegexOptions.Compiled | RegexOptions.IgnoreCase);
 		}
 		
 		internal static NSPopUpButton CreateFileFilterPopup (SelectFileDialogData data, NSSavePanel panel)
