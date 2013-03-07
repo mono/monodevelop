@@ -31,10 +31,14 @@
    start-process
    stop-process
    show-tooltip-at-point
-   show-typesig-at-point]
+   show-typesig-at-point
+   show-error-at-point
+   next-error
+   fsharp-overlay-at]
   :use
   [(popup popup-tip)
    (pos-tip pos-tip-show)
+   dash
    s
    (fsharp-doc fsharp-doc/format-for-minibuffer)
    (fsharp-mode-indent fsharp-in-literal-p)])
@@ -140,9 +144,6 @@ display in a help buffer instead.")
   (let ((request (format "%s \"%s\" %d %d %d\n" cmd file line col
                          (* 1000 ac-fsharp-blocking-timeout))))
       (log-psendstr ac-fsharp-completion-process request)))
-
-(defun ac-fsharp-send-error-request ()
-  (log-psendstr ac-fsharp-completion-process "errors\n"))
 
 ;;;###autoload
 (defn stop-process ()
@@ -293,7 +294,7 @@ possibly many lines of description.")
 (defn request-errors ()
   (when (ac-fsharp-can-make-request)
     (ac-fsharp-parse-current-buffer)
-    (ac-fsharp-send-error-request)))
+    (log-psendstr ac-fsharp-completion-process "errors\n")))
 
 (defn line-column-to-pos (line col)
   (save-excursion
@@ -354,6 +355,49 @@ possibly many lines of description.")
   (remove-overlays nil nil 'face 'fsharp-error-face)
   (remove-overlays nil nil 'face 'fsharp-warning-face)
   (@set errors nil))
+
+;;; ----------------------------------------------------------------------------
+;;; Error navigation
+;;;
+;;; These functions hook into Emacs' error navigation API and should not
+;;; be called directly by users.
+
+(defn error-position (n-steps errs)
+  "Calculate the position of the next error to move to."
+  (let* ((xs (->> (sort (-map 'fsharp-error-start errs) '<)
+               (--remove (= (point) it))
+               (--split-with (>= (point) it))))
+         (before (nreverse (car xs)))
+         (after  (cadr xs))
+         (errs   (if (< n-steps 0) before after))
+         (step   (- (abs n-steps) 1))
+         )
+    (nth step errs)))
+
+(defn next-error (n-steps reset)
+  "Move forward N-STEPS number of errors, possibly wrapping
+around to the start of the buffer."
+  (when reset
+    (goto-char (point-min)))
+
+  (let ((pos (_ error-position n-steps (@ errors))))
+    (if pos
+        (goto-char pos)
+      (error "No more F# errors"))))
+
+(defn fsharp-overlay-p (ov)
+  (let ((face (overlay-get ov 'face)))
+    (or (equal 'fsharp-warning-face face)
+        (equal 'fsharp-error-face face))))
+
+(defn fsharp-overlay-at (pos)
+  (car-safe (-filter (~ fsharp-overlay-p)
+                     (overlays-at pos))))
+
+(defn show-error-at-point ()
+  (let ((ov (_ fsharp-overlay-at (point))))
+    (when ov
+      (message (overlay-get ov 'help-echo)))))
 
 ;;; ----------------------------------------------------------------------------
 ;;; Process handling
