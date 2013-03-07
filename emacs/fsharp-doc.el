@@ -53,7 +53,7 @@
 (define-minor-mode fsharp-doc-mode
   "Display F# documentation in the minibuffer."
   nil
-  " Doc"
+  ""
   nil
   ;; Body
   (in-ns fsharp-doc
