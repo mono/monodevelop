@@ -467,9 +467,8 @@ has requested a popup tooltip, display a popup. Otherwise,
 display a short summary in the minibuffer."
   ;; Do not display if the current buffer is not an fsharp buffer.
   (when (equal major-mode 'fsharp-mode)
-    (unless (or (active-minibuffer-window) )
+    (unless (or (active-minibuffer-window) cursor-in-echo-area)
       (let ((cleaned (replace-regexp-in-string "DATA: tooltip\n" "" str)))
-
         (if (@ awaiting-tooltip)
             (progn
               (@set awaiting-tooltip nil)
