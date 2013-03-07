@@ -137,8 +137,8 @@ a few useful bindings:
 - <kbd>C-c C-d</kbd>:       Jump to definition of symbol at point
 - <kbd>C-c C-t</kbd>:       Request a tooltip for symbol at point
 - <kbd>C-c C-q</kbd>:       Quit current background compiler process
-- <kbd>M-N</kbd>:           Go to next error
-- <kbd>M-P</kbd>:           Go to previous error
+- <kbd>M-n</kbd>:           Go to next error
+- <kbd>M-p</kbd>:           Go to previous error
 
 To interrupt the interactive mode, use <kbd>C-c C-c</kbd>. This is useful if your
 code does an infinite loop or a very long computation.

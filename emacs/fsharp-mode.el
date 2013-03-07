@@ -84,8 +84,8 @@ and whether it is in a project directory.")
   (define-key fsharp-mode-map "\C-c\C-s" 'fsharp-show-subshell)
   (define-key fsharp-mode-map "\M-\C-h" 'fsharp-mark-phrase)
 
-  (define-key fsharp-mode-map (kbd "M-N") 'next-error)
-  (define-key fsharp-mode-map (kbd "M-P") 'previous-error)
+  (define-key fsharp-mode-map (kbd "M-n") 'next-error)
+  (define-key fsharp-mode-map (kbd "M-p") 'previous-error)
 
   (define-key fsharp-mode-map "\C-cl" 'fsharp-shift-region-left)
   (define-key fsharp-mode-map "\C-cr" 'fsharp-shift-region-right)
