@@ -240,6 +240,7 @@ and whether it is in a project directory.")
   ;; Error navigation
   (setq next-error-function 'fsharp-mode-completion/next-error)
   (add-hook 'next-error-hook 'fsharp-mode-completion/show-error-at-point nil t)
+  (add-hook 'post-command-hook 'fsharp-mode-completion/show-error-at-point nil t)
 
   ;; make a local copy of the menubar, so our modes don't
   ;; change the global menubar
