@@ -123,13 +123,13 @@
 If there is an error or warning at point, show the error text.
 Otherwise, request a tooltip from the completion process."
   (interactive)
-  (when (and fsharp-doc-mode
-             (thing-at-point 'symbol)
-             (not executing-kbd-macro)
-             (not (_ fsharp-overlay-at (point)))
-             (not (eq (selected-window) (minibuffer-window)))
-             (not (equal (point) (@ prevpoint))))
-    (@set prevpoint (point))
-    (_ show-typesig-at-point)))
+  (when (and fsharp-doc-mode (thing-at-point 'symbol))
+    (unless (or (equal (point) (@ prevpoint))
+                executing-kbd-macro
+                (_ fsharp-overlay-at (point))
+                (active-minibuffer-window)
+                cursor-in-echo-area)
+      (@set prevpoint (point))
+      (_ show-typesig-at-point))))
 
 ;;; fsharp-doc.el ends here

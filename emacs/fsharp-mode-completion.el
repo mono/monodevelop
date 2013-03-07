@@ -148,7 +148,7 @@ display in a help buffer instead.")
 ;;;###autoload
 (defn stop-process ()
   (interactive)
-  (message "Quitting fsharp completion process")
+  (_ message-safely "Quitting fsharp completion process")
   (when
       (and ac-fsharp-completion-process
            (process-live-p ac-fsharp-completion-process))
@@ -174,9 +174,8 @@ display in a help buffer instead.")
   "Launch the F# completion process in the background"
   (interactive)
   (if ac-fsharp-completion-process
-      (message "Completion process already running. Shutdown existing process first.")
-    (message (format "Launching completion process: '%s'"
-                     (mapconcat 'identity ac-fsharp-complete-command " ")))
+      (_ message-safely "Completion process already running. Shutdown existing process first.")
+    (_ message-safely (format "Launching completion process: '%s'" (s-join " " ac-fsharp-complete-command)))
     (setq ac-fsharp-completion-process
           (let ((process-connection-type nil))
             (apply 'start-process
@@ -362,6 +361,12 @@ possibly many lines of description.")
 ;;; These functions hook into Emacs' error navigation API and should not
 ;;; be called directly by users.
 
+(defn message-safely (format-string &rest args)
+  "Calls MESSAGE only if it is desirable to do so."
+  (when (equal major-mode 'fsharp-mode)
+    (unless (or (active-minibuffer-window) cursor-in-echo-area)
+      (apply 'message format-string args))))
+
 (defn error-position (n-steps errs)
   "Calculate the position of the next error to move to."
   (let* ((xs (->> (sort (-map 'fsharp-error-start errs) '<)
@@ -397,7 +402,7 @@ around to the start of the buffer."
 (defn show-error-at-point ()
   (let ((ov (_ fsharp-overlay-at (point))))
     (when ov
-      (message (overlay-get ov 'help-echo)))))
+      (_ message-safely (overlay-get ov 'help-echo)))))
 
 ;;; ----------------------------------------------------------------------------
 ;;; Process handling
@@ -421,9 +426,9 @@ around to the start of the buffer."
          ((s-starts-with? "DATA: errors" msg)     (_ handle-errors msg))
          ((s-starts-with? "DATA: project" msg)    (_ handle-project msg))
          ((s-starts-with? "ERROR: " msg)          (_ handle-process-error msg))
-         ((s-starts-with? "INFO: " msg) (when ac-fsharp-verbose (message msg)))
+         ((s-starts-with? "INFO: " msg) (when ac-fsharp-verbose (_ message-safely msg)))
          (t
-          (message "Error: unrecognised message: '%s'" msg)))
+          (_ message-safely "Error: unrecognised message: '%s'" msg)))
 
         (setq ac-fsharp-partial-data part))
       (setq eofloc (string-match-p (@ eom) ac-fsharp-partial-data)))))
@@ -439,7 +444,7 @@ around to the start of the buffer."
             (col (string-to-number (match-string 3 str))))
         (find-file (match-string 1 str))
         (goto-char (_ line-column-to-pos line col)))
-    (message "Unable to find definition.")))
+    (_ message-safely "Unable to find definition.")))
 
 (defn handle-errors (str)
   "Display error overlays and set buffer-local error variables for error navigation."
@@ -456,15 +461,16 @@ has requested a popup tooltip, display a popup. Otherwise,
 display a short summary in the minibuffer."
   ;; Do not display if the current buffer is not an fsharp buffer.
   (when (equal major-mode 'fsharp-mode)
-    (let ((cleaned (replace-regexp-in-string "DATA: tooltip\n" "" str)))
+    (unless (or (active-minibuffer-window) )
+      (let ((cleaned (replace-regexp-in-string "DATA: tooltip\n" "" str)))
 
-      (if (@ awaiting-tooltip)
-          (progn
-            (@set awaiting-tooltip nil)
-            (if ac-fsharp-use-popup
-                (_ show-popup cleaned)
-              (_ show-info-window cleaned)))
-        (message (fsharp-doc/format-for-minibuffer cleaned))))))
+        (if (@ awaiting-tooltip)
+            (progn
+              (@set awaiting-tooltip nil)
+              (if ac-fsharp-use-popup
+                  (_ show-popup cleaned)
+                (_ show-info-window cleaned)))
+          (_ message-safely (fsharp-doc/format-for-minibuffer cleaned)))))))
 
 (defn show-popup (str)
   (if (display-graphic-p)
@@ -488,7 +494,7 @@ display a short summary in the minibuffer."
 
 (defn handle-process-error (str)
   (unless (s-matches? "Could not get type information" str)
-    (message str))
+    (_ message-safely str))
   (when ac-fsharp-waiting
     (setq ac-fsharp-completion-data nil)
     (setq ac-fsharp-waiting nil)))
