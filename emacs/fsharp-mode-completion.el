@@ -406,8 +406,9 @@ around to the start of the buffer."
 (defn show-error-at-point ()
   (let ((ov (_ fsharp-overlay-at (point)))
         (changed-pos (not (equal (point) (@ last-point)))))
+    (@set last-point (point))
+
     (when (and ov changed-pos)
-      (@set last-point (point))
       (_ message-safely (overlay-get ov 'help-echo)))))
 
 ;;; ----------------------------------------------------------------------------
