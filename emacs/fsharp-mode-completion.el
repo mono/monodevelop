@@ -399,9 +399,15 @@ around to the start of the buffer."
   (car-safe (-filter (~ fsharp-overlay-p)
                      (overlays-at pos))))
 
+;;; HACK: show-error-at point checks last position of point to prevent
+;;; corner-case interaction issues, e.g. when running `describe-key`
+(defmutable last-point)
+
 (defn show-error-at-point ()
-  (let ((ov (_ fsharp-overlay-at (point))))
-    (when ov
+  (let ((ov (_ fsharp-overlay-at (point)))
+        (changed-pos (not (equal (point) (@ last-point)))))
+    (when (and ov changed-pos)
+      (@set last-point (point))
       (_ message-safely (overlay-get ov 'help-echo)))))
 
 ;;; ----------------------------------------------------------------------------
