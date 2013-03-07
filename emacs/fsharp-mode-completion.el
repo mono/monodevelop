@@ -56,14 +56,12 @@
 display in a help buffer instead.")
 
 (defface fsharp-error-face
-  '((((class color) (background dark))  :weight bold :underline "Red")
-    (((class color) (background light)) :weight bold :underline "Red"))
+  '((t :inherit error))
   "Face used for marking an error in F#"
   :group 'fsharp)
 
 (defface fsharp-warning-face
-  '((((class color) (background dark))  :weight bold :underline "LightBlue1")
-    (((class color) (background light)) :weight bold :underline "Blue"))
+  '((t :inherit warning))
   "Face used for marking a warning in F#"
   :group 'fsharp)
 
