@@ -56,6 +56,10 @@ Try indenting this token further or using standard formatting conventions."
      "\n")
   "A list of errors containing a square bracket to check the parsing")
 
+(check "parses errors from given string"
+  (in-ns fsharp-mode-completion
+    (should= 3 (length (_ parse-errors err-brace-str)))))
+
 (defmacro check-filter (desc &rest body)
   "Test properties of filtered output from the ac-process."
   (declare (indent 1))
@@ -85,13 +89,6 @@ Try indenting this token further or using standard formatting conventions."
   (let* ((ov (overlays-in (point-min) (point-max)))
          (face (overlay-get (car ov) 'face)))
     (should (eq 'fsharp-warning-face face))))
-
-;; (check-filter "second overlay should have the error face"
-;;   (let* ((ov (overlays-in (point-min) (point-max)))
-;;          (face (overlay-get (cadr ov) 'face)))
-;;     (should (eq 'fsharp-error-face face))))
-
-;;; Project loading
 
 (defmacro check-project-loading (desc &rest body)
   "Test fixture for loading projects, stubbing process-related functions.
