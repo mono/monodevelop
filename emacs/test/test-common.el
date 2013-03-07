@@ -64,7 +64,7 @@
 (defconst tests-load-path
   (mapcar 'expand-file-name `(,@load-path "." ".." "./tests")))
 
-(defconst default-dependencies '(namespaces popup s pos-tip))
+(defconst default-dependencies '(namespaces popup s dash pos-tip))
 
 (defun load-packages ()
   "Load package dependencies for fsharp-mode."
@@ -116,3 +116,7 @@ When running tests in batch mode, tests should be loaded as -l arguments to emac
   (require pkg))
 
 (provide 'test-common)
+
+;; Local Variables:
+;; byte-compile-warnings: (not cl-functions)
+;; End:
