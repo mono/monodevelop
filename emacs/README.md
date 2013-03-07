@@ -59,7 +59,7 @@ installed them yourself. A list can be found in `fsharp-mode-pkg.el`.
 ## Usage
 
 fsharp-mode should launch automatically whenever you open an F#
-buffer. If a the current file is part of an F# project, and the
+buffer. If the current file is part of an F# project, and the
 intellisense process is not running, it will be launched, and
 the current project loaded.
 
@@ -86,7 +86,7 @@ In the event of any trouble, please open an issue on [Github](https://github.com
 ### Compiler and REPL paths
 
 The F# compiler and interpreter should be set to good defaults for your
-OS as long as the relevant executables can be found on your PATH. If you 
+OS as long as the relevant executables can be found on your PATH. If you
 have a non-standard setup you may need to configure these paths manually.
 
 On Windows:
@@ -137,6 +137,8 @@ a few useful bindings:
 - <kbd>C-c C-d</kbd>:       Jump to definition of symbol at point
 - <kbd>C-c C-t</kbd>:       Request a tooltip for symbol at point
 - <kbd>C-c C-q</kbd>:       Quit current background compiler process
+- <kbd>M-n</kbd>:           Go to next error
+- <kbd>M-p</kbd>:           Go to previous error
 
 To interrupt the interactive mode, use <kbd>C-c C-c</kbd>. This is useful if your
 code does an infinite loop or a very long computation.

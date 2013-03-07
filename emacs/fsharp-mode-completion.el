@@ -31,10 +31,14 @@
    start-process
    stop-process
    show-tooltip-at-point
-   show-typesig-at-point]
+   show-typesig-at-point
+   show-error-at-point
+   next-error
+   fsharp-overlay-at]
   :use
   [(popup popup-tip)
    (pos-tip pos-tip-show)
+   dash
    s
    (fsharp-doc fsharp-doc/format-for-minibuffer)
    (fsharp-mode-indent fsharp-in-literal-p)])
@@ -55,7 +59,17 @@
   "Display tooltips using a popup at point. If set to nil,
 display in a help buffer instead.")
 
-; Both in seconds. Note that background process uses ms.
+(defface fsharp-error-face
+  '((t :inherit error))
+  "Face used for marking an error in F#"
+  :group 'fsharp)
+
+(defface fsharp-warning-face
+  '((t :inherit warning))
+  "Face used for marking a warning in F#"
+  :group 'fsharp)
+
+;;; Both in seconds. Note that background process uses ms.
 (defvar ac-fsharp-blocking-timeout 1)
 (defvar ac-fsharp-idle-timeout 1)
 
@@ -131,13 +145,10 @@ display in a help buffer instead.")
                          (* 1000 ac-fsharp-blocking-timeout))))
       (log-psendstr ac-fsharp-completion-process request)))
 
-(defun ac-fsharp-send-error-request ()
-  (log-psendstr ac-fsharp-completion-process "errors\n"))
-
 ;;;###autoload
 (defn stop-process ()
   (interactive)
-  (message "Quitting fsharp completion process")
+  (_ message-safely "Quitting fsharp completion process")
   (when
       (and ac-fsharp-completion-process
            (process-live-p ac-fsharp-completion-process))
@@ -156,16 +167,15 @@ display in a help buffer instead.")
         ac-fsharp-idle-timer nil
         ac-fsharp-verbose nil
         ac-fsharp-waiting nil)
-  (ac-fsharp-clear-errors))
+  (_ clear-errors))
 
 ;;;###autoload
 (defn start-process ()
   "Launch the F# completion process in the background"
   (interactive)
   (if ac-fsharp-completion-process
-      (message "Completion process already running. Shutdown existing process first.")
-    (message (format "Launching completion process: '%s'"
-                     (mapconcat 'identity ac-fsharp-complete-command " ")))
+      (_ message-safely "Completion process already running. Shutdown existing process first.")
+    (_ message-safely (format "Launching completion process: '%s'" (s-join " " ac-fsharp-complete-command)))
     (setq ac-fsharp-completion-process
           (let ((process-connection-type nil))
             (apply 'start-process
@@ -183,14 +193,7 @@ display in a help buffer instead.")
       (setq ac-fsharp-completion-process nil))
 
     (setq ac-fsharp-idle-timer
-          (run-with-idle-timer
-           ac-fsharp-idle-timeout
-           t
-           (lambda () (ac-fsharp-get-errors)))))
-
-  ;(add-hook 'before-save-hook 'ac-fsharp-reparse-buffer)
-  ;(local-set-key (kbd ".") 'completion-at-point)
-  )
+          (run-with-idle-timer ac-fsharp-idle-timeout t (~ request-errors)))))
 
 ; Consider using 'text' for filtering
 ; TODO: This caching is a bit optimistic. It might not always be correct
@@ -267,12 +270,32 @@ display in a help buffer instead.")
                                 (- (line-number-at-pos) 1)
                                 (current-column))))
 
-(defun ac-fsharp-get-errors ()
+(defun ac-fsharp-electric-dot ()
+  (interactive)
+  (insert ".")
+  (unless (fsharp-in-literal-p)
+    (completion-at-point)))
+
+;;; ----------------------------------------------------------------------------
+;;; Errors and Overlays
+
+(defstruct fsharp-error start end face text)
+
+(defmutable errors)
+(make-local-variable (~ errors))
+
+(def error-regexp
+     "\\[\\([0-9]+\\):\\([0-9]+\\)-\\([0-9]+\\):\\([0-9]+\\)\\] \\(ERROR\\|WARNING\\) \\(.*\\(?:\n[^[].*\\)*\\)"
+     "Regexp to match errors that come from fsautocomplete. Each
+starts with a character range for position and is followed by
+possibly many lines of description.")
+
+(defn request-errors ()
   (when (ac-fsharp-can-make-request)
     (ac-fsharp-parse-current-buffer)
-    (ac-fsharp-send-error-request)))
+    (log-psendstr ac-fsharp-completion-process "errors\n")))
 
-(defun line-column-to-pos (line col)
+(defn line-column-to-pos (line col)
   (save-excursion
     (goto-char (point-min))
     (forward-line (- line 1))
@@ -281,84 +304,112 @@ display in a help buffer instead.")
       (forward-char col)
       (point))))
 
-(defconst ac-fsharp-error-regexp
-  "\\[\\([0-9]+\\):\\([0-9]+\\)-\\([0-9]+\\):\\([0-9]+\\)\\] \\(ERROR\\|WARNING\\) \\(.*\\(?:\n[^[].*\\)*\\)"
-  "Regexp to match errors that come from fsautocomplete. Each
-starts with a character range for position and is followed by
-possibly many lines of description.")
-
-(defun ac-fsharp-show-errors (errors)
-  (ac-fsharp-clear-errors)
+(defn parse-errors (str)
+  "Extract the errors from the given process response. Returns a list of fsharp-error."
   (save-match-data
-    (while (string-match ac-fsharp-error-regexp errors)
-      (ac-fsharp-show-error-overlay
-       (line-column-to-pos (+ (string-to-number (match-string 1 errors)) 1)
-                           (string-to-number (match-string 2 errors)))
-       (line-column-to-pos (+ (string-to-number (match-string 3 errors)) 1)
-                           (string-to-number (match-string 4 errors)))
-       (if (string= "ERROR" (match-string 5 errors))
-           'fsharp-error-face
-         'fsharp-warning-face)
-       (match-string 6 errors))
-      (setq errors (substring errors (match-end 0))))))
+    (let (parsed)
+      (while (string-match (@ error-regexp) str)
+        (let ((beg (_ line-column-to-pos (+ (string-to-number (match-string 1 str)) 1)
+                      (string-to-number (match-string 2 str))))
+              (end (_ line-column-to-pos (+ (string-to-number (match-string 3 str)) 1)
+                      (string-to-number (match-string 4 str))))
+              (face (if (string= "ERROR" (match-string 5 str))
+                        'fsharp-error-face
+                      'fsharp-warning-face))
+              (msg (match-string 6 str))
+              )
+          (setq str (substring str (match-end 0)))
+          (add-to-list 'parsed (make-fsharp-error :start beg
+                                                  :end   end
+                                                  :face  face
+                                                  :text  msg))))
+      parsed)))
 
-(defface fsharp-error-face
-  '(
-    (((class color) (background dark))
-     :weight bold
-     :underline "Red"
-     )
-    (((class color) (background light))
-     :weight bold
-     :underline "Red"
-     ))
-  "Face used for marking an error in F#"
-  :group 'fsharp)
+(defn show-error-overlay (err)
+  "Draw overlays in the current buffer to represent fsharp-error ERR."
+  ;; Three cases
+  ;; 1. No overlays here yet: make it
+  ;; 2. new warning, exists error: do nothing
+  ;; 3. new error exists warning: rm warning and make it
+  (let* ((beg  (fsharp-error-start err))
+         (end  (fsharp-error-end err))
+         (face (fsharp-error-face err))
+         (txt  (fsharp-error-text err))
+         (ofaces (mapcar (lambda (o) (overlay-get o 'face))
+                         (overlays-in beg end)))
+         )
+    (unless (and (eq face 'fsharp-warning-face)
+                 (memq 'fsharp-error-face ofaces))
 
-(defface fsharp-warning-face
-  '(
-    (((class color) (background dark))
-     :weight bold
-     :underline "LightBlue1"
-     )
-    (((class color) (background light))
-     :weight bold
-     :underline "Blue"
-     ))
-  "Face used for marking a warning in F#"
-  :group 'fsharp)
-
-(defun ac-fsharp-show-error-overlay (p1 p2 face txt)
-  "Overlay the text from p1 to p2 to indicate an error is present here.
-   The error is described by txt."
-  ; Three cases
-  ; 1. No overlays here yet: make it
-  ; 2. new warning, exists error: do nothing
-  ; 3. new error exists warning: rm warning and make it
-  (let ((ofaces (mapcar (lambda (o) (overlay-get o 'face)) (overlays-in p1 p2))))
-    (if (and (eq face 'fsharp-warning-face)
-           (memq 'fsharp-error-face ofaces))
-        nil
       (when (and (eq face 'fsharp-error-face)
                  (memq 'fsharp-warning-face ofaces))
-        (remove-overlays p1 p2 'face 'fsharp-warning-face))
-      (let ((over (make-overlay p1 p2)))
-        (overlay-put over 'face face)
-        (overlay-put over 'help-echo txt)))))
+        (remove-overlays beg end 'face 'fsharp-warning-face))
 
-(defun ac-fsharp-clear-errors ()
+      (let ((ov (make-overlay beg end)))
+        (overlay-put ov 'face face)
+        (overlay-put ov 'help-echo txt)))))
+
+(defn clear-errors ()
   (interactive)
   (remove-overlays nil nil 'face 'fsharp-error-face)
-  (remove-overlays nil nil 'face 'fsharp-warning-face))
+  (remove-overlays nil nil 'face 'fsharp-warning-face)
+  (@set errors nil))
 
-(defun ac-fsharp-stash-partial (str)
-  (setq ac-fsharp-partial-data (concat ac-fsharp-partial-data str)))
+;;; ----------------------------------------------------------------------------
+;;; Error navigation
+;;;
+;;; These functions hook into Emacs' error navigation API and should not
+;;; be called directly by users.
 
-(defun ac-fsharp-electric-dot ()
-  (interactive)
-  (insert ".")
-  (unless (fsharp-in-literal-p)
-    (completion-at-point)))
+(defn message-safely (format-string &rest args)
+  "Calls MESSAGE only if it is desirable to do so."
+  (when (equal major-mode 'fsharp-mode)
+    (unless (or (active-minibuffer-window) cursor-in-echo-area)
+      (apply 'message format-string args))))
+
+(defn error-position (n-steps errs)
+  "Calculate the position of the next error to move to."
+  (let* ((xs (->> (sort (-map 'fsharp-error-start errs) '<)
+               (--remove (= (point) it))
+               (--split-with (>= (point) it))))
+         (before (nreverse (car xs)))
+         (after  (cadr xs))
+         (errs   (if (< n-steps 0) before after))
+         (step   (- (abs n-steps) 1))
+         )
+    (nth step errs)))
+
+(defn next-error (n-steps reset)
+  "Move forward N-STEPS number of errors, possibly wrapping
+around to the start of the buffer."
+  (when reset
+    (goto-char (point-min)))
+
+  (let ((pos (_ error-position n-steps (@ errors))))
+    (if pos
+        (goto-char pos)
+      (error "No more F# errors"))))
+
+(defn fsharp-overlay-p (ov)
+  (let ((face (overlay-get ov 'face)))
+    (or (equal 'fsharp-warning-face face)
+        (equal 'fsharp-error-face face))))
+
+(defn fsharp-overlay-at (pos)
+  (car-safe (-filter (~ fsharp-overlay-p)
+                     (overlays-at pos))))
+
+;;; HACK: show-error-at point checks last position of point to prevent
+;;; corner-case interaction issues, e.g. when running `describe-key`
+(defmutable last-point)
+
+(defn show-error-at-point ()
+  (let ((ov (_ fsharp-overlay-at (point)))
+        (changed-pos (not (equal (point) (@ last-point)))))
+    (@set last-point (point))
+
+    (when (and ov changed-pos)
+      (_ message-safely (overlay-get ov 'help-echo)))))
 
 ;;; ----------------------------------------------------------------------------
 ;;; Process handling
@@ -369,7 +420,7 @@ possibly many lines of description.")
 (defn filter-output (proc str)
   "Filter output from the completion process and handle appropriately."
   (log-to-proc-buf proc str)
-  (ac-fsharp-stash-partial str)
+  (setq ac-fsharp-partial-data (concat ac-fsharp-partial-data str))
 
   (let ((eofloc (string-match-p (@ eom) ac-fsharp-partial-data)))
     (while eofloc
@@ -379,12 +430,12 @@ possibly many lines of description.")
          ((s-starts-with? "DATA: completion" msg) (_ set-completion-data msg))
          ((s-starts-with? "DATA: finddecl" msg)   (_ visit-definition msg))
          ((s-starts-with? "DATA: tooltip" msg)    (_ handle-tooltip msg))
-         ((s-starts-with? "DATA: errors" msg)     (_ display-parse-errors msg))
+         ((s-starts-with? "DATA: errors" msg)     (_ handle-errors msg))
          ((s-starts-with? "DATA: project" msg)    (_ handle-project msg))
          ((s-starts-with? "ERROR: " msg)          (_ handle-process-error msg))
-         ((s-starts-with? "INFO: " msg) (when ac-fsharp-verbose (message msg)))
+         ((s-starts-with? "INFO: " msg) (when ac-fsharp-verbose (_ message-safely msg)))
          (t
-          (message "Error: unrecognised message: '%s'" msg)))
+          (_ message-safely "Error: unrecognised message: '%s'" msg)))
 
         (setq ac-fsharp-partial-data part))
       (setq eofloc (string-match-p (@ eom) ac-fsharp-partial-data)))))
@@ -399,12 +450,17 @@ possibly many lines of description.")
             (line (+ 1 (string-to-number (match-string 2 str))))
             (col (string-to-number (match-string 3 str))))
         (find-file (match-string 1 str))
-        (goto-char (line-column-to-pos line col)))
-    (message "Unable to find definition.")))
+        (goto-char (_ line-column-to-pos line col)))
+    (_ message-safely "Unable to find definition.")))
 
-(defn display-parse-errors (str)
-  (ac-fsharp-show-errors
-   (concat (replace-regexp-in-string "DATA: errors\n" "" str) "\n")))
+(defn handle-errors (str)
+  "Display error overlays and set buffer-local error variables for error navigation."
+  (_ clear-errors)
+  (let ((errs (_ parse-errors
+                 (concat (replace-regexp-in-string "DATA: errors\n" "" str) "\n")))
+        )
+    (@set errors errs)
+    (mapc (~ show-error-overlay) errs)))
 
 (defn handle-tooltip (str)
   "Display information from the background process. If the user
@@ -412,15 +468,15 @@ has requested a popup tooltip, display a popup. Otherwise,
 display a short summary in the minibuffer."
   ;; Do not display if the current buffer is not an fsharp buffer.
   (when (equal major-mode 'fsharp-mode)
-    (let ((cleaned (replace-regexp-in-string "DATA: tooltip\n" "" str)))
-
-      (if (@ awaiting-tooltip)
-          (progn
-            (@set awaiting-tooltip nil)
-            (if ac-fsharp-use-popup
-                (_ show-popup cleaned)
-              (_ show-info-window cleaned)))
-        (message (fsharp-doc/format-for-minibuffer cleaned))))))
+    (unless (or (active-minibuffer-window) cursor-in-echo-area)
+      (let ((cleaned (replace-regexp-in-string "DATA: tooltip\n" "" str)))
+        (if (@ awaiting-tooltip)
+            (progn
+              (@set awaiting-tooltip nil)
+              (if ac-fsharp-use-popup
+                  (_ show-popup cleaned)
+                (_ show-info-window cleaned)))
+          (_ message-safely (fsharp-doc/format-for-minibuffer cleaned)))))))
 
 (defn show-popup (str)
   (if (display-graphic-p)
@@ -444,7 +500,7 @@ display a short summary in the minibuffer."
 
 (defn handle-process-error (str)
   (unless (s-matches? "Could not get type information" str)
-    (message str))
+    (_ message-safely str))
   (when ac-fsharp-waiting
     (setq ac-fsharp-completion-data nil)
     (setq ac-fsharp-waiting nil)))

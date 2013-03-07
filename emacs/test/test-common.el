@@ -6,7 +6,8 @@
   (declare (indent 1))
   `(ert-deftest
        ,(intern (replace-regexp-in-string "[ .]" "-" desc)) ()
-     ,@body))
+     (flet ((message (&rest args)))
+       ,@body)))
 
 (defmacro using-file (path &rest body)
   "Open the file at PATH in a buffer, execute BODY forms, then kill the buffer."
@@ -21,6 +22,14 @@
   "Create a temporary file that will be deleted after executing BODY forms"
   (declare (indent 1))
   `(using-file (concat temporary-file-directory (symbol-name (gensym)) ,name)
+     ,@body))
+
+(defmacro stubbing-process-functions (&rest body)
+  `(flet ((process-live-p (p) t)
+          (start-process (&rest args))
+          (set-process-filter (&rest args))
+          (set-process-query-on-exit-flag (&rest args))
+          (process-send-string (&rest args)))
      ,@body))
 
 (defun should-match (regex str)
@@ -64,7 +73,7 @@
 (defconst tests-load-path
   (mapcar 'expand-file-name `(,@load-path "." ".." "./tests")))
 
-(defconst default-dependencies '(namespaces popup s pos-tip))
+(defconst default-dependencies '(namespaces popup s dash pos-tip))
 
 (defun load-packages ()
   "Load package dependencies for fsharp-mode."
@@ -116,3 +125,7 @@ When running tests in batch mode, tests should be loaded as -l arguments to emac
   (require pkg))
 
 (provide 'test-common)
+
+;; Local Variables:
+;; byte-compile-warnings: (not cl-functions)
+;; End:

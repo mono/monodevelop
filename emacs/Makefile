@@ -35,7 +35,7 @@ dest_bin  = $(HOME)/.emacs.d/fsharp-mode/bin/
 # Building
 
 $(ac_exe) : $(bin_d)
-	xbuild $(ac_fsproj) /property:OutputPath=$(bin_d)
+	xbuild $(ac_fsproj) /property:OutputPath="$(bin_d)"
 
 install : $(ac_exe) $(dest_root) $(dest_bin)
 # Install elisp packages

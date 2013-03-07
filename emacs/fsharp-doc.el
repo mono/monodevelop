@@ -43,9 +43,9 @@
 
 (namespace fsharp-doc
   :export
-  [ format-for-minibuffer ]
-  :use
-  [(fsharp-mode-completion ac-fsharp-tooltip-at-point)])
+  [format-for-minibuffer]
+  :import
+  [fsharp-mode-completion])
 
 (defvar fsharp-doc-idle-delay 0.5
   "The number of seconds to wait for input idle before showing a tooltip.")
@@ -53,7 +53,7 @@
 (define-minor-mode fsharp-doc-mode
   "Display F# documentation in the minibuffer."
   nil
-  " Doc"
+  ""
   nil
   ;; Body
   (in-ns fsharp-doc
@@ -119,14 +119,17 @@
 (defmutable prevpoint nil)
 
 (defn show-tooltip ()
-  "Show tooltip info in the minibuffer."
+  "Show tooltip info in the minibuffer.
+If there is an error or warning at point, show the error text.
+Otherwise, request a tooltip from the completion process."
   (interactive)
-  (when (and fsharp-doc-mode
-             (thing-at-point 'symbol)
-             (not executing-kbd-macro)
-             (not (eq (selected-window) (minibuffer-window)))
-             (not (equal (point) (@ prevpoint))))
-    (@set prevpoint (point))
-    (fsharp-mode-completion/show-typesig-at-point)))
+  (when (and fsharp-doc-mode (thing-at-point 'symbol))
+    (unless (or (equal (point) (@ prevpoint))
+                executing-kbd-macro
+                (_ fsharp-overlay-at (point))
+                (active-minibuffer-window)
+                cursor-in-echo-area)
+      (@set prevpoint (point))
+      (_ show-typesig-at-point))))
 
 ;;; fsharp-doc.el ends here

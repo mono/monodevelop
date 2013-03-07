@@ -136,7 +136,7 @@
      (delete-backward-char 1)
      (backward-char)
      (call-process "sleep" nil nil nil "3")
-     (ac-fsharp-get-errors)
+     (in-ns fsharp-mode-completion (_ request-errors))
      (while (eq (length (overlays-at (point))) 0)
        (sleep-for 1))
      (should (eq (overlay-get (car (overlays-at (point))) 'face)

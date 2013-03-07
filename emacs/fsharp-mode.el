@@ -84,6 +84,9 @@ and whether it is in a project directory.")
   (define-key fsharp-mode-map "\C-c\C-s" 'fsharp-show-subshell)
   (define-key fsharp-mode-map "\M-\C-h" 'fsharp-mark-phrase)
 
+  (define-key fsharp-mode-map (kbd "M-n") 'next-error)
+  (define-key fsharp-mode-map (kbd "M-p") 'previous-error)
+
   (define-key fsharp-mode-map "\C-cl" 'fsharp-shift-region-left)
   (define-key fsharp-mode-map "\C-cr" 'fsharp-shift-region-right)
 
@@ -180,11 +183,10 @@ and whether it is in a project directory.")
   "Hook for fsharp-mode")
 
 ;;;###autoload
-(define-derived-mode fsharp-mode prog-mode
+(define-derived-mode fsharp-mode prog-mode "fsharp"
   "Major mode for editing fsharp code.
 
 \\{fsharp-mode-map}"
-  (interactive)
 
   (require 'fsharp-mode-indent)
   (require 'fsharp-mode-font)
@@ -235,6 +237,11 @@ and whether it is in a project directory.")
         fsharp-last-comment-start      (make-marker)
         fsharp-last-comment-end        (make-marker))
 
+  ;; Error navigation
+  (setq next-error-function 'fsharp-mode-completion/next-error)
+  (add-hook 'next-error-hook 'fsharp-mode-completion/show-error-at-point nil t)
+  (add-hook 'post-command-hook 'fsharp-mode-completion/show-error-at-point nil t)
+
   ;; make a local copy of the menubar, so our modes don't
   ;; change the global menubar
   (when (and running-xemacs
@@ -250,6 +257,7 @@ and whether it is in a project directory.")
 
     (turn-on-fsharp-doc-mode)
     (run-hooks 'fsharp-mode-hook)))
+
 
 (defn try-load-project (file)
   (when file
