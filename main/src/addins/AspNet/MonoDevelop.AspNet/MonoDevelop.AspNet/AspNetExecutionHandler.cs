@@ -45,6 +45,8 @@ namespace MonoDevelop.AspNet
 				return "xsp2";
 			case ClrVersion.Net_4_0:
 				return "xsp4";
+			case ClrVersion.Net_4_5:
+				return "xsp4";
 			default:
 				LoggingService.LogError ("ASP.NET is not supported for unknown runtime version '{0}'.", cmd.ClrVersion);
 				throw new UserException (GettextCatalog.GetString (
