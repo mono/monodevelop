@@ -47,6 +47,7 @@
 	<DataItem class = "MonoDevelop.Projects.DotNetProjectConfiguration">
 		<ItemProperty member="assembly" name="Output/assembly"/>
 		<ItemProperty member="signAssembly" name="Output/signAssembly" defaultValue="false" />
+		<ItemProperty member="delaySign" name="Output/delaySign" defaultValue="false" />
 		<ItemProperty member="assemblyKeyFile" name="Output/assemblyKeyFile" defaultValue="" />
 		<LiteralProperty name="Execution/runtime" value="MsNet" />
 		<ItemMember name="md1_CompileTarget" type="System.String"/>

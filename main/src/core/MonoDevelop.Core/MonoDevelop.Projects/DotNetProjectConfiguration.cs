@@ -70,6 +70,14 @@ namespace MonoDevelop.Projects
 			get { return signAssembly; }
 			set { signAssembly = value; }
 		}
+		
+		[MonoDevelop.Projects.Formats.MSBuild.MergeToProject]
+		[ItemProperty("DelaySign", DefaultValue = false)]
+		private bool delaySign = false;
+		public bool DelaySign {
+			get { return delaySign; }
+			set { delaySign = value; }
+		}
 
 		[MonoDevelop.Projects.Formats.MSBuild.MergeToProject]
 		[ProjectPathItemProperty("AssemblyKeyFile", ReadOnly=true)]
@@ -181,6 +189,7 @@ namespace MonoDevelop.Projects
 				SetParentItem (conf.ParentItem);
 			CompilationParameters = conf.compilationParameters != null ? conf.compilationParameters.Clone () : null;
 			signAssembly = conf.signAssembly;
+			delaySign = conf.delaySign;
 			assemblyKeyFile = conf.assemblyKeyFile;
 		}
 		

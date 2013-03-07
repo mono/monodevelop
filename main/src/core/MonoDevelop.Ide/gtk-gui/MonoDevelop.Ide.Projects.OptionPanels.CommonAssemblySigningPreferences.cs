@@ -9,6 +9,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		private global::Gtk.HBox hbox1;
 		private global::Gtk.Label strongNameFileLabel;
 		private global::MonoDevelop.Components.FileEntry strongNameFileEntry;
+		private global::Gtk.CheckButton delaySignCheckbutton;
 		
 		protected virtual void Build ()
 		{
@@ -57,6 +58,18 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			w4.Position = 1;
 			w4.Expand = false;
 			w4.Fill = false;
+			// Container child vbox1.Gtk.Box+BoxChild
+			this.delaySignCheckbutton = new global::Gtk.CheckButton ();
+			this.delaySignCheckbutton.CanFocus = true;
+			this.delaySignCheckbutton.Name = "delaySignCheckbutton";
+			this.delaySignCheckbutton.Label = global::Mono.Unix.Catalog.GetString ("_Delay sign assembly");
+			this.delaySignCheckbutton.DrawIndicator = true;
+			this.delaySignCheckbutton.UseUnderline = true;
+			this.vbox1.Add (this.delaySignCheckbutton);
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.delaySignCheckbutton]));
+			w5.Position = 2;
+			w5.Expand = false;
+			w5.Fill = false;
 			this.Add (this.vbox1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
