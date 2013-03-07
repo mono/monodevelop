@@ -90,6 +90,11 @@ Try indenting this token further or using standard formatting conventions."
          (face (overlay-get (car ov) 'face)))
     (should (eq 'fsharp-warning-face face))))
 
+(check-filter "second overlay should have the error face"
+  (let* ((ov (overlays-in (point-min) (point-max)))
+         (face (overlay-get (cadr ov) 'face)))
+    (should (eq 'fsharp-error-face face))))
+
 (defmacro check-project-loading (desc &rest body)
   "Test fixture for loading projects, stubbing process-related functions.
 Bound vars:
