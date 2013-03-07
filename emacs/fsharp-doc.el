@@ -118,8 +118,19 @@
 
 (defmutable prevpoint nil)
 
+(defn fsharp-overlay-p (ov)
+  (let ((face (overlay-get ov 'face)))
+    (or (equal 'fsharp-warning-face face)
+        (equal 'fsharp-error-face face))))
+
+(defn fsharp-overlay-at (pos)
+  (car-safe (remove-if-not (~ fsharp-overlay-p)
+                           (overlays-at pos))))
+
 (defn show-tooltip ()
-  "Show tooltip info in the minibuffer."
+  "Show tooltip info in the minibuffer.
+If there is an error or warning at point, show the error text.
+Otherwise, request a tooltip from the completion process."
   (interactive)
   (when (and fsharp-doc-mode
              (thing-at-point 'symbol)
@@ -127,6 +138,14 @@
              (not (eq (selected-window) (minibuffer-window)))
              (not (equal (point) (@ prevpoint))))
     (@set prevpoint (point))
-    (fsharp-mode-completion/show-typesig-at-point)))
+    ;; Display error message if there is an error at POINT, else perform request.
+    (let ((ov (_ fsharp-overlay-at (point))))
+      (if ov
+          (message (overlay-get ov 'help-echo))
+        (fsharp-mode-completion/show-typesig-at-point)))))
+
+;; Local Variables:
+;; byte-compile-warnings: (not cl-functions)
+;; End:
 
 ;;; fsharp-doc.el ends here
