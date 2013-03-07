@@ -6,7 +6,8 @@
   (declare (indent 1))
   `(ert-deftest
        ,(intern (replace-regexp-in-string "[ .]" "-" desc)) ()
-     ,@body))
+     (flet ((message (&rest args)))
+       ,@body)))
 
 (defmacro using-file (path &rest body)
   "Open the file at PATH in a buffer, execute BODY forms, then kill the buffer."
@@ -21,6 +22,14 @@
   "Create a temporary file that will be deleted after executing BODY forms"
   (declare (indent 1))
   `(using-file (concat temporary-file-directory (symbol-name (gensym)) ,name)
+     ,@body))
+
+(defmacro stubbing-process-functions (&rest body)
+  `(flet ((process-live-p (p) t)
+          (start-process (&rest args))
+          (set-process-filter (&rest args))
+          (set-process-query-on-exit-flag (&rest args))
+          (process-send-string (&rest args)))
      ,@body))
 
 (defun should-match (regex str)

@@ -15,29 +15,33 @@
 (check "jumping to local definition should not change buffer"
   (let ((f (concat fs-file-dir "Program.fs")))
     (in-ns fsharp-mode-completion
-      (using-file f
-        (_ filter-output nil finddeclstr1)
-        (should (equal f (buffer-file-name)))))))
+      (stubbing-process-functions
+       (using-file f
+         (_ filter-output nil finddeclstr1)
+         (should (equal f (buffer-file-name))))))))
 
 (check "jumping to local definition should move point to definition"
-  (using-file (concat fs-file-dir "Program.fs")
-    (in-ns fsharp-mode-completion
-      (_ filter-output nil finddeclstr1)
-      (should (equal (point) 18)))))
+  (stubbing-process-functions
+   (using-file (concat fs-file-dir "Program.fs")
+     (in-ns fsharp-mode-completion
+       (_ filter-output nil finddeclstr1)
+       (should (equal (point) 18))))))
 
 (check "jumping to definition in another file should open that file"
   (let ((f1 (concat fs-file-dir "Program.fs"))
         (f2 (concat fs-file-dir "FileTwo.fs")))
     (in-ns fsharp-mode-completion
-      (using-file f1
-        (_ filter-output nil finddeclstr2)
-        (should (equal (buffer-file-name) f2))))))
+      (stubbing-process-functions
+       (using-file f1
+         (_ filter-output nil finddeclstr2)
+         (should (equal (buffer-file-name) f2)))))))
 
 (check "jumping to definition in another file should move point to definition"
   (in-ns fsharp-mode-completion
-    (using-file (concat fs-file-dir "Program.fs")
-      (_ filter-output nil finddeclstr2)
-      (should (equal (point) 127)))))
+    (stubbing-process-functions
+     (using-file (concat fs-file-dir "Program.fs")
+       (_ filter-output nil finddeclstr2)
+       (should (equal (point) 127))))))
 
 ;;; Error parsing
 
@@ -64,10 +68,11 @@ Try indenting this token further or using standard formatting conventions."
   "Test properties of filtered output from the ac-process."
   (declare (indent 1))
   `(check ,desc
-     (find-file (concat fs-file-dir "Program.fs"))
-     (in-ns fsharp-mode-completion
-       (_ filter-output nil err-brace-str))
-     ,@body))
+     (stubbing-process-functions
+      (find-file (concat fs-file-dir "Program.fs"))
+      (in-ns fsharp-mode-completion
+        (_ filter-output nil err-brace-str))
+      ,@body)))
 
 (check-filter "error clears partial data"
   (should (equal "" ac-fsharp-partial-data)))
@@ -102,11 +107,12 @@ Bound vars:
   The string passed to process-send-string"
   (declare (indent 1))
   `(check ,(concat "check project loading " desc)
-     (let    (load-cmd)
-       (flet ((fsharp-mode-completion/start-process ())
-              (process-send-string (proc cmd) (setq load-cmd cmd)))
-         (in-ns fsharp-mode-completion
-           ,@body)))))
+     (stubbing-process-functions
+      (let    (load-cmd)
+        (flet ((fsharp-mode-completion/start-process ())
+               (process-send-string (proc cmd) (setq load-cmd cmd)))
+          (in-ns fsharp-mode-completion
+            ,@body))))))
 
 (check-project-loading "raises error if not fsproj"
   (should-error (_ load-project "foo")))
