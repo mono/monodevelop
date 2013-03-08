@@ -90,6 +90,15 @@ namespace MonoDevelop.Ide.Gui
 				if (ret != null)
 					return ret;
 			}
+
+			// check sub view contents
+			foreach (var subView in Window.SubViewContents) {
+				if (subView == Window.ActiveViewContent)
+					continue;
+				ret = subView.GetContent (typeof(T)) as T;
+				if (ret != null)
+					return ret;
+			}
 			
 			//no, so look through the TexteditorExtensions as well
 			TextEditorExtension nextExtension = editorExtension;

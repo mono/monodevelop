@@ -156,6 +156,12 @@
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/DocumentationGenerator">
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
+	
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/UnknownMSbuildProjectTypes" name = "Unknown MSBuild project types">
+		<Description>Project types not supported by MonoDevelop</Description>
+		<ExtensionNode name="ProjectType" type="MonoDevelop.Projects.Extensions.UnknownProjectTypeNode"/>
+	</ExtensionPoint>
+	
 	<!-- Extensions -->
 	
 	
@@ -259,5 +265,21 @@
 		<SolutionItem guid = "{8BC9CEB9-8B4A-11D0-8D11-00A0C91BC942}"
 			type = "MonoDevelop.Projects.CompiledAssemblyProject"
 			handlerType = "MonoDevelop.Projects.Formats.MSBuild.CompiledAssemblyProjectMSBuildHandler" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ProjectModel/UnknownMSbuildProjectTypes">
+		<ProjectType guid = "{1C533B1C-72DD-4CB1-9F6B-BF11D93BCFBE};{948B3504-5B70-4649-8FE4-BDE1FB46EC69}" 
+			name = "MonoMac" 
+			instructions = "The MonoMac add-in is not installed" />
+		<ProjectType guid = "{42C0BBD9-55CE-4FC1-8D90-A7348ABAFB23}"
+			name = "Xamarin.Mac"
+			instructions = "Xamarin.Mac is not installed" />
+		<ProjectType guid = "{e613f3a2-fe9c-494f-b74e-f63bcb86fea6};{6bc8ed88-2882-458c-8e55-dfd12b67127b};{f5b4f3bc-b597-4e2b-b552-ef5d8a32436f}"
+			name = "Xamarin.iOS"
+			instructions = "Xamarin.iOS is not installed" />
+		<ProjectType guid = "{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{10368E6C-D01B-4462-8E8B-01FC667A7035}"
+			name = "Xamarin.Android"
+			instructions = "Xamarin.Android is not installed" />
+		<ProjectType guid = "{C089C8C0-30E0-4E22-80C0-CE093F111A43}" name = "Windows Phone" />
 	</Extension>
 </Addin>

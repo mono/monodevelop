@@ -26,6 +26,7 @@
 //
 
 using System;
+using System.Linq;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.IO;
@@ -598,6 +599,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return null;
 
 			return globalGroup.GetPropertyValue ("ProjectTypeGuids");
+		}
+
+		internal static UnknownProjectTypeNode GetUnknownProjectTypeInfo (string guid)
+		{
+			return AddinManager.GetExtensionNodes<UnknownProjectTypeNode> ("/MonoDevelop/ProjectModel/UnknownMSbuildProjectTypes").FirstOrDefault (p => p.Guid.IndexOf (guid) != -1);
 		}
 	}
 	

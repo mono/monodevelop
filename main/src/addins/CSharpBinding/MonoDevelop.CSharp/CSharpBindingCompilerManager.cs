@@ -174,6 +174,8 @@ namespace MonoDevelop.CSharp
 			if (configuration.SignAssembly) {
 				if (File.Exists (configuration.AssemblyKeyFile))
 					AppendQuoted (sb, "/keyfile:", configuration.AssemblyKeyFile);
+				if (configuration.DelaySign)
+					sb.AppendLine ("/delaySign");
 			}
 			
 			if (configuration.DebugMode) {

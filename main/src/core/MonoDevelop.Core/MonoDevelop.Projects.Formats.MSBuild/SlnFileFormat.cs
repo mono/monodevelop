@@ -42,6 +42,7 @@ using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
 using System.Reflection;
+using System.Linq;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
@@ -780,12 +781,23 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					
 					if (e is UnknownSolutionItemTypeException) {
 						var name = ((UnknownSolutionItemTypeException)e).TypeName;
-						LoggingService.LogWarning (!string.IsNullOrEmpty (name)?
-							  string.Format ("Could not load project '{0}' with unknown item type '{1}'", projectPath, name)
-							: string.Format ("Could not load project '{0}' with unknown item type", projectPath));
-						monitor.ReportWarning (!string.IsNullOrEmpty (name)?
-							  GettextCatalog.GetString ("Could not load project '{0}' with unknown item type '{1}'", projectPath, name)
-							: GettextCatalog.GetString ("Could not load project '{0}' with unknown item type", projectPath));
+
+						var relPath = new FilePath (path).ToRelative (sol.BaseDirectory);
+						if (!string.IsNullOrEmpty (name)) {
+							var guids = name.Split (';');
+							var projectInfo = guids.Select (g => MSBuildProjectService.GetUnknownProjectTypeInfo (g)).FirstOrDefault (p => p != null);
+							if (projectInfo != null) {
+								LoggingService.LogWarning (string.Format ("Could not load {0} project '{1}'. {2}", projectInfo.Name, relPath, projectInfo.Instructions));
+								monitor.ReportWarning (GettextCatalog.GetString ("Could not load {0} project '{1}'. {2}", projectInfo.Name, relPath, projectInfo.Instructions));
+							} else {
+								LoggingService.LogWarning (string.Format ("Could not load project '{0}' with unknown item type '{1}'", relPath, name));
+								monitor.ReportWarning (GettextCatalog.GetString ("Could not load project '{0}' with unknown item type '{1}'", relPath, name));
+							}
+						} else {
+							LoggingService.LogWarning (string.Format ("Could not load project '{0}' with unknown item type", relPath));
+							monitor.ReportWarning (GettextCatalog.GetString ("Could not load project '{0}' with unknown item type", relPath));
+						}
+
 					} else if (e is UserException) {
 						var ex = (UserException) e;
 						LoggingService.LogError ("{0}: {1}", ex.Message, ex.Details);

@@ -49,6 +49,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.configurations = configurations;
 			
 			int signAsm = -1;
+			int delaySign = -1;
 			
 			keyFile = null;
 			foreach (DotNetProjectConfiguration c in configurations) {
@@ -57,6 +58,11 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 					signAsm = r;
 				else if (signAsm != r)
 					signAsm = 2;
+				int d = c.DelaySign ? 1 : 0;
+				if (delaySign == -1)
+					delaySign = d;
+				else if (delaySign != d)
+					delaySign = 2;
 				if (keyFile == null)
 					keyFile = c.AssemblyKeyFile;
 				else if (keyFile != c.AssemblyKeyFile)
@@ -68,6 +74,12 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			else {
 				signAssemblyCheckbutton.Inconsistent = false;
 				signAssemblyCheckbutton.Active = signAsm == 1;
+			}
+			if (delaySign == 2)
+				delaySignCheckbutton.Inconsistent = true;
+			else {
+				delaySignCheckbutton.Inconsistent = false;
+				delaySignCheckbutton.Active = delaySign == 1;
 			}
 			
 			if (keyFile == null || keyFile == "?")
@@ -83,14 +95,16 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		void SignAssemblyCheckbuttonActivated (object sender, EventArgs e)
 		{
 			signAssemblyCheckbutton.Inconsistent = false;
-			this.strongNameFileLabel.Sensitive = this.strongNameFileEntry.Sensitive = this.signAssemblyCheckbutton.Active;
+			this.delaySignCheckbutton.Sensitive = this.strongNameFileLabel.Sensitive = this.strongNameFileEntry.Sensitive = this.signAssemblyCheckbutton.Active;
 		}
 		
 		public void StorePanelContents ()
 		{
 			foreach (DotNetProjectConfiguration c in configurations) {
-				if (!signAssemblyCheckbutton.Inconsistent)
+				if (!signAssemblyCheckbutton.Inconsistent) {
 					c.SignAssembly = this.signAssemblyCheckbutton.Active;
+					c.DelaySign = this.delaySignCheckbutton.Active;
+				}
 				if (strongNameFileEntry.Path.Length > 0 || keyFile != "?")
 					c.AssemblyKeyFile = this.strongNameFileEntry.Path;
 			}
@@ -121,6 +135,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 					cref = c;
 				else {
 					if (c.SignAssembly != cref.SignAssembly)
+						return false;
+					if (c.DelaySign != cref.DelaySign)
 						return false;
 					if (c.AssemblyKeyFile != cref.AssemblyKeyFile)
 						return false;

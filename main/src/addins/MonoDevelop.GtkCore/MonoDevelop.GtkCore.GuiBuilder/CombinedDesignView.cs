@@ -241,7 +241,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 //					return null;
 //			}
 //			
-			return  base.GetContent (type) ?? content.GetContent (type);
+			return  base.GetContent (type) ?? (content !=null  ? content.GetContent (type) : null);
 		}
 
 		public void JumpTo (int line, int column)

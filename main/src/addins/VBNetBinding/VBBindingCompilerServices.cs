@@ -146,6 +146,9 @@ namespace MonoDevelop.VBNetBinding {
 					sb.AppendLine ();
 				}
 			}
+			
+			if (configuration.DelaySign)
+				sb.AppendLine ("-delaySign");
 
 			if (!string.IsNullOrEmpty (compilerparameters.DocumentationFile)) {
 				sb.AppendFormat ("\"-doc:{0}\"", compilerparameters.DocumentationFile);

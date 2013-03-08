@@ -109,7 +109,9 @@ namespace CSharpBinding.Autotools
 
 			if (config.SignAssembly)
 				writer.Write (" \"-keyfile:" + project.GetRelativeChildPath (config.AssemblyKeyFile) + '"');
-			
+			if (config.DelaySign)
+				writer.Write (" -delaySign");
+
 			// TODO check paths and add to extradist?
 			//if (parameters.GenerateXmlDocumentation) {
 			//	writer.WriteLine(" \"-doc:" + Path.ChangeExtension(exe, ".xml") + '"');
