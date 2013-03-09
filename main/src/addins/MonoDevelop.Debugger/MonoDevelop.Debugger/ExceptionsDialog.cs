@@ -82,7 +82,7 @@ namespace MonoDevelop.Debugger
 				foreach (var t in dom.FindType (typeof (Exception)).GetSubTypeDefinitions ())
 					classes.Add (t.ReflectionName);
 			} else {
-				// no nead to unload this assembly context, it's not cached.
+				// no need to unload this assembly context, it's not cached.
 				var unresolvedAssembly = TypeSystemService.LoadAssemblyContext (Runtime.SystemAssemblyService.CurrentRuntime, MonoDevelop.Core.Assemblies.TargetFramework.Default, typeof(Uri).Assembly.Location);
 				var mscorlib = TypeSystemService.LoadAssemblyContext (Runtime.SystemAssemblyService.CurrentRuntime, MonoDevelop.Core.Assemblies.TargetFramework.Default, typeof(object).Assembly.Location);
 				if (unresolvedAssembly != null && mscorlib != null) {
