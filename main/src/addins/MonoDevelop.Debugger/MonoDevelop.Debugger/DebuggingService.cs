@@ -371,15 +371,17 @@ namespace MonoDevelop.Debugger
 				busyStatusIcon.Dispose ();
 				busyStatusIcon = null;
 			}
-			
-			session.TargetEvent -= OnTargetEvent;
-			session.TargetStarted -= OnStarted;
-			session.OutputWriter = null;
-			session.LogWriter = null;
-			session.BusyStateChanged -= OnBusyStateChanged;
-			session.TypeResolverHandler = null;
-			session.BreakpointTraceHandler = null;
-			session.GetExpressionEvaluator = null;
+
+			if (session != null) {
+				session.TargetEvent -= OnTargetEvent;
+				session.TargetStarted -= OnStarted;
+				session.OutputWriter = null;
+				session.LogWriter = null;
+				session.BusyStateChanged -= OnBusyStateChanged;
+				session.TypeResolverHandler = null;
+				session.BreakpointTraceHandler = null;
+				session.GetExpressionEvaluator = null;
+			}
 			
 			// Dispose the session at the end, since it may take a while.
 			DebuggerSession oldSession = session;
