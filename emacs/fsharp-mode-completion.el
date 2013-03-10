@@ -115,7 +115,6 @@ display in a help buffer instead.")
   (with-current-buffer (find-file-noselect file)
     (ac-fsharp-parse-current-buffer)))
 
-;;;###autoload
 (defn load-project (file)
   "Load the specified F# file as a project"
   (assert (equal "fsproj" (file-name-extension file))  ()
@@ -145,7 +144,6 @@ display in a help buffer instead.")
                          (* 1000 ac-fsharp-blocking-timeout))))
       (log-psendstr ac-fsharp-completion-process request)))
 
-;;;###autoload
 (defn stop-process ()
   (interactive)
   (_ message-safely "Quitting fsharp completion process")
@@ -169,7 +167,6 @@ display in a help buffer instead.")
         ac-fsharp-waiting nil)
   (_ clear-errors))
 
-;;;###autoload
 (defn start-process ()
   "Launch the F# completion process in the background"
   (interactive)
@@ -241,14 +238,12 @@ display in a help buffer instead.")
 
 (defmutable awaiting-tooltip nil)
 
-;;;###autoload
 (defn show-tooltip-at-point ()
   "Display a tooltip for the F# symbol at POINT."
   (interactive)
   (@set awaiting-tooltip t)
   (_ show-typesig-at-point))
 
-;;;###autoload
 (defn show-typesig-at-point ()
   "Display the type signature for the F# symbol at POINT."
   (interactive)
@@ -259,7 +254,6 @@ display in a help buffer instead.")
                                 (- (line-number-at-pos) 1)
                                 (current-column))))
 
-;;;###autoload
 (defun ac-fsharp-gotodefn-at-point ()
   "Find the point of declaration of the symbol at point and goto it"
   (interactive)

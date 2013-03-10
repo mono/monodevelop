@@ -17,7 +17,7 @@
       (cond
        ((eq testmode nil) ; Load from current checkout
         (init-melpa)
-        (ensure-packages '(pos-tip namespaces))
+        (ensure-packages '(pos-tip namespaces popup s dash))
 
         (push (expand-file-name "..") load-path)
 
@@ -32,7 +32,7 @@
        (t ; Assume `testmode` is a package file to install
           ; TODO: Break net dependency (pos-tip) for speed?
         (init-melpa)
-        (ensure-packages '(pos-tip namespaces))
+        (ensure-packages '(pos-tip namespaces popup s dash))
         (package-install-file (expand-file-name testmode)))))))
 
 (defun fsharp-mode-wrapper (bufs body)
