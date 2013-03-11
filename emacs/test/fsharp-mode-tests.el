@@ -14,7 +14,7 @@
 ;;; This is tricky to test comprehensively because there is a sln at the
 ;;; root of this repo.
 
-(check "does not find fsharp project if none present"
+(check "should not find fsharp project if none present"
   (should-not (fsharp-mode/find-sln-or-fsproj "/bin/")))
 
 (check "should find sln at base of repo given a subdir"

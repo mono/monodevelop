@@ -23,11 +23,11 @@
 ;; the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 ;; Boston, MA 02110-1301, USA.
 
-;;; User-configurable variables
-
 (require 's)
 (require 'dash)
 (require 'fsharp-mode-indent)
+
+;;; User-configurable variables
 
 (defvar ac-fsharp-executable "fsautocomplete.exe")
 
@@ -458,6 +458,7 @@ display a short summary in the minibuffer."
 
 (defun fsharp-mode-completion/show-popup (str)
   (if (display-graphic-p)
+      (require 'pos-tip)
       (pos-tip-show str)
     ;; Use unoptimized calculation for popup, making it less likely to
     ;; wrap lines.
