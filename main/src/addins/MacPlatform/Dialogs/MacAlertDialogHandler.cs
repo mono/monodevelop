@@ -44,7 +44,8 @@ namespace MonoDevelop.MacIntegration
 		public bool Run (AlertDialogData data)
 		{
 			using (var alert = new NSAlert ()) {
-				
+				alert.Window.Title = data.Title ?? BrandingService.ApplicationName;
+
 				if (data.Message.Icon == MonoDevelop.Ide.Gui.Stock.Information) {
 					alert.AlertStyle = NSAlertStyle.Critical;
 				} else if (data.Message.Icon == MonoDevelop.Ide.Gui.Stock.Warning) {

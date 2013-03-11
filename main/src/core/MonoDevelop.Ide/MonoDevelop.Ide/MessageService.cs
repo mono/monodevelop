@@ -327,6 +327,8 @@ namespace MonoDevelop.Ide
 			}
 			dialog.TransientFor = parent;
 			dialog.DestroyWithParent = true;
+			if (dialog.Title == null)
+				dialog.Title = BrandingService.ApplicationName;
 			PlaceDialog (dialog, parent);
 			return Mono.TextEditor.GtkWorkarounds.RunDialogWithNotification (dialog);
 		}

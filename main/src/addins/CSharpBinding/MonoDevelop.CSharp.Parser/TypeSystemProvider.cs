@@ -35,6 +35,7 @@ using Mono.CSharp;
 using System.Linq;
 using ICSharpCode.NRefactory;
 using MonoDevelop.CSharp.Refactoring.CodeActions;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp.Parser
 {
@@ -81,6 +82,10 @@ namespace MonoDevelop.CSharp.Parser
 			result.LastWriteTimeUtc = pf.LastWriteTime.Value;
 			result.ParsedFile = pf;
 			result.Add (GenerateFoldings (unit, result));
+
+			foreach (var tag in GetSemanticTags (unit))
+				result.Add (tag);
+
 			result.CreateRefactoringContext = (doc, token) => new MDRefactoringContext (doc, doc.Editor.Caret.Location, token);
 
 			if (storeAst) {
@@ -102,7 +107,7 @@ namespace MonoDevelop.CSharp.Parser
 			foreach (var fold in visitor.Foldings)
 				yield return fold;
 		}
-		
+
 		class FoldingVisitor : DepthFirstAstVisitor<object, object>
 		{
 			public readonly List<FoldingRegion> Foldings = new List<FoldingRegion> ();
@@ -209,7 +214,38 @@ namespace MonoDevelop.CSharp.Parser
 				return base.VisitBlockStatement (blockStatement, data);
 			}
 		}
-		
+
+		static IEnumerable<Tag> GetSemanticTags (SyntaxTree unit)
+		{
+			var visitor = new SemanticTagVisitor ();
+			unit.AcceptVisitor (visitor);
+			foreach (var fold in visitor.Tags)
+				yield return fold;
+		}
+
+		public class SemanticTagVisitor : DepthFirstAstVisitor
+		{
+			public List<Tag> Tags =  new List<Tag> ();
+
+			public override void VisitThrowStatement (ThrowStatement throwStatement)
+			{
+				var createExpression = throwStatement.Expression as ObjectCreateExpression;
+				if (createExpression == null)
+					return;
+				var st = createExpression.Type as SimpleType;
+				var mt = createExpression.Type as MemberType;
+				if (st != null && st.Identifier == "NotImplementedException" ||
+				    mt != null && mt.MemberName == "NotImplementedException" && mt.Target.ToString () == "System") {
+
+					if (createExpression.Arguments.Any ()) {
+						Tags.Add (new Tag ("High", GettextCatalog.GetString ("NotImplementedException({0}) thrown.", createExpression.Arguments.First ().GetText ()), new DomRegion (throwStatement.StartLocation, throwStatement.EndLocation)));
+					} else {
+						Tags.Add (new Tag ("High", GettextCatalog.GetString ("NotImplementedException thrown."), new DomRegion (throwStatement.StartLocation, throwStatement.EndLocation)));
+					}
+				}
+			}
+		}
+
 		void VisitMcsUnit ()
 		{
 		}
@@ -240,7 +276,7 @@ namespace MonoDevelop.CSharp.Parser
 			foreach (string tag in tagComments) {
 				if (!trimmedContent.StartsWith (tag))
 					continue;
-				result.Add (new MonoDevelop.Ide.TypeSystem.Tag (tag, comment.Content, cmt.Region));
+				result.Add (new Tag (tag, comment.Content, cmt.Region));
 			}
 		}
 		
