@@ -84,6 +84,21 @@ namespace MonoDevelop.Projects
 				rootFolder = value;
 			}
 		}
+
+		/// <summary>
+		/// Folder where to add solution files, when none is created
+		/// </summary>
+		public SolutionFolder DefaultSolutionFolder {
+			get {
+				var itemsFolder = (SolutionFolder) RootFolder.Items.Where (item => item.Name == "Solution Items").FirstOrDefault ();
+				if (itemsFolder == null) {
+					itemsFolder = new SolutionFolder ();
+					itemsFolder.Name = "Solution Items";
+					RootFolder.AddItem (itemsFolder);
+				}
+				return itemsFolder;
+			}
+		}
 		
 		// Does not include solution folders
 		public ReadOnlyCollection<SolutionItem> Items {
