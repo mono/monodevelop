@@ -6,4 +6,4 @@
     (pos-tip    "0.4.5")
     (s          "1.3.1")
     (dash       "1.1.0")
-    (namespaces "1.1.2")))
+    (namespaces "1.1.3")))
