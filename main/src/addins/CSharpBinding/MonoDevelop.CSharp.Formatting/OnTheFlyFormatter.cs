@@ -230,6 +230,7 @@ namespace MonoDevelop.CSharp.Formatting
 	
 				// Build stub
 				text = BuildStub (data, seg, startOffset, endOffset, out formatStartOffset);
+				formattingRegion = new DomRegion (data.Editor.OffsetToLocation (formatStartOffset), data.Editor.OffsetToLocation (endOffset));
 
 				formatLength = endOffset - seg.Offset;
 				realTextDelta = seg.Offset - formatStartOffset;
