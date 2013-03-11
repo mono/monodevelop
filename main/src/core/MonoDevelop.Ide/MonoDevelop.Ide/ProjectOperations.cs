@@ -1759,6 +1759,12 @@ namespace MonoDevelop.Ide
 				// Remove all files and directories under 'sourcePath'
 				foreach (var v in filesToRemove)
 					sourceProject.Files.Remove (v);
+
+				// Moving an empty folder. A new folder object has to be added to the project.
+				if (movingFolder && !sourceProject.Files.GetFilesInVirtualPath (targetPath).Any ()) {
+					var folderFile = new ProjectFile (targetPath) { Subtype = Subtype.Directory };
+					sourceProject.Files.Add (folderFile);
+				}
 			}
 			
 			var pfolder = sourcePath.ParentDirectory;

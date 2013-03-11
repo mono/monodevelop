@@ -129,6 +129,9 @@ namespace MonoDevelop.CSharp.Highlighting
 			if (src != null)
 				src.Cancel ();
 			resolver = null;
+			if (guiDocument.IsProjectContextInUpdate) {
+				return;
+			}
 			if (guiDocument != null && SemanticHighlightingEnabled) {
 				var parsedDocument = guiDocument.ParsedDocument;
 				if (parsedDocument != null) {

@@ -186,34 +186,49 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			question.Buttons.Add (AlertButton.Cancel);
 			question.Buttons.Add (AlertButton.Delete);
 			question.Buttons.Add (removeButton);
+
+			var deleteOnlyQuestion = new QuestionMessage () {
+				AllowApplyToAll = folders.Count > 1,
+				SecondaryText = GettextCatalog.GetString ("The directory and any files it contains will be permanintly removed from your hard disk. ")
+			};
+			deleteOnlyQuestion.Buttons.Add (AlertButton.Cancel);
+			deleteOnlyQuestion.Buttons.Add (AlertButton.Delete);
 			
 			foreach (var folder in folders) {
 				var project = folder.Project;
-				
+
 				var folderRelativePath = folder.Path.ToRelative (project.BaseDirectory);
 				var files = project.Files.GetFilesInVirtualPath (folderRelativePath).ToList ();
 				var folderPf = project.Files.GetFileWithVirtualPath (folderRelativePath);
-				
+				bool isProjectFolder = files.Count == 0 && folderPf == null;
+
+				AlertButton result;
+
 				//if the parent directory has already been removed, there may be nothing to do
-				if (files.Count == 0 && folderPf == null)
-					continue;
-				
-				question.Text = GettextCatalog.GetString ("Are you sure you want to remove directory {0} from project {1}?",
-					folder.Name, project.Name);
-				var result = MessageService.AskQuestion (question);
-				if (result != removeButton && result != AlertButton.Delete) 
-					break;
-				
-				projects.Add (project);
-				
-				//remove the files and link files in the directory
-				foreach (var f in files)
-					project.Files.Remove (f);
-				
-				// also remove the folder's own ProjectFile, if it exists 
-				// FIXME: it probably was already in the files list
-				if (folderPf != null)
-					project.Files.Remove (folderPf);
+				if (isProjectFolder) {
+					deleteOnlyQuestion.Text = GettextCatalog.GetString ("Are you sure you want to remove directory {0}?", folder.Name);
+					result = MessageService.AskQuestion (deleteOnlyQuestion);
+					if (result != AlertButton.Delete) 
+						break;
+				}
+				else {
+					question.Text = GettextCatalog.GetString ("Are you sure you want to remove directory {0} from project {1}?",
+						folder.Name, project.Name);
+					result = MessageService.AskQuestion (question);
+					if (result != removeButton && result != AlertButton.Delete) 
+						break;
+					
+					projects.Add (project);
+					
+					//remove the files and link files in the directory
+					foreach (var f in files)
+						project.Files.Remove (f);
+					
+					// also remove the folder's own ProjectFile, if it exists 
+					// FIXME: it probably was already in the files list
+					if (folderPf != null)
+						project.Files.Remove (folderPf);
+				}
 				
 				if (result == AlertButton.Delete) {
 					try {
@@ -229,7 +244,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					folder.Remove ();
 				}
 				
-				if (folder.Path.ParentDirectory != project.BaseDirectory) {
+				if (isProjectFolder && folder.Path.ParentDirectory != project.BaseDirectory) {
 					// If it's the last item in the parent folder, make sure we keep a reference to the parent 
 					// folder, so it is not deleted from the tree.
 					var inParentFolder = project.Files.GetFilesInVirtualPath (folderRelativePath.ParentDirectory);

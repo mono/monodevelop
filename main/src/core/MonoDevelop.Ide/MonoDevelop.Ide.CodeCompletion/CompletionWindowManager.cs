@@ -164,6 +164,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return;
 			wnd.PostProcessKeyEvent (key, keyChar, modifier);
 		}
+
+		public static void RepositionWindow ()
+		{
+			if (!IsVisible)
+				return;
+			wnd.RepositionWindow ();
+		}
 		
 		public static void HideWindow ()
 		{
