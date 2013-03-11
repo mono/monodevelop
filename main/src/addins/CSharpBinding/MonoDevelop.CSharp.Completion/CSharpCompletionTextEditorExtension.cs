@@ -707,6 +707,14 @@ namespace MonoDevelop.CSharp.Completion
 					}
 				}
 
+				public override string CompletionText {
+					get {
+						if (type.TypeParameterCount > 0 && !type.IsParameterized)
+							return type.Name;
+						return base.CompletionText;
+					}
+				}
+
 				#region IListData implementation
 
 				public CSharpCompletionDataList List {
