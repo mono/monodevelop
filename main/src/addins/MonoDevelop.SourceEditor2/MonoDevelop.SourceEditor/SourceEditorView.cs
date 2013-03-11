@@ -1940,12 +1940,23 @@ namespace MonoDevelop.SourceEditor
 		
 		public void FoldDefinitions ()
 		{
+			bool toggle = true;
+
 			foreach (FoldSegment segment in Document.FoldSegments) {
-				if (segment.FoldingType == FoldingType.TypeDefinition)
-					segment.IsFolded = false;
 				if (segment.FoldingType == FoldingType.TypeMember || segment.FoldingType == FoldingType.Comment)
-					segment.IsFolded = true;
+					if (segment.IsFolded)
+						toggle = false;
 			}
+
+
+			foreach (FoldSegment segment in Document.FoldSegments) {
+				if (segment.FoldingType == FoldingType.TypeDefinition) {
+					segment.IsFolded = false;
+				}
+				if (segment.FoldingType == FoldingType.TypeMember || segment.FoldingType == FoldingType.Comment)
+					segment.IsFolded = toggle;
+			}
+
 			widget.TextEditor.Caret.MoveCaretBeforeFoldings ();
 			Document.RequestUpdate (new UpdateAll ());
 			Document.CommitDocumentUpdate ();
