@@ -89,29 +89,22 @@ namespace MonoDevelop.Projects.Policies
 		public string Name { get; set; }
 		public string Id { get; private set; }
 		
-		internal void AddSerializedPolicies (StreamReader reader)
+		internal PolicyKey[] AddSerializedPolicies (StreamReader reader)
 		{
 			if (policies == null)
 				policies = new PolicyDictionary ();
+			var keys = new List<PolicyKey> ();
 			foreach (ScopedPolicy policyPair in PolicyService.RawDeserializeXml (reader)) {
 				PolicyKey key = new PolicyKey (policyPair.PolicyType, policyPair.Scope);
 				if (policies.ContainsKey (key))
 					throw new InvalidOperationException ("Cannot add second policy of type '" +  
 					                                     key.ToString () + "' to policy set '" + Id + "'");
+				keys.Add (key);
 				policies[key] = policyPair.Policy;
 				if (!policyPair.SupportsDiffSerialize)
 					externalPolicies.Add (key);
 			}
-		}
-		
-		internal void RemoveSerializedPolicies (StreamReader reader)
-		{
-			if (policies == null)
-				return;
-			// NOTE: this could be more efficient if it just got the types instead of a 
-			// full deserialisation
-			foreach (ScopedPolicy policyPair in PolicyService.RawDeserializeXml (reader))
-				policies.Remove (new PolicyKey (policyPair.PolicyType, policyPair.Scope));
+			return keys.ToArray ();
 		}
 		
 		internal bool SupportsDiffSerialize (ScopedPolicy pol)

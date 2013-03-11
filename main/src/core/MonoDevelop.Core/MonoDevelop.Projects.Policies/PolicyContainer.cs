@@ -162,6 +162,32 @@ namespace MonoDevelop.Projects.Policies
 			return false;
 		}
 		
+		internal void RemoveAll (Type type)
+		{
+			if (policies != null) {
+				foreach (var p in policies.ToArray ()) {
+					if (p.Key.PolicyType == type) {
+						policies.Remove (p.Key);
+						OnPolicyChanged (type, p.Key.Scope);
+					}
+				}
+				if (policies.Count == 0)
+					policies = null;
+			}
+		}
+
+		internal void RemoveAll (PolicyKey[] keys)
+		{
+			if (policies != null) {
+				foreach (var k in keys) {
+					policies.Remove (k);
+					OnPolicyChanged (k.PolicyType, k.Scope);
+				}
+				if (policies.Count == 0)
+					policies = null;
+			}
+		}
+
 		/// <summary>
 		/// Copies the policies defined in another container
 		/// </summary>
