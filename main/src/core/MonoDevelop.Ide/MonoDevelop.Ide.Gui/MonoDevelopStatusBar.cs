@@ -110,9 +110,13 @@ namespace MonoDevelop.Ide
 				feedbackButton.ClickOnRelease = true;
 				FeedbackService.FeedbackPositionGetter = delegate {
 					int x, y;
-					feedbackButton.GdkWindow.GetOrigin (out x, out y);
-					x += feedbackButton.Allocation.Width;
-					y -= 6;
+					if (feedbackButton.GdkWindow != null) {
+						feedbackButton.GdkWindow.GetOrigin (out x, out y);
+						x += feedbackButton.Allocation.Width;
+						y -= 6;
+					} else {
+						x = y = -1;
+					}
 					return new Gdk.Point (x, y);
 				};
 			}
