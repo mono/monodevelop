@@ -48,6 +48,7 @@ namespace MonoDevelop.Debugger
 		protected override void OnDestroyed ()
 		{
 			CompletionWindowManager.WindowClosed -= HandleCompletionWindowClosed;
+			CompletionWindowManager.HideWindow ();
 			base.OnDestroyed ();
 		}
 
