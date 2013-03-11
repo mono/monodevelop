@@ -1172,10 +1172,20 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		void SetIfPresentOrNotDefaultValue (MSBuildPropertySet propGroup, string name, string value, string defaultValue)
 		{
+			bool hasDefaultValue = string.IsNullOrEmpty (value) || value == defaultValue;
 			var prop = propGroup.GetProperty (name);
 			if (prop != null) {
-				prop.Value = value;
-			} else if (value != defaultValue) {
+				//if the value is default or empty, only remove the element if it was not already the default or empty
+				//to avoid unnecessary project file churn
+				if (hasDefaultValue) {
+					var existing = prop.Value;
+					bool alreadyHadDefaultValue = string.IsNullOrEmpty (existing) || existing == defaultValue;
+					if (!alreadyHadDefaultValue)
+						propGroup.RemoveProperty (name);
+				} else {
+					prop.Value = value;
+				}
+			} else if (!hasDefaultValue) {
 				propGroup.SetPropertyValue (name, value, false);
 			}
 		}
