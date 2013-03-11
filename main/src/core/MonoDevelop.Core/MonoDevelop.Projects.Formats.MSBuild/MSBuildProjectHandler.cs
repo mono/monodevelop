@@ -1155,7 +1155,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			var prop = propGroup.GetProperty (name);
 			if (prop != null) {
-				prop.Value = value;
+				if (value != defaultValue)
+					prop.Value = value;
 			} else if (value != defaultValue) {
 				propGroup.SetPropertyValue (name, value, false);
 			}
