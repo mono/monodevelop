@@ -245,10 +245,13 @@ namespace MonoDevelop.SourceEditor
 		
 		bool ExtensionKeyPress (Gdk.Key key, uint ch, Gdk.ModifierType state)
 		{
+			isInKeyStroke = true;
 			try {
 				return Extension.KeyPress (key, (char)ch, state);
 			} catch (Exception ex) {
 				ReportExtensionError (ex);
+			} finally {
+				isInKeyStroke = false;
 			}
 			return false;
 		}
@@ -683,6 +686,9 @@ namespace MonoDevelop.SourceEditor
 			if (!isInKeyStroke) {
 				CompletionWindowManager.HideWindow ();
 				ParameterInformationWindowManager.HideWindow (null, view);
+			} else {
+				CompletionWindowManager.RepositionWindow ();
+				ParameterInformationWindowManager.RepositionWindow (null, view);
 			}
 		}
 		

@@ -123,6 +123,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 			// Refresh.
 			UpdateWindow (ext, widget);
 		}
+
+		public static void RepositionWindow (CompletionTextEditorExtension ext, ICompletionWidget widget)
+		{
+			UpdateWindow (ext, widget);
+		}
 		
 		public static void ShowWindow (CompletionTextEditorExtension ext, ICompletionWidget widget, CodeCompletionContext ctx, ParameterDataProvider provider)
 		{
