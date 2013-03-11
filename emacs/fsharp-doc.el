@@ -35,6 +35,8 @@
 ;;
 ;;; Code:
 
+(require 'fsharp-mode-completion)
+
 (defvar fsharp-doc-idle-delay 0.5
   "The number of seconds to wait for input idle before showing a tooltip.")
 

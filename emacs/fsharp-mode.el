@@ -26,6 +26,7 @@
 ;; Boston, MA 02110-1301, USA.
 
 (require 'fsharp-mode-completion)
+(require 'fsharp-doc)
 (require 'inf-fsharp-mode)
 
 (defconst fsharp-mode-version 0.8
