@@ -26,6 +26,7 @@
 (require 's)
 (require 'dash)
 (require 'fsharp-mode-indent)
+(require 'pos-tip)
 
 ;;; User-configurable variables
 
@@ -458,7 +459,6 @@ display a short summary in the minibuffer."
 
 (defun fsharp-mode-completion/show-popup (str)
   (if (display-graphic-p)
-      (require 'pos-tip)
       (pos-tip-show str)
     ;; Use unoptimized calculation for popup, making it less likely to
     ;; wrap lines.
