@@ -115,11 +115,11 @@ namespace MonoDevelop.Ide.CodeFormatting
 					}
 				}
 
-				int newOffset = version.MoveOffsetTo (editor.Version, selection.Offset);
-				int newEndOffset = version.MoveOffsetTo (editor.Version, selection.EndOffset);
-				
-				editor.SetSelection (newOffset, newEndOffset);
-
+				if (editor.IsSomethingSelected) { 
+					int newOffset = version.MoveOffsetTo (editor.Version, selection.Offset);
+					int newEndOffset = version.MoveOffsetTo (editor.Version, selection.EndOffset);
+					editor.SetSelection (newOffset, newEndOffset);
+				}
 			}
 		}
 	}

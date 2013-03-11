@@ -214,6 +214,7 @@ namespace MonoDevelop.CSharp.Formatting
 					startDelta = startOffset - seg.Offset;
 					formatLength = endOffset - startOffset + startDelta;
 					realTextDelta = seg.Offset - formatStartOffset;
+					formattingRegion = new DomRegion (data.Editor.OffsetToLocation (formatStartOffset), data.Editor.OffsetToLocation (endOffset));
 				} else {
 					formatStartOffset = startOffset;
 					formatLength = endOffset - startOffset;
