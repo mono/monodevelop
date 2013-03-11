@@ -698,7 +698,8 @@ namespace MonoDevelop.Ide.Gui
 			}
 			e.Document.RunWhenLoaded (action);
 		}
-		
+
+		TypeSystemService.ProjectContentWrapper oldWrapper;
 		internal void SetProject (Project project)
 		{
 			if (Window.ViewContent.Project == project)
@@ -715,6 +716,22 @@ namespace MonoDevelop.Ide.Gui
 			if (project != null)
 				project.Modified += HandleProjectModified;
 			InitializeExtensionChain ();
+			StartReparseThread ();
+
+			if (oldWrapper != null) {
+				oldWrapper.InLoadChanged -= HandleInLoadChanged;
+				oldWrapper = null;
+			}
+
+			if (project != null) {
+				var wrapper = TypeSystemService.GetProjectContentWrapper (project);
+				wrapper.InLoadChanged += HandleInLoadChanged;
+				oldWrapper = wrapper;
+			}
+		}
+
+		void HandleInLoadChanged (object sender, EventArgs e)
+		{
 			StartReparseThread ();
 		}
 
@@ -760,6 +777,14 @@ namespace MonoDevelop.Ide.Gui
 		static IUnresolvedAssembly Mscorlib { get { return mscorlib.Value; } }
 		static IUnresolvedAssembly SystemCore { get { return systemCore.Value; } }
 		static IUnresolvedAssembly System { get { return system.Value; } }
+
+		public bool IsProjectContextInUpdate {
+			get {
+				if (Project == null)
+					return false;
+				return TypeSystemService.GetProjectContentWrapper (Project).InLoad;
+			}
+		}
 
 		public virtual IProjectContent GetProjectContext ()
 		{

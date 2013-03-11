@@ -934,6 +934,25 @@ namespace MonoDevelop.Ide.TypeSystem
 				private set;
 			}
 
+			bool inLoad;
+			public bool InLoad {
+				get {
+					return inLoad;
+				}
+				set {
+					inLoad = value;
+					OnInLoadChanged (EventArgs.Empty);
+				}
+			}
+
+			public event EventHandler InLoadChanged;
+
+			protected virtual void OnInLoadChanged (EventArgs e)
+			{
+				var handler = InLoadChanged;
+				if (handler != null)
+					handler (this, e);
+			}
 
 			[NonSerialized]
 			internal LazyAssemblyLoader OutputAssembly = null;
@@ -994,6 +1013,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						}
 
 						context = new MonoDevelopProjectContent (this.wrapper.Project);
+						wrapper.InLoad = true;
 						context = context.SetLocation (this.wrapper.Project.FileName);
 						context = context.SetAssemblyName (this.wrapper.Project.Name);
 						QueueParseJob (this.wrapper);
@@ -2113,7 +2133,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				TypeSystemParserNode node = null;
 				TypeSystemParser parser = null;
 				var tags = Context.GetExtensionObject <ProjectCommentTags> ();
-
+				Context.InLoad = true;
 				foreach (var file in (FileList ?? Context.Project.Files)) {
 					var fileName = file.FilePath;
 					if (filesSkippedInParseThread.Any (f => f == fileName))
@@ -2133,6 +2153,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						Context.InformFileRemoved (new ParsedFileEventArgs (oldFile));
 					Context.InformFileAdded (new ParsedFileEventArgs (parsedDocument.ParsedFile));
 				}
+				Context.InLoad = false;
 			}
 		}
 
