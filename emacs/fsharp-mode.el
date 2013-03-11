@@ -25,15 +25,8 @@
 ;; the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 ;; Boston, MA 02110-1301, USA.
 
-(require 'namespaces)
-
-(namespace fsharp-mode
-  :export
-  [find-sln-or-fsproj
-   find-sln
-   find-fsproj]
-  :use
-  [fsharp-mode-completion])
+(require 'fsharp-mode-completion)
+(require 'inf-fsharp-mode)
 
 (defconst fsharp-mode-version 0.8
   "Version of this fsharp-mode")
@@ -250,22 +243,21 @@ and whether it is in a project directory.")
     (set-buffer-menubar current-menubar)
     (add-submenu nil fsharp-mode-xemacs-menu))
 
-  (in-ns fsharp-mode
-    (setq compile-command (_ choose-compile-command (buffer-file-name)))
-    (unless ac-fsharp-completion-process
-      (_ try-load-project (buffer-file-name)))
+  (setq compile-command (fsharp-mode-choose-compile-command (buffer-file-name)))
+  (unless ac-fsharp-completion-process
+    (fsharp-mode-try-load-project (buffer-file-name))
 
     (turn-on-fsharp-doc-mode)
     (run-hooks 'fsharp-mode-hook)))
 
 
-(defn try-load-project (file)
+(defun fsharp-mode-try-load-project (file)
   (when file
-    (let ((proj (_ find-fsproj file)))
+    (let ((proj (fsharp-mode/find-fsproj file)))
       (when proj
         (fsharp-mode-completion/load-project proj)))))
 
-(defn choose-compile-command (file)
+(defun fsharp-mode-choose-compile-command (file)
   "Format an appropriate compilation command, depending on several factors:
 1. The presence of a makefile
 2. The presence of a .sln or .fsproj
@@ -362,29 +354,30 @@ whole string."
 
 ;;; Project
 
-(defn find-sln-or-fsproj (dir-or-file)
+(defun fsharp-mode/find-sln-or-fsproj (dir-or-file)
   "Search for a solution or F# project file in any enclosing
 folders relative to DIR-OR-FILE."
-  (or (_ find-sln dir-or-file)
-      (_ find-fsproj dir-or-file)))
+  (or (fsharp-mode/find-sln dir-or-file)
+      (fsharp-mode/find-fsproj dir-or-file)))
 
-(defn find-sln (dir-or-file)
-  (_ search-upwards (rx (0+ nonl) ".sln" eol)
+(defun fsharp-mode/find-sln (dir-or-file)
+  (fsharp-mode-search-upwards (rx (0+ nonl) ".sln" eol)
      (file-name-directory dir-or-file)))
 
-(defn find-fsproj (dir-or-file)
-  (_ search-upwards (rx (0+ nonl) ".fsproj" eol)
+(defun fsharp-mode/find-fsproj (dir-or-file)
+  (fsharp-mode-search-upwards (rx (0+ nonl) ".fsproj" eol)
      (file-name-directory dir-or-file)))
 
-(defn search-upwards (regex dir)
+(defun fsharp-mode-search-upwards (regex dir)
   (when dir
     (or (car-safe (directory-files dir 'full regex))
-        (_ search-upwards regex (_ parent-dir dir)))))
+        (fsharp-mode-search-upwards regex (fsharp-mode-parent-dir dir)))))
 
-(defn parent-dir (dir)
+(defun fsharp-mode-parent-dir (dir)
   (let ((p (file-name-directory (directory-file-name dir))))
     (unless (equal p dir)
       p)))
 
+(provide 'fsharp-mode)
 
 ;;; fsharp-mode.el ends here

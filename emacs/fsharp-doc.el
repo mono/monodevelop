@@ -33,19 +33,7 @@
 ;;   (autoload 'turn-on-fsharp-doc-mode "fsharp-doc.el")
 ;;   (add-hook 'fsharp-mode-hook 'turn-on-fsharp-doc-mode)
 ;;
-;; This file requires `namespaces`. It is available from MELPA, or from
-;; GitHub at
-;; https://raw.github.com/chrisbarrett/elisp-namespaces/master/namespaces.el
-;;
 ;;; Code:
-
-(require 'namespaces)
-
-(namespace fsharp-doc
-  :export
-  [format-for-minibuffer]
-  :import
-  [fsharp-mode-completion])
 
 (defvar fsharp-doc-idle-delay 0.5
   "The number of seconds to wait for input idle before showing a tooltip.")
@@ -56,12 +44,11 @@
   ""
   nil
   ;; Body
-  (in-ns fsharp-doc
-    (_ reset-timer)
-    (when fsharp-doc-mode
-      (_ start-timer)
-      (run-hooks 'fsharp-doc-mode-hook))
-    fsharp-doc-mode))
+  (fsharp-doc-reset-timer)
+  (when fsharp-doc-mode
+    (fsharp-doc-start-timer)
+    (run-hooks 'fsharp-doc-mode-hook))
+  fsharp-doc-mode)
 
 (defun turn-on-fsharp-doc-mode ()
   (fsharp-doc-mode t))
@@ -71,25 +58,27 @@
 
 ;;; -----------------------------------------------------------------------------
 
-(defmutable timer nil)
+(defvar fsharp-doc-timer nil)
 
-(defn start-timer ()
-  (unless (@ timer)
-    (@set timer (run-with-idle-timer fsharp-doc-idle-delay t (~ show-tooltip)))))
+(defun fsharp-doc-start-timer ()
+  (unless fsharp-doc-timer
+    (setq fsharp-doc-timer
+          (run-with-idle-timer fsharp-doc-idle-delay t
+                               'fsharp-doc-show-tooltip))))
 
-(defn reset-timer ()
-  (when (@ timer)
-    (cancel-timer (@ timer))
-    (@set timer nil)))
+(defun fsharp-doc-reset-timer ()
+  (when fsharp-doc-timer
+    (cancel-timer fsharp-doc-timer)
+    (setq fsharp-doc-timer nil)))
 
 ;;; ----------------------------------------------------------------------------
 
-(defn format-for-minibuffer (str)
+(defun fsharp-doc/format-for-minibuffer (str)
   "Parse the result from the F# process."
   (destructuring-bind (x &rest xs) (split-string str "[\r\n]")
     (let ((line (if (string-match-p "^Multiple" x) (car-safe xs) x))
-          (name (_ extract-full-name str)))
-      (_ tidy-result
+          (name (fsharp-doc-extract-full-name str)))
+      (fsharp-doc-tidy-result
          (cond
           ;; Don't fully-qualify let-bindings.
           ((string-match-p "^val" line)
@@ -97,39 +86,41 @@
 
           ;; Extract type identifier.
           (name
-           (_ replace-identifier line name))
+           (fsharp-doc-replace-identifier line name))
 
           (t
            line))))))
 
-(defn extract-full-name (str)
+(defun fsharp-doc-extract-full-name (str)
   (when (string-match "Full name: \\(.*\\)$" str)
     (match-string 1 str)))
 
-(defn replace-identifier (str fullname)
+(defun fsharp-doc-replace-identifier (str fullname)
   (replace-regexp-in-string
    "^\\w+ \\(public \\|private \\|internal \\)?\\(.*?\\) "
    fullname str 'fixcase "\2" 2))
 
-(defn tidy-result (str)
+(defun fsharp-doc-tidy-result (str)
   (replace-regexp-in-string "[ ]*=[ ]*" "" str))
 
 ;;; ----------------------------------------------------------------------------
 
-(defmutable prevpoint nil)
+(defvar fsharp-doc-prevpoint nil)
 
-(defn show-tooltip ()
+(defun fsharp-doc-show-tooltip ()
   "Show tooltip info in the minibuffer.
 If there is an error or warning at point, show the error text.
 Otherwise, request a tooltip from the completion process."
   (interactive)
   (when (and fsharp-doc-mode (thing-at-point 'symbol))
-    (unless (or (equal (point) (@ prevpoint))
+    (unless (or (equal (point) fsharp-doc-prevpoint)
                 executing-kbd-macro
-                (_ fsharp-overlay-at (point))
+                (fsharp-mode-completion-fsharp-overlay-at (point))
                 (active-minibuffer-window)
                 cursor-in-echo-area)
-      (@set prevpoint (point))
-      (_ show-typesig-at-point))))
+      (setq fsharp-doc-prevpoint (point))
+      (fsharp-mode-completion/show-typesig-at-point))))
+
+(provide 'fsharp-doc)
 
 ;;; fsharp-doc.el ends here

@@ -17,7 +17,7 @@
       (cond
        ((eq testmode nil) ; Load from current checkout
         (init-melpa)
-        (ensure-packages '(pos-tip namespaces popup s dash))
+        (ensure-packages '(pos-tip popup s dash))
 
         (push (expand-file-name "..") load-path)
 
@@ -32,7 +32,7 @@
        (t ; Assume `testmode` is a package file to install
           ; TODO: Break net dependency (pos-tip) for speed?
         (init-melpa)
-        (ensure-packages '(pos-tip namespaces popup s dash))
+        (ensure-packages '(pos-tip popup s dash))
         (package-install-file (expand-file-name testmode)))))))
 
 (defun fsharp-mode-wrapper (bufs body)
@@ -136,7 +136,7 @@
      (delete-backward-char 1)
      (backward-char)
      (call-process "sleep" nil nil nil "3")
-     (in-ns fsharp-mode-completion (_ request-errors))
+     (fsharp-mode-completion-request-errors)
      (while (eq (length (overlays-at (point))) 0)
        (sleep-for 1))
      (should (eq (overlay-get (car (overlays-at (point))) 'face)
