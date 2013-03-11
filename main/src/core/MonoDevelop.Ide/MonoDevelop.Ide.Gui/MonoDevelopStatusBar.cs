@@ -91,7 +91,7 @@ namespace MonoDevelop.Ide
 			// Feedback button
 			
 			if (FeedbackService.Enabled) {
-				CustomFrame fr = new CustomFrame (0, 0, 1, 1);
+				CustomFrame fr = new CustomFrame (0, 0, 1, 0);
 				Gdk.Pixbuf px = Gdk.Pixbuf.LoadFromResource ("balloon.png");
 				HBox b = new HBox (false, 3);
 				b.PackStart (new Gtk.Image (px));
@@ -123,12 +123,15 @@ namespace MonoDevelop.Ide
 			
 			// Dock area
 			
+			CustomFrame dfr = new CustomFrame (0, 0, 1, 0);
+			dfr.ShowAll ();
 			DefaultWorkbench wb = (DefaultWorkbench)IdeApp.Workbench.RootWindow;
 			var dockBar = wb.DockFrame.ExtractDockBar (PositionType.Bottom);
 			dockBar.AlignToEnd = true;
 			dockBar.ShowBorder = false;
 			dockBar.NoShowAll = true;
-			mainBox.PackStart (dockBar, false, false, 0);
+			dfr.Add (dockBar);
+			mainBox.PackStart (dfr, false, false, 0);
 
 			// Resize grip
 
