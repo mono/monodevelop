@@ -159,9 +159,9 @@
 			macShortcut = "Alt|Shift|Meta|Right"
 			_description = "Toggles all the foldings in the document."/>
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.FoldDefinitions"
-			_label = "Show _Definitions Only" 
+			_label = "Toggle _Definitions" 
 			macShortcut = "Alt|Shift|Meta|Left"
-			_description = "Folds all method and property bodies."/>
+			_description = "Toggles foldings of all method and property bodies."/>
 			
 	<Command id = "MonoDevelop.Ide.CodeFormatting.CodeFormattingCommands.FormatBuffer"
 			defaultHandler = "MonoDevelop.Ide.CodeFormatting.FormatBufferHandler"
