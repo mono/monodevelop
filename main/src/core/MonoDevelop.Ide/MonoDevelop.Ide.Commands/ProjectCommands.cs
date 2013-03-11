@@ -262,10 +262,19 @@ namespace MonoDevelop.Ide.Commands
 			info.Enabled = CanRun (Runtime.ProcessService.DefaultExecutionHandler);
 		}
 		
+		static IBuildTarget GetRunTarget ()
+		{
+			return IdeApp.ProjectOperations.CurrentSelectedSolution != null && IdeApp.ProjectOperations.CurrentSelectedSolution.StartupItem != null ? 
+				IdeApp.ProjectOperations.CurrentSelectedSolution.StartupItem : 
+					IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
+		}
+		
 		public static bool CanRun (IExecutionHandler executionHandler)
 		{
-            if (IdeApp.Workspace.IsOpen)
-                return IdeApp.ProjectOperations.CurrentSelectedSolution != null && IdeApp.ProjectOperations.CanExecute (IdeApp.ProjectOperations.CurrentSelectedSolution, executionHandler);
+            if (IdeApp.Workspace.IsOpen) {
+				var target = GetRunTarget ();
+				return target != null && IdeApp.ProjectOperations.CanExecute (target, executionHandler);
+			}
             else
                 return (IdeApp.Workbench.ActiveDocument != null) && (IdeApp.Workbench.ActiveDocument.CanRun (executionHandler));
 		}
@@ -291,14 +300,14 @@ namespace MonoDevelop.Ide.Commands
                 }
             }
             else {
+				var target = GetRunTarget ();
                 if (!IdeApp.Preferences.BuildBeforeExecuting)
-                    IdeApp.ProjectOperations.Execute (IdeApp.ProjectOperations.CurrentSelectedSolution, executionHandler);
+					IdeApp.ProjectOperations.Execute (target, executionHandler);
                 else {
-					Solution sol = IdeApp.ProjectOperations.CurrentSelectedSolution;
-                    IAsyncOperation asyncOperation = IdeApp.ProjectOperations.Build (sol);
+                    IAsyncOperation asyncOperation = IdeApp.ProjectOperations.Build (target);
                     asyncOperation.Completed += delegate {
                         if ((asyncOperation.Success) || (IdeApp.Preferences.RunWithWarnings && asyncOperation.SuccessWithWarnings))
-                            IdeApp.ProjectOperations.Execute (sol, executionHandler);
+                            IdeApp.ProjectOperations.Execute (target, executionHandler);
                     };
                 }
 
