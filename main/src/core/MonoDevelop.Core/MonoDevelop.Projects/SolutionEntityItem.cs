@@ -213,7 +213,7 @@ namespace MonoDevelop.Projects
 			get { return items; }
 		}
 
-		public ProjectItemCollection WildcardItems {
+		internal ProjectItemCollection WildcardItems {
 			get { return wildcardItems; }
 		}
 

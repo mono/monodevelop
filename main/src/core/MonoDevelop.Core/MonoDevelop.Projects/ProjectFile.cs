@@ -139,7 +139,7 @@ namespace MonoDevelop.Projects
 			get { return FilePath; }
 		}
 
-		public bool IsWildcard {
+		internal bool IsWildcard {
 			get {
 				return Name.Contains("*");
 			}
@@ -150,7 +150,7 @@ namespace MonoDevelop.Projects
 		/// a ProjectFile containing wildcards.  If true, this instance
 		/// should not be saved to a csproj file.
 		/// </summary>
-		public bool IsOriginatedFromWildcard
+		internal bool IsOriginatedFromWildcard
 		{
 			get;
 			private set;
@@ -194,7 +194,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		public IEnumerable<string> ResolveWildcardFilePath ()
+		internal IEnumerable<string> ResolveWildcardFilePath ()
 		{
 			if (String.IsNullOrWhiteSpace(filename)) yield break;
 
@@ -244,7 +244,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		public IEnumerable<ProjectFile> ResolveWildcardItems ()
+		internal IEnumerable<ProjectFile> ResolveWildcardItems ()
 		{
 			foreach (var resolvedFilePath in ResolveWildcardFilePath ())
 			{
