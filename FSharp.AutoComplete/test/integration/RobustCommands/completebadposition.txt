@@ -1,0 +1,10 @@
+DATA: project
+<absolute path removed>/test/integration/RobustCommands/Project/FileTwo.fs
+<absolute path removed>/test/integration/RobustCommands/Project/Program.fs
+<<EOF>>
+INFO: Background parsing started
+<<EOF>>
+ERROR: Position is out of range
+<<EOF>>
+ERROR: Position is out of range
+<<EOF>>

@@ -1,7 +1,0 @@
-DATA: project
-<absolute path removed>/test/RobustCommands/Project/FileTwo.fs
-<absolute path removed>/test/RobustCommands/Project/Program.fs
-<<EOF>>
-ERROR: File '<absolute path removed>/test/RobustCommands/NoSuchFile.fs' not parsed
-<<EOF>>
-

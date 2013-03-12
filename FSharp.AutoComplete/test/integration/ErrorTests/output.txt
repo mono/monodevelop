@@ -1,6 +1,6 @@
 DATA: project
-<absolute path removed>/test/ErrorTests/FileTwo.fs
-<absolute path removed>/test/ErrorTests/Program.fs
+<absolute path removed>/test/integration/ErrorTests/FileTwo.fs
+<absolute path removed>/test/integration/ErrorTests/Program.fs
 <<EOF>>
 INFO: Background parsing started
 <<EOF>>

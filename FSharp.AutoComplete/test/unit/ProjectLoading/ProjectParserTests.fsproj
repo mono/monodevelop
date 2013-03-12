@@ -39,15 +39,18 @@
     <Reference Include="FSharp.Core" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="Xunit">
-      <HintPath>..\xunit.1.9.1\lib\net20\xunit.dll</HintPath>
+    <Reference Include="NUnit">
+      <HintPath>..\..\..\..\lib\NUnit.2.6.1\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="FsUnit">
+      <HintPath>..\..\..\..\lib\FsUnit.1.1.1.0\Lib\Net40\FsUnit.NUnit.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Module1.fs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\FSharp.AutoComplete.fsproj">
+    <ProjectReference Include="..\..\..\FSharp.AutoComplete.fsproj">
       <Project>{b6ab4ef3-8f60-41a1-ab0c-851a6deb169e}</Project>
       <Name>FSharp.AutoComplete</Name>
     </ProjectReference>

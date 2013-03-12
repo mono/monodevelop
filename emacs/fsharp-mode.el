@@ -6,7 +6,7 @@
 ;;         2010-2011 Laurent Le Brun <laurent@le-brun.eu>
 ;; Maintainer: Robin Neatherway <robin.neatherway@gmail.com>
 ;; Keywords: languages
-;; Version: 0.7
+;; Version: 0.8
 
 ;; This file is not part of GNU Emacs.
 
@@ -25,15 +25,32 @@
 ;; the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 ;; Boston, MA 02110-1301, USA.
 
-;;user customizable variables
+(require 'fsharp-mode-completion)
+(require 'fsharp-doc)
+(require 'inf-fsharp-mode)
 
-(require 'fsharp-mode-indent)
-
-(defvar fsharp-mode-version 0.7
+(defconst fsharp-mode-version 0.8
   "Version of this fsharp-mode")
 
-(defvar fsharp-compiler "fsc"
-  "Program name for compiling a F# file")
+;;; Compilation
+
+(defvar fsharp-compile-command
+  (or (executable-find "fsharpc")
+      (executable-find "fsc"))
+  "The program used to compile F# source files.")
+
+(defvar fsharp-build-command
+  (or (executable-find "xbuild")
+      (executable-find "msbuild"))
+  "The command used to build F# projects and solutions.")
+
+(defvar fsharp-compiler nil
+  "The command used to compile an individual F# buffer.
+This will be set to a sane default, depending the type of file
+and whether it is in a project directory.")
+(make-variable-buffer-local 'fsharp-compiler)
+
+;;; ----------------------------------------------------------------------------
 
 (defvar fsharp-shell-active nil
   "Non nil when a subshell is running.")
@@ -44,8 +61,7 @@
 (defvar fsharp-mode-map nil
   "Keymap used in fsharp mode.")
 
-(if fsharp-mode-map
-    ()
+(unless fsharp-mode-map
   (setq fsharp-mode-map (make-sparse-keymap))
   (if running-xemacs
       (define-key fsharp-mode-map 'backspace 'backward-delete-char-untabify)
@@ -62,6 +78,9 @@
   (define-key fsharp-mode-map "\C-c\C-s" 'fsharp-show-subshell)
   (define-key fsharp-mode-map "\M-\C-h" 'fsharp-mark-phrase)
 
+  (define-key fsharp-mode-map (kbd "M-n") 'next-error)
+  (define-key fsharp-mode-map (kbd "M-p") 'previous-error)
+
   (define-key fsharp-mode-map "\C-cl" 'fsharp-shift-region-left)
   (define-key fsharp-mode-map "\C-cr" 'fsharp-shift-region-right)
 
@@ -69,15 +88,16 @@
   (define-key fsharp-mode-map "\C-c:"     'fsharp-guess-indent-offset)
   (define-key fsharp-mode-map [delete]    'fsharp-electric-delete)
   (define-key fsharp-mode-map [backspace] 'fsharp-electric-backspace)
+  (define-key fsharp-mode-map (kbd ".") 'ac-fsharp-electric-dot)
 
   (define-key fsharp-mode-map (kbd "C-c <up>") 'fsharp-goto-block-up)
 
-  (define-key fsharp-mode-map (kbd "C-c C-p") 'ac-fsharp-load-project)
-  (define-key fsharp-mode-map (kbd "C-c C-t") 'ac-fsharp-tooltip-at-point)
+  (define-key fsharp-mode-map (kbd "C-c C-p") 'fsharp-mode-completion/load-project)
+  (define-key fsharp-mode-map (kbd "C-c C-t") 'fsharp-mode-completion/show-tooltip-at-point)
   (define-key fsharp-mode-map (kbd "C-c C-d") 'ac-fsharp-gotodefn-at-point)
-  (define-key fsharp-mode-map (kbd "C-c C-q") 'ac-fsharp-quit-completion-process)
+  (define-key fsharp-mode-map (kbd "C-c C-q") 'fsharp-mode-completion/stop-process)
 
-  (if running-xemacs nil ; if not running xemacs
+  (unless running-xemacs
     (let ((map (make-sparse-keymap "fsharp"))
           (forms (make-sparse-keymap "Forms")))
       (define-key fsharp-mode-map [menu-bar] (make-sparse-keymap))
@@ -96,17 +116,14 @@
       (define-key map [separator-1] '("--"))
       (define-key map [show-subshell] '("Show subshell" . fsharp-show-subshell))
       (define-key map [eval-region] '("Eval region" . fsharp-eval-region))
-      (define-key map [eval-phrase] '("Eval phrase" . fsharp-eval-phrase))
-      )))
-
+      (define-key map [eval-phrase] '("Eval phrase" . fsharp-eval-phrase)))))
 
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.fs[iylx]?$" . fsharp-mode))
 
 (defvar fsharp-mode-syntax-table nil
   "Syntax table in use in fsharp mode buffers.")
-(if fsharp-mode-syntax-table
-    ()
+(unless fsharp-mode-syntax-table
   (setq fsharp-mode-syntax-table (make-syntax-table))
   ; backslash is an escape sequence
   (modify-syntax-entry ?\\ "\\" fsharp-mode-syntax-table)
@@ -141,10 +158,10 @@
   "Caches last buffer position determined not inside a fsharp comment.")
 (make-variable-buffer-local 'fsharp-last-noncomment-pos)
 
-;;last-noncomment-pos can be a simple position, because we nil it
-;;anyway whenever buffer changes upstream. last-comment-start and -end
-;;have to be markers, because we preserve them when the changes' end
-;;doesn't overlap with the comment's start.
+;; last-noncomment-pos can be a simple position, because we nil it
+;; anyway whenever buffer changes upstream. last-comment-start and -end
+;; have to be markers, because we preserve them when the changes' end
+;; doesn't overlap with the comment's start.
 
 (defvar fsharp-last-comment-start nil
   "A marker caching last determined fsharp comment start.")
@@ -156,110 +173,108 @@
 
 (make-variable-buffer-local 'before-change-function)
 
-
 (defvar fsharp-mode-hook nil
   "Hook for fsharp-mode")
 
 ;;;###autoload
-(defun fsharp-mode ()
+(define-derived-mode fsharp-mode prog-mode "fsharp"
   "Major mode for editing fsharp code.
 
 \\{fsharp-mode-map}"
-  (interactive)
 
   (require 'fsharp-mode-indent)
   (require 'fsharp-mode-font)
+  (require 'fsharp-doc)
   (require 'fsharp-mode-completion)
+
   (kill-all-local-variables)
   (use-local-map fsharp-mode-map)
   (set-syntax-table fsharp-mode-syntax-table)
-  (make-local-variable 'paragraph-start)
-  (make-local-variable 'require-final-newline)
-  (make-local-variable 'paragraph-separate)
-  (make-local-variable 'paragraph-ignore-fill-prefix)
-  (make-local-variable 'comment-start)
-  (make-local-variable 'comment-end)
-  (make-local-variable 'comment-column)
-  (make-local-variable 'comment-start-skip)
-  (make-local-variable 'parse-sexp-ignore-comments)
-  (make-local-variable 'indent-line-function)
-  (make-local-variable 'add-log-current-defun-function)
+
+  (mapc 'make-local-variable
+        '(paragraph-start
+          require-final-newline
+          paragraph-separate
+          paragraph-ignore-fill-prefix
+          comment-start
+          comment-end
+          comment-column
+          comment-start-skip
+          parse-sexp-ignore-comments
+          indent-line-function
+          add-log-current-defun-function
+          underline-minimum-offset
+          compile-command))
 
   (add-hook 'completion-at-point-functions #'ac-fsharp-completion-at-point)
 
-  (setq major-mode              'fsharp-mode
-        mode-name               "fsharp"
-        local-abbrev-table      fsharp-mode-abbrev-table
-        paragraph-start         (concat "^$\\|" page-delimiter)
-        paragraph-separate      paragraph-start
-        paragraph-ignore-fill-prefix t
-        require-final-newline   t
-        indent-tabs-mode        nil
-        comment-start           "//"
-        comment-end             ""
-        comment-column          40
-        comment-start-skip      "///* *"
-        comment-indent-function 'fsharp-comment-indent-function
-        indent-region-function  'fsharp-indent-region
-        indent-line-function    'fsharp-indent-line
+  (setq major-mode               'fsharp-mode
+        mode-name                "fsharp"
+        local-abbrev-table       fsharp-mode-abbrev-table
+        paragraph-start          (concat "^$\\|" page-delimiter)
+        paragraph-separate       paragraph-start
+        require-final-newline    t
+        indent-tabs-mode         nil
+        comment-start            "//"
+        comment-end              ""
+        comment-column           40
+        comment-start-skip       "///* *"
+        comment-indent-function  'fsharp-comment-indent-function
+        indent-region-function   'fsharp-indent-region
+        indent-line-function     'fsharp-indent-line
+        underline-minimum-offset  2
 
+        paragraph-ignore-fill-prefix   t
         add-log-current-defun-function 'fsharp-current-defun
-        before-change-function 'fsharp-before-change-function
-        fsharp-last-noncomment-pos nil
-        fsharp-last-comment-start (make-marker)
-        fsharp-last-comment-end (make-marker))
+        before-change-function         'fsharp-before-change-function
+        fsharp-last-noncomment-pos     nil
+        fsharp-last-comment-start      (make-marker)
+        fsharp-last-comment-end        (make-marker))
 
-  (if running-xemacs ; from Xemacs lisp mode
-      (if (and (featurep 'menubar)
-               current-menubar)
-          (progn
-            ;; make a local copy of the menubar, so our modes don't
-            ;; change the global menubar
-            (set-buffer-menubar current-menubar)
-            (add-submenu nil fsharp-mode-xemacs-menu))))
-  (run-hooks 'fsharp-mode-hook)
+  ;; Error navigation
+  (setq next-error-function 'fsharp-mode-completion/next-error)
+  (add-hook 'next-error-hook 'fsharp-mode-completion/show-error-at-point nil t)
+  (add-hook 'post-command-hook 'fsharp-mode-completion/show-error-at-point nil t)
 
-  (if fsharp-smart-indentation
-    (let ((offset fsharp-indent-offset))
-      ;; It's okay if this fails to guess a good value
-      (if (and (fsharp-safe (fsharp-guess-indent-offset))
-               (<= fsharp-indent-offset 8)
-               (>= fsharp-indent-offset 2))
-          (setq offset fsharp-indent-offset))
-      (setq fsharp-indent-offset offset)
-      ;; Only turn indent-tabs-mode off if tab-width !=
-      ;; fsharp-indent-offset.  Never turn it on, because the user must
-      ;; have explicitly turned it off.
-      (if (/= tab-width fsharp-indent-offset)
-          (setq indent-tabs-mode nil))
-      )))
+  ;; make a local copy of the menubar, so our modes don't
+  ;; change the global menubar
+  (when (and running-xemacs
+             (featurep 'menubar)
+             current-menubar)
+    (set-buffer-menubar current-menubar)
+    (add-submenu nil fsharp-mode-xemacs-menu))
 
-(defun fsharp-set-compile-command ()
-  "Hook to set compile-command locally, unless there is a Makefile in the 
-   current directory." 
-  (interactive)
-  (unless (or (null buffer-file-name)
-              (file-exists-p "makefile")
-              (file-exists-p "Makefile"))
-    (let* ((filename (file-name-nondirectory buffer-file-name))
-           (basename (file-name-sans-extension filename))
-           (command nil))
-      (cond
-       ((string-match ".*\\.fs\$" filename)
-        (setq command fsharp-compiler) ; (concat "fsc -o " basename)
-        )
-       ((string-match ".*\\.fsl\$" filename) ;FIXME
-        (setq command "fslex"))
-       ((string-match ".*\\.fsy\$" filename) ;FIXME
-        (setq command "fsyacc"))
-       )
-      (if command
-          (progn
-            (make-local-variable 'compile-command)
-            (setq compile-command (concat command " " filename))))
-      )))
+  (setq compile-command (fsharp-mode-choose-compile-command (buffer-file-name)))
+  (unless ac-fsharp-completion-process
+    (fsharp-mode-try-load-project (buffer-file-name))
 
-(add-hook 'fsharp-mode-hook 'fsharp-set-compile-command)
+    (turn-on-fsharp-doc-mode)
+    (run-hooks 'fsharp-mode-hook)))
+
+
+(defun fsharp-mode-try-load-project (file)
+  (when file
+    (let ((proj (fsharp-mode/find-fsproj file)))
+      (when proj
+        (fsharp-mode-completion/load-project proj)))))
+
+(defun fsharp-mode-choose-compile-command (file)
+  "Format an appropriate compilation command, depending on several factors:
+1. The presence of a makefile
+2. The presence of a .sln or .fsproj
+3. The file's type.
+"
+  (let* ((fname    (file-name-nondirectory file))
+         (ext      (file-name-extension file))
+         (proj     (fsharp-mode/find-sln-or-fsproj file))
+         (makefile (or (file-exists-p "Makefile") (file-exists-p "makefile"))))
+    (cond
+     (makefile          compile-command)
+     (proj              (concat fsharp-build-command " /nologo " proj))
+     ((equal ext "fs")  (concat fsharp-compile-command " --nologo " file))
+     ((equal ext "fsl") (concat "fslex "  file))
+     ((equal ext "fsy") (concat "fsyacc " file))
+     (t                 compile-command))))
 
 (defun fsharp-find-alternate-file ()
   (interactive)
@@ -270,7 +285,7 @@
           (fsharp-match-string 1 name)
           (if (string= "fs" (fsharp-match-string 2 name)) ".fsi" ".fs"))))))
 
-;;; subshell support
+;;; Subshell support
 
 (defun fsharp-eval-region (start end)
   "Send the current region to the inferior fsharp process."
@@ -295,7 +310,6 @@ loading it? "))
   (interactive)
   (require 'inf-fsharp-mode)
   (inferior-fsharp-show-subshell))
-
 
 (defconst fsharp-error-regexp-fs
   "^\\([^(\n]+\\)(\\([0-9]+\\),\\([0-9]+\\)):"
@@ -327,15 +341,6 @@ whole string."
     (if string (substring string begin end)
       (buffer-substring-no-properties begin end))))
 
-(defun fsharp-find-alternate-file ()
-  (interactive)
-  (let ((name (buffer-file-name)))
-    (if (string-match "^\\(.*\\)\\.\\(fs\\|fsi\\)$" name)
-        (find-file
-         (concat
-          (fsharp-match-string 1 name)
-          (if (string= "fs" (fsharp-match-string 2 name)) ".fsi" ".fs"))))))
-
 (defun fsharp-run-executable-file ()
   (interactive)
   (let ((name (buffer-file-name)))
@@ -347,6 +352,32 @@ whole string."
   (interactive)
   (message "Using `fsharp-mode' version %s" fsharp-mode-version)
   (fsharp-keep-region-active))
+
+;;; Project
+
+(defun fsharp-mode/find-sln-or-fsproj (dir-or-file)
+  "Search for a solution or F# project file in any enclosing
+folders relative to DIR-OR-FILE."
+  (or (fsharp-mode/find-sln dir-or-file)
+      (fsharp-mode/find-fsproj dir-or-file)))
+
+(defun fsharp-mode/find-sln (dir-or-file)
+  (fsharp-mode-search-upwards (rx (0+ nonl) ".sln" eol)
+     (file-name-directory dir-or-file)))
+
+(defun fsharp-mode/find-fsproj (dir-or-file)
+  (fsharp-mode-search-upwards (rx (0+ nonl) ".fsproj" eol)
+     (file-name-directory dir-or-file)))
+
+(defun fsharp-mode-search-upwards (regex dir)
+  (when dir
+    (or (car-safe (directory-files dir 'full regex))
+        (fsharp-mode-search-upwards regex (fsharp-mode-parent-dir dir)))))
+
+(defun fsharp-mode-parent-dir (dir)
+  (let ((p (file-name-directory (directory-file-name dir))))
+    (unless (equal p dir)
+      p)))
 
 (provide 'fsharp-mode)
 

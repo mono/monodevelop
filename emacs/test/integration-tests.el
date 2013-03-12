@@ -1,21 +1,56 @@
+
+(defun init-melpa ()
+  (setq package-archives
+        '(("melpa"       . "http://melpa.milkbox.net/packages/")))
+  (package-initialize)
+  (unless package-archive-contents
+    (package-refresh-contents)))
+
+(defun ensure-packages (packages)
+  (dolist (package packages)
+    (unless (package-installed-p package)
+      (package-install package))))
+
+(defun load-fsharp-mode ()
+  (unless (functionp 'fsharp-mode)
+    (let ((testmode (getenv "TESTMODE")))
+      (cond
+       ((eq testmode nil) ; Load from current checkout
+        (init-melpa)
+        (ensure-packages '(pos-tip popup s dash))
+
+        (push (expand-file-name "..") load-path)
+
+        (push '("\\.fs[iylx]?$" . fsharp-mode) auto-mode-alist)
+        (autoload 'fsharp-mode "fsharp-mode" "Major mode for editing F# code." t)
+        (autoload 'turn-on-fsharp-doc-mode "fsharp-doc"))
+
+       ((string= testmode "melpa") ; Install from MELPA
+        (init-melpa)
+        (ensure-packages '(fsharp-mode)))
+
+       (t ; Assume `testmode` is a package file to install
+          ; TODO: Break net dependency (pos-tip) for speed?
+        (init-melpa)
+        (ensure-packages '(pos-tip popup s dash))
+        (package-install-file (expand-file-name testmode)))))))
+
+(defun fsharp-mode-wrapper (bufs body)
+  "Load fsharp-mode and make sure any completion process is killed after test"
+  (unwind-protect
+      (progn (load-fsharp-mode)
+             (funcall body))
+    (sleep-for 1)
+    (dolist (buf bufs)
+      (when (get-buffer buf)
+        (switch-to-buffer buf)
+        (revert-buffer t t)
+        (kill-buffer buf)))
+    (fsharp-mode-completion/stop-process)
+    (when (get-buffer "*fsharp-complete*")
+      (kill-buffer "*fsharp-complete*"))))
+
 (require 'ert)
-(require 'test-utilities)
-
-
-(ert-deftest start-completion-process ()
-  "Check that we can start the completion process and request help"
-  (fsharp-mode-wrapper '("Program.fs")
-   (lambda ()
-     (find-file "Test1/Program.fs")
-     (ac-fsharp-launch-completion-process)
-     (should (buffer-live-p (get-buffer "*fsharp-complete*")))
-     (should (process-live-p ac-fsharp-completion-process))
-     (process-send-string ac-fsharp-completion-process "help\n")
-     (switch-to-buffer "*fsharp-complete*")
-     (with-timeout (waittime)
-       (while (string= (buffer-string) "")
-         (accept-process-output ac-fsharp-completion-process)))
-     (should (search-backward "trigger completion request" nil t)))))
 
 (defconst waittime 5
   "Seconds to wait for data from background process")
@@ -28,10 +63,10 @@
   (fsharp-mode-wrapper '("Program.fs")
    (lambda ()
      (find-file "Test1/Program.fs")
-     (ac-fsharp-load-project "Test1.fsproj")
      (accept-process-output ac-fsharp-completion-process waittime)
-     (while (eq nil ac-fsharp-project-files)
-       (sleep-for 1))
+     (with-timeout (waittime)
+       (while (null ac-fsharp-project-files)
+         (sleep-for 1)))
      (should (string-match-p "Test1/Program.fs" (mapconcat 'identity ac-fsharp-project-files "")))
      (should (string-match-p "Test1/FileTwo.fs" (mapconcat 'identity ac-fsharp-project-files ""))))))
 
@@ -41,7 +76,7 @@
   (fsharp-mode-wrapper '("Program.fs")
    (lambda ()
      (find-file "Test1/Program.fs")
-     (ac-fsharp-load-project "Test1.fsproj")
+     (fsharp-mode-completion/load-project "Test1.fsproj")
      ;(sleep-for sleeptime)
      (search-forward "X.func")
      (delete-backward-char 2)
@@ -56,7 +91,7 @@
   (fsharp-mode-wrapper '("Program.fs")
    (lambda ()
      (find-file "Test1/Program.fs")
-     (ac-fsharp-load-project "Test1.fsproj")
+     (fsharp-mode-completion/load-project "Test1.fsproj")
      (while (eq nil ac-fsharp-project-files)
        (sleep-for 1))
      (search-forward "X.func")
@@ -71,18 +106,20 @@
   "Check tooltip request works"
   (fsharp-mode-wrapper '("Program.fs")
    (lambda ()
-     (let ((tiptext))
-       (flet ((pos-tip-show (s) (setq tiptext s)))
+     (let ((tiptext)
+           (ac-fsharp-use-popup t))
+       (flet ((popup-tip (s) (setq tiptext s)))
          (find-file "Test1/Program.fs")
-         (ac-fsharp-load-project "Test1.fsproj")
+         (fsharp-mode-completion/load-project "Test1.fsproj")
          (while (eq nil ac-fsharp-project-files)
            (sleep-for 1))
          (search-forward "X.func")
          (backward-char 2)
          (call-process "sleep" nil nil nil "3")
-         (ac-fsharp-tooltip-at-point)
-         (while (eq nil tiptext)
-           (sleep-for 1))
+         (fsharp-mode-completion/show-tooltip-at-point)
+         (with-timeout (5)
+           (while (eq nil tiptext)
+             (sleep-for 1)))
          (should
           (string-match-p "val func : x:int -> int\n\nFull name: Program.X.func"
                           tiptext)))))))
@@ -92,14 +129,14 @@
   (fsharp-mode-wrapper '("Program.fs")
    (lambda ()
      (find-file "Test1/Program.fs")
-     (ac-fsharp-load-project "Test1.fsproj")
+     (fsharp-mode-completion/load-project "Test1.fsproj")
      (while (eq nil ac-fsharp-project-files)
        (sleep-for 1))
      (search-forward "X.func")
      (delete-backward-char 1)
      (backward-char)
      (call-process "sleep" nil nil nil "3")
-     (ac-fsharp-get-errors)
+     (fsharp-mode-completion-request-errors)
      (while (eq (length (overlays-at (point))) 0)
        (sleep-for 1))
      (should (eq (overlay-get (car (overlays-at (point))) 'face)
@@ -111,17 +148,17 @@
   "Check we can request a tooltip from a script"
   (fsharp-mode-wrapper '("Script.fsx")
    (lambda ()
-     (let ((tiptext))
-       (flet ((pos-tip-show (s) (setq tiptext s)))
-         (ac-fsharp-launch-completion-process)
+     (let ((tiptext)
+           (ac-fsharp-use-popup t))
+       (flet ((popup-tip (s) (setq tiptext s)))
          (find-file "Test1/Script.fsx")
          (ac-fsharp-parse-current-buffer)
          (call-process "sleep" nil nil nil "3")
          (search-forward "XA.fun")
-         (ac-fsharp-tooltip-at-point)
-         (with-timeout (5)
-           (while (eq nil tiptext)
-             (sleep-for 1)))
+         (fsharp-mode-completion/show-tooltip-at-point)
+         (with-timeout (waittime)
+           (while (null tiptext)
+             (accept-process-output ac-fsharp-completion-process sleeptime)))
          (should (stringp tiptext))
          (should
           (string-match-p "val funky : x:int -> int\n\nFull name: Script.XA.funky"

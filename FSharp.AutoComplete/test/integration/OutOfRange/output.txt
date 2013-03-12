@@ -256,8 +256,8 @@ ERROR: No tooltip information
 ERROR: Position is out of range
 <<EOF>>
 DATA: finddecl
-file stored in metadata is '<absolute path removed>/test/OutOfRange/Script.fsx'
-<absolute path removed>/test/OutOfRange/Script.fsx:2:7
+file stored in metadata is '<absolute path removed>/test/integration/OutOfRange/Script.fsx'
+<absolute path removed>/test/integration/OutOfRange/Script.fsx:2:7
 <<EOF>>
 DATA: finddecl
 ERROR: Could not find point of declaration

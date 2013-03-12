@@ -210,7 +210,7 @@ type internal IntelliSenseAgent() =
       match identIsland with
       | [ "" ] ->
         // There is no identifier at the current location
-        printfn "ERROR: No identifier found at this location\n<<EOF>>"
+        printfn "INFO: No identifier found at this location\n<<EOF>>"
       | _ ->
         // Assume that we are inside identifier (F# services can also handle
         // case when we're in a string in '#r "Foo.dll"' but we don't do that)
@@ -219,7 +219,7 @@ type internal IntelliSenseAgent() =
         | DataTipText(elems)
           when elems |> List.forall (function
             DataTipElementNone -> true | _ -> false) ->
-              printfn "ERROR: No tooltip information\n<<EOF>>"
+              printfn "INFO: No tooltip information\n<<EOF>>"
         | _ ->
           Console.WriteLine("DATA: tooltip")
           Console.WriteLine(TipFormatter.formatTip tip)

@@ -1,1 +1,0 @@
-(provide 'pos-tip)
