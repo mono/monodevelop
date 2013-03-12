@@ -63,7 +63,8 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		static CSharpFormattingPolicy ()
 		{
-			PolicyService.InvariantPolicies.Set<CSharpFormattingPolicy> (new CSharpFormattingPolicy (), "text/x-csharp");
+			if (!PolicyService.InvariantPolicies.ReadOnly)
+				 PolicyService.InvariantPolicies.Set<CSharpFormattingPolicy> (new CSharpFormattingPolicy (), "text/x-csharp");
 		}
 		
 		protected CSharpFormattingPolicy (CSharpFormattingOptions options)
