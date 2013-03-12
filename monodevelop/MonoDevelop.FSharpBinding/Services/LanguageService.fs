@@ -157,7 +157,9 @@ module internal TipFormatter =
   let tryGetDoc key = 
     let helpTree = MonoDevelop.Projects.HelpService.HelpTree
     if helpTree = null then None 
-    else try Some(helpTree.GetHelpXml(key)) 
+    else try 
+            let helpxml = helpTree.GetHelpXml(key)
+            if helpxml = null then None else Some(helpxml)
          with ex -> Debug.WriteLine (sprintf "GetHelpXml failed for key %s:\r\n\t%A" key ex)
                     None  
                   
