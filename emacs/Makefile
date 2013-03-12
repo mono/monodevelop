@@ -78,3 +78,11 @@ test-all : unit-test integration-test
 packages :
 	HOME=$(tmp_d) ;\
 	$(emacs) $(load_files) --batch -f load-packages
+
+# Use for informal check that byte-compilation
+# is going through cleanly
+byte-compile : packages
+	HOME=$(tmp_d) ;\
+	$(emacs) -batch --eval "(package-initialize)"\
+          --eval "(add-to-list 'load-path \"$(base_d)/emacs\")" \
+          -f batch-byte-compile $(src_files)
