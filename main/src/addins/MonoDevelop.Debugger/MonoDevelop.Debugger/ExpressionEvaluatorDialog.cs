@@ -68,8 +68,9 @@ namespace MonoDevelop.Debugger
 				valueTree.AddExpression (entry.Text);
 		}
 		
-		protected virtual void OnButtonEvalClicked (object sender, System.EventArgs e)
+		protected virtual void OnButtonEvalClicked (object sender, EventArgs e)
 		{
+			CompletionWindowManager.HideWindow ();
 			UpdateExpression ();
 		}
 
