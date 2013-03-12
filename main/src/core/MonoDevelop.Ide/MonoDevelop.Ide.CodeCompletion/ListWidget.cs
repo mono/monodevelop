@@ -166,6 +166,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			selectedItemInactiveColor = style.CompletionSelectedInactiveText;
 			selectionBorderColor = style.CompletionBorder.GetColor ("color");
 			selectionBorderInactiveColor = style.CompletionInactiveBorder.GetColor ("color");
+			this.Show ();
 		}
 
 		
