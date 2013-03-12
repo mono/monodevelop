@@ -747,7 +747,7 @@ namespace MonoDevelop.Debugger
 			
 			if (hasChildren) {
 				// Add dummy node
-				it = store.AppendValues (it, "", "", "", null, true);
+				store.AppendValues (it, "", "", "", null, true);
 				if (!ShowExpanders)
 					ShowExpanders = true;
 			}
