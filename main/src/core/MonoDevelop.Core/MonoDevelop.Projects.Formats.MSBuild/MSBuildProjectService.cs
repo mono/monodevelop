@@ -601,9 +601,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return globalGroup.GetPropertyValue ("ProjectTypeGuids");
 		}
 
-		internal static UnknownProjectTypeNode GetUnknownProjectTypeInfo (string guid)
+		internal static UnknownProjectTypeNode GetUnknownProjectTypeInfo (string[] guids)
 		{
-			return AddinManager.GetExtensionNodes<UnknownProjectTypeNode> ("/MonoDevelop/ProjectModel/UnknownMSbuildProjectTypes").FirstOrDefault (p => p.Guid.IndexOf (guid) != -1);
+			var nodes = AddinManager.GetExtensionNodes<UnknownProjectTypeNode> ("/MonoDevelop/ProjectModel/UnknownMSBuildProjectTypes")
+				.Where (p => guids.Any (p.MatchesGuid)).ToList ();
+			return nodes.FirstOrDefault (n => !n.IsSolvable) ?? nodes.FirstOrDefault (n => n.IsSolvable);
 		}
 	}
 	

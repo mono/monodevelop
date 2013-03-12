@@ -26,24 +26,80 @@
 using System;
 using Mono.Addins;
 using MonoDevelop.Core;
+using System.Linq;
 
 namespace MonoDevelop.Projects.Extensions
 {
-	public class UnknownProjectTypeNode: ExtensionNode
+	class UnknownProjectTypeNode: ExtensionNode
 	{
-		[NodeAttribute ("instructions")]
+		[NodeAttribute ("_instructions", Localizable=true)]
 		string instructions;
 
-		[NodeAttribute ("guid")]
+		[NodeAttribute ("guid", Required = true)]
 		public string Guid { get; set; }
 		
-		[NodeAttribute ("name")]
+		[NodeAttribute ("name", Required = true)]
 		public string Name { get; set; }
-		
-		public string Instructions {
+
+		[NodeAttribute ("addin")]
+		string requiresAddin { get; set; }
+
+		[NodeAttribute ("platforms")]
+		string requiresPlatform { get; set; }
+
+		[NodeAttribute ("product")]
+		string requiresProduct { get; set; }
+
+		public bool IsSolvable {
 			get {
-				return instructions ?? BrandingService.BrandApplicationName (GettextCatalog.GetString ("This project type is not supported by MonoDevelop"));
+				return requiresProduct != null || requiresAddin != null;
 			}
+		}
+
+		public bool MatchesGuid (string guid)
+		{
+			return Guid.IndexOf (guid, StringComparison.OrdinalIgnoreCase) != -1;
+		}
+
+		public string GetInstructions ()
+		{
+			if (instructions != null) {
+				return BrandingService.BrandApplicationName (instructions);
+			}
+
+			if (requiresPlatform != null) {
+				string[] platID;
+				string platName;
+				if (Platform.IsMac) {
+					platID = new[] { "mac" };
+					platName = "OS X";
+				} else if (Platform.IsWindows) {
+					platID = new[] { "win32", "windows", "win" };
+					platName = "Windows";
+				} else {
+					platID = new [] { "linux" };
+					platName = "Linux";
+				}
+				var plats = requiresPlatform.Split (';');
+				if (!plats.Any (a => platID.Any (b => string.Equals (a, b, StringComparison.OrdinalIgnoreCase)))) {
+					var msg = GettextCatalog.GetString ("This project type is not supported by MonoDevelop on {0}.", platName);
+					return BrandingService.BrandApplicationName (msg);
+				}
+			}
+
+			if (!string.IsNullOrEmpty (requiresProduct)) {
+				return GettextCatalog.GetString ("This project type requires {0} to be installed.", requiresProduct);
+			}
+
+			if (!string.IsNullOrEmpty (requiresAddin)) {
+				return GettextCatalog.GetString ("The {0} add-in is not installed.", requiresAddin);
+			}
+
+			if (!string.IsNullOrEmpty (instructions)) {
+				return BrandingService.BrandApplicationName (Addin.Localizer.GetString (instructions));
+			}
+
+			return BrandingService.BrandApplicationName (GettextCatalog.GetString ("This project type is not supported by MonoDevelop."));
 		}
 	}
 }
