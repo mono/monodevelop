@@ -86,3 +86,7 @@ byte-compile : packages
 	$(emacs) -batch --eval "(package-initialize)"\
           --eval "(add-to-list 'load-path \"$(base_d)/emacs\")" \
           -f batch-byte-compile $(src_files)
+
+run : packages
+	HOME=$(tmp_d) ;\
+	$(emacs) $(load_files)

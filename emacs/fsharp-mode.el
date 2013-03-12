@@ -88,14 +88,14 @@ and whether it is in a project directory.")
   (define-key fsharp-mode-map "\C-c:"     'fsharp-guess-indent-offset)
   (define-key fsharp-mode-map [delete]    'fsharp-electric-delete)
   (define-key fsharp-mode-map [backspace] 'fsharp-electric-backspace)
-  (define-key fsharp-mode-map (kbd ".") 'ac-fsharp-electric-dot)
+  (define-key fsharp-mode-map (kbd ".") 'fsharp-ac/electric-dot)
 
   (define-key fsharp-mode-map (kbd "C-c <up>") 'fsharp-goto-block-up)
 
-  (define-key fsharp-mode-map (kbd "C-c C-p") 'fsharp-mode-completion/load-project)
-  (define-key fsharp-mode-map (kbd "C-c C-t") 'fsharp-mode-completion/show-tooltip-at-point)
-  (define-key fsharp-mode-map (kbd "C-c C-d") 'ac-fsharp-gotodefn-at-point)
-  (define-key fsharp-mode-map (kbd "C-c C-q") 'fsharp-mode-completion/stop-process)
+  (define-key fsharp-mode-map (kbd "C-c C-p") 'fsharp-ac/load-project)
+  (define-key fsharp-mode-map (kbd "C-c C-t") 'fsharp-ac/show-tooltip-at-point)
+  (define-key fsharp-mode-map (kbd "C-c C-d") 'fsharp-ac/gotodefn-at-point)
+  (define-key fsharp-mode-map (kbd "C-c C-q") 'fsharp-ac/stop-process)
 
   (unless running-xemacs
     (let ((map (make-sparse-keymap "fsharp"))
@@ -171,8 +171,6 @@ and whether it is in a project directory.")
   "A marker caching last determined fsharp comment end.")
 (make-variable-buffer-local 'fsharp-last-comment-end)
 
-(make-variable-buffer-local 'before-change-function)
-
 (defvar fsharp-mode-hook nil
   "Hook for fsharp-mode")
 
@@ -206,7 +204,7 @@ and whether it is in a project directory.")
           underline-minimum-offset
           compile-command))
 
-  (add-hook 'completion-at-point-functions #'ac-fsharp-completion-at-point)
+  (add-hook 'completion-at-point-functions #'fsharp-ac/completion-at-point)
 
   (setq major-mode               'fsharp-mode
         mode-name                "fsharp"
@@ -226,15 +224,14 @@ and whether it is in a project directory.")
 
         paragraph-ignore-fill-prefix   t
         add-log-current-defun-function 'fsharp-current-defun
-        before-change-function         'fsharp-before-change-function
         fsharp-last-noncomment-pos     nil
         fsharp-last-comment-start      (make-marker)
         fsharp-last-comment-end        (make-marker))
 
   ;; Error navigation
-  (setq next-error-function 'fsharp-mode-completion/next-error)
-  (add-hook 'next-error-hook 'fsharp-mode-completion/show-error-at-point nil t)
-  (add-hook 'post-command-hook 'fsharp-mode-completion/show-error-at-point nil t)
+  (setq next-error-function 'fsharp-ac/next-error)
+  (add-hook 'next-error-hook 'fsharp-ac/show-error-at-point nil t)
+  (add-hook 'post-command-hook 'fsharp-ac/show-error-at-point nil t)
 
   ;; make a local copy of the menubar, so our modes don't
   ;; change the global menubar
@@ -244,8 +241,9 @@ and whether it is in a project directory.")
     (set-buffer-menubar current-menubar)
     (add-submenu nil fsharp-mode-xemacs-menu))
 
-  (setq compile-command (fsharp-mode-choose-compile-command (buffer-file-name)))
-  (unless ac-fsharp-completion-process
+  (setq compile-command (fsharp-mode-choose-compile-command
+                         (buffer-file-name)))
+  (unless fsharp-ac-completion-process
     (fsharp-mode-try-load-project (buffer-file-name))
 
     (turn-on-fsharp-doc-mode)
@@ -256,7 +254,7 @@ and whether it is in a project directory.")
   (when file
     (let ((proj (fsharp-mode/find-fsproj file)))
       (when proj
-        (fsharp-mode-completion/load-project proj)))))
+        (fsharp-ac/load-project proj)))))
 
 (defun fsharp-mode-choose-compile-command (file)
   "Format an appropriate compilation command, depending on several factors:

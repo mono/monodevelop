@@ -16,13 +16,13 @@
   (let ((f (concat fs-file-dir "Program.fs")))
     (stubbing-process-functions
      (using-file f
-                 (fsharp-mode-completion-filter-output nil finddeclstr1)
+                 (fsharp-ac-filter-output nil finddeclstr1)
                  (should (equal f (buffer-file-name)))))))
 
 (check "jumping to local definition should move point to definition"
   (stubbing-process-functions
    (using-file (concat fs-file-dir "Program.fs")
-               (fsharp-mode-completion-filter-output nil finddeclstr1)
+               (fsharp-ac-filter-output nil finddeclstr1)
                (should (equal (point) 18)))))
 
 (check "jumping to definition in another file should open that file"
@@ -30,13 +30,13 @@
         (f2 (concat fs-file-dir "FileTwo.fs")))
       (stubbing-process-functions
        (using-file f1
-         (fsharp-mode-completion-filter-output nil finddeclstr2)
+         (fsharp-ac-filter-output nil finddeclstr2)
          (should (equal (buffer-file-name) f2))))))
 
 (check "jumping to definition in another file should move point to definition"
     (stubbing-process-functions
      (using-file (concat fs-file-dir "Program.fs")
-       (fsharp-mode-completion-filter-output nil finddeclstr2)
+       (fsharp-ac-filter-output nil finddeclstr2)
        (should (equal (point) 127)))))
 
 ;;; Error parsing
@@ -57,7 +57,7 @@ Try indenting this token further or using standard formatting conventions."
   "A list of errors containing a square bracket to check the parsing")
 
 (check "parses errors from given string"
-    (should= 3 (length (fsharp-mode-completion-parse-errors err-brace-str))))
+    (should= 3 (length (fsharp-ac-parse-errors err-brace-str))))
 
 (defmacro check-filter (desc &rest body)
   "Test properties of filtered output from the ac-process."
@@ -65,11 +65,11 @@ Try indenting this token further or using standard formatting conventions."
   `(check ,desc
      (stubbing-process-functions
       (find-file (concat fs-file-dir "Program.fs"))
-        (fsharp-mode-completion-filter-output nil err-brace-str))
+        (fsharp-ac-filter-output nil err-brace-str))
       ,@body))
 
 (check-filter "error clears partial data"
-  (should (equal "" ac-fsharp-partial-data)))
+  (should (equal "" fsharp-ac-partial-data)))
 
 (check-filter "errors cause overlays to be drawn"
   (should (equal 3 (length (overlays-in (point-min) (point-max))))))
@@ -103,15 +103,15 @@ Bound vars:
   `(check ,(concat "check project loading " desc)
      (stubbing-process-functions
       (let    (load-cmd)
-        (flet ((fsharp-mode-completion/start-process ())
+        (flet ((fsharp-ac/start-process ())
                (process-send-string (proc cmd) (setq load-cmd cmd)))
             ,@body)))))
 
 (check-project-loading "raises error if not fsproj"
-  (should-error (fsharp-mode-completion/load-project "foo")))
+  (should-error (fsharp-ac/load-project "foo")))
 
 (check-project-loading "loads the specified project using the ac process"
-  (fsharp-mode-completion/load-project "foo.fsproj")
+  (fsharp-ac/load-project "foo.fsproj")
   (should-match "foo.fsproj" load-cmd))
 
 ;;; Process handling
@@ -124,7 +124,7 @@ Stubs out functions that call on the ac process."
      (setq major-mode 'fsharp-mode)
        (flet ((log-to-proc-buf (p s))
               (process-send-string   (p s))
-              (ac-fsharp-can-make-request () t))
+              (fsharp-ac-can-make-request () t))
          ,@body)))
 
 (defmacro stub-fn (sym var &rest body)
@@ -137,61 +137,61 @@ function bound to VAR in BODY. "
 
 (defun format-output (header &optional content)
   (concat header "\n" content
-          fsharp-mode-completion-eom))
+          fsharp-ac-eom))
 
 (check-handler "prints message on error"
   (stub-fn message err
-    (fsharp-mode-completion-filter-output nil (format-output "ERROR: foo"))
+    (fsharp-ac-filter-output nil (format-output "ERROR: foo"))
     (should-match "foo" err)))
 
 (check-handler "does not print message on type information error"
   (stub-fn message called
-    (fsharp-mode-completion-filter-output nil (format-output "ERROR: could not get type information"))
+    (fsharp-ac-filter-output nil (format-output "ERROR: could not get type information"))
     (should-not called)))
 
 ;;; Tooltips and typesigs
 
 (check-handler "uses popup in terminal if tooltip is requested"
-  (let ((ac-fsharp-use-popup t))
+  (let ((fsharp-ac-use-popup t))
     (flet ((display-graphic-p () nil))
       (stub-fn popup-tip tip
-        (fsharp-mode-completion/show-tooltip-at-point)
-        (fsharp-mode-completion-filter-output nil (format-output "DATA: tooltip" "foo"))
+        (fsharp-ac/show-tooltip-at-point)
+        (fsharp-ac-filter-output nil (format-output "DATA: tooltip" "foo"))
         (should-match "foo" tip)))))
 
 (check-handler "uses pos-tip in GUI if tooltip is requested"
-  (let ((ac-fsharp-use-popup t))
+  (let ((fsharp-ac-use-popup t))
     (flet ((display-graphic-p () t))
       (stub-fn pos-tip-show tip
-        (fsharp-mode-completion/show-tooltip-at-point)
-        (fsharp-mode-completion-filter-output nil (format-output "DATA: tooltip" "foo"))
+        (fsharp-ac/show-tooltip-at-point)
+        (fsharp-ac-filter-output nil (format-output "DATA: tooltip" "foo"))
         (should-match "foo" tip)))))
 
 (check-handler "does not show popup if typesig is requested"
-  (let ((ac-fsharp-use-popup t))
+  (let ((fsharp-ac-use-popup t))
     (stub-fn popup-tip called
-      (fsharp-mode-completion/show-typesig-at-point)
-      (fsharp-mode-completion-filter-output nil (format-output "DATA: tooltip" "foo"))
+      (fsharp-ac/show-typesig-at-point)
+      (fsharp-ac-filter-output nil (format-output "DATA: tooltip" "foo"))
       (should-not called))))
 
 (check-handler "does not show popup if use-popup is nil"
-  (let ((ac-fsharp-use-popup nil))
+  (let ((fsharp-ac-use-popup nil))
     (stub-fn popup-tip called
-      (fsharp-mode-completion/show-tooltip-at-point)
-      (fsharp-mode-completion-filter-output nil (format-output "DATA: tooltip" "foo"))
+      (fsharp-ac/show-tooltip-at-point)
+      (fsharp-ac-filter-output nil (format-output "DATA: tooltip" "foo"))
       (should-not called))))
 
 (check-handler "displays tooltip in info window if use-popup is nil"
-  (let ((ac-fsharp-use-popup nil))
+  (let ((fsharp-ac-use-popup nil))
     ;; HACK: stub internals of with-help-window.
     ;; with-help-window is a macro and macrolet and labels don't seem to work.
     (stub-fn help-window-setup win
-      (fsharp-mode-completion/show-tooltip-at-point)
-      (fsharp-mode-completion-filter-output nil (format-output "DATA: tooltip" "foo"))
+      (fsharp-ac/show-tooltip-at-point)
+      (fsharp-ac-filter-output nil (format-output "DATA: tooltip" "foo"))
       (should-match "fsharp info" (buffer-name (window-buffer win))))))
 
 (check-handler "displays typesig in minibuffer if typesig is requested"
   (stub-fn message sig
-    (fsharp-mode-completion/show-typesig-at-point)
-    (fsharp-mode-completion-filter-output nil (format-output "DATA: tooltip" "foo"))
+    (fsharp-ac/show-typesig-at-point)
+    (fsharp-ac-filter-output nil (format-output "DATA: tooltip" "foo"))
     (should= "foo" sig)))
