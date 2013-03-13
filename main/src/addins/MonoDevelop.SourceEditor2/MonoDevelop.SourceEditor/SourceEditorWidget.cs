@@ -852,16 +852,24 @@ namespace MonoDevelop.SourceEditor
 		internal bool UseIncorrectMarkers { get; set; }
 		internal bool HasIncorrectEolMarker {
 			get {
+				string eol = DetectedEolMarker;
+				if (eol == null)
+					return false;
+				return eol != textEditor.Options.DefaultEolMarker;
+			}
+		}
+		string DetectedEolMarker {
+			get {
 				if (textEditor.IsDisposed) {
 					LoggingService.LogWarning ("SourceEditorWidget.cs: HasIncorrectEolMarker was called on disposed source editor widget." + Environment.NewLine + Environment.StackTrace);
-					return false;
+					return null;
 				}
 				var firstLine = Document.GetLine (1);
 				if (firstLine != null && firstLine.DelimiterLength > 0) {
 					string firstDelimiter = Document.GetTextAt (firstLine.Length, firstLine.DelimiterLength);
-					return firstDelimiter != textEditor.Options.DefaultEolMarker;
+					return firstDelimiter;
 				}
-				return false;
+				return null;
 			}
 		}
 
@@ -903,8 +911,10 @@ namespace MonoDevelop.SourceEditor
 			
 			if (messageBar == null) {
 				messageBar = new MonoDevelop.Components.InfoBar (MessageType.Warning);
+				string detectedEol = DetectedEolMarker.Replace ("\n", "NL").Replace ("\r", "CR");
+				string defaultEol = textEditor.Options.DefaultEolMarker.Replace ("\n", "NL").Replace ("\r", "CR");
 				messageBar.SetMessageLabel (GettextCatalog.GetString (
-					"<b>The file \"{0}\" has line endings which differ from the policy settings.</b>\n" +
+					"<b>The file \"{0}\" has line endings (" + detectedEol + ") which differ from the policy settings(" + defaultEol + ").</b>\n" +
 					"Do you want to convert the line endings?",
 					EllipsizeMiddle (Document.FileName, 50)));
 				
