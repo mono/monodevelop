@@ -48,6 +48,7 @@ namespace MonoDevelop.Debugger
 		protected override void OnDestroyed ()
 		{
 			CompletionWindowManager.WindowClosed -= HandleCompletionWindowClosed;
+			CompletionWindowManager.HideWindow ();
 			base.OnDestroyed ();
 		}
 
@@ -67,8 +68,9 @@ namespace MonoDevelop.Debugger
 				valueTree.AddExpression (entry.Text);
 		}
 		
-		protected virtual void OnButtonEvalClicked (object sender, System.EventArgs e)
+		protected virtual void OnButtonEvalClicked (object sender, EventArgs e)
 		{
+			CompletionWindowManager.HideWindow ();
 			UpdateExpression ();
 		}
 

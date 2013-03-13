@@ -85,12 +85,12 @@ namespace Mono.Debugging.Client
 		{
 			if (elem.Name == "FunctionBreakpoint")
 				return new FunctionBreakpoint (elem);
-			else if (elem.Name == "Breakpoint")
+			if (elem.Name == "Breakpoint")
 				return new Breakpoint (elem);
-			else if (elem.Name == "Catchpoint")
+			if (elem.Name == "Catchpoint")
 				return new Catchpoint (elem);
-			else
-				return null;
+
+			return null;
 		}
 		
 		/// <summary>

@@ -1343,13 +1343,7 @@ namespace MonoDevelop.Ide
 				if (folder.IsRoot) {
 					// Don't allow adding files to the root folder. VS doesn't allow it
 					// If there is no existing folder, create one
-					var itemsFolder = (SolutionFolder) folder.Items.Where (item => item.Name == "Solution Items").FirstOrDefault ();
-					if (itemsFolder == null) {
-						itemsFolder = new SolutionFolder ();
-						itemsFolder.Name = "Solution Items";
-						folder.AddItem (itemsFolder);
-					}
-					folder = itemsFolder;
+					folder = folder.ParentSolution.DefaultSolutionFolder;
 				}
 				
 				if (!fp.IsChildPathOf (folder.BaseDirectory)) {

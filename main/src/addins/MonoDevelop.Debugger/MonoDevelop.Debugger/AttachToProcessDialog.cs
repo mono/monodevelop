@@ -82,6 +82,8 @@ namespace MonoDevelop.Debugger
 			Gtk.TreeIter it;
 			if (store.GetIterFirst (out it))
 				tree.Selection.SelectIter (it);
+
+			OnSelectionChanged (null, null);
 		}
 		
 		void FillList ()

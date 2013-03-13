@@ -98,5 +98,10 @@ namespace MonoDevelop.Ide.Commands
 		{
 			FeedbackService.ShowFeedbackWindow ();
 		}
+
+		protected override void Update (CommandInfo info)
+		{
+			info.Visible = FeedbackService.Enabled;
+		}
 	}
 }

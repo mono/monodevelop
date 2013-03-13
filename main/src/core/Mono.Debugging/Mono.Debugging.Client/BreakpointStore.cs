@@ -26,16 +26,53 @@
 //
 
 using System;
+using System.IO;
 using System.Linq;
 using System.Xml;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Runtime.InteropServices;
 
 namespace Mono.Debugging.Client
 {
 	public sealed class BreakpointStore: ICollection<BreakEvent>
 	{
+		static readonly StringComparer PathComparer;
+		static readonly bool IsWindows;
+		static readonly bool IsMac;
+
+		static BreakpointStore ()
+		{
+			IsWindows = Path.DirectorySeparatorChar == '\\';
+			IsMac = !IsWindows && IsRunningOnMac ();
+
+			PathComparer = IsWindows || IsMac ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
+		}
+
+		[DllImport ("libc")]
+		static extern int uname (IntPtr buf);
+
+		//From Managed.Windows.Forms/XplatUI
+		static bool IsRunningOnMac ()
+		{
+			IntPtr buf = IntPtr.Zero;
+			try {
+				buf = Marshal.AllocHGlobal (8192);
+				// This is a hacktastic way of getting sysname from uname ()
+				if (uname (buf) == 0) {
+					string os = Marshal.PtrToStringAnsi (buf);
+					if (os == "Darwin")
+						return true;
+				}
+			} catch {
+			} finally {
+				if (buf != IntPtr.Zero)
+					Marshal.FreeHGlobal (buf);
+			}
+			return false;
+		}
+
 		List<BreakEvent> breakpoints = new List<BreakEvent> ();
 		
 		public int Count {
@@ -68,8 +105,10 @@ namespace Mono.Debugging.Client
 		{
 			if (IsReadOnly)
 				return null;
+
 			Breakpoint bp = new Breakpoint (filename, line, column);
 			Add (bp);
+
 			return bp;
 		}
 
@@ -82,9 +121,11 @@ namespace Mono.Debugging.Client
 		{
 			if (IsReadOnly)
 				return false;
+
 			breakpoints.Add (bp);
 			bp.Store = this;
 			OnBreakEventAdded (bp);
+
 			return true;
 		}
 		
@@ -92,8 +133,10 @@ namespace Mono.Debugging.Client
 		{
 			if (IsReadOnly)
 				return null;
+
 			Catchpoint cp = new Catchpoint (exceptionName);
 			Add (cp);
+
 			return cp;
 		}
 		
@@ -101,7 +144,8 @@ namespace Mono.Debugging.Client
 		{
 			if (IsReadOnly)
 				return false;
-			filename = System.IO.Path.GetFullPath (filename);
+
+			filename = Path.GetFullPath (filename);
 			
 			for (int n=0; n<breakpoints.Count; n++) {
 				Breakpoint bp = breakpoints [n] as Breakpoint;
@@ -137,8 +181,9 @@ namespace Mono.Debugging.Client
 			if (!IsReadOnly && breakpoints.Remove (bp)) {
 				OnBreakEventRemoved (bp);
 				return true;
-			} else
-				return false;
+			}
+
+			return false;
 		}
 		
 		public Breakpoint Toggle (string filename, int line, int column)
@@ -151,9 +196,9 @@ namespace Mono.Debugging.Client
 				// Remove only the most-recently-added breakpoint on the specified line
 				Remove (col[col.Count - 1]);
 				return null;
-			} else {
-				return Add (filename, line, column);
 			}
+
+			return Add (filename, line, column);
 		}
 		
 		public ReadOnlyCollection<Breakpoint> GetBreakpoints ()
@@ -181,7 +226,7 @@ namespace Mono.Debugging.Client
 			List<Breakpoint> list = new List<Breakpoint> ();
 			
 			try {
-				filename = System.IO.Path.GetFullPath (filename);
+				filename = Path.GetFullPath (filename);
 			} catch {
 				return list.AsReadOnly ();
 			}
@@ -200,7 +245,7 @@ namespace Mono.Debugging.Client
 			List<Breakpoint> list = new List<Breakpoint> ();
 			
 			try {
-				filename = System.IO.Path.GetFullPath (filename);
+				filename = Path.GetFullPath (filename);
 			} catch {
 				return list.AsReadOnly ();
 			}
@@ -310,23 +355,49 @@ namespace Mono.Debugging.Client
 			}
 		}
 
+		[DllImport ("libc")]
+		static extern IntPtr realpath (string path, IntPtr buffer);
+
+		static string ResolveFullPath (string path)
+		{
+			if (IsWindows)
+				return Path.GetFullPath (path);
+
+			const int PATHMAX = 4096 + 1;
+			IntPtr buffer = IntPtr.Zero;
+
+			try {
+				buffer = Marshal.AllocHGlobal (PATHMAX);
+				var result = realpath (path, buffer);
+				return result == IntPtr.Zero ? "" : Marshal.PtrToStringAuto (buffer);
+			} finally {
+				if (buffer != IntPtr.Zero)
+					Marshal.FreeHGlobal (buffer);
+			}
+		}
+
 		public static bool FileNameEquals (string file1, string file2)
 		{
-			if (System.IO.Path.DirectorySeparatorChar == '\\')
-				return string.Compare (file1, file2, true) == 0;
-			else
-				return file1 == file2;
+			if (PathComparer.Compare (file1, file2) == 0)
+				return true;
+
+			var rfile1 = ResolveFullPath (file1);
+			var rfile2 = ResolveFullPath (file2);
+
+			return PathComparer.Compare (rfile1, rfile2) == 0;
 		}
 		
 		internal bool EnableBreakEvent (BreakEvent be, bool enabled)
 		{
 			if (IsReadOnly)
 				return false;
+
 			OnChanged ();
 			EventHandler<BreakEventArgs> evnt = BreakEventEnableStatusChanged;
 			if (evnt != null)
 				evnt (this, new BreakEventArgs (be));
 			NotifyStatusChanged (be);
+
 			return true;
 		}
 		

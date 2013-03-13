@@ -157,7 +157,7 @@
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/ProjectModel/UnknownMSbuildProjectTypes" name = "Unknown MSBuild project types">
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/UnknownMSBuildProjectTypes" name = "Unknown MSBuild project types">
 		<Description>Project types not supported by MonoDevelop</Description>
 		<ExtensionNode name="ProjectType" type="MonoDevelop.Projects.Extensions.UnknownProjectTypeNode"/>
 	</ExtensionPoint>
@@ -267,19 +267,59 @@
 			handlerType = "MonoDevelop.Projects.Formats.MSBuild.CompiledAssemblyProjectMSBuildHandler" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/UnknownMSbuildProjectTypes">
-		<ProjectType guid = "{1C533B1C-72DD-4CB1-9F6B-BF11D93BCFBE};{948B3504-5B70-4649-8FE4-BDE1FB46EC69}" 
-			name = "MonoMac" 
-			instructions = "The MonoMac add-in is not installed" />
-		<ProjectType guid = "{42C0BBD9-55CE-4FC1-8D90-A7348ABAFB23}"
-			name = "Xamarin.Mac"
-			instructions = "Xamarin.Mac is not installed" />
-		<ProjectType guid = "{e613f3a2-fe9c-494f-b74e-f63bcb86fea6};{6bc8ed88-2882-458c-8e55-dfd12b67127b};{f5b4f3bc-b597-4e2b-b552-ef5d8a32436f}"
-			name = "Xamarin.iOS"
-			instructions = "Xamarin.iOS is not installed" />
-		<ProjectType guid = "{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{10368E6C-D01B-4462-8E8B-01FC667A7035}"
-			name = "Xamarin.Android"
-			instructions = "Xamarin.Android is not installed" />
+	<!--
+	Some info from:
+	http://www.mztools.com/articles/2008/mz2008017.aspx
+	http://msdn.microsoft.com/en-us/library/hb23x61k(v=vs.80).aspx
+	http://workblog.pilin.name/2012/11/visual-studio-project-type-guids.html
+	Names edited in some cases to be a little more generic.
+	 -->
+	<Extension path = "/MonoDevelop/ProjectModel/UnknownMSBuildProjectTypes">
+		<ProjectType guid = "{1C533B1C-72DD-4CB1-9F6B-BF11D93BCFBE}" name = "MonoMac" platforms="mac" addin = "MonoMac" />
+		<ProjectType guid = "{948B3504-5B70-4649-8FE4-BDE1FB46EC69}" name = "MonoMac" platforms="mac" addin = "MonoMac" />
+		<ProjectType guid = "{42C0BBD9-55CE-4FC1-8D90-A7348ABAFB23}" name = "Xamarin.Mac" platforms="mac" product = "Xamarin.Mac" />
+		<ProjectType guid = "{E613F3A2-FE9C-494F-B74E-F63BCB86FEA6}" name = "Xamarin.iOS" platforms="mac" product = "Xamarin.iOS" />
+		<ProjectType guid = "{6BC8ED88-2882-458C-8E55-DFD12B67127B}" name = "Xamarin.iOS" platforms="mac" product = "Xamarin.iOS" />
+		<ProjectType guid = "{F5B4F3BC-B597-4E2B-B552-EF5D8A32436F}" name = "Xamarin.iOS" platforms="mac" product = "Xamarin.iOS" />
+		<ProjectType guid = "{EFBA0AD7-5A72-4C68-AF49-83D382785DCF}" name = "Xamarin.Android" platforms="win;mac" product = "Xamarin.Android" />
+		<ProjectType guid = "{10368E6C-D01B-4462-8E8B-01FC667A7035}" name = "Xamarin.Android" platforms="win;mac" product = "Xamarin.Android" />
+		<ProjectType guid = "{F85E285D-A4E0-4152-9332-AB1D724D3325}" name = "ASP.NET MVC 2" addin = "ASP.NET MVC" />
+		<ProjectType guid = "{E53F8FEA-EAE0-44A6-8774-FFD645390401}" name = "ASP.NET MVC 3" addin = "ASP.NET MVC" />
+		<ProjectType guid = "{E3E379DF-F4C6-4180-9B81-6769533ABE47}" name = "ASP.NET MVC 4" addin = "ASP.NET MVC" />
+		<ProjectType guid = "{349C5851-65DF-11DA-9384-00065B846F21}" name = "ASP.NET Web Application" addin = "ASP.NET" />
+		<ProjectType guid = "{9B831FEF-F496-498F-9FE8-180DA5CB4258}" name = "MonoGame" addin = "MonoGame" />
+		<ProjectType guid = "{4925A630-B079-445d-BCD4-3A9C94FE9307}" name = "F#" addin = "F#" />
 		<ProjectType guid = "{C089C8C0-30E0-4E22-80C0-CE093F111A43}" name = "Windows Phone" />
+		<ProjectType guid = "{E24C65DC-7377-472B-9ABA-BC803B73C61A}" name = "ASP.NET Web Site" />
+		<ProjectType guid = "{F135691A-BF7E-435D-8960-F99683D2D49C}" name = "MS Distributed System" />
+		<ProjectType guid = "{3D9AD99F-2412-4246-B90B-4EAA41C64699}" name = "Windows Communication Foundation (WCF)" />
+		<ProjectType guid = "{60DC8134-EBA5-43B8-BCC9-BB4BC16C2548}" name = "Windows Presentation Foundation (WPF)" />
+		<ProjectType guid = "{C252FEB5-A946-4202-B1D4-9916A0590387}" name = "MS Database" />
+		<ProjectType guid = "{A9ACE9BB-CECE-4E62-9AA4-C7E7C5BD2124}" name = "MS Database" />
+		<ProjectType guid = "{4F174C21-8C12-11D0-8340-0000F80270F8}" name = "MS Database" />
+		<ProjectType guid = "{3AC096D0-A1C2-E12C-1390-A8335801FDAB}" name = "MS Test" />
+		<ProjectType guid = "{20D4826A-C6FA-45DB-90F4-C717570B9F32}" name = "Windows CE Smart Device" />
+		<ProjectType guid = "{CB4CE8C6-1BDB-4DC7-A4D3-65A1999772F8}" name = "Windows CE Smart Device" />
+		<ProjectType guid = "{4D628B5B-2FBC-4AA6-8C16-197242AEB884}" name = "Windows CE Smart Device" />
+		<ProjectType guid = "{68B1623D-7FB9-47D8-8664-7ECEA3297D4F}" name = "Windows CE Smart Device" />
+		<ProjectType guid = "{32F31D43-81CC-4C15-9DE6-3FC5453562B6}" name = "Workflow Foundation" />
+		<ProjectType guid = "{06A35CCD-C46D-44D5-987B-CF40FF872267}" name = "MS Deployment" />
+		<ProjectType guid = "{3EA9E505-35AC-4774-B492-AD1749C4943A}" name = "MS Deployment" />
+		<ProjectType guid = "{978C614F-708E-4E1A-B201-565925725DBA}" name = "MS Deployment" />
+		<ProjectType guid = "{AB322303-2255-48EF-A496-5904EB18DA55}" name = "MS Deployment" />
+		<ProjectType guid = "{A860303F-1F3F-4691-B57E-529FC101A107}" name = "Visual Studio Tools for Applications" />
+		<ProjectType guid = "{BAA0C2D2-18E2-41B9-852F-F413020CAA33}" name = "Visual Studio Tools for Office" />
+		<ProjectType guid = "{14822709-B5A1-4724-98CA-57A101D1B079}" name = "SharePoint Workflow" />
+		<ProjectType guid = "{D59BE175-2ED0-4C54-BE3D-CDAA9F3214C8}" name = "SharePoint Workflow" />
+		<ProjectType guid = "{F8810EC1-6754-47FC-A15F-DFABD2E3FA90}" name = "SharePoint Workflow" />
+		<ProjectType guid = "{EC05E597-79D4-47f3-ADA0-324C4F7C7484}" name = "SharePoint" />
+		<ProjectType guid = "{593B0543-81F6-4436-BA1E-4747859CAAE2}" name = "SharePoint" />
+		<ProjectType guid = "{6D335F3A-9D43-41b4-9D22-F6F17C4BE596}" name = "XNA (Windows)" />
+		<ProjectType guid = "{2DF5C3F4-5A5F-47a9-8E94-23B4456F55E2}" name = "XNA (XBox)" />
+		<ProjectType guid = "{D399B71A-8929-442a-A9AC-8BEC78BB2433}" name = "XNA (Zune)" />
+		<ProjectType guid = "{A1591282-1198-4647-A2B1-27E5FF5F6F3B}" name = "Silverlight" />
+		<ProjectType guid = "{BC8A1FFA-BEE3-4634-8014-F334798102B3}" name = "Windows Store App" />
+		<ProjectType guid = "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}" name = "Visual C++" />
+		<ProjectType guid = "{E6FDF86B-F3D1-11D4-8576-0002A516ECE8}" name = "Visual J#" />
 	</Extension>
 </Addin>

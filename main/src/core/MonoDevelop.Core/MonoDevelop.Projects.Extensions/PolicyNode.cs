@@ -29,13 +29,12 @@
 using System;
 using System.IO;
 using Mono.Addins;
+using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.Projects.Extensions
 {
-	
 	class PolicyResourceNode : ExtensionNode
 	{
-		
 		[NodeAttribute]
 		protected string resource = null;
 		
@@ -43,5 +42,7 @@ namespace MonoDevelop.Projects.Extensions
 		{
 			return new StreamReader (Addin.GetResource (resource, true));
 		}
+
+		public PolicyKey[] AddedKeys { get; set; }
 	}
 }

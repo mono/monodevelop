@@ -785,10 +785,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						var relPath = new FilePath (path).ToRelative (sol.BaseDirectory);
 						if (!string.IsNullOrEmpty (name)) {
 							var guids = name.Split (';');
-							var projectInfo = guids.Select (g => MSBuildProjectService.GetUnknownProjectTypeInfo (g)).FirstOrDefault (p => p != null);
+							var projectInfo = MSBuildProjectService.GetUnknownProjectTypeInfo (guids);
 							if (projectInfo != null) {
-								LoggingService.LogWarning (string.Format ("Could not load {0} project '{1}'. {2}", projectInfo.Name, relPath, projectInfo.Instructions));
-								monitor.ReportWarning (GettextCatalog.GetString ("Could not load {0} project '{1}'. {2}", projectInfo.Name, relPath, projectInfo.Instructions));
+								LoggingService.LogWarning (string.Format ("Could not load {0} project '{1}'. {2}", projectInfo.Name, relPath, projectInfo.GetInstructions ()));
+								monitor.ReportWarning (GettextCatalog.GetString ("Could not load {0} project '{1}'. {2}", projectInfo.Name, relPath, projectInfo.GetInstructions ()));
 							} else {
 								LoggingService.LogWarning (string.Format ("Could not load project '{0}' with unknown item type '{1}'", relPath, name));
 								monitor.ReportWarning (GettextCatalog.GetString ("Could not load project '{0}' with unknown item type '{1}'", relPath, name));

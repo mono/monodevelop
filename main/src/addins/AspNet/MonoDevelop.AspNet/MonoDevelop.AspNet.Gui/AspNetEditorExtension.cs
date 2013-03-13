@@ -400,16 +400,10 @@ namespace MonoDevelop.AspNet.Gui
 			
 			//children of properties
 			if (childrenAsProperties && (!parentName.HasPrefix || defaultProp != null)) {
-				if (controlClass.GetProjectContent () == null) {
-					LoggingService.LogWarning ("IType {0} does not have a SourceProjectDom", controlClass);
-					return;
-				}
-				
 				string propName = defaultProp ?? parentName.Name;
 				IProperty property =
 					controlClass.GetProperties ()
-						.Where (x => string.Compare (propName, x.Name, StringComparison.OrdinalIgnoreCase) == 0)
-						.FirstOrDefault ();
+						.FirstOrDefault (x => string.Equals (propName, x.Name, StringComparison.OrdinalIgnoreCase));
 				
 				if (property == null)
 					return;
@@ -451,8 +445,7 @@ namespace MonoDevelop.AspNet.Gui
 				}
 				
 				string addStr = "Add";
-				IMethod meth = collectionType.GetMethods ()
-					.Where (m => m.Parameters.Count == 1 && m.Name == addStr).FirstOrDefault ();
+				IMethod meth = collectionType.GetMethods ().FirstOrDefault (m => m.Parameters.Count == 1 && m.Name == addStr);
 				
 				if (meth != null) {
 					IType argType = meth.Parameters [0].Type;
@@ -469,10 +462,6 @@ namespace MonoDevelop.AspNet.Gui
 			
 			//properties as children of controls
 			if (parentName.HasPrefix && childrenAsProperties) {
-				if (controlClass.GetProjectContent () == null) {
-					LoggingService.LogWarning ("IType {0} does not have a SourceProjectDom", controlClass);
-				}
-				
 				foreach (IProperty prop in GetUniqueMembers<IProperty> (controlClass.GetProperties ()))
 					if (GetPersistenceMode (prop) != System.Web.UI.PersistenceMode.Attribute)
 						list.Add (prop.Name, prop.GetStockIcon (), AmbienceService.GetSummaryMarkup (prop));
@@ -780,8 +769,12 @@ namespace MonoDevelop.AspNet.Gui
 			defaultProperty = "";
 			
 			IAttribute att = GetAttributes (type, "System.Web.UI.ParseChildrenAttribute").FirstOrDefault ();
+
+			if (att == null)
+				return childrenAsProperties;
+
 			var posArgs = att.PositionalArguments;
-			if (att == null || posArgs.Count == 0)
+			if (posArgs.Count == 0)
 				return childrenAsProperties;
 			
 			if (posArgs.Count > 0) {
@@ -844,11 +837,6 @@ namespace MonoDevelop.AspNet.Gui
 					yield return att;
 			}
 			
-			if (type.GetProjectContent () == null) {
-				LoggingService.LogWarning ("IType {0} has null SourceProjectDom", type);
-				yield break;
-			}
-			
 			foreach (IType t2 in type.GetAllBaseTypes ()) {
 				foreach (IAttribute att in t2.GetDefinition ().Attributes)
 					if (att.AttributeType.ReflectionName == attName)
@@ -863,7 +851,6 @@ namespace MonoDevelop.AspNet.Gui
 		protected override void RefillOutlineStore (ParsedDocument doc, Gtk.TreeStore store)
 		{
 			ParentNode p = ((AspNetParsedDocument)doc).RootNode;
-//			Gtk.TreeIter iter = outlineTreeStore.AppendValues (System.IO.Path.GetFileName (CU.Document.FilePath), p);
 			BuildTreeChildren (store, Gtk.TreeIter.Zero, p);
 		}
 		

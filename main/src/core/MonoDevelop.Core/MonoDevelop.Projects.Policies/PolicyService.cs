@@ -121,6 +121,8 @@ namespace MonoDevelop.Projects.Policies
 					invariantPolicies.InternalSet (t, null, Activator.CreateInstance (t));
 				break;
 			case ExtensionChange.Remove:
+				foreach (var s in sets)
+					s.RemoveAll (t);
 				policyTypes.Remove (t);
 				policyNames.Remove (name);
 				invariantPolicies.InternalRemove (t, null);
@@ -160,7 +162,7 @@ namespace MonoDevelop.Projects.Policies
 				}
 			}
 		}
-		
+
 		internal static IEnumerable<ScopedPolicy> DiffDeserializeXml (System.IO.StreamReader reader)
 		{
 			var xr = System.Xml.XmlReader.Create (reader);

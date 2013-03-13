@@ -9,55 +9,27 @@ using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.Ide.Gui.Dialogs {
 	
-	public class SplashScreenForm : Gtk.Window, IProgressMonitor, IDisposable
+	public class SplashScreenForm : Window, IProgressMonitor, IDisposable
 	{
+		ConsoleProgressMonitor monitor = new ConsoleProgressMonitor ();
+
 		const int SplashFontSize = 10;
-		const string SplashFontFamily = "sans-serif"; 
-		
-		static SplashScreenForm splashScreen;
-		static ProgressBar progress;
-		static VBox vbox;
-		ProgressTracker tracker = new ProgressTracker ();
+		const string SplashFontFamily = "sans-serif";
+
 		Gdk.Pixbuf bitmap;
-		static Gtk.Label label;
 		bool showVersionInfo;
-		
-		public static SplashScreenForm SplashScreen {
-			get {
-				if (splashScreen == null)
-					splashScreen = new SplashScreenForm();
-				return splashScreen;
-			}
-		}
-		
+
 		//this is a popup so it behaves like other splashes on Windows, i.e. doesn't show up as a second window in the taskbar.
-		public SplashScreenForm () : base (Gtk.WindowType.Popup)
+		public SplashScreenForm () : base (WindowType.Popup)
 		{
 			AppPaintable = true;
 			this.Decorated = false;
 			this.WindowPosition = WindowPosition.Center;
 			this.TypeHint = Gdk.WindowTypeHint.Splashscreen;
 			this.showVersionInfo = BrandingService.GetBool ("SplashScreen", "ShowVersionInfo") ?? true;
-			try {
-				using (var stream = BrandingService.GetStream ("SplashScreen.png", true))
-					bitmap = new Gdk.Pixbuf (stream);
-			} catch (Exception e) {
-				LoggingService.LogError ("Can't load splash screen pixbuf 'SplashScreen.png'.", e);
-			}
-			progress = new ProgressBar();
-			progress.Fraction = 0.00;
-			progress.HeightRequest = 6;
-
-			vbox = new VBox();
-			vbox.BorderWidth = 12;
-			label = new Gtk.Label ();
-			label.UseMarkup = true;
-			label.Xalign = 0;
-			vbox.PackEnd (progress, false, true, 0);
-			vbox.PackEnd (label, false, true, 3);
-			this.Add (vbox);
-			if (bitmap != null)
-				this.Resize (bitmap.Width, bitmap.Height);
+			using (var stream = BrandingService.GetStream ("SplashScreen.png", true))
+				bitmap = new Gdk.Pixbuf (stream);
+			this.Resize (bitmap.Width, bitmap.Height);
 		}
 		
 		protected override void OnDestroyed ()
@@ -164,22 +136,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 			c.Color = new Cairo.Color (161 / 255.0, 40 / 255.0, 48 / 255.0);
 			c.Fill ();
 		}
-
-		public static void SetProgress (double Percentage)
-		{
-			progress.Fraction = Percentage;
-			RunMainLoop ();
-		}
-
-		public void SetMessage (string Message)
-		{
-			if (bitmap == null) {
-				label.Text = Message;
-			} else {
-				label.Markup = "<span size='small' foreground='white'>" + Message + "</span>";
-			}
-			RunMainLoop ();
-		}
 		
 		static void RunMainLoop ()
 		{
@@ -188,43 +144,45 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		
 		void IProgressMonitor.BeginTask (string name, int totalWork)
 		{
-			tracker.BeginTask (name, totalWork);
-			SetMessage (tracker.CurrentTask);
+			monitor.BeginTask (name, totalWork);
+			RunMainLoop ();
 		}
 		
 		void IProgressMonitor.BeginStepTask (string name, int totalWork, int stepSize)
 		{
-			tracker.BeginStepTask (name, totalWork, stepSize);
-			SetMessage (tracker.CurrentTask);
+			monitor.BeginStepTask (name, totalWork, stepSize);
+			RunMainLoop ();
 		}
 		
 		void IProgressMonitor.EndTask ()
 		{
-			tracker.EndTask ();
-			SetProgress (tracker.GlobalWork);
-			SetMessage (tracker.CurrentTask);
+			monitor.EndTask ();
+			RunMainLoop ();
 		}
 		
 		void IProgressMonitor.Step (int work)
 		{
-			tracker.Step (work);
-			SetProgress (tracker.GlobalWork);
+			monitor.Step (work);
+			RunMainLoop ();
 		}
 		
 		TextWriter IProgressMonitor.Log {
-			get { return Console.Out; }
+			get { return monitor.Log; }
 		}
 		
 		void IProgressMonitor.ReportWarning (string message)
 		{
+			monitor.ReportWarning (message);
 		}
 		
 		void IProgressMonitor.ReportSuccess (string message)
 		{
+			monitor.ReportSuccess (message);
 		}
 		
 		void IProgressMonitor.ReportError (string message, Exception exception)
 		{
+			monitor.ReportError (message, exception);
 		}
 		
 		bool IProgressMonitor.IsCancelRequested {
@@ -238,17 +196,16 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		
 		// The returned IAsyncOperation object must be thread safe
 		IAsyncOperation IProgressMonitor.AsyncOperation {
-			get { return null; }
+			get { return monitor.AsyncOperation; }
 		}
 		
 		object IProgressMonitor.SyncRoot {
-			get { return this; }
+			get { return monitor.SyncRoot; }
 		}
 		
 		void IDisposable.Dispose ()
 		{
 			Destroy ();
-			splashScreen = null;
 		}
 	}
 }

@@ -2398,17 +2398,17 @@ namespace Mono.Debugging.Soft
 		{
 			IntPtr buf = IntPtr.Zero;
 			try {
-				buf = System.Runtime.InteropServices.Marshal.AllocHGlobal (8192);
+				buf = Marshal.AllocHGlobal (8192);
 				// This is a hacktastic way of getting sysname from uname ()
 				if (uname (buf) == 0) {
-					string os = System.Runtime.InteropServices.Marshal.PtrToStringAnsi (buf);
+					string os = Marshal.PtrToStringAnsi (buf);
 					if (os == "Darwin")
 						return true;
 				}
 			} catch {
 			} finally {
 				if (buf != IntPtr.Zero)
-					System.Runtime.InteropServices.Marshal.FreeHGlobal (buf);
+					Marshal.FreeHGlobal (buf);
 			}
 			return false;
 		}

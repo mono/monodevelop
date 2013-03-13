@@ -679,11 +679,11 @@ namespace Mono.Debugging.Soft
 			TypeMirror type = t as TypeMirror;
 
 			while (type != null) {
-				FieldInfoMirror field = FindByName (type.GetFields(), f => f.Name, name, ctx.CaseSensitive);
+				FieldInfoMirror field = FindByName (type.GetFields (), f => f.Name, name, ctx.CaseSensitive);
 				if (field != null && (field.IsStatic || co != null))
 					return new FieldValueReference (ctx, field, co, type);
 
-				PropertyInfoMirror prop = FindByName (type.GetProperties(), p => p.Name, name, ctx.CaseSensitive);
+				PropertyInfoMirror prop = FindByName (type.GetProperties (), p => p.Name, name, ctx.CaseSensitive);
 				if (prop != null && (IsStatic (prop) || co != null)) {
 					// Optimization: if the property has a CompilerGenerated backing field, use that instead.
 					// This way we avoid overhead of invoking methods on the debugee when the value is requested.

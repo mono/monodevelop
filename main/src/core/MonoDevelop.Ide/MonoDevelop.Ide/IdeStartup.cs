@@ -154,13 +154,17 @@ namespace MonoDevelop.Ide
 			if (Platform.IsMac)
 				options.NoSplash = true;
 			
-			IProgressMonitor monitor;
-			
-			if (options.NoSplash) {
+			IProgressMonitor monitor = null;
+			if (!options.NoSplash) {
+				try {
+					monitor = new SplashScreenForm ();
+					((SplashScreenForm)monitor).ShowAll ();
+				} catch (Exception ex) {
+					LoggingService.LogError ("Failed to create splash screen", ex);
+				}
+			}
+			if (monitor == null) {
 				monitor = new MonoDevelop.Core.ProgressMonitoring.ConsoleProgressMonitor ();
-			} else {
-				monitor = SplashScreenForm.SplashScreen;
-				SplashScreenForm.SplashScreen.ShowAll ();
 			}
 			
 			monitor.BeginTask (GettextCatalog.GetString ("Starting {0}", BrandingService.ApplicationName), 2);
@@ -204,11 +208,7 @@ namespace MonoDevelop.Ide
 				version += "." + Assembly.GetEntryAssembly ().GetName ().Version.Build;
 			if (Assembly.GetEntryAssembly ().GetName ().Version.Revision != 0)
 				version += "." + Assembly.GetEntryAssembly ().GetName ().Version.Revision;
-			
-			// System checks
-			if (!CheckBug77135 ())
-				return 1;
-			
+
 			CheckFileWatcher ();
 			
 			Exception error = null;
@@ -221,12 +221,12 @@ namespace MonoDevelop.Ide
 				
 				if (errorsList.Count > 0) {
 					if (monitor is SplashScreenForm)
-						SplashScreenForm.SplashScreen.Hide ();
+						((SplashScreenForm)monitor).Hide ();
 					AddinLoadErrorDialog dlg = new AddinLoadErrorDialog ((AddinError[]) errorsList.ToArray (typeof(AddinError)), false);
 					if (!dlg.Run ())
 						return 1;
 					if (monitor is SplashScreenForm)
-						SplashScreenForm.SplashScreen.Show ();
+						((SplashScreenForm)monitor).Show ();
 					reportedFailures = errorsList.Count;
 				}
 				
@@ -444,73 +444,7 @@ namespace MonoDevelop.Ide
 				LoggingService.LogWarning ("There was a problem checking whether to use managed file watching", e);
 			}
 		}
-		
-		bool CheckBug77135 ()
-		{
-			try {
-				// Check for bug 77135. Some versions of gnome-vfs2 and libgda
-				// make MD crash in the file open dialog or in FileIconLoader.
-				// Only in Suse.
-				
-				string path = "/etc/SuSE-release";
-				if (!File.Exists (path))
-					return true;
-					
-				// Only run the check for SUSE 10
-				StreamReader sr = File.OpenText (path);
-				string txt = sr.ReadToEnd ();
-				sr.Close ();
-				
-				if (txt.IndexOf ("SUSE LINUX 10") == -1)
-					return true;
-					
-				string current_libgda;
-				string current_gnomevfs;
-				string required_libgda = "1.3.91.5.4";
-				string required_gnomevfs = "2.12.0.9.2";
-				
-				StringWriter sw = new StringWriter ();
-				ProcessWrapper pw = Runtime.ProcessService.StartProcess ("rpm", "--qf %{version}.%{release} -q libgda", null, sw, null, null);
-				pw.WaitForOutput ();
-				current_libgda = sw.ToString ().Trim (' ','\n');
-				
-				sw = new StringWriter ();
-				pw = Runtime.ProcessService.StartProcess ("rpm", "--qf %{version}.%{release} -q gnome-vfs2", null, sw, null, null);
-				pw.WaitForOutput ();
-				current_gnomevfs = sw.ToString ().Trim (' ','\n');
-				
-				bool fail1 = Addin.CompareVersions (current_libgda, required_libgda) == 1;
-				bool fail2 = Addin.CompareVersions (current_gnomevfs, required_gnomevfs) == 1;
-				
-				if (fail1 || fail2) {
-					string msg = GettextCatalog.GetString (
-						"Some packages installed in your system are not compatible with {0}:\n",
-						BrandingService.ApplicationName
-					);
-					if (fail1)
-						msg += "\nlibgda " + current_libgda + " ("+ GettextCatalog.GetString ("version required: {0}", required_libgda) + ")";
-					if (fail2)
-						msg += "\ngnome-vfs2 " + current_gnomevfs + " ("+ GettextCatalog.GetString ("version required: {0}", required_gnomevfs) + ")";
-					msg += "\n\n";
-					msg += GettextCatalog.GetString ("You need to upgrade the previous packages to start using MonoDevelop.");
-					
-					SplashScreenForm.SplashScreen.Hide ();
-					Gtk.MessageDialog dlg = new Gtk.MessageDialog (null, Gtk.DialogFlags.Modal, Gtk.MessageType.Error, Gtk.ButtonsType.Ok, msg);
-					dlg.Run ();
-					dlg.Destroy ();
-					
-					return false;
-				} else
-					return true;
-			}
-			catch (Exception ex)
-			{
-				// Just ignore for now.
-				Console.WriteLine (ex);
-				return true;
-			}
-		}
-		
+
 		void SetupExceptionManager ()
 		{
 			System.Threading.Tasks.TaskScheduler.UnobservedTaskException += (sender, e) => {
