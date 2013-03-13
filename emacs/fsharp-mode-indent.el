@@ -251,8 +251,8 @@ This function does not modify point or mark."
      ((eq position 'bod) (fsharp-beginning-of-def-or-class 'either))
      ((eq position 'eod) (fsharp-end-of-def-or-class 'either))
      ;; Kind of funny, I know, but useful for fsharp-up-exception.
-     ((eq position 'bob) (beginning-of-buffer))
-     ((eq position 'eob) (end-of-buffer))
+     ((eq position 'bob) (point-min))
+     ((eq position 'eob) (point-max))
      ((eq position 'boi) (back-to-indentation))
      ((eq position 'bos) (fsharp-goto-initial-line))
      (t (error "Unknown buffer position requested: %s" position))
@@ -1610,11 +1610,12 @@ This tells add-log.el how to find the current function/method/variable."
   "Send current (top-level) phrase to the interactive mode"
   (interactive)
   (save-excursion
-    (fsharp-beginning-of-block)
-    (setq p1 (point))
-    (fsharp-end-of-block)
-    (setq p2 (point))
-    (fsharp-eval-region p1 p2)))
+    (let ((p1) (p2))
+      (fsharp-beginning-of-block)
+      (setq p1 (point))
+      (fsharp-end-of-block)
+      (setq p2 (point))
+      (fsharp-eval-region p1 p2))))
 
 (defun fsharp-mark-phrase ()
   "Send current (top-level) phrase to the interactive mode"
