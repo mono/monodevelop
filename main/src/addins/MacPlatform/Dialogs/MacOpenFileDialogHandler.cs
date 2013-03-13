@@ -174,18 +174,13 @@ namespace MonoDevelop.MacIntegration
 					if (encodingSelector != null)
 						encodingSelector.Enabled = !slnViewerSelected;
 				};
-				
-				try {
-					var action = MacSelectFileDialogHandler.RunPanel (data, panel);
-					if (!action) {
-						GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
-						return false;
-					}
-				} catch (Exception ex) {
-					System.Console.WriteLine (ex);
-					throw;
+
+				var action = MacSelectFileDialogHandler.RunPanel (data, panel);
+				if (!action) {
+					GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
+					return false;
 				}
-				
+
 				data.SelectedFiles = MacSelectFileDialogHandler.GetSelectedFiles (panel);
 				
 				if (encodingSelector != null)
@@ -199,6 +194,7 @@ namespace MonoDevelop.MacIntegration
 				
 				GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
 			} catch (Exception ex) {
+				LoggingService.LogError ("Error in Open File dialog", ex);
 				MessageService.ShowException (ex);
 			} finally {
 				if (panel != null)
