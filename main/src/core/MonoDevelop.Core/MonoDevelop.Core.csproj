@@ -469,6 +469,12 @@
     <EmbeddedResource Include="frameworks\framework_NET_4_5.xml">
       <LogicalName>framework_NET_4_5.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="frameworks\framework_NET_3_5_client.xml">
+      <LogicalName>framework_NET_3_5_client.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frameworks\framework_NET_4_0_client.xml">
+      <LogicalName>framework_NET_4_0_client.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="BeforeBuild">
