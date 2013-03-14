@@ -168,12 +168,6 @@ namespace MonoDevelop.Components
 			Destroy ();
 			return base.OnFocusOutEvent (evnt);
 		}
-		
-		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
-		{
-			Destroy ();
-			return base.OnButtonPressEvent (evnt);
-		}
 
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
 		{

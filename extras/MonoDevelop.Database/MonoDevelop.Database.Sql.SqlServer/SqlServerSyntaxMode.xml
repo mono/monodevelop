@@ -25,19 +25,19 @@
  
 <SyntaxMode name = "SqlServer" mimeTypes="text/x-sqlserver" ignorecase="true">
 
-	<EolSpan color = "comment" rule="Comment" tagColor="comment.tag">-</EolSpan>
+	<EolSpan color = "Comment(Line)" rule="Comment" tagColor="comment.tag">-</EolSpan>
 	
-	<Span color = "comment.block" rule="Comment" tagColor="comment.tag.block">
+	<Span color = "Comment(Block)" rule="Comment" tagColor="comment.tag.block">
 		<Begin>/*</Begin>
 		<End>*/</End>
 	</Span>
 	
-	<Span color = "string" rule="String" stopateol = "true" escape='\"'>
+	<Span color = "String" rule="String" stopateol = "true" escape='\"'>
 		<Begin>'</Begin>
 		<End>'</End>
 	</Span>
 	
-	<Keywords color = "keyword.misc">
+	<Keywords color = "Keyword(Other)">
 		<Word>@@DATEFIRST</Word>
 		<Word>@@OPTIONS</Word>
 		<Word>@@DBTS</Word>
@@ -1141,7 +1141,7 @@
 		<Word>sp_xml_schema_rowset2</Word>
 	</Keywords>
 	
-	<Keywords ignorecase="true" color = "keyword.operator">
+	<Keywords ignorecase="true" color = "Keyword(Operator)">
 		<Word>+</Word>
 		<Word>-</Word>
 		<Word>*</Word>
@@ -1173,7 +1173,7 @@
 		<Word>@</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.declaration">
+	<Keywords color = "Keyword(Declaration)">
 		<Word>CREATE</Word>
 		<Word>DATABASE</Word>
 		<Word>COLLATE</Word>
@@ -1211,10 +1211,10 @@
 		<Word>ACTION</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.parameter">
+	<Keywords color = "Keyword(Parameter)">
 	</Keywords>
 
-	<Keywords ignorecase="true" color = "keyword.selection">
+	<Keywords ignorecase="true" color = "Keyword(Selection)">
 		<Word>SELECT</Word>
 		<Word>FROM</Word>
 		<Word>WHERE</Word>
@@ -1248,10 +1248,10 @@
 		<Word>HAVING</Word>
 	</Keywords>
 	
-	<Keywords ignorecase="true" color = "keyword.iteration">
+	<Keywords ignorecase="true" color = "Keyword(Iteration)">
 	</Keywords>
 	
-	<Keywords ignorecase="true" color = "keyword.jump">
+	<Keywords ignorecase="true" color = "Keyword(Jump)">
 		<Word>BREAK</Word>
 		<Word>RETURN</Word>
 		<Word>RETURNS</Word>
@@ -1260,24 +1260,24 @@
 		<Word>READONLY</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.context">
+	<Keywords color = "Keyword(Context)">
 	</Keywords>
 	
-	<Keywords color = "keyword.exceptions">
+	<Keywords color = "Keyword(Exception)">
 	</Keywords>
 	
-	<Keywords ignorecase="true" color = "constant.language">
+	<Keywords ignorecase="true" color = "Keyword(Constants)">
 		<Word>TRUE</Word>
 		<Word>FALSE</Word>
 		<Word>NULL</Word>
 	</Keywords>
 	
-	<Keywords ignorecase="true" color = "keyword.modifier">
+	<Keywords ignorecase="true" color = "Keyword(Modifiers)">
 		<Word>RETURNS</Word>
 		<Word>AS</Word>
 	</Keywords>
 	
-	<Keywords ignorecase="true" color = "keyword.type">
+	<Keywords ignorecase="true" color = "Keyword(Type)">
 		<Word>bigint</Word>
 		<Word>numeric</Word>
 		<Word>bit</Word>
@@ -1314,12 +1314,10 @@
 	</Keywords>
 
 	<Rule name = "text.preprocessor">
-		<Keywords color="text.preprocessor.keyword">
-		</Keywords>
 	</Rule>
 	
 	<Rule name = "Comment">
-		<Keywords color="comment.keyword.todo" ignorecase="True">
+		<Keywords color="Comment Tag" ignorecase="True">
 			<Word>TODO</Word>
 			<Word>FIXME</Word>
 			<Word>HACK</Word>

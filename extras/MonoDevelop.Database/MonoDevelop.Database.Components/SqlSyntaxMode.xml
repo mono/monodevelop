@@ -25,32 +25,38 @@
  
 <SyntaxMode name = "Sql" mimeTypes="text/x-sql" ignorecase="true">
 
-	<EolSpan color = "comment" rule="Comment" tagColor="comment.tag">-</EolSpan>
+	<EolSpan color = "Comment(Line)" rule="Comment" tagColor="comment.tag">-</EolSpan>
 	
-	<Span color = "comment.block" rule="Comment" tagColor="comment.tag.block">
+	<Span color = "Comment(Block)" rule="Comment" tagColor="comment.tag.block">
 		<Begin>/*</Begin>
+
 		<End>*/</End>
+
 	</Span>
 	
-	<Span color = "string" rule="String" stopateol = "true" escape='\"'>
+	<Span color = "String" rule="String" stopateol = "true" escape='\"'>
 		<Begin>"</Begin>
 		<End>"</End>
 	</Span>
 	
-	<Span color = "string" rule="String" stopateol = "true" escape='\"'>
+	<Span color = "String" rule="String" stopateol = "true" escape='\"'>
 		<Begin>'</Begin>
 		<End>'</End>
 	</Span>
 	
-	<Keywords color = "keyword.access">
+	<Keywords color = "Keyword(Access)">
 	</Keywords>
 	
-	<Keywords ignorecase="true" color = "keyword.operator">
+	<Keywords ignorecase="true" color = "Keyword(Operator)">
 		<Word>+</Word>
+
 		<Word>-</Word>
+
 		<Word>=</Word>
+
 		<Word>AND</Word>
 		<Word>ON</Word>
+
 		<Word>OR</Word>
 		<Word>IN</Word>
 		<Word>NOT</Word>
@@ -67,11 +73,15 @@
 		
 	</Keywords>
 	
-	<Keywords ignorecase="true" color = "keyword.selection">
+	<Keywords ignorecase="true" color = "Keyword(Selection)">
 		<Word>SELECT</Word>
+
 		<Word>FROM</Word>
+
 		<Word>WHERE</Word>
+
 		<Word>INNER JOIN</Word>
+
 		<Word>LEFT JOIN</Word>
 		<Word>RIGHT JOIN</Word>
 		<Word>LEFT OUTER JOIN</Word>
@@ -92,34 +102,39 @@
 		<Word>EXISTS</Word>
 	</Keywords>
 	
-	<Keywords ignorecase="true" color = "keyword.iteration">
+	<Keywords ignorecase="true" color = "Keyword(Iteration)">
 	</Keywords>
 	
-	<Keywords ignorecase="true" color = "keyword.jump">
+	<Keywords ignorecase="true" color = "Keyword(Jump)">
 		<Word>BREAK</Word>
+
 		<Word>RETURN</Word>
 		<Word>RETURNS</Word>
+
 	</Keywords>
 	
-	<Keywords color = "keyword.context">
+	<Keywords color = "Keyword(Context)">
 	</Keywords>
 	
-	<Keywords color = "keyword.exceptions">
+	<Keywords color = "Keyword(Exception)">
 	</Keywords>
 	
-	<Keywords ignorecase="true" color = "constant.language">
+	<Keywords ignorecase="true" color = "Keyword(Constants)">
+
 		<Word>TRUE</Word>
+
 		<Word>FALSE</Word>
 		<Word>NULL</Word>
 	</Keywords>
 	
-	<Keywords ignorecase="true" color = "keyword.modifier">
+	<Keywords ignorecase="true" color = "Keyword(Modifiers)">
 		<Word>UNSIGNED</Word>
 		<Word>NOT NULL</Word>
 		<Word>DEFAULT</Word>
 	</Keywords>
 	
-	<Keywords ignorecase="true" color = "keyword.type">
+
+	<Keywords ignorecase="true" color = "Keyword(Type)">
 		<Word>SmallInt</Word>
 		<Word>Integer</Word>
 		<Word>BigInt</Word>
@@ -188,39 +203,50 @@
 		<Word>Boolean</Word>
 	</Keywords>
 	
-	<Keywords ignorecase="true" color = "keyword.declaration">
+	<Keywords ignorecase="true" color = "Keyword(Declaration)">
+
 		<Word>CREATE DATABASE</Word>
 		<Word>CREATE TABLE</Word>
 		<Word>CREATE FUNCTION</Word>
 		<Word>CREATE PROCEDURE</Word>
 		<Word>ALTER DATABASE</Word>
 		<Word>ALTER TABLE</Word>
+
 		<Word>ALTER FUNCTION</Word>
 		<Word>ALTER PROCEDURE</Word>
 		<Word>VIEW</Word>
 		<Word>TRIGGER</Word>
+
 		<Word>BEGIN</Word>
 		<Word>END</Word>
 	</Keywords>
 	
-	<Keywords ignorecase="true" color = "keyword.parameter">
+	<Keywords ignorecase="true" color = "Keyword(Parameter)">
+
 		<Word>DECLARE</Word>
+
 		<Word>IN</Word>
+
 		<Word>OUT</Word>
 	</Keywords>
 
+
 	<Rule name = "text.preprocessor">
-		<Keywords color="text.preprocessor.keyword">
-		</Keywords>
+
 	</Rule>
 	
 	<Rule name = "Comment">
-		<Keywords color="comment.keyword.todo" ignorecase="True">
+		<Keywords color="Comment Tag" ignorecase="True">
 			<Word>TODO</Word>
+
 			<Word>FIXME</Word>
+
 			<Word>HACK</Word>
+
 			<Word>UNDONE</Word>
+
 		</Keywords>	
+
 	</Rule>
 	
 	<Rule name = "String">

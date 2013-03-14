@@ -97,7 +97,12 @@ namespace MonoDevelop.CodeGeneration
 			
 			static string CreatePropertyName (IMember member)
 			{
-				return char.ToUpper (member.Name[0]) + member.Name.Substring (1);
+				int i = 0;
+				while (i + 1 < member.Name.Length && member.Name[i] == '_')
+					i++;
+				if (i + 1 >= member.Name.Length)
+					return char.ToUpper (member.Name [i]).ToString ();
+				return char.ToUpper (member.Name [i]) + member.Name.Substring (i + 1);
 			}
 			
 			protected override IEnumerable<string> GenerateCode (List<object> includedMembers)
