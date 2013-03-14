@@ -731,8 +731,12 @@ namespace Mono.Debugging.Evaluation
 			var target = memberReferenceExpression.Target.AcceptVisitor<ValueReference> (this);
 			var member = target.GetChild (memberReferenceExpression.MemberName, ctx.Options);
 
-			if (member == null)
+			if (member == null) {
+				if (ctx.Adapter.IsNull (ctx, target.Value))
+					throw new EvaluatorException ("{0} is null", target.Name);
+
 				throw ParseError ("Unknown member: {0}", memberReferenceExpression.MemberName);
+			}
 
 			return member;
 		}
