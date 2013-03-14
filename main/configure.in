@@ -112,14 +112,12 @@ Please see http://www.mono-project.org/ to download latest mono sources or packa
 fi
 
 if test "x$has_mono" = "xtrue"; then
+    AC_PATH_PROG(RUNTIME, mono, no)
+    AC_PATH_PROG(CSC, dmcs, no)
     if test `uname -s` = "Darwin"; then
-	AC_PATH_PROG(RUNTIME, mono, no)
-	AC_PATH_PROG(CSC, dmcs, no)
 	LIB_PREFIX=
 	LIB_SUFFIX=.dylib
     else
-	AC_PATH_PROG(RUNTIME, mono, no)
-	AC_PATH_PROG(CSC, dmcs, no)
 	LIB_PREFIX=.so
 	LIB_SUFFIX=
     fi
