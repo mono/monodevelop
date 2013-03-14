@@ -1003,18 +1003,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			// Convert debug property
 			
 			foreach (SolutionItemConfiguration conf in eitem.Configurations) {
-				DotNetProjectConfiguration cp = conf as MonoDevelop.Projects.DotNetProjectConfiguration;
-				if (cp != null) {
-					if (newProject)
-						cp.ExtendedProperties ["ErrorReport"] = "prompt";
-					
-					string debugType = (string) cp.ExtendedProperties ["DebugType"];
-					if (cp.DebugMode) {
-						if (debugType != "full" && debugType != "pdbonly")
-							cp.ExtendedProperties ["DebugType"] = "full";
-					}
-					else if (debugType != "none" && debugType != "pdbonly")
-						cp.ExtendedProperties ["DebugType"] = "none";
+				if (newProject && conf is DotNetProjectConfiguration) {
+					conf.ExtendedProperties ["ErrorReport"] = "prompt";
 				}
 			}
 			
@@ -1119,9 +1109,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				var moniker = dotNetProject.TargetFramework.Id;
 				bool supportsMultipleFrameworks = TargetFormat.FrameworkVersions.Length > 0;
 				var def = dotNetProject.GetDefaultTargetFrameworkForFormat (GetFileFormat ());
-				bool isDefaultIdentifier = def.Identifier == moniker.Identifier;
-				bool isDefaultVersion = isDefaultIdentifier && def.Version == moniker.Version;
-				bool isDefaultProfile = isDefaultVersion && def.Profile == moniker.Profile;
 
 				// If the format only supports one fx version, or the version is the default, there is no need to store it.
 				// However, is there is already a value set, do not remove it.
@@ -1765,7 +1752,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			new ItemMember (typeof(SolutionEntityItem), "SchemaVersion"),
 			new ItemMember (typeof(SolutionEntityItem), "ProjectGuid"),
 			new ItemMember (typeof(SolutionEntityItem), "ProjectTypeGuids"),
-			new ItemMember (typeof(DotNetProjectConfiguration), "DebugType"),
 			new ItemMember (typeof(DotNetProjectConfiguration), "ErrorReport"),
 			new ItemMember (typeof(DotNetProjectConfiguration), "TargetFrameworkVersion", new object[] { new MergeToProjectAttribute () }),
 			new ItemMember (typeof(ProjectReference), "RequiredTargetFramework"),
