@@ -17,6 +17,18 @@ namespace MonoDevelop.Platform
 {
 	public class WindowsPlatform : PlatformService
 	{
+        public override void SetGlobalProgressBar(double percent)
+        {
+            if (percent == 1)
+            {
+                Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressState(Microsoft.WindowsAPICodePack.Taskbar.TaskbarProgressBarState.NoProgress);
+            }
+            else
+            {
+                Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressState(Microsoft.WindowsAPICodePack.Taskbar.TaskbarProgressBarState.Normal);
+                Microsoft.WindowsAPICodePack.Taskbar.TaskbarManager.Instance.SetProgressValue((int)(percent * 100f), 100);
+            }
+        }
 		public override string DefaultMonospaceFont {
 			get {
 				// Vista has the very beautiful Consolas

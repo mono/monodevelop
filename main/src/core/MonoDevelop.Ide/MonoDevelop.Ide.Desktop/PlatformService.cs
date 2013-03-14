@@ -59,7 +59,10 @@ namespace MonoDevelop.Ide.Desktop
 				return "MonoDevelop";
 			}
 		}
-		
+        public virtual void SetGlobalProgressBar(double progress)
+        {
+        
+        }
 		public virtual void OpenFile (string filename)
 		{
 			Process.Start ("file://" + filename);
