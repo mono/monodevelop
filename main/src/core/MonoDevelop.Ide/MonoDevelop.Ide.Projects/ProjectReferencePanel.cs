@@ -200,12 +200,13 @@ namespace MonoDevelop.Ide.Projects {
 				bool allowSelecting = true;
 				DotNetProject netProject = projectEntry as DotNetProject;
 				if (netProject != null) {
+					string reason;
+
 					if (ProjectReferencesProject (references, null, netProject, configureProject.Name)) {
 						txt += " " + GLib.Markup.EscapeText (GettextCatalog.GetString ("(Cyclic dependencies not allowed)"));
 						allowSelecting = false;
-					}
-				    else if (!configureProject.TargetFramework.CanReferenceAssembliesTargetingFramework (netProject.TargetFramework)) {
-						txt += " " + GLib.Markup.EscapeText (GettextCatalog.GetString ("(Incompatible target framework: {0})", netProject.TargetFramework.Id));
+					} else if (!configureProject.CanReferenceProject (netProject, out reason)) {
+						txt += " " + GLib.Markup.EscapeText ("(" + reason + ")");
 						allowSelecting = false;
 					}
 				}

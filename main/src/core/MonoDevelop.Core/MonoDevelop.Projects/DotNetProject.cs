@@ -51,7 +51,6 @@ namespace MonoDevelop.Projects
 	[ProjectModelDataItem ("AbstractDotNetProject")]
 	public abstract class DotNetProject : Project, IAssemblyProject
 	{
-
 		bool usePartialTypes = true;
 		ProjectParameters languageParameters;
 
@@ -192,6 +191,18 @@ namespace MonoDevelop.Projects
 		
 		public ProjectReferenceCollection References {
 			get { return projectReferences; }
+		}
+
+		public virtual bool CanReferenceProject (DotNetProject targetProject, out string reason)
+		{
+			if (!TargetFramework.CanReferenceAssembliesTargetingFramework (targetProject.TargetFramework)) {
+				reason = GettextCatalog.GetString ("Incompatible target framework: {0}", targetProject.TargetFramework.Id);
+				return false;
+			}
+
+			reason = null;
+
+			return true;
 		}
 
 		public IDotNetLanguageBinding LanguageBinding {
