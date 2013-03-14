@@ -103,12 +103,28 @@ type FSharpInteractivePad() =
       x.UpdateFont()    
       view.ShadowType <- Gtk.ShadowType.None
       view.ShowAll()
-
+      
+      match view.Child with
+      | :? Gtk.TextView as v -> 
+            v.PopulatePopup.Add(fun (args) -> 
+                                    let item = new Gtk.MenuItem(GettextCatalog.GetString("Reset"))
+                                    item.Activated.Add(fun _ -> x.RestartFsi())
+                                    item.Show()
+                                    args.Menu.Add(item))
+      | _ -> ()
+                            
       let toolbar = container.GetToolbar(Gtk.PositionType.Right);
+
       let buttonClear = new DockToolButton("gtk-clear")
       buttonClear.Clicked.Add(fun _ -> view.Clear())
       buttonClear.TooltipText <- GettextCatalog.GetString("Clear")
       toolbar.Add(buttonClear)
+      
+      let buttonRestart = new DockToolButton("gtk-refresh")
+      buttonRestart.Clicked.Add(fun _ -> x.RestartFsi())
+      buttonRestart.TooltipText <- GettextCatalog.GetString("Reset")
+      toolbar.Add(buttonRestart)
+      
       toolbar.ShowAll()
       
     member x.RedrawContent() = ()
