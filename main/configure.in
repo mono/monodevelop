@@ -25,6 +25,22 @@ if test "x$MCS" = "x" ; then
   AC_MSG_ERROR([Can't find "gmcs" in your PATH])
 fi
 
+AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
+
+# On OSX use Mono's private copy of pkg-config if it exists
+OSX_PKG_CONFIG=/Library/Frameworks/Mono.framework/Versions/Current/bin/pkg-config
+if test -e $OSX_PKG_CONFIG; then
+	PKG_CONFIG=$OSX_PKG_CONFIG
+elif test "x$PKG_CONFIG" = "xno"; then
+	AC_MSG_ERROR([You need to install pkg-config])
+fi
+
+MONO_REQUIRED_VERSION=2.10.9
+
+if ! $PKG_CONFIG --atleast-version=$MONO_REQUIRED_VERSION mono; then
+	AC_MSG_ERROR([You need mono $MONO_REQUIRED_VERSION or newer])
+fi
+
 #ensure we have the same env as when configured
 AC_SUBST(PATH)
 AC_SUBST(PKG_CONFIG_PATH)
