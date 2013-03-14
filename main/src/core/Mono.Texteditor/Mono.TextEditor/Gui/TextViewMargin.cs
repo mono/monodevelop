@@ -2460,7 +2460,7 @@ namespace Mono.TextEditor
 					
 					DrawLinePart (cr, line, lineNr, logicalRulerColumn, offset, foldOffset - offset, ref pangoPosition, ref isSelectionDrawn, y, area.X + area.Width, _lineHeight);
 					
-					offset = folding.EndLine.Offset + folding.EndColumn;
+					offset = folding.EndLine.Offset + folding.EndColumn - 1;
 					markerLayout.SetText (folding.Description);
 					markerLayout.GetSize (out width, out height);
 					
