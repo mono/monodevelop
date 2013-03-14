@@ -95,7 +95,7 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		static IEnumerable<ITypeDefinition> Import (ICompilation compilation, IEnumerable<ITypeDefinition> types)
 		{
-			return types.Select (compilation.Import);
+			return types.Select (t => compilation.Import (t));
 		}
 
 		/// <summary>
