@@ -803,7 +803,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				ImplementingType = field.DeclaringTypeDefinition,
 				Part = implementingType
 			};
-			
+			result.Append ("public ");
 			AppendReturnType (result, options, field.ReturnType);
 			result.Append (" ");
 			result.Append (propertyName);
