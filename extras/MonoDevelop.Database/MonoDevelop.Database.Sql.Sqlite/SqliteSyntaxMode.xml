@@ -25,24 +25,24 @@
  
 <SyntaxMode name = "Sqlite" mimeTypes="text/x-sqlite" ignorecase="true">
 
-	<EolSpan color = "comment" rule="Comment" tagColor="comment.tag">-</EolSpan>
+	<EolSpan color = "Comment(Line)" rule="Comment" tagColor="comment.tag">-</EolSpan>
 	
-	<Span color = "comment.block" rule="Comment" tagColor="comment.tag.block">
+	<Span color = "Comment(Block)" rule="Comment" tagColor="comment.tag.block">
 		<Begin>/*</Begin>
 		<End>*/</End>
 	</Span>
 	
-	<Span color = "string" rule="String" stopateol = "true" escape='\"'>
+	<Span color = "String" rule="String" stopateol = "true" escape='\"'>
 		<Begin>"</Begin>
 		<End>"</End>
 	</Span>
 	
-	<Span color = "string" rule="String" stopateol = "true" escape='\"'>
+	<Span color = "String" rule="String" stopateol = "true" escape='\"'>
 		<Begin>'</Begin>
 		<End>'</End>
 	</Span>
 	
-	<Keywords color = "keyword.misc">
+	<Keywords color = "Keyword(Other)">
 		<Word>COUNT</Word>
 		<Word>AVG</Word>
 		<Word>GROUP_CONCAT</Word>
@@ -83,7 +83,7 @@
 		<Word>julianday</Word>
 	</Keywords>
 	
-	<Keywords ignorecase="true" color = "keyword.operator">
+	<Keywords ignorecase="true" color = "Keyword(Operator)">
 		<Word>||</Word>
 		<Word>AS</Word>
 		<Word>*</Word>
@@ -113,7 +113,7 @@
 		<Word>OR</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.declaration">
+	<Keywords color = "Keyword(Declaration)">
 		<Word>TABLE</Word>
 		<Word>RENAME</Word>
 		<Word>TO</Word>
@@ -164,10 +164,10 @@
 		<Word>REINDEX</Word>
 	</Keywords>
 	
-	<Keywords color = "keyword.parameter">
+	<Keywords color = "Keyword(Parameter)">
 	</Keywords>
 	
-	<Keywords ignorecase="true" color = "keyword.selection">
+	<Keywords ignorecase="true" color = "Keyword(Selection)">
 		<Word>ANALYZE</Word>
 		<Word>BEGIN</Word>
 		<Word>COMMIT</Word>
@@ -217,19 +217,19 @@
 		<Word>SET</Word>
 	</Keywords>
 	
-	<Keywords ignorecase="true" color = "keyword.iteration">
+	<Keywords ignorecase="true" color = "Keyword(Iteration)">
 	</Keywords>
 	
-	<Keywords ignorecase="true" color = "keyword.jump">
+	<Keywords ignorecase="true" color = "Keyword(Jump)">
 	</Keywords>
 	
-	<Keywords color = "keyword.context">
+	<Keywords color = "Keyword(Context)">
 	</Keywords>
 	
-	<Keywords color = "keyword.exceptions">
+	<Keywords color = "Keyword(Exception)">
 	</Keywords>
 	
-	<Keywords ignorecase="true" color = "constant.language">
+	<Keywords ignorecase="true" color = "Keyword(Constants)">
 		<Word>TRUE</Word>
 		<Word>FALSE</Word>
 		<Word>Yes</Word>
@@ -240,11 +240,11 @@
 		<Word>0</Word>
 	</Keywords>
 	
-	<Keywords ignorecase="true" color = "keyword.modifier">
+	<Keywords ignorecase="true" color = "Keyword(Modifiers)">
 		
 	</Keywords>
 	
-	<Keywords ignorecase="true" color = "keyword.type">
+	<Keywords ignorecase="true" color = "Keyword(Type)">
 		<Word>NULL</Word>
 		<Word>INTEGER</Word>
 		<Word>REAL</Word>
@@ -298,7 +298,7 @@
 	</Rule>
 	
 	<Rule name = "Comment">
-		<Keywords color="comment.keyword.todo" ignorecase="True">
+		<Keywords color="Comment Tag" ignorecase="True">
 			<Word>TODO</Word>
 			<Word>FIXME</Word>
 			<Word>HACK</Word>
