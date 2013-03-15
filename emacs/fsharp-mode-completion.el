@@ -102,8 +102,6 @@ display in a help buffer instead.")
 
 (defun fsharp-ac/load-project (file)
   "Load the specified F# file as a project"
-  (assert (equal "fsproj" (file-name-extension file))  ()
-          "The given file was not an F# project.")
 
   ;; Prompt user for an fsproj, searching for a default.
   (interactive
@@ -111,6 +109,9 @@ display in a help buffer instead.")
           "Path to project: "
           (fsharp-mode/find-fsproj buffer-file-name)
           (fsharp-mode/find-fsproj buffer-file-name))))
+
+  (assert (equal "fsproj" (file-name-extension file))  ()
+          "The given file was not an F# project.")
 
   ;; Reset state.
   (setq fsharp-ac-completion-cache nil
