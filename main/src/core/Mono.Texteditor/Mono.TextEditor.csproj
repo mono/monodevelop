@@ -336,6 +336,9 @@
     <EmbeddedResource Include="Styles\VisualStudioStyle.json">
       <LogicalName>VisualStudioStyle.json</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="SyntaxModes\TypescriptSyntaxMode.xml">
+      <LogicalName>TypescriptSyntaxMode.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
