@@ -87,6 +87,9 @@ display in a help buffer instead.")
   (log-to-proc-buf proc str)
   (process-send-string proc str))
 
+;;; ----------------------------------------------------------------------------
+;;; File Parsing and loading
+
 (defun fsharp-ac-parse-current-buffer ()
   (save-restriction
     (widen)
@@ -110,24 +113,39 @@ display in a help buffer instead.")
           (fsharp-mode/find-fsproj buffer-file-name)
           (fsharp-mode/find-fsproj buffer-file-name))))
 
-  (assert (equal "fsproj" (file-name-extension file))  ()
-          "The given file was not an F# project.")
+  (when (fsharp-ac--valid-project-p file)
+    (fsharp-ac--reset)
+    ;; Launch the completion process and
+    (unless fsharp-ac-completion-process
+      (fsharp-ac-start-process))
+    ;; Load given project.
+    (log-psendstr fsharp-ac-completion-process
+                  (format "project \"%s\"\n" (expand-file-name file)))
+    file))
 
-  ;; Reset state.
+(defun fsharp-ac--valid-project-p (file)
+  (and file
+       (file-exists-p file)
+       (string-match-p (rx "." (or "fsproj" "sln") eol) file)))
+
+(defun fsharp-ac/load-file (file)
+  (fsharp-ac--reset)
+  (fsharp-ac-start-process)
+  (add-hook 'after-save-hook 'fsharp-ac-request-errors)
+  file)
+
+(defun fsharp-ac--reset ()
   (setq fsharp-ac-completion-cache nil
         fsharp-ac-partial-data nil
-        fsharp-ac-project-files nil)
+        fsharp-ac-project-files nil))
 
-  ;; Launch the completion process and update the current project.
-  (unless fsharp-ac-completion-process
-    (fsharp-ac-start-process))
-  (log-psendstr fsharp-ac-completion-process
-                (format "project \"%s\"\n" (expand-file-name file))))
+;;; ----------------------------------------------------------------------------
+;;; Display Requests
 
 (defun fsharp-ac-send-pos-request (cmd file line col)
-  (let ((request (format "%s \"%s\" %d %d %d\n" cmd file line col
-                         (* 1000 fsharp-ac-blocking-timeout))))
-      (log-psendstr fsharp-ac-completion-process request)))
+  (log-psendstr fsharp-ac-completion-process
+                (format "%s \"%s\" %d %d %d\n" cmd file line col
+                        (* 1000 fsharp-ac-blocking-timeout))))
 
 (defun fsharp-ac/stop-process ()
   (interactive)
@@ -393,6 +411,7 @@ around to the start of the buffer."
 
 ;;; ----------------------------------------------------------------------------
 ;;; Process handling
+;;;
 ;;; Handle output from the completion process.
 
 (defconst fsharp-ac-eom "\n<<EOF>>\n")
