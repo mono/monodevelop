@@ -571,10 +571,13 @@ namespace MonoDevelop.Components.MainToolbar
 				if (solConf == null || !solConf.BuildEnabledForItem (currentSolution.StartupItem))
 					return;
 
-				var targets = configurationMerger.GetTargetsForConfiguration (IdeApp.Workspace.ActiveConfigurationId, true);
-				foreach (var target in targets)
+				int runtimes = 0;
+				foreach (var target in configurationMerger.GetTargetsForConfiguration (IdeApp.Workspace.ActiveConfigurationId, true)) {
 					runtimeStore.AppendValues (target.Name, target.Name, target);
-				runtimeCombo.Sensitive = targets.Count () > 1;
+					runtimes++;
+				}
+
+				runtimeCombo.Sensitive = runtimes > 1;
 			} finally {
 				runtimeCombo.Changed += HandleRuntimeChanged;
 			}
