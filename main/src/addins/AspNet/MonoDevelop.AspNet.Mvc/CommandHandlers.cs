@@ -47,15 +47,18 @@ namespace MonoDevelop.AspNet.Mvc
 			var doc = IdeApp.Workbench.ActiveDocument;
 			var currentLocation = doc.Editor.Caret.Location;
 
-			string controllerName = doc.ParsedDocument.GetTopLevelTypeDefinition (currentLocation).Name;
+			var controller = doc.ParsedDocument.GetTopLevelTypeDefinition (currentLocation);
+			string controllerName = controller.Name;
 			int pos = controllerName.LastIndexOf ("Controller");
 			if (pos != -1)
 				controllerName = controllerName.Remove (pos);
+			
+			var baseDirectory =  new FilePath(Path.GetDirectoryName(doc.FileName)).ParentDirectory;
 
 			string actionName = doc.ParsedDocument.GetMember (currentLocation).Name;
 			var viewFoldersPaths = new FilePath[] {
-				doc.Project.BaseDirectory.Combine ("Views", controllerName),
-				doc.Project.BaseDirectory.Combine ("Views", "Shared")
+				baseDirectory.Combine ("Views", controllerName),
+				baseDirectory.Combine ("Views", "Shared")
 			};
 			var viewExtensions = new string[] { ".aspx", ".cshtml" };
 
@@ -91,7 +94,7 @@ namespace MonoDevelop.AspNet.Mvc
 			if (pos != -1)
 				controllerName = controllerName.Remove (pos);
 
-			string path = doc.Project.BaseDirectory.Combine ("Views", controllerName);
+			string path =  new FilePath(Path.GetDirectoryName(doc.FileName)).ParentDirectory.Combine ("Views", controllerName);
 			string actionName = doc.ParsedDocument.GetMember (currentLocation).Name;
 			FolderCommandHandler.AddView (project, path, actionName);
 		}
@@ -106,8 +109,8 @@ namespace MonoDevelop.AspNet.Mvc
 				info.Enabled = info.Visible = false;
 				return;
 			}
-			var rootFolder = doc.Project.BaseDirectory.Combine ("Views");
-			if (!doc.FileName.ParentDirectory.IsChildPathOf (rootFolder))
+			var baseDirectory =  new FilePath(Path.GetDirectoryName(doc.FileName)).ParentDirectory;
+			if (!string.Equals(baseDirectory.FileName, "Views"))
 				info.Enabled = info.Visible = false;
 		}
 
@@ -136,7 +139,7 @@ namespace MonoDevelop.AspNet.Mvc
 
 			var currentLocation = doc.Editor.Caret.Location;
 			var topLevelType = doc.ParsedDocument.GetTopLevelTypeDefinition (currentLocation);
-			if (topLevelType == null || !topLevelType.BaseTypes.Any (t => t.ToString () == "Controller")) {
+			if (topLevelType == null || !topLevelType.Name.EndsWith("Controller")) {
 				info.Enabled = info.Visible = false;
 				return;
 			}
