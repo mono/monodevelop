@@ -58,9 +58,9 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				yield break;
 			string title;
 			if (IsSingleType (context)) {
-				title = String.Format (GettextCatalog.GetString ("_Rename file to '{0}'"), Path.GetFileName (GetCorrectFileName (context, type)));
+				title = String.Format (GettextCatalog.GetString ("Rename file to '{0}'"), Path.GetFileName (GetCorrectFileName (context, type)));
 			} else {
-				title = String.Format (GettextCatalog.GetString ("_Move type to file '{0}'"), Path.GetFileName (GetCorrectFileName (context, type)));
+				title = String.Format (GettextCatalog.GetString ("Move type to file '{0}'"), Path.GetFileName (GetCorrectFileName (context, type)));
 			}
 			yield return new MonoDevelop.CodeActions.DefaultCodeAction (title, (d, l) => {
 				var ctx = new MDRefactoringContext (d, l);
