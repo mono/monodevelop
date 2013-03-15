@@ -87,9 +87,6 @@ display in a help buffer instead.")
   (log-to-proc-buf proc str)
   (process-send-string proc str))
 
-;;; ----------------------------------------------------------------------------
-;;; File Parsing and loading
-
 (defun fsharp-ac-parse-current-buffer ()
   (save-restriction
     (widen)
@@ -103,11 +100,13 @@ display in a help buffer instead.")
   (with-current-buffer (find-file-noselect file)
     (fsharp-ac-parse-current-buffer)))
 
+;;; ----------------------------------------------------------------------------
+;;; File Parsing and loading
+
 (defun fsharp-ac/load-project (file)
   "Load the specified F# file as a project"
-
-  ;; Prompt user for an fsproj, searching for a default.
   (interactive
+  ;; Prompt user for an fsproj, searching for a default.
    (list (read-file-name
           "Path to project: "
           (fsharp-mode/find-fsproj buffer-file-name)
@@ -115,29 +114,34 @@ display in a help buffer instead.")
 
   (when (fsharp-ac--valid-project-p file)
     (fsharp-ac--reset)
-    ;; Launch the completion process and
-    (unless fsharp-ac-completion-process
-      (fsharp-ac-start-process))
+    (fsharp-ac-start-process)
     ;; Load given project.
     (log-psendstr fsharp-ac-completion-process
                   (format "project \"%s\"\n" (expand-file-name file)))
     file))
+
+(defun fsharp-ac/load-file (file)
+  "Load FILE as an individual F# file. If FILE does not exist, load it on save."
+  (if (file-exists-p file)
+      (progn
+        (fsharp-ac--reset)
+        (fsharp-ac-start-process))
+    (add-hook 'after-save-hook 'fsharp-ac--load-after-save nil 'local)))
+
+(defun fsharp-ac--load-after-save ()
+  (remove-hook 'fsharp-ac--load-after-save 'local)
+  (fsharp-ac/load-file (buffer-file-name)))
 
 (defun fsharp-ac--valid-project-p (file)
   (and file
        (file-exists-p file)
        (string-match-p (rx "." (or "fsproj" "sln") eol) file)))
 
-(defun fsharp-ac/load-file (file)
-  (fsharp-ac--reset)
-  (fsharp-ac-start-process)
-  (add-hook 'after-save-hook 'fsharp-ac-request-errors)
-  file)
-
 (defun fsharp-ac--reset ()
   (setq fsharp-ac-completion-cache nil
         fsharp-ac-partial-data nil
-        fsharp-ac-project-files nil))
+        fsharp-ac-project-files nil)
+  (fsharp-ac-clear-errors))
 
 ;;; ----------------------------------------------------------------------------
 ;;; Display Requests
@@ -173,27 +177,31 @@ display in a help buffer instead.")
 (defun fsharp-ac-start-process ()
   "Launch the F# completion process in the background"
   (interactive)
-  (if fsharp-ac-completion-process
-      (fsharp-ac-message-safely "Completion process already running. Shutdown existing process first.")
-    (fsharp-ac-message-safely (format "Launching completion process: '%s'" (s-join " " fsharp-ac-complete-command)))
-    (setq fsharp-ac-completion-process
-          (let ((process-connection-type nil))
-            (apply 'start-process
-                   "fsharp-complete"
-                   "*fsharp-complete*"
-                   fsharp-ac-complete-command)))
 
-    (if (process-live-p fsharp-ac-completion-process)
-        (progn
-          (set-process-filter fsharp-ac-completion-process 'fsharp-ac-filter-output)
-          (set-process-query-on-exit-flag fsharp-ac-completion-process nil)
-          (setq fsharp-ac-status 'idle)
-          (setq fsharp-ac-partial-data "")
-          (setq fsharp-ac-project-files))
-      (setq fsharp-ac-completion-process nil))
+  (when (and fsharp-ac-completion-process
+             (process-live-p fsharp-ac-completion-process))
+    (kill-process fsharp-ac-completion-process))
 
-    (setq fsharp-ac-idle-timer
-          (run-with-idle-timer fsharp-ac-idle-timeout t 'fsharp-ac-request-errors))))
+  (setq fsharp-ac-completion-process (fsharp-ac--configure-proc))
+  (fsharp-ac--reset-timer))
+
+(defun fsharp-ac--configure-proc ()
+  (let ((proc (let (process-connection-type)
+                (apply 'start-process "fsharp-complete" "*fsharp-complete*"
+                       fsharp-ac-complete-command))))
+    (when (process-live-p proc)
+      (set-process-filter proc 'fsharp-ac-filter-output)
+      (set-process-query-on-exit-flag proc nil)
+      (setq fsharp-ac-status 'idle
+            fsharp-ac-partial-data ""
+            fsharp-ac-project-files nil)
+      proc)))
+
+(defun fsharp-ac--reset-timer ()
+  (when fsharp-ac-idle-timer
+    (cancel-timer fsharp-ac-idle-timer))
+  (setq fsharp-ac-idle-timer
+        (run-with-idle-timer fsharp-ac-idle-timeout t 'fsharp-ac-request-errors)))
 
 ; Consider using 'text' for filtering
 ; TODO: This caching is a bit optimistic. It might not always be correct

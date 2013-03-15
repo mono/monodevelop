@@ -253,8 +253,8 @@ and whether it is in a project directory.")
   "Attempt to load FILE using the F# compiler binding.
 If FILE is part of an F# project, load the project.
 Otherwise, treat as a stand-alone file."
-    (or (fsharp-ac/load-project (fsharp-mode/find-fsproj (buffer-file-name)))
-        (fsharp-ac/load-file (buffer-file-name))))
+  (or (fsharp-ac/load-project (fsharp-mode/find-fsproj file))
+      (fsharp-ac/load-file file)))
 
 (defun fsharp-mode-choose-compile-command (file)
   "Format an appropriate compilation command, depending on several factors:
