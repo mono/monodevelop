@@ -485,48 +485,59 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void SelectActiveConfiguration ()
 		{
-			configurationCombo.Changed -= HandleConfigurationChanged;
 			string name = configurationMerger.GetUnresolvedConfiguration (IdeApp.Workspace.ActiveConfigurationId);
-			int i = 0;
-			Gtk.TreeIter iter;
-			if (configurationStore.GetIterFirst (out iter)) {
-				do {
-					string val = (string)configurationStore.GetValue (iter, 1);
-					if (name == val) {
-						configurationCombo.Active = i;
-						break;
-					}
-					i++;
-				}
-				while (configurationStore.IterNext (ref iter));
-			}
-			var validTargets = configurationMerger.GetTargetsForConfiguration (IdeApp.Workspace.ActiveConfigurationId, false).ToArray ();
-			if (IdeApp.Workspace.PreferredActiveExecutionTarget == null || !validTargets.Any (t => t.Id == IdeApp.Workspace.PreferredActiveExecutionTarget))
-				IdeApp.Workspace.ActiveExecutionTarget = validTargets.FirstOrDefault ();
 
-			configurationCombo.Changed += HandleConfigurationChanged;
+			configurationCombo.Changed -= HandleConfigurationChanged;
+			try {
+				TreeIter iter;
+
+				if (configurationStore.GetIterFirst (out iter)) {
+					int i = 0;
+
+					do {
+						string val = (string)configurationStore.GetValue (iter, 1);
+						if (name == val) {
+							configurationCombo.Active = i;
+							break;
+						}
+						i++;
+					} while (configurationStore.IterNext (ref iter));
+				}
+
+				var validTargets = configurationMerger.GetTargetsForConfiguration (IdeApp.Workspace.ActiveConfigurationId, false).ToArray ();
+				if (IdeApp.Workspace.PreferredActiveExecutionTarget == null || !validTargets.Any (t => t.Id == IdeApp.Workspace.PreferredActiveExecutionTarget))
+					IdeApp.Workspace.ActiveExecutionTarget = validTargets.FirstOrDefault ();
+			} finally {
+				configurationCombo.Changed += HandleConfigurationChanged;
+			}
+
 			SelectActiveRuntime ();
 		}
 
 		void SelectActiveRuntime ()
 		{
 			runtimeCombo.Changed -= HandleRuntimeChanged;
-			var i = 0;
-			Gtk.TreeIter iter;
-			if (runtimeStore.GetIterFirst (out iter)) {
-				do {
-					var val = (ExecutionTarget)runtimeStore.GetValue (iter, 2);
-					if (val.Id == IdeApp.Workspace.PreferredActiveExecutionTarget) {
-						runtimeCombo.Active = i;
-						break;
-					}
-					i++;
+			try {
+				TreeIter iter;
+
+				if (runtimeStore.GetIterFirst (out iter)) {
+					int i = 0;
+
+					do {
+						var val = (ExecutionTarget)runtimeStore.GetValue (iter, 2);
+						if (val.Id == IdeApp.Workspace.PreferredActiveExecutionTarget) {
+							runtimeCombo.Active = i;
+							break;
+						}
+						i++;
+					} while (runtimeStore.IterNext (ref iter));
 				}
-				while (runtimeStore.IterNext (ref iter));
+
+				if (runtimeCombo.Active == -1)
+					runtimeCombo.Active = 0;
+			} finally {
+				runtimeCombo.Changed += HandleRuntimeChanged;
 			}
-			if (runtimeCombo.Active == -1)
-				runtimeCombo.Active = 0;
-			runtimeCombo.Changed += HandleRuntimeChanged;
 		}
 
 		void UpdateCombos ()
