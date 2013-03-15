@@ -5,12 +5,12 @@
         copyright   = "MIT X11"
         url         = "http://www.monodevelop.com"
         description = "This add-in provides utilities for creating Mono.Addins based libraries and applications"
-        version     = "4.0.2">
+        version     = "4.0.3">
  
 	<Dependencies>
-		<Addin id="Core" version="4.0.2"/>
-		<Addin id="Ide" version="4.0.2"/>
-		<Addin id="VersionControl" version="4.0.2"/>
+		<Addin id="Core" version="4.0.3"/>
+		<Addin id="Ide" version="4.0.3"/>
+		<Addin id="VersionControl" version="4.0.3"/>
 	</Dependencies>
 
 	<!-- Extension Points -->

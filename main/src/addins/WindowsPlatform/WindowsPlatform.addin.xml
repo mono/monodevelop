@@ -6,15 +6,15 @@
        url         = "http://monodevelop.com/"
        description = "Windows Platform Support for MonoDevelop"
        category    = "Platform Support"
-       version     = "4.0.2">
+       version     = "4.0.3">
 
 	<Runtime>
 		<Import assembly="WindowsPlatform.dll"/>
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="4.0.2"/>
-		<Addin id="Ide" version="4.0.2"/>
+		<Addin id="Core" version="4.0.3"/>
+		<Addin id="Ide" version="4.0.3"/>
   </Dependencies>
 
 

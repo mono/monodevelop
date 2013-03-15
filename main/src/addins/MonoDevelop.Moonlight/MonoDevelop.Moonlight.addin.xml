@@ -6,14 +6,14 @@
        url         = "http://www.monodevelop.com/"
        description = "Support for editing, compiling, and running Moonlight/Silverlight projects."
        category    = "Web Development"
-       version     = "4.0.2">
+       version     = "4.0.3">
 	
 	<Dependencies>
-		<Addin id="Core" version="4.0.2"/>
-		<Addin id="Ide" version="4.0.2"/>
-		<Addin id="DesignerSupport" version="4.0.2"/>
-		<Addin id="Deployment" version="4.0.2"/>
-		<Addin id="AspNet" version="4.0.2" />
+		<Addin id="Core" version="4.0.3"/>
+		<Addin id="Ide" version="4.0.3"/>
+		<Addin id="DesignerSupport" version="4.0.3"/>
+		<Addin id="Deployment" version="4.0.3"/>
+		<Addin id="AspNet" version="4.0.3" />
 	</Dependencies>
 
 	<Runtime>
