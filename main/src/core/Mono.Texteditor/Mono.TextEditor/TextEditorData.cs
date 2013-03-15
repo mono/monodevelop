@@ -1055,24 +1055,7 @@ namespace Mono.TextEditor
 		
 		public int SearchReplaceAll (string withPattern)
 		{
-			int result = 0;
-			using (var undo = OpenUndoGroup ()) {
-				int offset = 0;
-				if (!SearchRequest.SearchRegion.IsInvalid)
-					offset = SearchRequest.SearchRegion.Offset;
-				SearchResult searchResult; 
-				while (true) {
-					searchResult = SearchForward (offset);
-					if (searchResult == null || searchResult.SearchWrapped)
-						break;
-					searchEngine.Replace (searchResult, withPattern);
-					offset = searchResult.Offset + withPattern.Length;
-					result++;
-				}
-				if (result > 0)
-					ClearSelection ();
-			}
-			return result;
+			return searchEngine.ReplaceAll (withPattern);
 		}
 		#endregion
 		

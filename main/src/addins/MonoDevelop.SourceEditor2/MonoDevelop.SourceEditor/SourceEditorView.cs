@@ -205,8 +205,6 @@ namespace MonoDevelop.SourceEditor
 				}
 				int startIndex = args.Offset;
 				int endIndex = startIndex + Math.Max (args.RemovalLength, args.InsertionLength);
-				if (TextChanged != null)
-					TextChanged (this, new TextChangedEventArgs (startIndex, endIndex));
 				foreach (var marker in currentErrorMarkers) {
 					if (marker.LineSegment.Contains (args.Offset) || marker.LineSegment.Contains (args.Offset + args.InsertionLength) || args.Offset < marker.LineSegment.Offset && marker.LineSegment.Offset < args.Offset + args.InsertionLength) {
 						markersToRemove.Enqueue (marker);
@@ -1520,8 +1518,6 @@ namespace MonoDevelop.SourceEditor
 			set {
 				this.IsDirty = true;
 				this.widget.TextEditor.Document.Text = value;
-				if (TextChanged != null)
-					TextChanged (this, new TextChangedEventArgs (0, Length));
 			}
 		}
 		
