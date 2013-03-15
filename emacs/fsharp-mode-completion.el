@@ -119,11 +119,10 @@ display in a help buffer instead.")
         fsharp-ac-project-files nil)
 
   ;; Launch the completion process and update the current project.
-  (let ((f (expand-file-name file)))
-    (unless fsharp-ac-completion-process
-      (fsharp-ac-start-process))
-    (log-psendstr fsharp-ac-completion-process
-                  (format "project \"%s\"\n" (expand-file-name file)))))
+  (unless fsharp-ac-completion-process
+    (fsharp-ac-start-process))
+  (log-psendstr fsharp-ac-completion-process
+                (format "project \"%s\"\n" (expand-file-name file))))
 
 (defun fsharp-ac-send-pos-request (cmd file line col)
   (let ((request (format "%s \"%s\" %d %d %d\n" cmd file line col
@@ -220,7 +219,8 @@ display in a help buffer instead.")
   (and fsharp-ac-completion-process
        (or
         (member (expand-file-name (buffer-file-name)) fsharp-ac-project-files)
-        (string-match-p "\\(fsx\\|fsscript\\)" (file-name-extension (buffer-file-name))))))
+        (string-match-p (rx (or "fs" "fsx" "fsscript"))
+                        (file-name-extension (buffer-file-name))))))
 
 (defvar fsharp-ac-awaiting-tooltip nil)
 
