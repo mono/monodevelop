@@ -243,11 +243,10 @@ and whether it is in a project directory.")
 
   (setq compile-command (fsharp-mode-choose-compile-command
                          (buffer-file-name)))
-  (unless fsharp-ac-completion-process
-    (fsharp-mode-try-load-project (buffer-file-name))
 
-    (turn-on-fsharp-doc-mode)
-    (run-hooks 'fsharp-mode-hook)))
+  (fsharp-mode-try-load-project (buffer-file-name))
+  (turn-on-fsharp-doc-mode)
+  (run-hooks 'fsharp-mode-hook))
 
 
 (defun fsharp-mode-try-load-project (file)
