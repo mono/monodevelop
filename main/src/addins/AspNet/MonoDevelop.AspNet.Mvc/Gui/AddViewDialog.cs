@@ -333,13 +333,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 
 		public string MvcVersion {
 			get {
-				var asm = project.References.FirstOrDefault (
-					r => r.Reference.StartsWith ("System.Web.Mvc", StringComparison.InvariantCultureIgnoreCase));
-				if (asm != null) {
-					string pattern = "Version=";
-					return asm.Reference.Substring (asm.Reference.IndexOf (pattern) + pattern.Length, "0.0.0.0".Length);
-				}
-				return "2.0.0.0";
+				return project.GetAspNetMvcVersion ();
 			}
 		}
 		
