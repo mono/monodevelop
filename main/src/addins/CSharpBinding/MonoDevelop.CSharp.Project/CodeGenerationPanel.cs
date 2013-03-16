@@ -91,8 +91,8 @@ namespace MonoDevelop.CSharp.Project
 			switch (comboDebug.Active) {
 			case DEBUG_FULL:
 				configuration.DebugMode = true;
-				if (!string.IsNullOrEmpty (compilerParameters.DebugType)) {
-					compilerParameters.DebugType = "full";
+				if (!string.Equals (compilerParameters.DebugType, "full", StringComparison.OrdinalIgnoreCase)) {
+					compilerParameters.DebugType = "";
 				}
 				break;
 			case DEBUG_PDB_ONLY:
@@ -101,8 +101,8 @@ namespace MonoDevelop.CSharp.Project
 				break;
 			case DEBUG_NONE:
 				configuration.DebugMode = false;
-				if (!string.IsNullOrEmpty (compilerParameters.DebugType)) {
-					compilerParameters.DebugType = "none";
+				if (!string.Equals (compilerParameters.DebugType, "none", StringComparison.OrdinalIgnoreCase)) {
+					compilerParameters.DebugType = "";
 				}
 				break;
 			}
