@@ -48,10 +48,10 @@ namespace MonoDevelop.AspNet.Mvc
 			var doc = IdeApp.Workbench.ActiveDocument;
 			var currentLocation = doc.Editor.Caret.Location;
 
-			int pos = controllerName.LastIndexOf ("Controller");
-			if (pos != -1)
 			var controller = doc.ParsedDocument.GetTopLevelTypeDefinition (currentLocation);
 			string controllerName = controller.Name;
+			int pos = controllerName.LastIndexOf ("Controller", StringComparison.Ordinal);
+			if (pos > 0)
 				controllerName = controllerName.Remove (pos);
 
 			var baseDirectory = doc.FileName.ParentDirectory.ParentDirectory;
@@ -91,8 +91,8 @@ namespace MonoDevelop.AspNet.Mvc
 			var currentLocation = doc.Editor.Caret.Location;
 
 			string controllerName = doc.ParsedDocument.GetTopLevelTypeDefinition (currentLocation).Name;
-			int pos = controllerName.LastIndexOf ("Controller");
-			if (pos != -1)
+			int pos = controllerName.LastIndexOf ("Controller", StringComparison.Ordinal);
+			if (pos > 0)
 				controllerName = controllerName.Remove (pos);
 
 			string path = doc.FileName.ParentDirectory.ParentDirectory.Combine ("Views", controllerName);
@@ -140,7 +140,7 @@ namespace MonoDevelop.AspNet.Mvc
 
 			var currentLocation = doc.Editor.Caret.Location;
 			var topLevelType = doc.ParsedDocument.GetTopLevelTypeDefinition (currentLocation);
-			if (topLevelType == null || !topLevelType.Name.EndsWith ("Controller")) {
+			if (topLevelType == null || !topLevelType.Name.EndsWith ("Controller", StringComparison.Ordinal)) {
 				info.Enabled = info.Visible = false;
 				return;
 			}
