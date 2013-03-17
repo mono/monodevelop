@@ -73,7 +73,7 @@ namespace MonoDevelop.AspNet.Parser
 						}
 						continue;
 					}
-					var dt = (XDocType)node;
+					var dt = node as XDocType;
 					if (dt != null ){
 						string id = !String.IsNullOrEmpty (dt.PublicFpi) ? dt.PublicFpi
 									: !String.IsNullOrEmpty (dt.Uri) ? dt.Uri : null;

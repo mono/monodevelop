@@ -95,10 +95,9 @@ namespace MonoDevelop.AspNet.Gui
 			documentBuilder = HasDoc ? LanguageCompletionBuilderService.GetBuilder (aspDoc.Info.Language) : null;
 			
 			if (documentBuilder != null) {
-				documentInfo = new DocumentInfo (document.Compilation, aspDoc, refman.GetUsings (), refman.GetDoms ()) {
-					ParsedDocument = documentBuilder.BuildDocument (documentInfo, Editor),
-					CodeBesideClass = CreateCodeBesideClass (documentInfo, refman)
-				};
+				documentInfo = new DocumentInfo (document.Compilation, aspDoc, refman.GetUsings (), refman.GetDoms ());
+				documentInfo.ParsedDocument = documentBuilder.BuildDocument (documentInfo, Editor);
+				documentInfo.CodeBesideClass = CreateCodeBesideClass (documentInfo, refman);
 			}
 		}
 		
