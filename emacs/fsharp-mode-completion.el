@@ -121,12 +121,12 @@ display in a help buffer instead.")
     file))
 
 (defun fsharp-ac/load-file (file)
-  "Load FILE as an individual F# file. If FILE does not exist, load it on save."
-  (if (file-exists-p file)
-      (progn
-        (fsharp-ac--reset)
-        (fsharp-ac-start-process))
-    (add-hook 'after-save-hook 'fsharp-ac--load-after-save nil 'local)))
+  "Start the compiler binding for an individual F# script."
+  (when (and file (equal "fsx" (file-name-extension file)))
+    (fsharp-ac--reset)
+    (if (file-exists-p file)
+        (fsharp-ac-start-process)
+      (add-hook 'after-save-hook 'fsharp-ac--load-after-save nil 'local))))
 
 (defun fsharp-ac--load-after-save ()
   (remove-hook 'fsharp-ac--load-after-save 'local)
