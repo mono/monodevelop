@@ -54,7 +54,7 @@ namespace MonoDevelop.Platform
 		void OnParentFocusIn (object o, EventArgs args)
 		{
 			if (rootForm != null)
-				rootForm.BeginInvoke (new Action (() => rootForm.Activate ()));
+				rootForm.BeginInvoke (new Action (rootForm.Activate));
 		}
 
 		bool RunDialog (OpenFileDialogData data)

@@ -34,9 +34,7 @@ using System;
 using System.Collections.Generic;
 
 using MonoDevelop.Core;
-using MonoDevelop.AspNet.Parser.Dom;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory;
 using MonoDevelop.Xml.StateEngine;
 using MonoDevelop.AspNet.StateEngine;
@@ -44,65 +42,6 @@ using MonoDevelop.AspNet.StateEngine;
 namespace MonoDevelop.AspNet.Parser
 {
 	//purpose is to find all named tags for code completion and compilation of base class
-	public class MemberListVisitor : Visitor
-	{
-		DocumentReferenceManager refMan;
-		
-		public MemberListVisitor (DocumentReferenceManager refMan)
-		{
-			this.refMan = refMan;
-			this.Errors = new List<Error> ();
-			this.Members = new Dictionary<string,CodeBehindMember> ();
-		}
-		
-		public override void Visit (TagNode node)
-		{
-			if (!node.Attributes.IsRunAtServer ())
-				return;
-			
-			string id = node.Attributes ["id"] as string;
-			
-			if (id == null)
-				return;
-			
-			if (Members.ContainsKey (id)) {
-				AddError (ErrorType.Error, node.Location, GettextCatalog.GetString ("Tag ID must be unique within the document: '{0}'.", id));
-				return;
-			}
-			
-			string [] s = node.TagName.Split (':');
-			string prefix = (s.Length == 1)? "" : s[0];
-			string name = (s.Length == 1)? s[0] : s[1];
-			if (s.Length > 2) {
-				AddError (ErrorType.Error, node.Location, GettextCatalog.GetString ("Malformed tag name: '{0}'.", node.TagName));
-				return;
-			}
-			
-			IType type = null;
-			try {
-				type = refMan.GetType (prefix, name, node.Attributes ["type"] as string);
-			} catch (Exception e) {
-				AddError (ErrorType.Error, node.Location, "Unknown parser error:" + e.ToString ());
-				return;
-			}
-			
-			if (type == null) {
-				AddError (ErrorType.Error, node.Location, GettextCatalog.GetString ("The tag type '{0}{1}{2}' has not been registered.", prefix, string.IsNullOrEmpty(prefix)? string.Empty:":", name));
-				return;
-			}
-			
-			Members [id] = new CodeBehindMember (id, type, new TextLocation (node.Location.BeginLine, node.Location.BeginColumn));
-		}
-		
-		internal void AddError (ErrorType type, ILocation location, string message)
-		{
-			Errors.Add (new Error (type, message, location.BeginLine, location.BeginColumn));
-		}
-		
-		public IDictionary<string,CodeBehindMember> Members { get; private set; }
-		public IList<Error> Errors { get; private set; }
-	}
-	
 	public class MemberListBuilder
 	{
 		DocumentReferenceManager docRefMan;
@@ -131,8 +70,8 @@ namespace MonoDevelop.AspNet.Parser
 		
 		void AddMember (XElement element)
 		{
-			string id = GetAttributeValueCI (element.Attributes, "id");
-			if (IsRunatServer (element) && (id != string.Empty)) {
+			string id;
+			if (element.IsRunatServer () && !string.IsNullOrEmpty (id = element.GetId ())) {
 				
 				if (Members.ContainsKey (id)) {
 					Errors.Add (new Error (
@@ -142,7 +81,7 @@ namespace MonoDevelop.AspNet.Parser
 					)
 					);
 				} else {
-					string controlType = GetAttributeValueCI (element.Attributes, "type");
+					string controlType = element.Attributes.GetValue (new XName ("type"), true);
 					IType type = docRefMan.GetType (element.Name.Prefix, element.Name.Name, controlType);
 	
 					if (type == null) {
@@ -165,27 +104,6 @@ namespace MonoDevelop.AspNet.Parser
 				if (node is XElement)
 					AddMember (node as XElement);
 			}
-		}
-		
-		bool IsRunatServer (XElement el)
-		{
-			XName runat = new XName ("runat");
-			foreach (XAttribute attr in el.Attributes) {
-				if ((attr.Name.ToLower () == runat) && (attr.Value.ToLower () == "server"))
-					return true;
-			}
-			return false;
-		}
-		
-		string GetAttributeValueCI (XAttributeCollection attributes, string key)
-		{
-			XName nameKey = new XName (key.ToLowerInvariant ());
-
-			foreach (XAttribute attr in attributes) {
-				if (attr.Name.ToLower () == nameKey)
-					return attr.Value;
-			}
-			return string.Empty;
 		}
 	}
 	

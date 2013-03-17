@@ -28,6 +28,7 @@ using System;
 using System.Linq;
 using System.IO;
 using System.Collections.Generic;
+using MonoDevelop.AspNet.StateEngine;
 using PP = System.IO.Path;
 
 using MonoDevelop.AspNet.Gui;
@@ -37,6 +38,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Components;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Xml.StateEngine;
 
 namespace MonoDevelop.AspNet.Mvc.Gui
 {
@@ -233,9 +235,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			
 			if (pd != null) {
 				try {
-					var visitor = new ContentPlaceHolderVisitor ();
-					pd.RootNode.AcceptVisit (visitor);
-					ContentPlaceHolders.AddRange (visitor.PlaceHolders);
+					ContentPlaceHolders.AddRange (pd.XDocument.GetAllPlaceholderIds ());
 					
 					for (int i = 0; i < ContentPlaceHolders.Count; i++) {
 						string placeholder = ContentPlaceHolders[i];

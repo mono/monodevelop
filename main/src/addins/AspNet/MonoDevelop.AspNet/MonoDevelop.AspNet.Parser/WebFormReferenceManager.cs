@@ -37,7 +37,6 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.Design;
 
-using MonoDevelop.AspNet.Parser.Dom;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 

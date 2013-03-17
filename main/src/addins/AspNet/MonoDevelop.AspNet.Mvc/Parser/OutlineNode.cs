@@ -29,8 +29,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.AspNet.Parser.Dom;
 using System.Web.Razor.Parser.SyntaxTree;
+using MonoDevelop.Xml.StateEngine;
+using MonoDevelop.AspNet.StateEngine;
 
 namespace MonoDevelop.AspNet.Mvc.Parser
 {
@@ -39,27 +40,16 @@ namespace MonoDevelop.AspNet.Mvc.Parser
 		public string Name { get; set; }
 		public DomRegion Location { get; set; }
 
-		public OutlineNode ()
+		public OutlineNode (XElement el)
 		{
-		}
-
-		public OutlineNode (TagNode node)
-		{
-			Name = node.TagName;
-			string att = null;
-			if (node.Attributes != null)
-				att = node.Attributes["id"] as string;
-			if (att != null)
-				Name = "<" + Name + "#" + att + ">";
+			Name = el.Name.FullName;
+			string id = el.GetId ();
+			if (!string.IsNullOrEmpty (id))
+				Name = "<" + Name + "#" + id + ">";
 			else
 				Name = "<" + Name + ">";
 
-			ILocation start = node.Location, end;
-			if (node.EndLocation != null)
-				end = node.EndLocation;
-			else
-				end = start;
-			Location = new DomRegion (start.BeginLine, start.BeginColumn + 1, end.EndLine, end.EndColumn + 1);
+			Location = el.Region;
 		}
 
 		public OutlineNode (Block block)

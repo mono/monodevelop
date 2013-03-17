@@ -32,38 +32,38 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 using MonoDevelop.Core;
-using MonoDevelop.Projects;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui.Content;
 
 using MonoDevelop.AspNet;
 using MonoDevelop.AspNet.Parser;
-using MonoDevelop.AspNet.Parser.Dom;
-using MonoDevelop.Html;
 using MonoDevelop.DesignerSupport;
 
-//I initially aliased this as SE, which (unintentionally) looked a little odd with the XDOM types :-)
 using S = MonoDevelop.Xml.StateEngine; 
 using MonoDevelop.AspNet.StateEngine;
-using System.Text;
 using System.Text.RegularExpressions;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Completion;
 
 namespace MonoDevelop.AspNet.Gui
 {
 	public class AspNetEditorExtension : BaseHtmlEditorExtension
 	{
+		static readonly Regex DocTypeRegex = new Regex (@"(?:PUBLIC|public)\s+""(?<fpi>[^""]*)""\s+""(?<uri>[^""]*)""");
+
 		AspNetParsedDocument aspDoc;
 		AspNetAppProject project;
 		DocumentReferenceManager refman;
+
+		ILanguageCompletionBuilder documentBuilder;
+		LocalDocumentInfo localDocumentInfo;
+		DocumentInfo documentInfo;
+
+		ICompletionWidget defaultCompletionWidget;
+		MonoDevelop.Ide.Gui.Document defaultDocument;
 		
-		bool HasDoc { get { return aspDoc != null; } }
-		 
-		Regex DocTypeRegex = new Regex (@"(?:PUBLIC|public)\s+""(?<fpi>[^""]*)""\s+""(?<uri>[^""]*)""");
+		bool HasDoc { get { return aspDoc != null; } } 
 		
 		#region Setup and teardown
 		
@@ -95,24 +95,21 @@ namespace MonoDevelop.AspNet.Gui
 			documentBuilder = HasDoc ? LanguageCompletionBuilderService.GetBuilder (aspDoc.Info.Language) : null;
 			
 			if (documentBuilder != null) {
-				var usings = refman.GetUsings ();
-				documentInfo = new DocumentInfo (document.Compilation, aspDoc, usings, refman.GetDoms ());
-				documentInfo.ParsedDocument = documentBuilder.BuildDocument (documentInfo, Editor);
-				documentInfo.CodeBesideClass = CreateCodeBesideClass (documentInfo, refman);
-/*				var domWrapper = new AspProjectDomWrapper (documentInfo);
-				if (localDocumentInfo != null)
-					localDocumentInfo.HiddenDocument.HiddenContext = domWrapper;*/
+				documentInfo = new DocumentInfo (document.Compilation, aspDoc, refman.GetUsings (), refman.GetDoms ()) {
+					ParsedDocument = documentBuilder.BuildDocument (documentInfo, Editor),
+					CodeBesideClass = CreateCodeBesideClass (documentInfo, refman)
+				};
 			}
 		}
 		
 		static IUnresolvedTypeDefinition CreateCodeBesideClass (DocumentInfo info, DocumentReferenceManager refman)
 		{
-			var v = new MemberListVisitor (refman);
-			info.AspNetDocument.RootNode.AcceptVisit (v);
+			var memberList = new MemberListBuilder (refman, info.AspNetDocument.XDocument);
+			memberList.Build ();
 			var t = new ICSharpCode.NRefactory.TypeSystem.Implementation.DefaultUnresolvedTypeDefinition (info.ClassName);
 			var dom = refman.TypeCtx.Compilation;
 			var baseType = ReflectionHelper.ParseReflectionName (info.BaseType).Resolve (dom);
-			foreach (var m in CodeBehind.GetDesignerMembers (v.Members.Values, baseType, null)) {
+			foreach (var m in CodeBehind.GetDesignerMembers (memberList.Members.Values, baseType, null)) {
 				t.Members.Add (new ICSharpCode.NRefactory.TypeSystem.Implementation.DefaultUnresolvedField (t, m.Name) {
 					Accessibility = Accessibility.Protected,
 					ReturnType = m.Type.ToTypeReference ()
@@ -120,12 +117,7 @@ namespace MonoDevelop.AspNet.Gui
 			}
 			return t;
 		}
-		
-		ILanguageCompletionBuilder documentBuilder;
-		LocalDocumentInfo localDocumentInfo;
-		DocumentInfo documentInfo;
-		
-		
+
 		protected override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext,
 		                                                            bool forced, ref int triggerWordLength)
 		{
@@ -144,7 +136,8 @@ namespace MonoDevelop.AspNet.Gui
 					return DirectiveCompletion.GetDirectives (aspDoc.Type);
 				}
 				return null;
-			} else if (Tracker.Engine.CurrentState is S.XmlNameState && Tracker.Engine.CurrentState.Parent is AspNetDirectiveState) {
+			}
+			if (Tracker.Engine.CurrentState is S.XmlNameState && Tracker.Engine.CurrentState.Parent is AspNetDirectiveState) {
 				var directive = Tracker.Engine.Nodes.Peek () as AspNetDirective;
 				if (HasDoc && directive != null && directive.Region.BeginLine == completionContext.TriggerLine &&
 				    directive.Region.BeginColumn + 4 == completionContext.TriggerLineOffset && char.IsLetter (currentChar))
@@ -177,8 +170,7 @@ namespace MonoDevelop.AspNet.Gui
 			if (Tracker.Engine.CurrentState is HtmlScriptBodyState) {
 				var el = Tracker.Engine.Nodes.Peek () as S.XElement;
 				if (el != null) {
-					var att = GetHtmlAtt (el, "runat");
-					if (att != null && "server".Equals (att.Value, StringComparison.OrdinalIgnoreCase)) {
+					if (el.IsRunatServer ()) {
 						if (documentBuilder != null) {
 							// TODO: C# completion
 						}
@@ -203,9 +195,7 @@ namespace MonoDevelop.AspNet.Gui
 		//case insensitive, no prefix
 		static S.XAttribute GetHtmlAtt (S.XElement el, string name)
 		{
-			return el.Attributes
-				.Where (a => a.IsNamed && !a.Name.HasPrefix && a.Name.Name.Equals (name, StringComparison.OrdinalIgnoreCase))
-				.FirstOrDefault ();
+			return el.Attributes.FirstOrDefault (a => a.IsNamed && !a.Name.HasPrefix && a.Name.Name.Equals (name, StringComparison.OrdinalIgnoreCase));
 		}
 		
 		public void InitializeCodeCompletion (char ch)
@@ -218,11 +208,7 @@ namespace MonoDevelop.AspNet.Gui
 			if (ch != '\0')
 				sourceText += ch;
 			string textAfterCaret = Document.Editor.GetTextBetween (caretOffset, Math.Min (Document.Editor.Length, Math.Max (caretOffset, Tracker.Engine.Position + Tracker.Engine.CurrentStateLength - 2)));
-			
-			var loc = new MonoDevelop.AspNet.Parser.Internal.Location ();
-			var docLoc = Document.Editor.Document.OffsetToLocation (start);
-			loc.EndLine = loc.BeginLine = docLoc.Line;
-			loc.EndColumn = loc.BeginColumn = docLoc.Column;
+
 			if (documentBuilder == null){
 				localDocumentInfo = null;
 				return;
@@ -254,10 +240,7 @@ namespace MonoDevelop.AspNet.Gui
 			}
 			return base.CodeCompletionCommand (completionContext);
 		}
-		
-		ICompletionWidget defaultCompletionWidget;
-		MonoDevelop.Ide.Gui.Document defaultDocument;
-//		AspProjectDomWrapper domWrapper;
+
 		public override void Initialize ()
 		{
 			base.Initialize ();
@@ -266,8 +249,35 @@ namespace MonoDevelop.AspNet.Gui
 			defaultDocument.Editor.Caret.PositionChanged += delegate {
 				OnCompletionContextChanged (CompletionWidget, EventArgs.Empty);
 			};
+			defaultDocument.Saved += AsyncUpdateDesignerFile;
 		}
-		
+
+		void AsyncUpdateDesignerFile (object sender, EventArgs e)
+		{
+			if (project == null)
+				return;
+
+			var file = project.GetProjectFile (FileName);
+			if (file == null)
+				return;
+
+			var designerFile = CodeBehind.GetDesignerFile (file);
+			if (designerFile == null)
+				return;
+
+			System.Threading.ThreadPool.QueueUserWorkItem (r => {
+				using (var monitor = MonoDevelop.Ide.IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (
+					GettextCatalog.GetString ("Updating ASP.NET Designer File..."), null, false))
+				{
+					var writer = CodeBehindWriter.CreateForProject (monitor, project);
+					var result = CodeBehind.UpdateDesignerFile (writer, project, file, designerFile);
+					//don't worry about reporting error's here for now
+					//if the user wants to see errors, they can compile
+					if (!result.Failed)
+						writer.WriteOpenFiles ();
+				}
+			});
+		}
 		
 		public override ICompletionDataList HandleCodeCompletion (
 		    CodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
@@ -506,8 +516,7 @@ namespace MonoDevelop.AspNet.Gui
 			var list = base.GetAttributeValueCompletions (ob, att) ?? new CompletionDataList ();
 			if (ob is S.XElement) {
 				if (ob.Name.HasPrefix) {
-					S.XAttribute idAtt = ob.Attributes[new S.XName ("id")];
-					string id = idAtt == null? null : idAtt.Value;
+					string id = ob.GetId ();
 					if (string.IsNullOrEmpty (id) || string.IsNullOrEmpty (id.Trim ()))
 						id = null;
 					AddAspAttributeValueCompletionData (list, ob.Name, att.Name, id);
@@ -572,7 +581,7 @@ namespace MonoDevelop.AspNet.Gui
 				list.Add ("%$", "md-literal", GettextCatalog.GetString ("ASP.NET resource expression"));
 			}
 			
-			//valid on 2.0+ runtime only
+			//valid on 4.0+ runtime only
 			if (ProjClrVersion != ClrVersion.Net_4_0) {
 				list.Add ("%:", "md-literal", GettextCatalog.GetString ("ASP.NET HTML encoded expression"));
 			}
@@ -644,7 +653,7 @@ namespace MonoDevelop.AspNet.Gui
 			GetCodeBehind (out codeBehindClass, out projectDatabase);
 			
 			//if it's an event, suggest compatible methods 
-			if (codeBehindClass != null && attName.Name.StartsWith ("On")) {
+			if (codeBehindClass != null && attName.Name.StartsWith ("On", StringComparison.Ordinal)) {
 				string eventName = attName.Name.Substring (2);
 				
 				foreach (IEvent ev in controlClass.GetEvents ()) {
@@ -755,8 +764,7 @@ namespace MonoDevelop.AspNet.Gui
 					
 					return (System.Web.UI.PersistenceMode) expr.ConstantValue;
 				}
-				else if (att.AttributeType.ReflectionName == "System.Web.UI.TemplateContainerAttribute")
-				{
+				if (att.AttributeType.ReflectionName == "System.Web.UI.TemplateContainerAttribute") {
 					return System.Web.UI.PersistenceMode.InnerProperty;
 				}
 			}
@@ -845,92 +853,5 @@ namespace MonoDevelop.AspNet.Gui
 		}
 		
 		#endregion
-		
-		#region Document outline
-		
-		protected override void RefillOutlineStore (ParsedDocument doc, Gtk.TreeStore store)
-		{
-			ParentNode p = ((AspNetParsedDocument)doc).RootNode;
-			BuildTreeChildren (store, Gtk.TreeIter.Zero, p);
-		}
-		
-		protected override void InitializeOutlineColumns (MonoDevelop.Ide.Gui.Components.PadTreeView outlineTree)
-		{
-			outlineTree.TextRenderer.Xpad = 0;
-			outlineTree.TextRenderer.Ypad = 0;
-			outlineTree.AppendColumn ("Node", outlineTree.TextRenderer, new Gtk.TreeCellDataFunc (outlineTreeDataFunc));
-		}
-		
-		protected override void OutlineSelectionChanged (object selection)
-		{
-			SelectNode ((Node)selection);
-		}
-		
-		static void BuildTreeChildren (Gtk.TreeStore store, Gtk.TreeIter parent, ParentNode p)
-		{
-			foreach (Node n in p) {
-				if (!(n is TagNode || n is DirectiveNode || n is ExpressionNode))
-					continue;
-				Gtk.TreeIter childIter;
-				if (!parent.Equals (Gtk.TreeIter.Zero))
-					
-					childIter = store.AppendValues (parent, n);
-				else
-					childIter = store.AppendValues (n);
-				ParentNode pChild = n as ParentNode;
-				if (pChild != null)
-					BuildTreeChildren (store, childIter, pChild);
-			}
-		}
-		
-		void outlineTreeDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
-		{
-			Gtk.CellRendererText txtRenderer = (Gtk.CellRendererText) cell;
-			Node n = (Node) model.GetValue (iter, 0);
-			string name = null;
-			if (n is TagNode) {
-				TagNode tn = (TagNode) n;
-				name = tn.TagName;
-				string att = null;
-				if (tn.Attributes != null) {
-					att = tn.Attributes["id"] as string;
-				}
-				if (att != null)
-					name = "<" + name + "#" + att + ">";
-				else
-					name = "<" + name + ">";
-			} else if (n is DirectiveNode) {
-				DirectiveNode dn = (DirectiveNode) n;
-				name = "<%@ " + dn.Name + " %>";
-			} else if (n is ExpressionNode) {
-				ExpressionNode en = (ExpressionNode) n;
-				string expr = en.Expression;
-				if (string.IsNullOrEmpty (expr)) {
-					name = "<% %>";
-				} else {
-					if (expr.Length > 10)
-						expr = expr.Substring (0, 10) + "...";
-					name = "<% " + expr + "%>";
-				}
-			}
-			if (name != null)
-				txtRenderer.Text = name;
-		}
-		
-		void SelectNode (Node n)
-		{
-			ILocation start = n.Location, end;
-			TagNode tn = n as TagNode;
-			if (tn != null && tn.EndLocation != null)
-				end = tn.EndLocation;
-			else
-				end = start;
-			
-			//FIXME: why is this offset necessary?
-			int offset = n is TagNode? 1 : 0;
-			EditorSelect (new DomRegion (start.BeginLine, start.BeginColumn + offset, end.EndLine, end.EndColumn + offset));
-		}
-		#endregion
 	}
-		
 }
