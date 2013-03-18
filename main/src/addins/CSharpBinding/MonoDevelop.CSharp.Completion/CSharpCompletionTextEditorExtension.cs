@@ -618,9 +618,21 @@ namespace MonoDevelop.CSharp.Completion
 
 				#region IListData implementation
 
+				CSharpCompletionDataList list;
 				public CSharpCompletionDataList List {
-					get;
-					set;
+					get {
+						return list;
+					}
+					set {
+						list = value;
+						if (overloads != null) {
+							foreach (var overload in overloads.Skip (1)) {
+								var ld = overload as IListData;
+								if (ld != null)
+									ld.List = list;
+							}
+						}
+					}
 				}
 
 				#endregion
@@ -699,7 +711,7 @@ namespace MonoDevelop.CSharp.Completion
 				CSharpCompletionTextEditorExtension ext;
 				CSharpUnresolvedFile file;
 				ICompilation compilation;
-				CSharpResolver resolver;
+//				CSharpResolver resolver;
 
 				string IdString {
 					get {
@@ -715,15 +727,6 @@ namespace MonoDevelop.CSharp.Completion
 					}
 				}
 
-				#region IListData implementation
-
-				public CSharpCompletionDataList List {
-					get;
-					set;
-				}
-
-				#endregion
-
 				public override TooltipInformation CreateTooltipInformation (bool smartWrap)
 				{
 					var def = type.GetDefinition ();
@@ -734,9 +737,9 @@ namespace MonoDevelop.CSharp.Completion
 						for (int i = 0; i < ConflictingTypes.Count; i++) {
 							var ct = ConflictingTypes[i];
 							if (i > 0)
-								conflicts.Append (", ");
-							if ((i + 1) % 5 == 0)
-								conflicts.Append (Environment.NewLine + "\t");
+								conflicts.AppendLine (",");
+//							if ((i + 1) % 5 == 0)
+//								conflicts.Append (Environment.NewLine + "\t");
 							conflicts.Append (sig.GetTypeReferenceString (((TypeCompletionData)ct).type));
 						}
 						result.AddCategory ("Type Conflicts", conflicts.ToString ());
@@ -761,18 +764,18 @@ namespace MonoDevelop.CSharp.Completion
 					if (overloads == null)
 						addedDatas [IdString] = this;
 
-					string id = IdString;
-					ICompletionData oldData;
-					if (addedDatas.TryGetValue (id, out oldData)) {
-						var old = (TypeCompletionData)oldData;
-						if (old.ConflictingTypes == null)
-							old.ConflictingTypes = new List<ICompletionData> ();
-						old.ConflictingTypes.Add (data);
-						return;
-
+					if (data is TypeCompletionData) {
+						string id = ((TypeCompletionData)data).IdString;
+						ICompletionData oldData;
+						if (addedDatas.TryGetValue (id, out oldData)) {
+							var old = (TypeCompletionData)oldData;
+							if (old.ConflictingTypes == null)
+								old.ConflictingTypes = new List<ICompletionData> ();
+							old.ConflictingTypes.Add (data);
+							return;
+						}
+						addedDatas [id] = data;
 					}
-					addedDatas[id] = data;
-
 
 					base.AddOverload (data);
 				}
