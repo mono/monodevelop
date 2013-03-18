@@ -114,7 +114,8 @@ display in a help buffer instead.")
 
   (when (fsharp-ac--valid-project-p file)
     (fsharp-ac--reset)
-    (fsharp-ac-start-process)
+    (when (not (fsharp-ac--process-live-p))
+      (fsharp-ac-start-process))
     ;; Load given project.
     (log-psendstr fsharp-ac-completion-process
                   (format "project \"%s\"\n" (expand-file-name file)))
@@ -122,10 +123,10 @@ display in a help buffer instead.")
 
 (defun fsharp-ac/load-file (file)
   "Start the compiler binding for an individual F# script."
-  (when (and file (equal "fsx" (file-name-extension file)))
-    (fsharp-ac--reset)
+  (when (fsharp-ac--script-file-p file)
     (if (file-exists-p file)
-        (fsharp-ac-start-process)
+        (when (not (fsharp-ac--process-live-p))
+          (fsharp-ac-start-process))
       (add-hook 'after-save-hook 'fsharp-ac--load-after-save nil 'local))))
 
 (defun fsharp-ac--load-after-save ()
@@ -136,6 +137,11 @@ display in a help buffer instead.")
   (and file
        (file-exists-p file)
        (string-match-p (rx "." (or "fsproj" "sln") eol) file)))
+
+(defun fsharp-ac--script-file-p (file)
+  (and file
+       (string-match-p (rx (or "fsx" "fsscript"))
+                       (file-name-extension file))))
 
 (defun fsharp-ac--reset ()
   (setq fsharp-ac-completion-cache nil
@@ -151,12 +157,15 @@ display in a help buffer instead.")
                 (format "%s \"%s\" %d %d %d\n" cmd file line col
                         (* 1000 fsharp-ac-blocking-timeout))))
 
+(defun fsharp-ac--process-live-p ()
+  "Check whether the background process is live"
+  (and fsharp-ac-completion-process
+       (process-live-p fsharp-ac-completion-process)))
+
 (defun fsharp-ac/stop-process ()
   (interactive)
   (fsharp-ac-message-safely "Quitting fsharp completion process")
-  (when
-      (and fsharp-ac-completion-process
-           (process-live-p fsharp-ac-completion-process))
+  (when (fsharp-ac--process-live-p)
     (log-psendstr fsharp-ac-completion-process "quit\n")
     (sleep-for 1)
     (when (process-live-p fsharp-ac-completion-process)
@@ -178,8 +187,7 @@ display in a help buffer instead.")
   "Launch the F# completion process in the background"
   (interactive)
 
-  (when (and fsharp-ac-completion-process
-             (process-live-p fsharp-ac-completion-process))
+  (when (fsharp-ac--process-live-p)
     (kill-process fsharp-ac-completion-process))
 
   (setq fsharp-ac-completion-process (fsharp-ac--configure-proc))
@@ -242,10 +250,10 @@ display in a help buffer instead.")
     nil))
 
 (defun fsharp-ac-can-make-request ()
-  (and fsharp-ac-completion-process
+  (and (fsharp-ac--process-live-p)
        (or
         (member (expand-file-name (buffer-file-name)) fsharp-ac-project-files)
-        (string-match-p (rx (or "fs" "fsx" "fsscript"))
+        (string-match-p (rx (or "fsx" "fsscript"))
                         (file-name-extension (buffer-file-name))))))
 
 (defvar fsharp-ac-awaiting-tooltip nil)
