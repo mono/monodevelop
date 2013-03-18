@@ -94,25 +94,29 @@ Try indenting this token further or using standard formatting conventions."
          (face (overlay-get (cadr ov) 'face)))
     (should (eq 'fsharp-error-face face))))
 
-(defmacro check-project-loading (desc &rest body)
-  "Test fixture for loading projects, stubbing process-related functions.
-Bound vars:
-* load-cmd
-  The string passed to process-send-string"
-  (declare (indent 1))
+;;; Loading projects
+
+(defmacro check-project-loading (desc exists &rest body)
+  "Test fixture for loading projects, stubbing process-related functions."
+  (declare (indent 2))
   `(check ,(concat "check project loading " desc)
      (stubbing-process-functions
-      (let    (load-cmd)
-        (flet ((fsharp-ac/start-process ())
-               (process-send-string (proc cmd) (setq load-cmd cmd)))
-            ,@body)))))
+      (flet ((fsharp-ac/start-process ())
+             (process-send-string (proc cmd))
+             (file-exists-p (_) ,exists))
+        ,@body))))
 
-(check-project-loading "raises error if not fsproj"
-  (should-error (fsharp-ac/load-project "foo")))
+(check-project-loading "returns nil if not fsproj"
+    'exists
+  (should-not (fsharp-ac/load-project "foo")))
 
-(check-project-loading "loads the specified project using the ac process"
-  (fsharp-ac/load-project "foo.fsproj")
-  (should-match "foo.fsproj" load-cmd))
+(check-project-loading "returns nil if the given fsproj does not exist"
+    nil ; doesn't exist
+  (should-not (fsharp-ac/load-project "foo")))
+
+(check-project-loading "returns the project path if loading succeeded"
+    'exists
+  (should-match "foo.fsproj" (fsharp-ac/load-project "foo.fsproj")))
 
 ;;; Process handling
 

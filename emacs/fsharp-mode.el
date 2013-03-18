@@ -244,16 +244,16 @@ and whether it is in a project directory.")
   (setq compile-command (fsharp-mode-choose-compile-command
                          (buffer-file-name)))
 
-  (fsharp-mode-try-load-project (buffer-file-name))
+  (fsharp-mode--load-with-binding (buffer-file-name))
   (turn-on-fsharp-doc-mode)
   (run-hooks 'fsharp-mode-hook))
 
-
-(defun fsharp-mode-try-load-project (file)
-  (when file
-    (let ((proj (fsharp-mode/find-fsproj file)))
-      (when proj
-        (fsharp-ac/load-project proj)))))
+(defun fsharp-mode--load-with-binding (file)
+  "Attempt to load FILE using the F# compiler binding.
+If FILE is part of an F# project, load the project.
+Otherwise, treat as a stand-alone file."
+  (or (fsharp-ac/load-project (fsharp-mode/find-fsproj file))
+      (fsharp-ac/load-file file)))
 
 (defun fsharp-mode-choose-compile-command (file)
   "Format an appropriate compilation command, depending on several factors:
