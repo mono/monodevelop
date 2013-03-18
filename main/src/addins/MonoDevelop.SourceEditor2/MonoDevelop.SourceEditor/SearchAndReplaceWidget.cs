@@ -816,6 +816,7 @@ But I leave it in in the case I've missed something. Mike
 
 		public static SearchResult FindNext (TextEditor textEditor)
 		{
+			textEditor.SearchPattern = searchPattern;
 			SearchResult result = textEditor.FindNext (true);
 			textEditor.CenterToCaret ();
 
@@ -834,6 +835,7 @@ But I leave it in in the case I've missed something. Mike
 
 		public static SearchResult FindPrevious (TextEditor textEditor)
 		{
+			textEditor.SearchPattern = searchPattern;
 			SearchResult result = textEditor.FindPrevious (true);
 
 			textEditor.CenterToCaret ();
