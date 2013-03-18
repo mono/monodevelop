@@ -1029,7 +1029,7 @@ namespace MonoDevelop.CSharp.Completion
 					--startOffset;
 				}
 
-				return Tuple.Create (document.Editor.GetTextAt (startOffset, caretOffset - startOffset), 
+				return Tuple.Create (caretOffset > startOffset ? document.Editor.GetTextAt (startOffset, caretOffset - startOffset) : "", 
 				                     (TextLocation)document.Editor.OffsetToLocation (startOffset));
 			}
 
