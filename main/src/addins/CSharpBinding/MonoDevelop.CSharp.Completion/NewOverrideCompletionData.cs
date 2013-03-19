@@ -79,7 +79,7 @@ namespace MonoDevelop.CSharp.Completion
 					}
 				}
 			}
-			var resolvedType = type.Resolve (ext.ParsedDocument.GetTypeResolveContext (ext.Compilation, editor.Caret.Location)).GetDefinition ();
+			var resolvedType = type.Resolve (ext.Project).GetDefinition ();
 			if (ext.Project != null)
 				generator.PolicyParent = ext.Project.Policies;
 			var result = generator.CreateMemberImplementation (resolvedType, type, member, isExplicit);

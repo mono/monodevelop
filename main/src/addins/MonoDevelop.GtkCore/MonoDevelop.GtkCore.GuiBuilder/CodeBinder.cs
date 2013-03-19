@@ -178,7 +178,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			};
 			foreach (Stetic.ParameterDescriptor pinfo in signal.SignalDescriptor.HandlerParameters)
 				met.Parameters.Add (new DefaultUnresolvedParameter (ReflectionHelper.ParseReflectionName (pinfo.TypeName), pinfo.Name));
-			var resolvedCls = cls.Resolve (cls.UnresolvedFile.GetTypeResolveContext (TypeSystemService.GetCompilation (project), cls.Region.Begin)).GetDefinition ();
+			var resolvedCls = cls.Resolve (project).GetDefinition ();
 			CodeGenerationService.AddNewMember (resolvedCls, cls, met);
 		}
 		
@@ -215,7 +215,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			IEditableTextFile editor = doc.GetContent<IEditableTextFile> ();
 			if (editor != null) {
-				var resolvedCls = cls.Resolve (cls.UnresolvedFile.GetTypeResolveContext (TypeSystemService.GetCompilation (project), cls.Region.Begin)).GetDefinition ();
+				var resolvedCls = cls.Resolve (project).GetDefinition ();
 				CodeGenerationService.AddNewMember (resolvedCls, cls, GetFieldCode (cls, obj, name));
 			}
 		}

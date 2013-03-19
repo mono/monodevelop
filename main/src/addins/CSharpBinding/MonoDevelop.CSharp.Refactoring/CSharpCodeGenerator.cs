@@ -159,11 +159,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			ITypeResolveContext ctx;
 
 			var doc = IdeApp.Workbench.GetDocument (part.Region.FileName);
-			if (doc != null) {
-				ctx = doc.ParsedDocument.GetTypeResolveContext (doc.Compilation, implementingType.Region.Begin);
-			} else {
-				ctx = new CSharpTypeResolveContext (implementingType.Compilation.MainAssembly, null, implementingType, null);
-			}
+			ctx = new CSharpTypeResolveContext (implementingType.Compilation.MainAssembly, null, implementingType, null);
 			options.Document = doc;
 
 			if (member is IUnresolvedMethod)

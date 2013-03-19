@@ -247,10 +247,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		public virtual ITypeResolveContext GetTypeResolveContext (ICompilation compilation, TextLocation loc)
-		{
-			return null;
-		}
 		#endregion
 
 		public Func<MonoDevelop.Ide.Gui.Document, CancellationToken, object> CreateRefactoringContext;
@@ -313,11 +309,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			get {
 				return attributes;
 			}
-		}
-		
-		public override ITypeResolveContext GetTypeResolveContext (ICompilation compilation, TextLocation loc)
-		{
-			return null;
 		}
 
 		public IList<IUnresolvedAttribute> ModuleAttributes {
