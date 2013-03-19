@@ -223,7 +223,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			foreach (string fileMask in filterOptions.FileMask.Split (',', ';')) {
 				string[] files;
 				try {
-					files = Directory.GetFiles (path, null, recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
+					files = Directory.GetFiles (path, "*", recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
 				} catch (Exception e) {
 					LoggingService.LogError ("Can't access path " + path, e);
 					yield break;
