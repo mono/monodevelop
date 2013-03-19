@@ -139,9 +139,10 @@ namespace MonoDevelop.Ide.Fonts
 			if (loadedFonts.ContainsKey (name)) 
 				loadedFonts.Remove (name);
 			fontProperties.Set (name, value);
-			
-			if (fontChangeCallbacks.ContainsKey (name)) 
-				fontChangeCallbacks [name].ForEach (c => c ());
+			List<Action> callbacks;
+			if (fontChangeCallbacks.TryGetValue (name, out callbacks)) {
+				callbacks.ForEach (c => c ());
+			}
 		}
 		
 		static Dictionary<string, List<Action>> fontChangeCallbacks = new Dictionary<string, List<Action>> ();
@@ -154,7 +155,7 @@ namespace MonoDevelop.Ide.Fonts
 		
 		public static void RemoveCallback (Action callback)
 		{
-			foreach (var list in fontChangeCallbacks.Values)
+			foreach (var list in fontChangeCallbacks.Values.ToList ())
 				list.Remove (callback);
 		}
 	}

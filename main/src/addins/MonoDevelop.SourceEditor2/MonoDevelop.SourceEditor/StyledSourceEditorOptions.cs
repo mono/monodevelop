@@ -181,9 +181,18 @@ namespace MonoDevelop.SourceEditor
 		public Pango.FontDescription Font {
 			get { return DefaultSourceEditorOptions.Instance.Font; }
 		}
-
+		
 		public string FontName {
 			get { return DefaultSourceEditorOptions.Instance.FontName; }
+			set { throw new NotSupportedException (); }
+		}
+
+		public Pango.FontDescription GutterFont {
+			get { return DefaultSourceEditorOptions.Instance.GutterFont; }
+		}
+		
+		public string GutterFontName {
+			get { return DefaultSourceEditorOptions.Instance.GutterFontName; }
 			set { throw new NotSupportedException (); }
 		}
 

@@ -197,15 +197,15 @@ namespace Mono.TextEditor
 		{
 			lineNumberBgGC = editor.ColorStyle.LineNumbers.Background;
 			lineNumberGC = editor.ColorStyle.LineNumbers.Foreground;
-			gutterFont = Gtk.Widget.DefaultStyle.FontDescription.Copy ();
-			gutterFont.Weight = (Pango.Weight)editor.ColorStyle.LineNumbers.FontWeight;
-			gutterFont.Style =  (Pango.Style)editor.ColorStyle.LineNumbers.FontStyle;
+			gutterFont = editor.Options.GutterFont;
+//			gutterFont.Weight = (Pango.Weight)editor.ColorStyle.LineNumbers.FontWeight;
+//			gutterFont.Style = (Pango.Style)editor.ColorStyle.LineNumbers.FontStyle;
 
-			if (Platform.IsWindows) {
+/*			if (Platform.IsWindows) {
 				gutterFont.Size = (int)(Pango.Scale.PangoScale * 8.0 * editor.Options.Zoom);
 			} else {
 				gutterFont.Size = (int)(Pango.Scale.PangoScale * 11.0 * editor.Options.Zoom);
-			}
+			}*/
 			CalculateWidth ();
 		}
 

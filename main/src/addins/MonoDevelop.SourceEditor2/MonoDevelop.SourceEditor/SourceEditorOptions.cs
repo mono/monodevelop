@@ -84,6 +84,7 @@ namespace MonoDevelop.SourceEditor
 			UpdateStylePolicy (currentPolicy);
 			PropertyService.PropertyChanged += UpdatePreferences;
 			FontService.RegisterFontChangedCallback ("Editor", UpdateFont);
+			FontService.RegisterFontChangedCallback ("Editor(Gutter)", UpdateFont);
 			FontService.RegisterFontChangedCallback ("MessageBubbles", UpdateFont);
 			
 		}
@@ -97,6 +98,7 @@ namespace MonoDevelop.SourceEditor
 		void UpdateFont ()
 		{
 			base.FontName = FontName;
+			base.GutterFontName = GutterFontName;
 			this.OnChanged (EventArgs.Empty);
 		
 		}
@@ -161,6 +163,9 @@ namespace MonoDevelop.SourceEditor
 				case "FontName":
 					base.FontName = (string)args.NewValue;
 					break;
+				case "GutterFontName":
+					base.GutterFontName = (string)args.NewValue;
+					break;
 				case "ColorScheme":
 					base.ColorScheme = (string)args.NewValue;
 					break;
@@ -213,6 +218,7 @@ namespace MonoDevelop.SourceEditor
 			base.HighlightMatchingBracket = PropertyService.Get ("HighlightMatchingBracket", true);
 			base.ShowRuler = PropertyService.Get ("ShowRuler", false);
 			base.FontName = PropertyService.Get ("FontName", "Mono 10");
+			base.GutterFontName = PropertyService.Get ("GutterFontName", "");
 			base.ColorScheme = PropertyService.Get ("ColorScheme", "Default");
 			this.defaultRegionsFolding = PropertyService.Get ("DefaultRegionsFolding", false);
 			this.defaultCommentFolding = PropertyService.Get ("DefaultCommentFolding", true);
@@ -643,6 +649,15 @@ namespace MonoDevelop.SourceEditor
 		public override string FontName {
 			get {
 				return FontService.FilterFontName (FontService.GetUnderlyingFontName ("Editor"));
+			}
+			set {
+				throw new InvalidOperationException ("Set font through font service");
+			}
+		}
+		
+		public override string GutterFontName {
+			get {
+				return FontService.FilterFontName (FontService.GetUnderlyingFontName ("Editor(Gutter)"));
 			}
 			set {
 				throw new InvalidOperationException ("Set font through font service");

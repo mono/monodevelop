@@ -83,6 +83,9 @@ namespace Mono.TextEditor
 		bool WrapLines { get; set; }
 		string FontName { get;  set; }
 		Pango.FontDescription Font { get;  }
+
+		string GutterFontName { get; set; }
+		Pango.FontDescription GutterFont { get; }
 		
 		string ColorScheme { get; set;  }
 		string DefaultEolMarker { get; set; }
