@@ -38,7 +38,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	public class EventCreationCompletionData : CompletionData
+	class EventCreationCompletionData : CompletionData
 	{
 		string parameterList;
 		IUnresolvedMember callingMember;

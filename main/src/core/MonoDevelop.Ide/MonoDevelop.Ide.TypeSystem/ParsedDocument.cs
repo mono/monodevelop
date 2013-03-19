@@ -395,11 +395,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				return parsedFile.TopLevelTypeDefinitions;
 			}
 		}
-		
-		public override ITypeResolveContext GetTypeResolveContext (ICompilation compilation, TextLocation loc)
-		{
-			return parsedFile.GetTypeResolveContext (compilation, loc);
-		}
 		#endregion
 	}
 	

@@ -48,7 +48,7 @@ using System.IO;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	public class MemberCompletionData : CompletionData, IEntityCompletionData
+	class MemberCompletionData : CompletionData, IEntityCompletionData
 	{
 		CSharpCompletionTextEditorExtension editorCompletion;
 		OutputFlags flags;

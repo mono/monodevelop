@@ -44,12 +44,13 @@ using ICSharpCode.NRefactory.Completion;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	public class TemplateParameterDataProvider: IParameterDataProvider
+	class TypeParameterDataProvider: IParameterDataProvider
 	{
 		int startOffset;
 		//CSharpCompletionTextEditorExtension ext;
 		
 		List<IType> types;
+		List<IMethod> methods;
 		CSharpAmbience ambience = new CSharpAmbience ();
 
 		public int StartOffset {
@@ -58,13 +59,20 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}		
 		
-		public TemplateParameterDataProvider (int startOffset, CSharpCompletionTextEditorExtension ext, IEnumerable<IType> types)
+		public TypeParameterDataProvider (int startOffset, CSharpCompletionTextEditorExtension ext, IEnumerable<IType> types)
 		{
 			this.startOffset = startOffset;
-//			this.ext = ext;
+			//			this.ext = ext;
 			this.types = new List<IType> (types);
 		}
-		
+
+		public TypeParameterDataProvider (int startOffset, CSharpCompletionTextEditorExtension ext, IEnumerable<IMethod> methods)
+		{
+			this.startOffset = startOffset;
+			//			this.ext = ext;
+			this.methods = new List<IMethod> (methods);
+		}
+
 		static int TypeComparer (IType left, IType right)
 		{
 			return left.TypeParameterCount - right.TypeParameterCount;
@@ -82,7 +90,11 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			var result = new StringBuilder ();
 			result.Append ("<b>");
-			result.Append (ambience.GetString (types [overload], OutputFlags.UseFullName | OutputFlags.IncludeMarkup));
+			if (methods != null) {
+				result.Append (ambience.GetString (methods [overload], OutputFlags.UseFullName | OutputFlags.IncludeMarkup));
+			} else {
+				result.Append (ambience.GetString (types [overload], OutputFlags.UseFullName | OutputFlags.IncludeMarkup));
+			}
 			result.Append ("</b>");
 			result.Append ("&lt;");
 			int parameterCount = 0;
@@ -104,6 +116,9 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public string GetParameterDescription (int overload, int paramIndex)
 		{
+			if (methods != null)
+				return ambience.GetString (methods[overload].TypeParameters [paramIndex], OutputFlags.AssemblyBrowserDescription | OutputFlags.HideExtensionsParameter | OutputFlags.IncludeGenerics | OutputFlags.IncludeModifiers | OutputFlags.HighlightName);
+
 			var type = types[overload];
 			
 			if (paramIndex < 0 || paramIndex >= type.TypeParameterCount)
@@ -116,6 +131,9 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			if (overload >= Count)
 				return -1;
+			
+			if (methods != null)
+				return methods[overload].TypeParameters.Count;
 			var type = types[overload];
 			return type != null ? type.TypeParameterCount : 0;
 		}
@@ -134,6 +152,8 @@ namespace MonoDevelop.CSharp.Completion
 
 		public int Count {
 			get {
+				if (methods != null)
+					return methods.Count;
 				return types != null ? types.Count : 0;
 			}
 		}

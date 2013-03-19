@@ -916,7 +916,12 @@ namespace MonoDevelop.CSharp.Completion
 		
 		IParameterDataProvider IParameterCompletionDataFactory.CreateTypeParameterDataProvider (int startOffset, IEnumerable<IType> types)
 		{
-			return new TemplateParameterDataProvider (startOffset, this, types);
+			return new TypeParameterDataProvider (startOffset, this, types);
+		}
+
+		IParameterDataProvider IParameterCompletionDataFactory.CreateTypeParameterDataProvider (int startOffset, IEnumerable<IMethod> methods)
+		{
+			return new TypeParameterDataProvider (startOffset, this, methods);
 		}
 		#endregion
 		

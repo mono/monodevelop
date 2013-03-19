@@ -38,7 +38,7 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	public class NewOverrideCompletionData : CompletionData
+	class NewOverrideCompletionData : CompletionData
 	{
 		CSharpCompletionTextEditorExtension ext;
 		IMember member;
