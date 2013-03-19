@@ -49,6 +49,7 @@ using System.Diagnostics;
 using MonoDevelop.Core;
 using ICSharpCode.NRefactory.CSharp.Analysis;
 using ICSharpCode.NRefactory;
+using MonoDevelop.Refactoring;
 
 
 namespace MonoDevelop.CSharp.Highlighting
@@ -124,6 +125,8 @@ namespace MonoDevelop.CSharp.Highlighting
 			set;
 		}
 
+
+
 		void HandleDocumentParsed (object sender, EventArgs e)
 		{
 			if (src != null)
@@ -140,8 +143,8 @@ namespace MonoDevelop.CSharp.Highlighting
 					if (guiDocument.Project != null && guiDocument.IsCompileableInProject) {
 						src = new CancellationTokenSource ();
 						var cancellationToken = src.Token;
-						compilation = guiDocument.Compilation;
-						var newResolver = new CSharpAstResolver (compilation, unit, parsedFile);
+						var newResolver = guiDocument.GetSharedResolver ();
+						compilation = newResolver.Compilation;
 						System.Threading.Tasks.Task.Factory.StartNew (delegate {
 							var visitor = new QuickTaskVisitor (newResolver, cancellationToken);
 							try {
