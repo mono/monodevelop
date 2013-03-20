@@ -321,7 +321,7 @@ namespace MonoDevelop.Debugger
 
 		public override Widget CreateWidget ()
 		{
-			var icon = Gdk.Pixbuf.LoadFromResource ("lightning.png");
+			var icon = Gdk.Pixbuf.LoadFromResource ("lightning-16.png");
 			var image = new Gtk.Image (icon);
 
 			HBox box = new HBox (false, 6);
@@ -408,7 +408,7 @@ namespace MonoDevelop.Debugger
 		{
 			Gtk.EventBox box = new EventBox ();
 			box.VisibleWindow = false;
-			var icon = Gdk.Pixbuf.LoadFromResource ("lightning.png");
+			var icon = Gdk.Pixbuf.LoadFromResource ("lightning-16.png");
 			box.Add (new Gtk.Image (icon));
 			box.ButtonPressEvent += (o,e) => dlg.ShowButton ();
 			PopoverWidget eb = new PopoverWidget ();

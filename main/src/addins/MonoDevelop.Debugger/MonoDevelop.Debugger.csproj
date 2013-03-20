@@ -192,8 +192,8 @@
     <EmbeddedResource Include="icons\bug-16.png">
       <LogicalName>bug-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\lightning.png">
-      <LogicalName>lightning.png</LogicalName>
+    <EmbeddedResource Include="icons\lightning-16.png">
+      <LogicalName>lightning-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\MonoDevelop.Close.Selected.Over.png">
       <LogicalName>MonoDevelop.Close.Selected.Over.png</LogicalName>
