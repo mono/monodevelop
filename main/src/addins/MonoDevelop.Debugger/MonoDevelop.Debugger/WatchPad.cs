@@ -27,6 +27,7 @@
 
 using System.Xml;
 using System.Collections.Generic;
+
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 
@@ -38,6 +39,7 @@ namespace MonoDevelop.Debugger
 		
 		public WatchPad()
 		{
+			DisableTreeViewWhenNotDebugging = false;
 			tree.AllowAdding = true;
 		}
 		
@@ -61,7 +63,7 @@ namespace MonoDevelop.Debugger
 			}
 		}
 		
-		void ICustomXmlSerializer.WriteTo (System.Xml.XmlWriter writer)
+		void ICustomXmlSerializer.WriteTo (XmlWriter writer)
 		{
 			if (tree != null) {
 				writer.WriteStartElement ("Values");
@@ -71,7 +73,7 @@ namespace MonoDevelop.Debugger
 			}
 		}
 		
-		ICustomXmlSerializer ICustomXmlSerializer.ReadFrom (System.Xml.XmlReader reader)
+		ICustomXmlSerializer ICustomXmlSerializer.ReadFrom (XmlReader reader)
 		{
 			storedVars = new List<string> ();
 			
