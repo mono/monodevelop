@@ -220,7 +220,9 @@ namespace Mono.TextEditor
 			int offset = data.Caret.Offset;
 			if (offset <= 0)
 				return;
+			var version = data.Version;
 			data.Remove (offset - 1, 1);
+			data.Caret.Location = data.OffsetToLocation (version.MoveOffsetTo (data.Version, offset));
 		}
 		
 		public static void Delete (TextEditorData data)
