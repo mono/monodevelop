@@ -265,8 +265,9 @@ namespace Mono.TextEditor
 				offset = searchResult.Offset + withPattern.Length;
 			}
 			if (searchResults.Count < 100) {
-				foreach (var sr in searchResults)
-					Replace (sr, withPattern);
+				for (int i = searchResults.Count - 1; i >= 0; i--) {
+					Replace (searchResults[i], withPattern);
+				}
 				if (searchResults.Count > 0)
 					textEditorData.ClearSelection ();
 			} else {
