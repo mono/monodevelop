@@ -979,6 +979,7 @@ namespace Mono.Debugging.Evaluation
 						}
 					}
 				}
+
 				if (IsFlagsEnumType (ctx, type) && rest == 0 && composed.Length > 0)
 					return new EvaluationResult (composed, composedDisplay);
 
@@ -999,8 +1000,13 @@ namespace Mono.Debugging.Evaluation
 					return new EvaluationResult (EvaluateDisplayString (ctx, obj, tdata.ValueDisplayString));
 
 				// Return the type name
-				if (ctx.Options.AllowToStringCalls)
-					return new EvaluationResult ("{" + CallToString (ctx, obj) + "}");
+				if (ctx.Options.AllowToStringCalls) {
+					try {
+						return new EvaluationResult ("{" + CallToString (ctx, obj) + "}");
+					} catch (TimeOutException) {
+						// ToString() timed out, fall back to default behavior.
+					}
+				}
 				
 				if (!string.IsNullOrEmpty (tdata.TypeDisplayString) && ctx.Options.AllowDisplayStringEvaluation)
 					return new EvaluationResult ("{" + EvaluateDisplayString (ctx, obj, tdata.TypeDisplayString) + "}");
