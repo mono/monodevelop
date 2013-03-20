@@ -73,29 +73,29 @@ namespace Mono.Debugging.Soft
 			
 			if (obj is StringMirror)
 				return ((StringMirror)obj).Value;
-			else if (obj is EnumMirror) {
-				EnumMirror eob = (EnumMirror) obj;
-				return eob.StringValue;
-			}
-			else if (obj is PrimitiveValue)
+
+			if (obj is EnumMirror)
+				return ((EnumMirror) obj).StringValue;
+
+			if (obj is PrimitiveValue)
 				return ((PrimitiveValue)obj).Value.ToString ();
-			else if (obj is PointerValue)
+
+			if (obj is PointerValue)
 				return string.Format ("0x{0:x}", ((PointerValue)obj).Address);
-			else if ((obj is StructMirror) && ((StructMirror)obj).Type.IsPrimitive) {
+
+			if ((obj is StructMirror) && ((StructMirror)obj).Type.IsPrimitive) {
 				// Boxed primitive
 				StructMirror sm = (StructMirror) obj;
 				if (sm.Fields.Length > 0 && (sm.Fields[0] is PrimitiveValue))
 					return ((PrimitiveValue)sm.Fields[0]).Value.ToString ();
-			}
-			else if ((obj is ObjectMirror) && cx.Options.AllowTargetInvoke) {
+			} else if ((obj is ObjectMirror) && cx.Options.AllowTargetInvoke) {
 				ObjectMirror ob = (ObjectMirror) obj;
 				MethodMirror method = OverloadResolve (cx, "ToString", ob.Type, new TypeMirror[0], true, false, false);
 				if (method != null && method.DeclaringType.FullName != "System.Object") {
 					StringMirror res = cx.RuntimeInvoke (method, obj, new Value[0]) as StringMirror;
 					return res != null ? res.Value : null;
 				}
-			}
-			else if ((obj is StructMirror) && cx.Options.AllowTargetInvoke) {
+			} else if ((obj is StructMirror) && cx.Options.AllowTargetInvoke) {
 				StructMirror ob = (StructMirror) obj;
 				MethodMirror method = OverloadResolve (cx, "ToString", ob.Type, new TypeMirror[0], true, false, false);
 				if (method != null && method.DeclaringType.FullName != "System.ValueType") {
