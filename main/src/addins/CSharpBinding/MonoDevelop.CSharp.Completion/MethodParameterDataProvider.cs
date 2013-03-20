@@ -85,7 +85,7 @@ namespace MonoDevelop.CSharp.Completion
 			methods.Add (method);
 		}
 		
-		protected static int MethodComparer (IMethod left, IMethod right)
+		protected internal static int MethodComparer (IMethod left, IMethod right)
 		{
 			bool lObs = left.IsObsolete ();
 			bool rObs = right.IsObsolete ();

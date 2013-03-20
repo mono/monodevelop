@@ -48,7 +48,7 @@ using System.IO;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	public class MemberCompletionData : CompletionData, IEntityCompletionData
+	class MemberCompletionData : CompletionData, IEntityCompletionData
 	{
 		CSharpCompletionTextEditorExtension editorCompletion;
 		OutputFlags flags;
@@ -654,13 +654,7 @@ namespace MonoDevelop.CSharp.Completion
 				}
 				
 				if (mx is IMethod && my is IMethod) {
-					IMethod mmx = (IMethod) mx, mmy = (IMethod) my;
-					result = (mmx.TypeParameters.Count).CompareTo (mmy.TypeParameters.Count);
-					if (result != 0)
-						return result;
-					result = (mmx.Parameters.Count).CompareTo (mmy.Parameters.Count);
-					if (result != 0)
-						return result;
+					return MethodParameterDataProvider.MethodComparer ((IMethod)mx, (IMethod)my);
 				}
 				string sx = mx.ReflectionName;// ambience.GetString (mx, flags);
 				string sy = my.ReflectionName;// ambience.GetString (my, flags);

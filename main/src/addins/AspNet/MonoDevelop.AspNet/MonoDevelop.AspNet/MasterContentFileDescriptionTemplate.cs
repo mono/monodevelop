@@ -31,6 +31,9 @@ using MonoDevelop.AspNet.Parser;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Xml.StateEngine;
+using MonoDevelop.AspNet.StateEngine;
+using System.Linq;
 
 namespace MonoDevelop.AspNet
 {
@@ -42,8 +45,8 @@ namespace MonoDevelop.AspNet
 			if (fileName == null)
 				return;
 			
-			tags["AspNetMaster"] = "";
-			tags["AspNetMasterContent"] = "";
+			tags ["AspNetMaster"] = "";
+			tags ["AspNetMasterContent"] = "";
 			
 			AspNetAppProject aspProj = project as AspNetAppProject;
 			if (aspProj == null)
@@ -54,17 +57,16 @@ namespace MonoDevelop.AspNet
 			var dialog = new MonoDevelop.Ide.Projects.ProjectFileSelectorDialog (aspProj, null, "*.master");
 			try {
 				dialog.Title = GettextCatalog.GetString ("Select a Master Page...");
-				int response =  MonoDevelop.Ide.MessageService.RunCustomDialog (dialog);
+				int response = MonoDevelop.Ide.MessageService.RunCustomDialog (dialog);
 				if (response == (int)Gtk.ResponseType.Ok)
 					masterPage = dialog.SelectedFile;
-			}
-			finally {
+			} finally {
 				dialog.Destroy ();
 			}
 			if (masterPage == null)
 				return;
 			
-			tags["AspNetMaster"] = aspProj.LocalToVirtualPath (masterPage);
+			tags ["AspNetMaster"] = aspProj.LocalToVirtualPath (masterPage);
 			
 			try {
 				var pd = TypeSystemService.ParseFile (project, masterPage.FilePath)
@@ -72,11 +74,8 @@ namespace MonoDevelop.AspNet
 				if (pd == null)
 					return;
 				
-				var visitor = new ContentPlaceHolderVisitor ();
-				pd.RootNode.AcceptVisit (visitor);
-				
 				var sb = new System.Text.StringBuilder ();
-				foreach (string id in visitor.PlaceHolders) {
+				foreach (string id in pd.XDocument.GetAllPlaceholderIds ()) {
 					sb.Append ("<asp:Content ContentPlaceHolderID=\"");
 					sb.Append (id);
 					sb.Append ("\" ID=\"");

@@ -26,6 +26,7 @@
 using System;
 using NUnit.Framework;
 using System.Linq;
+using Gtk;
 
 namespace Mono.TextEditor.Tests
 {
@@ -36,13 +37,13 @@ namespace Mono.TextEditor.Tests
 		public void TestInsertAtCaret ()
 		{
 			var data = Create (
-@"1234567890
+				@"1234567890
 1234<-567890
 1234567890
 1234567890
 1234->$567890
 1234567890");
-			data.MainSelection.SelectionMode = SelectionMode.Block;
+			data.MainSelection = data.MainSelection.WithSelectionMode (SelectionMode.Block);
 			data.InsertAtCaret ("hello");
 
 			Check (data, @"1234567890
@@ -58,13 +59,13 @@ namespace Mono.TextEditor.Tests
 		public void TestEditModeInput ()
 		{
 			var data = Create (
-@"1234567890
+				@"1234567890
 1234<-567890
 1234567890
 1234567890
 1234->$567890
 1234567890");
-			data.MainSelection.SelectionMode = SelectionMode.Block;
+			data.MainSelection = data.MainSelection.WithSelectionMode (SelectionMode.Block);
 			data.CurrentMode = new SimpleEditMode ();
 			data.CurrentMode.InternalHandleKeypress (null, data, Gdk.Key.a, (uint)'a', Gdk.ModifierType.None);
 			Check (data, @"1234567890
@@ -77,16 +78,36 @@ namespace Mono.TextEditor.Tests
 		}
 
 		[Test]
+		public void TestBackspaceWithTabs ()
+		{
+			var data = Create (
+				@"1234567890
+" + '\t' + @"1234<-567890
+....1234567890
+....1234567890
+....1234->$567890
+1234567890");
+			data.MainSelection = data.MainSelection.WithSelectionMode (SelectionMode.Block);
+			DeleteActions.Backspace (data);
+			Check (data, @"1234567890
+" + '\t' + @"123<-567890
+....123567890
+....123567890
+....123->$567890
+1234567890");
+		}
+
+		[Test]
 		public void TestBackspace ()
 		{
 			var data = Create (
-@"1234567890
+				@"1234567890
 1234<-567890
 1234567890
 1234567890
 1234->$567890
 1234567890");
-			data.MainSelection.SelectionMode = SelectionMode.Block;
+			data.MainSelection = data.MainSelection.WithSelectionMode (SelectionMode.Block);
 			DeleteActions.Backspace (data);
 			Check (data, @"1234567890
 123<-567890
@@ -106,7 +127,7 @@ namespace Mono.TextEditor.Tests
 1234567890
 1234->$567890
 1234567890");
-			data.MainSelection.SelectionMode = SelectionMode.Block;
+			data.MainSelection = data.MainSelection.WithSelectionMode (SelectionMode.Block);
 			DeleteActions.Delete (data);
 			Check (data, @"1234567890
 1234<-67890
@@ -129,7 +150,7 @@ namespace Mono.TextEditor.Tests
 1234567890
 123456->$7890
 1234567890");
-			data.MainSelection.SelectionMode = SelectionMode.Block;
+			data.MainSelection = data.MainSelection.WithSelectionMode (SelectionMode.Block);
 			MiscActions.InsertTab (data);
 			Check (data, 
 @"1234567890
@@ -137,6 +158,76 @@ namespace Mono.TextEditor.Tests
 1234	7890
 1234	7890
 1234	->$7890
+1234567890");
+		}
+
+		[Test]
+		public void TestEditModeInputWithTabs ()
+		{
+			var data = Create (
+				@"1234567890
+" + '\t' + @"<-567890
+1234567890
+1234567890
+1234->$567890
+1234567890");
+			data.MainSelection = data.MainSelection.WithSelectionMode (SelectionMode.Block);
+			data.CurrentMode = new SimpleEditMode ();
+			data.CurrentMode.InternalHandleKeypress (null, data, Gdk.Key.a, (uint)'a', Gdk.ModifierType.None);
+			Check (data, @"1234567890
+" + '\t' + @"a<-567890
+1234a567890
+1234a567890
+1234a->$567890
+1234567890");
+
+		}
+
+		[Test]
+		public void TestInsertAtCaretWithTabs ()
+		{
+			var data = Create (
+				@"1234567890
+" + '\t' + @"<-567890
+1234567890
+1234567890
+123456->$7890
+1234567890");
+			data.MainSelection = data.MainSelection.WithSelectionMode (SelectionMode.Block);
+
+			data.InsertAtCaret ("text");
+			Check (data, @"1234567890
+" + '\t' + @"text<-7890
+1234text7890
+1234text7890
+1234text->$7890
+1234567890");
+
+		}
+
+		[Test]
+		public void TestPasteBlockSelection ()
+		{
+			var data = Create (
+				@"1234567890
+1234<-567890
+1234567890
+1234567890
+1234->$567890
+1234567890");
+
+			data.MainSelection = data.MainSelection.WithSelectionMode (SelectionMode.Block);
+
+			Clipboard clipboard = Clipboard.Get (Mono.TextEditor.ClipboardActions.CopyOperation.CLIPBOARD_ATOM);
+			clipboard.Text = "hello";
+
+			ClipboardActions.Paste (data);
+
+			Check (data, @"1234567890
+1234hello567890
+1234hello567890
+1234hello567890
+1234hello$567890
 1234567890");
 		}
 

@@ -95,16 +95,6 @@ namespace MonoDevelop.SourceEditor
 			
 			Document.TextReplaced += HandleSkipCharsOnReplace;
 			
-			Document.TextReplaced += delegate(object sender, DocumentChangeEventArgs args) {
-				if (Extension != null) {
-					try {
-						Extension.TextChanged (args.Offset, args.Offset + Math.Max (args.RemovalLength, args.InsertionLength));
-					} catch (Exception ex) {
-						ReportExtensionError (ex);
-					}
-				}
-			};
-			
 			UpdateEditMode ();
 			this.DoPopupMenu = ShowPopup;
 		}

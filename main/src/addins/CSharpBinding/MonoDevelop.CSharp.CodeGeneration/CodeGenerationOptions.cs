@@ -158,10 +158,9 @@ namespace MonoDevelop.CodeGeneration
 				Document = document
 			};
 			if (document.ParsedDocument != null && document.ParsedDocument.ParsedFile != null) {
-				var ctx = document.ParsedDocument.GetTypeResolveContext (document.Compilation, document.Editor.Caret.Location);
 				options.EnclosingPart = document.ParsedDocument.ParsedFile.GetInnermostTypeDefinition (document.Editor.Caret.Location);
 				if (options.EnclosingPart != null)
-					options.EnclosingType = options.EnclosingPart.Resolve (ctx).GetDefinition ();
+					options.EnclosingType = options.EnclosingPart.Resolve (document.Project).GetDefinition ();
 				if (options.EnclosingType != null) {
 					options.EnclosingMember = options.EnclosingType.Members.FirstOrDefault (m => !m.IsSynthetic && m.Region.FileName == document.FileName && m.Region.IsInside (document.Editor.Caret.Location));
 				}

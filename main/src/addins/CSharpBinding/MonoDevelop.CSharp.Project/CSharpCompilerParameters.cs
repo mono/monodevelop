@@ -88,7 +88,9 @@ namespace MonoDevelop.CSharp.Project
 		
 		[ItemProperty("WarningsNotAsErrors", DefaultValue="")]
 		string warningsNotAsErrors = "";
-		
+
+		[ItemProperty("DebugType", DefaultValue="")]
+		string debugType = "";
 		
 		#region Members required for backwards compatibility. Not used for anything else.
 		
@@ -225,7 +227,16 @@ namespace MonoDevelop.CSharp.Project
 				platformTarget = value ?? string.Empty;
 			}
 		}
-		
+
+		public string DebugType {
+			get {
+				return debugType;
+			}
+			set {
+				debugType = value;
+			}
+		}
+
 #endregion
 
 #region Errors and Warnings 

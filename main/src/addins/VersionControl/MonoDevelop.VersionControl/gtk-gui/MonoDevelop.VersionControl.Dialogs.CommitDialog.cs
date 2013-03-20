@@ -54,6 +54,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.fileList = new global::Gtk.TreeView ();
 			this.fileList.CanFocus = true;
 			this.fileList.Name = "fileList";
+			this.fileList.SearchColumn = 2;
 			this.scrolledwindow1.Add (this.fileList);
 			this.mainBox.Add (this.scrolledwindow1);
 			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.mainBox [this.scrolledwindow1]));

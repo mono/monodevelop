@@ -416,7 +416,7 @@ namespace Mono.TextEditor.Vi
 			return delegate (TextEditorData data) {
 				//get info about the old selection state
 				DocumentLocation oldCaret = data.Caret.Location, oldAnchor = oldCaret, oldLead = oldCaret;
-				if (data.MainSelection != null) {
+				if (data.IsSomethingSelected) {
 					oldLead = data.MainSelection.Lead;
 					oldAnchor = data.MainSelection.Anchor;
 				}
@@ -427,7 +427,7 @@ namespace Mono.TextEditor.Vi
 				SelectionActions.EndSelection (data);
 				
 				DocumentLocation newCaret = data.Caret.Location, newAnchor = newCaret, newLead = newCaret;
-				if (data.MainSelection != null) {
+				if (data.IsSomethingSelected) {
 					newLead = data.MainSelection.Lead;
 					newAnchor = data.MainSelection.Anchor;
 				}

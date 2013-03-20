@@ -155,23 +155,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			return new MDRefactoringScript (this, this.Document, this.Document.GetFormattingOptions ());
 		}
 
-
-		static CSharpAstResolver CreateResolver (Document document)
-		{
-			var parsedDocument = document.ParsedDocument;
-			if (parsedDocument == null)
-				return null;
-
-			var unit       = parsedDocument.GetAst<SyntaxTree> ();
-			var parsedFile = parsedDocument.ParsedFile as CSharpUnresolvedFile;
-			
-			if (unit == null || parsedFile == null)
-				return null;
-
-			return new CSharpAstResolver (document.Compilation, unit, parsedFile);
-		}
-
-		public MDRefactoringContext (MonoDevelop.Ide.Gui.Document document, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken)) : base (CreateResolver (document), cancellationToken)
+		public MDRefactoringContext (MonoDevelop.Ide.Gui.Document document, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken)) : base (document.GetSharedResolver (), cancellationToken)
 		{
 			if (document == null)
 				throw new ArgumentNullException ("document");
@@ -179,8 +163,6 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			this.location = RefactoringService.GetCorrectResolveLocation (document, loc);
 			var policy = Document.HasProject ? Document.Project.Policies.Get<NameConventionPolicy> () : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<NameConventionPolicy> ();
 			Services.AddService (typeof(NamingConventionService), policy.CreateNRefactoryService ());
-
 		}
-
 	}
 }

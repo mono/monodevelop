@@ -171,6 +171,7 @@
     <Compile Include="MonoDevelop.SourceEditor.QuickTasks\QuickTaskOverviewMode.cs" />
     <Compile Include="MonoDevelop.SourceEditor.QuickTasks\IUsageProvider.cs" />
     <Compile Include="MonoDevelop.SourceEditor\FileRegistry.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\SearchAndReplaceOptions.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

@@ -491,7 +491,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		Selection oldSelection = null;
+		Selection oldSelection = Selection.Empty;
 		void TextEditorDataSelectionChanged (object sender, EventArgs args)
 		{
 			if (IsSomethingSelected) {
@@ -505,11 +505,11 @@ namespace Mono.TextEditor
 				ClipboardActions.ClearPrimary ();
 			}
 			// Handle redraw
-			Selection selection = Selection.Clone (MainSelection);
-			int startLine    = selection != null ? selection.Anchor.Line : -1;
-			int endLine      = selection != null ? selection.Lead.Line : -1;
-			int oldStartLine = oldSelection != null ? oldSelection.Anchor.Line : -1;
-			int oldEndLine   = oldSelection != null ? oldSelection.Lead.Line : -1;
+			Selection selection = MainSelection;
+			int startLine    = !selection.IsEmpty ? selection.Anchor.Line : -1;
+			int endLine      = !selection.IsEmpty ? selection.Lead.Line : -1;
+			int oldStartLine = !oldSelection.IsEmpty ? oldSelection.Anchor.Line : -1;
+			int oldEndLine   = !oldSelection.IsEmpty ? oldSelection.Lead.Line : -1;
 			if (SelectionMode == SelectionMode.Block) {
 				this.RedrawMarginLines (this.textViewMargin, 
 				                        System.Math.Min (System.Math.Min (oldStartLine, oldEndLine), System.Math.Min (startLine, endLine)),
@@ -520,7 +520,7 @@ namespace Mono.TextEditor
 				if (oldEndLine < 0 && oldStartLine >=0)
 					oldEndLine = Document.LineCount;
 				int from = oldEndLine, to = endLine;
-				if (selection != null && oldSelection != null) {
+				if (!selection.IsEmpty && !oldSelection.IsEmpty) {
 					if (startLine != oldStartLine && endLine != oldEndLine) {
 						from = System.Math.Min (startLine, oldStartLine);
 						to   = System.Math.Max (endLine, oldEndLine);
@@ -542,10 +542,10 @@ namespace Mono.TextEditor
 						from = to = -1;
 					}
 				} else {
-					if (selection == null) {
+					if (selection.IsEmpty) {
 						from = oldStartLine;
 						to = oldEndLine;
-					} else if (oldSelection == null) {
+					} else if (oldSelection.IsEmpty) {
 						from = startLine;
 						to = endLine;
 					} 
@@ -1111,7 +1111,7 @@ namespace Mono.TextEditor
 		bool dragOver = false;
 		ClipboardActions.CopyOperation dragContents = null;
 		DocumentLocation defaultCaretPos, dragCaretPos;
-		Selection selection = null;
+		Selection selection = Selection.Empty;
 		
 		public bool IsInDrag {
 			get {
@@ -1150,7 +1150,7 @@ namespace Mono.TextEditor
 			using (var undo = OpenUndoGroup ()) {
 				int dragOffset = Document.LocationToOffset (dragCaretPos);
 				if (context.Action == DragAction.Move) {
-					if (CanEdit (Caret.Line) && selection != null) {
+					if (CanEdit (Caret.Line) && !selection.IsEmpty) {
 						var selectionRange = selection.GetSelectionRange (textEditorData);
 						if (selectionRange.Offset < dragOffset)
 							dragOffset -= selectionRange.Length;
@@ -1158,22 +1158,21 @@ namespace Mono.TextEditor
 						textEditorData.DeleteSelection (selection);
 						Caret.PreserveSelection = false;
 	
-						selection = null;
+						selection = Selection.Empty;
 					}
 				}
 				if (selection_data.Length > 0 && selection_data.Format == 8) {
 					Caret.Offset = dragOffset;
 					if (CanEdit (dragCaretPos.Line)) {
 						int offset = Caret.Offset;
-						if (selection != null && selection.GetSelectionRange (textEditorData).Offset >= offset) {
+						if (!selection.IsEmpty && selection.GetSelectionRange (textEditorData).Offset >= offset) {
 							var start = Document.OffsetToLocation (selection.GetSelectionRange (textEditorData).Offset + selection_data.Text.Length);
 							var end = Document.OffsetToLocation (selection.GetSelectionRange (textEditorData).Offset + selection_data.Text.Length + selection.GetSelectionRange (textEditorData).Length);
 							selection = new Selection (start, end);
 						}
-						int insertedChars = textEditorData.Insert (offset, selection_data.Text);
+						textEditorData.PasteText (offset, selection_data.Text);
 						Caret.Offset = offset + selection_data.Text.Length;
 						MainSelection = new Selection (Document.OffsetToLocation (offset), Document.OffsetToLocation (offset + selection_data.Text.Length));
-						textEditorData.PasteText (offset, selection_data.Text, insertedChars);
 					}
 					dragOver = false;
 					context = null;
@@ -1196,7 +1195,7 @@ namespace Mono.TextEditor
 			Caret.PreserveSelection = true;
 			dragCaretPos = PointToLocation (x - textViewMargin.XOffset, y);
 			int offset = Document.LocationToOffset (dragCaretPos);
-			if (selection != null && offset >= this.selection.GetSelectionRange (textEditorData).Offset && offset < this.selection.GetSelectionRange (textEditorData).EndOffset) {
+			if (!selection.IsEmpty && offset >= this.selection.GetSelectionRange (textEditorData).Offset && offset < this.selection.GetSelectionRange (textEditorData).EndOffset) {
 				Gdk.Drag.Status (context, DragAction.Default, time);
 				Caret.Location = defaultCaretPos;
 			} else {
@@ -1236,7 +1235,7 @@ namespace Mono.TextEditor
 						CodeSegmentPreviewWindow window = new CodeSegmentPreviewWindow (textEditorData.Parent, true, textEditorData.SelectionRange, 300, 300);
 						Gtk.Drag.SetIconWidget (context, window, 0, 0);
 					}
-					selection = Selection.Clone (MainSelection);
+					selection = MainSelection;
 					textViewMargin.inDrag = false;
 				} else {
 					FireMotionEvent (x, y, mod);

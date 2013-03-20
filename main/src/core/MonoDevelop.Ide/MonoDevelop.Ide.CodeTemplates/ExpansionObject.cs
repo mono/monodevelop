@@ -253,19 +253,11 @@ namespace MonoDevelop.Ide.CodeTemplates
 				name = name.Substring (0, idx);
 			}
 
-			var type = new GetClassTypeReference (ns, name, 0).Resolve (
-				CurrentContext.Document.ParsedDocument.GetTypeResolveContext (
-				CurrentContext.Document.Compilation, 
-				CurrentContext.Document.Editor.Caret.Location
-				)
-			);
+			var type = new GetClassTypeReference (ns, name, 0).Resolve (new SimpleTypeResolveContext (CurrentContext.Document.Compilation.MainAssembly));
 			bool stripAttribute = false;
 			if (type == null || type.Kind == TypeKind.Unknown) {
 				type = new GetClassTypeReference (ns, name + "Attribute", 0).Resolve (
-					CurrentContext.Document.ParsedDocument.GetTypeResolveContext (
-					CurrentContext.Document.Compilation, 
-					CurrentContext.Document.Editor.Caret.Location
-					)
+					new SimpleTypeResolveContext (CurrentContext.Document.Compilation.MainAssembly)
 				);	
 				stripAttribute = true;
 			}

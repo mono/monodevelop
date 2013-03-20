@@ -44,6 +44,7 @@ namespace MonoDevelop.Ide.Gui
 			base.ColorScheme = IdeApp.Preferences.ColorScheme;
 			base.UseAntiAliasing = PropertyService.Get ("UseAntiAliasing", true);
 			FontService.RegisterFontChangedCallback ("Editor", UpdateFont);
+			FontService.RegisterFontChangedCallback ("Editor(Gutter)", UpdateFont);
 		}
 		
 		public override void Dispose ()
@@ -58,6 +59,7 @@ namespace MonoDevelop.Ide.Gui
 		void UpdateFont ()
 		{
 			base.FontName = FontName;
+			base.GutterFontName = GutterFontName;
 			this.OnChanged (EventArgs.Empty);
 		}
 		

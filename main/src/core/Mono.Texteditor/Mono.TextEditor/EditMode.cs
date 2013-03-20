@@ -122,6 +122,7 @@ namespace Mono.TextEditor
 					textEditorData.SelectionSurroundingProvider.HandleSpecialSelectionKey (textEditorData, unicodeKey);
 					return;
 				}
+
 				textEditorData.DeleteSelectedText (
 					textEditorData.IsSomethingSelected ? textEditorData.MainSelection.SelectionMode != SelectionMode.Block : true);
 				// Needs to be called after delete text, delete text handles virtual caret postitions itself,
@@ -153,11 +154,13 @@ namespace Mono.TextEditor
 								}
 								textEditorData.Insert (lineSegment.Offset + insertOffset, textToInsert);
 							}
+							var visualColumn = textEditorData.GetLine (Caret.Location.Line).GetVisualColumn (textEditorData, Caret.Column);
 
 							textEditorData.MainSelection = new Selection (
-								new DocumentLocation (selection.Anchor.Line, Caret.Column),
-								new DocumentLocation (selection.Lead.Line, Caret.Column),
-								Mono.TextEditor.SelectionMode.Block);
+								new DocumentLocation (selection.Anchor.Line, textEditorData.GetLine (selection.Anchor.Line).GetLogicalColumn (textEditorData, visualColumn)),
+								new DocumentLocation (selection.Lead.Line, textEditorData.GetLine (selection.Lead.Line).GetLogicalColumn (textEditorData, visualColumn)),
+								SelectionMode.Block
+								);
 							Document.CommitMultipleLineUpdate (textEditorData.MainSelection.MinLine, textEditorData.MainSelection.MaxLine);
 						} else {
 							textEditorData.Insert (Caret.Offset, text);

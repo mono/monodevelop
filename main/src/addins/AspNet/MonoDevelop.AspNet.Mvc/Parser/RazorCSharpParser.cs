@@ -40,7 +40,6 @@ using ICSharpCode.NRefactory.TypeSystem;
 using System.Web.Razor.Parser;
 using System.Web.Razor.Parser.SyntaxTree;
 using System.IO;
-using MonoDevelop.AspNet.Parser.Dom;
 using MonoDevelop.Core;
 using MonoDevelop.AspNet.Parser;
 using System.Web.Configuration;
@@ -48,6 +47,7 @@ using System.Web.WebPages.Razor.Configuration;
 using System.Web.WebPages.Razor;
 using System.Configuration;
 using MonoDevelop.Projects;
+using MonoDevelop.AspNet.StateEngine;
 
 namespace MonoDevelop.AspNet.Mvc.Parser
 {
@@ -101,8 +101,7 @@ namespace MonoDevelop.AspNet.Mvc.Parser
 				}
 			}
 
-			CreateHtmlDocument ();
-			GetHtmlErrors (errors);
+			ParseHtmlDocument (errors);
 			CreateCSharpParsedDocument ();
 			ClearLastChange ();
 
@@ -266,10 +265,10 @@ namespace MonoDevelop.AspNet.Mvc.Parser
 			}
 		}
 
-		RootNode htmlParsedDocument;
+		Xml.StateEngine.XDocument htmlParsedDocument;
 		IList<Comment> comments;
 
-		void CreateHtmlDocument ()
+		void ParseHtmlDocument (List<Error> errors)
 		{
 			var sb = new StringBuilder ();
 			var spanList = new List<Span> ();
@@ -304,21 +303,17 @@ namespace MonoDevelop.AspNet.Mvc.Parser
 			};
 
 			editorParser.CurrentParseTree.Accept (new CallbackVisitor (action));
-			var root = new RootNode ();
+
+			var parser = new Xml.StateEngine.Parser (new AspNetFreeState (), true);
 
 			try {
-				root.Parse (lastParsedFile, new StringReader (sb.ToString ()));
+				parser.Parse (new StringReader (sb.ToString ()));
 			} catch (Exception ex) {
 				LoggingService.LogError ("Unhandled error parsing html in Razor document '" + (lastParsedFile ?? "") + "'", ex);
 			}
 
-			htmlParsedDocument = root;
-		}
-
-		void GetHtmlErrors (List<Error> errors)
-		{
-			foreach (var error in htmlParsedDocument.ParseErrors)
-				errors.Add (new Error (ErrorType.Error, error.Message, error.Location.BeginLine, error.Location.BeginColumn));
+			htmlParsedDocument = parser.Nodes.GetRoot ();
+			errors.AddRange (parser.Errors);
 		}
 
 		IEnumerable<FoldingRegion> GetFoldingRegions ()
@@ -332,8 +327,8 @@ namespace MonoDevelop.AspNet.Mvc.Parser
 		void GetHtmlFoldingRegions (List<FoldingRegion> foldingRegions)
 		{
 			if (htmlParsedDocument != null) {
-				var cuVisitor = new CompilationUnitVisitor (foldingRegions);
-				htmlParsedDocument.AcceptVisit (cuVisitor);
+				var d = new AspNetParsedDocument (null, WebSubtype.Html, null, htmlParsedDocument);
+				foldingRegions.AddRange (d.Foldings);
 			}
 		}
 

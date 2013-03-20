@@ -64,6 +64,7 @@ namespace MonoDevelop.Components.MainToolbar
 		StatusArea statusArea;
 
 		SearchEntry matchEntry;
+		static object lastCommandTarget;
 
 		ButtonBar buttonBar = new ButtonBar ();
 		RoundButton button = new RoundButton ();
@@ -100,6 +101,10 @@ namespace MonoDevelop.Components.MainToolbar
 			get {
 				return statusArea;
 			}
+		}
+
+		internal static object LastCommandTarget {
+			get { return lastCommandTarget; }
 		}
 
 		void SetSearchCategory (string category)
@@ -257,6 +262,11 @@ namespace MonoDevelop.Components.MainToolbar
 
 			button.Clicked += HandleStartButtonClicked;
 			IdeApp.CommandService.RegisterCommandBar (this);
+
+			IdeApp.CommandService.ActiveWidgetChanged += (sender, e) => {
+				lastCommandTarget = e.OldActiveWidget;
+			};
+
 			this.ShowAll ();
 			this.statusArea.statusIconBox.HideAll ();
 		}
@@ -485,48 +495,59 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void SelectActiveConfiguration ()
 		{
-			configurationCombo.Changed -= HandleConfigurationChanged;
 			string name = configurationMerger.GetUnresolvedConfiguration (IdeApp.Workspace.ActiveConfigurationId);
-			int i = 0;
-			Gtk.TreeIter iter;
-			if (configurationStore.GetIterFirst (out iter)) {
-				do {
-					string val = (string)configurationStore.GetValue (iter, 1);
-					if (name == val) {
-						configurationCombo.Active = i;
-						break;
-					}
-					i++;
-				}
-				while (configurationStore.IterNext (ref iter));
-			}
-			var validTargets = configurationMerger.GetTargetsForConfiguration (IdeApp.Workspace.ActiveConfigurationId, false).ToArray ();
-			if (IdeApp.Workspace.PreferredActiveExecutionTarget == null || !validTargets.Any (t => t.Id == IdeApp.Workspace.PreferredActiveExecutionTarget))
-				IdeApp.Workspace.ActiveExecutionTarget = validTargets.FirstOrDefault ();
 
-			configurationCombo.Changed += HandleConfigurationChanged;
+			configurationCombo.Changed -= HandleConfigurationChanged;
+			try {
+				TreeIter iter;
+
+				if (configurationStore.GetIterFirst (out iter)) {
+					int i = 0;
+
+					do {
+						string val = (string)configurationStore.GetValue (iter, 1);
+						if (name == val) {
+							configurationCombo.Active = i;
+							break;
+						}
+						i++;
+					} while (configurationStore.IterNext (ref iter));
+				}
+
+				var validTargets = configurationMerger.GetTargetsForConfiguration (IdeApp.Workspace.ActiveConfigurationId, false).ToArray ();
+				if (IdeApp.Workspace.PreferredActiveExecutionTarget == null || !validTargets.Any (t => t.Id == IdeApp.Workspace.PreferredActiveExecutionTarget))
+					IdeApp.Workspace.ActiveExecutionTarget = validTargets.FirstOrDefault ();
+			} finally {
+				configurationCombo.Changed += HandleConfigurationChanged;
+			}
+
 			SelectActiveRuntime ();
 		}
 
 		void SelectActiveRuntime ()
 		{
 			runtimeCombo.Changed -= HandleRuntimeChanged;
-			var i = 0;
-			Gtk.TreeIter iter;
-			if (runtimeStore.GetIterFirst (out iter)) {
-				do {
-					var val = (ExecutionTarget)runtimeStore.GetValue (iter, 2);
-					if (val.Id == IdeApp.Workspace.PreferredActiveExecutionTarget) {
-						runtimeCombo.Active = i;
-						break;
-					}
-					i++;
+			try {
+				TreeIter iter;
+
+				if (runtimeStore.GetIterFirst (out iter)) {
+					int i = 0;
+
+					do {
+						var val = (ExecutionTarget)runtimeStore.GetValue (iter, 2);
+						if (val.Id == IdeApp.Workspace.PreferredActiveExecutionTarget) {
+							runtimeCombo.Active = i;
+							break;
+						}
+						i++;
+					} while (runtimeStore.IterNext (ref iter));
 				}
-				while (runtimeStore.IterNext (ref iter));
+
+				if (runtimeCombo.Active == -1)
+					runtimeCombo.Active = 0;
+			} finally {
+				runtimeCombo.Changed += HandleRuntimeChanged;
 			}
-			if (runtimeCombo.Active == -1)
-				runtimeCombo.Active = 0;
-			runtimeCombo.Changed += HandleRuntimeChanged;
 		}
 
 		void UpdateCombos ()
@@ -571,10 +592,13 @@ namespace MonoDevelop.Components.MainToolbar
 				if (solConf == null || !solConf.BuildEnabledForItem (currentSolution.StartupItem))
 					return;
 
-				var targets = configurationMerger.GetTargetsForConfiguration (IdeApp.Workspace.ActiveConfigurationId, true);
-				foreach (var target in targets)
+				int runtimes = 0;
+				foreach (var target in configurationMerger.GetTargetsForConfiguration (IdeApp.Workspace.ActiveConfigurationId, true)) {
 					runtimeStore.AppendValues (target.Name, target.Name, target);
-				runtimeCombo.Sensitive = targets.Count () > 1;
+					runtimes++;
+				}
+
+				runtimeCombo.Sensitive = runtimes > 1;
 			} finally {
 				runtimeCombo.Changed += HandleRuntimeChanged;
 			}

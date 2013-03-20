@@ -253,7 +253,6 @@
     <Compile Include="MonoDevelop.CSharp.Completion\IndexerParameterDataProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\HelperMethods.cs" />
     <Compile Include="MonoDevelop.CSharp.Parser\CSharpFoldingParser.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\TemplateParameterDataProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\AbstractGenerateAction.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\CodeGenerationCommands.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\CodeGenerationOptions.cs" />
@@ -293,6 +292,7 @@
     <Compile Include="MonoDevelop.CSharp\SignatureMarkupCreator.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\ArrayTypeParameterDataProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\ImplementInterfaceMembersGenerator.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\TypeParameterDataProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

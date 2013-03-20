@@ -44,9 +44,6 @@ namespace MonoDevelop.SourceEditor
 		const int  historyLimit = 20;
 		const string seachHistoryProperty = "MonoDevelop.FindReplaceDialogs.FindHistory";
 		const string replaceHistoryProperty = "MonoDevelop.FindReplaceDialogs.ReplaceHistory";
-		internal static string searchPattern = String.Empty;
-		internal static string replacePattern = String.Empty;
-
 		public TextSegment SelectionSegment {
 			get;
 			set;
@@ -169,9 +166,9 @@ namespace MonoDevelop.SourceEditor
 			}
 
 			if (String.IsNullOrEmpty (textEditor.SearchPattern)) {
-				textEditor.SearchPattern = searchPattern;
-			} else if (textEditor.SearchPattern != searchPattern) {
-				searchPattern = textEditor.SearchPattern;
+				textEditor.SearchPattern = SearchAndReplaceOptions.SearchPattern;
+			} else if (textEditor.SearchPattern != SearchAndReplaceOptions.SearchPattern) {
+				SearchAndReplaceOptions.SearchPattern = textEditor.SearchPattern;
 				//FireSearchPatternChanged ();
 			}
 			UpdateSearchPattern ();
@@ -187,19 +184,19 @@ namespace MonoDevelop.SourceEditor
 			
 			searchEntry.Entry.Changed += delegate {
 				SetSearchPattern (SearchPattern);
-				string oldPattern = searchPattern;
-				searchPattern = SearchPattern;
-				if (oldPattern != searchPattern)
+				string oldPattern = SearchAndReplaceOptions.SearchPattern;
+				SearchAndReplaceOptions.SearchPattern = SearchPattern;
+				if (oldPattern != SearchAndReplaceOptions.SearchPattern)
 					UpdateSearchEntry ();
 				var history = GetHistory (seachHistoryProperty);
 				if (history.Count > 0 && history [0] == oldPattern) {
-					ChangeHistory (seachHistoryProperty, searchPattern);
+					ChangeHistory (seachHistoryProperty, SearchAndReplaceOptions.SearchPattern);
 				} else {
-					UpdateSearchHistory (searchPattern);
+					UpdateSearchHistory (SearchAndReplaceOptions.SearchPattern);
 				}
 			};
 			
-			entryReplace.Text = replacePattern;
+			entryReplace.Text = SearchAndReplaceOptions.ReplacePattern;
 //			entryReplace.Model = replaceHistory;
 //			RestoreReplaceHistory ();
 			
@@ -248,7 +245,7 @@ namespace MonoDevelop.SourceEditor
 			this.searchEntry.RequestMenu += HandleSearchEntryhandleRequestMenu;
 			
 			entryReplace.Changed += delegate {
-				replacePattern = ReplacePattern;
+				SearchAndReplaceOptions.ReplacePattern = ReplacePattern;
 				if (!inReplaceUpdate) 
 					FireReplacePatternChanged ();
 			};
@@ -293,14 +290,26 @@ namespace MonoDevelop.SourceEditor
 					SelectionSegment = textEditor.SelectionRange;
 				}
 			}
-			SetSearchPattern (searchPattern);
+			SetSearchPattern (SearchAndReplaceOptions.SearchPattern);
 			textEditor.HighlightSearchPattern = true;
 			textEditor.TextViewMargin.RefreshSearchMarker ();
 			if (textEditor.Document.ReadOnly) {
 				buttonSearchMode.Visible = false;
 				IsReplaceMode = false;
 			}
-			
+
+			SearchAndReplaceOptions.SearchPatternChanged += HandleSearchPatternChanged;
+			SearchAndReplaceOptions.ReplacePatternChanged += HandleReplacePatternChanged;
+		}
+
+		void HandleReplacePatternChanged (object sender, EventArgs e)
+		{
+			ReplacePattern = SearchAndReplaceOptions.ReplacePattern;
+		}
+
+		void HandleSearchPatternChanged (object sender, EventArgs e)
+		{
+			SearchPattern = SearchAndReplaceOptions.SearchPattern;
 		}
 
 		public bool DisableAutomaticSearchPatternCaseMatch {
@@ -397,7 +406,7 @@ namespace MonoDevelop.SourceEditor
 					recentItem.Name = item;
 					recentItem.Activated += delegate (object mySender, EventArgs myE) {
 						MenuItem cur = (MenuItem)mySender;
-						searchPattern = ""; // force that the current pattern is stored in history and not replaced
+						SearchAndReplaceOptions.SearchPattern = ""; // force that the current pattern is stored in history and not replaced
 						searchEntry.Entry.Text = cur.Name;
 						FilterHistory (seachHistoryProperty);
 					};
@@ -446,7 +455,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			searchEntry.Entry.Text = textEditor.SearchPattern;
 			SetSearchPattern (textEditor.SearchPattern);
-			searchPattern = textEditor.SearchPattern;
+			SearchAndReplaceOptions.SearchPattern = textEditor.SearchPattern;
 //			UpdateSearchEntry ();
 		}
 
@@ -601,6 +610,9 @@ But I leave it in in the case I've missed something. Mike
 		
 		protected override void OnDestroyed ()
 		{
+			SearchAndReplaceOptions.SearchPatternChanged -= HandleSearchPatternChanged;
+			SearchAndReplaceOptions.ReplacePatternChanged -= HandleReplacePatternChanged;
+
 			textEditor.TextViewMargin.HideSelection = false;
 			textEditor.Caret.PositionChanged -= HandleWidgetTextEditorCaretPositionChanged;
 			textEditor.TextViewMargin.SearchRegionsUpdated -= HandleWidgetTextEditorTextViewMarginSearchRegionsUpdated;
@@ -748,7 +760,7 @@ But I leave it in in the case I've missed something. Mike
 			
 			//	bool error = result == null && !String.IsNullOrEmpty (SearchPattern);
 			string errorMsg;
-			bool valid = textEditor.SearchEngine.IsValidPattern (searchPattern, out errorMsg);
+			bool valid = textEditor.SearchEngine.IsValidPattern (SearchAndReplaceOptions.SearchPattern, out errorMsg);
 			//	error |= !valid;
 			
 			if (!valid) {
@@ -794,7 +806,7 @@ But I leave it in in the case I've missed something. Mike
 		
 		void UpdateReplacePattern (object sender, EventArgs args)
 		{
-			entryReplace.Text = replacePattern;
+			entryReplace.Text = SearchAndReplaceOptions.ReplacePattern;
 		}
 
 		internal void SetSearchPattern ()
@@ -803,7 +815,7 @@ But I leave it in in the case I've missed something. Mike
 			
 			if (!String.IsNullOrEmpty (selectedText)) {
 				SetSearchPattern (selectedText);
-				SearchAndReplaceWidget.searchPattern = selectedText;
+				SearchAndReplaceOptions.SearchPattern = selectedText;
 				SearchAndReplaceWidget.UpdateSearchHistory (selectedText);
 				textEditor.TextViewMargin.MainSearchResult = textEditor.SelectionRange;
 			}
@@ -816,6 +828,7 @@ But I leave it in in the case I've missed something. Mike
 
 		public static SearchResult FindNext (TextEditor textEditor)
 		{
+			textEditor.SearchPattern = SearchAndReplaceOptions.SearchPattern;
 			SearchResult result = textEditor.FindNext (true);
 			textEditor.CenterToCaret ();
 
@@ -834,6 +847,7 @@ But I leave it in in the case I've missed something. Mike
 
 		public static SearchResult FindPrevious (TextEditor textEditor)
 		{
+			textEditor.SearchPattern = SearchAndReplaceOptions.SearchPattern;
 			SearchResult result = textEditor.FindPrevious (true);
 
 			textEditor.CenterToCaret ();

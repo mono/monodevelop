@@ -238,6 +238,9 @@
 			baseType="text/html">
 			<File pattern="*.spark" />
 		</MimeType>
+		<MimeType id="application/typescript" _description="Typescript source code" icon="md-html-file-icon" isText="true">
+			<File pattern="*.ts" />
+		</MimeType>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">

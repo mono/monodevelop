@@ -40,10 +40,11 @@ using MonoDevelop.SourceEditor;
 using ICSharpCode.NRefactory.CSharp.Completion;
 using ICSharpCode.NRefactory.Editor;
 using System.Linq;
+using System.Text;
 
 namespace MonoDevelop.CSharp.Formatting
 {
-	public class CSharpTextEditorIndentation : TextEditorExtension
+	public class CSharpTextEditorIndentation : TextEditorExtension, ITextPasteHandler
 	{
 		DocumentStateTracker<CSharpIndentEngine> stateTracker;
 		int cursorPositionBeforeKeyPress;
@@ -113,82 +114,36 @@ namespace MonoDevelop.CSharp.Formatting
 			if (document.Editor.Options.IndentStyle == IndentStyle.None ||
 			    document.Editor.Options.IndentStyle == IndentStyle.Auto)
 				return;
-			var startLine = Editor.GetLineByOffset (insertionOffset);
-			var endLine = Editor.GetLineByOffset (insertionOffset + insertedChars);
 
-			using (var undo = Editor.OpenUndoGroup ()) {
+			// Just correct the start line of the paste operation - the text is already indented.
+			var curLine = Editor.GetLineByOffset (insertionOffset);
+			var curLineOffset = curLine.Offset;
+			stateTracker.UpdateEngine (curLineOffset);
+			if (!stateTracker.Engine.IsInsideOrdinaryCommentOrString) {
+				// The Indent engine doesn't really handle pre processor directives very well.
+				if (IsPreprocessorDirective (curLine)) {
+					Editor.Replace (curLineOffset, curLine.Length, stateTracker.Engine.NewLineIndent + Editor.GetTextAt (curLine).TrimStart ());
+				} else {
+					int pos = curLineOffset;
+					string curIndent = curLine.GetIndentation (textEditorData.Document);
+					int nlwsp = curIndent.Length;
 
-//			// Trim blank spaces on text paste, see: Bug 511 - Trim blank spaces when copy-pasting
-//			if (OnTheFlyFormatting) {
-//				int i = insertionOffset + insertedChars;
-//				bool foundNonWsFollowUp = false;
-//
-//				var line = Document.Editor.GetLineByOffset (i);
-//				if (line != null) {
-//					for (int j = 0; j < line.Offset + line.Length; j++) {
-//						var ch = Document.Editor.GetCharAt (j);
-//						if (ch != ' ' && ch != '\t') {
-//							foundNonWsFollowUp = true;
-//							break;
-//						}
-//					}
-//				}
-//
-//				if (!foundNonWsFollowUp) {
-//					while (i > insertionOffset) {
-//						char ch = Document.Editor.GetCharAt (i - 1);
-//						if (ch != ' ' && ch != '\t') 
-//							break;
-//						i--;
-//					}
-//					int delta = insertionOffset + insertedChars - i;
-//					if (delta > 0) {
-//						Editor.Caret.Offset -= delta;
-//						Editor.Remove (insertionOffset + insertedChars - delta, delta);
-//					}
-//				}
-//			}
-
-				var curLine = startLine;
-
-
-				while (true) {
-					if (curLine == null)
-						break;
-					var curLineOffset = curLine.Offset;
-					stateTracker.UpdateEngine (curLineOffset);
-					if (!stateTracker.Engine.IsInsideOrdinaryCommentOrString) {
-						// The Indent engine doesn't really handle pre processor directives very well.
-						if (IsPreprocessorDirective (curLine)) {
-							Editor.Replace (curLineOffset, curLine.Length, stateTracker.Engine.NewLineIndent + Editor.GetTextAt (curLine).TrimStart ());
-						} else {
-							int pos = curLineOffset;
-							string curIndent = curLine.GetIndentation (textEditorData.Document);
-							int nlwsp = curIndent.Length;
-
-
-							if (!stateTracker.Engine.LineBeganInsideMultiLineComment || (nlwsp < curLine.LengthIncludingDelimiter && textEditorData.Document.GetCharAt (curLineOffset + nlwsp) == '*')) {
-								// Possibly replace the indent
-								stateTracker.UpdateEngine (curLineOffset + curLine.Length);
-								string newIndent = stateTracker.Engine.ThisLineIndent;
-								if (newIndent != curIndent) {
-									if (CompletionWindowManager.IsVisible) {
-										if (pos < CompletionWindowManager.CodeCompletionContext.TriggerOffset)
-											CompletionWindowManager.CodeCompletionContext.TriggerOffset -= nlwsp;
-									}
-									textEditorData.Replace (pos, nlwsp, newIndent);
-									textEditorData.Document.CommitLineUpdate (textEditorData.Caret.Line);
-								}
+					if (!stateTracker.Engine.LineBeganInsideMultiLineComment || (nlwsp < curLine.LengthIncludingDelimiter && textEditorData.Document.GetCharAt (curLineOffset + nlwsp) == '*')) {
+						// Possibly replace the indent
+						stateTracker.UpdateEngine (curLineOffset + curLine.Length);
+						string newIndent = stateTracker.Engine.ThisLineIndent;
+						if (newIndent != curIndent) {
+							if (CompletionWindowManager.IsVisible) {
+								if (pos < CompletionWindowManager.CodeCompletionContext.TriggerOffset)
+									CompletionWindowManager.CodeCompletionContext.TriggerOffset -= nlwsp;
 							}
+							textEditorData.Replace (pos, nlwsp, newIndent);
+							textEditorData.Document.CommitLineUpdate (textEditorData.Caret.Line);
 						}
 					}
-
-					if (curLine == endLine)
-						break;
-					curLine = curLine.NextLine;
 				}
-				textEditorData.FixVirtualIndentation ();
 			}
+			textEditorData.FixVirtualIndentation ();
 		} 
 
 		public static bool OnTheFlyFormatting {
@@ -226,16 +181,50 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 
 			InitTracker ();
+			Document.Editor.TextPasteHandler = this;
 			Document.Editor.Paste += HandleTextPaste;
 		}
 
-		/*		void TextCut (object sender, ReplaceEventArgs e)
-		{
-			if (!string.IsNullOrEmpty (e.Value) || e.Count == 0)
-				return;
-			RunFormatterAt (e.Offset);
-		}*/
+		#region ITextPasteHandler implementation
 
+		string ITextPasteHandler.FormatPlainText (int insertionOffset, string text)
+		{
+			if (document.Editor.Options.IndentStyle == IndentStyle.None ||
+			    document.Editor.Options.IndentStyle == IndentStyle.Auto)
+				return text;
+
+			stateTracker.UpdateEngine (insertionOffset);
+			var engine = stateTracker.Engine.Clone () as CSharpIndentEngine;
+
+			StringBuilder result = new StringBuilder ();
+
+			bool inNewLine = false;
+			foreach (var ch in text) {
+				if (!stateTracker.Engine.IsInsideOrdinaryCommentOrString) {
+					if (inNewLine && (ch == ' ' || ch == '\t')) {
+						continue;
+					}
+				}
+
+				if (inNewLine && ch != '\n' && ch != '\r') {
+					if (!stateTracker.Engine.IsInsideOrdinaryCommentOrString) {
+						if (ch != '#')
+							engine.Push (ch);
+						result.Append (engine.ThisLineIndent);
+						if (ch == '#')
+							engine.Push (ch);
+					}
+					inNewLine = false;
+				} else {
+					engine.Push (ch);
+				}
+				result.Append (ch);
+				if (ch == '\n' || ch == '\r')
+					inNewLine = true;
+			}
+			return result.ToString ();
+		}
+		#endregion
 
 		#region Sharing the tracker
 

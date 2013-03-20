@@ -82,7 +82,7 @@ namespace CBinding.Parser
 		
 		string GetString (Ambience amb, IUnresolvedEntity x)
 		{
-			var ctx = Document.ParsedDocument.ParsedFile.GetTypeResolveContext (Document.Compilation, x.Region.Begin);
+			var ctx = new SimpleTypeResolveContext (Document.Compilation.MainAssembly);
 			IEntity rx = null;
 			if (x is IUnresolvedMember)
 				rx = ((IUnresolvedMember)x).CreateResolved (ctx);

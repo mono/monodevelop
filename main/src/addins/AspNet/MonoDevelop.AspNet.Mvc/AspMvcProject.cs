@@ -127,6 +127,30 @@ namespace MonoDevelop.AspNet.Mvc
 				}
 			}
 		}
+
+		public string GetAspNetMvcVersion ()
+		{
+			foreach (var pref in References) {
+				if (pref.StoredReference.IndexOf ("System.Web.Mvc", StringComparison.OrdinalIgnoreCase) < 0)
+					continue;
+				switch (pref.ReferenceType) {
+				case ReferenceType.Assembly:
+				case ReferenceType.Package:
+					foreach (var f in pref.GetReferencedFileNames (null)) {
+						if (Path.GetFileNameWithoutExtension (f) != "System.Web.Mvc" || !File.Exists (f))
+							continue;
+						return AssemblyName.GetAssemblyName (f).Version.ToString ();
+					}
+					break;
+				default:
+					continue;
+				}
+			};
+
+			return GetDefaultAspNetMvcVersion ();
+		}
+
+		protected abstract string GetDefaultAspNetMvcVersion ();
 	}
 
 	public class AspMvc1Project : AspMvcProject
@@ -144,6 +168,11 @@ namespace MonoDevelop.AspNet.Mvc
 			: base (languageName, info, projectOptions)
 		{
 		}
+
+		protected override string GetDefaultAspNetMvcVersion ()
+		{
+			return "1.0.0.0";
+		}
 	}
 
 	public class AspMvc2Project : AspMvcProject
@@ -160,6 +189,11 @@ namespace MonoDevelop.AspNet.Mvc
 		public AspMvc2Project (string languageName, ProjectCreateInformation info, XmlElement projectOptions)
 			: base (languageName, info, projectOptions)
 		{
+		}
+
+		protected override string GetDefaultAspNetMvcVersion ()
+		{
+			return "2.0.0.0";
 		}
 	}
 
@@ -183,6 +217,11 @@ namespace MonoDevelop.AspNet.Mvc
 		{
 			return framework.CanReferenceAssembliesTargetingFramework (MonoDevelop.Core.Assemblies.TargetFrameworkMoniker.NET_4_0);
 		}
+
+		protected override string GetDefaultAspNetMvcVersion ()
+		{
+			return "3.0.0.0";
+		}
 	}
 
 	public class AspMvc4Project : AspMvcProject
@@ -204,6 +243,11 @@ namespace MonoDevelop.AspNet.Mvc
 		public override bool SupportsFramework (MonoDevelop.Core.Assemblies.TargetFramework framework)
 		{
 			return framework.CanReferenceAssembliesTargetingFramework (MonoDevelop.Core.Assemblies.TargetFrameworkMoniker.NET_4_0);
+		}
+
+		protected override string GetDefaultAspNetMvcVersion ()
+		{
+			return "4.0.0.0";
 		}
 	}
 }

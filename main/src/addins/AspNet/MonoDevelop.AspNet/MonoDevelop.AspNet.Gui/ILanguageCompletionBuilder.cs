@@ -25,25 +25,14 @@
 // THE SOFTWARE.
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
-using System.Diagnostics;
-using MonoDevelop.Core;
-using MonoDevelop.Projects;
-using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.AspNet;
 using MonoDevelop.AspNet.Parser;
-using MonoDevelop.AspNet.Parser.Dom;
-using MonoDevelop.Html;
-using MonoDevelop.DesignerSupport;
 using S = MonoDevelop.Xml.StateEngine;
 using MonoDevelop.AspNet.StateEngine;
-using System.Text;
 using Mono.TextEditor;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.CodeCompletion;
-using ICSharpCode.NRefactory.Completion;
 
 namespace MonoDevelop.AspNet.Gui
 {
@@ -104,16 +93,12 @@ namespace MonoDevelop.AspNet.Gui
 			this.AspNetDocument = aspNetParsedDocument;
 			this.Imports = imports;
 			this.References = references;
-			ScriptBlocks = new List<TagNode> ();
-			Expressions = new List<ExpressionNode> ();
-			aspNetParsedDocument.RootNode.AcceptVisit (new ExpressionCollector (this));
+			BuildExpressionAndScriptsLists ();
 		}
 		
 		public ICompilation Dom { get; private set; }
 		public AspNetParsedDocument AspNetDocument { get; private set; }
 		public ParsedDocument ParsedDocument { get; set; }
-		public List<ExpressionNode> Expressions { get; private set; }
-		public List<TagNode> ScriptBlocks { get; private set; }
 		public IList<ICompilation> References { get; set; }
 		public IEnumerable<string> Imports { get; private set; }
 		
@@ -146,26 +131,32 @@ namespace MonoDevelop.AspNet.Gui
 			throw new InvalidOperationException (string.Format ("Unexpected filetype '{0}'", type));
 		}
 		
-		class ExpressionCollector : Visitor
+		#region parsing for expression and runat="server" script tags
+		
+		public List<S.XNode> XExpressions { get; private set; }
+		public List<S.XElement> XScriptBlocks { get; private set; }
+		
+		void BuildExpressionAndScriptsLists ()
 		{
-			DocumentInfo parent;
+			XExpressions = new List<S.XNode> ();
+			XScriptBlocks = new List<S.XElement> ();
 			
-			public ExpressionCollector (DocumentInfo parent)
-			{
-				this.parent = parent;
-			}
-			
-			public override void Visit (TagNode node)
-			{
-				if (node.TagName == "script" && (string)node.Attributes["runat"] == "server")
-					parent.ScriptBlocks.Add (node);
-			}
-			
-			public override void Visit (ExpressionNode node)
-			{
-				parent.Expressions.Add (node);
+			foreach (S.XNode node in AspNetDocument.XDocument.AllDescendentNodes) {
+				if (node is AspNetRenderExpression || node is AspNetHtmlEncodedExpression || node is AspNetRenderBlock) {
+					XExpressions.Add (node);
+					continue;
+				}
+				S.XElement el = node as S.XElement;
+				if (el == null) {
+					continue;
+				}
+				if (el.IsServerScriptTag ()) {
+					XScriptBlocks.Add (el);	
+				}
 			}
 		}
+		
+		#endregion
 	}
 	
 	/// <summary>

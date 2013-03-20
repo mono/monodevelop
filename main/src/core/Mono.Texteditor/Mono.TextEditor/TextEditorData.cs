@@ -438,6 +438,11 @@ namespace Mono.TextEditor
 			if (String.IsNullOrEmpty (text))
 				return;
 			using (var undo = OpenUndoGroup ()) {
+				DeleteSelectedText (IsSomethingSelected ? MainSelection.SelectionMode != SelectionMode.Block : true);
+				// Needs to be called after delete text, delete text handles virtual caret postitions itself,
+				// but afterwards the virtual position may need to be restored.
+				EnsureCaretIsNotVirtual ();
+
 				if (IsSomethingSelected && MainSelection.SelectionMode == SelectionMode.Block) {
 					var visualInsertLocation = LogicalToVisualLocation (MainSelection.Anchor);
 					var selection = MainSelection;
@@ -457,10 +462,12 @@ namespace Mono.TextEditor
 						}
 						Insert (lineSegment.Offset + insertOffset, textToInsert);
 					}
+					var visualColumn = GetLine (Caret.Location.Line).GetVisualColumn (this, Caret.Column);
 					MainSelection = new Selection (
-								new DocumentLocation (selection.Anchor.Line, Caret.Column),
-								new DocumentLocation (selection.Lead.Line, Caret.Column),
-								Mono.TextEditor.SelectionMode.Block);
+						new DocumentLocation (selection.Anchor.Line, GetLine (selection.Anchor.Line).GetLogicalColumn (this, visualColumn)),
+						new DocumentLocation (selection.Lead.Line, GetLine (selection.Lead.Line).GetLogicalColumn (this, visualColumn)),
+						SelectionMode.Block
+					);
 					Caret.PreserveSelection = false;
 					Document.CommitMultipleLineUpdate (selection.MinLine, selection.MaxLine);
 				} else {
@@ -560,17 +567,7 @@ namespace Mono.TextEditor
 		{
 			return Options.WordFindStrategy.FindCurrentWordStart (Document, offset);
 		}
-		
-		public delegate void PasteCallback (int insertionOffset, string text, int insertedChars);
-		
-		public event PasteCallback Paste;
-		
-		public void PasteText (int insertionOffset, string text, int insertedChars)
-		{
-			if (Paste != null)
-				Paste (insertionOffset, text, insertedChars);
-		}
-		
+
 		#region undo/redo handling
 		DocumentLocation savedCaretPos;
 		Selection savedSelection;
@@ -579,7 +576,7 @@ namespace Mono.TextEditor
 		void OnBeginUndo (object sender, EventArgs args)
 		{
 			savedCaretPos  = Caret.Location;
-			savedSelection = Selection.Clone (MainSelection);
+			savedSelection = MainSelection;
 		}
 
 		void OnEndUndo (object sender, TextDocument.UndoOperationEventArgs e)
@@ -620,7 +617,7 @@ namespace Mono.TextEditor
 				undoSelection = selection;
 				
 				redoCaretPos  = editor.Caret.Location;
-				redoSelection = Mono.TextEditor.Selection.Clone (editor.MainSelection);
+				redoSelection = editor.MainSelection;
 			}
 			
 			public void UndoState ()
@@ -640,7 +637,7 @@ namespace Mono.TextEditor
 		#region Selection management
 		public bool IsSomethingSelected {
 			get {
-				return MainSelection != null && MainSelection.Anchor != MainSelection.Lead; 
+				return !MainSelection.IsEmpty && MainSelection.Anchor != MainSelection.Lead; 
 			}
 		}
 		
@@ -683,39 +680,31 @@ namespace Mono.TextEditor
 		
 		public SelectionMode SelectionMode {
 			get {
-				return MainSelection != null ? MainSelection.SelectionMode : SelectionMode.Normal;
+				return !MainSelection.IsEmpty ? MainSelection.SelectionMode : SelectionMode.Normal;
 			}
 			set {
-				if (MainSelection != null)
-					MainSelection.SelectionMode = value;
+				if (MainSelection.IsEmpty)
+					return;
+				MainSelection = MainSelection.WithSelectionMode (value);
 			}
 		}
 		
-		Selection mainSelection = null;
+		Selection mainSelection = Selection.Empty;
 		public Selection MainSelection {
 			get {
 				return mainSelection;
 			}
 			set {
-				if (mainSelection == null && value == null)
+				if (mainSelection.IsEmpty && value.IsEmpty)
 					return;
-				if (mainSelection == null && value != null || mainSelection != null && value == null || !mainSelection.Equals (value)) {
+				if (mainSelection.IsEmpty && !value.IsEmpty || !mainSelection.IsEmpty && value.IsEmpty || !mainSelection.Equals (value)) {
 					OnSelectionChanging (EventArgs.Empty);
-					if (mainSelection != null)
-						mainSelection.Changed -= HandleMainSelectionChanged;
 					mainSelection = value;
-					if (mainSelection != null) 
-						mainSelection.Changed += HandleMainSelectionChanged;
 					OnSelectionChanged (EventArgs.Empty);
 				}
 			}
 		}
 
-		void HandleMainSelectionChanged (object sender, EventArgs e)
-		{
-			OnSelectionChanged (EventArgs.Empty);
-		}
-		
 		public IEnumerable<Selection> Selections {
 			get {
 				yield return MainSelection;
@@ -735,18 +724,20 @@ namespace Mono.TextEditor
 //		}
 		public int SelectionAnchor {
 			get {
-				if (MainSelection == null)
+				if (MainSelection.IsEmpty)
 					return -1;
 				return MainSelection.GetAnchorOffset (this);
 			}
 			set {
 				DocumentLocation location = Document.OffsetToLocation (value);
-				if (mainSelection == null) {
+				if (mainSelection.IsEmpty) {
 					MainSelection = new Selection (location, location);
 				} else {
-					if (MainSelection.Lead == location)
-						MainSelection.Lead = MainSelection.Anchor;
-					MainSelection.Anchor = location;
+					if (MainSelection.Lead == location) {
+						MainSelection = MainSelection.WithLead (MainSelection.Anchor);
+					} else {
+						MainSelection = MainSelection.WithAnchor (location);
+					}
 				}
 			}
 		}
@@ -756,30 +747,29 @@ namespace Mono.TextEditor
 		/// </summary>
 		public TextSegment SelectionRange {
 			get {
-				return MainSelection != null ? MainSelection.GetSelectionRange (this) : new TextSegment (Caret.Offset, 0);
+				return !MainSelection.IsEmpty ? MainSelection.GetSelectionRange (this) : new TextSegment (Caret.Offset, 0);
 			}
 			set {
 				if (SelectionRange != value) {
 					OnSelectionChanging (EventArgs.Empty);
 					if (value.IsEmpty) {
-						MainSelection = null;
+						MainSelection = Selection.Empty;
 					} else {
 						DocumentLocation loc1 = document.OffsetToLocation (value.Offset);
 						DocumentLocation loc2 = document.OffsetToLocation (value.EndOffset);
-						if (MainSelection == null) {
+						if (MainSelection.IsEmpty) {
 							MainSelection = new Selection (loc1, loc2);
 						} else {
 							if (MainSelection.Anchor == loc1) {
-								MainSelection.Lead = loc2;
+								MainSelection = MainSelection.WithLead (loc2);
 							} else if (MainSelection.Anchor == loc2) {
-								MainSelection.Lead = loc1;
+								MainSelection = MainSelection.WithLead (loc1);
 							} else {
 								MainSelection = new Selection (loc1, loc2);
 							}
 						}
 						
 					}
-					OnSelectionChanged (EventArgs.Empty);
 				}
 			}
 		}
@@ -821,15 +811,14 @@ namespace Mono.TextEditor
 		{
 			if (!IsSomethingSelected)
 				return;
-			MainSelection = null;
-			OnSelectionChanged (EventArgs.Empty);
+			MainSelection = Selection.Empty;
 		}
 		
 		public void ExtendSelectionTo (DocumentLocation location)
 		{
-			if (MainSelection == null)
+			if (MainSelection.IsEmpty)
 				MainSelection = new Selection (location, location);
-			MainSelection.Lead = location;
+			MainSelection = MainSelection.WithLead (location);
 		}
 		
 		public void SetSelection (int anchorOffset, int leadOffset)
@@ -862,8 +851,8 @@ namespace Mono.TextEditor
 
 		internal void DeleteSelection (Selection selection)
 		{
-			if (selection == null)
-				throw new ArgumentNullException ("selection");
+			if (selection.IsEmpty)
+				throw new ArgumentNullException ("selection was empty.");
 			switch (selection.SelectionMode) {
 			case SelectionMode.Normal:
 				var segment = selection.GetSelectionRange (this);
@@ -894,9 +883,10 @@ namespace Mono.TextEditor
 						Caret.Column = col1 + 1;
 				}
 				int column = System.Math.Min (selection.Anchor.Column, selection.Lead.Column);
-				selection.Anchor = new DocumentLocation (selection.Anchor.Line, column);
-				selection.Lead = new DocumentLocation (selection.Lead.Line, column);
-				Caret.Column = column;
+				MainSelection = selection.WithRange (
+					new DocumentLocation (selection.Anchor.Line, column),
+					new DocumentLocation (selection.Lead.Line, column)
+				);
 				Caret.PreserveSelection = preserve;
 				break;
 			}
@@ -1055,24 +1045,7 @@ namespace Mono.TextEditor
 		
 		public int SearchReplaceAll (string withPattern)
 		{
-			int result = 0;
-			using (var undo = OpenUndoGroup ()) {
-				int offset = 0;
-				if (!SearchRequest.SearchRegion.IsInvalid)
-					offset = SearchRequest.SearchRegion.Offset;
-				SearchResult searchResult; 
-				while (true) {
-					searchResult = SearchForward (offset);
-					if (searchResult == null || searchResult.SearchWrapped)
-						break;
-					searchEngine.Replace (searchResult, withPattern);
-					offset = searchResult.Offset + withPattern.Length;
-					result++;
-				}
-				if (result > 0)
-					ClearSelection ();
-			}
-			return result;
+			return searchEngine.ReplaceAll (withPattern);
 		}
 		#endregion
 		
@@ -1192,6 +1165,30 @@ namespace Mono.TextEditor
 				handler (this, EventArgs.Empty);
 		}
 		public event EventHandler RecenterEditor;
+
+		#region Text Paste
+		/// <summary>
+		/// Gets or sets the text paste handler.
+		/// </summary>
+		public ITextPasteHandler TextPasteHandler {
+			get;
+			set;
+		}
+
+		public int PasteText (int offset, string text)
+		{
+			if (TextPasteHandler != null)
+				text = TextPasteHandler.FormatPlainText (offset, text);
+			var insertedChars = Insert (offset, text);
+			if (Paste != null)
+				Paste (offset, text, insertedChars);
+			return insertedChars;
+		}
+
+		public delegate void PasteCallback (int insertionOffset, string text, int insertedChars);
+		
+		public event PasteCallback Paste;
+		#endregion
 
 		#region Document delegation
 		public int Length {

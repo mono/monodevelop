@@ -110,9 +110,10 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public static IType Resolve (this IUnresolvedTypeDefinition def, Project project)
 		{
-			var pf = TypeSystemService.GetProjectContext (project).GetFile (def.Region.FileName);
-			var ctx = pf.GetTypeResolveContext (TypeSystemService.GetCompilation (project), def.Region.Begin);
-			return def.Resolve (ctx);
+			var compilation = TypeSystemService.GetCompilation (project);
+			var ctx = new SimpleTypeResolveContext (compilation.MainAssembly);
+			var resolvedType = def.Resolve (ctx);
+			return resolvedType;
 		}
 		
 		[Obsolete("Do not use this method. Use type references to resolve types. Type references from full reflection names can be got from ReflectionHelper.ParseReflectionName.")]

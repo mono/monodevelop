@@ -72,6 +72,7 @@
     <Reference Include="ICSharpCode.SharpZipLib" />
     <Reference Include="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Web" />
@@ -468,6 +469,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="frameworks\framework_NET_4_5.xml">
       <LogicalName>framework_NET_4_5.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frameworks\framework_NET_3_5_client.xml">
+      <LogicalName>framework_NET_3_5_client.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frameworks\framework_NET_4_0_client.xml">
+      <LogicalName>framework_NET_4_0_client.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

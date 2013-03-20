@@ -451,9 +451,14 @@ namespace Mono.TextEditor
 			}
 
 			defaultLayout.FontDescription = textEditor.Options.Font;
-			using (var metrics = textEditor.PangoContext.GetMetrics (defaultLayout.FontDescription, textEditor.PangoContext.Language)) {
+			using (var metrics = textEditor.PangoContext.GetMetrics (textEditor.Options.Font, textEditor.PangoContext.Language)) {
 				this.textEditor.GetTextEditorData ().LineHeight = System.Math.Ceiling (0.5 + (metrics.Ascent + metrics.Descent) / Pango.Scale.PangoScale);
 				this.charWidth = metrics.ApproximateCharWidth / Pango.Scale.PangoScale;
+			}
+
+			// Gutter font may be bigger
+			using (var metrics = textEditor.PangoContext.GetMetrics (textEditor.Options.GutterFont, textEditor.PangoContext.Language)) {
+				this.textEditor.GetTextEditorData ().LineHeight = System.Math.Max (this.textEditor.GetTextEditorData ().LineHeight, System.Math.Ceiling (0.5 + (metrics.Ascent + metrics.Descent) / Pango.Scale.PangoScale));
 			}
 
 			textEditor.LineHeight = System.Math.Max (1, LineHeight);
@@ -1792,7 +1797,7 @@ namespace Mono.TextEditor
 					textEditor.RunAction (CaretMoveActions.ToDocumentEnd);
 					return;
 				}
-				if (args.Button == 2 && selection != null && selection.Contains (Document.OffsetToLocation (offset))) {
+				if (args.Button == 2 && !selection.IsEmpty && selection.Contains (Document.OffsetToLocation (offset))) {
 					textEditor.ClearSelection ();
 					return;
 				}
@@ -1861,13 +1866,13 @@ namespace Mono.TextEditor
 			if (!Platform.IsWindows && args.Button == 2 && this.textEditor.CanEdit (docLocation.Line)) {
 				TextSegment selectionRange = TextSegment.Invalid;
 				int offset = Document.LocationToOffset (docLocation);
-				if (selection != null)
+				if (!selection.IsEmpty)
 					selectionRange = selection.GetSelectionRange (this.textEditor.GetTextEditorData ());
 				var oldVersion = textEditor.Document.Version;
 
 				bool autoScroll = textEditor.Caret.AutoScrollToCaret;
 				textEditor.Caret.AutoScrollToCaret = false;
-				if (selection != null && selectionRange.Contains (offset)) {
+				if (!selection.IsEmpty && selectionRange.Contains (offset)) {
 					textEditor.ClearSelection ();
 					textEditor.Caret.Offset = selectionRange.EndOffset;
 					return;
@@ -2126,12 +2131,11 @@ namespace Mono.TextEditor
 					end = data.FindCurrentWordEnd (offset);
 					Caret.Offset = end;
 				}
-				if (textEditor.MainSelection != null) {
-					textEditor.MainSelection.Lead = Caret.Location;
+				if (!textEditor.IsSomethingSelected) {
 					if (Caret.Offset < mouseWordStart) {
-						textEditor.MainSelection.Anchor = Document.OffsetToLocation (mouseWordEnd);
+						textEditor.MainSelection = new Selection (Document.OffsetToLocation (mouseWordEnd), Caret.Location, textEditor.MainSelection.SelectionMode);
 					} else {
-						textEditor.MainSelection.Anchor = Document.OffsetToLocation (mouseWordStart);
+						textEditor.MainSelection = new Selection (Document.OffsetToLocation (mouseWordStart), Caret.Location, textEditor.MainSelection.SelectionMode);
 					}
 				}
 				break;
@@ -2141,13 +2145,11 @@ namespace Mono.TextEditor
 				DocumentLine line2 = textEditor.Document.GetLineByOffset (textEditor.SelectionAnchor);
 				var o2 = line1.Offset < line2.Offset ? line1.Offset : line1.EndOffsetIncludingDelimiter;
 				Caret.Offset = o2;
-				if (textEditor.MainSelection != null) {
-					textEditor.MainSelection.Lead = Caret.Location;
+				if (textEditor.IsSomethingSelected) {
 					if (mouseWordStart < o2) {
-						textEditor.MainSelection.Anchor = textEditor.OffsetToLocation (mouseWordStart);
+						textEditor.MainSelection = new Selection (textEditor.OffsetToLocation (mouseWordStart), Caret.Location, textEditor.MainSelection.SelectionMode);
 					} else {
-						textEditor.MainSelection.Anchor = textEditor.OffsetToLocation (mouseWordEnd);
-
+						textEditor.MainSelection = new Selection (textEditor.OffsetToLocation (mouseWordEnd), Caret.Location, textEditor.MainSelection.SelectionMode);
 					}
 				}
 

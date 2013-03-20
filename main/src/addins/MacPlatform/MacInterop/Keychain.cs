@@ -201,13 +201,13 @@ namespace MonoDevelop.MacInterop
 			if (res != OSStatus.Ok)
 				throw new Exception ("Could not enumerate certificates from the keychain. Error:\n" + GetError (res));
 			
-			var list = new List<string> ();
+			var names = new HashSet<string> ();
 			
 			OSStatus searchStatus;
 			while ((searchStatus = SecKeychainSearchCopyNext (searchRef, out itemRef)) == OSStatus.Ok) {
 				IntPtr commonName;
 				if (SecCertificateCopyCommonName (itemRef, out commonName) == OSStatus.Ok) {
-					list.Add (FetchString (commonName));
+					names.Add (FetchString (commonName));
 					CFRelease (commonName);
 				}
 				CFRelease (itemRef);
@@ -216,7 +216,7 @@ namespace MonoDevelop.MacInterop
 				LoggingService.LogWarning ("Unexpected error retrieving certificates from keychain:\n" + GetError (searchStatus));
 			
 			CFRelease (searchRef);
-			return list;
+			return names.ToList ();
 		}
 		
 		public static IList<string> GetAllSigningIdentities ()
@@ -228,7 +228,7 @@ namespace MonoDevelop.MacInterop
 			if (res != OSStatus.Ok)
 				throw new Exception ("Could not enumerate certificates from the keychain. Error:\n" + GetError (res));
 			
-			var list = new List<string> ();
+			var identities = new HashSet<string> ();
 			
 			OSStatus searchStatus;
 			while ((searchStatus = SecIdentitySearchCopyNext (searchRef, out itemRef)) == OSStatus.Ok) {
@@ -236,7 +236,7 @@ namespace MonoDevelop.MacInterop
 					if (SecCertificateCopyCommonName (certRef, out commonName) == OSStatus.Ok) {
 						string name = FetchString (commonName);
 						if (name != null)
-							list.Add (name);
+							identities.Add (name);
 						CFRelease (commonName);
 					}
 					CFRelease (certRef);
@@ -247,7 +247,7 @@ namespace MonoDevelop.MacInterop
 				LoggingService.LogWarning ("Unexpected error retrieving identities from keychain:\n" + GetError (searchStatus));
 			
 			CFRelease (searchRef);
-			return list;
+			return identities.ToList ();
 		}
 		
 		public static IEnumerable<X509Certificate2> FindNamedSigningCertificates (Func<string,bool> nameCheck)
@@ -267,7 +267,7 @@ namespace MonoDevelop.MacInterop
 			if (res != OSStatus.Ok)
 				throw new Exception ("Could not enumerate certificates from the keychain. Error:\n" + GetError (res));
 			
-			var list = new List<X509Certificate2> ();
+			var certs = new HashSet<X509Certificate2> ();
 			
 			OSStatus searchStatus;
 			while ((searchStatus = SecIdentitySearchCopyNext (searchRef, out itemRef)) == OSStatus.Ok) {
@@ -275,7 +275,7 @@ namespace MonoDevelop.MacInterop
 					CssmData data;
 					if (SecCertificateGetData (certRef, out data) == OSStatus.Ok) {
 						try {
-							list.Add (new X509Certificate2 (data.GetCopy ()));
+							certs.Add (new X509Certificate2 (data.GetCopy ()));
 						} catch (Exception ex) {
 							LoggingService.LogWarning ("Error loading signing certificate from keychain", ex);
 						}
@@ -287,7 +287,7 @@ namespace MonoDevelop.MacInterop
 				LoggingService.LogWarning ("Unexpected error code retrieving signing certificates from keychain:\n" + GetError (searchStatus));
 			
 			CFRelease (searchRef);
-			return list;
+			return certs.ToList ();
 		}
 		
 		/* 10.6 only

@@ -51,7 +51,6 @@ namespace MonoDevelop.Projects
 	[ProjectModelDataItem ("AbstractDotNetProject")]
 	public abstract class DotNetProject : Project, IAssemblyProject
 	{
-
 		bool usePartialTypes = true;
 		ProjectParameters languageParameters;
 
@@ -192,6 +191,18 @@ namespace MonoDevelop.Projects
 		
 		public ProjectReferenceCollection References {
 			get { return projectReferences; }
+		}
+
+		public virtual bool CanReferenceProject (DotNetProject targetProject, out string reason)
+		{
+			if (!TargetFramework.CanReferenceAssembliesTargetingFramework (targetProject.TargetFramework)) {
+				reason = GettextCatalog.GetString ("Incompatible target framework: {0}", targetProject.TargetFramework.Id);
+				return false;
+			}
+
+			reason = null;
+
+			return true;
 		}
 
 		public IDotNetLanguageBinding LanguageBinding {
@@ -833,7 +844,7 @@ namespace MonoDevelop.Projects
 				return null;
 			//return all projects in the sln in case some are loaded dynamically
 			//FIXME: should we do this for the whole workspace?
-			return ParentSolution.GetAllProjects ().OfType<DotNetProject> ()
+			return ParentSolution.RootFolder.GetAllBuildableEntries (configuration).OfType<DotNetProject> ()
 				.Select (d => (string) d.GetOutputFileName (configuration))
 				.Where (d => !string.IsNullOrEmpty (d)).ToList ();
 		}

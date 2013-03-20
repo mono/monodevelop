@@ -165,7 +165,7 @@ namespace Mono.TextEditor
 			{
 				copiedDocument = null;
 				monoDocument = null;
-				if (selection != null && data != null && data.Document != null) {
+				if (!selection.IsEmpty && data != null && data.Document != null) {
 					copiedDocument = new TextDocument ();
 					monoDocument = new TextDocument ();
 					this.docStyle = data.ColorStyle;
@@ -318,7 +318,8 @@ namespace Mono.TextEditor
 								data.Caret.PreserveSelection = true;
 								result = text.Length;
 								DocumentLine curLine = data.Document.GetLine (data.Caret.Line);
-								data.Insert (curLine.Offset, text + data.EolMarker);
+
+								data.PasteText (curLine.Offset, text + data.EolMarker);
 								if (!preserveState)
 									data.ClearSelection ();
 								data.Caret.PreserveSelection = false;
@@ -347,16 +348,35 @@ namespace Mono.TextEditor
 
 		static int PastePlainText (TextEditorData data, int offset, string text, bool preserveSelection = false)
 		{
-			int inserted;
+			int inserted = 0;
 			using (var undo = data.OpenUndoGroup ()) {
 				var version = data.Document.Version;
 				if (!preserveSelection)
 					data.DeleteSelectedText (!data.IsSomethingSelected || data.MainSelection.SelectionMode != SelectionMode.Block);
 				data.EnsureCaretIsNotVirtual ();
-				offset = version.MoveOffsetTo (data.Document.Version, offset);
-				inserted = data.Insert (offset, text);
+				if (data.IsSomethingSelected && data.MainSelection.SelectionMode == SelectionMode.Block) {
+					var selection = data.MainSelection;
+					var visualInsertLocation = data.LogicalToVisualLocation (selection.Anchor);
+					for (int lineNumber = selection.MinLine; lineNumber <= selection.MaxLine; lineNumber++) {
+						var lineSegment = data.GetLine (lineNumber);
+						int insertOffset = lineSegment.GetLogicalColumn (data, visualInsertLocation.Column) - 1;
+						string textToInsert;
+						if (lineSegment.Length < insertOffset) {
+							int visualLastColumn = lineSegment.GetVisualColumn (data, lineSegment.Length + 1);
+							int charsToInsert = visualInsertLocation.Column - visualLastColumn;
+							int spaceCount = charsToInsert % data.Options.TabSize;
+							textToInsert = new string ('\t', (charsToInsert - spaceCount) / data.Options.TabSize) + new string (' ', spaceCount) + text;
+							insertOffset = lineSegment.Length;
+						} else {
+							textToInsert = text;
+						}
+						inserted = data.Insert (lineSegment.Offset + insertOffset, textToInsert);
+					}
+				} else {
+					offset = version.MoveOffsetTo (data.Document.Version, offset);
+					inserted = data.PasteText (offset, text);
+				}
 			}
-			data.PasteText (offset, text, inserted);
 			return inserted;
 		}
 		

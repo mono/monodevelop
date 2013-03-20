@@ -58,7 +58,7 @@ namespace MonoDevelop.Components.Commands
 		ArrayList visitors = new ArrayList ();
 		Dictionary<Gtk.Window,Gtk.Window> topLevelWindows = new Dictionary<Gtk.Window,Gtk.Window> ();
 		Stack delegatorStack = new Stack ();
-		
+
 		HashSet<object> visitedTargets = new HashSet<object> ();
 		
 		bool disposed;
@@ -74,7 +74,8 @@ namespace MonoDevelop.Components.Commands
 		internal static readonly object CommandRouteTerminator = new object ();
 		
 		internal bool handlerFoundInMulticast;
-		
+		Gtk.Widget lastActiveWidget;
+
 		public CommandManager (): this (null)
 		{
 		}
@@ -1598,8 +1599,8 @@ namespace MonoDevelop.Components.Commands
 		Gtk.Widget GetActiveWidget (Gtk.Window win)
 		{
 			win = GetActiveWindow (win);
+			Gtk.Widget widget = win;
 			if (win != null) {
-				Gtk.Widget widget = win;
 				while (widget is Gtk.Container) {
 					Gtk.Widget child = ((Gtk.Container)widget).FocusChild;
 					if (child != null)
@@ -1607,11 +1608,15 @@ namespace MonoDevelop.Components.Commands
 					else
 						break;
 				}
-				return widget;
 			}
-			return win;
+			if (widget != lastActiveWidget) {
+				if (ActiveWidgetChanged != null)
+					ActiveWidgetChanged (this, new ActiveWidgetEventArgs () { OldActiveWidget = lastActiveWidget, NewActiveWidget = widget });
+				lastActiveWidget = widget;
+			}
+			return widget;
 		}
-		
+
 		bool UpdateStatus ()
 		{
 			if (!disposed && toolbarUpdaterRunning)
@@ -1737,14 +1742,14 @@ namespace MonoDevelop.Components.Commands
 			if (this.disposed)
 				return;
 			
-			object activeWidget = GetActiveWidget (rootWidget);
+			var activeWidget = GetActiveWidget (rootWidget);
 			foreach (ICommandBar toolbar in toolbars) {
 				toolbar.Update (activeWidget);
 			}
 			foreach (ICommandTargetVisitor v in visitors)
 				VisitCommandTargets (v, null);
 		}
-		
+
 		void UpdateAppFocusStatus (bool hasFocus, bool lastFocusedExists)
 		{
 			if (hasFocus != appHasFocus) {
@@ -1848,8 +1853,20 @@ namespace MonoDevelop.Components.Commands
 		/// Fired when a key is pressed
 		/// </summary>
 		public event EventHandler<KeyPressArgs> KeyPressed;
+
+		/// <summary>
+		/// Occurs when active widget (the current command target) changes
+		/// </summary>
+		public event EventHandler<ActiveWidgetEventArgs> ActiveWidgetChanged;
 	}
-	
+
+
+	public class ActiveWidgetEventArgs: EventArgs
+	{
+		public Gtk.Widget OldActiveWidget { get; internal set; }
+		public Gtk.Widget NewActiveWidget { get; internal set; }
+	}
+
 	internal class HandlerTypeInfo
 	{
 		public CommandHandlerInfo[] CommandHandlers;
