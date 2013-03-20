@@ -64,6 +64,7 @@ namespace MonoDevelop.Components.MainToolbar
 		StatusArea statusArea;
 
 		SearchEntry matchEntry;
+		static object lastCommandTarget;
 
 		ButtonBar buttonBar = new ButtonBar ();
 		RoundButton button = new RoundButton ();
@@ -100,6 +101,10 @@ namespace MonoDevelop.Components.MainToolbar
 			get {
 				return statusArea;
 			}
+		}
+
+		internal static object LastCommandTarget {
+			get { return lastCommandTarget; }
 		}
 
 		void SetSearchCategory (string category)
@@ -257,6 +262,11 @@ namespace MonoDevelop.Components.MainToolbar
 
 			button.Clicked += HandleStartButtonClicked;
 			IdeApp.CommandService.RegisterCommandBar (this);
+
+			IdeApp.CommandService.ActiveWidgetChanged += (sender, e) => {
+				lastCommandTarget = e.OldActiveWidget;
+			};
+
 			this.ShowAll ();
 			this.statusArea.statusIconBox.HideAll ();
 		}

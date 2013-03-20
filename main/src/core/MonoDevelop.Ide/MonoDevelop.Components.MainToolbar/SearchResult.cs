@@ -357,10 +357,14 @@ namespace MonoDevelop.Components.MainToolbar
 	class CommandResult: SearchResult
 	{
 		Command command;
+		CommandInfo ci;
+		CommandTargetRoute route;
 
-		public CommandResult (Command cmd, string match, string matchedString, int rank): base (match, matchedString, rank)
+		public CommandResult (Command cmd, CommandInfo ci, CommandTargetRoute route, string match, string matchedString, int rank): base (match, matchedString, rank)
 		{
+			this.ci = ci;
 			command = cmd;
+			this.route = route;
 		}
 
 		public override SearchResultType SearchResultType {
@@ -396,12 +400,12 @@ namespace MonoDevelop.Components.MainToolbar
 		public override string Description {
 			get {
 				string desc = "";
-				if (!string.IsNullOrEmpty (command.AccelKey))
-					desc = KeyBindingManager.BindingToDisplayLabel (command.AccelKey, false);
-				if (!string.IsNullOrEmpty (command.Description)) {
+				if (!string.IsNullOrEmpty (ci.AccelKey))
+					desc = KeyBindingManager.BindingToDisplayLabel (ci.AccelKey, false);
+				if (!string.IsNullOrEmpty (ci.Description)) {
 					if (desc.Length > 0)
 						desc += " - ";
-					desc += command.Description;
+					desc += ci.Description;
 				}
 				else if (desc.Length == 0) {
 					desc = "Command";
@@ -425,7 +429,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public override void Activate ()
 		{
-			IdeApp.CommandService.DispatchCommand (command.Id);
+			IdeApp.CommandService.DispatchCommand (command.Id, null, route.InitialTarget, CommandSource.MainToolbar);
 		}
 	}
 }
