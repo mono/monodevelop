@@ -932,9 +932,10 @@ namespace Mono.Debugging.Evaluation
 		
 		public virtual object TargetObjectToObject (EvaluationContext ctx, object obj)
 		{
-			if (IsNull (ctx, obj)) {
+			if (IsNull (ctx, obj))
 				return null;
-			} else if (IsArray (ctx, obj)) {
+
+			if (IsArray (ctx, obj)) {
 				ICollectionAdaptor adaptor = CreateArrayAdaptor (ctx, obj);
 				string ename = GetDisplayTypeName (GetTypeName (ctx, adaptor.ElementType));
 				int[] dims = adaptor.GetDimensions ();
@@ -950,10 +951,11 @@ namespace Mono.Debugging.Evaluation
 				i = ename.IndexOf ('[', i);
 				if (i != -1)
 					return new EvaluationResult ("{" + ename.Substring (0, i) + tn + ename.Substring (i) + "}");
-				else
-					return new EvaluationResult ("{" + ename + tn + "}");
+
+				return new EvaluationResult ("{" + ename + tn + "}");
 			}
-			else if (IsEnum (ctx, obj)) {
+
+			if (IsEnum (ctx, obj)) {
 				object type = GetValueType (ctx, obj);
 				object longType = GetType (ctx, "System.Int64");
 				object c = Cast (ctx, obj, longType);
@@ -979,17 +981,19 @@ namespace Mono.Debugging.Evaluation
 				}
 				if (IsFlagsEnumType (ctx, type) && rest == 0 && composed.Length > 0)
 					return new EvaluationResult (composed, composedDisplay);
-				else
-					return new EvaluationResult (val.ToString ());
+
+				return new EvaluationResult (val.ToString ());
 			}
-			else if (GetValueTypeName (ctx, obj) == "System.Decimal") {
+
+			if (GetValueTypeName (ctx, obj) == "System.Decimal") {
 				string res = CallToString (ctx, obj);
 				// This returns the decimal formatted using the current culture. It has to be converted to invariant culture.
 				decimal dec = decimal.Parse (res);
 				res = dec.ToString (System.Globalization.CultureInfo.InvariantCulture);
 				return new EvaluationResult (res);
 			}
-			else if (IsClassInstance (ctx, obj)) {
+
+			if (IsClassInstance (ctx, obj)) {
 				TypeDisplayData tdata = GetTypeDisplayData (ctx, GetValueType (ctx, obj));
 				if (!string.IsNullOrEmpty (tdata.ValueDisplayString) && ctx.Options.AllowDisplayStringEvaluation)
 					return new EvaluationResult (EvaluateDisplayString (ctx, obj, tdata.ValueDisplayString));
@@ -1011,11 +1015,12 @@ namespace Mono.Debugging.Evaluation
 		{
 			if (obj == null)
 				return null;
+
 			object res = TryConvert (ctx, obj, targetType);
 			if (res != null)
 				return res;
-			else
-				throw new EvaluatorException ("Can't convert an object of type '{0}' to type '{1}'", GetValueTypeName (ctx, obj), GetTypeName (ctx, targetType));
+
+			throw new EvaluatorException ("Can't convert an object of type '{0}' to type '{1}'", GetValueTypeName (ctx, obj), GetTypeName (ctx, targetType));
 		}
 
 		public virtual object TryConvert (EvaluationContext ctx, object obj, object targetType)
@@ -1027,11 +1032,12 @@ namespace Mono.Debugging.Evaluation
 		{
 			if (obj == null)
 				return null;
+
 			object res = TryCast (ctx, obj, targetType);
 			if (res != null)
 				return res;
-			else
-				throw new EvaluatorException ("Can't cast an object of type '{0}' to type '{1}'", GetValueTypeName (ctx, obj), GetTypeName (ctx, targetType));
+
+			throw new EvaluatorException ("Can't cast an object of type '{0}' to type '{1}'", GetValueTypeName (ctx, obj), GetTypeName (ctx, targetType));
 		}
 
 		public virtual string CallToString (EvaluationContext ctx, object obj)
