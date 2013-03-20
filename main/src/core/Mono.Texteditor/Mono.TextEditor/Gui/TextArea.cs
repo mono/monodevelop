@@ -625,10 +625,12 @@ namespace Mono.TextEditor
 			imContext.FocusOut ();
 			RemoveFocusOutTimerId ();
 
-			if (tipWindow != null && currentTooltipProvider != null && currentTooltipProvider.IsInteractive (textEditorData.Parent, tipWindow))
-				DelayedHideTooltip ();
-			else
+			if (tipWindow != null && currentTooltipProvider != null) {
+				if (!tipWindow.IsActive || !currentTooltipProvider.IsInteractive (textEditorData.Parent, tipWindow))
+					DelayedHideTooltip ();
+			} else {
 				HideTooltip ();
+			}
 
 			TextViewMargin.StopCaretThread ();
 			Document.CommitLineUpdate (Caret.Line);
