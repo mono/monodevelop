@@ -3,34 +3,31 @@ using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor
 {
-	public class Selection
+	public struct Selection
 	{
-		DocumentLocation anchor;
+		public static readonly Selection Empty = new Selection (true);
+
+		public bool IsEmpty {
+			get {
+				return anchor.IsEmpty;
+			}
+		}
+
+		readonly DocumentLocation anchor;
 		public DocumentLocation Anchor {
 			get {
 				return anchor;
 			}
-			set {
-				if (anchor != value) {
-					anchor = value;
-					OnChanged ();
-				}
-			}
 		}
 		
-		DocumentLocation lead;
+		readonly DocumentLocation lead;
 		public DocumentLocation Lead {
 			get {
 				return lead;
 			}
-			set {
-				if (lead != value) {
-					lead = value;
-					OnChanged ();
-				}
-			}
 		}
-		
+
+
 		public int MinLine {
 			get {
 				return System.Math.Min (Anchor.Line, Lead.Line);
@@ -55,28 +52,24 @@ namespace Mono.TextEditor
 			}
 		}
 		
+		readonly SelectionMode selectionMode;
 		public SelectionMode SelectionMode {
-			get;
-			set;
+			get {
+				return selectionMode;
+			}
 		}
 		
 		public bool Contains (DocumentLocation loc)
 		{
 			return anchor <= loc && loc <= lead || lead <= loc && loc <= anchor;
 		}
-		
-		public Selection ()
+
+		Selection(bool empty)
 		{
-			SelectionMode = SelectionMode.Normal;
+			anchor = lead = DocumentLocation.Empty;
+			selectionMode = SelectionMode.Normal;
 		}
-		
-		public static Selection Clone (Selection selection)
-		{
-			if (selection == null)
-				return null;
-			return new Selection (selection.Anchor, selection.Lead, selection.SelectionMode);
-		}
-		
+
 		public Selection (int anchorLine, int anchorColumn, int leadLine, int leadColumn, SelectionMode mode = SelectionMode.Normal) : this(new DocumentLocation (anchorLine, anchorColumn), new DocumentLocation (leadLine, leadColumn), mode)
 		{
 		}
@@ -87,11 +80,31 @@ namespace Mono.TextEditor
 				throw new ArgumentOutOfRangeException ("anchor", anchor + " is out of range.");
 			if (lead.Line < DocumentLocation.MinLine || lead.Column < DocumentLocation.MinColumn)
 				throw new ArgumentOutOfRangeException ("lead", lead + " is out of range.");
-			this.Anchor        = anchor;
-			this.Lead          = lead;
-			this.SelectionMode = selectionMode;
+			this.anchor        = anchor;
+			this.lead          = lead;
+			this.selectionMode = selectionMode;
 		}
-		
+
+		public Selection WithLead (DocumentLocation newLead)
+		{
+			return new Selection (Anchor, newLead, SelectionMode);
+		}
+
+		public Selection WithAnchor (DocumentLocation newAnchor)
+		{
+			return new Selection (newAnchor, Lead, SelectionMode);
+		}
+
+		public Selection WithRange (DocumentLocation newAnchor, DocumentLocation newLead)
+		{
+			return new Selection (newAnchor, newLead, SelectionMode);
+		}
+
+		public Selection WithSelectionMode (SelectionMode newSelectionMode)
+		{
+			return new Selection (Anchor, Lead, newSelectionMode);
+		}
+
 		public TextSegment GetSelectionRange (TextEditorData data)
 		{
 			int anchorOffset = GetAnchorOffset (data);
@@ -130,12 +143,10 @@ namespace Mono.TextEditor
 		{
 			if (obj == null)
 				return false;
-			if (ReferenceEquals (this, obj))
-				return true;
 			if (obj.GetType () != typeof(Selection))
 				return false;
 			Mono.TextEditor.Selection other = (Mono.TextEditor.Selection)obj;
-			return Anchor == other.Anchor && Lead == other.Lead;
+			return Anchor == other.Anchor && Lead == other.Lead && SelectionMode == other.SelectionMode;
 		}
 		
 		public bool IsSelected (DocumentLocation loc)
@@ -169,13 +180,5 @@ namespace Mono.TextEditor
 		{
 			return string.Format("[Selection: Anchor={0}, Lead={1}, MinLine={2}, MaxLine={3}, SelectionMode={4}]", Anchor, Lead, MinLine, MaxLine, SelectionMode);
 		}
-		
-		protected virtual void OnChanged ()
-		{
-			if (Changed != null)
-				Changed (this, EventArgs.Empty);
-		}
-		
-		public event EventHandler Changed;
 	}
 }

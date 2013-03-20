@@ -181,8 +181,10 @@ namespace Mono.TextEditor
 					for (int lineNumber = data.MainSelection.MinLine; lineNumber <= data.MainSelection.MaxLine; lineNumber++) {
 						data.Remove (data.Document.GetLine (lineNumber).Offset + col - 1, 1);
 					}
-					data.MainSelection.Lead = new DocumentLocation (data.MainSelection.Lead.Line, col);
-					data.MainSelection.Anchor = new DocumentLocation (data.MainSelection.Anchor.Line, col);
+					data.MainSelection = data.MainSelection.WithRange (
+						new DocumentLocation (data.MainSelection.Anchor.Line, col),
+						new DocumentLocation (data.MainSelection.Lead.Line, col)
+					);
 					data.Caret.PreserveSelection = preserve;
 					data.Document.CommitMultipleLineUpdate (data.MainSelection.MinLine, data.MainSelection.MaxLine);
 					return;

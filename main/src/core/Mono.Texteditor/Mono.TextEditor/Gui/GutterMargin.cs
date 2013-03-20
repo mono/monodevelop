@@ -124,8 +124,9 @@ namespace Mono.TextEditor
 				} else if (extendSelection) {
 					if (!editor.IsSomethingSelected) {
 						editor.MainSelection = new Selection (loc, loc);
-					} 
-					editor.MainSelection.Lead = loc;
+					} else {
+						editor.MainSelection = editor.MainSelection.WithLead (loc);
+					}
 				} else {
 					anchorLocation = loc;
 					editor.ClearSelection ();

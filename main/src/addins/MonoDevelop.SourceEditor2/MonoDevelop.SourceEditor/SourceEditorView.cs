@@ -1818,9 +1818,11 @@ namespace MonoDevelop.SourceEditor
 						data.Replace (offset, length, complete_word);
 					}
 					int minColumn = System.Math.Min (data.MainSelection.Anchor.Column, data.MainSelection.Lead.Column);
-					data.MainSelection.Anchor = new DocumentLocation (data.Caret.Line == minLine ? maxLine : minLine, minColumn);
-					data.MainSelection.Lead = data.Caret.Location;
-					
+					data.MainSelection = data.MainSelection.WithRange (
+						new DocumentLocation (data.Caret.Line == minLine ? maxLine : minLine, minColumn),
+						data.Caret.Location
+					);
+
 					data.Document.CommitMultipleLineUpdate (data.MainSelection.MinLine, data.MainSelection.MaxLine);
 					data.Caret.PreserveSelection = false;
 				}
