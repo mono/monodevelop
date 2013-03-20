@@ -626,7 +626,7 @@ namespace Mono.TextEditor
 			RemoveFocusOutTimerId ();
 
 			if (tipWindow != null && currentTooltipProvider != null) {
-				if (!tipWindow.IsActive || !currentTooltipProvider.IsInteractive (textEditorData.Parent, tipWindow))
+				if (!currentTooltipProvider.IsInteractive (textEditorData.Parent, tipWindow))
 					DelayedHideTooltip ();
 			} else {
 				HideTooltip ();
@@ -1347,10 +1347,12 @@ namespace Mono.TextEditor
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing e)
 		{
 			isMouseTrapped = false;
-			if (tipWindow != null && currentTooltipProvider.IsInteractive (textEditorData.Parent, tipWindow))
-				DelayedHideTooltip ();
-			else
+			if (tipWindow != null && currentTooltipProvider != null) {
+				if (!currentTooltipProvider.IsInteractive (textEditorData.Parent, tipWindow))
+					DelayedHideTooltip ();
+			} else {
 				HideTooltip ();
+			}
 			textViewMargin.HideCodeSegmentPreviewWindow ();
 			
 			if (GdkWindow != null)
