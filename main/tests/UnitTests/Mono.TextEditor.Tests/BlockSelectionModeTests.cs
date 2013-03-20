@@ -78,10 +78,30 @@ namespace Mono.TextEditor.Tests
 		}
 
 		[Test]
+		public void TestBackspaceWithTabs ()
+		{
+			var data = Create (
+				@"1234567890
+" + '\t' + @"1234<-567890
+....1234567890
+....1234567890
+....1234->$567890
+1234567890");
+			data.MainSelection = data.MainSelection.WithSelectionMode (SelectionMode.Block);
+			DeleteActions.Backspace (data);
+			Check (data, @"1234567890
+" + '\t' + @"123<-567890
+....123567890
+....123567890
+....123->$567890
+1234567890");
+		}
+
+		[Test]
 		public void TestBackspace ()
 		{
 			var data = Create (
-@"1234567890
+				@"1234567890
 1234<-567890
 1234567890
 1234567890
