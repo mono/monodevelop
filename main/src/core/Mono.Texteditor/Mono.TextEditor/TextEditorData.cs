@@ -560,17 +560,7 @@ namespace Mono.TextEditor
 		{
 			return Options.WordFindStrategy.FindCurrentWordStart (Document, offset);
 		}
-		
-		public delegate void PasteCallback (int insertionOffset, string text, int insertedChars);
-		
-		public event PasteCallback Paste;
-		
-		public void PasteText (int insertionOffset, string text, int insertedChars)
-		{
-			if (Paste != null)
-				Paste (insertionOffset, text, insertedChars);
-		}
-		
+
 		#region undo/redo handling
 		DocumentLocation savedCaretPos;
 		Selection savedSelection;
@@ -1175,6 +1165,30 @@ namespace Mono.TextEditor
 				handler (this, EventArgs.Empty);
 		}
 		public event EventHandler RecenterEditor;
+
+		#region Text Paste
+		/// <summary>
+		/// Gets or sets the text paste handler.
+		/// </summary>
+		public ITextPasteHandler TextPasteHandler {
+			get;
+			set;
+		}
+
+		public int PasteText (int offset, string text)
+		{
+			if (TextPasteHandler != null)
+				text = TextPasteHandler.FormatPlainText (offset, text);
+			var insertedChars = Insert (offset, text);
+			if (Paste != null)
+				Paste (offset, text, insertedChars);
+			return insertedChars;
+		}
+
+		public delegate void PasteCallback (int insertionOffset, string text, int insertedChars);
+		
+		public event PasteCallback Paste;
+		#endregion
 
 		#region Document delegation
 		public int Length {

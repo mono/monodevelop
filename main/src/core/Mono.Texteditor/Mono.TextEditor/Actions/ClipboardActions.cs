@@ -318,7 +318,8 @@ namespace Mono.TextEditor
 								data.Caret.PreserveSelection = true;
 								result = text.Length;
 								DocumentLine curLine = data.Document.GetLine (data.Caret.Line);
-								data.Insert (curLine.Offset, text + data.EolMarker);
+
+								data.PasteText (curLine.Offset, text + data.EolMarker);
 								if (!preserveState)
 									data.ClearSelection ();
 								data.Caret.PreserveSelection = false;
@@ -354,9 +355,8 @@ namespace Mono.TextEditor
 					data.DeleteSelectedText (!data.IsSomethingSelected || data.MainSelection.SelectionMode != SelectionMode.Block);
 				data.EnsureCaretIsNotVirtual ();
 				offset = version.MoveOffsetTo (data.Document.Version, offset);
-				inserted = data.Insert (offset, text);
+				inserted = data.PasteText (offset, text);
 			}
-			data.PasteText (offset, text, inserted);
 			return inserted;
 		}
 		
