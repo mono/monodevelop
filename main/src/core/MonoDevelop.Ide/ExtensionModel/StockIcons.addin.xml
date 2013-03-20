@@ -282,7 +282,7 @@
 	<StockIcon stockid = "md-error" icon = "gtk-dialog-error" size="Dialog" />
 	<StockIcon stockid = "md-warning" resource = "warning-16.png" size="Menu" />
 	<StockIcon stockid = "md-warning" icon = "gtk-dialog-warning" size="Dialog" />
-	<StockIcon stockid = "md-command" resource = "command.png" size="Menu" />
+	<StockIcon stockid = "md-command" resource = "command-16.png" size="Menu" />
 	<StockIcon stockid = "md-clear" resource = "broom-16.png" size="Menu" />
 	<StockIcon stockid = "md-stop" resource = "stop-16.png" size="Menu" />
 	<StockIcon stockid = "md-console" resource = "console-16.png" size="Menu" />
