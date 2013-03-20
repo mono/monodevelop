@@ -547,6 +547,9 @@ namespace Mono.Debugging.Soft
 		{
 			base.Dispose ();
 
+			if (symbolFiles == null)
+				return;
+
 			if (!HasExited)
 				EndLaunch ();
 
