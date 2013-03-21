@@ -2052,11 +2052,9 @@ namespace Mono.TextEditor
 
 		List<IActionTextLineMarker> oldMarkers = new List<IActionTextLineMarker> ();
 		List<IActionTextLineMarker> newMarkers = new List<IActionTextLineMarker> ();
-
+		internal TextLineMarkerHoverResult hoverResult = new TextLineMarkerHoverResult ();
 		protected internal override void MouseHover (MarginMouseEventArgs args)
 		{
-			base.MouseHover (args);
-
 			var loc = PointToLocation (args.X, args.Y);
 			if (loc.Line < DocumentLocation.MinLine || loc.Column < DocumentLocation.MinColumn)
 				return;
@@ -2089,6 +2087,8 @@ namespace Mono.TextEditor
 			} else {
 				oldMarkers.Clear ();
 			}
+			if (hoverResult.SuppressTooltip)
+				return;
 
 			base.cursor = hoverResult.Cursor ?? xtermCursor;
 			if (textEditor.TooltipMarkup != hoverResult.TooltipMarkup) {
@@ -2187,6 +2187,8 @@ namespace Mono.TextEditor
 				textEditor.SelectionMode = SelectionMode.Normal;
 			}
 			InSelectionDrag = true;
+			base.MouseHover (args);
+
 		}
 
 		public static int GetNextTabstop (TextEditorData textEditor, int currentColumn)

@@ -253,12 +253,13 @@ namespace MonoDevelop.CodeActions
 			var child = (TextEditor.EditorContainerChild)container [this];
 
 			Gdk.Rectangle rect;
-			if (child != null) {
+/*			if (child != null) {
 				rect = new Gdk.Rectangle (child.X, child.Y + Allocation.Height - (int)document.Editor.VAdjustment.Value, 0, 0);
-			} else {
+			} else {*/
 				var p = container.LocationToPoint (loc);
 				rect = new Gdk.Rectangle (p.X, p.Y + (int)document.Editor.LineHeight, 0, 0);
-			}
+			//}
+			Console.WriteLine (	"rect:"+rect);
 			GtkWorkarounds.ShowContextMenu (menu, document.Editor.Parent, null, rect);
 		}
 

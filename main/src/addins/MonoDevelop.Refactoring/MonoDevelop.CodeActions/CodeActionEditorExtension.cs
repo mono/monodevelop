@@ -195,10 +195,11 @@ namespace MonoDevelop.CodeActions
 			void IActionTextLineMarker.MouseHover (TextEditor editor, MarginMouseEventArgs args, TextLineMarkerHoverResult result)
 			{
 				var line = editor.GetLineByOffset (Offset);
-				var y = editor.LineToY (line.LineNumber);
+				var y = editor.LineToY (line.LineNumber) - editor.VAdjustment.Value;
 
-				var x = editor.ColumnToX (line, Offset - line.Offset + 1);
+				var x = editor.ColumnToX (line, Offset - line.Offset + 1) - editor.HAdjustment.Value;
 				if (args.X - x >= -8 * editor.Options.Zoom && args.X - x < 8 * editor.Options.Zoom && args.Y > y + editor.LineHeight / 2) {
+					result.SuppressTooltip = true;
 					Popup ();
 				}
 			}
@@ -303,9 +304,7 @@ namespace MonoDevelop.CodeActions
 			}
 			if (currentSmartTag == null)
 				return;
-			if (widget == null || !widget.Visible)
-				currentSmartTag.Popup ();
-			widget.PopupQuickFixMenu ();
+			currentSmartTag.Popup ();
 		}
 	}
 }
