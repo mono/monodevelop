@@ -177,12 +177,12 @@ namespace MonoDevelop.CodeActions
 
 				var pos = layout.IndexToPos (column).X / Pango.Scale.PangoScale;
 
-				cr.Rectangle (Math.Floor (startXPos + pos) + 0.5, Math.Floor (y + editor.LineHeight - (tagMarkerHeight + 2) * cr.LineWidth) + 0.5, tagMarkerWidth * cr.LineWidth, tagMarkerHeight * cr.LineWidth);
+				cr.Rectangle (Math.Floor (startXPos + pos) + 0.5, Math.Floor (y + editor.LineHeight - (tagMarkerHeight + 1) * cr.LineWidth) + 0.5, tagMarkerWidth * cr.LineWidth, tagMarkerHeight * cr.LineWidth);
 
 				if (HslColor.Brightness (editor.ColorStyle.PlainText.Background) < 0.5) {
-					cr.Color = new Cairo.Color (0.8, 0.8, 1);
+					cr.Color = new Cairo.Color (0.8, 0.8, 1, 0.5);
 				} else {
-					cr.Color = new Cairo.Color (0.2, 0.2, 1);
+					cr.Color = new Cairo.Color (0.2, 0.2, 1, 0.5);
 				}
 				cr.Stroke ();
 			}
