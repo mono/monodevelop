@@ -816,9 +816,11 @@ namespace Mono.TextEditor
 		
 		public void ExtendSelectionTo (DocumentLocation location)
 		{
-			if (MainSelection.IsEmpty)
+			if (MainSelection.IsEmpty) {
 				MainSelection = new Selection (location, location);
-			MainSelection = MainSelection.WithLead (location);
+			} else {
+				MainSelection = MainSelection.WithLead (location);
+			}
 		}
 		
 		public void SetSelection (int anchorOffset, int leadOffset)

@@ -1404,12 +1404,19 @@ namespace Mono.TextEditor
 
 		public void AddMarker (TextSegmentMarker marker)
 		{
+			CommitLineUpdate (GetLineByOffset (marker.Offset));
 			textSegmentMarkerTree.Add (marker);
 		}
 
-		public void RemoveMarker (TextSegmentMarker marker)
+		/// <summary>
+		/// Removes a marker from the document.
+		/// </summary>
+		/// <returns><c>true</c>, if marker was removed, <c>false</c> otherwise.</returns>
+		/// <param name="marker">Marker.</param>
+		public bool RemoveMarker (TextSegmentMarker marker)
 		{
-			textSegmentMarkerTree.Remove (marker);
+			CommitLineUpdate (GetLineByOffset (marker.Offset));
+			return textSegmentMarkerTree.Remove (marker);
 		}
 
 		#endregion
