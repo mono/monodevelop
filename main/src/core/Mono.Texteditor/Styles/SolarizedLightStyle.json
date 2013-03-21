@@ -77,8 +77,8 @@
         { "name": "Secondary Link", "color":"aluminium2", "secondcolor":"white"},
         { "name": "Secondary Link(Highlighted)", "color":"aluminium3", "secondcolor":"aluminium1"},
         
-        { "name": "Message Bubble Error", "color":"red", "secondcolor":"base03"},
-        { "name": "Message Bubble Warning", "color":"yellow", "secondcolor":"base03"}
+        { "name": "Message Bubble Error", "color":"red", "secondcolor":"base3"},
+        { "name": "Message Bubble Warning", "color":"yellow", "secondcolor":"base3"}
     ],
 
 	"text":[
