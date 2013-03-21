@@ -61,6 +61,7 @@ namespace MonoDevelop.CodeActions
 					LoggingService.LogWarning ("Can't remove smart tag marker from document.");
 				}
 				currentSmartTag = null;
+				currentSmartTagBegin = DocumentLocation.Empty;
 			}
 		}
 		
@@ -155,7 +156,7 @@ namespace MonoDevelop.CodeActions
 		class SmartTagMarker : TextSegmentMarker, IActionTextLineMarker
 		{
 			CodeActionEditorExtension codeActionEditorExtension;
-			List<CodeAction> fixes;
+			internal List<CodeAction> fixes;
 			DocumentLocation loc;
 
 			public SmartTagMarker (int offset, CodeActionEditorExtension codeActionEditorExtension, List<CodeAction> fixes, DocumentLocation loc) : base (offset, 0)
@@ -214,6 +215,7 @@ namespace MonoDevelop.CodeActions
 		}
 
 		SmartTagMarker currentSmartTag;
+		DocumentLocation currentSmartTagBegin;
 		void CreateSmartTag (List<CodeAction> fixes, DocumentLocation loc)
 		{
 			Fixes = fixes;
@@ -237,31 +239,37 @@ namespace MonoDevelop.CodeActions
 				return;
 			}
 			bool first = true;
-			DocumentLocation smartTagLoc = loc;
+			DocumentLocation smartTagLocBegin = loc;
 			foreach (var fix in fixes) {
 				if (fix.DocumentRegion.IsEmpty)
 					continue;
-				if (first || loc < fix.DocumentRegion.Begin)
-					smartTagLoc = fix.DocumentRegion.Begin;
+				if (first || loc < fix.DocumentRegion.Begin) {
+					smartTagLocBegin = fix.DocumentRegion.Begin;
+				}
 				first = false;
 			}
-			if (smartTagLoc.Line != loc.Line)
-				smartTagLoc = new DocumentLocation (loc.Line, 1);
-
-
+			if (smartTagLocBegin.Line != loc.Line)
+				smartTagLocBegin = new DocumentLocation (loc.Line, 1);
 			// got no fix location -> try to search word start
 			if (first) {
-				int offset = document.Editor.LocationToOffset (smartTagLoc);
+				int offset = document.Editor.LocationToOffset (smartTagLocBegin);
 				while (offset > 0) {
 					char ch = document.Editor.GetCharAt (offset - 1);
 					if (!char.IsLetterOrDigit (ch) && ch != '_')
 						break;
 					offset--;
 				}
-				smartTagLoc = document.Editor.OffsetToLocation (offset);
+				smartTagLocBegin = document.Editor.OffsetToLocation (offset);
 			}
+
+			if (currentSmartTagBegin == smartTagLocBegin) {
+				currentSmartTag.fixes = fixes;
+				return;
+			}
+			currentSmartTagBegin = smartTagLocBegin;
+
 			RemoveWidget ();
-			currentSmartTag = new SmartTagMarker (document.Editor.LocationToOffset (smartTagLoc), this, fixes, smartTagLoc);
+			currentSmartTag = new SmartTagMarker (document.Editor.LocationToOffset (smartTagLocBegin), this, fixes, smartTagLocBegin);
 			document.Editor.Document.AddMarker (currentSmartTag);
 		}
 		
