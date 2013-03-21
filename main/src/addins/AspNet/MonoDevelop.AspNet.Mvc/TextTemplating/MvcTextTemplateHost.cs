@@ -34,6 +34,7 @@ namespace MonoDevelop.AspNet.Mvc.TextTemplating
 	{
 		public MvcTextTemplateHost ()
 		{
+			AddMonoDevelopHostImport ();
 			Imports.Add ("MonoDevelop.AspNet.Mvc.TextTemplating");
 			Refs.Add (typeof (MvcTextTemplateHost).Assembly.Location);
 		}

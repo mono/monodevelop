@@ -36,6 +36,10 @@ namespace MonoDevelop.TextTemplating
 
 		public MonoDevelopTemplatingHost ()
 		{
+		}
+
+		public void AddMonoDevelopHostImport ()
+		{
 			Imports.Add ("MonoDevelop.TextTemplating");
 			Refs.Add (typeof (MonoDevelopTemplatingHost).Assembly.Location);
 		}

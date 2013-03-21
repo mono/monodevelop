@@ -37,7 +37,7 @@ namespace MonoDevelop.TextTemplating
 		{
 			return new ThreadAsyncOperation (delegate {
 				using (var host = new ProjectFileTemplatingHost (file)) {
-					
+					host.AddMonoDevelopHostImport ();
 					var defaultOutputName = file.FilePath.ChangeExtension (".cs"); //cs extension for VS compat
 					
 					string ns = TextTemplatingFilePreprocessor.GetNamespaceHint (file, defaultOutputName);
