@@ -39,6 +39,7 @@ using System.Collections.Concurrent;
 using MonoDevelop.SourceEditor.QuickTasks;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.CodeIssues;
+using Mono.TextEditor;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -68,7 +69,12 @@ namespace MonoDevelop.CodeIssues
 						return;
 //					var now2 = DateTime.Now;
 					foreach (var r in provider.GetIssues (input, context, cancellationToken)) {
-						var fixes = new List<GenericFix> (r.Actions.Where (a => a != null).Select (a => new GenericFix (a.Title, new System.Action (() => a.Run (input, loc)))));
+						var fixes = new List<GenericFix> (r.Actions.Where (a => a != null).Select (a => 
+							new GenericFix (
+								a.Title,
+								new System.Action (() => a.Run (input, loc))) {
+								DocumentRegion = new DocumentRegion (r.Region.Begin, r.Region.End)
+						}));
 						result.Add (new InspectorResults (
 							provider, 
 							r.Region, 
