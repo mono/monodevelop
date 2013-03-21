@@ -44,6 +44,8 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			this.IdString = id;
 			this.Title = title;
 			this.act = act;
+			if (act.AstNode != null)
+				this.DocumentRegion = new Mono.TextEditor.DocumentRegion (act.AstNode.StartLocation, act.AstNode.EndLocation);
 		}
 
 		public override void Run (Document document, TextLocation loc)
