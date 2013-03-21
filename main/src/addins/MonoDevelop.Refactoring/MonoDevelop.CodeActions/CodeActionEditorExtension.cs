@@ -173,16 +173,15 @@ namespace MonoDevelop.CodeActions
 			const double tagMarkerHeight = 2;
 			public override void Draw (TextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
 			{
-				int column = Offset - startOffset;
+				var line = editor.GetLine (loc.Line);
+				var x = editor.ColumnToX (line, loc.Column) - editor.HAdjustment.Value + editor.TextViewMargin.XOffset + editor.TextViewMargin.TextStartPosition;
 
-				var pos = layout.IndexToPos (column).X / Pango.Scale.PangoScale;
-
-				cr.Rectangle (Math.Floor (startXPos + pos) + 0.5, Math.Floor (y + editor.LineHeight - (tagMarkerHeight + 1) * cr.LineWidth) + 0.5, tagMarkerWidth * cr.LineWidth, tagMarkerHeight * cr.LineWidth);
+				cr.Rectangle (Math.Floor (x) + 0.5, Math.Floor (y) + 0.5, tagMarkerWidth * cr.LineWidth, tagMarkerHeight * cr.LineWidth);
 
 				if (HslColor.Brightness (editor.ColorStyle.PlainText.Background) < 0.5) {
-					cr.Color = new Cairo.Color (0.8, 0.8, 1, 0.5);
+					cr.Color = new Cairo.Color (0.8, 0.8, 1, 0.9);
 				} else {
-					cr.Color = new Cairo.Color (0.2, 0.2, 1, 0.5);
+					cr.Color = new Cairo.Color (0.2, 0.2, 1, 0.9);
 				}
 				cr.Stroke ();
 			}
@@ -196,11 +195,12 @@ namespace MonoDevelop.CodeActions
 
 			void IActionTextLineMarker.MouseHover (TextEditor editor, MarginMouseEventArgs args, TextLineMarkerHoverResult result)
 			{
-				var line = editor.GetLineByOffset (Offset);
+				var line = editor.GetLine (loc.Line);
+				var x = editor.ColumnToX (line, loc.Column) - editor.HAdjustment.Value;
 				var y = editor.LineToY (line.LineNumber) - editor.VAdjustment.Value;
-
-				var x = editor.ColumnToX (line, Offset - line.Offset + 1) - editor.HAdjustment.Value;
-				if (args.X - x >= 0 * editor.Options.Zoom && args.X - x < tagMarkerWidth * editor.Options.Zoom && args.Y > y + editor.LineHeight - (tagMarkerHeight + 3) * editor.Options.Zoom) {
+				if (args.X - x >= 0 * editor.Options.Zoom && 
+				    args.X - x < tagMarkerWidth * editor.Options.Zoom && 
+				    y - args.Y < (tagMarkerHeight) * editor.Options.Zoom) {
 					Popup ();
 				}
 			}
@@ -269,7 +269,9 @@ namespace MonoDevelop.CodeActions
 			currentSmartTagBegin = smartTagLocBegin;
 
 			RemoveWidget ();
-			currentSmartTag = new SmartTagMarker (document.Editor.LocationToOffset (smartTagLocBegin), this, fixes, smartTagLocBegin);
+			var line = document.Editor.GetLine (smartTagLocBegin.Line);
+
+			currentSmartTag = new SmartTagMarker (line.NextLine.Offset, this, fixes, smartTagLocBegin);
 			document.Editor.Document.AddMarker (currentSmartTag);
 		}
 		
