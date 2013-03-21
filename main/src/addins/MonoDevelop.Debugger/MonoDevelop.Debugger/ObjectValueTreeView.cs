@@ -524,20 +524,22 @@ namespace MonoDevelop.Debugger
 			TreeIter parent;
 			if (!store.IterParent (out parent, it))
 				parent = TreeIter.Zero;
-			
-			EvaluationOptions ops = frame.DebuggerSession.Options.EvaluationOptions.Clone ();
-			ops.AllowMethodEvaluation = true;
-			ops.AllowToStringCalls = true;
-			ops.AllowTargetInvoke = true;
-			ops.EllipsizeStrings = false;
-			
-			string oldName = val.Name;
-			val.Refresh (ops);
-			
-			// Don't update the name for the values entered by the user
-			if (store.IterDepth (it) == 0)
-				val.Name = oldName;
-			
+
+			if (frame != null && frame.DebuggerSession.IsRunning) {
+				EvaluationOptions ops = frame.DebuggerSession.Options.EvaluationOptions.Clone ();
+				ops.AllowMethodEvaluation = true;
+				ops.AllowToStringCalls = true;
+				ops.AllowTargetInvoke = true;
+				ops.EllipsizeStrings = false;
+
+				string oldName = val.Name;
+				val.Refresh (ops);
+
+				// Don't update the name for the values entered by the user
+				if (store.IterDepth (it) == 0)
+					val.Name = oldName;
+			}
+
 			SetValues (parent, it, val.Name, val);
 			RegisterValue (val, it);
 		}
@@ -680,9 +682,14 @@ namespace MonoDevelop.Debugger
 			oldValues.TryGetValue (valPath, out oldValue);
 			
 			if (val.IsUnknown) {
-				strval = GettextCatalog.GetString ("The name '{0}' does not exist in the current context.", val.Name);
-				nameColor = disabledColor;
-				canEdit = false;
+				if (frame != null) {
+					strval = GettextCatalog.GetString ("The name '{0}' does not exist in the current context.", val.Name);
+					nameColor = disabledColor;
+					canEdit = false;
+				} else {
+					canEdit = !val.IsReadOnly;
+					strval = string.Empty;
+				}
 			}
 			else if (val.IsError) {
 				strval = val.Value;
@@ -709,7 +716,7 @@ namespace MonoDevelop.Debugger
 				canEdit = false;
 			}
 			else {
-				canEdit = val.IsPrimitive && !val.IsReadOnly && allowEditing;
+				canEdit = val.IsPrimitive && !val.IsReadOnly;
 				strval = val.DisplayValue ?? "(null)";
 				if (oldValue != null && strval != oldValue)
 					nameColor = valueColor = modifiedColor;
@@ -728,7 +735,7 @@ namespace MonoDevelop.Debugger
 			store.SetValue (it, ObjectCol, val);
 			store.SetValue (it, ExpandedCol, !hasChildren);
 			store.SetValue (it, NameEditableCol, !hasParent && allowAdding);
-			store.SetValue (it, ValueEditableCol, canEdit);
+			store.SetValue (it, ValueEditableCol, canEdit && allowEditing);
 			store.SetValue (it, IconCol, icon);
 			store.SetValue (it, NameColorCol, nameColor);
 			store.SetValue (it, ValueColorCol, valueColor);
@@ -819,8 +826,7 @@ namespace MonoDevelop.Debugger
 				ObjectValue val = (ObjectValue) store.GetValue (it, ObjectCol);
 				if (val == null) {
 					val = (ObjectValue) store.GetValue (iter, ObjectCol);
-					bool first = true;
-					
+
 					foreach (ObjectValue cval in val.GetAllChildren ()) {
 						SetValues (iter, it, null, cval);
 						RegisterValue (cval, it);
@@ -1546,10 +1552,10 @@ namespace MonoDevelop.Debugger
 		
 		Mono.Debugging.Client.CompletionData GetCompletionData (string exp)
 		{
-			if (frame != null)
+			if (frame != null && frame.DebuggerSession.IsRunning)
 				return frame.GetExpressionCompletionData (exp);
-			else
-				return null;
+
+			return null;
 		}
 		
 		internal void SetCustomFont (Pango.FontDescription font)

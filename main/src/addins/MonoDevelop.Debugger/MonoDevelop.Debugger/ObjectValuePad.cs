@@ -40,12 +40,16 @@ namespace MonoDevelop.Debugger
 		IPadWindow container;
 		bool initialResume;
 		StackFrame lastFrame;
-		MonoDevelop.Ide.Gui.PadFontChanger fontChanger;
+		PadFontChanger fontChanger;
 		
 		public Gtk.Widget Control {
 			get {
 				return scrolled;
 			}
+		}
+
+		protected bool DisableTreeViewWhenNotDebugging {
+			get; set;
 		}
 		
 		public ObjectValuePad()
@@ -70,7 +74,8 @@ namespace MonoDevelop.Debugger
 			DebuggingService.ResumedEvent += OnDebuggerResumed;
 			DebuggingService.StoppedEvent += OnDebuggerStopped;
 			DebuggingService.EvaluationOptionsChanged += OnEvaluationOptionsChanged;
-			
+
+			DisableTreeViewWhenNotDebugging = true;
 			needsUpdate = true;
 			initialResume = true;
 		}
@@ -105,7 +110,7 @@ namespace MonoDevelop.Debugger
 		public virtual void OnUpdateList ()
 		{
 			needsUpdate = false;
-			if (DebuggingService.CurrentFrame != null && DebuggingService.CurrentFrame != lastFrame)
+			if (DebuggingService.CurrentFrame != lastFrame)
 				tree.Frame = DebuggingService.CurrentFrame;
 			lastFrame = DebuggingService.CurrentFrame;
 		}
@@ -135,7 +140,8 @@ namespace MonoDevelop.Debugger
 		void OnDebuggerStopped (object s, EventArgs a)
 		{
 			tree.ResetChangeTracking ();
-			tree.Sensitive = false;
+			if (DisableTreeViewWhenNotDebugging)
+				tree.Sensitive = false;
 			initialResume = true;
 		}
 		

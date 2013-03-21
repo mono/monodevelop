@@ -82,12 +82,12 @@ namespace MonoDevelop.SourceEditor
 		
 		public string ReplacePattern {
 			get { return entryReplace.Text; }
-			set { entryReplace.Text = value; }
+			set { entryReplace.Text = value ?? ""; }
 		}
 		
 		public string SearchPattern {
 			get { return searchEntry.Entry.Text; }
-			set { searchEntry.Entry.Text = value; }
+			set { searchEntry.Entry.Text = value ?? ""; }
 		}
 		
 		public bool SearchFocused {
@@ -196,7 +196,7 @@ namespace MonoDevelop.SourceEditor
 				}
 			};
 			
-			entryReplace.Text = SearchAndReplaceOptions.ReplacePattern;
+			entryReplace.Text = SearchAndReplaceOptions.ReplacePattern ?? "";
 //			entryReplace.Model = replaceHistory;
 //			RestoreReplaceHistory ();
 			
@@ -453,7 +453,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public void UpdateSearchPattern ()
 		{
-			searchEntry.Entry.Text = textEditor.SearchPattern;
+			searchEntry.Entry.Text = textEditor.SearchPattern ?? "";
 			SetSearchPattern (textEditor.SearchPattern);
 			SearchAndReplaceOptions.SearchPattern = textEditor.SearchPattern;
 //			UpdateSearchEntry ();
@@ -806,7 +806,7 @@ But I leave it in in the case I've missed something. Mike
 		
 		void UpdateReplacePattern (object sender, EventArgs args)
 		{
-			entryReplace.Text = SearchAndReplaceOptions.ReplacePattern;
+			entryReplace.Text = SearchAndReplaceOptions.ReplacePattern ?? "";
 		}
 
 		internal void SetSearchPattern ()
