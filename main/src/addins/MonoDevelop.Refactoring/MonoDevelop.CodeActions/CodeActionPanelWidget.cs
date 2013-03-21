@@ -141,8 +141,6 @@ namespace MonoDevelop.CodeActions
 					sb.Append (",");
 				sb.Append (kv.Key.IdString);
 			}
-			Console.WriteLine (">>>>>>>>");
-			Console.WriteLine (sb);
 			PropertyService.Set ("ContextActions." + mimeType, sb.ToString ());
 		}
 	}

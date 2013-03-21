@@ -130,6 +130,14 @@ namespace Mono.TextEditor
 		public IEnumerable<TooltipProvider> TooltipProviders {
 			get { return tooltipProviders; }
 		}
+		
+		/// <summary>
+		/// If set the tooltips wont show up.
+		/// </summary>
+		public bool SuppressTooltips {
+			get;
+			set;
+		}
 
 		public void ClearTooltipProviders ()
 		{

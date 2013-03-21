@@ -1286,6 +1286,7 @@ namespace Mono.TextEditor
 			mx = x - textViewMargin.XOffset;
 			my = y;
 
+			ShowTooltip (state);
 
 			double startPos;
 			Margin margin;
@@ -1310,8 +1311,6 @@ namespace Mono.TextEditor
 			if (margin != null) 
 				margin.MouseHover (new MarginMouseEventArgs (textEditorData.Parent, EventType.MotionNotify,
 					mouseButtonPressed, x - startPos, y, state));
-			if (margin != textViewMargin || !textViewMargin.hoverResult.SuppressTooltip)
-				ShowTooltip (state);
 			oldMargin = margin;
 		}
 
@@ -2639,6 +2638,8 @@ namespace Mono.TextEditor
 		void ShowTooltip (Gdk.ModifierType modifierState, int offset, int xloc, int yloc)
 		{
 			CancelScheduledShow ();
+			if (textEditorData.SuppressTooltips)
+				return;
 			if (tipWindow != null && currentTooltipProvider != null && currentTooltipProvider.IsInteractive (editor, tipWindow)) {
 				int wx, ww, wh;
 				tipWindow.GetSize (out ww, out wh);

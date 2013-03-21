@@ -168,14 +168,15 @@ namespace MonoDevelop.CodeActions
 			public SmartTagMarker (int offset) : base (offset, 0)
 			{
 			}
-
+			const double tagMarkerWidth = 8;
+			const double tagMarkerHeight = 2;
 			public override void Draw (TextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
 			{
 				int column = Offset - startOffset;
 
 				var pos = layout.IndexToPos (column).X / Pango.Scale.PangoScale;
 
-				cr.Rectangle (Math.Floor (startXPos + pos) + 0.5, Math.Floor (y + editor.LineHeight - 4 * cr.LineWidth) + 0.5, 8 * cr.LineWidth, 2 * cr.LineWidth);
+				cr.Rectangle (Math.Floor (startXPos + pos) + 0.5, Math.Floor (y + editor.LineHeight - (tagMarkerHeight + 2) * cr.LineWidth) + 0.5, tagMarkerWidth * cr.LineWidth, tagMarkerHeight * cr.LineWidth);
 
 				if (HslColor.Brightness (editor.ColorStyle.PlainText.Background) < 0.5) {
 					cr.Color = new Cairo.Color (0.8, 0.8, 1);
@@ -198,8 +199,7 @@ namespace MonoDevelop.CodeActions
 				var y = editor.LineToY (line.LineNumber) - editor.VAdjustment.Value;
 
 				var x = editor.ColumnToX (line, Offset - line.Offset + 1) - editor.HAdjustment.Value;
-				if (args.X - x >= -8 * editor.Options.Zoom && args.X - x < 8 * editor.Options.Zoom && args.Y > y + editor.LineHeight / 2) {
-					result.SuppressTooltip = true;
+				if (args.X - x >= 0 * editor.Options.Zoom && args.X - x < tagMarkerWidth * editor.Options.Zoom && args.Y > y + editor.LineHeight - (tagMarkerHeight + 3) * editor.Options.Zoom) {
 					Popup ();
 				}
 			}

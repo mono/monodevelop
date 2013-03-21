@@ -49,11 +49,6 @@ namespace Mono.TextEditor
 	{
 		public Gdk.Cursor Cursor { get; set; }
 		public string TooltipMarkup { get; set; }
-
-		public bool SuppressTooltip {
-			get;
-			set;
-		}
 	}
 	
 	[Flags]

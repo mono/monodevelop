@@ -242,9 +242,14 @@ namespace MonoDevelop.CodeActions
 				menu.Destroy ();
 				return;
 			}
+			document.Editor.SuppressTooltips = true;
+			document.Editor.Parent.HideTooltip ();
 			menu.ShowAll ();
 			menu.SelectFirst (true);
 			menuPushed = true;
+			menu.Hidden += delegate {
+				document.Editor.SuppressTooltips = false;
+			};
 			menu.Destroyed += delegate {
 				menuPushed = false;
 				Hide ();
@@ -259,7 +264,6 @@ namespace MonoDevelop.CodeActions
 				var p = container.LocationToPoint (loc);
 				rect = new Gdk.Rectangle (p.X, p.Y + (int)document.Editor.LineHeight, 0, 0);
 			//}
-			Console.WriteLine (	"rect:"+rect);
 			GtkWorkarounds.ShowContextMenu (menu, document.Editor.Parent, null, rect);
 		}
 

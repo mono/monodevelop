@@ -2052,7 +2052,6 @@ namespace Mono.TextEditor
 
 		List<IActionTextLineMarker> oldMarkers = new List<IActionTextLineMarker> ();
 		List<IActionTextLineMarker> newMarkers = new List<IActionTextLineMarker> ();
-		internal TextLineMarkerHoverResult hoverResult = new TextLineMarkerHoverResult ();
 		protected internal override void MouseHover (MarginMouseEventArgs args)
 		{
 			var loc = PointToLocation (args.X, args.Y);
@@ -2087,15 +2086,14 @@ namespace Mono.TextEditor
 			} else {
 				oldMarkers.Clear ();
 			}
-			if (hoverResult.SuppressTooltip)
-				return;
 
 			base.cursor = hoverResult.Cursor ?? xtermCursor;
 			if (textEditor.TooltipMarkup != hoverResult.TooltipMarkup) {
 				textEditor.TooltipMarkup = null;
 				textEditor.TriggerTooltipQuery ();
 			}
-			textEditor.TooltipMarkup = hoverResult.TooltipMarkup;
+			if (!textEditor.GetTextEditorData ().SuppressTooltips)
+				textEditor.TooltipMarkup = hoverResult.TooltipMarkup;
 			if (args.Button != 1 && args.Y >= 0 && args.Y <= this.textEditor.Allocation.Height) {
 				// folding marker
 				int lineNr = args.LineNumber;
