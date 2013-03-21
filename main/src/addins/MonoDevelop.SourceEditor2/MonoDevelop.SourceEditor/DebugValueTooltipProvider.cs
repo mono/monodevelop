@@ -71,7 +71,20 @@ namespace MonoDevelop.SourceEditor
 				tooltip.Hide ();
 		}
 
-		#region ITooltipProvider implementation 
+		#region ITooltipProvider implementation
+
+		static int IndexOfLastWhiteSpace (string text)
+		{
+			int index = text.Length - 1;
+
+			while (index >= 0) {
+				if (char.IsWhiteSpace (text[index]))
+					break;
+				index--;
+			}
+
+			return index;
+		}
 		
 		public override TooltipItem GetItem (TextEditor editor, int offset)
 		{
@@ -129,7 +142,15 @@ namespace MonoDevelop.SourceEditor
 					startOffset = editor.Document.LocationToOffset (start);
 					endOffset = editor.Document.LocationToOffset (end);
 
-					expression = ed.GetTextBetween (startOffset, endOffset);
+					expression = ed.GetTextBetween (startOffset, endOffset).Trim ();
+
+					// Note: When the LocalResolveResult is a parameter, the Variable.Region includes the type
+					if (lr.IsParameter) {
+						int index = IndexOfLastWhiteSpace (expression);
+						if (index != -1)
+							expression = expression.Substring (index + 1);
+					}
+
 					length = expression.Length;
 				} else if (res is InvocationResolveResult) {
 					var ir = (InvocationResolveResult) res;
