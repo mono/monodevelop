@@ -208,9 +208,7 @@ display in a help buffer instead.")
       (setq fsharp-ac-status 'idle
             fsharp-ac-partial-data ""
             fsharp-ac-project-files nil)
-      (local-set-key (kbd ".") 'fsharp-ac/electric-key)
       (add-to-list 'ac-modes 'fsharp-mode)
-      ;(setq ac-modes (delq 'fsharp-mode ac-modes))
       proc)))
 
 (defun fsharp-ac--reset-timer ()
@@ -300,12 +298,17 @@ display in a help buffer instead.")
 (defun fsharp-ac--ac-start (&rest ac-start-args)
   "Start completion, using only the F# completion source for intellisense."
   (interactive)
-  (let ((ac-sources '(fsharp-ac-source)))
+  (let ((ac-sources '(fsharp-ac-source))
+        (ac-auto-show-menu t))
     (apply 'ac-start ac-start-args)))
 
 (defun fsharp-ac/electric-key ()
   (interactive)
   (self-insert-command 1)
+  (fsharp-ac/complete-at-point))
+
+(defun fsharp-ac/complete-at-point ()
+  (interactive)
   (if (and (fsharp-ac-can-make-request)
            (eq fsharp-ac-status 'idle)
            fsharp-ac-autocompletion-automatically)

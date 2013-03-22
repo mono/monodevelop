@@ -88,8 +88,7 @@ and whether it is in a project directory.")
   (define-key fsharp-mode-map "\C-c:"     'fsharp-guess-indent-offset)
   (define-key fsharp-mode-map [delete]    'fsharp-electric-delete)
   (define-key fsharp-mode-map [backspace] 'fsharp-electric-backspace)
-  ;(define-key fsharp-mode-map (kbd ".") 'fsharp-ac/electric-dot)
-  (define-key fsharp-mode-map (kbd ".") 'self-insert-command)
+  (define-key fsharp-mode-map (kbd ".") 'fsharp-ac/electric-key)
 
   (define-key fsharp-mode-map (kbd "C-c <up>") 'fsharp-goto-block-up)
 
@@ -97,6 +96,7 @@ and whether it is in a project directory.")
   (define-key fsharp-mode-map (kbd "C-c C-t") 'fsharp-ac/show-tooltip-at-point)
   (define-key fsharp-mode-map (kbd "C-c C-d") 'fsharp-ac/gotodefn-at-point)
   (define-key fsharp-mode-map (kbd "C-c C-q") 'fsharp-ac/stop-process)
+  (define-key fsharp-mode-map (kbd "C-c C-.") 'fsharp-ac/complete-at-point)
 
   (unless running-xemacs
     (let ((map (make-sparse-keymap "fsharp"))
@@ -232,9 +232,9 @@ and whether it is in a project directory.")
         fsharp-last-comment-start      (make-marker)
         fsharp-last-comment-end        (make-marker)
 
-       ; ac-auto-start nil
         ac-use-comphist nil
-        ac-auto-show-menu 0.2)
+        ;ac-auto-show-menu t
+        )
 
   ;; Error navigation
   (setq next-error-function 'fsharp-ac/next-error)
