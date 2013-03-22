@@ -694,8 +694,8 @@
     <EmbeddedResource Include="icons\toolbar-skipButton.png">
       <LogicalName>toolbar-skipButton.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\toolbar-pause-16.png">
-      <LogicalName>toolbar-pause-16.png</LogicalName>
+    <EmbeddedResource Include="icons\toolbar-pauseButton.png">
+      <LogicalName>toolbar-pauseButton.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\btDebugBase-LeftCap-Normal.png">
       <LogicalName>btDebugBase-LeftCap-Normal.png</LogicalName>
