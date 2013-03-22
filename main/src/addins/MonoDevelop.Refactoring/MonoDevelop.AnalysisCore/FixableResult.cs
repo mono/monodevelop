@@ -30,6 +30,7 @@ using MonoDevelop.SourceEditor;
 using MonoDevelop.SourceEditor.QuickTasks;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
+using Mono.TextEditor;
 
 namespace MonoDevelop.AnalysisCore
 {
@@ -59,6 +60,7 @@ namespace MonoDevelop.AnalysisCore
 	public interface IAnalysisFixAction
 	{
 		string Label { get; }
+		DocumentRegion DocumentRegion { get; }
 		void Fix ();
 	}
 }

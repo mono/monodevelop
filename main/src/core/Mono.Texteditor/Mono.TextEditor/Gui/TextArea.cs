@@ -233,7 +233,7 @@ namespace Mono.TextEditor
 			oldVadjustment = value;
 			TextViewMargin.caretY -= delta;
 			
-			if (System.Math.Abs (delta) >= Allocation.Height - this.LineHeight * 2 || this.TextViewMargin.inSelectionDrag) {
+			if (System.Math.Abs (delta) >= Allocation.Height - this.LineHeight * 2 || this.TextViewMargin.InSelectionDrag) {
 				this.QueueDraw ();
 				OnVScroll (EventArgs.Empty);
 				return;
@@ -1107,7 +1107,7 @@ namespace Mono.TextEditor
 		{
 			mouseButtonPressed = 0;
 			textViewMargin.inDrag = false;
-			textViewMargin.inSelectionDrag = false;
+			textViewMargin.InSelectionDrag = false;
 		}
 		
 		bool dragOver = false;
@@ -1290,7 +1290,7 @@ namespace Mono.TextEditor
 
 			double startPos;
 			Margin margin;
-			if (textViewMargin.inSelectionDrag) {
+			if (textViewMargin.InSelectionDrag) {
 				margin = textViewMargin;
 				startPos = textViewMargin.XOffset;
 			} else {
@@ -2638,6 +2638,8 @@ namespace Mono.TextEditor
 		void ShowTooltip (Gdk.ModifierType modifierState, int offset, int xloc, int yloc)
 		{
 			CancelScheduledShow ();
+			if (textEditorData.SuppressTooltips)
+				return;
 			if (tipWindow != null && currentTooltipProvider != null && currentTooltipProvider.IsInteractive (editor, tipWindow)) {
 				int wx, ww, wh;
 				tipWindow.GetSize (out ww, out wh);

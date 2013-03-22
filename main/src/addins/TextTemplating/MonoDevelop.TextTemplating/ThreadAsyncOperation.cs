@@ -70,6 +70,7 @@ namespace MonoDevelop.TextTemplating
 		
 		public void Cancel ()
 		{
+			cancelled = true;
 			thread.Abort ();
 		}
 		

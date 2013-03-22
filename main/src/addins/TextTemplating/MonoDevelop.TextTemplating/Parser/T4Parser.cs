@@ -30,6 +30,7 @@ using Mono.TextTemplating;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Projects;
+using System.Collections.Generic;
 
 namespace MonoDevelop.TextTemplating.Parser
 {
@@ -44,13 +45,14 @@ namespace MonoDevelop.TextTemplating.Parser
 			} catch (ParserException ex) {
 				template.LogError (ex.Message, ex.Location);
 			}
-			
-			T4ParsedDocument doc = new T4ParsedDocument (fileName, template.RawSegments);
+
+			var errors = new List<Error> ();
+			foreach (System.CodeDom.Compiler.CompilerError err in template.Errors) {
+				errors.Add (new Error (err.IsWarning ? ErrorType.Warning : ErrorType.Error, err.ErrorText, err.Line, err.Column));
+			}
+			var doc = new T4ParsedDocument (fileName, template.RawSegments, errors);
 			doc.Flags |= ParsedDocumentFlags.NonSerializable;
-			foreach (System.CodeDom.Compiler.CompilerError err in template.Errors)
-				doc.Errors.Add (new Error (err.IsWarning? ErrorType.Warning : ErrorType.Error,
-				                           err.ErrorText, err.Line, err.Column)); 
-			
+
 			return doc;
 		}
 	}

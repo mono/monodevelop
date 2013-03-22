@@ -33,6 +33,7 @@ using MonoDevelop.Refactoring;
 using MonoDevelop.Refactoring.Rename;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Semantics;
+using Mono.TextEditor;
 
 namespace MonoDevelop.AnalysisCore.Fixes
 {
@@ -112,7 +113,8 @@ namespace MonoDevelop.AnalysisCore.Fixes
 			public RenameRefactoring.RenameProperties Properties;
 			public bool Preview;
 			public string Label { get; set; }
-			
+			public DocumentRegion DocumentRegion { get; set; }
+
 			public void Fix ()
 			{
 				if (string.IsNullOrEmpty (Properties.NewName)) {

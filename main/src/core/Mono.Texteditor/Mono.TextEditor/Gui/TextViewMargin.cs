@@ -1388,6 +1388,8 @@ namespace Mono.TextEditor
 
 		public void DrawCaretLineMarker (Cairo.Context cr, double xPos, double y, double width, double lineHeight)
 		{
+			if (BackgroundRenderer != null)
+				return;
 			xPos = System.Math.Floor (xPos);
 			cr.Rectangle (xPos, y, width, lineHeight);
 			var color = CurrentLineColor;
@@ -1725,9 +1727,9 @@ namespace Mono.TextEditor
 			return GetPixel ((Gdk.Color) ((HslColor)color));
 		}
 
-		public bool inSelectionDrag = false;
-		public bool inDrag = false;
-		public DocumentLocation clickLocation;
+		internal bool InSelectionDrag = false;
+		internal bool inDrag = false;
+		internal DocumentLocation clickLocation;
 		int mouseWordStart, mouseWordEnd;
 		enum MouseSelectionMode
 		{
@@ -1763,7 +1765,7 @@ namespace Mono.TextEditor
 			if (args.TriggersContextMenu ())
 				return;
 			
-			inSelectionDrag = false;
+			InSelectionDrag = false;
 			inDrag = false;
 			Selection selection = textEditor.MainSelection;
 			int oldOffset = textEditor.Caret.Offset;
@@ -1782,6 +1784,13 @@ namespace Mono.TextEditor
 				bool isHandled = false;
 				if (line != null) {
 					foreach (TextLineMarker marker in line.Markers) {
+						if (marker is IActionTextLineMarker) {
+							isHandled |= ((IActionTextLineMarker)marker).MousePressed (textEditor, args);
+							if (isHandled)
+								break;
+						}
+					}
+					foreach (var marker in Document.GetTextSegmentMarkersAt (line).Where (m => m.IsVisible)) {
 						if (marker is IActionTextLineMarker) {
 							isHandled |= ((IActionTextLineMarker)marker).MousePressed (textEditor, args);
 							if (isHandled)
@@ -1808,7 +1817,7 @@ namespace Mono.TextEditor
 					mouseWordEnd = data.FindCurrentWordEnd (offset);
 					Caret.Offset = mouseWordEnd;
 					textEditor.MainSelection = new Selection (textEditor.Document.OffsetToLocation (mouseWordStart), textEditor.Document.OffsetToLocation (mouseWordEnd));
-					inSelectionDrag = true;
+					InSelectionDrag = true;
 					mouseSelectionMode = MouseSelectionMode.Word;
 
 					// folding marker
@@ -1828,7 +1837,7 @@ namespace Mono.TextEditor
 					mouseWordStart = range.Offset;
 					mouseWordEnd = range.EndOffset;
 
-					inSelectionDrag = true;
+					InSelectionDrag = true;
 					mouseSelectionMode = MouseSelectionMode.WholeLine;
 					return;
 				}
@@ -1838,7 +1847,7 @@ namespace Mono.TextEditor
 					inDrag = true;
 				} else {
 					if ((args.ModifierState & Gdk.ModifierType.ShiftMask) == ModifierType.ShiftMask) {
-						inSelectionDrag = true;
+						InSelectionDrag = true;
 						Caret.PreserveSelection = true;
 						if (!textEditor.IsSomethingSelected) {
 							textEditor.MainSelection = new Selection (Caret.Location, clickLocation);
@@ -1851,7 +1860,7 @@ namespace Mono.TextEditor
 					} else {
 						textEditor.ClearSelection ();
 						Caret.Location = clickLocation;
-						inSelectionDrag = true;
+						InSelectionDrag = true;
 						textEditor.SetSelection (clickLocation, clickLocation);
 					}
 					textEditor.RequestResetCaretBlink ();
@@ -1890,9 +1899,9 @@ namespace Mono.TextEditor
 
 		protected internal override void MouseReleased (MarginMouseEventArgs args)
 		{
-			if (args.Button != 2 && !inSelectionDrag)
+			if (args.Button != 2 && !InSelectionDrag)
 				textEditor.ClearSelection ();
-			inSelectionDrag = false;
+			InSelectionDrag = false;
 			if (inDrag)
 				Caret.Location = clickLocation;
 			base.MouseReleased (args);
@@ -2045,11 +2054,8 @@ namespace Mono.TextEditor
 
 		List<IActionTextLineMarker> oldMarkers = new List<IActionTextLineMarker> ();
 		List<IActionTextLineMarker> newMarkers = new List<IActionTextLineMarker> ();
-
 		protected internal override void MouseHover (MarginMouseEventArgs args)
 		{
-			base.MouseHover (args);
-
 			var loc = PointToLocation (args.X, args.Y);
 			if (loc.Line < DocumentLocation.MinLine || loc.Column < DocumentLocation.MinColumn)
 				return;
@@ -2074,15 +2080,22 @@ namespace Mono.TextEditor
 				var tmp = oldMarkers;
 				oldMarkers = newMarkers;
 				newMarkers = tmp;
+				foreach (var marker in Document.GetTextSegmentMarkersAt (line).Where (m => m.IsVisible)) {
+					if (marker is IActionTextLineMarker) {
+						((IActionTextLineMarker)marker).MouseHover (textEditor, args, hoverResult);
+					}
+				}
 			} else {
 				oldMarkers.Clear ();
 			}
+
 			base.cursor = hoverResult.Cursor ?? xtermCursor;
 			if (textEditor.TooltipMarkup != hoverResult.TooltipMarkup) {
 				textEditor.TooltipMarkup = null;
 				textEditor.TriggerTooltipQuery ();
 			}
-			textEditor.TooltipMarkup = hoverResult.TooltipMarkup;
+			if (!textEditor.GetTextEditorData ().SuppressTooltips)
+				textEditor.TooltipMarkup = hoverResult.TooltipMarkup;
 			if (args.Button != 1 && args.Y >= 0 && args.Y <= this.textEditor.Allocation.Height) {
 				// folding marker
 				int lineNr = args.LineNumber;
@@ -2110,7 +2123,7 @@ namespace Mono.TextEditor
 
 			switch (this.mouseSelectionMode) {
 			case MouseSelectionMode.SingleChar:
-				if (!inSelectionDrag) {
+				if (!InSelectionDrag) {
 					textEditor.SetSelection (loc, loc);
 				} else {
 					textEditor.ExtendSelectionTo (loc);
@@ -2131,7 +2144,7 @@ namespace Mono.TextEditor
 					end = data.FindCurrentWordEnd (offset);
 					Caret.Offset = end;
 				}
-				if (!textEditor.IsSomethingSelected) {
+				if (!textEditor.MainSelection.IsEmpty) {
 					if (Caret.Offset < mouseWordStart) {
 						textEditor.MainSelection = new Selection (Document.OffsetToLocation (mouseWordEnd), Caret.Location, textEditor.MainSelection.SelectionMode);
 					} else {
@@ -2145,7 +2158,7 @@ namespace Mono.TextEditor
 				DocumentLine line2 = textEditor.Document.GetLineByOffset (textEditor.SelectionAnchor);
 				var o2 = line1.Offset < line2.Offset ? line1.Offset : line1.EndOffsetIncludingDelimiter;
 				Caret.Offset = o2;
-				if (textEditor.IsSomethingSelected) {
+				if (!textEditor.MainSelection.IsEmpty) {
 					if (mouseWordStart < o2) {
 						textEditor.MainSelection = new Selection (textEditor.OffsetToLocation (mouseWordStart), Caret.Location, textEditor.MainSelection.SelectionMode);
 					} else {
@@ -2173,7 +2186,9 @@ namespace Mono.TextEditor
 					Document.CommitMultipleLineUpdate (textEditor.MainSelection.MinLine, textEditor.MainSelection.MaxLine);
 				textEditor.SelectionMode = SelectionMode.Normal;
 			}
-			inSelectionDrag = true;
+			InSelectionDrag = true;
+			base.MouseHover (args);
+
 		}
 
 		public static int GetNextTabstop (TextEditorData textEditor, int currentColumn)

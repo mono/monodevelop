@@ -130,6 +130,14 @@ namespace Mono.TextEditor
 		public IEnumerable<TooltipProvider> TooltipProviders {
 			get { return tooltipProviders; }
 		}
+		
+		/// <summary>
+		/// If set the tooltips wont show up.
+		/// </summary>
+		public bool SuppressTooltips {
+			get;
+			set;
+		}
 
 		public void ClearTooltipProviders ()
 		{
@@ -816,9 +824,11 @@ namespace Mono.TextEditor
 		
 		public void ExtendSelectionTo (DocumentLocation location)
 		{
-			if (MainSelection.IsEmpty)
+			if (MainSelection.IsEmpty) {
 				MainSelection = new Selection (location, location);
-			MainSelection = MainSelection.WithLead (location);
+			} else {
+				MainSelection = MainSelection.WithLead (location);
+			}
 		}
 		
 		public void SetSelection (int anchorOffset, int leadOffset)
