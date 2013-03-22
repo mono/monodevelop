@@ -143,11 +143,6 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
-		public static SyntaxMode GetSyntaxMode (TextDocument doc)
-		{
-			return GetSyntaxMode (doc, doc.MimeType);
-		}
-		
 		public static SyntaxMode GetSyntaxMode (TextDocument doc, string mimeType)
 		{
 			if (string.IsNullOrEmpty (mimeType))
