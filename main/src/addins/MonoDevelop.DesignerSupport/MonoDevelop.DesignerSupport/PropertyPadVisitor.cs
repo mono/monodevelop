@@ -45,10 +45,13 @@ namespace MonoDevelop.DesignerSupport
 		// on a second try
 		bool visitingCurrentDoc;
 
+		Gtk.Widget activeWidget;
+
 		public void Start ()
 		{
 			found = false;
 			visitedCurrentDoc = false;
+			activeWidget = null;
 		}
 
 		public void End ()
@@ -74,6 +77,9 @@ namespace MonoDevelop.DesignerSupport
 
 		public bool Visit (object ob)
 		{
+			if (activeWidget == null && ob is Gtk.Widget)
+				activeWidget = (Gtk.Widget) ob;
+
 			if (ob == ((DefaultWorkbench)IdeApp.Workbench.RootWindow).ActiveWorkbenchWindow)
 				visitedCurrentDoc = true;
 
@@ -83,12 +89,12 @@ namespace MonoDevelop.DesignerSupport
 				return true;
 			}
 			else if (ob is IPropertyPadProvider) {
-				DesignerSupport.Service.SetPadContent ((IPropertyPadProvider)ob);
+				DesignerSupport.Service.SetPadContent ((IPropertyPadProvider)ob, activeWidget);
 				found = true;
 				return true;
 			}
 			else if (ob is ICustomPropertyPadProvider) {
-				DesignerSupport.Service.SetPadContent ((ICustomPropertyPadProvider)ob);
+				DesignerSupport.Service.SetPadContent ((ICustomPropertyPadProvider)ob, activeWidget);
 				found = true;
 				return true;
 			}
