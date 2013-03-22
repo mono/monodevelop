@@ -1388,6 +1388,8 @@ namespace Mono.TextEditor
 
 		public void DrawCaretLineMarker (Cairo.Context cr, double xPos, double y, double width, double lineHeight)
 		{
+			if (BackgroundRenderer != null)
+				return;
 			xPos = System.Math.Floor (xPos);
 			cr.Rectangle (xPos, y, width, lineHeight);
 			var color = CurrentLineColor;
