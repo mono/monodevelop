@@ -1853,6 +1853,7 @@
     <Compile Include="MonoDevelop.Ide.Gui\StatusBarContextImpl.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\MainStatusBarContextImpl.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopProjectContent.cs" />
+    <Compile Include="MonoDevelop.Components.Commands\ICommandDelegator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

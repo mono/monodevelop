@@ -683,18 +683,6 @@ namespace MonoDevelop.Projects
 			ItemHandler.RunTarget (monitor, "Clean", configuration);
 		}
 
-		void GetBuildableReferencedItems (List<SolutionItem> referenced, SolutionItem item, ConfigurationSelector configuration)
-		{
-			if (referenced.Contains (item))
-				return;
-
-			if (item.NeedsBuilding (configuration))
-				referenced.Add (item);
-
-			foreach (SolutionItem ritem in item.GetReferencedItems (configuration))
-				GetBuildableReferencedItems (referenced, ritem, configuration);
-		}
-
 		protected internal override void OnExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			ProjectConfiguration config = GetConfiguration (configuration) as ProjectConfiguration;

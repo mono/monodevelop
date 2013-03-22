@@ -207,12 +207,16 @@ namespace MonoDevelop.Projects
 		[ItemProperty (DefaultValue=true)]
 		bool build = true;
 		
+		[ItemProperty (DefaultValue=false)]
+		bool deploy;
+
 		internal SolutionConfigurationEntry (SolutionConfiguration parentConfig, SolutionConfigurationEntry other)
 		{
 			this.parentConfig = parentConfig;
 			this.itemId = other.itemId;
 			this.configuration = other.configuration;
 			this.build = other.build;
+			this.deploy = other.deploy;
 		}
 		
 		internal SolutionConfigurationEntry (SolutionConfiguration parentConfig, SolutionEntityItem item)
@@ -241,6 +245,11 @@ namespace MonoDevelop.Projects
 			set { build = value; }
 		}
 		
+		public bool Deploy {
+			get { return deploy; }
+			set { deploy = value; }
+		}
+
 		public SolutionEntityItem Item {
 			get {
 				if (item == null && parentConfig != null) {

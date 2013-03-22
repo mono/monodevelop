@@ -322,6 +322,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					if (cce.Build)
 						list.Add (String.Format (
                             "\t\t{0}.{1}.Build.0 = {2}", itemGuid, ToSlnConfigurationId (cc), ToSlnConfigurationId (cce.ItemConfiguration)));
+					
+					if (cce.Deploy)
+						list.Add (String.Format (
+							"\t\t{0}.{1}.Deploy.0 = {2}", itemGuid, ToSlnConfigurationId (cc), ToSlnConfigurationId (cce.ItemConfiguration)));
 				}
 			}
 			
@@ -926,6 +930,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				//Format:
 				// {projectGuid}.SolutionConfigName|SolutionPlatform.ActiveCfg = ProjConfigName|ProjPlatform
 				// {projectGuid}.SolutionConfigName|SolutionPlatform.Build.0 = ProjConfigName|ProjPlatform
+				// {projectGuid}.SolutionConfigName|SolutionPlatform.Deploy.0 = ProjConfigName|ProjPlatform
 
 				string [] parts = s.Split (new char [] {'='}, 2);
 				if (parts.Length < 2) {
@@ -943,8 +948,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				} else if (left.EndsWith (".Build.0")) {
 					action = "Build.0";
 					left = left.Substring (0, left.Length - 8);
+				} else if (left.EndsWith (".Deploy.0")) {
+					action = "Deploy.0";
+					left = left.Substring (0, left.Length - 9);
 				} else { 
-					LoggingService.LogWarning (GettextCatalog.GetString ("{0} ({1}) : Unknown action. Only ActiveCfg & Build.0 supported.",
+					LoggingService.LogWarning (GettextCatalog.GetString ("{0} ({1}) : Unknown action. Only ActiveCfg, Build.0 and Deploy.0 supported.",
 						sln.FileName, lineNum + 1));
 					continue;
 				}
@@ -1001,6 +1009,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						combineConfigEntry.ItemConfiguration = FromSlnConfigurationId (projConfig);
 					} else if (action == "Build.0") {
 						combineConfigEntry.Build = true;
+					} else if (action == "Deploy.0") {
+						combineConfigEntry.Deploy = true;
 					}
 				}
 				extras.RemoveAt (extras.Count - 1);

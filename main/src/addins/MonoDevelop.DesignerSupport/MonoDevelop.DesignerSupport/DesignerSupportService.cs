@@ -112,8 +112,13 @@ namespace MonoDevelop.DesignerSupport
 			if (propertyPad != null)
 				propertyPad.BlankPad ();
 		}
-		
+
 		public void SetPadContent (IPropertyPadProvider provider)
+		{
+			SetPadContent (provider, null);
+		}
+
+		public void SetPadContent (IPropertyPadProvider provider, object commandRouteOrigin)
 		{
 			if (provider != null) {
 				// If there was a custom provider, reset it now
@@ -132,8 +137,10 @@ namespace MonoDevelop.DesignerSupport
 					return;
 					
 				object[] provs = GetProvidersForObject (comp, provider.GetProvider ());
-				if (provs.Length > 0)
+				if (provs.Length > 0) {
 					propertyPad.PropertyGrid.SetCurrentObject (comp, provs);
+					propertyPad.CommandRouteOrigin = commandRouteOrigin;
+				}
 				else
 					propertyPad.BlankPad ();
 				
@@ -150,6 +157,11 @@ namespace MonoDevelop.DesignerSupport
 		
 		public void SetPadContent (ICustomPropertyPadProvider provider)
 		{
+			SetPadContent (provider, null);
+		}
+
+		public void SetPadContent (ICustomPropertyPadProvider provider, Gtk.Widget commandRouteOrigin)
+		{
 			if (provider != null) {
 				
 				if (lastCustomProvider == provider)
@@ -163,6 +175,7 @@ namespace MonoDevelop.DesignerSupport
 				
 				if (propertyPad != null) {
 					propertyPad.UseCustomWidget (provider.GetCustomPropertyWidget ());
+					propertyPad.CommandRouteOrigin = commandRouteOrigin;
 				
 					var customizer = provider as IPropertyPadCustomizer;
 					if (customizer != null)
