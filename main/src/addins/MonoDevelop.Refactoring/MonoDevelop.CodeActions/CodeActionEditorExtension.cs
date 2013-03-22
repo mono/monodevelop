@@ -195,6 +195,8 @@ namespace MonoDevelop.CodeActions
 
 			void IActionTextLineMarker.MouseHover (TextEditor editor, MarginMouseEventArgs args, TextLineMarkerHoverResult result)
 			{
+				if (args.Button != 0)
+					return;
 				var line = editor.GetLine (loc.Line);
 				var x = editor.ColumnToX (line, loc.Column) - editor.HAdjustment.Value;
 				var y = editor.LineToY (line.LineNumber) - editor.VAdjustment.Value;
