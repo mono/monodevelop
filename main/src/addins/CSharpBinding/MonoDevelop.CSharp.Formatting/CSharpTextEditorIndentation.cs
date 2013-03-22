@@ -200,14 +200,15 @@ namespace MonoDevelop.CSharp.Formatting
 
 			bool inNewLine = false;
 			foreach (var ch in text) {
-				if (!stateTracker.Engine.IsInsideOrdinaryCommentOrString) {
+				if (!engine.IsInsideOrdinaryCommentOrString) {
 					if (inNewLine && (ch == ' ' || ch == '\t')) {
+						engine.Push (ch);
 						continue;
 					}
 				}
 
 				if (inNewLine && ch != '\n' && ch != '\r') {
-					if (!stateTracker.Engine.IsInsideOrdinaryCommentOrString) {
+					if (!engine.IsInsideOrdinaryCommentOrString) {
 						if (ch != '#')
 							engine.Push (ch);
 						result.Append (engine.ThisLineIndent);
