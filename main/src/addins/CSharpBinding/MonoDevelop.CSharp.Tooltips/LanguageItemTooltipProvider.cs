@@ -275,7 +275,8 @@ namespace MonoDevelop.SourceEditor
 						false);
 					}
 				} else if (result is CSharpInvocationResolveResult) {
-					var member = ((CSharpInvocationResolveResult)result).ReducedMethod ?? (IMethod)((CSharpInvocationResolveResult)result).Member;
+					var invocationResult = (CSharpInvocationResolveResult)result;
+					var member = (IMember)invocationResult.ReducedMethod ?? invocationResult.Member;
 					return MemberCompletionData.CreateTooltipInformation (
 						doc.Compilation,
 						doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile,
