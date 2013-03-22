@@ -1516,12 +1516,22 @@ namespace MonoDevelop.Components.Commands
 			return cmdTarget;
 		}
 		
-		object GetNextCommandTarget (CommandTargetRoute targetRoute, object cmdTarget)
+		object GetNextCommandTarget (CommandTargetRoute targetRoute, object cmdTarget, bool ignoreDelegator = false)
 		{
 			if (cmdTarget is IMultiCastCommandRouter) 
 				cmdTarget = new MultiCastDelegator (this, (IMultiCastCommandRouter)cmdTarget, targetRoute);
-			
-			if (cmdTarget is ICommandDelegatorRouter) {
+
+			if (!ignoreDelegator && cmdTarget is ICommandDelegator) {
+				if (cmdTarget is ICommandDelegatorRouter)
+					throw new InvalidOperationException ("A type can't implement both ICommandDelegator and ICommandDelegatorRouter");
+				object oldCmdTarget = cmdTarget;
+				cmdTarget = ((ICommandDelegator)oldCmdTarget).GetDelegatedCommandTarget ();
+				if (cmdTarget != null)
+					delegatorStack.Push (oldCmdTarget);
+				else
+					cmdTarget = GetNextCommandTarget (targetRoute, oldCmdTarget, true);
+			}
+			else if (cmdTarget is ICommandDelegatorRouter) {
 				object oldCmdTarget = cmdTarget;
 				cmdTarget = ((ICommandDelegatorRouter)oldCmdTarget).GetDelegatedCommandTarget ();
 				if (cmdTarget != null)
@@ -1538,8 +1548,11 @@ namespace MonoDevelop.Components.Commands
 			
 			if (cmdTarget == null || !visitedTargets.Add (cmdTarget)) {
 				if (delegatorStack.Count > 0) {
-					ICommandDelegatorRouter del = (ICommandDelegatorRouter) delegatorStack.Pop ();
-					cmdTarget = del.GetNextCommandTarget ();
+					var del = delegatorStack.Pop ();
+					if (del is ICommandDelegatorRouter)
+						cmdTarget = ((ICommandDelegatorRouter)del).GetNextCommandTarget ();
+					else
+						cmdTarget = GetNextCommandTarget (targetRoute, del, true);
 					if (cmdTarget == CommandManager.CommandRouteTerminator)
 						return null;
 					if (cmdTarget != null)
