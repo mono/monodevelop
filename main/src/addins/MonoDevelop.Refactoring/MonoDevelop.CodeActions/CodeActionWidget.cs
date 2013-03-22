@@ -186,7 +186,7 @@ namespace MonoDevelop.CodeActions
 			}
 		}
 		
-		void PopupQuickFixMenu (Gdk.EventButton evt)
+	void PopupQuickFixMenu (Gdk.EventButton evt)
 		{
 			var menu = new Gtk.Menu ();
 
@@ -262,7 +262,7 @@ namespace MonoDevelop.CodeActions
 				rect = new Gdk.Rectangle (child.X, child.Y + Allocation.Height - (int)document.Editor.VAdjustment.Value, 0, 0);
 			} else {*/
 				var p = container.LocationToPoint (loc);
-				rect = new Gdk.Rectangle (p.X, p.Y + (int)document.Editor.LineHeight, 0, 0);
+				rect = new Gdk.Rectangle (p.X + container.Allocation.X , p.Y + (int)document.Editor.LineHeight + container.Allocation.Y, 0, 0);
 			//}
 			GtkWorkarounds.ShowContextMenu (menu, document.Editor.Parent, null, rect);
 		}
