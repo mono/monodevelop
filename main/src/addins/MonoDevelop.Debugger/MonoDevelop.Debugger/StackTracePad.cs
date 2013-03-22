@@ -129,7 +129,7 @@ namespace MonoDevelop.Debugger
 				
 				StringBuilder met = new StringBuilder (fr.SourceLocation.MethodName);
 				ObjectValue[] args = fr.GetParameters ();
-				if (args.Length != 0 || !fr.SourceLocation.MethodName.StartsWith ("[")) {
+				if (args.Length != 0 || !fr.SourceLocation.MethodName[0] == '[') {
 					met.Append (" (");
 					for (int n=0; n<args.Length; n++) {
 						if (n > 0)
