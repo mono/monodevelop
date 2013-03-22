@@ -267,7 +267,13 @@ namespace MonoDevelop.Components.Commands
 				isEnabled = value;
 			}
 		}
-		
+
+
+		/// <summary>
+		/// The command currently being executed or for which the status is being checked
+		/// </summary>
+		public Command CurrentCommand { get; private set; }
+
 		bool CanUseBinding (KeyboardShortcut[] chords, KeyboardShortcut[] accels, out KeyBinding binding, out bool isChord)
 		{
 			if (chords != null) {
@@ -997,7 +1003,8 @@ namespace MonoDevelop.Components.Commands
 				cmd = GetActionCommand (commandId);
 				if (cmd == null)
 					return false;
-				
+
+				CurrentCommand = cmd;
 				CommandTargetRoute targetRoute = new CommandTargetRoute (initialTarget);
 				object cmdTarget = GetFirstCommandTarget (targetRoute);
 				CommandInfo info = new CommandInfo (cmd);
@@ -1074,6 +1081,9 @@ namespace MonoDevelop.Components.Commands
 				string name = (cmd != null && cmd.Text != null && cmd.Text.Length > 0) ? cmd.Text : commandId.ToString ();
 				name = name.Replace ("_","");
 				ReportError (commandId, "Error while executing command: " + name, ex);
+			}
+			finally {
+				CurrentCommand = null;
 			}
 			return false;
 		}
@@ -1161,7 +1171,9 @@ namespace MonoDevelop.Components.Commands
 			try {
 				bool multiCastEnabled = true;
 				bool multiCastVisible = false;
-				
+
+				CurrentCommand = cmd;
+
 				object cmdTarget = GetFirstCommandTarget (targetRoute);
 				
 				while (cmdTarget != null)
@@ -1232,6 +1244,7 @@ namespace MonoDevelop.Components.Commands
 				info.Visible = true;
 			} finally {
 				NotifyCommandTargetScanFinished ();
+				CurrentCommand = null;
 			}
 
 			if (guiLock > 0)
