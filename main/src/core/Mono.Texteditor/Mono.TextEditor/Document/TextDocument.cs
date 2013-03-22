@@ -60,7 +60,7 @@ namespace Mono.TextEditor
 				if (mimeType != value) {
 					lock (this) {
 						mimeType = value;
-						SyntaxMode = SyntaxModeService.GetSyntaxMode (value);
+						SyntaxMode = SyntaxModeService.GetSyntaxMode (this, value);
 					}
 				}
 			}
