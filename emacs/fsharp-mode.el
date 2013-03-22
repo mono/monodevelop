@@ -232,8 +232,7 @@ and whether it is in a project directory.")
         fsharp-last-comment-start      (make-marker)
         fsharp-last-comment-end        (make-marker)
 
-        ac-sources '(fsharp-ac-source)
-        ac-auto-start nil
+       ; ac-auto-start nil
         ac-use-comphist nil
         ac-auto-show-menu 0.2)
 

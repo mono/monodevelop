@@ -127,6 +127,7 @@ Stubs out functions that call on the ac process."
   `(check ,(concat "process handler " desc)
      (setq major-mode 'fsharp-mode)
        (flet ((log-to-proc-buf (p s))
+              (fsharp-ac-parse-current-buffer () t)
               (process-send-string   (p s))
               (fsharp-ac-can-make-request () t))
          ,@body)))
