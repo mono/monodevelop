@@ -237,14 +237,14 @@ display in a help buffer instead.")
     (idle
      (setq fsharp-ac-status 'wait)
      (setq fsharp-ac-current-candidate nil)
-     
+
      (fsharp-ac-parse-current-buffer)
      (fsharp-ac-send-pos-request
       "completion"
       (expand-file-name (buffer-file-name (current-buffer)))
       (- (line-number-at-pos) 1)
       (current-column)))
-     
+
     (wait
      fsharp-ac-current-candidate)
 
@@ -297,15 +297,20 @@ display in a help buffer instead.")
                                 (- (line-number-at-pos) 1)
                                 (current-column))))
 
+(defun fsharp-ac--ac-start (&rest ac-start-args)
+  "Start completion, using only the F# completion source for intellisense."
+  (interactive)
+  (let ((ac-sources '(fsharp-ac-source)))
+    (apply 'ac-start ac-start-args)))
+
 (defun fsharp-ac/electric-key ()
   (interactive)
   (self-insert-command 1)
   (if (and (fsharp-ac-can-make-request)
            (eq fsharp-ac-status 'idle)
            fsharp-ac-autocompletion-automatically)
-      (ac-start)
+      (fsharp-ac--ac-start)
     (setq fsharp-ac-status 'preempted)))
-
 
 ;;; ----------------------------------------------------------------------------
 ;;; Errors and Overlays
@@ -479,13 +484,13 @@ around to the start of the buffer."
   (case fsharp-ac-status
     (preempted
      (setq fsharp-ac-status 'idle)
-     (ac-start)
+     (fsharp-ac--ac-start)
      (ac-update))
 
     (otherwise
      (setq fsharp-ac-current-candidate str
            fsharp-ac-status 'acknowledged)
-     (ac-start :force-init t)
+     (fsharp-ac--ac-start :force-init t)
      (ac-update)
      (setq fsharp-ac-status 'idle))))
 
@@ -551,5 +556,9 @@ display a short summary in the minibuffer."
           fsharp-ac-current-candidate nil)))
 
 (provide 'fsharp-mode-completion)
+
+;; Local Variables:
+;; byte-compile-warnings: (not cl-functions)
+;; End:
 
 ;;; fsharp-mode-completion.el ends here
