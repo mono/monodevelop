@@ -316,7 +316,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					if (data == null)
 						continue;
 					// Force syntax mode reparse (required for #if directives)
-					doc.Editor.Document.SyntaxMode = doc.Editor.Document.SyntaxMode;
+					doc.Editor.Parent.TextViewMargin.PurgeLayoutCache ();
 					doc.ReparseDocument ();
 				}
 			};
