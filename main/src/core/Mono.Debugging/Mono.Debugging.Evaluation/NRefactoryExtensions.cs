@@ -39,7 +39,7 @@ namespace Mono.Debugging.Evaluation
 			var args = new List<object> ();
 			var name = type.Resolve (ctx, args);
 
-			//if (name.StartsWith ("global::"))
+			//if (name.StartsWith ("global::", StringComparison.Ordinal))
 			//	name = name.Substring ("global::".Length);
 
 			if (args.Count > 0)

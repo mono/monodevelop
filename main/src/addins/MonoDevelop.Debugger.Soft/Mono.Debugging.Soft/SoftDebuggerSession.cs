@@ -924,16 +924,16 @@ namespace Mono.Debugging.Soft
 			if (name.Length == 0)
 				return true;
 
-			if (name.StartsWith ("global::")) {
+			if (name.StartsWith ("global::", StringComparison.Ordinal)) {
 				if (typeName != name.Substring ("global::".Length))
 					return false;
-			} else if (name.StartsWith ("::")) {
+			} else if (name.StartsWith ("::", StringComparison.Ordinal)) {
 				if (typeName != name.Substring ("::".Length))
 					return false;
 			} else {
 				// be a little more flexible with what we match... i.e. "Console" should match "System.Console"
 				if (typeName.Length > name.Length) {
-					if (!typeName.EndsWith (name))
+					if (!typeName.EndsWith (name, StringComparison.InvariantCulture))
 						return false;
 
 					char delim = typeName[typeName.Length - name.Length];
@@ -1267,7 +1267,10 @@ namespace Mono.Debugging.Soft
 		{
 			string name = method.Name;
 			
-			return method.IsSpecialName && name.StartsWith ("get_") || name.StartsWith ("set_") || name.StartsWith ("op_");
+			return method.IsSpecialName &&
+				name.StartsWith ("get_", StringComparison.Ordinal) ||
+					name.StartsWith ("set_", StringComparison.Ordinal) ||
+					name.StartsWith ("op_", StringComparison.Ordinal);
 		}
 		
 		void HandleBreakEventSet (Event[] es, bool dequeuing)
@@ -1777,7 +1780,7 @@ namespace Mono.Debugging.Soft
 				if (IsWindows) {
 					for (int i = 0; i < sourceFiles.Length; i++) {
 						string s = sourceFiles[i];
-						if (s != null && !s.StartsWith ("/"))
+						if (s != null && !s.StartsWith ("/", StringComparison.Ordinal))
 							sourceFiles[i] = Path.GetFileName (s);
 					}
 				}
@@ -1894,10 +1897,10 @@ namespace Mono.Debugging.Soft
 		
 		internal static string NormalizePath (string path)
 		{
-			if (!IsWindows && path.StartsWith ("\\"))
-				return path.Replace ('\\','/');
-			else
-				return path;
+			if (!IsWindows && path.StartsWith ("\\", StringComparison.Ordinal))
+				return path.Replace ('\\', '/');
+
+			return path;
 		}
 		
 		string PathToFileName (string path)
@@ -2120,7 +2123,7 @@ namespace Mono.Debugging.Soft
 			bool found = false;
 			if (userAssemblyNames != null) {
 				//HACK: not sure how else to handle xsp-compiled pages
-				if (name.StartsWith ("App_")) {
+				if (name.StartsWith ("App_", StringComparison.Ordinal)) {
 					found = true;
 				} else {
 					foreach (var n in userAssemblyNames) {

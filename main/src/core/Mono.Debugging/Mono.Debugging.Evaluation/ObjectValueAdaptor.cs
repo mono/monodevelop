@@ -287,7 +287,7 @@ namespace Mono.Debugging.Evaluation
 
 		public virtual bool IsNullableType (EvaluationContext ctx, object type)
 		{
-			return type != null && GetTypeName (ctx, type).StartsWith ("System.Nullable`1", StringComparison.InvariantCulture);
+			return type != null && GetTypeName (ctx, type).StartsWith ("System.Nullable`1", StringComparison.Ordinal);
 		}
 
 		public virtual bool NullableHasValue (EvaluationContext ctx, object type, object obj)
@@ -1310,7 +1310,7 @@ namespace Mono.Debugging.Evaluation
 				
 				if (tn != null)
 					oval.Name += " (" + ctx.Adapter.GetDisplayTypeName (ctx, tn) + ")";
-				if (!other.Key.Name.EndsWith (")")) {
+				if (!other.Key.Name.EndsWith (")", StringComparison.Ordinal)) {
 					tn = other.Value.DeclaringType;
 					if (tn != null)
 						other.Key.Name += " (" + ctx.Adapter.GetDisplayTypeName (ctx, tn) + ")";
