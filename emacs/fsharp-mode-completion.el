@@ -46,7 +46,7 @@
   "Display tooltips using a popup at point. If set to nil,
 display in a help buffer instead.")
 
-(defvar fsharp-ac-autocompletion-automatically t
+(defvar fsharp-ac-intellisense-enabled t
   "Whether autocompletion is automatically triggered on '.'")
 
 (defface fsharp-error-face
@@ -143,7 +143,7 @@ display in a help buffer instead.")
 (defun fsharp-ac--valid-project-p (file)
   (and file
        (file-exists-p file)
-       (string-match-p (rx "." (or "fsproj" "sln") eol) file)))
+       (string-match-p (rx "." "fsproj" eol) file)))
 
 (defun fsharp-ac--script-file-p (file)
   (and file
@@ -281,7 +281,7 @@ display in a help buffer instead.")
   (when (fsharp-ac-can-make-request)
     (fsharp-ac-parse-current-buffer)
     (fsharp-ac-send-pos-request "tooltip"
-                                (buffer-file-name)
+                                (expand-file-name (buffer-file-name))
                                 (- (line-number-at-pos) 1)
                                 (current-column))))
 
@@ -291,7 +291,7 @@ display in a help buffer instead.")
   (when (fsharp-ac-can-make-request)
     (fsharp-ac-parse-current-buffer)
     (fsharp-ac-send-pos-request "finddecl"
-                                (buffer-file-name)
+                                (expand-file-name (buffer-file-name))
                                 (- (line-number-at-pos) 1)
                                 (current-column))))
 
@@ -311,7 +311,7 @@ display in a help buffer instead.")
   (interactive)
   (if (and (fsharp-ac-can-make-request)
            (eq fsharp-ac-status 'idle)
-           fsharp-ac-autocompletion-automatically)
+           fsharp-ac-intellisense-enabled)
       (fsharp-ac--ac-start)
     (setq fsharp-ac-status 'preempted)))
 
