@@ -51,6 +51,7 @@ type FSharpCompiler(asmCompiler:Assembly, asmCompilerServer:Assembly, actualVers
     let dataTipText = asmCompiler.GetType(   "Microsoft.FSharp.Compiler.SourceCodeServices.DataTipText")
     let dataTipElement = asmCompiler.GetType("Microsoft.FSharp.Compiler.SourceCodeServices.DataTipElement")
     let xmlComment = asmCompiler.GetType(    "Microsoft.FSharp.Compiler.SourceCodeServices.XmlComment")
+    let parsedInput = asmCompiler.GetType(    "Microsoft.FSharp.Compiler.Ast.ParsedInput")
     
     let funcConvertType = fSharpCore.GetType("Microsoft.FSharp.Core.FuncConvert")
     let toFSharpFunc = funcConvertType.GetMethods() |> Array.find (fun x -> x.Name = "ToFSharpFunc" && x.GetParameters().[0].ParameterType.Name = "Converter`2")
@@ -80,6 +81,7 @@ type FSharpCompiler(asmCompiler:Assembly, asmCompilerServer:Assembly, actualVers
     member __.DataTipText = dataTipText
     member __.DataTipElement = dataTipElement
     member __.XmlComment = xmlComment
+    member __.ParsedInput = parsedInput
     
     /// Set the currently loaded FSharpCompiler wrapper to a wrapper that
     /// wraps the specified library. This allows it to be used with any library
@@ -347,6 +349,24 @@ module SourceCodeServices =
       XmlCommentSignature(it1, it2)
     else failwith "Unexpected XmlComment value!"
 
+
+  type ParsedImplFileInput(wrapped:obj) =
+    let ParsedImplFileInput = string wrapped?Item1
+    //let isScript = bool wrapped?Item2
+    let QualifiedNameOfFile = wrapped?Item3
+    //let  ScopedPragma = list wrapped?Item4
+    //let SynModuleOrNamespace = list wrapped?Item6
+    //let isLastCompiland = bool wrapped?Item7
+    member x.ParsedHashDirective = wrapped?Item5 |> List.untypedMap string
+
+  type ParsedInput(wrapped:obj) =
+    member x.Wrapped = wrapped
+    
+  let (|ImplFile|SigFile|) (input:ParsedInput) =
+    if input.Wrapped?IsImplFile then ImplFile(ParsedImplFileInput(input.Wrapped?Item))
+    elif input.Wrapped?IsParsedInput then SigFile()
+    else failwith "Unexpected ParsedInput value!"
+
   type DataTipElement(wrapped:obj) = 
     member x.Wrapped = wrapped
       
@@ -486,8 +506,12 @@ module SourceCodeServices =
       let tmp : obj[] = Array.zeroCreate decls?Length
       System.Array.Copy(decls :?> System.Array, tmp, (decls?Length : int))
       [| for t in tmp -> TopLevelDeclaration(t) |]
-      
+
+
+           
   type UntypedParseInfo(wrapped:obj) =
+
+
     member x.Wrapped = wrapped
     /// Name of the file for which this information were created
     member x.FileName : string = wrapped?FileName
@@ -496,8 +520,13 @@ module SourceCodeServices =
       NavigationItems(wrapped?GetNavigationItems())
     /// Return the inner-most range associated with a possible breakpoint location
     //abstract ValidateBreakpointLocation : Position -> Range option
-    /// When these files change then the build is invalid
-    //abstract DependencyFiles : unit -> string list
+    // When these files change then the build is invalid
+    member x.DependencyFiles = wrapped?DependencyFiles() |> List.untypedMap string
+    member x.ParseTree = let o = wrapped?ParseTree
+                         if o  <> null then
+                            Some(ParsedInput(o?Value))
+                         else
+                            None
 
 
   type Severity = Warning | Error
