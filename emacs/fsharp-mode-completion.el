@@ -26,9 +26,13 @@
 (require 's)
 (require 'dash)
 (require 'fsharp-mode-indent)
-(require 'pos-tip)
 (require 'auto-complete)
-(require 'cl)
+
+(autoload 'pos-tip-fill-string "pos-tip")
+(autoload 'pos-tip-show "pos-tip")
+(autoload 'popup-tip "popup")
+(autoload 'json-array-type "json")
+(autoload 'json-read-from-string "json")
 
 ;;; User-configurable variables
 
@@ -65,13 +69,16 @@ display in a help buffer instead.")
 
 ;;; ----------------------------------------------------------------------------
 
-(defconst fsharp-ac--debug t)
+(defvar fsharp-ac-debug nil)
 (defvar fsharp-ac-status 'idle)
 (defvar fsharp-ac-completion-process nil)
 (defvar fsharp-ac-partial-data "")
 (defvar fsharp-ac-project-files nil)
 (defvar fsharp-ac-idle-timer nil)
 (defvar fsharp-ac-verbose nil)
+(defvar fsharp-ac-current-candidate)
+(defvar fsharp-ac-current-candidate-help)
+
 
 (defun log-to-proc-buf (proc str)
   (when (processp proc)
@@ -87,7 +94,7 @@ display in a help buffer instead.")
               (goto-char (process-mark proc))))))))
 
 (defun log-psendstr (proc str)
-  (when fsharp-ac--debug
+  (when fsharp-ac-debug
     (log-to-proc-buf proc str))
   (process-send-string proc str))
 
@@ -502,7 +509,7 @@ around to the start of the buffer."
        (setq fsharp-ac-status 'idle)
        (fsharp-ac--ac-start)
        (ac-update))
-      
+
       (otherwise
        (setq fsharp-ac-current-candidate names
              fsharp-ac-current-candidate-help cs
@@ -574,9 +581,5 @@ display a short summary in the minibuffer."
           fsharp-ac-current-candidate-help nil)))
 
 (provide 'fsharp-mode-completion)
-
-;; Local Variables:
-;; byte-compile-warnings: (not cl-functions)
-;; End:
 
 ;;; fsharp-mode-completion.el ends here
