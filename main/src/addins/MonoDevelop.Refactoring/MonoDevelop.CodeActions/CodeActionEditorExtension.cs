@@ -264,7 +264,7 @@ namespace MonoDevelop.CodeActions
 				smartTagLocBegin = document.Editor.OffsetToLocation (offset);
 			}
 
-			if (currentSmartTagBegin == smartTagLocBegin) {
+			if (currentSmartTag != null && currentSmartTagBegin == smartTagLocBegin) {
 				currentSmartTag.fixes = fixes;
 				return;
 			}
