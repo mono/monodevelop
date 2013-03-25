@@ -247,7 +247,7 @@ namespace Mono.Debugging.Soft
 						return cx.RuntimeInvoke (method, obj, new Value[0]);
 				}
 
-				if (fromType.IsGenericType && fromType.FullName.StartsWith ("System.Nullable`1", StringComparison.InvariantCulture)) {
+				if (fromType.IsGenericType && fromType.FullName.StartsWith ("System.Nullable`1", StringComparison.Ordinal)) {
 					method = OverloadResolve (cx, "get_Value", fromType, new TypeMirror[0], true, false, false);
 					if (method != null) {
 						obj = cx.RuntimeInvoke (method, obj, new Value[0]);
@@ -471,42 +471,44 @@ namespace Mono.Debugging.Soft
 		{
 			// mcs is "<>f__this" or "$this" (if in an async compiler generated type)
 			// csc is "<>4__this"
-			return (field.Name.StartsWith ("<>") && field.Name.EndsWith ("__this")) || field.Name == "$this";
+			return field.Name == "$this" ||
+				(field.Name.StartsWith ("<>", StringComparison.Ordinal) &&
+				 field.Name.EndsWith ("__this", StringComparison.Ordinal));
 		}
 		
 		static bool IsClosureReferenceField (FieldInfoMirror field)
 		{
 			// mcs is "<>f__ref"
 			// csc is "CS$<>"
-			return field.Name.StartsWith ("CS$<>") || field.Name.StartsWith ("<>f__ref");
+			return field.Name.StartsWith ("CS$<>", StringComparison.Ordinal) ||
+				field.Name.StartsWith ("<>f__ref", StringComparison.Ordinal);
 		}
 		
 		static bool IsClosureReferenceLocal (LocalVariable local)
 		{
 			if (local.Name == null)
 				return false;
-			
-			return
-				// mcs
-				local.Name.Length == 0 || local.Name[0] == '<' || local.Name.StartsWith ("$locvar")
-				// csc
-				|| local.Name.StartsWith ("CS$<>");
+
+			// mcs is "$locvar" or starts with '<'
+			// csc is "CS$<>"
+			return local.Name.Length == 0 || local.Name[0] == '<' || local.Name.StartsWith ("$locvar", StringComparison.Ordinal) ||
+				local.Name.StartsWith ("CS$<>", StringComparison.Ordinal);
 		}
 		
 		static bool IsGeneratedTemporaryLocal (LocalVariable local)
 		{
-			return local.Name != null && local.Name.StartsWith ("CS$");
+			return local.Name != null && local.Name.StartsWith ("CS$", StringComparison.Ordinal);
 		}
 		
 		static string GetHoistedIteratorLocalName (FieldInfoMirror field)
 		{
 			//mcs captured args, of form <$>name
-			if (field.Name.StartsWith ("<$>")) {
+			if (field.Name.StartsWith ("<$>", StringComparison.Ordinal)) {
 				return field.Name.Substring (3);
 			}
 			
 			// csc, mcs locals of form <name>__0
-			if (field.Name.StartsWith ("<")) {
+			if (field.Name.StartsWith ("<", StringComparison.Ordinal)) {
 				int i = field.Name.IndexOf ('>');
 				if (i > 1) {
 					return field.Name.Substring (1, i - 1);
@@ -536,7 +538,7 @@ namespace Mono.Debugging.Soft
 					list.AddRange (GetHoistedLocalVariables (cx, new FieldValueReference (cx, field, val, type)));
 					continue;
 				}
-				if (field.Name.StartsWith ("<")) {
+				if (field.Name.StartsWith ("<", StringComparison.Ordinal)) {
 					if (isIterator) {
 						var name = GetHoistedIteratorLocalName (field);
 						if (!string.IsNullOrEmpty (name)) {
@@ -593,7 +595,7 @@ namespace Mono.Debugging.Soft
 			try {
 				LocalVariable local = null;
 				if (!cx.SourceCodeAvailable) {
-					if (name.StartsWith ("loc")) {
+					if (name.StartsWith ("loc", StringComparison.Ordinal)) {
 						int idx;
 						if (int.TryParse (name.Substring (3), out idx))
 							local = cx.Frame.Method.GetLocals ().FirstOrDefault (loc => loc.Index == idx);
@@ -671,7 +673,7 @@ namespace Mono.Debugging.Soft
 
 		static bool IsAnonymousType (TypeMirror type)
 		{
-			return type.Name.StartsWith ("<>__AnonType", StringComparison.InvariantCulture);
+			return type.Name.StartsWith ("<>__AnonType", StringComparison.Ordinal);
 		}
 
 		protected override ValueReference GetMember (EvaluationContext ctx, object t, object co, string name)
@@ -725,7 +727,7 @@ namespace Mono.Debugging.Soft
 				string n = getName (t);
 				if (n == name) 
 					return t;
-				else if (!caseSensitive && n.Equals (name, StringComparison.CurrentCultureIgnoreCase))
+				if (!caseSensitive && n.Equals (name, StringComparison.CurrentCultureIgnoreCase))
 					best = t;
 			}
 			return best;
@@ -839,8 +841,8 @@ namespace Mono.Debugging.Soft
 			SoftEvaluationContext cx = (SoftEvaluationContext) ctx;
 			if (InGeneratedClosureOrIteratorType (cx))
 				return GetHoistedThisReference (cx);
-			else
-				return GetThisReference (cx);
+
+			return GetThisReference (cx);
 		}
 		
 		ValueReference GetThisReference (SoftEvaluationContext cx)
@@ -895,7 +897,7 @@ namespace Mono.Debugging.Soft
 				object[] types = new object [names.Count];
 				for (int n=0; n<names.Count; n++) {
 					string tn = names [n];
-					if (tn.StartsWith ("["))
+					if (tn.StartsWith ("[", StringComparison.Ordinal))
 						tn = tn.Substring (1, tn.Length - 2);
 					types [n] = GetType (ctx, tn);
 					if (types [n] == null)
@@ -987,8 +989,9 @@ namespace Mono.Debugging.Soft
 				}
 				
 				return tm.FullName;
-			} else
-				return ((Type)type).FullName;
+			}
+
+			return ((Type)type).FullName;
 		}
 		
 		public override object GetValueType (EvaluationContext ctx, object val)
@@ -1007,8 +1010,8 @@ namespace Mono.Debugging.Soft
 				PrimitiveValue pv = (PrimitiveValue) val;
 				if (pv.Value == null)
 					return typeof(Object);
-				else
-					return pv.Value.GetType ();
+
+				return pv.Value.GetType ();
 			}
 
 			throw new NotSupportedException ();
@@ -1018,8 +1021,8 @@ namespace Mono.Debugging.Soft
 		{
 			if (type is TypeMirror)
 				return ((TypeMirror)type).BaseType;
-			else
-				return null;
+
+			return null;
 		}
 
 		public override bool HasMethod (EvaluationContext gctx, object targetType, string methodName, object[] argTypes, BindingFlags flags)

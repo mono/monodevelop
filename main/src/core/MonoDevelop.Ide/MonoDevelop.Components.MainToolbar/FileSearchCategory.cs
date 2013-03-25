@@ -71,7 +71,7 @@ namespace MonoDevelop.Components.MainToolbar
 		}
 
 		WorkerResult lastResult;
-		string[] validTags = new [] { "f", "file"};
+		string[] validTags = new [] { "file"};
 
 		public override Task<ISearchDataSource> GetResults (SearchPopupSearchPattern searchPattern, int resultsCount, CancellationToken token)
 		{

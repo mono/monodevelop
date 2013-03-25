@@ -43,17 +43,17 @@ namespace Mono.Debugging.Evaluation
 		{
 			expression = expression.TrimStart ();
 
-			if (expression.StartsWith ("?"))
+			if (expression.Length > 0 && expression[0] == '?')
 				expression = expression.Substring (1).Trim ();
 
-			if (expression.StartsWith ("var") && char.IsWhiteSpace (expression[3])) {
+			if (expression.StartsWith ("var", StringComparison.Ordinal) && char.IsWhiteSpace (expression[3])) {
 				expression = expression.Substring (4).Trim (' ', '\t');
 				string variable = null;
 
 				for (int n = 0; n < expression.Length; n++) {
 					if (!char.IsLetterOrDigit (expression[n]) && expression[n] != '_') {
 						variable = expression.Substring (0, n);
-						if (!expression.Substring (n).Trim (' ', '\t').StartsWith ("="))
+						if (!expression.Substring (n).Trim (' ', '\t').StartsWith ("=", StringComparison.Ordinal))
 							variable = null;
 						break;
 					}
@@ -91,10 +91,10 @@ namespace Mono.Debugging.Evaluation
 		{
 			expression = expression.TrimStart ();
 
-			if (expression.StartsWith ("?"))
+			if (expression.Length > 0 && expression[0] == '?')
 				return "?" + Resolve (session, location, expression.Substring (1).Trim ());
 
-			if (expression.StartsWith ("var") && char.IsWhiteSpace (expression[3]))
+			if (expression.StartsWith ("var", StringComparison.Ordinal) && char.IsWhiteSpace (expression[3]))
 				return "var " + Resolve (session, location, expression.Substring (4).Trim (' ', '\t'));
 
 			expression = ReplaceExceptionTag (expression, session.Options.EvaluationOptions.CurrentExceptionTag);
@@ -122,16 +122,16 @@ namespace Mono.Debugging.Evaluation
 		{
 			expression = expression.TrimStart ();
 
-			if (expression.StartsWith ("?"))
+			if (expression.Length > 0 && expression[0] == '?')
 				expression = expression.Substring (1).Trim ();
 
-			if (expression.StartsWith ("var") && char.IsWhiteSpace (expression[3]))
+			if (expression.StartsWith ("var", StringComparison.Ordinal) && char.IsWhiteSpace (expression[3]))
 				expression = expression.Substring (4).Trim ();
 
 			expression = ReplaceExceptionTag (expression, ctx.Options.CurrentExceptionTag);
 
 			// Required as a workaround for a bug in the parser (it won't parse simple expressions like numbers)
-			if (!expression.EndsWith (";"))
+			if (!expression.EndsWith (";", StringComparison.Ordinal))
 				expression += ";";
 
 			var parser = new CSharpParser ();

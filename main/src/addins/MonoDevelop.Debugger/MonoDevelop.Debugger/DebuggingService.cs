@@ -164,7 +164,7 @@ namespace MonoDevelop.Debugger
 					List<string> prios = new List<string> ();
 					int i = 0;
 					foreach (DebuggerEngineExtensionNode de in AddinManager.GetExtensionNodes (FactoriesPath)) {
-						if (de.Id.StartsWith ("Mono.Debugger.Soft")) // Give priority to soft debugger by default
+						if (de.Id.StartsWith ("Mono.Debugger.Soft", StringComparison.Ordinal)) // Give priority to soft debugger by default
 							prios.Insert (i++, de.Id);
 						else
 							prios.Add (de.Id);
@@ -839,9 +839,9 @@ namespace MonoDevelop.Debugger
 					
 					//ensure that soft debugger is prioritised over newly installed debuggers
 					if (i1 < 0 )
-						i1 = d1.Id.StartsWith ("Mono.Debugger.Soft")? 0 : engs.Count;
+						i1 = d1.Id.StartsWith ("Mono.Debugger.Soft", StringComparison.Ordinal) ? 0 : engs.Count;
 					if (i2 < 0)
-						i2 = d2.Id.StartsWith ("Mono.Debugger.Soft")? 0 : engs.Count;
+						i2 = d2.Id.StartsWith ("Mono.Debugger.Soft", StringComparison.Ordinal) ? 0 : engs.Count;
 					
 					if (i1 == i2)
 						return d1.Name.CompareTo (d2.Name);

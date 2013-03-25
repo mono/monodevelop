@@ -64,7 +64,7 @@ namespace Mono.Debugging.Evaluation
 		static string ResolveTypeName (AstType type)
 		{
 			string name = type.ToString ();
-			if (name.StartsWith ("global::"))
+			if (name.StartsWith ("global::", StringComparison.Ordinal))
 				name = name.Substring ("global::".Length);
 			return name;
 		}
@@ -603,7 +603,7 @@ namespace Mono.Debugging.Evaluation
 					}
 
 					foreach (string ns in namespaces) {
-						if (ns == name || ns.StartsWith (name + "."))
+						if (ns == name || ns.StartsWith (name + ".", StringComparison.InvariantCulture))
 							return new NamespaceValueReference (ctx, name);
 					}
 				}
