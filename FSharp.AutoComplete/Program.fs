@@ -12,6 +12,8 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 open FSharp.InteractiveAutocomplete.Parsing
 open FSharp.CompilerBinding.Reflection
 
+open Newtonsoft.Json
+
 module FsParser = Microsoft.FSharp.Compiler.Parser
 
 // --------------------------------------------------------------------------------------
@@ -42,6 +44,12 @@ type internal IntelliSenseAgentMessage =
   | GetErrors of AsyncReplyChannel<ErrorInfo[]>
   | GetDeclarationsMessage of RequestOptions * AsyncReplyChannel<TopLevelDeclaration[]>
 
+
+type Candidate =
+  {
+    Name: string
+    Help: string
+  }
 
 /// Provides an easy access to F# IntelliSense service
 type internal IntelliSenseAgent() =
@@ -184,7 +192,11 @@ type internal IntelliSenseAgent() =
         // Get items & generate output
         let decls = info.GetDeclarations(pos, lineStr, (longName, residue), 0, defaultArg time 1000)
         printfn "DATA: completion"
-        for d in decls.Items do Console.WriteLine(d.Name)
+        let cs =
+          [ for d in decls.Items do
+            yield { Name = d.Name
+                    Help = TipFormatter.formatTip d.DescriptionText } ]
+        Console.WriteLine(JsonConvert.SerializeObject(cs))
         printfn "<<EOF>>"
     | None -> printfn "ERROR: Could not get type information\n<<EOF>>"
 
@@ -343,7 +355,7 @@ module internal CommandInput =
     let! _ = string "declarations "
     let! _ = char '"'
     let! filename = some (sat ((<>) '"')) |> Parser.map String.ofSeq
-    let! _ = char '"' // " // TODO: This here for Emacs syntax highlighting bug
+    let! _ = char '"'
     return Declarations(filename) }
 
   /// Parse 'errors' command
@@ -354,7 +366,7 @@ module internal CommandInput =
     let! _ = string "project "
     let! _ = char '"'
     let! filename = some (sat ((<>) '"')) |> Parser.map String.ofSeq
-    let! _ = char '"' // " // TODO: This here for Emacs syntax highlighting bug
+    let! _ = char '"'
     return Project(filename) }
 
   /// Read multi-line input as a list of strings
@@ -366,9 +378,9 @@ module internal CommandInput =
   // Parse 'parse "<filename>" [full]' command
   let parse = parser {
     let! _ = string "parse "
-    let! _ = char '"' // " //
+    let! _ = char '"'
     let! filename = some (sat ((<>) '"')) |> Parser.map String.ofSeq
-    let! _ = char '"' // " // TODO: This here for Emacs syntax highlighting bug
+    let! _ = char '"'
     let! _ = many (string " ")
     let! full = (parser { let! _ = string "full"
                           return true }) <|>
@@ -380,9 +392,9 @@ module internal CommandInput =
     let! f = (string "completion " |> Parser.map (fun _ -> Completion)) <|>
              (string "tooltip " |> Parser.map (fun _ -> ToolTip)) <|>
              (string "finddecl " |> Parser.map (fun _ -> FindDeclaration))
-    let! _ = char '"' // " // TODO: This here for Emacs syntax highlighting bug
-    let! filename = some (sat ((<>) '"')) |> Parser.map String.ofSeq // "
-    let! _ = char '"' // " // TODO: This here for Emacs syntax highlighting bug
+    let! _ = char '"'
+    let! filename = some (sat ((<>) '"')) |> Parser.map String.ofSeq
+    let! _ = char '"'
     let! _ = many (string " ")
     let! line = some digit |> Parser.map (String.ofSeq >> int)
     let! _ = many (string " ")

@@ -154,7 +154,8 @@ display in a help buffer instead.")
   (setq fsharp-ac-partial-data nil
         fsharp-ac-project-files nil
         fsharp-ac-status 'idle
-        fsharp-ac-current-candidate nil)
+        fsharp-ac-current-candidate nil
+        fsharp-ac-current-candidate-help nil)
   (fsharp-ac-clear-errors))
 
 ;;; ----------------------------------------------------------------------------
@@ -224,10 +225,17 @@ display in a help buffer instead.")
   '((candidates . fsharp-ac-candidate)
     (prefix . fsharp-ac-prefix)
     (requires . 0)
-    ;(document . fsharp-ac-document)
+    (document . fsharp-ac-document)
     ;(action . fsharp-ac-action)
     (cache) ; this prevents multiple re-calls, critical
     ))
+
+(defun fsharp-ac-document (item)
+  (pos-tip-fill-string
+   (cdr (assq 'Help
+              (-first (lambda (e) (string= item (cdr (assq 'Name e))))
+                      fsharp-ac-current-candidate-help)))
+   80))
 
 (defun fsharp-ac-candidate ()
   (interactive)
@@ -235,6 +243,7 @@ display in a help buffer instead.")
     (idle
      (setq fsharp-ac-status 'wait)
      (setq fsharp-ac-current-candidate nil)
+     (setq fsharp-ac-current-candidate-help nil)
 
      (fsharp-ac-parse-current-buffer)
      (fsharp-ac-send-pos-request
@@ -483,19 +492,24 @@ around to the start of the buffer."
 
 (defun fsharp-ac-handle-completion (str)
   (setq str
-        (s-split "\n" (s-replace "DATA: completion" "" str) t))
-  (case fsharp-ac-status
-    (preempted
-     (setq fsharp-ac-status 'idle)
-     (fsharp-ac--ac-start)
-     (ac-update))
+        (s-replace "DATA: completion" "" str))
+  (let* ((json-array-type 'list)
+         (cs (json-read-from-string str))
+         (names (-map (lambda (e) (cdr (assq 'Name e))) cs)))
 
-    (otherwise
-     (setq fsharp-ac-current-candidate str
-           fsharp-ac-status 'acknowledged)
-     (fsharp-ac--ac-start :force-init t)
-     (ac-update)
-     (setq fsharp-ac-status 'idle))))
+    (case fsharp-ac-status
+      (preempted
+       (setq fsharp-ac-status 'idle)
+       (fsharp-ac--ac-start)
+       (ac-update))
+      
+      (otherwise
+       (setq fsharp-ac-current-candidate names
+             fsharp-ac-current-candidate-help cs
+             fsharp-ac-status 'acknowledged)
+       (fsharp-ac--ac-start :force-init t)
+       (ac-update)
+       (setq fsharp-ac-status 'idle)))))
 
 (defun fsharp-ac-visit-definition (str)
   (if (string-match "\n\\(.*\\):\\([0-9]+\\):\\([0-9]+\\)" str)
@@ -533,7 +547,7 @@ display a short summary in the minibuffer."
 
 (defun fsharp-ac/show-popup (str)
   (if (display-graphic-p)
-      (pos-tip-show str)
+      (pos-tip-show str nil nil nil 300)
     ;; Use unoptimized calculation for popup, making it less likely to
     ;; wrap lines.
     (let ((popup-use-optimized-column-computation nil) )
@@ -556,7 +570,8 @@ display a short summary in the minibuffer."
     (fsharp-ac-message-safely str))
   (when (not (eq fsharp-ac-status 'idle))
     (setq fsharp-ac-status 'idle
-          fsharp-ac-current-candidate nil)))
+          fsharp-ac-current-candidate nil
+          fsharp-ac-current-candidate-help nil)))
 
 (provide 'fsharp-mode-completion)
 
