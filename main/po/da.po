@@ -6452,7 +6452,7 @@ msgstr "Kunne ikke gemme løsning: {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:611
 msgid "Solution loaded."
-msgstr "Løsning indælst."
+msgstr "Løsning indlæst."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:883
 msgid ""
