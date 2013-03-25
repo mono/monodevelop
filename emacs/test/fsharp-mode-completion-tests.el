@@ -129,7 +129,8 @@ Stubs out functions that call on the ac process."
        (flet ((log-to-proc-buf (p s))
               (fsharp-ac-parse-current-buffer () t)
               (process-send-string   (p s))
-              (fsharp-ac-can-make-request () t))
+              (fsharp-ac-can-make-request () t)
+              (expand-file-name (x &rest _) x))
          ,@body)))
 
 (defmacro stub-fn (sym var &rest body)
