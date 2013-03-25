@@ -131,8 +131,10 @@ display in a help buffer instead.")
     (when (not (fsharp-ac--process-live-p))
       (fsharp-ac/start-process))
     ;; Load given project.
-    (log-psendstr fsharp-ac-completion-process
-                  (format "project \"%s\"\n" (expand-file-name file)))
+    (when (fsharp-ac--process-live-p)
+      (log-psendstr fsharp-ac-completion-process "outputmode json\n")
+      (log-psendstr fsharp-ac-completion-process
+                    (format "project \"%s\"\n" (expand-file-name file))))
     file))
 
 (defun fsharp-ac/load-file (file)
@@ -210,14 +212,19 @@ display in a help buffer instead.")
   (let ((proc (let (process-connection-type)
                 (apply 'start-process "fsharp-complete" "*fsharp-complete*"
                        fsharp-ac-complete-command))))
-    (when (process-live-p proc)
-      (set-process-filter proc 'fsharp-ac-filter-output)
-      (set-process-query-on-exit-flag proc nil)
-      (setq fsharp-ac-status 'idle
-            fsharp-ac-partial-data ""
-            fsharp-ac-project-files nil)
-      (add-to-list 'ac-modes 'fsharp-mode)
-      proc)))
+    (sleep-for 0.1)
+    (if (process-live-p proc)
+        (progn
+          (set-process-filter proc 'fsharp-ac-filter-output)
+          (set-process-query-on-exit-flag proc nil)
+          (setq fsharp-ac-status 'idle
+                fsharp-ac-partial-data ""
+                fsharp-ac-project-files nil)
+          (add-to-list 'ac-modes 'fsharp-mode)
+          proc)
+      (fsharp-ac-message-safely "Failed to launch: '%s'"
+                                (s-join " " fsharp-ac-complete-command))
+      nil)))
 
 (defun fsharp-ac--reset-timer ()
   (when fsharp-ac-idle-timer
@@ -348,8 +355,7 @@ possibly many lines of description.")
 (defun fsharp-ac-request-errors ()
   (when (fsharp-ac-can-make-request)
     (fsharp-ac-parse-current-buffer)
-    (log-psendstr fsharp-ac-completion-process "errors\n")
-    ))
+    (log-psendstr fsharp-ac-completion-process "errors\n")))
 
 (defun fsharp-ac-line-column-to-pos (line col)
   (save-excursion
