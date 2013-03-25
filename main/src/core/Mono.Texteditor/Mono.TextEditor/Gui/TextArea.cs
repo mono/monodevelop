@@ -2524,7 +2524,7 @@ namespace Mono.TextEditor
 				//draw the shadow
 				FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true,
 					shadowOffset, shadowOffset, corner, width, height);
-				var color = TextViewMargin.DimColor (Editor.ColorStyle.SearchResultMain.GetColor ("color"), 0.3);
+				var color = TextViewMargin.DimColor (Editor.ColorStyle.SearchResultMain.Color, 0.3);
 				color.A = 0.5 * opacity * opacity;
 				cr.Color = color;
 				cr.Fill ();
@@ -2533,13 +2533,13 @@ namespace Mono.TextEditor
 				FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, 0, 0, corner, width, height);
 				using (var gradient = new Cairo.LinearGradient (0, 0, 0, height)) {
 					color = ColorLerp (
-						TextViewMargin.DimColor (Editor.ColorStyle.SearchResultMain.GetColor ("color"), 1.1),
-						Editor.ColorStyle.SearchResultMain.GetColor ("color"),
+						TextViewMargin.DimColor (Editor.ColorStyle.SearchResultMain.Color, 1.1),
+						Editor.ColorStyle.SearchResultMain.Color,
 						1 - opacity);
 					gradient.AddColorStop (0, color);
 					color = ColorLerp (
-						TextViewMargin.DimColor (Editor.ColorStyle.SearchResultMain.GetColor ("color"), 0.9),
-						Editor.ColorStyle.SearchResultMain.GetColor ("color"),
+						TextViewMargin.DimColor (Editor.ColorStyle.SearchResultMain.Color, 0.9),
+						Editor.ColorStyle.SearchResultMain.Color,
 						1 - opacity);
 					gradient.AddColorStop (1, color);
 					cr.Pattern = gradient;

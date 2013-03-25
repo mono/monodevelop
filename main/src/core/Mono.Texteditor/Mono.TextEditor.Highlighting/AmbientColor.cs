@@ -39,7 +39,25 @@ namespace Mono.TextEditor.Highlighting
 	{
 		public string Name { get; private set; }
 		public readonly List<Tuple<string, Cairo.Color>> Colors = new List<Tuple<string, Cairo.Color>> ();
-		
+
+		public Cairo.Color Color {
+			get {
+				return GetColor ("color");
+			}
+		}
+
+		public Cairo.Color SecondColor {
+			get {
+				return GetColor ("secondcolor");
+			}
+		}
+
+		public Cairo.Color BorderColor {
+			get {
+				return GetColor ("bordercolor");
+			}
+		}
+
 		public Cairo.Color GetColor (string name)
 		{
 			foreach (var color in Colors) {

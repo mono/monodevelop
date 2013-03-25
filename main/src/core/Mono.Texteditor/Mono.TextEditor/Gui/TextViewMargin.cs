@@ -1371,10 +1371,10 @@ namespace Mono.TextEditor
 				
 				var bracketMatch = new Cairo.Rectangle (xPos + rect.X / Pango.Scale.PangoScale + 0.5, y + 0.5, (rect.Width / Pango.Scale.PangoScale) - 1, (rect.Height / Pango.Scale.PangoScale) - 1);
 				if (BackgroundRenderer == null) {
-					ctx.Color = this.ColorStyle.BraceMatchingRectangle.GetColor ("color");
+					ctx.Color = this.ColorStyle.BraceMatchingRectangle.Color;
 					ctx.Rectangle (bracketMatch);
 					ctx.FillPreserve ();
-					ctx.Color = this.ColorStyle.BraceMatchingRectangle.GetColor ("secondcolor");
+					ctx.Color = this.ColorStyle.BraceMatchingRectangle.SecondColor;
 					ctx.Stroke ();
 				}
 			}
@@ -1393,14 +1393,14 @@ namespace Mono.TextEditor
 			xPos = System.Math.Floor (xPos);
 			cr.Rectangle (xPos, y, width, lineHeight);
 			var color = CurrentLineColor;
-			cr.Color = color.GetColor ("color");
+			cr.Color = color.Color;
 			cr.Fill ();
 			double halfLine = (cr.LineWidth / 2.0);
 			cr.MoveTo (xPos, y + halfLine);
 			cr.LineTo (xPos + width, y + halfLine);
 			cr.MoveTo (xPos, y + lineHeight - halfLine);
 			cr.LineTo (xPos + width, y + lineHeight - halfLine);
-			cr.Color = color.GetColor ("secondcolor");
+			cr.Color = color.SecondColor;
 			cr.Stroke ();
 		}
 
@@ -1431,7 +1431,7 @@ namespace Mono.TextEditor
 				cr.MoveTo (x + 0.5, top);
 				cr.LineTo (x + 0.5, bottom);
 
-				cr.Color = ColorStyle.IndentationGuide.GetColor ("color");
+				cr.Color = ColorStyle.IndentationGuide.Color;
 				cr.Stroke ();
 			}
 			cr.Restore ();
@@ -1527,7 +1527,7 @@ namespace Mono.TextEditor
 							int s = (int) System.Math.Floor ((x1 + x) / Pango.Scale.PangoScale);
 							double corner = System.Math.Min (4, width) * textEditor.Options.Zoom;
 
-							cr.Color = MainSearchResult.IsInvalid || MainSearchResult.Offset != firstSearch.Offset ? ColorStyle.SearchResult.GetColor ("color") : ColorStyle.SearchResultMain.GetColor ("color");
+							cr.Color = MainSearchResult.IsInvalid || MainSearchResult.Offset != firstSearch.Offset ? ColorStyle.SearchResult.Color : ColorStyle.SearchResultMain.Color;
 							FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, s, y, corner, w + 1, LineHeight);
 							cr.Fill ();
 						}
@@ -2250,7 +2250,7 @@ namespace Mono.TextEditor
 
 					if (beforeDividerWidth > 0) {
 						cr.DrawLine (
-							ColorStyle.Ruler.GetColor ("color"),
+							ColorStyle.Ruler.Color,
 							divider + 0.5, area.Y,
 							divider + 0.5, area.Y + area.Height);
 					}
@@ -2442,7 +2442,7 @@ namespace Mono.TextEditor
 			int width, height;
 			double pangoPosition = (x - textEditor.HAdjustment.Value + TextStartPosition) * Pango.Scale.PangoScale;
 
-			defaultBgColor = Document.ReadOnly ? ColorStyle.BackgroundReadOnly.GetColor ("color") : ColorStyle.PlainText.Background;
+			defaultBgColor = Document.ReadOnly ? ColorStyle.BackgroundReadOnly.Color : ColorStyle.PlainText.Background;
 
 			// Draw the default back color for the whole line. Colors other than the default
 			// background will be drawn when rendering the text chunks.
