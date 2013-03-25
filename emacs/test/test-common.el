@@ -73,7 +73,7 @@
 (defconst tests-load-path
   (mapcar 'expand-file-name `(,@load-path "." ".." "./tests")))
 
-(defconst default-dependencies '(popup s dash pos-tip auto-complete))
+(defconst default-dependencies '(popup s dash pos-tip auto-complete json))
 
 (defun load-packages ()
   "Load package dependencies for fsharp-mode."

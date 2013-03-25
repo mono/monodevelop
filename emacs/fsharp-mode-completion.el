@@ -30,6 +30,9 @@
 (require 'auto-complete)
 (require 'cl)
 
+(autoload 'json-array-type "json")
+(autoload 'json-read-from-string "json")
+
 ;;; User-configurable variables
 
 (defvar fsharp-ac-executable "fsautocomplete.exe")
@@ -502,7 +505,7 @@ around to the start of the buffer."
        (setq fsharp-ac-status 'idle)
        (fsharp-ac--ac-start)
        (ac-update))
-      
+
       (otherwise
        (setq fsharp-ac-current-candidate names
              fsharp-ac-current-candidate-help cs
