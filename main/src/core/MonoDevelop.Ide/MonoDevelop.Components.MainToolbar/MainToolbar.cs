@@ -217,6 +217,18 @@ namespace MonoDevelop.Components.MainToolbar
 			matchEntry.RoundedShape = true;
 			matchEntry.Entry.Changed += HandleSearchEntryChanged;
 			matchEntry.Activated += (sender, e) => {
+				var pattern = SearchPopupSearchPattern.ParsePattern (matchEntry.Entry.Text);
+				if (pattern.Pattern == null && pattern.LineNumber > 0) {
+					popup.Destroy ();
+					var doc = IdeApp.Workbench.ActiveDocument;
+					if (doc != null && doc != null) {
+						doc.Select ();
+						doc.Editor.Caret.Location = new Mono.TextEditor.DocumentLocation (pattern.LineNumber, pattern.Column > 0 ? pattern.Column : 1);
+						doc.Editor.CenterToCaret ();
+						doc.Editor.Parent.StartCaretPulseAnimation ();
+					}
+					return;
+				}
 				if (popup != null)
 					popup.OpenFile ();
 			};
@@ -416,6 +428,17 @@ namespace MonoDevelop.Components.MainToolbar
 					popup.Destroy ();
 				return;
 			}
+			var pattern = SearchPopupSearchPattern.ParsePattern (matchEntry.Entry.Text);
+			if (pattern.Pattern == null && pattern.LineNumber > 0) {
+				if (popup != null) {
+					popup.Hide ();
+				}
+				return;
+			} else {
+				if (popup != null && !popup.Visible)
+					popup.Show ();
+			}
+
 			if (popup == null) {
 				popup = new SearchPopupWindow ();
 				popup.SearchForMembers = SearchForMembers;
@@ -426,7 +449,8 @@ namespace MonoDevelop.Components.MainToolbar
 				PositionPopup ();
 				popup.ShowAll ();
 			}
-			popup.Update (matchEntry.Entry.Text);
+
+			popup.Update (pattern);
 
 		}
 
