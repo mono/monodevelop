@@ -669,7 +669,7 @@ namespace MonoDevelop.Projects
 
 		public override IEnumerable<SolutionItem> GetReferencedItems (ConfigurationSelector configuration)
 		{
-			List<SolutionItem> items = new List<SolutionItem> ();
+			List<SolutionItem> items = new List<SolutionItem> (base.GetReferencedItems (configuration));
 			if (ParentSolution == null)
 				return items;
 

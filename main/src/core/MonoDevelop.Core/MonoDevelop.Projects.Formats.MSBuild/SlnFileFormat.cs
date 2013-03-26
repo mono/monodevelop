@@ -218,7 +218,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				if (ce is SolutionEntityItem) {
 					
 					SolutionEntityItem item = (SolutionEntityItem) ce;
-					MSBuildHandler handler = MSBuildProjectService.GetItemHandler (item);
+					MSBuildProjectHandler handler = (MSBuildProjectHandler) MSBuildProjectService.GetItemHandler (item);
 					
 					if (saveProjects) {
 						try {
@@ -241,6 +241,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					if (data != null && data.HasItemData) {
 						writer.WriteLine ("\tProjectSection(MonoDevelopProperties) = preProject");
 						WriteDataItem (writer, data);
+						writer.WriteLine ("\tEndProjectSection");
+					}
+					if (item.ItemDependencies.Count > 0) {
+						writer.WriteLine ("\tProjectSection(ProjectDependencies) = postProject");
+						foreach (var dep in item.ItemDependencies)
+							writer.WriteLine ("\t\t{0} = {0}", dep.ItemId);
+						if (handler.UnresolvedProjectDependencies != null) {
+							foreach (var dep in handler.UnresolvedProjectDependencies)
+								writer.WriteLine ("\t\t{0} = {0}", dep);
+						}
 						writer.WriteLine ("\tEndProjectSection");
 					}
 				} else if (ce is SolutionFolder) {
@@ -346,7 +356,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			// Find a project section of type MonoDevelopProperties
 			int start, end;
-			if (!FindSection (lines, "MonoDevelopProperties", out start, out end))
+			if (!FindSection (lines, "MonoDevelopProperties", true, out start, out end))
 				return null;
 			
 			// Deserialize the object
@@ -357,13 +367,33 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return it;
 		}
 		
+		List<string> ReadSolutionItemDependencies (List<string> lines)
+		{
+			// Find a project section of type MonoDevelopProperties
+			int start, end;
+			if (!FindSection (lines, "ProjectDependencies", false, out start, out end))
+				return null;
+
+			var ids = new List<string> ();
+			for (int n=start + 1; n < end; n++) {
+				string line = lines [n];
+				int i = line.IndexOf ('=');
+				if (i != -1)
+					ids.Add (line.Substring (0, i).Trim ());
+			}
+
+			// Remove the lines, since they have already been preocessed
+			lines.RemoveRange (start, end - start + 1);
+			return ids;
+		}
+
 		List<string> ReadFolderFiles (List<string> lines)
 		{
 			// Find a solution item section of type SolutionItems
 
 			List<string> list = new List<string> ();
 			int start, end;
-			if (!FindSection (lines, "SolutionItems", out start, out end))
+			if (!FindSection (lines, "SolutionItems", true, out start, out end))
 				return list;
 			
 			for (int n=start + 1; n < end; n++) {
@@ -381,14 +411,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return list;
 		}
 		
-		bool FindSection (List<string> lines, string name, out int start, out int end)
+		bool FindSection (List<string> lines, string name, bool preProject, out int start, out int end)
 		{
 			start = -1;
 			end = -1;
+
+			string prePost = preProject ? "preProject" : "postProject";
+			var sectionLine = "ProjectSection(" + name + ")=" + prePost;
 			
 			for (int n=0; n<lines.Count && start == -1; n++) {
 				string line = lines [n].Replace ("\t","").Replace (" ", "");
-				if (line == "ProjectSection(" + name + ")=preProject")
+				if (line == sectionLine)
 					start = n;
 			}
 			if (start == -1)
@@ -774,6 +807,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					MSBuildProjectHandler handler = (MSBuildProjectHandler) item.ItemHandler;
 					List<string> projLines = lines.GetRange (sec.Start + 1, sec.Count - 2);
 					DataItem it = GetSolutionItemData (projLines);
+
+					handler.UnresolvedProjectDependencies = ReadSolutionItemDependencies (lines);
 					handler.SlnProjectContent = projLines.ToArray ();
 					handler.ReadSlnData (it);
 					
@@ -836,6 +871,22 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (globals != null && globals.Contains ("NestedProjects")) {
 				LoadNestedProjects (globals ["NestedProjects"] as Section, lines, items, monitor);
 				globals.Remove ("NestedProjects");
+			}
+
+			// Resolve project dependencies
+			foreach (var it in items.OfType<SolutionEntityItem> ()) {
+				MSBuildProjectHandler handler = (MSBuildProjectHandler) it.ItemHandler;
+				if (handler.UnresolvedProjectDependencies != null) {
+					foreach (var id in handler.UnresolvedProjectDependencies.ToArray ()) {
+						SolutionItem dep;
+						if (items.TryGetValue (id, out dep) && dep is SolutionEntityItem) {
+							handler.UnresolvedProjectDependencies.Remove (id);
+							it.ItemDependencies.Add ((SolutionEntityItem)dep);
+						}
+					}
+					if (handler.UnresolvedProjectDependencies.Count == 0)
+						handler.UnresolvedProjectDependencies = null;
+				}
 			}
 
 			//Add top level folders and projects to the main folder
