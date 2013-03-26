@@ -202,7 +202,10 @@ namespace CBinding
 		
 		public override IEnumerable<SolutionItem> GetReferencedItems (ConfigurationSelector configuration)
 		{
-			List<string> project_names = new List<string> (base.GetReferencedItems (configuration));
+			foreach (var p in base.GetReferencedItems (configuration))
+				yield return p;
+
+			List<string> project_names = new List<string> ();
 			
 			foreach (Package p in Packages) {
 				if (p.IsProject && p.Name != Name) {
