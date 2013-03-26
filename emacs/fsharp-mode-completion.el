@@ -560,7 +560,7 @@ display a short summary in the minibuffer."
       (pos-tip-show str nil nil nil 300)
     ;; Use unoptimized calculation for popup, making it less likely to
     ;; wrap lines.
-    (let ((popup-use-optimized-column-computation nil) )
+    (let ((popup-use-optimized-column-computation nil))
       (popup-tip str))))
 
 (defconst fsharp-ac-info-buffer-name "*fsharp info*")

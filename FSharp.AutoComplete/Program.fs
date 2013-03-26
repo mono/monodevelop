@@ -193,8 +193,9 @@ type internal IntelliSenseAgent() =
 
   /// Invokes dot-completion request and writes information to the standard output
   member x.DoCompletion(opts : RequestOptions, ((line, column) as pos), lineStr, time) =
-    match x.GetTypeCheckInfo(opts, time) with
-    | Some(info) ->
+    let info = x.GetTypeCheckInfo(opts, time)
+    let decls =
+      Option.bind (fun (info: TypeCheckInfo) ->
         // Get the long identifier before the current location
         // 'residue' is the part after the last dot and 'longName' is before
         // e.g.  System.Console.Wri  --> "Wri", [ "System"; "Console"; ]
