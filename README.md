@@ -89,6 +89,7 @@ On Mac/Linux, please develop using  the 'Makefile' with Mono 3.0 and FSharp 3.0.
 On Mac/Linux, if you make changes to the binding, then loss of completion lists etc. can be disturbing and hard to debug. There are some debugging techniques. To launch MD you can use
 
    /Applications/MonoDevelop.app/Contents/MacOS/MonoDevelop --new-window --no-redirect
+   "/Applications/Xamarin Studio.app/Contents/MacOS/XamarinStudio" --new-window --no-redirect
 
 to enable some logging you can use
 
@@ -102,7 +103,7 @@ You can start Xamarin Studio or MonoDevelop under the debugger using the normal 
 
 ## Notes for People Preparing Releases
 
-The addin gets released to http://addins.monodevelop.com under project 'FSharp' (project index 48). Contact @sega, @tpetricek or @funnelweb to make an update.
+The addin gets released to http://addins.monodevelop.com under project 'FSharp' (project index 48). Contact @7sharp9, @sega, @tpetricek or @funnelweb to make an update.
 
 To build the .mpack files to upload to this site, use:
 
