@@ -175,7 +175,7 @@ namespace MonoDevelop.Components.MainToolbar
 					if (Pattern.LineNumber == 0) {
 						IdeApp.Workbench.OpenDocument (region.FileName);
 					} else {
-						IdeApp.Workbench.OpenDocument (region.FileName, Pattern.LineNumber, 1);
+						IdeApp.Workbench.OpenDocument (region.FileName, Pattern.LineNumber, Pattern.HasColumn ? Pattern.Column : 1);
 					}
 				} else {
 					IdeApp.Workbench.OpenDocument (region.FileName, region.BeginLine, region.BeginColumn);
