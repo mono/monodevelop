@@ -168,7 +168,6 @@ module CompilerService =
       br
   
   // ------------------------------------------------------------------------------------
-  
   /// Compiles the specified F# project using the current configuration
   let Compile(items, config:DotNetProjectConfiguration, configSel, monitor) : BuildResult =
     let reqLangVersion = FSharpCompilerVersion.LatestKnown
@@ -187,5 +186,3 @@ module CompilerService =
              yield CompilerArguments.wrapFile file ]
           
     compile runtime framework monitor args
-    
-    // CSharpCompilerParameters compilerParameters = (CSharpCompilerParameters)configuration.CompilationParameters ?? new CSharpCompilerParameters ();

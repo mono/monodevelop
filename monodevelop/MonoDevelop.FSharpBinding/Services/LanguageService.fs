@@ -27,7 +27,6 @@ open ICSharpCode.NRefactory.Editor
 
 open FSharp.CompilerBinding
 open MonoDevelop.FSharp
-open MonoDevelop.FSharp.MailBox
 
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
@@ -57,7 +56,6 @@ module ServiceSettings =
 
 
 // --------------------------------------------------------------------------------------
-    
 /// Formatting of tool-tip information displayed in F# IntelliSense
 module internal TipFormatter = 
 
@@ -67,7 +65,6 @@ module internal TipFormatter =
       fun x -> if d.ContainsKey x then d.[x] else let res = f x in d.[x] <- res; res
 
   /// Memoize the objects that manage access to XML files.
-  //
   // @todo consider if this needs to be a weak table in some way
   let xmlDocProvider = memoize (fun x -> ICSharpCode.NRefactory.Documentation.XmlDocumentationProvider(x))
 
@@ -138,7 +135,7 @@ module internal TipFormatter =
         [ for x in nodes -> x ] |> Seq.tryFind (fun curNode -> 
           let paramList = curNode.SelectNodes ("Parameters/*")
           
-          printfn "AAA paramList = %A" [ for x in paramList -> x.OuterXml ]
+          Debug.WriteLine(sprintf "AAA paramList = %A" [ for x in paramList -> x.OuterXml ])
           
           (paramList <> null) &&
           (argsFromKey.Length = paramList.Count) 
@@ -273,8 +270,7 @@ module internal TipFormatter =
   let private extractParamTipFromComment paramName comment =  
     match comment with
     | XmlCommentText(s) -> None
-    // For 'XmlCommentSignature' we could get documentation from 'xml' 
-    // files, but I'm not sure whether these are available on Mono
+    // For 'XmlCommentSignature' we can get documentation from 'xml' files, and via MonoDoc on Mono
     | XmlCommentSignature(file,key) -> 
         match findXmlDocProviderForAssembly file with 
         | None -> None
@@ -308,9 +304,8 @@ module internal TipFormatter =
   let extractParamTip paramName (DataTipText elements) = 
       List.tryPick (extractParamTipFromElement paramName) elements
 
-  /// Formats tool-tip and turns the first line into heading
-  /// MonoDevelop does this automatically for completion data, 
-  /// so we do the same thing explicitly for hover tool-tips
+  /// Formats tool-tip and turns the first line into heading.  MonoDevelop does this automatically 
+  /// for completion data, so we do the same thing explicitly for hover tool-tips
   let formatTipWithHeader tip = 
     let str = formatTip true tip
     let parts = str.Split([| '\n' |], 2)
@@ -319,7 +314,6 @@ module internal TipFormatter =
     
 
 // --------------------------------------------------------------------------------------
-
 /// Parsing utilities for IntelliSense (e.g. parse identifier on the left-hand side
 /// of the current cursor location etc.)
 module Parsing = 
@@ -383,10 +377,8 @@ module Parsing =
 
   /// Returns first result returned by the parser
   let tryGetFirst p s = match apply p s with h::_ -> Some h | [] -> None
-  
-    
+   
 // --------------------------------------------------------------------------------------
-
 /// Wraps the result of type-checking and provides methods for implementing
 /// various IntelliSense functions (such as completion & tool tips)
 type internal TypedParseResult(info:TypeCheckInfo) =
@@ -531,10 +523,8 @@ type internal ParseRequest (file:FilePath, source:string, options:CheckOptions, 
 type internal LanguageServiceMessage = 
   // Trigger parse request in ParserWorker
   | TriggerRequest of ParseRequest
-  
   // Request for information - when we receive this, we parse and reply when information become available
   | UpdateAndGetTypedInfo of ParseRequest * AsyncReplyChannel<TypedParseResult>
-  
   | GetTypedInfoDone of AsyncReplyChannel<TypedParseResult>
   
 
@@ -566,8 +556,7 @@ type internal LanguageService private () =
   let fakeDateTimeRepresentingTimeLoaded proj = System.DateTime(abs (int64 (match proj with null -> 0 | _ -> proj.GetHashCode())) % 103231L)
   
 
-  // ------------------------------------------------------------------------------------
-
+  // -----------------------------------------------------------------------------------
   // Nuke the checker when the current requested language version changes
   let reqLangVersion = FSharpCompilerVersion.LatestKnown 
   
@@ -587,7 +576,7 @@ type internal LanguageService private () =
                     with _ -> ()))
 
   // Mailbox of this 'LanguageService'
-  let mbox = SimpleMailboxProcessor.Start(fun mbox ->
+  let mbox = MailboxProcessor.Start(fun mbox ->
     
     // Tail-recursive loop that remembers the current state
     // (untyped and typed parse results)
@@ -752,7 +741,6 @@ type internal LanguageService private () =
   static member Service = instance.Value
     
 // --------------------------------------------------------------------------------------
-
 /// Various utilities for working with F# language service
 module internal ServiceUtils =
   let map =           
@@ -775,6 +763,4 @@ module internal ServiceUtils =
   let getIcon glyph =
     match map.TryFind (glyph / 6), map.TryFind (glyph % 6) with  
     | Some(s), _ -> s // Is the second number good for anything?
-    | _, _ -> "md-breakpoint" 
-  
-  
+    | _, _ -> "md-breakpoint"
