@@ -410,8 +410,10 @@ namespace Mono.TextEditor.Highlighting
 				if (file.EndsWith (".xml", StringComparison.Ordinal)) {
 					using (var stream = File.OpenRead (file)) {
 						string mimeTypes = Scan (stream, SyntaxMode.MimeTypesAttribute);
-						foreach (string mimeType in mimeTypes.Split (';')) {
-							syntaxModeLookup [mimeType] = new UrlStreamProvider (file);
+						if (!string.IsNullOrEmpty (mimeTypes)) {
+							foreach (string mimeType in mimeTypes.Split (';')) {
+								syntaxModeLookup [mimeType] = new UrlStreamProvider (file);
+							}
 						}
 					}
 				} else if (file.EndsWith (".json", StringComparison.Ordinal)) {
