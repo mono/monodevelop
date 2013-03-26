@@ -694,11 +694,11 @@ namespace Mono.TextEditor
 						drawBg = false;
 						Cairo.Color fillGc, rectangleGc;
 						if (segment == link.PrimaryLink) {
-							fillGc = isPrimaryHighlighted ? Editor.ColorStyle.PrimaryTemplateHighlighted.GetColor ("secondcolor") : Editor.ColorStyle.PrimaryTemplate.GetColor ("secondcolor");
-							rectangleGc = isPrimaryHighlighted ? Editor.ColorStyle.PrimaryTemplateHighlighted.GetColor ("secondcolor") : Editor.ColorStyle.PrimaryTemplate.GetColor ("secondcolor");
+							fillGc = isPrimaryHighlighted ? Editor.ColorStyle.PrimaryTemplateHighlighted.SecondColor : Editor.ColorStyle.PrimaryTemplate.SecondColor;
+							rectangleGc = isPrimaryHighlighted ? Editor.ColorStyle.PrimaryTemplateHighlighted.SecondColor : Editor.ColorStyle.PrimaryTemplate.SecondColor;
 						} else {
-							fillGc = isPrimaryHighlighted ? Editor.ColorStyle.SecondaryTemplateHighlighted.GetColor ("secondcolor") : Editor.ColorStyle.SecondaryTemplate.GetColor ("secondcolor");
-							rectangleGc = isPrimaryHighlighted ? Editor.ColorStyle.SecondaryTemplateHighlighted.GetColor ("color") : Editor.ColorStyle.SecondaryTemplate.GetColor ("color");
+							fillGc = isPrimaryHighlighted ? Editor.ColorStyle.SecondaryTemplateHighlighted.SecondColor : Editor.ColorStyle.SecondaryTemplate.SecondColor;
+							rectangleGc = isPrimaryHighlighted ? Editor.ColorStyle.SecondaryTemplateHighlighted.Color : Editor.ColorStyle.SecondaryTemplate.Color;
 						}
 						
 						// Draw segment
@@ -725,7 +725,7 @@ namespace Mono.TextEditor
 			var lineNumberGC = editor.ColorStyle.LineNumbers.Foreground;
 
 			cr.Rectangle (x, y, width, lineHeight);
-			cr.Color = editor.Caret.Line == line ? editor.ColorStyle.LineMarker.GetColor ("color") : lineNumberGC;
+			cr.Color = editor.Caret.Line == line ? editor.ColorStyle.LineMarker.Color : lineNumberGC;
 			cr.Fill ();
 			
 			if (line <= editor.Document.LineCount) {

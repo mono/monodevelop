@@ -160,12 +160,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 			SetFont ();
 			textColor = style.CompletionText.Foreground;
 
-			highlightColor = style.CompletionHighlight.GetColor ("color");
+			highlightColor = style.CompletionHighlight.Color;
 			backgroundColor = style.CompletionText.Background;
 			selectedItemColor = style.CompletionSelectedText;
 			selectedItemInactiveColor = style.CompletionSelectedInactiveText;
-			selectionBorderColor = style.CompletionBorder.GetColor ("color");
-			selectionBorderInactiveColor = style.CompletionInactiveBorder.GetColor ("color");
+			selectionBorderColor = style.CompletionBorder.Color;
+			selectionBorderInactiveColor = style.CompletionInactiveBorder.Color;
 			this.Show ();
 		}
 

@@ -143,7 +143,7 @@ namespace Mono.TextEditor
 					if (searchResult == null || searchResult.SearchWrapped)
 						break;
 					Replace (searchResult, withPattern);
-					offset = searchResult.Offset + withPattern.Length;
+					offset = searchResult.EndOffset;
 					result++;
 				}
 				if (result > 0)
@@ -258,22 +258,23 @@ namespace Mono.TextEditor
 			var text = textEditorData.Text;
 			var args = new TextViewMargin.SearchWorkerArguments () { Text = text };
 			while (true) {
-				searchResult =  SearchForward (null, args, offset);
+				searchResult = SearchForward (null, args, offset);
 				if (searchResult == null || searchResult.SearchWrapped)
 					break;
 				searchResults.Add (searchResult);
-				offset = searchResult.Offset + withPattern.Length;
+				offset = searchResult.EndOffset;
 			}
 			if (searchResults.Count < 100) {
-				for (int i = searchResults.Count - 1; i >= 0; i--) {
-					Replace (searchResults[i], withPattern);
+				using (var undo = textEditorData.OpenUndoGroup ()) {
+					for (int i = searchResults.Count - 1; i >= 0; i--) {
+						Replace (searchResults [i], withPattern);
+					}
+					if (searchResults.Count > 0)
+						textEditorData.ClearSelection ();
 				}
-				if (searchResults.Count > 0)
-					textEditorData.ClearSelection ();
 			} else {
-				var first = searchResults[0];
 				char[] oldText = text.ToCharArray ();
-				char[] newText = new char[oldText.Length + searchResults.Count * (withPattern.Length - first.Length)];
+				char[] newText = new char[oldText.Length + searchResults.Count * (withPattern.Length - compiledPattern.Length)];
 				char[] pattern = withPattern.ToCharArray ();
 				int curOffset = 0, destOffset = 0;
 				foreach (var sr in searchResults) {

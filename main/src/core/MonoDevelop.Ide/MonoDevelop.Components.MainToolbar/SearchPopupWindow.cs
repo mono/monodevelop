@@ -175,7 +175,7 @@ namespace MonoDevelop.Components.MainToolbar
 					if (Pattern.LineNumber == 0) {
 						IdeApp.Workbench.OpenDocument (region.FileName);
 					} else {
-						IdeApp.Workbench.OpenDocument (region.FileName, Pattern.LineNumber, 1);
+						IdeApp.Workbench.OpenDocument (region.FileName, Pattern.LineNumber, Pattern.HasColumn ? Pattern.Column : 1);
 					}
 				} else {
 					IdeApp.Workbench.OpenDocument (region.FileName, region.BeginLine, region.BeginColumn);
@@ -190,8 +190,9 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
-		public void Update (string searchPattern)
+		public void Update (SearchPopupSearchPattern pattern)
 		{
+			this.pattern = pattern;
 			if (src != null)
 				src.Cancel ();
 
@@ -201,7 +202,6 @@ namespace MonoDevelop.Components.MainToolbar
 			if (results.Count == 0) {
 				QueueDraw ();
 			}
-			pattern = SearchPopupSearchPattern.ParsePattern (searchPattern);
 			incompleteResults.Clear ();
 			foreach (var _cat in categories) {
 				var cat = _cat;

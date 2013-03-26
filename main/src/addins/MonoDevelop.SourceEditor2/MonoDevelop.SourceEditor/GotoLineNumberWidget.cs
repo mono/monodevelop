@@ -140,19 +140,40 @@ namespace MonoDevelop.SourceEditor
 			get {
 				int line;
 				try {
-					line = System.Int32.Parse (entryLineNumber.Text);
-				} catch (System.OverflowException) {
-					line = entryLineNumber.Text.Trim ().StartsWith ("-") ? int.MinValue : int.MaxValue;
+					var lineNumberText = entryLineNumber.Text.Split (',', ':')[0];
+					line = Int32.Parse (lineNumberText);
+				} catch (OverflowException) {
+					line = entryLineNumber.Text.Trim ().StartsWith ("-", StringComparison.Ordinal) ? int.MinValue : int.MaxValue;
 				}
-				bool isRelativeJump = entryLineNumber.Text.Trim ().StartsWith ("-") || entryLineNumber.Text.Trim ().StartsWith ("+");
+				bool isRelativeJump = entryLineNumber.Text.Trim ().StartsWith ("-", StringComparison.Ordinal) || entryLineNumber.Text.Trim ().StartsWith ("+", StringComparison.Ordinal);
 				return isRelativeJump ? this.caretSave.Line + line : line;
 			}
 		}
 		
+		int TargetColumn {
+			get {
+				int column;
+				try {
+					var col = entryLineNumber.Text.Split (',', ':');
+					if (col.Length != 2)
+						return 0;
+					var lineNumberText = col [1];
+					column = Int32.Parse (lineNumberText);
+				} catch (OverflowException) {
+					column = entryLineNumber.Text.Trim ().StartsWith ("-", StringComparison.Ordinal) ? int.MinValue : int.MaxValue;
+				}
+				bool isRelativeJump = entryLineNumber.Text.Trim ().StartsWith ("-", StringComparison.Ordinal) || entryLineNumber.Text.Trim ().StartsWith ("+", StringComparison.Ordinal);
+				return isRelativeJump ? this.caretSave.Column + column : column;
+			}
+		}
+
 		void GotoLine ()
 		{
 			try {
 				textEditor.Caret.Line = TargetLine;
+				var col = TargetColumn;
+				if (col > 0)
+					textEditor.Caret.Column = col;
 				textEditor.CenterToCaret ();
 			} catch (System.Exception) { 
 			}

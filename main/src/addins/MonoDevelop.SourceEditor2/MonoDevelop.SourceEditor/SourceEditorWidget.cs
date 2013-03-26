@@ -1625,7 +1625,7 @@ namespace MonoDevelop.SourceEditor
 
 		public override void Draw (TextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
 		{
-			Color = Info.ErrorType == ErrorType.Warning ? editor.ColorStyle.UnderlineWarning.GetColor ("color") : editor.ColorStyle.UnderlineError.GetColor ("color");
+			Color = Info.ErrorType == ErrorType.Warning ? editor.ColorStyle.UnderlineWarning.Color : editor.ColorStyle.UnderlineError.Color;
 
 			base.Draw (editor, cr, layout, selected, startOffset, endOffset, y, startXPos, endXPos);
 		}

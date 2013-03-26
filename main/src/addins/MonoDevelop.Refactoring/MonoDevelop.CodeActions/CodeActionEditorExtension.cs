@@ -176,7 +176,7 @@ namespace MonoDevelop.CodeActions
 				var line = editor.GetLine (loc.Line);
 				var x = editor.ColumnToX (line, loc.Column) - editor.HAdjustment.Value + editor.TextViewMargin.XOffset + editor.TextViewMargin.TextStartPosition;
 
-				cr.Rectangle (Math.Floor (x) + 0.5, Math.Floor (y) + 0.5, tagMarkerWidth * cr.LineWidth, tagMarkerHeight * cr.LineWidth);
+				cr.Rectangle (Math.Floor (x) + 0.5, Math.Floor (y) + 0.5 + (line == editor.GetLineByOffset (startOffset) ? editor.LineHeight - tagMarkerHeight - 1 : 0), tagMarkerWidth * cr.LineWidth, tagMarkerHeight * cr.LineWidth);
 
 				if (HslColor.Brightness (editor.ColorStyle.PlainText.Background) < 0.5) {
 					cr.Color = new Cairo.Color (0.8, 0.8, 1, 0.9);
@@ -273,7 +273,7 @@ namespace MonoDevelop.CodeActions
 			RemoveWidget ();
 			var line = document.Editor.GetLine (smartTagLocBegin.Line);
 
-			currentSmartTag = new SmartTagMarker (line.NextLine.Offset, this, fixes, smartTagLocBegin);
+			currentSmartTag = new SmartTagMarker ((line.NextLine ?? line).Offset, this, fixes, smartTagLocBegin);
 			document.Editor.Document.AddMarker (currentSmartTag);
 		}
 		

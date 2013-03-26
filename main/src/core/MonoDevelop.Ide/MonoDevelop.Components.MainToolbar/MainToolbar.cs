@@ -217,6 +217,18 @@ namespace MonoDevelop.Components.MainToolbar
 			matchEntry.RoundedShape = true;
 			matchEntry.Entry.Changed += HandleSearchEntryChanged;
 			matchEntry.Activated += (sender, e) => {
+				var pattern = SearchPopupSearchPattern.ParsePattern (matchEntry.Entry.Text);
+				if (pattern.Pattern == null && pattern.LineNumber > 0) {
+					popup.Destroy ();
+					var doc = IdeApp.Workbench.ActiveDocument;
+					if (doc != null && doc != null) {
+						doc.Select ();
+						doc.Editor.Caret.Location = new Mono.TextEditor.DocumentLocation (pattern.LineNumber, pattern.Column > 0 ? pattern.Column : 1);
+						doc.Editor.CenterToCaret ();
+						doc.Editor.Parent.StartCaretPulseAnimation ();
+					}
+					return;
+				}
 				if (popup != null)
 					popup.OpenFile ();
 			};
@@ -416,6 +428,17 @@ namespace MonoDevelop.Components.MainToolbar
 					popup.Destroy ();
 				return;
 			}
+			var pattern = SearchPopupSearchPattern.ParsePattern (matchEntry.Entry.Text);
+			if (pattern.Pattern == null && pattern.LineNumber > 0) {
+				if (popup != null) {
+					popup.Hide ();
+				}
+				return;
+			} else {
+				if (popup != null && !popup.Visible)
+					popup.Show ();
+			}
+
 			if (popup == null) {
 				popup = new SearchPopupWindow ();
 				popup.SearchForMembers = SearchForMembers;
@@ -426,7 +449,8 @@ namespace MonoDevelop.Components.MainToolbar
 				PositionPopup ();
 				popup.ShowAll ();
 			}
-			popup.Update (matchEntry.Entry.Text);
+
+			popup.Update (pattern);
 
 		}
 
@@ -499,14 +523,17 @@ namespace MonoDevelop.Components.MainToolbar
 
 			configurationCombo.Changed -= HandleConfigurationChanged;
 			try {
+				string defaultConfig = name;
 				TreeIter iter;
 
 				if (configurationStore.GetIterFirst (out iter)) {
+					defaultConfig = (string) configurationStore.GetValue (iter, 1);
 					int i = 0;
 
 					do {
-						string val = (string)configurationStore.GetValue (iter, 1);
-						if (name == val) {
+						string config = (string) configurationStore.GetValue (iter, 1);
+						if (config == name) {
+							IdeApp.Workspace.ActiveConfigurationId = config;
 							configurationCombo.Active = i;
 							break;
 						}
@@ -514,9 +541,10 @@ namespace MonoDevelop.Components.MainToolbar
 					} while (configurationStore.IterNext (ref iter));
 				}
 
-				var validTargets = configurationMerger.GetTargetsForConfiguration (IdeApp.Workspace.ActiveConfigurationId, false).ToArray ();
-				if (IdeApp.Workspace.PreferredActiveExecutionTarget == null || !validTargets.Any (t => t.Id == IdeApp.Workspace.PreferredActiveExecutionTarget))
-					IdeApp.Workspace.ActiveExecutionTarget = validTargets.FirstOrDefault ();
+				if (configurationCombo.Active == -1) {
+					IdeApp.Workspace.ActiveConfigurationId = defaultConfig;
+					configurationCombo.Active = 0;
+				}
 			} finally {
 				configurationCombo.Changed += HandleConfigurationChanged;
 			}
@@ -528,14 +556,17 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			runtimeCombo.Changed -= HandleRuntimeChanged;
 			try {
+				ExecutionTarget defaultTarget = null;
 				TreeIter iter;
 
 				if (runtimeStore.GetIterFirst (out iter)) {
+					defaultTarget = (ExecutionTarget) runtimeStore.GetValue (iter, 2);
 					int i = 0;
 
 					do {
-						var val = (ExecutionTarget)runtimeStore.GetValue (iter, 2);
-						if (val.Id == IdeApp.Workspace.PreferredActiveExecutionTarget) {
+						var target = (ExecutionTarget) runtimeStore.GetValue (iter, 2);
+						if (target.Id == IdeApp.Workspace.PreferredActiveExecutionTarget) {
+							IdeApp.Workspace.ActiveExecutionTarget = target;
 							runtimeCombo.Active = i;
 							break;
 						}
@@ -543,8 +574,10 @@ namespace MonoDevelop.Components.MainToolbar
 					} while (runtimeStore.IterNext (ref iter));
 				}
 
-				if (runtimeCombo.Active == -1)
+				if (runtimeCombo.Active == -1) {
+					IdeApp.Workspace.ActiveExecutionTarget = defaultTarget;
 					runtimeCombo.Active = 0;
+				}
 			} finally {
 				runtimeCombo.Changed += HandleRuntimeChanged;
 			}
