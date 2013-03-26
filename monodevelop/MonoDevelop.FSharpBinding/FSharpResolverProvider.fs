@@ -26,13 +26,11 @@ open ICSharpCode.NRefactory.TypeSystem
 
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
-/// Result of F# identifier resolution at the specified location
-/// Stores the data tip that we get from the language service
-/// (this is passed to MonoDevelop, which asks as about tooltip later)
+/// Result of F# identifier resolution at the specified location stores the data tip that we 
+/// get from the language service (this is passed to MonoDevelop, which asks about tooltip later)
 ///
-// We resolve language items to an under-specified LocalResolveResult (with 
-// an additional field for the data tip text). Goto-definition can operate 
-// on the LocalResolveResult.
+/// We resolve language items to an under-specified LocalResolveResult (with an additional field for
+/// the data tip text). Goto-definition can operate on the LocalResolveResult.
 // 
 // Other interesting ResolveResult's we may one day want to return are:
 // 
@@ -44,28 +42,9 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 //
 // Also of interest is FindReferencesHandler.FindRefs (obj), for find-all-references and
 // renaming.
-
 type internal FSharpLocalResolveResult(tip:DataTipText, ivar:IVariable) = 
   inherit LocalResolveResult(ivar)
   member x.DataTip = tip
-
-
-// In Mono 3.0.4, this change https://github.com/mono/monodevelop/commit/4a95275cf7d0418250d87844550934b849b1153d
-// appears to have busted all tooltips in editor extensions?  The call to CreateTooltip in 
-//     main/src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/LanguageItemWindow.cs
-// was commented out in that change, but this means CreateTooltip is never called and no tooltips 
-// are ever created. So instead we just create the Gtk window ourselves here.
-
-#if CODE_BEFORE_WORKAROUND_FOR_MISSING_MONODEVELOP_TOOLTIPS_IN_3_0_4
-type FSharpLanguageItemTooltipProvider() = 
-    let p = new MonoDevelop.SourceEditor.LanguageItemTooltipProvider() 
-    interface ITooltipProvider with 
-    
-        member x.GetItem (editor, offset) =  p.GetItem(editor,offset)
-        member x.CreateTooltipWindow (editor, offset, modifierState, item) = p.CreateTooltipWindow (editor, offset, modifierState, item)
-        member x.GetRequiredPosition (editor, tipWindow, requiredWidth, xalign) = p.GetRequiredPosition (editor, tipWindow, &requiredWidth, &xalign)
-        member x.IsInteractive (editor, tipWindow) =  p.IsInteractive (editor, tipWindow)
-#else
 
 [<AllowNullLiteral>] 
 type internal FSharpLanguageItemWindow(tooltip: string) as this = 
@@ -74,7 +53,10 @@ type internal FSharpLanguageItemWindow(tooltip: string) as this =
       
     let label = 
        if isEmpty then null else 
-       new MonoDevelop.Components.FixedWidthWrapLabel (Wrap = Pango.WrapMode.WordChar,Indent = -20,BreakOnCamelCasing = true,BreakOnPunctuation = true,Markup = tooltip)
+       new MonoDevelop.Components.FixedWidthWrapLabel(Wrap = Pango.WrapMode.WordChar, 
+                                                      Indent = -20,BreakOnCamelCasing = true,
+                                                      BreakOnPunctuation = true,
+                                                      Markup = tooltip )
 
     let updateFont (label:MonoDevelop.Components.FixedWidthWrapLabel) =
       if (label <> null) then
@@ -102,16 +84,8 @@ type internal FSharpLanguageItemWindow(tooltip: string) as this =
       | _ -> ()
 
 type FSharpLanguageItemTooltipProvider() = 
-#if MONODEVELOP_AT_MOST_3_1_1
-  let p = new MonoDevelop.SourceEditor.LanguageItemTooltipProvider() 
-  interface ITooltipProvider with 
-#else
     inherit Mono.TextEditor.TooltipProvider()
-#endif
     
-#if MONODEVELOP_AT_MOST_3_1_1
-    member x.GetItem (editor, offset) =  p.GetItem(editor,offset)
-#endif
     override x.GetItem (editor, offset) = 
             let extEditor = editor :?> MonoDevelop.SourceEditor.ExtensibleTextEditor 
             let (resolveResult, region) = extEditor.GetLanguageItem (offset)
@@ -124,34 +98,20 @@ type FSharpLanguageItemTooltipProvider() =
             if (doc = null) then null else
             match item.Item with 
             | :? FSharpLocalResolveResult as titem -> 
-                let tooltip = TipFormatter.formatTipWithHeader(titem.DataTip) 
-#if MONODEVELOP_AT_MOST_3_1_1           
-                let result = new FSharpLanguageItemWindow (tooltip)
-#else                
+                let tooltip = TipFormatter.formatTipWithHeader(titem.DataTip)               
                 let result = new TooltipInformationWindow(ShowArrow = true)
                 let toolTipInfo = new TooltipInformation(SignatureMarkup = tooltip)
                 result.AddOverload(toolTipInfo)
-                result.RepositionWindow ()
-#endif                    
+                result.RepositionWindow ()                  
                 result :> Gtk.Window
             | _ -> Debug.WriteLine("** not a FSharpLocalResolveResult!"); null
 
     override x.GetRequiredPosition (editor, tipWindow : Gtk.Window, requiredWidth : int byref, xalign : double byref) = 
             match tipWindow with 
-#if MONODEVELOP_AT_MOST_3_1_1
-            | :? FSharpLanguageItemWindow as win -> 
-                requiredWidth <- win.SetMaxWidth win.Screen.Width
-#else
             | :? TooltipInformationWindow as win -> 
                 requiredWidth <- win.Allocation.Width
-#endif
                 xalign <- 0.5
             | _ -> ()
-#if MONODEVELOP_AT_MOST_3_1_1
-    override x.IsInteractive (editor, tipWindow) = false
-#endif
-
-#endif
     
 /// Implements "resolution" - looks for tool-tips at current locations
 type FSharpResolverProvider() =
@@ -219,11 +179,7 @@ type FSharpResolverProvider() =
 
     /// Returns string with tool-tip from 'FSharpLocalResolveResult'
     /// (which we generated in the previous method - so we simply run formatter)
-#if MONODEVELOP_AT_MOST_3_0_3_2
-    member x.CreateTooltip(unit, result, errorInformation, ambience, modifierState) : string = 
-#else
     member x.CreateTooltip(document, offset, result, errorInformation, modifierState) : string = 
-#endif
       do Debug.WriteLine (sprintf "Resolver: in CreteTooltip")
       match result with
       //| :? FSharpLocalResolveResult as res -> TipFormatter.formatTipWithHeader(res.DataTip)
