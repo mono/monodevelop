@@ -65,7 +65,7 @@ display in a help buffer instead.")
 
 ;;; Both in seconds. Note that background process uses ms.
 (defvar fsharp-ac-blocking-timeout 0.4)
-(defvar fsharp-ac-idle-timeout 1)
+(defvar fsharp-ac-idle-timeout 2)
 
 ;;; ----------------------------------------------------------------------------
 
@@ -77,7 +77,6 @@ display in a help buffer instead.")
 (defvar fsharp-ac-idle-timer nil)
 (defvar fsharp-ac-verbose nil)
 (defvar fsharp-ac-current-candidate)
-(defvar fsharp-ac-current-candidate-help)
 
 
 (defun log-to-proc-buf (proc str)
@@ -163,8 +162,7 @@ display in a help buffer instead.")
   (setq fsharp-ac-partial-data nil
         fsharp-ac-project-files nil
         fsharp-ac-status 'idle
-        fsharp-ac-current-candidate nil
-        fsharp-ac-current-candidate-help nil)
+        fsharp-ac-current-candidate nil)
   (fsharp-ac-clear-errors))
 
 ;;; ----------------------------------------------------------------------------
@@ -246,10 +244,8 @@ display in a help buffer instead.")
 
 (defun fsharp-ac-document (item)
   (pos-tip-fill-string
-   (cdr (assq 'Help
-              (-first (lambda (e) (string= item (cdr (assq 'Name e))))
-                      fsharp-ac-current-candidate-help)))
-   80))
+   (cdr (get-text-property 0 'fsharp-ac-doc item))
+   popup-tip-max-width))
 
 (defun fsharp-ac-candidate ()
   (interactive)
@@ -257,7 +253,6 @@ display in a help buffer instead.")
     (idle
      (setq fsharp-ac-status 'wait)
      (setq fsharp-ac-current-candidate nil)
-     (setq fsharp-ac-current-candidate-help nil)
 
      (fsharp-ac-parse-current-buffer)
      (fsharp-ac-send-pos-request
@@ -482,7 +477,8 @@ around to the start of the buffer."
 
 (defun fsharp-ac-filter-output (proc str)
   "Filter output from the completion process and handle appropriately."
-  (log-to-proc-buf proc str)
+  (when fsharp-ac-debug
+    (log-to-proc-buf proc str))
   (setq fsharp-ac-partial-data (concat fsharp-ac-partial-data str))
 
   (let ((eofloc (string-match-p fsharp-ac-eom fsharp-ac-partial-data)))
@@ -508,7 +504,9 @@ around to the start of the buffer."
         (s-replace "DATA: completion" "" str))
   (let* ((json-array-type 'list)
          (cs (json-read-from-string str))
-         (names (-map (lambda (e) (cdr (assq 'Name e))) cs)))
+         (names (-map (lambda (e) (propertize (cdr (assq 'Name e))
+                                         'fsharp-ac-doc
+                                         (assq 'Help e))) cs)))
 
     (case fsharp-ac-status
       (preempted
@@ -518,7 +516,6 @@ around to the start of the buffer."
 
       (otherwise
        (setq fsharp-ac-current-candidate names
-             fsharp-ac-current-candidate-help cs
              fsharp-ac-status 'acknowledged)
        (fsharp-ac--ac-start :force-init t)
        (ac-update)
@@ -583,8 +580,7 @@ display a short summary in the minibuffer."
     (fsharp-ac-message-safely str))
   (when (not (eq fsharp-ac-status 'idle))
     (setq fsharp-ac-status 'idle
-          fsharp-ac-current-candidate nil
-          fsharp-ac-current-candidate-help nil)))
+          fsharp-ac-current-candidate nil)))
 
 (provide 'fsharp-mode-completion)
 

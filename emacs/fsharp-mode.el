@@ -208,7 +208,9 @@ and whether it is in a project directory.")
           ac-sources
           ac-auto-start
           ac-use-comphist
-          ac-auto-show-menu))
+          ac-auto-show-menu
+          ac-quick-help-delay
+          popup-tip-max-width))
 
   (setq major-mode               'fsharp-mode
         mode-name                "fsharp"
@@ -264,7 +266,11 @@ Otherwise, treat as a stand-alone file."
   (when fsharp-ac-intellisense-enabled
     (auto-complete-mode 1)
     (setq ac-auto-start nil
-          ac-use-comphist nil)))
+          ac-use-comphist nil
+          ac-quick-help-delay 0.5)
+    (when (and (display-graphic-p)
+               (featurep 'pos-tip))
+      (setq popup-tip-max-width 240))))
 
 (defun fsharp-mode-choose-compile-command (file)
   "Format an appropriate compilation command, depending on several factors:

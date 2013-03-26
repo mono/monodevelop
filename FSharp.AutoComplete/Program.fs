@@ -203,18 +203,23 @@ type internal IntelliSenseAgent() =
           lookBack |> Parsing.getFirst Parsing.parseBackIdentWithResidue
 
         // Get items & generate output
-        let decls = info.GetDeclarations(pos, lineStr, (longName, residue), 0, defaultArg time 1000)
-        printfn "DATA: completion"
-        match opts.OutputMode with
-        | Json ->
-            let cs =
-              [ for d in decls.Items do
-                yield { Name = d.Name
-                        Help = TipFormatter.formatTip d.DescriptionText } ]
-            Console.WriteLine(JsonConvert.SerializeObject(cs))
-        | Text ->
-            for d in decls.Items do Console.WriteLine(d.Name)
-        printfn "<<EOF>>"
+        try
+          Some (info.GetDeclarations(pos, lineStr, (longName, residue), 0, defaultArg time 1000))
+        with :? System.TimeoutException as e -> None) info
+                   
+    match decls with
+    | Some decls ->
+      printfn "DATA: completion"
+      match opts.OutputMode with
+      | Json ->
+        let cs =
+          [ for d in decls.Items do
+            yield { Name = d.Name
+                    Help = TipFormatter.formatTip d.DescriptionText } ]
+        Console.WriteLine(JsonConvert.SerializeObject(cs))
+      | Text ->
+        for d in decls.Items do Console.WriteLine(d.Name)
+      printfn "<<EOF>>"
     | None -> printfn "ERROR: Could not get type information\n<<EOF>>"
 
 
@@ -585,4 +590,7 @@ module internal Main =
       printfn "Unrecognised arguments: %s" (String.concat "," extra)
       1
     else
-      main initialState
+      try
+        main initialState
+      finally
+        (!Debug.output).Close ()
