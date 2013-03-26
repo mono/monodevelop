@@ -206,7 +206,9 @@ type internal IntelliSenseAgent() =
         // Get items & generate output
         try
           Some (info.GetDeclarations(pos, lineStr, (longName, residue), 0, defaultArg time 1000))
-        with :? System.TimeoutException as e -> None) info
+        with :? System.TimeoutException as e ->
+                   printfn "ERROR: GetDeclarations timed out\n<<EOF>>"
+                   None) info
                    
     match decls with
     | Some decls ->
