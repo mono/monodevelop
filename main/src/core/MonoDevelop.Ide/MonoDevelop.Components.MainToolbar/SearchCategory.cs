@@ -87,6 +87,8 @@ namespace MonoDevelop.Components.MainToolbar
 			this.Name = name;
 		}
 
+		public abstract bool IsValidTag (string tag);
+
 		public abstract Task<ISearchDataSource> GetResults (SearchPopupSearchPattern searchPattern, int resultsCount, CancellationToken token);
 	}
 }
