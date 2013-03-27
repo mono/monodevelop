@@ -421,6 +421,8 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 	
+		static readonly SearchPopupSearchPattern emptyColonPattern = SearchPopupSearchPattern.ParsePattern (":");
+
 		void HandleSearchEntryChanged (object sender, EventArgs e)
 		{
 			if (string.IsNullOrEmpty (matchEntry.Entry.Text)){
@@ -429,7 +431,7 @@ namespace MonoDevelop.Components.MainToolbar
 				return;
 			}
 			var pattern = SearchPopupSearchPattern.ParsePattern (matchEntry.Entry.Text);
-			if (pattern.Pattern == null && pattern.LineNumber > 0) {
+			if (pattern.Pattern == null && pattern.LineNumber > 0 || pattern == emptyColonPattern) {
 				if (popup != null) {
 					popup.Hide ();
 				}

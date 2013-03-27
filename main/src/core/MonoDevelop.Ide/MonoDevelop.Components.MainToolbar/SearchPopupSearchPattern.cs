@@ -174,6 +174,16 @@ namespace MonoDevelop.Components.MainToolbar
 			return Tag == other.Tag && Pattern == other.Pattern && LineNumber == other.LineNumber && Column == other.Column;
 		}
 
+		public static bool operator ==(SearchPopupSearchPattern l, SearchPopupSearchPattern r)
+		{
+			return l.Equals (r);
+		}
+
+		public static bool operator !=(SearchPopupSearchPattern l, SearchPopupSearchPattern r)
+		{
+			return !(l == r);
+		}
+
 		static string FormatString (string pattern)
 		{
 			if (pattern == null)
