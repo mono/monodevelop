@@ -44,7 +44,7 @@ namespace MonoDevelop.CodeActions
 		CodeActionWidget widget;
 		uint quickFixTimeout;
 
-		const int menuTimeout = 450;
+		const int menuTimeout = 250;
 		uint smartTagPopupTimeoutId;
 		uint menuCloseTimeoutId;
 		Menu codeActionMenu;
@@ -217,6 +217,7 @@ namespace MonoDevelop.CodeActions
 			{
 				return false;
 			}
+			static Gdk.Cursor arrowCursor = new Gdk.Cursor (Gdk.CursorType.LeftPtr);
 
 			void IActionTextLineMarker.MouseHover (TextEditor editor, MarginMouseEventArgs args, TextLineMarkerHoverResult result)
 			{
@@ -228,6 +229,7 @@ namespace MonoDevelop.CodeActions
 				if (args.X - x >= 0 * editor.Options.Zoom && 
 				    args.X - x < tagMarkerWidth * editor.Options.Zoom && 
 				    y - args.Y < (tagMarkerHeight) * editor.Options.Zoom) {
+					result.Cursor = arrowCursor;
 					Popup ();
 				} else {
 					codeActionEditorExtension.CancelSmartTagPopupTimeout ();
