@@ -43,10 +43,31 @@ namespace MonoDevelop.CodeActions
 	{
 		CodeActionWidget widget;
 		uint quickFixTimeout;
-		
+
+		const int menuTimeout = 450;
+		uint smartTagPopupTimeoutId;
+		uint menuCloseTimeoutId;
+		Menu codeActionMenu;
+
 		public IEnumerable<CodeAction> Fixes {
 			get;
 			private set;
+		}
+
+		void CancelSmartTagPopupTimeout ()
+		{
+			if (smartTagPopupTimeoutId != 0) {
+				GLib.Source.Remove (smartTagPopupTimeoutId);
+				smartTagPopupTimeoutId = 0;
+			}
+		}
+
+		void CancelMenuCloseTimer ()
+		{
+			if (menuCloseTimeoutId != 0) {
+				GLib.Source.Remove (menuCloseTimeoutId);
+				menuCloseTimeoutId = 0;
+			}
 		}
 		
 		void RemoveWidget ()
@@ -63,13 +84,17 @@ namespace MonoDevelop.CodeActions
 				currentSmartTag = null;
 				currentSmartTagBegin = DocumentLocation.Empty;
 			}
+			CancelSmartTagPopupTimeout ();
+
 		}
 		
 		public override void Dispose ()
 		{
+			CancelMenuCloseTimer ();
 			CancelQuickFixTimer ();
 			document.Editor.SelectionChanged -= HandleSelectionChanged;
 			document.DocumentParsed -= HandleDocumentDocumentParsed;
+			document.Editor.Parent.BeginHover -= HandleBeginHover;
 			RemoveWidget ();
 			base.Dispose ();
 		}
@@ -124,7 +149,7 @@ namespace MonoDevelop.CodeActions
 					RefactoringService.QueueQuickFixAnalysis (Document, loc, token, delegate(List<CodeAction> fixes) {
 						if (!fixes.Any ()) {
 							ICSharpCode.NRefactory.Semantics.ResolveResult resolveResult;
-							ICSharpCode.NRefactory.CSharp.AstNode node;
+							AstNode node;
 							if (ResolveCommandHandler.ResolveAt (document, out resolveResult, out node, token)) {
 								var possibleNamespaces = ResolveCommandHandler.GetPossibleNamespaces (document, node, ref resolveResult);
 								if (!possibleNamespaces.Any ()) {
@@ -204,14 +229,29 @@ namespace MonoDevelop.CodeActions
 				    args.X - x < tagMarkerWidth * editor.Options.Zoom && 
 				    y - args.Y < (tagMarkerHeight) * editor.Options.Zoom) {
 					Popup ();
+				} else {
+					codeActionEditorExtension.CancelSmartTagPopupTimeout ();
 				}
 			}
 
 			public void Popup ()
 			{
-				codeActionEditorExtension.CreateWidget (fixes, loc);
-				codeActionEditorExtension.widget.PopupQuickFixMenu ();
-				codeActionEditorExtension.widget.Destroy ();
+				codeActionEditorExtension.smartTagPopupTimeoutId = GLib.Timeout.Add (menuTimeout, delegate {
+					codeActionEditorExtension.CreateWidget (fixes, loc);
+					codeActionEditorExtension.widget.PopupQuickFixMenu (menu => {
+						codeActionEditorExtension.codeActionMenu = menu;
+						menu.MotionNotifyEvent += (o, args) => {
+							if (args.Event.Window == codeActionEditorExtension.Editor.Parent.TextArea.GdkWindow) {
+								codeActionEditorExtension.StartMenuCloseTimer ();
+							} else {
+								codeActionEditorExtension.CancelMenuCloseTimer ();
+							}
+						};
+					});
+					codeActionEditorExtension.widget.Destroy ();
+					codeActionEditorExtension.smartTagPopupTimeoutId = 0;
+					return false;
+				});
 			}
 			#endregion
 		}
@@ -272,7 +312,6 @@ namespace MonoDevelop.CodeActions
 
 			RemoveWidget ();
 			var line = document.Editor.GetLine (smartTagLocBegin.Line);
-
 			currentSmartTag = new SmartTagMarker ((line.NextLine ?? line).Offset, this, fixes, smartTagLocBegin);
 			document.Editor.Document.AddMarker (currentSmartTag);
 		}
@@ -282,6 +321,26 @@ namespace MonoDevelop.CodeActions
 			base.Initialize ();
 			document.DocumentParsed += HandleDocumentDocumentParsed;
 			document.Editor.SelectionChanged += HandleSelectionChanged;
+			document.Editor.Parent.BeginHover += HandleBeginHover;
+		}
+
+		void HandleBeginHover (object sender, EventArgs e)
+		{
+			CancelSmartTagPopupTimeout ();
+			CancelMenuCloseTimer ();
+		}
+
+		void StartMenuCloseTimer ()
+		{
+			CancelMenuCloseTimer ();
+			menuCloseTimeoutId = GLib.Timeout.Add (menuTimeout, delegate {
+				if (codeActionMenu != null) {
+					codeActionMenu.Destroy ();
+					codeActionMenu = null;
+				}
+				menuCloseTimeoutId = 0;
+				return false;
+			});
 		}
 
 		void HandleSelectionChanged (object sender, EventArgs e)
