@@ -25,6 +25,7 @@
 //
 //
 
+using System;
 using System.Xml;
 using System.Collections.Generic;
 
@@ -33,19 +34,24 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Debugger
 {
-	public class WatchPad: ObjectValuePad, IMementoCapable, ICustomXmlSerializer
+	public class WatchPad : ObjectValuePad, IMementoCapable, ICustomXmlSerializer
 	{
 		List<string> storedVars;
 		
-		public WatchPad()
+		public WatchPad ()
 		{
-			DisableTreeViewWhenNotDebugging = false;
 			tree.AllowAdding = true;
 		}
 		
 		public void AddWatch (string expression)
 		{
 			tree.AddExpression (expression);
+		}
+
+		protected override void OnDebuggerStopped (object s, EventArgs a)
+		{
+			base.OnDebuggerStopped (s, a);
+			tree.Sensitive = true;
 		}
 		
 		#region IMementoCapable implementation 
