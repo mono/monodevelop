@@ -36,11 +36,33 @@ namespace MonoDevelop.Debugger
 {
 	public class WatchPad : ObjectValuePad, IMementoCapable, ICustomXmlSerializer
 	{
+		static Gtk.TargetEntry[] DropTargets = new Gtk.TargetEntry[] {
+			new Gtk.TargetEntry ("text/plain;charset=utf-8", Gtk.TargetFlags.App, 0)
+		};
 		List<string> storedVars;
 		
 		public WatchPad ()
 		{
+			tree.EnableModelDragDest (DropTargets, Gdk.DragAction.Copy);
+			tree.DragDataReceived += HandleDragDataReceived;
 			tree.AllowAdding = true;
+		}
+
+		void HandleDragDataReceived (object o, Gtk.DragDataReceivedArgs args)
+		{
+			var text = args.SelectionData.Text;
+
+			args.RetVal = true;
+
+			if (string.IsNullOrEmpty (text))
+				return;
+
+			foreach (var expr in text.Split (new char[] { '\n' })) {
+				if (string.IsNullOrWhiteSpace (expr))
+					continue;
+
+				AddWatch (expr.Trim ());
+			}
 		}
 		
 		public void AddWatch (string expression)
