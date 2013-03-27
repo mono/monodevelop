@@ -263,10 +263,16 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			RenameRefactoring.RenameVariable (variable, name);
 		}
 
+		public override void Rename (INamespace ns, string name)
+		{
+			RenameRefactoring.RenameNamespace (ns, name);
+		}
+
 		public override void RenameTypeParameter (IType typeParameter, string name = null)
 		{
 			RenameRefactoring.RenameTypeParameter ((ITypeParameter)typeParameter, name);
 		}
+
 
 		public override void CreateNewType (AstNode newType, NewTypeContext ntctx)
 		{

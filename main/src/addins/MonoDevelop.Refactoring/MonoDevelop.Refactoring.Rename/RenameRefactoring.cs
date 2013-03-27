@@ -61,6 +61,10 @@ namespace MonoDevelop.Refactoring.Rename
 		{
 			if (options.SelectedItem is IVariable || options.SelectedItem is IParameter)
 				return true;
+			if (options.SelectedItem is INamespace) {
+				var ns = (INamespace)options.SelectedItem;
+				return ns.Types.Any (type => !string.IsNullOrEmpty (type.Region.FileName));
+			}
 			if (options.SelectedItem is ITypeDefinition)
 				return !string.IsNullOrEmpty (((ITypeDefinition)options.SelectedItem).Region.FileName);
 			if (options.SelectedItem is IType && ((IType)options.SelectedItem).Kind == TypeKind.TypeParameter)
@@ -150,6 +154,28 @@ namespace MonoDevelop.Refactoring.Rename
 				}
 			}
 		}
+
+		public static void RenameNamespace (INamespace ns, string newName)
+		{
+			using (var monitor = new NullProgressMonitor ()) {
+				var col = ReferenceFinder.FindReferences (ns, true, monitor);
+
+				List<Change> result = new List<Change> ();
+				foreach (var memberRef in col) {
+					var change = new TextReplaceChange ();
+					change.FileName = memberRef.FileName;
+					change.Offset = memberRef.Offset;
+					change.RemovedChars = memberRef.Length;
+					change.InsertedText = newName;
+					change.Description = string.Format (GettextCatalog.GetString ("Replace '{0}' with '{1}'"), memberRef.GetName (), newName);
+					result.Add (change);
+				}
+				if (result.Count > 0) {
+					RefactoringService.AcceptChanges (monitor, result);
+				}
+			}
+		}
+
 
 		public override string GetMenuDescription (RefactoringOptions options)
 		{

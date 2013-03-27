@@ -105,6 +105,8 @@ namespace MonoDevelop.Refactoring
 			}
 			if (resolveResult is TypeResolveResult)
 				return resolveResult.Type;
+			if (resolveResult is NamespaceResolveResult)
+				return ((NamespaceResolveResult)resolveResult).Namespace;
 			return null;
 		}
 		
@@ -247,6 +249,8 @@ namespace MonoDevelop.Refactoring
 				canRename = ((IType)item).Kind == TypeKind.TypeParameter;
 			} else if (item is IMember) {
 				canRename = !((IMember)item).Region.IsEmpty;
+			} else if (item is INamespace) {
+				canRename = true;
 			} else {
 				canRename = false;
 			}
@@ -302,7 +306,7 @@ namespace MonoDevelop.Refactoring
 				added = true;
 			}
 
-			if (item is IEntity || item is ITypeParameter || item is IVariable) {
+			if (item is IEntity || item is ITypeParameter || item is IVariable || item is INamespace) {
 				ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences), new System.Action (new FindRefs (item, false).Run));
 				if (doc.HasProject && ReferenceFinder.HasOverloads (doc.Project.ParentSolution, item))
 					ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindAllReferences), new System.Action (new FindRefs (item, true).Run));

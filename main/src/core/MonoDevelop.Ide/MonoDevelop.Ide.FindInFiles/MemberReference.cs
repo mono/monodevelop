@@ -61,6 +61,9 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (EntityOrVariable is ITypeParameter) {
 				return ((ITypeParameter)EntityOrVariable).Name;
 			} 
+			if (EntityOrVariable is INamespace) {
+				return ((INamespace)EntityOrVariable).Name;
+			} 
 			return ((IVariable)EntityOrVariable).Name;
 		}
 	}

@@ -202,7 +202,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			} else if (resolveResult is MethodGroupResolveResult) { 
 				finder.SetSearchedMembers (((MethodGroupResolveResult)resolveResult).Methods);
 			} else if (resolveResult is NamespaceResolveResult) { 
-				finder.SetSearchedMembers (new [] { ((NamespaceResolveResult)resolveResult).NamespaceName });
+				finder.SetSearchedMembers (new [] { ((NamespaceResolveResult)resolveResult).Namespace });
 			} else if (resolveResult is LocalResolveResult) { 
 				finder.SetSearchedMembers (new [] { ((LocalResolveResult)resolveResult).Variable });
 			} else {
