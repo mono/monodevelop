@@ -7,4 +7,4 @@ rmdir /s /q pack
 mkdir pack\windows\Release
 xcopy /s /I /y dependencies\AspNetMvc4 bin\windows\Release\packages\AspNetMvc4
 %MDROOT%\bin\mdtool.exe setup pack bin\windows\Release\FSharpBinding.windows.addin.xml -d:pack\windows\Release
-%MDROOT%\bin\mdtool.exe setup install -y pack\windows\Release\MonoDevelop.FSharpBinding_3.2.14.mpack 
+%MDROOT%\bin\mdtool.exe setup install -y pack\windows\Release\MonoDevelop.FSharpBinding_3.2.15.mpack 
