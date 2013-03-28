@@ -763,7 +763,7 @@ namespace MonoDevelop.Debugger
 			
 			if (hasChildren) {
 				// Add dummy node
-				store.AppendValues (it, "", "", "", null, true);
+				store.AppendValues (it, GettextCatalog.GetString ("Loading..."), "", "", null, true);
 				if (!ShowExpanders)
 					ShowExpanders = true;
 			}
