@@ -1207,11 +1207,17 @@ namespace Mono.Debugging.Soft
 		protected override bool HandleException (Exception ex)
 		{
 			HideConnectionDialog ();
+
+			if (HasExited)
+				return true;
 			
-			if (ex is VMDisconnectedException || ex is IOException)
+			if (ex is VMDisconnectedException || ex is IOException) {
 				ex = new DisconnectedException (ex);
-			else if (ex is SocketException)
+				HasExited = true;
+			} else if (ex is SocketException) {
 				ex = new DebugSocketException (ex);
+				HasExited = true;
+			}
 			
 			return base.HandleException (ex);
 		}
