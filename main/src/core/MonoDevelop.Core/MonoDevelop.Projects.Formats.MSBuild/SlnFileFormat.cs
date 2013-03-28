@@ -218,7 +218,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				if (ce is SolutionEntityItem) {
 					
 					SolutionEntityItem item = (SolutionEntityItem) ce;
-					MSBuildProjectHandler handler = (MSBuildProjectHandler) MSBuildProjectService.GetItemHandler (item);
+					MSBuildHandler handler = MSBuildProjectService.GetItemHandler (item);
 					
 					if (saveProjects) {
 						try {
@@ -804,7 +804,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						continue;
 					}
 
-					MSBuildProjectHandler handler = (MSBuildProjectHandler) item.ItemHandler;
+					MSBuildHandler handler = (MSBuildHandler) item.ItemHandler;
 					List<string> projLines = lines.GetRange (sec.Start + 1, sec.Count - 2);
 					DataItem it = GetSolutionItemData (projLines);
 
@@ -875,7 +875,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			// Resolve project dependencies
 			foreach (var it in items.OfType<SolutionEntityItem> ()) {
-				MSBuildProjectHandler handler = (MSBuildProjectHandler) it.ItemHandler;
+				MSBuildHandler handler = (MSBuildHandler) it.ItemHandler;
 				if (handler.UnresolvedProjectDependencies != null) {
 					foreach (var id in handler.UnresolvedProjectDependencies.ToArray ()) {
 						SolutionItem dep;
