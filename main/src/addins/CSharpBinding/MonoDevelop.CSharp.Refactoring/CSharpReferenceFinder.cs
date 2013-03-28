@@ -81,6 +81,8 @@ namespace MonoDevelop.CSharp.Refactoring
 				memberName = ((IVariable)firstMember).Name;
 			if (firstMember is ITypeParameter)
 				memberName = ((ITypeParameter)firstMember).Name;
+			if (firstMember is INamespace)
+				memberName = ((INamespace)firstMember).Name;
 		}
 		
 		void SetPossibleFiles (IEnumerable<FilePath> files)
@@ -110,8 +112,8 @@ namespace MonoDevelop.CSharp.Refactoring
 				valid = searchedMembers.FirstOrDefault (
 					member => member is IMember && ((IMember)member).Region == foundMember.Region);
 			} else if (result is NamespaceResolveResult) {
-				var ns = ((NamespaceResolveResult)result).NamespaceName;
-				valid = searchedMembers.FirstOrDefault (n => n is string && n.ToString () == ns);
+				var ns = ((NamespaceResolveResult)result).Namespace;
+				valid = searchedMembers.FirstOrDefault (n => n is INamespace && ns.FullName.StartsWith (((INamespace)n).FullName, StringComparison.Ordinal));
 			} else if (result is LocalResolveResult) {
 				var ns = ((LocalResolveResult)result).Variable;
 				valid = searchedMembers.FirstOrDefault (n => n is IVariable && ((IVariable)n).Region == ns.Region);
@@ -120,6 +122,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			} else {
 				valid = searchedMembers.FirstOrDefault ();
 			}
+
 			if (node is ConstructorInitializer)
 				return null;
 			if (node is ObjectCreateExpression)
@@ -137,6 +140,11 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (node is MemberType)
 				node = ((MemberType)node).MemberNameToken;
 			
+			if (node is NamespaceDeclaration) {
+				var nsd = ((NamespaceDeclaration)node);
+				node = nsd.Identifiers.Last (n => n.Name == memberName) ?? nsd.Identifiers.First ();
+			}
+
 			if (node is TypeDeclaration && (searchedMembers.First () is IType)) 
 				node = ((TypeDeclaration)node).NameToken;
 			if (node is DelegateDeclaration) 
@@ -210,7 +218,13 @@ namespace MonoDevelop.CSharp.Refactoring
 						if (IsNodeValid (obj, astNode))
 							result.Add (GetReference (r, astNode, editor.FileName, editor));
 					}, CancellationToken.None);
-				}
+				} else if (obj is INamespace) {
+					var entity = (INamespace)obj;
+					refFinder.FindReferencesInFile (refFinder.GetSearchScopes (entity), file, unit, doc.Compilation, (astNode, r) => {
+						if (IsNodeValid (obj, astNode))
+							result.Add (GetReference (r, astNode, editor.FileName, editor)); 
+					}, CancellationToken.None);
+				} 
 			}
 			return result;
 		}
@@ -222,7 +236,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			SetPossibleFiles (possibleFiles);
 			SetSearchedMembers (members);
 
-			var scopes = searchedMembers.Select (e => refFinder.GetSearchScopes (e as IEntity));
+			var scopes = searchedMembers.Select (e => e is IEntity ? refFinder.GetSearchScopes ((IEntity)e) : refFinder.GetSearchScopes ((INamespace)e));
 			var compilation = project != null ? TypeSystemService.GetCompilation (project) : content.CreateCompilation ();
 			List<MemberReference> refs = new List<MemberReference> ();
 			foreach (var opendoc in openDocuments) {
@@ -232,7 +246,6 @@ namespace MonoDevelop.CSharp.Refactoring
 					refs.Add (newRef);
 				}
 			}
-			
 			foreach (var file in files) {
 				string text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText (file);
 				if (memberName != null && text.IndexOf (memberName, StringComparison.Ordinal) < 0 &&

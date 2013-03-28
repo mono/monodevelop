@@ -124,21 +124,22 @@ namespace MonoDevelop.Ide.FindInFiles
 				yield break;
 			}
 
-			var entity = (IEntity)node;
+			var compilationProvider = (ICompilationProvider)node;
 			switch (scope) {
 			case RefactoryScope.DeclaringType:
+				var entity = (IEntity)compilationProvider;
 				if (entity.DeclaringTypeDefinition != null)
 					yield return SearchCollector.CollectDeclaringFiles (entity.DeclaringTypeDefinition);
 				else
 					yield return SearchCollector.CollectDeclaringFiles (entity);
 				break;
 			case RefactoryScope.Project:
-				var sourceProject = TypeSystemService.GetProject (entity.Compilation.MainAssembly.UnresolvedAssembly.Location);
-				foreach (var file in SearchCollector.CollectFiles (sourceProject, searchNodes.Cast<IEntity> ()))
+				var sourceProject = TypeSystemService.GetProject (compilationProvider.Compilation.MainAssembly.UnresolvedAssembly.Location);
+				foreach (var file in SearchCollector.CollectFiles (sourceProject, searchNodes))
 					yield return file;
 				break;
 			default:
-				var files = SearchCollector.CollectFiles (solution, searchNodes.Cast<IEntity> ()).ToList ();
+				var files = SearchCollector.CollectFiles (solution, searchNodes).ToList ();
 				if (monitor != null)
 					monitor.BeginTask (GettextCatalog.GetString ("Searching for references in solution..."), files.Count);
 				foreach (var file in files) {

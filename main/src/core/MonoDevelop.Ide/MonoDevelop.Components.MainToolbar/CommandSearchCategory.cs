@@ -54,6 +54,11 @@ namespace MonoDevelop.Components.MainToolbar
 		WorkerResult lastResult;
 		string[] validTags = new [] { "cmd", "command" };
 
+		public override bool IsValidTag (string tag)
+		{
+			return validTags.Any (t => t == tag);
+		}
+
 		public override Task<ISearchDataSource> GetResults (SearchPopupSearchPattern searchPattern, int resultsCount, CancellationToken token)
 		{
 			// NOTE: This is run on the UI thread as checking whether or not a command is enabled is not thread-safe

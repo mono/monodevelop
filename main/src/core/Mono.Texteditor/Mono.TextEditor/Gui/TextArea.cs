@@ -1214,8 +1214,18 @@ namespace Mono.TextEditor
 		Margin oldMargin = null;
 		bool overChildWidget;
 
+		public event EventHandler BeginHover;
+
+		protected virtual void OnBeginHover (EventArgs e)
+		{
+			var handler = BeginHover;
+			if (handler != null)
+				handler (this, e);
+		}
+
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion e)
 		{
+			OnBeginHover (EventArgs.Empty);
 			try {
 				// The coordinates have to be properly adjusted to the origin since
 				// the event may come from a child widget

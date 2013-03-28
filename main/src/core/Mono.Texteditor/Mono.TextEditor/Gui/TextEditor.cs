@@ -1217,7 +1217,11 @@ namespace Mono.TextEditor
 		{
 			textArea.SetCaretTo (line, column, highlight, centerCaret);
 		}
-		
+		public event EventHandler BeginHover {
+			add { textArea.BeginHover += value; }
+			remove { textArea.BeginHover -= value; }
+		}
+
 	}
 }
 

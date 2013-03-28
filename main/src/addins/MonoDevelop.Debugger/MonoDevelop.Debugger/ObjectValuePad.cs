@@ -47,10 +47,6 @@ namespace MonoDevelop.Debugger
 				return scrolled;
 			}
 		}
-
-		protected bool DisableTreeViewWhenNotDebugging {
-			get; set;
-		}
 		
 		public ObjectValuePad()
 		{
@@ -75,7 +71,6 @@ namespace MonoDevelop.Debugger
 			DebuggingService.StoppedEvent += OnDebuggerStopped;
 			DebuggingService.EvaluationOptionsChanged += OnEvaluationOptionsChanged;
 
-			DisableTreeViewWhenNotDebugging = true;
 			needsUpdate = true;
 			initialResume = true;
 		}
@@ -115,7 +110,7 @@ namespace MonoDevelop.Debugger
 			lastFrame = DebuggingService.CurrentFrame;
 		}
 		
-		void OnFrameChanged (object s, EventArgs a)
+		protected virtual void OnFrameChanged (object s, EventArgs a)
 		{
 			if (container != null && container.ContentVisible)
 				OnUpdateList ();
@@ -123,12 +118,12 @@ namespace MonoDevelop.Debugger
 				needsUpdate = true;
 		}
 		
-		void OnDebuggerPaused (object s, EventArgs a)
+		protected virtual void OnDebuggerPaused (object s, EventArgs a)
 		{
 			tree.Sensitive = true;
 		}
 		
-		void OnDebuggerResumed (object s, EventArgs a)
+		protected virtual void OnDebuggerResumed (object s, EventArgs a)
 		{
 			if (!initialResume)
 				tree.ChangeCheckpoint ();
@@ -137,15 +132,14 @@ namespace MonoDevelop.Debugger
 			tree.Sensitive = false;
 		}
 		
-		void OnDebuggerStopped (object s, EventArgs a)
+		protected virtual void OnDebuggerStopped (object s, EventArgs a)
 		{
 			tree.ResetChangeTracking ();
-			if (DisableTreeViewWhenNotDebugging)
-				tree.Sensitive = false;
+			tree.Sensitive = false;
 			initialResume = true;
 		}
 		
-		void OnEvaluationOptionsChanged (object s, EventArgs a)
+		protected virtual void OnEvaluationOptionsChanged (object s, EventArgs a)
 		{
 			if (!DebuggingService.IsRunning) {
 				lastFrame = null;

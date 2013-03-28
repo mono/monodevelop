@@ -99,12 +99,18 @@ namespace MonoDevelop.Components.MainToolbar
 				break;
 			case 3:
 				if (IsNumber (parts [1]) && IsNumber (parts [2])) {
-					pattern = parts [0];
+					if (!string.IsNullOrEmpty (parts [0]))
+						pattern = parts [0];
 					if (!TryParseLineColumn (parts [1] + "," + parts[2], ref lineNumber, ref column))
+						lineNumber = 0;
+				} else if (IsNumber (parts [1]) && string.IsNullOrEmpty (parts [2])) {
+					if (!string.IsNullOrEmpty (parts [0]))
+						pattern = parts [0];
+					if (!TryParseLineColumn (parts [1] + ",0", ref lineNumber, ref column))
 						lineNumber = 0;
 				} else {
 					tag = parts [0];
-					pattern = parts [1];
+					pattern = parts [1] ?? "";
 					if (!TryParseLineColumn (parts [2], ref lineNumber, ref column))
 						lineNumber = 0;
 				}
@@ -168,9 +174,26 @@ namespace MonoDevelop.Components.MainToolbar
 			return Tag == other.Tag && Pattern == other.Pattern && LineNumber == other.LineNumber && Column == other.Column;
 		}
 
+		public static bool operator ==(SearchPopupSearchPattern l, SearchPopupSearchPattern r)
+		{
+			return l.Equals (r);
+		}
+
+		public static bool operator !=(SearchPopupSearchPattern l, SearchPopupSearchPattern r)
+		{
+			return !(l == r);
+		}
+
+		static string FormatString (string pattern)
+		{
+			if (pattern == null)
+				return "<null>";
+			return '"' + pattern + '"';
+		}
+
 		public override string ToString ()
 		{
-			return string.Format ("[SearchPopupSearchPattern: Tag={0}, Pattern={1}, LineNumber={2}]", Tag, Pattern, LineNumber);
+			return string.Format ("[SearchPopupSearchPattern: Tag={0}, Pattern={1}, LineNumber={2}, Column={3}]", FormatString(Tag), FormatString(Pattern), LineNumber, Column);
 		}
 	}
 }

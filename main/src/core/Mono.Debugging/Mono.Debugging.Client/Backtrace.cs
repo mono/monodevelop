@@ -45,8 +45,7 @@ namespace Mono.Debugging.Client
 			if (frames == null)
 				frames = new List<StackFrame>();
 
-			if (n >= frames.Count)
-			{
+			if (n >= frames.Count) {
 				StackFrame[] newSet = serverBacktrace.GetStackFrames(frames.Count, n + 20);
 				foreach (StackFrame sf in newSet) {
 					sf.SourceBacktrace = serverBacktrace;
@@ -58,8 +57,8 @@ namespace Mono.Debugging.Client
 			
 			if (frames.Count > 0)
 				return frames[System.Math.Min (System.Math.Max (0, n), frames.Count - 1)];
-			else
-				return null;
+
+			return null;
 		}
 	}
 }

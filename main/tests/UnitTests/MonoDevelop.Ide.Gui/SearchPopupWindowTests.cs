@@ -67,6 +67,13 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		[Test]
+		public void TestLineNumberAndMissingColumn ()
+		{
+			var pattern = SearchPopupSearchPattern.ParsePattern (":4711:");
+			Assert.AreEqual (new SearchPopupSearchPattern (null, null, 4711, 0), pattern);
+		}
+
+		[Test]
 		public void TestEmptySecondPart ()
 		{
 			var pattern = SearchPopupSearchPattern.ParsePattern ("foo:");
@@ -86,6 +93,20 @@ namespace MonoDevelop.Ide.Gui
 		{
 			var pattern = SearchPopupSearchPattern.ParsePattern (":4711");
 			Assert.AreEqual (new SearchPopupSearchPattern (null, null, 4711), pattern);
+		}
+
+		[Test]
+		public void TestLineNumberAndColumnOnly ()
+		{
+			var pattern = SearchPopupSearchPattern.ParsePattern (":5,8");
+			Assert.AreEqual (new SearchPopupSearchPattern (null, null, 5, 8), pattern);
+		}
+
+		[Test]
+		public void TestLineNumberAndColumnOnlySyntax2 ()
+		{
+			var pattern = SearchPopupSearchPattern.ParsePattern (":5:8");
+			Assert.AreEqual (new SearchPopupSearchPattern (null, null, 5, 8), pattern);
 		}
 
 		[Test]

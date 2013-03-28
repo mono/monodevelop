@@ -1230,6 +1230,12 @@ namespace Mono.TextEditor.Vi
 				this.editor = editor;
 				this.editMode = editMode;
 				editor.TextViewMargin.CaretBlink += HandleCaretBlink;
+				editor.Caret.PositionChanged += HandlePositionChanged;
+			}
+
+			void HandlePositionChanged (object sender, DocumentLocationEventArgs e)
+			{
+				QueueDraw ();
 			}
 
 			void HandleCaretBlink (object sender, EventArgs e)
@@ -1239,6 +1245,7 @@ namespace Mono.TextEditor.Vi
 
 			protected override void OnDestroyed ()
 			{
+				editor.Caret.PositionChanged -= HandlePositionChanged;
 				editor.TextViewMargin.CaretBlink -= HandleCaretBlink;
 				base.OnDestroyed ();
 			}
@@ -1251,16 +1258,42 @@ namespace Mono.TextEditor.Vi
 					cr.Fill ();
 					using (var layout = PangoUtil.CreateLayout (editor)) {
 						layout.FontDescription = editor.Options.Font;
-						layout.SetText (editMode.Status);
 
-						cr.MoveTo (0, 0);
+						layout.SetText ("000,00-00");
+						int minstatusw, minstatush;
+						layout.GetPixelSize (out minstatusw, out minstatush);
+
+						var line = editor.GetLine (editor.Caret.Line);
+						var visColumn = line.GetVisualColumn (editor.GetTextEditorData (), editor.Caret.Column);
+
+						if (visColumn != editor.Caret.Column) {
+							layout.SetText (editor.Caret.Line + "," + editor.Caret.Column + "-" + visColumn);
+						} else {
+							layout.SetText (editor.Caret.Line + "," + editor.Caret.Column);
+						}
+
+						int statusw, statush;
+						layout.GetPixelSize (out statusw, out statush);
+
+						statusw = System.Math.Max (statusw, minstatusw);
+
+						statusw += 8;
+						cr.MoveTo (Allocation.Width - statusw, 0);
+						statusw += 8;
 						cr.Color = editor.ColorStyle.PlainText.Foreground;
 						cr.ShowLayout (layout);
+
+
+						layout.SetText (editMode.Status);
 						int w, h;
 						layout.GetPixelSize (out w, out h);
+						var x = System.Math.Min (0, -w + Allocation.Width - editor.TextViewMargin.CharWidth - statusw);
+						cr.MoveTo (x, 0);
+						cr.Color = editor.ColorStyle.PlainText.Foreground;
+						cr.ShowLayout (layout);
 						if (editMode.CurState == ViEditMode.State.Command) {
 							if (editor.TextViewMargin.caretBlink) {
-								cr.Rectangle (w, 0, (int)editor.TextViewMargin.CharWidth, (int)editor.LineHeight);
+								cr.Rectangle (w + x, 0, (int)editor.TextViewMargin.CharWidth, (int)editor.LineHeight);
 								cr.Fill ();
 							}
 						}

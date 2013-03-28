@@ -18,8 +18,7 @@ PACKAGE_VERSION_MINOR=$(word 2, $(subst ., ,$(VERSION)))
 PACKAGE_VERSION_REV=0$(word 3, $(subst ., ,$(VERSION)))
 PACKAGE_VERSION_BUILD=$(num_commits_since_version_change)
 PACKAGE_UPDATE_ID=$(shell echo $(PACKAGE_VERSION_MAJOR) $(PACKAGE_VERSION_MINOR) $(PACKAGE_VERSION_REV) $(PACKAGE_VERSION_BUILD) | awk '{printf "%d%02d%02d%04d",$$1,$$2,$$3,$$4}')
-
-BUNDLE_VERSION=$(VERSION).$(num_commits_since_version_change)
+BUNDLE_VERSION=$(shell echo $(PACKAGE_VERSION_MAJOR) $(PACKAGE_VERSION_MINOR) $(PACKAGE_VERSION_REV) $(PACKAGE_VERSION_BUILD) | awk '{printf "%d.%d.%d.%d",$$1,$$2,$$3,$$4}')
 
 CLEANFILES = render.exe
 #DISTCLEANFILES =

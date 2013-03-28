@@ -41,7 +41,7 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		static Dictionary<Wrapping, string> arrayInitializerTranslationDictionary = new Dictionary<Wrapping, string> ();
 		static Dictionary<BraceStyle, string> braceStyleTranslationDictionary = new Dictionary<BraceStyle, string> ();
-		static Dictionary<BraceForcement, string> braceForcementTranslationDictionary = new Dictionary<BraceForcement, string> ();
+		//static Dictionary<BraceForcement, string> braceForcementTranslationDictionary = new Dictionary<BraceForcement, string> ();
 		static Dictionary<PropertyFormatting, string> propertyFormattingTranslationDictionary = new Dictionary<PropertyFormatting, string> ();
 		static Dictionary<NewLinePlacement, string>  newLinePlacementTranslationDictionary = new Dictionary<NewLinePlacement, string> ();
 		
@@ -55,10 +55,10 @@ namespace MonoDevelop.CSharp.Formatting
 			braceStyleTranslationDictionary [BraceStyle.NextLineShifted2] = GettextCatalog.GetString ("Next line shifted2");
 			braceStyleTranslationDictionary [BraceStyle.BannerStyle] = GettextCatalog.GetString ("Banner style");
 			
-			braceForcementTranslationDictionary [BraceForcement.DoNotChange] = GettextCatalog.GetString ("Do not change");
+		/*	braceForcementTranslationDictionary [BraceForcement.DoNotChange] = GettextCatalog.GetString ("Do not change");
 			braceForcementTranslationDictionary [BraceForcement.AddBraces] = GettextCatalog.GetString ("Add braces");
 			braceForcementTranslationDictionary [BraceForcement.RemoveBraces] = GettextCatalog.GetString ("Remove braces");
-			
+			*/
 			propertyFormattingTranslationDictionary [PropertyFormatting.AllowOneLine] = GettextCatalog.GetString ("Allow one line");
 			propertyFormattingTranslationDictionary [PropertyFormatting.ForceOneLine] = GettextCatalog.GetString ("Force one line");
 			propertyFormattingTranslationDictionary [PropertyFormatting.ForceNewLine] = GettextCatalog.GetString ("Force new line");
@@ -77,8 +77,8 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			if (value is BraceStyle)
 				return braceStyleTranslationDictionary [(BraceStyle)value];
-			if (value is BraceForcement) 
-				return braceForcementTranslationDictionary [(BraceForcement)value];
+//			if (value is BraceForcement) 
+//				return braceForcementTranslationDictionary [(BraceForcement)value];
 			if (value is PropertyFormatting)
 				return propertyFormattingTranslationDictionary [(PropertyFormatting)value];
 			if (value is Wrapping)
@@ -92,8 +92,8 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			if (propertyType == typeof(BraceStyle))
 				return braceStyleTranslationDictionary.First (p => p.Value == newText).Key;
-			if (propertyType == typeof(BraceForcement)) 
-				return braceForcementTranslationDictionary.First (p => p.Value == newText).Key;
+//			if (propertyType == typeof(BraceForcement)) 
+//				return braceForcementTranslationDictionary.First (p => p.Value == newText).Key;
 			if (propertyType == typeof(PropertyFormatting)) 
 				return propertyFormattingTranslationDictionary.First (p => p.Value == newText).Key;
 			if (propertyType == typeof(Wrapping))

@@ -52,7 +52,8 @@ namespace MonoDevelop.Projects
 			
 		ProjectItemCollection items;
 		ProjectItemCollection wildcardItems;
-		
+		ItemCollection<SolutionEntityItem> dependencies = new ItemCollection<SolutionEntityItem> ();
+
 		SolutionItemEventArgs thisItemArgs;
 		
 		FileStatusTracker<SolutionItemEventArgs> fileStatusTracker;
@@ -215,6 +216,19 @@ namespace MonoDevelop.Projects
 
 		internal ProjectItemCollection WildcardItems {
 			get { return wildcardItems; }
+		}
+		
+		/// <summary>
+		/// Projects that need to be built before building this one
+		/// </summary>
+		/// <value>The dependencies.</value>
+		public ItemCollection<SolutionEntityItem> ItemDependencies {
+			get { return dependencies; }
+		}
+
+		public override IEnumerable<SolutionItem> GetReferencedItems (ConfigurationSelector configuration)
+		{
+			return base.GetReferencedItems (configuration).Concat (dependencies);
 		}
 
 		void IWorkspaceFileObject.ConvertToFormat (FileFormat format, bool convertChildren)

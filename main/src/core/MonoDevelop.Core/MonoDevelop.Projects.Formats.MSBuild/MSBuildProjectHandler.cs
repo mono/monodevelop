@@ -86,6 +86,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return subtypeGuids;
 			}
 		}
+
+		internal List<string> UnresolvedProjectDependencies { get; set; }
 		
 		public MSBuildProjectHandler ()
 		{

@@ -152,8 +152,8 @@ namespace MonoDevelop.WebReferences.Commands
 		[CommandUpdateHandler (MonoDevelop.WebReferences.WebReferenceCommands.Configure)]
 		void CanConfigureWebReferences (CommandInfo ci)
 		{
-			var item = (WebReferenceItem) CurrentNode.DataItem;
-			ci.Enabled = WCFConfigWidget.IsSupported (item);
+			var item = CurrentNode.DataItem as WebReferenceItem;
+			ci.Enabled = item != null && WCFConfigWidget.IsSupported (item);
 		}
 
 		/// <summary>Execute the command for configuring a web reference in a project.</summary>

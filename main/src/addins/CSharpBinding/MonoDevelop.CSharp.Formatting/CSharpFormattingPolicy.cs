@@ -438,69 +438,7 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 		
 		#endregion
-		
-		#region Force Braces
-		[ItemProperty]
-		public BraceForcement IfElseBraceForcement {
-			get {
-				return options.IfElseBraceForcement;
-			}
-			set {
-				options.IfElseBraceForcement = value;
-			}
-		}
-		
-		[ItemProperty]
-		public BraceForcement ForBraceForcement {
-			get {
-				return options.ForBraceForcement;
-			}
-			set {
-				options.ForBraceForcement = value;
-			}
-		}
-		
-		[ItemProperty]
-		public BraceForcement ForEachBraceForcement {
-			get {
-				return options.ForEachBraceForcement;
-			}
-			set {
-				options.ForEachBraceForcement = value;
-			}
-		}
-		
-		[ItemProperty]
-		public BraceForcement WhileBraceForcement {
-			get {
-				return options.WhileBraceForcement;
-			}
-			set {
-				options.WhileBraceForcement = value;
-			}
-		}
-		
-		[ItemProperty]
-		public BraceForcement UsingBraceForcement {
-			get {
-				return options.UsingBraceForcement;
-			}
-			set {
-				options.UsingBraceForcement = value;
-			}
-		}
-		
-		[ItemProperty]
-		public BraceForcement FixedBraceForcement {
-			get {
-				return options.FixedBraceForcement;
-			}
-			set {
-				options.FixedBraceForcement = value;
-			}
-		}
-		#endregion
-		
+
 		#region NewLines
 		[ItemProperty]
 		public NewLinePlacement ElseNewLinePlacement {

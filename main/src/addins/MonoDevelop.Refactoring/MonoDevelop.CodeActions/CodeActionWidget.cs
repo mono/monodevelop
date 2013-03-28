@@ -79,9 +79,9 @@ namespace MonoDevelop.CodeActions
 			base.OnDestroyed ();
 		}
 		
-		public void PopupQuickFixMenu ()
+		public void PopupQuickFixMenu (Action<Gtk.Menu> menuAction = null)
 		{
-			PopupQuickFixMenu (null);
+			PopupQuickFixMenu (null, menuAction);
 		}
 
 		static CodeActionWidget ()
@@ -186,10 +186,10 @@ namespace MonoDevelop.CodeActions
 			}
 		}
 		
-	void PopupQuickFixMenu (Gdk.EventButton evt)
+		void PopupQuickFixMenu (Gdk.EventButton evt, Action<Gtk.Menu> menuAction)
 		{
 			var menu = new Gtk.Menu ();
-
+			menu.Events |= Gdk.EventMask.AllEventsMask;
 			Gtk.Menu fixMenu = menu;
 			ResolveResult resolveResult;
 			ICSharpCode.NRefactory.CSharp.AstNode node;
@@ -244,6 +244,8 @@ namespace MonoDevelop.CodeActions
 			}
 			document.Editor.SuppressTooltips = true;
 			document.Editor.Parent.HideTooltip ();
+			if (menuAction != null)
+				menuAction (menu);
 			menu.ShowAll ();
 			menu.SelectFirst (true);
 			menuPushed = true;
@@ -289,7 +291,7 @@ namespace MonoDevelop.CodeActions
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
 			if (!evnt.TriggersContextMenu () && evnt.Button == 1)
-				PopupQuickFixMenu (evnt);
+				PopupQuickFixMenu (evnt, null);
 			return base.OnButtonPressEvent (evnt);
 		}
 		

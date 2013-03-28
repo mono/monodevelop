@@ -173,12 +173,10 @@ namespace Mono.TextEditor
 				// case: zero width block selection
 				if (data.MainSelection.SelectionMode == SelectionMode.Block && visualAnchorLocation.Column == visualLeadLocation.Column) {
 					var col = data.MainSelection.Lead.Column;
-					Console.WriteLine (1);
 					if (col <= DocumentLocation.MinColumn) {
 						data.ClearSelection ();
 						return;
 					}
-					Console.WriteLine (visualAnchorLocation);
 					bool preserve = data.Caret.PreserveSelection;
 					data.Caret.PreserveSelection = true;
 					for (int lineNumber = data.MainSelection.MinLine; lineNumber <= data.MainSelection.MaxLine; lineNumber++) {

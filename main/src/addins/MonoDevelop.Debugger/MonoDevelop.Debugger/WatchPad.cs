@@ -1,9 +1,10 @@
 // WatchPad.cs
 //
-// Author:
-//   Lluis Sanchez Gual <lluis@novell.com>
+// Authors: Lluis Sanchez Gual <lluis@novell.com>
+//          Jeffrey Stedfast <jeff@xamarin.com>
 //
 // Copyright (c) 2008 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2013 Xamarin Inc. (http://www.xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +26,7 @@
 //
 //
 
+using System;
 using System.Xml;
 using System.Collections.Generic;
 
@@ -33,19 +35,46 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Debugger
 {
-	public class WatchPad: ObjectValuePad, IMementoCapable, ICustomXmlSerializer
+	public class WatchPad : ObjectValuePad, IMementoCapable, ICustomXmlSerializer
 	{
+		static Gtk.TargetEntry[] DropTargets = new Gtk.TargetEntry[] {
+			new Gtk.TargetEntry ("text/plain;charset=utf-8", Gtk.TargetFlags.App, 0)
+		};
 		List<string> storedVars;
 		
-		public WatchPad()
+		public WatchPad ()
 		{
-			DisableTreeViewWhenNotDebugging = false;
+			tree.EnableModelDragDest (DropTargets, Gdk.DragAction.Copy);
+			tree.DragDataReceived += HandleDragDataReceived;
 			tree.AllowAdding = true;
+		}
+
+		void HandleDragDataReceived (object o, Gtk.DragDataReceivedArgs args)
+		{
+			var text = args.SelectionData.Text;
+
+			args.RetVal = true;
+
+			if (string.IsNullOrEmpty (text))
+				return;
+
+			foreach (var expr in text.Split (new char[] { '\n' })) {
+				if (string.IsNullOrWhiteSpace (expr))
+					continue;
+
+				AddWatch (expr.Trim ());
+			}
 		}
 		
 		public void AddWatch (string expression)
 		{
 			tree.AddExpression (expression);
+		}
+
+		protected override void OnDebuggerStopped (object s, EventArgs a)
+		{
+			base.OnDebuggerStopped (s, a);
+			tree.Sensitive = true;
 		}
 		
 		#region IMementoCapable implementation 

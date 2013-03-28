@@ -33,9 +33,127 @@ using MonoDevelop.Ide.Gui.Content;
 
 using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.CSharp.Parser;
+using Mono.TextEditor;
 
 namespace MonoDevelop.CSharp.Formatting
-{
+{/*
+	public class CSharpIndentEngine : IDocumentStateEngine
+	{
+		ICSharpCode.NRefactory.CSharp.CSharpIndentEngine internalEngine;
+
+		public bool NeedsReindent {
+			get {
+				return internalEngine.NeedsReindent;
+			}
+		}
+		public string NewLineIndent {
+			get {
+				return internalEngine.NewLineIndent;
+			}
+		}
+
+		public string ThisLineIndent {
+			get {
+				return internalEngine.ThisLineIndent;
+			}
+		}
+
+		public int LineNumber {
+			get {
+				return internalEngine.Location.Line;
+			}
+		}
+
+		public bool IsInsideOrdinaryCommentOrString {
+			get {
+				return internalEngine.IsInComment || internalEngine.IsInStringOrChar;
+			}
+		}
+
+		public bool IsInsideVerbatimString {
+			get {
+				return internalEngine.IsInVerbatimString;
+			}
+		}
+
+		public bool IsInsideStringLiteral {
+			get {
+				return internalEngine.IsInsideStringLiteral;
+			}
+		}
+
+		public bool IsInsidePreprocessorDirective {
+			get {
+				return internalEngine.IsInPreProcessorDirective;
+			}
+		}
+
+		public bool IsInsideDocLineComment {
+			get {
+				return internalEngine.IsInsideDocLineComment;
+			}
+		}
+
+		public bool IsInsideMultiLineComment {
+			get {
+				return internalEngine.IsInsideMultiLineComment;
+			}
+		}
+
+		public bool LineBeganInsideMultiLineComment {
+			get {
+				return false;
+			}
+		}
+
+		public bool LineBeganInsideVerbatimString {
+			get {
+				return false;
+			}
+		}
+
+		public CSharpIndentEngine (ICSharpCode.NRefactory.CSharp.CSharpIndentEngine engine)
+		{
+			this.internalEngine = engine;
+		}
+
+		public CSharpIndentEngine (TextEditorData data, CSharpFormattingPolicy policy, TextStylePolicy textPolicy)
+		{
+			ICSharpCode.NRefactory.CSharp.TextEditorOptions formattingOptions = new ICSharpCode.NRefactory.CSharp.TextEditorOptions {
+				TabSize = textPolicy.TabWidth,
+				IndentSize = textPolicy.IndentWidth,
+				TabsToSpaces = textPolicy.TabsToSpaces,
+				EolMarker = data.EolMarker
+			};
+			internalEngine = new ICSharpCode.NRefactory.CSharp.CSharpIndentEngine (data.Document, formattingOptions, policy.CreateOptions ());
+		}
+
+		#region IDocumentStateEngine implementation
+		public void Push (char c)
+		{
+			internalEngine.Push (c);
+		}
+
+		public void Reset ()
+		{
+			internalEngine.Reset ();
+		}
+
+		public int Position {
+			get {
+				return internalEngine.Offset;
+			}
+		}
+		#endregion
+
+		#region ICloneable implementation
+		public object Clone ()
+		{
+			return new CSharpIndentEngine (internalEngine.Clone ());
+		}
+		#endregion
+	}
+*/
 	public partial class CSharpIndentEngine : ICloneable, IDocumentStateEngine {
 		IndentStack stack;
 		
@@ -77,7 +195,7 @@ namespace MonoDevelop.CSharp.Formatting
 		TextStylePolicy textPolicy;
 		// Constructors
 
-		public CSharpIndentEngine (CSharpFormattingPolicy policy, TextStylePolicy textPolicy)
+			public CSharpIndentEngine (CSharpFormattingPolicy policy, TextStylePolicy textPolicy)
 		{
 			if (policy == null)
 				throw new ArgumentNullException ("policy");
