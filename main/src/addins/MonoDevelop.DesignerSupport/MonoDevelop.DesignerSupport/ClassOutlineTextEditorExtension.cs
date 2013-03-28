@@ -339,18 +339,20 @@ namespace MonoDevelop.DesignerSupport
 		{
 			List<object> items = new List<object> ();
 			if (cls.Kind != TypeKind.Delegate) {
-				foreach (object o in cls.GetMembers (m => part.Region.FileName == m.Region.FileName && part.Region.IsInside (m.Region.Begin))) {
+				foreach (var o in cls.GetMembers (m => part.Region.FileName == m.Region.FileName && part.Region.IsInside (m.Region.Begin))) {
 					items.Add (o);
 				}
-				foreach (object o in cls.GetNestedTypes (m => part.Region.FileName == m.Region.FileName && part.Region.IsInside (m.Region.Begin))) {
-					items.Add (o);
+				foreach (var o in cls.GetNestedTypes (m => part.Region.FileName == m.Region.FileName && part.Region.IsInside (m.Region.Begin))) {
+					if (o.DeclaringType == cls)
+						items.Add (o);
 				}
-				foreach (object o in cls.GetConstructors (m => part.Region.FileName == m.Region.FileName && part.Region.IsInside (m.Region.Begin))) {
+				foreach (var o in cls.GetConstructors (m => part.Region.FileName == m.Region.FileName && part.Region.IsInside (m.Region.Begin))) {
+					if (o.IsSynthetic)
+						continue;
 					items.Add (o);
 				}
 			}
 			items.Sort (ClassOutlineNodeComparer.CompareRegion);
-
 			List<FoldingRegion> regions = new List<FoldingRegion> ();
 			foreach (FoldingRegion fr in parsedDocument.UserRegions)
 				//check regions inside class
