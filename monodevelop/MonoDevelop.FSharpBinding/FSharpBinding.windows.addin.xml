@@ -1,6 +1,6 @@
 <Addin id="FSharpBinding" namespace="MonoDevelop" name="F# Language Binding"
        author="F# Open Source Foundation (fsharp.org)" copyright="F# Open Source Foundation (fsharp.org)" url="http://fsharp.github.com/fsharpbinding"
-       description="F# Language Binding (for MonoDevelop 4.0.0.0). Install F# 3.0 before using." category="Language bindings" version="3.2.14">
+       description="F# Language Binding (for MonoDevelop 4.0.0.0). Install F# 3.0 before using." category="Language bindings" version="3.2.15">
 
 	<Runtime>
     	<Import assembly="FSharp.Core.dll" />
@@ -64,12 +64,6 @@
   	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
     	<DataType class = "MonoDevelop.FSharp.FSharpCompilerParameters" />
   	</Extension>
-
-  <!--
-	<Extension path="/MonoDevelop/ProjectModel/MD1SerializationMaps">
-		<SerializationMap resource="md1format.xml" />
-	</Extension>
-  -->
   
   	<Extension path="/MonoDevelop/Ide/FileFilters">
 		<FileFilter id="F#" insertbefore="AllFiles" _label="F# Source Files" extensions="*.fs;*.fsi;*.fsx;*.fsscript"/>
@@ -95,7 +89,6 @@
 		</Condition>	
 
     	</Extension>
-
 
   	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
     	<DataType class = "MonoDevelop.FSharp.FSharpCompilerParameters" />
@@ -141,20 +134,6 @@
 		<LanguageBinding id="F#" supportedextensions=".fs,.fsi,.fsx,.fsscript" 
                      class="MonoDevelop.FSharp.FSharpLanguageBinding" />
 	</Extension>
-
-  <!--
-  	<Extension path="/MonoDevelop/ProjectModel/DomParser">
-    	<Class class="MonoDevelop.FSharpBinding.DomParser" />
-  	</Extension>
-  -->
-  
-  	<Extension path = "/MonoDevelop/SourceEditor2/CustomModes">
-    	<SyntaxMode mimeTypes="text/x-fsharp" class="MonoDevelop.FSharp.FSharpSyntaxMode"/>
-  	</Extension>
-
-  	<Extension path="/MonoDevelop/SourceEditor2/SyntaxModes">
-    	<Templates resource="FSharpSyntaxMode.xml" />
-  	</Extension>
 
   	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
     	<Class fileExtensions=".fs,.fsi,.fsx,.fsscript" class="MonoDevelop.FSharp.FSharpTextEditorCompletion" />
