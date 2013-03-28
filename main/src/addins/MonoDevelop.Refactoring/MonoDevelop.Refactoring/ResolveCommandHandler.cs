@@ -241,7 +241,7 @@ namespace MonoDevelop.Refactoring
 						lookup.IsAccessible (typeDefinition, false)) {
 						if (typeDefinition.DeclaringTypeDefinition != null) {
 							var builder = new TypeSystemAstBuilder (new CSharpResolver (doc.Compilation));
-							yield return Tuple.Create (builder.ConvertType (typeDefinition.DeclaringTypeDefinition).GetText (), false);
+							yield return Tuple.Create (builder.ConvertType (typeDefinition.DeclaringTypeDefinition).ToString (), false);
 						} else {
 							yield return Tuple.Create (typeDefinition.Namespace, true);
 						}

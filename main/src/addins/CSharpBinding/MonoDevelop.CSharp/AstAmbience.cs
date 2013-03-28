@@ -47,7 +47,7 @@ namespace MonoDevelop.CSharp
 				return false;
 			foreach (var section in entity.Attributes) {
 				foreach (var attr in section.Attributes) {
-					var attrText = attr.Type.GetText ();
+					var attrText = attr.Type.ToString ();
 					if (attrText == "Obsolete" || attrText == "ObsoleteAttribute" || attrText == "System.Obsolete" || attrText == "System.ObsoleteAttribute" )
 						return true;
 				}
@@ -67,7 +67,7 @@ namespace MonoDevelop.CSharp
 				} else {
 					first = false;
 				}
-				AppendEscaped (sb, param.GetText (options));
+				AppendEscaped (sb, param.ToString (options));
 			}
 			sb.Append ("&gt;");
 		}
@@ -96,7 +96,7 @@ namespace MonoDevelop.CSharp
 				} else {
 					first = false;
 				}
-				AppendEscaped (sb, param.GetText (options));
+				AppendEscaped (sb, param.ToString (options));
 			}
 			if (hasParameters && options.SpaceWithinMethodDeclarationParentheses)
 				sb.Append (" ");
@@ -157,12 +157,12 @@ namespace MonoDevelop.CSharp
 				var op = e as OperatorDeclaration;
 				sb.Append ("operator");
 				if (!op.OperatorTypeToken.IsNull)
-					AppendEscaped (sb, op.OperatorTypeToken.GetText ());
+					AppendEscaped (sb, op.OperatorTypeToken.ToString ());
 				AppendParameter (sb, op.Parameters);
 			} else if (e is MethodDeclaration) {
 				var method = e as MethodDeclaration;
 				if (!method.PrivateImplementationType.IsNull)
-					AppendEscaped (sb, method.PrivateImplementationType.GetText () + ".");
+					AppendEscaped (sb, method.PrivateImplementationType.ToString () + ".");
 				sb.Append (method.Name);
 				AppendTypeParameter (sb, method.TypeParameters);
 				AppendParameter (sb, method.Parameters);
@@ -206,7 +206,7 @@ namespace MonoDevelop.CSharp
 					} else {
 						first = false;
 					}
-					sb.Append (param.GetText (options));
+					sb.Append (param.ToString (options));
 				}
 				if (options.SpaceWithinIndexerDeclarationBracket)
 					sb.Append (" ");
@@ -229,12 +229,12 @@ namespace MonoDevelop.CSharp
 			} else if (e is PropertyDeclaration) {
 				var property = (PropertyDeclaration)e;
 				if (!property.PrivateImplementationType.IsNull)
-					AppendEscaped (sb, property.PrivateImplementationType.GetText () + ".");
+					AppendEscaped (sb, property.PrivateImplementationType.ToString () + ".");
 				sb.Append (property.Name);
 			} else if (e is CustomEventDeclaration) {
 				var customEvent = (CustomEventDeclaration)e;
 				if (!customEvent.PrivateImplementationType.IsNull)
-					AppendEscaped (sb, customEvent.PrivateImplementationType.GetText () + ".");
+					AppendEscaped (sb, customEvent.PrivateImplementationType.ToString () + ".");
 				sb.Append (customEvent.Name);
 			} else if (e is EntityDeclaration) {
 				var entity = (EntityDeclaration)e;

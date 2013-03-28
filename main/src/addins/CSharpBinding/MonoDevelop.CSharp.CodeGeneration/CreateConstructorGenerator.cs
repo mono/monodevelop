@@ -114,7 +114,7 @@ namespace MonoDevelop.CodeGeneration
 					constructorDeclaration.Body.Statements.Add (new ExpressionStatement (assign));
 				}
 				
-				yield return constructorDeclaration.GetText (Options.FormattingOptions);
+				yield return constructorDeclaration.ToString (Options.FormattingOptions);
 			}
 		}
 	}

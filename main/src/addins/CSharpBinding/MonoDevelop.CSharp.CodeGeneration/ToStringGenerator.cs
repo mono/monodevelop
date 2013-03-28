@@ -127,7 +127,7 @@ namespace MonoDevelop.CodeGeneration
 							)
 						)
 					} 
-				}.GetText (Options.FormattingOptions);
+				}.ToString (Options.FormattingOptions);
 			}
 		}
 	}

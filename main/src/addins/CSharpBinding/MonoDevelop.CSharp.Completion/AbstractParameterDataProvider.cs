@@ -71,7 +71,7 @@ namespace MonoDevelop.CSharp.Completion
 				}
 			}
 			try {
-				return GLib.Markup.EscapeText (builder.ConvertType(type).GetText (ext.FormattingPolicy.CreateOptions ()));
+				return GLib.Markup.EscapeText (builder.ConvertType(type).ToString (ext.FormattingPolicy.CreateOptions ()));
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception while getting short type.", e);
 				return "";

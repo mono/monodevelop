@@ -241,7 +241,7 @@ namespace MonoDevelop.CSharp.Parser
 				    mt != null && mt.MemberName == "NotImplementedException" && mt.Target.ToString () == "System") {
 
 					if (createExpression.Arguments.Any ()) {
-						Tags.Add (new Tag ("High", GettextCatalog.GetString ("NotImplementedException({0}) thrown.", createExpression.Arguments.First ().GetText ()), new DomRegion (throwStatement.StartLocation, throwStatement.EndLocation)));
+						Tags.Add (new Tag ("High", GettextCatalog.GetString ("NotImplementedException({0}) thrown.", createExpression.Arguments.First ().ToString ()), new DomRegion (throwStatement.StartLocation, throwStatement.EndLocation)));
 					} else {
 						Tags.Add (new Tag ("High", GettextCatalog.GetString ("NotImplementedException thrown."), new DomRegion (throwStatement.StartLocation, throwStatement.EndLocation)));
 					}

@@ -134,7 +134,7 @@ namespace MonoDevelop.CodeGeneration
 				}
 
 				methodDeclaration.Body.Statements.Add (new ReturnStatement (binOp));
-				yield return methodDeclaration.GetText (Options.FormattingOptions);
+				yield return methodDeclaration.ToString (Options.FormattingOptions);
 
 				methodDeclaration = new MethodDeclaration ();
 				methodDeclaration.Name = "GetHashCode";
@@ -162,7 +162,7 @@ namespace MonoDevelop.CodeGeneration
 				uncheckedBlock.Statements.Add (new ReturnStatement (binOp));
 
 				methodDeclaration.Body.Statements.Add (new UncheckedStatement (uncheckedBlock));
-				yield return methodDeclaration.GetText (Options.FormattingOptions);
+				yield return methodDeclaration.ToString (Options.FormattingOptions);
 			}
 		}
 	}
