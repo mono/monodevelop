@@ -295,10 +295,10 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			var formattingPolicy = this.document.GetFormattingPolicy ();
 			if (insertLocation < 0 || insertLocation > content.Length)
 				insertLocation = content.Length;
-			content = content.Substring (0, insertLocation) + newType.GetText (formattingPolicy.CreateOptions ()) + content.Substring (insertLocation);
+			content = content.Substring (0, insertLocation) + newType.ToString (formattingPolicy.CreateOptions ()) + content.Substring (insertLocation);
 
-			var formatter = new CSharpFormatter ();
-			content = formatter.FormatText (formattingPolicy, null, CSharpFormatter.MimeType, content, 0, content.Length);
+			var formatter = new MonoDevelop.CSharp.Formatting.CSharpFormatter ();
+			content = formatter.FormatText (formattingPolicy, null, MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType, content, 0, content.Length);
 
 			File.WriteAllText (correctFileName, content);
 			document.Project.AddFile (correctFileName);

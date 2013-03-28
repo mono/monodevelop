@@ -113,7 +113,7 @@ namespace MonoDevelop.CSharp.Completion
 		public CSharpFormattingPolicy FormattingPolicy {
 			get {
 				if (policy == null) {
-					IEnumerable<string> types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
+					IEnumerable<string> types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
 					if (Document.Project != null && Document.Project.Policies != null) {
 						policy = base.Document.Project.Policies.Get<CSharpFormattingPolicy> (types);
 					} else {
@@ -790,7 +790,7 @@ namespace MonoDevelop.CSharp.Completion
 			ICompletionData ICompletionDataFactory.CreateTypeCompletionData (IType type, bool showFullName, bool isInAttributeContext)
 			{
 				Lazy<string> displayText = new Lazy<string> (delegate {
-					string name = showFullName ? builder.ConvertType(type).GetText() : type.Name; 
+					string name = showFullName ? builder.ConvertType(type).ToString() : type.Name; 
 					if (isInAttributeContext && name.EndsWith("Attribute") && name.Length > "Attribute".Length) {
 						name = name.Substring(0, name.Length - "Attribute".Length);
 					}
@@ -806,7 +806,7 @@ namespace MonoDevelop.CSharp.Completion
 			ICompletionData ICompletionDataFactory.CreateMemberCompletionData(IType type, IEntity member)
 			{
 				Lazy<string> displayText = new Lazy<string> (delegate {
-					string name = builder.ConvertType(type).GetText(); 
+					string name = builder.ConvertType(type).ToString(); 
 					return name + "."+ member.Name;
 				});
 

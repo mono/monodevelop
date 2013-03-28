@@ -111,17 +111,16 @@ namespace MonoDevelop.CSharp.Formatting
 			var originalVersion = data.Document.Version;
 
 			var textEditorOptions = data.CreateNRefactoryTextEditorOptions ();
-			var formattingVisitor = new AstFormattingVisitor (
+			var formattingVisitor = new ICSharpCode.NRefactory.CSharp.CSharpFormatter (
 				policy.CreateOptions (),
-				data.Document,
 				textEditorOptions
 			) {
-				HadErrors = hadErrors,
 				FormattingMode = FormattingMode.Intrusive
 			};
-			compilationUnit.AcceptVisitor (formattingVisitor);
+
+			var changes = formattingVisitor.AnalyzeFormatting (data.Document, compilationUnit);
 			try {
-				formattingVisitor.ApplyChanges (startOffset, endOffset - startOffset);
+				changes.ApplyChanges (startOffset, endOffset - startOffset);
 			} catch (Exception e) {
 				LoggingService.LogError ("Error in code formatter", e);
 				return input.Substring (startOffset, Math.Max (0, Math.Min (endOffset, input.Length) - startOffset));

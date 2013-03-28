@@ -99,9 +99,9 @@ namespace MonoDevelop.CSharp
 			}
 
 			if (astType is PrimitiveType) {
-				return Highlight (astType.GetText (formattingOptions), colorStyle.KeywordTypes);
+				return Highlight (astType.ToString (formattingOptions), colorStyle.KeywordTypes);
 			}
-			var text = AmbienceService.EscapeText (astType.GetText (formattingOptions));
+			var text = AmbienceService.EscapeText (astType.ToString (formattingOptions));
 			return highlight ? HighlightSemantically (text, colorStyle.UserTypes) : text;
 		}
 
@@ -834,7 +834,7 @@ namespace MonoDevelop.CSharp
 		}
 		public TooltipInformation GetKeywordTooltip (AstNode node)
 		{
-			return GetKeywordTooltip (node.GetText (), node);
+			return GetKeywordTooltip (node.ToString (), node);
 		}
 
 		public TooltipInformation GetKeywordTooltip (string keyword, AstNode hintNode)
