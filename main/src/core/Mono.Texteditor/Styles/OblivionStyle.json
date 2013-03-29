@@ -146,7 +146,7 @@
 		{ "name": "Completion Selected Text(Inactive)", "fore":"#434343", "back":"white" },
 
 		{ "name": "Keyword(Access)", "fore":"plum1", "weight":"bold"  },
-		{ "name": "Keyword(Type)", "fore":"chameleon1", "weight":"bold"  },
+		{ "name": "Keyword(Type)", "fore":"plum1", "weight":"bold"  },
 		{ "name": "Keyword(Operator)", "fore":"plum1", "weight":"bold"  },
 		{ "name": "Keyword(Selection)", "fore":"white", "weight":"bold"  },
 		{ "name": "Keyword(Iteration)", "fore":"plum1", "weight":"bold"  },

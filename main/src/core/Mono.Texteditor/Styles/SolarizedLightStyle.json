@@ -134,7 +134,7 @@
 		{ "name": "Completion Selected Text(Inactive)", "fore":"#434343", "back":"white" },
 
 		{ "name": "Keyword(Access)", "fore":"violet" },
-		{ "name": "Keyword(Type)", "fore":"yellow" },
+		{ "name": "Keyword(Type)", "fore":"green" },
 		{ "name": "Keyword(Operator)", "fore":"green" },
 		{ "name": "Keyword(Selection)", "fore":"green" },
 		{ "name": "Keyword(Iteration)", "fore":"green" },

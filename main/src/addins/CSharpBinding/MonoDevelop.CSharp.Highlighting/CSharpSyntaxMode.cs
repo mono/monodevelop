@@ -238,6 +238,7 @@ namespace MonoDevelop.CSharp.Highlighting
 
 				valueKeywordColor = "Keyword(Context)";
 				externAliasKeywordColor = "Keyword(Namespace)";
+				varKeywordTypeColor = "Keyword(Type)";
 
 				parameterModifierColor = "Keyword(Parameter)";
 				inactiveCodeColor = "Excluded Code";

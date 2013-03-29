@@ -131,7 +131,7 @@
 		{ "name": "Completion Selected Text(Inactive)", "fore":"white", "back":"white" },
 
 		{ "name": "Keyword(Access)", "fore":"monokai-constant" },
-		{ "name": "Keyword(Type)", "fore":"monokai-type" },
+		{ "name": "Keyword(Type)", "fore":"monokai-keyword" },
 		{ "name": "Keyword(Operator)", "fore":"monokai-keyword" },
 		{ "name": "Keyword(Selection)", "fore":"monokai-keyword" },
 		{ "name": "Keyword(Iteration)", "fore":"monokai-keyword" },
