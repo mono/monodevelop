@@ -853,11 +853,13 @@ namespace MonoDevelop.Components.MainToolbar
 
 				var px = dataSrc.GetIcon (i);
 				if (px != null) {
-					evnt.Window.DrawPixbuf (Style.WhiteGC, px, 0, 0, (int)x + marginIconSpacing, (int)y + (h - px.Height) / 2, px.Width, px.Height, Gdk.RgbDither.None, 0, 0);
+					Gdk.CairoHelper.SetSourcePixbuf (context, px, (int)x + marginIconSpacing, (int)y + (h - px.Height) / 2);
+					context.Paint ();
 					x += px.Width + iconTextSpacing + marginIconSpacing;
 				}
 
 				context.MoveTo (x, y);
+				context.Color = new Cairo.Color (0, 0, 0);
 				Pango.CairoHelper.ShowLayout (context, layout);
 
 				y += h + itemSeparatorHeight;
@@ -895,11 +897,13 @@ namespace MonoDevelop.Components.MainToolbar
 
 					var px = dataSrc.GetIcon (i);
 					if (px != null) {
-						evnt.Window.DrawPixbuf (Style.WhiteGC, px, 0, 0, (int)x + marginIconSpacing, (int)y + (h - px.Height) / 2, px.Width, px.Height, Gdk.RgbDither.None, 0, 0);
+						Gdk.CairoHelper.SetSourcePixbuf (context, px, (int)x + marginIconSpacing, (int)y + (h - px.Height) / 2);
+						context.Paint ();
 						x += px.Width + iconTextSpacing + marginIconSpacing;
 					}
 
 					context.MoveTo (x, y);
+					context.Color = new Cairo.Color (0, 0, 0);
 					Pango.CairoHelper.ShowLayout (context, layout);
 
 					y += h + itemSeparatorHeight;

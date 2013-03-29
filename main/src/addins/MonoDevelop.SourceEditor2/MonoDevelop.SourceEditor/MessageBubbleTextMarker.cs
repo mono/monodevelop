@@ -632,15 +632,14 @@ namespace MonoDevelop.SourceEditor
 		}
 		#region IIconBarMarker implementation
 
-		public void DrawIcon (Mono.TextEditor.TextEditor editor, Cairo.Context cr, DocumentLine line, int lineNumber, double x, double y, double width, double height)
+		public void DrawIcon (TextEditor editor, Cairo.Context cr, DocumentLine line, int lineNumber, double x, double y, double width, double height)
 		{
-			editor.GdkWindow.DrawPixbuf (cache.editor.Style.BaseGC (Gtk.StateType.Normal), 
-				errors.Any (e => e.IsError) ? cache.errorPixbuf : cache.warningPixbuf, 
-				0, 0, 
-				(int)(x + (width - cache.errorPixbuf.Width) / 2), 
-				(int)(y + (height - cache.errorPixbuf.Height) / 2), 
-				cache.errorPixbuf.Width, cache.errorPixbuf.Height, 
-				Gdk.RgbDither.None, 0, 0);
+			Gdk.CairoHelper.SetSourcePixbuf (
+				cr,
+				errors.Any (e => e.IsError) ? cache.errorPixbuf : cache.warningPixbuf,
+				(int)(x + (width - cache.errorPixbuf.Width) / 2),
+				(int)(y + (height - cache.errorPixbuf.Height) / 2));
+			cr.Paint ();
 		}
 
 		public void MousePress (MarginMouseEventArgs args)
@@ -854,8 +853,11 @@ namespace MonoDevelop.SourceEditor
 			g.ShowLayout (layout.Layout);
 			g.Restore ();
 			
-//			if (ShowIconsInBubble)
-//				win.DrawPixbuf (editor.Style.BaseGC (Gtk.StateType.Normal), errors[errorNumber].IsError ? errorPixbuf : warningPixbuf, 0, 0, x2, y + (editor.LineHeight - errorPixbuf.Height) / 2, errorPixbuf.Width, errorPixbuf.Height, Gdk.RgbDither.None, 0, 0);
+			if (ShowIconsInBubble) {
+				var pixbuf = errors [errorNumber].IsError ? cache.errorPixbuf: cache.warningPixbuf;
+				Gdk.CairoHelper.SetSourcePixbuf (g, pixbuf, x2, y + (editor.LineHeight - cache.errorPixbuf.Height) / 2);
+				g.Paint ();
+			}
 		}
 		
 		#endregion

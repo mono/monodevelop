@@ -430,22 +430,18 @@ namespace MonoDevelop.Ide.CodeCompletion
 				
 				//when there are no matches, display a message to indicate that the completion list is still handling input
 				if (filteredItems.Count == 0) {
-					Gdk.GC gc = new Gdk.GC (window);
-					gc.RgbFgColor = backgroundColor.ToGdkColor ();
-					window.DrawRectangle (gc, true, 0, yPos, width, height - yPos);
+					context.Rectangle (0, yPos, width, height - yPos);
+					context.Color = backgroundColor;
+					context.Stroke ();
 					noMatchLayout.SetText (win.DataProvider.ItemCount == 0 ? NoSuggestionsMsg : NoMatchesMsg);
 					int lWidth, lHeight;
 					noMatchLayout.GetPixelSize (out lWidth, out lHeight);
-					gc.RgbFgColor = (Mono.TextEditor.HslColor)textColor;
-					window.DrawLayout (gc, (width - lWidth) / 2, yPos + (height - lHeight - yPos) / 2 - lHeight, noMatchLayout);
-					gc.Dispose ();
-
+					context.Color = textColor;
+					context.MoveTo ((width - lWidth) / 2, yPos + (height - lHeight - yPos) / 2 - lHeight);
+					PangoCairoHelper.ShowLayout (context, noMatchLayout);
 					return false;
 				}
 
-
-				var textGCNormal = new Gdk.GC (window);
-				textGCNormal.RgbFgColor = (Mono.TextEditor.HslColor)textColor;
 				var fgGCNormal = this.Style.ForegroundGC (StateType.Normal);
 				var matcher = CompletionMatcher.CreateCompletionMatcher (CompletionString);
 				Iterate (true, ref yPos, delegate (Category category, int ypos) {
@@ -458,7 +454,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 					int x = 2;
 					if (category.CompletionCategory != null && !string.IsNullOrEmpty (category.CompletionCategory.Icon)) {
 						var icon = ImageService.GetPixbuf (category.CompletionCategory.Icon, IconSize.Menu);
-						window.DrawPixbuf (fgGCNormal, icon, 0, 0, 0, ypos, icon.Width, icon.Height, Gdk.RgbDither.None, 0, 0);
+						Gdk.CairoHelper.SetSourcePixbuf (context, icon, 0, ypos);
+						context.Paint ();
 						x = icon.Width + 4;
 					}
 					context.Rectangle (0, ypos, Allocation.Width, rowHeight);
@@ -472,7 +469,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 					categoryLayout.SetMarkup ((category.CompletionCategory != null ? category.CompletionCategory.DisplayText : "Uncategorized"));
 					int px, py;
 					categoryLayout.GetPixelSize (out px, out py);
-					window.DrawLayout (textGCNormal, x, ypos + (rowHeight - py) / 2, categoryLayout);
+					context.MoveTo (x, ypos + (rowHeight - py) / 2);
+					context.Color = textColor;
+					PangoCairoHelper.ShowLayout (context, categoryLayout);
 				}, delegate (Category curCategory, int item, int itemidx, int ypos) {
 					if (ypos >= height)
 						return false;
@@ -545,10 +544,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 					} 
 
 					if (icon != null) {
-						window.DrawPixbuf (fgGCNormal, icon, 0, 0, xpos, iypos, iconWidth, iconHeight, Gdk.RgbDither.None, 0, 0);
+						Gdk.CairoHelper.SetSourcePixbuf (context, icon, xpos, iypos);
+						context.Paint ();
 						xpos += iconTextSpacing;
 					}
-					window.DrawLayout (textGCNormal, xpos + iconWidth + 2, typos, layout);
+					context.Color = textColor;
+					context.MoveTo (xpos + iconWidth + 2, typos);
+					PangoCairoHelper.ShowLayout (context, layout);
 
 					if (wi + xpos + iconWidth + 2 > listWidth) {
 						WidthRequest = listWidth = wi + xpos + iconWidth + 2 + iconTextSpacing;
@@ -572,67 +574,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 					return true;
 				});
 
-				/*
-				int n = 0;
-				while (ypos < winHeight - margin && (page + n) < filteredItems.Count) {
-					
-					bool hasMarkup = win.DataProvider.HasMarkup (filteredItems[page + n]);
-					if (hasMarkup) {
-						layout.SetMarkup (win.DataProvider.GetMarkup (filteredItems[page + n]) ?? "&lt;null&gt;");
-					} else {
-						layout.SetText (win.DataProvider.GetText (filteredItems[page + n]) ?? "<null>");
-					}
-					string text = win.DataProvider.GetText (filteredItems[page + n]);
-					if ((!SelectionEnabled || page + n != selection) && !string.IsNullOrEmpty (text)) {
-						int[] matchIndices = Match (CompletionString, text);
-						if (matchIndices != null) {
-							Pango.AttrList attrList = layout.Attributes ?? new Pango.AttrList ();
-							for (int newSelection = 0; newSelection < matchIndices.Length; newSelection++) {
-								int idx = matchIndices[newSelection];
-								Pango.AttrForeground fg = new Pango.AttrForeground (0, 0, ushort.MaxValue);
-								fg.StartIndex = (uint)idx;
-								fg.EndIndex = (uint)(idx + 1);
-								attrList.Insert (fg);
-							}
-							layout.Attributes = attrList;
-						}
-					}
-					
-					Gdk.Pixbuf icon = win.DataProvider.GetIcon (filteredItems[page + n]);
-					int iconHeight, iconWidth;
-					if (icon != null) {
-						iconWidth = icon.Width;
-						iconHeight = icon.Height;
-					} else if (!Gtk.Icon.SizeLookup (Gtk.IconSize.Menu, out iconWidth, out iconHeight)) {
-						iconHeight = iconWidth = 24;
-					}
-					
-					int wi, he, typos, iypos;
-					layout.GetPixelSize (out wi, out he);
-					typos = he < rowHeight ? ypos + (rowHeight - he) / 2 : ypos;
-					iypos = iconHeight < rowHeight ? ypos + (rowHeight - iconHeight) / 2 : ypos;
-					if (page + n == selection) {
-						if (SelectionEnabled) {
-							window.DrawRectangle (this.Style.BaseGC (StateType.Selected), true, margin, ypos, lineWidth, he + padding);
-							window.DrawLayout (this.Style.TextGC (StateType.Selected), xpos + iconWidth + 2, typos, layout);
-						} else {
-							window.DrawRectangle (this.Style.DarkGC (StateType.Prelight), false, margin, ypos, lineWidth - 1, he + padding - 1);
-							window.DrawLayout (this.Style.TextGC (StateType.Normal), xpos + iconWidth + 2, typos, layout);
-						}
-					} else
-						window.DrawLayout (this.Style.TextGC (StateType.Normal), xpos + iconWidth + 2, typos, layout);
-					if (icon != null)
-						window.DrawPixbuf (this.Style.ForegroundGC (StateType.Normal), icon, 0, 0, xpos, iypos, iconWidth, iconHeight, Gdk.RgbDither.None, 0, 0);
-					ypos += rowHeight;
-					n++;
-					if (hasMarkup)
-						layout.SetMarkup (string.Empty);
-					if (layout.Attributes != null) {
-						layout.Attributes.Dispose ();
-						layout.Attributes = null;
-					}
-				}
-				*/
 				return false;
 			}
 		}
