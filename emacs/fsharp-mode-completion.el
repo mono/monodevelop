@@ -72,37 +72,34 @@ display in a help buffer instead.")
 (defvar fsharp-ac-debug nil)
 (defvar fsharp-ac-status 'idle)
 (defvar fsharp-ac-completion-process nil)
-(defvar fsharp-ac-partial-data "")
 (defvar fsharp-ac-project-files nil)
 (defvar fsharp-ac-idle-timer nil)
 (defvar fsharp-ac-verbose nil)
 (defvar fsharp-ac-current-candidate)
 
+(defconst fsharp-ac--log-buf "*fsharp-debug*")
 
-(defun log-to-proc-buf (proc str)
-  (when (processp proc)
-    (let ((buf (process-buffer proc))
-          (atend (with-current-buffer (process-buffer proc)
-                   (eq (marker-position (process-mark proc)) (point)))))
-      (when (buffer-live-p buf)
-        (with-current-buffer buf
-          (goto-char (process-mark proc))
-          (insert-before-markers str))
-        (if atend
-            (with-current-buffer buf
-              (goto-char (process-mark proc))))))))
+(defun fsharp-ac--log (str)
+  (when fsharp-ac-debug
+    (unless (get-buffer fsharp-ac--log-buf)
+      (generate-new-buffer fsharp-ac--log-buf))
+    (with-current-buffer fsharp-ac--log-buf
+      (let ((pt (point))
+            (atend (eq (point-max) (point))))
+        (goto-char (point-max))
+        (insert-before-markers str)
+        (unless atend
+          (goto-char pt))))))
 
 (defun log-psendstr (proc str)
-  (when fsharp-ac-debug
-    (log-to-proc-buf proc str))
+  (fsharp-ac--log str)
   (process-send-string proc str))
 
 (defun fsharp-ac-parse-current-buffer ()
   (save-restriction
     (let ((file (expand-file-name (buffer-file-name))))
       (widen)
-      (log-to-proc-buf fsharp-ac-completion-process
-                       (format "Parsing \"%s\"\n" file))
+      (fsharp-ac--log (format "Parsing \"%s\"\n" file))
       (process-send-string
        fsharp-ac-completion-process
        (format "parse \"%s\" full\n%s\n<<EOF>>\n"
@@ -159,8 +156,7 @@ display in a help buffer instead.")
                        (file-name-extension file))))
 
 (defun fsharp-ac--reset ()
-  (setq fsharp-ac-partial-data nil
-        fsharp-ac-project-files nil
+  (setq fsharp-ac-project-files nil
         fsharp-ac-status 'idle
         fsharp-ac-current-candidate nil)
   (fsharp-ac-clear-errors))
@@ -190,7 +186,6 @@ display in a help buffer instead.")
     (cancel-timer fsharp-ac-idle-timer))
   (setq fsharp-ac-status 'idle
         fsharp-ac-completion-process nil
-        fsharp-ac-partial-data ""
         fsharp-ac-project-files nil
         fsharp-ac-idle-timer nil
         fsharp-ac-verbose nil)
@@ -216,8 +211,9 @@ display in a help buffer instead.")
           (set-process-filter proc 'fsharp-ac-filter-output)
           (set-process-query-on-exit-flag proc nil)
           (setq fsharp-ac-status 'idle
-                fsharp-ac-partial-data ""
                 fsharp-ac-project-files nil)
+          (with-current-buffer (process-buffer proc)
+            (delete-region (point-min) (point-max)))
           (add-to-list 'ac-modes 'fsharp-mode)
           proc)
       (fsharp-ac-message-safely "Failed to launch: '%s'"
@@ -280,6 +276,7 @@ display in a help buffer instead.")
 
 (defun fsharp-ac-can-make-request ()
   (and (fsharp-ac--process-live-p)
+       (not ac-completing)
        (or
         (member (expand-file-name (buffer-file-name)) fsharp-ac-project-files)
         (string-match-p (rx (or "fsx" "fsscript"))
@@ -297,11 +294,11 @@ display in a help buffer instead.")
   "Display the type signature for the F# symbol at POINT."
   (interactive)
   (when (fsharp-ac-can-make-request)
-    (fsharp-ac-parse-current-buffer)
-    (fsharp-ac-send-pos-request "tooltip"
-                                (expand-file-name (buffer-file-name))
-                                (- (line-number-at-pos) 1)
-                                (current-column))))
+     (fsharp-ac-parse-current-buffer)
+     (fsharp-ac-send-pos-request "tooltip"
+                                 (expand-file-name (buffer-file-name))
+                                 (- (line-number-at-pos) 1)
+                                 (current-column))))
 
 (defun fsharp-ac/gotodefn-at-point ()
   "Find the point of declaration of the symbol at point and goto it"
@@ -320,10 +317,23 @@ display in a help buffer instead.")
         (ac-auto-show-menu t))
     (apply 'ac-start ac-start-args)))
 
-(defun fsharp-ac/electric-key ()
+
+(defun fsharp-ac/electric-dot ()
   (interactive)
-  (self-insert-command 1)
+  (when ac-completing
+    (ac-complete))
+  (when (not (eq (string-to-char ".") (char-before)))
+    (self-insert-command 1))
   (fsharp-ac/complete-at-point))
+
+
+(defun fsharp-ac/electric-backspace ()
+  (interactive)
+  (when (eq (char-before) (string-to-char "."))
+    (ac-stop))
+  (delete-backward-char 1))
+
+(define-key ac-completing-map (kbd "<backspace>") 'fsharp-ac/electric-backspace)
 
 (defun fsharp-ac/complete-at-point ()
   (interactive)
@@ -475,29 +485,39 @@ around to the start of the buffer."
 
 (defconst fsharp-ac-eom "\n<<EOF>>\n")
 
+(defun fsharp-ac--get-msg (proc)
+  (with-current-buffer (process-buffer proc)
+    (goto-char (point-min))
+    (let ((eofloc (search-forward fsharp-ac-eom nil t)))
+      (when eofloc
+        (let ((msg (buffer-substring-no-properties (point-min) (match-beginning 0))))
+          (delete-region (point-min) (match-end 0))
+          msg)))))
+
 (defun fsharp-ac-filter-output (proc str)
   "Filter output from the completion process and handle appropriately."
-  (when fsharp-ac-debug
-    (log-to-proc-buf proc str))
-  (setq fsharp-ac-partial-data (concat fsharp-ac-partial-data str))
+  (fsharp-ac--log str)
 
-  (let ((eofloc (string-match-p fsharp-ac-eom fsharp-ac-partial-data)))
-    (while eofloc
-      (let ((msg  (substring fsharp-ac-partial-data 0 eofloc))
-            (part (substring fsharp-ac-partial-data (+ eofloc (length fsharp-ac-eom)))))
-        (cond
-         ((s-starts-with? "DATA: completion" msg) (fsharp-ac-handle-completion msg))
-         ((s-starts-with? "DATA: finddecl" msg)   (fsharp-ac-visit-definition msg))
-         ((s-starts-with? "DATA: tooltip" msg)    (fsharp-ac-handle-tooltip msg))
-         ((s-starts-with? "DATA: errors" msg)     (fsharp-ac-handle-errors msg))
-         ((s-starts-with? "DATA: project" msg)    (fsharp-ac-handle-project msg))
-         ((s-starts-with? "ERROR: " msg)          (fsharp-ac-handle-process-error msg))
-         ((s-starts-with? "INFO: " msg) (when fsharp-ac-verbose (fsharp-ac-message-safely msg)))
-         (t
-          (fsharp-ac-message-safely "Error: unrecognised message: '%s'" msg)))
+  (with-current-buffer (process-buffer proc)
+    (save-excursion
+      (goto-char (process-mark proc))
+      (insert-before-markers str)))
 
-        (setq fsharp-ac-partial-data part))
-      (setq eofloc (string-match-p fsharp-ac-eom fsharp-ac-partial-data)))))
+  (let ((msg (fsharp-ac--get-msg proc)))
+    (while msg
+      ;(message "[filter] length(msg) = %d" (length msg))
+      (cond
+       ((s-starts-with? "DATA: completion" msg) (fsharp-ac-handle-completion msg))
+       ((s-starts-with? "DATA: finddecl" msg)   (fsharp-ac-visit-definition msg))
+       ((s-starts-with? "DATA: tooltip" msg)    (fsharp-ac-handle-tooltip msg))
+       ((s-starts-with? "DATA: errors" msg)     (fsharp-ac-handle-errors msg))
+       ((s-starts-with? "DATA: project" msg)    (fsharp-ac-handle-project msg))
+       ((s-starts-with? "ERROR: " msg)          (fsharp-ac-handle-process-error msg))
+       ((s-starts-with? "INFO: " msg) (when fsharp-ac-verbose (fsharp-ac-message-safely msg)))
+       (t
+        (fsharp-ac-message-safely "Error: unrecognised message: '%s'" msg)))
+      
+    (setq msg (fsharp-ac--get-msg proc)))))
 
 (defun fsharp-ac-handle-completion (str)
   (setq str

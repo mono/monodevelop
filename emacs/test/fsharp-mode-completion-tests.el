@@ -63,13 +63,16 @@ Try indenting this token further or using standard formatting conventions."
   "Test properties of filtered output from the ac-process."
   (declare (indent 1))
   `(check ,desc
-     (stubbing-process-functions
-      (find-file (concat fs-file-dir "Program.fs"))
-        (fsharp-ac-filter-output nil err-brace-str))
-      ,@body))
+     (using-file "*fsharp-complete*"
+       (stubbing-process-functions
+        (find-file (concat fs-file-dir "Program.fs"))
+        (fsharp-ac-filter-output nil err-brace-str)
+       ,@body))))
 
 (check-filter "error clears partial data"
-  (should (equal "" fsharp-ac-partial-data)))
+  (should (equal "" (with-current-buffer (process-buffer
+                                          fsharp-ac-completion-process)
+                      (buffer-string)))))
 
 (check-filter "errors cause overlays to be drawn"
   (should (equal 3 (length (overlays-in (point-min) (point-max))))))
@@ -130,7 +133,9 @@ Stubs out functions that call on the ac process."
               (fsharp-ac-parse-current-buffer () t)
               (process-send-string   (p s))
               (fsharp-ac-can-make-request () t)
-              (expand-file-name (x &rest _) x))
+              (expand-file-name (x &rest _) x)
+              (process-buffer (proc) "*fsharp-complete*")
+              (process-mark (proc) (point-max)))
          ,@body)))
 
 (defmacro stub-fn (sym var &rest body)

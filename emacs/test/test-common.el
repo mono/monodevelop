@@ -29,7 +29,9 @@
           (start-process (&rest args))
           (set-process-filter (&rest args))
           (set-process-query-on-exit-flag (&rest args))
-          (process-send-string (&rest args)))
+          (process-send-string (&rest args))
+          (process-buffer (proc) "*fsharp-complete*")
+          (process-mark (proc) (point-max)))
      ,@body))
 
 (defun should-match (regex str)
