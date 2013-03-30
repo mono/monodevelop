@@ -27,12 +27,11 @@
 (require 'dash)
 (require 'fsharp-mode-indent)
 (require 'auto-complete)
+(require 'json)
 
 (autoload 'pos-tip-fill-string "pos-tip")
 (autoload 'pos-tip-show "pos-tip")
 (autoload 'popup-tip "popup")
-(autoload 'json-array-type "json")
-(autoload 'json-read-from-string "json")
 
 ;;; User-configurable variables
 

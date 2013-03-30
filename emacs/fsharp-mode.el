@@ -6,7 +6,7 @@
 ;;         2010-2011 Laurent Le Brun <laurent@le-brun.eu>
 ;; Maintainer: Robin Neatherway <robin.neatherway@gmail.com>
 ;; Keywords: languages
-;; Version: 0.8
+;; Version: 0.9
 
 ;; This file is not part of GNU Emacs.
 
@@ -29,7 +29,7 @@
 (require 'fsharp-doc)
 (require 'inf-fsharp-mode)
 
-(defconst fsharp-mode-version 0.8
+(defconst fsharp-mode-version 0.9
   "Version of this fsharp-mode")
 
 ;;; Compilation

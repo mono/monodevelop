@@ -1,6 +1,6 @@
 (define-package
   "fsharp-mode"
-  "0.8"
+  "0.9"
   "F# mode for Emacs"
   '((popup      "0.5")
     (pos-tip    "0.4.5")

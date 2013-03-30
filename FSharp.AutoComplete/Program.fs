@@ -328,8 +328,8 @@ module internal CommandInput =
     project ""<filename>""
       - associates the current session with the specified project
     outputmode {json,text}
-      - switches the output format. json offers richer data
-        for some commands"
+      - switches the output format. 'json' offers richer data
+        for some commands. default is 'text'"
 
   let outputText = @"
     Output format
