@@ -8,7 +8,7 @@ open MonoDevelop.Core
 
 open Mono.TextEditor
 open Mono.TextEditor.Highlighting
-   
+(*   
 /// Implements syntax highlighting for F# sources
 /// Currently, this just loads the keyword-based highlighting info from resources
 type FSharpSyntaxMode() as this =
@@ -36,5 +36,4 @@ type FSharpSyntaxMode() as this =
   //   
   //  override x.CreateSpanParser(doc:Document, mode:SyntaxMode, line:LineSegment, spanStack:Stack<Span>) : SyntaxMode.SpanParser =
   //    base.CreateSpanParser(doc, mode, line, spanStack)
-    
- 
+ *)

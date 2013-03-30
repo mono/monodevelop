@@ -16,10 +16,9 @@ type FSharpLanguageBinding() =
 
   let provider = lazy new CodeDom.FSharpCodeProvider()
   
-  // ------------------------------------------------------------------------------------
+  // ------------------------------------------------------------------------------------------
   // Watch for changes that trigger a reparse, but only if we're running within the IDE context
   // and not from mdtool or something like it.
-
   do if IdeApp.IsInitialized then
     // Register handler that will reparse when the active configuration is changes
       IdeApp.Workspace.ActiveConfigurationChanged.Add(fun _ -> 
@@ -31,17 +30,13 @@ type FSharpLanguageBinding() =
       IdeApp.Workbench.ActiveDocumentChanged.Add(fun _ ->
         let doc = IdeApp.Workbench.ActiveDocument
         if doc <> null && (CompilerArguments.supportedExtension(IO.Path.GetExtension(doc.FileName.ToString()))) then
-#if MONODEVELOP_AT_MOST_3_0_3_2
-#else
              doc.Editor.TabsToSpaces <- true
-#endif
              doc.ReparseDocument())
 
     
   
-  // ------------------------------------------------------------------------------------
-  
-        // Keep the platforms combo of CodeGenerationPanelWidget in sync with this list
+  // ----------------------------------------------------------------------------
+  // Keep the platforms combo of CodeGenerationPanelWidget in sync with this list
   let supportedPlatforms = [| "anycpu"; "x86"; "x64"; "itanium" |]
   interface IDotNetLanguageBinding  with
     member x.BlockCommentEndTag = "*)"
@@ -79,10 +74,9 @@ type FSharpLanguageBinding() =
               pars.DebugSymbols <- true
               pars.Optimize <- true
               pars.GenerateTailCalls <- true
-
-          // TODO: set up the documentation file to be AssemblyName.xml by default (but how do we get AssemblyName here?)
-          //pars.DocumentationFile <- ""
-          //    System.IO.Path.GetFileNameWithoutExtension(config.CompiledOutputName.ToString())+".xml" 
+      // TODO: set up the documentation file to be AssemblyName.xml by default (but how do we get AssemblyName here?)
+      // pars.DocumentationFile <- ""
+      //    System.IO.Path.GetFileNameWithoutExtension(config.CompiledOutputName.ToString())+".xml" 
       pars :> ConfigurationParameters
 
 
@@ -90,10 +84,10 @@ type FSharpLanguageBinding() =
       new FSharpProjectParameters() :> ProjectParameters
       
     override x.GetCodeDomProvider() : CodeDomProvider =
-      //null 
-      // TODO: Simplify CodeDom provider to generate reasonable template
-      // files at least for some MonoDevelop project types. Then we can recover:
-         provider.Value :> CodeDomProvider
+        // null 
+        // TODO: Simplify CodeDom provider to generate reasonable template
+        // files at least for some MonoDevelop project types. Then we can recover:
+        provider.Value :> CodeDomProvider
       
     override x.GetSupportedClrVersions() =
       [| ClrVersion.Net_2_0; ClrVersion.Net_4_0; ClrVersion.Net_4_5;  ClrVersion.Clr_2_1 |]

@@ -142,20 +142,6 @@
                      class="MonoDevelop.FSharp.FSharpLanguageBinding" />
 	</Extension>
 
-  <!--
-  	<Extension path="/MonoDevelop/ProjectModel/DomParser">
-    	<Class class="MonoDevelop.FSharpBinding.DomParser" />
-  	</Extension>
-  -->
-  
-  	<Extension path = "/MonoDevelop/SourceEditor2/CustomModes">
-    	<SyntaxMode mimeTypes="text/x-fsharp" class="MonoDevelop.FSharp.FSharpSyntaxMode"/>
-  	</Extension>
-
-  	<Extension path="/MonoDevelop/SourceEditor2/SyntaxModes">
-    	<Templates resource="FSharpSyntaxMode.xml" />
-  	</Extension>
-
   	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
     	<Class fileExtensions=".fs,.fsi,.fsx,.fsscript" class="MonoDevelop.FSharp.FSharpTextEditorCompletion" />
   	</Extension>

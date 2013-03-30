@@ -31,7 +31,7 @@ module internal Generator =
   
     //---------------------------------------------------------------------------------------------
     // Context and configuration
-    
+ 
     type AdditionalOptions =
       /// No extra configuration
       | None = 0                      
@@ -166,9 +166,8 @@ module internal Generator =
       | [] -> [];
       | a::r -> match (f a) with | None -> (mapFilter f r) | Some el -> el::(mapFilter f r)
 
-    /// Process collection - keeps context through the whole processing
-    /// calls 'f' for every element in sequence and 'fs' between every two elements 
-    /// as a separator
+    /// Process collection - keeps context through the whole processing calls 'f' for every 
+    /// element in sequence and 'fs' between every two elements as a separator
     let col fs (c:IEnumerable) f (ctx:Context) = 
       let mutable tryPick = true in
       let mutable st = ctx
@@ -1429,7 +1428,7 @@ VisibilityMask Specifies type visibility information.
           let spaces = Array.foldBack (countSpaces >> min) lines Int32.MaxValue
           let lines = lines |> Array.map (fun s -> s.[spaces..])
           
-          // ASP.NET doesn’t use any comments or custom attributes, 
+          // ASP.NET doesnï¿½t use any comments or custom attributes, 
           // but I assume this would be the right order
           id 
           +> col sepNone c.Comments generateStatement

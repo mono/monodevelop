@@ -61,7 +61,6 @@
     <EmbeddedResource Include="icons.fsharp-file-icon.png" />
     <EmbeddedResource Include="icons.fsharp-project-icon.png" />
     <EmbeddedResource Include="icons.fsharp-script-icon.png" />
-    <EmbeddedResource Include="FSharpSyntaxMode.xml" />
 
     <None Include="templates.EmptyFSharpSource.xft.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -102,7 +101,6 @@
     <Compile Include="PowerPack\CodeProvider.fs" />
     <Compile Include="PowerPack\LazyList.fsi" />
     <Compile Include="PowerPack\LazyList.fs" />
-    <Compile Include="Services\Mailbox.fs" />
     <Compile Include="Services\Parameters.fs" />
     <Compile Include="Services\Parser.fs" />
     <Compile Include="Services\CompilerArguments.fs" />
