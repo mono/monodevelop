@@ -19,7 +19,8 @@ module Options =
   Seq.iter (fun (s:string,d:string,a:string -> unit) -> ignore (p.Add(s,d,a)))
     [
       "version", "display versioning information",
-        fun _ -> printfn "%s" Version.string
+        fun _ -> printfn "%s" Version.string;
+                 exit 0
 
       "v|verbose", "enable verbose mode",
         fun _ -> Debug.verbose := true
