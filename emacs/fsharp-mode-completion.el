@@ -330,7 +330,7 @@ display in a help buffer instead.")
   (interactive)
   (when (eq (char-before) (string-to-char "."))
     (ac-stop))
-  (delete-backward-char 1))
+  (delete-char -1))
 
 (define-key ac-completing-map (kbd "<backspace>") 'fsharp-ac/electric-backspace)
 

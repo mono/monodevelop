@@ -56,6 +56,13 @@ Note that if you do not use `make install`, which attempts to download
 the dependencies from MELPA for you, then you must ensure that you have
 installed them yourself. A list can be found in `fsharp-mode-pkg.el`.
 
+If you run into any problems with installation, please check that you
+have Emacs 24 on your PATH using `emacs --version`.
+Note that OSX comes with Emacs 22 by default and installing a .app of
+Emacs 24 will not add it to your PATH. One option is:
+
+`alias emacs='/Applications/Emacs.app/Contents/MacOS/Emacs'`
+
 ## Usage
 
 fsharp-mode should launch automatically whenever you open an F#
@@ -109,11 +116,15 @@ invoked through the shell scripts `fsharpi` and `fsharpc`.
 
 There are a few variables you can adjust to change how fsharp-mode behaves:
 
-- `ac-fsharp-use-popup`: Show tooltips using a popup at the cursor
+- `fsharp-ac-use-popup`: Show tooltips using a popup at the cursor
   position. If set to nil, display the tooltip in a split window.
 
 - `fsharp-doc-idle-delay`: Set the time (in seconds) to wait before
   showing type information in the minibuffer.
+  
+- `fsharp-ac-intellisense-enabled`: This mode overrides some aspects of
+  auto-complete configuration and runs the background process automatically.
+  Set to nil to prevent this.
 
 ### Key Bindings
 
