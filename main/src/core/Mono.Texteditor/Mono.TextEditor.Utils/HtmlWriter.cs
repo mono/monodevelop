@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Text;
+using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor.Utils
 {
@@ -37,16 +38,21 @@ namespace Mono.TextEditor.Utils
 		{
 			var htmlText = new StringBuilder ();
 
-			htmlText.Append (@"<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.0 Transitional//EN""><HTML><BODY>");
-
+			htmlText.AppendLine (@"<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.0 Transitional//EN"">");
+			htmlText.AppendLine ("<HTML>");
+			htmlText.AppendLine ("<BODY>"); 
 			var selection = new TextSegment (0, doc.TextLength);
 			int startLineNumber = doc.OffsetToLineNumber (selection.Offset);
 			int endLineNumber = doc.OffsetToLineNumber (selection.EndOffset);
-			htmlText.Append ("<FONT face = '" + options.Font.Family + "'>");
+			htmlText.AppendLine ("<FONT face = '" + options.Font.Family + "'>");
 			bool first = true;
+			if (mode is SyntaxMode) {
+				SyntaxModeService.StartUpdate (doc, (SyntaxMode)mode, selection.Offset, selection.EndOffset);
+				SyntaxModeService.WaitUpdate (doc);
+			}
 			foreach (var line in doc.GetLinesBetween (startLineNumber, endLineNumber)) {
 				if (!first) {
-					htmlText.Append ("<BR/>");
+					htmlText.AppendLine ("<BR>");
 				} else {
 					first = false;
 				}
@@ -55,6 +61,7 @@ namespace Mono.TextEditor.Utils
 					AppendHtmlText (htmlText, doc, options, System.Math.Max (selection.Offset, line.Offset), System.Math.Min (line.EndOffset, selection.EndOffset));
 					continue;
 				}
+				int curSpaces = 0;
 
 				foreach (var chunk in mode.GetChunks (style, line, line.Offset, line.Length)) {
 					int start = System.Math.Max (selection.Offset, chunk.Offset);
@@ -73,7 +80,7 @@ namespace Mono.TextEditor.Utils
 					}
 				}
 			}
-			htmlText.Append ("</FONT>");
+			htmlText.AppendLine ("</FONT>");
 			htmlText.Append ("</BODY></HTML>");
 			return htmlText.ToString ();
 		}
@@ -84,7 +91,7 @@ namespace Mono.TextEditor.Utils
 				char ch = doc.GetCharAt (i);
 				switch (ch) {
 				case ' ':
-					htmlText.Append ("&nbsp;");
+					htmlText.Append ("&nbsp;"); // NOTE: &#32; doesn't work in all programs
 					break;
 				case '\t':
 					for (int i2 = 0; i2 < options.TabSize; i2++)

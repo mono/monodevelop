@@ -97,13 +97,17 @@ namespace Mono.TextEditor
 					}
 					break;
 				case RichTextType:
-					selection_data.Set (RTF_ATOM, UTF8_FORMAT, System.Text.Encoding.UTF8.GetBytes (RtfWriter.GenerateRtf (copiedDocument, mode, docStyle, options)));
+					var rtf = RtfWriter.GenerateRtf (copiedDocument, mode, docStyle, options);
+//					Console.WriteLine ("rtf:" + rtf);
+					selection_data.Set (RTF_ATOM, UTF8_FORMAT, Encoding.UTF8.GetBytes (rtf));
 					break;
 				case HTMLTextType:
-					selection_data.Set (HTML_ATOM, UTF8_FORMAT, System.Text.Encoding.UTF8.GetBytes (HtmlWriter.GenerateHtml (copiedDocument, mode, docStyle, options)));
+					var html = HtmlWriter.GenerateHtml (copiedDocument, mode, docStyle, options);
+//					Console.WriteLine ("html:" + html);
+					selection_data.Set (HTML_ATOM, UTF8_FORMAT, Encoding.UTF8.GetBytes (html));
 					break;
 				case MonoTextType:
-					byte[] rawText = System.Text.Encoding.UTF8.GetBytes (monoDocument.Text);
+					byte[] rawText = Encoding.UTF8.GetBytes (monoDocument.Text);
 					byte[] data = new byte [rawText.Length + 1];
 					rawText.CopyTo (data, 1);
 					data [0] = 0;
