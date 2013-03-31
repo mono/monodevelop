@@ -272,14 +272,16 @@ display in a help buffer instead.")
         (when (eq ?\. c)
           (point)))))
 
-
 (defun fsharp-ac-can-make-request ()
-  (and (fsharp-ac--process-live-p)
-       (not ac-completing)
-       (or
-        (member (expand-file-name (buffer-file-name)) fsharp-ac-project-files)
-        (string-match-p (rx (or "fsx" "fsscript"))
-                        (file-name-extension (buffer-file-name))))))
+  "Test whether it is possible to make a request with the compiler binding.
+The current buffer must be an F# file that exists on disk."
+  (let ((file (buffer-file-name)))
+    (and file
+         (fsharp-ac--process-live-p)
+         (not ac-completing)
+         (or (member (expand-file-name file) fsharp-ac-project-files)
+             (string-match-p (rx (or "fsx" "fsscript"))
+                             (file-name-extension file))))))
 
 (defvar fsharp-ac-awaiting-tooltip nil)
 
