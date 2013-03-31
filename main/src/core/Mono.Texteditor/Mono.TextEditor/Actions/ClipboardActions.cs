@@ -57,9 +57,8 @@ namespace Mono.TextEditor
 			
 			Clipboard clipboard = Clipboard.Get (CopyOperation.CLIPBOARD_ATOM);
 			operation.CopyData (data);
-			
-			clipboard.SetWithData ((Gtk.TargetEntry[])CopyOperation.targetList, operation.ClipboardGetFunc,
-			                       operation.ClipboardClearFunc);
+
+			clipboard.SetWithData (CopyOperation.TargetEntries, operation.ClipboardGetFunc, operation.ClipboardClearFunc);
 		}
 	
 		public class CopyOperation
@@ -138,7 +137,8 @@ namespace Mono.TextEditor
 			ITextEditorOptions options;
 			Mono.TextEditor.Highlighting.ISyntaxMode mode;
 
-			public static Gtk.TargetList targetList;
+			public static readonly TargetEntry[] TargetEntries;
+			public static readonly TargetList TargetList;
 
 			static CopyOperation ()
 			{
@@ -151,18 +151,27 @@ namespace Mono.TextEditor
 					HTML_ATOM = Gdk.Atom.Intern ("text/html", false);
 				}
 
-				targetList = new Gtk.TargetList ();
-				targetList.Add (HTML_ATOM, /* FLAGS */0, HTMLTextType);
-				targetList.Add (RTF_ATOM, /* FLAGS */0, RichTextType);
-				targetList.Add (MD_ATOM, /* FLAGS */0, MonoTextType);
-				targetList.AddTextTargets (TextType);
+				var newTargets = new List<TargetEntry> ();
+
+				newTargets.Add (new TargetEntry ("SAVE_TARGETS", TargetFlags.App, TextType));
+
+				newTargets.Add (new TargetEntry (HTML_ATOM.Name, TargetFlags.OtherApp, HTMLTextType));
+				newTargets.Add (new TargetEntry ("UTF8_STRING", TargetFlags.App, TextType));
+
+				newTargets.Add (new TargetEntry (RTF_ATOM.Name, TargetFlags.OtherApp, RichTextType));
+				newTargets.Add (new TargetEntry (MD_ATOM.Name, TargetFlags.App, MonoTextType));
+
+				newTargets.Add (new TargetEntry ("text/plain;charset=utf-8", TargetFlags.App, TextType));
+				newTargets.Add (new TargetEntry ("text/plain", TargetFlags.App, TextType));
 
 				//HACK: work around gtk_selection_data_set_text causing crashes on Mac w/ QuickSilver, Clipbard History etc.
-				if (Platform.IsMac) {
-					targetList.Remove ("COMPOUND_TEXT");
-					targetList.Remove ("TEXT");
-					targetList.Remove ("STRING");
+				if (!Platform.IsMac) {
+					newTargets.Add (new TargetEntry ("COMPOUND_TEXT", TargetFlags.App, TextType));
+					newTargets.Add (new TargetEntry ("STRING", TargetFlags.App, TextType));
+					newTargets.Add (new TargetEntry ("TEXT", TargetFlags.App, TextType));
 				}
+				TargetEntries = newTargets.ToArray ();
+				TargetList = new TargetList (TargetEntries);
 			}
 			
 			void CopyData (TextEditorData data, Selection selection)
@@ -258,7 +267,7 @@ namespace Mono.TextEditor
 		{
 			return PasteFrom (clipboard, data, preserveSelection, insertionOffset, false);
 		}
-		
+
 		static int PasteFrom (Clipboard clipboard, TextEditorData data, bool preserveSelection, int insertionOffset, bool preserveState)
 		{
 			int result = -1;

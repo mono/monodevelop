@@ -40,6 +40,10 @@ namespace Mono.TextEditor.Utils
 
 			htmlText.AppendLine (@"<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.0 Transitional//EN"">");
 			htmlText.AppendLine ("<HTML>");
+			htmlText.AppendLine ("<HEAD>");
+			htmlText.AppendLine ("<META HTTP-EQUIV=\"CONTENT-TYPE\" CONTENT=\"text/html; charset=utf-8\">");
+			htmlText.AppendLine ("<META NAME=\"GENERATOR\" CONTENT=\"Mono Text Editor\">");
+			htmlText.AppendLine ("</HEAD>");
 			htmlText.AppendLine ("<BODY>"); 
 			var selection = new TextSegment (0, doc.TextLength);
 			int startLineNumber = doc.OffsetToLineNumber (selection.Offset);
