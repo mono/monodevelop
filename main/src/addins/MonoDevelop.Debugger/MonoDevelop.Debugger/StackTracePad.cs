@@ -335,10 +335,9 @@ namespace MonoDevelop.Debugger
 		[CommandHandler ("StackTracePad.ActivateFrame")]
 		void ActivateFrame ()
 		{
-			TreePath[] sel = tree.Selection.GetSelectedRows ();
-			if (sel.Length > 0) {
-				DebuggingService.CurrentFrameIndex = sel[0].Indices [0];
-			}
+			TreePath[] selected = tree.Selection.GetSelectedRows ();
+			if (selected.Length > 0)
+				DebuggingService.CurrentFrameIndex = selected[0].Indices [0];
 		}
 		
 		[CommandHandler (EditCommands.SelectAll)]

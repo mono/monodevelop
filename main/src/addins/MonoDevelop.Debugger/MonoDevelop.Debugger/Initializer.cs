@@ -84,6 +84,10 @@ namespace MonoDevelop.Debugger
 					return;
 			}
 
+			// If we don't have an address space, we can't disassemble
+			if (string.IsNullOrEmpty (frame.AddressSpace))
+				return;
+
 			if (!DebuggingService.CurrentSessionSupportsFeature (DebuggerFeatures.Disassembly))
 				return;
 

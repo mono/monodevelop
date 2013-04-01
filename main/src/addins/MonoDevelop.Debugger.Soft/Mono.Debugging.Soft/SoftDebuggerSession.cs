@@ -2411,6 +2411,7 @@ namespace Mono.Debugging.Soft
 			IsWindows = Path.DirectorySeparatorChar == '\\';
 			IsMac = !IsWindows && IsRunningOnMac();
 			PathComparer = (IgnoreFilenameCase)? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
+			ThreadMirror.NativeTransitions = true;
 		}
 		
 		//From Managed.Windows.Forms/XplatUI
