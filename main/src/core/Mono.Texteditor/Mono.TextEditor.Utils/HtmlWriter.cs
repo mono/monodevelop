@@ -38,19 +38,18 @@ namespace Mono.TextEditor.Utils
 		public static string GenerateHtml (TextDocument doc, Mono.TextEditor.Highlighting.ISyntaxMode mode, Mono.TextEditor.Highlighting.ColorScheme style, ITextEditorOptions options)
 		{
 
-			var htmlStart = new StringBuilder ();
-			htmlStart.AppendLine (@"<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.0 Transitional//EN"">");
-			htmlStart.AppendLine ("<HTML>");
-			htmlStart.AppendLine ("<HEAD>");
-			htmlStart.AppendLine ("<META HTTP-EQUIV=\"CONTENT-TYPE\" CONTENT=\"text/html; charset=utf-8\">");
-			htmlStart.AppendLine ("<META NAME=\"GENERATOR\" CONTENT=\"Mono Text Editor\">");
-			htmlStart.AppendLine ("</HEAD>");
-			htmlStart.AppendLine ("<BODY>"); 
+			var htmlText = new StringBuilder ();
+			htmlText.AppendLine (@"<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.0 Transitional//EN"">");
+			htmlText.AppendLine ("<HTML>");
+			htmlText.AppendLine ("<HEAD>");
+			htmlText.AppendLine ("<META HTTP-EQUIV=\"CONTENT-TYPE\" CONTENT=\"text/html; charset=utf-8\">");
+			htmlText.AppendLine ("<META NAME=\"GENERATOR\" CONTENT=\"Mono Text Editor\">");
+			htmlText.AppendLine ("</HEAD>");
+			htmlText.AppendLine ("<BODY>"); 
 
 			var selection = new TextSegment (0, doc.TextLength);
 			int startLineNumber = doc.OffsetToLineNumber (selection.Offset);
 			int endLineNumber = doc.OffsetToLineNumber (selection.EndOffset);
-			var htmlText = new StringBuilder ();
 			htmlText.AppendLine ("<FONT face = '" + options.Font.Family + "'>");
 			bool first = true;
 			if (mode is SyntaxMode) {
@@ -89,35 +88,37 @@ namespace Mono.TextEditor.Utils
 				}
 			}
 			htmlText.AppendLine ("</FONT>");
+            htmlText.AppendLine ("</BODY></HTML>");
 
-			string htmlEnd = "</BODY></HTML>";
-			if (Platform.IsWindows) {
-				string htmlFragment = htmlText.ToString ();
+			if (Platform.IsWindows)
+                return GenerateCFHtml (htmlText.ToString ());
 
-                int startHTML     = emptyCFHtmlHeader.Length;
-				int startFragment = startHTML + htmlStart.Length;
-				int endFragment   = startFragment + Encoding.UTF8.GetByteCount (htmlFragment);
-				int endHTML       = endFragment + htmlEnd.Length;
-                return GenerateCFHtmlHeader (startHTML, endHTML, startFragment, endFragment) + htmlStart + htmlFragment + htmlEnd;
-			}
-
-			return htmlStart.ToString () + htmlText.ToString () + htmlEnd.ToString ();
+			return htmlText.ToString ();
 		}
 
         static readonly string emptyCFHtmlHeader = GenerateCFHtmlHeader (0, 0, 0, 0);
 
+        static string GenerateCFHtml (string htmlFragment)
+        {
+            int startHTML = emptyCFHtmlHeader.Length;
+            int startFragment = startHTML;
+            int endFragment = startFragment + System.Text.Encoding.UTF8.GetByteCount (htmlFragment);
+            int endHTML = endFragment;
+            return GenerateCFHtmlHeader (startHTML, endHTML, startFragment, endFragment) + htmlFragment;
+        }
+
         /// <summary>
-		/// Generates a CF_HTML clipboard format header.
-		/// </summary>
+        /// Generates a CF_HTML clipboard format header.
+        /// </summary>
         static string GenerateCFHtmlHeader (int startHTML, int endHTML, int startFragment, int endFragment)
-		{
+        {
             return
                 "Version:0.9" + Environment.NewLine +
-                string.Format ("StartHTML: {0:d8}", startHTML) + Environment.NewLine +
-                string.Format ("EndHTML: {0:d8}", endHTML) + Environment.NewLine +
-                string.Format ("StartFragment: {0:d8}", startFragment) + Environment.NewLine +
-                string.Format ("EndFragment: {0:d8}", endFragment) + Environment.NewLine;
-		}
+                    string.Format ("StartHTML: {0:d8}", startHTML) + Environment.NewLine +
+                    string.Format ("EndHTML: {0:d8}", endHTML) + Environment.NewLine +
+                    string.Format ("StartFragment: {0:d8}", startFragment) + Environment.NewLine +
+                    string.Format ("EndFragment: {0:d8}", endFragment) + Environment.NewLine;
+        }
 
 		static void AppendHtmlText (StringBuilder htmlText, TextDocument doc, ITextEditorOptions options, int start, int end)
 		{
