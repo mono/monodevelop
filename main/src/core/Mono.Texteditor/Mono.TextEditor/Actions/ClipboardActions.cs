@@ -146,6 +146,9 @@ namespace Mono.TextEditor
 					RTF_ATOM = Gdk.Atom.Intern ("NSRTFPboardType", false); //TODO: use public.rtf when dep on MacOS 10.6
 					const string NSHTMLPboardType = "Apple HTML pasteboard type";
 					HTML_ATOM = Gdk.Atom.Intern (NSHTMLPboardType, false);
+				} else if (Platform.IsWindows) {
+					RTF_ATOM = Gdk.Atom.Intern ("Rich Text Format", false);
+					HTML_ATOM = Gdk.Atom.Intern ("HTML Format", false);
 				} else {
 					RTF_ATOM = Gdk.Atom.Intern ("text/rtf", false);
 					HTML_ATOM = Gdk.Atom.Intern ("text/html", false);
