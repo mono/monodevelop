@@ -310,7 +310,7 @@ namespace MonoDevelop.CSharp
 			if (t == null)
 				throw new ArgumentNullException ("t");
 			var result = new StringBuilder ();
-			var highlightedTypeName = Highlight (CSharpAmbience.FilterName (t.Name), colorStyle.KeywordTypes);
+			var highlightedTypeName = Highlight (CSharpAmbience.FilterName (t.Name), colorStyle.UserTypes);
 			result.Append (highlightedTypeName);
 
 			var color = AlphaBlend (colorStyle.PlainText.Foreground, colorStyle.PlainText.Background, optionalAlpha);
@@ -383,7 +383,7 @@ namespace MonoDevelop.CSharp
 		string GetTypeNameWithParameters (IType t)
 		{
 			StringBuilder result = new StringBuilder ();
-			result.Append (Highlight (CSharpAmbience.FilterName (t.Name), colorStyle.KeywordTypes));
+			result.Append (Highlight (CSharpAmbience.FilterName (t.Name), colorStyle.UserTypesTypeParameters));
 			if (t.TypeParameterCount > 0) {
 				if (t.TypeArguments.Count > 0) {
 					AppendTypeArgumentList (result, t);
