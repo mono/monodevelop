@@ -1,0 +1,9 @@
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {value}.
+        /// </summary>
+        internal static string {name} {
+            get {
+                return ResourceManager.GetString("{name}", resourceCulture);
+            }
+        }

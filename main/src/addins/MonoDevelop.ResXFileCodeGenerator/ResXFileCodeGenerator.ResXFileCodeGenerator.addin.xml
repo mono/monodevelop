@@ -1,0 +1,18 @@
+<Addin namespace   = "MonoDevelop"  
+       id          = "ResXFileCodeGenerator"  
+       name        = "ResX Code-Behind Generator"  
+       author      = "Kenneth Skovhede"  
+       copyright   = ""  
+       url         = ""  
+       description = "Generates strongly typed designer files from .resx resources."  
+       category    = "IDE Extensions"  
+       version     = "1.0">  
+  
+    <Dependencies>  
+        <Addin id="::MonoDevelop.Ide" version="4.0"/>  
+    </Dependencies>  
+    
+    <Extension path = "/MonoDevelop/Ide/CustomTools">  
+  		<Tool name="ResXFileCodeGenerator" type="MonoDevelop.ResXFileCodeGenerator"/>
+    </Extension>  
+</Addin> 
