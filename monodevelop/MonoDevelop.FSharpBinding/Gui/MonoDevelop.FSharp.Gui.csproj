@@ -58,13 +58,13 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="gtk-gui/generated.cs" />
+    <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="FSharpCompilerOptionsWidget.cs" />
     <Compile Include="FSharpBuildOrderWidget.cs" />
     <Compile Include="FSharpSettingsWidget.cs" />
-    <Compile Include="gtk-gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs" />
-    <Compile Include="gtk-gui/MonoDevelop.FSharp.Gui.FSharpBuildOrderWidget.cs" />
-    <Compile Include="gtk-gui/MonoDevelop.FSharp.Gui.FSharpSettingsWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.FSharp.Gui.FSharpBuildOrderWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.FSharp.Gui.FSharpSettingsWidget.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
