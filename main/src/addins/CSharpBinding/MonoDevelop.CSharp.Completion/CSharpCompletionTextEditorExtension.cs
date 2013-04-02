@@ -275,6 +275,14 @@ namespace MonoDevelop.CSharp.Completion
 				Document.GetProjectContext (),
 				ctx
 			);
+
+			if (Document.HasProject) {
+				var configuration = Document.Project.GetConfiguration (MonoDevelop.Ide.IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
+				var par = configuration != null ? configuration.CompilationParameters as CSharpCompilerParameters : null;
+				if (par != null)
+					engine.LanguageVersion = MonoDevelop.CSharp.Parser.TypeSystemParser.ConvertLanguageVersion (par.LangVersion);
+			}
+
 			engine.FormattingPolicy = FormattingPolicy.CreateOptions ();
 			engine.EolMarker = data.EolMarker;
 			engine.IndentString = data.Options.IndentationString;
