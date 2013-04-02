@@ -35,36 +35,36 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="pango-sharp">
-      <HintPath>..\..\dependencies\gtk-sharp-2.0\pango-sharp.dll</HintPath>
+      <HintPath>../../dependencies/gtk-sharp-2.0/pango-sharp.dll</HintPath>
     </Reference>
     <Reference Include="atk-sharp">
-      <HintPath>..\..\dependencies\gtk-sharp-2.0\atk-sharp.dll</HintPath>
+      <HintPath>../../dependencies/gtk-sharp-2.0/atk-sharp.dll</HintPath>
     </Reference>
     <Reference Include="glib-sharp">
-      <HintPath>..\..\dependencies\gtk-sharp-2.0\glib-sharp.dll</HintPath>
+      <HintPath>../../dependencies/gtk-sharp-2.0/glib-sharp.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <Reference Include="gdk-sharp">
-      <HintPath>..\..\dependencies\gtk-sharp-2.0\gdk-sharp.dll</HintPath>
+      <HintPath>../../dependencies/gtk-sharp-2.0/gdk-sharp.dll</HintPath>
     </Reference>
     <Reference Include="gtk-sharp">
-      <HintPath>..\..\dependencies\gtk-sharp-2.0\gtk-sharp.dll</HintPath>
+      <HintPath>../../dependencies/gtk-sharp-2.0/gtk-sharp.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="gtk-gui\gui.stetic">
+    <EmbeddedResource Include="gtk-gui/gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="gtk-gui\generated.cs" />
+    <Compile Include="gtk-gui/generated.cs" />
     <Compile Include="FSharpCompilerOptionsWidget.cs" />
     <Compile Include="FSharpBuildOrderWidget.cs" />
     <Compile Include="FSharpSettingsWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.FSharp.Gui.FSharpBuildOrderWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.FSharp.Gui.FSharpSettingsWidget.cs" />
+    <Compile Include="gtk-gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs" />
+    <Compile Include="gtk-gui/MonoDevelop.FSharp.Gui.FSharpBuildOrderWidget.cs" />
+    <Compile Include="gtk-gui/MonoDevelop.FSharp.Gui.FSharpSettingsWidget.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
