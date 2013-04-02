@@ -17,6 +17,24 @@ open MonoDevelop.Ide.Gui
 
 open MonoDevelop.FSharp
 
+[<AutoOpen>]
+module ColorHelpers =
+    let strToColor s = 
+        let c = ref (new Color())
+        match Color.Parse (s, c) with
+        | true -> !c
+        | false -> new Color() // black is as good a guess as any here
+        
+    let colorToStr (c:Color) =
+        sprintf "#%04X%04X%04X" c.Red c.Green c.Blue
+        
+    let cairoToHsl (c:Cairo.Color) = HslColor.op_Implicit(c)
+    let gdkToHsl (c:Gdk.Color) = HslColor.op_Implicit(c)
+    let hslToCairo (c:HslColor) : Cairo.Color = HslColor.op_Implicit(c)
+    let hslToGdk (c:HslColor) : Gdk.Color = HslColor.op_Implicit(c)
+     
+    let cairoToGdk = cairoToHsl >> hslToGdk
+        
 type FSharpCommands = 
   | ShowFSharpInteractive = 0
   | SendSelection = 1
@@ -100,7 +118,8 @@ type FSharpInteractivePad() =
       view.Child.KeyPressEvent.Add(fun ea ->
         if ea.Event.State &&& ModifierType.ControlMask = ModifierType.ControlMask && ea.Event.Key = Key.period then
           !session |> Option.iter (fun s -> s.Interrupt()) )
-      x.UpdateFont()    
+      x.UpdateFont()   
+
       view.ShadowType <- Gtk.ShadowType.None
       view.ShowAll()
       
@@ -112,6 +131,8 @@ type FSharpInteractivePad() =
                                     item.Show()
                                     args.Menu.Add(item))
       | _ -> ()
+      
+      x.UpdateColors()
                             
       let toolbar = container.GetToolbar(Gtk.PositionType.Right);
 
@@ -133,6 +154,26 @@ type FSharpInteractivePad() =
     !session |> Option.iter (fun ses -> ses.Kill())
     session := None
     sendCommand "" false
+    
+  member x.UpdateColors() =
+    match view.Child with
+      | :? Gtk.TextView as v -> 
+            let colourStyles = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle(MonoDevelop.Ide.IdeApp.Preferences.ColorScheme)
+            
+            let (_, shouldMatch) = PropertyService.Get<string>("FSharpBinding.MatchWitThemePropName", "false") |> System.Boolean.TryParse
+            let themeTextColour = colourStyles.PlainText.Foreground |> cairoToGdk
+            let themeBackColour = colourStyles.PlainText.Background |> cairoToGdk
+            if(shouldMatch) then
+                v.ModifyText(Gtk.StateType.Normal, themeTextColour)
+                v.ModifyBase(Gtk.StateType.Normal, themeBackColour)
+            else
+                let textColour = PropertyService.Get<string>("FSharpBinding.TextColorPropName", "#000000") 
+                                    |> ColorHelpers.strToColor
+                let backColour = PropertyService.Get<string>("FSharpBinding.BaseColorPropName", "#FFFFFF") 
+                                    |> ColorHelpers.strToColor
+                v.ModifyText(Gtk.StateType.Normal, textColour)
+                v.ModifyBase(Gtk.StateType.Normal, backColour)
+      | _ -> ()
     
   member x.UpdateFont() = 
     let fontName = DesktopService.DefaultMonospaceFont
