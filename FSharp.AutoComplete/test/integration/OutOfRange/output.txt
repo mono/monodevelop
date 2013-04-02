@@ -249,9 +249,9 @@ module XA
 
 from Script
 <<EOF>>
-ERROR: No tooltip information
+INFO: No tooltip information
 <<EOF>>
-ERROR: No tooltip information
+INFO: No tooltip information
 <<EOF>>
 ERROR: Position is out of range
 <<EOF>>

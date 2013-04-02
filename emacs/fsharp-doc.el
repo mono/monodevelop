@@ -117,11 +117,11 @@ Otherwise, request a tooltip from the completion process."
   (when (and fsharp-doc-mode (thing-at-point 'symbol))
     (unless (or (equal (point) fsharp-doc-prevpoint)
                 executing-kbd-macro
-                (fsharp-mode-completion-fsharp-overlay-at (point))
+                (fsharp-ac/overlay-at (point))
                 (active-minibuffer-window)
                 cursor-in-echo-area)
       (setq fsharp-doc-prevpoint (point))
-      (fsharp-mode-completion/show-typesig-at-point))))
+      (fsharp-ac/show-typesig-at-point))))
 
 (provide 'fsharp-doc)
 

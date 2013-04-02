@@ -6,7 +6,7 @@
 ;;         2010-2011 Laurent Le Brun <laurent@le-brun.eu>
 ;; Maintainer: Robin Neatherway <robin.neatherway@gmail.com>
 ;; Keywords: languages
-;; Version: 0.8
+;; Version: 0.9
 
 ;; This file is not part of GNU Emacs.
 
@@ -29,7 +29,7 @@
 (require 'fsharp-doc)
 (require 'inf-fsharp-mode)
 
-(defconst fsharp-mode-version 0.8
+(defconst fsharp-mode-version 0.9
   "Version of this fsharp-mode")
 
 ;;; Compilation
@@ -88,14 +88,15 @@ and whether it is in a project directory.")
   (define-key fsharp-mode-map "\C-c:"     'fsharp-guess-indent-offset)
   (define-key fsharp-mode-map [delete]    'fsharp-electric-delete)
   (define-key fsharp-mode-map [backspace] 'fsharp-electric-backspace)
-  (define-key fsharp-mode-map (kbd ".") 'ac-fsharp-electric-dot)
+  (define-key fsharp-mode-map (kbd ".") 'fsharp-ac/electric-dot)
 
   (define-key fsharp-mode-map (kbd "C-c <up>") 'fsharp-goto-block-up)
 
-  (define-key fsharp-mode-map (kbd "C-c C-p") 'fsharp-mode-completion/load-project)
-  (define-key fsharp-mode-map (kbd "C-c C-t") 'fsharp-mode-completion/show-tooltip-at-point)
-  (define-key fsharp-mode-map (kbd "C-c C-d") 'ac-fsharp-gotodefn-at-point)
-  (define-key fsharp-mode-map (kbd "C-c C-q") 'fsharp-mode-completion/stop-process)
+  (define-key fsharp-mode-map (kbd "C-c C-p") 'fsharp-ac/load-project)
+  (define-key fsharp-mode-map (kbd "C-c C-t") 'fsharp-ac/show-tooltip-at-point)
+  (define-key fsharp-mode-map (kbd "C-c C-d") 'fsharp-ac/gotodefn-at-point)
+  (define-key fsharp-mode-map (kbd "C-c C-q") 'fsharp-ac/stop-process)
+  (define-key fsharp-mode-map (kbd "C-c C-.") 'fsharp-ac/complete-at-point)
 
   (unless running-xemacs
     (let ((map (make-sparse-keymap "fsharp"))
@@ -171,8 +172,6 @@ and whether it is in a project directory.")
   "A marker caching last determined fsharp comment end.")
 (make-variable-buffer-local 'fsharp-last-comment-end)
 
-(make-variable-buffer-local 'before-change-function)
-
 (defvar fsharp-mode-hook nil
   "Hook for fsharp-mode")
 
@@ -204,9 +203,14 @@ and whether it is in a project directory.")
           indent-line-function
           add-log-current-defun-function
           underline-minimum-offset
-          compile-command))
+          compile-command
 
-  (add-hook 'completion-at-point-functions #'ac-fsharp-completion-at-point)
+          ac-sources
+          ac-auto-start
+          ac-use-comphist
+          ac-auto-show-menu
+          ac-quick-help-delay
+          popup-tip-max-width))
 
   (setq major-mode               'fsharp-mode
         mode-name                "fsharp"
@@ -226,15 +230,16 @@ and whether it is in a project directory.")
 
         paragraph-ignore-fill-prefix   t
         add-log-current-defun-function 'fsharp-current-defun
-        before-change-function         'fsharp-before-change-function
         fsharp-last-noncomment-pos     nil
         fsharp-last-comment-start      (make-marker)
-        fsharp-last-comment-end        (make-marker))
+        fsharp-last-comment-end        (make-marker)
+
+        )
 
   ;; Error navigation
-  (setq next-error-function 'fsharp-mode-completion/next-error)
-  (add-hook 'next-error-hook 'fsharp-mode-completion/show-error-at-point nil t)
-  (add-hook 'post-command-hook 'fsharp-mode-completion/show-error-at-point nil t)
+  (setq next-error-function 'fsharp-ac/next-error)
+  (add-hook 'next-error-hook 'fsharp-ac/show-error-at-point nil t)
+  (add-hook 'post-command-hook 'fsharp-ac/show-error-at-point nil t)
 
   ;; make a local copy of the menubar, so our modes don't
   ;; change the global menubar
@@ -244,19 +249,28 @@ and whether it is in a project directory.")
     (set-buffer-menubar current-menubar)
     (add-submenu nil fsharp-mode-xemacs-menu))
 
-  (setq compile-command (fsharp-mode-choose-compile-command (buffer-file-name)))
-  (unless ac-fsharp-completion-process
-    (fsharp-mode-try-load-project (buffer-file-name))
+  (setq compile-command (fsharp-mode-choose-compile-command
+                         (buffer-file-name)))
 
-    (turn-on-fsharp-doc-mode)
-    (run-hooks 'fsharp-mode-hook)))
+  (fsharp-mode--load-with-binding (buffer-file-name))
+  (turn-on-fsharp-doc-mode)
+  (run-hooks 'fsharp-mode-hook))
 
-
-(defun fsharp-mode-try-load-project (file)
-  (when file
-    (let ((proj (fsharp-mode/find-fsproj file)))
-      (when proj
-        (fsharp-mode-completion/load-project proj)))))
+(defun fsharp-mode--load-with-binding (file)
+  "Attempt to load FILE using the F# compiler binding.
+If FILE is part of an F# project, load the project.
+Otherwise, treat as a stand-alone file."
+  (or (when (not (fsharp-ac--process-live-p))
+        (fsharp-ac/load-project (fsharp-mode/find-fsproj file)))
+      (fsharp-ac/load-file file))
+  (when fsharp-ac-intellisense-enabled
+    (auto-complete-mode 1)
+    (setq ac-auto-start nil
+          ac-use-comphist nil
+          ac-quick-help-delay 0.5)
+    (when (and (display-graphic-p)
+               (featurep 'pos-tip))
+      (setq popup-tip-max-width 240))))
 
 (defun fsharp-mode-choose-compile-command (file)
   "Format an appropriate compilation command, depending on several factors:

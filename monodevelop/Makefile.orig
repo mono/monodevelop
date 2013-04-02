@@ -4,7 +4,7 @@
 #   run 'make install' to compile and install the plugin against the installed version of MonoDevelop detected by ./configure.sh
 #   run 'make pack-all' to create a deployment binary packages for the known set of supported MonoDevelop versions
 
-VERSION=3.2.14
+VERSION=3.2.15
 
 MDTOOL = $(MONO) 'INSERT_MDROOT/../../mdtool'
 
@@ -60,20 +60,20 @@ uninstall:
 
 packs: build-support
 	$(MAKE) USE_KNOWN_BINARIES=true MDVERSION3=4.0 MDVERSION4=4.0 config=Release pack
-	$(MAKE) USE_KNOWN_BINARIES=true MDVERSION3=3.0.3 MDVERSION4=3.0.3.2 config=Release pack
-	$(MAKE) USE_KNOWN_BINARIES=true MDVERSION3=3.0.4 MDVERSION4=3.0.4.7 config=Release pack
-	$(MAKE) USE_KNOWN_BINARIES=true MDVERSION3=3.0.5 MDVERSION4=3.0.5 config=Release pack
-	$(MAKE) USE_KNOWN_BINARIES=true MDVERSION3=3.0.6 MDVERSION4=3.0.6 config=Release pack
-	$(MAKE) USE_KNOWN_BINARIES=true MDVERSION3=3.1.1 MDVERSION4=3.1.1 config=Release pack
+	# $(MAKE) USE_KNOWN_BINARIES=true MDVERSION3=3.0.3 MDVERSION4=3.0.3.2 config=Release pack
+	# $(MAKE) USE_KNOWN_BINARIES=true MDVERSION3=3.0.4 MDVERSION4=3.0.4.7 config=Release pack
+	# $(MAKE) USE_KNOWN_BINARIES=true MDVERSION3=3.0.5 MDVERSION4=3.0.5 config=Release pack
+	# $(MAKE) USE_KNOWN_BINARIES=true MDVERSION3=3.0.6 MDVERSION4=3.0.6 config=Release pack
+	# $(MAKE) USE_KNOWN_BINARIES=true MDVERSION3=3.1.1 MDVERSION4=3.1.1 config=Release pack
 
 # Used by continuous integration.
 builds: 
 	$(MAKE) USE_KNOWN_BINARIES=true MDVERSION3=4.0 MDVERSION4=4.0 config=Release build
-	$(MAKE) USE_KNOWN_BINARIES=true MDVERSION3=3.0.3 MDVERSION4=3.0.3.2 config=Release build
-	$(MAKE) USE_KNOWN_BINARIES=true MDVERSION3=3.0.4 MDVERSION4=3.0.4.7 config=Release build
-	$(MAKE) USE_KNOWN_BINARIES=true MDVERSION3=3.0.5 MDVERSION4=3.0.5 config=Release build
-	$(MAKE) USE_KNOWN_BINARIES=true MDVERSION3=3.0.6 MDVERSION4=3.0.6 config=Release build
-	$(MAKE) USE_KNOWN_BINARIES=true MDVERSION3=3.1.1 MDVERSION4=3.1.1 config=Release build
+	# $(MAKE) USE_KNOWN_BINARIES=true MDVERSION3=3.0.3 MDVERSION4=3.0.3.2 config=Release build
+	# $(MAKE) USE_KNOWN_BINARIES=true MDVERSION3=3.0.4 MDVERSION4=3.0.4.7 config=Release build
+	# $(MAKE) USE_KNOWN_BINARIES=true MDVERSION3=3.0.5 MDVERSION4=3.0.5 config=Release build
+	# $(MAKE) USE_KNOWN_BINARIES=true MDVERSION3=3.0.6 MDVERSION4=3.0.6 config=Release build
+	# $(MAKE) USE_KNOWN_BINARIES=true MDVERSION3=3.1.1 MDVERSION4=3.1.1 config=Release build
 
 clean:
 	-rm -fr bin

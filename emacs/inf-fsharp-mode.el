@@ -25,6 +25,7 @@
 ;; Boston, MA 02110-1301, USA.
 
 (require 'comint)
+(require 'cl)
 
 ;; User modifiable variables
 
@@ -211,9 +212,9 @@ Input and output via buffer `*inferior-fsharp*'."
                    (concat ;; comint-prompt-regexp
                            "(\\([0-9]+\\),\\([0-9]+\\)): error"))
 ;;                           "[ \t]*Characters[ \t]+\\([0-9]+\\)-[0-9]+:$"))
-                  (string-to-int (match-string 1))))))
-    (goto-line (- loc 1))))
-;;    (goto-char loc)))
+                  (string-to-number (match-string 1))))))
+    (goto-char (point-min))
+    (forward-line (1- N))))
 
 
 ;; as eval-phrase, but ignores errors.
@@ -274,8 +275,8 @@ should lies."
           (cond ((re-search-forward
                   " *Characters \\([01-9][01-9]*\\)-\\([1-9][01-9]*\\):\n[^W]"
                   (point-max) t)
-                 (setq beg (string-to-int (fsharp-match-string 1)))
-                 (setq end (string-to-int (fsharp-match-string 2)))
+                 (setq beg (string-to-number (fsharp-match-string 1)))
+                 (setq end (string-to-number (fsharp-match-string 2)))
                  (switch-to-buffer buf)
                  (goto-char orig)
                  (forward-byte end)

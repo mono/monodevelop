@@ -12,6 +12,8 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 open FSharp.InteractiveAutocomplete.Parsing
 open FSharp.CompilerBinding.Reflection
 
+open Newtonsoft.Json
+
 module FsParser = Microsoft.FSharp.Compiler.Parser
 
 // --------------------------------------------------------------------------------------
@@ -19,14 +21,22 @@ module FsParser = Microsoft.FSharp.Compiler.Parser
 // We're using a simple agent, because requests should be done from a single thread
 // --------------------------------------------------------------------------------------
 
+
+/// The possible types of output
+type OutputMode =
+  | Json
+  | Text
+
+
 /// Represents information needed to call the F# IntelliSense service
 /// (including project/script options, file name and source)
-type internal RequestOptions(opts, file, src) =
+type internal RequestOptions(opts, file, src, mode) =
   member x.Options : CheckOptions = opts
   member x.FileName : string = file
   member x.Source : string = src
+  member x.OutputMode : OutputMode = mode
   member x.WithSource(source) =
-    RequestOptions(opts, file, source)
+    RequestOptions(opts, file, source, mode)
 
   override x.ToString() =
     sprintf "FileName: '%s'\nSource length: '%d'\nOptions: %s, %A, %A, %b, %b"
@@ -42,6 +52,13 @@ type internal IntelliSenseAgentMessage =
   | GetErrors of AsyncReplyChannel<ErrorInfo[]>
   | GetDeclarationsMessage of RequestOptions * AsyncReplyChannel<TopLevelDeclaration[]>
 
+/// Used to marshal completion candidates
+/// before serializing to JSON
+type Candidate =
+  {
+    Name: string
+    Help: string
+  }
 
 /// Provides an easy access to F# IntelliSense service
 type internal IntelliSenseAgent() =
@@ -122,7 +139,8 @@ type internal IntelliSenseAgent() =
       | Some _, ".fsx"
       | Some _, ".fsscript" ->
 
-        // We are in a stand-alone file or we are in a project, but currently editing a script file
+        // We are in a stand-alone file or we are in a project,
+        // but currently editing a script file
         checker.GetCheckOptionsFromScriptRoot(fileName, source, System.DateTime.Now)
 
           // The InteractiveChecker resolution doesn't sometimes
@@ -141,8 +159,11 @@ type internal IntelliSenseAgent() =
 
     // Print contents of check option for debugging purposes
     Debug.print "Checkoptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A"
-                         opts.ProjectFileName opts.ProjectFileNames opts.ProjectOptions
-                         opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules
+                         opts.ProjectFileName
+                         opts.ProjectFileNames
+                         opts.ProjectOptions
+                         opts.IsIncompleteTypeCheckEnvironment
+                         opts.UseScriptResolutionRules
     opts
 
 
@@ -172,8 +193,9 @@ type internal IntelliSenseAgent() =
 
   /// Invokes dot-completion request and writes information to the standard output
   member x.DoCompletion(opts : RequestOptions, ((line, column) as pos), lineStr, time) =
-    match x.GetTypeCheckInfo(opts, time) with
-    | Some(info) ->
+    let info = x.GetTypeCheckInfo(opts, time)
+    let decls =
+      Option.bind (fun (info: TypeCheckInfo) ->
         // Get the long identifier before the current location
         // 'residue' is the part after the last dot and 'longName' is before
         // e.g.  System.Console.Wri  --> "Wri", [ "System"; "Console"; ]
@@ -182,10 +204,25 @@ type internal IntelliSenseAgent() =
           lookBack |> Parsing.getFirst Parsing.parseBackIdentWithResidue
 
         // Get items & generate output
-        let decls = info.GetDeclarations(pos, lineStr, (longName, residue), 0, defaultArg time 1000)
-        printfn "DATA: completion"
+        try
+          Some (info.GetDeclarations(pos, lineStr, (longName, residue), 0, defaultArg time 1000))
+        with :? System.TimeoutException as e ->
+                   printfn "ERROR: GetDeclarations timed out\n<<EOF>>"
+                   None) info
+                   
+    match decls with
+    | Some decls ->
+      printfn "DATA: completion"
+      match opts.OutputMode with
+      | Json ->
+        let cs =
+          [ for d in decls.Items do
+            yield { Name = d.Name
+                    Help = TipFormatter.formatTip d.DescriptionText } ]
+        Console.WriteLine(JsonConvert.SerializeObject(cs))
+      | Text ->
         for d in decls.Items do Console.WriteLine(d.Name)
-        printfn "<<EOF>>"
+      printfn "<<EOF>>"
     | None -> printfn "ERROR: Could not get type information\n<<EOF>>"
 
 
@@ -289,7 +326,10 @@ module internal CommandInput =
     finddecl ""<filename>"" <line> <col> [timeout]
       - find the point of declaration of the object at specified position
     project ""<filename>""
-      - associates the current session with the specified project"
+      - associates the current session with the specified project
+    outputmode {json,text}
+      - switches the output format. 'json' offers richer data
+        for some commands. default is 'text'"
 
   let outputText = @"
     Output format
@@ -315,7 +355,7 @@ module internal CommandInput =
        followed by some lines of free text, terminated by the special
        string <<EOF>>"
 
-  // The types of commands that
+  // The types of commands that need position information
   type PosCommand =
     | Completion
     | ToolTip
@@ -329,6 +369,7 @@ module internal CommandInput =
     | Parse of string * bool
     | Error of string
     | Project of string
+    | OutputMode of OutputMode
     | Help
     | Quit
 
@@ -343,18 +384,27 @@ module internal CommandInput =
     let! _ = string "declarations "
     let! _ = char '"'
     let! filename = some (sat ((<>) '"')) |> Parser.map String.ofSeq
-    let! _ = char '"' // " // TODO: This here for Emacs syntax highlighting bug
+    let! _ = char '"'
     return Declarations(filename) }
 
   /// Parse 'errors' command
   let errors = string "errors" |> Parser.map (fun _ -> GetErrors)
+
+  /// Parse 'outputmode' command
+  let outputmode = parser {
+    let! _ = string "outputmode "
+    let! mode = (parser { let! _ = string "json"
+                          return Json }) <|>
+                (parser { let! _ = string "text"
+                          return Text })
+    return OutputMode mode }
 
   /// Parse 'project' command
   let project = parser {
     let! _ = string "project "
     let! _ = char '"'
     let! filename = some (sat ((<>) '"')) |> Parser.map String.ofSeq
-    let! _ = char '"' // " // TODO: This here for Emacs syntax highlighting bug
+    let! _ = char '"'
     return Project(filename) }
 
   /// Read multi-line input as a list of strings
@@ -366,9 +416,9 @@ module internal CommandInput =
   // Parse 'parse "<filename>" [full]' command
   let parse = parser {
     let! _ = string "parse "
-    let! _ = char '"' // " //
+    let! _ = char '"'
     let! filename = some (sat ((<>) '"')) |> Parser.map String.ofSeq
-    let! _ = char '"' // " // TODO: This here for Emacs syntax highlighting bug
+    let! _ = char '"'
     let! _ = many (string " ")
     let! full = (parser { let! _ = string "full"
                           return true }) <|>
@@ -380,9 +430,9 @@ module internal CommandInput =
     let! f = (string "completion " |> Parser.map (fun _ -> Completion)) <|>
              (string "tooltip " |> Parser.map (fun _ -> ToolTip)) <|>
              (string "finddecl " |> Parser.map (fun _ -> FindDeclaration))
-    let! _ = char '"' // " // TODO: This here for Emacs syntax highlighting bug
-    let! filename = some (sat ((<>) '"')) |> Parser.map String.ofSeq // "
-    let! _ = char '"' // " // TODO: This here for Emacs syntax highlighting bug
+    let! _ = char '"'
+    let! filename = some (sat ((<>) '"')) |> Parser.map String.ofSeq
+    let! _ = char '"'
     let! _ = many (string " ")
     let! line = some digit |> Parser.map (String.ofSeq >> int)
     let! _ = many (string " ")
@@ -403,7 +453,7 @@ module internal CommandInput =
     | null -> Quit
     | input ->
       let reader = Parsing.createForwardStringReader input 0
-      let cmds = errors <|> help <|> declarations <|> parse <|> project <|> completionTipOrDecl <|> quit <|> error
+      let cmds = errors <|> help <|> declarations <|> parse <|> project <|> completionTipOrDecl <|> outputmode <|> quit <|> error
       reader |> Parsing.getFirst cmds
 
 // --------------------------------------------------------------------------------------
@@ -415,13 +465,14 @@ type internal State =
   {
     Files : Map<string,string[]>
     Project : Option<ProjectParser.ProjectResolver>
+    OutputMode : OutputMode
   }
 
 /// Contains main loop of the application
 module internal Main =
   open CommandInput
 
-  let initialState = { Files = Map.empty; Project = None }
+  let initialState = { Files = Map.empty; Project = None; OutputMode = Text }
 
   // Main agent that handles IntelliSense requests
   let agent = new IntelliSenseAgent()
@@ -440,9 +491,10 @@ module internal Main =
       if not ok then Console.WriteLine("ERROR: Position is out of range\n<<EOF>>")
       ok
 
-    Debug.print "main state is:\nproject: %b\nfiles: %A"
+    Debug.print "main state is:\nproject: %b\nfiles: %A\nmode: %A"
                 (Option.isSome state.Project)
                 (Map.fold (fun ks k _ -> k::ks) [] state.Files)
+                state.OutputMode
     match parseCommand(Console.ReadLine()) with
     | GetErrors ->
         let errs = agent.GetErrors()
@@ -453,6 +505,9 @@ module internal Main =
         Console.WriteLine("<<EOF>>")
         main state
 
+    | OutputMode m ->
+        main { state with OutputMode = m }
+
     | Parse(file,full) ->
         // Trigger parse request for a particular file
         let lines = readInput [] |> Array.ofList
@@ -461,7 +516,8 @@ module internal Main =
         if File.Exists file then
           let opts = RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
                                     file,
-                                    text)
+                                    text,
+                                    state.OutputMode)
           agent.TriggerParseRequest(opts, full)
           Console.WriteLine("INFO: Background parsing started\n<<EOF>>")
           main { state with Files = Map.add file lines state.Files }
@@ -490,7 +546,8 @@ module internal Main =
           let text = String.concat "\n" state.Files.[file]
           let opts = RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
                                     file,
-                                    text)
+                                    text,
+                                    state.OutputMode)
           let decls = agent.GetDeclarations(opts)
           printfn "DATA: declarations"
           for tld in decls do
@@ -508,7 +565,8 @@ module internal Main =
           let text = String.concat "\n" state.Files.[file]
           let opts = RequestOptions(agent.GetCheckerOptions(file, text, state.Project),
                                     file,
-                                    text)
+                                    text,
+                                    state.OutputMode)
 
           match cmd with
           | Completion -> agent.DoCompletion(opts, pos, state.Files.[file].[line], timeout)
@@ -535,4 +593,7 @@ module internal Main =
       printfn "Unrecognised arguments: %s" (String.concat "," extra)
       1
     else
-      main initialState
+      try
+        main initialState
+      finally
+        (!Debug.output).Close ()

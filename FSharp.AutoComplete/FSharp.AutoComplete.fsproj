@@ -57,6 +57,9 @@
     <Reference Include="NDesk.Options">
       <HintPath>..\lib\ndesk-options\NDesk.Options.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\lib\newtonsoft.json\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the
        targets below and uncomment it.  Other similar extension points
