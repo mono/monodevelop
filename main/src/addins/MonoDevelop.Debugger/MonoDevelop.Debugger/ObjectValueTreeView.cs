@@ -26,8 +26,10 @@
 //
 
 using System;
-using System.Collections.Generic;
 using System.Text;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
 using Gtk;
 using Mono.Debugging.Client;
 using MonoDevelop.Components;
@@ -50,6 +52,7 @@ namespace MonoDevelop.Debugger
 		List<ObjectValue> values = new List<ObjectValue> ();
 		Dictionary<ObjectValue,TreeRowReference> nodes = new Dictionary<ObjectValue, TreeRowReference> ();
 		Dictionary<string,ObjectValue> cachedValues = new Dictionary<string,ObjectValue> ();
+		Dictionary<ObjectValue, Task> expandTasks = new Dictionary<ObjectValue, Task> ();
 		TreeStore store;
 		TreeViewState state;
 		string createMsg;
@@ -235,7 +238,13 @@ namespace MonoDevelop.Debugger
 			crtValue.EditingStarted -= OnValueEditing;
 			crtValue.Edited -= OnValueEdited;
 			crtValue.EditingCanceled -= OnEditingCancelled;
-			
+
+			if (expandTasks.Count > 0) {
+				var tasks = new Task[expandTasks.Count];
+				expandTasks.Values.CopyTo (tasks, 0);
+				Task.WaitAll (tasks);
+			}
+
 			base.OnDestroyed ();
 			disposed = true;
 		}
@@ -754,7 +763,7 @@ namespace MonoDevelop.Debugger
 			
 			if (hasChildren) {
 				// Add dummy node
-				store.AppendValues (it, "", "", "", null, true);
+				store.AppendValues (it, GettextCatalog.GetString ("Loading..."), "", "", null, true);
 				if (!ShowExpanders)
 					ShowExpanders = true;
 			}
@@ -816,6 +825,47 @@ namespace MonoDevelop.Debugger
 			if (compact)
 				ColumnsAutosize ();
 		}
+
+		static Task<ObjectValue[]> GetChildrenAsync (ObjectValue value)
+		{
+			return Task.Factory.StartNew<ObjectValue[]> (delegate (object arg) {
+				try {
+					return ((ObjectValue) arg).GetAllChildren ();
+				} catch (Exception ex) {
+					// Note: this should only happen if someone breaks ObjectValue.GetAllChildren()
+					LoggingService.LogError ("Failed to get ObjectValue children.", ex);
+					return new ObjectValue[0];
+				}
+			}, value);
+		}
+
+		void AddChildrenAsync (ObjectValue value, TreeRowReference row)
+		{
+			Task task;
+
+			if (expandTasks.TryGetValue (value, out task))
+				return;
+
+			task = GetChildrenAsync (value).ContinueWith (t => {
+				TreeIter iter, it;
+
+				if (store.GetIter (out iter, row.Path) && store.IterChildren (out it, iter)) {
+					foreach (var child in t.Result) {
+						SetValues (iter, it, null, child);
+						RegisterValue (child, it);
+						it = store.InsertNodeAfter (it);
+					}
+
+					store.Remove (ref it);
+
+					if (compact)
+						ColumnsAutosize ();
+				}
+
+				expandTasks.Remove (value);
+			}, Xwt.Application.UITaskScheduler);
+			expandTasks.Add (value, task);
+		}
 		
 		protected override void OnRowExpanded (TreeIter iter, TreePath path)
 		{
@@ -823,24 +873,14 @@ namespace MonoDevelop.Debugger
 			TreeIter it;
 			
 			if (store.IterChildren (out it, iter)) {
-				ObjectValue val = (ObjectValue) store.GetValue (it, ObjectCol);
-				if (val == null) {
-					val = (ObjectValue) store.GetValue (iter, ObjectCol);
-
-					foreach (ObjectValue cval in val.GetAllChildren ()) {
-						SetValues (iter, it, null, cval);
-						RegisterValue (cval, it);
-						it = store.InsertNodeAfter (it);
-					}
-					
-					store.Remove (ref it);
+				ObjectValue value = (ObjectValue) store.GetValue (it, ObjectCol);
+				if (value == null) {
+					value = (ObjectValue) store.GetValue (iter, ObjectCol);
+					AddChildrenAsync (value, new TreeRowReference (store, store.GetPath (iter)));
 				}
 			}
 			
 			base.OnRowExpanded (iter, path);
-			
-			if (compact)
-				ColumnsAutosize ();
 		}
 		
 		string GetIterPath (TreeIter iter)

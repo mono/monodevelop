@@ -198,6 +198,44 @@ namespace MonoDevelop.CSharp.Formatting
 
 			StringBuilder result = new StringBuilder ();
 
+			if (engine.IsInsideStringLiteral) {
+				foreach (var ch in text) {
+					switch (ch) {
+					case '\t':
+						result.Append ("\\t");
+						break;
+					case '"':
+						result.Append ("\\\"");
+						break;
+					case '\n':
+						result.Append ("\\n");
+						break;
+					case '\r':
+						result.Append ("\\r");
+						break;
+					default:
+						result.Append (ch);
+						break;
+					}
+				}
+				return result.ToString ();
+			}
+
+
+			if (engine.IsInsideVerbatimString) {
+				foreach (var ch in text) {
+					switch (ch) {
+					case '"':
+						result.Append ("\"\"");
+						break;
+					default:
+						result.Append (ch);
+						break;
+					}
+				}
+				return result.ToString ();
+			}
+
 			bool inNewLine = false;
 			foreach (var ch in text) {
 				if (!engine.IsInsideOrdinaryCommentOrString) {

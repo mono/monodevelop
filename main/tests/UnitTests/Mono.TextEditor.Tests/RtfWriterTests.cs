@@ -30,10 +30,10 @@ using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor.Tests
 {
-	[TestFixture()]
+	[TestFixture]
 	public class RtfWriterTests : TextEditorTestBase
 	{
-		[Test()]
+		[Test]
 		public void TestSimpleCSharpRtf ()
 		{
 			var data = Create ("class Foo {}");
@@ -41,13 +41,21 @@ namespace Mono.TextEditor.Tests
 			ISyntaxMode mode = SyntaxModeService.GetSyntaxMode (data.Document, "text/x-csharp");
 			string generatedRtf = RtfWriter.GenerateRtf (data.Document, mode, style, data.Options);
 			Assert.AreEqual (
-				@"{\rtf1\ansi\deff0\adeflang1025{\fonttbl{\f0\fnil\fprq1\fcharset128 Mono;}}{\colortbl ;\red0\green150\blue149;\red68\green68\blue68;}\viewkind4\uc1\pard\f0\fs20\cf1\cf1 class\cf2  Foo \{\}\par" + Environment.NewLine + "}", generatedRtf);
+				@"{\rtf1\ansi\deff0\adeflang1025
+{\fonttbl
+{\f0\fnil\fprq1\fcharset128 Mono;}
+}
+{\colortbl ;\red0\green150\blue149;\red68\green68\blue68;}\viewkind4\uc1\pard
+\f0
+\fs20\cf1
+\cf1 class\cf2  Foo \{\}\line
+}", generatedRtf);
 		}
 
 		/// <summary>
 		/// Bug 5628 - Error while pasting text/rtf
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug5628 ()
 		{
 			var data = Create ("class Foo {}");
@@ -55,13 +63,20 @@ namespace Mono.TextEditor.Tests
 			ISyntaxMode mode = null;
 			string generatedRtf = RtfWriter.GenerateRtf (data.Document, mode, style, data.Options);
 			Assert.AreEqual (
-			@"{\rtf1\ansi\deff0\adeflang1025{\fonttbl{\f0\fnil\fprq1\fcharset128 Mono;}}{\colortbl ;}\viewkind4\uc1\pard\f0\fs20\cf1class Foo \{\}}", generatedRtf);
+				@"{\rtf1\ansi\deff0\adeflang1025
+{\fonttbl
+{\f0\fnil\fprq1\fcharset128 Mono;}
+}
+{\colortbl ;}\viewkind4\uc1\pard
+\f0
+\fs20\cf1
+class Foo \{\}}", generatedRtf);
 		}
 
 		/// <summary>
 		/// Bug 7386 - Copy-paste from MonoDevelop into LibreOffice is broken
 		/// </summary>
-		[Test()]
+		[Test]
 		public void TestBug7386 ()
 		{
 			var data = Create ("✔");
@@ -69,8 +84,43 @@ namespace Mono.TextEditor.Tests
 			ISyntaxMode mode = null;
 			string generatedRtf = RtfWriter.GenerateRtf (data.Document, mode, style, data.Options);
 			Assert.AreEqual (
-				@"{\rtf1\ansi\deff0\adeflang1025{\fonttbl{\f0\fnil\fprq1\fcharset128 Mono;}}{\colortbl ;}\viewkind4\uc1\pard\f0\fs20\cf1\uc1\u10004*}", generatedRtf);
+				@"{\rtf1\ansi\deff0\adeflang1025
+{\fonttbl
+{\f0\fnil\fprq1\fcharset128 Mono;}
+}
+{\colortbl ;}\viewkind4\uc1\pard
+\f0
+\fs20\cf1
+\uc1\u10004*}", generatedRtf);
 		}
+
+		[Test]
+		public void TestXml ()
+		{
+			var data = Create (
+				@"<foo
+	attr1 = ""1""
+	attr2 = ""2""
+/>");
+			var style = SyntaxModeService.GetColorStyle ("TangoLight");
+			ISyntaxMode mode = SyntaxModeService.GetSyntaxMode (data.Document, "application/xml");
+			string generatedRtf = RtfWriter.GenerateRtf (data.Document, mode, style, data.Options);
+			Assert.AreEqual (
+				@"{\rtf1\ansi\deff0\adeflang1025
+{\fonttbl
+{\f0\fnil\fprq1\fcharset128 Mono;}
+}
+{\colortbl ;\red68\green68\blue68;\red51\green100\blue164;\red245\green125\blue0;}\viewkind4\uc1\pard
+\f0
+\fs20\cf1
+\cf1 <\cf2 foo\line
+\tab\cf1 attr1 =\cf2  \cf3 ""1""\line
+\cf2\tab\cf1 attr2 =\cf2  \cf3 ""2""\line
+\cf1 />\line
+}"
+				, generatedRtf);
+		}
+
 	}
 }
 

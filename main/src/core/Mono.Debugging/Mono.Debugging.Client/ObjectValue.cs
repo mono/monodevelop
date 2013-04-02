@@ -497,23 +497,24 @@ namespace Mono.Debugging.Client
 			if (IsArray) {
 				GetArrayItem (arrayCount - 1);
 				return children.ToArray ();
-			} else {
-				if (children == null) {
-					children = new List<ObjectValue> ();
-					if (source != null) {
-						try {
-							ObjectValue[] cs = source.GetChildren (path, -1, -1, options);
-							ConnectCallbacks (parentFrame, cs);
-							children.AddRange (cs);
-						} catch (Exception ex) {
-							if (parentFrame != null)
-								parentFrame.DebuggerSession.OnDebuggerOutput (true, ex.ToString ());
-							children.Add (CreateFatalError ("", ex.Message, ObjectValueFlags.ReadOnly));
-						}
+			}
+
+			if (children == null) {
+				children = new List<ObjectValue> ();
+				if (source != null) {
+					try {
+						ObjectValue[] cs = source.GetChildren (path, -1, -1, options);
+						ConnectCallbacks (parentFrame, cs);
+						children.AddRange (cs);
+					} catch (Exception ex) {
+						if (parentFrame != null)
+							parentFrame.DebuggerSession.OnDebuggerOutput (true, ex.ToString ());
+						children.Add (CreateFatalError ("", ex.Message, ObjectValueFlags.ReadOnly));
 					}
 				}
-				return children.ToArray ();
 			}
+
+			return children.ToArray ();
 		}
 		
 		/// <summary>

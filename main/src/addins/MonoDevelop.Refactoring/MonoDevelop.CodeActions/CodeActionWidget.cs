@@ -330,12 +330,9 @@ namespace MonoDevelop.CodeActions
 					Allocation.Width, Allocation.Height);
 				cr.Color = isMouseInside || menuPushed ? document.Editor.ColorStyle.PlainText.Foreground : document.Editor.ColorStyle.FoldLineColor.Color;
 				cr.Stroke ();
-				
-				evnt.Window.DrawPixbuf (Style.BaseGC (State), icon, 
-					0, 0, 
-					(Allocation.Width - icon.Width) / 2, (Allocation.Height - icon.Height) / 2, 
-					icon.Width, icon.Height, 
-					Gdk.RgbDither.None, 0, 0);
+
+				Gdk.CairoHelper.SetSourcePixbuf (cr, icon, (Allocation.Width - icon.Width) / 2, (Allocation.Height - icon.Height) / 2);
+				cr.Paint ();
 			}
 			
 			return true;

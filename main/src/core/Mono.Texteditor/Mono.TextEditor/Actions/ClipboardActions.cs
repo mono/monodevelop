@@ -57,9 +57,8 @@ namespace Mono.TextEditor
 			
 			Clipboard clipboard = Clipboard.Get (CopyOperation.CLIPBOARD_ATOM);
 			operation.CopyData (data);
-			
-			clipboard.SetWithData ((Gtk.TargetEntry[])CopyOperation.targetList, operation.ClipboardGetFunc,
-			                       operation.ClipboardClearFunc);
+
+			clipboard.SetWithData (CopyOperation.TargetEntries, operation.ClipboardGetFunc, operation.ClipboardClearFunc);
 		}
 	
 		public class CopyOperation
@@ -97,13 +96,17 @@ namespace Mono.TextEditor
 					}
 					break;
 				case RichTextType:
-					selection_data.Set (RTF_ATOM, UTF8_FORMAT, System.Text.Encoding.UTF8.GetBytes (RtfWriter.GenerateRtf (copiedDocument, mode, docStyle, options)));
+					var rtf = RtfWriter.GenerateRtf (copiedDocument, mode, docStyle, options);
+//					Console.WriteLine ("rtf:" + rtf);
+					selection_data.Set (RTF_ATOM, UTF8_FORMAT, Encoding.UTF8.GetBytes (rtf));
 					break;
 				case HTMLTextType:
-					selection_data.Set (HTML_ATOM, UTF8_FORMAT, System.Text.Encoding.UTF8.GetBytes (HtmlWriter.GenerateHtml (copiedDocument, mode, docStyle, options)));
+					var html = HtmlWriter.GenerateHtml (copiedDocument, mode, docStyle, options);
+//					Console.WriteLine ("html:" + html);
+					selection_data.Set (HTML_ATOM, UTF8_FORMAT, Encoding.UTF8.GetBytes (html));
 					break;
 				case MonoTextType:
-					byte[] rawText = System.Text.Encoding.UTF8.GetBytes (monoDocument.Text);
+					byte[] rawText = Encoding.UTF8.GetBytes (monoDocument.Text);
 					byte[] data = new byte [rawText.Length + 1];
 					rawText.CopyTo (data, 1);
 					data [0] = 0;
@@ -134,7 +137,8 @@ namespace Mono.TextEditor
 			ITextEditorOptions options;
 			Mono.TextEditor.Highlighting.ISyntaxMode mode;
 
-			public static Gtk.TargetList targetList;
+			public static readonly TargetEntry[] TargetEntries;
+			public static readonly TargetList TargetList;
 
 			static CopyOperation ()
 			{
@@ -142,23 +146,35 @@ namespace Mono.TextEditor
 					RTF_ATOM = Gdk.Atom.Intern ("NSRTFPboardType", false); //TODO: use public.rtf when dep on MacOS 10.6
 					const string NSHTMLPboardType = "Apple HTML pasteboard type";
 					HTML_ATOM = Gdk.Atom.Intern (NSHTMLPboardType, false);
+				} else if (Platform.IsWindows) {
+					RTF_ATOM = Gdk.Atom.Intern ("Rich Text Format", false);
+					HTML_ATOM = Gdk.Atom.Intern ("HTML Format", false);
 				} else {
 					RTF_ATOM = Gdk.Atom.Intern ("text/rtf", false);
 					HTML_ATOM = Gdk.Atom.Intern ("text/html", false);
 				}
 
-				targetList = new Gtk.TargetList ();
-				targetList.Add (HTML_ATOM, /* FLAGS */0, HTMLTextType);
-				targetList.Add (RTF_ATOM, /* FLAGS */0, RichTextType);
-				targetList.Add (MD_ATOM, /* FLAGS */0, MonoTextType);
-				targetList.AddTextTargets (TextType);
+				var newTargets = new List<TargetEntry> ();
+
+				newTargets.Add (new TargetEntry ("SAVE_TARGETS", TargetFlags.App, TextType));
+
+				newTargets.Add (new TargetEntry (HTML_ATOM.Name, TargetFlags.OtherApp, HTMLTextType));
+				newTargets.Add (new TargetEntry ("UTF8_STRING", TargetFlags.App, TextType));
+
+				newTargets.Add (new TargetEntry (RTF_ATOM.Name, TargetFlags.OtherApp, RichTextType));
+				newTargets.Add (new TargetEntry (MD_ATOM.Name, TargetFlags.App, MonoTextType));
+
+				newTargets.Add (new TargetEntry ("text/plain;charset=utf-8", TargetFlags.App, TextType));
+				newTargets.Add (new TargetEntry ("text/plain", TargetFlags.App, TextType));
 
 				//HACK: work around gtk_selection_data_set_text causing crashes on Mac w/ QuickSilver, Clipbard History etc.
-				if (Platform.IsMac) {
-					targetList.Remove ("COMPOUND_TEXT");
-					targetList.Remove ("TEXT");
-					targetList.Remove ("STRING");
+				if (!Platform.IsMac) {
+					newTargets.Add (new TargetEntry ("COMPOUND_TEXT", TargetFlags.App, TextType));
+					newTargets.Add (new TargetEntry ("STRING", TargetFlags.App, TextType));
+					newTargets.Add (new TargetEntry ("TEXT", TargetFlags.App, TextType));
 				}
+				TargetEntries = newTargets.ToArray ();
+				TargetList = new TargetList (TargetEntries);
 			}
 			
 			void CopyData (TextEditorData data, Selection selection)
@@ -254,7 +270,7 @@ namespace Mono.TextEditor
 		{
 			return PasteFrom (clipboard, data, preserveSelection, insertionOffset, false);
 		}
-		
+
 		static int PasteFrom (Clipboard clipboard, TextEditorData data, bool preserveSelection, int insertionOffset, bool preserveState)
 		{
 			int result = -1;

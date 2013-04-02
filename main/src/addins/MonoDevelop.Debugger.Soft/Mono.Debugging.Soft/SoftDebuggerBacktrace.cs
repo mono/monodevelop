@@ -178,8 +178,21 @@ namespace Mono.Debugging.Soft
 
 			var location = new DC.SourceLocation (methodName, fileName, frame.LineNumber);
 			var external = session.IsExternalCode (frame);
+			string addressspace = string.Empty;
+			string language;
 
-			return new SoftDebuggerStackFrame (frame, method.FullName, location, "Managed", external, true, hidden, typeFQN, typeFullName);
+			if (frame.Method != null) {
+				if (frame.IsNativeTransition) {
+					language = "Transition";
+				} else {
+					addressspace = method.FullName;
+					language = "Managed";
+				}
+			} else {
+				language = "Native";
+			}
+
+			return new SoftDebuggerStackFrame (frame, addressspace, location, language, external, true, hidden, typeFQN, typeFullName);
 		}
 		
 		protected override EvaluationContext GetEvaluationContext (int frameIndex, EvaluationOptions options)
