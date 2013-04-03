@@ -186,12 +186,40 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 
 		#region ITextPasteHandler implementation
+		enum CopySource : byte
+		{
+			Text = 0,
+			StringLiteral = 1,
+			VerbatimString = 2
+		}
 
-		string ITextPasteHandler.FormatPlainText (int insertionOffset, string text)
+		byte[] ITextPasteHandler.GetCopyData (TextSegment segment)
+		{
+			stateTracker.UpdateEngine (segment.Offset);
+			if (stateTracker.Engine.IsInsideStringLiteral)
+				return new [] { (byte)CopySource.StringLiteral };
+			if (stateTracker.Engine.IsInsideVerbatimString)
+				return new [] { (byte)CopySource.VerbatimString };
+			return null;
+		}
+
+		string ITextPasteHandler.FormatPlainText (int insertionOffset, string text, byte[] copyData)
 		{
 			if (document.Editor.Options.IndentStyle == IndentStyle.None ||
 			    document.Editor.Options.IndentStyle == IndentStyle.Auto)
 				return text;
+
+			if (copyData != null && copyData.Length == 1) {
+				CopySource src = (CopySource)copyData [0];
+				switch (src) {
+				case CopySource.VerbatimString:
+					text = text.Replace ("\"\"", "\"");
+					break;
+				case CopySource.StringLiteral:
+					text = text.Replace ("\\r", "\r").Replace ("\\n", "\n").Replace ("\\\"", "\"").Replace ("\\t", "\t");
+					break;
+				}
+			}
 
 			stateTracker.UpdateEngine (insertionOffset);
 			var engine = stateTracker.Engine.Clone () as CSharpIndentEngine;
