@@ -43,10 +43,15 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (
 				@"<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.0 Transitional//EN"">
 <HTML>
+<HEAD>
+<META HTTP-EQUIV=""CONTENT-TYPE"" CONTENT=""text/html; charset=utf-8"">
+<META NAME=""GENERATOR"" CONTENT=""Mono Text Editor"">
+</HEAD>
 <BODY>
 <FONT face = 'Mono'>
 <SPAN style = 'color:#009695;' >class</SPAN><SPAN style = 'color:#444444;' >&nbsp;Foo&nbsp;</SPAN><SPAN style = 'color:#444444;' >{}</SPAN></FONT>
-</BODY></HTML>", generatedHtml);
+</BODY></HTML>
+", generatedHtml);
 		}
 
 		[Test]
@@ -63,13 +68,18 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (
 				@"<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.0 Transitional//EN"">
 <HTML>
+<HEAD>
+<META HTTP-EQUIV=""CONTENT-TYPE"" CONTENT=""text/html; charset=utf-8"">
+<META NAME=""GENERATOR"" CONTENT=""Mono Text Editor"">
+</HEAD>
 <BODY>
 <FONT face = 'Mono'>
 <SPAN style = 'color:#444444;' >&lt;</SPAN><SPAN style = 'color:#3364a4;' >foo</SPAN><BR>
 <SPAN style = 'color:#3364a4;' >&nbsp;&nbsp;&nbsp;&nbsp;</SPAN><SPAN style = 'color:#444444;' >attr1</SPAN><SPAN style = 'color:#444444;' >&nbsp;=</SPAN><SPAN style = 'color:#3364a4;' >&nbsp;</SPAN><SPAN style = 'color:#f57d00;' >&quot;</SPAN><SPAN style = 'color:#f57d00;' >1</SPAN><SPAN style = 'color:#f57d00;' >&quot;</SPAN><BR>
 <SPAN style = 'color:#3364a4;' >&nbsp;&nbsp;&nbsp;&nbsp;</SPAN><SPAN style = 'color:#444444;' >attr2</SPAN><SPAN style = 'color:#444444;' >&nbsp;=</SPAN><SPAN style = 'color:#3364a4;' >&nbsp;</SPAN><SPAN style = 'color:#f57d00;' >&quot;</SPAN><SPAN style = 'color:#f57d00;' >2</SPAN><SPAN style = 'color:#f57d00;' >&quot;</SPAN><BR>
 <SPAN style = 'color:#444444;' >/</SPAN><SPAN style = 'color:#444444;' >&gt;</SPAN></FONT>
-</BODY></HTML>"
+</BODY></HTML>
+"
 , generatedHtml);
 		}
 
