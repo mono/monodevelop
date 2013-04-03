@@ -845,6 +845,12 @@ namespace MonoDevelop.CSharp.Refactoring
 		
 		static bool InsertUsingAfter (AstNode node)
 		{
+			return node is NewLineNode && IsCommentOrUsing (node.GetNextSibling (s => !(s is NewLineNode))) ||
+				IsCommentOrUsing (node);
+		}
+
+		static bool IsCommentOrUsing (AstNode node)
+		{
 			return node is ICSharpCode.NRefactory.CSharp.Comment ||
 				node is UsingDeclaration ||
 				node is UsingAliasDeclaration;
