@@ -93,13 +93,14 @@ namespace MonoDevelop.CSharp.Completion
 			pos = Math.Max (0, Math.Min (pos, editor.Document.TextLength - 1));
 			
 			// Insert new event handler after closing bracket
-			string indent = editor.Document.GetLine (callingMember.Region.BeginLine).GetIndentation (editor.Document);
+			var line = callingMember != null ? editor.Document.GetLine (callingMember.Region.BeginLine) : editor.Document.GetLineByOffset (initialOffset);
+			string indent = line.GetIndentation (editor.Document);
 			
 			StringBuilder sb = new StringBuilder ();
 			sb.Append (editor.EolMarker);
 			sb.Append (editor.EolMarker);
 			sb.Append (indent);
-			if (callingMember.IsStatic)
+			if (callingMember != null && callingMember.IsStatic)
 				sb.Append ("static ");
 			sb.Append ("void ");
 			int pos2 = sb.Length;
