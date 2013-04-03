@@ -135,7 +135,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			// Gray out the project name if it is not selected in the current build configuration
 			
 			SolutionConfiguration conf = p.ParentSolution.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
-			SolutionConfigurationEntry ce;
+			SolutionConfigurationEntry ce = null;
 			bool noMapping = conf == null || (ce = conf.GetEntryForItem (p)) == null;
 			bool missingConfig = false;
 			if (noMapping || !ce.Build || (missingConfig = p.Configurations [ce.ItemConfiguration] == null)) {
