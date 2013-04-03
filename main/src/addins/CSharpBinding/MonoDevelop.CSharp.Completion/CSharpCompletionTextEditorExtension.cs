@@ -1001,11 +1001,15 @@ namespace MonoDevelop.CSharp.Completion
 			static void AddType (MonoDevelop.Ide.Gui.Document document, TypeSystemSegmentTree result, IUnresolvedTypeDefinition type)
 			{
 				int offset = document.Editor.LocationToOffset (type.Region.Begin);
-				int endOffset = document.Editor.LocationToOffset (type.Region.End);
+				int endOffset = type.Region.End.IsEmpty ? int.MaxValue : document.Editor.LocationToOffset (type.Region.End);
+				if (endOffset < 0)
+					endOffset = int.MaxValue;
 				result.Add (new TypeSystemTreeSegment (offset, endOffset - offset, type));
 				foreach (var entity in type.Members) {
 					offset = document.Editor.LocationToOffset (entity.Region.Begin);
 					endOffset = document.Editor.LocationToOffset (entity.Region.End);
+					if (endOffset < 0)
+						endOffset = int.MaxValue;
 					result.Add (new TypeSystemTreeSegment (offset, endOffset - offset, entity));
 				}
 				

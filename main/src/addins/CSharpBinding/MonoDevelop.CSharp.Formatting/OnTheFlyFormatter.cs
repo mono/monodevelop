@@ -222,10 +222,11 @@ namespace MonoDevelop.CSharp.Formatting
 				}
 			} else {
 				var seg = ext.typeSystemSegmentTree.GetMemberSegmentAt (startOffset - 1);
-				if (seg == null)
+				if (seg == null) {
 					return;
+				}
 				var member = seg.Entity;
-				if (member == null || member.Region.IsEmpty || member.BodyRegion.End.IsEmpty)
+				if (member == null)
 					return;
 	
 				// Build stub
