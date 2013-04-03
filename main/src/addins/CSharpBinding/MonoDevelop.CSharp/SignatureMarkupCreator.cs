@@ -84,6 +84,12 @@ namespace MonoDevelop.CSharp
 				throw new ArgumentNullException ("type");
 			if (type.Kind == TypeKind.Null)
 				return "?";
+			if (type.Kind == TypeKind.Array) {
+				var arrayType = (ArrayType)type;
+				return GetTypeReferenceString (arrayType.ElementType, highlight) + "[" + new string (',', arrayType.Dimensions - 1) + "]";
+			}
+			if (type.Kind == TypeKind.Pointer)
+				return GetTypeReferenceString (((PointerType)type).ElementType, highlight) + "*";
 			AstType astType;
 			try {
 				astType = astBuilder.ConvertType (type);
@@ -398,13 +404,14 @@ namespace MonoDevelop.CSharp
 		{
 			if (t == null)
 				throw new ArgumentNullException ("t");
-
 			if (t.Kind == TypeKind.Null)
 				return "Type can not be resolved.";
 			if (t.Kind == TypeKind.Delegate)
 				return GetDelegateMarkup (t);
 			if (t.Kind == TypeKind.TypeParameter)
 				return GetTypeParameterMarkup (t);
+			if (t.Kind == TypeKind.Array || t.Kind == TypeKind.Pointer)
+				return GetTypeReferenceString (t);
 			if (NullableType.IsNullable (t))
 				return GetNullableMarkup (t);
 			var result = new StringBuilder ();
