@@ -766,15 +766,10 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (scope == null)
 				return;
 			
-			ISearchProgressMonitor searchMonitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true);
-			lock (searchesInProgress)
-				searchesInProgress.Add (searchMonitor);
-			UpdateStopButton ();
 			find = new FindReplace ();
-			
+
 			string pattern = comboboxentryFind.Entry.Text;
 			FilterOptions options = GetFilterOptions ();
-			searchMonitor.ReportStatus (scope.GetDescription (options, pattern, null));
 
 			if (!find.ValidatePattern (options, pattern)) {
 				MessageService.ShowError (GettextCatalog.GetString ("Search pattern is invalid"));
@@ -786,40 +781,51 @@ namespace MonoDevelop.Ide.FindInFiles
 				return;
 			}
 
-			DateTime timer = DateTime.Now;
-			string errorMessage = null;
-				
-			try {
-				var results = new List<SearchResult> ();
-				foreach (SearchResult result in find.FindAll (scope, searchMonitor, pattern, replacePattern, options)) {
-					if (searchMonitor.IsCancelRequested)
-						return;
-					results.Add (result);
+			ThreadPool.QueueUserWorkItem (delegate {
+				using (ISearchProgressMonitor searchMonitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true)) {
+					searchMonitor.ReportStatus (scope.GetDescription (options, pattern, null));
+
+					lock (searchesInProgress)
+						searchesInProgress.Add (searchMonitor);
+					UpdateStopButton ();
+
+					DateTime timer = DateTime.Now;
+					string errorMessage = null;
+						
+					try {
+						var results = new List<SearchResult> ();
+						foreach (SearchResult result in find.FindAll (scope, searchMonitor, pattern, replacePattern, options)) {
+							if (searchMonitor.IsCancelRequested)
+								return;
+							results.Add (result);
+						}
+						searchMonitor.ReportResults (results);
+					} catch (Exception ex) {
+						errorMessage = ex.Message;
+						LoggingService.LogError ("Error while search", ex);
+					}
+						
+					string message;
+					if (errorMessage != null) {
+						message = GettextCatalog.GetString ("The search could not be finished: {0}", errorMessage);
+						searchMonitor.ReportError (message, null);
+					} else if (searchMonitor.IsCancelRequested) {
+						message = GettextCatalog.GetString ("Search cancelled.");
+						searchMonitor.ReportWarning (message);
+					} else {
+						string matches = string.Format (GettextCatalog.GetPluralString ("{0} match found", "{0} matches found", find.FoundMatchesCount), find.FoundMatchesCount);
+						string files = string.Format (GettextCatalog.GetPluralString ("in {0} file.", "in {0} files.", find.SearchedFilesCount), find.SearchedFilesCount);
+						message = GettextCatalog.GetString ("Search completed.") + Environment.NewLine + matches + " " + files;
+						searchMonitor.ReportSuccess (message);
+					}
+					searchMonitor.ReportStatus (message);
+					searchMonitor.Log.WriteLine (GettextCatalog.GetString ("Search time: {0} seconds."), (DateTime.Now - timer).TotalSeconds);
+					searchesInProgress.Remove (searchMonitor);
 				}
-				searchMonitor.ReportResults (results);
-			} catch (Exception ex) {
-				errorMessage = ex.Message;
-				LoggingService.LogError ("Error while search", ex);
-			}
-				
-			string message;
-			if (errorMessage != null) {
-				message = GettextCatalog.GetString ("The search could not be finished: {0}", errorMessage);
-				searchMonitor.ReportError (message, null);
-			} else if (searchMonitor.IsCancelRequested) {
-				message = GettextCatalog.GetString ("Search cancelled.");
-				searchMonitor.ReportWarning (message);
-			} else {
-				string matches = string.Format (GettextCatalog.GetPluralString ("{0} match found", "{0} matches found", find.FoundMatchesCount), find.FoundMatchesCount);
-				string files = string.Format (GettextCatalog.GetPluralString ("in {0} file.", "in {0} files.", find.SearchedFilesCount), find.SearchedFilesCount);
-				message = GettextCatalog.GetString ("Search completed.") + Environment.NewLine + matches + " " + files;
-				searchMonitor.ReportSuccess (message);
-			}
-			searchMonitor.ReportStatus (message);
-			searchMonitor.Log.WriteLine (GettextCatalog.GetString ("Search time: {0} seconds."), (DateTime.Now - timer).TotalSeconds);
-			searchMonitor.Dispose ();
-			searchesInProgress.Remove (searchMonitor);
-			UpdateStopButton ();
+				Application.Invoke (delegate {
+					UpdateStopButton ();
+				});
+			});
 		}
 	}
 }
