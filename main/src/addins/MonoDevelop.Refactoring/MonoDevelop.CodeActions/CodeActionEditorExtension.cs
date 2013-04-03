@@ -376,6 +376,13 @@ namespace MonoDevelop.CodeActions
 				return;
 			currentSmartTag.Popup ();
 		}
+
+		internal List<CodeAction> GetCurrentFixes ()
+		{
+			if (currentSmartTag == null)
+				return null;
+			return currentSmartTag.fixes;
+		}
 	}
 }
 
