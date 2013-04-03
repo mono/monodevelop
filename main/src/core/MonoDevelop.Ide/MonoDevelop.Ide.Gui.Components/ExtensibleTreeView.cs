@@ -2264,6 +2264,8 @@ namespace MonoDevelop.Ide.Gui.Components
 						scaledFont.Dispose ();
 					scaledFont = (customFont ?? parent.Style.FontDesc).Copy ();
 					scaledFont.Size = (int)(customFont.Size * Zoom);
+					if (layout != null)
+						layout.FontDescription = scaledFont;
 				}
 
 				if (layout == null || layout.Context != widget.PangoContext) {
