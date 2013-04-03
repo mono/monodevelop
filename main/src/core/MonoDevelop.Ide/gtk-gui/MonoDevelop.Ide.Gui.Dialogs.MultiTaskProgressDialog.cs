@@ -12,7 +12,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		private global::Gtk.TextView detailsTextView;
 		private global::Gtk.Button buttonCancel;
 		private global::Gtk.Button buttonClose;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

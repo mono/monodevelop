@@ -36,7 +36,7 @@ namespace MonoDevelop.Ide.Projects
 		private global::Gtk.Label label2;
 		private global::Gtk.Button btn_close;
 		private global::Gtk.Button btn_new;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

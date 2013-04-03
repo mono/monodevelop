@@ -14,7 +14,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		private global::Gtk.HSeparator hseparator1;
 		private global::Gtk.Label label1;
 		private global::MonoDevelop.Ide.Gui.Components.EnvVarList envVarList;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

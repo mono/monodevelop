@@ -24,7 +24,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		private global::Gtk.HBox boxData;
 		private global::Gtk.CheckButton checkExternalCons;
 		private global::Gtk.CheckButton checkPauseCons;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

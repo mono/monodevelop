@@ -9,7 +9,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		private global::Gtk.Label label104;
 		private global::Gtk.ScrolledWindow scrolledwindow11;
 		private global::Gtk.TreeView configsList;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

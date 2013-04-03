@@ -19,7 +19,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		private global::Gtk.Label GtkLabel6;
 		private global::Gtk.CheckButton checkVSStyleResourceNames;
 		private global::Gtk.Label label2;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

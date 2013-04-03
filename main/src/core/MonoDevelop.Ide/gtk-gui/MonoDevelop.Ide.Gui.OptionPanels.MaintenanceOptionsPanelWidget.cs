@@ -7,7 +7,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		private global::Gtk.VBox vbox2;
 		private global::Gtk.CheckButton checkInstr;
 		private global::Gtk.CheckButton checkAutoTest;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

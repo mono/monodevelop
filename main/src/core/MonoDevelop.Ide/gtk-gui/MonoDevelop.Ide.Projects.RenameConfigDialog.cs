@@ -11,7 +11,7 @@ namespace MonoDevelop.Ide.Projects
 		private global::Gtk.CheckButton renameChildrenCheck;
 		private global::Gtk.Button button9;
 		private global::Gtk.Button buttonOk;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

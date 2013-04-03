@@ -10,7 +10,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		private global::Gtk.ComboBox comboTheme;
 		private global::Gtk.Label label2;
 		private global::Gtk.Label labelTheme;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

@@ -15,7 +15,7 @@ namespace MonoDevelop.Ide.Projects
 		private global::Gtk.TreeView fileList;
 		private global::Gtk.Button buttonCancel;
 		private global::Gtk.Button buttonOk;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

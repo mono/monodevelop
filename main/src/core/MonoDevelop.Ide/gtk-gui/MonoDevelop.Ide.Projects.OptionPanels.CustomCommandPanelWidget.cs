@@ -8,7 +8,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		private global::Gtk.Label label3;
 		private global::Gtk.ScrolledWindow scrolledwindow1;
 		private global::Gtk.VBox vboxCommands;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

@@ -10,7 +10,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		private global::Gtk.VBox controls;
 		private global::Gtk.Button buttonUp;
 		private global::Gtk.Button buttonDown;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

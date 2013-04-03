@@ -7,7 +7,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		private global::Gtk.ScrolledWindow scrolled;
 		private global::Gtk.VBox msgBox;
 		private global::Gtk.Button buttonOk;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

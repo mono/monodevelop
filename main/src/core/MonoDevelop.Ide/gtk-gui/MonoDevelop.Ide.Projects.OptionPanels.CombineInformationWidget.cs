@@ -11,7 +11,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		private global::Gtk.TextView descView;
 		private global::Gtk.Entry versEntry;
 		private global::Gtk.Label versLabel;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

@@ -8,7 +8,7 @@ namespace MonoDevelop.Ide.StandardHeader
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
 		private global::Gtk.TextView headerText;
 		private global::Gtk.CheckButton includeAutoCheck;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

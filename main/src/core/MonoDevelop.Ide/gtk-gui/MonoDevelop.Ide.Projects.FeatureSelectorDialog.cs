@@ -9,7 +9,7 @@ namespace MonoDevelop.Ide.Projects
 		private global::MonoDevelop.Ide.Projects.CombineEntryFeatureSelector featureList;
 		private global::Gtk.Button button1547;
 		private global::Gtk.Button button1548;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
