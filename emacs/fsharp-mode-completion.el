@@ -323,7 +323,8 @@ The current buffer must be an F# file that exists on disk."
   (interactive)
   (when ac-completing
     (ac-complete))
-  (when (not (eq (string-to-char ".") (char-before)))
+  (when (or (not (eq (string-to-char ".") (char-before)))
+            (not ac-completing))
     (self-insert-command 1))
   (fsharp-ac/complete-at-point))
 
