@@ -155,7 +155,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			return new MDRefactoringScript (this, this.Document, this.Document.GetFormattingOptions ());
 		}
 
-		public MDRefactoringContext (MonoDevelop.Ide.Gui.Document document, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken)) : base (document.GetSharedResolver (), cancellationToken)
+		public MDRefactoringContext (MonoDevelop.Ide.Gui.Document document, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken)) : base (document.GetSharedResolver ().Result, cancellationToken)
 		{
 			if (document == null)
 				throw new ArgumentNullException ("document");
