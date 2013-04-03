@@ -231,7 +231,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			return result;
 		}
 		
-		public override IEnumerable<MemberReference> FindReferences (Project project, IProjectContent content, IEnumerable<FilePath> possibleFiles, IEnumerable<object> members)
+		public override IEnumerable<MemberReference> FindReferences (Project project, IProjectContent content, IEnumerable<FilePath> possibleFiles, IProgressMonitor monitor, IEnumerable<object> members)
 		{
 			if (content == null)
 				throw new ArgumentNullException ("content", "Project content not set.");
@@ -249,6 +249,8 @@ namespace MonoDevelop.CSharp.Refactoring
 				}
 			}
 			foreach (var file in files) {
+				if (monitor != null)
+					monitor.Step (1);
 				string text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText (file);
 				if (memberName != null && text.IndexOf (memberName, StringComparison.Ordinal) < 0 &&
 					(keywordName == null || text.IndexOf (keywordName, StringComparison.Ordinal) < 0))
