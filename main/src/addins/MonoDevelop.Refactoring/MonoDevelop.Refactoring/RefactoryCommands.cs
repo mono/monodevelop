@@ -270,14 +270,16 @@ namespace MonoDevelop.Refactoring
 				lastLocation = loc;
 				lastDocument = doc.ParsedDocument;
 			}
-			foreach (var fix_ in validActions) {
-				var fix = fix_;
-				if (first) {
-					first = false;
-					if (ciset.CommandInfos.Count > 0)
-						ciset.CommandInfos.AddSeparator ();
+			if (validActions != null) {
+				foreach (var fix_ in validActions) {
+					var fix = fix_;
+					if (first) {
+						first = false;
+						if (ciset.CommandInfos.Count > 0)
+							ciset.CommandInfos.AddSeparator ();
+					}
+					ciset.CommandInfos.Add (fix.Title, new Action (() => fix.Run (doc, loc)));
 				}
-				ciset.CommandInfos.Add (fix.Title, new Action (() => fix.Run (doc, loc)));
 			}
 
 			if (ciset.CommandInfos.Count > 0) {
