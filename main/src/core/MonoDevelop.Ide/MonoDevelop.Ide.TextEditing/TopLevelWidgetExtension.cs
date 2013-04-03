@@ -25,15 +25,9 @@
 // THE SOFTWARE.
 
 using System;
-using System.Linq;
-using MonoDevelop.Core;
-using Mono.TextEditor;
-using System.Collections.Generic;
-using MonoDevelop.Projects.Text;
 
 namespace MonoDevelop.Ide.TextEditing
 {
-
 	public abstract class TopLevelWidgetExtension: FileLineExtension
 	{
 		public HorizontalAlignment HorizontalAlignment { get; set; }
@@ -58,5 +52,4 @@ namespace MonoDevelop.Ide.TextEditing
 
 		public event EventHandler ScrollToViewRequested;
 	}
-	
-	}
+}
