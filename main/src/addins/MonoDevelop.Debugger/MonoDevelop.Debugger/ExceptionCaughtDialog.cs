@@ -106,7 +106,7 @@ namespace MonoDevelop.Debugger
 				valueView.ExpandRow (new TreePath ("0"), false);
 			}
 			if (exception.StackIsEvaluating) {
-				stackStore.AppendValues ("Loading...", "", 0, 0);
+				stackStore.AppendValues (GettextCatalog.GetString ("Loading..."), "", 0, 0);
 			}
 		}
 		
@@ -245,7 +245,7 @@ namespace MonoDevelop.Debugger
 				dialog = null;
 			}
 			if (button == null) {
-				button = new ExceptionCaughtButton (ex, this, file, line);
+				button = new ExceptionCaughtButton (ex, this, File, Line);
 				TextEditorService.RegisterExtension (button);
 			}
 			if (miniButton != null) {
@@ -265,7 +265,7 @@ namespace MonoDevelop.Debugger
 				button = null;
 			}
 			if (miniButton == null) {
-				miniButton = new ExceptionCaughtMiniButton (this, file, line);
+				miniButton = new ExceptionCaughtMiniButton (this, File, Line);
 				TextEditorService.RegisterExtension (miniButton);
 			}
 		}
