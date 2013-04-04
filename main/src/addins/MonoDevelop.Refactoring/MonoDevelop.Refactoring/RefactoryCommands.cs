@@ -41,6 +41,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.Semantics;
 using MonoDevelop.CodeActions;
+using MonoDevelop.SourceEditor.QuickTasks;
 
 namespace MonoDevelop.Refactoring
 {
@@ -101,7 +102,7 @@ namespace MonoDevelop.Refactoring
 				return ((NamespaceResolveResult)resolveResult).Namespace;
 			return null;
 		}
-		
+
 		class JumpTo
 		{
 			object el;
@@ -264,9 +265,13 @@ namespace MonoDevelop.Refactoring
 			bool first = true;
 			if (lastDocument != doc.ParsedDocument || loc != lastLocation) {
 
-				var ext = doc.GetContent <CodeActionEditorExtension> ();
+				if (QuickTaskStrip.EnableFancyFeatures) {
+					var ext = doc.GetContent <CodeActionEditorExtension> ();
+					validActions = ext != null ? ext.GetCurrentFixes () : null;
+				} else {
+					validActions = RefactoringService.GetValidActions (doc, loc).Result;
+				}
 
-				validActions = ext != null ? ext.GetCurrentFixes () : null;
 				lastLocation = loc;
 				lastDocument = doc.ParsedDocument;
 			}
