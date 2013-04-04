@@ -93,6 +93,12 @@ namespace Mono.TextEditor.Tests
 			            "<span foreground=\"#F57D00\">@\"Escape:</span><span foreground=\"#A53E00\">\"\"\"\"</span><span foreground=\"#F57D00\"> \"</span><span foreground=\"#444444\">outtext</span>");
 		}
 
+		[Test]
+		public void TestVerbatimStringEscapeLineBreak ()
+		{
+			TestOutput ("@\"Escape:\"\"\ntext\"",
+			            "<span foreground=\"#F57D00\">@\"Escape:</span><span foreground=\"#A53E00\">\"\"</span>\n<span foreground=\"#F57D00\">text\"</span>");
+		}
 
 		[Test]
 		public void TestHexDigit ()
