@@ -288,9 +288,8 @@ namespace MonoDevelop.Debugger
 				expCol.FixedWidth = texp;
 			}
 			
-			int ttype = 0;
 			if (typeCol.Visible) {
-				ttype = Math.Max ((int) (width * typeColWidth), 1);
+				int ttype = Math.Max ((int) (width * typeColWidth), 1);
 				if (ttype != typeCol.FixedWidth) {
 					typeCol.FixedWidth = ttype;
 				}
@@ -492,9 +491,12 @@ namespace MonoDevelop.Debugger
 			foreach (ObjectValue val in new List<ObjectValue> (nodes.Keys))
 				UnregisterValue (val);
 			nodes.Clear ();
-			
+
+			if (IsRealized)
+				ScrollToPoint (0, 0);
+
 			SaveState ();
-			
+
 			CleanPinIcon ();
 			store.Clear ();
 			
