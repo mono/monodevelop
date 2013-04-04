@@ -176,23 +176,23 @@ namespace Mono.Debugging.Soft
 				hidden = method.GetCustomAttributes (hiddenAttr, true).Any ();
 			}
 
-			var location = new DC.SourceLocation (methodName, fileName, frame.LineNumber);
+			var location = new DC.SourceLocation (methodName, fileName, frame.LineNumber, frame.ColumnNumber);
 			var external = session.IsExternalCode (frame);
-			string addressspace = string.Empty;
+			string addressSpace = string.Empty;
 			string language;
 
 			if (frame.Method != null) {
 				if (frame.IsNativeTransition) {
 					language = "Transition";
 				} else {
-					addressspace = method.FullName;
+					addressSpace = method.FullName;
 					language = "Managed";
 				}
 			} else {
 				language = "Native";
 			}
 
-			return new SoftDebuggerStackFrame (frame, addressspace, location, language, external, true, hidden, typeFQN, typeFullName);
+			return new SoftDebuggerStackFrame (frame, addressSpace, location, language, external, true, hidden, typeFQN, typeFullName);
 		}
 		
 		protected override EvaluationContext GetEvaluationContext (int frameIndex, EvaluationOptions options)

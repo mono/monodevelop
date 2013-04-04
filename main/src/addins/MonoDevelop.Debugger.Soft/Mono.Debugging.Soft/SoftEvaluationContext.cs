@@ -48,7 +48,7 @@ namespace Mono.Debugging.Soft
 			string method = frame.Method.Name;
 			if (frame.Method.DeclaringType != null)
 				method = frame.Method.DeclaringType.FullName + "." + method;
-			var location = new DC.SourceLocation (method, frame.FileName, frame.LineNumber);
+			var location = new DC.SourceLocation (method, frame.FileName, frame.LineNumber, frame.ColumnNumber);
 			string language;
 
 			if (frame.Method != null) {
