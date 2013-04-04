@@ -166,14 +166,6 @@ namespace MonoDevelop.Ide.FindInFiles
 			return projects;
 		}
 
-		public static bool HasOverloads (Solution solution, object item)
-		{
-			if (!(item is IMember))
-				return false;
-
-			return CollectMembers (solution, (IMember)item, RefactoryScope.Unknown).Count () > 1;
-		}
-		
 		public static IEnumerable<MemberReference> FindReferences (Solution solution, object member, bool searchForAllOverloads, RefactoryScope scope = RefactoryScope.Unknown, IProgressMonitor monitor = null)
 		{
 			if (member == null)

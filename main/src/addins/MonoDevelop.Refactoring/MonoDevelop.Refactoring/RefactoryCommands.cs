@@ -42,6 +42,7 @@ using Mono.TextEditor;
 using ICSharpCode.NRefactory.Semantics;
 using MonoDevelop.CodeActions;
 using MonoDevelop.SourceEditor.QuickTasks;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Refactoring
 {
@@ -210,6 +211,14 @@ namespace MonoDevelop.Refactoring
 
 		DocumentLocation lastLocation;
 
+		static bool HasOverloads (Solution solution, object item)
+		{
+			var method = item as IMethod;
+			if (method == null)
+				return false;
+			return method.DeclaringType.GetMethods (m => m.Name == method.Name).Count () > 1;
+		}
+
 		protected override void Update (CommandArrayInfo ainfo)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
@@ -309,7 +318,7 @@ namespace MonoDevelop.Refactoring
 
 			if (item is IEntity || item is ITypeParameter || item is IVariable || item is INamespace) {
 				ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences), new System.Action (new FindRefs (item, false).Run));
-				if (doc.HasProject && ReferenceFinder.HasOverloads (doc.Project.ParentSolution, item))
+				if (doc.HasProject && HasOverloads (doc.Project.ParentSolution, item))
 					ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindAllReferences), new System.Action (new FindRefs (item, true).Run));
 				added = true;
 			}
