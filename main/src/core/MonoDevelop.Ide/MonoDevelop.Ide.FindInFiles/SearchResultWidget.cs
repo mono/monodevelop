@@ -267,12 +267,14 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public void Reset ()
 		{
+			if (treeviewSearchResults.IsRealized)
+				treeviewSearchResults.ScrollToPoint (0, 0);
+
 			ResultCount = 0;
 			documents.Clear ();
 			store.Clear ();
 			labelStatus.Text = "";
 			textviewLog.Buffer.Clear ();
-			
 		}
 		
 		protected override void OnDestroyed ()
