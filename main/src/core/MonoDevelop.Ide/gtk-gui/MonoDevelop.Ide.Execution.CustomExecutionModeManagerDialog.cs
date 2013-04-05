@@ -13,7 +13,7 @@ namespace MonoDevelop.Ide.Execution
 		private global::Gtk.Button buttonRemove;
 		private global::Gtk.Button buttonEdit;
 		private global::Gtk.Button buttonOk;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

@@ -313,6 +313,9 @@ namespace MonoDevelop.Debugger
 		
 		public void UpdateDisplay ()
 		{
+			if (tree.IsRealized)
+				tree.ScrollToPoint (0, 0);
+
 			treeState.Save ();
 			
 			store.Clear ();

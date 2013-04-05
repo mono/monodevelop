@@ -420,11 +420,9 @@ namespace Mono.TextEditor.Highlighting
 								}
 							}
 							if (!mismatch) {
-								for (int j = 0; j < cur.Escape.Length - 1 && i < maxEnd;j++) {
-									ParseChar (ref i, CurText [textIndex]);
-									i++;
-								}
-//								ScanSpanEnd (cur, ref i);
+								int j = i + cur.Escape.Length - 1;
+								ParseChar (ref i, CurText [textIndex]);
+								i = j;
 								continue;
 							}
 						}

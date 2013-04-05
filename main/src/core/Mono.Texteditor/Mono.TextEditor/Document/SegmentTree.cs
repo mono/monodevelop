@@ -162,8 +162,10 @@ namespace Mono.TextEditor
 		
 		public bool Remove (TreeSegment node)
 		{
-			if (node.segmentTree != this)
+			if (node.segmentTree == null)
 				return false;
+			if (node.segmentTree != this)
+				throw new InvalidOperationException ("Tried to remove tree segment from wrong tree.");
 			var calculatedOffset = node.Offset;
 			var next = node.GetNextNode ();
 			if (next != null)

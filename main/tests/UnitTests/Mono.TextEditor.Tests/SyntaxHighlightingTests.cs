@@ -30,9 +30,8 @@ using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor.Tests
 {
-	[Ignore("Highighting changed")]
-	[TestFixture()]
-	public class SyntaxHighlightingTests
+	[TestFixture]
+	public class SyntaxHighlightingTests : TextEditorTestBase
 	{
 		[Test]
 		public void ValidateSyntaxModes ()
@@ -57,6 +56,12 @@ namespace Mono.TextEditor.Tests
 		static void TestOutput (string input, string expectedMarkup, string syntaxMode)
 		{
 			string markup = GetMarkup (input, syntaxMode);
+			if (markup != expectedMarkup){
+				Console.WriteLine ("----Expected:");
+				Console.WriteLine (expectedMarkup);
+				Console.WriteLine ("----Got:");
+				Console.WriteLine (markup);
+			}
 			Assert.AreEqual (expectedMarkup, markup, "expected:" + expectedMarkup + Environment.NewLine + "But got:" + markup);
 		}
 		 
@@ -64,48 +69,56 @@ namespace Mono.TextEditor.Tests
 		public void TestSpans ()
 		{
 			TestOutput ("/* TestMe */",
-		                "<span foreground=\"#4D9A06\">/* TestMe */</span>");
+			            "<span foreground=\"#999988\" style=\"Italic\">/*</span><span foreground=\"#999988\" style=\"Italic\"> </span><span foreground=\"#999988\" style=\"Italic\">TestMe</span><span foreground=\"#999988\" style=\"Italic\"> </span><span foreground=\"#999988\" style=\"Italic\">*/</span>");
 		}
 		
 		[Test]
 		public void TestStringEscapes ()
 		{
 			TestOutput ("\"Escape:\\\" \"outtext",
-		                "<span foreground=\"#75507B\">\"Escape:\\\" \"</span><span foreground=\"#000000\">outtext</span>");
+			            "<span foreground=\"#F57D00\">\"Escape:</span><span foreground=\"#A53E00\">\\\"</span><span foreground=\"#F57D00\"> \"</span><span foreground=\"#444444\">outtext</span>");
 		}
 		
 		[Test]
 		public void TestVerbatimStringEscapes ()
 		{
 			TestOutput ("@\"Escape:\"\" \"outtext",
-		                "<span foreground=\"#75507B\">@\"Escape:\"\" \"</span><span foreground=\"#000000\">outtext</span>");
+			            "<span foreground=\"#F57D00\">@\"Escape:</span><span foreground=\"#A53E00\">\"\"</span><span foreground=\"#F57D00\"> \"</span><span foreground=\"#444444\">outtext</span>");
 		}
-		
+
+		[Test]
+		public void TestDoubleVerbatimStringEscapes ()
+		{
+			TestOutput ("@\"Escape:\"\"\"\" \"outtext",
+			            "<span foreground=\"#F57D00\">@\"Escape:</span><span foreground=\"#A53E00\">\"\"\"\"</span><span foreground=\"#F57D00\"> \"</span><span foreground=\"#444444\">outtext</span>");
+		}
+
+		[Test]
+		public void TestVerbatimStringEscapeLineBreak ()
+		{
+			TestOutput ("@\"Escape:\"\"\ntext\"",
+			            "<span foreground=\"#F57D00\">@\"Escape:</span><span foreground=\"#A53E00\">\"\"</span>\n<span foreground=\"#F57D00\">text\"</span>");
+		}
+
 		[Test]
 		public void TestHexDigit ()
 		{
 			TestOutput ("0x12345679AFFEuL",
-		                "<span foreground=\"#75507B\">0x12345679AFFEuL</span>");
+			            "<span foreground=\"#F57D00\">0x12345679AFFEuL</span>");
 		}
 		
 		[Test]
 		public void TestDoubleDigit ()
 		{
 			TestOutput ("123.45678e-09d",
-		                "<span foreground=\"#75507B\">123.45678e-09d</span>");
+			            "<span foreground=\"#F57D00\">123.45678e-09d</span>");
 		}
 		
 		[Test]
 		public void TestCDATASection ()
 		{
-			string markup = GetMarkup ("<![CDATA[ test ]]>", "application/xml");
-			if (markup != "<span foreground=\"#A40000\" weight=\"bold\">&lt;![CDATA[</span><span foreground=\"#4D9A06\"> test</span><span foreground=\"#A40000\" weight=\"bold\"> ]]&gt;</span>" && 
-			    markup != "<span foreground=\"#A40000\" weight=\"bold\">&lt;![CDATA[</span><span foreground=\"#4D9A06\"> test </span><span foreground=\"#A40000\" weight=\"bold\">]]&gt;</span>") {
-				Assert.Fail ("CDATA markup invalid:" + markup);
-			}
-			
 			TestOutput ("<![CDATA[ test]]>",
-			            "<span foreground=\"#A40000\" weight=\"bold\">&lt;![CDATA[</span><span foreground=\"#4D9A06\"> test</span><span foreground=\"#A40000\" weight=\"bold\">]]&gt;</span>",
+			            "<span foreground=\"#444444\">&lt;![CDATA[ test]]&gt;</span>",
 			            "application/xml");
 		}
 		
@@ -117,7 +130,7 @@ namespace Mono.TextEditor.Tests
 		public void TestBug603 ()
 		{
 			TestOutput ("///<summary>foo bar</summary>",
-		                "<span foreground=\"#4D9A06\">///&lt;summary&gt;foo bar&lt;/summary&gt;</span>");
+			            "<span foreground=\"#999988\" style=\"Italic\">///</span><span foreground=\"#999988\" style=\"Italic\">&lt;</span><span foreground=\"#999988\" style=\"Italic\">summary</span><span foreground=\"#999988\" style=\"Italic\">&gt;</span><span foreground=\"#999988\" style=\"Italic\">foo bar</span><span foreground=\"#999988\" style=\"Italic\">&lt;</span><span foreground=\"#999988\" style=\"Italic\">/</span><span foreground=\"#999988\" style=\"Italic\">summary</span><span foreground=\"#999988\" style=\"Italic\">&gt;</span>");
 		}
 	}
 }

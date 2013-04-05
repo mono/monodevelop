@@ -12,7 +12,7 @@ namespace MonoDevelop.Ide.Execution
 		private global::Gtk.Label label4;
 		private global::Gtk.Label label3;
 		private global::MonoDevelop.Ide.Gui.Components.EnvVarList envVarList;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

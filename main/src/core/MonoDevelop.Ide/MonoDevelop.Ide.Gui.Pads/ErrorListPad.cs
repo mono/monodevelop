@@ -55,7 +55,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 	{
 		HPaned control;
 		ScrolledWindow sw;
-		MonoDevelop.Ide.Gui.Components.PadTreeView view;
+		PadTreeView view;
 		LogView outputView;
 		ListStore store;
 		TreeModelFilter filter;
@@ -174,7 +174,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			sort.SetSortFunc (VisibleColumns.Project, ProjectIterSort);
 			sort.SetSortFunc (VisibleColumns.File, FileIterSort);
 			
-			view = new MonoDevelop.Ide.Gui.Components.PadTreeView (sort);
+			view = new PadTreeView (sort);
 			view.RulesHint = true;
 			view.DoPopupMenu = (evnt) => IdeApp.CommandService.ShowContextMenu (view, evnt, CreateMenu ());
 			AddColumns ();
@@ -688,6 +688,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 		private void Clear()
 		{
 			errorCount = warningCount = infoCount = 0;
+			if (view.IsRealized)
+				view.ScrollToPoint (0, 0);
 			store.Clear ();
 			tasks.Clear ();
 			UpdateErrorsNum ();

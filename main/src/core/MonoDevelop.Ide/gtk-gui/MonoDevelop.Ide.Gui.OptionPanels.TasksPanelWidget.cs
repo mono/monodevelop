@@ -31,7 +31,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		private global::Gtk.Label label11;
 		private global::Gtk.Label label12;
 		private global::Gtk.Label label9;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

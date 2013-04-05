@@ -607,7 +607,7 @@ namespace Mono.Debugging.Soft
 			if (vm != null) {
 				try {
 					vm.Exit (0);
-				} catch (VMDisconnectedException ex) {
+				} catch (VMDisconnectedException) {
 					// The VM was already disconnected, ignore.
 				} catch (SocketException se) {
 					// This will often happen during normal operation
@@ -1164,8 +1164,22 @@ namespace Mono.Debugging.Soft
 					OnResumed ();
 					vm.Resume ();
 					DequeueEventsForFirstThread ();
+				} catch (CommandException ex) {
+					string reason;
+
+					switch (ex.ErrorCode) {
+					case ErrorCode.INVALID_FRAMEID: reason = "invalid frame id"; break;
+					case ErrorCode.NOT_SUSPENDED: reason = "VM not suspended"; break;
+					case ErrorCode.ERR_UNLOADED: reason = "AppDomain has been unloaded"; break;
+					case ErrorCode.NO_SEQ_POINT_AT_IL_OFFSET: reason = "no sequence point at the specified IL offset"; break;
+					default: reason = ex.ErrorCode.ToString (); break;
+					}
+
+					OnDebuggerOutput (true, string.Format ("Step request failed: {0}.", reason));
+					LoggingService.LogError ("Step request failed", ex);
 				} catch (Exception ex) {
-					LoggingService.LogError ("Next Line command failed", ex);
+					OnDebuggerOutput (true, string.Format ("Step request failed: {0}", ex.Message));
+					LoggingService.LogError ("Step request failed", ex);
 				}
 			});
 		}

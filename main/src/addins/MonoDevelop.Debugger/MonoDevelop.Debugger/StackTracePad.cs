@@ -168,6 +168,9 @@ namespace MonoDevelop.Debugger
 
 		void Update ()
 		{
+			if (tree.IsRealized)
+				tree.ScrollToPoint (0, 0);
+
 			needsUpdate = false;
 			store.Clear ();
 

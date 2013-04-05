@@ -27,14 +27,10 @@
 //
 
 using System;
-using System.IO;
-using System.Collections;
 using Gtk;
 
 using MonoDevelop.Core;
-using MonoDevelop.Projects;
 using MonoDevelop.Ide;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Tasks
@@ -156,9 +152,12 @@ namespace MonoDevelop.Ide.Tasks
 		{
 			if (updating)
 				return;
+
+			if (view.IsRealized)
+				view.ScrollToPoint (0, 0);
+
 			store.Clear ();
-			foreach (Task task in TaskService.UserTasks)
-			{
+			foreach (Task task in TaskService.UserTasks) {
 				store.AppendValues (GettextCatalog.GetString (Enum.GetName (typeof (TaskPriority), task.Priority)), task.Completed, task.Description, task, GetColorByPriority (task.Priority), task.Completed ? (int)Pango.Weight.Light : (int)Pango.Weight.Bold);
 			}
 			ValidateButtons ();

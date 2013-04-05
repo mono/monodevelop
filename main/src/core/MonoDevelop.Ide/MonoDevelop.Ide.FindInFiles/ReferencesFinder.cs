@@ -166,14 +166,6 @@ namespace MonoDevelop.Ide.FindInFiles
 			return projects;
 		}
 
-		public static bool HasOverloads (Solution solution, object item)
-		{
-			if (!(item is IMember))
-				return false;
-
-			return CollectMembers (solution, (IMember)item, RefactoryScope.Unknown).Count () > 1;
-		}
-		
 		public static IEnumerable<MemberReference> FindReferences (Solution solution, object member, bool searchForAllOverloads, RefactoryScope scope = RefactoryScope.Unknown, IProgressMonitor monitor = null)
 		{
 			if (member == null)
@@ -204,6 +196,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			// prepare references finder
 			var preparedFinders = new List<Tuple<ReferenceFinder, Project, IProjectContent, List<FilePath>>> ();
 			var curList = new List<FilePath> ();
+			int totalFiles = 0;
 			foreach (var info in GetFileNames (solution, member, scope, monitor, searchNodes)) {
 				string oldMime = null;
 				foreach (var file in info.Files) {
@@ -222,21 +215,26 @@ namespace MonoDevelop.Ide.FindInFiles
 						preparedFinders.Add (Tuple.Create (finder, info.Project, info.Content, curList));
 					}
 					curList.Add (file);
+					totalFiles++;
 				}
 			}
 			
 			// execute search
+			if (monitor != null)
+				monitor.BeginTask (GettextCatalog.GetString ("Analyzing files..."), totalFiles);
 			foreach (var tuple in preparedFinders) {
 				var finder = tuple.Item1;
-				foreach (var foundReference in finder.FindReferences (tuple.Item2, tuple.Item3, tuple.Item4, searchNodes)) {
+				foreach (var foundReference in finder.FindReferences (tuple.Item2, tuple.Item3, tuple.Item4, monitor, searchNodes)) {
 					if (monitor != null && monitor.IsCancelRequested)
 						yield break;
 					yield return foundReference;
 				}
 			}
+			if (monitor != null)
+				monitor.EndTask ();
 		}
-		
-		public abstract IEnumerable<MemberReference> FindReferences (Project project, IProjectContent content, IEnumerable<FilePath> files, IEnumerable<object> searchedMembers);
+
+		public abstract IEnumerable<MemberReference> FindReferences (Project project, IProjectContent content, IEnumerable<FilePath> files, IProgressMonitor monitor, IEnumerable<object> searchedMembers);
 
 		internal static IEnumerable<IMember> CollectMembers (Solution solution, IMember member, RefactoryScope scope)
 		{

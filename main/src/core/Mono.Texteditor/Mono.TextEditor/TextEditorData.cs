@@ -1185,10 +1185,10 @@ namespace Mono.TextEditor
 			set;
 		}
 
-		public int PasteText (int offset, string text)
+		public int PasteText (int offset, string text, byte[] copyData = null)
 		{
 			if (TextPasteHandler != null)
-				text = TextPasteHandler.FormatPlainText (offset, text);
+				text = TextPasteHandler.FormatPlainText (offset, text, copyData);
 			var insertedChars = Insert (offset, text);
 			if (Paste != null)
 				Paste (offset, text, insertedChars);

@@ -177,7 +177,11 @@ namespace MonoDevelop.CSharp.Formatting
 					if (node != null) {
 						while (node.Role == Roles.EmbeddedStatement || node.Role == IfElseStatement.TrueRole || node.Role == IfElseStatement.FalseRole)
 							node = node.Parent;
-						var start = stubData.LocationToOffset (node.StartLocation);
+						// include indentation if node starts in new line
+						var formatNode = node.GetPrevNode ();
+						if (formatNode.Role != Roles.NewLine)
+							formatNode = node;
+						var start = stubData.LocationToOffset (formatNode.StartLocation);
 						if (start > formatStartOffset) {
 							var end = stubData.LocationToOffset (node.EndLocation);
 							formatStartOffset = start;
@@ -222,10 +226,11 @@ namespace MonoDevelop.CSharp.Formatting
 				}
 			} else {
 				var seg = ext.typeSystemSegmentTree.GetMemberSegmentAt (startOffset - 1);
-				if (seg == null)
+				if (seg == null) {
 					return;
+				}
 				var member = seg.Entity;
-				if (member == null || member.Region.IsEmpty || member.BodyRegion.End.IsEmpty)
+				if (member == null)
 					return;
 	
 				// Build stub

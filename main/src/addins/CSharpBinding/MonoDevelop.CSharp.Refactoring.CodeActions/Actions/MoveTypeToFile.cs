@@ -54,7 +54,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			var type = GetTypeDeclaration (context);
 			if (type == null)
 				yield break;
-			if (Path.GetFileNameWithoutExtension (context.Document.FileName) == type.Name)
+			if (Path.GetFileNameWithoutExtension (context.TextEditor.FileName) == type.Name)
 				yield break;
 			string title;
 			if (IsSingleType (context)) {
@@ -66,9 +66,9 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				var ctx = new MDRefactoringContext (d, l);
 				string correctFileName = GetCorrectFileName (ctx, type);
 				if (IsSingleType (ctx)) {
-					FileService.RenameFile (ctx.Document.FileName, correctFileName);
-					if (ctx.Document.Project != null)
-						ctx.Document.Project.Save (new NullProgressMonitor ());
+					FileService.RenameFile (ctx.TextEditor.FileName, correctFileName);
+					if (ctx.Project != null)
+						ctx.Project.Save (new NullProgressMonitor ());
 					return;
 				}
 				
@@ -81,7 +81,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 
 		static void CreateNewFile (MDRefactoringContext context, TypeDeclaration type, string correctFileName)
 		{
-			var content = context.Document.Editor.Text;
+			var content = context.TextEditor.Text;
 			
 			var types = new List<EntityDeclaration> (context.Unit.GetTypes ().Where (t => t.StartLocation != type.StartLocation));
 			types.Sort ((x, y) => y.StartLocation.CompareTo (x.StartLocation));
@@ -92,16 +92,16 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				content = content.Remove (start, end - start);
 			}
 			
-			if (context.Document.Project is MonoDevelop.Projects.DotNetProject) {
-				string header = StandardHeaderService.GetHeader (context.Document.Project, correctFileName, true);
+			if (context.Project != null) {
+				string header = StandardHeaderService.GetHeader (context.Project, correctFileName, true);
 				if (!string.IsNullOrEmpty (header))
-					content = header + context.Document.Editor.EolMarker + StripHeader (content);
+					content = header + context.TextEditor.EolMarker + StripHeader (content);
 			}
 			content = StripDoubleBlankLines (content);
 			
 			File.WriteAllText (correctFileName, content);
-			context.Document.Project.AddFile (correctFileName);
-			MonoDevelop.Ide.IdeApp.ProjectOperations.Save (context.Document.Project);
+			context.Project.AddFile (correctFileName);
+			MonoDevelop.Ide.IdeApp.ProjectOperations.Save (context.Project);
 		}
 
 		static bool IsBlankLine (TextDocument doc, int i)
@@ -157,8 +157,8 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 		internal static string GetCorrectFileName (MDRefactoringContext context, EntityDeclaration type)
 		{
 			if (type == null)
-				return context.Document.FileName;
-			return Path.Combine (Path.GetDirectoryName (context.Document.FileName), type.Name + Path.GetExtension (context.Document.FileName));
+				return context.TextEditor.FileName;
+			return Path.Combine (Path.GetDirectoryName (context.TextEditor.FileName), type.Name + Path.GetExtension (context.TextEditor.FileName));
 		}
 	}
 }

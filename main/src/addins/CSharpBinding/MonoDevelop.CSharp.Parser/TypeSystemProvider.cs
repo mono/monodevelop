@@ -413,7 +413,7 @@ namespace MonoDevelop.CSharp.Parser
 			return compilerArguments;
 		}
 		
-		static Version ConvertLanguageVersion (LangVersion ver)
+		internal static Version ConvertLanguageVersion (LangVersion ver)
 		{
 			switch (ver) {
 			case LangVersion.Default:

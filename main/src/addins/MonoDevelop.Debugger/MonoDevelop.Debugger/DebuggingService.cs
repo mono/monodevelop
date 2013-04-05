@@ -270,8 +270,8 @@ namespace MonoDevelop.Debugger
 			DebuggerEngine engine = GetFactoryForCommand (command);
 			if (engine != null)
 				return engine.SupportedFeatures;
-			else
-				return DebuggerFeatures.None;
+
+			return DebuggerFeatures.None;
 		}
 
 		public static void ShowExpressionEvaluator (string expression)

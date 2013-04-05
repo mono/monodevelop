@@ -142,10 +142,10 @@ namespace MonoDevelop.CSharp.Highlighting
 					parsedFile = parsedDocument.ParsedFile as CSharpUnresolvedFile;
 					if (guiDocument.Project != null && guiDocument.IsCompileableInProject) {
 						src = new CancellationTokenSource ();
+						var newResolverTask = guiDocument.GetSharedResolver ();
 						var cancellationToken = src.Token;
-						var newResolver = guiDocument.GetSharedResolver ();
-						compilation = newResolver.Compilation;
 						System.Threading.Tasks.Task.Factory.StartNew (delegate {
+							var newResolver = newResolverTask.Result;
 							var visitor = new QuickTaskVisitor (newResolver, cancellationToken);
 							try {
 								unit.AcceptVisitor (visitor);
@@ -160,6 +160,7 @@ namespace MonoDevelop.CSharp.Highlighting
 									var editorData = guiDocument.Editor;
 									if (editorData == null)
 										return;
+									compilation = newResolver.Compilation;
 									resolver = newResolver;
 									quickTasks = visitor.QuickTasks;
 									OnTasksUpdated (EventArgs.Empty);

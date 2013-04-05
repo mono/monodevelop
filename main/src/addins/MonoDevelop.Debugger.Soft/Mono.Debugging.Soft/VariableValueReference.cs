@@ -75,6 +75,8 @@ namespace Mono.Debugging.Soft
 					return value;
 				} catch (AbsentInformationException) {
 					throw new EvaluatorException ("Value not available");
+				} catch (ArgumentException ex) {
+					throw new EvaluatorException (ex.Message);
 				}
 			}
 			set {

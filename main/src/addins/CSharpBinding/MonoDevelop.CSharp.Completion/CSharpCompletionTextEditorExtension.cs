@@ -275,6 +275,14 @@ namespace MonoDevelop.CSharp.Completion
 				Document.GetProjectContext (),
 				ctx
 			);
+
+			if (Document.HasProject) {
+				var configuration = Document.Project.GetConfiguration (MonoDevelop.Ide.IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
+				var par = configuration != null ? configuration.CompilationParameters as CSharpCompilerParameters : null;
+				if (par != null)
+					engine.LanguageVersion = MonoDevelop.CSharp.Parser.TypeSystemParser.ConvertLanguageVersion (par.LangVersion);
+			}
+
 			engine.FormattingPolicy = FormattingPolicy.CreateOptions ();
 			engine.EolMarker = data.EolMarker;
 			engine.IndentString = data.Options.IndentationString;
@@ -993,11 +1001,15 @@ namespace MonoDevelop.CSharp.Completion
 			static void AddType (MonoDevelop.Ide.Gui.Document document, TypeSystemSegmentTree result, IUnresolvedTypeDefinition type)
 			{
 				int offset = document.Editor.LocationToOffset (type.Region.Begin);
-				int endOffset = document.Editor.LocationToOffset (type.Region.End);
+				int endOffset = type.Region.End.IsEmpty ? int.MaxValue : document.Editor.LocationToOffset (type.Region.End);
+				if (endOffset < 0)
+					endOffset = int.MaxValue;
 				result.Add (new TypeSystemTreeSegment (offset, endOffset - offset, type));
 				foreach (var entity in type.Members) {
 					offset = document.Editor.LocationToOffset (entity.Region.Begin);
 					endOffset = document.Editor.LocationToOffset (entity.Region.End);
+					if (endOffset < 0)
+						endOffset = int.MaxValue;
 					result.Add (new TypeSystemTreeSegment (offset, endOffset - offset, entity));
 				}
 				

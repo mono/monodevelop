@@ -15,7 +15,7 @@ namespace MonoDevelop.Components
 		private global::Gtk.Button buttonUpdate;
 		private global::Gtk.Button buttonUp;
 		private global::Gtk.Button buttonDown;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

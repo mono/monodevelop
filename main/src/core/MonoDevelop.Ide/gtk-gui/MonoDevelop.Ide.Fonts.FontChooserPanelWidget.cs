@@ -8,7 +8,7 @@ namespace MonoDevelop.Ide.Fonts
 		private global::Gtk.Label label1;
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
 		private global::Gtk.TreeView treeviewFonts;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

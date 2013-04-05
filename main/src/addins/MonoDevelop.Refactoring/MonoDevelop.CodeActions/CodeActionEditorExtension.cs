@@ -77,10 +77,7 @@ namespace MonoDevelop.CodeActions
 				widget = null;
 			}
 			if (currentSmartTag != null) {
-				bool wasRemoved = document.Editor.Document.RemoveMarker (currentSmartTag);
-				if (!wasRemoved) {
-					LoggingService.LogWarning ("Can't remove smart tag marker from document.");
-				}
+				document.Editor.Document.RemoveMarker (currentSmartTag);
 				currentSmartTag = null;
 				currentSmartTagBegin = DocumentLocation.Empty;
 			}
@@ -378,6 +375,13 @@ namespace MonoDevelop.CodeActions
 			if (currentSmartTag == null)
 				return;
 			currentSmartTag.Popup ();
+		}
+
+		internal List<CodeAction> GetCurrentFixes ()
+		{
+			if (currentSmartTag == null)
+				return null;
+			return currentSmartTag.fixes;
 		}
 	}
 }

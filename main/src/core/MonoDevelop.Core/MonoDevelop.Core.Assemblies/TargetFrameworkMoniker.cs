@@ -280,7 +280,7 @@ namespace MonoDevelop.Core.Assemblies
 		public const string ID_SILVERLIGHT = "Silverlight";
 		public const string ID_PORTABLE = ".NETPortable";
 		public const string ID_MONOTOUCH = "MonoTouch";
-		public const string ID_MONODROID = "MonoDroid";
+		public const string ID_MONODROID = "MonoAndroid";
 	}
 	
 	class TargetFrameworkMonikerDataType: DataType

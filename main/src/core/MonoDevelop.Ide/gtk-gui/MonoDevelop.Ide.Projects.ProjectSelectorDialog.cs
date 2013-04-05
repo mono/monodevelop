@@ -9,7 +9,7 @@ namespace MonoDevelop.Ide.Projects
 		private global::MonoDevelop.Ide.Gui.Components.ProjectSelectorWidget selector;
 		private global::Gtk.Button buttonCancel;
 		private global::Gtk.Button buttonOk;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

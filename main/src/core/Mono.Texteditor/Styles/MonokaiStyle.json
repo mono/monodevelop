@@ -155,17 +155,17 @@
 		{ "name": "User Types(Value types)", "fore":"monokai-type" },
 		{ "name": "User Types(Type parameters)", "fore":"monokai-type" },
 
-		{ "name": "User Field Usage", "fore":"monokai-white" },
-		{ "name": "User Field Declaration", "fore":"monokai-white" },
+		{ "name": "User Field Usage", "fore":"#2EE2A6" },
+		{ "name": "User Field Declaration", "fore":"#2EE2A6" },
 
-		{ "name": "User Property Usage", "fore":"monokai-white" },
-		{ "name": "User Property Declaration", "fore":"monokai-white" },
+		{ "name": "User Property Usage", "fore":"#2EE2A6" },
+		{ "name": "User Property Declaration", "fore":"#2EE2A6" },
 
-		{ "name": "User Event Usage", "fore":"monokai-white" },
-		{ "name": "User Event Declaration", "fore":"monokai-white" },
+		{ "name": "User Event Usage", "fore":"#FFAE81" },
+		{ "name": "User Event Declaration", "fore":"#FFAE81" },
 
-		{ "name": "User Method Usage", "fore":"monokai-white" },
-		{ "name": "User Method Declaration", "fore":"monokai-white" },
+		{ "name": "User Method Usage", "fore":"monokai-functionargument" },
+		{ "name": "User Method Declaration", "fore":"monokai-functionargument" },
 		
 		{ "name": "User Parameter Usage", "fore":"monokai-white" },
 		{ "name": "User Parameter Declaration", "fore":"monokai-white" },

@@ -1172,7 +1172,7 @@ namespace Mono.TextEditor
 							var end = Document.OffsetToLocation (selection.GetSelectionRange (textEditorData).Offset + selection_data.Text.Length + selection.GetSelectionRange (textEditorData).Length);
 							selection = new Selection (start, end);
 						}
-						textEditorData.PasteText (offset, selection_data.Text);
+						textEditorData.PasteText (offset, selection_data.Text, null);
 						Caret.Offset = offset + selection_data.Text.Length;
 						MainSelection = new Selection (Document.OffsetToLocation (offset), Document.OffsetToLocation (offset + selection_data.Text.Length));
 					}

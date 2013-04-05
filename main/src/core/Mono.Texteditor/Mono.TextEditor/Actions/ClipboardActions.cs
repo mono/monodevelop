@@ -107,8 +107,13 @@ namespace Mono.TextEditor
 					break;
 				case MonoTextType:
 					byte[] rawText = Encoding.UTF8.GetBytes (monoDocument.Text);
-					byte[] data = new byte [rawText.Length + 1];
-					rawText.CopyTo (data, 1);
+					var copyDataLength = (byte)(copyData != null ? copyData.Length : 0);
+					var dataOffset = 1 + 1 + copyDataLength;
+					byte[] data = new byte [rawText.Length + dataOffset];
+					data [1] = copyDataLength;
+					if (copyDataLength > 0)
+						copyData.CopyTo (data, 2);
+					rawText.CopyTo (data, dataOffset);
 					data [0] = 0;
 					if (isBlockMode)
 						data [0] |= 1;
@@ -132,7 +137,10 @@ namespace Mono.TextEditor
 			}
 	
 			public TextDocument copiedDocument;
-			public TextDocument monoDocument; // has a slightly different format !!!
+			public TextDocument monoDocument;
+			byte[] copyData;
+
+ // has a slightly different format !!!
 			public Mono.TextEditor.Highlighting.ColorScheme docStyle;
 			ITextEditorOptions options;
 			Mono.TextEditor.Highlighting.ISyntaxMode mode;
@@ -187,10 +195,15 @@ namespace Mono.TextEditor
 					this.docStyle = data.ColorStyle;
 					this.options = data.Options;
 					this.mode = SyntaxModeService.GetSyntaxMode (monoDocument, data.MimeType);
+					copyData = null;
+
 					switch (selection.SelectionMode) {
 					case SelectionMode.Normal:
 						isBlockMode = false;
 						var segment = selection.GetSelectionRange (data);
+						var pasteHandler = data.TextPasteHandler;
+						if (pasteHandler != null)
+							copyData = pasteHandler.GetCopyData (segment);
 						var text = data.GetTextAt (segment);
 						copiedDocument.Text = text;
 						monoDocument.Text = text;
@@ -280,8 +293,10 @@ namespace Mono.TextEditor
 				clipboard.RequestContents (CopyOperation.MD_ATOM, delegate(Clipboard clp, SelectionData selectionData) {
 					if (selectionData.Length > 0) {
 						byte[] selBytes = selectionData.Data;
-	
-						string text = System.Text.Encoding.UTF8.GetString (selBytes, 1, selBytes.Length - 1);
+						byte[] copyData = new byte[selBytes[1]];
+						Array.Copy (selBytes, 2, copyData, 0, copyData.Length);
+						var rawTextOffset = 1 + 1 + copyData.Length;
+						string text = System.Text.Encoding.UTF8.GetString (selBytes, rawTextOffset, selBytes.Length - rawTextOffset);
 						bool pasteBlock = (selBytes [0] & 1) == 1;
 						bool pasteLine = (selBytes [0] & 2) == 2;
 						
@@ -335,13 +350,13 @@ namespace Mono.TextEditor
 								result = text.Length;
 								DocumentLine curLine = data.Document.GetLine (data.Caret.Line);
 
-								data.PasteText (curLine.Offset, text + data.EolMarker);
+								data.PasteText (curLine.Offset, text + data.EolMarker, copyData);
 								if (!preserveState)
 									data.ClearSelection ();
 								data.Caret.PreserveSelection = false;
 							}
 						} else {
-							result = PastePlainText (data, insertionOffset, text, preserveSelection);
+							result = PastePlainText (data, insertionOffset, text, preserveSelection, copyData);
 						}
 					}
 				});
@@ -362,7 +377,7 @@ namespace Mono.TextEditor
 			return result;
 		}
 
-		static int PastePlainText (TextEditorData data, int offset, string text, bool preserveSelection = false)
+		static int PastePlainText (TextEditorData data, int offset, string text, bool preserveSelection = false, byte[] copyData = null)
 		{
 			int inserted = 0;
 			using (var undo = data.OpenUndoGroup ()) {
@@ -390,7 +405,7 @@ namespace Mono.TextEditor
 					}
 				} else {
 					offset = version.MoveOffsetTo (data.Document.Version, offset);
-					inserted = data.PasteText (offset, text);
+					inserted = data.PasteText (offset, text, copyData);
 				}
 			}
 			return inserted;

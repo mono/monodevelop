@@ -88,7 +88,7 @@ namespace MonoDevelop.Refactoring
 		{
 			this.Document = doc;
 			if (doc != null && doc.ParsedDocument != null) {
-				resolver = doc.GetSharedResolver ();
+				resolver = doc.GetSharedResolver ().Result;
 				Unit = resolver != null ? resolver.RootNode as SyntaxTree : null;
 			}
 		}

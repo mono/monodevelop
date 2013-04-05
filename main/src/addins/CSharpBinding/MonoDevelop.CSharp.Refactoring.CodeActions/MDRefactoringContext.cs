@@ -25,55 +25,58 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.CSharp.Resolver;
 using ICSharpCode.NRefactory.CSharp;
-using System.Collections.Generic;
-using Mono.TextEditor;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Refactoring;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
-using ICSharpCode.NRefactory.CSharp.Resolver;
-using System.Linq;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Semantics;
-using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using System.Threading;
 using MonoDevelop.Ide.Gui;
 using System.Diagnostics;
 using MonoDevelop.CSharp.Refactoring.CodeIssues;
+using Mono.TextEditor;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using MonoDevelop.CSharp.Formatting;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
 	public class MDRefactoringContext : RefactoringContext
 	{
-		public MonoDevelop.Ide.Gui.Document Document {
+		public TextEditorData TextEditor {
+			get;
+			private set;
+		}
+
+		public DotNetProject Project {
 			get;
 			private set;
 		}
 
 		public bool IsInvalid {
 			get {
-				if (Resolver == null || Document == null)
+				if (Resolver == null || TextEditor == null)
 					return true;
-				var pd = Document.ParsedDocument;
-				return pd == null || pd.HasErrors;
+				return ParsedDocument == null || ParsedDocument.HasErrors;
 			}
+		}
+
+		public ParsedDocument ParsedDocument {
+			get;
+			private set;
 		}
 
 		public SyntaxTree Unit {
 			get {
 				Debug.Assert (!IsInvalid);
-				return Document.ParsedDocument.GetAst<SyntaxTree> ();
+				return ParsedDocument.GetAst<SyntaxTree> ();
 			}
 		}
 
 		public override bool Supports (Version version)
 		{
-			var project = Document.Project as DotNetProject;
+			var project = Project;
 			if (project == null)
 				return true;
 			switch (project.TargetFramework.ClrVersion) {
@@ -90,57 +93,57 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 
 		public override ICSharpCode.NRefactory.CSharp.TextEditorOptions TextEditorOptions {
 			get {
-				return Document.Editor.CreateNRefactoryTextEditorOptions ();
+				return TextEditor.CreateNRefactoryTextEditorOptions ();
 			}
 		}
 		
 		public override bool IsSomethingSelected { 
 			get {
-				return Document.Editor.IsSomethingSelected;
+				return TextEditor.IsSomethingSelected;
 			}
 		}
 		
 		public override string SelectedText {
 			get {
-				return Document.Editor.SelectedText;
+				return TextEditor.SelectedText;
 			}
 		}
 		
 		public override TextLocation SelectionStart {
 			get {
-				return Document.Editor.MainSelection.Start;
+				return TextEditor.MainSelection.Start;
 			}
 		}
 		
 		public override TextLocation SelectionEnd { 
 			get {
-				return Document.Editor.MainSelection.End;
+				return TextEditor.MainSelection.End;
 			}
 		}
 
 		public override int GetOffset (TextLocation location)
 		{
-			return Document.Editor.LocationToOffset (location);
+			return TextEditor.LocationToOffset (location);
 		}
 		
 		public override TextLocation GetLocation (int offset)
 		{
-			return Document.Editor.OffsetToLocation (offset);
+			return TextEditor.OffsetToLocation (offset);
 		}
 
 		public override string GetText (int offset, int length)
 		{
-			return Document.Editor.GetTextAt (offset, length);
+			return TextEditor.GetTextAt (offset, length);
 		}
 		
 		public override string GetText (ICSharpCode.NRefactory.Editor.ISegment segment)
 		{
-			return Document.Editor.GetTextAt (segment.Offset, segment.Length);
+			return TextEditor.GetTextAt (segment.Offset, segment.Length);
 		}
 		
 		public override ICSharpCode.NRefactory.Editor.IDocumentLine GetLineByOffset (int offset)
 		{
-			return Document.Editor.GetLineByOffset (offset);
+			return TextEditor.GetLineByOffset (offset);
 		}
 
 		readonly TextLocation location;
@@ -150,19 +153,36 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			}
 		}
 
+		CSharpFormattingOptions formattingOptions;
+
 		public Script StartScript ()
 		{
-			return new MDRefactoringScript (this, this.Document, this.Document.GetFormattingOptions ());
+			return new MDRefactoringScript (this, formattingOptions);
 		}
 
-		public MDRefactoringContext (MonoDevelop.Ide.Gui.Document document, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken)) : base (document.GetSharedResolver (), cancellationToken)
+		public MDRefactoringContext (Document document, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken)) : base (document.GetSharedResolver ().Result, cancellationToken)
 		{
 			if (document == null)
 				throw new ArgumentNullException ("document");
-			this.Document = document;
+			this.TextEditor = document.Editor;
+			this.ParsedDocument = document.ParsedDocument;
+			this.Project = document.Project as DotNetProject;
+			this.formattingOptions = document.GetFormattingOptions ();
 			this.location = RefactoringService.GetCorrectResolveLocation (document, loc);
-			var policy = Document.HasProject ? Document.Project.Policies.Get<NameConventionPolicy> () : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<NameConventionPolicy> ();
+			var policy = document.HasProject ? Project.Policies.Get<NameConventionPolicy> () : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<NameConventionPolicy> ();
 			Services.AddService (typeof(NamingConventionService), policy.CreateNRefactoryService ());
+		}
+
+		public MDRefactoringContext (DotNetProject project, TextEditorData data, ParsedDocument parsedDocument, CSharpAstResolver resolver, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken)) : base (resolver, cancellationToken)
+		{
+			this.TextEditor = data;
+			this.ParsedDocument = parsedDocument;
+			this.Project = project;
+			var policy = Project.Policies.Get<CSharpFormattingPolicy> ();
+			this.formattingOptions = policy.CreateOptions ();
+			this.location = loc;
+			var namingPolicy = Project.Policies.Get<NameConventionPolicy> ();
+			Services.AddService (typeof(NamingConventionService), namingPolicy.CreateNRefactoryService ());
 		}
 	}
 }

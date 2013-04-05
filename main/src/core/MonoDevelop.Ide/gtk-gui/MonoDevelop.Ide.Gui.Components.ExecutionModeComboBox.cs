@@ -5,7 +5,7 @@ namespace MonoDevelop.Ide.Gui.Components
 	public partial class ExecutionModeComboBox
 	{
 		private global::Gtk.ComboBox comboMode;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

@@ -130,7 +130,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		void UpdateFont ()
 		{
-			text_render.FontDesc = IdeApp.Preferences.CustomPadFont ?? tree.Style.FontDescription;
+			text_render.CustomFont = IdeApp.Preferences.CustomPadFont ?? tree.Style.FontDescription;
 			tree.ColumnsAutosize ();
 		}
 		
@@ -2199,7 +2199,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		{
 			double zoom;
 			Pango.Layout layout;
-			Pango.FontDescription scaledFont, cachedFontDescParent;
+			Pango.FontDescription scaledFont, customFont;
 
 			static Gdk.Pixbuf popupIcon;
 			static Gdk.Pixbuf popupIconDown;
@@ -2211,6 +2211,20 @@ namespace MonoDevelop.Ide.Gui.Components
 			string markup;
 
 			public bool Pushed { get; set; }
+
+			//using this instead of FontDesc property, FontDesc seems to be broken
+			public Pango.FontDescription CustomFont {
+				get {
+					return customFont;
+				}
+				set {
+					if (scaledFont != null) {
+						scaledFont.Dispose ();
+						scaledFont = null;
+					}
+					customFont = value;
+				}
+			}
 
 			static CustomCellRendererText ()
 			{
@@ -2245,13 +2259,13 @@ namespace MonoDevelop.Ide.Gui.Components
 				if ((flags & Gtk.CellRendererState.Selected) != 0)
 					st = widget.HasFocus ? Gtk.StateType.Selected : Gtk.StateType.Active;
 
-				var fontDesc = FontDesc;
-				if (scaledFont == null || cachedFontDescParent != fontDesc) {
+				if (scaledFont == null) {
 					if (scaledFont != null)
 						scaledFont.Dispose ();
-					cachedFontDescParent = fontDesc;
-					scaledFont = fontDesc.Copy ();
-					scaledFont.Size = (int)(fontDesc.Size * Zoom);
+					scaledFont = (customFont ?? parent.Style.FontDesc).Copy ();
+					scaledFont.Size = (int)(customFont.Size * Zoom);
+					if (layout != null)
+						layout.FontDescription = scaledFont;
 				}
 
 				if (layout == null || layout.Context != widget.PangoContext) {
@@ -2335,11 +2349,11 @@ namespace MonoDevelop.Ide.Gui.Components
 					return zoom;
 				}
 				set {
-					zoom = value;
 					if (scaledFont != null) {
-						scaledFont.Size = (int)(FontDesc.Size * Zoom);
-						layout.FontDescription = scaledFont;
+						scaledFont.Dispose ();
+						scaledFont = null;
 					}
+					zoom = value;
 				}
 			}
 

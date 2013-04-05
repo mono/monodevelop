@@ -133,7 +133,7 @@ namespace Mono.Debugging.Soft
 			// Compiler generated anonymous/lambda methods
 			bool special_method = false;
 			if (methodName [0] == '<' && methodName.Contains (">m__")) {
-				int nidx = methodName.IndexOf (">m__") + 2;
+				int nidx = methodName.IndexOf (">m__", StringComparison.Ordinal) + 2;
 				methodName = "AnonymousMethod" + methodName.Substring (nidx, method.Name.Length - nidx);
 				special_method = true;
 			}

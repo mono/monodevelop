@@ -7,7 +7,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		private global::Gtk.VBox vbox1;
 		private global::Gtk.Label label1;
 		private global::MonoDevelop.Components.FolderListSelector selector;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

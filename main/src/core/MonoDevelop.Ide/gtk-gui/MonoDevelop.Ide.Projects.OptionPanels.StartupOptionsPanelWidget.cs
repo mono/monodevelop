@@ -17,7 +17,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		private global::Gtk.VBox vbox3;
 		private global::Gtk.Button buttonUp;
 		private global::Gtk.Button buttonDown;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

@@ -8,7 +8,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		private global::Gtk.HBox hbox68;
 		private global::Gtk.Label label114;
 		private global::Gtk.ComboBox runtimeVersionCombo;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
