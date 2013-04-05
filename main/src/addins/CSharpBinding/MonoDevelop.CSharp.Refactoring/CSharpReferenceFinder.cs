@@ -97,8 +97,9 @@ namespace MonoDevelop.CSharp.Refactoring
 			}
 		}
 		
-		MemberReference GetReference (ResolveResult result, AstNode node, string fileName, Mono.TextEditor.TextEditorData editor)
+		MemberReference GetReference (Project project, ResolveResult result, AstNode node, SyntaxTree syntaxTree, string fileName, Mono.TextEditor.TextEditorData editor)
 		{
+			AstNode originalNode = node;
 			if (result == null) {
 				return null;
 			}
@@ -175,7 +176,32 @@ namespace MonoDevelop.CSharp.Refactoring
 			var region = new DomRegion (fileName, node.StartLocation, node.EndLocation);
 
 			var length = node is PrimitiveType ? keywordName.Length : node.EndLocation.Column - node.StartLocation.Column;
-			return new MemberReference (valid, region, editor.LocationToOffset (region.Begin), length);
+			return new CSharpMemberReference (project, originalNode, syntaxTree, valid, region, editor.LocationToOffset (region.Begin), length);
+		}
+
+		public class CSharpMemberReference : MemberReference
+		{
+			public SyntaxTree SyntaxTree {
+				get;
+				private set;
+			}
+
+			public AstNode AstNode {
+				get;
+				private set;
+			}
+
+			public Project Project {
+				get;
+				private set;
+			}
+
+			public CSharpMemberReference (Project project, AstNode astNode, SyntaxTree syntaxTree,  object entity, DomRegion region, int offset, int length) : base (entity, region, offset, length)
+			{
+				this.Project = project;
+				this.AstNode = astNode;
+				this.SyntaxTree = syntaxTree;
+			}
 		}
 
 		bool IsNodeValid (object searchedMember, AstNode node)
@@ -208,23 +234,23 @@ namespace MonoDevelop.CSharp.Refactoring
 
 					refFinder.FindReferencesInFile (refFinder.GetSearchScopes (entity), file, unit, doc.Compilation, (astNode, r) => {
 						if (IsNodeValid (obj, astNode))
-							result.Add (GetReference (r, astNode, editor.FileName, editor)); 
+							result.Add (GetReference (doc.Project, r, astNode, unit, editor.FileName, editor)); 
 					}, CancellationToken.None);
 				} else if (obj is IVariable) {
 					refFinder.FindLocalReferences ((IVariable)obj, file, unit, doc.Compilation, (astNode, r) => { 
 						if (IsNodeValid (obj, astNode))
-							result.Add (GetReference (r, astNode, editor.FileName, editor));
+							result.Add (GetReference (doc.Project, r, astNode, unit, editor.FileName, editor));
 					}, CancellationToken.None);
 				} else if (obj is ITypeParameter) {
 					refFinder.FindTypeParameterReferences ((ITypeParameter)obj, file, unit, doc.Compilation, (astNode, r) => { 
 						if (IsNodeValid (obj, astNode))
-							result.Add (GetReference (r, astNode, editor.FileName, editor));
+							result.Add (GetReference (doc.Project, r, astNode, unit, editor.FileName, editor));
 					}, CancellationToken.None);
 				} else if (obj is INamespace) {
 					var entity = (INamespace)obj;
 					refFinder.FindReferencesInFile (refFinder.GetSearchScopes (entity), file, unit, doc.Compilation, (astNode, r) => {
 						if (IsNodeValid (obj, astNode))
-							result.Add (GetReference (r, astNode, editor.FileName, editor)); 
+							result.Add (GetReference (doc.Project, r, astNode, unit, editor.FileName, editor)); 
 					}, CancellationToken.None);
 				} 
 			}
@@ -281,7 +307,7 @@ namespace MonoDevelop.CSharp.Refactoring
 							unit,
 							compilation,
 							(astNode, result) => {
-								var newRef = GetReference (result, astNode, file, editor);
+								var newRef = GetReference (project, result, astNode, unit, file, editor);
 								if (newRef == null || refs.Any (r => r.FileName == newRef.FileName && r.Region == newRef.Region))
 									return;
 								refs.Add (newRef);
