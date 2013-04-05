@@ -34,16 +34,27 @@ namespace MonoDevelop.MacIntegration.MacMenu
 		public MDServicesMenuItem ()
 		{
 			Title = GettextCatalog.GetString ("Services");
-			if (NSApplication.SharedApplication.ServicesMenu == null)
-				NSApplication.SharedApplication.ServicesMenu = new NSMenu ();
-			Submenu = NSApplication.SharedApplication.ServicesMenu;
+			var sub = NSApplication.SharedApplication.ServicesMenu;
+			if (sub == null) {
+				sub = new NSMenu ();
+				NSApplication.SharedApplication.ServicesMenu = sub;
+			} else {
+				foreach (var m in sub.Supermenu.ItemArray ()) {
+					if (m.Submenu == sub) {
+						m.Submenu = new NSMenu ();
+						break;
+					}
+				}
+			}
+			Submenu = sub;
 		}
 
 		public void Update (MDMenu parent, ref NSMenuItem lastSeparator, ref int index)
 		{
 			Enabled = true;
-			Hidden = false;
-			MDMenu.ShowLastSeparator (ref lastSeparator);
+			Hidden = Submenu != NSApplication.SharedApplication.ServicesMenu;
+			if (!Hidden)
+				MDMenu.ShowLastSeparator (ref lastSeparator);
 		}
 	}
 }
