@@ -20,7 +20,8 @@
 		{ "name":"violet", "value":"#6c71c4" },
 		{ "name":"blue", "value":"#268bd2" },
 		{ "name":"cyan", "value":"#2aa198" },
-		{ "name":"green", "value":"#859900" }
+		{ "name":"green", "value":"#859900" },
+    { "name":"invalid-red", "value":"#ff0000"}
 	],
 
 		"colors":[
