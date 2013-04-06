@@ -38,6 +38,7 @@ using ICSharpCode.NRefactory;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -105,6 +106,62 @@ namespace MonoDevelop.Ide.TypeSystem
 					MessageService.ShowError (GettextCatalog.GetString ("Failed to write file '{0}'.", type.Region.FileName));
 				}
 			}
+		}
+
+		public static Task<bool> InsertMemberWithCursor (
+			string operation, ITypeDefinition parentType, IUnresolvedTypeDefinition part,
+			IUnresolvedMember newMember, bool implementExplicit = false)
+		{
+			var tcs = new TaskCompletionSource<bool>();
+			if (parentType == null)
+				return tcs.Task;
+			part = part ?? parentType.Parts.FirstOrDefault ();
+			if (part == null)
+				return tcs.Task;
+
+			var loadedDocument = IdeApp.Workbench.OpenDocument (part.Region.FileName);
+			loadedDocument.RunWhenLoaded (delegate {
+				var editor = loadedDocument.Editor;
+				var loc = part.Region.Begin;
+				var parsedDocument = loadedDocument.UpdateParseDocument ();
+				var declaringType = parsedDocument.GetInnermostTypeDefinition (loc);
+				var mode = new InsertionCursorEditMode (
+					editor.Parent,
+					CodeGenerationService.GetInsertionPoints (loadedDocument, declaringType));
+				if (mode.InsertionPoints.Count == 0) {
+					MessageService.ShowError (
+						GettextCatalog.GetString ("No valid insertion point can be found in type '{0}'.", declaringType.Name)
+						);
+					return;
+				}
+				var suitableInsertionPoint = GetSuitableInsertionPoint (mode.InsertionPoints, part, newMember);
+				if (suitableInsertionPoint != null)
+					mode.CurIndex = mode.InsertionPoints.IndexOf (suitableInsertionPoint);
+				else
+					mode.CurIndex = 0;
+
+				var helpWindow = new Mono.TextEditor.PopupWindow.InsertionCursorLayoutModeHelpWindow () {
+					TransientFor = IdeApp.Workbench.RootWindow,
+					TitleText = operation
+				};
+				helpWindow.Shown += (s, a) => DesktopService.RemoveWindowShadow (helpWindow);
+				mode.HelpWindow = helpWindow;
+
+				mode.StartMode ();
+				mode.Exited += delegate(object s, InsertionCursorEventArgs iCArgs) {
+					if (!iCArgs.Success) {
+						tcs.SetResult (false);
+					}
+					var generator = CreateCodeGenerator (editor, parentType.Compilation);
+
+					generator.IndentLevel = CalculateBodyIndentLevel (declaringType);
+					var generatedCode = generator.CreateMemberImplementation (parentType, part, newMember, implementExplicit);
+					mode.InsertionPoints[mode.CurIndex].Insert (editor, generatedCode.Code);
+					tcs.SetResult (true);
+				};
+			});
+
+			return tcs.Task;
 		}
 		
 		public static int CalculateBodyIndentLevel (IUnresolvedTypeDefinition declaringType)
