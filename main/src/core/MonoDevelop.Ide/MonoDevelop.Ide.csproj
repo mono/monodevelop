@@ -965,8 +965,8 @@
     <EmbeddedResource Include="icons\tree-popup-button-down.png">
       <LogicalName>tree-popup-button-down.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\command-16.png">
-      <LogicalName>command-16.png</LogicalName>
+    <EmbeddedResource Include="icons\command.png">
+      <LogicalName>command.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\Theme\icoBuild-Disabled.png">
       <LogicalName>icoBuild-Disabled.png</LogicalName>
