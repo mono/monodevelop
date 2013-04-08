@@ -28,6 +28,15 @@ namespace MonoDevelop.FSharp.Gui
 		private global::Gtk.Alignment GtkAlignment1;
 		private global::Gtk.FontButton fontbutton1;
 		private global::Gtk.Label GtkLabel13;
+		private global::Gtk.Label label1;
+		private global::Gtk.CheckButton matchThemeCheckbox;
+		private global::Gtk.HBox colorsHBox;
+		private global::Gtk.VBox vbox2;
+		private global::Gtk.Label label5;
+		private global::Gtk.ColorButton baseColorButton;
+		private global::Gtk.VBox vbox3;
+		private global::Gtk.Label label6;
+		private global::Gtk.ColorButton textColorButton;
 		
 		protected virtual void Build ()
 		{
@@ -247,6 +256,95 @@ namespace MonoDevelop.FSharp.Gui
 			w21.Position = 4;
 			w21.Expand = false;
 			w21.Fill = false;
+			// Container child vbox1.Gtk.Box+BoxChild
+			this.label1 = new global::Gtk.Label ();
+			this.label1.Name = "label1";
+			this.label1.Xalign = 0F;
+			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>FSI Colors</b>");
+			this.label1.UseMarkup = true;
+			this.vbox1.Add (this.label1);
+			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.label1]));
+			w22.Position = 5;
+			w22.Expand = false;
+			w22.Fill = false;
+			// Container child vbox1.Gtk.Box+BoxChild
+			this.matchThemeCheckbox = new global::Gtk.CheckButton ();
+			this.matchThemeCheckbox.CanFocus = true;
+			this.matchThemeCheckbox.Name = "matchThemeCheckbox";
+			this.matchThemeCheckbox.Label = global::Mono.Unix.Catalog.GetString ("Match with Theme");
+			this.matchThemeCheckbox.DrawIndicator = true;
+			this.matchThemeCheckbox.UseUnderline = true;
+			this.vbox1.Add (this.matchThemeCheckbox);
+			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.matchThemeCheckbox]));
+			w23.Position = 6;
+			w23.Expand = false;
+			w23.Fill = false;
+			// Container child vbox1.Gtk.Box+BoxChild
+			this.colorsHBox = new global::Gtk.HBox ();
+			this.colorsHBox.Name = "colorsHBox";
+			this.colorsHBox.Spacing = 6;
+			// Container child colorsHBox.Gtk.Box+BoxChild
+			this.vbox2 = new global::Gtk.VBox ();
+			this.vbox2.Name = "vbox2";
+			this.vbox2.Spacing = 6;
+			// Container child vbox2.Gtk.Box+BoxChild
+			this.label5 = new global::Gtk.Label ();
+			this.label5.Name = "label5";
+			this.label5.LabelProp = global::Mono.Unix.Catalog.GetString ("Base Color");
+			this.vbox2.Add (this.label5);
+			global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label5]));
+			w24.Position = 0;
+			w24.Expand = false;
+			w24.Fill = false;
+			// Container child vbox2.Gtk.Box+BoxChild
+			this.baseColorButton = new global::Gtk.ColorButton ();
+			this.baseColorButton.CanFocus = true;
+			this.baseColorButton.Events = ((global::Gdk.EventMask)(784));
+			this.baseColorButton.Name = "baseColorButton";
+			this.vbox2.Add (this.baseColorButton);
+			global::Gtk.Box.BoxChild w25 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.baseColorButton]));
+			w25.Position = 1;
+			w25.Expand = false;
+			w25.Fill = false;
+			this.colorsHBox.Add (this.vbox2);
+			global::Gtk.Box.BoxChild w26 = ((global::Gtk.Box.BoxChild)(this.colorsHBox [this.vbox2]));
+			w26.Position = 0;
+			w26.Expand = false;
+			w26.Fill = false;
+			// Container child colorsHBox.Gtk.Box+BoxChild
+			this.vbox3 = new global::Gtk.VBox ();
+			this.vbox3.Name = "vbox3";
+			this.vbox3.Spacing = 6;
+			// Container child vbox3.Gtk.Box+BoxChild
+			this.label6 = new global::Gtk.Label ();
+			this.label6.Name = "label6";
+			this.label6.LabelProp = global::Mono.Unix.Catalog.GetString ("Text Color");
+			this.vbox3.Add (this.label6);
+			global::Gtk.Box.BoxChild w27 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.label6]));
+			w27.Position = 0;
+			w27.Expand = false;
+			w27.Fill = false;
+			// Container child vbox3.Gtk.Box+BoxChild
+			this.textColorButton = new global::Gtk.ColorButton ();
+			this.textColorButton.CanFocus = true;
+			this.textColorButton.Events = ((global::Gdk.EventMask)(784));
+			this.textColorButton.Name = "textColorButton";
+			this.vbox3.Add (this.textColorButton);
+			global::Gtk.Box.BoxChild w28 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.textColorButton]));
+			w28.Position = 1;
+			w28.Expand = false;
+			w28.Fill = false;
+			this.colorsHBox.Add (this.vbox3);
+			global::Gtk.Box.BoxChild w29 = ((global::Gtk.Box.BoxChild)(this.colorsHBox [this.vbox3]));
+			w29.Position = 1;
+			w29.Expand = false;
+			w29.Fill = false;
+			this.vbox1.Add (this.colorsHBox);
+			global::Gtk.Box.BoxChild w30 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.colorsHBox]));
+			w30.PackType = ((global::Gtk.PackType)(1));
+			w30.Position = 7;
+			w30.Expand = false;
+			w30.Fill = false;
 			this.Add (this.vbox1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();

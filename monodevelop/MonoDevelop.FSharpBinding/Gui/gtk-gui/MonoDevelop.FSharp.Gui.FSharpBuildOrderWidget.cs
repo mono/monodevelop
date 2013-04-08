@@ -85,7 +85,9 @@ namespace MonoDevelop.FSharp.Gui
 			this.GtkLabel2 = new global::Gtk.Label ();
 			this.GtkLabel2.WidthRequest = 400;
 			this.GtkLabel2.Name = "GtkLabel2";
-			this.GtkLabel2.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Build order</b> Note: editing the build order will not have any effect when using xbuild, msbuild or Visual Studio. It is currently better to edit the project file by hand, using 'open with Source Code Editor' on the .fsproj.");
+			this.GtkLabel2.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Build order</b> Note: editing the build order will not have any effect when us" +
+				"ing xbuild, msbuild or Visual Studio. It is currently better to edit the project" +
+				" file by hand, using \'open with Source Code Editor\' on the .fsproj.");
 			this.GtkLabel2.UseMarkup = true;
 			this.GtkLabel2.Wrap = true;
 			this.frame2.LabelWidget = this.GtkLabel2;

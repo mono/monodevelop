@@ -8,6 +8,7 @@ MonoDevelop.FSharpBinding/Gui/[Bb]in/*
 MonoDevelop.FSharpBinding/_ReSharper.MonoDevelop.FSharp/*
 MonoDevelop.FSharpBinding/[Oo]bj/
 MonoDevelop.FSharpBinding/[Bb]in/
+monodevelop/pack/*
 repository/*
 *.suo
 *.pidb

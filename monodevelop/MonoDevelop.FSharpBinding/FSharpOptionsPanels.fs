@@ -5,6 +5,7 @@
 namespace MonoDevelop.FSharp
 
 open Gtk
+open Gdk
 open System
 open System.IO
 open MonoDevelop.Core
@@ -25,6 +26,10 @@ type FSharpSettingsPanel() =
   let preferFSharp20PropName = "FSharpBinding.PreferFSharp20"
 #endif
   let fsiFontNamePropName = "FSharpBinding.FsiFontName"
+  let fsiBaseColorPropName ="FSharpBinding.BaseColorPropName"
+  let fsiTextColorPropName ="FSharpBinding.TextColorPropName"
+  let fsiMatchWitThemePropName = "FSharpBinding.MatchWitThemePropName"
+  
   let mutable widget : FSharpSettingsWidget = null
   
 #if ALLOW_LANGUAGE_VERSION_PREFERENCE
@@ -99,6 +104,30 @@ type FSharpSettingsPanel() =
     
     let fontName = MonoDevelop.Ide.DesktopService.DefaultMonospaceFont
     widget.FontInteractive.FontName <- PropertyService.Get<string>(fsiFontNamePropName, fontName)
+    
+        
+    //fsi colors
+    widget.MatchThemeCheckBox.Clicked.Add(fun _ -> 
+                                            if(widget.MatchThemeCheckBox.Active) then // there may be a race condition here.
+                                                widget.ColorsHBox.Hide()
+                                            else
+                                                widget.ColorsHBox.Show())
+    
+    let (_, matchWithTheme) = PropertyService.Get<string>(fsiMatchWitThemePropName, "false")
+                            |> System.Boolean.TryParse
+                            
+    if(matchWithTheme) then
+        widget.ColorsHBox.Hide()
+    else
+        widget.ColorsHBox.Show()                            
+    
+    widget.MatchThemeCheckBox.Active <- matchWithTheme
+    
+    let textColor = PropertyService.Get<string>(fsiTextColorPropName, "#000000") |> strToColor
+    widget.TextColorButton.Color <- textColor
+    
+    let baseColor = PropertyService.Get<string>(fsiBaseColorPropName, "#FFFFFF") |> strToColor
+    widget.BaseColorButton.Color <- baseColor
 
     // Implement checkbox for F# Interactive options
     widget.CheckInteractiveUseDefault.Toggled.Add(fun _ -> 
@@ -131,7 +160,15 @@ type FSharpSettingsPanel() =
     PropertyService.Set(fsiArgumentsPropName, if widget.CheckInteractiveUseDefault.Active then null else widget.EntryArguments.Text)
 
     PropertyService.Set(fsiFontNamePropName, widget.FontInteractive.FontName)
+    PropertyService.Set(fsiBaseColorPropName, widget.BaseColorButton.Color |> colorToStr)
+    PropertyService.Set(fsiTextColorPropName, widget.TextColorButton.Color |> colorToStr)
+    
+    let matchWithTheme = if widget.MatchThemeCheckBox.Active then "true" else "false"
+    PropertyService.Set(fsiMatchWitThemePropName, matchWithTheme)
+    
     FSharpInteractivePad.CurrentFsi.UpdateFont()    
+    FSharpInteractivePad.CurrentFsi.UpdateColors()
+    
     
 // --------------------------------------------------------------------------------------
 // F# build options - compiler configuration panel
