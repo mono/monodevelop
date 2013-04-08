@@ -1857,21 +1857,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
-    <Data Include="options\DefaultEditingLayout.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Data>
-    <Data Include="options\MonoDevelopProperties.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Data>
-    <Data Include="options\MonoDevelop-templates.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Data>
-    <Data Include="options\MonoDevelop-tools.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Data>
-    <Data Include="options\TipsOfTheDay.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Data>
+    <Data Include="options\DefaultEditingLayout.xml" />
+    <Data Include="options\MonoDevelopProperties.xml" />
+    <Data Include="options\MonoDevelop-templates.xml" />
+    <Data Include="options\MonoDevelop-tools.xml" />
+    <Data Include="options\TipsOfTheDay.xml" />
     <None Include="MonoDevelop.Ide.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
