@@ -740,11 +740,13 @@ namespace Mono.Debugging.Soft
 		
 		protected override BreakEventInfo OnInsertBreakEvent (BreakEvent ev)
 		{
-			if (HasExited)
-				return null;
-
 			lock (pending_bes) {
 				var bi = new BreakInfo ();
+
+				if (HasExited) {
+					bi.SetStatus (BreakEventStatus.Disconnected, null);
+					return bi;
+				}
 
 				if (ev is FunctionBreakpoint) {
 					var fb = (FunctionBreakpoint) ev;
@@ -1513,7 +1515,7 @@ namespace Mono.Debugging.Soft
 					break;
 				}
 				default:
-					Console.WriteLine ("Unknown debugger event type {0}", e.GetType ());
+					LoggingService.LogMessage ("Unknown debugger event type {0}", e.GetType ());
 					break;
 				}
 			}
@@ -1524,8 +1526,8 @@ namespace Mono.Debugging.Soft
 			ObjectMirror obj;
 			if (activeExceptionsByThread.TryGetValue (thread.ThreadId, out obj))
 				return obj;
-			else
-				return null;
+
+			return null;
 		}
 		
 		void QueueBreakEventSet (Event[] eventSet)
