@@ -740,11 +740,13 @@ namespace Mono.Debugging.Soft
 		
 		protected override BreakEventInfo OnInsertBreakEvent (BreakEvent ev)
 		{
-			if (HasExited)
-				return null;
-
 			lock (pending_bes) {
 				var bi = new BreakInfo ();
+
+				if (HasExited) {
+					bi.SetStatus (BreakEventStatus.Disconnected, null);
+					return bi;
+				}
 
 				if (ev is FunctionBreakpoint) {
 					var fb = (FunctionBreakpoint) ev;
