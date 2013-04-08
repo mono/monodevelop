@@ -226,15 +226,20 @@ namespace MonoDevelop.MacIntegration.MacMenu
 			if (txt == null)
 				return "";
 
-			if (!ci.UseMarkup)
-				return txt.Replace ("_", "&");
-
-			//strip GMarkup
 			//FIXME: markup stripping could be done better
 			var sb = new StringBuilder ();
 			for (int i = 0; i < txt.Length; i++) {
 				char ch = txt[i];
-				if (ch == '<') {
+				if (ch == '_') {
+					if (i + 1 < txt.Length && txt[i + 1] == '_') {
+						sb.Append ('_');
+						i++;
+					} else {
+						sb.Append ('&');
+					}
+				} else if (!ci.UseMarkup) {
+					sb.Append (ch);
+				} else if (ch == '<') {
 					while (++i < txt.Length && txt[i] != '>');
 				} else if (ch == '&') {
 					int j = i;
@@ -263,8 +268,6 @@ namespace MonoDevelop.MacIntegration.MacMenu
 							break;
 						}
 					}
-				} if (ch == '_') {
-					sb.Append ('&');
 				} else {
 					sb.Append (ch);
 				}
