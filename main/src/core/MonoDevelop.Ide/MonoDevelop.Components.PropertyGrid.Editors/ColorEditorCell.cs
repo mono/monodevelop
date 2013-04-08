@@ -57,7 +57,7 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 				return String.Format("#{0:x2}{1:x2}{2:x2}", color.R, color.G, color.B);
 		}
 		
-		public override void Render (Gdk.Drawable window, Gdk.Rectangle bounds, Gtk.StateType state)
+		public override void Render (Gdk.Drawable window, Cairo.Context ctx, Gdk.Rectangle bounds, Gtk.StateType state)
 		{
 			Gdk.GC gc = new Gdk.GC (window);
 	   		gc.RgbFgColor = GetColor ();
@@ -66,7 +66,7 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 			window.DrawRectangle (Container.Style.BlackGC, false, bounds.X, bounds.Y + yd, ColorBoxSize - 1, ColorBoxSize - 1);
 			bounds.X += ColorBoxSize + ColorBoxSpacing;
 			bounds.Width -= ColorBoxSize + ColorBoxSpacing;
-			base.Render (window, bounds, state);
+			base.Render (window, ctx, bounds, state);
 		}
 		
 		private Gdk.Color GetColor ()

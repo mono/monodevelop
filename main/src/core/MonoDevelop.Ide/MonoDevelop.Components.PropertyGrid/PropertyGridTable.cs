@@ -410,7 +410,7 @@ namespace MonoDevelop.Components.PropertyGrid
 					ctx.Restore ();
 
 					if (r != currentEditorRow)
-						cell.Render (GdkWindow, r.EditorBounds, state);
+						cell.Render (GdkWindow, ctx, r.EditorBounds, state);
 
 					y += r.EditorBounds.Height;
 					indent = PropertyIndent;
