@@ -344,9 +344,10 @@ namespace MonoDevelop.CSharp.Highlighting
 		
 		static Dictionary<string, string> contextualHighlightKeywords;
 		static readonly string[] ContextualKeywords = new string[] {
+			"value"
 /*			"async",
 			"await",
-			"value", //*
+			, //*
 			"get", "set", "add", "remove",  //*
 			"var", //*
 			"global",
