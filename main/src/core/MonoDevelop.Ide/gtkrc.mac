@@ -417,3 +417,11 @@ widget_class "*.<GtkToolbar>.*.<GtkComboBox>.*" style "toolbar-combo-box"
 widget "*MainToolbar*.GtkComboBox.*" style "toolbar-combo-box"
 
 widget "gtk-tooltip*"       style "tooltip"
+
+binding "gtk-mac-expand-collapse-cursor-row"
+{
+  unbind "Left"
+  unbind "Right"
+  bind "Left"  { "expand-collapse-cursor-row" (0, 0, 0) }
+  bind "Right" { "expand-collapse-cursor-row" (0, 1, 0) }
+}
