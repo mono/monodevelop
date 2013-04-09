@@ -526,6 +526,7 @@ namespace MonoDevelop.Components.MainToolbar
 			configurationCombo.Changed -= HandleConfigurationChanged;
 			try {
 				string defaultConfig = name;
+				bool selected = false;
 				TreeIter iter;
 
 				if (configurationStore.GetIterFirst (out iter)) {
@@ -537,13 +538,14 @@ namespace MonoDevelop.Components.MainToolbar
 						if (config == name) {
 							IdeApp.Workspace.ActiveConfigurationId = config;
 							configurationCombo.Active = i;
+							selected = true;
 							break;
 						}
 						i++;
 					} while (configurationStore.IterNext (ref iter));
 				}
 
-				if (configurationCombo.Active == -1) {
+				if (!selected) {
 					IdeApp.Workspace.ActiveConfigurationId = defaultConfig;
 					configurationCombo.Active = 0;
 				}
@@ -559,6 +561,7 @@ namespace MonoDevelop.Components.MainToolbar
 			runtimeCombo.Changed -= HandleRuntimeChanged;
 			try {
 				ExecutionTarget defaultTarget = null;
+				bool selected = false;
 				TreeIter iter;
 
 				if (runtimeStore.GetIterFirst (out iter)) {
@@ -570,13 +573,14 @@ namespace MonoDevelop.Components.MainToolbar
 						if (target.Id == IdeApp.Workspace.PreferredActiveExecutionTarget) {
 							IdeApp.Workspace.ActiveExecutionTarget = target;
 							runtimeCombo.Active = i;
+							selected = true;
 							break;
 						}
 						i++;
 					} while (runtimeStore.IterNext (ref iter));
 				}
 
-				if (runtimeCombo.Active == -1) {
+				if (!selected) {
 					IdeApp.Workspace.ActiveExecutionTarget = defaultTarget;
 					runtimeCombo.Active = 0;
 				}
