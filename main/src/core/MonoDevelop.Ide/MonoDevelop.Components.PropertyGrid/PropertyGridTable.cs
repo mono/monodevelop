@@ -273,7 +273,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			base.OnSizeAllocated (allocation);
 			int y = 0;
 			MeasureHeight (rows, ref y);
-			if (currentEditorRow != null)
+			if (currentEditor != null && currentEditorRow != null)
 				children [currentEditor] = currentEditorRow.EditorBounds;
 			foreach (var cr in children) {
 				var r = cr.Value;
@@ -651,6 +651,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			if (editSession != null) {
 				Remove (currentEditor);
 				currentEditor.Destroy ();
+				currentEditor = null;
 				editSession.Dispose ();
 				editSession = null;
 				currentEditorRow = null;
@@ -664,6 +665,9 @@ namespace MonoDevelop.Components.PropertyGrid
 			currentEditorRow = row;
 			var cell = GetCell (row);
 			editSession = cell.StartEditing (row.EditorBounds, State);
+			if (editSession == null)
+				return;
+
 			currentEditor = (Gtk.Widget) editSession.Editor;
 			Add (currentEditor);
 			SetAllocation (currentEditor, row.EditorBounds);
