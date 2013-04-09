@@ -31,6 +31,8 @@ using System.Collections.Generic;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
+using System.Security.Permissions;
+using System.Security;
 
 
 namespace MonoDevelop.Ide.FindInFiles
@@ -220,22 +222,51 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			if (monitor != null)
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in '{0}'", path));
-			foreach (string fileMask in filterOptions.FileMask.Split (',', ';')) {
-				string[] files;
+			var directoryStack = new Stack<string> ();
+			directoryStack.Push (path);
+
+			while (directoryStack.Count > 0) {
+				var curPath = directoryStack.Pop ();
+
 				try {
-					files = Directory.GetFiles (path, "*", recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
+					var readPermission = new FileIOPermission(FileIOPermissionAccess.Read, curPath);
+					readPermission.Demand ();
 				} catch (Exception e) {
-					LoggingService.LogError ("Can't access path " + path, e);
+					LoggingService.LogError ("Can't access path " + curPath, e);
 					yield break;
 				}
-				
-				foreach (string fileName in files.Where (filterOptions.NameMatches)) {
-					if (fileName.StartsWith (".", StringComparison.Ordinal) && !IncludeHiddenFiles)
-						continue;
+
+				foreach (string fileName in Directory.EnumerateFiles (curPath, "*")) {
+					if (!IncludeHiddenFiles) {
+						if (Platform.IsWindows) {
+							var attr = File.GetAttributes (fileName);
+							if (attr.HasFlag (FileAttributes.Hidden))
+								continue;
+						}
+						if (Path.GetFileName (fileName).StartsWith (".", StringComparison.Ordinal))
+							continue;
+					}
+
 					if (!IncludeBinaryFiles && !DesktopService.GetMimeTypeIsText (DesktopService.GetMimeTypeForUri (fileName))) 
 						continue;
 					yield return fileName;
 				}
+
+				if (recurse) {
+					foreach (string directoryName in Directory.EnumerateDirectories (curPath)) {
+						if (!IncludeHiddenFiles) {
+							if (Platform.IsWindows) {
+								var attr = File.GetAttributes (directoryName);
+								if (attr.HasFlag (FileAttributes.Hidden))
+									continue;
+							}
+							if (Path.GetFileName (directoryName).StartsWith (".", StringComparison.Ordinal))
+								continue;
+						}
+						directoryStack.Push (directoryName);
+					}
+				}
+
 			}
 		}
 		
