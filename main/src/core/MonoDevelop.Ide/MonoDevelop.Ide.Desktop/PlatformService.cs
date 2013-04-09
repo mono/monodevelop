@@ -78,20 +78,19 @@ namespace MonoDevelop.Ide.Desktop
 		public string GetMimeTypeForUri (string uri)
 		{
 			if (!String.IsNullOrEmpty (uri)) {
-// Creating file infos is expensive, should be avoided 
-//				FileInfo file = new FileInfo (uri);
-//				MimeTypeNode mt = FindMimeTypeForFile (file.Name);
 				MimeTypeNode mt = FindMimeTypeForFile (uri);
 				if (mt != null)
 					return mt.Id;
 			}
-			return OnGetMimeTypeForUri (uri) ?? "text/plain";
+			return OnGetMimeTypeForUri (uri) ?? "application/octet-stream";
 		}
-		
+
 		public string GetMimeTypeDescription (string mimeType)
 		{
 			if (mimeType == "text/plain")
 				return GettextCatalog.GetString ("Text file");
+			if (mimeType == "application/octet-stream")
+				return GettextCatalog.GetString ("Unknown");
 			MimeTypeNode mt = FindMimeType (mimeType);
 			if (mt != null && mt.Description != null)
 				return mt.Description;
@@ -116,14 +115,14 @@ namespace MonoDevelop.Ide.Desktop
 		{
 			yield return mimeType;
 			
-			while (mimeType != null && mimeType != "text/plain") {
+			while (mimeType != null && mimeType != "text/plain" && mimeType != "application/octet-stream") {
 				MimeTypeNode mt = FindMimeType (mimeType);
 				if (mt != null && !string.IsNullOrEmpty (mt.BaseType))
 					mimeType = mt.BaseType;
 				else {
-					if (mimeType.EndsWith ("+xml"))
+					if (mimeType.EndsWith ("+xml", StringComparison.Ordinal))
 						mimeType = "application/xml";
-					else if (mimeType.StartsWith ("text") || OnGetMimeTypeIsText (mimeType))
+					else if (mimeType.StartsWith ("text/", StringComparison.Ordinal) || OnGetMimeTypeIsText (mimeType))
 						mimeType = "text/plain";
 					else
 						break;
@@ -263,7 +262,7 @@ namespace MonoDevelop.Ide.Desktop
 			}
 			return null;
 		}
-		
+
 		protected virtual string OnGetMimeTypeForUri (string uri)
 		{
 			return null;

@@ -74,21 +74,24 @@ namespace MonoDevelop.SourceEditor
 			if (success)
 				Mono.TextEditor.Highlighting.SyntaxModeService.LoadStylesAndModes (SyntaxModePath);
 		}
-		
-		
+
 		public string Name {
 			get {
 				return GettextCatalog.GetString ("Source Code Editor");
 			}
 		}
-		
+
 		public bool CanHandle (FilePath fileName, string mimeType, Project ownerProject)
 		{
-			if (string.IsNullOrEmpty (mimeType))
-				return false;
-			return DesktopService.GetMimeTypeIsText (mimeType);
+			if (fileName != null)
+				return DesktopService.GetFileIsText (fileName, mimeType);
+
+			if (!string.IsNullOrEmpty (mimeType))
+				return DesktopService.GetMimeTypeIsText (mimeType);
+
+			return false;
 		}
-		
+
 		public IViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
 		{
 			return new SourceEditorView ();
@@ -96,10 +99,9 @@ namespace MonoDevelop.SourceEditor
 
 		public bool CanHandleFile (string fileName)
 		{
-			string mt = DesktopService.GetMimeTypeForUri (fileName);
-			return DesktopService.GetMimeTypeIsText (mt);
+			return DesktopService.GetFileIsText (fileName);
 		}
-		
+
 		public bool CanUseAsDefault {
 			get { return true; }
 		}
