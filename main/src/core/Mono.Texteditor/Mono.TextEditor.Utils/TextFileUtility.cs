@@ -84,6 +84,11 @@ namespace Mono.TextEditor.Utils
 			return OpenStream (File.ReadAllBytes (fileName), out hadBom);
 		}
 
+		public static StreamReader OpenStream (string fileName, out bool hadBom)
+		{
+			return OpenStream (File.ReadAllBytes (fileName), out hadBom);
+		}
+
 		public static StreamReader OpenStream (byte[] bytes)
 		{
 			bool hadBom;
@@ -140,7 +145,7 @@ namespace Mono.TextEditor.Utils
 			}
 		}
 
-		public static string GetText (byte[] bytes, out bool hadBom, out Encoding encoding)
+		public static string GetText (byte[] bytes, out Encoding encoding, out bool hadBom)
 		{
 			if (bytes == null)
 				throw new ArgumentNullException ("bytes");
@@ -157,11 +162,28 @@ namespace Mono.TextEditor.Utils
 			}
 		}
 
-		public static string GetText (Stream inputStream, out bool hadBom, out Encoding encoding)
+		public static string GetText (Stream inputStream, out Encoding encoding, out bool hadBom)
 		{
 			if (inputStream == null)
 				throw new ArgumentNullException ("inputStream");
 			using (var stream = OpenStream (inputStream, out hadBom)) {
+				encoding = stream.CurrentEncoding;
+				return stream.ReadToEnd ();
+			}
+		}
+
+		public static string GetText (string fileName)
+		{
+			using (var stream = OpenStream (fileName)) {
+				return stream.ReadToEnd ();
+			}
+		}
+
+		public static string GetText (string fileName, out Encoding encoding, out bool hadBom)
+		{
+			if (fileName == null)
+				throw new ArgumentNullException ("fileName");
+			using (var stream = OpenStream (fileName, out hadBom)) {
 				encoding = stream.CurrentEncoding;
 				return stream.ReadToEnd ();
 			}
@@ -260,7 +282,7 @@ namespace Mono.TextEditor.Utils
 			if (fileName == null)
 				throw new ArgumentNullException ("fileName");
 			using (var stream = new FileStream (fileName, FileMode.Open, FileAccess.Read, FileShare.Read)) {
-				return GetText (stream, out hadBom, out encoding);
+				return GetText (stream, out encoding, out hadBom);
 			}
 		}
 		public static string ReadAllText (string fileName, Encoding encoding, out bool hadBom)
