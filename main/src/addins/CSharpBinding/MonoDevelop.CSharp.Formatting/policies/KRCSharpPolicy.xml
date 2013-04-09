@@ -63,12 +63,6 @@ THE SOFTWARE.
 	<AllowEventRemoveBlockInline>True</AllowEventRemoveBlockInline>
 	<StatementBraceStyle>EndOfLine</StatementBraceStyle>
 	<AllowIfBlockInline>False</AllowIfBlockInline>
-	<IfElseBraceForcement>DoNotChange</IfElseBraceForcement>
-	<ForBraceForcement>DoNotChange</ForBraceForcement>
-	<ForEachBraceForcement>DoNotChange</ForEachBraceForcement>
-	<WhileBraceForcement>DoNotChange</WhileBraceForcement>
-	<UsingBraceForcement>DoNotChange</UsingBraceForcement>
-	<FixedBraceForcement>DoNotChange</FixedBraceForcement>
 	<ElseNewLinePlacement>SameLine</ElseNewLinePlacement>
 	<ElseIfNewLinePlacement>DoNotCare</ElseIfNewLinePlacement>
 	<CatchNewLinePlacement>SameLine</CatchNewLinePlacement>
