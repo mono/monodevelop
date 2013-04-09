@@ -525,7 +525,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 			configurationCombo.Changed -= HandleConfigurationChanged;
 			try {
-				string defaultConfig = name;
+				string defaultConfig = null;
 				bool selected = false;
 				TreeIter iter;
 
@@ -545,7 +545,7 @@ namespace MonoDevelop.Components.MainToolbar
 					} while (configurationStore.IterNext (ref iter));
 				}
 
-				if (!selected) {
+				if (!selected && defaultConfig != null) {
 					IdeApp.Workspace.ActiveConfigurationId = defaultConfig;
 					configurationCombo.Active = 0;
 				}
@@ -580,7 +580,7 @@ namespace MonoDevelop.Components.MainToolbar
 					} while (runtimeStore.IterNext (ref iter));
 				}
 
-				if (!selected) {
+				if (!selected && defaultTarget != null) {
 					IdeApp.Workspace.ActiveExecutionTarget = defaultTarget;
 					runtimeCombo.Active = 0;
 				}
