@@ -63,12 +63,12 @@ THE SOFTWARE.
 	<AllowEventRemoveBlockInline>True</AllowEventRemoveBlockInline>
 	<StatementBraceStyle>NextLine</StatementBraceStyle>
 	<AllowIfBlockInline>False</AllowIfBlockInline>
-	<ElseNewLinePlacement>SameLine</ElseNewLinePlacement>
+	<ElseNewLinePlacement>NewLine</ElseNewLinePlacement>
 	<ElseIfNewLinePlacement>DoNotCare</ElseIfNewLinePlacement>
-	<CatchNewLinePlacement>SameLine</CatchNewLinePlacement>
-	<FinallyNewLinePlacement>SameLine</FinallyNewLinePlacement>
-	<WhileNewLinePlacement>SameLine</WhileNewLinePlacement>
-	<ArrayInitializerWrapping>WrapIfTooLong</ArrayInitializerWrapping>
+	<CatchNewLinePlacement>NewLine</CatchNewLinePlacement>
+	<FinallyNewLinePlacement>NewLine</FinallyNewLinePlacement>
+	<WhileNewLinePlacement>DoNotCare</WhileNewLinePlacement>
+	<ArrayInitializerWrapping>DoNotChange</ArrayInitializerWrapping>
 	<ArrayInitializerBraceStyle>NextLine</ArrayInitializerBraceStyle>
 	<KeepCommentsAtFirstColumn>True</KeepCommentsAtFirstColumn>
 	<BeforeMethodDeclarationParentheses>False</BeforeMethodDeclarationParentheses>
