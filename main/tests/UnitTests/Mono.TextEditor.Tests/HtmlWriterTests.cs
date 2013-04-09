@@ -30,6 +30,7 @@ using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor.Tests
 {
+	[Ignore]
 	[TestFixture]
 	public class HtmlWriterTests : TextEditorTestBase
 	{
