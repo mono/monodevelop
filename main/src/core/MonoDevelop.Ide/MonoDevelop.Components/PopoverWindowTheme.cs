@@ -268,11 +268,11 @@ namespace MonoDevelop.Components
 		{
 			TopColor = scheme.TooltipText.Background.AddLight (0.03);
 			BottomColor = scheme.TooltipText.Background;
-			BorderColor = scheme.TooltipBorder.GetColor ("color");
-			PagerTextColor = scheme.TooltipPagerText.GetColor ("color");
-			PagerBackgroundColorTop = scheme.TooltipPagerTop.GetColor ("color");
-			PagerBackgroundColorBottom = scheme.TooltipPagerBottom.GetColor ("color");
-			PagerTriangleColor = scheme.TooltipPagerTriangle.GetColor ("color");
+			BorderColor = scheme.TooltipBorder.Color;
+			PagerTextColor = scheme.TooltipPagerText.Color;
+			PagerBackgroundColorTop = scheme.TooltipPagerTop.Color;
+			PagerBackgroundColorBottom = scheme.TooltipPagerBottom.Color;
+			PagerTriangleColor = scheme.TooltipPagerTriangle.Color;
 		}
 		
 		void EmitRedrawNeeded ()

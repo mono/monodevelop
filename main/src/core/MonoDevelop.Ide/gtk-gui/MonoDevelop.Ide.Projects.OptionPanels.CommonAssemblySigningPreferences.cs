@@ -10,7 +10,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		private global::Gtk.Label strongNameFileLabel;
 		private global::MonoDevelop.Components.FileEntry strongNameFileEntry;
 		private global::Gtk.CheckButton delaySignCheckbutton;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

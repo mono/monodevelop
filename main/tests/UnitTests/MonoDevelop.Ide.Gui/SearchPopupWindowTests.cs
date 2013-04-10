@@ -23,44 +23,64 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
 using MonoDevelop.Components.MainToolbar;
 using NUnit.Framework;
 
 namespace MonoDevelop.Ide.Gui
 {
-	[TestFixture()]
+	[TestFixture]
 	public class SearchPopupWindowTests
 	{
-		[Test()]
+		[Test]
 		public void TestEmptyPattern ()
 		{
 			var pattern = SearchPopupSearchPattern.ParsePattern ("");
-			Assert.AreEqual (new SearchPopupSearchPattern (null, "", -1), pattern);
+			Assert.AreEqual (new SearchPopupSearchPattern (null, ""), pattern);
 		}
 
-		[Test()]
+		[Test]
 		public void TestSimplePattern ()
 		{
 			var pattern = SearchPopupSearchPattern.ParsePattern ("foo");
 			Assert.AreEqual (new SearchPopupSearchPattern (null, "foo", -1), pattern);
 		}
 
-		[Test()]
+		[Test]
 		public void TestLineNumber ()
 		{
 			var pattern = SearchPopupSearchPattern.ParsePattern ("foo:4711");
 			Assert.AreEqual (new SearchPopupSearchPattern (null, "foo", 4711), pattern);
 		}
 
-		[Test()]
+		[Test]
+		public void TestLineNumberAndColumn ()
+		{
+			var pattern = SearchPopupSearchPattern.ParsePattern ("foo:4711,1174");
+			Assert.AreEqual (new SearchPopupSearchPattern (null, "foo", 4711, 1174), pattern);
+		}
+
+		[Test]
+		public void TestLineNumberAndColumnFormat2 ()
+		{
+			var pattern = SearchPopupSearchPattern.ParsePattern ("foo:4711:1174");
+			Assert.AreEqual (new SearchPopupSearchPattern (null, "foo", 4711, 1174), pattern);
+		}
+
+		[Test]
+		public void TestLineNumberAndMissingColumn ()
+		{
+			var pattern = SearchPopupSearchPattern.ParsePattern (":4711:");
+			Assert.AreEqual (new SearchPopupSearchPattern (null, null, 4711, 0), pattern);
+		}
+
+		[Test]
 		public void TestEmptySecondPart ()
 		{
 			var pattern = SearchPopupSearchPattern.ParsePattern ("foo:");
 			Assert.AreEqual (new SearchPopupSearchPattern ("foo", "", -1), pattern);
 		}
 
-		[Test()]
+		[Test]
 		public void TestEmptyThirdPart ()
 		{
 			var pattern = SearchPopupSearchPattern.ParsePattern ("foo:bar:");
@@ -68,28 +88,49 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		
-		[Test()]
+		[Test]
 		public void TestLineNumberOnly ()
 		{
 			var pattern = SearchPopupSearchPattern.ParsePattern (":4711");
 			Assert.AreEqual (new SearchPopupSearchPattern (null, null, 4711), pattern);
 		}
 
-		[Test()]
+		[Test]
+		public void TestLineNumberAndColumnOnly ()
+		{
+			var pattern = SearchPopupSearchPattern.ParsePattern (":5,8");
+			Assert.AreEqual (new SearchPopupSearchPattern (null, null, 5, 8), pattern);
+		}
+
+		[Test]
+		public void TestLineNumberAndColumnOnlySyntax2 ()
+		{
+			var pattern = SearchPopupSearchPattern.ParsePattern (":5:8");
+			Assert.AreEqual (new SearchPopupSearchPattern (null, null, 5, 8), pattern);
+		}
+
+		[Test]
 		public void TestCategory ()
 		{
 			var pattern = SearchPopupSearchPattern.ParsePattern ("cat:foo");
 			Assert.AreEqual (new SearchPopupSearchPattern ("cat", "foo", -1), pattern);
 		}
 
-		[Test()]
+		[Test]
 		public void TestCategoryAndLineNumber ()
 		{
 			var pattern = SearchPopupSearchPattern.ParsePattern ("cat:foo:1337");
 			Assert.AreEqual (new SearchPopupSearchPattern ("cat", "foo", 1337), pattern);
 		}
 
-		[Test()]
+		[Test]
+		public void TestCategoryAndLineNumberAndColumn ()
+		{
+			var pattern = SearchPopupSearchPattern.ParsePattern ("cat:foo:1337:5");
+			Assert.AreEqual (new SearchPopupSearchPattern ("cat", "foo", 1337, 5), pattern);
+		}
+
+		[Test]
 		public void TestInvalidLineNumber ()
 		{
 			var pattern = SearchPopupSearchPattern.ParsePattern ("cat:foo:bar");

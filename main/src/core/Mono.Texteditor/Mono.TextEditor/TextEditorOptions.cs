@@ -63,7 +63,7 @@ namespace Mono.TextEditor
 		bool useAntiAliasing = true;
 		string fontName = DEFAULT_FONT;
 		string colorStyle = "Default";
-		Pango.FontDescription font;
+		Pango.FontDescription font, gutterFont;
 		
 		double zoom = 1d;
 		IWordFindStrategy wordFindStrategy = new EmacsWordFindStrategy (true);
@@ -351,6 +351,11 @@ namespace Mono.TextEditor
 				font.Dispose ();
 				font = null;
 			}
+
+			if (gutterFont != null) {
+				gutterFont.Dispose ();
+				gutterFont = null;
+			}
 		}
 
 		
@@ -382,7 +387,38 @@ namespace Mono.TextEditor
 				return font;
 			}
 		}
-		
+		string gutterFontName;
+		public virtual string GutterFontName {
+			get {
+				return gutterFontName;
+			}
+			set {
+				if (gutterFontName != value) {
+					DisposeFont ();
+					gutterFontName = value;
+					OnChanged (EventArgs.Empty);
+				}
+			}
+		}
+
+		public Pango.FontDescription GutterFont {
+			get {
+				if (gutterFont == null) {
+					try {
+						if (!string.IsNullOrEmpty (GutterFontName))
+							gutterFont = Pango.FontDescription.FromString (GutterFontName);
+					} catch {
+						Console.WriteLine ("Could not load gutter font: {0}", GutterFontName);
+					}
+					if (gutterFont == null || String.IsNullOrEmpty (gutterFont.Family))
+						gutterFont = Gtk.Widget.DefaultStyle.FontDescription.Copy ();
+					if (gutterFont != null)
+						gutterFont.Size = (int)(gutterFont.Size * Zoom);
+				}
+				return gutterFont;
+			}
+		}
+
 		public virtual string ColorScheme {
 			get {
 				return colorStyle;

@@ -45,10 +45,11 @@ using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using System.IO;
+using MonoDevelop.CSharp.Formatting;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	public class MemberCompletionData : CompletionData, IEntityCompletionData
+	class MemberCompletionData : CompletionData, IEntityCompletionData
 	{
 		CSharpCompletionTextEditorExtension editorCompletion;
 		OutputFlags flags;
@@ -162,7 +163,7 @@ namespace MonoDevelop.CSharp.Completion
 			string partialWord = GetCurrentWord (window);
 			int skipChars = 0;
 			bool runParameterCompletionCommand = false;
-			
+
 			if (keyChar == '(' && !IsDelegateExpected && Entity is IMethod && !HasNonMethodMembersWithSameName ((IMember)Entity)) {
 				
 				var line = Editor.GetLine (Editor.Caret.Line);
@@ -170,7 +171,7 @@ namespace MonoDevelop.CSharp.Completion
 				var start = window.CodeCompletionContext.TriggerOffset + partialWord.Length + 2;
 				var end = line.Offset + line.Length;
 				string textToEnd = start < end ? Editor.GetTextBetween (start, end) : "";
-				if (Policy.BeforeMethodCallParentheses)
+				if (Policy.BeforeMethodCallParentheses && CSharpTextEditorIndentation.OnTheFlyFormatting)
 					text += " ";
 				
 				int exprStart = window.CodeCompletionContext.TriggerOffset - 1;
@@ -184,38 +185,40 @@ namespace MonoDevelop.CSharp.Completion
 				bool insertSemicolon = false;
 				if (string.IsNullOrEmpty ((textBefore + textToEnd).Trim ()))
 					insertSemicolon = true;
-			
-			
-				
+
 				int pos;
 				if (SearchBracket (window.CodeCompletionContext.TriggerOffset + partialWord.Length, out pos)) {
 					window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, partialWord, text);
 					ka |= KeyActions.Ignore;
 					int bracketOffset = pos + text.Length - partialWord.Length;
 					
-					// correct white space before method call.
-					char charBeforeBracket = bracketOffset > 1 ? Editor.GetCharAt (bracketOffset - 2) : '\0';
-					if (Policy.BeforeMethodCallParentheses) {
-						if (charBeforeBracket != ' ') {
-							Editor.Insert (bracketOffset - 1, " ");
-							bracketOffset++;
-						}
-					} else { 
-						if (char.IsWhiteSpace (charBeforeBracket)) {
-							while (bracketOffset > 1 && char.IsWhiteSpace (Editor.GetCharAt (bracketOffset - 2))) {
-								Editor.Remove (bracketOffset - 1, 1);
-								bracketOffset--;
+					if (CSharpTextEditorIndentation.OnTheFlyFormatting) {
+						// correct white space before method call.
+						char charBeforeBracket = bracketOffset > 1 ? Editor.GetCharAt (bracketOffset - 2) : '\0';
+						if (Policy.BeforeMethodCallParentheses) {
+							if (charBeforeBracket != ' ') {
+								Editor.Insert (bracketOffset - 1, " ");
+								bracketOffset++;
+							}
+						} else { 
+							if (char.IsWhiteSpace (charBeforeBracket)) {
+								while (bracketOffset > 1 && char.IsWhiteSpace (Editor.GetCharAt (bracketOffset - 2))) {
+									Editor.Remove (bracketOffset - 1, 1);
+									bracketOffset--;
+								}
 							}
 						}
 					}
+
 					Editor.Caret.Offset = bracketOffset;
-					if (insertSemicolon && Editor.GetCharAt (bracketOffset) == ')') {
-						Editor.Insert (bracketOffset + 1, ";");
-						// Need to reinsert the ')' as skip char because we inserted the ';' after the ')' and skip chars get deleted 
-						// when an insert after the skip char position occur.
-						Editor.SetSkipChar (bracketOffset, ')');
-						Editor.SetSkipChar (bracketOffset + 1, ';');
-					}
+// Currently broken/needs fine tuning:
+//					if (insertSemicolon && Editor.GetCharAt (bracketOffset - 1) == '(') {
+//						Editor.Insert (bracketOffset + 1, ";");
+//						// Need to reinsert the ')' as skip char because we inserted the ';' after the ')' and skip chars get deleted 
+//						// when an insert after the skip char position occur.
+//						Editor.SetSkipChar (bracketOffset, ')');
+//						Editor.SetSkipChar (bracketOffset + 1, ';');
+//					}
 					if (runParameterCompletionCommand)
 						editorCompletion.RunParameterCompletionCommand ();
 					return;
@@ -506,7 +509,7 @@ namespace MonoDevelop.CSharp.Completion
 			{
 				TypeSystemAstBuilder astBuilder = CreateAstBuilder();
 				AstNode astNode = astBuilder.ConvertVariable(v);
-				return astNode.GetText().TrimEnd(';', '\r', '\n');
+				return astNode.ToString().TrimEnd(';', '\r', '\n');
 			}
 			
 			public string ConvertType(IType type)
@@ -516,7 +519,7 @@ namespace MonoDevelop.CSharp.Completion
 				
 				TypeSystemAstBuilder astBuilder = CreateAstBuilder();
 				AstType astType = astBuilder.ConvertType(type);
-				return astType.GetText();
+				return astType.ToString();
 			}
 			
 			public void ConvertType(IType type, IOutputFormatter formatter, CSharpFormattingOptions formattingPolicy)
@@ -654,13 +657,7 @@ namespace MonoDevelop.CSharp.Completion
 				}
 				
 				if (mx is IMethod && my is IMethod) {
-					IMethod mmx = (IMethod) mx, mmy = (IMethod) my;
-					result = (mmx.TypeParameters.Count).CompareTo (mmy.TypeParameters.Count);
-					if (result != 0)
-						return result;
-					result = (mmx.Parameters.Count).CompareTo (mmy.Parameters.Count);
-					if (result != 0)
-						return result;
+					return MethodParameterDataProvider.MethodComparer ((IMethod)mx, (IMethod)my);
 				}
 				string sx = mx.ReflectionName;// ambience.GetString (mx, flags);
 				string sy = my.ReflectionName;// ambience.GetString (my, flags);

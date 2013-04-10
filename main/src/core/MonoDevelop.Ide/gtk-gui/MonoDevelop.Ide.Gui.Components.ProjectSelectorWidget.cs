@@ -6,7 +6,7 @@ namespace MonoDevelop.Ide.Gui.Components
 	{
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
 		private global::Gtk.TreeView tree;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

@@ -128,6 +128,8 @@ namespace Mono.TextEditor.Tests
 					data.SetSelection (selectionEnd, selectionStart);
 				} else {
 					data.SetSelection (selectionStart, selectionEnd);
+					if (caretIndex < 0)
+						data.Caret.Offset = selectionEnd;
 				}
 			}
 			if (foldSegments.Count > 0)
@@ -138,6 +140,13 @@ namespace Mono.TextEditor.Tests
 		public static void Check (TextEditorData data, string content)
 		{
 			var checkDocument = Create (content);
+			if (checkDocument.Text != data.Text) {
+				Console.WriteLine ("was:");
+				Console.WriteLine (data.Text);
+				Console.WriteLine ("expected:");
+				Console.WriteLine (checkDocument.Text);
+			}
+			Assert.AreEqual (checkDocument.Text, data.Text);
 			Assert.AreEqual (checkDocument.Caret.Offset, data.Caret.Offset, "Caret offset mismatch.");
 			if (data.IsSomethingSelected || checkDocument.IsSomethingSelected)
 				Assert.AreEqual (checkDocument.SelectionRange, data.SelectionRange, "Selection mismatch.");
@@ -150,7 +159,6 @@ namespace Mono.TextEditor.Tests
 					Assert.AreEqual (list1 [i].IsFolded, list2 [i].IsFolded, "Fold " + i + " isFolded mismatch.");
 				}
 			}
-			Assert.AreEqual (checkDocument.Text, data.Text);
 		}
 	}
 }

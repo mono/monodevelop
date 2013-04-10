@@ -45,6 +45,10 @@
 		</Condition>
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/Ide/Commands/Hidden">
+		<Command id = "MonoDevelop.MacIntegration.MacIntegrationCommands.Services" _label="Services" />
+	</Extension>
+
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Window">
 		<Condition id = "Platform" value = "mac">
 			<CommandItem id = "MonoDevelop.MacIntegration.MacIntegrationCommands.MinimizeWindow"
@@ -54,6 +58,8 @@
 	
 	<Extension path="/MonoDevelop/Ide/AppMenu">
 		<Condition id = "Platform" value = "mac">
+			<SeparatorItem id = "ServicesSeparator" insertbefore="QuitSeparator" />
+			<CommandItem id = "MonoDevelop.MacIntegration.MacIntegrationCommands.Services" />
 			<SeparatorItem id = "HideSeparator" insertbefore="QuitSeparator" />
 			<CommandItem id = "MonoDevelop.MacIntegration.MacIntegrationCommands.HideWindow" />
 			<CommandItem id = "MonoDevelop.MacIntegration.MacIntegrationCommands.HideOthers" />

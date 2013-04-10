@@ -143,11 +143,6 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
-		public static SyntaxMode GetSyntaxMode (TextDocument doc)
-		{
-			return GetSyntaxMode (doc, doc.MimeType);
-		}
-		
 		public static SyntaxMode GetSyntaxMode (TextDocument doc, string mimeType)
 		{
 			if (string.IsNullOrEmpty (mimeType))
@@ -412,14 +407,16 @@ namespace Mono.TextEditor.Highlighting
 		public static void LoadStylesAndModes (string path)
 		{
 			foreach (string file in Directory.GetFiles (path)) {
-				if (file.EndsWith ("SyntaxMode.xml", StringComparison.Ordinal)) {
+				if (file.EndsWith (".xml", StringComparison.Ordinal)) {
 					using (var stream = File.OpenRead (file)) {
 						string mimeTypes = Scan (stream, SyntaxMode.MimeTypesAttribute);
-						foreach (string mimeType in mimeTypes.Split (';')) {
-							syntaxModeLookup [mimeType] = new UrlStreamProvider (file);
+						if (!string.IsNullOrEmpty (mimeTypes)) {
+							foreach (string mimeType in mimeTypes.Split (';')) {
+								syntaxModeLookup [mimeType] = new UrlStreamProvider (file);
+							}
 						}
 					}
-				} else if (file.EndsWith ("Style.json", StringComparison.Ordinal)) {
+				} else if (file.EndsWith (".json", StringComparison.Ordinal)) {
 					using (var stream = File.OpenRead (file)) {
 						string styleName = ScanStyle (stream);
 						styleLookup [styleName] = new UrlStreamProvider (file);

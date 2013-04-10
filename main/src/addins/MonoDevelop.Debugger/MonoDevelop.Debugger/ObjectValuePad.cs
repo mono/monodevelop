@@ -40,7 +40,7 @@ namespace MonoDevelop.Debugger
 		IPadWindow container;
 		bool initialResume;
 		StackFrame lastFrame;
-		MonoDevelop.Ide.Gui.PadFontChanger fontChanger;
+		PadFontChanger fontChanger;
 		
 		public Gtk.Widget Control {
 			get {
@@ -70,7 +70,7 @@ namespace MonoDevelop.Debugger
 			DebuggingService.ResumedEvent += OnDebuggerResumed;
 			DebuggingService.StoppedEvent += OnDebuggerStopped;
 			DebuggingService.EvaluationOptionsChanged += OnEvaluationOptionsChanged;
-			
+
 			needsUpdate = true;
 			initialResume = true;
 		}
@@ -105,12 +105,12 @@ namespace MonoDevelop.Debugger
 		public virtual void OnUpdateList ()
 		{
 			needsUpdate = false;
-			if (DebuggingService.CurrentFrame != null && DebuggingService.CurrentFrame != lastFrame)
+			if (DebuggingService.CurrentFrame != lastFrame)
 				tree.Frame = DebuggingService.CurrentFrame;
 			lastFrame = DebuggingService.CurrentFrame;
 		}
 		
-		void OnFrameChanged (object s, EventArgs a)
+		protected virtual void OnFrameChanged (object s, EventArgs a)
 		{
 			if (container != null && container.ContentVisible)
 				OnUpdateList ();
@@ -118,12 +118,12 @@ namespace MonoDevelop.Debugger
 				needsUpdate = true;
 		}
 		
-		void OnDebuggerPaused (object s, EventArgs a)
+		protected virtual void OnDebuggerPaused (object s, EventArgs a)
 		{
 			tree.Sensitive = true;
 		}
 		
-		void OnDebuggerResumed (object s, EventArgs a)
+		protected virtual void OnDebuggerResumed (object s, EventArgs a)
 		{
 			if (!initialResume)
 				tree.ChangeCheckpoint ();
@@ -132,14 +132,14 @@ namespace MonoDevelop.Debugger
 			tree.Sensitive = false;
 		}
 		
-		void OnDebuggerStopped (object s, EventArgs a)
+		protected virtual void OnDebuggerStopped (object s, EventArgs a)
 		{
 			tree.ResetChangeTracking ();
 			tree.Sensitive = false;
 			initialResume = true;
 		}
 		
-		void OnEvaluationOptionsChanged (object s, EventArgs a)
+		protected virtual void OnEvaluationOptionsChanged (object s, EventArgs a)
 		{
 			if (!DebuggingService.IsRunning) {
 				lastFrame = null;

@@ -95,16 +95,6 @@ namespace MonoDevelop.SourceEditor
 			
 			Document.TextReplaced += HandleSkipCharsOnReplace;
 			
-			Document.TextReplaced += delegate(object sender, DocumentChangeEventArgs args) {
-				if (Extension != null) {
-					try {
-						Extension.TextChanged (args.Offset, args.Offset + Math.Max (args.RemovalLength, args.InsertionLength));
-					} catch (Exception ex) {
-						ReportExtensionError (ex);
-					}
-				}
-			};
-			
 			UpdateEditMode ();
 			this.DoPopupMenu = ShowPopup;
 		}
@@ -576,8 +566,9 @@ namespace MonoDevelop.SourceEditor
 		
 		void ShowPopup (Gdk.EventButton evt)
 		{
-			// Fire event that will close an open outo complete window
 			view.FireCompletionContextChanged ();
+			CompletionWindowManager.HideWindow ();
+			ParameterInformationWindowManager.HideWindow (null, view);
 			HideTooltip ();
 			const string menuPath = "/MonoDevelop/SourceEditor2/ContextMenu/Editor";
 			var ctx = ExtensionContext ?? AddinManager.AddinEngine;

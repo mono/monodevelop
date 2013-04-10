@@ -56,7 +56,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		public MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy Policy {
 			get {
 				if (policy == null) {
-					var types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
+					var types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
 					if (PolicyParent != null)
 						policy = PolicyParent.Get<CSharpFormattingPolicy> (types);
 					if (policy == null) {
@@ -74,7 +74,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			}
 			set {
 				base.PolicyParent = value;
-				var types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
+				var types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
 				policy = value.Get<CSharpFormattingPolicy> (types);
 			}
 		}
@@ -132,8 +132,8 @@ namespace MonoDevelop.CSharp.Refactoring
 			var obsoleteRef = ReflectionHelper.ParseReflectionName ("System.ObsoleteAttribute");
 			var resolvedType = obsoleteRef.Resolve (options.ImplementingType.Compilation);
 			var shortType = resolvedType.Kind != TypeKind.Unknown ? CreateShortType (options.ImplementingType.Compilation, file, loc, resolvedType) : null;
-			var text = shortType != null ? shortType.GetText () : "System.Obsolete";
-			if (text.EndsWith ("Attribute"))
+			var text = shortType != null ? shortType.ToString () : "System.Obsolete";
+			if (text.EndsWith ("Attribute", StringComparison.Ordinal))
 				text = text.Substring (0, text.Length - "Attribute".Length);
 			result.Append (text);
 			if (!string.IsNullOrEmpty (reason)) {
@@ -159,11 +159,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			ITypeResolveContext ctx;
 
 			var doc = IdeApp.Workbench.GetDocument (part.Region.FileName);
-			if (doc != null) {
-				ctx = doc.ParsedDocument.GetTypeResolveContext (doc.Compilation, implementingType.Region.Begin);
-			} else {
-				ctx = new CSharpTypeResolveContext (implementingType.Compilation.MainAssembly, null, implementingType, null);
-			}
+			ctx = new CSharpTypeResolveContext (implementingType.Compilation.MainAssembly, null, implementingType, null);
 			options.Document = doc;
 
 			if (member is IUnresolvedMethod)
@@ -848,6 +844,12 @@ namespace MonoDevelop.CSharp.Refactoring
 		}
 		
 		static bool InsertUsingAfter (AstNode node)
+		{
+			return node is NewLineNode && IsCommentOrUsing (node.GetNextSibling (s => !(s is NewLineNode))) ||
+				IsCommentOrUsing (node);
+		}
+
+		static bool IsCommentOrUsing (AstNode node)
 		{
 			return node is ICSharpCode.NRefactory.CSharp.Comment ||
 				node is UsingDeclaration ||

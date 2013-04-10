@@ -26,8 +26,10 @@
 //
 
 using System;
-using System.Collections.Generic;
 using System.Text;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
 using Gtk;
 using Mono.Debugging.Client;
 using MonoDevelop.Components;
@@ -50,6 +52,7 @@ namespace MonoDevelop.Debugger
 		List<ObjectValue> values = new List<ObjectValue> ();
 		Dictionary<ObjectValue,TreeRowReference> nodes = new Dictionary<ObjectValue, TreeRowReference> ();
 		Dictionary<string,ObjectValue> cachedValues = new Dictionary<string,ObjectValue> ();
+		Dictionary<ObjectValue, Task> expandTasks = new Dictionary<ObjectValue, Task> ();
 		TreeStore store;
 		TreeViewState state;
 		string createMsg;
@@ -235,7 +238,13 @@ namespace MonoDevelop.Debugger
 			crtValue.EditingStarted -= OnValueEditing;
 			crtValue.Edited -= OnValueEdited;
 			crtValue.EditingCanceled -= OnEditingCancelled;
-			
+
+			if (expandTasks.Count > 0) {
+				var tasks = new Task[expandTasks.Count];
+				expandTasks.Values.CopyTo (tasks, 0);
+				Task.WaitAll (tasks);
+			}
+
 			base.OnDestroyed ();
 			disposed = true;
 		}
@@ -279,9 +288,8 @@ namespace MonoDevelop.Debugger
 				expCol.FixedWidth = texp;
 			}
 			
-			int ttype = 0;
 			if (typeCol.Visible) {
-				ttype = Math.Max ((int) (width * typeColWidth), 1);
+				int ttype = Math.Max ((int) (width * typeColWidth), 1);
 				if (ttype != typeCol.FixedWidth) {
 					typeCol.FixedWidth = ttype;
 				}
@@ -483,9 +491,12 @@ namespace MonoDevelop.Debugger
 			foreach (ObjectValue val in new List<ObjectValue> (nodes.Keys))
 				UnregisterValue (val);
 			nodes.Clear ();
-			
+
+			if (IsRealized)
+				ScrollToPoint (0, 0);
+
 			SaveState ();
-			
+
 			CleanPinIcon ();
 			store.Clear ();
 			
@@ -524,20 +535,22 @@ namespace MonoDevelop.Debugger
 			TreeIter parent;
 			if (!store.IterParent (out parent, it))
 				parent = TreeIter.Zero;
-			
-			EvaluationOptions ops = frame.DebuggerSession.Options.EvaluationOptions.Clone ();
-			ops.AllowMethodEvaluation = true;
-			ops.AllowToStringCalls = true;
-			ops.AllowTargetInvoke = true;
-			ops.EllipsizeStrings = false;
-			
-			string oldName = val.Name;
-			val.Refresh (ops);
-			
-			// Don't update the name for the values entered by the user
-			if (store.IterDepth (it) == 0)
-				val.Name = oldName;
-			
+
+			if (frame != null && frame.DebuggerSession.IsConnected) {
+				EvaluationOptions ops = frame.DebuggerSession.Options.EvaluationOptions.Clone ();
+				ops.AllowMethodEvaluation = true;
+				ops.AllowToStringCalls = true;
+				ops.AllowTargetInvoke = true;
+				ops.EllipsizeStrings = false;
+
+				string oldName = val.Name;
+				val.Refresh (ops);
+
+				// Don't update the name for the values entered by the user
+				if (store.IterDepth (it) == 0)
+					val.Name = oldName;
+			}
+
 			SetValues (parent, it, val.Name, val);
 			RegisterValue (val, it);
 		}
@@ -680,9 +693,14 @@ namespace MonoDevelop.Debugger
 			oldValues.TryGetValue (valPath, out oldValue);
 			
 			if (val.IsUnknown) {
-				strval = GettextCatalog.GetString ("The name '{0}' does not exist in the current context.", val.Name);
-				nameColor = disabledColor;
-				canEdit = false;
+				if (frame != null) {
+					strval = GettextCatalog.GetString ("The name '{0}' does not exist in the current context.", val.Name);
+					nameColor = disabledColor;
+					canEdit = false;
+				} else {
+					canEdit = !val.IsReadOnly;
+					strval = string.Empty;
+				}
 			}
 			else if (val.IsError) {
 				strval = val.Value;
@@ -709,7 +727,7 @@ namespace MonoDevelop.Debugger
 				canEdit = false;
 			}
 			else {
-				canEdit = val.IsPrimitive && !val.IsReadOnly && allowEditing;
+				canEdit = val.IsPrimitive && !val.IsReadOnly;
 				strval = val.DisplayValue ?? "(null)";
 				if (oldValue != null && strval != oldValue)
 					nameColor = valueColor = modifiedColor;
@@ -728,7 +746,7 @@ namespace MonoDevelop.Debugger
 			store.SetValue (it, ObjectCol, val);
 			store.SetValue (it, ExpandedCol, !hasChildren);
 			store.SetValue (it, NameEditableCol, !hasParent && allowAdding);
-			store.SetValue (it, ValueEditableCol, canEdit);
+			store.SetValue (it, ValueEditableCol, canEdit && allowEditing);
 			store.SetValue (it, IconCol, icon);
 			store.SetValue (it, NameColorCol, nameColor);
 			store.SetValue (it, ValueColorCol, valueColor);
@@ -747,7 +765,7 @@ namespace MonoDevelop.Debugger
 			
 			if (hasChildren) {
 				// Add dummy node
-				store.AppendValues (it, "", "", "", null, true);
+				store.AppendValues (it, GettextCatalog.GetString ("Loading..."), "", "", null, true);
 				if (!ShowExpanders)
 					ShowExpanders = true;
 			}
@@ -809,6 +827,47 @@ namespace MonoDevelop.Debugger
 			if (compact)
 				ColumnsAutosize ();
 		}
+
+		static Task<ObjectValue[]> GetChildrenAsync (ObjectValue value)
+		{
+			return Task.Factory.StartNew<ObjectValue[]> (delegate (object arg) {
+				try {
+					return ((ObjectValue) arg).GetAllChildren ();
+				} catch (Exception ex) {
+					// Note: this should only happen if someone breaks ObjectValue.GetAllChildren()
+					LoggingService.LogError ("Failed to get ObjectValue children.", ex);
+					return new ObjectValue[0];
+				}
+			}, value);
+		}
+
+		void AddChildrenAsync (ObjectValue value, TreeRowReference row)
+		{
+			Task task;
+
+			if (expandTasks.TryGetValue (value, out task))
+				return;
+
+			task = GetChildrenAsync (value).ContinueWith (t => {
+				TreeIter iter, it;
+
+				if (store.GetIter (out iter, row.Path) && store.IterChildren (out it, iter)) {
+					foreach (var child in t.Result) {
+						SetValues (iter, it, null, child);
+						RegisterValue (child, it);
+						it = store.InsertNodeAfter (it);
+					}
+
+					store.Remove (ref it);
+
+					if (compact)
+						ColumnsAutosize ();
+				}
+
+				expandTasks.Remove (value);
+			}, Xwt.Application.UITaskScheduler);
+			expandTasks.Add (value, task);
+		}
 		
 		protected override void OnRowExpanded (TreeIter iter, TreePath path)
 		{
@@ -816,25 +875,14 @@ namespace MonoDevelop.Debugger
 			TreeIter it;
 			
 			if (store.IterChildren (out it, iter)) {
-				ObjectValue val = (ObjectValue) store.GetValue (it, ObjectCol);
-				if (val == null) {
-					val = (ObjectValue) store.GetValue (iter, ObjectCol);
-					bool first = true;
-					
-					foreach (ObjectValue cval in val.GetAllChildren ()) {
-						SetValues (iter, it, null, cval);
-						RegisterValue (cval, it);
-						it = store.InsertNodeAfter (it);
-					}
-					
-					store.Remove (ref it);
+				ObjectValue value = (ObjectValue) store.GetValue (it, ObjectCol);
+				if (value == null) {
+					value = (ObjectValue) store.GetValue (iter, ObjectCol);
+					AddChildrenAsync (value, new TreeRowReference (store, store.GetPath (iter)));
 				}
 			}
 			
 			base.OnRowExpanded (iter, path);
-			
-			if (compact)
-				ColumnsAutosize ();
 		}
 		
 		string GetIterPath (TreeIter iter)
@@ -1546,10 +1594,10 @@ namespace MonoDevelop.Debugger
 		
 		Mono.Debugging.Client.CompletionData GetCompletionData (string exp)
 		{
-			if (frame != null)
+			if (frame != null && frame.DebuggerSession.IsConnected)
 				return frame.GetExpressionCompletionData (exp);
-			else
-				return null;
+
+			return null;
 		}
 		
 		internal void SetCustomFont (Pango.FontDescription font)

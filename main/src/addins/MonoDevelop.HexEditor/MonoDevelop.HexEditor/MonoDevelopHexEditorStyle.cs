@@ -70,7 +70,7 @@ namespace MonoDevelop.HexEditor
 		
 		public override Color HexOffsetHighlighted {
 			get {
-				return (HslColor)colorStyle.LineMarker.GetColor ("color");
+				return (HslColor)colorStyle.LineMarker.Color;
 			}
 		}
 		
@@ -100,25 +100,25 @@ namespace MonoDevelop.HexEditor
 		
 		public override Color IconBarBg {
 			get {
-				return (HslColor) (colorStyle.IndicatorMarginSeparator.GetColor("color"));
+				return (HslColor) (colorStyle.IndicatorMarginSeparator.Color);
 			}
 		}
 		
 		public override Color IconBarSeperator {
 			get {
-				return (HslColor) (colorStyle.IndicatorMarginSeparator.GetColor("color"));
+				return (HslColor) (colorStyle.IndicatorMarginSeparator.Color);
 			}
 		}
 		
 		public override Color BookmarkColor1 {
 			get {
-				return (HslColor) (colorStyle.Bookmarks.GetColor ("color"));
+				return (HslColor) (colorStyle.Bookmarks.Color);
 			}
 		}
 		
 		public override Color BookmarkColor2 {
 			get {
-				return (HslColor) (colorStyle.Bookmarks.GetColor ("secondcolor"));
+				return (HslColor) (colorStyle.Bookmarks.SecondColor);
 			}
 		}
 		
@@ -136,7 +136,7 @@ namespace MonoDevelop.HexEditor
 		
 		public override Color HighlightOffset {
 			get {
-				return (HslColor) (colorStyle.SearchResult.GetColor ("color"));
+				return (HslColor) (colorStyle.SearchResult.Color);
 			}
 		}
 	}

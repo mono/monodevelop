@@ -14,7 +14,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		private global::Gtk.Button noButton;
 		private global::Gtk.Button yesButton;
 		private global::Gtk.Button closeButton;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

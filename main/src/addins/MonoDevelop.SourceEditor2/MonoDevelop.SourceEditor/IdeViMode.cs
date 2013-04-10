@@ -82,9 +82,10 @@ namespace MonoDevelop.SourceEditor
 				if (2 < command.Length) { 
 					switch (command[2]) {
 					case 'q':	// :wq
-						editor.View.WorkbenchWindow.Document.Save ();
+						var workbenchWindow = editor.View.WorkbenchWindow;
+						workbenchWindow.Document.Save ();
 						Gtk.Application.Invoke (delegate {
-							editor.View.WorkbenchWindow.CloseWindow (false/*, true, -1*/);
+							workbenchWindow.CloseWindow (false/*, true, -1*/);
 						});
 						return "Saved and closed file.";
 					case '!':	// :w!
@@ -112,8 +113,9 @@ namespace MonoDevelop.SourceEditor
 				if (!force && editor.View.IsDirty)
 					return "Document has not been saved!";
 
+				var window = editor.View.WorkbenchWindow;
 				Gtk.Application.Invoke (delegate {
-					editor.View.WorkbenchWindow.CloseWindow (force/*, true, -1*/);
+					window.CloseWindow (force);
 				});
 				return force? "Closed file without saving.": "Closed file.";
 				

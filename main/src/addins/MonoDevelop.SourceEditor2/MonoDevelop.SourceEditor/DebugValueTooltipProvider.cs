@@ -30,11 +30,9 @@ using System;
 using System.Collections.Generic;
 
 using Mono.TextEditor;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
 using Mono.Debugging.Client;
 using TextEditor = Mono.TextEditor.TextEditor;
-using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Debugger;
 
 using ICSharpCode.NRefactory.TypeSystem;
@@ -73,9 +71,22 @@ namespace MonoDevelop.SourceEditor
 				tooltip.Hide ();
 		}
 
-		#region ITooltipProvider implementation 
+		#region ITooltipProvider implementation
+
+		static int IndexOfLastWhiteSpace (string text)
+		{
+			int index = text.Length - 1;
+
+			while (index >= 0) {
+				if (char.IsWhiteSpace (text[index]))
+					break;
+				index--;
+			}
+
+			return index;
+		}
 		
-		public override TooltipItem GetItem (Mono.TextEditor.TextEditor editor, int offset)
+		public override TooltipItem GetItem (TextEditor editor, int offset)
 		{
 			if (offset >= editor.Document.TextLength)
 				return null;
@@ -131,7 +142,15 @@ namespace MonoDevelop.SourceEditor
 					startOffset = editor.Document.LocationToOffset (start);
 					endOffset = editor.Document.LocationToOffset (end);
 
-					expression = ed.GetTextBetween (startOffset, endOffset);
+					expression = ed.GetTextBetween (startOffset, endOffset).Trim ();
+
+					// Note: When the LocalResolveResult is a parameter, the Variable.Region includes the type
+					if (lr.IsParameter) {
+						int index = IndexOfLastWhiteSpace (expression);
+						if (index != -1)
+							expression = expression.Substring (index + 1);
+					}
+
 					length = expression.Length;
 				} else if (res is InvocationResolveResult) {
 					var ir = (InvocationResolveResult) res;
@@ -226,7 +245,7 @@ namespace MonoDevelop.SourceEditor
 			var location = editor.OffsetToLocation (item.ItemSegment.Offset);
 			var point = editor.LocationToPoint (location);
 			int lineHeight = (int) editor.LineHeight;
-			int y = (int) point.Y;
+			int y = point.Y;
 
 			// find the top of the line that the mouse is hovering over
 			while (y + lineHeight < mouseY)
@@ -239,7 +258,7 @@ namespace MonoDevelop.SourceEditor
 			return tooltip;
 		}
 
-		public override bool IsInteractive (Mono.TextEditor.TextEditor editor, Gtk.Window tipWindow)
+		public override bool IsInteractive (TextEditor editor, Gtk.Window tipWindow)
 		{
 			return DebuggingService.IsDebugging;
 		}

@@ -18,7 +18,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		private global::Gtk.Label label6;
 		private global::Gtk.Entry nameEntry;
 		private global::Gtk.Entry trademarkEntry;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

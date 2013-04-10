@@ -10,12 +10,6 @@
 		<Value _displayName="Banner Style">BannerStyle</Value>
 	</Type>
 	
-	<Type name = "BraceForcement">
-		<Value _displayName="Do not change">DoNotChange</Value>
-		<Value _displayName="Remove braces">RemoveBraces</Value>
-		<Value _displayName="Add braces">AddBraces</Value>
-	</Type>
-	
 	<Type name = "Wrapping">
 		<Value _displayName="Do not change">DoNotChange</Value>
 		<Value _displayName="Do not wrap">DoNotWrap</Value>
@@ -396,42 +390,6 @@ class ClassDeclaration {
 					<Option name="AllowEventRemoveBlockInline" _displayName="Allow one line remove" example="event"/>
 				</OptionCategory>
 			</Category>
-		</Category>
-		
-		<Category _displayName="Brace forcement">
-			<Option name="IfElseBraceForcement" _displayName="'if...else' statement" example="simpleIf"><Example><![CDATA[
-
-]]></Example></Option>
-			<Option name="ForBraceForcement" _displayName="'for' statement" example="simpleFor"><Example><![CDATA[
-
-]]></Example></Option>
-			<Option name="ForEachBraceForcement" _displayName="'foreach' statement" example="simpleForeach"><Example><![CDATA[
-class ClassDeclaration { 
-		public void Test (int[] list)
-		{
-			foreach (int i in list) {
-				Console.WriteLine ("Hello World " + i);
-			}
-			foreach (int i in list)
-				Console.WriteLine ("Hello World " + i);
-		}
-	}
-]]></Example></Option>
-			<Option name="WhileBraceForcement" _displayName="'while' statement" example="simpleWhile"><Example><![CDATA[
-class ClassDeclaration { 
-		public void Test ()
-		{
-			int i = 0;
-			while (i++ < 10) {
-				Console.WriteLine ("Hello World " + i);
-			}
-			while (i++ < 20)
-				Console.WriteLine ("Hello World " + i);
-		}
-	}
-]]></Example></Option>
-			<Option name="UsingBraceForcement" _displayName="'using' statement" example="simpleUsingStatement"/>
-			<Option name="FixedBraceForcement" _displayName="'fixed' statement" example="simpleFixedStatement"/>
 		</Category>
 		
 		<Category _displayName="Blocks">

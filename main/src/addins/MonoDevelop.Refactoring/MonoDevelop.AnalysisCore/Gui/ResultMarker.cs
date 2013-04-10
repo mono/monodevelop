@@ -59,13 +59,13 @@ namespace MonoDevelop.AnalysisCore.Gui
 			case Severity.None:
 				return editor.ColorStyle.PlainText.Background;
 			case Severity.Error:
-				return editor.ColorStyle.UnderlineError.GetColor ("color");
+				return editor.ColorStyle.UnderlineError.Color;
 			case Severity.Warning:
-				return editor.ColorStyle.UnderlineWarning.GetColor ("color");
+				return editor.ColorStyle.UnderlineWarning.Color;
 			case Severity.Suggestion:
-				return editor.ColorStyle.UnderlineSuggestion.GetColor ("color");
+				return editor.ColorStyle.UnderlineSuggestion.Color;
 			case Severity.Hint:
-				return editor.ColorStyle.UnderlineHint.GetColor ("color");
+				return editor.ColorStyle.UnderlineHint.Color;
 			default:
 				throw new System.ArgumentOutOfRangeException ();
 			}

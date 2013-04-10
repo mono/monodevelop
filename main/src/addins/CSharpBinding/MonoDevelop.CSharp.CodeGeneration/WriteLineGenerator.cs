@@ -139,7 +139,7 @@ namespace MonoDevelop.CodeGeneration
 				foreach (var member in includedMembers) {
 					invocationExpression.Arguments.Add (new IdentifierExpression (GetName (member)));
 				}
-				yield return new ExpressionStatement (invocationExpression).GetText (Options.FormattingOptions);
+				yield return new ExpressionStatement (invocationExpression).ToString (Options.FormattingOptions);
 			}
 		}
 	}

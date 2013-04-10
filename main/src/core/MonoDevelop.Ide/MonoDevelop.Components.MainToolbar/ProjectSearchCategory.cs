@@ -91,6 +91,11 @@ namespace MonoDevelop.Components.MainToolbar
 		string[] typeTags = new [] { "type", "c", "s", "i", "e", "d"};
 		string[] memberTags = new [] { "member", "m", "p", "f", "evt"};
 
+		public override bool IsValidTag (string tag)
+		{
+			return typeTags.Any (t => t == tag) || memberTags.Any (t => t == tag);
+		}
+
 		public override Task<ISearchDataSource> GetResults (SearchPopupSearchPattern searchPattern, int resultsCount, CancellationToken token)
 		{
 			return Task.Factory.StartNew (delegate {

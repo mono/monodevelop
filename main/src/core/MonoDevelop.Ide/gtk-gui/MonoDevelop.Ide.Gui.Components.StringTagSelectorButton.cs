@@ -6,7 +6,7 @@ namespace MonoDevelop.Ide.Gui.Components
 	{
 		private global::Gtk.Button button;
 		private global::Gtk.Arrow arrow1;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

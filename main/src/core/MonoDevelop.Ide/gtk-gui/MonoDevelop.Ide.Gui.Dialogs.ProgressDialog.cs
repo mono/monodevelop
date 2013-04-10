@@ -15,7 +15,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		private global::Gtk.TextView detailsTextView;
 		private global::Gtk.Label expanderLabel;
 		private global::Gtk.Button button103;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using ICSharpCode.NRefactory;
 using System;
+using Mono.TextEditor;
 
 namespace MonoDevelop.CodeActions
 {
@@ -48,6 +49,11 @@ namespace MonoDevelop.CodeActions
 		/// This allows to split the action and the issue provider.
 		/// </summary>
 		public Type BoundToIssue { get; set; }
+
+		/// <summary>
+		/// The region of the code action.
+		/// </summary>
+		public DocumentRegion DocumentRegion { get; set; }
 
 		public CodeAction ()
 		{

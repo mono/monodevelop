@@ -175,7 +175,7 @@ namespace MonoDevelop.Components.MainToolbar
 					if (Pattern.LineNumber == 0) {
 						IdeApp.Workbench.OpenDocument (region.FileName);
 					} else {
-						IdeApp.Workbench.OpenDocument (region.FileName, Pattern.LineNumber, 1);
+						IdeApp.Workbench.OpenDocument (region.FileName, Pattern.LineNumber, Pattern.HasColumn ? Pattern.Column : 1);
 					}
 				} else {
 					IdeApp.Workbench.OpenDocument (region.FileName, region.BeginLine, region.BeginColumn);
@@ -190,8 +190,15 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
-		public void Update (string searchPattern)
+		public void Update (SearchPopupSearchPattern pattern)
 		{
+			// in case of 'string:' it's not clear if the user ment 'tag:pattern'  or 'pattern:line' therefore guess
+			// 'tag:', if no valid tag is found guess 'pattern:'
+			if (!string.IsNullOrEmpty (pattern.Tag) && string.IsNullOrEmpty (pattern.Pattern) && !categories.Any (c => c.IsValidTag (pattern.Tag))) {
+				pattern = new SearchPopupSearchPattern (null, pattern.Tag, pattern.LineNumber, pattern.Column);
+			}
+
+			this.pattern = pattern;
 			if (src != null)
 				src.Cancel ();
 
@@ -201,7 +208,6 @@ namespace MonoDevelop.Components.MainToolbar
 			if (results.Count == 0) {
 				QueueDraw ();
 			}
-			pattern = SearchPopupSearchPattern.ParsePattern (searchPattern);
 			incompleteResults.Clear ();
 			foreach (var _cat in categories) {
 				var cat = _cat;
@@ -847,11 +853,13 @@ namespace MonoDevelop.Components.MainToolbar
 
 				var px = dataSrc.GetIcon (i);
 				if (px != null) {
-					evnt.Window.DrawPixbuf (Style.WhiteGC, px, 0, 0, (int)x + marginIconSpacing, (int)y + (h - px.Height) / 2, px.Width, px.Height, Gdk.RgbDither.None, 0, 0);
+					Gdk.CairoHelper.SetSourcePixbuf (context, px, (int)x + marginIconSpacing, (int)y + (h - px.Height) / 2);
+					context.Paint ();
 					x += px.Width + iconTextSpacing + marginIconSpacing;
 				}
 
 				context.MoveTo (x, y);
+				context.Color = new Cairo.Color (0, 0, 0);
 				Pango.CairoHelper.ShowLayout (context, layout);
 
 				y += h + itemSeparatorHeight;
@@ -889,11 +897,13 @@ namespace MonoDevelop.Components.MainToolbar
 
 					var px = dataSrc.GetIcon (i);
 					if (px != null) {
-						evnt.Window.DrawPixbuf (Style.WhiteGC, px, 0, 0, (int)x + marginIconSpacing, (int)y + (h - px.Height) / 2, px.Width, px.Height, Gdk.RgbDither.None, 0, 0);
+						Gdk.CairoHelper.SetSourcePixbuf (context, px, (int)x + marginIconSpacing, (int)y + (h - px.Height) / 2);
+						context.Paint ();
 						x += px.Width + iconTextSpacing + marginIconSpacing;
 					}
 
 					context.MoveTo (x, y);
+					context.Color = new Cairo.Color (0, 0, 0);
 					Pango.CairoHelper.ShowLayout (context, layout);
 
 					y += h + itemSeparatorHeight;

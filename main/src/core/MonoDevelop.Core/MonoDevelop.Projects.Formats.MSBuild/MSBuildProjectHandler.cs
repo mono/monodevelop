@@ -86,7 +86,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return subtypeGuids;
 			}
 		}
-		
+
 		public MSBuildProjectHandler ()
 		{
 		}

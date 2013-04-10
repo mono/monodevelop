@@ -28,7 +28,6 @@ using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using System.Web.Razor.Parser.SyntaxTree;
-using MonoDevelop.AspNet.Parser.Dom;
 using System.Web.Razor;
 
 namespace MonoDevelop.AspNet.Mvc.Parser
@@ -40,7 +39,7 @@ namespace MonoDevelop.AspNet.Mvc.Parser
 		public IEnumerable<Comment> Comments { get; set; }
 		public GeneratorResults GeneratorResults { get; set; }
 		public Block RazorRoot { get { return GeneratorResults.Document; } }
-		public RootNode HtmlRoot { get; set; }
+		public MonoDevelop.Xml.StateEngine.XDocument HtmlRoot { get; set; }
 		public IEnumerable<Span> Spans { get; set; }
 		public string DocType { get; set; }
 		public RazorHostKind HostKind { get; set; }

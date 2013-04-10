@@ -88,23 +88,12 @@ namespace MonoDevelop.Refactoring
 		{
 			this.Document = doc;
 			if (doc != null && doc.ParsedDocument != null) {
-				Unit = doc.ParsedDocument.GetAst<SyntaxTree> ();
-				resolver = CreateResolver (Unit);
+				var sharedResolver = doc.GetSharedResolver ();
+				if (sharedResolver == null)
+					return;
+				resolver = sharedResolver.Result;
+				Unit = resolver != null ? resolver.RootNode as SyntaxTree : null;
 			}
-		}
-
-		public CSharpAstResolver CreateResolver (SyntaxTree unit)
-		{
-			var parsedDocument = Document.ParsedDocument;
-			if (parsedDocument == null)
-				return null;
-
-			var parsedFile = parsedDocument.ParsedFile as CSharpUnresolvedFile;
-			
-			if (unit == null || parsedFile == null)
-				return null;
-
-			return new CSharpAstResolver (Document.Compilation, unit, parsedFile);
 		}
 
 		public Mono.TextEditor.TextEditorData GetTextEditorData ()

@@ -266,7 +266,8 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Fonts">
-		<Font name ="Editor" _displayName="Text Editor" default ="_DEFAULT_MONOSPACE"/>
+        <Font name ="Editor" _displayName="Text Editor" default ="_DEFAULT_MONOSPACE"/>
+        <Font name ="Editor(Gutter)" _displayName="Text Editor Line Numbers" default =""/>
 		<Font name ="Pad" _displayName="Pads" default ="_DEFAULT_SANS"/>
 		<Font name ="OutputPad" _displayName="Output Pads" default ="_DEFAULT_MONOSPACE"/>
 	</Extension>

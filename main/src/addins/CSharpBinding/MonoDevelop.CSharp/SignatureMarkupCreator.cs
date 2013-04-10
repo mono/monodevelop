@@ -84,6 +84,12 @@ namespace MonoDevelop.CSharp
 				throw new ArgumentNullException ("type");
 			if (type.Kind == TypeKind.Null)
 				return "?";
+			if (type.Kind == TypeKind.Array) {
+				var arrayType = (ArrayType)type;
+				return GetTypeReferenceString (arrayType.ElementType, highlight) + "[" + new string (',', arrayType.Dimensions - 1) + "]";
+			}
+			if (type.Kind == TypeKind.Pointer)
+				return GetTypeReferenceString (((PointerType)type).ElementType, highlight) + "*";
 			AstType astType;
 			try {
 				astType = astBuilder.ConvertType (type);
@@ -99,9 +105,9 @@ namespace MonoDevelop.CSharp
 			}
 
 			if (astType is PrimitiveType) {
-				return Highlight (astType.GetText (formattingOptions), colorStyle.KeywordTypes);
+				return Highlight (astType.ToString (formattingOptions), colorStyle.KeywordTypes);
 			}
-			var text = AmbienceService.EscapeText (astType.GetText (formattingOptions));
+			var text = AmbienceService.EscapeText (astType.ToString (formattingOptions));
 			return highlight ? HighlightSemantically (text, colorStyle.UserTypes) : text;
 		}
 
@@ -310,7 +316,7 @@ namespace MonoDevelop.CSharp
 			if (t == null)
 				throw new ArgumentNullException ("t");
 			var result = new StringBuilder ();
-			var highlightedTypeName = Highlight (CSharpAmbience.FilterName (t.Name), colorStyle.KeywordTypes);
+			var highlightedTypeName = Highlight (CSharpAmbience.FilterName (t.Name), colorStyle.UserTypes);
 			result.Append (highlightedTypeName);
 
 			var color = AlphaBlend (colorStyle.PlainText.Foreground, colorStyle.PlainText.Background, optionalAlpha);
@@ -383,7 +389,7 @@ namespace MonoDevelop.CSharp
 		string GetTypeNameWithParameters (IType t)
 		{
 			StringBuilder result = new StringBuilder ();
-			result.Append (Highlight (CSharpAmbience.FilterName (t.Name), colorStyle.KeywordTypes));
+			result.Append (Highlight (CSharpAmbience.FilterName (t.Name), colorStyle.UserTypesTypeParameters));
 			if (t.TypeParameterCount > 0) {
 				if (t.TypeArguments.Count > 0) {
 					AppendTypeArgumentList (result, t);
@@ -398,13 +404,14 @@ namespace MonoDevelop.CSharp
 		{
 			if (t == null)
 				throw new ArgumentNullException ("t");
-
 			if (t.Kind == TypeKind.Null)
 				return "Type can not be resolved.";
 			if (t.Kind == TypeKind.Delegate)
 				return GetDelegateMarkup (t);
 			if (t.Kind == TypeKind.TypeParameter)
 				return GetTypeParameterMarkup (t);
+			if (t.Kind == TypeKind.Array || t.Kind == TypeKind.Pointer)
+				return GetTypeReferenceString (t);
 			if (NullableType.IsNullable (t))
 				return GetNullableMarkup (t);
 			var result = new StringBuilder ();
@@ -834,7 +841,7 @@ namespace MonoDevelop.CSharp
 		}
 		public TooltipInformation GetKeywordTooltip (AstNode node)
 		{
-			return GetKeywordTooltip (node.GetText (), node);
+			return GetKeywordTooltip (node.ToString (), node);
 		}
 
 		public TooltipInformation GetKeywordTooltip (string keyword, AstNode hintNode)

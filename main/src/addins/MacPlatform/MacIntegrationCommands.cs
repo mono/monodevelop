@@ -27,6 +27,7 @@
 using MonoDevelop.Ide;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.MacInterop;
+using MonoMac.AppKit;
 
 namespace MonoDevelop.MacIntegration
 {
@@ -35,6 +36,7 @@ namespace MonoDevelop.MacIntegration
 		MinimizeWindow,
 		HideWindow,
 		HideOthers,
+		Services,
 	}
 	
 	internal class MacMinimizeWindowHandler : CommandHandler
@@ -49,7 +51,7 @@ namespace MonoDevelop.MacIntegration
 	{
 		protected override void Run ()
 		{
-			MacHideOthersHandler.RunMenuCommand (CarbonCommandID.Hide);
+			NSApplication.SharedApplication.Hide (NSApplication.SharedApplication);
 		}
 	}
 	
@@ -57,14 +59,7 @@ namespace MonoDevelop.MacIntegration
 	{
 		protected override void Run ()
 		{
-			RunMenuCommand (CarbonCommandID.HideOthers);
-		}
-		
-		internal static void RunMenuCommand (CarbonCommandID commandID)
-		{
-			var item = HIToolbox.GetMenuItem ((uint)commandID);
-			var cmd = new CarbonHICommand ((uint)commandID, item);
-			Carbon.ProcessHICommand (ref cmd);
+			NSApplication.SharedApplication.HideOtherApplications (NSApplication.SharedApplication);
 		}
 	}
 }

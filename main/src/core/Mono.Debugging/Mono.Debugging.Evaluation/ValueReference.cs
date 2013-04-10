@@ -141,8 +141,8 @@ namespace Mono.Debugging.Evaluation
 			
 			if (val != null)
 				return newCtx.Adapter.CreateObjectValue (newCtx, this, new ObjectPath (name), val, Flags);
-			else
-				return Mono.Debugging.Client.ObjectValue.CreateNullObject (this, name, newCtx.Adapter.GetTypeName (newCtx, Type), Flags);
+
+			return Mono.Debugging.Client.ObjectValue.CreateNullObject (this, name, newCtx.Adapter.GetTypeName (newCtx, Type), Flags);
 		}
 
 		ObjectValue IObjectValueSource.GetValue (ObjectPath path, EvaluationOptions options)

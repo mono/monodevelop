@@ -27,7 +27,7 @@ namespace MonoDevelop.Ide.Projects
 		private global::MonoDevelop.Components.FolderEntry projectFolderEntry;
 		private global::Gtk.Button cancelButton;
 		private global::Gtk.Button okButton;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

@@ -75,10 +75,9 @@ namespace MonoDevelop.Ide.Gui.Components
 		TreeBuilderContext builderContext;
 		Hashtable callbacks = new Hashtable ();
 		bool editingText = false;
-		int customFontSize = -1;
 		bool showSelectionPopupButton;
 		Gtk.TreeIter? lastPopupButtonIter;
-		
+
 		TreePadOption[] options;
 		TreeOptions globalOptions;
 
@@ -126,25 +125,19 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		void CustomFontPropertyChanged (object sender, EventArgs a)
 		{
-			UpdateCustomFont ();
+			UpdateFont ();
 		}
-
-		Pango.FontDescription customFont;
 		
-		void UpdateCustomFont ()
+		void UpdateFont ()
 		{
-			customFont = (IdeApp.Preferences.CustomPadFont ?? tree.Style.FontDescription).Copy ();
-			if (Zoom != 1)
-				customFont.Size = (int) (((double) customFont.Size) * Zoom);
-			text_render.Family = customFont.Family;
-			text_render.Size = customFont.Size;
+			text_render.CustomFont = IdeApp.Preferences.CustomPadFont ?? tree.Style.FontDescription;
 			tree.ColumnsAutosize ();
 		}
 		
 		protected override void OnStyleSet (Gtk.Style previous_style)
 		{
 			base.OnStyleSet (previous_style);
-			UpdateCustomFont ();
+			UpdateFont ();
 		}
 		
 		public void Initialize (NodeBuilder[] builders, TreePadOption[] options)
@@ -186,12 +179,6 @@ namespace MonoDevelop.Ide.Gui.Components
 			complete_column.AddAttribute (pix_render, "image-expander-closed", ClosedIconColumn);
 			
 			text_render = new CustomCellRendererText (this);
-			var customFont = IdeApp.Preferences.CustomPadFont;
-			if (customFont != null) {
-				text_render.Family = customFont.Family;
-				text_render.Size = customFont.Size;
-				customFontSize = customFont.Size;
-			}
 			text_render.Ypad = 0;
 			IdeApp.Preferences.CustomPadFontChanged += CustomFontPropertyChanged;;
 			text_render.EditingStarted += HandleEditingStarted;
@@ -950,12 +937,8 @@ namespace MonoDevelop.Ide.Gui.Components
 		void OnZoomChanged (double value)
 		{
 			pix_render.Zoom = value;
-			if (customFontSize != -1) {
-				int newSize = customFontSize;
-				if (value != 1)
-					newSize = (int) (((double) customFontSize) * value);
-				text_render.Size = newSize;
-			}
+			text_render.Zoom = value;
+
 			int expanderSize = (int) (12 * Zoom);
 			if (expanderSize < 3) expanderSize = 3;
 			if (expanderSize > 15) expanderSize = 15;
@@ -1996,9 +1979,6 @@ namespace MonoDevelop.Ide.Gui.Components
 				builders = null;
 			}
 			builderChains.Clear ();
-
-			if (customFont != null)
-				customFont.Dispose ();
 			
 			base.OnDestroyed ();
 		}
@@ -2217,6 +2197,10 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		class CustomCellRendererText: Gtk.CellRendererText
 		{
+			double zoom;
+			Pango.Layout layout;
+			Pango.FontDescription scaledFont, customFont;
+
 			static Gdk.Pixbuf popupIcon;
 			static Gdk.Pixbuf popupIconDown;
 			static Gdk.Pixbuf popupIconHover;
@@ -2227,6 +2211,20 @@ namespace MonoDevelop.Ide.Gui.Components
 			string markup;
 
 			public bool Pushed { get; set; }
+
+			//using this instead of FontDesc property, FontDesc seems to be broken
+			public Pango.FontDescription CustomFont {
+				get {
+					return customFont;
+				}
+				set {
+					if (scaledFont != null) {
+						scaledFont.Dispose ();
+						scaledFont = null;
+					}
+					customFont = value;
+				}
+			}
 
 			static CustomCellRendererText ()
 			{
@@ -2251,12 +2249,6 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			protected override void Render (Gdk.Drawable window, Gtk.Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, Gtk.CellRendererState flags)
 			{
-				Pango.Layout la = new Pango.Layout (widget.PangoContext);
-				int w, h;
-				la.SetMarkup (TextMarkup);
-				la.GetPixelSize (out w, out h);
-				la.FontDescription = parent.customFont;
-
 				Gtk.StateType st = Gtk.StateType.Normal;
 				if ((flags & Gtk.CellRendererState.Prelit) != 0)
 					st = Gtk.StateType.Prelight;
@@ -2267,12 +2259,31 @@ namespace MonoDevelop.Ide.Gui.Components
 				if ((flags & Gtk.CellRendererState.Selected) != 0)
 					st = widget.HasFocus ? Gtk.StateType.Selected : Gtk.StateType.Active;
 
+				if (scaledFont == null) {
+					if (scaledFont != null)
+						scaledFont.Dispose ();
+					scaledFont = (customFont ?? parent.Style.FontDesc).Copy ();
+					scaledFont.Size = (int)(customFont.Size * Zoom);
+					if (layout != null)
+						layout.FontDescription = scaledFont;
+				}
+
+				if (layout == null || layout.Context != widget.PangoContext) {
+					if (layout != null)
+						layout.Dispose ();
+					layout = new Pango.Layout (widget.PangoContext);
+					layout.FontDescription = scaledFont;
+				}
+
+				layout.SetMarkup (TextMarkup);
+
+				int w, h;
+				layout.GetPixelSize (out w, out h);
+
 				int tx = cell_area.X + (int) Xpad;
 				int ty = cell_area.Y + (cell_area.Height - h) / 2;
 
-				window.DrawLayout (widget.Style.TextGC (st), tx, ty, la);
-
-				la.Dispose ();
+				window.DrawLayout (widget.Style.TextGC (st), tx, ty, layout);
 
 				if (ShowPopupButton) {
 					if (!bound) {
@@ -2333,6 +2344,19 @@ namespace MonoDevelop.Ide.Gui.Components
 				}
 			}
 
+			public double Zoom {
+				get {
+					return zoom;
+				}
+				set {
+					if (scaledFont != null) {
+						scaledFont.Dispose ();
+						scaledFont = null;
+					}
+					zoom = value;
+				}
+			}
+
 			public bool PointerInButton (int px, int py)
 			{
 				return buttonScreenRect.Contains (px, py);
@@ -2342,6 +2366,15 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			public Gdk.Rectangle PopupAllocation {
 				get { return buttonAllocation; }
+			}
+
+			protected override void OnDestroyed ()
+			{
+				base.OnDestroyed ();
+				if (scaledFont != null)
+					scaledFont.Dispose ();
+				if (layout != null)
+					layout.Dispose ();
 			}
 		}
 	}

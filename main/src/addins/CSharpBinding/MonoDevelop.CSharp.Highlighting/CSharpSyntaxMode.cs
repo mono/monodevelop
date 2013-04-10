@@ -49,6 +49,7 @@ using System.Diagnostics;
 using MonoDevelop.Core;
 using ICSharpCode.NRefactory.CSharp.Analysis;
 using ICSharpCode.NRefactory;
+using MonoDevelop.Refactoring;
 
 
 namespace MonoDevelop.CSharp.Highlighting
@@ -124,6 +125,8 @@ namespace MonoDevelop.CSharp.Highlighting
 			set;
 		}
 
+
+
 		void HandleDocumentParsed (object sender, EventArgs e)
 		{
 			if (src != null)
@@ -139,10 +142,10 @@ namespace MonoDevelop.CSharp.Highlighting
 					parsedFile = parsedDocument.ParsedFile as CSharpUnresolvedFile;
 					if (guiDocument.Project != null && guiDocument.IsCompileableInProject) {
 						src = new CancellationTokenSource ();
+						var newResolverTask = guiDocument.GetSharedResolver ();
 						var cancellationToken = src.Token;
-						compilation = guiDocument.Compilation;
-						var newResolver = new CSharpAstResolver (compilation, unit, parsedFile);
 						System.Threading.Tasks.Task.Factory.StartNew (delegate {
+							var newResolver = newResolverTask.Result;
 							var visitor = new QuickTaskVisitor (newResolver, cancellationToken);
 							try {
 								unit.AcceptVisitor (visitor);
@@ -157,6 +160,7 @@ namespace MonoDevelop.CSharp.Highlighting
 									var editorData = guiDocument.Editor;
 									if (editorData == null)
 										return;
+									compilation = newResolver.Compilation;
 									resolver = newResolver;
 									quickTasks = visitor.QuickTasks;
 									OnTasksUpdated (EventArgs.Empty);
@@ -235,6 +239,7 @@ namespace MonoDevelop.CSharp.Highlighting
 
 				valueKeywordColor = "Keyword(Context)";
 				externAliasKeywordColor = "Keyword(Namespace)";
+				varKeywordTypeColor = "Keyword(Type)";
 
 				parameterModifierColor = "Keyword(Parameter)";
 				inactiveCodeColor = "Excluded Code";
@@ -313,7 +318,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					if (data == null)
 						continue;
 					// Force syntax mode reparse (required for #if directives)
-					doc.Editor.Document.SyntaxMode = doc.Editor.Document.SyntaxMode;
+					doc.Editor.Parent.TextViewMargin.PurgeLayoutCache ();
 					doc.ReparseDocument ();
 				}
 			};
@@ -339,9 +344,10 @@ namespace MonoDevelop.CSharp.Highlighting
 		
 		static Dictionary<string, string> contextualHighlightKeywords;
 		static readonly string[] ContextualKeywords = new string[] {
+			"value"
 /*			"async",
 			"await",
-			"value", //*
+			, //*
 			"get", "set", "add", "remove",  //*
 			"var", //*
 			"global",

@@ -86,8 +86,8 @@
         { "name": "Secondary Link", "color":"aluminium2", "secondcolor":"white"},
         { "name": "Secondary Link(Highlighted)", "color":"aluminium3", "secondcolor":"aluminium1"},
         
-        { "name": "Message Bubble Error", "color":"aluminium5", "secondcolor":"#f4eeda"},
-        { "name": "Message Bubble Warning", "color":"aluminium5", "secondcolor":"#f5eae7"}
+        { "name": "Message Bubble Error", "color":"aluminium5", "secondcolor":"#f5eae7"},
+        { "name": "Message Bubble Warning", "color":"aluminium5", "secondcolor":"#f4eeda"}
     ],
 
 	"text":[
@@ -143,7 +143,7 @@
 		{ "name": "Completion Selected Text(Inactive)", "fore":"#434343", "back":"#FFFFFF" },
 
 		{ "name": "Keyword(Access)", "fore":"keyword-teal" },
-		{ "name": "Keyword(Type)", "fore":"skyblue2" },
+		{ "name": "Keyword(Type)", "fore":"keyword-teal" },
 		{ "name": "Keyword(Operator)", "fore":"keyword-teal" },
 		{ "name": "Keyword(Selection)", "fore":"keyword-teal" },
 		{ "name": "Keyword(Iteration)", "fore":"keyword-teal" },

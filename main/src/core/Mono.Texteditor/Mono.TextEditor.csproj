@@ -218,6 +218,7 @@
     <Compile Include="Mono.TextEditor.Highlighting\AmbientColor.cs" />
     <Compile Include="Mono.TextEditor\ITextEditorOptions.cs" />
     <Compile Include="Mono.TextEditor.Vi\ViModeAbortException.cs" />
+    <Compile Include="Mono.TextEditor\ITextPasteHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mono.TextEditor.dll.config">

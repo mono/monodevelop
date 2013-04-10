@@ -30,7 +30,7 @@ using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using System.Linq;
-
+using Gtk;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -97,7 +97,9 @@ namespace MonoDevelop.Ide.FindInFiles
 						if (replacePattern != null)
 							provider.BeginReplace (content);
 					} catch (System.IO.FileNotFoundException) {
-						MessageService.ShowError (string.Format (GettextCatalog.GetString ("File {0} not found.")), provider.FileName);
+						Application.Invoke (delegate {
+							MessageService.ShowError (string.Format (GettextCatalog.GetString ("File {0} not found.")), provider.FileName);
+						});
 						continue;
 					}
 					foreach (SearchResult result in FindAll (monitor, provider, content, pattern, replacePattern, filter)) {

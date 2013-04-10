@@ -15,7 +15,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		private global::Gtk.Label label98;
 		private global::Gtk.Label label99;
 		private global::MonoDevelop.Components.FolderEntry outputPathEntry;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

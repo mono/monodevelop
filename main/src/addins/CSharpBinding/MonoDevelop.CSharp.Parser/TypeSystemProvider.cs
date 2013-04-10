@@ -137,81 +137,86 @@ namespace MonoDevelop.CSharp.Parser
 				return new TextLocation (token.EndLocation.Line, token.EndLocation.Column + 1);
 			}
 
+			static bool LastToken(AstNode arg)
+			{
+				return !(arg is NewLineNode || arg is WhitespaceNode || arg is ICSharpCode.NRefactory.CSharp.Comment);
+			}
+		
 			public override object VisitNamespaceDeclaration (NamespaceDeclaration namespaceDeclaration, object data)
 			{
 				AddUsings (namespaceDeclaration);
 				if (!namespaceDeclaration.RBraceToken.IsNull && namespaceDeclaration.LBraceToken.StartLocation.Line != namespaceDeclaration.RBraceToken.StartLocation.Line)
-					Foldings.Add (new FoldingRegion (new DomRegion (namespaceDeclaration.LBraceToken.GetPrevNode ().EndLocation, CorrectEnd (namespaceDeclaration.RBraceToken)), FoldType.Undefined));
+					Foldings.Add (new FoldingRegion (new DomRegion (namespaceDeclaration.LBraceToken.GetPrevNode (LastToken).EndLocation, CorrectEnd (namespaceDeclaration.RBraceToken)), FoldType.Undefined));
 				return base.VisitNamespaceDeclaration (namespaceDeclaration, data);
 			}
 			
 			public override object VisitTypeDeclaration (TypeDeclaration typeDeclaration, object data)
 			{
 				if (!typeDeclaration.RBraceToken.IsNull && typeDeclaration.LBraceToken.StartLocation.Line != typeDeclaration.RBraceToken.StartLocation.Line)
-					Foldings.Add (new FoldingRegion (new DomRegion (typeDeclaration.LBraceToken.GetPrevNode ().EndLocation, CorrectEnd (typeDeclaration.RBraceToken)), FoldType.Type));
+					Foldings.Add (new FoldingRegion (new DomRegion (typeDeclaration.LBraceToken.GetPrevNode (LastToken).EndLocation, CorrectEnd (typeDeclaration.RBraceToken)), FoldType.Type));
 				return base.VisitTypeDeclaration (typeDeclaration, data);
 			}
 			
 			public override object VisitMethodDeclaration (MethodDeclaration methodDeclaration, object data)
 			{
 				if (!methodDeclaration.Body.IsNull && methodDeclaration.Body.LBraceToken.StartLocation.Line != methodDeclaration.Body.RBraceToken.StartLocation.Line)
-					Foldings.Add (new FoldingRegion (new DomRegion (methodDeclaration.Body.LBraceToken.GetPrevNode ().EndLocation, CorrectEnd (methodDeclaration.Body.RBraceToken)), FoldType.Member));
+					Foldings.Add (new FoldingRegion (new DomRegion (methodDeclaration.Body.LBraceToken.GetPrevNode (LastToken).EndLocation, CorrectEnd (methodDeclaration.Body.RBraceToken)), FoldType.Member));
 				return base.VisitMethodDeclaration (methodDeclaration, data);
 			}
 			
 			public override object VisitConstructorDeclaration (ConstructorDeclaration constructorDeclaration, object data)
 			{
 				if (!constructorDeclaration.Body.IsNull && constructorDeclaration.Body.LBraceToken.StartLocation.Line != constructorDeclaration.Body.RBraceToken.StartLocation.Line)
-					Foldings.Add (new FoldingRegion (new DomRegion (constructorDeclaration.Body.LBraceToken.GetPrevNode ().EndLocation, CorrectEnd (constructorDeclaration.Body.RBraceToken)), FoldType.Member));
+					Foldings.Add (new FoldingRegion (new DomRegion (constructorDeclaration.Body.LBraceToken.GetPrevNode (LastToken).EndLocation, CorrectEnd (constructorDeclaration.Body.RBraceToken)), FoldType.Member));
 				return base.VisitConstructorDeclaration (constructorDeclaration, data);
 			}
 			
 			public override object VisitDestructorDeclaration (DestructorDeclaration destructorDeclaration, object data)
 			{
 				if (!destructorDeclaration.Body.IsNull && destructorDeclaration.Body.LBraceToken.StartLocation.Line != destructorDeclaration.Body.RBraceToken.StartLocation.Line)
-					Foldings.Add (new FoldingRegion (new DomRegion (destructorDeclaration.Body.LBraceToken.GetPrevNode ().EndLocation, CorrectEnd (destructorDeclaration.Body.RBraceToken)), FoldType.Member));
+					Foldings.Add (new FoldingRegion (new DomRegion (destructorDeclaration.Body.LBraceToken.GetPrevNode (LastToken).EndLocation, CorrectEnd (destructorDeclaration.Body.RBraceToken)), FoldType.Member));
 				return base.VisitDestructorDeclaration (destructorDeclaration, data);
 			}
 			
 			public override object VisitOperatorDeclaration (OperatorDeclaration operatorDeclaration, object data)
 			{
 				if (!operatorDeclaration.Body.IsNull && operatorDeclaration.Body.LBraceToken.StartLocation.Line != operatorDeclaration.Body.RBraceToken.StartLocation.Line)
-					Foldings.Add (new FoldingRegion (new DomRegion (operatorDeclaration.Body.LBraceToken.GetPrevNode ().EndLocation, CorrectEnd (operatorDeclaration.Body.RBraceToken)), FoldType.Member));
+					Foldings.Add (new FoldingRegion (new DomRegion (operatorDeclaration.Body.LBraceToken.GetPrevNode (LastToken).EndLocation, CorrectEnd (operatorDeclaration.Body.RBraceToken)), FoldType.Member));
 				return base.VisitOperatorDeclaration (operatorDeclaration, data);
 			}
 			
 			public override object VisitPropertyDeclaration (PropertyDeclaration propertyDeclaration, object data)
 			{
 				if (!propertyDeclaration.LBraceToken.IsNull && propertyDeclaration.LBraceToken.StartLocation.Line != propertyDeclaration.RBraceToken.StartLocation.Line)
-					Foldings.Add (new FoldingRegion (new DomRegion (propertyDeclaration.LBraceToken.GetPrevNode ().EndLocation, CorrectEnd (propertyDeclaration.RBraceToken)), FoldType.Member));
+					Foldings.Add (new FoldingRegion (new DomRegion (propertyDeclaration.LBraceToken.GetPrevNode (LastToken).EndLocation, CorrectEnd (propertyDeclaration.RBraceToken)), FoldType.Member));
 				return base.VisitPropertyDeclaration (propertyDeclaration, data);
 			}
 			
 			public override object VisitIndexerDeclaration (IndexerDeclaration indexerDeclaration, object data)
 			{
 				if (!indexerDeclaration.LBraceToken.IsNull && indexerDeclaration.LBraceToken.StartLocation.Line != indexerDeclaration.RBraceToken.StartLocation.Line)
-					Foldings.Add (new FoldingRegion (new DomRegion (indexerDeclaration.LBraceToken.GetPrevNode ().EndLocation, CorrectEnd (indexerDeclaration.RBraceToken)), FoldType.Member));
+					Foldings.Add (new FoldingRegion (new DomRegion (indexerDeclaration.LBraceToken.GetPrevNode (LastToken).EndLocation, CorrectEnd (indexerDeclaration.RBraceToken)), FoldType.Member));
 				return base.VisitIndexerDeclaration (indexerDeclaration, data);
 			}
 			
 			public override object VisitCustomEventDeclaration (CustomEventDeclaration eventDeclaration, object data)
 			{
 				if (!eventDeclaration.LBraceToken.IsNull && eventDeclaration.LBraceToken.StartLocation.Line != eventDeclaration.RBraceToken.StartLocation.Line)
-					Foldings.Add (new FoldingRegion (new DomRegion (eventDeclaration.LBraceToken.GetPrevNode ().EndLocation, CorrectEnd (eventDeclaration.RBraceToken)), FoldType.Member));
+					Foldings.Add (new FoldingRegion (new DomRegion (eventDeclaration.LBraceToken.GetPrevNode (LastToken).EndLocation, CorrectEnd (eventDeclaration.RBraceToken)), FoldType.Member));
 				return base.VisitCustomEventDeclaration (eventDeclaration, data);
 			}
 			
 			public override object VisitSwitchStatement (SwitchStatement switchStatement, object data)
 			{
 				if (!switchStatement.RBraceToken.IsNull && switchStatement.LBraceToken.StartLocation.Line != switchStatement.RBraceToken.StartLocation.Line)
-					Foldings.Add (new FoldingRegion (new DomRegion (switchStatement.LBraceToken.GetPrevNode ().EndLocation, CorrectEnd (switchStatement.RBraceToken)), FoldType.Member));
+					Foldings.Add (new FoldingRegion (new DomRegion (switchStatement.LBraceToken.GetPrevNode (LastToken).EndLocation, CorrectEnd (switchStatement.RBraceToken)), FoldType.Member));
 				return base.VisitSwitchStatement (switchStatement, data);
 			}
 			
 			public override object VisitBlockStatement (BlockStatement blockStatement, object data)
 			{
 				if (!(blockStatement.Parent is EntityDeclaration) && blockStatement.EndLocation.Line - blockStatement.StartLocation.Line > 2) {
-					Foldings.Add (new FoldingRegion (new DomRegion (blockStatement.GetPrevNode ().EndLocation, CorrectEnd (blockStatement.RBraceToken)), FoldType.Undefined));
+					Foldings.Add (new FoldingRegion (new DomRegion (blockStatement.GetPrevNode (LastToken).EndLocation, CorrectEnd (blockStatement.RBraceToken)), FoldType.Undefined));
 				}
 				
 				return base.VisitBlockStatement (blockStatement, data);
@@ -241,7 +246,7 @@ namespace MonoDevelop.CSharp.Parser
 				    mt != null && mt.MemberName == "NotImplementedException" && mt.Target.ToString () == "System") {
 
 					if (createExpression.Arguments.Any ()) {
-						Tags.Add (new Tag ("High", GettextCatalog.GetString ("NotImplementedException({0}) thrown.", createExpression.Arguments.First ().GetText ()), new DomRegion (throwStatement.StartLocation, throwStatement.EndLocation)));
+						Tags.Add (new Tag ("High", GettextCatalog.GetString ("NotImplementedException({0}) thrown.", createExpression.Arguments.First ().ToString ()), new DomRegion (throwStatement.StartLocation, throwStatement.EndLocation)));
 					} else {
 						Tags.Add (new Tag ("High", GettextCatalog.GetString ("NotImplementedException thrown."), new DomRegion (throwStatement.StartLocation, throwStatement.EndLocation)));
 					}
@@ -408,7 +413,7 @@ namespace MonoDevelop.CSharp.Parser
 			return compilerArguments;
 		}
 		
-		static Version ConvertLanguageVersion (LangVersion ver)
+		internal static Version ConvertLanguageVersion (LangVersion ver)
 		{
 			switch (ver) {
 			case LangVersion.Default:

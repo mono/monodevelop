@@ -160,8 +160,12 @@ namespace Mono.TextEditor
 			tree.InsertRight (tree.Root.GetOuterRight (), node);
 		}
 		
-		public void Remove (TreeSegment node)
+		public bool Remove (TreeSegment node)
 		{
+			if (node.segmentTree == null)
+				return false;
+			if (node.segmentTree != this)
+				throw new InvalidOperationException ("Tried to remove tree segment from wrong tree.");
 			var calculatedOffset = node.Offset;
 			var next = node.GetNextNode ();
 			if (next != null)
@@ -172,6 +176,7 @@ namespace Mono.TextEditor
 			node.segmentTree = null;
 			node.parent = node.left = node.right = null;
 			node.DistanceToPrevNode = calculatedOffset;
+			return true;
 		}
 		
 		TreeSegment SearchFirstSegmentWithStartAfter (int startOffset)
@@ -283,7 +288,7 @@ namespace Mono.TextEditor
 	interface TextSegmentTree
 	{
 		void Add (TreeSegment segment);
-		void Remove (TreeSegment segment);
+		bool Remove (TreeSegment segment);
 	}
 	
 	public class TreeSegment : IRedBlackTreeNode

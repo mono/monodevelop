@@ -79,9 +79,9 @@ namespace MonoDevelop.CodeActions
 			base.OnDestroyed ();
 		}
 		
-		public void PopupQuickFixMenu ()
+		public void PopupQuickFixMenu (Action<Gtk.Menu> menuAction = null)
 		{
-			PopupQuickFixMenu (null);
+			PopupQuickFixMenu (null, menuAction);
 		}
 
 		static CodeActionWidget ()
@@ -186,10 +186,10 @@ namespace MonoDevelop.CodeActions
 			}
 		}
 		
-		void PopupQuickFixMenu (Gdk.EventButton evt)
+		void PopupQuickFixMenu (Gdk.EventButton evt, Action<Gtk.Menu> menuAction)
 		{
 			var menu = new Gtk.Menu ();
-
+			menu.Events |= Gdk.EventMask.AllEventsMask;
 			Gtk.Menu fixMenu = menu;
 			ResolveResult resolveResult;
 			ICSharpCode.NRefactory.CSharp.AstNode node;
@@ -242,9 +242,16 @@ namespace MonoDevelop.CodeActions
 				menu.Destroy ();
 				return;
 			}
+			document.Editor.SuppressTooltips = true;
+			document.Editor.Parent.HideTooltip ();
+			if (menuAction != null)
+				menuAction (menu);
 			menu.ShowAll ();
 			menu.SelectFirst (true);
 			menuPushed = true;
+			menu.Hidden += delegate {
+				document.Editor.SuppressTooltips = false;
+			};
 			menu.Destroyed += delegate {
 				menuPushed = false;
 				Hide ();
@@ -253,12 +260,12 @@ namespace MonoDevelop.CodeActions
 			var child = (TextEditor.EditorContainerChild)container [this];
 
 			Gdk.Rectangle rect;
-			if (child != null) {
+/*			if (child != null) {
 				rect = new Gdk.Rectangle (child.X, child.Y + Allocation.Height - (int)document.Editor.VAdjustment.Value, 0, 0);
-			} else {
-				var p = container.LocationToPoint (document.Editor.Caret.Location);
-				rect = new Gdk.Rectangle (p.X, p.Y + (int)document.Editor.LineHeight, 0, 0);
-			}
+			} else {*/
+				var p = container.LocationToPoint (loc);
+				rect = new Gdk.Rectangle (p.X + container.Allocation.X , p.Y + (int)document.Editor.LineHeight + container.Allocation.Y, 0, 0);
+			//}
 			GtkWorkarounds.ShowContextMenu (menu, document.Editor.Parent, null, rect);
 		}
 
@@ -284,7 +291,7 @@ namespace MonoDevelop.CodeActions
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
 			if (!evnt.TriggersContextMenu () && evnt.Button == 1)
-				PopupQuickFixMenu (evnt);
+				PopupQuickFixMenu (evnt, null);
 			return base.OnButtonPressEvent (evnt);
 		}
 		
@@ -321,14 +328,11 @@ namespace MonoDevelop.CodeActions
 					true, true,
 					0, 0, Allocation.Width / 2, 
 					Allocation.Width, Allocation.Height);
-				cr.Color = isMouseInside || menuPushed ? document.Editor.ColorStyle.PlainText.Foreground : document.Editor.ColorStyle.FoldLineColor.GetColor ("color");
+				cr.Color = isMouseInside || menuPushed ? document.Editor.ColorStyle.PlainText.Foreground : document.Editor.ColorStyle.FoldLineColor.Color;
 				cr.Stroke ();
-				
-				evnt.Window.DrawPixbuf (Style.BaseGC (State), icon, 
-					0, 0, 
-					(Allocation.Width - icon.Width) / 2, (Allocation.Height - icon.Height) / 2, 
-					icon.Width, icon.Height, 
-					Gdk.RgbDither.None, 0, 0);
+
+				Gdk.CairoHelper.SetSourcePixbuf (cr, icon, (Allocation.Width - icon.Width) / 2, (Allocation.Height - icon.Height) / 2);
+				cr.Paint ();
 			}
 			
 			return true;

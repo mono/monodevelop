@@ -6,7 +6,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 	{
 		private global::Gtk.VBox vbox1;
 		private global::Gtk.Label labelTargetFrameworks;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

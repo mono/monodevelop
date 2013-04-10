@@ -25,6 +25,7 @@
 
 using System;
 using System.Text.RegularExpressions;
+using System.Collections.Generic;
 
 namespace Mono.TextEditor
 {
@@ -56,6 +57,8 @@ namespace Mono.TextEditor
 		SearchResult SearchBackward (int fromOffset);
 		
 		void Replace (SearchResult result, string pattern);
+
+		int ReplaceAll (string withPattern);
 		
 		ISearchEngine Clone ();
 	}
@@ -124,6 +127,31 @@ namespace Mono.TextEditor
 			return SearchBackward (null, new TextViewMargin.SearchWorkerArguments () { Text = textEditorData.Text }, fromOffset);
 		}
 		public abstract void Replace (SearchResult result, string pattern);
+
+		public virtual int ReplaceAll (string withPattern)
+		{
+			int result = 0;
+			using (var undo = textEditorData.OpenUndoGroup ()) {
+				int offset = 0;
+				if (!SearchRequest.SearchRegion.IsInvalid)
+					offset = SearchRequest.SearchRegion.Offset;
+				SearchResult searchResult; 
+				var text = textEditorData.Text;
+				var args = new TextViewMargin.SearchWorkerArguments () { Text = text };
+				while (true) {
+					searchResult = SearchForward (null, args, offset);
+					if (searchResult == null || searchResult.SearchWrapped)
+						break;
+					Replace (searchResult, withPattern);
+					offset = searchResult.EndOffset;
+					result++;
+				}
+				if (result > 0)
+					textEditorData.ClearSelection ();
+			}
+			return result;
+		}
+
 		public virtual ISearchEngine Clone ()
 		{
 			ISearchEngine result = (ISearchEngine)MemberwiseClone ();
@@ -213,10 +241,57 @@ namespace Mono.TextEditor
 			}
 			return null;
 		}
-		
+
 		public override void Replace (SearchResult result, string pattern)
 		{
 			textEditorData.Replace (result.Offset, result.Length, pattern);
+		}
+
+		public override int ReplaceAll (string withPattern)
+		{
+			var searchResults = new List<SearchResult> ();
+
+			int offset = 0;
+			if (!SearchRequest.SearchRegion.IsInvalid)
+				offset = SearchRequest.SearchRegion.Offset;
+			SearchResult searchResult; 
+			var text = textEditorData.Text;
+			var args = new TextViewMargin.SearchWorkerArguments () { Text = text };
+			while (true) {
+				searchResult = SearchForward (null, args, offset);
+				if (searchResult == null || searchResult.SearchWrapped)
+					break;
+				searchResults.Add (searchResult);
+				offset = searchResult.EndOffset;
+			}
+			if (searchResults.Count < 100) {
+				using (var undo = textEditorData.OpenUndoGroup ()) {
+					for (int i = searchResults.Count - 1; i >= 0; i--) {
+						Replace (searchResults [i], withPattern);
+					}
+					if (searchResults.Count > 0)
+						textEditorData.ClearSelection ();
+				}
+			} else {
+				char[] oldText = text.ToCharArray ();
+				char[] newText = new char[oldText.Length + searchResults.Count * (withPattern.Length - compiledPattern.Length)];
+				char[] pattern = withPattern.ToCharArray ();
+				int curOffset = 0, destOffset = 0;
+				foreach (var sr in searchResults) {
+					var length = sr.Offset - curOffset;
+					Array.Copy (oldText, curOffset, newText, destOffset, length);
+					destOffset += length;
+					Array.Copy (pattern, 0, newText, destOffset, pattern.Length);
+					destOffset += withPattern.Length;
+					curOffset = sr.EndOffset;
+				}
+				var l = textEditorData.Length - curOffset;
+				Array.Copy (oldText, curOffset, newText, destOffset, l);
+
+				textEditorData.Replace (0, textEditorData.Length, new string (newText));
+				textEditorData.ClearSelection ();
+			}
+			return searchResults.Count;
 		}
 	}
 	

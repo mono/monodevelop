@@ -32,6 +32,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using System.IO;
 using MonoDevelop.Core;
 using MonoDevelop.AspNet.Mvc.Gui;
+using System;
 
 namespace MonoDevelop.AspNet.Mvc
 {
@@ -49,11 +50,11 @@ namespace MonoDevelop.AspNet.Mvc
 
 			var controller = doc.ParsedDocument.GetTopLevelTypeDefinition (currentLocation);
 			string controllerName = controller.Name;
-			int pos = controllerName.LastIndexOf ("Controller");
-			if (pos != -1)
+			int pos = controllerName.LastIndexOf ("Controller", StringComparison.Ordinal);
+			if (pos > 0)
 				controllerName = controllerName.Remove (pos);
-			
-			var baseDirectory =  new FilePath(Path.GetDirectoryName(doc.FileName)).ParentDirectory;
+
+			var baseDirectory = doc.FileName.ParentDirectory.ParentDirectory;
 
 			string actionName = doc.ParsedDocument.GetMember (currentLocation).Name;
 			var viewFoldersPaths = new FilePath[] {
@@ -90,11 +91,11 @@ namespace MonoDevelop.AspNet.Mvc
 			var currentLocation = doc.Editor.Caret.Location;
 
 			string controllerName = doc.ParsedDocument.GetTopLevelTypeDefinition (currentLocation).Name;
-			int pos = controllerName.LastIndexOf ("Controller");
-			if (pos != -1)
+			int pos = controllerName.LastIndexOf ("Controller", StringComparison.Ordinal);
+			if (pos > 0)
 				controllerName = controllerName.Remove (pos);
 
-			string path =  new FilePath(Path.GetDirectoryName(doc.FileName)).ParentDirectory.Combine ("Views", controllerName);
+			string path = doc.FileName.ParentDirectory.ParentDirectory.Combine ("Views", controllerName);
 			string actionName = doc.ParsedDocument.GetMember (currentLocation).Name;
 			FolderCommandHandler.AddView (project, path, actionName);
 		}
@@ -109,8 +110,8 @@ namespace MonoDevelop.AspNet.Mvc
 				info.Enabled = info.Visible = false;
 				return;
 			}
-			var baseDirectory =  new FilePath(Path.GetDirectoryName(doc.FileName)).ParentDirectory;
-			if (!string.Equals(baseDirectory.FileName, "Views"))
+			var baseDirectory = doc.FileName.ParentDirectory.ParentDirectory;
+			if (!string.Equals (baseDirectory.FileName, "Views"))
 				info.Enabled = info.Visible = false;
 		}
 
@@ -139,7 +140,7 @@ namespace MonoDevelop.AspNet.Mvc
 
 			var currentLocation = doc.Editor.Caret.Location;
 			var topLevelType = doc.ParsedDocument.GetTopLevelTypeDefinition (currentLocation);
-			if (topLevelType == null || !topLevelType.Name.EndsWith("Controller")) {
+			if (topLevelType == null || !topLevelType.Name.EndsWith ("Controller", StringComparison.Ordinal)) {
 				info.Enabled = info.Visible = false;
 				return;
 			}

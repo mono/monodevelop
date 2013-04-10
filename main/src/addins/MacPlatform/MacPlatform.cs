@@ -48,6 +48,7 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Desktop;
 using MonoDevelop.MacInterop;
 using MonoDevelop.Components.MainToolbar;
+using MonoDevelop.MacIntegration.MacMenu;
 
 namespace MonoDevelop.MacIntegration
 {
@@ -191,24 +192,54 @@ namespace MonoDevelop.MacIntegration
 		{
 			if (setupFail)
 				return false;
-			
+
 			try {
 				InitApp (commandManager);
-				CommandEntrySet ces = commandManager.CreateCommandEntrySet (commandMenuAddinPath);
-				MacMainMenu.Recreate (commandManager, ces);
 
-				CommandEntrySet aes = commandManager.CreateCommandEntrySet (appMenuAddinPath);
-				MacMainMenu.SetAppMenuItems (commandManager, aes);
+				NSApplication.SharedApplication.HelpMenu = null;
+
+				var rootMenu = NSApplication.SharedApplication.MainMenu;
+				if (rootMenu == null) {
+					rootMenu = new NSMenu ();
+					NSApplication.SharedApplication.MainMenu = rootMenu;
+				} else {
+					rootMenu.RemoveAllItems ();
+				}
+
+				CommandEntrySet appCes = commandManager.CreateCommandEntrySet (appMenuAddinPath);
+				rootMenu.AddItem (new MDSubMenuItem (commandManager, appCes));
+
+				CommandEntrySet ces = commandManager.CreateCommandEntrySet (commandMenuAddinPath);
+				foreach (CommandEntry ce in ces) {
+					rootMenu.AddItem (new MDSubMenuItem (commandManager, (CommandEntrySet) ce));
+				}
 			} catch (Exception ex) {
 				try {
-					MacMainMenu.Destroy (true);
+					var m = NSApplication.SharedApplication.MainMenu;
+					if (m != null) {
+						m.Dispose ();
+					}
+					NSApplication.SharedApplication.MainMenu = null;
 				} catch {}
 				LoggingService.LogError ("Could not install global menu", ex);
 				setupFail = true;
 				return false;
 			}
-			
 			return true;
+		}
+
+		static void OnCommandActivating (object sender, CommandActivationEventArgs args)
+		{
+			if (args.Source != CommandSource.Keybinding)
+				return;
+			var m = NSApplication.SharedApplication.MainMenu;
+			if (m != null) {
+				foreach (NSMenuItem item in m.ItemArray ()) {
+					var submenu = item.Submenu as MDMenu;
+					if (submenu != null && submenu.FlashIfContainsCommand (args.CommandId))
+						return;
+				}
+			}
 		}
 		
 		void InitApp (CommandManager commandManager)
@@ -216,29 +247,8 @@ namespace MonoDevelop.MacIntegration
 			if (initedApp)
 				return;
 
-			MacMainMenu.SetAppQuitCommand (CommandManager.ToCommandId (FileCommands.Exit));
-			
-			MacMainMenu.AddCommandIDMappings (new Dictionary<object, CarbonCommandID> ()
-			{
-				{ CommandManager.ToCommandId (EditCommands.Copy), CarbonCommandID.Copy },
-				{ CommandManager.ToCommandId (EditCommands.Cut), CarbonCommandID.Cut },
-				{ CommandManager.ToCommandId (EditCommands.MonodevelopPreferences), CarbonCommandID.Preferences }, 
-				{ CommandManager.ToCommandId (EditCommands.Redo), CarbonCommandID.Redo },
-				{ CommandManager.ToCommandId (EditCommands.Undo), CarbonCommandID.Undo },
-				{ CommandManager.ToCommandId (EditCommands.SelectAll), CarbonCommandID.SelectAll },
-				{ CommandManager.ToCommandId (FileCommands.NewFile), CarbonCommandID.New },
-				{ CommandManager.ToCommandId (FileCommands.OpenFile), CarbonCommandID.Open },
-				{ CommandManager.ToCommandId (FileCommands.Save), CarbonCommandID.Save },
-				{ CommandManager.ToCommandId (FileCommands.SaveAs), CarbonCommandID.SaveAs },
-				{ CommandManager.ToCommandId (FileCommands.CloseFile), CarbonCommandID.Close },
-				{ CommandManager.ToCommandId (FileCommands.Exit), CarbonCommandID.Quit },
-				{ CommandManager.ToCommandId (FileCommands.ReloadFile), CarbonCommandID.Revert },
-				{ CommandManager.ToCommandId (HelpCommands.About), CarbonCommandID.About },
-				{ CommandManager.ToCommandId (HelpCommands.Help), CarbonCommandID.AppHelp },
-				{ CommandManager.ToCommandId (MacIntegrationCommands.HideWindow), CarbonCommandID.Hide },
-				{ CommandManager.ToCommandId (MacIntegrationCommands.HideOthers), CarbonCommandID.HideOthers },
-			});
-			
+			commandManager.CommandActivating += OnCommandActivating;
+
 			//mac-ify these command names
 			commandManager.GetCommand (EditCommands.MonodevelopPreferences).Text = GettextCatalog.GetString ("Preferences...");
 			commandManager.GetCommand (EditCommands.DefaultPolicies).Text = GettextCatalog.GetString ("Custom Policies...");
@@ -343,7 +353,7 @@ namespace MonoDevelop.MacIntegration
 		static void HandleDeleteEvent (object o, Gtk.DeleteEventArgs args)
 		{
 			args.RetVal = true;
-			MacHideOthersHandler.RunMenuCommand (CarbonCommandID.Hide);
+			NSApplication.SharedApplication.Hide (NSApplication.SharedApplication);
 		}
 
 		public static Gdk.Pixbuf GetPixbufFromNSImageRep (NSImageRep rep, int width, int height)

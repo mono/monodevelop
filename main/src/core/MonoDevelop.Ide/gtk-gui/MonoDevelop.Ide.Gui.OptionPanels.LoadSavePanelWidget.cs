@@ -25,7 +25,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		private global::Gtk.Label label21;
 		private global::Gtk.VBox vbox20;
 		private global::Gtk.CheckButton createBackupCopyCheckButton;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

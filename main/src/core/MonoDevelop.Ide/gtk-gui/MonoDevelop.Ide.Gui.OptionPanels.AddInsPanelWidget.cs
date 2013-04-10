@@ -21,7 +21,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		private global::Gtk.RadioButton radioTest;
 		private global::Gtk.HBox hbox3;
 		private global::Gtk.Button buttonUpdateNow;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

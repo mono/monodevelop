@@ -55,13 +55,16 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.treeviewColors.Selection.Changed += HandleTreeviewColorsSelectionChanged;
 			this.colorbuttonFg.ColorSet += Stylechanged;
 			this.colorbuttonBg.ColorSet += Stylechanged;
+			this.colorbuttonPrimary.ColorSet += Stylechanged;
+			this.colorbuttonSecondary.ColorSet += Stylechanged;
+			this.colorbuttonBorder.ColorSet += Stylechanged;
 			colorbuttonBg.UseAlpha = true;
 			this.checkbuttonBold.Toggled += Stylechanged;
 			this.checkbuttonItalic.Toggled += Stylechanged;
 			
 			this.buttonOk.Clicked += HandleButtonOkClicked;
 			HandleTreeviewColorsSelectionChanged (null, null);
-			
+			notebookColorChooser.ShowTabs = false;
 		}
 
 		void SyntaxCellRenderer (Gtk.CellLayout cell_layout, Gtk.CellRenderer cell, Gtk.TreeModel tree_model, Gtk.TreeIter iter)
@@ -81,7 +84,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			if (colorStore.GetIterFirst (out iter)) {
 				do {
 					var data = (ColorScheme.PropertyDecsription)colorStore.GetValue (iter, 1);
-					var style = (ChunkStyle)colorStore.GetValue (iter, 2);
+					var style = colorStore.GetValue (iter, 2);
 					data.Info.SetValue (sheme, style, null);
 				} while (colorStore.IterNext (ref iter));
 			}
@@ -116,22 +119,49 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			RefreshAllColors ();
 		}
 
+
 		void Stylechanged (object sender, EventArgs e)
 		{
 			Gtk.TreeIter iter;
 			if (!this.treeviewColors.Selection.GetSelected (out iter))
 				return;
-			var oldStyle = (ChunkStyle)colorStore.GetValue (iter, 2);
-			var newStyle = new ChunkStyle (oldStyle);
-			newStyle.Foreground = new Cairo.Color (colorbuttonFg.Color.Red / (double)ushort.MaxValue,
-			                                       colorbuttonFg.Color.Green / (double)ushort.MaxValue,
-			                                       colorbuttonFg.Color.Blue / (double)ushort.MaxValue,
-			                                       colorbuttonFg.Alpha / (double)ushort.MaxValue);
 
-			newStyle.Background = new Cairo.Color (colorbuttonBg.Color.Red / (double)ushort.MaxValue,
-			                                       colorbuttonBg.Color.Green / (double)ushort.MaxValue,
-			                                       colorbuttonBg.Color.Blue / (double)ushort.MaxValue,
-			                                       colorbuttonBg.Alpha / (double)ushort.MaxValue);
+			var o = colorStore.GetValue (iter, 2);
+
+			if (o is ChunkStyle) {
+				SetChunkStyle (iter, (ChunkStyle)o);
+			} else if (o is AmbientColor) {
+				SetAmbientColor (iter, (AmbientColor)o);
+			}
+		}
+
+		Cairo.Color GetColorFromButton (ColorButton button)
+		{
+			return new Cairo.Color (button.Color.Red / (double)ushort.MaxValue, button.Color.Green / (double)ushort.MaxValue, button.Color.Blue / (double)ushort.MaxValue, button.Alpha / (double)ushort.MaxValue);
+		}
+
+		void SetAmbientColor (Gtk.TreeIter iter, AmbientColor oldStyle)
+		{
+			var newStyle = new AmbientColor ();
+			newStyle.Color = GetColorFromButton (colorbuttonPrimary);
+			newStyle.SecondColor = GetColorFromButton (colorbuttonSecondary);
+
+			colorStore.SetValue (iter, 2, newStyle);
+
+			var newscheme = colorSheme.Clone ();
+			ApplyStyle (newscheme);
+
+			this.textEditor.TextViewMargin.PurgeLayoutCache ();
+			this.textEditor.Document.MimeType = "text/x-csharp";
+			this.textEditor.GetTextEditorData ().ColorStyle = newscheme;
+			this.textEditor.QueueDraw ();
+		}
+
+		void SetChunkStyle (Gtk.TreeIter iter, ChunkStyle oldStyle)
+		{
+			var newStyle = new ChunkStyle (oldStyle);
+			newStyle.Foreground = GetColorFromButton (colorbuttonFg);
+			newStyle.Background =GetColorFromButton (colorbuttonBg);
 
 			if (checkbuttonBold.Active) {
 				newStyle.FontWeight = Xwt.Drawing.FontWeight.Bold;
@@ -166,23 +196,44 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			Gtk.TreeIter iter;
 			if (!this.treeviewColors.Selection.GetSelected (out iter))
 				return;
-			var chunkStyle = (ChunkStyle)colorStore.GetValue (iter, 2);
-			colorbuttonFg.Color = (HslColor)chunkStyle.Foreground;
-			colorbuttonBg.Color = (HslColor)chunkStyle.Background;
+			var o = colorStore.GetValue (iter, 2);
+			if (o is ChunkStyle)
+				SelectChunkStyle (iter, (ChunkStyle)o);
+
+			if (o is AmbientColor)
+				SelectAmbientColor (iter, (AmbientColor)o);
+		}
+
+		void SetColorToButton (ColorButton button, Cairo.Color color)
+		{
+			button.Color = (HslColor)color;
+			button.Alpha = (ushort)(color.A * ushort.MaxValue);
+		}
+
+		void SelectAmbientColor (TreeIter iter, AmbientColor ambientColor)
+		{
+			notebookColorChooser.Page = 1;
+			SetColorToButton (colorbuttonPrimary, ambientColor.Color);
+			SetColorToButton (colorbuttonSecondary, ambientColor.SecondColor);
+			colorbuttonSecondary.Sensitive = ambientColor.HasSecondColor;
+			SetColorToButton (colorbuttonBorder, ambientColor.BorderColor);
+			colorbuttonBorder.Sensitive = ambientColor.HasBorderColor;
+		}
+
+		void SelectChunkStyle (TreeIter iter, ChunkStyle chunkStyle)
+		{
+			notebookColorChooser.Page = 0;
+			SetColorToButton (colorbuttonFg, chunkStyle.Foreground);
+			SetColorToButton (colorbuttonBg, chunkStyle.Background);
+
 			checkbuttonBold.Active = chunkStyle.FontWeight == Xwt.Drawing.FontWeight.Bold;
 			checkbuttonItalic.Active = chunkStyle.FontStyle == Xwt.Drawing.FontStyle.Italic;
-			
 			this.label4.Visible = this.colorbuttonFg.Visible = true;
 			this.colorbuttonFg.Sensitive = true;
-			this.colorbuttonFg.Alpha = (ushort)(chunkStyle.Foreground.A * ushort.MaxValue);
-
 			this.label5.Visible = this.colorbuttonBg.Visible = true;
 			this.colorbuttonBg.Sensitive = true;
-			this.colorbuttonBg.Alpha = (ushort)(chunkStyle.Background.A * ushort.MaxValue);
-
 			this.checkbuttonBold.Visible = true;
 			this.checkbuttonBold.Sensitive = true;
-			
 			this.checkbuttonItalic.Visible = true;
 			this.checkbuttonItalic.Sensitive = true;
 		}
@@ -208,6 +259,9 @@ class Example
 	}
 }";
 			foreach (var data in ColorScheme.TextColors) {
+				colorStore.AppendValues (data.Attribute.Name, data, data.Info.GetValue (style, null));
+			}
+			foreach (var data in ColorScheme.AmbientColors) {
 				colorStore.AppendValues (data.Attribute.Name, data, data.Info.GetValue (style, null));
 			}
 			Stylechanged (null, null);

@@ -43,8 +43,8 @@ namespace MonoDevelop.Debugger
 {
 	public class ThreadsPad : Gtk.ScrolledWindow, IPadContent
 	{
-		MonoDevelop.Ide.Gui.Components.PadTreeView tree;
-		Gtk.TreeStore store;
+		PadTreeView tree;
+		TreeStore store;
 		
 		TreeViewState treeViewState;
 		
@@ -64,7 +64,7 @@ namespace MonoDevelop.Debugger
 
 			store = new TreeStore (typeof(string), typeof (string), typeof(string), typeof(object), typeof(int), typeof(string));
 
-			tree = new MonoDevelop.Ide.Gui.Components.PadTreeView (store);
+			tree = new PadTreeView (store);
 			tree.RulesHint = true;
 			tree.HeadersVisible = true;
 			treeViewState = new TreeViewState (tree, (int)Columns.Object);
@@ -132,6 +132,9 @@ namespace MonoDevelop.Debugger
 		
 		public void UpdateDisplay ()
 		{
+			if (tree.IsRealized)
+				tree.ScrollToPoint (0, 0);
+
 			treeViewState.Save ();
 			
 			store.Clear ();

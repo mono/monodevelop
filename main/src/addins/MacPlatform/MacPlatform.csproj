@@ -73,7 +73,6 @@
     <Compile Include="Dialogs\Layout.cs" />
     <Compile Include="Dialogs\MacAlertDialogHandler.cs" />
     <Compile Include="MacInterop\CoreFoundation.cs" />
-    <Compile Include="MacInterop\HIToolbox.cs" />
     <Compile Include="MacInterop\ApplicationEvents.cs" />
     <Compile Include="MacInterop\AppleEvent.cs" />
     <Compile Include="MacInterop\AppleScript.cs" />
@@ -85,10 +84,14 @@
     <Compile Include="MacInterop\Cocoa.cs" />
     <Compile Include="MacIntegrationCommands.cs" />
     <Compile Include="MacExternalConsoleProcess.cs" />
-    <Compile Include="MacMainMenu.cs" />
     <Compile Include="MacInterop\Carbon.cs" />
     <Compile Include="MacInterop\AppleEvents\Native.cs" />
     <Compile Include="Dialogs\MacExceptionDialogHandler.cs" />
+    <Compile Include="MacMenu\MDLinkMenuItem.cs" />
+    <Compile Include="MacMenu\MDMenu.cs" />
+    <Compile Include="MacMenu\MDMenuItem.cs" />
+    <Compile Include="MacMenu\MDServicesMenuItem.cs" />
+    <Compile Include="MacMenu\MDSubMenuItem.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -106,5 +109,6 @@
     <Folder Include="Dialogs\" />
     <Folder Include="MacInterop\" />
     <Folder Include="MacInterop\AppleEvents\" />
+    <Folder Include="MacMenu\" />
   </ItemGroup>
 </Project>

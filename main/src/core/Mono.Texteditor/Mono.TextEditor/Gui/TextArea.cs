@@ -233,7 +233,7 @@ namespace Mono.TextEditor
 			oldVadjustment = value;
 			TextViewMargin.caretY -= delta;
 			
-			if (System.Math.Abs (delta) >= Allocation.Height - this.LineHeight * 2 || this.TextViewMargin.inSelectionDrag) {
+			if (System.Math.Abs (delta) >= Allocation.Height - this.LineHeight * 2 || this.TextViewMargin.InSelectionDrag) {
 				this.QueueDraw ();
 				OnVScroll (EventArgs.Empty);
 				return;
@@ -491,7 +491,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		Selection oldSelection = null;
+		Selection oldSelection = Selection.Empty;
 		void TextEditorDataSelectionChanged (object sender, EventArgs args)
 		{
 			if (IsSomethingSelected) {
@@ -505,11 +505,11 @@ namespace Mono.TextEditor
 				ClipboardActions.ClearPrimary ();
 			}
 			// Handle redraw
-			Selection selection = Selection.Clone (MainSelection);
-			int startLine    = selection != null ? selection.Anchor.Line : -1;
-			int endLine      = selection != null ? selection.Lead.Line : -1;
-			int oldStartLine = oldSelection != null ? oldSelection.Anchor.Line : -1;
-			int oldEndLine   = oldSelection != null ? oldSelection.Lead.Line : -1;
+			Selection selection = MainSelection;
+			int startLine    = !selection.IsEmpty ? selection.Anchor.Line : -1;
+			int endLine      = !selection.IsEmpty ? selection.Lead.Line : -1;
+			int oldStartLine = !oldSelection.IsEmpty ? oldSelection.Anchor.Line : -1;
+			int oldEndLine   = !oldSelection.IsEmpty ? oldSelection.Lead.Line : -1;
 			if (SelectionMode == SelectionMode.Block) {
 				this.RedrawMarginLines (this.textViewMargin, 
 				                        System.Math.Min (System.Math.Min (oldStartLine, oldEndLine), System.Math.Min (startLine, endLine)),
@@ -520,7 +520,7 @@ namespace Mono.TextEditor
 				if (oldEndLine < 0 && oldStartLine >=0)
 					oldEndLine = Document.LineCount;
 				int from = oldEndLine, to = endLine;
-				if (selection != null && oldSelection != null) {
+				if (!selection.IsEmpty && !oldSelection.IsEmpty) {
 					if (startLine != oldStartLine && endLine != oldEndLine) {
 						from = System.Math.Min (startLine, oldStartLine);
 						to   = System.Math.Max (endLine, oldEndLine);
@@ -542,10 +542,10 @@ namespace Mono.TextEditor
 						from = to = -1;
 					}
 				} else {
-					if (selection == null) {
+					if (selection.IsEmpty) {
 						from = oldStartLine;
 						to = oldEndLine;
-					} else if (oldSelection == null) {
+					} else if (oldSelection.IsEmpty) {
 						from = startLine;
 						to = endLine;
 					} 
@@ -625,10 +625,12 @@ namespace Mono.TextEditor
 			imContext.FocusOut ();
 			RemoveFocusOutTimerId ();
 
-			if (tipWindow != null && currentTooltipProvider != null && currentTooltipProvider.IsInteractive (textEditorData.Parent, tipWindow))
-				DelayedHideTooltip ();
-			else
+			if (tipWindow != null && currentTooltipProvider != null) {
+				if (!currentTooltipProvider.IsInteractive (textEditorData.Parent, tipWindow))
+					DelayedHideTooltip ();
+			} else {
 				HideTooltip ();
+			}
 
 			TextViewMargin.StopCaretThread ();
 			Document.CommitLineUpdate (Caret.Line);
@@ -1105,13 +1107,13 @@ namespace Mono.TextEditor
 		{
 			mouseButtonPressed = 0;
 			textViewMargin.inDrag = false;
-			textViewMargin.inSelectionDrag = false;
+			textViewMargin.InSelectionDrag = false;
 		}
 		
 		bool dragOver = false;
 		ClipboardActions.CopyOperation dragContents = null;
 		DocumentLocation defaultCaretPos, dragCaretPos;
-		Selection selection = null;
+		Selection selection = Selection.Empty;
 		
 		public bool IsInDrag {
 			get {
@@ -1150,7 +1152,7 @@ namespace Mono.TextEditor
 			using (var undo = OpenUndoGroup ()) {
 				int dragOffset = Document.LocationToOffset (dragCaretPos);
 				if (context.Action == DragAction.Move) {
-					if (CanEdit (Caret.Line) && selection != null) {
+					if (CanEdit (Caret.Line) && !selection.IsEmpty) {
 						var selectionRange = selection.GetSelectionRange (textEditorData);
 						if (selectionRange.Offset < dragOffset)
 							dragOffset -= selectionRange.Length;
@@ -1158,22 +1160,21 @@ namespace Mono.TextEditor
 						textEditorData.DeleteSelection (selection);
 						Caret.PreserveSelection = false;
 	
-						selection = null;
+						selection = Selection.Empty;
 					}
 				}
 				if (selection_data.Length > 0 && selection_data.Format == 8) {
 					Caret.Offset = dragOffset;
 					if (CanEdit (dragCaretPos.Line)) {
 						int offset = Caret.Offset;
-						if (selection != null && selection.GetSelectionRange (textEditorData).Offset >= offset) {
+						if (!selection.IsEmpty && selection.GetSelectionRange (textEditorData).Offset >= offset) {
 							var start = Document.OffsetToLocation (selection.GetSelectionRange (textEditorData).Offset + selection_data.Text.Length);
 							var end = Document.OffsetToLocation (selection.GetSelectionRange (textEditorData).Offset + selection_data.Text.Length + selection.GetSelectionRange (textEditorData).Length);
 							selection = new Selection (start, end);
 						}
-						int insertedChars = textEditorData.Insert (offset, selection_data.Text);
+						textEditorData.PasteText (offset, selection_data.Text, null);
 						Caret.Offset = offset + selection_data.Text.Length;
 						MainSelection = new Selection (Document.OffsetToLocation (offset), Document.OffsetToLocation (offset + selection_data.Text.Length));
-						textEditorData.PasteText (offset, selection_data.Text, insertedChars);
 					}
 					dragOver = false;
 					context = null;
@@ -1196,7 +1197,7 @@ namespace Mono.TextEditor
 			Caret.PreserveSelection = true;
 			dragCaretPos = PointToLocation (x - textViewMargin.XOffset, y);
 			int offset = Document.LocationToOffset (dragCaretPos);
-			if (selection != null && offset >= this.selection.GetSelectionRange (textEditorData).Offset && offset < this.selection.GetSelectionRange (textEditorData).EndOffset) {
+			if (!selection.IsEmpty && offset >= this.selection.GetSelectionRange (textEditorData).Offset && offset < this.selection.GetSelectionRange (textEditorData).EndOffset) {
 				Gdk.Drag.Status (context, DragAction.Default, time);
 				Caret.Location = defaultCaretPos;
 			} else {
@@ -1213,8 +1214,18 @@ namespace Mono.TextEditor
 		Margin oldMargin = null;
 		bool overChildWidget;
 
+		public event EventHandler BeginHover;
+
+		protected virtual void OnBeginHover (EventArgs e)
+		{
+			var handler = BeginHover;
+			if (handler != null)
+				handler (this, e);
+		}
+
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion e)
 		{
+			OnBeginHover (EventArgs.Empty);
 			try {
 				// The coordinates have to be properly adjusted to the origin since
 				// the event may come from a child widget
@@ -1231,12 +1242,12 @@ namespace Mono.TextEditor
 				if (textViewMargin.inDrag && margin == this.textViewMargin && Gtk.Drag.CheckThreshold (this, (int)pressPositionX, (int)pressPositionY, (int)x, (int)y)) {
 					dragContents = new ClipboardActions.CopyOperation ();
 					dragContents.CopyData (textEditorData);
-					DragContext context = Gtk.Drag.Begin (this, ClipboardActions.CopyOperation.targetList, DragAction.Move | DragAction.Copy, 1, e);
+					DragContext context = Gtk.Drag.Begin (this, ClipboardActions.CopyOperation.TargetList, DragAction.Move | DragAction.Copy, 1, e);
 					if (!Platform.IsMac) {
 						CodeSegmentPreviewWindow window = new CodeSegmentPreviewWindow (textEditorData.Parent, true, textEditorData.SelectionRange, 300, 300);
 						Gtk.Drag.SetIconWidget (context, window, 0, 0);
 					}
-					selection = Selection.Clone (MainSelection);
+					selection = MainSelection;
 					textViewMargin.inDrag = false;
 				} else {
 					FireMotionEvent (x, y, mod);
@@ -1289,7 +1300,7 @@ namespace Mono.TextEditor
 
 			double startPos;
 			Margin margin;
-			if (textViewMargin.inSelectionDrag) {
+			if (textViewMargin.InSelectionDrag) {
 				margin = textViewMargin;
 				startPos = textViewMargin.XOffset;
 			} else {
@@ -1346,10 +1357,12 @@ namespace Mono.TextEditor
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing e)
 		{
 			isMouseTrapped = false;
-			if (tipWindow != null && currentTooltipProvider.IsInteractive (textEditorData.Parent, tipWindow))
-				DelayedHideTooltip ();
-			else
+			if (tipWindow != null && currentTooltipProvider != null) {
+				if (!currentTooltipProvider.IsInteractive (textEditorData.Parent, tipWindow))
+					DelayedHideTooltip ();
+			} else {
 				HideTooltip ();
+			}
 			textViewMargin.HideCodeSegmentPreviewWindow ();
 			
 			if (GdkWindow != null)
@@ -2521,7 +2534,7 @@ namespace Mono.TextEditor
 				//draw the shadow
 				FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true,
 					shadowOffset, shadowOffset, corner, width, height);
-				var color = TextViewMargin.DimColor (Editor.ColorStyle.SearchResultMain.GetColor ("color"), 0.3);
+				var color = TextViewMargin.DimColor (Editor.ColorStyle.SearchResultMain.Color, 0.3);
 				color.A = 0.5 * opacity * opacity;
 				cr.Color = color;
 				cr.Fill ();
@@ -2530,13 +2543,13 @@ namespace Mono.TextEditor
 				FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, 0, 0, corner, width, height);
 				using (var gradient = new Cairo.LinearGradient (0, 0, 0, height)) {
 					color = ColorLerp (
-						TextViewMargin.DimColor (Editor.ColorStyle.SearchResultMain.GetColor ("color"), 1.1),
-						Editor.ColorStyle.SearchResultMain.GetColor ("color"),
+						TextViewMargin.DimColor (Editor.ColorStyle.SearchResultMain.Color, 1.1),
+						Editor.ColorStyle.SearchResultMain.Color,
 						1 - opacity);
 					gradient.AddColorStop (0, color);
 					color = ColorLerp (
-						TextViewMargin.DimColor (Editor.ColorStyle.SearchResultMain.GetColor ("color"), 0.9),
-						Editor.ColorStyle.SearchResultMain.GetColor ("color"),
+						TextViewMargin.DimColor (Editor.ColorStyle.SearchResultMain.Color, 0.9),
+						Editor.ColorStyle.SearchResultMain.Color,
 						1 - opacity);
 					gradient.AddColorStop (1, color);
 					cr.Pattern = gradient;
@@ -2635,6 +2648,8 @@ namespace Mono.TextEditor
 		void ShowTooltip (Gdk.ModifierType modifierState, int offset, int xloc, int yloc)
 		{
 			CancelScheduledShow ();
+			if (textEditorData.SuppressTooltips)
+				return;
 			if (tipWindow != null && currentTooltipProvider != null && currentTooltipProvider.IsInteractive (editor, tipWindow)) {
 				int wx, ww, wh;
 				tipWindow.GetSize (out ww, out wh);

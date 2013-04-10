@@ -475,7 +475,9 @@ namespace Mono.TextEditor
 		public static void DuplicateLine (TextEditorData data)
 		{
 			if (data.IsSomethingSelected) {
-				data.InsertAtCaret(data.SelectedText);
+				var selectedText = data.SelectedText;
+				data.ClearSelection ();
+				data.InsertAtCaret (selectedText);
 			}
 			else {
 				DocumentLine line = data.Document.GetLine (data.Caret.Line);

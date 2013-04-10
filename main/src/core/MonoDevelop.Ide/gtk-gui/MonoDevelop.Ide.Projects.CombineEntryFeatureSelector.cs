@@ -5,7 +5,7 @@ namespace MonoDevelop.Ide.Projects
 	public partial class CombineEntryFeatureSelector
 	{
 		private global::Gtk.ScrolledWindow scrolled;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

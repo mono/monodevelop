@@ -205,8 +205,6 @@ namespace MonoDevelop.SourceEditor
 				}
 				int startIndex = args.Offset;
 				int endIndex = startIndex + Math.Max (args.RemovalLength, args.InsertionLength);
-				if (TextChanged != null)
-					TextChanged (this, new TextChangedEventArgs (startIndex, endIndex));
 				foreach (var marker in currentErrorMarkers) {
 					if (marker.LineSegment.Contains (args.Offset) || marker.LineSegment.Contains (args.Offset + args.InsertionLength) || args.Offset < marker.LineSegment.Offset && marker.LineSegment.Offset < args.Offset + args.InsertionLength) {
 						markersToRemove.Enqueue (marker);
@@ -716,7 +714,7 @@ namespace MonoDevelop.SourceEditor
 			Document.MimeType = mimeType;
 			string text = null;
 			if (content != null) {
-				text = Mono.TextEditor.Utils.TextFileUtility.GetText (content, out hadBom, out encoding);
+				text = Mono.TextEditor.Utils.TextFileUtility.GetText (content, out encoding, out hadBom);
 				Document.Text = text;
 			}
 			this.CreateDocumentParsedHandler ();
@@ -961,7 +959,7 @@ namespace MonoDevelop.SourceEditor
 			ClipbardRingUpdated -= UpdateClipboardRing;
 
 			widget.TextEditor.Document.TextReplacing -= OnTextReplacing;
-			widget.TextEditor.Document.TextReplacing -= OnTextReplaced;
+			widget.TextEditor.Document.TextReplaced -= OnTextReplaced;
 			widget.TextEditor.Document.ReadOnlyCheckDelegate = null;
 			widget.TextEditor.Options.Changed -= HandleWidgetTextEditorOptionsChanged;
 
@@ -1520,8 +1518,6 @@ namespace MonoDevelop.SourceEditor
 			set {
 				this.IsDirty = true;
 				this.widget.TextEditor.Document.Text = value;
-				if (TextChanged != null)
-					TextChanged (this, new TextChangedEventArgs (0, Length));
 			}
 		}
 		
@@ -1822,9 +1818,11 @@ namespace MonoDevelop.SourceEditor
 						data.Replace (offset, length, complete_word);
 					}
 					int minColumn = System.Math.Min (data.MainSelection.Anchor.Column, data.MainSelection.Lead.Column);
-					data.MainSelection.Anchor = new DocumentLocation (data.Caret.Line == minLine ? maxLine : minLine, minColumn);
-					data.MainSelection.Lead = data.Caret.Location;
-					
+					data.MainSelection = data.MainSelection.WithRange (
+						new DocumentLocation (data.Caret.Line == minLine ? maxLine : minLine, minColumn),
+						data.Caret.Location
+					);
+
 					data.Document.CommitMultipleLineUpdate (data.MainSelection.MinLine, data.MainSelection.MaxLine);
 					data.Caret.PreserveSelection = false;
 				}
@@ -2157,7 +2155,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public Gtk.TargetEntry[] DragTargets { 
 			get {
-				return (Gtk.TargetEntry[])ClipboardActions.CopyOperation.targetList;
+				return ClipboardActions.CopyOperation.TargetEntries;
 			}
 		}
 				

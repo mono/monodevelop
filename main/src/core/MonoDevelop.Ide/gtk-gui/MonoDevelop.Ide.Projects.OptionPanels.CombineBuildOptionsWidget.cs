@@ -9,7 +9,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		private global::Gtk.HBox hbox46;
 		private global::Gtk.Label label74;
 		private global::MonoDevelop.Components.FolderEntry folderEntry;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

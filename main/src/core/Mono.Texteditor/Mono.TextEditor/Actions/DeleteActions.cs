@@ -168,8 +168,10 @@ namespace Mono.TextEditor
 			if (!data.CanEditSelection)
 				return;
 			if (data.IsSomethingSelected) {
+				var visualAnchorLocation = data.LogicalToVisualLocation (data.MainSelection.Anchor);
+				var visualLeadLocation = data.LogicalToVisualLocation (data.MainSelection.Lead);
 				// case: zero width block selection
-				if (data.MainSelection.SelectionMode == SelectionMode.Block && data.MainSelection.Anchor.Column == data.MainSelection.Lead.Column) {
+				if (data.MainSelection.SelectionMode == SelectionMode.Block && visualAnchorLocation.Column == visualLeadLocation.Column) {
 					var col = data.MainSelection.Lead.Column;
 					if (col <= DocumentLocation.MinColumn) {
 						data.ClearSelection ();
@@ -177,12 +179,19 @@ namespace Mono.TextEditor
 					}
 					bool preserve = data.Caret.PreserveSelection;
 					data.Caret.PreserveSelection = true;
-					col--;
 					for (int lineNumber = data.MainSelection.MinLine; lineNumber <= data.MainSelection.MaxLine; lineNumber++) {
-						data.Remove (data.Document.GetLine (lineNumber).Offset + col - 1, 1);
+						var lineSegment = data.Document.GetLine (lineNumber);
+						int insertOffset = lineSegment.GetLogicalColumn (data, visualAnchorLocation.Column - 1) - 1;
+						data.Remove (lineSegment.Offset + insertOffset, 1);
 					}
-					data.MainSelection.Lead = new DocumentLocation (data.MainSelection.Lead.Line, col);
-					data.MainSelection.Anchor = new DocumentLocation (data.MainSelection.Anchor.Line, col);
+
+					var visualColumn = data.GetLine (data.Caret.Location.Line).GetVisualColumn (data, col - 1);
+					data.MainSelection = new Selection (
+						new DocumentLocation (data.MainSelection.Anchor.Line, data.GetLine (data.MainSelection.Anchor.Line).GetLogicalColumn (data, visualColumn)),
+						new DocumentLocation (data.MainSelection.Lead.Line, data.GetLine (data.MainSelection.Lead.Line).GetLogicalColumn (data, visualColumn)),
+						SelectionMode.Block
+					);
+
 					data.Caret.PreserveSelection = preserve;
 					data.Document.CommitMultipleLineUpdate (data.MainSelection.MinLine, data.MainSelection.MaxLine);
 					return;
@@ -220,9 +229,9 @@ namespace Mono.TextEditor
 			int offset = data.Caret.Offset;
 			if (offset <= 0)
 				return;
-			int column = data.Caret.Column;
+			var version = data.Version;
 			data.Remove (offset - 1, 1);
-			data.Caret.Column = column - 1;
+			data.Caret.Location = data.OffsetToLocation (version.MoveOffsetTo (data.Version, offset));
 		}
 		
 		public static void Delete (TextEditorData data)

@@ -118,7 +118,27 @@ namespace MonoDevelop.Ide
 		{
 			return PlatformService.GetMimeTypeIsText (mimeType);
 		}
-		
+
+		public static bool GetFileIsText (string file, string mimeType = null)
+		{
+			if (mimeType == null) {
+				mimeType = GetMimeTypeForUri (file);
+			}
+
+			if (mimeType != "application/octet-stream") {
+				return GetMimeTypeIsText (mimeType);
+			}
+
+			using (var f = File.OpenRead (file)) {
+				var buf = new byte[8192];
+				var read = f.Read (buf, 0, buf.Length);
+				for (int i = 0; i < read; i++)
+					if (buf [i] == 0)
+						return false;
+			}
+			return true;
+		}
+
 		public static bool GetMimeTypeIsSubtype (string subMimeType, string baseMimeType)
 		{
 			return PlatformService.GetMimeTypeIsSubtype (subMimeType, baseMimeType);

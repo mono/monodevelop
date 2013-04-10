@@ -30,7 +30,7 @@ namespace MonoDevelop.Platform
         void OnParentFocusIn (object o, EventArgs args)
         {
             if (rootForm != null)
-                rootForm.BeginInvoke (new Action (() => rootForm.Activate ()));
+                rootForm.BeginInvoke (new Action (rootForm.Activate));
         }
 
         bool RunDialog (SelectFileDialogData data)
@@ -46,9 +46,9 @@ namespace MonoDevelop.Platform
 				dlg = new FolderBrowserDialog ();
 			
 			if (dlg is FileDialog)
-				SetCommonFormProperties (data, dlg as FileDialog);
+				SetCommonFormProperties (data, (FileDialog)dlg);
 			else
-				SetFolderBrowserProperties (data, dlg as FolderBrowserDialog);
+				SetFolderBrowserProperties (data, (FolderBrowserDialog)dlg);
 			
 			using (dlg) {
                 rootForm = new WinFormsRoot ();
@@ -110,9 +110,6 @@ namespace MonoDevelop.Platform
 			// FileDialog.FileName expects anything but a directory name.
 			if (!Directory.Exists (data.InitialFileName))
 				dialog.FileName = data.InitialFileName;
-
-			// Use the classic dialogs, as the new ones (WPF based) can't handle child controls.
-			dialog.AutoUpgradeEnabled = false;
 			
 			OpenFileDialog openDialog = dialog as OpenFileDialog;
 			if (openDialog != null)

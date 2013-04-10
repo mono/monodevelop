@@ -248,7 +248,7 @@ namespace MonoDevelop.Core
 		
 		public static void SetProcessName (string name)
 		{
-			if (Environment.OSVersion.Platform == PlatformID.Unix) {
+			if (!Platform.IsMac && !Platform.IsWindows) {
 				try {
 					unixSetProcessName (name);
 				} catch (Exception e) {

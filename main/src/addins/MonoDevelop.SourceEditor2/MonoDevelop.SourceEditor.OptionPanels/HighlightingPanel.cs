@@ -176,13 +176,16 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			var dialog = new SelectFileDialog (GettextCatalog.GetString ("Highlighting Scheme"), Gtk.FileChooserAction.Save) {
 				TransientFor = this.Toplevel as Gtk.Window,
 			};
-			dialog.AddFilter (null, "*.xml");
+			dialog.AddFilter (GettextCatalog.GetString ("Color schemes"), "*.json");
 			if (!dialog.Run ())
 				return;
 			TreeIter selectedIter;
 			if (styleTreeview.Selection.GetSelected (out selectedIter)) {
 				var sheme = (Mono.TextEditor.Highlighting.ColorScheme)this.styleStore.GetValue (selectedIter, 1);
-				sheme.Save (dialog.SelectedFile);
+				var selectedFile = dialog.SelectedFile.ToString ();
+				if (!selectedFile.EndsWith (".json", StringComparison.Ordinal))
+					selectedFile += ".json";
+				sheme.Save (selectedFile);
 			}
 
 		}
@@ -192,7 +195,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			var dialog = new SelectFileDialog (GettextCatalog.GetString ("Highlighting Scheme"), Gtk.FileChooserAction.Open) {
 				TransientFor = this.Toplevel as Gtk.Window,
 			};
-			dialog.AddFilter (null, "*.*");
+			dialog.AddFilter (GettextCatalog.GetString ("Color schemes"), "*.json");
+			dialog.AddFilter (GettextCatalog.GetString ("Visual Studio .NET settings"), "*.vssettings");
 			if (!dialog.Run ())
 				return;
 

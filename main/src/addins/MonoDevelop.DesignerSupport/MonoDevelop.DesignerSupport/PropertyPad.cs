@@ -38,17 +38,22 @@ using MonoDevelop.DesignerSupport;
 using pg = MonoDevelop.Components.PropertyGrid;
 using MonoDevelop.Components.Docking;
 using System.Collections.Generic;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Commands;
 
 namespace MonoDevelop.DesignerSupport
 {
 	
-	public class PropertyPad : AbstractPadContent
+	public class PropertyPad : AbstractPadContent, ICommandDelegator
 	{
 		pg.PropertyGrid grid;
 		MonoDevelop.Components.InvisibleFrame frame;
 		bool customWidget;
 		IPadWindow container;
 		DockToolbarProvider toolbarProvider = new DockToolbarProvider ();
+
+		internal object CommandRouteOrigin { get; set; }
 		
 		public PropertyPad ()
 		{
@@ -84,11 +89,27 @@ namespace MonoDevelop.DesignerSupport
 		}
 		
 		#endregion
+
+		#region ICommandDelegatorRouter implementation
+
+		object ICommandDelegator.GetDelegatedCommandTarget ()
+		{
+			// Route the save command to the object for which we are inspecting the properties,
+			// so pressing the Save shortcut when doing changes in the property pad will save
+			// the document we are changing
+			if (IdeApp.CommandService.CurrentCommand == IdeApp.CommandService.GetCommand (FileCommands.Save))
+				return CommandRouteOrigin;
+			else
+				return null;
+		}
+
+		#endregion
 		
 		//Grid consumers must call this when they lose focus!
 		public void BlankPad ()
 		{
 			PropertyGrid.CurrentObject = null;
+			CommandRouteOrigin = null;
 		}
 		
 		internal pg.PropertyGrid PropertyGrid {

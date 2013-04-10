@@ -133,7 +133,7 @@ namespace Mono.Debugging.Soft
 			// Compiler generated anonymous/lambda methods
 			bool special_method = false;
 			if (methodName [0] == '<' && methodName.Contains (">m__")) {
-				int nidx = methodName.IndexOf (">m__") + 2;
+				int nidx = methodName.IndexOf (">m__", StringComparison.Ordinal) + 2;
 				methodName = "AnonymousMethod" + methodName.Substring (nidx, method.Name.Length - nidx);
 				special_method = true;
 			}
@@ -176,10 +176,23 @@ namespace Mono.Debugging.Soft
 				hidden = method.GetCustomAttributes (hiddenAttr, true).Any ();
 			}
 
-			var location = new DC.SourceLocation (methodName, fileName, frame.LineNumber);
+			var location = new DC.SourceLocation (methodName, fileName, frame.LineNumber, frame.ColumnNumber);
 			var external = session.IsExternalCode (frame);
+			string addressSpace = string.Empty;
+			string language;
 
-			return new SoftDebuggerStackFrame (frame, method.FullName, location, "Managed", external, true, hidden, typeFQN, typeFullName);
+			if (frame.Method != null) {
+				if (frame.IsNativeTransition) {
+					language = "Transition";
+				} else {
+					addressSpace = method.FullName;
+					language = "Managed";
+				}
+			} else {
+				language = "Native";
+			}
+
+			return new SoftDebuggerStackFrame (frame, addressSpace, location, language, external, true, hidden, typeFQN, typeFullName);
 		}
 		
 		protected override EvaluationContext GetEvaluationContext (int frameIndex, EvaluationOptions options)

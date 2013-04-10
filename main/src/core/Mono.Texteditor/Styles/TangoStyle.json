@@ -68,8 +68,8 @@
 		{ "name": "Underline(Suggestion)", "color":"chameleon2" },
 		{ "name": "Underline(Hint)", "color":"skyblue2" },
 		
-		{ "name": "Quick Diff(Dirty)", "color":"orangesicle-light" },
-		{ "name": "Quick Diff(Changed)", "color":"orangesicle" },
+		{ "name": "Quick Diff(Dirty)", "color":"butter2" },
+		{ "name": "Quick Diff(Changed)", "color":"chameleon2" },
 		
 		{ "name": "Brace Matching(Rectangle)", "color":"aluminium1", "secondcolor":"aluminium2" },
 		{ "name": "Usages(Rectangle)", "color":"#f5f5f5", "secondcolor":"aluminium1" },
@@ -89,8 +89,8 @@
         { "name": "Secondary Link", "color":"aluminium2", "secondcolor":"white"},
         { "name": "Secondary Link(Highlighted)", "color":"aluminium3", "secondcolor":"aluminium1"},
         
-        { "name": "Message Bubble Error", "color":"aluminium5", "secondcolor":"#f4eeda"},
-        { "name": "Message Bubble Warning", "color":"aluminium5", "secondcolor":"#f5eae7"}
+        { "name": "Message Bubble Error", "color":"aluminium5", "secondcolor":"#f5eae7"},
+        { "name": "Message Bubble Warning", "color":"aluminium5", "secondcolor":"#f4eeda"}
     ],
 
 	"text":[

@@ -58,7 +58,7 @@ namespace MonoDevelop.Components.Commands
 		ArrayList visitors = new ArrayList ();
 		Dictionary<Gtk.Window,Gtk.Window> topLevelWindows = new Dictionary<Gtk.Window,Gtk.Window> ();
 		Stack delegatorStack = new Stack ();
-		
+
 		HashSet<object> visitedTargets = new HashSet<object> ();
 		
 		bool disposed;
@@ -74,7 +74,8 @@ namespace MonoDevelop.Components.Commands
 		internal static readonly object CommandRouteTerminator = new object ();
 		
 		internal bool handlerFoundInMulticast;
-		
+		Gtk.Widget lastActiveWidget;
+
 		public CommandManager (): this (null)
 		{
 		}
@@ -266,7 +267,13 @@ namespace MonoDevelop.Components.Commands
 				isEnabled = value;
 			}
 		}
-		
+
+
+		/// <summary>
+		/// The command currently being executed or for which the status is being checked
+		/// </summary>
+		public Command CurrentCommand { get; private set; }
+
 		bool CanUseBinding (KeyboardShortcut[] chords, KeyboardShortcut[] accels, out KeyBinding binding, out bool isChord)
 		{
 			if (chords != null) {
@@ -996,7 +1003,8 @@ namespace MonoDevelop.Components.Commands
 				cmd = GetActionCommand (commandId);
 				if (cmd == null)
 					return false;
-				
+
+				CurrentCommand = cmd;
 				CommandTargetRoute targetRoute = new CommandTargetRoute (initialTarget);
 				object cmdTarget = GetFirstCommandTarget (targetRoute);
 				CommandInfo info = new CommandInfo (cmd);
@@ -1073,6 +1081,9 @@ namespace MonoDevelop.Components.Commands
 				string name = (cmd != null && cmd.Text != null && cmd.Text.Length > 0) ? cmd.Text : commandId.ToString ();
 				name = name.Replace ("_","");
 				ReportError (commandId, "Error while executing command: " + name, ex);
+			}
+			finally {
+				CurrentCommand = null;
 			}
 			return false;
 		}
@@ -1160,7 +1171,9 @@ namespace MonoDevelop.Components.Commands
 			try {
 				bool multiCastEnabled = true;
 				bool multiCastVisible = false;
-				
+
+				CurrentCommand = cmd;
+
 				object cmdTarget = GetFirstCommandTarget (targetRoute);
 				
 				while (cmdTarget != null)
@@ -1231,6 +1244,7 @@ namespace MonoDevelop.Components.Commands
 				info.Visible = true;
 			} finally {
 				NotifyCommandTargetScanFinished ();
+				CurrentCommand = null;
 			}
 
 			if (guiLock > 0)
@@ -1515,12 +1529,22 @@ namespace MonoDevelop.Components.Commands
 			return cmdTarget;
 		}
 		
-		object GetNextCommandTarget (CommandTargetRoute targetRoute, object cmdTarget)
+		object GetNextCommandTarget (CommandTargetRoute targetRoute, object cmdTarget, bool ignoreDelegator = false)
 		{
 			if (cmdTarget is IMultiCastCommandRouter) 
 				cmdTarget = new MultiCastDelegator (this, (IMultiCastCommandRouter)cmdTarget, targetRoute);
-			
-			if (cmdTarget is ICommandDelegatorRouter) {
+
+			if (!ignoreDelegator && cmdTarget is ICommandDelegator) {
+				if (cmdTarget is ICommandDelegatorRouter)
+					throw new InvalidOperationException ("A type can't implement both ICommandDelegator and ICommandDelegatorRouter");
+				object oldCmdTarget = cmdTarget;
+				cmdTarget = ((ICommandDelegator)oldCmdTarget).GetDelegatedCommandTarget ();
+				if (cmdTarget != null)
+					delegatorStack.Push (oldCmdTarget);
+				else
+					cmdTarget = GetNextCommandTarget (targetRoute, oldCmdTarget, true);
+			}
+			else if (cmdTarget is ICommandDelegatorRouter) {
 				object oldCmdTarget = cmdTarget;
 				cmdTarget = ((ICommandDelegatorRouter)oldCmdTarget).GetDelegatedCommandTarget ();
 				if (cmdTarget != null)
@@ -1537,8 +1561,11 @@ namespace MonoDevelop.Components.Commands
 			
 			if (cmdTarget == null || !visitedTargets.Add (cmdTarget)) {
 				if (delegatorStack.Count > 0) {
-					ICommandDelegatorRouter del = (ICommandDelegatorRouter) delegatorStack.Pop ();
-					cmdTarget = del.GetNextCommandTarget ();
+					var del = delegatorStack.Pop ();
+					if (del is ICommandDelegatorRouter)
+						cmdTarget = ((ICommandDelegatorRouter)del).GetNextCommandTarget ();
+					else
+						cmdTarget = GetNextCommandTarget (targetRoute, del, true);
 					if (cmdTarget == CommandManager.CommandRouteTerminator)
 						return null;
 					if (cmdTarget != null)
@@ -1598,8 +1625,8 @@ namespace MonoDevelop.Components.Commands
 		Gtk.Widget GetActiveWidget (Gtk.Window win)
 		{
 			win = GetActiveWindow (win);
+			Gtk.Widget widget = win;
 			if (win != null) {
-				Gtk.Widget widget = win;
 				while (widget is Gtk.Container) {
 					Gtk.Widget child = ((Gtk.Container)widget).FocusChild;
 					if (child != null)
@@ -1607,11 +1634,15 @@ namespace MonoDevelop.Components.Commands
 					else
 						break;
 				}
-				return widget;
 			}
-			return win;
+			if (widget != lastActiveWidget) {
+				if (ActiveWidgetChanged != null)
+					ActiveWidgetChanged (this, new ActiveWidgetEventArgs () { OldActiveWidget = lastActiveWidget, NewActiveWidget = widget });
+				lastActiveWidget = widget;
+			}
+			return widget;
 		}
-		
+
 		bool UpdateStatus ()
 		{
 			if (!disposed && toolbarUpdaterRunning)
@@ -1737,14 +1768,14 @@ namespace MonoDevelop.Components.Commands
 			if (this.disposed)
 				return;
 			
-			object activeWidget = GetActiveWidget (rootWidget);
+			var activeWidget = GetActiveWidget (rootWidget);
 			foreach (ICommandBar toolbar in toolbars) {
 				toolbar.Update (activeWidget);
 			}
 			foreach (ICommandTargetVisitor v in visitors)
 				VisitCommandTargets (v, null);
 		}
-		
+
 		void UpdateAppFocusStatus (bool hasFocus, bool lastFocusedExists)
 		{
 			if (hasFocus != appHasFocus) {
@@ -1848,8 +1879,20 @@ namespace MonoDevelop.Components.Commands
 		/// Fired when a key is pressed
 		/// </summary>
 		public event EventHandler<KeyPressArgs> KeyPressed;
+
+		/// <summary>
+		/// Occurs when active widget (the current command target) changes
+		/// </summary>
+		public event EventHandler<ActiveWidgetEventArgs> ActiveWidgetChanged;
 	}
-	
+
+
+	public class ActiveWidgetEventArgs: EventArgs
+	{
+		public Gtk.Widget OldActiveWidget { get; internal set; }
+		public Gtk.Widget NewActiveWidget { get; internal set; }
+	}
+
 	internal class HandlerTypeInfo
 	{
 		public CommandHandlerInfo[] CommandHandlers;

@@ -200,7 +200,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			string what;
 			Project targetProject = (Project) CurrentNode.GetParentDataItem (typeof(Project), true);
 			Project sourceProject;
-			System.Collections.Generic.IEnumerable<ProjectFile> groupedChildren = null;
+			IEnumerable<ProjectFile> groupedChildren = null;
 			
 			if (dataObject is ProjectFolder) {
 				source = ((ProjectFolder) dataObject).Path;
@@ -334,7 +334,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				AlertButton res = MessageService.AskQuestion (question, AlertButton.Cancel, noSave, AlertButton.Save);
 				if (res == AlertButton.Cancel)
 					return;
-				else if (res == AlertButton.Save) { 
+				if (res == AlertButton.Save) {
 					try {
 						foreach (Document doc in filesToSave) {
 							doc.Save ();

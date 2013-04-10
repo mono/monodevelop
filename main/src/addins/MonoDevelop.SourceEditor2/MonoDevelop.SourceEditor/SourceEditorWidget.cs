@@ -1272,10 +1272,21 @@ namespace MonoDevelop.SourceEditor
 		
 		void SetSearchPatternToSelection ()
 		{
+			if (!TextEditor.IsSomethingSelected) {
+				int start = textEditor.Caret.Offset;
+				int end = start;
+				while (start - 1 >= 0 && DynamicAbbrevHandler.IsIdentifierPart (textEditor.GetCharAt (start - 1)))
+					start--;
+
+				while (end < textEditor.Length && DynamicAbbrevHandler.IsIdentifierPart (textEditor.GetCharAt (end)))
+					end++;
+				textEditor.Caret.Offset = end;
+				TextEditor.SetSelection (start, end);
+			}
+
 			if (TextEditor.IsSomethingSelected) {
 				var pattern = FormatPatternToSelectionOption (TextEditor.SelectedText);
-					
-				TextEditor.SearchPattern = pattern;
+				SearchAndReplaceOptions.SearchPattern = pattern;
 				SearchAndReplaceWidget.UpdateSearchHistory (TextEditor.SearchPattern);
 			}
 			if (searchAndReplaceWidget != null)
@@ -1625,7 +1636,7 @@ namespace MonoDevelop.SourceEditor
 
 		public override void Draw (TextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
 		{
-			Color = Info.ErrorType == ErrorType.Warning ? editor.ColorStyle.UnderlineWarning.GetColor ("color") : editor.ColorStyle.UnderlineError.GetColor ("color");
+			Color = Info.ErrorType == ErrorType.Warning ? editor.ColorStyle.UnderlineWarning.Color : editor.ColorStyle.UnderlineError.Color;
 
 			base.Draw (editor, cr, layout, selected, startOffset, endOffset, y, startXPos, endXPos);
 		}

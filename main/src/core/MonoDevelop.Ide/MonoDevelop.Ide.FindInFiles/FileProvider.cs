@@ -31,6 +31,7 @@ using MonoDevelop.Ide.Gui;
 using System.Text;
 using MonoDevelop.Core;
 using System;
+using Mono.TextEditor.Utils;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -81,24 +82,14 @@ namespace MonoDevelop.Ide.FindInFiles
 			var doc = SearchDocument ();
 			if (doc != null) 
 				return doc.Editor.Text;
-			byte[] bytes = null;
-			
 			try {
 				if (!File.Exists (FileName))
 					return null;
-				bytes = File.ReadAllBytes (FileName);
+				return TextFileUtility.GetText (FileName, out encoding, out hadBom);
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while opening " + FileName, e);
 				return null;
 			}
-			try {
-				return Encoding.UTF8.GetString (bytes);
-			} catch (Exception) {
-				
-			}
-			// fallback to ascii encoding, if UTF8 fails.
-			utf8Failed = true;
-			return Encoding.ASCII.GetString (bytes);
 		}
 		
 		Document SearchDocument ()
@@ -109,8 +100,10 @@ namespace MonoDevelop.Ide.FindInFiles
 		Document document;
 		StringBuilder buffer = null;
 		bool somethingReplaced;
-		bool utf8Failed;
 		IDisposable undoGroup;
+		bool hadBom;
+		Encoding encoding;
+
 		public void BeginReplace (string content)
 		{
 			somethingReplaced = false;
@@ -126,10 +119,6 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public void Replace (int offset, int length, string replacement)
 		{
-			if (utf8Failed) {
-				Gtk.Application.Invoke ((sender, e) => MessageService.ShowError (GettextCatalog.GetString ("File {0} is not in UTF8.\nReplace not supported in non UTF8 files.", FileName)));
-				return;
-			}
 			somethingReplaced = true;
 			buffer.Remove (offset, length);
 			buffer.Insert (offset, replacement);
@@ -154,7 +143,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 			if (buffer != null && somethingReplaced) {
 				object attributes = DesktopService.GetFileAttributes (FileName);
-				File.WriteAllText (FileName, buffer.ToString ());
+				TextFileUtility.WriteText (FileName, buffer.ToString (), encoding, hadBom);
 				DesktopService.SetFileAttributes (FileName, attributes);
 			}
 			buffer = null;

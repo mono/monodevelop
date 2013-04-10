@@ -39,7 +39,67 @@ namespace Mono.TextEditor.Highlighting
 	{
 		public string Name { get; private set; }
 		public readonly List<Tuple<string, Cairo.Color>> Colors = new List<Tuple<string, Cairo.Color>> ();
-		
+
+		public Cairo.Color Color {
+			get {
+				return GetColor ("color");
+			}
+			set {
+				for (int i = 0; i < Colors.Count; i++) {
+					var t = Colors [i];
+					if (t.Item1 == "color") {
+						Colors [i] = Tuple.Create ("color", value);
+						return;
+					}
+				}
+				Colors.Add (Tuple.Create ("color", value));
+			}
+		}
+
+		public Cairo.Color SecondColor {
+			get {
+				return GetColor ("secondcolor");
+			}
+			set {
+				for (int i = 0; i < Colors.Count; i++) {
+					var t = Colors [i];
+					if (t.Item1 == "secondcolor") {
+						Colors [i] = Tuple.Create ("secondcolor", value);
+						return;
+					}
+				}
+				Colors.Add (Tuple.Create ("secondcolor", value));
+			}
+		}
+
+		public bool HasSecondColor {
+			get {
+				return Colors.Any (c => c.Item1 == "secondcolor");
+			}
+		}
+
+		public Cairo.Color BorderColor {
+			get {
+				return GetColor ("bordercolor");
+			}
+			set {
+				for (int i = 0; i < Colors.Count; i++) {
+					var t = Colors [i];
+					if (t.Item1 == "bordercolor") {
+						Colors [i] = Tuple.Create ("bordercolor", value);
+						return;
+					}
+				}
+				Colors.Add (Tuple.Create ("bordercolor", value));
+			}
+		}
+
+		public bool HasBorderColor {
+			get {
+				return Colors.Any (c => c.Item1 == "bordercolor");
+			}
+		}
+
 		public Cairo.Color GetColor (string name)
 		{
 			foreach (var color in Colors) {

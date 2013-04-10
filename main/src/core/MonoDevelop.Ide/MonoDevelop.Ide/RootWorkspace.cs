@@ -358,7 +358,7 @@ namespace MonoDevelop.Ide
 			return result;
 		}
 
-		public void Execute (MonoDevelop.Core.IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		public void Execute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			Solution sol = IdeApp.ProjectOperations.CurrentSelectedSolution;
 			if (sol == null) {

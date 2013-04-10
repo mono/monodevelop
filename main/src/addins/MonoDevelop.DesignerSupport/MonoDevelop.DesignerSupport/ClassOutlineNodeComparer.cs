@@ -291,7 +291,9 @@ namespace MonoDevelop.DesignerSupport
 			var m2 = o as IUnresolvedEntity;
 			if (m2 != null)
 				return m2.BodyRegion.IsEmpty ? m2.Region : m2.BodyRegion;
-			return ((FoldingRegion)o).Region;
+			if (o is FoldingRegion)
+				return ((FoldingRegion)o).Region;
+			return DomRegion.Empty;
 		}
 		
 		internal static int CompareRegion (object o1, object o2)

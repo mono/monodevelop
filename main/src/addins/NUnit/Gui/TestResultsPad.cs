@@ -254,6 +254,9 @@ namespace MonoDevelop.NUnit
 		
 		public void OnTestSuiteChanged (object sender, EventArgs e)
 		{
+			if (failuresTreeView.IsRealized)
+				failuresTreeView.ScrollToPoint (0, 0);
+
 			results.Clear ();
 			
 			error = null;
@@ -325,6 +328,9 @@ namespace MonoDevelop.NUnit
 			labels.Show ();
 			buttonStop.Sensitive = true;
 			buttonRun.Sensitive = false;
+
+			if (failuresTreeView.IsRealized)
+				failuresTreeView.ScrollToPoint (0, 0);
 			
 			failuresStore.Clear ();
 			outputView.Buffer.Clear ();
@@ -558,6 +564,9 @@ namespace MonoDevelop.NUnit
 		
 		void RefreshList ()
 		{
+			if (failuresTreeView.IsRealized)
+				failuresTreeView.ScrollToPoint (0, 0);
+
 			failuresStore.Clear ();
 			outputView.Buffer.Clear ();
 			outIters.Clear ();

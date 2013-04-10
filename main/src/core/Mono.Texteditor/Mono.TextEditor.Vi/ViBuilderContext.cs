@@ -105,8 +105,10 @@ namespace Mono.TextEditor.Vi
 						}
 						caret.PreserveSelection = true;
 						caret.Column += length - 1;
-						data.MainSelection.Lead = new DocumentLocation (data.MainSelection.Lead.Line, caret.Column + 1);
-						data.MainSelection.Anchor = new DocumentLocation (data.MainSelection.Anchor.Line, caret.Column + 1);
+						data.MainSelection = data.MainSelection.WithRange (
+							new DocumentLocation (data.MainSelection.Anchor.Line, caret.Column + 1),
+							new DocumentLocation (data.MainSelection.Lead.Line, caret.Column + 1)
+						);
 						doc.CommitMultipleLineUpdate (data.MainSelection.MinLine, data.MainSelection.MaxLine);
 					} else {
 						int length = data.Insert (caret.Offset, text);

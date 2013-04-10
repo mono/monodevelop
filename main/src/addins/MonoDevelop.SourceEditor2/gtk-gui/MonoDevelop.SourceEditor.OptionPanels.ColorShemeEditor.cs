@@ -15,14 +15,26 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
 		private global::Gtk.TreeView treeviewColors;
 		private global::Gtk.VBox vbox3;
+		private global::Gtk.Notebook notebookColorChooser;
+		private global::Gtk.VBox vbox4;
 		private global::Gtk.Table table1;
 		private global::Gtk.ColorButton colorbuttonBg;
 		private global::Gtk.ColorButton colorbuttonFg;
-		private global::Gtk.Label label4;
 		private global::Gtk.Label label5;
+		private global::Gtk.Label label7;
 		private global::Gtk.CheckButton checkbuttonBold;
 		private global::Gtk.CheckButton checkbuttonItalic;
+		private global::Gtk.Label label4;
+		private global::Gtk.VBox vbox5;
+		private global::Gtk.Table table2;
+		private global::Gtk.ColorButton colorbuttonBorder;
+		private global::Gtk.ColorButton colorbuttonPrimary;
+		private global::Gtk.ColorButton colorbuttonSecondary;
+		private global::Gtk.Label label10;
+		private global::Gtk.Label label11;
+		private global::Gtk.Label label9;
 		private global::Gtk.Label label6;
+		private global::Gtk.Label label8;
 		private global::Gtk.ScrolledWindow scrolledwindowTextEditor;
 		private global::Gtk.Button buttonCancel;
 		private global::Gtk.Button buttonOk;
@@ -128,8 +140,18 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.vbox3.Name = "vbox3";
 			this.vbox3.Spacing = 6;
 			// Container child vbox3.Gtk.Box+BoxChild
+			this.notebookColorChooser = new global::Gtk.Notebook ();
+			this.notebookColorChooser.CanFocus = true;
+			this.notebookColorChooser.Name = "notebookColorChooser";
+			this.notebookColorChooser.CurrentPage = 1;
+			this.notebookColorChooser.ShowBorder = false;
+			this.notebookColorChooser.BorderWidth = ((uint)(8));
+			// Container child notebookColorChooser.Gtk.Notebook+NotebookChild
+			this.vbox4 = new global::Gtk.VBox ();
+			this.vbox4.Name = "vbox4";
+			this.vbox4.Spacing = 6;
+			// Container child vbox4.Gtk.Box+BoxChild
 			this.table1 = new global::Gtk.Table (((uint)(2)), ((uint)(2)), false);
-			this.table1.Name = "table1";
 			this.table1.RowSpacing = ((uint)(6));
 			this.table1.ColumnSpacing = ((uint)(6));
 			// Container child table1.Gtk.Table+TableChild
@@ -157,83 +179,191 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			w12.XOptions = ((global::Gtk.AttachOptions)(4));
 			w12.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.label4 = new global::Gtk.Label ();
-			this.label4.Name = "label4";
-			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("_Foreground:");
-			this.label4.UseUnderline = true;
-			this.table1.Add (this.label4);
-			global::Gtk.Table.TableChild w13 = ((global::Gtk.Table.TableChild)(this.table1 [this.label4]));
-			w13.XOptions = ((global::Gtk.AttachOptions)(4));
-			w13.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
 			this.label5 = new global::Gtk.Label ();
 			this.label5.Name = "label5";
+			this.label5.Xalign = 1F;
 			this.label5.LabelProp = global::Mono.Unix.Catalog.GetString ("_Background:");
 			this.label5.UseUnderline = true;
 			this.table1.Add (this.label5);
-			global::Gtk.Table.TableChild w14 = ((global::Gtk.Table.TableChild)(this.table1 [this.label5]));
-			w14.TopAttach = ((uint)(1));
-			w14.BottomAttach = ((uint)(2));
+			global::Gtk.Table.TableChild w13 = ((global::Gtk.Table.TableChild)(this.table1 [this.label5]));
+			w13.TopAttach = ((uint)(1));
+			w13.BottomAttach = ((uint)(2));
+			w13.XOptions = ((global::Gtk.AttachOptions)(4));
+			w13.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table1.Gtk.Table+TableChild
+			this.label7 = new global::Gtk.Label ();
+			this.label7.Name = "label7";
+			this.label7.Xalign = 1F;
+			this.label7.LabelProp = global::Mono.Unix.Catalog.GetString ("_Foreground:");
+			this.label7.UseUnderline = true;
+			this.table1.Add (this.label7);
+			global::Gtk.Table.TableChild w14 = ((global::Gtk.Table.TableChild)(this.table1 [this.label7]));
 			w14.XOptions = ((global::Gtk.AttachOptions)(4));
 			w14.YOptions = ((global::Gtk.AttachOptions)(4));
-			this.vbox3.Add (this.table1);
-			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.table1]));
+			this.vbox4.Add (this.table1);
+			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.table1]));
 			w15.Position = 0;
 			w15.Expand = false;
 			w15.Fill = false;
-			// Container child vbox3.Gtk.Box+BoxChild
+			// Container child vbox4.Gtk.Box+BoxChild
 			this.checkbuttonBold = new global::Gtk.CheckButton ();
 			this.checkbuttonBold.CanFocus = true;
 			this.checkbuttonBold.Name = "checkbuttonBold";
 			this.checkbuttonBold.Label = global::Mono.Unix.Catalog.GetString ("B_old");
 			this.checkbuttonBold.DrawIndicator = true;
 			this.checkbuttonBold.UseUnderline = true;
-			this.vbox3.Add (this.checkbuttonBold);
-			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.checkbuttonBold]));
+			this.vbox4.Add (this.checkbuttonBold);
+			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.checkbuttonBold]));
 			w16.Position = 1;
 			w16.Expand = false;
 			w16.Fill = false;
-			// Container child vbox3.Gtk.Box+BoxChild
+			// Container child vbox4.Gtk.Box+BoxChild
 			this.checkbuttonItalic = new global::Gtk.CheckButton ();
 			this.checkbuttonItalic.CanFocus = true;
 			this.checkbuttonItalic.Name = "checkbuttonItalic";
 			this.checkbuttonItalic.Label = global::Mono.Unix.Catalog.GetString ("Italic");
 			this.checkbuttonItalic.DrawIndicator = true;
 			this.checkbuttonItalic.UseUnderline = true;
-			this.vbox3.Add (this.checkbuttonItalic);
-			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.checkbuttonItalic]));
+			this.vbox4.Add (this.checkbuttonItalic);
+			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.checkbuttonItalic]));
 			w17.Position = 2;
 			w17.Expand = false;
 			w17.Fill = false;
-			// Container child vbox3.Gtk.Box+BoxChild
+			this.notebookColorChooser.Add (this.vbox4);
+			// Notebook tab
+			this.label4 = new global::Gtk.Label ();
+			this.label4.Name = "label4";
+			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("page1");
+			this.notebookColorChooser.SetTabLabel (this.vbox4, this.label4);
+			this.label4.ShowAll ();
+			// Container child notebookColorChooser.Gtk.Notebook+NotebookChild
+			this.vbox5 = new global::Gtk.VBox ();
+			this.vbox5.Name = "vbox5";
+			this.vbox5.Spacing = 6;
+			// Container child vbox5.Gtk.Box+BoxChild
+			this.table2 = new global::Gtk.Table (((uint)(3)), ((uint)(2)), false);
+			this.table2.Name = "table2";
+			this.table2.RowSpacing = ((uint)(6));
+			this.table2.ColumnSpacing = ((uint)(6));
+			// Container child table2.Gtk.Table+TableChild
+			this.colorbuttonBorder = new global::Gtk.ColorButton ();
+			this.colorbuttonBorder.CanFocus = true;
+			this.colorbuttonBorder.Events = ((global::Gdk.EventMask)(784));
+			this.colorbuttonBorder.Name = "colorbuttonBorder";
+			this.table2.Add (this.colorbuttonBorder);
+			global::Gtk.Table.TableChild w19 = ((global::Gtk.Table.TableChild)(this.table2 [this.colorbuttonBorder]));
+			w19.TopAttach = ((uint)(2));
+			w19.BottomAttach = ((uint)(3));
+			w19.LeftAttach = ((uint)(1));
+			w19.RightAttach = ((uint)(2));
+			w19.XOptions = ((global::Gtk.AttachOptions)(4));
+			w19.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table2.Gtk.Table+TableChild
+			this.colorbuttonPrimary = new global::Gtk.ColorButton ();
+			this.colorbuttonPrimary.CanFocus = true;
+			this.colorbuttonPrimary.Events = ((global::Gdk.EventMask)(784));
+			this.colorbuttonPrimary.Name = "colorbuttonPrimary";
+			this.table2.Add (this.colorbuttonPrimary);
+			global::Gtk.Table.TableChild w20 = ((global::Gtk.Table.TableChild)(this.table2 [this.colorbuttonPrimary]));
+			w20.LeftAttach = ((uint)(1));
+			w20.RightAttach = ((uint)(2));
+			w20.XOptions = ((global::Gtk.AttachOptions)(4));
+			w20.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table2.Gtk.Table+TableChild
+			this.colorbuttonSecondary = new global::Gtk.ColorButton ();
+			this.colorbuttonSecondary.CanFocus = true;
+			this.colorbuttonSecondary.Events = ((global::Gdk.EventMask)(784));
+			this.colorbuttonSecondary.Name = "colorbuttonSecondary";
+			this.table2.Add (this.colorbuttonSecondary);
+			global::Gtk.Table.TableChild w21 = ((global::Gtk.Table.TableChild)(this.table2 [this.colorbuttonSecondary]));
+			w21.TopAttach = ((uint)(1));
+			w21.BottomAttach = ((uint)(2));
+			w21.LeftAttach = ((uint)(1));
+			w21.RightAttach = ((uint)(2));
+			w21.XOptions = ((global::Gtk.AttachOptions)(4));
+			w21.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table2.Gtk.Table+TableChild
+			this.label10 = new global::Gtk.Label ();
+			this.label10.Name = "label10";
+			this.label10.Xalign = 1F;
+			this.label10.LabelProp = global::Mono.Unix.Catalog.GetString ("_Secondary Color:");
+			this.label10.UseUnderline = true;
+			this.table2.Add (this.label10);
+			global::Gtk.Table.TableChild w22 = ((global::Gtk.Table.TableChild)(this.table2 [this.label10]));
+			w22.TopAttach = ((uint)(1));
+			w22.BottomAttach = ((uint)(2));
+			w22.XOptions = ((global::Gtk.AttachOptions)(4));
+			w22.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table2.Gtk.Table+TableChild
+			this.label11 = new global::Gtk.Label ();
+			this.label11.Name = "label11";
+			this.label11.Xalign = 1F;
+			this.label11.LabelProp = global::Mono.Unix.Catalog.GetString ("_Border Color:");
+			this.label11.UseUnderline = true;
+			this.table2.Add (this.label11);
+			global::Gtk.Table.TableChild w23 = ((global::Gtk.Table.TableChild)(this.table2 [this.label11]));
+			w23.TopAttach = ((uint)(2));
+			w23.BottomAttach = ((uint)(3));
+			w23.XOptions = ((global::Gtk.AttachOptions)(4));
+			w23.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table2.Gtk.Table+TableChild
+			this.label9 = new global::Gtk.Label ();
+			this.label9.Name = "label9";
+			this.label9.Xalign = 1F;
+			this.label9.LabelProp = global::Mono.Unix.Catalog.GetString ("_Primary Color:");
+			this.label9.UseUnderline = true;
+			this.table2.Add (this.label9);
+			global::Gtk.Table.TableChild w24 = ((global::Gtk.Table.TableChild)(this.table2 [this.label9]));
+			w24.XOptions = ((global::Gtk.AttachOptions)(4));
+			w24.YOptions = ((global::Gtk.AttachOptions)(4));
+			this.vbox5.Add (this.table2);
+			global::Gtk.Box.BoxChild w25 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.table2]));
+			w25.Position = 0;
+			w25.Expand = false;
+			w25.Fill = false;
+			this.notebookColorChooser.Add (this.vbox5);
+			global::Gtk.Notebook.NotebookChild w26 = ((global::Gtk.Notebook.NotebookChild)(this.notebookColorChooser [this.vbox5]));
+			w26.Position = 1;
+			// Notebook tab
 			this.label6 = new global::Gtk.Label ();
 			this.label6.Name = "label6";
-			this.label6.Xalign = 0F;
-			this.label6.LabelProp = global::Mono.Unix.Catalog.GetString ("_Preview:");
-			this.label6.UseUnderline = true;
-			this.vbox3.Add (this.label6);
-			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.label6]));
-			w18.Position = 3;
-			w18.Expand = false;
-			w18.Fill = false;
+			this.label6.LabelProp = global::Mono.Unix.Catalog.GetString ("page2");
+			this.notebookColorChooser.SetTabLabel (this.vbox5, this.label6);
+			this.label6.ShowAll ();
+			this.vbox3.Add (this.notebookColorChooser);
+			global::Gtk.Box.BoxChild w27 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.notebookColorChooser]));
+			w27.Position = 0;
+			w27.Expand = false;
+			w27.Fill = false;
+			// Container child vbox3.Gtk.Box+BoxChild
+			this.label8 = new global::Gtk.Label ();
+			this.label8.Name = "label8";
+			this.label8.Xalign = 0F;
+			this.label8.LabelProp = global::Mono.Unix.Catalog.GetString ("_Preview:");
+			this.label8.UseUnderline = true;
+			this.vbox3.Add (this.label8);
+			global::Gtk.Box.BoxChild w28 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.label8]));
+			w28.Position = 1;
+			w28.Expand = false;
+			w28.Fill = false;
 			// Container child vbox3.Gtk.Box+BoxChild
 			this.scrolledwindowTextEditor = new global::Gtk.ScrolledWindow ();
 			this.scrolledwindowTextEditor.CanFocus = true;
 			this.scrolledwindowTextEditor.Name = "scrolledwindowTextEditor";
 			this.scrolledwindowTextEditor.ShadowType = ((global::Gtk.ShadowType)(1));
 			this.vbox3.Add (this.scrolledwindowTextEditor);
-			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.scrolledwindowTextEditor]));
-			w19.Position = 4;
+			global::Gtk.Box.BoxChild w29 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.scrolledwindowTextEditor]));
+			w29.Position = 2;
 			this.hpaned1.Add (this.vbox3);
 			w1.Add (this.hpaned1);
-			global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(w1 [this.hpaned1]));
-			w21.Position = 1;
+			global::Gtk.Box.BoxChild w31 = ((global::Gtk.Box.BoxChild)(w1 [this.hpaned1]));
+			w31.Position = 1;
 			// Internal child MonoDevelop.SourceEditor.OptionPanels.ColorShemeEditor.ActionArea
-			global::Gtk.HButtonBox w22 = this.ActionArea;
-			w22.Name = "dialog1_ActionArea";
-			w22.Spacing = 10;
-			w22.BorderWidth = ((uint)(5));
-			w22.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
+			global::Gtk.HButtonBox w32 = this.ActionArea;
+			w32.Name = "dialog1_ActionArea";
+			w32.Spacing = 10;
+			w32.BorderWidth = ((uint)(5));
+			w32.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.buttonCancel = new global::Gtk.Button ();
 			this.buttonCancel.CanDefault = true;
@@ -243,9 +373,9 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
 			this.AddActionWidget (this.buttonCancel, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w23 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w22 [this.buttonCancel]));
-			w23.Expand = false;
-			w23.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w33 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w32 [this.buttonCancel]));
+			w33.Expand = false;
+			w33.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.buttonOk = new global::Gtk.Button ();
 			this.buttonOk.CanDefault = true;
@@ -255,10 +385,10 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-ok";
 			this.AddActionWidget (this.buttonOk, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w24 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w22 [this.buttonOk]));
-			w24.Position = 1;
-			w24.Expand = false;
-			w24.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w34 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w32 [this.buttonOk]));
+			w34.Position = 1;
+			w34.Expand = false;
+			w34.Fill = false;
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}

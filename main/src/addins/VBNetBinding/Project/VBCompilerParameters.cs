@@ -29,7 +29,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.ComponentModel;
+using System.Collections.Generic;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
@@ -106,17 +106,35 @@ namespace MonoDevelop.VBNetBinding
 		
 		public override void AddDefineSymbol (string symbol)
 		{
-			DefineConstants += symbol + ";";
+			var symbols = new List<string> (definesymbols.Split (new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries));
+			
+			symbols.Add (symbol);
+			
+			definesymbols = string.Join (";", symbols) + ";";
 		}
-
+		
 		public override bool HasDefineSymbol (string symbol)
 		{
-			return DefineConstants.Contains (symbol);
+			var symbols = definesymbols.Split (new char[] { ';' });
+			
+			foreach (var sym in symbols) {
+				if (sym == symbol)
+					return true;
+			}
+			
+			return false;
 		}
-
+		
 		public override void RemoveDefineSymbol (string symbol)
 		{
-			DefineConstants = DefineConstants.Replace (symbol + ";", "");
+			var symbols = new List<string> (definesymbols.Split (new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries));
+			
+			symbols.Remove (symbol);
+			
+			if (symbols.Count > 0)
+				definesymbols = string.Join (";", symbols) + ";";
+			else
+				definesymbols = string.Empty;
 		}
 		
 		public bool DefineDebug {

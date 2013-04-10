@@ -41,7 +41,7 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		static Dictionary<Wrapping, string> arrayInitializerTranslationDictionary = new Dictionary<Wrapping, string> ();
 		static Dictionary<BraceStyle, string> braceStyleTranslationDictionary = new Dictionary<BraceStyle, string> ();
-		static Dictionary<BraceForcement, string> braceForcementTranslationDictionary = new Dictionary<BraceForcement, string> ();
+		//static Dictionary<BraceForcement, string> braceForcementTranslationDictionary = new Dictionary<BraceForcement, string> ();
 		static Dictionary<PropertyFormatting, string> propertyFormattingTranslationDictionary = new Dictionary<PropertyFormatting, string> ();
 		static Dictionary<NewLinePlacement, string>  newLinePlacementTranslationDictionary = new Dictionary<NewLinePlacement, string> ();
 		
@@ -54,10 +54,6 @@ namespace MonoDevelop.CSharp.Formatting
 			braceStyleTranslationDictionary [BraceStyle.NextLineShifted] = GettextCatalog.GetString ("Next line shifted");
 			braceStyleTranslationDictionary [BraceStyle.NextLineShifted2] = GettextCatalog.GetString ("Next line shifted2");
 			braceStyleTranslationDictionary [BraceStyle.BannerStyle] = GettextCatalog.GetString ("Banner style");
-			
-			braceForcementTranslationDictionary [BraceForcement.DoNotChange] = GettextCatalog.GetString ("Do not change");
-			braceForcementTranslationDictionary [BraceForcement.AddBraces] = GettextCatalog.GetString ("Add braces");
-			braceForcementTranslationDictionary [BraceForcement.RemoveBraces] = GettextCatalog.GetString ("Remove braces");
 			
 			propertyFormattingTranslationDictionary [PropertyFormatting.AllowOneLine] = GettextCatalog.GetString ("Allow one line");
 			propertyFormattingTranslationDictionary [PropertyFormatting.ForceOneLine] = GettextCatalog.GetString ("Force one line");
@@ -77,8 +73,8 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			if (value is BraceStyle)
 				return braceStyleTranslationDictionary [(BraceStyle)value];
-			if (value is BraceForcement) 
-				return braceForcementTranslationDictionary [(BraceForcement)value];
+//			if (value is BraceForcement) 
+//				return braceForcementTranslationDictionary [(BraceForcement)value];
 			if (value is PropertyFormatting)
 				return propertyFormattingTranslationDictionary [(PropertyFormatting)value];
 			if (value is Wrapping)
@@ -92,8 +88,8 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			if (propertyType == typeof(BraceStyle))
 				return braceStyleTranslationDictionary.First (p => p.Value == newText).Key;
-			if (propertyType == typeof(BraceForcement)) 
-				return braceForcementTranslationDictionary.First (p => p.Value == newText).Key;
+//			if (propertyType == typeof(BraceForcement)) 
+//				return braceForcementTranslationDictionary.First (p => p.Value == newText).Key;
 			if (propertyType == typeof(PropertyFormatting)) 
 				return propertyFormattingTranslationDictionary.First (p => p.Value == newText).Key;
 			if (propertyType == typeof(Wrapping))
@@ -546,40 +542,6 @@ namespace TestSpace {
 			AddOption (bacePositionOptions, category, "EventRemoveBraceStyle", GettextCatalog.GetString ("Remove declaration"), eventExample);
 			AddOption (bacePositionOptions, category, "AllowEventRemoveBlockInline", GettextCatalog.GetString ("Allow one line remove"), eventExample);
 			
-			category = AddOption (bacePositionOptions, null, GettextCatalog.GetString ("Brace forcement"), null);
-			AddOption (bacePositionOptions, category, "IfElseBraceForcement", GettextCatalog.GetString ("'if...else' statement"), @"class ClassDeclaration { 
-	public void Test ()
-		{
-			if (true) {
-				Console.WriteLine (""Hello World!"");
-			}
-			if (true)
-				Console.WriteLine (""Hello World!"");
-		}
-	}");
-			AddOption (bacePositionOptions, category, "ForBraceForcement", GettextCatalog.GetString ("'for' statement"), @"class ClassDeclaration { 
-		public void Test ()
-		{
-			for (int i = 0; i < 10; i++) {
-				Console.WriteLine (""Hello World "" + i);
-			}
-			for (int i = 0; i < 10; i++)
-				Console.WriteLine (""Hello World "" + i);
-		}
-	}");
-			AddOption (bacePositionOptions, category, "WhileBraceForcement", GettextCatalog.GetString ("'while' statement"), @"class ClassDeclaration { 
-		public void Test ()
-		{
-			int i = 0;
-			while (i++ < 10) {
-				Console.WriteLine (""Hello World "" + i);
-			}
-			while (i++ < 20)
-				Console.WriteLine (""Hello World "" + i);
-		}
-	}");
-			AddOption (bacePositionOptions, category, "UsingBraceForcement", GettextCatalog.GetString ("'using' statement"), simpleUsingStatement);
-			AddOption (bacePositionOptions, category, "FixedBraceForcement", GettextCatalog.GetString ("'fixed' statement"), simpleFixedStatement);
 			treeviewBracePositions.ExpandAll ();
 			#endregion
 			

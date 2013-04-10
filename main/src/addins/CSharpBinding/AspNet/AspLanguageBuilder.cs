@@ -26,7 +26,6 @@
 
 using System;
 using System.Linq;
-using MonoDevelop.AspNet.Parser.Dom;
 using MonoDevelop.AspNet.Gui;
 using System.Text;
 using System.Collections.Generic;
@@ -38,12 +37,14 @@ using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.CSharp.Parser;
 using System.IO;
 using ICSharpCode.NRefactory.Completion;
+using MonoDevelop.AspNet.StateEngine;
+using MonoDevelop.Xml.StateEngine;
 
 
 
 namespace MonoDevelop.CSharp.Completion
 {
-	public class AspLanguageBuilder : Visitor, ILanguageCompletionBuilder
+	public class AspLanguageBuilder : ILanguageCompletionBuilder
 	{
 		public bool SupportsLanguage (string language)
 		{
@@ -87,16 +88,26 @@ namespace MonoDevelop.CSharp.Completion
 				sb.AppendLine ("void Generated ()");
 				sb.AppendLine ("{");
 				//Console.WriteLine ("start:" + location.BeginLine  +"/" +location.BeginColumn);
-				foreach (var expression in info.Expressions) {
-					if (expression.Location.BeginLine > data.Caret.Line || expression.Location.BeginLine == data.Caret.Line && expression.Location.BeginColumn > data.Caret.Column - 5) 
+				foreach (var node in info.XExpressions) {
+					bool isBlock = node is AspNetRenderBlock;
+
+					if (node.Region.Begin.Line > data.Caret.Line || node.Region.Begin.Line == data.Caret.Line && node.Region.Begin.Column > data.Caret.Column - 5) 
 						continue;
 					//Console.WriteLine ("take xprt:" + expressions.Key.BeginLine  +"/" +expressions.Key.BeginColumn);
-					if (expression.IsExpression)
+
+					var start = data.Document.LocationToOffset (node.Region.Begin.Line, node.Region.Begin.Column) + 2;
+					var end = data.Document.LocationToOffset (node.Region.End.Line, node.Region.End.Column) - 2;
+
+					if (!isBlock) {
 						sb.Append ("WriteLine (");
-					string expr = expression.Expression.Trim ('=');
-					result.AddTextPosition (data.Document.LocationToOffset (expression.Location.BeginLine, expression.Location.BeginColumn), sb.Length, expr.Length);
+						start += 1;
+					}
+
+					string expr = data.GetTextBetween (start, end);
+					result.AddTextPosition (start, end, expr.Length);
 					sb.Append (expr);
-					if (expression.IsExpression)
+
+					if (!isBlock)
 						sb.Append (");");
 				}
 			}
@@ -289,10 +300,10 @@ namespace MonoDevelop.CSharp.Completion
 			var document = new StringBuilder ();
 			
 			WriteUsings (info.Imports, document);
-			
-			foreach (var node in info.ScriptBlocks) {
-				int start = data.Document.LocationToOffset (node.Location.EndLine,  node.Location.EndColumn);
-				int end = data.Document.LocationToOffset (node.EndLocation.BeginLine, node.EndLocation.BeginColumn);
+
+			foreach (var node in info.XScriptBlocks) {
+				var start = data.Document.LocationToOffset (node.Region.Begin.Line, node.Region.Begin.Column) + 2;
+				var end = data.Document.LocationToOffset (node.Region.End.Line, node.Region.End.Column) - 2;
 				if (offsetInfos != null)
 					offsetInfos.Add (new LocalDocumentInfo.OffsetInfo (start, document.Length, end - start));
 				
@@ -304,19 +315,24 @@ namespace MonoDevelop.CSharp.Completion
 				document.AppendLine ("void Generated ()");
 				document.AppendLine ("{");
 				//Console.WriteLine ("start:" + location.BeginLine  +"/" +location.BeginColumn);
-				foreach (var expression in info.Expressions) {
-					if (expression.IsExpression)
-						document.Append ("WriteLine (");
+
+				foreach (var node in info.XExpressions) {
+					bool isBlock = node is AspNetRenderBlock;
+
+					var start = data.Document.LocationToOffset (node.Region.Begin.Line, node.Region.Begin.Column) + 2;
+					var end = data.Document.LocationToOffset (node.Region.End.Line, node.Region.End.Column) - 2;
 					
-					string expr = expression.Expression.Trim ('=');
+					if (!isBlock) {
+						document.Append ("WriteLine (");
+						start += 1;
+					}
+					
+					string expr = data.GetTextBetween (start, end);
 					if (offsetInfos != null) {
-						int col = expression.Location.BeginColumn + "<%".Length + 2;
-						if (expr.Length < expression.Expression.Length)
-							col++;
-						offsetInfos.Add (new LocalDocumentInfo.OffsetInfo (data.Document.LocationToOffset (expression.Location.BeginLine, col), document.Length, expr.Length));
+						offsetInfos.Add (new LocalDocumentInfo.OffsetInfo (start, document.Length, expr.Length));
 					}
 					document.Append (expr);
-					if (expression.IsExpression)
+					if (!isBlock)
 						document.Append (");");
 				}
 				document.AppendLine ("}");

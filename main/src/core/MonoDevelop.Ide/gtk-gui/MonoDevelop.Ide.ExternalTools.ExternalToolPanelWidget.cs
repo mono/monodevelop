@@ -31,7 +31,7 @@ namespace MonoDevelop.Ide.ExternalTools
 		private global::Gtk.CheckButton promptArgsCheckBox;
 		private global::Gtk.CheckButton saveCurrentFileCheckBox;
 		private global::Gtk.CheckButton useOutputPadCheckBox;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

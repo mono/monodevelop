@@ -48,10 +48,20 @@ namespace Mono.Debugging.Soft
 			string method = frame.Method.Name;
 			if (frame.Method.DeclaringType != null)
 				method = frame.Method.DeclaringType.FullName + "." + method;
-			var location = new DC.SourceLocation (method, frame.FileName, frame.LineNumber);
-			var lang = frame.Method != null? "Managed" : "Native";
+			var location = new DC.SourceLocation (method, frame.FileName, frame.LineNumber, frame.ColumnNumber);
+			string language;
+
+			if (frame.Method != null) {
+				if (frame.IsNativeTransition) {
+					language = "Transition";
+				} else {
+					language = "Managed";
+				}
+			} else {
+				language = "Native";
+			}
 			
-			Evaluator = session.GetEvaluator (new DC.StackFrame (frame.ILOffset, location, lang, session.IsExternalCode (frame), true));
+			Evaluator = session.GetEvaluator (new DC.StackFrame (frame.ILOffset, location, language, session.IsExternalCode (frame), true));
 			Adapter = session.Adaptor;
 			this.session = session;
 			this.stackVersion = session.StackVersion;

@@ -44,6 +44,7 @@ namespace MonoDevelop.Components.MainToolbar
 	class CommandSearchCategory : SearchCategory
 	{
 		Widget widget;
+
 		public CommandSearchCategory (Widget widget) : base (GettextCatalog.GetString("Commands"))
 		{
 			this.widget = widget;
@@ -52,6 +53,11 @@ namespace MonoDevelop.Components.MainToolbar
 
 		WorkerResult lastResult;
 		string[] validTags = new [] { "cmd", "command" };
+
+		public override bool IsValidTag (string tag)
+		{
+			return validTags.Any (t => t == tag);
+		}
 
 		public override Task<ISearchDataSource> GetResults (SearchPopupSearchPattern searchPattern, int resultsCount, CancellationToken token)
 		{
@@ -80,12 +86,13 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void AllResults (WorkerResult lastResult, WorkerResult newResult, CancellationToken token)
 		{
+			CommandTargetRoute route = new CommandTargetRoute (MainToolbar.LastCommandTarget);
 			newResult.filteredCommands = new List<Command> ();
 			bool startsWithLastFilter = lastResult != null && lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern) && lastResult.filteredCommands != null;
 			IEnumerable<Command> allCommands = startsWithLastFilter ? lastResult.filteredCommands : IdeApp.CommandService.GetCommands ();
 			foreach (Command cmd in allCommands) {
 				token.ThrowIfCancellationRequested ();
-				SearchResult curResult = newResult.CheckCommand (cmd);
+				SearchResult curResult = newResult.CheckCommand (cmd, route);
 				if (curResult != null) {
 					newResult.filteredCommands.Add (cmd);
 					newResult.results.AddResult (curResult);
@@ -106,7 +113,7 @@ namespace MonoDevelop.Components.MainToolbar
 				results = new ResultsDataSource (widget);
 			}
 			
-			internal SearchResult CheckCommand (Command c)
+			internal SearchResult CheckCommand (Command c, CommandTargetRoute route)
 			{
 				ActionCommand cmd = c as ActionCommand;
 				if (cmd == null || cmd.CommandArray)
@@ -115,9 +122,13 @@ namespace MonoDevelop.Components.MainToolbar
 				int rank;
 				string matchString = cmd.Text.Replace ("_", "");
 				if (MatchName (matchString, out rank)) {
-					var ci = IdeApp.CommandService.GetCommandInfo (cmd.Id);
-					if (ci.Enabled && ci.Visible)
-						return new CommandResult (cmd, pattern, matchString, rank);
+					try {
+						var ci = IdeApp.CommandService.GetCommandInfo (cmd.Id, route);
+						if (ci.Enabled && ci.Visible)
+							return new CommandResult (cmd, ci, route, pattern, matchString, rank);
+					} catch (Exception 	ex) {
+						LoggingService.LogError ("Failure while checking command: " + cmd.Id, ex);
+					}
 				}
 				return null;
 			}
