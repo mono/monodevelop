@@ -175,8 +175,7 @@ namespace MonoDevelop.MacIntegration
 						encodingSelector.Enabled = !slnViewerSelected;
 				};
 
-				var action = MacSelectFileDialogHandler.RunPanel (data, panel);
-				if (!action) {
+				if (panel.RunModal () == 0) {
 					GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
 					return false;
 				}
