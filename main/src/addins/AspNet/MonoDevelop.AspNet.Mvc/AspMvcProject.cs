@@ -151,6 +151,39 @@ namespace MonoDevelop.AspNet.Mvc
 		}
 
 		protected abstract string GetDefaultAspNetMvcVersion ();
+
+		public override string GetDefaultBuildAction (string fileName)
+		{
+			var fileType = DeterminateFileType (fileName);
+			switch (fileType) 
+			{
+			case AspMvcSubtype.Razor:
+				return BuildAction.Content;
+			default:
+				return base.GetDefaultBuildAction (fileName);
+			}
+		}
+
+		private AspMvcSubtype DeterminateFileType(string fileName)
+		{
+			string extension = System.IO.Path.GetExtension (fileName);
+			if (extension == null)
+				return AspMvcSubtype.Unknown;
+			extension = extension.ToLower().TrimStart ('.');
+			switch (extension) 
+			{
+			case "cshtml":
+				return AspMvcSubtype.Razor;
+			default:
+				return AspMvcSubtype.Unknown;
+			}
+		}
+	}
+
+	public enum AspMvcSubtype
+	{
+		Unknown,
+		Razor
 	}
 
 	public class AspMvc1Project : AspMvcProject
