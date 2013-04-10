@@ -62,11 +62,15 @@ namespace MonoDevelop.MacIntegration.MacMenu
 		public void Run (NSMenuItem sender)
 		{
 			var a = sender as MDExpandedArrayItem;
-			if (a != null) {
-				manager.DispatchCommand (ce.CommandId, a.Info.DataItem, CommandSource.MainMenu);
-			} else {
-				manager.DispatchCommand (ce.CommandId, CommandSource.MainMenu);
-			}
+			//if the command opens a modal subloop, give cocoa a chance to unhighlight the menu item
+			GLib.Timeout.Add (1, () => {
+				if (a != null) {
+					manager.DispatchCommand (ce.CommandId, a.Info.DataItem, CommandSource.MainMenu);
+				} else {
+					manager.DispatchCommand (ce.CommandId, CommandSource.MainMenu);
+				}
+				return false;
+			});
 		}
 
 		//NOTE: This is used to disable the whole menu when there's a modal dialog.
