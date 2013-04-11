@@ -479,7 +479,8 @@ namespace Mono.TextEditor
 			if (lineNr < DocumentLocation.MinLine)
 				return DocumentLocation.Empty;
 			DocumentLine line = GetLine (lineNr);
-			return new DocumentLocation (lineNr, System.Math.Min (line.LengthIncludingDelimiter, offset - line.Offset) + 1);
+			var col = System.Math.Max (1, System.Math.Min (line.LengthIncludingDelimiter, offset - line.Offset) + 1);
+			return new DocumentLocation (lineNr, col);
 		}
 
 		public string GetLineIndent (int lineNumber)
