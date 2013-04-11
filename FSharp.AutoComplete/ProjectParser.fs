@@ -54,12 +54,15 @@ module ProjectParser =
     let getprop s = p.project.GetEvaluatedProperty s
     let split (s: string) (cs: char[]) =
       s.Split(cs, StringSplitOptions.RemoveEmptyEntries)
-    // TODO: Robustify - convert.ToBoolean may fail
-    let optimize     = getprop "Optimize" |> Convert.ToBoolean
-    let tailcalls    = getprop "Tailcalls" |> Convert.ToBoolean
-    let debugsymbols = getprop "DebugSymbols" |> Convert.ToBoolean
+    let getbool (s: string) =
+      match (Boolean.TryParse s) with
+      | (true, result) -> result
+      | (false, _) -> false
+    let optimize     = getprop "Optimize" |> getbool
+    let tailcalls    = getprop "Tailcalls" |> getbool
+    let debugsymbols = getprop "DebugSymbols" |> getbool
     let defines = split (getprop "DefineConstants") [|';';',';' '|]
-    let otherflags = getprop "OtherFlags"
+    let otherflags = getprop "OtherFlags" 
     let otherflags = if otherflags  = null
                      then [||]
                      else split otherflags [|' '|]
