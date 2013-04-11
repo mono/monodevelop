@@ -52,8 +52,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		//NOTE: default toolsversion should match the default format.
 		// remember to update the builder process' app.config too
 		public const string DefaultFormat = "MSBuild10";
-		const string REFERENCED_MSBUILD_TOOLS = "4.0";
-		internal const string DefaultToolsVersion = REFERENCED_MSBUILD_TOOLS;
+		internal const string DefaultToolsVersion = "4.0";
 		
 		static DataContext dataContext;
 		
@@ -522,9 +521,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if ((runtime is MsNetTargetRuntime) && int.Parse (toolsVersion.Split ('.')[0]) >= 4)
 				toolsVersion = "dotnet." + toolsVersion;
 
-			if (toolsVersion == REFERENCED_MSBUILD_TOOLS)
-				return sourceExe;
-			
 			var exe = sourceExe.ParentDirectory.Combine ("MSBuild", toolsVersion, sourceExe.FileName);
 			if (File.Exists (exe))
 				return exe;

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{B257A1A3-78DF-4F00-8053-D32A8B1EB679}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AssemblyName>MonoDevelop.Projects.Formats.MSBuild</AssemblyName>
+    <RootNamespace>MonoDevelop.Projects.Formats.MSBuild</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>False</Optimize>
+    <OutputPath>..\..\..\build\bin\MSBuild\4.0</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>none</DebugType>
+    <Optimize>False</Optimize>
+    <OutputPath>..\..\..\build\bin\MSBuild\4.0</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Runtime.Remoting" />
+    <Reference Include="Microsoft.Build.Engine" />
+    <Reference Include="Microsoft.Build.Framework" />
+    <Reference Include="Microsoft.Build.Utilities.v4.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Main.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\ProjectBuilder.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildResult.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\LocalLogger.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\ILogWriter.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\IProjectBuilder.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\BuildEngine.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\IBuildEngine.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\ConsoleLogger.cs" />
+    <Compile Include="AssemblyInfo.v4.0.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="MonoDevelop.Projects.Formats.MSBuild\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+</Project>
