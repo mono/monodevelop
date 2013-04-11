@@ -1749,7 +1749,7 @@ namespace Mono.TextEditor
 			DocumentLine line = Document.GetLine (clickLocation.Line);
 			if (line != null && clickLocation.Column >= line.Length + 1 && GetWidth (Document.GetTextAt (line.SegmentIncludingDelimiter) + "-") < x) {
 				clickLocation = new DocumentLocation (clickLocation.Line, line.Length + 1);
-				if (textEditor.GetTextEditorData ().HasIndentationTracker && textEditor.Options.IndentStyle == IndentStyle.Virtual) {
+				if (textEditor.GetTextEditorData ().HasIndentationTracker && textEditor.Options.IndentStyle == IndentStyle.Virtual && clickLocation.Column == 1) {
 					int indentationColumn = this.textEditor.GetTextEditorData ().GetVirtualIndentationColumn (clickLocation);
 					if (indentationColumn > clickLocation.Column)
 						clickLocation = new DocumentLocation (clickLocation.Line, indentationColumn);

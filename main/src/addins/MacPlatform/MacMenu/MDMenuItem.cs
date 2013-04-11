@@ -62,11 +62,15 @@ namespace MonoDevelop.MacIntegration.MacMenu
 		public void Run (NSMenuItem sender)
 		{
 			var a = sender as MDExpandedArrayItem;
-			if (a != null) {
-				manager.DispatchCommand (ce.CommandId, a.Info.DataItem, CommandSource.MainMenu);
-			} else {
-				manager.DispatchCommand (ce.CommandId, CommandSource.MainMenu);
-			}
+			//if the command opens a modal subloop, give cocoa a chance to unhighlight the menu item
+			GLib.Timeout.Add (1, () => {
+				if (a != null) {
+					manager.DispatchCommand (ce.CommandId, a.Info.DataItem, CommandSource.MainMenu);
+				} else {
+					manager.DispatchCommand (ce.CommandId, CommandSource.MainMenu);
+				}
+				return false;
+			});
 		}
 
 		//NOTE: This is used to disable the whole menu when there's a modal dialog.
@@ -226,15 +230,20 @@ namespace MonoDevelop.MacIntegration.MacMenu
 			if (txt == null)
 				return "";
 
-			if (!ci.UseMarkup)
-				return txt.Replace ("_", "&");
-
-			//strip GMarkup
 			//FIXME: markup stripping could be done better
 			var sb = new StringBuilder ();
 			for (int i = 0; i < txt.Length; i++) {
 				char ch = txt[i];
-				if (ch == '<') {
+				if (ch == '_') {
+					if (i + 1 < txt.Length && txt[i + 1] == '_') {
+						sb.Append ('_');
+						i++;
+					} else {
+						sb.Append ('&');
+					}
+				} else if (!ci.UseMarkup) {
+					sb.Append (ch);
+				} else if (ch == '<') {
 					while (++i < txt.Length && txt[i] != '>');
 				} else if (ch == '&') {
 					int j = i;
@@ -263,8 +272,6 @@ namespace MonoDevelop.MacIntegration.MacMenu
 							break;
 						}
 					}
-				} if (ch == '_') {
-					sb.Append ('&');
 				} else {
 					sb.Append (ch);
 				}

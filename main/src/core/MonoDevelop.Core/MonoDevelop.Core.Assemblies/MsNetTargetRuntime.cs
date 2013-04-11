@@ -96,19 +96,21 @@ namespace MonoDevelop.Core.Assemblies
 		protected override void OnInitialize ()
 		{
 			RegistryKey foldersKey = Registry.LocalMachine.OpenSubKey (@"SOFTWARE\Microsoft\.NETFramework\AssemblyFolders", false);
-			foreach (string key in foldersKey.GetSubKeyNames ()) {
-				if (ShuttingDown)
-					return;
-				if (key.StartsWith ("Microsoft .NET Framework"))
-					continue; // Framework assemblies
-				RegistryKey fk = foldersKey.OpenSubKey (key, false);
-				string folder = fk.GetValue ("") as string;
-				string version = fk.GetValue ("version") as string ?? "";
-				if (!string.IsNullOrEmpty (folder))
-					AddPackage (key, version, folder, null);
-				fk.Close ();
+			if (foldersKey != null) {
+				foreach (string key in foldersKey.GetSubKeyNames ()) {
+					if (ShuttingDown)
+						return;
+					if (key.StartsWith ("Microsoft .NET Framework", StringComparison.Ordinal))
+						continue; // Framework assemblies
+					RegistryKey fk = foldersKey.OpenSubKey (key, false);
+					string folder = fk.GetValue ("") as string;
+					string version = fk.GetValue ("version") as string ?? "";
+					if (!string.IsNullOrEmpty (folder))
+						AddPackage (key, version, folder, null);
+					fk.Close ();
+				}
+				foldersKey.Close ();
 			}
-			foldersKey.Close ();
 
 			// Extended assembly folders
 
@@ -124,7 +126,7 @@ namespace MonoDevelop.Core.Assemblies
 				}
 
 				string clrVer = MsNetFrameworkBackend.GetClrVersion (fx.ClrVersion);
-				if (clrVer.StartsWith ("v" + fx.Id.Version)) {
+				if (clrVer.StartsWith ("v" + fx.Id.Version, StringComparison.Ordinal)) {
 					// Several frameworks can share the same clr version. Make sure only one registers the assemblies.
 					fxKey = Registry.LocalMachine.OpenSubKey (@"SOFTWARE\Microsoft\.NETFramework\" + clrVer + @"\AssemblyFoldersEx", false);
 					if (fxKey != null) {

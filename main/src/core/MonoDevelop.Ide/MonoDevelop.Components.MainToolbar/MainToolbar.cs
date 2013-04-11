@@ -386,7 +386,7 @@ namespace MonoDevelop.Components.MainToolbar
 		void BuildToolbar ()
 		{
 			buttonBar.Clear ();
-			var bars = AddinManager.GetExtensionNodes (ToolbarExtensionPath).Cast<ItemSetCodon> ().Where (n => visibleBars.Contains (n.Id));
+			var bars = AddinManager.GetExtensionNodes (ToolbarExtensionPath).Cast<ItemSetCodon> ().Where (n => visibleBars.Contains (n.Id)).ToList ();
 			if (!bars.Any ()) {
 				buttonBarBox.Hide ();
 				return;

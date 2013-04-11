@@ -10,12 +10,6 @@
 		<Value _displayName="Banner Style">BannerStyle</Value>
 	</Type>
 	
-	<Type name = "BraceForcement">
-		<Value _displayName="Do not change">DoNotChange</Value>
-		<Value _displayName="Remove braces">RemoveBraces</Value>
-		<Value _displayName="Add braces">AddBraces</Value>
-	</Type>
-	
 	<Type name = "Wrapping">
 		<Value _displayName="Do not change">DoNotChange</Value>
 		<Value _displayName="Do not wrap">DoNotWrap</Value>

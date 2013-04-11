@@ -68,15 +68,14 @@ namespace MonoDevelop.MacIntegration
 					}
 				}
 				
-				var action = RunPanel (data, panel);
-				
-				if (action) {
-					data.SelectedFiles = GetSelectedFiles (panel);
+				if (panel.RunModal () == 0) {
 					GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
-				} else {
-					GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
+					return false;
 				}
-				return action;
+
+				data.SelectedFiles = GetSelectedFiles (panel);
+				GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
+				return true;
 			} finally {
 				if (panel != null)
 					panel.Dispose ();
@@ -103,31 +102,16 @@ namespace MonoDevelop.MacIntegration
 			
 			if (!string.IsNullOrEmpty (data.Title))
 				panel.Title = data.Title;
-			
-			//FIXME: 10.6 only
-			//if (!string.IsNullOrEmpty (data.InitialFileName))
-			//	panel.NameFieldStringValue = data.InitialFileName;
+
+			if (!string.IsNullOrEmpty (data.InitialFileName))
+				panel.NameFieldStringValue = data.InitialFileName;
 			
 			if (!string.IsNullOrEmpty (data.CurrentFolder))
-				panel.Directory = data.CurrentFolder;
-			//FIXME: 10.6 only
-			//	panel.DirectoryUrl = new NSUrl (data.CurrentFolder, true);
+				panel.DirectoryUrl = new NSUrl (data.CurrentFolder, true);
 			
 			var openPanel = panel as NSOpenPanel;
 			if (openPanel != null) {
 				openPanel.AllowsMultipleSelection = data.SelectMultiple;
-			}
-		}
-		
-		internal static bool RunPanel (SelectFileDialogData data, NSSavePanel panel)
-		{
-			var dir = string.IsNullOrEmpty (data.CurrentFolder)? null : data.CurrentFolder;
-			var file = string.IsNullOrEmpty (data.InitialFileName)? null : data.InitialFileName;
-			if (panel is NSOpenPanel) {
-				return ((NSOpenPanel)panel).RunModal (dir, file, null) != 0;
-			} else {
-				//FIXME: deprecated on 10.6, alternatives only on 10.6
-				return panel.RunModal (dir, file) != 0;
 			}
 		}
 		

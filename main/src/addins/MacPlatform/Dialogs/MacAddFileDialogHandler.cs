@@ -80,8 +80,7 @@ namespace MonoDevelop.MacIntegration
 						popup.AddItem (b);
 				}
 				
-				var action = MacSelectFileDialogHandler.RunPanel (data, panel);
-				if (!action) {
+				if (panel.RunModal () == 0) {
 					GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
 					return false;
 				}

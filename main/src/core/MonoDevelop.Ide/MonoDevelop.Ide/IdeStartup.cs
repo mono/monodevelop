@@ -526,6 +526,8 @@ namespace MonoDevelop.Ide
 			do {
 				try {
 					var exename = Path.GetFileNameWithoutExtension (Assembly.GetEntryAssembly ().Location);
+					if (!Platform.IsMac && !Platform.IsWindows)
+						exename = exename.ToLower ();
 					Runtime.SetProcessName (exename);
 					var app = new IdeStartup ();
 					ret = app.Run (options);

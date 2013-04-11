@@ -714,7 +714,7 @@ namespace MonoDevelop.SourceEditor
 			Document.MimeType = mimeType;
 			string text = null;
 			if (content != null) {
-				text = Mono.TextEditor.Utils.TextFileUtility.GetText (content, out hadBom, out encoding);
+				text = Mono.TextEditor.Utils.TextFileUtility.GetText (content, out encoding, out hadBom);
 				Document.Text = text;
 			}
 			this.CreateDocumentParsedHandler ();

@@ -82,11 +82,11 @@ namespace MonoDevelop.Ide.FindInFiles
 			var options = ignoreInherited ? GetMemberOptions.IgnoreInheritedMembers : GetMemberOptions.None;
 			var members = type.GetMembers (m => m.Name == member.Name, options);
 
-			// Filter out shadowed members.
+/*			// Filter out shadowed members.
 			// class A { public string Foo { get; set; } } class B : A { public string Foo { get; set; } }
 			if (member.EntityType == EntityType.Property || !(member is IParameterizedMember)) {
 				members = members.Where (m => m == member || m.DeclaringType.Kind == TypeKind.Interface);
-			}
+			}*/
 
 			if (filter != null)
 				members = members.Where (filter);

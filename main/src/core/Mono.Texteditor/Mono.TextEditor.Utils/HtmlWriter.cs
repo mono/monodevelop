@@ -75,13 +75,13 @@ namespace Mono.TextEditor.Utils
 					int end = System.Math.Min (chunk.EndOffset, selection.EndOffset);
 					var chunkStyle = style.GetChunkStyle (chunk);
 					if (start < end) {
-						htmlText.Append ("<SPAN style = '");
+						htmlText.Append ("<SPAN style='");
 						if (chunkStyle.FontWeight != Xwt.Drawing.FontWeight.Normal)
 							htmlText.Append ("font-weight:" + ((int)chunkStyle.FontWeight) + ";");
 						if (chunkStyle.FontStyle != Xwt.Drawing.FontStyle.Normal)
 							htmlText.Append ("font-style:" + chunkStyle.FontStyle.ToString ().ToLower () + ";");
 						htmlText.Append ("color:" + ((HslColor)chunkStyle.Foreground).ToPangoString () + ";");
-						htmlText.Append ("' >");
+						htmlText.Append ("'>");
 						AppendHtmlText (htmlText, doc, options, start, end);
 						htmlText.Append ("</SPAN>");
 					}
