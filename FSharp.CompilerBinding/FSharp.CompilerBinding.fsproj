@@ -34,7 +34,7 @@
   <ItemGroup>
     <Reference Include="mscorlib" />
     <!-- use F# 3.0 if it is on this machine, otherwise use F# 2.0  -->
-    <Reference Include="FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"/>
+    <Reference Include="FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="System" />
     <Reference Include="System.Numerics" />
   </ItemGroup>
@@ -43,5 +43,7 @@
     <Compile Include="Common.fs" />
     <Compile Include="CompilerLocationUtils.fs" />
     <Compile Include="FSharpCompiler.fs" />
+    <Compile Include="Digraph.fs" />
+    <Compile Include="OrderAssemblyReferences.fs" />
   </ItemGroup>
 </Project>
