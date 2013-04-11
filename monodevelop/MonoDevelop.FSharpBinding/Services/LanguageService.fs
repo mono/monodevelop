@@ -66,11 +66,12 @@ module internal TipFormatter =
 
   /// Memoize the objects that manage access to XML files.
   // @todo consider if this needs to be a weak table in some way
-  let xmlDocProvider = memoize (fun x -> ICSharpCode.NRefactory.Documentation.XmlDocumentationProvider(x))
+  let xmlDocProvider = memoize (fun x -> try ICSharpCode.NRefactory.Documentation.XmlDocumentationProvider(x)
+                                         with exn -> null)
 
   /// Return the XmlDocumentationProvider for an assembly
   let findXmlDocProviderForAssembly file  = 
-      let tryExists s = try  if File.Exists s then Some s else None with _ -> None
+      let tryExists s = try if File.Exists s then Some s else None with _ -> None
       let e = 
           match tryExists (Path.ChangeExtension(file,"xml")) with 
           | Some x -> Some x 
@@ -191,32 +192,18 @@ module internal TipFormatter =
   /// Format some of the data returned by the F# compiler
   let private buildFormatComment cmt = 
     match cmt with
-    | XmlCommentText(s) -> GLib.Markup.EscapeText s
+    | XmlCommentText(s) -> GLib.Markup.EscapeText <| s.Trim()
     | XmlCommentSignature(file,key) -> 
         match findDocForEntity (file, key) with 
-        | None -> ""
-        | Some doc ->
-            let tag1 = "<summary>"
-            let tag2 = "</summary>"
-            // chop out the summary node only
-            let summary = 
-                let idx1 = doc.IndexOf tag1
-                let idx2 = doc.IndexOf tag2
-                if (idx2 >= 0 && idx1 >= 0) then (* tag1 + *) doc.Substring (idx1 + tag1.Length, idx2 - idx1 - tag1.Length) (* + tag2 *) 
-                elif (idx1 >= 0) then (* tag1 + *) doc.Substring (idx1 + tag1.Length) (* + tag2 *) 
-                elif (idx2 >= 0) then (* tag1 + *) doc.Substring (0, idx2 - 1) (* + tag2 *) 
-                else doc
-            //    try MonoDevelop.Ide.TypeSystem.AmbienceService.GetSummaryMarkup summary 
-            //    with _ -> GLib.Markup.EscapeText summary
-            let summary = summary.Replace("\n","").Replace("\r","")
-            GLib.Markup.EscapeText summary
-    | _ -> ""
+        | None -> String.Empty
+        | Some doc -> 
+            MonoDevelop.FSharp.Tooltips.getTooltip Styles.simpleMarkup doc
+    | _ -> String.Empty
 
   /// Format some of the data returned by the F# compiler
   ///
-  /// If 'canAddHeader' is true (meaning that this is the only tip displayed)
-  /// then we add first line "Multiple overloads" because MD prints first
-  /// int in bold (so that no overload is highlighted)
+  /// If 'canAddHeader' is true (meaning that this is the only tip displayed) then we add first line 
+  //  "Multiple overloads" because MD prints first int in bold (so that no overload is highlighted)
   let private buildFormatElement canAddHeader el (sb:StringBuilder) =
     match el with 
     | DataTipElementNone -> ()
@@ -229,8 +216,7 @@ module internal TipFormatter =
     | DataTipElementGroup(items) -> 
         let items, msg = 
           if items.Length > 10 then 
-            (items |> Seq.take 10 |> List.ofSeq), 
-             sprintf "   <i>(+%d other overloads)</i>" (items.Length - 10) 
+            (items |> Seq.take 10 |> List.ofSeq), sprintf "   <i>(+%d other overloads)</i>" (items.Length - 10) 
           else items, null
         if (canAddHeader && items.Length > 1) then
           sb.AppendLine("Multiple overloads") |> ignore
@@ -241,8 +227,7 @@ module internal TipFormatter =
               if not (String.IsNullOrWhiteSpace html) then 
                   sb.Append(GLib.Markup.EscapeText "\n")  |> ignore
                   sb.AppendLine(html) |> ignore
-                  sb.Append(GLib.Markup.EscapeText "\n")  |> ignore
-        )
+                  sb.Append(GLib.Markup.EscapeText "\n")  |> ignore )
         if msg <> null then sb.Append(msg) |> ignore
     | DataTipElementCompositionError(err) -> 
         sb.Append("Composition error: " + GLib.Markup.EscapeText(err)) |> ignore
@@ -250,7 +235,8 @@ module internal TipFormatter =
   /// Format some of the data returned by the F# compiler
   let private buildFormatTip canAddHeader tip (sb:StringBuilder) = 
     match tip with
-    | DataTipText([single]) -> buildFormatElement true single sb
+    | DataTipText([single]) -> sb.Append(GLib.Markup.EscapeText "\n")  |> ignore
+                               buildFormatElement true single sb
     | DataTipText(its) -> 
         if canAddHeader then 
             sb.AppendLine("Multiple items") |> ignore
@@ -277,19 +263,8 @@ module internal TipFormatter =
         | Some docReader ->
             let doc = docReader.GetDocumentation(key)
             if System.String.IsNullOrEmpty(doc) then  None else
-            // get the <param name="...">...</param> node
-            let summary = 
-                let tag1 = "<param name=\"" + paramName + "\">"
-                let tag2 = "</param>"
-                let idx1 = doc.IndexOf tag1
-                let idx2 = doc.IndexOf(tag2, max idx1 0) 
-                if (idx2 >= 0 && idx1 >= 0) then doc.Substring (idx1 + tag1.Length, idx2 - idx1 - tag1.Length)
-                elif (idx1 >= 0) then doc.Substring (idx1 + tag1.Length)
-                elif (idx2 >= 0) then doc.Substring (0, idx2 - 1)
-                else doc
-            // remove the <paramref name="..."> from the text
-            let summary = summary.Replace("<paramref name=\"","").Replace("\" />","").Replace("\"/>","")
-            Some (GLib.Markup.EscapeText(summary))
+            let parameterTip = Tooltips.getParameterTip Styles.simpleMarkup doc paramName
+            Some ( (*GLib.Markup.EscapeText( *) parameterTip )
     | _ -> None
 
   /// For elements with XML docs, the paramater descriptions are buried in the XML. Fetch it.
@@ -304,13 +279,13 @@ module internal TipFormatter =
   let extractParamTip paramName (DataTipText elements) = 
       List.tryPick (extractParamTipFromElement paramName) elements
 
-  /// Formats tool-tip and turns the first line into heading.  MonoDevelop does this automatically 
-  /// for completion data, so we do the same thing explicitly for hover tool-tips
+  ///Formats tool-tip and turns the first line into heading.  MonoDevelop does this automatically 
+  ///for completion data, so we do the same thing explicitly for hover tool-tips
   let formatTipWithHeader tip = 
     let str = formatTip true tip
-    let parts = str.Split([| '\n' |], 2)
+    let parts = str.Split([| '\n'; '\r' |], 2, StringSplitOptions.RemoveEmptyEntries)
     "<b>" + parts.[0] + "</b>" +
-      (if parts.Length > 1 then "<small>\n" + parts.[1] + "</small>" else "")
+      (if parts.Length > 1 then "<small>\n\n" + parts.[1] + "</small>" else "")
     
 
 // --------------------------------------------------------------------------------------

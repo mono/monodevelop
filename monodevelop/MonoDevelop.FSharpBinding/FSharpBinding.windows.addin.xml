@@ -158,24 +158,32 @@
       		<Command id="MonoDevelop.FSharp.FSharpCommands.ShowFSharpInteractive"
         			_label = "F# Interactive"
         			type="check"
-					_description="Show F# Interactive pad."
-					shortcut="Control|Alt|F"
-					macShortcut="Meta|Control|F"
-					defaultHandler="MonoDevelop.FSharp.ShowFSharpInteractive" />
+    					_description="Show F# Interactive pad."
+    					shortcut="Control|Alt|F"
+    					macShortcut="Meta|Control|F"
+    					defaultHandler="MonoDevelop.FSharp.ShowFSharpInteractive" />
 
-			<Command id="MonoDevelop.FSharp.FSharpCommands.SendSelection"
-					_label = "Send selection to F# Interactive"
-					_description="Send the selected text to F# Interactive"
-					shortcut="Ctrl|Return"
-					macShortcut="Ctrl|Return"
-					defaultHandler="MonoDevelop.FSharp.SendSelection" />
+    			<Command id="MonoDevelop.FSharp.FSharpCommands.SendSelection"
+    					_label = "Send selection to F# Interactive"
+    					_description="Send the selected text to F# Interactive"
+    					shortcut="Ctrl|Return"
+    					macShortcut="Ctrl|Return"
+    					defaultHandler="MonoDevelop.FSharp.SendSelection" />
 
-			 <Command id="MonoDevelop.FSharp.FSharpCommands.SendLine"
-					_label = "Send line to F# Interactive"
-					_description="Send the current line to F# Interactive"
-					shortcut="Ctrl|Alt|L"
-					macShortcut="Meta|Control|L"
-					defaultHandler="MonoDevelop.FSharp.SendLine" />
+    		  <Command id="MonoDevelop.FSharp.FSharpCommands.SendLine"
+      		 		_label = "Send line to F# Interactive"
+      		 		_description="Send the current line to F# Interactive"
+      		 		shortcut="Ctrl|Alt|L"
+      		 		macShortcut="Meta|Control|L"
+      		 		defaultHandler="MonoDevelop.FSharp.SendLine" />
+
+          <Command _description="Send the current project references to F# Interactive" 
+              _label="Send references to F# Interactive" 
+              defaultHandler="MonoDevelop.FSharp.SendReferences"
+              id="MonoDevelop.FSharp.FSharpCommands.SendReferences" 
+              macShortcut="Meta|Control|P" 
+              shortcut="Ctrl|Alt|P" />
+
 			</Category>
   	</Extension>
 
@@ -183,11 +191,13 @@
 	 <Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
 		<CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendSelection" />
 		<CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendLine" />
+    <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendReferences" />
 	 </Extension>
 
   	<Extension path = "/MonoDevelop/Ide/MainMenu/Edit">
     	<CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendSelection" />
     	<CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendLine" />
+      <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendReferences" />
   	</Extension>
 
 </Addin>
