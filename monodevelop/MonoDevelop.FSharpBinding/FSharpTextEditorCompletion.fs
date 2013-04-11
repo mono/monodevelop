@@ -34,8 +34,7 @@ type internal FSharpMemberCompletionData(mi:Declaration) =
           [| yield lines.[0]
              yield! lines.[1..] |> Seq.takeWhile (fun s -> s.StartsWith(" ")) |]
       // Skip the indented format of the item for the 'summary'
-      let summaryLines = 
-          [|  yield! lines.[1..] |> Seq.skipWhile (fun s -> s.StartsWith(" ")) |]
+      let summaryLines = [|  yield! lines.[1..] |> Seq.skipWhile (fun s -> s.StartsWith(" ")) |]
       let summaryLines =  summaryLines |> Array.filter (String.IsNullOrEmpty >> not) 
       let tooltipInfo = new TooltipInformation ()
       tooltipInfo.SummaryMarkup <- summaryLines |> String.concat "\n"
@@ -65,9 +64,9 @@ type ParameterDataProvider(nameStart: int, meths: MethodOverloads) =
         // Get the lower part of the text for the display of an overload
         let description = 
             let meth = meths.Methods.[overload]
-            let text = TipFormatter.formatTip  false meth.Description 
-            let lines = text.Split([| '\n';'\r' |])
-            let lines = if lines.Length <= 1 then [| "" |] else lines.[1..] 
+            let text = TipFormatter.formatTip false meth.Description 
+            let allLines = text.Split([| '\n';'\r' |], StringSplitOptions.RemoveEmptyEntries)
+            let body = if allLines.Length <= 1 then None else Some <| String.Join("\n", allLines.[1..])
             let param = 
                 meth.Parameters |> Array.mapi (fun i param -> 
                     let paramDesc = 
@@ -75,12 +74,13 @@ type ParameterDataProvider(nameStart: int, meths: MethodOverloads) =
                         match TipFormatter.extractParamTip param.Name meth.Description  with 
                         | Some tip -> tip
                         | None -> param.Description
-                    let name = param.Name
-                    let name = if i = currentParameter then  "<b>" + name + "</b>" else name
-                    let text = name + ": " + GLib.Markup.EscapeText  paramDesc
-                    text
-                    )
-            String.Join("\n\n", Array.append lines param)
+                    let name = if i = currentParameter then  "<b>" + param.Name + "</b>" else param.Name
+                    let text = name + ": " + GLib.Markup.EscapeText paramDesc
+                    text )
+            match body with
+            | None -> String.Join("\n", param)
+            | Some body -> body + "\n\n" + String.Join("\n", param)
+            
         
         // Returns the text to use to represent the specified parameter
         let paramDescription = 
@@ -91,7 +91,7 @@ type ParameterDataProvider(nameStart: int, meths: MethodOverloads) =
 
         let heading = 
             let meth = meths.Methods.[overload]
-            let text = TipFormatter.formatTip  false  meth.Description 
+            let text = TipFormatter.formatTip false meth.Description 
             let lines = text.Split [| '\n';'\r' |]
 
             // Try to highlight the current parameter in bold. Hack apart the text based on (, comma, and ), then
@@ -113,19 +113,17 @@ type ParameterDataProvider(nameStart: int, meths: MethodOverloads) =
             let text10L = text10L |> Array.mapi (fun i x -> if i = currentParameter then "<b>" + x + "</b>" else x)
             textL.[0] + "(" + String.Join(",", text10L) + ")" + text11
 
-        let tooltipInfo = new TooltipInformation ()
-        tooltipInfo.SummaryMarkup <- description
-        tooltipInfo.SignatureMarkup <- heading
-        tooltipInfo.FooterMarkup <- paramDescription
+        let tooltipInfo = TooltipInformation(SummaryMarkup   = description,
+                                             SignatureMarkup = heading,
+                                             FooterMarkup    = paramDescription)
         tooltipInfo
 
-        
-        // Returns the number of parameters of the specified method
-    override x.GetParameterCount (overload:int) = 
+    /// Returns the number of parameters of the specified method
+    override x.GetParameterCount(overload:int) = 
         let meth = meths.Methods.[overload]
         meth.Parameters.Length
         
-        // @todo should return 'true' for param-list methods
+    // @todo should return 'true' for param-list methods
     override x.AllowParameterList (overload: int) = 
         false
 
@@ -154,7 +152,7 @@ type FSharpTextEditorCompletion() =
       let startOffset =
           let rec loop depth i = 
               if (i <= 0) then i else
-              let ch = docText.[i]
+              let ch = docText.[i] 
               if ((ch = '(' || ch = '{' || ch = '[') && depth > 0) then loop (depth - 1) (i-1) 
               elif ((ch = ')' || ch = '}' || ch = ']')) then loop (depth+1) (i-1) 
               elif (ch = '(') then i
@@ -168,9 +166,7 @@ type FSharpTextEditorCompletion() =
       let methsOpt = tyRes.GetMethods(startOffset, doc.Editor.Document)
       match methsOpt with 
       | None -> null 
-      | Some meths -> 
-      
-      new ParameterDataProvider (startOffset, meths) :> _ 
+      | Some meths -> new ParameterDataProvider (startOffset, meths) :> _ 
     with _ -> null
         
   override x.KeyPress (key, keyChar, modifier) =
@@ -206,10 +202,9 @@ type FSharpTextEditorCompletion() =
         let result = new CompletionDataList()
         result.Add(new FSharpTryAgainMemberCompletionData())
         result :> ICompletionDataList
-    | e -> 
-        let result = new CompletionDataList()
-        result.Add(new FSharpErrorCompletionData(e))
-        result :> ICompletionDataList
+    | e -> let result = new CompletionDataList()
+           result.Add(new FSharpErrorCompletionData(e))
+           result :> ICompletionDataList
 
   // @todo find out what this is used for
   override x.GetParameterCompletionCommandOffset(cpos:byref<int>) =
