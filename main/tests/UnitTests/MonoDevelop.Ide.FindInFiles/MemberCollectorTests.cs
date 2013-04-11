@@ -112,7 +112,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			return m => m.Name == memberName && m.DeclaringType.Name == declaringType && (filter == null || filter (m));
 		}
 		
-		[Test ()]
+		[Test]
 		public void TestMethodOverrides ()
 		{
 			var code = @"
@@ -138,7 +138,7 @@ class D : A
 			TestCollectMembersForAllTypes (code, memberName, types);
 		}
 		
-		[Test ()]
+		[Test]
 		public void TestEventOverrides ()
 		{
 			var code = @"
@@ -152,7 +152,7 @@ class B : A
 }
 class C : B
 {
-	public sealed event EventHandler Event;
+	public sealed override event EventHandler Event;
 }
 class D : A
 {
@@ -163,7 +163,7 @@ class D : A
 			TestCollectMembersForAllTypes (code, memberName, types);
 		}
 		
-		[Test ()]
+		[Test]
 		public void TestPropertyOverrides ()
 		{
 			var code = @"
@@ -179,7 +179,7 @@ class B : A
 }
 class C : B
 {
-	public sealed int Prop
+	public override sealed int Prop
 	{ get; set; }
 }
 class D : A
@@ -191,8 +191,8 @@ class D : A
 			var types = new [] {"A", "B", "C", "D"};
 			TestCollectMembersForAllTypes (code, memberName, types);
 		}
-	
-		[Test ()]
+
+		[Test]
 		public void TestSingleInterfaceImpl ()
 		{
 			var code = @"
@@ -217,7 +217,7 @@ class C : IA
 			TestCollectMembersForAllTypes (code, memberName, types);
 		}
 		
-		[Test ()]
+		[Test]
 		public void TestMultiInterfacesImpl1 ()
 		{
 			var code = @"
@@ -252,7 +252,7 @@ class C : IB
 			TestCollectMembers (code, "A", memberName, expected1);
 		}
 
-		[Test ()]
+		[Test]
 		public void TestMultiInterfacesImpl2 ()
 		{
 			var code = @"
@@ -286,7 +286,7 @@ class C : IB
 			TestCollectMembers (code, "IA", memberName, expected2);
 		}
 
-		[Test ()]
+		[Test]
 		public void TestMultiInterfacesImpl3 ()
 		{
 			var code = @"
@@ -320,7 +320,7 @@ class C : IB
 			TestCollectMembers (code, "IB", memberName, expected3);
 		}
 		
-		[Test ()]
+		[Test]
 		public void TestMethodOverloads ()
 		{
 			var code = @"
@@ -351,7 +351,7 @@ struct B
 			}
 		}
 		
-		[Test ()]
+		[Test]
 		public void TestIncludeOverloads ()
 		{
 			var code = @"
@@ -389,7 +389,7 @@ class D : A
 			
 		}
 		
-		[Test ()]
+		[Test]
 		public void TestExcludeOverloads ()
 		{
 			var code = @"
@@ -435,7 +435,7 @@ class D : A
 			
 		}
 		
-		[Test ()]
+		[Test]
 		public void TestInterfacePlusOverrides ()
 		{
 			string code = @"
@@ -471,7 +471,7 @@ class B : A, IA
 			TestCollectMembers (code, "B", memberName, expected3);
 		}
 		
-		[Test ()]
+		[Test]
 		public void TestGetBaseTypes ()
 		{
 			string code = @"
@@ -505,7 +505,7 @@ class D : B, IA, IB { }
 			             {t => t == A, t => t == IA, t => t == IB});
 		}
 
-		[Test ()]
+		[Test]
 		public void TestMatchDeclaringType ()
 		{
 			var code = @"
@@ -534,7 +534,7 @@ class B : A
 			TestCollectMembers (code, "B", memberName, expected3, expected3 [0], false, true);
 		}
 
-		[Test ()]
+		[Test]
 		public void TestConstructor ()
 		{
 			var code = @"
@@ -561,7 +561,7 @@ public A(int i) { }
 		}
 
 
-		[Test ()]
+		[Test]
 		public void TestStaticConstructor ()
 		{
 			var code = @"
@@ -574,6 +574,49 @@ static A() { }
 			Predicate<IMember> filter = m => m.EntityType == EntityType.Constructor && MatchParameters(m, emptyParam);
 			var result1 = CollectMembers (code, "A", m => true, filter, true, false);
 			Assert.AreEqual (2, result1.Count);
+		}
+
+
+		[Test]
+		public void TestShadowedMember ()
+		{
+			var code = @"
+class A
+{
+	public int Prop
+	{ get; set; }
+}
+class B : A
+{
+	public int Prop
+	{ get; set; }
+}";
+			var members = CollectMembers (code, "A", "Prop", m => true, true, false);
+			Assert.AreEqual (1, members.Count);
+		}
+
+		/// <summary>
+		/// Bug 11714 - Rename interface member does not affect other implementations 
+		/// </summary>
+		[Test]
+		public void TestBug11714 ()
+		{
+			var code = @"
+class A : IA
+{
+	public int Prop
+	{ get; set; }
+}
+
+interface IA { int Prop { get; set; } }
+
+class B : IA
+{
+	public int Prop
+	{ get; set; }
+}";
+			var members = CollectMembers (code, "A", "Prop", m => true, true, false);
+			Assert.AreEqual (3, members.Count);
 		}
 
 	}
