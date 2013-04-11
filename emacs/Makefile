@@ -1,15 +1,15 @@
 # Directories
 
-base_d = $(abspath ..)/
-test_d = $(abspath test)/
-tmp_d  = $(abspath tmp)/
-bin_d  = $(abspath bin)/
+base_d = $(abspath ..)
+test_d = $(abspath test)
+tmp_d  = $(abspath tmp)
+bin_d  = $(abspath bin)
 
 # Elisp files required for tests.
 src_files         = $(wildcard ./*.el)
-integration_tests = $(test_d)integration-tests.el
+integration_tests = $(test_d)/integration-tests.el
 unit_tests        = $(filter-out $(integration_tests), $(wildcard $(test_d)*tests.el))
-utils             = $(test_d)test-common.el
+utils             = $(test_d)/test-common.el
 
 # Emacs command format.
 emacs            = emacs
@@ -20,9 +20,9 @@ emacs_opts       = --batch -f run-fsharp-tests
 
 # HACK: Vars for manually building the ac binary.
 # We should be really able to use the top-level makefile for this...
-ac_exe    = $(bin_d)fsautocomplete.exe
-ac_fsproj = $(base_d)FSharp.AutoComplete/FSharp.AutoComplete.fsproj
-ac_out    = $(base_d)FSharp.AutoComplete/bin/Debug/
+ac_exe    = $(bin_d)/fsautocomplete.exe
+ac_fsproj = $(base_d)/FSharp.AutoComplete/FSharp.AutoComplete.fsproj
+ac_out    = $(base_d)/FSharp.AutoComplete/bin/Debug/
 
 # Installation paths.
 dest_root = $(HOME)/.emacs.d/fsharp-mode/
@@ -45,7 +45,7 @@ install : $(ac_exe) $(dest_root) $(dest_bin)
 		cp $$f $(dest_root) ;\
 	done
 # Copy bin folder.
-	cp -R $(bin_d) $(dest_root)/bin
+	cp -R $(bin_d) $(dest_root)
 
 
 $(dest_root) :; mkdir -p $(dest_root)
@@ -60,7 +60,7 @@ clean : clean-elc
 
 clean-elc :
 	rm -f  *.elc
-	rm -f  $(test_d)*.elc
+	rm -f  $(test_d)/*.elc
 
 # Testing
 
