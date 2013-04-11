@@ -27,3 +27,5 @@ lib/FsUnit.*
 *.elc
 emacs/deps
 emacs/tmp
+
+.DS_Store
