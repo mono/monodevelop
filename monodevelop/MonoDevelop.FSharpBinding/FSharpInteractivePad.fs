@@ -14,6 +14,7 @@ open MonoDevelop.Components.Commands
 open MonoDevelop.Core
 open MonoDevelop.Ide
 open MonoDevelop.Ide.Gui
+open MonoDevelop.Projects
 
 open MonoDevelop.FSharp
 
@@ -99,9 +100,11 @@ type FSharpInteractivePad() =
 
   //let handler = 
   do Debug.WriteLine ("InteracivePad: created!")
+  #if DEBUG
   do view.Destroyed.Add (fun _ ->       Debug.WriteLine ("Interactive: view destroyed"))
   do IdeApp.Exiting.Add (fun _ ->       Debug.WriteLine ("Interactive: app exiting!!"))
   do IdeApp.Exited.Add (fun _ ->       Debug.WriteLine ("Interactive: app exited!!"))
+  #endif
   member x.Shutdown()  = 
     do Debug.WriteLine (sprintf "Interactive: x.Shutdown()!")
     !session |> Option.iter (fun ses -> ses.Kill())
@@ -219,6 +222,18 @@ type FSharpInteractivePad() =
       let file = IdeApp.Workbench.ActiveDocument.FileName.ToString()
       CompilerArguments.supportedExtension(IO.Path.GetExtension(file))
       
+  member x.LoadReferences() =
+    Debug.WriteLine("FSI:  #LoadReferences")
+    let project = IdeApp.Workbench.ActiveDocument.Project :?> DotNetProject
+
+    let references = project.GetReferencedAssemblies(ConfigurationSelector.Default, true)
+                     |> Seq.filter (fun r ->  not <| (r.Contains "mscorlib.dll" || r.Contains "FSharp.Core.dll") )
+                     |> Seq.toArray
+    
+    let orderReferences = FSharp.CompilerBinding.OrderAssemblyReferences()
+    let references = orderReferences.Execute references
+    sendCommand references true
+      
   static member CurrentPad =  
     let existing = 
       try IdeApp.Workbench.GetPad<FSharpInteractivePad>()
@@ -259,6 +274,17 @@ type SendLine() =
   override x.Run() =
     Debug.WriteLine (sprintf "Interactive: Send line to F# interactive invoked!")
     FSharpInteractivePad.CurrentFsi.SendLine()
+    FSharpInteractivePad.CurrentPad.BringToFront(false)
+  override x.Update(info:CommandInfo) =
+    let fsi = FSharpInteractivePad.CurrentFsi
+    info.Enabled <- true
+    info.Visible <- fsi.IsInsideFSharpFile
+    
+type SendReferences() =
+  inherit CommandHandler()
+  override x.Run() =
+    Debug.WriteLine (sprintf "Interactive: Load references in F# interactive invoked!")
+    FSharpInteractivePad.CurrentFsi.LoadReferences()
     FSharpInteractivePad.CurrentPad.BringToFront(false)
   override x.Update(info:CommandInfo) =
     let fsi = FSharpInteractivePad.CurrentFsi
