@@ -296,12 +296,11 @@ namespace MonoDevelop.AspNet
 			string extension = System.IO.Path.GetExtension (fileName);
 			if (extension == null)
 				return WebSubtype.None;
-			extension = extension.ToLower ().TrimStart ('.');
+			extension = extension.ToUpperInvariant ().TrimStart ('.');
 			
 			//NOTE: No way to identify WebSubtype.Code from here
 			//use the instance method for that
-			switch (extension)
-			{
+			switch (extension) {
 			case "aspx":
 				return WebSubtype.WebForm;
 			case "master":

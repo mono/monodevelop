@@ -154,9 +154,8 @@ namespace MonoDevelop.AspNet.Mvc
 
 		public override string GetDefaultBuildAction (string fileName)
 		{
-			var fileType = DeterminateFileType (fileName);
-			switch (fileType) 
-			{
+			var fileType = DetermineFileType (fileName);
+			switch (fileType) {
 			case AspMvcSubtype.Razor:
 				return BuildAction.Content;
 			default:
@@ -164,12 +163,12 @@ namespace MonoDevelop.AspNet.Mvc
 			}
 		}
 
-		private AspMvcSubtype DeterminateFileType(string fileName)
+		private AspMvcSubtype DetermineFileType (string fileName)
 		{
 			string extension = System.IO.Path.GetExtension (fileName);
 			if (extension == null)
 				return AspMvcSubtype.Unknown;
-			extension = extension.ToLower().TrimStart ('.');
+			extension = extension.ToUpperInvariant ().TrimStart ('.');
 			switch (extension) 
 			{
 			case "cshtml":
