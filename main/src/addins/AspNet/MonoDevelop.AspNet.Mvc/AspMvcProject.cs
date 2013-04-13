@@ -171,7 +171,7 @@ namespace MonoDevelop.AspNet.Mvc
 			extension = extension.ToUpperInvariant ().TrimStart ('.');
 			switch (extension) 
 			{
-			case "cshtml":
+			case "CSHTML":
 				return AspMvcSubtype.Razor;
 			default:
 				return AspMvcSubtype.Unknown;

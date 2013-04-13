@@ -301,39 +301,39 @@ namespace MonoDevelop.AspNet
 			//NOTE: No way to identify WebSubtype.Code from here
 			//use the instance method for that
 			switch (extension) {
-			case "aspx":
+			case "ASPX":
 				return WebSubtype.WebForm;
-			case "master":
+			case "MASTER":
 				return WebSubtype.MasterPage;
-			case "ashx":
+			case "ASHX":
 				return WebSubtype.WebHandler;
-			case "ascx":
+			case "ASCX":
 				return WebSubtype.WebControl;
-			case "asmx":
+			case "ASMX":
 				return WebSubtype.WebService;
-			case "asax":
+			case "ASAX":
 				return WebSubtype.Global;
-			case "gif":
-			case "png":
-			case "jpg":
+			case "GIF":
+			case "PNG":
+			case "JPG":
 				return WebSubtype.WebImage;
-			case "skin":
+			case "SKIN":
 				return WebSubtype.WebSkin;
-			case "config":
+			case "CONFIG":
 				return WebSubtype.Config;
-			case "browser":
+			case "BROWSER":
 				return WebSubtype.BrowserDefinition;
-			case "axd":
+			case "AXD":
 				return WebSubtype.Axd;
-			case "sitemap":
+			case "SITEMAP":
 				return WebSubtype.Sitemap;
-			case "css":
+			case "CSS":
 				return WebSubtype.Css;
-			case "xhtml":
-			case "html":
-			case "htm":
+			case "XHTML":
+			case "HTML":
+			case "HTM":
 				return WebSubtype.Html;
-			case "js":
+			case "JS":
 				return WebSubtype.JavaScript;
 			default:
 				return WebSubtype.None;
