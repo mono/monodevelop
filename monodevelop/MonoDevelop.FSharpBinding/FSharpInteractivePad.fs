@@ -231,8 +231,9 @@ type FSharpInteractivePad() =
                      |> Seq.toArray
     
     let orderReferences = FSharp.CompilerBinding.OrderAssemblyReferences()
-    let references = orderReferences.Execute references
+    let references = orderReferences.Order references
     sendCommand references true
+    
       
   static member CurrentPad =  
     let existing = 
