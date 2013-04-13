@@ -2,6 +2,7 @@ namespace FSharp.CompilerBinding
 
 open System.Reflection
 open System
+open Mono.Cecil
 
 module Object = 
   let eqHack (f: 'a -> 'b) (x: 'a) (yobj: Object) : Boolean =
@@ -29,7 +30,7 @@ module List =
 type AssemblyRef =
   {
     Path: String
-    Assembly: Assembly
+    Assembly: AssemblyDefinition
     Name: String
   }
 
@@ -48,17 +49,17 @@ type AssemblyRef =
   override x.ToString () = x.Path
 
 [<Serializable>]
-type ForeignAidWorker () =
+type OrderAssemblyReferences () =
 
   let mkGraph (seeds: seq<AssemblyRef>) : Digraph<AssemblyRef> =
 
-    let findRef (s: seq<AssemblyRef>) (m: AssemblyName) =
+    let findRef (s: seq<AssemblyRef>) (m: AssemblyNameReference) =
       match Seq.tryFind (fun r -> r.Name = m.Name) seeds with
       | None    -> s
       | Some ar -> Seq.append (Seq.singleton ar) s
 
     let processNode (g: Digraph<AssemblyRef>) (n: AssemblyRef) =
-      let depNames = n.Assembly.GetReferencedAssemblies ()
+      let depNames = n.Assembly.MainModule.AssemblyReferences.ToArray()
       let depRefs = Array.fold findRef Seq.empty depNames
       Seq.fold (fun h c -> Digraph.addEdge (n, c) h) g depRefs
 
@@ -70,31 +71,18 @@ type ForeignAidWorker () =
     fixpoint (Seq.fold (fun g s -> Digraph.addNode s g) Map.empty seeds)
 
   let mkAssemblyRef (t: String) =
-    let asmBytes = System.IO.File.ReadAllBytes(t)
-    let assm = Assembly.Load(asmBytes)
+    let assemblyDefinition = Mono.Cecil.AssemblyDefinition.ReadAssembly(t)
     {
       Path = t
-      Assembly = assm
-      Name = assm.GetName().Name
+      Assembly = assemblyDefinition
+      Name = assemblyDefinition.FullName
     }
 
-  member x.Work(rs: String[]) = 
+  ///Orders the passed in array of assembly references in dependency order
+  member x.Order(rs: String[]) = 
     let asmRefs = Array.map mkAssemblyRef rs
     let graph = mkGraph asmRefs
     let ordering = Digraph.topSort graph
     let str = List.toStringWithDelims "#r @\"" "\"\n#r @\"" "\"" ordering
     str 
-
-type OrderAssemblyReferences() = 
-
-  member x.Execute paths =
-    let setup = AppDomainSetup()
-    do setup.ApplicationBase <- System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)
-    let appDomain = AppDomain.CreateDomain("TestDomain", null, setup)
-    try 
-      let faw = (appDomain.CreateInstanceAndUnwrap(typeof<ForeignAidWorker>.Assembly.FullName, typeof<ForeignAidWorker>.FullName)) :?> ForeignAidWorker
-      let ordering = faw.Work(paths)
-      ordering
-    finally
-      do AppDomain.Unload(appDomain)
     
