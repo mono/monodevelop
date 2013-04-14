@@ -230,40 +230,40 @@ namespace MonoDevelop.CSharp.Formatting
 	}
 }";
 		const string longMethodDeclaration = @"class ClassDeclaration { 
-		public void LongMethodCallInSameLine (int test, string foo, double bar)
-		{
-		}
-		public void LongMethodCallInMultiple (
+	public void LongMethodCallInSameLine (int test, string foo, double bar)
+	{
+	}
+	public void LongMethodCallInMultiple (
 int test,
 string foo,
 double bar)
-		{
-		}
-		public void LongMethodCallInMultipleCase2 (int test,
+	{
+	}
+	public void LongMethodCallInMultipleCase2 (int test,
 string foo,
 double bar)
-		{
-		}
+	{
 	}
 }";
 		const string longIndexerDeclaration = @"class ClassDeclaration { 
-		public int this [int test, string foo, double bar]
-		{
-			get {}
-		}
-		public int this [
+	public int this [int test, string foo, double bar]
+	{
+		get {}
+	}
+	public int this [
 int test,
 string foo,
 double bar]
-		{
-			get {}
-		}
-		public int this [int test,
+	{
+		get {}
+	}
+	public int this [int test,
 string foo,
 double bar]
-		{
-			get {}
-		}";
+	{
+		get {}
+	}
+}";
 		const string longIndexer = @"class ClassDeclaration { 
 		public void Test (int test)
 		{
@@ -271,7 +271,7 @@ double bar]
 			this [
 ""Hello"", 
 		1, 
-		test] = 0
+		test] = 0;
 
 		this [""Hello"", 
 		                               1, 

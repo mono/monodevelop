@@ -29,7 +29,7 @@ namespace MonoDevelop.CSharp.Project
 		private global::Gtk.Label label2;
 		private global::Gtk.ComboBox langVerCombo;
 		private global::Gtk.CheckButton allowUnsafeCodeCheckButton;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
