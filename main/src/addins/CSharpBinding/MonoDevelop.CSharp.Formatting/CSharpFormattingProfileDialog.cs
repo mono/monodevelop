@@ -37,7 +37,7 @@ namespace MonoDevelop.CSharp.Formatting
 	{
 		Mono.TextEditor.TextEditor texteditor = new Mono.TextEditor.TextEditor ();
 		CSharpFormattingPolicy profile;
-		Gtk.TreeStore indentOptions, bacePositionOptions, newLineOptions, whiteSpaceOptions;
+		Gtk.TreeStore indentOptions, bacePositionOptions, newLineOptions, whiteSpaceOptions, wrappingOptions;
 		
 		static Dictionary<Wrapping, string> arrayInitializerTranslationDictionary = new Dictionary<Wrapping, string> ();
 		static Dictionary<BraceStyle, string> braceStyleTranslationDictionary = new Dictionary<BraceStyle, string> ();
@@ -215,7 +215,69 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 	}";
-		
+		const string longMethodCall = @"class ClassDeclaration { 
+		public void Test (int test)
+		{
+			LongMethodCallInSameLine (""Hello"", 1, test);
+			LongMethodCallInMultiple (
+""Hello"", 
+		1, 
+		test);
+
+		LongMethodCallInMultipleCase2 (""Hello"", 
+		                               1, 
+		                               test);
+	}
+}";
+		const string longMethodDeclaration = @"class ClassDeclaration { 
+		public void LongMethodCallInSameLine (int test, string foo, double bar)
+		{
+		}
+		public void LongMethodCallInMultiple (
+int test,
+string foo,
+double bar)
+		{
+		}
+		public void LongMethodCallInMultipleCase2 (int test,
+string foo,
+double bar)
+		{
+		}
+	}
+}";
+		const string longIndexerDeclaration = @"class ClassDeclaration { 
+		public int this [int test, string foo, double bar]
+		{
+			get {}
+		}
+		public int this [
+int test,
+string foo,
+double bar]
+		{
+			get {}
+		}
+		public int this [int test,
+string foo,
+double bar]
+		{
+			get {}
+		}";
+		const string longIndexer = @"class ClassDeclaration { 
+		public void Test (int test)
+		{
+			this [""Hello"", 1, test] = 0;
+			this [
+""Hello"", 
+		1, 
+		test] = 0
+
+		this [""Hello"", 
+		                               1, 
+		                               test] = 0;
+	}
+}";
 		const string simpleWhile = @"class ClassDeclaration { 
 		public void Test ()
 		{
@@ -386,6 +448,7 @@ namespace TestSpace {
 			comboboxCategories.AppendText (GettextCatalog.GetString ("Indentation"));
 			comboboxCategories.AppendText (GettextCatalog.GetString ("Braces"));
 			comboboxCategories.AppendText (GettextCatalog.GetString ("Blank lines"));
+			comboboxCategories.AppendText (GettextCatalog.GetString ("Wrapping"));
 			comboboxCategories.AppendText (GettextCatalog.GetString ("White Space"));
 			comboboxCategories.AppendText (GettextCatalog.GetString ("New Lines"));
 			comboboxCategories.Changed += delegate(object sender, EventArgs e) {
@@ -547,22 +610,22 @@ namespace TestSpace {
 			
 			#region New line options
 			newLineOptions = new Gtk.TreeStore (typeof(string), typeof(string), typeof(string), typeof(bool), typeof(bool));
-			
+
 			column = new TreeViewColumn ();
 			// pixbuf column
 			column.PackStart (pixbufCellRenderer, false);
 			column.SetCellDataFunc (pixbufCellRenderer, RenderIcon);
-			
+
 			// text column
 			cellRendererText.Ypad = 1;
 			column.PackStart (cellRendererText, true);
 			column.SetAttributes (cellRendererText, "text", 1);
-			
+
 			treeviewNewLines.Model = newLineOptions;
 			treeviewNewLines.HeadersVisible = false;
 			treeviewNewLines.Selection.Changed += TreeSelectionChanged;
 			treeviewNewLines.AppendColumn (column);
-			
+
 			column = new TreeViewColumn ();
 			cellRendererCombo = new CellRendererCombo ();
 			cellRendererCombo.Ypad = 1;
@@ -576,7 +639,7 @@ namespace TestSpace {
 			column.PackStart (cellRendererCombo, false);
 			column.SetAttributes (cellRendererCombo, "visible", comboVisibleColumn);
 			column.SetCellDataFunc (cellRendererCombo, ComboboxDataFunc);
-			
+
 			cellRendererToggle = new CellRendererToggle ();
 			cellRendererToggle.Activatable = !profile.IsBuiltIn;
 			cellRendererToggle.Ypad = 1;
@@ -584,9 +647,9 @@ namespace TestSpace {
 			column.PackStart (cellRendererToggle, false);
 			column.SetAttributes (cellRendererToggle, "visible", toggleVisibleColumn);
 			column.SetCellDataFunc (cellRendererToggle, ToggleDataFunc);
-			
+
 			treeviewNewLines.AppendColumn (column);
-			
+
 			AddOption (newLineOptions, "ElseNewLinePlacement", GettextCatalog.GetString ("Place 'else' on new line"), simpleIf);
 			AddOption (newLineOptions, "ElseIfNewLinePlacement", GettextCatalog.GetString ("Place 'else if' on new line"), simpleIf);
 			AddOption (newLineOptions, "CatchNewLinePlacement", GettextCatalog.GetString ("Place 'catch' on new line"), simpleCatch);
@@ -596,6 +659,76 @@ namespace TestSpace {
 			treeviewNewLines.ExpandAll ();
 			#endregion
 			
+			#region Wrapping options
+			wrappingOptions = new Gtk.TreeStore (typeof(string), typeof(string), typeof(string), typeof(bool), typeof(bool));
+
+			column = new TreeViewColumn ();
+			// pixbuf column
+			column.PackStart (pixbufCellRenderer, false);
+			column.SetCellDataFunc (pixbufCellRenderer, RenderIcon);
+
+			// text column
+			cellRendererText.Ypad = 1;
+			column.PackStart (cellRendererText, true);
+			column.SetAttributes (cellRendererText, "text", 1);
+
+
+			treeviewWrappingCategory.Model = wrappingOptions;
+			treeviewWrappingCategory.HeadersVisible = false;
+			treeviewWrappingCategory.Selection.Changed += TreeSelectionChanged;
+			treeviewWrappingCategory.AppendColumn (column);
+
+			column = new TreeViewColumn ();
+			cellRendererCombo = new CellRendererCombo ();
+			cellRendererCombo.Ypad = 1;
+			cellRendererCombo.Mode = CellRendererMode.Editable;
+			cellRendererCombo.TextColumn = 1;
+			cellRendererCombo.Model = comboBoxStore;
+			cellRendererCombo.HasEntry = false;
+			cellRendererCombo.Editable = !profile.IsBuiltIn;
+			cellRendererCombo.Edited += new ComboboxEditedHandler (this, wrappingOptions).ComboboxEdited;
+
+			column.PackStart (cellRendererCombo, false);
+			column.SetAttributes (cellRendererCombo, "visible", comboVisibleColumn);
+			column.SetCellDataFunc (cellRendererCombo, ComboboxDataFunc);
+
+			cellRendererToggle = new CellRendererToggle ();
+			cellRendererToggle.Activatable = !profile.IsBuiltIn;
+			cellRendererToggle.Ypad = 1;
+			cellRendererToggle.Toggled += new CellRendererToggledHandler (this, treeviewNewLines, wrappingOptions).Toggled;
+			column.PackStart (cellRendererToggle, false);
+			column.SetAttributes (cellRendererToggle, "visible", toggleVisibleColumn);
+			column.SetCellDataFunc (cellRendererToggle, ToggleDataFunc);
+
+			treeviewWrappingCategory.AppendColumn (column);
+
+			category = AddOption (wrappingOptions, null, GettextCatalog.GetString ("Method declarations"), null);
+			AddOption (wrappingOptions, category, "MethodDeclarationParameterWrapping", GettextCatalog.GetString ("Parameters"), longMethodDeclaration);
+			AddOption (wrappingOptions, category, "NewLineAferMethodDeclarationOpenParentheses", GettextCatalog.GetString ("New line after open parentheses"), longMethodDeclaration);
+			AddOption (wrappingOptions, category, "MethodDeclarationClosingParenthesesOnNewLine", GettextCatalog.GetString ("New line before closing parentheses"), longMethodDeclaration);
+			AddOption (wrappingOptions, category, "AlignToFirstMethodDeclarationParameter", GettextCatalog.GetString ("Align to first parameter"), longMethodDeclaration);
+
+			category = AddOption (wrappingOptions, null, GettextCatalog.GetString ("Method calls"), null);
+			AddOption (wrappingOptions, category, "MethodCallArgumentWrapping", GettextCatalog.GetString ("Arguments"), longMethodCall);
+			AddOption (wrappingOptions, category, "NewLineAferMethodCallOpenParentheses", GettextCatalog.GetString ("New line after open parentheses"), longMethodCall);
+			AddOption (wrappingOptions, category, "MethodCallClosingParenthesesOnNewLine", GettextCatalog.GetString ("New line before closing parentheses"), longMethodCall);
+			AddOption (wrappingOptions, category, "AlignToFirstMethodCallArgument", GettextCatalog.GetString ("Align to first argument"), longMethodCall);
+
+			category = AddOption (wrappingOptions, null, GettextCatalog.GetString ("Indexer declarations"), null);
+			AddOption (wrappingOptions, category, "IndexerDeclarationParameterWrapping", GettextCatalog.GetString ("Parameters"), longIndexerDeclaration);
+			AddOption (wrappingOptions, category, "NewLineAferIndexerDeclarationOpenBracket", GettextCatalog.GetString ("New line after open parentheses"), longIndexerDeclaration);
+			AddOption (wrappingOptions, category, "IndexerDeclarationClosingBracketOnNewLine", GettextCatalog.GetString ("New line before closing parentheses"), longIndexerDeclaration);
+			AddOption (wrappingOptions, category, "AlignToFirstIndexerDeclarationParameter", GettextCatalog.GetString ("Align to first parameter"), longIndexerDeclaration);
+
+			category = AddOption (wrappingOptions, null, GettextCatalog.GetString ("Indexer usage"), null);
+			AddOption (wrappingOptions, category, "IndexerArgumentWrapping", GettextCatalog.GetString ("Arguments"), longIndexer);
+			AddOption (wrappingOptions, category, "NewLineAferIndexerOpenBracket", GettextCatalog.GetString ("New line after open bracket"), longIndexer);
+			AddOption (wrappingOptions, category, "IndexerClosingBracketOnNewLine", GettextCatalog.GetString ("New line before closing bracket"), longIndexer);
+			AddOption (wrappingOptions, category, "AlignToFirstIndexerArgument", GettextCatalog.GetString ("Align to first parameter"), longIndexer);
+
+			treeviewWrappingCategory.ExpandAll ();
+			#endregion
+
 			#region White space options
 			whiteSpaceOptions = new Gtk.TreeStore (typeof (string), typeof (string), typeof (string), typeof(bool), typeof(bool));
 			

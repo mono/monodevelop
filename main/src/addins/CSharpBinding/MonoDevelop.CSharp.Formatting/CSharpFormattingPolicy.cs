@@ -1377,7 +1377,170 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 		#endregion
-		
+
+		#region Wrapping
+		[ItemProperty]
+		public Wrapping MethodCallArgumentWrapping {
+			get {
+				return options.MethodCallArgumentWrapping;
+			}
+			set {
+				options.MethodCallArgumentWrapping = value;
+			}
+		}
+
+		[ItemProperty]
+		public NewLinePlacement NewLineAferMethodCallOpenParentheses {
+			get {
+				return options.NewLineAferMethodCallOpenParentheses;
+			}
+			set {
+				options.NewLineAferMethodCallOpenParentheses = value;
+			}
+		}
+
+		[ItemProperty]
+		public NewLinePlacement MethodCallClosingParenthesesOnNewLine {
+			get {
+				return options.MethodCallClosingParenthesesOnNewLine;
+			}
+			set {
+				options.MethodCallClosingParenthesesOnNewLine = value;
+			}
+		}
+
+		[ItemProperty]
+		public bool AlignToFirstMethodCallArgument {
+			get {
+				return options.AlignToFirstMethodCallArgument;
+			}
+			set {
+				options.AlignToFirstMethodCallArgument = value;
+			}
+		}
+
+		[ItemProperty]
+		public Wrapping MethodDeclarationParameterWrapping {
+			get {
+				return options.MethodDeclarationParameterWrapping;
+			}
+			set {
+				options.MethodDeclarationParameterWrapping = value;
+			}
+		}
+
+		[ItemProperty]
+		public NewLinePlacement NewLineAferMethodDeclarationOpenParentheses {
+			get {
+				return options.NewLineAferMethodDeclarationOpenParentheses;
+			}
+			set {
+				options.NewLineAferMethodDeclarationOpenParentheses = value;
+			}
+		}
+
+		[ItemProperty]
+		public NewLinePlacement MethodDeclarationClosingParenthesesOnNewLine {
+			get {
+				return options.MethodDeclarationClosingParenthesesOnNewLine;
+			}
+			set {
+				options.MethodDeclarationClosingParenthesesOnNewLine = value;
+			}
+		}
+
+		[ItemProperty]
+		public bool AlignToFirstMethodDeclarationParameter {
+			get {
+				return options.AlignToFirstMethodDeclarationParameter;
+			}
+			set {
+				options.AlignToFirstMethodDeclarationParameter = value;
+			}
+		}
+	
+		[ItemProperty]
+		public Wrapping IndexerDeclarationParameterWrapping {
+			get {
+				return options.IndexerDeclarationParameterWrapping;
+			}
+			set {
+				options.IndexerDeclarationParameterWrapping = value;
+			}
+		}
+
+		[ItemProperty]
+		public NewLinePlacement NewLineAferIndexerDeclarationOpenBracket {
+			get {
+				return options.NewLineAferIndexerDeclarationOpenBracket;
+			}
+			set {
+				options.NewLineAferIndexerDeclarationOpenBracket = value;
+			}
+		}
+
+		[ItemProperty]
+		public NewLinePlacement IndexerDeclarationClosingBracketOnNewLine {
+			get {
+				return options.IndexerDeclarationClosingBracketOnNewLine;
+			}
+			set {
+				options.IndexerDeclarationClosingBracketOnNewLine = value;
+			}
+		}
+
+		[ItemProperty]
+		public bool AlignToFirstIndexerDeclarationParameter {
+			get {
+				return options.AlignToFirstIndexerDeclarationParameter;
+			}
+			set {
+				options.AlignToFirstIndexerDeclarationParameter = value;
+			}
+		}
+
+		[ItemProperty]
+		public Wrapping IndexerArgumentWrapping {
+			get {
+				return options.IndexerArgumentWrapping;
+			}
+			set {
+				options.IndexerArgumentWrapping = value;
+			}
+		}
+
+		[ItemProperty]
+		public NewLinePlacement NewLineAferIndexerOpenBracket {
+			get {
+				return options.NewLineAferIndexerOpenBracket;
+			}
+			set {
+				options.NewLineAferIndexerOpenBracket = value;
+			}
+		}
+
+		[ItemProperty]
+		public NewLinePlacement IndexerClosingBracketOnNewLine {
+			get {
+				return options.IndexerClosingBracketOnNewLine;
+			}
+			set {
+				options.IndexerClosingBracketOnNewLine = value;
+			}
+		}
+
+		[ItemProperty]
+		public bool AlignToFirstIndexerArgument {
+			get {
+				return options.AlignToFirstIndexerArgument;
+			}
+			set {
+				options.AlignToFirstIndexerArgument = value;
+			}
+		}
+
+		#endregion
+
 		public CSharpFormattingPolicy ()
 		{
 			this.options = FormattingOptionsFactory.CreateMono ();

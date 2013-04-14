@@ -37,6 +37,9 @@ namespace MonoDevelop.CSharp.Formatting
 		private global::Gtk.Label label22;
 		private global::Gtk.Label label23;
 		private global::Gtk.Label label14;
+		private global::Gtk.ScrolledWindow GtkScrolledWindow3;
+		private global::Gtk.TreeView treeviewWrappingCategory;
+		private global::Gtk.Label label2;
 		private global::Gtk.ScrolledWindow GtkScrolledWindow2;
 		private global::Gtk.TreeView treeviewInsertWhiteSpaceCategory;
 		private global::Gtk.Label label10;
@@ -48,7 +51,7 @@ namespace MonoDevelop.CSharp.Formatting
 		private global::Gtk.ScrolledWindow scrolledwindow;
 		private global::Gtk.Button buttonCancel;
 		private global::Gtk.Button buttonOk;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
@@ -361,6 +364,24 @@ namespace MonoDevelop.CSharp.Formatting
 			this.notebookCategories.SetTabLabel (this.table4, this.label14);
 			this.label14.ShowAll ();
 			// Container child notebookCategories.Gtk.Notebook+NotebookChild
+			this.GtkScrolledWindow3 = new global::Gtk.ScrolledWindow ();
+			this.GtkScrolledWindow3.Name = "GtkScrolledWindow3";
+			this.GtkScrolledWindow3.ShadowType = ((global::Gtk.ShadowType)(1));
+			// Container child GtkScrolledWindow3.Gtk.Container+ContainerChild
+			this.treeviewWrappingCategory = new global::Gtk.TreeView ();
+			this.treeviewWrappingCategory.CanFocus = true;
+			this.treeviewWrappingCategory.Name = "treeviewWrappingCategory";
+			this.GtkScrolledWindow3.Add (this.treeviewWrappingCategory);
+			this.notebookCategories.Add (this.GtkScrolledWindow3);
+			global::Gtk.Notebook.NotebookChild w29 = ((global::Gtk.Notebook.NotebookChild)(this.notebookCategories [this.GtkScrolledWindow3]));
+			w29.Position = 3;
+			// Notebook tab
+			this.label2 = new global::Gtk.Label ();
+			this.label2.Name = "label2";
+			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("page6");
+			this.notebookCategories.SetTabLabel (this.GtkScrolledWindow3, this.label2);
+			this.label2.ShowAll ();
+			// Container child notebookCategories.Gtk.Notebook+NotebookChild
 			this.GtkScrolledWindow2 = new global::Gtk.ScrolledWindow ();
 			this.GtkScrolledWindow2.Name = "GtkScrolledWindow2";
 			this.GtkScrolledWindow2.ShadowType = ((global::Gtk.ShadowType)(1));
@@ -370,8 +391,8 @@ namespace MonoDevelop.CSharp.Formatting
 			this.treeviewInsertWhiteSpaceCategory.Name = "treeviewInsertWhiteSpaceCategory";
 			this.GtkScrolledWindow2.Add (this.treeviewInsertWhiteSpaceCategory);
 			this.notebookCategories.Add (this.GtkScrolledWindow2);
-			global::Gtk.Notebook.NotebookChild w29 = ((global::Gtk.Notebook.NotebookChild)(this.notebookCategories [this.GtkScrolledWindow2]));
-			w29.Position = 3;
+			global::Gtk.Notebook.NotebookChild w31 = ((global::Gtk.Notebook.NotebookChild)(this.notebookCategories [this.GtkScrolledWindow2]));
+			w31.Position = 4;
 			// Notebook tab
 			this.label10 = new global::Gtk.Label ();
 			this.label10.Name = "label10";
@@ -388,8 +409,8 @@ namespace MonoDevelop.CSharp.Formatting
 			this.treeviewNewLines.Name = "treeviewNewLines";
 			this.GtkScrolledWindow4.Add (this.treeviewNewLines);
 			this.notebookCategories.Add (this.GtkScrolledWindow4);
-			global::Gtk.Notebook.NotebookChild w31 = ((global::Gtk.Notebook.NotebookChild)(this.notebookCategories [this.GtkScrolledWindow4]));
-			w31.Position = 4;
+			global::Gtk.Notebook.NotebookChild w33 = ((global::Gtk.Notebook.NotebookChild)(this.notebookCategories [this.GtkScrolledWindow4]));
+			w33.Position = 5;
 			// Notebook tab
 			this.label11 = new global::Gtk.Label ();
 			this.label11.Name = "label11";
@@ -397,11 +418,11 @@ namespace MonoDevelop.CSharp.Formatting
 			this.notebookCategories.SetTabLabel (this.GtkScrolledWindow4, this.label11);
 			this.label11.ShowAll ();
 			this.vbox2.Add (this.notebookCategories);
-			global::Gtk.Box.BoxChild w32 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.notebookCategories]));
-			w32.Position = 1;
+			global::Gtk.Box.BoxChild w34 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.notebookCategories]));
+			w34.Position = 1;
 			this.hpaned1.Add (this.vbox2);
-			global::Gtk.Paned.PanedChild w33 = ((global::Gtk.Paned.PanedChild)(this.hpaned1 [this.vbox2]));
-			w33.Resize = false;
+			global::Gtk.Paned.PanedChild w35 = ((global::Gtk.Paned.PanedChild)(this.hpaned1 [this.vbox2]));
+			w35.Resize = false;
 			// Container child hpaned1.Gtk.Paned+PanedChild
 			this.vbox6 = new global::Gtk.VBox ();
 			this.vbox6.Name = "vbox6";
@@ -412,31 +433,31 @@ namespace MonoDevelop.CSharp.Formatting
 			this.label13.Xalign = 0F;
 			this.label13.LabelProp = global::Mono.Unix.Catalog.GetString ("Preview:");
 			this.vbox6.Add (this.label13);
-			global::Gtk.Box.BoxChild w34 = ((global::Gtk.Box.BoxChild)(this.vbox6 [this.label13]));
-			w34.Position = 0;
-			w34.Expand = false;
-			w34.Fill = false;
+			global::Gtk.Box.BoxChild w36 = ((global::Gtk.Box.BoxChild)(this.vbox6 [this.label13]));
+			w36.Position = 0;
+			w36.Expand = false;
+			w36.Fill = false;
 			// Container child vbox6.Gtk.Box+BoxChild
 			this.scrolledwindow = new global::Gtk.ScrolledWindow ();
 			this.scrolledwindow.CanFocus = true;
 			this.scrolledwindow.Name = "scrolledwindow";
 			this.scrolledwindow.ShadowType = ((global::Gtk.ShadowType)(1));
 			this.vbox6.Add (this.scrolledwindow);
-			global::Gtk.Box.BoxChild w35 = ((global::Gtk.Box.BoxChild)(this.vbox6 [this.scrolledwindow]));
-			w35.Position = 1;
+			global::Gtk.Box.BoxChild w37 = ((global::Gtk.Box.BoxChild)(this.vbox6 [this.scrolledwindow]));
+			w37.Position = 1;
 			this.hpaned1.Add (this.vbox6);
 			this.vbox5.Add (this.hpaned1);
-			global::Gtk.Box.BoxChild w37 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.hpaned1]));
-			w37.Position = 0;
+			global::Gtk.Box.BoxChild w39 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.hpaned1]));
+			w39.Position = 0;
 			w1.Add (this.vbox5);
-			global::Gtk.Box.BoxChild w38 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox5]));
-			w38.Position = 0;
+			global::Gtk.Box.BoxChild w40 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox5]));
+			w40.Position = 0;
 			// Internal child MonoDevelop.CSharp.Formatting.CSharpFormattingProfileDialog.ActionArea
-			global::Gtk.HButtonBox w39 = this.ActionArea;
-			w39.Name = "dialog1_ActionArea";
-			w39.Spacing = 10;
-			w39.BorderWidth = ((uint)(5));
-			w39.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
+			global::Gtk.HButtonBox w41 = this.ActionArea;
+			w41.Name = "dialog1_ActionArea";
+			w41.Spacing = 10;
+			w41.BorderWidth = ((uint)(5));
+			w41.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.buttonCancel = new global::Gtk.Button ();
 			this.buttonCancel.CanDefault = true;
@@ -446,9 +467,9 @@ namespace MonoDevelop.CSharp.Formatting
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
 			this.AddActionWidget (this.buttonCancel, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w40 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w39 [this.buttonCancel]));
-			w40.Expand = false;
-			w40.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w42 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w41 [this.buttonCancel]));
+			w42.Expand = false;
+			w42.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.buttonOk = new global::Gtk.Button ();
 			this.buttonOk.CanDefault = true;
@@ -458,10 +479,10 @@ namespace MonoDevelop.CSharp.Formatting
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-ok";
 			this.AddActionWidget (this.buttonOk, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w41 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w39 [this.buttonOk]));
-			w41.Position = 1;
-			w41.Expand = false;
-			w41.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w43 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w41 [this.buttonOk]));
+			w43.Position = 1;
+			w43.Expand = false;
+			w43.Fill = false;
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
