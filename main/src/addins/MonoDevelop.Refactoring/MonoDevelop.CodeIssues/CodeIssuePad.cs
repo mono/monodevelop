@@ -91,20 +91,21 @@ namespace MonoDevelop.CodeIssues
 					foreach (var project in solution.GetAllProjects ()) {
 						var compilation = TypeSystemService.GetCompilation (project);
 						List<CodeIssue> codeIssues = new List<CodeIssue> ();
-						foreach (var file in project.Files) {
+						Parallel.ForEach (project.Files, file => {
 							if (file.BuildAction != BuildAction.Compile)
-								continue;
-							var editor = TextFileProvider.Instance.GetTextEditorData (file.FilePath);
+								return;
+
+							var editor = TextFileProvider.Instance.GetReadOnlyTextEditorData (file.FilePath);
 
 							if (lastMime != editor.MimeType || parser == null)
 								parser = TypeSystemService.GetParser (editor.MimeType);
 							if (parser == null)
-								continue;
+								return;
 							var reader = new StreamReader (editor.OpenStream ());
 							var document = parser.Parse (true, editor.FileName, reader, project);
 							reader.Close ();
 							if (document == null) 
-								continue;
+								return;
 
 							var resolver = new CSharpAstResolver (compilation, document.GetAst<SyntaxTree> (), document.ParsedFile as CSharpUnresolvedFile);
 							var context = document.CreateRefactoringContextWithEditor (editor, resolver, CancellationToken.None);
@@ -127,7 +128,7 @@ namespace MonoDevelop.CodeIssues
 							});
 							lastMime = editor.MimeType;
 							monitor.Step (1);
-						}
+						});
 						Application.Invoke (delegate {
 							var projectNode = store.AddNode ();
 							projectNode.SetValue (text, project.Name + "( " + codeIssues.Count + " issues)");

@@ -2097,6 +2097,23 @@ namespace MonoDevelop.Ide
 			return GetTextEditorData (filePath, out isOpen);
 		}
 
+		public TextEditorData GetReadOnlyTextEditorData (FilePath filePath)
+		{
+			foreach (var doc in IdeApp.Workbench.Documents) {
+				if (doc.FileName == filePath) {
+					return doc.Editor;
+				}
+			}
+			bool hadBom;
+			Encoding encoding;
+			var text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText (filePath, out hadBom, out encoding);
+			var data = new TextEditorData (TextDocument.CreateImmutableDocument (text));
+			data.Document.MimeType = DesktopService.GetMimeTypeForUri (filePath);
+			data.Document.FileName = filePath;
+			data.Text = text;
+			return data;
+		}
+
 		public TextEditorData GetTextEditorData (FilePath filePath, out bool isOpen)
 		{
 			bool hadBom;
