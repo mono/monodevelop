@@ -38,9 +38,9 @@ namespace Mono.TextEditor.Tests
 		public void TestSimpleCSharpHtml ()
 		{
 			var data = Create ("class Foo {}");
-			var style = SyntaxModeService.GetColorStyle ("TangoLight");
-			ISyntaxMode mode = SyntaxModeService.GetSyntaxMode (data.Document, "text/x-csharp");
-			string generatedHtml = HtmlWriter.GenerateHtml (data.Document, mode, style, data.Options);
+			data.ColorStyle = SyntaxModeService.GetColorStyle ("TangoLight");
+			data.Document.SyntaxMode = SyntaxModeService.GetSyntaxMode (data.Document, "text/x-csharp");
+			string generatedHtml = HtmlWriter.GenerateHtml (data);
 			Assert.AreEqual (
 				@"<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.0 Transitional//EN"">
 <HTML>
@@ -63,9 +63,9 @@ namespace Mono.TextEditor.Tests
 	attr1 = ""1""
 	attr2 = ""2""
 />");
-			var style = SyntaxModeService.GetColorStyle ("TangoLight");
-			ISyntaxMode mode = SyntaxModeService.GetSyntaxMode (data.Document, "application/xml");
-			string generatedHtml = HtmlWriter.GenerateHtml (data.Document, mode, style, data.Options);
+			data.ColorStyle = SyntaxModeService.GetColorStyle ("TangoLight");
+			data.Document.SyntaxMode = SyntaxModeService.GetSyntaxMode (data.Document, "application/xml");
+			string generatedHtml = HtmlWriter.GenerateHtml (data);
 			Assert.AreEqual (
 				@"<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.0 Transitional//EN"">
 <HTML>

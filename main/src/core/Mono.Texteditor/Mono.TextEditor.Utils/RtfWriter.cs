@@ -52,13 +52,12 @@ namespace Mono.TextEditor.Utils
 
 		public static string GenerateRtf (TextEditorData data)
 		{
-			return GenerateRtf (data.Document, data.Document.SyntaxMode, data.ColorStyle, data.Options);
+			return GenerateRtf (ColoredSegment.GetChunks (data, new TextSegment (0, data.Length)), data.ColorStyle, data.Options);
 		}
 
-		static void AppendRtfText (StringBuilder rtfText, TextDocument doc, int start, int end, ref bool appendSpace)
+		static void AppendRtfText (StringBuilder rtfText, string text, ref bool appendSpace)
 		{
-			for (int i = start; i < end; i++) {
-				char ch = doc.GetCharAt (i);
+			foreach (char ch in text) {
 				switch (ch) {
 				case '\\':
 					rtfText.Append (@"\\");
@@ -93,54 +92,38 @@ namespace Mono.TextEditor.Utils
 				}
 			}
 		}
-		public static string GenerateRtf (TextDocument doc, Mono.TextEditor.Highlighting.ISyntaxMode mode, Mono.TextEditor.Highlighting.ColorScheme style, ITextEditorOptions options)
+		internal static string GenerateRtf (List<List<ColoredSegment>> chunks, Mono.TextEditor.Highlighting.ColorScheme style, ITextEditorOptions options)
 		{
 			var rtfText = new StringBuilder ();
 			var colorList = new List<Cairo.Color> ();
 
-			var selection = new TextSegment (0, doc.TextLength);
-			int startLineNumber = doc.OffsetToLineNumber (selection.Offset);
-			int endLineNumber = doc.OffsetToLineNumber (selection.EndOffset);
-			
 			bool isItalic = false;
 			bool isBold = false;
 			int curColor = -1;
-			if (mode is SyntaxMode) {
-				SyntaxModeService.StartUpdate (doc, (SyntaxMode)mode, selection.Offset, selection.EndOffset);
-				SyntaxModeService.WaitUpdate (doc);
-			}
-			foreach (var line in doc.GetLinesBetween (startLineNumber, endLineNumber)) {
+			foreach (var line in chunks) {
 				bool appendSpace = false;
-				if (mode == null) {
-					AppendRtfText (rtfText, doc, System.Math.Max (selection.Offset, line.Offset), System.Math.Min (line.EndOffset, selection.EndOffset), ref appendSpace);
-					continue;
-				}
-				foreach (var chunk in mode.GetChunks (style, line, line.Offset, line.Length)) {
-					int start = System.Math.Max (selection.Offset, chunk.Offset);
-					int end = System.Math.Min (chunk.EndOffset, selection.EndOffset);
-					var chunkStyle = style.GetChunkStyle (chunk);
-					if (start < end) {
-						if (isBold != (chunkStyle.FontWeight == Xwt.Drawing.FontWeight.Bold)) {
-							isBold = chunkStyle.FontWeight == Xwt.Drawing.FontWeight.Bold;
-							rtfText.Append (isBold ? @"\b" : @"\b0");
-							appendSpace = true;
-						}
-						if (isItalic != (chunkStyle.FontStyle == Xwt.Drawing.FontStyle.Italic)) {
-							isItalic = chunkStyle.FontStyle == Xwt.Drawing.FontStyle.Italic;
-							rtfText.Append (isItalic ? @"\i" : @"\i0");
-							appendSpace = true;
-						}
-						var foreground = style.GetForeground (chunkStyle);
-						if (!colorList.Contains (foreground)) 
-							colorList.Add (foreground);
-						int color = colorList.IndexOf (foreground);
-						if (curColor != color) {
-							curColor = color;
-							rtfText.Append (@"\cf" + (curColor + 1));
-							appendSpace = true;
-						}
-						AppendRtfText (rtfText, doc, start, end, ref appendSpace);
+				foreach (var chunk in line) {
+					var chunkStyle = style.GetChunkStyle (chunk.Style);
+					if (isBold != (chunkStyle.FontWeight == Xwt.Drawing.FontWeight.Bold)) {
+						isBold = chunkStyle.FontWeight == Xwt.Drawing.FontWeight.Bold;
+						rtfText.Append (isBold ? @"\b" : @"\b0");
+						appendSpace = true;
 					}
+					if (isItalic != (chunkStyle.FontStyle == Xwt.Drawing.FontStyle.Italic)) {
+						isItalic = chunkStyle.FontStyle == Xwt.Drawing.FontStyle.Italic;
+						rtfText.Append (isItalic ? @"\i" : @"\i0");
+						appendSpace = true;
+					}
+					var foreground = style.GetForeground (chunkStyle);
+					if (!colorList.Contains (foreground)) 
+						colorList.Add (foreground);
+					int color = colorList.IndexOf (foreground);
+					if (curColor != color) {
+						curColor = color;
+						rtfText.Append (@"\cf" + (curColor + 1));
+						appendSpace = true;
+					}
+					AppendRtfText (rtfText, chunk.Text, ref appendSpace);
 				}
 				rtfText.AppendLine (@"\line");
 			}
