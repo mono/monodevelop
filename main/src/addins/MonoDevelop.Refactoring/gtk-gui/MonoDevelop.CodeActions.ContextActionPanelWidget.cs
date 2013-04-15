@@ -11,7 +11,7 @@ namespace MonoDevelop.CodeActions
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
 		private global::Gtk.TreeView treeviewContextActions;
 		private global::Gtk.Label labelDescription;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
@@ -41,6 +41,8 @@ namespace MonoDevelop.CodeActions
 			this.searchentryFilter = new global::MonoDevelop.Components.SearchEntry ();
 			this.searchentryFilter.Name = "searchentryFilter";
 			this.searchentryFilter.ForceFilterButtonVisible = false;
+			this.searchentryFilter.HasFrame = false;
+			this.searchentryFilter.RoundedShape = false;
 			this.searchentryFilter.IsCheckMenu = false;
 			this.searchentryFilter.ActiveFilterID = 0;
 			this.searchentryFilter.Ready = true;

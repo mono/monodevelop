@@ -22,7 +22,7 @@ namespace MonoDevelop.Refactoring
 		private global::Gtk.Label labelError;
 		private global::Gtk.Button buttonCancel;
 		private global::Gtk.Button buttonOk;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
@@ -122,7 +122,7 @@ namespace MonoDevelop.Refactoring
 			this.vboxUpdateChoices.Name = "vboxUpdateChoices";
 			this.vboxUpdateChoices.Spacing = 6;
 			// Container child vboxUpdateChoices.Gtk.Box+BoxChild
-			this.radioUpdateExternal = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("_External"));
+			this.radioUpdateExternal = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString("_External"));
 			this.radioUpdateExternal.CanFocus = true;
 			this.radioUpdateExternal.Name = "radioUpdateExternal";
 			this.radioUpdateExternal.Active = true;
@@ -135,7 +135,7 @@ namespace MonoDevelop.Refactoring
 			w10.Expand = false;
 			w10.Fill = false;
 			// Container child vboxUpdateChoices.Gtk.Box+BoxChild
-			this.radioUpdateAll = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("_All"));
+			this.radioUpdateAll = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString("_All"));
 			this.radioUpdateAll.CanFocus = true;
 			this.radioUpdateAll.Name = "radioUpdateAll";
 			this.radioUpdateAll.DrawIndicator = true;

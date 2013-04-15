@@ -64,7 +64,7 @@ namespace MonoDevelop.CodeIssues
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MonoDevelop.CodeIssues.CodeIssue"/> class.
 		/// </summary>
-		public CodeIssue (string description, DocumentLocation start, DocumentLocation end, IEnumerable<MonoDevelop.CodeActions.CodeAction>  actions = null) : this (description, new DomRegion (start, end), actions)
+		public CodeIssue (string description, string fileName, DocumentLocation start, DocumentLocation end, IEnumerable<MonoDevelop.CodeActions.CodeAction>  actions = null) : this (description, new DomRegion (fileName, start, end), actions)
 		{
 		}
 		

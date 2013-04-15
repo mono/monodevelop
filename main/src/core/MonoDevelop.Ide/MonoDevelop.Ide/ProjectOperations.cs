@@ -2117,6 +2117,8 @@ namespace MonoDevelop.Ide
 
 			var text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText (filePath, out hadBom, out encoding);
 			TextEditorData data = new TextEditorData ();
+			data.Document.SuppressHighlightUpdate = true;
+			data.Document.MimeType = DesktopService.GetMimeTypeForUri (filePath);
 			data.Document.FileName = filePath;
 			data.Text = text;
 			isOpen = false;

@@ -59,7 +59,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			MimeType = "text/x-csharp";
 		}
 
-		public override IEnumerable<CodeIssue> GetIssues (Document document, object ctx, CancellationToken cancellationToken)
+		public override IEnumerable<CodeIssue> GetIssues (object ctx, CancellationToken cancellationToken)
 		{
 			var context = ctx as MDRefactoringContext;
 			if (context == null || context.IsInvalid || context.RootNode == null)
@@ -83,6 +83,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 				}
 				var issue = new CodeIssue (
 					GettextCatalog.GetString (action.Description ?? ""),
+					context.TextEditor.FileName,
 					action.Start,
 					action.End,
 					actions
