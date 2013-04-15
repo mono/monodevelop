@@ -12,7 +12,7 @@
   </TemplateConfiguration>
 
   <TemplateFiles>
-    <File DefaultExtension=".fsx" DefaultName="source" AddStandardHeader="True">
+    <File DefaultExtension=".fsx" DefaultName="source" AddStandardHeader="True" BuildAction="None">
     </File>
   </TemplateFiles>
 
