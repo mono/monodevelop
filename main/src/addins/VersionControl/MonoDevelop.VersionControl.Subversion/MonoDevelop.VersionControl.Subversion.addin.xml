@@ -7,12 +7,12 @@
        description = "Subversion core engine"
        category  = "Version Control"
        flags     = "Hidden"
-       version   = "4.0.3">
+       version   = "4.0.4">
  
 	<Dependencies>
-	    <Addin id="Core" version="4.0.3"/>
-	    <Addin id="Ide" version="4.0.3"/>
-	    <Addin id="VersionControl" version="4.0.3"/>
+	    <Addin id="Core" version="4.0.4"/>
+	    <Addin id="Ide" version="4.0.4"/>
+	    <Addin id="VersionControl" version="4.0.4"/>
 	</Dependencies>
 
 	<Extension path = "/MonoDevelop/Ide/Commands/VersionControl">

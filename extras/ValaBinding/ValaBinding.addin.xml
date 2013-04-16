@@ -6,14 +6,14 @@
        url         = "http://www.monodevelop.com"
        description = "Vala Language binding"
        category    = "Language bindings"
-       version     = "4.0.3">
+       version     = "4.0.4">
 
 	<Dependencies>
-		<Addin id = "Core" version = "4.0.3"/>
-		<Addin id = "Ide" version = "4.0.3"/>
-		<Addin id = "Deployment" version = "4.0.3"/>
-		<Addin id = "Deployment.Linux" version = "4.0.3"/>
-		<Addin id = "Autotools" version = "4.0.3"/>
+		<Addin id = "Core" version = "4.0.4"/>
+		<Addin id = "Ide" version = "4.0.4"/>
+		<Addin id = "Deployment" version = "4.0.4"/>
+		<Addin id = "Deployment.Linux" version = "4.0.4"/>
+		<Addin id = "Autotools" version = "4.0.4"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/Core/StockIcons">

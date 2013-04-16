@@ -7,15 +7,15 @@
        description = "Supporting services and pads for visual design tools."
        category    = "MonoDevelop Core"
        flags       = "Hidden"
-       version     = "4.0.3">
+       version     = "4.0.4">
 	
 	<Runtime>
 		<Import assembly = "MonoDevelop.DesignerSupport.dll"/>
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="4.0.3"/>
-		<Addin id="Ide" version="4.0.3"/>
+		<Addin id="Core" version="4.0.4"/>
+		<Addin id="Ide" version="4.0.4"/>
 	</Dependencies>
 
 	<!-- Extension points -->

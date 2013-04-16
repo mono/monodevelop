@@ -6,15 +6,15 @@
        url         = "http://www.monodevelop.com"
        description = "ILAsm Language Binding" 
        category    = "Language bindings"
-       version     = "4.0.3">
+       version     = "4.0.4">
 
 	<Runtime>
 		<Import assembly = "ILAsmBinding.dll"/>
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="4.0.3"/>
-		<Addin id="Ide" version="4.0.3"/>
+		<Addin id="Core" version="4.0.4"/>
+		<Addin id="Ide" version="4.0.4"/>
 	</Dependencies>
 	
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
