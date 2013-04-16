@@ -54,7 +54,7 @@ type OrderAssemblyReferences () =
   let mkGraph (seeds: seq<AssemblyRef>) : Digraph<AssemblyRef> =
 
     let findRef (s: seq<AssemblyRef>) (m: AssemblyNameReference) =
-      match Seq.tryFind (fun r -> r.Name = m.Name) seeds with
+      match Seq.tryFind (fun r -> r.Name = m.FullName) seeds with
       | None    -> s
       | Some ar -> Seq.append (Seq.singleton ar) s
 
