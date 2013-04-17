@@ -162,7 +162,7 @@ namespace MonoDevelop.CodeIssues
 			get {
 				if (issueControl == null)
 					issueControl = new CodeIssuePadControl ();
-				return (Gtk.Widget)Xwt.Engine.WidgetRegistry.GetNativeWidget (issueControl);
+				return (Gtk.Widget)Xwt.Toolkit.CurrentEngine.GetNativeWidget (issueControl);
 			}
 		}
 	}
