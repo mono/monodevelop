@@ -216,7 +216,32 @@ namespace MonoDevelop.CSharp.Formatting
 					text = text.Replace ("\"\"", "\"");
 					break;
 				case CopySource.StringLiteral:
-					text = text.Replace ("\\r", "\r").Replace ("\\n", "\n").Replace ("\\\"", "\"").Replace ("\\t", "\t");
+					StringBuilder sb = new StringBuilder ();
+					for (int i = 0; i < text.Length; i++) {
+						switch (text [i]) {
+						case '\\':
+							i++;
+							switch (text [i]) {
+							case '\\':
+								sb.Append ('\\');
+								break;
+							case 'r':
+								sb.Append ('\r');
+								break;
+							case 'n':
+								sb.Append ('\n');
+								break;
+							case 't':
+								sb.Append ('\t');
+								break;
+							}
+							break;
+						default:
+							sb.Append (text [i]);
+							break;
+						}
+					}
+					text = sb.ToString ();
 					break;
 				}
 			}
@@ -240,6 +265,9 @@ namespace MonoDevelop.CSharp.Formatting
 						break;
 					case '\r':
 						result.Append ("\\r");
+						break;
+					case '\\':
+						result.Append ("\\\\");
 						break;
 					default:
 						result.Append (ch);

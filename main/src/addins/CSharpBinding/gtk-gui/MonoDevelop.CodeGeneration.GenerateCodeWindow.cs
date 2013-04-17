@@ -9,7 +9,7 @@ namespace MonoDevelop.CodeGeneration
 		private global::Gtk.ScrolledWindow scrolledwindow1;
 		private global::Gtk.Label labelDescription;
 		private global::Gtk.ScrolledWindow scrolledwindow2;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

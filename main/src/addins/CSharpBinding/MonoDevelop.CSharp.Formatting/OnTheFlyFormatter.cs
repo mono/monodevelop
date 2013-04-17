@@ -167,6 +167,7 @@ namespace MonoDevelop.CSharp.Formatting
 				var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
 				
 				var formattingVisitor = new ICSharpCode.NRefactory.CSharp.CSharpFormatter (policy.CreateOptions (), document.Editor.CreateNRefactoryTextEditorOptions ());
+				formattingVisitor.FormattingMode = FormattingMode.Intrusive;
 				formattingVisitor.AddFormattingRegion (formattingRegion);
 
 

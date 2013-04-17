@@ -13,7 +13,7 @@ namespace MonoDevelop.CodeIssues
 		private global::Gtk.RadioButton radiobuttonError;
 		private global::Gtk.Button buttonCancel;
 		private global::Gtk.Button buttonOk;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
@@ -44,7 +44,7 @@ namespace MonoDevelop.CodeIssues
 			w2.Expand = false;
 			w2.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.radiobuttonHide = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Do not show"));
+			this.radiobuttonHide = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString("Do not show"));
 			this.radiobuttonHide.CanFocus = true;
 			this.radiobuttonHide.Name = "radiobuttonHide";
 			this.radiobuttonHide.DrawIndicator = true;
@@ -56,7 +56,7 @@ namespace MonoDevelop.CodeIssues
 			w3.Expand = false;
 			w3.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.radiobuttonHint = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Hint"));
+			this.radiobuttonHint = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString("Hint"));
 			this.radiobuttonHint.CanFocus = true;
 			this.radiobuttonHint.Name = "radiobuttonHint";
 			this.radiobuttonHint.DrawIndicator = true;
@@ -68,7 +68,7 @@ namespace MonoDevelop.CodeIssues
 			w4.Expand = false;
 			w4.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.radiobuttonSuggestion = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Suggestion"));
+			this.radiobuttonSuggestion = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString("Suggestion"));
 			this.radiobuttonSuggestion.CanFocus = true;
 			this.radiobuttonSuggestion.Name = "radiobuttonSuggestion";
 			this.radiobuttonSuggestion.DrawIndicator = true;
@@ -80,7 +80,7 @@ namespace MonoDevelop.CodeIssues
 			w5.Expand = false;
 			w5.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.radiobuttonWarning = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Warning"));
+			this.radiobuttonWarning = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString("Warning"));
 			this.radiobuttonWarning.CanFocus = true;
 			this.radiobuttonWarning.Name = "radiobuttonWarning";
 			this.radiobuttonWarning.DrawIndicator = true;
@@ -92,7 +92,7 @@ namespace MonoDevelop.CodeIssues
 			w6.Expand = false;
 			w6.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.radiobuttonError = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Error"));
+			this.radiobuttonError = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString("Error"));
 			this.radiobuttonError.CanFocus = true;
 			this.radiobuttonError.Name = "radiobuttonError";
 			this.radiobuttonError.DrawIndicator = true;

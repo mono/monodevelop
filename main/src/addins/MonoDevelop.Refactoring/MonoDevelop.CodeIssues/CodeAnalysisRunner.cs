@@ -68,7 +68,7 @@ namespace MonoDevelop.CodeIssues
 					if (severity == Severity.None)
 						return;
 //					var now2 = DateTime.Now;
-					foreach (var r in provider.GetIssues (input, context, cancellationToken)) {
+					foreach (var r in provider.GetIssues (context, cancellationToken)) {
 						var fixes = new List<GenericFix> (r.Actions.Where (a => a != null).Select (a => 
 							new GenericFix (
 								a.Title,

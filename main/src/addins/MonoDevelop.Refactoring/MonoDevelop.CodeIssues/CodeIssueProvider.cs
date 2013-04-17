@@ -113,7 +113,7 @@ namespace MonoDevelop.CodeIssues
 		/// <summary>
 		/// Gets all the code issues inside a document.
 		/// </summary>
-		public abstract IEnumerable<CodeIssue> GetIssues (MonoDevelop.Ide.Gui.Document document, object refactoringContext, CancellationToken cancellationToken);
+		public abstract IEnumerable<CodeIssue> GetIssues (object refactoringContext, CancellationToken cancellationToken);
 	}
 }
 

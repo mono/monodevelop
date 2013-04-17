@@ -167,9 +167,6 @@
     <EmbeddedResource Include="icons\csharp-project-16.png">
       <LogicalName>csharp-project-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\CSharpFormattingPolicy.xml">
-      <LogicalName>CSharpFormattingPolicy.xml</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\AllmanCSharpPolicy.xml">
       <LogicalName>AllmanCSharpPolicy.xml</LogicalName>
     </EmbeddedResource>

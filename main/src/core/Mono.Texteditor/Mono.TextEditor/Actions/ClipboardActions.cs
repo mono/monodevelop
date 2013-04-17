@@ -35,6 +35,7 @@ using System.Text;
 using Gtk;
 using Mono.TextEditor.Highlighting;
 using Mono.TextEditor.Utils;
+using System.Linq;
 
 namespace Mono.TextEditor
 {
@@ -96,12 +97,11 @@ namespace Mono.TextEditor
 					}
 					break;
 				case RichTextType:
-					var rtf = RtfWriter.GenerateRtf (copiedDocument, mode, docStyle, options);
-//					Console.WriteLine ("rtf:" + rtf);
+					var rtf = RtfWriter.GenerateRtf (copiedColoredChunks, docStyle, options);
 					selection_data.Set (RTF_ATOM, UTF8_FORMAT, Encoding.UTF8.GetBytes (rtf));
 					break;
 				case HTMLTextType:
-					var html = HtmlWriter.GenerateHtml (copiedDocument, mode, docStyle, options);
+					var html = HtmlWriter.GenerateHtml (copiedColoredChunks, docStyle, options);
 //					Console.WriteLine ("html:" + html);
 					selection_data.Set (HTML_ATOM, UTF8_FORMAT, Encoding.UTF8.GetBytes (html));
 					break;
@@ -136,14 +136,14 @@ namespace Mono.TextEditor
 				// NOTHING ?
 			}
 	
+			internal List<List<ColoredSegment>> copiedColoredChunks;
+
 			public TextDocument copiedDocument;
 			public TextDocument monoDocument;
 			byte[] copyData;
 
- // has a slightly different format !!!
 			public Mono.TextEditor.Highlighting.ColorScheme docStyle;
 			ITextEditorOptions options;
-			Mono.TextEditor.Highlighting.ISyntaxMode mode;
 
 			public static readonly TargetEntry[] TargetEntries;
 			public static readonly TargetList TargetList;
@@ -194,8 +194,9 @@ namespace Mono.TextEditor
 					monoDocument = new TextDocument ();
 					this.docStyle = data.ColorStyle;
 					this.options = data.Options;
-					this.mode = SyntaxModeService.GetSyntaxMode (monoDocument, data.MimeType);
 					copyData = null;
+					copiedColoredChunks = ColoredSegment.GetChunks (data, data.SelectionRange);
+
 
 					switch (selection.SelectionMode) {
 					case SelectionMode.Normal:
@@ -209,7 +210,6 @@ namespace Mono.TextEditor
 						monoDocument.Text = text;
 						var line = data.Document.GetLineByOffset (segment.Offset);
 						var spanStack = line.StartSpan.Clone ();
-						SyntaxModeService.ScanSpans (data.Document, this.mode as SyntaxMode, this.mode as SyntaxMode, spanStack, line.Offset, segment.Offset);
 						this.copiedDocument.GetLine (DocumentLocation.MinLine).StartSpan = spanStack;
 						break;
 					case SelectionMode.Block:
@@ -235,7 +235,6 @@ namespace Mono.TextEditor
 						}
 						line = data.Document.GetLine (selection.MinLine);
 						spanStack = line.StartSpan.Clone ();
-						SyntaxModeService.ScanSpans (data.Document, this.mode as SyntaxMode, this.mode as SyntaxMode, spanStack, line.Offset, line.Offset + startCol);
 						this.copiedDocument.GetLine (DocumentLocation.MinLine).StartSpan = spanStack;
 						break;
 					}

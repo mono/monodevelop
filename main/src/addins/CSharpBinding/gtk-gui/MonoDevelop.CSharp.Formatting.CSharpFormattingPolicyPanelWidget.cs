@@ -9,7 +9,7 @@ namespace MonoDevelop.CSharp.Formatting
 		private global::Gtk.Button buttonEdit;
 		private global::Gtk.Label label2;
 		private global::Gtk.ScrolledWindow scrolledwindow1;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
