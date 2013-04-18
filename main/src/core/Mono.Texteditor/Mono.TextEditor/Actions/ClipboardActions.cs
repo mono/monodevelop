@@ -81,7 +81,20 @@ namespace Mono.TextEditor
 			public CopyOperation ()	
 			{
 			}
-			
+
+			string GetCopiedPlainText ()
+			{
+				StringBuilder plainText = new StringBuilder ();
+				foreach (var line in copiedColoredChunks) {
+					if (plainText.Length > 0)
+						plainText.AppendLine ();
+					foreach (var chunk in line) {
+						plainText.Append (chunk.Text);
+					}
+				}
+				return plainText.ToString ();
+			}
+
 			public void SetData (SelectionData selection_data, uint info)
 			{
 				if (selection_data == null)
@@ -90,11 +103,9 @@ namespace Mono.TextEditor
 				case TextType:
 					// Windows specific hack to work around bug: Bug 661973 - copy operation in TextEditor braks text lines with duplicate line endings when the file has CRLF
 					// Remove when https://bugzilla.gnome.org/show_bug.cgi?id=640439 is fixed.
-					if (Platform.IsWindows) {
-						selection_data.Text = copiedDocument.Text.Replace ("\r\n", "\n");
-					} else {
-						selection_data.Text = copiedDocument.Text;
-					}
+
+
+					selection_data.Text = GetCopiedPlainText ();
 					break;
 				case RichTextType:
 					var rtf = RtfWriter.GenerateRtf (copiedColoredChunks, docStyle, options);
@@ -138,7 +149,6 @@ namespace Mono.TextEditor
 	
 			internal List<List<ColoredSegment>> copiedColoredChunks;
 
-			public TextDocument copiedDocument;
 			public TextDocument monoDocument;
 			byte[] copyData;
 
@@ -187,30 +197,24 @@ namespace Mono.TextEditor
 			
 			void CopyData (TextEditorData data, Selection selection)
 			{
-				copiedDocument = null;
 				monoDocument = null;
 				if (!selection.IsEmpty && data != null && data.Document != null) {
-					copiedDocument = new TextDocument ();
 					monoDocument = new TextDocument ();
 					this.docStyle = data.ColorStyle;
 					this.options = data.Options;
 					copyData = null;
-					copiedColoredChunks = ColoredSegment.GetChunks (data, data.SelectionRange);
 
 
 					switch (selection.SelectionMode) {
 					case SelectionMode.Normal:
+						copiedColoredChunks = ColoredSegment.GetChunks (data, data.SelectionRange);
 						isBlockMode = false;
 						var segment = selection.GetSelectionRange (data);
 						var pasteHandler = data.TextPasteHandler;
 						if (pasteHandler != null)
 							copyData = pasteHandler.GetCopyData (segment);
 						var text = data.GetTextAt (segment);
-						copiedDocument.Text = text;
 						monoDocument.Text = text;
-						var line = data.Document.GetLineByOffset (segment.Offset);
-						var spanStack = line.StartSpan.Clone ();
-						this.copiedDocument.GetLine (DocumentLocation.MinLine).StartSpan = spanStack;
 						break;
 					case SelectionMode.Block:
 						isBlockMode = true;
@@ -223,23 +227,20 @@ namespace Mono.TextEditor
 							int col1 = curLine.GetLogicalColumn (data, startCol) - 1;
 							int col2 = System.Math.Min (curLine.GetLogicalColumn (data, endCol) - 1, curLine.Length);
 							if (col1 < col2) {
-								copiedDocument.Insert (copiedDocument.TextLength, data.Document.GetTextAt (curLine.Offset + col1, col2 - col1));
+								copiedColoredChunks.Add (ColoredSegment.GetChunks (data, new TextSegment (curLine.Offset + col1, col2 - col1)).First ());
 								monoDocument.Insert (monoDocument.TextLength, data.Document.GetTextAt (curLine.Offset + col1, col2 - col1));
 							}
 							if (lineNr < selection.MaxLine) {
 								// Clipboard line end needs to be system dependend and not the document one.
-								copiedDocument.Insert (copiedDocument.TextLength, Environment.NewLine);
+								copiedColoredChunks.Add (new List<ColoredSegment> ());
 								// \r in mono document stands for block selection line end.
 								monoDocument.Insert (monoDocument.TextLength, "\r");
 							}
 						}
-						line = data.Document.GetLine (selection.MinLine);
-						spanStack = line.StartSpan.Clone ();
-						this.copiedDocument.GetLine (DocumentLocation.MinLine).StartSpan = spanStack;
 						break;
 					}
 				} else {
-					copiedDocument = null;
+					copiedColoredChunks = null;
 				}
 			}
 			
@@ -257,7 +258,7 @@ namespace Mono.TextEditor
 				CopyData (data, selection);
 				
 				if (Copy != null)
-					Copy (copiedDocument != null ? copiedDocument.Text : null);
+					Copy (GetCopiedPlainText ());
 			}
 		
 			public delegate void CopyDelegate (string text);
