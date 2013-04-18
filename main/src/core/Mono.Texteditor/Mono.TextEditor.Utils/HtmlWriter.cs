@@ -49,12 +49,14 @@ namespace Mono.TextEditor.Utils
 			int endLineNumber = data.OffsetToLineNumber (selectedSegment.EndOffset);
 			var copiedColoredChunks = new List<List<ColoredSegment>> ();
 			foreach (var line in data.Document.GetLinesBetween (startLineNumber, endLineNumber)) {
+				var offset = System.Math.Max (selectedSegment.Offset, line.Offset);
+				var length = System.Math.Min (selectedSegment.EndOffset - offset, line.Length);
 				copiedColoredChunks.Add (
 					data.GetChunks (
 					line, 
-					System.Math.Max (selectedSegment.Offset, line.Offset),
-					System.Math.Max (selectedSegment.EndOffset, line.EndOffset) - line.Offset
-					)
+					offset,
+					length
+				)
 					.Select (chunk => new ColoredSegment (chunk, data.Document))
 					.ToList ()
 				);

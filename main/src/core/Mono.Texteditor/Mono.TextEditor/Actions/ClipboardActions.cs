@@ -84,10 +84,15 @@ namespace Mono.TextEditor
 
 			string GetCopiedPlainText ()
 			{
-				StringBuilder plainText = new StringBuilder ();
+				var plainText = new StringBuilder ();
+				bool first = true;
 				foreach (var line in copiedColoredChunks) {
-					if (plainText.Length > 0)
+					if (!first) {
 						plainText.AppendLine ();
+					} else {
+						first = false;
+					}
+
 					foreach (var chunk in line) {
 						plainText.Append (chunk.Text);
 					}
@@ -117,7 +122,7 @@ namespace Mono.TextEditor
 					selection_data.Set (HTML_ATOM, UTF8_FORMAT, Encoding.UTF8.GetBytes (html));
 					break;
 				case MonoTextType:
-					byte[] rawText = Encoding.UTF8.GetBytes (monoDocument.Text);
+					byte[] rawText = Encoding.UTF8.GetBytes (GetCopiedPlainText ());
 					var copyDataLength = (byte)(copyData != null ? copyData.Length : 0);
 					var dataOffset = 1 + 1 + copyDataLength;
 					byte[] data = new byte [rawText.Length + dataOffset];
@@ -148,8 +153,6 @@ namespace Mono.TextEditor
 			}
 	
 			internal List<List<ColoredSegment>> copiedColoredChunks;
-
-			public TextDocument monoDocument;
 			byte[] copyData;
 
 			public Mono.TextEditor.Highlighting.ColorScheme docStyle;
@@ -197,9 +200,7 @@ namespace Mono.TextEditor
 			
 			void CopyData (TextEditorData data, Selection selection)
 			{
-				monoDocument = null;
 				if (!selection.IsEmpty && data != null && data.Document != null) {
-					monoDocument = new TextDocument ();
 					this.docStyle = data.ColorStyle;
 					this.options = data.Options;
 					copyData = null;
@@ -213,8 +214,6 @@ namespace Mono.TextEditor
 						var pasteHandler = data.TextPasteHandler;
 						if (pasteHandler != null)
 							copyData = pasteHandler.GetCopyData (segment);
-						var text = data.GetTextAt (segment);
-						monoDocument.Text = text;
 						break;
 					case SelectionMode.Block:
 						isBlockMode = true;
@@ -222,19 +221,15 @@ namespace Mono.TextEditor
 						DocumentLocation visEnd = data.LogicalToVisualLocation (selection.Lead);
 						int startCol = System.Math.Min (visStart.Column, visEnd.Column);
 						int endCol = System.Math.Max (visStart.Column, visEnd.Column);
+						copiedColoredChunks = new List<List<ColoredSegment>> ();
 						for (int lineNr = selection.MinLine; lineNr <= selection.MaxLine; lineNr++) {
 							DocumentLine curLine = data.Document.GetLine (lineNr);
 							int col1 = curLine.GetLogicalColumn (data, startCol) - 1;
 							int col2 = System.Math.Min (curLine.GetLogicalColumn (data, endCol) - 1, curLine.Length);
 							if (col1 < col2) {
 								copiedColoredChunks.Add (ColoredSegment.GetChunks (data, new TextSegment (curLine.Offset + col1, col2 - col1)).First ());
-								monoDocument.Insert (monoDocument.TextLength, data.Document.GetTextAt (curLine.Offset + col1, col2 - col1));
-							}
-							if (lineNr < selection.MaxLine) {
-								// Clipboard line end needs to be system dependend and not the document one.
+							} else {
 								copiedColoredChunks.Add (new List<ColoredSegment> ());
-								// \r in mono document stands for block selection line end.
-								monoDocument.Insert (monoDocument.TextLength, "\r");
 							}
 						}
 						break;
@@ -299,7 +294,7 @@ namespace Mono.TextEditor
 						string text = System.Text.Encoding.UTF8.GetString (selBytes, rawTextOffset, selBytes.Length - rawTextOffset);
 						bool pasteBlock = (selBytes [0] & 1) == 1;
 						bool pasteLine = (selBytes [0] & 2) == 2;
-						
+						Console.WriteLine ("paste block:" + pasteBlock);
 //						var clearSelection = data.IsSomethingSelected ? data.MainSelection.SelectionMode != SelectionMode.Block : true;
 						if (pasteBlock) {
 							using (var undo = data.OpenUndoGroup ()) {
@@ -310,15 +305,27 @@ namespace Mono.TextEditor
 								insertionOffset = version.MoveOffsetTo (data.Document.Version, insertionOffset);
 
 								data.Caret.PreserveSelection = true;
-							
-								string[] lines = text.Split ('\r');
+								var lines = new List<string> ();
+								int offset = 0;
+								while (true) {
+									var delimiter = LineSplitter.NextDelimiter (text, offset);
+									if (delimiter.IsInvalid)
+										break;
+
+									int delimiterEndOffset = delimiter.Offset + delimiter.Length;
+									lines.Add (text.Substring (offset, delimiter.Offset - offset));
+									offset = delimiterEndOffset;
+								}
+								if (offset < text.Length)
+									lines.Add (text.Substring (offset, text.Length - offset));
+
 								int lineNr = data.Document.OffsetToLineNumber (insertionOffset);
 								int col = insertionOffset - data.Document.GetLine (lineNr).Offset;
 								int visCol = data.Document.GetLine (lineNr).GetVisualColumn (data, col);
 								DocumentLine curLine;
 								int lineCol = col;
 								result = 0;
-								for (int i = 0; i < lines.Length; i++) {
+								for (int i = 0; i < lines.Count; i++) {
 									while (data.Document.LineCount <= lineNr + i) {
 										data.Insert (data.Document.TextLength, Environment.NewLine);
 										result += Environment.NewLine.Length;
