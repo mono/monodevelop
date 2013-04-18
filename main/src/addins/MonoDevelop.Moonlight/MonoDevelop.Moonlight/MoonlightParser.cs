@@ -37,6 +37,8 @@ using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using MonoDevelop.Projects;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.Moonlight
 {
@@ -45,34 +47,38 @@ namespace MonoDevelop.Moonlight
 		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader tr, Project project = null)
 		{
 			XmlParsedDocument doc = new XmlParsedDocument (fileName);
+			var result = new ParsedDocumentDecorator ();
 			try {
 				Parser xmlParser = new Parser (new XmlFreeState (), true);
+				var pf = new CSharpUnresolvedFile (doc.FileName);
+				result.ParsedFile = pf;
 				xmlParser.Parse (tr);
 				doc.XDocument = xmlParser.Nodes.GetRoot ();
-				doc.Add (xmlParser.Errors);
+				foreach (var err in xmlParser.Errors)
+					pf.Errors.Add (err);
 				
 				if (doc.XDocument != null && doc.XDocument.RootElement != null) {
 					if (!doc.XDocument.RootElement.IsEnded)
 						doc.XDocument.RootElement.End (xmlParser.Location);
-					GenerateCU (doc);
+					GenerateCU (doc, pf);
 				}
 			}
 			catch (Exception ex) {
 				MonoDevelop.Core.LoggingService.LogError ("Unhandled error parsing xaml document", ex);
 			}
-			return doc;
+			return result;
 		}
 		
-		static void GenerateCU (XmlParsedDocument doc)
+		static void GenerateCU (XmlParsedDocument doc, CSharpUnresolvedFile pf)
 		{
 			if (doc.XDocument == null || doc.XDocument.RootElement == null) {
-				doc.Add (new Error (ErrorType.Error, "No root node found.", 1, 1));
+				pf.Errors.Add (new Error (ErrorType.Error, "No root node found.", 1, 1));
 				return;
 			}
 
 			XAttribute rootClass = doc.XDocument.RootElement.Attributes [new XName ("x", "Class")];
 			if (rootClass == null) {
-				doc.Add (new Error (ErrorType.Error, "Root node does not contain an x:Class attribute.", 1, 1));
+				pf.Errors.Add (new Error (ErrorType.Error, "Root node does not contain an x:Class attribute.", 1, 1));
 				return;
 			}
 
@@ -80,19 +86,21 @@ namespace MonoDevelop.Moonlight
 			
 			string rootNamespace, rootType, rootAssembly;
 			XamlG.ParseXmlns (rootClass.Value, out rootType, out rootNamespace, out rootAssembly);
-
-			var cu = new DefaultParsedDocument (doc.FileName);
-
 			DomRegion rootRegion = doc.XDocument.RootElement.Region;
 			if (doc.XDocument.RootElement.IsClosed)
 				rootRegion = new DomRegion (doc.XDocument.RootElement.Region.FileName, doc.XDocument.RootElement.Region.Begin, doc.XDocument.RootElement.ClosingTag.Region.End); 
-			
-			var declType = new DefaultUnresolvedTypeDefinition (rootNamespace, rootType) {
+			var usingScope = new UsingScope (pf.RootUsingScope, rootNamespace);
+			var systemUsing = new SimpleTypeOrNamespaceReference ("System", null, NameLookupMode.TypeInUsingDeclaration);
+			usingScope.Parent.Usings.Add (new MemberTypeOrNamespaceReference (new MemberTypeOrNamespaceReference (systemUsing, "Windows", null, NameLookupMode.TypeInUsingDeclaration), "Controls", null, NameLookupMode.TypeInUsingDeclaration));
+			usingScope.Parent.Usings.Add (new MemberTypeOrNamespaceReference (new MemberTypeOrNamespaceReference (systemUsing, "Windows", null, NameLookupMode.TypeInUsingDeclaration), "Shapes", null, NameLookupMode.TypeInUsingDeclaration));
+			usingScope.Parent.Usings.Add (new MemberTypeOrNamespaceReference (new MemberTypeOrNamespaceReference (systemUsing, "Windows", null, NameLookupMode.TypeInUsingDeclaration), "Media", null, NameLookupMode.TypeInUsingDeclaration));
+			usingScope.Parent.Usings.Add (new MemberTypeOrNamespaceReference (new MemberTypeOrNamespaceReference (new MemberTypeOrNamespaceReference (systemUsing, "Windows", null, NameLookupMode.TypeInUsingDeclaration), "Media", null, NameLookupMode.TypeInUsingDeclaration), "Animation", null, NameLookupMode.TypeInUsingDeclaration));
+			var declType = new CSharpUnresolvedTypeDefinition (usingScope, rootType) {
 				Kind = TypeKind.Class,
 				Accessibility = Accessibility.Public,
 				Region = rootRegion
 			};
-			cu.TopLevelTypeDefinitions.Add (declType);
+			pf.TopLevelTypeDefinitions.Add (declType);
 			
 			var initcomp = new DefaultUnresolvedMethod (declType, "InitializeComponent") {
 				ReturnType = KnownTypeReference.Void,
@@ -108,20 +116,7 @@ namespace MonoDevelop.Moonlight
 
 			if (isApplication)
 				return;
-			
-//			cu.Add (new DomUsing (DomRegion.Empty, "System"));
-//			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows"));
-//			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Controls"));
-//			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Documents"));
-//			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Input"));
-//			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Media"));
-//			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Media.Animation"));
-//			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Shapes"));
-//			cu.Add (new DomUsing (DomRegion.Empty, "System.Windows.Controls.Primitives"));
-			
-	//		Dictionary<string,string> namespaceMap = new Dictionary<string, string> ();
-	//		namespaceMap["x"] = "http://schemas.microsoft.com/winfx/2006/xaml";
-			
+
 			XName nameAtt = new XName ("x", "Name");
 			
 			foreach (XElement el in doc.XDocument.RootElement.AllDescendentElements) {
@@ -129,12 +124,12 @@ namespace MonoDevelop.Moonlight
 				if (name != null && name.IsComplete) {
 					string type = ResolveType (el);
 					if (type == null || type.Length == 0)
-						cu.Add (new Error (ErrorType.Error, "Could not find namespace for '" + el.Name.FullName + "'.", el.Region.Begin));
+						pf.Errors.Add (new Error (ErrorType.Error, "Could not find namespace for '" + el.Name.FullName + "'.", el.Region.Begin));
 					else
 						declType.Members.Add (new DefaultUnresolvedField (declType, name.Value) {
 							Accessibility = Accessibility.Internal,
 							Region = el.Region,
-							ReturnType = new DefaultUnresolvedTypeDefinition (type)
+							ReturnType = new SimpleTypeOrNamespaceReference(type, null)
 						});
 				}
 			}
