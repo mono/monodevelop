@@ -71,6 +71,8 @@ type FSharpInteractivePad() =
     let ses = InteractiveSession()
     ses.Exited.Add(fun e -> 
       session := None
+      currentPath <- ""
+      prompting <- false
       DispatchService.GuiDispatch(fun () ->
         Debug.WriteLine (sprintf "Interactive: process stopped")
         if lastCommand = "#q;;" || lastCommand = "#quit;;" then
