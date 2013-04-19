@@ -2135,26 +2135,29 @@ namespace MonoDevelop.Ide.TypeSystem
 				TypeSystemParser parser = null;
 				var tags = Context.GetExtensionObject <ProjectCommentTags> ();
 				Context.InLoad = true;
-				foreach (var file in (FileList ?? Context.Project.Files)) {
-					var fileName = file.FilePath;
-					if (filesSkippedInParseThread.Any (f => f == fileName))
-						continue;
-					if (node == null || !node.CanParse (fileName, file.BuildAction)) {
-						node = TypeSystemService.GetTypeSystemParserNode (DesktopService.GetMimeTypeForUri (fileName), file.BuildAction);
-						parser = node != null ? node.Parser : null;
+				try {
+					foreach (var file in (FileList ?? Context.Project.Files)) {
+						var fileName = file.FilePath;
+						if (filesSkippedInParseThread.Any (f => f == fileName))
+							continue;
+						if (node == null || !node.CanParse (fileName, file.BuildAction)) {
+							node = TypeSystemService.GetTypeSystemParserNode (DesktopService.GetMimeTypeForUri (fileName), file.BuildAction);
+							parser = node != null ? node.Parser : null;
+						}
+						if (parser == null)
+							continue;
+						var parsedDocument = parser.Parse (false, fileName, Context.Project);
+						if (tags != null)
+							tags.UpdateTags (Context.Project, parsedDocument.FileName, parsedDocument.TagComments);
+						var oldFile = Context.Content.GetFile (fileName);
+						Context.UpdateContent (c => c.AddOrUpdateFiles (parsedDocument.ParsedFile));
+						if (oldFile != null)
+							Context.InformFileRemoved (new ParsedFileEventArgs (oldFile));
+						Context.InformFileAdded (new ParsedFileEventArgs (parsedDocument.ParsedFile));
 					}
-					if (parser == null)
-						continue;
-					var parsedDocument = parser.Parse (false, fileName, Context.Project);
-					if (tags != null)
-						tags.UpdateTags (Context.Project, parsedDocument.FileName, parsedDocument.TagComments);
-					var oldFile = Context.Content.GetFile (fileName);
-					Context.UpdateContent (c => c.AddOrUpdateFiles (parsedDocument.ParsedFile));
-					if (oldFile != null)
-						Context.InformFileRemoved (new ParsedFileEventArgs (oldFile));
-					Context.InformFileAdded (new ParsedFileEventArgs (parsedDocument.ParsedFile));
+				} finally {
+					Context.InLoad = false;
 				}
-				Context.InLoad = false;
 			}
 		}
 
@@ -2258,6 +2261,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				foreach (var pj in parseQueue) {
 					if (pj.Context == context) {
 						parseQueueIndex.Remove (pj.Context);
+						pj.Context.InLoad = false;
 					}
 				}
 			}
