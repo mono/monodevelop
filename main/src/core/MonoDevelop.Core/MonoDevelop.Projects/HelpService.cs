@@ -161,8 +161,13 @@ namespace MonoDevelop.Projects
 			var type = result.Type;
 			if (type != null && !String.IsNullOrEmpty (type.FullName)) {
 				string t = "T:" + type.FullName;
-				if (HelpTree != null && HelpTree.GetHelpXml (t) != null)
-					return t;
+				try {
+					var tree = HelpTree;
+					if (tree != null && tree.GetHelpXml (t) != null)
+						return t;
+				} catch (Exception) {
+					return null;
+				}
 			}
 			
 			return null;

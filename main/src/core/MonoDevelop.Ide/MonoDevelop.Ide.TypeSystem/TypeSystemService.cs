@@ -47,6 +47,8 @@ using System.Threading.Tasks;
 using ICSharpCode.NRefactory.Documentation;
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Ide.Extensions;
+using MonoDevelop.Core.Assemblies;
+using System.Text;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -461,6 +463,28 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 		#region Parser Database Handling
 
+		static string GetCacheDirectory (TargetFramework framework)
+		{
+			var derivedDataPath = UserProfile.Current.CacheDir.Combine ("DerivedData");
+
+			var name = new StringBuilder ();
+			foreach (var ch in framework.Name) {
+				if (char.IsLetterOrDigit (ch)) {
+					name.Append (ch);
+				} else {
+					name.Append ('_');
+				}
+			}
+
+			string result = derivedDataPath.Combine (name.ToString ());
+			try {
+				if (!Directory.Exists (result))
+					Directory.CreateDirectory (result);
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while creating derived data directories.", e);
+			}
+			return result;
+		}
 		static string GetCacheDirectory (string filename)
 		{
 			string result;
@@ -483,9 +507,9 @@ namespace MonoDevelop.Ide.TypeSystem
 						if (CheckCacheDirectoryIsCorrect (filename, subDir, out result))
 							return result;*/
 				}
-			} catch (Exception e) {
-				LoggingService.LogError ("Error while getting derived data directories.", e);
-			}
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while getting derived data directories.", e);
+				}
 			return null;
 		}
 
@@ -507,7 +531,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				
 					try {
 						if (!File.Exists (dataPath)) {
-								cacheDirectoryCache [candidate] = CacheDirectoryInfo.Empty;
+							cacheDirectoryCache [candidate] = CacheDirectoryInfo.Empty;
 							result = null;
 							return false;
 						}
@@ -1295,6 +1319,13 @@ namespace MonoDevelop.Ide.TypeSystem
 					Task.Factory.StartNew (delegate {
 						CheckModifiedFiles (project, files, wrapper);
 					});
+
+					if (dotNetProject != null) {
+						Task.Factory.StartNew (delegate {
+							GetFrameworkLookup (dotNetProject);
+						});
+					}
+
 					OnProjectContentLoaded (new ProjectContentEventArgs (project, wrapper.Content));
 					return wrapper;
 				} catch (Exception ex) {
@@ -2059,7 +2090,164 @@ namespace MonoDevelop.Ide.TypeSystem
 			var content = GetProjectContentWrapper (project);
 			return content.Compilation;
 		}
-		
+
+		public static ICompilation GetCompilation (SystemAssembly assembly, ICompilation compilation)
+		{
+			var ctx = LoadAssemblyContext (assembly.Location);
+			var list = compilation.ReferencedAssemblies.Select (r => r.UnresolvedAssembly).ToList ();
+			list.Add (compilation.MainAssembly.UnresolvedAssembly);
+			var	result = new SimpleCompilation (ctx, list);
+			return result;
+		}
+
+		[Serializable]
+		public class FrameworkLookup 
+		{
+			Dictionary<string, List<AssemblyLookup>> typeLookup = new Dictionary<string, List<AssemblyLookup>>  ();
+			Dictionary<string, List<AssemblyLookup>> extensionMethodLookup = new Dictionary<string, List<AssemblyLookup>>  ();
+
+			public int ItemCount {
+				get {
+					return typeLookup.Count + extensionMethodLookup.Count;
+				}
+			}
+
+			void AddExtensionMethodlookup(IUnresolvedMethod method, SystemAssembly assembly)
+			{
+				List<AssemblyLookup> list;
+				if (!extensionMethodLookup.TryGetValue (method.Name, out list)) {
+					list = new List<AssemblyLookup> ();
+					extensionMethodLookup [method.Name] = list;
+				}
+				if (!list.Any (a => a.Namespace == method.DeclaringTypeDefinition.Namespace && a.FullName == assembly.FullName)) {
+					list.Add (new AssemblyLookup (assembly, method.DeclaringTypeDefinition.Namespace));
+				}
+
+			}
+
+			public IEnumerable<AssemblyLookup> LookupExtensionMethod (string identifier)
+			{
+				List<AssemblyLookup> list;
+				if (!extensionMethodLookup.TryGetValue (identifier, out list)) 
+					return Enumerable.Empty<AssemblyLookup> ();
+				return list;
+			}
+
+			public void AddLookup (IUnresolvedTypeDefinition type, SystemAssembly assembly)
+			{
+				List<AssemblyLookup> list;
+				var id = GetIdentifier (type.Name, type.TypeParameters.Count);
+				if (!typeLookup.TryGetValue (id, out list)) {
+					list = new List<AssemblyLookup> ();
+					typeLookup [id] = list;
+				}
+				if (!list.Any (a => a.Namespace == type.Namespace && a.FullName == assembly.FullName))
+					list.Add (new AssemblyLookup (assembly, type.Namespace));
+
+				if (type.IsSealed || type.IsStatic) {
+					foreach (var method in type.Methods) {
+						var m = method as DefaultUnresolvedMethod;
+						if (m == null || !m.IsExtensionMethod)
+							continue;
+						AddExtensionMethodlookup (method, assembly);
+					}
+				}
+			}
+
+			static string GetIdentifier (string identifier, int tc)
+			{
+				if (tc == 0)
+					return identifier;
+				return identifier + "`" + tc;
+			}
+
+			public IEnumerable<AssemblyLookup> LookupIdentifier (string name, int typeParameterCount)
+			{
+				var identifier = GetIdentifier (name, typeParameterCount);
+				List<AssemblyLookup> list;
+				if (!typeLookup.TryGetValue (identifier, out list)) 
+					return Enumerable.Empty<AssemblyLookup> ();
+				return list;
+			}
+
+			[Serializable]
+			public class AssemblyLookup
+			{
+				public string Namespace { get; set; }
+				public string FullName { get; set; }
+				public string Package { get; set; }
+			
+				public AssemblyLookup (SystemAssembly assembly, string ns)
+				{
+					FullName = assembly.FullName;
+					Package = assembly.Package.Name;
+					Namespace = ns;
+				}
+
+				public override string ToString ()
+				{
+					return string.Format ("[AssemblyLookup: Namespace={0}, FullName={1}, Package={2}]", Namespace, FullName, Package);
+				}
+			}
+		}
+
+		static IEnumerable<SystemAssembly> GetFrameworkAssemblies (DotNetProject netProject)
+		{
+			var assemblies = new Dictionary<string, SystemAssembly> ();
+			foreach (var systemPackage in netProject.AssemblyContext.GetPackages ()) {
+				foreach (var assembly in systemPackage.Assemblies) {
+					SystemAssembly existing;
+					if (assemblies.TryGetValue (assembly.Name, out existing)) {
+						Version v1, v2;
+						if (!Version.TryParse (existing.Version, out v1))
+							continue;
+						if (!Version.TryParse (assembly.Version, out v2))
+							continue;
+						if (v1 > v2)
+							continue;
+					}
+					assemblies [assembly.Name] = assembly;
+				}
+			}
+			return assemblies.Values;
+		}
+
+		readonly static Dictionary<string, FrameworkLookup> frameworkLookup = new Dictionary<string, FrameworkLookup> ();
+		public static FrameworkLookup GetFrameworkLookup (DotNetProject netProject)
+		{
+			FrameworkLookup result;
+			string fileName;
+			lock (frameworkLookup) {
+				if (frameworkLookup.TryGetValue (netProject.TargetFramework.Name, out result)) 
+					return result;
+				var cache = GetCacheDirectory (netProject.TargetFramework);
+				fileName = Path.Combine (cache, "FrameworkLookup" + CurrentVersion + ".dat");
+				try {
+					if (File.Exists (fileName)) {
+						result = DeserializeObject<FrameworkLookup> (fileName);
+						if (result.ItemCount > 0) {
+							frameworkLookup [netProject.TargetFramework.Name] = result;
+							return result;
+						}
+					}
+				} catch (Exception e) {
+					LoggingService.LogWarning ("Can't read framework cache - recreating...", e);
+				}
+				result = new FrameworkLookup ();
+				frameworkLookup [netProject.TargetFramework.Name] = result;
+				foreach (var assembly in GetFrameworkAssemblies (netProject)) {
+					var ctx = LoadAssemblyContext (assembly.Location);
+					foreach (var type in ctx.Ctx.GetAllTypeDefinitions ()) {
+						if (!type.IsPublic)
+							continue;
+						result.AddLookup (type, assembly);
+					}
+				}
+				SerializeObject (fileName, result);
+				return result;
+			}
+		}
+
 		public static ProjectContentWrapper GetProjectContentWrapper (Project project)
 		{
 			if (project == null)
@@ -2135,26 +2323,29 @@ namespace MonoDevelop.Ide.TypeSystem
 				TypeSystemParser parser = null;
 				var tags = Context.GetExtensionObject <ProjectCommentTags> ();
 				Context.InLoad = true;
-				foreach (var file in (FileList ?? Context.Project.Files)) {
-					var fileName = file.FilePath;
-					if (filesSkippedInParseThread.Any (f => f == fileName))
-						continue;
-					if (node == null || !node.CanParse (fileName, file.BuildAction)) {
-						node = TypeSystemService.GetTypeSystemParserNode (DesktopService.GetMimeTypeForUri (fileName), file.BuildAction);
-						parser = node != null ? node.Parser : null;
+				try {
+					foreach (var file in (FileList ?? Context.Project.Files)) {
+						var fileName = file.FilePath;
+						if (filesSkippedInParseThread.Any (f => f == fileName))
+							continue;
+						if (node == null || !node.CanParse (fileName, file.BuildAction)) {
+							node = TypeSystemService.GetTypeSystemParserNode (DesktopService.GetMimeTypeForUri (fileName), file.BuildAction);
+							parser = node != null ? node.Parser : null;
+						}
+						if (parser == null)
+							continue;
+						var parsedDocument = parser.Parse (false, fileName, Context.Project);
+						if (tags != null)
+							tags.UpdateTags (Context.Project, parsedDocument.FileName, parsedDocument.TagComments);
+						var oldFile = Context.Content.GetFile (fileName);
+						Context.UpdateContent (c => c.AddOrUpdateFiles (parsedDocument.ParsedFile));
+						if (oldFile != null)
+							Context.InformFileRemoved (new ParsedFileEventArgs (oldFile));
+						Context.InformFileAdded (new ParsedFileEventArgs (parsedDocument.ParsedFile));
 					}
-					if (parser == null)
-						continue;
-					var parsedDocument = parser.Parse (false, fileName, Context.Project);
-					if (tags != null)
-						tags.UpdateTags (Context.Project, parsedDocument.FileName, parsedDocument.TagComments);
-					var oldFile = Context.Content.GetFile (fileName);
-					Context.UpdateContent (c => c.AddOrUpdateFiles (parsedDocument.ParsedFile));
-					if (oldFile != null)
-						Context.InformFileRemoved (new ParsedFileEventArgs (oldFile));
-					Context.InformFileAdded (new ParsedFileEventArgs (parsedDocument.ParsedFile));
+				} finally {
+					Context.InLoad = false;
 				}
-				Context.InLoad = false;
 			}
 		}
 
@@ -2258,6 +2449,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				foreach (var pj in parseQueue) {
 					if (pj.Context == context) {
 						parseQueueIndex.Remove (pj.Context);
+						pj.Context.InLoad = false;
 					}
 				}
 			}

@@ -181,7 +181,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
-		<ProjectTemplate id = "NUnitAssemblyGroup" resource = "NUnitAssemblyGroup.xpt.xml"/>
+<!--		<ProjectTemplate id = "NUnitAssemblyGroup" resource = "NUnitAssemblyGroup.xpt.xml"/>-->
 		<ProjectTemplate id = "NUnitProject" resource = "NUnitProject.xpt.xml"/>
 	</Extension>
 

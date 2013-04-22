@@ -39,6 +39,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
 using MonoDevelop.CodeActions;
 using MonoDevelop.Refactoring;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.CodeActions
 {
@@ -203,11 +204,14 @@ namespace MonoDevelop.CodeActions
 	
 				bool addUsing = !(resolveResult is AmbiguousTypeResolveResult);
 				if (addUsing) {
-					foreach (var t in possibleNamespaces.Where (tp => tp.Item2)) {
-						string ns = t.Item1;
+					foreach (var t in possibleNamespaces.Where (tp => tp.IsAccessibleWithGlobalUsing)) {
+						string ns = t.Namespace;
+						var reference = t.Reference;
 						var menuItem = new Gtk.MenuItem (string.Format ("using {0};", ns));
 						menuItem.Activated += delegate {
-							new MonoDevelop.Refactoring.ResolveCommandHandler.AddImport (document, resolveResult, ns, true, node).Run ();
+							new ResolveCommandHandler.AddImport (document, resolveResult, ns, reference, true, node).Run ();
+							if (reference != null)
+								document.Project.Items.Add (reference);
 							menu.Destroy ();
 						};
 						menu.Add (menuItem);
@@ -218,10 +222,11 @@ namespace MonoDevelop.CodeActions
 				bool resolveDirect = !(resolveResult is UnknownMemberResolveResult);
 				if (resolveDirect) {
 					foreach (var t in possibleNamespaces) {
-						string ns = t.Item1;
+						string ns = t.Namespace;
+						var reference = t.Reference;
 						var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("{0}", ns + "." + document.Editor.GetTextBetween (node.StartLocation, node.EndLocation)));
 						menuItem.Activated += delegate {
-							new MonoDevelop.Refactoring.ResolveCommandHandler.AddImport (document, resolveResult, ns, false, node).Run ();
+							new ResolveCommandHandler.AddImport (document, resolveResult, ns, reference, false, node).Run ();
 							menu.Destroy ();
 						};
 						menu.Add (menuItem);

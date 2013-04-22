@@ -132,7 +132,7 @@ namespace Mono.TextEditor.Highlighting
 			}
 			if (result != null) {
 				// crop to begin
-				if (result.Offset != offset) {
+				if (result.Offset < offset) {
 					while (result != null && result.EndOffset < offset) {
 						result = result.Next;
 					}
@@ -145,11 +145,11 @@ namespace Mono.TextEditor.Highlighting
 			}
 			while (result != null) {
 				// crop to end
-				if (result.EndOffset > offset + length) {
+				if (result.EndOffset >= offset + length) {
 					result.Length = offset + length - result.Offset;
+					result.Next = null;
 					if (result.Length < 0) {
 						result.Length = 0;
-						result.Next = null;
 						yield break;
 					}
 				}
