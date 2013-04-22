@@ -67,7 +67,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 			return doc;
 		}
 
-		HashSet<Tuple<string, bool>> GetResult (string input)
+		HashSet<MonoDevelop.Refactoring.ResolveCommandHandler.PossibleNamespace> GetResult (string input)
 		{
 			var doc = Setup (input);
 			var location = doc.Editor.Caret.Location;
@@ -86,7 +86,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 		var list = new $List<string> ();
 	}
 }");
-			Assert.IsTrue (result.Any (t => t.Item1 == "System.Collections.Generic"));
+			Assert.IsTrue (result.Any (t => t.Namespace == "System.Collections.Generic"));
 		}
 
 		[Test]
@@ -98,7 +98,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 		$List<string> list;
 	}
 }");
-				Assert.IsTrue (result.Any (t => t.Item1 == "System.Collections.Generic"));
+			Assert.IsTrue (result.Any (t => t.Namespace == "System.Collections.Generic"));
 		}
 
 		[Test]
@@ -109,7 +109,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 	{
 	}
 }");
-			Assert.IsTrue (result.Any (t => t.Item1 == "System.Collections.Generic"));
+			Assert.IsTrue (result.Any (t => t.Namespace == "System.Collections.Generic"));
 		}
 		
 		[Test]
@@ -118,7 +118,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 			var result = GetResult (@"class Test {
 	$List<string> list;
 }");
-			Assert.IsTrue (result.Any (t => t.Item1 == "System.Collections.Generic"));
+			Assert.IsTrue (result.Any (t => t.Namespace == "System.Collections.Generic"));
 		}
 		
 		
@@ -126,7 +126,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 		public void TestBaseType ()
 		{
 			var result = GetResult (@"class Test : $List<string> {}");
-			Assert.IsTrue (result.Any (t => t.Item1 == "System.Collections.Generic"));
+			Assert.IsTrue (result.Any (t => t.Namespace == "System.Collections.Generic"));
 		}
 		
 
@@ -150,7 +150,7 @@ class Test {
 [$Obsolete]
 class Test {
 }");
-			Assert.IsTrue (result.Any (t => t.Item1 == "System"));
+			Assert.IsTrue (result.Any (t => t.Namespace == "System"));
 		}
 		
 		[Test]
@@ -161,7 +161,7 @@ class Test {
 [$SerializableAttribute]
 class Test {
 }");
-			Assert.IsTrue (result.Any (t => t.Item1 == "System"));
+			Assert.IsTrue (result.Any (t => t.Namespace == "System"));
 		}
 
 		[Test]
@@ -186,8 +186,8 @@ namespace My
 }");
 			foreach (var a in result)
 				Console.WriteLine (a);
-			Assert.IsTrue (result.Any (t => t.Item1 == "Foo"));
-			Assert.IsTrue (result.Any (t => t.Item1 == "Foo2"));
+			Assert.IsTrue (result.Any (t => t.Namespace == "Foo"));
+			Assert.IsTrue (result.Any (t => t.Namespace == "Foo2"));
 		}
 
 		[Test]
@@ -202,7 +202,7 @@ namespace My
 }");
 			foreach (var a in result)
 				Console.WriteLine (a);
-			Assert.IsTrue (result.Any (t => t.Item1 == "System.Linq"));
+			Assert.IsTrue (result.Any (t => t.Namespace == "System.Linq"));
 		}
 
 
@@ -217,7 +217,7 @@ namespace My
 		return encoding.EncodingName;
 	}
 }");
-			Assert.IsTrue (result.Any (t => t.Item1 == "System.Text"));
+			Assert.IsTrue (result.Any (t => t.Namespace == "System.Text"));
 		}
 
 		[Test]
@@ -230,7 +230,7 @@ namespace My
 		return encoding.EncodingName;
 	}
 }");
-			Assert.IsTrue (result.Any (t => t.Item1 == "System.Text"));
+			Assert.IsTrue (result.Any (t => t.Namespace == "System.Text"));
 		}
 
 		[Test]
@@ -242,7 +242,7 @@ namespace My
 		$Encoding.
 	}
 }");
-			Assert.IsTrue (result.Any (t => t.Item1 == "System.Text"));
+			Assert.IsTrue (result.Any (t => t.Namespace == "System.Text"));
 		}
 
 		[Test]
@@ -254,7 +254,7 @@ namespace My
 		$List<string>.
 	}
 }");
-			Assert.IsTrue (result.Any (t => t.Item1 == "System.Collections.Generic"));
+			Assert.IsTrue (result.Any (t => t.Namespace == "System.Collections.Generic"));
 		}
 		#endregion
 
@@ -280,7 +280,7 @@ namespace sadfhgjhkfj
 }");
 			foreach (var a in result)
 				Console.WriteLine (a);
-			Assert.IsTrue (result.Any (t => t.Item1 == "System.Threading"));
+			Assert.IsTrue (result.Any (t => t.Namespace == "System.Threading"));
 		}
 
 		[Test]
@@ -302,7 +302,7 @@ namespace sadfhgjhkfj
 }");
 			foreach (var a in result)
 				Console.WriteLine (a);
-			Assert.IsTrue (result.Any (t => t.Item1 == "System.Threading"));
+			Assert.IsTrue (result.Any (t => t.Namespace == "System.Threading"));
 		}
 
 		/// <summary>
@@ -325,8 +325,8 @@ namespace sadfhgjhkfj
 }"
 			);
 
-			Assert.IsFalse (result.Any (t => t.Item1 == "System.Collections"));
-			Assert.IsTrue (result.Any (t => t.Item1 == "System.Collections.Generic"));
+			Assert.IsFalse (result.Any (t => t.Namespace == "System.Collections"));
+			Assert.IsTrue (result.Any (t => t.Namespace == "System.Collections.Generic"));
 		}
 
 
@@ -350,7 +350,7 @@ namespace TestConsole
 }"
 			);
 
-			Assert.IsTrue (result.Any (t => t.Item1 == "System.Reflection"));
+			Assert.IsTrue (result.Any (t => t.Namespace == "System.Reflection"));
 		}
 
 		/// <summary>
@@ -372,7 +372,7 @@ class Program
 ");
 			foreach (var a in result)
 				Console.WriteLine (a);
-			Assert.IsTrue (result.Any (t => t.Item1 == "Test.Foo" && !t.Item2));
+			Assert.IsTrue (result.Any (t => t.Namespace == "Test.Foo" && !t.IsAccessibleWithGlobalUsing));
 		}
 
 
@@ -392,7 +392,7 @@ class Program
 "
 			                        );
 			
-			Assert.IsTrue (result.Any (t => t.Item1 == "System"));
+			Assert.IsTrue (result.Any (t => t.Namespace == "System"));
 		}
 
 
