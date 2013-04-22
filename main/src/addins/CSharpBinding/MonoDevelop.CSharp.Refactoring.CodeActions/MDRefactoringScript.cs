@@ -75,8 +75,9 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			context.TextEditor.SelectionRange = new TextSegment (GetSegment (node));
 		}
 
-		public override void InsertWithCursor (string operation, InsertPosition defaultPosition, IEnumerable<AstNode> nodes, Action continuation)
+		public override Task InsertWithCursor (string operation, InsertPosition defaultPosition, IEnumerable<AstNode> nodes)
 		{
+			var tcs = new TaskCompletionSource<object> ();
 			var editor = context.TextEditor;
 			DocumentLocation loc = context.TextEditor.Caret.Location;
 			var declaringType = context.ParsedDocument.GetInnermostTypeDefinition (loc);
@@ -87,6 +88,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				MessageService.ShowError (
 					GettextCatalog.GetString ("No valid insertion point can be found in type '{0}'.", declaringType.Name)
 				);
+				return tcs.Task;
 			}
 			var helpWindow = new Mono.TextEditor.PopupWindow.InsertionCursorLayoutModeHelpWindow ();
 			helpWindow.TransientFor = MonoDevelop.Ide.IdeApp.Workbench.RootWindow;
@@ -131,22 +133,23 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 						var delta = iCArgs.InsertionPoint.Insert (editor, output.Text);
 						output.RegisterTrackedSegments (this, delta + offset);
 					}
-					if (continuation != null)
-						continuation ();
+					tcs.SetResult (null);
 				} else {
 					Rollback ();
 				}
 				DisposeOnClose (); 
 			};
+			return tcs.Task;
 		}
 
-		public override void InsertWithCursor (string operation, ITypeDefinition parentType, IEnumerable<AstNode> nodes, Action continuation)
+		public override Task InsertWithCursor (string operation, ITypeDefinition parentType, IEnumerable<AstNode> nodes)
 		{
+			var tcs = new TaskCompletionSource<object>();
 			if (parentType == null)
-				return;
+				return tcs.Task;
 			var part = parentType.Parts.FirstOrDefault ();
 			if (part == null)
-				return;
+				return tcs.Task;
 
 			var loadedDocument = Ide.IdeApp.Workbench.OpenDocument (part.Region.FileName);
 			loadedDocument.RunWhenLoaded (delegate {
@@ -172,8 +175,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 						var delta = point.Insert (editor, text);
 						output.RegisterTrackedSegments (this, delta + offset);
 					}
-					if (continuation != null)
-						continuation ();
+					tcs.SetResult (null);
 					return;
 				}
 
@@ -200,18 +202,20 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 							var delta = iCArgs.InsertionPoint.Insert (editor, text);
 							output.RegisterTrackedSegments (this, delta + offset);
 						}
-						if (continuation != null)
-							continuation ();
+						tcs.SetResult (null);
 					} else {
 						Rollback ();
 					}
 					DisposeOnClose (); 
 				};
 			});
+		
+			return tcs.Task;
 		}
 
-		public override void Link (Action continuation, params AstNode[] nodes)
+		public override Task Link (params AstNode[] nodes)
 		{
+			var tcs = new TaskCompletionSource<object> ();
 			var segments = new List<TextSegment> (nodes.Select (node => new TextSegment (GetSegment (node))).OrderBy (s => s.Offset));
 			
 			var link = new TextLink ("name");
@@ -231,8 +235,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				if (IdeApp.Workbench.ActiveDocument != null)
 					IdeApp.Workbench.ActiveDocument.ReparseDocument ();
 			}
-			if (continuation != null)
-				continuation ();
+			return tcs.Task;
 		}
 
 		bool isDisposed = false;
