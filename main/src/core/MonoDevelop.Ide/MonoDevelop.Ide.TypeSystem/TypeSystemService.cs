@@ -2100,9 +2100,16 @@ namespace MonoDevelop.Ide.TypeSystem
 			return result;
 		}
 
+		public static readonly Version FrameworkLookupVersion = new Version (1, 0, 0);
+
 		[Serializable]
 		public class FrameworkLookup 
 		{
+			public Version Version {
+				get;
+				set;
+			}
+
 			Dictionary<string, List<AssemblyLookup>> typeLookup = new Dictionary<string, List<AssemblyLookup>>  ();
 			Dictionary<string, List<AssemblyLookup>> extensionMethodLookup = new Dictionary<string, List<AssemblyLookup>>  ();
 
@@ -2112,6 +2119,11 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 
+			public FrameworkLookup ()
+			{
+				this.Version = FrameworkLookupVersion;
+			}
+
 			void AddExtensionMethodlookup(IUnresolvedMethod method, SystemAssembly assembly)
 			{
 				List<AssemblyLookup> list;
@@ -2119,8 +2131,9 @@ namespace MonoDevelop.Ide.TypeSystem
 					list = new List<AssemblyLookup> ();
 					extensionMethodLookup [method.Name] = list;
 				}
-				if (!list.Any (a => a.Namespace == method.DeclaringTypeDefinition.Namespace && a.FullName == assembly.FullName)) {
-					list.Add (new AssemblyLookup (assembly, method.DeclaringTypeDefinition.Namespace));
+				var assemblyLookup = new AssemblyLookup (assembly, method.DeclaringTypeDefinition.Namespace);
+				if (!list.Any (a => a.Equals (assemblyLookup))) {
+					list.Add (assemblyLookup);
 				}
 
 			}
@@ -2141,8 +2154,9 @@ namespace MonoDevelop.Ide.TypeSystem
 					list = new List<AssemblyLookup> ();
 					typeLookup [id] = list;
 				}
-				if (!list.Any (a => a.Namespace == type.Namespace && a.FullName == assembly.FullName))
-					list.Add (new AssemblyLookup (assembly, type.Namespace));
+				var assemblyLookup = new AssemblyLookup (assembly, type.Namespace);
+				if (!list.Any (a => a.Equals (assemblyLookup)))
+					list.Add (assemblyLookup);
 
 				if (type.IsSealed || type.IsStatic) {
 					foreach (var method in type.Methods) {
@@ -2188,6 +2202,25 @@ namespace MonoDevelop.Ide.TypeSystem
 				{
 					return string.Format ("[AssemblyLookup: Namespace={0}, FullName={1}, Package={2}]", Namespace, FullName, Package);
 				}
+
+				public override bool Equals (object obj)
+				{
+					if (obj == null)
+						return false;
+					if (ReferenceEquals (this, obj))
+						return true;
+					if (obj.GetType () != typeof(AssemblyLookup))
+						return false;
+					AssemblyLookup other = (AssemblyLookup)obj;
+					return Namespace == other.Namespace && FullName == other.FullName && Package == other.Package;
+				}
+				
+				public override int GetHashCode ()
+				{
+					unchecked {
+						return (Namespace != null ? Namespace.GetHashCode () : 0) ^ (FullName != null ? FullName.GetHashCode () : 0) ^ (Package != null ? Package.GetHashCode () : 0);
+					}
+				}
 			}
 		}
 
@@ -2221,13 +2254,14 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (frameworkLookup.TryGetValue (netProject.TargetFramework.Name, out result)) 
 					return result;
 				var cache = GetCacheDirectory (netProject.TargetFramework);
-				fileName = Path.Combine (cache, "FrameworkLookup" + CurrentVersion + ".dat");
+				fileName = Path.Combine (cache, "FrameworkLookup_" + FrameworkLookupVersion + ".dat");
 				try {
 					if (File.Exists (fileName)) {
 						result = DeserializeObject<FrameworkLookup> (fileName);
 						if (result.ItemCount > 0) {
 							frameworkLookup [netProject.TargetFramework.Name] = result;
-							return result;
+							if (result.Version == FrameworkLookupVersion)
+								return result;
 						}
 					}
 				} catch (Exception e) {
