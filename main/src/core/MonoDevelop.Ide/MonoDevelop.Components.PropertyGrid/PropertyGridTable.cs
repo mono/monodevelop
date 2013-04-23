@@ -410,7 +410,7 @@ namespace MonoDevelop.Components.PropertyGrid
 					ctx.Restore ();
 
 					if (r != currentEditorRow)
-						cell.Render (GdkWindow, r.EditorBounds, state);
+						cell.Render (GdkWindow, ctx, r.EditorBounds, state);
 
 					y += r.EditorBounds.Height;
 					indent = PropertyIndent;
@@ -418,16 +418,18 @@ namespace MonoDevelop.Components.PropertyGrid
 
 				if (r.ChildRows != null && r.ChildRows.Count > 0 && (r.Expanded || r.AnimatingExpand)) {
 					int py = y;
-					if (r.AnimatingExpand) {
-						ctx.Save ();
+
+					ctx.Save ();
+					if (r.AnimatingExpand)
 						ctx.Rectangle (0, y, Allocation.Width, r.AnimationHeight);
-						ctx.Clip ();
-					}
+					else
+						ctx.Rectangle (0, 0, Allocation.Width, Allocation.Height);
 
+					ctx.Clip ();
 					Draw (ctx, r.ChildRows, dividerX, x + indent, ref y);
+					ctx.Restore ();
 
 					if (r.AnimatingExpand) {
-						ctx.Restore ();
 						y = py + r.AnimationHeight;
 						// Repaing the background because the cairo clip doesn't work for gdk primitives
 						int dx = (int)((double)Allocation.Width * dividerPosition);

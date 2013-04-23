@@ -50,7 +50,7 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 			height = 20;
 		}
 		
-		public override void Render (Gdk.Drawable window, Gdk.Rectangle bounds, Gtk.StateType state)
+		public override void Render (Gdk.Drawable window, Cairo.Context ctx, Gdk.Rectangle bounds, Gtk.StateType state)
 		{
 			Gtk.ShadowType sh = (bool) Value ? Gtk.ShadowType.In : Gtk.ShadowType.Out;
 			int s = indicatorSize - 1;
