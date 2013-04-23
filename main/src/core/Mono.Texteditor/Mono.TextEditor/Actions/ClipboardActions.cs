@@ -208,9 +208,9 @@ namespace Mono.TextEditor
 
 					switch (selection.SelectionMode) {
 					case SelectionMode.Normal:
-						copiedColoredChunks = ColoredSegment.GetChunks (data, data.SelectionRange);
 						isBlockMode = false;
 						var segment = selection.GetSelectionRange (data);
+						copiedColoredChunks = ColoredSegment.GetChunks (data, segment);
 						var pasteHandler = data.TextPasteHandler;
 						if (pasteHandler != null)
 							copyData = pasteHandler.GetCopyData (segment);
@@ -294,8 +294,6 @@ namespace Mono.TextEditor
 						string text = System.Text.Encoding.UTF8.GetString (selBytes, rawTextOffset, selBytes.Length - rawTextOffset);
 						bool pasteBlock = (selBytes [0] & 1) == 1;
 						bool pasteLine = (selBytes [0] & 2) == 2;
-						Console.WriteLine ("paste block:" + pasteBlock);
-//						var clearSelection = data.IsSomethingSelected ? data.MainSelection.SelectionMode != SelectionMode.Block : true;
 						if (pasteBlock) {
 							using (var undo = data.OpenUndoGroup ()) {
 								var version = data.Document.Version;
@@ -357,7 +355,7 @@ namespace Mono.TextEditor
 								result = text.Length;
 								DocumentLine curLine = data.Document.GetLine (data.Caret.Line);
 
-								data.PasteText (curLine.Offset, text + data.EolMarker, copyData);
+								result = PastePlainText (data, curLine.Offset,  text + data.EolMarker, preserveSelection, copyData);
 								if (!preserveState)
 									data.ClearSelection ();
 								data.Caret.PreserveSelection = false;
