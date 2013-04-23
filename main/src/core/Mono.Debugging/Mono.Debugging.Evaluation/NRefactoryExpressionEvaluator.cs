@@ -46,7 +46,7 @@ namespace Mono.Debugging.Evaluation
 			if (expression.Length > 0 && expression[0] == '?')
 				expression = expression.Substring (1).Trim ();
 
-			if (expression.StartsWith ("var", StringComparison.Ordinal) && char.IsWhiteSpace (expression[3])) {
+			if (expression.Length > 3 && expression.StartsWith ("var", StringComparison.Ordinal) && char.IsWhiteSpace (expression[3])) {
 				expression = expression.Substring (4).Trim (' ', '\t');
 				string variable = null;
 
@@ -94,7 +94,7 @@ namespace Mono.Debugging.Evaluation
 			if (expression.Length > 0 && expression[0] == '?')
 				return "?" + Resolve (session, location, expression.Substring (1).Trim ());
 
-			if (expression.StartsWith ("var", StringComparison.Ordinal) && char.IsWhiteSpace (expression[3]))
+			if (expression.Length > 3 && expression.StartsWith ("var", StringComparison.Ordinal) && char.IsWhiteSpace (expression[3]))
 				return "var " + Resolve (session, location, expression.Substring (4).Trim (' ', '\t'));
 
 			expression = ReplaceExceptionTag (expression, session.Options.EvaluationOptions.CurrentExceptionTag);
@@ -125,7 +125,7 @@ namespace Mono.Debugging.Evaluation
 			if (expression.Length > 0 && expression[0] == '?')
 				expression = expression.Substring (1).Trim ();
 
-			if (expression.StartsWith ("var", StringComparison.Ordinal) && char.IsWhiteSpace (expression[3]))
+			if (expression.Length > 3 && expression.StartsWith ("var", StringComparison.Ordinal) && char.IsWhiteSpace (expression[3]))
 				expression = expression.Substring (4).Trim ();
 
 			expression = ReplaceExceptionTag (expression, ctx.Options.CurrentExceptionTag);
