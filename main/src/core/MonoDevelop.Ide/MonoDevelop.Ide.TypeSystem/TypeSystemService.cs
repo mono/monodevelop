@@ -2155,15 +2155,16 @@ namespace MonoDevelop.Ide.TypeSystem
 					typeLookup [id] = list;
 				}
 				var assemblyLookup = new AssemblyLookup (assembly, type.Namespace);
-				if (!list.Any (a => a.Equals (assemblyLookup)))
+				if (!list.Any (a => a.Equals (assemblyLookup))) {
 					list.Add (assemblyLookup);
 
-				if (type.IsSealed || type.IsStatic) {
-					foreach (var method in type.Methods) {
-						var m = method as DefaultUnresolvedMethod;
-						if (m == null || !m.IsExtensionMethod)
-							continue;
-						AddExtensionMethodlookup (method, assembly);
+					if (type.IsSealed || type.IsStatic) {
+						foreach (var method in type.Methods) {
+							var m = method as DefaultUnresolvedMethod;
+							if (m == null || !m.IsExtensionMethod)
+								continue;
+							AddExtensionMethodlookup (method, assembly);
+						}
 					}
 				}
 			}
