@@ -168,21 +168,69 @@ namespace MonoDevelop.CSharp.Formatting
 
 
 			if (textEditorData != null) {
-				textEditorData.Options.Changed += delegate {
-					textEditorData.IndentationTracker = new IndentVirtualSpaceManager (
-						textEditorData,
-						new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (Policy, TextStylePolicy), textEditorData)
-					);
-				};
+				textEditorData.Options.Changed += HandleTextOptionsChanged;
 				textEditorData.IndentationTracker = new IndentVirtualSpaceManager (
 					textEditorData,
 					new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (Policy, TextStylePolicy), textEditorData)
 				);
+				textEditorData.Document.TextReplacing += HandleTextReplacing;
+				textEditorData.Document.TextReplaced += HandleTextReplaced;;
+				textEditorData.TextPasteHandler = this;
+				textEditorData.Paste += HandleTextPaste;
 			}
 
 			InitTracker ();
-			Document.Editor.TextPasteHandler = this;
-			Document.Editor.Paste += HandleTextPaste;
+		}
+
+		void HandleTextOptionsChanged (object sender, EventArgs e)
+		{
+			textEditorData.IndentationTracker = new IndentVirtualSpaceManager (
+				textEditorData,
+				new DocumentStateTracker<CSharpIndentEngine> (new CSharpIndentEngine (Policy, TextStylePolicy), textEditorData)
+				);
+
+		}
+
+		public override void Dispose ()
+		{
+			if (textEditorData != null) {
+				textEditorData.TextPasteHandler = null;
+				textEditorData.Paste -= HandleTextPaste;
+				textEditorData.Options.Changed -= HandleTextOptionsChanged;
+				textEditorData.IndentationTracker = null;
+				textEditorData.Document.TextReplacing -= HandleTextReplacing;
+				textEditorData.Document.TextReplaced -= HandleTextReplaced;;
+			}
+			base.Dispose ();
+		}
+
+		bool wasInVerbatimString;
+
+		void HandleTextReplaced (object sender, DocumentChangeEventArgs e)
+		{
+			if (e.RemovalLength != 1)
+				return;
+			stateTracker.UpdateEngine (e.Offset + e.InsertionLength + 1);
+			if (wasInVerbatimString && !stateTracker.Engine.IsInsideVerbatimString) {
+				textEditorData.Document.TextReplacing -= HandleTextReplacing;
+				textEditorData.Document.TextReplaced -= HandleTextReplaced;;
+				ConvertVerbatimStringToNormal (textEditorData, e.Offset + e.InsertionLength + 1);
+				textEditorData.Document.TextReplacing += HandleTextReplacing;
+				textEditorData.Document.TextReplaced += HandleTextReplaced;;
+			}
+		}
+
+		void HandleTextReplacing (object sender, DocumentChangeEventArgs e)
+		{
+			var o = e.Offset + e.RemovalLength;
+			if (o < 0 || o + 1 > textEditorData.Length || e.RemovalLength != 1 || textEditorData.Document.IsInUndo) {
+				wasInVerbatimString = false;
+				return;
+			}
+			if (textEditorData.GetCharAt (o) != '"')
+				return;
+			stateTracker.UpdateEngine (o + 1);
+			wasInVerbatimString = stateTracker.Engine.IsInsideVerbatimString;
 		}
 
 		#region ITextPasteHandler implementation
@@ -202,6 +250,105 @@ namespace MonoDevelop.CSharp.Formatting
 				return new [] { (byte)CopySource.VerbatimString };
 			return null;
 		}
+		
+		static string ConvertFromString (string nonVerbatimStringContent)
+		{
+			var result = new StringBuilder ();
+			for (int i = 0; i < nonVerbatimStringContent.Length; i++) {
+				var ch = nonVerbatimStringContent [i];
+				switch (ch) {
+				case '\\':
+					i++;
+					switch (nonVerbatimStringContent [i]) {
+					case '\\':
+						result.Append ('\\');
+						break;
+					case 'r':
+						result.Append ('\r');
+						break;
+					case 'n':
+						result.Append ('\n');
+						break;
+					case 't':
+						result.Append ('\t');
+						break;
+					case '"':
+						result.Append ('"');
+						break;
+					}
+					break;
+				default:
+					result.Append (ch);
+					break;
+				}
+			}
+			return result.ToString ();
+		}
+		
+		static string ConvertFromVerbatimString (string verbatimStringContent)
+		{
+			var result = new StringBuilder ();
+			for (int i = 0; i < verbatimStringContent.Length; i++) {
+				var ch = verbatimStringContent [i];
+
+				switch (ch) {
+				case '"':
+					if (i + 1 < verbatimStringContent.Length && verbatimStringContent [i + 1] == '"') {
+						result.Append ("\"");
+						i++;
+					}
+					break;
+				default:
+					result.Append (ch);
+					break;
+				}
+			}
+			return result.ToString ();
+		}
+
+		static string ConvertToStringLiteral (string text)
+		{
+			var result = new StringBuilder ();
+			foreach (var ch in text) {
+				switch (ch) {
+				case '\t':
+					result.Append ("\\t");
+					break;
+				case '"':
+					result.Append ("\\\"");
+					break;
+				case '\n':
+					result.Append ("\\n");
+					break;
+				case '\r':
+					result.Append ("\\r");
+					break;
+				case '\\':
+					result.Append ("\\\\");
+					break;
+				default:
+					result.Append (ch);
+					break;
+				}
+			}
+			return result.ToString ();
+		}
+
+		static string ConvertToVerbatimLiteral (string text)
+		{
+			var result = new StringBuilder ();
+			foreach (var ch in text) {
+				switch (ch) {
+					case '"':
+					result.Append ("\"\"");
+					break;
+					default:
+					result.Append (ch);
+					break;
+				}
+			}
+			return result.ToString ();
+		}
 
 		string ITextPasteHandler.FormatPlainText (int insertionOffset, string text, byte[] copyData)
 		{
@@ -213,35 +360,10 @@ namespace MonoDevelop.CSharp.Formatting
 				CopySource src = (CopySource)copyData [0];
 				switch (src) {
 				case CopySource.VerbatimString:
-					text = text.Replace ("\"\"", "\"");
+					text = ConvertFromVerbatimString (text);
 					break;
 				case CopySource.StringLiteral:
-					StringBuilder sb = new StringBuilder ();
-					for (int i = 0; i < text.Length; i++) {
-						switch (text [i]) {
-						case '\\':
-							i++;
-							switch (text [i]) {
-							case '\\':
-								sb.Append ('\\');
-								break;
-							case 'r':
-								sb.Append ('\r');
-								break;
-							case 'n':
-								sb.Append ('\n');
-								break;
-							case 't':
-								sb.Append ('\t');
-								break;
-							}
-							break;
-						default:
-							sb.Append (text [i]);
-							break;
-						}
-					}
-					text = sb.ToString ();
+					text = ConvertFromString (text);
 					break;
 				}
 			}
@@ -249,48 +371,13 @@ namespace MonoDevelop.CSharp.Formatting
 			stateTracker.UpdateEngine (insertionOffset);
 			var engine = stateTracker.Engine.Clone () as CSharpIndentEngine;
 
-			StringBuilder result = new StringBuilder ();
+			var result = new StringBuilder ();
 
-			if (engine.IsInsideStringLiteral) {
-				foreach (var ch in text) {
-					switch (ch) {
-					case '\t':
-						result.Append ("\\t");
-						break;
-					case '"':
-						result.Append ("\\\"");
-						break;
-					case '\n':
-						result.Append ("\\n");
-						break;
-					case '\r':
-						result.Append ("\\r");
-						break;
-					case '\\':
-						result.Append ("\\\\");
-						break;
-					default:
-						result.Append (ch);
-						break;
-					}
-				}
-				return result.ToString ();
-			}
+			if (engine.IsInsideStringLiteral)
+				return ConvertToStringLiteral (text);
 
-
-			if (engine.IsInsideVerbatimString) {
-				foreach (var ch in text) {
-					switch (ch) {
-					case '"':
-						result.Append ("\"\"");
-						break;
-					default:
-						result.Append (ch);
-						break;
-					}
-				}
-				return result.ToString ();
-			}
+			if (engine.IsInsideVerbatimString)
+				return ConvertToVerbatimLiteral (text);
 
 			bool inNewLine = false;
 			foreach (var ch in text) {
@@ -320,6 +407,38 @@ namespace MonoDevelop.CSharp.Formatting
 			return result.ToString ();
 		}
 		#endregion
+
+		void ConvertNormalToVerbatimString (TextEditorData textEditorData, int offset)
+		{
+			var endOffset = offset;
+			while (endOffset < textEditorData.Length) {
+				char ch = textEditorData.GetCharAt (endOffset);
+				if (ch == '\\' && (endOffset + 1 < textEditorData.Length && textEditorData.GetCharAt (endOffset + 1) == '"'))  {
+					endOffset += 2;
+					continue;
+				}
+				if (ch == '"')
+					break;
+				endOffset++;
+			}
+			textEditorData.Replace (offset, endOffset - offset, ConvertToVerbatimLiteral (ConvertFromString (textEditorData.GetTextAt (offset, endOffset - offset))));
+		}
+
+		void ConvertVerbatimStringToNormal (TextEditorData textEditorData, int offset)
+		{
+			var endOffset = offset;
+			while (endOffset < textEditorData.Length) {
+				char ch = textEditorData.GetCharAt (endOffset);
+				if (ch == '"' && (endOffset + 1 < textEditorData.Length && textEditorData.GetCharAt (endOffset + 1) == '"'))  {
+					endOffset += 2;
+					continue;
+				}
+				if (ch == '"')
+					break;
+				endOffset++;
+			}
+			textEditorData.Replace (offset, endOffset - offset, ConvertToStringLiteral (ConvertFromVerbatimString (textEditorData.GetTextAt (offset, endOffset - offset))));
+		}
 
 		#region Sharing the tracker
 
@@ -451,6 +570,18 @@ namespace MonoDevelop.CSharp.Formatting
 				}
 				return false;
 			}
+
+			stateTracker.UpdateEngine ();
+			if (!stateTracker.Engine.IsInsideOrdinaryCommentOrString) {
+				if (keyChar == '@') {
+					var retval = base.KeyPress (key, keyChar, modifier);
+					int cursor = textEditorData.Caret.Offset;
+					if (cursor < textEditorData.Length && textEditorData.GetCharAt (cursor) == '"')
+						ConvertNormalToVerbatimString (textEditorData, cursor + 1);
+					return retval;
+				}
+			}
+
 
 			//do the smart indent
 			if (textEditorData.Options.IndentStyle == IndentStyle.Smart || textEditorData.Options.IndentStyle == IndentStyle.Virtual) {
