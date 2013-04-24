@@ -27,23 +27,9 @@
 //
 
 using System;
-using System.IO;
-using System.ComponentModel;
-using System.Drawing;
-using System.Diagnostics;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Xml;
-using System.Resources;
-using System.Text;
 
-using Mono.Addins;
 using MonoDevelop.Core;
-using MonoDevelop.Projects;
-using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Components;
-using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Components;
 

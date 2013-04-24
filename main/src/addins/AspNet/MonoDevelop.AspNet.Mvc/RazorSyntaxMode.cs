@@ -92,7 +92,7 @@ namespace MonoDevelop.AspNet.Mvc
 			chunks = new List<Chunk> ();
 			CSharpSymbol symbol;
 			CSharpSymbol prevSymbol = null;
-			int off = line.Offset;
+			int off = offset;
 			currentState = State.None;
 
 			while ((symbol = tokenizer.NextSymbol ()) != null) {

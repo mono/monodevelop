@@ -258,7 +258,7 @@ namespace MonoDevelop.Refactoring
 					compilations.Add (Tuple.Create (TypeSystemService.GetCompilation (systemAssembly, doc.Compilation), new MonoDevelop.Projects.ProjectReference (systemAssembly)));
 				}
 			}
-
+			bool foundIdentifier = false;
 			var lookup = new MemberLookup (null, doc.Compilation.MainAssembly);
 			foreach (var comp in compilations) {
 				var compilation = comp.Item1;
@@ -281,16 +281,19 @@ namespace MonoDevelop.Refactoring
 					}
 				}
 
+				var allTypes =  compilation == doc.Compilation ? compilation.GetAllTypeDefinitions () : compilation.MainAssembly.GetAllTypeDefinitions ();
 				if (resolveResult is UnknownIdentifierResolveResult) {
 					var uiResult = resolveResult as UnknownIdentifierResolveResult;
-					string possibleAttributeName = isInsideAttributeType ? uiResult.Identifier + "Attribute" : null;
-					foreach (var typeDefinition in compilation.GetAllTypeDefinitions ()) {
-						if ((typeDefinition.Name == uiResult.Identifier || typeDefinition.Name == possibleAttributeName) && typeDefinition.TypeParameterCount == tc && 
+					string possibleAttributeName = isInsideAttributeType ? uiResult.Identifier + "Attribute" : uiResult.Identifier;
+					foreach (var typeDefinition in allTypes) {
+						if (typeDefinition.Name == possibleAttributeName && typeDefinition.TypeParameterCount == tc && 
 							lookup.IsAccessible (typeDefinition, false)) {
 							if (typeDefinition.DeclaringTypeDefinition != null) {
 								var builder = new TypeSystemAstBuilder (new CSharpResolver (doc.Compilation));
+								foundIdentifier = true;
 								yield return new PossibleNamespace (builder.ConvertType (typeDefinition.DeclaringTypeDefinition).ToString (), false, requiredReference);
 							} else {
+								foundIdentifier = true;
 								yield return new PossibleNamespace (typeDefinition.Namespace, true, requiredReference);
 							}
 						}
@@ -299,9 +302,9 @@ namespace MonoDevelop.Refactoring
 
 				if (resolveResult is UnknownMemberResolveResult) {
 					var umResult = (UnknownMemberResolveResult)resolveResult;
-					string possibleAttributeName = isInsideAttributeType ? umResult.MemberName + "Attribute" : null;
-					foreach (var typeDefinition in compilation.GetAllTypeDefinitions ().Where (t => t.HasExtensionMethods)) {
-						foreach (var method in typeDefinition.Methods.Where (m => m.IsExtensionMethod && (m.Name == umResult.MemberName || m.Name == possibleAttributeName))) {
+					string possibleAttributeName = isInsideAttributeType ? umResult.MemberName + "Attribute" : umResult.MemberName;
+					foreach (var typeDefinition in allTypes.Where (t => t.HasExtensionMethods)) {
+						foreach (var method in typeDefinition.Methods.Where (m => m.IsExtensionMethod && m.Name == possibleAttributeName)) {
 							IType[] inferredTypes;
 							if (CSharpResolver.IsEligibleExtensionMethod (
 								compilation.Import (umResult.TargetType),
@@ -323,27 +326,26 @@ namespace MonoDevelop.Refactoring
 					if (identifier != null) {
 						var uiResult = resolveResult as UnknownIdentifierResolveResult;
 						if (uiResult != null) {
-							string possibleAttributeName = isInsideAttributeType ? uiResult.Identifier + "Attribute" : null;
-							foreach (var typeDefinition in compilation.GetAllTypeDefinitions ()) {
-								if ((identifier.Name == uiResult.Identifier || identifier.Name == possibleAttributeName) && 
-								    typeDefinition.TypeParameterCount == tc && 
-								    lookup.IsAccessible (typeDefinition, false))
+							string possibleAttributeName = isInsideAttributeType ? uiResult.Identifier + "Attribute" : uiResult.Identifier;
+							foreach (var typeDefinition in allTypes) {
+								if ((identifier.Name == possibleAttributeName) && 
+									typeDefinition.TypeParameterCount == tc && 
+									lookup.IsAccessible (typeDefinition, false))
 									yield return new PossibleNamespace (typeDefinition.Namespace, true, requiredReference);
 							}
 						}
 					}
 				}
 			}
-		
-
-			if (resolveResult is UnknownIdentifierResolveResult) {
+			// Try to search framework types
+			if (!foundIdentifier && resolveResult is UnknownIdentifierResolveResult) {
 				var uiResult = resolveResult as UnknownIdentifierResolveResult;
-
-				foreach (var r in frameworkLookup.LookupIdentifier (uiResult.Identifier, tc)) {
+				string possibleAttributeName = isInsideAttributeType ? uiResult.Identifier + "Attribute" : uiResult.Identifier;
+				foreach (var r in frameworkLookup.LookupIdentifier (possibleAttributeName, tc)) {
 					var systemAssembly = netProject.AssemblyContext.GetAssemblyFromFullName (r.FullName, r.Package, netProject.TargetFramework);
 					if (systemAssembly == null)
 						continue;
-					yield return new PossibleNamespace (r.Namespace, true, new MonoDevelop.Projects.ProjectReference (systemAssembly));
+				    yield return new PossibleNamespace (r.Namespace, true, new MonoDevelop.Projects.ProjectReference (systemAssembly));
 				}
 			}
 
