@@ -784,7 +784,7 @@ namespace Mono.Debugging.Soft
 
 					foreach (var location in FindLocationsByFile (bp.FileName, bp.Line, bp.Column, out generic, out insideLoadedRange)) {
 						OnDebuggerOutput (false, string.Format ("Resolved pending breakpoint at '{0}:{1},{2}' to {3} [0x{4:x5}].\n",
-						                                        bp.FileName, bp.Line, bp.Column, location.Method.FullName, location.ILOffset));
+						                                        bp.FileName, bp.Line, bp.Column, GetPrettyMethodName (location.Method), location.ILOffset));
 
 						bi.Location = location;
 						InsertBreakpoint (bp, bi);
@@ -1849,7 +1849,7 @@ namespace Mono.Debugging.Soft
 			type_to_source [t] = sourceFiles;
 		}
 		
-		string[] GetParamTypes (MethodMirror method)
+		static string[] GetParamTypes (MethodMirror method)
 		{
 			List<string> paramTypes = new List<string> ();
 			
@@ -1857,6 +1857,51 @@ namespace Mono.Debugging.Soft
 				paramTypes.Add (param.ParameterType.CSharpName);
 			
 			return paramTypes.ToArray ();
+		}
+
+		string GetPrettyMethodName (MethodMirror method)
+		{
+			var name = new StringBuilder ();
+
+			name.Append (Adaptor.GetDisplayTypeName (method.ReturnType.FullName));
+			name.Append (" ");
+			name.Append (Adaptor.GetDisplayTypeName (method.DeclaringType.FullName));
+			name.Append (".");
+			name.Append (method.Name);
+
+			if (method.VirtualMachine.Version.AtLeast (2, 12)) {
+				if (method.IsGenericMethodDefinition || method.IsGenericMethod) {
+					name.Append ("<");
+					if (method.VirtualMachine.Version.AtLeast (2, 15)) {
+						var types = method.GetGenericArguments ();
+						for (int i = 0; i < types.Length; i++) {
+							if (i != 0)
+								name.Append (", ");
+							name.Append (Adaptor.GetDisplayTypeName (types[i].FullName));
+						}
+					}
+					name.Append (">");
+				}
+			}
+
+			name.Append (" (");
+			var @params = method.GetParameters ();
+			for (int i = 0; i < @params.Length; i++) {
+				if (i != 0)
+					name.Append (", ");
+				if (@params[i].Attributes.HasFlag (ParameterAttributes.Out)) {
+					if (@params[i].Attributes.HasFlag (ParameterAttributes.In))
+						name.Append ("ref ");
+					else
+						name.Append ("out ");
+				}
+				name.Append (Adaptor.GetDisplayTypeName (@params[i].ParameterType.FullName));
+				name.Append (" ");
+				name.Append (@params[i].Name);
+			}
+			name.Append (")");
+
+			return name.ToString ();
 		}
 
 		void ResolveBreakpoints (TypeMirror type)
@@ -1868,9 +1913,8 @@ namespace Mono.Debugging.Soft
 			
 			// First, resolve FunctionBreakpoints
 			foreach (var bi in pending_bes.Where (b => b.BreakEvent is FunctionBreakpoint)) {
-				var bp = (FunctionBreakpoint) bi.BreakEvent;
-
 				if (CheckTypeName (type, bi.TypeName)) {
+					var bp = (FunctionBreakpoint) bi.BreakEvent;
 					string methodName = bp.FunctionName.Substring (bi.TypeName.Length + 1);
 					
 					foreach (var method in type.GetMethodsByNameFlags (methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static, false)) {
@@ -1908,7 +1952,7 @@ namespace Mono.Debugging.Soft
 						loc = GetLocFromType (type, s, bp.Line, bp.Column, out genericMethod, out insideLoadedRange);
 						if (loc != null) {
 							OnDebuggerOutput (false, string.Format ("Resolved pending breakpoint at '{0}:{1},{2}' to {3} [0x{4:x5}].\n",
-							                                        s, bp.Line, bp.Column, loc.Method.FullName, loc.ILOffset));
+							                                        s, bp.Line, bp.Column, GetPrettyMethodName (loc.Method), loc.ILOffset));
 							ResolvePendingBreakpoint (bi, loc);
 							
 							// Note: if the type or method is generic, there may be more instances so don't assume we are done resolving the breakpoint
