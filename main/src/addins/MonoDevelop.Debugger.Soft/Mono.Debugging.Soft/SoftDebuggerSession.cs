@@ -750,16 +750,22 @@ namespace Mono.Debugging.Soft
 
 				if (ev is FunctionBreakpoint) {
 					var fb = (FunctionBreakpoint) ev;
+					bool resolved = false;
 
 					foreach (var location in FindFunctionLocations (fb.FunctionName, fb.ParamTypes)) {
+						string paramList = "(" + string.Join (", ", fb.ParamTypes) + ")";
+						OnDebuggerOutput (false, string.Format ("Resolved pending breakpoint for '{0}{1}' to {2}:{3} [0x{4:x5}].\n",
+						                                        fb.FunctionName, paramList, location.SourceFile, location.LineNumber, location.ILOffset));
+
 						bi.FileName = location.SourceFile;
 						bi.Location = location;
 
 						InsertBreakpoint (fb, bi);
 						bi.SetStatus (BreakEventStatus.Bound, null);
+						resolved = true;
 					}
 
-					if (bi.Location == null) {
+					if (!resolved) {
 						// FIXME: handle types like GenericType<>, GenericType<SomeOtherType>, and GenericType<...>+NestedGenricType<...>
 						int dot = fb.FunctionName.LastIndexOf ('.');
 						if (dot != -1)
@@ -771,15 +777,22 @@ namespace Mono.Debugging.Soft
 				} else if (ev is Breakpoint) {
 					var bp = (Breakpoint) ev;
 					bool insideLoadedRange;
+					bool resolved = false;
 					bool generic;
 
-					bi.Location = FindLocationByFile (bp.FileName, bp.Line, bp.Column, out generic, out insideLoadedRange);
 					bi.FileName = bp.FileName;
 
-					if (bi.Location != null) {
+					foreach (var location in FindLocationsByFile (bp.FileName, bp.Line, bp.Column, out generic, out insideLoadedRange)) {
+						OnDebuggerOutput (false, string.Format ("Resolved pending breakpoint at '{0}:{1},{2}' to {3} [0x{4:x5}].\n",
+						                                        bp.FileName, bp.Line, bp.Column, location.Method.FullName, location.ILOffset));
+
+						bi.Location = location;
 						InsertBreakpoint (bp, bi);
 						bi.SetStatus (BreakEventStatus.Bound, null);
+						resolved = true;
+					}
 
+					if (resolved) {
 						// Note: if the type or method is generic, there may be more instances so don't assume we are done resolving the breakpoint
 						if (generic)
 							pending_bes.Add (bi);
@@ -1074,13 +1087,15 @@ namespace Mono.Debugging.Soft
 			yield break;
 		}
 		
-		Location FindLocationByFile (string file, int line, int column, out bool genericTypeOrMethod, out bool insideLoadedRange)
+		IList<Location> FindLocationsByFile (string file, int line, int column, out bool genericTypeOrMethod, out bool insideLoadedRange)
 		{
+			List<Location> locations = new List<Location> ();
+
 			genericTypeOrMethod = false;
 			insideLoadedRange = false;
 			
 			if (!started)
-				return null;
+				return locations;
 
 			string filename = PathToFileName (file);
 
@@ -1104,9 +1119,7 @@ namespace Mono.Debugging.Soft
 				foreach (TypeMirror t in typesInFile)
 					ProcessType (t);
 			}
-	
-			Location target_loc = null;
-	
+
 			// Try already loaded types in the current source file
 			List<TypeMirror> types;
 
@@ -1115,18 +1128,20 @@ namespace Mono.Debugging.Soft
 					bool genericMethod;
 					bool insideRange;
 					
-					target_loc = GetLocFromType (type, filename, line, column, out genericMethod, out insideRange);
+					var loc = GetLocFromType (type, filename, line, column, out genericMethod, out insideRange);
 					if (insideRange)
 						insideLoadedRange = true;
 					
-					if (target_loc != null) {
-						genericTypeOrMethod = genericMethod || type.IsGenericType;
-						break;
+					if (loc != null) {
+						if (genericMethod || type.IsGenericType)
+							genericTypeOrMethod = true;
+
+						locations.Add (loc);
 					}
 				}
 			}
 			
-			return target_loc;
+			return locations;
 		}
 		
 		public override bool CanCancelAsyncEvaluations {
