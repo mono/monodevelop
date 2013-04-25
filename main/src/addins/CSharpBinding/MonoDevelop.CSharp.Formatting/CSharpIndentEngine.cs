@@ -30,130 +30,10 @@ using System.Linq;
 using System.Text;
 
 using MonoDevelop.Ide.Gui.Content;
-
 using MonoDevelop.CSharp.Formatting;
-using MonoDevelop.CSharp.Parser;
-using Mono.TextEditor;
 
 namespace MonoDevelop.CSharp.Formatting
-{/*
-	public class CSharpIndentEngine : IDocumentStateEngine
-	{
-		ICSharpCode.NRefactory.CSharp.CSharpIndentEngine internalEngine;
-
-		public bool NeedsReindent {
-			get {
-				return internalEngine.NeedsReindent;
-			}
-		}
-		public string NewLineIndent {
-			get {
-				return internalEngine.NewLineIndent;
-			}
-		}
-
-		public string ThisLineIndent {
-			get {
-				return internalEngine.ThisLineIndent;
-			}
-		}
-
-		public int LineNumber {
-			get {
-				return internalEngine.Location.Line;
-			}
-		}
-
-		public bool IsInsideOrdinaryCommentOrString {
-			get {
-				return internalEngine.IsInComment || internalEngine.IsInStringOrChar;
-			}
-		}
-
-		public bool IsInsideVerbatimString {
-			get {
-				return internalEngine.IsInVerbatimString;
-			}
-		}
-
-		public bool IsInsideStringLiteral {
-			get {
-				return internalEngine.IsInsideStringLiteral;
-			}
-		}
-
-		public bool IsInsidePreprocessorDirective {
-			get {
-				return internalEngine.IsInPreProcessorDirective;
-			}
-		}
-
-		public bool IsInsideDocLineComment {
-			get {
-				return internalEngine.IsInsideDocLineComment;
-			}
-		}
-
-		public bool IsInsideMultiLineComment {
-			get {
-				return internalEngine.IsInsideMultiLineComment;
-			}
-		}
-
-		public bool LineBeganInsideMultiLineComment {
-			get {
-				return false;
-			}
-		}
-
-		public bool LineBeganInsideVerbatimString {
-			get {
-				return false;
-			}
-		}
-
-		public CSharpIndentEngine (ICSharpCode.NRefactory.CSharp.CSharpIndentEngine engine)
-		{
-			this.internalEngine = engine;
-		}
-
-		public CSharpIndentEngine (TextEditorData data, CSharpFormattingPolicy policy, TextStylePolicy textPolicy)
-		{
-			ICSharpCode.NRefactory.CSharp.TextEditorOptions formattingOptions = new ICSharpCode.NRefactory.CSharp.TextEditorOptions {
-				TabSize = textPolicy.TabWidth,
-				IndentSize = textPolicy.IndentWidth,
-				TabsToSpaces = textPolicy.TabsToSpaces,
-				EolMarker = data.EolMarker
-			};
-			internalEngine = new ICSharpCode.NRefactory.CSharp.CSharpIndentEngine (data.Document, formattingOptions, policy.CreateOptions ());
-		}
-
-		#region IDocumentStateEngine implementation
-		public void Push (char c)
-		{
-			internalEngine.Push (c);
-		}
-
-		public void Reset ()
-		{
-			internalEngine.Reset ();
-		}
-
-		public int Position {
-			get {
-				return internalEngine.Offset;
-			}
-		}
-		#endregion
-
-		#region ICloneable implementation
-		public object Clone ()
-		{
-			return new CSharpIndentEngine (internalEngine.Clone ());
-		}
-		#endregion
-	}
-*/
+{
 	public partial class CSharpIndentEngine : ICloneable, IDocumentStateEngine {
 		IndentStack stack;
 		
@@ -193,9 +73,8 @@ namespace MonoDevelop.CSharp.Formatting
 		int cursor;
 		CSharpFormattingPolicy policy;
 		TextStylePolicy textPolicy;
-		// Constructors
 
-			public CSharpIndentEngine (CSharpFormattingPolicy policy, TextStylePolicy textPolicy)
+		public CSharpIndentEngine (CSharpFormattingPolicy policy, TextStylePolicy textPolicy)
 		{
 			if (policy == null)
 				throw new ArgumentNullException ("policy");
@@ -264,9 +143,7 @@ namespace MonoDevelop.CSharp.Formatting
 		public bool IsInsideStringLiteral {
 			get { return (stack.PeekInside (0) & (Inside.StringLiteral)) != 0; }
 		}
-		
-		
-		
+
 		string TabsToSpaces (string indent)
 		{
 			StringBuilder builder;
@@ -444,7 +321,7 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 		
 		//directive keywords that we care about
-		static string[] directiveKeywords = new string [] {"region", "endregion" };
+		static string[] directiveKeywords = new string [] { "region", "endregion" };
 		
 		string GetDirectiveKeyword (char currentChar)
 		{
@@ -456,11 +333,11 @@ namespace MonoDevelop.CSharp.Formatting
 				return null;
 			
 			for (int i = 0; i < directiveKeywords.Length; i++) {
-				if (directiveKeywords[i].StartsWith (str)) {
+				if (directiveKeywords[i].StartsWith (str, StringComparison.Ordinal)) {
 					if (str == directiveKeywords[i])
 						return directiveKeywords[i];
-					else
-						return null;
+
+					return null;
 				}
 			}
 			
@@ -562,8 +439,7 @@ namespace MonoDevelop.CSharp.Formatting
 			
 			// got a "/*" - might start a MultiLineComment
 			if ((inside & (Inside.StringOrChar | Inside.Comment)) != 0) {
-//				if ((inside & Inside.MultiLineComment) != 0)
-//					Console.WriteLine ("Watch out! Nested /* */ comment detected!");
+				// if ((inside & Inside.MultiLineComment) != 0) - user seems to have nested /* */ comments...
 				return;
 			}
 			
@@ -673,12 +549,12 @@ namespace MonoDevelop.CSharp.Formatting
 				switch (style) {
 				case GotoLabelIndentStyle.LeftJustify:
 					needsReindent = true;
-			//		curIndent = " ";
+					//curIndent = " ";
 					break;
 				case GotoLabelIndentStyle.OneLess:
 					needsReindent = true;
 					TrimIndent ();
-			//		curIndent += " ";
+					//curIndent += " ";
 					break;
 				default:
 					break;
@@ -808,9 +684,9 @@ namespace MonoDevelop.CSharp.Formatting
 				}
 			} else {
 				stack.Push (Inside.Block, keyword, curLineNr, 0);
-// Destroys one lined expression block 'var s = "".Split (new char[] {' '});'
-//				if (inside == Inside.ParenList)
-//					TrimIndent ();
+				// Destroys one lined expression block 'var s = "".Split (new char[] {' '});'
+				//if (inside == Inside.ParenList)
+				//	TrimIndent ();
 			}
 			
 			keyword = String.Empty;
@@ -901,7 +777,7 @@ namespace MonoDevelop.CSharp.Formatting
 					break;
 				}
 
-								/* not escaped... error!! but what can we do,
+				/* not escaped... error!! but what can we do,
 				 * eh? allow folding across multiple lines I
 				 * guess... */
 				break;
@@ -1008,7 +884,7 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			var after = stack.PeekInside (0);
 			if ((after & Inside.ParenList) == Inside.ParenList && pc == '(') {
-//				var indent = stack.PeekIndent (0);
+				//var indent = stack.PeekIndent (0);
 				var kw = stack.PeekKeyword (0);
 				var line = stack.PeekLineNr (0);
 				stack.Pop ();
