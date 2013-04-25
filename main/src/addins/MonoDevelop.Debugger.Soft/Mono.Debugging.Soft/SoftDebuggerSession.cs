@@ -464,16 +464,16 @@ namespace Mono.Debugging.Soft
 				assemblyPathMap = new Dictionary<string, string> ();
 		}
 		
-		protected bool SetSocketTimeouts (int send_timeout, int receive_timeout, int keepalive_interval)
+		protected bool SetSocketTimeouts (int sendTimeout, int receiveTimeout, int keepaliveInterval)
 		{
 			try {
 				if (vm.Version.AtLeast (2, 4)) {
 					vm.EnableEvents (EventType.KeepAlive);
-					vm.SetSocketTimeouts (send_timeout, receive_timeout, keepalive_interval);
+					vm.SetSocketTimeouts (sendTimeout, receiveTimeout, keepaliveInterval);
 					return true;
-				} else {
-					return false;
 				}
+
+				return false;
 			} catch {
 				return false;
 			}
@@ -972,7 +972,9 @@ namespace Mono.Debugging.Soft
 			if (name[name.Length - 1] == '?') {
 				// canonicalize the user-specified nullable type
 				return CheckTypeName (type, string.Format ("System.Nullable<{0}>", name.Substring (0, name.Length - 1)));
-			} else if (type.IsArray) {
+			}
+
+			if (type.IsArray) {
 				int startIndex = name.LastIndexOf ('[');
 				int endIndex = name.Length - 1;
 
@@ -986,12 +988,16 @@ namespace Mono.Debugging.Soft
 					return false;
 
 				return CheckTypeName (type.GetElementType (), name.Substring (0, startIndex).TrimEnd ());
-			} else if (type.IsPointer) {
+			}
+
+			if (type.IsPointer) {
 				if (name.Length < 2 || name[name.Length - 1] != '*')
 					return false;
 
 				return CheckTypeName (type.GetElementType (), name.Substring (0, name.Length - 1).TrimEnd ());
-			} else if (type.IsGenericType) {
+			}
+
+			if (type.IsGenericType) {
 				int startIndex = name.IndexOf ('<');
 				int endIndex = name.Length - 1;
 
@@ -1740,10 +1746,8 @@ namespace Mono.Debugging.Soft
 		
 		string EvaluateExpression (ThreadMirror thread, string expression, Breakpoint bp)
 		{
-			MDB.StackFrame[] frames = null;
-
 			try {
-				frames = thread.GetFrames ();
+				var frames = thread.GetFrames ();
 				if (frames.Length == 0)
 					return string.Empty;
 
@@ -2222,12 +2226,13 @@ namespace Mono.Debugging.Soft
 					}
 				}
 			}
+
 			if (found) {
 				assemblyFilters.Add (asm);
 				return true;
-			} else {
-				return false;
 			}
+
+			return false;
 		}
 		
 		internal void WriteDebuggerOutput (bool isError, string msg)
@@ -2363,8 +2368,8 @@ namespace Mono.Debugging.Soft
 				int res = a1.SourceLine.CompareTo (a2.SourceLine);
 				if (res != 0)
 					return res;
-				else
-					return a1.Address.CompareTo (a2.Address);
+
+				return a1.Address.CompareTo (a2.Address);
 			});
 			return lines.ToArray ();
 		}
@@ -2439,7 +2444,7 @@ namespace Mono.Debugging.Soft
 				case '\t': txt = @"\t"; break;
 				default:
 					if (char.GetUnicodeCategory (c) == UnicodeCategory.OtherNotAssigned) {
-						sb.AppendFormat ("\\u{0:X4}", (int) c);
+						sb.AppendFormat ("\\u{0:X4}", c);
 					} else {
 						sb.Append (c);
 					}
@@ -2519,12 +2524,12 @@ namespace Mono.Debugging.Soft
 		{
 			if (loc0.LineNumber < loc1.LineNumber)
 				return -1;
-			else if (loc0.LineNumber > loc1.LineNumber)
+			if (loc0.LineNumber > loc1.LineNumber)
 				return 1;
 
 			if (loc0.ColumnNumber < loc1.ColumnNumber)
 				return -1;
-			else if (loc0.ColumnNumber > loc1.ColumnNumber)
+			if (loc0.ColumnNumber > loc1.ColumnNumber)
 				return 1;
 
 			return loc0.ILOffset - loc1.ILOffset;
