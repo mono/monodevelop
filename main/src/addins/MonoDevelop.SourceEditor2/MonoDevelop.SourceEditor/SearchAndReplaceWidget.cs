@@ -433,11 +433,10 @@ namespace MonoDevelop.SourceEditor
 		
 		Gtk.Label resultInformLabel = new Gtk.Label ();
 		Gtk.EventBox resultInformLabelEventBox;
-		static Gdk.Cursor arrowCursor = new Gdk.Cursor (Gdk.CursorType.Arrow);
 
 		protected override bool OnEnterNotifyEvent (Gdk.EventCrossing evnt)
 		{
-			GdkWindow.Cursor = arrowCursor;
+			GdkWindow.Cursor = null;
 			return base.OnEnterNotifyEvent (evnt);
 		}
 		

@@ -54,7 +54,6 @@ namespace MonoDevelop.Components.Docking
 		bool allowPlaceholderDocking;
 		bool mouseOver;
 
-		static Gdk.Cursor handCursor = new Gdk.Cursor (Gdk.CursorType.LeftPtr);
 		static Gdk.Cursor fleurCursor = new Gdk.Cursor (Gdk.CursorType.Fleur);
 
 		static Gdk.Pixbuf pixClose;
@@ -288,7 +287,7 @@ namespace MonoDevelop.Components.Docking
 				frame.DockInPlaceholder (item);
 				frame.HidePlaceholder ();
 				if (GdkWindow != null)
-					GdkWindow.Cursor = handCursor;
+					GdkWindow.Cursor = null;
 				frame.Toplevel.KeyPressEvent -= HeaderKeyPress;
 				frame.Toplevel.KeyReleaseEvent -= HeaderKeyRelease;
 			}
