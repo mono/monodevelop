@@ -43,8 +43,7 @@ namespace Mono.TextEditor
 		public GutterMargin (TextEditor editor)
 		{
 			this.editor = editor;
-			
-			base.cursor = new Gdk.Cursor (Gdk.CursorType.RightPtr);
+
 			this.editor.Document.LineChanged += UpdateWidth;
 			this.editor.Document.TextSet += HandleEditorDocumenthandleTextSet;
 			this.editor.Caret.PositionChanged += EditorCarethandlePositionChanged;

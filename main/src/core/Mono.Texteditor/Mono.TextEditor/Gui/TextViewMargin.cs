@@ -2089,7 +2089,7 @@ namespace Mono.TextEditor
 				oldMarkers.Clear ();
 			}
 
-			base.cursor = hoverResult.Cursor ?? xtermCursor;
+			base.cursor = hoverResult.Cursor;
 			if (textEditor.TooltipMarkup != hoverResult.TooltipMarkup) {
 				textEditor.TooltipMarkup = null;
 				textEditor.TriggerTooltipQuery ();
@@ -2112,7 +2112,7 @@ namespace Mono.TextEditor
 				if (!String.IsNullOrEmpty (link)) {
 					base.cursor = textLinkCursor;
 				} else {
-					base.cursor = hoverResult.Cursor ?? xtermCursor;
+					base.cursor = hoverResult.Cursor;
 				}
 				return;
 			}

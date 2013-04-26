@@ -47,7 +47,6 @@ namespace MonoDevelop.SourceEditor
 		internal Cairo.Color gcLight, gcSelected;
 		
 		internal Pango.FontDescription fontDescription;
-		internal Gdk.Cursor arrowCursor = new Gdk.Cursor (Gdk.CursorType.Arrow);
 
 		public MessageBubbleCache (TextEditor editor)
 		{
@@ -81,7 +80,6 @@ namespace MonoDevelop.SourceEditor
 				fontDescription.Dispose ();
 				fontDescription = null;
 			}
-			arrowCursor.Dispose ();
 		}
 
 		static string GetFirstLine (ErrorText errorText)

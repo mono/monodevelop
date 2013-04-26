@@ -29,12 +29,11 @@ using System;
 using System.Text;
 
 using MonoDevelop.CSharp.Formatting;
-using MonoDevelop.CSharp.Parser;
-using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp.Formatting
 {
 	public partial class CSharpIndentEngine : ICloneable {
+		[Flags]
 		public enum Inside {
 			Empty              = 0,
 			
@@ -66,15 +65,15 @@ namespace MonoDevelop.CSharp.Formatting
 			readonly static int INITIAL_CAPACITY = 16;
 			
 			struct Node {
-				public Inside inside;
-				public string keyword;
-				public string indent;
-				public int nSpaces;
-				public int lineNr;
+				public Inside Inside;
+				public string Keyword;
+				public string Indent;
+				public int NumSpaces;
+				public int LineNr;
 				
 				public override string ToString ()
 				{
-					return string.Format ("[Node: inside={0}, keyword={1}, indent={2}, nSpaces={3}, lineNr={4}]", inside, keyword, indent, nSpaces, lineNr);
+					return string.Format ("[Node: inside={0}, keyword={1}, indent={2}, nSpaces={3}, lineNr={4}]", Inside, Keyword, Indent, NumSpaces, LineNr);
 				}
 			};
 			
@@ -117,8 +116,8 @@ namespace MonoDevelop.CSharp.Formatting
 			public void Reset ()
 			{
 				for (int i = 0; i < size; i++) {
-					stack[i].keyword = null;
-					stack[i].indent = null;
+					stack[i].Keyword = null;
+					stack[i].Indent = null;
 				}
 				
 				size = 0;
@@ -133,21 +132,21 @@ namespace MonoDevelop.CSharp.Formatting
 				
 				indentBuilder = new StringBuilder ();
 				if ((inside & (Inside.Attribute | Inside.ParenList)) != 0) {
-					if (size > 0 && stack[sp].inside == inside) {
+					if (size > 0 && stack[sp].Inside == inside) {
 						while (sp >= 0) {
-							if ((stack[sp].inside & Inside.FoldedOrBlock) != 0)
+							if ((stack[sp].Inside & Inside.FoldedOrBlock) != 0)
 								break;
 							sp--;
 						}
 						if (sp >= 0) {
-							indentBuilder.Append (stack[sp].indent);
-							if (stack[sp].lineNr == lineNr)
-								n = stack[sp].nSpaces;
+							indentBuilder.Append (stack[sp].Indent);
+							if (stack[sp].LineNr == lineNr)
+								n = stack[sp].NumSpaces;
 						}
 					} else {
 						while (sp >= 0) {
-							if ((stack[sp].inside & Inside.FoldedBlockOrCase) != 0) {
-								indentBuilder.Append (stack[sp].indent);
+							if ((stack[sp].Inside & Inside.FoldedBlockOrCase) != 0) {
+								indentBuilder.Append (stack[sp].Indent);
 								break;
 							}
 							
@@ -161,16 +160,16 @@ namespace MonoDevelop.CSharp.Formatting
 					}
 				} else if (inside == Inside.MultiLineComment) {
 					if (size > 0) {
-						indentBuilder.Append (stack[sp].indent);
-						if (stack[sp].lineNr == lineNr)
-							n = stack[sp].nSpaces;
+						indentBuilder.Append (stack[sp].Indent);
+						if (stack[sp].LineNr == lineNr)
+							n = stack[sp].NumSpaces;
 					}
 					
 					indentBuilder.Append (' ', nSpaces - n);
 				} else if (inside == Inside.Case) {
 					while (sp >= 0) {
-						if ((stack[sp].inside & Inside.FoldedOrBlock) != 0) {
-							indentBuilder.Append (stack[sp].indent);
+						if ((stack[sp].Inside & Inside.FoldedOrBlock) != 0) {
+							indentBuilder.Append (stack[sp].Indent);
 							break;
 						}
 						
@@ -183,19 +182,19 @@ namespace MonoDevelop.CSharp.Formatting
 					nSpaces = 0;
 				} else if ((inside & (Inside.FoldedOrBlock)) != 0) {
 					while (sp >= 0) {
-						if ((stack[sp].inside & Inside.FoldedBlockOrCase) != 0) {
-							indentBuilder.Append (stack[sp].indent);
+						if ((stack[sp].Inside & Inside.FoldedBlockOrCase) != 0) {
+							indentBuilder.Append (stack[sp].Indent);
 							break;
 						}
 						
 						sp--;
 					}
 					
-					Inside parent = size > 0 ? stack[size - 1].inside : Inside.Empty;
+					Inside parent = size > 0 ? stack[size - 1].Inside : Inside.Empty;
 					
 					// This is a workaround to make anonymous methods indent nicely
 					if (parent == Inside.ParenList)
-						stack[size - 1].indent = indentBuilder.ToString ();
+						stack[size - 1].Indent = indentBuilder.ToString ();
 					
 					if (inside == Inside.FoldedStatement) {
 						indentBuilder.Append ('\t');
@@ -212,8 +211,8 @@ namespace MonoDevelop.CSharp.Formatting
 					//pop regions back out
 					if (keyword == "region" || keyword == "endregion") {
 						for (; sp >= 0; sp--) {
-							if ((stack[sp].inside & Inside.FoldedBlockOrCase) != 0) {
-								indentBuilder.Append (stack[sp].indent);
+							if ((stack[sp].Inside & Inside.FoldedBlockOrCase) != 0) {
+								indentBuilder.Append (stack[sp].Indent);
 								break;
 							}
 						}
@@ -226,11 +225,11 @@ namespace MonoDevelop.CSharp.Formatting
 					throw new ArgumentOutOfRangeException ();
 				}
 				
-				node.indent = indentBuilder.ToString ();
-				node.keyword = keyword;
-				node.nSpaces = nSpaces;
-				node.lineNr = lineNr;
-				node.inside = inside;
+				node.Indent = indentBuilder.ToString ();
+				node.Keyword = keyword;
+				node.NumSpaces = nSpaces;
+				node.LineNr = lineNr;
+				node.Inside = inside;
 				
 				if (size == stack.Length)
 					Array.Resize <Node> (ref stack, 2 * size);
@@ -242,11 +241,11 @@ namespace MonoDevelop.CSharp.Formatting
 			{
 				Node node;
 				
-				node.indent = indent;
-				node.keyword = keyword;
-				node.nSpaces = nSpaces;
-				node.lineNr = lineNr;
-				node.inside = inside;
+				node.Indent = indent;
+				node.Keyword = keyword;
+				node.NumSpaces = nSpaces;
+				node.LineNr = lineNr;
+				node.Inside = inside;
 				
 				if (size == stack.Length)
 					Array.Resize <Node> (ref stack, 2 * size);
@@ -260,8 +259,8 @@ namespace MonoDevelop.CSharp.Formatting
 					throw new InvalidOperationException ();
 				
 				int sp = size - 1;
-				stack[sp].keyword = null;
-				stack[sp].indent = null;
+				stack[sp].Keyword = null;
+				stack[sp].Indent = null;
 				size = sp;
 			}
 			
@@ -273,7 +272,7 @@ namespace MonoDevelop.CSharp.Formatting
 				if (up >= size)
 					return Inside.Empty;
 				
-				return stack[size - up - 1].inside;
+				return stack[size - up - 1].Inside;
 			}
 			
 			public string PeekKeyword (int up)
@@ -284,7 +283,7 @@ namespace MonoDevelop.CSharp.Formatting
 				if (up >= size)
 					return String.Empty;
 				
-				return stack[size - up - 1].keyword;
+				return stack[size - up - 1].Keyword;
 			}
 			
 			public string PeekIndent (int up)
@@ -295,7 +294,7 @@ namespace MonoDevelop.CSharp.Formatting
 				if (up >= size)
 					return String.Empty;
 				
-				return stack[size - up - 1].indent;
+				return stack[size - up - 1].Indent;
 			}
 			
 			public int PeekLineNr (int up)
@@ -306,7 +305,7 @@ namespace MonoDevelop.CSharp.Formatting
 				if (up >= size)
 					return -1;
 				
-				return stack[size - up - 1].lineNr;
+				return stack[size - up - 1].LineNr;
 			}
 		}
 	}
