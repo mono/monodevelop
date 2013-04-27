@@ -55,7 +55,15 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			if (string.IsNullOrEmpty (FileMask) || FileMask == "*")
 				return true;
-			return new PatternMatcher (FileMask).Match (System.IO.Path.GetFileName (name));
+
+			char [] separators = {';'};
+			string [] masks = FileMask.Split (separators, StringSplitOptions.RemoveEmptyEntries);
+			foreach (string mask in masks) {
+				if (new PatternMatcher (mask).Match (System.IO.Path.GetFileName (name))) 
+					return true;
+			}
+
+			return false;
 		}
 		
 		public static bool IsWordSeparator (char ch)
