@@ -31,11 +31,28 @@ namespace MonoDevelop.Ide.FindInFiles
 {
 	public class FilterOptions
 	{
+		private static readonly char [] separators = {';'};
+
+		private string file_mask;
+		private string [] split_file_masks;
+
 		public string FileMask {
-			get;
-			set;
+			get {
+				return file_mask;
+			}
+			set {
+				file_mask = value;
+
+				if (file_mask == null) {
+					split_file_masks = null;
+				}
+				else {
+					split_file_masks = file_mask.Split (separators, StringSplitOptions.RemoveEmptyEntries);
+				}
+			}
 		}
-		
+
+
 		public bool CaseSensitive {
 			get;
 			set;
@@ -53,12 +70,10 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public bool NameMatches (string name)
 		{
-			if (string.IsNullOrEmpty (FileMask) || FileMask == "*")
+			if (string.IsNullOrEmpty (FileMask) || FileMask == "*" || split_file_masks == null)
 				return true;
 
-			char [] separators = {';'};
-			string [] masks = FileMask.Split (separators, StringSplitOptions.RemoveEmptyEntries);
-			foreach (string mask in masks) {
+			foreach (string mask in split_file_masks) {
 				if (new PatternMatcher (mask).Match (System.IO.Path.GetFileName (name))) 
 					return true;
 			}
