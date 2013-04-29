@@ -89,15 +89,15 @@ namespace MonoDevelop.Components
 		bool IsClickedNodeSelected (int x, int y)
 		{
 			Gtk.TreePath path;
-			if (this.GetPathAtPos (x, y, out path))
-				return this.Selection.PathIsSelected (path);
-			else
-				return false;
+			if (GetPathAtPos (x, y, out path))
+				return Selection.PathIsSelected (path);
+
+			return false;
 		}
 		
 		bool MultipleNodesSelected ()
 		{
-			return this.Selection.GetSelectedRows ().Length > 1;
+			return Selection.GetSelectedRows ().Length > 1;
 		}
 	}
 }

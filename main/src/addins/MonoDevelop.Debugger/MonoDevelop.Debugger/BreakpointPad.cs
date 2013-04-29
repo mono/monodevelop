@@ -110,6 +110,7 @@ namespace MonoDevelop.Debugger
 			tree.HeadersVisible = true;
 			tree.DoPopupMenu = ShowPopup;
 			tree.KeyPressEvent += OnKeyPressEvent;
+			tree.Selection.Mode = SelectionMode.Multiple;
 			
 			treeState = new TreeViewState (tree, (int) Columns.Breakpoint);
 							
@@ -201,6 +202,7 @@ namespace MonoDevelop.Debugger
 		protected void OnProperties ()
 		{
 			TreeIter iter;
+
 			if (tree.Selection.GetSelected (out iter)) {
 				Breakpoint bp = (Breakpoint) store.GetValue (iter, (int) Columns.Breakpoint);
 				if (DebuggingService.ShowBreakpointProperties (bp, false))
@@ -211,8 +213,12 @@ namespace MonoDevelop.Debugger
 		[CommandHandler (DebugCommands.EnableDisableBreakpoint)]
 		protected void OnEnableDisable ()
 		{
-			TreeIter iter;
-			if (tree.Selection.GetSelected (out iter)) {
+			foreach (var path in tree.Selection.GetSelectedRows ()) {
+				TreeIter iter;
+
+				if (!store.GetIter (out iter, path))
+					continue;
+
 				Breakpoint bp = (Breakpoint) store.GetValue (iter, (int) Columns.Breakpoint);
 				bp.Enabled = !bp.Enabled;
 			}
@@ -222,6 +228,7 @@ namespace MonoDevelop.Debugger
 		protected void OnBpJumpTo ()
 		{
 			TreeIter iter;
+
 			if (tree.Selection.GetSelected (out iter)) {
 				Breakpoint bp = (Breakpoint) store.GetValue (iter, (int) Columns.Breakpoint);
 				if (!string.IsNullOrEmpty (bp.FileName))
