@@ -252,10 +252,8 @@ namespace MonoDevelop.Debugger
 				foreach (var path in selected) {
 					TreeIter iter;
 
-					if (!store.GetIter (out iter, path)) {
-						Console.WriteLine ("Failed to get iter for row: {0}", path.Indices[0]);
+					if (!store.GetIter (out iter, path))
 						continue;
-					}
 
 					var bp = (Breakpoint) store.GetValue (iter, (int) Columns.Breakpoint);
 					bps.Remove (bp);
