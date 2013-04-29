@@ -43,18 +43,19 @@ namespace MonoDevelop.Debugger
 
 		static int TreePathCompare (TreePath x, TreePath y)
 		{
+			int depth = Math.Min (x.Depth, y.Depth);
 			int i;
 
-			for (i = 0; i < x.Indices.Length && i < y.Indices.Length; i++) {
+			for (i = 0; i < depth; i++) {
 				if (x.Indices[i] < y.Indices[i])
 					return -1;
 				if (x.Indices[i] > y.Indices[i])
 					return 1;
 			}
 
-			if (x.Indices.Length < y.Indices.Length)
+			if (x.Depth < y.Depth)
 				return -1;
-			if (x.Indices.Length > y.Indices.Length)
+			if (x.Depth > y.Depth)
 				return 1;
 
 			return 0;
