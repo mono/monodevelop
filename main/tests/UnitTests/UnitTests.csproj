@@ -9,8 +9,6 @@
     <OutputType>Library</OutputType>
     <AssemblyName>UnitTests</AssemblyName>
     <RootNamespace>UnitTests</RootNamespace>
-    <TestRunnerAssembly>../../build/bin/MonoDevelop.Core.dll</TestRunnerAssembly>
-    <TestRunnerType>MonoDevelop.Core.InternalTestRunner</TestRunnerType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -258,30 +256,10 @@
     <Compile Include="MonoDevelop.Projects\WorkspaceTests.cs" />
     <Compile Include="MonoDevelop.Projects\PackagingTests.cs" />
     <Compile Include="MonoDevelop.Projects\MakefileTests.cs" />
-    <Compile Include="Mono.TextEditor.Tests\DocumentTests.cs" />
-    <Compile Include="Mono.TextEditor.Tests\LineSplitterTests.cs" />
-    <Compile Include="Mono.TextEditor.Tests\SearchTests.cs" />
-    <Compile Include="Mono.TextEditor.Tests\SelectionTests.cs" />
-    <Compile Include="Mono.TextEditor.Tests\UndoRedoTests.cs" />
-    <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\InsertTabTests.cs" />
-    <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\RemoveTabTests.cs" />
     <Compile Include="MonoDevelop.Projects\LocalCopyTests.cs" />
-    <Compile Include="Mono.TextEditor.Tests\FoldingTests.cs" />
     <Compile Include="MonoDevelop.Projects\TextFormatterTests.cs" />
-    <Compile Include="Mono.TextEditor.Tests\SyntaxHighlightingTests.cs" />
-    <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\CaretMoveActionTests.cs" />
-    <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\DeleteActionTests.cs" />
-    <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\SelectionActionTests.cs" />
-    <Compile Include="Mono.TextEditor.Tests\ViTests.cs" />
-    <Compile Include="Mono.TextEditor.Tests\VirtualSpacesTests.cs" />
-    <Compile Include="Mono.TextEditor.Tests\BufferTests.cs" />
-    <Compile Include="Mono.TextEditor.Tests\InsertionModeTests.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\EditorCompareWidgetBaseTest.cs" />
-    <Compile Include="Mono.TextEditor.Tests\TextBreakerTests.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\GitUtilsTests.cs" />
-    <Compile Include="Mono.TextEditor.Tests\SegmentTreeTests.cs" />
-    <Compile Include="Mono.TextEditor.Tests\RedBlackTreeTests.cs" />
-    <Compile Include="Mono.TextEditor.Tests\HeightTreeTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\TestWorkbenchWindow.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\TestViewContent.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\MemberTests.cs" />
@@ -289,35 +267,25 @@
     <Compile Include="MonoDevelop.CSharpBinding\ProjectDomTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\TestDocument.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\FoldingParserTests.cs" />
-    <Compile Include="Mono.TextEditor.Tests\SmartIndentModeTests.cs" />
-    <Compile Include="Mono.TextEditor.Tests\VirtualIndentModeTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\CSharpTextEditorIndentationTests.cs" />
-    <Compile Include="Mono.TextEditor.Tests\TextFileReaderTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\OnTheFlyFormatterTests.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\CompletionListWindowTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding.Refactoring\ResolveNamespaceTests.cs" />
     <Compile Include="MonoDevelop.Ide.FindInFiles\MemberCollectorTests.cs" />
     <Compile Include="MonoDevelop.Ide.FindInFiles\SearchCollectorTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding.Refactoring\GenerateNewMemberTests.cs" />
-    <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\TextEditorTestBase.cs" />
-    <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\BookmarkActionsTests.cs" />
-    <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\FoldActionTests.cs" />
-    <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\MiscActionsTest.cs" />
-    <Compile Include="Mono.TextEditor.Tests\BlockSelectionModeTests.cs" />
-    <Compile Include="Mono.TextEditor.Tests\RtfWriterTests.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SourceEditorTests.cs" />
     <Compile Include="MonoDevelop.Projects\FileServiceTests.cs" />
     <Compile Include="MonoDevelop.Projects\SolutionFolderTests.cs" />
     <Compile Include="MonoDevelop.Core\BacktrackingStringMatcherTests.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\SearchPopupWindowTests.cs" />
     <Compile Include="MonoDevelop.Core\LaneStringMatcherTests.cs" />
-    <Compile Include="Mono.TextEditor.Tests\HtmlWriterTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />
   <ProjectExtensions>
     <MonoDevelop>
-      <Properties>
+      <Properties TestRunnerAssembly="..\..\build\bin\MonoDevelop.Core.dll" TestRunnerType="MonoDevelop.Core.InternalTestRunner">
         <MonoDevelop.Autotools.MakefileInfo RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../..">
           <BuildFilesVar Sync="True" Name="FILES" />
           <DeployFilesVar />

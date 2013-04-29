@@ -28,7 +28,6 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using System.Linq;
 using Gtk;
-using UnitTests;
 
 namespace Mono.TextEditor.Tests
 {

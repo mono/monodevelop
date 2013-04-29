@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>12.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{9E4BA410-8338-42EC-AF9C-422C35ECED81}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>MonoDevelop.TextEditor.Tests</RootNamespace>
+    <AssemblyName>MonoDevelop.TextEditor.Tests</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\build\tests</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\build\tests</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="nunit.framework">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Core" />
+    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Mono.TextEditor.Tests\DocumentTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests\LineSplitterTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests\SearchTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests\SelectionTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests\UndoRedoTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests\FoldingTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests\SyntaxHighlightingTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests\ViTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests\VirtualSpacesTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests\BufferTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests\InsertionModeTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests\TextBreakerTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests\SegmentTreeTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests\RedBlackTreeTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests\HeightTreeTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests\SmartIndentModeTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests\VirtualIndentModeTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests\TextFileReaderTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests\BlockSelectionModeTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests\RtfWriterTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests\HtmlWriterTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\InsertTabTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\RemoveTabTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\CaretMoveActionTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\DeleteActionTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\SelectionActionTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\TextEditorTestBase.cs" />
+    <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\BookmarkActionsTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\FoldActionTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\MiscActionsTest.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
+      <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
+      <Name>ICSharpCode.NRefactory.CSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Mono.Texteditor\Mono.TextEditor.csproj">
+      <Project>{A2329308-3751-4DBD-9A75-5F7B8B024625}</Project>
+      <Name>Mono.TextEditor</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

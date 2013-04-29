@@ -221,6 +221,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MacPlatform.Tests", "tests\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestRunner", "tests\TestRunner\TestRunner.csproj", "{EBFC7F90-C2E5-4A4C-A327-E35021BEC181}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.TextEditor.Tests", "src\core\MonoDevelop.TextEditor.Tests\MonoDevelop.TextEditor.Tests.csproj", "{9E4BA410-8338-42EC-AF9C-422C35ECED81}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -620,6 +622,14 @@ Global
 		{9BC670A8-1851-40EC-9685-279F4C98433D}.DebugWin32|x86.Build.0 = Debug|Any CPU
 		{9BC670A8-1851-40EC-9685-279F4C98433D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9BC670A8-1851-40EC-9685-279F4C98433D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E4BA410-8338-42EC-AF9C-422C35ECED81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E4BA410-8338-42EC-AF9C-422C35ECED81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E4BA410-8338-42EC-AF9C-422C35ECED81}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E4BA410-8338-42EC-AF9C-422C35ECED81}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
+		{9E4BA410-8338-42EC-AF9C-422C35ECED81}.DebugWin32|x86.ActiveCfg = Debug|Any CPU
+		{9E4BA410-8338-42EC-AF9C-422C35ECED81}.DebugWin32|x86.Build.0 = Debug|Any CPU
+		{9E4BA410-8338-42EC-AF9C-422C35ECED81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E4BA410-8338-42EC-AF9C-422C35ECED81}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A19E6F3F-A25B-4B01-8922-CF0CC35C781D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A19E6F3F-A25B-4B01-8922-CF0CC35C781D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A19E6F3F-A25B-4B01-8922-CF0CC35C781D}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
@@ -995,6 +1005,7 @@ Global
 		{07F55155-51A8-4072-9F80-FA473666F086} = {78C10DAE-D3D7-44FC-93DF-831D8D54ECF9}
 		{C05AAB7A-523F-4109-966B-6675BE0975BA} = {78C10DAE-D3D7-44FC-93DF-831D8D54ECF9}
 		{EBFC7F90-C2E5-4A4C-A327-E35021BEC181} = {78C10DAE-D3D7-44FC-93DF-831D8D54ECF9}
+		{9E4BA410-8338-42EC-AF9C-422C35ECED81} = {78C10DAE-D3D7-44FC-93DF-831D8D54ECF9}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = src\core\MonoDevelop.Startup\MonoDevelop.Startup.csproj
