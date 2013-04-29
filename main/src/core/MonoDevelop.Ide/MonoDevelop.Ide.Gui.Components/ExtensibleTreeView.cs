@@ -783,12 +783,15 @@ namespace MonoDevelop.Ide.Gui.Components
 		{
 			try {
 				LockUpdates ();
-				foreach (SelectionGroup grp in GetSelectedNodesGrouped ()) {
-					grp.SavePositions ();
+
+				IEnumerable<SelectionGroup> nodeGroups = GetSelectedNodesGrouped ();
+				if (nodeGroups.Count () == 1) {
+					SelectionGroup grp = nodeGroups.First ();
 
 					if (grp.Nodes.Count () == 1) {
 						ITreeNavigator node = grp.Nodes.First ();
 						if (node.Expanded) {
+							grp.SavePositions ();
 							node.Selected = false;
 							if (node.MoveToFirstChild ())
 								node.Selected = true;
@@ -798,6 +801,10 @@ namespace MonoDevelop.Ide.Gui.Components
 							return;
 						}
 					}
+				}
+
+				foreach (SelectionGroup grp in nodeGroups) {
+					grp.SavePositions ();
 
 					foreach (var node in grp.Nodes) {
 						node.Expanded = true;
@@ -812,12 +819,16 @@ namespace MonoDevelop.Ide.Gui.Components
 		{
 			try {
 				LockUpdates ();
-				foreach (SelectionGroup grp in GetSelectedNodesGrouped ()) {
-					grp.SavePositions ();
 
-					if (grp.Nodes.Count() == 1) {
+				IEnumerable<SelectionGroup> nodeGroups = GetSelectedNodesGrouped ();
+				if (nodeGroups.Count () == 1) {
+					SelectionGroup grp = nodeGroups.First ();
+
+					if (grp.Nodes.Count () == 1)
+					{
 						ITreeNavigator node = grp.Nodes.First ();
 						if (!node.HasChildren () || !node.Expanded) {
+							grp.SavePositions ();
 							node.Selected = false;
 							if (node.MoveToParent ())
 								node.Selected = true;
@@ -827,6 +838,10 @@ namespace MonoDevelop.Ide.Gui.Components
 							return;
 						}
 					}
+				}
+
+				foreach (SelectionGroup grp in nodeGroups) {
+					grp.SavePositions ();
 
 					foreach (var node in grp.Nodes) {
 						node.Expanded = false;
