@@ -851,7 +851,7 @@ namespace MonoDevelop.Debugger
 			task = GetChildrenAsync (value).ContinueWith (t => {
 				TreeIter iter, it;
 
-				if (store.GetIter (out iter, row.Path) && store.IterChildren (out it, iter)) {
+				if (row.Valid () && store.GetIter (out iter, row.Path) && store.IterChildren (out it, iter)) {
 					foreach (var child in t.Result) {
 						SetValues (iter, it, null, child);
 						RegisterValue (child, it);
