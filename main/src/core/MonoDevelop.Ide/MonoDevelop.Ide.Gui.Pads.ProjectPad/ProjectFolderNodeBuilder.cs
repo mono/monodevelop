@@ -139,6 +139,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 	
 	class ProjectFolderCommandHandler: FolderCommandHandler
 	{
+		public override void ActivateItem ()
+		{
+			CurrentNode.Expanded = !CurrentNode.Expanded;
+		}
+
 		public override string GetFolderPath (object dataObject)
 		{
 			return ((ProjectFolder)dataObject).Path;
