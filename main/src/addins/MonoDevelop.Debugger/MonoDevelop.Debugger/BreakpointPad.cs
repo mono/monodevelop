@@ -202,9 +202,10 @@ namespace MonoDevelop.Debugger
 		[CommandHandler (LocalCommands.Properties)]
 		protected void OnProperties ()
 		{
+			var selected = tree.Selection.GetSelectedRows ();
 			TreeIter iter;
 
-			if (tree.Selection.GetSelected (out iter)) {
+			if (selected.Length == 1 && store.GetIter (out iter, selected[0])) {
 				Breakpoint bp = (Breakpoint) store.GetValue (iter, (int) Columns.Breakpoint);
 				if (DebuggingService.ShowBreakpointProperties (bp, false))
 					UpdateDisplay ();
@@ -214,23 +215,34 @@ namespace MonoDevelop.Debugger
 		[CommandHandler (DebugCommands.EnableDisableBreakpoint)]
 		protected void OnEnableDisable ()
 		{
-			foreach (var path in tree.Selection.GetSelectedRows ()) {
-				TreeIter iter;
+			DebuggingService.Breakpoints.Changed -= breakpointChangedHandler;
 
-				if (!store.GetIter (out iter, path))
-					continue;
+			try {
+				foreach (var path in tree.Selection.GetSelectedRows ()) {
+					TreeIter iter;
 
-				Breakpoint bp = (Breakpoint) store.GetValue (iter, (int) Columns.Breakpoint);
-				bp.Enabled = !bp.Enabled;
+					if (!store.GetIter (out iter, path))
+						continue;
+
+					bool val = (bool) store.GetValue (iter, (int) Columns.Selected);
+					Breakpoint bp = (Breakpoint) store.GetValue (iter, (int) Columns.Breakpoint);
+					bp.Enabled = !bp.Enabled;
+
+					store.SetValue (iter, (int) Columns.Icon, bp.Enabled ? "md-breakpoint" : "md-breakpoint-disabled");
+					store.SetValue (iter, (int) Columns.Selected, !val);
+				}
+			} finally {
+				DebuggingService.Breakpoints.Changed += breakpointChangedHandler;
 			}
 		}
 		
 		[CommandHandler (LocalCommands.GoToFile)]
 		protected void OnBpJumpTo ()
 		{
+			var selected = tree.Selection.GetSelectedRows ();
 			TreeIter iter;
 
-			if (tree.Selection.GetSelected (out iter)) {
+			if (selected.Length == 1 && store.GetIter (out iter, selected[0])) {
 				Breakpoint bp = (Breakpoint) store.GetValue (iter, (int) Columns.Breakpoint);
 				if (!string.IsNullOrEmpty (bp.FileName))
 					IdeApp.Workbench.OpenDocument (bp.FileName, bp.Line, 1);
@@ -321,13 +333,21 @@ namespace MonoDevelop.Debugger
 		
 		void ItemToggled (object o, ToggledArgs args)
 		{
-			TreeIter iter;
+			DebuggingService.Breakpoints.Changed -= breakpointChangedHandler;
+			
+			try {
+				TreeIter iter;
 
-			if (store.GetIterFromString (out iter, args.Path)) {
-				bool val = (bool) store.GetValue(iter, (int)Columns.Selected);
-				Breakpoint bp = (Breakpoint) store.GetValue (iter, (int) Columns.Breakpoint);
-				store.SetValue (iter, (int)Columns.Selected, !val);
-				bp.Enabled = !bp.Enabled;
+				if (store.GetIterFromString (out iter, args.Path)) {
+					bool val = (bool) store.GetValue (iter, (int) Columns.Selected);
+					Breakpoint bp = (Breakpoint) store.GetValue (iter, (int) Columns.Breakpoint);
+					bp.Enabled = !bp.Enabled;
+
+					store.SetValue (iter, (int) Columns.Icon, bp.Enabled ? "md-breakpoint" : "md-breakpoint-disabled");
+					store.SetValue (iter, (int) Columns.Selected, !val);
+				}
+			} finally {
+				DebuggingService.Breakpoints.Changed += breakpointChangedHandler;
 			}
 		}
 		
@@ -369,8 +389,10 @@ namespace MonoDevelop.Debugger
 		void OnBreakpointUpdated (object s, BreakpointEventArgs args)
 		{
 			TreeIter it;
+
 			if (!store.GetIterFirst (out it))
 				return;
+
 			do {
 				Breakpoint bp = (Breakpoint) store.GetValue (it, (int) Columns.Breakpoint);
 				if (bp == args.Breakpoint) {
