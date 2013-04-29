@@ -47,7 +47,22 @@ namespace Mono.TextEditor
 	
 	public class TextLineMarkerHoverResult 
 	{
-		public Gdk.Cursor Cursor { get; set; }
+		bool isCursorSet;
+
+		public bool HasCursor {
+			get { return isCursorSet;}
+		}
+
+		Gdk.Cursor cursor;
+		public Gdk.Cursor Cursor {
+			get {
+				return cursor;
+			}
+			set {
+				cursor = value;
+				isCursorSet = true;
+			}
+		}
 		public string TooltipMarkup { get; set; }
 	}
 	

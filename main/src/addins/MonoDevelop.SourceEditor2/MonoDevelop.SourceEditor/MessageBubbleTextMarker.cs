@@ -775,6 +775,7 @@ namespace MonoDevelop.SourceEditor
 			
 			int errorNumber = MouseIsOverError (editor, args);
 			if (errorNumber >= 0) {
+				result.Cursor = null;
 				if (!isOver)
 					// don't show tooltip when hovering over error counter layout.
 					result.TooltipMarkup = GLib.Markup.EscapeText (errors[errorNumber].ErrorMessage);
