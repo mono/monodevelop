@@ -778,7 +778,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			else
 				return null;
 		}
-		
+
 		void ExpandCurrentItem ()
 		{
 			try {
@@ -792,13 +792,15 @@ namespace MonoDevelop.Ide.Gui.Components
 							node.Selected = false;
 							if (node.MoveToFirstChild ())
 								node.Selected = true;
-						} else {
-							node.Expanded = true;
+
+							// This exit statement is so that it doesn't do 2 actions at a time.
+							// As in, navigate, then expand.
+							return;
 						}
-					} else {
-						foreach (var node in grp.Nodes) {
-							node.Expanded = true;
-						}
+					}
+
+					foreach (var node in grp.Nodes) {
+						node.Expanded = true;
 					}
 				}
 			} finally {
@@ -819,13 +821,15 @@ namespace MonoDevelop.Ide.Gui.Components
 							node.Selected = false;
 							if (node.MoveToParent ())
 								node.Selected = true;
-						} else {
-							node.Expanded = false;
+
+							// This exit statement is so that it doesn't do 2 actions at a time.
+							// As in, navigate, then collapse.
+							return;
 						}
-					} else {
-						foreach (var node in grp.Nodes) {
-							node.Expanded = false;
-						}
+					}
+
+					foreach (var node in grp.Nodes) {
+						node.Expanded = false;
 					}
 				}
 			} finally {
