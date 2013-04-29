@@ -1116,18 +1116,17 @@ namespace MonoDevelop.Debugger
 			case Gdk.Key.KP_Delete:
 			case Gdk.Key.BackSpace:
 				if (Selection.CountSelectedRows () > 0) {
-					List<TreeRowReference> selected = new List<TreeRowReference> ();
 					bool deleted = false;
 					string expression;
 					ObjectValue val;
 					TreeIter iter;
 
 					// get a list of the selected rows (in reverse order so that we delete children before parents)
-					foreach (var path in Selection.GetSelectedRows ())
-						selected.Insert (0, new TreeRowReference (Model, path));
+					var selected = Selection.GetSelectedRows ();
+					Array.Sort (selected, new TreePathComparer (true));
 
-					foreach (var row in selected) {
-						if (!Model.GetIter (out iter, row.Path))
+					foreach (var path in selected) {
+						if (!Model.GetIter (out iter, path))
 							continue;
 
 						val = (ObjectValue)store.GetValue (iter, ObjectCol);

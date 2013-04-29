@@ -26,6 +26,7 @@
 using GLib;
 using Gtk;
 using System;
+using System.Collections.Generic;
 
 using Stock = MonoDevelop.Ide.Gui.Stock;
 
@@ -235,41 +236,59 @@ namespace MonoDevelop.Debugger
 					IdeApp.Workbench.OpenDocument (bp.FileName, bp.Line, 1);
 			}
 		}
-		
-		[CommandHandler (EditCommands.Delete)]
-		[CommandHandler (EditCommands.DeleteKey)]
-		protected void OnDeleted ()
+
+		bool DeleteSelectedBreakpoints ()
 		{
 			bool deleted = false;
 
 			DebuggingService.Breakpoints.BreakpointRemoved -= breakpointRemovedHandler;
 
-			foreach (TreePath path in tree.Selection.GetSelectedRows ()) {
-				TreeIter iter;
-				
-				if (!store.GetIter (out iter, path))
-					continue;
-				
-				var bp = (Breakpoint) store.GetValue (iter, (int) Columns.Breakpoint);
-				bps.Remove (bp);
-				deleted = true;
+			try {
+				// Note: since we'll be modifying the list of breakpoints, we need to sort
+				// the paths in reverse order.
+				var selected = tree.Selection.GetSelectedRows ();
+				Array.Sort (selected, new TreePathComparer (true));
+
+				foreach (var path in selected) {
+					TreeIter iter;
+
+					if (!store.GetIter (out iter, path)) {
+						Console.WriteLine ("Failed to get iter for row: {0}", path.Indices[0]);
+						continue;
+					}
+
+					var bp = (Breakpoint) store.GetValue (iter, (int) Columns.Breakpoint);
+					bps.Remove (bp);
+					deleted = true;
+				}
+			} finally {
+				DebuggingService.Breakpoints.BreakpointRemoved += breakpointRemovedHandler;
 			}
-			
-			DebuggingService.Breakpoints.BreakpointRemoved += breakpointRemovedHandler;
-			
-			if (deleted)
+
+			return deleted;
+		}
+
+		[CommandHandler (EditCommands.Delete)]
+		[CommandHandler (EditCommands.DeleteKey)]
+		protected void OnDeleted ()
+		{
+			if (DeleteSelectedBreakpoints ())
 				UpdateDisplay ();
+		}
+
+		[CommandUpdateHandler (LocalCommands.GoToFile)]
+		[CommandUpdateHandler (LocalCommands.Properties)]
+		protected void UpdateBpCommand (CommandInfo cmd)
+		{
+			cmd.Enabled = tree.Selection.CountSelectedRows () == 1;
 		}
 		
 		[CommandUpdateHandler (EditCommands.Delete)]
 		[CommandUpdateHandler (EditCommands.DeleteKey)]
-		[CommandUpdateHandler (LocalCommands.GoToFile)]
-		[CommandUpdateHandler (LocalCommands.Properties)]
 		[CommandUpdateHandler (DebugCommands.EnableDisableBreakpoint)]
-		protected void UpdateBpCommand (CommandInfo cmd)
+		protected void UpdateMultiBpCommand (CommandInfo cmd)
 		{
-			TreeIter iter;
-			cmd.Enabled = tree.Selection.GetSelected (out iter);
+			cmd.Enabled = tree.Selection.CountSelectedRows () > 0;
 		}
 
 		[GLib.ConnectBefore]
@@ -280,37 +299,19 @@ namespace MonoDevelop.Debugger
 			case Gdk.Key.Delete:
 			case Gdk.Key.KP_Delete:
 			case Gdk.Key.BackSpace:
-				// Delete the selected breakpoints
-				bool deleted = false;
-
-				DebuggingService.Breakpoints.BreakpointRemoved -= breakpointRemovedHandler;
-
-				foreach (TreePath path in tree.Selection.GetSelectedRows ()) {
-					TreeIter iter;
-					
-					if (!store.GetIter (out iter, path))
-						continue;
-					
-					var bp = (Breakpoint) store.GetValue (iter, (int) Columns.Breakpoint);
-					bps.Remove (bp);
-					deleted = true;
-				}
-
-				DebuggingService.Breakpoints.BreakpointRemoved += breakpointRemovedHandler;
-
-				if (deleted) {
+				if (DeleteSelectedBreakpoints ()) {
 					args.RetVal = true;
 					UpdateDisplay ();
 				}
-
 				break;
 			}
 		}
 		
-		private void ItemToggled (object o, ToggledArgs args)
+		void ItemToggled (object o, ToggledArgs args)
 		{
-			Gtk.TreeIter iter;
-			if (store.GetIterFromString(out iter, args.Path)) {
+			TreeIter iter;
+
+			if (store.GetIterFromString (out iter, args.Path)) {
 				bool val = (bool) store.GetValue(iter, (int)Columns.Selected);
 				Breakpoint bp = (Breakpoint) store.GetValue (iter, (int) Columns.Breakpoint);
 				store.SetValue (iter, (int)Columns.Selected, !val);
