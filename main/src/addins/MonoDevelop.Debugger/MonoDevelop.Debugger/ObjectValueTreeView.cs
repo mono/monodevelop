@@ -623,7 +623,7 @@ namespace MonoDevelop.Debugger
 		{
 			TreeRowReference row;
 			
-			if (!nodes.TryGetValue (val, out row)) {
+			if (!nodes.TryGetValue (val, out row) || !row.Valid ()) {
 				it = TreeIter.Zero;
 				return false;
 			}
