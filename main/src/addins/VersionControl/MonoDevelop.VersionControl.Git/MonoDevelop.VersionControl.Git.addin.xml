@@ -10,6 +10,7 @@
  
 	<Runtime>
 		<Import assembly="MonoDevelop.VersionControl.Git.dll"/>
+		<Import assembly="NGit.dll"/>
 	</Runtime>
 
 	<Dependencies>

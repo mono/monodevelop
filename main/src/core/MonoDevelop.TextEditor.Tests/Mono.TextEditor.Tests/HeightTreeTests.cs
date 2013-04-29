@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 using System;
 using NUnit.Framework;
-using UnitTests;
 
 namespace Mono.TextEditor.Tests
 {

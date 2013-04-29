@@ -516,12 +516,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		static string GetExeLocation (TargetRuntime runtime, string toolsVersion)
 		{
-			FilePath sourceExe = typeof(ProjectBuilder).Assembly.Location;
+			FilePath sourceExe = typeof(MSBuildProjectService).Assembly.Location;
 
 			if ((runtime is MsNetTargetRuntime) && int.Parse (toolsVersion.Split ('.')[0]) >= 4)
 				toolsVersion = "dotnet." + toolsVersion;
 
-			var exe = sourceExe.ParentDirectory.Combine ("MSBuild", toolsVersion, sourceExe.FileName);
+			var exe = sourceExe.ParentDirectory.Combine ("MSBuild", toolsVersion, "MonoDevelop.Projects.Formats.MSBuild.exe");
 			if (File.Exists (exe))
 				return exe;
 			

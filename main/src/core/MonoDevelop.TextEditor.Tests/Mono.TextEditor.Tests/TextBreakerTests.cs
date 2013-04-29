@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using NUnit.Core;
 using Mono.TextEditor;
 using Mono.TextEditor.Utils;
 using NUnit.Framework;

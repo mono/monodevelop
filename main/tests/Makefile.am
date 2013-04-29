@@ -4,7 +4,7 @@ SUBDIRS=UnitTests MacPlatform.Tests UserInterfaceTests
 
 MONO=mono
 HARNESS=$(top_srcdir)/external/mdtestharness/nunit-console-x86.exe -domain=multiple
-RUN_TEST=$(MD_LAUNCH_SETUP) $(MONO) $(HARNESS)
+RUN_TEST=$(MDTOOL_RUN) run-md-tests
 TEST_DIR=$(top_builddir)/build/tests
 EXTERNAL=$(top_builddir)/external
 
@@ -47,6 +47,8 @@ test:
 			$(RUN_TEST) $$asm || exit $?; \
 		done; \
 	fi
+
+include $(top_srcdir)/Makefile.include
 
 EXTRA_DIST = \
 	test-projects/resources-tester/ResourcesTester/Subfolder/FormFile2.cs \
