@@ -62,9 +62,6 @@ namespace MonoDevelop.NUnit
 			}
 		}
 
-		public string TestRunnerType { get; set; }
-		public string TestRunnerAssembly { get; set; }
-
 		public NUnitAssemblyTestSuite (string name): base (name)
 		{
 		}
@@ -88,6 +85,11 @@ namespace MonoDevelop.NUnit
 			get {
 				return true;
 			}
+		}
+
+		public virtual void GetCustomTestRunner (out string assembly, out string type)
+		{
+			assembly = type = null;
 		}
 
 
@@ -389,7 +391,11 @@ namespace MonoDevelop.NUnit
 					throw new Exception (msg);
 				}
 				System.Runtime.Remoting.RemotingServices.Marshal (localMonitor, null, typeof (IRemoteEventListener));
-				result = runner.Run (localMonitor, filter, AssemblyPath, "", new List<string> (SupportAssemblies), TestRunnerType, TestRunnerAssembly);
+
+				string testRunnerAssembly, testRunnerType;
+				GetCustomTestRunner (out testRunnerAssembly, out testRunnerType);
+
+				result = runner.Run (localMonitor, filter, AssemblyPath, "", new List<string> (SupportAssemblies), testRunnerType, testRunnerAssembly);
 				if (testName != null)
 					result = localMonitor.SingleTestResult;
 			} catch (Exception ex) {

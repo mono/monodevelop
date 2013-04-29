@@ -115,14 +115,13 @@ namespace MonoDevelop.NUnit
 				UpdateTests ();
 		}
 
-		protected override UnitTestResult OnRun (TestContext testContext)
+		public override void GetCustomTestRunner (out string assembly, out string type)
 		{
-			TestRunnerType = (string) project.ExtendedProperties ["TestRunnerType"];
+			type = (string) project.ExtendedProperties ["TestRunnerType"];
 			var asm = project.ExtendedProperties ["TestRunnerAssembly"];
-			TestRunnerAssembly = asm != null ? project.BaseDirectory.Combine (asm.ToString ()).ToString () : null;
-			return base.OnRun (testContext);
+			assembly = asm != null ? project.BaseDirectory.Combine (asm.ToString ()).ToString () : null;
 		}
-	
+
 		protected override string AssemblyPath {
 			get { return project.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration); }
 		}
