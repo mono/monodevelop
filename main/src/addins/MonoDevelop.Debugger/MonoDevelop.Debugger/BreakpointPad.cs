@@ -216,18 +216,33 @@ namespace MonoDevelop.Debugger
 			DebuggingService.Breakpoints.Changed -= breakpointChangedHandler;
 
 			try {
+				bool enable = false;
+
+				// If any breakpoints are disabled, we'll enable them all. Otherwise, disable them all.
 				foreach (var path in tree.Selection.GetSelectedRows ()) {
 					TreeIter iter;
 
 					if (!store.GetIter (out iter, path))
 						continue;
 
-					bool val = (bool) store.GetValue (iter, (int) Columns.Selected);
 					Breakpoint bp = (Breakpoint) store.GetValue (iter, (int) Columns.Breakpoint);
-					bp.Enabled = !bp.Enabled;
+					if (!bp.Enabled) {
+						enable = true;
+						break;
+					}
+				}
 
-					store.SetValue (iter, (int) Columns.Icon, bp.Enabled ? "md-breakpoint" : "md-breakpoint-disabled");
-					store.SetValue (iter, (int) Columns.Selected, !val);
+				foreach (var path in tree.Selection.GetSelectedRows ()) {
+					TreeIter iter;
+
+					if (!store.GetIter (out iter, path))
+						continue;
+
+					Breakpoint bp = (Breakpoint) store.GetValue (iter, (int) Columns.Breakpoint);
+					bp.Enabled = enable;
+
+					store.SetValue (iter, (int) Columns.Icon, enable ? "md-breakpoint" : "md-breakpoint-disabled");
+					store.SetValue (iter, (int) Columns.Selected, enable);
 				}
 			} finally {
 				DebuggingService.Breakpoints.Changed += breakpointChangedHandler;
@@ -326,6 +341,12 @@ namespace MonoDevelop.Debugger
 					UpdateDisplay ();
 				}
 				break;
+			case Gdk.Key.space:
+				if (tree.Selection.CountSelectedRows () > 0) {
+					OnEnableDisable ();
+					args.RetVal = true;
+				}
+				break;
 			}
 		}
 		
@@ -337,12 +358,11 @@ namespace MonoDevelop.Debugger
 				TreeIter iter;
 
 				if (store.GetIterFromString (out iter, args.Path)) {
-					bool val = (bool) store.GetValue (iter, (int) Columns.Selected);
 					Breakpoint bp = (Breakpoint) store.GetValue (iter, (int) Columns.Breakpoint);
 					bp.Enabled = !bp.Enabled;
 
 					store.SetValue (iter, (int) Columns.Icon, bp.Enabled ? "md-breakpoint" : "md-breakpoint-disabled");
-					store.SetValue (iter, (int) Columns.Selected, !val);
+					store.SetValue (iter, (int) Columns.Selected, bp.Enabled);
 				}
 			} finally {
 				DebuggingService.Breakpoints.Changed += breakpointChangedHandler;
