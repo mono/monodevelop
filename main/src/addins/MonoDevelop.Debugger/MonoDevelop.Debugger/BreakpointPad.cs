@@ -266,6 +266,20 @@ namespace MonoDevelop.Debugger
 			return deleted;
 		}
 
+		[CommandUpdateHandler (EditCommands.SelectAll)]
+		protected void UpdateSelectAll (CommandInfo cmd)
+		{
+			TreeIter iter;
+
+			cmd.Enabled = store.GetIterFirst (out iter);
+		}
+
+		[CommandHandler (EditCommands.SelectAll)]
+		protected void OnSelectAll ()
+		{
+			tree.Selection.SelectAll ();
+		}
+
 		[CommandHandler (EditCommands.Delete)]
 		[CommandHandler (EditCommands.DeleteKey)]
 		protected void OnDeleted ()
