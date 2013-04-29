@@ -469,14 +469,23 @@ namespace MonoDevelop.Debugger
 	{
 		protected override void Run ()
 		{
-			foreach (BreakEvent bp in DebuggingService.Breakpoints)
-				bp.Enabled = false;
+			bool enable = false;
+
+			foreach (BreakEvent bp in DebuggingService.Breakpoints) {
+				if (!bp.Enabled) {
+					enable = true;
+					break;
+				}
+			}
+
+			foreach (BreakEvent bp in DebuggingService.Breakpoints) {
+				bp.Enabled = enable;
+			}
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = !DebuggingService.Breakpoints.IsReadOnly
-				&& DebuggingService.Breakpoints.Any (b => b.Enabled);
+			info.Enabled = !DebuggingService.Breakpoints.IsReadOnly && DebuggingService.Breakpoints.Count > 0;
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
 		}
 	}
