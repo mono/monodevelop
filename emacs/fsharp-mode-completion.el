@@ -42,7 +42,7 @@
                  (concat (file-name-directory (or load-file-name buffer-file-name))
                          "bin/" fsharp-ac-executable))))
     (case system-type
-      (windows-nt exe)
+      (windows-nt (list exe))
       (otherwise (list "mono" exe)))))
 
 (defvar fsharp-ac-use-popup t
