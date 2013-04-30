@@ -600,8 +600,10 @@ namespace MonoDevelop.Ide
 				timer.Trace ("Registering to recent list");
 				DesktopService.RecentFiles.AddProject (item.FileName, item.Name);
 				
-				timer.Trace ("Adding to items list");
-				Items.Add (item);
+				Gtk.Application.Invoke (delegate {
+					// Add the item in the GUI thread. It is not safe to do it in the background thread.
+					Items.Add (item);
+				});
 				
 				timer.Trace ("Searching for new files");
 				SearchForNewFiles ();
