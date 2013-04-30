@@ -778,13 +778,34 @@ namespace MonoDevelop.Ide.Gui.Components
 			else
 				return null;
 		}
-		
+
 		void ExpandCurrentItem ()
 		{
 			try {
 				LockUpdates ();
-				foreach (SelectionGroup grp in GetSelectedNodesGrouped ()) {
+
+				IEnumerable<SelectionGroup> nodeGroups = GetSelectedNodesGrouped ();
+				if (nodeGroups.Count () == 1) {
+					SelectionGroup grp = nodeGroups.First ();
+
+					if (grp.Nodes.Count () == 1) {
+						ITreeNavigator node = grp.Nodes.First ();
+						if (node.Expanded) {
+							grp.SavePositions ();
+							node.Selected = false;
+							if (node.MoveToFirstChild ())
+								node.Selected = true;
+
+							// This exit statement is so that it doesn't do 2 actions at a time.
+							// As in, navigate, then expand.
+							return;
+						}
+					}
+				}
+
+				foreach (SelectionGroup grp in nodeGroups) {
 					grp.SavePositions ();
+
 					foreach (var node in grp.Nodes) {
 						node.Expanded = true;
 					}
@@ -798,8 +819,30 @@ namespace MonoDevelop.Ide.Gui.Components
 		{
 			try {
 				LockUpdates ();
-				foreach (SelectionGroup grp in GetSelectedNodesGrouped ()) {
+
+				IEnumerable<SelectionGroup> nodeGroups = GetSelectedNodesGrouped ();
+				if (nodeGroups.Count () == 1) {
+					SelectionGroup grp = nodeGroups.First ();
+
+					if (grp.Nodes.Count () == 1)
+					{
+						ITreeNavigator node = grp.Nodes.First ();
+						if (!node.HasChildren () || !node.Expanded) {
+							grp.SavePositions ();
+							node.Selected = false;
+							if (node.MoveToParent ())
+								node.Selected = true;
+
+							// This exit statement is so that it doesn't do 2 actions at a time.
+							// As in, navigate, then collapse.
+							return;
+						}
+					}
+				}
+
+				foreach (SelectionGroup grp in nodeGroups) {
 					grp.SavePositions ();
+
 					foreach (var node in grp.Nodes) {
 						node.Expanded = false;
 					}
