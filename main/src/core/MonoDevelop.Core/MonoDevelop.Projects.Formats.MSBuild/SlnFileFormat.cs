@@ -808,7 +808,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					List<string> projLines = lines.GetRange (sec.Start + 1, sec.Count - 2);
 					DataItem it = GetSolutionItemData (projLines);
 
-					handler.UnresolvedProjectDependencies = ReadSolutionItemDependencies (lines);
+					handler.UnresolvedProjectDependencies = ReadSolutionItemDependencies (projLines);
 					handler.SlnProjectContent = projLines.ToArray ();
 					handler.ReadSlnData (it);
 					
