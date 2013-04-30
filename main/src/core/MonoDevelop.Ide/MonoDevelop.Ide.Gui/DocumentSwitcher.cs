@@ -270,15 +270,19 @@ namespace MonoDevelop.Ide
 			
 			switch (accels [0].Key) {
 			case Gdk.Key.Left:
+			case Gdk.Key.KP_Left:
 				LeftItem ();
 				break;
 			case Gdk.Key.Right:
+			case Gdk.Key.KP_Right:
 				RightItem ();
 				break;
 			case Gdk.Key.Up:
+			case Gdk.Key.KP_Up:
 				PrevItem (false);
 				break;
 			case Gdk.Key.Down:
+			case Gdk.Key.KP_Down:
 				NextItem (false);
 				break;
 			case Gdk.Key.Tab:
