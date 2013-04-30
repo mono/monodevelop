@@ -335,6 +335,9 @@
     <EmbeddedResource Include="SyntaxModes\TypescriptSyntaxMode.xml">
       <LogicalName>TypescriptSyntaxMode.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="SyntaxModes\LessSyntaxMode.xml">
+      <LogicalName>LessSyntaxMode.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
