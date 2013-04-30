@@ -140,6 +140,7 @@
     <Compile Include="MonoDevelop.Debugger\ExpressionEvaluatorExtensionNode.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Debugger.ExceptionCaughtWidget.cs" />
     <Compile Include="MonoDevelop.Debugger\TreePathComparer.cs" />
+    <Compile Include="MonoDevelop.Debugger\TreePathReference.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Debugger.addin.xml">
