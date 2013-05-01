@@ -4,44 +4,45 @@ namespace MonoDevelop.Debugger
 {
 	public partial class BreakpointPropertiesDialog
 	{
-		private global::Gtk.VBox vbox2;
+		private global::Gtk.VBox vboxProperties;
 		private global::Gtk.Label label1;
-		private global::Gtk.Table table1;
+		private global::Gtk.Alignment alignLocation;
+		private global::Gtk.Table tableLocation;
 		private global::Gtk.Entry entryFileFunction;
 		private global::Gtk.HBox hboxLineColumn;
 		private global::Gtk.SpinButton spinLine;
 		private global::Gtk.HBox hboxColumn;
 		private global::Gtk.Label label9;
 		private global::Gtk.SpinButton spinColumn;
-		private global::Gtk.Label label6;
 		private global::Gtk.Label labelFileFunction;
 		private global::Gtk.Label labelLine;
 		private global::Gtk.Label label2;
-		private global::Gtk.HBox hbox4;
-		private global::Gtk.Label label14;
-		private global::Gtk.VBox boxConditionOptions;
+		private global::Gtk.Alignment alignCondition;
+		private global::Gtk.VBox vboxConditionOptions;
 		private global::Gtk.RadioButton radioBreakAlways;
-		private global::Gtk.RadioButton radioBreakTrue;
-		private global::Gtk.RadioButton radioBreakChange;
-		private global::Gtk.HBox boxCondition;
-		private global::Gtk.Label label15;
-		private global::Gtk.Label label7;
+		private global::Gtk.RadioButton radioBreakWhenTrue;
+		private global::Gtk.RadioButton radioBreakWhenChanges;
+		private global::Gtk.Alignment alignConditionExpression;
+		private global::Gtk.HBox hboxConditionExpression;
+		private global::Gtk.Label labelConditionExpression;
 		private global::Gtk.Entry entryCondition;
-		private global::Gtk.HSeparator hseparator1;
-		private global::Gtk.HBox hbox7;
-		private global::Gtk.Label label8;
+		private global::Gtk.Label labelHitCount;
+		private global::Gtk.Alignment alignHitCount;
+		private global::Gtk.VBox vboxHitCount;
+		private global::Gtk.Label labelWhenHit;
+		private global::Gtk.HBox hbox1;
+		private global::Gtk.ComboBox comboHitCountMode;
 		private global::Gtk.SpinButton spinHitCount;
 		private global::Gtk.Label label3;
-		private global::Gtk.HBox hbox2;
-		private global::Gtk.Label label10;
-		private global::Gtk.VBox boxAction;
+		private global::Gtk.Alignment alignAction;
+		private global::Gtk.VBox vboxAction;
 		private global::Gtk.Label label11;
 		private global::Gtk.RadioButton radioActionBreak;
 		private global::Gtk.RadioButton radioActionTrace;
+		private global::Gtk.Alignment alignTraceExpression;
 		private global::Gtk.HBox boxTraceExpression;
-		private global::Gtk.Label label13;
-		private global::Gtk.Label label12;
-		private global::Gtk.Entry entryTraceExpr;
+		private global::Gtk.Label labelTraceExpression;
+		private global::Gtk.Entry entryTraceExpression;
 		private global::Gtk.Button buttonCancel;
 		private global::Gtk.Button buttonOk;
 		
@@ -58,38 +59,42 @@ namespace MonoDevelop.Debugger
 			w1.Name = "dialog1_VBox";
 			w1.BorderWidth = ((uint)(2));
 			// Container child dialog1_VBox.Gtk.Box+BoxChild
-			this.vbox2 = new global::Gtk.VBox ();
-			this.vbox2.Name = "vbox2";
-			this.vbox2.Spacing = 6;
-			this.vbox2.BorderWidth = ((uint)(9));
-			// Container child vbox2.Gtk.Box+BoxChild
+			this.vboxProperties = new global::Gtk.VBox ();
+			this.vboxProperties.Name = "vboxProperties";
+			this.vboxProperties.Spacing = 6;
+			this.vboxProperties.BorderWidth = ((uint)(9));
+			// Container child vboxProperties.Gtk.Box+BoxChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
 			this.label1.Xalign = 0F;
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Location</b>");
 			this.label1.UseMarkup = true;
-			this.vbox2.Add (this.label1);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label1]));
+			this.vboxProperties.Add (this.label1);
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vboxProperties [this.label1]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
-			// Container child vbox2.Gtk.Box+BoxChild
-			this.table1 = new global::Gtk.Table (((uint)(2)), ((uint)(3)), false);
-			this.table1.Name = "table1";
-			this.table1.RowSpacing = ((uint)(6));
-			this.table1.ColumnSpacing = ((uint)(6));
-			// Container child table1.Gtk.Table+TableChild
+			// Container child vboxProperties.Gtk.Box+BoxChild
+			this.alignLocation = new global::Gtk.Alignment (0F, 0.5F, 1F, 1F);
+			this.alignLocation.Name = "alignLocation";
+			this.alignLocation.LeftPadding = ((uint)(18));
+			// Container child alignLocation.Gtk.Container+ContainerChild
+			this.tableLocation = new global::Gtk.Table (((uint)(2)), ((uint)(2)), false);
+			this.tableLocation.Name = "tableLocation";
+			this.tableLocation.RowSpacing = ((uint)(6));
+			this.tableLocation.ColumnSpacing = ((uint)(6));
+			// Container child tableLocation.Gtk.Table+TableChild
 			this.entryFileFunction = new global::Gtk.Entry ();
 			this.entryFileFunction.CanFocus = true;
 			this.entryFileFunction.Name = "entryFileFunction";
 			this.entryFileFunction.IsEditable = true;
 			this.entryFileFunction.InvisibleChar = '●';
-			this.table1.Add (this.entryFileFunction);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.entryFileFunction]));
-			w3.LeftAttach = ((uint)(2));
-			w3.RightAttach = ((uint)(3));
+			this.tableLocation.Add (this.entryFileFunction);
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.tableLocation [this.entryFileFunction]));
+			w3.LeftAttach = ((uint)(1));
+			w3.RightAttach = ((uint)(2));
 			w3.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
+			// Container child tableLocation.Gtk.Table+TableChild
 			this.hboxLineColumn = new global::Gtk.HBox ();
 			this.hboxLineColumn.Name = "hboxLineColumn";
 			this.hboxLineColumn.Spacing = 6;
@@ -137,171 +142,182 @@ namespace MonoDevelop.Debugger
 			w7.Position = 1;
 			w7.Expand = false;
 			w7.Fill = false;
-			this.table1.Add (this.hboxLineColumn);
-			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table1 [this.hboxLineColumn]));
+			this.tableLocation.Add (this.hboxLineColumn);
+			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.tableLocation [this.hboxLineColumn]));
 			w8.TopAttach = ((uint)(1));
 			w8.BottomAttach = ((uint)(2));
-			w8.LeftAttach = ((uint)(2));
-			w8.RightAttach = ((uint)(3));
+			w8.LeftAttach = ((uint)(1));
+			w8.RightAttach = ((uint)(2));
 			w8.XOptions = ((global::Gtk.AttachOptions)(4));
 			w8.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
-			this.label6 = new global::Gtk.Label ();
-			this.label6.WidthRequest = 12;
-			this.label6.Name = "label6";
-			this.table1.Add (this.label6);
-			global::Gtk.Table.TableChild w9 = ((global::Gtk.Table.TableChild)(this.table1 [this.label6]));
-			w9.XOptions = ((global::Gtk.AttachOptions)(4));
-			w9.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
+			// Container child tableLocation.Gtk.Table+TableChild
 			this.labelFileFunction = new global::Gtk.Label ();
 			this.labelFileFunction.Name = "labelFileFunction";
 			this.labelFileFunction.Xalign = 0F;
 			this.labelFileFunction.LabelProp = global::Mono.Unix.Catalog.GetString ("File:");
-			this.table1.Add (this.labelFileFunction);
-			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.table1 [this.labelFileFunction]));
-			w10.LeftAttach = ((uint)(1));
-			w10.RightAttach = ((uint)(2));
-			w10.XOptions = ((global::Gtk.AttachOptions)(4));
-			w10.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table1.Gtk.Table+TableChild
+			this.tableLocation.Add (this.labelFileFunction);
+			global::Gtk.Table.TableChild w9 = ((global::Gtk.Table.TableChild)(this.tableLocation [this.labelFileFunction]));
+			w9.XOptions = ((global::Gtk.AttachOptions)(4));
+			w9.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child tableLocation.Gtk.Table+TableChild
 			this.labelLine = new global::Gtk.Label ();
 			this.labelLine.Name = "labelLine";
 			this.labelLine.LabelProp = global::Mono.Unix.Catalog.GetString ("Line:");
-			this.table1.Add (this.labelLine);
-			global::Gtk.Table.TableChild w11 = ((global::Gtk.Table.TableChild)(this.table1 [this.labelLine]));
-			w11.TopAttach = ((uint)(1));
-			w11.BottomAttach = ((uint)(2));
-			w11.LeftAttach = ((uint)(1));
-			w11.RightAttach = ((uint)(2));
-			w11.XOptions = ((global::Gtk.AttachOptions)(4));
-			w11.YOptions = ((global::Gtk.AttachOptions)(4));
-			this.vbox2.Add (this.table1);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.table1]));
+			this.tableLocation.Add (this.labelLine);
+			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.tableLocation [this.labelLine]));
+			w10.TopAttach = ((uint)(1));
+			w10.BottomAttach = ((uint)(2));
+			w10.XOptions = ((global::Gtk.AttachOptions)(4));
+			w10.YOptions = ((global::Gtk.AttachOptions)(4));
+			this.alignLocation.Add (this.tableLocation);
+			this.vboxProperties.Add (this.alignLocation);
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vboxProperties [this.alignLocation]));
 			w12.Position = 1;
-			// Container child vbox2.Gtk.Box+BoxChild
+			w12.Expand = false;
+			w12.Fill = false;
+			// Container child vboxProperties.Gtk.Box+BoxChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
 			this.label2.Xalign = 0F;
 			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Condition</b>");
 			this.label2.UseMarkup = true;
-			this.vbox2.Add (this.label2);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label2]));
+			this.vboxProperties.Add (this.label2);
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vboxProperties [this.label2]));
 			w13.Position = 2;
 			w13.Expand = false;
 			w13.Fill = false;
-			// Container child vbox2.Gtk.Box+BoxChild
-			this.hbox4 = new global::Gtk.HBox ();
-			this.hbox4.Name = "hbox4";
-			this.hbox4.Spacing = 6;
-			// Container child hbox4.Gtk.Box+BoxChild
-			this.label14 = new global::Gtk.Label ();
-			this.label14.WidthRequest = 12;
-			this.label14.Name = "label14";
-			this.hbox4.Add (this.label14);
-			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.label14]));
-			w14.Position = 0;
-			w14.Expand = false;
-			w14.Fill = false;
-			// Container child hbox4.Gtk.Box+BoxChild
-			this.boxConditionOptions = new global::Gtk.VBox ();
-			this.boxConditionOptions.Name = "boxConditionOptions";
-			this.boxConditionOptions.Spacing = 6;
-			// Container child boxConditionOptions.Gtk.Box+BoxChild
+			// Container child vboxProperties.Gtk.Box+BoxChild
+			this.alignCondition = new global::Gtk.Alignment (0F, 0.5F, 1F, 1F);
+			this.alignCondition.Name = "alignCondition";
+			this.alignCondition.LeftPadding = ((uint)(18));
+			// Container child alignCondition.Gtk.Container+ContainerChild
+			this.vboxConditionOptions = new global::Gtk.VBox ();
+			this.vboxConditionOptions.Name = "vboxConditionOptions";
+			this.vboxConditionOptions.Spacing = 6;
+			// Container child vboxConditionOptions.Gtk.Box+BoxChild
 			this.radioBreakAlways = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Always break"));
 			this.radioBreakAlways.CanFocus = true;
 			this.radioBreakAlways.Name = "radioBreakAlways";
-			this.radioBreakAlways.Active = true;
 			this.radioBreakAlways.DrawIndicator = true;
 			this.radioBreakAlways.UseUnderline = true;
 			this.radioBreakAlways.Group = new global::GLib.SList (global::System.IntPtr.Zero);
-			this.boxConditionOptions.Add (this.radioBreakAlways);
-			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.boxConditionOptions [this.radioBreakAlways]));
-			w15.Position = 0;
+			this.vboxConditionOptions.Add (this.radioBreakAlways);
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vboxConditionOptions [this.radioBreakAlways]));
+			w14.Position = 0;
+			w14.Expand = false;
+			w14.Fill = false;
+			// Container child vboxConditionOptions.Gtk.Box+BoxChild
+			this.radioBreakWhenTrue = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Break when condition is true"));
+			this.radioBreakWhenTrue.CanFocus = true;
+			this.radioBreakWhenTrue.Name = "radioBreakWhenTrue";
+			this.radioBreakWhenTrue.DrawIndicator = true;
+			this.radioBreakWhenTrue.UseUnderline = true;
+			this.radioBreakWhenTrue.Group = this.radioBreakAlways.Group;
+			this.vboxConditionOptions.Add (this.radioBreakWhenTrue);
+			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vboxConditionOptions [this.radioBreakWhenTrue]));
+			w15.Position = 1;
 			w15.Expand = false;
 			w15.Fill = false;
-			// Container child boxConditionOptions.Gtk.Box+BoxChild
-			this.radioBreakTrue = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Break when condition is true"));
-			this.radioBreakTrue.CanFocus = true;
-			this.radioBreakTrue.Name = "radioBreakTrue";
-			this.radioBreakTrue.DrawIndicator = true;
-			this.radioBreakTrue.UseUnderline = true;
-			this.radioBreakTrue.Group = this.radioBreakAlways.Group;
-			this.boxConditionOptions.Add (this.radioBreakTrue);
-			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.boxConditionOptions [this.radioBreakTrue]));
-			w16.Position = 1;
+			// Container child vboxConditionOptions.Gtk.Box+BoxChild
+			this.radioBreakWhenChanges = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Break when the expression changes"));
+			this.radioBreakWhenChanges.CanFocus = true;
+			this.radioBreakWhenChanges.Name = "radioBreakWhenChanges";
+			this.radioBreakWhenChanges.DrawIndicator = true;
+			this.radioBreakWhenChanges.UseUnderline = true;
+			this.radioBreakWhenChanges.Group = this.radioBreakAlways.Group;
+			this.vboxConditionOptions.Add (this.radioBreakWhenChanges);
+			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vboxConditionOptions [this.radioBreakWhenChanges]));
+			w16.Position = 2;
 			w16.Expand = false;
 			w16.Fill = false;
-			// Container child boxConditionOptions.Gtk.Box+BoxChild
-			this.radioBreakChange = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Break when the expression changes"));
-			this.radioBreakChange.CanFocus = true;
-			this.radioBreakChange.Name = "radioBreakChange";
-			this.radioBreakChange.DrawIndicator = true;
-			this.radioBreakChange.UseUnderline = true;
-			this.radioBreakChange.Group = this.radioBreakAlways.Group;
-			this.boxConditionOptions.Add (this.radioBreakChange);
-			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.boxConditionOptions [this.radioBreakChange]));
-			w17.Position = 2;
+			// Container child vboxConditionOptions.Gtk.Box+BoxChild
+			this.alignConditionExpression = new global::Gtk.Alignment (0F, 0.5F, 1F, 1F);
+			this.alignConditionExpression.Name = "alignConditionExpression";
+			this.alignConditionExpression.LeftPadding = ((uint)(18));
+			// Container child alignConditionExpression.Gtk.Container+ContainerChild
+			this.hboxConditionExpression = new global::Gtk.HBox ();
+			this.hboxConditionExpression.Name = "hboxConditionExpression";
+			this.hboxConditionExpression.Spacing = 6;
+			// Container child hboxConditionExpression.Gtk.Box+BoxChild
+			this.labelConditionExpression = new global::Gtk.Label ();
+			this.labelConditionExpression.Name = "labelConditionExpression";
+			this.labelConditionExpression.Xalign = 0F;
+			this.labelConditionExpression.LabelProp = global::Mono.Unix.Catalog.GetString ("Condition expression:");
+			this.hboxConditionExpression.Add (this.labelConditionExpression);
+			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.hboxConditionExpression [this.labelConditionExpression]));
+			w17.Position = 0;
 			w17.Expand = false;
 			w17.Fill = false;
-			// Container child boxConditionOptions.Gtk.Box+BoxChild
-			this.boxCondition = new global::Gtk.HBox ();
-			this.boxCondition.Name = "boxCondition";
-			this.boxCondition.Spacing = 6;
-			// Container child boxCondition.Gtk.Box+BoxChild
-			this.label15 = new global::Gtk.Label ();
-			this.label15.WidthRequest = 12;
-			this.label15.Name = "label15";
-			this.boxCondition.Add (this.label15);
-			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.boxCondition [this.label15]));
-			w18.Position = 0;
-			w18.Expand = false;
-			w18.Fill = false;
-			// Container child boxCondition.Gtk.Box+BoxChild
-			this.label7 = new global::Gtk.Label ();
-			this.label7.Name = "label7";
-			this.label7.Xalign = 0F;
-			this.label7.LabelProp = global::Mono.Unix.Catalog.GetString ("Condition expression:");
-			this.boxCondition.Add (this.label7);
-			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.boxCondition [this.label7]));
-			w19.Position = 1;
-			w19.Expand = false;
-			w19.Fill = false;
-			// Container child boxCondition.Gtk.Box+BoxChild
+			// Container child hboxConditionExpression.Gtk.Box+BoxChild
 			this.entryCondition = new global::Gtk.Entry ();
 			this.entryCondition.CanFocus = true;
 			this.entryCondition.Name = "entryCondition";
 			this.entryCondition.IsEditable = true;
 			this.entryCondition.InvisibleChar = '●';
-			this.boxCondition.Add (this.entryCondition);
-			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.boxCondition [this.entryCondition]));
-			w20.Position = 2;
-			this.boxConditionOptions.Add (this.boxCondition);
-			global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(this.boxConditionOptions [this.boxCondition]));
-			w21.Position = 3;
-			// Container child boxConditionOptions.Gtk.Box+BoxChild
-			this.hseparator1 = new global::Gtk.HSeparator ();
-			this.hseparator1.Name = "hseparator1";
-			this.boxConditionOptions.Add (this.hseparator1);
-			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.boxConditionOptions [this.hseparator1]));
-			w22.Position = 4;
+			this.hboxConditionExpression.Add (this.entryCondition);
+			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.hboxConditionExpression [this.entryCondition]));
+			w18.Position = 1;
+			this.alignConditionExpression.Add (this.hboxConditionExpression);
+			this.vboxConditionOptions.Add (this.alignConditionExpression);
+			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.vboxConditionOptions [this.alignConditionExpression]));
+			w20.Position = 3;
+			w20.Expand = false;
+			w20.Fill = false;
+			this.alignCondition.Add (this.vboxConditionOptions);
+			this.vboxProperties.Add (this.alignCondition);
+			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.vboxProperties [this.alignCondition]));
+			w22.Position = 3;
 			w22.Expand = false;
 			w22.Fill = false;
-			// Container child boxConditionOptions.Gtk.Box+BoxChild
-			this.hbox7 = new global::Gtk.HBox ();
-			this.hbox7.Name = "hbox7";
-			this.hbox7.Spacing = 6;
-			// Container child hbox7.Gtk.Box+BoxChild
-			this.label8 = new global::Gtk.Label ();
-			this.label8.Name = "label8";
-			this.label8.Xalign = 0F;
-			this.label8.LabelProp = global::Mono.Unix.Catalog.GetString ("Hit count before breaking:");
-			this.hbox7.Add (this.label8);
-			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.hbox7 [this.label8]));
-			w23.Position = 0;
+			// Container child vboxProperties.Gtk.Box+BoxChild
+			this.labelHitCount = new global::Gtk.Label ();
+			this.labelHitCount.Name = "labelHitCount";
+			this.labelHitCount.Xalign = 0F;
+			this.labelHitCount.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Hit Count</b>");
+			this.labelHitCount.UseMarkup = true;
+			this.vboxProperties.Add (this.labelHitCount);
+			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.vboxProperties [this.labelHitCount]));
+			w23.Position = 4;
 			w23.Expand = false;
 			w23.Fill = false;
-			// Container child hbox7.Gtk.Box+BoxChild
+			// Container child vboxProperties.Gtk.Box+BoxChild
+			this.alignHitCount = new global::Gtk.Alignment (0F, 0.5F, 1F, 1F);
+			this.alignHitCount.Name = "alignHitCount";
+			this.alignHitCount.LeftPadding = ((uint)(18));
+			// Container child alignHitCount.Gtk.Container+ContainerChild
+			this.vboxHitCount = new global::Gtk.VBox ();
+			this.vboxHitCount.Name = "vboxHitCount";
+			this.vboxHitCount.Spacing = 6;
+			// Container child vboxHitCount.Gtk.Box+BoxChild
+			this.labelWhenHit = new global::Gtk.Label ();
+			this.labelWhenHit.Name = "labelWhenHit";
+			this.labelWhenHit.Xalign = 0F;
+			this.labelWhenHit.LabelProp = global::Mono.Unix.Catalog.GetString ("When the condition is hit:");
+			this.vboxHitCount.Add (this.labelWhenHit);
+			global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(this.vboxHitCount [this.labelWhenHit]));
+			w24.Position = 0;
+			w24.Expand = false;
+			w24.Fill = false;
+			// Container child vboxHitCount.Gtk.Box+BoxChild
+			this.hbox1 = new global::Gtk.HBox ();
+			this.hbox1.Name = "hbox1";
+			this.hbox1.Spacing = 6;
+			// Container child hbox1.Gtk.Box+BoxChild
+			this.comboHitCountMode = global::Gtk.ComboBox.NewText ();
+			this.comboHitCountMode.AppendText (global::Mono.Unix.Catalog.GetString ("Always break"));
+			this.comboHitCountMode.AppendText (global::Mono.Unix.Catalog.GetString ("Break when the hit count is less than"));
+			this.comboHitCountMode.AppendText (global::Mono.Unix.Catalog.GetString ("Break when the hit count is less than or equal to"));
+			this.comboHitCountMode.AppendText (global::Mono.Unix.Catalog.GetString ("Break when the hit count is equal to"));
+			this.comboHitCountMode.AppendText (global::Mono.Unix.Catalog.GetString ("Break when the hit count is greater than"));
+			this.comboHitCountMode.AppendText (global::Mono.Unix.Catalog.GetString ("Break when the hit count is greater than or equal to"));
+			this.comboHitCountMode.Name = "comboHitCountMode";
+			this.comboHitCountMode.Active = 0;
+			this.hbox1.Add (this.comboHitCountMode);
+			global::Gtk.Box.BoxChild w25 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.comboHitCountMode]));
+			w25.Position = 0;
+			w25.Expand = false;
+			w25.Fill = false;
+			// Container child hbox1.Gtk.Box+BoxChild
 			this.spinHitCount = new global::Gtk.SpinButton (0, 100000000, 1);
 			this.spinHitCount.CanFocus = true;
 			this.spinHitCount.Name = "spinHitCount";
@@ -309,142 +325,124 @@ namespace MonoDevelop.Debugger
 			this.spinHitCount.ClimbRate = 1;
 			this.spinHitCount.Numeric = true;
 			this.spinHitCount.Value = 1;
-			this.hbox7.Add (this.spinHitCount);
-			global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(this.hbox7 [this.spinHitCount]));
-			w24.Position = 1;
-			w24.Expand = false;
-			w24.Fill = false;
-			this.boxConditionOptions.Add (this.hbox7);
-			global::Gtk.Box.BoxChild w25 = ((global::Gtk.Box.BoxChild)(this.boxConditionOptions [this.hbox7]));
-			w25.Position = 5;
-			w25.Expand = false;
-			w25.Fill = false;
-			this.hbox4.Add (this.boxConditionOptions);
-			global::Gtk.Box.BoxChild w26 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.boxConditionOptions]));
+			this.hbox1.Add (this.spinHitCount);
+			global::Gtk.Box.BoxChild w26 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.spinHitCount]));
 			w26.Position = 1;
-			this.vbox2.Add (this.hbox4);
-			global::Gtk.Box.BoxChild w27 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox4]));
-			w27.Position = 3;
+			w26.Expand = false;
+			w26.Fill = false;
+			this.vboxHitCount.Add (this.hbox1);
+			global::Gtk.Box.BoxChild w27 = ((global::Gtk.Box.BoxChild)(this.vboxHitCount [this.hbox1]));
+			w27.Position = 1;
 			w27.Expand = false;
 			w27.Fill = false;
-			// Container child vbox2.Gtk.Box+BoxChild
+			this.alignHitCount.Add (this.vboxHitCount);
+			this.vboxProperties.Add (this.alignHitCount);
+			global::Gtk.Box.BoxChild w29 = ((global::Gtk.Box.BoxChild)(this.vboxProperties [this.alignHitCount]));
+			w29.Position = 5;
+			w29.Expand = false;
+			w29.Fill = false;
+			// Container child vboxProperties.Gtk.Box+BoxChild
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
 			this.label3.Xalign = 0F;
 			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Action</b>");
 			this.label3.UseMarkup = true;
-			this.vbox2.Add (this.label3);
-			global::Gtk.Box.BoxChild w28 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label3]));
-			w28.Position = 4;
-			w28.Expand = false;
-			w28.Fill = false;
-			// Container child vbox2.Gtk.Box+BoxChild
-			this.hbox2 = new global::Gtk.HBox ();
-			this.hbox2.Name = "hbox2";
-			this.hbox2.Spacing = 6;
-			// Container child hbox2.Gtk.Box+BoxChild
-			this.label10 = new global::Gtk.Label ();
-			this.label10.WidthRequest = 12;
-			this.label10.Name = "label10";
-			this.hbox2.Add (this.label10);
-			global::Gtk.Box.BoxChild w29 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.label10]));
-			w29.Position = 0;
-			w29.Expand = false;
-			w29.Fill = false;
-			// Container child hbox2.Gtk.Box+BoxChild
-			this.boxAction = new global::Gtk.VBox ();
-			this.boxAction.Name = "boxAction";
-			this.boxAction.Spacing = 6;
-			// Container child boxAction.Gtk.Box+BoxChild
+			this.vboxProperties.Add (this.label3);
+			global::Gtk.Box.BoxChild w30 = ((global::Gtk.Box.BoxChild)(this.vboxProperties [this.label3]));
+			w30.Position = 6;
+			w30.Expand = false;
+			w30.Fill = false;
+			// Container child vboxProperties.Gtk.Box+BoxChild
+			this.alignAction = new global::Gtk.Alignment (0F, 0.5F, 1F, 1F);
+			this.alignAction.Name = "alignAction";
+			this.alignAction.LeftPadding = ((uint)(18));
+			// Container child alignAction.Gtk.Container+ContainerChild
+			this.vboxAction = new global::Gtk.VBox ();
+			this.vboxAction.Name = "vboxAction";
+			this.vboxAction.Spacing = 6;
+			// Container child vboxAction.Gtk.Box+BoxChild
 			this.label11 = new global::Gtk.Label ();
 			this.label11.Name = "label11";
 			this.label11.Xalign = 0F;
 			this.label11.LabelProp = global::Mono.Unix.Catalog.GetString ("When the breakpoint is hit:");
-			this.boxAction.Add (this.label11);
-			global::Gtk.Box.BoxChild w30 = ((global::Gtk.Box.BoxChild)(this.boxAction [this.label11]));
-			w30.Position = 0;
-			w30.Expand = false;
-			w30.Fill = false;
-			// Container child boxAction.Gtk.Box+BoxChild
+			this.vboxAction.Add (this.label11);
+			global::Gtk.Box.BoxChild w31 = ((global::Gtk.Box.BoxChild)(this.vboxAction [this.label11]));
+			w31.Position = 0;
+			w31.Expand = false;
+			w31.Fill = false;
+			// Container child vboxAction.Gtk.Box+BoxChild
 			this.radioActionBreak = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Break"));
 			this.radioActionBreak.CanFocus = true;
 			this.radioActionBreak.Name = "radioActionBreak";
-			this.radioActionBreak.Active = true;
 			this.radioActionBreak.DrawIndicator = true;
 			this.radioActionBreak.UseUnderline = true;
 			this.radioActionBreak.Group = new global::GLib.SList (global::System.IntPtr.Zero);
-			this.boxAction.Add (this.radioActionBreak);
-			global::Gtk.Box.BoxChild w31 = ((global::Gtk.Box.BoxChild)(this.boxAction [this.radioActionBreak]));
-			w31.Position = 1;
-			w31.Expand = false;
-			w31.Fill = false;
-			// Container child boxAction.Gtk.Box+BoxChild
+			this.vboxAction.Add (this.radioActionBreak);
+			global::Gtk.Box.BoxChild w32 = ((global::Gtk.Box.BoxChild)(this.vboxAction [this.radioActionBreak]));
+			w32.Position = 1;
+			w32.Expand = false;
+			w32.Fill = false;
+			// Container child vboxAction.Gtk.Box+BoxChild
 			this.radioActionTrace = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Write expression to the output"));
 			this.radioActionTrace.CanFocus = true;
 			this.radioActionTrace.Name = "radioActionTrace";
 			this.radioActionTrace.DrawIndicator = true;
 			this.radioActionTrace.UseUnderline = true;
 			this.radioActionTrace.Group = this.radioActionBreak.Group;
-			this.boxAction.Add (this.radioActionTrace);
-			global::Gtk.Box.BoxChild w32 = ((global::Gtk.Box.BoxChild)(this.boxAction [this.radioActionTrace]));
-			w32.Position = 2;
-			w32.Expand = false;
-			w32.Fill = false;
-			// Container child boxAction.Gtk.Box+BoxChild
+			this.vboxAction.Add (this.radioActionTrace);
+			global::Gtk.Box.BoxChild w33 = ((global::Gtk.Box.BoxChild)(this.vboxAction [this.radioActionTrace]));
+			w33.Position = 2;
+			w33.Expand = false;
+			w33.Fill = false;
+			// Container child vboxAction.Gtk.Box+BoxChild
+			this.alignTraceExpression = new global::Gtk.Alignment (0F, 0.5F, 1F, 1F);
+			this.alignTraceExpression.Name = "alignTraceExpression";
+			this.alignTraceExpression.LeftPadding = ((uint)(18));
+			// Container child alignTraceExpression.Gtk.Container+ContainerChild
 			this.boxTraceExpression = new global::Gtk.HBox ();
 			this.boxTraceExpression.Name = "boxTraceExpression";
 			this.boxTraceExpression.Spacing = 6;
 			// Container child boxTraceExpression.Gtk.Box+BoxChild
-			this.label13 = new global::Gtk.Label ();
-			this.label13.WidthRequest = 12;
-			this.label13.Name = "label13";
-			this.boxTraceExpression.Add (this.label13);
-			global::Gtk.Box.BoxChild w33 = ((global::Gtk.Box.BoxChild)(this.boxTraceExpression [this.label13]));
-			w33.Position = 0;
-			w33.Expand = false;
-			w33.Fill = false;
-			// Container child boxTraceExpression.Gtk.Box+BoxChild
-			this.label12 = new global::Gtk.Label ();
-			this.label12.Name = "label12";
-			this.label12.LabelProp = global::Mono.Unix.Catalog.GetString ("Expression:");
-			this.boxTraceExpression.Add (this.label12);
-			global::Gtk.Box.BoxChild w34 = ((global::Gtk.Box.BoxChild)(this.boxTraceExpression [this.label12]));
-			w34.Position = 1;
+			this.labelTraceExpression = new global::Gtk.Label ();
+			this.labelTraceExpression.Name = "labelTraceExpression";
+			this.labelTraceExpression.LabelProp = global::Mono.Unix.Catalog.GetString ("Expression:");
+			this.boxTraceExpression.Add (this.labelTraceExpression);
+			global::Gtk.Box.BoxChild w34 = ((global::Gtk.Box.BoxChild)(this.boxTraceExpression [this.labelTraceExpression]));
+			w34.Position = 0;
 			w34.Expand = false;
 			w34.Fill = false;
 			// Container child boxTraceExpression.Gtk.Box+BoxChild
-			this.entryTraceExpr = new global::Gtk.Entry ();
-			this.entryTraceExpr.CanFocus = true;
-			this.entryTraceExpr.Name = "entryTraceExpr";
-			this.entryTraceExpr.IsEditable = true;
-			this.entryTraceExpr.InvisibleChar = '●';
-			this.boxTraceExpression.Add (this.entryTraceExpr);
-			global::Gtk.Box.BoxChild w35 = ((global::Gtk.Box.BoxChild)(this.boxTraceExpression [this.entryTraceExpr]));
-			w35.Position = 2;
-			this.boxAction.Add (this.boxTraceExpression);
-			global::Gtk.Box.BoxChild w36 = ((global::Gtk.Box.BoxChild)(this.boxAction [this.boxTraceExpression]));
-			w36.Position = 3;
-			w36.Expand = false;
-			w36.Fill = false;
-			this.hbox2.Add (this.boxAction);
-			global::Gtk.Box.BoxChild w37 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.boxAction]));
-			w37.Position = 1;
-			this.vbox2.Add (this.hbox2);
-			global::Gtk.Box.BoxChild w38 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox2]));
-			w38.Position = 5;
-			w38.Expand = false;
-			w38.Fill = false;
-			w1.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w39 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox2]));
-			w39.Position = 0;
+			this.entryTraceExpression = new global::Gtk.Entry ();
+			this.entryTraceExpression.CanFocus = true;
+			this.entryTraceExpression.Name = "entryTraceExpression";
+			this.entryTraceExpression.IsEditable = true;
+			this.entryTraceExpression.InvisibleChar = '●';
+			this.boxTraceExpression.Add (this.entryTraceExpression);
+			global::Gtk.Box.BoxChild w35 = ((global::Gtk.Box.BoxChild)(this.boxTraceExpression [this.entryTraceExpression]));
+			w35.Position = 1;
+			this.alignTraceExpression.Add (this.boxTraceExpression);
+			this.vboxAction.Add (this.alignTraceExpression);
+			global::Gtk.Box.BoxChild w37 = ((global::Gtk.Box.BoxChild)(this.vboxAction [this.alignTraceExpression]));
+			w37.Position = 3;
+			w37.Expand = false;
+			w37.Fill = false;
+			this.alignAction.Add (this.vboxAction);
+			this.vboxProperties.Add (this.alignAction);
+			global::Gtk.Box.BoxChild w39 = ((global::Gtk.Box.BoxChild)(this.vboxProperties [this.alignAction]));
+			w39.Position = 7;
 			w39.Expand = false;
 			w39.Fill = false;
+			w1.Add (this.vboxProperties);
+			global::Gtk.Box.BoxChild w40 = ((global::Gtk.Box.BoxChild)(w1 [this.vboxProperties]));
+			w40.Position = 0;
+			w40.Expand = false;
+			w40.Fill = false;
 			// Internal child MonoDevelop.Debugger.BreakpointPropertiesDialog.ActionArea
-			global::Gtk.HButtonBox w40 = this.ActionArea;
-			w40.Name = "dialog1_ActionArea";
-			w40.Spacing = 6;
-			w40.BorderWidth = ((uint)(5));
-			w40.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
+			global::Gtk.HButtonBox w41 = this.ActionArea;
+			w41.Name = "dialog1_ActionArea";
+			w41.Spacing = 6;
+			w41.BorderWidth = ((uint)(5));
+			w41.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.buttonCancel = new global::Gtk.Button ();
 			this.buttonCancel.CanDefault = true;
@@ -454,9 +452,9 @@ namespace MonoDevelop.Debugger
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
 			this.AddActionWidget (this.buttonCancel, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w41 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w40 [this.buttonCancel]));
-			w41.Expand = false;
-			w41.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w42 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w41 [this.buttonCancel]));
+			w42.Expand = false;
+			w42.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.buttonOk = new global::Gtk.Button ();
 			this.buttonOk.CanDefault = true;
@@ -465,20 +463,20 @@ namespace MonoDevelop.Debugger
 			this.buttonOk.UseStock = true;
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-ok";
-			w40.Add (this.buttonOk);
-			global::Gtk.ButtonBox.ButtonBoxChild w42 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w40 [this.buttonOk]));
-			w42.Position = 1;
-			w42.Expand = false;
-			w42.Fill = false;
+			w41.Add (this.buttonOk);
+			global::Gtk.ButtonBox.ButtonBoxChild w43 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w41 [this.buttonOk]));
+			w43.Position = 1;
+			w43.Expand = false;
+			w43.Fill = false;
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
 			this.DefaultWidth = 512;
-			this.DefaultHeight = 438;
+			this.DefaultHeight = 522;
 			this.Hide ();
 			this.radioBreakAlways.Toggled += new global::System.EventHandler (this.OnRadioBreakAlwaysToggled);
-			this.radioBreakTrue.Toggled += new global::System.EventHandler (this.OnRadioBreakAlwaysToggled);
-			this.radioBreakChange.Toggled += new global::System.EventHandler (this.OnRadioBreakAlwaysToggled);
+			this.radioBreakWhenTrue.Toggled += new global::System.EventHandler (this.OnRadioBreakAlwaysToggled);
+			this.radioBreakWhenChanges.Toggled += new global::System.EventHandler (this.OnRadioBreakAlwaysToggled);
 			this.radioActionBreak.Toggled += new global::System.EventHandler (this.OnRadioActionBreakToggled);
 			this.radioActionTrace.Toggled += new global::System.EventHandler (this.OnRadioActionBreakToggled);
 			this.buttonOk.Clicked += new global::System.EventHandler (this.OnButtonOkClicked);

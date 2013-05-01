@@ -1654,12 +1654,10 @@ namespace Mono.Debugging.Soft
 			var bp = binfo.BreakEvent as Breakpoint;
 			if (bp == null)
 				return false;
-			
-			if (bp.HitCount > 0) {
-				// Just update the count and continue
-				binfo.UpdateHitCount (bp.HitCount - 1);
+
+			binfo.IncrementHitCount ();
+			if (!binfo.HitCountReached)
 				return true;
-			}
 			
 			if (!string.IsNullOrEmpty (bp.ConditionExpression)) {
 				string res = EvaluateExpression (thread, bp.ConditionExpression, bp);

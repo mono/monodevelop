@@ -42,7 +42,7 @@ namespace Mono.Debugging.Client
 		int hitCount;
 		string lastTraceValue;
 		
-		public BreakEvent()
+		public BreakEvent ()
 		{
 		}
 		
@@ -50,19 +50,27 @@ namespace Mono.Debugging.Client
 		{
 			string s = elem.GetAttribute ("enabled");
 			if (s.Length > 0)
-				enabled = bool.Parse (s);
+				bool.TryParse (s, out enabled);
 			s = elem.GetAttribute ("hitAction");
 			if (s.Length > 0)
-				hitAction = (HitAction) Enum.Parse (typeof(HitAction), s);
+				Enum.TryParse<HitAction> (s, out hitAction);
 			s = elem.GetAttribute ("customActionId");
 			if (s.Length > 0)
 				customActionId = s;
 			s = elem.GetAttribute ("traceExpression");
 			if (s.Length > 0)
 				traceExpression = s;
+			s = elem.GetAttribute ("hitCountMode");
+			HitCountMode mode;
+			if (s.Length > 0 && Enum.TryParse<HitCountMode> (s, out mode))
+				HitCountMode = mode;
 			s = elem.GetAttribute ("hitCount");
 			if (s.Length > 0)
-				hitCount = int.Parse (s);
+				int.TryParse (s, out hitCount);
+
+			// this is to facilitate backward compatibility
+			if (hitCount > 0 && HitCountMode == HitCountMode.None)
+				HitCountMode = HitCountMode.GreaterThanOrEqualTo;
 		}
 		
 		internal virtual XmlElement ToXml (XmlDocument doc)
@@ -76,6 +84,8 @@ namespace Mono.Debugging.Client
 				elem.SetAttribute ("customActionId", customActionId);
 			if (!string.IsNullOrEmpty (traceExpression))
 				elem.SetAttribute ("traceExpression", traceExpression);
+			if (HitCountMode != HitCountMode.None)
+				elem.SetAttribute ("hitCountMode", HitCountMode.ToString ());
 			if (hitCount > 0)
 				elem.SetAttribute ("hitCount", hitCount.ToString ());
 			return elem;
@@ -166,6 +176,21 @@ namespace Mono.Debugging.Client
 		}
 
 		/// <summary>
+		/// Gets the last value traced.
+		/// </summary>
+		/// <remarks>
+		/// This property returns the last evaluation of TraceExpression.
+		/// </remarks>
+		public string LastTraceValue {
+			get {
+				return lastTraceValue;
+			}
+			internal set {
+				lastTraceValue = value;
+			}
+		}
+
+		/// <summary>
 		/// Gets or sets the action to be performed when the breakpoint is hit
 		/// </summary>
 		/// <remarks>
@@ -185,6 +210,51 @@ namespace Mono.Debugging.Client
 			set {
 				hitAction = value;
 			}
+		}
+
+		/// <summary>
+		/// Gets or sets the hit count mode.
+		/// </summary>
+		/// <remarks>
+		/// When the break event is hit, the HitCountMode is used to compare the CurrentHitCount
+		/// with the TargetHitCount to determine if the break event should trigger.
+		/// </remarks>
+		public HitCountMode HitCountMode {
+			get; set;
+		}
+
+		/// <summary>
+		/// Gets or sets the target hit count.
+		/// </summary>
+		/// <remarks>
+		/// When the break event is hit, if the value of HitCountMode is not None, then
+		/// the value of CurrentHitCount will be incremented. Execution will immediately
+		/// resume if it is determined that the CurrentHitCount vs TargetHitCount
+		/// comparison does not meet the requirements of HitCountMode.
+		/// 
+		/// The CommitChanges() method has to be called for changes in this property
+		/// to take effect.
+		/// </remarks>
+		/// 
+		/// FIXME: rename this to TargetHitCount
+		public int HitCount {
+			get {
+				return hitCount;
+			}
+			set {
+				hitCount = value;
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets the current hit count.
+		/// </summary>
+		/// <remarks>
+		/// When the break event is hit, the HitCountMode is used to compare the CurrentHitCount
+		/// with the TargetHitCount to determine if the break event should trigger.
+		/// </remarks>
+		public int CurrentHitCount {
+			get; set;
 		}
 		
 		/// <summary>
@@ -217,39 +287,6 @@ namespace Mono.Debugging.Client
 		}
 		
 		/// <summary>
-		/// Gets or sets the hit count.
-		/// </summary>
-		/// <remarks>
-		/// When the break event is hit, if the value of this propery is greater than 0 then
-		/// the value will be decremented and execution will be immediately resumed.
-		/// The CommitChanges() method has to be called for changes in this
-		/// property to take effect.
-		/// </remarks>
-		public int HitCount {
-			get {
-				return hitCount;
-			}
-			set {
-				hitCount = value;
-			}
-		}
-		
-		/// <summary>
-		/// Gets the last value traced.
-		/// </summary>
-		/// <remarks>
-		/// This property returns the last evaluation of TraceExpression.
-		/// </remarks>
-		public string LastTraceValue {
-			get {
-				return lastTraceValue;
-			}
-			internal set {
-				lastTraceValue = value;
-			}
-		}
-		
-		/// <summary>
 		/// Commits changes done in the break event properties
 		/// </summary>
 		/// <remarks>
@@ -265,6 +302,15 @@ namespace Mono.Debugging.Client
 		{
 			if (store != null)
 				store.NotifyBreakEventUpdated (this);
+		}
+
+		public virtual bool Reset ()
+		{
+			bool changed = CurrentHitCount != 0;
+
+			CurrentHitCount = 0;
+
+			return changed;
 		}
 		
 		/// <summary>
