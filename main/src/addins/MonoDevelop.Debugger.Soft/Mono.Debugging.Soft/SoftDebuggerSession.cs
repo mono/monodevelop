@@ -704,6 +704,16 @@ namespace Mono.Debugging.Soft
 			return new Backtrace (new SoftDebuggerBacktrace (this, thread));
 		}
 
+		static string GetThreadName (ThreadMirror t)
+		{
+			string name = t.Name;
+			if (string.IsNullOrEmpty (name)) {
+				if (t.IsThreadPoolThread)
+					return "<Thread Pool>";
+			}
+			return name;
+		}
+
 		protected override ThreadInfo[] OnGetThreads (long processId)
 		{
 			if (current_threads == null) {
@@ -711,10 +721,7 @@ namespace Mono.Debugging.Soft
 				var threads = new ThreadInfo[mirrors.Count];
 				for (int i = 0; i < mirrors.Count; i++) {
 					ThreadMirror t = mirrors [i];
-					string name = t.Name;
-					if (string.IsNullOrEmpty (name) && t.IsThreadPoolThread)
-						name = "<Thread Pool>";
-					threads[i] = new ThreadInfo (processId, GetId (t), name, null);
+					threads[i] = new ThreadInfo (processId, GetId (t), GetThreadName (t), null);
 				}
 				current_threads = threads;
 			}
@@ -1492,7 +1499,7 @@ namespace Mono.Debugging.Soft
 					break;
 				}
 				case EventType.VMStart: {
-					OnStarted (new ThreadInfo (0, GetId (e.Thread), e.Thread.Name, null));
+					OnStarted (new ThreadInfo (0, GetId (e.Thread), GetThreadName (e.Thread), null));
 					//HACK: 2.6.1 VM doesn't emit type load event, so work around it
 					var t = vm.RootDomain.Corlib.GetType ("System.Exception", false, false);
 					if (t != null)
@@ -1516,17 +1523,21 @@ namespace Mono.Debugging.Soft
 				}
 				case EventType.ThreadStart: {
 					var ts = (ThreadStartEvent) e;
-					OnDebuggerOutput (false, string.Format ("Thread started: {0}\n", ts.Thread.Name));
+					var name = GetThreadName (ts.Thread);
+					var id = GetId (ts.Thread);
+					OnDebuggerOutput (false, string.Format ("Thread started: {0} #{1}\n", name, id));
 					OnTargetEvent (new TargetEventArgs (TargetEventType.ThreadStarted) {
-						Thread = new ThreadInfo (0, GetId (ts.Thread), ts.Thread.Name, null),
+						Thread = new ThreadInfo (0, id, name, null),
 					});
 					break;
 				}
 				case EventType.ThreadDeath: {
 					var ts = (ThreadDeathEvent) e;
-					OnDebuggerOutput (false, string.Format ("Thread finished: {0}\n", ts.Thread.Name));
+					var name = GetThreadName (ts.Thread);
+					var id = GetId (ts.Thread);
+					OnDebuggerOutput (false, string.Format ("Thread finished: {0} #{1}\n", name, id));
 					OnTargetEvent (new TargetEventArgs (TargetEventType.ThreadStopped) {
-						Thread = new ThreadInfo (0, GetId (ts.Thread), ts.Thread.Name, null),
+						Thread = new ThreadInfo (0, id, ts.Thread.Name, null),
 					});
 					break;
 				}
