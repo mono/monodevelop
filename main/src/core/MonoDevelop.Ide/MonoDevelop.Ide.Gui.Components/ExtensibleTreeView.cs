@@ -1904,7 +1904,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				return;
 			}
 
-			if (args.Event.Key == Gdk.Key.Return || args.Event.Key == Gdk.Key.KP_Enter) {
+			if (args.Event.Key == Gdk.Key.Return || args.Event.Key == Gdk.Key.KP_Enter || args.Event.Key == Gdk.Key.ISO_Enter) {
 				ActivateCurrentItem ();
 				args.RetVal = true;
 				return;
