@@ -70,7 +70,7 @@ namespace Mono.Debugging.Client
 
 			// this is to facilitate backward compatibility
 			if (hitCount > 0 && HitCountMode == HitCountMode.None)
-				HitCountMode = HitCountMode.GreaterThanOrEqualTo;
+				HitCountMode = HitCountMode.GreaterThan;
 		}
 		
 		internal virtual XmlElement ToXml (XmlDocument doc)
