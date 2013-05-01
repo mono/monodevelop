@@ -6,10 +6,11 @@
 		<Icon>md-xml-file-icon</Icon>
 		<_Category>XML</_Category>
 		<_Description>Creates an empty XML file.</_Description>
+		<DefaultFilename>EmptyXmlFile</DefaultFilename>
 	</TemplateConfiguration>
 	
 	<TemplateFiles>
-		<File DefaultExtension=".xml" DefaultName="EmptyXmlFile">
+		<File DefaultExtension=".xml">
 <![CDATA[<?xml version="1.0" encoding="UTF-8" ?>
 ]]>
 		</File>
