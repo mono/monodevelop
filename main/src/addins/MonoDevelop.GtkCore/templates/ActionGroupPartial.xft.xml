@@ -8,7 +8,7 @@
 		<LanguageName>*</LanguageName>
 		<ProjectType>DotNet</ProjectType>
 		<_Description>Creates a global Action Group.</_Description>
-		<DefaultFilename>ActionGroupPartial</DefaultFilename>
+		<DefaultFilename>ActionGroup</DefaultFilename>
 	</TemplateConfiguration>
 	
 	<Conditions>
