@@ -623,7 +623,7 @@ namespace MonoDevelop.Debugger
 		{
 			TreeRowReference row;
 			
-			if (!nodes.TryGetValue (val, out row)) {
+			if (!nodes.TryGetValue (val, out row) || !row.Valid ()) {
 				it = TreeIter.Zero;
 				return false;
 			}
@@ -841,7 +841,7 @@ namespace MonoDevelop.Debugger
 			}, value);
 		}
 
-		void AddChildrenAsync (ObjectValue value, TreeRowReference row)
+		void AddChildrenAsync (ObjectValue value, TreePathReference row)
 		{
 			Task task;
 
@@ -851,7 +851,7 @@ namespace MonoDevelop.Debugger
 			task = GetChildrenAsync (value).ContinueWith (t => {
 				TreeIter iter, it;
 
-				if (store.GetIter (out iter, row.Path) && store.IterChildren (out it, iter)) {
+				if (row.IsValid && store.GetIter (out iter, row.Path) && store.IterChildren (out it, iter)) {
 					foreach (var child in t.Result) {
 						SetValues (iter, it, null, child);
 						RegisterValue (child, it);
@@ -865,6 +865,7 @@ namespace MonoDevelop.Debugger
 				}
 
 				expandTasks.Remove (value);
+				row.Dispose ();
 			}, Xwt.Application.UITaskScheduler);
 			expandTasks.Add (value, task);
 		}
@@ -878,7 +879,7 @@ namespace MonoDevelop.Debugger
 				ObjectValue value = (ObjectValue) store.GetValue (it, ObjectCol);
 				if (value == null) {
 					value = (ObjectValue) store.GetValue (iter, ObjectCol);
-					AddChildrenAsync (value, new TreeRowReference (store, store.GetPath (iter)));
+					AddChildrenAsync (value, new TreePathReference (store, store.GetPath (iter)));
 				}
 			}
 			
@@ -1010,12 +1011,11 @@ namespace MonoDevelop.Debugger
 
 		void HandleChanged (object sender, EventArgs e)
 		{
-			Gtk.Entry entry = (Gtk.Entry)sender;
 			if (!wasHandled) {
 				string text = ctx == null ? editEntry.Text : editEntry.Text.Substring (Math.Max (0, Math.Min (ctx.TriggerOffset, editEntry.Text.Length)));
 				CompletionWindowManager.UpdateWordSelection (text);
 				CompletionWindowManager.PostProcessKeyEvent (key, keyChar, modifierState);
-				PopupCompletion (entry);
+				PopupCompletion ((Entry) sender);
 			}
 		}
 
@@ -1116,18 +1116,17 @@ namespace MonoDevelop.Debugger
 			case Gdk.Key.KP_Delete:
 			case Gdk.Key.BackSpace:
 				if (Selection.CountSelectedRows () > 0) {
-					List<TreeRowReference> selected = new List<TreeRowReference> ();
 					bool deleted = false;
 					string expression;
 					ObjectValue val;
 					TreeIter iter;
 
 					// get a list of the selected rows (in reverse order so that we delete children before parents)
-					foreach (var path in Selection.GetSelectedRows ())
-						selected.Insert (0, new TreeRowReference (Model, path));
+					var selected = Selection.GetSelectedRows ();
+					Array.Sort (selected, new TreePathComparer (true));
 
-					foreach (var row in selected) {
-						if (!Model.GetIter (out iter, row.Path))
+					foreach (var path in selected) {
+						if (!Model.GetIter (out iter, path))
 							continue;
 
 						val = (ObjectValue)store.GetValue (iter, ObjectCol);

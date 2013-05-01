@@ -173,6 +173,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 	
 	class SolutionFolderNodeCommandHandler: NodeCommandHandler
 	{
+		public override void ActivateItem ()
+		{
+			CurrentNode.Expanded = !CurrentNode.Expanded;
+		}
+
 		public override void RenameItem (string newName)
 		{
 			if (newName.IndexOfAny (new char [] { '\'', '(', ')', '"', '{', '}', '|' } ) != -1) {
