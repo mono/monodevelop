@@ -8,6 +8,7 @@
 		<LanguageName>*</LanguageName>
 		<ProjectType>DotNet</ProjectType>
 		<_Description>Creates a Gtk dialog.</_Description>
+		<DefaultFilename>Dialog</DefaultFilename>
 	</TemplateConfiguration>
 	
 	<Conditions>

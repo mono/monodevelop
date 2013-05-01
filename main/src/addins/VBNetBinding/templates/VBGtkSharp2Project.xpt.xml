@@ -10,6 +10,7 @@
 		<Icon>md-project-gui|res:vb-icon-32.png</Icon>
 		<LanguageName>VBNet</LanguageName>
 		<_Description>Creates a VB.NET Gtk# 2.0 project.</_Description>
+		<DefaultFilename>Gtk2VBProject</DefaultFilename>
 	</TemplateConfiguration>
 
 	<!-- Actions -->

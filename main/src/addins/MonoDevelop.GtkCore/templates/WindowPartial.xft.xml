@@ -8,6 +8,7 @@
 		<LanguageName>*</LanguageName>
 		<ProjectType>DotNet</ProjectType>
 		<_Description>Creates a Gtk Window</_Description>
+		<DefaultFilename>WindowPartial</DefaultFilename>
 	</TemplateConfiguration>
 	
 	<Conditions>

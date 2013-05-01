@@ -11,6 +11,7 @@
 		<_Category>General</_Category>
 		<LanguageName>Objective C</LanguageName>
 		<_Description>Creates an empty Objective C source file.</_Description>
+		<DefaultFilename>EmptyObjCSourceFile</DefaultFilename>
 	</TemplateConfiguration>
 	
 	<TemplateFiles>

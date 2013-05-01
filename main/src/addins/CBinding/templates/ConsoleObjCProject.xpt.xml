@@ -11,6 +11,7 @@
 		<Icon>md-project-console|res:c-icon-32.png</Icon>
 		<LanguageName>Objective C</LanguageName>
 		<_Description>Creates simple hello world Objective C project.</_Description>
+		<DefaultFilename>ConsoleObjCProject</DefaultFilename>
 	</TemplateConfiguration>
 	
 	<!-- Template Content -->
