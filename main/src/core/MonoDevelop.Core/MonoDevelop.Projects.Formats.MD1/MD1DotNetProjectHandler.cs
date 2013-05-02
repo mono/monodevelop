@@ -245,16 +245,13 @@ namespace MonoDevelop.Projects.Formats.MD1
 			}
 
 			using (StringWriter sw = new StringWriter ()) {
-				LoggingService.LogDebug ("Compiling resources\n{0}$ {1} /compile {2},{3}", Path.GetDirectoryName (fname), resgen, fname, outputFile);
+				LoggingService.LogDebug ("Compiling resources\n{0}$ {1} /compile {2}", Path.GetDirectoryName (fname), resgen, fname);
 				monitor.Log.WriteLine (GettextCatalog.GetString (
 					"Compiling resource {0} with {1}", fname, resgen));
 				ProcessWrapper pw = null;
 				try {
-					if (!Directory.Exists (outputFile.ParentDirectory))
-						Directory.CreateDirectory (outputFile.ParentDirectory);
-
 					ProcessStartInfo info = Runtime.ProcessService.CreateProcessStartInfo (
-									resgen, String.Format ("/compile \"{0},{1}\"", fname, outputFile),
+									resgen, String.Format ("/compile \"{0}\"", fname),
 									Path.GetDirectoryName (fname), false);
 
 					env.MergeTo (info);
@@ -275,7 +272,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 				pw.WaitForOutput ();
 
 				if (pw.ExitCode == 0) {
-					fname = outputFile;
+					fname = Path.ChangeExtension (fname, ".resources");
 				} else {
 					string output = sw.ToString ();
 					LoggingService.LogDebug (GettextCatalog.GetString (
@@ -317,8 +314,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 
 			if (File.Exists (output_filename))
 				return IsFileNewerThan (resx_filename, output_filename);
-			else
-				return true;
+			return IsFileNewerThan (resx_filename, Path.ChangeExtension (resx_filename, ".resources"));
 		}
 
 		// true if first is newer than second
