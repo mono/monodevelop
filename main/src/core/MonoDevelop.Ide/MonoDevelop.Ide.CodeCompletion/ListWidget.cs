@@ -417,7 +417,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			using (var context = Gdk.CairoHelper.Create (args.Window)) {
 				context.LineWidth = 1;
-				Gdk.Window window = args.Window;
 				var alloc = Allocation;
 				int width = alloc.Width;
 				int height = alloc.Height;
@@ -442,7 +441,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 					return false;
 				}
 
-				var fgGCNormal = this.Style.ForegroundGC (StateType.Normal);
 				var matcher = CompletionMatcher.CreateCompletionMatcher (CompletionString);
 				Iterate (true, ref yPos, delegate (Category category, int ypos) {
 					if (ypos >= height)
