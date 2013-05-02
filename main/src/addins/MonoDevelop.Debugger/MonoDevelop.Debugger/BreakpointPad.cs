@@ -379,9 +379,9 @@ namespace MonoDevelop.Debugger
 			store.Clear ();
 			if (bps != null) {		
 				foreach (Breakpoint bp in bps.GetBreakpoints ()) {
+					string hitCount = bp.HitCountMode != HitCountMode.None ? bp.CurrentHitCount.ToString () : "";
 					string traceExp = bp.HitAction == HitAction.PrintExpression ? bp.TraceExpression : "";
 					string traceVal = bp.HitAction == HitAction.PrintExpression ? bp.LastTraceValue : "";
-					string hitCount = bp.HitCount > 0 ? bp.HitCount.ToString () : "";
 					string name;
 					
 					if (bp is FunctionBreakpoint) {
@@ -414,8 +414,8 @@ namespace MonoDevelop.Debugger
 			do {
 				Breakpoint bp = (Breakpoint) store.GetValue (it, (int) Columns.Breakpoint);
 				if (bp == args.Breakpoint) {
+					string hitCount = bp.HitCountMode != HitCountMode.None ? bp.CurrentHitCount.ToString () : "";
 					string traceVal = bp.HitAction == HitAction.PrintExpression ? bp.LastTraceValue : "";
-					string hitCount = bp.HitCount > 0 ? bp.HitCount.ToString () : "";
 					store.SetValue (it, (int) Columns.HitCount, hitCount);
 					store.SetValue (it, (int) Columns.LastTrace, traceVal);
 					break;

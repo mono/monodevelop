@@ -322,12 +322,9 @@ namespace Mono.Debugging.Client
 			if (IsReadOnly)
 				return;
 			
-			foreach (Breakpoint bp in breakpoints.Where (b => b is Breakpoint).ToArray ()) {
-				if (bp.HasAdjustedLine || bp.HasAdjustedColumn) {
-					bp.ResetAdjustedLine ();
-					bp.ResetAdjustedColumn ();
+			foreach (Breakpoint bp in breakpoints.OfType<Breakpoint> ().ToArray ()) {
+				if (bp.Reset ())
 					NotifyBreakEventChanged (bp);
-				}
 			}
 		}
 		

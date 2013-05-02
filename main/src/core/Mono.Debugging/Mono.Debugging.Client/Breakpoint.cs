@@ -139,21 +139,36 @@ namespace Mono.Debugging.Client
 		{
 			adjustedLine = newLine;
 		}
-		
+
+		// FIXME: make this private
 		internal void ResetAdjustedColumn ()
 		{
 			adjustedColumn = -1;
 		}
-		
+
+		// FIXME: make this private
 		internal void ResetAdjustedLine ()
 		{
 			adjustedLine = -1;
 		}
-		
+
+		public override bool Reset ()
+		{
+			bool changed = base.Reset () || HasAdjustedLine || HasAdjustedColumn;
+
+			lastConditionValue = null;
+			adjustedColumn = -1;
+			adjustedLine = -1;
+
+			return changed;
+		}
+
+		// FIXME: make this private
 		internal bool HasAdjustedColumn {
 			get { return adjustedColumn != -1; }
 		}
 
+		// FIXME: make this private
 		internal bool HasAdjustedLine {
 			get { return adjustedLine != -1; }
 		}
@@ -198,7 +213,16 @@ namespace Mono.Debugging.Client
 			line = bp.line;
 		}
 	}
-	
+
+	public enum HitCountMode {
+		None,
+		LessThan,
+		LessThanOrEqualTo,
+		EqualTo,
+		GreaterThan,
+		GreaterThanOrEqualTo
+	}
+
 	public enum HitAction
 	{
 		Break,
