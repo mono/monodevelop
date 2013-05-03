@@ -320,8 +320,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public void MoveCursor (int relative)
 		{
 			int newIndex = GetIndex (false, SelectedItem) + relative;
+			newIndex = Math.Min (filteredItems.Count - 1, Math.Max (0, newIndex));
 			int newSelection = GetItem (false, newIndex);
-			if (newSelection < 0) 
+			if (newSelection < 0)
 				return;
 
 			if (SelectedItem == newSelection && relative < 0) {
