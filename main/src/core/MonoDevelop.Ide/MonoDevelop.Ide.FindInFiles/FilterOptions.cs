@@ -31,10 +31,10 @@ namespace MonoDevelop.Ide.FindInFiles
 {
 	public class FilterOptions
 	{
-		private static readonly char [] separators = {';'};
+		static readonly char [] separators = {';'};
 
-		private string file_mask;
-		private string [] split_file_masks;
+		string file_mask;
+		string [] split_file_masks;
 
 		public string FileMask {
 			get {
