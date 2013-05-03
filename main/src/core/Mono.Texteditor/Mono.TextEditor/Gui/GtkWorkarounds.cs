@@ -973,6 +973,43 @@ namespace Mono.TextEditor
 				public string Url { get { return (string)base.Args [0]; } }
 			}
 		}
+
+		static bool canSetOverlayScrollbarPolicy = true;
+
+		[DllImport ("libgtk-quartz-2.0.dylib")]
+		static extern void gtk_scrolled_window_set_overlay_policy (IntPtr sw, Gtk.PolicyType hpolicy, Gtk.PolicyType vpolicy);
+
+		[DllImport ("libgtk-quartz-2.0.dylib")]
+		static extern void gtk_scrolled_window_get_overlay_policy (IntPtr sw, out Gtk.PolicyType hpolicy, out Gtk.PolicyType vpolicy);
+
+		public static void SetOverlayScrollbarPolicy (Gtk.ScrolledWindow sw, Gtk.PolicyType hpolicy, Gtk.PolicyType vpolicy)
+		{
+			if (!canSetOverlayScrollbarPolicy) {
+				return;
+			}
+			try {
+				gtk_scrolled_window_set_overlay_policy (sw.Handle, hpolicy, vpolicy);
+				return;
+			} catch (DllNotFoundException) {
+			} catch (EntryPointNotFoundException) {
+			}
+		}
+
+		public static void GetOverlayScrollbarPolicy (Gtk.ScrolledWindow sw, out Gtk.PolicyType hpolicy, out Gtk.PolicyType vpolicy)
+		{
+			if (!canSetOverlayScrollbarPolicy) {
+				hpolicy = vpolicy = 0;
+				return;
+			}
+			try {
+				gtk_scrolled_window_get_overlay_policy (sw.Handle, out hpolicy, out vpolicy);
+				return;
+			} catch (DllNotFoundException) {
+			} catch (EntryPointNotFoundException) {
+			}
+			hpolicy = vpolicy = 0;
+			canSetOverlayScrollbarPolicy = false;
+		}
 	}
 	
 	public struct KeyboardShortcut : IEquatable<KeyboardShortcut>
