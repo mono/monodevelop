@@ -199,19 +199,6 @@ namespace MonoDevelop.Projects
 			SetItemHandler (new DummySolutionFolderHandler (this));
 		}
 
-		
-		protected internal override bool OnGetNeedsBuilding (ConfigurationSelector configuration)
-		{
-			foreach (SolutionItem item in Items)
-				if (item.NeedsBuilding (configuration)) return true;
-			return false;
-		}
-		
-		protected internal override void OnSetNeedsBuilding (bool value, ConfigurationSelector configuration)
-		{
-			// Ignore
-		}
-		
 		public override void Dispose()
 		{
 			if (items != null) {
@@ -626,7 +613,7 @@ namespace MonoDevelop.Projects
 			}
 			
 			try {
-				List<SolutionItem> toBuild = new List<SolutionItem> (allProjects.Where (p => p.NeedsBuilding (configuration)));
+				List<SolutionItem> toBuild = new List<SolutionItem> (allProjects);
 				
 				monitor.BeginTask (GettextCatalog.GetString ("Building Solution: {0} ({1})", Name, configuration.ToString ()), toBuild.Count);
 

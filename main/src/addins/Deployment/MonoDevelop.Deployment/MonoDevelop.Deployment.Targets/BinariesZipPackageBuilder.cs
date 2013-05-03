@@ -68,14 +68,12 @@ namespace MonoDevelop.Deployment.Targets
 			
 			try {
 				SolutionConfigurationSelector conf = (SolutionConfigurationSelector) configuration;
-				if (RootSolutionItem.NeedsBuilding (conf)) {
-					BuildResult res = RootSolutionItem.Build (monitor, conf);
-					if (res.ErrorCount > 0) {
-						foreach (BuildError e in res.Errors)
-							monitor.ReportError (e.ToString (), null);
-						monitor.ReportError (GettextCatalog.GetString ("The source project failed to build."), null);
-						return false;
-					}
+				BuildResult res = RootSolutionItem.Build (monitor, conf);
+				if (res.ErrorCount > 0) {
+					foreach (BuildError e in res.Errors)
+						monitor.ReportError (e.ToString (), null);
+					monitor.ReportError (GettextCatalog.GetString ("The source project failed to build."), null);
+					return false;
 				}
 				
 				tmpFolder = FileService.CreateTempDirectory ();

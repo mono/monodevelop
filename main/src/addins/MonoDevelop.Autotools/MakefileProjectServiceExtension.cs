@@ -91,8 +91,6 @@ namespace MonoDevelop.Autotools
 			} finally {
 				monitor.EndTask ();
 			}
-
-			entry.SetNeedsBuilding (false);
 			return entry;
 		}
 
@@ -201,8 +199,6 @@ namespace MonoDevelop.Autotools
 			BuildResult cr = ParseOutput (tf, output, project.BaseDirectory, regexError, regexWarning);
 			if (exitCode != 0 && cr.FailedBuildCount == 0)
 				cr.AddError (GettextCatalog.GetString ("Build failed. See Build Output panel."));
-			else
-				entry.SetNeedsBuilding (false, configuration);
 
 			return cr;
 		}

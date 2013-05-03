@@ -372,24 +372,21 @@ namespace MonoDevelop.Ide
 				throw new UserException (GettextCatalog.GetString ("No solution has been selected."));
 		}
 		
+		[Obsolete ("This method will be removed in future releases")]
 		public bool NeedsBuilding ()
 		{
-			return NeedsBuilding (IdeApp.Workspace.ActiveConfiguration) || IsDirtyFileInCombine;
+			return true;
 		}
 
+		[Obsolete ("This method will be removed in future releases")]
 		public bool NeedsBuilding (ConfigurationSelector configuration)
 		{
-			foreach (WorkspaceItem it in Items) {
-				if (it.NeedsBuilding (configuration))
-					return true;
-			}
-			return false;
+			return true;
 		}
 
+		[Obsolete ("This method will be removed in future releases")]
 		public void SetNeedsBuilding (bool needsBuilding, ConfigurationSelector configuration)
 		{
-			foreach (WorkspaceItem it in Items)
-				it.SetNeedsBuilding (needsBuilding, configuration);
 		}
 
 		bool IsDirtyFileInCombine {

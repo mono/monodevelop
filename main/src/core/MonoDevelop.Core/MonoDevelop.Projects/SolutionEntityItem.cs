@@ -327,10 +327,10 @@ namespace MonoDevelop.Projects
 			ItemHandler.Save (monitor);
 		}
 		
+		[Obsolete ("This method will be removed in future releases")]
 		public void SetNeedsBuilding (bool value)
 		{
-			foreach (string conf in GetConfigurations ())
-				SetNeedsBuilding (value, new ItemConfigurationSelector (conf));
+			// Nothing to be done
 		}
 
 		public FilePath GetAbsoluteChildPath (FilePath relPath)

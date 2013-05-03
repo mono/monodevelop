@@ -527,10 +527,8 @@ namespace MonoDevelop.Ide
 		
 		public void MarkFileDirty (string filename)
 		{
-			Project entry = IdeApp.Workspace.GetProjectContainingFile (filename);
-			if (entry != null) {
-				entry.SetNeedsBuilding (true);
-			}
+			FileInfo fi = new FileInfo (filename);
+			fi.LastWriteTime = DateTime.Now;
 		}
 		
 		public void ShowOptions (IWorkspaceObject entry)
@@ -552,7 +550,6 @@ namespace MonoDevelop.Ide
 						optionsDialog.SelectPanel (panelId);
 					
 					if (MessageService.RunCustomDialog (optionsDialog) == (int)Gtk.ResponseType.Ok) {
-						selectedProject.SetNeedsBuilding (true);
 						foreach (object ob in optionsDialog.ModifiedObjects) {
 							if (ob is Solution) {
 								Save ((Solution)ob);
@@ -588,8 +585,6 @@ namespace MonoDevelop.Ide
 					if (panelId != null)
 						optionsDialog.SelectPanel (panelId);
 					if (MessageService.RunCustomDialog (optionsDialog) == (int) Gtk.ResponseType.Ok) {
-						if (entry is IBuildTarget)
-							((IBuildTarget)entry).SetNeedsBuilding (true, IdeApp.Workspace.ActiveConfiguration);
 						if (entry is IWorkspaceFileObject)
 							Save ((IWorkspaceFileObject) entry);
 						else {

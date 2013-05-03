@@ -235,7 +235,6 @@ namespace MonoDevelop.GtkCore
 			try {
 				FileInfo fi = new FileInfo (SteticFile);
 				fi.LastWriteTime = DateTime.Now;
-				project.SetNeedsBuilding (true);
 			} catch {
 				// Ignore errors here
 			}
