@@ -37,7 +37,7 @@ namespace MonoDevelop.Debugger
 		StackFrame lastFrame;
 		HashSet<string> lastExpressions = new HashSet<string> ();
 		
-		public LocalsPad()
+		public LocalsPad ()
 		{
 			tree.AllowEditing = true;
 			tree.AllowAdding = false;

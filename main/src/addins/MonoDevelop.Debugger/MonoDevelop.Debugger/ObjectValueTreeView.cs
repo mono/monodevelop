@@ -56,9 +56,6 @@ namespace MonoDevelop.Debugger
 		TreeStore store;
 		TreeViewState state;
 		string createMsg;
-		bool allowAdding;
-		bool allowEditing;
-		bool allowExpanding = true;
 		bool restoringState = false;
 		bool compact;
 		StackFrame frame;
@@ -345,7 +342,8 @@ namespace MonoDevelop.Debugger
 			state.Load ();
 			restoringState = false;
 		}
-		
+
+		bool allowAdding;
 		public bool AllowAdding {
 			get {
 				return allowAdding;
@@ -355,7 +353,8 @@ namespace MonoDevelop.Debugger
 				Refresh ();
 			}
 		}
-		
+
+		bool allowEditing;
 		public bool AllowEditing {
 			get {
 				return allowEditing;
@@ -372,12 +371,12 @@ namespace MonoDevelop.Debugger
 		}
 		
 		public bool RootPinAlwaysVisible { get; set; }
-		
+
+		bool allowExpanding = true;
 		public bool AllowExpanding {
-			get { return this.allowExpanding; }
-			set { this.allowExpanding = value; }
+			get { return allowExpanding; }
+			set { allowExpanding = value; }
 		}
-		
 		
 		public PinnedWatch PinnedWatch { get; set; }
 		
@@ -743,8 +742,8 @@ namespace MonoDevelop.Debugger
 			store.SetValue (it, ValueCol, strval);
 			store.SetValue (it, TypeCol, val.TypeName);
 			store.SetValue (it, ObjectCol, val);
-			store.SetValue (it, NameEditableCol, !hasParent && allowAdding);
-			store.SetValue (it, ValueEditableCol, canEdit && allowEditing);
+			store.SetValue (it, NameEditableCol, !hasParent && AllowAdding);
+			store.SetValue (it, ValueEditableCol, canEdit && AllowEditing);
 			store.SetValue (it, IconCol, icon);
 			store.SetValue (it, NameColorCol, nameColor);
 			store.SetValue (it, ValueColorCol, valueColor);
@@ -1191,16 +1190,17 @@ namespace MonoDevelop.Debugger
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
 			allowStoreColumnSizes = true;
-			bool res = base.OnButtonPressEvent (evnt);
-			TreePath path;
-			TreeViewColumn col;
-			CellRenderer cr;
+			bool retval = base.OnButtonPressEvent (evnt);
 			
 			//HACK: show context menu in release event instead of show event to work around gtk bug
 			if (evnt.TriggersContextMenu ()) {
 			//	ShowPopup (evnt);
 				return true;
 			}
+
+			TreeViewColumn col;
+			CellRenderer cr;
+			TreePath path;
 			
 			if (evnt.Button == 1 && GetCellAtPos ((int)evnt.X, (int)evnt.Y, out path, out col, out cr)) {
 				TreeIter it;
@@ -1231,7 +1231,7 @@ namespace MonoDevelop.Debugger
 				}
 			}
 			
-			return res;
+			return retval;
 		}
 		
 		protected override bool OnButtonReleaseEvent (Gdk.EventButton evnt)
@@ -1341,15 +1341,17 @@ namespace MonoDevelop.Debugger
 				return;
 			}
 			
-			if (!allowAdding) {
+			if (!AllowAdding) {
 				cinfo.Visible = false;
 				return;
 			}
+
 			TreePath[] sel = Selection.GetSelectedRows ();
 			if (sel.Length == 0) {
 				cinfo.Enabled = false;
 				return;
 			}
+
 			foreach (TreePath tp in sel) {
 				if (tp.Depth > 1) {
 					cinfo.Enabled = false;
@@ -1391,13 +1393,14 @@ namespace MonoDevelop.Debugger
 		[CommandUpdateHandler (EditCommands.Rename)]
 		protected void OnUpdateRename (CommandInfo cinfo)
 		{
-			cinfo.Visible = allowAdding;
+			cinfo.Visible = AllowAdding;
 			cinfo.Enabled = Selection.GetSelectedRows ().Length == 1;
 		}
 		
 		protected override void OnRowActivated (TreePath path, TreeViewColumn column)
 		{
 			base.OnRowActivated (path, column);
+
 			TreeIter it;
 			TreePath[] sel = Selection.GetSelectedRows ();
 			if (store.GetIter (out it, sel[0])) {
