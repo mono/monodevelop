@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using Mono.Debugging.Client;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using Gtk;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -138,7 +139,13 @@ namespace MonoDevelop.SourceEditor
 		{
 			base.OnSizeAllocated (allocation);
 		}
-		
+
+		const int defaultMaxHeight = 240;
+		protected override void OnSizeRequested (ref Requisition requisition)
+		{
+			base.OnSizeRequested (ref requisition);
+			requisition.Height = Math.Min (Math.Max (Allocation.Height, defaultMaxHeight), requisition.Height);
+		}
 
 		[GLib.ConnectBeforeAttribute]
 		void HandleValueTreeButtonPressEvent (object o, Gtk.ButtonPressEventArgs args)
