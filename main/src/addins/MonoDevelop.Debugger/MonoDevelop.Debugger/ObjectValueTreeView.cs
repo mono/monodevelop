@@ -823,6 +823,7 @@ namespace MonoDevelop.Debugger
 		protected override void OnRowCollapsed (TreeIter iter, TreePath path)
 		{
 			store.SetValue (iter, ExpandedCol, false);
+			this.ScrollToCell (path, expCol, true, 0f, 0f);
 			base.OnRowCollapsed (iter, path);
 			if (compact)
 				ColumnsAutosize ();
@@ -873,6 +874,7 @@ namespace MonoDevelop.Debugger
 		protected override void OnRowExpanded (TreeIter iter, TreePath path)
 		{
 			store.SetValue (iter, ExpandedCol, true);
+			this.ScrollToCell (path, expCol, true, 0f, 0f);
 			TreeIter it;
 			
 			if (store.IterChildren (out it, iter)) {
@@ -1106,47 +1108,84 @@ namespace MonoDevelop.Debugger
 		
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
 		{
-			// Ignore if editing a cell, or if not editable
-			if (!AllowEditing || !AllowAdding || editing)
+			// Ignore if editing a cell
+			if (editing)
 				return base.OnKeyPressEvent (evnt);
-			
-			// Delete the current item with any delete key
+
+			TreePath[] selected = Selection.GetSelectedRows ();
+			bool changed = false;
+			TreePath lastPath;
+
+			if (selected == null || selected.Length < 1)
+				return base.OnKeyPressEvent (evnt);
+
 			switch (evnt.Key) {
+			case Gdk.Key.Left:
+			case Gdk.Key.KP_Left:
+				foreach (var path in selected) {
+					lastPath = path.Copy ();
+					if (GetRowExpanded (path)) {
+						CollapseRow (path);
+						changed = true;
+					} else if (path.Up ()) {
+						Selection.UnselectPath (lastPath);
+						Selection.SelectPath (path);
+						changed = true;
+					}
+				}
+				break;
+			case Gdk.Key.Right:
+			case Gdk.Key.KP_Right:
+				foreach (var path in selected) {
+					if (!GetRowExpanded (path)) {
+						ExpandRow (path, false);
+						changed = true;
+					} else {
+						lastPath = path.Copy ();
+						path.Down ();
+						if (lastPath.Compare (path) != 0) {
+							Selection.UnselectPath (lastPath);
+							Selection.SelectPath (path);
+							changed = true;
+						}
+					}
+				}
+				break;
 			case Gdk.Key.Delete:
 			case Gdk.Key.KP_Delete:
 			case Gdk.Key.BackSpace:
-				if (Selection.CountSelectedRows () > 0) {
-					bool deleted = false;
-					string expression;
-					ObjectValue val;
-					TreeIter iter;
+				string expression;
+				ObjectValue val;
+				TreeIter iter;
 
-					// get a list of the selected rows (in reverse order so that we delete children before parents)
-					var selected = Selection.GetSelectedRows ();
-					Array.Sort (selected, new TreePathComparer (true));
+				if (!AllowEditing || !AllowAdding)
+					return base.OnKeyPressEvent (evnt);
 
-					foreach (var path in selected) {
-						if (!Model.GetIter (out iter, path))
-							continue;
+				// Note: since we'll be modifying the tree, we need to make changes from bottom to top
+				Array.Sort (selected, new TreePathComparer (true));
 
-						val = (ObjectValue)store.GetValue (iter, ObjectCol);
-						expression = GetFullExpression (iter);
+				foreach (var path in selected) {
+					if (!Model.GetIter (out iter, path))
+						continue;
 
-						// Lookup and remove
-						if (val != null && values.Contains (val)) {
-							RemoveValue (val);
-							deleted = true;
-						} else if (!string.IsNullOrEmpty (expression) && valueNames.Contains (expression)) {
-							RemoveExpression (expression);
-							deleted = true;
-						}
+					val = (ObjectValue)store.GetValue (iter, ObjectCol);
+					expression = GetFullExpression (iter);
+
+					// Lookup and remove
+					if (val != null && values.Contains (val)) {
+						RemoveValue (val);
+						changed = true;
+					} else if (!string.IsNullOrEmpty (expression) && valueNames.Contains (expression)) {
+						RemoveExpression (expression);
+						changed = true;
 					}
-
-					if (deleted)
-						return true;
 				}
 				break;
 			}
+
+			if (changed)
+				return true;
+
 			return base.OnKeyPressEvent (evnt);
 		}
 
