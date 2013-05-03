@@ -409,6 +409,7 @@ namespace MonoDevelop.Refactoring
 				if (reference != null) {
 					var project = doc.Project;
 					project.Items.Add (reference);
+					project.Save (new NullProgressMonitor ());
 				}
 
 				if (!addUsing) {
