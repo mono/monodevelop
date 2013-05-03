@@ -98,16 +98,15 @@ namespace MonoDevelop.Debugger
 		const int ValueCol = 1;
 		const int TypeCol = 2;
 		const int ObjectCol = 3;
-		const int ExpandedCol = 4;
-		const int NameEditableCol = 5;
-		const int ValueEditableCol = 6;
-		const int IconCol = 7;
-		const int NameColorCol = 8;
-		const int ValueColorCol = 9;
-		const int ValueButtonVisibleCol = 10;
-		const int PinIconCol = 11;
-		const int LiveUpdateIconCol = 12;
-		const int ViewerButtonVisibleCol = 13;
+		const int NameEditableCol = 4;
+		const int ValueEditableCol = 5;
+		const int IconCol = 6;
+		const int NameColorCol = 7;
+		const int ValueColorCol = 8;
+		const int ValueButtonVisibleCol = 9;
+		const int PinIconCol = 10;
+		const int LiveUpdateIconCol = 11;
+		const int ViewerButtonVisibleCol = 12;
 		
 		public event EventHandler StartEditing;
 		public event EventHandler EndEditing;
@@ -132,7 +131,7 @@ namespace MonoDevelop.Debugger
 		
 		public ObjectValueTreeView ()
 		{
-			store = new TreeStore (typeof(string), typeof(string), typeof(string), typeof(ObjectValue), typeof(bool), typeof(bool), typeof(bool), typeof(string), typeof(string), typeof(string), typeof(bool), typeof(string), typeof(Gdk.Pixbuf), typeof(bool));
+			store = new TreeStore (typeof(string), typeof(string), typeof(string), typeof(ObjectValue), typeof(bool), typeof(bool), typeof(string), typeof(string), typeof(string), typeof(bool), typeof(string), typeof(Gdk.Pixbuf), typeof(bool));
 			Model = store;
 			RulesHint = true;
 			EnableSearch = false;
@@ -744,7 +743,6 @@ namespace MonoDevelop.Debugger
 			store.SetValue (it, ValueCol, strval);
 			store.SetValue (it, TypeCol, val.TypeName);
 			store.SetValue (it, ObjectCol, val);
-			store.SetValue (it, ExpandedCol, !hasChildren);
 			store.SetValue (it, NameEditableCol, !hasParent && allowAdding);
 			store.SetValue (it, ValueEditableCol, canEdit && allowEditing);
 			store.SetValue (it, IconCol, icon);
@@ -822,11 +820,12 @@ namespace MonoDevelop.Debugger
 		
 		protected override void OnRowCollapsed (TreeIter iter, TreePath path)
 		{
-			store.SetValue (iter, ExpandedCol, false);
-			this.ScrollToCell (path, expCol, true, 0f, 0f);
 			base.OnRowCollapsed (iter, path);
+
 			if (compact)
 				ColumnsAutosize ();
+
+			ScrollToCell (path, expCol, true, 0f, 0f);
 		}
 
 		static Task<ObjectValue[]> GetChildrenAsync (ObjectValue value)
@@ -873,8 +872,6 @@ namespace MonoDevelop.Debugger
 		
 		protected override void OnRowExpanded (TreeIter iter, TreePath path)
 		{
-			store.SetValue (iter, ExpandedCol, true);
-			this.ScrollToCell (path, expCol, true, 0f, 0f);
 			TreeIter it;
 			
 			if (store.IterChildren (out it, iter)) {
@@ -886,6 +883,8 @@ namespace MonoDevelop.Debugger
 			}
 			
 			base.OnRowExpanded (iter, path);
+
+			ScrollToCell (path, expCol, true, 0f, 0f);
 		}
 		
 		string GetIterPath (TreeIter iter)
