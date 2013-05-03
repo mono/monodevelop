@@ -770,7 +770,6 @@ namespace MonoDevelop.Ide.FindInFiles
 
 			string pattern = comboboxentryFind.Entry.Text;
 			FilterOptions options = GetFilterOptions ();
-
 			if (!find.ValidatePattern (options, pattern)) {
 				MessageService.ShowError (GettextCatalog.GetString ("Search pattern is invalid"));
 				return;
