@@ -129,7 +129,7 @@ namespace MonoDevelop.VersionControl.Views
 				notebook1.Page = 1;
 				UpdatePatchView ();
 			} else {
-				buttonDiff.Label = GettextCatalog.GetString ("_Patch");
+				buttonDiff.Label = GettextCatalog.GetString ("Unified Diff");
 				notebook1.Page = 0;
 			}
 			
