@@ -127,15 +127,15 @@ namespace MonoDevelop.WebReferences.WS
 		protected override string CreateProxyFile (DotNetProject dotNetProject, FilePath basePath, string proxyNamespace, string referenceName)
 		{
 			// Setup the proxy namespace and compile unit
-			ICodeGenerator codeGen = GetProvider (dotNetProject).CreateGenerator();
-			CodeNamespace codeNamespace = new CodeNamespace(proxyNamespace);
+			CodeDomProvider codeProv = GetProvider (dotNetProject);
+			CodeNamespace codeNamespace = new CodeNamespace (proxyNamespace);
 			CodeConstructor urlConstructor = new CodeConstructor ();
-			CodeCompileUnit codeUnit = new CodeCompileUnit();
-			codeUnit.Namespaces.Add(codeNamespace);
+			CodeCompileUnit codeUnit = new CodeCompileUnit ();
+			codeUnit.Namespaces.Add (codeNamespace);
 
 			// Setup the importer and import the service description into the code unit
-			ServiceDescriptionImporter importer = Library.ReadServiceDescriptionImporter(protocol);
-			importer.Import(codeNamespace, codeUnit);
+			ServiceDescriptionImporter importer = Library.ReadServiceDescriptionImporter (protocol);
+			importer.Import (codeNamespace, codeUnit);
 
 			// Add the new Constructor with Url as a paremeter
 			// Search for the class which inherit SoapHttpClientProtocol (Which is the Service Class)
@@ -156,10 +156,10 @@ namespace MonoDevelop.WebReferences.WS
 			
 			// Generate the code and save the file
 			string fileSpec = Path.Combine (basePath, dotNetProject.LanguageBinding.GetFileName (referenceName));
-			StreamWriter writer = new StreamWriter(fileSpec);
-			codeGen.GenerateCodeFromCompileUnit(codeUnit, writer, new CodeGeneratorOptions());
+			StreamWriter writer = new StreamWriter (fileSpec);
+			codeProv.GenerateCodeFromCompileUnit (codeUnit, writer, new CodeGeneratorOptions ());
 			
-			writer.Close();
+			writer.Close ();
 			
 			return fileSpec;
 		}
