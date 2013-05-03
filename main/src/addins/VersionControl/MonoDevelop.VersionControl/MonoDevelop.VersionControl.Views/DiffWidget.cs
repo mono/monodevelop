@@ -39,6 +39,7 @@ namespace MonoDevelop.VersionControl.Views
 		Gtk.Button buttonNext;
 		Gtk.Button buttonPrev;
 		Gtk.Button buttonDiff;
+		Gtk.Button buttonClose;
 		Gtk.Label labelOverview;
 
 		internal ComparisonWidget ComparisonWidget {
@@ -46,7 +47,7 @@ namespace MonoDevelop.VersionControl.Views
 				return comparisonWidget;
 			}
 		}
-		
+
 		string LabelText {
 			get {
 				if (comparisonWidget.Diff.Count == 0)
@@ -63,17 +64,17 @@ namespace MonoDevelop.VersionControl.Views
 				return changes + " (" + additions + ", " + removals + ")";
 			}
 		}
-		
+
 		public Mono.TextEditor.TextEditor FocusedEditor {
 			get {
 				return comparisonWidget.FocusedEditor;
 			}
 		}
-		
+
 		public DiffWidget (VersionControlDocumentInfo info) : this (info, false)
 		{
 		}
-		
+
 		public DiffWidget (VersionControlDocumentInfo info, bool viewOnly)
 		{
 			this.info = info;
@@ -83,22 +84,24 @@ namespace MonoDevelop.VersionControl.Views
 			buttonPrev = new DocumentToolButton (Gtk.Stock.GoDown, GettextCatalog.GetString ("Next Change"));
 			labelOverview = new Gtk.Label () { Xalign = 0 };
 			buttonDiff = new Gtk.Button (GettextCatalog.GetString ("Unified Diff"));
-			
+			buttonClose = new Gtk.Button (GettextCatalog.GetString ("Close"));
+
 			this.buttonNext.Clicked += (sender, args) => ComparisonWidget.GotoNext ();
 			this.buttonPrev.Clicked += (sender, args) => ComparisonWidget.GotoPrev ();
 			notebook1.Page = 0;
 			vboxComparisonView.PackStart (comparisonWidget, true, true, 0);
 			comparisonWidget.Show ();
-			
+
 			comparisonWidget.DiffChanged += delegate {
 				labelOverview.Markup = LabelText;
 				SetButtonSensitivity ();
 			};
 			comparisonWidget.SetVersionControlInfo (info);
 			this.buttonDiff.Clicked += HandleButtonDiffhandleClicked;
+			this.buttonClose.Clicked += HandleButtonClosehandleClicked;
 			diffTextEditor = new global::Mono.TextEditor.TextEditor (new Mono.TextEditor.TextDocument (), new CommonTextEditorOptions ());
 			diffTextEditor.Document.MimeType = "text/x-diff";
-			
+
 			diffTextEditor.Options.ShowFoldMargin = false;
 			diffTextEditor.Options.ShowIconMargin = false;
 			diffTextEditor.Options.DrawIndentationMarkers = PropertyService.Get ("DrawIndentationMarkers", false);
@@ -114,6 +117,7 @@ namespace MonoDevelop.VersionControl.Views
 			toolbar.Add (buttonDiff);
 			toolbar.Add (buttonPrev);
 			toolbar.Add (buttonNext);
+			toolbar.Add (buttonClose);
 			toolbar.ShowAll ();
 		}
 		
@@ -121,7 +125,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			this.buttonNext.Sensitive = this.buttonPrev.Sensitive = notebook1.Page == 0 &&  comparisonWidget.Diff != null && comparisonWidget.Diff.Count > 0;
 		}
-		
+
 		void HandleButtonDiffhandleClicked (object sender, EventArgs e)
 		{
 			if (notebook1.Page == 0) {
@@ -132,10 +136,16 @@ namespace MonoDevelop.VersionControl.Views
 				buttonDiff.Label = GettextCatalog.GetString ("Unified Diff");
 				notebook1.Page = 0;
 			}
-			
+
 			SetButtonSensitivity ();
 		}
-		
+
+		void HandleButtonClosehandleClicked (object sender, EventArgs e)
+		{
+			var window = Ide.IdeApp.Workbench.ActiveDocument.Window;
+			window.SwitchView (0);
+		}
+
 		public void UpdatePatchView ()
 		{
 			if (notebook1.Page == 1) {
@@ -147,7 +157,7 @@ namespace MonoDevelop.VersionControl.Views
 				);
 			}
 		}
-		
+
 		string GetRevisionText (Mono.TextEditor.TextEditor editor, Revision rev)
 		{
 			if (!editor.Document.ReadOnly)
@@ -156,7 +166,6 @@ namespace MonoDevelop.VersionControl.Views
 				return GettextCatalog.GetString ("(base)");
 			return string.Format (GettextCatalog.GetString ("(revision {0})"), rev.ToString ());
 		}
-			
 	}
 }
 
