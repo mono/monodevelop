@@ -244,7 +244,7 @@ namespace MonoDevelop.XmlEditor
 					| XmlSchemaValidationFlags.ProcessSchemaLocation
 					| XmlSchemaValidationFlags.ReportValidationWarnings;
 			settings.ValidationType = ValidationType.Schema;
-			settings.ProhibitDtd = false;
+			settings.DtdProcessing = DtdProcessing.Parse;
 			
 			ValidationEventHandler validationHandler = delegate (object sender, System.Xml.Schema.ValidationEventArgs args) {
 				if (args.Severity == XmlSeverityType.Warning) {
