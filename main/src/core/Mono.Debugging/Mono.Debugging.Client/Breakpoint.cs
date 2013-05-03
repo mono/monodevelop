@@ -220,7 +220,8 @@ namespace Mono.Debugging.Client
 		LessThanOrEqualTo,
 		EqualTo,
 		GreaterThan,
-		GreaterThanOrEqualTo
+		GreaterThanOrEqualTo,
+		MultipleOf
 	}
 
 	public enum HitAction

@@ -110,6 +110,8 @@ namespace Mono.Debugging.Client
 					return BreakEvent.CurrentHitCount > BreakEvent.HitCount;
 				case HitCountMode.GreaterThanOrEqualTo:
 					return BreakEvent.CurrentHitCount >= BreakEvent.HitCount;
+				case HitCountMode.MultipleOf:
+					return (BreakEvent.CurrentHitCount % BreakEvent.HitCount) == 0;
 				default:
 					return true;
 				}
