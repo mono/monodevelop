@@ -1257,6 +1257,20 @@ namespace MonoDevelop.Debugger
 		{
 			IdeApp.CommandService.ShowContextMenu (this, evt, menuSet, this);
 		}
+
+		[CommandUpdateHandler (EditCommands.SelectAll)]
+		protected void UpdateSelectAll (CommandInfo cmd)
+		{
+			TreeIter iter;
+
+			cmd.Enabled = store.GetIterFirst (out iter);
+		}
+
+		[CommandHandler (EditCommands.SelectAll)]
+		protected void OnSelectAll ()
+		{
+			Selection.SelectAll ();
+		}
 		
 		[CommandHandler (EditCommands.Copy)]
 		protected void OnCopy ()
