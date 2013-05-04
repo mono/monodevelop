@@ -142,8 +142,7 @@ namespace MonoDevelop.VersionControl.Views
 
 		void HandleButtonClosehandleClicked (object sender, EventArgs e)
 		{
-			var window = Ide.IdeApp.Workbench.ActiveDocument.Window;
-			window.SwitchView (0);
+			Ide.IdeApp.Workbench.ActiveDocument.Window.SwitchView (0);
 		}
 
 		public void UpdatePatchView ()
