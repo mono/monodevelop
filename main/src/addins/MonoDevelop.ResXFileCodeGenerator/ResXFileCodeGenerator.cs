@@ -68,9 +68,14 @@ namespace MonoDevelop
 			if (string.IsNullOrEmpty (ns) && !string.IsNullOrEmpty (outputFile)) {
 				var dnp = file.Project as DotNetProject;
 				if (dnp != null) {
-					ns = dnp.DefaultNamespace;
+					var vp =  file.ProjectVirtualPath.ParentDirectory.ToString().Replace(System.IO.Path.DirectorySeparatorChar, '.').Replace(System.IO.Path.AltDirectorySeparatorChar, '.').Trim().Replace(' ', '_');
+					if (!string.IsNullOrEmpty(vp))
+						vp = '.' + vp;
+					
 					if (!string.IsNullOrEmpty (dnp.GetDefaultNamespace (outputFile)))
-						ns += "." + dnp.GetDefaultNamespace (outputFile);
+						ns = dnp.GetDefaultNamespace(outputFile) + vp;
+					else
+						ns = dnp.DefaultNamespace + vp;
 				}
 			}
 			return ns;
