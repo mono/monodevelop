@@ -51,7 +51,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (excludeThis)
 				return false;
 			
-			if (fileName.IsNullOrEmpty == null)
+			if (fileName.IsNullOrEmpty)
 				return false;
 			
 			if (GetWindow (fileName) == null)

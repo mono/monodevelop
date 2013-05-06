@@ -82,7 +82,7 @@ namespace MonoDevelop.Platform
 					paths [n] = fileDlg.FileNames [n];
 				data.SelectedFiles = paths;
 				
-				if (dlg.SelectedEncodingId != null)
+				if (dlg.SelectedEncodingId != 0)
 					data.Encoding = dlg.SelectedEncodingId > 0 ? Encoding.GetEncoding (dlg.SelectedEncodingId) : null;
 				if (dlg.SelectedViewer != null)
 					data.SelectedViewer = dlg.SelectedViewer;
