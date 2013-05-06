@@ -600,9 +600,9 @@ namespace Mono.Debugging.Evaluation
 		
 		class ExpData
 		{
-			public EvaluationContext ctx;
-			public string exp;
-			public ObjectValueAdaptor adaptor;
+			ObjectValueAdaptor adaptor;
+			EvaluationContext ctx;
+			string exp;
 			
 			public ExpData (EvaluationContext ctx, string exp, ObjectValueAdaptor adaptor)
 			{
