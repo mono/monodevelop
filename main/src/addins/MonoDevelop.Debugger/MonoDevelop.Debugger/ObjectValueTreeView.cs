@@ -377,6 +377,12 @@ namespace MonoDevelop.Debugger
 			get { return allowExpanding; }
 			set { allowExpanding = value; }
 		}
+
+		bool CanQueryDebugger {
+			get {
+				return DebuggingService.IsConnected && DebuggingService.IsPaused;
+			}
+		}
 		
 		public PinnedWatch PinnedWatch { get; set; }
 		
@@ -524,17 +530,17 @@ namespace MonoDevelop.Debugger
 			LoadState ();
 		}
 		
-		void RefreshRow (TreeIter it)
+		void RefreshRow (TreeIter iter)
 		{
-			ObjectValue val = (ObjectValue) store.GetValue (it, ObjectCol);
+			ObjectValue val = (ObjectValue) store.GetValue (iter, ObjectCol);
 			UnregisterValue (val);
 			
-			RemoveChildren (it);
+			RemoveChildren (iter);
 			TreeIter parent;
-			if (!store.IterParent (out parent, it))
+			if (!store.IterParent (out parent, iter))
 				parent = TreeIter.Zero;
 
-			if (frame != null && frame.DebuggerSession.IsConnected) {
+			if (CanQueryDebugger && frame != null) {
 				EvaluationOptions ops = frame.DebuggerSession.Options.EvaluationOptions.Clone ();
 				ops.AllowMethodEvaluation = true;
 				ops.AllowToStringCalls = true;
@@ -545,30 +551,31 @@ namespace MonoDevelop.Debugger
 				val.Refresh (ops);
 
 				// Don't update the name for the values entered by the user
-				if (store.IterDepth (it) == 0)
+				if (store.IterDepth (iter) == 0)
 					val.Name = oldName;
 			}
 
-			SetValues (parent, it, val.Name, val);
-			RegisterValue (val, it);
+			SetValues (parent, iter, val.Name, val);
+			RegisterValue (val, iter);
 		}
 		
-		void RemoveChildren (TreeIter it)
+		void RemoveChildren (TreeIter iter)
 		{
-			TreeIter cit;
-			while (store.IterChildren (out cit, it)) {
-				ObjectValue val = (ObjectValue) store.GetValue (cit, ObjectCol);
+			TreeIter citer;
+
+			while (store.IterChildren (out citer, iter)) {
+				ObjectValue val = (ObjectValue) store.GetValue (citer, ObjectCol);
 				if (val != null)
 					UnregisterValue (val);
-				RemoveChildren (cit);
-				store.Remove (ref cit);
+				RemoveChildren (citer);
+				store.Remove (ref citer);
 			}
 		}
 
-		void RegisterValue (ObjectValue val, TreeIter it)
+		void RegisterValue (ObjectValue val, TreeIter iter)
 		{
 			if (val.IsEvaluating) {
-				nodes [val] = new TreeRowReference (store, store.GetPath (it));
+				nodes [val] = new TreeRowReference (store, store.GetPath (iter));
 				val.ValueChanged += OnValueUpdated;
 			}
 		}
@@ -1202,14 +1209,13 @@ namespace MonoDevelop.Debugger
 			CellRenderer cr;
 			TreePath path;
 			
-			if (evnt.Button == 1 && GetCellAtPos ((int)evnt.X, (int)evnt.Y, out path, out col, out cr)) {
+			if (CanQueryDebugger && evnt.Button == 1 && GetCellAtPos ((int)evnt.X, (int)evnt.Y, out path, out col, out cr)) {
 				TreeIter it;
 				store.GetIter (out it, path);
 				if (cr == crpViewer) {
 					ObjectValue val = (ObjectValue) store.GetValue (it, ObjectCol);
 					DebuggingService.ShowValueVisualizer (val);
-				}
-				else if (!editing) {
+				} else if (!editing) {
 					if (cr == crpButton) {
 						RefreshRow (it);
 					} else if (cr == crpPin) {
@@ -1415,13 +1421,18 @@ namespace MonoDevelop.Debugger
 		{
 			base.OnRowActivated (path, column);
 
-			TreeIter it;
-			TreePath[] sel = Selection.GetSelectedRows ();
-			if (store.GetIter (out it, sel[0])) {
-				ObjectValue val = (ObjectValue) store.GetValue (it, ObjectCol);
-				if (val != null && val.Name == DebuggingService.DebuggerSession.EvaluationOptions.CurrentExceptionTag)
-					DebuggingService.ShowExceptionCaughtDialog ();
-			}
+			if (!CanQueryDebugger)
+				return;
+
+			TreePath[] selected = Selection.GetSelectedRows ();
+			TreeIter iter;
+
+			if (!store.GetIter (out iter, selected[0]))
+				return;
+
+			ObjectValue val = (ObjectValue) store.GetValue (iter, ObjectCol);
+			if (val != null && val.Name == DebuggingService.DebuggerSession.EvaluationOptions.CurrentExceptionTag)
+				DebuggingService.ShowExceptionCaughtDialog ();
 		}
 		
 		
@@ -1648,7 +1659,7 @@ namespace MonoDevelop.Debugger
 		
 		Mono.Debugging.Client.CompletionData GetCompletionData (string exp)
 		{
-			if (frame != null && frame.DebuggerSession.IsConnected)
+			if (CanQueryDebugger && frame != null)
 				return frame.GetExpressionCompletionData (exp);
 
 			return null;
