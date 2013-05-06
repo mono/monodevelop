@@ -43,10 +43,9 @@ namespace MonoDevelop.Debugger
 {
 	public class ThreadsPad : Gtk.ScrolledWindow, IPadContent
 	{
+		TreeViewState treeViewState;
 		PadTreeView tree;
 		TreeStore store;
-		
-		TreeViewState treeViewState;
 		
 		enum Columns
 		{
@@ -58,7 +57,7 @@ namespace MonoDevelop.Debugger
 			Location
 		}
 		
-		public ThreadsPad()
+		public ThreadsPad ()
 		{
 			this.ShadowType = ShadowType.None;
 
@@ -210,19 +209,16 @@ namespace MonoDevelop.Debugger
 		
 		void OnDebuggerPaused (object s, EventArgs a)
 		{
-			Sensitive = true;
 			UpdateDisplay ();
 		}
 		
 		void OnDebuggerResumed (object s, EventArgs a)
 		{
-			Sensitive = false;
 			UpdateDisplay ();
 		}
 		
 		void OnDebuggerStopped (object s, EventArgs a)
 		{
-			Sensitive = false;
 			UpdateDisplay ();
 		}
 	}

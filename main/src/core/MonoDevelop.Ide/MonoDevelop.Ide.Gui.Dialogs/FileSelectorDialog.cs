@@ -108,7 +108,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				closeWorkspaceCheck.Visible = ShowViewerSelector = false;
 		}
 		
-		public int SeletcedEncoding {
+		public int SelectedEncoding {
 			get {
 				if (!ShowEncodingSelector)
 					return -1;

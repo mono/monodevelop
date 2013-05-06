@@ -1529,7 +1529,7 @@ namespace Mono.TextEditor
 		
 		public static bool IsWordSeparator (char ch)
 		{
-			return Char.IsWhiteSpace (ch) || (Char.IsPunctuation (ch) && ch != '_');
+			return !(char.IsLetterOrDigit (ch) || ch == '_');
 		}
 
 		public bool IsWholeWordAt (int offset, int length)

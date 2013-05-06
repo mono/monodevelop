@@ -374,6 +374,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					return KeyActions.Process;
 				if (list.filteredItems.Count < 2)
 					return KeyActions.CloseWindow | KeyActions.Process;
+				scrollbar.Vadjustment.Value = Math.Max (0, scrollbar.Vadjustment.Value - scrollbar.Vadjustment.PageSize);
 				list.MoveCursor (-8);
 				return KeyActions.Ignore;
 
@@ -382,6 +383,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					return KeyActions.Process;
 				if (list.filteredItems.Count < 2)
 					return KeyActions.CloseWindow | KeyActions.Process;
+				scrollbar.Vadjustment.Value = Math.Max (0, Math.Min (scrollbar.Vadjustment.Upper - scrollbar.Vadjustment.PageSize, scrollbar.Vadjustment.Value + scrollbar.Vadjustment.PageSize));
 				list.MoveCursor (8);
 				return KeyActions.Ignore;
 

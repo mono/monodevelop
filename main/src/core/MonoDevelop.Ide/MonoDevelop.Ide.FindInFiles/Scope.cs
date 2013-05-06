@@ -183,7 +183,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			foreach (Document document in IdeApp.Workbench.Documents) {
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in '{0}'", document.FileName));
-				if (!string.IsNullOrEmpty (document.FileName))
+				if (!string.IsNullOrEmpty (document.FileName) && filterOptions.NameMatches (document.FileName))
 					yield return new FileProvider (document.FileName);
 			}
 		}
@@ -246,7 +246,8 @@ namespace MonoDevelop.Ide.FindInFiles
 						if (Path.GetFileName (fileName).StartsWith (".", StringComparison.Ordinal))
 							continue;
 					}
-
+					if (!filterOptions.NameMatches (fileName))
+						continue;
 					if (!IncludeBinaryFiles && !DesktopService.GetFileIsText (fileName))
 						continue;
 					yield return fileName;

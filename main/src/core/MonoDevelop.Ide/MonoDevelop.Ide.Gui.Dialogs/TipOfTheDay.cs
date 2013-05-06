@@ -10,10 +10,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 {
     internal partial class TipOfTheDayWindow : Gtk.Window
 	{
-        private List<string> tips = new List<string> ();
-        private int currentTip;
-
-        private string property = "MonoDevelop.Core.Gui.Dialog.TipOfTheDayView.ShowTipsAtStartup";
+		internal const string ShowTipsAtStartup = "MonoDevelop.Core.Gui.Dialog.TipOfTheDayView.ShowTipsAtStartup";
+        List<string> tips = new List<string> ();
+        int currentTip;
 
         public TipOfTheDayWindow()
             : base (WindowType.Toplevel)
@@ -21,7 +20,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
             Build ();
             TransientFor = IdeApp.Workbench.RootWindow;
 
-            if (PropertyService.Get (property, false)) {
+            if (PropertyService.Get (ShowTipsAtStartup, false)) {
                 noshowCheckbutton.Active = true;
             }
 
@@ -50,7 +49,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
         void OnNoShow (object o, EventArgs e)
         {
-            PropertyService.Set (property, noshowCheckbutton.Active);
+            PropertyService.Set (ShowTipsAtStartup, noshowCheckbutton.Active);
         }
 
         void OnNextClicked (object o, EventArgs e)
@@ -64,8 +63,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
             tipTextview.Buffer.Clear ();
             tipTextview.Buffer.InsertAtCursor (tips[currentTip]);
-
-
         }
 
         void OnCloseClicked (object o, EventArgs e)
@@ -78,7 +75,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
     class TipOfTheDayStartup : CommandHandler {
         protected override void Run ()
         {
-            if (PropertyService.Get ("MonoDevelop.Core.Gui.Dialog.TipOfTheDayView.ShowTipsAtStartup", false)) {
+            if (PropertyService.Get (TipOfTheDayWindow.ShowTipsAtStartup, false)) {
                 new TipOfTheDayWindow ().Show ();
             }
         }

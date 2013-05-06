@@ -47,6 +47,7 @@ using ICSharpCode.NRefactory.CSharp.Refactoring;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Projects;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.Refactoring
 {
@@ -103,7 +104,7 @@ namespace MonoDevelop.Refactoring
 					string ns = t.Namespace;
 					var reference = t.Reference;
 					var info = resolveMenu.CommandInfos.Add (
-						string.Format ("using {0};", ns),
+						t.GetImportText (),
 						new System.Action (new AddImport (doc, resolveResult, ns, reference, true, node).Run)
 					);
 					info.Icon = MonoDevelop.Ide.Gui.Stock.AddNamespace;
@@ -119,7 +120,7 @@ namespace MonoDevelop.Refactoring
 				foreach (var t in possibleNamespaces) {
 					string ns = t.Namespace;
 					var reference = t.Reference;
-					resolveMenu.CommandInfos.Add (string.Format ("{0}", ns + "." + doc.Editor.GetTextBetween (node.StartLocation, node.EndLocation)), new System.Action (new AddImport (doc, resolveResult, ns, reference, false, node).Run));
+					resolveMenu.CommandInfos.Add (t.GetInsertNamespaceText (doc.Editor.GetTextBetween (node.StartLocation, node.EndLocation)), new System.Action (new AddImport (doc, resolveResult, ns, reference, false, node).Run));
 				}
 			}
 			
@@ -219,6 +220,37 @@ namespace MonoDevelop.Refactoring
 				this.Namespace = @namespace;
 				this.IsAccessibleWithGlobalUsing = isAccessibleWithGlobalUsing;
 				this.Reference = reference;
+			}
+
+			string GetLibraryName ()
+			{
+				var txt = Reference.Reference;
+				int idx = txt.IndexOf (',');
+				if (idx >= 0)
+					return txt.Substring (0, idx);
+				return txt;
+			}
+
+			public string GetImportText ()
+			{
+				if (Reference != null) 
+					return GettextCatalog.GetString (
+						"Reference '{0}' and use '{1}'", 
+						GetLibraryName (),
+						string.Format ("using {0};", Namespace));
+
+				return string.Format ("using {0};", Namespace);
+			}
+
+			public string GetInsertNamespaceText (string member)
+			{
+				if (Reference != null) 
+					return GettextCatalog.GetString (
+						"Reference '{0}' and use '{1}'", 
+						GetLibraryName (),
+						Namespace + "." + member
+					);
+				return Namespace + "." + member;
 			}
 		}
 
@@ -374,8 +406,11 @@ namespace MonoDevelop.Refactoring
 			{
 				var loc = doc.Editor.Caret.Location;
 
-				if (reference != null)
-					doc.Project.Items.Add (reference);
+				if (reference != null) {
+					var project = doc.Project;
+					project.Items.Add (reference);
+					IdeApp.ProjectOperations.Save (project);
+				}
 
 				if (!addUsing) {
 //					var unit = doc.ParsedDocument.GetAst<SyntaxTree> ();

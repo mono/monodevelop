@@ -310,6 +310,7 @@ namespace MonoDevelop.Debugger
 			this.comboHitCountMode.AppendText (global::Mono.Unix.Catalog.GetString ("Break when the hit count is equal to"));
 			this.comboHitCountMode.AppendText (global::Mono.Unix.Catalog.GetString ("Break when the hit count is greater than"));
 			this.comboHitCountMode.AppendText (global::Mono.Unix.Catalog.GetString ("Break when the hit count is greater than or equal to"));
+			this.comboHitCountMode.AppendText (global::Mono.Unix.Catalog.GetString ("Break when the hit count is a multiple of"));
 			this.comboHitCountMode.Name = "comboHitCountMode";
 			this.comboHitCountMode.Active = 0;
 			this.hbox1.Add (this.comboHitCountMode);

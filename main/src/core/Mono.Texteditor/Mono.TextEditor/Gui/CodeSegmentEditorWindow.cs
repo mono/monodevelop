@@ -83,6 +83,9 @@ namespace Mono.TextEditor
 			this.Decorated = false;
 			Gdk.Pointer.Grab (this.GdkWindow, true, Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.PointerMotionMask | Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask, null, null, Gtk.Global.CurrentEventTime);
 			Gtk.Grab.Add (this);
+			GrabBrokenEvent += delegate {
+				Destroy ();
+			};
 			codeSegmentEditor.GrabFocus ();
 		}
 		

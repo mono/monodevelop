@@ -88,6 +88,9 @@ namespace MonoDevelop.Components
 			base.OnMapped ();
 			Gdk.Pointer.Grab (this.GdkWindow, true, Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.PointerMotionMask | Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask, null, null, Gtk.Global.CurrentEventTime);
 			Gtk.Grab.Add (this);
+			this.GrabBrokenEvent += delegate {
+				Destroy ();
+			};
 		}
 		
 		protected override void OnUnmapped ()
