@@ -640,7 +640,7 @@ namespace MonoDevelop.XmlEditor
 						    GettextCatalog.GetString ("Error reading file '{0}'.", stylesheetFileName), null);
 						return;
 					}
-					System.Xml.Xsl.XslTransform xslt = 
+					System.Xml.Xsl.XslCompiledTransform xslt = 
 						XmlEditorService.ValidateStylesheet (monitor, xsltContent, stylesheetFileName);
 					if (xslt == null)
 						return;
