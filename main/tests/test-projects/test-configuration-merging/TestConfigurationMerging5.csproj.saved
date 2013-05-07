@@ -8,6 +8,7 @@
     <OutputType>Exe</OutputType>
     <AssemblyName>TestConfigurationMerging</AssemblyName>
     <RootNamespace>TestConfigurationMerging</RootNamespace>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <WarningLevel>4</WarningLevel>
     <DebugSymbols>True</DebugSymbols>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
@@ -24,10 +25,10 @@
     <Optimize>True</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <SignAssembly>True</SignAssembly>
+    <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <SignAssembly>False</SignAssembly>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
