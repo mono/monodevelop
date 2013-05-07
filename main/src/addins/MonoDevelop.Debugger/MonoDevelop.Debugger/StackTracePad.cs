@@ -74,6 +74,7 @@ namespace MonoDevelop.Debugger
 			tree.RulesHint = true;
 			tree.HeadersVisible = true;
 			tree.Selection.Mode = SelectionMode.Multiple;
+			tree.SearchEqualFunc = Search;
 			tree.EnableSearch = true;
 			tree.SearchColumn = 1;
 			tree.ButtonPressEvent += HandleButtonPressEvent;
@@ -129,6 +130,13 @@ namespace MonoDevelop.Debugger
 			DebuggingService.CallStackChanged += (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnClassStackChanged));
 			DebuggingService.CurrentFrameChanged += (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnFrameChanged));
 			tree.RowActivated += OnRowActivated;
+		}
+
+		bool Search (TreeModel model, int column, string key, TreeIter iter)
+		{
+			string value = (string) model.GetValue (iter, column);
+
+			return !value.Contains (key);
 		}
 		
 		void IPadContent.Initialize (IPadWindow window)
