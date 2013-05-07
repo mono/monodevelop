@@ -266,7 +266,7 @@ namespace MonoDevelop.Refactoring
 
 			var compilations = new List<Tuple<ICompilation, MonoDevelop.Projects.ProjectReference>> ();
 			compilations.Add (Tuple.Create (doc.Compilation, (MonoDevelop.Projects.ProjectReference)null));
-			var referencedItems = IdeApp.Workspace != null ? doc.Project.GetReferencedItems (IdeApp.Workspace.ActiveConfiguration).ToList () : new SolutionItem[0];
+			var referencedItems = IdeApp.Workspace != null ? doc.Project.GetReferencedItems (IdeApp.Workspace.ActiveConfiguration).ToList () : (IEnumerable<SolutionItem>) new SolutionItem[0];
 			foreach (var project in doc.Project.ParentSolution.GetAllProjects ()) {
 				if (project == doc.Project || referencedItems.Contains (project))
 					continue;
