@@ -320,8 +320,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public void MoveCursor (int relative)
 		{
 			int newIndex = GetIndex (false, SelectedItem) + relative;
+			newIndex = Math.Min (filteredItems.Count - 1, Math.Max (0, newIndex));
 			int newSelection = GetItem (false, newIndex);
-			if (newSelection < 0) 
+			if (newSelection < 0)
 				return;
 
 			if (SelectedItem == newSelection && relative < 0) {
@@ -417,7 +418,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			using (var context = Gdk.CairoHelper.Create (args.Window)) {
 				context.LineWidth = 1;
-				Gdk.Window window = args.Window;
 				var alloc = Allocation;
 				int width = alloc.Width;
 				int height = alloc.Height;
@@ -442,7 +442,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 					return false;
 				}
 
-				var fgGCNormal = this.Style.ForegroundGC (StateType.Normal);
 				var matcher = CompletionMatcher.CreateCompletionMatcher (CompletionString);
 				Iterate (true, ref yPos, delegate (Category category, int ypos) {
 					if (ypos >= height)

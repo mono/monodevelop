@@ -48,7 +48,7 @@ namespace MonoDevelop.Debugger
 			}
 		}
 		
-		public ObjectValuePad()
+		public ObjectValuePad ()
 		{
 			scrolled = new ScrolledWindow ();
 			scrolled.HscrollbarPolicy = PolicyType.Automatic;
@@ -120,7 +120,6 @@ namespace MonoDevelop.Debugger
 		
 		protected virtual void OnDebuggerPaused (object s, EventArgs a)
 		{
-			tree.Sensitive = true;
 		}
 		
 		protected virtual void OnDebuggerResumed (object s, EventArgs a)
@@ -129,13 +128,11 @@ namespace MonoDevelop.Debugger
 				tree.ChangeCheckpoint ();
 
 			initialResume = false;
-			tree.Sensitive = false;
 		}
 		
 		protected virtual void OnDebuggerStopped (object s, EventArgs a)
 		{
 			tree.ResetChangeTracking ();
-			tree.Sensitive = false;
 			initialResume = true;
 		}
 		

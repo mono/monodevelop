@@ -51,9 +51,14 @@ namespace MonoDevelop.Projects.Formats.MD1
 		DotNetProject Project {
 			get { return (DotNetProject) Item; }
 		}
-		
+
 		protected override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
+			if (!Project.InternalCheckNeedsBuild (configuration)) {
+				monitor.Log.WriteLine (GettextCatalog.GetString ("Skipping project since output files are up to date"));
+				return new BuildResult ();
+			}
+
 			DotNetProject project = Project;
 			
 			if (!project.TargetRuntime.IsInstalled (project.TargetFramework)) {

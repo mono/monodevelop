@@ -65,7 +65,6 @@ namespace MonoDevelop.Components.Docking
 		DockItemToolbar toolbarRight;
 
 		DockItemTitleTab titleTab;
-		bool allowPlaceholderDocking;
 
 		DockVisualStyle regionStyle;
 		DockVisualStyle itemStyle;

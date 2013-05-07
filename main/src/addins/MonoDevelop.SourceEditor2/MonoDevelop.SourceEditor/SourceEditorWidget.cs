@@ -236,9 +236,11 @@ namespace MonoDevelop.SourceEditor
 			void FancyFeaturesChanged (object sender, EventArgs e)
 			{
 				if (QuickTaskStrip.EnableFancyFeatures) {
+					GtkWorkarounds.SetOverlayScrollbarPolicy (scrolledWindow, PolicyType.Automatic, PolicyType.Never);
 					scrolledWindow.VScrollbar.SizeRequested += SuppressSize;
 					scrolledWindow.VScrollbar.ExposeEvent += SuppressExpose;
 				} else {
+					GtkWorkarounds.SetOverlayScrollbarPolicy (scrolledWindow, PolicyType.Automatic, PolicyType.Automatic);
 					scrolledWindow.VScrollbar.SizeRequested -= SuppressSize;
 					scrolledWindow.VScrollbar.ExposeEvent -= SuppressExpose;
 				}

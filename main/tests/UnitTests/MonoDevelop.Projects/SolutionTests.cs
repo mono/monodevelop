@@ -380,20 +380,10 @@ namespace MonoDevelop.Projects
 			
 			// Build the project, but not the references
 			
-			p.SetNeedsBuilding (true);
-			lib1.SetNeedsBuilding (true);
-			lib2.SetNeedsBuilding (true);
-			Assert.IsTrue (p.NeedsBuilding (config));
-			Assert.IsTrue (lib1.NeedsBuilding (config));
-			Assert.IsTrue (lib2.NeedsBuilding (config));
-			
 			res = p.Build (Util.GetMonitor (), config, false);
 			Assert.AreEqual (0, res.ErrorCount);
 			Assert.AreEqual (0, res.WarningCount);
 			Assert.AreEqual (1, res.BuildCount);
-			Assert.IsTrue (p.NeedsBuilding (config));   // True because references require building
-			Assert.IsTrue (lib1.NeedsBuilding (config));
-			Assert.IsTrue (lib2.NeedsBuilding (config));
 		}
 		
 		[Test()]

@@ -1095,14 +1095,12 @@ namespace MonoDevelop.Projects
 
 		internal void NotifyReferenceRemovedFromProject (ProjectReference reference)
 		{
-			SetNeedsBuilding (true);
 			NotifyModified ("References");
 			OnReferenceRemovedFromProject (new ProjectReferenceEventArgs (this, reference));
 		}
 
 		internal void NotifyReferenceAddedToProject (ProjectReference reference)
 		{
-			SetNeedsBuilding (true);
 			NotifyModified ("References");
 			OnReferenceAddedToProject (new ProjectReferenceEventArgs (this, reference));
 		}

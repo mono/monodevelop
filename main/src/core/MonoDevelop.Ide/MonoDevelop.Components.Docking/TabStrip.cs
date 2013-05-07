@@ -42,13 +42,11 @@ namespace MonoDevelop.Components.Docking
 	{
 		int currentTab = -1;
 		HBox box = new HBox ();
-		DockFrame frame;
 		Label bottomFiller = new Label ();
 		DockVisualStyle visualStyle;
 
 		public TabStrip (DockFrame frame)
 		{
-			this.frame = frame;
 			VBox vbox = new VBox ();
 			box = new TabStripBox () { TabStrip = this };
 			vbox.PackStart (box, false, false, 0);

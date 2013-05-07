@@ -70,12 +70,6 @@ namespace MonoDevelop.Debugger
 		{
 			tree.AddExpression (expression);
 		}
-
-		protected override void OnDebuggerStopped (object s, EventArgs a)
-		{
-			base.OnDebuggerStopped (s, a);
-			tree.Sensitive = true;
-		}
 		
 		#region IMementoCapable implementation 
 		

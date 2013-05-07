@@ -161,7 +161,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			//allow DTD but not try to resolve it from web
 			return new XmlReaderSettings () {
 				CloseInput = true,
-				ProhibitDtd = false,
+				DtdProcessing = DtdProcessing.Parse,
 				XmlResolver = null,
 			};
 		}

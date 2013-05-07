@@ -579,17 +579,7 @@ namespace MonoDevelop.Projects
 				monitor.EndTask ();
 			}
 		}
-		
-		protected internal override bool OnGetNeedsBuilding (ConfigurationSelector configuration)
-		{
-			return RootFolder.NeedsBuilding (configuration);
-		}
-		
-		protected internal override void OnSetNeedsBuilding (bool val, ConfigurationSelector configuration)
-		{
-			RootFolder.SetNeedsBuilding (val, configuration);
-		}
-		
+
 		protected virtual void OnStartupItemChanged(EventArgs e)
 		{
 			if (StartupItemChanged != null)

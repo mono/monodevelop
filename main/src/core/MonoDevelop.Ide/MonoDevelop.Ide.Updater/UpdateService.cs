@@ -36,7 +36,6 @@ namespace MonoDevelop.Ide.Updater
 	public static class UpdateService
 	{
 		static readonly TimeSpan AutoUpdateSpan = TimeSpan.FromDays (3);
-		static Timer autoUpdateTimer;
 
 		static UpdateService ()
 		{
@@ -46,7 +45,7 @@ namespace MonoDevelop.Ide.Updater
 
 		static void ScheduleUpdateRun ()
 		{
-			autoUpdateTimer = new Timer (_ => CheckForUpdates (true), null, AutoUpdateSpan, AutoUpdateSpan);
+			new Timer (_ => CheckForUpdates (true), null, AutoUpdateSpan, AutoUpdateSpan);
 		}
 		
 		public static bool AutoCheckForUpdates {

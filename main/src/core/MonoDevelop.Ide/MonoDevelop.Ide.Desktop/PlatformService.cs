@@ -28,6 +28,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -241,8 +242,8 @@ namespace MonoDevelop.Ide.Desktop
 					var mimeTypeNode = (MimeTypeNode)args.ExtensionNode;
 					switch (args.Change) {
 					case ExtensionChange.Add:
-							// initialize child nodes.
-						var initialize = mimeTypeNode.ChildNodes;
+						// initialize child nodes.
+						mimeTypeNode.ChildNodes.GetEnumerator ();
 						newList.Add (mimeTypeNode);
 						break;
 					case ExtensionChange.Remove:

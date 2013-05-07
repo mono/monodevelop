@@ -1044,14 +1044,14 @@ namespace Mono.Debugging.Soft
 			return met != null;
 		}
 		
-		public override bool IsExternalType (EvaluationContext gctx, object type)
+		public override bool IsExternalType (EvaluationContext ctx, object type)
 		{
-			SoftEvaluationContext ctx = (SoftEvaluationContext) gctx;
 			TypeMirror tm = type as TypeMirror;
+
 			if (tm != null)
-				return ctx.Session.IsExternalCode (tm);
-			else
-				return true;
+				return ((SoftEvaluationContext) ctx).Session.IsExternalCode (tm);
+
+			return true;
 		}
 
 		public override bool IsString (EvaluationContext ctx, object val)

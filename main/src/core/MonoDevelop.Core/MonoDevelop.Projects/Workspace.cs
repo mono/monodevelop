@@ -166,21 +166,6 @@ namespace MonoDevelop.Projects
 			throw new NotImplementedException ();
 		}
 		
-		protected internal override bool OnGetNeedsBuilding (ConfigurationSelector configuration)
-		{
-			foreach (WorkspaceItem it in Items) {
-				if (it.NeedsBuilding (configuration))
-					return true;
-			}
-			return false;
-		}
-		
-		protected internal override void OnSetNeedsBuilding (bool val, ConfigurationSelector configuration)
-		{
-			foreach (WorkspaceItem it in Items)
-				it.SetNeedsBuilding (val, configuration);
-		}
-		
 		public WorkspaceItem ReloadItem (IProgressMonitor monitor, WorkspaceItem item)
 		{
 			if (Items.IndexOf (item) == -1)

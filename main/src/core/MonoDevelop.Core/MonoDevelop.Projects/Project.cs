@@ -743,6 +743,11 @@ namespace MonoDevelop.Projects
 				isDirty = true;
 		}
 
+		internal bool InternalCheckNeedsBuild (ConfigurationSelector configuration)
+		{
+			return CheckNeedsBuild (configuration);
+		}
+
 		/// <summary>
 		/// Checks if the project needs to be built
 		/// </summary>
@@ -770,7 +775,7 @@ namespace MonoDevelop.Projects
 			}
 
 			foreach (SolutionItem pref in GetReferencedItems (configuration)) {
-				if (pref.GetLastBuildTime (configuration) > tim || pref.NeedsBuilding (configuration))
+				if (pref.GetLastBuildTime (configuration) > tim)
 					return true;
 			}
 

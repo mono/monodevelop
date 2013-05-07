@@ -69,7 +69,7 @@ namespace MonoDevelop.Components.MainToolbar
 		Cairo.Color fill2Color;
 		Cairo.Color fill3Color;*/
 
-		LazyImage btnNormal, btnPressed, btnInactive, btnHover;
+		LazyImage btnNormal/*, btnInactive, btnHover, btnPressed*/;
 
 		LazyImage iconRunNormal, iconRunDisabled;
 		LazyImage iconStopNormal, iconStopDisabled;
@@ -89,9 +89,9 @@ namespace MonoDevelop.Components.MainToolbar
 			SetSizeRequest (height, height);
 
 			btnNormal = new LazyImage ("btExecuteBase-Normal.png");
-			btnInactive = new LazyImage ("btExecuteBase-Disabled.png");
-			btnPressed = new LazyImage ("btExecuteBase-Pressed.png");
-			btnHover = new LazyImage ("btExecuteBase-Hover.png");
+//			btnInactive = new LazyImage ("btExecuteBase-Disabled.png");
+			//btnPressed = new LazyImage ("btExecuteBase-Pressed.png");
+//			btnHover = new LazyImage ("btExecuteBase-Hover.png");
 
 			iconRunNormal = new LazyImage ("icoExecute-Normal.png");
 			iconRunDisabled = new LazyImage ("icoExecute-Disabled.png");

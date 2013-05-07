@@ -917,7 +917,8 @@ Break when the hit count is less than
 Break when the hit count is less than or equal to
 Break when the hit count is equal to
 Break when the hit count is greater than
-Break when the hit count is greater than or equal to</property>
+Break when the hit count is greater than or equal to
+Break when the hit count is a multiple of</property>
                             <property name="Active">0</property>
                           </widget>
                           <packing>
