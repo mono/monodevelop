@@ -39,6 +39,7 @@ using System.Linq;
 
 namespace MonoDevelop.CSharpBinding.Refactoring
 {
+	[Ignore("Ignored till the tests run inside md.")]
 	[TestFixture]
 	public class ResolveNamespaceTests : UnitTests.TestBase
 	{
