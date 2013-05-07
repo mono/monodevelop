@@ -72,12 +72,12 @@ namespace Mono.Debugging.Evaluation
 		
 		public void SetRawValue (ObjectPath path, object value, EvaluationOptions options)
 		{
-			throw new System.NotImplementedException ();
+			throw new NotImplementedException ();
 		}
 		
 		public object GetRawValue (ObjectPath path, EvaluationOptions options)
 		{
-			throw new System.NotImplementedException ();
+			throw new NotImplementedException ();
 		}
 	}
 }
