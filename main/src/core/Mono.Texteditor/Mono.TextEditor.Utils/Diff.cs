@@ -483,12 +483,13 @@ namespace Mono.TextEditor.Utils
 
 			StringBuilder sb = new StringBuilder ();
 			IEnumerator<Hunk> he = diff.GetEnumerator ();
+			he.MoveNext ();
 
 			Queue<Hunk> qh = new Queue<Hunk> ();
-			Hunk current = he.Current;
+			Hunk current;
 			Hunk next;
 
-			if (current.IsEmpty && !he.MoveNext () && baseFileName.Equals (changedFileName))
+			if (he.Current.IsEmpty)
 				return "";
 
 			sb.AppendLine ("--- " + baseFileName);
