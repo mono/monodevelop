@@ -350,6 +350,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		static object projectWrapperUpdateLock = new object ();
 		public static ParsedDocument ParseFile (Project project, string fileName, string mimeType, TextReader content)
 		{
+			if (fileName == null)
+				throw new ArgumentNullException ("fileName");
 			var parser = GetParser (mimeType);
 			if (parser == null)
 				return null;
