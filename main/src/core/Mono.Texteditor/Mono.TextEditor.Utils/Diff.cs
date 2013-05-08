@@ -102,13 +102,16 @@ namespace Mono.TextEditor.Utils
 	public struct Hunk
 	{
 		public static readonly Hunk Empty = new Hunk (0, 0, 0, 0);
-		
+
 		public bool IsEmpty {
 			get {
 				return InsertStart <= 0;
 			}
 		}
-		
+
+		// TODO: Add option to change this value.
+		public readonly int Context;
+
 		public readonly int InsertStart;
 		public readonly int RemoveStart;
 
@@ -121,6 +124,17 @@ namespace Mono.TextEditor.Utils
 			this.RemoveStart = removeStart;
 			this.Removed = removed;
 			this.Inserted = inserted;
+			this.Context = 3;
+		}
+
+		public int DistanceTo(Hunk other)
+		{
+			return other.RemoveStart - (this.RemoveStart + this.Removed);
+		}
+
+		public bool Overlaps(Hunk other)
+		{
+			return DistanceTo (other) < this.Context * 2;
 		}
 
 		public static bool operator ==(Hunk left, Hunk right)
@@ -375,7 +389,7 @@ namespace Mono.TextEditor.Utils
 		// SMS
 
 		/// <summary>
-		/// This is the divide-and-conquer implementation of the longes common-subsequence (LCS)
+		/// This is the divide-and-conquer implementation of the longest common-subsequence (LCS)
 		/// algorithm.
 		/// The published algorithm passes recursively parts of the A and B sequences.
 		/// To avoid copying these arrays the lower and upper bounds are passed while the sequences stay constant.
@@ -424,28 +438,19 @@ namespace Mono.TextEditor.Utils
 			}
 		}
 		// LCS()
-		
-		
-		public static string GetDiffString (TextDocument baseDocument, TextDocument changedDocument)
+
+		static void WriteHunks (Queue<Hunk> qh, TextDocument baseDocument, TextDocument changedDocument, StringBuilder sb)
 		{
-			return GetDiffString (baseDocument.Diff (changedDocument), baseDocument, changedDocument, baseDocument.FileName, changedDocument.FileName);
-		}
-		
-		public static string GetDiffString (IEnumerable<Hunk> diff, TextDocument baseDocument, TextDocument changedDocument, string baseFileName, string changedFileName)
-		{
-			if (diff == null)
-				return "";
-			StringBuilder sb = new StringBuilder ();
-			sb.AppendLine ("--- " + baseFileName);
-			sb.AppendLine ("+++ " + changedFileName);
-			
-			foreach (var item in diff) {
-				int remStart = System.Math.Max (1, item.RemoveStart - 3);
-				int remEnd   = System.Math.Min (baseDocument.LineCount, item.RemoveStart + item.Removed + 3);
-				int insStart = System.Math.Max (1, item.InsertStart - 3);
-				int insEnd   = System.Math.Min (changedDocument.LineCount, item.InsertStart + item.Inserted + 3);
-				
-				sb.AppendLine ("@@ -" + remStart + "," + (remEnd - remStart) + " +" + insStart + "," + (insEnd - insStart) + " @@");
+			Hunk item;
+			int remStart;
+			int insStart;
+			int distance = 0;
+
+			do {
+				item = qh.Dequeue ();
+				remStart = System.Math.Max (1, item.RemoveStart - (distance != 0 ? distance : item.Context));
+				insStart = System.Math.Max (1, item.InsertStart - (distance != 0 ? distance : item.Context));
+
 				for (int i = System.Math.Min (remStart, insStart); i < item.RemoveStart; i++) {
 					sb.AppendLine (" " + baseDocument.GetLineText (i, false));
 				}
@@ -455,9 +460,72 @@ namespace Mono.TextEditor.Utils
 				for (int i = item.InsertStart; i < item.InsertStart + item.Inserted; i++) {
 					sb.AppendLine ("+" + changedDocument.GetLineText (i, false));
 				}
-				for (int i = item.RemoveStart + item.Removed; i < remEnd; i++) {
-					sb.AppendLine (" " + baseDocument.GetLineText (i, false));
+
+				if (qh.Count != 0)
+					distance = item.DistanceTo (qh.Peek ());
+			} while (qh.Count != 0);
+
+			int remEnd = System.Math.Min (baseDocument.LineCount, item.RemoveStart + item.Removed + item.Context);
+			for (int i = item.RemoveStart + item.Removed; i < remEnd; i++) {
+				sb.AppendLine (" " + baseDocument.GetLineText (i, false));
+			}
+		}
+
+		public static string GetDiffString (TextDocument baseDocument, TextDocument changedDocument)
+		{
+			return GetDiffString (baseDocument.Diff (changedDocument), baseDocument, changedDocument, baseDocument.FileName, changedDocument.FileName);
+		}
+
+		public static string GetDiffString (IEnumerable<Hunk> diff, TextDocument baseDocument, TextDocument changedDocument, string baseFileName, string changedFileName)
+		{
+			if (diff == null)
+				return "";
+
+			StringBuilder sb = new StringBuilder ();
+			IEnumerator<Hunk> he = diff.GetEnumerator ();
+
+			Queue<Hunk> qh = new Queue<Hunk> ();
+			Hunk current = he.Current;
+			Hunk next;
+
+			if (current.IsEmpty && !he.MoveNext () && baseFileName.Equals (changedFileName))
+				return "";
+
+			sb.AppendLine ("--- " + baseFileName);
+			sb.AppendLine ("+++ " + changedFileName);
+
+			current = he.Current;
+
+			qh.Enqueue (current);
+			int remStart = System.Math.Max (1, current.RemoveStart - current.Context);
+			int remEnd = System.Math.Min (baseDocument.LineCount, current.RemoveStart + current.Removed + current.Context);
+			int insStart = System.Math.Max (1, current.InsertStart - current.Context);
+			int insEnd = System.Math.Min (changedDocument.LineCount, current.InsertStart + current.Inserted + current.Context);
+
+			while (he.MoveNext ()) {
+				next = he.Current;
+
+				if (current.Overlaps (next)) {
+					// Change upper bounds.
+					remEnd = System.Math.Min (baseDocument.LineCount, next.RemoveStart + next.Removed + next.Context);
+					insEnd = System.Math.Min (changedDocument.LineCount, next.InsertStart + next.Inserted + next.Context);
+				} else {
+					sb.AppendLine ("@@ -" + remStart + "," + (remEnd - remStart) + " +" + insStart + "," + (insEnd - insStart) + " @@");
+					WriteHunks (qh, baseDocument, changedDocument, sb);
+
+					remStart = System.Math.Max (1, next.RemoveStart - next.Context);
+					remEnd = System.Math.Min (baseDocument.LineCount, next.RemoveStart + next.Removed + next.Context);
+					insStart = System.Math.Max (1, next.InsertStart - next.Context);
+					insEnd = System.Math.Min (changedDocument.LineCount, next.InsertStart + next.Inserted + next.Context);
 				}
+				qh.Enqueue (next);
+
+				current = next;
+			}
+
+			if (qh.Count != 0) {
+				sb.AppendLine ("@@ -" + remStart + "," + (remEnd - remStart) + " +" + insStart + "," + (insEnd - insStart) + " @@");
+				WriteHunks (qh, baseDocument, changedDocument, sb);
 			}
 			return sb.ToString ();
 		}
