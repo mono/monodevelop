@@ -66,22 +66,22 @@ namespace Mono.Debugging.Evaluation
 
 		public EvaluationResult SetValue (ObjectPath path, string value, EvaluationOptions options)
 		{
-			throw new NotSupportedException();
+			throw new NotSupportedException ();
 		}
 
 		public ObjectValue GetValue (ObjectPath path, EvaluationOptions options)
 		{
-			throw new NotSupportedException();
+			throw new NotSupportedException ();
 		}
 		
 		public object GetRawValue (ObjectPath path, EvaluationOptions options)
 		{
-			throw new System.NotImplementedException ();
+			throw new NotImplementedException ();
 		}
 		
 		public void SetRawValue (ObjectPath path, object value, EvaluationOptions options)
 		{
-			throw new System.NotImplementedException ();
+			throw new NotImplementedException ();
 		}
 		
 		#endregion

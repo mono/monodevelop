@@ -85,8 +85,10 @@ namespace MonoDevelop.CSharp
 				if (SupportedPlatforms.Contains (platform))
 					pars.PlatformTarget = platform;
 				string debugAtt = projectOptions.GetAttribute ("DefineDebug");
-				if (string.Compare ("True", debugAtt, StringComparison.OrdinalIgnoreCase) == 0)
+				if (string.Compare ("True", debugAtt, StringComparison.OrdinalIgnoreCase) == 0) {
 					pars.AddDefineSymbol ("DEBUG");
+					pars.DebugType = "full";
+				}
 				string releaseAtt = projectOptions.GetAttribute ("Release");
 				if (string.Compare ("True", releaseAtt, StringComparison.OrdinalIgnoreCase) == 0)
 					pars.Optimize = true;

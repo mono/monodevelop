@@ -135,12 +135,15 @@ namespace MonoDevelop.SourceEditor
 				
 				if (res is LocalResolveResult) {
 					var lr = (LocalResolveResult) res;
-					
-					// Use the start and end offsets of the variable region so that we get the "@" in variable names like "@class"
-					start = new DocumentLocation (lr.Variable.Region.BeginLine, lr.Variable.Region.BeginColumn);
-					end = new DocumentLocation (lr.Variable.Region.EndLine, lr.Variable.Region.EndColumn);
-					startOffset = editor.Document.LocationToOffset (start);
-					endOffset = editor.Document.LocationToOffset (end);
+
+					// In a setter, the 'value' variable will have a begin line/column of 0,0 which is an undefined offset
+					if (lr.Variable.Region.BeginLine != 0 && lr.Variable.Region.BeginColumn != 0) {
+						// Use the start and end offsets of the variable region so that we get the "@" in variable names like "@class"
+						start = new DocumentLocation (lr.Variable.Region.BeginLine, lr.Variable.Region.BeginColumn);
+						end = new DocumentLocation (lr.Variable.Region.EndLine, lr.Variable.Region.EndColumn);
+						startOffset = editor.Document.LocationToOffset (start);
+						endOffset = editor.Document.LocationToOffset (end);
+					}
 
 					expression = ed.GetTextBetween (startOffset, endOffset).Trim ();
 

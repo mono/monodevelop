@@ -367,10 +367,7 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (0, res.ErrorCount);
 			Assert.AreEqual (0, res.WarningCount);
 			Assert.AreEqual (3, res.BuildCount);
-			Assert.IsFalse (p.NeedsBuilding (config));
-			Assert.IsFalse (lib1.NeedsBuilding (config));
-			Assert.IsFalse (lib2.NeedsBuilding (config));
-			
+
 			Assert.IsTrue (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", "console-with-libs-mdp.exe")));
 			Assert.IsTrue (File.Exists (Util.Combine (p.BaseDirectory, "bin", "Debug", GetMdb ("console-with-libs-mdp.exe"))));
 			Assert.IsTrue (File.Exists (Util.Combine (lib1.BaseDirectory, "bin", "Debug", "library1.dll")));

@@ -214,9 +214,9 @@
 		<ItemProperty class = "MonoDevelop.Projects.SolutionItemConfiguration"
 			name = "UnitTestInformation" type = "MonoDevelop.NUnit.UnitTestOptionsSet" />
 		<ItemProperty class = "MonoDevelop.Projects.DotNetProject"
-			name = "TestRunnerType" type = "System.String" />
+			name = "TestRunnerType" type = "System.String" external="false" />
 		<ItemProperty class = "MonoDevelop.Projects.DotNetProject"
-			name = "TestRunnerAssembly" type = "MonoDevelop.Core.FilePath" />
+			name = "TestRunnerAssembly" type = "MonoDevelop.Core.FilePath" external="false" />
 	</Extension>
 
 </Addin>

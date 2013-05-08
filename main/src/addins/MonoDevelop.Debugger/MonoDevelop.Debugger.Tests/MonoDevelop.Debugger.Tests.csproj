@@ -31,9 +31,11 @@
     <Reference Include="System.Core" />
     <Reference Include="nunit.core">
       <HintPath>..\..\NUnit\lib\nunit.core.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\..\NUnit\lib\nunit.framework.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -89,6 +91,7 @@
     <ProjectReference Include="..\..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">
       <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>
       <Name>Mono.Addins</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

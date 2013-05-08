@@ -15,14 +15,8 @@
     <DebugType>full</DebugType>
     <Optimize>True</Optimize>
     <OutputPath>..\..\build\tests</OutputPath>
-    <DefineConstants>DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <Execution>
-      <Execution clr-version="Net_2_0" />
-    </Execution>
-  </PropertyGroup>
+    <DefineConstants>DEBUG</DefineConstants>333
+    <ErrorReport>prompt</ErrorReport><WarningLevel>4</WarningLevel><CheckForOverflowUnderflow>True</CheckForOverflowUnderflow><Execution><Execution clr-version="Net_2_0" /></Execution></PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>True</Optimize>
@@ -41,15 +35,18 @@
     <Reference Include="Mono.Cairo" />
     <Reference Include="nunit.core">
       <HintPath>..\..\src\addins\NUnit\lib\nunit.core.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="nunit.core.interfaces">
       <HintPath>..\..\src\addins\NUnit\lib\nunit.core.interfaces.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\..\src\addins\NUnit\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="nunit.util">
       <HintPath>..\..\src\addins\NUnit\lib\nunit.util.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <Private>False</Private>

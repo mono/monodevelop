@@ -266,14 +266,17 @@ namespace MonoDevelop.Refactoring
 
 			var compilations = new List<Tuple<ICompilation, MonoDevelop.Projects.ProjectReference>> ();
 			compilations.Add (Tuple.Create (doc.Compilation, (MonoDevelop.Projects.ProjectReference)null));
-			var referencedItems = doc.Project.GetReferencedItems (IdeApp.Workspace.ActiveConfiguration).ToList ();
-			foreach (var project in doc.Project.ParentSolution.GetAllProjects ()) {
-				if (project == doc.Project || referencedItems.Contains (project))
-					continue;
-				var comp = TypeSystemService.GetCompilation (project);
-				if (comp == null)
-					continue;
-				compilations.Add (Tuple.Create (comp, new MonoDevelop.Projects.ProjectReference (project)));
+			var referencedItems = IdeApp.Workspace != null ? doc.Project.GetReferencedItems (IdeApp.Workspace.ActiveConfiguration).ToList () : (IEnumerable<SolutionItem>) new SolutionItem[0];
+			var solution = doc.Project != null ? doc.Project.ParentSolution : null;
+			if (solution != null) {
+				foreach (var project in solution.GetAllProjects ()) {
+					if (project == doc.Project || referencedItems.Contains (project))
+						continue;
+					var comp = TypeSystemService.GetCompilation (project);
+					if (comp == null)
+						continue;
+					compilations.Add (Tuple.Create (comp, new MonoDevelop.Projects.ProjectReference (project)));
+				}
 			}
 
 			var netProject = doc.Project as DotNetProject;
