@@ -99,8 +99,7 @@ namespace Mono.Debugging.Evaluation
 				s2 += 8;
 			if (s1 > s2)
 				return v1.GetType ();
-			else
-				return v2.GetType ();
+			return v2.GetType ();
 		}
 
 		static bool IsUnsigned (object v)
@@ -476,8 +475,8 @@ namespace Mono.Debugging.Evaluation
 
 			if (self != null)
 				return LiteralValueReference.CreateTargetBaseObjectLiteral (ctx, expression, self.Value);
-			else
-				throw ParseError ("'base' reference not available in static methods.");
+
+			throw ParseError ("'base' reference not available in static methods.");
 		}
 
 		public ValueReference VisitBinaryOperatorExpression (BinaryOperatorExpression binaryOperatorExpression)
@@ -705,9 +704,9 @@ namespace Mono.Debugging.Evaluation
 			if (invokeBaseMethod)
 				vtype = ctx.Adapter.GetBaseType (ctx, vtype);
 
-			object res = ctx.Adapter.RuntimeInvoke (ctx, vtype, vtarget, methodName, types, args);
-			if (res != null)
-				return LiteralValueReference.CreateTargetObjectLiteral (ctx, expression, res);
+			object result = ctx.Adapter.RuntimeInvoke (ctx, vtype, vtarget, methodName, types, args);
+			if (result != null)
+				return LiteralValueReference.CreateTargetObjectLiteral (ctx, expression, result);
 
 			return LiteralValueReference.CreateVoidReturnLiteral (ctx, expression);
 		}
