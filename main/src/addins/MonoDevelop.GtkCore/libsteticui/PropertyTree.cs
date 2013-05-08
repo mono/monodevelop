@@ -536,7 +536,8 @@ namespace Stetic
 			else {
 				session.Dispose ();
 				((InternalTree)previous_parent).Editing = false;
-				box.Unparent ();
+				if (box.Parent != null)
+					box.Unparent ();
 			}
 		}
 		
