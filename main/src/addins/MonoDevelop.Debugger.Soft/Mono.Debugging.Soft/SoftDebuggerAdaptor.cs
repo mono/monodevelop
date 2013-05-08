@@ -425,7 +425,7 @@ namespace Mono.Debugging.Soft
 				type = type.BaseType;
 			}
 			
-			MethodMirror idx = OverloadResolve ((SoftEvaluationContext) ctx, targetType.Name, null, types, candidates, true);
+			MethodMirror idx = OverloadResolve ((SoftEvaluationContext) ctx, targetType, null, types, candidates, true);
 			int i = candidates.IndexOf (idx);
 			
 			MethodMirror getter = props[i].GetGetMethod (true);
@@ -1318,7 +1318,7 @@ namespace Mono.Debugging.Soft
 					currentType = currentType.BaseType;
 			}
 
-			return OverloadResolve (ctx, type.Name, methodName, argtypes, candidates, throwIfNotFound);
+			return OverloadResolve (ctx, type, methodName, argtypes, candidates, throwIfNotFound);
 		}
 
 		static bool IsApplicable (SoftEvaluationContext ctx, MethodMirror method, TypeMirror[] types, out string error, out int matchCount)
@@ -1347,16 +1347,19 @@ namespace Mono.Debugging.Soft
 			return true;
 		}
 
-		static MethodMirror OverloadResolve (SoftEvaluationContext ctx, string typeName, string methodName, TypeMirror[] argtypes, List<MethodMirror> candidates, bool throwIfNotFound)
+		static MethodMirror OverloadResolve (SoftEvaluationContext ctx, TypeMirror type, string methodName, TypeMirror[] argtypes, List<MethodMirror> candidates, bool throwIfNotFound)
 		{
 			if (candidates.Count == 0) {
 				if (throwIfNotFound) {
+					string typeName = ctx.Adapter.GetDisplayTypeName (ctx, type);
+
 					if (methodName == null)
 						throw new EvaluatorException ("Indexer not found in type `{0}'.", typeName);
 
 					throw new EvaluatorException ("Method `{0}' not found in type `{1}'.", methodName, typeName);
-				} else
-					return null;
+				}
+
+				return null;
 			}
 
 			if (argtypes == null) {
