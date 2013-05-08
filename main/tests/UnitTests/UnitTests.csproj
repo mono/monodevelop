@@ -43,7 +43,6 @@
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\..\src\addins\NUnit\lib\nunit.framework.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="nunit.util">
       <HintPath>..\..\src\addins\NUnit\lib\nunit.util.dll</HintPath>

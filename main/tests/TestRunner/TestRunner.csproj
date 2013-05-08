@@ -41,7 +41,6 @@
     </Reference>
     <Reference Include="nunit-console-runner">
       <HintPath>..\..\external\mdtestharness\lib\nunit-console-runner.dll</HintPath>
-      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
