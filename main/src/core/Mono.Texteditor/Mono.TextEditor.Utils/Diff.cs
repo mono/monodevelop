@@ -483,7 +483,7 @@ namespace Mono.TextEditor.Utils
 
 			StringBuilder sb = new StringBuilder ();
 			IEnumerator<Hunk> he = diff.GetEnumerator ();
-			he.Reset ();
+			he.MoveNext ();
 
 			Queue<Hunk> qh = new Queue<Hunk> ();
 			Hunk current;
