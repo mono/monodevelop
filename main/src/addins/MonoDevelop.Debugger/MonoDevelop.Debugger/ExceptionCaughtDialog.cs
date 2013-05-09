@@ -49,8 +49,6 @@ namespace MonoDevelop.Debugger
 			stackStore = new TreeStore (typeof(string), typeof(string), typeof(int), typeof(int));
 			treeStack.Model = stackStore;
 			var crt = new CellRendererText ();
-			crt.WrapWidth = 200;
-			crt.WrapMode = Pango.WrapMode.WordChar;
 			treeStack.AppendColumn ("", crt, "markup", 0);
 			treeStack.ShowExpanders = false;
 			
@@ -130,6 +128,7 @@ namespace MonoDevelop.Debugger
 					}
 					text += "</small>";
 				}
+
 				if (!it.Equals (TreeIter.Zero))
 					stackStore.AppendValues (it, text, frame.File, frame.Line, frame.Column);
 				else
