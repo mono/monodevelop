@@ -221,8 +221,8 @@ namespace Mono.Debugging.Client
 				ObjectValue file = frame.GetChild ("File");
 				if (file != null)
 					return file.Value;
-				else
-					return null;
+
+				return null;
 			}
 		}
 
@@ -231,8 +231,8 @@ namespace Mono.Debugging.Client
 				ObjectValue val = frame.GetChild ("Line");
 				if (val != null)
 					return int.Parse (val.Value);
-				else
-					return 0;
+
+				return 0;
 			}
 		}
 
@@ -241,8 +241,8 @@ namespace Mono.Debugging.Client
 				ObjectValue val = frame.GetChild ("Column");
 				if (val != null)
 					return int.Parse (val.Value);
-				else
-					return 0;
+
+				return 0;
 			}
 		}
 

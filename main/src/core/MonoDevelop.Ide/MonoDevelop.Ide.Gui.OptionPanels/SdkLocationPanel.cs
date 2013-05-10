@@ -158,7 +158,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			if (path.IsNullOrEmpty) {
 				return null;
 			}
-			path = path.FullPath;
+
+			try {
+				path = path.FullPath;
+			} catch {
+				return null;
+			}
 
 			//if it's a default path, blank it *unless* it overrides a higher priority default path
 			bool overridesHigherPriorityDefault = false;
