@@ -23,7 +23,7 @@
 	<binding command="MonoDevelop.Ide.Commands.EditCommands.FoldDefinitions" shortcut="Control+M|Control+O" />
 	<binding command="MonoDevelop.Ide.Commands.EditCommands.ToggleAllFoldings" shortcut="Control+M|Control+L" />
 	<binding command="MonoDevelop.Ide.Commands.EditCommands.ToggleFolding" shortcut="Control+M|Control+M" />
-	<binding command="MonoDevelop.Ide.Commands.EditCommands.ToggleCodeComment" shortcut="Control+K|C" />
+	<binding command="MonoDevelop.Ide.Commands.EditCommands.ToggleCodeComment" shortcut="Control+K|Control+C" />
 	<binding command="MonoDevelop.Ide.Commands.ProjectCommands.AddNewFiles" shortcut="Control+Shift+A" />
 	<binding command="MonoDevelop.Ide.Commands.ProjectCommands.AddItem" shortcut="Alt+Shift+A" />
 	<binding command="MonoDevelop.Ide.Commands.ViewCommands.ShowNext" shortcut="F8" />
