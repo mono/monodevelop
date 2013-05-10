@@ -51,6 +51,8 @@ using MonoDevelop.SourceEditor;
 using XmlDocIdLib;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -569,7 +571,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			if (nav == null)
 				return null;
-			bool searchType = helpUrl.StartsWith ("T:");
+			bool searchType = helpUrl.StartsWith ("T:", StringComparison.Ordinal);
 			do {
 				if (IsMatch (nav, helpUrl, searchType)) {
 					inspectEditor.ClearSelection ();
@@ -1173,36 +1175,89 @@ namespace MonoDevelop.AssemblyBrowser
 			ITreeNavigator nav = SearchMember (url);
 			if (definitions == null) // we've been disposed
 				return;
-			if (nav == null) {
-				if (currentAssembly != null) {
-					var cecilObject = loader.GetCecilObject (currentAssembly.UnresolvedAssembly);
-					if (cecilObject != null) {
-						foreach (var reference in cecilObject.MainModule.AssemblyReferences) {
-							string fileName = currentAssembly.LookupAssembly (reference.FullName);
-							if (string.IsNullOrEmpty (fileName))
-								continue;
-							AddReferenceByFileName (fileName, true);
-							nav = SearchMember (url);
-							if (nav != null)
-								break;
-						}
-					}
+			if (nav != null)
+				return;
+			if (currentAssembly != null) {
+				OpenFromAssembly (url, currentAssembly);
+			} else {
+				OpenFromAssemblyNames (url);
+			}
+		}
 
-				} else {
-					foreach (var definition in definitions.ToArray ()) {
-						var cecilObject = loader.GetCecilObject (definition.UnresolvedAssembly);
-						if (cecilObject == null)
-							continue;
-						foreach (var assemblyNameReference in cecilObject.MainModule.AssemblyReferences) {
-							AddReferenceByAssemblyName (assemblyNameReference);
-						}
+		void OpenFromAssembly (string url, AssemblyLoader currentAssembly)
+		{
+			var cecilObject = loader.GetCecilObject (currentAssembly.UnresolvedAssembly);
+			if (cecilObject == null) {
+				return;
+			};
+
+			int i = 0;
+			System.Action loadNext;
+			var references = cecilObject.MainModule.AssemblyReferences;
+			loadNext = () =>  {
+				var reference = references [i];
+				string fileName = currentAssembly.LookupAssembly (reference.FullName);
+				if (string.IsNullOrEmpty (fileName)) {
+					LoggingService.LogWarning ("Assembly browser: Can't find assembly: " + reference.FullName + ".");
+					if (++i == references.Count)
+						LoggingService.LogError ("Assembly browser: Can't find: " + url + ".");
+					else
+						loadNext ();
+					return;
+				}
+				var result = AddReferenceByFileName (fileName, true);
+				result.LoadingTask.ContinueWith (t2 => {
+					t2.Wait ();
+					if (definitions == null) // disposed
+						return;
+					var nav = SearchMember (url);
+					if (nav == null) {
+						if (++i == references.Count)
+							LoggingService.LogError ("Assembly browser: Can't find: " + url + ".");
+						else
+							loadNext ();
+					}
+				}, TaskScheduler.Current);
+			};
+		}
+
+		void OpenFromAssemblyNames (string url)
+		{
+			List<Task> tasks = new List<Task> ();
+			foreach (var definition in definitions.ToArray ()) {
+				var cecilObject = loader.GetCecilObject (definition.UnresolvedAssembly);
+				if (cecilObject == null) {
+					LoggingService.LogWarning ("Assembly browser: Can't find assembly: " + definition.UnresolvedAssembly.FullAssemblyName + ".");
+					continue;
+				}
+				foreach (var assemblyNameReference in cecilObject.MainModule.AssemblyReferences) {
+					var result = AddReferenceByAssemblyName (assemblyNameReference);
+					if (result == null) {
+						LoggingService.LogWarning ("Assembly browser: Can't find assembly: " + assemblyNameReference.FullName + ".");
+					} else {
+						tasks.Add (result.LoadingTask);
 					}
 				}
-				nav = SearchMember (url);
 			}
-			if (nav == null) {
-				LoggingService.LogError ("Can't open: " + url + " (not found).");
-			}
+			if (tasks.Count == 0) {
+				var nav = SearchMember (url);
+				if (nav == null) {
+					LoggingService.LogError ("Assembly browser: Can't find: " + url + ".");
+				}
+				return;
+			};
+			Task.Factory.ContinueWhenAll (tasks.ToArray (), tarr => {
+				var exceptions = tarr.Where (t => t.IsFaulted).Select (t => t.Exception).ToArray ();
+				if (exceptions != null) {
+					throw new AggregateException (exceptions).Flatten ();
+				}
+				if (definitions == null) // disposed
+					return;
+				var nav = SearchMember (url);
+				if (nav == null) {
+					LoggingService.LogError ("Assembly browser: Can't find: " + url + ".");
+				}
+			}, CancellationToken.None, TaskContinuationOptions.None, TaskScheduler.Current);
 		}
 		
 		public void SelectAssembly (string fileName)
