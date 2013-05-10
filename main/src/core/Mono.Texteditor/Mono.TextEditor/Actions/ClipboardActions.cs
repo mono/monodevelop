@@ -373,9 +373,7 @@ namespace Mono.TextEditor
 				clipboard.RequestText (delegate(Clipboard clp, string text) {
 					if (string.IsNullOrEmpty (text))
 						return;
-					using (var undo = data.OpenUndoGroup ()) {
-						result = PastePlainText (data, insertionOffset, text, preserveSelection);
-					}
+					result = PastePlainText (data, insertionOffset, text, preserveSelection);
 				});
 			}
 			
@@ -385,34 +383,34 @@ namespace Mono.TextEditor
 		static int PastePlainText (TextEditorData data, int offset, string text, bool preserveSelection = false, byte[] copyData = null)
 		{
 			int inserted = 0;
-			using (var undo = data.OpenUndoGroup ()) {
-				var version = data.Document.Version;
-				if (!preserveSelection)
-					data.DeleteSelectedText (!data.IsSomethingSelected || data.MainSelection.SelectionMode != SelectionMode.Block);
-				data.EnsureCaretIsNotVirtual ();
-				if (data.IsSomethingSelected && data.MainSelection.SelectionMode == SelectionMode.Block) {
-					var selection = data.MainSelection;
-					var visualInsertLocation = data.LogicalToVisualLocation (selection.Anchor);
-					for (int lineNumber = selection.MinLine; lineNumber <= selection.MaxLine; lineNumber++) {
-						var lineSegment = data.GetLine (lineNumber);
-						int insertOffset = lineSegment.GetLogicalColumn (data, visualInsertLocation.Column) - 1;
-						string textToInsert;
-						if (lineSegment.Length < insertOffset) {
-							int visualLastColumn = lineSegment.GetVisualColumn (data, lineSegment.Length + 1);
-							int charsToInsert = visualInsertLocation.Column - visualLastColumn;
-							int spaceCount = charsToInsert % data.Options.TabSize;
-							textToInsert = new string ('\t', (charsToInsert - spaceCount) / data.Options.TabSize) + new string (' ', spaceCount) + text;
-							insertOffset = lineSegment.Length;
-						} else {
-							textToInsert = text;
-						}
-						inserted = data.Insert (lineSegment.Offset + insertOffset, textToInsert);
+			var undo = data.OpenUndoGroup ();
+			var version = data.Document.Version;
+			if (!preserveSelection)
+				data.DeleteSelectedText (!data.IsSomethingSelected || data.MainSelection.SelectionMode != SelectionMode.Block);
+			data.EnsureCaretIsNotVirtual ();
+			if (data.IsSomethingSelected && data.MainSelection.SelectionMode == SelectionMode.Block) {
+				var selection = data.MainSelection;
+				var visualInsertLocation = data.LogicalToVisualLocation (selection.Anchor);
+				for (int lineNumber = selection.MinLine; lineNumber <= selection.MaxLine; lineNumber++) {
+					var lineSegment = data.GetLine (lineNumber);
+					int insertOffset = lineSegment.GetLogicalColumn (data, visualInsertLocation.Column) - 1;
+					string textToInsert;
+					if (lineSegment.Length < insertOffset) {
+						int visualLastColumn = lineSegment.GetVisualColumn (data, lineSegment.Length + 1);
+						int charsToInsert = visualInsertLocation.Column - visualLastColumn;
+						int spaceCount = charsToInsert % data.Options.TabSize;
+						textToInsert = new string ('\t', (charsToInsert - spaceCount) / data.Options.TabSize) + new string (' ', spaceCount) + text;
+						insertOffset = lineSegment.Length;
+					} else {
+						textToInsert = text;
 					}
-				} else {
-					offset = version.MoveOffsetTo (data.Document.Version, offset);
-					inserted = data.PasteText (offset, text, copyData);
+					inserted = data.Insert (lineSegment.Offset + insertOffset, textToInsert);
 				}
+			} else {
+				offset = version.MoveOffsetTo (data.Document.Version, offset);
+				inserted = data.PasteText (offset, text, copyData, ref undo);
 			}
+			undo.Dispose ();
 			return inserted;
 		}
 		

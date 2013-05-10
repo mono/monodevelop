@@ -1185,10 +1185,20 @@ namespace Mono.TextEditor
 			set;
 		}
 
-		public int PasteText (int offset, string text, byte[] copyData = null)
+		public int PasteText (int offset, string text, byte[] copyData, ref IDisposable undoGroup)
 		{
-			if (TextPasteHandler != null)
-				text = TextPasteHandler.FormatPlainText (offset, text, copyData);
+			if (TextPasteHandler != null) {
+				var newText = TextPasteHandler.FormatPlainText (offset, text, copyData);
+				if (newText != text) {
+					Insert (offset, text);
+					undoGroup.Dispose ();
+					undoGroup = OpenUndoGroup ();
+					var result = Replace (offset, text.Length, newText);
+					if (Paste != null)
+						Paste (offset, text, result);
+					return result;
+				}
+			}
 			var insertedChars = Insert (offset, text);
 			if (Paste != null)
 				Paste (offset, text, insertedChars);
