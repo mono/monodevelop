@@ -1187,14 +1187,13 @@ namespace MonoDevelop.AssemblyBrowser
 		void OpenFromAssembly (string url, AssemblyLoader currentAssembly)
 		{
 			var cecilObject = loader.GetCecilObject (currentAssembly.UnresolvedAssembly);
-			if (cecilObject == null) {
+			if (cecilObject == null)
 				return;
-			};
 
 			int i = 0;
-			System.Action loadNext;
+			System.Action loadNext = null;
 			var references = cecilObject.MainModule.AssemblyReferences;
-			loadNext = () =>  {
+			loadNext = () => {
 				var reference = references [i];
 				string fileName = currentAssembly.LookupAssembly (reference.FullName);
 				if (string.IsNullOrEmpty (fileName)) {
