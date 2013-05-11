@@ -2122,32 +2122,36 @@ namespace Mono.TextEditor
 
 			switch (this.mouseSelectionMode) {
 			case MouseSelectionMode.SingleChar:
-				if (!InSelectionDrag) {
-					textEditor.SetSelection (loc, loc);
-				} else {
-					textEditor.ExtendSelectionTo (loc);
+				if (loc.Line != Caret.Line || !textEditor.GetTextEditorData ().IsCaretInVirtualLocation) {
+					if (!InSelectionDrag) {
+						textEditor.SetSelection (loc, loc);
+					} else {
+						textEditor.ExtendSelectionTo (loc);
+					}
+					Caret.Location = loc;
 				}
-				Caret.Location = loc;
 				break;
 			case MouseSelectionMode.Word:
-				int offset = textEditor.Document.LocationToOffset (loc);
-				int start;
-				int end;
-				var data = textEditor.GetTextEditorData ();
-				if (offset < textEditor.SelectionAnchor) {
-					start = data.FindCurrentWordStart (offset);
-					end = data.FindCurrentWordEnd (textEditor.SelectionAnchor);
-					Caret.Offset = start;
-				} else {
-					start = data.FindCurrentWordStart (textEditor.SelectionAnchor);
-					end = data.FindCurrentWordEnd (offset);
-					Caret.Offset = end;
-				}
-				if (!textEditor.MainSelection.IsEmpty) {
-					if (Caret.Offset < mouseWordStart) {
-						textEditor.MainSelection = new Selection (Document.OffsetToLocation (mouseWordEnd), Caret.Location, textEditor.MainSelection.SelectionMode);
+				if (loc.Line != Caret.Line || !textEditor.GetTextEditorData ().IsCaretInVirtualLocation) {
+					int offset = textEditor.Document.LocationToOffset (loc);
+					int start;
+					int end;
+					var data = textEditor.GetTextEditorData ();
+					if (offset < textEditor.SelectionAnchor) {
+						start = data.FindCurrentWordStart (offset);
+						end = data.FindCurrentWordEnd (textEditor.SelectionAnchor);
+						Caret.Offset = start;
 					} else {
-						textEditor.MainSelection = new Selection (Document.OffsetToLocation (mouseWordStart), Caret.Location, textEditor.MainSelection.SelectionMode);
+						start = data.FindCurrentWordStart (textEditor.SelectionAnchor);
+						end = data.FindCurrentWordEnd (offset);
+						Caret.Offset = end;
+					}
+					if (!textEditor.MainSelection.IsEmpty) {
+						if (Caret.Offset < mouseWordStart) {
+							textEditor.MainSelection = new Selection (Document.OffsetToLocation (mouseWordEnd), Caret.Location, textEditor.MainSelection.SelectionMode);
+						} else {
+							textEditor.MainSelection = new Selection (Document.OffsetToLocation (mouseWordStart), Caret.Location, textEditor.MainSelection.SelectionMode);
+						}
 					}
 				}
 				break;
