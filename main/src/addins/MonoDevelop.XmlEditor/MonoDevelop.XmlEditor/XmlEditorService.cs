@@ -150,7 +150,7 @@ namespace MonoDevelop.XmlEditor
 			StringReader transformString = new StringReader (transform);
 			XPathDocument transformDocument = new XPathDocument (transformString);
 
-			XslCompiledTransform xslTransform = new XslCompiledTransform();
+			XslCompiledTransform xslTransform = new XslCompiledTransform ();
 			xslTransform.Load (transformDocument, null, new XmlUrlResolver ());
 
 			MemoryStream outputStream = new MemoryStream ();

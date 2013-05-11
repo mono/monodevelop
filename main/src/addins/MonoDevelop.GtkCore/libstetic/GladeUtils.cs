@@ -31,7 +31,7 @@ namespace Stetic {
 */
 
 			StringWriter sw = new StringWriter ();
-			XmlWriter xw = XmlWriter.Create(sw);
+			XmlWriter xw = XmlWriter.Create (sw);
 			Registry.GladeImportXsl.Transform (doc, xw);
 			XmlReader reader = XmlReader.Create (sw.ToString ());
 			doc = new XmlDocument ();
