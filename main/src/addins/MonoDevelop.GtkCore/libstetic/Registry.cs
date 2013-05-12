@@ -10,7 +10,7 @@ namespace Stetic {
 		static ArrayList libraries = new ArrayList ();
 		static ArrayList classes = new ArrayList ();
 		
-		static XslTransform gladeImport, gladeExport;
+		static XslCompiledTransform gladeImport, gladeExport;
 		static WidgetLibrary coreLib;
 		
 		public static event EventHandler RegistryChanging;
@@ -183,8 +183,8 @@ namespace Stetic {
 					doc.FirstChild.PrependChild (doc.ImportNode (elem, true));
 			}
 			
-			gladeImport = new XslTransform ();
-			gladeImport.Load (doc, null, null);
+			gladeImport = new XslCompiledTransform ();
+			gladeImport.Load (doc);
 				
 			doc = CreateGladeTransformBase ();
 			
@@ -193,8 +193,8 @@ namespace Stetic {
 					doc.FirstChild.PrependChild (doc.ImportNode (elem, true));
 			}
 			
-			gladeExport = new XslTransform ();
-			gladeExport.Load (doc, null, null);
+			gladeExport = new XslCompiledTransform ();
+			gladeExport.Load (doc);
 		}
 			
 		static XmlDocument CreateGladeTransformBase ()
@@ -218,13 +218,13 @@ namespace Stetic {
 			}
 		}
 
-		public static XslTransform GladeImportXsl {
+		public static XslCompiledTransform GladeImportXsl {
 			get {
 				return gladeImport;
 			}
 		}
 
-		public static XslTransform GladeExportXsl {
+		public static XslCompiledTransform GladeExportXsl {
 			get {
 				return gladeExport;
 			}

@@ -144,23 +144,23 @@ namespace MonoDevelop.XmlEditor
 		/// <returns>The output of the transform.</returns>
 		public static string Transform (string input, string transform)
 		{
-			StringReader inputString = new StringReader(input);
-			XPathDocument sourceDocument = new XPathDocument(inputString);
+			StringReader inputString = new StringReader (input);
+			XPathDocument sourceDocument = new XPathDocument (inputString);
 
-			StringReader transformString = new StringReader(transform);
-			XPathDocument transformDocument = new XPathDocument(transformString);
+			StringReader transformString = new StringReader (transform);
+			XPathDocument transformDocument = new XPathDocument (transformString);
 
-			XslTransform xslTransform = new XslTransform();
-			xslTransform.Load(transformDocument, new XmlUrlResolver(), null);
-			
-			MemoryStream outputStream = new MemoryStream();
-			XmlTextWriter writer = new XmlTextWriter(outputStream, Encoding.UTF8);
-			
-			xslTransform.Transform(sourceDocument, null, writer, new XmlUrlResolver());
+			XslCompiledTransform xslTransform = new XslCompiledTransform ();
+			xslTransform.Load (transformDocument, null, new XmlUrlResolver ());
 
-			int preambleLength = Encoding.UTF8.GetPreamble().Length;
-			byte[] outputBytes = outputStream.ToArray();
-			return UTF8Encoding.UTF8.GetString(outputBytes, preambleLength, outputBytes.Length - preambleLength);
+			MemoryStream outputStream = new MemoryStream ();
+			XmlTextWriter writer = new XmlTextWriter (outputStream, Encoding.UTF8);
+
+			xslTransform.Transform (sourceDocument, writer);
+
+			int preambleLength = Encoding.UTF8.GetPreamble ().Length;
+			byte[] outputBytes = outputStream.ToArray ();
+			return UTF8Encoding.UTF8.GetString (outputBytes, preambleLength, outputBytes.Length - preambleLength);
 		}
 		
 		public static string CreateSchema (Document doc, string xml)
@@ -345,17 +345,17 @@ namespace MonoDevelop.XmlEditor
 			return error? null: schema;
 		}
 		
-		public static XslTransform ValidateStylesheet (IProgressMonitor monitor, string xml, string fileName)
+		public static XslCompiledTransform ValidateStylesheet (IProgressMonitor monitor, string xml, string fileName)
 		{
 			monitor.BeginTask (GettextCatalog.GetString ("Validating stylesheet..."), 1);
 			bool error = true;
-			XslTransform xslt = null;
+			XslCompiledTransform xslt = null;
 			
 			try {
 				StringReader reader = new StringReader (xml);
 				XPathDocument doc = new XPathDocument (reader);
-				xslt = new XslTransform ();
-				xslt.Load (doc, new XmlUrlResolver (), null);
+				xslt = new XslCompiledTransform ();
+				xslt.Load (doc, null, new XmlUrlResolver ());
 				error = false;
 			} catch (XsltCompileException ex) {
 				monitor.ReportError (ex.Message, ex);
@@ -390,12 +390,16 @@ namespace MonoDevelop.XmlEditor
 			var dlg = new SelectFileDialog (GettextCatalog.GetString ("Select XSLT Stylesheet")) {
 				TransientFor = IdeApp.Workbench.RootWindow,
 			};
-			dlg.AddFilter (new SelectFileDialogFilter (GettextCatalog.GetString ("XML Files", "*.xml")) {
-				MimeTypes = { "text/xml", "application/xml" },
-			});
-			dlg.AddFilter (new SelectFileDialogFilter (GettextCatalog.GetString ("XSL Files"), "*.xslt", "*.xsl") {
-				MimeTypes = { "text/x-xslt" },
-			});
+			dlg.AddFilter (new SelectFileDialogFilter (
+				GettextCatalog.GetString ("XML Files"),
+				new string[] { "*.xml" },
+				new string[] { "text/xml", "application/xml" }
+			));
+			dlg.AddFilter (new SelectFileDialogFilter(
+				GettextCatalog.GetString ("XSL Files"),
+				new string[] { "*.xslt", "*.xsl" },
+				new string[] { "text/x-xslt" }
+			));
 			dlg.AddAllFilesFilter ();
 			
 			if (dlg.Run ())
