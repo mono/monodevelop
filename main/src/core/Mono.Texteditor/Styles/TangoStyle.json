@@ -41,8 +41,8 @@
 		{ "name": "Search result background", "color":"#F6B94D" },
 		{ "name": "Search result background (highlighted)", "color":"#E5992F" },
 
-        { "name": "Column Ruler", "color":"aluminium3" },
-        
+		{ "name": "Column Ruler", "color":"aluminium3" },
+
 		{ "name": "Fold Square", "color":"aluminium4", "secondcolor":"white" },
 		{ "name": "Fold Cross", "color":"aluminium4", "secondcolor":"white" },
 		
@@ -62,7 +62,7 @@
 		{ "name": "Completion Border", "color":"#C9C9C9" },
 		{ "name": "Completion Border(Inactive)", "color":"#666666" },
 
-        { "name": "Bookmarks", "color":"white", "secondcolor":"skyblue" },
+		{ "name": "Bookmarks", "color":"white", "secondcolor":"skyblue" },
 		
 		{ "name": "Underline(Error)", "color":"scarletred2" },
 		{ "name": "Underline(Warning)", "color":"butter2" },
@@ -79,20 +79,20 @@
 		{ "name": "Breakpoint Marker(Disabled)", "color":"white", "secondcolor":"#AB616B" },
 		{ "name": "Breakpoint Marker(Invalid)", "color":"#eddcdc", "secondcolor":"#eddcdc" },
 		
-        { "name": "Current Line Marker", "color":"aluminium1", "secondcolor":"aluminium2"},
-        { "name": "Current Line Marker(Inactive)", "color":"aluminium2", "secondcolor":"aluminium3"},
-		
-        { "name": "Debugger Current Line Marker", "color":"#ffff00", "secondcolor":"#ffffcc", "bordercolor":"#666600" },
-        { "name": "Debugger Stack Line Marker", "color":"#80ff80", "secondcolor":"#ccffcc", "bordercolor":"#336633"},
-        
-        { "name": "Primary Link", "color":"chameleon3", "secondcolor":"chameleon2"},
-        { "name": "Primary Link(Highlighted)", "color":"chameleon3", "secondcolor":"chameleon1"},
-        { "name": "Secondary Link", "color":"aluminium2", "secondcolor":"white"},
-        { "name": "Secondary Link(Highlighted)", "color":"aluminium3", "secondcolor":"aluminium1"},
-        
-        { "name": "Message Bubble Error", "color":"aluminium5", "secondcolor":"#f5eae7"},
-        { "name": "Message Bubble Warning", "color":"aluminium5", "secondcolor":"#f4eeda"}
-    ],
+		{ "name": "Current Line Marker", "color":"aluminium1", "secondcolor":"aluminium2"},
+		{ "name": "Current Line Marker(Inactive)", "color":"aluminium2", "secondcolor":"aluminium3"},
+
+		{ "name": "Debugger Current Line Marker", "color":"#ffff00", "secondcolor":"#ffffcc", "bordercolor":"#666600" },
+		{ "name": "Debugger Stack Line Marker", "color":"#80ff80", "secondcolor":"#ccffcc", "bordercolor":"#336633"},
+
+		{ "name": "Primary Link", "color":"chameleon3", "secondcolor":"chameleon2"},
+		{ "name": "Primary Link(Highlighted)", "color":"chameleon3", "secondcolor":"chameleon1"},
+		{ "name": "Secondary Link", "color":"aluminium2", "secondcolor":"white"},
+		{ "name": "Secondary Link(Highlighted)", "color":"aluminium3", "secondcolor":"aluminium1"},
+
+		{ "name": "Message Bubble Error", "color":"aluminium5", "secondcolor":"#f5eae7"},
+		{ "name": "Message Bubble Warning", "color":"aluminium5", "secondcolor":"#f4eeda"}
+	],
 
 	"text":[
 		{ "name": "Plain Text", "fore":"black", "back":"white" },
@@ -127,12 +127,12 @@
 		{ "name": "Xml Attribute", "fore":"orange2" },
 		{ "name": "Xml Attribute Quotes", "fore":"scarletred3" },
 		{ "name": "Xml Attribute Value", "fore":"scarletred3" },
-		{ "name": "Xml Comment", "fore":"chameleon3" },
+		{ "name": "Xml Comment", "fore":"aluminium4" },
 		{ "name": "Xml CData Section", "fore":"scarletred3" },
 		
 		{ "name": "Html Attribute Name", "fore":"orange2" },
 		{ "name": "Html Attribute Value", "fore":"scarletred3" },
-		{ "name": "Html Comment", "fore":"chameleon3" },
+		{ "name": "Html Comment", "fore":"aluminium4" },
 		{ "name": "Html Element Name", "fore":"skyblue3" },
 		{ "name": "Html Entity", "fore":"#c12dad" },
 		{ "name": "Html Operator", "fore":"skyblue3" },
@@ -146,23 +146,23 @@
 		{ "name": "Completion Selected Text", "fore":"#f8fcfc", "back":"#dff4f0" },
 		{ "name": "Completion Selected Text(Inactive)", "fore":"#434343", "back":"white" },
 
-		{ "name": "Keyword(Access)", "fore":"skyblue2", "weight":"Semibold" },
-		{ "name": "Keyword(Type)", "fore":"skyblue2", "weight":"Semibold" },
-		{ "name": "Keyword(Operator)", "fore":"skyblue2", "weight":"Semibold" },
-		{ "name": "Keyword(Selection)", "fore":"skyblue2", "weight":"Semibold" },
-		{ "name": "Keyword(Iteration)", "fore":"skyblue2", "weight":"Semibold" },
-		{ "name": "Keyword(Jump)", "fore":"skyblue2", "weight":"Semibold" },
-		{ "name": "Keyword(Context)", "fore":"skyblue2", "weight":"Semibold" },
-		{ "name": "Keyword(Exception)", "fore":"skyblue2", "weight":"Semibold" },
-		{ "name": "Keyword(Modifiers)", "fore":"skyblue2", "weight":"Semibold" },
-		{ "name": "Keyword(Constants)", "fore":"skyblue2", "weight":"Semibold" },
-		{ "name": "Keyword(Void)", "fore":"skyblue2", "weight":"Semibold" },
-		{ "name": "Keyword(Namespace)", "fore":"skyblue2", "weight":"Semibold" },
-		{ "name": "Keyword(Property)", "fore":"skyblue2", "weight":"Semibold" },
-		{ "name": "Keyword(Declaration)", "fore":"skyblue2", "weight":"Semibold" },
-		{ "name": "Keyword(Parameter)", "fore":"skyblue2", "weight":"Semibold" },
-		{ "name": "Keyword(Operator Declaration)", "fore":"skyblue2", "weight":"Semibold" },
-		{ "name": "Keyword(Other)", "fore":"skyblue2", "weight":"Semibold" },
+		{ "name": "Keyword(Access)", "fore":"skyblue2" },
+		{ "name": "Keyword(Type)", "fore":"skyblue2" },
+		{ "name": "Keyword(Operator)", "fore":"skyblue2" },
+		{ "name": "Keyword(Selection)", "fore":"skyblue2" },
+		{ "name": "Keyword(Iteration)", "fore":"skyblue2" },
+		{ "name": "Keyword(Jump)", "fore":"skyblue2" },
+		{ "name": "Keyword(Context)", "fore":"skyblue2" },
+		{ "name": "Keyword(Exception)", "fore":"skyblue2" },
+		{ "name": "Keyword(Modifiers)", "fore":"skyblue2" },
+		{ "name": "Keyword(Constants)", "fore":"skyblue2" },
+		{ "name": "Keyword(Void)", "fore":"skyblue2" },
+		{ "name": "Keyword(Namespace)", "fore":"skyblue2" },
+		{ "name": "Keyword(Property)", "fore":"skyblue2" },
+		{ "name": "Keyword(Declaration)", "fore":"skyblue2" },
+		{ "name": "Keyword(Parameter)", "fore":"skyblue2" },
+		{ "name": "Keyword(Operator Declaration)", "fore":"skyblue2" },
+		{ "name": "Keyword(Other)", "fore":"skyblue2" },
 		
 		{ "name": "User Types", "fore":"plum2" },
 		{ "name": "User Types(Enums)", "fore":"plum2" },
@@ -183,8 +183,8 @@
 		{ "name": "User Method Usage", "fore":"black" },
 		{ "name": "User Method Declaration", "fore":"black" },
 		
-		{ "name": "User Parameter Usage", "fore":"chameleon3" },
-		{ "name": "User Parameter Declaration", "fore":"chameleon3" },
+		{ "name": "User Parameter Usage", "fore":"black" },
+		{ "name": "User Parameter Declaration", "fore":"black" },
 
 		{ "name": "User Variable Usage", "fore":"black" },
 		{ "name": "User Variable Declaration", "fore":"black" },
