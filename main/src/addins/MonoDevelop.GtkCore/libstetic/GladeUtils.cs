@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Reflection;
 using System.Collections;
 using System.Runtime.InteropServices;
@@ -28,7 +29,11 @@ namespace Stetic {
 			    doctype.SystemId != Glade20SystemId)
 				throw new GladeException ("Not a glade file according to doctype");
 */
-			XmlReader reader = Registry.GladeImportXsl.Transform (doc, null, (XmlResolver)null);
+
+			StringWriter sw = new StringWriter ();
+			XmlWriter xw = XmlWriter.Create (sw);
+			Registry.GladeImportXsl.Transform (doc, xw);
+			XmlReader reader = XmlReader.Create (sw.ToString ());
 			doc = new XmlDocument ();
 			doc.PreserveWhitespace = true;
 			doc.Load (reader);
@@ -38,7 +43,10 @@ namespace Stetic {
 
 		public static XmlDocument XslExportTransform (XmlDocument doc)
 		{
-			XmlReader reader = Registry.GladeExportXsl.Transform (doc, null, (XmlResolver)null);
+			StringWriter sw = new StringWriter ();
+			XmlWriter xw = XmlWriter.Create (sw);
+			Registry.GladeExportXsl.Transform (doc, xw);
+			XmlReader reader = XmlReader.Create (sw.ToString ());
 			doc = new XmlDocument ();
 			doc.PreserveWhitespace = true;
 			doc.Load (reader);

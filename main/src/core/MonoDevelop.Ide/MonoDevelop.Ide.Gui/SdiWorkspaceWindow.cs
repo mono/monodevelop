@@ -346,7 +346,8 @@ namespace MonoDevelop.Ide.Gui
 			}
 			
 			if (content.IsDirty) {
-				IdeApp.ProjectOperations.MarkFileDirty (content.ContentName);
+				if (!String.IsNullOrEmpty (content.ContentName))
+					IdeApp.ProjectOperations.MarkFileDirty (content.ContentName);
 			} else if (content.IsReadOnly) {
 				newTitle += "+";
 			}
