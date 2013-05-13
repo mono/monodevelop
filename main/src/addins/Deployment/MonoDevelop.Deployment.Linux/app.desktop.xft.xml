@@ -6,10 +6,11 @@
 		<Icon>md-gui-file</Icon>
 		<_Category>Deployment</_Category>
 		<_Description>Creates a Desktop Entry file.</_Description>
+		<DefaultFilename>app</DefaultFilename>
 	</TemplateConfiguration>
 	
 	<TemplateFiles>
-<File DefaultExtension=".desktop" DefaultName="app">
+<File DefaultExtension=".desktop">
 [Desktop Entry]
 Encoding=UTF-8
 Type=Application

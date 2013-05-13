@@ -7,10 +7,11 @@
                 <_Category>General</_Category>
                 <LanguageName>VBNet</LanguageName>
                 <_Description>Creates an empty VB.Net file.</_Description>
+                <DefaultFilename>EmptyVBFile</DefaultFilename>
 	</TemplateConfiguration>
 	
 	<TemplateFiles>
-        <File DefaultExtension=".vb" DefaultName="EmptyVBfile" AddStandardHeader="True">
+        <File DefaultExtension=".vb" AddStandardHeader="True">
         </File>
 	</TemplateFiles>
 	

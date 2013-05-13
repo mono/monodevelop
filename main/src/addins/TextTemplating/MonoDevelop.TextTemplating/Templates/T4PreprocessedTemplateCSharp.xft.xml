@@ -9,6 +9,7 @@
 		<Icon></Icon>
 		<_Category>Text Templating</_Category>
 		<_Description>A T4 template that will be preprocessed into a partial class.</_Description>
+		<DefaultFilename>PreprocessedT4Template</DefaultFilename>
 	</TemplateConfiguration>
 	
 	<!-- Template Content -->

@@ -11,6 +11,7 @@
 		<Icon>md-project|res:c-icon-32.png</Icon>
 		<LanguageName>C</LanguageName>
 		<_Description>Creates an empty C solution.</_Description>
+		<DefaultFilename>EmptyCProject</DefaultFilename>
 	</TemplateConfiguration>
 	
 	<!-- Template Content -->

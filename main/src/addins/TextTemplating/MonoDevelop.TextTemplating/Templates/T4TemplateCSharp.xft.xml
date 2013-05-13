@@ -9,6 +9,7 @@
 		<Icon></Icon>
 		<_Category>Text Templating</_Category>
 		<_Description>A T4 template for generating code or text files.</_Description>
+		<DefaultFilename>T4Template</DefaultFilename>
 	</TemplateConfiguration>
 	
 	<!-- Template Content -->

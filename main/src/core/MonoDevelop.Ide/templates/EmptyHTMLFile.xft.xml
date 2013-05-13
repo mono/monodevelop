@@ -6,10 +6,11 @@
 		<Icon>md-html-file-icon</Icon>
 		<_Category>Web</_Category>
 		<_Description>Creates an empty HTML file.</_Description>
+		<DefaultFilename>EmptyHtmlFile</DefaultFilename>
 	</TemplateConfiguration>
 	
 	<TemplateFiles>
-		<File DefaultExtension=".html" DefaultName="EmptyHtmlfile"><![CDATA[
+		<File DefaultExtension=".html"><![CDATA[
 <html>
 	<head>
 		<title></title>

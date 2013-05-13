@@ -7,6 +7,7 @@
 		<_Category>Other</_Category>
 		<Icon>md-project|res:gettext-overlay-32.png</Icon>
 		<_Description>Creates a translation project.</_Description>
+		<DefaultFilename>TranslationProject</DefaultFilename>
 	</TemplateConfiguration>
 	
 	<!-- Template Content -->

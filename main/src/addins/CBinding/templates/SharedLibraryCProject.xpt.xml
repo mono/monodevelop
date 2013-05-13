@@ -11,6 +11,7 @@
 		<Icon>md-project-library|res:c-icon-32.png</Icon>
 		<LanguageName>C</LanguageName>
 		<_Description>Creates simple shared library C project.</_Description>
+		<DefaultFilename>SharedLibraryCProject</DefaultFilename>
 	</TemplateConfiguration>
 	
 	<!-- Template Content -->

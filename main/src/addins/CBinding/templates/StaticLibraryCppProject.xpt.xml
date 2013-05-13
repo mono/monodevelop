@@ -11,6 +11,7 @@
 		<Icon>md-project-library|res:cpp-icon-32.png</Icon>
 		<LanguageName>CPP</LanguageName>
 		<_Description>Creates simple static library C++ project.</_Description>
+		<DefaultFilename>StaticLibraryCppProject</DefaultFilename>
 	</TemplateConfiguration>
 	
 	<!-- Template Content -->

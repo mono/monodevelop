@@ -11,10 +11,11 @@
 		<_Category>General</_Category>
 		<LanguageName>C</LanguageName>
 		<_Description>Creates an empty C header file.</_Description>
+		<DefaultFilename>EmptyCHeaderFile</DefaultFilename>
 	</TemplateConfiguration>
 	
 	<TemplateFiles>
-		<File DefaultExtension=".h" DefaultName="EmptyCHeaderFile" AddStandardHeader="True"/>
+		<File DefaultExtension=".h" AddStandardHeader="True"/>
 	</TemplateFiles>
 	
 	<FileOptions/>
