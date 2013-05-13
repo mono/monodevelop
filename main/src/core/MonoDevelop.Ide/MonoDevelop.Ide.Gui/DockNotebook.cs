@@ -237,14 +237,16 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (tab == targetTabPosition)
 				return;
+			int targetPos = targetTabPosition.Index;
 			if (tab.Index > targetTabPosition.Index) {
 				pages.RemoveAt (tab.Index);
-				pages.Insert (targetTabPosition.Index, tab);
+				pages.Insert (targetPos, tab);
 			} else {
-				pages.Insert (targetTabPosition.Index + 1, tab);
+				pages.Insert (targetPos + 1, tab);
 				pages.RemoveAt (tab.Index);
 			}
-			UpdateIndexes (0);
+			IdeApp.Workbench.ReorderDocuments (tab.Index, targetPos);
+			UpdateIndexes (Math.Min (tab.Index, targetPos));
 			tabStrip.Update ();
 		}
 
@@ -635,7 +637,7 @@ namespace MonoDevelop.Ide.Gui
 				// If the user clicks and drags on the 'x' which closes the current
 				// tab we can end up with a null tab here
 				if (t == null)
-					return base.OnMotionNotifyEvent (evnt);;
+					return base.OnMotionNotifyEvent (evnt);
 				SetHighlightedTab (t);
 
 				var newOver = IsOverCloseButton (t, (int)evnt.X, (int)evnt.Y);
