@@ -11,6 +11,7 @@
 		<Icon>md-project|res:cpp-icon-32.png</Icon>
 		<LanguageName>CPP</LanguageName>
 		<_Description>Creates an empty C++ solution.</_Description>
+		<DefaultFilename>EmptyCppProject</DefaultFilename>
 	</TemplateConfiguration>
 	
 	<!-- Template Content -->

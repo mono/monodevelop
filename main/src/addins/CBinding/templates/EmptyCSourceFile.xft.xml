@@ -11,10 +11,11 @@
 		<_Category>General</_Category>
 		<LanguageName>C</LanguageName>
 		<_Description>Creates an empty C source file.</_Description>
+		<DefaultFilename>EmptyCSourceFile</DefaultFilename>
 	</TemplateConfiguration>
 	
 	<TemplateFiles>
-		<File DefaultExtension=".c" DefaultName="EmptyCSourceFile" AddStandardHeader="True"/>
+		<File DefaultExtension=".c" AddStandardHeader="True"/>
 	</TemplateFiles>
 	
 	<FileOptions/>

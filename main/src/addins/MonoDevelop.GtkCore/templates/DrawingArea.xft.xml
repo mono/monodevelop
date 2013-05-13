@@ -7,6 +7,7 @@
     <LanguageName>*</LanguageName>
     <ProjectType>DotNet</ProjectType>
     <_Description>Creates a custom Gtk.DrawingArea subclass.</_Description>
+    <DefaultFilename>DrawingArea</DefaultFilename>
   </TemplateConfiguration>
   <TemplateFiles>
     <CodeDomFile>

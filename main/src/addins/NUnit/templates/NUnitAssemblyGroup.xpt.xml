@@ -9,6 +9,7 @@
 		<_Category>NUnit</_Category>
 		<Icon>md-project|res:nunit-overlay-32.png</Icon>
 		<_Description>Create an NUnit assembly test collection</_Description>
+		<DefaultFilename>NUnitAssemblyGroup</DefaultFilename>
 	</TemplateConfiguration>
 	
 	<!-- Template Content -->

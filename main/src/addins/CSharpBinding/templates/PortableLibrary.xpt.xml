@@ -10,6 +10,7 @@
 		<Icon>md-project-library|res:csharp-icon-32.png</Icon>
 		<LanguageName>C#</LanguageName>
 		<_Description>Creates a C# library that can be used in Windows, Silverlight, Windows Phone, Xbox 360, MonoTouch and Mono for Android.</_Description>
+		<DefaultFilename>PortableLibrary</DefaultFilename>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->

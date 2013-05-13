@@ -10,6 +10,7 @@
 		<Icon>md-project|res:csharp-icon-32.png</Icon>
 		<LanguageName>C#</LanguageName>
 		<_Description>Creates an empty C# project.</_Description>
+		<DefaultFilename>EmptyProject</DefaultFilename>
 	</TemplateConfiguration>
 	
 	<Combine name = "${ProjectName}" directory = ".">
