@@ -1117,6 +1117,15 @@ namespace Mono.TextEditor
 			return EnsureIsNotVirtual (Caret.Location);
 		}
 
+		public bool IsCaretInVirtualLocation {
+			get {
+				DocumentLine documentLine = Document.GetLine (Caret.Line);
+				if (documentLine == null)
+					return true;
+				return Caret.Column > documentLine.Length + 1;
+			}
+		}
+
 		int EnsureIsNotVirtual (DocumentLocation loc)
 		{
 			return EnsureIsNotVirtual (loc.Line, loc.Column);

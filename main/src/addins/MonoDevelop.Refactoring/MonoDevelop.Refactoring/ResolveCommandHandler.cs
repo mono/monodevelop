@@ -299,6 +299,8 @@ namespace MonoDevelop.Refactoring
 				var compilation = comp.Item1;
 				var requiredReference = comp.Item2;
 				if (resolveResult is AmbiguousTypeResolveResult) {
+					if (compilation != doc.Compilation)
+						continue;
 					var aResult = resolveResult as AmbiguousTypeResolveResult;
 					var file = doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile;
 					var scope = file.GetUsingScope (location).Resolve (compilation);
