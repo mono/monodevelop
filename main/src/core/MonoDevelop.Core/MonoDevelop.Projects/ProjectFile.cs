@@ -70,7 +70,7 @@ namespace MonoDevelop.Projects
 		}
 
 		[ItemProperty("subtype")]
-		private Subtype subtype;
+		Subtype subtype;
 		public Subtype Subtype {
 			get { return subtype; }
 			set {
@@ -80,7 +80,7 @@ namespace MonoDevelop.Projects
 		}
 
 		[ItemProperty("data", DefaultValue = "")]
-		private string data = "";
+		string data = "";
 		public string Data {
 			get { return data; }
 			set {
@@ -265,7 +265,7 @@ namespace MonoDevelop.Projects
 					return Link;
 				if (project != null) {
 					var rel = project.GetRelativeChildPath (FilePath);
-					if (!rel.ToString ().StartsWith (".."))
+					if (!rel.ToString ().StartsWith ("..", StringComparison.Ordinal))
 						return rel;
 				}
 				return FilePath.FileName;
@@ -365,7 +365,7 @@ namespace MonoDevelop.Projects
 			get { return link; }
 			set {
 				if (link != value) {
-					if (value.IsAbsolute || value.ToString ().StartsWith (".."))
+					if (value.IsAbsolute || value.ToString ().StartsWith ("..", StringComparison.Ordinal))
 						throw new ArgumentException ("value");
 					link = value;
 					OnChanged ();
@@ -410,7 +410,9 @@ namespace MonoDevelop.Projects
 
 			set {
 				if (dependsOn != value) {
-					var oldPath = !string.IsNullOrEmpty (dependsOn) ? FilePath.ParentDirectory.Combine (Path.GetFileName (dependsOn)) : FilePath.Empty;
+					var oldPath = !string.IsNullOrEmpty (dependsOn)
+						? FilePath.ParentDirectory.Combine (Path.GetFileName (dependsOn))
+						: FilePath.Empty;
 					dependsOn = value;
 	
 					if (dependsOnFile != null) {
@@ -468,7 +470,10 @@ namespace MonoDevelop.Projects
 
 				//don't allow cyclic references
 				if (parentPath == FilePath) {
-					MonoDevelop.Core.LoggingService.LogWarning ("Cyclic dependency in project '{0}': file '{1}' depends on '{2}'", project == null ? "(none)" : project.Name, FilePath, parentPath);
+					LoggingService.LogWarning (
+						"Cyclic dependency in project '{0}': file '{1}' depends on '{2}'",
+						project == null ? "(none)" : project.Name, FilePath, parentPath
+					);
 					return true;
 				}
 
