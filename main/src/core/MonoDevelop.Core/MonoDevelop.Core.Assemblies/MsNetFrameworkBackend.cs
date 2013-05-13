@@ -60,6 +60,7 @@ namespace MonoDevelop.Core.Assemblies
 				yield return targetRuntime.RootDirectory.Combine (GetClrVersion (framework.ClrVersion));
 				break;
 			case "4.0":
+			case "4.5":
 				var fx40dir = targetRuntime.RootDirectory.Combine (GetClrVersion (framework.ClrVersion));
 				yield return fx40dir;
 				yield return fx40dir.Combine ("WPF");
