@@ -377,7 +377,7 @@ namespace MonoDevelop.Ide.Projects
 				}
 				
 				// Fill in a default name if text entry is empty or contains a default name
-				if ((string.IsNullOrEmpty (filename) || (previousDefaultEntryText == filename)) && !string.IsNullOrEmpty (template.DefaultFilename)) {
+				if (string.IsNullOrEmpty (filename) || previousDefaultEntryText == filename) {
 					previousDefaultEntryText = template.DefaultFilename;
 					name = template.DefaultFilename;
 				}

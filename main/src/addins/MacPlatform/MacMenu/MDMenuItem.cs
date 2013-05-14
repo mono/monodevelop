@@ -38,7 +38,8 @@ namespace MonoDevelop.MacIntegration.MacMenu
 	//TODO: autohide, arrray
 	class MDMenuItem : NSMenuItem, IUpdatableMenuItem
 	{
-		public static Selector ActionSel = new Selector ("run:");
+		public const string ActionSelName = "run:";
+		public static Selector ActionSel = new Selector (ActionSelName);
 
 		CommandEntry ce;
 		CommandManager manager;
@@ -58,7 +59,7 @@ namespace MonoDevelop.MacIntegration.MacMenu
 
 		public CommandEntry CommandEntry { get { return ce; } }
 
-		[Export ("run:")]
+		[Export (ActionSelName)]
 		public void Run (NSMenuItem sender)
 		{
 			var a = sender as MDExpandedArrayItem;

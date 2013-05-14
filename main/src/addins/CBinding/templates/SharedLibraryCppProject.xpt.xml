@@ -11,6 +11,7 @@
 		<Icon>md-project-library|res:cpp-icon-32.png</Icon>
 		<LanguageName>CPP</LanguageName>
 		<_Description>Creates simple shared library C++ project.</_Description>
+		<DefaultFilename>SharedLibraryCppProject</DefaultFilename>
 	</TemplateConfiguration>
 	
 	<!-- Template Content -->

@@ -548,15 +548,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				if (it == null) continue;
 
 				if (it is ProjectFile) {
-					ProjectFile file = (ProjectFile)it;
+					var file = (ProjectFile)it;
 
-					if (file.IsWildcard)  {
-						foreach (ProjectFile wildcardItem in file.ResolveWildcardItems ()) {
-							EntityItem.Items.Add (wildcardItem);
-							
-							// Thanks to IsOriginatedFromWildcard, this item will not be saved back to disk.
-							System.Diagnostics.Debug.Assert (wildcardItem.IsOriginatedFromWildcard);
-						}
+					if (file.Name.IndexOf ('*') > -1)  {
+						// Thanks to IsOriginatedFromWildcard, these expanded items will not be saved back to disk.
+						foreach (var expandedItem in ResolveWildcardItems (file))
+							EntityItem.Items.Add (expandedItem);
 
 						// Add to wildcard items (so it can be re-saved) instead of Items (where tools will 
 						// try to compile and display these nonstandard items
@@ -695,6 +692,66 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 			
 			Item.NeedsReload = false;
+		}
+
+		const string RecursiveDirectoryWildcard = "**";
+		static readonly char[] directorySeparators = new [] {
+			Path.DirectorySeparatorChar,
+			Path.AltDirectorySeparatorChar
+		};
+
+		static string GetWildcardDirectoryName (string path)
+		{
+			int indexOfLast = path.LastIndexOfAny (directorySeparators);
+			if (indexOfLast < 0)
+				return String.Empty;
+			return path.Substring (0, indexOfLast);
+		}
+
+		static string GetWildcardFileName (string path)
+		{
+			int indexOfLast = path.LastIndexOfAny (directorySeparators);
+			if (indexOfLast < 0)
+				return path;
+			if (indexOfLast == path.Length)
+				return String.Empty;
+			return path.Substring (indexOfLast + 1, path.Length - (indexOfLast + 1));
+		}
+
+		static IEnumerable<string> ExpandWildcardFilePath (string filePath)
+		{
+			if (String.IsNullOrWhiteSpace (filePath))
+				throw new ArgumentException ("Not a wildcard path");
+
+			string dir = GetWildcardDirectoryName (filePath);
+			string file = GetWildcardFileName (filePath);
+
+			if (String.IsNullOrEmpty (dir) || String.IsNullOrEmpty (file))
+				return null;
+
+			SearchOption searchOption = SearchOption.TopDirectoryOnly;
+			if (dir.EndsWith (RecursiveDirectoryWildcard, StringComparison.Ordinal)) {
+				dir = dir.Substring (0, dir.Length - RecursiveDirectoryWildcard.Length);
+				searchOption = SearchOption.AllDirectories;
+			}
+
+			if (!Directory.Exists (dir))
+				return null;
+
+			return Directory.GetFiles (dir, file, searchOption);
+		}
+
+		static IEnumerable<ProjectFile> ResolveWildcardItems (ProjectFile wildcardFile)
+		{
+			var paths = ExpandWildcardFilePath (wildcardFile.Name);
+			if (paths == null)
+				yield break;
+			foreach (var resolvedFilePath in paths) {
+				var projectFile = (ProjectFile)wildcardFile.Clone ();
+				projectFile.Name = resolvedFilePath;
+				projectFile.IsOriginatedFromWildcard = true;
+				yield return projectFile;
+			}
 		}
 
 		MSBuildPropertyGroup ExtractMergedtoprojectProperties (MSBuildSerializer ser, MSBuildPropertySet pgroup, SolutionItemConfiguration ob)

@@ -7,6 +7,7 @@
 		<_Category>NUnit</_Category>
 		<LanguageName>*</LanguageName>
 		<_Description>Creates a Test Fixture.</_Description>
+		<DefaultFilename>NUnitTestClass</DefaultFilename>
 	</TemplateConfiguration>
 	
 	<TemplateFiles>

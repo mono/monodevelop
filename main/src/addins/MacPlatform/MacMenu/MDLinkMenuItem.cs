@@ -43,7 +43,7 @@ namespace MonoDevelop.MacIntegration.MacMenu
 			Action = MDMenuItem.ActionSel;
 		}
 
-		[Export ("run")]
+		[Export (MDMenuItem.ActionSelName)]
 		public void Run ()
 		{
 			MonoDevelop.Ide.DesktopService.ShowUrl (lce.Url);

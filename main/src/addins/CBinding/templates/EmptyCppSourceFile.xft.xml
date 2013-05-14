@@ -11,10 +11,11 @@
 		<_Category>General</_Category>
 		<LanguageName>CPP</LanguageName>
 		<_Description>Creates an empty C++ source file.</_Description>
+		<DefaultFilename>EmptyCppSourceFile</DefaultFilename>
 	</TemplateConfiguration>
 	
 	<TemplateFiles>
-		<File DefaultExtension=".cpp" DefaultName="EmptyCfile" AddStandardHeader="True"/>
+		<File DefaultExtension=".cpp" AddStandardHeader="True"/>
 	</TemplateFiles>
 	
 	<FileOptions/>

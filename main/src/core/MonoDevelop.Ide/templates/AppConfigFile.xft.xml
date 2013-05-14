@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<Template Originator="Fawad Halim" Language="XML" Created="10/14/2004" LastModified="10/14/2004">
+<Template Originator="Fawad Halim" Language="XML" Created="10/14/2004" LastModified="05/01/2013">
 	
 	<TemplateConfiguration>
 		<_Name>Application Configuration File</_Name>
@@ -7,10 +7,11 @@
 		<_Category>Misc</_Category>
 		<ProjectType>DotNet</ProjectType>
 		<_Description>Creates a .NET application configuration file.</_Description>
+		<DefaultFilename>app</DefaultFilename>
 	</TemplateConfiguration>
 	
 	<TemplateFiles>
-		<File DefaultExtension=".config" DefaultName="app">
+		<File DefaultExtension=".config">
 			<![CDATA[<?xml version="1.0" encoding="utf-8" ?>
 <configuration>
 </configuration>]]>

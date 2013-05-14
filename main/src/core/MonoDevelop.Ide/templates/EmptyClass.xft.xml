@@ -7,6 +7,7 @@
 		<_Category>General</_Category>
 		<LanguageName>*</LanguageName>
 		<_Description>Creates an empty class.</_Description>
+		<DefaultFilename>EmptyClass</DefaultFilename>
 	</TemplateConfiguration>
 	
 	<TemplateFiles>

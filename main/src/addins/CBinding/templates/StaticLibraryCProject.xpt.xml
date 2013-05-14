@@ -11,6 +11,7 @@
 		<Icon>md-project-library|res:c-icon-32.png</Icon>
 		<LanguageName>C</LanguageName>
 		<_Description>Creates simple static library C project.</_Description>
+		<DefaultFilename>StaticLibraryCProject</DefaultFilename>
 	</TemplateConfiguration>
 	
 	<!-- Template Content -->
