@@ -1187,7 +1187,14 @@ namespace MonoDevelop.Ide.Gui
 				ignorePageSwitch = false;
 			}
 		}
-		
+
+		internal void ReorderTab (int oldPlacement, int newPlacement)
+		{
+			DockNotebookTab tab = (DockNotebookTab)tabControl.GetTab (oldPlacement);
+			DockNotebookTab targetTab = (DockNotebookTab)tabControl.GetTab (newPlacement);
+			tabControl.ReorderTab (tab, targetTab);
+		}
+
 		#endregion
 
 		#region Dock Item management
