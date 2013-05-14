@@ -120,10 +120,14 @@ namespace MonoDevelop.SourceEditor
 
 				if (res is NamespaceResolveResult ||
 				    res is ConversionResolveResult ||
+				    res is ConstantResolveResult ||
 				    res is ForEachResolveResult ||
 				    res is TypeIsResolveResult ||
 				    res is TypeOfResolveResult ||
 				    res is ErrorResolveResult)
+					return null;
+
+				if (res.IsCompileTimeConstant)
 					return null;
 				
 				var start = new DocumentLocation (expressionRegion.BeginLine, expressionRegion.BeginColumn);
@@ -193,7 +197,7 @@ namespace MonoDevelop.SourceEditor
 					}
 					
 					// If the TargetResult is not null, then treat it like any other ResolveResult.
-				} else if (res is ConstantResolveResult) {
+				} else if (res is NamedArgumentResolveResult) {
 					// Fall through...
 				} else if (res is ThisResolveResult) {
 					// Fall through...
