@@ -257,7 +257,7 @@ namespace MonoDevelop.CSharp.Formatting
 						data.Editor.Replace (translatedOffset, replaceLength, insertText);
 					}, (replaceOffset, replaceLength, insertText) => {
 						int translatedOffset = realTextDelta + replaceOffset;
-						if (translatedOffset < 0 || translatedOffset + replaceLength > data.Editor.Length)
+						if (translatedOffset < 0 || translatedOffset + replaceLength > data.Editor.Length || replaceLength < 0)
 							return true;
 						return data.Editor.GetTextAt (translatedOffset, replaceLength) == insertText;
 					});

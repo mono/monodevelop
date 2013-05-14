@@ -30,10 +30,10 @@ using System;
 using System.Collections.Generic;
 
 using Mono.TextEditor;
+using MonoDevelop.Debugger;
 using MonoDevelop.Components;
 using Mono.Debugging.Client;
 using TextEditor = Mono.TextEditor.TextEditor;
-using MonoDevelop.Debugger;
 
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
@@ -99,20 +99,16 @@ namespace MonoDevelop.SourceEditor
 				return null;
 			
 			var ed = (ExtensibleTextEditor)editor;
-			
-			string expression = null;
 			int startOffset = 0, length = 0;
+			DomRegion expressionRegion;
+			string expression = null;
+			ResolveResult res;
+
 			if (ed.IsSomethingSelected && offset >= ed.SelectionRange.Offset && offset <= ed.SelectionRange.EndOffset) {
 				expression = ed.SelectedText;
 				startOffset = ed.SelectionRange.Offset;
 				length = ed.SelectionRange.Length;
-			} else {
-				DomRegion expressionRegion;
-				ResolveResult res = ed.GetLanguageItem (offset, out expressionRegion);
-				
-				if (res == null || res.IsError || res.GetType () == typeof (ResolveResult))
-					return null;
-				
+			} else if ((res = ed.GetLanguageItem (offset, out expressionRegion)) != null && !res.IsError && res.GetType () != typeof (ResolveResult)) {
 				//Console.WriteLine ("res is a {0}", res.GetType ().Name);
 				
 				if (expressionRegion.IsEmpty)
@@ -120,10 +116,14 @@ namespace MonoDevelop.SourceEditor
 
 				if (res is NamespaceResolveResult ||
 				    res is ConversionResolveResult ||
+				    res is ConstantResolveResult ||
 				    res is ForEachResolveResult ||
 				    res is TypeIsResolveResult ||
 				    res is TypeOfResolveResult ||
 				    res is ErrorResolveResult)
+					return null;
+
+				if (res.IsCompileTimeConstant)
 					return null;
 				
 				var start = new DocumentLocation (expressionRegion.BeginLine, expressionRegion.BeginColumn);
@@ -193,7 +193,7 @@ namespace MonoDevelop.SourceEditor
 					}
 					
 					// If the TargetResult is not null, then treat it like any other ResolveResult.
-				} else if (res is ConstantResolveResult) {
+				} else if (res is NamedArgumentResolveResult) {
 					// Fall through...
 				} else if (res is ThisResolveResult) {
 					// Fall through...
@@ -205,6 +205,12 @@ namespace MonoDevelop.SourceEditor
 				
 				if (expression == null)
 					expression = ed.GetTextBetween (start, end);
+			} else {
+				var data = editor.GetTextEditorData ();
+				startOffset = data.FindCurrentWordStart (offset);
+				int endOffset = data.FindCurrentWordEnd (offset);
+
+				expression = ed.GetTextBetween (ed.OffsetToLocation (startOffset), ed.OffsetToLocation (endOffset));
 			}
 			
 			if (string.IsNullOrEmpty (expression))
