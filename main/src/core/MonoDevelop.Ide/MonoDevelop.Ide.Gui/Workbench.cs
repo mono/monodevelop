@@ -971,7 +971,7 @@ namespace MonoDevelop.Ide.Gui
 			return null;
 		}
 
-		public void ReorderTab (int oldPlacement, int newPlacement)
+		internal void ReorderTab (int oldPlacement, int newPlacement)
 		{
 			workbench.ReorderTab (oldPlacement, newPlacement);
 		}

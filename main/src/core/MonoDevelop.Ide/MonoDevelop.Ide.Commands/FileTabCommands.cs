@@ -41,7 +41,7 @@ namespace MonoDevelop.Ide.Commands
 		CloseAllButThis,
 		CopyPathName,
 		ToggleMaximize,
-		OpenLastTab
+		ReopenClosedTab
 	}
 	
 	class CloseAllButThisHandler : CommandHandler
