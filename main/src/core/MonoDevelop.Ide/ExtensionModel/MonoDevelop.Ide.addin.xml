@@ -255,6 +255,7 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseFile" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseAllFiles" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileTabCommands.CloseAllButThis" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileTabCommands.ReopenClosedTab" />
 		<SeparatorItem id = "CloseSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.Save" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.SaveAll" />

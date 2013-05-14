@@ -40,6 +40,7 @@ namespace MonoDevelop.Ide.Navigation
 	public static class NavigationHistoryService
 	{
 		static HistoryList history = new HistoryList ();
+		static HistoryList closedHistory = new HistoryList ();
 		
 		//used to prevent re-logging the current point during a switch
 		static bool switching;
@@ -59,7 +60,16 @@ namespace MonoDevelop.Ide.Navigation
 				history.Clear ();
 				OnHistoryChanged ();
 			};
-			
+
+			IdeApp.Workbench.DocumentClosed += delegate(object sender, DocumentEventArgs e) {
+				ClosedDocumentNavigationPoint point = new ClosedDocumentNavigationPoint (
+					e.Document.FileName, IdeApp.Workbench.Documents.IndexOf (IdeApp.Workbench.ActiveDocument)
+				);
+				NavigationHistoryItem item = new NavigationHistoryItem (point);
+				closedHistory.AddPoint (item);
+				OnClosedHistoryChanged ();
+			};
+
 			//keep nav points up to date
 			TextEditorService.LineCountChanged += LineCountChanged;
 			TextEditorService.LineCountChangesCommitted += CommitCountChanges;
@@ -202,6 +212,20 @@ namespace MonoDevelop.Ide.Navigation
 		}
 		
 		#endregion
+
+		#region Closed Document List
+
+		public static bool HasClosedDocuments {
+			get { return closedHistory.Current != null; }
+		}
+
+		public static void OpenLastClosedDocument () {
+			if (closedHistory.Current != null) {
+				closedHistory.Current.Show ();
+			}
+		}
+
+		#endregion
 		
 		public static IList<NavigationHistoryItem> GetNavigationList (int desiredLength)
 		{
@@ -227,11 +251,18 @@ namespace MonoDevelop.Ide.Navigation
 		}
 		
 		public static event EventHandler HistoryChanged;
+		public static event EventHandler ClosedHistoryChanged;
 		
 		static void OnHistoryChanged ()
 		{
 			if (HistoryChanged != null)
 				HistoryChanged (null, EventArgs.Empty);
+		}
+
+		static void OnClosedHistoryChanged ()
+		{
+			if (ClosedHistoryChanged != null)
+				ClosedHistoryChanged (null, EventArgs.Empty);
 		}
 		
 		#region Handling active doc change events
@@ -307,15 +338,22 @@ namespace MonoDevelop.Ide.Navigation
 		
 		static void FileRenamed (object sender, ProjectFileRenamedEventArgs e)
 		{
-			bool changed = false;
+			bool historyChanged = false;
+			bool closedHistoryChanged = false;
 			foreach (ProjectFileRenamedEventInfo args in e) {
 				foreach (NavigationHistoryItem point in history) {
 					DocumentNavigationPoint dp = point.NavigationPoint as DocumentNavigationPoint;
-					changed &= (dp != null && dp.HandleRenameEvent (args.OldName, args.NewName));
+					historyChanged &= (dp != null && dp.HandleRenameEvent (args.OldName, args.NewName));
+				}
+				foreach (NavigationHistoryItem point in history) {
+					ClosedDocumentNavigationPoint cdp = point.NavigationPoint as ClosedDocumentNavigationPoint;
+					closedHistoryChanged &= (cdp != null && cdp.HandleRenameEvent (args.OldName, args.NewName));
 				}
 			}
-			if (changed)
+			if (historyChanged)
 				OnHistoryChanged ();
+			if (closedHistoryChanged)
+				OnClosedHistoryChanged ();
 		}
 		
 		#endregion

@@ -403,4 +403,5 @@ namespace MonoDevelop.Ide.Commands
 	// MonoDevelop.Ide.Commands.FileTabCommands.CloseAllButThis    Implemented in FileTabCommands.cs
 	// MonoDevelop.Ide.Commands.CopyPathNameHandler                Implemented in FileTabCommands.cs
 	// MonoDevelop.Ide.Commands.FileTabCommands.ToggleMaximize     Implemented in FileTabCommands.cs
+	// MonoDevelop.Ide.Commands.FileTabCommands.ReopenClosedTab    Implemented in FileTabCommands.cs
 }

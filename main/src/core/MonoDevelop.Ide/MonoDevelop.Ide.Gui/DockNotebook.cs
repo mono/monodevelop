@@ -233,12 +233,12 @@ namespace MonoDevelop.Ide.Gui
 				PageRemoved (this, EventArgs.Empty);
 		}
 
-		internal void ReorderTab (DockNotebookTab tab, DockNotebookTab targetTabPosition)
+		internal void ReorderTab (DockNotebookTab tab, DockNotebookTab targetTab)
 		{
-			if (tab == targetTabPosition)
+			if (tab == targetTab)
 				return;
-			int targetPos = targetTabPosition.Index;
-			if (tab.Index > targetTabPosition.Index) {
+			int targetPos = targetTab.Index;
+			if (tab.Index > targetTab.Index) {
 				pages.RemoveAt (tab.Index);
 				pages.Insert (targetPos, tab);
 			} else {
