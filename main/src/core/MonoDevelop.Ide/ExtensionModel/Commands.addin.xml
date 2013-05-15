@@ -681,7 +681,7 @@
 	<Category _name = "Help" id = "Help">
 	
 	<Command id = "MonoDevelop.Ide.Commands.HelpCommands.Help"
-			_label = "Help" 
+			_label = "API Documentation"
 			icon = "gtk-help"
 			_description = "Show help"
 			defaultHandler = "MonoDevelop.Ide.Commands.HelpHandler"
