@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Globalization;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Text.RegularExpressions;
 using Mono.Addins;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects;
@@ -40,6 +41,7 @@ using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using Cecil = Mono.Cecil;
+using System.Text;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
@@ -58,7 +60,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		static Dictionary<string,RemoteBuildEngine> builders = new Dictionary<string, RemoteBuildEngine> ();
 		static GenericItemTypeNode genericItemTypeNode = new GenericItemTypeNode ();
-		
+        static readonly Regex environmentVariableRegex = new Regex(@"\$\([a-zA-Z0-9_]+\)");
 		public static DataContext DataContext {
 			get {
 				if (dataContext == null) {
@@ -336,15 +338,33 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return true;
 			return false;
 		}
-		
+
+        internal static string ExpandEnvironmentVariables(string path)
+        {
+            int copied_so_far = 0;
+            StringBuilder output = new StringBuilder();
+            foreach (Match match in environmentVariableRegex.Matches(path))
+            {
+                output.Append(path.Substring(copied_so_far, match.Index - copied_so_far));
+                var ev = match.Value.Substring(2,match.Length - 3);
+                var expanded_ev = Environment.GetEnvironmentVariable(ev);
+                output.Append(expanded_ev);
+                copied_so_far += match.Value.Length;
+            }
+            if (copied_so_far < path.Length)
+                output.Append(path.Substring(copied_so_far, path.Length - copied_so_far));
+            return output.ToString();
+        }
+
 		internal static bool FromMSBuildPath (string basePath, string relPath, out string resultPath)
 		{
 			resultPath = relPath;
 			
 			if (string.IsNullOrEmpty (relPath))
 				return false;
-			
-			string path = UnescapePath (relPath);
+
+            string expandedPath = ExpandEnvironmentVariables(relPath);
+			string path = UnescapePath (expandedPath);
 
 			if (char.IsLetter (path [0]) && path.Length > 1 && path[1] == ':') {
 				if (Platform.IsWindows) {
