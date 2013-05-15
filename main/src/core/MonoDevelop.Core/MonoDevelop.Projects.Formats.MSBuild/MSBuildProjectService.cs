@@ -339,22 +339,22 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return false;
 		}
 
-        internal static string ExpandEnvironmentVariables(string path)
-        {
-            int copied_so_far = 0;
-            StringBuilder output = new StringBuilder();
-            foreach (Match match in environmentVariableRegex.Matches(path))
-            {
-                output.Append(path.Substring(copied_so_far, match.Index - copied_so_far));
-                var ev = match.Value.Substring(2,match.Length - 3);
-                var expanded_ev = Environment.GetEnvironmentVariable(ev);
-                output.Append(expanded_ev);
-                copied_so_far += match.Value.Length;
-            }
-            if (copied_so_far < path.Length)
-                output.Append(path.Substring(copied_so_far, path.Length - copied_so_far));
-            return output.ToString();
-        }
+		internal static string ExpandEnvironmentVariables(string path)
+		{
+			int copied_so_far = 0;
+			StringBuilder output = new StringBuilder();
+			foreach (Match match in environmentVariableRegex.Matches(path))
+			{
+				output.Append(path.Substring(copied_so_far, match.Index - copied_so_far));
+				var ev = match.Value.Substring(2,match.Length - 3);
+				var expanded_ev = Environment.GetEnvironmentVariable(ev);
+				output.Append(expanded_ev);
+				copied_so_far += match.Value.Length;
+			}
+			if (copied_so_far < path.Length)
+				output.Append(path.Substring(copied_so_far, path.Length - copied_so_far));
+			return output.ToString();
+		}
 
 		internal static bool FromMSBuildPath (string basePath, string relPath, out string resultPath)
 		{
@@ -363,7 +363,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (string.IsNullOrEmpty (relPath))
 				return false;
 
-            string expandedPath = ExpandEnvironmentVariables(relPath);
+			string expandedPath = ExpandEnvironmentVariables(relPath);
 			string path = UnescapePath (expandedPath);
 
 			if (char.IsLetter (path [0]) && path.Length > 1 && path[1] == ':') {
