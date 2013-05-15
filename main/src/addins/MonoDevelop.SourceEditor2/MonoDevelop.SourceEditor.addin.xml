@@ -7,16 +7,16 @@
        description = "Provides a text editor for the MonoDevelop based on Mono.TextEditor"
        category    = "MonoDevelop Core"
        flags       = "Hidden"
-       version     = "4.0.6">
+       version     = "4.0.7">
 	
 	<Runtime>
 		<Import assembly="MonoDevelop.SourceEditor2.dll"/>
 	</Runtime>
 
 	<Dependencies>
-	    <Addin id="Core" version="4.0.6"/>
-	    <Addin id="Ide" version="4.0.6"/>
-	    <Addin id="Debugger" version="4.0.6"/>
+	    <Addin id="Core" version="4.0.7"/>
+	    <Addin id="Ide" version="4.0.7"/>
+	    <Addin id="Debugger" version="4.0.7"/>
 	</Dependencies>
 
 	<!-- Extension points -->
