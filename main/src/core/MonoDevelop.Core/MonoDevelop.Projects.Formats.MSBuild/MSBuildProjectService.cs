@@ -339,6 +339,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return false;
 		}
 
+		internal static bool IsMacroContainingMSBuildPath(string path)
+		{
+			return path.Contains('$');
+		}
+
 		internal static string ExpandEnvironmentVariables(string path)
 		{
 			int copied_so_far = 0;
@@ -363,8 +368,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (string.IsNullOrEmpty (relPath))
 				return false;
 
-			string expandedPath = ExpandEnvironmentVariables(relPath);
-			string path = UnescapePath (expandedPath);
+			string path = UnescapePath (relPath);
 
 			if (char.IsLetter (path [0]) && path.Length > 1 && path[1] == ':') {
 				if (Platform.IsWindows) {

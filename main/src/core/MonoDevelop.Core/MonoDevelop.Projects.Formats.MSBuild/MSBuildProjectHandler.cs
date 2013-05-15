@@ -824,7 +824,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					if (buildItem.HasMetadata ("HintPath")) {
 						string hintPath = buildItem.GetMetadata ("HintPath");
 						string path;
-						if (!MSBuildProjectService.FromMSBuildPath (dotNetProject.ItemDirectory, hintPath, out path)) {
+						if (MSBuildProjectService.IsMacroContainingMSBuildPath(hintPath)) {
+							pref = new ProjectReference(ReferenceType.Assembly, hintPath);
+							pref.SetInvalid(GettextCatalog.GetString("Reference hint path contains MSBuild macros"));
+							pref.ExtendedProperties["_OriginalMSBuildReferenceHintPathHasMacros"] = true;
+							pref.ExtendedProperties["_OriginalMSBuildReferenceInclude"] = buildItem.Include;
+							pref.ExtendedProperties["_OriginalMSBuildReferenceHintPath"] = hintPath;
+						} else if (!MSBuildProjectService.FromMSBuildPath (dotNetProject.ItemDirectory, hintPath, out path)) {
 							pref = new ProjectReference (ReferenceType.Assembly, path);
 							pref.SetInvalid (GettextCatalog.GetString ("Invalid file path"));
 							pref.ExtendedProperties ["_OriginalMSBuildReferenceInclude"] = buildItem.Include;
@@ -1374,11 +1380,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (pref.ReferenceType == ReferenceType.Assembly) {
 				string asm = null;
 				string hintPath = null;
-				if (pref.ExtendedProperties.Contains ("_OriginalMSBuildReferenceInclude")) {
+				if (pref.ExtendedProperties.Contains("_OriginalMSBuildReferenceHintPathHasMacros")) {
+					asm = (string)pref.ExtendedProperties["_OriginalMSBuildReferenceInclude"];
+					hintPath = (string)pref.ExtendedProperties["_OriginalMSBuildReferenceHintPath"];
+				} else if (pref.ExtendedProperties.Contains ("_OriginalMSBuildReferenceInclude")) {
 					asm = (string) pref.ExtendedProperties ["_OriginalMSBuildReferenceInclude"];
 					hintPath = (string) pref.ExtendedProperties ["_OriginalMSBuildReferenceHintPath"];
-				}
-				else {
+				} else {
 					if (File.Exists (pref.Reference)) {
 						try {
 							var aname = AssemblyName.GetAssemblyName (pref.Reference);

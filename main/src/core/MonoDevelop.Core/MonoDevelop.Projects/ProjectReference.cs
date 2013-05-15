@@ -37,6 +37,7 @@ using System.ComponentModel;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core.Assemblies;
+using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Projects
 {
@@ -323,6 +324,22 @@ namespace MonoDevelop.Projects
 				return new string[] { s };
 			return new string [0];
 		}
+
+		public void InterpretMacrosInPathAsEnvironmentVariables()
+		{
+			string err_msg = this.ValidationErrorMessage;
+			if (err_msg != null && err_msg == GettextCatalog.GetString("Reference hint path contains MSBuild macros")) {
+				var expanded_path = MSBuildProjectService.ExpandEnvironmentVariables(this.Reference);
+				string cleaned_path;
+				if (MSBuildProjectService.FromMSBuildPath(this.OwnerProject.BaseDirectory, expanded_path, out cleaned_path)
+						&& File.Exists(cleaned_path)) {
+					this.Reference = cleaned_path;
+					this.ExtendedProperties["_OriginalMSBuildReferenceHintPathExpanded"] = cleaned_path;
+					SetInvalid(null);
+				}
+			}
+		}
+
 		/*
 		void AddRequiredPackages (List<string> result, SystemPackage fromPackage)
 		{
