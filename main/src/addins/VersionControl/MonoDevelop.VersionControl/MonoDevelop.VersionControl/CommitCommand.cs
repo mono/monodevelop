@@ -19,10 +19,11 @@ namespace MonoDevelop.VersionControl
 				if (test) return true;
 				ChangeSet cset  = item.Repository.CreateChangeSet (item.Path);
 				cset.GlobalComment = VersionControlService.GetCommitComment (cset.BaseLocalPath);
-				
+
 				foreach (VersionInfo vi in item.Repository.GetDirectoryVersionInfo (item.Path, false, true))
 					if (vi.HasLocalChanges)
 						cset.AddFile (vi);
+
 				if (!cset.IsEmpty) {
 					Commit (item.Repository, cset, false);
 				} else {

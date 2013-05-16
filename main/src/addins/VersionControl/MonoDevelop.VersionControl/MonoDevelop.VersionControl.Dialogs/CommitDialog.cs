@@ -75,10 +75,15 @@ namespace MonoDevelop.VersionControl.Dialogs
 			foreach (ChangeSetItem info in changeSet.Items) {
 				Gdk.Pixbuf statusicon = VersionControlService.LoadIconForStatus (info.Status);
 				string lstatus = VersionControlService.GetStatusLabel (info.Status);
-				
-				string localpath = (!info.LocalPath.IsChildPathOf (changeSet.BaseLocalPath)?
-				                    ".":
-				                    (string) info.LocalPath.ToRelative (changeSet.BaseLocalPath)); 
+				string localpath;
+
+				if (info.IsDirectory)
+					localpath = (!info.LocalPath.IsChildPathOf (changeSet.BaseLocalPath)?
+									".":
+									(string) info.LocalPath.ToRelative (changeSet.BaseLocalPath));
+				else
+					localpath = System.IO.Path.GetFileName((string) info.LocalPath);
+
 				if (localpath.Length > 0 && localpath[0] == System.IO.Path.DirectorySeparatorChar) localpath = localpath.Substring(1);
 				if (localpath == "") { localpath = "."; } // not sure if this happens
 				
