@@ -154,6 +154,7 @@ namespace project1 {
 			var compilation = TypeSystemService.GetCompilation (project1);
 
 			var typeA = compilation.MainAssembly.GetTypeDefinition ("project1", "A", 0);
+			Assert.IsNotNull (typeA);
 			TestCollectProjects (solution, new [] { typeA }, new [] { project1 });
 			TestCollectProjects (solution, typeA.GetMembers (), new [] { project1 });
 			TestCollectProjects (solution, typeA.GetMembers (m => m.Name == "Method1"), new [] { project1 });
@@ -161,6 +162,7 @@ namespace project1 {
 
 			project2.References.Add (new MonoDevelop.Projects.ProjectReference (project1));
 			var typeB = compilation.MainAssembly.GetTypeDefinition ("project1", "B", 0);
+			Assert.IsNotNull (typeB);
 			TestCollectProjects (solution, new [] { typeB }, new Project [] { project1, project2 });
 			TestCollectProjects (solution, typeB.GetMembers (), new Project [] { project1, project2 });
 			TestCollectProjects (solution, typeB.GetMembers (m => m.Name == "Method1"), new [] { project1 });
