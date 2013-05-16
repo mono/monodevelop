@@ -280,9 +280,16 @@
 		<ProjectType guid = "{1C533B1C-72DD-4CB1-9F6B-BF11D93BCFBE}" name = "MonoMac" platforms="mac" addin = "MonoMac" />
 		<ProjectType guid = "{948B3504-5B70-4649-8FE4-BDE1FB46EC69}" name = "MonoMac" platforms="mac" addin = "MonoMac" />
 		<ProjectType guid = "{42C0BBD9-55CE-4FC1-8D90-A7348ABAFB23}" name = "Xamarin.Mac" platforms="mac" product = "Xamarin.Mac" />
-		<ProjectType guid = "{E613F3A2-FE9C-494F-B74E-F63BCB86FEA6}" name = "Xamarin.iOS" platforms="mac" product = "Xamarin.iOS" />
-		<ProjectType guid = "{6BC8ED88-2882-458C-8E55-DFD12B67127B}" name = "Xamarin.iOS" platforms="mac" product = "Xamarin.iOS" />
-		<ProjectType guid = "{F5B4F3BC-B597-4E2B-B552-EF5D8A32436F}" name = "Xamarin.iOS" platforms="mac" product = "Xamarin.iOS" />
+		<Condition id="Platform" value="!windows">
+			<ProjectType guid = "{E613F3A2-FE9C-494F-B74E-F63BCB86FEA6}" name = "Xamarin.iOS" platforms="mac" product = "Xamarin.iOS" />
+			<ProjectType guid = "{6BC8ED88-2882-458C-8E55-DFD12B67127B}" name = "Xamarin.iOS" platforms="mac" product = "Xamarin.iOS" />
+			<ProjectType guid = "{F5B4F3BC-B597-4E2B-B552-EF5D8A32436F}" name = "Xamarin.iOS" platforms="mac" product = "Xamarin.iOS" />
+		</Condition>
+		<Condition id="Platform" value="windows">
+			<ProjectType guid = "{E613F3A2-FE9C-494F-B74E-F63BCB86FEA6}" _instructions = "Xamarin.iOS projects are not supported in MonoDevelop. You need to use Visual Studio." />
+			<ProjectType guid = "{6BC8ED88-2882-458C-8E55-DFD12B67127B}" _instructions = "Xamarin.iOS projects are not supported in MonoDevelop. You need to use Visual Studio." />
+			<ProjectType guid = "{F5B4F3BC-B597-4E2B-B552-EF5D8A32436F}" _instructions = "Xamarin.iOS projects are not supported in MonoDevelop. You need to use Visual Studio." />
+		</Condition>
 		<ProjectType guid = "{EFBA0AD7-5A72-4C68-AF49-83D382785DCF}" name = "Xamarin.Android" platforms="win;mac" product = "Xamarin.Android" />
 		<ProjectType guid = "{10368E6C-D01B-4462-8E8B-01FC667A7035}" name = "Xamarin.Android" platforms="win;mac" product = "Xamarin.Android" />
 		<ProjectType guid = "{F85E285D-A4E0-4152-9332-AB1D724D3325}" name = "ASP.NET MVC 2" addin = "ASP.NET MVC" />
