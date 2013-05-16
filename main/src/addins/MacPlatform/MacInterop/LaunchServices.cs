@@ -45,6 +45,47 @@ namespace MonoDevelop.MacInterop
 		public bool Async { get; set; }
 		public bool NewInstance { get; set; }
 	}
+
+	public class LaunchServicesException : Exception
+	{
+		public LaunchServicesException (int errorCode)
+			 : base ("Failed to start process: " + LookupErrorMessage (errorCode))
+		{
+		}
+
+		static string LookupErrorMessage (int errorCode)
+		{
+			switch (errorCode) {
+			case -10660: return "Can not launch applications from trash folder";
+			case -10661: return "Incorrect executable";
+			case -10662: return "Attribute not found";
+			case -10663: return "The attribute not settable";
+			case -10664: return "Incompatible application version";
+			case -10665: return "Required Rosetta environment not found";
+			case -10810: return "Unknown error";
+			case -10811: return "Not an application";
+			case -10813: return "Data Unavailable";
+			case -10814: return "Application not found";
+			case -10815: return "Unknown item type";
+			case -10816: return "Data too old";
+			case -10817: return "Data error";
+			case -10818: return "Launch in progress";
+			case -10819: return "Not registered";
+			case -10820: return "App does not claim type";
+			case -10821: return "App does not support scheme";
+			case -10822: return "Server communication error";
+			case -10823: return "Cannot set info";
+			case -10824: return "No registration info";
+			case -10825: return "App is incompatible with the system version";
+			case -10826: return "No launch permission";
+			case -10827: return "Executable is missing";
+			case -10828: return "Required Classic environment not found";
+			case -10829: return "Multiple sessions not supported";
+			default:
+				return String.Format ("Unknown LaunchServices return code {0}", errorCode);
+			}
+		}
+	}
 	
 	public static class LaunchServices
 	{
@@ -102,7 +143,7 @@ namespace MonoDevelop.MacInterop
 				
 				var status = LSOpenApplication (ref appParams, out psn);
 				if (status != OSStatus.Ok)
-					throw new Exception ("Failed to start process: " + ((int)status).ToString ());
+					throw new LaunchServicesException ((int)status);
 			} finally {
 				if (appParams.application != IntPtr.Zero)
 					Marshal.FreeHGlobal (appParams.application);
