@@ -142,8 +142,10 @@ namespace MonoDevelop.Projects
 				MonoTargetRuntimeFactory.UnregisterRuntime((MonoTargetRuntime) targetRuntime);
 			}
 
-			foreach (var err in res.Errors) {
-				Console.Error.WriteLine (err);
+			if (res != null) {
+				foreach (var err in res.Errors) {
+					Console.Error.WriteLine (err);
+				}
 			}
 
 			return (res == null || res.ErrorCount == 0) ? 0 : 1;
