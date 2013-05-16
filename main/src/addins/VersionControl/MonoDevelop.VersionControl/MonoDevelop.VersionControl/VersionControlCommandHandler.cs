@@ -75,7 +75,7 @@ namespace MonoDevelop.VersionControl
 			IWorkspaceObject pentry;
 			Repository repo;
 			VersionInfo versionInfo = null;
-			
+
 			if (obj is ProjectFile) {
 				ProjectFile file = (ProjectFile)obj;
 				path = file.FilePath;

@@ -261,8 +261,8 @@
 				<CommandItem id = "MonoDevelop.VersionControl.Commands.Update"/>
 				<Condition id="ItemType" value="IFolderItem">
 					<CommandItem id = "MonoDevelop.VersionControl.Commands.Status"/>
-					<CommandItem id = "MonoDevelop.VersionControl.Commands.Commit"/>
 				</Condition>
+				<CommandItem id = "MonoDevelop.VersionControl.Commands.Commit"/>
 				<CommandItem id = "MonoDevelop.VersionControl.Commands.Diff"/>
 				<CommandItem id = "MonoDevelop.VersionControl.Commands.CreatePatch"/>
 				<CommandItem id = "MonoDevelop.VersionControl.Commands.Log"/>
