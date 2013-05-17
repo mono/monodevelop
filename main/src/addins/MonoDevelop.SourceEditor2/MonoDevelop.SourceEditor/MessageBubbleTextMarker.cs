@@ -551,7 +551,7 @@ namespace MonoDevelop.SourceEditor
 					g.Stroke ();
 				} else {
 // draw 'arrow marker' in the same line
-					if (errors.Count > 1) {
+				//	if (errors.Count > 1) {
 						g.MoveTo (new Cairo.PointD (x2 + 0.5, y2));
 						double mid = y2 + topSize;
 						g.LineTo (new Cairo.PointD (x2 - editor.LineHeight / 2 + 0.5, mid));
@@ -570,7 +570,7 @@ namespace MonoDevelop.SourceEditor
 						
 						g.Color = TagColor.SecondColor;
 						g.Fill ();
-					}
+				//	}
 					
 // draw border
 					g.MoveTo (new Cairo.PointD (x2 + 0.5, y2));
