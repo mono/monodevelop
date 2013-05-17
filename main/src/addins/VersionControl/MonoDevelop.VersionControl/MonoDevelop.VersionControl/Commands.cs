@@ -131,7 +131,7 @@ namespace MonoDevelop.VersionControl
 			return StatusView.Show (items, test);
 		}
 	}
-	
+
 	class CommitCommandHandler: FileVersionControlCommandHandler
 	{
 		protected override bool RunCommand (VersionControlItemList items, bool test)
@@ -139,7 +139,7 @@ namespace MonoDevelop.VersionControl
 			return CommitCommand.Commit (items, test);
 		}
 	}
-	
+
 	class AddCommandHandler: FileVersionControlCommandHandler
 	{
 		protected override bool RunCommand (VersionControlItemList items, bool test)
