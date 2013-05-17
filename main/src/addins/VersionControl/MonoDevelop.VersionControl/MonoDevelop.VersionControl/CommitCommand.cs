@@ -10,45 +10,40 @@ namespace MonoDevelop.VersionControl
 {
 	class CommitCommand
 	{
-		// TODO: Split algorithm by repository to commit to?
 		public static bool Commit (VersionControlItemList items, bool test)
 		{
 			int filesToCommit = 0;
+			VersionControlItemList[] itemListsByRepo = items.SplitByRepository ();
 
-			// Generate base folder path.
-			var MatchingChars =
-				from len in Enumerable.Range(0, items.Min (item => item.Path.ToString ().Length)).Reverse ()
-				let possibleMatch = items.First ().Path.ToString ().Substring (0, len)
-				where items.All (item => item.Path.ToString ().StartsWith (possibleMatch))
-				select possibleMatch;
+			foreach (VersionControlItemList itemList in itemListsByRepo) {
+				// Generate base folder path.
+				FilePath basePath = itemList.FindMostSpecificParent (FilePath.Null);
 
-			string basePath = System.IO.Path.GetDirectoryName (MatchingChars.First ());
-			Repository repo = items.First ().Repository;
+				Repository repo = itemList.First ().Repository;
 
-			ChangeSet cset = repo.CreateChangeSet (basePath);
-			cset.GlobalComment = VersionControlService.GetCommitComment (cset.BaseLocalPath);
+				ChangeSet cset = repo.CreateChangeSet (basePath);
+				cset.GlobalComment = VersionControlService.GetCommitComment (cset.BaseLocalPath);
 
-			foreach (var item in items) {
-				if (!item.VersionInfo.CanCommit)
+				foreach (var item in itemList) {
+					if (!item.VersionInfo.CanCommit)
+						continue;
+
+					filesToCommit++;
+					if (test)
+						continue;
+
+					foreach (VersionInfo vi in item.Repository.GetDirectoryVersionInfo (item.Path, false, true))
+						if (vi.HasLocalChanges)
+							cset.AddFile (vi);
+				}
+
+				if (!cset.IsEmpty) {
+					Commit (itemList.First ().Repository, cset, false);
+				} else if (!test) {
+					MessageService.ShowMessage (GettextCatalog.GetString ("There are no changes to be committed."));
 					continue;
-				
-				LoggingService.LogError("{0} {1}", test ? "test" : "", item.VersionInfo.CanCommit ? " can commit" : " can't");
-				filesToCommit++;
-				if (test)
-					continue;
-
-				foreach (VersionInfo vi in item.Repository.GetDirectoryVersionInfo (item.Path, false, true))
-					if (vi.HasLocalChanges)
-						cset.AddFile (vi);
+				}
 			}
-
-			if (!cset.IsEmpty) {
-				Commit (items.First ().Repository, cset, false);
-			} else if (!test) {
-				MessageService.ShowMessage (GettextCatalog.GetString ("There are no changes to be committed."));
-				return false;
-			}
-
 			return filesToCommit != 0;
 		}
 

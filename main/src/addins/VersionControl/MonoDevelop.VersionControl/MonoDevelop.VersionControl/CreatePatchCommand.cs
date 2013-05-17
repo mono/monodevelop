@@ -59,7 +59,7 @@ namespace MonoDevelop.VersionControl
 			bool can = CanCreatePatch (items);
 			if (test || !can){ return can; }
 			
-			FilePath basePath = FindMostSpecificParent (items, FilePath.Null);
+			FilePath basePath = items.FindMostSpecificParent (FilePath.Null);
 			if (FilePath.Empty == basePath)
 				return false;
 			
@@ -125,27 +125,6 @@ namespace MonoDevelop.VersionControl
 		{
 			if (null == items || 0 == items.Count){ return false; }
 			return items.All (i => i.VersionInfo.CanRevert);
-		}
-		
-		// Finds the most specific ancestor path of a set of version control items.
-		// suggested is a suggested parent to try, or FilePath.Null.
-		// Returns FilePath.Empty if no parent is found.
-		private static FilePath FindMostSpecificParent (VersionControlItemList items, FilePath suggested)
-		{
-			if (null == items || 0 == items.Count){ return FilePath.Empty; }
-			
-			if (FilePath.Null == suggested) {
-				suggested = items[0].IsDirectory? items[0].Path.FullPath: items[0].Path.ParentDirectory.FullPath;
-			}
-			
-			foreach (FilePath path in items.Paths) {
-				if (!path.IsChildPathOf (suggested)) {
-					FilePath parent = suggested.ParentDirectory.FullPath;
-					return (Path.GetPathRoot (parent) == parent)? parent: FindMostSpecificParent (items, parent);
-				}
-			}
-			
-			return suggested.FullPath;
 		}
 	}
 }
