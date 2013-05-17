@@ -167,7 +167,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			try {
 				if (file.Project != null)
 					newProjectFile = file.Project.Files.GetFileWithVirtualPath (newPath.ToRelative (file.Project.BaseDirectory));
-				
+
 				if (!FileService.IsValidPath (newPath)) {
 					MessageService.ShowWarning (GettextCatalog.GetString ("The name you have chosen contains illegal characters. Please choose a different name."));
 				} else if (newProjectFile != null && newProjectFile != file) {
