@@ -172,6 +172,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.label2.MnemonicWidget = this.textview;
 			this.label3.MnemonicWidget = this.textview;
 			this.Hide ();
+			this.buttonCommit.Clicked += new global::System.EventHandler (this.OnButtonCommitClicked);
 		}
 	}
 }

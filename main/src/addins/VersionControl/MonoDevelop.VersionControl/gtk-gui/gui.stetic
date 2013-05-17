@@ -1218,6 +1218,7 @@
             <property name="Label" translatable="yes">C_ommit</property>
             <property name="UseUnderline">True</property>
             <property name="ResponseId">-1</property>
+            <signal name="Clicked" handler="OnButtonCommitClicked" />
           </widget>
           <packing>
             <property name="Position">1</property>
