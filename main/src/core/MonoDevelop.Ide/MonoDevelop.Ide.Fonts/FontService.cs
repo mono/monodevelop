@@ -75,7 +75,8 @@ namespace MonoDevelop.Ide.Fonts
 
 		static FontDescription LoadFont (string name)
 		{
-			return Pango.FontDescription.FromString (FilterFontName (name));
+			var fontName = FilterFontName (name);
+			return Pango.FontDescription.FromString (fontName);
 		}
 		
 		public static string FilterFontName (string name)
@@ -88,7 +89,6 @@ namespace MonoDevelop.Ide.Fonts
 				label.Destroy ();
 				return result;
 			}
-			
 			return name;
 		}
 		
@@ -138,7 +138,13 @@ namespace MonoDevelop.Ide.Fonts
 		{
 			if (loadedFonts.ContainsKey (name)) 
 				loadedFonts.Remove (name);
-			fontProperties.Set (name, value);
+
+			var font = GetFont (name);
+			if (font != null && font.FontDescription == value) {
+				fontProperties.Set (name, null);
+			} else {
+				fontProperties.Set (name, value);
+			}
 			List<Action> callbacks;
 			if (fontChangeCallbacks.TryGetValue (name, out callbacks)) {
 				callbacks.ForEach (c => c ());

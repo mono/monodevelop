@@ -23,7 +23,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
 using Mono.Addins;
 
 
@@ -50,12 +49,24 @@ namespace MonoDevelop.Ide.Fonts
 		
 		[NodeAttribute("default", "Default font to use.")]
 		string fontDescription;
+
+		[NodeAttribute("defaultMac", "Default mac font to use.")]
+		string fontDescriptionMac;
+
+		[NodeAttribute("defaultWindows", "Default windows font to use.")]
+		string fontDescriptionWindows;
+
 		public string FontDescription {
 			get {
-				return this.fontDescription;
+				if (MonoDevelop.Core.Platform.IsWindows)
+					return fontDescriptionWindows ?? fontDescription;
+				if (MonoDevelop.Core.Platform.IsMac)
+					return fontDescriptionMac ?? fontDescription;
+				return fontDescription;
 			}
 		}
-		
+
+
 	}
 }
 
