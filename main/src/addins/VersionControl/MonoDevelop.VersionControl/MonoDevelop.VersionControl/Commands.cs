@@ -132,7 +132,7 @@ namespace MonoDevelop.VersionControl
 		}
 	}
 	
-	class CommitCommandHandler: SolutionVersionControlCommandHandler
+	class CommitCommandHandler: FileVersionControlCommandHandler
 	{
 		protected override bool RunCommand (VersionControlItemList items, bool test)
 		{
