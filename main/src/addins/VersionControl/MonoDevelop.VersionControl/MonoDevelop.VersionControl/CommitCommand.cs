@@ -28,13 +28,14 @@ namespace MonoDevelop.VersionControl
 					if (!item.VersionInfo.CanCommit)
 						continue;
 
-					filesToCommit++;
-					if (test)
-						continue;
-
 					foreach (VersionInfo vi in item.Repository.GetDirectoryVersionInfo (item.Path, false, true))
-						if (vi.HasLocalChanges)
+						if (vi.HasLocalChanges) {
+							filesToCommit++;
+							if (test)
+								continue;
+
 							cset.AddFile (vi);
+						}
 				}
 
 				if (!cset.IsEmpty) {
