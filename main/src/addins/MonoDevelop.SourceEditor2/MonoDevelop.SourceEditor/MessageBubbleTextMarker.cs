@@ -40,11 +40,13 @@ namespace MonoDevelop.SourceEditor
 {
 	public class ErrorText
 	{
+		public Task Task { get; set; }
 		public bool IsError { get; set; }
 		public string ErrorMessage { get; set; }
 
-		public ErrorText (bool isError, string errorMessage)
+		public ErrorText (Task task, bool isError, string errorMessage)
 		{
+			this.Task = task;
 			this.IsError = isError;
 			this.ErrorMessage = errorMessage;
 		}
@@ -184,17 +186,17 @@ namespace MonoDevelop.SourceEditor
 			this.initialText = editor.Document.GetTextAt (lineSegment);
 			this.Flags = TextLineMarkerFlags.DrawsSelection;
 			this.isError = isError;
-			AddError (isError, errorMessage);
+			AddError (task, isError, errorMessage);
 //			cache.Changed += (sender, e) => CalculateLineFit (editor, lineSegment);
 		}
 		
 		static System.Text.RegularExpressions.Regex mcsErrorFormat = new System.Text.RegularExpressions.Regex ("(.+)\\(CS\\d+\\)\\Z");
-		public void AddError (bool isError, string errorMessage)
+		public void AddError (Task task, bool isError, string errorMessage)
 		{
 			var match = mcsErrorFormat.Match (errorMessage);
 			if (match.Success)
 				errorMessage = match.Groups [1].Value;
-			errors.Add (new ErrorText (isError, errorMessage));
+			errors.Add (new ErrorText (task, isError, errorMessage));
 			CollapseExtendedErrors = true;
 			DisposeLayout ();
 		}
@@ -218,6 +220,12 @@ namespace MonoDevelop.SourceEditor
 		internal Pango.Layout errorCountLayout;
 		List<MessageBubbleCache.LayoutDescriptor> layouts;
 		
+		AmbientColor MarkerColor {
+			get {
+				return isError ? editor.ColorStyle.MessageBubbleErrorMarker : editor.ColorStyle.MessageBubbleWarningMarker;
+			}
+		}
+
 		AmbientColor TextColor {
 			get {
 				return isError ? editor.ColorStyle.MessageBubbleErrorTagText : editor.ColorStyle.MessageBubbleWarningTagText;
@@ -375,13 +383,37 @@ namespace MonoDevelop.SourceEditor
 				g.Fill ();
 			}
 		}
+
+		void DrawErrorMarkers (TextEditor editor, Cairo.Context g, TextViewMargin.LayoutWrapper layout2, double x, double y)
+		{
+			uint curIndex = 0, byteIndex = 0;
+
+
+			foreach (var task in errors.Select (t => t.Task)) {
+				int index = (int)layout2.TranslateToUTF8Index ((uint)(task.Column - 1), ref curIndex, ref byteIndex);
+				var pos = layout2.Layout.IndexToPos (index);
+				g.Color = MarkerColor.Color;
+
+				g.MoveTo (
+					x + editor.TextViewMargin.TextStartPosition + pos.X / Pango.Scale.PangoScale,
+					y + editor.LineHeight - 4
+				);
+				g.RelLineTo (3, 3);
+				g.RelLineTo (-6, 0);
+				g.ClosePath ();
+
+
+				g.Fill ();
+			}
+		}
 		
-		public bool DrawBackground (TextEditor editor, Cairo.Context g, TextViewMargin.LayoutWrapper layout2, int selectionStart, int selectionEnd, int startOffset, int endOffset, double y, double startXPos, double endXPos, ref bool drawBg)
+		public bool DrawBackground (TextEditor editor, Cairo.Context g, TextViewMargin.LayoutWrapper layout2, int selectionStart, int selectionEnd, int startOffset, int endOffset, double startYPos, double startXPos, double endXPos, ref bool drawBg)
 		{
 			if (!IsVisible)
 				return true;
 			EnsureLayoutCreated (editor);
 			double x = editor.TextViewMargin.XOffset;
+			double y = startYPos;
 			int right = editor.Allocation.Width;
 			bool isCaretInLine = startOffset <= editor.Caret.Offset && editor.Caret.Offset <= endOffset;
 			var lineTextPx = editor.TextViewMargin.XOffset + editor.TextViewMargin.TextStartPosition + layout2.PangoWidth / Pango.Scale.PangoScale;
@@ -665,6 +697,9 @@ namespace MonoDevelop.SourceEditor
 				if (!UseVirtualLines)
 					break;
 			}
+
+			DrawErrorMarkers (editor, g, layout2, startXPos, startYPos);
+
 			return true;
 		}
 		

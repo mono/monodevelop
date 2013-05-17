@@ -548,7 +548,7 @@ namespace MonoDevelop.SourceEditor
 							continue;
 						var marker = currentErrorMarkers.FirstOrDefault (m => m.LineSegment == lineSegment);
 						if (marker != null) {
-							marker.AddError (task.Severity == TaskSeverity.Error, task.Description);
+							marker.AddError (task, task.Severity == TaskSeverity.Error, task.Description);
 							continue;
 						}
 						MessageBubbleTextMarker errorTextMarker = new MessageBubbleTextMarker (messageBubbleCache, task, lineSegment, task.Severity == TaskSeverity.Error, task.Description);
