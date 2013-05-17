@@ -28,7 +28,7 @@ namespace MonoDevelop.VersionControl
 					if (!item.VersionInfo.CanCommit)
 						continue;
 
-					foreach (VersionInfo vi in item.Repository.GetDirectoryVersionInfo (item.Path, false, true))
+					foreach (VersionInfo vi in repo.GetDirectoryVersionInfo (item.Path, false, true))
 						if (vi.HasLocalChanges) {
 							filesToCommit++;
 							if (test)
@@ -39,7 +39,7 @@ namespace MonoDevelop.VersionControl
 				}
 
 				if (!cset.IsEmpty) {
-					Commit (itemList.First ().Repository, cset, false);
+					Commit (repo, cset, false);
 				} else if (!test) {
 					MessageService.ShowMessage (GettextCatalog.GetString ("There are no changes to be committed."));
 					continue;
