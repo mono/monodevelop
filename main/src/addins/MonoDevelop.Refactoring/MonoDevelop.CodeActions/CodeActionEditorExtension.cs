@@ -220,11 +220,12 @@ namespace MonoDevelop.CodeActions
 				if (args.Button != 0)
 					return;
 				var line = editor.GetLine (loc.Line);
-				var x = editor.ColumnToX (line, loc.Column) - editor.HAdjustment.Value;
-				var y = editor.LineToY (line.LineNumber) - editor.VAdjustment.Value;
+				var x = editor.ColumnToX (line, loc.Column) - editor.HAdjustment.Value + editor.TextViewMargin.TextStartPosition;
+				var y = editor.LineToY (line.LineNumber + 1) - editor.VAdjustment.Value;
 				if (args.X - x >= 0 * editor.Options.Zoom && 
 				    args.X - x < tagMarkerWidth * editor.Options.Zoom && 
-				    y - args.Y < (tagMarkerHeight) * editor.Options.Zoom) {
+				    args.Y - y < (editor.LineHeight / 2) * editor.Options.Zoom) {
+					result.Cursor = null;
 					Popup ();
 				} else {
 					codeActionEditorExtension.CancelSmartTagPopupTimeout ();

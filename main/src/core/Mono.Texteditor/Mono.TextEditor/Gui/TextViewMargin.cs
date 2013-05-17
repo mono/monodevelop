@@ -1261,6 +1261,11 @@ namespace Mono.TextEditor
 					backgroundColors = new List<BackgroundColor> ();
 				BackgroundColors.Add (new BackgroundColor (color, fromIdx, toIdx));
 			}
+
+			public uint TranslateToUTF8Index (uint textIndex, ref uint curIndex, ref uint byteIndex)
+			{
+				return TextViewMargin.TranslateToUTF8Index (LineChars, textIndex, ref curIndex, ref byteIndex);
+			}
 		}
 
 		ChunkStyle selectionColor;

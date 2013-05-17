@@ -64,8 +64,12 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			var property = (IUnresolvedProperty)dataObject;
-			var resolved = Resolve (treeBuilder, property);
-			label = Ambience.GetString (resolved, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.CompletionListFomat);
+			try {
+				var resolved = Resolve (treeBuilder, property);
+				label = Ambience.GetString (resolved, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.CompletionListFomat);
+			} catch (Exception) {
+				label = property.Name;
+			}
 			if (property.IsPrivate || property.IsInternal)
 				label = DomMethodNodeBuilder.FormatPrivate (label);
 			icon = ImageService.GetPixbuf (property.GetStockIcon (), Gtk.IconSize.Menu);
@@ -82,20 +86,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		
 		#region IAssemblyBrowserNodeBuilder
-		string IAssemblyBrowserNodeBuilder.GetDescription (ITreeNavigator navigator)
-		{
-			var property = (IUnresolvedProperty)navigator.DataItem;
-			var resolved = Resolve (navigator, property);
-			StringBuilder result = new StringBuilder ();
-			result.Append ("<span font_family=\"monospace\">");
-			result.Append (Ambience.GetString (resolved, OutputFlags.AssemblyBrowserDescription));
-			result.Append ("</span>");
-			result.AppendLine ();
-			DomMethodNodeBuilder.PrintDeclaringType (result, navigator);
-			DomTypeNodeBuilder.PrintAssembly (result, navigator);
-			return result.ToString ();
-		}
-		
+
 		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Disassemble (TextEditorData data, ITreeNavigator navigator)
 		{
 			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 

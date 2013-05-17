@@ -21,7 +21,7 @@
 		{ "name":"blue", "value":"#268bd2" },
 		{ "name":"cyan", "value":"#2aa198" },
 		{ "name":"green", "value":"#859900" },
-    { "name":"invalid-red", "value":"#ff0000"}
+		{ "name":"invalid-red", "value":"#ff0000"}
 	],
 
 	"colors":[
@@ -30,8 +30,8 @@
 		{ "name": "Search result background", "color":"base02" },
 		{ "name": "Search result background (highlighted)", "color":"base02" },
 
-        { "name": "Column Ruler", "color":"base1" },
-        
+		{ "name": "Column Ruler", "color":"base1" },
+
 		{ "name": "Fold Square", "color":"base01", "secondcolor":"base02" },
 		{ "name": "Fold Cross", "color":"base01", "secondcolor":"base02" },
 		
@@ -50,7 +50,7 @@
 		{ "name": "Completion Border", "color":"#C9C9C9" },
 		{ "name": "Completion Border(Inactive)", "color":"#bebebe" },
 
-        { "name": "Bookmarks", "color":"base3", "secondcolor":"blue" },
+		{ "name": "Bookmarks", "color":"base3", "secondcolor":"blue" },
 		
 		{ "name": "Underline(Error)", "color":"red" },
 		{ "name": "Underline(Warning)", "color":"orange" },
@@ -67,20 +67,27 @@
 		{ "name": "Breakpoint Marker(Disabled)", "color":"white", "secondcolor":"#AB616B" },
 		{ "name": "Breakpoint Marker(Invalid)", "color":"#eddcdc", "secondcolor":"#eddcdc" },
 		
-        { "name": "Current Line Marker", "color":"base02", "secondcolor":"base02"},
-        { "name": "Current Line Marker(Inactive)", "color":"base02", "secondcolor":"base02"},
-		
-        { "name": "Debugger Current Line Marker", "color":"#ffff00", "secondcolor":"#ffffcc", "bordercolor":"#666600" },
-        { "name": "Debugger Stack Line Marker", "color":"#80ff80", "secondcolor":"#ccffcc", "bordercolor":"#336633"},
-        
-        { "name": "Primary Link", "color":"chameleon3", "secondcolor":"chameleon2"},
-        { "name": "Primary Link(Highlighted)", "color":"chameleon3", "secondcolor":"chameleon1"},
-        { "name": "Secondary Link", "color":"aluminium2", "secondcolor":"white"},
-        { "name": "Secondary Link(Highlighted)", "color":"aluminium3", "secondcolor":"aluminium1"},
-        
-        { "name": "Message Bubble Error", "color":"red", "secondcolor":"base03"},
-        { "name": "Message Bubble Warning", "color":"yellow", "secondcolor":"base03"}
-    ],
+		{ "name": "Current Line Marker", "color":"base02", "secondcolor":"base02"},
+		{ "name": "Current Line Marker(Inactive)", "color":"base02", "secondcolor":"base02"},
+
+		{ "name": "Debugger Current Line Marker", "color":"#ffff00", "secondcolor":"#ffffcc", "bordercolor":"#666600" },
+		{ "name": "Debugger Stack Line Marker", "color":"#80ff80", "secondcolor":"#ccffcc", "bordercolor":"#336633"},
+
+		{ "name": "Primary Link", "color":"chameleon3", "secondcolor":"chameleon2"},
+		{ "name": "Primary Link(Highlighted)", "color":"chameleon3", "secondcolor":"chameleon1"},
+		{ "name": "Secondary Link", "color":"aluminium2", "secondcolor":"white"},
+		{ "name": "Secondary Link(Highlighted)", "color":"aluminium3", "secondcolor":"aluminium1"},
+
+		{ "name": "Message Bubble Error Marker", "color":"#b28d37"},
+		{ "name": "Message Bubble Error Tag Text", "color":"black"},
+		{ "name": "Message Bubble Error Tag", "color":"#e3a6a1", "secondcolor":"#e0968f", "bordercolor":"#cf8982"},
+		{ "name": "Message Bubble Error Line", "color":"#7b645c", "secondcolor":"#735c54", "bordercolor":"#805b4d"},
+
+		{ "name": "Message Bubble Warning Marker", "color":"#b28d37"},
+		{ "name": "Message Bubble Warning Tag Text", "color":"black"},
+		{ "name": "Message Bubble Warning Tag", "color":"#efe89d", "secondcolor":"#ebe286", "bordercolor":"#d9cf5d"},
+		{ "name": "Message Bubble Warning Line", "color":"#807e5c", "secondcolor":"#777553", "bordercolor":"#948e51"}
+	],
 
 	"text":[
 		{ "name": "Plain Text", "fore":"base00", "back":"base03" },

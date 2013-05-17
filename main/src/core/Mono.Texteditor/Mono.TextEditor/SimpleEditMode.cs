@@ -302,11 +302,13 @@ namespace Mono.TextEditor
 			action = CaretMoveActions.ToDocumentStart;
 			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Home), action);
 			keyBindings.Add (GetKeyCode (Gdk.Key.Home), action);
-			
+			keyBindings.Add (GetKeyCode (Gdk.Key.Up, Gdk.ModifierType.MetaMask), action);
+
 			action = SelectionActions.MoveToDocumentStart;
 			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Home, Gdk.ModifierType.ShiftMask), action);
 			keyBindings.Add (GetKeyCode (Gdk.Key.Home, Gdk.ModifierType.ShiftMask), action);
-			
+			keyBindings.Add (GetKeyCode (Gdk.Key.Up, Gdk.ModifierType.MetaMask | Gdk.ModifierType.ShiftMask), action);
+
 			// ==== End ====
 			
 			action = CaretMoveActions.LineEnd;
@@ -321,11 +323,13 @@ namespace Mono.TextEditor
 			action = CaretMoveActions.ToDocumentEnd;
 			keyBindings.Add (GetKeyCode (Gdk.Key.KP_End), action);
 			keyBindings.Add (GetKeyCode (Gdk.Key.End), action);
-			
+			keyBindings.Add (GetKeyCode (Gdk.Key.Down, Gdk.ModifierType.MetaMask), action);
+
 			action = SelectionActions.MoveToDocumentEnd;
 			keyBindings.Add (GetKeyCode (Gdk.Key.KP_End, Gdk.ModifierType.ShiftMask), action);
 			keyBindings.Add (GetKeyCode (Gdk.Key.End, Gdk.ModifierType.ShiftMask), action);
-			
+			keyBindings.Add (GetKeyCode (Gdk.Key.Down, Gdk.ModifierType.MetaMask | Gdk.ModifierType.ShiftMask), action);
+
 			// ==== Cut, copy, paste ===
 			
 			action = ClipboardActions.Cut;

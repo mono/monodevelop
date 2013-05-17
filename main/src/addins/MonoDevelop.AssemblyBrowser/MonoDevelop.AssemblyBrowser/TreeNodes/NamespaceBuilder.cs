@@ -97,20 +97,7 @@ namespace MonoDevelop.AssemblyBrowser
 		}
 		
 		#region IAssemblyBrowserNodeBuilder
-		string IAssemblyBrowserNodeBuilder.GetDescription (ITreeNavigator navigator)
-		{
-			Namespace ns = (Namespace)navigator.DataItem;
-			StringBuilder result = new StringBuilder ();
-			if (!String.IsNullOrEmpty (ns.Name)) {
-				result.Append ("<span font_family=\"monospace\">");
-//				result.Append (Ambience.GetString (ns.Name, OutputFlags.AssemblyBrowserDescription));
-				result.Append ("</span>");
-				result.AppendLine ();
-			}
-			DomTypeNodeBuilder.PrintAssembly (result, navigator);
-			return result.ToString ();
-		}
-		
+
 		public List<ReferenceSegment> Disassemble (TextEditorData data, ITreeNavigator navigator)
 		{
 		//	bool publicOnly = Widget.PublicApiOnly;

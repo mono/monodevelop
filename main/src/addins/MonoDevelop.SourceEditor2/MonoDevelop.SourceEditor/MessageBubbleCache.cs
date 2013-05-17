@@ -42,10 +42,6 @@ namespace MonoDevelop.SourceEditor
 		
 		internal TextEditor editor;
 		
-		internal Cairo.Color[,,,,] warningMatrix, errorMatrix;
-		internal Cairo.Color errorGc, warningGc;
-		internal Cairo.Color gcLight, gcSelected;
-		
 		internal Pango.FontDescription fontDescription;
 
 		public MessageBubbleCache (TextEditor editor)
@@ -56,8 +52,6 @@ namespace MonoDevelop.SourceEditor
 			
 			editor.EditorOptionsChanged += HandleEditorEditorOptionsChanged;
 			fontDescription = FontService.GetFontDescription ("MessageBubbles");
-			
-			SetColors ();
 		}
 
 		public bool RemoveLine (DocumentLine line)
@@ -75,10 +69,6 @@ namespace MonoDevelop.SourceEditor
 				foreach (var l in textWidthDictionary.Values) {
 					l.Layout.Dispose ();
 				}
-			}
-			if (fontDescription != null) {
-				fontDescription.Dispose ();
-				fontDescription = null;
 			}
 		}
 
@@ -104,94 +94,13 @@ namespace MonoDevelop.SourceEditor
 			}
 			return result;
 		}
-		
-		void SetColors ()
-		{
-			ColorScheme style = editor.ColorStyle;
-			errorGc = (HslColor)(style.MessageBubbleError.Color);
-			warningGc = (HslColor)(style.MessageBubbleWarning.Color);
-			errorMatrix = CreateColorMatrix (editor, true);
-			warningMatrix = CreateColorMatrix (editor, false);
-			
-			gcSelected = (HslColor)style.SelectedText.Foreground;
-			gcLight = new Cairo.Color (1, 1, 1);
-		}
-		
+
 		void HandleEditorEditorOptionsChanged (object sender, EventArgs e)
 		{
-			SetColors ();
 			lineWidthDictionary.Clear ();
 			OnChanged (EventArgs.Empty);
 		}	
-		
-		static void AdjustColorMatrix (Cairo.Color[,,,,] colorMatrix , int side, Cairo.Color baseColor)
-		{
-			var hsl = (HslColor)baseColor;
-			hsl.L *= 1.2;
-			colorMatrix [side, 0, 0, 0, 0] = hsl; // light top
-			colorMatrix [side, 1, 0, 0, 0] = baseColor; // light below
-			
-			hsl = (HslColor)baseColor;
-			hsl.L *= 1.05;
-			colorMatrix [side, 0, 1, 0, 0] = hsl; // dark top
-			
-			hsl = (HslColor)baseColor;
-			hsl.L *= 0.95;
-			colorMatrix [side, 1, 1, 0, 0] = hsl; // dark below
-			
-			hsl = (HslColor)baseColor;
-			hsl.L *= 0.98;
-			colorMatrix [side, 0, 2, 0, 0] = hsl; // line top 
-			
-			hsl = (HslColor)baseColor;
-			hsl.L *= 0.92;
-			colorMatrix [side, 1, 2, 0, 0] = hsl; // line below
-			
-		}
-		
-		static Cairo.Color[,,,,] CreateColorMatrix (TextEditor editor, bool isError)
-		{
-			Cairo.Color[,,,,] colorMatrix = new Cairo.Color[2, 2, 3, 2, 2];
-			
-			ColorScheme style = editor.ColorStyle;
-			var baseColor = (isError ? style.MessageBubbleError : style.MessageBubbleWarning).SecondColor;
-			
-			AdjustColorMatrix (colorMatrix, 0, baseColor);
-			
-			var hsl = (HslColor)baseColor;
-			hsl.S *= 0.6;
-			baseColor = hsl;
-			AdjustColorMatrix (colorMatrix, 1, hsl);
-			
-			double factor = 1.03;
-			for (int i = 0; i < 2; i++) {
-				for (int j = 0; j < 2; j++) {
-					for (int k = 0; k < 3; k++) {
-						HslColor color = colorMatrix [i, j, k, 0, 0];
-						color.L *= factor;
-						colorMatrix [i, j, k, 1, 0] = color;
-					}
-				}
-			}
-			var selectionColor = style.SelectedText.Background;
-			const double bubbleAlpha = 0.1;
-			for (int i = 0; i < 2; i++) {
-				for (int j = 0; j < 2; j++) {
-					for (int k = 0; k < 3; k++) {
-						for (int l = 0; l < 2; l++) {
-							var color = colorMatrix [i, j, k, l, 0];
-							colorMatrix [i, j, k, l, 1] = new Cairo.Color (
-								(color.R * bubbleAlpha + selectionColor.R * (1 - bubbleAlpha)), 
-								(color.G * bubbleAlpha + selectionColor.G * (1 - bubbleAlpha)), 
-								(color.B * bubbleAlpha + selectionColor.B * (1 - bubbleAlpha))
-							);
-						}
-					}
-				}
-			}
-			return colorMatrix;
-		}
-		
+
 		internal class LayoutDescriptor
 		{
 			public Pango.Layout Layout { get; set; }

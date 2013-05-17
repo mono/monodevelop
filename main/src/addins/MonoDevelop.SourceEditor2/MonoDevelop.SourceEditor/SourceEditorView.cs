@@ -474,7 +474,7 @@ namespace MonoDevelop.SourceEditor
 			widget.UpdateLineCol ();
 		}
 		
-		MessageBubbleHighlightPopupWindow messageBubbleHighlightPopupWindow = null;
+	//	MessageBubbleHighlightPopupWindow messageBubbleHighlightPopupWindow = null;
 
 		void HandleWidgetTextEditorOptionsChanged (object sender, EventArgs e)
 		{
@@ -497,8 +497,8 @@ namespace MonoDevelop.SourceEditor
 			marker.SetPrimaryError (task.Description);
 			
 			if (TextEditor != null && TextEditor.IsComposited) {
-				if (messageBubbleHighlightPopupWindow != null)
-					messageBubbleHighlightPopupWindow.Destroy ();
+				/*if (messageBubbleHighlightPopupWindow != null)
+					messageBubbleHighlightPopupWindow.Destroy ();*/
 			/*	messageBubbleHighlightPopupWindow = new MessageBubbleHighlightPopupWindow (this, marker);
 				messageBubbleHighlightPopupWindow.Destroyed += delegate {
 					messageBubbleHighlightPopupWindow = null;
@@ -548,7 +548,7 @@ namespace MonoDevelop.SourceEditor
 							continue;
 						var marker = currentErrorMarkers.FirstOrDefault (m => m.LineSegment == lineSegment);
 						if (marker != null) {
-							marker.AddError (task.Severity == TaskSeverity.Error, task.Description);
+							marker.AddError (task, task.Severity == TaskSeverity.Error, task.Description);
 							continue;
 						}
 						MessageBubbleTextMarker errorTextMarker = new MessageBubbleTextMarker (messageBubbleCache, task, lineSegment, task.Severity == TaskSeverity.Error, task.Description);
@@ -567,8 +567,8 @@ namespace MonoDevelop.SourceEditor
 			//the window has a reference to the markers we're destroying
 			//so if the error markers get cleared out while it's running, its expose will
 			//NRE and bring down MD
-			if (messageBubbleHighlightPopupWindow != null)
-				messageBubbleHighlightPopupWindow.Destroy ();
+			/*if (messageBubbleHighlightPopupWindow != null)
+				messageBubbleHighlightPopupWindow.Destroy ();*/
 			
 			currentErrorMarkers.ForEach (em => {
 				widget.Document.RemoveMarker (em);
@@ -947,8 +947,8 @@ namespace MonoDevelop.SourceEditor
 			this.isDisposed = true;
 			Counters.LoadedEditors--;
 			
-			if (messageBubbleHighlightPopupWindow != null)
-				messageBubbleHighlightPopupWindow.Destroy ();
+		/*	if (messageBubbleHighlightPopupWindow != null)
+				messageBubbleHighlightPopupWindow.Destroy ();*/
 
 			IdeApp.Preferences.DefaultHideMessageBubblesChanged -= HandleIdeAppPreferencesDefaultHideMessageBubblesChanged;
 			IdeApp.Preferences.ShowMessageBubblesChanged -= HandleIdeAppPreferencesShowMessageBubblesChanged;

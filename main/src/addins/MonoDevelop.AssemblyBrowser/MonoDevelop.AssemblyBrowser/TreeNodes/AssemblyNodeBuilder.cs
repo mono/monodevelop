@@ -151,21 +151,6 @@ namespace MonoDevelop.AssemblyBrowser
 			return GettextCatalog.GetString ("Unknown");
 		}
 		
-		string IAssemblyBrowserNodeBuilder.GetDescription (ITreeNavigator navigator)
-		{
-			var compilationUnit = Widget.CecilLoader.GetCecilObject (((AssemblyLoader)navigator.DataItem).UnresolvedAssembly);
-			StringBuilder result = new StringBuilder ();
-			PrintAssemblyHeader (result, compilationUnit);
-			
-			result.Append (String.Format (GettextCatalog.GetString ("<b>Name:</b>\t{0}"),
-			                              compilationUnit.Name.FullName));
-			result.AppendLine ();
-			result.Append (String.Format (GettextCatalog.GetString ("<b>Type:</b>\t{0}"),
-			                              GetTypeString (compilationUnit.MainModule.Kind)));
-			result.AppendLine ();
-			return result.ToString ();
-		}
-
 		public List<ReferenceSegment> Disassemble (TextEditorData data, ITreeNavigator navigator)
 		{
 			var assembly = ((AssemblyLoader)navigator.DataItem).UnresolvedAssembly;

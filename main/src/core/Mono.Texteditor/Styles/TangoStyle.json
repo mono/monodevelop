@@ -90,8 +90,15 @@
 		{ "name": "Secondary Link", "color":"aluminium2", "secondcolor":"white"},
 		{ "name": "Secondary Link(Highlighted)", "color":"aluminium3", "secondcolor":"aluminium1"},
 
-		{ "name": "Message Bubble Error", "color":"aluminium5", "secondcolor":"#f5eae7"},
-		{ "name": "Message Bubble Warning", "color":"aluminium5", "secondcolor":"#f4eeda"}
+		{ "name": "Message Bubble Error Marker", "color":"#df6962"},
+		{ "name": "Message Bubble Error Tag Text", "color":"black"},
+		{ "name": "Message Bubble Error Tag", "color":"#e3a6a1", "secondcolor":"#e09690", "bordercolor":"#cf8982"},
+		{ "name": "Message Bubble Error Line", "color":"#f4d5ca", "secondcolor":"#eccdc2", "bordercolor":"#dbb6a8"},
+
+		{ "name": "Message Bubble Warning Marker", "color":"#b28d37"},
+		{ "name": "Message Bubble Warning Tag Text", "color":"black"},
+		{ "name": "Message Bubble Warning Tag", "color":"#efe89c", "secondcolor":"#ece388", "bordercolor":"#d9cf5d"},
+		{ "name": "Message Bubble Warning Line", "color":"#faf7c7", "secondcolor":"#f3f0c0", "bordercolor":"#efe9ac"}
 	],
 
 	"text":[
