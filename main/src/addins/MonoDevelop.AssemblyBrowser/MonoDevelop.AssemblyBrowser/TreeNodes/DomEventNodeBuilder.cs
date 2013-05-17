@@ -62,8 +62,12 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
 		{
 			var evt = (IUnresolvedEvent)dataObject;
-			var resolved = Resolve (treeBuilder, evt);
-			label = Ambience.GetString (resolved, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.CompletionListFomat);
+			try {
+				var resolved = Resolve (treeBuilder, evt);
+				label = Ambience.GetString (resolved, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.CompletionListFomat);
+			} catch (Exception) {
+				label = evt.Name;
+			}
 			if (evt.IsPrivate || evt.IsInternal)
 				label = DomMethodNodeBuilder.FormatPrivate (label);
 			icon = ImageService.GetPixbuf (evt.GetStockIcon (), Gtk.IconSize.Menu);
