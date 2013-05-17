@@ -101,11 +101,12 @@ namespace MonoDevelop.VersionControl.Dialogs
 				
 			textview.Buffer.Changed += OnTextChanged;
 			
-			// Focus the text view and move the insert point to the begining. Makes it easier to insert
+			// Focus the text view and move the insert point to the beginning. Makes it easier to insert
 			// a comment header.
 			textview.Buffer.MoveMark (textview.Buffer.InsertMark, textview.Buffer.StartIter);
 			textview.Buffer.MoveMark (textview.Buffer.SelectionBound, textview.Buffer.StartIter);
 			textview.GrabFocus ();
+			textview.Buffer.MarkSet += OnMarkSet;
 		}
 
 		void HandleAllowCommitChanged (object sender, EventArgs e)
@@ -163,10 +164,26 @@ namespace MonoDevelop.VersionControl.Dialogs
 			}
 			Respond (Gtk.ResponseType.Ok);
 		}
+
+		void UpdatePositionLabel (TextIter iter)
+		{
+			int row = iter.Line + 1;
+			int col = iter.LineOffset + 1;
+			label3.Text = String.Format ("{0}/{1}", row, col);
+		}
+
+		void OnMarkSet (object o, MarkSetArgs e)
+		{
+			if (e.Mark != textview.Buffer.InsertMark)
+				return;
+
+			UpdatePositionLabel (e.Location);
+		}
 		
 		void OnTextChanged (object s, EventArgs args)
 		{
 			changeSet.GlobalComment = Message;
+			UpdatePositionLabel (textview.Buffer.GetIterAtOffset (textview.Buffer.CursorPosition));
 		}
 		
 		public void EndCommit (bool success)
