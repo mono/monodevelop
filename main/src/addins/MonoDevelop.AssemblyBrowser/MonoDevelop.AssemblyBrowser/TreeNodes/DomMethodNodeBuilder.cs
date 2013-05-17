@@ -78,7 +78,11 @@ namespace MonoDevelop.AssemblyBrowser
 			var method = (IUnresolvedMethod)dataObject;
 			var dt = new DefaultResolvedTypeDefinition (GetContext (treeBuilder), method.DeclaringTypeDefinition);
 			var resolved = (DefaultResolvedMethod)Resolve (treeBuilder, method, dt);
-			label = Ambience.GetString (resolved, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.CompletionListFomat);
+			try {
+				label = Ambience.GetString (resolved, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.CompletionListFomat);
+			} catch (Exception) {
+				label = method.Name;
+			}
 
 			if (method.IsPrivate || method.IsInternal)
 				label = DomMethodNodeBuilder.FormatPrivate (label);
@@ -95,20 +99,6 @@ namespace MonoDevelop.AssemblyBrowser
 			
 			result.Append (String.Format (GettextCatalog.GetString ("<b>Declaring Type:</b>\t{0}"), type.FullName));
 			result.AppendLine ();
-		}
-		
-		string IAssemblyBrowserNodeBuilder.GetDescription (ITreeNavigator navigator)
-		{
-			var method = (IUnresolvedMethod)navigator.DataItem;
-			var resolved = Resolve (navigator, method);
-			StringBuilder result = new StringBuilder ();
-			result.Append ("<span font_family=\"monospace\">");
-			result.Append (Ambience.GetString (resolved, OutputFlags.AssemblyBrowserDescription));
-			result.Append ("</span>");
-			result.AppendLine ();
-			PrintDeclaringType (result, navigator);
-			DomTypeNodeBuilder.PrintAssembly (result, navigator);
-			return result.ToString ();
 		}
 		
 		static string GetInstructionOffset (Instruction instruction)

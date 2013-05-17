@@ -86,20 +86,6 @@ namespace MonoDevelop.AssemblyBrowser
 		}
 		
 		#region IAssemblyBrowserNodeBuilder
-		string IAssemblyBrowserNodeBuilder.GetDescription (ITreeNavigator navigator)
-		{
-			var evt = (IUnresolvedEvent)navigator.DataItem;
-			var resolved = Resolve (navigator, evt);
-			StringBuilder result = new StringBuilder ();
-			result.Append ("<span font_family=\"monospace\">");
-			result.Append (Ambience.GetString (resolved, OutputFlags.AssemblyBrowserDescription));
-			result.Append ("</span>");
-			result.AppendLine ();
-			DomMethodNodeBuilder.PrintDeclaringType (result, navigator);
-			DomTypeNodeBuilder.PrintAssembly (result, navigator);
-			return result.ToString ();
-		}
-		
 		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Disassemble (TextEditorData data, ITreeNavigator navigator)
 		{
 			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
