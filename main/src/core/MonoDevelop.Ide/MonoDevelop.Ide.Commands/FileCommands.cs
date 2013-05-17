@@ -167,7 +167,8 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
-			IdeApp.Workbench.ActiveDocument.Close ();
+			if (IdeApp.Workbench.ActiveDocument != null)
+				IdeApp.Workbench.ActiveDocument.Close ();
 		}
 
 		protected override void Update (CommandInfo info)
