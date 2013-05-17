@@ -468,7 +468,7 @@ namespace MonoDevelop.CSharp.Formatting
 			if (keyChar == '>' && stateTracker.Engine.IsInsideDocLineComment) {
 				var location = Editor.Caret.Location;
 				string lineText = Editor.GetLineText (Editor.Caret.Line);
-				int startIndex = Math.Min (location.Column - 1, lineText.Length - 1);
+				int startIndex = Math.Min (location.Column - 2, lineText.Length - 1);
 				while (startIndex >= 0 && lineText [startIndex] != '<') {
 					--startIndex;
 					if (lineText [startIndex] == '/') {
@@ -478,11 +478,11 @@ namespace MonoDevelop.CSharp.Formatting
 					}
 				}
 				if (startIndex >= 0) {
-					int endIndex = startIndex;
-					while (endIndex <= location.Column && endIndex < lineText.Length && !Char.IsWhiteSpace (lineText [endIndex])) {
+					int endIndex = startIndex + 1;
+					while (endIndex <= location.Column -1 && endIndex < lineText.Length && Char.IsLetter (lineText [endIndex])) {
 						endIndex++;
 					}
-					string tag = endIndex - startIndex - 1 > 0 ? lineText.Substring (startIndex + 1, endIndex - startIndex - 2) : null;
+					string tag = endIndex - startIndex > 0 ? lineText.Substring (startIndex + 1, endIndex - startIndex - 1) : null;
 					if (!string.IsNullOrEmpty (tag) && CSharpCompletionEngine.CommentTags.Any (t => t == tag)) {
 						Editor.Document.Insert (Editor.Caret.Offset, "</" + tag + ">", AnchorMovementType.BeforeInsertion);
 					}
@@ -879,11 +879,13 @@ namespace MonoDevelop.CSharp.Formatting
 						return false;
 					//check that the newline command actually inserted a newline
 					textEditorData.EnsureCaretIsNotVirtual ();
-					string nextLine = textEditorData.Document.GetTextAt (textEditorData.Document.GetLine (lineNumber + 1)).TrimStart ();
+					var nextLineSegment = textEditorData.Document.GetLine (lineNumber + 1);
+					string nextLine = nextLineSegment != null ? textEditorData.Document.GetTextAt (nextLineSegment).TrimStart () : "";
 
 					if (trimmedPreviousLine.Length > "///".Length || nextLine.StartsWith ("///", StringComparison.Ordinal)) {
-						var insertionPoint = line.Offset + line.GetIndentation (textEditorData.Document).Length;
-						textEditorData.Insert (insertionPoint, "/// ");
+						var insertionPoint = textEditorData.Caret.Offset;
+						int inserted = textEditorData.Insert (insertionPoint, "/// ");
+						textEditorData.Caret.Offset = insertionPoint + inserted;
 						return true;
 					}
 					//multi-line comments

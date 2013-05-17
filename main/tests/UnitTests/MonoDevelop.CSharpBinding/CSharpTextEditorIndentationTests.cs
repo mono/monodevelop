@@ -252,6 +252,19 @@ namespace MonoDevelop.CSharpBinding
 		{
 			TestGuessSemicolonInsertionOffset ("this.method($)~");
 		}
+
+		/// <summary>
+		/// Bug 11966 - Code Completion Errors with /// Comments
+		/// </summary>
+		[Test]
+		public void TestBug11966 ()
+		{
+			var data = Create ("///<summary>This is a long comment $ </summary>");
+			MiscActions.InsertNewLine (data);
+
+			CheckOutput (data, @"///<summary>This is a long comment 
+/// $ </summary>");
+		}
 	}
 }
 
