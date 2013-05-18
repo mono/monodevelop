@@ -59,9 +59,9 @@ namespace MonoDevelop.Ide.Fonts
 		public string FontDescription {
 			get {
 				if (MonoDevelop.Core.Platform.IsWindows)
-					return fontDescriptionWindows ?? fontDescription;
+					return string.IsNullOrEmpty (fontDescriptionWindows) ? fontDescription : fontDescriptionWindows;
 				if (MonoDevelop.Core.Platform.IsMac)
-					return fontDescriptionMac ?? fontDescription;
+					return string.IsNullOrEmpty (fontDescriptionMac) ? fontDescription : fontDescriptionMac;
 				return fontDescription;
 			}
 		}
