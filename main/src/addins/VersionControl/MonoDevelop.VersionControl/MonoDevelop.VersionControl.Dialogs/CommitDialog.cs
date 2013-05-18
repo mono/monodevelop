@@ -90,7 +90,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 				store.AppendValues (statusicon, lstatus, localpath, true, info);
 				selected.Add (info.LocalPath);
 			}
-			
+
 			if (string.IsNullOrEmpty (changeSet.GlobalComment)) {
 				AuthorInformation aInfo;
 				CommitMessageFormat fmt = VersionControlService.GetCommitMessageFormat (changeSet, out aInfo);
