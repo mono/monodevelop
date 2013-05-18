@@ -31,6 +31,7 @@ using MonoDevelop.SourceEditor.QuickTasks;
 using ICSharpCode.NRefactory.CSharp;
 using Gtk;
 using MonoDevelop.CodeActions;
+using ICSharpCode.NRefactory.Refactoring;
 
 namespace MonoDevelop.CodeIssues
 {

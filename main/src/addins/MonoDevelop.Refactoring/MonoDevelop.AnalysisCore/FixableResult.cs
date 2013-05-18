@@ -31,6 +31,7 @@ using MonoDevelop.SourceEditor.QuickTasks;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
 using Mono.TextEditor;
+using ICSharpCode.NRefactory.Refactoring;
 
 namespace MonoDevelop.AnalysisCore
 {

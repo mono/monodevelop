@@ -38,6 +38,7 @@ using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.AnalysisCore.Fixes;
 using MonoDevelop.Ide;
 using MonoDevelop.CodeIssues;
+using ICSharpCode.NRefactory.Refactoring;
 
 namespace MonoDevelop.AnalysisCore
 {

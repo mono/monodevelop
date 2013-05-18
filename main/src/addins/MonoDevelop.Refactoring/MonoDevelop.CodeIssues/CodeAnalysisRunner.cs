@@ -40,6 +40,7 @@ using MonoDevelop.SourceEditor.QuickTasks;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.CodeIssues;
 using Mono.TextEditor;
+using ICSharpCode.NRefactory.Refactoring;
 
 namespace MonoDevelop.CodeIssues
 {

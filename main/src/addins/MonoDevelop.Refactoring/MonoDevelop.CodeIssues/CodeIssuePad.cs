@@ -40,6 +40,7 @@ using MonoDevelop.Core;
 using System.Threading.Tasks;
 using ICSharpCode.NRefactory.TypeSystem;
 using System.IO;
+using ICSharpCode.NRefactory.Refactoring;
 
 namespace MonoDevelop.CodeIssues
 {

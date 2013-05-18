@@ -33,7 +33,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Components.Commands;
 using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.Refactoring;
 
 namespace MonoDevelop.SourceEditor.QuickTasks
 {
