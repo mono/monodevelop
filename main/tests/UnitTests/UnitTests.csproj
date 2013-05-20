@@ -9,6 +9,8 @@
     <OutputType>Library</OutputType>
     <AssemblyName>UnitTests</AssemblyName>
     <RootNamespace>UnitTests</RootNamespace>
+    <TestRunnerAssembly>..\..\build\bin\MonoDevelop.Core.dll</TestRunnerAssembly>
+    <TestRunnerType>MonoDevelop.Core.InternalTestRunner</TestRunnerType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -285,7 +287,7 @@
   <Import Project="..\..\md.targets" />
   <ProjectExtensions>
     <MonoDevelop>
-      <Properties TestRunnerAssembly="..\..\build\bin\MonoDevelop.Core.dll" TestRunnerType="MonoDevelop.Core.InternalTestRunner">
+      <Properties>
         <MonoDevelop.Autotools.MakefileInfo RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../..">
           <BuildFilesVar Sync="True" Name="FILES" />
           <DeployFilesVar />
