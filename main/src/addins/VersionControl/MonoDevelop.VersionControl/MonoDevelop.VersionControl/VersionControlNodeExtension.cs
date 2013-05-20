@@ -296,7 +296,8 @@ namespace MonoDevelop.VersionControl
 		protected void UpdateStatus(CommandInfo item) {
 			TestCommand(Commands.Status, item);
 		}
-		
+
+		[AllowMultiSelection]
 		[CommandHandler (Commands.Commit)]
 		protected void OnCommit() {
 			RunCommand (Commands.Commit, false);
