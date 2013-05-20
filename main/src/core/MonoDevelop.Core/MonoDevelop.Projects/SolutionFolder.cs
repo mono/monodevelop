@@ -702,8 +702,11 @@ namespace MonoDevelop.Projects
 		{
 			foreach (Project projectEntry in GetAllProjects()) {
 				foreach (ProjectFile fInfo in projectEntry.Files) {
-					if (fInfo.FilePath == oldName)
+					if (fInfo.FilePath == oldName) {
+						if (fInfo.BuildAction == projectEntry.GetDefaultBuildAction (oldName))
+							fInfo.BuildAction = projectEntry.GetDefaultBuildAction (newName);
 						fInfo.Name = newName;
+					}
 				}
 			}
 		}
