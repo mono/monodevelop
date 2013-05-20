@@ -55,6 +55,7 @@ namespace MonoDevelop.Xml.StateEngine
 		<p><a href =""http://mono-project.com/"" ><b>foo $ </a>
 		<p>
 		<p>$
+		<div><div>$</div></div>
 	</body>
 </html>
 ",
@@ -69,6 +70,9 @@ namespace MonoDevelop.Xml.StateEngine
 				},
 				delegate {
 					parser.AssertPath ("//html/body/p");
+				},
+				delegate {
+					parser.AssertPath ("//html/body/div/div");
 				}
 			);
 			parser.AssertEmpty ();
