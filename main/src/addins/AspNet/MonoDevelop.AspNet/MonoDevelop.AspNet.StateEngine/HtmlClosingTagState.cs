@@ -51,43 +51,39 @@ namespace MonoDevelop.AspNet.StateEngine
 		{
 			this.warnAutoClose = warnAutoClose;
 		}
-		
+
 		public override State PushChar (char c, MonoDevelop.Xml.StateEngine.IParseContext context, ref string rollback)
 		{
 			//NOTE: This is (mostly) duplicated in HtmlTagState
-			//handle "paragraph" tags implicitly closed by block-level elements
+			//handle inline tags implicitly closed by block-level elements
 			if (context.CurrentStateLength == 1 && context.PreviousState is XmlNameState)
 			{
 				XClosingTag ct = (XClosingTag) context.Nodes.Peek ();
-				//Note: the node stack will always be at least 1 deep due to the XDocument
-				XElement parent = context.Nodes.Peek (1) as XElement;
-				
-				
-				while (parent != null && parent.Name.IsValid && !parent.Name.HasPrefix && !ct.Name.HasPrefix
-				    && ct.Name.IsValid
-				    && string.Compare (ct.Name.Name, parent.Name.Name, StringComparison.OrdinalIgnoreCase) != 0
-				    && !ElementTypes.IsInline (ct.Name.Name)
-				    && (ElementTypes.IsInline (parent.Name.Name) || ElementTypes.IsParagraph (parent.Name.Name))
-				    )
-				{
-					
-					context.Nodes.Pop ();
-					context.Nodes.Pop ();
-					if (warnAutoClose) {
-						context.LogWarning (string.Format ("Tag '{0}' implicitly closed by closing tag '{1}'.",
-							parent.Name.Name, ct.Name.Name), parent.Region);
+				if (!ct.Name.HasPrefix && ct.Name.IsValid) {
+					//Note: the node stack will always be at least 1 deep due to the XDocument
+					var parent = context.Nodes.Peek (1) as XElement;
+					//if it's not a matching closing tag
+					if (!string.Equals (ct.Name.Name, parent.Name.Name, StringComparison.OrdinalIgnoreCase)) {
+						//attempt to implicitly close the parents
+						while (parent.ValidAndNoPrefix () && parent.IsImplicitlyClosedBy (ct)) {
+							context.Nodes.Pop ();
+							context.Nodes.Pop ();
+							if (warnAutoClose) {
+								context.LogWarning (string.Format ("Tag '{0}' implicitly closed by closing tag '{1}'.",
+									parent.Name.Name, ct.Name.Name), parent.Region);
+							}
+							//parent.Region.End = element.Region.Start;
+							//parent.Region.EndColumn = Math.Max (parent.Region.EndColumn - 1, 1);
+							parent.Close (parent);
+							context.Nodes.Push (ct);
+
+							parent = context.Nodes.Peek (1) as XElement;
+						}
 					}
-					//parent.Region.End = element.Region.Start;
-					//parent.Region.EndColumn = Math.Max (parent.Region.EndColumn - 1, 1);
-					parent.Close (parent);
-					context.Nodes.Push (ct);
-					
-					parent = context.Nodes.Peek (1) as XElement;
 				} 
 			}
 			
 			return base.PushChar (c, context, ref rollback);
 		}
-
 	}
 }
