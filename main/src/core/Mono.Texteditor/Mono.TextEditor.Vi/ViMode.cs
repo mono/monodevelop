@@ -124,6 +124,22 @@ namespace Mono.TextEditor.Vi
 		Dictionary<char,ViMacro> macros = new Dictionary<char, ViMacro>();
 		char macros_lastplayed = '@'; // start with the illegal macro character
 		string statusText = "";
+
+    /// <summary>
+    /// Number of times to perform the next action
+    /// For example 3 is the numeric prefix when "3w" is entered
+    /// <summary>
+    string numericPrefix = "0";
+    /// <summary>
+    /// Whether ViEditMode is in a state where it should accept a numeric prefix
+    /// <summary>
+    bool AcceptNumericPrefix
+    {
+      get {
+        return CurState == State.Normal || CurState == State.Delete || CurState == State.Change 
+          || CurState == State.Yank;
+      }
+    }
 		
 		/// <summary>
 		/// The macro currently being implemented. Will be set to null and checked as a flag when required.
@@ -332,6 +348,49 @@ namespace Mono.TextEditor.Vi
 				ViActionMaps.GetDirectionKeyAction (key, modifier);
 		}
 
+    private void RunRepeatableAction (Action<TextEditorData> action)
+    {
+      if (numericPrefix.Length <= 1)
+      {
+        RunAction (action);
+      }
+      else
+      {
+        int reps;   //how many times to repeat command
+        int.TryParse(numericPrefix, out reps);
+        for (int i = 0 ; i < reps ; i++)
+        {
+          RunAction (action);
+        }
+        numericPrefix = "0";
+      }
+    }
+
+    private void RunRepeatableActionChain (params Action<TextEditorData>[] actions)
+    {
+      if (numericPrefix.Length <= 1)
+      {
+        RunActions (actions);
+      }
+      else
+      {
+        List<Action<TextEditorData>> actionList = new List<Action<TextEditorData>>();
+        int reps;   //how many times to repeat command
+        int.TryParse(numericPrefix, out reps);
+        for (int i = 0 ; i < reps ; i++)
+        {
+          actionList.Add(actions[0]);
+        }
+        for (int i = 1 ; i < actions.Length ; i++)
+        {
+          actionList.Add(actions[i]);
+        }
+        RunActions (actionList.ToArray());
+        numericPrefix = "0";
+      }
+      
+    }
+
 		protected override void HandleKeypress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
 		{
 		
@@ -365,6 +424,13 @@ namespace Mono.TextEditor.Vi
 			
 			Action<TextEditorData> action = null;
 			bool lineAction = false;
+
+      //handle numeric keypress
+      if (AcceptNumericPrefix && '0' <= (char)unicodeKey && (char)unicodeKey <= '9')
+      {
+        numericPrefix += (char)unicodeKey;
+        return;
+      }
 			
 			switch (CurState) {
 			case State.Unknown:
@@ -589,7 +655,7 @@ namespace Mono.TextEditor.Vi
 					action = ViActionMaps.GetCommandCharAction ((char)unicodeKey);
 				
 				if (action != null)
-					RunAction (action);
+					RunRepeatableAction (action);
 				
 				//undo/redo may leave MD with a selection mode without activating visual mode
 				CheckVisualMode ();
@@ -616,10 +682,14 @@ namespace Mono.TextEditor.Vi
 				
 				if (action != null) {
 					if (lineAction)
+          {
 						RunActions (action, ClipboardActions.Cut, CaretMoveActions.LineFirstNonWhitespace);
+          }
 					else
-						RunActions (action, ClipboardActions.Cut);
-					Reset ("");
+          {
+						RunRepeatableActionChain (action, ClipboardActions.Cut);
+          }
+					Reset ("action deleted");
 				} else {
 					Reset ("Unrecognised motion");
 				}
@@ -647,7 +717,7 @@ namespace Mono.TextEditor.Vi
 				}
 				
 				if (action != null) {
-					RunAction (action);
+					RunRepeatableAction (action);
 					if (Data.IsSomethingSelected && !lineAction)
 						offset = Data.SelectionRange.Offset;
 					RunAction (ClipboardActions.Copy);
