@@ -50,6 +50,7 @@ using MonoDevelop.Core;
 using ICSharpCode.NRefactory.CSharp.Analysis;
 using ICSharpCode.NRefactory;
 using MonoDevelop.Refactoring;
+using ICSharpCode.NRefactory.Refactoring;
 
 
 namespace MonoDevelop.CSharp.Highlighting

@@ -66,6 +66,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			lastImage = img;
 			box.PackStart (imgBox, false, false, 0);
 			Label lab = new Label (msg);
+			lab.UseUnderline = false;
 			lab.Xalign = 0;
 			lab.Yalign = 0;
 			lab.Wrap = true;

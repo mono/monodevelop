@@ -93,6 +93,16 @@ namespace MonoDevelop.AspNet
 
 			return result;
 		}
+
+		static void AddErrorsToResult (BuildResult result, string filename, IList<Error> errors)
+		{
+			foreach (var err in errors) {
+				if (err.ErrorType == ErrorType.Warning)
+					result.AddWarning (filename, err.Region.BeginLine, err.Region.BeginColumn, null, err.Message);
+				else
+					result.AddError (filename, err.Region.BeginLine, err.Region.BeginColumn, null, err.Message);
+			}
+		}
 		
 		public static BuildResult GenerateCodeBehind (
 			AspNetAppProject project,
@@ -103,9 +113,7 @@ namespace MonoDevelop.AspNet
 			ccu = null;
 			var result = new BuildResult ();
 			string className = document.Info.InheritedClass;
-
-			foreach (var err in document.Errors)
-				result.AddError (filename, err.Region.BeginLine, err.Region.BeginColumn, null, err.Message);
+			AddErrorsToResult (result, filename, document.Errors);
 			if (result.ErrorCount > 0)
 				return result;
 			
@@ -116,8 +124,7 @@ namespace MonoDevelop.AspNet
 			var memberList = new MemberListBuilder (refman, document.XDocument);
 			memberList.Build ();
 
-			foreach (var err in memberList.Errors)
-				result.AddError (filename, err.Region.BeginLine, err.Region.BeginColumn, null, err.Message);
+			AddErrorsToResult (result, filename, memberList.Errors);
 			if (result.ErrorCount > 0)
 				return result;
 			

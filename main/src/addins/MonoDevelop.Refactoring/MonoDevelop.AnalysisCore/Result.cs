@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using ICSharpCode.NRefactory.Refactoring;
 using MonoDevelop.AnalysisCore.Extensions;
 using MonoDevelop.SourceEditor;
 using ICSharpCode.NRefactory.TypeSystem;

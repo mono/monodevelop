@@ -219,8 +219,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				
 				if (closeWorkspaceCheck.Visible)
 					closeWorkspaceCheck.Active = true;
-				
-				selected = 0;
+
+				// Default exe/dll to AssemblyBrowser, solutions/projects to Solution Workbench.
+				// HACK: Couldn't make it a generic SolutionItemFile based conditional, .csproj fits under this category also.
+				if (!(Filename.EndsWith (".exe", StringComparison.OrdinalIgnoreCase) || Filename.EndsWith (".dll", StringComparison.OrdinalIgnoreCase)))
+					selected = 0;
 				i++;
 			}
 			

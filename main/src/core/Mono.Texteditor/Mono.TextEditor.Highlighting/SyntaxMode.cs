@@ -556,7 +556,7 @@ namespace Mono.TextEditor.Highlighting
 
 				curChunk.Offset = offset;
 				curChunk.Length = length;
-				curChunk.Style = span.TagColor ?? GetChunkStyle (span);
+				curChunk.Style = span.BeginTagColor ?? GetChunkStyle (span);
 				curChunk.SpanStack.Push (span);
 				AddChunk (ref curChunk, 0, curChunk.Style);
 				foreach (SemanticRule semanticRule in spanRule.SemanticRules) {
@@ -580,7 +580,7 @@ namespace Mono.TextEditor.Highlighting
 
 				curChunk.Offset = offset;
 				curChunk.Length = length;
-				curChunk.Style  = span.TagColor ?? GetChunkStyle (span);
+				curChunk.Style  = span.EndTagColor ?? GetChunkStyle (span);
 				AddChunk (ref curChunk, 0, defaultStyle);
 				spanParser.PopSpan ();
 			}

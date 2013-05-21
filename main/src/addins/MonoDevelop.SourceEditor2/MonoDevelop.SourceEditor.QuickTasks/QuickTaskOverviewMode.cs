@@ -31,7 +31,7 @@ using System.Collections.Generic;
 using Gdk;
 using MonoDevelop.Core;
 using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.Refactoring;
 
 namespace MonoDevelop.SourceEditor.QuickTasks
 {

@@ -1,4 +1,4 @@
-<!-- CSharpSyntaxMode.xml
+<!-- FSharpSyntaxMode.xml
 
  Author:
    Mike Krüger <mkrueger@novell.com>
@@ -29,7 +29,7 @@
 	<Property name="BlockCommentEnd">*)</Property>
 	<Property name="StringQuote">"</Property>
 	<Property name="StringQuote">'</Property>
-
+	
 	<EolSpan tagColor = "Preprocessor" rule="text.preprocessor">#if</EolSpan>
 	<EolSpan tagColor = "Preprocessor" rule="text.preprocessor">#else</EolSpan>
 	<EolSpan tagColor = "Preprocessor" rule="text.preprocessor">#elif</EolSpan>
@@ -63,6 +63,17 @@
 		<Begin>"</Begin>
 		<End>"</End>
 	</Span>
+	
+	<Span color = "String" rule="String" stopateol = "true">
+		<Begin>&apos;</Begin>
+		<End>&apos;</End>
+	</Span>
+	
+	<Span rule="String" stopateol = "false">
+		<Begin color="Keyword(Iteration)">let</Begin>
+		<End>=</End>
+	</Span>
+
   
 <!-- 
 	<Span color="String" rule="String" stopateol="true" escape='\'>
@@ -115,7 +126,6 @@
 		<Word>else</Word>
 		<Word>end</Word>
 		<Word>if</Word>
-		<Word>let</Word>
 		<Word>match</Word>
 		<Word>return</Word>
 		<Word>then</Word>
@@ -240,6 +250,13 @@
 	</Rule>
   
 	<Rule name="MultiComment">
+	
+		<!-- let a = (* let s = "*)" *) -->
+		<Span rule="String" stopateol="true">
+			<Begin>"</Begin>
+			<End>"</End>
+		</Span>
+
 		<Span color="Comment(Block)" rule="MultiComment">
 			<Begin>(*®)</Begin>
 			<End>*)</End>

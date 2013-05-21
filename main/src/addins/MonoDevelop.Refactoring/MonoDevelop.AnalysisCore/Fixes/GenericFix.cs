@@ -30,6 +30,7 @@ using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.CodeIssues;
 using MonoDevelop.Ide;
 using Mono.TextEditor;
+using ICSharpCode.NRefactory.Refactoring;
 
 namespace MonoDevelop.AnalysisCore.Fixes
 {

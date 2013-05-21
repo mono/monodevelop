@@ -41,6 +41,7 @@ using MonoDevelop.CodeActions;
 using MonoDevelop.Refactoring;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.ProgressMonitoring;
+using ICSharpCode.NRefactory.Refactoring;
 
 namespace MonoDevelop.CodeActions
 {
@@ -161,7 +162,7 @@ namespace MonoDevelop.CodeActions
 
 			foreach (var fix_ in fixes.Where (f => f.BoundToIssue != null)) {
 				var fix = fix_;
-				foreach (var inspector_ in RefactoringService.GetInspectors (document.Editor.MimeType).Where (i => i.GetSeverity () != ICSharpCode.NRefactory.CSharp.Severity.None)) {
+				foreach (var inspector_ in RefactoringService.GetInspectors (document.Editor.MimeType).Where (i => i.GetSeverity () != Severity.None)) {
 					var inspector = inspector_;
 
 					if (inspector.IdString.IndexOf (fix.BoundToIssue.FullName, StringComparison.Ordinal) < 0)

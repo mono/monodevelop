@@ -78,5 +78,27 @@ namespace MonoDevelop.VersionControl
 				return paths;
 			}
 		}
+
+		// Finds the most specific ancestor path of a set of version control items.
+		// suggested is a suggested parent to try, or FilePath.Null.
+		// Returns FilePath.Empty if no parent is found.
+		public FilePath FindMostSpecificParent (FilePath suggested)
+		{
+			if (Count == 0)
+				return FilePath.Empty;
+
+			if (suggested == FilePath.Null) {
+				suggested = this [0].IsDirectory ? this [0].Path.FullPath: this [0].Path.ParentDirectory.FullPath;
+			}
+
+			foreach (FilePath path in Paths) {
+				if (!path.IsChildPathOf (suggested)) {
+					FilePath parent = suggested.ParentDirectory.FullPath;
+					return (System.IO.Path.GetPathRoot (parent) == parent) ? parent: FindMostSpecificParent (parent);
+				}
+			}
+
+			return suggested.FullPath;
+		}
 	}
 }

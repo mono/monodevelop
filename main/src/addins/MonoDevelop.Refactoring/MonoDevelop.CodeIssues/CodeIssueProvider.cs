@@ -29,7 +29,8 @@ using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory;
 using System.Threading;
-using MonoDevelop.Core; 
+using MonoDevelop.Core;
+using ICSharpCode.NRefactory.Refactoring; 
 
 namespace MonoDevelop.CodeIssues
 {

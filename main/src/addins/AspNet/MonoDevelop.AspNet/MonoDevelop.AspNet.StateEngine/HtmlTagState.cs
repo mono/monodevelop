@@ -73,27 +73,25 @@ namespace MonoDevelop.AspNet.StateEngine
 			//handle "paragraph" tags implicitly closed by block-level elements
 			if (context.CurrentStateLength == 1 && context.PreviousState is XmlNameState) {
 				XElement element = (XElement) context.Nodes.Peek ();
-				//Note: the node stack will always be at least 1 deep due to the XDocument
-				XElement parent = context.Nodes.Peek (1) as XElement;
-				
-				while (parent != null && parent.Name.IsValid && !parent.Name.HasPrefix && !element.Name.HasPrefix
-				    && element.Name.IsValid
-				    && !ElementTypes.IsInline (element.Name.Name)
-				    && (ElementTypes.IsInline (parent.Name.Name) || ElementTypes.IsParagraph (parent.Name.Name))
-				    )
-				{
-					context.Nodes.Pop ();
-					context.Nodes.Pop ();
-					if (warnAutoClose) {
-						context.LogWarning (string.Format ("Tag '{0}' implicitly closed by tag '{1}'.",
-							parent.Name.Name, element.Name.Name), parent.Region);
+
+				if (!element.Name.HasPrefix && element.Name.IsValid) {
+					//Note: the node stack will always be at least 1 deep due to the XDocument
+					var parent = context.Nodes.Peek (1) as XElement;
+
+					while (parent.ValidAndNoPrefix () && parent.IsImplicitlyClosedBy (element)) {
+						context.Nodes.Pop ();
+						context.Nodes.Pop ();
+						if (warnAutoClose) {
+							context.LogWarning (string.Format ("Tag '{0}' implicitly closed by tag '{1}'.",
+							                                   parent.Name.Name, element.Name.Name), parent.Region);
+						}
+						//parent.Region.End = element.Region.Start;
+						//parent.Region.EndColumn = Math.Max (parent.Region.EndColumn - 1, 1);
+						parent.Close (parent);
+						context.Nodes.Push (element);
+
+						parent = context.Nodes.Peek (1) as XElement;
 					}
-					//parent.Region.End = element.Region.Start;
-					//parent.Region.EndColumn = Math.Max (parent.Region.EndColumn - 1, 1);
-					parent.Close (parent);
-					context.Nodes.Push (element);
-					
-					parent = context.Nodes.Peek (1) as XElement;
 				}
 			}
 						
@@ -117,6 +115,25 @@ namespace MonoDevelop.AspNet.StateEngine
 			}
 			
 			return ret;
+		}
+	}
+
+	static class HtmlDomExtensions
+	{
+		public static bool ValidAndNoPrefix (this INamedXObject element)
+		{
+			return element != null && element.Name.IsValid && !element.Name.HasPrefix;
+		}
+
+		//TODO: implement real implicit closing logic from HTML5 spec
+		// see http://www.w3.org/html/wg/drafts/html/master/syntax.html#syntax-tag-omission
+		public static bool IsImplicitlyClosedBy (this XElement parent, INamedXObject current)
+		{
+			//inline and paragraph tags are implicitly closed by block tags and paragraph tags
+			if (ElementTypes.IsInline (parent.Name.Name) || ElementTypes.IsParagraph (parent.Name.Name))
+				return ElementTypes.IsBlock (current.Name.Name) || ElementTypes.IsParagraph (current.Name.Name);
+
+			return false;
 		}
 	}
 }

@@ -32,6 +32,7 @@ using MonoDevelop.Ide.Gui.Content;
 using System.Linq;
 
 using NUnit.Framework;
+using ICSharpCode.NRefactory.TypeSystem;
 
 
 namespace MonoDevelop.Xml.StateEngine
@@ -212,7 +213,7 @@ namespace MonoDevelop.Xml.StateEngine
 			Assert.AreEqual ("html", dt.RootElement.FullName);
 			Assert.AreEqual ("-//W3C//DTD XHTML 1.0 Strict//EN", dt.PublicFpi);
 			Assert.AreEqual ("DTD/xhtml1-strict.dtd", dt.Uri);
-			Assert.AreEqual (dt.InternalDeclarationRegion.Start.Line, 4);
+			Assert.AreEqual (dt.InternalDeclarationRegion.Begin.Line, 4);
 			Assert.AreEqual (dt.InternalDeclarationRegion.End.Line, 7);
 			parser.AssertNoErrors ();
 		}
