@@ -94,6 +94,26 @@ namespace Mono.TextEditor.Highlighting
 			set;
 		}
 
+		string endTagColor;
+		public string EndTagColor {
+			get {
+				return endTagColor ?? TagColor;
+			}
+			set {
+				endTagColor = value;
+			}
+		}
+
+		string beginTagColor;
+		public string BeginTagColor {
+			get {
+				return beginTagColor ?? TagColor;
+			}
+			set {
+				beginTagColor = value;
+			}
+		}
+
 		public string Escape {
 			get;
 			set;
@@ -158,6 +178,8 @@ namespace Mono.TextEditor.Highlighting
 			newSpan.Rule = Rule;
 			newSpan.StopAtEol = StopAtEol;
 			newSpan.TagColor = TagColor;
+			newSpan.BeginTagColor = beginTagColor;
+			newSpan.EndTagColor = endTagColor;
 			return newSpan;
 		}
 		
@@ -200,12 +222,14 @@ namespace Mono.TextEditor.Highlighting
 						string beginFlags = reader.GetAttribute ("flags");
 						if (!string.IsNullOrEmpty (beginFlags))
 							result.BeginFlags = (SpanBeginFlags)Enum.Parse (typeof(SpanBeginFlags), beginFlags);
+						result.BeginTagColor = reader.GetAttribute ("color");
 						result.Begin = new Regex (reader.ReadElementString ());
 						return true;
 					case "End":
 						string endFlags = reader.GetAttribute ("flags");
 						if (!string.IsNullOrEmpty (endFlags))
 							result.EndFlags = (SpanEndFlags)Enum.Parse (typeof(SpanEndFlags), endFlags);
+						result.EndTagColor = reader.GetAttribute ("color");
 						result.End = new Regex (reader.ReadElementString ());
 						return true;
 					case "Exit":
