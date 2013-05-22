@@ -151,9 +151,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				mode.Exited += delegate(object s, InsertionCursorEventArgs iCArgs) {
 					if (!iCArgs.Success) {
 						tcs.SetResult (false);
+						return;
 					}
 					var generator = CreateCodeGenerator (editor, parentType.Compilation);
-
 					generator.IndentLevel = CalculateBodyIndentLevel (declaringType);
 					var generatedCode = generator.CreateMemberImplementation (parentType, part, newMember, implementExplicit);
 					mode.InsertionPoints[mode.CurIndex].Insert (editor, generatedCode.Code);
