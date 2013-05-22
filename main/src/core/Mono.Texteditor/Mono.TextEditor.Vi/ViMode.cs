@@ -366,6 +366,31 @@ namespace Mono.TextEditor.Vi
       }
     }
 
+    private void RunRepeatableActionChain (params Action<TextEditorData>[] actions)
+    {
+      if (numericPrefix.Length <= 1)
+      {
+        RunActions (actions);
+      }
+      else
+      {
+        List<Action<TextEditorData>> actionList = new List<Action<TextEditorData>>();
+        int reps;   //how many times to repeat command
+        int.TryParse(numericPrefix, out reps);
+        for (int i = 0 ; i < reps ; i++)
+        {
+          actionList.Add(actions[0]);
+        }
+        for (int i = 1 ; i < actions.Length ; i++)
+        {
+          actionList.Add(actions[i]);
+        }
+        RunActions (actionList.ToArray());
+        numericPrefix = "0";
+      }
+      
+    }
+
 		protected override void HandleKeypress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
 		{
 		
@@ -662,10 +687,9 @@ namespace Mono.TextEditor.Vi
           }
 					else
           {
-            RunRepeatableAction (action);
-						RunActions (ClipboardActions.Cut);
+						RunRepeatableActionChain (action, ClipboardActions.Cut);
           }
-					Reset ("");
+					Reset ("action deleted");
 				} else {
 					Reset ("Unrecognised motion");
 				}
@@ -693,7 +717,7 @@ namespace Mono.TextEditor.Vi
 				}
 				
 				if (action != null) {
-					RunAction (action);
+					RunRepeatableAction (action);
 					if (Data.IsSomethingSelected && !lineAction)
 						offset = Data.SelectionRange.Offset;
 					RunAction (ClipboardActions.Copy);
