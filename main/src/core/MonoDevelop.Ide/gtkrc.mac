@@ -21,6 +21,7 @@ gtk-enable-mnemonics  = 0
 gtk-icon-sizes        = "gtk-small-toolbar=16,16:gtk-large-toolbar=22,22"
 gtk-toolbar-icon-size = large-toolbar
 gtk-auto-mnemonics    = 1
+gtk-error-bell = 0
 
 
 style "default" {
