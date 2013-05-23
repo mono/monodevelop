@@ -348,6 +348,10 @@ namespace Mono.TextEditor.Vi
 				ViActionMaps.GetDirectionKeyAction (key, modifier);
 		}
 
+    /// <summary>
+    /// Run an action multiple times if it was preceded by a numeric key
+    /// Resets numeric prefixs
+    /// <summary>
     private void RunRepeatableAction (Action<TextEditorData> action)
     {
       if (numericPrefix.Length <= 1)
@@ -366,6 +370,10 @@ namespace Mono.TextEditor.Vi
       }
     }
 
+    /// <summary>
+    /// Run the first action multiple times if it was preceded by a numeric key
+    /// Run the following actions once each
+    /// <summary>
     private void RunRepeatableActionChain (params Action<TextEditorData>[] actions)
     {
       if (numericPrefix.Length <= 1)
@@ -389,6 +397,31 @@ namespace Mono.TextEditor.Vi
         numericPrefix = "0";
       }
       
+    }
+
+    /// <summary>
+    /// Repeat entire set of actions based on preceding numeric key
+    /// The first action indicates the movement that initiates the line action
+    /// The second action indicates the action to be taken on the line
+    /// The third action indicates the action to reset after completing the action on that line
+    /// <summary>
+    private void RunRepeatableLineAction(Action<TextEditorData> startMove, Action<TextEditorData> action, Action<TextEditorData> endMove)
+    {
+      //RunActions (action, ClipboardActions.Cut, CaretMoveActions.LineFirstNonWhitespace, action, ClipboardActions.Cut, CaretMoveActions.LineFirstNonWhitespace);
+      List<Action<TextEditorData>> actionList = new List<Action<TextEditorData>>();
+
+      int reps;   //how many times to repeat command
+      int.TryParse(numericPrefix, out reps);
+      reps = (reps == 0) ? 1 : reps;
+
+      for (int i = 0 ; i < reps ; i++)
+      {
+        actionList.Add(startMove);
+        actionList.Add(action);
+        actionList.Add(endMove);
+      }
+      RunActions (actionList.ToArray());
+      numericPrefix = "0";
     }
 
 		protected override void HandleKeypress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
@@ -683,7 +716,7 @@ namespace Mono.TextEditor.Vi
 				if (action != null) {
 					if (lineAction)
           {
-						RunActions (action, ClipboardActions.Cut, CaretMoveActions.LineFirstNonWhitespace);
+						RunRepeatableLineAction (action, ClipboardActions.Cut, CaretMoveActions.LineFirstNonWhitespace);
           }
 					else
           {
