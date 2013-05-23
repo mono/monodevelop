@@ -340,6 +340,8 @@ namespace Mono.TextEditor.Vi
 			
 			commandBuffer.Length = 0;
 			Status = status;
+
+      numericPrefix = "0";
 		}
 		
 		protected virtual Action<TextEditorData> GetInsertAction (Gdk.Key key, Gdk.ModifierType modifier)
