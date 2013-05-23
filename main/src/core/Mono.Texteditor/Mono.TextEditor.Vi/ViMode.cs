@@ -788,7 +788,7 @@ namespace Mono.TextEditor.Vi
 					if (lineAction)
 						RunActions (action, ClipboardActions.Cut, ViActions.NewLineAbove);
 					else
-						RunActions (action, ClipboardActions.Cut);
+						RunRepeatableActionChain (action, ClipboardActions.Cut);
 					Status = "-- INSERT --";
 					CurState = State.Insert;
 					Caret.Mode = CaretMode.Insert;
