@@ -489,10 +489,14 @@
 	<Command id = "MonoDevelop.Ide.Commands.FileTabCommands.ToggleMaximize"
 	         defaultHandler = "MonoDevelop.Ide.Commands.ToggleMaximizeHandler"
 			_label = "S_witch maximize/normal view"/>
-	<Command id ="MonoDevelop.Ide.Commands.FileTabCommands.ReopenClosedTab"
+	<Command id = "MonoDevelop.Ide.Commands.FileTabCommands.ReopenClosedTab"
 			defaultHandler = "MonoDevelop.Ide.Commands.ReopenClosedTabHandler"
 			_label = "Reopen Closed Tab"
 			_description = "Opens the last tab that has been closed"/>
+	<Command id = "MonoDevelop.Ide.Commands.FileTabCommands.OpenContainingFolder"
+			defaultHandler = "MonoDevelop.Ide.Commands.OpenContainingFolderHandler"
+			_label = "O_pen Containing Folder" 
+			_description = "Opens the folder that contains this file"/>
 	</Category>
 			
 	<!-- ViewCommands -->
