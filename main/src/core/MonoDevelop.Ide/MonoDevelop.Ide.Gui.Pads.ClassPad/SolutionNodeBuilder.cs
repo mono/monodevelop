@@ -286,7 +286,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public void OnOpenFolder ()
 		{
 			Solution solution = (Solution) CurrentNode.DataItem;
-			System.Diagnostics.Process.Start ("file://" + solution.BaseDirectory);
+			DesktopService.OpenFolder (solution.BaseDirectory);
 		}
 		
 		[CommandHandler (SearchCommands.FindInFiles)]
