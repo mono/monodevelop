@@ -419,8 +419,12 @@ namespace Mono.TextEditor.Highlighting
 				} else if (file.EndsWith (".json", StringComparison.Ordinal)) {
 					using (var stream = File.OpenRead (file)) {
 						string styleName = ScanStyle (stream);
-						styleLookup [styleName] = new UrlStreamProvider (file);
-						isLoadedFromFile [styleName] = file;
+						if (!string.IsNullOrEmpty (styleName)) {
+							styleLookup [styleName] = new UrlStreamProvider (file);
+							isLoadedFromFile [styleName] = file;
+						} else {
+							Console.WriteLine ("Invalid .json syntax sheme file : " + file);
+						}
 					}
 				} else if (file.EndsWith (".vssettings", StringComparison.Ordinal)) {
 					using (var stream = File.OpenRead (file)) {

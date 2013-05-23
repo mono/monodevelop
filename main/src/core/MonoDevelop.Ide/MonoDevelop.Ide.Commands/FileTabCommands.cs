@@ -33,6 +33,7 @@ using Gtk;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Navigation;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Commands
 {
@@ -41,7 +42,8 @@ namespace MonoDevelop.Ide.Commands
 		CloseAllButThis,
 		CopyPathName,
 		ToggleMaximize,
-		ReopenClosedTab
+		ReopenClosedTab,
+		OpenContainingFolder
 	}
 	
 	class CloseAllButThisHandler : CommandHandler
@@ -85,6 +87,21 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandInfo info)
 		{
 			info.Enabled = NavigationHistoryService.HasClosedDocuments;
+		}
+	}
+
+	class OpenContainingFolderHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+			// A tab will always hold a file, never a folder.
+			FilePath path = System.IO.Path.GetDirectoryName (IdeApp.Workbench.ActiveDocument.FileName);
+			DesktopService.OpenFolder (path);
+		}
+
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = !IdeApp.Workbench.ActiveDocument.FileName.IsNullOrEmpty;
 		}
 	}
 }
