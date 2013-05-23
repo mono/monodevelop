@@ -108,6 +108,7 @@ namespace MonoDevelop.Ide.Tasks
 		{
 			parentObject = error.SourceTarget;
 			file = error.FileName;
+			this.owner = owner;
 			description = error.ErrorText;
 			column = error.Column;
 			line = error.Line;
