@@ -214,6 +214,7 @@
     <Compile Include="Mono.TextEditor\ITextEditorOptions.cs" />
     <Compile Include="Mono.TextEditor.Vi\ViModeAbortException.cs" />
     <Compile Include="Mono.TextEditor\ITextPasteHandler.cs" />
+    <Compile Include="Mono.TextEditor.Vi\NewViEditMode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mono.TextEditor.dll.config">
