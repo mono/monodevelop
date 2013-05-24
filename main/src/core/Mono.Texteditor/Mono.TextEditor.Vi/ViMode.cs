@@ -46,10 +46,8 @@ namespace Mono.TextEditor.Vi
 			}
 			set {
 				curState = value;
-				if (viTextEditor != null) {
-					viTextEditor.Caret.IsVisible = curState != State.Command;
+				if (statusArea != null) {
 					statusArea.ShowCaret = curState == State.Command;
-					viTextEditor.RequestResetCaretBlink ();
 				}
 			}
 		}
@@ -60,7 +58,6 @@ namespace Mono.TextEditor.Vi
 		Dictionary<char,ViMark> marks = new Dictionary<char, ViMark>();
 		Dictionary<char,ViMacro> macros = new Dictionary<char, ViMacro>();
 		char macros_lastplayed = '@'; // start with the illegal macro character
-		string statusText = "";
 		
 		/// <summary>
 		/// The macro currently being implemented. Will be set to null and checked as a flag when required.
@@ -79,10 +76,6 @@ namespace Mono.TextEditor.Vi
 				}
 				if (viTextEditor != null) {
 					statusArea.Message = value;
-					if (curState == State.Command) {
-					    viTextEditor.RequestResetCaretBlink ();
-						statusArea.QueueDraw ();
-					}
 				}
 			}
 		}
