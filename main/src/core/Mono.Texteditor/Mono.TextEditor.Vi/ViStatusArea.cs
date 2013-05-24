@@ -138,7 +138,7 @@ namespace Mono.TextEditor.Vi
 					cr.Color = editor.ColorStyle.PlainText.Foreground;
 					cr.ShowLayout (layout);
 
-					layout.SetText (statusText);
+					layout.SetText (statusText ?? "");
 					int w, h;
 					layout.GetPixelSize (out w, out h);
 					var x = System.Math.Min (0, -w + Allocation.Width - editor.TextViewMargin.CharWidth - statusw);
