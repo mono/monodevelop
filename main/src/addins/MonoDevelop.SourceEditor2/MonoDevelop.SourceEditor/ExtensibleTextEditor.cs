@@ -318,9 +318,6 @@ namespace MonoDevelop.SourceEditor
 			DocumentLine line = Document.GetLine (Caret.Line);
 			if (line == null)
 				return true;
-			bool inChar = false;
-			bool inComment = false;
-			bool inString = false;
 			//			string escape = "\"";
 			var stack = line.StartSpan.Clone ();
 			var sm = Document.SyntaxMode as SyntaxMode;
@@ -329,23 +326,10 @@ namespace MonoDevelop.SourceEditor
 			foreach (Span span in stack) {
 				if (string.IsNullOrEmpty (span.Color))
 					continue;
-				if (span.Color == "string.other") {
-					inStringOrComment = inChar = inString = true;
-					break;
-				}
-				if (span.Color == "string.single" || span.Color == "string.double" || span.Color.StartsWith ("comment")) {
+				if (span.Color.StartsWith ("String", StringComparison.Ordinal) || span.Color.StartsWith ("Comment", StringComparison.Ordinal)) {
 					inStringOrComment = true;
-					inChar |= span.Color == "string.single";
-					inComment |= span.Color.StartsWith ("comment");
-					inString = !inChar && !inComment;
-					//escape = span.Escape;
 					break;
 				}
-			}
-			if (Caret.Offset > 0) {
-				char c = GetCharAt (Caret.Offset - 1);
-				if (c == '"' || c == '\'')
-					inStringOrComment = inChar = inString = true;
 			}
 
 			// insert template when space is typed (currently disabled - it's annoying).
@@ -363,7 +347,7 @@ namespace MonoDevelop.SourceEditor
 			// special handling for escape chars inside ' and "
 			if (Caret.Offset > 0) {
 				char charBefore = Document.GetCharAt (Caret.Offset - 1);
-				if (inStringOrComment && (ch == '"' || (inChar && ch == '\'')) && charBefore == '\\')
+				if (inStringOrComment && ch == '"' && charBefore == '\\')
 					skipChar = null;
 			}
 			char insertionChar = '\0';
@@ -389,7 +373,7 @@ namespace MonoDevelop.SourceEditor
 					}
 				} else {
 					char charBefore = Document.GetCharAt (Caret.Offset - 1);
-					if (!inString && !inComment && !inChar && ch == '"' && charBefore != '\\') {
+					if (!inStringOrComment && ch == '"' && charBefore != '\\') {
 						insertMatchingBracket = true;
 						insertionChar = '"';
 					}
