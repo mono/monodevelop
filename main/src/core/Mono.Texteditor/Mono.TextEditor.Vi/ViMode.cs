@@ -699,15 +699,17 @@ namespace Mono.TextEditor.Vi
 			case State.Delete:
 				if (IsInnerOrOuterMotionKey (unicodeKey, ref motion)) return;
 
-				if (motion != Motion.None) {
-					action = ViActionMaps.GetEditObjectCharAction((char) unicodeKey, motion);
-				}
-				else if (((modifier & (Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask)) == 0 
-				     && unicodeKey == 'd'))
+				if (((modifier & (Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask)) == 0 
+				     && (unicodeKey == 'd' || unicodeKey == 'j')))
 				{
 					action = SelectionActions.LineActionFromMoveAction (CaretMoveActions.LineEnd);
 					lineAction = true;
-				} else {
+				} 
+        else if (motion != Motion.None) {
+					action = ViActionMaps.GetEditObjectCharAction((char) unicodeKey, motion);
+				}
+
+        else {
 					action = ViActionMaps.GetNavCharAction ((char)unicodeKey);
 					if (action == null)
 						action = ViActionMaps.GetDirectionKeyAction (key, modifier);
