@@ -59,8 +59,35 @@ namespace Mono.TextEditor.Vi
 		public TextEditorData Data { get { return editMode.Data; } }
 		public TextDocument Document { get { return Data.Document; } }
 		ViBuilderContext Context { get; set; }
-		public string Message { get; private set; }
-		public ViEditorMode Mode { get; private set; }
+
+		public event EventHandler ModeChanged;
+		public event EventHandler MessageChanged;
+
+		string message;
+		public string Message {
+			get {
+				return message;
+			}
+			private set {
+				message = value;
+				var e = MessageChanged;
+				if (e != null)
+					e (this, EventArgs.Empty);
+			}
+		}
+
+		ViEditorMode mode;
+		public ViEditorMode Mode {
+			get {
+				return mode;
+			}
+			private set {
+				mode = value;
+				var e = ModeChanged;
+				if (e != null)
+					e (this, EventArgs.Empty);
+			}
+		}
 
 		//shared between editors in the same process
 		//TODO: maybe move these into some kind of shared context to pass around explicitly
@@ -280,7 +307,8 @@ namespace Mono.TextEditor.Vi
 		Replace,					// R
 		Visual,						// v
 		VisualLine,					// V
-		VisualBlock	      			// ^V TODO
+		VisualBlock,    			// ^V TODO
+		Command,
 	}
 }
 

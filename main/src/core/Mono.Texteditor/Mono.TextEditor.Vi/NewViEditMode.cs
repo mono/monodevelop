@@ -34,11 +34,50 @@ namespace Mono.TextEditor.Vi
 {
 	public class NewViEditMode : EditMode
 	{
+		ViStatusArea statusArea;
+		TextEditor viTextEditor;
+
 		protected ViEditor ViEditor { get ; private set ;}
 
 		public NewViEditMode ()
 		{
 			ViEditor = new ViEditor (this);
+			ViEditor.ModeChanged += (sender, e) => {
+				if (statusArea != null)
+					statusArea.ShowCaret = ViEditor.Mode == ViEditorMode.Command;
+			};
+			ViEditor.MessageChanged += (sender, e) => {
+				if (statusArea != null)
+					statusArea.Message = ViEditor.Message;
+			};
+		}
+
+		protected override void OnAddedToEditor (TextEditorData data)
+		{
+			ViEditor.SetMode (ViEditorMode.Normal);
+			SetCaretMode (CaretMode.Block, data);
+			ViActions.RetreatFromLineEnd (data);
+
+			viTextEditor = data.Parent;
+			if (viTextEditor != null) {
+				statusArea = new ViStatusArea (viTextEditor);
+			}
+		}
+
+		protected override void OnRemovedFromEditor (TextEditorData data)
+		{
+			SetCaretMode (CaretMode.Insert, data);
+
+			if (viTextEditor != null) {
+				statusArea.RemoveFromParentAndDestroy ();
+				statusArea = null;
+				viTextEditor = null;
+			}
+		}
+
+		public override void AllocateTextArea (TextEditor textEditor, TextArea textArea, Gdk.Rectangle allocation)
+		{
+			statusArea.AllocateArea (textArea, allocation);
 		}
 
 		protected override void HandleKeypress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
@@ -64,18 +103,6 @@ namespace Mono.TextEditor.Vi
 			}
 		}
 
-		protected override void OnAddedToEditor (TextEditorData data)
-		{
-			ViEditor.SetMode (ViEditorMode.Normal);
-			SetCaretMode (CaretMode.Block, data);
-			ViActions.RetreatFromLineEnd (data);
-		}
-
-		protected override void OnRemovedFromEditor (TextEditorData data)
-		{
-			SetCaretMode (CaretMode.Insert, data);
-		}
-
 		protected override void CaretPositionChanged ()
 		{
 			ViEditor.OnCaretPositionChanged ();
@@ -95,5 +122,4 @@ namespace Mono.TextEditor.Vi
 			data.Document.CommitDocumentUpdate ();
 		}
 	}
-
 }
