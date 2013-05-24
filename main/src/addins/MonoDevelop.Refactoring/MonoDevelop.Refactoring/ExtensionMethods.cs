@@ -58,7 +58,8 @@ namespace MonoDevelop.Refactoring
 			var parsedFile = parsedDocument.ParsedFile as CSharpUnresolvedFile;
 			if (unit == null || parsedFile == null)
 				return null;
-			
+			var compilation = document.Compilation;
+
 			var resolverAnnotation = document.Annotation<ResolverAnnotation> ();
 
 			if (resolverAnnotation != null) {
@@ -68,7 +69,7 @@ namespace MonoDevelop.Refactoring
 			}
 
 			var resolveTask = Task.Factory.StartNew (delegate {
-				var result = new CSharpAstResolver (document.Compilation, unit, parsedFile);
+				var result = new CSharpAstResolver (compilation, unit, parsedFile);
 				result.ApplyNavigator (new ConstantModeResolveVisitorNavigator (ResolveVisitorNavigationMode.Resolve, null));
 				return result;
 			});
