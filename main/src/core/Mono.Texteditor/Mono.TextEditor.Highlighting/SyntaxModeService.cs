@@ -378,10 +378,16 @@ namespace Mono.TextEditor.Highlighting
 		
 		static string Scan (Stream stream, string attribute)
 		{
-			var reader = XmlReader.Create (stream);
-			while (reader.Read () && !reader.IsStartElement ()) 
-				;
-			return reader.GetAttribute (attribute);
+			try {
+				var reader = XmlReader.Create (stream);
+				while (reader.Read () && !reader.IsStartElement ()) 
+					;
+				return reader.GetAttribute (attribute);
+			} catch (Exception e) {
+				Console.WriteLine ("Error while scanning xml:");
+				Console.WriteLine (e);
+				return null;
+			}
 		}
 
 		public static List<ValidationEventArgs> ValidateStyleFile (string fileName)
@@ -459,13 +465,19 @@ namespace Mono.TextEditor.Highlighting
 
 		static string ScanStyle (Stream stream)
 		{
-			var file = new StreamReader (stream);
-			file.ReadLine ();
-			var nameLine = file.ReadLine ();
-			var match = nameRegex.Match (nameLine);
-			if (!match.Success)
+			try {
+				var file = new StreamReader (stream);
+				file.ReadLine ();
+				var nameLine = file.ReadLine ();
+				var match = nameRegex.Match (nameLine);
+				if (!match.Success)
+					return null;
+				return match.Groups[1].Value;
+			} catch (Exception e) {
+				Console.WriteLine ("Error while scanning json:");
+				Console.WriteLine (e);
 				return null;
-			return match.Groups[1].Value;
+			}
 		}
 
 		public static void AddSyntaxMode (IStreamProvider provider)

@@ -138,16 +138,20 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			if (!IsVisible)
 				return false;
+			if (keyChar != '\0') {
+				wnd.EndOffset = wnd.StartOffset + wnd.CurrentPartialWord.Length + 1;
+			}
 			return wnd.PreProcessKeyEvent (key, keyChar, modifier);
 		}
 
 		public static void UpdateCursorPosition ()
 		{
-			if (!IsVisible) 
+			if (!IsVisible)
 				return;
-			if (wnd.CompletionWidget.CaretOffset < wnd.StartOffset)
-				DestroyWindow ();
 
+			var caretOffset = wnd.CompletionWidget.CaretOffset;
+			if (caretOffset < wnd.StartOffset || caretOffset > wnd.EndOffset)
+				DestroyWindow ();
 		}
 
 		public static void UpdateWordSelection (string text)

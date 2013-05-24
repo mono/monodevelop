@@ -101,7 +101,8 @@ namespace MonoDevelop.Ide.Commands
 
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = !IdeApp.Workbench.ActiveDocument.FileName.IsNullOrEmpty;
+			var doc = IdeApp.Workbench.ActiveDocument;
+			info.Enabled = doc != null && !doc.FileName.IsNullOrEmpty;
 		}
 	}
 }

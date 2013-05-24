@@ -55,6 +55,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		List<PolicySet> setsInCombo = new List<PolicySet> ();
 		bool synchingPoliciesCombo;
 		bool selectingPolicy;
+
+		public List<IMimeTypePolicyOptionsPanel> Panels {
+			get {
+				return panels;
+			}
+		}
 		
 		public MimeTypePolicyOptionsSection ()
 		{
@@ -142,7 +148,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				notebook.AppendPage (align, tlabel);
 				panel.LoadCurrentPolicy ();
 			}
-			
+			notebook.SwitchPage += delegate(object o, SwitchPageArgs args) {
+				if (notebook.Page >= 0 && notebook.Page < this.panels.Count)
+					this.panels[notebook.Page].PanelSelected ();
+			};
 			notebook.Show ();
 			vbox.PackEnd (notebook, true, true, 0);
 			

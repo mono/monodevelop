@@ -86,18 +86,13 @@ namespace MonoDevelop.Components
 			layout = new Pango.Layout (PangoContext);
 			if (FontDescription != null)
 				layout.FontDescription = FontDescription;
-			if (use_markup) {
-				layout.SetMarkup (brokentext != null? brokentext : (text ?? string.Empty));
-			} else {
-				layout.SetText (brokentext != null? brokentext : (text ?? string.Empty));
-			}
 			layout.Indent = (int) (indent * Pango.Scale.PangoScale);
 			layout.Wrap = wrapMode;
 			if (width >= 0)
 				layout.Width = (int)(width * Pango.Scale.PangoScale);
 			else
 				layout.Width = int.MaxValue;
-			QueueResize ();
+			SetLayoutMarkupAndResize ();
 		}
 		
 		protected override void OnDestroyed ()
@@ -236,12 +231,25 @@ namespace MonoDevelop.Components
 				}
 			}
 		}
+
+		void SetLayoutMarkupAndResize ()
+		{
+			if (layout != null) {
+				if (use_markup) {
+					layout.SetMarkup (brokentext ?? (text ?? string.Empty));
+				}
+				else {
+					layout.SetText (brokentext ?? (text ?? string.Empty));
+				}
+			}
+			QueueResize ();
+		}
 		
 		void breakText ()
 		{
 			brokentext = null;
 			if ((!breakOnCamelCasing && !breakOnPunctuation) || string.IsNullOrEmpty (text)) {
-				QueueResize ();
+				SetLayoutMarkupAndResize ();
 				return;
 			}
 			
@@ -310,14 +318,7 @@ namespace MonoDevelop.Components
 			}
 			brokentext = sb.ToString ();
 
-			if (layout != null) {
-				if (use_markup) {
-					layout.SetMarkup (brokentext != null? brokentext : (text ?? string.Empty));
-				} else {
-					layout.SetText (brokentext != null? brokentext : (text ?? string.Empty));
-				}
-			}
-			QueueResize ();
+			SetLayoutMarkupAndResize ();
 		}
 	}
 }

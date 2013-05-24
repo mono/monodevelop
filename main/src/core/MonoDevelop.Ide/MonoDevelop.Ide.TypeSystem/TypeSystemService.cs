@@ -168,7 +168,7 @@ namespace MonoDevelop.Ide.TypeSystem
 	
 	public static class TypeSystemService
 	{
-		const string CurrentVersion = "1.1.1";
+		const string CurrentVersion = "1.1.2";
 
 		static List<TypeSystemParserNode> parsers;
 		static string[] filesSkippedInParseThread = new string[0];

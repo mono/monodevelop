@@ -109,8 +109,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			if (current_overload >= 0 && current_overload < overloads.Count) {
 				var o = overloads[current_overload];
+				headlabel.BreakOnCamelCasing = false;
+				headlabel.BreakOnPunctuation = false;
 				headlabel.Markup = o.SignatureMarkup;
 				headlabel.Visible = true;
+
 				if (Theme.DrawPager && overloads.Count > 1) {
 					headlabel.WidthRequest = headlabel.RealWidth + 70;
 				} else {

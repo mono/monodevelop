@@ -122,7 +122,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			this.ShowAll ();
 			
 			var fileNameColumn = new TreeViewColumn {
-				Resizable = false,
+				Resizable = true,
 				SortColumnId = 0,
 				Title = GettextCatalog.GetString("File")
 			};
@@ -145,14 +145,14 @@ namespace MonoDevelop.Ide.FindInFiles
 			TreeViewColumn textColumn = treeviewSearchResults.AppendColumn (GettextCatalog.GetString ("Text"),
 				treeviewSearchResults.TextRenderer, ResultTextDataFunc);
 			textColumn.SortColumnId = 2;
-			textColumn.Resizable = false;
+			textColumn.Resizable = true;
 			textColumn.FixedWidth = 300;
 
 			
 			TreeViewColumn pathColumn = treeviewSearchResults.AppendColumn (GettextCatalog.GetString ("Path"),
 				treeviewSearchResults.TextRenderer, ResultPathDataFunc);
 			pathColumn.SortColumnId = 3;
-			pathColumn.Resizable = false;
+			pathColumn.Resizable = true;
 			pathColumn.FixedWidth = 500;
 
 			

@@ -177,7 +177,6 @@ namespace MonoDevelop.Ide.Gui.Content
 				CompletionWindowManager.HideWindow ();
 			if (autoHideParameterWindow)
 				ParameterInformationWindowManager.HideWindow (this, CompletionWidget);
-			CompletionWindowManager.UpdateCursorPosition ();
 			ParameterInformationWindowManager.UpdateCursorPosition (this, CompletionWidget);
 		}
 
@@ -430,24 +429,34 @@ namespace MonoDevelop.Ide.Gui.Content
 			return -1;
 		}
 		
+		void HandlePaste (int insertionOffset, string text, int insertedChars)
+		{
+			ParameterInformationWindowManager.HideWindow (this, CompletionWidget);
+			CompletionWindowManager.HideWindow ();
+		}
+
+		void HandleFocusOutEvent (object o, Gtk.FocusOutEventArgs args)
+		{
+			ParameterInformationWindowManager.HideWindow (this, CompletionWidget);
+			CompletionWindowManager.HideWindow ();
+		}
+
 		public override void Initialize ()
 		{
 			base.Initialize ();
-
 			CompletionWindowManager.WindowClosed += HandleWindowClosed;
 			CompletionWidget = Document.GetContent <ICompletionWidget> ();
 			if (CompletionWidget != null)
 				CompletionWidget.CompletionContextChanged += OnCompletionContextChanged;
-			document.Editor.Paste += (insertionOffset, text, insertedChars) => {
-				ParameterInformationWindowManager.HideWindow (this, CompletionWidget);
-				CompletionWindowManager.HideWindow ();
-			};
-			if (document.Editor.Parent != null) {
-				document.Editor.Parent.TextArea.FocusOutEvent += delegate {
-					ParameterInformationWindowManager.HideWindow (this, CompletionWidget);
-					CompletionWindowManager.HideWindow ();
-				};
-			}
+			document.Editor.Caret.PositionChanged += HandlePositionChanged;
+			document.Editor.Paste += HandlePaste;
+			if (document.Editor.Parent != null)
+				document.Editor.Parent.TextArea.FocusOutEvent += HandleFocusOutEvent;
+		}
+
+		void HandlePositionChanged (object sender, Mono.TextEditor.DocumentLocationEventArgs e)
+		{
+			CompletionWindowManager.UpdateCursorPosition ();
 		}
 
 		void HandleWindowClosed (object sender, EventArgs e)
@@ -463,6 +472,10 @@ namespace MonoDevelop.Ide.Gui.Content
 				ParameterInformationWindowManager.HideWindow (this, CompletionWidget);
 
 				disposed = true;
+				if (document.Editor.Parent != null)
+					document.Editor.Parent.TextArea.FocusOutEvent -= HandleFocusOutEvent;
+				document.Editor.Paste -= HandlePaste;
+				document.Editor.Caret.PositionChanged -= HandlePositionChanged;
 				CompletionWindowManager.WindowClosed -= HandleWindowClosed;
 				if (CompletionWidget != null)
 					CompletionWidget.CompletionContextChanged -= OnCompletionContextChanged;

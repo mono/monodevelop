@@ -123,7 +123,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		protected virtual void ResetState ()
 		{
 			HideWhenWordDeleted = false;
-			endOffset = -1;
+			lastCommitCharEndoffset = -1;
 			list.ResetState ();
 		}
 		
@@ -199,11 +199,22 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 		
+		int startOffset;
 		internal int StartOffset {
+			get {
+				return startOffset;
+			}
+			set {
+				startOffset = value;
+				EndOffset = value + 1;
+			}
+		}
+
+		public int EndOffset {
 			get;
 			set;
 		}
-		
+
 		public ICompletionWidget CompletionWidget {
 			get {
 				return list.CompletionWidget;
@@ -213,10 +224,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 		
-		int endOffset = -1;
+		int lastCommitCharEndoffset = -1;
 		public virtual string PartialWord {
 			get {
-				return CompletionWidget.GetText (StartOffset, Math.Max (StartOffset, endOffset > 0 ? endOffset : CompletionWidget.CaretOffset)); 
+				return CompletionWidget.GetText (StartOffset, Math.Max (StartOffset, lastCommitCharEndoffset > 0 ? lastCommitCharEndoffset : CompletionWidget.CaretOffset)); 
 			}
 			
 		}
@@ -253,6 +264,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			if (StartOffset > CompletionWidget.CaretOffset)
 				return KeyActions.CloseWindow | KeyActions.Process;
+
 			if (HideWhenWordDeleted && StartOffset >= CompletionWidget.CaretOffset)
 				return KeyActions.CloseWindow | KeyActions.Process;
 			switch (key) {
@@ -261,7 +273,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 				UpdateWordSelection ();
 				return KeyActions.Process;
 			}
-			
 			
 			const string commitChars = " <>()[]{}=+-*/%~&|!";
 			if (keyChar == '[' && CloseOnSquareBrackets)
@@ -279,7 +290,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				int match = FindMatchedEntry (curword, out hasMismatches);
 				if (match >= 0 && System.Char.IsPunctuation (keyChar)) {
 					string text = DataProvider.GetCompletionText (FilteredItems [match]);
-					if (!text.ToUpper ().StartsWith (curword.ToUpper ()))
+					if (!text.ToUpper ().StartsWith (curword.ToUpper (), StringComparison.Ordinal))
 						match = -1;	 
 				}
 				if (match >= 0 && !hasMismatches && keyChar != '<') {
@@ -289,7 +300,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				}
 				if (keyChar == '.')
 					list.AutoSelect = list.AutoCompleteEmptyMatch = true;
-				endOffset = CompletionWidget.CaretOffset - 1;
+				lastCommitCharEndoffset = CompletionWidget.CaretOffset - 1;
 				if (list.SelectionEnabled) {
 					if (keyChar == '{' && !list.AutoCompleteEmptyMatchOnCurlyBrace && string.IsNullOrEmpty (list.CompletionString))
 					    return KeyActions.CloseWindow | KeyActions.Process;
@@ -345,7 +356,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			case Gdk.Key.ISO_Enter:
 			case Gdk.Key.Key_3270_Enter:
 			case Gdk.Key.KP_Enter:
-				endOffset = CompletionWidget.CaretOffset;
+				lastCommitCharEndoffset = CompletionWidget.CaretOffset;
 				WasShiftPressed = (modifier & ModifierType.ShiftMask) == ModifierType.ShiftMask;
 				return KeyActions.Complete | KeyActions.Ignore | KeyActions.CloseWindow;
 			case Gdk.Key.Down:
