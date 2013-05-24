@@ -29,6 +29,9 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using System.Collections.Generic;
 using MonoDevelop.Ide.CodeFormatting;
+using MonoDevelop.Ide.Gui.Content;
+
+
 namespace MonoDevelop.CSharp.Formatting
 {
 	[System.ComponentModel.ToolboxItem(true)]
@@ -49,17 +52,28 @@ namespace Example {
 		}
 	}
 }";
+		TextStylePolicy textStylePolicy;
 		CSharpFormattingPolicy policy;
 		public CSharpFormattingPolicy Policy {
 			get {
 				return policy;
 			}
-			set {
-				policy = value;
-				FormatSample ();
-			}
 		}
-		
+
+
+		public void SetPolicy (CSharpFormattingPolicy cSharpFormattingPolicy, TextStylePolicy textStylePolicy)
+		{
+			this.policy = cSharpFormattingPolicy;
+			this.textStylePolicy = textStylePolicy;
+			FormatSample ();
+		}
+
+		public void SetPolicy (TextStylePolicy textStylePolicy)
+		{
+			this.textStylePolicy = textStylePolicy;
+			FormatSample ();
+		}
+
 		public CSharpFormattingPolicyPanelWidget ()
 		{
 			this.Build ();
@@ -81,7 +95,12 @@ namespace Example {
 		public void FormatSample ()
 		{
 			var formatter = new CSharpFormatter ();
-			texteditor.Document.Text = formatter.FormatText (policy, null, CSharpFormatter.MimeType, example, 0, example.Length);
+			if (textStylePolicy != null) {
+				texteditor.Options.IndentationSize = textStylePolicy.IndentWidth;
+				texteditor.Options.TabSize = textStylePolicy.TabWidth;
+				texteditor.Options.TabsToSpaces = textStylePolicy.TabsToSpaces;
+			}
+			texteditor.Document.Text = formatter.FormatText (policy, textStylePolicy, CSharpFormatter.MimeType, example, 0, example.Length);
 		}
 
 		void HandleButtonEditClicked (object sender, EventArgs e)

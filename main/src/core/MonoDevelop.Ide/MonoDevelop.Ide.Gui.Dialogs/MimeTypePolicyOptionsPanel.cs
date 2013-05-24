@@ -55,6 +55,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		PolicySet GetMatchingSet (IEnumerable<PolicySet> candidateSets);
 		bool Modified { get; }
 		bool HandlesPolicyType (Type type, string scope);
+
+		void PanelSelected ();
 	}
 	
 	public abstract class MimeTypePolicyOptionsPanel<T>: ItemOptionsPanel, IMimeTypePolicyOptionsPanel where T : class, IEquatable<T>, new ()
@@ -70,7 +72,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		CheckButton defaultSettingsButton;
 		Widget panelWidget;
 		bool isExactMimeType;
-		
+
 		void IMimeTypePolicyOptionsPanel.InitializePolicy (PolicyContainer policyContainer, string mimeType, bool isExactMimeType)
 		{
 			this.mimeType = mimeType;
@@ -99,7 +101,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		void IMimeTypePolicyOptionsPanel.LoadParentPolicy ()
 		{
 			T policy = GetInheritedPolicy (mimeTypeScopes);
-			
+
 			if (loaded) {
 				UpdateDefaultSettingsButton (policyContainer.ParentPolicies);
 				LoadFrom ((T)policy);
@@ -277,6 +279,21 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				return !pol.Equals (GetCurrentPolicy ());
 			}
 		}
+
+		/// <summary>
+		/// Gets the current policy from the same section.
+		/// </summary>
+		protected S GetCurrentOtherPolicy<S> () where S : class, IEquatable<S>, new ()
+		{
+			foreach (IMimeTypePolicyOptionsPanel p in section.Panels) {
+				var panel = p as MimeTypePolicyOptionsPanel<S>;
+				if (panel == null)
+					continue;
+				return panel.GetCurrentPolicy ();
+			}
+
+			return policyContainer.Get<S> (mimeTypeScopes);
+		}
 		
 		protected abstract void LoadFrom (T policy);
 		
@@ -289,6 +306,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		public void UpdateSelectedNamedPolicy ()
 		{
 			section.UpdateSelectedNamedPolicy ();
+		}
+
+		public virtual void PanelSelected ()
+		{
 		}
 	}
 }
