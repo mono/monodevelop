@@ -148,7 +148,16 @@ namespace MonoDevelop.Ide.WelcomePage
 					Gtk.Application.Invoke (delegate { LoadNews (); });
 
 				} catch (Exception ex) {
-					LoggingService.LogWarning ("Welcome Page news file could not be downloaded.", ex);
+					var agg = ex as AggregateException;
+					if (agg != null) {
+						ex = agg.Flatten ().InnerException;
+					}
+					var wex = ex as WebException;
+					if (wex != null && wex.Status == WebExceptionStatus.NameResolutionFailure) {
+						LoggingService.LogWarning ("Welcome Page news server could not be reached.");
+					} else {
+						LoggingService.LogWarning ("Welcome Page news file could not be downloaded.", ex);
+					}
 				} finally {
 					lock (updateLock)
 						isUpdating = false;
