@@ -129,7 +129,23 @@ namespace Mono.TextEditor.Vi
     /// Number of times to perform the next action
     /// For example 3 is the numeric prefix when "3w" is entered
     /// <summary>
-    string numericPrefix = "0";
+    string numericPrefix = "";
+    /// <summary>
+    /// Number of times to perform the next action
+    /// <summary>
+    int repeatCount
+    {
+      get
+      {
+        int n;
+        int.TryParse(numericPrefix, out n);
+        return n < 1 ? 1 : n;
+      }
+      set
+      {
+        numericPrefix = value.ToString();
+      }
+    }
     /// <summary>
     /// Number of times to repeat next action
     /// <summary>
@@ -367,28 +383,17 @@ namespace Mono.TextEditor.Vi
 				ViActionMaps.GetDirectionKeyAction (key, modifier);
 		}
 
-    /// <summary>
-    /// Get integer from numeric prefix and reset numeric prefix
-    /// Call before a repeatable method
-    /// <summary>
-    private int ExtractNumericPrefix()
-    {
-      int n = repeatCount;
-      numericPrefix = "0";
-      return n;
-    }
-
-    /// <summary>
     /// Run an action multiple times if it was preceded by a numeric key
     /// Resets numeric prefixs
     /// <summary>
     private void RunRepeatableAction (Action<TextEditorData> action)
     {
-        int reps = ExtractNumericPrefix();   //how many times to repeat command
-        for (int i = 0 ; i < reps ; i++)
-        {
-          RunAction (action);
-        }
+      int reps = repeatCount;   //how many times to repeat command
+      for (int i = 0 ; i < reps ; i++)
+      {
+        RunAction (action);
+      }
+      numericPrefix = "";
     }
 
     /// <summary>
@@ -397,18 +402,18 @@ namespace Mono.TextEditor.Vi
     /// <summary>
     private void RunRepeatableActionChain (params Action<TextEditorData>[] actions)
     {
-      int reps = ExtractNumericPrefix();  //how many times to repeat command
-      List<Action<TextEditorData>> actionList = new List<Action<TextEditorData>>();
-      int.TryParse(numericPrefix, out reps);
-      for (int i = 0 ; i < reps ; i++)
-      {
-        actionList.Add(actions[0]);
-      }
-      for (int i = 1 ; i < actions.Length ; i++)
-      {
-        actionList.Add(actions[i]);
-      }
-      RunActions (actionList.ToArray());
+        List<Action<TextEditorData>> actionList = new List<Action<TextEditorData>>();
+        int reps = repeatCount;   //how many times to repeat command
+        for (int i = 0 ; i < reps ; i++)
+        {
+          actionList.Add(actions[0]);
+        }
+        for (int i = 1 ; i < actions.Length ; i++)
+        {
+          actionList.Add(actions[i]);
+        }
+        RunActions (actionList.ToArray());
+        numericPrefix = "";
     }
 
     /// <summary>
@@ -421,7 +426,7 @@ namespace Mono.TextEditor.Vi
     {
       List<Action<TextEditorData>> actionList = new List<Action<TextEditorData>>();
 
-      int reps = ExtractNumericPrefix();   //how many times to repeat command
+      int reps = repeatCount;   //how many times to repeat command
 
       for (int i = 0 ; i < reps ; i++)
       {
@@ -429,6 +434,7 @@ namespace Mono.TextEditor.Vi
       }
 
       RunActions (actionList.ToArray());
+      numericPrefix = "";
     }
 
 		protected override void HandleKeypress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
@@ -726,12 +732,12 @@ namespace Mono.TextEditor.Vi
           {
 						RepeatAllActions (action, ClipboardActions.Cut, CaretMoveActions.LineFirstNonWhitespace);
           }
-          else if (unicodeKey == 'j') 
-          { 
-            repeatCount += 1; 
+          else if (unicodeKey == 'j')   //dj -- delete current line and line below
+          {
+            repeatCount += 1;
 						RepeatAllActions (action, ClipboardActions.Cut, CaretMoveActions.LineFirstNonWhitespace);
           }
-          else if (unicodeKey == 'k')   //dk -- delete lines moving upward
+          else if (unicodeKey == 'k')   //dk -- delete current line and line above
           {
             repeatCount += 1;
 						RepeatAllActions (CaretMoveActions.LineFirstNonWhitespace, ClipboardActions.Cut, action);
