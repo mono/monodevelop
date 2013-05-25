@@ -759,9 +759,22 @@ namespace Mono.TextEditor.Vi
 				}
 				
 				if (action != null) {
-					RunRepeatableAction (action);
-					if (Data.IsSomethingSelected && !lineAction)
-						offset = Data.SelectionRange.Offset;
+          if (lineAction)
+          {
+            SelectionActions.StartSelection(Data);
+            for (int i = 1 ; i < repeatCount ; i++)
+            {
+              RunAction(CaretMoveActions.Down);
+            }
+            SelectionActions.EndSelection(Data);
+            numericPrefix = "";
+          }
+          else
+          {
+            RunRepeatableAction (action);
+          }
+          if (Data.IsSomethingSelected && !lineAction)
+            offset = Data.SelectionRange.Offset;
 					RunAction (ClipboardActions.Copy);
 					Reset (string.Empty);
 				} else {
