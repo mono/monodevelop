@@ -146,22 +146,6 @@ namespace Mono.TextEditor.Vi
         numericPrefix = value.ToString();
       }
     }
-    /// <summary>
-    /// Number of times to repeat next action
-    /// <summary>
-    int repeatCount
-    {
-      get
-      {
-        int n;
-        int.TryParse(numericPrefix, out n);
-        return (n <= 0) ? 1 : n;
-      }
-      set
-      {
-        numericPrefix = value.ToString();
-      }
-    }
 
     /// <summary>
     /// Whether ViEditMode is in a state where it should accept a numeric prefix
