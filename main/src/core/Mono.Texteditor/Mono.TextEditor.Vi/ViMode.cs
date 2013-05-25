@@ -406,7 +406,8 @@ namespace Mono.TextEditor.Vi
     /// The second action indicates the action to be taken on the line
     /// The third action indicates the action to reset after completing the action on that line
     /// <summary>
-    private void RepeatAllActions(params Action<TextEditorData>[] actions)
+    private List<Action<TextEditorData>> GenerateRepeatedActionList(
+        params Action<TextEditorData>[] actions)
     {
       List<Action<TextEditorData>> actionList = new List<Action<TextEditorData>>();
 
@@ -417,8 +418,8 @@ namespace Mono.TextEditor.Vi
         actionList.AddRange(actions);
       }
 
-      RunActions (actionList.ToArray());
       numericPrefix = "";
+      return actionList;
     }
 
 		protected override void HandleKeypress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
@@ -712,25 +713,32 @@ namespace Mono.TextEditor.Vi
 				}
 				
 				if (action != null) {
+          List<Action<TextEditorData>> actions;
 					if (lineAction)   //dd or dj  -- delete lines moving downward
           {
-						RepeatAllActions (action, ClipboardActions.Cut, CaretMoveActions.LineFirstNonWhitespace);
+						actions = GenerateRepeatedActionList (
+              action, ClipboardActions.Cut, CaretMoveActions.LineFirstNonWhitespace);
           }
           else if (unicodeKey == 'j')   //dj -- delete current line and line below
           {
             repeatCount += 1;
             action = SelectionActions.LineActionFromMoveAction (CaretMoveActions.LineEnd);
-						RepeatAllActions (action, ClipboardActions.Cut, CaretMoveActions.LineFirstNonWhitespace);
+						actions = GenerateRepeatedActionList (
+              action, ClipboardActions.Cut, CaretMoveActions.LineFirstNonWhitespace);
           }
           else if (unicodeKey == 'k')   //dk -- delete current line and line above
           {
             repeatCount += 1;
-						RepeatAllActions (CaretMoveActions.LineFirstNonWhitespace, ClipboardActions.Cut, action);
+						actions = GenerateRepeatedActionList (
+                CaretMoveActions.LineFirstNonWhitespace, ClipboardActions.Cut, action);
           }
 					else
           {
-						RunRepeatableActionChain (action, ClipboardActions.Cut);
+						actions = GenerateRepeatedActionList (action);
+            actions.Add (ClipboardActions.Cut);
           }
+
+          RunActions (actions.ToArray());
 					Reset ("action deleted");
 				} else {
 					Reset ("Unrecognised motion");
@@ -808,10 +816,34 @@ namespace Mono.TextEditor.Vi
 				}
 				
 				if (action != null) {
-					if (lineAction)
-						RunActions (action, ClipboardActions.Cut, ViActions.NewLineAbove);
+          List<Action<TextEditorData>> actions;
+					if (lineAction)   //cd or cj  -- delete lines moving downward
+          {
+						actions = GenerateRepeatedActionList (
+              action, ClipboardActions.Cut, CaretMoveActions.LineFirstNonWhitespace);
+            actions.Add (ViActions.NewLineAbove);
+          }
+          else if (unicodeKey == 'j')   //cj -- delete current line and line below
+          {
+            repeatCount += 1;
+            action = SelectionActions.LineActionFromMoveAction (CaretMoveActions.LineEnd);
+						actions = GenerateRepeatedActionList (
+              action, ClipboardActions.Cut, CaretMoveActions.LineFirstNonWhitespace);
+            actions.Add (ViActions.NewLineAbove);
+          }
+          else if (unicodeKey == 'k')   //ck -- delete current line and line above
+          {
+            repeatCount += 1;
+						actions = GenerateRepeatedActionList (
+                CaretMoveActions.LineFirstNonWhitespace, ClipboardActions.Cut, action);
+            actions.Add (ViActions.NewLineBelow);
+          }
 					else
-						RunRepeatableActionChain (action, ClipboardActions.Cut);
+          {
+						actions = GenerateRepeatedActionList (action);
+            actions.Add (ClipboardActions.Cut);
+          }
+          RunActions (actions.ToArray());
 					Status = "-- INSERT --";
 					CurState = State.Insert;
 					Caret.Mode = CaretMode.Insert;
