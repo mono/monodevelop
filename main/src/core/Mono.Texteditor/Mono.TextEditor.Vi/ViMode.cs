@@ -129,7 +129,23 @@ namespace Mono.TextEditor.Vi
     /// Number of times to perform the next action
     /// For example 3 is the numeric prefix when "3w" is entered
     /// <summary>
-    string numericPrefix = "0";
+    string numericPrefix = "";
+    /// <summary>
+    /// Number of times to perform the next action
+    /// <summary>
+    int repeatCount
+    {
+      get
+      {
+        int n;
+        int.TryParse(numericPrefix, out n);
+        return n < 1 ? 1 : n;
+      }
+      set
+      {
+        numericPrefix = value.ToString();
+      }
+    }
     /// <summary>
     /// Whether ViEditMode is in a state where it should accept a numeric prefix
     /// <summary>
@@ -356,20 +372,12 @@ namespace Mono.TextEditor.Vi
     /// <summary>
     private void RunRepeatableAction (Action<TextEditorData> action)
     {
-      if (numericPrefix.Length <= 1)
+      int reps = repeatCount;   //how many times to repeat command
+      for (int i = 0 ; i < reps ; i++)
       {
         RunAction (action);
       }
-      else
-      {
-        int reps;   //how many times to repeat command
-        int.TryParse(numericPrefix, out reps);
-        for (int i = 0 ; i < reps ; i++)
-        {
-          RunAction (action);
-        }
-        numericPrefix = "0";
-      }
+      numericPrefix = "";
     }
 
     /// <summary>
@@ -378,15 +386,8 @@ namespace Mono.TextEditor.Vi
     /// <summary>
     private void RunRepeatableActionChain (params Action<TextEditorData>[] actions)
     {
-      if (numericPrefix.Length <= 1)
-      {
-        RunActions (actions);
-      }
-      else
-      {
         List<Action<TextEditorData>> actionList = new List<Action<TextEditorData>>();
-        int reps;   //how many times to repeat command
-        int.TryParse(numericPrefix, out reps);
+        int reps = repeatCount;   //how many times to repeat command
         for (int i = 0 ; i < reps ; i++)
         {
           actionList.Add(actions[0]);
@@ -396,9 +397,7 @@ namespace Mono.TextEditor.Vi
           actionList.Add(actions[i]);
         }
         RunActions (actionList.ToArray());
-        numericPrefix = "0";
-      }
-      
+        numericPrefix = "";
     }
 
     /// <summary>
@@ -411,16 +410,14 @@ namespace Mono.TextEditor.Vi
     {
       List<Action<TextEditorData>> actionList = new List<Action<TextEditorData>>();
 
-      int reps;   //how many times to repeat command
-      int.TryParse(numericPrefix, out reps);
-      reps = (reps == 0) ? 1 : reps;
+      int reps = repeatCount;   //how many times to repeat command
 
       for (int i = 0 ; i < reps ; i++)
       {
         actionList.AddRange(actions);
       }
       RunActions (actionList.ToArray());
-      numericPrefix = "0";
+      numericPrefix = "";
     }
 
 		protected override void HandleKeypress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
@@ -696,16 +693,15 @@ namespace Mono.TextEditor.Vi
 			case State.Delete:
 				if (IsInnerOrOuterMotionKey (unicodeKey, ref motion)) return;
 
-				if (((modifier & (Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask)) == 0 
-				     && (unicodeKey == 'd' || unicodeKey == 'j')))
+        if (motion != Motion.None) {
+					action = ViActionMaps.GetEditObjectCharAction((char) unicodeKey, motion);
+				}
+        else if ((modifier & (Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask)) == 0 
+				     && unicodeKey == 'd' )
 				{
 					action = SelectionActions.LineActionFromMoveAction (CaretMoveActions.LineEnd);
 					lineAction = true;
 				} 
-        else if (motion != Motion.None) {
-					action = ViActionMaps.GetEditObjectCharAction((char) unicodeKey, motion);
-				}
-
         else {
 					action = ViActionMaps.GetNavCharAction ((char)unicodeKey);
 					if (action == null)
@@ -719,8 +715,14 @@ namespace Mono.TextEditor.Vi
           {
 						RepeatAllActions (action, ClipboardActions.Cut, CaretMoveActions.LineFirstNonWhitespace);
           }
-          else if (unicodeKey == 'k')   //dk -- delete lines moving upward
+          else if (unicodeKey == 'j')   //dj -- delete current line and line below
           {
+            repeatCount += 1;
+						RepeatAllActions (action, ClipboardActions.Cut, CaretMoveActions.LineFirstNonWhitespace);
+          }
+          else if (unicodeKey == 'k')   //dk -- delete current line and line above
+          {
+            repeatCount += 1;
 						RepeatAllActions (CaretMoveActions.LineFirstNonWhitespace, ClipboardActions.Cut, action);
           }
 					else
