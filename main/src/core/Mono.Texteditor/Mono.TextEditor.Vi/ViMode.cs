@@ -746,9 +746,11 @@ namespace Mono.TextEditor.Vi
 					action = ViActionMaps.GetEditObjectCharAction((char) unicodeKey, motion);
 				}
 				else if (((modifier & (Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask)) == 0
-				     && unicodeKey == 'y'))
+				     && (unicodeKey == 'y' || unicodeKey == 'j' || unicodeKey == 'k')))
 				{
-					action = SelectionActions.LineActionFromMoveAction (CaretMoveActions.LineEnd);
+          if (unicodeKey == 'k') { action = CaretMoveActions.Up; } 
+          else { action = CaretMoveActions.Down; }
+          if (unicodeKey == 'j') { repeatCount += 1; } //get one extra line for yj
 					lineAction	= true;
 				} else {
 					action = ViActionMaps.GetNavCharAction ((char)unicodeKey);
@@ -761,10 +763,11 @@ namespace Mono.TextEditor.Vi
 				if (action != null) {
           if (lineAction)
           {
+            RunAction (CaretMoveActions.LineStart);
             SelectionActions.StartSelection(Data);
-            for (int i = 1 ; i < repeatCount ; i++)
+            for (int i = 0 ; i < repeatCount ; i++)
             {
-              RunAction(CaretMoveActions.Down);
+              RunAction(action);
             }
             SelectionActions.EndSelection(Data);
             numericPrefix = "";
