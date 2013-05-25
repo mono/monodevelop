@@ -719,6 +719,7 @@ namespace Mono.TextEditor.Vi
           else if (unicodeKey == 'j')   //dj -- delete current line and line below
           {
             repeatCount += 1;
+            action = SelectionActions.LineActionFromMoveAction (CaretMoveActions.LineEnd);
 						RepeatAllActions (action, ClipboardActions.Cut, CaretMoveActions.LineFirstNonWhitespace);
           }
           else if (unicodeKey == 'k')   //dk -- delete current line and line above
