@@ -969,7 +969,7 @@ namespace Mono.TextEditor.Vi
 				if (((modifier & (Gdk.ModifierType.ControlMask)) == 0 && unicodeKey == '>'))
 				{ //select current line to indent
           List<Action<TextEditorData>> actions = new List<Action<TextEditorData>>();
-          actions.Add (SelectionActions.FromMoveAction(ViActions.Left));
+          actions.Add (SelectionActions.FromMoveAction(CaretMoveActions.LineEnd));
           for (int i = 1 ; i < repeatCount ; i++)
           {
             actions.Add (SelectionActions.FromMoveAction (ViActions.Down));
@@ -986,7 +986,13 @@ namespace Mono.TextEditor.Vi
 					action = ViActionMaps.GetDirectionKeyAction (key, modifier);
 				
 				if (action != null) {
-					RunActions (SelectionActions.FromMoveAction (action), MiscActions.IndentSelection);
+          List<Action<TextEditorData>> actions = new List<Action<TextEditorData>>();
+          for (int i = 0 ; i < repeatCount ; i++)
+          {
+            actions.Add (SelectionActions.FromMoveAction (action));
+          }
+          actions.Add (MiscActions.RemoveIndentSelection);
+          RunActions (actions.ToArray());
 					Reset ("");
 				} else {
 					Reset ("Unrecognised motion");
@@ -997,7 +1003,7 @@ namespace Mono.TextEditor.Vi
 				if (((modifier & (Gdk.ModifierType.ControlMask)) == 0 && ((char)unicodeKey) == '<'))
 				{ //select current line to indent
           List<Action<TextEditorData>> actions = new List<Action<TextEditorData>>();
-          actions.Add (SelectionActions.FromMoveAction(ViActions.Left));
+          actions.Add (SelectionActions.FromMoveAction(CaretMoveActions.LineEnd));
           for (int i = 1 ; i < repeatCount ; i++)
           {
             actions.Add (SelectionActions.FromMoveAction (ViActions.Down));
@@ -1014,7 +1020,13 @@ namespace Mono.TextEditor.Vi
 					action = ViActionMaps.GetDirectionKeyAction (key, modifier);
 				
 				if (action != null) {
-					RunActions (SelectionActions.FromMoveAction (action), MiscActions.RemoveIndentSelection);
+          List<Action<TextEditorData>> actions = new List<Action<TextEditorData>>();
+          for (int i = 0 ; i < repeatCount ; i++)
+          {
+            actions.Add (SelectionActions.FromMoveAction (action));
+          }
+          actions.Add (MiscActions.RemoveIndentSelection);
+          RunActions (actions.ToArray());
 					Reset ("");
 				} else {
 					Reset ("Unrecognised motion");
