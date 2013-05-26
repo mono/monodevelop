@@ -1105,12 +1105,16 @@ namespace Mono.TextEditor.Vi
 				if (k == '@') 
 					k = macros_lastplayed;
 				if (macros.ContainsKey(k)) {
+          int playCount = repeatCount;  //store repeat count in case macro changes it
 					Reset ("");
 					macros_lastplayed = k; // FIXME play nice when playing macros from inside macros?
 					ViMacro macroToPlay = macros [k];
-					foreach (ViMacro.KeySet keySet in macroToPlay.KeysPressed) {
-						HandleKeypress(keySet.Key, keySet.UnicodeKey, keySet.Modifiers); // FIXME stop on errors? essential with multipliers and nowrapscan
-					}
+          for (int i = 0 ; i < playCount ; i++)
+          {
+            foreach (ViMacro.KeySet keySet in macroToPlay.KeysPressed) {
+              HandleKeypress(keySet.Key, keySet.UnicodeKey, keySet.Modifiers); // FIXME stop on errors? essential with multipliers and nowrapscan
+            }
+          }
 					/* Once all the keys have been played back, quickly exit. */
 					return;
 				} else {
