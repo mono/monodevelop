@@ -48,6 +48,7 @@ using System.Web.WebPages.Razor;
 using System.Configuration;
 using MonoDevelop.Projects;
 using MonoDevelop.AspNet.StateEngine;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace MonoDevelop.AspNet.Mvc.Parser
 {
@@ -82,7 +83,7 @@ namespace MonoDevelop.AspNet.Mvc.Parser
 			currentDocument = openDocuments.FirstOrDefault (d => d != null && d.FileName == fileName);
 			// We need document and project to be loaded to correctly initialize Razor Host.
 			this.project = project as DotNetProject;
-			if (this.project == null || (currentDocument == null && !TryAddDocument (fileName)))
+			if (currentDocument == null && !TryAddDocument (fileName))
 				return new RazorCSharpParsedDocument (fileName, new RazorCSharpPageInfo ());
 
 			this.aspProject = project as AspMvcProject;
@@ -184,12 +185,14 @@ namespace MonoDevelop.AspNet.Mvc.Parser
 
 		RazorEngineHost CreateRazorHost (string fileName)
 		{
-			var projectFile = project.GetProjectFile (fileName);
-			if (projectFile != null && projectFile.Generator == "RazorTemplatePreprocessor") {
-				var h = MonoDevelop.RazorGenerator.PreprocessedRazorHost.Create (fileName);
-				h.DesignTimeMode = true;
-				h.EnableLinePragmas = false;
-				return h;
+			if (project != null) {
+				var projectFile = project.GetProjectFile (fileName);
+				if (projectFile != null && projectFile.Generator == "RazorTemplatePreprocessor") {
+					var h = MonoDevelop.RazorGenerator.PreprocessedRazorHost.Create (fileName);
+					h.DesignTimeMode = true;
+					h.EnableLinePragmas = false;
+					return h;
+				}
 			}
 
 			string virtualPath = "~/Views/Default.cshtml";
@@ -375,7 +378,9 @@ namespace MonoDevelop.AspNet.Mvc.Parser
 		string CreateCodeFile ()
 		{
 			var unit = capturedArgs.GeneratorResults.GeneratedCode;
-			var provider = project.LanguageBinding.GetCodeDomProvider ();
+			System.CodeDom.Compiler.CodeDomProvider provider = project != null
+				? project.LanguageBinding.GetCodeDomProvider ()
+				: new Microsoft.CSharp.CSharpCodeProvider ();
 			using (var sw = new StringWriter ()) {
 				provider.GenerateCodeFromCompileUnit (unit, sw, new System.CodeDom.Compiler.CodeGeneratorOptions ()	{
 					// HACK: we use true, even though razor uses false, to work around a mono bug where it omits the 
@@ -391,7 +396,26 @@ namespace MonoDevelop.AspNet.Mvc.Parser
 		// Creates compilation that includes underlying C# file for Razor view
 		ICompilation CreateCompilation ()
 		{
-			return TypeSystemService.GetProjectContext (project).AddOrUpdateFiles (parsedCodeFile.ParsedFile).CreateCompilation ();
+			if (project != null) {
+				return TypeSystemService.GetProjectContext (project).AddOrUpdateFiles (parsedCodeFile.ParsedFile).CreateCompilation ();
+			}
+			return new SimpleCompilation (
+				new DefaultUnresolvedAssembly (Path.ChangeExtension (parsedCodeFile.FileName, ".dll")),
+				GetDefaultAssemblies ()
+			);
+		}
+
+		//FIXME: make this better reflect the real set of assemblies used by razor
+		static IEnumerable<IUnresolvedAssembly> GetDefaultAssemblies ()
+		{
+			var runtime = Runtime.SystemAssemblyService.DefaultRuntime;
+			var fx = Runtime.SystemAssemblyService.GetTargetFramework (MonoDevelop.Core.Assemblies.TargetFrameworkMoniker.NET_4_5);
+			if (!runtime.IsInstalled (fx))
+				fx = Runtime.SystemAssemblyService.GetTargetFramework (MonoDevelop.Core.Assemblies.TargetFrameworkMoniker.NET_4_0);
+			foreach (var assembly in new [] { "System", "System.Core", "System.Xml", "System.Web.Mvc,Version=3.0.0.0" }) {
+				var path = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyLocation (assembly, fx);
+				yield return TypeSystemService.LoadAssemblyContext (runtime, fx, path);
+			}
 		}
 
 		void OnTextReplacing (object sender, DocumentChangeEventArgs e)
