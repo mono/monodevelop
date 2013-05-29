@@ -54,7 +54,6 @@ namespace Mono.Debugging.Client
 		bool disposed;
 		bool attached;
 		bool ownedBreakpointStore;
-		object bslock = new object ();
 		object slock = new object ();
 		object olock = new object ();
 		ThreadInfo activeThread;
@@ -223,45 +222,41 @@ namespace Mono.Debugging.Client
 		public BreakpointStore Breakpoints {
 			get {
 				lock (slock) {
-					lock (bslock) {
-						if (breakpointStore == null) {
-							Breakpoints = new BreakpointStore ();
-							ownedBreakpointStore = true;
-						}
-						return breakpointStore;
+					if (breakpointStore == null) {
+						Breakpoints = new BreakpointStore ();
+						ownedBreakpointStore = true;
 					}
+					return breakpointStore;
 				}
 			}
 			set {
 				lock (slock) {
-					lock (bslock) {
-						if (breakpointStore != null) {
-							foreach (BreakEvent bp in breakpointStore) {
-								RemoveBreakEvent (bp);
-								NotifyBreakEventStatusChanged (bp);
-							}
-							breakpointStore.BreakEventAdded -= OnBreakpointAdded;
-							breakpointStore.BreakEventRemoved -= OnBreakpointRemoved;
-							breakpointStore.BreakEventModified -= OnBreakpointModified;
-							breakpointStore.BreakEventEnableStatusChanged -= OnBreakpointStatusChanged;
-							breakpointStore.CheckingReadOnly -= BreakpointStoreCheckingReadOnly;
-							breakpointStore.ResetAdjustedBreakpoints ();
+					if (breakpointStore != null) {
+						foreach (BreakEvent bp in breakpointStore) {
+							RemoveBreakEvent (bp);
+							NotifyBreakEventStatusChanged (bp);
 						}
+						breakpointStore.BreakEventAdded -= OnBreakpointAdded;
+						breakpointStore.BreakEventRemoved -= OnBreakpointRemoved;
+						breakpointStore.BreakEventModified -= OnBreakpointModified;
+						breakpointStore.BreakEventEnableStatusChanged -= OnBreakpointStatusChanged;
+						breakpointStore.CheckingReadOnly -= BreakpointStoreCheckingReadOnly;
+						breakpointStore.ResetAdjustedBreakpoints ();
+					}
 
-						breakpointStore = value;
-						ownedBreakpointStore = false;
+					breakpointStore = value;
+					ownedBreakpointStore = false;
 
-						if (breakpointStore != null) {
-							if (IsConnected) {
-								foreach (BreakEvent bp in breakpointStore)
-									AddBreakEvent (bp);
-							}
-							breakpointStore.BreakEventAdded += OnBreakpointAdded;
-							breakpointStore.BreakEventRemoved += OnBreakpointRemoved;
-							breakpointStore.BreakEventModified += OnBreakpointModified;
-							breakpointStore.BreakEventEnableStatusChanged += OnBreakpointStatusChanged;
-							breakpointStore.CheckingReadOnly += BreakpointStoreCheckingReadOnly;
+					if (breakpointStore != null) {
+						if (IsConnected) {
+							foreach (BreakEvent bp in breakpointStore)
+								AddBreakEvent (bp);
 						}
+						breakpointStore.BreakEventAdded += OnBreakpointAdded;
+						breakpointStore.BreakEventRemoved += OnBreakpointRemoved;
+						breakpointStore.BreakEventModified += OnBreakpointModified;
+						breakpointStore.BreakEventEnableStatusChanged += OnBreakpointStatusChanged;
+						breakpointStore.CheckingReadOnly += BreakpointStoreCheckingReadOnly;
 					}
 				}
 			}
@@ -654,18 +649,7 @@ namespace Mono.Debugging.Client
 
 		void BreakpointStoreCheckingReadOnly (object sender, ReadOnlyCheckEventArgs e)
 		{
-			// When this used 'lock', it was a common cause of deadlocks, as it is called on a timeout from the GUI 
-			// thread, so if something else held the session lock, the GUI would deadlock. Instead we use TryEnter,
-			// so the worst that can happen is that users won't be able to modify breakpoints.
-			//FIXME: why do we always lock accesses to AllowBreakEventChanges? Only MonoDebuggerSession needs it locked.
-			bool entered = false;
-			try {
-				entered = Monitor.TryEnter (bslock, TimeSpan.FromMilliseconds (50));
-				e.SetReadOnly (!entered || !AllowBreakEventChanges);
-			} finally {
-				if (entered)
-					Monitor.Exit (bslock);
-			}
+			e.SetReadOnly (!AllowBreakEventChanges);
 		}
 		
 		/// <summary>
