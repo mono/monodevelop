@@ -34,70 +34,6 @@ using System.Linq;
 
 namespace Mono.TextEditor.Vi
 {
-	public class NewViEditMode : EditMode
-	{
-		protected ViEditor ViEditor { get ; private set ;}
-		
-		public NewViEditMode ()
-		{
-			ViEditor = new ViEditor (this);
-		}
-		
-		protected override void HandleKeypress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
-		{
-			ViEditor.ProcessKey (modifier, key, (char)unicodeKey);
-		}
-		
-		public new TextEditor Editor { get { return base.Editor; } }
-		public new TextEditorData Data { get { return base.Data; } }
-		
-		public override bool WantsToPreemptIM {
-			get {
-				switch (ViEditor.Mode) {
-				case ViEditorMode.Insert:
-				case ViEditorMode.Replace:
-					return false;
-				case ViEditorMode.Normal:
-				case ViEditorMode.Visual:
-				case ViEditorMode.VisualLine:
-				default:
-					return true;
-				}
-			}
-		}
-		
-		protected override void OnAddedToEditor (TextEditorData data)
-		{
-			ViEditor.SetMode (ViEditorMode.Normal);
-			SetCaretMode (CaretMode.Block, data);
-			ViActions.RetreatFromLineEnd (data);
-		}
-		
-		protected override void OnRemovedFromEditor (TextEditorData data)
-		{
-			SetCaretMode (CaretMode.Insert, data);
-		}
-		
-		protected override void CaretPositionChanged ()
-		{
-			ViEditor.OnCaretPositionChanged ();
-		}
-		
-		public void SetCaretMode (CaretMode mode)
-		{
-			SetCaretMode (mode, Data);
-		}
-		
-		static void SetCaretMode (CaretMode mode, TextEditorData data)
-		{
-			if (data.Caret.Mode == mode)
-				return;
-			data.Caret.Mode = mode;
-			data.Document.RequestUpdate (new SinglePositionUpdate (data.Caret.Line, data.Caret.Column));
-			data.Document.CommitDocumentUpdate ();
-		}
-	}
-	
 	public class ViEditMode : EditMode
 	{
 		bool searchBackward;
@@ -110,9 +46,8 @@ namespace Mono.TextEditor.Vi
 			}
 			set {
 				curState = value;
-				if (viTextEditor != null) {
-					viTextEditor.Caret.IsVisible = curState != State.Command;
-					viTextEditor.RequestResetCaretBlink ();
+				if (statusArea != null) {
+					statusArea.ShowCaret = curState == State.Command;
 				}
 			}
 		}
@@ -157,8 +92,6 @@ namespace Mono.TextEditor.Vi
           || CurState == State.Yank || CurState == State.Indent || CurState == State.Unindent;
       }
     }
-		
-		/// <summary>
 		/// The macro currently being implemented. Will be set to null and checked as a flag when required.
 		/// </summary>
 		ViMacro currentMacro;
@@ -166,19 +99,15 @@ namespace Mono.TextEditor.Vi
 		public virtual string Status {
 		
 			get {
-				return statusText;
+				return statusArea.Message;
 			}
 			
 			protected set {
-				if (currentMacro == null) {
-					statusText = value;
-				} else {
-					statusText = value + " recording";
+				if (currentMacro != null) {
+					value = value + " recording";
 				}
-
-				if (curState == State.Command && viTextEditor != null) {
-				    viTextEditor.RequestResetCaretBlink ();
-					statusArea.QueueDraw ();
+				if (viTextEditor != null) {
+					statusArea.Message = value;
 				}
 			}
 		}
@@ -331,23 +260,24 @@ namespace Mono.TextEditor.Vi
 
 			viTextEditor = data.Parent;
 			if (viTextEditor != null) {
-				statusArea = new ViStatusArea (viTextEditor, this);
-				viTextEditor.AddTopLevelWidget (statusArea, 0, 0);
-				((TextEditor.EditorContainerChild)viTextEditor[statusArea]).FixedPosition = true;
-				statusArea.Show ();
+				statusArea = new ViStatusArea (viTextEditor);
 			}
 		}
 		
 		protected override void OnRemovedFromEditor (TextEditorData data)
 		{
 			data.Caret.Mode = CaretMode.Insert;
+
 			if (viTextEditor != null) {
-				viTextEditor.Remove (statusArea);
-				statusArea.Destroy ();
+				statusArea.RemoveFromParentAndDestroy ();
 				statusArea = null;
 				viTextEditor = null;
 			}
+		}
 
+		public override void AllocateTextArea (TextEditor textEditor, TextArea textArea, Gdk.Rectangle allocation)
+		{
+			statusArea.AllocateArea (textArea, allocation);
 		}
 		
 		void Reset (string status)
@@ -1423,100 +1353,6 @@ namespace Mono.TextEditor.Vi
 			GoToMark,
 			NameMacro,
 			PlayMacro
-		}
-
-		public override void AllocateTextArea (TextEditor textEditor, TextArea textArea, Gdk.Rectangle allocation)
-		{
-			if (!statusArea.Visible)
-				statusArea.Show ();
-			allocation.Height -= (int)textArea.LineHeight;
-			if (textArea.Allocation != allocation)
-				textArea.SizeAllocate (allocation);
-			statusArea.SetSizeRequest (allocation.Width, (int)viTextEditor.LineHeight);
-			viTextEditor.MoveTopLevelWidget (statusArea, 0, allocation.Height);
-		}
-
-		class ViStatusArea : Gtk.DrawingArea
-		{
-			TextEditor editor;
-			ViEditMode editMode;
-
-			public ViStatusArea (TextEditor editor, ViEditMode editMode)
-			{
-				this.editor = editor;
-				this.editMode = editMode;
-				editor.TextViewMargin.CaretBlink += HandleCaretBlink;
-				editor.Caret.PositionChanged += HandlePositionChanged;
-			}
-
-			void HandlePositionChanged (object sender, DocumentLocationEventArgs e)
-			{
-				QueueDraw ();
-			}
-
-			void HandleCaretBlink (object sender, EventArgs e)
-			{
-				QueueDraw ();
-			}
-
-			protected override void OnDestroyed ()
-			{
-				editor.Caret.PositionChanged -= HandlePositionChanged;
-				editor.TextViewMargin.CaretBlink -= HandleCaretBlink;
-				base.OnDestroyed ();
-			}
-			
-			protected override bool OnExposeEvent (Gdk.EventExpose evnt)
-			{
-				using (Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
-					cr.Rectangle (evnt.Region.Clipbox.X, evnt.Region.Clipbox.Y, evnt.Region.Clipbox.Width, evnt.Region.Clipbox.Height);
-					cr.Color = editor.ColorStyle.PlainText.Background;
-					cr.Fill ();
-					using (var layout = PangoUtil.CreateLayout (editor)) {
-						layout.FontDescription = editor.Options.Font;
-
-						layout.SetText ("000,00-00");
-						int minstatusw, minstatush;
-						layout.GetPixelSize (out minstatusw, out minstatush);
-
-						var line = editor.GetLine (editor.Caret.Line);
-						var visColumn = line.GetVisualColumn (editor.GetTextEditorData (), editor.Caret.Column);
-
-						if (visColumn != editor.Caret.Column) {
-							layout.SetText (editor.Caret.Line + "," + editor.Caret.Column + "-" + visColumn);
-						} else {
-							layout.SetText (editor.Caret.Line + "," + editor.Caret.Column);
-						}
-
-						int statusw, statush;
-						layout.GetPixelSize (out statusw, out statush);
-
-						statusw = System.Math.Max (statusw, minstatusw);
-
-						statusw += 8;
-						cr.MoveTo (Allocation.Width - statusw, 0);
-						statusw += 8;
-						cr.Color = editor.ColorStyle.PlainText.Foreground;
-						cr.ShowLayout (layout);
-
-
-						layout.SetText (editMode.Status);
-						int w, h;
-						layout.GetPixelSize (out w, out h);
-						var x = System.Math.Min (0, -w + Allocation.Width - editor.TextViewMargin.CharWidth - statusw);
-						cr.MoveTo (x, 0);
-						cr.Color = editor.ColorStyle.PlainText.Foreground;
-						cr.ShowLayout (layout);
-						if (editMode.CurState == ViEditMode.State.Command) {
-							if (editor.TextViewMargin.caretBlink) {
-								cr.Rectangle (w + x, 0, (int)editor.TextViewMargin.CharWidth, (int)editor.LineHeight);
-								cr.Fill ();
-							}
-						}
-					}
-				}
-				return true;
-			}
 		}
 	}
 
