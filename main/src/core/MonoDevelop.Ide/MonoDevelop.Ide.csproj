@@ -577,9 +577,6 @@
     <EmbeddedResource Include="icons\workspace-32.png">
       <LogicalName>workspace-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons-components\MonoDevelop.Close.png">
-      <LogicalName>MonoDevelop.Close.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons-components\MonoDevelop.Components.PropertyGrid.DefaultPropertyTab.bmp">
       <LogicalName>MonoDevelop.Components.PropertyGrid.DefaultPropertyTab.bmp</LogicalName>
     </EmbeddedResource>
@@ -672,15 +669,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="branding\SplashScreen.png">
       <LogicalName>SplashScreen.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons-components\MonoDevelop.Close.Over.png">
-      <LogicalName>MonoDevelop.Close.Over.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons-components\MonoDevelop.Close.Selected.Over.png">
-      <LogicalName>MonoDevelop.Close.Selected.Over.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons-components\MonoDevelop.Close.Selected.png">
-      <LogicalName>MonoDevelop.Close.Selected.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\toolbar-runButton.png">
       <LogicalName>toolbar-runButton.png</LogicalName>
@@ -1339,7 +1327,6 @@
     <Compile Include="MonoDevelop.Components\FolderEntry.cs" />
     <Compile Include="MonoDevelop.Components\IconView.cs" />
     <Compile Include="MonoDevelop.Components\Navbar.cs" />
-    <Compile Include="MonoDevelop.Components\TabLabel.cs" />
     <Compile Include="MonoDevelop.Components\CellRendererComboBox.cs" />
     <Compile Include="MonoDevelop.Components\TreeViewCellContainer.cs" />
     <Compile Include="MonoDevelop.Components\TreeViewState.cs" />
