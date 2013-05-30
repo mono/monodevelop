@@ -172,7 +172,8 @@ namespace MonoDevelop.SourceEditor
 				//FireSearchPatternChanged ();
 			}
 			UpdateSearchPattern ();
-			
+			SetSearchOptions ();
+
 			//searchEntry.Model = searchHistory;
 			
 			searchEntry.Entry.KeyReleaseEvent += delegate {
