@@ -1199,10 +1199,10 @@ namespace Mono.TextEditor
 			if (TextPasteHandler != null) {
 				var newText = TextPasteHandler.FormatPlainText (offset, text, copyData);
 				if (newText != text) {
-					Insert (offset, text);
+					var inserted = Insert (offset, text);
 					undoGroup.Dispose ();
 					undoGroup = OpenUndoGroup ();
-					var result = Replace (offset, text.Length, newText);
+					var result = Replace (offset, inserted, newText);
 					if (Paste != null)
 						Paste (offset, text, result);
 					return result;
