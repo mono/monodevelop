@@ -122,6 +122,12 @@ namespace MonoDevelop.NUnit
 			assembly = asm != null ? project.BaseDirectory.Combine (asm.ToString ()).ToString () : null;
 		}
 
+		public override string GetCustomConsoleRunner ()
+		{
+			var r = project.ExtendedProperties ["TestRunnerExe"];
+			return r != null ? project.BaseDirectory.Combine (r.ToString ()).ToString () : null;
+		}
+
 		protected override string AssemblyPath {
 			get { return project.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration); }
 		}
