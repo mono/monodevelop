@@ -593,15 +593,18 @@ namespace MonoDevelop.Ide.TypeSystem
 				return null;
 			}
 		}
-		
+
+		static FastSerializer sharedSerializer = new FastSerializer ();
+
 		static T DeserializeObject<T> (string path) where T : class
 		{
 			var t = Counters.ParserService.ObjectDeserialized.BeginTiming (path);
 			try {
 				using (var fs = new FileStream (path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.SequentialScan)) {
 					using (var reader = new BinaryReaderWith7BitEncodedInts (fs)) {
-						var s = new FastSerializer ();
-						return (T)s.Deserialize (reader);
+						lock (sharedSerializer) {
+							return (T)sharedSerializer.Deserialize (reader);
+						}
 					}
 				}
 			} catch (Exception e) {
@@ -621,8 +624,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			try {
 				using (var fs = new FileStream (path, FileMode.Create, FileAccess.Write)) {
 					using (var writer = new BinaryWriterWith7BitEncodedInts (fs)) {
-						FastSerializer s = new FastSerializer ();
-						s.Serialize (writer, obj);
+						lock (sharedSerializer) {
+							sharedSerializer.Serialize (writer, obj);
+						}
 					}
 				}
 			} catch (Exception e) {
