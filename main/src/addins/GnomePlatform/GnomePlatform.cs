@@ -195,10 +195,12 @@ namespace MonoDevelop.Platform
 		
 		
 		delegate string TerminalRunnerHandler (string command, string args, string dir, string title, bool pause);
-	
+		delegate string TerminalOpenFolderRunnerHandler (string dir);
+
 		string terminal_command;
 		bool terminal_probed;
 		TerminalRunnerHandler runner;
+		TerminalOpenFolderRunnerHandler openDirectoryRunner;
 		
 		public override IProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory,
 		                                                            IDictionary<string, string> environmentVariables, 
@@ -249,7 +251,33 @@ namespace MonoDevelop.Platform
 				EscapeDir (dir),
 				title);
 		}
-		
+
+		private static string KdeTerminalRunner (string command, string args, string dir, string title, bool pause)
+		{
+			string extra_commands = pause 
+				? BashPause.Replace ("'", "\"")
+					: String.Empty;
+
+			return String.Format (@" --nofork --caption ""{4}"" --workdir=""{3}"" -e ""bash"" -c '{0} {1} ; {2}'",
+			                      command,
+			                      args,
+			                      extra_commands,
+			                      EscapeDir (dir),
+			                      title);
+		}
+
+		private static string GnomeTerminalOpenFolderRunner (string dir) {
+			return string.Format(@" --working-directory=""{0}""", EscapeDir(dir));
+		}
+
+		private static string XtermOpenFolderRunner (string dir) {
+			return string.Format(@" -e bash -c ""cd {0}""", EscapeDir(dir));
+		}
+
+		private static string KdeTerminalOpenFolderRunner (string dir) {
+			return string.Format(@" --nofork --workdir=""{0}""", EscapeDir(dir));
+		}
+
 		private static string EscapeArgs (string args)
 		{
 			return args.Replace ("\\", "\\\\").Replace ("\"", "\\\"");
@@ -276,32 +304,45 @@ namespace MonoDevelop.Platform
 			
 			terminal_probed = true;
 			
-			string fallback_terminal = "xterm";
+			string fallback_terminal = PropertyService.Get ("MonoDevelop.Shell", "xterm");
 			string preferred_terminal;
 			TerminalRunnerHandler preferred_runner = null;
 			TerminalRunnerHandler fallback_runner = XtermRunner;
 
+			TerminalOpenFolderRunnerHandler preferedOpenFolderRunner = null;
+			TerminalOpenFolderRunnerHandler fallbackOpenFolderRunner = XtermOpenFolderRunner;
+
 			if (!String.IsNullOrEmpty (Environment.GetEnvironmentVariable ("GNOME_DESKTOP_SESSION_ID"))) {
 				preferred_terminal = "gnome-terminal";
 				preferred_runner = GnomeTerminalRunner;
+				preferedOpenFolderRunner = GnomeTerminalOpenFolderRunner;
 			}
 			else if (!String.IsNullOrEmpty (Environment.GetEnvironmentVariable ("MATE_DESKTOP_SESSION_ID"))) {
 				preferred_terminal = "mate-terminal";
 				preferred_runner = GnomeTerminalRunner;
+				preferedOpenFolderRunner = GnomeTerminalOpenFolderRunner;
+			} 
+			else if (!String.IsNullOrEmpty (Environment.GetEnvironmentVariable ("KDE_SESSION_VERSION"))) { 
+				preferred_terminal = "konsole";
+				preferred_runner = KdeTerminalRunner;
+				preferedOpenFolderRunner = KdeTerminalOpenFolderRunner;
 			}
 			else {
 				preferred_terminal = fallback_terminal;
 				preferred_runner = fallback_runner;
+				preferedOpenFolderRunner = fallbackOpenFolderRunner;
 			}
 
 			terminal_command = FindExec (preferred_terminal);
 			if (terminal_command != null) {
 				runner = preferred_runner;
+				openDirectoryRunner = preferedOpenFolderRunner;
 				return;
 			}
 			
 			terminal_command = FindExec (fallback_terminal);
 			runner = fallback_runner;
+			openDirectoryRunner = fallbackOpenFolderRunner;
 		}
 
 		private string FindExec (string command)
@@ -333,14 +374,7 @@ namespace MonoDevelop.Platform
 		}
 
 #endregion
-		
-		//FIXME: probe for terminal
-		static string TerminalCommand {
-			get {
-				return PropertyService.Get ("MonoDevelop.Shell", "gnome-terminal");
-			}
-		}
-		
+				
 		public override bool CanOpenTerminal {
 			get {
 				return true;
@@ -349,7 +383,8 @@ namespace MonoDevelop.Platform
 		
 		public override void OpenInTerminal (FilePath directory)
 		{
-			Runtime.ProcessService.StartProcess (TerminalCommand, "", directory, null);
+			ProbeTerminal ();
+			Runtime.ProcessService.StartProcess (terminal_command, openDirectoryRunner(directory), directory, null);
 		}
 	}
 	
