@@ -26,10 +26,6 @@
 
 using System;
 using MonoDevelop.Ide.CustomTools;
-using System.CodeDom.Compiler;
-using MonoDevelop.Projects;
-using System.IO;
-using Mono.TextTemplating;
 using MonoDevelop.Core;
 using System.Threading;
 namespace MonoDevelop.TextTemplating
