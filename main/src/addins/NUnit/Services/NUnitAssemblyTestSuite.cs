@@ -452,13 +452,16 @@ namespace MonoDevelop.NUnit
 				if (suiteName != null)
 					cm.Arguments += " -fixture=" + suiteName;
 				if (testName != null)
-					cm.Arguments += " -run=" + testName;
+					cm.Arguments += " -run=" + suiteName + "." + testName;
 				var p = testContext.ExecutionContext.Execute (cm, cons);
 
 				testContext.Monitor.CancelRequested += p.Cancel;
 				if (testContext.Monitor.IsCancelRequested)
 					p.Cancel ();
 				p.WaitForCompleted ();
+				
+				if (new FileInfo (outFile).Length == 0)
+					throw new Exception ("Command failed");
 
 				LocalTestMonitor localMonitor = new LocalTestMonitor (testContext, test, suiteName, testName != null);
 				XDocument doc = XDocument.Load (outFile);
