@@ -1647,16 +1647,12 @@ namespace MonoDevelop.Ide.TypeSystem
 		
 		static bool GetXml (string baseName, MonoDevelop.Core.Assemblies.TargetRuntime runtime, out FilePath xmlFileName)
 		{
-			string filePattern = Path.GetFileNameWithoutExtension (baseName) + ".*";
 			try {
-				foreach (string fileName in Directory.EnumerateFileSystemEntries (Path.GetDirectoryName (baseName), filePattern)) {
-					if (fileName.ToLower ().EndsWith (".xml")) {
-						xmlFileName = LookupLocalizedXmlDoc (fileName);
-						return true;
-					}
-				}
+				xmlFileName = LookupLocalizedXmlDoc (baseName);
+				if (xmlFileName != null)
+					return true;
 			} catch (Exception e) {
-				LoggingService.LogError ("Error while retrieving file system entries.", e);
+				LoggingService.LogError ("Error while looking up XML docs.", e);
 			}
 			
 			if (MonoDevelop.Core.Platform.IsWindows) {
