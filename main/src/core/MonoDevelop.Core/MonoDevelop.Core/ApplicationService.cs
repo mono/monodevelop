@@ -45,14 +45,7 @@ namespace MonoDevelop.Core
 				throw new Exception ("Invalid node type");
 			
 			IApplication app = (IApplication) apnode.CreateInstance ();
-
-			try {
-				return app.Run (parameters);
-			} catch (Exception ex) {
-				Console.WriteLine (ex.Message);
-				LoggingService.LogFatalError (ex.ToString ());
-				return -1;
-			}
+			return app.Run (parameters);
 		}
 		
 		public IApplicationInfo[] GetApplications ()
