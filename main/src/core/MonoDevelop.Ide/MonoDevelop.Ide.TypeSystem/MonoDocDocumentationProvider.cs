@@ -31,6 +31,7 @@ using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using MonoDevelop.Core;
 using ICSharpCode.NRefactory.Documentation;
 using System.Text;
+using Monodoc.Generators;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -61,21 +62,21 @@ namespace MonoDevelop.Ide.TypeSystem
 			DocumentationComment result;
 			if (commentCache.TryGetValue (idString, out result))
 				return result;
-			XmlDocument doc = null;
+			string xml = null;
 			try {
 				var helpTree = MonoDevelop.Projects.HelpService.HelpTree;
 				if (helpTree == null)
 					return null;
+
 				if (entity.EntityType == EntityType.TypeDefinition) {
-					doc = helpTree.GetHelpXml (idString);
+					var rawGen = new RawGenerator ();
+					xml = helpTree.RenderUrl (idString, rawGen);
 				} else {
 					var parentId = entity.DeclaringTypeDefinition.GetIdString ();
-
-					doc = helpTree.GetHelpXml (parentId);
-					if (doc == null)
-						return null;
+					var doc = new XmlDocument ();
+					var rawGen = new RawGenerator ();
+					doc.LoadXml (helpTree.RenderUrl (parentId, rawGen));
 					XmlNode node = SelectNode (doc, entity);
-					
 					if (node != null)
 						return commentCache [idString] = new DocumentationComment (node.OuterXml, new SimpleTypeResolveContext (entity));
 					return null;
@@ -86,11 +87,11 @@ namespace MonoDevelop.Ide.TypeSystem
 				hadError = true;
 				LoggingService.LogError ("Error while reading monodoc file.", e);
 			}
-			if (doc == null) {
+			if (xml == null) {
 				commentCache [idString] = null;
 				return null;
 			}
-			return commentCache [idString] = new DocumentationComment (doc.OuterXml, new SimpleTypeResolveContext (entity));
+			return commentCache [idString] = new DocumentationComment (xml, new SimpleTypeResolveContext (entity));
 		}
 
 		public XmlNode SelectNode (XmlDocument doc, IEntity entity)
