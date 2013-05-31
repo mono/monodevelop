@@ -507,13 +507,13 @@ namespace Mono.Debugging.Evaluation
 			}
 
 			TypeDisplayData tdata = GetTypeDisplayData (ctx, type);
-			bool groupPrivateMembers = ctx.Options.GroupPrivateMembers && (ctx.Options.GroupUserPrivateMembers || IsExternalType (ctx, type));
+			bool groupPrivateMembers = ctx.Options.GroupPrivateMembers || IsExternalType (ctx, type);
 
 			List<ObjectValue> values = new List<ObjectValue> ();
 			BindingFlags flattenFlag = ctx.Options.FlattenHierarchy ? (BindingFlags)0 : BindingFlags.DeclaredOnly;
-			BindingFlags nonNonPublicFlag = groupPrivateMembers || showRawView ? (BindingFlags)0 : BindingFlags.NonPublic;
+			BindingFlags nonPublicFlag = !(groupPrivateMembers || showRawView) ? BindingFlags.NonPublic : (BindingFlags) 0;
 			BindingFlags staticFlag = ctx.Options.GroupStaticMembers ? (BindingFlags)0 : BindingFlags.Static;
-			BindingFlags access = BindingFlags.Public | BindingFlags.Instance | flattenFlag | nonNonPublicFlag | staticFlag;
+			BindingFlags access = BindingFlags.Public | BindingFlags.Instance | flattenFlag | nonPublicFlag | staticFlag;
 			
 			// Load all members to a list before creating the object values,
 			// to avoid problems with objects being invalidated due to evaluations in the target,
@@ -569,7 +569,7 @@ namespace Mono.Debugging.Evaluation
 				}
 				else {
 					if (ctx.Options.GroupStaticMembers && HasMembers (ctx, type, proxy, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | flattenFlag)) {
-						access = BindingFlags.Static | BindingFlags.Public | flattenFlag | nonNonPublicFlag;
+						access = BindingFlags.Static | BindingFlags.Public | flattenFlag | nonPublicFlag;
 						values.Add (FilteredMembersSource.CreateStaticsNode (ctx, objectSource, type, proxy, access));
 					}
 					if (groupPrivateMembers && HasMembers (ctx, type, proxy, BindingFlags.Instance | BindingFlags.NonPublic | flattenFlag | staticFlag))

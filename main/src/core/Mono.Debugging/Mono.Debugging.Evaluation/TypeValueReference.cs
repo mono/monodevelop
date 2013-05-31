@@ -127,7 +127,7 @@ namespace Mono.Debugging.Evaluation
 				List<ObjectValue> list = new List<ObjectValue> ();
 				BindingFlags flattenFlag = options.FlattenHierarchy ? (BindingFlags)0 : BindingFlags.DeclaredOnly;
 				BindingFlags flags = BindingFlags.Static | BindingFlags.Public | flattenFlag;
-				bool groupPrivateMembers = options.GroupPrivateMembers && (options.GroupUserPrivateMembers || ctx.Adapter.IsExternalType (ctx, type));
+				bool groupPrivateMembers = options.GroupPrivateMembers || ctx.Adapter.IsExternalType (ctx, type);
 				if (!groupPrivateMembers)
 					flags |= BindingFlags.NonPublic;
 				
