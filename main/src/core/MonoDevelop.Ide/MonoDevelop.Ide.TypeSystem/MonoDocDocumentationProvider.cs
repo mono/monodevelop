@@ -53,6 +53,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (entity == null)
 				throw new System.ArgumentNullException ("entity");
+			
 			// If we had an exception while getting the help xml the monodoc help provider
 			// shouldn't try it again. A corrupt .zip file could cause long tooltip delays otherwise.
 			if (hadError)
@@ -66,6 +67,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				var helpTree = MonoDevelop.Projects.HelpService.HelpTree;
 				if (helpTree == null)
 					return null;
+
 				if (entity.EntityType == EntityType.TypeDefinition) {
 					var rawGen = new RawGenerator ();
 					xml = helpTree.RenderUrl (idString, rawGen);
@@ -74,10 +76,12 @@ namespace MonoDevelop.Ide.TypeSystem
 					var doc = new XmlDocument ();
 					var rawGen = new RawGenerator ();
 					doc.LoadXml (helpTree.RenderUrl (parentId, rawGen));
-					var node = SelectNode (doc, entity);
-					if (node == null)
-						return null;
-					xml = node.OuterXml;
+					XmlNode node = SelectNode (doc, entity);
+					if (node != null)
+						return commentCache [idString] = new DocumentationComment (node.OuterXml, new SimpleTypeResolveContext (entity));
+					return null;
+//					var node = doc.SelectSingleNode ("/Type/Members/Member")
+//					return new DocumentationComment (doc.OuterXml, new SimpleTypeResolveContext (entity));
 				}
 			} catch (Exception e) {
 				hadError = true;

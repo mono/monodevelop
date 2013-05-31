@@ -1616,11 +1616,10 @@ namespace MonoDevelop.Ide.TypeSystem
 		
 		static bool GetXml (string baseName, MonoDevelop.Core.Assemblies.TargetRuntime runtime, out FilePath xmlFileName)
 		{
-			var plainFileName = Path.GetFileNameWithoutExtension (baseName);
-			string filePattern = plainFileName + ".*";
+			string filePattern = Path.GetFileNameWithoutExtension (baseName) + ".*";
 			try {
 				foreach (string fileName in Directory.EnumerateFileSystemEntries (Path.GetDirectoryName (baseName), filePattern)) {
-					if (fileName.ToLower ().EndsWith (".xml", StringComparison.OrdinalIgnoreCase) && plainFileName.Equals (Path.GetFileName (fileName), StringComparison.OrdinalIgnoreCase)) {
+					if (fileName.ToLower ().EndsWith (".xml")) {
 						xmlFileName = LookupLocalizedXmlDoc (fileName);
 						return true;
 					}
