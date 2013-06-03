@@ -98,6 +98,7 @@ namespace MonoDevelop.NUnit
 		
 		public ResultStatus Status {
 			get { return status; }
+			set { status = value; }
 		}
 		
 		public bool IsFailure {

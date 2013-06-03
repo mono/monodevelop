@@ -30,6 +30,7 @@ using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
+using Gtk;
 
 namespace Mono.TextEditor
 {
@@ -1009,6 +1010,24 @@ namespace Mono.TextEditor
 			}
 			hpolicy = vpolicy = 0;
 			canSetOverlayScrollbarPolicy = false;
+		}
+
+		[DllImport ("libgtk-win32-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
+		static extern bool gtk_tree_view_get_tooltip_context (IntPtr raw, ref int x, ref int y, bool keyboard_tip, out IntPtr model, out IntPtr path, IntPtr iter);
+
+		//the GTK# version of this has 'out' instead of 'ref', preventing passing the x,y values in
+		public static bool GetTooltipContext (this TreeView tree, ref int x, ref int y, bool keyboardTip,
+			 out TreeModel model, out TreePath path, out Gtk.TreeIter iter)
+		{
+			IntPtr intPtr = Marshal.AllocHGlobal (Marshal.SizeOf (typeof(TreeIter)));
+			IntPtr handle;
+			IntPtr intPtr2;
+			bool result = gtk_tree_view_get_tooltip_context (tree.Handle, ref x, ref y, keyboardTip, out handle, out intPtr2, intPtr);
+			model = TreeModelAdapter.GetObject (handle, false);
+			path = intPtr2 == IntPtr.Zero ? null : ((TreePath)GLib.Opaque.GetOpaque (intPtr2, typeof(TreePath), false));
+			iter = TreeIter.New (intPtr);
+			Marshal.FreeHGlobal (intPtr);
+			return result;
 		}
 	}
 	

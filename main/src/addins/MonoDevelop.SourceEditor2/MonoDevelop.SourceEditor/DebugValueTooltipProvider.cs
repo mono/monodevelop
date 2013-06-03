@@ -164,35 +164,49 @@ namespace MonoDevelop.SourceEditor
 					expression = ir.Member.DeclaringType.FullName;
 				} else if (res is MemberResolveResult) {
 					var mr = (MemberResolveResult) res;
-					
-					if (mr.TargetResult == null) {
-						// User is hovering over a member definition...
-						
+					string member = null;
+
+					if (mr.Member != null) {
 						if (mr.Member is IProperty) {
 							// Visual Studio will evaluate Properties if you hover over their definitions...
 							var prop = (IProperty) mr.Member;
-							
+
 							if (prop.CanGet) {
 								if (prop.IsStatic)
 									expression = prop.FullName;
 								else
-									expression = prop.Name;
+									member = prop.Name;
 							} else {
 								return null;
 							}
 						} else if (mr.Member is IField) {
 							var field = (IField) mr.Member;
-							
+
 							if (field.IsStatic)
 								expression = field.FullName;
 							else
-								expression = field.Name;
+								member = field.Name;
 						} else {
 							return null;
 						}
 					}
-					
-					// If the TargetResult is not null, then treat it like any other ResolveResult.
+
+					if (expression == null) {
+						if (member == null)
+							return null;
+
+						if (mr.TargetResult != null) {
+							var targetRegion = mr.TargetResult.GetDefinitionRegion ();
+
+							if (targetRegion.BeginLine != 0 && targetRegion.BeginColumn != 0) {
+								start = new DocumentLocation (targetRegion.BeginLine, targetRegion.BeginColumn);
+								end   = new DocumentLocation (targetRegion.EndLine, targetRegion.EndColumn);
+								expression = ed.GetTextBetween (start, end).Trim () + "." + member;
+							}
+						} else {
+							expression = member;
+						}
+					}
 				} else if (res is NamedArgumentResolveResult) {
 					// Fall through...
 				} else if (res is ThisResolveResult) {

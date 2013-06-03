@@ -30,6 +30,11 @@
 		<ExtensionNode name="ExecutionHandler"/>
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/Core/CommandFactories" name = "Command factories">
+		<Description>Command factories used to create commands from file paths. Specified types must implement ICommandFactory.</Description>
+		<ExtensionNode objectType = "MonoDevelop.Core.Execution.ICommandFactory" />
+	</ExtensionPoint>
+	
 	<ExtensionPoint path = "/MonoDevelop/Core/FileSystemExtensions" name = "File system extensions">
 		<Description>File system extensions which can provide specific behavior when handling files. Specified classes must implement MonoDevelop.Core.FileSystem.FileSystemExtension.</Description>
 		<ExtensionNode name="Class" objectType="MonoDevelop.Core.FileSystem.FileSystemExtension"/>
@@ -191,6 +196,10 @@
 		                  class = "MonoDevelop.Core.Execution.DotNetExecutionHandler"/>
 		<ExecutionHandler id="Native"
 		                  class = "MonoDevelop.Core.Execution.NativePlatformExecutionHandler"/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Core/CommandFactories">
+		<Type id="DotNet" class = "MonoDevelop.Core.Execution.DotNetCommandFactory"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/UserDataMigration">

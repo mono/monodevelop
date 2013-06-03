@@ -70,9 +70,9 @@ public class MonoDevelopProcessHost
 				pi++;
 				logger.EnabledLevel = MonoDevelop.Core.Logging.EnabledLoggingLevel.UpToWarn;
 			} else {
-				// Disable logging if verbose is not specified. Command line tools should alread be
-				// providing feedback using the console
-				logger.EnabledLevel = MonoDevelop.Core.Logging.EnabledLoggingLevel.None;
+				// Disable logging (except fatal errors) if verbose is not specified. Command line tools should already
+				// be providing feedback using the console.
+				logger.EnabledLevel = MonoDevelop.Core.Logging.EnabledLoggingLevel.Fatal;
 			}
 			
 			string[] newArgs = new string [args.Length - 1 - pi];
@@ -85,7 +85,7 @@ public class MonoDevelopProcessHost
 			Console.WriteLine (ex.Message);
 			return -1;
 		} catch (Exception ex) {
-			Console.WriteLine (ex);
+			LoggingService.LogFatalError (ex.ToString ());
 			return -1;
 		} finally {
 			try {

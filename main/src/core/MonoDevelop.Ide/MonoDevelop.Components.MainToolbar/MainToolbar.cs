@@ -270,6 +270,7 @@ namespace MonoDevelop.Components.MainToolbar
 			align.Add (contentBox);
 
 			Add (align);
+			SetDefaultSizes (-1, 21);
 			UpdateCombos ();
 
 			button.Clicked += HandleStartButtonClicked;
@@ -360,13 +361,7 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
-		protected override void OnRealized ()
-		{
-			base.OnRealized ();
-			UpdateSize (-1, 21);
-		}
-
-		void UpdateSize (int comboHeight, int height)
+		void SetDefaultSizes (int comboHeight, int height)
 		{
 			configurationCombo.SetSizeRequest (150, comboHeight);
 			runtimeCombo.SetSizeRequest (150, comboHeight);

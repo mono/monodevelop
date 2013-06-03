@@ -217,6 +217,8 @@
 			name = "TestRunnerType" type = "System.String" external="false" />
 		<ItemProperty class = "MonoDevelop.Projects.DotNetProject"
 			name = "TestRunnerAssembly" type = "MonoDevelop.Core.FilePath" external="false" />
+		<ItemProperty class = "MonoDevelop.Projects.DotNetProject"
+			name = "TestRunnerExe" type = "MonoDevelop.Core.FilePath" external="false" />
 	</Extension>
 
 </Addin>

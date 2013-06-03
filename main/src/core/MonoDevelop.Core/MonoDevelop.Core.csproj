@@ -446,6 +446,8 @@
     <Compile Include="MonoDevelop.Core.Assemblies\SupportedFramework.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\UnknownProjectTypeNode.cs" />
     <Compile Include="MonoDevelop.Core\InternalTestRunner.cs" />
+    <Compile Include="MonoDevelop.Core.Execution\ICommandFactory.cs" />
+    <Compile Include="MonoDevelop.Core.Execution\DotNetCommandFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

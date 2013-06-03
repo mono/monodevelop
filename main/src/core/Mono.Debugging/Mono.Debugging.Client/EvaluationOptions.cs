@@ -93,7 +93,8 @@ namespace Mono.Debugging.Client
 		public bool FlattenHierarchy { get; set; }
 		
 		public bool GroupPrivateMembers { get; set; }
-		
+
+		[Obsolete ("I don't see a point in even having this property")]
 		public bool GroupUserPrivateMembers { get; set; }
 		
 		public bool GroupStaticMembers { get; set; }

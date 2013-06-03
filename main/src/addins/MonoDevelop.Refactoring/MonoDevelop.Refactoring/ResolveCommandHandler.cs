@@ -259,6 +259,9 @@ namespace MonoDevelop.Refactoring
 			var unit = doc.ParsedDocument.GetAst<SyntaxTree> ();
 			if (unit == null)
 				yield break;
+			var project = doc.Project;
+			if (project == null)
+				yield break;
 
 			int tc = GetTypeParameterCount (node);
 			var attribute = unit.GetNodeAt<ICSharpCode.NRefactory.CSharp.Attribute> (location);
@@ -266,20 +269,20 @@ namespace MonoDevelop.Refactoring
 
 			var compilations = new List<Tuple<ICompilation, MonoDevelop.Projects.ProjectReference>> ();
 			compilations.Add (Tuple.Create (doc.Compilation, (MonoDevelop.Projects.ProjectReference)null));
-			var referencedItems = IdeApp.Workspace != null ? doc.Project.GetReferencedItems (IdeApp.Workspace.ActiveConfiguration).ToList () : (IEnumerable<SolutionItem>) new SolutionItem[0];
-			var solution = doc.Project != null ? doc.Project.ParentSolution : null;
+			var referencedItems = IdeApp.Workspace != null ? project.GetReferencedItems (IdeApp.Workspace.ActiveConfiguration).ToList () : (IEnumerable<SolutionItem>) new SolutionItem[0];
+			var solution = project != null ? project.ParentSolution : null;
 			if (solution != null) {
-				foreach (var project in solution.GetAllProjects ()) {
-					if (project == doc.Project || referencedItems.Contains (project))
+				foreach (var curProject in solution.GetAllProjects ()) {
+					if (curProject == project || referencedItems.Contains (curProject))
 						continue;
-					var comp = TypeSystemService.GetCompilation (project);
+					var comp = TypeSystemService.GetCompilation (curProject);
 					if (comp == null)
 						continue;
-					compilations.Add (Tuple.Create (comp, new MonoDevelop.Projects.ProjectReference (project)));
+					compilations.Add (Tuple.Create (comp, new MonoDevelop.Projects.ProjectReference (curProject)));
 				}
 			}
 
-			var netProject = doc.Project as DotNetProject;
+			var netProject = project as DotNetProject;
 			if (netProject == null) 
 				yield break;
 			var frameworkLookup = TypeSystemService.GetFrameworkLookup (netProject);
