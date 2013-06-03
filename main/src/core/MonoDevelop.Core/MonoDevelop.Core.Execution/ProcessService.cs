@@ -249,11 +249,12 @@ namespace MonoDevelop.Core.Execution
 		
 		public ProcessExecutionCommand CreateCommand (string file)
 		{
-			string f = file.ToLower ();
-			if (f.EndsWith (".exe") || f.EndsWith (".dll"))
-				return new DotNetExecutionCommand (file);
-			else
-				return new NativeExecutionCommand (file);
+			foreach (ICommandFactory f in AddinManager.GetExtensionObjects<ICommandFactory> ("/MonoDevelop/Core/CommandFactories")) {
+				var cmd = f.CreateCommand (file);
+				if (cmd != null)
+					return cmd;
+			}
+			return new NativeExecutionCommand (file);
 		}
 		
 		public IEnumerable<IExecutionModeSet> GetExecutionModes ()
