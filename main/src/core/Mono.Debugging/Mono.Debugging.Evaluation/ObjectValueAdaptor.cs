@@ -1057,25 +1057,36 @@ namespace Mono.Debugging.Evaluation
 			if (string.IsNullOrEmpty (data.ProxyType) || !ctx.Options.AllowDebuggerProxy)
 				return obj;
 
+			string proxyType = data.ProxyType;
 			object[] typeArgs = null;
 
-			int i = data.ProxyType.IndexOf ('`');
+			int i = proxyType.IndexOf ('`');
 			if (i != -1) {
 				// The proxy type is an uninstantiated generic type.
 				// The number of type args of the proxy must match the args of the target object
-				int j = i + 1;
-				for (; j < data.ProxyType.Length && char.IsDigit (data.ProxyType[j]); j++);
-				int np = int.Parse (data.ProxyType.Substring (i + 1, j - i - 1));
+				int startIndex = i + 1;
+				int endIndex = i + 1;
+
+				while (endIndex < proxyType.Length && char.IsDigit (proxyType[endIndex]))
+					endIndex++;
+
+				int num = int.Parse (proxyType.Substring (startIndex, endIndex - startIndex));
 				typeArgs = GetTypeArgs (ctx, GetValueType (ctx, obj));
-				if (typeArgs.Length != np)
+				if (typeArgs.Length != num)
 					return obj;
+
+				if (endIndex < proxyType.Length) {
+					// chop off the []'d list of generic type arguments
+					proxyType = proxyType.Substring (0, endIndex);
+				}
 			}
 			
-			object ttype = GetType (ctx, data.ProxyType, typeArgs);
+			object ttype = GetType (ctx, proxyType, typeArgs);
 			if (ttype == null) {
-				i = data.ProxyType.IndexOf (',');
+				// the proxy type string might be in the form: "Namespace.TypeName, Assembly...", chop off the ", Assembly..." bit.
+				i = proxyType.IndexOf (',');
 				if (i != -1)
-					ttype = GetType (ctx, data.ProxyType.Substring (0, i).Trim (), typeArgs);
+					ttype = GetType (ctx, proxyType.Substring (0, i).Trim (), typeArgs);
 			}
 			if (ttype == null)
 				throw new EvaluatorException ("Unknown type '{0}'", data.ProxyType);
