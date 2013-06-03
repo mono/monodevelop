@@ -344,6 +344,11 @@ namespace MonoDevelop.NUnit
 
 		protected override bool OnCanRun (MonoDevelop.Core.Execution.IExecutionHandler executionContext)
 		{
+			var runnerExe = GetCustomConsoleRunner ();
+			if (runnerExe != null) {
+				var cmd = Runtime.ProcessService.CreateCommand (runnerExe);
+				return cmd != null && executionContext.CanExecute (cmd);
+			}
 			return Runtime.ProcessService.IsValidForRemoteHosting (executionContext);
 		}
 
