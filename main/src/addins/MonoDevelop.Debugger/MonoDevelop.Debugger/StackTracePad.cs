@@ -45,6 +45,17 @@ namespace MonoDevelop.Debugger
 {
 	public class StackTracePad : Gtk.ScrolledWindow, IPadContent
 	{
+		const int IconColumn = 0;
+		const int MethodColumn = 1;
+		const int FileColumn = 2;
+		const int LangColumn = 3;
+		const int AddrColumn = 4;
+		const int ForegroundColumn = 5;
+		const int StyleColumn = 6;
+		const int FrameColumn = 7;
+		const int FrameIndexColumn = 8;
+		const int CanRefreshColumn = 9;
+
 		Backtrace current_backtrace;
 
 		PadTreeView tree;
@@ -68,7 +79,7 @@ namespace MonoDevelop.Debugger
 			menuSet.AddItem (EditCommands.SelectAll);
 			menuSet.AddItem (EditCommands.Copy);
 			
-			store = new ListStore (typeof (string), typeof (string), typeof (string), typeof (string), typeof (string), typeof (string), typeof (Pango.Style), typeof (object), typeof (bool));
+			store = new ListStore (typeof (string), typeof (string), typeof (string), typeof (string), typeof (string), typeof (string), typeof (Pango.Style), typeof (object), typeof (int), typeof (bool));
 
 			tree = new PadTreeView (store);
 			tree.RulesHint = true;
@@ -83,7 +94,7 @@ namespace MonoDevelop.Debugger
 			TreeViewColumn col = new TreeViewColumn ();
 			CellRenderer crp = new CellRendererIcon ();
 			col.PackStart (crp, false);
-			col.AddAttribute (crp, "stock_id", 0);
+			col.AddAttribute (crp, "stock_id", IconColumn);
 			tree.AppendColumn (col);
 			
 			TreeViewColumn FrameCol = new TreeViewColumn ();
@@ -91,11 +102,11 @@ namespace MonoDevelop.Debugger
 			refresh = new CellRendererIcon ();
 			refresh.Pixbuf = ImageService.GetPixbuf (Gtk.Stock.Refresh).ScaleSimple (12, 12, Gdk.InterpType.Hyper);
 			FrameCol.PackStart (refresh, false);
-			FrameCol.AddAttribute (refresh, "visible", 8);
+			FrameCol.AddAttribute (refresh, "visible", CanRefreshColumn);
 			FrameCol.PackStart (tree.TextRenderer, true);
-			FrameCol.AddAttribute (tree.TextRenderer, "text", 1);
-			FrameCol.AddAttribute (tree.TextRenderer, "foreground", 5);
-			FrameCol.AddAttribute (tree.TextRenderer, "style", 6);
+			FrameCol.AddAttribute (tree.TextRenderer, "text", MethodColumn);
+			FrameCol.AddAttribute (tree.TextRenderer, "foreground", ForegroundColumn);
+			FrameCol.AddAttribute (tree.TextRenderer, "style", StyleColumn);
 			FrameCol.Resizable = true;
 			FrameCol.Alignment = 0.0f;
 			tree.AppendColumn (FrameCol);
@@ -103,22 +114,22 @@ namespace MonoDevelop.Debugger
 			col = new TreeViewColumn ();
 			col.Title = GettextCatalog.GetString ("File");
 			col.PackStart (tree.TextRenderer, false);
-			col.AddAttribute (tree.TextRenderer, "text", 2);
-			col.AddAttribute (tree.TextRenderer, "foreground", 5);
+			col.AddAttribute (tree.TextRenderer, "text", FileColumn);
+			col.AddAttribute (tree.TextRenderer, "foreground", ForegroundColumn);
 			tree.AppendColumn (col);
 
 			col = new TreeViewColumn ();
 			col.Title = GettextCatalog.GetString ("Language");
 			col.PackStart (tree.TextRenderer, false);
-			col.AddAttribute (tree.TextRenderer, "text", 3);
-			col.AddAttribute (tree.TextRenderer, "foreground", 5);
+			col.AddAttribute (tree.TextRenderer, "text", LangColumn);
+			col.AddAttribute (tree.TextRenderer, "foreground", ForegroundColumn);
 			tree.AppendColumn (col);
 
 			col = new TreeViewColumn ();
 			col.Title = GettextCatalog.GetString ("Address");
 			col.PackStart (tree.TextRenderer, false);
-			col.AddAttribute (tree.TextRenderer, "text", 4);
-			col.AddAttribute (tree.TextRenderer, "foreground", 5);
+			col.AddAttribute (tree.TextRenderer, "text", AddrColumn);
+			col.AddAttribute (tree.TextRenderer, "foreground", ForegroundColumn);
 			tree.AppendColumn (col);
 			
 			Add (tree);
@@ -205,13 +216,14 @@ namespace MonoDevelop.Debugger
 					file = frame.SourceLocation.FileName;
 					if (frame.SourceLocation.Line != -1)
 						file += ":" + frame.SourceLocation.Line;
-				} else
+				} else {
 					file = string.Empty;
+				}
 
 				var style = frame.IsExternalCode ? Pango.Style.Italic : Pango.Style.Normal;
 				
 				store.AppendValues (icon, method, file, frame.Language, "0x" + frame.Address.ToString ("x"), null,
-				                    style, frame, !options.AllowDisplayStringEvaluation);
+				                    style, frame, i, !options.AllowDisplayStringEvaluation);
 			}
 		}
 
@@ -255,29 +267,29 @@ namespace MonoDevelop.Debugger
 				options.AllowMethodEvaluation = true;
 				options.AllowToStringCalls = true;
 
-				var frame = (StackFrame) store.GetValue (iter, 7);
+				var frame = (StackFrame) store.GetValue (iter, FrameColumn);
 				var method = EvaluateMethodName (frame, options);
 
-				store.SetValue (iter, 1, method);
-				store.SetValue (iter, 8, false);
+				store.SetValue (iter, MethodColumn, method);
+				store.SetValue (iter, CanRefreshColumn, false);
 			}
 		}
 		
 		public void UpdateCurrentFrame ()
 		{
-			TreeIter it;
-			int n = 0;
+			TreeIter iter;
 
-			if (!store.GetIterFirst (out it))
+			if (!store.GetIterFirst (out iter))
 				return;
 
 			do {
-				if (n == DebuggingService.CurrentFrameIndex)
-					store.SetValue (it, 0, Gtk.Stock.GoForward);
+				int frame = (int) store.GetValue (iter, FrameIndexColumn);
+
+				if (frame == DebuggingService.CurrentFrameIndex)
+					store.SetValue (iter, IconColumn, Gtk.Stock.GoForward);
 				else
-					store.SetValue (it, 0, null);
-				n++;
-			} while (store.IterNext (ref it));
+					store.SetValue (iter, IconColumn, null);
+			} while (store.IterNext (ref iter));
 		}
 
 		protected void OnFrameChanged (object o, EventArgs args)
@@ -333,12 +345,12 @@ namespace MonoDevelop.Debugger
 			options.AllowToStringCalls = true;
 
 			do {
-				if ((bool) store.GetValue (iter, 8)) {
-					var frame = (StackFrame) store.GetValue (iter, 7);
+				if ((bool) store.GetValue (iter, CanRefreshColumn)) {
+					var frame = (StackFrame) store.GetValue (iter, FrameColumn);
 					var method = EvaluateMethodName (frame, options);
 
-					store.SetValue (iter, 1, method);
-					store.SetValue (iter, 8, false);
+					store.SetValue (iter, MethodColumn, method);
+					store.SetValue (iter, CanRefreshColumn, false);
 				}
 			} while (store.IterNext (ref iter));
 		}
@@ -347,8 +359,10 @@ namespace MonoDevelop.Debugger
 		void ActivateFrame ()
 		{
 			TreePath[] selected = tree.Selection.GetSelectedRows ();
-			if (selected.Length > 0)
-				DebuggingService.CurrentFrameIndex = selected[0].Indices [0];
+			TreeIter iter;
+
+			if (selected.Length > 0 && store.GetIter (out iter, selected[0]))
+				DebuggingService.CurrentFrameIndex = (int) store.GetValue (iter, FrameIndexColumn);
 		}
 		
 		[CommandHandler (EditCommands.SelectAll)]
@@ -360,18 +374,23 @@ namespace MonoDevelop.Debugger
 		[CommandHandler (EditCommands.Copy)]
 		internal void OnCopy ()
 		{
-			TreeModel model;
 			StringBuilder txt = new StringBuilder ();
-			foreach (Gtk.TreePath p in tree.Selection.GetSelectedRows (out model)) {
-				TreeIter it;
-				if (!model.GetIter (out it, p))
+			TreeModel model;
+			TreeIter iter;
+
+			foreach (TreePath path in tree.Selection.GetSelectedRows (out model)) {
+				if (!model.GetIter (out iter, path))
 					continue;
-				string met = (string) model.GetValue (it, 1);
-				string file = (string) model.GetValue (it, 2);
+
+				string method = (string) model.GetValue (iter, MethodColumn);
+				string file = (string) model.GetValue (iter, FileColumn);
+
 				if (txt.Length > 0)
 					txt.Append ('\n');
-				txt.AppendFormat ("{0} in {1}", met, file);
+
+				txt.AppendFormat ("{0} in {1}", method, file);
 			}
+
 			Clipboard clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
 			clipboard.Text = txt.ToString ();
 			clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
