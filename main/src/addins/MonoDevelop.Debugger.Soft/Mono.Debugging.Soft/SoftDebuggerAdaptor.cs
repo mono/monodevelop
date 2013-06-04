@@ -425,7 +425,7 @@ namespace Mono.Debugging.Soft
 				type = type.BaseType;
 			}
 			
-			MethodMirror idx = OverloadResolve ((SoftEvaluationContext) ctx, targetType, null, types, candidates, true);
+			MethodMirror idx = OverloadResolve ((SoftEvaluationContext) ctx, targetType, null, new TypeMirror[0], types, candidates, true);
 			int i = candidates.IndexOf (idx);
 			
 			MethodMirror getter = props[i].GetGetMethod (true);
@@ -1250,26 +1250,60 @@ namespace Mono.Debugging.Soft
 			return (TypeMirror) GetType (ctx, ((Type)type).FullName);
 		}
 
-		public override object RuntimeInvoke (EvaluationContext gctx, object targetType, object target, string methodName, object[] argTypes, object[] argValues)
+		public override object RuntimeInvoke (EvaluationContext ctx, object targetType, object target, string methodName, object[] argTypes, object[] argValues)
+		{
+			return RuntimeInvoke (ctx, targetType, target, methodName, new object [0], argTypes, argValues);
+		}
+
+		public override object RuntimeInvoke (EvaluationContext gctx, object targetType, object target, string methodName, object[] genericTypeArgs, object[] argTypes, object[] argValues)
 		{
 			SoftEvaluationContext ctx = (SoftEvaluationContext) gctx;
 			TypeMirror type = ToTypeMirror (ctx, targetType);
-			
-			ctx.AssertTargetInvokeAllowed ();
-			
-			TypeMirror[] types = new TypeMirror [argTypes.Length];
-			for (int n=0; n<argTypes.Length; n++)
-				types [n] = ToTypeMirror (ctx, argTypes [n]);
-			
-			Value[] values = new Value[argValues.Length];
-			for (int n=0; n<argValues.Length; n++)
-				values[n] = (Value) argValues [n];
 
-			MethodMirror method = OverloadResolve (ctx, methodName, type, types, target != null, target == null, true);
+			ctx.AssertTargetInvokeAllowed ();
+
+			TypeMirror[] genericTypes = new TypeMirror [genericTypeArgs.Length];
+			for (int n = 0; n < genericTypeArgs.Length; n++)
+				genericTypes[n] = ToTypeMirror (ctx, genericTypeArgs[n]);
+
+			TypeMirror[] types = new TypeMirror [argTypes.Length];
+			for (int n = 0; n < argTypes.Length; n++)
+				types[n] = ToTypeMirror (ctx, argTypes[n]);
+
+			MethodMirror method = OverloadResolve (ctx, methodName, genericTypes, type, types, target != null, target == null, true);
+			if (genericTypeArgs.Length > 0)
+				method = method.GetGenericMethodDefinition ().MakeGenericMethod (genericTypes);
+
+			ParameterInfoMirror[] mparams = method.GetParameters ();
+			Value[] values = new Value [argValues.Length];
+			for (int n = 0; n < argValues.Length; n++) {
+				var param_type = mparams[n].ParameterType;
+
+				if (param_type.FullName != types[n].FullName && !param_type.IsAssignableFrom (types[n]) &&
+				    param_type.VirtualMachine.Version.AtLeast (2, 12) && param_type.IsGenericType) {
+					var args = param_type.GetGenericArguments ();
+
+				    if (args.Length == genericTypeArgs.Length) {
+						var real_type = ctx.Adapter.GetType (ctx, param_type.GetGenericTypeDefinition ().FullName, genericTypeArgs);
+
+						values[n] = (Value) TryCast (ctx, (Value) argValues[n], real_type);
+					} else {
+						values[n] = (Value) argValues[n];
+					}
+				} else {
+					values[n] = (Value) argValues[n];
+				}
+			}
+
 			return ctx.RuntimeInvoke (method, target ?? targetType, values);
 		}
 
-		public static MethodMirror OverloadResolve (SoftEvaluationContext ctx, string methodName, TypeMirror type, TypeMirror[] argtypes, bool allowInstance, bool allowStatic, bool throwIfNotFound)
+		public static MethodMirror OverloadResolve (SoftEvaluationContext ctx, string methodName, TypeMirror type, TypeMirror[] argTypes, bool allowInstance, bool allowStatic, bool throwIfNotFound)
+		{
+			return OverloadResolve (ctx, methodName, new TypeMirror[0], type, argTypes, allowInstance, allowStatic, throwIfNotFound);
+		}
+
+		public static MethodMirror OverloadResolve (SoftEvaluationContext ctx, string methodName, TypeMirror[] genericTypeArgs, TypeMirror type, TypeMirror[] argTypes, bool allowInstance, bool allowStatic, bool throwIfNotFound)
 		{
 			List<MethodMirror> candidates = new List<MethodMirror> ();
 			var cache = ctx.Session.OverloadResolveCache;
@@ -1300,12 +1334,12 @@ namespace Mono.Debugging.Soft
 				foreach (MethodMirror met in methods) {
 					if (met.Name == methodName || (!ctx.CaseSensitive && met.Name.Equals (methodName, StringComparison.CurrentCultureIgnoreCase))) {
 						ParameterInfoMirror[] pars = met.GetParameters ();
-						if (argtypes == null || pars.Length == argtypes.Length && ((met.IsStatic && allowStatic) || (!met.IsStatic && allowInstance)))
+						if (argTypes == null || pars.Length == argTypes.Length && ((met.IsStatic && allowStatic) || (!met.IsStatic && allowInstance)))
 							candidates.Add (met);
 					}
 				}
 
-				if (argtypes == null && candidates.Count > 0)
+				if (argTypes == null && candidates.Count > 0)
 					break; // when argtypes is null, we are just looking for *any* match (not a specific match)
 				
 				if (methodName == ".ctor")
@@ -1318,10 +1352,10 @@ namespace Mono.Debugging.Soft
 					currentType = currentType.BaseType;
 			}
 
-			return OverloadResolve (ctx, type, methodName, argtypes, candidates, throwIfNotFound);
+			return OverloadResolve (ctx, type, methodName, genericTypeArgs, argTypes, candidates, throwIfNotFound);
 		}
 
-		static bool IsApplicable (SoftEvaluationContext ctx, MethodMirror method, TypeMirror[] types, out string error, out int matchCount)
+		static bool IsApplicable (SoftEvaluationContext ctx, MethodMirror method, TypeMirror[] genericTypeArgs, TypeMirror[] types, out string error, out int matchCount)
 		{
 			ParameterInfoMirror[] mparams = method.GetParameters ();
 			matchCount = 0;
@@ -1329,13 +1363,22 @@ namespace Mono.Debugging.Soft
 			for (int i = 0; i < types.Length; i++) {
 				TypeMirror param_type = mparams[i].ParameterType;
 
-				if (param_type.FullName == types [i].FullName) {
+				if (param_type.FullName == types[i].FullName) {
 					matchCount++;
 					continue;
 				}
 
-				if (param_type.IsAssignableFrom (types [i]))
+				if (param_type.IsAssignableFrom (types[i]))
 					continue;
+
+				if (param_type.IsGenericType) {
+					if (param_type.VirtualMachine.Version.AtLeast (2, 12)) {
+						if (param_type.GetGenericArguments ().Length == genericTypeArgs.Length)
+							continue;
+					} else if (genericTypeArgs.Length > 0) {
+						continue;
+					}
+				}
 
 				error = String.Format (
 					"Argument {0}: Cannot implicitly convert `{1}' to `{2}'",
@@ -1347,7 +1390,7 @@ namespace Mono.Debugging.Soft
 			return true;
 		}
 
-		static MethodMirror OverloadResolve (SoftEvaluationContext ctx, TypeMirror type, string methodName, TypeMirror[] argtypes, List<MethodMirror> candidates, bool throwIfNotFound)
+		static MethodMirror OverloadResolve (SoftEvaluationContext ctx, TypeMirror type, string methodName, TypeMirror[] genericTypeArgs, TypeMirror[] argTypes, List<MethodMirror> candidates, bool throwIfNotFound)
 		{
 			if (candidates.Count == 0) {
 				if (throwIfNotFound) {
@@ -1356,13 +1399,19 @@ namespace Mono.Debugging.Soft
 					if (methodName == null)
 						throw new EvaluatorException ("Indexer not found in type `{0}'.", typeName);
 
+					if (genericTypeArgs.Length > 0) {
+						var types = string.Join (", ", genericTypeArgs.Select (t => ctx.Adapter.GetDisplayTypeName (ctx, t)));
+
+						throw new EvaluatorException ("Method `{0}<{1}>' not found in type `{2}'.", methodName, types, typeName);
+					}
+
 					throw new EvaluatorException ("Method `{0}' not found in type `{1}'.", methodName, typeName);
 				}
 
 				return null;
 			}
 
-			if (argtypes == null) {
+			if (argTypes == null) {
 				// This is just a probe to see if the type contains *any* methods of the given name
 				return candidates[0];
 			}
@@ -1371,13 +1420,13 @@ namespace Mono.Debugging.Soft
 				string error;
 				int matchCount;
 
-				if (IsApplicable (ctx, candidates[0], argtypes, out error, out matchCount))
-					return candidates [0];
+				if (IsApplicable (ctx, candidates[0], genericTypeArgs, argTypes, out error, out matchCount))
+					return candidates[0];
 
 				if (throwIfNotFound)
 					throw new EvaluatorException ("Invalid arguments for method `{0}': {1}", methodName, error);
-				else
-					return null;
+
+				return null;
 			}
 			
 			// Ok, now we need to find an exact match.
@@ -1389,7 +1438,7 @@ namespace Mono.Debugging.Soft
 				string error;
 				int matchCount;
 				
-				if (!IsApplicable (ctx, method, argtypes, out error, out matchCount))
+				if (!IsApplicable (ctx, method, genericTypeArgs, argTypes, out error, out matchCount))
 					continue;
 
 				if (matchCount == bestCount) {
@@ -1404,10 +1453,11 @@ namespace Mono.Debugging.Soft
 			if (match == null) {
 				if (!throwIfNotFound)
 					return null;
+
 				if (methodName != null)
 					throw new EvaluatorException ("Invalid arguments for method `{0}'.", methodName);
-				else
-					throw new EvaluatorException ("Invalid arguments for indexer.");
+
+				throw new EvaluatorException ("Invalid arguments for indexer.");
 			}
 			
 			if (repeatedBestCount) {
