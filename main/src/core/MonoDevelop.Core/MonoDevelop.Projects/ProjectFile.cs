@@ -104,6 +104,10 @@ namespace MonoDevelop.Projects
 						projectFile.dependsOn = Path.GetFileName (FilePath);
 				}
 
+				// If the file is a link, rename the link too
+				if (IsLink && Link.FileName == oldFileName.FileName)
+					link = Path.Combine (Path.GetDirectoryName (link), filename.FileName);
+
 				if (project != null)
 					project.NotifyFileRenamedInProject (new ProjectFileRenamedEventArgs (project, this, oldFileName));
 			}
