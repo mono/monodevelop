@@ -85,6 +85,35 @@ namespace MonoDevelop.SourceEditor
 
 			return index;
 		}
+
+		static string GetLocalExpression (TextEditor editor, LocalResolveResult lr, DomRegion expressionRegion)
+		{
+			var start = new DocumentLocation (expressionRegion.BeginLine, expressionRegion.BeginColumn);
+			var end   = new DocumentLocation (expressionRegion.EndLine, expressionRegion.EndColumn);
+			int startOffset = editor.Document.LocationToOffset (start);
+			int endOffset = editor.Document.LocationToOffset (end);
+			var ed = (ExtensibleTextEditor) editor;
+
+			// In a setter, the 'value' variable will have a begin line/column of 0,0 which is an undefined offset
+			if (lr.Variable.Region.BeginLine != 0 && lr.Variable.Region.BeginColumn != 0) {
+				// Use the start and end offsets of the variable region so that we get the "@" in variable names like "@class"
+				start = new DocumentLocation (lr.Variable.Region.BeginLine, lr.Variable.Region.BeginColumn);
+				end = new DocumentLocation (lr.Variable.Region.EndLine, lr.Variable.Region.EndColumn);
+				startOffset = editor.Document.LocationToOffset (start);
+				endOffset = editor.Document.LocationToOffset (end);
+			}
+
+			string expression = ed.GetTextBetween (startOffset, endOffset).Trim ();
+
+			// Note: When the LocalResolveResult is a parameter, the Variable.Region includes the type
+			if (lr.IsParameter) {
+				int index = IndexOfLastWhiteSpace (expression);
+				if (index != -1)
+					expression = expression.Substring (index + 1);
+			}
+
+			return expression;
+		}
 		
 		public override TooltipItem GetItem (TextEditor editor, int offset)
 		{
@@ -134,26 +163,7 @@ namespace MonoDevelop.SourceEditor
 				length = endOffset - startOffset;
 				
 				if (res is LocalResolveResult) {
-					var lr = (LocalResolveResult) res;
-
-					// In a setter, the 'value' variable will have a begin line/column of 0,0 which is an undefined offset
-					if (lr.Variable.Region.BeginLine != 0 && lr.Variable.Region.BeginColumn != 0) {
-						// Use the start and end offsets of the variable region so that we get the "@" in variable names like "@class"
-						start = new DocumentLocation (lr.Variable.Region.BeginLine, lr.Variable.Region.BeginColumn);
-						end = new DocumentLocation (lr.Variable.Region.EndLine, lr.Variable.Region.EndColumn);
-						startOffset = editor.Document.LocationToOffset (start);
-						endOffset = editor.Document.LocationToOffset (end);
-					}
-
-					expression = ed.GetTextBetween (startOffset, endOffset).Trim ();
-
-					// Note: When the LocalResolveResult is a parameter, the Variable.Region includes the type
-					if (lr.IsParameter) {
-						int index = IndexOfLastWhiteSpace (expression);
-						if (index != -1)
-							expression = expression.Substring (index + 1);
-					}
-
+					expression = GetLocalExpression (editor, (LocalResolveResult) res, expressionRegion);
 					length = expression.Length;
 				} else if (res is InvocationResolveResult) {
 					var ir = (InvocationResolveResult) res;
@@ -196,13 +206,19 @@ namespace MonoDevelop.SourceEditor
 							return null;
 
 						if (mr.TargetResult != null) {
-							var targetRegion = mr.TargetResult.GetDefinitionRegion ();
+							if (mr.TargetResult is LocalResolveResult) {
+								expression = GetLocalExpression (editor, (LocalResolveResult) mr.TargetResult, expressionRegion);
+							} else {
+								var targetRegion = mr.TargetResult.GetDefinitionRegion ();
 
-							if (targetRegion.BeginLine != 0 && targetRegion.BeginColumn != 0) {
-								start = new DocumentLocation (targetRegion.BeginLine, targetRegion.BeginColumn);
-								end   = new DocumentLocation (targetRegion.EndLine, targetRegion.EndColumn);
-								expression = ed.GetTextBetween (start, end).Trim () + "." + member;
+								if (targetRegion.BeginLine != 0 && targetRegion.BeginColumn != 0) {
+									start = new DocumentLocation (targetRegion.BeginLine, targetRegion.BeginColumn);
+									end   = new DocumentLocation (targetRegion.EndLine, targetRegion.EndColumn);
+									expression = ed.GetTextBetween (start, end).Trim ();
+								}
 							}
+
+							expression += "." + member;
 						} else {
 							expression = member;
 						}
