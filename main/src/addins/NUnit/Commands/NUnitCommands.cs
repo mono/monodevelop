@@ -36,6 +36,7 @@ namespace MonoDevelop.NUnit.Commands
 	{
 		RunAllTests,
 		RunTest,
+		DebugTest,
 		RunTestWith,
 		ShowTestCode,
 		SelectTestInTree,
