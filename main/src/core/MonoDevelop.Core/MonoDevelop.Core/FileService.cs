@@ -435,9 +435,17 @@ namespace MonoDevelop.Core
 		{
 			if (path == null)
 				throw new ArgumentNullException ("path");
-			// Note: It's not required for Path.GetFullPath (path) that path exists.
-			return Path.GetFullPath (path); 
+			if (!Platform.IsWindows || path.IndexOf ('*') == -1)
+				return Path.GetFullPath (path);
+			else {
+				// On Windows, GetFullPath doesn't work if the path contains wildcards.
+				path = path.Replace ("*", wildcardMarker);
+				path = Path.GetFullPath (path);
+				return path.Replace (wildcardMarker, "*");
+			}
 		}
+
+		static string wildcardMarker = "_" + Guid.NewGuid ().ToString () + "_";
 		
 		public static string CreateTempDirectory ()
 		{
