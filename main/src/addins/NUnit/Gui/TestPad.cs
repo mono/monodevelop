@@ -42,6 +42,7 @@ using MonoDevelop.Components.Docking;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using Mono.TextEditor;
+using System.Linq;
 
 namespace MonoDevelop.NUnit
 {
@@ -420,6 +421,33 @@ namespace MonoDevelop.NUnit
 			}
 		}
 		
+		[CommandHandler (TestCommands.DebugTest)]
+		protected void OnDebugTest (object data)
+		{
+			var debugModeSet = Runtime.ProcessService.GetDebugExecutionMode ();
+			var mode = debugModeSet.ExecutionModes.First (m => m.Id == (string)data);
+			RunSelectedTest (mode.ExecutionHandler);
+		}
+
+		[CommandUpdateHandler (TestCommands.DebugTest)]
+		protected void OnUpdateDebugTest (CommandArrayInfo info)
+		{
+			var debugModeSet = Runtime.ProcessService.GetDebugExecutionMode ();
+			if (debugModeSet == null)
+				return;
+
+			UnitTest test = GetSelectedTest ();
+			if (test == null)
+				return;
+
+			foreach (var mode in debugModeSet.ExecutionModes) {
+				if (test.CanRun (mode.ExecutionHandler))
+					info.Add (GettextCatalog.GetString ("Debug Test ({0})", mode.Name), mode.Id);
+			}
+			if (info.Count == 1)
+				info [0].Text = GettextCatalog.GetString ("Debug Test");
+		}
+
 		public TestPad ()
 		{
 			base.TreeView.CurrentItemActivated += delegate {
