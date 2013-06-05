@@ -457,9 +457,9 @@ namespace Mono.Debugging.Soft
 			//
 			return tm.Name[0] == '<' &&
 				// mcs is of the form <${NAME}>.c__{KIND}${NUMBER}
-				(tm.Name.IndexOf (">c__") > 0 ||
+				(tm.Name.IndexOf (">c__", StringComparison.Ordinal) > 0 ||
 				// csc is of form <${NAME}>d__${NUMBER}
-				 tm.Name.IndexOf (">d__") > 0);
+				 tm.Name.IndexOf (">d__", StringComparison.Ordinal) > 0);
 		}
 
 		internal static string GetNameFromGeneratedType (TypeMirror tm)
@@ -566,15 +566,17 @@ namespace Mono.Debugging.Soft
 		ValueReference GetHoistedThisReference (SoftEvaluationContext cx, TypeMirror type, object val)
 		{
 			foreach (FieldInfoMirror field in type.GetFields ()) {
-				if (IsHoistedThisReference (field)) {
+				if (IsHoistedThisReference (field))
 					return new FieldValueReference (cx, field, val, type, "this", ObjectValueFlags.Literal);
-				} else if (IsClosureReferenceField (field)) {
+
+				if (IsClosureReferenceField (field)) {
 					var fieldRef = new FieldValueReference (cx, field, val, type);
 					var thisRef = GetHoistedThisReference (cx, field.FieldType, fieldRef.Value);
 					if (thisRef != null)
 						return thisRef;
 				}
 			}
+
 			return null;
 		}
 		
@@ -621,8 +623,8 @@ namespace Mono.Debugging.Soft
 				ValueReference vthis = GetThisReference (cx);
 				return GetHoistedLocalVariables (cx, vthis).Union (GetLocalVariables (cx));
 			}
-			else
-				return GetLocalVariables (cx);
+
+			return GetLocalVariables (cx);
 		}
 		
 		IEnumerable<ValueReference> GetLocalVariables (SoftEvaluationContext cx)
@@ -864,8 +866,8 @@ namespace Mono.Debugging.Soft
 				ObjectMirror exc = cx.Session.GetExceptionObject (cx.Thread);
 				if (exc != null)
 					return LiteralValueReference.CreateTargetObjectLiteral (ctx, ctx.Options.CurrentExceptionTag, exc);
-				else
-					return null;
+
+				return null;
 			} catch (AbsentInformationException) {
 				return null;
 			}
