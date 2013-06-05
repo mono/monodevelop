@@ -1169,7 +1169,7 @@ namespace Mono.Debugging.Evaluation
 				}
 
 				last = j + 1;
-				i = exp.IndexOf ("{", last);
+				i = exp.IndexOf ('{', last);
 			}
 
 			sb.Append (exp.Substring (last));
@@ -1202,11 +1202,10 @@ namespace Mono.Debugging.Evaluation
 		{
 			try {
 				ValueReference var = ctx.Evaluator.Evaluate (ctx, exp);
-				if (var != null) {
+				if (var != null)
 					return var.CreateObjectValue (ctx.Options);
-				}
-				else
-					return ObjectValue.CreateUnknown (exp);
+
+				return ObjectValue.CreateUnknown (exp);
 			}
 			catch (ImplicitEvaluationDisabledException) {
 				return ObjectValue.CreateImplicitNotSupported (ctx.ExpressionValueSource, new ObjectPath (exp), "", ObjectValueFlags.None);
@@ -1246,6 +1245,12 @@ namespace Mono.Debugging.Evaluation
 		public virtual object RuntimeInvoke (EvaluationContext ctx, object targetType, object target, string methodName, object[] argTypes, object[] argValues)
 		{
 			return null;
+		}
+
+		public virtual object RuntimeInvoke (EvaluationContext ctx, object targetType, object target, string methodName, object[] genericTypeArgs, object[] argTypes, object[] argValues)
+		{
+			// Note: this is for backward compatibility with debugger backends that haven't yet implemented this particular overload
+			return RuntimeInvoke (ctx, targetType, target, methodName, argTypes, argValues);
 		}
 		
 		public virtual ValidationResult ValidateExpression (EvaluationContext ctx, string expression)
@@ -1289,8 +1294,8 @@ namespace Mono.Debugging.Evaluation
 			DebuggerBrowsableState state;
 			if (MemberData.TryGetValue (name, out state))
 				return state;
-			else
-				return DebuggerBrowsableState.Collapsed;
+
+			return DebuggerBrowsableState.Collapsed;
 		}
 	}
 	

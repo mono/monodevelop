@@ -647,6 +647,24 @@ namespace Mono.Debugging.Evaluation
 			return indexer;
 		}
 
+		string ResolveMethodName (MemberReferenceExpression mre, out object[] typeArgs)
+		{
+			if (mre.TypeArguments.Count > 0) {
+				List<object> args = new List<object> ();
+
+				foreach (var arg in mre.TypeArguments) {
+					var type = arg.AcceptVisitor (this);
+					args.Add (type.Type);
+				}
+
+				typeArgs = args.ToArray ();
+			} else {
+				typeArgs = new object[0];
+			}
+
+			return mre.MemberName;
+		}
+
 		public ValueReference VisitInvocationExpression (InvocationExpression invocationExpression)
 		{
 			if (!options.AllowMethodEvaluation)
@@ -658,6 +676,7 @@ namespace Mono.Debugging.Evaluation
 
 			object[] types = new object [invocationExpression.Arguments.Count];
 			object[] args = new object [invocationExpression.Arguments.Count];
+			object[] typeArgs = new object [0];
 			int n = 0;
 
 			foreach (var arg in invocationExpression.Arguments) {
@@ -672,7 +691,7 @@ namespace Mono.Debugging.Evaluation
 				target = field.Target.AcceptVisitor<ValueReference> (this);
 				if (field.Target is BaseReferenceExpression)
 					invokeBaseMethod = true;
-				methodName = field.MemberName;
+				methodName = ResolveMethodName (field, out typeArgs);
 			} else if (invocationExpression.Target is IdentifierExpression) {
 				methodName = ((IdentifierExpression) invocationExpression.Target).Identifier;
 				var vref = ctx.Adapter.GetThisReference (ctx);
@@ -704,7 +723,7 @@ namespace Mono.Debugging.Evaluation
 			if (invokeBaseMethod)
 				vtype = ctx.Adapter.GetBaseType (ctx, vtype);
 
-			object result = ctx.Adapter.RuntimeInvoke (ctx, vtype, vtarget, methodName, types, args);
+			object result = ctx.Adapter.RuntimeInvoke (ctx, vtype, vtarget, methodName, typeArgs, types, args);
 			if (result != null)
 				return LiteralValueReference.CreateTargetObjectLiteral (ctx, expression, result);
 
