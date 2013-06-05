@@ -122,10 +122,11 @@ namespace MonoDevelop.NUnit
 			assembly = asm != null ? project.BaseDirectory.Combine (asm.ToString ()).ToString () : null;
 		}
 
-		public override string GetCustomConsoleRunner ()
+		public override void GetCustomConsoleRunner (out string command, out string args)
 		{
-			var r = project.ExtendedProperties ["TestRunnerExe"];
-			return r != null ? project.BaseDirectory.Combine (r.ToString ()).ToString () : null;
+			var r = project.ExtendedProperties ["TestRunnerCommand"];
+			command = r != null ? project.BaseDirectory.Combine (r.ToString ()).ToString () : null;
+			args = (string)project.ExtendedProperties ["TestRunnerArgs"];
 		}
 
 		protected override string AssemblyPath {

@@ -95,9 +95,23 @@ namespace MonoDevelop.NUnit
 			assembly = type = null;
 		}
 
-		public virtual string GetCustomConsoleRunner ()
+		public virtual void GetCustomConsoleRunner (out string command, out string args)
 		{
-			return null;
+			command = args = null;
+		}
+
+		ProcessExecutionCommand GetCustomConsoleRunnerCommand ()
+		{
+			string file, args;
+
+			GetCustomConsoleRunner (out file, out args);
+			file = file != null ? file.Trim () : null;
+			if (string.IsNullOrEmpty (file))
+				return null;
+
+			var cmd = Runtime.ProcessService.CreateCommand (file);
+			cmd.Arguments = args;
+			return cmd;
 		}
 
 		protected override void OnActiveConfigurationChanged ()
@@ -344,10 +358,9 @@ namespace MonoDevelop.NUnit
 
 		protected override bool OnCanRun (MonoDevelop.Core.Execution.IExecutionHandler executionContext)
 		{
-			var runnerExe = GetCustomConsoleRunner ();
-			if (runnerExe != null) {
-				var cmd = Runtime.ProcessService.CreateCommand (runnerExe);
-				return cmd != null && executionContext.CanExecute (cmd);
+			var runnerCmd = GetCustomConsoleRunnerCommand ();
+			if (runnerCmd != null) {
+				return executionContext.CanExecute (runnerCmd);
 			}
 			return Runtime.ProcessService.IsValidForRemoteHosting (executionContext);
 		}
@@ -367,7 +380,7 @@ namespace MonoDevelop.NUnit
 
 		internal UnitTestResult RunUnitTest (UnitTest test, string suiteName, string pathName, string testName, TestContext testContext)
 		{
-			var runnerExe = GetCustomConsoleRunner ();
+			var runnerExe = GetCustomConsoleRunnerCommand ();
 			if (runnerExe != null)
 				return RunWithConsoleRunner (runnerExe, test, suiteName, pathName, testName, testContext);
 
@@ -446,19 +459,20 @@ namespace MonoDevelop.NUnit
 			}
 		}
 
-		UnitTestResult RunWithConsoleRunner (string command, UnitTest test, string suiteName, string pathName, string testName, TestContext testContext)
+		UnitTestResult RunWithConsoleRunner (ProcessExecutionCommand cmd, UnitTest test, string suiteName, string pathName, string testName, TestContext testContext)
 		{
 			var outFile = Path.GetTempFileName ();
 			LocalConsole cons = new LocalConsole ();
 
 			try {
-				var cm = Runtime.ProcessService.CreateCommand (command);
-				cm.Arguments = "\"-xml=" + outFile + "\" " + AssemblyPath;
-				if (suiteName != null)
-					cm.Arguments += " -fixture=" + suiteName;
+				if (!string.IsNullOrEmpty (cmd.Arguments))
+					cmd.Arguments += " ";
+				cmd.Arguments += "\"-xml=" + outFile + "\" " + AssemblyPath;
 				if (testName != null)
-					cm.Arguments += " -run=" + suiteName + "." + testName;
-				var p = testContext.ExecutionContext.Execute (cm, cons);
+					cmd.Arguments += " -run=" + suiteName + "." + testName;
+				else if (suiteName != null)
+					cmd.Arguments += " -run=" + suiteName;
+				var p = testContext.ExecutionContext.Execute (cmd, cons);
 
 				testContext.Monitor.CancelRequested += p.Cancel;
 				if (testContext.Monitor.IsCancelRequested)
