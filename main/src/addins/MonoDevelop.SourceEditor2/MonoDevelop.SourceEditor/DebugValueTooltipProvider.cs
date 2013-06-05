@@ -217,11 +217,12 @@ namespace MonoDevelop.SourceEditor
 									expression = ed.GetTextBetween (start, end).Trim ();
 								}
 							}
-
-							expression += "." + member;
-						} else {
-							expression = member;
 						}
+
+						if (!string.IsNullOrEmpty (expression))
+							expression += "." + member;
+						else
+							expression = member;
 					}
 				} else if (res is NamedArgumentResolveResult) {
 					// Fall through...
