@@ -66,11 +66,19 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		public virtual FilePath EvaluatedIntermediateOutputDirectory {
+			get { return IntermediateOutputDirectory; }
+		}
+
 		[ProjectPathItemProperty("OutputPath")]
 		private FilePath outputDirectory = "." + Path.DirectorySeparatorChar;
 		public virtual FilePath OutputDirectory {
 			get { return outputDirectory; }
 			set { outputDirectory = value; }
+		}
+
+		public virtual FilePath EvaluatedOutputDirectory {
+			get { return outputDirectory; }
 		}
 
 		[ItemProperty("DebugSymbols", DefaultValue = false)]

@@ -131,7 +131,24 @@ namespace MonoDevelop.Projects
 //			sol.FileFormat = Services.ProjectService.FileFormats.GetFileFormat ("MSBuild08");
 //			sol.Save (Util.GetMonitor ());
 		}
-		
+
+		[Test]
+		public void PlaceholdersAreReplaced_OutputPath ()
+		{
+			var config = new DotNetProjectConfiguration {
+				Name = "Debug",
+				Platform = "x86",
+				IntermediateOutputDirectory = "intermediate/$(Configuration)/$(Platform)",
+				OutputDirectory = "full/$(Configuration)/$(Platform)",
+				OutputAssembly = "Baz.dll"
+			};
+			Assert.AreEqual ((FilePath) "intermediate/$(Configuration)/$(Platform)", config.IntermediateOutputDirectory, "#1a");
+			Assert.AreEqual ((FilePath) "intermediate/Debug/x86", config.EvaluatedIntermediateOutputDirectory, "#1b");
+			Assert.AreEqual ((FilePath) "full/$(Configuration)/$(Platform)", config.OutputDirectory, "#2a");
+			Assert.AreEqual ((FilePath) "full/Debug/x86", config.EvaluatedOutputDirectory, "#2b");
+			Assert.AreEqual ((FilePath) "full/Debug/x86/Baz.dll", config.CompiledOutputName, "#3");
+		}
+
 		[Test]
 		public void TestCreateLoadSaveConsoleProject ()
 		{

@@ -167,17 +167,17 @@ namespace MonoDevelop.Projects
 					return null;
 			}
 		}
-		
+
 		public FilePath CompiledOutputName {
 			get {
-				FilePath fullPath = OutputDirectory.Combine (OutputAssembly);
+				FilePath fullPath = EvaluatedOutputDirectory.Combine (OutputAssembly);
 				if (OutputAssembly.EndsWith (".dll") || OutputAssembly.EndsWith (".exe"))
 					return fullPath;
 				else
 					return fullPath + (CompileTarget == CompileTarget.Library ? ".dll" : ".exe");
 			}
 		}
-		
+
 		public override void CopyFrom (ItemConfiguration configuration)
 		{
 			base.CopyFrom (configuration);
@@ -192,9 +192,24 @@ namespace MonoDevelop.Projects
 			delaySign = conf.delaySign;
 			assemblyKeyFile = conf.assemblyKeyFile;
 		}
-		
+
+		public override FilePath EvaluatedIntermediateOutputDirectory {
+			get { return ReplacePlaceholders (base.EvaluatedIntermediateOutputDirectory); }
+		}
+
+		public override FilePath EvaluatedOutputDirectory {
+			get { return ReplacePlaceholders (base.EvaluatedOutputDirectory); }
+		}
+
 		public new DotNetProject ParentItem {
 			get { return (DotNetProject) base.ParentItem; }
+		}
+
+		string ReplacePlaceholders (string path)
+		{
+			if (path == null)
+				return null;
+			return path.Replace ("$(Configuration)", Name).Replace ("$(Platform)", Platform);
 		}
 	}
 	
