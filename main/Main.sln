@@ -212,6 +212,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mdmonitor", "src\tools\mdmonitor\mdmonitor.csproj", "{D0B5AF2B-4BC1-4EB4-81D3-E5B85DDCE925}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{78C10DAE-D3D7-44FC-93DF-831D8D54ECF9}"
+	ProjectSection(MonoDevelopProperties) = preProject
+		BaseDirectory = tests
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "tests\UnitTests\UnitTests.csproj", "{1497D0A8-AFF1-4938-BC22-BE79B358BA5B}"
 EndProject
