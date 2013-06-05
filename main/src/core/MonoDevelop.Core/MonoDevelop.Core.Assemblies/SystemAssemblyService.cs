@@ -391,6 +391,24 @@ namespace MonoDevelop.Core.Assemblies
 			}
 		}
 
+		public static bool ContainsReferenceToSystemRuntime (string fileName)
+		{
+			using (var universe = new IKVM.Reflection.Universe ()) {
+				IKVM.Reflection.Assembly assembly;
+				try {
+					assembly = universe.LoadFile (fileName);
+				} catch {
+					return false;
+				}
+				foreach (var r in assembly.GetReferencedAssemblies ()) {
+					if (r.FullName.Equals ("System.Runtime, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"))
+						return true;
+				}
+			}
+
+			return false;
+		}
+
 		public class ManifestResource
 		{
 			public string Name {
