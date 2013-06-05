@@ -1060,12 +1060,12 @@ namespace Mono.Debugging.Evaluation
 			string proxyType = data.ProxyType;
 			object[] typeArgs = null;
 
-			int i = proxyType.IndexOf ('`');
-			if (i != -1) {
+			int index = proxyType.IndexOf ('`');
+			if (index != -1) {
 				// The proxy type is an uninstantiated generic type.
 				// The number of type args of the proxy must match the args of the target object
-				int startIndex = i + 1;
-				int endIndex = i + 1;
+				int startIndex = index + 1;
+				int endIndex = index + 1;
 
 				while (endIndex < proxyType.Length && char.IsDigit (proxyType[endIndex]))
 					endIndex++;
@@ -1084,9 +1084,8 @@ namespace Mono.Debugging.Evaluation
 			object ttype = GetType (ctx, proxyType, typeArgs);
 			if (ttype == null) {
 				// the proxy type string might be in the form: "Namespace.TypeName, Assembly...", chop off the ", Assembly..." bit.
-				i = proxyType.IndexOf (',');
-				if (i != -1)
-					ttype = GetType (ctx, proxyType.Substring (0, i).Trim (), typeArgs);
+				if ((index = proxyType.IndexOf (',')) != -1)
+					ttype = GetType (ctx, proxyType.Substring (0, index).Trim (), typeArgs);
 			}
 			if (ttype == null)
 				throw new EvaluatorException ("Unknown type '{0}'", data.ProxyType);
@@ -1169,7 +1168,7 @@ namespace Mono.Debugging.Evaluation
 				}
 
 				last = j + 1;
-				i = exp.IndexOf ("{", last);
+				i = exp.IndexOf ('{', last);
 			}
 
 			sb.Append (exp.Substring (last));
@@ -1202,11 +1201,10 @@ namespace Mono.Debugging.Evaluation
 		{
 			try {
 				ValueReference var = ctx.Evaluator.Evaluate (ctx, exp);
-				if (var != null) {
+				if (var != null)
 					return var.CreateObjectValue (ctx.Options);
-				}
-				else
-					return ObjectValue.CreateUnknown (exp);
+
+				return ObjectValue.CreateUnknown (exp);
 			}
 			catch (ImplicitEvaluationDisabledException) {
 				return ObjectValue.CreateImplicitNotSupported (ctx.ExpressionValueSource, new ObjectPath (exp), "", ObjectValueFlags.None);
@@ -1246,6 +1244,12 @@ namespace Mono.Debugging.Evaluation
 		public virtual object RuntimeInvoke (EvaluationContext ctx, object targetType, object target, string methodName, object[] argTypes, object[] argValues)
 		{
 			return null;
+		}
+
+		public virtual object RuntimeInvoke (EvaluationContext ctx, object targetType, object target, string methodName, object[] genericTypeArgs, object[] argTypes, object[] argValues)
+		{
+			// Note: this is for backward compatibility with debugger backends that haven't yet implemented this particular overload
+			return RuntimeInvoke (ctx, targetType, target, methodName, argTypes, argValues);
 		}
 		
 		public virtual ValidationResult ValidateExpression (EvaluationContext ctx, string expression)
@@ -1289,8 +1293,8 @@ namespace Mono.Debugging.Evaluation
 			DebuggerBrowsableState state;
 			if (MemberData.TryGetValue (name, out state))
 				return state;
-			else
-				return DebuggerBrowsableState.Collapsed;
+
+			return DebuggerBrowsableState.Collapsed;
 		}
 	}
 	

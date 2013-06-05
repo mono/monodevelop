@@ -9,6 +9,8 @@
     <OutputType>Library</OutputType>
     <RootNamespace>MonoDevelop.Debugger.Tests</RootNamespace>
     <AssemblyName>MonoDevelop.Debugger.Tests</AssemblyName>
+    <TestRunnerCommand>..\..\..\..\build\bin\mdtool.exe</TestRunnerCommand>
+    <TestRunnerArgs>run-md-tests</TestRunnerArgs>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>

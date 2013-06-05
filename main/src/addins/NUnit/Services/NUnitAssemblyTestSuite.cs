@@ -468,9 +468,9 @@ namespace MonoDevelop.NUnit
 				if (!string.IsNullOrEmpty (cmd.Arguments))
 					cmd.Arguments += " ";
 				cmd.Arguments += "\"-xml=" + outFile + "\" " + AssemblyPath;
-				if (testName != null)
+				if (!string.IsNullOrEmpty (testName))
 					cmd.Arguments += " -run=" + suiteName + "." + testName;
-				else if (suiteName != null)
+				else if (!string.IsNullOrEmpty (suiteName))
 					cmd.Arguments += " -run=" + suiteName;
 				var p = testContext.ExecutionContext.Execute (cmd, cons);
 
