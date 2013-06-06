@@ -189,8 +189,8 @@ namespace Mono.Debugging.Client
 			get {
 				if (name == null)
 					return path [path.Length - 1];
-				else
-					return name;
+
+				return name;
 			}
 			set {
 				name = value;
@@ -723,8 +723,9 @@ namespace Mono.Debugging.Client
 				if (updateCallback == null)
 					updateCallback = new UpdateCallback (new UpdateCallbackProxy (this), path);
 				return updateCallback;
-			} else
-				return null;
+			}
+
+			return null;
 		}
 
 		~ObjectValue ()
