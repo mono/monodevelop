@@ -17,6 +17,9 @@ namespace MonoDevelop.Debugger.Win32
 
 		public static R Run<R> (Func<R> ts)
 		{
+			if (Thread.CurrentThread.GetApartmentState () == ApartmentState.MTA)
+				return ts ();
+
 			R res = default (R);
 			Run (delegate
 			{
@@ -27,12 +30,12 @@ namespace MonoDevelop.Debugger.Win32
 
 		public static void Run (Action ts)
 		{
+			if (Thread.CurrentThread.GetApartmentState () == ApartmentState.MTA) {
+				ts ();
+				return;
+			}
 			lock (workLock) {
 				lock (threadLock) {
-					if (Thread.CurrentThread.ApartmentState == ApartmentState.MTA) {
-						ts ();
-						return;
-					}
 					workDelegate = ts;
 					workError = null;
 					if (workThread == null) {
