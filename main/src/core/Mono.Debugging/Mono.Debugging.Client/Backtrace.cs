@@ -31,8 +31,10 @@ namespace Mono.Debugging.Client
 			this.session = session;
 			serverBacktrace = session.WrapDebuggerObject (serverBacktrace);
 			if (frames != null) {
-				foreach (StackFrame f in frames)
+				foreach (StackFrame f in frames) {
 					f.Attach (session);
+					f.SourceBacktrace = serverBacktrace;
+				}
 			}
 		}
 
