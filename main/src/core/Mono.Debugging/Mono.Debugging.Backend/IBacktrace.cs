@@ -3,7 +3,7 @@ using Mono.Debugging.Client;
 
 namespace Mono.Debugging.Backend
 {
-	public interface IBacktrace
+	public interface IBacktrace: IDebuggerBackendObject
 	{
 		int FrameCount { get; }
 		StackFrame[] GetStackFrames (int firstIndex, int lastIndex);
