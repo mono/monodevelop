@@ -739,6 +739,8 @@ namespace Mono.Debugging.Client
 			List<ObjectValue> valueList = new List<ObjectValue> (values);
 			for (int n=0; n<valueList.Count; n++) {
 				ObjectValue val = valueList [n];
+				val.source = parentFrame.DebuggerSession.WrapDebuggerObject (val.source);
+				val.updater = parentFrame.DebuggerSession.WrapDebuggerObject (val.updater);
 				val.parentFrame = parentFrame;
 				UpdateCallback cb = val.GetUpdateCallback ();
 				if (cb != null) {
