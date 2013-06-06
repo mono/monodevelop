@@ -30,7 +30,7 @@ using Mono.Debugging.Client;
 namespace Mono.Debugging.Backend
 {
 	
-	public interface IRawValue
+	public interface IRawValue: IDebuggerBackendObject
 	{
 		object CallMethod (string name, object[] parameters, EvaluationOptions options);
 		object GetMemberValue (string name, EvaluationOptions options);

@@ -29,8 +29,7 @@ using Mono.Debugging.Client;
 
 namespace Mono.Debugging.Backend
 {
-	
-	public interface IRawValueString
+	public interface IRawValueString: IDebuggerBackendObject
 	{
 		string Substring (int index, int length);
 		string Value { get; }

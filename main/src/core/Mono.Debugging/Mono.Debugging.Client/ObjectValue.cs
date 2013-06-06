@@ -318,9 +318,9 @@ namespace Mono.Debugging.Client
 		public object GetRawValue (EvaluationOptions options)
 		{
 			object res = source.GetRawValue (path, options);
-			RawValue val = res as RawValue;
+			IRawObject val = res as IRawObject;
 			if (val != null)
-				val.options = options;
+				val.Connect (parentFrame.DebuggerSession, options);
 			return res;
 		}
 		

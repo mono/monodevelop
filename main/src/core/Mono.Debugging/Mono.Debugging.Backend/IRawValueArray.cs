@@ -29,8 +29,7 @@ using Mono.Debugging.Client;
 
 namespace Mono.Debugging.Backend
 {
-	
-	public interface IRawValueArray
+	public interface IRawValueArray: IDebuggerBackendObject
 	{
 		object GetValue (int[] index);
 		void SetValue (int[] index, object value);
