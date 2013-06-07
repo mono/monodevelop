@@ -373,7 +373,13 @@ namespace MonoDevelop.AssemblyBrowser
 			
 		ITreeNavigator SearchMember (string helpUrl)
 		{
-			return SearchMember (TreeView.GetRootNode (), helpUrl);
+			var nav = SearchMember (TreeView.GetRootNode (), helpUrl);
+			if (nav != null)
+				return nav;
+			// Constructor may be a generated default without implementation.
+			if (helpUrl.StartsWith ("M:", StringComparison.Ordinal) && helpUrl.EndsWith (".#ctor", StringComparison.Ordinal))
+				return SearchMember ("T" + helpUrl.Substring (1, helpUrl.Length - 1 - ".#ctor".Length));
+			return null;
 		}
 		
 		static void AppendTypeReference (StringBuilder result, ITypeReference type)
@@ -409,6 +415,10 @@ namespace MonoDevelop.AssemblyBrowser
 
 			if (type is IUnresolvedTypeDefinition) {
 				result.Append (((IUnresolvedTypeDefinition)type).FullName);
+			}
+
+			if (type is TypeParameterReference) {
+				result.Append ("`" +((TypeParameterReference)type).Index);
 			}
 		}
 		
