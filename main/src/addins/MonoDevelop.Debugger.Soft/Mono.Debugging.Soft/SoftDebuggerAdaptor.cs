@@ -1036,7 +1036,7 @@ namespace Mono.Debugging.Soft
 			if (genericTypeArgs != null) {
 				typeArgs = new TypeMirror [genericTypeArgs.Length];
 				for (int n = 0; n < genericTypeArgs.Length; n++) {
-					if (argTypes[n] is TypeMirror)
+					if (genericTypeArgs[n] is TypeMirror)
 						typeArgs[n] = (TypeMirror) genericTypeArgs[n];
 					else
 						typeArgs[n] = (TypeMirror) GetType (ctx, ((Type) genericTypeArgs[n]).FullName);
