@@ -28,6 +28,9 @@ namespace MonoDevelop.VersionControl
 					if (!item.VersionInfo.CanCommit)
 						continue;
 
+					if (test)
+						return true;
+
 					foreach (VersionInfo vi in repo.GetDirectoryVersionInfo (item.Path, false, true))
 						if (vi.HasLocalChanges) {
 							filesToCommit++;

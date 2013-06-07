@@ -58,6 +58,17 @@ namespace MonoDevelop.Core.Execution
 			clog.Dispose ();
 			cin.Dispose ();
 		}
+
+		/// <summary>
+		/// Flushes and closes the readers and writers
+		/// </summary>
+		public void SetDone ()
+		{
+			cout.SetDone ();
+			cerror.SetDone ();
+			clog.SetDone ();
+			cin.SetDone ();
+		}
 		
 		/// <summary>
 		/// This writer can be used to provide the input of the console.
@@ -265,6 +276,11 @@ namespace MonoDevelop.Core.Execution
 			get {
 				return Encoding.UTF8;
 			}
+		}
+
+		public void SetDone ()
+		{
+			data.SetDone ();
 		}
 
 		public override void Write (char value)

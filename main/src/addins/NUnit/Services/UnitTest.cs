@@ -48,6 +48,8 @@ namespace MonoDevelop.NUnit
 		IWorkspaceObject ownerSolutionItem;
 		SolutionEntityItem ownerSolutionEntityItem;
 		UnitTestResultsStore results;
+		bool historicResult;
+		bool resultLoaded;
 		
 		public string FixtureTypeNamespace {
 			get;
@@ -248,13 +250,23 @@ namespace MonoDevelop.NUnit
 		
 		public UnitTestResult GetLastResult ()
 		{
+			if (!resultLoaded) {
+				resultLoaded = true;
+				lastResult = Results.GetLastResult (DateTime.Now);
+				if (lastResult != null)
+					historicResult = true;
+			}
 			return lastResult;
 		}
 		
 		public void ResetLastResult ()
 		{
-			lastResult = null;
+			historicResult = true;
 			OnTestStatusChanged ();
+		}
+
+		public bool IsHistoricResult {
+			get { return historicResult; }
 		}
 		
 		public UnitTestCollection GetRegressions (DateTime fromDate, DateTime toDate)
@@ -399,7 +411,11 @@ namespace MonoDevelop.NUnit
 			result.TestDate = context.TestDate;
 //			if ((int)result.Status == 0)
 //				result.Status = ResultStatus.Ignored;
+
 			lastResult = result;
+			historicResult = false;
+			resultLoaded = true;
+
 			IResultsStore store = GetResultsStore ();
 			if (store != null)
 				store.RegisterResult (ActiveConfiguration, this, result);

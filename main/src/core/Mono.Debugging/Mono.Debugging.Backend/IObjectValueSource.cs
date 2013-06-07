@@ -31,7 +31,7 @@ using Mono.Debugging.Client;
 
 namespace Mono.Debugging.Backend
 {
-	public interface IObjectValueSource
+	public interface IObjectValueSource: IDebuggerBackendObject
 	{
 		ObjectValue[] GetChildren (ObjectPath path, int index, int count, EvaluationOptions options);
 		EvaluationResult SetValue (ObjectPath path, string value, EvaluationOptions options);
@@ -39,50 +39,5 @@ namespace Mono.Debugging.Backend
 		
 		object GetRawValue (ObjectPath path, EvaluationOptions options);
 		void SetRawValue (ObjectPath path, object value, EvaluationOptions options);
-	}
-	
-	public interface IRawValue
-	{
-		object CallMethod (string name, object[] parameters, EvaluationOptions options);
-		object GetMemberValue (string name, EvaluationOptions options);
-		void SetMemberValue (string name, object value, EvaluationOptions options);
-	}
-	
-	public interface IRawValueArray
-	{
-		object GetValue (int[] index);
-		void SetValue (int[] index, object value);
-		int[] Dimensions { get; }
-		Array ToArray ();
-	}
-	
-	public interface IRawValueString
-	{
-		string Substring (int index, int length);
-		string Value { get; }
-		int Length { get; }
-	}
-	
-	[Serializable]
-	public class EvaluationResult
-	{
-		public EvaluationResult (string value)
-		{
-			Value = value;
-		}
-		
-		public EvaluationResult (string value, string displayValue)
-		{
-			Value = value;
-			DisplayValue = displayValue;
-		}
-		
-		public string Value { get; private set; }
-		public string DisplayValue { get; private set; }
-		
-		public override string ToString ()
-		{
-			return Value;
-		}
 	}
 }

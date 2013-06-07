@@ -210,7 +210,7 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			if (e.RemovalLength != 1)
 				return;
-			stateTracker.UpdateEngine (e.Offset + e.InsertionLength + 1);
+			stateTracker.UpdateEngine (Math.Min (textEditorData.Document.TextLength, e.Offset + e.InsertionLength + 1));
 			if (wasInVerbatimString && !stateTracker.Engine.IsInsideVerbatimString) {
 				textEditorData.Document.TextReplacing -= HandleTextReplacing;
 				textEditorData.Document.TextReplaced -= HandleTextReplaced;;

@@ -29,20 +29,27 @@
 using System;
 using Gdk;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.NUnit
 {
 	static class CircleImage
 	{
 		internal static Gdk.Pixbuf Running;
-		internal static Gdk.Pixbuf Failure;
 		internal static Gdk.Pixbuf None;
 		internal static Gdk.Pixbuf NotRun;
+		internal static Gdk.Pixbuf Loading;
+
+		internal static Gdk.Pixbuf Failure;
 		internal static Gdk.Pixbuf Success;
 		internal static Gdk.Pixbuf SuccessAndFailure;
 		internal static Gdk.Pixbuf Inconclusive;
-		internal static Gdk.Pixbuf Loading;
 		
+		internal static Gdk.Pixbuf OldFailure;
+		internal static Gdk.Pixbuf OldSuccess;
+		internal static Gdk.Pixbuf OldSuccessAndFailure;
+		internal static Gdk.Pixbuf OldInconclusive;
+
 		static CircleImage ()
 		{
 			try {
@@ -54,6 +61,10 @@ namespace MonoDevelop.NUnit
 				SuccessAndFailure = Gdk.Pixbuf.LoadFromResource ("NUnit.SuccessAndFailed.png");
 				Loading = Gdk.Pixbuf.LoadFromResource ("NUnit.Loading.png");
 				Inconclusive = Gdk.Pixbuf.LoadFromResource ("NUnit.Inconclusive.png");
+				OldFailure = ImageService.MakeTransparent (Failure, 0.4);
+				OldSuccess = ImageService.MakeTransparent (Success, 0.4);
+				OldSuccessAndFailure = ImageService.MakeTransparent (SuccessAndFailure, 0.4);
+				OldInconclusive = ImageService.MakeTransparent (Inconclusive, 0.4);
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while loading icons.", e);
 			}

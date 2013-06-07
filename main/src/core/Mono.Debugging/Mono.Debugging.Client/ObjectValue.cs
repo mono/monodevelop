@@ -189,8 +189,8 @@ namespace Mono.Debugging.Client
 			get {
 				if (name == null)
 					return path [path.Length - 1];
-				else
-					return name;
+
+				return name;
 			}
 			set {
 				name = value;
@@ -318,9 +318,9 @@ namespace Mono.Debugging.Client
 		public object GetRawValue (EvaluationOptions options)
 		{
 			object res = source.GetRawValue (path, options);
-			RawValue val = res as RawValue;
+			IRawObject val = res as IRawObject;
 			if (val != null)
-				val.options = options;
+				val.Connect (parentFrame.DebuggerSession, options);
 			return res;
 		}
 		
@@ -723,8 +723,9 @@ namespace Mono.Debugging.Client
 				if (updateCallback == null)
 					updateCallback = new UpdateCallback (new UpdateCallbackProxy (this), path);
 				return updateCallback;
-			} else
-				return null;
+			}
+
+			return null;
 		}
 
 		~ObjectValue ()
@@ -739,6 +740,8 @@ namespace Mono.Debugging.Client
 			List<ObjectValue> valueList = new List<ObjectValue> (values);
 			for (int n=0; n<valueList.Count; n++) {
 				ObjectValue val = valueList [n];
+				val.source = parentFrame.DebuggerSession.WrapDebuggerObject (val.source);
+				val.updater = parentFrame.DebuggerSession.WrapDebuggerObject (val.updater);
 				val.parentFrame = parentFrame;
 				UpdateCallback cb = val.GetUpdateCallback ();
 				if (cb != null) {

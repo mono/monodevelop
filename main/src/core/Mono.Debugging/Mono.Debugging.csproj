@@ -111,6 +111,11 @@
     <Compile Include="Mono.Debugging.Evaluation\NRefactoryExpressionEvaluatorVisitor.cs" />
     <Compile Include="Mono.Debugging.Evaluation\NRefactoryExpressionResolverVisitor.cs" />
     <Compile Include="Mono.Debugging.Evaluation\NRefactoryExtensions.cs" />
+    <Compile Include="Mono.Debugging.Backend\IDebuggerBackendObject.cs" />
+    <Compile Include="Mono.Debugging.Backend\IRawValue.cs" />
+    <Compile Include="Mono.Debugging.Backend\IRawValueArray.cs" />
+    <Compile Include="Mono.Debugging.Backend\IRawValueString.cs" />
+    <Compile Include="Mono.Debugging.Backend\EvaluationResult.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

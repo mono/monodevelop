@@ -186,7 +186,7 @@ namespace MonoDevelop.Refactoring.Rename
 		{
 			if (options.SelectedItem is IVariable) {
 				var field = options.SelectedItem as IField;
-				if (field != null && field.Accessibility != Accessibility.Private) {
+				if (field != null && (field.Accessibility != Accessibility.Private || field.DeclaringTypeDefinition != null && field.DeclaringTypeDefinition.Parts.Count > 1)) {
 					MessageService.ShowCustomDialog (new RenameItemDialog (options, this));
 					return;
 				}

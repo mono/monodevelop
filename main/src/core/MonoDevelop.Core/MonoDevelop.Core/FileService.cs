@@ -332,8 +332,8 @@ namespace MonoDevelop.Core
 			if (!Path.IsPathRooted (absPath) || string.IsNullOrEmpty (baseDirectoryPath))
 				return absPath;
 				
-			absPath = Path.GetFullPath (absPath);
-			baseDirectoryPath = Path.GetFullPath (baseDirectoryPath).TrimEnd (Path.DirectorySeparatorChar);
+			absPath = GetFullPath (absPath);
+			baseDirectoryPath = GetFullPath (baseDirectoryPath).TrimEnd (Path.DirectorySeparatorChar);
 			
 			fixed (char* bPtr = baseDirectoryPath, aPtr = absPath) {
 				var bEnd = bPtr + baseDirectoryPath.Length;

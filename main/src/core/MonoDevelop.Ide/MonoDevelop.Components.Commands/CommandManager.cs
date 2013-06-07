@@ -49,6 +49,7 @@ namespace MonoDevelop.Components.Commands
 		DateTime lastUserInteraction;
 		KeyboardShortcut[] chords;
 		string chord;
+		internal const int SlowCommandWarningTime = 200;
 		
 		Dictionary<object,Command> cmds = new Dictionary<object,Command> ();
 		Hashtable handlerInfo = new Hashtable ();
@@ -1167,7 +1168,7 @@ namespace MonoDevelop.Components.Commands
 
 			NotifyCommandTargetScanStarted ();
 			CommandInfo info = new CommandInfo (cmd);
-			
+
 			try {
 				bool multiCastEnabled = true;
 				bool multiCastVisible = false;
@@ -2024,13 +2025,25 @@ namespace MonoDevelop.Components.Commands
 		{
 			if (customHandlerChain != null) {
 				info.UpdateHandlerData = Method;
+
+				DateTime t = DateTime.Now;
 				customHandlerChain.CommandUpdate (cmdTarget, info);
+				var time = DateTime.Now - t;
+				if (time.TotalMilliseconds > CommandManager.SlowCommandWarningTime)
+					LoggingService.LogWarning ("Slow command update ({0}ms): Command:{1}, CustomUpdater:{2}", (int)time.TotalMilliseconds, CommandId, customHandlerChain);
 			} else {
 				if (Method == null)
 					throw new InvalidOperationException ("Invalid custom update handler. An implementation of ICommandUpdateHandler was expected.");
 				if (isArray)
 					throw new InvalidOperationException ("Invalid signature for command update handler: " + Method.DeclaringType + "." + Method.Name + "()");
+
+				DateTime t = DateTime.Now;
+
 				Method.Invoke (cmdTarget, new object[] {info} );
+
+				var time = DateTime.Now - t;
+				if (time.TotalMilliseconds > CommandManager.SlowCommandWarningTime)
+					LoggingService.LogWarning ("Slow command update ({0}ms): Command:{1}, Method:{2}", (int)time.TotalMilliseconds, CommandId, Method.DeclaringType + "." + Method.Name);
 			}
 		}
 		
@@ -2044,7 +2057,14 @@ namespace MonoDevelop.Components.Commands
 					throw new InvalidOperationException ("Invalid custom update handler. An implementation of ICommandArrayUpdateHandler was expected.");
 				if (!isArray)
 					throw new InvalidOperationException ("Invalid signature for command update handler: " + Method.DeclaringType + "." + Method.Name + "()");
+
+				DateTime t = DateTime.Now;
+
 				Method.Invoke (cmdTarget, new object[] {info} );
+				
+				var time = DateTime.Now - t;
+				if (time.TotalMilliseconds > CommandManager.SlowCommandWarningTime)
+					LoggingService.LogWarning ("Slow command update ({0}ms): Command:{1}, Method:{2}", (int)time.TotalMilliseconds, CommandId, Method.DeclaringType + "." + Method.Name);
 			}
 		}
 	}

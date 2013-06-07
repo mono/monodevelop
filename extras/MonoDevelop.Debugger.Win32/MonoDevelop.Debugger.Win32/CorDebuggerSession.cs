@@ -77,8 +77,11 @@ namespace MonoDevelop.Debugger.Win32
 
 		public override void Dispose ( )
 		{
-			TerminateDebugger ();
-			ObjectAdapter.Dispose();
+			MtaThread.Run (delegate
+			{
+				TerminateDebugger ();
+				ObjectAdapter.Dispose ();
+			});
 
 			base.Dispose ();
 
@@ -115,59 +118,61 @@ namespace MonoDevelop.Debugger.Win32
 
 		protected override void OnRun (DebuggerStartInfo startInfo)
 		{
-			// Create the debugger
+			MtaThread.Run (delegate
+			{
+				// Create the debugger
 
-			string dversion;
-			try {
-				dversion = CorDebugger.GetDebuggerVersionFromFile (startInfo.Command);
-			}
-			catch {
-				dversion = CorDebugger.GetDefaultDebuggerVersion ();
-			}
-			dbg = new CorDebugger (dversion);
+				string dversion;
+				try {
+					dversion = CorDebugger.GetDebuggerVersionFromFile (startInfo.Command);
+				}
+				catch {
+					dversion = CorDebugger.GetDefaultDebuggerVersion ();
+				}
+				dbg = new CorDebugger (dversion);
 
-			Dictionary<string, string> env = new Dictionary<string, string> ();
-			foreach (DictionaryEntry de in Environment.GetEnvironmentVariables ())
-				env[(string) de.Key] = (string) de.Value;
+				Dictionary<string, string> env = new Dictionary<string, string> ();
+				foreach (DictionaryEntry de in Environment.GetEnvironmentVariables ())
+					env[(string)de.Key] = (string)de.Value;
 
-			foreach (KeyValuePair<string, string> var in startInfo.EnvironmentVariables)
-				env[var.Key] = var.Value;
+				foreach (KeyValuePair<string, string> var in startInfo.EnvironmentVariables)
+					env[var.Key] = var.Value;
 
-            // The second parameter of CreateProcess is the command line, and it includes the application being launched
-            string cmdLine = "\"" + startInfo.Command + "\" " + startInfo.Arguments;
+				// The second parameter of CreateProcess is the command line, and it includes the application being launched
+				string cmdLine = "\"" + startInfo.Command + "\" " + startInfo.Arguments;
 
-			int flags = 0;
-			if (!startInfo.UseExternalConsole) {
-				flags = 0x08000000; /* CREATE_NO_WINDOW*/
-				flags |= CorDebugger.CREATE_REDIRECT_STD;
-			}
+				int flags = 0;
+				if (!startInfo.UseExternalConsole) {
+					flags = 0x08000000; /* CREATE_NO_WINDOW*/
+					flags |= CorDebugger.CREATE_REDIRECT_STD;
+				}
 
-			process = dbg.CreateProcess (startInfo.Command, cmdLine, startInfo.WorkingDirectory, env, flags);
-			processId = process.Id;
+				process = dbg.CreateProcess (startInfo.Command, cmdLine, startInfo.WorkingDirectory, env, flags);
+				processId = process.Id;
 
-			process.OnCreateProcess += new CorProcessEventHandler (OnCreateProcess);
-			process.OnCreateAppDomain += new CorAppDomainEventHandler (OnCreateAppDomain);
-			process.OnAssemblyLoad += new CorAssemblyEventHandler (OnAssemblyLoad);
-			process.OnAssemblyUnload += new CorAssemblyEventHandler (OnAssemblyUnload);
-			process.OnCreateThread += new CorThreadEventHandler (OnCreateThread);
-			process.OnThreadExit += new CorThreadEventHandler (OnThreadExit);
-			process.OnModuleLoad += new CorModuleEventHandler (OnModuleLoad);
-			process.OnModuleUnload += new CorModuleEventHandler (OnModuleUnload);
-			process.OnProcessExit += new CorProcessEventHandler (OnProcessExit);
-			process.OnUpdateModuleSymbols += new UpdateModuleSymbolsEventHandler (OnUpdateModuleSymbols);
-			process.OnDebuggerError += new DebuggerErrorEventHandler (OnDebuggerError);
-			process.OnBreakpoint += new BreakpointEventHandler (OnBreakpoint);
-			process.OnStepComplete += new StepCompleteEventHandler (OnStepComplete);
-			process.OnBreak += new CorThreadEventHandler (OnBreak);
-			process.OnNameChange += new CorThreadEventHandler (OnNameChange);
-			process.OnEvalComplete += new EvalEventHandler (OnEvalComplete);
-			process.OnEvalException += new EvalEventHandler (OnEvalException);
-			process.OnLogMessage += new LogMessageEventHandler (OnLogMessage);
-			process.OnStdOutput += new CorTargetOutputEventHandler (OnStdOutput);
-			process.OnException2 += new CorException2EventHandler (OnException2);
+				process.OnCreateProcess += new CorProcessEventHandler (OnCreateProcess);
+				process.OnCreateAppDomain += new CorAppDomainEventHandler (OnCreateAppDomain);
+				process.OnAssemblyLoad += new CorAssemblyEventHandler (OnAssemblyLoad);
+				process.OnAssemblyUnload += new CorAssemblyEventHandler (OnAssemblyUnload);
+				process.OnCreateThread += new CorThreadEventHandler (OnCreateThread);
+				process.OnThreadExit += new CorThreadEventHandler (OnThreadExit);
+				process.OnModuleLoad += new CorModuleEventHandler (OnModuleLoad);
+				process.OnModuleUnload += new CorModuleEventHandler (OnModuleUnload);
+				process.OnProcessExit += new CorProcessEventHandler (OnProcessExit);
+				process.OnUpdateModuleSymbols += new UpdateModuleSymbolsEventHandler (OnUpdateModuleSymbols);
+				process.OnDebuggerError += new DebuggerErrorEventHandler (OnDebuggerError);
+				process.OnBreakpoint += new BreakpointEventHandler (OnBreakpoint);
+				process.OnStepComplete += new StepCompleteEventHandler (OnStepComplete);
+				process.OnBreak += new CorThreadEventHandler (OnBreak);
+				process.OnNameChange += new CorThreadEventHandler (OnNameChange);
+				process.OnEvalComplete += new EvalEventHandler (OnEvalComplete);
+				process.OnEvalException += new EvalEventHandler (OnEvalException);
+				process.OnLogMessage += new LogMessageEventHandler (OnLogMessage);
+				process.OnStdOutput += new CorTargetOutputEventHandler (OnStdOutput);
+				process.OnException2 += new CorException2EventHandler (OnException2);
 
-			process.Continue (false);
-
+				process.Continue (false);
+			});
 			OnStarted ();
 		}
 
@@ -525,60 +530,81 @@ namespace MonoDevelop.Debugger.Win32
 
 		protected override void OnContinue ( )
 		{
-			ClearEvalStatus ();
-			ClearHandles ();
-			process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_RUN, null);
-			process.Continue (false);
+			MtaThread.Run (delegate
+			{
+				ClearEvalStatus ();
+				ClearHandles ();
+				process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_RUN, null);
+				process.Continue (false);
+			});
 		}
 
 		protected override void OnDetach ( )
 		{
-			process.Detach ();
+			MtaThread.Run (delegate
+			{
+				process.Detach ();
+			});
 		}
 
 		protected override void OnEnableBreakEvent (BreakEventInfo binfo, bool enable)
 		{
-			CorBreakpoint bp = binfo.Handle as CorFunctionBreakpoint;
-			if (bp != null)
-				bp.Activate (enable);
+			MtaThread.Run (delegate
+			{
+				CorBreakpoint bp = binfo.Handle as CorFunctionBreakpoint;
+				if (bp != null)
+					bp.Activate (enable);
+			});
 		}
 
 		protected override void OnExit ( )
 		{
-			TerminateDebugger ();
+			MtaThread.Run (delegate
+			{
+				TerminateDebugger ();
+			});
 		}
 
 		protected override void OnFinish ( )
 		{
-			if (stepper != null) {
-				stepper.StepOut ();
-				ClearEvalStatus ();
-				process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_RUN, null);
-				process.Continue (false);
-			}
+			MtaThread.Run (delegate
+			{
+				if (stepper != null) {
+					stepper.StepOut ();
+					ClearEvalStatus ();
+					process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_RUN, null);
+					process.Continue (false);
+				}
+			});
 		}
 
 		protected override ProcessInfo[] OnGetProcesses ( )
 		{
-			return new ProcessInfo[] { GetProcess (process) };
+			return MtaThread.Run (() => new ProcessInfo[] { GetProcess (process) });
 		}
 
 		protected override Mono.Debugging.Client.Backtrace OnGetThreadBacktrace (long processId, long threadId)
 		{
-			foreach (CorThread t in process.Threads) {
-				if (t.Id == threadId) {
-					return new Backtrace (new CorBacktrace (t, this));
+			return MtaThread.Run (delegate
+			{
+				foreach (CorThread t in process.Threads) {
+					if (t.Id == threadId) {
+						return new Backtrace (new CorBacktrace (t, this));
+					}
 				}
-			}
-			return null;
+				return null;
+			});
 		}
 
 		protected override ThreadInfo[] OnGetThreads (long processId)
 		{
-			List<ThreadInfo> list = new List<ThreadInfo> ();
-			foreach (CorThread t in process.Threads)
-				list.Add (GetThread (t));
-			return list.ToArray ();
+			return MtaThread.Run (delegate
+			{
+				List<ThreadInfo> list = new List<ThreadInfo> ();
+				foreach (CorThread t in process.Threads)
+					list.Add (GetThread (t));
+				return list.ToArray ();
+			});
 		}
 
 		internal ISymbolReader GetReaderForModule (string file)
@@ -630,61 +656,65 @@ namespace MonoDevelop.Debugger.Win32
 
 		protected override BreakEventInfo OnInsertBreakEvent (BreakEvent be)
 		{
-			BreakEventInfo binfo = new BreakEventInfo ();
+			return MtaThread.Run (delegate
+			{
+				BreakEventInfo binfo = new BreakEventInfo ();
 
-			lock (documents) {
-				Breakpoint bp = be as Breakpoint;
-				if (bp != null) {
-					if (bp is FunctionBreakpoint) {
-						// FIXME: implement breaking on function name
-						binfo.SetStatus (BreakEventStatus.Invalid, null);
-						return binfo;
-					} else {
-						DocInfo doc;
-						if (!documents.TryGetValue (System.IO.Path.GetFullPath (bp.FileName), out doc)) {
-							binfo.SetStatus (BreakEventStatus.NotBound, null);
-							return binfo;
-						}
-						
-						int line;
-						try {
-							line = doc.Document.FindClosestLine(bp.Line);
-						}
-						catch {
-							// Invalid line
+				lock (documents) {
+					Breakpoint bp = be as Breakpoint;
+					if (bp != null) {
+						if (bp is FunctionBreakpoint) {
+							// FIXME: implement breaking on function name
 							binfo.SetStatus (BreakEventStatus.Invalid, null);
 							return binfo;
 						}
-						ISymbolMethod met = doc.Reader.GetMethodFromDocumentPosition (doc.Document, line, 0);
-						if (met == null) {
-							binfo.SetStatus (BreakEventStatus.Invalid, null);
-							return binfo;
-						}
-						
-						int offset = -1;
-						foreach (SequencePoint sp in met.GetSequencePoints ()) {
-							if (sp.Line == line && sp.Document.URL == doc.Document.URL) {
-								offset = sp.Offset;
-								break;
+						else {
+							DocInfo doc;
+							if (!documents.TryGetValue (System.IO.Path.GetFullPath (bp.FileName), out doc)) {
+								binfo.SetStatus (BreakEventStatus.NotBound, null);
+								return binfo;
 							}
-						}
-						if (offset == -1) {
-							binfo.SetStatus (BreakEventStatus.Invalid, null);
+
+							int line;
+							try {
+								line = doc.Document.FindClosestLine (bp.Line);
+							}
+							catch {
+								// Invalid line
+								binfo.SetStatus (BreakEventStatus.Invalid, null);
+								return binfo;
+							}
+							ISymbolMethod met = doc.Reader.GetMethodFromDocumentPosition (doc.Document, line, 0);
+							if (met == null) {
+								binfo.SetStatus (BreakEventStatus.Invalid, null);
+								return binfo;
+							}
+
+							int offset = -1;
+							foreach (SequencePoint sp in met.GetSequencePoints ()) {
+								if (sp.Line == line && sp.Document.URL == doc.Document.URL) {
+									offset = sp.Offset;
+									break;
+								}
+							}
+							if (offset == -1) {
+								binfo.SetStatus (BreakEventStatus.Invalid, null);
+								return binfo;
+							}
+
+							CorFunction func = doc.Module.GetFunctionFromToken (met.Token.GetToken ());
+							CorFunctionBreakpoint corBp = func.ILCode.CreateBreakpoint (offset);
+							corBp.Activate (bp.Enabled);
+							breakpoints[corBp] = binfo;
+
+							binfo.Handle = corBp;
+							binfo.SetStatus (BreakEventStatus.Bound, null);
 							return binfo;
 						}
-						
-						CorFunction func = doc.Module.GetFunctionFromToken (met.Token.GetToken ());
-						CorFunctionBreakpoint corBp = func.ILCode.CreateBreakpoint (offset);
-						corBp.Activate (bp.Enabled);
-						breakpoints[corBp] = binfo;
-						
-						binfo.Handle = corBp;
-						binfo.SetStatus (BreakEventStatus.Bound, null);
-						return binfo;
 					}
 				}
-			}
-			return null;
+				return null;
+			});
 		}
 
 		protected override void OnNextInstruction ( )
@@ -693,7 +723,10 @@ namespace MonoDevelop.Debugger.Win32
 
 		protected override void OnNextLine ( )
 		{
-			Step (false);
+			MtaThread.Run (delegate
+			{
+				Step (false);
+			});
 		}
 
 		void Step (bool into)
@@ -764,22 +797,28 @@ namespace MonoDevelop.Debugger.Win32
 			
 			if (bi.Status != BreakEventStatus.Bound || bi.Handle == null)
 				return;
-			
-			CorFunctionBreakpoint corBp = (CorFunctionBreakpoint)bi.Handle;
-			corBp.Activate (false);
+
+			MtaThread.Run (delegate
+			{
+				CorFunctionBreakpoint corBp = (CorFunctionBreakpoint)bi.Handle;
+				corBp.Activate (false);
+			});
 		}
 
 
 		protected override void OnSetActiveThread (long processId, long threadId)
 		{
-			activeThread = null;
-			stepper = null;
-			foreach (CorThread t in process.Threads) {
-				if (t.Id == threadId) {
-					SetActiveThread (t);
-					break;
+			MtaThread.Run (delegate
+			{
+				activeThread = null;
+				stepper = null;
+				foreach (CorThread t in process.Threads) {
+					if (t.Id == threadId) {
+						SetActiveThread (t);
+						break;
+					}
 				}
-			}
+			});
 		}
 
 		void SetActiveThread (CorThread t)
@@ -796,22 +835,29 @@ namespace MonoDevelop.Debugger.Win32
 
 		protected override void OnStepLine ( )
 		{
-			Step (true);
+			MtaThread.Run (delegate
+			{
+				Step (true);
+			});
 		}
 
 		protected override void OnStop ( )
 		{
-			process.Stop (0);
-			OnStopped ();
-			CorThread currentThread = null;
-			foreach (CorThread t in process.Threads) {
-				currentThread = t;
-				break;
-			}
 			TargetEventArgs args = new TargetEventArgs (TargetEventType.TargetStopped);
-			args.Process = GetProcess (process);
-			args.Thread = GetThread (currentThread);
-			args.Backtrace = new Backtrace (new CorBacktrace (currentThread, this));
+
+			MtaThread.Run (delegate
+			{
+				process.Stop (0);
+				OnStopped ();
+				CorThread currentThread = null;
+				foreach (CorThread t in process.Threads) {
+					currentThread = t;
+					break;
+				}
+				args.Process = GetProcess (process);
+				args.Thread = GetThread (currentThread);
+				args.Backtrace = new Backtrace (new CorBacktrace (currentThread, this));
+			});
 			OnTargetEvent (args);
 		}
 
@@ -1146,6 +1192,23 @@ namespace MonoDevelop.Debugger.Win32
 				OnDebuggerOutput (true, ex.ToString ());
 				return string.Empty;
 			}
+		}
+
+		protected override T OnWrapDebuggerObject<T> (T obj)
+		{
+			if (obj is IBacktrace)
+				return (T) (object) new MtaBacktrace ((IBacktrace)obj);
+			if (obj is IObjectValueSource)
+				return (T)(object)new MtaObjectValueSource ((IObjectValueSource)obj);
+			if (obj is IObjectValueUpdater)
+				return (T)(object)new MtaObjectValueUpdater ((IObjectValueUpdater)obj);
+			if (obj is IRawValue)
+				return (T)(object)new MtaRawValue ((IRawValue)obj);
+			if (obj is IRawValueArray)
+				return (T)(object)new MtaRawValueArray ((IRawValueArray)obj);
+			if (obj is IRawValueString)
+				return (T)(object)new MtaRawValueString ((IRawValueString)obj);
+			return obj;
 		}
 	}
 

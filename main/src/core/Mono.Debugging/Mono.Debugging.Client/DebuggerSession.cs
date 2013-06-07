@@ -1438,7 +1438,21 @@ namespace Mono.Debugging.Client
 		{
 			return null;
 		}
-		
+
+		internal T WrapDebuggerObject<T> (T obj) where T:class,IDebuggerBackendObject
+		{
+			return obj != null ? OnWrapDebuggerObject (obj) : null;
+		}
+
+		/// <summary>
+		/// Called for every object that is obtained from the debugger engine.
+		/// Subclasses may want to create wrappers for some of those objects
+		/// </summary>
+		protected virtual T OnWrapDebuggerObject<T> (T obj) where T:class,IDebuggerBackendObject
+		{
+			return obj;
+		}
+
 		protected IDebuggerSessionFrontend Frontend {
 			get {
 				return frontend;

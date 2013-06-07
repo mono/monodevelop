@@ -355,6 +355,11 @@ namespace MonoDevelop.NUnit
 			monitor.ReportRuntimeError (message, exception);
 		}
 		
+		void ITestProgressMonitor.WriteGlobalLog (string message)
+		{
+			monitor.WriteGlobalLog (message);
+		}
+
 		bool ITestProgressMonitor.IsCancelRequested {
 			get { return monitor.IsCancelRequested; }
 		}

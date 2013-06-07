@@ -33,10 +33,10 @@ namespace Mono.Debugging.Client
 	/// Represents an object in the process being debugged
 	/// </summary>
 	[Serializable]
-	public class RawValue
+	public class RawValue: IRawObject
 	{
 		IRawValue source;
-		internal EvaluationOptions options;
+		EvaluationOptions options;
 		
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Mono.Debugging.Client.RawValue"/> class.
@@ -49,10 +49,16 @@ namespace Mono.Debugging.Client
 			this.source = source;
 		}
 		
+		void IRawObject.Connect (DebuggerSession session, EvaluationOptions options)
+		{
+			this.options = options;
+			source = session.WrapDebuggerObject (source);
+		}
+
 		internal IRawValue Source {
 			get { return this.source; }
 		}
-		
+
 		/// <summary>
 		/// Full name of the type of the object
 		/// </summary>
@@ -116,7 +122,7 @@ namespace Mono.Debugging.Client
 	/// Represents an array of objects in the process being debugged
 	/// </summary>
 	[Serializable]
-	public class RawValueArray
+	public class RawValueArray: IRawObject
 	{
 		IRawValueArray source;
 		int[] dimensions;
@@ -132,10 +138,15 @@ namespace Mono.Debugging.Client
 			this.source = source;
 		}
 		
+		void IRawObject.Connect (DebuggerSession session, EvaluationOptions options)
+		{
+			source = session.WrapDebuggerObject (source);
+		}
+
 		internal IRawValueArray Source {
 			get { return this.source; }
 		}
-		
+
 		/// <summary>
 		/// Full type name of the array items
 		/// </summary>
@@ -190,7 +201,7 @@ namespace Mono.Debugging.Client
 	/// Represents a string object in the process being debugged
 	/// </summary>
 	[Serializable]
-	public class RawValueString
+	public class RawValueString: IRawObject
 	{
 		IRawValueString source;
 		
@@ -205,6 +216,11 @@ namespace Mono.Debugging.Client
 			this.source = source;
 		}
 		
+		void IRawObject.Connect (DebuggerSession session, EvaluationOptions options)
+		{
+			source = session.WrapDebuggerObject (source);
+		}
+
 		internal IRawValueString Source {
 			get { return this.source; }
 		}
@@ -239,6 +255,11 @@ namespace Mono.Debugging.Client
 		public string Value {
 			get { return source.Value; }
 		}
+	}
+
+	internal interface IRawObject
+	{
+		void Connect (DebuggerSession session, EvaluationOptions options);
 	}
 }
 

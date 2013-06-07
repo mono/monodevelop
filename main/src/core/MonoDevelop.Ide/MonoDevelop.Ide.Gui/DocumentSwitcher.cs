@@ -241,9 +241,9 @@ namespace MonoDevelop.Ide
 						cr.MoveTo (xPos + item.Icon.Width + 2 + itemPadding, yPos + (iconHeight - h) / 2);
 						layout.SetText (Ellipsize (item.ListTitle ?? item.Title, maxLength));
 						cr.ShowLayout (layout);
-						e.Window.DrawPixbuf (Style.BaseGC (StateType.Normal), item.Icon, 0, 0, (int)xPos + itemPadding,
-							(int)(yPos + (iconHeight - item.Icon.Height) / 2), item.Icon.Width, item.Icon.Height, RgbDither.None, 0, 0);
-						
+						Gdk.CairoHelper.SetSourcePixbuf (cr, item.Icon, (int)xPos + itemPadding,
+						                                 (int)(yPos + (iconHeight - item.Icon.Height) / 2));
+						cr.Paint ();
 						yPos += iconHeight;
 						if (++curItem >= maxItems) {
 							curItem = 0;

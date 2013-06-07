@@ -365,7 +365,7 @@ namespace MonoDevelop.NUnit
 		{
 			string msg = GettextCatalog.GetString ("Internal error");
 			if (errorMessage != null)
-				msg += ": " + errorMessage;
+				msg += ": " + Escape (errorMessage);
 
 			Gdk.Pixbuf stock = failuresTreeView.RenderIcon (Gtk.Stock.DialogError, Gtk.IconSize.Menu, "");
 			TreeIter testRow = failuresStore.AppendValues (stock, msg, null, null, 0);
@@ -632,7 +632,14 @@ namespace MonoDevelop.NUnit
 				outputView.Buffer.Insert (ref it, result.ConsoleError);
 			outputView.ScrollMarkOnscreen (outputView.Buffer.InsertMark);
 		}
-		
+
+		void ITestProgressMonitor.WriteGlobalLog (string message)
+		{
+			TextIter it = outputView.Buffer.EndIter;
+			outputView.Buffer.Insert (ref it, message);
+			outputView.ScrollMarkOnscreen (outputView.Buffer.InsertMark);
+		}
+
 		string Escape (string s)
 		{
 			return GLib.Markup.EscapeText (s);
@@ -733,6 +740,12 @@ namespace MonoDevelop.NUnit
 		{
 			DispatchService.GuiDispatch (delegate {
 				monitor.ReportRuntimeError (message, exception);
+			});
+		}
+		public void WriteGlobalLog (string message)
+		{
+			DispatchService.GuiDispatch (delegate {
+				monitor.WriteGlobalLog (message);
 			});
 		}
 		public bool IsCancelRequested {

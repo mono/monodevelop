@@ -607,7 +607,7 @@ namespace MonoDevelop.CSharp
 			var result = new StringBuilder ();
 
 			if (variable.IsConst)
-				result.Append (Highlight ("const", colorStyle.KeywordModifiers));
+				result.Append (Highlight ("const ", colorStyle.KeywordModifiers));
 
 			result.Append (GetTypeReferenceString (variable.Type));
 			if (BreakLineAfterReturnType) {

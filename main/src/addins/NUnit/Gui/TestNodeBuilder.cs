@@ -93,15 +93,14 @@ namespace MonoDevelop.NUnit
 				if (res == null)
 					icon = CircleImage.None;
 				else if (res.ErrorsAndFailures > 0 && res.Passed > 0)
-					icon = CircleImage.SuccessAndFailure;
+					icon = test.IsHistoricResult ? CircleImage.OldSuccessAndFailure : CircleImage.SuccessAndFailure;
 				else if (res.IsInconclusive)
-					icon = CircleImage.Inconclusive;
+					icon = test.IsHistoricResult ? CircleImage.OldInconclusive : CircleImage.Inconclusive;
 				else if (res.IsFailure)
-					icon = CircleImage.Failure;
-				else if (res.IsSuccess) {
-					icon = CircleImage.Success;
-
-				} else if (res.IsNotRun)
+					icon = test.IsHistoricResult ? CircleImage.OldFailure : CircleImage.Failure;
+				else if (res.IsSuccess)
+					icon = test.IsHistoricResult ? CircleImage.OldSuccess : CircleImage.Success;
+				else if (res.IsNotRun)
 					icon = CircleImage.NotRun;
 				else
 					icon = CircleImage.None;
