@@ -307,8 +307,9 @@ namespace MonoDevelop.Debugger.Win32
 			return (CorValRef)RuntimeInvoke (ctx, at, arr, "GetValue", argTypes, new object[] { CreateValue (ctx, 0) });
 		}
 
-		public override bool HasMethod (EvaluationContext gctx, object gtargetType, string methodName, object[] gargTypes, BindingFlags flags)
+		public override bool HasMethod (EvaluationContext gctx, object gtargetType, string methodName, object[] ggenericArgTypes, object[] gargTypes, BindingFlags flags)
 		{
+			// FIXME: support generic methods by using the genericArgTypes parameter
 			CorType targetType = (CorType) gtargetType;
 			CorType[] argTypes = gargTypes != null ? CastArray<CorType> (gargTypes) : null;
 			CorEvaluationContext ctx = (CorEvaluationContext)gctx;
@@ -317,8 +318,9 @@ namespace MonoDevelop.Debugger.Win32
 			return OverloadResolve (ctx, methodName, targetType, argTypes, flags, false) != null;
 		}
 
-		public override object RuntimeInvoke (EvaluationContext gctx, object gtargetType, object gtarget, string methodName, object[] gargTypes, object[] gargValues)
+		public override object RuntimeInvoke (EvaluationContext gctx, object gtargetType, object gtarget, string methodName, object[] ggenericArgTypes, object[] gargTypes, object[] gargValues)
 		{
+			// FIXME: support generic methods by using the genericArgTypes parameter
 			CorType targetType = (CorType) gtargetType;
 			CorValRef target = (CorValRef) gtarget;
 			CorType[] argTypes = CastArray<CorType> (gargTypes);
@@ -377,7 +379,6 @@ namespace MonoDevelop.Debugger.Win32
 				currentType = currentType.Base;
 			}
 
-
 			return OverloadResolve (ctx, GetTypeName (ctx, type), methodName, argtypes, candidates, throwIfNotFound);
 		}
 
@@ -418,15 +419,15 @@ namespace MonoDevelop.Debugger.Win32
 
 				if (throwIfNotFound)
 					throw new EvaluatorException ("Invalid arguments for method `{0}': {1}", methodName, error);
-				else
-					return null;
+
+				return null;
 			}
 
 			if (candidates.Count == 0) {
 				if (throwIfNotFound)
 					throw new EvaluatorException ("Method `{0}' not found in type `{1}'.", methodName, typeName);
-				else
-					return null;
+
+				return null;
 			}
 
 			// Ok, now we need to find an exact match.
@@ -454,10 +455,11 @@ namespace MonoDevelop.Debugger.Win32
 			if (match == null) {
 				if (!throwIfNotFound)
 					return null;
+
 				if (methodName != null)
 					throw new EvaluatorException ("Invalid arguments for method `{0}'.", methodName);
-				else
-					throw new EvaluatorException ("Invalid arguments for indexer.");
+
+				throw new EvaluatorException ("Invalid arguments for indexer.");
 			}
 
 			if (repeatedBestCount) {
