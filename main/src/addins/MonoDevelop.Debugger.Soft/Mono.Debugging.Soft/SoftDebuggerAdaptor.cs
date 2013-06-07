@@ -873,12 +873,23 @@ namespace Mono.Debugging.Soft
 			}
 		}
 
+		public override bool IsGenericType (EvaluationContext ctx, object type)
+		{
+			return type != null && ((TypeMirror) type).IsGenericType;
+		}
 
 		public override object[] GetTypeArgs (EvaluationContext ctx, object type)
 		{
-			string s = ((TypeMirror)type).FullName;
-			int i = s.IndexOf ('`');
+			TypeMirror tm = (TypeMirror) type;
+
+			if (tm.VirtualMachine.Version.AtLeast (2, 15))
+				return tm.GetGenericArguments ();
+
+			// fall back to parsing them from the from the FullName
 			List<string> names = new List<string> ();
+			string s = tm.FullName;
+			int i = s.IndexOf ('`');
+
 			if (i != -1) {
 				i = s.IndexOf ('[', i);
 				if (i == -1)
@@ -907,6 +918,7 @@ namespace Mono.Debugging.Soft
 				}
 				return types;
 			}
+
 			return new object [0];
 		}
 

@@ -659,7 +659,7 @@ namespace Mono.Debugging.Evaluation
 
 				typeArgs = args.ToArray ();
 			} else {
-				typeArgs = new object[0];
+				typeArgs = null;
 			}
 
 			return mre.MemberName;
@@ -676,7 +676,7 @@ namespace Mono.Debugging.Evaluation
 
 			object[] types = new object [invocationExpression.Arguments.Count];
 			object[] args = new object [invocationExpression.Arguments.Count];
-			object[] typeArgs = new object [0];
+			object[] typeArgs = null;
 			int n = 0;
 
 			foreach (var arg in invocationExpression.Arguments) {
@@ -720,8 +720,44 @@ namespace Mono.Debugging.Evaluation
 			object vtype = target != null ? target.Type : ctx.Adapter.GetEnclosingType (ctx);
 			object vtarget = (target is TypeValueReference) || target == null ? null : target.Value;
 
-			if (invokeBaseMethod)
+			if (invokeBaseMethod) {
 				vtype = ctx.Adapter.GetBaseType (ctx, vtype);
+			} else if (target != null && !ctx.Adapter.HasMethod (ctx, vtype, methodName, typeArgs, types, BindingFlags.Instance | BindingFlags.Static)) {
+				// Look for LINQ extension methods...
+				var linq = ctx.Adapter.GetType (ctx, "System.Linq.Enumerable");
+				if (linq != null) {
+					object[] xtypeArgs = typeArgs;
+
+					if (xtypeArgs == null) {
+						// try to infer the generic type arguments from the type of the object...
+						object xtype = vtype;
+						while (!ctx.Adapter.IsGenericType (ctx, xtype))
+							xtype = ctx.Adapter.GetBaseType (ctx, xtype);
+
+						if (xtype != null)
+							xtypeArgs = ctx.Adapter.GetTypeArgs (ctx, xtype);
+					}
+
+					if (xtypeArgs != null) {
+						var xtypes = new object[types.Length + 1];
+						Array.Copy (types, 0, xtypes, 1, types.Length);
+						xtypes[0] = vtype;
+
+						var xargs = new object[args.Length + 1];
+						Array.Copy (args, 0, xargs, 1, args.Length);
+						xargs[0] = vtarget;
+
+						if (ctx.Adapter.HasMethod (ctx, linq, methodName, xtypeArgs, xtypes, BindingFlags.Static)) {
+							vtarget = null;
+							vtype = linq;
+
+							typeArgs = xtypeArgs;
+							types = xtypes;
+							args = xargs;
+						}
+					}
+				}
+			}
 
 			object result = ctx.Adapter.RuntimeInvoke (ctx, vtype, vtarget, methodName, typeArgs, types, args);
 			if (result != null)
