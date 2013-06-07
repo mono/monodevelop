@@ -2057,6 +2057,27 @@ namespace Mono.TextEditor
 				handler (this, e);
 		}
 
+
+		static int ScanWord (TextDocument doc, int offset, bool forwardDirection)
+		{
+			if (offset < 0 || offset >= doc.TextLength)
+				return offset;
+			var line = doc.GetLineByOffset (offset);
+			char first = doc.GetCharAt (offset);
+			if (char.IsPunctuation (first))
+				return forwardDirection ? System.Math.Min (line.Offset + line.Length, offset + 1) : System.Math.Max (line.Offset, offset - 1);
+			while (offset >= line.Offset && offset < line.Offset + line.Length) {
+				char ch = doc.GetCharAt (offset);
+				if (char.IsWhiteSpace (first) && !char.IsWhiteSpace (ch)
+				    || WordFindStrategy.IsNoIdentifierPart (first) && !WordFindStrategy.IsNoIdentifierPart (ch)
+				    || (char.IsLetterOrDigit (first) || first == '_') && !(char.IsLetterOrDigit (ch) || ch == '_'))
+					break;
+				offset = forwardDirection ? offset + 1 : offset - 1;
+			}
+			return System.Math.Min (line.Offset + line.Length,
+			                        System.Math.Max (line.Offset, offset + (forwardDirection ? 0 : 1)));
+		}
+
 		List<IActionTextLineMarker> oldMarkers = new List<IActionTextLineMarker> ();
 		List<IActionTextLineMarker> newMarkers = new List<IActionTextLineMarker> ();
 		protected internal override void MouseHover (MarginMouseEventArgs args)
@@ -2143,12 +2164,12 @@ namespace Mono.TextEditor
 					int end;
 					var data = textEditor.GetTextEditorData ();
 					if (offset < textEditor.SelectionAnchor) {
-						start = data.FindCurrentWordStart (offset);
-						end = data.FindCurrentWordEnd (textEditor.SelectionAnchor);
+						start = ScanWord (Document, offset, false);
+						end = ScanWord (Document,  textEditor.SelectionAnchor, true);
 						Caret.Offset = start;
 					} else {
-						start = data.FindCurrentWordStart (textEditor.SelectionAnchor);
-						end = data.FindCurrentWordEnd (offset);
+						start = ScanWord (Document, textEditor.SelectionAnchor, false);
+						end = ScanWord (Document, offset, true);
 						Caret.Offset = end;
 					}
 					if (!textEditor.MainSelection.IsEmpty) {
