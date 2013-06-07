@@ -1236,7 +1236,7 @@ namespace Mono.Debugging.Evaluation
 		
 		// argTypes can be null, meaning that it has to return true if there is any method with that name
 		// flags will only contain Static or Instance flags
-		[Obsolete ("This API cannot handle generic methods.")]
+		// FIXME: this should become non-virtual
 		public virtual bool HasMethod (EvaluationContext ctx, object targetType, string methodName, object[] argTypes, BindingFlags flags)
 		{
 			return HasMethod (ctx, targetType, methodName, null, argTypes, flags);
@@ -1247,7 +1247,7 @@ namespace Mono.Debugging.Evaluation
 			return false;
 		}
 
-		[Obsolete ("This API cannot handle generic methods.")]
+		// FIXME: this should become non-virtual and simply call the newer method
 		public virtual object RuntimeInvoke (EvaluationContext ctx, object targetType, object target, string methodName, object[] argTypes, object[] argValues)
 		{
 			return null;
