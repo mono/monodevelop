@@ -790,6 +790,7 @@ namespace MonoDevelop.Debugger
 			case ObjectValueFlags.Namespace: return "md-name-space";
 			case ObjectValueFlags.Group: return "md-open-resource-folder";
 			case ObjectValueFlags.Field: source = "field"; break;
+			case ObjectValueFlags.Variable: return "md-variable";
 			default: return "md-empty";
 			}
 

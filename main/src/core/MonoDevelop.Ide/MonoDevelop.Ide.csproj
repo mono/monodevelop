@@ -1076,6 +1076,9 @@
     <EmbeddedResource Include="icons\statusConnecting-06.png">
       <LogicalName>statusConnecting-06.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\variable-16.png">
+      <LogicalName>variable-16.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
