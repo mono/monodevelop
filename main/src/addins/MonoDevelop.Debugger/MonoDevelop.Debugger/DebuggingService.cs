@@ -553,7 +553,6 @@ namespace MonoDevelop.Debugger
 				Cleanup ();
 				throw;
 			}
-
 		}
 		
 		static bool ExceptionHandler (Exception ex)

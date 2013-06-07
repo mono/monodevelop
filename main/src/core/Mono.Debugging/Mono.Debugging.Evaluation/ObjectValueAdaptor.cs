@@ -1226,21 +1226,28 @@ namespace Mono.Debugging.Evaluation
 			BindingFlags flags = BindingFlags.Instance | BindingFlags.Static;
 			if (!ctx.Evaluator.CaseSensitive)
 				flags |= BindingFlags.IgnoreCase;
-			return HasMethod (ctx, targetType, methodName, null, flags);
+			return HasMethod (ctx, targetType, methodName, null, null, flags);
 		}
 		
 		public bool HasMethod (EvaluationContext ctx, object targetType, string methodName, BindingFlags flags)
 		{
-			return HasMethod (ctx, targetType, methodName, null, flags);
+			return HasMethod (ctx, targetType, methodName, null, null, flags);
 		}
 		
 		// argTypes can be null, meaning that it has to return true if there is any method with that name
 		// flags will only contain Static or Instance flags
+		[Obsolete ("This API cannot handle generic methods.")]
 		public virtual bool HasMethod (EvaluationContext ctx, object targetType, string methodName, object[] argTypes, BindingFlags flags)
+		{
+			return HasMethod (ctx, targetType, methodName, null, argTypes, flags);
+		}
+
+		public virtual bool HasMethod (EvaluationContext ctx, object targetType, string methodName, object[] genericTypeArgs, object[] argTypes, BindingFlags flags)
 		{
 			return false;
 		}
-		
+
+		[Obsolete ("This API cannot handle generic methods.")]
 		public virtual object RuntimeInvoke (EvaluationContext ctx, object targetType, object target, string methodName, object[] argTypes, object[] argValues)
 		{
 			return null;
