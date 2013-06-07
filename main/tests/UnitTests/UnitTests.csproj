@@ -17,7 +17,7 @@
     <DebugType>full</DebugType>
     <Optimize>True</Optimize>
     <OutputPath>..\..\build\tests</OutputPath>
-    <DefineConstants>DEBUG</DefineConstants>333
+    <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport><WarningLevel>4</WarningLevel><CheckForOverflowUnderflow>True</CheckForOverflowUnderflow><Execution><Execution clr-version="Net_2_0" /></Execution></PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
