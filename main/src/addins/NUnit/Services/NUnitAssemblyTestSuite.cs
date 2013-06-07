@@ -486,12 +486,29 @@ namespace MonoDevelop.NUnit
 				XDocument doc = XDocument.Load (outFile);
 				if (doc.Root != null) {
 					var root = doc.Root.Elements ("test-suite").FirstOrDefault ();
-					if (root != null)
+					if (root != null) {
+						cons.SetDone ();
+						var ot = cons.Out.ReadToEnd ();
+						var et = cons.Error.ReadToEnd ();
+						testContext.Monitor.WriteGlobalLog (ot);
+						if (!string.IsNullOrEmpty (et)) {
+							testContext.Monitor.WriteGlobalLog ("ERROR:\n");
+							testContext.Monitor.WriteGlobalLog (et);
+						}
 						return ReportXmlResult (localMonitor, root, "");
+					}
 				}
 				throw new Exception ("Test results could not be parsed.");
 			} catch (Exception ex) {
-				testContext.Monitor.ReportRuntimeError ("Test execution failed.\n" + cons.Out.ReadToEnd () + "\n" + cons.Error.ReadToEnd (), ex);
+				cons.SetDone ();
+				var ot = cons.Out.ReadToEnd ();
+				var et = cons.Error.ReadToEnd ();
+				testContext.Monitor.WriteGlobalLog (ot);
+				if (!string.IsNullOrEmpty (et)) {
+					testContext.Monitor.WriteGlobalLog ("ERROR:\n");
+					testContext.Monitor.WriteGlobalLog (et);
+				}
+				testContext.Monitor.ReportRuntimeError ("Test execution failed.\n" + ot + "\n" + et, ex);
 				return UnitTestResult.CreateIgnored ("Test execution failed");
 			} finally {
 				File.Delete (outFile);
