@@ -22,6 +22,7 @@ TEST_ASSEMBLIES_MAC = \
 TEST_ASSEMBLIES_COMMON = \
 	$(TEST_DIR)/UnitTests.dll \
 	$(TEST_DIR)/MonoDevelop.Debugger.Tests.dll \
+	$(TEST_DIR)/Mono.TextTemplating.Tests.dll \
 	$(EXTERNAL)/ngit/bin/NGit.Test.dll
 
 
