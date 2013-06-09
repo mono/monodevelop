@@ -38,6 +38,7 @@ namespace Mono.TextTemplating.Tests
 	public class GenerationTests
 	{	
 		[Test]
+		[Ignore]
 		public void Generate ()
 		{
 			string Input = ParsingTests.ParseSample1;
@@ -46,6 +47,7 @@ namespace Mono.TextTemplating.Tests
 		}
 		
 		[Test]
+		[Ignore]
 		public void GenerateMacNewlines ()
 		{
 			string MacInput = ParsingTests.ParseSample1.Replace ("\n", "\r");
@@ -54,6 +56,7 @@ namespace Mono.TextTemplating.Tests
 		}
 		
 		[Test]
+		[Ignore]
 		public void GenerateWindowsNewlines ()
 		{
 			string WinInput = ParsingTests.ParseSample1.Replace ("\n", "\r\n");

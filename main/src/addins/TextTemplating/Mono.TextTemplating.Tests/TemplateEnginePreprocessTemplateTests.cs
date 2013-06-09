@@ -50,6 +50,7 @@ namespace Mono.TextTemplating.Tests
 		}
 		
 		[Test]
+		[Ignore]
 		public void Preprocess_ControlBlockAfterIncludedTemplateWithClassFeatureBlock_ReturnsValidCSharpOutput ()
 		{
 			string input = InputTemplate_ControlBlockAfterIncludedTemplateWithClassFeatureBlock;
