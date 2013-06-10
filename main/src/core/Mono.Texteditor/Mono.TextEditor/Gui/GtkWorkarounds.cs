@@ -401,7 +401,8 @@ namespace Mono.TextEditor
 			if (parent != null) {
 				menu.AttachToWidget (parent, null);
 				menu.Hidden += (sender, e) => {
-					menu.Detach ();
+					if (menu.AttachWidget != null)
+						menu.Detach ();
 				};
 				posFunc = delegate (Gtk.Menu m, out int x, out int y, out bool pushIn) {
 					Gdk.Window window = evt != null? evt.Window : parent.GdkWindow;

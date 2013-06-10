@@ -738,6 +738,9 @@ namespace MonoDevelop.Components.Commands
 			object initialCommandTarget = null)
 		{
 			var menu = CreateMenu (entrySet);
+			menu.Hidden += delegate {
+				menu.Destroy ();
+			};
 			if (menu != null)
 				ShowContextMenu (parent, evt, menu, initialCommandTarget);
 		}
