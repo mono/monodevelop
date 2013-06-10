@@ -337,6 +337,10 @@ namespace MonoDeveloper
 			project.FileRenamedInProject -= OnFileRenamedInProject;
 			IdeApp.Workspace.SolutionLoaded -= CombineOpened;
 		}
+
+		public void OnModified (string hint)
+		{
+		}
 		
 		public string GetTestFileBase ()
 		{
