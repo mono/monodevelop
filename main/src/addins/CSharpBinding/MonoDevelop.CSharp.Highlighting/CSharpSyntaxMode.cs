@@ -386,7 +386,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			if (_commentRule == null)
 				return;
 			var joinedTasks = string.Join ("", CommentTag.SpecialCommentTags.Select (t => t.Tag));
-			_commentRule.Delimiter = new string ("&()<>{}[]~!%^*-+=|\\#/:;\"' ,\t.?".Where (c => joinedTasks.IndexOf (c) < 0).ToArray ());
+			_commentRule.SetDelimiter (new string ("&()<>{}[]~!%^*-+=|\\#/:;\"' ,\t.?".Where (c => joinedTasks.IndexOf (c) < 0).ToArray ()));
 			_commentRule.Keywords = new[] {
 				new Keywords {
 					Color = "Comment Tag",
