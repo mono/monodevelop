@@ -95,11 +95,11 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
-		protected SyntaxMode () : base (null)
+		protected SyntaxMode ()
 		{
 			DefaultColor = "Plain Text";
 			Name = "<root>";
-			this.Delimiter = "&()<>{}[]~!%^*-+=|\\#/:;\"' ,\t.?";
+			SetDelimiter ("&()<>{}[]~!%^*-+=|\\#/:;\"' ,\t.?");
 		}
 		
 		public SyntaxMode (TextDocument doc) : this ()
@@ -296,7 +296,7 @@ namespace Mono.TextEditor.Highlighting
 			public Rule GetRule (Span span)
 			{
 				if (string.IsNullOrEmpty (span.Rule))
-					return new Rule (mode);
+					return new Rule ();
 				return CurRule.GetRule (doc, span.Rule);
 			}
 
@@ -589,13 +589,13 @@ namespace Mono.TextEditor.Highlighting
 			public void ParseChar (ref int i, char ch)
 			{
 				Rule cur = spanParser.CurRule;
-				bool isWordPart = cur.Delimiter.IndexOf (ch) < 0;
+				bool isWordPart = cur.GetDelimiter (mode).IndexOf (ch) < 0;
 				if (inWord && !isWordPart || !inWord && isWordPart)
 					AddChunk (ref curChunk, 0, curChunk.Style = GetStyle (curChunk) ?? GetSpanStyle ());
 
 				inWord = isWordPart;
 
-				if (cur.HasMatches && (i - curChunk.Offset == 0 || string.IsNullOrEmpty (cur.Delimiter))) {
+				if (cur.HasMatches && (i - curChunk.Offset == 0 || string.IsNullOrEmpty (cur.GetDelimiter (mode)))) {
 					Match foundMatch = null;
 					var   foundMatchLength = new int[0];
 					int textOffset = i - spanParser.StartOffset;
@@ -798,12 +798,13 @@ namespace Mono.TextEditor.Highlighting
 		
 		Rule DeepCopy (TextDocument doc, SyntaxMode mode, Rule rule)
 		{
-			var newRule = new Rule (mode);
+			var newRule = new Rule ();
 			newRule.spans = new Span[rule.Spans.Length];
 			for (int i = 0; i < rule.Spans.Length; i++) {
 				newRule.spans [i] = rule.Spans [i].Clone ();
 			}
-			newRule.Delimiter = rule.Delimiter;
+			if (rule.HasDelimiter)
+				newRule.SetDelimiter (rule.GetDelimiter (null));
 			newRule.IgnoreCase = rule.IgnoreCase;
 			newRule.Name = rule.Name;
 			newRule.DefaultColor = rule.DefaultColor;

@@ -2162,7 +2162,7 @@ namespace Mono.TextEditor
 					int offset = textEditor.Document.LocationToOffset (loc);
 					int start;
 					int end;
-					var data = textEditor.GetTextEditorData ();
+//					var data = textEditor.GetTextEditorData ();
 					if (offset < textEditor.SelectionAnchor) {
 						start = ScanWord (Document, offset, false);
 						end = ScanWord (Document,  textEditor.SelectionAnchor, true);

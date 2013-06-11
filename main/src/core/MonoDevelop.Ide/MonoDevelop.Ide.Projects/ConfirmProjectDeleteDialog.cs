@@ -25,12 +25,13 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.IO;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-
 using Gtk;
+
 
 namespace MonoDevelop.Ide.Projects
 {
@@ -106,8 +107,17 @@ namespace MonoDevelop.Ide.Projects
 					}
 				}
 			}
+
+			if (item is SolutionItem) {
+				var sol = ((SolutionItem)item).ParentSolution;
+				var bdir = item.BaseDirectory;
+				if (sol.GetItemFiles (false).Any (f => f.IsChildPathOf (bdir)) || sol.GetAllSolutionItems<SolutionEntityItem> ().Any (it => it != item && it.GetItemFiles (true).Any (f => f.IsChildPathOf (bdir)))) {
+					radioDeleteAll.Sensitive = false;
+					labelProjectDir.Text = GettextCatalog.GetString ("Project directory can't be deleted since it contains files from other projects or solutions");
+				}
+			}
 			
-			if (item.BaseDirectory.FileName == item.Name) {
+			if (item.BaseDirectory.FileName == item.Name && radioDeleteAll.Sensitive) {
 				radioDeleteAll.Active = true;
 				fileList.Sensitive = false;
 			}

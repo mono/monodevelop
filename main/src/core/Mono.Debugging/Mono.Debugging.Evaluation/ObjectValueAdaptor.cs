@@ -285,6 +285,11 @@ namespace Mono.Debugging.Evaluation
 		public abstract object[] GetTypeArgs (EvaluationContext ctx, object type);
 		public abstract object GetBaseType (EvaluationContext ctx, object type);
 
+		public virtual bool IsGenericType (EvaluationContext ctx, object type)
+		{
+			return type != null && GetTypeName (ctx, type).IndexOf ('`') != -1;
+		}
+
 		public virtual bool IsNullableType (EvaluationContext ctx, object type)
 		{
 			return type != null && GetTypeName (ctx, type).StartsWith ("System.Nullable`1", StringComparison.Ordinal);
@@ -1226,21 +1231,30 @@ namespace Mono.Debugging.Evaluation
 			BindingFlags flags = BindingFlags.Instance | BindingFlags.Static;
 			if (!ctx.Evaluator.CaseSensitive)
 				flags |= BindingFlags.IgnoreCase;
-			return HasMethod (ctx, targetType, methodName, null, flags);
+			return HasMethod (ctx, targetType, methodName, null, null, flags);
 		}
 		
 		public bool HasMethod (EvaluationContext ctx, object targetType, string methodName, BindingFlags flags)
 		{
-			return HasMethod (ctx, targetType, methodName, null, flags);
+			return HasMethod (ctx, targetType, methodName, null, null, flags);
 		}
 		
 		// argTypes can be null, meaning that it has to return true if there is any method with that name
 		// flags will only contain Static or Instance flags
+		// FIXME: this should become non-virtual
 		public virtual bool HasMethod (EvaluationContext ctx, object targetType, string methodName, object[] argTypes, BindingFlags flags)
+		{
+			return HasMethod (ctx, targetType, methodName, null, argTypes, flags);
+		}
+
+		// argTypes can be null, meaning that it has to return true if there is any method with that name
+		// flags will only contain Static or Instance flags
+		public virtual bool HasMethod (EvaluationContext ctx, object targetType, string methodName, object[] genericTypeArgs, object[] argTypes, BindingFlags flags)
 		{
 			return false;
 		}
-		
+
+		// FIXME: this should become non-virtual and simply call the newer method
 		public virtual object RuntimeInvoke (EvaluationContext ctx, object targetType, object target, string methodName, object[] argTypes, object[] argValues)
 		{
 			return null;

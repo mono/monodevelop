@@ -174,5 +174,12 @@ namespace MonoDevelop.Components.Commands
 			
 			updating = false;
 		}
+
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+			initialTarget = null;
+			arrayDataItem = null;
+		}
 	}
 }

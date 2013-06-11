@@ -126,11 +126,24 @@ namespace Mono.TextEditor.Highlighting
 		
 		string delimiter;
 		bool delimiterSet;
-		public string Delimiter {
-			get { 
-				return !delimiterSet ? mode.Delimiter : delimiter; 
+
+		public string GetDelimiter (SyntaxMode mode)
+		{
+			if (mode == null)
+				return delimiter;
+			return !delimiterSet ? mode.GetDelimiter (null) : delimiter; 
+		}
+
+		public void SetDelimiter (string value)
+		{
+			delimiter = value;
+			delimiterSet = true; 
+		}
+
+		public bool HasDelimiter {
+			get {
+				return delimiterSet;
 			}
-			set { delimiter = value; delimiterSet = true; }
 		}
 
 		public Marker[] PrevMarker {
@@ -139,16 +152,18 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
-		SyntaxMode mode;
-		
-		public Rule (SyntaxMode mode)
+		public Rule ()
 		{
-			this.mode = mode;
+		}
+
+		[Obsolete("This constructor is obsolete use parameterless constructor instead.")]
+		public Rule (SyntaxMode obsolteMode)
+		{
 		}
 		
 		public virtual Rule GetRule (TextDocument doc, string name)
 		{
-			return mode.GetRule (doc, name);
+			return (doc.SyntaxMode as SyntaxMode).GetRule (doc, name);
 		}
 		
 		public override string ToString ()
@@ -244,7 +259,7 @@ namespace Mono.TextEditor.Highlighting
 		{
 			switch (reader.LocalName) {
 			case "Delimiters":
-				this.Delimiter = reader.ReadElementString ();
+				this.SetDelimiter (reader.ReadElementString ());
 				return true;
 			case "Property":
 				string name = reader.GetAttribute ("name");
@@ -335,7 +350,7 @@ namespace Mono.TextEditor.Highlighting
 		public const string Node = "Rule";
 		public static Rule Read (SyntaxMode mode, XmlReader reader, bool ignoreCaseDefault)
 		{
-			Rule result = new Rule (mode);
+			Rule result = new Rule ();
 			result.Name         = reader.GetAttribute ("name");
 			result.DefaultColor = reader.GetAttribute ("color");
 			result.IgnoreCase   = ignoreCaseDefault;

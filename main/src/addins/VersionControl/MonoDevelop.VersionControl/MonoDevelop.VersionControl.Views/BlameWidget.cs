@@ -109,7 +109,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			hAdjustment = new Adjustment (0, 0, 0, 0, 0, 0);
 			hAdjustment.Changed += HandleAdjustmentChanged;
-			
+
 			hScrollBar = new HScrollbar (hAdjustment);
 			AddChild (hScrollBar);
 			
@@ -177,7 +177,7 @@ namespace MonoDevelop.VersionControl.Views
 				children.ForEach (child => callback (child.Child));
 		}
 		
-		public void AddChild (Gtk.Widget child)
+		void AddChild (Gtk.Widget child)
 		{
 			child.Parent = this;
 			children.Add (new ContainerChild (this, child));
@@ -205,8 +205,14 @@ namespace MonoDevelop.VersionControl.Views
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
-			children.ForEach (child => child.Child.Destroy ());
-			children.Clear ();
+			hScrollBar.Destroy ();
+			hAdjustment.Destroy ();
+
+			vScrollBar.Destroy ();
+			vAdjustment.Destroy ();
+
+			editor.Destroy ();
+			overview.Destroy ();
 		}
 		 
 		protected override void OnSizeAllocated (Rectangle allocation)

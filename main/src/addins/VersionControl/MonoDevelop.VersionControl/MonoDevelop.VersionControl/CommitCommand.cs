@@ -17,8 +17,7 @@ namespace MonoDevelop.VersionControl
 
 			foreach (VersionControlItemList itemList in itemListsByRepo) {
 				// Generate base folder path.
-				FilePath basePath = itemList.FindMostSpecificParent (FilePath.Null);
-
+				FilePath basePath = itemList.FindMostSpecificParent ();
 				Repository repo = itemList.First ().Repository;
 
 				ChangeSet cset = repo.CreateChangeSet (basePath);
@@ -28,22 +27,35 @@ namespace MonoDevelop.VersionControl
 					if (!item.VersionInfo.CanCommit)
 						continue;
 
-					if (test)
-						return true;
+					if (item.Path.IsDirectory) {
+						// We don't run checks for directories, we throw dialog if there are no changes.
+						if (test)
+							return true;
 
-					foreach (VersionInfo vi in repo.GetDirectoryVersionInfo (item.Path, false, true))
+						foreach (VersionInfo vi in repo.GetDirectoryVersionInfo (item.Path, false, true))
+							if (vi.HasLocalChanges) {
+								filesToCommit++;
+								cset.AddFile (vi);
+							}
+					} else {
+						VersionInfo vi = repo.GetVersionInfo (item.Path);
 						if (vi.HasLocalChanges) {
-							filesToCommit++;
 							if (test)
-								continue;
+								return true;
 
+							filesToCommit++;
 							cset.AddFile (vi);
 						}
+					}
 				}
+
+				// In case of no local changes.
+				if (test)
+					return false;
 
 				if (!cset.IsEmpty) {
 					Commit (repo, cset, false);
-				} else if (!test) {
+				} else {
 					MessageService.ShowMessage (GettextCatalog.GetString ("There are no changes to be committed."));
 					continue;
 				}
@@ -61,7 +73,8 @@ namespace MonoDevelop.VersionControl
 				}
 				
 				if (vc.GetVersionInfo (changeSet.BaseLocalPath).CanCommit) {
-					if (test) return true;
+					if (test)
+						return true;
 
 					if (!VersionControlService.NotifyPrepareCommit (vc, changeSet))
 						return false;

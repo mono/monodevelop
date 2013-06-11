@@ -821,14 +821,14 @@ namespace MonoDevelop.SourceEditor
 			LoadExtensions ();
 			this.IsDirty = !didLoadCleanly;
 			UpdateTasks (null, null);
-			widget.TextEditor.VAdjustment.Changed += HandleTextEditorVAdjustmentChanged;
+			widget.TextEditor.SizeAllocated += HandleTextEditorVAdjustmentChanged;
 			if (didLoadCleanly)
 				Document.InformLoadComplete ();
 		}
 		
 		void HandleTextEditorVAdjustmentChanged (object sender, EventArgs e)
 		{
-			widget.TextEditor.VAdjustment.Changed -= HandleTextEditorVAdjustmentChanged;
+			widget.TextEditor.SizeAllocated -= HandleTextEditorVAdjustmentChanged;
 			LoadSettings ();
 		}
 		
@@ -958,6 +958,7 @@ namespace MonoDevelop.SourceEditor
 			
 			ClipbardRingUpdated -= UpdateClipboardRing;
 
+			widget.TextEditor.IconMargin.ButtonPressed -= OnIconButtonPress;
 			widget.TextEditor.Document.TextReplacing -= OnTextReplacing;
 			widget.TextEditor.Document.TextReplaced -= OnTextReplaced;
 			widget.TextEditor.Document.ReadOnlyCheckDelegate = null;

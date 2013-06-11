@@ -2192,17 +2192,34 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			[Serializable]
-			public class AssemblyLookup
+			public struct AssemblyLookup
 			{
-				public string Namespace { get; set; }
-				public string FullName { get; set; }
-				public string Package { get; set; }
+				readonly string nspace;
+				public string Namespace {
+					get {
+						return nspace;
+					}
+				}
+
+				readonly string fullName;
+				public string FullName {
+					get {
+						return fullName;
+					}
+				}
+
+				readonly string package;
+				public string Package {
+					get {
+						return package;
+					}
+				}
 			
 				public AssemblyLookup (SystemAssembly assembly, string ns)
 				{
-					FullName = assembly.FullName;
-					Package = assembly.Package.Name;
-					Namespace = ns;
+					fullName = assembly.FullName;
+					package = assembly.Package.Name;
+					nspace = ns;
 				}
 
 				public override string ToString ()

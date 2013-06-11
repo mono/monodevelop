@@ -435,8 +435,6 @@ namespace MonoDevelop.VersionControl.Views
 
 		protected override void OnDestroyed ()
 		{
-			base.OnDestroyed ();
-			
 			if (vAdjustment != null) {
 				vAdjustment.Destroy ();
 				hAdjustment.Destroy ();
@@ -446,8 +444,15 @@ namespace MonoDevelop.VersionControl.Views
 					adj.Destroy ();
 				vAdjustment = null;
 			}
-			
+
+			foreach (var hscrollbar in hScrollBars) {
+				Remove (hscrollbar);
+				hscrollbar.Destroy ();
+			}
+
 			children.ForEach (child => child.Child.Destroy ());
+
+			base.OnDestroyed ();
 		}
 
 		#endregion
