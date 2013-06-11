@@ -12,6 +12,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		private global::Gtk.HBox hbox1;
 		private global::Gtk.Label label1;
 		private global::Gtk.ComboBox verbosityCombo;
+		private global::Gtk.CheckButton checkExpandHintPathEnvironmentVariables;
 		private global::Gtk.Label buildAndRunOptionsLabel;
 		private global::Gtk.HBox hbox44;
 		private global::Gtk.Label label71;
@@ -58,12 +59,13 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.checkXBuild = new global::Gtk.CheckButton ();
 			this.checkXBuild.CanFocus = true;
 			this.checkXBuild.Name = "checkXBuild";
-			this.checkXBuild.Label = global::Mono.Unix.Catalog.GetString ("Compile projects using MSBuild / XBuild\n(this is an experimental feature and may not work for some projects)");
+			this.checkXBuild.Label = global::Mono.Unix.Catalog.GetString ("Compile projects using MSBuild / XBuild\n(this is an experimental feature and may " +
+				"not work for some projects)");
 			this.checkXBuild.DrawIndicator = true;
 			this.checkXBuild.UseUnderline = true;
 			this.vbox66.Add (this.checkXBuild);
 			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox66 [this.checkXBuild]));
-			w3.Position = 2;
+			w3.Position = 3;
 			w3.Expand = false;
 			w3.Fill = false;
 			// Container child vbox66.Gtk.Box+BoxChild
@@ -101,9 +103,21 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.alignment1.Add (this.hbox1);
 			this.vbox66.Add (this.alignment1);
 			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox66 [this.alignment1]));
-			w7.Position = 3;
+			w7.Position = 4;
 			w7.Expand = false;
 			w7.Fill = false;
+			// Container child vbox66.Gtk.Box+BoxChild
+			this.checkExpandHintPathEnvironmentVariables = new global::Gtk.CheckButton ();
+			this.checkExpandHintPathEnvironmentVariables.CanFocus = true;
+			this.checkExpandHintPathEnvironmentVariables.Name = "checkExpandHintPathEnvironmentVariables";
+			this.checkExpandHintPathEnvironmentVariables.Label = global::Mono.Unix.Catalog.GetString ("Expand environment variable macros within Reference hint paths");
+			this.checkExpandHintPathEnvironmentVariables.DrawIndicator = true;
+			this.checkExpandHintPathEnvironmentVariables.UseUnderline = true;
+			this.vbox66.Add (this.checkExpandHintPathEnvironmentVariables);
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox66 [this.checkExpandHintPathEnvironmentVariables]));
+			w8.Position = 5;
+			w8.Expand = false;
+			w8.Fill = false;
 			// Container child vbox66.Gtk.Box+BoxChild
 			this.buildAndRunOptionsLabel = new global::Gtk.Label ();
 			this.buildAndRunOptionsLabel.Name = "buildAndRunOptionsLabel";
@@ -112,11 +126,11 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.buildAndRunOptionsLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>File Save Options Before Building</b>");
 			this.buildAndRunOptionsLabel.UseMarkup = true;
 			this.vbox66.Add (this.buildAndRunOptionsLabel);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox66 [this.buildAndRunOptionsLabel]));
-			w8.Position = 4;
-			w8.Expand = false;
-			w8.Fill = false;
-			w8.Padding = ((uint)(6));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox66 [this.buildAndRunOptionsLabel]));
+			w9.Position = 7;
+			w9.Expand = false;
+			w9.Fill = false;
+			w9.Padding = ((uint)(6));
 			// Container child vbox66.Gtk.Box+BoxChild
 			this.hbox44 = new global::Gtk.HBox ();
 			this.hbox44.Name = "hbox44";
@@ -128,10 +142,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.label71.Yalign = 0F;
 			this.label71.LabelProp = "    ";
 			this.hbox44.Add (this.label71);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox44 [this.label71]));
-			w9.Position = 0;
-			w9.Expand = false;
-			w9.Fill = false;
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox44 [this.label71]));
+			w10.Position = 0;
+			w10.Expand = false;
+			w10.Fill = false;
 			// Container child hbox44.Gtk.Box+BoxChild
 			this.vbox67 = new global::Gtk.VBox ();
 			this.vbox67.Name = "vbox67";
@@ -139,15 +153,14 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			// Container child vbox67.Gtk.Box+BoxChild
 			this.saveChangesRadioButton = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("_Save changes to open documents"));
 			this.saveChangesRadioButton.Name = "saveChangesRadioButton";
-			this.saveChangesRadioButton.Active = true;
 			this.saveChangesRadioButton.DrawIndicator = true;
 			this.saveChangesRadioButton.UseUnderline = true;
 			this.saveChangesRadioButton.Group = new global::GLib.SList (global::System.IntPtr.Zero);
 			this.vbox67.Add (this.saveChangesRadioButton);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox67 [this.saveChangesRadioButton]));
-			w10.Position = 0;
-			w10.Expand = false;
-			w10.Fill = false;
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox67 [this.saveChangesRadioButton]));
+			w11.Position = 0;
+			w11.Expand = false;
+			w11.Fill = false;
 			// Container child vbox67.Gtk.Box+BoxChild
 			this.promptChangesRadioButton = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("_Prompt to save changes to open documents"));
 			this.promptChangesRadioButton.Name = "promptChangesRadioButton";
@@ -155,28 +168,28 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.promptChangesRadioButton.UseUnderline = true;
 			this.promptChangesRadioButton.Group = this.saveChangesRadioButton.Group;
 			this.vbox67.Add (this.promptChangesRadioButton);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox67 [this.promptChangesRadioButton]));
-			w11.Position = 1;
-			w11.Expand = false;
-			w11.Fill = false;
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox67 [this.promptChangesRadioButton]));
+			w12.Position = 1;
+			w12.Expand = false;
+			w12.Fill = false;
 			// Container child vbox67.Gtk.Box+BoxChild
-			this.noSaveRadioButton = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("_Don't save changes to open documents "));
+			this.noSaveRadioButton = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("_Don\'t save changes to open documents "));
 			this.noSaveRadioButton.Name = "noSaveRadioButton";
 			this.noSaveRadioButton.DrawIndicator = true;
 			this.noSaveRadioButton.UseUnderline = true;
 			this.noSaveRadioButton.Group = this.saveChangesRadioButton.Group;
 			this.vbox67.Add (this.noSaveRadioButton);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox67 [this.noSaveRadioButton]));
-			w12.Position = 2;
-			w12.Expand = false;
-			w12.Fill = false;
-			this.hbox44.Add (this.vbox67);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.hbox44 [this.vbox67]));
-			w13.Position = 1;
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox67 [this.noSaveRadioButton]));
+			w13.Position = 2;
 			w13.Expand = false;
+			w13.Fill = false;
+			this.hbox44.Add (this.vbox67);
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.hbox44 [this.vbox67]));
+			w14.Position = 1;
+			w14.Expand = false;
 			this.vbox66.Add (this.hbox44);
-			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox66 [this.hbox44]));
-			w14.Position = 5;
+			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox66 [this.hbox44]));
+			w15.Position = 8;
 			this.Add (this.vbox66);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();

@@ -241,6 +241,11 @@ namespace MonoDevelop.Ide
 			set { PropertyService.Set ("MonoDevelop.Ide.MSBuildVerbosity", value); }
 		}
 
+		public bool ExpandHintPathEnvironmentVariables {
+			get { return PropertyService.Get ("MonoDevelop.Ide.ExpandHintPathEnvironmentVariables", false); }
+			set { PropertyService.Set ("MonoDevelop.Ide.ExpandHintPathEnvironmentVariables", value); }
+		}
+
 		public bool EnableInstrumentation {
 			get { return PropertyService.Get ("MonoDevelop.EnableInstrumentation", false); }
 			set { PropertyService.Set ("MonoDevelop.EnableInstrumentation", value); }

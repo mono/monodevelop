@@ -1486,7 +1486,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget" design-size="471 266">
+  <widget class="Gtk.Bin" id="MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget" design-size="495 320">
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
     <child>
@@ -1526,6 +1526,9 @@
           </packing>
         </child>
         <child>
+          <placeholder />
+        </child>
+        <child>
           <widget class="Gtk.CheckButton" id="checkXBuild">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
@@ -1536,7 +1539,7 @@
             <property name="UseUnderline">True</property>
           </widget>
           <packing>
-            <property name="Position">2</property>
+            <property name="Position">3</property>
             <property name="AutoSize">True</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
@@ -1589,11 +1592,30 @@ Diagnostic</property>
             </child>
           </widget>
           <packing>
-            <property name="Position">3</property>
+            <property name="Position">4</property>
             <property name="AutoSize">True</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
           </packing>
+        </child>
+        <child>
+          <widget class="Gtk.CheckButton" id="checkExpandHintPathEnvironmentVariables">
+            <property name="MemberName" />
+            <property name="CanFocus">True</property>
+            <property name="Label" translatable="yes">Expand environment variable macros within Reference hint paths</property>
+            <property name="DrawIndicator">True</property>
+            <property name="HasLabel">True</property>
+            <property name="UseUnderline">True</property>
+          </widget>
+          <packing>
+            <property name="Position">5</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <placeholder />
         </child>
         <child>
           <widget class="Gtk.Label" id="buildAndRunOptionsLabel">
@@ -1604,7 +1626,7 @@ Diagnostic</property>
             <property name="UseMarkup">True</property>
           </widget>
           <packing>
-            <property name="Position">4</property>
+            <property name="Position">7</property>
             <property name="AutoSize">False</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
@@ -1691,9 +1713,12 @@ Diagnostic</property>
             </child>
           </widget>
           <packing>
-            <property name="Position">5</property>
+            <property name="Position">8</property>
             <property name="AutoSize">False</property>
           </packing>
+        </child>
+        <child>
+          <placeholder />
         </child>
       </widget>
     </child>

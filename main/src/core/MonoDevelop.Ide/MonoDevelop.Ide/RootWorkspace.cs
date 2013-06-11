@@ -588,6 +588,16 @@ namespace MonoDevelop.Ide
 				if (item == null) {
 					timer.Trace ("Reading item");
 					item = Services.ProjectService.ReadWorkspaceItem (monitor, filename);
+					if (IdeApp.Preferences.ExpandHintPathEnvironmentVariables)
+					{
+						foreach (var project in item.GetAllProjects())
+						{
+							DotNetProject tproject = project as DotNetProject;
+							if (tproject != null)
+								foreach (var reference in tproject.References)
+									reference.InterpretMacrosInPathAsEnvironmentVariables();
+						}
+					}
 					if (monitor.IsCancelRequested) {
 						monitor.Dispose ();
 						return;
