@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Text;
@@ -159,7 +160,14 @@ namespace MonoDevelop.CSharp
 					}
 				}
 			}
-			
+
+			if (alreadyAddedReference.Any (reference => SystemAssemblyService.ContainsReferenceToSystemRuntime (reference))) {
+				LoggingService.LogInfo ("Found PCLv2 assembly.");
+				var facades = runtime.FindFacadeAssembliesForPCL (project.TargetFramework);
+				foreach (var facade in facades)
+					AppendQuoted (sb, "/r:", facade);
+			}
+
 			string sysCore = project.AssemblyContext.GetAssemblyFullName ("System.Core", project.TargetFramework);
 			if (sysCore != null) {
 				sysCore = project.AssemblyContext.GetAssemblyLocation (sysCore, project.TargetFramework);
