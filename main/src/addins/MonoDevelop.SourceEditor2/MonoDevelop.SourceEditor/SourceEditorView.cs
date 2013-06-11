@@ -821,14 +821,14 @@ namespace MonoDevelop.SourceEditor
 			LoadExtensions ();
 			this.IsDirty = !didLoadCleanly;
 			UpdateTasks (null, null);
-			widget.TextEditor.VAdjustment.Changed += HandleTextEditorVAdjustmentChanged;
+			widget.TextEditor.SizeAllocated += HandleTextEditorVAdjustmentChanged;
 			if (didLoadCleanly)
 				Document.InformLoadComplete ();
 		}
 		
 		void HandleTextEditorVAdjustmentChanged (object sender, EventArgs e)
 		{
-			widget.TextEditor.VAdjustment.Changed -= HandleTextEditorVAdjustmentChanged;
+			widget.TextEditor.SizeAllocated -= HandleTextEditorVAdjustmentChanged;
 			LoadSettings ();
 		}
 		
