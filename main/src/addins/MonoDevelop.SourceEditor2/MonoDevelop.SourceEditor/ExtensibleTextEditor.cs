@@ -577,7 +577,10 @@ namespace MonoDevelop.SourceEditor
 		{	
 			var menu = sender as Gtk.Menu;
 			menu.Hidden -= HandleMenuHidden; 
-			menu.Destroy ();
+			GLib.Timeout.Add (10, delegate {
+				menu.Destroy ();
+				return false;
+			});
 		}
 		
 #region Templates
