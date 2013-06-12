@@ -114,6 +114,66 @@ namespace MonoDevelop.SourceEditor
 
 			return expression;
 		}
+
+		static string GetMemberExpression (TextEditor editor, MemberResolveResult mr, DomRegion expressionRegion)
+		{
+			var ed = (ExtensibleTextEditor) editor;
+			string expression = null;
+			string member = null;
+
+			if (mr.Member != null) {
+				if (mr.Member is IProperty) {
+					// Visual Studio will evaluate Properties if you hover over their definitions...
+					var prop = (IProperty) mr.Member;
+
+					if (prop.CanGet) {
+						if (prop.IsStatic)
+							expression = prop.FullName;
+						else
+							member = prop.Name;
+					} else {
+						return null;
+					}
+				} else if (mr.Member is IField) {
+					var field = (IField) mr.Member;
+
+					if (field.IsStatic)
+						expression = field.FullName;
+					else
+						member = field.Name;
+				} else {
+					return null;
+				}
+			}
+
+			if (expression == null) {
+				if (member == null)
+					return null;
+
+				if (mr.TargetResult != null) {
+					if (mr.TargetResult is LocalResolveResult) {
+						expression = GetLocalExpression (editor, (LocalResolveResult) mr.TargetResult, expressionRegion);
+					} else if (mr.TargetResult is MemberResolveResult) {
+						expression = GetMemberExpression (editor, (MemberResolveResult) mr.TargetResult, expressionRegion);
+					} else {
+						var targetRegion = mr.TargetResult.GetDefinitionRegion ();
+
+						if (targetRegion.BeginLine != 0 && targetRegion.BeginColumn != 0) {
+							var start = new DocumentLocation (targetRegion.BeginLine, targetRegion.BeginColumn);
+							var end   = new DocumentLocation (targetRegion.EndLine, targetRegion.EndColumn);
+							expression = ed.GetTextBetween (start, end).Trim ();
+						}
+					}
+				}
+
+				if (!string.IsNullOrEmpty (expression))
+					expression += "." + member;
+				else
+					expression = member;
+			}
+
+			return expression;
+		}
 		
 		public override TooltipItem GetItem (TextEditor editor, int offset)
 		{
@@ -173,57 +233,7 @@ namespace MonoDevelop.SourceEditor
 					
 					expression = ir.Member.DeclaringType.FullName;
 				} else if (res is MemberResolveResult) {
-					var mr = (MemberResolveResult) res;
-					string member = null;
-
-					if (mr.Member != null) {
-						if (mr.Member is IProperty) {
-							// Visual Studio will evaluate Properties if you hover over their definitions...
-							var prop = (IProperty) mr.Member;
-
-							if (prop.CanGet) {
-								if (prop.IsStatic)
-									expression = prop.FullName;
-								else
-									member = prop.Name;
-							} else {
-								return null;
-							}
-						} else if (mr.Member is IField) {
-							var field = (IField) mr.Member;
-
-							if (field.IsStatic)
-								expression = field.FullName;
-							else
-								member = field.Name;
-						} else {
-							return null;
-						}
-					}
-
-					if (expression == null) {
-						if (member == null)
-							return null;
-
-						if (mr.TargetResult != null) {
-							if (mr.TargetResult is LocalResolveResult) {
-								expression = GetLocalExpression (editor, (LocalResolveResult) mr.TargetResult, expressionRegion);
-							} else {
-								var targetRegion = mr.TargetResult.GetDefinitionRegion ();
-
-								if (targetRegion.BeginLine != 0 && targetRegion.BeginColumn != 0) {
-									start = new DocumentLocation (targetRegion.BeginLine, targetRegion.BeginColumn);
-									end   = new DocumentLocation (targetRegion.EndLine, targetRegion.EndColumn);
-									expression = ed.GetTextBetween (start, end).Trim ();
-								}
-							}
-						}
-
-						if (!string.IsNullOrEmpty (expression))
-							expression += "." + member;
-						else
-							expression = member;
-					}
+					expression = GetMemberExpression (editor, (MemberResolveResult) res, expressionRegion);
 				} else if (res is NamedArgumentResolveResult) {
 					// Fall through...
 				} else if (res is ThisResolveResult) {
