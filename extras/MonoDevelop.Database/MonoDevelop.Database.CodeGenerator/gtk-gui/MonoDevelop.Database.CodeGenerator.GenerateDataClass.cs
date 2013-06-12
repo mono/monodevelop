@@ -476,7 +476,7 @@ namespace MonoDevelop.Database.CodeGenerator
 			this.checkGenerateTimestamps = new global::Gtk.CheckButton ();
 			this.checkGenerateTimestamps.CanFocus = true;
 			this.checkGenerateTimestamps.Name = "checkGenerateTimestamps";
-			this.checkGenerateTimestamps.Label = global::Mono.Unix.Catalog.GetString ("Generate timestampes in the generated code. ");
+			this.checkGenerateTimestamps.Label = global::Mono.Unix.Catalog.GetString ("Generate timestamps in the generated code. ");
 			this.checkGenerateTimestamps.Active = true;
 			this.checkGenerateTimestamps.DrawIndicator = true;
 			this.checkGenerateTimestamps.UseUnderline = true;
