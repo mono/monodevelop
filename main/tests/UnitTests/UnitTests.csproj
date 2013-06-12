@@ -181,16 +181,6 @@
       <Name>MonoDevelop.Deployment.Linux</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\core\Mono.Debugging\Mono.Debugging.csproj">
-      <Project>{90C99ADB-7D4B-4EB4-98C2-40BD1B14C7D2}</Project>
-      <Name>Mono.Debugging</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\addins\MonoDevelop.Debugger.Soft\Mono.Debugging.Soft\Mono.Debugging.Soft.csproj">
-      <Project>{DE40756E-57F6-4AF2-B155-55E3A88CCED8}</Project>
-      <Name>Mono.Debugging.Soft</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.Formats.MSBuild.v3.5.csproj">
       <Project>{40A31ADE-6F26-4D99-A3C7-87BB8236151D}</Project>
       <Name>MonoDevelop.Projects.Formats.MSBuild.v3.5</Name>
@@ -219,6 +209,16 @@
     <ProjectReference Include="..\..\contrib\ICSharpCode.Decompiler\ICSharpCode.Decompiler.csproj">
       <Project>{984CC812-9470-4A13-AFF9-CC44068D666C}</Project>
       <Name>ICSharpCode.Decompiler</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\external\debugger-libs\Mono.Debugging\Mono.Debugging.csproj">
+      <Project>{90C99ADB-7D4B-4EB4-98C2-40BD1B14C7D2}</Project>
+      <Name>Mono.Debugging</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\external\debugger-libs\Mono.Debugging.Soft\Mono.Debugging.Soft.csproj">
+      <Project>{DE40756E-57F6-4AF2-B155-55E3A88CCED8}</Project>
+      <Name>Mono.Debugging.Soft</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
