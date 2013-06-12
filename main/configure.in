@@ -276,13 +276,11 @@ AC_OUTPUT([
 build/Makefile
 build/MacOSX/Makefile
 contrib/Makefile
-contrib/Mono.Debugger.Soft/Makefile
 contrib/ICSharpCode.Decompiler/Makefile
 external/Makefile
 src/Makefile
 src/core/Makefile
 src/core/Mono.Texteditor/Makefile
-src/core/Mono.Debugging/Makefile
 src/core/MonoDevelop.Core/Makefile
 src/core/MonoDevelop.Projects.Formats.MSBuild/Makefile
 src/core/MonoDevelop.Ide/Makefile
@@ -339,7 +337,6 @@ src/addins/MonoDevelop.XmlEditor/Makefile
 src/addins/MonoDevelop.Refactoring/Makefile
 src/addins/MonoDevelop.Debugger/Makefile
 src/addins/MonoDevelop.Debugger.Soft/Makefile
-src/addins/MonoDevelop.Debugger.Soft/Mono.Debugging.Soft/Makefile
 src/addins/MonoDevelop.Debugger.Soft/MonoDevelop.Debugger.Soft/Makefile
 src/addins/MonoDevelop.Debugger.Soft/MonoDevelop.Debugger.Soft.AspNet/Makefile
 src/addins/MonoDevelop.HexEditor/Makefile

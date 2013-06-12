@@ -20,6 +20,11 @@ else
 	_MONO_OPTIONS=$MONO_OPTIONS
 fi
 
+MONO_RECOMMENDED_VERSION_FOR_SGEN=3.0
+if pkg-config --atleast-version=$MONO_RECOMMENDED_VERSION_FOR_SGEN mono; then
+	MONO_OPTIONS="$MONO_OPTIONS --gc=sgen"
+fi
+
 if [ -n "$_MD_REDIRECT_LOG" ]; then
 	mkdir -p `dirname "$_MD_REDIRECT_LOG"`
 	$MONO_EXEC $_MONO_OPTIONS "$EXE_PATH" $* 2>&1 | tee "$_MD_REDIRECT_LOG"
