@@ -175,13 +175,13 @@ namespace MonoDevelop.Components.MainToolbar
 							return;
 						var member = t.Item2;
 						if (newResult.Tag != null) {
-							if (newResult.Tag == "m" && member.SymbolKind != SymbolKind.Method)
+							if (newResult.Tag == "m" && member.EntityType != EntityType.Method)
 								continue;
-							if (newResult.Tag == "p" && member.SymbolKind != SymbolKind.Property)
+							if (newResult.Tag == "p" && member.EntityType != EntityType.Property)
 								continue;
-							if (newResult.Tag == "f" && member.SymbolKind != SymbolKind.Field)
+							if (newResult.Tag == "f" && member.EntityType != EntityType.Field)
 								continue;
-							if (newResult.Tag == "evt" && member.SymbolKind != SymbolKind.Event)
+							if (newResult.Tag == "evt" && member.EntityType != EntityType.Event)
 								continue;
 						}
 						SearchResult curResult = newResult.CheckMember (t.Item1, member);
@@ -193,13 +193,13 @@ namespace MonoDevelop.Components.MainToolbar
 				} else {
 					Func<IUnresolvedMember, bool> mPred = member => {
 						if (newResult.Tag != null) {
-							if (newResult.Tag == "m" && member.SymbolKind != SymbolKind.Method)
+							if (newResult.Tag == "m" && member.EntityType != EntityType.Method)
 								return false;
-							if (newResult.Tag == "p" && member.SymbolKind != SymbolKind.Property)
+							if (newResult.Tag == "p" && member.EntityType != EntityType.Property)
 								return false;
-							if (newResult.Tag == "f" && member.SymbolKind != SymbolKind.Field)
+							if (newResult.Tag == "f" && member.EntityType != EntityType.Field)
 								return false;
-							if (newResult.Tag == "evt" && member.SymbolKind != SymbolKind.Event)
+							if (newResult.Tag == "evt" && member.EntityType != EntityType.Event)
 								return false;
 						}
 						return newResult.IsMatchingMember (member);

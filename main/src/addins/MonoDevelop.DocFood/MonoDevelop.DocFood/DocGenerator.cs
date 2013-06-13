@@ -63,7 +63,7 @@ namespace MonoDevelop.DocFood
 					continue;
 				IMember documentMember = null;
 				foreach (var searchedMember in type.Members.Where (m => m.Name == member.Name)) {
-					if (searchedMember.SymbolKind == member.SymbolKind && searchedMember.Name == member.Name) {
+					if (searchedMember.EntityType == member.EntityType && searchedMember.Name == member.Name) {
 						if ((searchedMember is IParameterizedMember) && ((IParameterizedMember)searchedMember).Parameters.Count != ((IParameterizedMember)member).Parameters.Count)
 							continue;
 						if (searchedMember.Accessibility != member.Accessibility)
@@ -131,26 +131,26 @@ namespace MonoDevelop.DocFood
 		
 		static string GetType (IEntity member)
 		{
-			switch (member.SymbolKind) {
-			case SymbolKind.Event:
+			switch (member.EntityType) {
+			case EntityType.Event:
 				return "event";
-			case SymbolKind.Field:
+			case EntityType.Field:
 				return "field";
-			case SymbolKind.Constructor:
+			case EntityType.Constructor:
 				return "constructor";
-			case SymbolKind.Destructor:
+			case EntityType.Destructor:
 				return "destructor";
-			case SymbolKind.Operator:
+			case EntityType.Operator:
 				return "operator";
-			case SymbolKind.Method:
+			case EntityType.Method:
 				return "method";
 //			case MemberType.Parameter:
 //				return "parameter";
-			case SymbolKind.Indexer:
+			case EntityType.Indexer:
 				return "indexer";
-			case SymbolKind.Property:
+			case EntityType.Property:
 				return "property";
-			case SymbolKind.TypeDefinition:
+			case EntityType.TypeDefinition:
 				switch (((ITypeDefinition)member).Kind) {
 				case TypeKind.Class:
 					return "class";

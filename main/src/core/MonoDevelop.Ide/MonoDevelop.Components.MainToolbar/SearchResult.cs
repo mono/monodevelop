@@ -311,25 +311,25 @@ namespace MonoDevelop.Components.MainToolbar
 			get {
 				string loc = GettextCatalog.GetString ("type \"{0}\"", member.DeclaringTypeDefinition.Name);
 
-				switch (member.SymbolKind) {
-				case SymbolKind.Field:
+				switch (member.EntityType) {
+				case EntityType.Field:
 					return GettextCatalog.GetString ("field ({0})", loc);
-				case SymbolKind.Property:
+				case EntityType.Property:
 					return GettextCatalog.GetString ("property ({0})", loc);
-				case SymbolKind.Indexer:
+				case EntityType.Indexer:
 					return GettextCatalog.GetString ("indexer ({0})", loc);
-				case SymbolKind.Event:
+				case EntityType.Event:
 					return GettextCatalog.GetString ("event ({0})", loc);
-				case SymbolKind.Method:
+				case EntityType.Method:
 					return GettextCatalog.GetString ("method ({0})", loc);
-				case SymbolKind.Operator:
+				case EntityType.Operator:
 					return GettextCatalog.GetString ("operator ({0})", loc);
-				case SymbolKind.Constructor:
+				case EntityType.Constructor:
 					return GettextCatalog.GetString ("constructor ({0})", loc);
-				case SymbolKind.Destructor:
+				case EntityType.Destructor:
 					return GettextCatalog.GetString ("destrutcor ({0})", loc);
 				default:
-					throw new NotSupportedException (member.SymbolKind + " is not supported.");
+					throw new NotSupportedException (member.EntityType + " is not supported.");
 				}
 			}
 		}
@@ -344,8 +344,8 @@ namespace MonoDevelop.Components.MainToolbar
 		public override string GetMarkupText (Widget widget)
 		{
 			if (useFullName)
-				return HighlightMatch (widget, member.SymbolKind == SymbolKind.Constructor ? member.DeclaringTypeDefinition.FullName :  member.FullName, match);
-			return HighlightMatch (widget, member.SymbolKind == SymbolKind.Constructor ? member.DeclaringTypeDefinition.Name : member.Name, match);
+				return HighlightMatch (widget, member.EntityType == EntityType.Constructor ? member.DeclaringTypeDefinition.FullName :  member.FullName, match);
+			return HighlightMatch (widget, member.EntityType == EntityType.Constructor ? member.DeclaringTypeDefinition.Name : member.Name, match);
 		}
 		
 		internal Ambience Ambience { 
