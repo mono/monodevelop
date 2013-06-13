@@ -135,6 +135,7 @@ namespace MonoDevelop.Projects
 			
 			monitor = new ConsoleProgressMonitor ();
 			BuildResult res = item.RunTarget (monitor, command, configuration);
+			item.Dispose ();
 
 			if (targetRuntime != null)
 			{
