@@ -101,7 +101,7 @@ namespace MonoDevelop.Refactoring.Rename
 			
 			if (options.SelectedItem is IEntity) {
 				var member = (IEntity)options.SelectedItem;
-				if (member.EntityType == EntityType.Constructor || member.EntityType == EntityType.Destructor) {
+				if (member.SymbolKind == SymbolKind.Constructor || member.SymbolKind == SymbolKind.Destructor) {
 					entry.Text = member.DeclaringType.Name;
 				} else {
 					entry.Text = member.Name;

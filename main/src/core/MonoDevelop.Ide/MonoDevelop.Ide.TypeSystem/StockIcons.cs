@@ -199,18 +199,18 @@ namespace MonoDevelop.Ide.TypeSystem
 		
 		public static string GetStockIcon (this IEntity entity, bool showAccessibility = true)
 		{
-			switch (entity.EntityType) {
-			case EntityType.TypeDefinition:
+			switch (entity.SymbolKind) {
+			case SymbolKind.TypeDefinition:
 				return GetStockIcon ((IType)entity);
-			case EntityType.Field:
+			case SymbolKind.Field:
 				if (showAccessibility)
 					return fieldIconTable [(int)entity.Accessibility];
 				else
 					return fieldIconTable [0];
-			case EntityType.Method:
-			case EntityType.Constructor:
-			case EntityType.Destructor:
-			case EntityType.Operator:
+			case SymbolKind.Method:
+			case SymbolKind.Constructor:
+			case SymbolKind.Destructor:
+			case SymbolKind.Operator:
 				if (showAccessibility) {
 					if (((IMethod)entity).IsExtensionMethod)
 						return extensionMethodIconTable [(int)entity.Accessibility];
@@ -220,13 +220,13 @@ namespace MonoDevelop.Ide.TypeSystem
 						return extensionMethodIconTable [0];
 					return methodIconTable [0];
 				}
-			case EntityType.Property:
-			case EntityType.Indexer:
+			case SymbolKind.Property:
+			case SymbolKind.Indexer:
 				if (showAccessibility)
 					return propertyIconTable [(int)entity.Accessibility];
 				else
 					return propertyIconTable [0];
-			case EntityType.Event:
+			case SymbolKind.Event:
 				if (showAccessibility)
 					return eventIconTable [(int)entity.Accessibility];
 				else
@@ -236,29 +236,29 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 		public static string GetStockIcon (this IUnresolvedEntity entity, bool showAccessibility = true)
 		{
-			switch (entity.EntityType) {
-			case EntityType.TypeDefinition:
+			switch (entity.SymbolKind) {
+			case SymbolKind.TypeDefinition:
 				return GetStockIcon ((IUnresolvedTypeDefinition)entity);
-			case EntityType.Field:
+			case SymbolKind.Field:
 				if (showAccessibility)
 					return fieldIconTable [(int)entity.Accessibility];
 				else
 					return fieldIconTable [0];
-			case EntityType.Method:
-			case EntityType.Constructor:
-			case EntityType.Destructor:
-			case EntityType.Operator:
+			case SymbolKind.Method:
+			case SymbolKind.Constructor:
+			case SymbolKind.Destructor:
+			case SymbolKind.Operator:
 				if (showAccessibility)
 					return methodIconTable [(int)entity.Accessibility];
 				else
 					return methodIconTable [0];
-			case EntityType.Property:
-			case EntityType.Indexer:
+			case SymbolKind.Property:
+			case SymbolKind.Indexer:
 				if (showAccessibility)
 					return propertyIconTable [(int)entity.Accessibility];
 				else
 					return propertyIconTable [0];
-			case EntityType.Event:
+			case SymbolKind.Event:
 				if (showAccessibility)
 					return eventIconTable [(int)entity.Accessibility];
 				else

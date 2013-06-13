@@ -360,7 +360,7 @@ namespace MonoDevelop.CSharp.Completion
 					WriteMemberDeclarationName ((IMember)entity, formatter, formattingPolicy);
 				
 				if ((ConversionFlags & ConversionFlags.ShowParameterList) == ConversionFlags.ShowParameterList && HasParameters (entity)) {
-					formatter.WriteToken (entity.EntityType == EntityType.Indexer ? "[" : "(");
+					formatter.WriteToken (entity.SymbolKind == SymbolKind.Indexer ? "[" : "(");
 					bool first = true;
 					foreach (var param in node.GetChildrenByRole(Roles.Parameter)) {
 						if (first) {
@@ -371,7 +371,7 @@ namespace MonoDevelop.CSharp.Completion
 						}
 						param.AcceptVisitor (new CSharpOutputVisitor (formatter, formattingPolicy));
 					}
-					formatter.WriteToken (entity.EntityType == EntityType.Indexer ? "]" : ")");
+					formatter.WriteToken (entity.SymbolKind == SymbolKind.Indexer ? "]" : ")");
 				}
 				
 				if ((ConversionFlags & ConversionFlags.ShowBody) == ConversionFlags.ShowBody && !(node is TypeDeclaration)) {
@@ -399,14 +399,14 @@ namespace MonoDevelop.CSharp.Completion
 
 			bool HasParameters (IEntity e)
 			{
-				switch (e.EntityType) {
-				case EntityType.TypeDefinition:
+				switch (e.SymbolKind) {
+				case SymbolKind.TypeDefinition:
 					return ((ITypeDefinition)e).Kind == TypeKind.Delegate;
-				case EntityType.Indexer:
-				case EntityType.Method:
-				case EntityType.Operator:
-				case EntityType.Constructor:
-				case EntityType.Destructor:
+				case SymbolKind.Indexer:
+				case SymbolKind.Method:
+				case SymbolKind.Operator:
+				case SymbolKind.Constructor:
+				case SymbolKind.Destructor:
 					return true;
 				default:
 					return false;
@@ -448,18 +448,18 @@ namespace MonoDevelop.CSharp.Completion
 					ConvertType (member.DeclaringType, formatter, formattingPolicy);
 					formatter.WriteToken (".");
 				}
-				switch (member.EntityType) {
-				case EntityType.Indexer:
+				switch (member.SymbolKind) {
+				case SymbolKind.Indexer:
 					formatter.WriteKeyword ("this");
 					break;
-				case EntityType.Constructor:
+				case SymbolKind.Constructor:
 					formatter.WriteIdentifier (member.DeclaringType.Name);
 					break;
-				case EntityType.Destructor:
+				case SymbolKind.Destructor:
 					formatter.WriteToken ("~");
 					formatter.WriteIdentifier (member.DeclaringType.Name);
 					break;
-				case EntityType.Operator:
+				case SymbolKind.Operator:
 					switch (member.Name) {
 					case "op_Implicit":
 						formatter.WriteKeyword ("implicit");
@@ -490,7 +490,7 @@ namespace MonoDevelop.CSharp.Completion
 					formatter.WriteIdentifier (member.Name);
 					break;
 				}
-				if ((ConversionFlags & ConversionFlags.ShowTypeParameterList) == ConversionFlags.ShowTypeParameterList && member.EntityType == EntityType.Method) {
+				if ((ConversionFlags & ConversionFlags.ShowTypeParameterList) == ConversionFlags.ShowTypeParameterList && member.SymbolKind == SymbolKind.Method) {
 					var outputVisitor = new CSharpOutputVisitor (formatter, formattingPolicy);
 					outputVisitor.WriteTypeParameters (astBuilder.ConvertEntity (member).GetChildrenByRole (Roles.TypeParameter));
 				}

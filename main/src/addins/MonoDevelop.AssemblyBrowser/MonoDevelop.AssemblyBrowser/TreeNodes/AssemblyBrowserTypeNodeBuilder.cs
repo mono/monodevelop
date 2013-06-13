@@ -69,8 +69,8 @@ namespace MonoDevelop.AssemblyBrowser
 				if (e2 == null)
 					return 1;
 				
-				if (e1.EntityType != e2.EntityType)
-					return e2.EntityType.CompareTo (e1.EntityType);
+				if (e1.SymbolKind != e2.SymbolKind)
+					return e2.SymbolKind.CompareTo (e1.SymbolKind);
 				
 				return e1.Name.CompareTo (e2.Name);
 			} catch (Exception e) {

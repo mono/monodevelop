@@ -184,7 +184,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				searchNodes = CollectMembers ((IType)member).ToList<object> ();
 			} else if (member is IEntity) {
 				var e = (IEntity)member;
-				if (e.EntityType == EntityType.Destructor) {
+				if (e.SymbolKind == SymbolKind.Destructor) {
 					foreach (var r in FindReferences (solution, e.DeclaringType, searchForAllOverloads, scope, monitor)) {
 						yield return r;
 					}
@@ -244,7 +244,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		internal static IEnumerable<IEntity> CollectMembers (IType type)
 		{
 			yield return (IEntity)type;
-			foreach (var c in type.GetDefinition ().GetMembers (m => m.EntityType == EntityType.Constructor, GetMemberOptions.IgnoreInheritedMembers)) {
+			foreach (var c in type.GetDefinition ().GetMembers (m => m.SymbolKind == SymbolKind.Constructor, GetMemberOptions.IgnoreInheritedMembers)) {
 				if (!c.IsSynthetic)
 					yield return c;
 			}
