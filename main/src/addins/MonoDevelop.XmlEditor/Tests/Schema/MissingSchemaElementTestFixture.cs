@@ -1,16 +1,13 @@
-
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.XmlEditor;
 using NUnit.Framework;
-using System;
-using System.IO;
 
 namespace MonoDevelop.XmlEditor.Tests.Schema
 {
 	[TestFixture]
 	public class MissingSchemaElementTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionData[] barElementAttributes;
+		CompletionDataList barElementAttributes;
 		
 		public override void FixtureInit()
 		{
@@ -23,7 +20,7 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 		[Test]
 		public void BarHasOneAttribute()
 		{
-			Assert.AreEqual(1, barElementAttributes.Length, "Should have 1 attribute.");
+			Assert.AreEqual(1, barElementAttributes.Count, "Should have 1 attribute.");
 		}
 		
 		protected override string GetSchema()

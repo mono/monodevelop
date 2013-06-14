@@ -1,9 +1,5 @@
-
-using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.XmlEditor;
 using NUnit.Framework;
-using System;
-using System.IO;
 using System.Xml.Schema;
 
 namespace MonoDevelop.XmlEditor.Tests.Schema

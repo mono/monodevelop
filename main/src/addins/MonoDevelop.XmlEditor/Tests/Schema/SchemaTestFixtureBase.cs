@@ -1,6 +1,6 @@
-
+using ICSharpCode.NRefactory.Completion;
 using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.XmlEditor;
+using MonoDevelop.XmlEditor.Completion;
 using NUnit.Framework;
 using System;
 using System.IO;
@@ -9,7 +9,7 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 {
 	[TestFixture]
 	public abstract class SchemaTestFixtureBase
-	{		
+	{
 		XmlSchemaCompletionData schemaCompletionData;
 
 		/// <summary>
@@ -48,12 +48,12 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 		/// <summary>
 		/// Checks whether the specified name exists in the completion data.
 		/// </summary>
-		public static bool Contains(ICompletionData[] items, string name)
+		public static bool Contains(CompletionDataList items, string name)
 		{
 			bool Contains = false;
 			
 			foreach (ICompletionData data in items) {
-				if (data.Text[0] == name) {
+				if (data.DisplayText == name) {
 					Contains = true;
 					break;
 				}
@@ -66,12 +66,12 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 		/// Checks whether the completion data specified by name has
 		/// the correct description.
 		/// </summary>
-		public static bool ContainsDescription(ICompletionData[] items, string name, string description)
+		public static bool ContainsDescription(CompletionDataList items, string name, string description)
 		{
 			bool Contains = false;
 			
 			foreach (ICompletionData data in items) {
-				if (data.Text[0] == name) {
+				if (data.DisplayText == name) {
 					if (data.Description == description) {
 						Contains = true;
 						break;						
@@ -86,12 +86,12 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 		/// Gets a count of the number of occurrences of a particular name
 		/// in the completion data.
 		/// </summary>
-		public static int GetItemCount(ICompletionData[] items, string name)
+		public static int GetItemCount(CompletionDataList items, string name)
 		{
 			int count = 0;
 			
 			foreach (ICompletionData data in items) {
-				if (data.Text[0] == name) {
+				if (data.DisplayText == name) {
 					++count;
 				}
 			}

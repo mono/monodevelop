@@ -1,9 +1,6 @@
-
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.XmlEditor;
 using NUnit.Framework;
-using System;
-using System.IO;
 
 namespace MonoDevelop.XmlEditor.Tests.Schema
 {
@@ -13,8 +10,8 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 	[TestFixture]
 	public class GroupRefTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionData[] childElements;
-		ICompletionData[] paraAttributes;
+		CompletionDataList childElements;
+		CompletionDataList paraAttributes;
 		
 		public override void FixtureInit()
 		{
@@ -32,7 +29,7 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 		[Test]
 		public void BodyHasFourChildElements()
 		{
-			Assert.AreEqual(4, childElements.Length, 
+			Assert.AreEqual(4, childElements.Count, 
 			                "Should be 4 child elements.");
 		}
 		

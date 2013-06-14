@@ -1,4 +1,3 @@
-
 using MonoDevelop.XmlEditor;
 using NUnit.Framework;
 using System;

@@ -1,9 +1,6 @@
-
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.XmlEditor;
 using NUnit.Framework;
-using System;
-using System.IO;
 
 namespace MonoDevelop.XmlEditor.Tests.Schema
 {
@@ -14,8 +11,8 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 	[TestFixture]
 	public class SingleElementSchemaTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionData[] childElementCompletionData;
-		ICompletionData[] attributeCompletionData;
+		CompletionDataList childElementCompletionData;
+		CompletionDataList attributeCompletionData;
 		
 		public override void FixtureInit()
 		{
@@ -40,14 +37,14 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 		[Test]
 		public void NoteElementHasNoAttributes()
 		{
-			Assert.AreEqual(0, attributeCompletionData.Length, 
+			Assert.AreEqual(0, attributeCompletionData.Count, 
 			                "Not expecting any attributes.");
 		}
 		
 		[Test]
 		public void NoteElementHasNoChildElements()
 		{
-			Assert.AreEqual(0, childElementCompletionData.Length, "" +
+			Assert.AreEqual(0, childElementCompletionData.Count, "" +
 			                "Not expecting any child elements.");
 		}
 		

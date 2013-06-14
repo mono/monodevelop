@@ -1,9 +1,6 @@
-
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.XmlEditor;
 using NUnit.Framework;
-using System;
-using System.IO;
 
 namespace MonoDevelop.XmlEditor.Tests.Schema
 {
@@ -13,7 +10,7 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 	[TestFixture]
 	public class DuplicateElementTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionData[] htmlChildElements;
+		CompletionDataList htmlChildElements;
 		
 		public override void FixtureInit()
 		{
@@ -26,7 +23,7 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 		[Test]
 		public void HtmlHasTwoChildElements()
 		{
-			Assert.AreEqual(2, htmlChildElements.Length, 
+			Assert.AreEqual(2, htmlChildElements.Count, 
 			                "Should be 2 child elements.");
 		}
 		

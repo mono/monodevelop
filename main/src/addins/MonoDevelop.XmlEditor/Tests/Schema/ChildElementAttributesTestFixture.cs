@@ -1,9 +1,6 @@
-
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.XmlEditor;
 using NUnit.Framework;
-using System;
-using System.IO;
 
 namespace MonoDevelop.XmlEditor.Tests.Schema
 {
@@ -13,7 +10,7 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 	[TestFixture]
 	public class ChildElementAttributesTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionData[] attributes;
+		CompletionDataList attributes;
 		
 		public override void FixtureInit()
 		{
@@ -27,7 +24,7 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 		[Test]
 		public void AttributeCount()
 		{
-			Assert.AreEqual(10, attributes.Length, "Should be one attribute.");
+			Assert.AreEqual(10, attributes.Count, "Should be one attribute.");
 		}
 		
 		[Test]

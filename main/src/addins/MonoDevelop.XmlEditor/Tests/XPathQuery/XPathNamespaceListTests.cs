@@ -8,7 +8,7 @@ using System.Xml;
 
 namespace MonoDevelop.XmlEditor.Tests.XPathQuery
 {
-	[TestFixture]
+/*	[TestFixture]
 	public class XPathNamespaceListTests
 	{
 		StringBuilder xml;
@@ -126,5 +126,5 @@ namespace MonoDevelop.XmlEditor.Tests.XPathQuery
 			list = (XPathNamespaceList)list.ReadFrom(reader);
 			Assert.AreEqual(0, list.GetNamespaces().Length);
 		}		
-	}
+	}*/
 }
