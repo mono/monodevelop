@@ -3,7 +3,6 @@ using NUnit.Framework;
 using MonoDevelop.XmlEditor.Tests.Utils;
 using MonoDevelop.XmlEditor.Tests.Schema;
 
-/*
 namespace MonoDevelop.XmlEditor.Tests.Schema.Includes
 {
 	/// <summary>
@@ -11,6 +10,7 @@ namespace MonoDevelop.XmlEditor.Tests.Schema.Includes
 	/// generating completion data.
 	/// </summary>
 	[TestFixture]
+	[Ignore]
 	public class TwoElementSchemaIncludeTestFixture : TwoElementSchemaTestFixture
 	{
 		[TestFixtureTearDown]
@@ -35,4 +35,3 @@ namespace MonoDevelop.XmlEditor.Tests.Schema.Includes
 		}
 	}
 }
-*/

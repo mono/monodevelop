@@ -2,7 +2,7 @@ using NUnit.Framework;
 using MonoDevelop.XmlEditor.Completion;
 using MonoDevelop.XmlEditor.Tests.Utils;
 using MonoDevelop.XmlEditor.Tests.Schema;
-/*
+
 namespace MonoDevelop.XmlEditor.Tests.Schema.Includes
 {
 	/// <summary>
@@ -10,6 +10,7 @@ namespace MonoDevelop.XmlEditor.Tests.Schema.Includes
 	/// generating completion data.
 	/// </summary>
 	[TestFixture]
+	[Ignore]
 	public class AttributeGroupRefSchemaIncludeTestFixture : AttributeGroupRefTestFixture
 	{
 		[TestFixtureTearDown]
@@ -34,4 +35,3 @@ namespace MonoDevelop.XmlEditor.Tests.Schema.Includes
 		}
 	}
 }
-*/

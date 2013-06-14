@@ -212,7 +212,7 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 		/// xs:boolean tests.
 		/// </summary>
 		[Test]
-		[Ignore ("This test fails on mono")]
+		[Ignore]
 		public void MixedAttributeHasValueTrue()
 		{
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(mixedAttributeValues, "true"),
