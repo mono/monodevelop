@@ -1,7 +1,6 @@
 
 using MonoDevelop.XmlEditor;
 using NUnit.Framework;
-using System;
 
 namespace MonoDevelop.XmlEditor.Tests.XPathQuery
 {

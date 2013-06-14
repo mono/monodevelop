@@ -1,12 +1,6 @@
-
-using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.XmlEditor;
+using MonoDevelop.XmlEditor.Completion;
 using NUnit.Framework;
 using System;
-using System.IO;
-using System.Text;
-using System.Xml;
-using MonoDevelop.XmlEditor.Tests.Utils;
 
 namespace MonoDevelop.XmlEditor.Tests.Schema.Uri
 {
@@ -21,7 +15,7 @@ namespace MonoDevelop.XmlEditor.Tests.Schema.Uri
 		{
 			string fileName = @"C:\temp\foo.xml";
 			string expectedUri = "file:///C:/temp/foo.xml";
-			
+
 			Assert.AreEqual(expectedUri, XmlSchemaCompletionData.GetUri(fileName));
 		}
 		

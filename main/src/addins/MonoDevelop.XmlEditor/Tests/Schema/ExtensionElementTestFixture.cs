@@ -1,9 +1,6 @@
-
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.XmlEditor;
 using NUnit.Framework;
-using System;
-using System.IO;
 
 namespace MonoDevelop.XmlEditor.Tests.Schema
 {
@@ -13,13 +10,13 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 	[TestFixture]
 	public class ExtensionElementTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionData[] schemaChildElements;
-		ICompletionData[] annotationChildElements;
-		ICompletionData[] annotationAttributes;
-		ICompletionData[] includeAttributes;
-		ICompletionData[] appInfoAttributes;
-		//ICompletionData[] schemaAttributes;
-		ICompletionData[] fooAttributes;
+		CompletionDataList schemaChildElements;
+		CompletionDataList annotationChildElements;
+		CompletionDataList annotationAttributes;
+		CompletionDataList includeAttributes;
+		CompletionDataList appInfoAttributes;
+		//CompletionDataList schemaAttributes;
+		CompletionDataList fooAttributes;
 		
 		public override void FixtureInit()
 		{
@@ -53,7 +50,7 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 		[Test]
 		public void SchemaHasSevenChildElements()
 		{
-			Assert.AreEqual(7, schemaChildElements.Length, 
+			Assert.AreEqual(7, schemaChildElements.Count, 
 			                "Should be 7 child elements.");
 		}
 		
@@ -91,7 +88,7 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 		[Test]
 		public void AnnotationElementHasOneAttribute()
 		{
-			Assert.AreEqual(1, annotationAttributes.Length, "Should be one attribute.");
+			Assert.AreEqual(1, annotationAttributes.Count, "Should be one attribute.");
 		}
 		
 		[Test]
@@ -104,7 +101,7 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 		[Test]
 		public void AnnotationHasTwoChildElements()
 		{
-			Assert.AreEqual(2, annotationChildElements.Length, 
+			Assert.AreEqual(2, annotationChildElements.Count, 
 			                "Should be 2 child elements.");
 		}
 		
@@ -125,7 +122,7 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 		[Test]
 		public void IncludeElementHasOneAttribute()
 		{
-			Assert.AreEqual(1, includeAttributes.Length, "Should be one attribute.");
+			Assert.AreEqual(1, includeAttributes.Count, "Should be one attribute.");
 		}
 		
 		[Test]
@@ -138,7 +135,7 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 		[Test]
 		public void AppInfoElementHasOneAttribute()
 		{
-			Assert.AreEqual(1, appInfoAttributes.Length, "Should be one attribute.");
+			Assert.AreEqual(1, appInfoAttributes.Count, "Should be one attribute.");
 		}
 		
 		[Test]

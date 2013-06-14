@@ -1,8 +1,6 @@
-
+using MonoDevelop.XmlEditor.Completion;
 using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.XmlEditor;
 using NUnit.Framework;
-using System;
 using System.IO;
 
 namespace MonoDevelop.XmlEditor.Tests.Schema
@@ -14,7 +12,7 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 	[TestFixture]
 	public class NamespaceCompletionTestFixture
 	{
-		ICompletionData[] namespaceCompletionData;
+		CompletionDataList namespaceCompletionData;
 		string firstNamespace = "http://foo.com/foo.xsd";
 		string secondNamespace = "http://bar.com/bar.xsd";
 		
@@ -30,13 +28,13 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 			reader = new StringReader(GetSchema(secondNamespace));
 			schema = new XmlSchemaCompletionData(reader);
 			items.Add(schema);
-			namespaceCompletionData = items.GetNamespaceCompletionData();
+			namespaceCompletionData = new CompletionDataList(items.GetNamespaceCompletionData());
 		}
 		
 		[Test]
 		public void NamespaceCount()
 		{
-			Assert.AreEqual(2, namespaceCompletionData.Length,
+			Assert.AreEqual(2, namespaceCompletionData.Count,
 			                "Should be 2 namespaces.");
 		}
 		

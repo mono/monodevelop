@@ -1,9 +1,6 @@
-
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.XmlEditor;
 using NUnit.Framework;
-using System;
-using System.IO;
 
 namespace MonoDevelop.XmlEditor.Tests.Schema
 {
@@ -13,8 +10,8 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 	[TestFixture]
 	public class ElementWithAttributeSchemaTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionData[] attributeCompletionData;
-		string[] attributeName;
+		CompletionDataList attributeCompletionData;
+		string attributeName;
 		
 		public override void FixtureInit()
 		{
@@ -22,25 +19,19 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 			path.Elements.Add(new QualifiedName("note", "http://www.w3schools.com"));
 						
 			attributeCompletionData = SchemaCompletionData.GetAttributeCompletionData(path);
-			attributeName = attributeCompletionData[0].Text;
+			attributeName = attributeCompletionData[0].DisplayText;
 		}
 
 		[Test]
 		public void AttributeCount()
 		{
-			Assert.AreEqual(1, attributeCompletionData.Length, "Should be one attribute.");
+			Assert.AreEqual(1, attributeCompletionData.Count, "Should be one attribute.");
 		}
 		
 		[Test]
 		public void AttributeName()
 		{
-			Assert.AreEqual("name", attributeName[0], "Attribute name is incorrect.");
-		}		
-		
-		[Test]
-		public void AttributeNameOverloadCount()
-		{
-			Assert.AreEqual(1, attributeName.Length, "Should only be one item in the array.");
+			Assert.AreEqual("name", attributeName, "Attribute name is incorrect.");
 		}
 		
 		[Test]
@@ -48,9 +39,9 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 		{
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("foobar", "http://www.w3schools.com"));
-			ICompletionData[] attributes = SchemaCompletionData.GetAttributeCompletionData(path);
+			CompletionDataList attributes = SchemaCompletionData.GetAttributeCompletionData(path);
 			
-			Assert.AreEqual(0, attributes.Length, "Should not find attributes for unknown element.");
+			Assert.AreEqual(0, attributes.Count, "Should not find attributes for unknown element.");
 		}
 		
 		protected override string GetSchema()

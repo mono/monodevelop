@@ -1,17 +1,14 @@
-
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.XmlEditor;
 using NUnit.Framework;
-using System;
-using System.IO;
 
 namespace MonoDevelop.XmlEditor.Tests.Schema
 {
 	[TestFixture]
 	public class ReferencedElementsTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionData[] shipOrderAttributes;
-		ICompletionData[] shipToAttributes;
+		CompletionDataList shipOrderAttributes;
+		CompletionDataList shipToAttributes;
 		XmlElementPath shipToPath;
 		XmlElementPath shipOrderPath;
 		
@@ -36,7 +33,7 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 		[Test]
 		public void OneShipOrderAttribute()
 		{
-			Assert.AreEqual(1, shipOrderAttributes.Length, "Should only have one shiporder attribute.");
+			Assert.AreEqual(1, shipOrderAttributes.Count, "Should only have one shiporder attribute.");
 		}		
 		
 		[Test]
@@ -49,7 +46,7 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 		[Test]
 		public void OneShipToAttribute()
 		{
-			Assert.AreEqual(1, shipToAttributes.Length, "Should only have one shipto attribute.");
+			Assert.AreEqual(1, shipToAttributes.Count, "Should only have one shipto attribute.");
 		}
 		
 		[Test]
@@ -62,14 +59,14 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 		[Test]
 		public void ShipOrderChildElementsCount()
 		{
-			Assert.AreEqual(1, SchemaCompletionData.GetChildElementCompletionData(shipOrderPath).Length, 
+			Assert.AreEqual(1, SchemaCompletionData.GetChildElementCompletionData(shipOrderPath).Count, 
 			                "Should be one child element.");
 		}
 		
 		[Test]
 		public void ShipOrderHasShipToChildElement()
 		{
-			ICompletionData[] data = SchemaCompletionData.GetChildElementCompletionData(shipOrderPath);
+			CompletionDataList data = SchemaCompletionData.GetChildElementCompletionData(shipOrderPath);
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(data, "shipto"), 
 			                "Incorrect child element name.");
 		}
@@ -77,14 +74,14 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 		[Test]
 		public void ShipToChildElementsCount()
 		{
-			Assert.AreEqual(2, SchemaCompletionData.GetChildElementCompletionData(shipToPath).Length, 
+			Assert.AreEqual(2, SchemaCompletionData.GetChildElementCompletionData(shipToPath).Count, 
 			                "Should be 2 child elements.");
 		}		
 		
 		[Test]
 		public void ShipToHasNameChildElement()
 		{
-			ICompletionData[] data = SchemaCompletionData.GetChildElementCompletionData(shipToPath);
+			CompletionDataList data = SchemaCompletionData.GetChildElementCompletionData(shipToPath);
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(data, "name"), 
 			                "Incorrect child element name.");
 		}		
@@ -92,7 +89,7 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 		[Test]
 		public void ShipToHasAddressChildElement()
 		{
-			ICompletionData[] data = SchemaCompletionData.GetChildElementCompletionData(shipToPath);
+			CompletionDataList data = SchemaCompletionData.GetChildElementCompletionData(shipToPath);
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(data, "address"), 
 			                "Incorrect child element name.");
 		}		

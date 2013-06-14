@@ -1,9 +1,6 @@
-
-using MonoDevelop.XmlEditor;
 using MonoDevelop.Ide.CodeCompletion;
+using MonoDevelop.XmlEditor;
 using NUnit.Framework;
-using System;
-using System.IO;
 
 namespace MonoDevelop.XmlEditor.Tests.Schema
 {
@@ -13,9 +10,9 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 	[TestFixture]
 	public class AbstractElementTestFixture : SchemaTestFixtureBase
 	{		
-		ICompletionData[] itemsElementChildren;
-		ICompletionData[] fileElementAttributes;
-		ICompletionData[] fileElementChildren;
+		CompletionDataList itemsElementChildren;
+		CompletionDataList fileElementAttributes;
+		CompletionDataList fileElementChildren;
 		
 		public override void FixtureInit()
 		{
@@ -35,7 +32,7 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 		[Test]
 		public void ItemsElementHasTwoChildElements()
 		{
-			Assert.AreEqual(2, itemsElementChildren.Length, 
+			Assert.AreEqual(2, itemsElementChildren.Count, 
 			                "Should be 2 child elements.");
 		}
 		
@@ -60,7 +57,7 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 		[Test]
 		public void FileElementHasTwoChildElements()
 		{
-			Assert.AreEqual(2, fileElementChildren.Length, "Should be 2 child elements.");
+			Assert.AreEqual(2, fileElementChildren.Count, "Should be 2 child elements.");
 		}
 		
 		protected override string GetSchema()

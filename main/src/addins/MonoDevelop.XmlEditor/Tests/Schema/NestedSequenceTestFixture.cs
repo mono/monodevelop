@@ -1,9 +1,6 @@
-
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.XmlEditor;
 using NUnit.Framework;
-using System;
-using System.IO;
 
 namespace MonoDevelop.XmlEditor.Tests.Schema
 {
@@ -14,7 +11,7 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 	[TestFixture]
 	public class NestedSequenceSchemaTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionData[] noteChildElements;
+		CompletionDataList noteChildElements;
 		
 		public override void FixtureInit()
 		{
@@ -29,7 +26,7 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("note", "http://www.w3schools.com"));
 			path.Elements.Add(new QualifiedName("title", "http://www.w3schools.com"));
-			Assert.AreEqual(0, SchemaCompletionData.GetChildElementCompletionData(path).Length,
+			Assert.AreEqual(0, SchemaCompletionData.GetChildElementCompletionData(path).Count,
 			                "Should be no child elements.");
 		}
 		
@@ -39,14 +36,14 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("note", "http://www.w3schools.com"));
 			path.Elements.Add(new QualifiedName("text", "http://www.w3schools.com"));
-			Assert.AreEqual(0, SchemaCompletionData.GetChildElementCompletionData(path).Length, 
+			Assert.AreEqual(0, SchemaCompletionData.GetChildElementCompletionData(path).Count, 
 			                "Should be no child elements.");
 		}		
 		
 		[Test]
 		public void NoteHasTwoChildElements()
 		{
-			Assert.AreEqual(2, noteChildElements.Length, 
+			Assert.AreEqual(2, noteChildElements.Count, 
 			                "Should be two child elements.");
 		}
 		

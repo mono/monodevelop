@@ -1,15 +1,12 @@
-
-using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.XmlEditor;
+using MonoDevelop.XmlEditor.Completion;
 using NUnit.Framework;
 using System;
-using System.IO;
 using System.Xml.Schema;
 using MonoDevelop.XmlEditor.Tests.Schema;
 
 namespace MonoDevelop.XmlEditor.Tests.FindSchemaObject
 {
-	[TestFixture]
+/*	[TestFixture]
 	public class AttributeSelectedTestFixture : SchemaTestFixtureBase
 	{
 		XmlSchemaAttribute schemaAttribute;
@@ -39,5 +36,5 @@ namespace MonoDevelop.XmlEditor.Tests.FindSchemaObject
 				"    </xs:element>\r\n" +
 				"</xs:schema>";
 		}
-	}
+	}*/
 }
