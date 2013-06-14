@@ -1,10 +1,6 @@
-
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.XmlEditor;
 using NUnit.Framework;
-using System;
-using System.IO;
-using System.Xml;
 
 namespace MonoDevelop.XmlEditor.Tests.Schema
 {
@@ -15,7 +11,7 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 	[TestFixture]
 	public class ElementRefAnnotationTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionData[] fooChildElementCompletionData;
+		CompletionDataList fooChildElementCompletionData;
 		
 		public override void FixtureInit()
 		{

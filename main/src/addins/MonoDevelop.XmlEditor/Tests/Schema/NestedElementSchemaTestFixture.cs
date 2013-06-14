@@ -1,9 +1,6 @@
-
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.XmlEditor;
 using NUnit.Framework;
-using System;
-using System.IO;
 
 namespace MonoDevelop.XmlEditor.Tests.Schema
 {
@@ -11,7 +8,7 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 	public class NestedElementSchemaTestFixture : SchemaTestFixtureBase
 	{
 		XmlElementPath noteElementPath;
-		ICompletionData[] elementData;
+		CompletionDataList elementData;
 		
 		public override void FixtureInit()
 		{			
@@ -24,7 +21,7 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 		[Test]
 		public void NoteHasOneChildElementCompletionDataItem()
 		{
-			Assert.AreEqual(1, elementData.Length, "Should be one child element completion data item.");
+			Assert.AreEqual(1, elementData.Count, "Should be one child element completion data item.");
 		}
 		
 		[Test]

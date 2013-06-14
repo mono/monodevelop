@@ -1,9 +1,6 @@
-
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.XmlEditor;
 using NUnit.Framework;
-using System;
-using System.IO;
 
 namespace MonoDevelop.XmlEditor.Tests.Schema
 {
@@ -13,7 +10,7 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 	[TestFixture]
 	public class SimpleContentWithAttributeSchemaTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionData[] attributeCompletionData;
+		CompletionDataList attributeCompletionData;
 		
 		public override void FixtureInit()
 		{

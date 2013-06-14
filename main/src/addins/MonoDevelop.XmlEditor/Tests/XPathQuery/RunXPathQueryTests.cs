@@ -1,4 +1,3 @@
-
 using MonoDevelop.XmlEditor;
 using NUnit.Framework;
 using System;
@@ -9,7 +8,7 @@ using System.Xml.XPath;
 
 namespace MonoDevelop.XmlEditor.Tests.XPathQuery
 {
-	[TestFixture]
+/*	[TestFixture]
 	public class RunXPathQueryTests
 	{		
 		[Test]
@@ -18,6 +17,7 @@ namespace MonoDevelop.XmlEditor.Tests.XPathQuery
 			string xml = "<root>\r\n" +
 				"\t<foo/>\r\n" +
 				"</root>";
+
 			XPathNodeMatch[] nodes = XmlEditorView.SelectNodes(xml, "//foo");
 			XPathNodeMatch node = nodes[0];
 			IXmlLineInfo lineInfo = node as IXmlLineInfo;
@@ -165,5 +165,5 @@ namespace MonoDevelop.XmlEditor.Tests.XPathQuery
 			Assert.AreEqual("Id", node.Value);
 			Assert.AreEqual("@Id", node.DisplayValue);
 		}
-	}
+	}*/
 }

@@ -1,16 +1,13 @@
-
-using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.XmlEditor;
+using MonoDevelop.XmlEditor.Completion;
 using NUnit.Framework;
 using System;
-using System.IO;
 using System.Xml.Schema;
 using MonoDevelop.XmlEditor.Tests.Schema;
 using MonoDevelop.XmlEditor.Tests.Utils;
 
 namespace MonoDevelop.XmlEditor.Tests.FindSchemaObject
 {
-	/// <summary>
+/*	/// <summary>
 	/// Tests that an xs:element/@ref is located in the schema.
 	/// </summary>
 	[TestFixture]
@@ -77,5 +74,5 @@ namespace MonoDevelop.XmlEditor.Tests.FindSchemaObject
 				"\r\n" +
 				"</xs:schema>";
 		}
-	}
+	}*/
 }

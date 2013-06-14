@@ -1,7 +1,4 @@
-
-using MonoDevelop.XmlEditor;
 using NUnit.Framework;
-using System;
 
 namespace MonoDevelop.XmlEditor.Tests
 {
@@ -10,7 +7,7 @@ namespace MonoDevelop.XmlEditor.Tests
 	/// "application/xml" are handled by the 
 	/// XmlEditorViewContent.
 	/// </summary>
-	[TestFixture]
+/*	[TestFixture]
 	public class MimeTypeHandledTests
 	{
 		[Test]
@@ -36,5 +33,5 @@ namespace MonoDevelop.XmlEditor.Tests
 		{
 			Assert.IsFalse(XmlEditorViewContent.IsMimeTypeHandled("unknown/xml"));
 		}		
-	}
+	}*/
 }
