@@ -34,11 +34,15 @@ namespace Mono.TextEditor.Tests
 	[TestFixture()]
 	public class SearchTests
 	{
+		static TextEditorData Create (string content)
+		{
+			return new TextEditorData (new TextDocument(content));
+		}
+
 		[Test()]
 		public void TestSearchForward ()
 		{
-			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
-			data.Document.Text = @"ababab";
+			TextEditorData data = Create (@"ababab");
 			data.SearchEngine.SearchRequest.SearchPattern = "ab";
 			SearchResult result = data.SearchForward (0);
 			Assert.AreEqual (0, result.Offset);
@@ -64,8 +68,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestSearchBackward ()
 		{
-			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
-			data.Document.Text = @"ababab";
+			TextEditorData data = Create (@"ababab");
 			data.SearchEngine.SearchRequest.SearchPattern = "ab";
 			SearchResult result = data.SearchBackward (0);
 			Assert.AreEqual (4, result.Offset);
@@ -86,8 +89,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestFindNext ()
 		{
-			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
-			data.Document.Text = @"ababab";
+			TextEditorData data = Create (@"ababab");
 			data.SearchEngine.SearchRequest.SearchPattern = "ab";
 			
 			data.Caret.Offset = 0;
@@ -127,8 +129,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestFindPrev ()
 		{
-			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
-			data.Document.Text = @"ababab";
+			TextEditorData data = Create (@"ababab");
 			data.SearchEngine.SearchRequest.SearchPattern = "ab";
 			
 			data.Caret.Offset = 0;

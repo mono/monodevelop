@@ -31,11 +31,15 @@ namespace Mono.TextEditor.Tests
 	[TestFixture()]
 	public class HeightTreeTests 
 	{
+		public static TextEditorData Create (string content)
+		{
+			return new TextEditorData (new TextDocument(content));
+		}
+
 		[Test()]
 		public void TestSimpleLineNumberToY ()
 		{
-			var editor = new TextEditorData ();
-			editor.Text = "1\n2\n3\n4\n5\n6\n7";
+			var editor = Create ("1\n2\n3\n4\n5\n6\n7");
 			HeightTree heightTree = new HeightTree (editor);
 			heightTree.Rebuild ();
 			for (int i = 1; i <= editor.LineCount; i++) {
@@ -46,8 +50,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestSimpleYToLineNumber ()
 		{
-			var editor = new TextEditorData ();
-			editor.Text = "1\n2\n3\n4\n5\n6\n7";
+			var editor = Create ("1\n2\n3\n4\n5\n6\n7");
 			HeightTree heightTree = new HeightTree (editor);
 			heightTree.Rebuild ();
 			for (int i = 1; i <= editor.LineCount; i++) {
@@ -58,8 +61,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestYToLineNumberWithFolds ()
 		{
-			var editor = new TextEditorData ();
-			editor.Text = "1\n2\n3\n4\n5\n6\n7\n8\n9\n0";
+			var editor = Create ("1\n2\n3\n4\n5\n6\n7\n8\n9\n0");
 			HeightTree heightTree = new HeightTree (editor);
 			heightTree.Rebuild ();
 			heightTree.Fold (1, 2);
@@ -74,8 +76,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestLineNumberToYWithFolds ()
 		{
-			var editor = new TextEditorData ();
-			editor.Text = "1\n2\n3\n4\n5\n6\n7\n8\n9\n0";
+			var editor = Create ("1\n2\n3\n4\n5\n6\n7\n8\n9\n0");
 			
 			//123
 			//4
@@ -97,8 +98,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestSetLineHeight ()
 		{
-			var editor = new TextEditorData ();
-			editor.Text = "1\n2\n3\n4\n5\n6\n7";
+			var editor = Create ("1\n2\n3\n4\n5\n6\n7");
 			HeightTree heightTree = new HeightTree (editor);
 			heightTree.Rebuild ();
 			for (int i = 1; i <= editor.LineCount; i += 2) {
@@ -122,8 +122,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestFoldLineNumberToYCase1 ()
 		{
-			var editor = new TextEditorData ();
-			editor.Text = "1\n2\n3\n4\n5\n6\n7";
+			var editor = Create ("1\n2\n3\n4\n5\n6\n7");
 			HeightTree heightTree = new HeightTree (editor);
 			heightTree.Rebuild ();
 			
@@ -145,8 +144,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestFoldYToLineNumber ()
 		{
-			var editor = new TextEditorData ();
-			editor.Text = "1\n2\n3\n4\n5\n6\n7";
+			var editor = Create ("1\n2\n3\n4\n5\n6\n7");
 			HeightTree heightTree = new HeightTree (editor);
 			heightTree.Rebuild ();
 			
@@ -176,8 +174,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestFoldLineNumberToY ()
 		{
-			var editor = new TextEditorData ();
-			editor.Text = "1\n2\n3\n4\n5\n6\n7\n8";
+			var editor = Create ("1\n2\n3\n4\n5\n6\n7\n8");
 			HeightTree heightTree = new HeightTree (editor);
 			heightTree.Rebuild ();
 			
@@ -225,8 +222,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestUnfold ()
 		{
-			var editor = new TextEditorData ();
-			editor.Text = "1\n2\n3\n4\n5\n6\n7";
+			var editor = Create ("1\n2\n3\n4\n5\n6\n7");
 			HeightTree heightTree = new HeightTree (editor);
 			heightTree.Rebuild ();
 			var f = heightTree.Fold (2, 2);
@@ -243,8 +239,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestBug4839 ()
 		{
-			var editor = new TextEditorData ();
-			editor.Text = "1\n2\n3\n4\n5\n6\n7";
+			var editor = Create ("1\n2\n3\n4\n5\n6\n7");
 			editor.Caret.Offset = editor.Text.Length;
 			var heightTree = new HeightTree (editor);
 			heightTree.Rebuild ();
@@ -255,8 +250,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestBug4839MultipleNewLines ()
 		{
-			var editor = new TextEditorData ();
-			editor.Text = "1\n2\n3\n4\n5\n6\n7";
+			var editor = Create ("1\n2\n3\n4\n5\n6\n7");
 			editor.Caret.Offset = editor.Text.Length;
 			var heightTree = new HeightTree (editor);
 			heightTree.Rebuild ();

@@ -34,7 +34,11 @@ namespace Mono.TextEditor.Tests
 	[TestFixture()]
 	public class SelectionTests
 	{
-		
+		static TextEditorData Create(string content)
+		{
+			return new TextEditorData (new TextDocument (content));
+		}
+
 		static TextSegment GetSelection (TextEditorData data, bool reverse)
 		{
 			int offset1 = data.Document.Text.IndexOf ('[');
@@ -60,15 +64,15 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestExtendSelectionTo ()
 		{
-			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
-data.Document.Text = 
-@"123456789
+			TextEditorData data = Create (
+				@"123456789
 123456789
 123456789
 123456789
 123456789
-123456789";
-			
+123456789"
+			);
+
 			data.SelectionAnchor = 3;
 			DocumentLine line = data.Document.GetLine (3);
 			
@@ -84,14 +88,14 @@ data.Document.Text =
 		[Test()]
 		public void TestSelectedLines ()
 		{
-			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
-data.Document.Text = 
-@"123456789
+			TextEditorData data = Create (
+				@"123456789
 123[456789
 123456789
 1234]56789
 123456789
-123456789";
+123456789");
+
 			SetSelection (data, false);
 			int lines = data.SelectedLines.Count ();
 			Assert.AreEqual (3, lines);
@@ -100,14 +104,13 @@ data.Document.Text =
 		[Test()]
 		public void TestSelectedLinesReverse ()
 		{
-			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
-data.Document.Text = 
-@"123456789
+			TextEditorData data = Create (
+				@"123456789
 123[456789
 123456789
 1234]56789
 123456789
-123456789";
+123456789");
 			SetSelection (data, true);
 			Assert.AreEqual (3, data.SelectedLines.Count ());
 		}
@@ -115,14 +118,13 @@ data.Document.Text =
 		[Test()]
 		public void TestSelectedLinesCase2 ()
 		{
-			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
-data.Document.Text = 
-@"123456789
+			TextEditorData data = Create (
+				@"123456789
 123[456789
 123456789
 123456789
 ]123456789
-123456789";
+123456789");
 			SetSelection (data, false);
 			Assert.AreEqual (3, data.SelectedLines.Count ());
 		}
@@ -130,14 +132,13 @@ data.Document.Text =
 		[Test()]
 		public void TestSelectedLinesCase2Reverse ()
 		{
-			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
-data.Document.Text = 
-@"123456789
+			TextEditorData data = Create (
+				@"123456789
 123[456789
 123456789
 123456789
 ]123456789
-123456789";
+123456789");
 			SetSelection (data, true);
 			Assert.AreEqual (3, data.SelectedLines.Count ());
 		}
@@ -145,14 +146,13 @@ data.Document.Text =
 		[Test()]
 		public void TestSelectedLinesCase3 ()
 		{
-			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
-data.Document.Text = 
-@"123456789
+			TextEditorData data = Create (
+				@"123456789
 [123456789
 123456789
 123]456789
 123456789
-123456789";
+123456789");
 			SetSelection (data, false);
 			Assert.AreEqual (3, data.SelectedLines.Count ());
 		}
@@ -160,14 +160,13 @@ data.Document.Text =
 		[Test()]
 		public void TestSelectedLinesCase3Reverse ()
 		{
-			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
-data.Document.Text = 
-@"123456789
+			TextEditorData data = Create (
+				@"123456789
 [123456789
 123456789
 123]456789
 123456789
-123456789";
+123456789");
 			SetSelection (data, true);
 			Assert.AreEqual (3, data.SelectedLines.Count ());
 		}
@@ -175,12 +174,11 @@ data.Document.Text =
 		[Test()]
 		public void TestSetSelectedLines ()
 		{
-			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
-data.Document.Text = 
-@"1
+			TextEditorData data = Create (
+				@"1
 2
 3
-";
+");
 			data.SetSelectLines (1, 4);
 			Assert.AreEqual (0, data.SelectionAnchor);
 			Assert.AreEqual (0, data.SelectionRange.Offset);

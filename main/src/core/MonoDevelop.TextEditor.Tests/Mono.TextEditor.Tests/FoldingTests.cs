@@ -56,8 +56,7 @@ namespace Mono.TextEditor.Tests
 				caretIndex = selectionEnd;
 			}
 
-			var data = new TextEditorData ();
-			data.Text = content;
+			var data = new TextEditorData (new TextDocument(content));
 			if (caretIndex >= 0)
 				data.Caret.Offset = caretIndex;
 			if (selection1 >= 0) {
@@ -590,7 +589,7 @@ AAAAAAAA$
 			segments.Insert (0, seg);
 			data.Document.UpdateFoldSegments (segments);
 			Assert.AreEqual (3, data.Document.FoldSegments.Count ());
-			
+
 		}	
 	}
 }
