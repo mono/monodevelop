@@ -109,47 +109,48 @@ namespace MonoDevelop.Projects
 				item = Services.ProjectService.ReadWorkspaceItem (monitor, solFile);
 			else
 				item = Services.ProjectService.ReadSolutionItem (monitor, itemFile);
-			
-			if (project != null) {
-				Solution solution = item as Solution;
-				item = null;
+
+			using (item) {
+				if (project != null) {
+					Solution solution = item as Solution;
+					item = null;
+					
+					if (solution != null) {
+						item = solution.FindProjectByName (project);
+					}
+					if (item == null) {
+						Console.WriteLine ("The project '" + project + "' could not be found in " + file);
+						return 1;
+					}
+				}
+
+				IConfigurationTarget configTarget = item as IConfigurationTarget;
+				if (config == null && configTarget != null)
+					config = configTarget.DefaultConfigurationId;
 				
-				if (solution != null) {
-					item = solution.FindProjectByName (project);
+				ConfigurationSelector configuration;
+				if (item is SolutionEntityItem)
+					configuration = new ItemConfigurationSelector (config);
+				else
+					configuration = new SolutionConfigurationSelector (config);
+				
+				monitor = new ConsoleProgressMonitor ();
+				BuildResult res = item.RunTarget (monitor, command, configuration);
+
+				if (targetRuntime != null)
+				{
+					Runtime.SystemAssemblyService.DefaultRuntime = defaultRuntime;
+					MonoTargetRuntimeFactory.UnregisterRuntime((MonoTargetRuntime) targetRuntime);
 				}
-				if (item == null) {
-					Console.WriteLine ("The project '" + project + "' could not be found in " + file);
-					return 1;
+
+				if (res != null) {
+					foreach (var err in res.Errors) {
+						Console.Error.WriteLine (err);
+					}
 				}
+
+				return (res == null || res.ErrorCount == 0) ? 0 : 1;
 			}
-
-			IConfigurationTarget configTarget = item as IConfigurationTarget;
-			if (config == null && configTarget != null)
-				config = configTarget.DefaultConfigurationId;
-			
-			ConfigurationSelector configuration;
-			if (item is SolutionEntityItem)
-				configuration = new ItemConfigurationSelector (config);
-			else
-				configuration = new SolutionConfigurationSelector (config);
-			
-			monitor = new ConsoleProgressMonitor ();
-			BuildResult res = item.RunTarget (monitor, command, configuration);
-			item.Dispose ();
-
-			if (targetRuntime != null)
-			{
-				Runtime.SystemAssemblyService.DefaultRuntime = defaultRuntime;
-				MonoTargetRuntimeFactory.UnregisterRuntime((MonoTargetRuntime) targetRuntime);
-			}
-
-			if (res != null) {
-				foreach (var err in res.Errors) {
-					Console.Error.WriteLine (err);
-				}
-			}
-
-			return (res == null || res.ErrorCount == 0) ? 0 : 1;
 		}
 		
 		void ReadArgument (string argument)
