@@ -141,7 +141,7 @@ namespace MonoDevelop.CSharp.Parser
 
 			static bool LastToken(AstNode arg)
 			{
-				return !(arg is NewLineNode || arg is WhitespaceNode || arg is ICSharpCode.NRefactory.CSharp.Comment);
+				return !(arg.Role == Roles.NewLine || arg.Role == Roles.Whitespace || arg.Role == Roles.Comment);
 			}
 		
 			public override object VisitNamespaceDeclaration (NamespaceDeclaration namespaceDeclaration, object data)
