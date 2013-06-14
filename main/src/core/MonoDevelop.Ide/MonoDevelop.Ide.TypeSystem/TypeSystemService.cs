@@ -49,6 +49,7 @@ using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Core.Assemblies;
 using System.Text;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -2120,15 +2121,29 @@ namespace MonoDevelop.Ide.TypeSystem
 				this.Version = FrameworkLookupVersion;
 			}
 
-			public IEnumerable<AssemblyLookup> LookupExtensionMethod (string identifier)
+			public IEnumerable<AssemblyLookup> GetExtensionMethodLookups (UnknownMemberResolveResult uiResult)
 			{
-				return GetLookup (identifier, extLookupTable);
+				return GetLookup (uiResult.MemberName, extLookupTable);
 			}
 
-			public IEnumerable<AssemblyLookup> LookupIdentifier (string name, int typeParameterCount)
+			public IEnumerable<AssemblyLookup> GetLookups (UnknownIdentifierResolveResult uiResult, int typeParameterCount, bool isInsideAttributeType)
 			{
+				string name = isInsideAttributeType ? uiResult.Identifier + "Attribute" : uiResult.Identifier;
+
 				var identifier = GetIdentifier (name, typeParameterCount);
 				return GetLookup (identifier, typeLookupTable);
+			}
+
+			public IEnumerable<AssemblyLookup> GetLookups (UnknownMemberResolveResult uiResult, AstNode node, int typeParameterCount, bool isInsideAttributeType)
+			{
+				string name = isInsideAttributeType ? uiResult.MemberName + "Attribute" : uiResult.MemberName;
+
+				var identifier = GetIdentifier (name, typeParameterCount);
+				foreach (var lookup in GetLookup (identifier, typeLookupTable)) {
+					if (node.ToString ().StartsWith (lookup.Namespace))
+						yield return lookup;
+
+				}
 			}
 
 			IEnumerable<AssemblyLookup> GetLookup (string identifier, Dictionary<int, int> lookupTable)
@@ -2136,6 +2151,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (lookupTable == null)
 					yield break;
 				int listPtr;
+
 				if (!lookupTable.TryGetValue (GetStableHashCode (identifier), out listPtr)) 
 					yield break;
 				using (var reader = new BinaryReader (File.OpenRead (fileName), Encoding.UTF8)) {
@@ -2160,7 +2176,6 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			public void OpenDataFile (string fileName)
 			{
-				Console.WriteLine ("open data file:"+fileName);
 				this.fileName = fileName;
 				var fs = File.OpenRead (fileName);
 				using (var reader = new BinaryReader (fs, Encoding.UTF8)) {
