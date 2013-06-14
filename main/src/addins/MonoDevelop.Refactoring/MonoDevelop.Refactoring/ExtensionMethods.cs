@@ -31,6 +31,7 @@ using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
 using System.Threading.Tasks;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Refactoring
 {
@@ -69,9 +70,14 @@ namespace MonoDevelop.Refactoring
 			}
 
 			var resolveTask = Task.Factory.StartNew (delegate {
-				var result = new CSharpAstResolver (compilation, unit, parsedFile);
-				result.ApplyNavigator (new ConstantModeResolveVisitorNavigator (ResolveVisitorNavigationMode.Resolve, null));
-				return result;
+				try {
+					var result = new CSharpAstResolver (compilation, unit, parsedFile);
+					result.ApplyNavigator (new ConstantModeResolveVisitorNavigator (ResolveVisitorNavigationMode.Resolve, null));
+					return result;
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while creating the resolver.", e);
+					return null;
+				}
 			});
 			document.AddAnnotation (new ResolverAnnotation {
 				Task = resolveTask,
