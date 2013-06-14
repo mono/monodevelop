@@ -93,6 +93,7 @@ namespace Mono.TextEditor.Tests
 		}
 
 		[Test]
+		[Ignore ("Test does not work under mono 2.10.x")]
 		public void TestVerbatimStringEscapeLineBreak ()
 		{
 			TestOutput ("@\"Escape:\"\"\ntext\"",
