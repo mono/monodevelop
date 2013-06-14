@@ -34,11 +34,15 @@ namespace Mono.TextEditor.Tests
 	[TestFixture()]
 	public class UndoRedoTests
 	{
+		static TextEditorData Create (string content)
+		{
+			return new TextEditorData (new TextDocument (content));
+		}
+
 		[Test()]
 		public void TestSimpleUndo ()
 		{
-			TextEditorData data = new Mono.TextEditor.TextEditorData ();
-			data.Document.Text = "Hello";
+			TextEditorData data = Create ("Hello");
 			Assert.IsFalse (data.Document.CanUndo);
 			data.Caret.Offset = data.Document.TextLength;
 			data.InsertAtCaret ("World");
@@ -52,8 +56,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestSimpleRedo ()
 		{
-			TextEditorData data = new Mono.TextEditor.TextEditorData  ();
-			data.Document.Text = "Hello";
+			TextEditorData data = Create ("Hello");
 			Assert.IsFalse (data.Document.CanUndo);
 			data.Caret.Offset = data.Document.TextLength;
 			data.InsertAtCaret ("World");

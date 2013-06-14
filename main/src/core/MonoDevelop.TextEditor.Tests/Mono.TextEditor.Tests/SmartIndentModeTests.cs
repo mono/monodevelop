@@ -67,9 +67,9 @@ namespace Mono.TextEditor.Tests
 			#endregion
 		}
 
-		TextEditorData CreateData ()
+		TextEditorData CreateData (string content)
 		{
-			var data = new TextEditorData ();
+			var data = new TextEditorData (new TextDocument (content));
 			data.IndentationTracker = IndentTracker;
 			data.Options.IndentStyle = IndentStyle.Smart;
 			return data;
@@ -78,8 +78,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestIndentNewLine ()
 		{
-			var data = CreateData ();
-			data.Document.Text = "\n\n\n";
+			var data = CreateData ("\n\n\n");
 			data.Caret.Offset = data.Document.GetLine (2).Offset;
 			
 			MiscActions.InsertNewLine (data);
@@ -91,8 +90,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestLineEndBehavior ()
 		{
-			var data = CreateData ();
-			data.Document.Text = "\n\n\n";
+			var data = CreateData ("\n\n\n");
 			data.Caret.Offset = data.Document.GetLine (2).Offset;
 
 			CaretMoveActions.LineEnd (data);
@@ -104,8 +102,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestDesiredColumnCaretDown ()
 		{
-			var data = CreateData ();
-			data.Document.Text = "12345\n\n12345\n";
+			var data = CreateData ("12345\n\n12345\n");
 			data.Caret.Column = 4;
 			Assert.AreEqual (4, data.Caret.DesiredColumn);
 
@@ -120,8 +117,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestDesiredColumnCaretUp ()
 		{
-			var data = CreateData ();
-			data.Document.Text = "12345\n\n12345\n";
+			var data = CreateData ("12345\n\n12345\n");
 			data.Caret.Line = 3;
 			data.Caret.Column = 4;
 			Assert.AreEqual (4, data.Caret.DesiredColumn);
@@ -137,8 +133,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestCaretRightBehavior ()
 		{
-			var data = CreateData ();
-			data.Document.Text = "\n\n\n";
+			var data = CreateData ("\n\n\n");
 			CaretMoveActions.Right (data);
 			Assert.AreEqual (new DocumentLocation (2, 1), data.Caret.Location);
 			CaretMoveActions.Right (data);

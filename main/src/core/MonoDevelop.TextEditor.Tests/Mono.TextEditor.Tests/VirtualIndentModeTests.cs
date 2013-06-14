@@ -34,9 +34,9 @@ namespace Mono.TextEditor.Tests
 	[TestFixture()]
 	public class VirtualIndentModeTests
 	{
-		TextEditorData CreateData ()
+		TextEditorData CreateData (string content)
 		{
-			var data = new TextEditorData ();
+			var data = new TextEditorData (new TextDocument (content));
 			data.IndentationTracker = SmartIndentModeTests.IndentTracker;
 			data.Options.IndentStyle = IndentStyle.Virtual;
 			return data;
@@ -45,8 +45,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestIndentNewLine ()
 		{
-			var data = CreateData ();
-			data.Document.Text = "\n\n\n";
+			var data = CreateData ("\n\n\n");
 			data.Caret.Offset = data.Document.GetLine (2).Offset;
 			
 			MiscActions.InsertNewLine (data);
@@ -58,8 +57,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestLineEndBehavior ()
 		{
-			var data = CreateData ();
-			data.Document.Text = "\n\n\n";
+			var data = CreateData ("\n\n\n");
 			data.Caret.Offset = data.Document.GetLine (2).Offset;
 
 			CaretMoveActions.LineEnd (data);
@@ -71,8 +69,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestDesiredColumnCaretDown ()
 		{
-			var data = CreateData ();
-			data.Document.Text = "12345\n\n12345\n";
+			var data = CreateData ("12345\n\n12345\n");
 			data.Caret.Column = 4;
 			Assert.AreEqual (4, data.Caret.DesiredColumn);
 
@@ -88,8 +85,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestDesiredColumnCaretUp ()
 		{
-			var data = CreateData ();
-			data.Document.Text = "12345\n\n12345\n";
+			var data = CreateData ("12345\n\n12345\n");
 			data.Caret.Line = 3;
 			data.Caret.Column = 4;
 			Assert.AreEqual (4, data.Caret.DesiredColumn);
@@ -105,8 +101,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestVirtualColumnDesiredColumnCaretUp ()
 		{
-			var data = CreateData ();
-			data.Document.Text = "12345\n\n12345\n";
+			var data = CreateData ("12345\n\n12345\n");
 			CaretMoveActions.Down (data);
 			CaretMoveActions.Right (data);
 			CaretMoveActions.Left (data);
@@ -125,8 +120,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestVirtualColumnDesiredColumnCaretDown ()
 		{
-			var data = CreateData ();
-			data.Document.Text = "12345\n\n12345\n";
+			var data = CreateData ("12345\n\n12345\n");
 			var segs = new List<FoldSegment> ();
 			segs.Add (new FoldSegment (data.Document, "", 5, 5, FoldingType.Region));
 			data.Document.UpdateFoldSegments (segs);
@@ -147,8 +141,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestCaretRightBehavior ()
 		{
-			var data = CreateData ();
-			data.Document.Text = "\n\n\n";
+			var data = CreateData ("\n\n\n");
 			CaretMoveActions.Right (data);
 			Assert.AreEqual (new DocumentLocation (1, data.IndentationTracker.GetVirtualIndentationColumn (2, 1)), data.Caret.Location);
 			CaretMoveActions.Right (data);
@@ -160,8 +153,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestCaretRightBehaviorInNonEmptyLines ()
 		{
-			var data = CreateData ();
-			data.Document.Text = "12\n\n\n";
+			var data = CreateData ("12\n\n\n");
 			CaretMoveActions.Right (data);
 			CaretMoveActions.Right (data);
 			CaretMoveActions.Right (data);
@@ -173,8 +165,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestBackspaceRightBehavior ()
 		{
-			var data = CreateData ();
-			data.Document.Text = "test\n\n\n";
+			var data = CreateData ("test\n\n\n");
 			data.Caret.Location = new DocumentLocation (2, data.IndentationTracker.GetVirtualIndentationColumn (2, 1));
 			DeleteActions.Backspace (data);
 			Assert.AreEqual (new DocumentLocation (2, data.IndentationTracker.GetVirtualIndentationColumn (2, 1) - 1), data.Caret.Location);
@@ -184,8 +175,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestBackspaceSelectionBehavior ()
 		{
-			var data = CreateData ();
-			data.Document.Text = "\n\t\ttest\n\n";
+			var data = CreateData ("\n\t\ttest\n\n");
 			data.Caret.Location = new DocumentLocation (2, 3);
 			SelectionActions.MoveUp (data);
 			Assert.AreEqual (new DocumentLocation (1, 3), data.Caret.Location);
@@ -198,8 +188,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestDeleteSelectionBehavior ()
 		{
-			var data = CreateData ();
-			data.Document.Text = "\n\t\ttest\n\n";
+			var data = CreateData ("\n\t\ttest\n\n");
 			data.Caret.Location = new DocumentLocation (2, 3);
 			SelectionActions.MoveUp (data);
 			Assert.AreEqual (new DocumentLocation (1, 3), data.Caret.Location);
@@ -212,8 +201,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestDeleteBehavior ()
 		{
-			var data = CreateData ();
-			data.Document.Text = "\n\t\ttest";
+			var data = CreateData ("\n\t\ttest");
 			data.Caret.Location = new DocumentLocation (2, 3);
 			CaretMoveActions.Up (data);
 			Assert.AreEqual (new DocumentLocation (1, 3), data.Caret.Location);
@@ -224,8 +212,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestAutoRemoveIndent ()
 		{
-			var data = CreateData ();
-			data.Document.Text = "\n\t\t\n\n";
+			var data = CreateData ("\n\t\t\n\n");
 			data.Caret.Location = new DocumentLocation (2, 3);
 			
 			data.InsertAtCaret (" ");
@@ -239,8 +226,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestAutoRemoveIndentOnReturn ()
 		{
-			var data = CreateData ();
-			data.Document.Text = "\n\n\n";
+			var data = CreateData ("\n\n\n");
 			data.Caret.Location = new DocumentLocation (2, 3);
 			MiscActions.InsertNewLine (data);
 			MiscActions.InsertNewLine (data);
@@ -251,8 +237,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestAutoRemoveExistingIndentOnReturn ()
 		{
-			var data = CreateData ();
-			data.Document.Text = "\n\t\t\n\n";
+			var data = CreateData ("\n\t\t\n\n");
 			data.Caret.Location = new DocumentLocation (2, 3);
 			MiscActions.InsertNewLine (data);
 			MiscActions.InsertNewLine (data);
@@ -263,8 +248,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestRemoveExistingIndentWithBackspace ()
 		{
-			var data = CreateData ();
-			data.Document.Text = "\n\t\t\t\n\n";
+			var data = CreateData ("\n\t\t\t\n\n");
 			data.Caret.Location = new DocumentLocation (2, 4);
 			DeleteActions.Backspace (data);
 			Assert.AreEqual (3, data.Caret.Column);
@@ -274,8 +258,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestRemoveLastTabInLine ()
 		{
-			var data = CreateData ();
-			data.Document.Text = "\n\t\n\n";
+			var data = CreateData ("\n\t\n\n");
 			data.Caret.Location = new DocumentLocation (2, 2);
 			DeleteActions.Backspace (data);
 			Assert.AreEqual ("\n\n\n", data.Document.Text);
@@ -285,8 +268,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestAutoRemoveIndentNotRemovingOnCaretMove ()
 		{
-			var data = CreateData ();
-			data.Document.Text = "\n\t\t\n\n";
+			var data = CreateData ("\n\t\t\n\n");
 			data.Caret.Location = new DocumentLocation (2, 3);
 			CaretMoveActions.Down (data);
 			Assert.AreEqual ("\n\t\t\n\n", data.Document.Text);
@@ -299,8 +281,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestUndoRedo ()
 		{
-			var data = CreateData ();
-			data.Text = "";
+			var data = CreateData ("");
 			data.Caret.Location = new DocumentLocation (1, 3);
 			data.InsertAtCaret ("1");
 			data.InsertAtCaret ("2");
@@ -324,8 +305,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestRemoveDoesntBreakCaretPosition ()
 		{
-			var data = CreateData ();
-			data.Document.Text = "Hello\n\n";
+			var data = CreateData ("Hello\n\n");
 			data.Caret.Location = new DocumentLocation (2, 3);
 			
 			data.Remove (0, "Hello".Length);
@@ -337,8 +317,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestInsertDoesntBreakCaretPosition ()
 		{
-			var data = CreateData ();
-			data.Document.Text = "\n\n";
+			var data = CreateData ("\n\n");
 			data.Caret.Location = new DocumentLocation (2, 3);
 			
 			data.Insert (0, "Hello");
@@ -351,8 +330,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestReturnOnNonEmptyLine ()
 		{
-			var data = CreateData ();
-			data.Document.Text = "\n\t\tFoo\t\tBar\n\n";
+			var data = CreateData ("\n\t\tFoo\t\tBar\n\n");
 			data.Caret.Location = new DocumentLocation (2, 3);
 			MiscActions.InsertNewLine (data);
 			Assert.AreEqual (3, data.Caret.Column);
@@ -362,8 +340,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestTabBehavior ()
 		{
-			var data = CreateData ();
-			data.Document.Text = "\n\n\n";
+			var data = CreateData ("\n\n\n");
 			data.Caret.Location = new DocumentLocation (2, 3);
 			MiscActions.InsertTab (data);
 			Assert.AreEqual ("\n\t\t\t\n\n", data.Document.Text);
@@ -375,8 +352,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestBug5067 ()
 		{
-			var data = CreateData ();
-			data.Document.Text = "\n\n\t\tFoo ();\n";
+			var data = CreateData ("\n\n\t\tFoo ();\n");
 			data.Caret.Location = new DocumentLocation (2, 3);
 			SelectionActions.MoveDown (data);
 			DeleteActions.Delete (data);
@@ -384,9 +360,9 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual ("\n\t\tFoo ();\n", data.Document.Text);
 		}
 
-		TextEditorData CreateDataWithSpaces ()
+		TextEditorData CreateDataWithSpaces (string content)
 		{
-			var data = new TextEditorData ();
+			var data = new TextEditorData (new TextDocument (content));
 			data.IndentationTracker = new SmartIndentModeTests.TestIndentTracker ("        ");
 			data.Options = new TextEditorOptions () {
 				TabsToSpaces = true,
@@ -398,8 +374,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestIndentWithSpaces ()
 		{
-			var data = CreateDataWithSpaces ();
-			data.Document.Text = "\n        \n\n";
+			var data = CreateDataWithSpaces ("\n        \n\n");
 			data.Caret.Location = new DocumentLocation (2, 9);
 			MiscActions.InsertNewLine (data);
 			Assert.AreEqual ("\n\n\n\n", data.Document.Text);
@@ -411,9 +386,8 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestBug5402 ()
 		{
-			var data = new TextEditorData ();
+			var data = CreateData ("\t");
 			data.IndentationTracker = new SmartIndentModeTests.TestIndentTracker ("\t");
-			data.Document.Text = "\t";
 			data.Caret.Location = new DocumentLocation (1, 2);
 			DeleteActions.Backspace (data);
 			Assert.AreEqual ("", data.Document.Text);
@@ -426,8 +400,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestBug5949 ()
 		{
-			var data = CreateData ();
-			data.Document.Text = "\t\tfoo\n\n\t\tbar";
+			var data = CreateData ("\t\tfoo\n\n\t\tbar");
 			data.Caret.Location = new DocumentLocation (3, 1);
 			CaretMoveActions.Left (data);
 			Assert.AreEqual (new DocumentLocation (2, 3), data.Caret.Location);
@@ -439,8 +412,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestBug5956 ()
 		{
-			var data = CreateData ();
-			data.Document.Text = "\t\tfoo\n\n\t\tbar";
+			var data = CreateData ("\t\tfoo\n\n\t\tbar");
 			data.Caret.Location = new DocumentLocation (3, 1);
 			DeleteActions.Backspace (data);
 			Assert.AreEqual (new DocumentLocation (2, 3), data.Caret.Location);
@@ -454,8 +426,7 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestBug7012 ()
 		{
-			var data = CreateData ();
-			data.Document.Text = "\n\t\tthrow new NotImplementedException();";
+			var data = CreateData ("\n\t\tthrow new NotImplementedException();");
 			var loc1 = new DocumentLocation (1, data.IndentationTracker.GetVirtualIndentationColumn (1, 1));
 			var loc2 = new DocumentLocation (3, data.GetLine (2).Length);
 			data.Caret.Location = loc2;
