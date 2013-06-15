@@ -2230,10 +2230,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				return identifier + "`" + tc;
 			}
 
-			public class FrameWorkCreator 
+			internal class FrameworkBuilder 
 			{
-				#region Creation
-
 				int GetLookup (SystemAssembly assembly, string ns)
 				{
 					for (int i = 0; i < assemblyLookups.Count; i++) {
@@ -2326,22 +2324,32 @@ namespace MonoDevelop.Ide.TypeSystem
 						stream.Write (typeBuffer);
 						stream.Write (extMethodBuffer);
 						stream.Write (assemblyLookupMemory.ToArray ());
+						stream.Flush ();
 					}
-					typeLookup = null;
-					extensionMethodLookup = null;
-					assemblyLookups = null;
 				}
 
 				Dictionary<int, List<int>> typeLookup = new Dictionary<int, List<int>>  ();
 				Dictionary<int, List<int>> extensionMethodLookup = new Dictionary<int, List<int>>  ();
 				List<AssemblyLookup> assemblyLookups = new List<AssemblyLookup> ();
+				Dictionary<int, string> typeCheck = new Dictionary<int, string> ();
+				Dictionary<int, string> methodCheck = new Dictionary<int, string> ();
 
 				void AddExtensionMethodlookup(IUnresolvedMethod method, SystemAssembly assembly)
 				{
 					List<int> list;
-					if (!extensionMethodLookup.TryGetValue (method.Name.GetHashCode (), out list)) {
+					var hash = GetStableHashCode (method.Name);
+
+					if (!extensionMethodLookup.TryGetValue (hash, out list)) {
 						list = new List<int> ();
-						extensionMethodLookup [method.Name.GetHashCode ()] = list;
+						extensionMethodLookup [hash] = list;
+					} else {
+						string existingString;
+						if (methodCheck.TryGetValue (hash, out existingString)) {
+							if (existingString != method.Name)
+								LoggingService.LogError ("Duplicate hash for " + existingString + " and "+ method.Name); 
+						} else {
+							methodCheck.Add (hash, method.Name);
+						}
 					}
 					var assemblyLookup = GetLookup (assembly, method.DeclaringTypeDefinition.Namespace);
 					if (!list.Any (a => a.Equals (assemblyLookup))) {
@@ -2354,9 +2362,18 @@ namespace MonoDevelop.Ide.TypeSystem
 				{
 					List<int> list;
 					var id = GetIdentifier (type.Name, type.TypeParameters.Count);
-					if (!typeLookup.TryGetValue (GetStableHashCode (id), out list)) {
+					var hash = GetStableHashCode (id);
+					if (!typeLookup.TryGetValue (hash, out list)) {
 						list = new List<int> ();
-						typeLookup [GetStableHashCode (id)] = list;
+						typeLookup [hash] = list;
+					} else {
+						string existingString;
+						if (typeCheck.TryGetValue (hash, out existingString)) {
+							if (existingString != id)
+								LoggingService.LogError ("Duplicate hash for " + existingString + " and "+ id); 
+						} else {
+							typeCheck.Add (hash, id);
+						}
 					}
 
 					var assemblyLookup = GetLookup (assembly, type.Namespace);
@@ -2373,8 +2390,6 @@ namespace MonoDevelop.Ide.TypeSystem
 						}
 					}
 				}
-
-				#endregion
 			}
 
 			public class AssemblyLookup
@@ -2483,7 +2498,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				} catch (Exception e) {
 					LoggingService.LogWarning ("Can't read framework cache - recreating...", e);
 				}
-				var creator = new FrameworkLookup.FrameWorkCreator ();
+				var creator = new FrameworkLookup.FrameworkBuilder ();
 				frameworkLookup [netProject.TargetFramework.Name] = result;
 				foreach (var assembly in GetFrameworkAssemblies (netProject)) {
 					var ctx = LoadAssemblyContext (assembly.Location);
