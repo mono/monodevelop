@@ -516,6 +516,21 @@ namespace MonoDevelop.Ide.TypeSystem
 			return null;
 		}
 
+		/// <summary>
+		/// Gets the cache directory for a projects derived data cache directory.
+		/// If forceCreation is set to false the method may return null, if the cache doesn't exist.
+		/// </summary>
+		/// <returns>The cache directory.</returns>
+		/// <param name="project">The project to get the cache for.</param>
+		/// <param name="forceCreation">If set to <c>true</c> the creation is forced and the method doesn't return null.</param>
+		public static string GetCacheDirectory (Project project, bool forceCreation = false)
+		{
+			var result = GetCacheDirectory (project.FileName);
+			if (forceCreation && result == null)
+				result = CreateCacheDirectory (project.FileName);
+			return result;
+		}
+
 		struct CacheDirectoryInfo
 		{
 			public static readonly CacheDirectoryInfo Empty = new CacheDirectoryInfo ();
@@ -709,7 +724,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (!wrapper.WasChanged)
 				return;
-			string cacheDir = GetCacheDirectory (project.FileName) ?? CreateCacheDirectory (project.FileName);
+			string cacheDir = GetCacheDirectory (project, true);
 			TouchCache (cacheDir);
 			string fileName = Path.GetTempFileName ();
 			
@@ -895,7 +910,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (extensionObjects.TryGetValue (typeof (T), out result))
 					return (T)result;
 
-				string cacheDir = GetCacheDirectory (Project.FileName);
+				string cacheDir = GetCacheDirectory (Project);
 				if (cacheDir == null)
 					return default(T);
 
@@ -1055,7 +1070,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				static IProjectContent LoadProjectCache (Project project)
 				{
-					string cacheDir = GetCacheDirectory (project.FileName);
+					string cacheDir = GetCacheDirectory (project);
 					if (cacheDir == null) {
 						return null;
 					}
