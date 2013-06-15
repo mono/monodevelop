@@ -139,8 +139,6 @@ namespace MonoDevelop.CSharp.Highlighting
 			if (guiDocument != null && SemanticHighlightingEnabled) {
 				var parsedDocument = guiDocument.ParsedDocument;
 				if (parsedDocument != null) {
-					unit = parsedDocument.GetAst<SyntaxTree> ();
-					parsedFile = parsedDocument.ParsedFile as CSharpUnresolvedFile;
 					if (guiDocument.Project != null && guiDocument.IsCompileableInProject) {
 						src = new CancellationTokenSource ();
 						var newResolverTask = guiDocument.GetSharedResolver ();
@@ -149,6 +147,8 @@ namespace MonoDevelop.CSharp.Highlighting
 							var newResolver = newResolverTask.Result;
 							if (newResolver == null)
 								return;
+							unit = newResolver.RootNode as SyntaxTree;
+							parsedFile = newResolver.UnresolvedFile;
 							var visitor = new QuickTaskVisitor (newResolver, cancellationToken);
 							try {
 								unit.AcceptVisitor (visitor);
