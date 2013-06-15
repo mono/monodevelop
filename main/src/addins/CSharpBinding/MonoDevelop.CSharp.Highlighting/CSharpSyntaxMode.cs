@@ -147,6 +147,8 @@ namespace MonoDevelop.CSharp.Highlighting
 						var cancellationToken = src.Token;
 						System.Threading.Tasks.Task.Factory.StartNew (delegate {
 							var newResolver = newResolverTask.Result;
+							if (newResolver == null)
+								return;
 							var visitor = new QuickTaskVisitor (newResolver, cancellationToken);
 							try {
 								unit.AcceptVisitor (visitor);
