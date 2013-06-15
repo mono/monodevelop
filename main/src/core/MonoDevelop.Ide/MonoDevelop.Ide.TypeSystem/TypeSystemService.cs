@@ -2107,18 +2107,19 @@ namespace MonoDevelop.Ide.TypeSystem
 			return result;
 		}
 
-		public static readonly Version FrameworkLookupVersion = new Version (2, 0, 0);
-
 		public class FrameworkLookup 
 		{
+			public static readonly Version CurrentVersion = new Version (2, 0, 1);
+
+			public static readonly FrameworkLookup Empty = new FrameworkLookup () { Version = CurrentVersion };
+
 			public Version Version {
 				get;
-				set;
+				private set;
 			}
 
-			public FrameworkLookup ()
+			FrameworkLookup ()
 			{
-				this.Version = FrameworkLookupVersion;
 			}
 
 			public IEnumerable<AssemblyLookup> GetExtensionMethodLookups (UnknownMemberResolveResult uiResult)
@@ -2140,9 +2141,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				var identifier = GetIdentifier (name, typeParameterCount);
 				foreach (var lookup in GetLookup (identifier, typeLookupTable)) {
-					if (node.ToString ().StartsWith (lookup.Namespace))
+					if (node.ToString ().StartsWith (lookup.Namespace, StringComparison.Ordinal))
 						yield return lookup;
-
 				}
 			}
 
@@ -2154,11 +2154,11 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				if (!lookupTable.TryGetValue (GetStableHashCode (identifier), out listPtr)) 
 					yield break;
-				using (var reader = new BinaryReader (File.OpenRead (fileName), Encoding.UTF8)) {
+				using (var reader = new BinaryReader (File.Open (fileName, FileMode.Open, FileAccess.Read, FileShare.Read), Encoding.UTF8)) {
 					reader.BaseStream.Seek (listPtr, SeekOrigin.Begin);
 					var b = reader.ReadInt32 ();
 					while (b --> 0) {
-						var assembly = reader.ReadInt32 ();
+						var assembly = reader.ReadUInt16 ();
 						reader.BaseStream.Seek (assemblyLookuptTable [assembly], SeekOrigin.Begin);
 
 						var package = reader.ReadString ();
@@ -2174,37 +2174,43 @@ namespace MonoDevelop.Ide.TypeSystem
 			Dictionary<int, int> extLookupTable;
 			string fileName;
 
-			public void OpenDataFile (string fileName)
+			internal static FrameworkLookup Load (string fileName)
 			{
-				this.fileName = fileName;
+				var result = new FrameworkLookup ();
+
+				result.fileName = fileName;
 				var fs = File.OpenRead (fileName);
 				using (var reader = new BinaryReader (fs, Encoding.UTF8)) {
+					var major = reader.ReadByte ();
+					var minor = reader.ReadByte ();
+					var build = reader.ReadByte ();
+					result.Version = new Version (major, minor, build);
 					int typeLookupListCount = reader.ReadInt32 ();
 					int extLookupListCount = reader.ReadInt32 ();
 					int assemblyLookupCount = reader.ReadInt32 ();
 
-					assemblyLookuptTable = new int[assemblyLookupCount];
+					result.assemblyLookuptTable = new int[assemblyLookupCount];
 					for (int i = 0; i < assemblyLookupCount; i++) {
-						assemblyLookuptTable[i] = reader.ReadInt32 ();
+						result.assemblyLookuptTable[i] = reader.ReadInt32 ();
 					}
 
-					typeLookupTable = new Dictionary<int, int> ();
+					result.typeLookupTable = new Dictionary<int, int> ();
 					for (int i = 0; i < typeLookupListCount; i++) {
 						var type = reader.ReadInt32 ();
 						var listOffset = reader.ReadInt32 ();
-						typeLookupTable [type] = listOffset;
+						result.typeLookupTable [type] = listOffset;
 					}
 
-					extLookupTable 	= new Dictionary<int, int> ();
+					result.extLookupTable 	= new Dictionary<int, int> ();
 					for (int i = 0; i < extLookupListCount; i++) {
 						var type = reader.ReadInt32 ();
 						var listOffset = reader.ReadInt32 ();
-						extLookupTable [type] = listOffset;
+						result.extLookupTable [type] = listOffset;
 					}
 				}
+				return result;
 			}
 
-			
 			/// <summary>
 			/// Retrieves a hash code for the specified string that is stable across
 			/// .NET upgrades.
@@ -2232,51 +2238,39 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			internal class FrameworkBuilder 
 			{
-				int GetLookup (SystemAssembly assembly, string ns)
+				Dictionary<int, List<ushort>> typeLookup = new Dictionary<int, List<ushort>>  ();
+				Dictionary<int, List<ushort>> extensionMethodLookup = new Dictionary<int, List<ushort>>  ();
+				List<AssemblyLookup> assemblyLookups = new List<AssemblyLookup> ();
+				Dictionary<int, string> methodCheck = new Dictionary<int, string> ();
+				Dictionary<int, string> typeCheck = new Dictionary<int, string> ();
+
+				static int[] WriteTable (MemoryStream stream, Dictionary<int, List<ushort>> table, out List<KeyValuePair<int, List<ushort>>> list)
 				{
-					for (int i = 0; i < assemblyLookups.Count; i++) {
-						var lookup = assemblyLookups [i];
-						if (lookup.FullName == assembly.FullName && lookup.Namespace == ns)
-							return i;
-						
+					list = new List<KeyValuePair<int, List<ushort>>> (table);
+					list.Sort ((x, y) => x.Key.CompareTo (y.Key));
+
+					var result = new int[list.Count];
+					using (var bw = new BinaryWriter (stream)) {
+						for (int i = 0; i < result.Length; i++) {
+							result [i] = (int)stream.Length;
+							bw.Write (list [i].Value.Count);
+							foreach (var ii in list [i].Value)
+								bw.Write (ii);
+						}
 					}
-					var result = new AssemblyLookup (assembly, ns);
-					assemblyLookups.Add (result);
-					return assemblyLookups.Count - 1;
+
+					return result;
 				}
 
 				public void Store (string fileName)
 				{
 					var typeLookupMemory = new MemoryStream ();
-					var typeLookupList = new List<KeyValuePair<int, List<int>>> (this.typeLookup);
-					typeLookupList.Sort ((x, y) => x.Key.CompareTo (y.Key));
-					var typeTable = new int[typeLookupList.Count];
-
-					using (var bw = new BinaryWriter (typeLookupMemory)) {
-						for (int i = 0; i < typeTable.Length; i++) {
-							typeTable [i] = (int)typeLookupMemory.Length;
-							bw.Write (typeLookupList [i].Value.Count);
-							foreach (var ii in typeLookupList [i].Value)
-								bw.Write (ii);
-						}
-					}
+					List<KeyValuePair<int, List<ushort>>> typeLookupList;
+					var typeTable = WriteTable (typeLookupMemory, typeLookup, out typeLookupList);
 
 					var extMethodLookupMemory = new MemoryStream ();
-					var extMethodLookuplist = new List<KeyValuePair<int, List<int>>> (this.extensionMethodLookup);
-					extMethodLookuplist.Sort ((x, y) => x.Key.CompareTo (y.Key));
-
-					var extMethodTable = new int[extMethodLookuplist.Count];
-
-					using (var bw = new BinaryWriter (extMethodLookupMemory)) {
-
-						for (int i = 0; i < extMethodTable.Length; i++) {
-							extMethodTable [i] = (int)extMethodLookupMemory.Length;
-
-							bw.Write (extMethodLookuplist [i].Value.Count);
-							foreach (var ii in extMethodLookuplist [i].Value)
-								bw.Write (ii);
-						}
-					}
+					List<KeyValuePair<int, List<ushort>>> extMethodLookuplist;
+					var extMethodTable = WriteTable (extMethodLookupMemory, extensionMethodLookup, out extMethodLookuplist);
 
 					var assemblyLookupMemory = new MemoryStream ();
 					var assemblyPositionTable = new int[assemblyLookups.Count];
@@ -2291,11 +2285,16 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 
 					using (var stream = new BinaryWriter (File.OpenWrite (fileName), Encoding.UTF8)) {
+						// write header [Version] [#Types] [#Methods] [#Assemblies]
+						stream.Write ((byte)CurrentVersion.Major);
+						stream.Write ((byte)CurrentVersion.Minor);
+						stream.Write ((byte)CurrentVersion.Build);
+
 						stream.Write (typeLookupList.Count);
 						stream.Write (extMethodLookuplist.Count);
 						stream.Write (assemblyLookups.Count);
 
-						const int headerSize = 4 + 4 + 4;
+						const int headerSize = 3 + 4 + 4 + 4;
 
 						var typeBuffer = typeLookupMemory.ToArray ();
 						var extMethodBuffer = extMethodLookupMemory.ToArray ();
@@ -2328,64 +2327,56 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 				}
 
-				Dictionary<int, List<int>> typeLookup = new Dictionary<int, List<int>>  ();
-				Dictionary<int, List<int>> extensionMethodLookup = new Dictionary<int, List<int>>  ();
-				List<AssemblyLookup> assemblyLookups = new List<AssemblyLookup> ();
-				Dictionary<int, string> typeCheck = new Dictionary<int, string> ();
-				Dictionary<int, string> methodCheck = new Dictionary<int, string> ();
-
-				void AddExtensionMethodlookup(IUnresolvedMethod method, SystemAssembly assembly)
+				ushort GetLookup (SystemAssembly assembly, string ns)
 				{
-					List<int> list;
-					var hash = GetStableHashCode (method.Name);
-
-					if (!extensionMethodLookup.TryGetValue (hash, out list)) {
-						list = new List<int> ();
-						extensionMethodLookup [hash] = list;
-					} else {
-						string existingString;
-						if (methodCheck.TryGetValue (hash, out existingString)) {
-							if (existingString != method.Name)
-								LoggingService.LogError ("Duplicate hash for " + existingString + " and "+ method.Name); 
-						} else {
-							methodCheck.Add (hash, method.Name);
-						}
+					for (int i = 0; i < assemblyLookups.Count; i++) {
+						var lookup = assemblyLookups [i];
+						if (lookup.FullName == assembly.FullName && lookup.Namespace == ns)
+							return (ushort)i;
 					}
-					var assemblyLookup = GetLookup (assembly, method.DeclaringTypeDefinition.Namespace);
-					if (!list.Any (a => a.Equals (assemblyLookup))) {
-						list.Add (assemblyLookup);
-					}
+					var result = new AssemblyLookup (assembly, ns);
+					assemblyLookups.Add (result);
+					var index = assemblyLookups.Count - 1;
+					if (index > ushort.MaxValue)
+						throw new InvalidOperationException ("Assembly lookup list overflow > " + ushort.MaxValue + " assemblies.");
+					return (ushort)index;
 				}
 
+				bool AddToTable (SystemAssembly assembly, Dictionary<int, List<ushort>> table, Dictionary<int, string> checkTable, string id, string ns)
+				{
+					List<ushort> list;
+					var hash = GetStableHashCode (id);
+
+					if (!table.TryGetValue (hash, out list)) {
+						list = new List<ushort> ();
+						table [hash] = list;
+					} else {
+						string existingString;
+						if (checkTable.TryGetValue (hash, out existingString)) {
+							if (existingString != id)
+								throw new InvalidOperationException ("Duplicate hash for " + existingString + " and "+ id); 
+						} else {
+							checkTable.Add (hash, id);
+						}
+					}
+					var assemblyLookup = GetLookup (assembly, ns);
+					if (!list.Any (a => a.Equals (assemblyLookup))) {
+						list.Add (assemblyLookup);
+						return true;
+					}
+					return false;
+				}
 
 				public void AddLookup (IUnresolvedTypeDefinition type, SystemAssembly assembly)
 				{
-					List<int> list;
 					var id = GetIdentifier (type.Name, type.TypeParameters.Count);
-					var hash = GetStableHashCode (id);
-					if (!typeLookup.TryGetValue (hash, out list)) {
-						list = new List<int> ();
-						typeLookup [hash] = list;
-					} else {
-						string existingString;
-						if (typeCheck.TryGetValue (hash, out existingString)) {
-							if (existingString != id)
-								LoggingService.LogError ("Duplicate hash for " + existingString + " and "+ id); 
-						} else {
-							typeCheck.Add (hash, id);
-						}
-					}
-
-					var assemblyLookup = GetLookup (assembly, type.Namespace);
-					if (!list.Any (a => a == assemblyLookup)) {
-						list.Add (assemblyLookup);
-
+					if (AddToTable (assembly, typeLookup, typeCheck, id, type.Namespace)) {
 						if (type.IsSealed || type.IsStatic) {
 							foreach (var method in type.Methods) {
 								var m = method as DefaultUnresolvedMethod;
 								if (m == null || !m.IsExtensionMethod)
 									continue;
-								AddExtensionMethodlookup (method, assembly);
+								AddToTable (assembly, extensionMethodLookup, methodCheck, method.Name, method.DeclaringTypeDefinition.Namespace);
 							}
 						}
 					}
@@ -2486,37 +2477,44 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (frameworkLookup.TryGetValue (netProject.TargetFramework.Name, out result)) 
 					return result;
 				var cache = GetCacheDirectory (netProject.TargetFramework);
-				fileName = Path.Combine (cache, "FrameworkLookup_" + FrameworkLookupVersion + ".dat");
+				fileName = Path.Combine (cache, "FrameworkLookup_" + FrameworkLookup.CurrentVersion + ".dat");
 				try {
 					if (File.Exists (fileName)) {
-						result = new FrameworkLookup ();
-						frameworkLookup [netProject.TargetFramework.Name] = result = new FrameworkLookup ();
-						result.OpenDataFile (fileName);
-						if (result.Version == FrameworkLookupVersion)
+						result = FrameworkLookup.Load (fileName);
+						if (result != null && result.Version == FrameworkLookup.CurrentVersion) {
+							frameworkLookup [netProject.TargetFramework.Name] = result;
 							return result;
+						}
 					}
 				} catch (Exception e) {
 					LoggingService.LogWarning ("Can't read framework cache - recreating...", e);
 				}
-				var creator = new FrameworkLookup.FrameworkBuilder ();
-				frameworkLookup [netProject.TargetFramework.Name] = result;
-				foreach (var assembly in GetFrameworkAssemblies (netProject)) {
-					var ctx = LoadAssemblyContext (assembly.Location);
-					foreach (var type in ctx.Ctx.GetAllTypeDefinitions ()) {
-						if (!type.IsPublic)
-							continue;
-						creator.AddLookup (type, assembly);
-					}
-				}
+
 				try {
+					var creator = new FrameworkLookup.FrameworkBuilder ();
+					foreach (var assembly in GetFrameworkAssemblies (netProject)) {
+						var ctx = LoadAssemblyContext (assembly.Location);
+						foreach (var type in ctx.Ctx.GetAllTypeDefinitions ()) {
+							if (!type.IsPublic)
+								continue;
+							creator.AddLookup (type, assembly);
+						}
+					}
+
 					creator.Store (fileName);
 				} catch (Exception e){
 					LoggingService.LogError ("Error while storing framework lookup", e);
-					return new FrameworkLookup ();
+					return FrameworkLookup.Empty;
 				}
-				result = new FrameworkLookup ();
-				result.OpenDataFile (fileName);
-				return result;
+
+				try {
+					result = FrameworkLookup.Load (fileName);
+					frameworkLookup [netProject.TargetFramework.Name] = result;
+					return result;
+				} catch (Exception e) {
+					LoggingService.LogError ("Error loading framework lookup", e);
+					return FrameworkLookup.Empty;
+				}
 			}
 		}
 
