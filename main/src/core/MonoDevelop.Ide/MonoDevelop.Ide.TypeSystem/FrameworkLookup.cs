@@ -40,13 +40,28 @@ namespace MonoDevelop.Ide.TypeSystem
 	/// </summary>
 	public class FrameworkLookup 
 	{
+		/* Binary format:
+		 * [Header]
+		 *    [Version] : [Major (byte)] [Minor (byte)] [Build  (byte)]
+		 * 	  [#Types (int)]
+		 *    [#Methods (int)]
+		 *    [#Assemblies (int)]
+		 * [AssemblyListTable] : #Assemblies x [OffsetToAssemblyLists (int)]
+		 * [TypeLookupTable] : #Types x ( [NameHash (int)] [AssemblyPtrToAssemblyListTable (ushort)]
+		 * [ExtMethodLookupTable] : #Methods x ( [NameHash (int)] [AssemblyPtrToAssemblyListTable (ushort)]
+		 * [AssemblyLists] 
+		 *    [#Count (byte)]
+		 *    #Count x [AssemblyLookup] : [Package (string)] [FullName (string)] [Namespace (string)] 
+		*/
+		const int headerSize = 3 + 4 + 4 + 4;
+
 		public static readonly Version CurrentVersion = new Version (2, 0, 1);
 		public static readonly FrameworkLookup Empty = new FrameworkLookup ();
 
 		string fileName;
-		int[] assemblyLookuptTable;
-		Dictionary<int, int> typeLookupTable;
-		Dictionary<int, int> extLookupTable;
+		int[] assemblyListTable;
+		int[] typeLookupTable;
+		int[] extLookupTable;
 
 		/// <summary>
 		/// This method tries to get a matching extension method.
@@ -55,7 +70,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		/// <param name="resolveResult">The resolve result.</param>
 		public IEnumerable<AssemblyLookup> GetExtensionMethodLookups (UnknownMemberResolveResult resolveResult)
 		{
-			return GetLookup (resolveResult.MemberName, extLookupTable);
+			return GetLookup (resolveResult.MemberName, extLookupTable, headerSize + assemblyListTable.Length * 4 + typeLookupTable.Length * 8);
 		}
 
 		/// <summary>
@@ -70,7 +85,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			string name = isInsideAttributeType ? resolveResult.Identifier + "Attribute" : resolveResult.Identifier;
 
 			var identifier = GetIdentifier (name, typeParameterCount);
-			return GetLookup (identifier, typeLookupTable);
+			return GetLookup (identifier, typeLookupTable, headerSize + assemblyListTable.Length * 4);
 		}
 
 		/// <summary>
@@ -85,7 +100,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			string name = isInsideAttributeType ? resolveResult.MemberName + "Attribute" : resolveResult.MemberName;
 
 			var identifier = GetIdentifier (name, typeParameterCount);
-			foreach (var lookup in GetLookup (identifier, typeLookupTable)) {
+			foreach (var lookup in GetLookup (identifier, typeLookupTable, headerSize + assemblyListTable.Length * 4)) {
 				if (node.ToString ().StartsWith (lookup.Namespace, StringComparison.Ordinal))
 					yield return lookup;
 			}
@@ -208,23 +223,23 @@ namespace MonoDevelop.Ide.TypeSystem
 				int extLookupListCount = reader.ReadInt32 ();
 				int assemblyLookupCount = reader.ReadInt32 ();
 
-				result.assemblyLookuptTable = new int[assemblyLookupCount];
+				result.assemblyListTable = new int[assemblyLookupCount];
 				for (int i = 0; i < assemblyLookupCount; i++) {
-					result.assemblyLookuptTable[i] = reader.ReadInt32 ();
+					result.assemblyListTable[i] = reader.ReadInt32 ();
 				}
 
-				result.typeLookupTable = new Dictionary<int, int> ();
+				result.typeLookupTable = new int[typeLookupListCount];
 				for (int i = 0; i < typeLookupListCount; i++) {
-					var type = reader.ReadInt32 ();
-					var listOffset = reader.ReadInt32 ();
-					result.typeLookupTable [type] = listOffset;
+					result.typeLookupTable [i] = reader.ReadInt32 ();
+					// skip list offset
+					reader.ReadInt32 ();
 				}
 
-				result.extLookupTable 	= new Dictionary<int, int> ();
+				result.extLookupTable = new int[extLookupListCount];
 				for (int i = 0; i < extLookupListCount; i++) {
-					var type = reader.ReadInt32 ();
-					var listOffset = reader.ReadInt32 ();
-					result.extLookupTable [type] = listOffset;
+					result.extLookupTable [i] = reader.ReadInt32 ();
+					// skip list offset
+					reader.ReadInt32 ();
 				}
 			}
 			return result;
@@ -234,20 +249,24 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 		}
 
-		IEnumerable<AssemblyLookup> GetLookup (string identifier, Dictionary<int, int> lookupTable)
+		IEnumerable<AssemblyLookup> GetLookup (string identifier, int[] lookupTable, int tableOffset)
 		{
 			if (lookupTable == null)
 				yield break;
-			int listPtr;
 
-			if (!lookupTable.TryGetValue (GetStableHashCode (identifier), out listPtr)) 
+			int index = Array.BinarySearch (lookupTable, GetStableHashCode (identifier));
+			if (index < 0)
 				yield break;
+
 			using (var reader = new BinaryReader (File.Open (fileName, FileMode.Open, FileAccess.Read, FileShare.Read), Encoding.UTF8)) {
+				reader.BaseStream.Seek (tableOffset + index * 8 + 4, SeekOrigin.Begin);
+				int listPtr = reader.ReadInt32 ();
+
 				reader.BaseStream.Seek (listPtr, SeekOrigin.Begin);
 				var b = reader.ReadInt32 ();
 				while (b --> 0) {
 					var assembly = reader.ReadUInt16 ();
-					reader.BaseStream.Seek (assemblyLookuptTable [assembly], SeekOrigin.Begin);
+					reader.BaseStream.Seek (assemblyListTable [assembly], SeekOrigin.Begin);
 
 					var package = reader.ReadString ();
 					var fullName = reader.ReadString ();
@@ -340,7 +359,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 
 				using (var stream = new BinaryWriter (File.OpenWrite (fileName), Encoding.UTF8)) {
-					// write header [Version] [#Types] [#Methods] [#Assemblies]
 					stream.Write ((byte)CurrentVersion.Major);
 					stream.Write ((byte)CurrentVersion.Minor);
 					stream.Write ((byte)CurrentVersion.Build);
@@ -349,19 +367,16 @@ namespace MonoDevelop.Ide.TypeSystem
 					stream.Write (extMethodLookuplist.Count);
 					stream.Write (assemblyLookups.Count);
 
-					const int headerSize = 3 + 4 + 4 + 4;
-
 					var typeBuffer = typeLookupMemory.ToArray ();
 					var extMethodBuffer = extMethodLookupMemory.ToArray ();
 
 					int dataOffset = 
 						headerSize + 
-							assemblyLookups.Count * 4 + 
-							typeLookupList.Count * (4 + 4) + 
-							extMethodLookuplist.Count * (4 + 4);
+						assemblyLookups.Count * 4 + 
+						typeLookupList.Count * (4 + 4) + 
+						extMethodLookuplist.Count * (4 + 4);
 
 					for (int i = 0; i < assemblyLookups.Count; i++) {
-						var lookup = assemblyLookups[i];
 						stream.Write ((int)(dataOffset + typeBuffer.Length + extMethodBuffer.Length + assemblyPositionTable[i]));
 					}
 
