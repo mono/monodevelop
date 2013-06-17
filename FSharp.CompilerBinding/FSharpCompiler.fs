@@ -101,10 +101,10 @@ type FSharpCompiler(asmCompiler:Assembly, asmCompilerServer:Assembly, actualVers
             match reqVersion with FSharp_2_0 -> FSharp_3_0 | FSharp_3_0 -> FSharp_2_0
 
         let checkVersion (ver:FSharpCompilerVersion) (ass:System.Reflection.Assembly) = 
-            if ass = null then failwith (sprintf "no assembly found, wanted verion %s" (ver.ToString())) else
+            if ass = null then failwith (sprintf "no assembly found, wanted version %s" (ver.ToString())) else
             let nm = ass.GetName()
-            if nm = null then failwith (sprintf "no assembly name found, wanted verion %s" (ver.ToString())) 
-            elif nm.Name = null then failwith (sprintf "no assembly name property Name found, nm = %s, wanted verion %s" (nm.ToString()) (ver.ToString()))
+            if nm = null then failwith (sprintf "no assembly name found, wanted version %s" (ver.ToString()))
+            elif nm.Name = null then failwith (sprintf "no assembly name property Name found, nm = %s, wanted version %s" (nm.ToString()) (ver.ToString()))
             elif nm.Version.ToString() <> ver.ToString() then failwith (sprintf "loaded %s, but had wrong version, wanted %s, got %s" nm.Name (ver.ToString()) (nm.Version.ToString()))
             else ass
 
