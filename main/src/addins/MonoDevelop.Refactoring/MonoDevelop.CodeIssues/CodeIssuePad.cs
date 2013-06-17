@@ -63,11 +63,11 @@ namespace MonoDevelop.CodeIssues
 			view.HeadersVisible = false;
 
 			view.Columns.Add ("Name", text);
+			
+			view.RowActivated += OnRowActivated;
 			PackStart (view, BoxMode.FillAndExpand);
-
 		}
 		
-
 		void StartAnalyzation (object sender, EventArgs e)
 		{
 			var solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
@@ -151,7 +151,13 @@ namespace MonoDevelop.CodeIssues
 					monitor.EndTask ();
 				}
 			});
-
+		}
+		
+		void OnRowActivated (object sender, TreeViewRowEventArgs e)
+		{
+			var navigator = store.GetNavigatorAt (e.Position);
+			var issue = navigator.GetValue (region);
+			IdeApp.Workbench.OpenDocument (issue.FileName, issue.BeginLine, issue.BeginColumn);
 		}
 	}
 
