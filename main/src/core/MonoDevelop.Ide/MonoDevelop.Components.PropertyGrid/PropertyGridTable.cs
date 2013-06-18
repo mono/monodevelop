@@ -572,9 +572,16 @@ namespace MonoDevelop.Components.PropertyGrid
 			if (row != null) {
 				tooltipWindow = new TooltipPopoverWindow ();
 				tooltipWindow.ShowArrow = true;
-				var s = "<b>" + row.Property.DisplayName + "</b>\n\n";
-				s += GLib.Markup.EscapeText (row.Property.Description);
-				tooltipWindow.Markup = s;
+				var s = new System.Text.StringBuilder ("<b>" + row.Property.DisplayName + "</b>");
+				s.AppendLine ();
+				s.AppendLine ();
+				s.Append (GLib.Markup.EscapeText (row.Property.Description));
+				if (row.Property.Converter.CanConvertTo (typeof(string))) {
+					s.AppendLine ();
+					s.AppendLine ();
+					s.Append ("Value: " + row.Property.GetValue (row.Instace));
+				}
+				tooltipWindow.Markup = s.ToString ();
 				tooltipWindow.ShowPopup (this, new Gdk.Rectangle (0, row.EditorBounds.Y, Allocation.Width, row.EditorBounds.Height), PopupPosition.Right);
 			}
 		}
