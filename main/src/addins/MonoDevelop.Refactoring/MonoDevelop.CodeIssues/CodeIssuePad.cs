@@ -35,7 +35,6 @@ using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using MonoDevelop.Refactoring;
 using System.Linq;
-using System.Collections.Generic;
 using MonoDevelop.Core;
 using System.Threading.Tasks;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -47,25 +46,33 @@ namespace MonoDevelop.CodeIssues
 	public class CodeIssuePadControl : VBox
 	{
 		TreeView view = new TreeView ();
-		DataField<string> text = new DataField<string> ();
-		DataField<DomRegion> region = new DataField<DomRegion> ();
+		DataField<string> textField = new DataField<string> ();
+		DataField<IssueSummary> summaryField = new DataField<IssueSummary> ();
+		DataField<IssueGroup> groupField = new DataField<IssueGroup> ();
 		Button runButton = new Button ("Run");
+		
+		IssueGroup rootGroup;
 
 		TreeStore store;
 
 		public CodeIssuePadControl ()
 		{
+		
 			runButton.Clicked += StartAnalyzation;
 			PackStart (runButton, BoxMode.None);
 
-			store = new TreeStore (text, region);
+			store = new TreeStore (textField, summaryField, groupField);
 			view.DataSource = store;
 			view.HeadersVisible = false;
 
-			view.Columns.Add ("Name", text);
+			view.Columns.Add ("Name", textField);
 			
 			view.RowActivated += OnRowActivated;
 			PackStart (view, BoxMode.FillAndExpand);
+			
+			rootGroup = new IssueGroup (new CategoryGroupingProvider (), "root group");
+			rootGroup.ChildGroupAdded += GetGroupAddedHandler (rootGroup);
+			rootGroup.IssueSummaryAdded += GetIssueSummaryAddedHandler (rootGroup);
 		}
 		
 		void StartAnalyzation (object sender, EventArgs e)
@@ -75,8 +82,9 @@ namespace MonoDevelop.CodeIssues
 				return;
 			runButton.Sensitive = false;
 			store.Clear ();
+			rootGroup.Clear();
 			var rootNode = store.AddNode ();
-			rootNode.SetValue (text, "Analyzing...");
+			rootNode.SetValue (textField, "Analyzing...");
 			ThreadPool.QueueUserWorkItem (delegate {
 
 				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor ("Analyzing solution", null, false)) {
@@ -85,13 +93,11 @@ namespace MonoDevelop.CodeIssues
 						work += project.Files.Count (f => f.BuildAction == BuildAction.Compile);
 					}
 					monitor.BeginTask ("Analyzing solution", work);
-					int allIssues = 0;
 					TypeSystemParser parser = null;
 					string lastMime = null;
 					CodeIssueProvider[] codeIssueProvider = null;
 					foreach (var project in solution.GetAllProjects ()) {
 						var compilation = TypeSystemService.GetCompilation (project);
-						List<CodeIssue> codeIssues = new List<CodeIssue> ();
 						Parallel.ForEach (project.Files, file => {
 							if (file.BuildAction != BuildAction.Compile)
 								return;
@@ -119,9 +125,14 @@ namespace MonoDevelop.CodeIssues
 									return;
 								try {
 									foreach (var r in provider.GetIssues (context, CancellationToken.None)) {
-										lock (codeIssues) {
-											codeIssues.Add (r);
-										}
+										var issue = new IssueSummary {
+											IssueDescription = r.Description,
+											Region = r.Region,
+											ProviderTitle = provider.Title,
+											ProviderDescription = provider.Description,
+											ProviderCategory = provider.Category
+										};
+										rootGroup.Push (issue);
 									}
 								} catch (Exception ex) {
 									LoggingService.LogError ("Error while running code issue on:"+ editor.FileName, ex);
@@ -130,22 +141,9 @@ namespace MonoDevelop.CodeIssues
 							lastMime = editor.MimeType;
 							monitor.Step (1);
 						});
-						Application.Invoke (delegate {
-							var projectNode = store.AddNode ();
-							projectNode.SetValue (text, project.Name + "( " + codeIssues.Count + " issues)");
-							foreach (var issue in codeIssues) {
-								var child = projectNode.AddChild ();
-								child.SetValue (text, issue.Description + " - " + issue.Region);
-								child.SetValue (region, issue.Region);
-								child.MoveToParent ();
-							}
-							projectNode.MoveToParent ();
-							allIssues += codeIssues.Count;
-						});
-
 					}
 					Application.Invoke (delegate {
-						rootNode.SetValue (text, "Found issues :" + allIssues);
+						rootNode.SetValue (textField, "Found issues: " + rootGroup.IssueCount);
 						runButton.Sensitive = true;
 					});
 					monitor.EndTask ();
@@ -153,11 +151,72 @@ namespace MonoDevelop.CodeIssues
 			});
 		}
 		
+		Action<IssueGroup> GetGroupAddedHandler (IssueGroup parentGroup) 
+		{
+			return group => {
+				Application.Invoke (delegate {
+					var position = parentGroup.Position;
+					TreeNavigator navigator;
+					if (position == null) {
+						navigator = store.AddNode();
+					} else {
+						navigator = store.GetNavigatorAt(position).AddChild();
+					}
+					group.Position = navigator.CurrentPosition;
+					group.ChildGroupAdded += GetGroupAddedHandler(group);
+					group.IssueSummaryAdded += GetIssueSummaryAddedHandler(group);
+					
+					navigator.SetValue (groupField, group);
+					UpdateParents (navigator);
+				});
+			};
+		}
+
+		Action<IssueSummary> GetIssueSummaryAddedHandler (IssueGroup parentGroup)
+		{
+			return issue => {
+				Application.Invoke (delegate {
+					var position = parentGroup.Position;
+					TreeNavigator navigator;
+					if (position == null) {
+						navigator = store.AddNode();
+					} else {
+						navigator = store.GetNavigatorAt(position).AddChild();
+					}
+					navigator.SetValue (textField, string.Format ("{0}: {1}", issue.Severity, issue.IssueDescription));
+					UpdateParents (navigator);
+				});
+			};
+		}
+
+		void UpdateParents (TreeNavigator navigator)
+		{
+			do {
+				var group = navigator.GetValue (groupField);
+				if (group != null) {
+					navigator.SetValue (textField, string.Format ("{0} ({1} issues)", group.Description, group.IssueCount));
+				}
+			} while (navigator.MoveToParent());
+		}
+		
 		void OnRowActivated (object sender, TreeViewRowEventArgs e)
 		{
 			var navigator = store.GetNavigatorAt (e.Position);
-			var issue = navigator.GetValue (region);
-			IdeApp.Workbench.OpenDocument (issue.FileName, issue.BeginLine, issue.BeginColumn);
+			var issueSummary = navigator.GetValue (summaryField);
+			if (issueSummary != null) {
+				var region = issueSummary.Region;
+				IdeApp.Workbench.OpenDocument (region.FileName, region.BeginLine, region.BeginColumn);
+			} else {
+				var issueGroup = navigator.GetValue (groupField);
+				if (issueGroup != null) {
+					var position = issueGroup.Position;
+					if (!view.IsRowExpanded (position)) {
+						view.ExpandRow (position, false);
+					} else {
+						view.CollapseRow (position);
+					}
+				}
+			}
 		}
 	}
 

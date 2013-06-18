@@ -110,6 +110,10 @@
     <Compile Include="MonoDevelop.Refactoring\ResolveCommandHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring\ExtensionMethods.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CodeIssuePad.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\IGroupingProvider.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\IssueSummary.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\IssueGroup.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\CategoryGroupingProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
