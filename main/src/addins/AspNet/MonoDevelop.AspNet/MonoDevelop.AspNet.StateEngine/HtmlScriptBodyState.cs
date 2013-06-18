@@ -56,6 +56,7 @@ namespace MonoDevelop.AspNet.StateEngine
 						var closing = new XClosingTag (new XName ("script"), context.LocationMinus (CLOSE.Length));
 						closing.End (context.Location);
 						el.Close (closing);
+						rollback = string.Empty;
 						return Parent;
 					}
 				} else {
