@@ -105,6 +105,10 @@ namespace MonoDevelop.Ide
 			Assembly.LoadFrom (p.ParentDirectory.Combine ("Xwt.Gtk.dll"));
 			Xwt.Application.InitializeAsGuest (Xwt.ToolkitType.Gtk);
 
+			// Ensure we initialize the native toolkit on the UI thread immediately
+			// so that we can safely access this property later in other threads
+			GC.KeepAlive (DesktopService.NativeToolkit);
+
 			//default to Windows IME on Windows
 			if (Platform.IsWindows && Mono.TextEditor.GtkWorkarounds.GtkMinorVersion >= 16) {
 				var settings = Gtk.Settings.Default;
