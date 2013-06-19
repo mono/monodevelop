@@ -7,6 +7,12 @@ using System.Runtime.InteropServices;
 using MonoDevelop.Core;
 using MonoDevelop.VersionControl.Subversion.Gui;
 
+/**
+ * TODO List:
+ * Check if text-bases (pristines) are still needed.
+ * 
+ */
+
 namespace MonoDevelop.VersionControl.Subversion
 {
 	public abstract class SubversionVersionControl : VersionControlSystem
@@ -37,16 +43,13 @@ namespace MonoDevelop.VersionControl.Subversion
 
 		public override Repository GetRepositoryReference (FilePath path, string id)
 		{
-			try {
-				if (!IsVersioned (path))
-					return null;
-				string url = GetPathUrl (path);
-				return new SubversionRepository (this, url, path);
-			} catch (Exception ex) {
-				// No SVN
-				LoggingService.LogError (ex.ToString ());
+			if (path.IsEmpty || path.ParentDirectory.IsEmpty || path.IsNull || path.ParentDirectory.IsNull)
 				return null;
-			}
+
+			if (Directory.Exists (path.Combine (".svn")))
+				return new SubversionRepository (this, path, null);
+
+			return GetRepositoryReference (path.ParentDirectory, id);
 		}
 
 		protected override Repository OnCreateRepositoryInstance ()

@@ -1,8 +1,6 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using MonoDevelop.Core;
 using MonoDevelop.VersionControl;
 using MonoDevelop.VersionControl.Subversion;
@@ -68,7 +66,7 @@ namespace SubversionAddinWindows
 			Init ();
 		}
 
-		void Init ( )
+		void Init ()
 		{
 			client = new SvnClient ();
 			client.Authentication.SslClientCertificateHandlers += new EventHandler<SharpSvn.Security.SvnSslClientCertificateEventArgs> (AuthenticationSslClientCertificateHandlers);

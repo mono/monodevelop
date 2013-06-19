@@ -13,8 +13,6 @@ namespace MonoDevelop.VersionControl.Subversion
 {
 	public class SubversionRepository: UrlBasedRepository
 	{
-		FilePath rootPath;
-		
 		public SubversionRepository ()
 		{
 			Url = "svn://";
@@ -23,13 +21,9 @@ namespace MonoDevelop.VersionControl.Subversion
 		public SubversionRepository (SubversionVersionControl vcs, string url, FilePath rootPath): base (vcs)
 		{
 			Url = url;
-			this.rootPath = !rootPath.IsNullOrEmpty ? rootPath.CanonicalPath : null;
+			RootPath = !rootPath.IsNullOrEmpty ? rootPath.CanonicalPath : null;
 		}
-		
-		public FilePath RootPath {
-			get { return rootPath; }
-		}
-		
+
 		public override string[] SupportedProtocols {
 			get {
 				return new string[] {"svn", "svn+ssh", "http", "https", "file"};
@@ -56,9 +50,8 @@ namespace MonoDevelop.VersionControl.Subversion
 			}
 		}
 
-		SubversionVersionControl VersionControlSystem {
-			get { return (SubversionVersionControl) base.VersionControlSystem;
-			}
+		new SubversionVersionControl VersionControlSystem {
+			get { return (SubversionVersionControl)base.VersionControlSystem; }
 		}
 
 		SubversionBackend backend;
@@ -162,7 +155,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			CreateDirectory (paths, message, monitor);
 			Svn.Checkout (this.Url + "/" + serverPath, localPath, null, true, monitor);
 
-			rootPath = localPath;
+			RootPath = localPath;
 			Set<FilePath> dirs = new Set<FilePath> ();
 			PublishDir (dirs, localPath, false, monitor);
 
@@ -244,7 +237,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		{
 			foreach (FilePath path in paths) {
 				if (IsVersioned (path) && File.Exists (path) && !Directory.Exists (path)) {
-					if (rootPath.IsNull)
+					if (RootPath.IsNull)
 						throw new UserException (GettextCatalog.GetString ("Project publishing failed. There is a stale .svn folder in the path '{0}'", path.ParentDirectory));
 					VersionInfo srcInfo = GetVersionInfo (path, VersionInfoQueryFlags.IgnoreCache);
 					if (srcInfo.HasLocalChange (VersionStatus.ScheduledDelete)) {
@@ -267,7 +260,7 @@ namespace MonoDevelop.VersionControl.Subversion
 						// The file/folder belongs to an unversioned folder. We can add it by versioning the parent
 						// folders up to the root of the repository
 						
-						if (!path.IsChildPathOf (rootPath))
+						if (!path.IsChildPathOf (RootPath))
 							throw new InvalidOperationException ("File outside the repository directory");
 
 						List<FilePath> dirChain = new List<FilePath> ();
@@ -278,7 +271,7 @@ namespace MonoDevelop.VersionControl.Subversion
 								break;
 							dirChain.Add (parentDir);
 						}
-						while (parentDir != rootPath);
+						while (parentDir != RootPath);
 
 						// Found all parent unversioned dirs. Versin them now.
 						dirChain.Reverse ();
