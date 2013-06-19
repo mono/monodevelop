@@ -1,5 +1,5 @@
 //
-// ProjectGroupingProvider.cs
+// CategoryGroupingProviderTests.cs
 //
 // Author:
 //       Simon Lindgren <simon.n.lindgren@gmail.com>
@@ -23,33 +23,28 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System.Collections.Generic;
+using System;
+using MonoDevelop.CodeIssues;
+using NUnit.Framework;
 
-namespace MonoDevelop.CodeIssues
+namespace MonoDevelop.Refactoring
 {
-	// TODO: should this be a threadsafe class?
-	// Our current usage is fine, but could be nice anyway (and might avoid future bugs)
-	public class CategoryGroupingProvider: IGroupingProvider
+	[TestFixture]
+	public class CategoryGroupingProviderTests: GroupingProviderTestBase<CategoryGroupingProvider>
 	{
-		Dictionary<string, IssueGroup> groups = new Dictionary<string, IssueGroup> ();
-		
-		#region IGroupingProvider implementation
-
-		public IssueGroup GetIssueGroup (IssueSummary issue)
+		#region implemented abstract members of GroupingProviderTestBase		
+		protected override CategoryGroupingProvider CreateProviderInstance ()
 		{
-			IssueGroup group;
-			if (!groups.TryGetValue(issue.ProviderCategory, out group)) {
-				group = new IssueGroup (null, issue.ProviderCategory);
-				groups.Add (issue.ProviderCategory, group);
-			}
-			return group;
-		}
+			return new CategoryGroupingProvider ();
+		}		
 
-		public void Reset ()
+		protected override IssueSummary[] GetDistinctSummaries ()
 		{
-			groups.Clear ();
+			return new [] {
+				new IssueSummary { ProviderCategory = "first" },
+				new IssueSummary { ProviderCategory = "second" }
+			};
 		}
-		
 		#endregion
 	}
 }
