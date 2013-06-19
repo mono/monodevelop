@@ -51,6 +51,8 @@ namespace MonoDevelop.Components.MainToolbar
 	{
 		const string ToolbarExtensionPath = "/MonoDevelop/Ide/CommandBar";
 
+		EventHandler executionTargetsChanged;
+
 		HBox contentBox = new HBox (false, 0);
 
 		HBox configurationCombosBox;
@@ -109,7 +111,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void SetSearchCategory (string category)
 		{
-			matchEntry.Entry.Text = category +":";
+			matchEntry.Entry.Text = category + ":";
 			matchEntry.Entry.GrabFocus ();
 			var pos = matchEntry.Entry.Text.Length;
 			matchEntry.Entry.SelectRegion (pos, pos);
@@ -117,6 +119,8 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public MainToolbar ()
 		{
+			executionTargetsChanged = DispatchService.GuiDispatch (new EventHandler (HandleExecutionTargetsChanged));
+
 			IdeApp.Workspace.ActiveConfigurationChanged += (sender, e) => UpdateCombos ();
 			IdeApp.Workspace.ConfigurationsChanged += (sender, e) => UpdateCombos ();
 
@@ -124,7 +128,6 @@ namespace MonoDevelop.Components.MainToolbar
 			IdeApp.Workspace.SolutionUnloaded += (sender, e) => UpdateCombos ();
 
 			IdeApp.ProjectOperations.CurrentSelectedSolutionChanged += HandleCurrentSelectedSolutionChanged;
-
 
 			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
 
@@ -154,7 +157,7 @@ namespace MonoDevelop.Components.MainToolbar
 			AddWidget (configurationCombosBox);
 
 			buttonBarBox = new Alignment (0.5f, 0.5f, 0, 0);
-			buttonBarBox.LeftPadding = 7;
+			buttonBarBox.LeftPadding = (uint) 7;
 			buttonBarBox.Add (buttonBar);
 			buttonBarBox.NoShowAll = true;
 			AddWidget (buttonBarBox);
@@ -263,10 +266,10 @@ namespace MonoDevelop.Components.MainToolbar
 
 			var align = new Gtk.Alignment (0, 0, 1f, 1f);
 			align.Show ();
-			align.TopPadding = 5;
-			align.LeftPadding = 9;
-			align.RightPadding = 18;
-			align.BottomPadding = 10;
+			align.TopPadding = (uint) 5;
+			align.LeftPadding = (uint) 9;
+			align.RightPadding = (uint) 18;
+			align.BottomPadding = (uint) 10;
 			align.Add (contentBox);
 
 			Add (align);
@@ -315,14 +318,14 @@ namespace MonoDevelop.Components.MainToolbar
 		void TrackStartupProject ()
 		{
 			if (currentStartupProject != null && ((currentSolution != null && currentStartupProject != currentSolution.StartupItem) || currentSolution == null)) {
-				currentStartupProject.ExecutionTargetsChanged -= HandleExecutionTargetsChanged;
+				currentStartupProject.ExecutionTargetsChanged -= executionTargetsChanged;
 				currentStartupProject.Saved -= HandleProjectSaved;
 			}
 
 			if (currentSolution != null) {
 				currentStartupProject = currentSolution.StartupItem;
 				if (currentStartupProject != null) {
-					currentStartupProject.ExecutionTargetsChanged += HandleExecutionTargetsChanged;
+					currentStartupProject.ExecutionTargetsChanged += executionTargetsChanged;
 					currentStartupProject.Saved += HandleProjectSaved;
 				}
 			}
