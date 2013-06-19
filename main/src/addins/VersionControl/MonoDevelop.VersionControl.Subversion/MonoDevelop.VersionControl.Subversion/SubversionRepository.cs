@@ -70,15 +70,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		
 		public override string GetBaseText (FilePath sourcefile)
 		{
-			// The base file will not exist if the file has just been
-			// added to svn and not committed
-			var baseFile = Svn.GetPathToBaseText (sourcefile);
-			return File.Exists (baseFile) ? File.ReadAllText (baseFile) : "";
-		}
-
-		public string GetPathToBaseText (FilePath sourcefile)
-		{
-			return Svn.GetPathToBaseText (sourcefile);
+			return Svn.GetTextBase (sourcefile);
 		}
 
 		protected override string OnGetTextAtRevision (FilePath repositoryPath, Revision revision)
@@ -518,7 +510,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		{
 			List<Annotation> annotations = new List<Annotation> (Svn.GetAnnotations (this, localPath, SvnRevision.First, SvnRevision.Base));
 			Annotation nextRev = new Annotation (GettextCatalog.GetString ("working copy"), "", DateTime.MinValue);
-			var baseDocument = new Mono.TextEditor.TextDocument (File.ReadAllText (GetPathToBaseText (localPath)));
+			var baseDocument = new Mono.TextEditor.TextDocument (GetBaseText (localPath));
 			var workingDocument = new Mono.TextEditor.TextDocument (File.ReadAllText (localPath));
 			
 			// "SubversionException: blame of the WORKING revision is not supported"

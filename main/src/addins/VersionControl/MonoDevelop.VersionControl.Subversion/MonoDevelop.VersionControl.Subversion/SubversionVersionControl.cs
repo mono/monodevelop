@@ -65,7 +65,7 @@ namespace MonoDevelop.VersionControl.Subversion
 
 	public abstract class SubversionBackend
 	{
-		string GetTextBase (string sourcefile)
+		public virtual string GetTextBase (string sourcefile)
 		{
 			return SubversionVersionControl.GetTextBase (sourcefile);
 		}
@@ -73,10 +73,6 @@ namespace MonoDevelop.VersionControl.Subversion
 		string GetDirectoryDotSvn (string sourcepath)
 		{
 			return SubversionVersionControl.GetDirectoryDotSvn (sourcepath);
-		}
-
-		public string GetPathToBaseText (FilePath sourcefile) {
-			return GetTextBase (sourcefile);
 		}
 
 		public Revision[] GetHistory (Repository repo, FilePath sourcefile, Revision since)
@@ -122,7 +118,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			// Check for directory before checking for file, since directory links may appear as files
 			if (Directory.Exists (GetDirectoryDotSvn (localPath)) || Directory.Exists (localPath))
 				return GetDirStatus (repo, localPath, getRemoteStatus);
-			else if (File.Exists (GetTextBase(localPath)) || File.Exists (localPath))
+			else if (File.Exists (localPath))
 				return GetFileStatus (repo, localPath, getRemoteStatus);
 			else
 				return VersionInfo.CreateUnversioned (localPath, false);

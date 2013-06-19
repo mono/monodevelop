@@ -16,6 +16,14 @@ namespace SubversionAddinWindows
 		static bool errorShown;
 		static bool installError;
 		static SvnClient client;
+
+		internal static string GetBaseText (string file)
+		{
+			MemoryStream data = new MemoryStream();
+			if (client.Write (new SvnPathTarget (file), data))
+				return System.Text.Encoding.ASCII.GetString (data.GetBuffer (), 0, Convert.ToInt32 (data.Length));
+			return "";
+		}
 		
 		static SvnSharpClient ()
 		{
@@ -60,6 +68,11 @@ namespace SubversionAddinWindows
 	public class SvnSharpBackend: SubversionBackend
 	{
 		SvnClient client;
+
+		public override string GetTextBase (string file)
+		{
+			return SvnSharpClient.GetBaseText (file);
+		}
 
 		public SvnSharpBackend ()
 		{
