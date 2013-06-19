@@ -110,8 +110,6 @@ namespace MonoDevelop.DesignerSupport
 		
 		protected override bool IsReadOnly (string propertyName)
 		{
-			if (propertyName == "ResourceId" && file.BuildAction != MonoDevelop.Projects.BuildAction.EmbeddedResource)
-				return true;
 			return false;
 		}
 		
@@ -130,12 +128,12 @@ namespace MonoDevelop.DesignerSupport
 				}
 			}
 			
-			public override bool CanConvertTo (System.ComponentModel.ITypeDescriptorContext context, System.Type destinationType)
+			public override bool CanConvertTo (ITypeDescriptorContext context, Type destinationType)
 			{
 				return destinationType == typeof (string);
 			}
 			
-			public override object ConvertTo (System.ComponentModel.ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, System.Type destinationType)
+			public override object ConvertTo (ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, Type destinationType)
 			{
 				return (string)value;
 			}
