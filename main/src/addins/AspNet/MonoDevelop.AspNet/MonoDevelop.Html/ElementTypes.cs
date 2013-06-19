@@ -43,14 +43,14 @@ namespace MonoDevelop.Html
 			"form", "head", "html", "map", "noscript",
 			"object", "ol", "optgroup", "pre", "script",
 			"select", "style", "table", "tbody", "tfoot",
-			"thead", "tr", "ul", "div"
+			"thead", "tr", "td", "th", "ul", "div"
 		};
 		
 		public static readonly ICollection<string> Paragraph = new string[] {
 			"area", "base", "blockquote", "br", "button", "caption",
 			"col", "dd", "dt", "h1", "h2", "h3", "h4", "h5",
 			"h6", "hr", "input", "li", "link", "meta", "option", "p",
-			"param", "td", "textarea", "th", "title"
+			"param", "textarea", "title"
 		};
 		
 		public static readonly ICollection<string> Inline = new string[] {
