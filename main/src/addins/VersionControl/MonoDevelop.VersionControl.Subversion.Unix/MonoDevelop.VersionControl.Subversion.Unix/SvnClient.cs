@@ -1016,9 +1016,6 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		void TryStartOperation ()
 		{
 			lock (sync) {
-				Console.WriteLine ("*************************************");
-				Console.WriteLine (Environment.StackTrace);
-				Console.WriteLine ("*************************************");
 				if (inProgress)
 					throw new SubversionException ("Another Subversion operation is already in progress.");
 				inProgress = true;
