@@ -22,7 +22,7 @@ namespace SubversionAddinWindows
 			MemoryStream data = new MemoryStream();
 			if (client.Write (new SvnPathTarget (file), data))
 				return System.Text.Encoding.ASCII.GetString (data.GetBuffer (), 0, Convert.ToInt32 (data.Length));
-			return "";
+			return String.Empty;
 		}
 		
 		static SvnSharpClient ()
