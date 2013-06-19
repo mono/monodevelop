@@ -155,13 +155,8 @@ namespace MonoDevelop.CodeIssues
 		{
 			return group => {
 				Application.Invoke (delegate {
-					var position = parentGroup.Position;
-					TreeNavigator navigator;
-					if (position == null) {
-						navigator = store.AddNode();
-					} else {
-						navigator = store.GetNavigatorAt(position).AddChild();
-					}
+					var navigator = GetNavigatorForGroup (parentGroup);
+					
 					group.Position = navigator.CurrentPosition;
 					group.ChildGroupAdded += GetGroupAddedHandler(group);
 					group.IssueSummaryAdded += GetIssueSummaryAddedHandler(group);
@@ -176,17 +171,23 @@ namespace MonoDevelop.CodeIssues
 		{
 			return issue => {
 				Application.Invoke (delegate {
-					var position = parentGroup.Position;
-					TreeNavigator navigator;
-					if (position == null) {
-						navigator = store.AddNode();
-					} else {
-						navigator = store.GetNavigatorAt(position).AddChild();
-					}
-					navigator.SetValue (textField, string.Format ("{0}: {1}", issue.Severity, issue.IssueDescription));
+					TreeNavigator navigator = GetNavigatorForGroup (parentGroup);
+					
 					UpdateParents (navigator);
 				});
 			};
+		}
+
+		TreeNavigator GetNavigatorForGroup (IssueGroup parentGroup)
+		{
+			var position = parentGroup.Position;
+			TreeNavigator navigator;
+			if (position == null) {
+				navigator = store.AddNode ();
+			} else {
+				navigator = store.GetNavigatorAt (position).AddChild ();
+			}
+			return navigator;
 		}
 
 		void UpdateParents (TreeNavigator navigator)
@@ -195,6 +196,11 @@ namespace MonoDevelop.CodeIssues
 				var group = navigator.GetValue (groupField);
 				if (group != null) {
 					navigator.SetValue (textField, string.Format ("{0} ({1} issues)", group.Description, group.IssueCount));
+				} else {
+					var issue = navigator.GetValue (summaryField);
+					if (issue != null) {
+						navigator.SetValue (textField, string.Format ("{0}: {1}", issue.Severity, issue.IssueDescription));
+					}
 				}
 			} while (navigator.MoveToParent());
 		}
