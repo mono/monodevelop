@@ -51,5 +51,10 @@ namespace Mono.TextEditor.Vi
 		{
 			ed.Data.Caret.Line = System.Math.Max (0, ed.Editor.PointToLocation (0, ed.Editor.LineHeight - 1).Line);
 		}
+
+		public static void CaretToLineNumber (int lineNumber, ViEditor ed)
+		{
+			ed.Data.Caret.Line = System.Math.Max (1, lineNumber);
+		}
 	}
 }

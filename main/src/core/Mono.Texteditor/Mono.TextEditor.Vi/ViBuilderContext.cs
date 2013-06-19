@@ -197,7 +197,7 @@ namespace Mono.TextEditor.Vi
 				{ 'o', FoldActions.OpenFold },
 			}},
 			{ 'g', new ViCommandMap () {
-				{ 'g', CaretMoveActions.ToDocumentStart },
+				{ 'g', GotoLine, true },
 			}},
 			{ 'r', ViBuilders.ReplaceChar },
 			{ '~', ViActions.ToggleCase },
@@ -310,6 +310,13 @@ namespace Mono.TextEditor.Vi
 			ctx.RunAction ((ViEditor e) => ViActions.Up (e.Data));
 			return Open (ctx);
 		}
+
+		static bool GotoLine (ViBuilderContext ctx)
+    {
+      ctx.RunAction ((ViEditor e) => ViEditorActions.CaretToLineNumber (ctx.Multiplier, e));
+      ctx.RunAction ((ViEditor e) => CaretMoveActions.LineFirstNonWhitespace (e.Data));
+      return true;
+    }
 	}
 }
 
