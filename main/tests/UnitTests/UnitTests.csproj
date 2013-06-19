@@ -277,6 +277,8 @@
     <Compile Include="MonoDevelop.Xml.StateEngine\HtmlParsingTests.cs" />
     <Compile Include="MonoDevelop.Xml.StateEngine\AspNetParsingTests.cs" />
     <Compile Include="MonoDevelop.Xml.StateEngine\ParsingTests.cs" />
+    <Compile Include="MonoDevelop.Refactoring\IssueGroupTests.cs" />
+    <Compile Include="MonoDevelop.Refactoring\MockGroupingProvider.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />
@@ -306,4 +308,7 @@
     <None Include="MonoDevelop.AspNet\AspNetTesting.cs" />
   </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <Folder Include="MonoDevelop.Refactoring\" />
+  </ItemGroup>
 </Project>

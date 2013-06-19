@@ -29,7 +29,7 @@ using ICSharpCode.NRefactory.Refactoring;
 namespace MonoDevelop.CodeIssues
 {
 
-	class IssueSummary
+	public class IssueSummary
 	{
 		/// <summary>
 		/// The description of the issue.

@@ -35,7 +35,7 @@ namespace MonoDevelop.CodeIssues
 	/// <remarks>
 	/// This class is thread safe.
 	/// </remarks>
-	class IssueGroup
+	public class IssueGroup
 	{
 		object _lock = new object ();
 		IGroupingProvider groupingProvider;
@@ -43,10 +43,6 @@ namespace MonoDevelop.CodeIssues
 		/// A list of groups produced by the <see cref="groupingProvider"/>.
 		/// </summary>
 		IList<IssueGroup> groups = new List<IssueGroup>();
-		/// <summary>
-		/// The internal child nodes and leaves of this node.
-		/// </summary>
-		IList<IssueSummary> issues = new List<IssueSummary>();
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MonoDevelop.CodeIssues.IssueGroup"/> class.
@@ -105,11 +101,10 @@ namespace MonoDevelop.CodeIssues
 			}
 		}
 
-		public void Clear ()
+		public void ClearStatistics ()
 		{
 			lock (_lock) {
 				groups.Clear ();
-				issues.Clear ();
 				groupingProvider.Reset ();
 				IssueCount = 0;
 			}
@@ -128,9 +123,7 @@ namespace MonoDevelop.CodeIssues
 				if (groupingProvider != null) {
 					group = groupingProvider.GetIssueGroup (issue);
 				}
-				if (group == null) {
-					issues.Add (issue);
-				} else if (!groups.Contains (group)) {
+				if (group != null && !groups.Contains (group)) {
 					groupAdded = true;
 					groups.Add (group);
 				}

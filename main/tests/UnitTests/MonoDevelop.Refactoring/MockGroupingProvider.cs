@@ -1,5 +1,5 @@
 //
-// IGroupingProvider.cs
+// IssueGroupTests.cs
 //
 // Author:
 //       Simon Lindgren <simon.n.lindgren@gmail.com>
@@ -23,22 +23,36 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using MonoDevelop.CodeIssues;
 
-namespace MonoDevelop.CodeIssues
+namespace MonoDevelop.Refactoring
 {
-	public interface IGroupingProvider
+	public class MockGroupingProvider: IGroupingProvider
 	{
-		/// <summary>
-		/// Gets the issue group for the <see cref="IssueGroup"/> specified in <paramref name="issue"/>.
-		/// </summary>
-		/// <returns>The issue group.</returns>
-		/// <param name="issue">The <see cref="IssueSummary"/> to return a group for.</param>
-		IssueGroup GetIssueGroup(IssueSummary issue);
+		
+		public MockGroupingProvider () 
+		{
+			Reset ();
+		}
+	
+		#region IGroupingProvider implementation
 
-		/// <summary>
-		/// Removes the set of cached groups.
-		/// </summary>
-		void Reset ();
+		public IssueGroup Group { get; set; }
+		
+		public IssueGroup GetIssueGroup (IssueSummary issue)
+		{
+			return Group;
+		}
+		
+		public bool ResetCalled { get; private set; }
+		
+		public void Reset ()
+		{
+			Group = null;
+			ResetCalled = true;
+		}
+		#endregion
 	}
+
 }
 

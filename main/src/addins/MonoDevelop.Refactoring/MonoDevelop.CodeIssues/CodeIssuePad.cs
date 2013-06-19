@@ -82,7 +82,7 @@ namespace MonoDevelop.CodeIssues
 				return;
 			runButton.Sensitive = false;
 			store.Clear ();
-			rootGroup.Clear();
+			rootGroup.ClearStatistics();
 			var rootNode = store.AddNode ();
 			rootNode.SetValue (textField, "Analyzing...");
 			ThreadPool.QueueUserWorkItem (delegate {
