@@ -20,9 +20,12 @@ namespace SubversionAddinWindows
 		internal static string GetBaseText (string file)
 		{
 			MemoryStream data = new MemoryStream();
-			if (client.Write (new SvnPathTarget (file), data))
+			try {
+				client.Write (new SvnPathTarget (file), data);
 				return System.Text.Encoding.ASCII.GetString (data.GetBuffer (), 0, Convert.ToInt32 (data.Length));
-			return String.Empty;
+			} catch {
+				return String.Empty;
+			}
 		}
 		
 		static SvnSharpClient ()
