@@ -150,6 +150,13 @@ namespace Mono.TextEditor.Vi
 			ctx.Builder = (ViBuilderContext x) => {
 				int c = (int)x.LastKey.Char;
 				if (c >= (int)'0' && c <= (int)'9') {
+          //don't eat '0' if not preceded by non-zero digit
+          //pass on to interpret as goto line start
+          if (c == (int)'0' && factor == 1) {
+            ctx.Multiplier *= multiplier;
+            ctx.Builder = nextBuilder;
+            return ctx.Builder (ctx);
+          }
 					int d = c - (int)'0';
 					multiplier = multiplier * factor + d;
 					factor *= 10;
