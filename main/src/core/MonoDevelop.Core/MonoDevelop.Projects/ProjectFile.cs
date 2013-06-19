@@ -75,7 +75,7 @@ namespace MonoDevelop.Projects
 			get { return subtype; }
 			set {
 				subtype = value;
-				OnChanged ();
+				OnChanged ("Subtype");
 			}
 		}
 
@@ -85,7 +85,7 @@ namespace MonoDevelop.Projects
 			get { return data; }
 			set {
 				data = value;
-				OnChanged ();
+				OnChanged ("Data");
 			}
 		}
 
@@ -120,7 +120,7 @@ namespace MonoDevelop.Projects
 			get { return buildaction; }
 			set {
 				buildaction = string.IsNullOrEmpty (value) ? MonoDevelop.Projects.BuildAction.None : value;
-				OnChanged ();
+				OnChanged ("BuildAction");
 			}
 		}
 
@@ -181,7 +181,7 @@ namespace MonoDevelop.Projects
 			get { return contentType; }
 			set {
 				contentType = value;
-				OnChanged ();
+				OnChanged ("ContentType");
 			}
 		}
 
@@ -196,7 +196,7 @@ namespace MonoDevelop.Projects
 			set {
 				if (visible != value) {
 					visible = value;
-					OnChanged ();
+					OnChanged ("Visible");
 				}
 			}
 		}
@@ -212,7 +212,7 @@ namespace MonoDevelop.Projects
 			set {
 				if (generator != value) {
 					generator = value;
-					OnChanged ();
+					OnChanged ("Generator");
 				}
 			}
 		}
@@ -228,7 +228,7 @@ namespace MonoDevelop.Projects
 			set {
 				if (customToolNamespace != value) {
 					customToolNamespace = value;
-					OnChanged ();
+					OnChanged ("CustomToolNamespace");
 				}
 			}
 		}
@@ -245,7 +245,7 @@ namespace MonoDevelop.Projects
 			set {
 				if (lastGenOutput != value) {
 					lastGenOutput = value;
-					OnChanged ();
+					OnChanged ("LastGenOutput");
 				}
 			}
 		}
@@ -265,7 +265,7 @@ namespace MonoDevelop.Projects
 					if (value.IsAbsolute || value.ToString ().StartsWith ("..", StringComparison.Ordinal))
 						throw new ArgumentException ("value");
 					link = value;
-					OnChanged ();
+					OnChanged ("Link");
 				}
 			}
 		}
@@ -295,7 +295,7 @@ namespace MonoDevelop.Projects
 			set {
 				if (copyToOutputDirectory != value) {
 					copyToOutputDirectory = value;
-					OnChanged ();
+					OnChanged ("CopyToOutputDirectory");
 				}
 			}
 		}
@@ -320,7 +320,7 @@ namespace MonoDevelop.Projects
 					if (project != null && value != null)
 						project.UpdateDependency (this, oldPath);
 	
-					OnChanged ();
+					OnChanged ("DependsOn");
 				}
 			}
 		}
@@ -399,7 +399,7 @@ namespace MonoDevelop.Projects
 			}
 			set {
 				resourceId = value;
-				OnChanged ();
+				OnChanged ("ResourceId");
 			}
 		}
 
@@ -426,10 +426,16 @@ namespace MonoDevelop.Projects
 		{
 		}
 
-		protected virtual void OnChanged ()
+		protected virtual void OnChanged (string property)
 		{
 			if (project != null)
-				project.NotifyFilePropertyChangedInProject (this);
+				project.NotifyFilePropertyChangedInProject (this, property);
+		}
+
+		[Obsolete ("Use OnChanged(string property) instead.")]
+		protected virtual void OnChanged ()
+		{
+			OnChanged (null);
 		}
 	}
 }

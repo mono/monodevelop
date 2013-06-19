@@ -848,10 +848,10 @@ namespace MonoDevelop.Projects
 			OnFileChangedInProject (new ProjectFileEventArgs (this, file));
 		}
 
-		internal void NotifyFilePropertyChangedInProject (ProjectFile file)
+		internal void NotifyFilePropertyChangedInProject (ProjectFile file, string property)
 		{
 			NotifyModified ("Files");
-			OnFilePropertyChangedInProject (new ProjectFileEventArgs (this, file));
+			OnFilePropertyChangedInProject (new ProjectFileEventArgs (this, file, property));
 		}
 
 		// A collection of files that depend on other files for which the dependencies
