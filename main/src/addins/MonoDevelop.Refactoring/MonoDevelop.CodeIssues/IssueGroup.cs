@@ -42,7 +42,7 @@ namespace MonoDevelop.CodeIssues
 		/// <summary>
 		/// A list of groups produced by the <see cref="groupingProvider"/>.
 		/// </summary>
-		IList<IssueGroup> groups = new List<IssueGroup>();
+		ISet<IssueGroup> groups = new HashSet<IssueGroup>();
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MonoDevelop.CodeIssues.IssueGroup"/> class.
