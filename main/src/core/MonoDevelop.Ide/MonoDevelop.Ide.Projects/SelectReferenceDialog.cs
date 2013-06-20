@@ -473,7 +473,16 @@ namespace MonoDevelop.Ide.Projects
 		protected override void ForAll (bool include_internals, Callback callback)
 		{
 			base.ForAll (include_internals, callback);
-			callback (filterEntry);
+			if (filterEntry != null)
+				callback (filterEntry);
+		}
+
+		protected override void OnRemoved (Widget widget)
+		{
+			if (widget == filterEntry)
+				filterEntry = null;
+			else
+				base.OnRemoved (widget);
 		}
 
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
