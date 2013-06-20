@@ -83,9 +83,13 @@ namespace MonoDevelop.Debugger
 		void OnEditKeyPress (object sender, KeyPressEventArgs args)
 		{
 			if (currentCompletionData != null) {
-				bool ret = CompletionWindowManager.PreProcessKeyEvent (args.Event.Key, (char)args.Event.Key, args.Event.State);
-				CompletionWindowManager.PostProcessKeyEvent (args.Event.Key, (char)args.Event.Key, args.Event.State);
-				args.RetVal = ret;
+				char keyChar = (char)args.Event.Key;
+				if ((args.Event.Key == Gdk.Key.Down || args.Event.Key == Gdk.Key.Up)) {
+					keyChar = '\0';
+				}
+				var retVal = CompletionWindowManager.PreProcessKeyEvent (args.Event.Key, keyChar, args.Event.State);
+				CompletionWindowManager.PostProcessKeyEvent (args.Event.Key, keyChar, args.Event.State);
+				args.RetVal = retVal;
 			}
 			
 			Application.Invoke (delegate {
@@ -137,7 +141,7 @@ namespace MonoDevelop.Debugger
 		
 		string ICompletionWidget.GetText (int startOffset, int endOffset)
 		{
-			if (startOffset < 0) startOffset = 0;
+			if (startOffset < 0 || startOffset > entry.Text.Length) startOffset = 0;
 			if (endOffset > entry.Text.Length) endOffset = entry.Text.Length;
 			return entry.Text.Substring (startOffset, endOffset - startOffset);
 		}
