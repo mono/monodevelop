@@ -46,7 +46,7 @@ namespace MonoDevelop.CodeIssues
 		{
 			IssueGroup group;
 			if (!groups.TryGetValue(issue.ProviderCategory, out group)) {
-				group = new IssueGroup (null, null, issue.ProviderCategory);
+				group = new IssueGroup (this, Next, issue.ProviderCategory);
 				groups.Add (issue.ProviderCategory, group);
 			}
 			return group;

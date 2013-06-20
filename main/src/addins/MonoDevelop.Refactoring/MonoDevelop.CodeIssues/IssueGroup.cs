@@ -64,11 +64,11 @@ namespace MonoDevelop.CodeIssues
 			}
 		}
 
-		void HandleNextChanged (IGroupingProvider obj)
+		void HandleNextChanged (IGroupingProvider sourceProvider)
 		{
 			lock(_lock) {
 				ProcessingEnabled = false;
-				groupingProvider = obj.Next;
+				groupingProvider = sourceProvider.Next;
 				groups.Clear ();
 				leaves.Clear ();
 			}
