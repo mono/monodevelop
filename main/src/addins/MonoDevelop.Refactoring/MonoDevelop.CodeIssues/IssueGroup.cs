@@ -88,18 +88,28 @@ namespace MonoDevelop.CodeIssues
 			set;
 		}
 
+		/// <summary>
+		/// Gets the description.
+		/// </summary>
+		/// <value>The description.</value>
 		public string Description {
 			get;
 			private set;
 		}
 
+		/// <summary>
+		/// Gets a value indicating whether this instance issue count.
+		/// </summary>
+		/// <value><c>true</c> if this instance issue count; otherwise, <c>false</c>.</value>
 		public int IssueCount {
 			get;
 			private set;
 		}
 
 		event Action<IssueGroup> childrenInvalidated;
-		
+		/// <summary>
+		/// Occurs when child groups of this instance are invalidated.
+		/// </summary>
 		public event Action<IssueGroup> ChildrenInvalidated {
 			add {
 				childrenInvalidated += value;
@@ -160,7 +170,7 @@ namespace MonoDevelop.CodeIssues
 				handler (summary);
 			}
 		}
-
+		
 		public void ClearStatistics ()
 		{
 			lock (_lock) {
@@ -170,7 +180,13 @@ namespace MonoDevelop.CodeIssues
 			}
 		}
 		
-		public bool ProcessingEnabled {
+		/// <summary>
+		/// Gets a value indicating whether this <see cref="MonoDevelop.CodeIssues.IssueGroup"/> currently
+		/// processes the <see cref="IssueSummary">IssueSummaries</see> passed to <see cref="Push(IssueSummary)"/>.
+		/// </summary>
+		/// <value><c>true</c> if processing is enabled; otherwise, <c>false</c>.</value>
+		public bool ProcessingEnabled
+		{
 			get;
 			private set;
 		}

@@ -58,7 +58,8 @@ namespace MonoDevelop.CodeIssues
 		}
 
 		IGroupingProvider next;
-		public IGroupingProvider Next {
+		public IGroupingProvider Next
+		{
 			get {
 				return next;
 			}
