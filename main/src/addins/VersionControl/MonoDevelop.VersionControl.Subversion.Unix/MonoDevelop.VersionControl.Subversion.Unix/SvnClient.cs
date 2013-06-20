@@ -558,10 +558,17 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				
 			LibSvnClient.Rev revisionStart = (LibSvnClient.Rev) revStart;
 			LibSvnClient.Rev revisionEnd = (LibSvnClient.Rev) revEnd;
-			
-			int numAnnotations = File.ReadAllLines (((SubversionRepository)repo).GetPathToBaseText(file)).Length;
+
+			MemoryStream data = new MemoryStream ();
+			int numAnnotations = 0;
+			Cat (file, SvnRevision.Base, data);
+
+			StreamReader reader = new StreamReader (data);
+			while (reader.ReadLine () != null)
+				numAnnotations++;
+			reader.Close ();
+
 			Annotation[] annotations = new Annotation [numAnnotations];
-			
 			AnnotationCollector collector = new AnnotationCollector (annotations);
 			
 			IntPtr localpool = newpool (pool);
