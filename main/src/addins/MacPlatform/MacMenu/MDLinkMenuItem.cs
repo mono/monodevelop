@@ -53,7 +53,7 @@ namespace MonoDevelop.MacIntegration.MacMenu
 		// We can justify this because safari 3.2.1 does it ("do you want to close all tabs?").
 		static bool IsGloballyDisabled {
 			get {
-				return !MonoDevelop.Ide.IdeApp.Workbench.HasToplevelFocus;
+				return MonoDevelop.Ide.DesktopService.IsModalDialogRunning ();
 			}
 		}
 

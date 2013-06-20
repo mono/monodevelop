@@ -282,5 +282,10 @@ namespace MonoDevelop.Ide
 		{
 			PlatformService.SetIsFullscreen (window, isFullscreen);
 		}
+
+		public static bool IsModalDialogRunning ()
+		{
+			return PlatformService.IsModalDialogRunning ();
+		}
 	}
 }
