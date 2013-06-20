@@ -266,6 +266,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				var b = reader.ReadInt32 ();
 				while (b --> 0) {
 					var assembly = reader.ReadUInt16 ();
+					if (assembly < 0 || assembly >= assemblyListTable.Length)
+						throw new InvalidDataException ("Assembly lookup was " + assembly + " but only " + assemblyListTable.Length + " are known.");
 					reader.BaseStream.Seek (assemblyListTable [assembly], SeekOrigin.Begin);
 
 					var package = reader.ReadString ();
