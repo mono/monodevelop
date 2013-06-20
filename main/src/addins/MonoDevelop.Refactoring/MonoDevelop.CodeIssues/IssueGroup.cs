@@ -64,11 +64,11 @@ namespace MonoDevelop.CodeIssues
 			}
 		}
 
-		void HandleNextChanged (IGroupingProvider sourceProvider)
+		void HandleNextChanged (object sender, GroupingProviderEventArgs eventArgs)
 		{
 			lock(_lock) {
 				ProcessingEnabled = false;
-				groupingProvider = sourceProvider.Next;
+				groupingProvider = eventArgs.GroupingProvider.Next;
 				groups.Clear ();
 				leaves.Clear ();
 			}
@@ -76,7 +76,7 @@ namespace MonoDevelop.CodeIssues
 			// called. There is a slight possibility of a race between two different grouping provider
 			// changes but all such changes should originate in the ui and thus it should not happen
 			// TODO: Fix the race described above.
-			OnChildrenInvalidated ();
+			OnChildrenInvalidated (new IssueGroupEventArgs(this));
 		}
 
 		/// <summary>
@@ -106,11 +106,11 @@ namespace MonoDevelop.CodeIssues
 			private set;
 		}
 
-		event Action<IssueGroup> childrenInvalidated;
+		event EventHandler<IssueGroupEventArgs> childrenInvalidated;
 		/// <summary>
 		/// Occurs when child groups of this instance are invalidated.
 		/// </summary>
-		public event Action<IssueGroup> ChildrenInvalidated {
+		public event EventHandler<IssueGroupEventArgs> ChildrenInvalidated {
 			add {
 				childrenInvalidated += value;
 			}
@@ -119,19 +119,19 @@ namespace MonoDevelop.CodeIssues
 			}
 		}
 
-		protected virtual void OnChildrenInvalidated ()
+		protected virtual void OnChildrenInvalidated (IssueGroupEventArgs eventArgs)
 		{
 			var handler = childrenInvalidated;
 			if (handler != null) {
-				handler (this);
+				handler (this, eventArgs);
 			}
 		}
 
-		event Action<IssueGroup> childGroupAdded;
+		event EventHandler<IssueGroupEventArgs> childGroupAdded;
 		/// <summary>
 		/// Called when a child is added to this IssueGrouping.
 		/// </summary>
-		public event Action<IssueGroup> ChildGroupAdded
+		public event EventHandler<IssueGroupEventArgs> ChildGroupAdded
 		{
 			add {
 				childGroupAdded += value;
@@ -141,19 +141,19 @@ namespace MonoDevelop.CodeIssues
 			}
 		}
 
-		void DoChildGroupAdded (IssueGroup group)
+		protected virtual void OnChildGroupAdded (IssueGroupEventArgs eventArgs)
 		{
 			var handler = childGroupAdded;
 			if (handler != null) {
-				handler (group);
+				handler (this, eventArgs);
 			}
 		}
 
-		event Action<IssueSummary> issueSummaryAdded;
+		event EventHandler<IssueSummaryEventArgs> issueSummaryAdded;
 		/// <summary>
 		/// Called when an <see cref="IssueSummary"/> is added to this IssueGrouping.
 		/// </summary>
-		public event Action<IssueSummary> IssueSummaryAdded
+		public event EventHandler<IssueSummaryEventArgs> IssueSummaryAdded
 		{
 			add {
 				issueSummaryAdded += value;
@@ -163,11 +163,11 @@ namespace MonoDevelop.CodeIssues
 			}
 		}
 
-		void DoIssueAdded (IssueSummary summary)
+		protected virtual void OnIssueAdded (IssueSummaryEventArgs eventArgs)
 		{
 			var handler = issueSummaryAdded;
 			if (handler != null) {
-				handler (summary);
+				handler (this, eventArgs);
 			}
 		}
 		
@@ -237,10 +237,10 @@ namespace MonoDevelop.CodeIssues
 			// will be updated again when the second caller reaches the event calls.
 			
 			if (groupAdded) {
-				DoChildGroupAdded (group);
+				OnChildGroupAdded (new IssueGroupEventArgs(group));
 				group.Push (issue);	
 			} else if (group == null) {
-				DoIssueAdded (issue);
+				OnIssueAdded (new IssueSummaryEventArgs(this, issue));
 			} else {
 				group.Push (issue);	
 			}

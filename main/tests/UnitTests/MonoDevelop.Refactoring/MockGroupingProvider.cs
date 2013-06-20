@@ -61,14 +61,15 @@ namespace MonoDevelop.Refactoring
 				return next;
 			}
 			set {
+				var eventArgs = new GroupingProviderEventArgs (this, next);
 				next = value;
-				nextChanged (this);
+				nextChanged (this, eventArgs);
 			}
 		}
-
-		event Action<IGroupingProvider> nextChanged;
 		
-		public event Action<IGroupingProvider> NextChanged
+		event EventHandler<GroupingProviderEventArgs> nextChanged;
+		
+		event EventHandler<GroupingProviderEventArgs> IGroupingProvider.NextChanged
 		{
 			add {
 				nextChanged += value;

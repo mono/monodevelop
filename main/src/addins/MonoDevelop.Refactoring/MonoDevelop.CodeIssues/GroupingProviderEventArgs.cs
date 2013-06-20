@@ -1,5 +1,5 @@
 //
-// NullGroupingProvider.cs
+// IGroupingProvider.cs
 //
 // Author:
 //       Simon Lindgren <simon.n.lindgren@gmail.com>
@@ -27,56 +27,26 @@ using System;
 
 namespace MonoDevelop.CodeIssues
 {
-	public class NullGroupingProvider: IGroupingProvider
+	public class GroupingProviderEventArgs : EventArgs
 	{
-		static Lazy<NullGroupingProvider> instance = new Lazy<NullGroupingProvider>();
-		public static IGroupingProvider Instance
+		public GroupingProviderEventArgs(IGroupingProvider provider, IGroupingProvider oldNext)
 		{
-			get {
-				return instance.Value;
-			}
+			GroupingProvider = provider;
+			OldNext = oldNext;
 		}
 
-		#region IGroupingProvider implementation
+		/// <summary>
+		/// The <see cref="IGroupingProvider"/> whose Next reference has changed.
+		/// </summary>
+		/// <value>The grouping provider.</value>
+		public IGroupingProvider GroupingProvider { get; private set; }
 
-		public IssueGroup GetIssueGroup (IssueSummary issue)
-		{
-			return null;
-		}
-
-		public void Reset ()
-		{
-			// no-op
-		}
-
-		public IGroupingProvider Next {
-			get {
-				throw new InvalidOperationException ();
-			}
-			set {
-				throw new InvalidOperationException ();
-			}
-		}
-		
-		event EventHandler<GroupingProviderEventArgs> nextChanged;
-		
-		event EventHandler<GroupingProviderEventArgs> IGroupingProvider.NextChanged
-		{
-			add {
-				nextChanged += value;
-			}
-			remove {
-				nextChanged -= value;
-			}
-		}
-
-		public bool SupportsNext {
-			get {
-				return false;
-			}
-		}
-
-		#endregion
+		/// <summary>
+		/// The old value of the Next reference.
+		/// </summary>
+		/// <value>The old value.</value>
+		public IGroupingProvider OldNext { get; private set; }
 	}
+
 }
 

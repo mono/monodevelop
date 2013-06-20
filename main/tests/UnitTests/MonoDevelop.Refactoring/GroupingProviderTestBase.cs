@@ -100,7 +100,7 @@ namespace MonoDevelop.Refactoring
 		public void FiresNextUpdatedEvent ()
 		{
 			bool fired = false;
-			Provider.NextChanged += (obj) => {
+			Provider.NextChanged += (sender, obj) => {
 				fired = true;
 			};
 			Provider.Next = new MockGroupingProvider ();

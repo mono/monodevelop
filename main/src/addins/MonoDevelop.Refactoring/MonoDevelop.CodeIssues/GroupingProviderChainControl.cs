@@ -107,65 +107,20 @@ namespace MonoDevelop.CodeIssues
 			return combo;
 		}
 		
-		class GroupingProvider: IGroupingProvider
+		class GroupingProvider: AbstractGroupingProvider<object>
 		{
-			public GroupingProvider()
+			#region implemented abstract members of AbstractGroupingProvider
+			protected override object GetGroupingKey (IssueSummary issue)
 			{
-				Next = NullGroupingProvider.Instance;
+				return null;
 			}
-			
-			#region IGroupingProvider implementation
-	
-			public IssueGroup GetIssueGroup (IssueSummary issue)
+
+			protected override string GetGroupName (IssueSummary issue)
 			{
-				// This should never _ever_ happen!
-				throw new NotImplementedException ();
+				return null;
 			}
-	
-			public void Reset ()
-			{
-			}
-	
-			IGroupingProvider next;
-			public IGroupingProvider Next {
-				get {
-					return next;
-				}
-				set {
-					next = value;
-					OnNextChanged (this);
-				}
-			}
-	
-			protected virtual void OnNextChanged (GroupingProvider categoryGroupingProvider)
-			{
-				var handler = nextChanged;
-				if (handler != null) {
-					handler (categoryGroupingProvider);
-				}
-			}
-			
-			event Action<IGroupingProvider> nextChanged;
-			
-			event Action<IGroupingProvider> IGroupingProvider.NextChanged
-			{
-				add {
-					nextChanged += value;
-				}
-				remove {
-					nextChanged -= value;
-				}
-			}
-	
-			public bool SupportsNext
-			{
-				get {
-					return true;
-				}
-			}
-			
+			#endregion
 		}
-		#endregion
 	}
 }
 

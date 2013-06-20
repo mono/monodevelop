@@ -1,5 +1,5 @@
 //
-// NullGroupingProvider.cs
+// AbstractGroupingProvider.cs
 //
 // Author:
 //       Simon Lindgren <simon.n.lindgren@gmail.com>
@@ -24,37 +24,61 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 
 namespace MonoDevelop.CodeIssues
 {
-	public class NullGroupingProvider: IGroupingProvider
+	public abstract class AbstractGroupingProvider<T>: IGroupingProvider
 	{
-		static Lazy<NullGroupingProvider> instance = new Lazy<NullGroupingProvider>();
-		public static IGroupingProvider Instance
+		Dictionary<T, IssueGroup> groups = new Dictionary<T, IssueGroup> ();
+		
+		protected AbstractGroupingProvider()
 		{
-			get {
-				return instance.Value;
-			}
+			Next = NullGroupingProvider.Instance;
 		}
-
+		
 		#region IGroupingProvider implementation
+
+		protected abstract T GetGroupingKey (IssueSummary issue);
+		
+		protected abstract string GetGroupName (IssueSummary issue);
 
 		public IssueGroup GetIssueGroup (IssueSummary issue)
 		{
-			return null;
+			IssueGroup group;
+			var providerCategory = GetGroupingKey (issue);
+			if (providerCategory == null)
+				return null;
+			if (!groups.TryGetValue(providerCategory, out group)) {
+				group = new IssueGroup (this, Next, GetGroupName(issue));
+				groups.Add (providerCategory, group);
+			}
+			return group;
 		}
 
 		public void Reset ()
 		{
-			// no-op
+			groups.Clear ();
 		}
 
-		public IGroupingProvider Next {
+		IGroupingProvider next;
+		public IGroupingProvider Next
+		{
 			get {
-				throw new InvalidOperationException ();
+				return next;
 			}
 			set {
-				throw new InvalidOperationException ();
+				var eventArgs = new GroupingProviderEventArgs (this, next);
+				next = value;
+				OnNextChanged (eventArgs);
+			}
+		}
+
+		protected virtual void OnNextChanged (GroupingProviderEventArgs eventArgs)
+		{
+			var handler = nextChanged;
+			if (handler != null) {
+				handler (this, eventArgs);
 			}
 		}
 		
@@ -70,9 +94,10 @@ namespace MonoDevelop.CodeIssues
 			}
 		}
 
-		public bool SupportsNext {
+		public bool SupportsNext
+		{
 			get {
-				return false;
+				return true;
 			}
 		}
 

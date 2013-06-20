@@ -58,6 +58,10 @@ namespace MonoDevelop.CodeIssues
 		TreeStore store;
 		CancellationTokenSource tokenSource;
 
+		static Type[] groupingProviders = new[] {
+			typeof(CategoryGroupingProvider)
+		};
+
 		public CodeIssuePadControl ()
 		{
 			runButton.Clicked += StartAnalyzation;
@@ -68,7 +72,7 @@ namespace MonoDevelop.CodeIssues
 			buttonRow.PackStart (cancelButton);
 			
 			var groupingProvider = new CategoryGroupingProvider ();
-			groupingProviderControl = new GroupingProviderChainControl (groupingProvider, new [] { typeof(CategoryGroupingProvider) });
+			groupingProviderControl = new GroupingProviderChainControl (groupingProvider, groupingProviders);
 			buttonRow.PackStart (groupingProviderControl);
 			
 			PackStart (buttonRow);
@@ -87,7 +91,7 @@ namespace MonoDevelop.CodeIssues
 			rootGroup = new IssueGroup (rootProvider, rootProvider.Next, "root group");
 			rootGroup.ChildGroupAdded += GetGroupAddedHandler (rootGroup);
 			rootGroup.IssueSummaryAdded += GetIssueSummaryAddedHandler (rootGroup);
-			rootGroup.ChildrenInvalidated += (obj) => {
+			rootGroup.ChildrenInvalidated += (sender, group) => {
 				store.Clear ();
 				InsertTopRow ();
 				rootGroup.EnableProcessing ();
@@ -195,12 +199,13 @@ namespace MonoDevelop.CodeIssues
 			tokenSource.Cancel ();
 		}
 		
-		Action<IssueGroup> GetGroupAddedHandler (IssueGroup parentGroup) 
+		EventHandler<IssueGroupEventArgs> GetGroupAddedHandler (IssueGroup parentGroup) 
 		{
-			return group => {
+			return (sender, eventArgs) => {
 				Application.Invoke (delegate {
 					var navigator = GetNavigatorForGroup (parentGroup);
 					
+					var group = eventArgs.IssueGroup;
 					group.Position = navigator.CurrentPosition;
 					group.ChildGroupAdded += GetGroupAddedHandler(group);
 					group.IssueSummaryAdded += GetIssueSummaryAddedHandler(group);
@@ -212,21 +217,21 @@ namespace MonoDevelop.CodeIssues
 			};
 		}
 
-		Action<IssueSummary> GetIssueSummaryAddedHandler (IssueGroup parentGroup)
+		EventHandler<IssueSummaryEventArgs> GetIssueSummaryAddedHandler (IssueGroup parentGroup)
 		{
-			return issue => {
+			return (sender, eventArgs) => {
 				Application.Invoke (delegate {
 					TreeNavigator navigator = GetNavigatorForGroup (parentGroup);
-					navigator.SetValue (summaryField, issue);
+					navigator.SetValue (summaryField, eventArgs.IssueSummary);
 					
 					UpdateParents (navigator);
 				});
 			};
 		}
 
-		Action<IssueGroup> GetChildrenInvalidatedHandler (TreeNavigator navigator)
+		EventHandler<IssueGroupEventArgs> GetChildrenInvalidatedHandler (TreeNavigator navigator)
 		{
-			return group => {
+			return (sender, group) => {
 				navigator.RemoveChildren ();
 				UpdateParents (navigator);
 			};

@@ -1,5 +1,5 @@
 //
-// NullGroupingProvider.cs
+// IssueGroupEventArgs.cs
 //
 // Author:
 //       Simon Lindgren <simon.n.lindgren@gmail.com>
@@ -27,56 +27,14 @@ using System;
 
 namespace MonoDevelop.CodeIssues
 {
-	public class NullGroupingProvider: IGroupingProvider
+	public class IssueGroupEventArgs: EventArgs
 	{
-		static Lazy<NullGroupingProvider> instance = new Lazy<NullGroupingProvider>();
-		public static IGroupingProvider Instance
+		public IssueGroupEventArgs (IssueGroup group)
 		{
-			get {
-				return instance.Value;
-			}
-		}
-
-		#region IGroupingProvider implementation
-
-		public IssueGroup GetIssueGroup (IssueSummary issue)
-		{
-			return null;
-		}
-
-		public void Reset ()
-		{
-			// no-op
-		}
-
-		public IGroupingProvider Next {
-			get {
-				throw new InvalidOperationException ();
-			}
-			set {
-				throw new InvalidOperationException ();
-			}
+			IssueGroup = group;
 		}
 		
-		event EventHandler<GroupingProviderEventArgs> nextChanged;
-		
-		event EventHandler<GroupingProviderEventArgs> IGroupingProvider.NextChanged
-		{
-			add {
-				nextChanged += value;
-			}
-			remove {
-				nextChanged -= value;
-			}
-		}
-
-		public bool SupportsNext {
-			get {
-				return false;
-			}
-		}
-
-		#endregion
+		public IssueGroup IssueGroup { get; private set; }
 	}
 }
 

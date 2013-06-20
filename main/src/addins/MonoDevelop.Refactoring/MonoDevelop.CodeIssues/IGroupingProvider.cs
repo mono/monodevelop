@@ -53,7 +53,7 @@ namespace MonoDevelop.CodeIssues
 		/// <summary>
 		/// Occurs when <see cref="Next"/> changes.
 		/// </summary>
-		event Action<IGroupingProvider> NextChanged;
+		event EventHandler<GroupingProviderEventArgs> NextChanged;
 		
 		/// <summary>
 		/// Gets a value indicating whether this <see cref="MonoDevelop.CodeIssues.IGroupingProvider"/>

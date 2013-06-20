@@ -23,80 +23,25 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-using System.Collections.Generic;
 
 namespace MonoDevelop.CodeIssues
 {
 	// TODO: should this be a threadsafe class?
 	// Our current usage is fine, but could be nice anyway (and might avoid future bugs)
 	[GroupingDescription("Category")]
-	public class CategoryGroupingProvider: IGroupingProvider
+	public class CategoryGroupingProvider: AbstractGroupingProvider<string>
 	{
-		Dictionary<string, IssueGroup> groups = new Dictionary<string, IssueGroup> ();
-		
-		public CategoryGroupingProvider()
+		#region implemented abstract members of AbstractGroupingProvider
+		protected override string GetGroupingKey (IssueSummary issue)
 		{
-			Next = NullGroupingProvider.Instance;
-		}
-		
-		#region IGroupingProvider implementation
-
-		public IssueGroup GetIssueGroup (IssueSummary issue)
-		{
-			IssueGroup group;
-			if (!groups.TryGetValue(issue.ProviderCategory, out group)) {
-				group = new IssueGroup (this, Next, issue.ProviderCategory);
-				groups.Add (issue.ProviderCategory, group);
-			}
-			return group;
+			return issue.ProviderCategory;
 		}
 
-		public void Reset ()
+		protected override string GetGroupName (IssueSummary issue)
 		{
-			groups.Clear ();
+			return issue.ProviderCategory;
 		}
-
-		IGroupingProvider next;
-		public IGroupingProvider Next
-		{
-			get {
-				return next;
-			}
-			set {
-				next = value;
-				OnNextChanged (this);
-			}
-		}
-
-		protected virtual void OnNextChanged (CategoryGroupingProvider categoryGroupingProvider)
-		{
-			var handler = nextChanged;
-			if (handler != null) {
-				handler (categoryGroupingProvider);
-			}
-		}
-		
-		event Action<IGroupingProvider> nextChanged;
-		
-		event Action<IGroupingProvider> IGroupingProvider.NextChanged
-		{
-			add {
-				nextChanged += value;
-			}
-			remove {
-				nextChanged -= value;
-			}
-		}
-
-		public bool SupportsNext
-		{
-			get {
-				return true;
-			}
-		}
-
-		#endregion
+		#endregion	
 	}
 }
 

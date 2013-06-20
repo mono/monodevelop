@@ -117,6 +117,10 @@
     <Compile Include="MonoDevelop.CodeIssues\GroupingProviderChainControl.cs" />
     <Compile Include="MonoDevelop.CodeIssues\GroupingDescriptionAttribute.cs" />
     <Compile Include="MonoDevelop.CodeIssues\NullGroupingProvider.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\IssueGroupEventArgs.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\IssueSummaryEventArgs.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\GroupingProviderEventArgs.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\AbstractGroupingProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
