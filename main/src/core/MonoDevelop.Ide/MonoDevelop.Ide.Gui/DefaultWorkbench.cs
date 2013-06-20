@@ -336,6 +336,7 @@ namespace MonoDevelop.Ide.Gui
 				return;
 			
 			rootWidget.Remove (topMenu);
+			topMenu.Destroy ();
 			topMenu = null;
 		}
 		
@@ -682,6 +683,9 @@ namespace MonoDevelop.Ide.Gui
 				if (content.Initialized)
 					content.PadContent.Dispose();
 			}
+
+			rootWidget.Destroy ();
+			Destroy ();
 		}
 		
 		public bool Close() 
