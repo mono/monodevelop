@@ -402,31 +402,38 @@ namespace MonoDevelop.Refactoring
 			if (!foundIdentifier && resolveResult is UnknownIdentifierResolveResult) {
 				var uiResult = resolveResult as UnknownIdentifierResolveResult;
 				if (uiResult != null) {
+					var lookups = new List<Tuple<FrameworkLookup.AssemblyLookup, SystemAssembly>> ();
 					try {
 						foreach (var r in frameworkLookup.GetLookups (uiResult, tc, isInsideAttributeType)) {
 							var systemAssembly = netProject.AssemblyContext.GetAssemblyFromFullName (r.FullName, r.Package, netProject.TargetFramework);
 							if (systemAssembly == null)
 								continue;
-							yield return new PossibleNamespace (r.Namespace, true, new MonoDevelop.Projects.ProjectReference (systemAssembly));
+							lookups.Add (Tuple.Create (r, systemAssembly));
 						}
 					} catch (Exception e) {
 						LoggingService.LogError ("Error while looking up framework types.", e);
 					}
+					foreach(var kv in lookups)
+						yield return new PossibleNamespace (kv.Item1.Namespace, true, new MonoDevelop.Projects.ProjectReference (kv.Item2));
+
 				}
 			}
 			if (!foundIdentifier && resolveResult is UnknownMemberResolveResult) {
 				var uiResult = resolveResult as UnknownMemberResolveResult;
 				if (uiResult != null) {
+					var lookups = new List<Tuple<FrameworkLookup.AssemblyLookup, SystemAssembly>> ();
 					try {
 						foreach (var r in frameworkLookup.GetLookups (uiResult, node, tc, isInsideAttributeType)) {
 							var systemAssembly = netProject.AssemblyContext.GetAssemblyFromFullName (r.FullName, r.Package, netProject.TargetFramework);
 							if (systemAssembly == null)
 								continue;
-							yield return new PossibleNamespace (r.Namespace, false, new MonoDevelop.Projects.ProjectReference (systemAssembly));
+							lookups.Add (Tuple.Create (r, systemAssembly));
 						}
 					} catch (Exception e) {
 						LoggingService.LogError ("Error while looking up framework types.", e);
 					}
+					foreach(var kv in lookups)
+						yield return new PossibleNamespace (kv.Item1.Namespace, true, new MonoDevelop.Projects.ProjectReference (kv.Item2));
 				}
 			}
 
