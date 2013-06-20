@@ -35,6 +35,7 @@ using System.Text.RegularExpressions;
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Components;
+using Gtk;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -168,30 +169,31 @@ namespace MonoDevelop.SourceEditor
 		public void Dispose ()
 		{
 			DisposeLayout ();
+
 		}
 		
 		internal Pango.Layout errorCountLayout;
 		List<MessageBubbleCache.LayoutDescriptor> layouts;
 		
-		AmbientColor MarkerColor {
+		internal AmbientColor MarkerColor {
 			get {
 				return isError ? editor.ColorStyle.MessageBubbleErrorMarker : editor.ColorStyle.MessageBubbleWarningMarker;
 			}
 		}
 
-		AmbientColor TextColor {
+		internal AmbientColor TextColor {
 			get {
 				return isError ? editor.ColorStyle.MessageBubbleErrorTagText : editor.ColorStyle.MessageBubbleWarningTagText;
 			}
 		}
 
-		AmbientColor TagColor {
+		internal AmbientColor TagColor {
 			get {
 				return isError ? editor.ColorStyle.MessageBubbleErrorTag : editor.ColorStyle.MessageBubbleWarningTag;
 			}
 		}
 
-		AmbientColor LineColor {
+		internal AmbientColor LineColor {
 			get {
 				return isError ? editor.ColorStyle.MessageBubbleErrorLine : editor.ColorStyle.MessageBubbleWarningLine;
 			}
@@ -341,11 +343,6 @@ namespace MonoDevelop.SourceEditor
 		public override void Draw (TextEditor editor, Cairo.Context g, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
 		{
 
-		}
-		
-		public void PopupWindow ()
-		{
-			// TODO!
 		}
 	}
 }
