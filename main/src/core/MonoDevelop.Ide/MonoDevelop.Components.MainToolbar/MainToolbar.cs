@@ -780,6 +780,16 @@ namespace MonoDevelop.Components.MainToolbar
 			matchEntry.Sensitive = enabled;
 		}
 		#endregion
+
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+
+			if (Background != null) {
+				((IDisposable)Background).Dispose ();
+				Background = null;
+			}
+		}
 	}
 }
 
