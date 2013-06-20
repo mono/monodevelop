@@ -50,16 +50,21 @@ namespace MonoDevelop.CodeIssues
 		DataField<IssueSummary> summaryField = new DataField<IssueSummary> ();
 		DataField<IssueGroup> groupField = new DataField<IssueGroup> ();
 		Button runButton = new Button ("Run");
+		Button cancelButton = new Button ("Cancel");
+		HBox buttonRow = new HBox();
 		
 		IssueGroup rootGroup;
-
 		TreeStore store;
+		CancellationTokenSource tokenSource;
 
 		public CodeIssuePadControl ()
 		{
-		
 			runButton.Clicked += StartAnalyzation;
-			PackStart (runButton, BoxMode.None);
+			buttonRow.PackStart (runButton);
+			cancelButton.Clicked += StopAnalyzation;
+			cancelButton.Sensitive = false;
+			buttonRow.PackStart (cancelButton);
+			PackStart (buttonRow);
 
 			store = new TreeStore (textField, summaryField, groupField);
 			view.DataSource = store;
@@ -81,8 +86,10 @@ namespace MonoDevelop.CodeIssues
 			if (solution == null)
 				return;
 			runButton.Sensitive = false;
+			cancelButton.Sensitive = true;
 			store.Clear ();
 			rootGroup.ClearStatistics();
+			tokenSource = new CancellationTokenSource ();
 			var rootNode = store.AddNode ();
 			rootNode.SetValue (textField, "Analyzing...");
 			ThreadPool.QueueUserWorkItem (delegate {
@@ -97,9 +104,11 @@ namespace MonoDevelop.CodeIssues
 					string lastMime = null;
 					CodeIssueProvider[] codeIssueProvider = null;
 					foreach (var project in solution.GetAllProjects ()) {
+						if (tokenSource.IsCancellationRequested)
+							break;
 						var compilation = TypeSystemService.GetCompilation (project);
 						Parallel.ForEach (project.Files, file => {
-							if (file.BuildAction != BuildAction.Compile)
+							if (file.BuildAction != BuildAction.Compile || tokenSource.IsCancellationRequested)
 								return;
 
 							var editor = TextFileProvider.Instance.GetReadOnlyTextEditorData (file.FilePath);
@@ -115,16 +124,16 @@ namespace MonoDevelop.CodeIssues
 								return;
 
 							var resolver = new CSharpAstResolver (compilation, document.GetAst<SyntaxTree> (), document.ParsedFile as CSharpUnresolvedFile);
-							var context = document.CreateRefactoringContextWithEditor (editor, resolver, CancellationToken.None);
+							var context = document.CreateRefactoringContextWithEditor (editor, resolver, tokenSource.Token);
 
 							if (lastMime != editor.MimeType || codeIssueProvider == null)
 								codeIssueProvider = RefactoringService.GetInspectors (editor.MimeType).ToArray ();
 							Parallel.ForEach (codeIssueProvider, (provider) => { 
 								var severity = provider.GetSeverity ();
-								if (severity == Severity.None)
+								if (severity == Severity.None || tokenSource.IsCancellationRequested)
 									return;
 								try {
-									foreach (var r in provider.GetIssues (context, CancellationToken.None)) {
+									foreach (var r in provider.GetIssues (context, tokenSource.Token)) {
 										var issue = new IssueSummary {
 											IssueDescription = r.Description,
 											Region = r.Region,
@@ -134,6 +143,9 @@ namespace MonoDevelop.CodeIssues
 										};
 										rootGroup.Push (issue);
 									}
+								} catch (OperationCanceledException)  {
+									// The operation was cancelled, no-op as the user-visible parts are
+									// handled elsewhere
 								} catch (Exception ex) {
 									LoggingService.LogError ("Error while running code issue on:"+ editor.FileName, ex);
 								}
@@ -143,12 +155,22 @@ namespace MonoDevelop.CodeIssues
 						});
 					}
 					Application.Invoke (delegate {
-						rootNode.SetValue (textField, "Found issues: " + rootGroup.IssueCount);
+						var status = string.Format ("Found issues: {0}{1}",
+							rootGroup.IssueCount,
+							tokenSource.IsCancellationRequested ? " (Cancelled)" : string.Empty);
+						rootNode.SetValue (textField, status);
 						runButton.Sensitive = true;
+						cancelButton.Sensitive = false;
 					});
 					monitor.EndTask ();
 				}
 			});
+		}
+
+		void StopAnalyzation (object sender, EventArgs e)
+		{
+			cancelButton.Sensitive = false;
+			tokenSource.Cancel ();
 		}
 		
 		Action<IssueGroup> GetGroupAddedHandler (IssueGroup parentGroup) 
