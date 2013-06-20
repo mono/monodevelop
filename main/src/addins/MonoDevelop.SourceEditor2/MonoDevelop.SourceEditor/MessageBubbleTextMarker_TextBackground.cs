@@ -111,8 +111,8 @@ namespace MonoDevelop.SourceEditor
 			g.RoundedRectangle (metrics.TextRenderEndPosition, y + 1, LayoutWidth + errorCounterWidth + editor.LineHeight, editor.LineHeight - 2, editor.LineHeight / 2 - 1);
 			g.Color = TagColor.Color;
 			g.Fill ();
-
-			if (errorCounterWidth > 0) {
+		
+			if (errorCounterWidth > 0 && errorCountLayout != null) {
 				g.RoundedRectangle (metrics.TextRenderEndPosition + LayoutWidth + editor.LineHeight / 2, y + 2, errorCounterWidth, editor.LineHeight - 4, editor.LineHeight / 2 - 3);
 				g.Color = TextColor.Color;
 				g.Fill ();

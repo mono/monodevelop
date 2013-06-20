@@ -41,7 +41,7 @@ namespace MonoDevelop.SourceEditor
 		internal Dictionary<DocumentLine, double> lineWidthDictionary = new Dictionary<DocumentLine, double> ();
 		
 		internal TextEditor editor;
-		
+
 		internal Pango.FontDescription fontDescription;
 
 		public MessageBubbleTextMarker CurrentSelectedTextMarker;
@@ -58,8 +58,38 @@ namespace MonoDevelop.SourceEditor
 			fontDescription = FontService.GetFontDescription ("MessageBubbles");
 		}
 
+		uint hoverTimeout;
+
+		void CancelHoverTimeout ()
+		{
+			if (hoverTimeout != 0) {
+				GLib.Source.Remove (hoverTimeout);
+				hoverTimeout = 0;
+			}
+		}
+
+		public void StartHover (MessageBubbleTextMarker marker)
+		{
+			CancelHoverTimeout ();
+			if (removedMarker == marker) {
+				CurrentSelectedTextMarker = marker;
+				return;
+			}
+
+			hoverTimeout = GLib.Timeout.Add (200, delegate {
+				CurrentSelectedTextMarker = marker;
+				editor.QueueDraw ();
+				marker.PopupWindow ();
+				return false;
+			});
+		}
+
+		MessageBubbleTextMarker removedMarker;
+
 		void HandleBeginHover (object sender, EventArgs e)
 		{
+			CancelHoverTimeout ();
+			removedMarker = CurrentSelectedTextMarker;
 			if (CurrentSelectedTextMarker == null)
 				return;
 			CurrentSelectedTextMarker = null;
@@ -68,6 +98,7 @@ namespace MonoDevelop.SourceEditor
 
 		void HandleLeaveNotifyEvent (object o, Gtk.LeaveNotifyEventArgs args)
 		{
+			CancelHoverTimeout ();
 			if (CurrentSelectedTextMarker == null)
 				return;
 			CurrentSelectedTextMarker = null;
@@ -84,6 +115,7 @@ namespace MonoDevelop.SourceEditor
 
 		public void Dispose ()
 		{
+			CancelHoverTimeout ();
 			editor.TextArea.BeginHover -= HandleBeginHover;
 			editor.LeaveNotifyEvent -= HandleLeaveNotifyEvent;
 			editor.EditorOptionsChanged -= HandleEditorEditorOptionsChanged;

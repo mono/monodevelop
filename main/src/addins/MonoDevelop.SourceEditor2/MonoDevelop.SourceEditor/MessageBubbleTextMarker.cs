@@ -330,8 +330,7 @@ namespace MonoDevelop.SourceEditor
 
 			if (bubbleStart < args.X && args.X < bubbleStart + LayoutWidth + errorCounterWidth + editor.LineHeight) {
 				result.Cursor = null;
-				cache.CurrentSelectedTextMarker = this;
-				editor.QueueDraw ();
+				cache.StartHover (this);
 			}
 
 			if (layout.IsUncached)
@@ -344,5 +343,9 @@ namespace MonoDevelop.SourceEditor
 
 		}
 		
+		public void PopupWindow ()
+		{
+			// TODO!
+		}
 	}
 }
