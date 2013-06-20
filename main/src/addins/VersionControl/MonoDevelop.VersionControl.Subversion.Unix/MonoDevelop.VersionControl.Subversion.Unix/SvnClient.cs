@@ -14,7 +14,7 @@ using size_t = System.Int32;
 
 namespace MonoDevelop.VersionControl.Subversion.Unix
 {
-	class SvnClient : SubversionVersionControl
+	public class SvnClient : SubversionVersionControl
 	{
 		internal static LibApr apr;
 		static Lazy<bool> isInstalled;
@@ -157,7 +157,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		}
 	}
 
-	class UnixSvnBackend : SubversionBackend
+	public class UnixSvnBackend : SubversionBackend
 	{
 		protected static LibApr apr {
 			get { return SvnClient.apr; }

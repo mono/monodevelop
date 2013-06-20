@@ -318,12 +318,12 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 			public IntPtr rev_prop;
 			public svn_revnum_t old_revision;
 			/* C Unsigned Long */
-			public UInt64 hunk_original_start;
-			public UInt64 hunk_original_length;
-			public UInt64 hunk_modified_start;
-			public UInt64 hunk_modified_length;
-			public UInt64 hunk_matched_line;
-			public UInt64 hunk_fuzz;
+			public IntPtr hunk_original_start;
+			public IntPtr hunk_original_length;
+			public IntPtr hunk_modified_start;
+			public IntPtr hunk_modified_length;
+			public IntPtr hunk_matched_line;
+			public IntPtr hunk_fuzz;
 		}
 		
 		[StructLayout(LayoutKind.Sequential)]

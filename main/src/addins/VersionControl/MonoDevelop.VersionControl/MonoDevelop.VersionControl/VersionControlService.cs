@@ -193,7 +193,7 @@ namespace MonoDevelop.VersionControl
 			return repo;
 		}
 		
-		static Repository GetRepositoryReference (string path, string id)
+		public static Repository GetRepositoryReference (string path, string id)
 		{
 			foreach (VersionControlSystem vcs in GetVersionControlSystems ()) {
 				Repository repo = vcs.GetRepositoryReference (path, id);

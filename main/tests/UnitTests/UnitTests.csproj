@@ -227,6 +227,14 @@
       <Name>Mono.Debugging.Soft</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\src\addins\VersionControl\MonoDevelop.VersionControl.Subversion\MonoDevelop.VersionControl.Subversion.csproj">
+      <Project>{183E084F-2C3B-4A6D-A8CE-6CDF3DC499AC}</Project>
+      <Name>MonoDevelop.VersionControl.Subversion</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\addins\VersionControl\MonoDevelop.VersionControl.Subversion.Unix\MonoDevelop.VersionControl.Subversion.Unix.csproj">
+      <Project>{E2CAB397-D00C-4D11-8F5F-E3A052092969}</Project>
+      <Name>MonoDevelop.VersionControl.Subversion.Unix</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.AspNet.Mvc.Completion\CompletionTests.cs" />
@@ -277,6 +285,7 @@
     <Compile Include="MonoDevelop.Xml.StateEngine\HtmlParsingTests.cs" />
     <Compile Include="MonoDevelop.Xml.StateEngine\AspNetParsingTests.cs" />
     <Compile Include="MonoDevelop.Xml.StateEngine\ParsingTests.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Subversion\SvnUtilsTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />
@@ -306,4 +315,7 @@
     <None Include="MonoDevelop.AspNet\AspNetTesting.cs" />
   </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <Folder Include="MonoDevelop.VersionControl.Subversion\" />
+  </ItemGroup>
 </Project>
