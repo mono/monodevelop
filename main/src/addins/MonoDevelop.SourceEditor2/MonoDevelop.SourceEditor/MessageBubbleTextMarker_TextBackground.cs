@@ -28,6 +28,7 @@ using Mono.TextEditor;
 using System;
 using System.Linq;
 using MonoDevelop.Components;
+using MonoDevelop.Debugger;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -38,6 +39,9 @@ namespace MonoDevelop.SourceEditor
 			if (!IsVisible)
 				return true;
 			bool markerShouldDrawnAsHidden = cache.CurrentSelectedTextMarker != null && cache.CurrentSelectedTextMarker != this;
+
+			if (metrics.LineSegment.Markers.Any (m => m is DebugTextMarker))
+				markerShouldDrawnAsHidden = true;
 
 
 			EnsureLayoutCreated (editor);
