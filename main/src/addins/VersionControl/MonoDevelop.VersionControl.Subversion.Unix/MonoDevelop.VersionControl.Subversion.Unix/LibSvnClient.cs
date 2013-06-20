@@ -288,7 +288,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 			public IntPtr mimetypes_map;
 			public svn_wc_conflict_resolver_func_t conflict_func;
 			public IntPtr conflict_baton;
-			public string client_name;
+			public IntPtr client_name;
 			public svn_wc_conflict_resolver_func2_t conflict_func2;
 			public IntPtr conflict_baton2;
 			public IntPtr wc_ctx;
@@ -316,7 +316,14 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 			public IntPtr path_prefix;
 			public IntPtr prop_name;
 			public IntPtr rev_prop;
-
+			public svn_revnum_t old_revision;
+			/* C Unsigned Long */
+			public UInt64 hunk_original_start;
+			public UInt64 hunk_original_length;
+			public UInt64 hunk_modified_start;
+			public UInt64 hunk_modified_length;
+			public UInt64 hunk_matched_line;
+			public UInt64 hunk_fuzz;
 		}
 		
 		[StructLayout(LayoutKind.Sequential)]
@@ -662,8 +669,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 
 		public delegate void svn_ra_progress_notify_func_t (off_t progress, off_t total, off_t baton, IntPtr pool);
 
-		public delegate IntPtr svn_wc_conflict_resolver_func_t (out IntPtr result, out IntPtr description, IntPtr baton, IntPtr pool);
+		public delegate IntPtr svn_wc_conflict_resolver_func_t (out IntPtr result, IntPtr description, IntPtr baton, IntPtr pool);
 
-		public delegate IntPtr svn_wc_conflict_resolver_func2_t (out IntPtr result, out IntPtr description, IntPtr baton, IntPtr result_pool, IntPtr scratch_pool);
+		public delegate IntPtr svn_wc_conflict_resolver_func2_t (out IntPtr result, IntPtr description, IntPtr baton, IntPtr result_pool, IntPtr scratch_pool);
 	}
 }
