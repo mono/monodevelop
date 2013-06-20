@@ -270,6 +270,15 @@ namespace MonoDevelop.Refactoring
 			}
 		}
 
+		static bool CanBeReferenced (Project project, SystemAssembly systemAssembly)
+		{
+			var netProject = project as DotNetProject;
+			if (netProject == null)
+				return false;
+			var result = netProject.TargetRuntime.AssemblyContext.GetAssemblyNameForVersion(systemAssembly.FullName, netProject.TargetFramework);
+			return !string.IsNullOrEmpty (result);
+		}
+
 		static IEnumerable<PossibleNamespace> GetPossibleNamespaces (Document doc, AstNode node, ResolveResult resolveResult, DocumentLocation location)
 		{
 			var unit = doc.ParsedDocument.GetAst<SyntaxTree> ();
@@ -311,7 +320,8 @@ namespace MonoDevelop.Refactoring
 						var systemAssembly = netProject.AssemblyContext.GetAssemblyFromFullName (r.FullName, r.Package, netProject.TargetFramework);
 						if (systemAssembly == null)
 							continue;
-						compilations.Add (Tuple.Create (TypeSystemService.GetCompilation (systemAssembly, doc.Compilation), new MonoDevelop.Projects.ProjectReference (systemAssembly)));
+						if (CanBeReferenced (doc.Project, systemAssembly))
+							compilations.Add (Tuple.Create (TypeSystemService.GetCompilation (systemAssembly, doc.Compilation), new MonoDevelop.Projects.ProjectReference (systemAssembly)));
 					}
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while looking up framework extension methods.", e);
@@ -408,7 +418,8 @@ namespace MonoDevelop.Refactoring
 							var systemAssembly = netProject.AssemblyContext.GetAssemblyFromFullName (r.FullName, r.Package, netProject.TargetFramework);
 							if (systemAssembly == null)
 								continue;
-							lookups.Add (Tuple.Create (r, systemAssembly));
+							if (CanBeReferenced (doc.Project, systemAssembly))
+								lookups.Add (Tuple.Create (r, systemAssembly));
 						}
 					} catch (Exception e) {
 						LoggingService.LogError ("Error while looking up framework types.", e);
@@ -427,7 +438,8 @@ namespace MonoDevelop.Refactoring
 							var systemAssembly = netProject.AssemblyContext.GetAssemblyFromFullName (r.FullName, r.Package, netProject.TargetFramework);
 							if (systemAssembly == null)
 								continue;
-							lookups.Add (Tuple.Create (r, systemAssembly));
+							if (CanBeReferenced (doc.Project, systemAssembly))
+								lookups.Add (Tuple.Create (r, systemAssembly));
 						}
 					} catch (Exception e) {
 						LoggingService.LogError ("Error while looking up framework types.", e);
