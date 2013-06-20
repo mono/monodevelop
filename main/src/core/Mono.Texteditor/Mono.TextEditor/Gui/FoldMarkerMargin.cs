@@ -293,6 +293,13 @@ namespace Mono.TextEditor
 		
 		internal protected override void Draw (Cairo.Context cr, Cairo.Rectangle area, DocumentLine lineSegment, int line, double x, double y, double lineHeight)
 		{
+			var gutterMarker = lineSegment != null ? (IFoldMarginMarker)lineSegment.Markers.FirstOrDefault (marker => marker is IFoldMarginMarker) : null;
+			if (gutterMarker != null) {
+				bool hasDrawn = gutterMarker.DrawBackground (editor, Width, cr, area, lineSegment, line, x, y, lineHeight);
+				if (!hasDrawn)
+					gutterMarker = null;
+			}
+
 			foldSegmentSize = marginWidth * 4 / 6;
 			foldSegmentSize -= (foldSegmentSize) % 2;
 			
@@ -330,21 +337,23 @@ namespace Mono.TextEditor
 				isEndSelected = this.lineHover != null && IsMouseHover (endFoldings);
 			}
 
-			if (editor.Options.HighlightCaretLine && editor.Caret.Line == line) {
-				editor.TextViewMargin.DrawCaretLineMarker (cr, x, y, Width, lineHeight);
-			} else {
-				var bgGC = foldBgGC;
-				if (editor.TextViewMargin.BackgroundRenderer != null) {
-					if (isContainingSelected || isStartSelected || isEndSelected) {
-						bgGC = foldBgGC;
-					} else {
-						bgGC = foldLineHighlightedGCBg;
+			if (gutterMarker == null) {
+				if (editor.Options.HighlightCaretLine && editor.Caret.Line == line) {
+					editor.TextViewMargin.DrawCaretLineMarker (cr, x, y, Width, lineHeight);
+				} else {
+					var bgGC = foldBgGC;
+					if (editor.TextViewMargin.BackgroundRenderer != null) {
+						if (isContainingSelected || isStartSelected || isEndSelected) {
+							bgGC = foldBgGC;
+						} else {
+							bgGC = foldLineHighlightedGCBg;
+						}
 					}
+					
+					cr.Rectangle (drawArea);
+					cr.Color = bgGC;
+					cr.Fill ();
 				}
-				
-				cr.Rectangle (drawArea);
-				cr.Color = bgGC;
-				cr.Fill ();
 			}
 
 			if (editor.Options.EnableQuickDiff) {

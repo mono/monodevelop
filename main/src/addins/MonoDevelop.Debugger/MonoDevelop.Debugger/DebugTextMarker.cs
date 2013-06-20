@@ -57,6 +57,12 @@ namespace MonoDevelop.Debugger
 			this.editor = editor;
 		}
 
+		public bool CanDrawBackground { get { return false; } }
+
+		public void DrawBackground (TextEditor editor, Cairo.Context cr, DocumentLine line, int lineNumber, double xPos, double yPos, double width, double height)
+		{
+			throw new NotSupportedException ();
+		}
 
 		public override void Draw (TextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
 		{

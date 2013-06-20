@@ -214,12 +214,34 @@ namespace Mono.TextEditor
 	/// </summary>
 	public interface IIconBarMarker
 	{
+		bool CanDrawBackground { get; }
+		void DrawBackground (TextEditor editor, Cairo.Context cr, DocumentLine line, int lineNumber, double xPos, double yPos, double width, double height);
+
 		void DrawIcon (TextEditor editor, Cairo.Context cr, DocumentLine line, int lineNumber, double xPos, double yPos, double width, double height);
 		void MousePress (MarginMouseEventArgs args);
 		void MouseRelease (MarginMouseEventArgs args);
 		void MouseHover (MarginMouseEventArgs args);
 	}
-	
+
+	public class LineMetrics
+	{
+		public DocumentLine LineSegment { get; internal set; }
+		public TextViewMargin.LayoutWrapper Layout { get; internal set; }
+
+		public int SelectionStart { get; internal set; }
+		public int SelectionEnd { get; internal set; }
+
+		public int TextStartOffset { get; internal set; }
+		public int TextEndOffset { get; internal set; }
+
+		public double TextRenderStartPosition { get; internal set; }
+		public double TextRenderEndPosition { get; internal set; }
+
+		public double LineHeight { get; internal set; }
+
+		public double WholeLineWidth { get; internal set; }
+	}
+
 	/// <summary>
 	/// A specialized interface to draw text backgrounds.
 	/// </summary>
@@ -231,13 +253,29 @@ namespace Mono.TextEditor
 		/// <returns>
 		/// true, when the text view should draw the text, false when the text view should not draw the text.
 		/// </returns>
-		bool DrawBackground (TextEditor Editor, Cairo.Context cr, TextViewMargin.LayoutWrapper layout, int selectionStart, int selectionEnd, int startOffset, int endOffset, double y, double startXPos, double endXPos, ref bool drawBg);
+		bool DrawBackground (TextEditor editor, Cairo.Context cr, double y, LineMetrics metrics, ref bool drawBg);
+	}
+
+	public interface IFoldMarginMarker
+	{
+		/// <summary>
+		/// Draws the background of the fold margin marker.
+		/// </summary>
+		/// <returns>True, if the marker has drawn.</returns>
+		bool DrawBackground (TextEditor editor, double marginWidth, Cairo.Context cr, Cairo.Rectangle area, DocumentLine lineSegment, int line, double x, double y, double lineHeight);
 	}
 
 	public interface IGutterMarker
 	{
-		void DrawLineNumber (TextEditor editor, double marginWidth, Cairo.Context cr, Cairo.Rectangle area, DocumentLine lineSegment, int line, double x, double y, double lineHeight);
+		/// <summary>
+		/// If set to true the gutter marker draws the whole gutter margin. Otherwise the gutter marker only draws the background.
+		/// </summary>
+		bool DrawsForeground {
+			get;
+		}
+		bool Draw (TextEditor editor, double marginWidth, Cairo.Context cr, Cairo.Rectangle area, DocumentLine lineSegment, int line, double x, double y, double lineHeight);
 	}
+
 	
 	public class LineBackgroundMarker: TextLineMarker, IBackgroundMarker
 	{
@@ -248,13 +286,13 @@ namespace Mono.TextEditor
 			this.color = color;
 		}
 		
-		public bool DrawBackground (TextEditor editor, Cairo.Context cr, TextViewMargin.LayoutWrapper layout, int selectionStart, int selectionEnd, int startOffset, int endOffset, double y, double startXPos, double endXPos, ref bool drawBg)
+		public bool DrawBackground  (TextEditor editor, Cairo.Context cr, double y, LineMetrics metrics, ref bool drawBg)
 		{
 			drawBg = false;
-			if (selectionStart > 0)
+			if (metrics.SelectionStart > 0)
 				return true;
 			cr.Color = color;
-			cr.Rectangle (startXPos, y, endXPos - startXPos, editor.LineHeight);
+			cr.Rectangle (metrics.TextRenderStartPosition, y, metrics.TextRenderEndPosition - metrics.TextRenderStartPosition, editor.LineHeight);
 			cr.Fill ();
 			return true;
 		}

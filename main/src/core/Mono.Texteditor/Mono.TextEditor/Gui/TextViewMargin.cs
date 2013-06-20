@@ -1479,12 +1479,33 @@ namespace Mono.TextEditor
 
 			bool drawBg = true;
 			bool drawText = true;
+
+			LineMetrics metrics = null;
+
 			foreach (TextLineMarker marker in line.Markers) {
 				IBackgroundMarker bgMarker = marker as IBackgroundMarker;
 				if (bgMarker == null || !marker.IsVisible)
 					continue;
 				isSelectionDrawn |= (marker.Flags & TextLineMarkerFlags.DrawsSelection) == TextLineMarkerFlags.DrawsSelection;
-				drawText &= bgMarker.DrawBackground (textEditor, cr, layout, selectionStart, selectionEnd, offset, offset + length, y, xPos, xPos + width, ref drawBg);
+				if (metrics == null) {
+					metrics = new LineMetrics {
+						LineSegment = line,
+						Layout = layout,
+
+						SelectionStart = selectionStart,
+						SelectionEnd = selectionEnd,
+
+						TextStartOffset = offset,
+						TextEndOffset = offset + length,
+
+						TextRenderStartPosition = xPos,
+						TextRenderEndPosition = xPos + width,
+
+						LineHeight = _lineHeight,
+						WholeLineWidth = textEditor.Allocation.Width - xPos
+					};
+				}
+				drawText &= bgMarker.DrawBackground (textEditor, cr, y, metrics, ref drawBg);
 			}
 
 			if (DecorateLineBg != null)

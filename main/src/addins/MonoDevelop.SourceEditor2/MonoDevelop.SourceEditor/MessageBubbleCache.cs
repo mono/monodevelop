@@ -44,6 +44,8 @@ namespace MonoDevelop.SourceEditor
 		
 		internal Pango.FontDescription fontDescription;
 
+		public MessageBubbleTextMarker CurrentSelectedTextMarker;
+
 		public MessageBubbleCache (TextEditor editor)
 		{
 			this.editor = editor;
@@ -51,7 +53,25 @@ namespace MonoDevelop.SourceEditor
 			warningPixbuf = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Warning, Gtk.IconSize.Menu);
 			
 			editor.EditorOptionsChanged += HandleEditorEditorOptionsChanged;
+			editor.LeaveNotifyEvent += HandleLeaveNotifyEvent;
+			editor.TextArea.BeginHover += HandleBeginHover;
 			fontDescription = FontService.GetFontDescription ("MessageBubbles");
+		}
+
+		void HandleBeginHover (object sender, EventArgs e)
+		{
+			if (CurrentSelectedTextMarker == null)
+				return;
+			CurrentSelectedTextMarker = null;
+			editor.QueueDraw ();
+		}
+
+		void HandleLeaveNotifyEvent (object o, Gtk.LeaveNotifyEventArgs args)
+		{
+			if (CurrentSelectedTextMarker == null)
+				return;
+			CurrentSelectedTextMarker = null;
+			editor.QueueDraw ();
 		}
 
 		public bool RemoveLine (DocumentLine line)
@@ -64,6 +84,8 @@ namespace MonoDevelop.SourceEditor
 
 		public void Dispose ()
 		{
+			editor.TextArea.BeginHover -= HandleBeginHover;
+			editor.LeaveNotifyEvent -= HandleLeaveNotifyEvent;
 			editor.EditorOptionsChanged -= HandleEditorEditorOptionsChanged;
 			if (textWidthDictionary != null) {
 				foreach (var l in textWidthDictionary.Values) {
