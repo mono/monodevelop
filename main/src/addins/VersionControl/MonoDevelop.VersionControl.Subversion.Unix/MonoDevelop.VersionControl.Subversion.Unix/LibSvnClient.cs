@@ -289,6 +289,13 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 			public svn_wc_conflict_resolver_func_t conflict_func;
 			public IntPtr conflict_baton;
 			public string client_name;
+			public svn_wc_conflict_resolver_func2_t conflict_func2;
+			public IntPtr conflict_baton2;
+			public IntPtr wc_ctx;
+		}
+
+		[StructLayout(LayoutKind.Sequential)]
+		public struct svn_wc_context_t {
 		}
 		
 		[StructLayout(LayoutKind.Sequential)]
@@ -629,22 +636,22 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		public delegate IntPtr svn_auth_ssl_server_trust_prompt_func_t (ref IntPtr cred, IntPtr baton, [MarshalAs (UnmanagedType.LPStr)] string realm, uint failures, ref svn_auth_ssl_server_cert_info_t cert_info, [MarshalAs (UnmanagedType.Bool)] bool may_save, IntPtr pool);
 		public delegate IntPtr svn_auth_ssl_client_cert_prompt_func_t (ref IntPtr cred, IntPtr baton, [MarshalAs (UnmanagedType.LPStr)] string realm, [MarshalAs (UnmanagedType.Bool)] bool may_save, IntPtr pool);
 		public delegate IntPtr svn_auth_ssl_client_cert_pw_prompt_func_t (ref IntPtr cred, IntPtr baton, [MarshalAs (UnmanagedType.LPStr)] string realm, [MarshalAs (UnmanagedType.Bool)] bool may_save, IntPtr pool);
-		
+
 		public delegate IntPtr svn_log_message_receiver_t (IntPtr baton, IntPtr apr_hash_changed_paths,
 		                                                   svn_revnum_t revision, IntPtr author, IntPtr date,
 		                                                   IntPtr message, IntPtr pool);
-		
+
 		public delegate IntPtr svn_readwrite_fn_t (IntPtr baton, IntPtr data, ref size_t len);
-		
+
 		public delegate void svn_wc_notify_func_t (IntPtr baton, IntPtr path, NotifyAction action, svn_node_kind_t kind,
 		                                           IntPtr mime_type, NotifyState content_state, NotifyState prop_state,
 		                                           svn_revnum_t revision);
-		
+
 		public delegate void svn_wc_notify_func2_t (IntPtr baton, ref svn_wc_notify_t notify, IntPtr pool);
-		
+
 		public delegate IntPtr svn_client_get_commit_log_t (ref IntPtr log_msg, ref IntPtr tmp_file, IntPtr commit_items,
 		                                                    IntPtr baton, IntPtr pool);
-		
+
 		public delegate IntPtr svn_client_get_commit_log2_t (ref IntPtr log_msg, ref IntPtr tmp_file, IntPtr commit_items,
 		                                                     IntPtr baton, IntPtr pool);
 
@@ -656,5 +663,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		public delegate void svn_ra_progress_notify_func_t (off_t progress, off_t total, off_t baton, IntPtr pool);
 
 		public delegate IntPtr svn_wc_conflict_resolver_func_t (out IntPtr result, out IntPtr description, IntPtr baton, IntPtr pool);
+
+		public delegate IntPtr svn_wc_conflict_resolver_func2_t (out IntPtr result, out IntPtr description, IntPtr baton, IntPtr result_pool, IntPtr scratch_pool);
 	}
 }
