@@ -36,28 +36,28 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 			return null;
 		}
 		
-		public abstract void config_ensure (string config_dir, IntPtr pool);
-		public abstract void config_get_config (ref IntPtr cfg_hash, string config_dir, IntPtr pool);
+		public abstract IntPtr config_ensure (string config_dir, IntPtr pool);
+		public abstract IntPtr config_get_config (ref IntPtr cfg_hash, string config_dir, IntPtr pool);
 		public abstract void auth_open (out IntPtr auth_baton, IntPtr providers, IntPtr pool);
 		public abstract void auth_set_parameter (IntPtr auth_baton, string name, IntPtr value);
 		public abstract IntPtr auth_get_parameter (IntPtr auth_baton, string name);
-		public abstract void client_get_simple_provider (IntPtr item, IntPtr pool);
-		public abstract void client_get_simple_prompt_provider (IntPtr item, svn_auth_simple_prompt_func_t prompt_func, IntPtr prompt_batton, int retry_limit, IntPtr pool);
-		public abstract void client_get_username_provider (IntPtr item, IntPtr pool);
-		public abstract void client_get_username_prompt_provider (IntPtr item, svn_auth_username_prompt_func_t prompt_func, IntPtr prompt_batton, int retry_limit, IntPtr pool);
-		public abstract void client_get_ssl_server_trust_file_provider (IntPtr item, IntPtr pool);
-		public abstract void client_get_ssl_client_cert_file_provider (IntPtr item, IntPtr pool);
-		public abstract void client_get_ssl_client_cert_pw_file_provider (IntPtr item, IntPtr pool);
-		public abstract void client_get_ssl_server_trust_prompt_provider (IntPtr item, svn_auth_ssl_server_trust_prompt_func_t prompt_func, IntPtr prompt_batton, IntPtr pool);
-		public abstract void client_get_ssl_client_cert_prompt_provider (IntPtr item, svn_auth_ssl_client_cert_prompt_func_t prompt_func, IntPtr prompt_batton, int retry_limit, IntPtr pool);
-		public abstract void client_get_ssl_client_cert_pw_prompt_provider (IntPtr item, svn_auth_ssl_client_cert_pw_prompt_func_t prompt_func, IntPtr prompt_batton, int retry_limit, IntPtr pool);
+		public abstract void client_get_simple_provider (out IntPtr item, IntPtr pool);
+		public abstract void client_get_simple_prompt_provider (out IntPtr item, svn_auth_simple_prompt_func_t prompt_func, IntPtr prompt_batton, int retry_limit, IntPtr pool);
+		public abstract void client_get_username_provider (out IntPtr item, IntPtr pool);
+		public abstract void client_get_username_prompt_provider (out IntPtr item, svn_auth_username_prompt_func_t prompt_func, IntPtr prompt_batton, int retry_limit, IntPtr pool);
+		public abstract void client_get_ssl_server_trust_file_provider (out IntPtr item, IntPtr pool);
+		public abstract void client_get_ssl_client_cert_file_provider (out IntPtr item, IntPtr pool);
+		public abstract void client_get_ssl_client_cert_pw_file_provider (out IntPtr item, IntPtr pool);
+		public abstract void client_get_ssl_server_trust_prompt_provider (out IntPtr item, svn_auth_ssl_server_trust_prompt_func_t prompt_func, IntPtr prompt_batton, IntPtr pool);
+		public abstract void client_get_ssl_client_cert_prompt_provider (out IntPtr item, svn_auth_ssl_client_cert_prompt_func_t prompt_func, IntPtr prompt_batton, int retry_limit, IntPtr pool);
+		public abstract void client_get_ssl_client_cert_pw_prompt_provider (out IntPtr item, svn_auth_ssl_client_cert_pw_prompt_func_t prompt_func, IntPtr prompt_batton, int retry_limit, IntPtr pool);
 		
 		public abstract IntPtr client_version ();
 		
 		public abstract IntPtr client_create_context (out IntPtr ctx, IntPtr pool);
 		
 		public abstract IntPtr client_ls (out IntPtr dirents, string path_or_url,
-		                                  ref Rev revision, int recurse, IntPtr ctx,
+		                                  ref Rev revision, bool recurse, IntPtr ctx,
 		                                  IntPtr pool);
 		
 		public abstract IntPtr client_status (IntPtr result_rev, string path, ref Rev revision,
@@ -69,8 +69,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		
 		public abstract IntPtr client_log (IntPtr apr_array_header_t_targets,
 		                                   ref Rev rev_start, ref Rev rev_end,
-		                                   int discover_changed_paths,
-		                                   int strict_node_history,
+		                                   bool discover_changed_paths,
+		                                   bool strict_node_history,
 		                                   svn_log_message_receiver_t receiver,
 		                                   IntPtr receiver_baton,
 		                                   IntPtr ctx, IntPtr pool);
@@ -88,27 +88,29 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		
 		//public abstract IntPtr stream_set_read (IntPtr stream, svn_readwrite_fn_t reader);
 		
-		public abstract IntPtr stream_set_write (IntPtr stream, svn_readwrite_fn_t writer);
+		public abstract void stream_set_write (IntPtr stream, svn_readwrite_fn_t writer);
 		
 		public abstract IntPtr client_update (IntPtr result_rev, string path, ref Rev revision,
 		                                      bool recurse, IntPtr ctx, IntPtr pool);
 		
 		public abstract IntPtr client_delete (ref IntPtr commit_info_p, IntPtr apr_array_header_t_targets, 
-		                                      int force, IntPtr ctx, IntPtr pool);
+		                                      bool force, IntPtr ctx, IntPtr pool);
 		
-		public abstract IntPtr client_add3 (string path, int recurse, int force, int no_ignore, IntPtr ctx, IntPtr pool);
+		public abstract IntPtr client_add3 (string path, bool recurse, bool force, bool no_ignore, IntPtr ctx, IntPtr pool);
 		
 		public abstract IntPtr client_commit (ref IntPtr svn_client_commit_info_t_commit_info,
-		                                      IntPtr apr_array_header_t_targets, int nonrecursive,
+		                                      IntPtr apr_array_header_t_targets,
+		                                      bool nonrecursive,
 		                                      IntPtr ctx, IntPtr pool);
 		
-		public abstract IntPtr client_revert (IntPtr apr_array_header_t_targets, int recursive,
+		public abstract IntPtr client_revert (IntPtr apr_array_header_t_targets,
+		                                      bool recursive,
 		                                      IntPtr ctx, IntPtr pool);
 		
-		public abstract IntPtr client_resolved (string path, int recursive, IntPtr ctx, IntPtr pool);
+		public abstract IntPtr client_resolved (string path, bool recursive, IntPtr ctx, IntPtr pool);
 		
 		public abstract IntPtr client_move (ref IntPtr commit_info_p, string srcPath, ref Rev rev,
-		                                    string destPath, int force, IntPtr ctx, IntPtr pool);
+		                                    string destPath, bool force, IntPtr ctx, IntPtr pool);
 		
 		public abstract IntPtr client_checkout (IntPtr result_rev, string url, string path, ref Rev rev, 
 		                                        bool recurse, IntPtr ctx, IntPtr pool);
@@ -116,8 +118,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		public abstract IntPtr client_mkdir2 (ref IntPtr commit_info, IntPtr apr_array_paths, IntPtr ctx, IntPtr pool);
 		
 		public abstract IntPtr client_diff (IntPtr diff_options, string path1, ref Rev revision1,
-		                                    string path2, ref Rev revision2, int recurse,
-		                                    int ignore_ancestry, int no_diff_deleted,
+		                                    string path2, ref Rev revision2, bool recurse,
+		                                    bool ignore_ancestry, bool no_diff_deleted,
 		                                    IntPtr outfile, IntPtr errfile,
 		                                    IntPtr ctx, IntPtr pool);
 		
@@ -135,24 +137,25 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		                                          IntPtr ctx,
 		                                          IntPtr pool);
 		
-		public abstract IntPtr client_lock (IntPtr apr_array_header_t_targets, string comment, int steal_lock, IntPtr ctx, IntPtr pool);
+		public abstract IntPtr client_lock (IntPtr apr_array_header_t_targets, string comment, bool steal_lock, IntPtr ctx, IntPtr pool);
 		
-		public abstract IntPtr client_unlock (IntPtr apr_array_header_t_targets, int break_lock, IntPtr ctx, IntPtr pool);
+		public abstract IntPtr client_unlock (IntPtr apr_array_header_t_targets, bool break_lock, IntPtr ctx, IntPtr pool);
 		
-		public abstract IntPtr client_prop_get (out IntPtr value, string name, string target, ref Rev revision, int recurse, IntPtr ctx, IntPtr pool);
+		public abstract IntPtr client_propget (out IntPtr value, string name, string target, ref Rev revision, bool recurse, IntPtr ctx, IntPtr pool);
 		
 		public abstract IntPtr client_blame (string path, ref Rev rev_start, ref Rev rev_end, svn_client_blame_receiver_t receiver, IntPtr baton, IntPtr ctx, IntPtr pool);
-		
-		public abstract void strerror (int statcode, byte[] buf, int bufsize);
+
+		// TODO: Check if intptr
+		public abstract IntPtr strerror (int statcode, byte[] buf, int bufsize);
 		
 		public abstract IntPtr path_internal_style (string path, IntPtr pool);
 		
 		public class DirEnt {
 			public readonly string Name;
 			public readonly bool IsDirectory;
-			public readonly long Size;
+			public readonly Int64 Size;
 			public readonly bool HasProps;
-			public readonly int CreatedRevision;
+			public readonly svn_revnum_t CreatedRevision;
 			public readonly DateTime Time;
 			public readonly string LastAuthor;
 			
@@ -275,7 +278,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 			public svn_client_get_commit_log_t LogMsgFunc;
 			public IntPtr logmsg_baton;
 			public IntPtr config;
-			public IntPtr cancel_func;
+			public svn_cancel_func_t cancel_func;
 			public IntPtr cancel_baton;
 			public svn_wc_notify_func2_t NotifyFunc2;
 			public IntPtr notify_baton2;
@@ -358,16 +361,18 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
   			Dir,
   			Unknown
   		}
-		
+
+		[StructLayout (LayoutKind.Sequential)]
 		internal struct svn_dirent_t {
 			public svn_node_kind_t kind;
-			public long size;
+			public Int64 size;
 			[MarshalAs (UnmanagedType.Bool)] public bool has_props;
 			public svn_revnum_t created_rev;
 			public long time; // created
 			[MarshalAs (UnmanagedType.LPStr)] public string last_author;
 		}
-		
+
+		/* svn_wc_schedule_t */
 		public enum NodeSchedule {
 			Normal,
 			Add,
@@ -436,6 +441,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 			public Rev file_external_rev;
 		}
 
+		[StructLayout (LayoutKind.Sequential)]
 		public struct svn_wc_status2_t {
 			public IntPtr to_svn_wc_entry_t;
 			public svn_wc_status_kind text_status;      // Field not shown in the documentation
@@ -529,39 +535,46 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		public struct svn_opt_revision_value_t {
 			public long number_or_date;
 		}
-		
+
+		[StructLayout (LayoutKind.Sequential)]
 		public struct svn_log_changed_path_t {
 			public char action;
 			public string copy_from_path;
 			public svn_revnum_t copy_from_rev;
 		}
-		
+
+		[StructLayout (LayoutKind.Sequential)]
 		public struct svn_auth_cred_simple_t {
 			[MarshalAs (UnmanagedType.LPStr)] public string username;
 			[MarshalAs (UnmanagedType.LPStr)] public string password;
 			[MarshalAs (UnmanagedType.Bool)] public bool may_save;
 		}
-		
+
+		[StructLayout (LayoutKind.Sequential)]
 		public struct svn_auth_cred_username_t {
 			[MarshalAs (UnmanagedType.LPStr)] public string username;
 			[MarshalAs (UnmanagedType.Bool)] public bool may_save;
 		}
-		
+
+		[StructLayout (LayoutKind.Sequential)]
 		public struct svn_auth_cred_ssl_server_trust_t {
 			[MarshalAs (UnmanagedType.Bool)] public bool may_save;
 			public uint accepted_failures;
 		}
-		
+
+		[StructLayout (LayoutKind.Sequential)]
 		public struct svn_auth_cred_ssl_client_cert_t {
 			[MarshalAs (UnmanagedType.LPStr)] public string cert_file;
 			[MarshalAs (UnmanagedType.Bool)] public bool may_save;
 		}
-		
+
+		[StructLayout (LayoutKind.Sequential)]
 		public struct svn_auth_cred_ssl_client_cert_pw_t {
 			[MarshalAs (UnmanagedType.LPStr)] public string password;
 			[MarshalAs (UnmanagedType.Bool)] public bool may_save;
 		}
-		
+
+		[StructLayout (LayoutKind.Sequential)]
 		public struct svn_auth_ssl_server_cert_info_t {
 			[MarshalAs (UnmanagedType.LPStr)] public string hostname;
 			[MarshalAs (UnmanagedType.LPStr)] public string fingerprint;
@@ -606,6 +619,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 			Unlocked,
 			FailedLock,
 			FailedUnlock
+			// TODO: Add more enum data
 		}
 		
 		public enum NotifyState {
@@ -616,7 +630,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 			Obstructed,
 			Changed,
 			Merged,
-			Conflicted
+			Conflicted,
+			SourceMissing
 		}
 		
 		public enum NotifyLockState {
@@ -640,18 +655,21 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		
 		public delegate IntPtr svn_auth_simple_prompt_func_t (ref IntPtr cred, IntPtr baton, [MarshalAs (UnmanagedType.LPStr)] string realm, [MarshalAs (UnmanagedType.LPStr)] string user_name, [MarshalAs (UnmanagedType.Bool)] bool may_save, IntPtr pool);
 		public delegate IntPtr svn_auth_username_prompt_func_t (ref IntPtr cred, IntPtr baton, [MarshalAs (UnmanagedType.LPStr)] string realm, [MarshalAs (UnmanagedType.Bool)] bool may_save, IntPtr pool);
-		public delegate IntPtr svn_auth_ssl_server_trust_prompt_func_t (ref IntPtr cred, IntPtr baton, [MarshalAs (UnmanagedType.LPStr)] string realm, uint failures, ref svn_auth_ssl_server_cert_info_t cert_info, [MarshalAs (UnmanagedType.Bool)] bool may_save, IntPtr pool);
-		public delegate IntPtr svn_auth_ssl_client_cert_prompt_func_t (ref IntPtr cred, IntPtr baton, [MarshalAs (UnmanagedType.LPStr)] string realm, [MarshalAs (UnmanagedType.Bool)] bool may_save, IntPtr pool);
-		public delegate IntPtr svn_auth_ssl_client_cert_pw_prompt_func_t (ref IntPtr cred, IntPtr baton, [MarshalAs (UnmanagedType.LPStr)] string realm, [MarshalAs (UnmanagedType.Bool)] bool may_save, IntPtr pool);
+		public delegate IntPtr svn_auth_ssl_server_trust_prompt_func_t (ref IntPtr cred,IntPtr baton,[MarshalAs (UnmanagedType.LPStr)] string realm,uint failures,ref svn_auth_ssl_server_cert_info_t cert_info,[MarshalAs (UnmanagedType.Bool)] bool may_save,IntPtr pool);
 
-		public delegate IntPtr svn_log_message_receiver_t (IntPtr baton, IntPtr apr_hash_changed_paths,
-		                                                   svn_revnum_t revision, IntPtr author, IntPtr date,
-		                                                   IntPtr message, IntPtr pool);
+		public delegate IntPtr svn_auth_ssl_client_cert_prompt_func_t (ref IntPtr cred,IntPtr baton,[MarshalAs (UnmanagedType.LPStr)] string realm,[MarshalAs (UnmanagedType.Bool)] bool may_save,IntPtr pool);
 
-		public delegate IntPtr svn_readwrite_fn_t (IntPtr baton, IntPtr data, ref size_t len);
+		public delegate IntPtr svn_auth_ssl_client_cert_pw_prompt_func_t (ref IntPtr cred,IntPtr baton,[MarshalAs (UnmanagedType.LPStr)] string realm,[MarshalAs (UnmanagedType.Bool)] bool may_save,IntPtr pool);
 
-		public delegate void svn_wc_notify_func_t (IntPtr baton, IntPtr path, NotifyAction action, svn_node_kind_t kind,
-		                                           IntPtr mime_type, NotifyState content_state, NotifyState prop_state,
+		public delegate IntPtr svn_log_message_receiver_t (IntPtr baton,IntPtr apr_hash_changed_paths,
+														   // TODO: See if IntPtr
+		                                                   svn_revnum_t revision,IntPtr author,IntPtr date,
+		                                                   IntPtr message,IntPtr pool);
+
+		public delegate IntPtr svn_readwrite_fn_t (IntPtr baton,IntPtr data,ref size_t len);
+
+		public delegate void svn_wc_notify_func_t (IntPtr baton,IntPtr path,NotifyAction action,svn_node_kind_t kind,
+		                                           IntPtr mime_type,NotifyState content_state,NotifyState prop_state,
 		                                           svn_revnum_t revision);
 
 		public delegate void svn_wc_notify_func2_t (IntPtr baton, ref svn_wc_notify_t notify, IntPtr pool);
@@ -665,12 +683,14 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		public delegate IntPtr svn_client_get_commit_log3_t (ref IntPtr log_msg, ref IntPtr tmp_file, IntPtr commit_items,
 		                                                     IntPtr baton, IntPtr pool);
 
-		public delegate IntPtr svn_client_blame_receiver_t (IntPtr baton, long line_no, svn_revnum_t revision, string author, string date, string line, IntPtr pool);
+		public delegate IntPtr svn_client_blame_receiver_t (IntPtr baton, Int64 line_no, svn_revnum_t revision, string author, string date, string line, IntPtr pool);
 
 		public delegate void svn_ra_progress_notify_func_t (off_t progress, off_t total, off_t baton, IntPtr pool);
 
 		public delegate IntPtr svn_wc_conflict_resolver_func_t (out IntPtr result, IntPtr description, IntPtr baton, IntPtr pool);
 
 		public delegate IntPtr svn_wc_conflict_resolver_func2_t (out IntPtr result, IntPtr description, IntPtr baton, IntPtr result_pool, IntPtr scratch_pool);
+
+		public delegate IntPtr svn_cancel_func_t (IntPtr baton);
 	}
 }
