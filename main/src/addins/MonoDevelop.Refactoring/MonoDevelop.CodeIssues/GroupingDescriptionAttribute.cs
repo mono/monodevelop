@@ -1,5 +1,5 @@
 //
-// IssueGroupTests.cs
+// GroupingDescriptionAttribute.cs
 //
 // Author:
 //       Simon Lindgren <simon.n.lindgren@gmail.com>
@@ -23,70 +23,18 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using MonoDevelop.CodeIssues;
 using System;
 
-namespace MonoDevelop.Refactoring
+namespace MonoDevelop.CodeIssues
 {
-	public class MockGroupingProvider: IGroupingProvider
+	public class GroupingDescriptionAttribute: Attribute
 	{
-		public bool GetIssueGroupCalled { get; set; }
+		public string Title { get; private set; }
 
-		public MockGroupingProvider () 
+		public GroupingDescriptionAttribute (string title)
 		{
-			Reset ();
+			this.Title = title;
 		}
-	
-		#region IGroupingProvider implementation
-
-		public IssueGroup Group { get; set; }
-		
-		public IssueGroup GetIssueGroup (IssueSummary issue)
-		{
-			GetIssueGroupCalled = true;
-			return Group;
-		}
-		
-		public bool ResetCalled { get; private set; }
-		
-		public void Reset ()
-		{
-			Group = null;
-			ResetCalled = true;
-		}
-		
-		IGroupingProvider next;
-		public IGroupingProvider Next {
-			get {
-				return next;
-			}
-			set {
-				next = value;
-				nextChanged (this);
-			}
-		}
-
-		event Action<IGroupingProvider> nextChanged;
-		
-		public event Action<IGroupingProvider> NextChanged
-		{
-			add {
-				nextChanged += value;
-			}
-			remove {
-				nextChanged -= value;
-			}
-		}
-		
-		public bool SupportsNext
-		{
-			get {
-				return true;
-			}
-		}
-
-		#endregion
 	}
-
 }
 

@@ -1,5 +1,5 @@
 //
-// IssueGroupTests.cs
+// NullGroupingProvider.cs
 //
 // Author:
 //       Simon Lindgren <simon.n.lindgren@gmail.com>
@@ -23,52 +23,44 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using MonoDevelop.CodeIssues;
 using System;
 
-namespace MonoDevelop.Refactoring
+namespace MonoDevelop.CodeIssues
 {
-	public class MockGroupingProvider: IGroupingProvider
+	public class NullGroupingProvider: IGroupingProvider
 	{
-		public bool GetIssueGroupCalled { get; set; }
-
-		public MockGroupingProvider () 
+		static Lazy<NullGroupingProvider> instance = new Lazy<NullGroupingProvider>();
+		public static IGroupingProvider Instance
 		{
-			Reset ();
+			get {
+				return instance.Value;
+			}
 		}
-	
+
 		#region IGroupingProvider implementation
 
-		public IssueGroup Group { get; set; }
-		
 		public IssueGroup GetIssueGroup (IssueSummary issue)
 		{
-			GetIssueGroupCalled = true;
-			return Group;
-		}
-		
-		public bool ResetCalled { get; private set; }
-		
-		public void Reset ()
-		{
-			Group = null;
-			ResetCalled = true;
-		}
-		
-		IGroupingProvider next;
-		public IGroupingProvider Next {
-			get {
-				return next;
-			}
-			set {
-				next = value;
-				nextChanged (this);
-			}
+			return null;
 		}
 
+		public void Reset ()
+		{
+			// no-op
+		}
+
+		public IGroupingProvider Next {
+			get {
+				throw new InvalidOperationException ();
+			}
+			set {
+				throw new InvalidOperationException ();
+			}
+		}
+		
 		event Action<IGroupingProvider> nextChanged;
 		
-		public event Action<IGroupingProvider> NextChanged
+		event Action<IGroupingProvider> IGroupingProvider.NextChanged
 		{
 			add {
 				nextChanged += value;
@@ -77,16 +69,14 @@ namespace MonoDevelop.Refactoring
 				nextChanged -= value;
 			}
 		}
-		
-		public bool SupportsNext
-		{
+
+		public bool SupportsNext {
 			get {
-				return true;
+				return false;
 			}
 		}
 
 		#endregion
 	}
-
 }
 

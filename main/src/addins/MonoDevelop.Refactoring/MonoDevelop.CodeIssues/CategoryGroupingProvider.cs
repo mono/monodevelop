@@ -23,15 +23,22 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using System;
 using System.Collections.Generic;
 
 namespace MonoDevelop.CodeIssues
 {
 	// TODO: should this be a threadsafe class?
 	// Our current usage is fine, but could be nice anyway (and might avoid future bugs)
+	[GroupingDescription("Category")]
 	public class CategoryGroupingProvider: IGroupingProvider
 	{
 		Dictionary<string, IssueGroup> groups = new Dictionary<string, IssueGroup> ();
+		
+		public CategoryGroupingProvider()
+		{
+			Next = NullGroupingProvider.Instance;
+		}
 		
 		#region IGroupingProvider implementation
 
@@ -39,7 +46,7 @@ namespace MonoDevelop.CodeIssues
 		{
 			IssueGroup group;
 			if (!groups.TryGetValue(issue.ProviderCategory, out group)) {
-				group = new IssueGroup (null, issue.ProviderCategory);
+				group = new IssueGroup (null, null, issue.ProviderCategory);
 				groups.Add (issue.ProviderCategory, group);
 			}
 			return group;
@@ -49,7 +56,45 @@ namespace MonoDevelop.CodeIssues
 		{
 			groups.Clear ();
 		}
+
+		IGroupingProvider next;
+		public IGroupingProvider Next {
+			get {
+				return next;
+			}
+			set {
+				next = value;
+				OnNextChanged (this);
+			}
+		}
+
+		protected virtual void OnNextChanged (CategoryGroupingProvider categoryGroupingProvider)
+		{
+			var handler = nextChanged;
+			if (handler != null) {
+				handler (categoryGroupingProvider);
+			}
+		}
 		
+		event Action<IGroupingProvider> nextChanged;
+		
+		event Action<IGroupingProvider> IGroupingProvider.NextChanged
+		{
+			add {
+				nextChanged += value;
+			}
+			remove {
+				nextChanged -= value;
+			}
+		}
+
+		public bool SupportsNext
+		{
+			get {
+				return true;
+			}
+		}
+
 		#endregion
 	}
 }

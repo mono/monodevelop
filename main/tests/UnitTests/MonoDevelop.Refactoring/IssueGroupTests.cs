@@ -33,7 +33,8 @@ namespace MonoDevelop.Refactoring
 	public class IssueGroupTests
 	{
 		IssueGroup group;
-		MockGroupingProvider provider;
+		MockGroupingProvider nextProvider;
+		MockGroupingProvider sourceProvider;
 
 		Action<T> Forbidden<T> (string eventName)
 		{
@@ -41,19 +42,28 @@ namespace MonoDevelop.Refactoring
 				Assert.Fail ("The event '{0}' was not supposed to be invoked.", eventName);
 			};
 		}
+
+		static IssueGroup CreateSecondaryGroup ()
+		{
+			 var issueGroup = new IssueGroup (null, null, "secondary group");
+			issueGroup.EnableProcessing ();
+			return issueGroup;
+		}
 		
 		[SetUp]
 		public void SetUp()
 		{
-			provider = new MockGroupingProvider ();
-			group = new IssueGroup (provider, "sut");
+			nextProvider = new MockGroupingProvider ();
+			sourceProvider = new MockGroupingProvider ();
+			group = new IssueGroup (sourceProvider, nextProvider, "sut");
+			group.EnableProcessing ();
 		}
 		
 		[Test]
 		public void CallsGroupAddedEventHandler()
 		{
-			provider.Group = new IssueGroup(null, "group to be added");
-			provider.Group.ChildGroupAdded += Forbidden<IssueGroup> ("provider.Group.ChildGroupAdded");
+			nextProvider.Group = CreateSecondaryGroup ();
+			nextProvider.Group.ChildGroupAdded += Forbidden<IssueGroup> ("nextProvider.Group.ChildGroupAdded");
 			
 			bool eventHandlerCalled = false;
 			group.ChildGroupAdded += delegate {
@@ -69,12 +79,12 @@ namespace MonoDevelop.Refactoring
 		public void PassesIssueSummaryToExistingGroup()
 		{
 			// "prime" the tree of groups
-			provider.Group = new IssueGroup(null, "group to be added");
+			nextProvider.Group = CreateSecondaryGroup ();
 			group.Push (new IssueSummary ());
 		
-			provider.Group.ChildGroupAdded += Forbidden<IssueGroup> ("provider.Group.ChildGroupAdded");
+			nextProvider.Group.ChildGroupAdded += Forbidden<IssueGroup> ("nextProvider.Group.ChildGroupAdded");
 			bool eventHandlerCalled = false;
-			provider.Group.IssueSummaryAdded += delegate {
+			nextProvider.Group.IssueSummaryAdded += delegate {
 				eventHandlerCalled = true;
 			};
 			
@@ -88,10 +98,10 @@ namespace MonoDevelop.Refactoring
 		[Test]
 		public void PassesIssueSummaryToNewGroup()
 		{
-			provider.Group = new IssueGroup(null, "group to be added");
-			provider.Group.ChildGroupAdded += Forbidden<IssueGroup> ("provider.Group.ChildGroupAdded");
+			nextProvider.Group = CreateSecondaryGroup ();
+			nextProvider.Group.ChildGroupAdded += Forbidden<IssueGroup> ("nextProvider.Group.ChildGroupAdded");
 			bool eventHandlerCalled = false;
-			provider.Group.IssueSummaryAdded += delegate {
+			nextProvider.Group.IssueSummaryAdded += delegate {
 				eventHandlerCalled = true;
 			};
 			
@@ -104,7 +114,7 @@ namespace MonoDevelop.Refactoring
 		[Test]
 		public void CallsIssueSummaryAddedEventHandler()
 		{
-			provider.Group = null;
+			nextProvider.Group = null;
 			
 			bool eventHandlerCalled = false;
 			group.ChildGroupAdded += Forbidden<IssueGroup> ("group.ChildGroupAdded");
@@ -126,10 +136,10 @@ namespace MonoDevelop.Refactoring
 			group.ClearStatistics ();
 			
 			Assert.AreEqual (0, group.IssueCount, "Incorrect issue count after reset.");
-			Assert.IsTrue (provider.ResetCalled, "Reset was not called on the provider");
+			Assert.IsTrue (nextProvider.ResetCalled, "Reset was not called on the provider");
 
-			provider.Group = new IssueGroup (null, "group to be added");
-			provider.Group.ChildGroupAdded += Forbidden<IssueGroup> ("provider.Group.ChildGroupAdded");
+			nextProvider.Group = CreateSecondaryGroup ();
+			nextProvider.Group.ChildGroupAdded += Forbidden<IssueGroup> ("nextProvider.Group.ChildGroupAdded");
 			bool eventHandlerCalled = false;
 			group.ChildGroupAdded += delegate {
 				eventHandlerCalled = true;
@@ -139,6 +149,33 @@ namespace MonoDevelop.Refactoring
 			group.Push (new IssueSummary ());			
 			
 			Assert.IsTrue (eventHandlerCalled, "The ChildGroupAdded event handler was not called.");
+		}
+		
+		[Test]
+		public void DoesNotInteractIfGroupingDisabled ()
+		{
+			var disabledGroup = new IssueGroup (null, nextProvider, "disabled group");
+			
+			nextProvider.Group = CreateSecondaryGroup ();
+			nextProvider.Group.ChildGroupAdded += Forbidden<IssueGroup> ("nextProvider.Group.ChildGroupAdded");
+			nextProvider.Group.IssueSummaryAdded += Forbidden<IssueSummary> ("nextProvider.Group.IssueSummaryAdded");
+			
+			disabledGroup.ChildGroupAdded += Forbidden<IssueGroup> ("disabledGroup.ChildGroupAdded");
+			disabledGroup.IssueSummaryAdded += Forbidden<IssueSummary> ("disabledGroup.IssueSummaryAdded");
+			
+			disabledGroup.Push (new IssueSummary ());
+			Assert.IsFalse (nextProvider.GetIssueGroupCalled, "The provider should not be called by a disabled group.");
+		}
+		
+		[Test]
+		public void ChildrenInvalidatedCalledWhenCreatingProviderNextChanges ()
+		{
+			bool eventCalled = false;
+			group.ChildrenInvalidated += (obj) => {
+				eventCalled = true;
+			};
+			sourceProvider.Next = new MockGroupingProvider();
+			Assert.IsTrue (eventCalled, "The event was not called.");
 		}
 	}
 }

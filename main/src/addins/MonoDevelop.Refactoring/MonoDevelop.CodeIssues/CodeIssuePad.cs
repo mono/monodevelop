@@ -51,6 +51,7 @@ namespace MonoDevelop.CodeIssues
 		DataField<IssueGroup> groupField = new DataField<IssueGroup> ();
 		Button runButton = new Button ("Run");
 		Button cancelButton = new Button ("Cancel");
+		GroupingProviderChainControl groupingProviderControl;
 		HBox buttonRow = new HBox();
 		
 		IssueGroup rootGroup;
@@ -61,9 +62,15 @@ namespace MonoDevelop.CodeIssues
 		{
 			runButton.Clicked += StartAnalyzation;
 			buttonRow.PackStart (runButton);
+			
 			cancelButton.Clicked += StopAnalyzation;
 			cancelButton.Sensitive = false;
 			buttonRow.PackStart (cancelButton);
+			
+			var groupingProvider = new CategoryGroupingProvider ();
+			groupingProviderControl = new GroupingProviderChainControl (groupingProvider, new [] { typeof(CategoryGroupingProvider) });
+			buttonRow.PackStart (groupingProviderControl);
+			
 			PackStart (buttonRow);
 
 			store = new TreeStore (textField, summaryField, groupField);
@@ -73,11 +80,13 @@ namespace MonoDevelop.CodeIssues
 			view.Columns.Add ("Name", textField);
 			
 			view.RowActivated += OnRowActivated;
+			view.RowExpanding += OnRowExpanding;
 			PackStart (view, BoxMode.FillAndExpand);
 			
-			rootGroup = new IssueGroup (new CategoryGroupingProvider (), "root group");
+			rootGroup = new IssueGroup (null, groupingProvider, "root group");
 			rootGroup.ChildGroupAdded += GetGroupAddedHandler (rootGroup);
 			rootGroup.IssueSummaryAdded += GetIssueSummaryAddedHandler (rootGroup);
+			rootGroup.EnableProcessing ();
 		}
 		
 		void StartAnalyzation (object sender, EventArgs e)
@@ -147,6 +156,7 @@ namespace MonoDevelop.CodeIssues
 									// The operation was cancelled, no-op as the user-visible parts are
 									// handled elsewhere
 								} catch (Exception ex) {
+									System.Console.WriteLine (ex.ToString());
 									LoggingService.LogError ("Error while running code issue on:"+ editor.FileName, ex);
 								}
 							});
@@ -182,6 +192,11 @@ namespace MonoDevelop.CodeIssues
 					group.Position = navigator.CurrentPosition;
 					group.ChildGroupAdded += GetGroupAddedHandler(group);
 					group.IssueSummaryAdded += GetIssueSummaryAddedHandler(group);
+					//group.EnableProcessing();
+					/*group.ChildrenInvalidated += (obj) => {
+						navigator.RemoveChildren();
+						UpdateParents (navigator);
+					};*/
 					
 					navigator.SetValue (groupField, group);
 					UpdateParents (navigator);
@@ -194,6 +209,7 @@ namespace MonoDevelop.CodeIssues
 			return issue => {
 				Application.Invoke (delegate {
 					TreeNavigator navigator = GetNavigatorForGroup (parentGroup);
+					navigator.SetValue (summaryField, issue);
 					
 					UpdateParents (navigator);
 				});
@@ -218,6 +234,16 @@ namespace MonoDevelop.CodeIssues
 				var group = navigator.GetValue (groupField);
 				if (group != null) {
 					navigator.SetValue (textField, string.Format ("{0} ({1} issues)", group.Description, group.IssueCount));
+					if (group.IssueCount > 0) {
+						// Add a fake child to show the expander button
+						if (!navigator.MoveToChild ()) {
+							navigator.AddChild ();
+							navigator.SetValue(textField, "Loading...");
+							navigator.MoveToParent();
+						} else {
+							navigator.MoveToParent ();
+						}
+					}
 				} else {
 					var issue = navigator.GetValue (summaryField);
 					if (issue != null) {
@@ -245,6 +271,23 @@ namespace MonoDevelop.CodeIssues
 					}
 				}
 			}
+		}
+
+		void OnRowExpanding (object sender, TreeViewRowEventArgs e)
+		{
+			var row = store.GetNavigatorAt(e.Position);
+			var group = row.GetValue (groupField);
+			if (group == null || group.ProcessingEnabled)
+				return;
+			ThreadPool.QueueUserWorkItem(delegate {
+				group.EnableProcessing ();
+				Application.Invoke(delegate {
+					if (row.MoveToChild() && row.GetValue(groupField) == null && row.GetValue(summaryField) == null) {
+						// there is a dummy child present
+						row.Remove ();
+					}
+				});
+			});
 		}
 	}
 

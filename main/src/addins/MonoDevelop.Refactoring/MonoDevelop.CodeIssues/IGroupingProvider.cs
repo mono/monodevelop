@@ -23,6 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using System;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -39,6 +40,27 @@ namespace MonoDevelop.CodeIssues
 		/// Removes the set of cached groups.
 		/// </summary>
 		void Reset ();
+		
+		/// <summary>
+		/// The <see cref="IGroupingProvider"/> to be applied after the current instance. Never returns null.
+		/// </summary>
+		/// <value>The next.</value>
+		/// <exception cref="InvalidOperationException">
+		/// Thrown by both accessors if <see cref="SupportsNext"/> is false.
+		/// </exception>
+		IGroupingProvider Next { get; set; }
+		
+		/// <summary>
+		/// Occurs when <see cref="Next"/> changes.
+		/// </summary>
+		event Action<IGroupingProvider> NextChanged;
+		
+		/// <summary>
+		/// Gets a value indicating whether this <see cref="MonoDevelop.CodeIssues.IGroupingProvider"/>
+		/// supports the usage of <see cref="Next"/> .
+		/// </summary>
+		/// <value>True if <see cref="Next"/> can be used.</value>
+		bool SupportsNext { get; }
 	}
 }
 

@@ -95,6 +95,23 @@ namespace MonoDevelop.Refactoring
 				}
 			}
 		}
+		
+		[Test]
+		public void FiresNextUpdatedEvent ()
+		{
+			bool fired = false;
+			Provider.NextChanged += (obj) => {
+				fired = true;
+			};
+			Provider.Next = new MockGroupingProvider ();
+			Assert.IsTrue (fired, "The NextChanged event was not fired.");
+		}
+		
+		[Test]
+		public void NextIsNotNull ()
+		{
+			Assert.NotNull (Provider.Next);
+		}
 	}
 }
 

@@ -43,17 +43,40 @@ namespace MonoDevelop.CodeIssues
 		/// A list of groups produced by the <see cref="groupingProvider"/>.
 		/// </summary>
 		ISet<IssueGroup> groups = new HashSet<IssueGroup>();
+		IList<IssueSummary> leaves = new List<IssueSummary>();
+		ISet<IssueSummary> allIssues = new HashSet<IssueSummary>();
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MonoDevelop.CodeIssues.IssueGroup"/> class.
 		/// </summary>
-		/// <param name="provider">
+		/// <param name="sourceProvider">The <see cref="IGroupingProvider"/> that created this group.</param>
+		/// <param name="nextProvider">
 		/// The <see cref="IGroupingProvider"/> to use when grouping <see cref="IssueSummary"/> instances.
 		/// </param>
-		public IssueGroup (IGroupingProvider provider, string description)
+		/// <param name="description">A string describing the contents of this group.</param>
+		public IssueGroup (IGroupingProvider sourceProvider, IGroupingProvider nextProvider, string description)
 		{
-			groupingProvider = provider;
+			groupingProvider = nextProvider;
 			Description = description;
+			ProcessingEnabled = false;
+			if (sourceProvider != null) {
+				sourceProvider.NextChanged += HandleNextChanged;
+			}
+		}
+
+		void HandleNextChanged (IGroupingProvider obj)
+		{
+			lock(_lock) {
+				ProcessingEnabled = false;
+				groupingProvider = obj.Next;
+				groups.Clear ();
+				leaves.Clear ();
+			}
+			// By disabling processing, no events will be raised until EnableGrouping() has been
+			// called. There is a slight possibility of a race between two different grouping provider
+			// changes but all such changes should originate in the ui and thus it should not happen
+			// TODO: Fix the race described above.
+			OnChildrenInvalidated ();
 		}
 
 		/// <summary>
@@ -75,27 +98,64 @@ namespace MonoDevelop.CodeIssues
 			private set;
 		}
 
+		event Action<IssueGroup> childrenInvalidated;
+		
+		public event Action<IssueGroup> ChildrenInvalidated {
+			add {
+				childrenInvalidated += value;
+			}
+			remove {
+				childrenInvalidated -= value;
+			}
+		}
+
+		protected virtual void OnChildrenInvalidated ()
+		{
+			var handler = childrenInvalidated;
+			if (handler != null) {
+				handler (this);
+			}
+		}
+
+		event Action<IssueGroup> childGroupAdded;
 		/// <summary>
 		/// Called when a child is added to this IssueGrouping.
 		/// </summary>
-		public event Action<IssueGroup> ChildGroupAdded;
+		public event Action<IssueGroup> ChildGroupAdded
+		{
+			add {
+				childGroupAdded += value;
+			}
+			remove {
+				childGroupAdded -= value;
+			}
+		}
 
 		void DoChildGroupAdded (IssueGroup group)
 		{
-			var handler = ChildGroupAdded;
+			var handler = childGroupAdded;
 			if (handler != null) {
 				handler (group);
 			}
 		}
 
+		event Action<IssueSummary> issueSummaryAdded;
 		/// <summary>
 		/// Called when an <see cref="IssueSummary"/> is added to this IssueGrouping.
 		/// </summary>
-		public event Action<IssueSummary> IssueSummaryAdded;
+		public event Action<IssueSummary> IssueSummaryAdded
+		{
+			add {
+				issueSummaryAdded += value;
+			}
+			remove {
+				issueSummaryAdded -= value;
+			}
+		}
 
 		void DoIssueAdded (IssueSummary summary)
 		{
-			var handler = IssueSummaryAdded;
+			var handler = issueSummaryAdded;
 			if (handler != null) {
 				handler (summary);
 			}
@@ -109,6 +169,24 @@ namespace MonoDevelop.CodeIssues
 				IssueCount = 0;
 			}
 		}
+		
+		public bool ProcessingEnabled {
+			get;
+			private set;
+		}
+		
+		/// <summary>
+		/// Makes this instance start processing issues.
+		/// </summary>
+		public void EnableProcessing ()
+		{
+			lock (_lock) {
+				ProcessingEnabled = true;
+			}
+			foreach (var issue in allIssues) {
+				Push (issue);
+			}
+		}
 
 		/// <summary>
 		/// Push the specified issue through the grouped tree.
@@ -119,11 +197,19 @@ namespace MonoDevelop.CodeIssues
 			IssueGroup group = null;
 			bool groupAdded = false;
 			lock (_lock) {
-				IssueCount++;
+				if (!allIssues.Contains (issue)) {
+					IssueCount++;
+					allIssues.Add (issue);
+				}
+				if (!ProcessingEnabled) {
+					return;
+				}
 				if (groupingProvider != null) {
 					group = groupingProvider.GetIssueGroup (issue);
 				}
-				if (group != null && !groups.Contains (group)) {
+				if (group == null) {
+					leaves.Add (issue);
+				} else if (!groups.Contains (group)) {
 					groupAdded = true;
 					groups.Add (group);
 				}
