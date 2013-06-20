@@ -83,10 +83,23 @@ namespace MonoDevelop.CodeIssues
 			view.RowExpanding += OnRowExpanding;
 			PackStart (view, BoxMode.FillAndExpand);
 			
-			rootGroup = new IssueGroup (null, groupingProvider, "root group");
+			var rootProvider = groupingProviderControl.RootGroupingProvider;
+			rootGroup = new IssueGroup (rootProvider, rootProvider.Next, "root group");
 			rootGroup.ChildGroupAdded += GetGroupAddedHandler (rootGroup);
 			rootGroup.IssueSummaryAdded += GetIssueSummaryAddedHandler (rootGroup);
+			rootGroup.ChildrenInvalidated += (obj) => {
+				store.Clear ();
+				InsertTopRow ();
+				rootGroup.EnableProcessing ();
+			};
 			rootGroup.EnableProcessing ();
+		}
+
+		TreeNavigator InsertTopRow ()
+		{
+			var rootNode = store.AddNode ();
+			rootNode.SetValue (textField, "Analyzing...");
+			return rootNode;
 		}
 		
 		void StartAnalyzation (object sender, EventArgs e)
@@ -99,8 +112,7 @@ namespace MonoDevelop.CodeIssues
 			store.Clear ();
 			rootGroup.ClearStatistics();
 			tokenSource = new CancellationTokenSource ();
-			var rootNode = store.AddNode ();
-			rootNode.SetValue (textField, "Analyzing...");
+			var rootNode = InsertTopRow ();
 			ThreadPool.QueueUserWorkItem (delegate {
 
 				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor ("Analyzing solution", null, false)) {
@@ -192,11 +204,7 @@ namespace MonoDevelop.CodeIssues
 					group.Position = navigator.CurrentPosition;
 					group.ChildGroupAdded += GetGroupAddedHandler(group);
 					group.IssueSummaryAdded += GetIssueSummaryAddedHandler(group);
-					//group.EnableProcessing();
-					/*group.ChildrenInvalidated += (obj) => {
-						navigator.RemoveChildren();
-						UpdateParents (navigator);
-					};*/
+					group.ChildrenInvalidated += GetChildrenInvalidatedHandler (navigator);
 					
 					navigator.SetValue (groupField, group);
 					UpdateParents (navigator);
@@ -213,6 +221,14 @@ namespace MonoDevelop.CodeIssues
 					
 					UpdateParents (navigator);
 				});
+			};
+		}
+
+		Action<IssueGroup> GetChildrenInvalidatedHandler (TreeNavigator navigator)
+		{
+			return group => {
+				navigator.RemoveChildren ();
+				UpdateParents (navigator);
 			};
 		}
 

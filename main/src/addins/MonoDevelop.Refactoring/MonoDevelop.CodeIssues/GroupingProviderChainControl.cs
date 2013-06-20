@@ -35,17 +35,21 @@ namespace MonoDevelop.CodeIssues
 	{
 		IList<Type> availableProviders;
 		
-		IGroupingProvider rootProvider;
-		
 		IList<ComboBox> providerPickers = new List<ComboBox>();
 		IList<Label> labels = new List<Label>();
 
-		public GroupingProviderChainControl(IGroupingProvider rootProvider, IEnumerable<Type> providers)
+		public GroupingProviderChainControl(IGroupingProvider provider, IEnumerable<Type> providers)
 		{
-			this.rootProvider = rootProvider;
+			this.RootGroupingProvider = new GroupingProvider ();
+			RootGroupingProvider.Next = provider;
 			availableProviders = providers.ToList();
 			
 			BuildUi ();
+		}
+
+		public IGroupingProvider RootGroupingProvider {
+			get;
+			private set;
 		}
 
 		void BuildUi ()
@@ -54,39 +58,19 @@ namespace MonoDevelop.CodeIssues
 			var label = new Label ("Group by:");
 			labels.Add (label);
 			PackStart (label);
-			BuildProviderSelectors (null, rootProvider);
+			BuildProviderSelectors (RootGroupingProvider, RootGroupingProvider.Next);
 		}
 		
 		void BuildProviderSelectors (IGroupingProvider previousProvider, IGroupingProvider selectedProvider)
 		{
-			var combo = new ComboBox ();
-			combo.Items.Add (typeof (NullGroupingProvider), "Nothing");
-			combo.Items.Add (ItemSeparator.Instance);
-			foreach (var providerType in availableProviders) {
-				var metadata = (GroupingDescriptionAttribute)providerType.GetCustomAttributes (false)
-					.FirstOrDefault (attr => attr is GroupingDescriptionAttribute);
-				if (metadata == null) {
-					LoggingService.LogWarning ("Grouping provider '{0}' does not have a metadata attribute, ignoring provider.", providerType.FullName);
-					continue;
-				}
-				combo.Items.Add (providerType, metadata.Title);
-			}
-			if (selectedProvider != null) {
-				combo.SelectedItem = selectedProvider.GetType ();
-			} else {
-				combo.SelectedItem = typeof (NullGroupingProvider);
-			}
+			var combo = MakeSelector (selectedProvider);
 			combo.SelectionChanged += (sender, e) => {
-				var newSelected = combo.SelectedItem as Type;
-				if (newSelected == null)
+				var selectedType = combo.SelectedItem as Type;
+				if (selectedType == null)
 					return;
-				var newProvider = (IGroupingProvider)Activator.CreateInstance(newSelected);
+				var newProvider = (IGroupingProvider)Activator.CreateInstance(selectedType);
 				
-				if (previousProvider != null) {
-					previousProvider.Next = newProvider;
-				} else {
-					rootProvider = newProvider;
-				}
+				previousProvider.Next = newProvider;
 				if (newProvider.SupportsNext && selectedProvider.SupportsNext) {
 					newProvider.Next = selectedProvider.Next;
 				}
@@ -100,6 +84,88 @@ namespace MonoDevelop.CodeIssues
 				BuildProviderSelectors (selectedProvider, selectedProvider.Next);
 			}
 		}
+
+		ComboBox MakeSelector (IGroupingProvider selectedProvider)
+		{
+			var combo = new ComboBox ();
+			combo.Items.Add (typeof(NullGroupingProvider), "Nothing");
+			combo.Items.Add (ItemSeparator.Instance);
+			foreach (var providerType in availableProviders) {
+				var metadata = (GroupingDescriptionAttribute)providerType.GetCustomAttributes (false).FirstOrDefault (attr => attr is GroupingDescriptionAttribute);
+				if (metadata == null) {
+					LoggingService.LogWarning ("Grouping provider '{0}' does not have a metadata attribute, ignoring provider.", providerType.FullName);
+					continue;
+				}
+				combo.Items.Add (providerType, metadata.Title);
+			}
+			if (selectedProvider != null) {
+				combo.SelectedItem = selectedProvider.GetType ();
+			}
+			else {
+				combo.SelectedItem = typeof(NullGroupingProvider);
+			}
+			return combo;
+		}
+		
+		class GroupingProvider: IGroupingProvider
+		{
+			public GroupingProvider()
+			{
+				Next = NullGroupingProvider.Instance;
+			}
+			
+			#region IGroupingProvider implementation
+	
+			public IssueGroup GetIssueGroup (IssueSummary issue)
+			{
+				// This should never _ever_ happen!
+				throw new NotImplementedException ();
+			}
+	
+			public void Reset ()
+			{
+			}
+	
+			IGroupingProvider next;
+			public IGroupingProvider Next {
+				get {
+					return next;
+				}
+				set {
+					next = value;
+					OnNextChanged (this);
+				}
+			}
+	
+			protected virtual void OnNextChanged (GroupingProvider categoryGroupingProvider)
+			{
+				var handler = nextChanged;
+				if (handler != null) {
+					handler (categoryGroupingProvider);
+				}
+			}
+			
+			event Action<IGroupingProvider> nextChanged;
+			
+			event Action<IGroupingProvider> IGroupingProvider.NextChanged
+			{
+				add {
+					nextChanged += value;
+				}
+				remove {
+					nextChanged -= value;
+				}
+			}
+	
+			public bool SupportsNext
+			{
+				get {
+					return true;
+				}
+			}
+			
+		}
+		#endregion
 	}
 }
 
