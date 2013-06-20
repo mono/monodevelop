@@ -8,6 +8,7 @@ using SharpSvn;
 using SharpSvn.Security;
 using SvnRevision = MonoDevelop.VersionControl.Subversion.SvnRevision;
 using MonoDevelop.Ide;
+using MonoDevelop.Projects.Text;
 
 namespace SubversionAddinWindows
 {
@@ -21,8 +22,10 @@ namespace SubversionAddinWindows
 		{
 			MemoryStream data = new MemoryStream();
 			try {
+				// This outputs the contents of the base revision
+				// of a file to a stream.
 				client.Write (new SvnPathTarget (file), data);
-				return System.Text.Encoding.ASCII.GetString (data.GetBuffer (), 0, Convert.ToInt32 (data.Length));
+				return TextFile.ReadFile (file, data).Text;
 			} catch {
 				return String.Empty;
 			}
