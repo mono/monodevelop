@@ -2906,6 +2906,12 @@ namespace Mono.TextEditor
 			uint curChunkIndex = 0, byteChunkIndex = 0;
 			List<Pango.Attribute> attributes = new List<Pango.Attribute> ();
 			uint oldEndIndex = 0;
+
+			Cairo.Color curFgColor = textEditor.ColorStyle.PlainText.Foreground;
+			Cairo.Color curBgColor = textEditor.ColorStyle.PlainText.Background;
+			var curWeight = Xwt.Drawing.FontWeight.Normal;
+			var curStyle = Xwt.Drawing.FontStyle.Normal;
+
 			foreach (Chunk chunk in startChunk) {
 				ChunkStyle chunkStyle = chunk != null ? textEditor.ColorStyle.GetChunkStyle (chunk) : null;
 
@@ -2929,33 +2935,46 @@ namespace Mono.TextEditor
 
 					HandleSelection (lineOffset, logicalRulerColumn, - 1, -1, chunk.Offset, chunk.EndOffset, delegate(int start, int end) {
 						var color = textEditor.ColorStyle.GetForeground (chunkStyle);
-						Pango.AttrForeground foreGround = new Pango.AttrForeground (
-							(ushort)(color.R * ushort.MaxValue),
-							(ushort)(color.G * ushort.MaxValue),
-							(ushort)(color.B * ushort.MaxValue));
-						foreGround.StartIndex = TranslateToUTF8Index (lineChars, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
-						foreGround.EndIndex = TranslateToUTF8Index (lineChars, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
-						attributes.Add (foreGround);
-						if (!chunkStyle.TransparentBackground) {
-							color = chunkStyle.Background;
-							var background = new Pango.AttrBackground (
+						var si = TranslateToUTF8Index (lineChars, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
+						var ei = TranslateToUTF8Index (lineChars, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
+						if (!color.Equals (curFgColor)) {
+							curFgColor = color;
+							var foreGround = new Pango.AttrForeground (
 								(ushort)(color.R * ushort.MaxValue),
 								(ushort)(color.G * ushort.MaxValue),
 								(ushort)(color.B * ushort.MaxValue));
-							background.StartIndex = foreGround.StartIndex;
-							background.EndIndex = foreGround.EndIndex;
-							attributes.Add (background);
+							foreGround.StartIndex = si;
+							foreGround.EndIndex = ei;
+							attributes.Add (foreGround);
+						}
+						if (!chunkStyle.TransparentBackground) {
+							color = chunkStyle.Background;
+							if (!color.Equals (curBgColor)) {
+								var background = new Pango.AttrBackground (
+									(ushort)(color.R * ushort.MaxValue),
+									(ushort)(color.G * ushort.MaxValue),
+									(ushort)(color.B * ushort.MaxValue));
+								background.StartIndex = si;
+								background.EndIndex = ei;
+								attributes.Add (background);
+							}
 						}
 					}, delegate(int start, int end) {
 						Pango.AttrForeground selectedForeground;
 						if (!SelectionColor.TransparentForeground) {
 							var color = SelectionColor.Foreground;
+							if (color.Equals (curFgColor))
+								return;
+							curFgColor = color;
 							selectedForeground = new Pango.AttrForeground (
 								(ushort)(color.R * ushort.MaxValue),
 								(ushort)(color.G * ushort.MaxValue),
 								(ushort)(color.B * ushort.MaxValue));
 						} else {
 							var color = ColorStyle.GetForeground (chunkStyle);
+							if (color.Equals (curFgColor))
+								return;
+							curFgColor = color;
 							selectedForeground = new Pango.AttrForeground (
 								(ushort)(color.R * ushort.MaxValue),
 								(ushort)(color.G * ushort.MaxValue),
@@ -2969,14 +2988,16 @@ namespace Mono.TextEditor
 					var translatedStartIndex = TranslateToUTF8Index (lineChars, (uint)startIndex, ref curChunkIndex, ref byteChunkIndex);
 					var translatedEndIndex = TranslateToUTF8Index (lineChars, (uint)endIndex, ref curChunkIndex, ref byteChunkIndex);
 
-					if (chunkStyle.FontWeight != Xwt.Drawing.FontWeight.Normal) {
-						Pango.AttrWeight attrWeight = new Pango.AttrWeight ((Pango.Weight)chunkStyle.FontWeight);
+					if (chunkStyle.FontWeight != curWeight) {
+						curWeight = chunkStyle.FontWeight;
+						var attrWeight = new Pango.AttrWeight ((Pango.Weight)chunkStyle.FontWeight);
 						attrWeight.StartIndex = translatedStartIndex;
 						attrWeight.EndIndex = translatedEndIndex;
 						attributes.Add (attrWeight);
 					}
 
-					if (chunkStyle.FontStyle != Xwt.Drawing.FontStyle.Normal) {
+					if (chunkStyle.FontStyle != curStyle) {
+						curStyle = chunkStyle.FontStyle;
 						Pango.AttrStyle attrStyle = new Pango.AttrStyle ((Pango.Style)chunkStyle.FontStyle);
 						attrStyle.StartIndex = translatedStartIndex;
 						attrStyle.EndIndex = translatedEndIndex;
@@ -2984,7 +3005,7 @@ namespace Mono.TextEditor
 					}
 
 					if (chunkStyle.Underline) {
-						Pango.AttrUnderline attrUnderline = new Pango.AttrUnderline (Pango.Underline.Single);
+						var attrUnderline = new Pango.AttrUnderline (Pango.Underline.Single);
 						attrUnderline.StartIndex = translatedStartIndex;
 						attrUnderline.EndIndex = translatedEndIndex;
 						attributes.Add (attrUnderline);

@@ -651,6 +651,7 @@ namespace Mono.TextEditor.Highlighting
 				length = System.Math.Min (doc.TextLength - offset, length);
 				curChunk = new Chunk (offset, 0, GetSpanStyle ());
 				spanParser.ParseSpans (offset, length);
+				curChunk.SpanStack = spanParser.SpanStack;
 				curChunk.Length = offset + length - curChunk.Offset;
 				if (curChunk.Length > 0) {
 					curChunk.Style = GetStyle (curChunk) ?? GetSpanStyle ();
