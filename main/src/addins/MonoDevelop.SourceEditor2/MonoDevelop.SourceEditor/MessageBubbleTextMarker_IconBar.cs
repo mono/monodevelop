@@ -56,12 +56,17 @@ namespace MonoDevelop.SourceEditor
 
 		void IIconBarMarker.DrawIcon (TextEditor ed, Cairo.Context cr, DocumentLine line, int lineNumber, double x, double y, double width, double height)
 		{
+			cr.Save ();
+			cr.Translate (
+				x + 0.5  + (width - cache.errorPixbuf.Width) / 2,
+				y + 0.5 + (height - cache.errorPixbuf.Height) / 2
+			);
 			Gdk.CairoHelper.SetSourcePixbuf (
 				cr,
-				errors.Any (e => e.IsError) ? cache.errorPixbuf : cache.warningPixbuf,
-				(int)(x + (width - cache.errorPixbuf.Width) / 2),
-				(int)(y + (height - cache.errorPixbuf.Height) / 2));
+				errors.Any (e => e.IsError) ? cache.errorPixbuf : cache.warningPixbuf, 0, 0);
 			cr.Paint ();
+			cr.Restore ();
+
 		}
 
 		void IIconBarMarker.MousePress (MarginMouseEventArgs args)

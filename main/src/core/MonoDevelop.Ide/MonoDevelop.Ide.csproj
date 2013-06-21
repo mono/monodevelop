@@ -1083,6 +1083,12 @@
     <EmbeddedResource Include="icons\variable-16.png">
       <LogicalName>variable-16.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\bubble-error-icon.png">
+      <LogicalName>bubble-error-icon.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\bubble-warning-icon.png">
+      <LogicalName>bubble-warning-icon.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
