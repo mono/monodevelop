@@ -116,12 +116,6 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 		}
 
-		public override string Id {
-			get {
-				return "MonoDevelop.VersionControl.Subversion.SubversionVersionControl";
-			}
-		}
-
 		public override bool IsInstalled {
 			get { return isInstalled.Value; }
 		}
@@ -285,7 +279,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			
 			item = apr.array_push (providers);
 			svn.client_get_ssl_client_cert_pw_prompt_provider (out item, OnAuthSslClientCertPwPromptCallback, IntPtr.Zero, 2, pool);
-			
+
 			// Create the authentication baton			
 			
 			svn.auth_open (out auth_baton, providers, pool); 
@@ -358,7 +352,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		}
 
 		static LibSvnClient.svn_auth_ssl_server_trust_prompt_func_t OnAuthSslServerTrustPromptCallback = OnAuthSslServerTrustPrompt;
-		static IntPtr OnAuthSslServerTrustPrompt (ref IntPtr cred, IntPtr baton, string realm, uint failures, ref LibSvnClient.svn_auth_ssl_server_cert_info_t cert_info, bool may_save, IntPtr pool)
+		static IntPtr OnAuthSslServerTrustPrompt (ref IntPtr cred, IntPtr baton, string realm, UInt32 failures, ref LibSvnClient.svn_auth_ssl_server_cert_info_t cert_info, bool may_save, IntPtr pool)
 		{
 			LibSvnClient.svn_auth_cred_ssl_server_trust_t data = new LibSvnClient.svn_auth_cred_ssl_server_trust_t ();
 			
