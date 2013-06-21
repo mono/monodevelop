@@ -453,7 +453,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				pathorurl = NormalizePath (pathorurl, localpool);
 				
 				CheckError (svn.client_ls (out hash, pathorurl, ref revision,
-				                           recurse ? 1 : 0, ctx, localpool));
+				                           recurse, ctx, localpool));
 				
 				IntPtr item = apr.hash_first (localpool, hash);
 				while (item != IntPtr.Zero) {
@@ -538,7 +538,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				
 				LogCollector collector = new LogCollector ((SubversionRepository)repo, ret);
 				
-				CheckError (svn.client_log (array, ref revisionStart, ref revisionEnd, 1, 0,
+				CheckError (svn.client_log (array, ref revisionStart, ref revisionEnd, true, false,
 				                            collector.Func,
 				                            IntPtr.Zero, ctx, localpool));
 			} finally {
@@ -668,7 +668,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 					Marshal.WriteIntPtr (item, apr.pstrdup (localpool, pathorurl));
 				}
 			
-				CheckError (svn.client_revert (array, recurse ? 1 : 0, ctx, localpool));
+				CheckError (svn.client_revert (array, recurse, ctx, localpool));
 			} finally {
 				apr.pool_destroy (localpool);
 				updatemonitor = null;
@@ -688,7 +688,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			
 			try {
 				string pathorurl = NormalizePath (path, localpool);
-				CheckError (svn.client_resolved (pathorurl, recurse ? 1 : 0, ctx, localpool));
+				CheckError (svn.client_resolved (pathorurl, recurse, ctx, localpool));
 			} finally {
 				apr.pool_destroy (localpool);
 				updatemonitor = null;
@@ -708,7 +708,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			IntPtr localpool = newpool (pool);
 			try {
 				string pathorurl = NormalizePath (path, localpool);
-				CheckError (svn.client_add3 (pathorurl, (recurse ? 1 : 0), 1, 0, ctx, localpool));
+				CheckError (svn.client_add3 (pathorurl, (recurse), true, false, ctx, localpool));
 			} finally {
 				apr.pool_destroy (localpool);
 				updatemonitor = null;
@@ -765,7 +765,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				
 				commitmessage = message;
 				
-				CheckError (svn.client_commit (ref commit_info, array, 0, ctx, localpool));
+				CheckError (svn.client_commit (ref commit_info, array, false, ctx, localpool));
 				unsafe {
 					if (commit_info != IntPtr.Zero) {
 						monitor.Log.WriteLine ();
@@ -832,7 +832,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 					Marshal.WriteIntPtr (item, apr.pstrdup (localpool, npath));
 				//}
 				IntPtr commit_info = IntPtr.Zero;
-				CheckError (svn.client_delete (ref commit_info, array, (force ? 1 : 0), ctx, localpool));
+				CheckError (svn.client_delete (ref commit_info, array, force, ctx, localpool));
 			} finally {
 				commitmessage = null;
 				updatemonitor = null;
@@ -858,7 +858,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				string nsrcPath = NormalizePath (srcPath, localpool);
 				string ndestPath = NormalizePath (destPath, localpool);
 				CheckError (svn.client_move (ref commit_info, nsrcPath, ref revision,
-				                             ndestPath, (force ? 1 : 0), ctx, localpool));
+				                             ndestPath, force, ctx, localpool));
 			} finally {
 				apr.pool_destroy (localpool);
 				updatemonitor = null;
@@ -884,7 +884,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				lockFileList = new ArrayList ();
 				requiredLockState = LibSvnClient.NotifyLockState.Locked;
 				
-				CheckError (svn.client_lock (array, comment, stealLock ? 1 : 0, ctx, localpool));
+				CheckError (svn.client_lock (array, comment, stealLock, ctx, localpool));
 				if (paths.Length != lockFileList.Count)
 					throw new SubversionException ("Lock operation failed.");
 			} finally {
@@ -913,7 +913,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				lockFileList = new ArrayList ();
 				requiredLockState = LibSvnClient.NotifyLockState.Unlocked;
 			
-				CheckError (svn.client_unlock (array, breakLock ? 1 : 0, ctx, localpool));
+				CheckError (svn.client_unlock (array, breakLock, ctx, localpool));
 				if (paths.Length != lockFileList.Count)
 					throw new SubversionException ("Lock operation failed.");
 			} finally {
@@ -948,7 +948,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				if (res1 == 0 && res2 == 0) {
 					string npath1 = NormalizePath (path1, localpool);
 					string npath2 = NormalizePath (path2, localpool);
-					CheckError (svn.client_diff (options, npath1, ref revision1, npath2, ref revision2, (recursive ? 1 : 0), 0, 1, outfile, errfile, ctx, localpool));
+					CheckError (svn.client_diff (options, npath1, ref revision1, npath2, ref revision2, recursive, false, true, outfile, errfile, ctx, localpool));
 					return MonoDevelop.Projects.Text.TextFile.ReadFile (fout).Text;
 				} else {
 					throw new Exception ("Could not get diff information");

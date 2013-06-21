@@ -54,7 +54,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		
 		public override IntPtr config_get_config (ref IntPtr cfg_hash, string config_dir, IntPtr pool)
 		{
-			svn_config_get_config (ref cfg_hash, config_dir, pool);
+			return svn_config_get_config (ref cfg_hash, config_dir, pool);
 		}
 		
 		public override void auth_open (out IntPtr auth_baton, IntPtr providers, IntPtr pool)	
@@ -420,7 +420,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		                                                                      IntPtr ctx,
 		                                                                      IntPtr pool);
 		
-		[DllImport(svnclientlib)] static extern IntPtr svn_client_lock (IntPtr apr_array_header_t_targets, string comment, int steal_lock, IntPtr ctx, IntPtr pool);
+		[DllImport(svnclientlib)] static extern IntPtr svn_client_lock (IntPtr apr_array_header_t_targets, string comment,
+		                                                                [MarshalAs (UnmanagedType.Bool)] bool steal_lock,
+		                                                                IntPtr ctx, IntPtr pool);
 		
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_unlock (IntPtr apr_array_header_t_targets,
 		                                                                  [MarshalAs (UnmanagedType.Bool)] bool break_lock,
