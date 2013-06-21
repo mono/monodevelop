@@ -128,7 +128,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		public void StartHover (MessageBubbleTextMarker marker)
+		public void StartHover (MessageBubbleTextMarker marker, double bubbleX, double bubbleY, double bubbleWidth, bool isReduced)
 		{
 			CancelHoverTimeout ();
 			if (removedMarker == marker) {
@@ -142,16 +142,10 @@ namespace MonoDevelop.SourceEditor
 
 				DestroyPopoverWindow ();
 
-				var y = editor.LineToY (marker.LineSegment.LineNumber);
-				var layoutWrapper = editor.TextViewMargin.GetLayout (marker.LineSegment);
-				double x = layoutWrapper.PangoWidth / Pango.Scale.PangoScale + editor.TextViewMargin.TextStartPosition;
-				
-				if (marker.Layouts.Count < 2 && x + marker.LayoutWidth < editor.Allocation.Width)
+				if (marker.Layouts.Count < 2 && !isReduced)
 					return false;
 				popoverWindow = new MessageBubblePopoverWindow (this, marker);
-				popoverWindow.ShowPopup (editor, new Gdk.Rectangle ((int)x, (int)y, Math.Min (marker.LayoutWidth, editor.Allocation.Width - (int)x), (int)editor.LineHeight) ,PopupPosition.Top);
-				if (layoutWrapper.IsUncached)
-					layoutWrapper.Dispose ();
+				popoverWindow.ShowPopup (editor, new Gdk.Rectangle ((int)(bubbleX + editor.TextViewMargin.XOffset), (int)bubbleY, (int)bubbleWidth, (int)editor.LineHeight) ,PopupPosition.Top);
 				return false;
 			});
 		}

@@ -41,7 +41,7 @@ namespace MonoDevelop.SourceEditor
 {
 	partial class MessageBubbleTextMarker : TextLineMarker, IDisposable, IActionTextLineMarker
 	{
-		MessageBubbleCache cache;
+		readonly MessageBubbleCache cache;
 		
 		internal const int border = 4;
 		
@@ -136,6 +136,8 @@ namespace MonoDevelop.SourceEditor
 		bool isError;
 		internal MessageBubbleTextMarker (MessageBubbleCache cache, Task task, DocumentLine lineSegment, bool isError, string errorMessage)
 		{
+			if (cache == null)
+				throw new ArgumentNullException ("cache");
 			this.cache = cache;
 			this.task = task;
 			this.IsVisible = true;
@@ -325,23 +327,80 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (LineSegment == null)
 				return;
-			var layout = editor.TextViewMargin.GetLayout (lineSegment);
-
-			var bubbleStart = editor.TextViewMargin.TextStartPosition + layout.PangoWidth / Pango.Scale.PangoScale;
-			int errorCounterWidth = GetErrorCountBounds (layout).Item1;
-
-			if (bubbleStart < args.X && args.X < bubbleStart + LayoutWidth + errorCounterWidth + editor.LineHeight) {
+			if (bubbleDrawX < args.X && args.X < bubbleDrawX + bubbleWidth) {
+				editor.HideTooltip ();
 				result.Cursor = null;
-				cache.StartHover (this);
+				cache.StartHover (this, bubbleDrawX, bubbleDrawY, bubbleWidth, bubbleIsReduced);
 			}
-
-			if (layout.IsUncached)
-				layout.Dispose ();
 		}
 		#endregion
+
+		double bubbleDrawX, bubbleDrawY;
+		double bubbleWidth;
+		bool bubbleIsReduced;
 		
-		public override void Draw (TextEditor editor, Cairo.Context g, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
+		public override void Draw (TextEditor editor, Cairo.Context g, double y, LineMetrics metrics)
 		{
+			EnsureLayoutCreated (editor);
+			double x = editor.TextViewMargin.XOffset;
+			int errorCounterWidth = GetErrorCountBounds (metrics.Layout).Item1;
+
+			var sx = metrics.TextRenderEndPosition;
+			var width = LayoutWidth + errorCounterWidth + editor.LineHeight;
+			var drawLayout = layouts[0].Layout;
+			int ex = 0 , ey = 0;
+			bool customLayout = sx + width > editor.Allocation.Width;
+			bool hideText = false;
+			bubbleIsReduced = customLayout;
+			if (customLayout) {
+				width = editor.Allocation.Width - sx;
+				string text = layouts[0].Layout.Text;
+				drawLayout = new Pango.Layout (editor.PangoContext);
+				drawLayout.FontDescription = cache.fontDescription;
+				for (int j = text.Length - 4; j > 0; j--) {
+					drawLayout.SetText (text.Substring (0, j) + "...");
+					drawLayout.GetPixelSize (out ex, out ey);
+					if (ex + (errorCountLayout != null ? errorCounterWidth : 0) + editor.LineHeight < width)
+						break;
+				}
+				if (ex + (errorCountLayout != null ? errorCounterWidth : 0) + editor.LineHeight > width) {
+					hideText = true;
+					drawLayout.SetMarkup ("<span weight='heavy'>···</span>");
+					width = Math.Max (17, errorCounterWidth) + editor.LineHeight;
+					sx = Math.Min (sx, editor.Allocation.Width - width);
+				}
+			}
+			bubbleDrawX = sx - editor.TextViewMargin.XOffset;
+			bubbleDrawY = y;
+			bubbleWidth = width;
+			g.RoundedRectangle (sx, y + 1, width, editor.LineHeight - 2, editor.LineHeight / 2 - 1);
+			g.Color = TagColor.Color;
+			g.Fill ();
+
+			if (errorCounterWidth > 0 && errorCountLayout != null) {
+				g.RoundedRectangle (sx + width - errorCounterWidth - editor.LineHeight / 2, y + 2, errorCounterWidth, editor.LineHeight - 4, editor.LineHeight / 2 - 3);
+				g.Color = TextColor.Color;
+				g.Fill ();
+
+				g.Save ();
+				int ew, eh;
+				errorCountLayout.GetPixelSize (out ew, out eh);
+				g.Translate (sx + width - errorCounterWidth - editor.LineHeight / 2 + (errorCounterWidth - ew) / 2, y + 1);
+				g.Color = TagColor.Color;
+				g.ShowLayout (errorCountLayout);
+				g.Restore ();
+			}
+
+			if (errorCounterWidth <= 0 || errorCountLayout == null || !hideText) {
+				g.Save ();
+				g.Translate (sx + editor.LineHeight / 2, y + (editor.LineHeight - layouts [0].Height) / 2 + layouts [0].Height % 2);
+				g.Color = TextColor.Color;
+				g.ShowLayout (drawLayout);
+				g.Restore ();
+			}
+
+			if (customLayout)
+				drawLayout.Dispose ();
 
 		}
 	}

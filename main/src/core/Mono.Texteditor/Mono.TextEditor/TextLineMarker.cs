@@ -102,7 +102,7 @@ namespace Mono.TextEditor
 		{
 		}
 		
-		public virtual void Draw (TextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
+		public virtual void Draw (TextEditor editor, Cairo.Context cr, double y, LineMetrics metrics)
 		{
 		}
 		
@@ -175,8 +175,13 @@ namespace Mono.TextEditor
 			doc.LineChanged -= HandleDocLineChanged;
 		}
 		
-		public override void Draw (TextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
+		public override void Draw (TextEditor editor, Cairo.Context cr, double y, LineMetrics metrics)
 		{
+			var startOffset = metrics.TextStartOffset;
+			int endOffset = metrics.TextEndOffset;
+			double startXPos = metrics.TextRenderStartPosition;
+			double endXPos = metrics.TextRenderEndPosition;
+			var layout = metrics.Layout.Layout;
 			int markerStart = line.Offset + startColumn;
 			int markerEnd = line.Offset + endColumn;
 	
@@ -204,7 +209,7 @@ namespace Mono.TextEditor
 			@from = System.Math.Max (@from, editor.TextViewMargin.XOffset);
 			to = System.Math.Max (to, editor.TextViewMargin.XOffset);
 			if (@from < to) {
-				cr.DrawLine (selected ? editor.ColorStyle.SelectedText.Foreground : editor.ColorStyle.GetForeground (editor.ColorStyle.GetChunkStyle (style)), @from + 0.5, y + editor.LineHeight - 1.5, to + 0.5, y + editor.LineHeight - 1.5);
+				cr.DrawLine (editor.ColorStyle.GetForeground (editor.ColorStyle.GetChunkStyle (style)), @from + 0.5, y + editor.LineHeight - 1.5, to + 0.5, y + editor.LineHeight - 1.5);
 			}
 		}
 	}
@@ -324,8 +329,14 @@ namespace Mono.TextEditor
 		public int EndCol { get; set; }
 		public bool Wave { get; set; }
 		
-		public override void Draw (TextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
+		public override void Draw (TextEditor editor, Cairo.Context cr, double y, LineMetrics metrics)
 		{
+			var startOffset = metrics.TextStartOffset;
+			int endOffset = metrics.TextEndOffset;
+			double startXPos = metrics.TextRenderStartPosition;
+			double endXPos = metrics.TextRenderEndPosition;
+			var layout = metrics.Layout.Layout;
+
 			int markerStart = LineSegment.Offset + System.Math.Max (StartCol - 1, 0);
 			int markerEnd = LineSegment.Offset + (EndCol < 1 ? LineSegment.Length : EndCol - 1);
 			if (markerEnd < startOffset || markerStart > endOffset) 

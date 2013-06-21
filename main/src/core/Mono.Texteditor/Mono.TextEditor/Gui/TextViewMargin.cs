@@ -1480,31 +1480,28 @@ namespace Mono.TextEditor
 			bool drawBg = true;
 			bool drawText = true;
 
-			LineMetrics metrics = null;
+			LineMetrics metrics  = new LineMetrics {
+				LineSegment = line,
+				Layout = layout,
+
+				SelectionStart = selectionStart,
+				SelectionEnd = selectionEnd,
+
+				TextStartOffset = offset,
+				TextEndOffset = offset + length,
+
+				TextRenderStartPosition = xPos,
+				TextRenderEndPosition = xPos + width,
+
+				LineHeight = _lineHeight,
+				WholeLineWidth = textEditor.Allocation.Width - xPos
+			};
 
 			foreach (TextLineMarker marker in line.Markers) {
 				IBackgroundMarker bgMarker = marker as IBackgroundMarker;
 				if (bgMarker == null || !marker.IsVisible)
 					continue;
 				isSelectionDrawn |= (marker.Flags & TextLineMarkerFlags.DrawsSelection) == TextLineMarkerFlags.DrawsSelection;
-				if (metrics == null) {
-					metrics = new LineMetrics {
-						LineSegment = line,
-						Layout = layout,
-
-						SelectionStart = selectionStart,
-						SelectionEnd = selectionEnd,
-
-						TextStartOffset = offset,
-						TextEndOffset = offset + length,
-
-						TextRenderStartPosition = xPos,
-						TextRenderEndPosition = xPos + width,
-
-						LineHeight = _lineHeight,
-						WholeLineWidth = textEditor.Allocation.Width - xPos
-					};
-				}
 				drawText &= bgMarker.DrawBackground (textEditor, cr, y, metrics, ref drawBg);
 			}
 
@@ -1648,7 +1645,7 @@ namespace Mono.TextEditor
 
 			foreach (TextLineMarker marker in line.Markers.Where (m => m.IsVisible)) {
 				if (layout.Layout != null)
-					marker.Draw (textEditor, cr, layout.Layout, false, /*selected*/offset, offset + length, y, xPos, xPos + width);
+					marker.Draw (textEditor, cr, y, metrics);
 			}
 
 			foreach (var marker in Document.GetTextSegmentMarkersAt (line).Where (m => m.IsVisible)) {
