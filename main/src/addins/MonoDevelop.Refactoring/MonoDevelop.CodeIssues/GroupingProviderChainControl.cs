@@ -70,10 +70,10 @@ namespace MonoDevelop.CodeIssues
 					return;
 				var newProvider = (IGroupingProvider)Activator.CreateInstance(selectedType);
 				
-				previousProvider.Next = newProvider;
 				if (newProvider.SupportsNext && selectedProvider.SupportsNext) {
 					newProvider.Next = selectedProvider.Next;
 				}
+				previousProvider.Next = newProvider;
 				BuildUi ();
 			};
 			providerPickers.Add (combo);

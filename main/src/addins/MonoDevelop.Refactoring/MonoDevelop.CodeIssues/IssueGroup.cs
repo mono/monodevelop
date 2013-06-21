@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using Xwt;
 
@@ -175,6 +176,8 @@ namespace MonoDevelop.CodeIssues
 		{
 			lock (_lock) {
 				groups.Clear ();
+				leaves.Clear ();
+				allIssues.Clear ();
 				groupingProvider.Reset ();
 				IssueCount = 0;
 			}
@@ -196,10 +199,13 @@ namespace MonoDevelop.CodeIssues
 		/// </summary>
 		public void EnableProcessing ()
 		{
+			IList<IssueSummary> summaries;
 			lock (_lock) {
 				ProcessingEnabled = true;
+				summaries = allIssues.ToList ();
 			}
-			foreach (var issue in allIssues) {
+			// Now process the existing issues
+			foreach (var issue in summaries) {
 				Push (issue);
 			}
 		}

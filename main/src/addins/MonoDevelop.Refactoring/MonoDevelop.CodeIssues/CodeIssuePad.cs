@@ -209,7 +209,7 @@ namespace MonoDevelop.CodeIssues
 					group.Position = navigator.CurrentPosition;
 					group.ChildGroupAdded += GetGroupAddedHandler(group);
 					group.IssueSummaryAdded += GetIssueSummaryAddedHandler(group);
-					group.ChildrenInvalidated += GetChildrenInvalidatedHandler (navigator);
+					group.ChildrenInvalidated += GetChildrenInvalidatedHandler (group);
 					
 					navigator.SetValue (groupField, group);
 					UpdateParents (navigator);
@@ -229,11 +229,17 @@ namespace MonoDevelop.CodeIssues
 			};
 		}
 
-		EventHandler<IssueGroupEventArgs> GetChildrenInvalidatedHandler (TreeNavigator navigator)
+		EventHandler<IssueGroupEventArgs> GetChildrenInvalidatedHandler (IssueGroup group)
 		{
-			return (sender, group) => {
+			return (sender, eventArgs) => {
+				var position = group.Position;
+				var navigator = store.GetNavigatorAt (position);
+				bool expanded = view.IsRowExpanded (position);
 				navigator.RemoveChildren ();
 				UpdateParents (navigator);
+				if (expanded) {
+					view.ExpandRow (position, false);
+				}
 			};
 		}
 
