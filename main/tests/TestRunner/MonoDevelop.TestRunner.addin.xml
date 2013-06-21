@@ -7,7 +7,7 @@
        category    = "MonoDevelop Core"
        isroot      = "false"
        version     = "4.0.9"
-       compatVersion = "4.0.8">
+       compatVersion = "4.0">
 
 	<Dependencies>
 		<Addin id="Core" version="4.0.9"/>
