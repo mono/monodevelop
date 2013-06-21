@@ -368,7 +368,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		
 		[DllImport(svnclientlib)] static extern void svn_stream_set_write (IntPtr stream, svn_readwrite_fn_t writer);
 		
-		[DllImport(svnclientlib)] static extern IntPtr svn_client_update (IntPtr result_rev, string path, ref Rev revision,
+		[DllImport(svnclientlib)] static extern IntPtr svn_client_update (svn_revnum_t result_rev, string path, ref Rev revision,
 		                                                                  [MarshalAs (UnmanagedType.Bool)] bool recurse,
 		                                                                  IntPtr ctx, IntPtr pool);
 		

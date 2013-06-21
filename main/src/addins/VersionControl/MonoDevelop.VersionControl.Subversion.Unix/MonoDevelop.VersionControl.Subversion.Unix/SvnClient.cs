@@ -532,7 +532,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				strptr = Marshal.StringToHGlobalAnsi (pathorurl);
 				Marshal.WriteIntPtr (first, strptr);
 				
-				LogCollector collector = new LogCollector ((SubversionRepository)repo, ret);
+				LogCollector collector = new LogCollector ((SubversionRepository)repo, ret, ctx);
 				
 				CheckError (svn.client_log (array, ref revisionStart, ref revisionEnd, true, false,
 				                            collector.Func,
@@ -633,7 +633,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			IntPtr localpool = newpool (pool);
 			try {
 				string pathorurl = NormalizePath (path, localpool);
-				CheckError (svn.client_update (IntPtr.Zero, pathorurl, ref rev, recurse, ctx, localpool));
+				IntPtr result = Marshal.AllocHGlobal (IntPtr.Size);
+				CheckError (svn.client_update (result, pathorurl, ref rev, recurse, ctx, localpool));
+				Marshal.FreeHGlobal (result);
 			} finally {
 				foreach (string file in updateFileList)
 					FileService.NotifyFileChanged (file);
@@ -1309,14 +1311,16 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			
 			List<SvnRevision> logs;
 			SubversionRepository repo;
+			IntPtr ctx;
 
 			public LibSvnClient.svn_log_message_receiver_t Func {
 				get; private set;
 			}
 
-			public LogCollector (SubversionRepository repo, List<SvnRevision> logs) {
+			public LogCollector (SubversionRepository repo, List<SvnRevision> logs, IntPtr ctx) {
 				this.repo = repo;
 				this.logs = logs;
+				this.ctx = ctx;
 				Func = CollectorFunc;
 			}
 
@@ -1353,7 +1357,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 					}
 					
 					IntPtr result = IntPtr.Zero;
-					SvnClient.CheckError (svn.client_root_url_from_path (ref result, repo.RootPath, IntPtr.Zero, pool));
+
+					SvnClient.CheckError (svn.client_root_url_from_path (ref result, repo.RootPath, ctx, pool));
 					if (result == IntPtr.Zero) // Should never happen
 						items.Add (new RevisionPath (name, ac, ""));
 					else
