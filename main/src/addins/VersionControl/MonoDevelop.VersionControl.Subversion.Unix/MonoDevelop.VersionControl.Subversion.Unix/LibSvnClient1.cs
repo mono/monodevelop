@@ -35,7 +35,7 @@ using MonoDevelop.Core;
 using MonoDevelop.VersionControl;
 using MonoDevelop.VersionControl.Subversion.Gui;
 
-using svn_revnum_t = System.Int32;
+using svn_revnum_t = System.IntPtr;
 
 namespace MonoDevelop.VersionControl.Subversion.Unix {
 	
@@ -192,7 +192,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 			svn_stream_set_write (stream, writer);
 		}
 		
-		public override IntPtr client_update (IntPtr result_rev, string path, ref Rev revision,
+		public override IntPtr client_update (svn_revnum_t result_rev, string path, ref Rev revision,
 		                                      bool recurse, IntPtr ctx, IntPtr pool)
 		{
 			return svn_client_update (result_rev, path, ref revision, recurse, ctx, pool);
@@ -294,6 +294,11 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		public override IntPtr client_blame (string path, ref Rev rev_start, ref Rev rev_end, svn_client_blame_receiver_t receiver, System.IntPtr baton, System.IntPtr ctx, System.IntPtr pool)
 		{
 			return svn_client_blame (path, ref rev_start, ref rev_end, receiver, baton, ctx, pool);
+		}
+
+		public override IntPtr wc_context_create (out IntPtr svn_wc_context_t, IntPtr config, IntPtr result_pool, IntPtr scratch_pool)
+		{
+			return svn_wc_context_create (out svn_wc_context_t, config, result_pool, scratch_pool);
 		}
 		
 		public override IntPtr strerror (int statcode, byte[] buf, int bufsize)
@@ -435,7 +440,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		                                                                    IntPtr ctx, IntPtr pool);
 		
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_blame (string path, ref Rev rev_start, ref Rev rev_end, svn_client_blame_receiver_t receiver, IntPtr baton, IntPtr ctx, IntPtr pool);
-		
+
+		[DllImport(svnclientlib)] static extern IntPtr svn_wc_context_create (out IntPtr svn_wc_context_t, IntPtr svn_config_ensure, IntPtr result_pool, IntPtr scratch_pool);
+
 		[DllImport(svnclientlib)] static extern IntPtr svn_strerror (int statcode, byte[] buf, int bufsize);
 		
 		[DllImport(svnclientlib)] static extern IntPtr svn_path_internal_style (string path, IntPtr pool);

@@ -9,7 +9,7 @@ using MonoDevelop.Core;
 using MonoDevelop.VersionControl.Subversion.Gui;
 using System.Text;
 
-using svn_revnum_t = System.Int32;
+using svn_revnum_t = System.IntPtr;
 using size_t = System.Int32;
 
 namespace MonoDevelop.VersionControl.Subversion.Unix
@@ -207,6 +207,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		{
 			// Allocate the APR pool and the SVN client context.
 			pool = newpool (IntPtr.Zero);
+			IntPtr scratch = newpool (IntPtr.Zero);
 
 			// Make sure the config directory is properly created.
 			// If the config directory and specifically the subdirectories
@@ -236,6 +237,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			
 			// Load user and system configuration
 			svn.config_get_config (ref ctxstruct.config, null, pool);
+			svn.wc_context_create (out ctxstruct.wc_ctx, ctxstruct.config, pool, scratch);
+			apr.pool_destroy (scratch);
 			
 			IntPtr providers = apr.array_make (pool, 16, IntPtr.Size);
 			IntPtr item;
@@ -490,14 +493,14 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			IntPtr localpool = newpool (pool);
 			try {
 				string pathorurl = NormalizePath (path, localpool);
-//				CheckError (svn.client_status (IntPtr.Zero, pathorurl, ref revision,
-//				                               collector.Func,
-//				                               IntPtr.Zero, descendDirs, 
-//				                               !changedItemsOnly, 
-//				                               remoteStatus,
-//				                               false,
-//				                               false,
-//				                               ctx, localpool));
+				CheckError (svn.client_status (IntPtr.Zero, pathorurl, ref revision,
+				                               collector.Func,
+				                               IntPtr.Zero, descendDirs, 
+				                               !changedItemsOnly, 
+				                               remoteStatus,
+				                               false,
+				                               false,
+				                               ctx, localpool));
 			} finally {
 				apr.pool_destroy (localpool);
 				TryEndOperation ();
@@ -701,7 +704,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			IntPtr localpool = newpool (pool);
 			try {
 				string pathorurl = NormalizePath (path, localpool);
-				CheckError (svn.client_add3 (pathorurl, (recurse), true, false, ctx, localpool));
+				CheckError (svn.client_add3 (pathorurl, recurse, true, false, ctx, localpool));
 			} finally {
 				apr.pool_destroy (localpool);
 				updatemonitor = null;

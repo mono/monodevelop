@@ -12,7 +12,7 @@ using MonoDevelop.Core;
 using MonoDevelop.VersionControl;
 using MonoDevelop.VersionControl.Subversion.Gui;
 
-using svn_revnum_t = System.Int32;
+using svn_revnum_t = System.IntPtr;
 using off_t = System.Int64;
 using size_t = System.Int32;
 
@@ -90,7 +90,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		
 		public abstract void stream_set_write (IntPtr stream, svn_readwrite_fn_t writer);
 		
-		public abstract IntPtr client_update (IntPtr result_rev, string path, ref Rev revision,
+		public abstract IntPtr client_update (svn_revnum_t result_rev, string path, ref Rev revision,
 		                                      bool recurse, IntPtr ctx, IntPtr pool);
 		
 		public abstract IntPtr client_delete (ref IntPtr commit_info_p, IntPtr apr_array_header_t_targets, 
@@ -145,6 +145,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		
 		public abstract IntPtr client_blame (string path, ref Rev rev_start, ref Rev rev_end, svn_client_blame_receiver_t receiver, IntPtr baton, IntPtr ctx, IntPtr pool);
 
+		public abstract IntPtr wc_context_create (out IntPtr svn_wc_context_t, IntPtr config, IntPtr result_pool, IntPtr scratch_pool);
+
 		// TODO: Check if intptr
 		public abstract IntPtr strerror (int statcode, byte[] buf, int bufsize);
 		
@@ -167,7 +169,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 				IsDirectory = ent.kind == svn_node_kind_t.Dir;
 				Size = ent.size;
 				HasProps = ent.has_props;
-				CreatedRevision = (int) ent.created_rev;
+				CreatedRevision = ent.created_rev;
 				Time = Epoch.AddTicks(ent.time * 10);
 				LastAuthor = ent.last_author;
 			}
@@ -454,15 +456,16 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 			public IntPtr repos_lock;
 			public IntPtr url;
 			public svn_revnum_t ood_last_cmt_rev;
-			public IntPtr ood_last_cmt_date;
+			public Int64 ood_last_cmt_date;
 			public svn_node_kind_t ood_kind;
-			public string ood_last_cmt_author;
+			public IntPtr ood_last_cmt_author;
 			public IntPtr tree_conflict;
 			[MarshalAs (UnmanagedType.Bool)] public bool file_external;
 			public svn_wc_status_kind pristine_text_status;
 			public svn_wc_status_kind pristine_prop_status;
 		}
-		
+
+		[StructLayout (LayoutKind.Sequential)]
 		public struct svn_lock_t {
 			public string path;
 			public string token;
@@ -525,7 +528,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 			Date,
 			Committed,
 			Previous,
-		    Base,
+			Base,
 			Working,
 			Head
 		}
