@@ -2,9 +2,9 @@
 // SvnUtilsTest.cs
 //
 // Author:
-//       root <${AuthorEmail}>
+//       Therzok <teromario@yahoo.com>
 //
-// Copyright (c) 2013 root
+// Copyright (c) 2013 Xamarin Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,27 +23,48 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
+using System.Diagnostics;
 using NUnit.Framework;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.ProgressMonitoring;
+using MonoDevelop.VersionControl.Subversion;
+using UnitTests;
 
 namespace MonoDevelop.VersionControl.Subversion
 {
 	[TestFixture]
-	public class SvnUtilsTest
+	public class SvnUtilsTest : TestBase
 	{
+		static readonly string url = "svn://localhost";
+		static readonly string daemon = "svnserve";
+		static readonly string arguments = "-dr ";
+		static readonly string port = "3690";
+
+		[SetUp]
+		public override void Setup () {
+			base.Setup ();
+		}
+
 		[Test]
 		public void TestThis ()
 		{
-			System.Diagnostics.Process process = new System.Diagnostics.Process ();
-			System.Diagnostics.ProcessStartInfo info = new System.Diagnostics.ProcessStartInfo ();
-			info.FileName = "svnserve";
-			info.Arguments = "-d --listen-port 1234";
+			Process process = new Process ();
+			ProcessStartInfo info = new ProcessStartInfo ();
+			FilePath path = new FilePath (FileService.CreateTempDirectory ());
+			info.FileName = daemon;
+			info.Arguments = arguments + path;
 			process.StartInfo = info;
-//			process.Start ();
-			SubversionRepository repo = new SubversionRepository (new Unix.SvnClient(),
-			                                                 "file:///home/therzok/work/svnrepo",
-			                                                 "file:///home/therzok/work/svnrepo");
-			repo.Update (repo.RootPath, true, new MonoDevelop.Ide.ProgressMonitoring.BaseProgressMonitor());
+			process.Start ();
+
+			SubversionRepository repo = new SubversionRepository (null,
+			                                                      url + ":" + port,
+			                                                      null);
+			repo.Checkout (path, true, new MessageDialogProgressMonitor ());
+			System.IO.Directory.Delete (path);
+//			Assert.True (System.IO.Directory.Exists (path + "/.svn"));
+//			repo.Update (repo.RootPath, true, new MonoDevelop.Ide.ProgressMonitoring.BaseProgressMonitor());
 		}
 	}
 }
