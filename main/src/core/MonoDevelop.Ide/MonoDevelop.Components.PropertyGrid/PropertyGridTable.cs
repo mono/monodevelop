@@ -371,11 +371,12 @@ namespace MonoDevelop.Components.PropertyGrid
 				if (r.IsCategory) {
 					var rh = h + CategoryTopBottomPadding*2;
 					ctx.Rectangle (0, y, Allocation.Width, rh);
-					Cairo.LinearGradient gr = new LinearGradient (0, y, 0, rh);
-					gr.AddColorStop (0, new Cairo.Color (248d/255d, 248d/255d, 248d/255d));
-					gr.AddColorStop (1, new Cairo.Color (240d/255d, 240d/255d, 240d/255d));
-					ctx.Pattern = gr;
-					ctx.Fill ();
+					using (var gr = new LinearGradient (0, y, 0, rh)) {
+						gr.AddColorStop (0, new Cairo.Color (248d/255d, 248d/255d, 248d/255d));
+						gr.AddColorStop (1, new Cairo.Color (240d/255d, 240d/255d, 240d/255d));
+						ctx.Pattern = gr;
+						ctx.Fill ();
+					}
 
 					if (lastCategory == null || lastCategory.Expanded || lastCategory.AnimatingExpand) {
 						ctx.MoveTo (0, y + 0.5);

@@ -158,40 +158,40 @@ namespace MonoDevelop.Components.Theming
 
 		public override void DrawColumnHighlight (Cairo.Context cr, Gdk.Rectangle alloc, Cairo.Color color)
 		{
-			Cairo.Color light_color = CairoExtensions.ColorShade (color, 1.6);
-			Cairo.Color dark_color = CairoExtensions.ColorShade (color, 1.3);
+			Color light_color = CairoExtensions.ColorShade (color, 1.6);
+			Color dark_color = CairoExtensions.ColorShade (color, 1.3);
 			
-			LinearGradient grad = new LinearGradient (alloc.X, alloc.Y, alloc.X, alloc.Bottom - 1);
-			grad.AddColorStop (0, light_color);
-			grad.AddColorStop (1, dark_color);
-			
-			cr.Pattern = grad;
-			cr.Rectangle (alloc.X + 1.5, alloc.Y + 1.5, alloc.Width - 3, alloc.Height - 2);
-			cr.Fill ();
-			grad.Destroy ();
+			using (var grad = new LinearGradient (alloc.X, alloc.Y, alloc.X, alloc.Bottom - 1)) {
+				grad.AddColorStop (0, light_color);
+				grad.AddColorStop (1, dark_color);
+				
+				cr.Pattern = grad;
+				cr.Rectangle (alloc.X + 1.5, alloc.Y + 1.5, alloc.Width - 3, alloc.Height - 2);
+				cr.Fill ();
+			}
 		}
 
 		public override void DrawHeaderBackground (Cairo.Context cr, Gdk.Rectangle alloc)
 		{
-			Cairo.Color gtk_background_color = Colors.GetWidgetColor (GtkColorClass.Background, StateType.Normal);
-			Cairo.Color light_color = CairoExtensions.ColorShade (gtk_background_color, 1.1);
-			Cairo.Color dark_color = CairoExtensions.ColorShade (gtk_background_color, 0.95);
+			Color gtk_background_color = Colors.GetWidgetColor (GtkColorClass.Background, StateType.Normal);
+			Color light_color = CairoExtensions.ColorShade (gtk_background_color, 1.1);
+			Color dark_color = CairoExtensions.ColorShade (gtk_background_color, 0.95);
 			
 			CairoCorners corners = CairoCorners.TopLeft | CairoCorners.TopRight;
 			
-			LinearGradient grad = new LinearGradient (alloc.X, alloc.Y, alloc.X, alloc.Bottom);
-			grad.AddColorStop (0, light_color);
-			grad.AddColorStop (0.75, dark_color);
-			grad.AddColorStop (0, light_color);
-			
-			cr.Pattern = grad;
-			CairoExtensions.RoundedRectangle (cr, alloc.X, alloc.Y, alloc.Width, alloc.Height, Context.Radius, corners);
-			cr.Fill ();
+			using (LinearGradient grad = new LinearGradient (alloc.X, alloc.Y, alloc.X, alloc.Bottom)) {
+				grad.AddColorStop (0, light_color);
+				grad.AddColorStop (0.75, dark_color);
+				grad.AddColorStop (0, light_color);
+				
+				cr.Pattern = grad;
+				CairoExtensions.RoundedRectangle (cr, alloc.X, alloc.Y, alloc.Width, alloc.Height, Context.Radius, corners);
+				cr.Fill ();
+			}
 			
 			cr.Color = border_color;
 			cr.Rectangle (alloc.X, alloc.Bottom, alloc.Width, BorderWidth);
 			cr.Fill ();
-			grad.Destroy ();
 		}
 
 		public override void DrawColumnHeaderFocus (Cairo.Context cr, Gdk.Rectangle alloc)
@@ -274,15 +274,15 @@ namespace MonoDevelop.Components.Theming
 				selection_fill_light.A = color.A;
 				selection_fill_dark.A = color.A;
 				
-				LinearGradient grad = new LinearGradient (x, y, x, y + height);
-				grad.AddColorStop (0, selection_fill_light);
-				grad.AddColorStop (0.4, selection_fill_dark);
-				grad.AddColorStop (1, selection_fill_light);
-				
-				cr.Pattern = grad;
-				CairoExtensions.RoundedRectangle (cr, x, y, width, height, Context.Radius, corners, true);
-				cr.Fill ();
-				grad.Destroy ();
+				using (LinearGradient grad = new LinearGradient (x, y, x, y + height)) {
+					grad.AddColorStop (0, selection_fill_light);
+					grad.AddColorStop (0.4, selection_fill_dark);
+					grad.AddColorStop (1, selection_fill_light);
+					
+					cr.Pattern = grad;
+					CairoExtensions.RoundedRectangle (cr, x, y, width, height, Context.Radius, corners, true);
+					cr.Fill ();
+				}
 			}
 			
 			if (filled && stroked) {

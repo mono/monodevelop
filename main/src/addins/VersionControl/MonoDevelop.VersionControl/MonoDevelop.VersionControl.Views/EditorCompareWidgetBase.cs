@@ -1049,15 +1049,15 @@ namespace MonoDevelop.VersionControl.Views
 			void FillGradient (Cairo.Context cr, double y, double h)
 			{
 				cr.Rectangle (0.5, y, Allocation.Width, h);
-				var grad = new Cairo.LinearGradient (0, y, Allocation.Width, y);
-				var col = (Mono.TextEditor.HslColor)Style.Base (StateType.Normal);
-				col.L *= 0.95;
-				grad.AddColorStop (0, col);
-				grad.AddColorStop (0.7, (Mono.TextEditor.HslColor)Style.Base (StateType.Normal));
-				grad.AddColorStop (1, col);
-				cr.Pattern = grad;
-				
-				cr.Fill ();
+				using (var grad = new Cairo.LinearGradient (0, y, Allocation.Width, y)) {
+					var col = (Mono.TextEditor.HslColor)Style.Base (StateType.Normal);
+					col.L *= 0.95;
+					grad.AddColorStop (0, col);
+					grad.AddColorStop (0.7, (Mono.TextEditor.HslColor)Style.Base (StateType.Normal));
+					grad.AddColorStop (1, col);
+					cr.Pattern = grad;
+					cr.Fill ();
+				}
 			}
 			
 			void DrawBar (Cairo.Context cr, double y, double h)
