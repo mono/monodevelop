@@ -244,45 +244,44 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			// 'username/password' creds and 'username' creds.
 			
 			item = apr.array_push (providers);
-			svn.client_get_simple_provider (out item, pool);
+			svn.client_get_simple_provider (item, pool);
 
 			item = apr.array_push (providers);
-			svn.client_get_username_provider (out item, pool);
+			svn.client_get_username_provider (item, pool);
 			
 			// The server-cert, client-cert, and client-cert-password providers
 			
 			item = apr.array_push (providers);
-			svn.client_get_ssl_server_trust_file_provider (out item, pool);
+			svn.client_get_ssl_server_trust_file_provider (item, pool);
 			
 			item = apr.array_push (providers);
-			svn.client_get_ssl_client_cert_file_provider (out item, pool);
+			svn.client_get_ssl_client_cert_file_provider (item, pool);
 			
 			item = apr.array_push (providers);
-			svn.client_get_ssl_client_cert_pw_file_provider (out item, pool);
+			svn.client_get_ssl_client_cert_pw_file_provider (item, pool);
 
 			// Two basic prompt providers: username/password, and just username.
 
 			item = apr.array_push (providers);
-			svn.client_get_simple_prompt_provider (out item, OnAuthSimplePromptCallback, IntPtr.Zero, 2, pool);
+			svn.client_get_simple_prompt_provider (item, OnAuthSimplePromptCallback, IntPtr.Zero, 2, pool);
 			
 			item = apr.array_push (providers);
-			svn.client_get_username_prompt_provider (out item, OnAuthUsernamePromptCallback, IntPtr.Zero, 2, pool);
+			svn.client_get_username_prompt_provider (item, OnAuthUsernamePromptCallback, IntPtr.Zero, 2, pool);
 			
 			// Three ssl prompt providers, for server-certs, client-certs,
 			// and client-cert-passphrases.
 			
 			item = apr.array_push (providers);
-			svn.client_get_ssl_server_trust_prompt_provider (out item, OnAuthSslServerTrustPromptCallback, IntPtr.Zero, pool);
+			svn.client_get_ssl_server_trust_prompt_provider (item, OnAuthSslServerTrustPromptCallback, IntPtr.Zero, pool);
 			
 			item = apr.array_push (providers);
-			svn.client_get_ssl_client_cert_prompt_provider (out item, OnAuthSslClientCertPromptCallback, IntPtr.Zero, 2, pool);
+			svn.client_get_ssl_client_cert_prompt_provider (item, OnAuthSslClientCertPromptCallback, IntPtr.Zero, 2, pool);
 			
 			item = apr.array_push (providers);
-			svn.client_get_ssl_client_cert_pw_prompt_provider (out item, OnAuthSslClientCertPwPromptCallback, IntPtr.Zero, 2, pool);
+			svn.client_get_ssl_client_cert_pw_prompt_provider (item, OnAuthSslClientCertPwPromptCallback, IntPtr.Zero, 2, pool);
 
 			// Create the authentication baton			
-			
-			svn.auth_open (out auth_baton, providers, pool); 
+			svn.auth_open (out auth_baton, providers, pool);
 			ctxstruct.auth_baton = auth_baton;
 			
 			Marshal.StructureToPtr (ctxstruct, ctx, false);
@@ -491,14 +490,14 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			IntPtr localpool = newpool (pool);
 			try {
 				string pathorurl = NormalizePath (path, localpool);
-				CheckError (svn.client_status (IntPtr.Zero, pathorurl, ref revision,
-				                               collector.Func,
-				                               IntPtr.Zero, descendDirs, 
-				                               !changedItemsOnly, 
-				                               remoteStatus,
-				                               false,
-				                               false,
-				                               ctx, localpool));
+//				CheckError (svn.client_status (IntPtr.Zero, pathorurl, ref revision,
+//				                               collector.Func,
+//				                               IntPtr.Zero, descendDirs, 
+//				                               !changedItemsOnly, 
+//				                               remoteStatus,
+//				                               false,
+//				                               false,
+//				                               ctx, localpool));
 			} finally {
 				apr.pool_destroy (localpool);
 				TryEndOperation ();

@@ -41,16 +41,16 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		public abstract void auth_open (out IntPtr auth_baton, IntPtr providers, IntPtr pool);
 		public abstract void auth_set_parameter (IntPtr auth_baton, string name, IntPtr value);
 		public abstract IntPtr auth_get_parameter (IntPtr auth_baton, string name);
-		public abstract void client_get_simple_provider (out IntPtr item, IntPtr pool);
-		public abstract void client_get_simple_prompt_provider (out IntPtr item, svn_auth_simple_prompt_func_t prompt_func, IntPtr prompt_batton, int retry_limit, IntPtr pool);
-		public abstract void client_get_username_provider (out IntPtr item, IntPtr pool);
-		public abstract void client_get_username_prompt_provider (out IntPtr item, svn_auth_username_prompt_func_t prompt_func, IntPtr prompt_batton, int retry_limit, IntPtr pool);
-		public abstract void client_get_ssl_server_trust_file_provider (out IntPtr item, IntPtr pool);
-		public abstract void client_get_ssl_client_cert_file_provider (out IntPtr item, IntPtr pool);
-		public abstract void client_get_ssl_client_cert_pw_file_provider (out IntPtr item, IntPtr pool);
-		public abstract void client_get_ssl_server_trust_prompt_provider (out IntPtr item, svn_auth_ssl_server_trust_prompt_func_t prompt_func, IntPtr prompt_batton, IntPtr pool);
-		public abstract void client_get_ssl_client_cert_prompt_provider (out IntPtr item, svn_auth_ssl_client_cert_prompt_func_t prompt_func, IntPtr prompt_batton, int retry_limit, IntPtr pool);
-		public abstract void client_get_ssl_client_cert_pw_prompt_provider (out IntPtr item, svn_auth_ssl_client_cert_pw_prompt_func_t prompt_func, IntPtr prompt_batton, int retry_limit, IntPtr pool);
+		public abstract void client_get_simple_provider (IntPtr item, IntPtr pool);
+		public abstract void client_get_simple_prompt_provider (IntPtr item, svn_auth_simple_prompt_func_t prompt_func, IntPtr prompt_batton, int retry_limit, IntPtr pool);
+		public abstract void client_get_username_provider (IntPtr item, IntPtr pool);
+		public abstract void client_get_username_prompt_provider (IntPtr item, svn_auth_username_prompt_func_t prompt_func, IntPtr prompt_batton, int retry_limit, IntPtr pool);
+		public abstract void client_get_ssl_server_trust_file_provider (IntPtr item, IntPtr pool);
+		public abstract void client_get_ssl_client_cert_file_provider (IntPtr item, IntPtr pool);
+		public abstract void client_get_ssl_client_cert_pw_file_provider (IntPtr item, IntPtr pool);
+		public abstract void client_get_ssl_server_trust_prompt_provider (IntPtr item, svn_auth_ssl_server_trust_prompt_func_t prompt_func, IntPtr prompt_batton, IntPtr pool);
+		public abstract void client_get_ssl_client_cert_prompt_provider (IntPtr item, svn_auth_ssl_client_cert_prompt_func_t prompt_func, IntPtr prompt_batton, int retry_limit, IntPtr pool);
+		public abstract void client_get_ssl_client_cert_pw_prompt_provider (IntPtr item, svn_auth_ssl_client_cert_pw_prompt_func_t prompt_func, IntPtr prompt_batton, int retry_limit, IntPtr pool);
 		
 		public abstract IntPtr client_version ();
 		

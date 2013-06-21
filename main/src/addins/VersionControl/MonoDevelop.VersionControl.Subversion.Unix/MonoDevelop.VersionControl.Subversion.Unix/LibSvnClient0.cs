@@ -72,54 +72,54 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 			return svn_auth_get_parameter (auth_baton, name);
 		}
 		
-		public override void client_get_simple_provider (out IntPtr item, IntPtr pool)
+		public override void client_get_simple_provider (IntPtr item, IntPtr pool)
 		{
-			svn_client_get_simple_provider (out item, pool);
+			svn_client_get_simple_provider (item, pool);
 		}
 		
-		public override void client_get_simple_prompt_provider (out IntPtr item, svn_auth_simple_prompt_func_t prompt_func, IntPtr prompt_batton, int retry_limit, IntPtr pool)
+		public override void client_get_simple_prompt_provider (IntPtr item, svn_auth_simple_prompt_func_t prompt_func, IntPtr prompt_batton, int retry_limit, IntPtr pool)
 		{
-			svn_client_get_simple_prompt_provider (out item, prompt_func, prompt_batton, retry_limit, pool);
+			svn_client_get_simple_prompt_provider (item, prompt_func, prompt_batton, retry_limit, pool);
 		}
 		
-		public override void client_get_username_provider (out IntPtr item, IntPtr pool)
+		public override void client_get_username_provider (IntPtr item, IntPtr pool)
 		{
-			svn_client_get_username_provider (out item, pool);
+			svn_client_get_username_provider (item, pool);
 		}
 		
-		public override void client_get_username_prompt_provider (out IntPtr item, svn_auth_username_prompt_func_t prompt_func, IntPtr prompt_batton, int retry_limit, IntPtr pool)
+		public override void client_get_username_prompt_provider (IntPtr item, svn_auth_username_prompt_func_t prompt_func, IntPtr prompt_batton, int retry_limit, IntPtr pool)
 		{
-			svn_client_get_username_prompt_provider (out item, prompt_func, prompt_batton, retry_limit, pool);
+			svn_client_get_username_prompt_provider (item, prompt_func, prompt_batton, retry_limit, pool);
 		}
 		
-		public override void client_get_ssl_server_trust_file_provider (out IntPtr item, IntPtr pool)
+		public override void client_get_ssl_server_trust_file_provider (IntPtr item, IntPtr pool)
 		{
-			svn_client_get_ssl_server_trust_file_provider (out item, pool);
+			svn_client_get_ssl_server_trust_file_provider (item, pool);
 		}
 		
-		public override void client_get_ssl_client_cert_file_provider (out IntPtr item, IntPtr pool)
+		public override void client_get_ssl_client_cert_file_provider (IntPtr item, IntPtr pool)
 		{
-			svn_client_get_ssl_client_cert_file_provider (out item, pool);
+			svn_client_get_ssl_client_cert_file_provider (item, pool);
 		}
 		
-		public override void client_get_ssl_client_cert_pw_file_provider (out IntPtr item, IntPtr pool)
+		public override void client_get_ssl_client_cert_pw_file_provider (IntPtr item, IntPtr pool)
 		{
-			svn_client_get_ssl_client_cert_pw_file_provider (out item, pool);
+			svn_client_get_ssl_client_cert_pw_file_provider (item, pool);
 		}
 		
-		public override void client_get_ssl_server_trust_prompt_provider (out IntPtr item, svn_auth_ssl_server_trust_prompt_func_t prompt_func, IntPtr prompt_batton, IntPtr pool)
+		public override void client_get_ssl_server_trust_prompt_provider (IntPtr item, svn_auth_ssl_server_trust_prompt_func_t prompt_func, IntPtr prompt_batton, IntPtr pool)
 		{
-			svn_client_get_ssl_server_trust_prompt_provider (out item, prompt_func, prompt_batton, pool);
+			svn_client_get_ssl_server_trust_prompt_provider (item, prompt_func, prompt_batton, pool);
 		}
 		
-		public override void client_get_ssl_client_cert_prompt_provider (out IntPtr item, svn_auth_ssl_client_cert_prompt_func_t prompt_func, IntPtr prompt_batton, int retry_limit, IntPtr pool)
+		public override void client_get_ssl_client_cert_prompt_provider (IntPtr item, svn_auth_ssl_client_cert_prompt_func_t prompt_func, IntPtr prompt_batton, int retry_limit, IntPtr pool)
 		{
-			svn_client_get_ssl_client_cert_prompt_provider (out item, prompt_func, prompt_batton, retry_limit, pool);
+			svn_client_get_ssl_client_cert_prompt_provider (item, prompt_func, prompt_batton, retry_limit, pool);
 		}
 		
-		public override void client_get_ssl_client_cert_pw_prompt_provider (out IntPtr item, svn_auth_ssl_client_cert_pw_prompt_func_t prompt_func, IntPtr prompt_batton, int retry_limit, IntPtr pool)
+		public override void client_get_ssl_client_cert_pw_prompt_provider (IntPtr item, svn_auth_ssl_client_cert_pw_prompt_func_t prompt_func, IntPtr prompt_batton, int retry_limit, IntPtr pool)
 		{
-			svn_client_get_ssl_client_cert_pw_prompt_provider (out item, prompt_func, prompt_batton, retry_limit, pool);
+			svn_client_get_ssl_client_cert_pw_prompt_provider (item, prompt_func, prompt_batton, retry_limit, pool);
 		}
 		
 		public override IntPtr client_version ()
@@ -311,16 +311,16 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		[DllImport(svnclientlib)] static extern void svn_auth_open (out IntPtr auth_baton, IntPtr providers, IntPtr pool);
 		[DllImport(svnclientlib)] static extern void svn_auth_set_parameter (IntPtr auth_baton, string name, IntPtr value);
 		[DllImport(svnclientlib)] static extern IntPtr svn_auth_get_parameter (IntPtr auth_baton, string name);
-		[DllImport(svnclientlib)] static extern void svn_client_get_simple_provider (out IntPtr item, IntPtr pool);
-		[DllImport(svnclientlib)] static extern void svn_client_get_simple_prompt_provider (out IntPtr item, svn_auth_simple_prompt_func_t prompt_func, IntPtr prompt_batton, int retry_limit, IntPtr pool);
-		[DllImport(svnclientlib)] static extern void svn_client_get_username_provider (out IntPtr item, IntPtr pool);
-		[DllImport(svnclientlib)] static extern void svn_client_get_username_prompt_provider (out IntPtr item, svn_auth_username_prompt_func_t prompt_func, IntPtr prompt_batton, int retry_limit, IntPtr pool);
-		[DllImport(svnclientlib)] static extern void svn_client_get_ssl_server_trust_file_provider (out IntPtr item, IntPtr pool);
-		[DllImport(svnclientlib)] static extern void svn_client_get_ssl_client_cert_file_provider (out IntPtr item, IntPtr pool);
-		[DllImport(svnclientlib)] static extern void svn_client_get_ssl_client_cert_pw_file_provider (out IntPtr item, IntPtr pool);
-		[DllImport(svnclientlib)] static extern void svn_client_get_ssl_server_trust_prompt_provider (out IntPtr item, svn_auth_ssl_server_trust_prompt_func_t prompt_func, IntPtr prompt_batton, IntPtr pool);
-		[DllImport(svnclientlib)] static extern void svn_client_get_ssl_client_cert_prompt_provider (out IntPtr item, svn_auth_ssl_client_cert_prompt_func_t prompt_func, IntPtr prompt_batton, int retry_limit, IntPtr pool);
-		[DllImport(svnclientlib)] static extern void svn_client_get_ssl_client_cert_pw_prompt_provider (out IntPtr item, svn_auth_ssl_client_cert_pw_prompt_func_t prompt_func, IntPtr prompt_batton, int retry_limit, IntPtr pool);
+		[DllImport(svnclientlib)] static extern void svn_client_get_simple_provider (IntPtr item, IntPtr pool);
+		[DllImport(svnclientlib)] static extern void svn_client_get_simple_prompt_provider (IntPtr item, svn_auth_simple_prompt_func_t prompt_func, IntPtr prompt_batton, int retry_limit, IntPtr pool);
+		[DllImport(svnclientlib)] static extern void svn_client_get_username_provider (IntPtr item, IntPtr pool);
+		[DllImport(svnclientlib)] static extern void svn_client_get_username_prompt_provider (IntPtr item, svn_auth_username_prompt_func_t prompt_func, IntPtr prompt_batton, int retry_limit, IntPtr pool);
+		[DllImport(svnclientlib)] static extern void svn_client_get_ssl_server_trust_file_provider (IntPtr item, IntPtr pool);
+		[DllImport(svnclientlib)] static extern void svn_client_get_ssl_client_cert_file_provider (IntPtr item, IntPtr pool);
+		[DllImport(svnclientlib)] static extern void svn_client_get_ssl_client_cert_pw_file_provider (IntPtr item, IntPtr pool);
+		[DllImport(svnclientlib)] static extern void svn_client_get_ssl_server_trust_prompt_provider (IntPtr item, svn_auth_ssl_server_trust_prompt_func_t prompt_func, IntPtr prompt_batton, IntPtr pool);
+		[DllImport(svnclientlib)] static extern void svn_client_get_ssl_client_cert_prompt_provider (IntPtr item, svn_auth_ssl_client_cert_prompt_func_t prompt_func, IntPtr prompt_batton, int retry_limit, IntPtr pool);
+		[DllImport(svnclientlib)] static extern void svn_client_get_ssl_client_cert_pw_prompt_provider (IntPtr item, svn_auth_ssl_client_cert_pw_prompt_func_t prompt_func, IntPtr prompt_batton, int retry_limit, IntPtr pool);
 		
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_version();
 		
