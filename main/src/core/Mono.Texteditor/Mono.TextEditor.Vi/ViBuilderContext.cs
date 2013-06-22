@@ -39,15 +39,20 @@ namespace Mono.TextEditor.Vi
 	/// Returns true if it handled the keystroke.
 	/// </summary>
 	public delegate bool ViBuilder (ViBuilderContext ctx);
-	
+	public delegate Action<ViEditor> EditorActionTransformer (Action<ViEditor> action);
+
 	public class ViBuilderContext
 	{
+
+		public static EditorActionTransformer DefaultTransformer = (Action<ViEditor> action) => action;
+
 		readonly ViEditor editor;
 		readonly List<ViKey> keys = new List<ViKey> ();
 		
 		ViBuilderContext (ViEditor editor)
 		{
 			this.editor = editor;
+			Transformer = DefaultTransformer;
 			Multiplier = 1;
 		}
 		
@@ -128,14 +133,16 @@ namespace Mono.TextEditor.Vi
 		public void RunAction (Action<ViEditor> action)
 		{
 			Completed = true;
+
+			Action<ViEditor> newaction = Transformer (action);
 			
 			//FALLBACK for builders that don't handler multipliers directly
 			//we cap these at 100, to reduce the length of time MD could be unresponsive
 			if (Multiplier > 1) {
 				for (int i = 0; i < System.Math.Min (100, Multiplier); i++)
-					action (editor);
+					newaction (editor);
 			} else {
-				action (editor);
+				newaction (editor);
 			}
 		}
 		
@@ -161,6 +168,21 @@ namespace Mono.TextEditor.Vi
 				_builder = value;
 			}
 		}
+
+		private EditorActionTransformer _transformer;
+		
+		public EditorActionTransformer Transformer {
+			get { return _transformer; }
+			set {
+				if (_transformer == value)
+					return;
+				if (value == null)
+					throw new ArgumentException ("transformer cannot be null");
+				if (Completed)
+					throw new InvalidOperationException ("transformer cannot be set after context is completed");
+				_transformer = value;
+			}
+		}
 		
 		public ViKey LastKey {
 			get { return Keys[Keys.Count - 1]; }
@@ -178,7 +200,7 @@ namespace Mono.TextEditor.Vi
 			normalBuilder = 
 				ViBuilders.RegisterBuilder (
 					ViBuilders.MultiplierBuilder (
-						ViBuilders.First (normalActions.Builder, motions.Builder, nonCharMotions.Builder)));
+						ViBuilders.First (normalActions.Builder, motions.Builder, nonCharMotions.Builder, editActions.Builder)));
 			insertActions = ViBuilders.First (nonCharMotions.Builder, insertEditActions.Builder);
 		}
 		
@@ -279,7 +301,11 @@ namespace Mono.TextEditor.Vi
 			{ new ViKey (ModifierType.ShiftMask,   Key.Tab),       MiscActions.RemoveTab },
 			{ new ViKey (ModifierType.ShiftMask,   Key.BackSpace),       DeleteActions.Backspace },
 		};
-		
+
+		static ViCommandMap editActions = new ViCommandMap () {
+			{ 'd', DeleteActionFromMoveAction, motions }
+		};
+
 		static bool Insert (ViBuilderContext ctx)
 		{
 			ctx.RunAction ((ViEditor e) => e.SetMode (ViEditorMode.Insert));
@@ -317,6 +343,16 @@ namespace Mono.TextEditor.Vi
       ctx.RunAction ((ViEditor e) => CaretMoveActions.LineFirstNonWhitespace (e.Data));
       return true;
     }
+
+		public static Action<ViEditor> DeleteActionFromMoveAction (Action<ViEditor> moveAction)
+		{
+			return delegate (ViEditor e) {
+				SelectionActions.StartSelection (e.Data);
+				moveAction (e);
+				SelectionActions.EndSelection (e.Data);
+				e.Data.DeleteSelectedText ();
+			};
+		}
 	}
 }
 
