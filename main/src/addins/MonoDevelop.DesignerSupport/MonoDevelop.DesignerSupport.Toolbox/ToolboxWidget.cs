@@ -771,13 +771,17 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		protected override void OnSetScrollAdjustments (Adjustment hAdjustement, Adjustment vAdjustement)
 		{
 			this.hAdjustement = hAdjustement;
-			this.hAdjustement.ValueChanged += delegate {
-				this.QueueDraw ();
-			};
+			if (this.hAdjustement != null) {
+				this.hAdjustement.ValueChanged += delegate {
+					this.QueueDraw ();
+				};
+			}
 			this.vAdjustement = vAdjustement;
-			this.vAdjustement.ValueChanged += delegate {
-				this.QueueDraw ();
-			};
+			if (this.vAdjustement != null) {
+				this.vAdjustement.ValueChanged += delegate {
+					this.QueueDraw ();
+				};
+			}
 		}
 		#endregion
 		
