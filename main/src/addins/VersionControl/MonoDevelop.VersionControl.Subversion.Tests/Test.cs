@@ -29,23 +29,17 @@ using System.Diagnostics;
 using NUnit.Framework;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.ProgressMonitoring;
-using MonoDevelop.VersionControl.Subversion;
-using UnitTests;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl.Subversion
 {
 	[TestFixture]
-	public class SvnUtilsTest : TestBase
+	public class SvnUtilsTest
 	{
 		static readonly string url = "svn://localhost";
 		static readonly string daemon = "svnserve";
 		static readonly string arguments = "-dr ";
 		static readonly string port = "3690";
-
-		[SetUp]
-		public override void Setup () {
-			base.Setup ();
-		}
 
 		[Test]
 		public void TestThis ()
@@ -57,14 +51,16 @@ namespace MonoDevelop.VersionControl.Subversion
 			info.Arguments = arguments + path;
 			process.StartInfo = info;
 			process.Start ();
+/*			VersionControlService service = new VersionControlService ();
+			Assert.True (service != null);
 
 			SubversionRepository repo = new SubversionRepository (null,
 			                                                      url + ":" + port,
 			                                                      null);
-			repo.Checkout (path, true, new MessageDialogProgressMonitor ());
+			repo.Checkout (path, true, new MessageDialogProgressMonitor ());*/
 			System.IO.Directory.Delete (path);
-//			Assert.True (System.IO.Directory.Exists (path + "/.svn"));
-//			repo.Update (repo.RootPath, true, new MonoDevelop.Ide.ProgressMonitoring.BaseProgressMonitor());
+			//			Assert.True (System.IO.Directory.Exists (path + "/.svn"));
+			//			repo.Update (repo.RootPath, true, new MonoDevelop.Ide.ProgressMonitoring.BaseProgressMonitor());
 		}
 	}
 }
