@@ -123,27 +123,17 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (project.Files.Count > 500)
 				return true;
 
-			string folder = ((ProjectFolder) dataObject).Path;
-			string folderPrefix = folder + Path.DirectorySeparatorChar;
+			var folder = ((ProjectFolder) dataObject).Path;
 
-			foreach (ProjectFile file in project.Files) {
-				string dir;
+			foreach (var file in project.Files) {
+				FilePath path;
 
-				if (file.Subtype != Subtype.Directory) {
-					if (file.DependsOnFile != null)
-						continue;
+				if (file.Subtype != Subtype.Directory)
+					path = file.IsLink ? project.BaseDirectory.Combine (file.ProjectVirtualPath) : file.FilePath;
+				else
+					path = file.FilePath;
 
-					dir = file.IsLink
-						? project.BaseDirectory.Combine (file.ProjectVirtualPath).ParentDirectory
-							: file.FilePath.ParentDirectory;
-
-					if (dir == folder)
-						return true;
-				} else {
-					dir = file.Name;
-				}
-
-				if (dir.StartsWith (folderPrefix, StringComparison.Ordinal))
+				if (path.IsChildPathOf (folder))
 					return true;
 			}
 
