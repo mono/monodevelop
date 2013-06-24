@@ -32,11 +32,14 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
+using System.Threading;
 
 namespace MonoDevelop.Refactoring
 {
     public static class ExtensionMethods
     {
+		static CancellationTokenSource sharedTokenSource = new CancellationTokenSource ();
+
 		class ResolverAnnotation
 		{
 			public Task<CSharpAstResolver> Task;
@@ -68,17 +71,21 @@ namespace MonoDevelop.Refactoring
 					return resolverAnnotation.Task;
 				document.RemoveAnnotations<ResolverAnnotation> ();
 			}
-
+			sharedTokenSource.Cancel ();
+			sharedTokenSource = new CancellationTokenSource ();
+			var token = sharedTokenSource.Token;
 			var resolveTask = Task.Factory.StartNew (delegate {
 				try {
 					var result = new CSharpAstResolver (compilation, unit, parsedFile);
-					result.ApplyNavigator (new ConstantModeResolveVisitorNavigator (ResolveVisitorNavigationMode.Resolve, null));
+					result.ApplyNavigator (new ConstantModeResolveVisitorNavigator (ResolveVisitorNavigationMode.Resolve, null), token);
 					return result;
+				} catch (OperationCanceledException) {
+					return null;
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while creating the resolver.", e);
 					return null;
 				}
-			});
+			}, token);
 			document.AddAnnotation (new ResolverAnnotation {
 				Task = resolveTask,
 				ParsedFile = parsedFile
