@@ -260,7 +260,7 @@ namespace MonoDevelop.VersionControl.Subversion
 						FilePath parentDir = path.CanonicalPath;
 						do {
 							parentDir = parentDir.ParentDirectory;
-							if (Directory.Exists (SubversionVersionControl.GetDirectoryDotSvn (parentDir)))
+							if (IsVersioned (parentDir))
 								break;
 							dirChain.Add (parentDir);
 						}
