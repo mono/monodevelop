@@ -1,5 +1,5 @@
 //
-// SvnUtilsTest.cs
+// RepositoryTests.cs
 //
 // Author:
 //       Therzok <teromario@yahoo.com>
