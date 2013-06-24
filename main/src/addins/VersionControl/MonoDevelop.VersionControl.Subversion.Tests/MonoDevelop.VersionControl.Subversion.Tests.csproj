@@ -9,6 +9,8 @@
     <OutputType>Library</OutputType>
     <RootNamespace>MonoDevelop.VersionControl.Subversion.Tests</RootNamespace>
     <AssemblyName>MonoDevelop.VersionControl.Subversion.Tests</AssemblyName>
+    <TestRunnerCommand>..\..\..\..\build\bin\mdtool.exe</TestRunnerCommand>
+    <TestRunnerArgs>run-md-tests</TestRunnerArgs>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -18,42 +20,33 @@
     <DefineConstants>DEBUG;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>full</DebugType>
-    <Optimize>true</Optimize>
+    <DebugType>none</DebugType>
+    <Optimize>False</Optimize>
     <OutputPath>..\..\..\..\build\tests</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="nunit.framework">
       <Private>False</Private>
+      <HintPath>..\..\NUnit\lib\nunit.framework.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.core, Version=2.6.0.12051, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
+    <Reference Include="nunit.core">
+      <HintPath>..\..\NUnit\lib\nunit.core.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Test.cs" />
-    <Compile Include="AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
       <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
       <Name>MonoDevelop.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
-      <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
-      <Name>MonoDevelop.Ide</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MonoDevelop.VersionControl\MonoDevelop.VersionControl.csproj">
-      <Project>{19DE0F35-D204-4FD8-A553-A19ECE05E24D}</Project>
-      <Name>MonoDevelop.VersionControl</Name>
     </ProjectReference>
     <ProjectReference Include="..\MonoDevelop.VersionControl.Subversion\MonoDevelop.VersionControl.Subversion.csproj">
       <Project>{183E084F-2C3B-4A6D-A8CE-6CDF3DC499AC}</Project>

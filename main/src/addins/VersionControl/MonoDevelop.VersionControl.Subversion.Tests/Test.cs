@@ -28,10 +28,8 @@ using System;
 using System.Diagnostics;
 using NUnit.Framework;
 using MonoDevelop.Core;
-using MonoDevelop.Ide.ProgressMonitoring;
-using MonoDevelop.Ide;
 
-namespace MonoDevelop.VersionControl.Subversion
+namespace MonoDevelop.VersionControl.Subversion.Tests
 {
 	[TestFixture]
 	public class SvnUtilsTest
@@ -44,13 +42,13 @@ namespace MonoDevelop.VersionControl.Subversion
 		[Test]
 		public void TestThis ()
 		{
-			Process process = new Process ();
+/*			Process process = new Process ();
 			ProcessStartInfo info = new ProcessStartInfo ();
 			FilePath path = new FilePath (FileService.CreateTempDirectory ());
 			info.FileName = daemon;
 			info.Arguments = arguments + path;
 			process.StartInfo = info;
-			process.Start ();
+			process.Start ();*/
 /*			VersionControlService service = new VersionControlService ();
 			Assert.True (service != null);
 
@@ -58,7 +56,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			                                                      url + ":" + port,
 			                                                      null);
 			repo.Checkout (path, true, new MessageDialogProgressMonitor ());*/
-			System.IO.Directory.Delete (path);
+//			System.IO.Directory.Delete (path);
 			//			Assert.True (System.IO.Directory.Exists (path + "/.svn"));
 			//			repo.Update (repo.RootPath, true, new MonoDevelop.Ide.ProgressMonitoring.BaseProgressMonitor());
 		}
