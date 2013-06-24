@@ -119,7 +119,7 @@ namespace MonoDevelop.SourceEditor
 				foreach (var layout in marker.Layouts) {
 					g.Save ();
 					g.Translate (x, y);
-					g.Color = marker.TextColor.Color;
+					g.Color = marker.TagColor.SecondColor;
 					g.ShowLayout (layout.Layout);
 					g.Restore ();
 					y += layout.Height;

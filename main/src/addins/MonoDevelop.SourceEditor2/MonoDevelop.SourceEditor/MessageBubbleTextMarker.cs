@@ -183,12 +183,6 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		internal AmbientColor TextColor {
-			get {
-				return isError ? editor.ColorStyle.MessageBubbleErrorTagText : editor.ColorStyle.MessageBubbleWarningTagText;
-			}
-		}
-
 		internal AmbientColor TagColor {
 			get {
 				return isError ? editor.ColorStyle.MessageBubbleErrorTag : editor.ColorStyle.MessageBubbleWarningTag;
@@ -198,6 +192,18 @@ namespace MonoDevelop.SourceEditor
 		internal AmbientColor LineColor {
 			get {
 				return isError ? editor.ColorStyle.MessageBubbleErrorLine : editor.ColorStyle.MessageBubbleWarningLine;
+			}
+		}
+
+		internal AmbientColor CounterColor {
+			get {
+				return isError ? editor.ColorStyle.MessageBubbleErrorCounter : editor.ColorStyle.MessageBubbleWarningCounter;
+			}
+		}
+
+		internal AmbientColor IconMarginColor {
+			get {
+				return isError ? editor.ColorStyle.MessageBubbleErrorIconMargin : editor.ColorStyle.MessageBubbleWarningIconMargin;
 			}
 		}
 
@@ -379,14 +385,14 @@ namespace MonoDevelop.SourceEditor
 
 			if (errorCounterWidth > 0 && errorCountLayout != null) {
 				g.RoundedRectangle (sx + width - errorCounterWidth - editor.LineHeight / 2, y + 2, errorCounterWidth, editor.LineHeight - 4, editor.LineHeight / 2 - 3);
-				g.Color = TextColor.Color;
+				g.Color = CounterColor.Color;
 				g.Fill ();
 
 				g.Save ();
 				int ew, eh;
 				errorCountLayout.GetPixelSize (out ew, out eh);
 				g.Translate (sx + width - errorCounterWidth - editor.LineHeight / 2 + (errorCounterWidth - ew) / 2, y + 1);
-				g.Color = TagColor.Color;
+				g.Color = CounterColor.SecondColor;
 				g.ShowLayout (errorCountLayout);
 				g.Restore ();
 			}
@@ -394,7 +400,7 @@ namespace MonoDevelop.SourceEditor
 			if (errorCounterWidth <= 0 || errorCountLayout == null || !hideText) {
 				g.Save ();
 				g.Translate (sx + editor.LineHeight / 2, y + (editor.LineHeight - layouts [0].Height) / 2 + layouts [0].Height % 2);
-				g.Color = TextColor.Color;
+				g.Color = TagColor.SecondColor;
 				g.ShowLayout (drawLayout);
 				g.Restore ();
 			}

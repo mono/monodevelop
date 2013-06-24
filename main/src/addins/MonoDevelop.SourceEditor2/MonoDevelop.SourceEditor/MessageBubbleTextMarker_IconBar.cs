@@ -35,12 +35,12 @@ namespace MonoDevelop.SourceEditor
 		void IIconBarMarker.DrawBackground (TextEditor ed, Cairo.Context cr, DocumentLine line, int lineNumber, double x, double y, double width, double height)
 		{
 			cr.Rectangle (x, y, width, height);
-			cr.Color = LineColor.SecondColor;
+			cr.Color = IconMarginColor.Color;
 			cr.Fill ();
 
 			cr.MoveTo (x + width - 0.5, y);
 			cr.LineTo (x + width - 0.5, y + height);
-			cr.Color = LineColor.BorderColor;
+			cr.Color = IconMarginColor.BorderColor;
 			cr.Stroke ();
 
 			if (cache.CurrentSelectedTextMarker != null && cache.CurrentSelectedTextMarker != this) {
