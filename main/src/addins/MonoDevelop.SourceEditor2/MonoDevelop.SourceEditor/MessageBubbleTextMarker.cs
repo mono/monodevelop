@@ -132,6 +132,15 @@ namespace MonoDevelop.SourceEditor
 //			fitsInSameLine = editor.TextViewMargin.XOffset + textWidth + LayoutWidth + cache.errorPixbuf.Width + border + editor.LineHeight / 2 < editor.Allocation.Width;
 //		}
 
+		public override TextLineMarkerFlags Flags {
+			get {
+				if (lineSegment != null && lineSegment.Markers.Any (m => m is DebugTextMarker)) 
+					return TextLineMarkerFlags.None;
+
+				return TextLineMarkerFlags.DrawsSelection;
+			}
+		}
+
 		string initialText;
 		bool isError;
 		internal MessageBubbleTextMarker (MessageBubbleCache cache, Task task, DocumentLine lineSegment, bool isError, string errorMessage)
@@ -143,7 +152,6 @@ namespace MonoDevelop.SourceEditor
 			this.IsVisible = true;
 			this.lineSegment = lineSegment;
 			this.initialText = editor.Document.GetTextAt (lineSegment);
-			this.Flags = TextLineMarkerFlags.DrawsSelection;
 			this.isError = isError;
 			AddError (task, isError, errorMessage);
 //			cache.Changed += (sender, e) => CalculateLineFit (editor, lineSegment);

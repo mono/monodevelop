@@ -41,8 +41,7 @@ namespace MonoDevelop.SourceEditor
 			bool markerShouldDrawnAsHidden = cache.CurrentSelectedTextMarker != null && cache.CurrentSelectedTextMarker != this;
 
 			if (metrics.LineSegment.Markers.Any (m => m is DebugTextMarker))
-				markerShouldDrawnAsHidden = true;
-
+				return true;
 
 			EnsureLayoutCreated (editor);
 			double x = editor.TextViewMargin.XOffset;
