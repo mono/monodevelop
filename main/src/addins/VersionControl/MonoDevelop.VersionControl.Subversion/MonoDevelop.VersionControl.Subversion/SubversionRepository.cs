@@ -245,6 +245,7 @@ namespace MonoDevelop.VersionControl.Subversion
 						// Copy the file over the old one and clean up
 						File.Copy (tmp, path, true);
 						File.Delete (tmp);
+						continue;
 					}
 				}
 				else {
@@ -275,8 +276,8 @@ namespace MonoDevelop.VersionControl.Subversion
 						}
 						VersionControlService.NotifyFileStatusChanged (args);
 					}
-					Svn.Add (path, recurse, monitor);
 				}
+				Svn.Add (path, recurse, monitor);
 			}
 		}
 		
