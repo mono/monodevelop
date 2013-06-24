@@ -272,7 +272,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		}
 		// Native Interop
 		[StructLayout(LayoutKind.Sequential)]
-		public struct svn_client_ctx_t_1_7 {
+		public struct svn_client_ctx_t {
 			public IntPtr auth_baton;
 			public svn_wc_notify_func_t NotifyFunc;
 			public IntPtr notify_baton;
@@ -296,30 +296,6 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 			public svn_wc_conflict_resolver_func2_t conflict_func2;
 			public IntPtr conflict_baton2;
 			public IntPtr wc_ctx;
-		}
-
-		[StructLayout(LayoutKind.Sequential)]
-		public struct svn_client_ctx_t {
-			public IntPtr auth_baton;
-			public svn_wc_notify_func_t NotifyFunc;
-			public IntPtr notify_baton;
-			public svn_client_get_commit_log_t LogMsgFunc;
-			public IntPtr logmsg_baton;
-			public IntPtr config;
-			public svn_cancel_func_t cancel_func;
-			public IntPtr cancel_baton;
-			public svn_wc_notify_func2_t NotifyFunc2;
-			public IntPtr notify_baton2;
-			public svn_client_get_commit_log2_t LogMsgFunc2;
-			public IntPtr log_msg_baton2;
-			public svn_ra_progress_notify_func_t progress_func;
-			public IntPtr progress_baton;
-			public svn_client_get_commit_log3_t LogMsgFunc3;
-			public IntPtr log_msg_baton3;
-			public IntPtr mimetypes_map;
-			public svn_wc_conflict_resolver_func_t conflict_func;
-			public IntPtr conflict_baton;
-			public IntPtr client_name;
 		}
 		
 		[StructLayout(LayoutKind.Sequential)]

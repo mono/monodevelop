@@ -194,7 +194,6 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 		// retain this so the delegates aren't GC'ed
 		LibSvnClient.svn_client_ctx_t ctxstruct;
-		LibSvnClient.svn_client_ctx_t_1_7 ctxstruct_1_7;
 
 		static bool IsBinary (byte[] buffer, long length)
 		{
@@ -233,20 +232,15 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			// I don't use references to the structure itself in the API
 			// calls because it needs to be allocated by SVN.  I hope
 			// this doesn't cause any memory leaks.
-			if (pre_1_7) {
-				ctxstruct = new LibSvnClient.svn_client_ctx_t ();
-				ctxstruct.NotifyFunc2 = new LibSvnClient.svn_wc_notify_func2_t (svn_wc_notify_func_t_impl);
-				ctxstruct.LogMsgFunc = new LibSvnClient.svn_client_get_commit_log_t (svn_client_get_commit_log_impl);
-				// Load user and system configuration
-				svn.config_get_config (ref ctxstruct.config, null, pool);
-			} else {
+			ctxstruct = new LibSvnClient.svn_client_ctx_t ();
+			ctxstruct.NotifyFunc2 = new LibSvnClient.svn_wc_notify_func2_t (svn_wc_notify_func_t_impl);
+			ctxstruct.LogMsgFunc = new LibSvnClient.svn_client_get_commit_log_t (svn_client_get_commit_log_impl);
+			// Load user and system configuration
+			svn.config_get_config (ref ctxstruct.config, null, pool);
+
+			if (!pre_1_7) {
 				IntPtr scratch = newpool (IntPtr.Zero);
-				ctxstruct_1_7 = new LibSvnClient.svn_client_ctx_t_1_7 ();
-				ctxstruct_1_7.NotifyFunc2 = new LibSvnClient.svn_wc_notify_func2_t (svn_wc_notify_func_t_impl);
-				ctxstruct_1_7.LogMsgFunc = new LibSvnClient.svn_client_get_commit_log_t (svn_client_get_commit_log_impl);
-				// Load user and system configuration
-				svn.config_get_config (ref ctxstruct_1_7.config, null, pool);
-				svn.wc_context_create (out ctxstruct_1_7.wc_ctx, ctxstruct_1_7.config, pool, scratch);
+				svn.wc_context_create (out ctxstruct.wc_ctx, ctxstruct.config, pool, scratch);
 				apr.pool_destroy (scratch);
 			}
 
@@ -296,13 +290,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			// Create the authentication baton			
 			svn.auth_open (out auth_baton, providers, pool);
 
-			if (pre_1_7) {
-				ctxstruct.auth_baton = auth_baton;
-				Marshal.StructureToPtr (ctxstruct, ctx, false);
-			} else {
-				ctxstruct_1_7.auth_baton = auth_baton;
-				Marshal.StructureToPtr (ctxstruct_1_7, ctx, false);
-			}
+			ctxstruct.auth_baton = auth_baton;
+			Marshal.StructureToPtr (ctxstruct, ctx, false);
 		}
 		
 		public void Dispose ()
