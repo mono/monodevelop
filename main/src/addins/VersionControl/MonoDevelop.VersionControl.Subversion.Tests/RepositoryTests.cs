@@ -24,39 +24,48 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using MonoDevelop.Core;
+using MonoDevelop.Ide.ProgressMonitoring;
+using MonoDevelop.VersionControl.Subversion;
+using NUnit.Framework;
 using System;
 using System.Diagnostics;
-using NUnit.Framework;
-using MonoDevelop.Core;
+using System.IO;
 
 namespace MonoDevelop.VersionControl.Subversion.Tests
 {
 	[TestFixture]
 	public class SvnUtilsTest
 	{
-		static readonly string url = "svn://localhost";
-		static readonly string daemon = "svnserve";
-		static readonly string arguments = "-dr ";
-		static readonly string port = "3690";
-
 		[Test]
 		public void TestThis ()
 		{
-/*			Process process = new Process ();
-			ProcessStartInfo info = new ProcessStartInfo ();
-			FilePath path = new FilePath (FileService.CreateTempDirectory ());
-			info.FileName = daemon;
-			info.Arguments = arguments + path;
-			process.StartInfo = info;
-			process.Start ();*/
-/*			VersionControlService service = new VersionControlService ();
-			Assert.True (service != null);
+			// Generate directories and a svn util.
+			FilePath svnRoot = new FilePath (FileService.CreateTempDirectory ());
+			FilePath svnCheckout = new FilePath (FileService.CreateTempDirectory ());
+			Unix.UnixSvnBackend backend = new Unix.UnixSvnBackend ();
 
-			SubversionRepository repo = new SubversionRepository (null,
-			                                                      url + ":" + port,
-			                                                      null);
-			repo.Checkout (path, true, new MessageDialogProgressMonitor ());*/
-//			System.IO.Directory.Delete (path);
+			// Create host.
+			Process process = new Process ();
+			ProcessStartInfo info = new ProcessStartInfo ();
+			info.FileName = "svnserve";
+			info.Arguments = "-dr" + svnRoot;
+			process.StartInfo = info;
+			process.Start ();
+			// Create repo in "repo".
+			process = new Process ();
+			info = new ProcessStartInfo ();
+			info.FileName = "svnadmin";
+			info.Arguments = "create " + svnRoot + Path.DirectorySeparatorChar + "repo";
+			process.StartInfo = info;
+			process.Start ();
+
+			backend.Checkout ("svn://localhost:3690/repo",
+			                  svnCheckout, SvnRevision.Head,
+			                  true, new BaseProgressMonitor ());
+
+			Directory.Delete (svnRoot);
+			Directory.Delete (svnCheckout);
 			//			Assert.True (System.IO.Directory.Exists (path + "/.svn"));
 			//			repo.Update (repo.RootPath, true, new MonoDevelop.Ide.ProgressMonitoring.BaseProgressMonitor());
 		}
