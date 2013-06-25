@@ -220,7 +220,7 @@ namespace MonoDevelop.Ide.CustomTools
 			}
 		}
 		
-		public static void HandleRename (ProjectFileRenamedEventArgs e)
+		static void HandleRename (ProjectFileRenamedEventArgs e)
 		{
 			foreach (ProjectFileEventInfo args in e) {
 				var file = args.ProjectFile;
