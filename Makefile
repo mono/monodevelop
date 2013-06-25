@@ -77,6 +77,13 @@ dist: update_submodules remove-stale-tarballs dist-recursive
 	@cd tarballs && tar -cjf monodevelop-$(PACKAGE_VERSION).tar.bz2 monodevelop-$(PACKAGE_VERSION)
 	@cd tarballs && rm -rf monodevelop-$(PACKAGE_VERSION)
 
+aot:
+	for i in main/build/bin/*.dll; do mono --aot $$i; done
+	for i in main/build/bin/*/*.dll; do mono --aot $$i; done
+	for i in main/build/AddIns/*.dll; do mono --aot $$i; done
+	for i in main/build/AddIns/*/*.dll; do mono --aot $$i; done
+	for i in main/build/AddIns/*/*/*.dll; do mono --aot $$i; done
+
 run:
 	cd main && $(MAKE) run
 
