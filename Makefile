@@ -78,10 +78,10 @@ dist: update_submodules remove-stale-tarballs dist-recursive
 	@cd tarballs && rm -rf monodevelop-$(PACKAGE_VERSION)
 
 aot:
-	for i in main/build/bin/*.dll; do mono --aot $$i; done
-	for i in main/build/AddIns/*.dll; do mono --aot $$i; done
-	for i in main/build/AddIns/*/*.dll; do mono --aot $$i; done
-	for i in main/build/AddIns/*/*/*.dll; do mono --aot $$i; done
+	@for i in main/build/bin/*.dll; do (mono --aot $$i && echo AOT successful: $$i) || (echo AOT failed: $$i); done
+	@for i in main/build/AddIns/*.dll; do (mono --aot $$i && echo AOT successful: $$i) || (echo AOT failed: $$i); done
+	@for i in main/build/AddIns/*/*.dll; do (mono --aot $$i && echo AOT successful: $$i) || (echo AOT failed: $$i); done
+	@for i in main/build/AddIns/*/*/*.dll; do (mono --aot $$i && echo AOT successful: $$i) || (echo AOT failed: $$i); done
 
 run:
 	cd main && $(MAKE) run
