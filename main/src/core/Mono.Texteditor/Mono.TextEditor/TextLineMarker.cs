@@ -116,6 +116,19 @@ namespace Mono.TextEditor
 		{
 			return baseStyle;
 		}
+
+		/// <summary>
+		/// Draws the background of the text.
+		/// </summary>
+		/// <returns><c>true</c>, if background was drawn, <c>false</c> otherwise.</returns>
+		/// <param name="editor">The editor.</param>
+		/// <param name="cr">The cairo context.</param>
+		/// <param name="y">The y coordinate.</param>
+		/// <param name="metrics">The line metrics.</param>
+		public virtual bool DrawBackground (TextEditor editor, Cairo.Context cr, double y, LineMetrics metrics)
+		{
+			return false;
+		}
 	}
 	
 	public enum UrlType {
@@ -259,6 +272,7 @@ namespace Mono.TextEditor
 	/// <summary>
 	/// A specialized interface to draw text backgrounds.
 	/// </summary>
+	[Obsolete("This is obsolete - TextLineMarker now handles this")]
 	public interface IBackgroundMarker
 	{
 		/// <summary>
@@ -267,10 +281,10 @@ namespace Mono.TextEditor
 		/// <returns>
 		/// true, when the text view should draw the text, false when the text view should not draw the text.
 		/// </returns>
-		bool DrawBackground (TextEditor editor, Cairo.Context cr, double y, LineMetrics metrics, ref bool drawBg);
+		bool DrawBackground (TextEditor Editor, Cairo.Context cr, TextViewMargin.LayoutWrapper layout, int selectionStart, int selectionEnd, int startOffset, int endOffset, double y, double startXPos, double endXPos, ref bool drawBg);
 	}
 
-	public class LineBackgroundMarker: TextLineMarker, IBackgroundMarker
+	public class LineBackgroundMarker: TextLineMarker
 	{
 		Cairo.Color color;
 		
@@ -278,10 +292,9 @@ namespace Mono.TextEditor
 		{
 			this.color = color;
 		}
-		
-		public bool DrawBackground  (TextEditor editor, Cairo.Context cr, double y, LineMetrics metrics, ref bool drawBg)
+
+		public override bool DrawBackground (TextEditor editor, Cairo.Context cr, double y, LineMetrics metrics)
 		{
-			drawBg = false;
 			if (metrics.SelectionStart > 0)
 				return true;
 			cr.Color = color;

@@ -168,7 +168,6 @@
     <Compile Include="MonoDevelop.SourceEditor\FileRegistry.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SearchAndReplaceOptions.cs" />
     <Compile Include="MonoDevelop.SourceEditor\ErrorText.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\MessageBubbleTextMarker_TextBackground.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

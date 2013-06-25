@@ -246,7 +246,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		}
 
 		
-		public class UsageMarker : TextLineMarker, IBackgroundMarker
+		public class UsageMarker : TextLineMarker
 		{
 			List<TextSegment> usages = new List<TextSegment> ();
 
@@ -258,18 +258,17 @@ namespace MonoDevelop.CSharp.Highlighting
 			{
 				return usages.Any (u => u.Offset <= offset && offset <= u.EndOffset);
 			}
-			
-			public bool DrawBackground (TextEditor editor, Cairo.Context cr, double y, LineMetrics metrics, ref bool drawBg)
+
+			public override bool DrawBackground (TextEditor editor, Cairo.Context cr, double y, LineMetrics metrics)
 			{
-				drawBg = false;
 				if (metrics.SelectionStart >= 0 || editor.CurrentMode is TextLinkEditMode || editor.TextViewMargin.SearchResultMatchCount > 0)
-					return true;
+					return false;
 				foreach (var usage in Usages) {
 					int markerStart = usage.Offset;
 					int markerEnd = usage.EndOffset;
 					
 					if (markerEnd < metrics.TextStartOffset || markerStart > metrics.TextEndOffset) 
-						return true; 
+						return false; 
 					
 					double @from;
 					double to;
