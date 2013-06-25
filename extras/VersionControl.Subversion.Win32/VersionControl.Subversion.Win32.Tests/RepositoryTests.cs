@@ -61,7 +61,7 @@ namespace VersionControl.Subversion.Win32.Tests
 			info = new ProcessStartInfo ();
 			info.FileName = "svnadmin";
 			info.Arguments = "create " + svnRoot + Path.DirectorySeparatorChar + "repo";
-			info.CreateNoWindow = true;
+			info.WindowStyle = ProcessWindowStyle.Hidden;
 			svnAdmin.StartInfo = info;
 			svnAdmin.Start ();
 			svnAdmin.WaitForExit ();
@@ -79,7 +79,7 @@ namespace VersionControl.Subversion.Win32.Tests
 			info = new ProcessStartInfo ();
 			info.FileName = "svnserve";
 			info.Arguments = "-dr " + svnRoot;
-			info.CreateNoWindow = true;
+			info.WindowStyle = ProcessWindowStyle.Hidden;
 			svnServe.StartInfo = info;
 			svnServe.Start ();
 
@@ -165,8 +165,7 @@ namespace VersionControl.Subversion.Win32.Tests
 			File.Create (added).Close ();
 			backend.Add (added, false, new NullProgressMonitor ());
 			backend.Commit (new FilePath[] { svnCheckout }, "File committed", new NullProgressMonitor ());
-			using (var file = File.AppendText (added))
-				file.WriteLine ("text");
+			File.AppendAllText (added, "text");
 
 			string difftext = @"Index: " + added.Replace ('\\', '/') + @"
 ===================================================================
@@ -176,7 +175,6 @@ namespace VersionControl.Subversion.Win32.Tests
 +text
 ";
 
-			string udiff = backend.GetUnifiedDiff (added, false, false);
 			Assert.AreEqual (difftext, backend.GetUnifiedDiff (added, false, false));
 		}
 
@@ -191,25 +189,20 @@ namespace VersionControl.Subversion.Win32.Tests
 			backend.Commit (new FilePath[] { svnCheckout }, "File committed", new NullProgressMonitor ());
 
 			// Revert to head.
-			using (var file = File.AppendText (added))
-				file.WriteLine (content);
+			File.WriteAllText (added, content);
 
 			backend.Revert (new FilePath[] { added }, false, new NullProgressMonitor ());
-			using (var file = File.OpenText (added))
-				Assert.AreEqual (backend.GetTextBase (added), file.ReadToEnd ());
+			Assert.AreEqual (backend.GetTextBase (added), File.ReadAllText (added));
 
 			// Revert revision.
-			using (var file = File.AppendText (added))
-				file.WriteLine (content);
+			File.AppendAllText (added, content);
 			File.Copy (added, added + "2");
 
 			backend.Commit (new FilePath[] { added }, "File modified", new NullProgressMonitor ());
 			backend.RevertRevision (added, new SvnRevision (repo, 2), new NullProgressMonitor ());
 			backend.Commit (new FilePath[] { added }, "File reverted", new NullProgressMonitor ());
 
-			using (var file = File.OpenText (added))
-			using (var file2 = File.OpenText (added + "2"))
-				Assert.AreNotEqual (file2.ReadToEnd (), file.ReadToEnd ());
+			Assert.AreNotEqual (File.ReadAllText (added + "2"), File.ReadAllText (added));
 		}
 
 		#region Util

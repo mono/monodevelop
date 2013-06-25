@@ -74,10 +74,10 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			return Marshal.PtrToStringAnsi (res);
 		}
 
-		static bool CheckInstalled ()
+		internal static bool CheckInstalled ()
 		{
 			// libsvn_client may be linked to libapr-0 or libapr-1, and we need to bind the LibApr class
-			// the the same library. The following code detects the required libapr version and loads it. 
+			// to the same library. The following code detects the required libapr version and loads it. 
 			int aprver = GetLoadAprLib (-1);
 			svn = LibSvnClient.GetLib ();
 			if (svn == null) {
@@ -158,7 +158,11 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		}
 		
 		protected static LibSvnClient svn {
-			get { return SvnClient.svn; }
+			get {
+				if (SvnClient.svn == null)
+					SvnClient.CheckInstalled ();
+				return SvnClient.svn;
+			}
 		}
 
 		static void CheckError (IntPtr error)
