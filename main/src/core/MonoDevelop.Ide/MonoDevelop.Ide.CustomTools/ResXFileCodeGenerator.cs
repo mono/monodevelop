@@ -34,17 +34,18 @@ using System.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.CustomTools;
+using System.Reflection;
 
-namespace MonoDevelop
+namespace MonoDevelop.Ide.CustomTools
 {
-	public class ResXFileCodeGenerator : MonoDevelop.Ide.CustomTools.ISingleFileCustomTool
+	public class ResXFileCodeGenerator : ISingleFileCustomTool
 	{
-		public static void GenerateDesignerFile (string resxfile, string @namespace, string classname, string designerfile)
+		public static void GenerateDesignerFile (string resxfile, string ns, string classname, string designerfile)
 		{
 			var doc = XDocument.Load (resxfile).Root;
 
-			var filetemplate = new StreamReader (System.Reflection.Assembly.GetExecutingAssembly ().GetManifestResourceStream ("ResxDesignerGenerator.HeaderTemplate.txt")).ReadToEnd ();
-			var elementtemplate = new StreamReader (System.Reflection.Assembly.GetExecutingAssembly ().GetManifestResourceStream ("ResxDesignerGenerator.ElementTemplate.txt")).ReadToEnd ();
+			var filetemplate = new StreamReader (Assembly.GetExecutingAssembly ().GetManifestResourceStream ("ResxDesignerGenerator.HeaderTemplate.txt")).ReadToEnd ();
+			var elementtemplate = new StreamReader (Assembly.GetExecutingAssembly ().GetManifestResourceStream ("ResxDesignerGenerator.ElementTemplate.txt")).ReadToEnd ();
 
 			var sb = new StringBuilder ();
 			foreach (var node in
@@ -59,7 +60,7 @@ namespace MonoDevelop
 			}
 
 			using (var w = new StreamWriter(designerfile, false, Encoding.UTF8))
-				w.Write (filetemplate.Replace ("{runtime-version}", System.Environment.Version.ToString ()).Replace ("{namespace}",  @namespace).Replace ("{classname}", classname).Replace ("{elementdata}", sb.ToString ().Trim ()));
+				w.Write (filetemplate.Replace ("{runtime-version}", System.Environment.Version.ToString ()).Replace ("{namespace}",  ns).Replace ("{classname}", classname).Replace ("{elementdata}", sb.ToString ().Trim ()));
 		}
 
 		internal static string GetNamespaceHint (ProjectFile file, string outputFile)
@@ -68,7 +69,7 @@ namespace MonoDevelop
 			if (string.IsNullOrEmpty (ns) && !string.IsNullOrEmpty (outputFile)) {
 				var dnp = file.Project as DotNetProject;
 				if (dnp != null) {
-					var vp =  file.ProjectVirtualPath.ParentDirectory.ToString().Replace(System.IO.Path.DirectorySeparatorChar, '.').Replace(System.IO.Path.AltDirectorySeparatorChar, '.').Trim().Replace(' ', '_');
+					var vp =  file.ProjectVirtualPath.ParentDirectory.ToString().Replace(Path.DirectorySeparatorChar, '.').Replace(System.IO.Path.AltDirectorySeparatorChar, '.').Trim().Replace(' ', '_');
 					if (!string.IsNullOrEmpty(vp))
 						vp = '.' + vp;
 
@@ -85,7 +86,7 @@ namespace MonoDevelop
 
 		public IAsyncOperation Generate (IProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result)
 		{
-			return new MonoDevelop.TextTemplating.ThreadAsyncOperation (delegate {
+			return new ThreadAsyncOperation (delegate {
 				var outputfile = file.FilePath.ChangeExtension (".Designer.cs");
 				var ns = GetNamespaceHint (file, outputfile);
 				var cn = file.FilePath.FileNameWithoutExtension;

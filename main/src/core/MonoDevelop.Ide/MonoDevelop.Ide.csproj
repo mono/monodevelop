@@ -1089,6 +1089,12 @@
     <EmbeddedResource Include="icons\bubble-warning-icon.png">
       <LogicalName>bubble-warning-icon.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.CustomTools\ElementTemplate.txt">
+      <LogicalName>ResxDesignerGenerator.ElementTemplate.txt</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.CustomTools\HeaderTemplate.txt">
+      <LogicalName>HeaderTemplate.txt</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
@@ -1869,6 +1875,7 @@
     <Compile Include="MonoDevelop.Components.Commands\ICommandDelegator.cs" />
     <Compile Include="MonoDevelop.Ide.Navigation\ClosedDocumentNavigationPoint.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\FrameworkLookup.cs" />
+    <Compile Include="MonoDevelop.Ide.CustomTools\ResXFileCodeGenerator.cs" />
     <Compile Include="MonoDevelop.Ide.CustomTools\ThreadAsyncOperation.cs" />
   </ItemGroup>
   <ItemGroup>

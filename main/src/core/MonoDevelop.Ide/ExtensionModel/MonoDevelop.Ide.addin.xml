@@ -300,4 +300,8 @@
 	<Extension path = "/MonoDevelop/Core/WebCertificateProvider">
 		<Class class = "MonoDevelop.Ide.DefaultWebCertificateProvider" />
 	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/CustomTools">
+		<Tool name="ResXFileCodeGenerator" type="MonoDevelop.Ide.CustomTools.ResXFileCodeGenerator" />
+	</Extension>
 </Addin>
