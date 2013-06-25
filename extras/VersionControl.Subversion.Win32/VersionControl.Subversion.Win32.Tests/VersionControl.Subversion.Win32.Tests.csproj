@@ -38,10 +38,6 @@
       <HintPath>..\..\..\main\build\bin\MonoDevelop.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="MonoDevelop.Ide">
-      <HintPath>..\..\..\main\build\bin\MonoDevelop.Ide.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="MonoDevelop.VersionControl">
       <HintPath>..\..\..\main\build\AddIns\VersionControl\MonoDevelop.VersionControl.dll</HintPath>
       <Private>False</Private>
