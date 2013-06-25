@@ -79,7 +79,6 @@ dist: update_submodules remove-stale-tarballs dist-recursive
 
 aot:
 	for i in main/build/bin/*.dll; do mono --aot $$i; done
-	for i in main/build/bin/*/*.dll; do mono --aot $$i; done
 	for i in main/build/AddIns/*.dll; do mono --aot $$i; done
 	for i in main/build/AddIns/*/*.dll; do mono --aot $$i; done
 	for i in main/build/AddIns/*/*/*.dll; do mono --aot $$i; done
