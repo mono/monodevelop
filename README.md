@@ -7,9 +7,6 @@ This project contains advanced editing support for F# for a number of open edito
 
 For more information about F# see [The F# Software Foundation](http://fsharp.org). Join [The F# Open Source Group](http://fsharp.github.com). We use [github](https://github.com/fsharp/fsharpbinding) for tracking work items and suggestions.
 
-Users of Windows XP wishing to use this project are advised to select the `windows-xp` entry in the _branch_ pulldown
-menu entry above, and follow the variant instructions which will then be presented.
-
 ## Basic Components
 
 The core component is the FSharp.CompilerBinding.dll. This is used by both fsautocomplete.exe, a command-line utility to sit behind Emacs, Vim and other editing environments, an the MonoDevelop components.
@@ -67,6 +64,9 @@ Normally you should get the binding from the repository. If you want to build an
 ### Can't get it to work?  
 
 Don't give up! Add an issue to [the issue tracker](https://github.com/fsharp/fsharpbinding/issues). You issue will be seen by the developers.
+
+Users of Windows XP wishing to use this project are advised to select the `windows-xp` entry in the _branch_ pulldown
+menu entry above, and follow the variant instructions which will then be presented.
 
 ### Notes for Developers
 
