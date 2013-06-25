@@ -165,7 +165,7 @@ namespace VersionControl.Subversion.Win32.Tests
 			File.Create (added).Close ();
 			backend.Add (added, false, new NullProgressMonitor ());
 			backend.Commit (new FilePath[] { svnCheckout }, "File committed", new NullProgressMonitor ());
-			File.AppendAllText (added, "text");
+			File.AppendAllText (added, "text" + Environment.NewLine);
 
 			string difftext = @"Index: " + added.Replace ('\\', '/') + @"
 ===================================================================
@@ -174,7 +174,6 @@ namespace VersionControl.Subversion.Win32.Tests
 @@ -0,0 +1 @@
 +text
 ";
-
 			Assert.AreEqual (difftext, backend.GetUnifiedDiff (added, false, false));
 		}
 

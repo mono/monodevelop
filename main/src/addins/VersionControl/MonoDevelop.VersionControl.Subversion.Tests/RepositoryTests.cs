@@ -91,11 +91,8 @@ namespace VersionControl.Subversion.Unix.Tests
 		[TearDown]
 		public void TearDown ()
 		{
-			try {
-				svnServe.Kill ();
-			} catch {
+			svnServe.Kill ();
 
-			}
 			DeleteDirectory (svnRoot);
 			DeleteDirectory (svnCheckout);
 		}
@@ -168,7 +165,7 @@ namespace VersionControl.Subversion.Unix.Tests
 			File.Create (added).Close ();
 			backend.Add (added, false, new NullProgressMonitor ());
 			backend.Commit (new FilePath[] { svnCheckout }, "File committed", new NullProgressMonitor ());
-			File.AppendAllText (added, "text");
+			File.AppendAllText (added, "text" + Environment.NewLine);
 
 			string difftext = @"Index: " + added + @"
 ===================================================================
