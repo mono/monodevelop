@@ -3,8 +3,10 @@
 //
 // Author:
 //   Kenneth Skovhede <kenneth@hexad.dk>
+//   Michael Hutchinson <m.j.hutchinson@gmail.com>
 //
-// Copyright (C) 2013
+// Copyright (C) 2013 Kenneth Skovhede
+// Copyright (C) 2013 Xamarin Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -27,75 +29,52 @@
 //
 
 using System;
-using System.Linq;
-using System.Xml.Linq;
 using System.IO;
 using System.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.CustomTools;
-using System.Reflection;
+using System.Resources.Tools;
+using System.CodeDom.Compiler;
 
 namespace MonoDevelop.Ide.CustomTools
 {
 	public class ResXFileCodeGenerator : ISingleFileCustomTool
 	{
-		public static void GenerateDesignerFile (string resxfile, string ns, string classname, string designerfile)
-		{
-			var doc = XDocument.Load (resxfile).Root;
-
-			var filetemplate = new StreamReader (Assembly.GetExecutingAssembly ().GetManifestResourceStream ("ResxDesignerGenerator.HeaderTemplate.txt")).ReadToEnd ();
-			var elementtemplate = new StreamReader (Assembly.GetExecutingAssembly ().GetManifestResourceStream ("ResxDesignerGenerator.ElementTemplate.txt")).ReadToEnd ();
-
-			var sb = new StringBuilder ();
-			foreach (var node in
-				from d in (from n in doc.Descendants() where n.Name == "data" select n)
-				let name = d.Attribute("name").Value
-				let value = d.Descendants().First().Value
-				orderby name
-				select new { Name = name, Value = value }
-				) {
-				sb.Append (elementtemplate.Replace ("{name}", node.Name).Replace ("{value}", System.Web.HttpUtility.HtmlEncode (node.Value.Trim ().Replace ("\r\n", "\n").Replace ("\r", "\n").Replace ("\n", "\r\n        ///"))));
-				sb.Append ("\r\n");
-			}
-
-			using (var w = new StreamWriter(designerfile, false, Encoding.UTF8))
-				w.Write (filetemplate.Replace ("{runtime-version}", System.Environment.Version.ToString ()).Replace ("{namespace}",  ns).Replace ("{classname}", classname).Replace ("{elementdata}", sb.ToString ().Trim ()));
-		}
-
-		internal static string GetNamespaceHint (ProjectFile file, string outputFile)
-		{
-			string ns = file.CustomToolNamespace;
-			if (string.IsNullOrEmpty (ns) && !string.IsNullOrEmpty (outputFile)) {
-				var dnp = file.Project as DotNetProject;
-				if (dnp != null) {
-					var vp =  file.ProjectVirtualPath.ParentDirectory.ToString().Replace(Path.DirectorySeparatorChar, '.').Replace(System.IO.Path.AltDirectorySeparatorChar, '.').Trim().Replace(' ', '_');
-					if (!string.IsNullOrEmpty(vp))
-						vp = '.' + vp;
-
-					if (!string.IsNullOrEmpty (dnp.GetDefaultNamespace (outputFile)))
-						ns = dnp.GetDefaultNamespace(outputFile) + vp;
-					else
-						ns = dnp.DefaultNamespace + vp;
-				}
-			}
-			return ns;
-		}
-
-		#region ISingleFileCustomTool implementation
-
 		public IAsyncOperation Generate (IProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result)
 		{
 			return new ThreadAsyncOperation (delegate {
-				var outputfile = file.FilePath.ChangeExtension (".Designer.cs");
-				var ns = GetNamespaceHint (file, outputfile);
-				var cn = file.FilePath.FileNameWithoutExtension;
+				var dnp = file.Project as DotNetProject;
+				if (dnp == null) {
+					var err = "ResXFileCodeGenerator can only be used with .NET projects";
+					result.Errors.Add (new CompilerError (null, 0, 0, null, err));
+					return;
+				}
 
-				GenerateDesignerFile (file.FilePath.FullPath, ns, cn, outputfile);
+				var provider = dnp.LanguageBinding.GetCodeDomProvider ();
+				if (provider == null) {
+					var err = "ResXFileCodeGenerator can only be used with languages that support CodeDOM";
+					result.Errors.Add (new CompilerError (null, 0, 0, null, err));
+					return;
+				}
+
+				var outputfile = file.FilePath.ChangeExtension (".Designer." + provider.FileExtension);
+				var ns = CustomToolService.GetFileNamespace (file, outputfile);
+				var cn = provider.CreateValidIdentifier (file.FilePath.FileNameWithoutExtension);
+
+				string[] unmatchable;
+				var ccu = StronglyTypedResourceBuilder.Create (file.FilePath, cn, ns, provider, true, out unmatchable);
+
+				foreach (var p in unmatchable) {
+					var msg = string.Format ("Could not generate property for resource ID '{0}'", p);
+					result.Errors.Add (new CompilerError (file.FilePath, 0, 0, null, msg));
+				}
+
+				using (var w = new StreamWriter (outputfile, false, Encoding.UTF8))
+					provider.GenerateCodeFromCompileUnit (ccu, w, new CodeGeneratorOptions ());
+
 				result.GeneratedFilePath = outputfile;
 			}, result);
 		}
-
-		#endregion
 	}
 }

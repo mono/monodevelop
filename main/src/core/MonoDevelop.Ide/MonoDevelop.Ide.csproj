@@ -62,6 +62,7 @@
     <Reference Include="Mono.Cairo" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Design" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -1088,12 +1089,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\bubble-warning-icon.png">
       <LogicalName>bubble-warning-icon.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.CustomTools\ElementTemplate.txt">
-      <LogicalName>ResxDesignerGenerator.ElementTemplate.txt</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.CustomTools\HeaderTemplate.txt">
-      <LogicalName>HeaderTemplate.txt</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
