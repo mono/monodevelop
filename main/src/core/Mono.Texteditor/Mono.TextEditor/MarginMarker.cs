@@ -31,7 +31,7 @@ using Mono.TextEditor.Highlighting;
 namespace Mono.TextEditor
 {
 	/// <summary>
-	/// Contains all information about a margin draw event.
+	/// Contains all information about a margin draw event. This class is used inside <see cref="MarginMarker"/>.
 	/// </summary>
 	public class MarginDrawMetrics
 	{
@@ -41,7 +41,7 @@ namespace Mono.TextEditor
 		public Margin Margin { get; private set; }
 
 		/// <summary>
-		/// The area that should be redrawn.
+		/// The area that needs to be redrawn.
 		/// </summary>
 		public Cairo.Rectangle Area { get; private set; }
 
@@ -100,6 +100,7 @@ namespace Mono.TextEditor
 	/// <summary>
 	/// The margin marker is a specialized text line marker used to change how a margins of a line are drawn.
 	/// (If the margin supports custom drawing plugins)
+	/// Note: This is not used for the text view margin, which is handled by the basic TextLineMarker class.
 	/// </summary>
 	public class MarginMarker : TextLineMarker
 	{
@@ -141,22 +142,31 @@ namespace Mono.TextEditor
 		}
 
 		/// <summary>
-		/// Informs the marging marker of a mouse press event.
+		/// Informs the margin marker of a mouse press event.
 		/// </summary>
+		/// <param name="editor">The text editor in which the event press occured.</param>
+		/// <param name="margin">The margin in which the event occured.</param>
+		/// <param name="args">The event arguments.</param>
 		public virtual void InformMousePress (TextEditor editor, Margin margin, MarginMouseEventArgs args)
 		{
 		}
 
 		/// <summary>
-		/// Informs the marging marker of a mouse release event.
+		/// Informs the margin marker of a mouse release event.
 		/// </summary>
+		/// <param name="editor">The text editor in which the event press occured.</param>
+		/// <param name="margin">The margin in which the event occured.</param>
+		/// <param name="args">The event arguments.</param>
 		public virtual void InformMouseRelease (TextEditor editor, Margin margin, MarginMouseEventArgs args)
 		{
 		}
 
 		/// <summary>
-		/// Informs the marging marker of a mouse hover event.
+		/// Informs the margin marker of a mouse hover event.
 		/// </summary>
+		/// <param name="editor">The text editor in which the event press occured.</param>
+		/// <param name="margin">The margin in which the event occured.</param>
+		/// <param name="args">The event arguments.</param>
 		public virtual void InformMouseHover (TextEditor editor, Margin margin, MarginMouseEventArgs args)
 		{
 		}
