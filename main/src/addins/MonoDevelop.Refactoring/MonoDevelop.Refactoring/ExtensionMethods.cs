@@ -42,8 +42,30 @@ namespace MonoDevelop.Refactoring
 
 		class ResolverAnnotation
 		{
-			public Task<CSharpAstResolver> Task;
+			public TaskWrapper Task;
 			public CSharpUnresolvedFile ParsedFile;
+		}
+
+		public class TaskWrapper {
+			readonly Task<CSharpAstResolver> underlyingTask;
+
+			public CSharpAstResolver Result {
+				get {
+					if (underlyingTask.IsCanceled)
+						return null;
+					try {
+						return underlyingTask.Result;
+					} catch (Exception e) {
+						LoggingService.LogWarning ("Exception while getting shared AST resolver.", e);
+						return null;
+					}
+				}
+			}
+			public TaskWrapper (Task<CSharpAstResolver> underlyingTask)
+			{
+				this.underlyingTask = underlyingTask;
+			}
+			
 		}
 
 		/// <summary>
@@ -52,7 +74,7 @@ namespace MonoDevelop.Refactoring
 		/// resolve navigator.
 		/// Note: The shared resolver is fully resolved.
 		/// </summary>
-		public static Task<CSharpAstResolver> GetSharedResolver (this Document document)
+		public static TaskWrapper GetSharedResolver (this Document document)
 		{
 			var parsedDocument = document.ParsedDocument;
 			if (parsedDocument == null)
@@ -86,11 +108,12 @@ namespace MonoDevelop.Refactoring
 					return null;
 				}
 			}, token);
+			var wrapper = new TaskWrapper (resolveTask);
 			document.AddAnnotation (new ResolverAnnotation {
-				Task = resolveTask,
+				Task = wrapper,
 				ParsedFile = parsedFile
 			});
-			return resolveTask;
+			return wrapper;
 		}
 
 		sealed class ConstantModeResolveVisitorNavigator : IResolveVisitorNavigator
