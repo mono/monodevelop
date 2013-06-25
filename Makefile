@@ -1,7 +1,7 @@
 include main/monodevelop_version
 
 EXTRA_DIST = configure
-MONO_AOT=MONO_PATH=main/build/bin:$(MONO_PATH) mono --aot
+MONO_AOT=MONO_PATH=main/build/bin:$(MONO_PATH) mono --aot --debug
 
 all: update_submodules all-recursive
 
