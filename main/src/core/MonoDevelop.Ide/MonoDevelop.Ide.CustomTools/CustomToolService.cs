@@ -229,6 +229,17 @@ namespace MonoDevelop.Ide.CustomTools
 					continue;
 			}
 		}
+
+		public static string GetFileNamespace (ProjectFile file, string outputFile)
+		{
+			string ns = file.CustomToolNamespace;
+			if (string.IsNullOrEmpty (ns) && !string.IsNullOrEmpty (outputFile)) {
+				var dnp = file.Project as DotNetProject;
+				if (dnp != null)
+					ns = dnp.GetDefaultNamespace (outputFile);
+			}
+			return ns;
+		}
 	}
 }
 
