@@ -59,6 +59,7 @@ namespace MonoDevelop.CodeIssues
 		public void Reset ()
 		{
 			groups.Clear ();
+			Next.Reset ();
 		}
 
 		IGroupingProvider next;

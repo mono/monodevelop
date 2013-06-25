@@ -35,6 +35,7 @@ using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using MonoDevelop.Refactoring;
 using System.Linq;
+using System.Collections.Generic;
 using MonoDevelop.Core;
 using System.Threading.Tasks;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -53,6 +54,7 @@ namespace MonoDevelop.CodeIssues
 		Button cancelButton = new Button ("Cancel");
 		GroupingProviderChainControl groupingProviderControl;
 		HBox buttonRow = new HBox();
+		Timer redrawTimer;
 		
 		IssueGroup rootGroup;
 		TreeStore store;
@@ -89,14 +91,10 @@ namespace MonoDevelop.CodeIssues
 			
 			var rootProvider = groupingProviderControl.RootGroupingProvider;
 			rootGroup = new IssueGroup (rootProvider, rootProvider.Next, "root group");
-			rootGroup.ChildGroupAdded += GetGroupAddedHandler (rootGroup);
-			rootGroup.IssueSummaryAdded += GetIssueSummaryAddedHandler (rootGroup);
 			rootGroup.ChildrenInvalidated += (sender, group) => {
 				store.Clear ();
 				InsertTopRow ();
-				rootGroup.EnableProcessing ();
 			};
-			rootGroup.EnableProcessing ();
 		}
 
 		TreeNavigator InsertTopRow ()
@@ -111,6 +109,7 @@ namespace MonoDevelop.CodeIssues
 			var solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
 			if (solution == null)
 				return;
+			redrawTimer = new Timer (arg => QueueUiUpdate (), null, 500, 500);
 			runButton.Sensitive = false;
 			cancelButton.Sensitive = true;
 			store.Clear ();
@@ -172,7 +171,6 @@ namespace MonoDevelop.CodeIssues
 									// The operation was cancelled, no-op as the user-visible parts are
 									// handled elsewhere
 								} catch (Exception ex) {
-									System.Console.WriteLine (ex.ToString());
 									LoggingService.LogError ("Error while running code issue on:"+ editor.FileName, ex);
 								}
 							});
@@ -188,6 +186,7 @@ namespace MonoDevelop.CodeIssues
 						runButton.Sensitive = true;
 						cancelButton.Sensitive = false;
 					});
+					redrawTimer.Dispose ();
 					monitor.EndTask ();
 				}
 			});
@@ -198,86 +197,123 @@ namespace MonoDevelop.CodeIssues
 			cancelButton.Sensitive = false;
 			tokenSource.Cancel ();
 		}
+
+		void QueueUiUpdate ()
+		{
+			Application.Invoke (delegate {
+				UpdateUi ();
+			});
+		}
+
+		void UpdateUi ()
+		{
+			var navigator = store.GetFirstNode ();
+			
+			UpdateGroups (rootGroup.Groups, navigator);
+			UpdateIssues (rootGroup.Issues, navigator);
+		}
 		
-		EventHandler<IssueGroupEventArgs> GetGroupAddedHandler (IssueGroup parentGroup) 
+		void UpdateGroup (IssueGroup group, TreeNavigator navigator, bool forceExpansion = false)
 		{
-			return (sender, eventArgs) => {
-				Application.Invoke (delegate {
-					var navigator = GetNavigatorForGroup (parentGroup);
-					
-					var group = eventArgs.IssueGroup;
-					group.Position = navigator.CurrentPosition;
-					group.ChildGroupAdded += GetGroupAddedHandler(group);
-					group.IssueSummaryAdded += GetIssueSummaryAddedHandler(group);
-					group.ChildrenInvalidated += GetChildrenInvalidatedHandler (group);
-					
-					navigator.SetValue (groupField, group);
-					UpdateParents (navigator);
-				});
-			};
-		}
-
-		EventHandler<IssueSummaryEventArgs> GetIssueSummaryAddedHandler (IssueGroup parentGroup)
-		{
-			return (sender, eventArgs) => {
-				Application.Invoke (delegate {
-					TreeNavigator navigator = GetNavigatorForGroup (parentGroup);
-					navigator.SetValue (summaryField, eventArgs.IssueSummary);
-					
-					UpdateParents (navigator);
-				});
-			};
-		}
-
-		EventHandler<IssueGroupEventArgs> GetChildrenInvalidatedHandler (IssueGroup group)
-		{
-			return (sender, eventArgs) => {
-				var position = group.Position;
-				var navigator = store.GetNavigatorAt (position);
-				bool expanded = view.IsRowExpanded (position);
-				navigator.RemoveChildren ();
-				UpdateParents (navigator);
-				if (expanded) {
-					view.ExpandRow (position, false);
+			UpdateText (navigator, group);
+			bool isExpanded = forceExpansion || view.IsRowExpanded (navigator.CurrentPosition);
+			if (navigator.MoveToChild ()) {
+				if (isExpanded) {
+					UpdateGroups (group.Groups, navigator);
+					UpdateIssues (group.Issues, navigator);
 				}
-			};
-		}
-
-		TreeNavigator GetNavigatorForGroup (IssueGroup parentGroup)
-		{
-			var position = parentGroup.Position;
-			TreeNavigator navigator;
-			if (position == null) {
-				navigator = store.AddNode ();
-			} else {
-				navigator = store.GetNavigatorAt (position).AddChild ();
+				navigator.MoveToParent ();
+			} else if (group.HasChildren) {
+				AddDummyChild (navigator);
 			}
-			return navigator;
 		}
 
-		void UpdateParents (TreeNavigator navigator)
+		void UpdateGroups (IList<IssueGroup> groups, TreeNavigator navigator)
 		{
+			var unprocessedGroups = groups;
+			var existingGroups = new HashSet<IssueGroup> (unprocessedGroups);
+			
+			// Begin by updating any existing nodes
 			do {
+				if (navigator.GetValue (summaryField) != null)
+					break;
 				var group = navigator.GetValue (groupField);
-				if (group != null) {
-					navigator.SetValue (textField, string.Format ("{0} ({1} issues)", group.Description, group.IssueCount));
-					if (group.IssueCount > 0) {
-						// Add a fake child to show the expander button
-						if (!navigator.MoveToChild ()) {
-							navigator.AddChild ();
-							navigator.SetValue(textField, "Loading...");
-							navigator.MoveToParent();
-						} else {
-							navigator.MoveToParent ();
-						}
-					}
+				if (group == null)
+					continue;
+				if (!existingGroups.Contains (group)) {
+					store.GetNavigatorAt (navigator.CurrentPosition).Remove ();
 				} else {
-					var issue = navigator.GetValue (summaryField);
-					if (issue != null) {
-						navigator.SetValue (textField, string.Format ("{0}: {1}", issue.Severity, issue.IssueDescription));
-					}
+					unprocessedGroups.Remove (group);
+					UpdateGroup (group, navigator);
 				}
-			} while (navigator.MoveToParent());
+			} while (navigator.MoveNext());
+			
+			// Add any new groups to the tree
+			foreach (var group in unprocessedGroups) {
+				navigator.InsertAfter ();
+				navigator.SetValue (groupField, group);
+				UpdateText (navigator, group);
+				if (group.HasChildren) {
+					AddDummyChild (navigator);
+				}
+				var position = navigator.CurrentPosition;
+				group.ChildrenInvalidated += GetChildrenInvalidatedHandler (position);
+			}
+		}
+
+		void UpdateText (TreeNavigator navigator, IssueGroup group)
+		{
+			navigator.SetValue (textField, string.Format ("{0} ({1} issues)", group.Description, group.IssueCount));
+		}
+
+		void UpdateText (TreeNavigator navigator, IssueSummary issue)
+		{
+			navigator.SetValue (textField, string.Format ("{0}: {1}", issue.Severity, issue.IssueDescription));
+		}
+
+		void AddDummyChild (TreeNavigator navigator)
+		{
+			navigator.AddChild ();
+			navigator.SetValue (textField, "Loading...");
+			navigator.MoveToParent ();
+		}
+
+		void UpdateIssues (IList<IssueSummary> issues, TreeNavigator navigator)
+		{
+			var unprocessedIssues = issues;
+			var existingIssues = new HashSet<IssueSummary> (unprocessedIssues);
+			do {
+				var issue = navigator.GetValue (summaryField);
+				if (issue == null) 
+					continue;
+				if (!existingIssues.Contains (issue)) {
+					navigator.Remove ();
+				} else {
+					unprocessedIssues.Remove (issue);
+					UpdateText (navigator, issue);
+				}
+			} while (navigator.MoveNext());
+			
+			foreach (var issue in unprocessedIssues) {
+				navigator.InsertAfter ();
+				navigator.SetValue (summaryField, issue);
+				UpdateText (navigator, issue);
+			}
+		}
+
+		EventHandler<IssueGroupEventArgs> GetChildrenInvalidatedHandler (TreePosition position)
+		{
+			return (sender, eventArgs) => {
+				Application.Invoke(delegate {
+					var expanded = view.IsRowExpanded (position);
+					var newNavigator = store.GetNavigatorAt (position);
+					newNavigator.RemoveChildren ();
+					UpdateGroup (eventArgs.IssueGroup, newNavigator, expanded);
+					if (expanded) {
+						view.ExpandRow (position, false);
+					}
+				});
+			};
 		}
 		
 		void OnRowActivated (object sender, TreeViewRowEventArgs e)
@@ -302,19 +338,24 @@ namespace MonoDevelop.CodeIssues
 
 		void OnRowExpanding (object sender, TreeViewRowEventArgs e)
 		{
-			var row = store.GetNavigatorAt(e.Position);
-			var group = row.GetValue (groupField);
-			if (group == null || group.ProcessingEnabled)
+			var navigator = store.GetNavigatorAt (e.Position);
+			var group = navigator.GetValue (groupField);
+			if (group == null)
 				return;
-			ThreadPool.QueueUserWorkItem(delegate {
-				group.EnableProcessing ();
-				Application.Invoke(delegate {
-					if (row.MoveToChild() && row.GetValue(groupField) == null && row.GetValue(summaryField) == null) {
-						// there is a dummy child present
-						row.Remove ();
-					}
-				});
-			});
+			bool hasDummyChild = false;
+			if (navigator.MoveToChild ()) {
+				var issueGroup = navigator.GetValue (groupField);
+				var issueSummary = navigator.GetValue (summaryField);
+				hasDummyChild = issueGroup == null && issueSummary == null;
+				navigator.MoveToParent ();
+			}
+			
+			UpdateGroup (group, navigator, true);
+					
+			if (hasDummyChild) {
+				navigator.MoveToChild ();
+				navigator.Remove ();
+			}
 		}
 	}
 

@@ -111,6 +111,24 @@ namespace MonoDevelop.Refactoring
 		{
 			Assert.NotNull (Provider.Next);
 		}
+		
+		[Test]
+		public void ResetRemovesGroups ()
+		{
+			var firstGroup = Provider.GetIssueGroup (summary);
+			Provider.Reset ();
+			var secondGroup = Provider.GetIssueGroup (summary);
+			Assert.AreNotEqual (firstGroup, secondGroup, "Reset did not remove the old group.");
+		}
+		
+		[Test]
+		public void ResetCascadesToNext ()
+		{
+			var mock = new MockGroupingProvider ();
+			Provider.Next = mock;
+			Provider.Reset ();
+			Assert.IsTrue (mock.ResetCalled, "The provider did not reset its Next provider.");
+		}
 	}
 }
 

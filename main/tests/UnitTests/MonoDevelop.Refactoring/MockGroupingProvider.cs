@@ -34,7 +34,7 @@ namespace MonoDevelop.Refactoring
 
 		public MockGroupingProvider () 
 		{
-			Reset ();
+			Group = null;
 		}
 	
 		#region IGroupingProvider implementation

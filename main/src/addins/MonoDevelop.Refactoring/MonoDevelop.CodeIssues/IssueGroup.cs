@@ -39,6 +39,7 @@ namespace MonoDevelop.CodeIssues
 	public class IssueGroup
 	{
 		object _lock = new object ();
+		bool processingEnabled;
 		IGroupingProvider groupingProvider;
 		/// <summary>
 		/// A list of groups produced by the <see cref="groupingProvider"/>.
@@ -59,7 +60,7 @@ namespace MonoDevelop.CodeIssues
 		{
 			groupingProvider = nextProvider;
 			Description = description;
-			ProcessingEnabled = false;
+			processingEnabled = false;
 			if (sourceProvider != null) {
 				sourceProvider.NextChanged += HandleNextChanged;
 			}
@@ -68,7 +69,7 @@ namespace MonoDevelop.CodeIssues
 		void HandleNextChanged (object sender, GroupingProviderEventArgs eventArgs)
 		{
 			lock(_lock) {
-				ProcessingEnabled = false;
+				processingEnabled = false;
 				groupingProvider = eventArgs.GroupingProvider.Next;
 				groups.Clear ();
 				leaves.Clear ();
@@ -106,6 +107,34 @@ namespace MonoDevelop.CodeIssues
 			get;
 			private set;
 		}
+		
+		public bool HasChildren {
+			get {
+				lock (_lock) {
+					return allIssues.Count > 0;
+				}
+			}
+		}
+
+		public IList<IssueGroup> Groups {
+			get {
+				EnableProcessing ();
+					
+				lock (_lock) {
+					return new List<IssueGroup> (groups);
+				}
+			}
+		}
+
+		public IList<IssueSummary> Issues {
+			get {
+				EnableProcessing ();
+				
+				lock (_lock) {
+					return new List<IssueSummary> (leaves);
+				}
+			}
+		}
 
 		event EventHandler<IssueGroupEventArgs> childrenInvalidated;
 		/// <summary>
@@ -127,50 +156,6 @@ namespace MonoDevelop.CodeIssues
 				handler (this, eventArgs);
 			}
 		}
-
-		event EventHandler<IssueGroupEventArgs> childGroupAdded;
-		/// <summary>
-		/// Called when a child is added to this IssueGrouping.
-		/// </summary>
-		public event EventHandler<IssueGroupEventArgs> ChildGroupAdded
-		{
-			add {
-				childGroupAdded += value;
-			}
-			remove {
-				childGroupAdded -= value;
-			}
-		}
-
-		protected virtual void OnChildGroupAdded (IssueGroupEventArgs eventArgs)
-		{
-			var handler = childGroupAdded;
-			if (handler != null) {
-				handler (this, eventArgs);
-			}
-		}
-
-		event EventHandler<IssueSummaryEventArgs> issueSummaryAdded;
-		/// <summary>
-		/// Called when an <see cref="IssueSummary"/> is added to this IssueGrouping.
-		/// </summary>
-		public event EventHandler<IssueSummaryEventArgs> IssueSummaryAdded
-		{
-			add {
-				issueSummaryAdded += value;
-			}
-			remove {
-				issueSummaryAdded -= value;
-			}
-		}
-
-		protected virtual void OnIssueAdded (IssueSummaryEventArgs eventArgs)
-		{
-			var handler = issueSummaryAdded;
-			if (handler != null) {
-				handler (this, eventArgs);
-			}
-		}
 		
 		public void ClearStatistics ()
 		{
@@ -180,18 +165,8 @@ namespace MonoDevelop.CodeIssues
 				allIssues.Clear ();
 				groupingProvider.Reset ();
 				IssueCount = 0;
+				processingEnabled = false;
 			}
-		}
-		
-		/// <summary>
-		/// Gets a value indicating whether this <see cref="MonoDevelop.CodeIssues.IssueGroup"/> currently
-		/// processes the <see cref="IssueSummary">IssueSummaries</see> passed to <see cref="Push(IssueSummary)"/>.
-		/// </summary>
-		/// <value><c>true</c> if processing is enabled; otherwise, <c>false</c>.</value>
-		public bool ProcessingEnabled
-		{
-			get;
-			private set;
 		}
 		
 		/// <summary>
@@ -199,14 +174,15 @@ namespace MonoDevelop.CodeIssues
 		/// </summary>
 		public void EnableProcessing ()
 		{
-			IList<IssueSummary> summaries;
 			lock (_lock) {
-				ProcessingEnabled = true;
-				summaries = allIssues.ToList ();
-			}
-			// Now process the existing issues
-			foreach (var issue in summaries) {
-				Push (issue);
+				if (!processingEnabled) {
+					processingEnabled = true;
+				
+					// Now process the existing issues
+					foreach (var issue in allIssues) {
+						ProcessIssue (issue);
+					}
+				}
 			}
 		}
 
@@ -216,40 +192,37 @@ namespace MonoDevelop.CodeIssues
 		/// <param name="issue">The <see cref="IssueSummary"/> to push through the tree.</param>
 		public void Push (IssueSummary issue)
 		{
-			IssueGroup group = null;
-			bool groupAdded = false;
 			lock (_lock) {
 				if (!allIssues.Contains (issue)) {
 					IssueCount++;
 					allIssues.Add (issue);
 				}
-				if (!ProcessingEnabled) {
+				if (!processingEnabled) {
 					return;
 				}
-				if (groupingProvider != null) {
-					group = groupingProvider.GetIssueGroup (issue);
-				}
-				if (group == null) {
-					leaves.Add (issue);
-				} else if (!groups.Contains (group)) {
-					groupAdded = true;
-					groups.Add (group);
-				}
+				ProcessIssue (issue);
 			}
-			// We don't need to hold the lock while calling the event delegates
-			// It is possible that the IssueCount is incorrect, because it can
-			// be updated by another call to Push before the value has been used by
-			// the event handlers. Currently, this is not a problem, because the value
-			// will be updated again when the second caller reaches the event calls.
+		}
+
+		void ProcessIssue (IssueSummary issue)
+		{
+			IssueGroup group = null;
+			if (groupingProvider != null) {
+				group = groupingProvider.GetIssueGroup (issue);
+			}
+			if (group == null) {
+				leaves.Add (issue);
+			}
+			else if (!groups.Contains (group)) {
+				groups.Add (group);
+			}
 			
-			if (groupAdded) {
-				OnChildGroupAdded (new IssueGroupEventArgs(group));
+			if (group != null) {
 				group.Push (issue);	
-			} else if (group == null) {
-				OnIssueAdded (new IssueSummaryEventArgs(this, issue));
 			} else {
-				group.Push (issue);	
+				leaves.Add (issue);
 			}
+			
 		}
 	}
 }
