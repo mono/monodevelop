@@ -219,10 +219,13 @@ namespace Mono.TextEditor
 			}
 		}
 	}
-	
+
+
+
 	/// <summary>
 	/// A specialized text marker interface to draw icons in the bookmark margin.
 	/// </summary>
+	[Obsolete("Use MarginMarker instead.")]
 	public interface IIconBarMarker
 	{
 		bool CanDrawBackground { get; }
@@ -267,27 +270,6 @@ namespace Mono.TextEditor
 		bool DrawBackground (TextEditor editor, Cairo.Context cr, double y, LineMetrics metrics, ref bool drawBg);
 	}
 
-	public interface IFoldMarginMarker
-	{
-		/// <summary>
-		/// Draws the background of the fold margin marker.
-		/// </summary>
-		/// <returns>True, if the marker has drawn.</returns>
-		bool DrawBackground (TextEditor editor, double marginWidth, Cairo.Context cr, Cairo.Rectangle area, DocumentLine lineSegment, int line, double x, double y, double lineHeight);
-	}
-
-	public interface IGutterMarker
-	{
-		/// <summary>
-		/// If set to true the gutter marker draws the whole gutter margin. Otherwise the gutter marker only draws the background.
-		/// </summary>
-		bool DrawsForeground {
-			get;
-		}
-		bool Draw (TextEditor editor, double marginWidth, Cairo.Context cr, Cairo.Rectangle area, DocumentLine lineSegment, int line, double x, double y, double lineHeight);
-	}
-
-	
 	public class LineBackgroundMarker: TextLineMarker, IBackgroundMarker
 	{
 		Cairo.Color color;

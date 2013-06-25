@@ -167,10 +167,7 @@
     <Compile Include="MonoDevelop.SourceEditor.QuickTasks\IUsageProvider.cs" />
     <Compile Include="MonoDevelop.SourceEditor\FileRegistry.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SearchAndReplaceOptions.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\MessageBubbleTextMarker_Gutter.cs" />
     <Compile Include="MonoDevelop.SourceEditor\ErrorText.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\MessageBubbleTextMarker_FoldMarker.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\MessageBubbleTextMarker_IconBar.cs" />
     <Compile Include="MonoDevelop.SourceEditor\MessageBubbleTextMarker_TextBackground.cs" />
   </ItemGroup>
   <ItemGroup>

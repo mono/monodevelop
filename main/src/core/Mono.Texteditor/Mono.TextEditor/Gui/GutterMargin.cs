@@ -222,17 +222,20 @@ namespace Mono.TextEditor
 
 		internal protected override void Draw (Cairo.Context cr, Cairo.Rectangle area, DocumentLine lineSegment, int line, double x, double y, double lineHeight)
 		{
-			var gutterMarker = lineSegment != null ? (IGutterMarker)lineSegment.Markers.FirstOrDefault (marker => marker is IGutterMarker) : null;
-			if (gutterMarker != null) {
-				bool hasDrawn = gutterMarker.Draw (editor, Width, cr, area, lineSegment, line, x, y, lineHeight);
-				if (gutterMarker.DrawsForeground && hasDrawn)
-					return;
+			var gutterMarker = lineSegment != null ? (MarginMarker)lineSegment.Markers.FirstOrDefault (marker => marker is MarginMarker && ((MarginMarker)marker).CanDraw (this)) : null;
+			if (gutterMarker != null && gutterMarker.CanDrawBackground (this)) {
+				bool hasDrawn = gutterMarker.DrawBackground (editor, cr, new MarginDrawMetrics (this, area, lineSegment, line, x, y, lineHeight));
 				if (!hasDrawn)
 					DrawGutterBackground (cr, line, x, y, lineHeight);
 			} else {
 				DrawGutterBackground (cr, line, x, y, lineHeight);
 			}
-			
+
+			if (gutterMarker != null && gutterMarker.CanDrawForeground (this)) {
+				gutterMarker.DrawForeground (editor, cr, new MarginDrawMetrics (this, area, lineSegment, line, x, y, lineHeight));
+				return;
+			}
+
 			if (line <= editor.Document.LineCount) {
 				// Due to a mac? gtk bug I need to re-create the layout here
 				// otherwise I get pango exceptions.

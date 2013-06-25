@@ -216,6 +216,7 @@
     <Compile Include="Mono.TextEditor\ITextPasteHandler.cs" />
     <Compile Include="Mono.TextEditor.Vi\NewViEditMode.cs" />
     <Compile Include="Mono.TextEditor.Vi\ViStatusArea.cs" />
+    <Compile Include="Mono.TextEditor\MarginMarker.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mono.TextEditor.dll.config">

@@ -580,7 +580,7 @@ namespace Mono.TextEditor
 		#endregion
 	}
 
-	public class TextLinkMarker : TextLineMarker, IBackgroundMarker, IGutterMarker
+	public class TextLinkMarker : MarginMarker, IBackgroundMarker
 	{
 		TextLinkEditMode mode;
 
@@ -714,37 +714,48 @@ namespace Mono.TextEditor
 		}
 		#region IGutterMarker implementation
 
-		public bool DrawsForeground {
-			get {
-				return true;
-			}
+		public override bool CanDrawForeground (Margin margin)
+		{
+			return margin is GutterMargin;
 		}
 
-		public bool Draw (TextEditor editor, double width, Cairo.Context cr, Cairo.Rectangle area, DocumentLine lineSegment, int line, double x, double y, double lineHeight)
+		public override bool CanDrawBackground (Margin margin)
 		{
-			var lineNumberBgGC = editor.ColorStyle.LineNumbers.Background;
-			var lineNumberGC = editor.ColorStyle.LineNumbers.Foreground;
+			return margin is GutterMargin;
+		}
 
-			cr.Rectangle (x, y, width, lineHeight);
-			cr.Color = editor.Caret.Line == line ? editor.ColorStyle.LineMarker.Color : lineNumberGC;
+		public override bool DrawBackground (TextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
+		{
+			var width = metrics.Width;
+
+			cr.Rectangle (metrics.X, metrics.Y, metrics.Width, metrics.Height);
+			var lineNumberGC = editor.ColorStyle.LineNumbers.Foreground;
+			cr.Color = editor.Caret.Line == metrics.LineNumber ? editor.ColorStyle.LineMarker.Color : lineNumberGC;
 			cr.Fill ();
-			
-			if (line <= editor.Document.LineCount) {
+
+			return true;
+		}
+
+		public override void DrawForeground (TextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
+		{
+			var width = metrics.Width;
+			var lineNumberBgGC = editor.ColorStyle.LineNumbers.Background;
+
+			if (metrics.LineNumber <= editor.Document.LineCount) {
 				// Due to a mac? gtk bug I need to re-create the layout here
 				// otherwise I get pango exceptions.
 				using (var layout = PangoUtil.CreateLayout (editor)) {
 					layout.FontDescription = editor.Options.Font;
 					layout.Width = (int)width;
 					layout.Alignment = Pango.Alignment.Right;
-					layout.SetText (line.ToString ());
+					layout.SetText (metrics.LineNumber.ToString ());
 					cr.Save ();
-					cr.Translate (x + (int)width + (editor.Options.ShowFoldMargin ? 0 : -2), y);
+					cr.Translate (metrics.X + (int)width + (editor.Options.ShowFoldMargin ? 0 : -2), metrics.Y);
 					cr.Color = lineNumberBgGC;
 					cr.ShowLayout (layout);
 					cr.Restore ();
 				}
 			}
-			return true;
 		}
 		#endregion
 	}

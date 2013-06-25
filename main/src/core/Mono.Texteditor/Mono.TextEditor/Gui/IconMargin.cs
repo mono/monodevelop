@@ -75,6 +75,10 @@ namespace Mono.TextEditor
 			DocumentLine lineSegment = args.LineSegment;
 			if (lineSegment != null) {
 				foreach (TextLineMarker marker in lineSegment.Markers) {
+					var marginMarker = marker as MarginMarker;
+					if (marginMarker != null) 
+						marginMarker.InformMousePress (editor, this, args);
+
 					if (marker is IIconBarMarker) 
 						((IIconBarMarker)marker).MousePress (args);
 				}
@@ -88,6 +92,10 @@ namespace Mono.TextEditor
 			DocumentLine lineSegment = args.LineSegment;
 			if (lineSegment != null) {
 				foreach (TextLineMarker marker in lineSegment.Markers) {
+					var marginMarker = marker as MarginMarker;
+					if (marginMarker != null) 
+						marginMarker.InformMouseRelease (editor, this, args);
+
 					if (marker is IIconBarMarker) 
 						((IIconBarMarker)marker).MouseRelease (args);
 				}
@@ -101,6 +109,9 @@ namespace Mono.TextEditor
 			DocumentLine lineSegment = args.LineSegment;
 			if (lineSegment != null) {
 				foreach (TextLineMarker marker in lineSegment.Markers) {
+					var marginMarker = marker as MarginMarker;
+					if (marginMarker != null) 
+						marginMarker.InformMouseHover (editor, this, args);
 					if (marker is IIconBarMarker) 
 						((IIconBarMarker)marker).MouseHover (args);
 				}
@@ -112,6 +123,11 @@ namespace Mono.TextEditor
 			bool backgroundIsDrawn = false;
 			if (lineSegment != null) {
 				foreach (var marker in lineSegment.Markers) {
+					var marginMarker = marker as MarginMarker;
+					if (marginMarker != null && marginMarker.CanDrawBackground (this)) {
+						backgroundIsDrawn = marginMarker.DrawBackground (editor, ctx, new MarginDrawMetrics (this, area, lineSegment, line, x, y, lineHeight));
+					}
+
 					var iconMarker = marker as IIconBarMarker;
 					if (iconMarker == null || !iconMarker.CanDrawBackground)
 						continue;
@@ -134,6 +150,11 @@ namespace Mono.TextEditor
 
 			if (lineSegment != null && line <= editor.Document.LineCount) {
 				foreach (var marker in lineSegment.Markers) {
+					var marginMarker = marker as MarginMarker;
+					if (marginMarker != null && marginMarker.CanDrawForeground (this)) {
+						marginMarker.DrawForeground (editor, ctx, new MarginDrawMetrics (this, area, lineSegment, line, x, y, lineHeight));
+					}
+
 					if (marker is IIconBarMarker) 
 						((IIconBarMarker)marker).DrawIcon (editor, ctx, lineSegment, line, x, y, (int)Width, editor.LineHeight);
 				}

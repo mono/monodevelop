@@ -39,7 +39,7 @@ using Gtk;
 
 namespace MonoDevelop.SourceEditor
 {
-	partial class MessageBubbleTextMarker : TextLineMarker, IDisposable, IActionTextLineMarker
+	partial class MessageBubbleTextMarker : MarginMarker, IDisposable, IActionTextLineMarker
 	{
 		readonly MessageBubbleCache cache;
 		
@@ -417,5 +417,72 @@ namespace MonoDevelop.SourceEditor
 				drawLayout.Dispose ();
 
 		}
+
+		#region MarginMarker
+
+		public override bool CanDrawBackground (Margin margin)
+		{
+			return margin is FoldMarkerMargin || margin is GutterMargin || margin is IconMargin;
+		}
+
+		public override bool CanDrawForeground (Margin margin)
+		{
+			return margin is IconMargin;
+		}
+
+		void DrawIconMarginBackground (TextEditor ed, Cairo.Context cr, MarginDrawMetrics metrics)
+		{
+			cr.Rectangle (metrics.X, metrics.Y, metrics.Width, metrics.Height);
+			cr.Color = IconMarginColor.Color;
+			cr.Fill ();
+			cr.MoveTo (metrics.Right - 0.5, metrics.Y);
+			cr.LineTo (metrics.Right - 0.5, metrics.Bottom);
+			cr.Color = IconMarginColor.BorderColor;
+			cr.Stroke ();
+			if (cache.CurrentSelectedTextMarker != null && cache.CurrentSelectedTextMarker != this) {
+				cr.Rectangle (metrics.X, metrics.Y, metrics.Width, metrics.Height);
+				cr.Color = new Cairo.Color (ed.ColorStyle.IndicatorMargin.Color.R, ed.ColorStyle.IndicatorMargin.Color.G, ed.ColorStyle.IndicatorMargin.Color.B, 0.5);
+				cr.Fill ();
+			}
+		}
+
+		public override void DrawForeground (TextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
+		{
+			cr.Save ();
+			cr.Translate (
+				metrics.X + 0.5  + (metrics.Width - cache.errorPixbuf.Width) / 2,
+				metrics.Y + 0.5 + (metrics.Height - cache.errorPixbuf.Height) / 2
+				);
+			Gdk.CairoHelper.SetSourcePixbuf (
+				cr,
+				errors.Any (e => e.IsError) ? cache.errorPixbuf : cache.warningPixbuf, 0, 0);
+			cr.Paint ();
+			cr.Restore ();
+
+		}
+
+		public override bool DrawBackground (TextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
+		{
+			if (metrics.Margin is FoldMarkerMargin || metrics.Margin is GutterMargin)
+				return DrawMarginBackground (editor, metrics.Margin, cr, metrics.Area, lineSegment, metrics.LineNumber, metrics.X, metrics.Y, metrics.Height);
+			if (metrics.Margin is IconMargin) {
+				DrawIconMarginBackground (editor, cr, metrics);
+				return true;
+			}
+			return false;
+		}
+
+		bool DrawMarginBackground (TextEditor e, Margin margin, Cairo.Context cr, Cairo.Rectangle area, DocumentLine documentLine, long line, double x, double y, double lineHeight)
+		{
+			if (cache.CurrentSelectedTextMarker != null && cache.CurrentSelectedTextMarker != this)
+				return false;
+			cr.Rectangle (x, y, margin.Width, lineHeight);
+			cr.Color = LineColor.Color;
+			cr.Fill ();
+			return true;
+		}
+
+
+		#endregion
 	}
 }
