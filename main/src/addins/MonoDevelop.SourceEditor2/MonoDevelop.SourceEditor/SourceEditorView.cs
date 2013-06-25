@@ -69,6 +69,7 @@ namespace MonoDevelop.SourceEditor
 		TextLineMarker currentDebugLineMarker;
 		TextLineMarker debugStackLineMarker;
 		int lastDebugLine = -1;
+		BreakpointStore breakpoints;
 		EventHandler currentFrameChanged;
 		EventHandler<BreakpointEventArgs> breakpointAdded;
 		EventHandler<BreakpointEventArgs> breakpointRemoved;
@@ -268,14 +269,15 @@ namespace MonoDevelop.SourceEditor
 			TextEditorService.FileExtensionAdded += HandleFileExtensionAdded;
 			TextEditorService.FileExtensionRemoved += HandleFileExtensionRemoved;
 
+			breakpoints = DebuggingService.Breakpoints;
 			DebuggingService.DebugSessionStarted += OnDebugSessionStarted;
 			DebuggingService.CurrentFrameChanged += currentFrameChanged;
 			DebuggingService.StoppedEvent += currentFrameChanged;
 			DebuggingService.ResumedEvent += currentFrameChanged;
-			DebuggingService.Breakpoints.BreakpointAdded += breakpointAdded;
-			DebuggingService.Breakpoints.BreakpointRemoved += breakpointRemoved;
-			DebuggingService.Breakpoints.BreakpointStatusChanged += breakpointStatusChanged;
-			DebuggingService.Breakpoints.BreakpointModified += breakpointStatusChanged;
+			breakpoints.BreakpointAdded += breakpointAdded;
+			breakpoints.BreakpointRemoved += breakpointRemoved;
+			breakpoints.BreakpointStatusChanged += breakpointStatusChanged;
+			breakpoints.BreakpointModified += breakpointStatusChanged;
 			DebuggingService.PinnedWatches.WatchAdded += OnWatchAdded;
 			DebuggingService.PinnedWatches.WatchRemoved += OnWatchRemoved;
 			DebuggingService.PinnedWatches.WatchChanged += OnWatchChanged;
@@ -971,10 +973,10 @@ namespace MonoDevelop.SourceEditor
 			DebuggingService.CurrentFrameChanged -= currentFrameChanged;
 			DebuggingService.StoppedEvent -= currentFrameChanged;
 			DebuggingService.ResumedEvent -= currentFrameChanged;
-			DebuggingService.Breakpoints.BreakpointAdded -= breakpointAdded;
-			DebuggingService.Breakpoints.BreakpointRemoved -= breakpointRemoved;
-			DebuggingService.Breakpoints.BreakpointStatusChanged -= breakpointStatusChanged;
-			DebuggingService.Breakpoints.BreakpointModified -= breakpointStatusChanged;
+			breakpoints.BreakpointAdded -= breakpointAdded;
+			breakpoints.BreakpointRemoved -= breakpointRemoved;
+			breakpoints.BreakpointStatusChanged -= breakpointStatusChanged;
+			breakpoints.BreakpointModified -= breakpointStatusChanged;
 			DebuggingService.PinnedWatches.WatchAdded -= OnWatchAdded;
 			DebuggingService.PinnedWatches.WatchRemoved -= OnWatchRemoved;
 			DebuggingService.PinnedWatches.WatchChanged -= OnWatchChanged;
@@ -1213,15 +1215,18 @@ namespace MonoDevelop.SourceEditor
 			if (!forceUpdate) {
 				int i = 0, count = 0;
 				bool mismatch = false;
-				foreach (Breakpoint bp in DebuggingService.Breakpoints.GetBreakpointsAtFile (fp.FullPath)) {
-					count++;
-					if (i < breakpointSegments.Count) {
-						int lineNumber = widget.TextEditor.Document.OffsetToLineNumber (breakpointSegments [i].Offset);
-						if (lineNumber != bp.Line) {
-							mismatch = true;
-							break;
+
+				lock (breakpoints) {
+					foreach (var bp in breakpoints.GetBreakpointsAtFile (fp.FullPath)) {
+						count++;
+						if (i < breakpointSegments.Count) {
+							int lineNumber = widget.TextEditor.Document.OffsetToLineNumber (breakpointSegments [i].Offset);
+							if (lineNumber != bp.Line) {
+								mismatch = true;
+								break;
+							}
+							i++;
 						}
-						i++;
 					}
 				}
 				
@@ -1241,9 +1246,12 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 			breakpointSegments.Clear ();
-			foreach (Breakpoint bp in DebuggingService.Breakpoints.GetBreakpointsAtFile (fp.FullPath)) {
-				lineNumbers.Add (bp.Line);
-				AddBreakpoint (bp);
+
+			lock (breakpoints) {
+				foreach (Breakpoint bp in breakpoints.GetBreakpointsAtFile (fp.FullPath)) {
+					lineNumbers.Add (bp.Line);
+					AddBreakpoint (bp);
+				}
 			}
 			
 			foreach (int lineNumber in lineNumbers) {
@@ -1345,7 +1353,8 @@ namespace MonoDevelop.SourceEditor
 					if (args.LineSegment != null) {
 						int column = TextEditor.Caret.Line == args.LineNumber ? TextEditor.Caret.Column : 1;
 
-						DebuggingService.Breakpoints.Toggle (this.Document.FileName, args.LineNumber, column);
+						lock (breakpoints)
+							breakpoints.Toggle (this.Document.FileName, args.LineNumber, column);
 					}
 				}
 			}
