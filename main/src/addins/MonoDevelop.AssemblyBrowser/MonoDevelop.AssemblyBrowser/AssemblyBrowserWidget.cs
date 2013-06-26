@@ -449,13 +449,13 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			StringBuilder sb;
 			
-			switch (member.EntityType) {
-			case EntityType.TypeDefinition:
+			switch (member.SymbolKind) {
+			case SymbolKind.TypeDefinition:
 				var type = member as IUnresolvedTypeDefinition;
 				if (type.TypeParameters.Count == 0)
 					return "T:" + type.FullName;
 				return "T:" + type.FullName + "`" + type.TypeParameters.Count;
-			case EntityType.Method:
+			case SymbolKind.Method:
 				var method = (IUnresolvedMethod)member;
 				sb = new StringBuilder ();
 				sb.Append ("M:");
@@ -468,7 +468,7 @@ namespace MonoDevelop.AssemblyBrowser
 				}
 				AppendHelpParameterList (sb, method.Parameters);
 				return sb.ToString ();
-			case EntityType.Constructor:
+			case SymbolKind.Constructor:
 				var constructor = (IUnresolvedMethod)member;
 				sb = new StringBuilder ();
 				sb.Append ("M:");
@@ -476,16 +476,16 @@ namespace MonoDevelop.AssemblyBrowser
 				sb.Append (".#ctor");
 				AppendHelpParameterList (sb, constructor.Parameters);
 				return sb.ToString ();
-			case EntityType.Destructor: // todo
+			case SymbolKind.Destructor: // todo
 				return "todo";
-			case EntityType.Property:
+			case SymbolKind.Property:
 				sb = new StringBuilder ();
 				sb.Append ("P:");
 				sb.Append (member.DeclaringTypeDefinition.ReflectionName);
 				sb.Append (".");
 				sb.Append (member.Name);
 				return sb.ToString ();
-			case EntityType.Indexer:
+			case SymbolKind.Indexer:
 				var indexer = (IUnresolvedProperty)member;
 				sb = new StringBuilder ();
 				sb.Append ("P:");
@@ -493,21 +493,21 @@ namespace MonoDevelop.AssemblyBrowser
 				sb.Append (".Item");
 				AppendHelpParameterList (sb, indexer.Parameters);
 				return sb.ToString ();
-			case EntityType.Field:
+			case SymbolKind.Field:
 				sb = new StringBuilder ();
 				sb.Append ("F:");
 				sb.Append (member.DeclaringTypeDefinition.ReflectionName);
 				sb.Append (".");
 				sb.Append (member.Name);
 				return sb.ToString ();
-			case EntityType.Event:
+			case SymbolKind.Event:
 				sb = new StringBuilder ();
 				sb.Append ("E:");
 				sb.Append (member.DeclaringTypeDefinition.ReflectionName);
 				sb.Append (".");
 				sb.Append (member.Name);
 				return sb.ToString ();
-			case EntityType.Operator: // todo
+			case SymbolKind.Operator: // todo
 				return "todo";
 			}
 			return "unknown entity: " + member;
