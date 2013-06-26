@@ -40,7 +40,7 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 	{
 		protected SubversionBackend backend;
 		protected SubversionRepository repo;
-		protected FilePath svnRoot;
+		protected FilePath svnRoot = ""; // Moved to Win32 and Unix versions.
 		protected FilePath svnCheckout;
 		protected FilePath repoLocation = "";
 		protected Process svnServe = null;
@@ -52,7 +52,6 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 			ProcessStartInfo info;
 
 			// Generate directories and a svn util.
-			svnRoot = new FilePath (FileService.CreateTempDirectory ());
 			svnCheckout = new FilePath (FileService.CreateTempDirectory () + Path.DirectorySeparatorChar);
 
 			// Create repo in "repo".
@@ -67,7 +66,7 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 
 			// Create host (Win32)
 			// This needs to be done after doing the svnAdmin creation.
-			// So I put it here.
+			// And before checkout.
 			if (svnServe != null) {
 				info = new ProcessStartInfo ();
 				info.FileName = "svnserve";
@@ -75,14 +74,6 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 				info.WindowStyle = ProcessWindowStyle.Hidden;
 				svnServe.StartInfo = info;
 				svnServe.Start ();
-			}
-
-			// Create user to auth.
-			using (var perm = File. CreateText (svnRoot + Path.DirectorySeparatorChar + "repo" +
-			                                    Path.DirectorySeparatorChar + "conf" + Path.DirectorySeparatorChar + "svnserve.conf")) {
-				perm.WriteLine ("[general]");
-				perm.WriteLine ("anon-access = write");
-				perm.WriteLine ("[sasl]");
 			}
 
 			// Check out the repository.
