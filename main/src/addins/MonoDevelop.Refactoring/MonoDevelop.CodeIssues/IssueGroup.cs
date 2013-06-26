@@ -180,7 +180,12 @@ namespace MonoDevelop.CodeIssues
 				
 					// Now process the existing issues
 					foreach (var issue in allIssues) {
-						ProcessIssue (issue);
+						var group = ProcessIssue (issue);
+						
+						// TODO: Could this be run without holding the lock and is it worth it?
+						if (group != null) {
+							group.Push (issue);	
+						}
 					}
 				}
 			}
@@ -192,6 +197,7 @@ namespace MonoDevelop.CodeIssues
 		/// <param name="issue">The <see cref="IssueSummary"/> to push through the tree.</param>
 		public void Push (IssueSummary issue)
 		{
+			IssueGroup group;
 			lock (_lock) {
 				if (!allIssues.Contains (issue)) {
 					IssueCount++;
@@ -200,11 +206,14 @@ namespace MonoDevelop.CodeIssues
 				if (!processingEnabled) {
 					return;
 				}
-				ProcessIssue (issue);
+				group = ProcessIssue (issue);
+			}
+			if (group != null) {
+				group.Push (issue);
 			}
 		}
 
-		void ProcessIssue (IssueSummary issue)
+		IssueGroup ProcessIssue (IssueSummary issue)
 		{
 			IssueGroup group = null;
 			if (groupingProvider != null) {
@@ -212,17 +221,10 @@ namespace MonoDevelop.CodeIssues
 			}
 			if (group == null) {
 				leaves.Add (issue);
-			}
-			else if (!groups.Contains (group)) {
+			} else if (!groups.Contains (group)) {
 				groups.Add (group);
 			}
-			
-			if (group != null) {
-				group.Push (issue);	
-			} else {
-				leaves.Add (issue);
-			}
-			
+			return group;
 		}
 	}
 }

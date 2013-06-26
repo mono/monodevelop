@@ -143,6 +143,17 @@ namespace MonoDevelop.Refactoring
 			sourceProvider.Next = new MockGroupingProvider();
 			Assert.IsTrue (eventCalled, "The event was not called.");
 		}
+		
+		[Test]
+		public void LeavesFilteredCorrectly ()
+		{
+			var leafGroup = new IssueGroup (NullGroupingProvider.Instance, NullGroupingProvider.Instance, "sut");
+			var issue = new IssueSummary ();
+			leafGroup.Push (issue);
+			
+			CollectionAssert.Contains (leafGroup.Issues, issue, "The number of issues in the group was incorrect.");
+			Assert.AreEqual (1, leafGroup.Issues.Count, "The group contained too many issues.");
+		}
 	}
 }
 

@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Refactoring;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -67,6 +68,17 @@ namespace MonoDevelop.CodeIssues
 		/// </summary>
 		public IssueMarker IssueMarker { get; set; }
 
+		/// <summary>
+		/// Gets or sets the file that this issue was found in.
+		/// </summary>
+		/// <value>The file.</value>
+		public ProjectFile File { get; set; }
+		
+		/// <summary>
+		/// Gets or sets the project this issue was found in.
+		/// </summary>
+		/// <value>The project.</value>
+		public Project Project { get; set; }
 	}
 }
 

@@ -121,6 +121,8 @@
     <Compile Include="MonoDevelop.CodeIssues\IssueSummaryEventArgs.cs" />
     <Compile Include="MonoDevelop.CodeIssues\GroupingProviderEventArgs.cs" />
     <Compile Include="MonoDevelop.CodeIssues\AbstractGroupingProvider.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\ProviderGroupingProvider.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\SeverityGroupingProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />

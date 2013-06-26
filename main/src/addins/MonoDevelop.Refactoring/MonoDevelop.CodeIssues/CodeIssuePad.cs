@@ -61,7 +61,9 @@ namespace MonoDevelop.CodeIssues
 		CancellationTokenSource tokenSource;
 
 		static Type[] groupingProviders = new[] {
-			typeof(CategoryGroupingProvider)
+			typeof(CategoryGroupingProvider),
+			typeof(ProviderGroupingProvider),
+			typeof(SeverityGroupingProvider)
 		};
 
 		public CodeIssuePadControl ()
@@ -73,7 +75,9 @@ namespace MonoDevelop.CodeIssues
 			cancelButton.Sensitive = false;
 			buttonRow.PackStart (cancelButton);
 			
-			var groupingProvider = new CategoryGroupingProvider ();
+			var groupingProvider = new CategoryGroupingProvider {
+					Next = new ProviderGroupingProvider()
+			};
 			groupingProviderControl = new GroupingProviderChainControl (groupingProvider, groupingProviders);
 			buttonRow.PackStart (groupingProviderControl);
 			
@@ -92,8 +96,11 @@ namespace MonoDevelop.CodeIssues
 			var rootProvider = groupingProviderControl.RootGroupingProvider;
 			rootGroup = new IssueGroup (rootProvider, rootProvider.Next, "root group");
 			rootGroup.ChildrenInvalidated += (sender, group) => {
-				store.Clear ();
-				InsertTopRow ();
+				Application.Invoke (delegate {
+					store.Clear ();
+					InsertTopRow ();
+					UpdateUi ();
+				});
 			};
 		}
 
@@ -163,7 +170,11 @@ namespace MonoDevelop.CodeIssues
 											Region = r.Region,
 											ProviderTitle = provider.Title,
 											ProviderDescription = provider.Description,
-											ProviderCategory = provider.Category
+											ProviderCategory = provider.Category,
+											Severity = provider.GetSeverity (),
+											IssueMarker = provider.IssueMarker,
+											File = file,
+											Project = project
 										};
 										rootGroup.Push (issue);
 									}
@@ -268,7 +279,16 @@ namespace MonoDevelop.CodeIssues
 
 		void UpdateText (TreeNavigator navigator, IssueSummary issue)
 		{
-			navigator.SetValue (textField, string.Format ("{0}: {1}", issue.Severity, issue.IssueDescription));
+			var region = issue.Region;
+			string lineDescription;
+			if (region.BeginLine == region.EndLine) {
+				lineDescription = region.BeginLine.ToString ();
+			} else {
+				lineDescription = string.Format ("{0}-{1}", region.BeginLine, region.EndLine);
+			}
+			var fileName = Path.GetFileName (issue.File.Name);
+			var title = string.Format ("{0} [{1}:{2}]", issue.IssueDescription, fileName, lineDescription);
+			navigator.SetValue (textField, title);
 		}
 
 		void AddDummyChild (TreeNavigator navigator)
