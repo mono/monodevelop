@@ -332,7 +332,7 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		
-		// Returns a path to the last version of the file updated from the repository
+		// Returns the content of the file in the base revision of the working copy.
 		public abstract string GetBaseText (FilePath localFile);
 		
 		// Returns the revision history of a file

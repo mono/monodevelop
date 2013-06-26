@@ -43,8 +43,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			return ptr;
 		}
 		
-		public abstract void initialize();
-		public abstract IntPtr pool_create_ex(out IntPtr pool, IntPtr parent, IntPtr abort, IntPtr allocator);
+		public abstract int initialize();
+		public abstract int pool_create_ex(out IntPtr pool, IntPtr parent, IntPtr abort, IntPtr allocator);
 		public abstract void pool_destroy(IntPtr pool);
 		public abstract IntPtr hash_first(IntPtr pool, IntPtr hash);
 		public abstract IntPtr hash_next(IntPtr hashindex);
@@ -67,8 +67,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 	{
 		private const string aprlib = "libapr-0.so.0";
 		
-		public override void initialize() { apr_initialize (); }
-		public override IntPtr pool_create_ex (out IntPtr pool, IntPtr parent, IntPtr abort, IntPtr allocator) { return apr_pool_create_ex(out pool, parent, abort, allocator); }
+		public override int initialize() { return apr_initialize (); }
+		public override int pool_create_ex (out IntPtr pool, IntPtr parent, IntPtr abort, IntPtr allocator) { return apr_pool_create_ex(out pool, parent, abort, allocator); }
 		public override void pool_destroy(IntPtr pool) { apr_pool_destroy (pool); }
 		public override IntPtr hash_first(IntPtr pool, IntPtr hash) { return apr_hash_first (pool, hash); }
 		public override IntPtr hash_next(IntPtr hashindex) { return apr_hash_next(hashindex); }
@@ -80,8 +80,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		public override int file_open(ref IntPtr newf, string fname, int flag, int perm, IntPtr pool) { return apr_file_open(ref newf, fname, flag, perm, pool); } 
 		public override int file_close (IntPtr file) { return apr_file_close (file); } 	
 
-		[DllImport(aprlib)] static extern void apr_initialize();
-		[DllImport(aprlib)] static extern IntPtr apr_pool_create_ex(out IntPtr pool, IntPtr parent, IntPtr abort, IntPtr allocator);
+		[DllImport(aprlib)] static extern int apr_initialize();
+		[DllImport(aprlib)] static extern int apr_pool_create_ex(out IntPtr pool, IntPtr parent, IntPtr abort, IntPtr allocator);
 		[DllImport(aprlib)] static extern void apr_pool_destroy(IntPtr pool);
 		[DllImport(aprlib)] static extern IntPtr apr_hash_first(IntPtr pool, IntPtr hash);
 		[DllImport(aprlib)] static extern IntPtr apr_hash_next(IntPtr hashindex);
@@ -98,8 +98,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 	{
 		private const string aprlib = "libapr-1.so.0";
 		
-		public override void initialize() { apr_initialize (); }
-		public override IntPtr pool_create_ex (out IntPtr pool, IntPtr parent, IntPtr abort, IntPtr allocator) { return apr_pool_create_ex(out pool, parent, abort, allocator); }
+		public override int initialize() { return apr_initialize (); }
+		public override int pool_create_ex (out IntPtr pool, IntPtr parent, IntPtr abort, IntPtr allocator) { return apr_pool_create_ex(out pool, parent, abort, allocator); }
 		public override void pool_destroy(IntPtr pool) { apr_pool_destroy (pool); }
 		public override IntPtr hash_first(IntPtr pool, IntPtr hash) { return apr_hash_first (pool, hash); }
 		public override IntPtr hash_next(IntPtr hashindex) { return apr_hash_next(hashindex); }
@@ -111,8 +111,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		public override int file_open(ref IntPtr newf, string fname, int flag, int perm, IntPtr pool) { return apr_file_open(ref newf, fname, flag, perm, pool); } 
 		public override int file_close (IntPtr file) { return apr_file_close (file); } 	
 
-		[DllImport(aprlib)] static extern void apr_initialize();
-		[DllImport(aprlib)] static extern IntPtr apr_pool_create_ex(out IntPtr pool, IntPtr parent, IntPtr abort, IntPtr allocator);
+		[DllImport(aprlib)] static extern int apr_initialize();
+		[DllImport(aprlib)] static extern int apr_pool_create_ex(out IntPtr pool, IntPtr parent, IntPtr abort, IntPtr allocator);
 		[DllImport(aprlib)] static extern void apr_pool_destroy(IntPtr pool);
 		[DllImport(aprlib)] static extern IntPtr apr_hash_first(IntPtr pool, IntPtr hash);
 		[DllImport(aprlib)] static extern IntPtr apr_hash_next(IntPtr hashindex);
