@@ -26,8 +26,13 @@ namespace SubversionAddinWindows
 				// of a file to a stream.
 				client.Write (new SvnPathTarget (file), data);
 				return TextFile.ReadFile (file, data).Text;
-			} catch {
-				return String.Empty;
+			} catch (SvnIllegalTargetException e) {
+				// This occurs when we don't have a base file for
+				// the target file. We have no way of knowing if
+				// a file has a base version therefore this will do.
+				if (e.SvnErrorCode == SvnErrorCode.SVN_ERR_ILLEGAL_TARGET)
+					return String.Empty;
+				throw;
 			}
 		}
 		
