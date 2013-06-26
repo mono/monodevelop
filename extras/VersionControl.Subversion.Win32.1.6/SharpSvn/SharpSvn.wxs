@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.microsoft.com/wix/2006/wi tools/wix.xsd">
+  <!-- $Id: SharpSvn.wxs 1296 2009-06-21 12:07:55Z rhuijben $ -->
+  <Fragment>
+    <!-- When referenced installs a Win32 SharpSvn into the directory DIR_SharpSvn -->
+    <ComponentGroup Id="LOCAL_SharpSvn_Win32">
+      <ComponentRef Id="C_LOCAL_SharpSvn.dll" />
+      <ComponentRef Id="C_LOCAL_SharpSvn_Sasl21_23_win32.dll" />
+      <ComponentRef Id="C_LOCAL_SharpPlink_Win32.svnExe" />
+      <?ifndef SharpSvn_NoDB?>
+      <ComponentRef Id="C_LOCAL_SharpSvn_DB44_20_win32.dll" />
+      <?endif?>
+      <?ifdef SharpSvn_Pdb?>
+      <ComponentRef Id="C_LOCAL_SharpSvn.pdb" />
+      <ComponentRef Id="C_LOCAL_SharpPlink_Win32.pdb" />
+      <?endif?>
+      <?ifndef SharpSvn_NoXml?>
+      <ComponentRef Id="C_LOCAL_SharpSvn.xml" />
+      <?endif?>
+      <?ifndef SharpSvn_NoResources?>
+      <!-- TODO: Add resource dll's -->
+      <?endif?>
+    </ComponentGroup>
+  </Fragment>
+  <Fragment>
+    <!-- When referenced installs SharpSvn into the GAC -->
+    <ComponentGroup Id="GAC_SharpSvn_Win32">
+      <!-- Not implemented yet -->
+      <ComponentRef Id="C_GAC_SharpSvn" />
+    </ComponentGroup>
+  </Fragment>
+  <Fragment>
+    <!-- When referenced installs a SharpSvn.UI into the directory DIR_SharpSvn -->
+    <ComponentGroup Id="LOCAL_SharpSvnUI">
+      <ComponentRef Id="C_LOCAL_SharpSvn.UI.dll" />
+      <?ifdef SharpSvn_Pdb?>
+      <ComponentRef Id="C_LOCAL_SharpSvn.UI.pdb" />
+      <?endif?>
+      <?ifndef SharpSvn_NoXml?>
+      <ComponentRef Id="C_LOCAL_SharpSvn.UI.xml" />
+      <?endif?>
+      <?ifndef SharpSvn_NoResources?>
+      <!-- TODO: Add resource dll's -->
+      <?endif?>
+    </ComponentGroup>
+  </Fragment>
+  <Fragment>
+    <!-- Always installed items -->
+    <DirectoryRef Id="DIR_SharpSvn" FileSource="$(sys.SOURCEFILEDIR)">
+      <Component Id="C_LOCAL_SharpSvn.dll" Guid="32EB117A-B450-4137-B453-072D03DAECB1">
+        <File Id="CF_LOCAL_SharpSvn.dll" Name="SharpSvn.dll" Vital="yes" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="C_LOCAL_SharpSvn_Sasl21_23_win32.dll" Guid="CE42CB05-C393-4876-8F1A-10711D68ACF1">
+        <File Id="CF_LOCAL_SharpSvn_Sasl21_23_win32.dll" Name="SharpSvn-Sasl21-23-win32.dll" Vital="yes" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="C_LOCAL_SharpPlink_Win32.svnExe" Guid="34F616E9-637E-44F0-9416-F79325560FDE">
+        <File Id="CF_LOCAL_SharpPlink_Win32.svnExe" Name="SharpPlink-Win32.svnExe" Vital="yes" KeyPath="yes" Checksum="yes" />
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <!-- BDB is optional (BDB repository format support is disabled if not available) -->
+    <DirectoryRef Id="DIR_SharpSvn" FileSource="$(sys.SOURCEFILEDIR)">
+      <Component Id="C_LOCAL_SharpSvn_DB44_20_win32.dll" Guid="29EEA692-708D-499B-8543-E4B43D1293AE">
+        <File Id="CF_LOCAL_SharpSvn_DB44_20_win32.dll" Name="SharpSvn-DB44-20-win32.dll" Vital="yes" KeyPath="yes" Checksum="yes" />
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="DIR_SharpSvn" FileSource="$(sys.SOURCEFILEDIR)">
+      <Component Id="C_LOCAL_SharpSvn.pdb" Guid="F38A631A-F9DE-4A4C-B4DD-2C94FA4A7E1F">
+        <File Id="CF_LOCAL_SharpSvn.pdb" Name="SharpSvn.pdb" KeyPath="yes" />
+      </Component>
+      <Component Id="C_LOCAL_SharpPlink_Win32.pdb" Guid="F3ED7757-1A3E-4F56-8CCE-811924222608">
+        <File Id="CF_LOCAL_SharpPlink_Win32.pdb" Name="SharpPlink-Win32.pdb" KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="DIR_SharpSvn" FileSource="$(sys.SOURCEFILEDIR)">
+      <Component Id="C_LOCAL_SharpSvn.xml" Guid="79440517-DF55-459A-93D6-B3A59D976072">
+        <File Id="CF_LOCAL_SharpSvn.xml" Name="SharpSvn.xml" KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="DIR_SharpSvn" FileSource="$(sys.SOURCEFILEDIR)">
+      <Component Id="C_LOCAL_SharpSvn.UI.dll" Guid="19505234-2C62-4785-B12B-D4891966A87E">
+        <File Id="CF_LOCAL_SharpSvn.UI.dll" Name="SharpSvn.UI.dll" Vital="yes" KeyPath="yes" Checksum="yes"/>
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="DIR_SharpSvn" FileSource="$(sys.SOURCEFILEDIR)">
+      <Component Id="C_LOCAL_SharpSvn.UI.pdb" Guid="4DC97A6D-5BF8-4FBC-A525-698A4466C5ED">
+        <File Id="CF_LOCAL_SharpSvn.UI.pdb" Name="SharpSvn.UI.pdb" KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+  <Fragment>
+    <DirectoryRef Id="DIR_SharpSvn" FileSource="$(sys.SOURCEFILEDIR)">
+      <Component Id="C_LOCAL_SharpSvn.UI.xml" Guid="FDBDAF00-1FCB-4A44-8E97-3ED6766B626B">
+        <File Id="CF_LOCAL_SharpSvn.UI.xml" Name="SharpSvn.UI.xml" KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+</Wix>
