@@ -89,7 +89,7 @@ module CompilerService =
 
   /// Run the F# compiler with the specified arguments (passed as a list)
   /// and print the arguments to progress monitor (Output in MonoDevelop)
-  let private compile (runtime:TargetRuntime) (framework:TargetFramework) (monitor:IProgressMonitor) argsList = 
+  let private compile (runtime:TargetRuntime) (framework:TargetFramework) (monitor:IProgressMonitor) projectDir argsList = 
   
 //    let nw x = if x = None then "None" else x.Value 
 //    monitor.Log.WriteLine("Env compiler: " + nw (Common.getCompilerFromEnvironment runtime framework))
@@ -133,7 +133,7 @@ module CompilerService =
       let startInfo = 
         new ProcessStartInfo
           (FileName = fscPath.Value, UseShellExecute = false, Arguments = args,
-           RedirectStandardError = true, CreateNoWindow = true) 
+           RedirectStandardError = true, CreateNoWindow = true, WorkingDirectory = projectDir) 
       Debug.WriteLine (sprintf "Compiler: Compile using: %s Arguments: %s" fscPath.Value args)
       let p = Process.Start(startInfo) 
       
@@ -173,6 +173,7 @@ module CompilerService =
     let reqLangVersion = FSharpCompilerVersion.LatestKnown
     let runtime = config.TargetRuntime
     let framework = config.TargetFramework
+    let root = Path.GetDirectoryName(config.ProjectParameters.ParentProject.FileName.FullPath.ToString())
     let args = 
         [ yield! [ "--noframework --nologo" ]
           yield! generateCmdArgs(config, reqLangVersion, items, configSel)
@@ -181,8 +182,7 @@ module CompilerService =
           // Generate source files (sort using current configuration)
           let fsconfig = config.ProjectParameters :?> FSharpProjectParameters
           let files = CompilerArguments.getSourceFiles items
-          let root = Path.GetDirectoryName(config.ProjectParameters.ParentProject.FileName.FullPath.ToString())
           for file in CompilerArguments.getItemsInOrder root files fsconfig.BuildOrder false do 
              yield CompilerArguments.wrapFile file ]
           
-    compile runtime framework monitor args
+    compile runtime framework monitor root args
