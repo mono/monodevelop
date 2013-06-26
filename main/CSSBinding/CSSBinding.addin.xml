@@ -1,10 +1,10 @@
-<Addin id          = "CSharpBinding"
+<Addin id          = "CSSBinding"
        namespace   = "MonoDevelop"
-       name        = "CSharp Language Binding"
-       author      = "Todd Berman"
+       name        = "CSS Language Binding"
+       author      = "Diyoda"
        copyright   = "MIT X11"
        url         = "http://www.monodevelop.com/"
-       description = "CSharp Language Binding"
+       description = "CSS Language Binding"
        category    = "Language bindings"
        version     = "4.1.4">
 	
@@ -43,12 +43,10 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">
-		<FileTemplate id = "CSharpEmptyFile" resource = "EmptyCSharpFile.xft.xml"/>
-		<FileTemplate id = "CSharpAssemblyInfo" resource = "AssemblyInfo.xft.xml"/>
-		<FileTemplate id = "EmptyCSSFile1" resource = "EmptyCSSFile1.xft.xml"/>
+		<FileTemplate id = "EmptyCSSFile" resource = "EmptyCSSFile.xft.xml"/>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
+	<!--<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
 		<ProjectTemplate id = "CSharpConsoleProject" resource = "ConsoleProject.xpt.xml"/>
 		<ProjectTemplate id = "CSharpEmptyProject" resource = "EmptyProject.xpt.xml"/>
 		<ProjectTemplate id = "CSharpGtkSharp2Project" resource = "GtkSharp2Project.xpt.xml"/>
@@ -96,9 +94,11 @@
 		<DataType class = "MonoDevelop.CSharp.Project.CSharpCompilerParameters" />
 		<DataType class = "MonoDevelop.CSharp.Project.CSharpProjectParameters" />
 	</Extension>
+	
+	-->
 
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
-		<!-- indent engine must be before the completion text editor engine,
+		<!--indent engine must be before the completion text editor engine,
 		otherwise stuff like
 
 		int Foo {
@@ -109,7 +109,6 @@
 		int Foo {
 		         get;
 		         privaet;
-
 		-->
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Formatting.CSharpTextEditorIndentation" />
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Completion.CSharpCompletionTextEditorExtension" />

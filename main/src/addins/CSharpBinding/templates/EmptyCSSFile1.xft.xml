@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<Template Originator="Diyoda" Language="CSS" Created="3/09/2001" LastModified="3/09/2001">
+	
+	<TemplateConfiguration>
+		<_Name>Spreadsheet1</_Name>
+		<Icon>md-text-file-icon</Icon>
+		<_Category>Web</_Category>
+		<LanguageName>CSS</LanguageName>
+		<_Description>Creates an empty CSS file.</_Description>
+		<DefaultFilename>EmptyCSSFile1</DefaultFilename>
+	</TemplateConfiguration>
+	
+	<TemplateFiles>
+		<File DefaultExtension=".css" DefaultName="EmptyCSSFile1" AddStandardHeader="True">
+		</File>
+	</TemplateFiles>
+	
+	<FileOptions/>
+	
+</Template>

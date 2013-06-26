@@ -5,7 +5,7 @@ namespace Stetic
 	internal class Gui
 	{
 		private static bool initialized;
-		
+
 		internal static void Initialize (Gtk.Widget iconRenderer)
 		{
 			if ((Stetic.Gui.initialized == false)) {
@@ -13,7 +13,7 @@ namespace Stetic
 			}
 		}
 	}
-	
+
 	internal class IconLoader
 	{
 		public static Gdk.Pixbuf LoadIcon (Gtk.Widget widget, string name, Gtk.IconSize size)
@@ -24,7 +24,7 @@ namespace Stetic
 			} else {
 				int sz;
 				int sy;
-				global::Gtk.Icon.SizeLookup (size, out  sz, out  sy);
+				global::Gtk.Icon.SizeLookup (size, out sz, out sy);
 				try {
 					return Gtk.IconTheme.Default.LoadIcon (name, sz, 0);
 				} catch (System.Exception) {
@@ -39,22 +39,26 @@ namespace Stetic
 						pmap.DrawRectangle (gc, false, 0, 0, (sz - 1), (sz - 1));
 						gc.SetLineAttributes (3, Gdk.LineStyle.Solid, Gdk.CapStyle.Round, Gdk.JoinStyle.Round);
 						gc.RgbFgColor = new Gdk.Color (255, 0, 0);
-						pmap.DrawLine (gc, (sz / 4), (sz / 4), ((sz - 1) - (sz / 4)), ((sz - 1) - (sz / 4)));
-						pmap.DrawLine (gc, ((sz - 1) - (sz / 4)), (sz / 4), (sz / 4), ((sz - 1) - (sz / 4)));
+						pmap.DrawLine (gc, (sz / 4), (sz / 4), ((sz - 1) 
+							- (sz / 4)), ((sz - 1) 
+							- (sz / 4)));
+						pmap.DrawLine (gc, ((sz - 1) 
+							- (sz / 4)), (sz / 4), (sz / 4), ((sz - 1) 
+							- (sz / 4)));
 						return Gdk.Pixbuf.FromDrawable (pmap, pmap.Colormap, 0, 0, 0, 0, sz, sz);
 					}
 				}
 			}
 		}
 	}
-	
+
 	internal class ActionGroups
 	{
 		public static Gtk.ActionGroup GetActionGroup (System.Type type)
 		{
 			return Stetic.ActionGroups.GetActionGroup (type.FullName);
 		}
-		
+
 		public static Gtk.ActionGroup GetActionGroup (string name)
 		{
 			return null;

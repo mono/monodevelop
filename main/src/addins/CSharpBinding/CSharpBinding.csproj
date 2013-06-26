@@ -197,6 +197,9 @@
     <EmbeddedResource Include="templates\PortableLibrary.xpt.xml">
       <LogicalName>PortableLibrary.xpt.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="templates\EmptyCSSFile1.xft.xml">
+      <LogicalName>EmptyCSSFile1.xft.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="gtk-gui\generated.cs" />
