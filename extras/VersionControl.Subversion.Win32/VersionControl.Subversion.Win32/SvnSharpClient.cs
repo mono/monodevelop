@@ -1,8 +1,6 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using MonoDevelop.Core;
 using MonoDevelop.VersionControl;
 using MonoDevelop.VersionControl.Subversion;
@@ -10,6 +8,7 @@ using SharpSvn;
 using SharpSvn.Security;
 using SvnRevision = MonoDevelop.VersionControl.Subversion.SvnRevision;
 using MonoDevelop.Ide;
+using MonoDevelop.Projects.Text;
 
 namespace SubversionAddinWindows
 {
@@ -18,6 +17,24 @@ namespace SubversionAddinWindows
 		static bool errorShown;
 		static bool installError;
 		static SvnClient client;
+
+		internal static string GetBaseText (string file)
+		{
+			MemoryStream data = new MemoryStream();
+			try {
+				// This outputs the contents of the base revision
+				// of a file to a stream.
+				client.Write (new SvnPathTarget (file), data);
+				return TextFile.ReadFile (file, data).Text;
+			} catch (SvnIllegalTargetException e) {
+				// This occurs when we don't have a base file for
+				// the target file. We have no way of knowing if
+				// a file has a base version therefore this will do.
+				if (e.SvnErrorCode == SvnErrorCode.SVN_ERR_ILLEGAL_TARGET)
+					return String.Empty;
+				throw;
+			}
+		}
 		
 		static SvnSharpClient ()
 		{
@@ -63,12 +80,17 @@ namespace SubversionAddinWindows
 	{
 		SvnClient client;
 
+		public override string GetTextBase (string file)
+		{
+			return SvnSharpClient.GetBaseText (file);
+		}
+
 		public SvnSharpBackend ()
 		{
 			Init ();
 		}
 
-		void Init ( )
+		void Init ()
 		{
 			client = new SvnClient ();
 			client.Authentication.SslClientCertificateHandlers += new EventHandler<SharpSvn.Security.SvnSslClientCertificateEventArgs> (AuthenticationSslClientCertificateHandlers);

@@ -1,0 +1,32 @@
+<Addin id        = "SubversionAddinWindows.1.6"
+       namespace = "MonoDevelop"
+       version   = "4.1.4">
+  <Header>
+    <Name>Subversion Add-in</Name>
+    <Description>Subversion support for the Version Control Add-in</Description>
+    <Description locale="ca">Suport per a Subversion</Description>
+    <Icon32>subversion-logo.png</Icon32>
+    <Author>Lluis Sanchez</Author>
+    <Copyright>GPL</Copyright>
+    <Category>Version Control</Category>
+  </Header>
+
+	<Dependencies>
+		<Addin id="Core" version="4.1.4"/>
+		<Addin id="Ide" version="4.1.4"/>
+		<Addin id="VersionControl" version="4.1.4"/>
+		<Addin id="VersionControl.Subversion" version="4.1.4"/>
+	</Dependencies>
+
+	<Runtime>
+    <Import file="SharpSvn.dll" />
+    <Import file="SharpPlink-Win32.svnExe" />
+    <Import file="SharpSvn-DB44-20-Win32.dll" />
+    <Import file="SharpSvn-SASL21-23-Win32.dll" />
+    <Import file="SubversionAddinWindows.exclude.addins" />
+  </Runtime>
+
+	<Extension path = "/MonoDevelop/VersionControl/VersionControlSystems">
+		<Class class = "SubversionAddinWindows.SvnSharpClient" />
+	</Extension>
+</Addin>
