@@ -31,15 +31,36 @@ namespace Mono.TextTemplating.Tests
 {
 	public static class TemplatingEngineHelper
 	{
-		public static string StripHeader (string input, string newLine)
+		/// <summary>
+		/// Cleans CodeDOM generated code so that Windows/Mac and Mono/.NET output can be compared.
+		/// </summary>
+		public static string CleanCodeDom (string input, string newLine)
 		{
 			using (var writer = new StringWriter ()) {
 				using (var reader = new StringReader (input)) {
-					for (int i = 0; i < 9; i++) {
-						reader.ReadLine ();
-					}
+
+					bool afterLineDirective = true;
+					bool stripHeader = true;
+
 					string line;
 					while ((line = reader.ReadLine ()) != null) {
+
+						if (stripHeader) {
+							if (line.StartsWith ("//", StringComparison.Ordinal) || string.IsNullOrWhiteSpace (line))
+								continue;
+							stripHeader = false;
+						}
+
+						if (afterLineDirective) {
+							if (string.IsNullOrWhiteSpace (line))
+								continue;
+							afterLineDirective = false;
+						}
+
+						if (line.Contains ("#line")) {
+							afterLineDirective = true;
+						}
+
 						writer.Write (line);
 						writer.Write (newLine);
 					}

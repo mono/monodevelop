@@ -38,7 +38,6 @@ namespace Mono.TextTemplating.Tests
 	public class GenerationTests
 	{	
 		[Test]
-		[Ignore]
 		public void Generate ()
 		{
 			string Input = ParsingTests.ParseSample1;
@@ -47,7 +46,6 @@ namespace Mono.TextTemplating.Tests
 		}
 		
 		[Test]
-		[Ignore]
 		public void GenerateMacNewlines ()
 		{
 			string MacInput = ParsingTests.ParseSample1.Replace ("\n", "\r");
@@ -56,7 +54,6 @@ namespace Mono.TextTemplating.Tests
 		}
 		
 		[Test]
-		[Ignore]
 		public void GenerateWindowsNewlines ()
 		{
 			string WinInput = ParsingTests.ParseSample1.Replace ("\n", "\r\n");
@@ -72,7 +69,10 @@ namespace Mono.TextTemplating.Tests
 			string className = "GeneratedTextTransformation4f504ca0";
 			string code = GenerateCode (host, input, className, newline);
 			Assert.AreEqual (0, host.Errors.Count);
-			Assert.AreEqual (expectedOutput, TemplatingEngineHelper.StripHeader (code, newline));
+
+			var generated = TemplatingEngineHelper.CleanCodeDom (code, newline);
+			expectedOutput = TemplatingEngineHelper.CleanCodeDom (expectedOutput, newline);
+			Assert.AreEqual (expectedOutput, generated);
 		}
 		
 		#region Helpers
@@ -120,7 +120,7 @@ namespace Microsoft.VisualStudio.TextTemplating {
         
         
         #line 9 """"
-         
+
 baz \#>
 
         #line default
