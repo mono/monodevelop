@@ -18,7 +18,7 @@ open ICSharpCode.NRefactory.Completion
 /// Item that is returned in a list of completions Contains title and can generate description (tool-tip shown on 
 /// the right) of the item. Description should be generated lazily because this is quite slow (in the F# services)
 type internal FSharpMemberCompletionData(mi:Declaration) =
-    inherit CompletionData(CompletionText = (if mi.Name |> String.forall (fun c -> System.Char.IsLetterOrDigit c || c = '_') then mi.Name else "``" + mi.Name + "``"), 
+    inherit CompletionData(CompletionText = (if mi.Name |> String.forall PrettyNaming.IsIdentifierPartCharacter then mi.Name else "``" + mi.Name + "``"), 
                            DisplayText = mi.Name, 
                            DisplayFlags = DisplayFlags.DescriptionHasMarkup)
     override x.Description = TipFormatter.formatTip false mi.DescriptionText    
