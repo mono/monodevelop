@@ -41,7 +41,6 @@ namespace VersionControl.Subversion.Unix.Tests
 	{
 		UnixSvnBackend backend;
 		SubversionRepository repo;
-		Process svnServe;
 		FilePath svnRoot;
 		FilePath svnCheckout;
 
@@ -74,25 +73,14 @@ namespace VersionControl.Subversion.Unix.Tests
 				perm.WriteLine ("[sasl]");
 			}
 
-			// Create host.
-			svnServe = new Process ();
-			info = new ProcessStartInfo ();
-			info.FileName = "svnserve";
-			info.Arguments = "-dr " + svnRoot;
-			info.WindowStyle = ProcessWindowStyle.Hidden;
-			svnServe.StartInfo = info;
-			svnServe.Start ();
-
 			// Check out the repository.
 			Checkout (svnCheckout);
-			repo = GetRepo ("svn://localhost:3690/repo", svnCheckout);
+			repo = GetRepo ("file://" + svnRoot + "/repo", svnCheckout);
 		}
 
 		[TearDown]
 		public void TearDown ()
 		{
-			svnServe.Kill ();
-
 			DeleteDirectory (svnRoot);
 			DeleteDirectory (svnCheckout);
 		}
@@ -153,7 +141,7 @@ namespace VersionControl.Subversion.Unix.Tests
 				Assert.AreEqual ("File committed", rev.Message);
 				foreach (var change in rev.ChangedFiles) {
 					Assert.AreEqual (RevisionAction.Add, change.Action);
-					Assert.AreEqual ("/testfile", change.Path);
+					Assert.AreEqual ("file://" + svnRoot + "/repo//testfile", change.Path);
 				}
 			}
 		}
@@ -209,7 +197,7 @@ namespace VersionControl.Subversion.Unix.Tests
 
 		public void Checkout (string path)
 		{
-			backend.Checkout ("svn://localhost:3690/repo",
+			backend.Checkout ("file://" + svnRoot + "/repo",
 				path, SvnRevision.Head,
 				true, new NullProgressMonitor ());
 		}
