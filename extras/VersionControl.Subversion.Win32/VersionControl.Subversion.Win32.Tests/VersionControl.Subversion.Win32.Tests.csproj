@@ -49,6 +49,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="RepositoryTests.cs" />
+    <Compile Include="..\..\..\main\src\addins\VersionControl\MonoDevelop.VersionControl.Subversion.Tests\BaseRepositoryTests.cs">
+      <Link>BaseRepositoryTests.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
