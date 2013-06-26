@@ -1,5 +1,0 @@
-<Addins>
-	<Exclude>SharpSvn.dll</Exclude>
-	<Exclude>SharpSvn-DB44-20-win32.dll</Exclude>
-	<Exclude>SharpSvn-Sasl21-23-win32.dll</Exclude>
-</Addins>

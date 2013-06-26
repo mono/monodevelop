@@ -54,14 +54,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data.DataSetExtensions">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
     <Reference Include="MonoDevelop.Core">
       <HintPath>..\..\..\main\build\bin\MonoDevelop.Core.dll</HintPath>
       <Private>False</Private>
@@ -78,14 +70,15 @@
       <HintPath>..\..\..\main\build\AddIns\VersionControl\MonoDevelop.VersionControl.Subversion.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="SharpSvn, Version=1.5005.984.35067, Culture=neutral, PublicKeyToken=d729672594885a28, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="SharpSvn, Version=1.6017.1920.11722, Culture=neutral, PublicKeyToken=d729672594885a28">
       <HintPath>..\SharpSvn\SharpSvn.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SvnSharpClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\..\VersionControl.Subversion.Win32\VersionControl.Subversion.Win32\SvnSharpClient.cs">
+      <Link>SvnSharpClient.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Manifest.addin.xml" />
@@ -95,13 +88,6 @@
       <Link>SharpPlink-Win32.svnExe</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Content Include="subversion-logo.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SubversionAddinWindows.exclude.addins">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <SubType>Designer</SubType>
-    </Content>
     <Content Include="..\SharpSvn\SharpSvn-DB44-20-win32.dll">
       <Link>SharpSvn-DB44-20-win32.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -110,6 +96,12 @@
       <Link>SharpSvn-Sasl21-23-win32.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="..\..\VersionControl.Subversion.Win32\VersionControl.Subversion.Win32\SubversionAddinWindows.exclude.addins">
+      <Link>SubversionAddinWindows.exclude.addins</Link>
+    </None>
+    <None Include="..\..\VersionControl.Subversion.Win32\VersionControl.Subversion.Win32\subversion-logo.png">
+      <Link>subversion-logo.png</Link>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

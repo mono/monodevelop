@@ -54,8 +54,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
     <Reference Include="MonoDevelop.Core">
       <HintPath>..\..\..\main\build\bin\MonoDevelop.Core.dll</HintPath>
       <Private>False</Private>
