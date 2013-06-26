@@ -74,6 +74,14 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 				info.WindowStyle = ProcessWindowStyle.Hidden;
 				svnServe.StartInfo = info;
 				svnServe.Start ();
+
+				// Create user to auth.
+				using (var perm = File. CreateText (svnRoot + Path.DirectorySeparatorChar + "repo" +
+				                                    Path.DirectorySeparatorChar + "conf" + Path.DirectorySeparatorChar + "svnserve.conf")) {
+					perm.WriteLine ("[general]");
+					perm.WriteLine ("anon-access = write");
+					perm.WriteLine ("[sasl]");
+				}
 			}
 
 			// Check out the repository.

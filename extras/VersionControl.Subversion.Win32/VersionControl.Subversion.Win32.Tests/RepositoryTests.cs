@@ -43,6 +43,7 @@ namespace VersionControl.Subversion.Win32.Tests
 		[SetUp]
 		public override void Setup ()
 		{
+			svnRoot = new FilePath (FileService.CreateTempDirectory ());
 			repoLocation = "svn://localhost:3690/repo";
 			backend = new SvnSharpBackend ();
 			svnServe = new Process ();
