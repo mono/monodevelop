@@ -28,6 +28,7 @@ using System.IO;
 using System.Reflection;
 using MonoDevelop.Core;
 using System.Collections.Generic;
+using Mono.Addins;
 
 namespace MonoDevelop.Tests.TestRunner
 {
@@ -39,6 +40,19 @@ namespace MonoDevelop.Tests.TestRunner
 		{
 			var list = new List<string> (arguments);
 			list.Add ("-domain=None");
+
+			foreach (var ar in arguments) {
+				if ((ar.EndsWith (".dll") || ar.EndsWith (".exe")) && File.Exists (ar)) {
+					try {
+						var asm = Assembly.LoadFrom (ar);
+						foreach (AddinDependencyAttribute att in asm.GetCustomAttributes (typeof(AddinDependencyAttribute), true)) {
+							AddinManager.LoadAddin (new Mono.Addins.ConsoleProgressStatus (false), att.Id);
+						}
+					} catch (Exception ex) {
+						Console.WriteLine (ex);
+					}
+				}
+			}
 			return NUnit.ConsoleRunner.Runner.Main (list.ToArray ());
 		}
 
