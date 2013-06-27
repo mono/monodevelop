@@ -88,7 +88,7 @@ type InteractiveSession() =
   member x.SendCommand(str:string) = 
     waitingForResponse <- true
     Debug.WriteLine (sprintf "Interactive: sending %s" str)
-    fsiProcess.StandardInput.Write(str + ";;\n")
+    fsiProcess.StandardInput.Write(str + if str.EndsWith(";;") then "\n" else ";;\n")
 
   member x.Exited = fsiProcess.Exited
     
