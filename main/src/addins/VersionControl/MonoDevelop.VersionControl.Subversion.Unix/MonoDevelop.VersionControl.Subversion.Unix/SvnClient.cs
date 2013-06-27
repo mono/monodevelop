@@ -197,7 +197,10 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		LibSvnClient.NotifyLockState requiredLockState;
 
 		// retain this so the delegates aren't GC'ed
-		LibSvnClient.svn_client_ctx_t ctxstruct;
+		LibSvnClient.svn_wc_notify_func2_t notify_func;
+		LibSvnClient.svn_client_get_commit_log_t log_func;
+		IntPtr config_hash;
+		IntPtr wc_ctx;
 
 		static bool IsBinary (byte[] buffer, long length)
 		{
@@ -224,27 +227,27 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				throw new InvalidOperationException ("Could not create a Subversion client context.");
 			
 			// Set the callbacks on the client context structure.
+			notify_func = new LibSvnClient.svn_wc_notify_func2_t (svn_wc_notify_func_t_impl);
+			Marshal.WriteIntPtr (ctx,
+			                     (int) Marshal.OffsetOf (typeof (LibSvnClient.svn_client_ctx_t), "NotifyFunc2"),
+			                     Marshal.GetFunctionPointerForDelegate (notify_func));
+			log_func = new LibSvnClient.svn_client_get_commit_log_t (svn_client_get_commit_log_impl);
+			Marshal.WriteIntPtr (ctx,
+			                     (int) Marshal.OffsetOf (typeof (LibSvnClient.svn_client_ctx_t), "LogMsgFunc"),
+			                     Marshal.GetFunctionPointerForDelegate (log_func));
 			
-			// This is quite a roudabout way of doing this.  The task
-			// is to set the notify field of the unmanaged structure
-			// at the address 'ctx' -- with the address of a delegate.
-			// There's no way to get an address for the delegate directly,
-			// as far as I could figure out, so instead I create a managed
-			// structure that mirrors the start of the unmanaged structure
-			// I want to modify.  Then I marshal the managed structure
-			// *onto* to unmanaged one, overwriting fields in the process.
-			// I don't use references to the structure itself in the API
-			// calls because it needs to be allocated by SVN.  I hope
-			// this doesn't cause any memory leaks.
-			ctxstruct = new LibSvnClient.svn_client_ctx_t ();
-			ctxstruct.NotifyFunc2 = new LibSvnClient.svn_wc_notify_func2_t (svn_wc_notify_func_t_impl);
-			ctxstruct.LogMsgFunc = new LibSvnClient.svn_client_get_commit_log_t (svn_client_get_commit_log_impl);
 			// Load user and system configuration
-			svn.config_get_config (ref ctxstruct.config, null, pool);
+			svn.config_get_config (ref config_hash, null, pool);
+			Marshal.WriteIntPtr (ctx,
+			                     (int) Marshal.OffsetOf (typeof (LibSvnClient.svn_client_ctx_t), "config"),
+			                     config_hash);
 
 			if (!pre_1_7) {
 				IntPtr scratch = newpool (IntPtr.Zero);
-				svn.wc_context_create (out ctxstruct.wc_ctx, ctxstruct.config, pool, scratch);
+				svn.wc_context_create (out wc_ctx, config_hash, pool, scratch);
+				Marshal.WriteIntPtr (ctx,
+				                     (int) Marshal.OffsetOf (typeof (LibSvnClient.svn_client_ctx_t), "wc_ctx"),
+				                     wc_ctx);
 				apr.pool_destroy (scratch);
 			}
 
@@ -294,8 +297,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			// Create the authentication baton			
 			svn.auth_open (out auth_baton, providers, pool);
 
-			ctxstruct.auth_baton = auth_baton;
-			Marshal.StructureToPtr (ctxstruct, ctx, false);
+			Marshal.WriteIntPtr (ctx,
+			                     (int) Marshal.OffsetOf (typeof(LibSvnClient.svn_client_ctx_t), "auth_baton"),
+			                     auth_baton);
 		}
 		
 		public void Dispose ()
