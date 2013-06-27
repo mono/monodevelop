@@ -49,7 +49,7 @@ namespace MonoDevelop.Components.Commands
 		DateTime lastUserInteraction;
 		KeyboardShortcut[] chords;
 		string chord;
-		internal const int SlowCommandWarningTime = 200;
+		internal const int SlowCommandWarningTime = 50;
 		
 		Dictionary<object,Command> cmds = new Dictionary<object,Command> ();
 		Hashtable handlerInfo = new Hashtable ();
