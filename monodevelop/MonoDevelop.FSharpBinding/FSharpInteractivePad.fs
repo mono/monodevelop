@@ -35,82 +35,85 @@ module ColorHelpers =
     let hslToGdk (c:HslColor) : Gdk.Color = HslColor.op_Implicit(c)
      
     let cairoToGdk = cairoToHsl >> hslToGdk
-        
+
+[<AutoOpen>]
+module EventHandlerHelpers = 
+  type IDelegateEvent<'Del when 'Del :> Delegate> with
+    member this.Subscribe handler =
+      do this.AddHandler(handler)
+      { new IDisposable with 
+          member x.Dispose() =
+            this.RemoveHandler(handler) }
+
 type FSharpCommands = 
   | ShowFSharpInteractive = 0
   | SendSelection = 1
   | SendLine = 2
-  
+
+type KillIntent = 
+  | Restart
+  | Kill
+  | NoIntent // Unexpected kill, or from #q/#quit, so we prompt  
+
 type FSharpInteractivePad() =
-  let mutable view = new ConsoleView()
-  let mutable prompting = false
+  let view = new ConsoleView()
   let mutable lastCommand = ""
   let mutable currentPath = ""
-  let mutable enterHandler = { new IDisposable with member x.Dispose() = () }
+  let mutable killIntent = NoIntent
+  let mutable isPrompting = false
 
+  let setupSession() = 
+    let ses = InteractiveSession()
+    let textReceived = ses.TextReceived.Subscribe(fun t -> view.WriteOutput t )
+    let promptReady = ses.PromptReady.Subscribe(fun () -> view.Prompt true )
+    ses.Exited.Add(fun e -> 
+      textReceived.Dispose()
+      promptReady.Dispose()
+      currentPath <- ""
+      if killIntent = NoIntent then
+        DispatchService.GuiDispatch(fun () ->
+          Debug.WriteLine (sprintf "Interactive: process stopped")
+          view.WriteOutput("\nSession termination detected. Press Enter to restart."))
+        isPrompting <- true
+      elif killIntent = Restart then 
+        DispatchService.GuiDispatch view.Clear
+      killIntent <- NoIntent)
+
+    ses.StartReceiving()
+    ses
+    
+  let session = ref (Some(setupSession()))
+
+  let sendCommand (str:string) = 
+     session := match !session with 
+                | None -> Some (setupSession())
+                | s -> s
+     !session |> Option.iter (fun s ->
+         lastCommand <- str.Trim()
+         s.SendCommand(str))
+
+  let resetFsi intent = 
+    killIntent <- intent
+    !session |> Option.iter (fun ses -> ses.Kill())
+    if intent = Restart then session := Some (setupSession())
+  
   let AddSourceToSelection selection =
      let stap = IdeApp.Workbench.ActiveDocument.Editor.SelectionRange.Offset
      let line = IdeApp.Workbench.ActiveDocument.Editor.OffsetToLineNumber(stap)
      let file = IdeApp.Workbench.ActiveDocument.FileName
      String.Format("# {0} \"{1}\"\n{2}" ,line,file.FullPath,selection)  
-
-  let rec setupReleaseHandler (ea:Gtk.KeyReleaseEventArgs) =
-    enterHandler.Dispose()
-    enterHandler <- view.Child.KeyReleaseEvent.Subscribe releaseHandler
-  
-  and releaseHandler (ea:Gtk.KeyReleaseEventArgs) =
-    if ea.Event.Key = Key.Return && view.InputLine = "" then  
-      Debug.WriteLine (sprintf "Interactive: Handling enter for empty line")
-      sendCommand "" true
-  
-  and session = 
-    ref (Some(setupSession()))
     
-  and setupSession() = 
-    enterHandler.Dispose()
-    let ses = InteractiveSession()
-    ses.Exited.Add(fun e -> 
-      session := None
-      currentPath <- ""
-      prompting <- false
-      DispatchService.GuiDispatch(fun () ->
-        Debug.WriteLine (sprintf "Interactive: process stopped")
-        if lastCommand = "#q;;" || lastCommand = "#quit;;" then
-          enterHandler <- view.Child.KeyReleaseEvent.Subscribe setupReleaseHandler
-        else
-          enterHandler <- view.Child.KeyReleaseEvent.Subscribe releaseHandler
-        view.WriteOutput("\nSession termination detected. Press Enter to restart.")
-        view.Prompt(true)
-        view.Prompt(true) ))
-    ses.TextReceived.Add(fun t -> 
-      view.WriteOutput(t)
-      if prompting then view.Prompt(true) )
-    ses.PromptReady.Add(fun () -> 
-      if not prompting then view.Prompt(true); prompting <- true)
-    ses.StartReceiving()
-    ses
-    
-  and sendCommand (str:string) fromPrompt = 
-    if view <> null then
-      match !session with
-      | Some(session) when str <> "" -> 
-          lastCommand <- str.Trim()
-          session.SendCommand(str)
-          prompting <- false
-      | Some(_) -> ()
-      | _ -> session := Some(setupSession())
-
   //let handler = 
-  do Debug.WriteLine ("InteracivePad: created!")
+  do Debug.WriteLine ("InteractivePad: created!")
   #if DEBUG
-  do view.Destroyed.Add (fun _ ->       Debug.WriteLine ("Interactive: view destroyed"))
-  do IdeApp.Exiting.Add (fun _ ->       Debug.WriteLine ("Interactive: app exiting!!"))
-  do IdeApp.Exited.Add (fun _ ->       Debug.WriteLine ("Interactive: app exited!!"))
+  do view.Destroyed.Add (fun _ -> Debug.WriteLine ("Interactive: view destroyed"))
+  do IdeApp.Exiting.Add (fun _ -> Debug.WriteLine ("Interactive: app exiting!!"))
+  do IdeApp.Exited.Add  (fun _ -> Debug.WriteLine ("Interactive: app exited!!"))
   #endif
   member x.Shutdown()  = 
     do Debug.WriteLine (sprintf "Interactive: x.Shutdown()!")
-    !session |> Option.iter (fun ses -> ses.Kill())
-
+    resetFsi Kill
+ 
   interface MonoDevelop.Ide.Gui.IPadContent with
     member x.Dispose() =
       Debug.WriteLine ("Interactive: disposing pad...")
@@ -119,10 +122,15 @@ type FSharpInteractivePad() =
     member x.Control : Gtk.Widget = view :> Gtk.Widget
   
     member x.Initialize(container:MonoDevelop.Ide.Gui.IPadWindow) = 
-      view.ConsoleInput.Add(fun cie -> sendCommand cie.Text true)
+      view.ConsoleInput.Add(fun cie -> if isPrompting then 
+                                         isPrompting <- false
+                                         session := None
+                                         sendCommand ""
+                                       else sendCommand cie.Text)
       view.Child.KeyPressEvent.Add(fun ea ->
         if ea.Event.State &&& ModifierType.ControlMask = ModifierType.ControlMask && ea.Event.Key = Key.period then
-          !session |> Option.iter (fun s -> s.Interrupt()) )
+          !session |> Option.iter (fun s -> s.Interrupt()))
+
       x.UpdateFont()   
 
       view.ShadowType <- Gtk.ShadowType.None
@@ -155,10 +163,7 @@ type FSharpInteractivePad() =
       
     member x.RedrawContent() = ()
   
-  member x.RestartFsi() =
-    !session |> Option.iter (fun ses -> ses.Kill())
-    session := None
-    sendCommand "" false
+  member x.RestartFsi() = resetFsi Restart
     
   member x.UpdateColors() =
     match view.Child with
@@ -191,14 +196,14 @@ type FSharpInteractivePad() =
     if IdeApp.Workbench.ActiveDocument.FileName.FileName <> null then
       let path = Path.GetDirectoryName(IdeApp.Workbench.ActiveDocument.FileName.ToString())
       if currentPath <> path then
-        sendCommand ("#silentCd @\"" + path + "\";;") false
+        sendCommand ("#silentCd @\"" + path + "\";;")
         currentPath <- path
         
   member x.SendSelection() = 
     if x.IsSelectionNonEmpty then
       let sel = IdeApp.Workbench.ActiveDocument.Editor.SelectedText
       x.EnsureCorrectDirectory()
-      sendCommand (AddSourceToSelection sel) false
+      sendCommand (AddSourceToSelection sel)
       
   member x.SendLine() = 
     if IdeApp.Workbench.ActiveDocument = null then () 
@@ -208,7 +213,7 @@ type FSharpInteractivePad() =
       let text = IdeApp.Workbench.ActiveDocument.Editor.GetLineText(line)
       let file = IdeApp.Workbench.ActiveDocument.FileName
       let sel = String.Format("# {0} \"{1}\"\n{2}" ,line ,file.FullPath,text) 
-      sendCommand sel false
+      sendCommand sel
 
   member x.IsSelectionNonEmpty = 
     if IdeApp.Workbench.ActiveDocument = null || 
@@ -234,7 +239,7 @@ type FSharpInteractivePad() =
     
     let orderReferences = FSharp.CompilerBinding.OrderAssemblyReferences()
     let references = orderReferences.Order references
-    sendCommand references true
+    sendCommand references
     
       
   static member CurrentPad =  
