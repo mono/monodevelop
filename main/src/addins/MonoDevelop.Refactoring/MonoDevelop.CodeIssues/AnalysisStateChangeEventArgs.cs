@@ -1,5 +1,5 @@
 //
-// AnalysisState.cs
+// AnalysisStateChangeEventArgs.cs
 //
 // Author:
 //       Simon Lindgren <simon.n.lindgren@gmail.com>
@@ -23,14 +23,28 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using System;
 
 namespace MonoDevelop.CodeIssues
 {
-	public enum AnalysisState {
-		NeverStarted,
-		Running,
-		Completed,
-		Cancelled
+	public class AnalysisStateChangeEventArgs : EventArgs
+	{
+		public AnalysisStateChangeEventArgs (AnalysisState oldState, AnalysisState newState)
+		{
+			OldState = oldState;
+			NewState = newState;
+		}
+
+		public AnalysisState OldState {
+			get;
+			private set;
+		}
+		
+		public AnalysisState NewState {
+			get;
+			private set;
+		}
 	}
+
 }
 

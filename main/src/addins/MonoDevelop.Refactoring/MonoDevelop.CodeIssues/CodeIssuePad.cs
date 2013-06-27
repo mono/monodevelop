@@ -28,19 +28,11 @@ using MonoDevelop.Ide.Gui;
 using Xwt;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
-using MonoDevelop.Ide.TypeSystem;
 using System.Threading;
-using ICSharpCode.NRefactory.CSharp.Resolver;
-using ICSharpCode.NRefactory.CSharp;
-using ICSharpCode.NRefactory.CSharp.TypeSystem;
-using MonoDevelop.Refactoring;
-using System.Linq;
 using System.Collections.Generic;
-using MonoDevelop.Core;
-using System.Threading.Tasks;
 using ICSharpCode.NRefactory.TypeSystem;
 using System.IO;
-using ICSharpCode.NRefactory.Refactoring;
+using System.Diagnostics;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -55,11 +47,10 @@ namespace MonoDevelop.CodeIssues
 		GroupingProviderChainControl groupingProviderControl;
 		HBox buttonRow = new HBox();
 		Timer redrawTimer;
-		AnalysisState state;
+		CodeAnalysisBatchRunner runner = new CodeAnalysisBatchRunner();
 		
 		IssueGroup rootGroup;
 		TreeStore store;
-		CancellationTokenSource tokenSource;
 
 		static Type[] groupingProviders = new[] {
 			typeof(CategoryGroupingProvider),
@@ -77,7 +68,7 @@ namespace MonoDevelop.CodeIssues
 			buttonRow.PackStart (cancelButton);
 			
 			var groupingProvider = new CategoryGroupingProvider {
-					Next = new ProviderGroupingProvider()
+				Next = new ProviderGroupingProvider()
 			};
 			groupingProviderControl = new GroupingProviderChainControl (groupingProvider, groupingProviders);
 			buttonRow.PackStart (groupingProviderControl);
@@ -99,30 +90,33 @@ namespace MonoDevelop.CodeIssues
 			rootGroup.ChildrenInvalidated += (sender, group) => {
 				Application.Invoke (delegate {
 					store.Clear ();
-					SyncStateToUi ();
+					SyncStateToUi (runner.State);
 					UpdateUi ();
 				});
 			};
 			
-			state = AnalysisState.NeverStarted;
+			runner.DestinationGroup = rootGroup;
+			runner.AnalysisStateChanged += HandleAnalysisStateChanged;
 		}
 
-		AnalysisState State {
-			get {
-				return state;
-			}
-			set {
-				state = value;
-				SyncStateToUi ();
+		void HandleAnalysisStateChanged (object sender, AnalysisStateChangeEventArgs e)
+		{
+			SyncStateToUi(e.NewState);
+			if (e.NewState == AnalysisState.Running) {
+				Debug.Assert (redrawTimer == null);
+				redrawTimer = new Timer (arg => QueueUiUpdate (), null, 500, 500);
+			} else if (e.NewState == AnalysisState.Completed || e.NewState == AnalysisState.Cancelled) {
+				redrawTimer.Dispose ();
+				redrawTimer = null;
 			}
 		}
 
-		void SyncStateToUi ()
+		void SyncStateToUi (AnalysisState state)
 		{
 			Application.Invoke (delegate {
 				// Update the top row
 				string text;
-				switch (State) {
+				switch (state) {
 				case AnalysisState.Running:
 					text = "Running...";
 					break;
@@ -144,7 +138,7 @@ namespace MonoDevelop.CodeIssues
 				}
 				
 				// Set button sensitivity
-				bool running = State == AnalysisState.Running;
+				bool running = state == AnalysisState.Running;
 				runButton.Sensitive = !running;
 				cancelButton.Sensitive = running;
 			});
@@ -159,93 +153,16 @@ namespace MonoDevelop.CodeIssues
 			cancelButton.Sensitive = true;
 			store.Clear ();
 			rootGroup.ClearStatistics();
-			State = AnalysisState.Running;
-			// Force the ui to update, so that the timer does not race with the creation of the top row
-			SyncStateToUi ();
-			redrawTimer = new Timer (arg => QueueUiUpdate (), null, 500, 500);
-			tokenSource = new CancellationTokenSource ();
-			ThreadPool.QueueUserWorkItem (delegate {
-
-				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor ("Analyzing solution", null, false)) {
-					int work = 0;
-					foreach (var project in solution.GetAllProjects ()) {
-						work += project.Files.Count (f => f.BuildAction == BuildAction.Compile);
-					}
-					monitor.BeginTask ("Analyzing solution", work);
-					TypeSystemParser parser = null;
-					string lastMime = null;
-					CodeIssueProvider[] codeIssueProvider = null;
-					foreach (var project in solution.GetAllProjects ()) {
-						if (tokenSource.IsCancellationRequested)
-							break;
-						var compilation = TypeSystemService.GetCompilation (project);
-						Parallel.ForEach (project.Files, file => {
-							if (file.BuildAction != BuildAction.Compile || tokenSource.IsCancellationRequested)
-								return;
-
-							var editor = TextFileProvider.Instance.GetReadOnlyTextEditorData (file.FilePath);
-
-							if (lastMime != editor.MimeType || parser == null)
-								parser = TypeSystemService.GetParser (editor.MimeType);
-							if (parser == null)
-								return;
-							var reader = new StreamReader (editor.OpenStream ());
-							var document = parser.Parse (true, editor.FileName, reader, project);
-							reader.Close ();
-							if (document == null) 
-								return;
-
-							var resolver = new CSharpAstResolver (compilation, document.GetAst<SyntaxTree> (), document.ParsedFile as CSharpUnresolvedFile);
-							var context = document.CreateRefactoringContextWithEditor (editor, resolver, tokenSource.Token);
-
-							if (lastMime != editor.MimeType || codeIssueProvider == null)
-								codeIssueProvider = RefactoringService.GetInspectors (editor.MimeType).ToArray ();
-							Parallel.ForEach (codeIssueProvider, (provider) => { 
-								var severity = provider.GetSeverity ();
-								if (severity == Severity.None || tokenSource.IsCancellationRequested)
-									return;
-								try {
-									foreach (var r in provider.GetIssues (context, tokenSource.Token)) {
-										var issue = new IssueSummary {
-											IssueDescription = r.Description,
-											Region = r.Region,
-											ProviderTitle = provider.Title,
-											ProviderDescription = provider.Description,
-											ProviderCategory = provider.Category,
-											Severity = provider.GetSeverity (),
-											IssueMarker = provider.IssueMarker,
-											File = file,
-											Project = project
-										};
-										rootGroup.Push (issue);
-									}
-								} catch (OperationCanceledException)  {
-									// The operation was cancelled, no-op as the user-visible parts are
-									// handled elsewhere
-								} catch (Exception ex) {
-									LoggingService.LogError ("Error while running code issue on:"+ editor.FileName, ex);
-								}
-							});
-							lastMime = editor.MimeType;
-							monitor.Step (1);
-						});
-					}
-					Application.Invoke(delegate {
-						if (tokenSource.IsCancellationRequested) {
-							State = AnalysisState.Cancelled;
-						} else {
-							State = AnalysisState.Completed;
-						}
-					});
-					redrawTimer.Dispose ();
-					monitor.EndTask ();
-				}
-			});
+			// Force the ui to update, so that the ui update timer does not race with the creation of the top row
+			// TODO: This has turned very ugly since factoring out CodeAnalysisBatchRunner. 
+			SyncStateToUi (AnalysisState.Running);
+			
+			runner.StartAnalysis (solution);
 		}
 
 		void StopAnalyzation (object sender, EventArgs e)
 		{
-			tokenSource.Cancel ();
+			runner.Stop ();
 		}
 
 		void QueueUiUpdate ()

@@ -124,6 +124,8 @@
     <Compile Include="MonoDevelop.CodeIssues\ProviderGroupingProvider.cs" />
     <Compile Include="MonoDevelop.CodeIssues\SeverityGroupingProvider.cs" />
     <Compile Include="MonoDevelop.CodeIssues\AnalysisState.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\AnalysisStateChangeEventArgs.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\CodeAnalysisBatchRunner.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
@@ -195,6 +197,10 @@
       <Project>{90C99ADB-7D4B-4EB4-98C2-40BD1B14C7D2}</Project>
       <Name>Mono.Debugging</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\external\ngit\NGit\NGit.csproj">
+      <Project>{E3BFF8B4-189C-496A-A817-7E8B31E22B91}</Project>
+      <Name>NGit</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
