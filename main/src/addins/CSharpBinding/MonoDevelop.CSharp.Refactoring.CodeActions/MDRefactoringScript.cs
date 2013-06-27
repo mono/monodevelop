@@ -256,25 +256,33 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 		{
 			DisposeOnClose ();
 		}
-
-		public override void Rename (IEntity entity, string name)
+		public override void Rename (ISymbol symbol, string name)
 		{
-			RenameRefactoring.Rename (entity, name);
-		}
+			IEntity entity = symbol as IEntity;
+			if (entity != null) {
+				RenameRefactoring.Rename (entity, name);
+				return;
+			}
 
-		public override void Rename (IVariable variable, string name)
-		{
-			RenameRefactoring.RenameVariable (variable, name);
-		}
+			IVariable variable = symbol as IVariable;
+			if (variable != null) {
+				RenameRefactoring.RenameVariable (variable, name);
+				return;
+			}
 
-		public override void Rename (INamespace ns, string name)
-		{
-			RenameRefactoring.RenameNamespace (ns, name);
-		}
+			INamespace ns = symbol as INamespace;
+			if (ns != null) {
+				RenameRefactoring.RenameNamespace (ns, name);
+				return;
+			}
 
-		public override void RenameTypeParameter (IType typeParameter, string name = null)
-		{
-			RenameRefactoring.RenameTypeParameter ((ITypeParameter)typeParameter, name);
+			ITypeParameter typeParameter = symbol as ITypeParameter;
+			if (typeParameter != null) {
+				RenameRefactoring.RenameTypeParameter (typeParameter, name);
+				return;
+			}
+
+		throw new InvalidOperationException ("Unrecognized symbol type " + symbol.GetType ().FullName);
 		}
 
 		public override void DoGlobalOperationOn (IEntity entity, Action<RefactoringContext, Script, AstNode> callback, string operationName = null)

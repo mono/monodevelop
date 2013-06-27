@@ -64,7 +64,7 @@ namespace MonoDevelop.AssemblyBrowser
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
 			var method = (IUnresolvedMethod)dataObject;
-			if (method.EntityType == EntityType.Constructor || method.EntityType == EntityType.Destructor)
+			if (method.SymbolKind == SymbolKind.Constructor || method.SymbolKind == SymbolKind.Destructor)
 				return method.DeclaringTypeDefinition.Name;
 			return method.Name;
 		}

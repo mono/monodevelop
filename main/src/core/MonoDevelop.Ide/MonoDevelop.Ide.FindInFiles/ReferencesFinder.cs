@@ -244,7 +244,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		internal static IEnumerable<IEntity> CollectMembers (IType type)
 		{
 			yield return (IEntity)type;
-			foreach (var c in type.GetDefinition ().GetMembers (m => m.EntityType == EntityType.Constructor, GetMemberOptions.IgnoreInheritedMembers)) {
+			foreach (var c in type.GetDefinition ().GetMembers (m => m.SymbolKind == SymbolKind.Constructor, GetMemberOptions.IgnoreInheritedMembers)) {
 				if (!c.IsSynthetic)
 					yield return c;
 			}

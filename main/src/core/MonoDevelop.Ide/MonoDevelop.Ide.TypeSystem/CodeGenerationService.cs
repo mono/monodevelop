@@ -399,20 +399,20 @@ namespace MonoDevelop.Ide.TypeSystem
 		static InsertionPoint GetSuitableInsertionPoint (IEnumerable<InsertionPoint> points, IUnresolvedTypeDefinition cls, IUnresolvedMember member)
 		{
 			var mainPart = cls;
-			switch (member.EntityType) {
-			case EntityType.Field:
+			switch (member.SymbolKind) {
+			case SymbolKind.Field:
 				return GetNewFieldPosition (points, mainPart);
-			case EntityType.Method:
-			case EntityType.Constructor:
-			case EntityType.Destructor:
-			case EntityType.Operator:
+			case SymbolKind.Method:
+			case SymbolKind.Constructor:
+			case SymbolKind.Destructor:
+			case SymbolKind.Operator:
 				return GetNewMethodPosition (points, mainPart);
-			case EntityType.Event:
+			case SymbolKind.Event:
 				return GetNewEventPosition (points, mainPart);
-			case EntityType.Property:
+			case SymbolKind.Property:
 				return GetNewPropertyPosition (points, mainPart);
 			}
-			throw new InvalidOperationException ("Invalid member type: " + member.EntityType);
+			throw new InvalidOperationException ("Invalid member type: " + member.SymbolKind);
 		}
 		
 		static InsertionPoint GetSuitableInsertionPoint (IEnumerable<InsertionPoint> points, IUnresolvedTypeDefinition cls, CodeTypeMember mem)
