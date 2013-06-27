@@ -110,8 +110,9 @@ namespace MonoDevelop.SourceEditor
 
 			protected override void OnDrawContent (Gdk.EventExpose evnt, Cairo.Context g)
 			{
+				Theme.BorderColor = marker.TagColor.Color;
 				g.Rectangle (0, 0, Allocation.Width, Allocation.Height);
-				g.Color = marker.LineColor.SecondColor;
+				g.Color = marker.TagColor.Color;
 				g.Fill ();
 
 				double y = 8;
