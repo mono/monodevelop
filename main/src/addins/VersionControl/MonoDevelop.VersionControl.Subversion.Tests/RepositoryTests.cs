@@ -34,8 +34,6 @@ using System.Diagnostics;
 using System.IO;
 using System;
 
-[assembly:Mono.Addins.AddinDependency ("MonoDevelop.VersionControl.Subversion.Unix","")]
-
 namespace VersionControl.Subversion.Unix.Tests
 {
 	[TestFixture]

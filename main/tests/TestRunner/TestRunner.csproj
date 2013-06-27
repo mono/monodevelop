@@ -43,6 +43,7 @@
     <Reference Include="nunit.framework">
       <HintPath>..\..\external\mdtestharness\framework\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
