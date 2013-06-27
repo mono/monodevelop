@@ -166,7 +166,8 @@ namespace MonoDevelop.VersionControl
 		public IEnumerable<VersionInfo> GetVersionInfo (IEnumerable<FilePath> paths, VersionInfoQueryFlags queryFlags = VersionInfoQueryFlags.None)
 		{
 			if ((queryFlags & VersionInfoQueryFlags.IgnoreCache) != 0) {
-				var res = OnGetVersionInfo (paths, (queryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0);
+				// We shouldn't use IEnumerable because elements don't save property modifications.
+				var res = OnGetVersionInfo (paths, (queryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0).ToList ();
 				infoCache.SetStatus (res);
 				return res;
 			}
