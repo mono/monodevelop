@@ -434,8 +434,8 @@ namespace MonoDevelop.VersionControl
 
 		public void Revert (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
 		{
-			OnRevert (localPaths, recurse, monitor);
 			ClearCachedVersionInfo (localPaths);
+			OnRevert (localPaths, recurse, monitor);
 		}
 
 		public void Revert (FilePath localPath, bool recurse, IProgressMonitor monitor)
@@ -447,16 +447,16 @@ namespace MonoDevelop.VersionControl
 
 		public void RevertRevision (FilePath localPath, Revision revision, IProgressMonitor monitor)
 		{
-			OnRevertRevision (localPath, revision, monitor);
 			ClearCachedVersionInfo (localPath);
+			OnRevertRevision (localPath, revision, monitor);
 		}
 
 		protected abstract void OnRevertRevision (FilePath localPath, Revision revision, IProgressMonitor monitor);
 
 		public void RevertToRevision (FilePath localPath, Revision revision, IProgressMonitor monitor)
 		{
-			OnRevertToRevision (localPath, revision, monitor);
 			ClearCachedVersionInfo (localPath);
+			OnRevertToRevision (localPath, revision, monitor);
 		}
 		
 		protected abstract void OnRevertToRevision (FilePath localPath, Revision revision, IProgressMonitor monitor);
