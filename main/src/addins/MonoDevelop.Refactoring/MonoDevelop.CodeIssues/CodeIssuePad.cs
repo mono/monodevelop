@@ -55,6 +55,7 @@ namespace MonoDevelop.CodeIssues
 		GroupingProviderChainControl groupingProviderControl;
 		HBox buttonRow = new HBox();
 		Timer redrawTimer;
+		AnalysisState state;
 		
 		IssueGroup rootGroup;
 		TreeStore store;
@@ -98,17 +99,55 @@ namespace MonoDevelop.CodeIssues
 			rootGroup.ChildrenInvalidated += (sender, group) => {
 				Application.Invoke (delegate {
 					store.Clear ();
-					InsertTopRow ();
+					SyncStateToUi ();
 					UpdateUi ();
 				});
 			};
+			
+			state = AnalysisState.NeverStarted;
 		}
 
-		TreeNavigator InsertTopRow ()
+		AnalysisState State {
+			get {
+				return state;
+			}
+			set {
+				state = value;
+				SyncStateToUi ();
+			}
+		}
+
+		void SyncStateToUi ()
 		{
-			var rootNode = store.AddNode ();
-			rootNode.SetValue (textField, "Analyzing...");
-			return rootNode;
+			Application.Invoke (delegate {
+				// Update the top row
+				string text;
+				switch (State) {
+				case AnalysisState.Running:
+					text = "Running...";
+					break;
+				case AnalysisState.Cancelled:
+					text = string.Format ("Found issues: {0} (Cancelled)", rootGroup.IssueCount);
+					break;
+				case AnalysisState.Completed:
+					text = string.Format ("Found issues: {0}", rootGroup.IssueCount);
+					break;
+				}
+				if (text != null) {
+					var topRow = store.GetFirstNode ();
+					// Weird way to check if the store was empty during the call above.
+					// Might not be portable...
+					if (topRow.CurrentPosition == null) {
+						topRow = store.AddNode ();
+					}
+					topRow.SetValue (textField, text);
+				}
+				
+				// Set button sensitivity
+				bool running = State == AnalysisState.Running;
+				runButton.Sensitive = !running;
+				cancelButton.Sensitive = running;
+			});
 		}
 		
 		void StartAnalyzation (object sender, EventArgs e)
@@ -116,13 +155,15 @@ namespace MonoDevelop.CodeIssues
 			var solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
 			if (solution == null)
 				return;
-			redrawTimer = new Timer (arg => QueueUiUpdate (), null, 500, 500);
 			runButton.Sensitive = false;
 			cancelButton.Sensitive = true;
 			store.Clear ();
 			rootGroup.ClearStatistics();
+			State = AnalysisState.Running;
+			// Force the ui to update, so that the timer does not race with the creation of the top row
+			SyncStateToUi ();
+			redrawTimer = new Timer (arg => QueueUiUpdate (), null, 500, 500);
 			tokenSource = new CancellationTokenSource ();
-			var rootNode = InsertTopRow ();
 			ThreadPool.QueueUserWorkItem (delegate {
 
 				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor ("Analyzing solution", null, false)) {
@@ -189,13 +230,12 @@ namespace MonoDevelop.CodeIssues
 							monitor.Step (1);
 						});
 					}
-					Application.Invoke (delegate {
-						var status = string.Format ("Found issues: {0}{1}",
-							rootGroup.IssueCount,
-							tokenSource.IsCancellationRequested ? " (Cancelled)" : string.Empty);
-						rootNode.SetValue (textField, status);
-						runButton.Sensitive = true;
-						cancelButton.Sensitive = false;
+					Application.Invoke(delegate {
+						if (tokenSource.IsCancellationRequested) {
+							State = AnalysisState.Cancelled;
+						} else {
+							State = AnalysisState.Completed;
+						}
 					});
 					redrawTimer.Dispose ();
 					monitor.EndTask ();
@@ -205,7 +245,6 @@ namespace MonoDevelop.CodeIssues
 
 		void StopAnalyzation (object sender, EventArgs e)
 		{
-			cancelButton.Sensitive = false;
 			tokenSource.Cancel ();
 		}
 

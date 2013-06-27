@@ -123,6 +123,7 @@
     <Compile Include="MonoDevelop.CodeIssues\AbstractGroupingProvider.cs" />
     <Compile Include="MonoDevelop.CodeIssues\ProviderGroupingProvider.cs" />
     <Compile Include="MonoDevelop.CodeIssues\SeverityGroupingProvider.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\AnalysisState.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
