@@ -535,8 +535,8 @@ namespace Mono.TextTemplating
 
 		static CodeSnippetTypeMember CreateSnippetMember (string value, CodeLinePragma location = null)
 		{
-			//HACK: workaround for Mono 3.x not indenting first line of member snippet when inserting into class
-			const string indent = "        ";
+			//HACK: workaround for Mono not indenting first line of member snippet when inserting into class
+			const string indent = "\n        ";
 			if (isMono && !char.IsWhiteSpace (value[0]))
 				value = indent + value;
 
