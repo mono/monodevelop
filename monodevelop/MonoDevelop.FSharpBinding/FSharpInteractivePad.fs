@@ -58,7 +58,6 @@ type KillIntent =
 type FSharpInteractivePad() =
   let view = new ConsoleView()
   let mutable lastCommand = ""
-  let mutable currentPath = ""
   let mutable killIntent = NoIntent
   let mutable isPrompting = false
 
@@ -69,7 +68,6 @@ type FSharpInteractivePad() =
     ses.Exited.Add(fun e -> 
       textReceived.Dispose()
       promptReady.Dispose()
-      currentPath <- ""
       if killIntent = NoIntent then
         DispatchService.GuiDispatch(fun () ->
           Debug.WriteLine (sprintf "Interactive: process stopped")
@@ -110,6 +108,12 @@ type FSharpInteractivePad() =
   do IdeApp.Exiting.Add (fun _ -> Debug.WriteLine ("Interactive: app exiting!!"))
   do IdeApp.Exited.Add  (fun _ -> Debug.WriteLine ("Interactive: app exited!!"))
   #endif
+
+  let ensureCorrectDirectory() =
+    if IdeApp.Workbench.ActiveDocument.FileName.FileName <> null then
+      let path = Path.GetDirectoryName(IdeApp.Workbench.ActiveDocument.FileName.ToString())
+      sendCommand ("#silentCd @\"" + path + "\";;")
+
   member x.Shutdown()  = 
     do Debug.WriteLine (sprintf "Interactive: x.Shutdown()!")
     resetFsi Kill
@@ -147,7 +151,7 @@ type FSharpInteractivePad() =
       
       x.UpdateColors()
                             
-      let toolbar = container.GetToolbar(Gtk.PositionType.Right);
+      let toolbar = container.GetToolbar(Gtk.PositionType.Right)
 
       let buttonClear = new DockToolButton("gtk-clear")
       buttonClear.Clicked.Add(fun _ -> view.Clear())
@@ -191,24 +195,17 @@ type FSharpInteractivePad() =
     Debug.WriteLine (sprintf "Interactive: Loading font '%s'" fontName)
     let font = Pango.FontDescription.FromString(fontName)
     view.SetFont(font)
-    
-  member x.EnsureCorrectDirectory() =
-    if IdeApp.Workbench.ActiveDocument.FileName.FileName <> null then
-      let path = Path.GetDirectoryName(IdeApp.Workbench.ActiveDocument.FileName.ToString())
-      if currentPath <> path then
-        sendCommand ("#silentCd @\"" + path + "\";;")
-        currentPath <- path
         
   member x.SendSelection() = 
     if x.IsSelectionNonEmpty then
       let sel = IdeApp.Workbench.ActiveDocument.Editor.SelectedText
-      x.EnsureCorrectDirectory()
+      ensureCorrectDirectory()
       sendCommand (AddSourceToSelection sel)
       
   member x.SendLine() = 
     if IdeApp.Workbench.ActiveDocument = null then () 
     else
-      x.EnsureCorrectDirectory()
+      ensureCorrectDirectory()
       let line = IdeApp.Workbench.ActiveDocument.Editor.Caret.Line
       let text = IdeApp.Workbench.ActiveDocument.Editor.GetLineText(line)
       let file = IdeApp.Workbench.ActiveDocument.FileName
@@ -227,7 +224,7 @@ type FSharpInteractivePad() =
        IdeApp.Workbench.ActiveDocument.FileName.FileName = null then false
     else
       let file = IdeApp.Workbench.ActiveDocument.FileName.ToString()
-      CompilerArguments.supportedExtension(IO.Path.GetExtension(file))
+      CompilerArguments.supportedExtension(Path.GetExtension(file))
       
   member x.LoadReferences() =
     Debug.WriteLine("FSI:  #LoadReferences")
@@ -240,7 +237,6 @@ type FSharpInteractivePad() =
     let orderReferences = FSharp.CompilerBinding.OrderAssemblyReferences()
     let references = orderReferences.Order references
     sendCommand references
-    
       
   static member CurrentPad =  
     let existing = 
