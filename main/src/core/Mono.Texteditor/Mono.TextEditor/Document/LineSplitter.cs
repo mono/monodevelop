@@ -250,6 +250,8 @@ namespace Mono.TextEditor
 						return new Delimiter ((int)(p - start), 1);
 					case '\n':
 						return new Delimiter ((int)(p - start), 1);
+					case (char)8232: // Unicode LINE SEPARATOR
+						return new Delimiter ((int)(p - start), 1);
 					}
 					p++;
 				}
