@@ -65,7 +65,7 @@ type FSharpInteractivePad() =
        IdeApp.Workbench.ActiveDocument.FileName.FileName = null then false
     else
       let file = IdeApp.Workbench.ActiveDocument.FileName.ToString()
-      CompilerArguments.supportedExtension(IO.Path.GetExtension(file))
+      CompilerArguments.supportedExtension(Path.GetExtension(file))
 
   let getCorrectDirectory () = 
     if IdeApp.Workbench.ActiveDocument <> null && isInsideFSharpFile() then
@@ -113,9 +113,8 @@ type FSharpInteractivePad() =
      String.Format("# {0} \"{1}\"\n{2}" ,line,file.FullPath,selection)  
 
   let ensureCorrectDirectory _ =
-    match getCorrectDirectory() with 
-    | Some path -> sendCommand ("#silentCd @\"" + path + "\";;")
-    | _ -> ()
+    getCorrectDirectory()
+    |> Option.iter (fun path -> sendCommand ("#silentCd @\"" + path + "\";;") )
     
   //let handler = 
   do Debug.WriteLine ("InteractivePad: created!")
@@ -184,23 +183,23 @@ type FSharpInteractivePad() =
     
   member x.UpdateColors() =
     match view.Child with
-      | :? Gtk.TextView as v -> 
-            let colourStyles = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle(MonoDevelop.Ide.IdeApp.Preferences.ColorScheme)
-            
-            let (_, shouldMatch) = PropertyService.Get<string>("FSharpBinding.MatchWitThemePropName", "false") |> System.Boolean.TryParse
-            let themeTextColour = colourStyles.PlainText.Foreground |> cairoToGdk
-            let themeBackColour = colourStyles.PlainText.Background |> cairoToGdk
-            if(shouldMatch) then
-                v.ModifyText(Gtk.StateType.Normal, themeTextColour)
-                v.ModifyBase(Gtk.StateType.Normal, themeBackColour)
-            else
-                let textColour = PropertyService.Get<string>("FSharpBinding.TextColorPropName", "#000000") 
-                                    |> ColorHelpers.strToColor
-                let backColour = PropertyService.Get<string>("FSharpBinding.BaseColorPropName", "#FFFFFF") 
-                                    |> ColorHelpers.strToColor
-                v.ModifyText(Gtk.StateType.Normal, textColour)
-                v.ModifyBase(Gtk.StateType.Normal, backColour)
-      | _ -> ()
+    | :? Gtk.TextView as v -> 
+          let colourStyles = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle(MonoDevelop.Ide.IdeApp.Preferences.ColorScheme)
+          
+          let (_, shouldMatch) = PropertyService.Get<string>("FSharpBinding.MatchWitThemePropName", "false") |> System.Boolean.TryParse
+          let themeTextColour = colourStyles.PlainText.Foreground |> cairoToGdk
+          let themeBackColour = colourStyles.PlainText.Background |> cairoToGdk
+          if(shouldMatch) then
+              v.ModifyText(Gtk.StateType.Normal, themeTextColour)
+              v.ModifyBase(Gtk.StateType.Normal, themeBackColour)
+          else
+              let textColour = PropertyService.Get<string>("FSharpBinding.TextColorPropName", "#000000") 
+                                  |> ColorHelpers.strToColor
+              let backColour = PropertyService.Get<string>("FSharpBinding.BaseColorPropName", "#FFFFFF") 
+                                  |> ColorHelpers.strToColor
+              v.ModifyText(Gtk.StateType.Normal, textColour)
+              v.ModifyBase(Gtk.StateType.Normal, backColour)
+    | _ -> ()
     
   member x.UpdateFont() = 
     let fontName = DesktopService.DefaultMonospaceFont
@@ -208,6 +207,7 @@ type FSharpInteractivePad() =
     Debug.WriteLine (sprintf "Interactive: Loading font '%s'" fontName)
     let font = Pango.FontDescription.FromString(fontName)
     view.SetFont(font)
+
   member x.SendSelection() = 
     if x.IsSelectionNonEmpty then
       let sel = IdeApp.Workbench.ActiveDocument.Editor.SelectedText
