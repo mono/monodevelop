@@ -41,9 +41,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 				if (msg == null)
 					msg = GettextCatalog.GetString ("Unknown error");
-
-				throw new SubversionException (msg);
 			}
+			if (msg != null)
+				throw new SubversionException (msg);
 		}
 		
 		static string GetErrorMessage (LibSvnClient.svn_error_t error)
@@ -770,9 +770,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 					IntPtr item = apr.array_push (array);
 					Marshal.WriteIntPtr (item, apr.pstrdup (localpool, npath));
 				}
-				
+
 				IntPtr commit_info = IntPtr.Zero;
-				
 				commitmessage = message;
 				
 				CheckError (svn.client_commit (ref commit_info, array, false, ctx, localpool));
