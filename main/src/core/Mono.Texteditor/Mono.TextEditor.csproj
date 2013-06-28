@@ -223,6 +223,7 @@
     <Compile Include="Mono.TextEditor\IIconBarMarker.cs" />
     <Compile Include="Mono.TextEditor\UrlMarker.cs" />
     <Compile Include="Mono.TextEditor\StyleTextLineMarker.cs" />
+    <Compile Include="Mono.TextEditor\Standalone\UnicodeNewline.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mono.TextEditor.dll.config">

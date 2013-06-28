@@ -36,6 +36,7 @@ using Mono.TextEditor.Highlighting;
 using Gdk; 
 using Gtk;
 using System.Timers;
+using ICSharpCode.NRefactory;
 
 namespace Mono.TextEditor
 {
@@ -44,7 +45,11 @@ namespace Mono.TextEditor
 		readonly TextEditor textEditor;
 		Pango.TabArray tabArray;
 		Pango.Layout markerLayout, defaultLayout;
-		Pango.Layout macEolLayout, unixEolLayout, windowsEolLayout, eofEolLayout;
+		Pango.Layout eofEolLayout;
+		Pango.Rectangle eofEolLayoutRect;
+		Pango.Layout[] eolMarkerLayout;
+		Pango.Rectangle[] eolMarkerLayoutRect;
+
 		internal double charWidth;
 		int highlightBracketOffset = -1;
 		
@@ -428,10 +433,37 @@ namespace Mono.TextEditor
 			highlightBracketWorker = null;
 		}
 
-		Pango.Rectangle unixEolLayoutRect;
-		Pango.Rectangle macEolLayoutRect;
-		Pango.Rectangle windowsEolLayoutRect;
-		Pango.Rectangle eofEolLayoutRect;
+		static readonly string[] markerTexts = {
+			"\\n",
+			"\\r",
+			"\\r\\n",
+			"<NEL>",
+			"<VT>",
+			"<FF>",
+			"<LS>",
+			"<PS>"
+		};
+
+		static int GetEolMarkerIndex (char ch)
+		{
+			switch (ch) {
+			case NewLine.LF:
+				return 0;
+			case NewLine.CR:
+				return 1;
+			case NewLine.NEL:
+				return 3;
+			case NewLine.VT:
+				return 4;
+			case NewLine.FF:
+				return 5;
+			case NewLine.LS:
+				return 6;
+			case NewLine.PS:
+				return 7;
+			}
+			return 0;
+		}
 
 		protected internal override void OptionsChanged ()
 		{
@@ -463,27 +495,31 @@ namespace Mono.TextEditor
 
 			textEditor.LineHeight = System.Math.Max (1, LineHeight);
 
-			if (unixEolLayout == null) {
-				unixEolLayout = PangoUtil.CreateLayout (textEditor);
-				macEolLayout = PangoUtil.CreateLayout (textEditor);
-				windowsEolLayout = PangoUtil.CreateLayout (textEditor);
+			if (eolMarkerLayout == null) {
+				eolMarkerLayout = new Pango.Layout[8];
+				eolMarkerLayoutRect = new Pango.Rectangle[8];
+				for (int i = 0; i < eolMarkerLayout.Length; i++)
+					eolMarkerLayout[i] = PangoUtil.CreateLayout (textEditor);
 				eofEolLayout = PangoUtil.CreateLayout (textEditor);
 			}
 
 			var font = textEditor.Options.Font.Copy ();
 			font.Size = font.Size * 3 / 4;
-			unixEolLayout.FontDescription = macEolLayout.FontDescription = windowsEolLayout.FontDescription = eofEolLayout.FontDescription = font;
 
-			unixEolLayout.SetText ("\\n");
 			Pango.Rectangle logRect;
-			unixEolLayout.GetPixelExtents (out logRect, out unixEolLayoutRect);
+			for (int i = 0; i < eolMarkerLayout.Length; i++) {
+				var layout = eolMarkerLayout [i];
+				layout.FontDescription = font;
 
-			macEolLayout.SetText ("\\r");
-			macEolLayout.GetPixelExtents (out logRect, out macEolLayoutRect);
+				layout.SetText (markerTexts [i]);
+				
+				Pango.Rectangle tRect;
+				layout.GetPixelExtents (out logRect, out tRect);
+				eolMarkerLayoutRect [i] = tRect;
+			}
 
-			windowsEolLayout.SetText ("\\r\\n");
-			windowsEolLayout.GetPixelExtents (out logRect, out windowsEolLayoutRect);
 
+			eofEolLayout.FontDescription = font;
 			eofEolLayout.SetText ("<EOF>");
 			eofEolLayout.GetPixelExtents (out logRect, out eofEolLayoutRect);
 
@@ -544,10 +580,10 @@ namespace Mono.TextEditor
 
 			if (defaultLayout!= null) 
 				defaultLayout.Dispose ();
-			if (unixEolLayout != null) {
-				macEolLayout.Dispose ();
-				unixEolLayout.Dispose ();
-				windowsEolLayout.Dispose ();
+			if (eolMarkerLayout != null) {
+				foreach (var marker in eolMarkerLayout)
+					marker.Dispose ();
+				eolMarkerLayout = null;
 				eofEolLayout.Dispose ();
 			}
 			
@@ -1713,17 +1749,13 @@ namespace Mono.TextEditor
 				rect = eofEolLayoutRect;
 				break;
 			case 1:
-				if (Document.GetCharAt (line.Offset + line.Length) == '\n') {
-					layout = unixEolLayout;
-					rect = unixEolLayoutRect;
-				} else {
-					layout = macEolLayout;
-					rect = macEolLayoutRect;
-				}
+				var eolIndex = GetEolMarkerIndex (Document.GetCharAt (line.Offset + line.Length));
+				layout = eolMarkerLayout[eolIndex];
+				rect = eolMarkerLayoutRect[eolIndex];
 				break;
 			case 2:
-				layout = windowsEolLayout;
-				rect = windowsEolLayoutRect;
+				layout = eolMarkerLayout[2];
+				rect = eolMarkerLayoutRect[2];
 				break;
 			default:
 				throw new InvalidOperationException (); // other line endings are not known.
