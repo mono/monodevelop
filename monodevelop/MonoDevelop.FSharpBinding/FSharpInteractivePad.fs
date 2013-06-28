@@ -236,6 +236,7 @@ type FSharpInteractivePad() =
     
     let orderReferences = FSharp.CompilerBinding.OrderAssemblyReferences()
     let references = orderReferences.Order references
+    ensureCorrectDirectory()
     sendCommand references
       
   static member CurrentPad =  
