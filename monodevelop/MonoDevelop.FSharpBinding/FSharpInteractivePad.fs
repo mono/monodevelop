@@ -15,7 +15,6 @@ open MonoDevelop.Core
 open MonoDevelop.Ide
 open MonoDevelop.Ide.Gui
 open MonoDevelop.Projects
-
 open MonoDevelop.FSharp
 
 [<AutoOpen>]
@@ -57,9 +56,22 @@ type KillIntent =
 
 type FSharpInteractivePad() =
   let view = new ConsoleView()
-  let mutable lastCommand = ""
   let mutable killIntent = NoIntent
   let mutable isPrompting = false
+  let mutable activeDoc : IDisposable option = None
+  
+  let isInsideFSharpFile () = 
+    if IdeApp.Workbench.ActiveDocument = null ||
+       IdeApp.Workbench.ActiveDocument.FileName.FileName = null then false
+    else
+      let file = IdeApp.Workbench.ActiveDocument.FileName.ToString()
+      CompilerArguments.supportedExtension(IO.Path.GetExtension(file))
+
+  let getCorrectDirectory () = 
+    if IdeApp.Workbench.ActiveDocument <> null && isInsideFSharpFile() then
+      let doc = IdeApp.Workbench.ActiveDocument.FileName.ToString()
+      if doc <> null then Path.GetDirectoryName(doc) |> Some else None
+    else None
 
   let setupSession() = 
     let ses = InteractiveSession()
@@ -76,8 +88,9 @@ type FSharpInteractivePad() =
       elif killIntent = Restart then 
         DispatchService.GuiDispatch view.Clear
       killIntent <- NoIntent)
-
     ses.StartReceiving()
+    // Make sure we're in the correct directory after a start/restart. No ActiveDocument event then.
+    getCorrectDirectory() |> Option.iter (fun path -> ses.SendCommand("#silentCd @\"" + path + "\";;"))
     ses
     
   let session = ref (Some(setupSession()))
@@ -86,9 +99,7 @@ type FSharpInteractivePad() =
      session := match !session with 
                 | None -> Some (setupSession())
                 | s -> s
-     !session |> Option.iter (fun s ->
-         lastCommand <- str.Trim()
-         s.SendCommand(str))
+     !session |> Option.iter (fun s -> s.SendCommand(str))
 
   let resetFsi intent = 
     killIntent <- intent
@@ -100,6 +111,11 @@ type FSharpInteractivePad() =
      let line = IdeApp.Workbench.ActiveDocument.Editor.OffsetToLineNumber(stap)
      let file = IdeApp.Workbench.ActiveDocument.FileName
      String.Format("# {0} \"{1}\"\n{2}" ,line,file.FullPath,selection)  
+
+  let ensureCorrectDirectory _ =
+    match getCorrectDirectory() with 
+    | Some path -> sendCommand ("#silentCd @\"" + path + "\";;")
+    | _ -> ()
     
   //let handler = 
   do Debug.WriteLine ("InteractivePad: created!")
@@ -109,11 +125,6 @@ type FSharpInteractivePad() =
   do IdeApp.Exited.Add  (fun _ -> Debug.WriteLine ("Interactive: app exited!!"))
   #endif
 
-  let ensureCorrectDirectory() =
-    if IdeApp.Workbench.ActiveDocument.FileName.FileName <> null then
-      let path = Path.GetDirectoryName(IdeApp.Workbench.ActiveDocument.FileName.ToString())
-      sendCommand ("#silentCd @\"" + path + "\";;")
-
   member x.Shutdown()  = 
     do Debug.WriteLine (sprintf "Interactive: x.Shutdown()!")
     resetFsi Kill
@@ -121,6 +132,7 @@ type FSharpInteractivePad() =
   interface MonoDevelop.Ide.Gui.IPadContent with
     member x.Dispose() =
       Debug.WriteLine ("Interactive: disposing pad...")
+      activeDoc |> Option.iter (fun ad -> ad.Dispose())
       x.Shutdown()
 
     member x.Control : Gtk.Widget = view :> Gtk.Widget
@@ -134,6 +146,7 @@ type FSharpInteractivePad() =
       view.Child.KeyPressEvent.Add(fun ea ->
         if ea.Event.State &&& ModifierType.ControlMask = ModifierType.ControlMask && ea.Event.Key = Key.period then
           !session |> Option.iter (fun s -> s.Interrupt()))
+      activeDoc <- IdeApp.Workbench.ActiveDocumentChanged.Subscribe ensureCorrectDirectory |> Some
 
       x.UpdateFont()   
 
@@ -195,7 +208,6 @@ type FSharpInteractivePad() =
     Debug.WriteLine (sprintf "Interactive: Loading font '%s'" fontName)
     let font = Pango.FontDescription.FromString(fontName)
     view.SetFont(font)
-        
   member x.SendSelection() = 
     if x.IsSelectionNonEmpty then
       let sel = IdeApp.Workbench.ActiveDocument.Editor.SelectedText
@@ -219,12 +231,7 @@ type FSharpInteractivePad() =
       let sel = IdeApp.Workbench.ActiveDocument.Editor.SelectedText
       not(String.IsNullOrEmpty(sel))
     
-  member x.IsInsideFSharpFile = 
-    if IdeApp.Workbench.ActiveDocument = null ||
-       IdeApp.Workbench.ActiveDocument.FileName.FileName = null then false
-    else
-      let file = IdeApp.Workbench.ActiveDocument.FileName.ToString()
-      CompilerArguments.supportedExtension(Path.GetExtension(file))
+  member x.IsInsideFSharpFile = isInsideFSharpFile()
       
   member x.LoadReferences() =
     Debug.WriteLine("FSI:  #LoadReferences")
@@ -236,6 +243,8 @@ type FSharpInteractivePad() =
     
     let orderReferences = FSharp.CompilerBinding.OrderAssemblyReferences()
     let references = orderReferences.Order references
+    ensureCorrectDirectory() // For good measure
+    
     sendCommand references
       
   static member CurrentPad =  
