@@ -1023,6 +1023,10 @@ namespace Mono.TextEditor
 			if (containsPreedit) {
 				var si = TranslateToUTF8Index (lineChars, (uint)(textEditor.preeditOffset - offset), ref curIndex, ref byteIndex);
 				var ei = TranslateToUTF8Index (lineChars, (uint)(textEditor.preeditOffset - offset + preeditLength), ref curIndex, ref byteIndex);
+				atts.AddForegroundAttribute ((HslColor)ColorStyle.PlainText.Foreground, si, ei);
+				var hasBackground = wrapper.BackgroundColors.Any (bg => bg.FromIdx <= si && bg.ToIdx >= ei);
+				if (hasBackground)
+					atts.AddBackgroundAttribute ((HslColor)ColorStyle.PlainText.Background, si, ei);
 				atts.Splice (textEditor.preeditAttrs, (int)si, (int)(ei - si));
 			}
 			wrapper.LineChars = lineChars;
