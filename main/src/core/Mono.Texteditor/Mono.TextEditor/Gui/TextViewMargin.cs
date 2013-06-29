@@ -475,13 +475,6 @@ namespace Mono.TextEditor
 			markerLayout.FontDescription.Weight = Pango.Weight.Normal;
 			markerLayout.FontDescription.Style = Pango.Style.Normal;
 
-			if (textEditor.preeditString != null && textEditor.preeditAttrs != null) {
-				using (var preeditLayout = PangoUtil.CreateLayout (textEditor)) {
-					preeditLayout.SetText (textEditor.preeditString);
-					preeditLayout.Attributes = textEditor.preeditAttrs;
-				}
-			}
-
 			defaultLayout.FontDescription = textEditor.Options.Font;
 			using (var metrics = textEditor.PangoContext.GetMetrics (textEditor.Options.Font, textEditor.PangoContext.Language)) {
 				this.textEditor.GetTextEditorData ().LineHeight = System.Math.Ceiling (0.5 + (metrics.Ascent + metrics.Descent) / Pango.Scale.PangoScale);
@@ -540,6 +533,8 @@ namespace Mono.TextEditor
 			tabWidthLayout.Dispose ();
 			tabArray = new Pango.TabArray (1, false);
 			tabArray.SetTab (0, Pango.TabAlign.Left, tabWidth);
+
+			textEditor.UpdatePreeditLineHeight ();
 
 			DisposeLayoutDict ();
 			chunkDict.Clear ();

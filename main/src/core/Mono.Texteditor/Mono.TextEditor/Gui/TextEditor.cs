@@ -583,6 +583,11 @@ namespace Mono.TextEditor
 			}
 		}
 
+		internal bool UpdatePreeditLineHeight ()
+		{
+			return textArea.UpdatePreeditLineHeight ();
+		}
+
 		internal void ResetIMContext ()
 		{
 			textArea.ResetIMContext ();
