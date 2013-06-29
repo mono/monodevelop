@@ -423,7 +423,7 @@ namespace Mono.TextEditor
 			window.ShowAll ();
 		}
 		
-		internal int preeditOffset, preeditLine, preeditCursorCharIndex;
+		internal int preeditOffset = -1, preeditLine, preeditCursorCharIndex;
 		internal string preeditString;
 		internal Pango.AttrList preeditAttrs;
 		internal bool preeditHeightChange;
