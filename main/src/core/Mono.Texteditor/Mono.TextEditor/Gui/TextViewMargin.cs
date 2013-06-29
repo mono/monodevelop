@@ -1026,7 +1026,7 @@ namespace Mono.TextEditor
 				var hasBackground = wrapper.BackgroundColors.Any (bg => bg.FromIdx <= si && bg.ToIdx >= ei);
 				if (hasBackground)
 					atts.AddBackgroundAttribute ((HslColor)ColorStyle.PlainText.Background, si, ei);
-				atts.Splice (textEditor.preeditAttrs, (int)si, (int)(ei - si));
+				atts.InsertOffsetList (textEditor.preeditAttrs, si, ei);
 			}
 			wrapper.LineChars = lineChars;
 			wrapper.Layout.SetText (lineText);

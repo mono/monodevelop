@@ -120,6 +120,42 @@ namespace Mono.TextEditor
 			}
 			pango_attr_list_insert (list, attribute);
 		}
+
+		/// <summary>
+		/// Like Splice, except it only offsets/clamps the inserted items, doesn't affect items already in the list.
+		/// </summary>
+		public void InsertOffsetList (Pango.AttrList atts, uint startOffset, uint endOffset)
+		{
+			//HACK: atts.Iterator.Attrs broken (throws NRE), so manually P/Invoke
+			var iter = pango_attr_list_get_iterator (atts.Handle);
+			try {
+				do {
+					IntPtr list = pango_attr_iterator_get_attrs (iter);
+					try {
+						int len = g_slist_length (list);
+						for (uint i = 0; i < len; i++) {
+							IntPtr val = g_slist_nth_data (list, i);
+							AddOffsetCopy (val, startOffset, endOffset);
+						}
+					} finally {
+						g_slist_free (list);
+					}
+				} while (pango_attr_iterator_next (iter));
+			} finally {
+				pango_attr_iterator_destroy (iter);
+			}
+		}
+
+		void AddOffsetCopy (IntPtr attr, uint startOffset, uint endOffset)
+		{
+			var copy = pango_attribute_copy (attr);
+			unsafe {
+				PangoAttribute *attPtr = (PangoAttribute *) copy;
+				attPtr->start_index = startOffset + attPtr->start_index;
+				attPtr->end_index = System.Math.Min (endOffset, startOffset + attPtr->end_index);
+			}
+			pango_attr_list_insert (list, copy);
+		}
 		
 		[DllImport (PangoUtil.LIBPANGO, CallingConvention=CallingConvention.Cdecl)]
 		static extern IntPtr pango_attr_style_new (Pango.Style style);
@@ -153,7 +189,31 @@ namespace Mono.TextEditor
 		
 		[DllImport (PangoUtil.LIBPANGO, CallingConvention=CallingConvention.Cdecl)]
 		static extern void pango_attr_list_splice (IntPtr attr_list, IntPtr other, Int32 pos, Int32 len);
+
+		[DllImport (PangoUtil.LIBPANGO, CallingConvention=CallingConvention.Cdecl)]
+		static extern IntPtr pango_attribute_copy (IntPtr attr);
+
+		[DllImport (PangoUtil.LIBPANGO, CallingConvention=CallingConvention.Cdecl)]
+		static extern IntPtr pango_attr_list_get_iterator (IntPtr list);
 		
+		[DllImport (PangoUtil.LIBPANGO, CallingConvention=CallingConvention.Cdecl)]
+		static extern bool pango_attr_iterator_next (IntPtr iterator);
+
+		[DllImport (PangoUtil.LIBPANGO, CallingConvention=CallingConvention.Cdecl)]
+		static extern void pango_attr_iterator_destroy (IntPtr iterator);
+
+		[DllImport (PangoUtil.LIBPANGO, CallingConvention=CallingConvention.Cdecl)]
+		static extern IntPtr pango_attr_iterator_get_attrs (IntPtr iterator);
+
+		[DllImport (PangoUtil.LIBGLIB, CallingConvention = CallingConvention.Cdecl)]
+		private static extern int g_slist_length (IntPtr l);
+
+		[DllImport (PangoUtil.LIBGLIB, CallingConvention = CallingConvention.Cdecl)]
+		private static extern IntPtr g_slist_nth_data (IntPtr l, uint n);
+
+		[DllImport (PangoUtil.LIBGLIB, CallingConvention = CallingConvention.Cdecl)]
+		private static extern void g_slist_free (IntPtr l);
+
 		public void Splice (Pango.AttrList attrs, int pos, int len)
 		{
 			pango_attr_list_splice (list, attrs.Handle, pos, len);
