@@ -444,6 +444,23 @@ namespace Mono.TextEditor
 					preeditOffset = Caret.Offset;
 					preeditLine = Caret.Line;
 				}
+				if (UpdatePreeditLineHeight ())
+					QueueDraw ();
+			} else {
+				preeditOffset = -1;
+				preeditString = null;
+				preeditAttrs = null;
+				preeditCursorCharIndex = 0;
+				if (UpdatePreeditLineHeight ())
+					QueueDraw ();
+			}
+			this.textViewMargin.ForceInvalidateLine (preeditLine);
+			this.textEditorData.Document.CommitLineUpdate (preeditLine);
+		}
+
+		internal bool UpdatePreeditLineHeight ()
+		{
+			if (!string.IsNullOrEmpty (preeditString)) {
 				using (var preeditLayout = PangoUtil.CreateLayout (this)) {
 					preeditLayout.SetText (preeditString);
 					preeditLayout.Attributes = preeditAttrs;
@@ -453,22 +470,15 @@ namespace Mono.TextEditor
 					if (LineHeight != calcHeight) {
 						textEditorData.HeightTree.SetLineHeight (preeditLine, calcHeight);
 						preeditHeightChange = true;
-						QueueDraw ();
+						return true;
 					}
 				}
-			} else {
-				preeditOffset = -1;
-				preeditString = null;
-				preeditAttrs = null;
-				preeditCursorCharIndex = 0;
-				if (preeditHeightChange) {
-					preeditHeightChange = false;
-					textEditorData.HeightTree.Rebuild ();
-					QueueDraw ();
-				}
+			} else if (preeditHeightChange) {
+				preeditHeightChange = false;
+				textEditorData.HeightTree.Rebuild ();
+				return true;
 			}
-			this.textViewMargin.ForceInvalidateLine (preeditLine);
-			this.textEditorData.Document.CommitLineUpdate (preeditLine);
+			return false;
 		}
 
 		void CaretPositionChanged (object sender, DocumentLocationEventArgs args) 
