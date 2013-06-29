@@ -1667,19 +1667,13 @@ namespace Mono.TextEditor
 
 						wrapper.Dispose ();
 						pangoPosition += vx;
-					} else if (index == length && textEditor.preeditString == null) {
+					} else if (index == length && (textEditor.preeditString == null || textEditor.preeditCursorCharIndex == textEditor.preeditString.Length)) {
 						SetVisibleCaretPosition ((pangoPosition + layout.PangoWidth) / Pango.Scale.PangoScale, y);
 					} else if (index >= 0 && index <= length) {
 						Pango.Rectangle strong_pos, weak_pos;
 						curIndex = byteIndex = 0;
-						int utf8ByteIndex = (int)TranslateToUTF8Index (layout.LineChars, (uint)index, ref curIndex, ref byteIndex);
-						if (textEditor.preeditString != null && textEditor.preeditCursorCharIndex > 0) {
-							curIndex = byteIndex = 0;
-							int preeditUtf8ByteIndex = (int)TranslateToUTF8Index (textEditor.preeditString.ToCharArray (),
-								(uint)textEditor.preeditCursorCharIndex,
-								ref curIndex, ref byteIndex);
-							utf8ByteIndex += preeditUtf8ByteIndex;
-						}
+						int pidx = index + textEditor.preeditCursorCharIndex;
+						int utf8ByteIndex = (int)TranslateToUTF8Index (layout.LineChars, (uint)pidx, ref curIndex, ref byteIndex);
 						layout.Layout.GetCursorPos (utf8ByteIndex, out strong_pos, out weak_pos);
 						SetVisibleCaretPosition (xPos + (strong_pos.X / Pango.Scale.PangoScale), y + (strong_pos.Y / Pango.Scale.PangoScale));
 					}
