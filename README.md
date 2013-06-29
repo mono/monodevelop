@@ -65,8 +65,7 @@ Normally you should get the binding from the repository. If you want to build an
 
 Don't give up! Add an issue to [the issue tracker](https://github.com/fsharp/fsharpbinding/issues). You issue will be seen by the developers.
 
-Users of Windows XP wishing to use this project are advised to select the `windows-xp` entry in the _branch_ pulldown
-menu entry above, and follow the variant instructions which will then be presented.
+Users of Windows XP wishing to use this project are advised to read the instruction in this [fork](https://github.com/satyagraha/fsharpbinding/tree/windows-xp)
 
 ### Notes for Developers
 
@@ -88,11 +87,14 @@ On windows, use the file MonoDevelop.FSharpBinding\MonoDevelop.FSharp.windows.fs
 
 On Mac/Linux, please develop using  the 'Makefile' with Mono 3.0 and FSharp 3.0. There is an old Makefile for the days before xbuild works, but this is not used to prepare distributions.
 
-On Mac/Linux, if you make changes to the binding, then loss of completion lists etc. can be disturbing and hard to debug. There are some debugging techniques. To launch MD you can use
-
-   /Applications/MonoDevelop.app/Contents/MacOS/MonoDevelop --new-window --no-redirect
-   "/Applications/Xamarin Studio.app/Contents/MacOS/XamarinStudio" --new-window --no-redirect
-
+On Mac/Linux, if you make changes to the binding, then loss of completion lists etc. can be disturbing and hard to debug. There are some debugging techniques. To launch MonoDevelop you can use the command:  
+```
+/Applications/MonoDevelop.app/Contents/MacOS/MonoDevelop --new-window --no-redirect
+```
+or this command for Xamarin Studio:  
+```
+"/Applications/Xamarin Studio.app/Contents/MacOS/XamarinStudio" --new-window --no-redirect
+```
 to enable some logging you can use
 
   export FSHARPBINDING_LOGGING=*
