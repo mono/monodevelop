@@ -638,8 +638,7 @@ namespace Mono.TextEditor
 		}
 		#endregion
 		
-		internal double caretX;
-		internal double caretY;
+		internal double caretX, caretY, nonPreeditX, nonPreeditY;
 
 		public Cairo.PointD CaretVisualLocation {
 			get {
@@ -647,19 +646,19 @@ namespace Mono.TextEditor
 			}
 		}
 
-		void SetVisibleCaretPosition (double x, double y)
+		void SetVisibleCaretPosition (double x, double y, double nonPreeditX, double nonPreeditY)
 		{
-			if (x == caretX && y == caretY)
+			if (x == caretX && y == caretY && this.nonPreeditX == nonPreeditX && this.nonPreeditY == nonPreeditY)
 				return;
 			caretX = x;
 			caretY = y;
-			
-			textEditor.ResetIMContext ();
-			
+			this.nonPreeditX = nonPreeditX;
+			this.nonPreeditY = nonPreeditY;
+
 			GtkWorkarounds.SetImCursorLocation (
 				textEditor.IMContext,
 				textEditor.GdkWindow,
-				new Rectangle ((int)caretX, (int)caretY, 0, (int)(LineHeight - 1)));
+				new Rectangle ((int)nonPreeditX, (int)nonPreeditY, 0, (int)(LineHeight - 1)));
 		}
 
 		public static Gdk.Rectangle EmptyRectangle = new Gdk.Rectangle (0, 0, 0, 0);
@@ -1635,7 +1634,8 @@ namespace Mono.TextEditor
 						int vy, vx;
 						wrapper.Layout.GetSize (out vx, out vy);
 						
-						SetVisibleCaretPosition (((pangoPosition + vx + layout.PangoWidth) / Pango.Scale.PangoScale), y);
+						var x = ((pangoPosition + vx + layout.PangoWidth) / Pango.Scale.PangoScale);
+						SetVisibleCaretPosition (x, y, x, y);
 						xPos = (pangoPosition + layout.PangoWidth) / Pango.Scale.PangoScale;
 
 						if (!isSelectionDrawn && (selectionEnd == lineOffset + line.Length) && BackgroundRenderer == null) {
@@ -1667,15 +1667,26 @@ namespace Mono.TextEditor
 
 						wrapper.Dispose ();
 						pangoPosition += vx;
-					} else if (index == length && (textEditor.preeditString == null || textEditor.preeditCursorCharIndex == textEditor.preeditString.Length)) {
-						SetVisibleCaretPosition ((pangoPosition + layout.PangoWidth) / Pango.Scale.PangoScale, y);
+					} else if (index == length && string.IsNullOrEmpty (textEditor.preeditString)) {
+						var x = (pangoPosition + layout.PangoWidth) / Pango.Scale.PangoScale;
+						SetVisibleCaretPosition (x, y, x, y);
 					} else if (index >= 0 && index <= length) {
 						Pango.Rectangle strong_pos, weak_pos;
 						curIndex = byteIndex = 0;
-						int pidx = index + textEditor.preeditCursorCharIndex;
-						int utf8ByteIndex = (int)TranslateToUTF8Index (layout.LineChars, (uint)pidx, ref curIndex, ref byteIndex);
+						int utf8ByteIndex = (int)TranslateToUTF8Index (layout.LineChars, (uint)index, ref curIndex, ref byteIndex);
 						layout.Layout.GetCursorPos (utf8ByteIndex, out strong_pos, out weak_pos);
-						SetVisibleCaretPosition (xPos + (strong_pos.X / Pango.Scale.PangoScale), y + (strong_pos.Y / Pango.Scale.PangoScale));
+						var cx = xPos + (strong_pos.X / Pango.Scale.PangoScale);
+						var cy = y + (strong_pos.Y / Pango.Scale.PangoScale);
+						if (textEditor.preeditCursorCharIndex == 0) {
+							SetVisibleCaretPosition (cx, cy, cx, cy);
+						} else {
+							var preeditIndex = (uint)(index + textEditor.preeditCursorCharIndex);
+							utf8ByteIndex = (int)TranslateToUTF8Index (layout.LineChars, preeditIndex, ref curIndex, ref byteIndex);
+							layout.Layout.GetCursorPos (utf8ByteIndex, out strong_pos, out weak_pos);
+							var pcx = xPos + (strong_pos.X / Pango.Scale.PangoScale);
+							var pcy = y + (strong_pos.Y / Pango.Scale.PangoScale);
+							SetVisibleCaretPosition (pcx, pcy, cx, cy);
+						}
 					}
 				}
 			}
@@ -2599,11 +2610,15 @@ namespace Mono.TextEditor
 					cr.ShowLayout (markerLayout);
 					cr.Restore ();
 
-					if (caretOffset == foldOffset && !string.IsNullOrEmpty (folding.Description))
-						SetVisibleCaretPosition ((int)(pangoPosition / Pango.Scale.PangoScale), y);
+					if (caretOffset == foldOffset && !string.IsNullOrEmpty (folding.Description)) {
+						var cx = (int)(pangoPosition / Pango.Scale.PangoScale);
+						SetVisibleCaretPosition (cx, y, cx, y);
+					}
 					pangoPosition += foldingRectangle.Width * Pango.Scale.PangoScale;
-					if (caretOffset == foldOffset + folding.Length && !string.IsNullOrEmpty (folding.Description))
-						SetVisibleCaretPosition ((int)(pangoPosition / Pango.Scale.PangoScale), y);
+					if (caretOffset == foldOffset + folding.Length && !string.IsNullOrEmpty (folding.Description)) {
+						var cx = (int)(pangoPosition / Pango.Scale.PangoScale);
+						SetVisibleCaretPosition (cx, y, cx, y);
+					}
 
 					if (folding.EndLine != line) {
 						line = folding.EndLine;
