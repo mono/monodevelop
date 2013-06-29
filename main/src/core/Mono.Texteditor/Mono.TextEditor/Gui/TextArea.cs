@@ -428,12 +428,12 @@ namespace Mono.TextEditor
 		internal Pango.AttrList preeditAttrs;
 		internal bool preeditHeightChange;
 		
-		internal bool ContainsPreedit (int line, int length)
+		internal bool ContainsPreedit (int offset, int length)
 		{
 			if (string.IsNullOrEmpty (preeditString))
 				return false;
 			
-			return line <= preeditOffset && preeditOffset <= line + length;
+			return offset <= preeditOffset && preeditOffset <= offset + length;
 		}
 
 		void PreeditStringChanged (object sender, EventArgs e)

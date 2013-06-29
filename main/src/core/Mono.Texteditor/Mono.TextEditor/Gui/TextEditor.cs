@@ -593,9 +593,9 @@ namespace Mono.TextEditor
 			textArea.ResetIMContext ();
 		}
 
-		internal bool ContainsPreedit (int line, int length)
+		internal bool ContainsPreedit (int offset, int length)
 		{
-			return textArea.ContainsPreedit (line, length);
+			return textArea.ContainsPreedit (offset, length);
 		}
 
 		internal void FireLinkEvent (string link, uint button, ModifierType modifierState)
