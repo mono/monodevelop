@@ -467,7 +467,7 @@ namespace Mono.TextEditor
 					int w, h;
 					preeditLayout.GetSize (out w, out h);
 					var calcHeight = System.Math.Ceiling (h / Pango.Scale.PangoScale);
-					if (LineHeight != calcHeight) {
+					if (LineHeight < calcHeight) {
 						textEditorData.HeightTree.SetLineHeight (preeditLine, calcHeight);
 						preeditHeightChange = true;
 						return true;
