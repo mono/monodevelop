@@ -192,12 +192,11 @@ module internal TipFormatter =
   /// Format some of the data returned by the F# compiler
   let private buildFormatComment cmt = 
     match cmt with
-    | XmlCommentText(s) -> GLib.Markup.EscapeText <| s.Trim()
+    | XmlCommentText(s) -> Tooltips.getTooltip Styles.simpleMarkup <| s.Trim()
     | XmlCommentSignature(file,key) -> 
         match findDocForEntity (file, key) with 
         | None -> String.Empty
-        | Some doc -> 
-            MonoDevelop.FSharp.Tooltips.getTooltip Styles.simpleMarkup doc
+        | Some doc -> Tooltips.getTooltip Styles.simpleMarkup doc
     | _ -> String.Empty
 
   /// Format some of the data returned by the F# compiler
