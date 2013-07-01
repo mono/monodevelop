@@ -94,8 +94,8 @@ namespace MonoDevelop.DesignerSupport
 			RemoveRefillOutlineStoreTimeout ();
 			lastCU = null;
 			if (outlineTreeStore != null) {
-				outlineTreeStore = null;
 				outlineTreeStore.Dispose ();
+				outlineTreeStore = null;
 			}
 			if (outlineTreeModelSort != null) {
 				outlineTreeModelSort.Dispose ();
