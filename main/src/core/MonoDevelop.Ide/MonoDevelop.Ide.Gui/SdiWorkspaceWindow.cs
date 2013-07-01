@@ -381,20 +381,33 @@ namespace MonoDevelop.Ide.Gui
 
 			OnClosed (args);
 
-			foreach (IAttachableViewContent sv in SubViewContents) {
-				sv.Dispose ();
-			}
-			
-			content.ContentNameChanged -= new EventHandler(SetTitleEvent);
-			content.DirtyChanged -= HandleDirtyChanged;
-			content.BeforeSave         -= new EventHandler(BeforeSave);
-			content.ContentChanged     -= new EventHandler (OnContentChanged);
-			content.WorkbenchWindow     = null;
-			content.Dispose ();
-			
-			DetachFromPathedDocument ();
 			Destroy ();
 			return true;
+		}
+
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+			if (viewContents != null) {
+				foreach (IAttachableViewContent sv in SubViewContents) {
+					sv.Dispose ();
+				}
+				viewContents = null;
+			}
+
+			if (content != null) {
+				content.ContentNameChanged -= new EventHandler(SetTitleEvent);
+				content.DirtyChanged       -= HandleDirtyChanged;
+				content.BeforeSave         -= new EventHandler(BeforeSave);
+				content.ContentChanged     -= new EventHandler (OnContentChanged);
+				content.WorkbenchWindow     = null;
+				content.Dispose ();
+				content = null;
+			}
+
+			DetachFromPathedDocument ();
+			commandHandler = null;
+			document = null;
 		}
 		
 		#region lazy UI element creation
