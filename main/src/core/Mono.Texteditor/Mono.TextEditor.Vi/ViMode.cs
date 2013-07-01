@@ -947,12 +947,16 @@ namespace Mono.TextEditor.Vi
 			case State.Indent:
 				if (((modifier & (Gdk.ModifierType.ControlMask)) == 0 && unicodeKey == '>')) { //select current line to indent
 					List<Action<TextEditorData>> actions = new List<Action<TextEditorData>> ();
+					int roffset = Data.SelectionRange.Offset;
 					actions.Add (SelectionActions.FromMoveAction (CaretMoveActions.LineEnd));
 					for (int i = 1; i < repeatCount; i++) {
 						actions.Add (SelectionActions.FromMoveAction (ViActions.Down));
 					}
 					actions.Add (MiscActions.IndentSelection);
 					RunActions (actions.ToArray ());
+					//set cursor to start of first line indented
+					Caret.Offset = roffset;
+					RunAction (CaretMoveActions.LineFirstNonWhitespace);
               
 					Reset ("");
 					return;
@@ -965,12 +969,16 @@ namespace Mono.TextEditor.Vi
 				if (action != null) {
 					List<Action<TextEditorData>> actions = new List<Action<TextEditorData>> ();
 					//get away from LineBegin
-					actions.Add (SelectionActions.FromMoveAction (ViActions.Right));
+					int roffset = Data.SelectionRange.Offset;
+					actions.Add (ViActions.Right);
 					for (int i = 0; i < repeatCount; i++) {
 						actions.Add (SelectionActions.FromMoveAction (action));
 					}
 					actions.Add (MiscActions.IndentSelection);
 					RunActions (actions.ToArray ());
+					//set cursor to start of first line indented
+					Caret.Offset = roffset;
+					RunAction (CaretMoveActions.LineFirstNonWhitespace);
 					Reset ("");
 				} else {
 					Reset ("Unrecognised motion");
@@ -980,12 +988,16 @@ namespace Mono.TextEditor.Vi
 			case State.Unindent:
 				if (((modifier & (Gdk.ModifierType.ControlMask)) == 0 && ((char)unicodeKey) == '<')) { //select current line to indent
 					List<Action<TextEditorData>> actions = new List<Action<TextEditorData>> ();
+					int roffset = Data.SelectionRange.Offset; //save caret position
 					actions.Add (SelectionActions.FromMoveAction (CaretMoveActions.LineEnd));
 					for (int i = 1; i < repeatCount; i++) {
 						actions.Add (SelectionActions.FromMoveAction (ViActions.Down));
 					}
 					actions.Add (MiscActions.RemoveIndentSelection);
 					RunActions (actions.ToArray ());
+					//set cursor to start of first line indented
+					Caret.Offset = roffset;
+					RunAction (CaretMoveActions.LineFirstNonWhitespace);
               
 					Reset ("");
 					return;
@@ -997,13 +1009,17 @@ namespace Mono.TextEditor.Vi
 				
 				if (action != null) {
 					List<Action<TextEditorData>> actions = new List<Action<TextEditorData>> ();
+					int roffset = Data.SelectionRange.Offset;
 					//get away from LineBegin
-					actions.Add (SelectionActions.FromMoveAction (ViActions.Right));
+					actions.Add (ViActions.Right);
 					for (int i = 0; i < repeatCount; i++) {
 						actions.Add (SelectionActions.FromMoveAction (action));
 					}
 					actions.Add (MiscActions.RemoveIndentSelection);
 					RunActions (actions.ToArray ());
+					//set cursor to start of first line indented
+					Caret.Offset = roffset;
+					RunAction (CaretMoveActions.LineFirstNonWhitespace);
 					Reset ("");
 				} else {
 					Reset ("Unrecognised motion");
