@@ -409,7 +409,7 @@ namespace MonoDevelop.VersionControl
 		
 		private TestResult RunCommand (Commands cmd, bool test)
 		{
-			VersionControlItemList items = GetItems ();
+			VersionControlItemList items = GetItems (cmd != Commands.Revert);
 
 			foreach (VersionControlItem it in items) {
 				if (it.Repository == null) {
