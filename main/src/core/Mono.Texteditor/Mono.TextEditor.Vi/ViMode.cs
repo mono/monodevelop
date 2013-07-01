@@ -947,6 +947,7 @@ namespace Mono.TextEditor.Vi
 			case State.Indent:
 				if (((modifier & (Gdk.ModifierType.ControlMask)) == 0 && unicodeKey == '>')) { //select current line to indent
 					List<Action<TextEditorData>> actions = new List<Action<TextEditorData>> ();
+					RunAction (CaretMoveActions.LineFirstNonWhitespace);
 					int roffset = Data.SelectionRange.Offset;
 					actions.Add (SelectionActions.FromMoveAction (CaretMoveActions.LineEnd));
 					for (int i = 1; i < repeatCount; i++) {
@@ -969,6 +970,7 @@ namespace Mono.TextEditor.Vi
 				if (action != null) {
 					List<Action<TextEditorData>> actions = new List<Action<TextEditorData>> ();
 					//get away from LineBegin
+					RunAction (CaretMoveActions.LineFirstNonWhitespace);
 					int roffset = Data.SelectionRange.Offset;
 					actions.Add (ViActions.Right);
 					for (int i = 0; i < repeatCount; i++) {
@@ -988,6 +990,7 @@ namespace Mono.TextEditor.Vi
 			case State.Unindent:
 				if (((modifier & (Gdk.ModifierType.ControlMask)) == 0 && ((char)unicodeKey) == '<')) { //select current line to indent
 					List<Action<TextEditorData>> actions = new List<Action<TextEditorData>> ();
+					RunAction (CaretMoveActions.LineFirstNonWhitespace);
 					int roffset = Data.SelectionRange.Offset; //save caret position
 					actions.Add (SelectionActions.FromMoveAction (CaretMoveActions.LineEnd));
 					for (int i = 1; i < repeatCount; i++) {
@@ -1009,6 +1012,7 @@ namespace Mono.TextEditor.Vi
 				
 				if (action != null) {
 					List<Action<TextEditorData>> actions = new List<Action<TextEditorData>> ();
+					RunAction (CaretMoveActions.LineFirstNonWhitespace);
 					int roffset = Data.SelectionRange.Offset;
 					//get away from LineBegin
 					actions.Add (ViActions.Right);
