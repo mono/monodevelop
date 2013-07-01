@@ -383,8 +383,11 @@ namespace Mono.TextEditor.Vi
 
 			//handle numeric keypress
 			if (AcceptNumericPrefix && '0' <= (char)unicodeKey && (char)unicodeKey <= '9') {
-				numericPrefix += (char)unicodeKey;
-				return;
+				//make sure not to eat 0 keypress unless a multiplier is already being built
+				if ((char)unicodeKey != '0' || !String.IsNullOrEmpty (numericPrefix)) {
+					numericPrefix += (char)unicodeKey;
+					return;
+				}
 			}
 			
 			switch (CurState) {
