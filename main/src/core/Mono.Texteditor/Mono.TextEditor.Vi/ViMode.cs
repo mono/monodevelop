@@ -152,7 +152,7 @@ namespace Mono.TextEditor.Vi
 		bool AcceptNumericPrefix {
 			get {
 				return CurState == State.Normal || CurState == State.Delete || CurState == State.Change 
-					|| CurState == State.Yank;
+					|| CurState == State.Yank || CurState == State.Indent || CurState == State.Unindent;
 			}
 		}
 
@@ -964,10 +964,12 @@ namespace Mono.TextEditor.Vi
 				
 				if (action != null) {
 					List<Action<TextEditorData>> actions = new List<Action<TextEditorData>> ();
+					//get away from LineBegin
+					actions.Add (SelectionActions.FromMoveAction (ViActions.Right));
 					for (int i = 0; i < repeatCount; i++) {
 						actions.Add (SelectionActions.FromMoveAction (action));
 					}
-					actions.Add (MiscActions.RemoveIndentSelection);
+					actions.Add (MiscActions.IndentSelection);
 					RunActions (actions.ToArray ());
 					Reset ("");
 				} else {
@@ -995,6 +997,8 @@ namespace Mono.TextEditor.Vi
 				
 				if (action != null) {
 					List<Action<TextEditorData>> actions = new List<Action<TextEditorData>> ();
+					//get away from LineBegin
+					actions.Add (SelectionActions.FromMoveAction (ViActions.Right));
 					for (int i = 0; i < repeatCount; i++) {
 						actions.Add (SelectionActions.FromMoveAction (action));
 					}
