@@ -399,9 +399,8 @@ namespace Mono.TextEditor.Vi
 		/// The second action indicates the action to be taken on the line
 		/// The third action indicates the action to reset after completing the action on that line
 		/// <summary>
-		private void RunRepeatableLineAction (Action<TextEditorData> startMove, Action<TextEditorData> action, Action<TextEditorData> endMove)
+		private void RepeatAllActions (params Action<TextEditorData>[] actions)
 		{
-			//RunActions (action, ClipboardActions.Cut, CaretMoveActions.LineFirstNonWhitespace, action, ClipboardActions.Cut, CaretMoveActions.LineFirstNonWhitespace);
 			List<Action<TextEditorData>> actionList = new List<Action<TextEditorData>> ();
 
 			int reps;   //how many times to repeat command
@@ -409,9 +408,7 @@ namespace Mono.TextEditor.Vi
 			reps = (reps == 0) ? 1 : reps;
 
 			for (int i = 0; i < reps; i++) {
-				actionList.Add (startMove);
-				actionList.Add (action);
-				actionList.Add (endMove);
+				actionList.AddRange (actions);
 			}
 			RunActions (actionList.ToArray ());
 			numericPrefix = "0";
@@ -706,8 +703,10 @@ namespace Mono.TextEditor.Vi
 				}
 				
 				if (action != null) {
-					if (lineAction) {
-						RunRepeatableLineAction (action, ClipboardActions.Cut, CaretMoveActions.LineFirstNonWhitespace);
+					if (lineAction) {   //dd or dj  -- delete lines moving downward
+						RepeatAllActions (action, ClipboardActions.Cut, CaretMoveActions.LineFirstNonWhitespace);
+					} else if (unicodeKey == 'k') {   //dk -- delete lines moving upward
+						RepeatAllActions (CaretMoveActions.LineFirstNonWhitespace, ClipboardActions.Cut, action);
 					} else {
 						RunRepeatableActionChain (action, ClipboardActions.Cut);
 					}
