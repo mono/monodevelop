@@ -945,8 +945,9 @@ namespace Mono.TextEditor.Vi
 				return;
 				
 			case State.Indent:
-				if (((modifier & (Gdk.ModifierType.ControlMask)) == 0 && unicodeKey == '>')) {
-					RunAction (MiscActions.IndentSelection);
+				if (((modifier & (Gdk.ModifierType.ControlMask)) == 0 && unicodeKey == '>')) { //select current line to indent
+					RunActions (SelectionActions.FromMoveAction (ViActions.Left), 
+					            MiscActions.IndentSelection);
 					Reset ("");
 					return;
 				}
@@ -964,8 +965,9 @@ namespace Mono.TextEditor.Vi
 				return;
 				
 			case State.Unindent:
-				if (((modifier & (Gdk.ModifierType.ControlMask)) == 0 && ((char)unicodeKey) == '<')) {
-					RunAction (MiscActions.RemoveIndentSelection);
+				if (((modifier & (Gdk.ModifierType.ControlMask)) == 0 && ((char)unicodeKey) == '<')) { //select current line to unindent
+					RunActions (SelectionActions.FromMoveAction (ViActions.Left), 
+					            MiscActions.RemoveIndentSelection);
 					Reset ("");
 					return;
 				}
