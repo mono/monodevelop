@@ -188,57 +188,15 @@ namespace MonoDevelop.SourceEditor
 			breakpointStatusChanged = (EventHandler<BreakpointEventArgs>)DispatchService.GuiDispatch (new EventHandler<BreakpointEventArgs> (OnBreakpointStatusChanged));
 
 			widget = new SourceEditorWidget (this);
-			widget.TextEditor.Document.SyntaxModeChanged += delegate(object sender, SyntaxModeChangeEventArgs e) {
-				var oldProvider = e.OldMode as IQuickTaskProvider;
-				if (oldProvider != null)
-					widget.RemoveQuickTaskProvider (oldProvider);
-				var newProvider = e.NewMode as IQuickTaskProvider;
-				if (newProvider != null)
-					widget.AddQuickTaskProvider (newProvider);
-			};
-			widget.TextEditor.Document.TextReplaced += delegate(object sender, DocumentChangeEventArgs args) {
-				if (!inLoad) {
-					if (widget.TextEditor.Document.IsInAtomicUndo) {
-						wasEdited = true;
-					} else {
-						InformAutoSave ();
-					}
-				}
-				int startIndex = args.Offset;
-				int endIndex = startIndex + Math.Max (args.RemovalLength, args.InsertionLength);
-				foreach (var marker in currentErrorMarkers) {
-					if (marker.LineSegment.Contains (args.Offset) || marker.LineSegment.Contains (args.Offset + args.InsertionLength) || args.Offset < marker.LineSegment.Offset && marker.LineSegment.Offset < args.Offset + args.InsertionLength) {
-						markersToRemove.Enqueue (marker);
-					}
-				}
-				ResetRemoveMarker ();
-			};
-			
-			widget.TextEditor.Document.LineChanged += delegate(object sender, LineEventArgs e) {
-				UpdateBreakpoints ();
-				UpdateWidgetPositions ();
-				if (messageBubbleCache != null && messageBubbleCache.RemoveLine (e.Line)) {
-					MessageBubbleTextMarker marker = currentErrorMarkers.FirstOrDefault (m => m.LineSegment == e.Line);
-					if (marker != null) {
+			widget.TextEditor.Document.SyntaxModeChanged += HandleSyntaxModeChanged;
+			widget.TextEditor.Document.TextReplaced += HandleTextReplaced;
+			widget.TextEditor.Document.LineChanged += HandleLineChanged;
 
-						widget.TextEditor.TextViewMargin.RemoveCachedLine (e.Line); 
-						// ensure that the line cache is renewed
-						marker.GetLineHeight (widget.TextEditor);
-					}
-				}
-			};
-			
-			widget.TextEditor.Document.BeginUndo += delegate {
-				wasEdited = false;
-			};
-			
-			widget.TextEditor.Document.EndUndo += delegate {
-				if (wasEdited)
-					InformAutoSave ();
-			};
-			widget.TextEditor.Document.Undone += (o, a) => AutoSave.InformAutoSaveThread (Document);
-			widget.TextEditor.Document.Redone += (o, a) => AutoSave.InformAutoSaveThread (Document);
-			
+			widget.TextEditor.Document.BeginUndo += HandleBeginUndo; 
+			widget.TextEditor.Document.EndUndo += HandleEndUndo;
+			widget.TextEditor.Document.Undone += HandleUndone;
+			widget.TextEditor.Document.Redone += HandleUndone;
+
 			widget.TextEditor.Document.TextReplacing += OnTextReplacing;
 			widget.TextEditor.Document.TextReplaced += OnTextReplaced;
 			widget.TextEditor.Document.ReadOnlyCheckDelegate = CheckReadOnly;
@@ -247,10 +205,7 @@ namespace MonoDevelop.SourceEditor
 			//				this.IsDirty = Document.IsDirty;
 			//			};
 			
-			widget.TextEditor.Caret.PositionChanged += delegate {
-				OnCaretPositionSet (EventArgs.Empty);
-				FireCompletionContextChanged ();
-			};
+			widget.TextEditor.Caret.PositionChanged += HandlePositionChanged; 
 			widget.TextEditor.IconMargin.ButtonPressed += OnIconButtonPress;
 		
 			debugStackLineMarker = new DebugStackLineTextMarker (widget.TextEditor);
@@ -291,6 +246,73 @@ namespace MonoDevelop.SourceEditor
 			IdeApp.Preferences.DefaultHideMessageBubblesChanged += HandleIdeAppPreferencesDefaultHideMessageBubblesChanged;
 			Document.AddAnnotation (this);
 			FileRegistry.Add (this);
+		}
+
+		void HandleLineChanged (object sender, LineEventArgs e)
+		{
+			UpdateBreakpoints ();
+			UpdateWidgetPositions ();
+			if (messageBubbleCache != null && messageBubbleCache.RemoveLine (e.Line)) {
+				MessageBubbleTextMarker marker = currentErrorMarkers.FirstOrDefault (m => m.LineSegment == e.Line);
+				if (marker != null) {
+					widget.TextEditor.TextViewMargin.RemoveCachedLine (e.Line);
+					// ensure that the line cache is renewed
+					marker.GetLineHeight (widget.TextEditor);
+				}
+			}
+		}
+
+		void HandleTextReplaced (object sender, DocumentChangeEventArgs args)
+		{
+			if (!inLoad) {
+				if (widget.TextEditor.Document.IsInAtomicUndo) {
+					wasEdited = true;
+				}
+				else {
+					InformAutoSave ();
+				}
+			}
+			int startIndex = args.Offset;
+			int endIndex = startIndex + Math.Max (args.RemovalLength, args.InsertionLength);
+			foreach (var marker in currentErrorMarkers) {
+				if (marker.LineSegment.Contains (args.Offset) || marker.LineSegment.Contains (args.Offset + args.InsertionLength) || args.Offset < marker.LineSegment.Offset && marker.LineSegment.Offset < args.Offset + args.InsertionLength) {
+					markersToRemove.Enqueue (marker);
+				}
+			}
+			ResetRemoveMarker ();
+		}
+
+		void HandleSyntaxModeChanged (object sender, SyntaxModeChangeEventArgs e)
+		{
+			var oldProvider = e.OldMode as IQuickTaskProvider;
+			if (oldProvider != null)
+				widget.RemoveQuickTaskProvider (oldProvider);
+			var newProvider = e.NewMode as IQuickTaskProvider;
+			if (newProvider != null)
+				widget.AddQuickTaskProvider (newProvider);
+		}
+
+
+		void HandleEndUndo (object sender, TextDocument.UndoOperationEventArgs e)
+		{
+			if (wasEdited)
+				InformAutoSave ();
+		}
+
+		void HandleBeginUndo (object sender, EventArgs e)
+		{
+			wasEdited = false;
+		}
+
+		void HandleUndone (object sender, TextDocument.UndoOperationEventArgs e)
+		{
+			AutoSave.InformAutoSaveThread (Document);
+		}
+
+		void HandlePositionChanged (object sender, DocumentLocationEventArgs e)
+		{
+			OnCaretPositionSet (EventArgs.Empty);
+			FireCompletionContextChanged ();
 		}
 
 		void HandleFileExtensionRemoved (object sender, FileExtensionEventArgs args)
@@ -960,6 +982,14 @@ namespace MonoDevelop.SourceEditor
 			
 			ClipbardRingUpdated -= UpdateClipboardRing;
 
+			widget.TextEditor.Document.SyntaxModeChanged -= HandleSyntaxModeChanged;
+			widget.TextEditor.Document.TextReplaced -= HandleTextReplaced;
+			widget.TextEditor.Document.LineChanged -= HandleLineChanged;
+			widget.TextEditor.Document.BeginUndo -= HandleBeginUndo; 
+			widget.TextEditor.Document.EndUndo -= HandleEndUndo;
+			widget.TextEditor.Document.Undone -= HandleUndone;
+			widget.TextEditor.Document.Redone -= HandleUndone;
+			widget.TextEditor.Caret.PositionChanged -= HandlePositionChanged; 
 			widget.TextEditor.IconMargin.ButtonPressed -= OnIconButtonPress;
 			widget.TextEditor.Document.TextReplacing -= OnTextReplacing;
 			widget.TextEditor.Document.TextReplaced -= OnTextReplaced;
