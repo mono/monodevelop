@@ -352,20 +352,26 @@ namespace Mono.TextEditor.Vi
 		}
 
 		/// <summary>
+		/// Get integer from numeric prefix and reset numeric prefix
+		/// Call before a repeatable method
+		/// <summary>
+		private int ExtractNumericPrefix ()
+		{
+			int n = 1;
+			int.TryParse (numericPrefix, out n);
+			numericPrefix = "0";
+			return (n <= 0) ? 1 : n;
+		}
+
+		/// <summary>
 		/// Run an action multiple times if it was preceded by a numeric key
 		/// Resets numeric prefixs
 		/// <summary>
 		private void RunRepeatableAction (Action<TextEditorData> action)
 		{
-			if (numericPrefix.Length <= 1) {
+			int reps = ExtractNumericPrefix ();   //how many times to repeat command
+			for (int i = 0; i < reps; i++) {
 				RunAction (action);
-			} else {
-				int reps;   //how many times to repeat command
-				int.TryParse (numericPrefix, out reps);
-				for (int i = 0; i < reps; i++) {
-					RunAction (action);
-				}
-				numericPrefix = "0";
 			}
 		}
 
@@ -375,22 +381,16 @@ namespace Mono.TextEditor.Vi
 		/// <summary>
 		private void RunRepeatableActionChain (params Action<TextEditorData>[] actions)
 		{
-			if (numericPrefix.Length <= 1) {
-				RunActions (actions);
-			} else {
-				List<Action<TextEditorData>> actionList = new List<Action<TextEditorData>> ();
-				int reps;   //how many times to repeat command
-				int.TryParse (numericPrefix, out reps);
-				for (int i = 0; i < reps; i++) {
-					actionList.Add (actions [0]);
-				}
-				for (int i = 1; i < actions.Length; i++) {
-					actionList.Add (actions [i]);
-				}
-				RunActions (actionList.ToArray ());
-				numericPrefix = "0";
+			int reps = ExtractNumericPrefix ();  //how many times to repeat command
+			List<Action<TextEditorData>> actionList = new List<Action<TextEditorData>> ();
+			int.TryParse (numericPrefix, out reps);
+			for (int i = 0; i < reps; i++) {
+				actionList.Add (actions [0]);
 			}
-      
+			for (int i = 1; i < actions.Length; i++) {
+				actionList.Add (actions [i]);
+			}
+			RunActions (actionList.ToArray ());
 		}
 
 		/// <summary>
@@ -403,15 +403,13 @@ namespace Mono.TextEditor.Vi
 		{
 			List<Action<TextEditorData>> actionList = new List<Action<TextEditorData>> ();
 
-			int reps;   //how many times to repeat command
-			int.TryParse (numericPrefix, out reps);
-			reps = (reps == 0) ? 1 : reps;
+			int reps = ExtractNumericPrefix ();   //how many times to repeat command
 
 			for (int i = 0; i < reps; i++) {
 				actionList.AddRange (actions);
 			}
+
 			RunActions (actionList.ToArray ());
-			numericPrefix = "0";
 		}
 
 		protected override void HandleKeypress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
