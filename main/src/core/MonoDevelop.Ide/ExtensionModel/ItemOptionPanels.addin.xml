@@ -35,10 +35,10 @@
 	</Section>
 	<Section id="Build" _label="Build">
 		<Section id="General" _label="General" icon="md-build-combine">
-			<Condition id="ItemType" value="Project">
+			<Condition id="ItemType" value="DotNetAssemblyProject">
 				<Panel id = "RuntimeOptionsPanel" _label = "Runtime Options" class = "MonoDevelop.Ide.Projects.OptionPanels.RuntimeOptionsPanel"/>
 			</Condition>
-			<Condition id="ItemType" value="Project">
+			<Condition id="ItemType" value="PortableDotNetProject">
 				<Panel id = "PortableRuntimeOptionsPanel" _label = "Runtime Options" class = "MonoDevelop.Ide.Projects.OptionPanels.PortableRuntimeOptionsPanel"/>
 			</Condition>
 			<Condition id="ItemType" value="Solution">

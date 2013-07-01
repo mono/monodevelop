@@ -37,11 +37,10 @@ namespace Mono.TextEditor.Tests
 		{
 			int idx = input.IndexOf ('$');
 			Assert.Greater (idx, -1);
-			TextEditor editor = new TextEditor ();
-			editor.Document.Text = input.Substring (0, idx) + input.Substring (idx + 1);
-			InsertionPoint point = new InsertionPoint (editor.Document.OffsetToLocation (idx), before, after);
-			point.Insert (editor.GetTextEditorData (), text);
-			return editor.Document.Text;
+			TextEditorData data = new TextEditorData (new TextDocument (input.Substring (0, idx) + input.Substring (idx + 1)));
+			InsertionPoint point = new InsertionPoint (data.Document.OffsetToLocation (idx), before, after);
+			point.Insert (data, text);
+			return data.Document.Text;
 		}
 		
 		[Test()]

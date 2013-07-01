@@ -70,7 +70,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override void Load (string fileName)
 		{
-			this.ContentName = MonoDevelop.Core.GettextCatalog.GetString ("Assembly Browser");
+			ContentName = GettextCatalog.GetString ("Assembly Browser");
 			widget.AddReferenceByFileName (fileName);
 		}
 		

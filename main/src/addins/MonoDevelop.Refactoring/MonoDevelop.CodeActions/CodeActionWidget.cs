@@ -203,6 +203,16 @@ namespace MonoDevelop.CodeActions
 					node,
 					ref resolveResult
 				);
+
+				foreach (var t in possibleNamespaces.Where (tp => tp.OnlyAddReference)) {
+					var menuItem = new Gtk.MenuItem (t.GetImportText ());
+					menuItem.Activated += delegate {
+						new ResolveCommandHandler.AddImport (document, resolveResult, null, t.Reference, true, node).Run ();
+						menu.Destroy ();
+					};
+					menu.Add (menuItem);
+					items++;
+				}
 	
 				bool addUsing = !(resolveResult is AmbiguousTypeResolveResult);
 				if (addUsing) {

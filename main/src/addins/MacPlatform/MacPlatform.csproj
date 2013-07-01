@@ -59,6 +59,14 @@
       <Name>MonoDevelop.Ide</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\external\xwt\Xwt\Xwt.csproj">
+      <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
+      <Name>Xwt</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\external\xwt\Xwt.Mac\Xwt.Mac.csproj">
+      <Project>{B7C1673E-5124-4BE5-8D21-EC8B12F85B6B}</Project>
+      <Name>Xwt.Mac</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

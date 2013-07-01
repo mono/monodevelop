@@ -103,8 +103,7 @@ namespace MonoDevelop.Ide
 
 			FilePath p = typeof(IdeStartup).Assembly.Location;
 			Assembly.LoadFrom (p.ParentDirectory.Combine ("Xwt.Gtk.dll"));
-			Xwt.Application.Initialize (Xwt.ToolkitType.Gtk);
-			Xwt.Engine.Toolkit.ExitUserCode (null);
+			Xwt.Application.InitializeAsGuest (Xwt.ToolkitType.Gtk);
 
 			//default to Windows IME on Windows
 			if (Platform.IsWindows && Mono.TextEditor.GtkWorkarounds.GtkMinorVersion >= 16) {
@@ -426,7 +425,7 @@ namespace MonoDevelop.Ide
 		bool ValidateGtkTheme (string requestedTheme, out string validTheme)
 		{
 			foreach (var theme in FailingGtkThemes) {
-				if (requestedTheme == theme) {
+				if (string.Equals (requestedTheme, theme, StringComparison.OrdinalIgnoreCase)) {
 					string msg = theme +" theme not supported";
 					string desc = "Your system is using the " + theme + " GTK+ theme. This theme is known to cause stability issues in MonoDevelop. Please select another theme in the GTK+ Theme Selector.\n\nIf you click on Proceed, MonoDevelop will switch to the default GTK+ theme.";
 					AlertButton res = MessageService.GenericAlert (Gtk.Stock.DialogWarning, msg, desc, AlertButton.Cancel, AlertButton.Proceed);

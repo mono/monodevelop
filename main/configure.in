@@ -1,4 +1,4 @@
-AC_INIT([monodevelop], 4.0.6, [monodevelop-list@lists.ximian.com])
+AC_INIT([monodevelop], 4.1.4, [monodevelop-list@lists.ximian.com])
 AC_PREREQ(2.53)
 AM_INIT_AUTOMAKE([1.10 tar-ustar])
 AM_MAINTAINER_MODE
@@ -6,13 +6,13 @@ AM_MAINTAINER_MODE
 #capture aclocal flags for autoreconf
 AC_SUBST(ACLOCAL_FLAGS)
 
-ASSEMBLY_VERSION=4.0.0.0
+ASSEMBLY_VERSION=4.1.4.0
 
 # This is parsed in BuildVariables.cs. Keep the format consistent to avoid breaking
 # the C# side of things. It should be one of the following two formats:
 # 1) "VERSION_NUMBER"					"2.0"
 # 2) "VERSION_NUMBER BUILD_TYPE BUILD_NUMBER"		"2.0 Alpha 1"
-PACKAGE_VERSION_LABEL="4.0.6"
+PACKAGE_VERSION_LABEL="4.1.4"
 
 AC_PATH_PROG(MONO, mono)
 AC_PATH_PROG(MCS, gmcs)
@@ -276,13 +276,11 @@ AC_OUTPUT([
 build/Makefile
 build/MacOSX/Makefile
 contrib/Makefile
-contrib/Mono.Debugger.Soft/Makefile
 contrib/ICSharpCode.Decompiler/Makefile
 external/Makefile
 src/Makefile
 src/core/Makefile
 src/core/Mono.Texteditor/Makefile
-src/core/Mono.Debugging/Makefile
 src/core/MonoDevelop.Core/Makefile
 src/core/MonoDevelop.Projects.Formats.MSBuild/Makefile
 src/core/MonoDevelop.Ide/Makefile
@@ -301,6 +299,7 @@ src/addins/NUnit/NUnitRunner/Makefile
 src/addins/VersionControl/MonoDevelop.VersionControl/Makefile
 src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/Makefile
 src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/Makefile
+src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Tests/Makefile
 src/addins/VersionControl/MonoDevelop.VersionControl.Git/Makefile
 src/addins/VersionControl/Makefile
 src/addins/CSharpBinding/Makefile
@@ -339,7 +338,6 @@ src/addins/MonoDevelop.XmlEditor/Makefile
 src/addins/MonoDevelop.Refactoring/Makefile
 src/addins/MonoDevelop.Debugger/Makefile
 src/addins/MonoDevelop.Debugger.Soft/Makefile
-src/addins/MonoDevelop.Debugger.Soft/Mono.Debugging.Soft/Makefile
 src/addins/MonoDevelop.Debugger.Soft/MonoDevelop.Debugger.Soft/Makefile
 src/addins/MonoDevelop.Debugger.Soft/MonoDevelop.Debugger.Soft.AspNet/Makefile
 src/addins/MonoDevelop.HexEditor/Makefile

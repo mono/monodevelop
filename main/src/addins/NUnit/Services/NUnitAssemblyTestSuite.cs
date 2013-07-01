@@ -42,6 +42,9 @@ using NUnit.Core;
 using NUnit.Core.Filters;
 using MonoDevelop.NUnit.External;
 using MonoDevelop.Ide;
+using System.Xml.Linq;
+using System.Linq;
+using System.Globalization;
 
 namespace MonoDevelop.NUnit
 {
@@ -92,6 +95,24 @@ namespace MonoDevelop.NUnit
 			assembly = type = null;
 		}
 
+		public virtual void GetCustomConsoleRunner (out string command, out string args)
+		{
+			command = args = null;
+		}
+
+		ProcessExecutionCommand GetCustomConsoleRunnerCommand ()
+		{
+			string file, args;
+
+			GetCustomConsoleRunner (out file, out args);
+			file = file != null ? file.Trim () : null;
+			if (string.IsNullOrEmpty (file))
+				return null;
+
+			var cmd = Runtime.ProcessService.CreateCommand (file);
+			cmd.Arguments = args;
+			return cmd;
+		}
 
 		protected override void OnActiveConfigurationChanged ()
 		{
@@ -337,6 +358,10 @@ namespace MonoDevelop.NUnit
 
 		protected override bool OnCanRun (MonoDevelop.Core.Execution.IExecutionHandler executionContext)
 		{
+			var runnerCmd = GetCustomConsoleRunnerCommand ();
+			if (runnerCmd != null) {
+				return executionContext.CanExecute (runnerCmd);
+			}
 			return Runtime.ProcessService.IsValidForRemoteHosting (executionContext);
 		}
 
@@ -355,9 +380,12 @@ namespace MonoDevelop.NUnit
 
 		internal UnitTestResult RunUnitTest (UnitTest test, string suiteName, string pathName, string testName, TestContext testContext)
 		{
+			var runnerExe = GetCustomConsoleRunnerCommand ();
+			if (runnerExe != null)
+				return RunWithConsoleRunner (runnerExe, test, suiteName, pathName, testName, testContext);
 
 			ExternalTestRunner runner = (ExternalTestRunner)Runtime.ProcessService.CreateExternalProcessObject (typeof(ExternalTestRunner), testContext.ExecutionContext, UserAssemblyPaths);
-			LocalTestMonitor localMonitor = new LocalTestMonitor (testContext, runner, test, suiteName, testName != null);
+			LocalTestMonitor localMonitor = new LocalTestMonitor (testContext, test, suiteName, testName != null);
 
 			ITestFilter filter = null;
 			if (test != null) {
@@ -429,6 +457,134 @@ namespace MonoDevelop.NUnit
 				t.Status = TestStatus.Ready;
 				t = t.Parent;
 			}
+		}
+
+		UnitTestResult RunWithConsoleRunner (ProcessExecutionCommand cmd, UnitTest test, string suiteName, string pathName, string testName, TestContext testContext)
+		{
+			var outFile = Path.GetTempFileName ();
+			LocalConsole cons = new LocalConsole ();
+
+			try {
+				if (!string.IsNullOrEmpty (cmd.Arguments))
+					cmd.Arguments += " ";
+				cmd.Arguments += "\"-xml=" + outFile + "\" " + AssemblyPath;
+				if (!string.IsNullOrEmpty (testName))
+					cmd.Arguments += " -run=" + suiteName + "." + testName;
+				else if (!string.IsNullOrEmpty (suiteName))
+					cmd.Arguments += " -run=" + suiteName;
+				var p = testContext.ExecutionContext.Execute (cmd, cons);
+
+				testContext.Monitor.CancelRequested += p.Cancel;
+				if (testContext.Monitor.IsCancelRequested)
+					p.Cancel ();
+				p.WaitForCompleted ();
+				
+				if (new FileInfo (outFile).Length == 0)
+					throw new Exception ("Command failed");
+
+				LocalTestMonitor localMonitor = new LocalTestMonitor (testContext, test, suiteName, testName != null);
+				XDocument doc = XDocument.Load (outFile);
+				if (doc.Root != null) {
+					var root = doc.Root.Elements ("test-suite").FirstOrDefault ();
+					if (root != null) {
+						cons.SetDone ();
+						var ot = cons.Out.ReadToEnd ();
+						var et = cons.Error.ReadToEnd ();
+						testContext.Monitor.WriteGlobalLog (ot);
+						if (!string.IsNullOrEmpty (et)) {
+							testContext.Monitor.WriteGlobalLog ("ERROR:\n");
+							testContext.Monitor.WriteGlobalLog (et);
+						}
+						return ReportXmlResult (localMonitor, root, "");
+					}
+				}
+				throw new Exception ("Test results could not be parsed.");
+			} catch (Exception ex) {
+				cons.SetDone ();
+				var ot = cons.Out.ReadToEnd ();
+				var et = cons.Error.ReadToEnd ();
+				testContext.Monitor.WriteGlobalLog (ot);
+				if (!string.IsNullOrEmpty (et)) {
+					testContext.Monitor.WriteGlobalLog ("ERROR:\n");
+					testContext.Monitor.WriteGlobalLog (et);
+				}
+				testContext.Monitor.ReportRuntimeError ("Test execution failed.\n" + ot + "\n" + et, ex);
+				return UnitTestResult.CreateIgnored ("Test execution failed");
+			} finally {
+				File.Delete (outFile);
+			}
+		}
+
+		UnitTestResult ReportXmlResult (IRemoteEventListener listener, XElement elem, string testPrefix)
+		{
+			UnitTestResult result = new UnitTestResult ();
+			var time = (string)elem.Attribute ("time");
+			if (time != null)
+				result.Time = TimeSpan.FromSeconds (double.Parse (time, CultureInfo.InvariantCulture));
+			result.TestDate = DateTime.Now;
+
+			var reason = elem.Element ("reason");
+			if (reason != null)
+				result.Message = (string) reason;
+
+			var failure = elem.Element ("failure");
+			if (failure != null) {
+				var msg = failure.Element ("message");
+				if (msg != null)
+					result.Message = (string)msg;
+				var stack = failure.Element ("stack-trace");
+				if (stack != null)
+					result.StackTrace = (string)stack;
+			}
+
+			switch ((string)elem.Attribute ("result")) {
+			case "Error":
+			case "Failure":
+				result.Status = ResultStatus.Failure;
+				break;
+			case "Success":
+				result.Status = ResultStatus.Success;
+				break;
+			case "Ignored":
+				result.Status = ResultStatus.Ignored;
+				break;
+			default:
+				result.Status = ResultStatus.Inconclusive;
+				break;
+			}
+
+			if (elem.Name == "test-suite") {
+				var name = (string)elem.Attribute ("type") == "Assembly" ? "<root>" : (string) elem.Attribute ("name");
+				listener.SuiteStarted (testPrefix + name);
+				var cts = elem.Element ("results");
+				if (cts != null) {
+					foreach (var ct in cts.Elements ()) {
+						var r = ReportXmlResult (listener, ct, name != "<root>" ? testPrefix + name + "." : "");
+						result.Add (r);
+					}
+				}
+				listener.SuiteFinished (testPrefix + name, result);
+			} else {
+				string name = (string)elem.Attribute ("name");
+				switch (result.Status) {
+				case ResultStatus.Success:
+					result.Passed++;
+					break;
+				case ResultStatus.Failure:
+					result.Failures++;
+					break;
+				case ResultStatus.Ignored:
+					result.Ignored++;
+					break;
+				case ResultStatus.Inconclusive:
+					result.Inconclusive++;
+					break;
+				}
+
+				listener.TestStarted (name);
+				listener.TestFinished (name, result);
+			}
+			return result;
 		}
 		
 		protected abstract string AssemblyPath {

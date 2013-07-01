@@ -49,7 +49,7 @@ namespace MonoDevelop.Debugger
 		
 		public ExceptionsDialog()
 		{
-			this.Build();
+			this.Build ();
 			
 			storeExceptions = new ListStore (typeof(String));
 			treeExceptions.Selection.Mode = SelectionMode.Multiple;
@@ -64,10 +64,13 @@ namespace MonoDevelop.Debugger
 			treeSelected.AppendColumn ("", new CellRendererText (), "text", 0);
 			tstateSel = new TreeViewState (treeSelected, 0);
 			storeSelection.SetSortColumnId (0, SortType.Ascending);
-			
-			foreach (Catchpoint cp in DebuggingService.Breakpoints.GetCatchpoints ())
-				selectedClasses.Add (cp.ExceptionName);
-			
+
+			var breakpoints = DebuggingService.Breakpoints;
+			lock (breakpoints) {
+				foreach (Catchpoint cp in breakpoints.GetCatchpoints ())
+					selectedClasses.Add (cp.ExceptionName);
+			}
+
 			LoadExceptions ();
 			
 			FillSelection ();
@@ -192,14 +195,19 @@ namespace MonoDevelop.Debugger
 		
 		protected virtual void OnButtonOkClicked (object sender, EventArgs e)
 		{
-			foreach (Catchpoint cp in new List<Catchpoint> (DebuggingService.Breakpoints.GetCatchpoints ())) {
-				if (!selectedClasses.Contains (cp.ExceptionName))
-					DebuggingService.Breakpoints.Remove (cp);
-				else
-					selectedClasses.Remove (cp.ExceptionName);
+			var breakpoints = DebuggingService.Breakpoints;
+
+			lock (breakpoints) {
+				foreach (Catchpoint cp in new List<Catchpoint> (breakpoints.GetCatchpoints ())) {
+					if (!selectedClasses.Contains (cp.ExceptionName))
+						breakpoints.Remove (cp);
+					else
+						selectedClasses.Remove (cp.ExceptionName);
+				}
+
+				foreach (string exc in selectedClasses)
+					breakpoints.AddCatchpoint (exc);
 			}
-			foreach (string exc in selectedClasses)
-				DebuggingService.Breakpoints.AddCatchpoint (exc);
 		}
 		
 		[GLib.ConnectBefore]

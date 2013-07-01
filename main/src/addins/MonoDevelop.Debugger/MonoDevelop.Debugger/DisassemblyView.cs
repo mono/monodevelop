@@ -45,7 +45,7 @@ namespace MonoDevelop.Debugger
 	public class DisassemblyView: AbstractViewContent, IClipboardHandler
 	{
 		Gtk.ScrolledWindow sw;
-		Mono.TextEditor.TextEditor editor;
+		TextEditor editor;
 		int firstLine;
 		int lastLine;
 		Dictionary<string,int> addressLines = new Dictionary<string,int> ();
@@ -62,12 +62,12 @@ namespace MonoDevelop.Debugger
 		
 		public DisassemblyView ()
 		{
-			UntitledName = GettextCatalog.GetString ("Disassembly");
+			ContentName = GettextCatalog.GetString ("Disassembly");
 			sw = new Gtk.ScrolledWindow ();
-			editor = new Mono.TextEditor.TextEditor ();
+			editor = new TextEditor ();
 			editor.Document.ReadOnly = true;
 			
-			editor.Options = new MonoDevelop.Ide.Gui.CommonTextEditorOptions () {
+			editor.Options = new CommonTextEditorOptions {
 				ShowLineNumberMargin = false,
 			};
 			
@@ -102,7 +102,13 @@ namespace MonoDevelop.Debugger
 		public override void Load (string fileName)
 		{
 		}
-		
+
+		public override bool IsFile {
+			get {
+				return false;
+			}
+		}
+
 		public void Update ()
 		{
 			autoRefill = false;

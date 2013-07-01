@@ -65,8 +65,7 @@ namespace Mono.TextEditor.Highlighting
 		protected readonly static int[] emptyMatch = new int[0];
 		public virtual int[] TryMatch (string text, int matchOffset)
 		{
-			string matchStr = text.Substring (matchOffset);
-			var match = regex.Match (matchStr);
+			var match = regex.Match (text, matchOffset);
 			if (match.Success) {
 				var result = new int[match.Groups.Count];
 				for (int i = 0; i < result.Length; i++) {
@@ -100,7 +99,7 @@ namespace Mono.TextEditor.Highlighting
 			if (!string.IsNullOrEmpty (expression)) {
 				var result = new Match ();
 
-				result.Pattern = "^" + expression;
+				result.Pattern = "\\G" + expression;
 				result.regex   = new System.Text.RegularExpressions.Regex (result.Pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
 				XmlReadHelper.ReadList (reader, Node, delegate () {
@@ -119,7 +118,7 @@ namespace Mono.TextEditor.Highlighting
 			string pattern = reader.ReadElementString ();
 			Match result2   = pattern == "CSharpNumber" ? new CSharpNumberMatch () : new Match ();
 			result2.Color   = color;
-			result2.Pattern = "^" + pattern;
+			result2.Pattern = "\\G" + pattern;
 			result2.regex   = new System.Text.RegularExpressions.Regex (result2.Pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
 			return result2;
 		}

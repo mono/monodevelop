@@ -319,11 +319,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				}
 			}
 		}
-		
+
+		static HashSet<string> propertiesThatAffectDisplay = new HashSet<string> (new string[] { null, "DependsOn", "Link", "Visible" });
 		void OnFilePropertyChanged (object sender, ProjectFileEventArgs e)
 		{
-			foreach (ProjectFileEventInfo args in e) {
-				ITreeBuilder tb = Context.GetTreeBuilder (args.Project);
+			foreach (var project in e.Where (x => propertiesThatAffectDisplay.Contains (x.Property)).Select (x => x.Project).Distinct ()) {
+				ITreeBuilder tb = Context.GetTreeBuilder (project);
 				if (tb != null) tb.UpdateAll ();
 			}
 		}

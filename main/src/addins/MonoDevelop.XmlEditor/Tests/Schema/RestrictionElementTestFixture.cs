@@ -1,9 +1,6 @@
-
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.XmlEditor;
 using NUnit.Framework;
-using System;
-using System.IO;
 
 namespace MonoDevelop.XmlEditor.Tests.Schema
 {
@@ -13,10 +10,10 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 	[TestFixture]
 	public class RestrictionElementTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionData[] childElements;
-		ICompletionData[] attributes;
-		ICompletionData[] annotationChildElements;
-		ICompletionData[] choiceChildElements;
+		CompletionDataList childElements;
+		CompletionDataList attributes;
+		CompletionDataList annotationChildElements;
+		CompletionDataList choiceChildElements;
 		
 		public override void FixtureInit()
 		{			

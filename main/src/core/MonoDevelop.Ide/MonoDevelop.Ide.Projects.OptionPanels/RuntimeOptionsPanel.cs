@@ -46,12 +46,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 	internal class RuntimeOptionsPanel : ItemOptionsPanel
 	{
 		RuntimeOptionsPanelWidget widget;
-		
-		public override bool IsVisible ()
-		{
-			return (ConfiguredProject is DotNetProject) && !(ConfiguredProject is PortableDotNetProject);
-		}
-		
+
 		public override Widget CreatePanelWidget()
 		{
 			return (widget = new RuntimeOptionsPanelWidget ((DotNetProject)ConfiguredProject, ItemConfigurations));

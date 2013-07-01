@@ -38,6 +38,13 @@ namespace Mono.TextEditor
 		{
 		}
 
+		public bool CanDrawBackground { get { return false; } }
+
+		public void DrawBackground (TextEditor editor, Cairo.Context cr, DocumentLine line, int lineNumber, double xPos, double yPos, double width, double height)
+		{
+			throw new NotSupportedException ();
+		}
+
 		public void DrawIcon (TextEditor editor, Cairo.Context cr, DocumentLine lineSegment, int lineNumber, double x, double y, double width, double height)
 		{
 			if (lineSegment.IsBookmarked) {

@@ -149,7 +149,15 @@ namespace MonoDevelop.MacIntegration.MacMenu
 		void MenuNeedsUpdate (NSMenu menu)
 		{
 			Debug.Assert (menu == this);
-			UpdateCommands ();
+
+			// MacOS calls this for each menu when it's about to open, but also for every menu on every keystroke.
+			// We only want to do the update when the menu's about to open, since it's expensive. Checking whether
+			// NSMenuProperty.Image needs to be updated is the only way to distinguish between these cases.
+			//
+			// http://www.cocoabuilder.com/archive/cocoa/285859-reason-for-menuneedsupdate-notification.html
+			//
+			if (PropertiesToUpdate ().HasFlag (NSMenuProperty.Image))
+				UpdateCommands ();
 		}
 
 		public static void ShowLastSeparator (ref NSMenuItem lastSeparator)

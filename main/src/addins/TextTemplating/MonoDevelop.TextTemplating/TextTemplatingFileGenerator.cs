@@ -40,7 +40,7 @@ namespace MonoDevelop.TextTemplating
 					host.AddMonoDevelopHostImport ();
 					var defaultOutputName = file.FilePath.ChangeExtension (".cs"); //cs extension for VS compat
 					
-					string ns = TextTemplatingFilePreprocessor.GetNamespaceHint (file, defaultOutputName);
+					string ns = CustomToolService.GetFileNamespace (file, defaultOutputName);
 					TextTemplatingFilePreprocessor.LogicalSetData ("NamespaceHint", ns, result.Errors);
 					
 					host.ProcessTemplate (file.FilePath, defaultOutputName);

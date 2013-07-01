@@ -1,14 +1,11 @@
-
-using MonoDevelop.Core;
 using NUnit.Framework;
-using System;
 using System.IO;
 using System.Text;
 using System.Xml;
 
 namespace MonoDevelop.XmlEditor.Tests.XPathQuery
 {
-	[TestFixture]
+/*	[TestFixture]
 	public class XPathHistoryListTests
 	{
 		StringBuilder xml;
@@ -106,5 +103,5 @@ namespace MonoDevelop.XmlEditor.Tests.XPathQuery
 			list = (XPathHistoryList)list.ReadFrom(reader);
 			Assert.AreEqual(0, list.GetXPaths().Length);
 		}
-	}
+	}*/
 }

@@ -239,7 +239,7 @@ namespace MonoDevelop.NUnit.External
 		UnitTestResult singleTestResult;
 		public bool Canceled;
 
-		public LocalTestMonitor (TestContext context, ExternalTestRunner runner, UnitTest rootTest, string rootFullName, bool singleTestRun)
+		public LocalTestMonitor (TestContext context, UnitTest rootTest, string rootFullName, bool singleTestRun)
 		{
 //			this.rootFullName = rootFullName;
 			this.rootTest = rootTest;

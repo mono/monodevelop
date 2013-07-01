@@ -96,19 +96,18 @@ namespace Mono.TextEditor
 		public override string ToString ()
 		{
 			return string.Format ("[TextLink: Name={0}, Links={1}, IsEditable={2}, Tooltip={3}, CurrentText={4}, Values=({5})]", 
-								Name, 
-								Links.Count, 
-								IsEditable, 
-								Tooltip, 
-								CurrentText, 
-								Values.Count);
+			                      Name, 
+			                      Links.Count, 
+			                      IsEditable, 
+			                      Tooltip, 
+			                      CurrentText, 
+			                      Values.Count);
 		}
 
 		public void AddLink (TextSegment segment)
 		{
 			links.Add (segment);
 		}
-
 		#region IListDataProvider implementation
 		public string GetText (int n)
 		{
@@ -134,7 +133,8 @@ namespace Mono.TextEditor
 		#endregion
 	}
 
-	public enum TextLinkMode {
+	public enum TextLinkMode
+	{
 		EditIdentifier,
 		General
 	}
@@ -188,7 +188,7 @@ namespace Mono.TextEditor
 
 		TextLinkTooltipProvider tooltipProvider;
 
-		public TextLinkEditMode (TextEditor editor,int baseOffset,List<TextLink> links)
+		public TextLinkEditMode (TextEditor editor, int baseOffset, List<TextLink> links)
 		{
 			this.editor = editor;
 			this.links = links;
@@ -288,7 +288,7 @@ namespace Mono.TextEditor
 			this.undoDepth = Editor.Document.GetCurrentUndoDepth ();
 			ShowHelpWindow ();
 		}
-		
+
 		public bool HasChangedText {
 			get {
 				return undoDepth != Editor.Document.GetCurrentUndoDepth ();
@@ -303,7 +303,7 @@ namespace Mono.TextEditor
 			Editor.ScrollToCaret ();
 			Editor.Caret.Offset = baseOffset + link.PrimaryLink.EndOffset;
 			Editor.MainSelection = new Selection (Editor.Document.OffsetToLocation (baseOffset + link.PrimaryLink.Offset),
-											Editor.Document.OffsetToLocation (baseOffset + link.PrimaryLink.EndOffset));
+			                                      Editor.Document.OffsetToLocation (baseOffset + link.PrimaryLink.EndOffset));
 			Editor.Document.CommitUpdateAll ();
 		}
 
@@ -342,7 +342,7 @@ namespace Mono.TextEditor
 			int offset = e.Offset - baseOffset;
 			int delta = e.ChangeDelta;
 			if (!IsInUpdate && !links.Where (link => link.Links.Where (segment => segment.Contains (offset)
-					|| segment.EndOffset == offset).
+				|| segment.EndOffset == offset).
 				Any ()).Any ()) {
 				SetCaretPosition = false;
 				ExitTextLinkMode ();
@@ -547,7 +547,6 @@ namespace Mono.TextEditor
 		{
 			this.mode = mode;
 		}
-
 		#region ITooltipProvider implementation 
 		public override TooltipItem GetItem (TextEditor Editor, int offset)
 		{
@@ -578,10 +577,10 @@ namespace Mono.TextEditor
 			requiredWidth = win.SetMaxWidth (win.Screen.Width);
 			xalign = 0.5;
 		}
-		#endregion 
+		#endregion
 	}
 
-	public class TextLinkMarker : TextLineMarker, IBackgroundMarker, IGutterMarker
+	public class TextLinkMarker : MarginMarker
 	{
 		TextLinkEditMode mode;
 
@@ -596,116 +595,38 @@ namespace Mono.TextEditor
 			IsVisible = true;
 		}
 
-		/*
-		void InternalDrawBackground (TextEditor Editor, Gdk.Drawable win, Pango.Layout layout, bool selected, int startOffset, int endOffset, int y, ref int startXPos, int endXPos, ref bool drawBg)
+		public override bool DrawBackground (TextEditor editor, Cairo.Context cr, double y, LineMetrics metrics)
 		{
-			Gdk.Rectangle clipRectangle = new Gdk.Rectangle (mode.Editor.TextViewMargin.XOffset, 0, 
-													Editor.Allocation.Width - mode.Editor.TextViewMargin.XOffset, Editor.Allocation.Height);
-			
-			// draw default background
-			using (Gdk.GC fillGc = new Gdk.GC (win)) {
-				fillGc.ClipRectangle = clipRectangle;
-				fillGc.RgbFgColor = selected ? Editor.ColorStyle.Selection.BackgroundColor : Editor.ColorStyle.Default.BackgroundColor;
-				win.DrawRectangle (fillGc, true, startXPos, y, endXPos, Editor.LineHeight);
-			}
-			
-			if (startOffset >= endOffset)
-				return;
-			
-			int caretOffset = Editor.Caret.Offset - BaseOffset;
-			foreach (TextLink link in mode.Links) {
-				if (!link.IsEditable)
-					continue;
-				bool isPrimaryHighlighted = link.PrimaryLink.Offset <= caretOffset && caretOffset <= link.PrimaryLink.EndOffset;
-				
-				foreach (TextSegment segment in link.Links) {
-					
-					if ((BaseOffset + segment.Offset <= startOffset && startOffset < BaseOffset + segment.EndOffset) ||
-						(startOffset <= BaseOffset + segment.Offset && BaseOffset + segment.Offset < endOffset)) {
-						int strOffset    = BaseOffset + segment.Offset - startOffset;
-						int strEndOffset = BaseOffset + segment.EndOffset - startOffset;
-						
-						int lineNr, x_pos, x_pos2;
-						layout.IndexToLineX (strOffset, false, out lineNr, out x_pos);
-						layout.IndexToLineX (strEndOffset, false, out lineNr, out x_pos2);
-						x_pos  = (int)(x_pos / Pango.Scale.PangoScale);
-						x_pos2 = (int)(x_pos2 / Pango.Scale.PangoScale);
-						using (Gdk.GC rectangleGc = new Gdk.GC (win)) {
-							rectangleGc.ClipRectangle = clipRectangle;
-							using (Gdk.GC fillGc = new Gdk.GC (win)) {
-								fillGc.ClipRectangle = clipRectangle;
-								drawBg = false;
-								
-								if (segment == link.PrimaryLink) {
-									fillGc.RgbFgColor      = isPrimaryHighlighted ? Editor.ColorStyle.PrimaryTemplateHighlighted.BackgroundColor : Editor.ColorStyle.PrimaryTemplate.BackgroundColor;
-									rectangleGc.RgbFgColor = isPrimaryHighlighted ? Editor.ColorStyle.PrimaryTemplateHighlighted.Color           : Editor.ColorStyle.PrimaryTemplate.Color;
-								} else {
-									fillGc.RgbFgColor      = isPrimaryHighlighted ? Editor.ColorStyle.SecondaryTemplateHighlighted.BackgroundColor : Editor.ColorStyle.SecondaryTemplate.BackgroundColor;
-									rectangleGc.RgbFgColor = isPrimaryHighlighted ? Editor.ColorStyle.SecondaryTemplateHighlighted.Color           : Editor.ColorStyle.SecondaryTemplate.Color;
-								}
-								// Draw segment
-								if (!selected)
-									win.DrawRectangle (fillGc, true, startXPos, y, x_pos2 - x_pos, Editor.LineHeight);
-								
-								int x1 = startXPos + x_pos - 1;
-								int x2 = startXPos + x_pos2 - 1;
-								int y2 = y + Editor.LineHeight - 1;
-								
-								win.DrawLine (rectangleGc, x1, y, x2, y);
-								win.DrawLine (rectangleGc, x1, y2, x2, y2);
-								win.DrawLine (rectangleGc, x1, y, x1, y2);
-								win.DrawLine (rectangleGc, x2, y, x2, y2);
-							}
-						}
-					}
-				}
-			}
-			startXPos += Editor.GetWidth (Editor.Document.GetTextBetween (startOffset, endOffset));
-		}
-		*/
-	/*	bool Overlaps (TextSegment segment, int start, int end)
-		{
-			return segment.Offset <= start && start < segment.EndOffset || 
-					segment.Offset <= end && end < segment.EndOffset ||
-					start <= segment.Offset && segment.Offset < end ||
-					start < segment.EndOffset && segment.EndOffset < end;
-		}*/
-		
-		public bool DrawBackground (TextEditor Editor, Cairo.Context cr, TextViewMargin.LayoutWrapper layout, int selectionStart, int selectionEnd, int startOffset, int endOffset, double y, double startXPos, double endXPos, ref bool drawBg)
-		{
-			int caretOffset = Editor.Caret.Offset - BaseOffset;
+			int caretOffset = editor.Caret.Offset - BaseOffset;
 
-			foreach (TextLink link in mode.Links) {
+			foreach (var link in mode.Links) {
 				if (!link.IsEditable) 
 					continue; 
 				bool isPrimaryHighlighted = link.PrimaryLink.Offset <= caretOffset && caretOffset <= link.PrimaryLink.EndOffset;
-
 				foreach (TextSegment segment in link.Links) {
+					if ((BaseOffset + segment.Offset <= metrics.TextStartOffset && metrics.TextStartOffset < BaseOffset + segment.EndOffset) || (metrics.TextStartOffset <= BaseOffset + segment.Offset && BaseOffset + segment.Offset < metrics.TextEndOffset)) {
+						int strOffset = BaseOffset + segment.Offset - metrics.TextStartOffset;
+						int strEndOffset = BaseOffset + segment.EndOffset - metrics.TextStartOffset;
 
-					if ((BaseOffset + segment.Offset <= startOffset && startOffset < BaseOffset + segment.EndOffset) || (startOffset <= BaseOffset + segment.Offset && BaseOffset + segment.Offset < endOffset)) {
-						int strOffset = BaseOffset + segment.Offset - startOffset;
-						int strEndOffset = BaseOffset + segment.EndOffset - startOffset;
-
-						int x_pos = layout.Layout.IndexToPos (strOffset).X;
-						int x_pos2 = layout.Layout.IndexToPos (strEndOffset).X;
+						int x_pos = metrics.Layout.Layout.IndexToPos (strOffset).X;
+						int x_pos2 = metrics.Layout.Layout.IndexToPos (strEndOffset).X;
 					
 						x_pos = (int)(x_pos / Pango.Scale.PangoScale);
 						x_pos2 = (int)(x_pos2 / Pango.Scale.PangoScale);
-						drawBg = false;
 						Cairo.Color fillGc, rectangleGc;
 						if (segment == link.PrimaryLink) {
-							fillGc = isPrimaryHighlighted ? Editor.ColorStyle.PrimaryTemplateHighlighted.SecondColor : Editor.ColorStyle.PrimaryTemplate.SecondColor;
-							rectangleGc = isPrimaryHighlighted ? Editor.ColorStyle.PrimaryTemplateHighlighted.SecondColor : Editor.ColorStyle.PrimaryTemplate.SecondColor;
+							fillGc = isPrimaryHighlighted ? editor.ColorStyle.PrimaryTemplateHighlighted.SecondColor : editor.ColorStyle.PrimaryTemplate.SecondColor;
+							rectangleGc = isPrimaryHighlighted ? editor.ColorStyle.PrimaryTemplateHighlighted.SecondColor : editor.ColorStyle.PrimaryTemplate.SecondColor;
 						} else {
-							fillGc = isPrimaryHighlighted ? Editor.ColorStyle.SecondaryTemplateHighlighted.SecondColor : Editor.ColorStyle.SecondaryTemplate.SecondColor;
-							rectangleGc = isPrimaryHighlighted ? Editor.ColorStyle.SecondaryTemplateHighlighted.Color : Editor.ColorStyle.SecondaryTemplate.Color;
+							fillGc = isPrimaryHighlighted ? editor.ColorStyle.SecondaryTemplateHighlighted.SecondColor : editor.ColorStyle.SecondaryTemplate.SecondColor;
+							rectangleGc = isPrimaryHighlighted ? editor.ColorStyle.SecondaryTemplateHighlighted.Color : editor.ColorStyle.SecondaryTemplate.Color;
 						}
 						
 						// Draw segment
-						double x1 = startXPos + x_pos - 1;
-						double x2 = startXPos + x_pos2 - 1 + 0.5;
+						double x1 = metrics.TextRenderStartPosition + x_pos - 1;
+						double x2 = metrics.TextRenderStartPosition + x_pos2 - 1 + 0.5;
 
-						cr.Rectangle (x1 + 0.5, y + 0.5, x2 - x1, Editor.LineHeight - 1);
+						cr.Rectangle (x1 + 0.5, y + 0.5, x2 - x1, editor.LineHeight - 1);
 						
 						cr.Color = fillGc;
 						cr.FillPreserve ();
@@ -717,27 +638,45 @@ namespace Mono.TextEditor
 			}
 			return true;
 		}
-
 		#region IGutterMarker implementation
-		public void DrawLineNumber (TextEditor editor, double width, Cairo.Context cr, Cairo.Rectangle area, DocumentLine lineSegment, int line, double x, double y, double lineHeight)
-		{
-			var lineNumberBgGC = editor.ColorStyle.LineNumbers.Background;
-			var lineNumberGC = editor.ColorStyle.LineNumbers.Foreground;
 
-			cr.Rectangle (x, y, width, lineHeight);
-			cr.Color = editor.Caret.Line == line ? editor.ColorStyle.LineMarker.Color : lineNumberGC;
+		public override bool CanDrawForeground (Margin margin)
+		{
+			return margin is GutterMargin;
+		}
+
+		public override bool CanDrawBackground (Margin margin)
+		{
+			return margin is GutterMargin;
+		}
+
+		public override bool DrawBackground (TextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
+		{
+			var width = metrics.Width;
+
+			cr.Rectangle (metrics.X, metrics.Y, metrics.Width, metrics.Height);
+			var lineNumberGC = editor.ColorStyle.LineNumbers.Foreground;
+			cr.Color = editor.Caret.Line == metrics.LineNumber ? editor.ColorStyle.LineMarker.Color : lineNumberGC;
 			cr.Fill ();
-			
-			if (line <= editor.Document.LineCount) {
+
+			return true;
+		}
+
+		public override void DrawForeground (TextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
+		{
+			var width = metrics.Width;
+			var lineNumberBgGC = editor.ColorStyle.LineNumbers.Background;
+
+			if (metrics.LineNumber <= editor.Document.LineCount) {
 				// Due to a mac? gtk bug I need to re-create the layout here
 				// otherwise I get pango exceptions.
 				using (var layout = PangoUtil.CreateLayout (editor)) {
 					layout.FontDescription = editor.Options.Font;
 					layout.Width = (int)width;
 					layout.Alignment = Pango.Alignment.Right;
-					layout.SetText (line.ToString ());
+					layout.SetText (metrics.LineNumber.ToString ());
 					cr.Save ();
-					cr.Translate (x + (int)width + (editor.Options.ShowFoldMargin ? 0 : -2), y);
+					cr.Translate (metrics.X + (int)width + (editor.Options.ShowFoldMargin ? 0 : -2), metrics.Y);
 					cr.Color = lineNumberBgGC;
 					cr.ShowLayout (layout);
 					cr.Restore ();

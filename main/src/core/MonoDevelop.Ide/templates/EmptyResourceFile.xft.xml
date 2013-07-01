@@ -12,7 +12,12 @@
 	
 	<TemplateFiles>
 		<ProjectResource>
-			<File DefaultExtension=".resx" />
+				<File name="${Name}.resx" CustomTool="ResXFileCodeGenerator">
+		<![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<root>
+</root>
+]]>
+		</File>
 		</ProjectResource>
 	</TemplateFiles>
 	

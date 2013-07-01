@@ -139,14 +139,16 @@ namespace MonoDevelop.CSharp.Highlighting
 			if (guiDocument != null && SemanticHighlightingEnabled) {
 				var parsedDocument = guiDocument.ParsedDocument;
 				if (parsedDocument != null) {
-					unit = parsedDocument.GetAst<SyntaxTree> ();
-					parsedFile = parsedDocument.ParsedFile as CSharpUnresolvedFile;
 					if (guiDocument.Project != null && guiDocument.IsCompileableInProject) {
 						src = new CancellationTokenSource ();
 						var newResolverTask = guiDocument.GetSharedResolver ();
 						var cancellationToken = src.Token;
 						System.Threading.Tasks.Task.Factory.StartNew (delegate {
 							var newResolver = newResolverTask.Result;
+							if (newResolver == null)
+								return;
+							unit = newResolver.RootNode as SyntaxTree;
+							parsedFile = newResolver.UnresolvedFile;
 							var visitor = new QuickTaskVisitor (newResolver, cancellationToken);
 							try {
 								unit.AcceptVisitor (visitor);
@@ -386,7 +388,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			if (_commentRule == null)
 				return;
 			var joinedTasks = string.Join ("", CommentTag.SpecialCommentTags.Select (t => t.Tag));
-			_commentRule.Delimiter = new string ("&()<>{}[]~!%^*-+=|\\#/:;\"' ,\t.?".Where (c => joinedTasks.IndexOf (c) < 0).ToArray ());
+			_commentRule.SetDelimiter (new string ("&()<>{}[]~!%^*-+=|\\#/:;\"' ,\t.?".Where (c => joinedTasks.IndexOf (c) < 0).ToArray ()));
 			_commentRule.Keywords = new[] {
 				new Keywords {
 					Color = "Comment Tag",

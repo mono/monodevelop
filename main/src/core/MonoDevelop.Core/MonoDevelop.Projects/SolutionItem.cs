@@ -890,6 +890,7 @@ namespace MonoDevelop.Projects
 		/// </param>
 		protected void NotifyModified (string hint)
 		{
+			ItemHandler.OnModified (hint);
 			OnModified (new SolutionItemModifiedEventArgs (this, hint));
 		}
 		

@@ -35,6 +35,7 @@ namespace MonoDevelop.NUnit
 		void BeginTest (UnitTest test);
 		void EndTest (UnitTest test, UnitTestResult result);
 		void ReportRuntimeError (string message, Exception exception);
+		void WriteGlobalLog (string message);
 		
 		bool IsCancelRequested { get; }
 		event TestHandler CancelRequested;

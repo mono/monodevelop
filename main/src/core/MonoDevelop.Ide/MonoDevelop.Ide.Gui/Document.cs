@@ -799,6 +799,8 @@ namespace MonoDevelop.Ide.Gui
 			// very inefficient. Do it after a small delay instead, so several changes can
 			// be parsed at the same time.
 			string currentParseFile = FileName;
+			if (string.IsNullOrEmpty (currentParseFile))
+				return;
 			CancelParseTimeout ();
 			
 			parseTimeout = GLib.Timeout.Add (ParseDelay, delegate {

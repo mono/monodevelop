@@ -82,7 +82,7 @@
 		<ItemProperty member="generator" name="generator" defaultValue=""/>
 	</DataItem>
 	<DataItem class = "MonoDevelop.Projects.ProjectReference" fallbackType="MonoDevelop.Projects.UnknownProjectReference" customDataItem="MonoDevelop.Projects.Formats.MD1.MD1CustomDataItem">
-		<ItemProperty member="referenceType" name="type" />
+		<ItemProperty member="internalReferenceType" name="type" />
 		<ItemProperty member="localCopy" name="localcopy" />
 		<ItemProperty member="SpecificVersion" name="specificVersion" defaultValue="True"/>
 	</DataItem>

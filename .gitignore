@@ -129,6 +129,7 @@ main/external/Makefile
 /main/src/addins/VersionControl/MonoDevelop.VersionControl.Git/Makefile
 /main/src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/Makefile
 /main/src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/Makefile
+/main/src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Tests/Makefile
 /main/src/addins/VersionControl/MonoDevelop.VersionControl/Makefile
 /main/src/addins/WelcomePage/Makefile
 /main/src/addins/WindowsPlatform/Makefile

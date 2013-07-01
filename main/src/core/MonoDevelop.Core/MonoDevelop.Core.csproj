@@ -76,12 +76,6 @@
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Web" />
-    <Reference Include="nunit.core">
-      <HintPath>..\..\..\external\mdtestharness\lib\nunit.core.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.core.interfaces">
-      <HintPath>..\..\..\external\mdtestharness\lib\nunit.core.interfaces.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Core\StringParserService.cs" />
@@ -445,7 +439,8 @@
     <Compile Include="MonoDevelop.Core.Execution\ExecutionTarget.cs" />
     <Compile Include="MonoDevelop.Core.Assemblies\SupportedFramework.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\UnknownProjectTypeNode.cs" />
-    <Compile Include="MonoDevelop.Core\InternalTestRunner.cs" />
+    <Compile Include="MonoDevelop.Core.Execution\ICommandFactory.cs" />
+    <Compile Include="MonoDevelop.Core.Execution\DotNetCommandFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

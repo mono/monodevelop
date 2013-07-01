@@ -43,7 +43,6 @@ namespace MonoDevelop.Ide.Commands
 		CopyPathName,
 		ToggleMaximize,
 		ReopenClosedTab,
-		OpenContainingFolder
 	}
 	
 	class CloseAllButThisHandler : CommandHandler
@@ -87,22 +86,6 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandInfo info)
 		{
 			info.Enabled = NavigationHistoryService.HasClosedDocuments;
-		}
-	}
-
-	class OpenContainingFolderHandler : CommandHandler
-	{
-		protected override void Run ()
-		{
-			// A tab will always hold a file, never a folder.
-			FilePath path = System.IO.Path.GetDirectoryName (IdeApp.Workbench.ActiveDocument.FileName);
-			DesktopService.OpenFolder (path);
-		}
-
-		protected override void Update (CommandInfo info)
-		{
-			var doc = IdeApp.Workbench.ActiveDocument;
-			info.Enabled = doc != null && !doc.FileName.IsNullOrEmpty;
 		}
 	}
 }

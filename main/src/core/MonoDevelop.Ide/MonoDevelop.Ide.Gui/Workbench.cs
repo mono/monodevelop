@@ -186,15 +186,15 @@ namespace MonoDevelop.Ide.Gui
 		/// </summary>
 		public bool HasToplevelFocus {
 			get {
-				var windows = Gtk.Window.ListToplevels ();
-				if (windows.Any (w => w.Modal && w.Visible))
+				if (DesktopService.IsModalDialogRunning ())
 					return false;
+				var windows = Gtk.Window.ListToplevels ();
 				var toplevel = windows.FirstOrDefault (x => x.HasToplevelFocus);
 				if (toplevel == null)
 					return false;
 				if (toplevel == RootWindow)
 					return true;
-				var dock = toplevel as MonoDevelop.Components.Docking.DockFloatingWindow;
+				var dock = toplevel as DockFloatingWindow;
 				return dock != null && dock.DockParent == RootWindow;
 			}
 		}

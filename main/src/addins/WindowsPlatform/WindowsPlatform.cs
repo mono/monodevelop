@@ -1,14 +1,42 @@
+//
+// WindowsPlatform.cs
+//
+// Author:
+//   Jonathan Pobst <monkey@jpobst.com>
+//   Lluis Sanchez Gual <lluis@novell.com>
+//   Michael Hutchinson <m.j.hutchinson@gmail.com>
+//
+// Copyright (C) 2007-2011 Novell, Inc (http://www.novell.com)
+// Copyright (C) 2012-2013 Xamarin Inc. (https://www.xamarin.com)
+//
+// Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to
+// permit persons to whom the Software is furnished to do so, subject to
+// the following conditions:
+// 
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+
 using System;
 using System.IO;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
-using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Win32;
 using CustomControls.OS;
-using CustomControls.Controls;
-using System.Windows.Forms;
 using MonoDevelop.Ide.Desktop;
 using System.Diagnostics;
 using MonoDevelop.Core.Execution;
@@ -77,7 +105,7 @@ namespace MonoDevelop.Platform
 			string key = shinfo.iIcon.ToString () + " - " + shinfo.szDisplayName;
 			Gdk.Pixbuf pix;
 			if (!icons.TryGetValue (key, out pix)) {
-				System.Drawing.Icon icon = System.Drawing.Icon.FromHandle (shinfo.hIcon);
+				var icon = Icon.FromHandle (shinfo.hIcon);
 				pix = CreateFromResource (icon.ToBitmap ());
 				icons[key] = pix;
 			}
@@ -174,15 +202,15 @@ namespace MonoDevelop.Platform
 		}
 
 		public override IProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory,
-		                                                            IDictionary<string, string> environmentVariables, 
+		                                                            IDictionary<string, string> environmentVariables,
 		                                                            string title, bool pauseWhenFinished)
 		{
 			string args = "/C \"title " + title + " && \"" + command + "\" " + arguments;
 			if (pauseWhenFinished)
-			    args += " & pause\"";
+				args += " & pause\"";
 			else
-			    args += "\"";
-			
+				args += "\"";
+
 			var psi = new ProcessStartInfo ("cmd.exe", args) {
 				CreateNoWindow = false,
 				WorkingDirectory = workingDirectory,
@@ -190,53 +218,16 @@ namespace MonoDevelop.Platform
 			};
 			foreach (var env in environmentVariables)
 				psi.EnvironmentVariables [env.Key] = env.Value;
-			
+
 			ProcessWrapper proc = new ProcessWrapper ();
 			proc.StartInfo = psi;
 			proc.Start ();
 			return proc;
-        }
-		
+		}
+
 		protected override RecentFiles CreateRecentFilesProvider ()
 		{
-			return new MonoDevelop.Platform.WindowsRecentFiles ();
+			return new WindowsRecentFiles ();
 		}
-	}
-	
-	public static class GdkWin32
-	{
-		[System.Runtime.InteropServices.DllImport ("libgdk-win32-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
-		static extern IntPtr gdk_win32_drawable_get_handle (IntPtr drawable);
-
-		[System.Runtime.InteropServices.DllImport ("libgdk-win32-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
-		static extern IntPtr gdk_win32_hdc_get (IntPtr drawable, IntPtr gc, int usage);
-
-		[System.Runtime.InteropServices.DllImport ("libgdk-win32-2.0-0.dll", CallingConvention = CallingConvention.Cdecl)]
-		static extern void gdk_win32_hdc_release (IntPtr drawable, IntPtr gc, int usage);
-		
-		public static IntPtr HgdiobjGet (Gdk.Drawable drawable)
-		{
-			return gdk_win32_drawable_get_handle (drawable.Handle);
-		}
-		
-		public static IntPtr HdcGet (Gdk.Drawable drawable, Gdk.GC gc, Gdk.GCValuesMask usage)
-		{
-			return gdk_win32_hdc_get (drawable.Handle, gc.Handle, (int) usage);
-		}
-		
-		public static void HdcRelease (Gdk.Drawable drawable, Gdk.GC gc, Gdk.GCValuesMask usage)
-		{
-			gdk_win32_hdc_release (drawable.Handle, gc.Handle, (int) usage);
-		}
-	}
-	
-	public class GtkWin32Proxy : IWin32Window
-	{
-		public GtkWin32Proxy (Gtk.Window gtkWindow)
-		{
-			Handle = GdkWin32.HgdiobjGet (gtkWindow.RootWindow);
-		}
-		
-		public IntPtr Handle { get; private set; }
 	}
 }

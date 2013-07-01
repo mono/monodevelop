@@ -1,29 +1,23 @@
-
-using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.XmlEditor;
+using MonoDevelop.XmlEditor.Completion;
 using NUnit.Framework;
-using System;
-using System.IO;
-using System.Xml;
-using MonoDevelop.XmlEditor.Tests.Utils;
 
 namespace MonoDevelop.XmlEditor.Tests.CompletionData
-{	
+{
 	[TestFixture]
-	public class XmlCompletionDataImageTestFixture
+	public class XmlCompletionDataIconTestFixture
 	{
 		[Test]
-		public void ImageNotNull()
+		public void IconNotNull ()
 		{
-			XmlCompletionData data = new XmlCompletionData("foo", XmlCompletionData.DataType.XmlElement);
-			Assert.IsNotNull(data.Image);
+			XmlCompletionData data = new XmlCompletionData ("foo");
+			Assert.IsFalse (data.Icon.IsNull);
 		}
 		
 		[Test]
-		public void ImageNotEmptyString()
+		public void IconNotEmptyString ()
 		{
-			XmlCompletionData data = new XmlCompletionData("foo", XmlCompletionData.DataType.XmlElement);
-			Assert.IsTrue(data.Image.Length > 0);
+			XmlCompletionData data = new XmlCompletionData ("foo");
+			Assert.IsTrue (data.Icon.Name.Length > 0);
 		}
 	}
 }

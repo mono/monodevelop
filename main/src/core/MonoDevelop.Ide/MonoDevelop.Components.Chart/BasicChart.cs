@@ -409,12 +409,13 @@ namespace MonoDevelop.Components.Chart
 
 			if (backgroundDisplay == BackgroundDisplay.Gradient) {
 				ctx.Rectangle (left - 1, top - 1, width + 2, height + 2);
-				Cairo.Gradient pat = new Cairo.LinearGradient (left - 1, top - 1, left - 1, height + 2);
-				pat.AddColorStop (0, backroundColor);
-				Cairo.Color endc = new Cairo.Color (1,1,1);
-				pat.AddColorStop (1, endc);
-				ctx.Pattern = pat;
-				ctx.Fill ();
+				using (var pat = new Cairo.LinearGradient (left - 1, top - 1, left - 1, height + 2)) {
+					pat.AddColorStop (0, backroundColor);
+					Cairo.Color endc = new Cairo.Color (1,1,1);
+					pat.AddColorStop (1, endc);
+					ctx.Pattern = pat;
+					ctx.Fill ();
+				}
 			} else {
 				ctx.Rectangle (left - 1, top - 1, width + 2, height + 2);
 				ctx.Color = backroundColor;

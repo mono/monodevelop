@@ -70,7 +70,7 @@ namespace MonoDevelop.NUnit
 
 		protected override SourceCodeLocation GetSourceCodeLocation (string fixtureTypeNamespace, string fixtureTypeName, string methodName)
 		{
-			if (fixtureTypeName == null)
+			if (string.IsNullOrEmpty (fixtureTypeName) || string.IsNullOrEmpty (fixtureTypeName))
 				return null;
 			var ctx = TypeSystemService.GetCompilation (project);
 			var cls = ctx.MainAssembly.GetTypeDefinition (fixtureTypeNamespace, fixtureTypeName, 0);
@@ -120,6 +120,13 @@ namespace MonoDevelop.NUnit
 			type = (string) project.ExtendedProperties ["TestRunnerType"];
 			var asm = project.ExtendedProperties ["TestRunnerAssembly"];
 			assembly = asm != null ? project.BaseDirectory.Combine (asm.ToString ()).ToString () : null;
+		}
+
+		public override void GetCustomConsoleRunner (out string command, out string args)
+		{
+			var r = project.ExtendedProperties ["TestRunnerCommand"];
+			command = r != null ? project.BaseDirectory.Combine (r.ToString ()).ToString () : null;
+			args = (string)project.ExtendedProperties ["TestRunnerArgs"];
 		}
 
 		protected override string AssemblyPath {

@@ -59,8 +59,8 @@ namespace MonoDevelop.VersionControl
 			bool can = CanCreatePatch (items);
 			if (test || !can){ return can; }
 			
-			FilePath basePath = items.FindMostSpecificParent (FilePath.Null);
-			if (FilePath.Empty == basePath)
+			FilePath basePath = items.FindMostSpecificParent ();
+			if (FilePath.Null == basePath)
 				return false;
 			
 			ChangeSet cset = new ChangeSet (items[0].Repository, basePath);

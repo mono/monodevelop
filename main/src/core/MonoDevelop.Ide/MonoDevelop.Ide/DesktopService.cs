@@ -37,6 +37,7 @@ namespace MonoDevelop.Ide
 	public static class DesktopService
 	{
 		static PlatformService platformService;
+		static Xwt.Toolkit nativeToolkit;
 
 		static PlatformService PlatformService {
 			get {
@@ -64,8 +65,24 @@ namespace MonoDevelop.Ide
 				new EventHandler<FileEventArgs> (NotifyFileRemoved));
 			FileService.FileRenamed += DispatchService.GuiDispatch (
 				new EventHandler<FileCopyEventArgs> (NotifyFileRenamed));
+
+			// Ensure we initialize the native toolkit on the UI thread immediately
+			// so that we can safely access this property later in other threads
+			GC.KeepAlive (NativeToolkit);
 		}
 		
+		/// <summary>
+		/// Returns the XWT toolkit for the native toolkit (Cocoa on Mac, WPF on Windows)
+		/// </summary>
+		/// <returns>The native toolkit.</returns>
+		public static Xwt.Toolkit NativeToolkit {
+			get {
+				if (nativeToolkit == null)
+					nativeToolkit = platformService.LoadNativeToolkit ();
+				return nativeToolkit;
+			}
+		}
+
 		public static IEnumerable<DesktopApplication> GetApplications (string filename)
 		{
 			return PlatformService.GetApplications (filename);
@@ -264,6 +281,11 @@ namespace MonoDevelop.Ide
 		public static void SetIsFullscreen (Gtk.Window window, bool isFullscreen)
 		{
 			PlatformService.SetIsFullscreen (window, isFullscreen);
+		}
+
+		public static bool IsModalDialogRunning ()
+		{
+			return PlatformService.IsModalDialogRunning ();
 		}
 	}
 }

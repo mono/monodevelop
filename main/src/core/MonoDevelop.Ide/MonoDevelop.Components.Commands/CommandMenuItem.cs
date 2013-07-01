@@ -247,7 +247,15 @@ namespace MonoDevelop.Components.Commands
 						smenu.Add (item);
 					}
 				}
-			}
+			}			
+		}
+
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+			itemArray = null;
+			initialTarget = null;
+			arrayDataItem = null;
 		}
 	}
 }

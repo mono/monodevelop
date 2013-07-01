@@ -6,11 +6,11 @@
        description = "Support for Debugging projects"
        copyright = "MIT X11"
        flags = "Hidden"
-       version = "4.0.6">
+       version = "4.1.4">
 
 	<Dependencies>
-		<Addin id="Core" version="4.0.6"/>
-		<Addin id="Ide" version="4.0.6"/>
+		<Addin id="Core" version="4.1.4"/>
+		<Addin id="Ide" version="4.1.4"/>
 	</Dependencies>
 	
 	<ExtensionPoint path="/MonoDevelop/Debugging/DebuggerEngines">
@@ -211,7 +211,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/ExecutionModes">
-		<ModeSetType class="MonoDevelop.Debugger.DebugExecutionModeSet"/>
+		<ModeSetType id="MonoDevelop.Debugger" class="MonoDevelop.Debugger.DebugExecutionModeSet"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/StockIcons">

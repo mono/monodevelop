@@ -1,9 +1,6 @@
-
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.XmlEditor;
 using NUnit.Framework;
-using System;
-using System.IO;
 
 namespace MonoDevelop.XmlEditor.Tests.Schema
 {
@@ -13,7 +10,7 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 	[TestFixture]
 	public class EnumAttributeValueTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionData[] attributeValues;
+		CompletionDataList attributeValues;
 		
 		public override void FixtureInit()
 		{
@@ -39,7 +36,7 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 		[Test]
 		public void IdAttributeValueCount()
 		{
-			Assert.AreEqual(2, attributeValues.Length, "Expecting 2 attribute values.");
+			Assert.AreEqual(2, attributeValues.Count, "Expecting 2 attribute values.");
 		}
 		
 		protected override string GetSchema()

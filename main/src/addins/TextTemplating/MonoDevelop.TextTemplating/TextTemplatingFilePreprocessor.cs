@@ -65,7 +65,7 @@ namespace MonoDevelop.TextTemplating
 				string[] references;
 				string className = provider.CreateValidIdentifier (file.FilePath.FileNameWithoutExtension);
 				
-				string classNamespace = GetNamespaceHint (file, outputFile);
+				string classNamespace = CustomToolService.GetFileNamespace (file, outputFile);
 				LogicalSetData ("NamespaceHint", classNamespace, result.Errors);
 
 				host.PreprocessTemplate (file.FilePath, className, classNamespace, outputFile, encoding, out langauge, out references);
@@ -75,17 +75,6 @@ namespace MonoDevelop.TextTemplating
 				foreach (var err in host.Errors)
 					monitor.Log.WriteLine (err.ToString ());
 			}, result);
-		}
-		
-		internal static string GetNamespaceHint (ProjectFile file, string outputFile)
-		{
-			string ns = file.CustomToolNamespace;
-			if (string.IsNullOrEmpty (ns) && !string.IsNullOrEmpty (outputFile)) {
-				var dnp = file.Project as DotNetProject;
-					if (dnp != null)
-						ns = dnp.GetDefaultNamespace (outputFile);
-			}
-			return ns;
 		}
 		
 		static bool warningLogged;

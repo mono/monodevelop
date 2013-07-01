@@ -51,6 +51,8 @@ namespace MonoDevelop.Core.Execution
 		IExecutionMode defaultExecutionMode = new DefaultExecutionMode ();
 		ExternalConsoleHandler externalConsoleHandler;
 		
+		const string ExecutionModesExtensionPath = "/MonoDevelop/Core/ExecutionModes";
+
 		Dictionary<string, string> environmentVariableOverrides = null;
 		
 		public IDictionary<string, string> EnvironmentVariableOverrides {
@@ -249,24 +251,38 @@ namespace MonoDevelop.Core.Execution
 		
 		public ProcessExecutionCommand CreateCommand (string file)
 		{
-			string f = file.ToLower ();
-			if (f.EndsWith (".exe") || f.EndsWith (".dll"))
-				return new DotNetExecutionCommand (file);
-			else
-				return new NativeExecutionCommand (file);
+			foreach (ICommandFactory f in AddinManager.GetExtensionObjects<ICommandFactory> ("/MonoDevelop/Core/CommandFactories")) {
+				var cmd = f.CreateCommand (file);
+				if (cmd != null)
+					return cmd;
+			}
+			return new NativeExecutionCommand (file);
 		}
-		
+
 		public IEnumerable<IExecutionModeSet> GetExecutionModes ()
 		{
 			yield return defaultExecutionModeSet;
-			foreach (ExtensionNode node in AddinManager.GetExtensionNodes ("/MonoDevelop/Core/ExecutionModes")) {
+			foreach (ExtensionNode node in AddinManager.GetExtensionNodes (ExecutionModesExtensionPath)) {
 				if (node is ExecutionModeSetNode)
 					yield return (ExecutionModeSetNode) node;
 				else if (!(node is ExecutionModeNode))
 					yield return (IExecutionModeSet) ((TypeExtensionNode)node).GetInstance (typeof (IExecutionModeSet));
 			}
 		}
-		
+
+		/// <summary>
+		/// Returns the debug execution mode set
+		/// </summary>
+		/// <remarks>The returned mode set can be used to run applications in debug mode</remarks>
+		public IExecutionModeSet GetDebugExecutionMode ()
+		{
+			foreach (ExtensionNode node in AddinManager.GetExtensionNodes (ExecutionModesExtensionPath)) {
+				if (node.Id == "MonoDevelop.Debugger")
+					return (IExecutionModeSet) ((TypeExtensionNode)node).GetInstance (typeof (IExecutionModeSet));
+			}
+			return null;
+		}
+
 		public IExecutionHandler DefaultExecutionHandler {
 			get {
 				return defaultExecutionHandler;

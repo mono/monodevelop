@@ -246,7 +246,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		}
 
 		
-		public class UsageMarker : TextLineMarker, IBackgroundMarker
+		public class UsageMarker : TextLineMarker
 		{
 			List<TextSegment> usages = new List<TextSegment> ();
 
@@ -258,40 +258,39 @@ namespace MonoDevelop.CSharp.Highlighting
 			{
 				return usages.Any (u => u.Offset <= offset && offset <= u.EndOffset);
 			}
-			
-			public bool DrawBackground (TextEditor editor, Cairo.Context cr, TextViewMargin.LayoutWrapper layout, int selectionStart, int selectionEnd, int startOffset, int endOffset, double y, double startXPos, double endXPos, ref bool drawBg)
+
+			public override bool DrawBackground (TextEditor editor, Cairo.Context cr, double y, LineMetrics metrics)
 			{
-				drawBg = false;
-				if (selectionStart >= 0 || editor.CurrentMode is TextLinkEditMode || editor.TextViewMargin.SearchResultMatchCount > 0)
-					return true;
+				if (metrics.SelectionStart >= 0 || editor.CurrentMode is TextLinkEditMode || editor.TextViewMargin.SearchResultMatchCount > 0)
+					return false;
 				foreach (var usage in Usages) {
 					int markerStart = usage.Offset;
 					int markerEnd = usage.EndOffset;
 					
-					if (markerEnd < startOffset || markerStart > endOffset) 
-						return true; 
+					if (markerEnd < metrics.TextStartOffset || markerStart > metrics.TextEndOffset) 
+						return false; 
 					
 					double @from;
 					double to;
 					
-					if (markerStart < startOffset && endOffset < markerEnd) {
-						@from = startXPos;
-						to = endXPos;
+					if (markerStart < metrics.TextStartOffset && metrics.TextEndOffset < markerEnd) {
+						@from = metrics.TextRenderStartPosition;
+						to = metrics.TextRenderEndPosition;
 					} else {
-						int start = startOffset < markerStart ? markerStart : startOffset;
-						int end = endOffset < markerEnd ? endOffset : markerEnd;
+						int start = metrics.TextStartOffset < markerStart ? markerStart : metrics.TextStartOffset;
+						int end = metrics.TextEndOffset < markerEnd ? metrics.TextEndOffset : markerEnd;
 						
 						uint curIndex = 0, byteIndex = 0;
-						TextViewMargin.TranslateToUTF8Index (layout.LineChars, (uint)(start - startOffset), ref curIndex, ref byteIndex);
+						TextViewMargin.TranslateToUTF8Index (metrics.Layout.LineChars, (uint)(start - metrics.TextStartOffset), ref curIndex, ref byteIndex);
 						
-						int x_pos = layout.Layout.IndexToPos ((int)byteIndex).X;
+						int x_pos = metrics.Layout.Layout.IndexToPos ((int)byteIndex).X;
 						
-						@from = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
+						@from = metrics.TextRenderStartPosition + (int)(x_pos / Pango.Scale.PangoScale);
 						
-						TextViewMargin.TranslateToUTF8Index (layout.LineChars, (uint)(end - startOffset), ref curIndex, ref byteIndex);
-						x_pos = layout.Layout.IndexToPos ((int)byteIndex).X;
+						TextViewMargin.TranslateToUTF8Index (metrics.Layout.LineChars, (uint)(end - metrics.TextStartOffset), ref curIndex, ref byteIndex);
+						x_pos = metrics.Layout.Layout.IndexToPos ((int)byteIndex).X;
 			
-						to = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
+						to = metrics.TextRenderStartPosition + (int)(x_pos / Pango.Scale.PangoScale);
 					}
 		
 					@from = System.Math.Max (@from, editor.TextViewMargin.XOffset);

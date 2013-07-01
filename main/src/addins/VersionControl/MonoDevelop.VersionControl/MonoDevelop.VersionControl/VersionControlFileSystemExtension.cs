@@ -32,6 +32,10 @@ namespace MonoDevelop.VersionControl
 				if (path == prj.BaseDirectory || path.IsChildPathOf (prj.BaseDirectory))
 					return VersionControlService.GetRepository (prj);
 			}
+			foreach (Solution sol in IdeApp.Workspace.GetAllSolutions ()) {
+				if (path == sol.BaseDirectory || path.IsChildPathOf (sol.BaseDirectory))
+					return VersionControlService.GetRepository (sol);
+			}
 			return null;
 		}
 		
@@ -53,7 +57,7 @@ namespace MonoDevelop.VersionControl
 			Repository srcRepo = GetRepository (source);
 			Repository dstRepo = GetRepository (dest);
 			
-			if (dstRepo.CanMoveFilesFrom (srcRepo, source, dest))
+			if (dstRepo != null && dstRepo.CanMoveFilesFrom (srcRepo, source, dest))
 				srcRepo.MoveFile (source, dest, true, monitor);
 			else {
 				CopyFile (source, dest, true);

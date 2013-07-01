@@ -117,7 +117,7 @@ namespace Mono.TextEditor
 			                        System.Math.Max (line.Offset, offset + (forwardDirection ? 0 : 1)));
 		}
 		
-		static bool IsNoIdentifierPart (char ch)
+		internal static bool IsNoIdentifierPart (char ch)
 		{
 			return !char.IsWhiteSpace (ch) && !char.IsLetterOrDigit (ch) && ch != '_';
 		}

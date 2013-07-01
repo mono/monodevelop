@@ -103,11 +103,12 @@ namespace Stetic {
 			cr.RelLineTo (-rect.Width, 0);
 			cr.RelLineTo (0, -rect.Height);
 			cr.ClosePath ();
-			Cairo.LinearGradient pat = new Cairo.LinearGradient (rect.X + rect.Width*fx, rect.Y + rect.Height*fy, rect.X + rect.Width*fw, rect.Y + rect.Height*fh);
-			pat.AddColorStop (0, c1);
-			pat.AddColorStop (1, c2);
-			cr.Pattern = pat;
-			cr.FillPreserve ();
+			using (var pat = new Cairo.LinearGradient (rect.X + rect.Width*fx, rect.Y + rect.Height*fy, rect.X + rect.Width*fw, rect.Y + rect.Height*fh)) {
+				pat.AddColorStop (0, c1);
+				pat.AddColorStop (1, c2);
+				cr.Pattern = pat;
+				cr.FillPreserve ();
+			}
 		}
 
 		bool IEditableObject.CanDelete {

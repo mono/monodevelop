@@ -129,6 +129,19 @@ namespace MonoDevelop.Core.Assemblies
 				return false;
 			
 			monoVersion = ver.Substring (i, j - i);
+
+			i = ver.IndexOf ('(');
+			if (i != -1) {
+				i++;
+				j = ver.IndexOf (' ', i);
+				if (j == -1)
+					j = ver.IndexOf (')', i);
+				if (j != -1) {
+					var rev = ver.Substring (i, j - i);
+					if (rev != "tarball")
+						monoVersion += " (" + rev + ")";
+				}
+			}
 			
 			return true;
 		}

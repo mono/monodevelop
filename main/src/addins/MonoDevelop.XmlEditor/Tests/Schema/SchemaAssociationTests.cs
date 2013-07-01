@@ -1,3 +1,4 @@
+using MonoDevelop.XmlEditor;
 using NUnit.Framework;
 using System;
 using System.IO;
@@ -13,20 +14,20 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 		XmlWriter writer;
 		
 		[SetUp]
-		public void Init()
+		public void Init ()
 		{
-			xml = new StringBuilder();
-			XmlWriterSettings settings = new XmlWriterSettings();
+			xml = new StringBuilder ();
+			XmlWriterSettings settings = new XmlWriterSettings ();
 			settings.Indent = true;
 			settings.OmitXmlDeclaration = true;
 			settings.IndentChars = "\t";
-			writer = XmlWriter.Create(xml, settings);
+			writer = XmlWriter.Create (xml, settings);
 		}
 				
 		[Test]
 		public void ToXml()
 		{
-			XmlSchemaAssociation schema = new XmlSchemaAssociation(".xml", "http://mono-project.com");
+			XmlFileAssociation schema = new XmlFileAssociation (".xml", "http://mono-project.com", null);
 			schema.WriteTo(writer);
 			
 			string expectedXml = "<SchemaAssociation extension=\".xml\" namespace=\"http://mono-project.com\" prefix=\"\" />";
@@ -36,13 +37,13 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 		[Test]
 		public void FromXml()
 		{
-			XmlSchemaAssociation expectedSchema = new XmlSchemaAssociation(".xml", "http://mono-project.com");
+			XmlFileAssociation expectedSchema = new XmlFileAssociation (".xml", "http://mono-project.com", null);
 			expectedSchema.WriteTo(writer);
 
 			string propertiesXml = "<SerializedNode>" + xml.ToString() + "</SerializedNode>";
-			XmlTextReader reader = new XmlTextReader(new StringReader(propertiesXml));
-			XmlSchemaAssociation schema = new MonoDevelop.XmlEditor.XmlSchemaAssociation(String.Empty);
-			schema = (XmlSchemaAssociation)schema.ReadFrom(reader);
+			XmlTextReader reader = new XmlTextReader (new StringReader(propertiesXml));
+			XmlFileAssociation schema = new XmlFileAssociation ();
+			schema = (XmlFileAssociation)schema.ReadFrom (reader);
 			
 			Assert.AreEqual(expectedSchema.Extension, schema.Extension);
 			Assert.AreEqual(expectedSchema.NamespacePrefix, schema.NamespacePrefix);
@@ -54,8 +55,8 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 		{
 			string propertiesXml = "<SerializedNode/>";
 			XmlTextReader reader = new XmlTextReader(new StringReader(propertiesXml));
-			XmlSchemaAssociation schema = new MonoDevelop.XmlEditor.XmlSchemaAssociation(String.Empty);
-			Assert.IsNull(schema.ReadFrom(reader));
+			XmlFileAssociation schema = new XmlFileAssociation();
+			Assert.IsNull(schema.ReadFrom (reader));
 		}		
 	}
 }

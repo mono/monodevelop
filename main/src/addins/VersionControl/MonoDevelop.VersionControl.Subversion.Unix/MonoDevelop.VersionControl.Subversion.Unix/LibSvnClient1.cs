@@ -35,7 +35,7 @@ using MonoDevelop.Core;
 using MonoDevelop.VersionControl;
 using MonoDevelop.VersionControl.Subversion.Gui;
 
-using svn_revnum_t = System.Int32;
+using svn_revnum_t = System.IntPtr;
 
 namespace MonoDevelop.VersionControl.Subversion.Unix {
 	
@@ -47,14 +47,14 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 			return svn_client_root_url_from_path (ref url, path_or_url, ctx, pool);
 		}
 		
-		public override void config_ensure (string config_dir, IntPtr pool)
+		public override IntPtr config_ensure (string config_dir, IntPtr pool)
 		{
-			svn_config_ensure (config_dir, pool);
+			return svn_config_ensure (config_dir, pool);
 		}
 		
-		public override void config_get_config (ref IntPtr cfg_hash, string config_dir, IntPtr pool)
+		public override IntPtr config_get_config (ref IntPtr cfg_hash, string config_dir, IntPtr pool)
 		{
-			svn_config_get_config (ref cfg_hash, config_dir, pool);
+			return svn_config_get_config (ref cfg_hash, config_dir, pool);
 		}
 		
 		public override void auth_open (out IntPtr auth_baton, IntPtr providers, IntPtr pool)	
@@ -133,7 +133,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		}
 		
 		public override IntPtr client_ls (out IntPtr dirents, string path_or_url,
-		                                  ref Rev revision, int recurse, IntPtr ctx,
+		                                  ref Rev revision, bool recurse, IntPtr ctx,
 		                                  IntPtr pool)
 		{
 			return svn_client_ls (out dirents, path_or_url, ref revision, recurse, ctx, pool);
@@ -151,8 +151,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		
 		public override IntPtr client_log (IntPtr apr_array_header_t_targets,
 		                                   ref Rev rev_start, ref Rev rev_end,
-		                                   int discover_changed_paths,
-		                                   int strict_node_history,
+		                                   bool discover_changed_paths,
+		                                   bool strict_node_history,
 		                                   svn_log_message_receiver_t receiver,
 		                                   IntPtr receiver_baton,
 		                                   IntPtr ctx, IntPtr pool)
@@ -187,49 +187,50 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		
 		//public override IntPtr stream_set_read (IntPtr stream, svn_readwrite_fn_t reader);
 		
-		public override IntPtr stream_set_write (IntPtr stream, svn_readwrite_fn_t writer)
+		public override void stream_set_write (IntPtr stream, svn_readwrite_fn_t writer)
 		{
-			return svn_stream_set_write (stream, writer);
+			svn_stream_set_write (stream, writer);
 		}
 		
-		public override IntPtr client_update (IntPtr result_rev, string path, ref Rev revision,
+		public override IntPtr client_update (svn_revnum_t result_rev, string path, ref Rev revision,
 		                                      bool recurse, IntPtr ctx, IntPtr pool)
 		{
 			return svn_client_update (result_rev, path, ref revision, recurse, ctx, pool);
 		}
 		
 		public override IntPtr client_delete (ref IntPtr commit_info_p, IntPtr apr_array_header_t_targets, 
-		                                      int force, IntPtr ctx, IntPtr pool)
+		                                      bool force, IntPtr ctx, IntPtr pool)
 		{
 			return svn_client_delete (ref commit_info_p, apr_array_header_t_targets, force, ctx, pool);
 		}
 		
-		public override IntPtr client_add3 (string path, int recurse, int force, int no_ignore, IntPtr ctx, IntPtr pool)
+		public override IntPtr client_add3 (string path, bool recurse, bool force, bool no_ignore, IntPtr ctx, IntPtr pool)
 		{
 			return svn_client_add3 (path, recurse, force, no_ignore, ctx, pool);
 		}
 		
 		public override IntPtr client_commit (ref IntPtr svn_client_commit_info_t_commit_info,
-		                                      IntPtr apr_array_header_t_targets, int nonrecursive,
+		                                      IntPtr apr_array_header_t_targets,
+		                                      bool nonrecursive,
 		                                      IntPtr ctx, IntPtr pool)
 		{
 			return svn_client_commit (ref svn_client_commit_info_t_commit_info, apr_array_header_t_targets,
 			                          nonrecursive, ctx, pool);
 		}
 		
-		public override IntPtr client_revert (IntPtr apr_array_header_t_targets, int recursive,
+		public override IntPtr client_revert (IntPtr apr_array_header_t_targets, bool recursive,
 		                                      IntPtr ctx, IntPtr pool)
 		{
 			return svn_client_revert (apr_array_header_t_targets, recursive, ctx, pool);
 		}
 		
-		public override IntPtr client_resolved (string path, int recursive, IntPtr ctx, IntPtr pool)
+		public override IntPtr client_resolved (string path, bool recursive, IntPtr ctx, IntPtr pool)
 		{
 			return svn_client_resolved (path, recursive, ctx, pool);
 		}
 		
 		public override IntPtr client_move (ref IntPtr commit_info_p, string srcPath, ref Rev rev,
-		                                    string destPath, int force, IntPtr ctx, IntPtr pool)
+		                                    string destPath, bool force, IntPtr ctx, IntPtr pool)
 		{
 			return svn_client_move (ref commit_info_p, srcPath, ref rev, destPath, force, ctx, pool);
 		}
@@ -246,8 +247,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		}
 		
 		public override IntPtr client_diff (IntPtr diff_options, string path1, ref Rev revision1,
-		                                    string path2, ref Rev revision2, int recurse,
-		                                    int ignore_ancestry, int no_diff_deleted,
+		                                    string path2, ref Rev revision2, bool recurse,
+		                                    bool ignore_ancestry, bool no_diff_deleted,
 		                                    IntPtr outfile, IntPtr errfile,
 		                                    IntPtr ctx, IntPtr pool)
 		{
@@ -275,29 +276,34 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 			                              merge_options, ctx, pool);
 		}
 		
-		public override IntPtr client_lock (IntPtr apr_array_header_t_targets, string comment, int steal_lock, IntPtr ctx, IntPtr pool)
+		public override IntPtr client_lock (IntPtr apr_array_header_t_targets, string comment, bool steal_lock, IntPtr ctx, IntPtr pool)
 		{
 			return svn_client_lock (apr_array_header_t_targets, comment, steal_lock, ctx, pool);
 		}
 		
-		public override IntPtr client_unlock (IntPtr apr_array_header_t_targets, int break_lock, IntPtr ctx, IntPtr pool)
+		public override IntPtr client_unlock (IntPtr apr_array_header_t_targets, bool break_lock, IntPtr ctx, IntPtr pool)
 		{
 			return svn_client_unlock (apr_array_header_t_targets, break_lock, ctx, pool);
 		}
 		
-		public override IntPtr client_prop_get (out IntPtr value, string name, string target, ref Rev revision, int recurse, IntPtr ctx, IntPtr pool)
+		public override IntPtr client_propget (out IntPtr value, string name, string target, ref Rev revision, bool recurse, IntPtr ctx, IntPtr pool)
 		{
-			return svn_client_prop_get (out value, name, target, ref revision, recurse, ctx, pool);
+			return svn_client_propget (out value, name, target, ref revision, recurse, ctx, pool);
 		}
 		
 		public override IntPtr client_blame (string path, ref Rev rev_start, ref Rev rev_end, svn_client_blame_receiver_t receiver, System.IntPtr baton, System.IntPtr ctx, System.IntPtr pool)
 		{
 			return svn_client_blame (path, ref rev_start, ref rev_end, receiver, baton, ctx, pool);
 		}
-		
-		public override void strerror (int statcode, byte[] buf, int bufsize)
+
+		public override IntPtr wc_context_create (out IntPtr svn_wc_context_t, IntPtr config, IntPtr result_pool, IntPtr scratch_pool)
 		{
-			svn_strerror (statcode, buf, bufsize);
+			return svn_wc_context_create (out svn_wc_context_t, config, result_pool, scratch_pool);
+		}
+		
+		public override IntPtr strerror (int statcode, byte[] buf, int bufsize)
+		{
+			return svn_strerror (statcode, buf, bufsize);
 		}
 		
 		public override IntPtr path_internal_style (string path, IntPtr pool)
@@ -327,8 +333,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_create_context(out IntPtr ctx, IntPtr pool);
 		
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_ls (out IntPtr dirents, string path_or_url,
-		                                                              ref Rev revision, int recurse, IntPtr ctx,
-		                                                              IntPtr pool);
+		                                                              ref Rev revision, [MarshalAs (UnmanagedType.Bool)] bool recurse,
+		                                                              IntPtr ctx, IntPtr pool);
 		
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_status2 (IntPtr svn_revnum_t, string path, ref Rev revision,
 		                                                                   svn_wc_status_func2_t status_func, IntPtr status_baton,
@@ -341,8 +347,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_log (IntPtr apr_array_header_t_targets,
 		                                                               ref Rev rev_start, ref Rev rev_end,
-		                                                               int discover_changed_paths,
-		                                                               int strict_node_history,
+		                                                               [MarshalAs (UnmanagedType.Bool)] bool discover_changed_paths,
+		                                                               [MarshalAs (UnmanagedType.Bool)] bool strict_node_history,
 		                                                               svn_log_message_receiver_t receiver,
 		                                                               IntPtr receiver_baton,
 		                                                               IntPtr ctx, IntPtr pool);
@@ -360,28 +366,36 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		
 		//[DllImport(svnclientlib)] static extern IntPtr svn_stream_set_read (IntPtr stream, svn_readwrite_fn_t reader);
 		
-		[DllImport(svnclientlib)] static extern IntPtr svn_stream_set_write (IntPtr stream, svn_readwrite_fn_t writer);
+		[DllImport(svnclientlib)] static extern void svn_stream_set_write (IntPtr stream, svn_readwrite_fn_t writer);
 		
-		[DllImport(svnclientlib)] static extern IntPtr svn_client_update (IntPtr result_rev, string path, ref Rev revision,
+		[DllImport(svnclientlib)] static extern IntPtr svn_client_update (svn_revnum_t result_rev, string path, ref Rev revision,
 		                                                                  [MarshalAs (UnmanagedType.Bool)] bool recurse,
 		                                                                  IntPtr ctx, IntPtr pool);
 		
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_delete (ref IntPtr commit_info_p, IntPtr apr_array_header_t_targets, 
-		                                                                  int force, IntPtr ctx, IntPtr pool);
+		                                                                  [MarshalAs (UnmanagedType.Bool)] bool force, IntPtr ctx, IntPtr pool);
 		
-		[DllImport(svnclientlib)] static extern IntPtr svn_client_add3 (string path, int recurse, int force, int no_ignore, IntPtr ctx, IntPtr pool);
+		[DllImport(svnclientlib)] static extern IntPtr svn_client_add3 (string path, [MarshalAs (UnmanagedType.Bool)] bool recurse,
+		                                                                [MarshalAs (UnmanagedType.Bool)] bool force,
+		                                                                [MarshalAs (UnmanagedType.Bool)] bool no_ignore,
+		                                                                IntPtr ctx, IntPtr pool);
 		
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_commit (ref IntPtr svn_client_commit_info_t_commit_info,
-		                                                                  IntPtr apr_array_header_t_targets, int nonrecursive,
+		                                                                  IntPtr apr_array_header_t_targets,
+		                                                                  [MarshalAs (UnmanagedType.Bool)] bool nonrecursive,
 		                                                                  IntPtr ctx, IntPtr pool);
 		
-		[DllImport(svnclientlib)] static extern IntPtr svn_client_revert (IntPtr apr_array_header_t_targets, int recursive,
+		[DllImport(svnclientlib)] static extern IntPtr svn_client_revert (IntPtr apr_array_header_t_targets,
+		                                                                  [MarshalAs (UnmanagedType.Bool)] bool recursive,
 		                                                                  IntPtr ctx, IntPtr pool);
 		
-		[DllImport(svnclientlib)] static extern IntPtr svn_client_resolved (string path, int recursive, IntPtr ctx, IntPtr pool);
+		[DllImport(svnclientlib)] static extern IntPtr svn_client_resolved (string path,
+		                                                                    [MarshalAs (UnmanagedType.Bool)] bool recursive,
+		                                                                    IntPtr ctx, IntPtr pool);
 		
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_move (ref IntPtr commit_info_p, string srcPath, ref Rev rev,
-		                                                                string destPath, int force, IntPtr ctx, IntPtr pool);
+		                                                                string destPath, [MarshalAs (UnmanagedType.Bool)] bool force,
+		                                                                IntPtr ctx, IntPtr pool);
 		
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_checkout (IntPtr result_rev, string url, string path, ref Rev rev, 
 		                                                                    [MarshalAs (UnmanagedType.Bool)] bool recurse,
@@ -391,9 +405,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_diff (IntPtr diff_options, string path1,
 		                                                                ref Rev revision1, string path2,
-		                                                                ref Rev revision2, int recurse,
-		                                                                int ignore_ancestry,
-		                                                                int no_diff_deleted,
+		                                                                ref Rev revision2, [MarshalAs (UnmanagedType.Bool)] bool recurse,
+		                                                                [MarshalAs (UnmanagedType.Bool)] bool ignore_ancestry,
+		                                                                [MarshalAs (UnmanagedType.Bool)] bool no_diff_deleted,
 		                                                                IntPtr outfile,
 		                                                                IntPtr errfile,
 		                                                                IntPtr ctx,
@@ -412,15 +426,24 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		                                                                      IntPtr ctx,
 		                                                                      IntPtr pool);
 		
-		[DllImport(svnclientlib)] static extern IntPtr svn_client_lock (IntPtr apr_array_header_t_targets, string comment, int steal_lock, IntPtr ctx, IntPtr pool);
+		[DllImport(svnclientlib)] static extern IntPtr svn_client_lock (IntPtr apr_array_header_t_targets, string comment,
+		                                                                [MarshalAs (UnmanagedType.Bool)] bool steal_lock,
+		                                                                IntPtr ctx, IntPtr pool);
 		
-		[DllImport(svnclientlib)] static extern IntPtr svn_client_unlock (IntPtr apr_array_header_t_targets, int break_lock, IntPtr ctx, IntPtr pool);
+		[DllImport(svnclientlib)] static extern IntPtr svn_client_unlock (IntPtr apr_array_header_t_targets,
+		                                                                  [MarshalAs (UnmanagedType.Bool)] bool break_lock,
+		                                                                  IntPtr ctx, IntPtr pool);
 		
-		[DllImport(svnclientlib)] static extern IntPtr svn_client_prop_get (out IntPtr value, string name, string target, ref Rev revision, int recurse, IntPtr ctx, IntPtr pool);
+		[DllImport(svnclientlib)] static extern IntPtr svn_client_propget (out IntPtr value, string name, string target,
+		                                                                    ref Rev revision,
+		                                                                    [MarshalAs (UnmanagedType.Bool)] bool recurse,
+		                                                                    IntPtr ctx, IntPtr pool);
 		
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_blame (string path, ref Rev rev_start, ref Rev rev_end, svn_client_blame_receiver_t receiver, IntPtr baton, IntPtr ctx, IntPtr pool);
-		
-		[DllImport(svnclientlib)] static extern void svn_strerror (int statcode, byte[] buf, int bufsize);
+
+		[DllImport(svnclientlib)] static extern IntPtr svn_wc_context_create (out IntPtr svn_wc_context_t, IntPtr svn_config_ensure, IntPtr result_pool, IntPtr scratch_pool);
+
+		[DllImport(svnclientlib)] static extern IntPtr svn_strerror (int statcode, byte[] buf, int bufsize);
 		
 		[DllImport(svnclientlib)] static extern IntPtr svn_path_internal_style (string path, IntPtr pool);
 	}

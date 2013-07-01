@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -44,6 +44,10 @@
     <Reference Include="Microsoft.WindowsAPICodePack.Shell">
       <HintPath>Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationFramework" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -90,6 +94,7 @@
     </Compile>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Enums.cs" />
+    <Compile Include="GdkWin32.cs" />
     <Compile Include="structs.cs" />
     <Compile Include="Win32.cs" />
     <Compile Include="WindowsPlatform.cs" />

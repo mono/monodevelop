@@ -369,7 +369,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			
 			// If we're on Windows, don't need to fix file casing.
 			if (Platform.IsWindows) {
-				resultPath = Path.GetFullPath (path);
+				resultPath = FileService.GetFullPath (path);
 				return true;
 			}
 			

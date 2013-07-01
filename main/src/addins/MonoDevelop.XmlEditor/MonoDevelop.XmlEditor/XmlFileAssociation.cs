@@ -22,7 +22,6 @@
 // THE SOFTWARE.
 
 using MonoDevelop.Core;
-using System;
 using System.Xml;
 
 namespace MonoDevelop.XmlEditor
@@ -51,7 +50,7 @@ namespace MonoDevelop.XmlEditor
 		public string Extension { get; private set; }
 		public string NamespacePrefix { get; private set; }
 		
-		ICustomXmlSerializer ICustomXmlSerializer.ReadFrom (XmlReader reader)
+		public ICustomXmlSerializer ReadFrom (XmlReader reader)
 		{
 			while (reader.Read ()) {
 				if (reader.NodeType == XmlNodeType.Element && reader.Name == schemaAssociationElementName) {
@@ -64,7 +63,7 @@ namespace MonoDevelop.XmlEditor
 			return null;
 		}
 		
-		void ICustomXmlSerializer.WriteTo (XmlWriter writer)
+		public void WriteTo (XmlWriter writer)
 		{
 			writer.WriteStartElement (schemaAssociationElementName);
 			writer.WriteAttributeString (extensionAttributeName, Extension);

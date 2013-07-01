@@ -34,7 +34,7 @@ using System.Reflection;
 
 namespace MonoDevelop.Components.MainToolbar
 {
-	class LazyImage
+	class LazyImage : IDisposable
 	{
 		string resourceName;
 
@@ -57,6 +57,13 @@ namespace MonoDevelop.Components.MainToolbar
 			return lazy.Img;
 		}
 
+		public void Dispose ()
+		{
+			if (img != null) {
+				img.Dispose ();
+				img = null;
+			}
+		}
 	}
 
 	class RoundButton : Gtk.EventBox
@@ -236,6 +243,46 @@ namespace MonoDevelop.Components.MainToolbar
 			EventHandler handler = this.Clicked;
 			if (handler != null)
 				handler (this, e);
+		}
+
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+
+			if (btnNormal != null) {
+				btnNormal.Dispose ();
+				btnNormal = null;
+			}
+
+			if (iconRunNormal != null) {
+				iconRunNormal.Dispose ();
+				iconRunNormal = null;
+			}
+
+			if (iconRunDisabled != null) {
+				iconRunDisabled.Dispose ();
+				iconRunDisabled = null;
+			}
+
+			if (iconStopNormal != null) {
+				iconStopNormal.Dispose ();
+				iconStopNormal = null;
+			}
+
+			if (iconStopDisabled != null) {
+				iconStopDisabled.Dispose ();
+				iconStopDisabled = null;
+			}
+
+			if (iconBuildNormal != null) {
+				iconBuildNormal.Dispose ();
+				iconBuildNormal = null;
+			}
+
+			if (iconBuildDisabled != null) {
+				iconBuildDisabled.Dispose ();
+				iconBuildDisabled = null;
+			}
 		}
 	}
 }

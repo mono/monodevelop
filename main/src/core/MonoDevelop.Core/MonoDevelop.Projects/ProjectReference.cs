@@ -46,7 +46,7 @@ namespace MonoDevelop.Projects
 		Package,
 		Custom,
 		[Obsolete]
-		Gac = Package
+		Gac
 	}
 	
 	/// <summary>
@@ -104,6 +104,10 @@ namespace MonoDevelop.Projects
 		{
 			if (referenceType == ReferenceType.Assembly)
 				specificVersion = false;
+#pragma warning disable 612
+			if (referenceType == ReferenceType.Gac)
+				referenceType = ReferenceType.Package;
+#pragma warning restore 612
 			this.referenceType = referenceType;
 			this.reference     = reference;
 			UpdatePackageReference ();
@@ -144,7 +148,15 @@ namespace MonoDevelop.Projects
 		public Project OwnerProject {
 			get { return ownerProject; }
 		}
-		
+
+		// This property is used by the serializer. It ensures that the obsolete Gac value is not serialized
+		internal ReferenceType internalReferenceType {
+			get { return referenceType; }
+			#pragma warning disable 612
+			set { referenceType = value == ReferenceType.Gac ? ReferenceType.Package : value; }
+			#pragma warning restore 612
+		}
+
 		public ReferenceType ReferenceType {
 			get {
 				return referenceType;

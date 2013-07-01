@@ -1,11 +1,5 @@
-
-using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.XmlEditor;
 using NUnit.Framework;
-using System;
-using System.IO;
-using System.Text;
-using System.Xml;
+using MonoDevelop.XmlEditor.Completion;
 using MonoDevelop.XmlEditor.Tests.Utils;
 using MonoDevelop.XmlEditor.Tests.Schema;
 
@@ -16,6 +10,7 @@ namespace MonoDevelop.XmlEditor.Tests.Schema.Includes
 	/// generating completion data.
 	/// </summary>
 	[TestFixture]
+	[Ignore]
 	public class AttributeGroupRefSchemaIncludeTestFixture : AttributeGroupRefTestFixture
 	{
 		[TestFixtureTearDown]

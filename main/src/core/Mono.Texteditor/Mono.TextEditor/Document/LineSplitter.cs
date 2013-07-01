@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Mono.TextEditor.Utils;
 using System.Diagnostics;
+using ICSharpCode.NRefactory;
 
 namespace Mono.TextEditor
 {
@@ -242,15 +243,11 @@ namespace Mono.TextEditor
 				char* p = start + offset;
 				char* endPtr = start + text.Length;
 				while (p < endPtr) {
-					switch (*p) {
-					case '\r':
-						char* nextp = p + 1;
-						if (nextp < endPtr && *nextp == '\n') 
-							return new Delimiter ((int)(p - start), 2);
-						return new Delimiter ((int)(p - start), 1);
-					case '\n':
-						return new Delimiter ((int)(p - start), 1);
-					}
+					char* nextp = p + 1;
+					char nextChar = nextp < endPtr ? *nextp : '\0';
+					var nl = NewLine.GetDelimiterLength (*p, nextChar);
+					if (nl > 0)
+						return new Delimiter ((int)(p - start), nl);
 					p++;
 				}
 				return Delimiter.Invalid;

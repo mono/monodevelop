@@ -6,7 +6,7 @@
        url         = "http://monodevelop.com"
        description = "Integrates NUnit into the MonoDevelop IDE."
        category    = "Testing"
-       version     = "4.0.6">
+       version     = "4.1.4">
 
 	<Runtime>
 		<Import assembly="MonoDevelop.NUnit.dll" />
@@ -17,8 +17,8 @@
 	</Runtime>
 	
 	<Dependencies>
-		<Addin id="Core" version="4.0.6"/>
-		<Addin id="Ide" version="4.0.6"/>
+		<Addin id="Core" version="4.1.4"/>
+		<Addin id="Ide" version="4.1.4"/>
 	</Dependencies>
 	
 	<!-- Extension Points -->
@@ -106,6 +106,9 @@
 			_label = "Run With"
 			type="array"
 			_description="Runs tests using a special execution mode."/>
+		<Command id = "MonoDevelop.NUnit.Commands.TestCommands.DebugTest" 
+			_label = "Debug Test"
+			type="array" />
 		<Command id = "MonoDevelop.NUnit.Commands.TestCommands.RunTest" _label = "Run Test" />
 		<Command id = "MonoDevelop.NUnit.Commands.TestCommands.ShowTestCode" _label = "Show test source code" />
 		<Command id = "MonoDevelop.NUnit.Commands.TestCommands.GoToFailure" _label = "Go to failure" />
@@ -140,6 +143,7 @@
 
 	<Extension path = "/MonoDevelop/NUnit/ContextMenu/TestPad">
 		<CommandItem id = "MonoDevelop.NUnit.Commands.TestCommands.RunTest" />
+		<CommandItem id = "MonoDevelop.NUnit.Commands.TestCommands.DebugTest" />
 		<ItemSet id = "RunTestWith" _label = "Run Test With">
 			<CommandItem id = "MonoDevelop.NUnit.Commands.TestCommands.RunTestWith" />
 		</ItemSet>
@@ -217,6 +221,10 @@
 			name = "TestRunnerType" type = "System.String" external="false" />
 		<ItemProperty class = "MonoDevelop.Projects.DotNetProject"
 			name = "TestRunnerAssembly" type = "MonoDevelop.Core.FilePath" external="false" />
+		<ItemProperty class = "MonoDevelop.Projects.DotNetProject"
+			name = "TestRunnerCommand" type = "MonoDevelop.Core.FilePath" external="false" />
+		<ItemProperty class = "MonoDevelop.Projects.DotNetProject"
+			name = "TestRunnerArgs" type = "System.String" external="false" />
 	</Extension>
 
 </Addin>

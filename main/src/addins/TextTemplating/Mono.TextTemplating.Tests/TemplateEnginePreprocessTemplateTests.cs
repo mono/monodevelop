@@ -43,7 +43,7 @@ namespace Mono.TextTemplating.Tests
 				"<#@ template language=\"C#\" #>\r\n" +
 				"Test\r\n";
 			
-			string expectedOutput = OutputSample1;
+			string expectedOutput = TemplatingEngineHelper.CleanCodeDom (OutputSample1, "\n");
 			string output = Preprocess (input);
 			
 			Assert.AreEqual (expectedOutput, output);
@@ -55,7 +55,7 @@ namespace Mono.TextTemplating.Tests
 			string input = InputTemplate_ControlBlockAfterIncludedTemplateWithClassFeatureBlock;
 			DummyHost host = CreateDummyHostForControlBlockAfterIncludedTemplateWithClassFeatureBlockTest ();
 			
-			string expectedOutput = Output_ControlBlockAfterIncludedTemplateWithClassFeatureBlock;
+			string expectedOutput = TemplatingEngineHelper.CleanCodeDom (Output_ControlBlockAfterIncludedTemplateWithClassFeatureBlock, "\n");
 			string output = Preprocess (input, host);
 			
 			Assert.AreEqual (expectedOutput, output, output);
@@ -80,8 +80,7 @@ namespace Mono.TextTemplating.Tests
 			string output = engine.PreprocessTemplate (input, host, className, classNamespace, out language, out references);
 			ReportErrors (host.Errors);
 			if (output != null) {
-				output = output.Replace ("\r\n", "\n");
-				return TemplatingEngineHelper.StripHeader (output, "\n");
+				return TemplatingEngineHelper.CleanCodeDom (output, "\n");
 			}
 			return null;
 		}
@@ -161,6 +160,7 @@ namespace Templating {
             this.GenerationEnvironment = null;
             
             #line 2 """"
+
             this.Write(""Test\r\n"");
             
             #line default

@@ -208,8 +208,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (cref.Length < 2)
 				return cref;
 			try {
-				var entity = new DocumentationComment ("", ctx).ResolveCref (cref);
-
+				var entity = new DocumentationComment ("", ctx).ResolveCref (cref.Replace("<", "{").Replace(">", "}"));
+	
 				if (entity != null) {
 					var ambience = new ICSharpCode.NRefactory.CSharp.CSharpAmbience ();
 					ambience.ConversionFlags = ConversionFlags.ShowParameterList | ConversionFlags.ShowParameterNames | ConversionFlags.ShowTypeParameterList;

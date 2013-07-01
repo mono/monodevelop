@@ -1,9 +1,6 @@
-
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.XmlEditor;
 using NUnit.Framework;
-using System;
-using System.IO;
 
 namespace MonoDevelop.XmlEditor.Tests.Schema
 {
@@ -17,8 +14,8 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 	[TestFixture]
 	public class GroupRefAsCompositorTestFixture : SchemaTestFixtureBase
 	{
-		ICompletionData[] rootChildElements;
-		ICompletionData[] fooAttributes;
+		CompletionDataList rootChildElements;
+		CompletionDataList fooAttributes;
 		
 		public override void FixtureInit()
 		{
@@ -35,7 +32,7 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 		[Test]
 		public void RootHasTwoChildElements()
 		{
-			Assert.AreEqual(2, rootChildElements.Length, 
+			Assert.AreEqual(2, rootChildElements.Count, 
 			                "Should be two child elements.");
 		}
 		

@@ -56,11 +56,6 @@
       <Name>MonoDevelop.DesignerSupport</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\core\Mono.Debugging\Mono.Debugging.csproj">
-      <Project>{90C99ADB-7D4B-4EB4-98C2-40BD1B14C7D2}</Project>
-      <Name>Mono.Debugging</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\MonoDevelop.Debugger\MonoDevelop.Debugger.csproj">
       <Project>{2357AABD-08C7-4808-A495-8FF2D3CDFDB0}</Project>
       <Name>MonoDevelop.Debugger</Name>
@@ -84,6 +79,12 @@
     <ProjectReference Include="..\..\..\external\xwt\Xwt\Xwt.csproj">
       <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
       <Name>Xwt</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\external\debugger-libs\Mono.Debugging\Mono.Debugging.csproj">
+      <Project>{90C99ADB-7D4B-4EB4-98C2-40BD1B14C7D2}</Project>
+      <Name>Mono.Debugging</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -151,7 +152,6 @@
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.PrintSettingsWidget.cs" />
     <Compile Include="MonoDevelop.SourceEditor\MessageBubbleCommands.cs" />
     <Compile Include="MonoDevelop.SourceEditor\MessageBubbleTextMarker.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\MessageBubbleHighlightPopupWindow.cs" />
     <Compile Include="MonoDevelop.SourceEditor\MessageBubbleCache.cs" />
     <Compile Include="MonoDevelop.SourceEditor.OptionPanels\ColorShemeEditor.cs" />
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.OptionPanels.ColorShemeEditor.cs" />
@@ -167,6 +167,7 @@
     <Compile Include="MonoDevelop.SourceEditor.QuickTasks\IUsageProvider.cs" />
     <Compile Include="MonoDevelop.SourceEditor\FileRegistry.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SearchAndReplaceOptions.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\ErrorText.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

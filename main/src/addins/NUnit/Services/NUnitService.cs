@@ -252,8 +252,12 @@ namespace MonoDevelop.NUnit
 		public UnitTest BuildTest (IWorkspaceObject entry)
 		{
 			foreach (ITestProvider p in providers) {
-				UnitTest t = p.CreateUnitTest (entry);
-				if (t != null) return t;
+				try {
+					UnitTest t = p.CreateUnitTest (entry);
+					if (t != null)
+						return t;
+				} catch {
+				}
 			}
 			return null;
 		}
@@ -355,6 +359,11 @@ namespace MonoDevelop.NUnit
 			monitor.ReportRuntimeError (message, exception);
 		}
 		
+		void ITestProgressMonitor.WriteGlobalLog (string message)
+		{
+			monitor.WriteGlobalLog (message);
+		}
+
 		bool ITestProgressMonitor.IsCancelRequested {
 			get { return monitor.IsCancelRequested; }
 		}

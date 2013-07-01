@@ -512,7 +512,13 @@ namespace MonoDevelop.Components.MainToolbar
 			var token = tooltipSrc.Token;
 
 			ThreadPool.QueueUserWorkItem (delegate {
-				var tooltip = currentSelectedItem.DataSource.GetTooltip (i);
+				TooltipInformation tooltip;
+				try {
+					tooltip = currentSelectedItem.DataSource.GetTooltip (i);
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while creating search popup window tooltip", e);
+					return;
+				}
 				if (tooltip == null || string.IsNullOrEmpty (tooltip.SignatureMarkup) || token.IsCancellationRequested)
 					return;
 				Application.Invoke (delegate {

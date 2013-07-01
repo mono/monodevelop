@@ -7,7 +7,7 @@
        description = "The MonoDevelop IDE application."
        category    = "MonoDevelop Core"
        isroot      = "true"
-       version     = "4.0.6"
+       version     = "4.1.4"
        compatVersion = "4.0">
 	
 	<Runtime>
@@ -15,7 +15,7 @@
 	</Runtime>
 	
 	<Dependencies>
-		<Addin id="Core" version="4.0.6"/>
+		<Addin id="Core" version="4.1.4"/>
 	</Dependencies>
 
 	<!-- Extension ponts -->
@@ -260,7 +260,7 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.Save" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.SaveAll" />
 		<SeparatorItem id = "SaveSeparator" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.FileTabCommands.OpenContainingFolder" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenContainingFolder" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileTabCommands.CopyPathName" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileTabCommands.ToggleMaximize" />
 	</Extension>
@@ -299,5 +299,9 @@
 
 	<Extension path = "/MonoDevelop/Core/WebCertificateProvider">
 		<Class class = "MonoDevelop.Ide.DefaultWebCertificateProvider" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/CustomTools">
+		<Tool name="ResXFileCodeGenerator" type="MonoDevelop.Ide.CustomTools.ResXFileCodeGenerator" />
 	</Extension>
 </Addin>

@@ -38,6 +38,7 @@ using MonoDevelop.Components;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
 using System.IO;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Ide.Projects
 {
@@ -243,7 +244,6 @@ namespace MonoDevelop.Ide.Projects
 		
 		void InsertFilterEntry ()
 		{
-			filterEntry.EmptyMessage = GettextCatalog.GetString ("Search (Control+F)");
 			filterEntry.KeyPressEvent += HandleFilterEntryKeyPressEvent;
 			filterEntry.Activated += HandleFilterEntryActivated;
 			filterEntry.Changed += delegate {
@@ -275,10 +275,13 @@ namespace MonoDevelop.Ide.Projects
 		
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
 		{
-			if (evnt.Key == Gdk.Key.f && evnt.State == Gdk.ModifierType.ControlMask) {
+			bool complete;
+			var accels = KeyBindingManager.AccelsFromKey (evnt, out complete);
+			if (complete && accels.Any (a => a.Equals (combinedBox.SearchKeyShortcut))) {
 				filterEntry.HasFocus = true;
 				return false;
 			}
+
 			return base.OnKeyPressEvent (evnt);
 		}
 
@@ -435,6 +438,7 @@ namespace MonoDevelop.Ide.Projects
 	class CombinedBox: Gtk.EventBox
 	{
 		SearchEntry filterEntry;
+		KeyboardShortcut searchShortcut;
 
 		public SearchEntry FilterEntry {
 			get { return filterEntry; }
@@ -447,17 +451,38 @@ namespace MonoDevelop.Ide.Projects
 			filterEntry.Ready = true;
 			filterEntry.ForceFilterButtonVisible = true;
 			filterEntry.Entry.CanFocus = true;
-			filterEntry.EmptyMessage = GettextCatalog.GetString ("Search (Control+F)");
 			filterEntry.RoundedShape = true;
 			filterEntry.HasFrame = true;
 			filterEntry.Parent = this;
 			filterEntry.Show ();
+
+			SearchKeyShortcut = new KeyboardShortcut (
+				Gdk.Key.f, Platform.IsMac? Gdk.ModifierType.MetaMask : Gdk.ModifierType.ControlMask
+			);
+		}
+
+		public KeyboardShortcut SearchKeyShortcut {
+			get { return searchShortcut; }
+			set {
+				searchShortcut = value;
+				var bindingLabel = KeyBindingManager.BindingToDisplayLabel (new KeyBinding (searchShortcut), false);
+				filterEntry.EmptyMessage = GettextCatalog.GetString ("Search ({0})", bindingLabel);
+			}
 		}
 
 		protected override void ForAll (bool include_internals, Callback callback)
 		{
 			base.ForAll (include_internals, callback);
-			callback (filterEntry);
+			if (filterEntry != null)
+				callback (filterEntry);
+		}
+
+		protected override void OnRemoved (Widget widget)
+		{
+			if (widget == filterEntry)
+				filterEntry = null;
+			else
+				base.OnRemoved (widget);
 		}
 
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)

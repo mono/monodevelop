@@ -97,7 +97,22 @@ namespace MonoDevelop.Ide.Gui
 		{
 			info.Enabled = window.ViewContent.ContentName != null && !window.ViewContent.IsViewOnly;
 		}
+
+		[CommandHandler (FileCommands.OpenContainingFolder)]
+		protected void OnOpenFolder ()
+		{
+			// A tab will always hold a file, never a folder.
+			FilePath path = Path.GetDirectoryName (doc.FileName);
+			DesktopService.OpenFolder (path);
+		}
 		
+		[CommandUpdateHandler (FileCommands.OpenContainingFolder)]
+		protected void OnUpdateOpenFolder (CommandInfo info)
+		{
+			info.Visible = doc != null && !doc.FileName.IsNullOrEmpty;
+			info.Enabled = info.Visible;
+		}
+
 		
 		/*** Edit commands ***/
 		

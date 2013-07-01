@@ -218,9 +218,7 @@ namespace MonoDevelop.Ide.Commands
 		internal static bool CanPrint ()
 		{
 			IPrintable print;
-			//HACK: disable printing on Windows while it doesn't work
-			return !Platform.IsWindows
-				&& IdeApp.Workbench.ActiveDocument != null
+			return IdeApp.Workbench.ActiveDocument != null
 				&& (print = IdeApp.Workbench.ActiveDocument.GetContent<IPrintable> ()) != null
 				&& print.CanPrint;
 		}
@@ -236,6 +234,12 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandInfo info)
 		{
 			info.Enabled = PrintHandler.CanPrint ();
+
+			//HACK: disable print preview on Win32 because it doesn't work
+			if (Platform.IsWindows) {
+				info.Enabled = false;
+				info.Visible = false;
+			}
 		}
 	}
 	

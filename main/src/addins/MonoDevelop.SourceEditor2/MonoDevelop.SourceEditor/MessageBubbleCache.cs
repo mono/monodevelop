@@ -29,6 +29,7 @@ using Mono.TextEditor;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Fonts;
 using Mono.TextEditor.Highlighting;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -41,17 +42,135 @@ namespace MonoDevelop.SourceEditor
 		internal Dictionary<DocumentLine, double> lineWidthDictionary = new Dictionary<DocumentLine, double> ();
 		
 		internal TextEditor editor;
-		
+
 		internal Pango.FontDescription fontDescription;
+
+		public MessageBubbleTextMarker CurrentSelectedTextMarker;
 
 		public MessageBubbleCache (TextEditor editor)
 		{
 			this.editor = editor;
-			errorPixbuf = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Error, Gtk.IconSize.Menu);
-			warningPixbuf = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Warning, Gtk.IconSize.Menu);
+			errorPixbuf = ImageService.GetPixbuf ("md-bubble-error", Gtk.IconSize.Menu);
+			warningPixbuf = ImageService.GetPixbuf ("md-bubble-warning", Gtk.IconSize.Menu);
 			
 			editor.EditorOptionsChanged += HandleEditorEditorOptionsChanged;
+			editor.LeaveNotifyEvent += HandleLeaveNotifyEvent;
+			editor.MotionNotifyEvent += HandleMotionNotifyEvent;
+			editor.TextArea.BeginHover += HandleBeginHover;
 			fontDescription = FontService.GetFontDescription ("MessageBubbles");
+		}
+
+		void HandleMotionNotifyEvent (object o, Gtk.MotionNotifyEventArgs args)
+		{
+			if (CurrentSelectedTextMarker == null)
+				DestroyPopoverWindow ();
+		}
+
+		uint hoverTimeout;
+
+		void CancelHoverTimeout ()
+		{
+			if (hoverTimeout != 0) {
+				GLib.Source.Remove (hoverTimeout);
+				hoverTimeout = 0;
+			}
+		}
+		MessageBubblePopoverWindow popoverWindow;
+
+		
+		class MessageBubblePopoverWindow : PopoverWindow
+		{
+			readonly MessageBubbleCache cache;
+			readonly MessageBubbleTextMarker marker;
+
+			public MessageBubblePopoverWindow (MessageBubbleCache cache, MessageBubbleTextMarker marker)
+			{
+				this.cache = cache;
+				this.marker = marker;
+				ShowArrow = true;
+				Opacity = 0.9;
+			}
+
+			protected override void OnSizeRequested (ref Gtk.Requisition requisition)
+			{
+				base.OnSizeRequested (ref requisition);
+				double y = 0;
+				foreach (var layout in marker.Layouts) {
+					requisition.Width = Math.Max (layout.Width + 8, requisition.Width);
+					y += layout.Height;
+				}
+				requisition.Height = (int)y + 12;
+			}
+
+			protected override bool OnEnterNotifyEvent (Gdk.EventCrossing evnt)
+			{
+				cache.DestroyPopoverWindow ();
+				return base.OnEnterNotifyEvent (evnt);
+			}
+
+			protected override void OnDrawContent (Gdk.EventExpose evnt, Cairo.Context g)
+			{
+				Theme.BorderColor = marker.TagColor.Color;
+				g.Rectangle (0, 0, Allocation.Width, Allocation.Height);
+				g.Color = marker.TagColor.Color;
+				g.Fill ();
+
+				double y = 8;
+				double x = 4;
+				foreach (var layout in marker.Layouts) {
+					g.Save ();
+					g.Translate (x, y);
+					g.Color = marker.TagColor.SecondColor;
+					g.ShowLayout (layout.Layout);
+					g.Restore ();
+					y += layout.Height;
+				}
+
+			}
+		}
+
+		public void StartHover (MessageBubbleTextMarker marker, double bubbleX, double bubbleY, double bubbleWidth, bool isReduced)
+		{
+			CancelHoverTimeout ();
+			if (removedMarker == marker) {
+				CurrentSelectedTextMarker = marker;
+				return;
+			}
+
+			hoverTimeout = GLib.Timeout.Add (200, delegate {
+				CurrentSelectedTextMarker = marker;
+				editor.QueueDraw ();
+
+				DestroyPopoverWindow ();
+
+				if (marker.Layouts.Count < 2 && !isReduced)
+					return false;
+				popoverWindow = new MessageBubblePopoverWindow (this, marker);
+				popoverWindow.ShowPopup (editor, new Gdk.Rectangle ((int)(bubbleX + editor.TextViewMargin.XOffset), (int)bubbleY, (int)bubbleWidth, (int)editor.LineHeight) ,PopupPosition.Top);
+				return false;
+			});
+		}
+
+		MessageBubbleTextMarker removedMarker;
+
+		void HandleBeginHover (object sender, EventArgs e)
+		{
+			CancelHoverTimeout ();
+			removedMarker = CurrentSelectedTextMarker;
+			if (CurrentSelectedTextMarker == null)
+				return;
+			CurrentSelectedTextMarker = null;
+			editor.QueueDraw ();
+		}
+
+		void HandleLeaveNotifyEvent (object o, Gtk.LeaveNotifyEventArgs args)
+		{
+			DestroyPopoverWindow ();
+			CancelHoverTimeout ();
+			if (CurrentSelectedTextMarker == null)
+				return;
+			CurrentSelectedTextMarker = null;
+			editor.QueueDraw ();
 		}
 
 		public bool RemoveLine (DocumentLine line)
@@ -62,8 +181,21 @@ namespace MonoDevelop.SourceEditor
 			return true;
 		}
 
+		void DestroyPopoverWindow ()
+		{
+			if (popoverWindow != null) {
+				popoverWindow.Destroy ();
+				popoverWindow = null;
+			}
+		}
+
 		public void Dispose ()
 		{
+			CancelHoverTimeout ();
+			DestroyPopoverWindow ();
+			editor.TextArea.BeginHover -= HandleBeginHover;
+			editor.LeaveNotifyEvent -= HandleLeaveNotifyEvent;
+			editor.MotionNotifyEvent -= HandleMotionNotifyEvent;
 			editor.EditorOptionsChanged -= HandleEditorEditorOptionsChanged;
 			if (textWidthDictionary != null) {
 				foreach (var l in textWidthDictionary.Values) {

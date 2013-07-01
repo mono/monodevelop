@@ -423,17 +423,17 @@ namespace Mono.TextEditor
 			window.ShowAll ();
 		}
 		
-		internal int preeditOffset, preeditLine, preeditCursorCharIndex;
+		internal int preeditOffset = -1, preeditLine, preeditCursorCharIndex;
 		internal string preeditString;
 		internal Pango.AttrList preeditAttrs;
 		internal bool preeditHeightChange;
 		
-		internal bool ContainsPreedit (int line, int length)
+		internal bool ContainsPreedit (int offset, int length)
 		{
 			if (string.IsNullOrEmpty (preeditString))
 				return false;
 			
-			return line <= preeditOffset && preeditOffset <= line + length;
+			return offset <= preeditOffset && preeditOffset <= offset + length;
 		}
 
 		void PreeditStringChanged (object sender, EventArgs e)
@@ -444,31 +444,41 @@ namespace Mono.TextEditor
 					preeditOffset = Caret.Offset;
 					preeditLine = Caret.Line;
 				}
+				if (UpdatePreeditLineHeight ())
+					QueueDraw ();
+			} else {
+				preeditOffset = -1;
+				preeditString = null;
+				preeditAttrs = null;
+				preeditCursorCharIndex = 0;
+				if (UpdatePreeditLineHeight ())
+					QueueDraw ();
+			}
+			this.textViewMargin.ForceInvalidateLine (preeditLine);
+			this.textEditorData.Document.CommitLineUpdate (preeditLine);
+		}
+
+		internal bool UpdatePreeditLineHeight ()
+		{
+			if (!string.IsNullOrEmpty (preeditString)) {
 				using (var preeditLayout = PangoUtil.CreateLayout (this)) {
 					preeditLayout.SetText (preeditString);
 					preeditLayout.Attributes = preeditAttrs;
 					int w, h;
 					preeditLayout.GetSize (out w, out h);
 					var calcHeight = System.Math.Ceiling (h / Pango.Scale.PangoScale);
-					if (LineHeight != calcHeight) {
+					if (LineHeight < calcHeight) {
 						textEditorData.HeightTree.SetLineHeight (preeditLine, calcHeight);
 						preeditHeightChange = true;
-						QueueDraw ();
+						return true;
 					}
 				}
-			} else {
-				preeditOffset = -1;
-				preeditString = null;
-				preeditAttrs = null;
-				preeditCursorCharIndex = 0;
-				if (preeditHeightChange) {
-					preeditHeightChange = false;
-					textEditorData.HeightTree.Rebuild ();
-					QueueDraw ();
-				}
+			} else if (preeditHeightChange) {
+				preeditHeightChange = false;
+				textEditorData.HeightTree.Rebuild ();
+				return true;
 			}
-			this.textViewMargin.ForceInvalidateLine (preeditLine);
-			this.textEditorData.Document.CommitLineUpdate (preeditLine);
+			return false;
 		}
 
 		void CaretPositionChanged (object sender, DocumentLocationEventArgs args) 

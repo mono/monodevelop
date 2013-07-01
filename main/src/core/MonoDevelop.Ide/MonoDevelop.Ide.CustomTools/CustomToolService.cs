@@ -220,7 +220,7 @@ namespace MonoDevelop.Ide.CustomTools
 			}
 		}
 		
-		public static void HandleRename (ProjectFileRenamedEventArgs e)
+		static void HandleRename (ProjectFileRenamedEventArgs e)
 		{
 			foreach (ProjectFileEventInfo args in e) {
 				var file = args.ProjectFile;
@@ -228,6 +228,17 @@ namespace MonoDevelop.Ide.CustomTools
 				if (tool == null)
 					continue;
 			}
+		}
+
+		public static string GetFileNamespace (ProjectFile file, string outputFile)
+		{
+			string ns = file.CustomToolNamespace;
+			if (string.IsNullOrEmpty (ns) && !string.IsNullOrEmpty (outputFile)) {
+				var dnp = file.Project as DotNetProject;
+				if (dnp != null)
+					ns = dnp.GetDefaultNamespace (outputFile);
+			}
+			return ns;
 		}
 	}
 }

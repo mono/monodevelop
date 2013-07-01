@@ -9,12 +9,14 @@
     <OutputType>Library</OutputType>
     <AssemblyName>Mono.TextTemplating.Tests</AssemblyName>
     <RootNamespace>Mono.TextTemplating.Tests</RootNamespace>
+    <TestRunnerCommand>..\..\..\..\build\bin\mdtool.exe</TestRunnerCommand>
+    <TestRunnerArgs>run-md-tests</TestRunnerArgs>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
-    <OutputPath>..\..\..\..\build\AddIns\MonoDevelop.TextTemplating</OutputPath>
+    <OutputPath>..\..\..\..\build\tests</OutputPath>
     <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -22,18 +24,18 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>False</Optimize>
-    <OutputPath>..\..\..\..\build\AddIns\MonoDevelop.TextTemplating</OutputPath>
+    <OutputPath>..\..\..\..\build\tests</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="nunit.core">
-      <HintPath>..\..\NUnit\lib\nunit.core.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\..\NUnit\lib\nunit.framework.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="nunit.core">
+      <HintPath>..\..\NUnit\lib\nunit.core.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>

@@ -69,7 +69,10 @@ namespace Mono.TextTemplating.Tests
 			string className = "GeneratedTextTransformation4f504ca0";
 			string code = GenerateCode (host, input, className, newline);
 			Assert.AreEqual (0, host.Errors.Count);
-			Assert.AreEqual (expectedOutput, TemplatingEngineHelper.StripHeader (code, newline));
+
+			var generated = TemplatingEngineHelper.CleanCodeDom (code, newline);
+			expectedOutput = TemplatingEngineHelper.CleanCodeDom (expectedOutput, newline);
+			Assert.AreEqual (expectedOutput, generated);
 		}
 		
 		#region Helpers
@@ -117,7 +120,7 @@ namespace Microsoft.VisualStudio.TextTemplating {
         
         
         #line 9 """"
-         
+
 baz \#>
 
         #line default

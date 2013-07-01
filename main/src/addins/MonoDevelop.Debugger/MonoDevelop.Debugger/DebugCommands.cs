@@ -382,12 +382,19 @@ namespace MonoDevelop.Debugger
 	{
 		protected override void Run ()
 		{
-			DebuggingService.Breakpoints.Clear ();
+			var breakpoints = DebuggingService.Breakpoints;
+
+			lock (breakpoints)
+				breakpoints.Clear ();
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = !DebuggingService.Breakpoints.IsReadOnly && DebuggingService.Breakpoints.Count > 0;
+			var breakpoints = DebuggingService.Breakpoints;
+
+			lock (breakpoints)
+				info.Enabled = !breakpoints.IsReadOnly && breakpoints.Count > 0;
+
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
 		}
 	}
@@ -396,10 +403,11 @@ namespace MonoDevelop.Debugger
 	{
 		protected override void Run ()
 		{
-			var bp = DebuggingService.Breakpoints.Toggle (
-				IdeApp.Workbench.ActiveDocument.FileName,
-				IdeApp.Workbench.ActiveDocument.Editor.Caret.Line,
-				IdeApp.Workbench.ActiveDocument.Editor.Caret.Column);
+			var breakpoints = DebuggingService.Breakpoints;
+			Breakpoint bp;
+
+			lock (breakpoints)
+				bp = breakpoints.Toggle (IdeApp.Workbench.ActiveDocument.FileName, IdeApp.Workbench.ActiveDocument.Editor.Caret.Line, IdeApp.Workbench.ActiveDocument.Editor.Caret.Column);
 			
 			// If the breakpoint could not be inserted in the caret location, move the caret
 			// to the real line of the breakpoint, so that if the Toggle command is run again,
@@ -441,27 +449,28 @@ namespace MonoDevelop.Debugger
 	{
 		protected override void Run ()
 		{
-			IEnumerable brs = DebuggingService.Breakpoints.GetBreakpointsAtFileLine (
-			    IdeApp.Workbench.ActiveDocument.FileName,
-			    IdeApp.Workbench.ActiveDocument.Editor.Caret.Line);
-			
-			foreach (Breakpoint bp in brs)
-				bp.Enabled = !bp.Enabled;
+			var breakpoints = DebuggingService.Breakpoints;
+
+			lock (breakpoints) {
+				foreach (var bp in breakpoints.GetBreakpointsAtFileLine (IdeApp.Workbench.ActiveDocument.FileName, IdeApp.Workbench.ActiveDocument.Editor.Caret.Line))
+					bp.Enabled = !bp.Enabled;
+			}
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
+			var breakpoints = DebuggingService.Breakpoints;
+
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
 			if (IdeApp.Workbench.ActiveDocument != null && 
-					IdeApp.Workbench.ActiveDocument.Editor != null &&
-					IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null &&
-			        !DebuggingService.Breakpoints.IsReadOnly) {
-				info.Enabled = DebuggingService.Breakpoints.GetBreakpointsAtFileLine (
-			    	IdeApp.	Workbench.ActiveDocument.FileName,
-			    	IdeApp.Workbench.ActiveDocument.Editor.Caret.Line).Count > 0;
-			}
-			else
+			    IdeApp.Workbench.ActiveDocument.Editor != null &&
+			    IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null &&
+			    !breakpoints.IsReadOnly) {
+				lock (breakpoints)
+					info.Enabled = breakpoints.GetBreakpointsAtFileLine (IdeApp.Workbench.ActiveDocument.FileName, IdeApp.Workbench.ActiveDocument.Editor.Caret.Line).Count > 0;
+			} else {
 				info.Enabled = false;
+			}
 		}
 	}
 	
@@ -469,23 +478,29 @@ namespace MonoDevelop.Debugger
 	{
 		protected override void Run ()
 		{
+			var breakpoints = DebuggingService.Breakpoints;
 			bool enable = false;
 
-			foreach (BreakEvent bp in DebuggingService.Breakpoints) {
-				if (!bp.Enabled) {
-					enable = true;
-					break;
+			lock (breakpoints) {
+				foreach (BreakEvent bp in breakpoints) {
+					if (!bp.Enabled) {
+						enable = true;
+						break;
+					}
 				}
-			}
 
-			foreach (BreakEvent bp in DebuggingService.Breakpoints) {
-				bp.Enabled = enable;
+				foreach (BreakEvent bp in breakpoints) {
+					bp.Enabled = enable;
+				}
 			}
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = !DebuggingService.Breakpoints.IsReadOnly && DebuggingService.Breakpoints.Count > 0;
+			var breakpoints = DebuggingService.Breakpoints;
+
+			lock (breakpoints)
+				info.Enabled = !breakpoints.IsReadOnly && breakpoints.Count > 0;
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
 		}
 	}
@@ -507,28 +522,33 @@ namespace MonoDevelop.Debugger
 	{
 		protected override void Run ()
 		{
-			IEnumerable<Breakpoint> brs = DebuggingService.Breakpoints.GetBreakpointsAtFileLine (
-			    IdeApp.Workbench.ActiveDocument.FileName,
-			    IdeApp.Workbench.ActiveDocument.Editor.Caret.Line);
-			
-			List<Breakpoint> list = new List<Breakpoint> (brs);
-			foreach (Breakpoint bp in list)
-				DebuggingService.Breakpoints.Remove (bp);
+			var breakpoints = DebuggingService.Breakpoints;
+
+			lock (breakpoints) {
+				IEnumerable<Breakpoint> brs = breakpoints.GetBreakpointsAtFileLine (
+					IdeApp.Workbench.ActiveDocument.FileName,
+					IdeApp.Workbench.ActiveDocument.Editor.Caret.Line);
+
+				List<Breakpoint> list = new List<Breakpoint> (brs);
+				foreach (Breakpoint bp in list)
+					breakpoints.Remove (bp);
+			}
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
+			var breakpoints = DebuggingService.Breakpoints;
+
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
 			if (IdeApp.Workbench.ActiveDocument != null && 
-					IdeApp.Workbench.ActiveDocument.Editor != null &&
-					IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null &&
-			        !DebuggingService.Breakpoints.IsReadOnly) {
-				info.Enabled = DebuggingService.Breakpoints.GetBreakpointsAtFileLine (
-			    	IdeApp.	Workbench.ActiveDocument.FileName,
-			    	IdeApp.Workbench.ActiveDocument.Editor.Caret.Line).Count > 0;
-			}
-			else
+			    IdeApp.Workbench.ActiveDocument.Editor != null &&
+			    IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null &&
+			    !breakpoints.IsReadOnly) {
+				lock (breakpoints)
+					info.Enabled = breakpoints.GetBreakpointsAtFileLine (IdeApp.Workbench.ActiveDocument.FileName, IdeApp.Workbench.ActiveDocument.Editor.Caret.Line).Count > 0;
+			} else {
 				info.Enabled = false;
+			}
 		}
 	}
 	
@@ -537,8 +557,12 @@ namespace MonoDevelop.Debugger
 		protected override void Run ()
 		{
 			Breakpoint bp = new Breakpoint (IdeApp.Workbench.ActiveDocument.FileName, IdeApp.Workbench.ActiveDocument.Editor.Caret.Line, IdeApp.Workbench.ActiveDocument.Editor.Caret.Column);
-			if (DebuggingService.ShowBreakpointProperties (bp, true))
-				DebuggingService.Breakpoints.Add (bp);
+			if (DebuggingService.ShowBreakpointProperties (bp, true)) {
+				var breakpoints = DebuggingService.Breakpoints;
+
+				lock (breakpoints)
+					breakpoints.Add (bp);
+			}
 		}
 		
 		protected override void Update (CommandInfo info)
@@ -549,9 +573,9 @@ namespace MonoDevelop.Debugger
 					IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null &&
 			        !DebuggingService.Breakpoints.IsReadOnly) {
 				info.Enabled = true;
-			}
-			else
+			} else {
 				info.Enabled = false;
+			}
 		}
 	}
 	
@@ -560,8 +584,12 @@ namespace MonoDevelop.Debugger
 		protected override void Run ()
 		{
 			FunctionBreakpoint bp = new FunctionBreakpoint ("", "C#");
-			if (DebuggingService.ShowBreakpointProperties (bp, true))
-				DebuggingService.Breakpoints.Add (bp);
+			if (DebuggingService.ShowBreakpointProperties (bp, true)) {
+				var breakpoints = DebuggingService.Breakpoints;
+
+				lock (breakpoints)
+					breakpoints.Add (bp);
+			}
 		}
 		
 		protected override void Update (CommandInfo info)
@@ -575,27 +603,33 @@ namespace MonoDevelop.Debugger
 	{
 		protected override void Run ()
 		{
-			IList<Breakpoint> brs = DebuggingService.Breakpoints.GetBreakpointsAtFileLine (
-			    IdeApp.Workbench.ActiveDocument.FileName,
-			    IdeApp.Workbench.ActiveDocument.Editor.Caret.Line);
+			var breakpoints = DebuggingService.Breakpoints;
+			IList<Breakpoint> brs;
+
+			lock (breakpoints) {
+				brs = breakpoints.GetBreakpointsAtFileLine (
+					IdeApp.Workbench.ActiveDocument.FileName,
+					IdeApp.Workbench.ActiveDocument.Editor.Caret.Line);
+			}
 
 			if (brs.Count > 0)
-				DebuggingService.ShowBreakpointProperties (brs [0], false);
+				DebuggingService.ShowBreakpointProperties (brs[0], false);
 		}
 		
 		protected override void Update (CommandInfo info)
 		{
+			var breakpoints = DebuggingService.Breakpoints;
+
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
 			if (IdeApp.Workbench.ActiveDocument != null && 
-					IdeApp.Workbench.ActiveDocument.Editor != null &&
-					IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null &&
-			        !DebuggingService.Breakpoints.IsReadOnly) {
-				info.Enabled = DebuggingService.Breakpoints.GetBreakpointsAtFileLine (
-			    	IdeApp.	Workbench.ActiveDocument.FileName,
-			    	IdeApp.Workbench.ActiveDocument.Editor.Caret.Line).Count > 0;
-			}
-			else
+			    IdeApp.Workbench.ActiveDocument.Editor != null &&
+			    IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null &&
+			    !breakpoints.IsReadOnly) {
+				lock (breakpoints)
+					info.Enabled = breakpoints.GetBreakpointsAtFileLine (IdeApp.Workbench.ActiveDocument.FileName, IdeApp.Workbench.ActiveDocument.Editor.Caret.Line).Count > 0;
+			} else {
 				info.Enabled = false;
+			}
 		}
 	}
 

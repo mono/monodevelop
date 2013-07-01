@@ -92,19 +92,19 @@ namespace Mono.TextEditor.Tests
 			Assert.That (segments.Count, Is.EqualTo (97));
 		}
 
-		public TextEditor CreateEditor (string editorText)
+		public TextEditorData CreateData (string editorText)
 		{
-			return new TextEditor (new TextDocument (editorText));
+			return new TextEditorData (new TextDocument (editorText));
 		}
 
 		public List<TextSegment> BreakAllLines (String editorText)
 		{
-			return BreakAllLines (CreateEditor (editorText));
+			return BreakAllLines (CreateData (editorText));
 		}
 
-		public List<TextSegment> BreakAllLines (TextEditor editor)
+		public List<TextSegment> BreakAllLines (TextEditorData data)
 		{
-			return TextBreaker.BreakLinesIntoWords (editor.Document, 1, editor.LineCount, false);
+			return TextBreaker.BreakLinesIntoWords (data.Document, 1, data.LineCount, false);
 		}
 	}
 }

@@ -40,7 +40,8 @@ namespace MonoDevelop.VersionControl
 				status == other.status &&
 				revision == other.revision &&
 				remoteStatus == other.remoteStatus &&
-				remoteRevision == other.remoteRevision;
+				remoteRevision == other.remoteRevision &&
+				AllowedOperations == other.AllowedOperations;
 		}
 		
 		internal void Init (Repository repo)
