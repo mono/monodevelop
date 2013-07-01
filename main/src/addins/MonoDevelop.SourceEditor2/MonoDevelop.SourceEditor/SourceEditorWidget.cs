@@ -379,7 +379,8 @@ namespace MonoDevelop.SourceEditor
 				this.lastActiveEditor = null;
 				this.splittedTextEditor = null;
 				view = null;
-				
+				parsedDocument = null;
+
 //				IdeApp.Workbench.StatusBar.ClearCaretState ();
 				if (parseInformationUpdaterWorkerThread != null) {
 					parseInformationUpdaterWorkerThread.Dispose ();
