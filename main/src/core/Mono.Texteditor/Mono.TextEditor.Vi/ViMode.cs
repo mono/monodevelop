@@ -46,10 +46,8 @@ namespace Mono.TextEditor.Vi
 			}
 			set {
 				curState = value;
-				if (viTextEditor != null) {
-					viTextEditor.Caret.IsVisible = curState != State.Command;
+				if (statusArea != null) {
 					statusArea.ShowCaret = curState == State.Command;
-					viTextEditor.RequestResetCaretBlink ();
 				}
 			}
 		}
@@ -109,10 +107,6 @@ namespace Mono.TextEditor.Vi
 				}
 				if (viTextEditor != null) {
 					statusArea.Message = value;
-					if (curState == State.Command) {
-					    viTextEditor.RequestResetCaretBlink ();
-						statusArea.QueueDraw ();
-					}
 				}
 			}
 		}

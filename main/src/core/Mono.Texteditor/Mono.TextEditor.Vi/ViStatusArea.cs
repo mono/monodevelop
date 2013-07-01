@@ -83,10 +83,12 @@ namespace Mono.TextEditor.Vi
 		public bool ShowCaret {
 			get { return showCaret; }
 			set {
-				if (showCaret == value)
-					return;
-				showCaret = value;
-				QueueDraw ();
+				if (showCaret != value) {
+					showCaret = value;
+					editor.Caret.IsVisible = !showCaret;
+					editor.RequestResetCaretBlink ();
+					QueueDraw ();
+				}
 			}
 		}
 
@@ -96,6 +98,9 @@ namespace Mono.TextEditor.Vi
 				if (statusText == value)
 					return;
 				statusText = value;
+				if (showCaret) {
+					editor.RequestResetCaretBlink ();
+				}
 				QueueDraw ();
 			}
 		}
