@@ -365,7 +365,6 @@ namespace Mono.TextEditor.Vi
 				ViActionMaps.GetDirectionKeyAction (key, modifier);
 		}
 
-		/// <summary>
 		/// Run an action multiple times if it was preceded by a numeric key
 		/// Resets numeric prefixs
 		/// <summary>
@@ -411,6 +410,7 @@ namespace Mono.TextEditor.Vi
 			for (int i = 0; i < reps; i++) {
 				actionList.AddRange (actions);
 			}
+
 			RunActions (actionList.ToArray ());
 			numericPrefix = "";
 		}
