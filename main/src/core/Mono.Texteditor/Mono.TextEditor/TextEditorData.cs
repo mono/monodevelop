@@ -1307,7 +1307,7 @@ namespace Mono.TextEditor
 		
 		public int LineCount {
 			get {
-				return Document.LineCount;
+				return Document != null ? Document.LineCount : 0;
 			}
 		}
 		

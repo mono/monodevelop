@@ -158,6 +158,8 @@ namespace Mono.TextEditor
 		public void Rebuild ()
 		{
 			lock (tree) {
+				if (editor.IsDisposed)
+					return;
 				rebuild = true;
 				try {
 					markers.Clear ();
