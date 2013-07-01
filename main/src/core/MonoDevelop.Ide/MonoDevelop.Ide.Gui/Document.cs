@@ -559,6 +559,8 @@ namespace MonoDevelop.Ide.Gui
 			singleFileContext = null;
 			provider = null;
 			annotations = null;
+			views = null;
+			viewsRO = null;
 		}
 #region document tasks
 		object lockObj = new object ();
