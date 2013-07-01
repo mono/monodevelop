@@ -731,8 +731,15 @@ namespace Mono.TextEditor.Vi
 				if (motion != Motion.None) {
 					action = ViActionMaps.GetEditObjectCharAction ((char)unicodeKey, motion);
 				} else if (((modifier & (Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask)) == 0
-					&& unicodeKey == 'y')) {
-					action = SelectionActions.LineActionFromMoveAction (CaretMoveActions.LineEnd);
+					&& (unicodeKey == 'y' || unicodeKey == 'j' || unicodeKey == 'k'))) {
+					if (unicodeKey == 'k') {
+						action = CaretMoveActions.Up;
+					} else {
+						action = CaretMoveActions.Down;
+					}
+					if (unicodeKey == 'j') {
+						repeatCount += 1;
+					} //get one extra line for yj
 					lineAction = true;
 				} else {
 					action = ViActionMaps.GetNavCharAction ((char)unicodeKey);
@@ -743,22 +750,19 @@ namespace Mono.TextEditor.Vi
 				}
 				
 				if (action != null) {
-          if (lineAction)
-          {
-            SelectionActions.StartSelection(Data);
-            for (int i = 1 ; i < repeatCount ; i++)
-            {
-              RunAction(CaretMoveActions.Down);
-            }
-            SelectionActions.EndSelection(Data);
-            numericPrefix = "";
-          }
-          else
-          {
-            RunRepeatableAction (action);
-          }
-          if (Data.IsSomethingSelected && !lineAction)
-            offset = Data.SelectionRange.Offset;
+					if (lineAction) {
+						RunAction (CaretMoveActions.LineStart);
+						SelectionActions.StartSelection (Data);
+						for (int i = 0; i < repeatCount; i++) {
+							RunAction (action);
+						}
+						SelectionActions.EndSelection (Data);
+						numericPrefix = "";
+					} else {
+						RunRepeatableAction (action);
+					}
+					if (Data.IsSomethingSelected && !lineAction)
+						offset = Data.SelectionRange.Offset;
 					RunAction (ClipboardActions.Copy);
 					Reset (string.Empty);
 				} else {
