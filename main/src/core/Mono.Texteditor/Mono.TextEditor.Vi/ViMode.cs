@@ -356,7 +356,7 @@ namespace Mono.TextEditor.Vi
 			commandBuffer.Length = 0;
 			Status = status;
 
-			numericPrefix = "0";
+			numericPrefix = "";
 		}
 
 		protected virtual Action<TextEditorData> GetInsertAction (Gdk.Key key, Gdk.ModifierType modifier)
@@ -946,8 +946,14 @@ namespace Mono.TextEditor.Vi
 				
 			case State.Indent:
 				if (((modifier & (Gdk.ModifierType.ControlMask)) == 0 && unicodeKey == '>')) { //select current line to indent
-					RunActions (SelectionActions.FromMoveAction (ViActions.Left), 
-					            MiscActions.IndentSelection);
+					List<Action<TextEditorData>> actions = new List<Action<TextEditorData>> ();
+					actions.Add (SelectionActions.FromMoveAction (ViActions.Left));
+					for (int i = 1; i < repeatCount; i++) {
+						actions.Add (SelectionActions.FromMoveAction (ViActions.Down));
+					}
+					actions.Add (MiscActions.IndentSelection);
+					RunActions (actions.ToArray ());
+              
 					Reset ("");
 					return;
 				}
@@ -965,9 +971,15 @@ namespace Mono.TextEditor.Vi
 				return;
 				
 			case State.Unindent:
-				if (((modifier & (Gdk.ModifierType.ControlMask)) == 0 && ((char)unicodeKey) == '<')) { //select current line to unindent
-					RunActions (SelectionActions.FromMoveAction (ViActions.Left), 
-					            MiscActions.RemoveIndentSelection);
+				if (((modifier & (Gdk.ModifierType.ControlMask)) == 0 && ((char)unicodeKey) == '<')) { //select current line to indent
+					List<Action<TextEditorData>> actions = new List<Action<TextEditorData>> ();
+					actions.Add (SelectionActions.FromMoveAction (ViActions.Left));
+					for (int i = 1; i < repeatCount; i++) {
+						actions.Add (SelectionActions.FromMoveAction (ViActions.Down));
+					}
+					actions.Add (MiscActions.RemoveIndentSelection);
+					RunActions (actions.ToArray ());
+              
 					Reset ("");
 					return;
 				}
