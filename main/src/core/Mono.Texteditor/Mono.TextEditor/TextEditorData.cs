@@ -43,7 +43,7 @@ namespace Mono.TextEditor
 	public class TextEditorData : IDisposable
 	{
 		ITextEditorOptions    options;
-		readonly TextDocument document; 
+		TextDocument document; 
 		readonly Caret        caret;
 		
 		static Adjustment emptyAdjustment = new Adjustment (0, 0, 0, 0, 0, 0);
@@ -89,13 +89,13 @@ namespace Mono.TextEditor
 		
 		public string FileName {
 			get {
-				return Document.FileName;
+				return Document != null ? Document.FileName : null;
 			}
 		}
 		
 		public string MimeType {
 			get {
-				return Document.MimeType;
+				return Document != null ? Document.MimeType : null;
 			}
 		}
 
@@ -487,6 +487,8 @@ namespace Mono.TextEditor
 
 		void DetachDocument ()
 		{
+			if (document == null)
+				return;
 			document.BeginUndo -= OnBeginUndo;
 			document.EndUndo -= OnEndUndo;
 
@@ -498,6 +500,7 @@ namespace Mono.TextEditor
 			document.TextSet -= HandleDocTextSet;
 			document.Folded -= HandleTextEditorDataDocumentFolded;
 			document.FoldTreeUpdated -= HandleFoldTreeUpdated;
+			document = null;
 		}
 
 		public void Dispose ()
