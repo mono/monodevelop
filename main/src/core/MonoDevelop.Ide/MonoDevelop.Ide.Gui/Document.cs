@@ -54,7 +54,7 @@ using System.Collections.ObjectModel;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public class Document : IDisposable
+	public class Document
 	{
 		internal object MemoryProbe = Counters.DocumentsInMemory.CreateMemoryProbe ();
 		
@@ -538,7 +538,7 @@ namespace MonoDevelop.Ide.Gui
 			Counters.OpenDocuments--;
 		}
 
-		public void Dispose ()
+		internal void DisposeDocument ()
 		{
 			DetachExtensionChain ();
 

@@ -725,7 +725,7 @@ namespace MonoDevelop.Ide.Gui
 			window.Closed -= OnWindowClosed;
 			documents.Remove (doc); 
 			OnDocumentClosed (doc);
-			doc.Dispose ();
+			doc.DisposeDocument ();
 		}
 		
 		// When looking for the project to which the file belongs, look first
