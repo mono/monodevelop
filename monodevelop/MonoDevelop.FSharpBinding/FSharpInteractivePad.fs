@@ -116,6 +116,14 @@ type FSharpInteractivePad() =
     getCorrectDirectory()
     |> Option.iter (fun path -> sendCommand ("#silentCd @\"" + path + "\";;") )
     
+  let consoleInputHandler (cie : ConsoleInputEventArgs) = 
+    if isPrompting then 
+      isPrompting <- false
+      session := None
+      sendCommand ""
+    elif cie.Text.EndsWith(";;") then 
+      sendCommand cie.Text
+    
   //let handler = 
   do Debug.WriteLine ("InteractivePad: created!")
   #if DEBUG
@@ -137,11 +145,7 @@ type FSharpInteractivePad() =
     member x.Control : Gtk.Widget = view :> Gtk.Widget
   
     member x.Initialize(container:MonoDevelop.Ide.Gui.IPadWindow) = 
-      view.ConsoleInput.Add(fun cie -> if isPrompting then 
-                                         isPrompting <- false
-                                         session := None
-                                         sendCommand ""
-                                       else sendCommand cie.Text)
+      view.ConsoleInput.Add consoleInputHandler
       view.Child.KeyPressEvent.Add(fun ea ->
         if ea.Event.State &&& ModifierType.ControlMask = ModifierType.ControlMask && ea.Event.Key = Key.period then
           !session |> Option.iter (fun s -> s.Interrupt()))
