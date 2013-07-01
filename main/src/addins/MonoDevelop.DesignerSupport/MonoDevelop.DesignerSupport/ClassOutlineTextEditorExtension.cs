@@ -92,7 +92,17 @@ namespace MonoDevelop.DesignerSupport
 			if (Document != null)
 				Document.DocumentParsed -= UpdateDocumentOutline;
 			RemoveRefillOutlineStoreTimeout ();
-
+			lastCU = null;
+			if (outlineTreeStore != null) {
+				outlineTreeStore = null;
+				outlineTreeStore.Dispose ();
+			}
+			if (outlineTreeModelSort != null) {
+				outlineTreeModelSort.Dispose ();
+				outlineTreeModelSort = null;
+			}
+			settings = null;
+			comparer = null;
 			base.Dispose ();
 		}
 
