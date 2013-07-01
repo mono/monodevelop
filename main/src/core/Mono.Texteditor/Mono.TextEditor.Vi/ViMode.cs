@@ -133,6 +133,20 @@ namespace Mono.TextEditor.Vi
 		string numericPrefix = "0";
 
 		/// <summary>
+		/// Number of times to repeat next action
+		/// <summary>
+		int repeatCount {
+			get {
+				int n;
+				int.TryParse (numericPrefix, out n);
+				return (n <= 0) ? 1 : n;
+			}
+			set {
+				numericPrefix = value.ToString ();
+			}
+		}
+
+		/// <summary>
 		/// Whether ViEditMode is in a state where it should accept a numeric prefix
 		/// <summary>
 		bool AcceptNumericPrefix {
@@ -357,10 +371,9 @@ namespace Mono.TextEditor.Vi
 		/// <summary>
 		private int ExtractNumericPrefix ()
 		{
-			int n = 1;
-			int.TryParse (numericPrefix, out n);
+			int n = repeatCount;
 			numericPrefix = "0";
-			return (n <= 0) ? 1 : n;
+			return n;
 		}
 
 		/// <summary>
@@ -686,12 +699,12 @@ namespace Mono.TextEditor.Vi
 				if (IsInnerOrOuterMotionKey (unicodeKey, ref motion))
 					return;
 
-				if (((modifier & (Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask)) == 0 
-					&& (unicodeKey == 'd' || unicodeKey == 'j'))) {
+				if (motion != Motion.None) {
+					action = ViActionMaps.GetEditObjectCharAction ((char)unicodeKey, motion);
+				} else if ((modifier & (Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask)) == 0 
+					&& unicodeKey == 'd') {
 					action = SelectionActions.LineActionFromMoveAction (CaretMoveActions.LineEnd);
 					lineAction = true;
-				} else if (motion != Motion.None) {
-					action = ViActionMaps.GetEditObjectCharAction ((char)unicodeKey, motion);
 				} else {
 					action = ViActionMaps.GetNavCharAction ((char)unicodeKey);
 					if (action == null)
@@ -703,7 +716,11 @@ namespace Mono.TextEditor.Vi
 				if (action != null) {
 					if (lineAction) {   //dd or dj  -- delete lines moving downward
 						RepeatAllActions (action, ClipboardActions.Cut, CaretMoveActions.LineFirstNonWhitespace);
+					} else if (unicodeKey == 'j') { 
+						repeatCount += 1; 
+						RepeatAllActions (action, ClipboardActions.Cut, CaretMoveActions.LineFirstNonWhitespace);
 					} else if (unicodeKey == 'k') {   //dk -- delete lines moving upward
+						repeatCount += 1;
 						RepeatAllActions (CaretMoveActions.LineFirstNonWhitespace, ClipboardActions.Cut, action);
 					} else {
 						RunRepeatableActionChain (action, ClipboardActions.Cut);
