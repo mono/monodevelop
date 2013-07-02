@@ -259,7 +259,7 @@ namespace MonoDevelop.Projects
 		
 		public static XmlNode GetMonodocDocumentation (this IEntity member)
 		{
-			if (member.EntityType == EntityType.TypeDefinition) {
+			if (member.SymbolKind == SymbolKind.TypeDefinition) {
 				var helpXml = HelpService.HelpTree != null ? HelpService.HelpTree.GetHelpXml (member.GetIdString ()) : null;
 				if (helpXml == null)
 					return null;
@@ -270,8 +270,8 @@ namespace MonoDevelop.Projects
 			if (declaringXml == null)
 				return null;
 			
-			switch (member.EntityType) {
-			case EntityType.Method: {
+			switch (member.SymbolKind) {
+			case SymbolKind.Method: {
 					var nodes = declaringXml.SelectNodes ("/Type/Members/Member[@MemberName='" + member.Name + "']");
 					XmlNode node = nodes.Count == 1 ? nodes [0] : FindMatch ((IMethod)member, nodes);
 					if (node != null) {
@@ -280,7 +280,7 @@ namespace MonoDevelop.Projects
 					}
 					return null;
 				}
-			case EntityType.Constructor: {
+			case SymbolKind.Constructor: {
 					var nodes = declaringXml.SelectNodes ("/Type/Members/Member[@MemberName='.ctor']");
 					XmlNode node = nodes.Count == 1 ? nodes [0] : FindMatch ((IMethod)member, nodes);
 					if (node != null) {

@@ -113,36 +113,36 @@ namespace MonoDevelop.Ide.TypeSystem
 				return "null entity: " + (trace != null && trace.Length > 2 ? trace [2] : "unknown location");
 			}
 			string result = null;
-			switch (entity.EntityType) {
-			case EntityType.Constructor:
+			switch (entity.SymbolKind) {
+			case SymbolKind.Constructor:
 				result = GetConstructorString ((IMethod)entity, settings);
 				break;
-			case EntityType.Destructor:
+			case SymbolKind.Destructor:
 				result = GetDestructorString ((IMethod)entity, settings);
 				break;
-			case EntityType.Event:
+			case SymbolKind.Event:
 				result = GetEventString ((IEvent)entity, settings);
 				break;
-			case EntityType.Field:
+			case SymbolKind.Field:
 				result = GetFieldString ((IField)entity, settings);
 				break;
-			case EntityType.Indexer:
+			case SymbolKind.Indexer:
 				result = GetPropertyString ((IProperty)entity, settings);
 				break;
-			case EntityType.Method:
+			case SymbolKind.Method:
 				result = GetMethodString ((IMethod)entity, settings);
 				break;
-			case EntityType.Operator:
+			case SymbolKind.Operator:
 				result = GetMethodString ((IMethod)entity, settings);
 				break;
-			case EntityType.Property:
+			case SymbolKind.Property:
 				result = GetPropertyString ((IProperty)entity, settings);
 				break;
-			case EntityType.TypeDefinition:
+			case SymbolKind.TypeDefinition:
 				result = GetTypeString ((ITypeDefinition)entity, settings);
 				break;
 			default:
-				throw new ArgumentOutOfRangeException ("EntityType", "Unknown entity type:" + entity.EntityType);
+				throw new ArgumentOutOfRangeException ("SymbolKind", "Unknown entity type:" + entity.SymbolKind);
 			}
 			result = settings.PostProcess (entity, result);
 			return result;
