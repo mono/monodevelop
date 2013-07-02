@@ -40,48 +40,10 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 //
 // or to return complete IEntity data.
 //
-// Also of interest is FindReferencesHandler.FindRefs (obj), for find-all-references and
-// renaming.
+// Also of interest is FindReferencesHandler.FindRefs (obj), for find-all-references and renaming.
 type internal FSharpLocalResolveResult(tip:DataTipText, ivar:IVariable) = 
   inherit LocalResolveResult(ivar)
   member x.DataTip = tip
-
-[<AllowNullLiteral>] 
-type internal FSharpLanguageItemWindow(tooltip: string) as this = 
-    inherit MonoDevelop.Components.TooltipWindow() 
-    let isEmpty = System.String.IsNullOrEmpty (tooltip)|| tooltip = "?"
-      
-    let label = 
-       if isEmpty then null else 
-       new MonoDevelop.Components.FixedWidthWrapLabel(Wrap = Pango.WrapMode.WordChar, 
-                                                      Indent = -20,BreakOnCamelCasing = true,
-                                                      BreakOnPunctuation = true,
-                                                      Markup = tooltip )
-
-    let updateFont (label:MonoDevelop.Components.FixedWidthWrapLabel) =
-      if (label <> null) then
-          label.FontDescription <- MonoDevelop.Ide.Fonts.FontService.GetFontDescription ("LanguageTooltips")
-        
-    do 
-        if not isEmpty then 
-          this.BorderWidth <- 3u
-          this.Add label
-          updateFont label
-          this.EnableTransparencyControl <- true
-      
-    //return the real width
-    member this.SetMaxWidth (maxWidth) =
-      match this.Child with 
-      | :? MonoDevelop.Components.FixedWidthWrapLabel as label -> 
-          label.MaxWidth <- maxWidth
-          label.RealWidth
-      | _ -> this.Allocation.Width 
-
-    override this.OnStyleSet (previousStyle: Gtk.Style) =
-      base.OnStyleSet previousStyle
-      match this.Child with 
-      | :? MonoDevelop.Components.FixedWidthWrapLabel as label -> updateFont label
-      | _ -> ()
 
 type FSharpLanguageItemTooltipProvider() = 
     inherit Mono.TextEditor.TooltipProvider()
@@ -105,13 +67,6 @@ type FSharpLanguageItemTooltipProvider() =
                 result.RepositionWindow ()                  
                 result :> Gtk.Window
             | _ -> Debug.WriteLine("** not a FSharpLocalResolveResult!"); null
-
-    override x.GetRequiredPosition (editor, tipWindow : Gtk.Window, requiredWidth : int byref, xalign : double byref) = 
-            match tipWindow with 
-            | :? TooltipInformationWindow as win -> 
-                requiredWidth <- win.Allocation.Width
-                xalign <- 0.5
-            | _ -> ()
     
 /// Implements "resolution" - looks for tool-tips at current locations
 type FSharpResolverProvider() =
@@ -162,7 +117,8 @@ type FSharpResolverProvider() =
                        | DeclFound(line,col,file) -> 
                            Debug.WriteLine("found, line = {0}, col = {1}, file = {2}", line, col, file)
                            DomRegion(file,line+1,col+1)
-                       | _ -> DomRegion.Empty
+                       | _ -> Debug.WriteLine("Cant find declaration location, using DomRegion.Empty")
+                              DomRegion.Empty
                     member x.Type = (SpecialType.UnknownType :> _)
                     member x.IsConst = false
                     member x.ConstantValue = Unchecked.defaultof<_> }
