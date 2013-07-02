@@ -1560,7 +1560,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 		#endregion
 		
-		
+		/*
 		class SimpleAssemblyResolver : IAssemblyResolver
 		{
 			string lookupPath;
@@ -1643,7 +1643,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			ReaderParameters parameters = new ReaderParameters ();
 			parameters.AssemblyResolver = new DefaultAssemblyResolver (); // new SimpleAssemblyResolver (Path.GetDirectoryName (fileName));
 			return AssemblyDefinition.ReadAssembly (fileName, parameters);
-		}
+		}*/
 		
 		static bool GetXml (string baseName, MonoDevelop.Core.Assemblies.TargetRuntime runtime, out FilePath xmlFileName)
 		{
@@ -1974,16 +1974,13 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 				} catch (Exception) {
 				}
-				var asm = ReadAssembly (fileName);
-				if (asm == null)
-					return null;
-				
+
 				IUnresolvedAssembly assembly;
 				try {
-					var loader = new CecilLoader ();
+					var loader = new IkvmLoader ();
 					loader.IncludeInternalMembers = true;
 					loader.DocumentationProvider = new CombinedDocumentationProvider (fileName);
-					assembly = loader.LoadAssembly (asm);
+					assembly = loader.LoadAssemblyFile (fileName);
 				} catch (Exception e) {
 					LoggingService.LogError ("Can't convert assembly: " + fileName, e);
 					return null;

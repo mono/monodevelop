@@ -143,7 +143,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			
 			if (node is NamespaceDeclaration) {
 				var nsd = ((NamespaceDeclaration)node);
-				node = nsd.Identifiers.LastOrDefault (n => n.Name == memberName) ?? nsd.Identifiers.FirstOrDefault ();
+				node = nsd.NamespaceName;
 				if (node == null)
 					return null;
 			}
