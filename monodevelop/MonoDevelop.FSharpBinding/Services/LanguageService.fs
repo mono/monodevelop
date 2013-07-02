@@ -207,6 +207,7 @@ module internal TipFormatter =
     match el with 
     | DataTipElementNone -> ()
     | DataTipElement(it, comment) -> 
+        Debug.WriteLine("DataTipElement: " + it)
         sb.AppendLine(GLib.Markup.EscapeText it) |> ignore
         let html = buildFormatComment comment 
         if not (String.IsNullOrWhiteSpace html) then 
@@ -248,10 +249,10 @@ module internal TipFormatter =
     let sb = new StringBuilder()
     buildFormatTip canAddHeader tip sb
     let text = sb.ToString()
-    let textSquashed =  MonoDevelop.Ide.TypeSystem.AmbienceService.BreakLines(text,120)
+    let textSquashed =  MonoDevelop.Ide.TypeSystem.AmbienceService.BreakLines(text,90)
     textSquashed.Trim('\n', '\r')
 
-  /// For elements with XML docs, the paramater descriptions are buried in the XML. Fetch it.
+  /// For elements with XML docs, the parameter descriptions are buried in the XML. Fetch it.
   let private extractParamTipFromComment paramName comment =  
     match comment with
     | XmlCommentText(s) -> None
@@ -266,7 +267,7 @@ module internal TipFormatter =
             Some ( (*GLib.Markup.EscapeText( *) parameterTip )
     | _ -> None
 
-  /// For elements with XML docs, the paramater descriptions are buried in the XML. Fetch it.
+  /// For elements with XML docs, the parameter descriptions are buried in the XML. Fetch it.
   let private extractParamTipFromElement paramName element = 
       match element with 
       | DataTipElementNone -> None
@@ -274,7 +275,7 @@ module internal TipFormatter =
       | DataTipElementGroup(items) -> List.tryPick (snd >> extractParamTipFromComment paramName) items
       | DataTipElementCompositionError(err) -> None
 
-  /// For elements with XML docs, the paramater descriptions are buried in the XML. Fetch it.
+  /// For elements with XML docs, the parameter descriptions are buried in the XML. Fetch it.
   let extractParamTip paramName (DataTipText elements) = 
       List.tryPick (extractParamTipFromElement paramName) elements
 
@@ -284,7 +285,7 @@ module internal TipFormatter =
     let str = formatTip true tip
     let parts = str.Split([| '\n'; '\r' |], 2, StringSplitOptions.RemoveEmptyEntries)
     "<b>" + parts.[0] + "</b>" +
-      (if parts.Length > 1 then "<small>\n\n" + parts.[1] + "</small>" else "")
+      (if parts.Length > 1 then "\n\n" + parts.[1] else "")
     
 
 // --------------------------------------------------------------------------------------
@@ -306,7 +307,7 @@ module Parsing =
         let! _ = optional (string "``") 
         return res }
 
-  /// Parse remainder of a logn identifier before '.' (e.g. "Name.space.")
+  /// Parse remainder of a long identifier before '.' (e.g. "Name.space.")
   /// (designed to look backwards - reverses the results after parsing)
   let rec parseBackLongIdentRest = parser {
     return! parser {
