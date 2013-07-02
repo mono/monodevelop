@@ -708,8 +708,12 @@ namespace Mono.Debugging.Soft
 		{
 			string name = t.Name;
 			if (string.IsNullOrEmpty (name)) {
-				if (t.IsThreadPoolThread)
-					return "<Thread Pool>";
+				try {
+					if (t.IsThreadPoolThread)
+						return "<Thread Pool>";
+				} catch (ObjectCollectedException) {
+					return "<Thread>";
+				}
 			}
 			return name;
 		}
