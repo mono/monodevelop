@@ -1303,7 +1303,20 @@ namespace Mono.Debugging.Soft
 				if (es.Events.Length != 1)
 					throw new InvalidOperationException ("EventSet has unexpected combination of events");
 				HandleEvent (es[0]);
-				vm.Resume ();
+				try {
+					vm.Resume ();
+				} catch (InvalidOperationException e) {
+					EventType eventType = es [0].EventType;
+					if (eventType != EventType.VMStart 
+					    && eventType != EventType.AppDomainCreate
+					    && eventType != EventType.AppDomainUnload
+					    && eventType != EventType.AssemblyLoad
+					    && eventType != EventType.TypeLoad
+					    && eventType != EventType.ThreadStart
+					    && eventType != EventType.ThreadDeath) {
+						throw e;
+					}
+				}
 			}
 		}
 		
