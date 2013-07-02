@@ -17,7 +17,7 @@ type System.String with
 type Parser<'T> = P of (LazyList<char> -> ('T * LazyList<char>) list)
 
 
-// Basic functions needed by the computation builed
+// Basic functions needed by the computation builder
 
 let result v = P(fun c -> [v, c])
 let zero () = P(fun c -> [])
