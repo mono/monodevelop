@@ -787,6 +787,7 @@ namespace Mono.TextEditor
 			
 			this.textEditorData.SelectionChanged -= TextEditorDataSelectionChanged;
 			this.textEditorData.Dispose (); 
+			longestLine = null;
 
 			base.OnDestroyed ();
 		}

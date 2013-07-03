@@ -92,7 +92,11 @@ namespace Mono.TextEditor
 		
 		public void Dispose ()
 		{
-			doc.LineChanged -= HandleDocLineChanged;
+			if (doc != null) {
+				doc.LineChanged -= HandleDocLineChanged;
+				doc = null;
+			}
+			line = null;
 		}
 		
 		public override void Draw (TextEditor editor, Cairo.Context cr, double y, LineMetrics metrics)
