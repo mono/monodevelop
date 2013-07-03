@@ -49,6 +49,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		public abstract IntPtr hash_first(IntPtr pool, IntPtr hash);
 		public abstract IntPtr hash_next(IntPtr hashindex);
 		public abstract void hash_this(IntPtr hashindex, out IntPtr key, out int keylen, out IntPtr val);
+		public abstract IntPtr hash_get(IntPtr ht, IntPtr key, int klen);
 		public abstract IntPtr array_make(IntPtr pool, int nelts, int elt_size);
 		public abstract IntPtr array_push(IntPtr arr);
 		public abstract IntPtr pstrdup(IntPtr pool, string s);
@@ -73,6 +74,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		public override IntPtr hash_first(IntPtr pool, IntPtr hash) { return apr_hash_first (pool, hash); }
 		public override IntPtr hash_next(IntPtr hashindex) { return apr_hash_next(hashindex); }
 		public override void hash_this(IntPtr hashindex, out IntPtr key, out int keylen, out IntPtr val) { apr_hash_this(hashindex, out key, out keylen, out val); }
+		public override IntPtr hash_get(IntPtr ht, IntPtr key, int klen) { return apr_hash_get (ht, key, klen); }
 		public override IntPtr array_make(IntPtr pool, int nelts, int elt_size) { return apr_array_make(pool, nelts, elt_size); }
 		public override IntPtr array_push(IntPtr arr) { return apr_array_push (arr); }
 		public override IntPtr pstrdup(IntPtr pool, string s) { return apr_pstrdup(pool, s); }
@@ -86,6 +88,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		[DllImport(aprlib)] static extern IntPtr apr_hash_first(IntPtr pool, IntPtr hash);
 		[DllImport(aprlib)] static extern IntPtr apr_hash_next(IntPtr hashindex);
 		[DllImport(aprlib)] static extern void apr_hash_this(IntPtr hashindex, out IntPtr key, out int keylen, out IntPtr val);
+		[DllImport(aprlib)] static extern IntPtr apr_hash_get(IntPtr ht, IntPtr key, int klen);
 		[DllImport(aprlib)] static extern IntPtr apr_array_make(IntPtr pool, int nelts, int elt_size);
 		[DllImport(aprlib)] static extern IntPtr apr_array_push(IntPtr arr);
 		[DllImport(aprlib)] static extern IntPtr apr_pstrdup(IntPtr pool, string s);
@@ -104,6 +107,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		public override IntPtr hash_first(IntPtr pool, IntPtr hash) { return apr_hash_first (pool, hash); }
 		public override IntPtr hash_next(IntPtr hashindex) { return apr_hash_next(hashindex); }
 		public override void hash_this(IntPtr hashindex, out IntPtr key, out int keylen, out IntPtr val) { apr_hash_this(hashindex, out key, out keylen, out val); }
+		public override IntPtr hash_get(IntPtr ht, IntPtr key, int klen) { return apr_hash_get (ht, key, klen); }
 		public override IntPtr array_make(IntPtr pool, int nelts, int elt_size) { return apr_array_make(pool, nelts, elt_size); }
 		public override IntPtr array_push(IntPtr arr) { return apr_array_push (arr); }
 		public override IntPtr pstrdup(IntPtr pool, string s) { return apr_pstrdup(pool, s); }
@@ -117,6 +121,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		[DllImport(aprlib)] static extern IntPtr apr_hash_first(IntPtr pool, IntPtr hash);
 		[DllImport(aprlib)] static extern IntPtr apr_hash_next(IntPtr hashindex);
 		[DllImport(aprlib)] static extern void apr_hash_this(IntPtr hashindex, out IntPtr key, out int keylen, out IntPtr val);
+		[DllImport(aprlib)] static extern IntPtr apr_hash_get(IntPtr ht, IntPtr key, int klen);
 		[DllImport(aprlib)] static extern IntPtr apr_array_make(IntPtr pool, int nelts, int elt_size);
 		[DllImport(aprlib)] static extern IntPtr apr_array_push(IntPtr arr);
 		[DllImport(aprlib)] static extern IntPtr apr_pstrdup(IntPtr pool, string s);
