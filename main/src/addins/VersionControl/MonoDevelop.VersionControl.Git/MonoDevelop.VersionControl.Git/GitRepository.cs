@@ -835,7 +835,16 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override void OnRevertToRevision (FilePath localPath, Revision revision, IProgressMonitor monitor)
 		{
-			throw new System.NotImplementedException ();
+			NGit.Repository repo = GetRepository (localPath);
+			NGit.Api.Git git = new NGit.Api.Git (repo);
+			GitRevision gitRev = (GitRevision)revision;
+
+			// Rewrite file data from selected revision.
+			foreach (var path in GetFilesInPaths (new FilePath[] { localPath })) {
+				MonoDevelop.Projects.Text.TextFile.WriteFile (path, GetCommitTextContent (gitRev.Commit, path), null);
+			}
+
+			monitor.ReportSuccess (GettextCatalog.GetString ("Successfully reverted {0} to revision {1}", localPath, gitRev));
 		}
 
 
