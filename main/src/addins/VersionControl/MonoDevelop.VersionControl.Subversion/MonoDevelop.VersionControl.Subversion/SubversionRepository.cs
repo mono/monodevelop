@@ -548,5 +548,10 @@ namespace MonoDevelop.VersionControl.Subversion
 			
 			return patch.ToString ();
 		}
+
+		protected override void OnIgnore (FilePath[] paths)
+		{
+			Svn.Ignore (paths);
+		}
 	}
 }

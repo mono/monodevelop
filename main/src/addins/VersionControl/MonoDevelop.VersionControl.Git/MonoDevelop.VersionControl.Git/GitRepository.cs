@@ -1420,6 +1420,25 @@ namespace MonoDevelop.VersionControl.Git
 				return null;
 			return new GitRevision (this, revision.GitRepository, id.Name);
 		}
+
+		protected override void OnIgnore (FilePath[] paths)
+		{
+			List<FilePath> ignored = new List<FilePath> ();
+			string txt;
+			using (StreamReader br = new StreamReader (RootPath + Path.DirectorySeparatorChar + ".gitignore")) {
+				while ((txt = br.ReadLine ()) != null) {
+					txt = txt.Trim ();
+					if (txt.Length > 0 && !txt.StartsWith ("#"))
+						ignored.Add (txt);
+				}
+			}
+
+			StringBuilder sb = new StringBuilder ();
+			foreach (var path in paths.Except (ignored))
+				sb.AppendLine (RootRepository.ToGitPath (path));
+
+			File.AppendAllText (RootPath + Path.DirectorySeparatorChar + ".gitignore", sb.ToString ());
+		}
 	}
 	
 	public class GitRevision: Revision

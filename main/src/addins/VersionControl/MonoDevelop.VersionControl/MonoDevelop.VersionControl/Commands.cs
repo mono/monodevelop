@@ -26,7 +26,8 @@ namespace MonoDevelop.VersionControl
 		Annotate,
 		ShowAnnotations,
 		HideAnnotations,
-		CreatePatch
+		CreatePatch,
+		Ignore
 	}
 	
 	class SolutionVersionControlCommandHandler: CommandHandler
@@ -209,6 +210,14 @@ namespace MonoDevelop.VersionControl
 		{
 			base.Update (info);
 			info.Text = GettextCatalog.GetString ("Unlock File");
+		}
+	}
+
+	class IgnoreCommandHandler : FileVersionControlCommandHandler
+	{
+		protected override bool RunCommand (VersionControlItemList items, bool test)
+		{
+			return IgnoreCommand.Ignore (items, test);
 		}
 	}
 

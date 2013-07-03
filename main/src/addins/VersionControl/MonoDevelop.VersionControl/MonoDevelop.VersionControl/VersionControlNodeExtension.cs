@@ -395,8 +395,22 @@ namespace MonoDevelop.VersionControl
 		protected void UpdateCreatePatch(CommandInfo item) {
 			TestCommand(Commands.CreatePatch, item);
 		}
-			
-		private void TestCommand(Commands cmd, CommandInfo item, bool projRecurse = true) {
+
+		[AllowMultiSelection]
+		[CommandHandler (Commands.Ignore)]
+		protected void OnIgnore ()
+		{
+			RunCommand(Commands.Ignore, false);
+		}
+
+		[CommandUpdateHandler (Commands.Ignore)]
+		protected void UpdateIgnore (CommandInfo item)
+		{
+			TestCommand(Commands.Ignore, item);
+		}
+
+		private void TestCommand(Commands cmd, CommandInfo item, bool projRecurse = true)
+		{
 			TestResult res = RunCommand(cmd, true, projRecurse);
 			if (res == TestResult.NoVersionControl && cmd == Commands.Log) {
 				// Use the update command to show the "not available" message
@@ -464,6 +478,9 @@ namespace MonoDevelop.VersionControl
 					break;
 				case Commands.CreatePatch:
 					res = CreatePatchCommand.CreatePatch (items, test);
+					break;
+				case Commands.Ignore:
+					res = IgnoreCommand.Ignore (items, test);
 					break;
 				}
 			}

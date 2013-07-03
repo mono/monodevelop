@@ -449,6 +449,18 @@ namespace SubversionAddinWindows
 			client.Update (path, args);
 		}
 
+		public override void Ignore (FilePath[] paths)
+		{
+			string result;
+			lock (client) {
+				foreach (var path in paths) {
+					if (client.GetProperty (new SvnPathTarget (path.ParentDirectory), SvnPropertyNames.SvnIgnore, out result)) {
+						client.SetProperty (path.ParentDirectory, SvnPropertyNames.SvnIgnore, result + path.ToRelative (path.ParentDirectory));
+					}
+				}
+			}
+		}
+
 		SharpSvn.SvnRevision GetRevision (Revision rev)
 		{
 			if (rev == null)
