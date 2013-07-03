@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Template originator   = "Jeffrey Stedfast"
           created      = "04/03/2012"
-          lastModified = "04/03/2012">
+          lastModified = "07/03/2013">
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
@@ -25,7 +25,7 @@
 		</Options>
 		
 		<Project name = "${ProjectName}" directory = "." type = "PortableDotNet">
-			<Options Target = "Library" TargetFrameworkVersion = ".NETPortable,Version=v4.0,Profile=Profile1"/>
+			<Options Target = "Library" TargetFrameworkVersion = ".NETPortable,Version=v4.0,Profile=Profile37"/>
 			<References>
 				<Reference type="Gac" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
 				<Reference type="Gac" refto="System.Xml, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
