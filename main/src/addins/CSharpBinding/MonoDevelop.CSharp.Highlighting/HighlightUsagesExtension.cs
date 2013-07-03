@@ -27,25 +27,36 @@ using System;
 using MonoDevelop.Ide.Gui.Content;
 using Mono.TextEditor;
 using System.Collections.Generic;
-using Gdk;
-using MonoDevelop.CSharp.Resolver;
-using MonoDevelop.Projects.Text;
 using System.Linq;
 using MonoDevelop.Core;
-using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using MonoDevelop.Ide.FindInFiles;
-using MonoDevelop.SourceEditor;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.CSharp;
-using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using MonoDevelop.SourceEditor.QuickTasks;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
-	public class HighlightUsagesExtension : TextEditorExtension, IUsageProvider
+	class HighlightUsagesExtension : TextEditorExtension, IUsageProvider
 	{
-		public readonly List<TextSegment> UsagesSegments = new List<TextSegment> ();
+		internal class UsageSegment
+		{
+			public readonly ReferenceUsageType UsageType;
+			public readonly TextSegment TextSegment;
+
+			public UsageSegment (ReferenceUsageType usageType, int offset, int length)
+			{
+				this.UsageType = usageType;
+				this.TextSegment = new TextSegment (offset, length);
+			}
+
+			public static implicit operator TextSegment (UsageSegment usage)
+			{
+				return usage.TextSegment;
+			}
+		}
+
+		public readonly List<UsageSegment> UsagesSegments = new List<UsageSegment> ();
 			
 		CSharpSyntaxMode syntaxMode;
 		TextEditorData textEditorData;
@@ -88,7 +99,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			RemoveTimer ();
 		}
 		
-		uint popupTimer = 0;
+		uint popupTimer;
 		
 		public bool IsTimerOnQueue {
 			get {
@@ -178,18 +189,17 @@ namespace MonoDevelop.CSharp.Highlighting
 							offset < sr.Offset && sr.EndOffset < endOffset)) {
 							editor.TextViewMargin.AlphaBlendSearchResults = alphaBlend = true;
 						}
-						UsagesSegments.Add (new TextSegment (offset, endOffset - offset));
-						marker.Usages.Add (new TextSegment (offset, endOffset - offset));
+						UsagesSegments.Add (new UsageSegment (r.ReferenceUsageType, offset, endOffset - offset));
+						marker.Usages.Add (new UsageSegment (r.ReferenceUsageType, offset, endOffset - offset));
 						lineNumbers.Add (r.Region.BeginLine);
 					}
 				}
 				foreach (int line in lineNumbers)
 					textEditorData.Document.CommitLineUpdate (line);
-				UsagesSegments.Sort ((x, y) => x.Offset.CompareTo (y.Offset));
+				UsagesSegments.Sort ((x, y) => x.TextSegment.Offset.CompareTo (y.TextSegment.Offset));
 			}
 			OnUsagesUpdated (EventArgs.Empty);
 		}
-
 
 		static readonly List<MemberReference> emptyList = new List<MemberReference> ();
 		IEnumerable<MemberReference> GetReferences (ResolveResult resolveResult)
@@ -248,15 +258,15 @@ namespace MonoDevelop.CSharp.Highlighting
 		
 		public class UsageMarker : TextLineMarker
 		{
-			List<TextSegment> usages = new List<TextSegment> ();
+			List<UsageSegment> usages = new List<UsageSegment> ();
 
-			public List<TextSegment> Usages {
+			public List<UsageSegment> Usages {
 				get { return this.usages; }
 			}
 			
 			public bool Contains (int offset)
 			{
-				return usages.Any (u => u.Offset <= offset && offset <= u.EndOffset);
+				return usages.Any (u => u.TextSegment.Offset <= offset && offset <= u.TextSegment.EndOffset);
 			}
 
 			public override bool DrawBackground (TextEditor editor, Cairo.Context cr, double y, LineMetrics metrics)
@@ -264,8 +274,8 @@ namespace MonoDevelop.CSharp.Highlighting
 				if (metrics.SelectionStart >= 0 || editor.CurrentMode is TextLinkEditMode || editor.TextViewMargin.SearchResultMatchCount > 0)
 					return false;
 				foreach (var usage in Usages) {
-					int markerStart = usage.Offset;
-					int markerEnd = usage.EndOffset;
+					int markerStart = usage.TextSegment.Offset;
+					int markerEnd = usage.TextSegment.EndOffset;
 					
 					if (markerEnd < metrics.TextStartOffset || markerStart > metrics.TextEndOffset) 
 						return false; 
@@ -296,11 +306,18 @@ namespace MonoDevelop.CSharp.Highlighting
 					@from = System.Math.Max (@from, editor.TextViewMargin.XOffset);
 					to = System.Math.Max (to, editor.TextViewMargin.XOffset);
 					if (@from < to) {
-						cr.Color = (HslColor)editor.ColorStyle.UsagesRectangle.SecondColor;
+						Mono.TextEditor.Highlighting.AmbientColor colorStyle;
+						if ((usage.UsageType | ReferenceUsageType.Write) == ReferenceUsageType.Write) {
+							colorStyle = editor.ColorStyle.ChangingUsagesRectangle;
+						} else {
+							colorStyle = editor.ColorStyle.UsagesRectangle;
+						}
+
+						cr.Color = (HslColor)colorStyle.SecondColor;
 						cr.Rectangle (@from + 1, y + 1, to - @from - 1, editor.LineHeight - 2);
 						cr.Fill ();
 						
-						cr.Color = (HslColor)editor.ColorStyle.UsagesRectangle.Color;
+						cr.Color = (HslColor)colorStyle.Color;
 						cr.Rectangle (@from + 0.5, y + 0.5, to - @from, editor.LineHeight - 1);
 						cr.Stroke ();
 					}

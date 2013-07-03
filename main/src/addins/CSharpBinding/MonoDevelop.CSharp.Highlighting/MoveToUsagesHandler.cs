@@ -37,7 +37,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		NextUsage
 	}
 	
-	public class MoveToPrevUsageHandler : CommandHandler
+	class MoveToPrevUsageHandler : CommandHandler
 	{
 		protected override void Update (CommandInfo info)
 		{
@@ -65,13 +65,13 @@ namespace MonoDevelop.CSharp.Highlighting
 
 			var caretOffset = doc.Editor.Caret.Offset;
 			for (int i = 0; i < ext.UsagesSegments.Count; i++) {
-				if (ext.UsagesSegments [i].Contains (caretOffset))
+				if (ext.UsagesSegments [i].TextSegment.Contains (caretOffset))
 					MoveToNextUsageHandler.MoveToSegment (doc, ext.UsagesSegments [(i + ext.UsagesSegments.Count - 1) % ext.UsagesSegments.Count]);
 			}
 		}
 	}
 	
-	public class MoveToNextUsageHandler : CommandHandler
+	class MoveToNextUsageHandler : CommandHandler
 	{
 		protected override void Update (CommandInfo info)
 		{
@@ -97,7 +97,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			
 			var caretOffset = doc.Editor.Caret.Offset;
 			for (int i = 0; i < ext.UsagesSegments.Count; i++) {
-				if (ext.UsagesSegments [i].Contains (caretOffset))
+				if (ext.UsagesSegments [i].TextSegment.Contains (caretOffset))
 					MoveToNextUsageHandler.MoveToSegment (doc, ext.UsagesSegments [(i + 1) % ext.UsagesSegments.Count]);
 			}
 		}

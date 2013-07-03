@@ -69,7 +69,8 @@
 		{ "name": "Quick Diff(Changed)", "color":"orangesicle" },
 		
 		{ "name": "Brace Matching(Rectangle)", "color":"orangesicle", "secondcolor":"orangesicle-light" },
-		{ "name": "Usages(Rectangle)", "color":"orangesicle", "secondcolor":"orangesicle-light" },
+		{ "name": "Usages(Rectangle)", "color":"#B1DFF9", "secondcolor":"#B1DFF9" },
+		{ "name": "Changing usages(Rectangle)", "color":"#FFD6DD", "secondcolor":"#FFD6DD" },
 		
 		{ "name": "Breakpoint Marker", "color":"white", "secondcolor":"#AB616B" },
 		{ "name": "Breakpoint Marker(Disabled)", "color":"#AB616B", "secondcolor":"white" },

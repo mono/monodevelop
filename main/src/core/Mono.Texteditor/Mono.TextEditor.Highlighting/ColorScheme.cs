@@ -110,6 +110,9 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("Usages(Rectangle)", VSSetting="color=MarkerFormatDefinition/HighlightedReference/Background,secondcolor=MarkerFormatDefinition/HighlightedReference/Background")]
 		public AmbientColor UsagesRectangle { get; private set; }
 
+		[ColorDescription("Changing usages(Rectangle)", VSSetting="color=MarkerFormatDefinition/HighlightedReference/Background,secondcolor=MarkerFormatDefinition/HighlightedReference/Background")]
+		public AmbientColor ChangingUsagesRectangle { get; private set; }
+
 		[ColorDescription("Breakpoint Marker")]
 		public AmbientColor BreakpointMarker { get; private set; }
 

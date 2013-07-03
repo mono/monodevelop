@@ -28,6 +28,14 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
+	[Flags]
+	public enum ReferenceUsageType {
+		Unknown = 0,
+		Read    = 1,
+		Write   = 2,
+		ReadWrite = Read | Write
+	}
+
 	public class MemberReference : SearchResult
 	{
 		public override FileProvider FileProvider {
@@ -41,7 +49,8 @@ namespace MonoDevelop.Ide.FindInFiles
 				return Region.FileName;
 			}
 		}
-		
+
+		public ReferenceUsageType ReferenceUsageType { get; set; }
 		public object EntityOrVariable { get; private set;}
 		public DomRegion Region { get; private set;}
 		

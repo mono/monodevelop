@@ -28,7 +28,8 @@
 		{"name": "Underline(Error)", "color":"#FF0000" },
 		{"name": "Underline(Warning)", "color":"comment-green" },
 		{"name": "Brace Matching(Rectangle)", "color":"#DBE0CC", "secondcolor":"#00000000" },
-		{"name": "Usages(Rectangle)", "color":"#DBE0CC", "secondcolor":"#DBE0CC" }	
+		{ "name": "Usages(Rectangle)", "color":"#B1DFF9", "secondcolor":"#B1DFF9" },
+		{ "name": "Changing usages(Rectangle)", "color":"#FFD6DD", "secondcolor":"#FFD6DD" }
 	],
 	
 	"text":[
