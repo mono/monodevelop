@@ -577,9 +577,14 @@ namespace MonoDevelop.Components.PropertyGrid
 				s.AppendLine ();
 				s.Append (GLib.Markup.EscapeText (row.Property.Description));
 				if (row.Property.Converter.CanConvertTo (typeof(string))) {
-					s.AppendLine ();
-					s.AppendLine ();
-					s.Append ("Value: " + row.Property.GetValue (row.Instace));
+					var value = Convert.ToString (row.Property.GetValue (row.Instace));
+					if (!string.IsNullOrEmpty (value)) {
+						const int chunkLength = 200;
+						var multiLineValue = string.Join (Environment.NewLine, Enumerable.Range (0, (int)Math.Ceiling ((double)value.Length / chunkLength)).Select (n => string.Concat (value.Skip (n * chunkLength).Take (chunkLength))));
+						s.AppendLine ();
+						s.AppendLine ();
+						s.Append ("Value: " + multiLineValue);
+					}
 				}
 				tooltipWindow.Markup = s.ToString ();
 				tooltipWindow.ShowPopup (this, new Gdk.Rectangle (0, row.EditorBounds.Y, Allocation.Width, row.EditorBounds.Height), PopupPosition.Right);
