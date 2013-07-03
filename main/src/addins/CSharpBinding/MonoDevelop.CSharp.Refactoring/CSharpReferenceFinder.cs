@@ -207,6 +207,9 @@ namespace MonoDevelop.CSharp.Refactoring
 				return ReferenceUsageType.Write;
 			} else if (node is ParameterDeclaration) {
 				return ReferenceUsageType.Write;
+			} else if (node.Parent is ForeachStatement) {
+				if (node.Role == Roles.Identifier)
+					return ReferenceUsageType.Write;
 			}
 			return ReferenceUsageType.Read;
 		}
