@@ -44,7 +44,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		void EnsureIconLoaded (object o, GLib.NotifyArgs args)
 		{
-			ImageService.EnsureStockIconIsLoaded (StockId, (IconSize)StockSize);
+			ImageService.EnsureStockIconIsLoaded (StockId);
 		}
 		
 		IconId icon;

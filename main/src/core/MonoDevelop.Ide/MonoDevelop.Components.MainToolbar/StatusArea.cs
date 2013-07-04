@@ -62,14 +62,14 @@ namespace MonoDevelop.Components.MainToolbar
 			public float         BuildAnimationProgress { get; set; }
 			public float         BuildAnimationOpacity { get; set; }
 			public Gdk.Rectangle ChildAllocation { get; set; }
-			public Gdk.Pixbuf    CurrentPixbuf { get; set; }
+			public Xwt.Drawing.Image CurrentPixbuf { get; set; }
 			public string        CurrentText { get; set; }
 			public bool          CurrentTextIsMarkup { get; set; }
 			public float         ErrorAnimationProgress { get; set; }
 			public float         HoverProgress { get; set; }
 			public string        LastText { get; set; }
 			public bool          LastTextIsMarkup { get; set; }
-			public Gdk.Pixbuf    LastPixbuf { get; set; }
+			public Xwt.Drawing.Image LastPixbuf { get; set; }
 			public Gdk.Point     MousePosition { get; set; }
 			public Pango.Context Pango { get; set; }
 			public float         ProgressBarAlpha { get; set; }
@@ -359,7 +359,7 @@ namespace MonoDevelop.Components.MainToolbar
 				renderArg.MousePosition         = tracker.MousePosition;
 				renderArg.Pango                 = PangoContext;
 
-				theme.Render (context, renderArg);
+				theme.Render (context, renderArg, this);
 			}
 			return base.OnExposeEvent (evnt);
 		}
@@ -677,13 +677,13 @@ namespace MonoDevelop.Components.MainToolbar
 			// load image now
 			if (ImageService.IsAnimation (image, Gtk.IconSize.Menu)) {
 				iconAnimation = ImageService.GetAnimatedIcon (image, Gtk.IconSize.Menu);
-				renderArg.CurrentPixbuf = iconAnimation.FirstFrame;
-				currentIconAnimation = iconAnimation.StartAnimation (delegate (Gdk.Pixbuf p) {
-					renderArg.CurrentPixbuf = p;
+				renderArg.CurrentPixbuf = iconAnimation.FirstFrame.WithSize (14,14);
+				currentIconAnimation = iconAnimation.StartAnimation (delegate (Xwt.Drawing.Image p) {
+					renderArg.CurrentPixbuf = p.WithSize (14,14);
 					QueueDraw ();
 				});
 			} else {
-				renderArg.CurrentPixbuf = ImageService.GetPixbuf (image, Gtk.IconSize.Menu);
+				renderArg.CurrentPixbuf = ImageService.GetIcon (image).WithSize (14,14);
 			}
 
 			iconLoaded = true;

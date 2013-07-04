@@ -152,9 +152,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			if (parentWindow != null)
 				TransientFor = parentWindow;
 			
-			ImageService.EnsureStockIconIsLoaded (emptyCategoryIcon, treeIconSize);
-			ImageService.EnsureStockIconIsLoaded (emptyCategoryIcon, headerIconSize);
-			
+			ImageService.EnsureStockIconIsLoaded (emptyCategoryIcon);
+
 			store = new TreeStore (typeof(OptionsDialogSection));
 			tree.Model = store;
 			tree.HeadersVisible = false;

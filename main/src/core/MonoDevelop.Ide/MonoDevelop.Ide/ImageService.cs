@@ -64,7 +64,7 @@ namespace MonoDevelop.Ide
 		{
 			iconFactory.AddDefault ();
 			IconId.IconNameRequestHandler = delegate (string stockId) {
-				EnsureStockIconIsLoaded (stockId, Gtk.IconSize.Menu);
+				EnsureStockIconIsLoaded (stockId);
 			};
 			
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Core/StockIcons", delegate (object sender, ExtensionNodeEventArgs args) {
@@ -272,6 +272,33 @@ namespace MonoDevelop.Ide
 			return copy;
 		}
 		
+		static Dictionary<string,Xwt.Drawing.Image> icons = new Dictionary<string, Xwt.Drawing.Image> ();
+
+		public static Xwt.Drawing.Image GetIcon (string name)
+		{
+			name = name ?? "";
+
+			Xwt.Drawing.Image img;
+			if (icons.TryGetValue (name, out img))
+				return img; 
+
+			if (string.IsNullOrEmpty (name)) {
+				LoggingService.LogWarning ("Empty icon requested. Stack Trace: " + Environment.NewLine + Environment.StackTrace);
+				icons [name] = img = CreateColorBlock ("#FF0000", Gtk.IconSize.Dialog).ToXwtImage ();
+				return img;
+			}
+
+			//if an icon name begins with '#', we assume it's a hex colour
+			if (name[0] == '#') {
+				icons [name] = img = CreateColorBlock (name, Gtk.IconSize.Dialog).ToXwtImage ();
+				return img;
+			}
+
+			EnsureStockIconIsLoaded (name);
+
+			return icons [name] = img = Xwt.Toolkit.CurrentEngine.WrapImage (name);
+		}
+
 		public static Gdk.Pixbuf GetPixbuf (string name)
 		{
 			return GetPixbuf (name, Gtk.IconSize.Button);
@@ -290,7 +317,7 @@ namespace MonoDevelop.Ide
 			}
 
 			// If this name refers to an icon defined in an extension point, the images for the icon will now be laoded
-			EnsureStockIconIsLoaded (name, size);
+			EnsureStockIconIsLoaded (name);
 
 			//if an icon name begins with '#', we assume it's a hex colour
 			if (name[0] == '#')
@@ -322,7 +349,7 @@ namespace MonoDevelop.Ide
 		}
 		
 		static Dictionary<string,ImageLoader> userIcons = new Dictionary<string, ImageLoader> ();
-		
+
 		public static ImageLoader GetUserIcon (string email, int size)
 		{
 			string key = email + size;
@@ -349,7 +376,7 @@ namespace MonoDevelop.Ide
 			};
 		}
 		
-		internal static void EnsureStockIconIsLoaded (string stockId, Gtk.IconSize size)
+		internal static void EnsureStockIconIsLoaded (string stockId)
 		{
 			if (string.IsNullOrEmpty (stockId))
 				return;
@@ -612,7 +639,7 @@ namespace MonoDevelop.Ide
 			string stockId = "__asm" + addinId + "__" + id + "__" + size;
 			if (!hash.ContainsKey (stockId)) {
 				var aicon = new AnimatedIcon (addin, id, size);
-				AddToIconFactory (stockId, aicon.FirstFrame, null, size);
+				AddToIconFactory (stockId, aicon.FirstFrame.WithSize (size).ToPixbuf (), null, size);
 				AddToAnimatedIconFactory (stockId, aicon);
 				hash[stockId] = stockId;
 			}
@@ -695,7 +722,7 @@ namespace MonoDevelop.Ide
 
 		public static bool IsAnimation (string iconId, Gtk.IconSize size)
 		{
-			EnsureStockIconIsLoaded (iconId, size);
+			EnsureStockIconIsLoaded (iconId);
 			string id = GetStockIdForImageSpec (iconId, size);
 			return animationFactory.ContainsKey (id);
 		}
@@ -707,7 +734,7 @@ namespace MonoDevelop.Ide
 
 		public static AnimatedIcon GetAnimatedIcon (string iconId, Gtk.IconSize size)
 		{
-			EnsureStockIconIsLoaded (iconId, size);
+			EnsureStockIconIsLoaded (iconId);
 			string id = GetStockIdForImageSpec (iconId, size);
 
 			AnimatedIcon aicon;
@@ -736,8 +763,8 @@ namespace MonoDevelop.Ide
 			void StartAnimation ()
 			{
 				if (Animation == null) {
-					Animation = AnimatedIcon.StartAnimation (delegate (Gdk.Pixbuf pix) {
-						Image.Pixbuf = pix;
+					Animation = AnimatedIcon.StartAnimation (delegate (Xwt.Drawing.Image pix) {
+						Image.Pixbuf = pix.ToPixbuf ();
 					});
 				}
 			}
@@ -785,8 +812,8 @@ namespace MonoDevelop.Ide
 			if (IsAnimation (iconId, size)) {
 				var anim = GetAnimatedIcon (iconId);
 				ainfo = new AnimatedImageInfo (image, anim);
-				ainfo.Animation = anim.StartAnimation (delegate (Gdk.Pixbuf pix) {
-					image.Pixbuf = pix;
+				ainfo.Animation = anim.StartAnimation (delegate (Xwt.Drawing.Image pix) {
+					image.Pixbuf = pix.ToPixbuf ();
 				});
 				animatedImages.Add (new WeakReference (ainfo));
 			} else

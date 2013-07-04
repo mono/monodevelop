@@ -73,7 +73,30 @@ namespace MonoDevelop.Components
 		{
 			return (Gtk.Widget) Xwt.Toolkit.CurrentEngine.GetNativeWidget (widget);
 		}
+
+		public static void DrawImage (this Cairo.Context s, Gtk.Widget widget, Xwt.Drawing.Image image, double x, double y)
+		{
+			Xwt.Toolkit.CurrentEngine.RenderImage (widget, s, image, x, y);
+		}
+
+		public static Xwt.Drawing.Image ToXwtImage (this Gdk.Pixbuf pix)
+		{
+			return Xwt.Toolkit.CurrentEngine.WrapImage (pix);
+		}
 		
+		public static Gdk.Pixbuf ToPixbuf (this Xwt.Drawing.Image image)
+		{
+			return (Gdk.Pixbuf)Xwt.Toolkit.CurrentEngine.GetNativeImage (image);
+		}
+
+		public static Xwt.Drawing.Image WithSize (this Xwt.Drawing.Image image, Gtk.IconSize size)
+		{
+			int w, h;
+			if (!Gtk.Icon.SizeLookup (size, out w, out h))
+				return image;
+			return image.WithSize (w, h);
+		}
+
 		public static void EnableAutoTooltips (this Gtk.TreeView tree)
 		{
 			TreeViewTooltipsData data = new TreeViewTooltipsData ();

@@ -33,6 +33,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Components;
 using System.Text;
 using System.Linq;
+using Xwt.Drawing;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
@@ -54,7 +55,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		Gtk.IconSize size;
 
 		const int defaultPause = 200;
-		List<Gdk.Pixbuf> images;
+		List<Xwt.Drawing.Image> images;
 		List<int> pauses;
 
 		static Dictionary<string,Type> animationItems = new Dictionary<string, Type> ();
@@ -97,7 +98,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				else {
 					// It must be an image
 					var id = ImageService.GetStockId (addin, item, size);
-					var img = ImageService.GetPixbuf (id, size);
+					var img = ImageService.GetIcon (id);
 					if (img == null)
 						continue;
 					aitem = new ImageItem () { Image = img };
@@ -115,16 +116,16 @@ namespace MonoDevelop.Ide.Gui.Components
 				parsedItems [parsedItems.Count - 1].NextItem = parsedItems [0];
 			}
 
-			images = new List<Gdk.Pixbuf> ();
+			images = new List<Image> ();
 			pauses = new List<int> ();
 			bool lastWasImage = false;
 
 			foreach (var aitem in parsedItems) {
 				foreach (var frame in aitem.GetFrames ()) {
-					if (frame is Gdk.Pixbuf) {
+					if (frame is Image) {
 						if (lastWasImage)
 							pauses.Add (defaultPause);
-						images.Add ((Gdk.Pixbuf)frame);
+						images.Add ((Image)frame);
 						lastWasImage = true;
 					}
 					else {
@@ -133,7 +134,7 @@ namespace MonoDevelop.Ide.Gui.Components
 								pauses [pauses.Count - 1] = pauses [pauses.Count - 1] + (int) frame;
 							else {
 								// Pause before any image. Add a dummy image
-								images.Add (ImageService.GetPixbuf ("md-empty"));
+								images.Add (ImageService.GetIcon ("md-empty"));
 								pauses.Add ((int) frame);
 							}
 						} else
@@ -146,9 +147,9 @@ namespace MonoDevelop.Ide.Gui.Components
 				pauses.Add (defaultPause);
 		}
 
-		public Gdk.Pixbuf FirstFrame {
+		public Xwt.Drawing.Image FirstFrame {
 			get {
-				return images.Count > 0 ? images [0] : ImageService.GetPixbuf ("md-empty");
+				return images.Count > 0 ? images [0] : ImageService.GetIcon ("md-empty");
 			}
 		}
 
@@ -156,7 +157,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			get { return animationSpec; }
 		}
 
-		public IDisposable StartAnimation (Action<Gdk.Pixbuf> renderer)
+		public IDisposable StartAnimation (Action<Xwt.Drawing.Image> renderer)
 		{
 			int currentFrame = 0;
 			return DispatchService.RunAnimation (delegate {
@@ -185,10 +186,10 @@ namespace MonoDevelop.Ide.Gui.Components
 				return frames;
 			}
 
-			public Gdk.Pixbuf PreviousFrame {
+			public Image PreviousFrame {
 				get {
 					PreviousItem.RenderFrames ();
-					var last = (Gdk.Pixbuf) PreviousItem.frames.LastOrDefault (f => f is Gdk.Pixbuf);
+					var last = (Image) PreviousItem.frames.LastOrDefault (f => f is Image);
 					if (last != null)
 						return last;
 					else
@@ -196,10 +197,10 @@ namespace MonoDevelop.Ide.Gui.Components
 				}
 			}
 
-			public Gdk.Pixbuf NextFrame {
+			public Image NextFrame {
 				get {
 					NextItem.RenderFrames ();
-					var first = (Gdk.Pixbuf) NextItem.frames.FirstOrDefault (f => f is Gdk.Pixbuf);
+					var first = (Image) NextItem.frames.FirstOrDefault (f => f is Image);
 					if (first != null)
 						return first;
 					else
@@ -221,7 +222,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			
 			public abstract void OnRenderFrames ();
 
-			protected void AddImage (Gdk.Pixbuf image)
+			protected void AddImage (Image image)
 			{
 				frames.Add (image);
 			}
@@ -234,7 +235,7 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		class ImageItem: AnimationItem
 		{
-			public Gdk.Pixbuf Image { get; set; }
+			public Image Image { get; set; }
 
 			public override void OnRenderFrames ()
 			{
@@ -258,7 +259,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			{
 				var icon = PreviousFrame;
 				for (int n=0; n<10; n++) {
-					AddImage (ImageService.MakeTransparent (icon, ((double)(9-n))/10.0));
+					AddImage (icon.WithAlpha (((double)(9-n))/10.0));
 					AddPause (60);
 				}
 			}
@@ -270,7 +271,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			{
 				var icon = NextFrame;
 				for (int n=0; n<10; n++) {
-					AddImage (ImageService.MakeTransparent (icon, ((double)(n))/10.0));
+					AddImage (icon.WithAlpha (((double)(n))/10.0));
 					AddPause (60);
 				}
 			}
@@ -283,14 +284,12 @@ namespace MonoDevelop.Ide.Gui.Components
 				var prev = PreviousFrame;
 				var next = NextFrame;
 				for (int n=0; n<10; n++) {
-					var img1 = ImageService.MakeTransparent (next, ((double)(n))/10.0);
-					var img2 = ImageService.MakeTransparent (prev, ((double)(9-n))/10.0);
-					img1.Composite (img2,
-					                0,  0,
-					                img2.Width, img2.Width,
-					                0, 0,
-					                1, 1, Gdk.InterpType.Bilinear, 255); 
-					AddImage (img2);
+					var img1 = next.WithAlpha (((double)(n))/10.0);
+					var img2 = prev.WithAlpha (((double)(9-n))/10.0);
+					var ib = new ImageBuilder (img1.Size.Width, img2.Size.Height);
+					ib.Context.DrawImage (img1, 0, 0, ((double)(n)) / 10.0);
+					ib.Context.DrawImage (img2, 0, 0, ((double)(9 - n)) / 10.0);
+					AddImage (ib.ToVectorImage ());
 					AddPause (60);
 				}
 			}
