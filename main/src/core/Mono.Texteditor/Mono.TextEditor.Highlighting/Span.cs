@@ -114,7 +114,7 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 
-		public string Escape {
+		public Regex Escape {
 			get;
 			set;
 		}
@@ -156,7 +156,7 @@ namespace Mono.TextEditor.Highlighting
 
 		public override string ToString ()
 		{
-			return String.Format ("[Span: Color={0}, Rule={1}, Begin={2}, End={3}, Escape={4}, stopAtEol={5}]", Color, Rule, Begin, End, String.IsNullOrEmpty (Escape) ? "not set" : "'" + Escape +"'", StopAtEol);
+			return String.Format ("[Span: Color={0}, Rule={1}, Begin={2}, End={3}, Escape={4}, stopAtEol={5}]", Color, Rule, Begin, End, Escape == null ? "not set" : "'" + Escape +"'", StopAtEol);
 		}
 		
 		public Span Clone ()
@@ -201,7 +201,8 @@ namespace Mono.TextEditor.Highlighting
 			result.TagColor   = reader.GetAttribute ("tagColor");
 			result.NextColor  = reader.GetAttribute ("nextColor");
 
-			result.Escape = reader.GetAttribute ("escape");
+			string escape = reader.GetAttribute("escape");
+			result.Escape = string.IsNullOrEmpty(escape) ? null : new Regex(escape);
 
 			string stopateol = reader.GetAttribute ("stopateol");
 			if (!String.IsNullOrEmpty (stopateol)) {
