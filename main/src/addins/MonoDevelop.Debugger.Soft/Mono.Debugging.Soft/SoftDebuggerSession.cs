@@ -704,14 +704,17 @@ namespace Mono.Debugging.Soft
 			return new Backtrace (new SoftDebuggerBacktrace (this, thread));
 		}
 
-		static string GetThreadName (ThreadMirror t)
+		string GetThreadName (ThreadMirror t)
 		{
 			string name = t.Name;
 			if (string.IsNullOrEmpty (name)) {
 				try {
 					if (t.IsThreadPoolThread)
 						return "<Thread Pool>";
-				} catch (ObjectCollectedException) {
+				} catch (ObjectCollectedException e) {
+					if (vm.Version.AtLeast(2, 2)) {
+						throw e;
+					}
 					return "<Thread>";
 				}
 			}
@@ -1307,13 +1310,13 @@ namespace Mono.Debugging.Soft
 					vm.Resume ();
 				} catch (InvalidOperationException e) {
 					EventType eventType = es [0].EventType;
-					if (eventType != EventType.VMStart 
+					if (vm.Version.AtLeast(2, 2) || (eventType != EventType.VMStart 
 					    && eventType != EventType.AppDomainCreate
 					    && eventType != EventType.AppDomainUnload
 					    && eventType != EventType.AssemblyLoad
 					    && eventType != EventType.TypeLoad
 					    && eventType != EventType.ThreadStart
-					    && eventType != EventType.ThreadDeath) {
+					    && eventType != EventType.ThreadDeath)) {
 						throw e;
 					}
 				}
