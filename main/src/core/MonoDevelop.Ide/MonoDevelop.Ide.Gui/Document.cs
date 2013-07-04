@@ -82,6 +82,8 @@ namespace MonoDevelop.Ide.Gui
  		
 		public T GetContent<T> () where T : class
 		{
+			if (window == null)
+				return null;
 			//check whether the ViewContent can return the type directly
 			T ret = Window.ActiveViewContent.GetContent (typeof(T)) as T;
 			if (ret != null)
