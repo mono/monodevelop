@@ -307,7 +307,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					to = System.Math.Max (to, editor.TextViewMargin.XOffset);
 					if (@from < to) {
 						Mono.TextEditor.Highlighting.AmbientColor colorStyle;
-						if ((usage.UsageType | ReferenceUsageType.Write) == ReferenceUsageType.Write) {
+						if ((usage.UsageType & ReferenceUsageType.Write) == ReferenceUsageType.Write) {
 							colorStyle = editor.ColorStyle.ChangingUsagesRectangle;
 						} else {
 							colorStyle = editor.ColorStyle.UsagesRectangle;

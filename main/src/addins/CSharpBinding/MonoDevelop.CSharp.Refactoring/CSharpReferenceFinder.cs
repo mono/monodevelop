@@ -189,8 +189,10 @@ namespace MonoDevelop.CSharp.Refactoring
 		{
 			if (node.Parent is UnaryOperatorExpression) {
 				var unaryOperatorExpression = (UnaryOperatorExpression)node.Parent;
-				if (unaryOperatorExpression.Operator == UnaryOperatorType.Increment || unaryOperatorExpression.Operator == UnaryOperatorType.Decrement ||
-					unaryOperatorExpression.Operator == UnaryOperatorType.PostIncrement || unaryOperatorExpression.Operator == UnaryOperatorType.PostDecrement) {
+				if (unaryOperatorExpression.Operator == UnaryOperatorType.Increment || 
+				    unaryOperatorExpression.Operator == UnaryOperatorType.Decrement ||
+					unaryOperatorExpression.Operator == UnaryOperatorType.PostIncrement || 
+				    unaryOperatorExpression.Operator == UnaryOperatorType.PostDecrement) {
 					return ReferenceUsageType.ReadWrite;
 				}
 			} else if (node.Parent is DirectionExpression) {
