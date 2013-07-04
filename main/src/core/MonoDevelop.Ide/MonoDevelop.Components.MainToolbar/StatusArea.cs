@@ -273,19 +273,17 @@ namespace MonoDevelop.Components.MainToolbar
 				box = new VBox ();
 			box.Spacing = 3;
 			
-			Gdk.Pixbuf errorIcon = ImageService.GetPixbuf (StockIcons.Error, IconSize.Menu);
-			Gdk.Pixbuf noErrorIcon = ImageService.MakeGrayscale (errorIcon); // creates a new pixbuf instance
-			Gdk.Pixbuf warningIcon = ImageService.GetPixbuf (StockIcons.Warning, IconSize.Menu);
-			Gdk.Pixbuf noWarningIcon = ImageService.MakeGrayscale (warningIcon); // creates a new pixbuf instance
+			var errorIcon = ImageService.GetIcon (StockIcons.Error).WithSize (Xwt.IconSize.Small);
+			var warningIcon = ImageService.GetIcon (StockIcons.Warning).WithSize (Xwt.IconSize.Small);
+
+			var errorImage = new Xwt.ImageView (errorIcon);
+			var warningImage = new Xwt.ImageView (warningIcon);
 			
-			Gtk.Image errorImage = new Gtk.Image (errorIcon);
-			Gtk.Image warningImage = new Gtk.Image (warningIcon);
-			
-			box.PackStart (errorImage, false, false, 0);
+			box.PackStart (errorImage.ToGtkWidget (), false, false, 0);
 			Label errors = new Gtk.Label ();
 			box.PackStart (errors, false, false, 0);
 			
-			box.PackStart (warningImage, false, false, 0);
+			box.PackStart (warningImage.ToGtkWidget (), false, false, 0);
 			Label warnings = new Gtk.Label ();
 			box.PackStart (warnings, false, false, 0);
 			box.NoShowAll = true;
@@ -316,8 +314,6 @@ namespace MonoDevelop.Components.MainToolbar
 			TaskService.Errors.TasksRemoved += updateHandler;
 			
 			box.Destroyed += delegate {
-				noErrorIcon.Dispose ();
-				noWarningIcon.Dispose ();
 				TaskService.Errors.TasksAdded -= updateHandler;
 				TaskService.Errors.TasksRemoved -= updateHandler;
 			};
