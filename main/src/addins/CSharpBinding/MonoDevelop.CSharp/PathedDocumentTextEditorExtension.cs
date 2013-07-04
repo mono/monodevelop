@@ -43,20 +43,39 @@ namespace MonoDevelop.CSharp
 	{
 		public override void Dispose ()
 		{
-			Document.Editor.Caret.PositionChanged -= UpdatePath;
+			if (caret != null) {
+				caret.PositionChanged -= UpdatePath;
+				caret = null;
+			}
+			if (ext != null) {
+				ext.TypeSegmentTreeUpdated -= HandleTypeSegmentTreeUpdated;
+				ext = null;
+			}
+			currentPath = null;
+			lastType = null;
+			lastMember = null;
 			base.Dispose ();
 		}
 
 		bool isPathSet;
+
+		Mono.TextEditor.Caret caret;
+		CSharpCompletionTextEditorExtension ext;
 		
 		public override void Initialize ()
 		{
 			CurrentPath = new PathEntry[] { new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = null } };
 			isPathSet = false;
 			UpdatePath (null, null);
-			Document.Editor.Caret.PositionChanged += UpdatePath;
-			var ext = Document.GetContent<CSharpCompletionTextEditorExtension> ();
-			ext.TypeSegmentTreeUpdated += (o, s) => UpdatePath (null, null);
+			caret = Document.Editor.Caret;
+			caret.PositionChanged += UpdatePath;
+			ext = Document.GetContent<CSharpCompletionTextEditorExtension> ();
+			ext.TypeSegmentTreeUpdated += HandleTypeSegmentTreeUpdated;
+		}
+
+		void HandleTypeSegmentTreeUpdated (object sender, EventArgs e)
+		{
+			UpdatePath (null, null);
 		}
 
 		#region IPathedDocument implementation
