@@ -313,8 +313,8 @@ namespace MonoDevelop.Refactoring
 				yield break;
 			FrameworkLookup frameworkLookup;
 			if (!TypeSystemService.TryGetFrameworkLookup (netProject, out frameworkLookup))
-				yield break;
-			if (resolveResult is UnknownMemberResolveResult) {
+				frameworkLookup = null;
+			if (frameworkLookup != null && resolveResult is UnknownMemberResolveResult) {
 				var umResult = (UnknownMemberResolveResult)resolveResult;
 				try {
 					foreach (var r in frameworkLookup.GetExtensionMethodLookups (umResult)) {
@@ -410,7 +410,7 @@ namespace MonoDevelop.Refactoring
 				}
 			}
 			// Try to search framework types
-			if (!foundIdentifier && resolveResult is UnknownIdentifierResolveResult) {
+			if (!foundIdentifier && frameworkLookup != null && resolveResult is UnknownIdentifierResolveResult) {
 				var uiResult = resolveResult as UnknownIdentifierResolveResult;
 				if (uiResult != null) {
 					var lookups = new List<Tuple<FrameworkLookup.AssemblyLookup, SystemAssembly>> ();
@@ -430,7 +430,7 @@ namespace MonoDevelop.Refactoring
 
 				}
 			}
-			if (!foundIdentifier && resolveResult is UnknownMemberResolveResult) {
+			if (!foundIdentifier && frameworkLookup != null && resolveResult is UnknownMemberResolveResult) {
 				var uiResult = resolveResult as UnknownMemberResolveResult;
 				if (uiResult != null) {
 					var lookups = new List<Tuple<FrameworkLookup.AssemblyLookup, SystemAssembly>> ();
