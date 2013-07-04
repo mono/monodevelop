@@ -48,6 +48,7 @@ using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Projects;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using MonoDevelop.Core.ProgressMonitoring;
+using ICSharpCode.NRefactory.Completion;
 
 namespace MonoDevelop.Refactoring
 {
@@ -270,7 +271,7 @@ namespace MonoDevelop.Refactoring
 			}
 		}
 
-		static bool CanBeReferenced (Project project, SystemAssembly systemAssembly)
+		internal static bool CanBeReferenced (Project project, SystemAssembly systemAssembly)
 		{
 			var netProject = project as DotNetProject;
 			if (netProject == null)
@@ -434,7 +435,7 @@ namespace MonoDevelop.Refactoring
 				if (uiResult != null) {
 					var lookups = new List<Tuple<FrameworkLookup.AssemblyLookup, SystemAssembly>> ();
 					try {
-						foreach (var r in frameworkLookup.GetLookups (uiResult, node, tc, isInsideAttributeType)) {
+						foreach (var r in frameworkLookup.GetLookups (uiResult, node.ToString (), tc, isInsideAttributeType)) {
 							var systemAssembly = netProject.AssemblyContext.GetAssemblyFromFullName (r.FullName, r.Package, netProject.TargetFramework);
 							if (systemAssembly == null)
 								continue;
