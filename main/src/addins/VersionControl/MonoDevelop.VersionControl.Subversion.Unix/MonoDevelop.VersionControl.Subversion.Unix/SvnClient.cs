@@ -997,6 +997,29 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			SvnRevision srev = (SvnRevision) revision;
 			Merge (path, (LibSvnClient.Rev) srev, LibSvnClient.Rev.Number (srev.Rev - 1));
 		}
+		
+		private void Merge (string path, LibSvnClient.Rev revision1, LibSvnClient.Rev revision2)
+		{
+			TryStartOperation ();
+
+			IntPtr localpool = newpool (pool);
+			try {
+				path = NormalizePath (path, localpool);
+				LibSvnClient.Rev working = LibSvnClient.Rev.Working;
+				CheckError (svn.client_merge_peg2 (path, 
+				                                   ref revision1,
+				                                   ref revision2,
+				                                   ref working,
+				                                   path,
+				                                   false, false, false, false,
+				                                   IntPtr.Zero, //default options is NULL
+				                                   ctx, localpool));
+			}
+			finally {
+				apr.pool_destroy (localpool);
+				TryEndOperation ();
+			}
+		}
 
 		public override void Ignore (FilePath[] paths)
 		{
@@ -1035,27 +1058,47 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				}
 			}
 		}
-		
-		private void Merge (string path, LibSvnClient.Rev revision1, LibSvnClient.Rev revision2)
+
+		public override void Unignore (FilePath[] paths)
 		{
 			TryStartOperation ();
 
 			IntPtr localpool = newpool (pool);
-			try {
-				path = NormalizePath (path, localpool);
-				LibSvnClient.Rev working = LibSvnClient.Rev.Working;
-				CheckError (svn.client_merge_peg2 (path, 
-				                                   ref revision1,
-				                                   ref revision2,
-				                                   ref working,
-				                                   path,
-				                                   false, false, false, false,
-				                                   IntPtr.Zero, //default options is NULL
-				                                   ctx, localpool));
-			}
-			finally {
-				apr.pool_destroy (localpool);
-				TryEndOperation ();
+			IntPtr hash_item, hash_name, hash_val;
+			int length;
+			IntPtr result;
+			IntPtr props_ptr = IntPtr.Zero;
+			StringBuilder props = new StringBuilder ();
+			string new_path;
+			LibSvnClient.svn_string_t new_props;
+			LibSvnClient.Rev rev = LibSvnClient.Rev.Working;
+			int index;
+			string props_str;
+			foreach (var path in paths) {
+				try {
+					new_path = NormalizePath (path, localpool);
+					CheckError (svn.client_propget (out result, "svn:ignore", Path.GetDirectoryName (new_path),
+					                                ref rev, false, ctx, localpool));
+					hash_item = apr.hash_first (localpool, result);
+					while (hash_item != IntPtr.Zero) {
+						apr.hash_this (hash_item, out hash_name, out length, out hash_val);
+						new_props = (LibSvnClient.svn_string_t) Marshal.PtrToStructure (hash_val, typeof (LibSvnClient.svn_string_t));
+						props.Append (Marshal.PtrToStringAnsi (new_props.data));
+						hash_item = apr.hash_next (hash_item);
+					}
+					props_str = props.ToString ();
+					index = props_str.IndexOf (Path.GetFileName (new_path) + Environment.NewLine);
+					props_str = (index < 0) ? props_str : props_str.Remove (index, Path.GetFileName(new_path).Length+1);
+
+					new_props = new LibSvnClient.svn_string_t ();
+					new_props.data = Marshal.StringToHGlobalAnsi (props_str);
+					new_props.len = props_str.Length;
+					props_ptr = apr.pcalloc (localpool, new_props);
+					CheckError (svn.client_propset ("svn:ignore", props_ptr, Path.GetDirectoryName (new_path), false, localpool));
+				} finally {
+					apr.pool_destroy (localpool);
+					TryEndOperation ();
+				}
 			}
 		}
 		
