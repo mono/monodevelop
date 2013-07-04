@@ -888,7 +888,6 @@ namespace MonoDevelop.CSharp.Completion
 			class ImportSymbolCompletionData : CompletionData
 			{
 				IType type;
-				Ambience ambience;
 				ParsedDocument unit;
 				MonoDevelop.Ide.Gui.Document doc;
 				bool useFullName;
@@ -901,8 +900,6 @@ namespace MonoDevelop.CSharp.Completion
 				{
 					this.doc = doc;
 					this.useFullName = useFullName;
-					//			this.data = doc.Editor;
-					this.ambience = AmbienceService.GetAmbience (doc.Editor.MimeType);
 					this.type = type;
 					this.unit = doc.ParsedDocument;
 				}
@@ -949,12 +946,10 @@ namespace MonoDevelop.CSharp.Completion
 						return type.GetStockIcon ();
 					}
 				}
-				string displayText = null;
+
 				public override string DisplayText {
 					get {
-						if (displayText == null)
-							displayText = ambience.GetString (type, OutputFlags.IncludeGenerics);
-						return displayText;
+						return type.Name;
 					}
 				}
 
