@@ -27,7 +27,8 @@ namespace MonoDevelop.VersionControl
 		ShowAnnotations,
 		HideAnnotations,
 		CreatePatch,
-		Ignore
+		Ignore,
+		Unignore
 	}
 	
 	class SolutionVersionControlCommandHandler: CommandHandler
@@ -218,6 +219,26 @@ namespace MonoDevelop.VersionControl
 		protected override bool RunCommand (VersionControlItemList items, bool test)
 		{
 			return IgnoreCommand.Ignore (items, test);
+		}
+
+		protected override void Update (CommandInfo info)
+		{
+			base.Update (info);
+			info.Text = GettextCatalog.GetString ("Add to ignore list");
+		}
+	}
+
+	class UnignoreCommandHandler : FileVersionControlCommandHandler
+	{
+		protected override bool RunCommand (VersionControlItemList items, bool test)
+		{
+			return UnignoreCommand.Unignore (items, test);
+		}
+
+		protected override void Update (CommandInfo info)
+		{
+			base.Update (info);
+			info.Text = GettextCatalog.GetString ("Remove from ignore list");
 		}
 	}
 

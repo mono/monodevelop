@@ -29,6 +29,7 @@ using MonoDevelop.VersionControl.Dialogs;
 using MonoDevelop.Ide;
 using System;
 using System.Linq;
+using System.Xml;
 
 namespace MonoDevelop.VersionControl
 {
@@ -36,11 +37,8 @@ namespace MonoDevelop.VersionControl
 	{
 		public static bool Ignore (VersionControlItemList items, bool test)
 		{
-			if (IgnoreInternal (items, test)) {
-				foreach (var itemPath in items.Paths)
-					VersionControlService.SetCommitComment (itemPath, string.Empty, true);
+			if (IgnoreInternal (items, test)) 
 				return true;
-			}
 			return false;
 		}
 
@@ -86,6 +84,69 @@ namespace MonoDevelop.VersionControl
 					list[0].Repository.Ignore (list.Paths);
 
 				Monitor.ReportSuccess (GettextCatalog.GetString ("Ignore operation completed."));
+				Gtk.Application.Invoke (delegate {
+					foreach (VersionControlItem item in items)
+						if (!item.IsDirectory)
+							FileService.NotifyFileChanged (item.Path);
+
+					VersionControlService.NotifyFileStatusChanged (items);
+				});
+			}
+		}
+	}
+
+	class UnignoreCommand : CommandHandler
+	{
+		public static bool Unignore (VersionControlItemList items, bool test)
+		{
+			if (UnignoreInternal (items, test))
+				return true;
+			return false;
+		}
+
+		static bool UnignoreInternal (VersionControlItemList items, bool test)
+		{
+			try {
+				// NGit doesn't return a version info for ignored files.
+				if (test)
+					return items.All (x => (x.VersionInfo.Status & (VersionStatus.ScheduledIgnore | VersionStatus.Ignored)) != VersionStatus.Unversioned);
+
+				if (MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to unignore the selected files?"),
+				                                AlertButton.No, AlertButton.Yes) != AlertButton.Yes)
+					return false;
+
+				new UnignoreWorker (items).Start();
+				return true;
+			}
+			catch (Exception ex) {
+				if (test)
+					LoggingService.LogError (ex.ToString ());
+				else
+					MessageService.ShowException (ex, GettextCatalog.GetString ("Version control command failed."));
+				return false;
+			}
+		}
+
+		private class UnignoreWorker : Task
+		{
+			VersionControlItemList items;
+
+			public UnignoreWorker (VersionControlItemList items)
+			{
+				this.items = items;
+			}
+
+			protected override string GetDescription()
+			{
+				return GettextCatalog.GetString ("Unignoring ...");
+			}
+
+			protected override void Run ()
+			{
+				foreach (VersionControlItemList list in items.SplitByRepository ())
+					list[0].Repository.Unignore (list.Paths);
+
+				Monitor.ReportSuccess (GettextCatalog.GetString ("Unignore operation completed."));
 				Gtk.Application.Invoke (delegate {
 					foreach (VersionControlItem item in items)
 						if (!item.IsDirectory)

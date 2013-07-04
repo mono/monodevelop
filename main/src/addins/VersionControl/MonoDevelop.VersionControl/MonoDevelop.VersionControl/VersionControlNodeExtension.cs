@@ -409,6 +409,19 @@ namespace MonoDevelop.VersionControl
 			TestCommand(Commands.Ignore, item);
 		}
 
+		[AllowMultiSelection]
+		[CommandHandler (Commands.Unignore)]
+		protected void OnUnignore ()
+		{
+			RunCommand(Commands.Unignore, false);
+		}
+
+		[CommandUpdateHandler (Commands.Unignore)]
+		protected void UpdateUnignore (CommandInfo item)
+		{
+			TestCommand(Commands.Unignore, item);
+		}
+
 		private void TestCommand(Commands cmd, CommandInfo item, bool projRecurse = true)
 		{
 			TestResult res = RunCommand(cmd, true, projRecurse);
@@ -481,6 +494,9 @@ namespace MonoDevelop.VersionControl
 					break;
 				case Commands.Ignore:
 					res = IgnoreCommand.Ignore (items, test);
+					break;
+				case Commands.Unignore:
+					res = UnignoreCommand.Unignore (items, test);
 					break;
 				}
 			}

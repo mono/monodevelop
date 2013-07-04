@@ -315,9 +315,12 @@ namespace MonoDevelop.VersionControl.Git
 
 				GetDirectoryVersionInfoCore (repository, rev, files.ToArray (), existingFiles, nonVersionedMissingFiles, versions);
 				
-				// Existing files for which git did not report an status are supposed to be tracked
+				// Existing files for which git did not report a status are supposed to be tracked
 				foreach (FilePath file in existingFiles.Where (f => files.Contains (f))) {
-					VersionInfo vi = new VersionInfo (file, "", false, VersionStatus.Versioned, rev, VersionStatus.Versioned, null);
+					VersionStatus status = VersionStatus.Versioned;
+					if (IgnoreCache.IndexOf (RootRepository.ToGitPath (file)) > 0)
+						status = VersionStatus.Ignored;
+					VersionInfo vi = new VersionInfo (file, "", false, status, rev, status, null);
 					versions.Add (vi);
 				}
 			}
@@ -1438,6 +1441,46 @@ namespace MonoDevelop.VersionControl.Git
 				sb.AppendLine (RootRepository.ToGitPath (path));
 
 			File.AppendAllText (RootPath + Path.DirectorySeparatorChar + ".gitignore", sb.ToString ());
+			ignoreCache = String.Concat (ignoreCache, sb.ToString ());
+		}
+
+		protected override void OnUnignore (FilePath[] paths)
+		{
+			List<string> ignored = new List<string> ();
+			string txt;
+			using (StreamReader br = new StreamReader (RootPath + Path.DirectorySeparatorChar + ".gitignore")) {
+				while ((txt = br.ReadLine ()) != null) {
+					txt = txt.Trim ();
+					if (txt.Length > 0 && !txt.StartsWith ("#"))
+						ignored.Add (txt);
+				}
+			}
+
+			StringBuilder sb = new StringBuilder ();
+			foreach (var path in ignored.Except (RootRepository.ToGitPath (paths)))
+				sb.AppendLine (path);
+
+			File.WriteAllText (RootPath + Path.DirectorySeparatorChar + ".gitignore", sb.ToString ());
+			ignoreCache = sb.ToString ();
+		}
+
+		string ignoreCache;
+		internal string IgnoreCache {
+			get {
+				if (ignoreCache != null)
+					return ignoreCache;
+				StringBuilder sb = new StringBuilder ();
+				string txt;
+				using (StreamReader br = new StreamReader (RootPath + Path.DirectorySeparatorChar + ".gitignore")) {
+					while ((txt = br.ReadLine ()) != null) {
+						txt = txt.Trim ();
+						if (txt.Length > 0 && !txt.StartsWith ("#") && !txt.Contains ('*'))
+							sb.AppendLine (RootRepository.ToGitPath (txt));
+					}
+				}
+				ignoreCache = sb.ToString ();
+				return ignoreCache;
+			}
 		}
 	}
 	

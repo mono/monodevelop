@@ -200,6 +200,9 @@
 		<Command id = "MonoDevelop.VersionControl.Commands.Ignore"
 			_label = "Add to ignore list"
 			description = "Add items to version control ignore list"/>
+		<Command id = "MonoDevelop.VersionControl.Commands.Unignore"
+			_label = "Remove from ignore list"
+			description = "Add items to version control ignore list"/>
 
 		<Command id = "MonoDevelop.VersionControl.Views.BlameCommands.CopyRevision"
 			_label = "_Copy revision"/>
@@ -234,6 +237,7 @@
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Lock"/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Unlock"/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Ignore"/>
+			<CommandItem id = "Monodevelop.VersionControl.Commands.Unignore"/>
 			<SeparatorItem/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Diff"/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Log"/>
@@ -259,6 +263,7 @@
 				<CommandItem id = "MonoDevelop.VersionControl.Commands.Remove"/>
 				<CommandItem id = "MonoDevelop.VersionControl.Commands.Revert"/>
 				<CommandItem id = "MonoDevelop.VersionControl.Commands.Ignore"/>
+				<CommandItem id = "MonoDevelop.VersionControl.Commands.Unignore"/>
 				<Condition id="ItemType" value="IFileItem">
 					<CommandItem id = "MonoDevelop.VersionControl.Commands.Lock"/>
 					<CommandItem id = "MonoDevelop.VersionControl.Commands.Unlock"/>

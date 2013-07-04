@@ -748,7 +748,14 @@ namespace MonoDevelop.VersionControl
 
 		protected abstract void OnIgnore (FilePath[] localPath);
 
-		// TODO: Unignore
+		// Unignores a file for version control operations.
+		public void Unignore (FilePath[] localPath)
+		{
+			ClearCachedVersionInfo (localPath);
+			OnUnignore (localPath);
+		}
+
+		protected abstract void OnUnignore (FilePath[] localPath);
 	}
 	
 	public class Annotation
