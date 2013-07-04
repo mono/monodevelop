@@ -1359,9 +1359,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					});
 
 					if (dotNetProject != null) {
-						Task.Factory.StartNew (delegate {
-							GetFrameworkLookup (dotNetProject);
-						});
+						StartFrameworkLookup (dotNetProject);
 					}
 
 					OnProjectContentLoaded (new ProjectContentEventArgs (project, wrapper.Content));
@@ -2152,52 +2150,76 @@ namespace MonoDevelop.Ide.TypeSystem
 			return assemblies.Values;
 		}
 
-		readonly static Dictionary<string, FrameworkLookup> frameworkLookup = new Dictionary<string, FrameworkLookup> ();
-		public static FrameworkLookup GetFrameworkLookup (DotNetProject netProject)
+		readonly static Dictionary<string, Task<FrameworkLookup>> frameworkLookup = new Dictionary<string, Task<FrameworkLookup>> ();
+
+		static void StartFrameworkLookup (DotNetProject netProject)
+		{
+			lock (frameworkLookup) {
+				Task<FrameworkLookup> result;
+				if (frameworkLookup.TryGetValue (netProject.TargetFramework.Name, out result)) 
+					return;
+				frameworkLookup[netProject.TargetFramework.Name] = Task.Factory.StartNew (delegate {
+					return GetFrameworkLookup (netProject);
+				});
+			}
+		}
+
+		public static bool TryGetFrameworkLookup (DotNetProject project, out FrameworkLookup lookup)
+		{
+			lock (frameworkLookup) {
+				Task<FrameworkLookup> result;
+				if (frameworkLookup.TryGetValue (project.TargetFramework.Name, out result)) {
+					if (!result.IsCompleted)  {
+						lookup = null;
+						return false;
+					}
+					lookup = result.Result;
+					return true;
+				}
+			}
+			lookup = null;
+			return false;
+		}
+
+		static FrameworkLookup GetFrameworkLookup (DotNetProject netProject)
 		{
 			FrameworkLookup result;
 			string fileName;
-			lock (frameworkLookup) {
-				if (frameworkLookup.TryGetValue (netProject.TargetFramework.Name, out result)) 
-					return result;
-				var cache = GetCacheDirectory (netProject.TargetFramework);
-				fileName = Path.Combine (cache, "FrameworkLookup_" + FrameworkLookup.CurrentVersion + ".dat");
-				try {
-					if (File.Exists (fileName)) {
-						result = FrameworkLookup.Load (fileName);
-						if (result != null) {
-							frameworkLookup [netProject.TargetFramework.Name] = result;
-							return result;
-						}
-					}
-				} catch (Exception e) {
-					LoggingService.LogWarning ("Can't read framework cache - recreating...", e);
-				}
-
-				try {
-					using (var creator = FrameworkLookup.Create (fileName)) {
-						foreach (var assembly in GetFrameworkAssemblies (netProject)) {
-							var ctx = LoadAssemblyContext (assembly.Location);
-							foreach (var type in ctx.Ctx.GetAllTypeDefinitions ()) {
-								if (!type.IsPublic)
-									continue;
-								creator.AddLookup (assembly.Package.Name, assembly.FullName, type);
-							}
-						}
-					}
-				} catch (Exception e){
-					LoggingService.LogError ("Error while storing framework lookup", e);
-					return FrameworkLookup.Empty;
-				}
-
-				try {
+			var cache = GetCacheDirectory (netProject.TargetFramework);
+			fileName = Path.Combine (cache, "FrameworkLookup_" + FrameworkLookup.CurrentVersion + ".dat");
+			try {
+				if (File.Exists (fileName)) {
 					result = FrameworkLookup.Load (fileName);
-					frameworkLookup [netProject.TargetFramework.Name] = result;
-					return result;
-				} catch (Exception e) {
-					LoggingService.LogError ("Error loading framework lookup", e);
-					return FrameworkLookup.Empty;
+					if (result != null) {
+						return result;
+					}
 				}
+			} catch (Exception e) {
+				LoggingService.LogWarning ("Can't read framework cache - recreating...", e);
+			}
+
+			try {
+				using (var creator = FrameworkLookup.Create (fileName)) {
+					foreach (var assembly in GetFrameworkAssemblies (netProject)) {
+						var ctx = LoadAssemblyContext (assembly.Location);
+						foreach (var type in ctx.Ctx.GetAllTypeDefinitions ()) {
+							if (!type.IsPublic)
+								continue;
+							creator.AddLookup (assembly.Package.Name, assembly.FullName, type);
+						}
+					}
+				}
+			} catch (Exception e){
+				LoggingService.LogError ("Error while storing framework lookup", e);
+				return FrameworkLookup.Empty;
+			}
+
+			try {
+				result = FrameworkLookup.Load (fileName);
+				return result;
+			} catch (Exception e) {
+				LoggingService.LogError ("Error loading framework lookup", e);
+				return FrameworkLookup.Empty;
 			}
 		}
 

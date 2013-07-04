@@ -311,8 +311,8 @@ namespace MonoDevelop.Refactoring
 			var netProject = project as DotNetProject;
 			if (netProject == null) 
 				yield break;
-			var frameworkLookup = TypeSystemService.GetFrameworkLookup (netProject);
-			if (frameworkLookup == null)
+			FrameworkLookup frameworkLookup;
+			if (!TypeSystemService.TryGetFrameworkLookup (netProject, out frameworkLookup))
 				yield break;
 			if (resolveResult is UnknownMemberResolveResult) {
 				var umResult = (UnknownMemberResolveResult)resolveResult;
