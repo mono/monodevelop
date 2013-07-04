@@ -634,7 +634,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			filteredItems.Sort (delegate (int left, int right) {
 				var lt = win.DataProvider.GetText (left);
 				var rt = win.DataProvider.GetText (right);
-				var result = lt.CompareTo (rt);
+				var result = string.Compare (lt, rt, StringComparison.Ordinal);
 				if (result == 0)
 					return right.CompareTo (left);
 				return result;
