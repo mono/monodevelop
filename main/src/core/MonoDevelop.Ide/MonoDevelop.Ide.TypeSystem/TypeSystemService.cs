@@ -625,7 +625,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 				}
 			} catch (Exception e) {
-				LoggingService.LogError ("Error while reading type system cache.", e);
+				LoggingService.LogError ("Error while trying to deserialize " + typeof (T).FullName + ".", e);
 				return default(T);
 			} finally {
 				t.Dispose ();
