@@ -143,7 +143,7 @@ namespace MonoDevelop.SourceEditor
 
 				DestroyPopoverWindow ();
 
-				if (marker.Layouts.Count < 2 && !isReduced)
+				if (marker.Layouts == null || marker.Layouts.Count < 2 && !isReduced)
 					return false;
 				popoverWindow = new MessageBubblePopoverWindow (this, marker);
 				popoverWindow.ShowPopup (editor, new Gdk.Rectangle ((int)(bubbleX + editor.TextViewMargin.XOffset), (int)bubbleY, (int)bubbleWidth, (int)editor.LineHeight) ,PopupPosition.Top);
