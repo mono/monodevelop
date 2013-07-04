@@ -470,7 +470,7 @@ namespace SubversionAddinWindows
 				foreach (var path in paths) {
 					if (client.GetProperty (new SvnPathTarget (path.ParentDirectory), SvnPropertyNames.SvnIgnore, out result)) {
 						int index = result.IndexOf (path.FileName + Environment.NewLine);
-						result = (index < 0) ? result : result.Remove (index, path.FileName.Length);
+						result = (index < 0) ? result : result.Remove (index, path.FileName.Length+1);
 						client.SetProperty (path.ParentDirectory, SvnPropertyNames.SvnIgnore, result);
 					}
 				}
