@@ -48,7 +48,7 @@ namespace MonoDevelop.Components.Docking
 		int defaultWidth = -1;
 		int defaultHeight = -1;
 		string label;
-		Gdk.Pixbuf icon;
+		Xwt.Drawing.Image icon;
 		bool expand;
 		DockItemBehavior behavior;
 		Gtk.Window floatingWindow;
@@ -282,7 +282,7 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 
-		public Gdk.Pixbuf Icon {
+		public Xwt.Drawing.Image Icon {
 			get {
 				return icon;
 			}

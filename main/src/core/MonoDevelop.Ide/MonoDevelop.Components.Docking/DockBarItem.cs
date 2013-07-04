@@ -43,46 +43,19 @@ namespace MonoDevelop.Components.Docking
 	{
 		// This class should be subclassed from Gtk.Misc, but there is no reasonable way to do that due to there being no bindings to gtk_widget_set_has_window
 
-		SurfaceWrapper primarySurface;
-		SurfaceWrapper secondarySurface;
-		Gdk.Pixbuf primary, secondary;
+		Xwt.Drawing.Image primary, secondary;
 
 		float secondaryOpacity;
 
-		public CrossfadeIcon (Gdk.Pixbuf primary, Gdk.Pixbuf secondary)
+		public CrossfadeIcon (Xwt.Drawing.Image primary, Xwt.Drawing.Image secondary)
 		{
 			if (primary == null)
 				throw new ArgumentNullException ("primary");
 			if (secondary == null)
 				throw new ArgumentNullException ("secondary");
 
-			this.primary = primary.Copy ();
-			this.secondary = secondary.Copy ();
-		}
-
-		protected override void OnUnrealized ()
-		{
-			if (primarySurface != null)
-				primarySurface.Dispose ();
-			if (secondarySurface != null)
-				secondarySurface.Dispose ();
-			base.OnUnrealized ();
-		}
-
-		protected override void OnRealized ()
-		{
-			base.OnRealized ();
-
-			using (Cairo.Context context = Gdk.CairoHelper.Create (GdkWindow)) {
-				primarySurface = new SurfaceWrapper (context, primary);
-				secondarySurface = new SurfaceWrapper (context, secondary);
-			}
-
-			primary.Dispose ();
-			primary = null;
-
-			secondary.Dispose ();
-			secondary = null;
+			this.primary = primary;
+			this.secondary = secondary;
 		}
 
 		public void ShowPrimary ()
@@ -107,30 +80,28 @@ namespace MonoDevelop.Components.Docking
 		{
 			base.OnSizeRequested (ref requisition);
 
-			requisition.Width += primarySurface.Width;
-			requisition.Height += primarySurface.Height;
+			requisition.Width += (int) primary.Width;
+			requisition.Height += (int) primary.Height;
 		}
 
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
 			using (Cairo.Context context = Gdk.CairoHelper.Create (evnt.Window)) {
 				if (secondaryOpacity < 1.0f)
-					RenderIcon (context, primarySurface, 1.0f - (float)Math.Pow (secondaryOpacity, 3.0f));
+					RenderIcon (context, primary, 1.0f - (float)Math.Pow (secondaryOpacity, 3.0f));
 
 				if (secondaryOpacity > 0.0f)
-					RenderIcon (context, secondarySurface, secondaryOpacity);
+					RenderIcon (context, secondary, secondaryOpacity);
 			}
 
 			return false;
 		}
 
-		void RenderIcon (Cairo.Context context, SurfaceWrapper surface, float opacity)
+		void RenderIcon (Cairo.Context context, Xwt.Drawing.Image surface, float opacity)
 		{
-			context.SetSourceSurface (surface.Surface, 
+			context.DrawImage (this, surface.WithAlpha (opacity),
 			                          Allocation.X + (Allocation.Width - surface.Width) / 2,
 			                          Allocation.Y + (Allocation.Height - surface.Height) / 2);
-
-			context.PaintWithAlpha (opacity);
 		}
 	}
 
@@ -250,8 +221,7 @@ namespace MonoDevelop.Components.Docking
 			}
 			else {
 				if (it.Icon != null) {
-					Gdk.Pixbuf desat = it.Icon.Copy ();
-					desat.SaturateAndPixelate (desat, 0.5f, false);
+					var desat = it.Icon.WithAlpha (0.5);
 					crossfade = new CrossfadeIcon (desat, it.Icon);
 					box.PackStart (crossfade, false, false, 0);
 					desat.Dispose ();

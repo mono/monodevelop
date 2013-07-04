@@ -101,7 +101,7 @@ namespace MonoDevelop.Components.Docking
 				currentTab = box.Children.Length - 1;
 		}
 
-		public void SetTabLabel (Gtk.Widget page, Gdk.Pixbuf icon, string label)
+		public void SetTabLabel (Gtk.Widget page, Xwt.Drawing.Image icon, string label)
 		{
 			foreach (DockItemTitleTab tab in box.Children) {
 				if (tab.Page == page) {

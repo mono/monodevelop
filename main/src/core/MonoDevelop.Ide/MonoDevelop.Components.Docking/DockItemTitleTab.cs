@@ -45,7 +45,7 @@ namespace MonoDevelop.Components.Docking
 		ExtendedLabel labelWidget;
 		int labelWidth;
 		DockVisualStyle visualStyle;
-		Image tabIcon;
+		Gtk.Widget tabIcon;
 		DockFrame frame;
 		string label;
 		ImageButton btnDock;
@@ -129,7 +129,7 @@ namespace MonoDevelop.Components.Docking
 				HeightRequest = visualStyle.PadTitleHeight != null ? visualStyle.PadTitleHeight.Value : -1;
 		}
 
-		public void SetLabel (Gtk.Widget page, Gdk.Pixbuf icon, string label)
+		public void SetLabel (Gtk.Widget page, Xwt.Drawing.Image icon, string label)
 		{
 			this.label = label;
 			this.page = page;
@@ -143,7 +143,7 @@ namespace MonoDevelop.Components.Docking
 			box.Spacing = 2;
 			
 			if (icon != null) {
-				tabIcon = new Gtk.Image (icon);
+				tabIcon = new Xwt.ImageView (icon).ToGtkWidget ();
 				tabIcon.Show ();
 				box.PackStart (tabIcon, false, false, 0);
 			} else
