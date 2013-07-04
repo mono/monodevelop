@@ -36,7 +36,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		public static bool IsVisible {
 			get {
-				return wnd != null /*&& wnd.Visible*/;
+				return wnd != null && wnd.Visible;
 			}
 		}
 		
@@ -183,9 +183,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			ParameterInformationWindowManager.UpdateWindow (wnd.Extension, wnd.CompletionWidget);
 			if (wnd.Extension != null)
 				wnd.Extension.document.Editor.FixVirtualIndentation ();
-//			wnd.HideWindow ();
-//			OnWindowClosed (EventArgs.Empty);
-			DestroyWindow ();
+			wnd.HideWindow ();
+			OnWindowClosed (EventArgs.Empty);
+			//DestroyWindow ();
 		}
 		
 		
