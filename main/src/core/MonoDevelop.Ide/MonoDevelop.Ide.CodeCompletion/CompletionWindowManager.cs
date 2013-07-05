@@ -151,7 +151,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			var caretOffset = wnd.CompletionWidget.CaretOffset;
 			if (caretOffset < wnd.StartOffset || caretOffset > wnd.EndOffset)
-				DestroyWindow ();
+				HideWindow ();
 		}
 
 		public static void UpdateWordSelection (string text)
