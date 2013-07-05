@@ -931,7 +931,11 @@ namespace Mono.TextEditor
 			uint preeditLength = 0;
 			
 			if (containsPreedit) {
-				lineText = lineText.Insert (textEditor.preeditOffset - offset, textEditor.preeditString);
+				if (textEditor.GetTextEditorData ().IsCaretInVirtualLocation) {
+					lineText = textEditor.GetTextEditorData ().GetIndentationString (textEditor.Caret.Location) + textEditor.preeditString;
+				} else {
+					lineText = lineText.Insert (textEditor.preeditOffset - offset, textEditor.preeditString);
+				}
 				preeditLength = (uint)textEditor.preeditString.Length;
 			}
 			char[] lineChars = lineText.ToCharArray ();
@@ -1022,6 +1026,13 @@ namespace Mono.TextEditor
 			if (containsPreedit) {
 				var si = TranslateToUTF8Index (lineChars, (uint)(textEditor.preeditOffset - offset), ref curIndex, ref byteIndex);
 				var ei = TranslateToUTF8Index (lineChars, (uint)(textEditor.preeditOffset - offset + preeditLength), ref curIndex, ref byteIndex);
+
+				if (textEditor.GetTextEditorData ().IsCaretInVirtualLocation) {
+					uint len = (uint)textEditor.GetTextEditorData ().GetIndentationString (textEditor.Caret.Location).Length;
+					si += len;
+					ei += len;
+				}
+
 				atts.AddForegroundAttribute ((HslColor)ColorStyle.PlainText.Foreground, si, ei);
 				var hasBackground = wrapper.BackgroundColors.Any (bg => bg.FromIdx <= si && bg.ToIdx >= ei);
 				if (hasBackground)
@@ -1626,6 +1637,10 @@ namespace Mono.TextEditor
 						}
 						if (Caret.Column > line.Length + 1 + virtualSpace.Length) 
 							virtualSpace += new string (' ', Caret.Column - line.Length - 1 - virtualSpace.Length);
+
+						// predit layout already contains virtual space.
+						if (!string.IsNullOrEmpty (textEditor.preeditString))
+							virtualSpace = ""; 
 						LayoutWrapper wrapper = new LayoutWrapper (PangoUtil.CreateLayout (textEditor));
 						wrapper.LineChars = virtualSpace.ToCharArray ();
 						wrapper.Layout.SetText (virtualSpace);
