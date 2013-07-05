@@ -107,7 +107,7 @@ You can start Xamarin Studio or MonoDevelop under the debugger using the normal 
 
 ## Notes for People Preparing Releases
 
-The addin gets released to http://addins.monodevelop.com under project 'FSharp' (project index 48). Contact @7sharp9, @sega, @tpetricek or @funnelweb to make an update.
+The addin gets released to http://addins.monodevelop.com under project 'FSharp' (project index 48). Contact @7sharp9, @tpetricek or @funnelweb to make an update.
 
 To build the .mpack files to upload to this site, use:
 
