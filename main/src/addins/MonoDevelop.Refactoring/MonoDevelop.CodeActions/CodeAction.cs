@@ -26,6 +26,7 @@
 using ICSharpCode.NRefactory;
 using System;
 using Mono.TextEditor;
+using System.Collections.Generic;
 
 namespace MonoDevelop.CodeActions
 {
@@ -64,6 +65,23 @@ namespace MonoDevelop.CodeActions
 		/// Performs the specified code action in document at loc.
 		/// </summary>
 		public abstract void Run (MonoDevelop.Ide.Gui.Document document, TextLocation loc);
+
+		/// <summary>
+		/// True if <see cref="BatchRun"/> can be used on the current instance.
+		/// </summary>
+		/// <value><c>true</c> if supports batch running; otherwise, <c>false</c>.</value>
+		public virtual bool SupportsBatchRunning {
+			get{
+				return false;
+			}
+		}
+		
+		public virtual void BatchRun (MonoDevelop.Ide.Gui.Document document, TextLocation loc)
+		{
+			if (!SupportsBatchRunning) {
+				throw new InvalidOperationException ("Batch running is not supported.");
+			}
+		}
 	}
 
 	public class DefaultCodeAction : CodeAction

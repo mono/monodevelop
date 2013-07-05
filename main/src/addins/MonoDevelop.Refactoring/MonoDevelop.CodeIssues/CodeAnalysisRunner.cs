@@ -58,6 +58,7 @@ namespace MonoDevelop.CodeIssues
 				return Enumerable.Empty<Result> ();
 			var loc = editor.Caret.Location;
 			var result = new BlockingCollection<Result> ();
+			//var siblingGroups = new ConcurrentDictionary<object, >
 		
 			var codeIssueProvider = RefactoringService.GetInspectors (editor.Document.MimeType).ToArray ();
 			var context = input.ParsedDocument.CreateRefactoringContext != null ?
@@ -70,11 +71,16 @@ namespace MonoDevelop.CodeIssues
 						return;
 //					var now2 = DateTime.Now;
 					foreach (var r in provider.GetIssues (context, cancellationToken)) {
-						var fixes = new List<GenericFix> (r.Actions.Where (a => a != null).Select (a => 
-							new GenericFix (
+						var fixes = new List<GenericFix> (r.Actions.Where (a => a != null).Select (a => {
+							Action batchAction = null;
+							if (provider.SupportsBatchFixing)
+								batchAction = () => a.BatchRun (input, loc);
+							return new GenericFix (
 								a.Title,
-								new System.Action (() => a.Run (input, loc))) {
+								() => a.Run (input, loc),
+								batchAction) {
 								DocumentRegion = new DocumentRegion (r.Region.Begin, r.Region.End)
+							};
 						}));
 						result.Add (new InspectorResults (
 							provider, 

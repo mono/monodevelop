@@ -131,6 +131,17 @@ namespace MonoDevelop.AnalysisCore.Fixes
 					RefactoringService.AcceptChanges (monitor, changes);
 				}
 			}
+			
+			public bool SupportsBatchFix {
+				get {
+					return false;
+				}
+			}
+			
+			public void BatchFix ()
+			{
+				throw new InvalidOperationException ("Batch fixing is not supported");
+			}
 		}
 	}
 }

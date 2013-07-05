@@ -146,11 +146,18 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			return TextEditor.GetLineByOffset (offset);
 		}
 
-		readonly TextLocation location;
+		readonly Document document;
+
+		TextLocation location;
 		public override TextLocation Location {
 			get {
 				return location;
 			}
+		}
+		
+		internal void SetLocation (TextLocation loc)
+		{
+			location = RefactoringService.GetCorrectResolveLocation (document, loc);
 		}
 
 		CSharpFormattingOptions formattingOptions;
@@ -164,6 +171,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 		{
 			if (document == null)
 				throw new ArgumentNullException ("document");
+			this.document = document;
 			this.TextEditor = document.Editor;
 			this.ParsedDocument = document.ParsedDocument;
 			this.Project = document.Project as DotNetProject;
