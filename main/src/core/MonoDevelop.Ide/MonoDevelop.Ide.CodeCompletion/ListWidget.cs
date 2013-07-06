@@ -636,8 +636,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 				var lt = win.DataProvider.GetText (left);
 				var rt = win.DataProvider.GetText (right);
 				var result = string.Compare (lt, rt, StringComparison.Ordinal);
-				if (result == 0)
+				if (result == 0) {
+					lt = win.DataProvider.GetDescription (left);
+					rt = win.DataProvider.GetDescription (right);
+					result = string.Compare (lt, rt, StringComparison.Ordinal);
+					if (result != 0)
+						return result;
 					return right.CompareTo (left);
+				}
 				return result;
 			});
 			categories.Sort (delegate (Category left, Category right) {
