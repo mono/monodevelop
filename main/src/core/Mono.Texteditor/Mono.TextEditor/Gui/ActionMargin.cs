@@ -35,13 +35,8 @@ namespace Mono.TextEditor
 		double marginWidth;
 		public override double Width {
 			get {
-				return IsActive ? marginWidth : 0;
+				return marginWidth;
 			}
-		}
-
-		public bool IsActive {
-			get;
-			set;
 		}
 
 		public ActionMargin (TextEditor editor)
@@ -50,7 +45,7 @@ namespace Mono.TextEditor
 				throw new ArgumentNullException ("editor");
 			this.editor = editor;
 			marginWidth = 20;
-			IsActive = false;
+			IsVisible = false;
 			this.editor.Caret.PositionChanged += HandlePositionChanged;;
 		}
 

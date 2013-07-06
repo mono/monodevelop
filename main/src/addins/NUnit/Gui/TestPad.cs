@@ -481,7 +481,7 @@ namespace MonoDevelop.NUnit
 			UnitTest test = nav.DataItem as UnitTest;
 			if (test == null)
 				return;
-			TestSession.ResetResult (test.RootTest);
+			NUnitService.ResetResult (test.RootTest);
 			
 			this.buttonRun.Sensitive = false;
 			this.buttonRunAll.Sensitive = false;
