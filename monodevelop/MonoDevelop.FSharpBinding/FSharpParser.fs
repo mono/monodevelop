@@ -12,14 +12,9 @@ open ICSharpCode.NRefactory.TypeSystem
 type FSharpParsedDocument(fileName) = 
      inherit DefaultParsedDocument(fileName)
   
-
 // An instance of this type is created by MonoDevelop (as defined in the .xml for the AddIn) 
 type FSharpParser() =
-#if MONODEVELOP_AT_MOST_3_1_1
-  inherit AbstractTypeSystemParser()
-#else
   inherit TypeSystemParser()
-#endif
   do Debug.WriteLine("Parsing: Creating FSharpParser")
         
   /// Holds the previous errors reported by a file. 
@@ -29,19 +24,15 @@ type FSharpParser() =
   /// scheduled a new ReparseDocument() to update the errors.
   let prevContent = System.Collections.Generic.Dictionary<string,string>()
 
-#if MONODEVELOP_AT_MOST_3_1_1
-  interface ITypeSystemParser with
-   override x.Parse(storeAst:bool, fileName:string, content:System.IO.TextReader, proj:MonoDevelop.Projects.Project) =
-#else
   override x.Parse(storeAst:bool, fileName:string, content:System.IO.TextReader, proj:MonoDevelop.Projects.Project) =
-#endif
     let fileContent = content.ReadToEnd()
     Debug.WriteLine("Parsing: Update in FSharpParser.Parse")
   
     // Trigger a parse/typecheck in the background. After the parse/typecheck is completed, request another parse to report the errors.
     //
-    // Skip this is this call is a result of updating errors and the content still matches.
-    if fileName <> null && not (prevContent.ContainsKey(fileName) && prevContent.[fileName] = fileContent ) && CompilerArguments.supportedExtension(IO.Path.GetExtension(fileName)) then 
+    // Skip this if this call is a result of updating errors and the content still matches.
+    if fileName <> null && not (prevContent.ContainsKey(fileName) && prevContent.[fileName] = fileContent ) 
+                        && CompilerArguments.supportedExtension(IO.Path.GetExtension(fileName)) then 
       // Trigger parsing in the language service 
       let filePathOpt = 
           // TriggerParse will work only for full paths
