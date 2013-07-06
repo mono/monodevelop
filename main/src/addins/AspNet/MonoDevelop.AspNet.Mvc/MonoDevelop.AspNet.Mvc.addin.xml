@@ -36,6 +36,8 @@
 		<Import file = "CodeTemplates/CSharp/AddView/Razor/Empty.tt" />
 		<Import file = "CodeTemplates/CSharp/AddController/Empty.tt" />
 		<Import file = "CodeTemplates/CSharp/AddController/ControllerWithEmptyReadAndWriteActions.tt" />
+		
+		<Import file = "Templates/EmptyCSSFile2.xft.xml"/>
 	</Runtime>
 
 	<Dependencies>
@@ -101,6 +103,9 @@
 		              file     = "Templates/PartialViewPageRazor.xft.xml" />
 		<FileTemplate id       = "PreprocessedRazorTemplate"
 		              file     = "Templates/PreprocessedRazorTemplate.xft.xml" />
+		              
+		<FileTemplate id       = "EmptyCSSFile2"
+		              file     = "Templates/EmptyCSSFile2.xft.xml" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">

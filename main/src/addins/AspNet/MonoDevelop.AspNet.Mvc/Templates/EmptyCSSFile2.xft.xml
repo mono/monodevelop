@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<Template Originator="Diyoda" Language="CSS" Created="3/09/2001" LastModified="3/09/2001">
+	
+	<TemplateConfiguration>
+		<_Name>Spreadsheet2</_Name>
+		<Icon>md-html-file-icon</Icon>
+		<!--<_Category>Web</_Category>-->
+		<_Category>ASP.NET MVC</_Category>
+		<ProjectType>AspNetMvc</ProjectType>
+		<_Description>Creates an empty CSS file.</_Description>
+		<DefaultFilename>EmptyCSSFile2</DefaultFilename>
+	</TemplateConfiguration>
+	
+	<TemplateFiles>
+		<File DefaultExtension=".css" DefaultName="EmptyCSSFile2" AddStandardHeader="True">
+		</File>
+	</TemplateFiles>
+	
+	<FileOptions/>
+	
+</Template>

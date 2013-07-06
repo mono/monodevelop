@@ -5,13 +5,13 @@
 		<_Name>Spreadsheet1</_Name>
 		<Icon>md-text-file-icon</Icon>
 		<_Category>Web</_Category>
-		<LanguageName>CSS</LanguageName>
+		<LanguageName>*</LanguageName>
 		<_Description>Creates an empty CSS file.</_Description>
 		<DefaultFilename>EmptyCSSFile1</DefaultFilename>
 	</TemplateConfiguration>
 	
 	<TemplateFiles>
-		<File DefaultExtension=".css" DefaultName="EmptyCSSFile1" AddStandardHeader="True">
+		<File DefaultExtension=".css" DefaultName="EmptyCSSfile1" AddStandardHeader="True">
 		</File>
 	</TemplateFiles>
 	

@@ -5,7 +5,7 @@
 		<_Name>Spreadsheet</_Name>
 		<Icon>md-text-file-icon</Icon>
 		<_Category>Web</_Category>
-		<LanguageName>CSS</LanguageName>
+		<LanguageName>*</LanguageName>
 		<_Description>Creates an empty CSS file.</_Description>
 		<DefaultFilename>EmptyCSSFile</DefaultFilename>
 	</TemplateConfiguration>

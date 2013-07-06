@@ -44,4 +44,10 @@
       <LogicalName>CSSBinding.addin.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\ExCSS\ExCSS\ExCSS\ExCSS.net40.csproj">
+      <Project>{26881075-3F64-4825-A6B5-EAA0D5419D20}</Project>
+      <Name>ExCSS.net40</Name>
+    </ProjectReference>
+  </ItemGroup>
 </Project>
