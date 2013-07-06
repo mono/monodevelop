@@ -426,7 +426,7 @@ namespace MonoDevelop.SourceEditor
 
 		public override bool CanDrawBackground (Margin margin)
 		{
-			return margin is FoldMarkerMargin || margin is GutterMargin || margin is IconMargin;
+			return margin is FoldMarkerMargin || margin is GutterMargin || margin is IconMargin || margin is ActionMargin;
 		}
 
 		public override bool CanDrawForeground (Margin margin)
@@ -467,7 +467,7 @@ namespace MonoDevelop.SourceEditor
 
 		public override bool DrawBackground (TextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
 		{
-			if (metrics.Margin is FoldMarkerMargin || metrics.Margin is GutterMargin)
+			if (metrics.Margin is FoldMarkerMargin || metrics.Margin is GutterMargin || metrics.Margin is ActionMargin)
 				return DrawMarginBackground (editor, metrics.Margin, cr, metrics.Area, lineSegment, metrics.LineNumber, metrics.X, metrics.Y, metrics.Height);
 			if (metrics.Margin is IconMargin) {
 				DrawIconMarginBackground (editor, cr, metrics);

@@ -441,6 +441,12 @@ namespace Mono.TextEditor
 			}
 		}
 
+		public ActionMargin ActionMargin {
+			get {
+				return textArea.ActionMargin;
+			}
+		}
+
 		public Margin IconMargin {
 			get { return textArea.IconMargin; }
 		}
