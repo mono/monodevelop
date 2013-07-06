@@ -236,10 +236,8 @@ module FSharpEnvironment =
          let exists f = safeExists(file f)
          match (if exists "fsc" && exists "fsi" then tryFsharpiScript (file "fsi") else None) with
          | Some res -> Some res
-         | None ->
-           match (if exists "fsharpc" && exists "fsharpi" then tryFsharpiScript (file "fsharpi") else None) with
-           | Some res -> Some res
-           | None -> None)
+         | None -> if exists "fsharpc" && exists "fsharpi" then tryFsharpiScript (file "fsharpi") 
+                   else None)
                
         
   // The default location of FSharp.Core.dll and fsc.exe based on the version of fsc.exe that is running
