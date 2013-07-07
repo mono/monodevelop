@@ -328,8 +328,8 @@ namespace Mono.TextEditor
 			textViewMargin = new TextViewMargin (editor);
 
 			margins.Add (iconMargin);
-			margins.Add (actionMargin);
 			margins.Add (gutterMargin);
+			margins.Add (actionMargin);
 			margins.Add (foldMarkerMargin);
 
 			margins.Add (textViewMargin);
