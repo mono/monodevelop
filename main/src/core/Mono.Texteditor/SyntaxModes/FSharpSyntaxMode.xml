@@ -83,7 +83,7 @@
 	-->
 
 	<!-- ' is also used for type parameters therefore we need a regex match to find out if something is a string -->
-	<Match expression="(&apos;(.|(\\.+))&apos;)">
+	<Match expression="(&apos;(.|(\\.))&apos;)">
 			<Group color = "String"/>
 			<Group color = "String"/>
 			<Group color = "String"/>
