@@ -81,8 +81,6 @@ module FSharpEnvironment =
       if String.IsNullOrEmpty(s) then None
       else Some(s)
 
-      
-    
 
   // MaxPath accounts for the null-terminating character, for example, the maximum path on the D drive is "D:\<256 chars>\0". 
   // See: ndp\clr\src\BCL\System\IO\Path.cs
@@ -185,7 +183,6 @@ module FSharpEnvironment =
     with e -> 
       None
 
-
   let BackupInstallationProbePoints = 
       [ // prefer the latest installation of Mono on Mac
         "/Library/Frameworks/Mono.framework/Versions/Current"
@@ -194,7 +191,56 @@ module FSharpEnvironment =
         // otherwise look in the standard place
         "/usr" ]
 
-    // The default location of FSharp.Core.dll and fsc.exe based on the version of fsc.exe that is running
+  let tryWindowsConfig (reqLangVersion: FSharpCompilerVersion) =
+    //early termination on Mono, continuing here results in failed pinvokes and reg key failures ~18-35ms
+    if Environment.runningOnMono then None else
+    // On windows the location of the compiler is via a registry key
+    let key20 = @"Software\Microsoft\.NETFramework\AssemblyFolders\Microsoft.FSharp-" + FSharpTeamVersionNumber 
+    let key40 = match reqLangVersion with 
+                | FSharp_2_0 ->  @"Software\Microsoft\FSharp\2.0\Runtime\v4.0"
+                | FSharp_3_0 ->  @"Software\Microsoft\FSharp\3.0\Runtime\v4.0"
+                
+    let key1,key2 = match FSharpCoreLibRunningVersion with 
+                    | None -> key20,key40 
+                    | Some v -> if v.Length > 1 && v.[0] <= '3' then key20,key40 
+                                else key40,key20
+    
+    Debug.WriteLine(sprintf "BinFolderOfDefaultFSharpCore: Probing registry key %s" key1)
+    let result = tryRegKey key1
+    match result with 
+    | Some _ ->  result 
+    | None -> Debug.WriteLine(sprintf "Resolution: BinFolderOfDefaultFSharpCore: Probing registry key %s" key2)
+              tryRegKey key2
+              
+  let tryUnixConfig() = 
+      // On Unix we let you set FSHARP_COMILER_BIN. I've rarely seen this used and its not documented in the install isntructions.
+      Debug.WriteLine(sprintf "Resolution: BinFolderOfDefaultFSharpCore: Probing environment variable FSHARP_COMPILER_BIN")
+      let result = 
+          let var = System.Environment.GetEnvironmentVariable("FSHARP_COMPILER_BIN")
+          if String.IsNullOrEmpty(var) then None
+          else Some(var)
+          
+      match result with 
+      | Some _ -> result
+      | None -> 
+
+      // On Unix we probe 'bin' under various hardwired paths for the scripts 'fsharpc' and 'fsharpi'. 
+      // We then loko in the script to see the Mono location it is pointing to. 
+      // This is pretty fragile, e.g. the script lookup is done via a regular expression.
+      // Really we should just search the path or otherwise resolve the 'mono' command?
+      BackupInstallationProbePoints 
+      |> List.tryPick (fun x -> 
+         Debug.WriteLine(sprintf "Resolution: BinFolderOfDefaultFSharpCore: Probing    %s" x)
+         let safeExists f = (try File.Exists(f) with _ -> false)
+         let file f = Path.Combine(Path.Combine(x,"bin"),f)
+         let exists f = safeExists(file f)
+         match (if exists "fsc" && exists "fsi" then tryFsharpiScript (file "fsi") else None) with
+         | Some res -> Some res
+         | None -> if exists "fsharpc" && exists "fsharpi" then tryFsharpiScript (file "fsharpi") 
+                   else None)
+               
+        
+  // The default location of FSharp.Core.dll and fsc.exe based on the version of fsc.exe that is running
   // Used for
   //   - location of design-time copies of FSharp.Core.dll and FSharp.Compiler.Interactive.Settings.dll for the default assumed environment for scripts
   //   - default ToolPath in tasks in FSharp.Build.dll (for Fsc tasks)
@@ -204,66 +250,19 @@ module FSharpEnvironment =
   let BinFolderOfDefaultFSharpCompiler(reqLangVersion: FSharpCompilerVersion) = 
     // Check for an app.config setting to redirect the default compiler location
     // Like fsharp-compiler-location
-    try 
+    try
       // FSharp.Compiler support setting an appkey for compiler location. I've never seen this used.
       Debug.WriteLine("Resolution:BinFolderOfDefaultFSharpCore: Probing app.config")
       let result = tryAppConfig "fsharp-compiler-location"
       match result with 
-      | Some _ ->  result 
-      | None -> 
-
-        // On windows the location of the compiler is via a registry key
-        let key20 = @"Software\Microsoft\.NETFramework\AssemblyFolders\Microsoft.FSharp-" + FSharpTeamVersionNumber 
-        let key40 = 
-            match reqLangVersion with 
-            | FSharp_2_0 ->  @"Software\Microsoft\FSharp\2.0\Runtime\v4.0"
-            | FSharp_3_0 ->  @"Software\Microsoft\FSharp\3.0\Runtime\v4.0"
-        let key1,key2 = 
-          match FSharpCoreLibRunningVersion with 
-          | None -> key20,key40 
-          | Some v -> if v.Length > 1 && v.[0] <= '3' then key20,key40 else key40,key20
-        
-        Debug.WriteLine(sprintf "BinFolderOfDefaultFSharpCore: Probing registry key %s" key1)
-        let result = tryRegKey key1
-        match result with 
-        | Some _ ->  result 
-        | None -> 
-        Debug.WriteLine(sprintf "Resolution: BinFolderOfDefaultFSharpCore: Probing registry key %s" key2)
-        let result =  tryRegKey key2
-        match result with 
-        | Some _ ->  result 
-        | None ->
-
-        // On Unix we let you set FSHARP_COMILER_BIN. I've rarely seen this used and its not documented in the install isntructions.
-        Debug.WriteLine(sprintf "Resolution: BinFolderOfDefaultFSharpCore: Probing environment variable FSHARP_COMPILER_BIN")
-        let result = 
-            let var = System.Environment.GetEnvironmentVariable("FSHARP_COMPILER_BIN")
-            if String.IsNullOrEmpty(var) then None
-            else Some(var)
-        match result with 
-        | Some _ -> result
-        | None -> 
-
-        // On Unix we probe 'bin' under various hardwired paths for the scripts 'fsharpc' and 'fsharpi'. 
-        // We then loko in the script to see the Mono location it is pointing to. 
-        // This is pretty fragile, e.g. the script lookup is done via a regular expression.
-        // Really we should just search the path or otherwise resolve the 'mono' command?
-        let result = 
-            BackupInstallationProbePoints |> List.tryPick (fun x -> 
-               Debug.WriteLine(sprintf "Resolution: BinFolderOfDefaultFSharpCore: Probing	 %s" x)
-               let safeExists f = (try File.Exists(f) with _ -> false)
-               let file f = Path.Combine(Path.Combine(x,"bin"),f)
-               let exists f = safeExists(file f)
-               match (if exists "fsc" && exists "fsi" then tryFsharpiScript (file "fsi") else None) with
-               | Some res -> Some res
-               | None ->
-               match (if exists "fsharpc" && exists "fsharpi" then tryFsharpiScript (file "fsharpi") else None) with
-               | Some res -> Some res
-               | None -> None)
-                
-        match result with 
-        | Some _ -> result
-        | None -> None
+      | Some _ -> result 
+      | None -> let result = tryWindowsConfig reqLangVersion
+                match result with
+                | Some _ -> result
+                | None -> let result = tryUnixConfig() 
+                          match result with 
+                          | Some _ -> result
+                          | None -> None
     with e -> 
       System.Diagnostics.Debug.Assert(false, "Error while determining default location of F# compiler")
       Debug.WriteLine(sprintf "Resolution: BinFolderOfDefaultFSharpCore: error %s" (e.ToString()))
@@ -282,6 +281,8 @@ module FSharpEnvironment =
         // This only works for .NET 2.0 - 4.0. To target Silverlight or Portable you'll need to use a direct reference to
         // the right FSharp.Core.dll.
         let result =
+            //early termination on Mono, continuing here results in failed pinvokes and reg key failures ~18-35ms
+            if Environment.runningOnMono then None else
             match reqLangVersion, targetFramework with 
             | FSharp_2_0, x when (x = FSharpTargetFramework.NET_2_0 || x = FSharpTargetFramework.NET_3_0 || x = FSharpTargetFramework.NET_3_5) -> 
                 tryRegKey @"Software\Microsoft\.NETFramework\v2.0.50727\AssemblyFoldersEx\Microsoft Visual F# 4.0"
