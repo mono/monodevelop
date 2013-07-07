@@ -127,7 +127,6 @@ display in a help buffer instead.")
       (fsharp-ac/start-process))
     ;; Load given project.
     (when (fsharp-ac--process-live-p)
-      (log-psendstr fsharp-ac-completion-process "outputmode json\n")
       (log-psendstr fsharp-ac-completion-process
                     (format "project \"%s\"\n" (expand-file-name file))))
     file))
@@ -198,6 +197,7 @@ display in a help buffer instead.")
     (kill-process fsharp-ac-completion-process))
 
   (setq fsharp-ac-completion-process (fsharp-ac--configure-proc))
+  (log-psendstr fsharp-ac-completion-process "outputmode json\n")
   (fsharp-ac--reset-timer))
 
 (defun fsharp-ac--configure-proc ()
