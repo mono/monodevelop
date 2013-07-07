@@ -107,6 +107,11 @@ You can start Xamarin Studio or MonoDevelop under the debugger using the normal 
 
 ## Notes for People Preparing Releases
 
+The MonoDevelop Addin mechanism can be hard to easily find information for so here are a couple of links to help get a better understanding.  
+
+  - The addin.xml installation schema description can be found [here](http://addins.monodevelop.com/Source/AddinProjectHelp?projectId=1)
+  - Details about publishing an addin can be found [here](http://monodevelop.com/Developers/Articles/Publishing_an_Addin)
+
 The addin gets released to http://addins.monodevelop.com under project 'FSharp' (project index 48). Contact @7sharp9, @tpetricek or @funnelweb to make an update.
 
 To build the .mpack files to upload to this site, use:
@@ -125,5 +130,4 @@ change a bit and are not binary compatible. We try to keep up with
 
 When developing generally use (c)
 
-The build is performed against the MonoDevelop binaries we depend on in dependencies/..., which have been 
-snarfed from MonoDevelop installs.
+The build is performed against the MonoDevelop binaries we depend on in dependencies/... which have been copied from MonoDevelop installs.
