@@ -188,7 +188,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		public Project Project {
-			get { return Window.ViewContent.Project; }
+			get { return Window != null ? Window.ViewContent.Project : null; }
 /*			set { 
 				Window.ViewContent.Project = value; 
 				if (value != null)
