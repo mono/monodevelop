@@ -427,11 +427,11 @@ namespace MonoDevelop.VersionControl.Git
 			string upstreamRef = GitUtil.GetUpstreamSource (RootRepository, GetCurrentBranch ());
 			if (upstreamRef == null)
 				upstreamRef = GetCurrentRemote () + "/" + GetCurrentBranch ();
-			
+
 			if (GitService.UseRebaseOptionWhenPulling)
-				Rebase (upstreamRef, GitService.StashUnstashWhenUpdating, monitor);
+				Rebase (upstreamRef, GitService.StashUnstashWhenUpdating, monitor, true);
 			else
-				Merge (upstreamRef, GitService.StashUnstashWhenUpdating, monitor);
+				Merge (upstreamRef, GitService.StashUnstashWhenUpdating, monitor, true);
 
 			monitor.Step (1);
 			
@@ -456,22 +456,33 @@ namespace MonoDevelop.VersionControl.Git
 			monitor.Step (1);
 		}
 
-		public void Rebase (string upstreamRef, bool saveLocalChanges, IProgressMonitor monitor)
+		public void Rebase (string upstreamRef, bool saveLocalChanges, IProgressMonitor monitor, bool fromUpdate = false)
 		{
 			StashCollection stashes = GitUtil.GetStashes (RootRepository);
 			Stash stash = null;
-			
+			NGit.Api.Git git = new NGit.Api.Git (RootRepository);
 			try
 			{
+				monitor.BeginTask (GettextCatalog.GetString ("Rebasing"), 5);
+
+				// TODO: Fix stash so we don't have to do update before the main repo update.
+				if (fromUpdate) {
+					monitor.Log.WriteLine (GettextCatalog.GetString ("Updating repository submodules"));
+					var submoduleUpdate = git.SubmoduleUpdate ();
+					foreach (var submodule in CachedSubmodules)
+						submoduleUpdate.AddPath (submodule.Item1);
+
+					submoduleUpdate.Call ();
+				}
+				monitor.Step (1);
+
 				if (saveLocalChanges) {
-					monitor.BeginTask (GettextCatalog.GetString ("Rebasing"), 3);
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Saving local changes"));
 					using (var gm = new GitMonitor (monitor))
 						stash = stashes.Create (gm, GetStashName ("_tmp_"));
 					monitor.Step (1);
 				}
 
-				NGit.Api.Git git = new NGit.Api.Git (RootRepository);
 				RebaseCommand rebase = git.Rebase ();
 				rebase.SetOperation (RebaseCommand.Operation.BEGIN);
 				rebase.SetUpstream (upstreamRef);
@@ -531,25 +542,47 @@ namespace MonoDevelop.VersionControl.Git
 					using (var gm = new GitMonitor (monitor))
 						stash.Apply (gm);
 					stashes.Remove (stash);
-					monitor.EndTask ();
 				}
-			}			
+
+				if (fromUpdate) {
+					monitor.Log.WriteLine (GettextCatalog.GetString ("Updating repository submodules"));
+					var submoduleUpdate = git.SubmoduleUpdate ();
+					foreach (var submodule in CachedSubmodules)
+						submoduleUpdate.AddPath (submodule.Item1);
+
+					submoduleUpdate.Call ();
+				}
+				monitor.Step (1);
+				monitor.EndTask ();
+			}
 		}
 		
-		public void Merge (string branch, bool saveLocalChanges, IProgressMonitor monitor)
+		public void Merge (string branch, bool saveLocalChanges, IProgressMonitor monitor, bool fromUpdate = false)
 		{
 			IEnumerable<DiffEntry> statusList = null;
 			Stash stash = null;
 			StashCollection stashes = GetStashes (RootRepository);
-			monitor.BeginTask (null, 4);
-			
+			NGit.Api.Git git = new NGit.Api.Git (RootRepository);
+
 			try {
+				monitor.BeginTask (GettextCatalog.GetString ("Merging"), 5);
+
+				// TODO: Fix stash so we don't have to do update before the main repo update.
+				if (fromUpdate) {
+					monitor.Log.WriteLine (GettextCatalog.GetString ("Updating repository submodules"));
+					var submoduleUpdate = git.SubmoduleUpdate ();
+					foreach (var submodule in CachedSubmodules)
+						submoduleUpdate.AddPath (submodule.Item1);
+
+					submoduleUpdate.Call ();
+				}
+				monitor.Step (1);
+
 				// Get a list of files that are different in the target branch
 				statusList = GitUtil.GetChangedFiles (RootRepository, branch);
 				monitor.Step (1);
 				
 				if (saveLocalChanges) {
-					monitor.BeginTask (GettextCatalog.GetString ("Merging"), 3);
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Saving local changes"));
 					using (var gm = new GitMonitor (monitor))
 						stash = stashes.Create (gm, GetStashName ("_tmp_"));
@@ -559,8 +592,7 @@ namespace MonoDevelop.VersionControl.Git
 				// Apply changes
 				
 				ObjectId branchId = RootRepository.Resolve (branch);
-				
-				NGit.Api.Git git = new NGit.Api.Git (RootRepository);
+
 				MergeCommandResult mergeResult = git.Merge ().SetStrategy (MergeStrategy.RESOLVE).Include (branchId).Call ();
 				if (mergeResult.GetMergeStatus () == MergeStatus.CONFLICTING || mergeResult.GetMergeStatus () == MergeStatus.FAILED) {
 					var conflicts = mergeResult.GetConflicts ();
@@ -592,16 +624,24 @@ namespace MonoDevelop.VersionControl.Git
 					using (var gm = new GitMonitor (monitor))
 						stash.Apply (gm);
 					stashes.Remove (stash);
-					monitor.EndTask ();
+					monitor.Step (1);
 				}
+
+				if (fromUpdate) {
+					monitor.Log.WriteLine (GettextCatalog.GetString ("Updating repository submodules"));
+					var submoduleUpdate = git.SubmoduleUpdate ();
+					foreach (var submodule in CachedSubmodules)
+						submoduleUpdate.AddPath (submodule.Item1);
+
+					submoduleUpdate.Call ();
+				}
+				monitor.Step (1);
+				monitor.EndTask ();
 			}
-			monitor.Step (1);
 			
 			// Notify changes
 			if (statusList != null)
 				NotifyFileChanges (monitor, statusList);
-			
-			monitor.EndTask ();
 		}
 
 		ConflictResult ResolveConflict (string file)
