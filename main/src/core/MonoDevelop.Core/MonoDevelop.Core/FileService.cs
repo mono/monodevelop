@@ -246,17 +246,17 @@ namespace MonoDevelop.Core
 			return GetFileSystemForPath (fileName, false).RequestFileEdit (fileName);
 		}
 		
-		public static void NotifyFileChanged (FilePath fileName)
+		public static void NotifyFileChanged (FilePath fileName, bool isVersionControlChange = false)
 		{
-			NotifyFilesChanged (new FilePath[] { fileName });
+			NotifyFilesChanged (new FilePath[] { fileName }, isVersionControlChange);
 		}
 		
-		public static void NotifyFilesChanged (IEnumerable<FilePath> files)
+		public static void NotifyFilesChanged (IEnumerable<FilePath> files, bool isVersionControlChange = false)
 		{
 			try {
 				foreach (var fsFiles in files.GroupBy (f => GetFileSystemForPath (f, false)))
 					fsFiles.Key.NotifyFilesChanged (fsFiles);
-				OnFileChanged (new FileEventArgs (files, false));
+				OnFileChanged (new FileEventArgs (files, false, isVersionControlChange));
 			} catch (Exception ex) {
 				LoggingService.LogError ("File change notification failed", ex);
 			}
