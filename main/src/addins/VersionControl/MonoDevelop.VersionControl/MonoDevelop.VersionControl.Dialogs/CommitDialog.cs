@@ -127,6 +127,31 @@ namespace MonoDevelop.VersionControl.Dialogs
 
 		protected void OnButtonCommitClicked (object sender, System.EventArgs e)
 		{
+			// In case we have local unsaved files with changes, throw a dialog for the user.
+			System.Collections.Generic.List<Document> docList = new System.Collections.Generic.List<Document> ();
+			foreach (var item in IdeApp.Workbench.Documents) {
+				if (!item.IsDirty)
+					continue;
+				docList.Add (item);
+			}
+
+			if (docList.Count != 0) {
+				AlertButton response = MessageService.GenericAlert (
+					MonoDevelop.Ide.Gui.Stock.Question,
+					GettextCatalog.GetString ("Files has unsaved changes"),
+					GettextCatalog.GetString ("Do you want to save before?"),
+					new AlertButton[] { AlertButton.Cancel, AlertButton.No, AlertButton.Yes });
+
+				if (response == AlertButton.Cancel)
+					return;
+
+				if (response == AlertButton.Yes)
+					foreach (var item in docList)
+						item.Save ();
+
+				docList.Clear ();
+			}
+
 			// Update the change set
 			ArrayList todel = new ArrayList ();
 			foreach (ChangeSetItem it in changeSet.Items) {
