@@ -35,15 +35,15 @@ namespace MonoDevelop.Core
 		{
 		}
 		
-		public FileEventArgs (FilePath fileName, bool isDirectory, bool isVersionControlChange = false)
+		public FileEventArgs (FilePath fileName, bool isDirectory, bool autoReload = false)
 		{
-			Add (new FileEventInfo (fileName, isDirectory, isVersionControlChange));
+			Add (new FileEventInfo (fileName, isDirectory, autoReload));
 		}
 		
-		public FileEventArgs (IEnumerable<FilePath> files, bool isDirectory, bool isVersionControlChange = false)
+		public FileEventArgs (IEnumerable<FilePath> files, bool isDirectory, bool autoReload = false)
 		{
 			foreach (var f in files)
-				Add (new FileEventInfo (f, isDirectory, isVersionControlChange));
+				Add (new FileEventInfo (f, isDirectory, autoReload));
 		}
 	}
 	
@@ -51,7 +51,7 @@ namespace MonoDevelop.Core
 	{
 		FilePath fileName;
 		bool isDirectory;
-		bool isVersionControlChange;
+		bool autoReload;
 		
 		public FilePath FileName {
 			get {
@@ -65,17 +65,17 @@ namespace MonoDevelop.Core
 			}
 		}
 
-		public bool IsVersionControlChange {
+		public bool AutoReload {
 			get {
-				return isVersionControlChange;
+				return autoReload;
 			}
 		}
 		
-		public FileEventInfo (FilePath fileName, bool isDirectory, bool isVersionControlChange)
+		public FileEventInfo (FilePath fileName, bool isDirectory, bool autoReload)
 		{
 			this.fileName = fileName;
 			this.isDirectory = isDirectory;
-			this.isVersionControlChange = isVersionControlChange;
+			this.autoReload = autoReload;
 		}
 	}
 	
