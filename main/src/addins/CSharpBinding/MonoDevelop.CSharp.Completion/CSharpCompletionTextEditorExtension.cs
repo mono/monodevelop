@@ -171,7 +171,11 @@ namespace MonoDevelop.CSharp.Completion
 			unit = null;
 			CSharpUnresolvedFile = null;
 			UnresolvedFileCompilation = null;
-			Document.DocumentParsed -= HandleDocumentParsed; 
+			Document.DocumentParsed -= HandleDocumentParsed;
+			if (typeSystemSegmentTree != null) {
+				typeSystemSegmentTree.RemoveListener ();
+				typeSystemSegmentTree = null;
+			}
 			base.Dispose ();
 		}
 
