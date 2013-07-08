@@ -145,6 +145,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 
+		void ReleaseObjects ()
+		{
+			CompletionWidget = null;
+			CompletionDataList = null;
+
+			CodeCompletionContext = null;
+		}
+
 		protected override void OnDestroyed ()
 		{
 			if (declarationviewwindow != null) {
@@ -171,6 +179,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				declarationviewwindow.Destroy ();
 				declarationviewwindow = null;
 			}
+			ReleaseObjects ();
 			base.OnDestroyed ();
 		}
 
@@ -469,6 +478,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			Hide ();
 			HideDeclarationView ();
+			ReleaseObjects ();
 		}
 
 		protected override void DoubleClick ()
