@@ -201,7 +201,7 @@ namespace MonoDevelop.CSharp
 							var test = NUnitService.Instance.SearchTestById (unitTest.UnitTestIdentifier + id);
 							if (test != null) {
 								var result = test.GetLastResult ();
-								if (result.IsFailure) {
+								if (result != null && result.IsFailure) {
 									tooltip = result.Message;
 									label += "!";
 								}
@@ -241,6 +241,8 @@ namespace MonoDevelop.CSharp
 						return;
 					var buildOperation = IdeApp.ProjectOperations.Build (IdeApp.ProjectOperations.CurrentSelectedSolution);
 					buildOperation.Completed += delegate {
+						if (!buildOperation.Success)
+							return;
 						bool first = true;
 						var test = NUnitService.Instance.SearchTestById (testCase);
 						Console.WriteLine (testCase +":"+test);
@@ -249,12 +251,13 @@ namespace MonoDevelop.CSharp
 								NUnitService.ResetResult (test.RootTest);
 							// TODO: Run with debugger, if debug == true
 							NUnitService.Instance.RunTest (test, null).Completed += delegate {
-								Application.Invoke (delegate { doc.Editor.Parent.QueueDraw (); });
+								Application.Invoke (delegate {
+									doc.Editor.Parent.QueueDraw ();
+								});
 							};
 						}
 					};
 				}
-
 			}
 
 			bool isFailed;
