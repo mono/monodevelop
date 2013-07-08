@@ -93,6 +93,7 @@ namespace MonoDevelop.CodeActions
 			document.DocumentParsed -= HandleDocumentDocumentParsed;
 			document.Editor.Parent.BeginHover -= HandleBeginHover;
 			RemoveWidget ();
+			Fixes = null;
 			base.Dispose ();
 		}
 		TextLocation loc;
