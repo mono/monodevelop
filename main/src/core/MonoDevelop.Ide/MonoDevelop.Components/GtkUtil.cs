@@ -89,6 +89,11 @@ namespace MonoDevelop.Components
 			return (Gdk.Pixbuf)Xwt.Toolkit.CurrentEngine.GetNativeImage (image);
 		}
 
+		public static Gdk.Pixbuf ToPixbuf (this Xwt.Drawing.Image image, Gtk.IconSize size)
+		{
+			return (Gdk.Pixbuf)Xwt.Toolkit.CurrentEngine.GetNativeImage (image.WithSize (size));
+		}
+
 		public static Xwt.Drawing.Image WithSize (this Xwt.Drawing.Image image, Gtk.IconSize size)
 		{
 			int w, h;

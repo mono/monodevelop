@@ -37,9 +37,9 @@ namespace MonoDevelop.Ide.Gui.Components
 		ITreeBuilder GetTreeBuilder (ITreeNavigator navigator);
 		ITreeNavigator GetTreeNavigator (object dataObject);
 		
-		Gdk.Pixbuf GetIcon (string iconId);
-		Gdk.Pixbuf GetComposedIcon (Gdk.Pixbuf baseIcon, object compositionKey);
-		Gdk.Pixbuf CacheComposedIcon (Gdk.Pixbuf baseIcon, object compositionKey, Gdk.Pixbuf composedIcon);
+		Xwt.Drawing.Image GetIcon (string iconId);
+		Xwt.Drawing.Image GetComposedIcon (Xwt.Drawing.Image baseIcon, object compositionKey);
+		Xwt.Drawing.Image CacheComposedIcon (Xwt.Drawing.Image baseIcon, object compositionKey, Xwt.Drawing.Image composedIcon);
 		
 		ExtensibleTreeView Tree { get; }
 	}

@@ -63,7 +63,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 			return "UserInterface";
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
 		{
 			Project p = ((WindowsFolder)dataObject).Project;
 			GtkDesignInfo info = GtkDesignInfo.FromProject (p);

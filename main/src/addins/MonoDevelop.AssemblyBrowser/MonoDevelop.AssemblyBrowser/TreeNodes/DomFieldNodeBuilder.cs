@@ -60,7 +60,7 @@ namespace MonoDevelop.AssemblyBrowser
 			return field.Name;
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
 		{
 			var field = (IUnresolvedField)dataObject;
 			try {
@@ -72,7 +72,7 @@ namespace MonoDevelop.AssemblyBrowser
 
 			if (field.IsPrivate || field.IsInternal)
 				label = DomMethodNodeBuilder.FormatPrivate (label);
-			icon = ImageService.GetPixbuf (field.GetStockIcon (), Gtk.IconSize.Menu);
+			icon = Context.GetIcon (field.GetStockIcon ());
 		}
 		
 		#region IAssemblyBrowserNodeBuilder

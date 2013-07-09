@@ -21,15 +21,15 @@ namespace MonoDevelop.VersionControl
 {
 	public class VersionControlService
 	{
-		static Gdk.Pixbuf overlay_modified;
-		static Gdk.Pixbuf overlay_removed;
-		static Gdk.Pixbuf overlay_conflicted;
-		static Gdk.Pixbuf overlay_added;
-		internal static Gdk.Pixbuf overlay_controled;
-		static Gdk.Pixbuf overlay_unversioned;
-		static Gdk.Pixbuf overlay_protected;
-		static Gdk.Pixbuf overlay_locked;
-		static Gdk.Pixbuf overlay_unlocked;
+		static Xwt.Drawing.Image overlay_modified;
+		static Xwt.Drawing.Image overlay_removed;
+		static Xwt.Drawing.Image overlay_conflicted;
+		static Xwt.Drawing.Image overlay_added;
+		internal static Xwt.Drawing.Image overlay_controled;
+		static Xwt.Drawing.Image overlay_unversioned;
+		static Xwt.Drawing.Image overlay_protected;
+		static Xwt.Drawing.Image overlay_locked;
+		static Xwt.Drawing.Image overlay_unlocked;
 //		static Gdk.Pixbuf overlay_normal;
 
 		static Gdk.Pixbuf icon_modified;
@@ -54,15 +54,15 @@ namespace MonoDevelop.VersionControl
 		static VersionControlService ()
 		{
 			try {
-				overlay_modified = Gdk.Pixbuf.LoadFromResource("overlay_modified.png");
-				overlay_removed = Gdk.Pixbuf.LoadFromResource("overlay_removed.png");
-				overlay_conflicted = Gdk.Pixbuf.LoadFromResource("overlay_conflicted.png");
-				overlay_added = Gdk.Pixbuf.LoadFromResource("overlay_added.png");
-				overlay_controled = Gdk.Pixbuf.LoadFromResource("overlay_controled.png");
-				overlay_unversioned = Gdk.Pixbuf.LoadFromResource("overlay_unversioned.png");
-				overlay_protected = Gdk.Pixbuf.LoadFromResource("overlay_lock_required.png");
-				overlay_unlocked = Gdk.Pixbuf.LoadFromResource("overlay_unlocked.png");
-				overlay_locked = Gdk.Pixbuf.LoadFromResource("overlay_locked.png");
+				overlay_modified = Xwt.Drawing.Image.FromResource("overlay_modified.png");
+				overlay_removed = Xwt.Drawing.Image.FromResource("overlay_removed.png");
+				overlay_conflicted = Xwt.Drawing.Image.FromResource("overlay_conflicted.png");
+				overlay_added = Xwt.Drawing.Image.FromResource("overlay_added.png");
+				overlay_controled = Xwt.Drawing.Image.FromResource("overlay_controled.png");
+				overlay_unversioned = Xwt.Drawing.Image.FromResource("overlay_unversioned.png");
+				overlay_protected = Xwt.Drawing.Image.FromResource("overlay_lock_required.png");
+				overlay_unlocked = Xwt.Drawing.Image.FromResource("overlay_unlocked.png");
+				overlay_locked = Xwt.Drawing.Image.FromResource("overlay_locked.png");
 	//			overlay_normal = Gdk.Pixbuf.LoadFromResource("overlay_normal.png");
 			
 				icon_modified = ImageService.GetPixbuf ("gtk-edit", Gtk.IconSize.Menu);
@@ -107,7 +107,7 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 		
-		public static Gdk.Pixbuf LoadOverlayIconForStatus(VersionStatus status)
+		public static Xwt.Drawing.Image LoadOverlayIconForStatus(VersionStatus status)
 		{
 			if ((status & VersionStatus.Versioned) == 0)
 				return overlay_unversioned;

@@ -43,6 +43,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using Mono.TextEditor;
 using System.Linq;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.NUnit
 {
@@ -202,7 +203,7 @@ namespace MonoDevelop.NUnit
 			TreeViewColumn col3 = new TreeViewColumn ();
 			col3.Expand = false;
 //			col3.Alignment = 0.5f;
-			col3.Widget = new Gtk.Image (CircleImage.Success);
+			col3.Widget = new Gtk.Image (CircleImage.Success.ToPixbuf (Gtk.IconSize.Menu));
 			col3.Widget.Show ();
 			tr = new CellRendererText ();
 //			tr.Xalign = 0.5f;
@@ -213,7 +214,7 @@ namespace MonoDevelop.NUnit
 			TreeViewColumn col4 = new TreeViewColumn ();
 			col4.Expand = false;
 //			col4.Alignment = 0.5f;
-			col4.Widget = new Gtk.Image (CircleImage.Failure);
+			col4.Widget = new Gtk.Image (CircleImage.Failure.ToPixbuf (Gtk.IconSize.Menu));
 			col4.Widget.Show ();
 			tr = new CellRendererText ();
 //			tr.Xalign = 0.5f;
@@ -224,7 +225,7 @@ namespace MonoDevelop.NUnit
 			TreeViewColumn col5 = new TreeViewColumn ();
 			col5.Expand = false;
 //			col5.Alignment = 0.5f;
-			col5.Widget = new Gtk.Image (CircleImage.NotRun);
+			col5.Widget = new Gtk.Image (CircleImage.NotRun.ToPixbuf (Gtk.IconSize.Menu));
 			col5.Widget.Show ();
 			tr = new CellRendererText ();
 //			tr.Xalign = 0.5f;

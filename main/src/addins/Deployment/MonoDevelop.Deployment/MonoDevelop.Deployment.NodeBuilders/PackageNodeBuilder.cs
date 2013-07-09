@@ -63,7 +63,7 @@ namespace MonoDevelop.Deployment.NodeBuilders
 			return ((Package)dataObject).Name;
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
 		{
 			Package package = dataObject as Package;
 			label = package.Name;

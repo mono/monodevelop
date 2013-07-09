@@ -71,7 +71,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			IdeApp.Workspace.ReferenceRemovedFromProject -= removedHandler;
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
 		{
 			label = GLib.Markup.EscapeText (GettextCatalog.GetString ("References"));
 			icon = Context.GetIcon (Stock.OpenReferenceFolder);

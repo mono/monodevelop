@@ -41,6 +41,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Docking;
 using MonoDevelop.Ide;
 using System.Text.RegularExpressions;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.NUnit
 {
@@ -161,7 +162,7 @@ namespace MonoDevelop.NUnit
 			buttonSuccess = new ToggleButton ();
 			buttonSuccess.Label = GettextCatalog.GetString ("Successful Tests");
 			buttonSuccess.Active = false;
-			buttonSuccess.Image = new Gtk.Image (CircleImage.Success);
+			buttonSuccess.Image = new Gtk.Image (CircleImage.Success.ToPixbuf (Gtk.IconSize.Menu));
 			buttonSuccess.Image.Show ();
 			buttonSuccess.Toggled += new EventHandler (OnShowSuccessfulToggled);
 			buttonSuccess.TooltipText = GettextCatalog.GetString ("Show Successful Tests");
@@ -170,7 +171,7 @@ namespace MonoDevelop.NUnit
 			buttonInconclusive = new ToggleButton ();
 			buttonInconclusive.Label = GettextCatalog.GetString ("Inconclusive Tests");
 			buttonInconclusive.Active = true;
-			buttonInconclusive.Image = new Gtk.Image (CircleImage.Inconclusive);
+			buttonInconclusive.Image = new Gtk.Image (CircleImage.Inconclusive.ToPixbuf (Gtk.IconSize.Menu));
 			buttonInconclusive.Image.Show ();
 			buttonInconclusive.Toggled += new EventHandler (OnShowInconclusiveToggled);
 			buttonInconclusive.TooltipText = GettextCatalog.GetString ("Show Inconclusive Tests");
@@ -179,7 +180,7 @@ namespace MonoDevelop.NUnit
 			buttonFailures = new ToggleButton ();
 			buttonFailures.Label = GettextCatalog.GetString ("Failed Tests");
 			buttonFailures.Active = true;
-			buttonFailures.Image = new Gtk.Image (CircleImage.Failure);
+			buttonFailures.Image = new Gtk.Image (CircleImage.Failure.ToPixbuf (Gtk.IconSize.Menu));
 			buttonFailures.Image.Show ();
 			buttonFailures.Toggled += new EventHandler (OnShowFailuresToggled);
 			buttonFailures.TooltipText = GettextCatalog.GetString ("Show Failed Tests");
@@ -188,7 +189,7 @@ namespace MonoDevelop.NUnit
 			buttonIgnored = new ToggleButton ();
 			buttonIgnored.Label = GettextCatalog.GetString ("Ignored Tests");
 			buttonIgnored.Active = true;
-			buttonIgnored.Image = new Gtk.Image (CircleImage.NotRun);
+			buttonIgnored.Image = new Gtk.Image (CircleImage.NotRun.ToPixbuf (Gtk.IconSize.Menu));
 			buttonIgnored.Image.Show ();
 			buttonIgnored.Toggled += new EventHandler (OnShowIgnoredToggled);
 			buttonIgnored.TooltipText = GettextCatalog.GetString ("Show Ignored Tests");

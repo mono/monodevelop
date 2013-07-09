@@ -55,7 +55,7 @@ namespace MonoDevelop.AssemblyBrowser
 			return reference.ToString ();
 		}
 
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
 		{
 			var reference = dataObject as ITypeReference;
 			label = reference.ToString ();
@@ -90,7 +90,7 @@ namespace MonoDevelop.AssemblyBrowser
 			return "Base Types";
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
 		{
 			label      = MonoDevelop.Core.GettextCatalog.GetString ("Base Types");
 			icon       = Context.GetIcon (Stock.OpenFolder);

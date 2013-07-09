@@ -2087,24 +2087,24 @@ namespace MonoDevelop.Ide.Gui.Components
 				return pad.CreateBuilder (navigator.CurrentPosition._iter);
 			}
 		
-			public Gdk.Pixbuf GetIcon (string id)
+			public Xwt.Drawing.Image GetIcon (string id)
 			{
-				Gdk.Pixbuf icon = icons [id] as Gdk.Pixbuf;
+				Xwt.Drawing.Image icon = icons [id] as Xwt.Drawing.Image;
 				if (icon == null) {
-					icon = ImageService.GetPixbuf (id, Gtk.IconSize.Menu);
+					icon = ImageService.GetIcon (id).WithSize (Gtk.IconSize.Menu);
 					icons [id] = icon;
 				}
 				return icon;
 			}
 			
-			public Gdk.Pixbuf GetComposedIcon (Gdk.Pixbuf baseIcon, object compositionKey)
+			public Xwt.Drawing.Image GetComposedIcon (Xwt.Drawing.Image baseIcon, object compositionKey)
 			{
 				Hashtable itable = composedIcons [baseIcon] as Hashtable;
 				if (itable == null) return null;
-				return itable [compositionKey] as Gdk.Pixbuf;
+				return itable [compositionKey] as Xwt.Drawing.Image;
 			}
 			
-			public Gdk.Pixbuf CacheComposedIcon (Gdk.Pixbuf baseIcon, object compositionKey, Gdk.Pixbuf composedIcon)
+			public Xwt.Drawing.Image CacheComposedIcon (Xwt.Drawing.Image baseIcon, object compositionKey, Xwt.Drawing.Image composedIcon)
 			{
 				Hashtable itable = composedIcons [baseIcon] as Hashtable;
 				if (itable == null) {

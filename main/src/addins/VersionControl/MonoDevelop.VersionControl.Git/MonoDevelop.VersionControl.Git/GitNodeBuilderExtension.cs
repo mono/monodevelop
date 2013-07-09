@@ -56,7 +56,7 @@ namespace MonoDevelop.VersionControl.Git
 			return typeof(IWorkspaceObject).IsAssignableFrom (dataType);
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
 		{
 			IWorkspaceObject ob = (IWorkspaceObject) dataObject;
 			GitRepository rep = VersionControlService.GetRepository (ob) as GitRepository;

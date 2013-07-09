@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			get { return typeof(UnknownEntryCommandHandler); }
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
 		{
 			UnknownSolutionItem entry = (UnknownSolutionItem) dataObject;
 			
@@ -56,9 +56,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				label = GettextCatalog.GetString ("{0} <span foreground='red' size='small'>(Load failed)</span>", GLib.Markup.EscapeText (entry.Name));
 			} else {
 				icon = Context.GetIcon (MonoDevelop.Ide.Gui.Stock.Project);
-				Gdk.Pixbuf gicon = Context.GetComposedIcon (icon, "fade");
+				var gicon = Context.GetComposedIcon (icon, "fade");
 				if (gicon == null) {
-					gicon = ImageService.MakeTransparent (icon, 0.5);
+					gicon = icon.WithAlpha (0.5);
 					Context.CacheComposedIcon (icon, "fade", gicon);
 				}
 				icon = gicon;

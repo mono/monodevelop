@@ -107,7 +107,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			return ((Project)dataObject).BaseDirectory;
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
 		{
 			base.BuildNode (treeBuilder, dataObject, ref label, ref icon, ref closedIcon);
 
@@ -139,9 +139,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			bool noMapping = conf == null || (ce = conf.GetEntryForItem (p)) == null;
 			bool missingConfig = false;
 			if (noMapping || !ce.Build || (missingConfig = p.Configurations [ce.ItemConfiguration] == null)) {
-				Gdk.Pixbuf ticon = Context.GetComposedIcon (icon, "project-no-build");
+				var ticon = Context.GetComposedIcon (icon, "project-no-build");
 				if (ticon == null)
-					ticon = Context.CacheComposedIcon (icon, "project-no-build", ImageService.MakeTransparent (icon, 0.5));
+					ticon = Context.CacheComposedIcon (icon, "project-no-build", icon.WithAlpha (0.5));
 				icon = ticon;
 				label = missingConfig
 					? "<span foreground='red'>" + label + " <small>(invalid configuration mapping)</small></span>"

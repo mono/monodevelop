@@ -57,7 +57,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			return ((SolutionFolder)dataObject).Name;
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
 		{
 			SolutionFolder folder = dataObject as SolutionFolder;
 			label = folder.Name;

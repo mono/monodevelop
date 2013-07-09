@@ -73,7 +73,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			return "<span foreground= \"#666666\">" + label + "</span>";	
 		}
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
 		{
 			var method = (IUnresolvedMethod)dataObject;
 			var dt = new DefaultResolvedTypeDefinition (GetContext (treeBuilder), method.DeclaringTypeDefinition);
@@ -87,7 +87,7 @@ namespace MonoDevelop.AssemblyBrowser
 			if (method.IsPrivate || method.IsInternal)
 				label = DomMethodNodeBuilder.FormatPrivate (label);
 			
-			icon = ImageService.GetPixbuf (resolved.GetStockIcon (), Gtk.IconSize.Menu);
+			icon = Context.GetIcon (resolved.GetStockIcon ());
 		}
 		
 		#region IAssemblyBrowserNodeBuilder

@@ -89,7 +89,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			attributes |= NodeAttributes.AllowRename;
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
 		{
 			Solution solution = dataObject as Solution;
 			label = GLib.Markup.EscapeText (solution.Name);

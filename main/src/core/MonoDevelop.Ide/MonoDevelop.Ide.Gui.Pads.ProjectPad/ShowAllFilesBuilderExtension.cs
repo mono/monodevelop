@@ -105,7 +105,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			return ((IFolderItem)dataObject).BaseDirectory;
 		}
 		
-		public override void BuildNode (ITreeBuilder builder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		public override void BuildNode (ITreeBuilder builder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
 		{
 			string thisPath = GetFolderPath (dataObject);
 			
@@ -113,15 +113,15 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			{
 				ProjectFolder pf = (ProjectFolder) dataObject;
 				if (pf.Project == null || !ProjectFolderCommandHandler.PathExistsInProject (pf.Project, thisPath)) {
-					Gdk.Pixbuf gicon = Context.GetComposedIcon (icon, "fade");
+					var gicon = Context.GetComposedIcon (icon, "fade");
 					if (gicon == null) {
-						gicon = ImageService.MakeTransparent (icon, 0.5);
+						gicon = icon.WithAlpha (0.5);
 						Context.CacheComposedIcon (icon, "fade", gicon);
 					}
 					icon = gicon;
 					gicon = Context.GetComposedIcon (closedIcon, "fade");
 					if (gicon == null) {
-						gicon = ImageService.MakeTransparent (closedIcon, 0.5);
+						gicon = closedIcon.WithAlpha (0.5);
 						Context.CacheComposedIcon (closedIcon, "fade", gicon);
 					}
 					closedIcon = gicon;

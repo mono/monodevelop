@@ -44,8 +44,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
 	class ProjectFolderNodeBuilder: FolderNodeBuilder
 	{
-		Gdk.Pixbuf folderOpenIcon;
-		Gdk.Pixbuf folderClosedIcon;
+		Xwt.Drawing.Image folderOpenIcon;
+		Xwt.Drawing.Image folderClosedIcon;
 		
 		EventHandler<FileCopyEventArgs> fileRenamedHandler;
 		EventHandler<FileEventArgs> fileRemovedHandler;
@@ -119,7 +119,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			}
 		}
 	
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
 		{
 			base.BuildNode (treeBuilder, dataObject, ref label, ref icon, ref closedIcon);
 

@@ -35,7 +35,7 @@ namespace MonoDevelop.Ide.Gui.Components
 	{
 		string stockIcon;
 		string label;
-		Gdk.Pixbuf icon;
+		Xwt.Drawing.Image icon;
 		
 		public TreeViewItem (string label, IconId stockIcon)
 		{
@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			this.label = label;
 		}
 
-		public TreeViewItem (string label, Gdk.Pixbuf icon)
+		public TreeViewItem (string label, Xwt.Drawing.Image icon)
 		{
 			this.icon = icon;
 			this.label = label;
@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			get { return stockIcon; }
 		}
 		
-		public Gdk.Pixbuf Icon {
+		public Xwt.Drawing.Image Icon {
 			get { return icon; }
 		}
 		
@@ -79,7 +79,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			return it.Label;
 		}
 
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
 		{
 			TreeViewItem it = (TreeViewItem) dataObject;
 			label = it.Label;

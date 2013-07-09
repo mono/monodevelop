@@ -42,7 +42,7 @@ namespace MonoDevelop.VersionControl
 			base.Dispose ();
 		}
 
-		public override void BuildNode (ITreeBuilder builder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		public override void BuildNode (ITreeBuilder builder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
 		{
 			if (!builder.Options["ShowVersionControlOverlays"])
 				return;
@@ -91,7 +91,7 @@ namespace MonoDevelop.VersionControl
 			
 			VersionInfo vi = repo.GetVersionInfo (file);
 
-			Gdk.Pixbuf overlay = VersionControlService.LoadOverlayIconForStatus (vi.Status);
+			Xwt.Drawing.Image overlay = VersionControlService.LoadOverlayIconForStatus (vi.Status);
 			if (overlay != null)
 				AddOverlay (ref icon, overlay);
 		}
@@ -114,9 +114,9 @@ namespace MonoDevelop.VersionControl
 			base.PrepareChildNodes (dataObject);
 		}
 */		
-		void AddFolderOverlay (Repository rep, string folder, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon, bool skipVersionedOverlay)
+		void AddFolderOverlay (Repository rep, string folder, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon, bool skipVersionedOverlay)
 		{
-			Gdk.Pixbuf overlay = null;
+			Xwt.Drawing.Image overlay = null;
 			VersionInfo vinfo = rep.GetVersionInfo (folder);
 			if (vinfo == null || !vinfo.IsVersioned) {
 				overlay = VersionControlService.LoadOverlayIconForStatus (VersionStatus.Unversioned);
@@ -133,9 +133,9 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 		
-		void AddOverlay (ref Gdk.Pixbuf icon, Gdk.Pixbuf overlay)
+		void AddOverlay (ref Xwt.Drawing.Image icon, Xwt.Drawing.Image overlay)
 		{
-			Gdk.Pixbuf cached = Context.GetComposedIcon (icon, overlay);
+			var cached = Context.GetComposedIcon (icon, overlay);
 			if (cached != null) {
 				icon = cached;
 				return;
@@ -143,17 +143,11 @@ namespace MonoDevelop.VersionControl
 			
 			int dx = 2;
 			int dy = 2;
-			
-			Gdk.Pixbuf res = new Gdk.Pixbuf (icon.Colorspace, icon.HasAlpha, icon.BitsPerSample, icon.Width + dx, icon.Height + dy);
-			res.Fill (0);
-			icon.CopyArea (0, 0, icon.Width, icon.Height, res, 0, 0);
-			
-			overlay.Composite (res,
-				res.Width - overlay.Width,  res.Height - overlay.Height,
-				overlay.Width, overlay.Height,
-				res.Width - overlay.Width,  res.Height - overlay.Height,
-				1, 1, Gdk.InterpType.Bilinear, 255); 
-			
+
+			var ib = new Xwt.Drawing.ImageBuilder (icon.Width + dx, icon.Height + dy);
+			ib.Context.DrawImage (icon, 0, 0);
+			ib.Context.DrawImage (overlay, ib.Width - overlay.Width, ib.Height - overlay.Height);
+			var res = ib.ToVectorImage ();
 			Context.CacheComposedIcon (icon, overlay, res);
 			icon = res;
 		}

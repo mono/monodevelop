@@ -87,7 +87,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			return ((Project)dataObject).Name;
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
 		{
 			Project p = dataObject as Project;
 			label = p.Name;

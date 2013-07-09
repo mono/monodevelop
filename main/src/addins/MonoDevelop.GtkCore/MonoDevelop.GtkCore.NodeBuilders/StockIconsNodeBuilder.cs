@@ -23,7 +23,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 	
 	public class StockIconsNodeBuilder: TypeNodeBuilder
 	{
-		Pixbuf iconsIcon;
+		Xwt.Drawing.Image iconsIcon;
 		
 		public override Type NodeDataType {
 			get { return typeof(StockIconsNode); }
@@ -39,7 +39,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		public StockIconsNodeBuilder ()
 		{
 			try {
-				iconsIcon = Pixbuf.LoadFromResource ("image-x-generic.png");
+				iconsIcon = Xwt.Drawing.Image.FromResource ("image-x-generic.png");
 			} catch (Exception e) {
 				Console.WriteLine ("Error while loading pixbuf 'image-x-generic.png': " + e);
 			}
@@ -55,7 +55,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 			return "StockIcons";
 		}
 
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Pixbuf icon, ref Pixbuf closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
 		{
 			label = GettextCatalog.GetString ("Stock Icons");
 			icon = iconsIcon;

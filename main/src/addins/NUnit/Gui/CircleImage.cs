@@ -35,36 +35,36 @@ namespace MonoDevelop.NUnit
 {
 	static class CircleImage
 	{
-		internal static Gdk.Pixbuf Running;
-		internal static Gdk.Pixbuf None;
-		internal static Gdk.Pixbuf NotRun;
-		internal static Gdk.Pixbuf Loading;
+		internal static Xwt.Drawing.Image Running;
+		internal static Xwt.Drawing.Image None;
+		internal static Xwt.Drawing.Image NotRun;
+		internal static Xwt.Drawing.Image Loading;
 
-		internal static Gdk.Pixbuf Failure;
-		internal static Gdk.Pixbuf Success;
-		internal static Gdk.Pixbuf SuccessAndFailure;
-		internal static Gdk.Pixbuf Inconclusive;
+		internal static Xwt.Drawing.Image Failure;
+		internal static Xwt.Drawing.Image Success;
+		internal static Xwt.Drawing.Image SuccessAndFailure;
+		internal static Xwt.Drawing.Image Inconclusive;
 		
-		internal static Gdk.Pixbuf OldFailure;
-		internal static Gdk.Pixbuf OldSuccess;
-		internal static Gdk.Pixbuf OldSuccessAndFailure;
-		internal static Gdk.Pixbuf OldInconclusive;
+		internal static Xwt.Drawing.Image OldFailure;
+		internal static Xwt.Drawing.Image OldSuccess;
+		internal static Xwt.Drawing.Image OldSuccessAndFailure;
+		internal static Xwt.Drawing.Image OldInconclusive;
 
 		static CircleImage ()
 		{
 			try {
-				Running = Gdk.Pixbuf.LoadFromResource ("NUnit.Running.png");
-				Failure = Gdk.Pixbuf.LoadFromResource ("NUnit.Failed.png");
-				None = Gdk.Pixbuf.LoadFromResource ("NUnit.None.png");
-				NotRun = Gdk.Pixbuf.LoadFromResource ("NUnit.NotRun.png");
-				Success = Gdk.Pixbuf.LoadFromResource ("NUnit.Success.png");
-				SuccessAndFailure = Gdk.Pixbuf.LoadFromResource ("NUnit.SuccessAndFailed.png");
-				Loading = Gdk.Pixbuf.LoadFromResource ("NUnit.Loading.png");
-				Inconclusive = Gdk.Pixbuf.LoadFromResource ("NUnit.Inconclusive.png");
-				OldFailure = ImageService.MakeTransparent (Failure, 0.4);
-				OldSuccess = ImageService.MakeTransparent (Success, 0.4);
-				OldSuccessAndFailure = ImageService.MakeTransparent (SuccessAndFailure, 0.4);
-				OldInconclusive = ImageService.MakeTransparent (Inconclusive, 0.4);
+				Running = Xwt.Drawing.Image.FromResource ("NUnit.Running.png");
+				Failure = Xwt.Drawing.Image.FromResource ("NUnit.Failed.png");
+				None = Xwt.Drawing.Image.FromResource ("NUnit.None.png");
+				NotRun = Xwt.Drawing.Image.FromResource ("NUnit.NotRun.png");
+				Success = Xwt.Drawing.Image.FromResource ("NUnit.Success.png");
+				SuccessAndFailure = Xwt.Drawing.Image.FromResource ("NUnit.SuccessAndFailed.png");
+				Loading = Xwt.Drawing.Image.FromResource ("NUnit.Loading.png");
+				Inconclusive = Xwt.Drawing.Image.FromResource ("NUnit.Inconclusive.png");
+				OldFailure = Failure.WithAlpha (0.4);
+				OldSuccess = Success.WithAlpha (0.4);
+				OldSuccessAndFailure = SuccessAndFailure.WithAlpha (0.4);
+				OldInconclusive = Inconclusive.WithAlpha (0.4);
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while loading icons.", e);
 			}

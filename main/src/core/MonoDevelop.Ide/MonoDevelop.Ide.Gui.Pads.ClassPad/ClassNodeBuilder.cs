@@ -59,7 +59,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			return ((ClassData)dataObject).Class.FullName;
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
 		{
 			ClassData classData = dataObject as ClassData;
 			label = AmbienceService.DefaultAmbience.GetString (classData.Class.GetDefinition (), OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup);

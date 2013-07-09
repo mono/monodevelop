@@ -39,6 +39,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Components;
 using System.Collections.Generic;
 using System.Linq;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
@@ -62,17 +63,17 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			attributes |= NodeAttributes.AllowRename;
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
 		{
 			SystemFile file = (SystemFile) dataObject;
 			label = GLib.Markup.EscapeText (file.Name);
 			
-			icon = DesktopService.GetPixbufForFile (file.Path, Gtk.IconSize.Menu);
+			icon = DesktopService.GetPixbufForFile (file.Path, Gtk.IconSize.Menu).ToXwtImage ();
 			
 			if (file.ShowTransparent) {
-				Gdk.Pixbuf gicon = Context.GetComposedIcon (icon, "fade");
+				var gicon = Context.GetComposedIcon (icon, "fade");
 				if (gicon == null) {
-					gicon = ImageService.MakeTransparent (icon, 0.5);
+					gicon = icon.WithAlpha (0.5);
 					Context.CacheComposedIcon (icon, "fade", gicon);
 				}
 				icon = gicon;

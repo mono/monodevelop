@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			get { return "/MonoDevelop/Ide/ContextMenu/ClassPad/Event"; }
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
 		{
 			IEvent data = dataObject as IEvent;
 			label = Ambience.GetString (data, OutputFlags.ClassBrowserEntries  | OutputFlags.IncludeMarkup);

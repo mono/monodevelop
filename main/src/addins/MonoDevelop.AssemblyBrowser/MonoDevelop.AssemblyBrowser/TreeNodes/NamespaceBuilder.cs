@@ -76,7 +76,7 @@ namespace MonoDevelop.AssemblyBrowser
 			return ns.Name;
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
 		{
 			Namespace ns = (Namespace)dataObject;
 			label = GLib.Markup.EscapeText (ns.Name);

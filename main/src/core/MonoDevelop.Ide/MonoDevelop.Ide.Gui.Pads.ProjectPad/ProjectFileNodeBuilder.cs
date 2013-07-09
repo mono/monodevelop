@@ -38,6 +38,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Core.Collections;
 using MonoDevelop.Ide.Gui.Components;
 using System.Linq;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
@@ -67,7 +68,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				attributes |= NodeAttributes.Hidden;
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
 		{
 			ProjectFile file = (ProjectFile) dataObject;
 
@@ -76,20 +77,19 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				label = "<span foreground='red'>" + label + "</span>";
 			}
 			
-			icon = DesktopService.GetPixbufForFile (file.FilePath, Gtk.IconSize.Menu);
+			icon = DesktopService.GetPixbufForFile (file.FilePath, Gtk.IconSize.Menu).ToXwtImage ();
 			
 			if (file.IsLink && icon != null) {
-				var overlay = ImageService.GetPixbuf ("md-link-overlay", Gtk.IconSize.Menu);
+				var overlay = ImageService.GetIcon ("md-link-overlay");
 				var cached = Context.GetComposedIcon (icon, overlay);
 				if (cached != null)
 					icon = cached;
 				else {
-					var res = icon.Copy ();
-					overlay.Composite (res,
-					                   0,  0,
-					                   icon.Width, icon.Width,
-					                   0, 0,
-					                   1, 1, Gdk.InterpType.Bilinear, 255); 
+					var ib = new Xwt.Drawing.ImageBuilder (icon.Width, icon.Height);
+					ib.Context.DrawImage (icon, 0, 0);
+					ib.Context.DrawImage (overlay, 0, 0);
+					var res = ib.ToVectorImage ();
+					ib.Dispose ();
 					Context.CacheComposedIcon (icon, overlay, res);
 					icon = res;
 				}

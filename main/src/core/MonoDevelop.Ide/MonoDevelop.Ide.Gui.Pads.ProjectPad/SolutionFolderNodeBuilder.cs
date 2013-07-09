@@ -72,7 +72,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			attributes |= NodeAttributes.AllowRename;
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
 		{
 			SolutionFolder folder = dataObject as SolutionFolder;
 			label = GLib.Markup.EscapeText (folder.Name);

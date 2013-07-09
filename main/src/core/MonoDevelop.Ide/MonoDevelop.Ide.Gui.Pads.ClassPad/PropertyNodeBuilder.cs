@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			get { return "/MonoDevelop/Ide/ContextMenu/ClassPad/Property"; }
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
 		{
 			IProperty data = dataObject as IProperty;
 			label = Ambience.GetString (data, OutputFlags.ClassBrowserEntries  | OutputFlags.IncludeMarkup);

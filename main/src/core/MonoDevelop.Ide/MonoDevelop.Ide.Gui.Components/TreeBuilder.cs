@@ -28,6 +28,7 @@
 using System;
 using System.Collections;
 using MonoDevelop.Core;
+using MonoDevelop.Components;
 
 
 namespace MonoDevelop.Ide.Gui.Components
@@ -290,32 +291,35 @@ namespace MonoDevelop.Ide.Gui.Components
 				text = string.Empty;
 				
 				NodePosition pos = tb.CurrentPosition;
-				
+
+				Xwt.Drawing.Image wicon = null, wclosedIcon = null;
 				foreach (NodeBuilder builder in chain) {
 					try {
-						builder.BuildNode (tb, dataObject, ref text, ref icon, ref closedIcon);
+						builder.BuildNode (tb, dataObject, ref text, ref wicon, ref wclosedIcon);
 					} catch (Exception ex) {
 						LoggingService.LogError (ex.ToString ());
 					}
 					tb.MoveToPosition (pos);
 				}
 					
-				if (closedIcon == null) closedIcon = icon;
+				if (wclosedIcon == null) wclosedIcon = wicon;
 				
 				if (tree.CopyObjects != null && ((IList)tree.CopyObjects).Contains (dataObject) && tree.CurrentTransferOperation == DragOperation.Move) {
-					Gdk.Pixbuf gicon = tree.BuilderContext.GetComposedIcon (icon, "fade");
+					var gicon = tree.BuilderContext.GetComposedIcon (wicon, "fade");
 					if (gicon == null) {
-						gicon = ImageService.MakeTransparent (icon, 0.5);
-						tree.BuilderContext.CacheComposedIcon (icon, "fade", gicon);
+						gicon = wicon.WithAlpha (0.5);
+						tree.BuilderContext.CacheComposedIcon (wicon, "fade", gicon);
 					}
-					icon = gicon;
-					gicon = tree.BuilderContext.GetComposedIcon (closedIcon, "fade");
+					wicon = gicon;
+					gicon = tree.BuilderContext.GetComposedIcon (wclosedIcon, "fade");
 					if (gicon == null) {
-						gicon = ImageService.MakeTransparent (closedIcon, 0.5);
-						tree.BuilderContext.CacheComposedIcon (closedIcon, "fade", gicon);
+						gicon = wclosedIcon.WithAlpha (0.5);
+						tree.BuilderContext.CacheComposedIcon (wclosedIcon, "fade", gicon);
 					}
-					closedIcon = gicon;
+					wclosedIcon = gicon;
 				}
+				icon = wicon != null ? wicon.ToPixbuf () : null;
+				closedIcon = wclosedIcon != null ? wclosedIcon.ToPixbuf () : null;
 			}
 			
 			void SetNodeInfo (Gtk.TreeIter it, NodeAttributes ats, string text, Gdk.Pixbuf icon, Gdk.Pixbuf closedIcon)

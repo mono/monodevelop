@@ -65,7 +65,7 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 			return win.Name;
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
 		{
 			GuiBuilderWindow win = (GuiBuilderWindow) dataObject;
 			label = win.Name;
@@ -73,9 +73,9 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 //			if (win.RootWidget.IsWindow)
 //				icon = ImageService.GetPixbuf ("md-gtkcore-window");
 			if (win.RootWidget.IsWindow)
-				icon = ImageService.GetPixbuf ("md-gtkcore-dialog", Gtk.IconSize.Menu);
+				icon = Context.GetIcon ("md-gtkcore-dialog");
 			else
-				icon = ImageService.GetPixbuf ("md-gtkcore-widget", Gtk.IconSize.Menu);
+				icon = Context.GetIcon ("md-gtkcore-widget");
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)

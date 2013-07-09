@@ -115,6 +115,11 @@
       <Project>{849AE05D-0058-4A8C-A0E8-77DC6BB12E52}</Project>
       <Name>Sharpen.Unix</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\xwt\Xwt\Xwt.csproj">
+      <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
+      <Name>Xwt</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.VersionControl.Git.addin.xml">

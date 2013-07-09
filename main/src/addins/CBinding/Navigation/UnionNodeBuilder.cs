@@ -62,8 +62,8 @@ namespace CBinding.Navigation
 		public override void BuildNode (ITreeBuilder treeBuilder,
 		                                object dataObject,
 		                                ref string label,
-		                                ref Gdk.Pixbuf icon,
-		                                ref Gdk.Pixbuf closedIcon)
+		                                ref Xwt.Drawing.Image icon,
+		                                ref Xwt.Drawing.Image closedIcon)
 		{
 			Union u = (Union)dataObject;
 				

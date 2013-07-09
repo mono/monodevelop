@@ -59,7 +59,7 @@ namespace MonoDevelop.AssemblyBrowser
 			return evt.Name;
 		}
 		
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Gdk.Pixbuf icon, ref Gdk.Pixbuf closedIcon)
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, ref string label, ref Xwt.Drawing.Image icon, ref Xwt.Drawing.Image closedIcon)
 		{
 			var evt = (IUnresolvedEvent)dataObject;
 			try {
@@ -70,7 +70,7 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			if (evt.IsPrivate || evt.IsInternal)
 				label = DomMethodNodeBuilder.FormatPrivate (label);
-			icon = ImageService.GetPixbuf (evt.GetStockIcon (), Gtk.IconSize.Menu);
+			icon = Context.GetIcon (evt.GetStockIcon ());
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
