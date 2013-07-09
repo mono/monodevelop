@@ -34,13 +34,24 @@ namespace MonoDevelop.Core
 		public FileEventArgs ()
 		{
 		}
+
+		public FileEventArgs (FilePath fileName, bool isDirectory)
+		{
+			Add (new FileEventInfo (fileName, isDirectory, false));
+		}
 		
-		public FileEventArgs (FilePath fileName, bool isDirectory, bool autoReload = false)
+		public FileEventArgs (FilePath fileName, bool isDirectory, bool autoReload)
 		{
 			Add (new FileEventInfo (fileName, isDirectory, autoReload));
 		}
-		
-		public FileEventArgs (IEnumerable<FilePath> files, bool isDirectory, bool autoReload = false)
+
+		public FileEventArgs (IEnumerable<FilePath> files, bool isDirectory)
+		{
+			foreach (var f in files)
+				Add (new FileEventInfo (f, isDirectory, false));
+		}
+
+		public FileEventArgs (IEnumerable<FilePath> files, bool isDirectory, bool autoReload)
 		{
 			foreach (var f in files)
 				Add (new FileEventInfo (f, isDirectory, autoReload));

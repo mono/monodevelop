@@ -246,12 +246,22 @@ namespace MonoDevelop.Core
 			return GetFileSystemForPath (fileName, false).RequestFileEdit (fileName);
 		}
 		
-		public static void NotifyFileChanged (FilePath fileName, bool autoReload = false)
+		public static void NotifyFileChanged (FilePath fileName)
+		{
+			NotifyFileChanged (fileName, false);
+		}
+
+		public static void NotifyFileChanged (FilePath fileName, bool autoReload)
 		{
 			NotifyFilesChanged (new FilePath[] { fileName }, autoReload);
 		}
 		
-		public static void NotifyFilesChanged (IEnumerable<FilePath> files, bool autoReload = false)
+		public static void NotifyFilesChanged (IEnumerable<FilePath> files)
+		{
+			NotifyFilesChanged (files, false);
+		}
+
+		public static void NotifyFilesChanged (IEnumerable<FilePath> files, bool autoReload)
 		{
 			try {
 				foreach (var fsFiles in files.GroupBy (f => GetFileSystemForPath (f, false)))
