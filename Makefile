@@ -90,6 +90,9 @@ aot:
 run:
 	cd main && $(MAKE) run
 
+run-boehm:
+	cd main && $(MAKE) run-boehm
+
 run-sgen:
 	cd main && $(MAKE) run-sgen
 
