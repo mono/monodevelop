@@ -1034,8 +1034,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			string new_path;
 			LibSvnClient.svn_string_t new_props;
 			LibSvnClient.Rev rev = LibSvnClient.Rev.Working;
-			foreach (var path in paths) {
-				try {
+			try {
+				foreach (var path in paths) {
 					new_path = NormalizePath (path, localpool);
 					CheckError (svn.client_propget (out result, "svn:ignore", Path.GetDirectoryName (new_path),
 					                                ref rev, false, ctx, localpool));
@@ -1052,10 +1052,10 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 					new_props.len = props.Length;
 					props_ptr = apr.pcalloc (localpool, new_props);
 					CheckError (svn.client_propset ("svn:ignore", props_ptr, Path.GetDirectoryName (new_path), false, localpool));
-				} finally {
-					apr.pool_destroy (localpool);
-					TryEndOperation ();
 				}
+			} finally {
+				apr.pool_destroy (localpool);
+				TryEndOperation ();
 			}
 		}
 
@@ -1074,8 +1074,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			LibSvnClient.Rev rev = LibSvnClient.Rev.Working;
 			int index;
 			string props_str;
-			foreach (var path in paths) {
-				try {
+			try {
+				foreach (var path in paths) {
 					new_path = NormalizePath (path, localpool);
 					CheckError (svn.client_propget (out result, "svn:ignore", Path.GetDirectoryName (new_path),
 					                                ref rev, false, ctx, localpool));
@@ -1095,10 +1095,10 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 					new_props.len = props_str.Length;
 					props_ptr = apr.pcalloc (localpool, new_props);
 					CheckError (svn.client_propset ("svn:ignore", props_ptr, Path.GetDirectoryName (new_path), false, localpool));
-				} finally {
-					apr.pool_destroy (localpool);
-					TryEndOperation ();
 				}
+			} finally {
+				apr.pool_destroy (localpool);
+				TryEndOperation ();
 			}
 		}
 		

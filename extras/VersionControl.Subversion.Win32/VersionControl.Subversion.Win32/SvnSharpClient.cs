@@ -464,13 +464,12 @@ namespace SubversionAddinWindows
 
 		public override void Unignore (FilePath[] paths)
 		{
-			StringBuilder props = new StringBuilder ();
 			string result;
 			lock (client) {
 				foreach (var path in paths) {
 					if (client.GetProperty (new SvnPathTarget (path.ParentDirectory), SvnPropertyNames.SvnIgnore, out result)) {
 						int index = result.IndexOf (path.FileName + Environment.NewLine);
-						result = (index < 0) ? result : result.Remove (index, path.FileName.Length+1);
+						result = (index < 0) ? result : result.Remove (index, path.FileName.Length+Environment.NewLine.Length);
 						client.SetProperty (path.ParentDirectory, SvnPropertyNames.SvnIgnore, result);
 					}
 				}
