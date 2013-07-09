@@ -168,6 +168,10 @@
     <Compile Include="MonoDevelop.SourceEditor\FileRegistry.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SearchAndReplaceOptions.cs" />
     <Compile Include="MonoDevelop.SourceEditor\ErrorText.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.OptionPanels\CompletionOptionsPanel.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.SourceEditor.OptionPanels.CompletionOptionsPanel.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.OptionPanels\CompletionAppearancePanel.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.SourceEditor.OptionPanels.CompletionAppearancePanel.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

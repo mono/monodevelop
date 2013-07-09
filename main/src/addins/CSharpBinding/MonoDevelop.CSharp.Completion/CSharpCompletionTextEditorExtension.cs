@@ -279,7 +279,13 @@ namespace MonoDevelop.CSharp.Completion
 				Document.GetProjectContext (),
 				ctx
 			);
-
+			engine.AutomaticallyAddImports = AddImportedItemsToCompletionList.Value;
+			engine.IncludeKeywordsInCompletionList = IncludeKeywordsInCompletionList.Value;
+			if (FilterCompletionListByEditorBrowsable) {
+				engine.EditorBrowsableBehavior = IncludeEditorBrowsableAdvancedMembers ? EditorBrowsableBehavior.IncludeAdvanced : EditorBrowsableBehavior.Normal;
+			} else {
+				engine.EditorBrowsableBehavior = EditorBrowsableBehavior.Ignore;
+			}
 			if (Document.HasProject) {
 				var configuration = Document.Project.GetConfiguration (MonoDevelop.Ide.IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
 				var par = configuration != null ? configuration.CompilationParameters as CSharpCompilerParameters : null;
