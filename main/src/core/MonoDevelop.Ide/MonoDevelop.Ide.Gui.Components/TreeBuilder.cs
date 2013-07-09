@@ -278,13 +278,13 @@ namespace MonoDevelop.Ide.Gui.Components
 			void UpdateNode (NodeBuilder[] chain, NodeAttributes ats, object dataObject)
 			{
 				string text;
-				Gdk.Pixbuf icon;
-				Gdk.Pixbuf closedIcon;
+				Xwt.Drawing.Image icon;
+				Xwt.Drawing.Image closedIcon;
 				GetNodeInfo (pad, this, chain, dataObject, out text, out icon, out closedIcon);
 				SetNodeInfo (currentIter, ats, text, icon, closedIcon);
 			}
 			
-			internal static void GetNodeInfo (ExtensibleTreeView tree, ITreeBuilder tb, NodeBuilder[] chain, object dataObject, out string text, out Gdk.Pixbuf icon, out Gdk.Pixbuf closedIcon)
+			internal static void GetNodeInfo (ExtensibleTreeView tree, ITreeBuilder tb, NodeBuilder[] chain, object dataObject, out string text, out Xwt.Drawing.Image icon, out Xwt.Drawing.Image closedIcon)
 			{
 				icon = null;
 				closedIcon = null;
@@ -318,11 +318,11 @@ namespace MonoDevelop.Ide.Gui.Components
 					}
 					wclosedIcon = gicon;
 				}
-				icon = wicon != null ? wicon.ToPixbuf () : null;
-				closedIcon = wclosedIcon != null ? wclosedIcon.ToPixbuf () : null;
+				icon = wicon;
+				closedIcon = wclosedIcon;
 			}
 			
-			void SetNodeInfo (Gtk.TreeIter it, NodeAttributes ats, string text, Gdk.Pixbuf icon, Gdk.Pixbuf closedIcon)
+			void SetNodeInfo (Gtk.TreeIter it, NodeAttributes ats, string text, Xwt.Drawing.Image icon, Xwt.Drawing.Image closedIcon)
 			{
 				store.SetValue (it, ExtensibleTreeView.TextColumn, text);
 				if (icon != null) store.SetValue (it, ExtensibleTreeView.OpenIconColumn, icon);

@@ -159,7 +159,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			4 -- Builder chain
 			5 -- Expanded
 			*/
-			store = new Gtk.TreeStore (typeof(string), typeof(Gdk.Pixbuf), typeof(Gdk.Pixbuf), typeof(object), typeof(object), typeof(bool), typeof(bool));
+			store = new Gtk.TreeStore (typeof(string), typeof(Xwt.Drawing.Image), typeof(Xwt.Drawing.Image), typeof(object), typeof(object), typeof(bool), typeof(bool));
 			tree.Model = store;
 			tree.Selection.Mode = Gtk.SelectionMode.Multiple;
 			
@@ -333,7 +333,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			var dragObjects = new object [navs.Length];
 			for (int n=0; n<navs.Length; n++)
 				dragObjects [n] = navs [n].DataItem;
-			icon = (Gdk.Pixbuf) store.GetValue (navs[0].CurrentPosition._iter, OpenIconColumn);
+			icon = ((Xwt.Drawing.Image) store.GetValue (navs[0].CurrentPosition._iter, OpenIconColumn)).ToPixbuf (Gtk.IconSize.Menu);
 			return dragObjects;
 		}
 
@@ -2478,14 +2478,11 @@ namespace MonoDevelop.Ide.Gui.Components
 		}
 	}
 	
-	class ZoomableCellRendererPixbuf: Gtk.CellRendererPixbuf
+	class ZoomableCellRendererPixbuf: CellRendererImage
 	{
-		Gdk.Pixbuf image;
-		Gdk.Pixbuf imageOpen;
-		Gdk.Pixbuf imageClosed;
 		double zoom = 1f;
 		
-		Dictionary<Gdk.Pixbuf,Gdk.Pixbuf> resizedCache = new Dictionary<Gdk.Pixbuf, Gdk.Pixbuf> ();
+		Dictionary<Xwt.Drawing.Image,Xwt.Drawing.Image> resizedCache = new Dictionary<Xwt.Drawing.Image, Xwt.Drawing.Image> ();
 		
 		public double Zoom {
 			get { return zoom; }
@@ -2497,41 +2494,35 @@ namespace MonoDevelop.Ide.Gui.Components
 				}
 			}
 		}
-		
-		[GLib.Property ("image")]
-		public Gdk.Pixbuf Image {
+
+		public override Xwt.Drawing.Image Image {
 			get {
-				return image;
+				return base.Image;
 			}
 			set {
-				image = value;
-				Pixbuf = GetResized (image);
+				base.Image = GetResized (value);
 			}
 		}
-		
-		[GLib.Property ("image-expander-open")]
-		public Gdk.Pixbuf ImageExpanderOpen {
+
+		public override Xwt.Drawing.Image ImageExpanderOpen {
 			get {
-				return imageOpen;
+				return base.ImageExpanderOpen;
 			}
 			set {
-				imageOpen = value;
-				PixbufExpanderOpen = GetResized (imageOpen);
+				base.ImageExpanderOpen = GetResized (value);
 			}
 		}
-		
-		[GLib.Property ("image-expander-closed")]
-		public Gdk.Pixbuf ImageExpanderClosed {
+
+		public override Xwt.Drawing.Image ImageExpanderClosed {
 			get {
-				return imageClosed;
+				return base.ImageExpanderClosed;
 			}
 			set {
-				imageClosed = value;
-				PixbufExpanderClosed = GetResized (imageClosed);
+				base.ImageExpanderClosed = GetResized (value);
 			}
 		}
-		
-		Gdk.Pixbuf GetResized (Gdk.Pixbuf value)
+
+		Xwt.Drawing.Image GetResized (Xwt.Drawing.Image value)
 		{
 			if (zoom == 1)
 				return value;
@@ -2541,7 +2532,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			if (value == null)
 				return null;
 
-			Gdk.Pixbuf resized;
+			Xwt.Drawing.Image resized;
 			if (resizedCache.TryGetValue (value, out resized))
 				return resized;
 			
@@ -2549,7 +2540,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			int h = (int) (zoom * (double) value.Height);
 			if (w == 0) w = 1;
 			if (h == 0) h = 1;
-			resized = value.ScaleSimple (w, h, Gdk.InterpType.Hyper);
+			resized = value.WithSize (w, h);
 			resizedCache [value] = resized;
 			return resized;
 		}

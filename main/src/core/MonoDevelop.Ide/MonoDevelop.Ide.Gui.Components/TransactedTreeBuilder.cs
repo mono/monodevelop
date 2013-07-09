@@ -654,8 +654,8 @@ namespace MonoDevelop.Ide.Gui.Components
 			void UpdateNode (TreeNode n, NodeBuilder[] chain, NodeAttributes ats, object dataObject)
 			{
 				string text;
-				Gdk.Pixbuf icon;
-				Gdk.Pixbuf closedIcon;
+				Xwt.Drawing.Image icon;
+				Xwt.Drawing.Image closedIcon;
 				TreeBuilder.GetNodeInfo (tree, this, chain, dataObject, out text, out icon, out closedIcon);
 
 				n.Text = text;
@@ -674,8 +674,8 @@ namespace MonoDevelop.Ide.Gui.Components
 		internal class TreeNode
 		{
 			public string Text;
-			public Gdk.Pixbuf Icon;
-			public Gdk.Pixbuf ClosedIcon;
+			public Xwt.Drawing.Image Icon;
+			public Xwt.Drawing.Image ClosedIcon;
 			
 			public bool Selected;
 			public bool Filled;
