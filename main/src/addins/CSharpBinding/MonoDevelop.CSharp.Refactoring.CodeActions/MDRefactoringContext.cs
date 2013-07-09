@@ -39,6 +39,7 @@ using MonoDevelop.CSharp.Refactoring.CodeIssues;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using MonoDevelop.CSharp.Formatting;
+using System.Linq;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
@@ -160,7 +161,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			return new MDRefactoringScript (this, formattingOptions);
 		}
 
-		public MDRefactoringContext (Document document, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken)) : base (document.GetSharedResolver ().Result, cancellationToken)
+		public MDRefactoringContext (Document document, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken)) : base (document.GetSharedResolver ().Result, document.ParsedDocument.Errors.ToList(), cancellationToken)
 		{
 			if (document == null)
 				throw new ArgumentNullException ("document");
@@ -173,7 +174,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			Services.AddService (typeof(NamingConventionService), policy.CreateNRefactoryService ());
 		}
 
-		public MDRefactoringContext (DotNetProject project, TextEditorData data, ParsedDocument parsedDocument, CSharpAstResolver resolver, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken)) : base (resolver, cancellationToken)
+		public MDRefactoringContext (DotNetProject project, TextEditorData data, ParsedDocument parsedDocument, CSharpAstResolver resolver, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken)) : base (resolver, parsedDocument.Errors.ToList(), cancellationToken)
 		{
 			this.TextEditor = data;
 			this.ParsedDocument = parsedDocument;
