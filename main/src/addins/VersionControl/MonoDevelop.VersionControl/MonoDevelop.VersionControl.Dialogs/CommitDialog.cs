@@ -138,16 +138,31 @@ namespace MonoDevelop.VersionControl.Dialogs
 			if (docList.Count != 0) {
 				AlertButton response = MessageService.GenericAlert (
 					MonoDevelop.Ide.Gui.Stock.Question,
-					GettextCatalog.GetString ("Files has unsaved changes"),
-					GettextCatalog.GetString ("Do you want to save before?"),
-					new AlertButton[] { AlertButton.Cancel, AlertButton.No, AlertButton.Yes });
+					GettextCatalog.GetString ("You are trying to commit files which have unsaved changes."),
+					GettextCatalog.GetString ("Do you want to save the changes before committing?"),
+					new AlertButton[] {
+						AlertButton.Cancel,
+						new AlertButton ("Don't Save"),
+						AlertButton.Save
+					}
+				);
 
 				if (response == AlertButton.Cancel)
 					return;
 
-				if (response == AlertButton.Yes)
+				if (response == AlertButton.Save) {
+					// Go through all the items and save them.
 					foreach (var item in docList)
 						item.Save ();
+
+					// Check if save failed on any item and abort.
+					foreach (var item in docList)
+						if (item.IsDirty) {
+							MessageService.ShowMessage (GettextCatalog.GetString (
+								"Some files could not be saved. Commit operation aborted"));
+							return;
+						}
+				}
 
 				docList.Clear ();
 			}
