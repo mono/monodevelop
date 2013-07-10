@@ -355,9 +355,15 @@ namespace MonoDevelop.SourceEditor
 		
 		public override void Draw (TextEditor editor, Cairo.Context g, double y, LineMetrics metrics)
 		{
+
+		}
+
+		public override void DrawAfterEol (TextEditor textEditor, Cairo.Context g, double y, EndOfLineMetrics metrics)
+		{
 			EnsureLayoutCreated (editor);
-			double x = editor.TextViewMargin.XOffset;
-			int errorCounterWidth = GetErrorCountBounds (metrics.Layout).Item1;
+			int errorCounterWidth = 0, eh = 0;
+			if (errorCountLayout != null) 
+				errorCountLayout.GetPixelSize (out errorCounterWidth, out eh);
 
 			var sx = metrics.TextRenderEndPosition;
 			var width = LayoutWidth + errorCounterWidth + editor.LineHeight;
@@ -397,9 +403,7 @@ namespace MonoDevelop.SourceEditor
 				g.Fill ();
 
 				g.Save ();
-				int ew, eh;
-				errorCountLayout.GetPixelSize (out ew, out eh);
-				g.Translate (sx + width - errorCounterWidth - editor.LineHeight / 2 + (errorCounterWidth - ew) / 2, y + 1);
+				g.Translate (sx + width - errorCounterWidth - editor.LineHeight / 2 + (errorCounterWidth - errorCounterWidth) / 2, y + 1);
 				g.Color = CounterColor.SecondColor;
 				g.ShowLayout (errorCountLayout);
 				g.Restore ();
@@ -422,7 +426,7 @@ namespace MonoDevelop.SourceEditor
 
 		public override bool CanDrawBackground (Margin margin)
 		{
-			return margin is FoldMarkerMargin || margin is GutterMargin || margin is IconMargin;
+			return margin is FoldMarkerMargin || margin is GutterMargin || margin is IconMargin || margin is ActionMargin;
 		}
 
 		public override bool CanDrawForeground (Margin margin)
@@ -463,7 +467,7 @@ namespace MonoDevelop.SourceEditor
 
 		public override bool DrawBackground (TextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
 		{
-			if (metrics.Margin is FoldMarkerMargin || metrics.Margin is GutterMargin)
+			if (metrics.Margin is FoldMarkerMargin || metrics.Margin is GutterMargin || metrics.Margin is ActionMargin)
 				return DrawMarginBackground (editor, metrics.Margin, cr, metrics.Area, lineSegment, metrics.LineNumber, metrics.X, metrics.Y, metrics.Height);
 			if (metrics.Margin is IconMargin) {
 				DrawIconMarginBackground (editor, cr, metrics);
@@ -511,7 +515,6 @@ namespace MonoDevelop.SourceEditor
 
 			// draw background
 			if (!markerShouldDrawnAsHidden) {
-
 				DrawRectangle (g, x, y, right, editor.LineHeight);
 				g.Color = LineColor.Color;
 				g.Fill ();

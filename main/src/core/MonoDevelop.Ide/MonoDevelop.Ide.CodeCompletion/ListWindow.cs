@@ -227,6 +227,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		int lastCommitCharEndoffset = -1;
 		public virtual string PartialWord {
 			get {
+				if (CompletionWidget == null)
+					return "";
 				return CompletionWidget.GetText (StartOffset, Math.Max (StartOffset, lastCommitCharEndoffset > 0 ? lastCommitCharEndoffset : CompletionWidget.CaretOffset)); 
 			}
 			

@@ -114,6 +114,7 @@
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Completion.CSharpCompletionTextEditorExtension" />
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Highlighting.HighlightUsagesExtension" />
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.PathedDocumentTextEditorExtension" />
+<!--	<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.UnitTestTextEditorExtension" /> -->
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/MD1SerializationMaps">
@@ -197,6 +198,10 @@
 			_title = "Move type to another file"
 			_description = "Moves current type to another file that matches the name of the type."
 			class = "MonoDevelop.CSharp.Refactoring.CodeActions.MoveTypeToFile" />
+		<Action mimeType="text/x-csharp"
+			_title = "Convert to enum"
+			_description = "Converts constant fields to enumeration"
+			class = "MonoDevelop.CSharp.Refactoring.CodeActions.ConvertToEnumAction" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/TextEditorResolver">

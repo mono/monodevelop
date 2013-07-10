@@ -26,6 +26,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
+
 using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
@@ -256,12 +258,12 @@ namespace MonoDevelop.Ide.Projects
 			if (filters != null) {
 				pattern = filters[fileTypeCombo.Active].Patterns [0];
 			}
-			pattern = System.Text.RegularExpressions.Regex.Escape (pattern);
+			pattern = Regex.Escape (pattern);
 			pattern = pattern.Replace ("\\*",".*");
 			pattern = pattern.Replace ("\\?",".");
 			pattern = pattern.Replace ("\\|","$|^");
 			pattern = "^" + pattern + "$";
-			System.Text.RegularExpressions.Regex regex = new System.Text.RegularExpressions.Regex (pattern);
+			var regex = new Regex (pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
 			string dir = GetSelectedDirectory ().ToString ();
 			foreach (ProjectFile pf in project.Files) {

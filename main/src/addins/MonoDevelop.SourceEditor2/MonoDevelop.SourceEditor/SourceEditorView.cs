@@ -1821,8 +1821,16 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (data == null || data.Document == null)
 				return;
+
 			int triggerOffset = ctx.TriggerOffset;
 			int length = String.IsNullOrEmpty (partial_word) ? 0 : partial_word.Length;
+
+			// for named arguments invoke(arg:<Expr>);
+			if (complete_word.EndsWith (":", StringComparison.Ordinal)) {
+				if (data.GetCharAt (triggerOffset + length) == ':')
+					length++;
+			}
+
 			bool blockMode = false;
 			if (data.IsSomethingSelected) {
 				blockMode = data.MainSelection.SelectionMode == Mono.TextEditor.SelectionMode.Block;

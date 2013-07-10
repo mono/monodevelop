@@ -146,6 +146,9 @@ namespace MonoDevelop.Ide
 				return GetMimeTypeIsText (mimeType);
 			}
 
+			if (!File.Exists (file))
+				return false;
+
 			using (var f = File.OpenRead (file)) {
 				var buf = new byte[8192];
 				var read = f.Read (buf, 0, buf.Length);

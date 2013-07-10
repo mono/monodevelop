@@ -35,6 +35,7 @@ using Mono.TextEditor;
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Fonts;
+using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -321,12 +322,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			int newIndex = GetIndex (false, SelectedItem) + relative;
 			newIndex = Math.Min (filteredItems.Count - 1, Math.Max (0, newIndex));
+
 			int newSelection = GetItem (false, newIndex);
 			if (newSelection < 0)
 				return;
 
 			if (SelectedItem == newSelection && relative < 0) {
-				SelectedItem = 0;
+				SelectedItem = GetItem (false, 0);
 			} else {
 				SelectedItem = newSelection;
 			}
@@ -635,8 +637,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 				var lt = win.DataProvider.GetText (left);
 				var rt = win.DataProvider.GetText (right);
 				var result = string.Compare (lt, rt, StringComparison.Ordinal);
-				if (result == 0)
+				if (result == 0) {
+					lt = win.DataProvider.GetDescription (left);
+					rt = win.DataProvider.GetDescription (right);
+					result = string.Compare (lt, rt, StringComparison.Ordinal);
+					if (result != 0)
+						return result;
 					return right.CompareTo (left);
+				}
 				return result;
 			});
 			categories.Sort (delegate (Category left, Category right) {
@@ -719,7 +727,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 				requisition.Height += requisition.Height % rowHeight;
 		}
 
-		const int maxVisibleRows = 7;
 		void CalcVisibleRows ()
 		{
 
@@ -728,7 +735,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			layout.GetPixelSize (out rowWidth, out rowHeight);
 			rowHeight = Math.Max (1, rowHeight * 3 / 2);
 
-			int newHeight = rowHeight * maxVisibleRows;
+			int newHeight = rowHeight * CompletionTextEditorExtension.CompletionListRows;
 			if (Allocation.Height != listWidth || Allocation.Width != newHeight)
 				this.SetSizeRequest (listWidth, newHeight);
 			SetAdjustments ();

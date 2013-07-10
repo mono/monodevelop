@@ -256,6 +256,8 @@ namespace Mono.TextEditor
 			StopTimer ();
 			editor.Document.FoldTreeUpdated -= HandleEditorDocumentFoldTreeUpdated;
 			layout = layout.Kill ();
+			foldings = null;
+			startFoldings = containingFoldings = endFoldings = null;
 		}
 		
 		void DrawFoldSegment (Cairo.Context ctx, double x, double y, bool isOpen, bool isSelected)

@@ -161,8 +161,7 @@ namespace MonoDevelop.CSharp.Completion
 			int skipChars = 0;
 			bool runParameterCompletionCommand = false;
 
-			if (keyChar == '(' && !IsDelegateExpected && Entity is IMethod && !HasNonMethodMembersWithSameName ((IMember)Entity)) {
-				
+			if (CompletionTextEditorExtension.AddParenthesesAfterCompletion && !IsDelegateExpected && Entity is IMethod && !HasNonMethodMembersWithSameName ((IMember)Entity)) {
 				var line = Editor.GetLine (Editor.Caret.Line);
 				var method = (IMethod)Entity;
 				var start = window.CodeCompletionContext.TriggerOffset + partialWord.Length + 2;
@@ -184,65 +183,86 @@ namespace MonoDevelop.CSharp.Completion
 					insertSemicolon = true;
 
 				int pos;
-				if (SearchBracket (window.CodeCompletionContext.TriggerOffset + partialWord.Length, out pos)) {
-					window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, partialWord, text);
-					ka |= KeyActions.Ignore;
-					int bracketOffset = pos + text.Length - partialWord.Length;
-					
-					if (CSharpTextEditorIndentation.OnTheFlyFormatting) {
-						// correct white space before method call.
-						char charBeforeBracket = bracketOffset > 1 ? Editor.GetCharAt (bracketOffset - 2) : '\0';
-						if (Policy.BeforeMethodCallParentheses) {
-							if (charBeforeBracket != ' ') {
-								Editor.Insert (bracketOffset - 1, " ");
-								bracketOffset++;
+//				if (SearchBracket (window.CodeCompletionContext.TriggerOffset + partialWord.Length, out pos)) {
+//					window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, partialWord, text);
+//					ka |= KeyActions.Ignore;
+//					int bracketOffset = pos + text.Length - partialWord.Length;
+//					
+//					if (CSharpTextEditorIndentation.OnTheFlyFormatting) {
+//						// correct white space before method call.
+//						char charBeforeBracket = bracketOffset > 1 ? Editor.GetCharAt (bracketOffset - 2) : '\0';
+//						if (Policy.BeforeMethodCallParentheses) {
+//							if (charBeforeBracket != ' ') {
+//								Editor.Insert (bracketOffset - 1, " ");
+//								bracketOffset++;
+//							}
+//						} else { 
+//							if (char.IsWhiteSpace (charBeforeBracket)) {
+//								while (bracketOffset > 1 && char.IsWhiteSpace (Editor.GetCharAt (bracketOffset - 2))) {
+//									Editor.Remove (bracketOffset - 1, 1);
+//									bracketOffset--;
+//								}
+//							}
+//						}
+//					}
+//
+//					Editor.Caret.Offset = bracketOffset;
+//// Currently broken/needs fine tuning:
+////					if (insertSemicolon && Editor.GetCharAt (bracketOffset - 1) == '(') {
+////						Editor.Insert (bracketOffset + 1, ";");
+////						// Need to reinsert the ')' as skip char because we inserted the ';' after the ')' and skip chars get deleted 
+////						// when an insert after the skip char position occur.
+////						Editor.SetSkipChar (bracketOffset, ')');
+////						Editor.SetSkipChar (bracketOffset + 1, ';');
+////					}
+//					if (runParameterCompletionCommand)
+//						editorCompletion.RunParameterCompletionCommand ();
+//					return;
+//				}
+				Gdk.Key[] keys = new [] { Gdk.Key.Return, Gdk.Key.Tab, Gdk.Key.space, Gdk.Key.KP_Enter, Gdk.Key.ISO_Enter };
+				if (keys.Contains (closeChar) || keyChar == '.') {
+					if (HasAnyOverloadWithParameters (method)) {
+						if (CompletionTextEditorExtension.AddOpeningOnly) {
+							text += "(|";
+							skipChars = 0;
+						} else {
+							if (keyChar == '.') {
+								text += "()|";
+								skipChars = 0;
+							} else {
+								if (insertSemicolon) {
+									text += "(|);";
+									skipChars = 2;
+								} else {
+									text += "(|)";
+									skipChars = 1;
+								}
 							}
-						} else { 
-							if (char.IsWhiteSpace (charBeforeBracket)) {
-								while (bracketOffset > 1 && char.IsWhiteSpace (Editor.GetCharAt (bracketOffset - 2))) {
-									Editor.Remove (bracketOffset - 1, 1);
-									bracketOffset--;
+						}
+						runParameterCompletionCommand = true;
+					} else {
+						if (CompletionTextEditorExtension.AddOpeningOnly) {
+							text += "(|";
+							skipChars = 0;
+						} else {
+							if (keyChar == '.') {
+								text += "().|";
+								skipChars = 0;
+							} else {
+								if (insertSemicolon) {
+									text += "();|";
+								} else {
+									text += "()|";
 								}
 							}
 						}
 					}
-
-					Editor.Caret.Offset = bracketOffset;
-// Currently broken/needs fine tuning:
-//					if (insertSemicolon && Editor.GetCharAt (bracketOffset - 1) == '(') {
-//						Editor.Insert (bracketOffset + 1, ";");
-//						// Need to reinsert the ')' as skip char because we inserted the ';' after the ')' and skip chars get deleted 
-//						// when an insert after the skip char position occur.
-//						Editor.SetSkipChar (bracketOffset, ')');
-//						Editor.SetSkipChar (bracketOffset + 1, ';');
-//					}
-					if (runParameterCompletionCommand)
-						editorCompletion.RunParameterCompletionCommand ();
-					return;
-				}
-				
-				if (HasAnyOverloadWithParameters (method)) {
-					if (insertSemicolon) {
-						text += "(|);";
-						skipChars = 2;
-					} else {
-						text += "(|)";
-						skipChars = 1;
-					}
-					runParameterCompletionCommand = true;
-				} else {
-					if (insertSemicolon) {
-						text += "();|";
-					} else {
-						text += "()|";
+					if (keyChar == '(') {
+						var skipChar = Editor.SkipChars.LastOrDefault ();
+						if (skipChar != null && skipChar.Offset == (window.CodeCompletionContext.TriggerOffset + partialWord.Length) && skipChar.Char == ')')
+							Editor.Remove (skipChar.Offset, 1);
 					}
 				}
-				if (keyChar == '(') {
-					var skipChar = Editor.SkipChars.LastOrDefault ();
-					if (skipChar != null && skipChar.Offset == (window.CodeCompletionContext.TriggerOffset + partialWord.Length) && skipChar.Char == ')')
-						Editor.Remove (skipChar.Offset, 1);
-				}
-				
 				ka |= KeyActions.Ignore;
 			}
 			

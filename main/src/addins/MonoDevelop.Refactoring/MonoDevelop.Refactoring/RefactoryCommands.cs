@@ -43,6 +43,7 @@ using ICSharpCode.NRefactory.Semantics;
 using MonoDevelop.CodeActions;
 using MonoDevelop.SourceEditor.QuickTasks;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.Refactoring
 {
@@ -206,8 +207,12 @@ namespace MonoDevelop.Refactoring
 			}
 		}
 
-		IEnumerable<MonoDevelop.CodeActions.CodeAction> validActions;
-		MonoDevelop.Ide.TypeSystem.ParsedDocument lastDocument;
+		class RefactoringDocumentInfo
+		{
+			public IEnumerable<MonoDevelop.CodeActions.CodeAction> validActions;
+			public MonoDevelop.Ide.TypeSystem.ParsedDocument lastDocument;
+		}
+
 
 		DocumentLocation lastLocation;
 
@@ -269,23 +274,27 @@ namespace MonoDevelop.Refactoring
 					ciset.CommandInfos.Add (info, new Action (new RefactoringOperationWrapper (refactoring, options).Operation));
 				}
 			}
-
+			var refactoringInfo = doc.Annotation<RefactoringDocumentInfo> ();
+			if (refactoringInfo == null) {
+				refactoringInfo = new RefactoringDocumentInfo ();
+				doc.AddAnnotation (refactoringInfo);
+			}
 			var loc = doc.Editor.Caret.Location;
 			bool first = true;
-			if (lastDocument != doc.ParsedDocument || loc != lastLocation) {
+			if (refactoringInfo.lastDocument != doc.ParsedDocument || loc != lastLocation) {
 
 				if (QuickTaskStrip.EnableFancyFeatures) {
 					var ext = doc.GetContent <CodeActionEditorExtension> ();
-					validActions = ext != null ? ext.GetCurrentFixes () : null;
+					refactoringInfo.validActions = ext != null ? ext.GetCurrentFixes () : null;
 				} else {
-					validActions = RefactoringService.GetValidActions (doc, loc).Result;
+					refactoringInfo.validActions = RefactoringService.GetValidActions (doc, loc).Result;
 				}
 
 				lastLocation = loc;
-				lastDocument = doc.ParsedDocument;
+				refactoringInfo.lastDocument = doc.ParsedDocument;
 			}
-			if (validActions != null) {
-				foreach (var fix_ in validActions) {
+			if (refactoringInfo.validActions != null) {
+				foreach (var fix_ in refactoringInfo.validActions) {
 					var fix = fix_;
 					if (first) {
 						first = false;

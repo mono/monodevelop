@@ -408,6 +408,7 @@ namespace MonoDevelop.Ide.Gui
 			DetachFromPathedDocument ();
 			commandHandler = null;
 			document = null;
+			extensionContext = null;
 		}
 		
 		#region lazy UI element creation

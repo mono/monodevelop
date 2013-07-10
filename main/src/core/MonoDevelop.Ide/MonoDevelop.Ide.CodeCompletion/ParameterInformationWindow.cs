@@ -191,6 +191,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			ChangeOverload ();
 			Hide ();
+			Ext = null;
+			Widget = null;
 		}
 	}
 }

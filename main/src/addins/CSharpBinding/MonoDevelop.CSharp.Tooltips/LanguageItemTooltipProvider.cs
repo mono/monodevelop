@@ -126,6 +126,8 @@ namespace MonoDevelop.SourceEditor
 		public void Dispose ()
 		{
 			DestroyLastTooltipWindow ();
+			lastNode = null;
+			lastResult = null;
 		}
 
 		#endregion

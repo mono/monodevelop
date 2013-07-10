@@ -171,7 +171,11 @@ namespace MonoDevelop.CSharp.Completion
 			unit = null;
 			CSharpUnresolvedFile = null;
 			UnresolvedFileCompilation = null;
-			Document.DocumentParsed -= HandleDocumentParsed; 
+			Document.DocumentParsed -= HandleDocumentParsed;
+			if (typeSystemSegmentTree != null) {
+				typeSystemSegmentTree.RemoveListener ();
+				typeSystemSegmentTree = null;
+			}
 			base.Dispose ();
 		}
 
@@ -275,7 +279,13 @@ namespace MonoDevelop.CSharp.Completion
 				Document.GetProjectContext (),
 				ctx
 			);
-
+			engine.AutomaticallyAddImports = AddImportedItemsToCompletionList.Value;
+			engine.IncludeKeywordsInCompletionList = IncludeKeywordsInCompletionList.Value;
+			if (FilterCompletionListByEditorBrowsable) {
+				engine.EditorBrowsableBehavior = IncludeEditorBrowsableAdvancedMembers ? EditorBrowsableBehavior.IncludeAdvanced : EditorBrowsableBehavior.Normal;
+			} else {
+				engine.EditorBrowsableBehavior = EditorBrowsableBehavior.Ignore;
+			}
 			if (Document.HasProject) {
 				var configuration = Document.Project.GetConfiguration (MonoDevelop.Ide.IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
 				var par = configuration != null ? configuration.CompilationParameters as CSharpCompilerParameters : null;
@@ -922,19 +932,21 @@ namespace MonoDevelop.CSharp.Completion
 				public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
 				{
 					Initialize ();
-					string text = insertNamespace ? type.Namespace + "." + type.Name : type.Name;
-					if (text != GetCurrentWord (window)) {
-						if (window.WasShiftPressed && generateUsing) 
-							text = type.Namespace + "." + text;
-						window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, GetCurrentWord (window), text);
-					}
+					using (var undo = doc.Editor.OpenUndoGroup ()) {
+						string text = insertNamespace ? type.Namespace + "." + type.Name : type.Name;
+						if (text != GetCurrentWord (window)) {
+							if (window.WasShiftPressed && generateUsing) 
+								text = type.Namespace + "." + text;
+							window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, GetCurrentWord (window), text);
+						}
 
-					if (!window.WasShiftPressed && generateUsing) {
-						var generator = CodeGenerator.CreateGenerator (doc);
-						if (generator != null) {
-							generator.AddGlobalNamespaceImport (doc, type.Namespace);
-							// reparse
-							doc.UpdateParseDocument ();
+						if (!window.WasShiftPressed && generateUsing) {
+							var generator = CodeGenerator.CreateGenerator (doc);
+							if (generator != null) {
+								generator.AddGlobalNamespaceImport (doc, type.Namespace);
+								// reparse
+								doc.UpdateParseDocument ();
+							}
 						}
 					}
 				}

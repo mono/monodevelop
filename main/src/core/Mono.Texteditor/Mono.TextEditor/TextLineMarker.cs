@@ -92,6 +92,13 @@ namespace Mono.TextEditor
 		public double WholeLineWidth { get; internal set; }
 	}
 
+	public class EndOfLineMetrics
+	{
+		public DocumentLine LineSegment { get; internal set; }
+		public double TextRenderEndPosition { get; internal set; }
+		public double LineHeight { get; internal set; }
+	}
+
 	public class TextLineMarker
 	{
 		DocumentLine lineSegment;
@@ -147,6 +154,13 @@ namespace Mono.TextEditor
 		public virtual bool DrawBackground (TextEditor editor, Cairo.Context cr, double y, LineMetrics metrics)
 		{
 			return false;
+		}
+
+		/// <summary>
+		/// Is used to draw in the area after the visible text.
+		/// </summary>
+		public virtual void DrawAfterEol (TextEditor textEditor, Cairo.Context cr, double y, EndOfLineMetrics lineHeight)
+		{
 		}
 	}
 
