@@ -39,6 +39,8 @@ using Gtk;
 
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
+using MonoDevelop.Components;
+using System.IO;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
@@ -47,7 +49,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 	public abstract class ItemToolboxNode : ICustomDataItem, IComparable, IComparable<ItemToolboxNode>
 	{
 		[NonSerialized]
-		Gdk.Pixbuf icon;
+		Xwt.Drawing.Image icon;
 		
 		[ItemProperty ("name")]
 		string name = "";
@@ -69,7 +71,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		#region properties
 		
 		[Browsable(false)]
-		public virtual Gdk.Pixbuf Icon {
+		public virtual Xwt.Drawing.Image Icon {
 			get { return icon; }
 			set { icon = value; }
 		}
@@ -151,12 +153,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		#endregion Behaviours
 		
 		
-		protected Gdk.Pixbuf ImageToPixbuf (System.Drawing.Image image)
+		protected Xwt.Drawing.Image ImageToPixbuf (System.Drawing.Image image)
 		{
 			using (System.IO.MemoryStream stream = new System.IO.MemoryStream ()) {
 				image.Save (stream, System.Drawing.Imaging.ImageFormat.Png);
 				stream.Position = 0;
-				return new Gdk.Pixbuf (stream);
+				return Xwt.Drawing.Image.FromStream (stream);
 			}
 		}
 		
@@ -185,7 +187,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				DataItem item = new DataItem ();
 				item.Name = "icon";
 				dc.Add (item);
-				string iconString = Convert.ToBase64String (icon.SaveToBuffer ("png"));
+				MemoryStream ms = new MemoryStream ();
+				icon.Save (ms, Xwt.Drawing.ImageFileType.Png);
+				string iconString = Convert.ToBase64String (ms.ToArray ());
 				item.ItemData.Add (new DataValue ("enc", iconString));
 			}
 			
@@ -208,7 +212,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			DataItem iconItem = data.Extract ("icon") as DataItem;
 			if (iconItem != null) {
 				DataValue iconData = (DataValue) iconItem ["enc"];
-				this.icon = new Gdk.Pixbuf (Convert.FromBase64String(iconData.Value));
+				var ms = new MemoryStream (Convert.FromBase64String (iconData.Value));
+				this.icon = Xwt.Drawing.Image.FromStream (ms);
 			}
 			
 			handler.Deserialize (this, data);

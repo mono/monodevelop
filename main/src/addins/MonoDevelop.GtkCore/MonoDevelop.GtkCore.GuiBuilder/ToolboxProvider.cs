@@ -10,6 +10,7 @@ using MonoDevelop.Core.Serialization;
 using Stetic;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -123,7 +124,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			componentType = type;
 			className = type.ClassName;
 			Category = GetCategoryName (type.Category);
-			Icon = type.Icon;
+			Icon = type.Icon.ToXwtImage ();
 			gtkVersion = type.TargetGtkVersion;
 		}
 		

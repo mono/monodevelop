@@ -49,7 +49,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 						continue;
 					yield return new TemplateToolboxNode (ct) {
 						Category = category,
-						Icon = ImageService.GetPixbuf ("md-template", Gtk.IconSize.Menu)
+						Icon = ImageService.GetIcon ("md-template", Gtk.IconSize.Menu)
 					};
 				}
 			}

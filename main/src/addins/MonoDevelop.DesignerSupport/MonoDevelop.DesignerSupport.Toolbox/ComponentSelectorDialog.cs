@@ -142,7 +142,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		void AddItem (ComponentIndexFile ifile, ItemToolboxNode co)
 		{
-			Gdk.Pixbuf img = co.Icon != null ? co.Icon.ScaleSimple (16, 16, Gdk.InterpType.Bilinear) : null;
+			Xwt.Drawing.Image img = co.Icon != null ? co.Icon.WithSize (16, 16) : null;
 			if (showCategories) {
 				TreeIter it;
 				bool found = false;
