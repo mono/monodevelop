@@ -55,15 +55,15 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 		}
 
 		/// <summary>
-		/// The sibling actions of this action, ie those actions which represent the same kind
-		/// of fix, but in a different part of the document.
+		/// All the sibling actions of this action, ie those actions which represent the same kind
+		/// of fix. This list includes the current action. 
 		/// </summary>
 		/// <value>The sibling actions.</value>
 		public IList<CodeAction> SiblingActions { get; set; }
 		
 		public override bool SupportsBatchRunning {
 			get{
-				return SiblingActions != null;
+				return SiblingActions != null && SiblingActions.Count > 1;
 			}
 		}
 		

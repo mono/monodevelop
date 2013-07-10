@@ -57,7 +57,6 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			DefaultSeverity = attr.Severity;
 			IssueMarker = attr.IssueMarker;
 			MimeType = "text/x-csharp";
-			SupportsBatchFixing = attr.SupportsBatchFixing;
 		}
 
 		public override IEnumerable<CodeIssue> GetIssues (object ctx, CancellationToken cancellationToken)
@@ -84,7 +83,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 						continue;
 					}
 					var nrefactoryCodeAction = new NRefactoryCodeAction (providerIdString, act.Description, act);
-					if (SupportsBatchFixing) {
+					if (act.SiblingKey != null) {
 						// make sure the action has a list of its siblings
 						IList<ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction> siblingGroup;
 						if (!actionGroups.TryGetValue(act.SiblingKey, out siblingGroup)) {

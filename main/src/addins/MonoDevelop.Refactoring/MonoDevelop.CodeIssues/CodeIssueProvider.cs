@@ -78,12 +78,6 @@ namespace MonoDevelop.CodeIssues
 		/// Note: There is only one code issue provider generated therfore providers need to be state less.
 		/// </summary>
 		public IssueMarker IssueMarker { get; set; }
-		
-		/// <summary>
-		/// Gets or sets a value indicating whether this <see cref="MonoDevelop.CodeIssues.CodeIssueProvider"/> supports batch fixing.
-		/// </summary>
-		/// <value><c>true</c> if supports batch fixing; otherwise, <c>false</c>.</value>
-		public bool SupportsBatchFixing { get; set; }
 
 		/// <summary>
 		/// Gets the identifier string used as property ID tag.

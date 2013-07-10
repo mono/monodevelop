@@ -73,7 +73,7 @@ namespace MonoDevelop.CodeIssues
 					foreach (var r in provider.GetIssues (context, cancellationToken)) {
 						var fixes = new List<GenericFix> (r.Actions.Where (a => a != null).Select (a => {
 							Action batchAction = null;
-							if (provider.SupportsBatchFixing)
+							if (a.SupportsBatchRunning)
 								batchAction = () => a.BatchRun (input, loc);
 							return new GenericFix (
 								a.Title,

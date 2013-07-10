@@ -136,11 +136,11 @@ namespace MonoDevelop.CodeActions
 				subMenu.Add (thisInstanceMenuItem);
 				if (fix.SupportsBatchRunning) {
 					var batchRunMenuItem = new Gtk.MenuItem (GettextCatalog.GetString ("All in this file"));
-					batchRunMenuItem.Activated += new ContextActionRunner (fix, document, loc).BatchRun;
 					batchRunMenuItem.Activated += delegate {
 						ConfirmUsage (fix.IdString);
 						menu.Destroy ();
 					};
+					batchRunMenuItem.Activated += new ContextActionRunner (fix, document, loc).BatchRun;
 					subMenu.Add (batchRunMenuItem);
 				}
 				menuItem.Submenu = subMenu;
