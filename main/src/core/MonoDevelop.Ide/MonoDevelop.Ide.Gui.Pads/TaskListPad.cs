@@ -44,8 +44,7 @@ using MonoDevelop.Components.Docking;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {
-	
-	public class TaskListPad : IPadContent
+	class TaskListPad : IPadContent
 	{
 		Widget control;
 		ITaskListView activeView;

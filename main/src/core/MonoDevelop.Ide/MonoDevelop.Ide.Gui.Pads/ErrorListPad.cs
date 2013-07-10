@@ -51,7 +51,7 @@ using MonoDevelop.Ide.Commands;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {
-	public class ErrorListPad : IPadContent
+	class ErrorListPad : IPadContent
 	{
 		HPaned control;
 		ScrolledWindow sw;

@@ -35,7 +35,7 @@ using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 {
-	public class ClassBrowserPad : SolutionPad
+	class ClassBrowserPad : SolutionPad
 	{
 		ClassBrowserPadWidget widget;
 		
