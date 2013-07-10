@@ -800,6 +800,7 @@ namespace MonoDevelop.VersionControl
 		}
 	}
 
+	[Flags]
 	public enum VersionInfoQueryFlags
 	{
 		None = 0,
