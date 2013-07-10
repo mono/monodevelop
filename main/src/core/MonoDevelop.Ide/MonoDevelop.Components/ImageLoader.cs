@@ -35,7 +35,7 @@ namespace MonoDevelop.Components
 	public class ImageLoader
 	{
 		string url;
-		Gdk.Pixbuf image;
+		Xwt.Drawing.Image image;
 		NullProgressMonitor loadMonitor;
 		IAsyncOperation loadOperation;
 		
@@ -47,7 +47,7 @@ namespace MonoDevelop.Components
 			Load ();
 		}
 		
-		public Gdk.Pixbuf Pixbuf {
+		public Xwt.Drawing.Image Image {
 			get {
 				return image;
 			}
@@ -73,7 +73,7 @@ namespace MonoDevelop.Components
 					MonoDevelop.Ide.DispatchService.GuiSyncDispatch (delegate {
 						Gdk.PixbufLoader l = new Gdk.PixbufLoader (resp.ContentType);
 						l.Write (data);
-						image = l.Pixbuf;
+						image = l.Pixbuf.ToXwtImage ();
 						l.Close ();
 						monitor.Dispose ();
 					});
