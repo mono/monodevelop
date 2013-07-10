@@ -98,6 +98,9 @@
 		<Condition id="ItemType" value="IFolderItem">
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenInTerminal" />
 		</Condition>
+		<Condition id="ItemType" value="Project|UnknownSolutionItem">
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.EditSolutionItem" />
+		</Condition>
 	</ItemSet>
 	<Condition id="ItemType" value="IFolderItem">
 		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindInFiles" />

@@ -418,6 +418,20 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				}
 			}
 		}
+
+		[CommandHandler (ProjectCommands.EditSolutionItem)]
+		public void OnEditProject ()
+		{
+			Project project = (Project) CurrentNode.DataItem;
+			IdeApp.Workbench.OpenDocument (project.FileName);
+		}
+
+		[CommandUpdateHandler (ProjectCommands.EditSolutionItem)]
+		public void OnEditProjectUpdate (CommandInfo info)
+		{
+			var p = (Project) CurrentNode.DataItem;
+			info.Visible = !IdeApp.Workbench.Documents.Any (d => d.FileName == p.FileName);
+		}
 		
 		public override DragOperation CanDragNode ()
 		{
