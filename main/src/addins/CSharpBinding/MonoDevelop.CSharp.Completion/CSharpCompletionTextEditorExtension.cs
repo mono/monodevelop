@@ -272,13 +272,15 @@ namespace MonoDevelop.CSharp.Completion
 			list.Resolver = CSharpUnresolvedFile != null ? CSharpUnresolvedFile.GetResolver (UnresolvedFileCompilation, Document.Editor.Caret.Location) : new CSharpResolver (Compilation);
 			var ctx = CSharpUnresolvedFile.GetTypeResolveContext (UnresolvedFileCompilation, data.Caret.Location) as CSharpTypeResolveContext;
 
+			var completionDataFactory = new CompletionDataFactory (this, new CSharpResolver (ctx));
 			var engine = new CSharpCompletionEngine (
 				data.Document,
 				typeSystemSegmentTree,
-				new CompletionDataFactory (this, new CSharpResolver (ctx)),
+				completionDataFactory,
 				Document.GetProjectContext (),
 				ctx
 			);
+			completionDataFactory.Engine = engine;
 			engine.AutomaticallyAddImports = AddImportedItemsToCompletionList.Value;
 			engine.IncludeKeywordsInCompletionList = IncludeKeywordsInCompletionList.Value;
 			if (FilterCompletionListByEditorBrowsable) {
@@ -610,11 +612,16 @@ namespace MonoDevelop.CSharp.Completion
 
 
 		#region ICompletionDataFactory implementation
-		class CompletionDataFactory : ICompletionDataFactory
+		internal class CompletionDataFactory : ICompletionDataFactory
 		{
-			CSharpCompletionTextEditorExtension ext;
+			internal readonly CSharpCompletionTextEditorExtension ext;
 //			readonly CSharpResolver state;
 			readonly TypeSystemAstBuilder builder;
+
+			public CSharpCompletionEngine Engine {
+				get;
+				set;
+			}
 
 			public CompletionDataFactory (CSharpCompletionTextEditorExtension ext, CSharpResolver state)
 			{
@@ -625,7 +632,7 @@ namespace MonoDevelop.CSharp.Completion
 			
 			ICompletionData ICompletionDataFactory.CreateEntityCompletionData (IEntity entity)
 			{
-				return new MemberCompletionData (ext, entity, OutputFlags.IncludeGenerics | OutputFlags.HideArrayBrackets | OutputFlags.IncludeParameterName) {
+				return new MemberCompletionData (this, entity, OutputFlags.IncludeGenerics | OutputFlags.HideArrayBrackets | OutputFlags.IncludeParameterName) {
 					HideExtensionParameter = true
 				};
 			}

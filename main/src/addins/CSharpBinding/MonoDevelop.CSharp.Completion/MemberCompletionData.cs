@@ -105,12 +105,26 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
-		public bool IsDelegateExpected { get; set; }
+		bool isDelegateExpected;
+		public bool IsDelegateExpected {
+			get {
+				return isDelegateExpected || factory != null && factory.Engine.PossibleDelegates.Count > 0;
+			} 
+			set {
+				isDelegateExpected = value;
+			}
+		}
 
 		ICompilation compilation;
 		CSharpUnresolvedFile file;
+		CSharpCompletionTextEditorExtension.CompletionDataFactory factory;
 
-		public MemberCompletionData (CSharpCompletionTextEditorExtension  editorCompletion, IEntity entity, OutputFlags flags)
+		public MemberCompletionData (CSharpCompletionTextEditorExtension.CompletionDataFactory factory, IEntity entity, OutputFlags flags) : this(factory.ext, entity, flags)
+		{
+			this.factory = factory;
+		}
+
+		public MemberCompletionData (CSharpCompletionTextEditorExtension editorCompletion, IEntity entity, OutputFlags flags)
 		{
 			compilation = editorCompletion.UnresolvedFileCompilation;
 			file = editorCompletion.CSharpUnresolvedFile;
@@ -151,17 +165,22 @@ namespace MonoDevelop.CSharp.Completion
 
 		bool HasAnyOverloadWithParameters (IMethod method)
 		{
-			return method.DeclaringType.GetMethods ().Any (m => m.Parameters.Count > 0);
+			return method.DeclaringType.GetMethods ().Any (m => m.Name == method.Name && m.Parameters.Count > 0);
 		}
 
 		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
+		{
+			InsertCompletionText (window, ref ka, closeChar, keyChar, modifier, CompletionTextEditorExtension.AddParenthesesAfterCompletion, CompletionTextEditorExtension.AddOpeningOnly);
+		}
+
+		public void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier, bool addParens, bool addOpeningOnly)
 		{
 			string text = CompletionText;
 			string partialWord = GetCurrentWord (window);
 			int skipChars = 0;
 			bool runParameterCompletionCommand = false;
 
-			if (CompletionTextEditorExtension.AddParenthesesAfterCompletion && !IsDelegateExpected && Entity is IMethod && !HasNonMethodMembersWithSameName ((IMember)Entity)) {
+			if (addParens && !IsDelegateExpected && Entity is IMethod && !HasNonMethodMembersWithSameName ((IMember)Entity)) {
 				var line = Editor.GetLine (Editor.Caret.Line);
 				var method = (IMethod)Entity;
 				var start = window.CodeCompletionContext.TriggerOffset + partialWord.Length + 2;
@@ -222,7 +241,7 @@ namespace MonoDevelop.CSharp.Completion
 				Gdk.Key[] keys = new [] { Gdk.Key.Return, Gdk.Key.Tab, Gdk.Key.space, Gdk.Key.KP_Enter, Gdk.Key.ISO_Enter };
 				if (keys.Contains (closeChar) || keyChar == '.') {
 					if (HasAnyOverloadWithParameters (method)) {
-						if (CompletionTextEditorExtension.AddOpeningOnly) {
+						if (addOpeningOnly) {
 							text += "(|";
 							skipChars = 0;
 						} else {
@@ -241,7 +260,7 @@ namespace MonoDevelop.CSharp.Completion
 						}
 						runParameterCompletionCommand = true;
 					} else {
-						if (CompletionTextEditorExtension.AddOpeningOnly) {
+						if (addOpeningOnly) {
 							text += "(|";
 							skipChars = 0;
 						} else {
