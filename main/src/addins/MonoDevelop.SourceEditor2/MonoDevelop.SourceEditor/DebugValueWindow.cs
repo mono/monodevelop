@@ -248,7 +248,7 @@ namespace MonoDevelop.SourceEditor
 	
 	class PinWindow: BaseWindow
 	{
-		Gtk.Image icon;
+		Xwt.ImageView icon;
 		
 		public PinWindow (Gtk.Window parent)
 		{
@@ -256,18 +256,17 @@ namespace MonoDevelop.SourceEditor
 			TransientFor = parent;
 			DestroyWithParent = true;
 			
-			icon = new Gtk.Image ();
-			Add (icon);
-			icon.ShowAll ();
+			icon = new Xwt.ImageView ();
+			Add (icon.ToGtkWidget ());
 			AcceptFocus = false;
 		}
 		
 		public void SetPinned (bool pinned)
 		{
 			if (pinned)
-				icon.Pixbuf = ImageService.GetPixbuf ("md-pin-down", IconSize.Menu);
+				icon.Image = ImageService.GetIcon ("md-pin-down", IconSize.Menu);
 			else
-				icon.Pixbuf = ImageService.GetPixbuf ("md-pin-up", IconSize.Menu);
+				icon.Image = ImageService.GetIcon ("md-pin-up", IconSize.Menu);
 		}
 	}
 }

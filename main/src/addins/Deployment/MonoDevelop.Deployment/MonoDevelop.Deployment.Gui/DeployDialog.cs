@@ -6,6 +6,7 @@ using Gtk;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Deployment.Gui
 {
@@ -36,13 +37,13 @@ namespace MonoDevelop.Deployment.Gui
 				FillProjectSelectors ();
 			}
 			
-			store = new ListStore (typeof(Gdk.Pixbuf), typeof(string), typeof(object));
+			store = new ListStore (typeof(Xwt.Drawing.Image), typeof(string), typeof(object));
 			targetsTree.Model = store;
 			
 			targetsTree.HeadersVisible = false;
-			Gtk.CellRendererPixbuf cr = new Gtk.CellRendererPixbuf();
+			CellRendererImage cr = new CellRendererImage();
 			cr.Yalign = 0;
-			targetsTree.AppendColumn ("", cr, "pixbuf", 0);
+			targetsTree.AppendColumn ("", cr, "image", 0);
 			targetsTree.AppendColumn ("", new Gtk.CellRendererText(), "markup", 1);
 			
 			targetsTree.Selection.Changed += delegate (object s, EventArgs a) {
@@ -91,7 +92,7 @@ namespace MonoDevelop.Deployment.Gui
 			
 			store.Clear ();
 			foreach (PackageBuilder builder in builders) {
-				Gdk.Pixbuf pix = ImageService.GetPixbuf (builder.Icon, Gtk.IconSize.LargeToolbar);
+				var pix = ImageService.GetIcon (builder.Icon, Gtk.IconSize.LargeToolbar);
 				store.AppendValues (pix, builder.Description, builder);
 			}
 			

@@ -457,10 +457,7 @@ namespace MonoDevelop.SourceEditor
 				metrics.X + 0.5  + (metrics.Width - cache.errorPixbuf.Width) / 2,
 				metrics.Y + 0.5 + (metrics.Height - cache.errorPixbuf.Height) / 2
 				);
-			Gdk.CairoHelper.SetSourcePixbuf (
-				cr,
-				errors.Any (e => e.IsError) ? cache.errorPixbuf : cache.warningPixbuf, 0, 0);
-			cr.Paint ();
+			cr.DrawImage (editor, errors.Any (e => e.IsError) ? cache.errorPixbuf : cache.warningPixbuf, 0, 0);
 			cr.Restore ();
 
 		}

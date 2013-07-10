@@ -35,8 +35,8 @@ namespace MonoDevelop.SourceEditor
 {
 	class MessageBubbleCache : IDisposable
 	{
-		internal Gdk.Pixbuf errorPixbuf;
-		internal Gdk.Pixbuf warningPixbuf;
+		internal Xwt.Drawing.Image errorPixbuf;
+		internal Xwt.Drawing.Image warningPixbuf;
 		
 		internal Dictionary<string, LayoutDescriptor> textWidthDictionary = new Dictionary<string, LayoutDescriptor> ();
 		internal Dictionary<DocumentLine, double> lineWidthDictionary = new Dictionary<DocumentLine, double> ();
@@ -50,8 +50,8 @@ namespace MonoDevelop.SourceEditor
 		public MessageBubbleCache (TextEditor editor)
 		{
 			this.editor = editor;
-			errorPixbuf = ImageService.GetPixbuf ("md-bubble-error", Gtk.IconSize.Menu);
-			warningPixbuf = ImageService.GetPixbuf ("md-bubble-warning", Gtk.IconSize.Menu);
+			errorPixbuf = ImageService.GetIcon ("md-bubble-error", Gtk.IconSize.Menu);
+			warningPixbuf = ImageService.GetIcon ("md-bubble-warning", Gtk.IconSize.Menu);
 			
 			editor.EditorOptionsChanged += HandleEditorEditorOptionsChanged;
 			editor.LeaveNotifyEvent += HandleLeaveNotifyEvent;

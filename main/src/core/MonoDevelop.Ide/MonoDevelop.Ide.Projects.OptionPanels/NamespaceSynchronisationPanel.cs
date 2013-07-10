@@ -137,7 +137,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			radioFlat.Toggled += UpdatePreview;
 			radioHierarch.Toggled += UpdatePreview;
 			
-			previewStore = new TreeStore (typeof (Gdk.Pixbuf), typeof (String), typeof (String));
+			previewStore = new TreeStore (typeof (String), typeof (String), typeof (String));
 			previewTree = new TreeView (previewStore);
 			
 			//Cosmetic, not available in GTK+ 2.8
@@ -153,10 +153,11 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			TreeViewColumn dirCol = new TreeViewColumn ();
 			dirCol.Title = GettextCatalog.GetString ("Directory");
 			var iconRenderer = new CellRendererPixbuf ();
+			iconRenderer.StockSize = (int) Gtk.IconSize.Menu;
 			CellRendererText textRenderer = new CellRendererText ();
 			dirCol.PackStart (iconRenderer, false);
 			dirCol.PackStart (textRenderer, false);
-			dirCol.AddAttribute (iconRenderer, "pixbuf", 0);
+			dirCol.AddAttribute (iconRenderer, "stock-id", 0);
 			dirCol.AddAttribute (textRenderer, "text", 1);
 			previewTree.AppendColumn (dirCol);
 			
@@ -241,8 +242,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			
 			string rootNamespace = checkDefaultAsRoot.Active? GettextCatalog.GetString ("Default.Namespace") : "";
 			
-			Gdk.Pixbuf folderIcon = ImageService.GetPixbuf ("md-open-folder", IconSize.Menu);
-			Gdk.Pixbuf projectIcon = ImageService.GetPixbuf ("md-project", IconSize.Menu);
+			var folderIcon = MonoDevelop.Ide.Gui.Stock.OpenFolder;
+			var projectIcon = MonoDevelop.Ide.Gui.Stock.Project;
 			iter = previewStore.AppendValues (projectIcon, GettextCatalog.GetString ("Project"), rootNamespace);
 			
 			if (rootNamespace.Length > 0)
