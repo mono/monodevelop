@@ -388,7 +388,7 @@ namespace MonoDevelop.Ide
 			image.HeightRequest = size;
 			ImageLoader loader = GetUserIcon (email, size);
 			loader.LoadOperation.Completed += delegate {
-				image.Pixbuf = loader.Pixbuf;
+				image.Pixbuf = loader.Image.ToPixbuf ();
 			};
 		}
 		

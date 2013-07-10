@@ -62,7 +62,7 @@ namespace MonoDevelop.VersionControl.Views
 		CellRendererDiff diffRenderer = new CellRendererDiff ();
 		CellRendererText messageRenderer = new CellRendererText ();
 		CellRendererText textRenderer = new CellRendererText ();
-		CellRendererPixbuf pixRenderer = new CellRendererPixbuf ();
+		CellRendererImage pixRenderer = new CellRendererImage ();
 		
 		bool currentRevisionShortened;
 		
@@ -187,20 +187,20 @@ namespace MonoDevelop.VersionControl.Views
 			scrolledwindowFiles.Child = treeviewFiles;
 			scrolledwindowFiles.ShowAll ();
 			
-			changedpathstore = new TreeStore (typeof(Gdk.Pixbuf), typeof (string), // icon/file name
-				typeof(Gdk.Pixbuf), typeof (string), // icon/operation
+			changedpathstore = new TreeStore (typeof(Xwt.Drawing.Image), typeof (string), // icon/file name
+			                                  typeof(Xwt.Drawing.Image), typeof (string), // icon/operation
 				typeof (string), // path
 				typeof (string), // revision path (invisible)
 				typeof (string[]) // diff
 				);
 			
 			TreeViewColumn colChangedFile = new TreeViewColumn ();
-			var crp = new CellRendererPixbuf ();
+			var crp = new CellRendererImage ();
 			var crt = new CellRendererText ();
 			colChangedFile.Title = GettextCatalog.GetString ("File");
 			colChangedFile.PackStart (crp, false);
 			colChangedFile.PackStart (crt, true);
-			colChangedFile.AddAttribute (crp, "pixbuf", 2);
+			colChangedFile.AddAttribute (crp, "image", 2);
 			colChangedFile.AddAttribute (crt, "text", 3);
 			treeviewFiles.AppendColumn (colChangedFile);
 			
@@ -208,7 +208,7 @@ namespace MonoDevelop.VersionControl.Views
 			colOperation.Title = GettextCatalog.GetString ("Operation");
 			colOperation.PackStart (crp, false);
 			colOperation.PackStart (crt, true);
-			colOperation.AddAttribute (crp, "pixbuf", 0);
+			colOperation.AddAttribute (crp, "image", 0);
 			colOperation.AddAttribute (crt, "text", 1);
 			treeviewFiles.AppendColumn (colOperation);
 			
@@ -506,15 +506,15 @@ namespace MonoDevelop.VersionControl.Views
 		
 		void AuthorIconFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
-			CellRendererPixbuf renderer = (CellRendererPixbuf)cell;
+			CellRendererImage renderer = (CellRendererImage)cell;
 			var rev = (Revision)model.GetValue (iter, 0);
 			if (string.IsNullOrEmpty (rev.Email))
 				return;
 			ImageLoader img = ImageService.GetUserIcon (rev.Email, 16);
 			if (img.LoadOperation.IsCompleted)
-				renderer.Pixbuf = img.Pixbuf;
+				renderer.Image = img.Image;
 			else {
-				renderer.Pixbuf = null;
+				renderer.Image = null;
 				img.LoadOperation.Completed += delegate {
 					Gtk.Application.Invoke (delegate {
 						if (logstore.IterIsValid (iter))
@@ -585,25 +585,25 @@ namespace MonoDevelop.VersionControl.Views
 			Gtk.TreeIter selectIter = Gtk.TreeIter.Zero;
 			bool select = false;
 			foreach (RevisionPath rp in info.Repository.GetRevisionChanges (d)) {
-				Gdk.Pixbuf actionIcon;
+				Xwt.Drawing.Image actionIcon;
 				string action = null;
 				if (rp.Action == RevisionAction.Add) {
 					action = GettextCatalog.GetString ("Add");
-					actionIcon = ImageService.GetPixbuf (Gtk.Stock.Add, Gtk.IconSize.Menu);
+					actionIcon = ImageService.GetIcon (Gtk.Stock.Add, Gtk.IconSize.Menu);
 				} else if (rp.Action == RevisionAction.Delete) {
 					action = GettextCatalog.GetString ("Delete");
-					actionIcon = ImageService.GetPixbuf (Gtk.Stock.Remove, Gtk.IconSize.Menu);
+					actionIcon = ImageService.GetIcon (Gtk.Stock.Remove, Gtk.IconSize.Menu);
 				} else if (rp.Action == RevisionAction.Modify) {
 					action = GettextCatalog.GetString ("Modify");
-					actionIcon = ImageService.GetPixbuf ("gtk-edit", Gtk.IconSize.Menu);
+					actionIcon = ImageService.GetIcon ("gtk-edit", Gtk.IconSize.Menu);
 				} else if (rp.Action == RevisionAction.Replace) {
 					action = GettextCatalog.GetString ("Replace");
-					actionIcon = ImageService.GetPixbuf ("gtk-edit", Gtk.IconSize.Menu);
+					actionIcon = ImageService.GetIcon ("gtk-edit", Gtk.IconSize.Menu);
 				} else {
 					action = rp.ActionDescription;
-					actionIcon = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Empty, Gtk.IconSize.Menu);
+					actionIcon = ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.Empty, Gtk.IconSize.Menu);
 				}
-				Gdk.Pixbuf fileIcon = DesktopService.GetIconForFile (rp.Path, Gtk.IconSize.Menu).ToPixbuf ();
+				Xwt.Drawing.Image fileIcon = DesktopService.GetIconForFile (rp.Path, Gtk.IconSize.Menu);
 				var iter = changedpathstore.AppendValues (actionIcon, action, fileIcon, System.IO.Path.GetFileName (rp.Path), System.IO.Path.GetDirectoryName (rp.Path), rp.Path, null);
 				changedpathstore.AppendValues (iter, null, null, null, null, null, rp.Path, null);
 				if (rp.Path == preselectFile) {

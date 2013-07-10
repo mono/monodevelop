@@ -32,6 +32,7 @@ using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Components.Extensions;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Projects
 {
@@ -42,11 +43,11 @@ namespace MonoDevelop.Ide.Projects
 		string [] buildActions;
 		Project project;
 		TreeStore dirStore = new TreeStore (typeof (string), typeof (FilePath));
-		ListStore fileStore = new ListStore (typeof (ProjectFile), typeof (Gdk.Pixbuf));
+		ListStore fileStore = new ListStore (typeof (ProjectFile), typeof (Xwt.Drawing.Image));
 		
 		// NOTE: these should not be disposed, since they come from the icon scheme, and must instead be unref'd
 		// and the only way to unref is to let the finalizer handle it.
-		Gdk.Pixbuf projBuf, dirOpenBuf, dirClosedBuf;
+		Xwt.Drawing.Image projBuf, dirOpenBuf, dirClosedBuf;
 		
 		public ProjectFileSelectorDialog (Project project)
 			: this (project, GettextCatalog.GetString ("All files"), "*")
@@ -66,13 +67,13 @@ namespace MonoDevelop.Ide.Projects
 			
 			this.Build();
 			
-			projBuf = ImageService.GetPixbuf (project.StockIcon, IconSize.Menu);
-			dirClosedBuf = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.ClosedFolder, IconSize.Menu);
-			dirOpenBuf = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.OpenFolder, IconSize.Menu);
+			projBuf = ImageService.GetIcon (project.StockIcon, IconSize.Menu);
+			dirClosedBuf = ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.ClosedFolder, IconSize.Menu);
+			dirOpenBuf = ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.OpenFolder, IconSize.Menu);
 			
 			TreeViewColumn projectCol = new TreeViewColumn ();
 			projectCol.Title = GettextCatalog.GetString ("Project Folders");
-			var pixRenderer = new CellRendererPixbuf ();
+			var pixRenderer = new CellRendererImage ();
 			CellRendererText txtRenderer = new CellRendererText ();
 			projectCol.PackStart (pixRenderer, false);
 			projectCol.PackStart (txtRenderer, true);
@@ -89,11 +90,11 @@ namespace MonoDevelop.Ide.Projects
 			projectTree.KeyPressEvent += ProjectListKeyPressEvent;
 			
 			TreeViewColumn fileCol = new TreeViewColumn ();
-			var filePixRenderer = new CellRendererPixbuf ();
+			var filePixRenderer = new CellRendererImage ();
 			fileCol.Title = GettextCatalog.GetString ("Files");
 			fileCol.PackStart (filePixRenderer, false);
 			fileCol.PackStart (txtRenderer, true);
-			fileCol.AddAttribute (filePixRenderer, "pixbuf", 1);
+			fileCol.AddAttribute (filePixRenderer, "image", 1);
 			fileCol.SetCellDataFunc (txtRenderer, new TreeCellDataFunc (TxtFileDataFunc));
 			fileList.Model = fileStore;
 			fileList.AppendColumn (fileCol);
@@ -186,18 +187,18 @@ namespace MonoDevelop.Ide.Projects
 		
 		void PixDataFunc (TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter)
 		{
-			var pixRenderer = (CellRendererPixbuf) cell;
+			var pixRenderer = (CellRendererImage) cell;
 			string dirname = (string) tree_model.GetValue (iter, 0);
 			
 			if (dirname.Length == 0) {
-				pixRenderer.PixbufExpanderOpen = projBuf;
-				pixRenderer.PixbufExpanderClosed = projBuf;
-				pixRenderer.Pixbuf = projBuf;
+				pixRenderer.ImageExpanderOpen = projBuf;
+				pixRenderer.ImageExpanderClosed = projBuf;
+				pixRenderer.Image = projBuf;
 				return;
 			}
-			pixRenderer.PixbufExpanderOpen = dirOpenBuf;
-			pixRenderer.PixbufExpanderClosed = dirClosedBuf;
-			pixRenderer.Pixbuf = dirClosedBuf;
+			pixRenderer.ImageExpanderOpen = dirOpenBuf;
+			pixRenderer.ImageExpanderClosed = dirClosedBuf;
+			pixRenderer.Image = dirClosedBuf;
 		}
 		
 		void TxtDataFunc (TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter)
