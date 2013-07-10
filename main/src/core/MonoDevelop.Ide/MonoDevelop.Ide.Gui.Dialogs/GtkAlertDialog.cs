@@ -31,6 +31,7 @@ using System.Text;
 using Gtk;
 using MonoDevelop.Core;
 using System.Linq;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
@@ -43,7 +44,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		AlertButton[] buttons;
 		
 		Gtk.HBox  hbox  = new HBox ();
-		Gtk.Image image;
+		ImageView image;
 		Gtk.Label label = new Label ();
 		VBox labelsBox = new VBox (false, 6);
 		
@@ -99,9 +100,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 			
 			if (!string.IsNullOrEmpty (message.Icon)) {
-				image = new Image ();
+				image = new ImageView ();
 				image.Yalign   = 0.00f;
-				image.Pixbuf = ImageService.GetPixbuf (message.Icon, IconSize.Dialog);
+				image.Image = ImageService.GetIcon (message.Icon, IconSize.Dialog);
 				hbox.PackStart (image, false, false, 0);
 				hbox.ReorderChild (image, 0);
 			}

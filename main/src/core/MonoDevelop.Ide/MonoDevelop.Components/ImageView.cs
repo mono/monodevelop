@@ -50,6 +50,24 @@ namespace MonoDevelop.Components
 			}
 		}
 
+		float xalign = 0.5f;
+		public float Xalign {
+			get { return xalign; }
+			set {
+				xalign = value;
+				QueueDraw ();
+			}
+		}
+
+		float yalign = 0.5f;
+		public float Yalign {
+			get { return yalign; }
+			set {
+ 				yalign = value;
+				QueueDraw ();
+			}
+		}
+
 		protected override void OnSizeRequested (ref Gtk.Requisition requisition)
 		{
 			requisition.Width = (int)image.Width;
@@ -60,8 +78,8 @@ namespace MonoDevelop.Components
 		{
 			if (image != null) {
 				using (var ctx = CairoHelper.Create (evnt.Window)) {
-					var x = Allocation.X + (Allocation.Width - image.Width) / 2;
-					var y = Allocation.Y + (Allocation.Height - image.Height) / 2;
+					var x = Allocation.X + (Allocation.Width - image.Width) * xalign;
+					var y = Allocation.Y + (Allocation.Height - image.Height) * yalign;
 					ctx.DrawImage (this, image, x, y);
 				}
 			}
