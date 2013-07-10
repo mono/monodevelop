@@ -41,7 +41,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	{
 		Gtk.HBox mainHBox;
 		Gtk.TreeView tree;
-		Gtk.Image image;
+		Xwt.ImageView image;
 		Gtk.Label labelTitle;
 		Gtk.HBox pageFrame;
 		Gtk.Button buttonCancel;
@@ -114,7 +114,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			var vbox = new VBox ();
 			mainHBox.PackStart (vbox, true, true, 0);
 			var headerBox = new HBox (false, 6);
-			image = new Image ();
+			image = new Xwt.ImageView ();
 		//	headerBox.PackStart (image, false, false, 0);
 
 			labelTitle = new Label ();
@@ -206,7 +206,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			// Instead, give this some awareness of the mime system.
 			var mimeSection = section as MonoDevelop.Ide.Projects.OptionPanels.MimetypeOptionsDialogSection;
 			if (mimeSection != null && !string.IsNullOrEmpty (mimeSection.MimeType)) {
-				var pix = DesktopService.GetPixbufForType (mimeSection.MimeType, treeIconSize);
+				var pix = DesktopService.GetIconForType (mimeSection.MimeType, treeIconSize).ToPixbuf ();
 				if (pix != null) {
 					crp.Pixbuf = pix;
 				} else {
@@ -481,15 +481,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			//HACK: mimetype panels can't provide stock ID for mimetype images. Give this some awareness of mimetypes.
 			var mimeSection = section as MonoDevelop.Ide.Projects.OptionPanels.MimetypeOptionsDialogSection;
 			if (mimeSection != null && !string.IsNullOrEmpty (mimeSection.MimeType)) {
-				var pix = DesktopService.GetPixbufForType (mimeSection.MimeType, headerIconSize);
+				var pix = DesktopService.GetIconForType (mimeSection.MimeType, headerIconSize);
 				if (pix != null) {
-					image.Pixbuf = pix;
+					image.Image = pix;
 				} else {
-					image.Pixbuf = ImageService.GetPixbuf (emptyCategoryIcon, headerIconSize);
+					image.Image = ImageService.GetIcon (emptyCategoryIcon, headerIconSize);
 				}
 			} else {
 				string icon = section.Icon.IsNull? emptyCategoryIcon : section.Icon.ToString ();
-				image.Pixbuf = ImageService.GetPixbuf (icon, headerIconSize);
+				image.Image = ImageService.GetIcon (icon, headerIconSize);
 			}
 
 /*			var algn = new HeaderBox ();

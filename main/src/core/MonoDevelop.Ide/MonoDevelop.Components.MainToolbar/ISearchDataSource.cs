@@ -36,7 +36,7 @@ namespace MonoDevelop.Components.MainToolbar
 	{
 		int ItemCount { get; }
 
-		Gdk.Pixbuf GetIcon (int item);
+		Xwt.Drawing.Image GetIcon (int item);
 		string GetMarkup (int item, bool isSelected);
 		string GetDescriptionMarkup (int item, bool isSelected);
 		TooltipInformation GetTooltip (int item);

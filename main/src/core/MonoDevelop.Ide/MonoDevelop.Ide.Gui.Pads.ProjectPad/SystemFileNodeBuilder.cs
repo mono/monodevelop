@@ -68,7 +68,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			SystemFile file = (SystemFile) dataObject;
 			label = GLib.Markup.EscapeText (file.Name);
 			
-			icon = DesktopService.GetPixbufForFile (file.Path, Gtk.IconSize.Menu).ToXwtImage ();
+			icon = DesktopService.GetIconForFile (file.Path, Gtk.IconSize.Menu);
 			
 			if (file.ShowTransparent) {
 				var gicon = Context.GetComposedIcon (icon, "fade");

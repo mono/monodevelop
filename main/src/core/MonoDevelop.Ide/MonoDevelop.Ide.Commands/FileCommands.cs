@@ -276,11 +276,11 @@ namespace MonoDevelop.Ide.Commands
 				var cmd = new CommandInfo (acceleratorKeyPrefix + ri.DisplayName.Replace ("_", "__")) {
 					Description = GettextCatalog.GetString ("Open {0}", ri.FileName)
 				};
-				Gdk.Pixbuf icon = DesktopService.GetPixbufForFile (ri.FileName, IconSize.Menu);
+/*				Gdk.Pixbuf icon = DesktopService.GetIconForFile (ri.FileName, IconSize.Menu);
 				#pragma warning disable 618
 				if (icon != null)
 					cmd.Icon = ImageService.GetStockId (icon, IconSize.Menu);
-				#pragma warning restore 618
+				#pragma warning restore 618*/
 				info.Add (cmd, ri.FileName);
 				i++;
 			}

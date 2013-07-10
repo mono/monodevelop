@@ -89,14 +89,14 @@ namespace MonoDevelop.Platform
 			}
 		}
 		
-		protected override Gdk.Pixbuf OnGetPixbufForType (string type, Gtk.IconSize size)
+		protected override Gdk.Pixbuf OnGetIconForType (string type, Gtk.IconSize size)
 		{
-			return base.OnGetPixbufForType (type, size);
+			return base.OnGetIconForType (type, size);
 		}
 		
 		Dictionary<string, Gdk.Pixbuf> icons = new Dictionary<string, Gdk.Pixbuf> ();
 		
-		protected override Gdk.Pixbuf OnGetPixbufForFile (string filename, Gtk.IconSize size)
+		protected override Gdk.Pixbuf OnGetIconForFile (string filename, Gtk.IconSize size)
 		{
 			SHFILEINFO shinfo = new SHFILEINFO();
 			Win32.SHGetFileInfo (filename, 0, ref shinfo, (uint) Marshal.SizeOf (shinfo), Win32.SHGFI_ICON | Win32.SHGFI_SMALLICON | Win32.SHGFI_ICONLOCATION | Win32.SHGFI_TYPENAME);

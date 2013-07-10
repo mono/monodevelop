@@ -381,15 +381,15 @@ namespace MonoDevelop.Ide.Gui
 				}
 			}
 			
-			Gdk.Pixbuf mimeimage = null;
+			Xwt.Drawing.Image mimeimage = null;
 			
 			if (content.StockIconId != null ) {
-				mimeimage = ImageService.GetPixbuf (content.StockIconId, IconSize.Menu);
+				mimeimage = ImageService.GetIcon (content.StockIconId, IconSize.Menu);
 			}
 			else if (content.IsUntitled && content.UntitledName == null) {
-				mimeimage = DesktopService.GetPixbufForType ("gnome-fs-regular", Gtk.IconSize.Menu);
+				mimeimage = DesktopService.GetIconForType ("gnome-fs-regular", Gtk.IconSize.Menu);
 			} else {
-				mimeimage = DesktopService.GetPixbufForFile (content.ContentName ?? content.UntitledName, Gtk.IconSize.Menu);
+				mimeimage = DesktopService.GetIconForFile (content.ContentName ?? content.UntitledName, Gtk.IconSize.Menu);
 			}			
 
 			var tab = tabControl.InsertTab (-1);

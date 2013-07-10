@@ -77,7 +77,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				label = "<span foreground='red'>" + label + "</span>";
 			}
 			
-			icon = DesktopService.GetPixbufForFile (file.FilePath, Gtk.IconSize.Menu).ToXwtImage ();
+			icon = DesktopService.GetIconForFile (file.FilePath, Gtk.IconSize.Menu);
 			
 			if (file.IsLink && icon != null) {
 				var overlay = ImageService.GetIcon ("md-link-overlay");

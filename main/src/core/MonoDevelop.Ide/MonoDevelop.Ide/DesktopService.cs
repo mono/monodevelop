@@ -30,6 +30,7 @@ using Mono.Addins;
 using MonoDevelop.Ide.Desktop;
 using MonoDevelop.Core;
 using System.IO;
+using MonoDevelop.Components;
 using MonoDevelop.Components.MainToolbar;
 
 namespace MonoDevelop.Ide
@@ -169,14 +170,24 @@ namespace MonoDevelop.Ide
 			return PlatformService.GetMimeTypeInheritanceChain (mimeType);
 		}
 		
-		public static Gdk.Pixbuf GetPixbufForFile (string filename, Gtk.IconSize size)
+		public static Xwt.Drawing.Image GetIconForFile (string filename)
 		{
-			return PlatformService.GetPixbufForFile (filename, size);
+			return PlatformService.GetIconForFile (filename);
+		}
+
+		public static Xwt.Drawing.Image GetIconForFile (string filename, Gtk.IconSize size)
+		{
+			return PlatformService.GetIconForFile (filename).WithSize (size);
 		}
 		
-		public static Gdk.Pixbuf GetPixbufForType (string mimeType, Gtk.IconSize size)
+		public static Xwt.Drawing.Image GetIconForType (string mimeType)
 		{
-			return PlatformService.GetPixbufForType (mimeType, size);
+			return PlatformService.GetIconForType (mimeType);
+		}
+
+		public static Xwt.Drawing.Image GetIconForType (string mimeType, Gtk.IconSize size)
+		{
+			return PlatformService.GetIconForType (mimeType).WithSize (size);
 		}
 
 		public static bool SetGlobalMenu (MonoDevelop.Components.Commands.CommandManager commandManager,

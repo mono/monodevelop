@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using Gtk;
+using MonoDevelop.Components;
 
 
 namespace MonoDevelop.Ide.Projects
@@ -70,9 +71,9 @@ namespace MonoDevelop.Ide.Projects
 			col.PackStart (crt, false);
 			col.AddAttribute (crt, "active", 0);
 			
-			CellRendererPixbuf crp = new CellRendererPixbuf ();
+			CellRendererImage crp = new CellRendererImage ();
 			col.PackStart (crp, false);
-			col.AddAttribute (crp, "pixbuf", 1);
+			col.AddAttribute (crp, "image", 1);
 			
 			CellRendererText cre = new CellRendererText ();
 			col.PackStart (cre, true);
@@ -102,7 +103,7 @@ namespace MonoDevelop.Ide.Projects
 				// from the item directory are shown in the list
 				foreach (FilePath f in item.GetItemFiles (false)) {
 					if (!f.IsChildPathOf (item.BaseDirectory)) {
-						Gdk.Pixbuf pix = DesktopService.GetPixbufForFile (f, IconSize.Menu);
+						var pix = DesktopService.GetIconForFile (f, IconSize.Menu);
 						paths [f] = store.AppendValues (true, pix, f.FileName, f.ToString ());
 					}
 				}
@@ -178,21 +179,21 @@ namespace MonoDevelop.Ide.Projects
 			
 			TreeIter dit;
 			if (!iter.Equals (TreeIter.Zero)) {
-				dit = store.AppendValues (iter, false, DesktopService.GetPixbufForFile (dir, IconSize.Menu), dir.FileName.ToString (), dir.ToString ());
+				dit = store.AppendValues (iter, false, DesktopService.GetIconForFile (dir, IconSize.Menu), dir.FileName.ToString (), dir.ToString ());
 				fileList.ExpandRow (store.GetPath (iter), false);
 			}
 			else
-				dit = store.AppendValues (false, DesktopService.GetPixbufForFile (dir, IconSize.Menu), dir.FileName.ToString (), dir.ToString ());
+				dit = store.AppendValues (false, DesktopService.GetIconForFile (dir, IconSize.Menu), dir.FileName.ToString (), dir.ToString ());
 			
 			paths [dir] = dit;
 			
 			foreach (string file in Directory.GetFiles (dir)) {
 				string path = System.IO.Path.GetFileName (file);
-				Gdk.Pixbuf pix = DesktopService.GetPixbufForFile (file, IconSize.Menu);
+				var pix = DesktopService.GetIconForFile (file, IconSize.Menu);
 				bool active = itemFiles.Contains (file);
 				string color = null;
 				if (!active) {
-					pix = ImageService.MakeTransparent (pix, 0.5);
+					pix = pix.WithAlpha (0.5);
 					color = "dimgrey";
 				} else
 					cinfo |= ChildInfo.HasProjectFiles;
@@ -219,8 +220,7 @@ namespace MonoDevelop.Ide.Projects
 			if ((cinfo & ChildInfo.AllSelected) != 0 && hasChildren)
 				store.SetValue (dit, 0, true);
 			if ((cinfo & ChildInfo.HasProjectFiles) == 0) {
-				Gdk.Pixbuf pix = DesktopService.GetPixbufForFile (dir, IconSize.Menu);
-				pix = ImageService.MakeTransparent (pix, 0.5);
+				var pix = DesktopService.GetIconForFile (dir, IconSize.Menu).WithAlpha (0.5);
 				store.SetValue (dit, 1, pix);
 				store.SetValue (dit, 4, "dimgrey");
 			}

@@ -62,7 +62,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			set;
 		}
 
-		public Gdk.Pixbuf Pixbuf {
+		public Xwt.Drawing.Image Icon {
 			get;
 			set;
 		}

@@ -281,6 +281,11 @@ namespace MonoDevelop.Ide
 
 		public static Xwt.Drawing.Image GetIcon (string name)
 		{
+			return GetIcon (name, true);
+		}
+
+		public static Xwt.Drawing.Image GetIcon (string name, bool generateDefaultIcon)
+		{
 			name = name ?? "";
 
 			Xwt.Drawing.Image img;
@@ -289,7 +294,7 @@ namespace MonoDevelop.Ide
 
 			if (string.IsNullOrEmpty (name)) {
 				LoggingService.LogWarning ("Empty icon requested. Stack Trace: " + Environment.NewLine + Environment.StackTrace);
-				icons [name] = img = CreateColorBlock ("#FF0000", Gtk.IconSize.Dialog).ToXwtImage ();
+				icons [name] = img = CreateColorIcon ("#FF0000");
 				return img;
 			}
 
@@ -300,6 +305,12 @@ namespace MonoDevelop.Ide
 			}
 
 			EnsureStockIconIsLoaded (name);
+
+			Gtk.IconSet iconset = Gtk.IconFactory.LookupDefault (name);
+			if (iconset == null && !Gtk.IconTheme.Default.HasIcon (name) && generateDefaultIcon) {
+				LoggingService.LogWarning ("Unknown icon: " + name);
+				return CreateColorIcon ("#FF0000FF");
+			}
 
 			return icons [name] = img = Xwt.Toolkit.CurrentEngine.WrapImage (name);
 		}
@@ -414,6 +425,17 @@ namespace MonoDevelop.Ide
 				}
 				// Icon loaded, it can be removed from the pending icon collection
 				iconStock.Remove (stockId);
+			}
+		}
+
+		static Xwt.Drawing.Image CreateColorIcon (string name)
+		{
+			var color = Xwt.Drawing.Color.FromName (name);
+			using (var ib = new Xwt.Drawing.ImageBuilder (16, 16)) {
+				ib.Context.Rectangle (0, 0, 16, 16);
+				ib.Context.SetColor (color);
+				ib.Context.Fill ();
+				return ib.ToVectorImage ();
 			}
 		}
 

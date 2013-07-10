@@ -542,7 +542,7 @@ namespace MonoDevelop.VersionControl.Views
 			if (n.IsDirectory)
 				fileIcon = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.ClosedFolder, Gtk.IconSize.Menu);
 			else
-				fileIcon = DesktopService.GetPixbufForFile (n.LocalPath, Gtk.IconSize.Menu);
+				fileIcon = DesktopService.GetIconForFile (n.LocalPath, Gtk.IconSize.Menu).ToPixbuf ();
 
 			
 			

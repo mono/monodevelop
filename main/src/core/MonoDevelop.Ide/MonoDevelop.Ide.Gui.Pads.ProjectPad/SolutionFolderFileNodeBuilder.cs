@@ -57,7 +57,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			label = file.FileName.FileName;
 			if (!System.IO.File.Exists (file.FileName))
 				label = "<span foreground='red'>" + label + "</span>";
-			icon = DesktopService.GetPixbufForFile (file.FileName, Gtk.IconSize.Menu).ToXwtImage ();
+			icon = DesktopService.GetIconForFile (file.FileName, Gtk.IconSize.Menu);
 		}
 		
 		public override object GetParentObject (object dataObject)

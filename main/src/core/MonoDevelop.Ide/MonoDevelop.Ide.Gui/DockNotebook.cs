@@ -283,7 +283,7 @@ namespace MonoDevelop.Ide.Gui
 		int Index { get; }
 		string Text { get; set; }
 		string Markup { get; set; }
-		Pixbuf Icon { get; set; }
+		Xwt.Drawing.Image Icon { get; set; }
 		Widget Content { get; set; }
 		string Tooltip { get; set; }
 		bool Notify { get; set; }
@@ -298,7 +298,7 @@ namespace MonoDevelop.Ide.Gui
 
 		string text;
 		string markup;
-		Gdk.Pixbuf icon;
+		Xwt.Drawing.Image icon;
 		Gtk.Widget content;
 
 		internal Gdk.Rectangle Allocation;
@@ -355,7 +355,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		public Pixbuf Icon {
+		public Xwt.Drawing.Image Icon {
 			get {
 				return this.icon;
 			}

@@ -28,6 +28,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using MonoDevelop.Core;
+using MonoDevelop.Components;
 using System.IO;
 
 namespace MonoDevelop.Ide.Projects
@@ -56,26 +57,26 @@ namespace MonoDevelop.Ide.Projects
 			
 			image.Visible = true;
 			
-			Gdk.Pixbuf img;
+			Xwt.Drawing.Image img;
 			string desc;
 			
 			string mt = TryGetFileType (name);
 			if (mt != null && mt != "text/plain") {
 				desc = DesktopService.GetMimeTypeDescription (mt);
-				img = DesktopService.GetPixbufForType (mt, Gtk.IconSize.Menu);
+				img = DesktopService.GetIconForType (mt, Gtk.IconSize.Menu);
 				mimeType = mt;
 			}
 			else if (name.IndexOf ('/') != -1) {
 				desc = DesktopService.GetMimeTypeDescription (name);
-				img = DesktopService.GetPixbufForType (name, Gtk.IconSize.Menu);
+				img = DesktopService.GetIconForType (name, Gtk.IconSize.Menu);
 				mimeType = name;
 			} else {
-				img = ImageService.GetPixbuf (Gtk.Stock.DialogError, Gtk.IconSize.Menu);
+				img = ImageService.GetIcon (Gtk.Stock.DialogError, Gtk.IconSize.Menu);
 				desc = GettextCatalog.GetString ("Unknown type");
 				mimeType = null;
 			}
 			if (mimeType != null && currentTypes.Contains (mimeType)) {
-				img = ImageService.GetPixbuf (Gtk.Stock.DialogError, Gtk.IconSize.Menu);
+				img = ImageService.GetIcon (Gtk.Stock.DialogError, Gtk.IconSize.Menu);
 				desc = GettextCatalog.GetString ("Type '{0}' already registered", desc);
 				mimeType = null;
 			}
@@ -83,7 +84,7 @@ namespace MonoDevelop.Ide.Projects
 				desc = mt;
 			buttonOk.Sensitive = mimeType != null;
 			labelDesc.Text = desc ?? string.Empty;
-			image.Pixbuf = img;
+			image.Pixbuf = img.ToPixbuf (Gtk.IconSize.Menu);
 		}
 		
 		string TryGetFileType (string name)

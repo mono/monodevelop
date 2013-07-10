@@ -367,7 +367,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		void Fill ()
 		{
 			foreach (MimeTypePanelData mt in panel.GetMimeTypeData ()) {
-				store.AppendValues (mt, DesktopService.GetPixbufForType (mt.MimeType, Gtk.IconSize.Menu), mt.TypeDescription);
+				store.AppendValues (mt, DesktopService.GetIconForType (mt.MimeType, Gtk.IconSize.Menu), mt.TypeDescription);
 			}
 		}
 		
@@ -391,7 +391,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			try {
 				if (MessageService.RunCustomDialog (dlg, this.Toplevel as Gtk.Window) == (int) Gtk.ResponseType.Ok) {
 					MimeTypePanelData mt = panel.AddGlobalMimeType (dlg.MimeType);
-					store.AppendValues (mt, DesktopService.GetPixbufForType (mt.MimeType, Gtk.IconSize.Menu), mt.TypeDescription);
+					store.AppendValues (mt, DesktopService.GetIconForType (mt.MimeType, Gtk.IconSize.Menu), mt.TypeDescription);
 				}
 			} finally {
 				dlg.Destroy ();

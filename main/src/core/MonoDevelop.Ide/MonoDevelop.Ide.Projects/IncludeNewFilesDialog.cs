@@ -204,7 +204,7 @@ namespace MonoDevelop.Ide.Projects
 			TreeIter iter = GetPath (relativePath.ParentDirectory);
 			object[] values = new object[] {
 				//FIXME: look these pixbufs up lazily in the renderer
-				DesktopService.GetPixbufForFile (filePath, IconSize.Menu),
+				DesktopService.GetIconForFile (filePath, IconSize.Menu),
 				null,
 				filePath.FileName,
 				filePath.ToString (),

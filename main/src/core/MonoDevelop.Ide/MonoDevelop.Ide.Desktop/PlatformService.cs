@@ -39,6 +39,7 @@ using MonoDevelop.Core;
 using Mono.Unix;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.Components;
 using MonoDevelop.Components.MainToolbar;
 
 
@@ -141,88 +142,88 @@ namespace MonoDevelop.Ide.Desktop
 			}
 		}
 		
-		public Gdk.Pixbuf GetPixbufForFile (string filename, Gtk.IconSize size)
+		public Xwt.Drawing.Image GetIconForFile (string filename)
 		{
-			Gdk.Pixbuf pic = null;
+			Xwt.Drawing.Image pic = null;
 			
-			string icon = GetIconForFile (filename);
+			string icon = GetIconIdForFile (filename);
 			if (icon != null)
-				pic = ImageService.GetPixbuf (icon, size, false);
+				pic = ImageService.GetIcon (icon, false);
 			
 			if (pic == null)
-				pic = OnGetPixbufForFile (filename, size);
+				pic = OnGetIconForFile (filename);
 			
 			if (pic == null) {
 				string mtype = GetMimeTypeForUri (filename);
 				if (mtype != null) {
 					foreach (string mt in GetMimeTypeInheritanceChain (mtype)) {
-						pic = GetPixbufForType (mt, size);
+						pic = GetIconForType (mt);
 						if (pic != null)
 							return pic;
 					}
 				}
 			}
-			return pic ?? GetDefaultIcon (size);
+			return pic ?? GetDefaultIcon ();
 		}
 		
-		public Gdk.Pixbuf GetPixbufForType (string mimeType, Gtk.IconSize size)
+		public Xwt.Drawing.Image GetIconForType (string mimeType)
 		{
-			Gdk.Pixbuf bf = (Gdk.Pixbuf) iconHash [mimeType+size];
+			Xwt.Drawing.Image bf = (Xwt.Drawing.Image) iconHash [mimeType];
 			if (bf != null)
 				return bf;
 			
 			foreach (string type in GetMimeTypeInheritanceChain (mimeType)) {
 				// Try getting an icon name for the type
-				string icon = GetIconForType (type);
+				string icon = GetIconIdForType (type);
 				if (icon != null) {
-					bf = ImageService.GetPixbuf (icon, size, false);
+					bf = ImageService.GetIcon (icon, false);
 					if (bf != null)
 						break;
 				}
 				
 				// Try getting a pixbuff
-				bf = OnGetPixbufForType (type, size);
+				bf = OnGetIconForType (type);
 				if (bf != null)
 					break;
 			}
 			
 			if (bf == null) {
-				bf = ImageService.GetPixbuf (mimeType, size, false);
+				bf = ImageService.GetIcon (mimeType, false);
 				if (bf == null)
-					bf = GetDefaultIcon (size);
+					bf = GetDefaultIcon ();
 			}
-			iconHash [mimeType+size] = bf;
+			iconHash [mimeType] = bf;
 			return bf;
 		}
-		
-		Gdk.Pixbuf GetDefaultIcon (Gtk.IconSize size)
+
+		Xwt.Drawing.Image GetDefaultIcon ()
 		{
-			string id = "__default" + size;
-			Gdk.Pixbuf bf = (Gdk.Pixbuf) iconHash [id];
+			string id = "__default";
+			Xwt.Drawing.Image bf = (Xwt.Drawing.Image) iconHash [id];
 			if (bf != null)
 				return bf;
 
-			string icon = DefaultFileIcon;
+			string icon = DefaultFileIconId;
 			if (icon != null)
-				bf = ImageService.GetPixbuf (icon, size, false);
+				bf = ImageService.GetIcon (icon, false);
 			if (bf == null)
-				bf = OnGetDefaultFileIcon (size);
+				bf = DefaultFileIcon;
 			if (bf == null)
-				bf = ImageService.GetPixbuf ("md-regular-file", size, true);
+				bf = ImageService.GetIcon ("md-regular-file", true);
 			iconHash [id] = bf;
 			return bf;
 		}
 		
-		string GetIconForFile (string fileName)
+		string GetIconIdForFile (string fileName)
 		{
 			MimeTypeNode mt = FindMimeTypeForFile (fileName);
 			if (mt != null)
 				return mt.Icon;
 			else
-				return OnGetIconForFile (fileName);
+				return OnGetIconIdForFile (fileName);
 		}
 		
-		string GetIconForType (string type)
+		string GetIconIdForType (string type)
 		{
 			if (type == "text/plain")
 				return "md-text-file-icon";
@@ -230,7 +231,7 @@ namespace MonoDevelop.Ide.Desktop
 			if (mt != null)
 				return mt.Icon;
 			else
-				return OnGetIconForType (type);
+				return OnGetIconIdForType (type);
 		}
 
 		static List<MimeTypeNode> mimeTypeNodes = new List<MimeTypeNode> ();
@@ -288,33 +289,32 @@ namespace MonoDevelop.Ide.Desktop
 			return false;
 		}
 		
-		protected virtual string OnGetIconForFile (string filename)
+		protected virtual string OnGetIconIdForFile (string filename)
 		{
 			return null;
 		}
 		
-		protected virtual string OnGetIconForType (string type)
+		protected virtual string OnGetIconIdForType (string type)
 		{
 			return null;
 		}
 		
-		protected virtual Gdk.Pixbuf OnGetPixbufForFile (string filename, Gtk.IconSize size)
+		protected virtual Xwt.Drawing.Image OnGetIconForFile (string filename)
 		{
 			return null;
 		}
 		
-		protected virtual Gdk.Pixbuf OnGetPixbufForType (string type, Gtk.IconSize size)
+		protected virtual Xwt.Drawing.Image OnGetIconForType (string type)
 		{
 			return null;
 		}
 		
-		protected virtual string DefaultFileIcon {
+		protected virtual string DefaultFileIconId {
 			get { return null; }
 		}
 		
-		protected virtual Gdk.Pixbuf OnGetDefaultFileIcon (Gtk.IconSize size)
-		{
-			return null;
+		protected virtual Xwt.Drawing.Image DefaultFileIcon {
+			get { return null; }
 		}
 		
 		public virtual bool SetGlobalMenu (MonoDevelop.Components.Commands.CommandManager commandManager,

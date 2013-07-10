@@ -47,6 +47,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Desktop;
 using MonoDevelop.MacInterop;
+using MonoDevelop.Components;
 using MonoDevelop.Components.MainToolbar;
 using MonoDevelop.MacIntegration.MacMenu;
 
@@ -412,11 +413,11 @@ namespace MonoDevelop.MacIntegration
 			}
 		}
 		
-		protected override Gdk.Pixbuf OnGetPixbufForFile (string filename, Gtk.IconSize size)
+		protected override Xwt.Drawing.Image OnGetIconForFile (string filename)
 		{
 			//this only works on MacOS 10.6.0 and greater
 			if (systemVersion < 0x1060)
-				return base.OnGetPixbufForFile (filename, size);
+				return base.OnGetIconForFile (filename);
 			
 			NSImage icon = null;
 			
@@ -429,7 +430,7 @@ namespace MonoDevelop.MacIntegration
 			}
 			
 			if (icon == null) {
-				return base.OnGetPixbufForFile (filename, size);
+				return base.OnGetIconForFile (filename);
 			}
 			
 			int w, h;
@@ -441,9 +442,9 @@ namespace MonoDevelop.MacIntegration
 			
 			using (var rep = icon.BestRepresentation (rect, null, null)) {
 				if (rep == null)
-					return base.OnGetPixbufForFile (filename, size);
+					return base.OnGetIconForFile (filename);
 				
-				return GetPixbufFromNSImageRep (rep, w, h);
+				return GetPixbufFromNSImageRep (rep, w, h).ToXwtImage ();
 			}
 		}
 		

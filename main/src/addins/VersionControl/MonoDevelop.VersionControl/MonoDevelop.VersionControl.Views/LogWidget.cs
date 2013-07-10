@@ -603,7 +603,7 @@ namespace MonoDevelop.VersionControl.Views
 					action = rp.ActionDescription;
 					actionIcon = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Empty, Gtk.IconSize.Menu);
 				}
-				Gdk.Pixbuf fileIcon = DesktopService.GetPixbufForFile (rp.Path, Gtk.IconSize.Menu);
+				Gdk.Pixbuf fileIcon = DesktopService.GetIconForFile (rp.Path, Gtk.IconSize.Menu).ToPixbuf ();
 				var iter = changedpathstore.AppendValues (actionIcon, action, fileIcon, System.IO.Path.GetFileName (rp.Path), System.IO.Path.GetDirectoryName (rp.Path), rp.Path, null);
 				changedpathstore.AppendValues (iter, null, null, null, null, null, rp.Path, null);
 				if (rp.Path == preselectFile) {

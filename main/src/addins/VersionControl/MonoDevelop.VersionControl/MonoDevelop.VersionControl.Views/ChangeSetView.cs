@@ -12,6 +12,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -239,7 +240,7 @@ namespace MonoDevelop.VersionControl.Views
 			if (n.IsDirectory)
 				fileIcon = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.ClosedFolder, Gtk.IconSize.Menu);
 			else
-				fileIcon = DesktopService.GetPixbufForFile (n.LocalPath, Gtk.IconSize.Menu);
+				fileIcon = DesktopService.GetIconForFile (n.LocalPath, Gtk.IconSize.Menu).ToPixbuf ();
 			
 			TreeIter it = filestore.AppendValues (statusicon, lstatus, GLib.Markup.EscapeText (localpath).Split ('\n'), commit, false, n.LocalPath.ToString (), true, hasComment, fileIcon, n.HasLocalChanges, scolor);
 			if (!n.IsDirectory)

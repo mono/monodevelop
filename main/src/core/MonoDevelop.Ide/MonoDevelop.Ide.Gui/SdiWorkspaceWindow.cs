@@ -676,14 +676,14 @@ namespace MonoDevelop.Ide.Gui
 
 			try {
 				if (content.StockIconId != null ) {
-					tab.Icon = ImageService.GetPixbuf (content.StockIconId, IconSize.Menu);
+					tab.Icon = ImageService.GetIcon (content.StockIconId, IconSize.Menu);
 				}
 				else if (content.ContentName != null && content.ContentName.IndexOfAny (new char[] { '*', '+'}) == -1) {
-					tab.Icon = DesktopService.GetPixbufForFile (content.ContentName, Gtk.IconSize.Menu);
+					tab.Icon = DesktopService.GetIconForFile (content.ContentName, Gtk.IconSize.Menu);
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError (ex.ToString ());
-				tab.Icon = DesktopService.GetPixbufForType ("gnome-fs-regular", Gtk.IconSize.Menu);
+				tab.Icon = DesktopService.GetIconForType ("gnome-fs-regular", Gtk.IconSize.Menu);
 			}
 
 			if (TitleChanged != null) {

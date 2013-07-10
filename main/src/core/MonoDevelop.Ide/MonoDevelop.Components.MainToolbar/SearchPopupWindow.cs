@@ -62,7 +62,7 @@ namespace MonoDevelop.Components.MainToolbar
 		class NullDataSource : ISearchDataSource
 		{
 			#region ISearchDataSource implementation
-			Gdk.Pixbuf ISearchDataSource.GetIcon (int item)
+			Xwt.Drawing.Image ISearchDataSource.GetIcon (int item)
 			{
 				throw new NotImplementedException ();
 			}
@@ -859,8 +859,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 				var px = dataSrc.GetIcon (i);
 				if (px != null) {
-					Gdk.CairoHelper.SetSourcePixbuf (context, px, (int)x + marginIconSpacing, (int)y + (h - px.Height) / 2);
-					context.Paint ();
+					context.DrawImage (this, px, (int)x + marginIconSpacing, (int)y + (h - px.Height) / 2);
 					x += px.Width + iconTextSpacing + marginIconSpacing;
 				}
 
@@ -903,8 +902,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 					var px = dataSrc.GetIcon (i);
 					if (px != null) {
-						Gdk.CairoHelper.SetSourcePixbuf (context, px, (int)x + marginIconSpacing, (int)y + (h - px.Height) / 2);
-						context.Paint ();
+						context.DrawImage (this, px, (int)x + marginIconSpacing, (int)y + (h - px.Height) / 2);
 						x += px.Width + iconTextSpacing + marginIconSpacing;
 					}
 

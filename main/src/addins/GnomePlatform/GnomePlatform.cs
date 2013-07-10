@@ -142,7 +142,7 @@ namespace MonoDevelop.Platform
 			get { return "Gnome"; }
 		}
 
-		protected override string OnGetIconForFile (string filename)
+		protected override string OnGetIconIdForFile (string filename)
 		{
 			if (filename == "Documentation") {
 				return "gnome-fs-regular";
@@ -167,10 +167,10 @@ namespace MonoDevelop.Platform
 			
 		}
 		
-		protected override Gdk.Pixbuf OnGetPixbufForFile (string filename, Gtk.IconSize size)
+		protected override Xwt.Drawing.Image OnGetIconForFile (string filename)
 		{
-			string icon = OnGetIconForFile (filename);
-			return GetPixbufForType (icon, size);
+			string icon = OnGetIconIdForFile (filename);
+			return GetIconForType (icon);
 		}
 		
 		string EscapeFileName (string filename)

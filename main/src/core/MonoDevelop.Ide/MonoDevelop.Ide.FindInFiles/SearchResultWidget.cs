@@ -129,7 +129,7 @@ namespace MonoDevelop.Ide.FindInFiles
 
 			fileNameColumn.FixedWidth = 200;
 
-			var fileNamePixbufRenderer = new CellRendererPixbuf ();
+			var fileNamePixbufRenderer = new CellRendererImage ();
 			fileNameColumn.PackStart (fileNamePixbufRenderer, false);
 			fileNameColumn.SetCellDataFunc (fileNamePixbufRenderer, FileIconDataFunc);
 			
@@ -354,13 +354,13 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			if (TreeIter.Zero.Equals (iter))
 				return;
-			var fileNamePixbufRenderer = (CellRendererPixbuf) cell;
+			var fileNamePixbufRenderer = (CellRendererImage) cell;
 			var searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
 			if (searchResult == null)
 				return;
-			if (searchResult.Pixbuf == null)
-				searchResult.Pixbuf = DesktopService.GetPixbufForFile (searchResult.FileName, IconSize.Menu);
-			fileNamePixbufRenderer.Pixbuf = searchResult.Pixbuf;
+			if (searchResult.Icon == null)
+				searchResult.Icon = DesktopService.GetIconForFile (searchResult.FileName, IconSize.Menu);
+			fileNamePixbufRenderer.Image = searchResult.Icon;
 		}
 
 
