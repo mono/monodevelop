@@ -34,6 +34,7 @@ using System.IO;
 using System;
 using NGit.Storage.File;
 using NGit.Api;
+using NGit.Revwalk;
 
 namespace MonoDevelop.VersionControl.Git.Tests
 {
@@ -108,14 +109,12 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			repo.Commit (changes, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
 
 			VersionInfo vi = repo.GetVersionInfo (added);
-			Assert.AreEqual (VersionStatus.Versioned, (VersionStatus.Versioned & vi.Status));
-			Assert.IsFalse (vi.CanAdd);
-			Assert.IsTrue (vi.CanRevert);
+			Assert.AreEqual (VersionStatus.ScheduledAdd, (VersionStatus.ScheduledAdd & vi.Status));
 		}
 
 		[Test]
 		[Ignore]
-		// Works but doesn't delete the files.
+		// Works but doesn't delete the files on Windows.
 		public override void UpdateIsDone ()
 		{
 			// Update fails on repositories with nothing in them.
@@ -147,15 +146,36 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		}
 
 		[Test]
-		// TODO:
 		public override void LogIsProper ()
 		{
+			string added = rootCheckout + "testfile";
+			File.Create (added).Close ();
+			repo.Add (added, false, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
+			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
+			changes.AddFile (added);
+			changes.GlobalComment = "File committed";
+			repo.Commit (changes, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
+			foreach (Revision rev in repo.GetHistory (added, null)) {
+				Assert.AreEqual ("File committed", rev.Message);
+			}
 		}
 
 		[Test]
-		// TODO:
 		public override void DiffIsProper ()
 		{
+			string added = rootCheckout + "testfile";
+			File.Create (added).Close ();
+			repo.Add (added, false, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
+			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
+			changes.AddFile (added);
+			changes.GlobalComment = "File committed";
+			repo.Commit (changes, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
+			File.AppendAllText (added, "text" + Environment.NewLine);
+
+			string difftext = @"@@ -0,0 +1 @@
++text
+";
+			Assert.AreEqual (difftext, repo.GenerateDiff (added, repo.GetVersionInfo (added)).Content.Replace ("\n", "\r\n"));
 		}
 
 		[Test]
@@ -165,24 +185,16 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			string content = "text";
 
 			File.Create (added).Close ();
-/*			backend.Add (added, false, new NullProgressMonitor ());
-			backend.Commit (new FilePath[] { rootCheckout }, "File committed", new NullProgressMonitor ());
+			repo.Add (added, false, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
+			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
+			changes.AddFile (added);
+			changes.GlobalComment = "File committed";
+			repo.Commit (changes, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
 
 			// Revert to head.
 			File.WriteAllText (added, content);
-
-			backend.Revert (new FilePath[] { added }, false, new NullProgressMonitor ());
-			Assert.AreEqual (backend.GetTextBase (added), File.ReadAllText (added));
-
-			// Revert revision.
-			File.AppendAllText (added, content);
-			File.Copy (added, added + "2");
-
-			backend.Commit (new FilePath[] { added }, "File modified", new NullProgressMonitor ());
-			backend.RevertRevision (added, new SvnRevision (repo, 2), new NullProgressMonitor ());
-			backend.Commit (new FilePath[] { added }, "File reverted", new NullProgressMonitor ());
-
-			Assert.AreNotEqual (File.ReadAllText (added + "2"), File.ReadAllText (added));*/
+			repo.Revert (added, false, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
+			Assert.AreEqual (repo.GetBaseText (added), File.ReadAllText (added));
 		}
 
 		#region Util
