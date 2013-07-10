@@ -51,7 +51,7 @@ namespace MonoDevelop.Ide
 		/// Shows a status icon in the toolbar. The icon can be removed by disposing
 		/// the StatusBarIcon instance.
 		/// </summary>
-		StatusBarIcon ShowStatusIcon (Gdk.Pixbuf pixbuf);
+		StatusBarIcon ShowStatusIcon (Xwt.Drawing.Image pixbuf);
 		
 		/// <summary>
 		/// Creates a status bar context. The returned context can be used to show status information

@@ -249,11 +249,12 @@ namespace MonoDevelop.Ide.Gui
 			}
 			
 			//built-ins
+			var appIcon = ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.MonoDevelop);
 			this.IconList = new Gdk.Pixbuf[] {
-				ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.MonoDevelop, Gtk.IconSize.Menu),
-				ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.MonoDevelop, Gtk.IconSize.Button),
-				ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.MonoDevelop, Gtk.IconSize.Dnd),
-				ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.MonoDevelop, Gtk.IconSize.Dialog)
+				appIcon.ToPixbuf (Gtk.IconSize.Menu),
+				appIcon.ToPixbuf (Gtk.IconSize.Button),
+				appIcon.ToPixbuf (Gtk.IconSize.Dnd),
+				appIcon.ToPixbuf (Gtk.IconSize.Dialog)
 			};
 		}
 

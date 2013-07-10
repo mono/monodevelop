@@ -59,7 +59,7 @@ namespace MonoDevelop.Ide
 		/// <summary>
 		/// The icon
 		/// </summary>
-		Gdk.Pixbuf Image { get; set; }
+		Xwt.Drawing.Image Image { get; set; }
 		
 		/// <summary>
 		/// Sets alert mode. The icon will flash for the provided number of seconds.

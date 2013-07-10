@@ -274,6 +274,11 @@ namespace MonoDevelop.Ide
 		
 		static Dictionary<string,Xwt.Drawing.Image> icons = new Dictionary<string, Xwt.Drawing.Image> ();
 
+		public static Xwt.Drawing.Image GetIcon (string name, Gtk.IconSize size)
+		{
+			return GetIcon (name).WithSize (size);
+		}
+
 		public static Xwt.Drawing.Image GetIcon (string name)
 		{
 			name = name ?? "";

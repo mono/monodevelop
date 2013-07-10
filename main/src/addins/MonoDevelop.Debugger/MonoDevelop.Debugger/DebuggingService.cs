@@ -593,7 +593,7 @@ namespace MonoDevelop.Debugger
 				busyDialog.UpdateBusyState (args);
 				if (args.IsBusy) {
 					if (busyStatusIcon == null) {
-						busyStatusIcon = IdeApp.Workbench.StatusBar.ShowStatusIcon (ImageService.GetPixbuf ("md-execute-debug", Gtk.IconSize.Menu));
+						busyStatusIcon = IdeApp.Workbench.StatusBar.ShowStatusIcon (ImageService.GetIcon ("md-execute-debug", Gtk.IconSize.Menu));
 						busyStatusIcon.SetAlertMode (100);
 						busyStatusIcon.ToolTip = GettextCatalog.GetString ("The Debugger is waiting for an expression evaluation to finish.");
 						busyStatusIcon.EventBox.ButtonPressEvent += delegate {

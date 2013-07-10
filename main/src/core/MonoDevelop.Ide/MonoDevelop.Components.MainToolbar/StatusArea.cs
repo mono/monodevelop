@@ -373,7 +373,7 @@ namespace MonoDevelop.Components.MainToolbar
 			throw new NotImplementedException ();
 		}
 
-		public StatusBarIcon ShowStatusIcon (Gdk.Pixbuf pixbuf)
+		public StatusBarIcon ShowStatusIcon (Xwt.Drawing.Image pixbuf)
 		{
 			DispatchService.AssertGuiThread ();
 			StatusIcon icon = new StatusIcon (this, pixbuf);
@@ -419,24 +419,26 @@ namespace MonoDevelop.Components.MainToolbar
 			internal EventBox box;
 			string tip;
 			DateTime alertEnd;
-			Gdk.Pixbuf icon;
+			Xwt.Drawing.Image icon;
 			uint animation;
-			Gtk.Image image;
+			Xwt.ImageView image;
 			
 			int astep;
-			Gdk.Pixbuf[] images;
+			Xwt.Drawing.Image[] images;
 			TooltipPopoverWindow tooltipWindow;
 			bool mouseOver;
 			
-			public StatusIcon (StatusArea statusBar, Gdk.Pixbuf icon)
+			public StatusIcon (StatusArea statusBar, Xwt.Drawing.Image icon)
 			{
+				if (!icon.HasFixedSize)
+					icon = icon.WithSize (IconSize.Menu);
+
 				this.statusBar = statusBar;
 				this.icon = icon;
 				box = new EventBox ();
 				box.VisibleWindow = false;
-				image = new Image (icon);
-				image.SetPadding (0, 0);
-				box.Child = image;
+				image = new Xwt.ImageView (icon);
+				box.Child = image.ToGtkWidget ();
 				box.Events |= Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask;
 				box.EnterNotifyEvent += HandleEnterNotifyEvent;
 				box.LeaveNotifyEvent += HandleLeaveNotifyEvent;
@@ -480,7 +482,7 @@ namespace MonoDevelop.Components.MainToolbar
 				HideTooltip ();
 				statusBar.HideStatusIcon (this);
 				if (images != null) {
-					foreach (Gdk.Pixbuf img in images) {
+					foreach (Xwt.Drawing.Image img in images) {
 						img.Dispose ();
 					}
 				}
@@ -508,11 +510,13 @@ namespace MonoDevelop.Components.MainToolbar
 				get { return box; }
 			}
 			
-			public Gdk.Pixbuf Image {
+			public Xwt.Drawing.Image Image {
 				get { return icon; }
 				set {
 					icon = value;
-					image.Pixbuf = icon;
+					if (!icon.HasFixedSize)
+						icon = icon.WithSize (IconSize.Menu);
+					image.Image = icon;
 				}
 			}
 			
@@ -527,23 +531,23 @@ namespace MonoDevelop.Components.MainToolbar
 				animation = GLib.Timeout.Add (60, new GLib.TimeoutHandler (AnimateIcon));
 				
 				if (images == null) {
-					images = new Gdk.Pixbuf [10];
+					images = new Xwt.Drawing.Image [10];
 					for (int n=0; n<10; n++)
-						images [n] = ImageService.MakeTransparent (icon, ((double)(9-n))/10.0);
+						images [n] = icon.WithAlpha (((double)(9-n))/10.0);
 				}
 			}
 			
 			bool AnimateIcon ()
 			{
 				if (DateTime.Now >= alertEnd && astep == 0) {
-					image.Pixbuf = icon;
+					image.Image = icon;
 					animation = 0;
 					return false;
 				}
 				if (astep < 10)
-					image.Pixbuf = images [astep];
+					image.Image = images [astep];
 				else
-					image.Pixbuf = images [20 - astep - 1];
+					image.Image = images [20 - astep - 1];
 				
 				astep = (astep + 1) % 20;
 				return true;

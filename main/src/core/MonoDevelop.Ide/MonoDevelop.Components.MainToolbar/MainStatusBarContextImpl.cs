@@ -68,7 +68,7 @@ namespace MonoDevelop.Components.MainToolbar
 			statusBar.ClearCaretState ();
 		}
 		
-		public StatusBarIcon ShowStatusIcon (Gdk.Pixbuf pixbuf)
+		public StatusBarIcon ShowStatusIcon (Xwt.Drawing.Image pixbuf)
 		{
 			return statusBar.ShowStatusIcon (pixbuf);
 		}
