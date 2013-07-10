@@ -62,7 +62,7 @@ namespace MonoDevelop.Components
 			set;
 		}
 		
-		public Gdk.Pixbuf Pixbuf {
+		public Xwt.Drawing.Image Pixbuf {
 			get;
 			set;
 		}
@@ -122,7 +122,7 @@ namespace MonoDevelop.Components
 			window.GrabFocus ();
 		}
 		
-		public void SetItem (string text, Gdk.Pixbuf icon, object currentItem)
+		public void SetItem (string text, Xwt.Drawing.Image icon, object currentItem)
 		{
 			if (currentItem != CurrentItem) {// don't update when the same item is set.
 				this.Text = text;
@@ -157,8 +157,8 @@ namespace MonoDevelop.Components
 			layout.GetPixelSize (out width, out height);
 			
 			if (Pixbuf != null) {
-				width += Pixbuf.Width + pixbufSpacing * 2;
-				height = System.Math.Max (height, Pixbuf.Height);
+				width += (int)Pixbuf.Width + pixbufSpacing * 2;
+				height = System.Math.Max (height, (int)Pixbuf.Height);
 			} else {
 				height = System.Math.Max (height, defaultIconHeight);
 			}
@@ -276,8 +276,9 @@ namespace MonoDevelop.Components
 			
 			int xPos = Allocation.Left;
 			if (Pixbuf != null) {
-				win.DrawPixbuf (this.Style.BaseGC (StateType.Normal), Pixbuf, 0, 0, xPos + pixbufSpacing, Allocation.Y + (Allocation.Height - Pixbuf.Height) / 2, Pixbuf.Width, Pixbuf.Height, Gdk.RgbDither.None, 0, 0);
-				xPos += Pixbuf.Width + pixbufSpacing * 2;
+				using (var ctx = Gdk.CairoHelper.Create (win))
+					ctx.DrawImage (this, Pixbuf, xPos + pixbufSpacing, Allocation.Y + (Allocation.Height - Pixbuf.Height) / 2);
+				xPos += (int)Pixbuf.Width + pixbufSpacing * 2;
 			}
 			
 			//constrain the text area so it doesn't get rendered under the arrows

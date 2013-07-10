@@ -56,9 +56,9 @@ namespace MonoDevelop.Components.Docking
 
 		static Gdk.Cursor fleurCursor = new Gdk.Cursor (Gdk.CursorType.Fleur);
 
-		static Gdk.Pixbuf pixClose;
-		static Gdk.Pixbuf pixAutoHide;
-		static Gdk.Pixbuf pixDock;
+		static Xwt.Drawing.Image pixClose;
+		static Xwt.Drawing.Image pixAutoHide;
+		static Xwt.Drawing.Image pixDock;
 
 		const int TopPadding = 5;
 		const int BottomPadding = 7;
@@ -69,9 +69,9 @@ namespace MonoDevelop.Components.Docking
 
 		static DockItemTitleTab ()
 		{
-			pixClose = Gdk.Pixbuf.LoadFromResource ("stock-close-12.png");
-			pixAutoHide = Gdk.Pixbuf.LoadFromResource ("stock-auto-hide.png");
-			pixDock = Gdk.Pixbuf.LoadFromResource ("stock-dock.png");
+			pixClose = Xwt.Drawing.Image.FromResource ("stock-close-12.png");
+			pixAutoHide = Xwt.Drawing.Image.FromResource ("stock-auto-hide.png");
+			pixDock = Xwt.Drawing.Image.FromResource ("stock-dock.png");
 		}
 		
 		public DockItemTitleTab (DockItem item, DockFrame frame)

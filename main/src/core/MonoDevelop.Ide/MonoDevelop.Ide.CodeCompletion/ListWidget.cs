@@ -514,11 +514,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 						}
 					}
 					
-					Gdk.Pixbuf icon = win.DataProvider.GetIcon (item);
+					Xwt.Drawing.Image icon = win.DataProvider.GetIcon (item);
 					int iconHeight, iconWidth;
 					if (icon != null) {
-						iconWidth = icon.Width;
-						iconHeight = icon.Height;
+						iconWidth = (int)icon.Width;
+						iconHeight = (int)icon.Height;
 					} else if (!Gtk.Icon.SizeLookup (Gtk.IconSize.Menu, out iconWidth, out iconHeight)) {
 						iconHeight = iconWidth = 24;
 					}
@@ -545,8 +545,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					} 
 
 					if (icon != null) {
-						Gdk.CairoHelper.SetSourcePixbuf (context, icon, xpos, iypos);
-						context.Paint ();
+						context.DrawImage (this, icon, xpos, iypos);
 						xpos += iconTextSpacing;
 					}
 					context.Color = textColor;

@@ -387,9 +387,9 @@ namespace MonoDevelop.Components
 					string text = win.DataProvider.GetMarkup (n) ?? "&lt;null&gt;";
 					layout.SetMarkup (text);
 
-					Gdk.Pixbuf icon = win.DataProvider.GetIcon (n);
-					int iconHeight = icon != null ? icon.Height : 24;
-					int iconWidth = icon != null ? icon.Width : 0;
+					var icon = win.DataProvider.GetIcon (n);
+					int iconHeight = icon != null ? (int)icon.Height : 24;
+					int iconWidth = icon != null ? (int)icon.Width : 0;
 
 					int wi, he, typos, iypos;
 					layout.GetPixelSize (out wi, out he);
@@ -427,9 +427,10 @@ namespace MonoDevelop.Components
 						this.GdkWindow.DrawLayout (this.Style.TextGC (StateType.Normal), 
 						                           xpos + iconWidth + 2, typos, layout);
 					
-					if (icon != null)
-						this.GdkWindow.DrawPixbuf (this.Style.ForegroundGC (StateType.Normal), icon, 0, 0, 
-						                           xpos, iypos, iconWidth, iconHeight, Gdk.RgbDither.None, 0, 0);
+					if (icon != null) {
+						using (var ctx = Gdk.CairoHelper.Create (this.GdkWindow))
+							ctx.DrawImage (this, icon, xpos, iypos);
+					}
 					
 					ypos += rowHeight;
 					n++;
@@ -488,8 +489,8 @@ namespace MonoDevelop.Components
 				layout.SetMarkup (win.DataProvider.GetMarkup (longest) ?? "&lt;null&gt;");
 				int w, h;
 				layout.GetPixelSize (out w, out h);
-				Gdk.Pixbuf icon = win.DataProvider.GetIcon (longest);
-				int iconWidth = icon != null ? icon.Width : 24;
+				var icon = win.DataProvider.GetIcon (longest);
+				int iconWidth = icon != null ? (int) icon.Width : 24;
 				w += iconWidth + 2 + padding * 2 + margin;
 				return w;
 			}
@@ -563,7 +564,7 @@ namespace MonoDevelop.Components
 			}
 			void Reset ();
 			string GetMarkup (int n);
-			Gdk.Pixbuf GetIcon (int n);
+			Xwt.Drawing.Image GetIcon (int n);
 			object GetTag (int n);
 			
 			void ActivateItem (int n);

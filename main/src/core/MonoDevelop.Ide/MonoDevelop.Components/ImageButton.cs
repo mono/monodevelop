@@ -30,9 +30,9 @@ namespace MonoDevelop.Components
 {
 	public class ImageButton: Gtk.EventBox
 	{
-		Gdk.Pixbuf image;
-		Gdk.Pixbuf inactiveImage;
-		Gtk.Image imageWidget;
+		Xwt.Drawing.Image image;
+		Xwt.Drawing.Image inactiveImage;
+		ImageView imageWidget;
 		bool hasInactiveImage;
 		bool hover;
 		bool pressed;
@@ -41,19 +41,19 @@ namespace MonoDevelop.Components
 		{
 			Events |= Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask | Gdk.EventMask.ButtonReleaseMask;
 			VisibleWindow = false;
-			imageWidget = new Gtk.Image ();
+			imageWidget = new ImageView ();
 			imageWidget.Show ();
 			Add (imageWidget);
 		}
 
-		public Gdk.Pixbuf Image {
+		public Xwt.Drawing.Image Image {
 			get { return image; }
 			set {
 				image = value;
-				Gdk.Pixbuf oldInactive = null;
+				Xwt.Drawing.Image oldInactive = null;
 				if (!hasInactiveImage) {
 					oldInactive = inactiveImage;
-					inactiveImage = image != null ? ImageService.MakeTransparent (image, 0.5) : null;
+					inactiveImage = image != null ? image.WithAlpha (0.5) : null;
 				}
 				LoadImage ();
 				if (oldInactive != null)
@@ -61,7 +61,7 @@ namespace MonoDevelop.Components
 			}
 		}
 
-		public Gdk.Pixbuf InactiveImage {
+		public Xwt.Drawing.Image InactiveImage {
 			get { return hasInactiveImage ? inactiveImage : null; }
 			set {
 				if (!hasInactiveImage && inactiveImage != null)
@@ -83,11 +83,11 @@ namespace MonoDevelop.Components
 		{
 			if (image != null) {
 				if (hover)
-					imageWidget.Pixbuf = image;
+					imageWidget.Image = image;
 				else
-					imageWidget.Pixbuf = inactiveImage;
+					imageWidget.Image = inactiveImage;
 			} else {
-				imageWidget.Pixbuf = null;
+				imageWidget.Image = null;
 			}
 		}
 

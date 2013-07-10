@@ -219,7 +219,7 @@ namespace MonoDevelop.CSharp
 				return ext.GetEntityMarkup (node);
 			}
 			
-			public Gdk.Pixbuf GetIcon (int n)
+			public Xwt.Drawing.Image GetIcon (int n)
 			{
 				string icon;
 				var node = memberList [n];
@@ -228,7 +228,7 @@ namespace MonoDevelop.CSharp
 				} else {
 					icon = ((EntityDeclaration)node.Parent).GetStockIcon (false);
 				}
-				return ImageService.GetPixbuf (icon, Gtk.IconSize.Menu);
+				return ImageService.GetIcon (icon, Gtk.IconSize.Menu);
 			}
 			
 			public object GetTag (int n)
@@ -286,13 +286,13 @@ namespace MonoDevelop.CSharp
 				return GLib.Markup.EscapeText (Document.ParsedDocument.UserRegions.ElementAt (n).Name);
 			}
 			
-			internal static Gdk.Pixbuf Pixbuf {
+			internal static Xwt.Drawing.Image Pixbuf {
 				get {
-					return ImageService.GetPixbuf (Gtk.Stock.Add, Gtk.IconSize.Menu);
+					return ImageService.GetIcon (Gtk.Stock.Add, Gtk.IconSize.Menu);
 				}
 			}
 			
-			public Gdk.Pixbuf GetIcon (int n)
+			public Xwt.Drawing.Image GetIcon (int n)
 			{
 				return Pixbuf;
 			}
@@ -425,17 +425,17 @@ namespace MonoDevelop.CSharp
 				var type = curType;
 				while (type != null) {
 					var declaringType = type.Parent as TypeDeclaration;
-					result.Insert (0, new PathEntry (ImageService.GetPixbuf (type.GetStockIcon (false), Gtk.IconSize.Menu), GetEntityMarkup (type)) { Tag = (AstNode)declaringType ?? unit });
+					result.Insert (0, new PathEntry (ImageService.GetIcon (type.GetStockIcon (false), Gtk.IconSize.Menu), GetEntityMarkup (type)) { Tag = (AstNode)declaringType ?? unit });
 					type = declaringType;
 				}
 			}
 				
 			if (curMember != null) {
-				result.Add (new PathEntry (ImageService.GetPixbuf (curMember.GetStockIcon (true), Gtk.IconSize.Menu), curMemberMarkup) { Tag = curMember });
+				result.Add (new PathEntry (ImageService.GetIcon (curMember.GetStockIcon (true), Gtk.IconSize.Menu), curMemberMarkup) { Tag = curMember });
 				if (curMember is Accessor) {
 					var parent = curMember.Parent as EntityDeclaration;
 					if (parent != null)
-						result.Insert (result.Count - 1, new PathEntry (ImageService.GetPixbuf (parent.GetStockIcon (true), Gtk.IconSize.Menu), GetEntityMarkup (parent)) { Tag = parent });
+						result.Insert (result.Count - 1, new PathEntry (ImageService.GetIcon (parent.GetStockIcon (true), Gtk.IconSize.Menu), GetEntityMarkup (parent)) { Tag = parent });
 				}
 			}
 				

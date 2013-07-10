@@ -678,7 +678,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		bool HasMarkup (int n);
 		string GetCompletionText (int n);
 		string GetDescription (int n);
-		Gdk.Pixbuf GetIcon (int n);
+		Xwt.Drawing.Image GetIcon (int n);
 	}
 }
 

@@ -221,7 +221,7 @@ namespace MonoDevelop.VersionControl.Views
 				return GLib.Markup.EscapeText (rev.ToString () + "\t" + rev.Time.ToString () + "\t" + rev.Author);
 			}
 
-			public Pixbuf GetIcon (int n)
+			public Xwt.Drawing.Image GetIcon (int n)
 			{
 				return null;
 			}

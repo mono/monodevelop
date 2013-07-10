@@ -81,12 +81,12 @@ namespace MonoDevelop.Components.PropertyGrid
 			return GetProperties (component, null);
 		}
 		
-		public Gdk.Pixbuf GetIcon ()
+		public Xwt.Drawing.Image GetIcon ()
 		{
 			using (var stream = GetType ().Assembly.GetManifestResourceStream (GetType ().FullName + ".bmp")) {
 				if (stream != null) {
 					try {
-						return new Gdk.Pixbuf (stream);
+						return new Gdk.Pixbuf (stream).ToXwtImage ();
 					} catch (Exception e) {
 						LoggingService.LogError ("Can't create pixbuf from resource:" + GetType ().FullName + ".bmp", e);
 					}

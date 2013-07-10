@@ -654,12 +654,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return completionDataList[n].CompletionText;
 		}
 		
-		Gdk.Pixbuf IListDataProvider.GetIcon (int n)
+		Xwt.Drawing.Image IListDataProvider.GetIcon (int n)
 		{
 			string iconName = ((CompletionData)completionDataList[n]).Icon;
 			if (string.IsNullOrEmpty (iconName))
 				return null;
-			return ImageService.GetPixbuf (iconName, IconSize.Menu);
+			return ImageService.GetIcon (iconName, IconSize.Menu);
 		}
 		
 		#endregion

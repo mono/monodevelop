@@ -234,9 +234,9 @@ namespace MonoDevelop.Components.PropertyGrid
 			//load image from PropertyTab's bitmap
 			var icon = tab.GetIcon ();
 			if (icon != null)
-				rtb.Image = new Gtk.Image (icon);
+				rtb.Image = new ImageView (icon);
 			else
-				rtb.Image = new Gtk.Image (Stock.MissingImage, IconSize.Menu);
+				rtb.Image = new ImageView (MonoDevelop.Ide.ImageService.GetIcon (Stock.MissingImage, IconSize.Menu));
 			
 			rtb.Tab = tab;
 			rtb.TooltipText = tab.TabName;

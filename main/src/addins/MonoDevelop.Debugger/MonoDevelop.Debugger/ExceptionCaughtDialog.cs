@@ -300,8 +300,8 @@ namespace MonoDevelop.Debugger
 		ExceptionCaughtMessage dlg;
 		ExceptionInfo exception;
 		Gtk.Label messageLabel;
-		Gdk.Pixbuf closeSelImage;
-		Gdk.Pixbuf closeSelOverImage;
+		Xwt.Drawing.Image closeSelImage;
+		Xwt.Drawing.Image closeSelOverImage;
 
 		public ExceptionCaughtButton (ExceptionInfo val, ExceptionCaughtMessage dlg, FilePath file, int line)
 		{
@@ -310,8 +310,8 @@ namespace MonoDevelop.Debugger
 			OffsetX = 6;
 			File = file;
 			Line = line;
-			closeSelImage = Gdk.Pixbuf.LoadFromResource ("MonoDevelop.Close.Selected.png");
-			closeSelOverImage = Gdk.Pixbuf.LoadFromResource ("MonoDevelop.Close.Selected.Over.png");
+			closeSelImage = Xwt.Drawing.Image.FromResource ("MonoDevelop.Close.Selected.png");
+			closeSelOverImage = Xwt.Drawing.Image.FromResource ("MonoDevelop.Close.Selected.Over.png");
 		}
 
 		protected override void OnLineDeleted ()

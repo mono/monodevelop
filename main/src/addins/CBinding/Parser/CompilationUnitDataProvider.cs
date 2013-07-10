@@ -58,12 +58,12 @@ namespace CBinding.Parser
 			return GLib.Markup.EscapeText (Document.ParsedDocument.UserRegions.ElementAt (n).Name);
 		}
 		
-		internal static Gdk.Pixbuf Pixbuf
+		internal static Xwt.Drawing.Image Pixbuf
 		{
-			get { return ImageService.GetPixbuf (Gtk.Stock.Add, IconSize.Menu); }
+			get { return ImageService.GetIcon (Gtk.Stock.Add, IconSize.Menu); }
 		}
 		
-		public Gdk.Pixbuf GetIcon (int n)
+		public Xwt.Drawing.Image GetIcon (int n)
 		{
 			return Pixbuf;
 		}

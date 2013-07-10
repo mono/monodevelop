@@ -523,9 +523,9 @@ namespace MonoDevelop.Components
 				bool isSelected = selectedRows.Contains (page + n);
 				bool hasMarkup = SetLayoutText (page + n, isSelected);
 				
-				Gdk.Pixbuf icon = dataProvider.GetIcon (page + n);
-				int iconHeight = icon != null? icon.Height : IconWidth;
-				int iconWidth = icon != null? icon.Width : IconWidth;
+				Xwt.Drawing.Image icon = dataProvider.GetIcon (page + n);
+				int iconHeight = icon != null? (int)icon.Height : IconWidth;
+				int iconWidth = icon != null? (int)icon.Width : IconWidth;
 				
 				int wi, he, typos, iypos;
 				layout.GetPixelSize (out wi, out he);
@@ -556,8 +556,11 @@ namespace MonoDevelop.Components
 				else
 					window.DrawLayout (textGCNormal, xpos + iconWidth + ColumnGap, typos, layout);
 				
-				if (icon != null)
-					window.DrawPixbuf (fgGCNormal, icon, 0, 0, xpos, iypos, iconWidth, iconHeight, RgbDither.None, 0, 0);
+				if (icon != null) {
+					using (var ctx = Gdk.CairoHelper.Create (window)) {
+						ctx.DrawImage (this, icon, xpos, iypos);
+					}
+				}
 				
 				ypos += rowHeight;
 				n++;
@@ -666,6 +669,6 @@ namespace MonoDevelop.Components
 		string GetText (int n);
 		string GetSelectedText (int n);
 		bool UseMarkup (int n);
-		Gdk.Pixbuf GetIcon (int n);
+		Xwt.Drawing.Image GetIcon (int n);
 	}
 }

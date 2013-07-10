@@ -100,9 +100,9 @@ namespace CBinding.Parser
 			return GLib.Markup.EscapeText (GetString (amb, m));
 		}
 		
-		public Gdk.Pixbuf GetIcon (int n)
+		public Xwt.Drawing.Image GetIcon (int n)
 		{
-			return ImageService.GetPixbuf (memberList[n].GetStockIcon (), Gtk.IconSize.Menu);
+			return ImageService.GetIcon (memberList[n].GetStockIcon (), Gtk.IconSize.Menu);
 		}
 		
 		public object GetTag (int n)

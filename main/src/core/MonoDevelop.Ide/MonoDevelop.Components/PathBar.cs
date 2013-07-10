@@ -43,9 +43,9 @@ namespace MonoDevelop.Components
 	
 	public class PathEntry 
 	{
-		Gdk.Pixbuf darkIcon;
+		Xwt.Drawing.Image darkIcon;
 
-		public Gdk.Pixbuf Icon {
+		public Xwt.Drawing.Image Icon {
 			get;
 			private set;
 		}
@@ -70,7 +70,7 @@ namespace MonoDevelop.Components
 			set;
 		}
 		
-		public PathEntry (Gdk.Pixbuf icon, string markup)
+		public PathEntry (Xwt.Drawing.Image icon, string markup)
 		{
 			this.Icon = icon;
 			this.Markup = markup;
@@ -100,14 +100,14 @@ namespace MonoDevelop.Components
 			}
 		}
 
-		internal Gdk.Pixbuf DarkIcon {
+		internal Xwt.Drawing.Image DarkIcon {
 			get {
 				if (darkIcon == null && Icon != null) {
 					darkIcon = Icon;
-					if (Styles.BreadcrumbGreyscaleIcons)
+/*					if (Styles.BreadcrumbGreyscaleIcons)
 						darkIcon = ImageService.MakeGrayscale (darkIcon);
 					if (Styles.BreadcrumbInvertedIcons)
-						darkIcon = ImageService.MakeInverted (darkIcon);
+						darkIcon = ImageService.MakeInverted (darkIcon);*/
 				}
 				return darkIcon;
 			}
@@ -264,10 +264,9 @@ namespace MonoDevelop.Components
 
 					int textOffset = 0;
 					if (leftPath [i].DarkIcon != null) {
-						int iy = (height - leftPath [i].DarkIcon.Height) / 2 + topPadding;
-						Gdk.CairoHelper.SetSourcePixbuf (ctx, leftPath [i].DarkIcon, x, iy);
-						ctx.Paint ();
-						textOffset += leftPath [i].DarkIcon.Width + iconSpacing;
+						int iy = (height - (int)leftPath [i].DarkIcon.Height) / 2 + topPadding;
+						ctx.DrawImage (this, leftPath [i].DarkIcon, x, iy);
+						textOffset += (int) leftPath [i].DarkIcon.Width + iconSpacing;
 					}
 					
 					layout.Attributes = (i == activeIndex) ? boldAtts : null;
@@ -324,9 +323,8 @@ namespace MonoDevelop.Components
 					
 					int textOffset = 0;
 					if (rightPath [i].DarkIcon != null) {
-						Gdk.CairoHelper.SetSourcePixbuf (ctx, rightPath [i].DarkIcon, x, ypos);
-						ctx.Paint ();
-						textOffset += rightPath [i].DarkIcon.Width + padding;
+						ctx.DrawImage (this, rightPath [i].DarkIcon, x, ypos);
+						textOffset += (int) rightPath [i].DarkIcon.Width + padding;
 					}
 					
 					layout.Attributes = (i == activeIndex) ? boldAtts : null;
@@ -625,8 +623,8 @@ namespace MonoDevelop.Components
 				layout.GetPixelSize (out w, out h);
 				textHeight = Math.Max (h, textHeight);
 				if (path[i].DarkIcon != null) {
-					maxIconHeight = Math.Max (path[i].DarkIcon.Height, maxIconHeight);
-					w += path[i].DarkIcon.Width + iconSpacing;
+					maxIconHeight = Math.Max ((int)path[i].DarkIcon.Height, maxIconHeight);
+					w += (int)path[i].DarkIcon.Width + iconSpacing;
 				}
 				result[i + index] = w;
 			}
