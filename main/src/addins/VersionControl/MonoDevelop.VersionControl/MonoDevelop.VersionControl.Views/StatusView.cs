@@ -412,10 +412,6 @@ namespace MonoDevelop.VersionControl.Views
 			
 			ThreadPool.QueueUserWorkItem (delegate {
 				List<VersionInfo> newList = new List<VersionInfo> ();
-				//filepath is path to .sln file, but Repostory.GetDirectoryVersionInfo expect solution folder.
-				if (!Directory.Exists (filepath) && File.Exists (filepath)) {
-					filepath = Path.GetDirectoryName (filepath);
-				}
 				newList.AddRange (vc.GetDirectoryVersionInfo(filepath, remoteStatus, true));
 				DispatchService.GuiDispatch (delegate {
 					if (!disposed)
