@@ -86,7 +86,7 @@ namespace MonoDevelop.Ide.Commands
 		SpecificAssemblyVersion,
 		SelectActiveConfiguration,
 		SelectActiveRuntime,
-		EditProject
+		EditSolutionItem
 	}
 
 	internal class SolutionOptionsHandler : CommandHandler

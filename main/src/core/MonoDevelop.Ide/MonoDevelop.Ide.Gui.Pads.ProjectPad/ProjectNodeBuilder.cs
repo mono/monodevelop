@@ -419,14 +419,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			}
 		}
 
-		[CommandHandler (ProjectCommands.EditProject)]
+		[CommandHandler (ProjectCommands.EditSolutionItem)]
 		public void OnEditProject ()
 		{
 			Project project = (Project) CurrentNode.DataItem;
 			IdeApp.Workbench.OpenDocument (project.FileName);
 		}
 
-		[CommandUpdateHandler (ProjectCommands.EditProject)]
+		[CommandUpdateHandler (ProjectCommands.EditSolutionItem)]
 		public void OnEditProjectUpdate (CommandInfo info)
 		{
 			var p = (Project) CurrentNode.DataItem;
