@@ -272,7 +272,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		[CommandHandler (TextEditorCommands.ShowParameterCompletionWindow)]
 		public virtual void RunParameterCompletionCommand ()
 		{
-			if (Document.Editor.SelectionMode == Mono.TextEditor.SelectionMode.Block)
+			if (Document.Editor.SelectionMode == Mono.TextEditor.SelectionMode.Block || CompletionWidget == null)
 				return;
 			ParameterDataProvider cp = null;
 			int cpos;
