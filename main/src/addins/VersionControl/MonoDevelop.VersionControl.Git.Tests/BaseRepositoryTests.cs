@@ -83,7 +83,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 				DeleteDirectory (dir);
 			}
 
-			Directory.Delete (path);
+			Directory.Delete (path, true);
 		}
 
 		#endregion

@@ -83,7 +83,7 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 				DeleteDirectory (dir);
 			}
 
-			Directory.Delete (path);
+			Directory.Delete (path, true);
 		}
 
 		#endregion
