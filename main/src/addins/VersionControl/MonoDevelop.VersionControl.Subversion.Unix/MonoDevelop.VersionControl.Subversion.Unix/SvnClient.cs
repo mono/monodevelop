@@ -972,7 +972,6 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			} finally {
 				try {
 					// Cleanup
-					apr.pool_destroy (localpool);
 					if (outfile != IntPtr.Zero)
 						apr.file_close (outfile); 
 					if (errfile != IntPtr.Zero)
@@ -981,9 +980,11 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 						FileService.DeleteFile (ferr);
 					if (fout != null)
 						FileService.DeleteFile (fout);
-
+				} catch {
+				} finally {
+					apr.pool_destroy (localpool);
 					TryEndOperation ();
-				} catch {}
+				}
 			}
 		}
 
