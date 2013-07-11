@@ -937,6 +937,8 @@ namespace MonoDevelop.VersionControl.Views
 					// Just remove the file from the change set
 					changeSet.RemoveFile (args.FilePath);
 					statuses.RemoveAt (oldStatusIndex);
+					localDiff.RemoveAt (oldStatusIndex);
+					remoteDiff.RemoveAt (oldStatusIndex);
 					filestore.Remove (ref oldStatusIter);
 					return true;
 				}
@@ -957,6 +959,8 @@ namespace MonoDevelop.VersionControl.Views
 				if (FileVisible (newInfo)) {
 					statuses.Add (newInfo);
 					changeSet.AddFile (newInfo);
+					localDiff.Add (new DiffData (vc, filepath, newInfo, false));
+					remoteDiff.Add (new DiffData (vc, filepath, newInfo, true));
 					AppendFileInfo (newInfo);
 				}
 			}
