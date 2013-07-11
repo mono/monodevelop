@@ -40,6 +40,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 	{
 		ICSharpCode.NRefactory.CSharp.Refactoring.ICodeIssueProvider issueProvider;
 		readonly string providerIdString;
+		bool acceptsInvalidContexts;
 
 		public override string IdString {
 			get {
@@ -50,6 +51,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 		public NRefactoryIssueProvider (ICSharpCode.NRefactory.CSharp.Refactoring.ICodeIssueProvider issue, IssueDescriptionAttribute attr)
 		{
 			issueProvider = issue;
+			acceptsInvalidContexts = attr.AcceptInvalidContexts;
 			providerIdString = issueProvider.GetType ().FullName;
 			Category = GettextCatalog.GetString (attr.Category ?? "");
 			Title = GettextCatalog.GetString (attr.Title ?? "");
@@ -62,7 +64,9 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 		public override IEnumerable<CodeIssue> GetIssues (object ctx, CancellationToken cancellationToken)
 		{
 			var context = ctx as MDRefactoringContext;
-			if (context == null || context.IsInvalid || context.RootNode == null)
+			if (context == null || context.RootNode == null)
+				yield break;
+			if (context.IsInvalid && !acceptsInvalidContexts)
 				yield break;
 			foreach (var action in issueProvider.GetIssues (context)) {
 				if (cancellationToken.IsCancellationRequested)
