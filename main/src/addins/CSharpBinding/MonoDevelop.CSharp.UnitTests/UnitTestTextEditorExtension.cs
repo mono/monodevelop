@@ -216,6 +216,7 @@ namespace MonoDevelop.CSharp
 					}
 				}
 				menu.ShowAll ();
+				editor.TextArea.ResetMouseState (); 
 				GtkWorkarounds.ShowContextMenu (menu, editor, new Gdk.Rectangle ((int)args.X, (int)args.Y, 1, 1));
 			}
 
