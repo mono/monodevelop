@@ -317,10 +317,7 @@ namespace MonoDevelop.VersionControl.Git
 				
 				// Existing files for which git did not report a status are supposed to be tracked
 				foreach (FilePath file in existingFiles.Where (f => files.Contains (f))) {
-					VersionStatus status = VersionStatus.Versioned;
-					if (IgnoreCache.IndexOf (RootRepository.ToGitPath (file)) > 0)
-						status = VersionStatus.Ignored;
-					VersionInfo vi = new VersionInfo (file, "", false, status, rev, status, null);
+					VersionInfo vi = new VersionInfo (file, "", false, VersionStatus.Versioned, rev, VersionStatus.Versioned, null);
 					versions.Add (vi);
 				}
 			}
@@ -335,8 +332,8 @@ namespace MonoDevelop.VersionControl.Git
 
 		void GetDirectoryVersionInfoCore (NGit.Repository repository, GitRevision rev, FilePath [] localPaths, HashSet<FilePath> existingFiles, HashSet<FilePath> nonVersionedMissingFiles, List<VersionInfo> versions)
 		{
-			
-			var status = new FilteredStatus (repository, repository.ToGitPath (localPaths)).Call (); 
+			var filteredStatus = new FilteredStatus (repository, repository.ToGitPath (localPaths));
+			var status = filteredStatus.Call ();
 			HashSet<string> added = new HashSet<string> ();
 			Action<IEnumerable<string>, VersionStatus> AddFiles = delegate(IEnumerable<string> files, VersionStatus fstatus) {
 				foreach (string file in files) {
@@ -345,7 +342,7 @@ namespace MonoDevelop.VersionControl.Git
 					FilePath statFile = repository.FromGitPath (file);
 					existingFiles.Remove (statFile.CanonicalPath);
 					nonVersionedMissingFiles.Remove (statFile.CanonicalPath);
-					versions.Add (new VersionInfo (statFile, "", false, fstatus, rev, VersionStatus.Versioned, null));
+					versions.Add (new VersionInfo (statFile, "", false, fstatus, rev, fstatus == VersionStatus.Ignored ? VersionStatus.Unversioned : VersionStatus.Versioned, null));
 				}
 			};
 			
@@ -356,6 +353,7 @@ namespace MonoDevelop.VersionControl.Git
 			AddFiles (status.GetMissing (), VersionStatus.Versioned | VersionStatus.ScheduledDelete);
 			AddFiles (status.GetConflicting (), VersionStatus.Versioned | VersionStatus.Conflicted);
 			AddFiles (status.GetUntracked (), VersionStatus.Unversioned);
+			AddFiles (filteredStatus.GetIgnoredNotInIndex (), VersionStatus.Ignored);
 		}
 		
 		protected override VersionControlOperation GetSupportedOperations (VersionInfo vinfo)
@@ -1430,9 +1428,7 @@ namespace MonoDevelop.VersionControl.Git
 			string txt;
 			using (StreamReader br = new StreamReader (RootPath + Path.DirectorySeparatorChar + ".gitignore")) {
 				while ((txt = br.ReadLine ()) != null) {
-					txt = txt.Trim ();
-					if (txt.Length > 0 && !txt.StartsWith ("#"))
-						ignored.Add (txt);
+					ignored.Add (txt);
 				}
 			}
 
@@ -1441,7 +1437,6 @@ namespace MonoDevelop.VersionControl.Git
 				sb.AppendLine (RootRepository.ToGitPath (path));
 
 			File.AppendAllText (RootPath + Path.DirectorySeparatorChar + ".gitignore", sb.ToString ());
-			ignoreCache = String.Concat (ignoreCache, sb.ToString ());
 		}
 
 		protected override void OnUnignore (FilePath[] paths)
@@ -1450,9 +1445,7 @@ namespace MonoDevelop.VersionControl.Git
 			string txt;
 			using (StreamReader br = new StreamReader (RootPath + Path.DirectorySeparatorChar + ".gitignore")) {
 				while ((txt = br.ReadLine ()) != null) {
-					txt = txt.Trim ();
-					if (txt.Length > 0 && !txt.StartsWith ("#"))
-						ignored.Add (txt);
+					ignored.Add (txt);
 				}
 			}
 
@@ -1461,26 +1454,6 @@ namespace MonoDevelop.VersionControl.Git
 				sb.AppendLine (path);
 
 			File.WriteAllText (RootPath + Path.DirectorySeparatorChar + ".gitignore", sb.ToString ());
-			ignoreCache = sb.ToString ();
-		}
-
-		string ignoreCache;
-		internal string IgnoreCache {
-			get {
-				if (ignoreCache != null)
-					return ignoreCache;
-				StringBuilder sb = new StringBuilder ();
-				string txt;
-				using (StreamReader br = new StreamReader (RootPath + Path.DirectorySeparatorChar + ".gitignore")) {
-					while ((txt = br.ReadLine ()) != null) {
-						txt = txt.Trim ();
-						if (txt.Length > 0 && !txt.StartsWith ("#") && !txt.Contains ('*'))
-							sb.AppendLine (RootRepository.ToGitPath (txt));
-					}
-				}
-				ignoreCache = sb.ToString ();
-				return ignoreCache;
-			}
 		}
 	}
 	
