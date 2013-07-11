@@ -196,13 +196,14 @@ namespace MonoDevelop.VersionControl
 			return result;
 		}
 
+		public VersionInfo[] GetSolutionVersionInfo (FilePath solutionPath, bool getRemoteStatus)
+		{
+			return GetDirectoryVersionInfo (solutionPath.ParentDirectory, getRemoteStatus, true);
+		}
+
 		public VersionInfo[] GetDirectoryVersionInfo (FilePath localDirectory, bool getRemoteStatus, bool recursive)
 		{
 			try {
-				//check if localDirectory is directory
-				if (!localDirectory.IsDirectory) {
-					localDirectory = localDirectory.ParentDirectory;
-				}
 				if (recursive)
 					return OnGetDirectoryVersionInfo (localDirectory, getRemoteStatus, recursive);
 

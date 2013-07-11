@@ -412,7 +412,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			ThreadPool.QueueUserWorkItem (delegate {
 				List<VersionInfo> newList = new List<VersionInfo> ();
-				newList.AddRange (vc.GetDirectoryVersionInfo(filepath, remoteStatus, true));
+				newList.AddRange (vc.GetSolutionVersionInfo(filepath, remoteStatus));
 				DispatchService.GuiDispatch (delegate {
 					if (!disposed)
 						LoadStatus (newList);
