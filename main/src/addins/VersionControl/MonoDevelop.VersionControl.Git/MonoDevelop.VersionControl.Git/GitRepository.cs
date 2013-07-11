@@ -315,7 +315,7 @@ namespace MonoDevelop.VersionControl.Git
 
 				GetDirectoryVersionInfoCore (repository, rev, files.ToArray (), existingFiles, nonVersionedMissingFiles, versions);
 				
-				// Existing files for which git did not report an status are supposed to be tracked
+				// Existing files for which git did not report a status are supposed to be tracked
 				foreach (FilePath file in existingFiles.Where (f => files.Contains (f))) {
 					VersionInfo vi = new VersionInfo (file, "", false, VersionStatus.Versioned, rev, VersionStatus.Versioned, null);
 					versions.Add (vi);
@@ -332,8 +332,8 @@ namespace MonoDevelop.VersionControl.Git
 
 		void GetDirectoryVersionInfoCore (NGit.Repository repository, GitRevision rev, FilePath [] localPaths, HashSet<FilePath> existingFiles, HashSet<FilePath> nonVersionedMissingFiles, List<VersionInfo> versions)
 		{
-			
-			var status = new FilteredStatus (repository, repository.ToGitPath (localPaths)).Call (); 
+			var filteredStatus = new FilteredStatus (repository, repository.ToGitPath (localPaths));
+			var status = filteredStatus.Call ();
 			HashSet<string> added = new HashSet<string> ();
 			Action<IEnumerable<string>, VersionStatus> AddFiles = delegate(IEnumerable<string> files, VersionStatus fstatus) {
 				foreach (string file in files) {
@@ -342,7 +342,7 @@ namespace MonoDevelop.VersionControl.Git
 					FilePath statFile = repository.FromGitPath (file);
 					existingFiles.Remove (statFile.CanonicalPath);
 					nonVersionedMissingFiles.Remove (statFile.CanonicalPath);
-					versions.Add (new VersionInfo (statFile, "", false, fstatus, rev, VersionStatus.Versioned, null));
+					versions.Add (new VersionInfo (statFile, "", false, fstatus, rev, fstatus == VersionStatus.Ignored ? VersionStatus.Unversioned : VersionStatus.Versioned, null));
 				}
 			};
 			
@@ -353,6 +353,7 @@ namespace MonoDevelop.VersionControl.Git
 			AddFiles (status.GetMissing (), VersionStatus.Versioned | VersionStatus.ScheduledDelete);
 			AddFiles (status.GetConflicting (), VersionStatus.Versioned | VersionStatus.Conflicted);
 			AddFiles (status.GetUntracked (), VersionStatus.Unversioned);
+			AddFiles (filteredStatus.GetIgnoredNotInIndex (), VersionStatus.Ignored);
 		}
 		
 		protected override VersionControlOperation GetSupportedOperations (VersionInfo vinfo)
@@ -1419,6 +1420,40 @@ namespace MonoDevelop.VersionControl.Git
 			if (id == null)
 				return null;
 			return new GitRevision (this, revision.GitRepository, id.Name);
+		}
+
+		protected override void OnIgnore (FilePath[] paths)
+		{
+			List<FilePath> ignored = new List<FilePath> ();
+			string txt;
+			using (StreamReader br = new StreamReader (RootPath + Path.DirectorySeparatorChar + ".gitignore")) {
+				while ((txt = br.ReadLine ()) != null) {
+					ignored.Add (txt);
+				}
+			}
+
+			StringBuilder sb = new StringBuilder ();
+			foreach (var path in paths.Except (ignored))
+				sb.AppendLine (RootRepository.ToGitPath (path));
+
+			File.AppendAllText (RootPath + Path.DirectorySeparatorChar + ".gitignore", sb.ToString ());
+		}
+
+		protected override void OnUnignore (FilePath[] paths)
+		{
+			List<string> ignored = new List<string> ();
+			string txt;
+			using (StreamReader br = new StreamReader (RootPath + Path.DirectorySeparatorChar + ".gitignore")) {
+				while ((txt = br.ReadLine ()) != null) {
+					ignored.Add (txt);
+				}
+			}
+
+			StringBuilder sb = new StringBuilder ();
+			foreach (var path in ignored.Except (RootRepository.ToGitPath (paths)))
+				sb.AppendLine (path);
+
+			File.WriteAllText (RootPath + Path.DirectorySeparatorChar + ".gitignore", sb.ToString ());
 		}
 	}
 	

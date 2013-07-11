@@ -9,6 +9,7 @@ using SharpSvn.Security;
 using SvnRevision = MonoDevelop.VersionControl.Subversion.SvnRevision;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects.Text;
+using System.Text;
 
 namespace SubversionAddinWindows
 {
@@ -447,6 +448,32 @@ namespace SubversionAddinWindows
 			BindMonitor (args, monitor);
 			args.Depth = recurse ? SvnDepth.Infinity : SvnDepth.Children;
 			client.Update (path, args);
+		}
+
+		public override void Ignore (FilePath[] paths)
+		{
+			string result;
+			lock (client) {
+				foreach (var path in paths) {
+					if (client.GetProperty (new SvnPathTarget (path.ParentDirectory), SvnPropertyNames.SvnIgnore, out result)) {
+						client.SetProperty (path.ParentDirectory, SvnPropertyNames.SvnIgnore, result + path.FileName);
+					}
+				}
+			}
+		}
+
+		public override void Unignore (FilePath[] paths)
+		{
+			string result;
+			lock (client) {
+				foreach (var path in paths) {
+					if (client.GetProperty (new SvnPathTarget (path.ParentDirectory), SvnPropertyNames.SvnIgnore, out result)) {
+						int index = result.IndexOf (path.FileName + Environment.NewLine);
+						result = (index < 0) ? result : result.Remove (index, path.FileName.Length+Environment.NewLine.Length);
+						client.SetProperty (path.ParentDirectory, SvnPropertyNames.SvnIgnore, result);
+					}
+				}
+			}
 		}
 
 		SharpSvn.SvnRevision GetRevision (Revision rev)

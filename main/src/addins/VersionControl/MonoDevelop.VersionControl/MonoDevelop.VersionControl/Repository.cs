@@ -742,6 +742,24 @@ namespace MonoDevelop.VersionControl
 		/// A revision
 		/// </param>
 		protected abstract RevisionPath[] OnGetRevisionChanges (Revision revision);
+
+		// Ignores a file for version control operations.
+		public void Ignore (FilePath[] localPath)
+		{
+			ClearCachedVersionInfo (localPath);
+			OnIgnore (localPath);
+		}
+
+		protected abstract void OnIgnore (FilePath[] localPath);
+
+		// Unignores a file for version control operations.
+		public void Unignore (FilePath[] localPath)
+		{
+			ClearCachedVersionInfo (localPath);
+			OnUnignore (localPath);
+		}
+
+		protected abstract void OnUnignore (FilePath[] localPath);
 	}
 	
 	public class Annotation
