@@ -796,7 +796,7 @@ namespace MonoDevelop.VersionControl.Git
 			monitor.BeginTask (null, files.Length);
 
 			foreach (FilePath p in changedFiles) {
-				FileService.NotifyFileChanged (p);
+				FileService.NotifyFileChanged (p, true);
 				monitor.Step (1);
 			}
 			foreach (FilePath p in removedFiles) {
@@ -1269,8 +1269,8 @@ namespace MonoDevelop.VersionControl.Git
 			var modified = changes.Where (c => c.GetChangeType () != DiffEntry.ChangeType.ADD).Select (c => GetRepository (c.GetNewPath ()).FromGitPath (c.GetNewPath ())).ToList ();
 			
 			monitor.BeginTask (GettextCatalog.GetString ("Updating solution"), removed.Count + modified.Count);
-			
-			FileService.NotifyFilesChanged (modified);
+
+			FileService.NotifyFilesChanged (modified, true);
 			monitor.Step (modified.Count);
 			
 			FileService.NotifyFilesRemoved (removed);

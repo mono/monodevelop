@@ -622,7 +622,7 @@ namespace SubversionAddinWindows
 			}
 
 			if (notifyChange && File.Exists (file))
-				FileService.NotifyFileChanged (file);
+				FileService.NotifyFileChanged (file, true);
 		}
 	}
 }
