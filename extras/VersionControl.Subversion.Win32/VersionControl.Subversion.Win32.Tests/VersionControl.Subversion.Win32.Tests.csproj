@@ -50,6 +50,7 @@
   <ItemGroup>
     <Compile Include="RepositoryTests.cs" />
     <Compile Include="BaseRepositoryTests.cs" />
+    <Compile Include="BaseSvnRepositoryTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

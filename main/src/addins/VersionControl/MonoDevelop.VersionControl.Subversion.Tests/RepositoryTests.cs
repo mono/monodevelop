@@ -30,7 +30,6 @@ using MonoDevelop.VersionControl;
 using MonoDevelop.VersionControl.Subversion;
 using MonoDevelop.VersionControl.Subversion.Unix;
 using NUnit.Framework;
-using System.Diagnostics;
 using System.IO;
 using System;
 
@@ -42,8 +41,8 @@ namespace VersionControl.Subversion.Unix.Tests
 		[SetUp]
 		public override void Setup ()
 		{
-			svnRoot = new FilePath (FileService.CreateTempDirectory ());
-			repoLocation = "file://" + svnRoot + "/repo";
+			rootUrl = new FilePath (FileService.CreateTempDirectory ());
+			repoLocation = "file://" + rootUrl + "/repo";
 			backend = new UnixSvnBackend ();
 			base.Setup ();
 		}
@@ -51,10 +50,10 @@ namespace VersionControl.Subversion.Unix.Tests
 		[Test]
 		public override void LogIsProper ()
 		{
-			string added = svnCheckout + "testfile";
+			string added = rootCheckout + "testfile";
 			File.Create (added).Close ();
 			backend.Add (added, false, new NullProgressMonitor ());
-			backend.Commit (new FilePath[] { svnCheckout }, "File committed", new NullProgressMonitor ());
+			backend.Commit (new FilePath[] { rootCheckout }, "File committed", new NullProgressMonitor ());
 			foreach (var rev in backend.Log (repo, added, SvnRevision.First, SvnRevision.Working)) {
 				Assert.AreEqual ("File committed", rev.Message);
 				foreach (var change in rev.ChangedFiles) {
@@ -67,10 +66,10 @@ namespace VersionControl.Subversion.Unix.Tests
 		[Test]
 		public override void DiffIsProper ()
 		{
-			string added = svnCheckout + "testfile";
+			string added = rootCheckout + "testfile";
 			File.Create (added).Close ();
 			backend.Add (added, false, new NullProgressMonitor ());
-			backend.Commit (new FilePath[] { svnCheckout }, "File committed", new NullProgressMonitor ());
+			backend.Commit (new FilePath[] { rootCheckout }, "File committed", new NullProgressMonitor ());
 			File.AppendAllText (added, "text" + Environment.NewLine);
 
 			string difftext = @"Index: " + added + @"

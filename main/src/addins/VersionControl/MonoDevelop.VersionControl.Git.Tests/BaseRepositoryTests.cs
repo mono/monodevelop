@@ -24,10 +24,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Core;
 using NUnit.Framework;
 using System.IO;
 using System;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl.Tests
 {

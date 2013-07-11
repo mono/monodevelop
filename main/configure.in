@@ -301,6 +301,7 @@ src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/Makefile
 src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/Makefile
 src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Tests/Makefile
 src/addins/VersionControl/MonoDevelop.VersionControl.Git/Makefile
+src/addins/VersionControl/MonoDevelop.VersionControl.Git.Tests/Makefile
 src/addins/VersionControl/Makefile
 src/addins/CSharpBinding/Makefile
 src/addins/CSharpBinding/Autotools/Makefile
