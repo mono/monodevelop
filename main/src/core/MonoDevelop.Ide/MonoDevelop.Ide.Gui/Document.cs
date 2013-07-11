@@ -184,7 +184,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		public bool HasProject {
-			get { return Window.ViewContent.Project != null; }
+			get { return Window != null ? Window.ViewContent.Project != null : false; }
 		}
 		
 		public Project Project {
