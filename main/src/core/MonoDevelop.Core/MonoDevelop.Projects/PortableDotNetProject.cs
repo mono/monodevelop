@@ -86,8 +86,8 @@ namespace MonoDevelop.Projects
 		
 		public override TargetFrameworkMoniker GetDefaultTargetFrameworkId ()
 		{
-			// Profile1 is the most-inclusive subset of the profiles, so we'll default to that one.
-			return new TargetFrameworkMoniker (".NETPortable", "4.0", "Profile1");
+			// Profile14 includes .NET, Silverlight and Xamarin.iOS/Android, so make that our default.
+			return new TargetFrameworkMoniker (".NETPortable", "4.0", "Profile14");
 		}
 	}
 }
