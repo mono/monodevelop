@@ -112,10 +112,6 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
-		public FilePath RootPath {
-			get; private set;
-		}
-
 		public override void CopyConfigurationFrom (Repository other)
 		{
 			base.CopyConfigurationFrom (other);
@@ -642,7 +638,7 @@ namespace MonoDevelop.VersionControl.Git
 			NGit.Api.Git git = new NGit.Api.Git (RootRepository);
 			NGit.Api.CommitCommand commit = git.Commit ();
 			commit.SetMessage (message);
-			
+
 			if (changeSet.ExtendedProperties.Contains ("Git.AuthorName")) {
 				commit.SetAuthor ((string)changeSet.ExtendedProperties ["Git.AuthorName"], (string)changeSet.ExtendedProperties ["Git.AuthorEmail"]);
 			}
@@ -676,6 +672,12 @@ namespace MonoDevelop.VersionControl.Git
 					yield return file.GetPath ();
 				iter.Next (1);
 			}
+		}
+
+		public bool IsUserInfoDefault ()
+		{
+			UserConfig config = RootRepository.GetConfig ().Get (UserConfig.KEY);
+			return config.IsCommitterNameImplicit () && config.IsCommitterEmailImplicit ();
 		}
 		
 		public void GetUserInfo (out string name, out string email)
