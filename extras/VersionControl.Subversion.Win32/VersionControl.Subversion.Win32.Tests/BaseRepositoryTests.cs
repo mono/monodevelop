@@ -29,7 +29,7 @@ using NUnit.Framework;
 using System.IO;
 using System;
 
-namespace MonoDevelop.VersionControl.Subversion.Tests
+namespace MonoDevelop.VersionControl.Tests
 {
 	[TestFixture]
 	public abstract class BaseRepoUtilsTest

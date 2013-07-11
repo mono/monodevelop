@@ -29,7 +29,7 @@ using System.IO;
 using System;
 using MonoDevelop.Core;
 
-namespace MonoDevelop.VersionControl.Git.Tests
+namespace MonoDevelop.VersionControl.Tests
 {
 	[TestFixture]
 	public abstract class BaseRepoUtilsTest

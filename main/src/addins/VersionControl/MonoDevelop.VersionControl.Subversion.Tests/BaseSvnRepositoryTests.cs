@@ -28,6 +28,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.VersionControl;
 using MonoDevelop.VersionControl.Subversion;
+using MonoDevelop.VersionControl.Tests;
 using NUnit.Framework;
 using System.Diagnostics;
 using System.IO;

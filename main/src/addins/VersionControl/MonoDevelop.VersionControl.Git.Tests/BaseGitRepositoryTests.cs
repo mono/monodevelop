@@ -27,14 +27,13 @@
 using MonoDevelop.Core;
 using MonoDevelop.VersionControl;
 using MonoDevelop.VersionControl.Git;
+using MonoDevelop.VersionControl.Tests;
 using NGit;
 using NUnit.Framework;
-using System.Diagnostics;
 using System.IO;
 using System;
 using NGit.Storage.File;
 using NGit.Api;
-using NGit.Revwalk;
 
 namespace MonoDevelop.VersionControl.Git.Tests
 {
