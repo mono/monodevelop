@@ -216,8 +216,18 @@ namespace MonoDevelop.CSharp
 				sb.Append (initializer.Name);
 				if (IsObsolete (initializer.Parent as EntityDeclaration))
 					return "<s>" + sb.ToString () + "</s>";
+			} else if (e is FixedVariableInitializer) {
+				var initializer = (FixedVariableInitializer)e;
+				sb.Append (initializer.Name);
+				if (IsObsolete (initializer.Parent as EntityDeclaration))
+					return "<s>" + sb.ToString () + "</s>";
 			} else if (e is FieldDeclaration) {
 				var field = (FieldDeclaration)e;
+				if (!field.Variables.Any ())
+					return "";
+				sb.Append (field.Variables.First ().Name);
+			} else if (e is FixedFieldDeclaration) {
+				var field = (FixedFieldDeclaration)e;
 				if (!field.Variables.Any ())
 					return "";
 				sb.Append (field.Variables.First ().Name);
