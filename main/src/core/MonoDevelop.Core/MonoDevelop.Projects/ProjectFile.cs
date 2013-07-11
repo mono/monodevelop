@@ -264,7 +264,11 @@ namespace MonoDevelop.Projects
 				if (link != value) {
 					if (value.IsAbsolute || value.ToString ().StartsWith ("..", StringComparison.Ordinal))
 						throw new ArgumentException ("value");
+
+					var oldLink = link;
 					link = value;
+
+					OnLinkChanged (oldLink, link);
 					OnChanged ("Link");
 				}
 			}
@@ -426,6 +430,16 @@ namespace MonoDevelop.Projects
 		{
 		}
 
+		internal event EventHandler<ProjectFileLinkChangedEventArgs> LinkChanged;
+
+		void OnLinkChanged (FilePath oldLink, FilePath newLink)
+		{
+			var handler = LinkChanged;
+
+			if (handler != null)
+				handler (this, new ProjectFileLinkChangedEventArgs (this, oldLink, newLink));
+		}
+
 		protected virtual void OnChanged (string property)
 		{
 			if (project != null)
@@ -437,5 +451,19 @@ namespace MonoDevelop.Projects
 		{
 			OnChanged (null);
 		}
+	}
+
+	internal class ProjectFileLinkChangedEventArgs : EventArgs
+	{
+		public ProjectFileLinkChangedEventArgs (ProjectFile projectFile, FilePath oldLink, FilePath newLink)
+		{
+			ProjectFile = projectFile;
+			OldLink = oldLink;
+			NewLink = newLink;
+		}
+
+		public ProjectFile ProjectFile { get; private set; }
+		public FilePath OldLink { get; private set; }
+		public FilePath NewLink { get; private set; }
 	}
 }
