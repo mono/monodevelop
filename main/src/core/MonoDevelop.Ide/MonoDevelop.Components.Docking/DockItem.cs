@@ -566,6 +566,11 @@ namespace MonoDevelop.Components.Docking
 				menu.Append (citem);
 			}
 
+			if (menu.Children.Length == 0) {
+				menu.Destroy ();
+				return;
+			}
+
 			ShowingContextMemu = true;
 
 			menu.ShowAll ();
