@@ -11,6 +11,7 @@ using System.Text;
 
 using svn_revnum_t = System.IntPtr;
 using size_t = System.Int32;
+using MonoDevelop.Projects.Text;
 
 namespace MonoDevelop.VersionControl.Subversion.Unix
 {
@@ -1100,6 +1101,22 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			} finally {
 				apr.pool_destroy (localpool);
 				TryEndOperation ();
+			}
+		}
+
+		public override string GetTextBase (string sourcefile)
+		{
+			MemoryStream data = new MemoryStream ();
+			try {
+				Cat (sourcefile, SvnRevision.Base, data);
+				return TextFile.ReadFile (sourcefile, data).Text;
+				// This outputs the contents of the base revision
+				// of a file to a stream.
+			} catch (SubversionException e) {
+				// This occurs when we don't have a base file for
+				// the target file. We have no way of knowing if
+				// a file has a base version therefore this will do.
+				return String.Empty;
 			}
 		}
 		
