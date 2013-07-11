@@ -242,8 +242,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			
 			string rootNamespace = checkDefaultAsRoot.Active? GettextCatalog.GetString ("Default.Namespace") : "";
 			
-			var folderIcon = MonoDevelop.Ide.Gui.Stock.OpenFolder;
-			var projectIcon = MonoDevelop.Ide.Gui.Stock.Project;
+			string folderIcon = MonoDevelop.Ide.Gui.Stock.OpenFolder;
+			string projectIcon = MonoDevelop.Ide.Gui.Stock.Project;
 			iter = previewStore.AppendValues (projectIcon, GettextCatalog.GetString ("Project"), rootNamespace);
 			
 			if (rootNamespace.Length > 0)
