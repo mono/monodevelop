@@ -20,7 +20,7 @@ namespace MonoDevelop.VersionControl.Views
 {
 	internal class StatusView : BaseView 
 	{
-		string filepath;
+		FilePath filepath;
 		Repository vc;
 		bool disposed;
 		
@@ -412,7 +412,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			ThreadPool.QueueUserWorkItem (delegate {
 				List<VersionInfo> newList = new List<VersionInfo> ();
-				newList.AddRange (vc.GetSolutionVersionInfo(filepath, remoteStatus));
+				newList.AddRange (vc.GetDirectoryVersionInfo(filepath.ParentDirectory, remoteStatus, true));
 				DispatchService.GuiDispatch (delegate {
 					if (!disposed)
 						LoadStatus (newList);
@@ -531,7 +531,7 @@ namespace MonoDevelop.VersionControl.Views
 
 			string scolor = n.HasLocalChanges && n.HasRemoteChanges ? "red" : null;
 			
-			string localpath = n.LocalPath.ToRelative (filepath);
+			string localpath = n.LocalPath.ToRelative (filepath.ParentDirectory);
 			if (localpath.Length > 0 && localpath[0] == Path.DirectorySeparatorChar) localpath = localpath.Substring(1);
 			if (localpath == "") { localpath = "."; } // not sure if this happens
 			
@@ -869,7 +869,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		void OnFileStatusChanged (object s, FileUpdateEventArgs args)
 		{
-			if (args.Any (f => f.FilePath == filepath || (f.FilePath.IsChildPathOf (filepath) && f.IsDirectory))) {
+			if (args.Any (f => f.FilePath == filepath || (f.FilePath.IsChildPathOf (filepath.ParentDirectory) && f.IsDirectory))) {
 				StartUpdate ();
 				return;
 			}
@@ -882,7 +882,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		bool OnFileStatusChanged (FileUpdateEventInfo args)
 		{
-			if (!args.FilePath.IsChildPathOf (filepath) && args.FilePath != filepath)
+			if (!args.FilePath.IsChildPathOf (filepath.ParentDirectory) && args.FilePath != filepath)
 				return true;
 			
 			if (args.IsDirectory) {
@@ -940,7 +940,13 @@ namespace MonoDevelop.VersionControl.Views
 					filestore.Remove (ref oldStatusIter);
 					return true;
 				}
-				
+
+				//Update Diff
+				localDiff.RemoveAt (oldStatusIndex);
+				remoteDiff.RemoveAt (oldStatusIndex);
+				localDiff.Insert(oldStatusIndex, new DiffData (vc, filepath, newInfo, false));
+				remoteDiff.Insert(oldStatusIndex, new DiffData (vc, filepath, newInfo, true));
+
 				statuses [oldStatusIndex] = newInfo;
 				
 				// Update the tree

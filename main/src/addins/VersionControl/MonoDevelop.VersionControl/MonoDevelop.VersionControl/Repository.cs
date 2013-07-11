@@ -196,11 +196,6 @@ namespace MonoDevelop.VersionControl
 			return result;
 		}
 
-		public VersionInfo[] GetSolutionVersionInfo (FilePath solutionPath, bool getRemoteStatus)
-		{
-			return GetDirectoryVersionInfo (solutionPath.ParentDirectory, getRemoteStatus, true);
-		}
-
 		public VersionInfo[] GetDirectoryVersionInfo (FilePath localDirectory, bool getRemoteStatus, bool recursive)
 		{
 			try {
