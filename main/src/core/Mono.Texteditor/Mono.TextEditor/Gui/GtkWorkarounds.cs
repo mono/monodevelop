@@ -1076,7 +1076,7 @@ namespace Mono.TextEditor
 			return result;
 		}
 		
-		static bool supportsHiResIcons = true;
+		static bool supportsHiResIcons = false; // Disabled for now
 
 		[DllImport ("libgtk-quartz-2.0.dylib")]
 		static extern void gtk_icon_source_set_scale (IntPtr source, double scale);
