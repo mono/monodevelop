@@ -34,7 +34,7 @@ namespace MonoDevelop.Components
 
 		public ImageView ()
 		{
-			AppPaintable = true;
+			WidgetFlags |= Gtk.WidgetFlags.AppPaintable | Gtk.WidgetFlags.NoWindow;
 		}
 
 		public ImageView (Xwt.Drawing.Image image): this ()
@@ -47,6 +47,7 @@ namespace MonoDevelop.Components
 			set {
 				image = value;
 				QueueDraw ();
+				QueueResize ();
 			}
 		}
 
@@ -70,8 +71,10 @@ namespace MonoDevelop.Components
 
 		protected override void OnSizeRequested (ref Gtk.Requisition requisition)
 		{
-			requisition.Width = (int)image.Width;
-			requisition.Height = (int)image.Height;
+			if (image != null) {
+				requisition.Width = (int)image.Width;
+				requisition.Height = (int)image.Height;
+			}
 		}
 
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
