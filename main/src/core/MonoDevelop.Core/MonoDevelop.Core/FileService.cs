@@ -248,15 +248,25 @@ namespace MonoDevelop.Core
 		
 		public static void NotifyFileChanged (FilePath fileName)
 		{
-			NotifyFilesChanged (new FilePath[] { fileName });
+			NotifyFileChanged (fileName, false);
+		}
+
+		public static void NotifyFileChanged (FilePath fileName, bool autoReload)
+		{
+			NotifyFilesChanged (new FilePath[] { fileName }, autoReload);
 		}
 		
 		public static void NotifyFilesChanged (IEnumerable<FilePath> files)
 		{
+			NotifyFilesChanged (files, false);
+		}
+
+		public static void NotifyFilesChanged (IEnumerable<FilePath> files, bool autoReload)
+		{
 			try {
 				foreach (var fsFiles in files.GroupBy (f => GetFileSystemForPath (f, false)))
 					fsFiles.Key.NotifyFilesChanged (fsFiles);
-				OnFileChanged (new FileEventArgs (files, false));
+				OnFileChanged (new FileEventArgs (files, false, autoReload));
 			} catch (Exception ex) {
 				LoggingService.LogError ("File change notification failed", ex);
 			}

@@ -650,7 +650,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				Marshal.FreeHGlobal (result);
 			} finally {
 				foreach (string file in updateFileList)
-					FileService.NotifyFileChanged (file);
+					FileService.NotifyFileChanged (file, true);
 				updateFileList = null;
 				
 				apr.pool_destroy (localpool);
