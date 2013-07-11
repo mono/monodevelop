@@ -75,7 +75,7 @@
 	</Span>
 	
 	<Span rule="String" stopateol = "false">
-		<Begin color="Keyword(Iteration)">let</Begin>
+		<Begin color="Keyword(Iteration)" flags="NewWord">let</Begin>
 		<End>=</End>
 	</Span>
 
