@@ -130,7 +130,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			// In case we have local unsaved files with changes, throw a dialog for the user.
 			System.Collections.Generic.List<Document> docList = new System.Collections.Generic.List<Document> ();
 			foreach (var item in IdeApp.Workbench.Documents) {
-				if (!item.IsDirty)
+				if (!item.IsDirty || !selected.Contains (item.FileName))
 					continue;
 				docList.Add (item);
 			}
