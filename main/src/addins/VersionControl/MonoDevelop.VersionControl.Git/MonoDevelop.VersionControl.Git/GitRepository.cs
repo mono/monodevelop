@@ -672,6 +672,12 @@ namespace MonoDevelop.VersionControl.Git
 				iter.Next (1);
 			}
 		}
+
+		public bool IsUserInfoDefault ()
+		{
+			UserConfig config = RootRepository.GetConfig ().Get (UserConfig.KEY);
+			return config.IsCommitterNameImplicit () && config.IsCommitterEmailImplicit ();
+		}
 		
 		public void GetUserInfo (out string name, out string email)
 		{

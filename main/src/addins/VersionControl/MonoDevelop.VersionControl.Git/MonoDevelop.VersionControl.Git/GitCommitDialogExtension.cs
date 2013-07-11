@@ -87,8 +87,7 @@ namespace MonoDevelop.VersionControl.Git
 					repo.SetUserInfo (sol.AuthorInformation.Name, sol.AuthorInformation.Email);
 			}
 			else if (val != "UsingGIT") {
-				if (user == NGit.UserConfig.GetDefaultUserName () &&
-					email == NGit.UserConfig.GetDefaultEmail ()) {
+				if (repo.IsUserInfoDefault ()) {
 					var dlg = new UserGitConfigDialog ();
 					try {
 						if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
