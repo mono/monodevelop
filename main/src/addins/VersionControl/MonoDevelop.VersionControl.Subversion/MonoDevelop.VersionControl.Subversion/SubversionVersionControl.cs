@@ -9,12 +9,6 @@ namespace MonoDevelop.VersionControl.Subversion
 {
 	public abstract class SubversionVersionControl : VersionControlSystem
 	{
-		internal static string GetTextBase(string sourcefile)
-		{
-			// Visible only to be overridden.
-			return "";
-		}
-		
 		internal static string GetDirectoryDotSvn (FilePath path)
 		{
 			if (path.IsEmpty || path.ParentDirectory.IsEmpty || path.IsNull || path.ParentDirectory.IsNull)
@@ -57,11 +51,8 @@ namespace MonoDevelop.VersionControl.Subversion
 
 	public abstract class SubversionBackend
 	{
-		public virtual string GetTextBase (string sourcefile)
-		{
-			return SubversionVersionControl.GetTextBase (sourcefile);
-		}
-		
+		public abstract string GetTextBase (string sourcefile);
+
 		string GetDirectoryDotSvn (FilePath path)
 		{
 			return SubversionVersionControl.GetDirectoryDotSvn (path);
