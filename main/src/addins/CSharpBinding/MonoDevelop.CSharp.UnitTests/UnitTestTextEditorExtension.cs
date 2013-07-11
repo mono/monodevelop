@@ -162,39 +162,48 @@ namespace MonoDevelop.CSharp
 				if (menu != null) {
 					menu.Destroy ();
 				}
+				var debugModeSet = Runtime.ProcessService.GetDebugExecutionMode ();
 
 				menu = new Gtk.Menu ();
 				if (unitTest.IsFixture) {
 					var menuItem = new Gtk.MenuItem ("_Run All");
 					menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, false).Run;
 					menu.Add (menuItem);
-					menuItem = new Gtk.MenuItem ("_Debug All");
-					menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, true).Run;
-					menu.Add (menuItem);
+					if (debugModeSet != null) {
+						menuItem = new Gtk.MenuItem ("_Debug All");
+						menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, true).Run;
+						menu.Add (menuItem);
+					}
 				} else {
 					if (unitTest.TestCases.Count == 0) {
 						var menuItem = new Gtk.MenuItem ("_Run");
 						menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, false).Run;
 						menu.Add (menuItem);
-						menuItem = new Gtk.MenuItem ("_Debug");
-						menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, true).Run;
-						menu.Add (menuItem);
+						if (debugModeSet != null) {
+							menuItem = new Gtk.MenuItem ("_Debug");
+							menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, true).Run;
+							menu.Add (menuItem);
+						}
 					} else {
 						var menuItem = new Gtk.MenuItem ("_Run All");
 						menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, false).Run;
 						menu.Add (menuItem);
-						menuItem = new Gtk.MenuItem ("_Debug All");
-						menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, true).Run;
-						menu.Add (menuItem);
+						if (debugModeSet != null) {
+							menuItem = new Gtk.MenuItem ("_Debug All");
+							menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, true).Run;
+							menu.Add (menuItem);
+						}
 						menu.Add (new Gtk.SeparatorMenuItem ());
 						foreach (var id in unitTest.TestCases) {
 							var submenu = new Gtk.Menu ();
 							menuItem = new Gtk.MenuItem ("_Run");
 							menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier + id, false).Run;
 							submenu.Add (menuItem);
-							menuItem = new Gtk.MenuItem ("_Debug");
-							menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier + id, true).Run;
-							submenu.Add (menuItem);
+							if (debugModeSet != null) {
+								menuItem = new Gtk.MenuItem ("_Debug");
+								menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier + id, true).Run;
+								submenu.Add (menuItem);
+							}
 
 							var label = "Test" + id;
 							string tooltip = null;
@@ -244,21 +253,43 @@ namespace MonoDevelop.CSharp
 					buildOperation.Completed += delegate {
 						if (!buildOperation.Success)
 							return;
-						bool first = true;
-						var test = NUnitService.Instance.SearchTestById (testCase);
-						Console.WriteLine (testCase +":"+test);
-						if (test != null) {
-							if (first)
-								NUnitService.ResetResult (test.RootTest);
-							// TODO: Run with debugger, if debug == true
-							NUnitService.Instance.RunTest (test, null).Completed += delegate {
-								Application.Invoke (delegate {
-									doc.Editor.Parent.QueueDraw ();
-								});
-							};
-						}
+						ThreadPool.QueueUserWorkItem (delegate {
+							var test = NUnitService.Instance.SearchTestById (testCase);
+							int t = 0;
+							while (test == null && t < 5) {
+								Console.WriteLine (t);
+								Thread.Sleep (250); 
+								test = NUnitService.Instance.SearchTestById (testCase);
+								t++;
+							}
+							if (test != null)
+								RunTest (test);
+						});
+
 					};
 				}
+
+				void RunTest (UnitTest test)
+				{
+					NUnitService.ResetResult (test.RootTest);
+					var debugModeSet = Runtime.ProcessService.GetDebugExecutionMode ();
+					MonoDevelop.Core.Execution.IExecutionHandler ctx = null;
+					if (debug && debugModeSet != null) {
+						foreach (var executionMode in debugModeSet.ExecutionModes) {
+							if (test.CanRun (executionMode.ExecutionHandler)) {
+								ctx = executionMode.ExecutionHandler;
+								break;
+							}
+						}
+					}
+					NUnitService.Instance.RunTest (test, ctx).Completed += delegate {
+						Application.Invoke (delegate {
+							doc.Editor.Parent.QueueDraw ();
+						});
+					};
+				}
+
+
 			}
 
 			bool isFailed;
