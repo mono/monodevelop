@@ -194,6 +194,10 @@ namespace MonoDevelop.VersionControl.Subversion
 
 		public abstract void Delete (FilePath path, bool force, IProgressMonitor monitor);
 
+		public abstract void Ignore (FilePath[] paths);
+
+		public abstract void Unignore (FilePath[] paths);
+
 		public IEnumerable<DirectoryEntry> List (FilePath path, bool recurse)
 		{
 			return List (path, recurse, SvnRevision.Head);

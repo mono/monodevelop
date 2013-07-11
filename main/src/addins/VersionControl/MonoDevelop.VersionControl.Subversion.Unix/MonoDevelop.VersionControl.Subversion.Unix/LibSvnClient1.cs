@@ -290,6 +290,11 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		{
 			return svn_client_propget (out value, name, target, ref revision, recurse, ctx, pool);
 		}
+
+		public override IntPtr client_propset (string propname, IntPtr propval, string target, bool recurse, IntPtr pool)
+		{
+			return svn_client_propset (propname, propval, target, recurse, pool);
+		}
 		
 		public override IntPtr client_blame (string path, ref Rev rev_start, ref Rev rev_end, svn_client_blame_receiver_t receiver, System.IntPtr baton, System.IntPtr ctx, System.IntPtr pool)
 		{
@@ -438,6 +443,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		                                                                    ref Rev revision,
 		                                                                    [MarshalAs (UnmanagedType.Bool)] bool recurse,
 		                                                                    IntPtr ctx, IntPtr pool);
+
+		[DllImport(svnclientlib)] static extern IntPtr svn_client_propset (string propname, IntPtr propval, string target,
+		                                                                   [MarshalAs (UnmanagedType.Bool)] bool recurse, IntPtr pool);
 		
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_blame (string path, ref Rev rev_start, ref Rev rev_end, svn_client_blame_receiver_t receiver, IntPtr baton, IntPtr ctx, IntPtr pool);
 
