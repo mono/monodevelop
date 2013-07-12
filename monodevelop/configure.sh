@@ -55,7 +55,7 @@ then
   MDVERSION3=`$MDDIR/../../MonoDevelop /? | head -n 1 | grep -o "[0-9]\+.[0-9]\+.[0-9]\+"`
   echo "Detected MonoDevelop version " $MDVERSION4
 else
-  MDVERSION4=4.0.0.0
+  MDVERSION4=4.1.6
   MDVERSION3=4.0
   echo "Assumed MonoDevelop version " $MDVERSION4
 fi
