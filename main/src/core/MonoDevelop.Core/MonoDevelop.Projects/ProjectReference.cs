@@ -241,10 +241,14 @@ namespace MonoDevelop.Projects
 					if (!IsExactVersion && SpecificVersion)
 						return GettextCatalog.GetString ("Specified version not found: expected {0}, found {1}", GetVersionNum (StoredReference), GetVersionNum (Reference));
 					if (notFound) {
-						if (ownerProject != null)
-							return GettextCatalog.GetString ("Assembly not available for {0} (in {1})", TargetFramework.Name, TargetRuntime.DisplayName);
-						else
-							return GettextCatalog.GetString ("Assembly not found");
+						if (ownerProject != null) {
+							if (TargetRuntime.IsInstalled (TargetFramework))
+								return GettextCatalog.GetString ("Assembly not found for {0} (in {1})", TargetFramework.Name, TargetRuntime.DisplayName);
+
+							return GettextCatalog.GetString ("Framework {0} is not installed (in {1})", TargetFramework.Name, TargetRuntime.DisplayName);
+						}
+
+						return GettextCatalog.GetString ("Assembly not found");
 					}
 				} else if (ReferenceType == ReferenceType.Project) {
 					if (ownerProject != null && ownerProject.ParentSolution != null) {

@@ -67,6 +67,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		Dictionary<CheckButton, ComboBox> comboboxes = new Dictionary<CheckButton, ComboBox> ();
 		PortableDotNetProject project;
 		TargetFramework target;
+		HBox warningHBox;
+		Label warning;
 
 		static void InitProfiles ()
 		{
@@ -169,6 +171,9 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 					AddSingleOptionCheckbox (kvp.Key, kvp.Value);
 				}
 			}
+
+			AddWarningLabel ();
+			UpdateWarning ();
 		}
 
 		IEnumerable<TargetFramework> GetPortableTargetFrameworks ()
@@ -287,6 +292,26 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			vbox1.PackStart (alignment, false, false, 0);
 		}
 
+		void AddWarningLabel ()
+		{
+			var alignment = new Alignment (0.0f, 0.5f, 1.0f, 1.0f) { LeftPadding = 18 };
+			var image = new Image (GetType ().Assembly, "warning-16.png");
+
+			warning = new Label ("");
+			warning.SetAlignment (0.0f, 0.5f);
+			warning.Show ();
+			image.Show ();
+
+			warningHBox = new HBox (false, 6);
+			warningHBox.PackStart (image, false, false, 0);
+			warningHBox.PackStart (warning, false, true, 0);
+
+			alignment.Child = warningHBox;
+			alignment.Show ();
+
+			vbox1.PackStart (alignment, false, false, 0);
+		}
+
 		List<TargetFramework> GetTargetFrameworks (ComboBox combo)
 		{
 			TreeIter iter;
@@ -352,12 +377,26 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			return smallest;
 		}
 
+		void UpdateWarning ()
+		{
+			if (target.SupportedFrameworks.Count > 0) {
+				warningHBox.Hide ();
+				return;
+			}
+
+			var moniker = target.Id.Profile == null ? TargetFrameworkMoniker.PORTABLE_4_0 : target.Id;
+			warning.LabelProp = GettextCatalog.GetString ("The {0} framework is not installed.", moniker);
+
+			warningHBox.Show ();
+		}
+
 		void TargetFrameworkChanged (CheckButton check, List<TargetFramework> targetFrameworks)
 		{
 			if (!check.Active)
 				targetFrameworks = new List<TargetFramework> (GetPortableTargetFrameworks ());
 
 			target = GetTargetFramework (check, targetFrameworks);
+			UpdateWarning ();
 		}
 
 		void TargetFrameworkChanged (CheckButton check, ComboBox combo)
@@ -370,6 +409,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				targetFrameworks = GetTargetFrameworks (combo);
 
 			target = GetTargetFramework (check, targetFrameworks);
+			UpdateWarning ();
 		}
 		
 		public void Store ()
