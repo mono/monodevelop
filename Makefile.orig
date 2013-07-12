@@ -29,6 +29,7 @@ REFERENCES = \
 	-r:Microsoft.Build.Tasks.v4.0.dll \
 	-r:Microsoft.Build.Utilities.v4.0.dll \
 	-r:lib/ndesk-options/NDesk.Options.dll \
+	-r:lib/newtonsoft.json/Newtonsoft.Json.dll \
 	-r:$(FSBIN)/FSharp.Core.dll 
 
 config=Release
