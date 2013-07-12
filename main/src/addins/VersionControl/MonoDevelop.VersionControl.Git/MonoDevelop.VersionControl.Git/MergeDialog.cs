@@ -79,6 +79,10 @@ namespace MonoDevelop.VersionControl.Git
 			get { return checkStage.Active; }
 		}
 
+		public bool IsRemote {
+			get { return currentType == "remote"; }
+		}
+
 		void HandleTreeSelectionChanged (object sender, EventArgs e)
 		{
 			TreeIter it;
