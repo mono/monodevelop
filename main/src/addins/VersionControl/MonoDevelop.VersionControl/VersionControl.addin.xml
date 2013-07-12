@@ -237,7 +237,7 @@
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Lock"/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Unlock"/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Ignore"/>
-			<CommandItem id = "Monodevelop.VersionControl.Commands.Unignore"/>
+			<CommandItem id = "MonoDevelop.VersionControl.Commands.Unignore"/>
 			<SeparatorItem/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Diff"/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Log"/>
