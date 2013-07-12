@@ -304,4 +304,8 @@
 	<Extension path = "/MonoDevelop/Ide/CustomTools">
 		<Tool name="ResXFileCodeGenerator" type="MonoDevelop.Ide.CustomTools.ResXFileCodeGenerator" />
 	</Extension>
+	
+	<Extension path = "/MonoDevelop/Core/FileSystemExtensions">
+		<Class id="Ide" class = "MonoDevelop.Ide.Projects.IdeFileSystemExtensionExtension" insertafter = "FinalStep"/>
+	</Extension>
 </Addin>

@@ -49,5 +49,11 @@ namespace MonoDevelop.Core
 		public string Details {
 			get { return details; }
 		}
+
+		/// <summary>
+		/// If true, it means that the error has already been reported to the user (for example, by showing a dialog), so it doesn't have to be reported again.
+		/// </summary>
+		/// <value><c>true</c> if already reported to user; otherwise, <c>false</c>.</value>
+		public bool AlreadyReportedToUser { get; set; }
 	}
 }

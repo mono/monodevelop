@@ -239,13 +239,43 @@ namespace MonoDevelop.Core
 				srcExt.DeleteDirectory (srcPath);
 			}
 		}
-		
+
+		[Obsolete ("Replaced by RequestFileEdit(fileName,throwIfFails)")]
 		public static bool RequestFileEdit (string fileName)
 		{
-			Debug.Assert (!String.IsNullOrEmpty (fileName));
-			return GetFileSystemForPath (fileName, false).RequestFileEdit (fileName);
+			return RequestFileEdit (fileName, false);
 		}
-		
+
+		/// <summary>
+		/// Requests permission for modifying a file
+		/// </summary>
+		/// <param name="fileNames">Files</param>
+		/// <remarks>This method must be called before trying to write any file. It throws an exception if permission is not granted.</remarks>
+		public static bool RequestFileEdit (FilePath fileName, bool throwIfFails = true)
+		{
+			Debug.Assert (!String.IsNullOrEmpty (fileName));
+			return RequestFileEdit (new FilePath[] { fileName }, throwIfFails);
+		}
+
+		/// <summary>
+		/// Requests permission for modifying a set of files
+		/// </summary>
+		/// <param name="fileNames">Files</param>
+		/// <remarks>This method must be called before trying to write any file. It throws an exception if permission is not granted.</remarks>
+		public static bool RequestFileEdit (IEnumerable<FilePath> fileNames, bool throwIfFails = true)
+		{
+			try {
+				foreach (var fg in fileNames.GroupBy (f => GetFileSystemForPath (f, false)))
+					fg.Key.RequestFileEdit (fg);
+				return true;
+			} catch (Exception ex) {
+				if (throwIfFails)
+					throw;
+				LoggingService.LogError ("File can't be written", ex);
+				return false;
+			}
+		}
+
 		public static void NotifyFileChanged (FilePath fileName)
 		{
 			NotifyFileChanged (fileName, false);

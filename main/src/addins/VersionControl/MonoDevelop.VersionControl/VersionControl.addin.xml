@@ -96,7 +96,7 @@
 	</ExtensionPoint>
 
 	<Extension path = "/MonoDevelop/Core/FileSystemExtensions">
-		<Class class = "MonoDevelop.VersionControl.VersionControlFileSystemExtension" />
+		<Class class = "MonoDevelop.VersionControl.VersionControlFileSystemExtension" insertafter = "MidStep" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">

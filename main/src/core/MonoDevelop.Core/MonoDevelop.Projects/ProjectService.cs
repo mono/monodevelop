@@ -329,9 +329,8 @@ namespace MonoDevelop.Projects
 				file = format.GetValidFileName (item, file);
 			}
 			
-			if (!FileService.RequestFileEdit (file))
-				throw new UserException (GettextCatalog.GetString ("The project could not be saved"), GettextCatalog.GetString ("Write permission has not been granted for file '{0}'", file));
-			
+			FileService.RequestFileEdit (file);
+
 			format.Format.WriteFile (file, item, monitor);
 			return file;
 		}
@@ -644,6 +643,7 @@ namespace MonoDevelop.Projects
 		
 		public override void Save (IProgressMonitor monitor, SolutionEntityItem entry)
 		{
+			FileService.RequestFileEdit (entry.GetItemFiles (false));
 			entry.OnSave (monitor);
 		}
 		
