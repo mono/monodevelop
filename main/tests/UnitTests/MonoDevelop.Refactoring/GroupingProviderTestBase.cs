@@ -129,6 +129,15 @@ namespace MonoDevelop.Refactoring
 			Provider.Reset ();
 			Assert.IsTrue (mock.ResetCalled, "The provider did not reset its Next provider.");
 		}
+		
+		[Test]
+		public void SetsNextProviderOfGeneratedGroups ()
+		{
+			var group = Provider.GetIssueGroup (summary);
+			var mock = new MockGroupingProvider ();
+			Provider.Next = mock;
+			Assert.AreSame (mock, group.GroupingProvider, "The grouping provider change was not propagated to the existing group.");
+		}
 	}
 }
 

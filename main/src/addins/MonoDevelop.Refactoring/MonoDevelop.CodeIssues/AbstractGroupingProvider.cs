@@ -50,7 +50,7 @@ namespace MonoDevelop.CodeIssues
 			if (providerCategory == null)
 				return null;
 			if (!groups.TryGetValue(providerCategory, out group)) {
-				group = new IssueGroup (this, Next, GetGroupName(issue));
+				group = new IssueGroup (Next, GetGroupName(issue));
 				groups.Add (providerCategory, group);
 			}
 			return group;
@@ -71,6 +71,9 @@ namespace MonoDevelop.CodeIssues
 			set {
 				var eventArgs = new GroupingProviderEventArgs (this, next);
 				next = value;
+				foreach (var group in groups.Values) {
+					group.GroupingProvider = value;
+				}
 				OnNextChanged (eventArgs);
 			}
 		}

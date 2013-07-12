@@ -45,9 +45,9 @@ namespace MonoDevelop.CodeIssues
 	{
 		object _lock = new object ();
 		CancellationTokenSource tokenSource;
-		IssueGroup destinationGroup;
+		IIssueSummarySink destinationGroup;
 		
-		public IssueGroup DestinationGroup {
+		public IIssueSummarySink IssueSink {
 			get {
 				lock (_lock) {
 					return destinationGroup;
@@ -166,7 +166,7 @@ namespace MonoDevelop.CodeIssues
 												File = file,
 												Project = project
 											};
-											DestinationGroup.Push (issue);
+											IssueSink.AddIssue (issue);
 										}
 									} catch (OperationCanceledException) {
 										// The operation was cancelled, no-op as the user-visible parts are

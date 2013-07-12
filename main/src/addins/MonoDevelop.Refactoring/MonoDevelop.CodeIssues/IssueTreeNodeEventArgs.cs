@@ -27,17 +27,17 @@ using System;
 
 namespace MonoDevelop.CodeIssues
 {
-	public class IssueSummaryEventArgs: EventArgs
+	public class IssueTreeNodeEventArgs: EventArgs
 	{
-		public IssueSummaryEventArgs (IssueGroup group, IssueSummary summary)
+		public IssueTreeNodeEventArgs (IIssueTreeNode parent, IIssueTreeNode child)
 		{
-			IssueGroup = group;
-			IssueSummary = summary;
+			Parent = parent;
+			Child = child;
 		}
 		
-		public IssueGroup IssueGroup { get; private set; }
+		public IIssueTreeNode Parent { get; private set; }
 		
-		public IssueSummary IssueSummary { get; private set; }
+		public IIssueTreeNode Child { get; private set; }
 	}
 }
 

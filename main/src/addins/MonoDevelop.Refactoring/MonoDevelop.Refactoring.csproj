@@ -118,7 +118,6 @@
     <Compile Include="MonoDevelop.CodeIssues\GroupingDescriptionAttribute.cs" />
     <Compile Include="MonoDevelop.CodeIssues\NullGroupingProvider.cs" />
     <Compile Include="MonoDevelop.CodeIssues\IssueGroupEventArgs.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\IssueSummaryEventArgs.cs" />
     <Compile Include="MonoDevelop.CodeIssues\GroupingProviderEventArgs.cs" />
     <Compile Include="MonoDevelop.CodeIssues\AbstractGroupingProvider.cs" />
     <Compile Include="MonoDevelop.CodeIssues\ProviderGroupingProvider.cs" />
@@ -126,6 +125,9 @@
     <Compile Include="MonoDevelop.CodeIssues\AnalysisState.cs" />
     <Compile Include="MonoDevelop.CodeIssues\AnalysisStateChangeEventArgs.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CodeAnalysisBatchRunner.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\IIssueTreeNode.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\IIssueSummarySink.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\IssueTreeNodeEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />

@@ -26,12 +26,67 @@
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Refactoring;
 using MonoDevelop.Projects;
+using System.Collections.Generic;
+using System.IO;
 
 namespace MonoDevelop.CodeIssues
 {
 
-	public class IssueSummary
+	public class IssueSummary: IIssueTreeNode
 	{
+		#region IIssueTreeNode implementation
+
+		string IIssueTreeNode.Text {
+			get {
+				string lineDescription;
+				if (Region.BeginLine == Region.EndLine) {
+					lineDescription = Region.BeginLine.ToString ();
+				} else {
+					lineDescription = string.Format ("{0}-{1}", Region.BeginLine, Region.EndLine);
+				}
+				var fileName = Path.GetFileName (File.Name);
+				return string.Format ("{0} [{1}:{2}]", IssueDescription, fileName, lineDescription);
+			}
+		}
+	
+		static readonly ICollection<IIssueTreeNode> children = new IIssueTreeNode[0];
+
+		ICollection<IIssueTreeNode> IIssueTreeNode.Children {
+			get {
+				return children;
+			}
+		}
+		
+		bool IIssueTreeNode.HasChildren {
+			get {
+				return false;
+			}
+		}
+		
+		// no-op events, these never happen in this implementation
+		event System.EventHandler<IssueGroupEventArgs> IIssueTreeNode.ChildrenInvalidated {
+			add {
+			}
+			remove {
+			}
+		}
+
+		event System.EventHandler<IssueTreeNodeEventArgs> IIssueTreeNode.ChildAdded {
+			add {
+			}
+			remove {
+			}
+		}
+
+		event System.EventHandler<IssueGroupEventArgs> IIssueTreeNode.TextChanged {
+			add {
+			}
+			remove {
+			}
+		}
+
+		#endregion
+
 		/// <summary>
 		/// The description of the issue.
 		/// </summary>

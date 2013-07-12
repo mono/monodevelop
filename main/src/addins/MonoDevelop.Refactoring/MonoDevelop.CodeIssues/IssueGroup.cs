@@ -27,6 +27,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using Xwt;
+using MonoDevelop.CodeIssues;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -36,16 +37,15 @@ namespace MonoDevelop.CodeIssues
 	/// <remarks>
 	/// This class is thread safe.
 	/// </remarks>
-	public class IssueGroup
+	public class IssueGroup : IIssueTreeNode, IIssueSummarySink
 	{
 		object _lock = new object ();
 		bool processingEnabled;
-		IGroupingProvider groupingProvider;
 		/// <summary>
 		/// A list of groups produced by the <see cref="groupingProvider"/>.
 		/// </summary>
 		ISet<IssueGroup> groups = new HashSet<IssueGroup>();
-		IList<IssueSummary> leaves = new List<IssueSummary>();
+		IList<IIssueTreeNode> children = new List<IIssueTreeNode>();
 		ISet<IssueSummary> allIssues = new HashSet<IssueSummary>();
 
 		/// <summary>
@@ -56,39 +56,123 @@ namespace MonoDevelop.CodeIssues
 		/// The <see cref="IGroupingProvider"/> to use when grouping <see cref="IssueSummary"/> instances.
 		/// </param>
 		/// <param name="description">A string describing the contents of this group.</param>
-		public IssueGroup (IGroupingProvider sourceProvider, IGroupingProvider nextProvider, string description)
+		public IssueGroup (IGroupingProvider nextProvider, string description)
 		{
 			groupingProvider = nextProvider;
 			Description = description;
 			processingEnabled = false;
-			if (sourceProvider != null) {
-				sourceProvider.NextChanged += HandleNextChanged;
+		}
+
+		IGroupingProvider groupingProvider;
+
+		public IGroupingProvider GroupingProvider {
+			get {
+				return groupingProvider;
+			}
+			set {
+				lock(_lock) {
+					processingEnabled = false;
+					groupingProvider = value;
+					groups.Clear ();
+					children.Clear ();
+				}
+				OnChildrenInvalidated (new IssueGroupEventArgs(this));
 			}
 		}
 
-		void HandleNextChanged (object sender, GroupingProviderEventArgs eventArgs)
+		/*void HandleNextChanged (object sender, GroupingProviderEventArgs eventArgs)
 		{
 			lock(_lock) {
 				processingEnabled = false;
 				groupingProvider = eventArgs.GroupingProvider.Next;
 				groups.Clear ();
-				leaves.Clear ();
+				children.Clear ();
 			}
 			// By disabling processing, no events will be raised until EnableGrouping() has been
 			// called. There is a slight possibility of a race between two different grouping provider
 			// changes but all such changes should originate in the ui and thus it should not happen
 			// TODO: Fix the race described above.
 			OnChildrenInvalidated (new IssueGroupEventArgs(this));
+		}*/
+
+		#region IIssueTreeNode implementation
+
+		string IIssueTreeNode.Text {
+			get {
+				return string.Format ("{0} ({1})", Description, IssueCount);
+			}
 		}
 
-		/// <summary>
-		/// Gets or sets the position of this node inside an <see cref="TreeStore"/>.
-		/// </summary>
-		/// <value>The position.</value>
-		public TreePosition Position {
-			get;
-			set;
+		ICollection<IIssueTreeNode> IIssueTreeNode.Children {
+			get {
+				EnableProcessing ();
+				lock (_lock) {
+					return new List<IIssueTreeNode> (children);
+				}
+			}
 		}
+		
+		bool IIssueTreeNode.HasChildren {
+			get {
+				return HasChildren;
+			}
+		}
+
+		event EventHandler<IssueGroupEventArgs> childrenInvalidated;
+		event EventHandler<IssueGroupEventArgs> IIssueTreeNode.ChildrenInvalidated {
+			add {
+				childrenInvalidated += value;
+			}
+			remove {
+				childrenInvalidated -= value;
+			}
+		}
+
+		protected virtual void OnChildrenInvalidated (IssueGroupEventArgs eventArgs)
+		{
+			var handler = childrenInvalidated;
+			if (handler != null) {
+				handler (this, eventArgs);
+			}
+		}
+
+		event EventHandler<IssueTreeNodeEventArgs> childAdded;
+		event EventHandler<IssueTreeNodeEventArgs> IIssueTreeNode.ChildAdded {
+			add {
+				childAdded += value;
+			}
+			remove {
+				childAdded -= value;
+			}
+		}
+
+		protected virtual void OnChildAdded (IssueTreeNodeEventArgs eventArgs)
+		{
+			var handler = childAdded;
+			if (handler != null) {
+				handler (this, eventArgs);
+			}
+		}
+
+		event EventHandler<IssueGroupEventArgs> textChanged;
+		event EventHandler<IssueGroupEventArgs> IIssueTreeNode.TextChanged {
+			add {
+				textChanged += value;
+			}
+			remove {
+				textChanged -= value;
+			}
+		}
+
+		protected virtual void OnTextChanged (IssueGroupEventArgs eventArgs)
+		{
+			var handler = textChanged;
+			if (handler != null) {
+				handler (this, eventArgs);
+			}
+		}
+
+		#endregion
 
 		/// <summary>
 		/// Gets the description.
@@ -115,53 +199,12 @@ namespace MonoDevelop.CodeIssues
 				}
 			}
 		}
-
-		public IList<IssueGroup> Groups {
-			get {
-				EnableProcessing ();
-					
-				lock (_lock) {
-					return new List<IssueGroup> (groups);
-				}
-			}
-		}
-
-		public IList<IssueSummary> Issues {
-			get {
-				EnableProcessing ();
-				
-				lock (_lock) {
-					return new List<IssueSummary> (leaves);
-				}
-			}
-		}
-
-		event EventHandler<IssueGroupEventArgs> childrenInvalidated;
-		/// <summary>
-		/// Occurs when child groups of this instance are invalidated.
-		/// </summary>
-		public event EventHandler<IssueGroupEventArgs> ChildrenInvalidated {
-			add {
-				childrenInvalidated += value;
-			}
-			remove {
-				childrenInvalidated -= value;
-			}
-		}
-
-		protected virtual void OnChildrenInvalidated (IssueGroupEventArgs eventArgs)
-		{
-			var handler = childrenInvalidated;
-			if (handler != null) {
-				handler (this, eventArgs);
-			}
-		}
 		
 		public void ClearStatistics ()
 		{
 			lock (_lock) {
 				groups.Clear ();
-				leaves.Clear ();
+				children.Clear ();
 				allIssues.Clear ();
 				groupingProvider.Reset ();
 				IssueCount = 0;
@@ -180,51 +223,68 @@ namespace MonoDevelop.CodeIssues
 				
 					// Now process the existing issues
 					foreach (var issue in allIssues) {
-						var group = ProcessIssue (issue);
+						IssueGroup group;
+						ProcessIssue (issue, out group);
 						
 						// TODO: Could this be run without holding the lock and is it worth it?
 						if (group != null) {
-							group.Push (issue);	
+							group.AddIssue (issue);	
 						}
 					}
 				}
 			}
 		}
 
-		/// <summary>
-		/// Push the specified issue through the grouped tree.
-		/// </summary>
-		/// <param name="issue">The <see cref="IssueSummary"/> to push through the tree.</param>
-		public void Push (IssueSummary issue)
+		#region IIssueSummarySink implementation
+		
+		public void AddIssue (IssueSummary issue)
 		{
-			IssueGroup group;
+			IssueGroup group = null;
+			bool groupAdded = false;
+			bool issueAdded = false;
 			lock (_lock) {
 				if (!allIssues.Contains (issue)) {
 					IssueCount++;
 					allIssues.Add (issue);
+					issueAdded = true;
 				}
-				if (!processingEnabled) {
-					return;
+				if (processingEnabled) {
+					groupAdded = ProcessIssue (issue, out group);
 				}
-				group = ProcessIssue (issue);
+			}
+			if (issueAdded) {
+				OnTextChanged (new IssueGroupEventArgs (this));
+			}
+			if (!processingEnabled)
+				return;
+			if (groupAdded) {
+				OnChildAdded (new IssueTreeNodeEventArgs (this, group));
+			} else if (group == null) {
+				OnChildAdded (new IssueTreeNodeEventArgs (this, issue));
 			}
 			if (group != null) {
-				group.Push (issue);
+				group.AddIssue (issue);
 			}
+			
 		}
+		
+		#endregion
 
-		IssueGroup ProcessIssue (IssueSummary issue)
+		bool ProcessIssue (IssueSummary issue, out IssueGroup group)
 		{
-			IssueGroup group = null;
+			bool groupAdded = false;
+			group = null;
 			if (groupingProvider != null) {
 				group = groupingProvider.GetIssueGroup (issue);
 			}
 			if (group == null) {
-				leaves.Add (issue);
+				children.Add (issue);
 			} else if (!groups.Contains (group)) {
+				groupAdded = true;
 				groups.Add (group);
+				children.Add (group);
 			}
-			return group;
+			return groupAdded;
 		}
 	}
 }

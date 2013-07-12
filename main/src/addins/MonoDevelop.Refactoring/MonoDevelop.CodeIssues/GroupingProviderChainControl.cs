@@ -38,10 +38,9 @@ namespace MonoDevelop.CodeIssues
 		IList<ComboBox> providerPickers = new List<ComboBox>();
 		IList<Label> labels = new List<Label>();
 
-		public GroupingProviderChainControl(IGroupingProvider provider, IEnumerable<Type> providers)
+		public GroupingProviderChainControl(IssueGroup rootGroup, IEnumerable<Type> providers)
 		{
-			this.RootGroupingProvider = new GroupingProvider ();
-			RootGroupingProvider.Next = provider;
+			this.RootGroupingProvider = new GroupingProvider (rootGroup);
 			availableProviders = providers.ToList();
 			
 			BuildUi ();
@@ -107,19 +106,48 @@ namespace MonoDevelop.CodeIssues
 			return combo;
 		}
 		
-		class GroupingProvider: AbstractGroupingProvider<object>
+		class GroupingProvider: IGroupingProvider
 		{
-			#region implemented abstract members of AbstractGroupingProvider
-			protected override object GetGroupingKey (IssueSummary issue)
+			IssueGroup rootGroup;
+			
+			public GroupingProvider (IssueGroup rootGroup)
 			{
-				return null;
+				this.rootGroup = rootGroup;
+				next = rootGroup.GroupingProvider;
 			}
-
-			protected override string GetGroupName (IssueSummary issue)
+		
+			#region IGroupingProvider implementation
+			
+			public event EventHandler<GroupingProviderEventArgs> NextChanged;
+			
+			public IssueGroup GetIssueGroup (IssueSummary issue)
 			{
-				return null;
+				throw new NotImplementedException ();
+			}
+			
+			public void Reset ()
+			{
+				throw new NotImplementedException ();
+			}
+			
+			IGroupingProvider next;
+			public IGroupingProvider Next {
+				get {
+					return next;
+				}
+				set {
+					next = value;
+					rootGroup.GroupingProvider = value;
+				}
+			}
+			
+			public bool SupportsNext {
+				get {
+					return true;
+				}
 			}
 			#endregion
+			
 		}
 	}
 }

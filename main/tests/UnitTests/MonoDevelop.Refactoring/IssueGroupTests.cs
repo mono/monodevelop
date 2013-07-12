@@ -34,6 +34,7 @@ namespace MonoDevelop.Refactoring
 	public class IssueGroupTests
 	{
 		IssueGroup group;
+		IIssueTreeNode node;
 		MockGroupingProvider nextProvider;
 		MockGroupingProvider sourceProvider;
 
@@ -46,75 +47,131 @@ namespace MonoDevelop.Refactoring
 
 		static IssueGroup CreateSecondaryGroup ()
 		{
-			var issueGroup = new IssueGroup (null, null, "secondary group");
+			var issueGroup = new IssueGroup (null, "secondary group");
 			issueGroup.EnableProcessing ();
 			return issueGroup;
 		}
-		
+
 		[SetUp]
-		public void SetUp()
+		public void SetUp ()
 		{
 			nextProvider = new MockGroupingProvider ();
 			sourceProvider = new MockGroupingProvider ();
-			group = new IssueGroup (sourceProvider, nextProvider, "sut");
+			group = new IssueGroup (nextProvider, "sut");
+			node = group;
 			group.EnableProcessing ();
 		}
-		
+
 		[Test]
-		public void PassesIssueSummaryToExistingGroup()
+		public void CallsChildAddedEventHandlers ()
+		{
+			nextProvider.Group = CreateSecondaryGroup ();
+
+			bool eventHandlerCalled = false;
+			bool groupEventHandlerCalled = false;
+			((IIssueTreeNode)nextProvider.Group).ChildAdded += delegate {
+				groupEventHandlerCalled = true;
+			};
+			node.ChildAdded += delegate {
+				eventHandlerCalled = true;
+			};
+
+			group.AddIssue (new IssueSummary ());
+			Assert.IsTrue (eventHandlerCalled, "The event handler for the root group was not called.");
+			Assert.IsTrue (groupEventHandlerCalled, "The event handler for the nested group was not called.");
+		}
+
+		[Test]
+		public void CallsTextChangedEventHandlersWhenIssueIsAdded ()
+		{
+			bool textChangedHandlerCalled = false;
+			node.TextChanged += delegate {
+				textChangedHandlerCalled = true;
+			};
+
+			group.AddIssue (new IssueSummary ());
+			Assert.IsTrue (textChangedHandlerCalled, "The event handler was not called.");
+		}
+
+		[Test]
+		public void CallsTextChangedEventHandlersWhenIssueIsAddedToNonProcessingGroup ()
+		{
+			var inactiveGroup = new IssueGroup (nextProvider, "sut");
+			bool textChangedHandlerCalled = false;
+			((IIssueTreeNode)inactiveGroup).TextChanged += delegate {
+				textChangedHandlerCalled = true;
+			};
+
+			inactiveGroup.AddIssue (new IssueSummary ());
+			Assert.IsTrue (textChangedHandlerCalled, "The event handler was not called.");
+		}
+
+		[Test]
+		public void DoesNotCallChildAddedEventHandlersIfNotEnabled ()
+		{
+			var disabledGroup = new IssueGroup (null, "disabledNode");
+			IIssueTreeNode disabledNode = disabledGroup;
+			nextProvider.Group = CreateSecondaryGroup ();
+			
+			disabledNode.ChildAdded += Forbidden<IssueTreeNodeEventArgs> ("node.ChildAdded");
+			disabledGroup.AddIssue (new IssueSummary ());
+		}
+
+		[Test]
+		public void PassesIssueSummaryToExistingGroup ()
 		{
 			// "prime" the tree of groups
 			nextProvider.Group = CreateSecondaryGroup ();
-			group.Push (new IssueSummary ());
+			group.AddIssue (new IssueSummary ());
 			
 			var probe = new IssueSummary ();
-			group.Push (probe);
-			Assert.IsTrue (nextProvider.Group.Issues.Contains(probe), "The issue was not added to the existing group.");
+			group.AddIssue (probe);
+			Assert.IsTrue (((IIssueTreeNode)nextProvider.Group).Children.Contains (probe), "The issue was not added to the existing group.");
 		}
-		
+
 		[Test]
-		public void PassesIssueSummaryToNewGroup()
+		public void PassesIssueSummaryToNewGroup ()
 		{
 			nextProvider.Group = CreateSecondaryGroup ();
 			
 			var probe = new IssueSummary ();
-			group.Push (probe);
-			Assert.IsTrue (nextProvider.Group.Issues.Contains(probe), "The issue was not added to the new group.");
+			group.AddIssue (probe);
+			Assert.IsTrue (((IIssueTreeNode)nextProvider.Group).Children.Contains (probe), "The issue was not added to the new group.");
 		}
-		
+
 		[Test]
 		public void PassesIssueSummaryToExistingGroupDuringEnableProcessing ()
 		{
-			var disabledGroup = new IssueGroup (sourceProvider, nextProvider, "sut");
+			var disabledGroup = new IssueGroup (nextProvider, "sut");
 			// "prime" the tree of groups
 			nextProvider.Group = CreateSecondaryGroup ();
-			disabledGroup.Push (new IssueSummary ());
+			disabledGroup.AddIssue (new IssueSummary ());
 			
 			var probe = new IssueSummary ();
-			disabledGroup.Push (probe);
+			disabledGroup.AddIssue (probe);
 			disabledGroup.EnableProcessing ();
-			var issues = nextProvider.Group.Issues;
-			Assert.IsTrue (issues.Contains(probe), "The issue was not added to the existing group.");
+			var issues = ((IIssueTreeNode)nextProvider.Group).Children;
+			Assert.IsTrue (issues.Contains (probe), "The issue was not added to the existing group.");
 		}
-		
+
 		[Test]
 		public void PassesIssueSummaryToNewGroupDuringEnableProcessing ()
 		{
-			var disabledGroup = new IssueGroup (sourceProvider, nextProvider, "sut");
+			var disabledGroup = new IssueGroup (nextProvider, "sut");
 			// "prime" the tree of groups
 			nextProvider.Group = CreateSecondaryGroup ();
 			
 			var probe = new IssueSummary ();
-			disabledGroup.Push (probe);
+			disabledGroup.AddIssue (probe);
 			disabledGroup.EnableProcessing ();
-			var issues = nextProvider.Group.Issues;
-			Assert.IsTrue (issues.Contains(probe), "The issue was not added to the new group.");
+			var issues = ((IIssueTreeNode)nextProvider.Group).Children;
+			Assert.IsTrue (issues.Contains (probe), "The issue was not added to the new group.");
 		}
-		
+
 		[Test]
 		public void ClearStatisticsTest ()
 		{
-			group.Push (new IssueSummary ());
+			group.AddIssue (new IssueSummary ());
 			
 			Assert.AreEqual (1, group.IssueCount, "Incorrect issue count.");
 			
@@ -123,36 +180,50 @@ namespace MonoDevelop.Refactoring
 			Assert.AreEqual (0, group.IssueCount, "Incorrect issue count after reset.");
 			Assert.IsTrue (nextProvider.ResetCalled, "Reset was not called on the provider");
 		}
-		
+
 		[Test]
 		public void DoesNotInteractIfGroupingDisabled ()
 		{
-			var disabledGroup = new IssueGroup (null, nextProvider, "disabled group");
+			var disabledGroup = new IssueGroup (nextProvider, "disabled group");
 			
-			disabledGroup.Push (new IssueSummary ());
+			disabledGroup.AddIssue (new IssueSummary ());
 			Assert.IsFalse (nextProvider.GetIssueGroupCalled, "The provider should not be called by a disabled group.");
 		}
-		
+
 		[Test]
-		public void ChildrenInvalidatedCalledWhenCreatingProviderNextChanges ()
+		public void ChildrenInvalidatedCalledWhenNextProviderChanges ()
 		{
 			bool eventCalled = false;
-			group.ChildrenInvalidated += (sender, eventArgs) => {
+			node.ChildrenInvalidated += (sender, eventArgs) => {
 				eventCalled = true;
 			};
-			sourceProvider.Next = new MockGroupingProvider();
+			group.GroupingProvider = new MockGroupingProvider ();
 			Assert.IsTrue (eventCalled, "The event was not called.");
 		}
 		
 		[Test]
+		public void NoEventsCalledForIssuesAddedBeforeProcessingEnabled ()
+		{
+			var localGroup = new IssueGroup (null, "sut");
+			IIssueTreeNode localNode = localGroup;
+			localNode.ChildAdded += Forbidden<IssueTreeNodeEventArgs> ("node.ChildAdded");
+			var issue = new IssueSummary ();
+			localGroup.AddIssue (issue);
+			var children = localNode.Children;
+			CollectionAssert.Contains (children, issue);
+			Assert.AreEqual (1, children.Count, "The number of children was incorrect.");
+		}
+
+		[Test]
 		public void LeavesFilteredCorrectly ()
 		{
-			var leafGroup = new IssueGroup (NullGroupingProvider.Instance, NullGroupingProvider.Instance, "sut");
+			var leafGroup = new IssueGroup (NullGroupingProvider.Instance, "sut");
+			IIssueTreeNode leafNode = leafGroup;
 			var issue = new IssueSummary ();
-			leafGroup.Push (issue);
+			leafGroup.AddIssue (issue);
 			
-			CollectionAssert.Contains (leafGroup.Issues, issue, "The number of issues in the group was incorrect.");
-			Assert.AreEqual (1, leafGroup.Issues.Count, "The group contained too many issues.");
+			CollectionAssert.Contains (leafNode.Children, issue);
+			Assert.AreEqual (1, leafNode.Children.Count, "The group contained too many issues.");
 		}
 	}
 }
