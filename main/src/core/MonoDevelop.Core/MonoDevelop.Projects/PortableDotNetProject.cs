@@ -53,7 +53,7 @@ namespace MonoDevelop.Projects
 		{
 			int version;
 			
-			if (!format.Id.StartsWith ("MSBuild"))
+			if (!format.Id.StartsWith ("MSBuild", StringComparison.Ordinal))
 				return false;
 			
 			if (!int.TryParse (format.Id.Substring ("MSBuild".Length), out version))
