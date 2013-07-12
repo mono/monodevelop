@@ -674,7 +674,7 @@ namespace MonoDevelop.CSharp.Completion
 
 				public override TooltipInformation CreateTooltipInformation (bool smartWrap)
 				{
-					return tooltipFunc (List, smartWrap);
+					return tooltipFunc != null ? tooltipFunc (List, smartWrap) : new TooltipInformation ();
 				}
 
 				protected List<ICompletionData> overloads;
@@ -902,6 +902,52 @@ namespace MonoDevelop.CSharp.Completion
 					
 			}
 
+			class FormatItemCompletionData : CompletionData
+			{
+				string format;
+				string description;
+				object example;
+
+				public FormatItemCompletionData (string format, string description, object example)
+				{
+					this.format = format;
+					this.description = description;
+					this.example = example;
+				}
+
+				
+				public override string DisplayText {
+					get {
+						return format;
+					}
+				}
+
+				
+				string displayDescription = null;
+				public override string DisplayDescription {
+					get {
+						if (displayDescription == null) {
+							displayDescription = description + " (" + string.Format ("{0:" +format +"}", example) + ")";
+						}
+						return displayDescription;
+					}
+				}
+
+				public override string CompletionText {
+					get {
+						return format;
+					}
+				}
+
+			}
+
+
+			ICompletionData ICompletionDataFactory.CreateFormatItemCompletionData(string format, string description, object example)
+			{
+				return new FormatItemCompletionData (format, description, example);
+			}
+
+
 			class ImportSymbolCompletionData : CompletionData
 			{
 				IType type;
@@ -965,13 +1011,13 @@ namespace MonoDevelop.CSharp.Completion
 						return type.GetStockIcon ();
 					}
 				}
-
+				
 				public override string DisplayText {
 					get {
 						return type.Name;
 					}
 				}
-
+				
 				string displayDescription = null;
 				public override string DisplayDescription {
 					get {
