@@ -130,6 +130,9 @@
 		<MimeType id="text/x-csharp" _description="C# source code" icon="md-csharp-file" isText="true">
 			<File pattern="*.cs" />
 		</MimeType>
+		<MimeType id="application/csproject+xml" _description="C# project file" baseType="application/xml">
+			<File pattern="*.csproj" />
+		</MimeType>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/CodeFormatters">
