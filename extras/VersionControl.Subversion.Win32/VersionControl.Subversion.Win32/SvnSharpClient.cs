@@ -9,7 +9,6 @@ using SharpSvn.Security;
 using SvnRevision = MonoDevelop.VersionControl.Subversion.SvnRevision;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects.Text;
-using System.Text;
 
 namespace SubversionAddinWindows
 {

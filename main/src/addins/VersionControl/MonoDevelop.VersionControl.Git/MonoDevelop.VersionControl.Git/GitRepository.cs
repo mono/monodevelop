@@ -865,36 +865,84 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 		
-		protected override void OnDeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor)
+		protected override void OnDeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
 		{
-			DeleteCore (localPaths, force, monitor);
-			// Untracked files are not deleted by the rm command, so delete them now
-			foreach (var f in localPaths)
-				if (File.Exists (f))
-					File.Delete (f);
+			DeleteCore (localPaths, force, monitor, keepLocal);
+
+			foreach (var path in localPaths) {
+				if (keepLocal) {
+					// Undo addition of files.
+					VersionInfo info = GetVersionInfo (path, VersionInfoQueryFlags.IgnoreCache);
+					if (info != null && info.HasLocalChange (VersionStatus.ScheduledAdd)) {
+						// Revert addition.
+						Revert (path, false, monitor);
+					}
+				} else {
+					// Untracked files are not deleted by the rm command, so delete them now
+					if (File.Exists (path))
+						File.Delete (path);
+				}
+			}
 		}
 		
-		protected override void OnDeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor)
+		protected override void OnDeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
 		{
-			DeleteCore (localPaths, force, monitor);
+			DeleteCore (localPaths, force, monitor, keepLocal);
 
-			// Untracked files are not deleted by the rm command, so delete them now
-			foreach (var f in localPaths)
-				if (Directory.Exists (f))
-					Directory.Delete (f, true);
+			foreach (var path in localPaths) {
+				if (keepLocal) {
+					// Undo addition of directories and files.
+					foreach (var info in GetDirectoryVersionInfo (path, false, true)) {
+						if (info != null && info.HasLocalChange (VersionStatus.ScheduledAdd)) {
+							// Revert addition.
+							Revert (path, false, monitor);
+						}
+					}
+				} else {
+					// Untracked files are not deleted by the rm command, so delete them now
+					foreach (var f in localPaths)
+						if (Directory.Exists (f))
+							Directory.Delete (f, true);
+				}
+			}
 		}
 
-		void DeleteCore (FilePath[] localPaths, bool force, IProgressMonitor monitor)
+		void DeleteCore (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
 		{
 			foreach (var group in localPaths.GroupBy (p => GetRepository (p))) {
+				List<FilePath> backupFiles = new List<FilePath> ();
 				var repository = group.Key;
 				var files = group;
 
 				var git = new NGit.Api.Git (repository);
 				RmCommand rm = git.Rm ();
-				foreach (var f in files)
+				foreach (var f in files) {
+					// Create backups.
+					if (keepLocal) {
+						string newPath = "";
+						if (f.IsDirectory) {
+							newPath = FileService.CreateTempDirectory ();
+							FileService.CopyDirectory (f, newPath);
+						} else {
+							newPath = Path.GetTempFileName ();
+							File.Copy (f, newPath, true);
+						}
+						backupFiles.Add (newPath);
+					}
+
 					rm.AddFilepattern (repository.ToGitPath (f));
+				}
 				rm.Call ();
+
+				// Copy backups.
+				if (keepLocal) {
+					foreach (var backup in backupFiles) {
+						if (backup.IsDirectory)
+							FileService.MoveDirectory (backup, files.ElementAt (backupFiles.IndexOf (backup)));
+						else
+							File.Move (backup,  files.ElementAt (backupFiles.IndexOf (backup)));
+					}
+				}
 			}
 		}
 

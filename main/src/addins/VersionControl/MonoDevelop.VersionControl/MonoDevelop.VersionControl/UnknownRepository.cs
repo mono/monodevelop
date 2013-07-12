@@ -86,11 +86,11 @@ namespace MonoDevelop.VersionControl
 		{
 		}
 
-		protected override void OnDeleteFiles (FilePath[] path, bool force, IProgressMonitor monitor)
+		protected override void OnDeleteFiles (FilePath[] path, bool force, IProgressMonitor monitor, bool keepLocal)
 		{
 		}
 
-		protected override void OnDeleteDirectories (FilePath[] path, bool force, IProgressMonitor monitor)
+		protected override void OnDeleteDirectories (FilePath[] path, bool force, IProgressMonitor monitor, bool keepLocal)
 		{
 		}
 
