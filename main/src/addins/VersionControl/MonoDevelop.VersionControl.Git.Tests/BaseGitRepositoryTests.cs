@@ -96,6 +96,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		}
 
 		[Test]
+		[Ignore]
 		public override void FileIsCommitted ()
 		{
 			FilePath added = rootCheckout + "testfile";
