@@ -421,18 +421,9 @@ namespace MonoDevelop.VersionControl.Git
 			IEnumerable<DiffEntry> statusList = null;
 			
 			monitor.BeginTask (GettextCatalog.GetString ("Updating"), 5);
-			
+
 			// Fetch remote commits
-			string remote = GetCurrentRemote ();
-			if (remote == null)
-				throw new InvalidOperationException ("No remotes defined");
-			monitor.Log.WriteLine (GettextCatalog.GetString ("Fetching from '{0}'", remote));
-			RemoteConfig remoteConfig = new RemoteConfig (RootRepository.GetConfig (), remote);
-			Transport tn = Transport.Open (RootRepository, remoteConfig);
-			using (var gm = new GitMonitor (monitor))
-				tn.Fetch (gm, null);
-			monitor.Step (1);
-			
+			Fetch (monitor);
 			string upstreamRef = GitUtil.GetUpstreamSource (RootRepository, GetCurrentBranch ());
 			if (upstreamRef == null)
 				upstreamRef = GetCurrentRemote () + "/" + GetCurrentBranch ();
@@ -451,6 +442,20 @@ namespace MonoDevelop.VersionControl.Git
 			monitor.EndTask ();
 		}
 
+		public void Fetch (IProgressMonitor monitor)
+		{
+			string remote = GetCurrentRemote ();
+			if (remote == null)
+				throw new InvalidOperationException ("No remotes defined");
+
+			monitor.Log.WriteLine (GettextCatalog.GetString ("Fetching from '{0}'", remote));
+			RemoteConfig remoteConfig = new RemoteConfig (RootRepository.GetConfig (), remote);
+			Transport tn = Transport.Open (RootRepository, remoteConfig);
+			using (var gm = new GitMonitor (monitor))
+				tn.Fetch (gm, null);
+			monitor.Step (1);
+		}
+
 		public void Rebase (string upstreamRef, bool saveLocalChanges, IProgressMonitor monitor)
 		{
 			StashCollection stashes = GitUtil.GetStashes (RootRepository);
@@ -465,12 +470,11 @@ namespace MonoDevelop.VersionControl.Git
 						stash = stashes.Create (gm, GetStashName ("_tmp_"));
 					monitor.Step (1);
 				}
-				
+
 				NGit.Api.Git git = new NGit.Api.Git (RootRepository);
 				RebaseCommand rebase = git.Rebase ();
 				rebase.SetOperation (RebaseCommand.Operation.BEGIN);
 				rebase.SetUpstream (upstreamRef);
-				
 				var gmonitor = new GitMonitor (monitor);
 				rebase.SetProgressMonitor (gmonitor);
 				
