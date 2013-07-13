@@ -55,13 +55,9 @@ then
 elif [  -f "$MDDIR"/../../MonoDevelop ] ;then
   # e.g. 3.0.4.7
   MDVERSION4=`"$MDDIR"/../../MonoDevelop /? | head -n 1 | grep -o "[0-9]\+.[0-9]\+.[0-9]\+\(.[0-9]\+\)\?"`
-  # e.g. 3.0.4
-  MDVERSION3=`$MDDIR/../../MonoDevelop /? | head -n 1 | grep -o "[0-9]\+.[0-9]\+.[0-9]\+"`
   echo "Detected MonoDevelop version " $MDVERSION4
-  echo "Detected MonoDevelop version " $MDVERSION3
 else
   MDVERSION4=4.1.6
-  MDVERSION3=4.0
   echo "Assumed MonoDevelop version " $MDVERSION4
 fi
 
@@ -69,4 +65,4 @@ fi
 # ------------------------------------------------------------------------------
 # Write Makefile
 
-sed -e "s,INSERT_MDROOT,$MDDIR,g" -e "s,INSERT_MDVERSION3,$MDVERSION3,g" -e "s,INSERT_MDVERSION4,$MDVERSION4,g" Makefile.orig > Makefile
+sed -e "s,INSERT_MDROOT,$MDDIR,g" -e "s,INSERT_MDVERSION4,$MDVERSION4,g" Makefile.orig > Makefile

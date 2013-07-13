@@ -15,11 +15,6 @@
     <UsePartialTypes>False</UsePartialTypes>
 
     <MonoDevelopVersion>INSERT_FSPROJ_MDVERSION4</MonoDevelopVersion>
-    <DefineConstants Condition="'$(MonoDevelopVersion)' == '3.0.3.2'">MONODEVELOP_AT_MOST_3_0_3_2;MONODEVELOP_AT_MOST_3_0_6;MONODEVELOP_AT_MOST_3_1_1;$(DefineConstants)</DefineConstants>
-    <DefineConstants Condition="'$(MonoDevelopVersion)' == '3.0.4.7'">MONODEVELOP_AT_MOST_3_0_6;MONODEVELOP_AT_MOST_3_1_1;$(DefineConstants)</DefineConstants>
-    <DefineConstants Condition="'$(MonoDevelopVersion)' == '3.0.5'">MONODEVELOP_AT_MOST_3_0_6;MONODEVELOP_AT_MOST_3_1_1;$(DefineConstants)</DefineConstants>
-    <DefineConstants Condition="'$(MonoDevelopVersion)' == '3.0.6'">MONODEVELOP_AT_MOST_3_0_6;MONODEVELOP_AT_MOST_3_1_1;$(DefineConstants)</DefineConstants>
-    <DefineConstants Condition="'$(MonoDevelopVersion)' == '3.1.1'">MONODEVELOP_AT_MOST_3_1_1;$(DefineConstants)</DefineConstants>
     <DefineConstants Condition="'$(MonoDevelopVersion)' == '4.0'">M$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 
