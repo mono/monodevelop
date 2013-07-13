@@ -47,15 +47,20 @@ echo "Successfully found MonoDevelop root directory." $MDDIR
 
 echo "Running $MDDIR/../../MonoDevelop to determine MonoDevelop version"
 
-if [  -f "$MDDIR"/../../MonoDevelop ] 
-then 
+if [  -f "$MDDIR"/../../XamarinStudio ]
+then
   # e.g. 3.0.4.7
-  MDVERSION4=`$MDDIR/../../MonoDevelop /? | head -n 1 | grep -o "[0-9]\+.[0-9]\+.[0-9]\+\(.[0-9]\+\)\?"`
+  MDVERSION4=`"$MDDIR"/../../XamarinStudio /? | head -n 1 | grep -o "[0-9]\+.[0-9]\+.[0-9]\+\(.[0-9]\+\)\?"`
+  echo "Detected Xamarin Studio version " $MDVERSION4
+elif [  -f "$MDDIR"/../../MonoDevelop ] ;then
+  # e.g. 3.0.4.7
+  MDVERSION4=`"$MDDIR"/../../MonoDevelop /? | head -n 1 | grep -o "[0-9]\+.[0-9]\+.[0-9]\+\(.[0-9]\+\)\?"`
   # e.g. 3.0.4
   MDVERSION3=`$MDDIR/../../MonoDevelop /? | head -n 1 | grep -o "[0-9]\+.[0-9]\+.[0-9]\+"`
   echo "Detected MonoDevelop version " $MDVERSION4
+  echo "Detected MonoDevelop version " $MDVERSION3
 else
-  MDVERSION4=4.0.0.0
+  MDVERSION4=4.1.6
   MDVERSION3=4.0
   echo "Assumed MonoDevelop version " $MDVERSION4
 fi
