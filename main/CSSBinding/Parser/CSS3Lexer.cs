@@ -1,5 +1,5 @@
 //
-// CSSParser.cs
+// CSSLexer.cs
 //
 // Author:
 //       Diyoda Sajjana <>
@@ -34,12 +34,12 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// $ANTLR 3.3.1.7705 CSS3.g3 2013-07-14 02:22:24
+// $ANTLR 3.3.1.7705 CSS3.g3 2013-07-14 23:24:50
 
 // The variable 'variable' is assigned but its value is never used.
-#pragma warning disable 219
+//#pragma warning disable 219
 // Unreachable code detected.
-#pragma warning disable 162
+//#pragma warning disable 162
 
 
 using System.Collections.Generic;
@@ -49,86 +49,85 @@ namespace Parser
 {
 	[System.CodeDom.Compiler.GeneratedCode("ANTLR", "3.3.1.7705")]
 	[System.CLSCompliant(false)]
-	public partial class CSS3Lexer : Antlr.Runtime
+	public partial class CSS3Lexer : Antlr.Runtime.Lexer
 	{
 		public const int EOF=-1;
 		public const int A=4;
 		public const int ANGLE=5;
 		public const int B=6;
-		public const int BOM=7;
-		public const int C=8;
-		public const int CDC=9;
-		public const int CDO=10;
-		public const int CHARSET_SYM=11;
-		public const int COLON=12;
-		public const int COMMA=13;
-		public const int COMMENT=14;
-		public const int D=15;
-		public const int DASHMATCH=16;
-		public const int DIMENSION=17;
-		public const int DOT=18;
-		public const int E=19;
-		public const int EMS=20;
-		public const int ESCAPE=21;
-		public const int EXS=22;
-		public const int F=23;
-		public const int FREQ=24;
-		public const int G=25;
-		public const int GREATER=26;
-		public const int H=27;
-		public const int HASH=28;
-		public const int HEXCHAR=29;
-		public const int I=30;
-		public const int IDENT=31;
-		public const int IMPORTANT_SYM=32;
-		public const int IMPORT_SYM=33;
-		public const int INCLUDES=34;
-		public const int INVALID=35;
-		public const int J=36;
-		public const int K=37;
-		public const int L=38;
-		public const int LBRACE=39;
-		public const int LBRACKET=40;
-		public const int LENGTH=41;
-		public const int LPAREN=42;
-		public const int M=43;
-		public const int MEDIA_SYM=44;
-		public const int MINUS=45;
-		public const int N=46;
-		public const int NAME=47;
-		public const int NL=48;
-		public const int NMCHAR=49;
-		public const int NMSTART=50;
-		public const int NONASCII=51;
-		public const int NUMBER=52;
-		public const int O=53;
-		public const int OPEQ=54;
-		public const int P=55;
-		public const int PAGE_SYM=56;
-		public const int PERCENTAGE=57;
-		public const int PLUS=58;
-		public const int Q=59;
-		public const int R=60;
-		public const int RBRACE=61;
-		public const int RBRACKET=62;
-		public const int RPAREN=63;
-		public const int S=64;
-		public const int SEMI=65;
-		public const int SOLIDUS=66;
-		public const int STAR=67;
-		public const int STRING=68;
-		public const int T=69;
-		public const int TIME=70;
-		public const int U=71;
-		public const int UNICODE=72;
-		public const int URI=73;
-		public const int URL=74;
-		public const int V=75;
-		public const int W=76;
-		public const int WS=77;
-		public const int X=78;
-		public const int Y=79;
-		public const int Z=80;
+		public const int C=7;
+		public const int CDC=8;
+		public const int CDO=9;
+		public const int CHARSET_SYM=10;
+		public const int COLON=11;
+		public const int COMMA=12;
+		public const int COMMENT=13;
+		public const int D=14;
+		public const int DASHMATCH=15;
+		public const int DIMENSION=16;
+		public const int DOT=17;
+		public const int E=18;
+		public const int EMS=19;
+		public const int ESCAPE=20;
+		public const int EXS=21;
+		public const int F=22;
+		public const int FREQ=23;
+		public const int G=24;
+		public const int GREATER=25;
+		public const int H=26;
+		public const int HASH=27;
+		public const int HEXCHAR=28;
+		public const int I=29;
+		public const int IDENT=30;
+		public const int IMPORTANT_SYM=31;
+		public const int IMPORT_SYM=32;
+		public const int INCLUDES=33;
+		public const int INVALID=34;
+		public const int J=35;
+		public const int K=36;
+		public const int L=37;
+		public const int LBRACE=38;
+		public const int LBRACKET=39;
+		public const int LENGTH=40;
+		public const int LPAREN=41;
+		public const int M=42;
+		public const int MEDIA_SYM=43;
+		public const int MINUS=44;
+		public const int N=45;
+		public const int NAME=46;
+		public const int NL=47;
+		public const int NMCHAR=48;
+		public const int NMSTART=49;
+		public const int NONASCII=50;
+		public const int NUMBER=51;
+		public const int O=52;
+		public const int OPEQ=53;
+		public const int P=54;
+		public const int PAGE_SYM=55;
+		public const int PERCENTAGE=56;
+		public const int PLUS=57;
+		public const int Q=58;
+		public const int R=59;
+		public const int RBRACE=60;
+		public const int RBRACKET=61;
+		public const int RPAREN=62;
+		public const int S=63;
+		public const int SEMI=64;
+		public const int SOLIDUS=65;
+		public const int STAR=66;
+		public const int STRING=67;
+		public const int T=68;
+		public const int TIME=69;
+		public const int U=70;
+		public const int UNICODE=71;
+		public const int URI=72;
+		public const int URL=73;
+		public const int V=74;
+		public const int W=75;
+		public const int WS=76;
+		public const int X=77;
+		public const int Y=78;
+		public const int Z=79;
 
 		// delegates
 		// delegators
@@ -11049,43 +11048,6 @@ namespace Parser
 		}
 		// $ANTLR end "NL"
 
-		partial void EnterRule_BOM();
-		partial void LeaveRule_BOM();
-
-		// $ANTLR start "BOM"
-		[GrammarRule("BOM")]
-		private void mBOM()
-		{
-			EnterRule_BOM();
-			EnterRule("BOM", 77);
-			TraceIn("BOM", 77);
-			try
-			{
-				// CSS3.g3:673:18: ( '\\u65279' )
-				DebugEnterAlt(1);
-				// CSS3.g3:673:20: '\\u65279'
-				{
-					DebugLocation(673, 20);
-					Match("\u65279"); if (state.failed) return;
-
-					DebugLocation(673, 29);
-					if (state.backtracking == 0)
-					{
-						skip(); 
-					}
-
-				}
-
-			}
-			finally
-			{
-				TraceOut("BOM", 77);
-				LeaveRule("BOM", 77);
-				LeaveRule_BOM();
-			}
-		}
-		// $ANTLR end "BOM"
-
 		public override void mTokens()
 		{
 			// CSS3.g3:1:8: ( COMMENT | CDO | CDC | INCLUDES | DASHMATCH | GREATER | LBRACE | RBRACE | LBRACKET | RBRACKET | OPEQ | SEMI | COLON | SOLIDUS | MINUS | PLUS | STAR | LPAREN | RPAREN | COMMA | DOT | STRING | IDENT | HASH | IMPORT_SYM | PAGE_SYM | MEDIA_SYM | CHARSET_SYM | IMPORTANT_SYM | NUMBER | URI | WS | NL )
@@ -11412,8 +11374,8 @@ namespace Parser
 		public void synpred1_CSS3_fragment()
 		{
 			EnterRule_synpred1_CSS3_fragment();
-			EnterRule("synpred1_CSS3_fragment", 79);
-			TraceIn("synpred1_CSS3_fragment", 79);
+			EnterRule("synpred1_CSS3_fragment", 78);
+			TraceIn("synpred1_CSS3_fragment", 78);
 			try
 			{
 				// CSS3.g3:612:15: ( E ( M | X ) )
@@ -11614,8 +11576,8 @@ namespace Parser
 			}
 			finally
 			{
-				TraceOut("synpred1_CSS3_fragment", 79);
-				LeaveRule("synpred1_CSS3_fragment", 79);
+				TraceOut("synpred1_CSS3_fragment", 78);
+				LeaveRule("synpred1_CSS3_fragment", 78);
 				LeaveRule_synpred1_CSS3_fragment();
 			}
 		}
@@ -11628,8 +11590,8 @@ namespace Parser
 		public void synpred2_CSS3_fragment()
 		{
 			EnterRule_synpred2_CSS3_fragment();
-			EnterRule("synpred2_CSS3_fragment", 80);
-			TraceIn("synpred2_CSS3_fragment", 80);
+			EnterRule("synpred2_CSS3_fragment", 79);
+			TraceIn("synpred2_CSS3_fragment", 79);
 			try
 			{
 				// CSS3.g3:618:15: ( P ( X | T | C ) )
@@ -11692,8 +11654,8 @@ namespace Parser
 			}
 			finally
 			{
-				TraceOut("synpred2_CSS3_fragment", 80);
-				LeaveRule("synpred2_CSS3_fragment", 80);
+				TraceOut("synpred2_CSS3_fragment", 79);
+				LeaveRule("synpred2_CSS3_fragment", 79);
 				LeaveRule_synpred2_CSS3_fragment();
 			}
 		}
@@ -11706,8 +11668,8 @@ namespace Parser
 		public void synpred3_CSS3_fragment()
 		{
 			EnterRule_synpred3_CSS3_fragment();
-			EnterRule("synpred3_CSS3_fragment", 81);
-			TraceIn("synpred3_CSS3_fragment", 81);
+			EnterRule("synpred3_CSS3_fragment", 80);
+			TraceIn("synpred3_CSS3_fragment", 80);
 			try
 			{
 				// CSS3.g3:626:15: ( C M )
@@ -11724,8 +11686,8 @@ namespace Parser
 			}
 			finally
 			{
-				TraceOut("synpred3_CSS3_fragment", 81);
-				LeaveRule("synpred3_CSS3_fragment", 81);
+				TraceOut("synpred3_CSS3_fragment", 80);
+				LeaveRule("synpred3_CSS3_fragment", 80);
 				LeaveRule_synpred3_CSS3_fragment();
 			}
 		}
@@ -11738,8 +11700,8 @@ namespace Parser
 		public void synpred4_CSS3_fragment()
 		{
 			EnterRule_synpred4_CSS3_fragment();
-			EnterRule("synpred4_CSS3_fragment", 82);
-			TraceIn("synpred4_CSS3_fragment", 82);
+			EnterRule("synpred4_CSS3_fragment", 81);
+			TraceIn("synpred4_CSS3_fragment", 81);
 			try
 			{
 				// CSS3.g3:628:15: ( M ( M | S ) )
@@ -11940,8 +11902,8 @@ namespace Parser
 			}
 			finally
 			{
-				TraceOut("synpred4_CSS3_fragment", 82);
-				LeaveRule("synpred4_CSS3_fragment", 82);
+				TraceOut("synpred4_CSS3_fragment", 81);
+				LeaveRule("synpred4_CSS3_fragment", 81);
 				LeaveRule_synpred4_CSS3_fragment();
 			}
 		}
@@ -11954,8 +11916,8 @@ namespace Parser
 		public void synpred5_CSS3_fragment()
 		{
 			EnterRule_synpred5_CSS3_fragment();
-			EnterRule("synpred5_CSS3_fragment", 83);
-			TraceIn("synpred5_CSS3_fragment", 83);
+			EnterRule("synpred5_CSS3_fragment", 82);
+			TraceIn("synpred5_CSS3_fragment", 82);
 			try
 			{
 				// CSS3.g3:635:15: ( I N )
@@ -11972,8 +11934,8 @@ namespace Parser
 			}
 			finally
 			{
-				TraceOut("synpred5_CSS3_fragment", 83);
-				LeaveRule("synpred5_CSS3_fragment", 83);
+				TraceOut("synpred5_CSS3_fragment", 82);
+				LeaveRule("synpred5_CSS3_fragment", 82);
 				LeaveRule_synpred5_CSS3_fragment();
 			}
 		}
@@ -11986,8 +11948,8 @@ namespace Parser
 		public void synpred6_CSS3_fragment()
 		{
 			EnterRule_synpred6_CSS3_fragment();
-			EnterRule("synpred6_CSS3_fragment", 84);
-			TraceIn("synpred6_CSS3_fragment", 84);
+			EnterRule("synpred6_CSS3_fragment", 83);
+			TraceIn("synpred6_CSS3_fragment", 83);
 			try
 			{
 				// CSS3.g3:638:15: ( D E G )
@@ -12006,8 +11968,8 @@ namespace Parser
 			}
 			finally
 			{
-				TraceOut("synpred6_CSS3_fragment", 84);
-				LeaveRule("synpred6_CSS3_fragment", 84);
+				TraceOut("synpred6_CSS3_fragment", 83);
+				LeaveRule("synpred6_CSS3_fragment", 83);
 				LeaveRule_synpred6_CSS3_fragment();
 			}
 		}
@@ -12020,8 +11982,8 @@ namespace Parser
 		public void synpred7_CSS3_fragment()
 		{
 			EnterRule_synpred7_CSS3_fragment();
-			EnterRule("synpred7_CSS3_fragment", 85);
-			TraceIn("synpred7_CSS3_fragment", 85);
+			EnterRule("synpred7_CSS3_fragment", 84);
+			TraceIn("synpred7_CSS3_fragment", 84);
 			try
 			{
 				// CSS3.g3:640:15: ( R A D )
@@ -12040,8 +12002,8 @@ namespace Parser
 			}
 			finally
 			{
-				TraceOut("synpred7_CSS3_fragment", 85);
-				LeaveRule("synpred7_CSS3_fragment", 85);
+				TraceOut("synpred7_CSS3_fragment", 84);
+				LeaveRule("synpred7_CSS3_fragment", 84);
 				LeaveRule_synpred7_CSS3_fragment();
 			}
 		}
@@ -12054,8 +12016,8 @@ namespace Parser
 		public void synpred8_CSS3_fragment()
 		{
 			EnterRule_synpred8_CSS3_fragment();
-			EnterRule("synpred8_CSS3_fragment", 86);
-			TraceIn("synpred8_CSS3_fragment", 86);
+			EnterRule("synpred8_CSS3_fragment", 85);
+			TraceIn("synpred8_CSS3_fragment", 85);
 			try
 			{
 				// CSS3.g3:643:15: ( S )
@@ -12070,8 +12032,8 @@ namespace Parser
 			}
 			finally
 			{
-				TraceOut("synpred8_CSS3_fragment", 86);
-				LeaveRule("synpred8_CSS3_fragment", 86);
+				TraceOut("synpred8_CSS3_fragment", 85);
+				LeaveRule("synpred8_CSS3_fragment", 85);
 				LeaveRule_synpred8_CSS3_fragment();
 			}
 		}
@@ -12084,8 +12046,8 @@ namespace Parser
 		public void synpred9_CSS3_fragment()
 		{
 			EnterRule_synpred9_CSS3_fragment();
-			EnterRule("synpred9_CSS3_fragment", 87);
-			TraceIn("synpred9_CSS3_fragment", 87);
+			EnterRule("synpred9_CSS3_fragment", 86);
+			TraceIn("synpred9_CSS3_fragment", 86);
 			try
 			{
 				// CSS3.g3:645:15: ( ( K )? H Z )
@@ -12210,8 +12172,8 @@ namespace Parser
 			}
 			finally
 			{
-				TraceOut("synpred9_CSS3_fragment", 87);
-				LeaveRule("synpred9_CSS3_fragment", 87);
+				TraceOut("synpred9_CSS3_fragment", 86);
+				LeaveRule("synpred9_CSS3_fragment", 86);
 				LeaveRule_synpred9_CSS3_fragment();
 			}
 		}
@@ -12224,8 +12186,8 @@ namespace Parser
 		public void synpred10_CSS3_fragment()
 		{
 			EnterRule_synpred10_CSS3_fragment();
-			EnterRule("synpred10_CSS3_fragment", 88);
-			TraceIn("synpred10_CSS3_fragment", 88);
+			EnterRule("synpred10_CSS3_fragment", 87);
+			TraceIn("synpred10_CSS3_fragment", 87);
 			try
 			{
 				// CSS3.g3:661:14: ( WS )
@@ -12240,8 +12202,8 @@ namespace Parser
 			}
 			finally
 			{
-				TraceOut("synpred10_CSS3_fragment", 88);
-				LeaveRule("synpred10_CSS3_fragment", 88);
+				TraceOut("synpred10_CSS3_fragment", 87);
+				LeaveRule("synpred10_CSS3_fragment", 87);
 				LeaveRule_synpred10_CSS3_fragment();
 			}
 		}
@@ -17457,8 +17419,7 @@ namespace Parser
 	}
 
 } // namespace CssParser
- index205_547 = input.Index;
-				input.Rewind();
+t.Rewind();
 				s = -1;
 				if ((EvaluatePredicate(synpred7_CSS3_fragment))) {s = 161;}
 
@@ -17975,6 +17936,9 @@ namespace Parser
 			DebugRecognitionException(nvae);
 		}
 	}
+
+ 
+	#endregion
 
 }
 
