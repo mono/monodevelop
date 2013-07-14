@@ -141,7 +141,7 @@
     <Reference Include="System.Xaml" />
     <Reference Include="mscorlib" />
     <Reference Include="Mono.Cairo" />
-    <Reference Include="Mono.Addins, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
+    <Reference Include="Mono.Addins">
       <Private>False</Private>
     </Reference>
     <Reference Include="Mono.TextEditor">
