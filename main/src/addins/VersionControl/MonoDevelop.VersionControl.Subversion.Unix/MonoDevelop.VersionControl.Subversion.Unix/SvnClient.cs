@@ -602,7 +602,12 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		public override string GetTextAtRevision (string pathorurl, Revision revision, string rootPath)
 		{
 			MemoryStream memstream = new MemoryStream ();
-			Cat (pathorurl, (SvnRevision) revision, memstream);
+			try {
+				Cat (pathorurl, (SvnRevision) revision, memstream);
+			} catch (SubversionException e) {
+				// File got added/removed at some point.
+				return "";
+			}
 
 			var buffer = memstream.GetBuffer ();
 			try {
@@ -610,9 +615,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 					return null;
 				return Encoding.UTF8.GetString (buffer, 0, (int) memstream.Length);
 			} catch {
+				return "";
 			}
-			
-			return Encoding.ASCII.GetString (buffer, 0, (int) memstream.Length);
 		}
 		
 		public void Cat (string pathorurl, SvnRevision rev, Stream stream)

@@ -355,12 +355,7 @@ namespace MonoDevelop.VersionControl.Views
 				changedpathstore.SetValue (iter, colDiff, new string[] { GettextCatalog.GetString ("Loading data...") });
 				var rev = SelectedRevision;
 				ThreadPool.QueueUserWorkItem (delegate {
-					string text = "";
-					try {
-						text = info.Repository.GetTextAtRevision (path, rev);
-					} catch (Exception e) {
-						// The file got deleted in this revision.
-					}
+					string text = info.Repository.GetTextAtRevision (path, rev);
 					Revision prevRev = null;
 					try {
 						prevRev = rev.GetPrevious ();
@@ -383,13 +378,7 @@ namespace MonoDevelop.VersionControl.Views
 								lines[i] = "+ " + changedDocument.GetLineText (i + 1).TrimEnd ('\r','\n');
 							}
 						} else {
-							string prevRevisionText = "";
-							try {
-								prevRevisionText = info.Repository.GetTextAtRevision (path, prevRev);
-							} catch (Exception e) {
-								// The file got added in the next revision.
-							}
-
+							string prevRevisionText = info.Repository.GetTextAtRevision (path, prevRev);
 							if (String.IsNullOrEmpty (text)) {
 								if (String.IsNullOrEmpty (prevRevisionText)) {
 									Application.Invoke (delegate {

@@ -205,9 +205,15 @@ namespace SubversionAddinWindows
 					repositoryPath = repositoryPath.Remove (0, segment.Length);
 			}
 
-			lock (client)
+			lock (client) {
 				// repositoryPath already contains the relative URL path.
-				client.Write (new SvnUriTarget (target.Uri.AbsoluteUri + repositoryPath, GetRevision (revision)), ms);
+				try {
+					client.Write (new SvnUriTarget (target.Uri.AbsoluteUri + repositoryPath, GetRevision (revision)), ms);
+				} catch (SvnFileSystemException e) {
+					// File got added/deleted at some point.
+					return "";
+				}
+			}
 			return TextFile.ReadFile (repositoryPath, ms).Text;
 		}
 
