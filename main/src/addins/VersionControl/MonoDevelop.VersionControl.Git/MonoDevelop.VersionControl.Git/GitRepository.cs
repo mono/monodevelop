@@ -932,15 +932,18 @@ namespace MonoDevelop.VersionControl.Git
 
 					rm.AddFilepattern (repository.ToGitPath (f));
 				}
-				rm.Call ();
 
-				// Copy backups.
-				if (keepLocal) {
-					foreach (var backup in backupFiles) {
-						if (backup.IsDirectory)
-							FileService.MoveDirectory (backup, files.ElementAt (backupFiles.IndexOf (backup)));
-						else
-							File.Move (backup,  files.ElementAt (backupFiles.IndexOf (backup)));
+				try {
+					rm.Call ();
+				} finally {
+					// Restore backups.
+					if (keepLocal) {
+						foreach (var backup in backupFiles) {
+							if (backup.IsDirectory)
+								FileService.MoveDirectory (backup, files.ElementAt (backupFiles.IndexOf (backup)));
+							else
+								File.Move (backup, files.ElementAt (backupFiles.IndexOf (backup)));
+						}
 					}
 				}
 			}
