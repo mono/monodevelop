@@ -189,8 +189,6 @@ namespace MonoDevelop.CSharpBinding
 			return widget.CompletedWord;
 		}
 
-
-
 		[Test]
 		public void TestSimpleCase ()
 		{
@@ -203,6 +201,20 @@ namespace MonoDevelop.CSharpBinding
 }", "MyClass", "FooBar");
 			Assert.AreEqual ("FooBar ();|", completion); 
 		}
+
+		[Test]
+		public void TestBracketAlreadyThere ()
+		{
+			string completion = Test (@"class MyClass
+{
+	void FooBar ()
+	{
+		$ ();
+	}
+}", "MyClass", "FooBar");
+			Assert.AreEqual ("FooBar", completion); 
+		}
+
 
 		[Test]
 		public void TestOverloads ()

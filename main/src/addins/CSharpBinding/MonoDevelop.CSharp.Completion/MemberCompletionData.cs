@@ -173,6 +173,19 @@ namespace MonoDevelop.CSharp.Completion
 			InsertCompletionText (window, ref ka, closeChar, keyChar, modifier, CompletionTextEditorExtension.AddParenthesesAfterCompletion, CompletionTextEditorExtension.AddOpeningOnly);
 		}
 
+		bool IsBracketAlreadyInserted ()
+		{
+			int offset = Editor.Caret.Offset;
+			while (offset < Editor.Length) {
+				char ch = Editor.GetCharAt (offset);
+				if (!char.IsLetterOrDigit (ch) && !char.IsWhiteSpace (ch)) {
+					return ch == '(';
+				}
+				offset++;
+			}
+			return false;
+		}
+
 		public void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier, bool addParens, bool addOpeningOnly)
 		{
 			string text = CompletionText;
@@ -180,7 +193,7 @@ namespace MonoDevelop.CSharp.Completion
 			int skipChars = 0;
 			bool runParameterCompletionCommand = false;
 
-			if (addParens && !IsDelegateExpected && Entity is IMethod && !HasNonMethodMembersWithSameName ((IMember)Entity)) {
+			if (addParens && !IsDelegateExpected && Entity is IMethod && !HasNonMethodMembersWithSameName ((IMember)Entity) && !IsBracketAlreadyInserted ()) {
 				var line = Editor.GetLine (Editor.Caret.Line);
 				var method = (IMethod)Entity;
 				var start = window.CodeCompletionContext.TriggerOffset + partialWord.Length + 2;
