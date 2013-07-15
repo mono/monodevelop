@@ -594,7 +594,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			return annotations;
 		}
 
-		public override string GetTextAtRevision (string pathorurl, Revision revision)
+		public override string GetTextAtRevision (string pathorurl, Revision revision, string rootPath)
 		{
 			MemoryStream memstream = new MemoryStream ();
 			Cat (pathorurl, (SvnRevision) revision, memstream);
@@ -603,11 +603,11 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			try {
 				if (IsBinary (buffer, memstream.Length))
 					return null;
-				return System.Text.Encoding.UTF8.GetString (buffer, 0, (int) memstream.Length);
+				return Encoding.UTF8.GetString (buffer, 0, (int) memstream.Length);
 			} catch {
 			}
 			
-			return System.Text.Encoding.ASCII.GetString (buffer, 0, (int) memstream.Length);
+			return Encoding.ASCII.GetString (buffer, 0, (int) memstream.Length);
 		}
 		
 		public void Cat (string pathorurl, SvnRevision rev, Stream stream)

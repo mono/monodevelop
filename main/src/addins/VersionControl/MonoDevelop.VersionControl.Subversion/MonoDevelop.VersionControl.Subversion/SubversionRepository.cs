@@ -75,7 +75,7 @@ namespace MonoDevelop.VersionControl.Subversion
 
 		protected override string OnGetTextAtRevision (FilePath repositoryPath, Revision revision)
 		{
-			return Svn.GetTextAtRevision (repositoryPath, revision);
+			return Svn.GetTextAtRevision (repositoryPath, revision, RootPath);
 		}
 
 		protected override Revision[] OnGetHistory (FilePath sourcefile, Revision since)

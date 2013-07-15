@@ -9,10 +9,6 @@ namespace MonoDevelop.VersionControl
 		string url;
 		Uri uri;
 		
-		public MonoDevelop.Core.FilePath RootPath {
-			get; protected set;
-		}
-		
 		public UrlBasedRepository ()
 		{
 		}
