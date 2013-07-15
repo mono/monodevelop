@@ -923,7 +923,7 @@ namespace MonoDevelop.CSharp.Completion
 				}
 				public override string GetDisplayDescription (bool isSelected)
 				{
-					return "<span foreground=\"darkgray\">" + description + "</span>";
+					return "- <span foreground=\"darkgray\" size='small'>" + description + "</span>";
 				}
 
 
@@ -931,7 +931,7 @@ namespace MonoDevelop.CSharp.Completion
 				public override string GetRightSideDescription (bool isSelected)
 				{
 					if (rightSideDescription == null) {
-						rightSideDescription = "<span size='small' foreground=\"darkgray\">" + string.Format ("{0:" +format +"}", example) +"</span>";
+						rightSideDescription = "<span size='small'>" + string.Format ("{0:" +format +"}", example) +"</span>";
 					}
 					return rightSideDescription;
 				}
