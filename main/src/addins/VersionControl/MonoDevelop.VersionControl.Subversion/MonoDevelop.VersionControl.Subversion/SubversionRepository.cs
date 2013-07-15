@@ -517,9 +517,9 @@ namespace MonoDevelop.VersionControl.Subversion
 			
 			// "SubversionException: blame of the WORKING revision is not supported"
 			foreach (var hunk in baseDocument.Diff (workingDocument)) {
-				annotations.RemoveRange (hunk.InsertStart, hunk.Inserted);
+				annotations.RemoveRange (hunk.RemoveStart, hunk.Removed);
 				for (int i = 0; i < hunk.Inserted; ++i) {
-					annotations.Insert (hunk.InsertStart, nextRev);
+					annotations.Insert (hunk.InsertStart - 1, nextRev);
 				}
 			}
 			
