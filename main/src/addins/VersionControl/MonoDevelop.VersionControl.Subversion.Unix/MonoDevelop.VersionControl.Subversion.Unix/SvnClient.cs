@@ -624,8 +624,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				StreamCollector collector = new StreamCollector (stream);
 				IntPtr svnstream = svn.stream_create (IntPtr.Zero, localpool);
 				svn.stream_set_write (svnstream, collector.Func);
-				LibSvnClient.Rev peg_revision = LibSvnClient.Rev.Blank;
-				CheckError (svn.client_cat2 (svnstream, pathorurl, ref peg_revision, ref revision, ctx, localpool), 195007);
+				// Setting peg_revision to revision.
+				// Otherwise, it will use Head as peg and it will throw exceptions.
+				CheckError (svn.client_cat2 (svnstream, pathorurl, ref revision, ref revision, ctx, localpool), 195007);
 			} finally {
 				apr.pool_destroy (localpool);
 				TryEndOperation ();
