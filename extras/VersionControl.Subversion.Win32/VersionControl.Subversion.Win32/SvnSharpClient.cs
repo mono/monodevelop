@@ -471,6 +471,39 @@ namespace SubversionAddinWindows
 			}
 		}
 
+		public override Annotation[] GetAnnotations (Repository repo, FilePath file, SvnRevision revStart, SvnRevision revEnd)
+		{
+			if (file == FilePath.Null)
+				throw new ArgumentNullException ();
+
+			SvnPathTarget target = new SvnPathTarget (file, SharpSvn.SvnRevision.Base);
+			MemoryStream data = new MemoryStream ();
+			int numAnnotations = 0;
+			client.Write (target, data);
+
+			using (StreamReader reader = new StreamReader (data)) {
+				reader.BaseStream.Seek (0, SeekOrigin.Begin);
+				while (reader.ReadLine () != null)
+					numAnnotations++;
+			}
+
+			System.Collections.ObjectModel.Collection<SvnBlameEventArgs> list;
+			SvnBlameArgs args = new SvnBlameArgs ();
+			args.Start = GetRevision (revStart);
+			args.End = GetRevision (revEnd);
+
+			if (client.GetBlame (target, args, out list)) {
+				Annotation[] annotations = new Annotation [numAnnotations];
+				foreach (var annotation in list) {
+					if (annotation.LineNumber < annotations.Length)
+						annotations [(int)annotation.LineNumber] = new Annotation (annotation.Revision.ToString (),
+																					annotation.Author, annotation.Time);
+				}
+				return annotations;
+			}
+			return new Annotation[0];
+		}
+
 		SharpSvn.SvnRevision GetRevision (Revision rev)
 		{
 			if (rev == null)
