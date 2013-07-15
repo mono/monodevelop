@@ -540,7 +540,13 @@ namespace MonoDevelop.VersionControl
 			ClearCachedVersionInfo (localPaths);
 		}
 
-		protected abstract void OnDeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal);
+		[Obsolete ("Use overload the overload with keepLocal parameter")]
+		protected abstract void OnDeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor);
+
+		protected virtual void OnDeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
+		{
+			OnDeleteFiles (localPaths, force, monitor);
+		}
 
 		public void DeleteDirectory (FilePath localPath, bool force, IProgressMonitor monitor)
 		{
@@ -563,7 +569,13 @@ namespace MonoDevelop.VersionControl
 			ClearCachedVersionInfo (localPaths);
 		}
 
-		protected abstract void OnDeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal);
+		[Obsolete ("Use overload the overload with keepLocal parameter")]
+		protected abstract void OnDeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor);
+
+		protected virtual void OnDeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
+		{
+			OnDeleteDirectories (localPaths, force, monitor);
+		}
 		
 		// Creates a local directory.
 		public void CreateLocalDirectory (FilePath path)

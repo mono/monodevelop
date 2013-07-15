@@ -864,7 +864,11 @@ namespace MonoDevelop.VersionControl.Git
 				cmd.Call ();
 			}
 		}
-		
+
+		protected override void OnDeleteFiles (FilePath[] path, bool force, IProgressMonitor monitor)
+		{
+		}
+
 		protected override void OnDeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
 		{
 			DeleteCore (localPaths, force, monitor, keepLocal);
@@ -884,7 +888,11 @@ namespace MonoDevelop.VersionControl.Git
 				}
 			}
 		}
-		
+
+		protected override void OnDeleteDirectories (FilePath[] path, bool force, IProgressMonitor monitor)
+		{
+		}
+
 		protected override void OnDeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
 		{
 			DeleteCore (localPaths, force, monitor, keepLocal);
