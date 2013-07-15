@@ -43,7 +43,21 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public virtual string Description { get; set; }
 		public virtual string CompletionText { get; set; }
 
+		[Obsolete("Use GetDisplayDescription (bool isSelected)")]
 		public virtual string DisplayDescription { get; set; }
+
+		public virtual string GetDisplayDescription (bool isSelected)
+		{
+			return DisplayDescription;
+		}
+
+
+		public virtual string GetRightSideDescription (bool isSelected)
+		{
+			return "";
+		}
+
+
 		public virtual CompletionCategory CompletionCategory { get; set; }
 		public virtual DisplayFlags DisplayFlags { get; set; }
 

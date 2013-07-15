@@ -145,7 +145,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 
 
-		public IListDataProvider DataProvider {
+		internal IListDataProvider DataProvider {
 			get;
 			set;
 		}
@@ -669,7 +669,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 	}
 
-	public interface IListDataProvider
+	interface IListDataProvider
 	{
 		int ItemCount { get; }
 		string GetText (int n);
@@ -677,7 +677,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		CompletionCategory GetCompletionCategory (int n);
 		bool HasMarkup (int n);
 		string GetCompletionText (int n);
-		string GetDescription (int n);
+		string GetDescription (int n, bool isSelected);
+		string GetRightSideDescription (int n, bool isSelected);
 		Gdk.Pixbuf GetIcon (int n);
 	}
 }

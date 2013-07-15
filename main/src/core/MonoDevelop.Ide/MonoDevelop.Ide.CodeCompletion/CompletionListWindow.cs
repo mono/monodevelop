@@ -629,11 +629,16 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return completionDataList[n].DisplayText;
 		}
 		
-		string IListDataProvider.GetDescription (int n)
+		string IListDataProvider.GetDescription (int n, bool isSelected)
 		{
-			return ((CompletionData)completionDataList[n]).DisplayDescription;
+			return ((CompletionData)completionDataList[n]).GetDisplayDescription (isSelected);
 		}
-		
+
+		string IListDataProvider.GetRightSideDescription (int n, bool isSelected)
+		{
+			return ((CompletionData)completionDataList[n]).GetRightSideDescription (isSelected);
+		}
+
 		bool IListDataProvider.HasMarkup (int n)
 		{
 			return completionDataList[n].DisplayFlags.HasFlag (DisplayFlags.Obsolete);

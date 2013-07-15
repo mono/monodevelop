@@ -921,16 +921,19 @@ namespace MonoDevelop.CSharp.Completion
 						return format;
 					}
 				}
+				public override string GetDisplayDescription (bool isSelected)
+				{
+					return "<span foreground=\"darkgray\">" + description + "</span>";
+				}
 
-				
-				string displayDescription = null;
-				public override string DisplayDescription {
-					get {
-						if (displayDescription == null) {
-							displayDescription = description + " (" + string.Format ("{0:" +format +"}", example) + ")";
-						}
-						return displayDescription;
+
+				string rightSideDescription = null;
+				public override string GetRightSideDescription (bool isSelected)
+				{
+					if (rightSideDescription == null) {
+						rightSideDescription = "<span size='small' foreground=\"darkgray\">" + string.Format ("{0:" +format +"}", example) +"</span>";
 					}
+					return rightSideDescription;
 				}
 
 				public override string CompletionText {
@@ -1017,20 +1020,26 @@ namespace MonoDevelop.CSharp.Completion
 						return type.Name;
 					}
 				}
-				
+
+				static string GetDefaultDisplaySelection (string description, bool isSelected)
+				{
+					if (!isSelected)
+						return "<span foreground=\"darkgray\">" + description + "</span>";
+					return description;
+				}
+
 				string displayDescription = null;
-				public override string DisplayDescription {
-					get {
-						if (displayDescription == null) {
-							Initialize ();
-							if (generateUsing || insertNamespace) {
-								displayDescription = string.Format (GettextCatalog.GetString ("(from '{0}')"), type.Namespace);
-							} else {
-								displayDescription = "";
-							}
+				public override string GetDisplayDescription (bool isSelected)
+				{
+					if (displayDescription == null) {
+						Initialize ();
+						if (generateUsing || insertNamespace) {
+							displayDescription = string.Format (GettextCatalog.GetString ("(from '{0}')"), type.Namespace);
+						} else {
+							displayDescription = "";
 						}
-						return displayDescription;
 					}
+					return GetDefaultDisplaySelection (displayDescription, isSelected);
 				}
 
 				public override string Description {
