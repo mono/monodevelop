@@ -44,9 +44,12 @@ namespace MonoDevelop.Ide.Projects
 		{
 			base.RequestFileEdit (files);
 
+			if (!IdeApp.IsInitialized)
+				return;
+
 			List<FilePath> readOnlyFiles = new List<FilePath> ();
 			foreach (var f in files) {
-				if (File.GetAttributes (f).HasFlag (FileAttributes.ReadOnly))
+				if (File.Exists (f) && File.GetAttributes (f).HasFlag (FileAttributes.ReadOnly))
 					readOnlyFiles.Add (f);
 			}
 			string error;
