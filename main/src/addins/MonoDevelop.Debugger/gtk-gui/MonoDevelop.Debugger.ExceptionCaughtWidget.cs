@@ -8,7 +8,6 @@ namespace MonoDevelop.Debugger
 		private global::Gtk.VBox vbox2;
 		private global::Gtk.HBox hbox2;
 		private global::Gtk.Image imageWarning;
-		private global::Gtk.Alignment alignment1;
 		private global::Gtk.VBox vboxExceptionInfo;
 		private global::Gtk.Label labelType;
 		private global::Gtk.Label labelMessage;
@@ -32,6 +31,8 @@ namespace MonoDevelop.Debugger
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.hbox2 = new global::Gtk.HBox ();
 			this.hbox2.Name = "hbox2";
+			this.hbox2.Spacing = 12;
+			this.hbox2.BorderWidth = ((uint)(12));
 			// Container child hbox2.Gtk.Box+BoxChild
 			this.imageWarning = new global::Gtk.Image ();
 			this.imageWarning.Name = "imageWarning";
@@ -42,10 +43,6 @@ namespace MonoDevelop.Debugger
 			w1.Expand = false;
 			w1.Fill = false;
 			// Container child hbox2.Gtk.Box+BoxChild
-			this.alignment1 = new global::Gtk.Alignment (0.5F, 0.5F, 1F, 1F);
-			this.alignment1.Name = "alignment1";
-			this.alignment1.TopPadding = ((uint)(12));
-			// Container child alignment1.Gtk.Container+ContainerChild
 			this.vboxExceptionInfo = new global::Gtk.VBox ();
 			this.vboxExceptionInfo.Name = "vboxExceptionInfo";
 			this.vboxExceptionInfo.Spacing = 6;
@@ -73,15 +70,16 @@ namespace MonoDevelop.Debugger
 			w3.Position = 1;
 			w3.Expand = false;
 			w3.Fill = false;
-			this.alignment1.Add (this.vboxExceptionInfo);
-			this.hbox2.Add (this.alignment1);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.alignment1]));
-			w5.Position = 1;
+			this.hbox2.Add (this.vboxExceptionInfo);
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.vboxExceptionInfo]));
+			w4.Position = 1;
+			w4.Expand = false;
+			w4.Fill = false;
 			this.vbox2.Add (this.hbox2);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox2]));
-			w6.Position = 0;
-			w6.Expand = false;
-			w6.Fill = false;
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox2]));
+			w5.Position = 0;
+			w5.Expand = false;
+			w5.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.GtkScrolledWindow1 = new global::Gtk.ScrolledWindow ();
 			this.GtkScrolledWindow1.HeightRequest = 128;
@@ -94,8 +92,8 @@ namespace MonoDevelop.Debugger
 			this.treeStack.HeadersVisible = false;
 			this.GtkScrolledWindow1.Add (this.treeStack);
 			this.vbox2.Add (this.GtkScrolledWindow1);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.GtkScrolledWindow1]));
-			w8.Position = 1;
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.GtkScrolledWindow1]));
+			w7.Position = 1;
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.GtkScrolledWindow = new global::Gtk.ScrolledWindow ();
 			this.GtkScrolledWindow.HeightRequest = 128;
@@ -114,11 +112,11 @@ namespace MonoDevelop.Debugger
 			this.valueView.CompactView = false;
 			this.GtkScrolledWindow.Add (this.valueView);
 			this.vbox2.Add (this.GtkScrolledWindow);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.GtkScrolledWindow]));
-			w10.Position = 2;
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.GtkScrolledWindow]));
+			w9.Position = 2;
 			this.dialog1_VBox.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.dialog1_VBox [this.vbox2]));
-			w11.Position = 0;
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.dialog1_VBox [this.vbox2]));
+			w10.Position = 0;
 			this.Add (this.dialog1_VBox);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
