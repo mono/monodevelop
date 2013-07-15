@@ -931,7 +931,12 @@ namespace MonoDevelop.CSharp.Completion
 				public override string GetRightSideDescription (bool isSelected)
 				{
 					if (rightSideDescription == null) {
-						rightSideDescription = "<span size='small'>" + string.Format ("{0:" +format +"}", example) +"</span>";
+						try {
+							rightSideDescription = "<span size='small'>" + string.Format ("{0:" +format +"}", example) +"</span>";
+						} catch (Exception e) {
+							rightSideDescription = "";
+							LoggingService.LogError ("Format error.", e);
+						}
 					}
 					return rightSideDescription;
 				}
