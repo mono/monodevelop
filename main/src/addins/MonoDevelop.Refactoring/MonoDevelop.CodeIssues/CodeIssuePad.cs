@@ -164,12 +164,7 @@ namespace MonoDevelop.CodeIssues
 					}
 				}
 			}
-			
-			if (runPeriodicUpdate) {
-				// Add new callback
-				Application.TimeoutInvoke (UpdatePeriod, RunPeriodicUpdate);
-			}
-			return false;
+			return runPeriodicUpdate;
 		}
 
 		void EndPeriodicUpdate ()
