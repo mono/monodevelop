@@ -572,10 +572,11 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			int numAnnotations = 0;
 			Cat (file, SvnRevision.Base, data);
 
-			StreamReader reader = new StreamReader (data);
-			while (reader.ReadLine () != null)
-				numAnnotations++;
-			reader.Close ();
+			using (StreamReader reader = new StreamReader (data)) {
+				reader.BaseStream.Seek (0, SeekOrigin.Begin);
+				while (reader.ReadLine () != null)
+					numAnnotations++;
+			}
 
 			Annotation[] annotations = new Annotation [numAnnotations];
 			AnnotationCollector collector = new AnnotationCollector (annotations);
