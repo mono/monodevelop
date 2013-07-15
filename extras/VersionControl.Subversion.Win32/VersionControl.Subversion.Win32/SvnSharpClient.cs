@@ -198,8 +198,6 @@ namespace SubversionAddinWindows
 		{
 			MemoryStream ms = new MemoryStream ();
 			SvnUriTarget target = client.GetUriFromWorkingCopy (rootPath);
-			SvnWriteArgs args = new SvnWriteArgs ();
-			args.Revision = GetRevision (revision);
 			// Redo path link.
 			repositoryPath = repositoryPath.TrimStart (new char[] { '/' });
 			foreach (var segment in target.Uri.Segments) {
@@ -209,7 +207,7 @@ namespace SubversionAddinWindows
 
 			lock (client)
 				// repositoryPath already contains the relative URL path.
-				client.Write (new SvnUriTarget (target.Uri.AbsoluteUri + repositoryPath, args.Revision), ms, args);
+				client.Write (new SvnUriTarget (target.Uri.AbsoluteUri + repositoryPath, GetRevision (revision)), ms);
 			return TextFile.ReadFile (repositoryPath, ms).Text;
 		}
 
