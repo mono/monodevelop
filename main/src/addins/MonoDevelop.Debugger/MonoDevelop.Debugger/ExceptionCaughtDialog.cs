@@ -167,7 +167,7 @@ namespace MonoDevelop.Debugger
 			HButtonBox buttonBox = new HButtonBox ();
 			buttonBox.Layout = ButtonBoxStyle.End;
 			buttonBox.BorderWidth = 6;
-			buttonBox.Spacing = 6;
+			buttonBox.Spacing = 12;
 
 			var copy = new Gtk.Button (GettextCatalog.GetString ("Copy"));
 			buttonBox.PackStart (copy, false, false, 0);

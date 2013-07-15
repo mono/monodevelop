@@ -1757,7 +1757,7 @@ Break when the hit count is a multiple of</property>
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.Debugger.ExceptionCaughtWidget" design-size="588 332">
+  <widget class="Gtk.Bin" id="MonoDevelop.Debugger.ExceptionCaughtWidget" design-size="588 362">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <child>
@@ -1769,12 +1769,10 @@ Break when the hit count is a multiple of</property>
             <child>
               <widget class="Gtk.HBox" id="hbox2">
                 <property name="MemberName" />
-                <property name="Spacing">12</property>
-                <property name="BorderWidth">12</property>
                 <child>
                   <widget class="Gtk.Image" id="imageWarning">
                     <property name="MemberName" />
-                    <property name="Pixbuf">stock:gtk-dialog-warning Dialog</property>
+                    <property name="Pixbuf">resource:exception-icon.png</property>
                   </widget>
                   <packing>
                     <property name="Position">0</property>
@@ -1784,45 +1782,49 @@ Break when the hit count is a multiple of</property>
                   </packing>
                 </child>
                 <child>
-                  <widget class="Gtk.VBox" id="vbox3">
+                  <widget class="Gtk.Alignment" id="alignment1">
                     <property name="MemberName" />
-                    <property name="Spacing">6</property>
+                    <property name="TopPadding">12</property>
                     <child>
-                      <widget class="Gtk.Label" id="labelType">
+                      <widget class="Gtk.VBox" id="vboxExceptionInfo">
                         <property name="MemberName" />
-                        <property name="Xalign">0</property>
-                        <property name="LabelProp">&lt;b&gt;Exception&lt;/b&gt; has been thrown</property>
-                        <property name="UseMarkup">True</property>
+                        <property name="Spacing">6</property>
+                        <child>
+                          <widget class="Gtk.Label" id="labelType">
+                            <property name="MemberName" />
+                            <property name="Xalign">0</property>
+                            <property name="LabelProp">&lt;b&gt;Exception&lt;/b&gt; has been thrown</property>
+                            <property name="UseMarkup">True</property>
+                          </widget>
+                          <packing>
+                            <property name="Position">0</property>
+                            <property name="AutoSize">True</property>
+                            <property name="Expand">False</property>
+                            <property name="Fill">False</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="Gtk.Label" id="labelMessage">
+                            <property name="MemberName" />
+                            <property name="WidthRequest">500</property>
+                            <property name="Xalign">0</property>
+                            <property name="LabelProp">test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test</property>
+                            <property name="Wrap">True</property>
+                            <property name="Selectable">True</property>
+                          </widget>
+                          <packing>
+                            <property name="Position">1</property>
+                            <property name="AutoSize">True</property>
+                            <property name="Expand">False</property>
+                            <property name="Fill">False</property>
+                          </packing>
+                        </child>
                       </widget>
-                      <packing>
-                        <property name="Position">0</property>
-                        <property name="AutoSize">True</property>
-                        <property name="Expand">False</property>
-                        <property name="Fill">False</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="Gtk.Label" id="labelMessage">
-                        <property name="MemberName" />
-                        <property name="WidthRequest">500</property>
-                        <property name="Xalign">0</property>
-                        <property name="LabelProp">test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test</property>
-                        <property name="Wrap">True</property>
-                        <property name="Selectable">True</property>
-                      </widget>
-                      <packing>
-                        <property name="Position">1</property>
-                        <property name="AutoSize">True</property>
-                        <property name="Expand">False</property>
-                        <property name="Fill">False</property>
-                      </packing>
                     </child>
                   </widget>
                   <packing>
                     <property name="Position">1</property>
-                    <property name="AutoSize">True</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
+                    <property name="AutoSize">False</property>
                   </packing>
                 </child>
               </widget>
