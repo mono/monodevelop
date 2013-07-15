@@ -189,6 +189,11 @@ namespace SubversionAddinWindows
 				client.Delete (path, args);
 		}
 
+		public override string GetTextAtRevision (string repositoryPath, Revision revision)
+		{
+			return null;
+		}
+
 		public override string GetTextAtRevision (string repositoryPath, Revision revision, string rootPath)
 		{
 			MemoryStream ms = new MemoryStream ();

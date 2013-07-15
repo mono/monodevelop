@@ -87,7 +87,13 @@ namespace MonoDevelop.VersionControl.Subversion
 		/// <param name='revision'>
 		/// Revision.
 		/// </param>
-		public abstract string GetTextAtRevision (string repositoryPath, Revision revision, string rootPath);
+		[Obsolete ("Use the overload with rootPath parameter")]
+		public abstract string GetTextAtRevision (string repositoryPath, Revision revision);
+
+		public virtual string GetTextAtRevision (string repositoryPath, Revision revision, string rootPath)
+		{
+			return GetTextAtRevision (repositoryPath, revision);
+		}
 		
 		internal protected virtual VersionControlOperation GetSupportedOperations (Repository repo, VersionInfo vinfo, VersionControlOperation defaultValue)
 		{

@@ -594,6 +594,11 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			return annotations;
 		}
 
+		public override string GetTextAtRevision (string pathorurl, Revision revision)
+		{
+			return null;
+		}
+
 		public override string GetTextAtRevision (string pathorurl, Revision revision, string rootPath)
 		{
 			MemoryStream memstream = new MemoryStream ();
