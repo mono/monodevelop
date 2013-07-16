@@ -131,17 +131,19 @@ namespace MonoDevelop.Ide
 		public static string MonoDevelopVersion {
 			get {
 				string v = "";
-				if (BuildVariables.PackageVersion != BuildVariables.PackageVersionLabel)
-					v += BuildVariables.PackageVersion;
+#pragma warning disable 162
+				if (BuildInfo.Version != BuildInfo.VersionLabel)
+					v += BuildInfo.Version;
+#pragma warning restore 162
 				if (IdeApp.Version.Revision >= 0) {
 					if (v.Length > 0)
 						v += " ";
 					v += "build " + IdeApp.Version.Revision;
 				}
 				if (v.Length == 0)
-					return BuildVariables.PackageVersionLabel;
+					return BuildInfo.VersionLabel;
 				else
-					return BuildVariables.PackageVersionLabel + " (" + v + ")";
+					return BuildInfo.VersionLabel + " (" + v + ")";
 			}
 		}
 	}
