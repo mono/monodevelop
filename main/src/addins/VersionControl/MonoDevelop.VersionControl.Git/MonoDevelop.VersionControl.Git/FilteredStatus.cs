@@ -75,7 +75,7 @@ namespace MonoDevelop.VersionControl.Git
 			
 			diff.Diff ();
 			this.diff = diff;
-			return new NGit.Api.Status(diff);
+			return new NGit.Api.Status (diff);
 		}
 
 		public virtual ICollection<string> GetIgnoredNotInIndex()

@@ -713,5 +713,17 @@ namespace MonoDevelop.VersionControl.Views
 				currentRevisionShortened = false;
 			}
 		}
+
+		internal string DiffText {
+			get {
+				TreeIter iter;
+				if (treeviewFiles.Selection.GetSelected (out iter)) {
+					string [] items = changedpathstore.GetValue (iter, colDiff) as string [];
+					if (items != null)
+						return String.Join (Environment.NewLine, items);
+				}
+				return null;
+			}
+		}
 	}
 }
