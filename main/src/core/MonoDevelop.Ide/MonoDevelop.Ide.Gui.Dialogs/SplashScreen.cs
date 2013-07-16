@@ -44,7 +44,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		protected override bool OnExposeEvent (Gdk.EventExpose evt)
 		{
 			var build = "";
-			var version = "v" + BuildInfo.VersionLabel;
+			var version = "v" + BuildVariables.PackageVersionLabel;
 			
 			var index = version.IndexOf (' ');
 			if (index != -1) {

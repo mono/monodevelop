@@ -596,7 +596,7 @@ namespace MonoDevelop.Ide
 			}
 			
 			if (opt.ShowHelp) {
-				Console.WriteLine (BrandingService.ApplicationName + " " + BuildInfo.VersionLabel);
+				Console.WriteLine (BrandingService.ApplicationName + " " + BuildVariables.PackageVersionLabel);
 				Console.WriteLine ("Options:");
 				optSet.WriteOptionDescriptions (Console.Out);
 			}

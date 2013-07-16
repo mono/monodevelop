@@ -159,7 +159,7 @@ namespace MonoDevelop.Ide
 		public static Version Version {
 			get {
 				if (version == null) {
-					version = new Version (BuildInfo.Version);
+					version = new Version (BuildVariables.PackageVersion);
 					var relId = SystemInformation.GetReleaseId ();
 					if (relId != null && relId.Length >= 9) {
 						int rev;
@@ -254,8 +254,8 @@ namespace MonoDevelop.Ide
 			if (PropertyService.Get("MonoDevelop.Core.FirstRun", false)) {
 				isInitialRun = true;
 				PropertyService.Set ("MonoDevelop.Core.FirstRun", false);
-				PropertyService.Set ("MonoDevelop.Core.LastRunVersion", BuildInfo.Version);
-				PropertyService.Set ("MonoDevelop.Core.LastRunRevision", CurrentRevision);
+				PropertyService.Set ("MonoDevelop.Core.LastRunVersion", BuildVariables.PackageVersion);
+				PropertyService.Set ("MonoDevelop.Core.LastRunVersion", CurrentRevision);
 				PropertyService.SaveProperties ();
 			}
 
@@ -272,7 +272,7 @@ namespace MonoDevelop.Ide
 					}
 				}
 				upgradedFromRevision = lastRevision;
-				PropertyService.Set ("MonoDevelop.Core.LastRunVersion", BuildInfo.Version);
+				PropertyService.Set ("MonoDevelop.Core.LastRunVersion", BuildVariables.PackageVersion);
 				PropertyService.Set ("MonoDevelop.Core.LastRunRevision", CurrentRevision);
 				PropertyService.SaveProperties ();
 			}

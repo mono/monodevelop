@@ -14,8 +14,6 @@ ASSEMBLY_VERSION=4.1.7.0
 # 2) "VERSION_NUMBER BUILD_TYPE BUILD_NUMBER"		"2.0 Alpha 1"
 PACKAGE_VERSION_LABEL="4.1.7"
 
-COMPAT_ADDIN_VERSION=4.0
-
 AC_PATH_PROG(MONO, mono)
 AC_PATH_PROG(MCS, gmcs)
 
@@ -256,7 +254,6 @@ AC_SUBST(LIB_SUFFIX)
 AC_SUBST(LIB_PREFIX)
 AC_SUBST(ASSEMBLY_VERSION)
 AC_SUBST(PACKAGE_VERSION_LABEL)
-AC_SUBST(COMPAT_ADDIN_VERSION)
 AC_SUBST(SQLITE_XML)
 AC_SUBST(CSC_FLAGS)
 
@@ -285,9 +282,9 @@ src/Makefile
 src/core/Makefile
 src/core/Mono.Texteditor/Makefile
 src/core/MonoDevelop.Core/Makefile
-src/core/MonoDevelop.Core/BuildVariables.cs
 src/core/MonoDevelop.Projects.Formats.MSBuild/Makefile
 src/core/MonoDevelop.Ide/Makefile
+src/core/MonoDevelop.Ide/BuildVariables.cs
 src/core/MonoDevelop.Startup/Makefile
 src/tools/Makefile
 src/tools/mdhost/Makefile

@@ -1273,6 +1273,7 @@
     <Compile Include="MonoDevelop.Ide.Gui.Content\IUrlHandler.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\ISmartIndenter.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="BuildVariables.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\ITextEditorResolver.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\AuthorInformationPanel.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\GlobalAuthorInformationPanel.cs" />
@@ -1879,7 +1880,6 @@
     <Compile Include="MonoDevelop.Ide.CustomTools\ResXFileCodeGenerator.cs" />
     <Compile Include="MonoDevelop.Ide.CustomTools\ThreadAsyncOperation.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\IdeFileSystemExtensionExtension.cs" />
-    <Compile Include="AddinInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
