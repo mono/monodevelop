@@ -355,7 +355,16 @@ namespace MonoDevelop.VersionControl.Views
 				changedpathstore.SetValue (iter, colDiff, new string[] { GettextCatalog.GetString ("Loading data...") });
 				var rev = SelectedRevision;
 				ThreadPool.QueueUserWorkItem (delegate {
-					string text = info.Repository.GetTextAtRevision (path, rev);
+					string text = "";
+					try {
+						text = info.Repository.GetTextAtRevision (path, rev);
+					} catch (Exception e) {
+						Application.Invoke (delegate {
+							LoggingService.LogError ("Error while getting revision text", e);
+							MessageService.ShowError ("Error while getting revision text.", "The file may not be part of the working copy.");
+						});
+						return;
+					}
 					Revision prevRev = null;
 					try {
 						prevRev = rev.GetPrevious ();
@@ -378,25 +387,29 @@ namespace MonoDevelop.VersionControl.Views
 								lines[i] = "+ " + changedDocument.GetLineText (i + 1).TrimEnd ('\r','\n');
 							}
 						} else {
-							string prevRevisionText = info.Repository.GetTextAtRevision (path, prevRev);
-							if (String.IsNullOrEmpty (text)) {
-								if (String.IsNullOrEmpty (prevRevisionText)) {
-									Application.Invoke (delegate {
-										LoggingService.LogError ("Error while getting revision text", path);
-										MessageService.ShowError ("Error while getting revision text.", "The file may not be part of the working copy.");
-									});
-									return;
-								}
+							string prevRevisionText = "";
+							try {
+								prevRevisionText = info.Repository.GetTextAtRevision (path, prevRev);
+							} catch (Exception e) {
+								Application.Invoke (delegate {
+									LoggingService.LogError ("Error while getting revision text", e);
+									MessageService.ShowError ("Error while getting revision text.", "The file may not be part of the working copy.");
+								});
+								return;
+							}
 
-								lines = new string [changedDocument.LineCount];
-								for (int i = 0; i < changedDocument.LineCount; i++) {
-									lines [i] = "- " + changedDocument.GetLineText (i + 1).TrimEnd ('\r','\n');
+							if (String.IsNullOrEmpty (text)) {
+								if (!String.IsNullOrEmpty (prevRevisionText)) {
+									lines = new string [changedDocument.LineCount];
+									for (int i = 0; i < changedDocument.LineCount; i++) {
+										lines [i] = "- " + changedDocument.GetLineText (i + 1).TrimEnd ('\r','\n');
+									}
 								}
 							}
 
 							var originalDocument = new Mono.TextEditor.TextDocument (prevRevisionText);
-							originalDocument.FileName = "Revision " + prevRev.ToString ();
-							changedDocument.FileName = "Revision " + rev.ToString ();
+							originalDocument.FileName = "Revision " + prevRev;
+							changedDocument.FileName = "Revision " + rev;
 							lines = Mono.TextEditor.Utils.Diff.GetDiffString (originalDocument, changedDocument).Split ('\n');
 						}
 					}

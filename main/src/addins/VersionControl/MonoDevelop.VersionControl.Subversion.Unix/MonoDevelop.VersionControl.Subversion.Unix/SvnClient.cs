@@ -29,11 +29,13 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		public static void CheckError (IntPtr error, int? allowedError)
 		{
 			string msg = null;
+			int errorCode = 0;
 			while (error != IntPtr.Zero) {
 				LibSvnClient.svn_error_t error_t = (LibSvnClient.svn_error_t) Marshal.PtrToStructure (error, typeof (LibSvnClient.svn_error_t));
 				if (allowedError.HasValue && error_t.apr_err == allowedError.Value)
 					return;
 
+				errorCode = error_t.apr_err;
 				if (msg != null)
 					msg += "\n" + GetErrorMessage (error_t);
 				else
@@ -44,7 +46,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 					msg = GettextCatalog.GetString ("Unknown error");
 			}
 			if (msg != null)
-				throw new SubversionException (msg);
+				throw new SubversionException (msg, errorCode);
 		}
 		
 		static string GetErrorMessage (LibSvnClient.svn_error_t error)
@@ -605,8 +607,11 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			try {
 				Cat (pathorurl, (SvnRevision) revision, memstream);
 			} catch (SubversionException e) {
+				// SVN_ERR_FS_NOT_FOUND
+				if (e.ErrorCode == 160013)
+					return "";
 				// File got added/removed at some point.
-				return "";
+				throw;
 			}
 
 			var buffer = memstream.GetBuffer ();
