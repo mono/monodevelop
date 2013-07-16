@@ -39,31 +39,29 @@ namespace MonoDevelop.AnalysisCore.Gui
 		public override Widget CreatePanelWidget ()
 		{
 			return widget = new AnalysisOptionsWidget () {
-				AnalysisEnabled = AnalysisOptions.AnalysisEnabled
+				AnalysisEnabled = AnalysisOptions.AnalysisEnabled,
+				UnitTestIntegrationEnabled = AnalysisOptions.EnableUnitTestEditorIntegration
 			};
 		}
 		
 		public override void ApplyChanges ()
 		{
 			AnalysisOptions.AnalysisEnabled.Set (widget.AnalysisEnabled);
+			AnalysisOptions.EnableUnitTestEditorIntegration.Set (widget.UnitTestIntegrationEnabled);
 		}
 	}
 	
 	class AnalysisOptionsWidget : VBox
 	{
 		CheckButton enabledCheck;
-		
+		CheckButton enabledTest;
+
 		public AnalysisOptionsWidget ()
 		{
 			enabledCheck = new CheckButton (GettextCatalog.GetString ("Enable source analysis of open files"));
 			PackStart (enabledCheck, false, false, 0);
-			if (GC.MaxGeneration == 0) {
-				HBox hb = new HBox ();
-				hb.Spacing = 6;
-				hb.PackStart (ImageService.GetImage (Stock.DialogWarning, IconSize.Dialog), false, false, 0);
-				hb.PackStart (new Label (GettextCatalog.GetString ("Note: Source analysis may be slow with the current garbage collector.\nUse a generational GC like sgen to get best performance.")), true, true, 0);
-				PackStart (hb, false, false, 32);
-			}
+			enabledTest = new CheckButton (GettextCatalog.GetString ("Enable text editor unit test integration"));
+			PackStart (enabledTest, false, false, 0);
 
 			ShowAll ();
 		}
@@ -71,6 +69,11 @@ namespace MonoDevelop.AnalysisCore.Gui
 		public bool AnalysisEnabled {
 			get { return enabledCheck.Active; }
 			set { enabledCheck.Active = value; }
+		}
+
+		public bool UnitTestIntegrationEnabled {
+			get { return enabledTest.Active; }
+			set { enabledTest.Active = value; }
 		}
 	}
 }

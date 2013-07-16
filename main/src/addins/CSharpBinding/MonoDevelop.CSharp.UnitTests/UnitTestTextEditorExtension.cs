@@ -44,6 +44,7 @@ using MonoDevelop.Components.Commands;
 using Gdk;
 using Gtk;
 using System.Text;
+using MonoDevelop.AnalysisCore;
 
 namespace MonoDevelop.CSharp
 {
@@ -65,6 +66,8 @@ namespace MonoDevelop.CSharp
 
 		void HandleDocumentParsed (object sender, EventArgs e)
 		{
+			if (!AnalysisOptions.EnableUnitTestEditorIntegration)
+				return;
 			src.Cancel ();
 			src = new CancellationTokenSource ();
 			var token = src.Token;
@@ -302,17 +305,17 @@ namespace MonoDevelop.CSharp
 				bool searchCases = false;
 				if (test != null) {
 					var result = test.GetLastResult ();
-					if (result == null || result.IsNotRun || test.IsHistoricResult) {
+					if (result == null || result.IsNotRun) {
 						cr.Color = new Cairo.Color (0.5, 0.5, 0.5);
 						searchCases = true;
-				} else if (result.IsSuccess) {
-						cr.Color = new Cairo.Color (0, 1, 0);
+					} else if (result.IsSuccess) {
+						cr.Color = new Cairo.Color (0, 1, 0, test.IsHistoricResult ? 0.2 : 1.0);
 					} else if (result.IsFailure) {
-						cr.Color = new Cairo.Color (1, 0, 0);
+						cr.Color = new Cairo.Color (1, 0, 0, test.IsHistoricResult ? 0.2 : 1.0);
 						failMessage = result.Message;
 						isFailed = true;
 					} else if (result.IsInconclusive) {
-						cr.Color = new Cairo.Color (0, 1, 1);
+						cr.Color = new Cairo.Color (0, 1, 1, test.IsHistoricResult ? 0.2 : 1.0);
 					} 
 				} else {
 					cr.Color = new Cairo.Color (0.5, 0.5, 0.5);
@@ -339,7 +342,25 @@ namespace MonoDevelop.CSharp
 					}
 				}
 
-				cr.Fill ();
+				cr.FillPreserve ();
+
+				if (test != null) {
+					var result = test.GetLastResult ();
+					if (result == null || result.IsNotRun) {
+						cr.Color = new Cairo.Color (0.2, 0.2, 0.2);
+						cr.Stroke ();
+					} else if (result.IsSuccess && !test.IsHistoricResult) {
+						cr.Color = new Cairo.Color (0, 0.5, 0);
+						cr.Stroke ();
+					} else if (result.IsFailure && !test.IsHistoricResult) {
+						cr.Color = new Cairo.Color (0.5, 0, 0);
+						cr.Stroke ();
+					} else if (result.IsInconclusive && !test.IsHistoricResult) {
+						cr.Color = new Cairo.Color (0, 0.7, 0.7);
+						cr.Stroke ();
+					} 
+				}
+				cr.NewPath ();
 			}
 		}
 

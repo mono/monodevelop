@@ -35,6 +35,9 @@ namespace MonoDevelop.AnalysisCore
 		public static PropertyWrapper<bool> AnalysisEnabled {
 			get { return QuickTaskStrip.EnableFancyFeatures; }
 		}
+
+		public readonly static PropertyWrapper<bool> EnableUnitTestEditorIntegration = new PropertyWrapper<bool> ("Testing.EnableUnitTestEditorIntegration", false);
+
 	}
 }
 
