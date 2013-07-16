@@ -29,11 +29,13 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		public static void CheckError (IntPtr error, int? allowedError)
 		{
 			string msg = null;
+			int errorCode = 0; // Innermost error-code.
 			while (error != IntPtr.Zero) {
 				LibSvnClient.svn_error_t error_t = (LibSvnClient.svn_error_t) Marshal.PtrToStructure (error, typeof (LibSvnClient.svn_error_t));
 				if (allowedError.HasValue && error_t.apr_err == allowedError.Value)
 					return;
 
+				errorCode = error_t.apr_err;
 				if (msg != null)
 					msg += "\n" + GetErrorMessage (error_t);
 				else
@@ -44,7 +46,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 					msg = GettextCatalog.GetString ("Unknown error");
 			}
 			if (msg != null)
-				throw new SubversionException (msg);
+				throw new SubversionException (msg, errorCode);
 		}
 		
 		static string GetErrorMessage (LibSvnClient.svn_error_t error)
@@ -597,18 +599,34 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 		public override string GetTextAtRevision (string pathorurl, Revision revision)
 		{
+			return null;
+		}
+
+		public override string GetTextAtRevision (string pathorurl, Revision revision, string rootPath)
+		{
 			MemoryStream memstream = new MemoryStream ();
-			Cat (pathorurl, (SvnRevision) revision, memstream);
+			try {
+				Cat (pathorurl, (SvnRevision) revision, memstream);
+			} catch (SubversionException e) {
+				// File got added/removed at some point.
+				// SVN_ERR_FS_NOT_FOUND
+				if (e.ErrorCode == 160013)
+					return "";
+				// We tried on a directory
+				// SVN_ERR_FS_NOT_FILE
+				if (e.ErrorCode == 160017)
+					return "";
+				throw;
+			}
 
 			var buffer = memstream.GetBuffer ();
 			try {
 				if (IsBinary (buffer, memstream.Length))
 					return null;
-				return System.Text.Encoding.UTF8.GetString (buffer, 0, (int) memstream.Length);
+				return Encoding.UTF8.GetString (buffer, 0, (int) memstream.Length);
 			} catch {
+				return "";
 			}
-			
-			return System.Text.Encoding.ASCII.GetString (buffer, 0, (int) memstream.Length);
 		}
 		
 		public void Cat (string pathorurl, SvnRevision rev, Stream stream)
@@ -625,8 +643,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				StreamCollector collector = new StreamCollector (stream);
 				IntPtr svnstream = svn.stream_create (IntPtr.Zero, localpool);
 				svn.stream_set_write (svnstream, collector.Func);
-				LibSvnClient.Rev peg_revision = LibSvnClient.Rev.Blank;
-				CheckError (svn.client_cat2 (svnstream, pathorurl, ref peg_revision, ref revision, ctx, localpool), 195007);
+				// Setting peg_revision to revision.
+				// Otherwise, it will use Head as peg and it will throw exceptions.
+				CheckError (svn.client_cat2 (svnstream, pathorurl, ref revision, ref revision, ctx, localpool), 195007);
 			} finally {
 				apr.pool_destroy (localpool);
 				TryEndOperation ();

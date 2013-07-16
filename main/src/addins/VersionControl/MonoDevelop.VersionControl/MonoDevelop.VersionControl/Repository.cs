@@ -20,6 +20,12 @@ namespace MonoDevelop.VersionControl
 		string vcsName;
 
 		int references;
+
+		public MonoDevelop.Core.FilePath RootPath
+		{
+			get;
+			protected set;
+		}
 		
 		public event EventHandler NameChanged;
 		
