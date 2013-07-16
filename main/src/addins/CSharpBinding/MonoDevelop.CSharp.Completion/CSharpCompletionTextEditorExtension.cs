@@ -947,6 +947,10 @@ namespace MonoDevelop.CSharp.Completion
 					}
 				}
 
+				public override int CompareTo (object obj)
+				{
+					return 0;
+				}
 			}
 
 
