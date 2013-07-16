@@ -463,9 +463,12 @@ namespace MonoDevelop.VersionControl.Subversion
 						newPath = Path.GetTempFileName ();
 						File.Copy (path, newPath, true);
 					}
-					Svn.Delete (path, force, monitor);
-					if (keepLocal)
-						File.Move (newPath, path);
+					try {
+						Svn.Delete (path, force, monitor);
+					} finally {
+						if (keepLocal)
+							File.Move (newPath, path);
+					}
 				} else {
 					if (keepLocal) {
 						VersionInfo srcInfo = GetVersionInfo (path, VersionInfoQueryFlags.IgnoreCache);
@@ -492,9 +495,12 @@ namespace MonoDevelop.VersionControl.Subversion
 						newPath = FileService.CreateTempDirectory ();
 						FileService.CopyDirectory (path, newPath);
 					}
-					Svn.Delete (path, force, monitor);
-					if (keepLocal)
-						FileService.MoveDirectory (newPath, path);
+					try {
+						Svn.Delete (path, force, monitor);
+					} finally {
+						if (keepLocal)
+							FileService.MoveDirectory (newPath, path);
+					}
 				} else {
 					if (keepLocal) {
 						foreach (var info in GetDirectoryVersionInfo (path, false, true)) {
