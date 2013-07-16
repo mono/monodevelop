@@ -154,7 +154,7 @@ namespace MonoDevelop.CSharp.Completion
 			return false;
 		}
 
-		bool HasNonMethodMembersWithSameName (IMember member)
+		static bool HasNonMethodMembersWithSameName (IMember member)
 		{
 			return member.DeclaringType.GetFields ().Cast<INamedElement> ()
 				.Concat (member.DeclaringType.GetProperties ().Cast<INamedElement> ())
@@ -163,7 +163,7 @@ namespace MonoDevelop.CSharp.Completion
 				.Any (e => e.Name == member.Name);
 		}
 
-		bool HasAnyOverloadWithParameters (IMethod method)
+		static bool HasAnyOverloadWithParameters (IMethod method)
 		{
 			return method.DeclaringType.GetMethods ().Any (m => m.Name == method.Name && m.Parameters.Count > 0);
 		}
@@ -297,7 +297,19 @@ namespace MonoDevelop.CSharp.Completion
 				}
 				ka |= KeyActions.Ignore;
 			}
-			
+			if ((DisplayFlags & DisplayFlags.NamedArgument) == DisplayFlags.NamedArgument &&
+			    (closeChar == Gdk.Key.Tab ||
+				 closeChar == Gdk.Key.KP_Tab ||
+				 closeChar == Gdk.Key.ISO_Left_Tab ||
+				 closeChar == Gdk.Key.Return ||
+				 closeChar == Gdk.Key.KP_Enter ||
+				 closeChar == Gdk.Key.ISO_Enter)) {
+				if (Policy.AroundAssignmentParentheses)
+					text += " ";
+				text += "=";
+				if (Policy.AroundAssignmentParentheses)
+					text += " ";
+			}
 			window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, partialWord, text);
 			int offset = Editor.Caret.Offset;
 			for (int i = 0; i < skipChars; i++) {
