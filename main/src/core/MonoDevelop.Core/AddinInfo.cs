@@ -2,11 +2,11 @@
 using System;
 using Mono.Addins;
 
-[AddinRoot ("Core", 
+[assembly:AddinRoot ("Core", 
         Namespace = "MonoDevelop", 
         Version = MonoDevelop.BuildInfo.Version,
         CompatVersion = MonoDevelop.BuildInfo.CompatVersion,
         Category = "MonoDevelop Core")]
 
-[AddinName ("MonoDevelop Runtime")]
-[AddinDescription ("Provides the core services of the MonoDevelop platform")]
+[assembly:AddinName ("MonoDevelop Runtime")]
+[assembly:AddinDescription ("Provides the core services of the MonoDevelop platform")]
