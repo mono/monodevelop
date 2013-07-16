@@ -29,7 +29,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		public static void CheckError (IntPtr error, int? allowedError)
 		{
 			string msg = null;
-			int errorCode = 0;
+			int errorCode = 0; // Innermost error-code.
 			while (error != IntPtr.Zero) {
 				LibSvnClient.svn_error_t error_t = (LibSvnClient.svn_error_t) Marshal.PtrToStructure (error, typeof (LibSvnClient.svn_error_t));
 				if (allowedError.HasValue && error_t.apr_err == allowedError.Value)
@@ -607,10 +607,14 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			try {
 				Cat (pathorurl, (SvnRevision) revision, memstream);
 			} catch (SubversionException e) {
+				// File got added/removed at some point.
 				// SVN_ERR_FS_NOT_FOUND
 				if (e.ErrorCode == 160013)
 					return "";
-				// File got added/removed at some point.
+				// We tried on a directory
+				// SVN_ERR_FS_NOT_FILE
+				if (e.ErrorCode == 160017)
+					return "";
 				throw;
 			}
 

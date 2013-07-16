@@ -211,7 +211,12 @@ namespace SubversionAddinWindows
 					client.Write (new SvnUriTarget (target.Uri.AbsoluteUri + repositoryPath, GetRevision (revision)), ms);
 				} catch (SvnFileSystemException e) {
 					// File got added/deleted at some point.
-					if (e.SubversionErrorCode == SvnErrorCode.SVN_ERR_FS_NOT_FOUND)
+					if (e.SvnErrorCode == SvnErrorCode.SVN_ERR_FS_NOT_FOUND)
+						return "";
+					throw;
+				} catch (SvnClientNodeKindException e) {
+					// We're trying on a directory.
+					if (e.SvnErrorCode == SvnErrorCode.SVN_ERR_CLIENT_IS_DIRECTORY)
 						return "";
 					throw;
 				}

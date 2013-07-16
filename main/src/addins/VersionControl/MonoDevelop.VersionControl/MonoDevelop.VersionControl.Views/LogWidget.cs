@@ -191,7 +191,7 @@ namespace MonoDevelop.VersionControl.Views
 				typeof (Gdk.Pixbuf), typeof (string), // icon/operation
 				typeof (string), // path
 				typeof (string), // revision path (invisible)
-				typeof (string[]) // diff
+				typeof (string []) // diff
 				);
 			
 			TreeViewColumn colChangedFile = new TreeViewColumn ();
@@ -352,6 +352,7 @@ namespace MonoDevelop.VersionControl.Views
 					return;
 
 				string path = (string)changedpathstore.GetValue (args.Iter, colPath);
+
 				changedpathstore.SetValue (iter, colDiff, new string[] { GettextCatalog.GetString ("Loading data...") });
 				var rev = SelectedRevision;
 				ThreadPool.QueueUserWorkItem (delegate {
