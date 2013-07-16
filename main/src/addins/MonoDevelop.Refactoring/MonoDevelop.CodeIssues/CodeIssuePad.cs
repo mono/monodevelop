@@ -83,7 +83,6 @@ namespace MonoDevelop.CodeIssues
 			store = new TreeStore (textField, nodeField);
 			view.DataSource = store;
 			view.HeadersVisible = false;
-
 			view.Columns.Add ("Name", textField);
 			
 			view.RowActivated += OnRowActivated;

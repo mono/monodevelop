@@ -28,21 +28,56 @@ using System.IO;
 using System.Reflection;
 using MonoDevelop.Core;
 using System.Collections.Generic;
+using Mono.Addins;
+using System.Linq;
+using Mono.Addins.Description;
 
 namespace MonoDevelop.Tests.TestRunner
 {
 	public class Runer: IApplication
 	{
-		#region IApplication implementation
-
 		public int Run (string[] arguments)
 		{
 			var list = new List<string> (arguments);
 			list.Add ("-domain=None");
+
+			foreach (var ar in arguments) {
+				if ((ar.EndsWith (".dll") || ar.EndsWith (".exe")) && File.Exists (ar)) {
+					try {
+						var asm = Assembly.LoadFrom (ar);
+						HashSet<string> ids = new HashSet<string> ();
+						foreach (var aname in asm.GetReferencedAssemblies ())
+							ids.UnionWith (GetAddinsFromReferences (aname));
+
+						foreach (var id in ids)
+							AddinManager.LoadAddin (new Mono.Addins.ConsoleProgressStatus (false), id);
+
+					} catch (Exception ex) {
+						Console.WriteLine (ex);
+					}
+				}
+			}
 			return NUnit.ConsoleRunner.Runner.Main (list.ToArray ());
 		}
 
-		#endregion
+		IEnumerable<string> GetAddinsFromReferences (AssemblyName aname)
+		{
+			foreach (var adn in AddinManager.Registry.GetAddins ().Union (AddinManager.Registry.GetAddinRoots ())) {
+				foreach (ModuleDescription m in adn.Description.AllModules) {
+					bool found = false;
+					foreach (var sname in m.Assemblies) {
+						if (Path.GetFileNameWithoutExtension (sname) == aname.Name) {
+							found = true;
+							break;
+						}
+					}
+					if (found) {
+						yield return Addin.GetIdName (adn.Id);
+						break;
+					}
+				}
+			}
+		}
 	}
 }
 

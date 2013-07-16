@@ -275,14 +275,16 @@ namespace MonoDevelop.Components.Docking
 					cr.RelLineTo (-rect.Width, 0);
 					cr.RelLineTo (0, -rect.Height);
 					cr.ClosePath ();
-					Cairo.Gradient pat = new Cairo.LinearGradient (rect.X, rect.Y, rect.X, bottom);
-					pat.AddColorStop (0, bcolor.ToCairoColor ());
-					HslColor gcol = bcolor;
-					gcol.L -= 0.1;
-					if (gcol.L < 0) gcol.L = 0;
-					pat.AddColorStop (1, gcol);
-					cr.Pattern = pat;
-					cr.Fill ();
+					using (Cairo.Gradient pat = new Cairo.LinearGradient (rect.X, rect.Y, rect.X, bottom)) {
+						pat.AddColorStop (0, bcolor.ToCairoColor ());
+						HslColor gcol = bcolor;
+						gcol.L -= 0.1;
+						if (gcol.L < 0)
+							gcol.L = 0;
+						pat.AddColorStop (1, gcol);
+						cr.Pattern = pat;
+						cr.Fill ();
+					}
 				} else {
 					if (backgroundColorSet) {
 						Gdk.GC gc = new Gdk.GC (GdkWindow);

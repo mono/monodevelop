@@ -62,6 +62,7 @@
     <Reference Include="Mono.Cairo" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Design" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -119,6 +120,14 @@
     <ProjectReference Include="..\..\..\external\debugger-libs\Mono.Debugging\Mono.Debugging.csproj">
       <Project>{90C99ADB-7D4B-4EB4-98C2-40BD1B14C7D2}</Project>
       <Name>Mono.Debugging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory.IKVM\ICSharpCode.NRefactory.IKVM.csproj">
+      <Project>{A727169F-D94F-443F-B305-B057D7F3B420}</Project>
+      <Name>ICSharpCode.NRefactory.IKVM</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\external\ikvm\reflect\IKVM.Reflection.csproj">
+      <Project>{4CB170EF-DFE6-4A56-9E1B-A85449E827A7}</Project>
+      <Name>IKVM.Reflection</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -1083,6 +1092,12 @@
     <EmbeddedResource Include="icons\variable-16.png">
       <LogicalName>variable-16.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\bubble-error-icon.png">
+      <LogicalName>bubble-error-icon.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\bubble-warning-icon.png">
+      <LogicalName>bubble-warning-icon.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
@@ -1862,6 +1877,8 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopProjectContent.cs" />
     <Compile Include="MonoDevelop.Components.Commands\ICommandDelegator.cs" />
     <Compile Include="MonoDevelop.Ide.Navigation\ClosedDocumentNavigationPoint.cs" />
+    <Compile Include="MonoDevelop.Ide.CustomTools\ResXFileCodeGenerator.cs" />
+    <Compile Include="MonoDevelop.Ide.CustomTools\ThreadAsyncOperation.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

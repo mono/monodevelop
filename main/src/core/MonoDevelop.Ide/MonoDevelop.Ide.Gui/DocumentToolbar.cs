@@ -159,11 +159,12 @@ namespace MonoDevelop.Ide.Gui
 			{
 				using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
 					ctx.Rectangle (0, 0, Allocation.Width, Allocation.Height);
-					Cairo.LinearGradient g = new Cairo.LinearGradient (0, 0, 0, Allocation.Height);
-					g.AddColorStop (0, Styles.BreadcrumbBackgroundColor);
-					g.AddColorStop (1, Styles.BreadcrumbGradientEndColor);
-					ctx.Pattern = g;
-					ctx.Fill ();
+					using (Cairo.LinearGradient g = new Cairo.LinearGradient (0, 0, 0, Allocation.Height)) {
+						g.AddColorStop (0, Styles.BreadcrumbBackgroundColor);
+						g.AddColorStop (1, Styles.BreadcrumbGradientEndColor);
+						ctx.Pattern = g;
+						ctx.Fill ();
+					}
 
 					ctx.MoveTo (0.5, Allocation.Height - 0.5);
 					ctx.RelLineTo (Allocation.Width, 0);

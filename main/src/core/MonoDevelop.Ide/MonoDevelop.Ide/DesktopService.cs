@@ -65,6 +65,10 @@ namespace MonoDevelop.Ide
 				new EventHandler<FileEventArgs> (NotifyFileRemoved));
 			FileService.FileRenamed += DispatchService.GuiDispatch (
 				new EventHandler<FileCopyEventArgs> (NotifyFileRenamed));
+
+			// Ensure we initialize the native toolkit on the UI thread immediately
+			// so that we can safely access this property later in other threads
+			GC.KeepAlive (NativeToolkit);
 		}
 		
 		/// <summary>
@@ -277,6 +281,11 @@ namespace MonoDevelop.Ide
 		public static void SetIsFullscreen (Gtk.Window window, bool isFullscreen)
 		{
 			PlatformService.SetIsFullscreen (window, isFullscreen);
+		}
+
+		public static bool IsModalDialogRunning ()
+		{
+			return PlatformService.IsModalDialogRunning ();
 		}
 	}
 }

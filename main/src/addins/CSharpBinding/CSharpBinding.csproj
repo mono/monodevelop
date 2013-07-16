@@ -101,6 +101,15 @@
       <Name>Mono.Debugging</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory.IKVM\ICSharpCode.NRefactory.IKVM.csproj">
+      <Project>{A727169F-D94F-443F-B305-B057D7F3B420}</Project>
+      <Name>ICSharpCode.NRefactory.IKVM</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\external\xwt\Xwt\Xwt.csproj">
+      <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
+      <Name>Xwt</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -290,6 +299,8 @@
     <Compile Include="MonoDevelop.CSharp.Completion\ArrayTypeParameterDataProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\ImplementInterfaceMembersGenerator.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\TypeParameterDataProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\Actions\ConvertToEnumAction.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\Actions\ConvertToEnumDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

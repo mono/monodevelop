@@ -344,12 +344,12 @@ namespace MonoDevelop.VersionControl
 		[AllowMultiSelection]
 		[CommandHandler (Commands.Revert)]
 		protected void OnRevert() {
-			RunCommand(Commands.Revert, false);
+			RunCommand(Commands.Revert, false, false);
 		}
 		
 		[CommandUpdateHandler (Commands.Revert)]
 		protected void UpdateRevert(CommandInfo item) {
-			TestCommand(Commands.Revert, item);
+			TestCommand(Commands.Revert, item, false);
 		}
 		
 		[AllowMultiSelection]
@@ -396,8 +396,8 @@ namespace MonoDevelop.VersionControl
 			TestCommand(Commands.CreatePatch, item);
 		}
 			
-		private void TestCommand(Commands cmd, CommandInfo item) {
-			TestResult res = RunCommand(cmd, true);
+		private void TestCommand(Commands cmd, CommandInfo item, bool projRecurse = true) {
+			TestResult res = RunCommand(cmd, true, projRecurse);
 			if (res == TestResult.NoVersionControl && cmd == Commands.Log) {
 				// Use the update command to show the "not available" message
 				item.Icon = null;
@@ -407,9 +407,9 @@ namespace MonoDevelop.VersionControl
 				item.Visible = res == TestResult.Enable;
 		}
 		
-		private TestResult RunCommand (Commands cmd, bool test)
+		private TestResult RunCommand (Commands cmd, bool test, bool projRecurse = true)
 		{
-			VersionControlItemList items = GetItems ();
+			VersionControlItemList items = GetItems (projRecurse);
 
 			foreach (VersionControlItem it in items) {
 				if (it.Repository == null) {

@@ -70,7 +70,7 @@ namespace MonoDevelop.NUnit
 
 		protected override SourceCodeLocation GetSourceCodeLocation (string fixtureTypeNamespace, string fixtureTypeName, string methodName)
 		{
-			if (fixtureTypeName == null)
+			if (string.IsNullOrEmpty (fixtureTypeName) || string.IsNullOrEmpty (fixtureTypeName))
 				return null;
 			var ctx = TypeSystemService.GetCompilation (project);
 			var cls = ctx.MainAssembly.GetTypeDefinition (fixtureTypeNamespace, fixtureTypeName, 0);

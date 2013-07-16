@@ -70,6 +70,9 @@ namespace MonoDevelop.MacIntegration
 
 		public MacPlatformService ()
 		{
+			if (IntPtr.Size == 8)
+				throw new Exception ("Mac integration is not yet 64-bit safe");
+
 			if (initedGlobal)
 				throw new Exception ("Only one MacPlatformService instance allowed");
 			initedGlobal = true;
@@ -282,7 +285,7 @@ namespace MonoDevelop.MacIntegration
 				ApplicationEvents.Quit += delegate (object sender, ApplicationQuitEventArgs e)
 				{
 					// We can only attempt to quit safely if all windows are GTK windows and not modal
-					if (GtkQuartz.GetToplevels ().All (t => t.Value != null && (!t.Value.Visible || !t.Value.Modal))) {
+					if (!IsModalDialogRunning ()) {
 						e.UserCancelled = !IdeApp.Exit ();
 						e.Handled = true;
 						return;
@@ -666,6 +669,11 @@ end tell", directory.ToString ().Replace ("\"", "\\\"")));
 					MonoMac.ObjCRuntime.Selector.GetHandle ("toggleFullScreen:"),
 					IntPtr.Zero);
 			}
+		}
+
+		public override bool IsModalDialogRunning ()
+		{
+			return GtkQuartz.GetToplevels ().Any (t => t.Key.IsVisible && (t.Value == null || t.Value.Modal));
 		}
 	}
 }

@@ -293,6 +293,13 @@ namespace Mono.TextEditor
 		
 		internal protected override void Draw (Cairo.Context cr, Cairo.Rectangle area, DocumentLine lineSegment, int line, double x, double y, double lineHeight)
 		{
+			var marker = lineSegment != null ? (MarginMarker)lineSegment.Markers.FirstOrDefault (m => m is MarginMarker && ((MarginMarker)m).CanDraw (this)) : null;
+			if (marker != null) {
+				bool hasDrawn = marker.DrawBackground (editor, cr, new MarginDrawMetrics (this, area, lineSegment, line, x, y, lineHeight));
+				if (!hasDrawn)
+					marker = null;
+			}
+
 			foldSegmentSize = marginWidth * 4 / 6;
 			foldSegmentSize -= (foldSegmentSize) % 2;
 			
@@ -330,21 +337,23 @@ namespace Mono.TextEditor
 				isEndSelected = this.lineHover != null && IsMouseHover (endFoldings);
 			}
 
-			if (editor.Options.HighlightCaretLine && editor.Caret.Line == line) {
-				editor.TextViewMargin.DrawCaretLineMarker (cr, x, y, Width, lineHeight);
-			} else {
-				var bgGC = foldBgGC;
-				if (editor.TextViewMargin.BackgroundRenderer != null) {
-					if (isContainingSelected || isStartSelected || isEndSelected) {
-						bgGC = foldBgGC;
-					} else {
-						bgGC = foldLineHighlightedGCBg;
+			if (marker == null) {
+				if (editor.Options.HighlightCaretLine && editor.Caret.Line == line) {
+					editor.TextViewMargin.DrawCaretLineMarker (cr, x, y, Width, lineHeight);
+				} else {
+					var bgGC = foldBgGC;
+					if (editor.TextViewMargin.BackgroundRenderer != null) {
+						if (isContainingSelected || isStartSelected || isEndSelected) {
+							bgGC = foldBgGC;
+						} else {
+							bgGC = foldLineHighlightedGCBg;
+						}
 					}
+					
+					cr.Rectangle (drawArea);
+					cr.Color = bgGC;
+					cr.Fill ();
 				}
-				
-				cr.Rectangle (drawArea);
-				cr.Color = bgGC;
-				cr.Fill ();
 			}
 
 			if (editor.Options.EnableQuickDiff) {
@@ -385,9 +394,7 @@ namespace Mono.TextEditor
 					if (isContaining || moreLinedOpenFold) 
 						cr.DrawLine (isEndSelected || (isStartSelected && isVisible) || isContainingSelected ? foldLineHighlightedGC : foldLineGC, xPos, foldSegmentYPos + foldSegmentSize + 2, xPos, drawArea.Y + drawArea.Height);
 				} else {
-					
 					if (isFoldEnd) {
-						
 						double yMid = System.Math.Floor (drawArea.Y + drawArea.Height / 2) + 0.5;
 						cr.DrawLine (isEndSelected ? foldLineHighlightedGC : foldLineGC, xPos, yMid, x + marginWidth - 2, yMid);
 						cr.DrawLine (isContainingSelected || isEndSelected ? foldLineHighlightedGC : foldLineGC, xPos, drawArea.Y, xPos, yMid);
@@ -397,7 +404,6 @@ namespace Mono.TextEditor
 					} else if (isContaining) {
 						cr.DrawLine (isContainingSelected ? foldLineHighlightedGC : foldLineGC, xPos, drawArea.Y, xPos, drawArea.Y + drawArea.Height);
 					}
-					
 				}
 			}
 		}

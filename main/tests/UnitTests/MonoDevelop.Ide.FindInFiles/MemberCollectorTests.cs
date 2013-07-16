@@ -547,8 +547,8 @@ public A(int i) { }
 			var intParam = new [] { "Int32" };
 			var filters = new List<Predicate<IMember>> 
 			{
-				m => m.EntityType == EntityType.Constructor && MatchParameters(m, emptyParam),
-				m => m.EntityType == EntityType.Constructor && MatchParameters(m, intParam)
+				m => m.SymbolKind == SymbolKind.Constructor && MatchParameters(m, emptyParam),
+				m => m.SymbolKind == SymbolKind.Constructor && MatchParameters(m, intParam)
 			};
 			
 			foreach (var filter in filters) {
@@ -571,7 +571,7 @@ public A() { }
 static A() { }
 }";
 			var emptyParam = new string [] { };
-			Predicate<IMember> filter = m => m.EntityType == EntityType.Constructor && MatchParameters(m, emptyParam);
+			Predicate<IMember> filter = m => m.SymbolKind == SymbolKind.Constructor && MatchParameters(m, emptyParam);
 			var result1 = CollectMembers (code, "A", m => true, filter, true, false);
 			Assert.AreEqual (2, result1.Count);
 		}

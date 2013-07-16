@@ -13,8 +13,6 @@ namespace MonoDevelop.VersionControl.Subversion
 {
 	public class SubversionRepository: UrlBasedRepository
 	{
-		FilePath rootPath;
-		
 		public SubversionRepository ()
 		{
 			Url = "svn://";
@@ -23,13 +21,9 @@ namespace MonoDevelop.VersionControl.Subversion
 		public SubversionRepository (SubversionVersionControl vcs, string url, FilePath rootPath): base (vcs)
 		{
 			Url = url;
-			this.rootPath = !rootPath.IsNullOrEmpty ? rootPath.CanonicalPath : null;
+			RootPath = !rootPath.IsNullOrEmpty ? rootPath.CanonicalPath : null;
 		}
-		
-		public FilePath RootPath {
-			get { return rootPath; }
-		}
-		
+
 		public override string[] SupportedProtocols {
 			get {
 				return new string[] {"svn", "svn+ssh", "http", "https", "file"};
@@ -56,9 +50,8 @@ namespace MonoDevelop.VersionControl.Subversion
 			}
 		}
 
-		SubversionVersionControl VersionControlSystem {
-			get { return (SubversionVersionControl) base.VersionControlSystem;
-			}
+		new SubversionVersionControl VersionControlSystem {
+			get { return (SubversionVersionControl)base.VersionControlSystem; }
 		}
 
 		SubversionBackend backend;
@@ -70,22 +63,14 @@ namespace MonoDevelop.VersionControl.Subversion
 			}
 		}
 
-		static bool IsVersioned (FilePath sourcefile)
+		bool IsVersioned (FilePath sourcefile)
 		{
-			return SubversionVersionControl.IsVersioned (sourcefile);
+			return GetVersionInfo (sourcefile, VersionInfoQueryFlags.IgnoreCache).IsVersioned;
 		}
 		
 		public override string GetBaseText (FilePath sourcefile)
 		{
-			// The base file will not exist if the file has just been
-			// added to svn and not committed
-			var baseFile = Svn.GetPathToBaseText (sourcefile);
-			return File.Exists (baseFile) ? File.ReadAllText (baseFile) : "";
-		}
-
-		public string GetPathToBaseText (FilePath sourcefile)
-		{
-			return Svn.GetPathToBaseText (sourcefile);
+			return Svn.GetTextBase (sourcefile);
 		}
 
 		protected override string OnGetTextAtRevision (FilePath repositoryPath, Revision revision)
@@ -162,7 +147,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			CreateDirectory (paths, message, monitor);
 			Svn.Checkout (this.Url + "/" + serverPath, localPath, null, true, monitor);
 
-			rootPath = localPath;
+			RootPath = localPath;
 			Set<FilePath> dirs = new Set<FilePath> ();
 			PublishDir (dirs, localPath, false, monitor);
 
@@ -244,7 +229,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		{
 			foreach (FilePath path in paths) {
 				if (IsVersioned (path) && File.Exists (path) && !Directory.Exists (path)) {
-					if (rootPath.IsNull)
+					if (RootPath.IsNull)
 						throw new UserException (GettextCatalog.GetString ("Project publishing failed. There is a stale .svn folder in the path '{0}'", path.ParentDirectory));
 					VersionInfo srcInfo = GetVersionInfo (path, VersionInfoQueryFlags.IgnoreCache);
 					if (srcInfo.HasLocalChange (VersionStatus.ScheduledDelete)) {
@@ -260,25 +245,27 @@ namespace MonoDevelop.VersionControl.Subversion
 						// Copy the file over the old one and clean up
 						File.Copy (tmp, path, true);
 						File.Delete (tmp);
+						continue;
 					}
 				}
 				else {
+					VersionInfo srcInfo = GetVersionInfo (path, VersionInfoQueryFlags.IgnoreCache);
 					if (!IsVersioned (path.ParentDirectory)) {
 						// The file/folder belongs to an unversioned folder. We can add it by versioning the parent
 						// folders up to the root of the repository
 						
-						if (!path.IsChildPathOf (rootPath))
+						if (!path.IsChildPathOf (RootPath))
 							throw new InvalidOperationException ("File outside the repository directory");
 
 						List<FilePath> dirChain = new List<FilePath> ();
 						FilePath parentDir = path.CanonicalPath;
 						do {
 							parentDir = parentDir.ParentDirectory;
-							if (Directory.Exists (SubversionVersionControl.GetDirectoryDotSvn (parentDir)))
+							if (IsVersioned (parentDir))
 								break;
 							dirChain.Add (parentDir);
 						}
-						while (parentDir != rootPath);
+						while (parentDir != RootPath);
 
 						// Found all parent unversioned dirs. Versin them now.
 						dirChain.Reverse ();
@@ -289,8 +276,8 @@ namespace MonoDevelop.VersionControl.Subversion
 						}
 						VersionControlService.NotifyFileStatusChanged (args);
 					}
-					Svn.Add (path, recurse, monitor);
 				}
+				Svn.Add (path, recurse, monitor);
 			}
 		}
 		
@@ -525,7 +512,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		{
 			List<Annotation> annotations = new List<Annotation> (Svn.GetAnnotations (this, localPath, SvnRevision.First, SvnRevision.Base));
 			Annotation nextRev = new Annotation (GettextCatalog.GetString ("working copy"), "", DateTime.MinValue);
-			var baseDocument = new Mono.TextEditor.TextDocument (File.ReadAllText (GetPathToBaseText (localPath)));
+			var baseDocument = new Mono.TextEditor.TextDocument (GetBaseText (localPath));
 			var workingDocument = new Mono.TextEditor.TextDocument (File.ReadAllText (localPath));
 			
 			// "SubversionException: blame of the WORKING revision is not supported"

@@ -143,7 +143,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			
 			if (node is NamespaceDeclaration) {
 				var nsd = ((NamespaceDeclaration)node);
-				node = nsd.Identifiers.LastOrDefault (n => n.Name == memberName) ?? nsd.Identifiers.FirstOrDefault ();
+				node = nsd.NamespaceName;
 				if (node == null)
 					return null;
 			}
@@ -176,7 +176,44 @@ namespace MonoDevelop.CSharp.Refactoring
 			var region = new DomRegion (fileName, node.StartLocation, node.EndLocation);
 
 			var length = node is PrimitiveType ? keywordName.Length : node.EndLocation.Column - node.StartLocation.Column;
-			return new CSharpMemberReference (project, originalNode, syntaxTree, valid, region, editor.LocationToOffset (region.Begin), length);
+
+			var reference = new CSharpMemberReference (project, originalNode, syntaxTree, valid, region, editor.LocationToOffset (region.Begin), length);
+
+			reference.ReferenceUsageType = GetUsage (originalNode);
+			return reference;
+		}
+
+		// same logic than the extract method analyzation, unfortunately it's not reusable in this context 
+		// we need to do it bottom up here.
+		ReferenceUsageType GetUsage (AstNode node)
+		{
+			if (node.Parent is UnaryOperatorExpression) {
+				var unaryOperatorExpression = (UnaryOperatorExpression)node.Parent;
+				if (unaryOperatorExpression.Operator == UnaryOperatorType.Increment || 
+				    unaryOperatorExpression.Operator == UnaryOperatorType.Decrement ||
+					unaryOperatorExpression.Operator == UnaryOperatorType.PostIncrement || 
+				    unaryOperatorExpression.Operator == UnaryOperatorType.PostDecrement) {
+					return ReferenceUsageType.ReadWrite;
+				}
+			} else if (node.Parent is DirectionExpression) {
+				var de = (DirectionExpression)node.Parent;
+				if (de.FieldDirection == FieldDirection.Ref)
+					return ReferenceUsageType.ReadWrite;
+				if (de.FieldDirection == FieldDirection.Out)
+					return ReferenceUsageType.Write;
+			} else if (node.Parent is AssignmentExpression) {
+				var ae = (AssignmentExpression)node.Parent;
+				if (ae.Left == node)
+					return ReferenceUsageType.Write;
+			} else if (node is VariableInitializer) {
+				return ReferenceUsageType.Write;
+			} else if (node is ParameterDeclaration) {
+				return ReferenceUsageType.Write;
+			} else if (node.Parent is ForeachStatement) {
+				if (node.Role == Roles.Identifier)
+					return ReferenceUsageType.Write;
+			}
+			return ReferenceUsageType.Read;
 		}
 
 		public class CSharpMemberReference : MemberReference

@@ -50,6 +50,7 @@ using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Core.Assemblies;
 using System.Text;
 using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.Completion;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -169,7 +170,7 @@ namespace MonoDevelop.Ide.TypeSystem
 	
 	public static class TypeSystemService
 	{
-		const string CurrentVersion = "1.1.2";
+		const string CurrentVersion = "1.1.3";
 
 		static List<TypeSystemParserNode> parsers;
 		static string[] filesSkippedInParseThread = new string[0];
@@ -516,6 +517,21 @@ namespace MonoDevelop.Ide.TypeSystem
 			return null;
 		}
 
+		/// <summary>
+		/// Gets the cache directory for a projects derived data cache directory.
+		/// If forceCreation is set to false the method may return null, if the cache doesn't exist.
+		/// </summary>
+		/// <returns>The cache directory.</returns>
+		/// <param name="project">The project to get the cache for.</param>
+		/// <param name="forceCreation">If set to <c>true</c> the creation is forced and the method doesn't return null.</param>
+		public static string GetCacheDirectory (Project project, bool forceCreation = false)
+		{
+			var result = GetCacheDirectory (project.FileName);
+			if (forceCreation && result == null)
+				result = CreateCacheDirectory (project.FileName);
+			return result;
+		}
+
 		struct CacheDirectoryInfo
 		{
 			public static readonly CacheDirectoryInfo Empty = new CacheDirectoryInfo ();
@@ -609,7 +625,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 				}
 			} catch (Exception e) {
-				LoggingService.LogError ("Error while reading type system cache.", e);
+				LoggingService.LogError ("Error while trying to deserialize " + typeof (T).FullName + ".", e);
 				return default(T);
 			} finally {
 				t.Dispose ();
@@ -709,7 +725,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (!wrapper.WasChanged)
 				return;
-			string cacheDir = GetCacheDirectory (project.FileName) ?? CreateCacheDirectory (project.FileName);
+			string cacheDir = GetCacheDirectory (project, true);
 			TouchCache (cacheDir);
 			string fileName = Path.GetTempFileName ();
 			
@@ -895,7 +911,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (extensionObjects.TryGetValue (typeof (T), out result))
 					return (T)result;
 
-				string cacheDir = GetCacheDirectory (Project.FileName);
+				string cacheDir = GetCacheDirectory (Project);
 				if (cacheDir == null)
 					return default(T);
 
@@ -913,6 +929,23 @@ namespace MonoDevelop.Ide.TypeSystem
 				return default (T);
 			}
 
+			void ClearCachedCompilations ()
+			{
+				// Need to clear this compilation & all compilations that reference this directly or indirectly
+				var stack = new Stack<ProjectContentWrapper> ();
+				stack.Push (this);
+				var cleared = new HashSet<ProjectContentWrapper> ();
+				while (stack.Count > 0) {
+					var cur = stack.Pop ();
+					if (cleared.Contains (cur))
+						continue;
+					cleared.Add (cur);
+					cur.compilation = null;
+					foreach (var project in cur.ReferencedProjects)
+						stack.Push (GetProjectContentWrapper (project));
+				}
+			}
+
 			public void UpdateContent (Func<IProjectContent, IProjectContent> updateFunc)
 			{
 				lock (this) {
@@ -920,9 +953,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						((LazyProjectLoader)Content).ContextTask.Wait ();
 					}
 					Content = updateFunc (Content);
-					// Need to clear this compilation & all compilations that reference this directly or indirectly
-					foreach (var wrapper in projectContents.Values)
-						wrapper.compilation = null;
+					ClearCachedCompilations ();
 					WasChanged = true;
 				}
 			}
@@ -1055,7 +1086,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				static IProjectContent LoadProjectCache (Project project)
 				{
-					string cacheDir = GetCacheDirectory (project.FileName);
+					string cacheDir = GetCacheDirectory (project);
 					if (cacheDir == null) {
 						return null;
 					}
@@ -1328,9 +1359,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					});
 
 					if (dotNetProject != null) {
-						Task.Factory.StartNew (delegate {
-							GetFrameworkLookup (dotNetProject);
-						});
+						StartFrameworkLookup (dotNetProject);
 					}
 
 					OnProjectContentLoaded (new ProjectContentEventArgs (project, wrapper.Content));
@@ -1530,7 +1559,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 		#endregion
 		
-		
+		/*
 		class SimpleAssemblyResolver : IAssemblyResolver
 		{
 			string lookupPath;
@@ -1613,20 +1642,16 @@ namespace MonoDevelop.Ide.TypeSystem
 			ReaderParameters parameters = new ReaderParameters ();
 			parameters.AssemblyResolver = new DefaultAssemblyResolver (); // new SimpleAssemblyResolver (Path.GetDirectoryName (fileName));
 			return AssemblyDefinition.ReadAssembly (fileName, parameters);
-		}
+		}*/
 		
 		static bool GetXml (string baseName, MonoDevelop.Core.Assemblies.TargetRuntime runtime, out FilePath xmlFileName)
 		{
-			string filePattern = Path.GetFileNameWithoutExtension (baseName) + ".*";
 			try {
-				foreach (string fileName in Directory.EnumerateFileSystemEntries (Path.GetDirectoryName (baseName), filePattern)) {
-					if (fileName.ToLower ().EndsWith (".xml")) {
-						xmlFileName = LookupLocalizedXmlDoc (fileName);
-						return true;
-					}
-				}
+				xmlFileName = LookupLocalizedXmlDoc (baseName);
+				if (xmlFileName != null)
+					return true;
 			} catch (Exception e) {
-				LoggingService.LogError ("Error while retrieving file system entries.", e);
+				LoggingService.LogError ("Error while looking up XML docs.", e);
 			}
 			
 			if (MonoDevelop.Core.Platform.IsWindows) {
@@ -1948,16 +1973,13 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 				} catch (Exception) {
 				}
-				var asm = ReadAssembly (fileName);
-				if (asm == null)
-					return null;
-				
+
 				IUnresolvedAssembly assembly;
 				try {
-					var loader = new CecilLoader ();
+					var loader = new IkvmLoader ();
 					loader.IncludeInternalMembers = true;
 					loader.DocumentationProvider = new CombinedDocumentationProvider (fileName);
-					assembly = loader.LoadAssembly (asm);
+					assembly = loader.LoadAssemblyFile (fileName);
 				} catch (Exception e) {
 					LoggingService.LogError ("Can't convert assembly: " + fileName, e);
 					return null;
@@ -2107,340 +2129,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			return result;
 		}
 
-		public static readonly Version FrameworkLookupVersion = new Version (2, 0, 0);
-
-		public class FrameworkLookup 
-		{
-			public Version Version {
-				get;
-				set;
-			}
-
-			public FrameworkLookup ()
-			{
-				this.Version = FrameworkLookupVersion;
-			}
-
-			public IEnumerable<AssemblyLookup> GetExtensionMethodLookups (UnknownMemberResolveResult uiResult)
-			{
-				return GetLookup (uiResult.MemberName, extLookupTable);
-			}
-
-			public IEnumerable<AssemblyLookup> GetLookups (UnknownIdentifierResolveResult uiResult, int typeParameterCount, bool isInsideAttributeType)
-			{
-				string name = isInsideAttributeType ? uiResult.Identifier + "Attribute" : uiResult.Identifier;
-
-				var identifier = GetIdentifier (name, typeParameterCount);
-				return GetLookup (identifier, typeLookupTable);
-			}
-
-			public IEnumerable<AssemblyLookup> GetLookups (UnknownMemberResolveResult uiResult, AstNode node, int typeParameterCount, bool isInsideAttributeType)
-			{
-				string name = isInsideAttributeType ? uiResult.MemberName + "Attribute" : uiResult.MemberName;
-
-				var identifier = GetIdentifier (name, typeParameterCount);
-				foreach (var lookup in GetLookup (identifier, typeLookupTable)) {
-					if (node.ToString ().StartsWith (lookup.Namespace))
-						yield return lookup;
-
-				}
-			}
-
-			IEnumerable<AssemblyLookup> GetLookup (string identifier, Dictionary<int, int> lookupTable)
-			{
-				if (lookupTable == null)
-					yield break;
-				int listPtr;
-
-				if (!lookupTable.TryGetValue (GetStableHashCode (identifier), out listPtr)) 
-					yield break;
-				using (var reader = new BinaryReader (File.OpenRead (fileName), Encoding.UTF8)) {
-					reader.BaseStream.Seek (listPtr, SeekOrigin.Begin);
-					var b = reader.ReadInt32 ();
-					while (b --> 0) {
-						var assembly = reader.ReadInt32 ();
-						reader.BaseStream.Seek (assemblyLookuptTable [assembly], SeekOrigin.Begin);
-
-						var package = reader.ReadString ();
-						var fullName = reader.ReadString ();
-						var ns = reader.ReadString ();
-						yield return new AssemblyLookup (package, fullName, ns);
-					}
-				}
-			}
-
-			int[] assemblyLookuptTable;
-			Dictionary<int, int> typeLookupTable;
-			Dictionary<int, int> extLookupTable;
-			string fileName;
-
-			public void OpenDataFile (string fileName)
-			{
-				this.fileName = fileName;
-				var fs = File.OpenRead (fileName);
-				using (var reader = new BinaryReader (fs, Encoding.UTF8)) {
-					int typeLookupListCount = reader.ReadInt32 ();
-					int extLookupListCount = reader.ReadInt32 ();
-					int assemblyLookupCount = reader.ReadInt32 ();
-
-					assemblyLookuptTable = new int[assemblyLookupCount];
-					for (int i = 0; i < assemblyLookupCount; i++) {
-						assemblyLookuptTable[i] = reader.ReadInt32 ();
-					}
-
-					typeLookupTable = new Dictionary<int, int> ();
-					for (int i = 0; i < typeLookupListCount; i++) {
-						var type = reader.ReadInt32 ();
-						var listOffset = reader.ReadInt32 ();
-						typeLookupTable [type] = listOffset;
-					}
-
-					extLookupTable 	= new Dictionary<int, int> ();
-					for (int i = 0; i < extLookupListCount; i++) {
-						var type = reader.ReadInt32 ();
-						var listOffset = reader.ReadInt32 ();
-						extLookupTable [type] = listOffset;
-					}
-				}
-			}
-
-			
-			/// <summary>
-			/// Retrieves a hash code for the specified string that is stable across
-			/// .NET upgrades.
-			/// 
-			/// Use this method instead of the normal <c>string.GetHashCode</c> if the hash code
-			/// is persisted to disk.
-			/// </summary>
-			static int GetStableHashCode(string text)
-			{
-				unchecked {
-					int h = 0;
-					foreach (char c in text) {
-						h = (h << 5) - h + c;
-					}
-					return h;
-				}
-			}
-
-			static string GetIdentifier (string identifier, int tc)
-			{
-				if (tc == 0)
-					return identifier;
-				return identifier + "`" + tc;
-			}
-
-			public class FrameWorkCreator 
-			{
-				#region Creation
-
-				int GetLookup (SystemAssembly assembly, string ns)
-				{
-					for (int i = 0; i < assemblyLookups.Count; i++) {
-						var lookup = assemblyLookups [i];
-						if (lookup.FullName == assembly.FullName && lookup.Namespace == ns)
-							return i;
-						
-					}
-					var result = new AssemblyLookup (assembly, ns);
-					assemblyLookups.Add (result);
-					return assemblyLookups.Count - 1;
-				}
-
-				public void Store (string fileName)
-				{
-					var typeLookupMemory = new MemoryStream ();
-					var typeLookupList = new List<KeyValuePair<int, List<int>>> (this.typeLookup);
-					typeLookupList.Sort ((x, y) => x.Key.CompareTo (y.Key));
-					var typeTable = new int[typeLookupList.Count];
-
-					using (var bw = new BinaryWriter (typeLookupMemory)) {
-						for (int i = 0; i < typeTable.Length; i++) {
-							typeTable [i] = (int)typeLookupMemory.Length;
-							bw.Write (typeLookupList [i].Value.Count);
-							foreach (var ii in typeLookupList [i].Value)
-								bw.Write (ii);
-						}
-					}
-
-					var extMethodLookupMemory = new MemoryStream ();
-					var extMethodLookuplist = new List<KeyValuePair<int, List<int>>> (this.extensionMethodLookup);
-					extMethodLookuplist.Sort ((x, y) => x.Key.CompareTo (y.Key));
-
-					var extMethodTable = new int[extMethodLookuplist.Count];
-
-					using (var bw = new BinaryWriter (extMethodLookupMemory)) {
-
-						for (int i = 0; i < extMethodTable.Length; i++) {
-							extMethodTable [i] = (int)extMethodLookupMemory.Length;
-
-							bw.Write (extMethodLookuplist [i].Value.Count);
-							foreach (var ii in extMethodLookuplist [i].Value)
-								bw.Write (ii);
-						}
-					}
-
-					var assemblyLookupMemory = new MemoryStream ();
-					var assemblyPositionTable = new int[assemblyLookups.Count];
-					using (var writer = new BinaryWriter (assemblyLookupMemory, Encoding.UTF8)) {
-						for (int i = 0; i < assemblyLookups.Count; i++) {
-							var lookup = assemblyLookups[i];
-							assemblyPositionTable[i] = (int)assemblyLookupMemory.Length;
-							writer.Write (lookup.Package);
-							writer.Write (lookup.FullName);
-							writer.Write (lookup.Namespace);
-						}
-					}
-
-					using (var stream = new BinaryWriter (File.OpenWrite (fileName), Encoding.UTF8)) {
-						stream.Write (typeLookupList.Count);
-						stream.Write (extMethodLookuplist.Count);
-						stream.Write (assemblyLookups.Count);
-
-						const int headerSize = 4 + 4 + 4;
-
-						var typeBuffer = typeLookupMemory.ToArray ();
-						var extMethodBuffer = extMethodLookupMemory.ToArray ();
-
-						int dataOffset = 
-							headerSize + 
-							assemblyLookups.Count * 4 + 
-							typeLookupList.Count * (4 + 4) + 
-							extMethodLookuplist.Count * (4 + 4);
-
-						for (int i = 0; i < assemblyLookups.Count; i++) {
-							var lookup = assemblyLookups[i];
-							stream.Write ((int)(dataOffset + typeBuffer.Length + extMethodBuffer.Length + assemblyPositionTable[i]));
-						}
-
-						for (int i = 0; i < typeLookupList.Count; i++) {
-							stream.Write (typeLookupList [i].Key);
-							stream.Write (dataOffset + typeTable[i]);
-						}
-
-						for (int i = 0; i < extMethodLookuplist.Count; i++) {
-							stream.Write (extMethodLookuplist [i].Key);
-							stream.Write (dataOffset + typeBuffer.Length + extMethodTable[i]);
-						}
-
-						stream.Write (typeBuffer);
-						stream.Write (extMethodBuffer);
-						stream.Write (assemblyLookupMemory.ToArray ());
-					}
-					typeLookup = null;
-					extensionMethodLookup = null;
-					assemblyLookups = null;
-				}
-
-				Dictionary<int, List<int>> typeLookup = new Dictionary<int, List<int>>  ();
-				Dictionary<int, List<int>> extensionMethodLookup = new Dictionary<int, List<int>>  ();
-				List<AssemblyLookup> assemblyLookups = new List<AssemblyLookup> ();
-
-				void AddExtensionMethodlookup(IUnresolvedMethod method, SystemAssembly assembly)
-				{
-					List<int> list;
-					if (!extensionMethodLookup.TryGetValue (method.Name.GetHashCode (), out list)) {
-						list = new List<int> ();
-						extensionMethodLookup [method.Name.GetHashCode ()] = list;
-					}
-					var assemblyLookup = GetLookup (assembly, method.DeclaringTypeDefinition.Namespace);
-					if (!list.Any (a => a.Equals (assemblyLookup))) {
-						list.Add (assemblyLookup);
-					}
-				}
-
-
-				public void AddLookup (IUnresolvedTypeDefinition type, SystemAssembly assembly)
-				{
-					List<int> list;
-					var id = GetIdentifier (type.Name, type.TypeParameters.Count);
-					if (!typeLookup.TryGetValue (GetStableHashCode (id), out list)) {
-						list = new List<int> ();
-						typeLookup [GetStableHashCode (id)] = list;
-					}
-
-					var assemblyLookup = GetLookup (assembly, type.Namespace);
-					if (!list.Any (a => a == assemblyLookup)) {
-						list.Add (assemblyLookup);
-
-						if (type.IsSealed || type.IsStatic) {
-							foreach (var method in type.Methods) {
-								var m = method as DefaultUnresolvedMethod;
-								if (m == null || !m.IsExtensionMethod)
-									continue;
-								AddExtensionMethodlookup (method, assembly);
-							}
-						}
-					}
-				}
-
-				#endregion
-			}
-
-			public class AssemblyLookup
-			{
-				readonly string nspace;
-				public string Namespace {
-					get {
-						return nspace;
-					}
-				}
-
-				readonly string fullName;
-				public string FullName {
-					get {
-						return fullName;
-					}
-				}
-
-				readonly string package;
-				public string Package {
-					get {
-						return package;
-					}
-				}
-
-				public AssemblyLookup (string package, string fullName, string nspace)
-				{
-					this.nspace = nspace;
-					this.fullName = fullName;
-					this.package = package;
-				}
-				
-				public AssemblyLookup (SystemAssembly assembly, string ns)
-				{
-					fullName = assembly.FullName;
-					package = assembly.Package.Name;
-					nspace = ns;
-				}
-
-				public override string ToString ()
-				{
-					return string.Format ("[AssemblyLookup: Namespace={0}, FullName={1}, Package={2}]", Namespace, FullName, Package);
-				}
-
-				public override bool Equals (object obj)
-				{
-					if (obj == null)
-						return false;
-					if (ReferenceEquals (this, obj))
-						return true;
-					if (obj.GetType () != typeof(AssemblyLookup))
-						return false;
-					AssemblyLookup other = (AssemblyLookup)obj;
-					return Namespace == other.Namespace && FullName == other.FullName && Package == other.Package;
-				}
-				
-				public override int GetHashCode ()
-				{
-					unchecked {
-						return (Namespace != null ? Namespace.GetHashCode () : 0) ^ (FullName != null ? FullName.GetHashCode () : 0) ^ (Package != null ? Package.GetHashCode () : 0);
-					}
-				}
-			}
-		}
-
-
 		static IEnumerable<SystemAssembly> GetFrameworkAssemblies (DotNetProject netProject)
 		{
 			var assemblies = new Dictionary<string, SystemAssembly> ();
@@ -2462,46 +2150,76 @@ namespace MonoDevelop.Ide.TypeSystem
 			return assemblies.Values;
 		}
 
-		readonly static Dictionary<string, FrameworkLookup> frameworkLookup = new Dictionary<string, FrameworkLookup> ();
-		public static FrameworkLookup GetFrameworkLookup (DotNetProject netProject)
+		readonly static Dictionary<string, Task<FrameworkLookup>> frameworkLookup = new Dictionary<string, Task<FrameworkLookup>> ();
+
+		static void StartFrameworkLookup (DotNetProject netProject)
+		{
+			lock (frameworkLookup) {
+				Task<FrameworkLookup> result;
+				if (frameworkLookup.TryGetValue (netProject.TargetFramework.Name, out result)) 
+					return;
+				frameworkLookup[netProject.TargetFramework.Name] = Task.Factory.StartNew (delegate {
+					return GetFrameworkLookup (netProject);
+				});
+			}
+		}
+
+		public static bool TryGetFrameworkLookup (DotNetProject project, out FrameworkLookup lookup)
+		{
+			lock (frameworkLookup) {
+				Task<FrameworkLookup> result;
+				if (frameworkLookup.TryGetValue (project.TargetFramework.Name, out result)) {
+					if (!result.IsCompleted)  {
+						lookup = null;
+						return false;
+					}
+					lookup = result.Result;
+					return true;
+				}
+			}
+			lookup = null;
+			return false;
+		}
+
+		static FrameworkLookup GetFrameworkLookup (DotNetProject netProject)
 		{
 			FrameworkLookup result;
 			string fileName;
-			lock (frameworkLookup) {
-				if (frameworkLookup.TryGetValue (netProject.TargetFramework.Name, out result)) 
-					return result;
-				var cache = GetCacheDirectory (netProject.TargetFramework);
-				fileName = Path.Combine (cache, "FrameworkLookup_" + FrameworkLookupVersion + ".dat");
-				try {
-					if (File.Exists (fileName)) {
-						result = new FrameworkLookup ();
-						frameworkLookup [netProject.TargetFramework.Name] = result = new FrameworkLookup ();
-						result.OpenDataFile (fileName);
-						if (result.Version == FrameworkLookupVersion)
-							return result;
-					}
-				} catch (Exception e) {
-					LoggingService.LogWarning ("Can't read framework cache - recreating...", e);
-				}
-				var creator = new FrameworkLookup.FrameWorkCreator ();
-				frameworkLookup [netProject.TargetFramework.Name] = result;
-				foreach (var assembly in GetFrameworkAssemblies (netProject)) {
-					var ctx = LoadAssemblyContext (assembly.Location);
-					foreach (var type in ctx.Ctx.GetAllTypeDefinitions ()) {
-						if (!type.IsPublic)
-							continue;
-						creator.AddLookup (type, assembly);
+			var cache = GetCacheDirectory (netProject.TargetFramework);
+			fileName = Path.Combine (cache, "FrameworkLookup_" + FrameworkLookup.CurrentVersion + ".dat");
+			try {
+				if (File.Exists (fileName)) {
+					result = FrameworkLookup.Load (fileName);
+					if (result != null) {
+						return result;
 					}
 				}
-				try {
-					creator.Store (fileName);
-				} catch (Exception e){
-					LoggingService.LogError ("Error while storing framework lookup", e);
-					return new FrameworkLookup ();
+			} catch (Exception e) {
+				LoggingService.LogWarning ("Can't read framework cache - recreating...", e);
+			}
+
+			try {
+				using (var creator = FrameworkLookup.Create (fileName)) {
+					foreach (var assembly in GetFrameworkAssemblies (netProject)) {
+						var ctx = LoadAssemblyContext (assembly.Location);
+						foreach (var type in ctx.Ctx.GetAllTypeDefinitions ()) {
+							if (!type.IsPublic)
+								continue;
+							creator.AddLookup (assembly.Package.Name, assembly.FullName, type);
+						}
+					}
 				}
-				result = new FrameworkLookup ();
-				result.OpenDataFile (fileName);
+			} catch (Exception e){
+				LoggingService.LogError ("Error while storing framework lookup", e);
+				return FrameworkLookup.Empty;
+			}
+
+			try {
+				result = FrameworkLookup.Load (fileName);
 				return result;
+			} catch (Exception e) {
+				LoggingService.LogError ("Error loading framework lookup", e);
+				return FrameworkLookup.Empty;
 			}
 		}
 

@@ -889,14 +889,14 @@ namespace MonoDevelop.VersionControl.Views
 									GetPointer (out mx, out my);
 								//	mx -= (int)x;
 								//	my -= (int)y;
-									Cairo.RadialGradient gradient = new Cairo.RadialGradient (mx, my, h, 
-										mx, my, 2);
-									var color = (Mono.TextEditor.HslColor)Style.Mid (StateType.Normal);
-									color.L *= 1.05;
-									gradient.AddColorStop (0, color);
-									color.L *= 1.07;
-									gradient.AddColorStop (1, color);
-									cr.Pattern = gradient;
+									using (var gradient = new Cairo.RadialGradient (mx, my, h, mx, my, 2)) {
+										var color = (Mono.TextEditor.HslColor)Style.Mid (StateType.Normal);
+										color.L *= 1.05;
+										gradient.AddColorStop (0, color);
+										color.L *= 1.07;
+										gradient.AddColorStop (1, color);
+										cr.Pattern = gradient;
+									}
 								} else {
 									cr.Color = (Mono.TextEditor.HslColor)Style.Mid (StateType.Normal);
 								}
@@ -1049,15 +1049,15 @@ namespace MonoDevelop.VersionControl.Views
 			void FillGradient (Cairo.Context cr, double y, double h)
 			{
 				cr.Rectangle (0.5, y, Allocation.Width, h);
-				var grad = new Cairo.LinearGradient (0, y, Allocation.Width, y);
-				var col = (Mono.TextEditor.HslColor)Style.Base (StateType.Normal);
-				col.L *= 0.95;
-				grad.AddColorStop (0, col);
-				grad.AddColorStop (0.7, (Mono.TextEditor.HslColor)Style.Base (StateType.Normal));
-				grad.AddColorStop (1, col);
-				cr.Pattern = grad;
-				
-				cr.Fill ();
+				using (var grad = new Cairo.LinearGradient (0, y, Allocation.Width, y)) {
+					var col = (Mono.TextEditor.HslColor)Style.Base (StateType.Normal);
+					col.L *= 0.95;
+					grad.AddColorStop (0, col);
+					grad.AddColorStop (0.7, (Mono.TextEditor.HslColor)Style.Base (StateType.Normal));
+					grad.AddColorStop (1, col);
+					cr.Pattern = grad;
+					cr.Fill ();
+				}
 			}
 			
 			void DrawBar (Cairo.Context cr, double y, double h)

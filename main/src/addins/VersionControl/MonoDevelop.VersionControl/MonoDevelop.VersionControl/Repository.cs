@@ -166,7 +166,8 @@ namespace MonoDevelop.VersionControl
 		public IEnumerable<VersionInfo> GetVersionInfo (IEnumerable<FilePath> paths, VersionInfoQueryFlags queryFlags = VersionInfoQueryFlags.None)
 		{
 			if ((queryFlags & VersionInfoQueryFlags.IgnoreCache) != 0) {
-				var res = OnGetVersionInfo (paths, (queryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0);
+				// We shouldn't use IEnumerable because elements don't save property modifications.
+				var res = OnGetVersionInfo (paths, (queryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0).ToList ();
 				infoCache.SetStatus (res);
 				return res;
 			}
@@ -332,7 +333,7 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		
-		// Returns a path to the last version of the file updated from the repository
+		// Returns the content of the file in the base revision of the working copy.
 		public abstract string GetBaseText (FilePath localFile);
 		
 		// Returns the revision history of a file
@@ -434,8 +435,8 @@ namespace MonoDevelop.VersionControl
 
 		public void Revert (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
 		{
-			OnRevert (localPaths, recurse, monitor);
 			ClearCachedVersionInfo (localPaths);
+			OnRevert (localPaths, recurse, monitor);
 		}
 
 		public void Revert (FilePath localPath, bool recurse, IProgressMonitor monitor)
@@ -447,16 +448,16 @@ namespace MonoDevelop.VersionControl
 
 		public void RevertRevision (FilePath localPath, Revision revision, IProgressMonitor monitor)
 		{
-			OnRevertRevision (localPath, revision, monitor);
 			ClearCachedVersionInfo (localPath);
+			OnRevertRevision (localPath, revision, monitor);
 		}
 
 		protected abstract void OnRevertRevision (FilePath localPath, Revision revision, IProgressMonitor monitor);
 
 		public void RevertToRevision (FilePath localPath, Revision revision, IProgressMonitor monitor)
 		{
-			OnRevertToRevision (localPath, revision, monitor);
 			ClearCachedVersionInfo (localPath);
+			OnRevertToRevision (localPath, revision, monitor);
 		}
 		
 		protected abstract void OnRevertToRevision (FilePath localPath, Revision revision, IProgressMonitor monitor);

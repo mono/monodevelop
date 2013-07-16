@@ -152,7 +152,6 @@
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.PrintSettingsWidget.cs" />
     <Compile Include="MonoDevelop.SourceEditor\MessageBubbleCommands.cs" />
     <Compile Include="MonoDevelop.SourceEditor\MessageBubbleTextMarker.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\MessageBubbleHighlightPopupWindow.cs" />
     <Compile Include="MonoDevelop.SourceEditor\MessageBubbleCache.cs" />
     <Compile Include="MonoDevelop.SourceEditor.OptionPanels\ColorShemeEditor.cs" />
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.OptionPanels.ColorShemeEditor.cs" />
@@ -168,6 +167,7 @@
     <Compile Include="MonoDevelop.SourceEditor.QuickTasks\IUsageProvider.cs" />
     <Compile Include="MonoDevelop.SourceEditor\FileRegistry.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SearchAndReplaceOptions.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\ErrorText.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

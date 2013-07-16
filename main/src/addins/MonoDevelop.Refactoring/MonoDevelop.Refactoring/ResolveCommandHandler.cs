@@ -48,6 +48,7 @@ using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Projects;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using MonoDevelop.Core.ProgressMonitoring;
+using ICSharpCode.NRefactory.Completion;
 
 namespace MonoDevelop.Refactoring
 {
@@ -270,6 +271,15 @@ namespace MonoDevelop.Refactoring
 			}
 		}
 
+		internal static bool CanBeReferenced (Project project, SystemAssembly systemAssembly)
+		{
+			var netProject = project as DotNetProject;
+			if (netProject == null)
+				return false;
+			var result = netProject.TargetRuntime.AssemblyContext.GetAssemblyNameForVersion(systemAssembly.FullName, netProject.TargetFramework);
+			return !string.IsNullOrEmpty (result);
+		}
+
 		static IEnumerable<PossibleNamespace> GetPossibleNamespaces (Document doc, AstNode node, ResolveResult resolveResult, DocumentLocation location)
 		{
 			var unit = doc.ParsedDocument.GetAst<SyntaxTree> ();
@@ -301,16 +311,21 @@ namespace MonoDevelop.Refactoring
 			var netProject = project as DotNetProject;
 			if (netProject == null) 
 				yield break;
-			var frameworkLookup = TypeSystemService.GetFrameworkLookup (netProject);
-			if (frameworkLookup == null)
-				yield break;
-			if (resolveResult is UnknownMemberResolveResult) {
+			FrameworkLookup frameworkLookup;
+			if (!TypeSystemService.TryGetFrameworkLookup (netProject, out frameworkLookup))
+				frameworkLookup = null;
+			if (frameworkLookup != null && resolveResult is UnknownMemberResolveResult) {
 				var umResult = (UnknownMemberResolveResult)resolveResult;
-				foreach (var r in frameworkLookup.GetExtensionMethodLookups (umResult)) {
-					var systemAssembly = netProject.AssemblyContext.GetAssemblyFromFullName (r.FullName, r.Package, netProject.TargetFramework);
-					if (systemAssembly == null)
-						continue;
-					compilations.Add (Tuple.Create (TypeSystemService.GetCompilation (systemAssembly, doc.Compilation), new MonoDevelop.Projects.ProjectReference (systemAssembly)));
+				try {
+					foreach (var r in frameworkLookup.GetExtensionMethodLookups (umResult)) {
+						var systemAssembly = netProject.AssemblyContext.GetAssemblyFromFullName (r.FullName, r.Package, netProject.TargetFramework);
+						if (systemAssembly == null)
+							continue;
+						if (CanBeReferenced (doc.Project, systemAssembly))
+							compilations.Add (Tuple.Create (TypeSystemService.GetCompilation (systemAssembly, doc.Compilation), new MonoDevelop.Projects.ProjectReference (systemAssembly)));
+					}
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while looking up framework extension methods.", e);
 				}
 			}
 			bool foundIdentifier = false;
@@ -395,26 +410,43 @@ namespace MonoDevelop.Refactoring
 				}
 			}
 			// Try to search framework types
-			if (!foundIdentifier && resolveResult is UnknownIdentifierResolveResult) {
+			if (!foundIdentifier && frameworkLookup != null && resolveResult is UnknownIdentifierResolveResult) {
 				var uiResult = resolveResult as UnknownIdentifierResolveResult;
 				if (uiResult != null) {
-					foreach (var r in frameworkLookup.GetLookups (uiResult, tc, isInsideAttributeType)) {
-						var systemAssembly = netProject.AssemblyContext.GetAssemblyFromFullName (r.FullName, r.Package, netProject.TargetFramework);
-						if (systemAssembly == null)
-							continue;
-						yield return new PossibleNamespace (r.Namespace, true, new MonoDevelop.Projects.ProjectReference (systemAssembly));
+					var lookups = new List<Tuple<FrameworkLookup.AssemblyLookup, SystemAssembly>> ();
+					try {
+						foreach (var r in frameworkLookup.GetLookups (uiResult, tc, isInsideAttributeType)) {
+							var systemAssembly = netProject.AssemblyContext.GetAssemblyFromFullName (r.FullName, r.Package, netProject.TargetFramework);
+							if (systemAssembly == null)
+								continue;
+							if (CanBeReferenced (doc.Project, systemAssembly))
+								lookups.Add (Tuple.Create (r, systemAssembly));
+						}
+					} catch (Exception e) {
+						LoggingService.LogError ("Error while looking up framework types.", e);
 					}
+					foreach(var kv in lookups)
+						yield return new PossibleNamespace (kv.Item1.Namespace, true, new MonoDevelop.Projects.ProjectReference (kv.Item2));
+
 				}
 			}
-			if (!foundIdentifier && resolveResult is UnknownMemberResolveResult) {
+			if (!foundIdentifier && frameworkLookup != null && resolveResult is UnknownMemberResolveResult) {
 				var uiResult = resolveResult as UnknownMemberResolveResult;
 				if (uiResult != null) {
-					foreach (var r in frameworkLookup.GetLookups (uiResult, node, tc, isInsideAttributeType)) {
-						var systemAssembly = netProject.AssemblyContext.GetAssemblyFromFullName (r.FullName, r.Package, netProject.TargetFramework);
-						if (systemAssembly == null)
-							continue;
-						yield return new PossibleNamespace (r.Namespace, false, new MonoDevelop.Projects.ProjectReference (systemAssembly));
+					var lookups = new List<Tuple<FrameworkLookup.AssemblyLookup, SystemAssembly>> ();
+					try {
+						foreach (var r in frameworkLookup.GetLookups (uiResult, node.ToString (), tc, isInsideAttributeType)) {
+							var systemAssembly = netProject.AssemblyContext.GetAssemblyFromFullName (r.FullName, r.Package, netProject.TargetFramework);
+							if (systemAssembly == null)
+								continue;
+							if (CanBeReferenced (doc.Project, systemAssembly))
+								lookups.Add (Tuple.Create (r, systemAssembly));
+						}
+					} catch (Exception e) {
+						LoggingService.LogError ("Error while looking up framework types.", e);
 					}
+					foreach(var kv in lookups)
+						yield return new PossibleNamespace (kv.Item1.Namespace, true, new MonoDevelop.Projects.ProjectReference (kv.Item2));
 				}
 			}
 

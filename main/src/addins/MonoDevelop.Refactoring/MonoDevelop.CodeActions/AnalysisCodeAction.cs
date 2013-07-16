@@ -83,6 +83,17 @@ namespace MonoDevelop.CodeActions
 			{
 				Action.Fix ();
 			}
+			
+			public override bool SupportsBatchRunning {
+				get {
+					return Action.SupportsBatchFix;
+				}
+			}
+			
+			public override void BatchRun (MonoDevelop.Ide.Gui.Document document, TextLocation loc)
+			{
+				Action.BatchFix ();
+			}
 
 			public void ShowOptions (object sender, EventArgs e)
 			{

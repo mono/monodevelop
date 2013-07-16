@@ -77,9 +77,9 @@ namespace MonoDevelop.VersionControl.Views
 			this.Repository = repository;
 		}
 
-		public void Start ()
+		public void Start (bool rerun = false)
 		{
-			if (alreadyStarted)
+			if (!rerun && alreadyStarted)
 				return;
 			alreadyStarted = true;
 			ThreadPool.QueueUserWorkItem (delegate {

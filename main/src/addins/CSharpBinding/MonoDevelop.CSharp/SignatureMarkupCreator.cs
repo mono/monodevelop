@@ -139,28 +139,28 @@ namespace MonoDevelop.CSharp
 			if (entity == null)
 				throw new ArgumentNullException ("entity");
 			string result;
-			switch (entity.EntityType) {
-			case EntityType.TypeDefinition:
+			switch (entity.SymbolKind) {
+			case SymbolKind.TypeDefinition:
 				result = GetTypeMarkup ((ITypeDefinition)entity);
 				break;
-			case EntityType.Field:
+			case SymbolKind.Field:
 				result = GetFieldMarkup ((IField)entity);
 				break;
-			case EntityType.Property:
-			case EntityType.Indexer:
+			case SymbolKind.Property:
+			case SymbolKind.Indexer:
 				result = GetPropertyMarkup ((IProperty)entity);
 				break;
-			case EntityType.Event:
+			case SymbolKind.Event:
 				result = GetEventMarkup ((IEvent)entity);
 				break;
-			case EntityType.Method:
-			case EntityType.Operator:
+			case SymbolKind.Method:
+			case SymbolKind.Operator:
 				result = GetMethodMarkup ((IMethod)entity);
 				break;
-			case EntityType.Constructor:
+			case SymbolKind.Constructor:
 				result = GetConstructorMarkup ((IMethod)entity);
 				break;
-			case EntityType.Destructor:
+			case SymbolKind.Destructor:
 				result = GetDestructorMarkup ((IMethod)entity);
 				break;
 			default:
@@ -190,7 +190,7 @@ namespace MonoDevelop.CSharp
 
 			switch (entity.Accessibility) {
 			case Accessibility.Internal:
-				if (entity.EntityType != EntityType.TypeDefinition)
+				if (entity.SymbolKind != SymbolKind.TypeDefinition)
 					result.Append (Highlight ("internal ", colorStyle.KeywordModifiers));
 				break;
 			case Accessibility.ProtectedAndInternal:
@@ -683,7 +683,7 @@ namespace MonoDevelop.CSharp
 
 			AppendExplicitInterfaces (result, method);
 
-			if (method.EntityType == EntityType.Operator) {
+			if (method.SymbolKind == SymbolKind.Operator) {
 				result.Append ("operator ");
 				result.Append (CSharpAmbience.GetOperator (method.Name));
 			} else {
@@ -785,7 +785,7 @@ namespace MonoDevelop.CSharp
 
 			AppendExplicitInterfaces (result, property);
 			
-			if (property.EntityType == EntityType.Indexer) {
+			if (property.SymbolKind == SymbolKind.Indexer) {
 				result.Append (Highlight ("this", colorStyle.KeywordAccessors));
 			} else {
 				result.Append (HighlightSemantically (CSharpAmbience.FilterName (property.Name), colorStyle.UserPropertyDeclaration));

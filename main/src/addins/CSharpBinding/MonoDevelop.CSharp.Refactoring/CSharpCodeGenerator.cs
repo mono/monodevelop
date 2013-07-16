@@ -671,7 +671,7 @@ namespace MonoDevelop.CSharp.Refactoring
 //					foreach (var type in options.ImplementingType.BaseTypes) {
 //						if (type.Kind == TypeKind.Interface)
 //							continue;
-//						if (type.Members.Any (m => m.Name == member.Name && member.EntityType == m.EntityType /* && DomMethod.ParameterListEquals (member.Parameters, m.Parameters)*/ )) {
+//						if (type.Members.Any (m => m.Name == member.Name && member.SymbolKind == m.SymbolKind /* && DomMethod.ParameterListEquals (member.Parameters, m.Parameters)*/ )) {
 //							isFromInterface = false;
 //							break;
 //						}
@@ -720,7 +720,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					} else {
 						AppendIndent (result);
 						bodyStartOffset = result.Length;
-						if (property.EntityType == EntityType.Indexer) {
+						if (property.SymbolKind == SymbolKind.Indexer) {
 							result.Append ("return base[");
 							if (property.Parameters.Count > 0)
 								result.Append (CSharpAmbience.FilterName (property.Parameters.First ().Name));
@@ -754,7 +754,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					} else {
 						AppendIndent (result);
 						bodyStartOffset = result.Length;
-						if (property.EntityType == EntityType.Indexer) {
+						if (property.SymbolKind == SymbolKind.Indexer) {
 							result.Append ("base[");
 							if (property.Parameters.Count > 0)
 								result.Append (CSharpAmbience.FilterName (property.Parameters.First ().Name));

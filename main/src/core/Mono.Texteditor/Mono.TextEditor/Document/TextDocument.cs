@@ -327,6 +327,10 @@ namespace Mono.TextEditor
 		
 		public char GetCharAt (int offset)
 		{
+			if (offset < 0)
+				throw new ArgumentException ("offset < 0");
+			if (offset >= TextLength)
+				throw new ArgumentException ("offset >= TextLength");
 			return buffer.GetCharAt (offset);
 		}
 

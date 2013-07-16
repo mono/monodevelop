@@ -47,6 +47,7 @@ using MonoDevelop.Ide.Extensions;
 using System.Linq;
 using System.Threading;
 using MonoDevelop.Ide.TypeSystem;
+using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using System.Text;
@@ -60,7 +61,10 @@ namespace MonoDevelop.Ide.Gui
 		
 		IWorkbenchWindow window;
 		TextEditorExtension editorExtension;
-		
+		ParsedDocument parsedDocument;
+		IProjectContent singleFileContext;
+		Mono.TextEditor.ITextEditorDataProvider provider = null;
+
 		const int ParseDelay = 600;
 
 		public IWorkbenchWindow Window {
@@ -78,6 +82,8 @@ namespace MonoDevelop.Ide.Gui
  		
 		public T GetContent<T> () where T : class
 		{
+			if (window == null)
+				return null;
 			//check whether the ViewContent can return the type directly
 			T ret = Window.ActiveViewContent.GetContent (typeof(T)) as T;
 			if (ret != null)
@@ -203,7 +209,6 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		IProjectContent singleFileContext;
 		public  IProjectContent ProjectContent {
 			get {
 				return Project != null ? TypeSystemService.GetProjectContext (Project) : GetProjectContext ();
@@ -216,7 +221,6 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		ParsedDocument parsedDocument;
 		public virtual ParsedDocument ParsedDocument {
 			get {
 				return parsedDocument;
@@ -292,7 +296,6 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		Mono.TextEditor.ITextEditorDataProvider provider = null;
 		public Mono.TextEditor.TextEditorData Editor {
 			get {
 				if (provider == null) {
@@ -514,23 +517,13 @@ namespace MonoDevelop.Ide.Gui
 			CancelParseTimeout ();
 			ClearTasks ();
 			TypeSystemService.RemoveSkippedfile (FileName);
-			if (window is SdiWorkspaceWindow)
-				((SdiWorkspaceWindow)window).DetachFromPathedDocument ();
-			window.Closed -= OnClosed;
-			window.ActiveViewContentChanged -= OnActiveViewContentChanged;
-			if (IdeApp.Workspace != null)
-				IdeApp.Workspace.ItemRemovedFromSolution -= OnEntryRemoved;
 
-			// Unsubscribe project events
-			if (window.ViewContent.Project != null)
-				window.ViewContent.Project.Modified -= HandleProjectModified;
 
 			try {
 				OnClosed (a);
 			} catch (Exception ex) {
 				LoggingService.LogError ("Exception while calling OnClosed.", ex);
 			}
-			DetachExtensionChain ();
 
 			// Parse the file when the document is closed. In this way if the document
 			// is closed without saving the changes, the saved compilation unit
@@ -545,9 +538,31 @@ namespace MonoDevelop.Ide.Gui
 				dom = null;
 			}*/
 			
-			parsedDocument = null;
-			provider = null;
 			Counters.OpenDocuments--;
+		}
+
+		internal void DisposeDocument ()
+		{
+			DetachExtensionChain ();
+			ClearAnnotations ();
+			if (window is SdiWorkspaceWindow)
+				((SdiWorkspaceWindow)window).DetachFromPathedDocument ();
+			window.Closed -= OnClosed;
+			window.ActiveViewContentChanged -= OnActiveViewContentChanged;
+			if (IdeApp.Workspace != null)
+				IdeApp.Workspace.ItemRemovedFromSolution -= OnEntryRemoved;
+
+			// Unsubscribe project events
+			if (window.ViewContent.Project != null)
+				window.ViewContent.Project.Modified -= HandleProjectModified;
+			window.ViewsChanged += HandleViewsChanged;
+			window = null;
+
+			parsedDocument = null;
+			singleFileContext = null;
+			provider = null;
+			views = null;
+			viewsRO = null;
 		}
 #region document tasks
 		object lockObj = new object ();
@@ -756,14 +771,15 @@ namespace MonoDevelop.Ide.Gui
 					singleFileContext = GetProjectContext ().AddOrUpdateFiles (parsedDocument.ParsedFile);
 				}
 			} finally {
+
 				OnDocumentParsed (EventArgs.Empty);
 			}
 			return this.parsedDocument;
 		}
 
-		static readonly Lazy<IUnresolvedAssembly> mscorlib = new Lazy<IUnresolvedAssembly> ( () => new CecilLoader ().LoadAssemblyFile (typeof (object).Assembly.Location));
-		static readonly Lazy<IUnresolvedAssembly> systemCore = new Lazy<IUnresolvedAssembly>( () => new CecilLoader ().LoadAssemblyFile (typeof (System.Linq.Enumerable).Assembly.Location));
-		static readonly Lazy<IUnresolvedAssembly> system = new Lazy<IUnresolvedAssembly>( () => new CecilLoader ().LoadAssemblyFile (typeof (System.Uri).Assembly.Location));
+		static readonly Lazy<IUnresolvedAssembly> mscorlib = new Lazy<IUnresolvedAssembly> ( () => new IkvmLoader ().LoadAssemblyFile (typeof (object).Assembly.Location));
+		static readonly Lazy<IUnresolvedAssembly> systemCore = new Lazy<IUnresolvedAssembly>( () => new IkvmLoader ().LoadAssemblyFile (typeof (System.Linq.Enumerable).Assembly.Location));
+		static readonly Lazy<IUnresolvedAssembly> system = new Lazy<IUnresolvedAssembly>( () => new IkvmLoader ().LoadAssemblyFile (typeof (System.Uri).Assembly.Location));
 
 		static IUnresolvedAssembly Mscorlib { get { return mscorlib.Value; } }
 		static IUnresolvedAssembly SystemCore { get { return systemCore.Value; } }
@@ -799,6 +815,8 @@ namespace MonoDevelop.Ide.Gui
 			// very inefficient. Do it after a small delay instead, so several changes can
 			// be parsed at the same time.
 			string currentParseFile = FileName;
+			if (string.IsNullOrEmpty (currentParseFile))
+				return;
 			CancelParseTimeout ();
 			
 			parseTimeout = GLib.Timeout.Add (ParseDelay, delegate {
@@ -904,7 +922,6 @@ namespace MonoDevelop.Ide.Gui
 //			return MonoDevelop.Projects.CodeGeneration.CodeGenerator.CreateGenerator (Editor.Document.MimeType, 
 //				Editor.Options.TabsToSpaces, Editor.Options.TabSize, Editor.EolMarker);
 //		}
-
 	}
 	
 	

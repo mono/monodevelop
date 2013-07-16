@@ -53,7 +53,7 @@ namespace MonoDevelop.VersionControl.Views
 		ListStore logstore = new ListStore (typeof (Revision));
 		FileTreeView treeviewFiles;
 		TreeStore changedpathstore;
-		Gtk.Button revertButton, revertToButton;
+		Gtk.Button revertButton, revertToButton, refreshButton;
 		SearchEntry searchEntry;
 		string currentFilter;
 		
@@ -131,6 +131,10 @@ namespace MonoDevelop.VersionControl.Views
 			revertToButton = new DocumentToolButton ("vc-revert-command", GettextCatalog.GetString ("Revert to this revision"));
 //			revertToButton.Sensitive = false;
 			revertToButton.Clicked += new EventHandler (RevertToRevisionClicked);
+
+			refreshButton = new DocumentToolButton (Gtk.Stock.Refresh, GettextCatalog.GetString ("Refresh"));
+//			refreshButton.Sensitive = false;
+			refreshButton.Clicked += new EventHandler (RefreshClicked);
 
 			searchEntry = new SearchEntry ();
 			searchEntry.WidthRequest = 200;
@@ -253,6 +257,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			toolbar.Add (revertButton);
 			toolbar.Add (revertToButton);
+			toolbar.Add (refreshButton);
 
 			Gtk.HBox a = new Gtk.HBox ();
 			a.PackEnd (searchEntry, false, false, 0);
@@ -281,18 +286,26 @@ namespace MonoDevelop.VersionControl.Views
 			scrolledLog.Hide ();
 		}
 		
-		void RevertToRevisionClicked (object src, EventArgs args) {
+		void RevertToRevisionClicked (object src, EventArgs args)
+		{
 			Revision d = SelectedRevision;
 			if (RevertRevisionsCommands.RevertToRevision (info.Repository, info.Item.Path, d, false))
 				VersionControlService.SetCommitComment (info.Item.Path, 
 				  string.Format ("(Revert to revision {0})", d.ToString ()), true);
 		}
 		
-		void RevertRevisionClicked (object src, EventArgs args) {
+		void RevertRevisionClicked (object src, EventArgs args)
+		{
 			Revision d = SelectedRevision;
 			if (RevertRevisionsCommands.RevertRevision (info.Repository, info.Item.Path, d, false))
 				VersionControlService.SetCommitComment (info.Item.Path, 
 				  string.Format ("(Revert revision {0})", d.ToString ()), true);
+		}
+
+		void RefreshClicked (object src, EventArgs args)
+		{
+			ShowLoading ();
+			info.Start (true);
 		}
 
 		void HandleTreeviewFilesDiffLineActivated (object sender, EventArgs e)

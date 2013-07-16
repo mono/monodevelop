@@ -434,6 +434,12 @@ namespace MonoDevelop.Ide.Desktop
 			return ((bool?) window.Data ["isFullScreen"]) ?? false;
 		}
 
+		public virtual bool IsModalDialogRunning ()
+		{
+			var windows = Gtk.Window.ListToplevels ();
+			return windows.Any (w => w.Modal && w.Visible);
+		}
+
 		public virtual void SetIsFullscreen (Gtk.Window window, bool isFullscreen)
 		{
 			window.Data ["isFullScreen"] = isFullscreen;

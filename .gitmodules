@@ -24,7 +24,7 @@
 	url = git://github.com/mono/Newtonsoft.Json.git
 [submodule "main/external/nrefactory"]
 	path = main/external/nrefactory
-	url = git://github.com/icsharpcode/NRefactory.git
+	url = git://github.com:mono-soc-2013/NRefactory.git
 [submodule "main/external/mono-addins"]
 	path = main/external/mono-addins
 	url = git://github.com/mono/mono-addins.git
@@ -33,4 +33,4 @@
 	url = git://github.com/mono/ikvm-fork.git
 [submodule "main/external/debugger-libs"]
 	path = main/external/debugger-libs
-	url = git@github.com:mono/debugger-libs.git
+	url = git://github.com/mono/debugger-libs.git

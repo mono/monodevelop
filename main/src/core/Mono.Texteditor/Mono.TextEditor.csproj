@@ -216,6 +216,14 @@
     <Compile Include="Mono.TextEditor\ITextPasteHandler.cs" />
     <Compile Include="Mono.TextEditor.Vi\NewViEditMode.cs" />
     <Compile Include="Mono.TextEditor.Vi\ViStatusArea.cs" />
+    <Compile Include="Mono.TextEditor\MarginMarker.cs" />
+    <Compile Include="Mono.TextEditor\UnderlineMarker.cs" />
+    <Compile Include="Mono.TextEditor\IBackgroundMarker.cs" />
+    <Compile Include="Mono.TextEditor\LineBackgroundMarker.cs" />
+    <Compile Include="Mono.TextEditor\IIconBarMarker.cs" />
+    <Compile Include="Mono.TextEditor\UrlMarker.cs" />
+    <Compile Include="Mono.TextEditor\StyleTextLineMarker.cs" />
+    <Compile Include="Mono.TextEditor\Standalone\UnicodeNewline.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mono.TextEditor.dll.config">

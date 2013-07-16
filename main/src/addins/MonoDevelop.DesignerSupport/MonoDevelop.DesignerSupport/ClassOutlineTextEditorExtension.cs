@@ -92,7 +92,9 @@ namespace MonoDevelop.DesignerSupport
 			if (Document != null)
 				Document.DocumentParsed -= UpdateDocumentOutline;
 			RemoveRefillOutlineStoreTimeout ();
-
+			lastCU = null;
+			settings = null;
+			comparer = null;
 			base.Dispose ();
 		}
 
@@ -257,10 +259,14 @@ namespace MonoDevelop.DesignerSupport
 				return;
 			var w = (ScrolledWindow)outlineTreeView.Parent;
 			w.Destroy ();
-			outlineTreeModelSort.Dispose ();
-			outlineTreeModelSort = null;
-			outlineTreeStore.Dispose ();
-			outlineTreeStore = null;
+			if (outlineTreeModelSort != null) {
+				outlineTreeModelSort.Dispose ();
+				outlineTreeModelSort = null;
+			}
+			if (outlineTreeStore != null) {
+				outlineTreeStore.Dispose ();
+				outlineTreeStore = null;
+			}
 			outlineTreeView = null;
 			settings = null;
 			foreach (var tw in toolbarWidgets)

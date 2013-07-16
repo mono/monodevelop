@@ -66,7 +66,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				var helpTree = MonoDevelop.Projects.HelpService.HelpTree;
 				if (helpTree == null)
 					return null;
-				if (entity.EntityType == EntityType.TypeDefinition) {
+				if (entity.SymbolKind == SymbolKind.TypeDefinition) {
 					doc = helpTree.GetHelpXml (idString);
 				} else {
 					var parentId = entity.DeclaringTypeDefinition.GetIdString ();
@@ -95,20 +95,20 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public XmlNode SelectNode (XmlDocument doc, IEntity entity)
 		{
-			switch (entity.EntityType) {
-			case EntityType.None:
-			case EntityType.TypeDefinition:
-			case EntityType.Field:
-			case EntityType.Property:
-			case EntityType.Indexer:
-			case EntityType.Event:
+			switch (entity.SymbolKind) {
+			case SymbolKind.None:
+			case SymbolKind.TypeDefinition:
+			case SymbolKind.Field:
+			case SymbolKind.Property:
+			case SymbolKind.Indexer:
+			case SymbolKind.Event:
 				return doc.SelectSingleNode ("/Type/Members/Member[@MemberName='" + entity.Name + "']");
 			
-			case EntityType.Method:
-			case EntityType.Operator:
-			case EntityType.Destructor:
+			case SymbolKind.Method:
+			case SymbolKind.Operator:
+			case SymbolKind.Destructor:
 				return SelectOverload (doc.SelectNodes ("/Type/Members/Member[@MemberName='" + entity.Name + "']"), (IParameterizedMember)entity);
-			case EntityType.Constructor:
+			case SymbolKind.Constructor:
 				return SelectOverload (doc.SelectNodes ("/Type/Members/Member[@MemberName='.ctor']"), (IParameterizedMember)entity);
 				
 			default:

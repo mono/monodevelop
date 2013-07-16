@@ -364,6 +364,9 @@ namespace MonoDevelop.VersionControl.Views
 			Pango.Layout layout;
 
 			double dragPosition = -1;
+
+			TextDocument document;
+
 			public BlameRenderer (BlameWidget widget)
 			{
 				this.widget = widget;
@@ -371,8 +374,9 @@ namespace MonoDevelop.VersionControl.Views
 				annotations = new List<Annotation> ();
 				UpdateAnnotations (null, null);
 	//			widget.Document.Saved += UpdateAnnotations;
-				widget.Editor.Document.TextReplacing += EditorDocumentTextReplacing;
-				widget.Editor.Document.LineChanged += EditorDocumentLineChanged;
+				document = widget.Editor.Document;
+				document.TextReplacing += EditorDocumentTextReplacing;
+				document.LineChanged += EditorDocumentLineChanged;
 				widget.vScrollBar.ValueChanged += delegate {
 					QueueDraw ();
 				};
@@ -394,8 +398,11 @@ namespace MonoDevelop.VersionControl.Views
 			{
 				base.OnDestroyed ();
 //				widget.Document.Saved -= UpdateAnnotations;
-				widget.Editor.Document.TextReplacing -= EditorDocumentTextReplacing;
-				widget.Editor.Document.LineChanged -= EditorDocumentLineChanged;
+				if (document != null) { 
+					document.TextReplacing -= EditorDocumentTextReplacing;
+					document.LineChanged -= EditorDocumentLineChanged;
+					document = null;
+				}
 				if (layout != null) {
 					layout.Dispose ();
 					layout = null;

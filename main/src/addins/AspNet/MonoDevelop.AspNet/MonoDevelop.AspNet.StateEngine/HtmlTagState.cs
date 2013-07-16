@@ -66,7 +66,7 @@ namespace MonoDevelop.AspNet.StateEngine
 		
 		public override State PushChar (char c, IParseContext context, ref string rollback)
 		{
-			if (context.CurrentStateLength == 0 && context.PreviousState is HtmlScriptBodyState)
+			if (context.CurrentStateLength == 1 && context.PreviousState is HtmlScriptBodyState)
 				return Parent;
 			
 			//NOTE: This is (mostly) duplicated in HtmlClosingTagState

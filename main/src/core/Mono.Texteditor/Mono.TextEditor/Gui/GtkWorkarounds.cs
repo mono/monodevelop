@@ -54,16 +54,43 @@ namespace Mono.TextEditor
 		static extern bool objc_msgSend_bool (IntPtr klass, IntPtr selector);
 		
 		[DllImport (LIBOBJC, EntryPoint = "objc_msgSend")]
-		static extern bool objc_msgSend_int_int (IntPtr klass, IntPtr selector, int arg);
+		static extern int objc_msgSend_NSInt32_NSInt32 (IntPtr klass, IntPtr selector, int arg);
+
+		[DllImport (LIBOBJC, EntryPoint = "objc_msgSend")]
+		static extern long objc_msgSend_NSInt64_NSInt64 (IntPtr klass, IntPtr selector, long arg);
 		
 		[DllImport (LIBOBJC, EntryPoint = "objc_msgSend")]
-		static extern int objc_msgSend_int (IntPtr klass, IntPtr selector);
+		static extern uint objc_msgSend_NSUInt32 (IntPtr klass, IntPtr selector);
+
+		[DllImport (LIBOBJC, EntryPoint = "objc_msgSend")]
+		static extern ulong objc_msgSend_NSUInt64 (IntPtr klass, IntPtr selector);
 		
 		[DllImport (LIBOBJC, EntryPoint = "objc_msgSend_stret")]
-		static extern void objc_msgSend_RectangleF (out RectangleF rect, IntPtr klass, IntPtr selector);
+		static extern void objc_msgSend_CGRect32 (out CGRect32 rect, IntPtr klass, IntPtr selector);
+
+		[DllImport (LIBOBJC, EntryPoint = "objc_msgSend_stret")]
+		static extern void objc_msgSend_CGRect64 (out CGRect64 rect, IntPtr klass, IntPtr selector);
 		
 		[DllImport ("libgtk-quartz-2.0.dylib")]
 		static extern IntPtr gdk_quartz_window_get_nswindow (IntPtr window);
+
+		struct CGRect32
+		{
+			public float X, Y, Width, Height;
+		}
+
+		struct CGRect64
+		{
+			public double X, Y, Width, Height;
+
+			public CGRect64 (CGRect32 rect32)
+			{
+				X = rect32.X;
+				Y = rect32.Y;
+				Width = rect32.Width;
+				Height = rect32.Height;
+			}
+		}
 
 		static IntPtr cls_NSScreen;
 		static IntPtr sel_screens, sel_objectEnumerator, sel_nextObject, sel_frame, sel_visibleFrame,
@@ -141,7 +168,6 @@ namespace Mono.TextEditor
 			IntPtr iter = objc_msgSend_IntPtr (array, sel_objectEnumerator);
 			Gdk.Rectangle ygeometry = screen.GetMonitorGeometry (monitor);
 			Gdk.Rectangle xgeometry = screen.GetMonitorGeometry (0);
-			RectangleF visible, frame;
 			IntPtr scrn;
 			int i = 0;
 			
@@ -150,9 +176,19 @@ namespace Mono.TextEditor
 			
 			if (scrn == IntPtr.Zero)
 				return screen.GetMonitorGeometry (monitor);
-			
-			objc_msgSend_RectangleF (out visible, scrn, sel_visibleFrame);
-			objc_msgSend_RectangleF (out frame, scrn, sel_frame);
+
+			CGRect64 visible, frame;
+
+			if (IntPtr.Size == 8) {
+				objc_msgSend_CGRect64 (out visible, scrn, sel_visibleFrame);
+				objc_msgSend_CGRect64 (out frame, scrn, sel_frame);
+			} else {
+				CGRect32 visible32, frame32;
+				objc_msgSend_CGRect32 (out visible32, scrn, sel_visibleFrame);
+				objc_msgSend_CGRect32 (out frame32, scrn, sel_frame);
+				visible = new CGRect64 (visible32);
+				frame = new CGRect64 (frame32);
+			}
 			
 			// Note: Frame and VisibleFrame rectangles are relative to monitor 0, but we need absolute
 			// coordinates.
@@ -165,11 +201,11 @@ namespace Mono.TextEditor
 			//
 			// We need to swap the Y offset with the menu height because our callers expect the Y offset
 			// to be from the top of the screen, not from the bottom of the screen.
-			float x, y, width, height;
+			double x, y, width, height;
 			
 			if (visible.Height < frame.Height) {
-				float dockHeight = visible.Y - frame.Y;
-				float menubarHeight = (frame.Height - visible.Height) - dockHeight;
+				double dockHeight = visible.Y - frame.Y;
+				double menubarHeight = (frame.Height - visible.Height) - dockHeight;
 				
 				height = frame.Height - menubarHeight - dockHeight;
 				y = ygeometry.Y + menubarHeight;
@@ -188,7 +224,11 @@ namespace Mono.TextEditor
 		static void MacRequestAttention (bool critical)
 		{
 			int kind = critical?  NSCriticalRequest : NSInformationalRequest;
-			objc_msgSend_int_int (sharedApp, sel_requestUserAttention, kind);
+			if (IntPtr.Size == 8) {
+				objc_msgSend_NSInt64_NSInt64 (sharedApp, sel_requestUserAttention, kind);
+			} else {
+				objc_msgSend_NSInt32_NSInt32 (sharedApp, sel_requestUserAttention, kind);
+			}
 		}
 
 		// Note: we can't reuse RectangleF because the layout is different...
@@ -329,7 +369,12 @@ namespace Mono.TextEditor
 		{
 			if (Platform.IsMac) {
 				Gdk.ModifierType mtype = Gdk.ModifierType.None;
-				int mod = objc_msgSend_int (cls_NSEvent, sel_modifierFlags);
+				ulong mod;
+				if (IntPtr.Size == 8) {
+					mod = objc_msgSend_NSUInt64 (cls_NSEvent, sel_modifierFlags);
+				} else {
+					mod = objc_msgSend_NSUInt32 (cls_NSEvent, sel_modifierFlags);
+				}
 				if ((mod & (1 << 17)) != 0)
 					mtype |= Gdk.ModifierType.ShiftMask;
 				if ((mod & (1 << 18)) != 0)
@@ -1029,6 +1074,86 @@ namespace Mono.TextEditor
 			iter = TreeIter.New (intPtr);
 			Marshal.FreeHGlobal (intPtr);
 			return result;
+		}
+		
+		static bool supportsHiResIcons = true;
+
+		[DllImport ("libgtk-quartz-2.0.dylib")]
+		static extern void gtk_icon_source_set_scale (IntPtr source, double scale);
+		
+		[DllImport ("libgtk-quartz-2.0.dylib")]
+		static extern void gtk_icon_source_set_scale_wildcarded (IntPtr source, bool setting);
+		
+		[DllImport (PangoUtil.LIBGTK)]
+		static extern double gtk_widget_get_scale_factor (IntPtr widget);
+
+		[DllImport (PangoUtil.LIBGOBJECT)]
+		static extern IntPtr g_object_get_data (IntPtr source, string name);
+
+		public static bool SetSourceScale (Gtk.IconSource source, double scale)
+		{
+			if (!supportsHiResIcons)
+				return false;
+
+			try {
+				gtk_icon_source_set_scale (source.Handle, scale);
+				return true;
+			} catch (DllNotFoundException) {
+			} catch (EntryPointNotFoundException) {
+			}
+			supportsHiResIcons = false;
+			return false;
+		}
+		
+		public static bool SetSourceScaleWildcarded (Gtk.IconSource source, bool setting)
+		{
+			if (!supportsHiResIcons)
+				return false;
+
+			try {
+				gtk_icon_source_set_scale_wildcarded (source.Handle, setting);
+				return true;
+			} catch (DllNotFoundException) {
+			} catch (EntryPointNotFoundException) {
+			}
+			supportsHiResIcons = false;
+			return false;
+		}
+
+		public static Gdk.Pixbuf Get2xVariant (Gdk.Pixbuf px)
+		{
+			if (!supportsHiResIcons)
+				return null;
+
+			try {
+				IntPtr res = g_object_get_data (px.Handle, "gdk-pixbuf-2x-variant");
+				if (res != IntPtr.Zero && res != px.Handle)
+					return new Gdk.Pixbuf (res);
+				else
+					return null;
+			} catch (DllNotFoundException) {
+			} catch (EntryPointNotFoundException) {
+			}
+			supportsHiResIcons = false;
+			return null;
+		}
+
+		public static void Set2xVariant (Gdk.Pixbuf px, Gdk.Pixbuf variant2x)
+		{
+		}
+		
+		public static double GetScaleFactor (Gtk.Widget w)
+		{
+			if (!supportsHiResIcons)
+				return 1;
+
+			try {
+				return gtk_widget_get_scale_factor (w.Handle);
+			} catch (DllNotFoundException) {
+			} catch (EntryPointNotFoundException) {
+			}
+			supportsHiResIcons = false;
+			return 1;
 		}
 	}
 	

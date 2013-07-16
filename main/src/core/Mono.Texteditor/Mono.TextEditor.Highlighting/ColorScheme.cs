@@ -110,6 +110,9 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("Usages(Rectangle)", VSSetting="color=MarkerFormatDefinition/HighlightedReference/Background,secondcolor=MarkerFormatDefinition/HighlightedReference/Background")]
 		public AmbientColor UsagesRectangle { get; private set; }
 
+		[ColorDescription("Changing usages(Rectangle)", VSSetting="color=MarkerFormatDefinition/HighlightedReference/Background,secondcolor=MarkerFormatDefinition/HighlightedReference/Background")]
+		public AmbientColor ChangingUsagesRectangle { get; private set; }
+
 		[ColorDescription("Breakpoint Marker")]
 		public AmbientColor BreakpointMarker { get; private set; }
 
@@ -158,26 +161,32 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("Message Bubble Error Marker")]
 		public AmbientColor MessageBubbleErrorMarker { get; private set; }
 
-		[ColorDescription("Message Bubble Error Tag Text")]
-		public AmbientColor MessageBubbleErrorTagText { get; private set; }
-
 		[ColorDescription("Message Bubble Error Tag")]
 		public AmbientColor MessageBubbleErrorTag { get; private set; }
 
 		[ColorDescription("Message Bubble Error Line")]
 		public AmbientColor MessageBubbleErrorLine { get; private set; }
 
+		[ColorDescription("Message Bubble Error Counter")]
+		public AmbientColor MessageBubbleErrorCounter { get; private set; }
+
+		[ColorDescription("Message Bubble Error IconMargin")]
+		public AmbientColor MessageBubbleErrorIconMargin { get; private set; }
+
 		[ColorDescription("Message Bubble Warning Marker")]
 		public AmbientColor MessageBubbleWarningMarker { get; private set; }
-
-		[ColorDescription("Message Bubble Warning Tag Text")]
-		public AmbientColor MessageBubbleWarningTagText { get; private set; }
 
 		[ColorDescription("Message Bubble Warning Tag")]
 		public AmbientColor MessageBubbleWarningTag { get; private set; }
 
 		[ColorDescription("Message Bubble Warning Line")]
 		public AmbientColor MessageBubbleWarningLine { get; private set; }
+
+		[ColorDescription("Message Bubble Warning Counter")]
+		public AmbientColor MessageBubbleWarningCounter { get; private set; }
+
+		[ColorDescription("Message Bubble Warning IconMargin")]
+		public AmbientColor MessageBubbleWarningIconMargin { get; private set; }
 		#endregion
 
 		#region Text Colors

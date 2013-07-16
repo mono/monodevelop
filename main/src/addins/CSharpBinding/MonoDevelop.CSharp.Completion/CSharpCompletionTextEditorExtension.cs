@@ -885,10 +885,110 @@ namespace MonoDevelop.CSharp.Completion
 					
 			}
 
+			class ImportSymbolCompletionData : CompletionData
+			{
+				IType type;
+				ParsedDocument unit;
+				MonoDevelop.Ide.Gui.Document doc;
+				bool useFullName;
+
+				public IType Type {
+					get { return this.type; }
+				}
+
+				public ImportSymbolCompletionData (MonoDevelop.Ide.Gui.Document doc, bool useFullName, IType type)
+				{
+					this.doc = doc;
+					this.useFullName = useFullName;
+					this.type = type;
+					this.unit = doc.ParsedDocument;
+				}
+
+				bool initialized = false;
+				bool generateUsing, insertNamespace;
+
+				void Initialize ()
+				{
+					if (initialized)
+						return;
+					initialized = true;
+					if (string.IsNullOrEmpty (type.Namespace)) 
+						return;
+					generateUsing = !useFullName;
+					insertNamespace = useFullName;
+				}
+
+				#region IActionCompletionData implementation
+				public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
+				{
+					Initialize ();
+					string text = insertNamespace ? type.Namespace + "." + type.Name : type.Name;
+					if (text != GetCurrentWord (window)) {
+						if (window.WasShiftPressed && generateUsing) 
+							text = type.Namespace + "." + text;
+						window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, GetCurrentWord (window), text);
+					}
+
+					if (!window.WasShiftPressed && generateUsing) {
+						var generator = CodeGenerator.CreateGenerator (doc);
+						if (generator != null) {
+							generator.AddGlobalNamespaceImport (doc, type.Namespace);
+							// reparse
+							doc.UpdateParseDocument ();
+						}
+					}
+				}
+				#endregion
+
+				#region ICompletionData implementation
+				public override IconId Icon {
+					get {
+						return type.GetStockIcon ();
+					}
+				}
+
+				public override string DisplayText {
+					get {
+						return type.Name;
+					}
+				}
+
+				string displayDescription = null;
+				public override string DisplayDescription {
+					get {
+						if (displayDescription == null) {
+							Initialize ();
+							if (generateUsing || insertNamespace) {
+								displayDescription = string.Format (GettextCatalog.GetString ("(from '{0}')"), type.Namespace);
+							} else {
+								displayDescription = "";
+							}
+						}
+						return displayDescription;
+					}
+				}
+
+				public override string Description {
+					get {
+						Initialize ();
+						if (generateUsing)
+							return string.Format (GettextCatalog.GetString ("Add namespace import '{0}'"), type.Namespace);
+						return null;
+					}
+				}
+
+				public override string CompletionText {
+					get {
+						return type.Name;
+					}
+				}
+				#endregion
+			}
+
+
 			ICompletionData ICompletionDataFactory.CreateImportCompletionData(IType type, bool useFullName)
 			{
-				// atm only used in #develop
-				throw new NotImplementedException ();
+				return new ImportSymbolCompletionData (ext.Document, useFullName, type);
 			}
 
 		}

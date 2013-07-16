@@ -654,30 +654,72 @@ namespace MonoDevelop.Components
 
 	public class QuartzSurface : Cairo.Surface
 	{
-		[DllImport ("libcairo-2.dll", CallingConvention = CallingConvention.Cdecl)]
-		public static extern IntPtr cairo_quartz_surface_create(Cairo.Format format, uint width, uint height);
+		const string CoreGraphics = "/System/Library/Frameworks/ApplicationServices.framework/Frameworks/CoreGraphics.framework/CoreGraphics";
 
 		[DllImport ("libcairo-2.dll", CallingConvention = CallingConvention.Cdecl)]
-		public static extern IntPtr cairo_quartz_surface_get_cg_context(IntPtr surface);
+		static extern IntPtr cairo_quartz_surface_create (Cairo.Format format, uint width, uint height);
 
 		[DllImport ("libcairo-2.dll", CallingConvention = CallingConvention.Cdecl)]
-		public static extern IntPtr cairo_get_target(IntPtr context);
+		static extern IntPtr cairo_quartz_surface_get_cg_context (IntPtr surface);
 
-		[DllImport ("/System/Library/Frameworks/ApplicationServices.framework/Frameworks/CoreGraphics.framework/CoreGraphics", CallingConvention = CallingConvention.Cdecl)]
-		public static extern System.Drawing.RectangleF CGContextConvertRectToDeviceSpace (IntPtr contextRef, System.Drawing.RectangleF cgrect);
+		[DllImport ("libcairo-2.dll", CallingConvention = CallingConvention.Cdecl)]
+		static extern IntPtr cairo_get_target (IntPtr context);
+
+		[DllImport (CoreGraphics, EntryPoint="CGContextConvertRectToDeviceSpace", CallingConvention = CallingConvention.Cdecl)]
+		static extern CGRect32 CGContextConvertRectToDeviceSpace32 (IntPtr contextRef, CGRect32 cgrect);
+
+		[DllImport (CoreGraphics, EntryPoint="CGContextConvertRectToDeviceSpace", CallingConvention = CallingConvention.Cdecl)]
+		static extern CGRect64 CGContextConvertRectToDeviceSpace64 (IntPtr contextRef, CGRect64 cgrect);
 
 		public static double GetRetinaScale (Cairo.Context context)  {
 			if (!Platform.IsMac)
 				return 1;
 
-			var rect = new System.Drawing.RectangleF ();
 			// Use C call to avoid dispose bug in cairo bindings for OSX
 			var cgContext = cairo_quartz_surface_get_cg_context (cairo_get_target (context.Handle));
-			var unitRect = new System.Drawing.RectangleF (1, 1, 1, 1);
 
-			rect = CGContextConvertRectToDeviceSpace (cgContext, unitRect);
+			if (IntPtr.Size == 8)
+				return CGContextConvertRectToDeviceSpace64 (cgContext, CGRect64.Unit).X;
 
-			return rect.X;
+			return CGContextConvertRectToDeviceSpace32 (cgContext, CGRect32.Unit).X;
+		}
+
+		struct CGRect32
+		{
+			public CGRect32 (float x, float y, float width, float height)
+			{
+				this.X = x;
+				this.Y = y;
+				this.Width = width;
+				this.Height = height;
+			}
+
+			public float X, Y, Width, Height;
+
+			public static CGRect32 Unit {
+				get {
+					return new CGRect32 (1, 1, 1, 1);
+				}
+			}
+		}
+
+		struct CGRect64
+		{
+			public CGRect64 (double x, double y, double width, double height)
+			{
+				this.X = x;
+				this.Y = y;
+				this.Width = width;
+				this.Height = height;
+			}
+
+			public double X, Y, Width, Height;
+
+			public static CGRect64 Unit {
+				get {
+					return new CGRect64 (1, 1, 1, 1);
+				}
+			}
 		}
 
 		public QuartzSurface (Cairo.Format format, int width, int height)

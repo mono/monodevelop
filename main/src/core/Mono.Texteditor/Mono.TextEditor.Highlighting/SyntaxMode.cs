@@ -412,15 +412,9 @@ namespace Mono.TextEditor.Highlighting
 					Span cur = CurSpan;
 					if (cur != null) {
 						if (cur.Escape != null) {
-							bool mismatch = false;
-							for (int j = 0; j < cur.Escape.Length; j++) {
-								if (textIndex + j >= CurText.Length || CurText [textIndex + j] != cur.Escape [j]) {
-									mismatch = true;
-									break;
-								}
-							}
-							if (!mismatch) {
-								int j = i + cur.Escape.Length - 1;
+							RegexMatch match = cur.Escape.TryMatch(CurText, textIndex);
+							if (match.Success) {
+								int j = i + match.Length - 1;
 								ParseChar (ref i, CurText [textIndex]);
 								i = j;
 								continue;
@@ -651,6 +645,7 @@ namespace Mono.TextEditor.Highlighting
 				length = System.Math.Min (doc.TextLength - offset, length);
 				curChunk = new Chunk (offset, 0, GetSpanStyle ());
 				spanParser.ParseSpans (offset, length);
+				curChunk.SpanStack = spanParser.SpanStack;
 				curChunk.Length = offset + length - curChunk.Offset;
 				if (curChunk.Length > 0) {
 					curChunk.Style = GetStyle (curChunk) ?? GetSpanStyle ();

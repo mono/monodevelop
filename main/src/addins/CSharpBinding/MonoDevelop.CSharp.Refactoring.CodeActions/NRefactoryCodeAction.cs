@@ -53,6 +53,31 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			using (var script = context.StartScript ())
 				act.Run (script);
 		}
+
+		/// <summary>
+		/// All the sibling actions of this action, ie those actions which represent the same kind
+		/// of fix. This list includes the current action. 
+		/// </summary>
+		/// <value>The sibling actions.</value>
+		public IList<CodeAction> SiblingActions { get; set; }
+		
+		public override bool SupportsBatchRunning {
+			get{
+				return SiblingActions != null && SiblingActions.Count > 1;
+			}
+		}
+		
+		public override void BatchRun (Document document, TextLocation loc)
+		{
+			base.BatchRun (document, loc);
+			var context = new MDRefactoringContext (document, loc);
+			using (var script = context.StartScript ()) {
+				foreach (var action in SiblingActions) {
+					context.SetLocation (action.Start);
+					action.Run (script);
+				}
+			}
+		}
 	}
 	
 }

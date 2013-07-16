@@ -126,11 +126,24 @@ namespace MonoDevelop.CodeActions
 					? "_" + (mnemonic++ % 10).ToString () + " " + escapedLabel
 						: "  " + escapedLabel;
 				var menuItem = new Gtk.MenuItem (label);
-				menuItem.Activated += new ContextActionRunner (fix, document, loc).Run;
-				menuItem.Activated += delegate {
+				var subMenu = new Gtk.Menu ();
+				var thisInstanceMenuItem = new Gtk.MenuItem (GettextCatalog.GetString ("This instance"));
+				thisInstanceMenuItem.Activated += new ContextActionRunner (fix, document, loc).Run;
+				thisInstanceMenuItem.Activated += delegate {
 					ConfirmUsage (fix.IdString);
 					menu.Destroy ();
 				};
+				subMenu.Add (thisInstanceMenuItem);
+				if (fix.SupportsBatchRunning) {
+					var batchRunMenuItem = new Gtk.MenuItem (GettextCatalog.GetString ("All in this file"));
+					batchRunMenuItem.Activated += delegate {
+						ConfirmUsage (fix.IdString);
+						menu.Destroy ();
+					};
+					batchRunMenuItem.Activated += new ContextActionRunner (fix, document, loc).BatchRun;
+					subMenu.Add (batchRunMenuItem);
+				}
+				menuItem.Submenu = subMenu;
 				menu.Add (menuItem);
 				items++;
 			}
@@ -300,6 +313,11 @@ namespace MonoDevelop.CodeActions
 			public void Run (object sender, EventArgs e)
 			{
 				act.Run (document, loc);
+			}
+			
+			public void BatchRun (object sender, EventArgs e)
+			{
+				act.BatchRun (document, loc);
 			}
 		}
 		

@@ -324,9 +324,6 @@ namespace MonoDevelop.Ide.Gui.Content
 					break;
 				pos++;
 			}
-			// for named arguments invoke(arg:<Expr>);
-			if (pos + 1 < len && Editor.GetCharAt (pos) == ':' && Editor.GetCharAt (pos + 1) != ':') 
-				pos++;
 			wlen = pos - cpos;
 			return true;
 		}

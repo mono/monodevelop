@@ -35,7 +35,6 @@ using System.CodeDom;
 using System.CodeDom.Compiler;
 using Microsoft.CSharp;
 using ICSharpCode.NRefactory.CSharp;
-using Mono.Cecil;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 
@@ -60,13 +59,13 @@ namespace MonoDevelop.CSharp
 		}
 		
 		static readonly Lazy<IUnresolvedAssembly> mscorlib = new Lazy<IUnresolvedAssembly>(
-			delegate {
-			return new CecilLoader().LoadAssemblyFile(typeof(object).Assembly.Location);
+			delegate {					
+			return new IkvmLoader ().LoadAssemblyFile(typeof(object).Assembly.Location);
 		});
 		
 		static readonly Lazy<IUnresolvedAssembly> systemCore = new Lazy<IUnresolvedAssembly>(
 			delegate {
-			return new CecilLoader().LoadAssemblyFile(typeof(System.Linq.Enumerable).Assembly.Location);
+			return new IkvmLoader ().LoadAssemblyFile(typeof(System.Linq.Enumerable).Assembly.Location);
 		});
 
 		static readonly Lazy<ICompilation> Compilation = new Lazy<ICompilation>(

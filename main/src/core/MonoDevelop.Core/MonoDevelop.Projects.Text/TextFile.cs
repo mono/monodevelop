@@ -73,36 +73,38 @@ namespace MonoDevelop.Projects.Text
 			tf.Read (fileName, encoding);
 			return tf;
 		}
-		
-		public void Read (FilePath fileName, string encoding)
+
+		public static TextFile ReadFile (string path, Stream content)
 		{
-			// Reads the file using the specified encoding.
-			// If the encoding is null, it autodetects the
-			// required encoding.
-			
-			this.name = fileName;
-			
+			TextFile tf = new TextFile ();
+			tf.name = path;
+			tf.Read (content, null);
+			return tf;
+		}
+
+		public void Read (Stream stream, string encoding)
+		{
 			ByteOrderMark bom = null;
 			byte[] content = null;
 			long nread;
-			
+
 		retry:
-			using (FileStream stream = new FileStream (fileName, FileMode.Open, FileAccess.Read, FileShare.Read)) {
-				if (encoding == null) {
-					if (ByteOrderMark.TryParse (stream, out bom))
-						stream.Seek (bom.Length, SeekOrigin.Begin);
-					else
-						stream.Seek (0, SeekOrigin.Begin);
-				}
-				
-				content = new byte [bom != null ? stream.Length - bom.Length : stream.Length];
-				nread = 0;
-				
-				int n;
-				while ((n = stream.Read (content, (int) nread, (content.Length - (int) nread))) > 0)
-					nread += n;
+			stream.Seek (0, SeekOrigin.Begin);
+
+			if (encoding == null) {
+				if (ByteOrderMark.TryParse (stream, out bom))
+					stream.Seek (bom.Length, SeekOrigin.Begin);
+				else
+					stream.Seek (0, SeekOrigin.Begin);
 			}
-			
+
+			content = new byte [bom != null ? stream.Length - bom.Length : stream.Length];
+			nread = 0;
+
+			int n;
+			while ((n = stream.Read (content, (int) nread, (content.Length - (int) nread))) > 0)
+				nread += n;
+
 			if (encoding != null) {
 				string s = ConvertFromEncoding (content, nread, encoding);
 				if (s == null) {
@@ -111,13 +113,14 @@ namespace MonoDevelop.Projects.Text
 					content = null;
 					goto retry;
 				}
-				
+
 				text = new StringBuilder (s);
 				sourceEncoding = encoding;
 				return;
-			} else if (bom != null) {
+			}
+			if (bom != null) {
 				string s = ConvertFromEncoding (content, nread, bom.Name);
-				
+
 				if (s != null) {
 					HadBOM = true;
 					sourceEncoding = bom.Name;
@@ -125,7 +128,7 @@ namespace MonoDevelop.Projects.Text
 					return;
 				}
 			}
-			
+
 			// Fall back to trying all the encodings...
 			foreach (TextEncoding co in TextEncoding.ConversionEncodings) {
 				string s = ConvertFromEncoding (content, nread, co.Id);
@@ -135,8 +138,20 @@ namespace MonoDevelop.Projects.Text
 					return;
 				}
 			}
-			
 			throw new Exception ("Unknown text file encoding");
+		}
+
+		public void Read (FilePath fileName, string encoding)
+		{
+			// Reads the file using the specified encoding.
+			// If the encoding is null, it autodetects the
+			// required encoding.
+			
+			this.name = fileName;
+
+			using (FileStream stream = new FileStream (fileName, FileMode.Open, FileAccess.Read, FileShare.Read)) {
+				Read (stream, encoding);
+			}
 		}
 
 		public static string GetFileEncoding (FilePath fileName)

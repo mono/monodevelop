@@ -69,7 +69,8 @@
 		{ "name": "Quick Diff(Changed)", "color":"orangesicle" },
 		
 		{ "name": "Brace Matching(Rectangle)", "color":"orangesicle", "secondcolor":"orangesicle-light" },
-		{ "name": "Usages(Rectangle)", "color":"orangesicle", "secondcolor":"orangesicle-light" },
+		{ "name": "Usages(Rectangle)", "color":"#B1DFF9", "secondcolor":"#B1DFF9" },
+		{ "name": "Changing usages(Rectangle)", "color":"#FFD6DD", "secondcolor":"#FFD6DD" },
 		
 		{ "name": "Breakpoint Marker", "color":"white", "secondcolor":"#AB616B" },
 		{ "name": "Breakpoint Marker(Disabled)", "color":"#AB616B", "secondcolor":"white" },
@@ -87,14 +88,16 @@
 		{ "name": "Secondary Link(Highlighted)", "color":"aluminium3", "secondcolor":"aluminium1"},
 
 		{ "name": "Message Bubble Error Marker", "color":"#df6962"},
-		{ "name": "Message Bubble Error Tag Text", "color":"black"},
-		{ "name": "Message Bubble Error Tag", "color":"#e3a6a1", "secondcolor":"#e09690", "bordercolor":"#cf8982"},
-		{ "name": "Message Bubble Error Line", "color":"#f4d5ca", "secondcolor":"#eccdc2", "bordercolor":"#dbb6a8"},
+		{ "name": "Message Bubble Error Tag", "color":"#d83f3f", "secondcolor":"white"},
+		{ "name": "Message Bubble Error Counter", "color":"white", "secondcolor":"#d83f3f"},
+		{ "name": "Message Bubble Error IconMargin", "color":"#d83f3f", "bordercolor":"#b12a2"},
+		{ "name": "Message Bubble Error Line", "color":"#fbe4e6"},
 
 		{ "name": "Message Bubble Warning Marker", "color":"#b28d37"},
-		{ "name": "Message Bubble Warning Tag Text", "color":"black"},
-		{ "name": "Message Bubble Warning Tag", "color":"#efe89c", "secondcolor":"#ece388", "bordercolor":"#d9cf5d"},
-		{ "name": "Message Bubble Warning Line", "color":"#faf7c7", "secondcolor":"#f3f0c0", "bordercolor":"#efe9ac"}
+		{ "name": "Message Bubble Warning Tag", "color":"#e68100", "secondcolor":"white"},
+		{ "name": "Message Bubble Warning Counter", "color":"white", "secondcolor":"#e68100"},
+		{ "name": "Message Bubble Warning IconMargin", "color":"#e68100", "bordercolor":"#c76f00"},
+		{ "name": "Message Bubble Warning Line", "color":"#fff1da"}
 	],
 
 	"text":[

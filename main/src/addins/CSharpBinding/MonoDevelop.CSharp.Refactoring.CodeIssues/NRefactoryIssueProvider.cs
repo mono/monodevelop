@@ -64,6 +64,9 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			var context = ctx as MDRefactoringContext;
 			if (context == null || context.IsInvalid || context.RootNode == null)
 				yield break;
+				
+			// Holds all the actions in a particular sibling group.
+			var actionGroups = new Dictionary<object, IList<ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction>> ();
 			foreach (var action in issueProvider.GetIssues (context)) {
 				if (cancellationToken.IsCancellationRequested)
 					yield break;
@@ -71,7 +74,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 					LoggingService.LogError ("NRefactory actions == null in :" + Title);
 					continue;
 				}
-				var actions = new List<MonoDevelop.CodeActions.CodeAction> ();
+				var actions = new List<NRefactoryCodeAction> ();
 				foreach (var act in action.Actions) {
 					if (cancellationToken.IsCancellationRequested)
 						yield break;
@@ -79,7 +82,18 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 						LoggingService.LogError ("NRefactory issue action was null in :" + Title);
 						continue;
 					}
-					actions.Add (new NRefactoryCodeAction (providerIdString, act.Description, act));
+					var nrefactoryCodeAction = new NRefactoryCodeAction (providerIdString, act.Description, act);
+					if (act.SiblingKey != null) {
+						// make sure the action has a list of its siblings
+						IList<ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction> siblingGroup;
+						if (!actionGroups.TryGetValue(act.SiblingKey, out siblingGroup)) {
+							siblingGroup = new List<ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction> ();
+							actionGroups.Add (act.SiblingKey, siblingGroup);
+						}
+						siblingGroup.Add (act);
+						nrefactoryCodeAction.SiblingActions = siblingGroup;
+					}
+					actions.Add (nrefactoryCodeAction);
 				}
 				var issue = new CodeIssue (
 					GettextCatalog.GetString (action.Description ?? ""),

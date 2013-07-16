@@ -172,7 +172,8 @@ namespace MonoDevelop.SourceEditor
 		protected override void OnDestroyed ()
 		{
 			UnregisterAdjustments ();
-
+			resolveResult = null;
+			Extension = null;
 			ExtensionContext = null;
 			view = null;
 			base.OnDestroyed ();

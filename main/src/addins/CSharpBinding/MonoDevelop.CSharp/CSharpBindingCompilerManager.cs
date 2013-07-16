@@ -169,10 +169,10 @@ namespace MonoDevelop.CSharp
 			}
 
 			string sysCore = project.AssemblyContext.GetAssemblyFullName ("System.Core", project.TargetFramework);
-			if (sysCore != null) {
-				sysCore = project.AssemblyContext.GetAssemblyLocation (sysCore, project.TargetFramework);
-				if (sysCore != null && !alreadyAddedReference.Contains (sysCore))
-					AppendQuoted (sb, "/r:", sysCore);
+			if (sysCore != null && !alreadyAddedReference.Contains (sysCore)) {
+				var asm = project.AssemblyContext.GetAssemblyFromFullName (sysCore, null, project.TargetFramework);
+				if (asm != null)
+					AppendQuoted (sb, "/r:", asm.Location);
 			}
 			
 			sb.AppendLine ("/nologo");

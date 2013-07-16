@@ -206,9 +206,13 @@ namespace MonoDevelop.Core.Assemblies
 				SystemAssembly found = null;
 				SystemAssembly gacFound = null;
 				foreach (SystemAssembly asm in GetAssembliesFromFullNameInternal (fullname)) {
+					if (asm.Package.IsFrameworkPackage && fx != null) {
+						if (fx.IncludesFramework (asm.Package.TargetFramework))
+							return asm;
+						else
+							continue;
+					}
 					found = asm;
-					if (asm.Package.IsFrameworkPackage && fx != null && fx.IncludesFramework (asm.Package.TargetFramework))
-						return asm;
 					if (asm.Package.IsGacPackage)
 						gacFound = asm;
 				}

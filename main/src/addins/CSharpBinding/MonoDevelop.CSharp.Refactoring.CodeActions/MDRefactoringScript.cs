@@ -257,69 +257,51 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			DisposeOnClose ();
 		}
 
-		public override void Rename (IEntity entity, string name)
+		public override void Rename (ISymbol symbol, string name)
 		{
-			RenameRefactoring.Rename (entity, name);
+			if (symbol is IEntity)
+				RenameRefactoring.Rename ((IEntity)symbol, name);
+			if (symbol is IVariable)
+				RenameRefactoring.RenameVariable ((IVariable)symbol, name);
+			if (symbol is INamespace)
+				RenameRefactoring.RenameNamespace ((INamespace)symbol, name);
+			if (symbol is ITypeParameter)
+				RenameRefactoring.RenameTypeParameter ((ITypeParameter)symbol, name);
 		}
 
-		public override void Rename (IVariable variable, string name)
-		{
-			RenameRefactoring.RenameVariable (variable, name);
-		}
-
-		public override void Rename (INamespace ns, string name)
-		{
-			RenameRefactoring.RenameNamespace (ns, name);
-		}
-
-		public override void RenameTypeParameter (IType typeParameter, string name = null)
-		{
-			RenameRefactoring.RenameTypeParameter ((ITypeParameter)typeParameter, name);
-		}
-
-		public override void DoGlobalOperationOn (IEntity entity, Action<RefactoringContext, Script, AstNode> callback, string operationName = null)
+		public override void DoGlobalOperationOn (IEnumerable<IEntity> entities, Action<RefactoringContext, Script, IEnumerable<AstNode>> callback, string operationName = null)
 		{
 			using (var monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (operationName ?? GettextCatalog.GetString ("Performing refactoring task..."), null)) {
-				var col = ReferenceFinder.FindReferences (entity, true, monitor);
-
-				string oldFileName = null;
-				MDRefactoringContext ctx = null;
-				MDRefactoringScript script = null;
-				TextEditorData data = null;
-				bool hadBom = false;
-				System.Text.Encoding encoding = null;
-				bool isOpen = true;
+				var col = entities.SelectMany (entity => ReferenceFinder.FindReferences (entity, true, monitor)).OfType<CSharpReferenceFinder.CSharpMemberReference> ().GroupBy(reference => reference.FileName);
 
 				foreach (var r in col) {
-					var memberRef = r as CSharpReferenceFinder.CSharpMemberReference;
-					if (memberRef == null)
-						continue;
+					string filename = r.Key;
 
-					if (oldFileName != memberRef.FileName) {
-						if (oldFileName != null && !isOpen) {
-							script.Dispose ();
-							Mono.TextEditor.Utils.TextFileUtility.WriteText (oldFileName, data.Text, encoding, hadBom);
-						}
+					bool isOpen;
+					System.Text.Encoding encoding;
+					bool hadBom;
 
-						data = TextFileProvider.Instance.GetTextEditorData (memberRef.FileName, out hadBom, out encoding, out isOpen);
-						var project = memberRef.Project;
+					var data = TextFileProvider.Instance.GetTextEditorData (filename, out hadBom, out encoding, out isOpen);
 
-						ParsedDocument parsedDocument;
-						using (var reader = new StreamReader (data.OpenStream ()))
-							parsedDocument = new MonoDevelop.CSharp.Parser.TypeSystemParser ().Parse (true, memberRef.FileName, reader, project);
-						var resolver = new CSharpAstResolver (TypeSystemService.GetCompilation (project), memberRef.SyntaxTree, parsedDocument.ParsedFile as CSharpUnresolvedFile);
+					var firstReference = r.First ();
 
-						ctx = new MDRefactoringContext (project as DotNetProject, data, parsedDocument, resolver, memberRef.AstNode.StartLocation, this.context.CancellationToken);
-						script = new MDRefactoringScript (ctx, FormattingOptions);
-						oldFileName = memberRef.FileName;
+					var project = firstReference.Project;
+
+					ParsedDocument parsedDocument;
+					using (var reader = new StreamReader (data.OpenStream ()))
+						parsedDocument = new MonoDevelop.CSharp.Parser.TypeSystemParser ().Parse (true, filename, reader, project);
+
+					var resolver = new CSharpAstResolver (TypeSystemService.GetCompilation (project), firstReference.SyntaxTree, parsedDocument.ParsedFile as CSharpUnresolvedFile);
+
+					var ctx = new MDRefactoringContext (project as DotNetProject, data, parsedDocument, resolver, firstReference.AstNode.StartLocation, this.context.CancellationToken);
+					var script = new MDRefactoringScript (ctx, FormattingOptions);
+
+					callback (ctx, script, r.Select (reference => reference.AstNode));
+
+					if (!isOpen) {
+						script.Dispose ();
+						Mono.TextEditor.Utils.TextFileUtility.WriteText (filename, data.Text, encoding, hadBom);
 					}
-
-					callback (ctx, script, memberRef.AstNode);
-				}
-
-				if (oldFileName != null && !isOpen) {
-					script.Dispose ();
-					Mono.TextEditor.Utils.TextFileUtility.WriteText (oldFileName, data.Text, encoding, hadBom);
 				}
 			}
 		}

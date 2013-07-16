@@ -321,12 +321,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			int newIndex = GetIndex (false, SelectedItem) + relative;
 			newIndex = Math.Min (filteredItems.Count - 1, Math.Max (0, newIndex));
+
 			int newSelection = GetItem (false, newIndex);
 			if (newSelection < 0)
 				return;
 
 			if (SelectedItem == newSelection && relative < 0) {
-				SelectedItem = 0;
+				SelectedItem = GetItem (false, 0);
 			} else {
 				SelectedItem = newSelection;
 			}
@@ -634,7 +635,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			filteredItems.Sort (delegate (int left, int right) {
 				var lt = win.DataProvider.GetText (left);
 				var rt = win.DataProvider.GetText (right);
-				var result = lt.CompareTo (rt);
+				var result = string.Compare (lt, rt, StringComparison.Ordinal);
 				if (result == 0)
 					return right.CompareTo (left);
 				return result;

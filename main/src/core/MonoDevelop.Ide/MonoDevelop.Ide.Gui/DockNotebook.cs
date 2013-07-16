@@ -542,8 +542,13 @@ namespace MonoDevelop.Ide.Gui
 		protected override void ForAll (bool include_internals, Callback callback)
 		{
 			base.ForAll (include_internals, callback);
-			foreach (var c in children)
+			foreach (var c in children.ToArray ())
 				callback (c);
+		}
+
+		protected override void OnRemoved (Widget widget)
+		{
+			children.Remove (widget);
 		}
 
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)

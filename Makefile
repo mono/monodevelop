@@ -1,6 +1,7 @@
 include main/monodevelop_version
 
 EXTRA_DIST = configure
+MONO_AOT=MONO_PATH=main/build/bin:$(MONO_PATH) mono --aot --debug
 
 all: update_submodules all-recursive
 
@@ -76,6 +77,12 @@ dist: update_submodules remove-stale-tarballs dist-recursive
 	@echo Generating merged tarball
 	@cd tarballs && tar -cjf monodevelop-$(PACKAGE_VERSION).tar.bz2 monodevelop-$(PACKAGE_VERSION)
 	@cd tarballs && rm -rf monodevelop-$(PACKAGE_VERSION)
+
+aot:
+	@for i in main/build/bin/*.dll; do ($(MONO_AOT) $$i && echo AOT successful: $$i) || (echo AOT failed: $$i); done
+	@for i in main/build/AddIns/*.dll; do ($(MONO_AOT) $$i && echo AOT successful: $$i) || (echo AOT failed: $$i); done
+	@for i in main/build/AddIns/*/*.dll; do ($(MONO_AOT) $$i && echo AOT successful: $$i) || (echo AOT failed: $$i); done
+	@for i in main/build/AddIns/*/*/*.dll; do ($(MONO_AOT) $$i && echo AOT successful: $$i) || (echo AOT failed: $$i); done
 
 run:
 	cd main && $(MAKE) run

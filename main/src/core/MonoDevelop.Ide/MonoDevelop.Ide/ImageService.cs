@@ -90,17 +90,30 @@ namespace MonoDevelop.Ide
 		static void LoadStockIcon (StockIconCodon iconCodon, bool forceWildcard)
 		{
 			try {
-				Gdk.Pixbuf pixbuf = null;
+				Gdk.Pixbuf pixbuf = null, pixbuf2x = null;
 				AnimatedIcon animatedIcon = null;
 
 				if (!string.IsNullOrEmpty (iconCodon.Resource) || !string.IsNullOrEmpty (iconCodon.File)) {
 					// using the stream directly produces a gdk warning.
 					byte[] buffer;
-					Stream stream;
-					if (iconCodon.Resource != null)
+					Stream stream, stream2x = null;
+
+					if (iconCodon.Resource != null) {
 						stream = iconCodon.Addin.GetResource (iconCodon.Resource);
-					else
-						stream = File.OpenRead (iconCodon.Addin.GetFilePath (iconCodon.File));
+						stream2x = iconCodon.Addin.GetResource2x (iconCodon.Resource);
+					}
+					else {
+						var file = iconCodon.Addin.GetFilePath (iconCodon.File);
+						stream = File.OpenRead (file);
+						var file2x = Path.Combine (Path.GetDirectoryName (file), Path.GetFileNameWithoutExtension (file) + "@2x" + Path.GetExtension (file));
+						if (File.Exists (file2x))
+							stream2x = File.OpenRead (file2x);
+						else {
+							file2x = file + "@2x";
+							if (File.Exists (file2x))
+								stream2x = File.OpenRead (file2x);
+						}
+					}
 					using (stream) {
 						if (stream == null || stream.Length < 0) {
 							LoggingService.LogError ("Did not find resource '{0}' in addin '{1}' for icon '{2}'", 
@@ -111,6 +124,15 @@ namespace MonoDevelop.Ide
 						stream.Read (buffer, 0, (int)stream.Length);
 					}
 					pixbuf = new Gdk.Pixbuf (buffer);
+
+					using (stream2x) {
+						if (stream2x != null && stream2x.Length >= 0) {
+							buffer = new byte [stream2x.Length];
+							stream2x.Read (buffer, 0, (int)stream2x.Length);
+							pixbuf2x = new Gdk.Pixbuf (buffer);
+						}
+					}
+
 				} else if (!string.IsNullOrEmpty (iconCodon.IconId)) {
 					var id = GetStockIdForImageSpec (iconCodon.Addin, iconCodon.IconId, iconCodon.IconSize);
 					pixbuf = GetPixbuf (id, iconCodon.IconSize);
@@ -125,9 +147,11 @@ namespace MonoDevelop.Ide
 
 				Gtk.IconSize size = forceWildcard? Gtk.IconSize.Invalid : iconCodon.IconSize;
 				if (pixbuf != null)
-					AddToIconFactory (iconCodon.StockId, pixbuf, size);
+					AddToIconFactory (iconCodon.StockId, pixbuf, pixbuf2x, size);
+
 				if (animatedIcon != null)
 					AddToAnimatedIconFactory (iconCodon.StockId, animatedIcon);
+
 			} catch (Exception ex) {
 				LoggingService.LogError (string.Format ("Error loading icon '{0}'", iconCodon.StockId), ex);
 			}
@@ -138,12 +162,65 @@ namespace MonoDevelop.Ide
 			//forces static constructor to run
 		}
 
+		static Gdk.Pixbuf Get2xIconVariant (Gdk.Pixbuf px)
+		{
+			return Mono.TextEditor.GtkWorkarounds.Get2xVariant (px);
+		}
+		
+		static void Set2xIconVariant (Gdk.Pixbuf px, Gdk.Pixbuf variant2x)
+		{
+			Mono.TextEditor.GtkWorkarounds.Set2xVariant (px, variant2x);
+		}
+
+		public static Gdk.Pixbuf ScaleIcon (Gdk.Pixbuf px, int width, int height)
+		{
+			var res = px.ScaleSimple (width, height, Gdk.InterpType.Bilinear);
+			
+			var icon2x = Get2xIconVariant (px);
+			if (icon2x != null)
+				Set2xIconVariant (res, ScaleIcon (icon2x, width*2, height * 2));
+			return res;
+		}
+
+		//caller should check that sizes match
+		public static Gdk.Pixbuf MergeIcons (Gdk.Pixbuf icon1, Gdk.Pixbuf icon2)
+		{
+			if (icon2 == null)
+				return icon1;
+			if (icon1 == null)
+				return icon2;
+
+			Gdk.Pixbuf res = new Gdk.Pixbuf (icon1.Colorspace, icon1.HasAlpha, icon1.BitsPerSample, icon1.Width, icon1.Height);
+			res.Fill (0);
+			icon1.CopyArea (0, 0, icon1.Width, icon1.Height, res, 0, 0);
+			icon2.Composite (res, 0, 0, icon2.Width, icon2.Height, 0, 0, 1, 1, Gdk.InterpType.Bilinear, 255);
+
+			var icon1_2x = Get2xIconVariant (icon1);
+			var icon2_2x = Get2xIconVariant (icon2);
+
+			if (icon1_2x != null || icon2_2x != null) {
+				if (icon1_2x == null)
+					icon1_2x = ScaleIcon (icon1, icon1.Width * 2, icon1.Height * 2);
+				if (icon2_2x == null)
+					icon2_2x = ScaleIcon (icon2, icon2.Width * 2, icon2.Height * 2);
+				var res2x = MergeIcons (icon1_2x, icon2_2x);
+				Set2xIconVariant (res, res2x);
+			}
+
+			return res;
+		}
+
 		public static Gdk.Pixbuf MakeTransparent (Gdk.Pixbuf icon, double opacity)
 		{
 			Gdk.Pixbuf result = icon.Copy ();
 			result.Fill (0);
 			result = result.AddAlpha (true, 0, 0, 0);
 			icon.Composite (result, 0, 0, icon.Width, icon.Height, 0, 0, 1, 1, Gdk.InterpType.Bilinear, (int)(256 * opacity));
+
+			var icon2x = Get2xIconVariant (icon);
+			if (icon2x != null)
+				Set2xIconVariant (result, MakeTransparent (icon2x, opacity));
+
 			return result;
 		}
 
@@ -160,6 +237,11 @@ namespace MonoDevelop.Ide
 		{
 			Gdk.Pixbuf copy = icon.Copy ();
 			copy.SaturateAndPixelate (copy, 0, false);
+
+			var icon2x = Get2xIconVariant (icon);
+			if (icon2x != null)
+				Set2xIconVariant (copy, MakeGrayscale (icon2x));
+
 			return copy;
 		}
 		
@@ -182,6 +264,11 @@ namespace MonoDevelop.Ide
 					pix = start + copy.Rowstride;
 				}
 			}
+			
+			var icon2x = Get2xIconVariant (icon);
+			if (icon2x != null)
+				Set2xIconVariant (copy, MakeInverted (icon2x));
+
 			return copy;
 		}
 		
@@ -407,7 +494,7 @@ namespace MonoDevelop.Ide
 				return id;
 			id = "__ni_" + namedIcons.Count;
 			namedIcons[pixbuf] = id;
-			AddToIconFactory (id, pixbuf, size);
+			AddToIconFactory (id, pixbuf, null, size);
 			return id;
 		}
 
@@ -429,20 +516,38 @@ namespace MonoDevelop.Ide
 			return GetStockIdForImageSpec (addin, filename, iconSize);
 		}
 		
-		static void AddToIconFactory (string stockId, Gdk.Pixbuf pixbuf, Gtk.IconSize iconSize)
+		static void AddToIconFactory (string stockId, Gdk.Pixbuf pixbuf, Gdk.Pixbuf pixbuf2x, Gtk.IconSize iconSize)
 		{
 			Gtk.IconSet iconSet = iconFactory.Lookup (stockId);
 			if (iconSet == null) {
 				iconSet = new Gtk.IconSet ();
 				iconFactory.Add (stockId, iconSet);
 			}
-			
+
 			Gtk.IconSource source = new Gtk.IconSource ();
-			
+			Gtk.IconSource source2x = null;
+
 			source.Pixbuf = pixbuf;
 			source.Size = iconSize;
 			source.SizeWildcarded = iconSize == Gtk.IconSize.Invalid;
+
+			if (pixbuf2x != null) {
+				if (Mono.TextEditor.GtkWorkarounds.SetSourceScale (source, 1)) {
+					Mono.TextEditor.GtkWorkarounds.SetSourceScaleWildcarded (source, false);
+					source2x = new Gtk.IconSource ();
+					source2x.Pixbuf = pixbuf2x;
+					source2x.Size = iconSize;
+					source2x.SizeWildcarded = iconSize == Gtk.IconSize.Invalid;
+					Mono.TextEditor.GtkWorkarounds.SetSourceScale (source2x, 2);
+					Mono.TextEditor.GtkWorkarounds.SetSourceScaleWildcarded (source2x, false);
+				}
+			} else {
+				Mono.TextEditor.GtkWorkarounds.SetSourceScaleWildcarded (source, true);
+			}
+
 			iconSet.AddSource (source);
+			if (source2x != null)
+				iconSet.AddSource (source2x);
 		}
 
 		static void AddToAnimatedIconFactory (string stockId, AnimatedIcon aicon)
@@ -462,13 +567,29 @@ namespace MonoDevelop.Ide
 			if (!hash.ContainsKey (stockId)) {
 				System.IO.Stream stream = addin.GetResource (id);
 				if (stream != null) {
+					Gdk.Pixbuf pix1, pix2 = null;
 					using (stream) {
-						AddToIconFactory (stockId, new Gdk.Pixbuf (stream), size);
+						pix1 = new Gdk.Pixbuf (stream);
 					}
+					stream = addin.GetResource2x (id);
+					if (stream != null) {
+						using (stream) {
+							pix2 = new Gdk.Pixbuf (stream);
+						}
+					}
+					AddToIconFactory (stockId, pix1, pix2, size);
 				}
 				hash[stockId] = stockId;
 			}
 			return stockId;
+		}
+
+		static Stream GetResource2x (this RuntimeAddin addin, string id)
+		{
+			var stream = addin.GetResource (Path.GetFileNameWithoutExtension (id) + "@2x" + Path.GetExtension (id));
+			if (stream == null)
+				stream = addin.GetResource (id + "@2x");
+			return stream;
 		}
 		
 		static string InternalGetStockIdFromAnimation (RuntimeAddin addin, string id, Gtk.IconSize size)
@@ -491,7 +612,7 @@ namespace MonoDevelop.Ide
 			string stockId = "__asm" + addinId + "__" + id + "__" + size;
 			if (!hash.ContainsKey (stockId)) {
 				var aicon = new AnimatedIcon (addin, id, size);
-				AddToIconFactory (stockId, aicon.FirstFrame, size);
+				AddToIconFactory (stockId, aicon.FirstFrame, null, size);
 				AddToAnimatedIconFactory (stockId, aicon);
 				hash[stockId] = stockId;
 			}
@@ -533,27 +654,17 @@ namespace MonoDevelop.Ide
 					}
 
 					if (icon.Width != px.Width || icon.Height != px.Height) 
-						px = px.ScaleSimple (icon.Width, icon.Height, Gdk.InterpType.Bilinear);
+						px = ScaleIcon (icon, icon.Width, icon.Height);
 
 					icon = MergeIcons (icon, px);
 				}
 				if (icon != null)
-					AddToIconFactory (id, icon, sz);
+					AddToIconFactory (id, icon, null, sz);
 			}
 			composedIcons[id] = id;
 			return id;
 		}
 
-		//caller should check null and that sizes match
-		static Gdk.Pixbuf MergeIcons (Gdk.Pixbuf icon1, Gdk.Pixbuf icon2)
-		{
-			Gdk.Pixbuf res = new Gdk.Pixbuf (icon1.Colorspace, icon1.HasAlpha, icon1.BitsPerSample, icon1.Width, icon1.Height);
-			res.Fill (0);
-			icon1.CopyArea (0, 0, icon1.Width, icon1.Height, res, 0, 0);
-			icon2.Composite (res, 0, 0, icon2.Width, icon2.Height, 0, 0, 1, 1, Gdk.InterpType.Bilinear, 255);
-			return res;
-		}
-		
 		static string GetStockIdForImageSpec (string filename, Gtk.IconSize size)
 		{
 			return GetStockIdForImageSpec (null, filename, size);
