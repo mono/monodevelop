@@ -353,9 +353,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			public int Compare (ICompletionData a, ICompletionData b)
 			{
-				return ((a.DisplayFlags & DisplayFlags.Obsolete) == (b.DisplayFlags & DisplayFlags.Obsolete))
-					? StringComparer.OrdinalIgnoreCase.Compare (a.DisplayText, b.DisplayText)
-					: (a.DisplayFlags & DisplayFlags.Obsolete) != 0 ? 1 : -1;
+				if (a is IComparable && b is IComparable)
+					return ((IComparable)a).CompareTo (b);
+				return CompletionData.Compare (a, b);
 			}
 		}
 		
@@ -376,7 +376,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			//which makes completion triggering noticeably more responsive
 			if (!completionDataList.IsSorted)
 				completionDataList.Sort (new DataItemComparer ());
-			
+
 			Reposition (true);
 			return true;
 		}
@@ -657,6 +657,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 		string IListDataProvider.GetCompletionText (int n)
 		{
 			return completionDataList[n].CompletionText;
+		}
+		static DataItemComparer defaultComparer = new DataItemComparer ();
+		int IListDataProvider.CompareTo (int n, int m)
+		{
+			return defaultComparer.Compare (completionDataList [n], completionDataList [m]);
 		}
 		
 		Gdk.Pixbuf IListDataProvider.GetIcon (int n)

@@ -642,18 +642,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 
 			filteredItems.Sort (delegate (int left, int right) {
-				var lt = win.DataProvider.GetText (left);
-				var rt = win.DataProvider.GetText (right);
-				var result = string.Compare (lt, rt, StringComparison.Ordinal);
-				if (result == 0) {
-					lt = win.DataProvider.GetDescription (left, false);
-					rt = win.DataProvider.GetDescription (right, false);
-					result = string.Compare (lt, rt, StringComparison.Ordinal);
-					if (result != 0)
-						return result;
-					return right.CompareTo (left);
-				}
-				return result;
+				return win.DataProvider.CompareTo (left, right);
 			});
 			categories.Sort (delegate (Category left, Category right) {
 				return left.CompletionCategory != null ? left.CompletionCategory.CompareTo (right.CompletionCategory) : -1;

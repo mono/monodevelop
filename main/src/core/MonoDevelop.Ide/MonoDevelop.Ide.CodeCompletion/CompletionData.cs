@@ -34,7 +34,7 @@ using ICSharpCode.NRefactory.Completion;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
-	public class CompletionData : ICompletionData
+	public class CompletionData : ICompletionData, IComparable
 	{
 		protected CompletionData () {}
 		
@@ -114,5 +114,26 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			return string.Format ("[CompletionData: Icon={0}, DisplayText={1}, Description={2}, CompletionText={3}, DisplayFlags={4}]", Icon, DisplayText, Description, CompletionText, DisplayFlags);
 		}
+
+		#region IComparable implementation
+
+		public virtual int CompareTo (object obj)
+		{
+			if (!(obj is ICompletionData))
+				return 0;
+			return Compare (this, (ICompletionData)obj);
+		}
+
+		public static int Compare (ICompletionData a, ICompletionData b)
+		{
+			var result =  ((a.DisplayFlags & DisplayFlags.Obsolete) == (b.DisplayFlags & DisplayFlags.Obsolete))
+				? StringComparer.OrdinalIgnoreCase.Compare (a.DisplayText, b.DisplayText)
+					: (a.DisplayFlags & DisplayFlags.Obsolete) != 0 ? 1 : -1;
+			if (result == 0)
+				result = StringComparer.OrdinalIgnoreCase.Compare (a.Description, b.Description);
+			return result;
+		}
+
+		#endregion
 	}
 }
