@@ -706,6 +706,7 @@ namespace MonoDevelop.VersionControl.Git
 			cmd.SetRemote ("origin");
 			cmd.SetBranch ("refs/heads/master");
 			cmd.SetDirectory ((string)targetLocalPath);
+			cmd.SetCloneSubmodules (true);
 			using (var gm = new GitMonitor (monitor, 4)) {
 				cmd.SetProgressMonitor (gm);
 				cmd.Call ();
