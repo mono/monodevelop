@@ -65,7 +65,7 @@ namespace SubversionAddinWindows
 
 		public override string GetTextBase (string file)
 		{
-			MemoryStream data = new MemoryStream();
+			MemoryStream data = new MemoryStream ();
 			try {
 				// This outputs the contents of the base revision
 				// of a file to a stream.
@@ -89,7 +89,7 @@ namespace SubversionAddinWindows
 		void Init ()
 		{
 			client = new SvnClient ();
-			client.Authentication.SslClientCertificateHandlers += new EventHandler<SharpSvn.Security.SvnSslClientCertificateEventArgs> (AuthenticationSslClientCertificateHandlers);
+			client.Authentication.SslClientCertificateHandlers += new EventHandler<SvnSslClientCertificateEventArgs> (AuthenticationSslClientCertificateHandlers);
 			client.Authentication.SslClientCertificatePasswordHandlers += new EventHandler<SvnSslClientCertificatePasswordEventArgs> (AuthenticationSslClientCertificatePasswordHandlers);
 			client.Authentication.SslServerTrustHandlers += new EventHandler<SvnSslServerTrustEventArgs> (AuthenticationSslServerTrustHandlers);
 			client.Authentication.UserNameHandlers += new EventHandler<SvnUserNameEventArgs> (AuthenticationUserNameHandlers);
@@ -191,16 +191,40 @@ namespace SubversionAddinWindows
 
 		public override string GetTextAtRevision (string repositoryPath, Revision revision)
 		{
-			MemoryStream ms = new MemoryStream ();
-			lock (client) 
-				client.Write (new SvnUriTarget (repositoryPath, GetRevision (revision)), ms);
-			ms.Position = 0;
-			using (StreamReader sr = new StreamReader (ms)) {
-				return sr.ReadToEnd ();
-			}
+			return null;
 		}
 
-		public override string GetVersion ( )
+		public override string GetTextAtRevision (string repositoryPath, Revision revision, string rootPath)
+		{
+			MemoryStream ms = new MemoryStream ();
+			SvnUriTarget target = client.GetUriFromWorkingCopy (rootPath);
+			// Redo path link.
+			repositoryPath = repositoryPath.TrimStart (new char[] { '/' });
+			foreach (var segment in target.Uri.Segments) {
+				if (repositoryPath.StartsWith (segment))
+					repositoryPath = repositoryPath.Remove (0, segment.Length);
+			}
+
+			lock (client) {
+				// repositoryPath already contains the relative URL path.
+				try {
+					client.Write (new SvnUriTarget (target.Uri.AbsoluteUri + repositoryPath, GetRevision (revision)), ms);
+				} catch (SvnFileSystemException e) {
+					// File got added/deleted at some point.
+					if (e.SvnErrorCode == SvnErrorCode.SVN_ERR_FS_NOT_FOUND)
+						return "";
+					throw;
+				} catch (SvnClientNodeKindException e) {
+					// We're trying on a directory.
+					if (e.SvnErrorCode == SvnErrorCode.SVN_ERR_CLIENT_IS_DIRECTORY)
+						return "";
+					throw;
+				}
+			}
+			return TextFile.ReadFile (repositoryPath, ms).Text;
+		}
+
+		public override string GetVersion ()
 		{
 			return SvnClient.Version.ToString ();
 		}
