@@ -242,8 +242,19 @@ namespace MonoDevelop.Projects
 						return GettextCatalog.GetString ("Specified version not found: expected {0}, found {1}", GetVersionNum (StoredReference), GetVersionNum (Reference));
 					if (notFound) {
 						if (ownerProject != null) {
-							if (TargetRuntime.IsInstalled (TargetFramework))
-								return GettextCatalog.GetString ("Assembly not found for {0} (in {1})", TargetFramework.Name, TargetRuntime.DisplayName);
+							bool isDefaultRuntime = Runtime.SystemAssemblyService.DefaultRuntime == TargetRuntime;
+							var hintPath = ExtendedProperties ["_OriginalMSBuildReferenceHintPath"] as string;
+							bool probablyFrameworkAssembly = string.IsNullOrEmpty (hintPath);
+
+							if (TargetRuntime.IsInstalled (TargetFramework) || !probablyFrameworkAssembly) {
+								if (isDefaultRuntime)
+									return GettextCatalog.GetString ("Assembly not found for framework {0}", TargetFramework.Name);
+
+								return GettextCatalog.GetString ("Assembly not found for framework {0} (in {1})", TargetFramework.Name, TargetRuntime.DisplayName);
+							}
+
+							if (isDefaultRuntime)
+								return GettextCatalog.GetString ("Framework {0} is not installed", TargetFramework.Name);
 
 							return GettextCatalog.GetString ("Framework {0} is not installed (in {1})", TargetFramework.Name, TargetRuntime.DisplayName);
 						}
