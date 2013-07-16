@@ -1,5 +1,24 @@
-<ExtensionModel>
+<Addin id          = "SourceEditor2"
+       namespace   = "MonoDevelop"
+       name        = "MonoDevelop Source Editor"
+       author      = "Mike Krüger"
+       copyright   = ""
+       url         = ""
+       description = "Provides a text editor for the MonoDevelop based on Mono.TextEditor"
+       category    = "MonoDevelop Core"
+       flags       = "Hidden"
+       version     = "4.1.7">
 	
+	<Runtime>
+		<Import assembly="MonoDevelop.SourceEditor2.dll"/>
+	</Runtime>
+
+	<Dependencies>
+	    <Addin id="Core" version="4.1.7"/>
+	    <Addin id="Ide" version="4.1.7"/>
+	    <Addin id="Debugger" version="4.1.7"/>
+	</Dependencies>
+
 	<!-- Extension points -->
 
 	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor" name = "Editor context menu">
@@ -196,4 +215,4 @@
 		<!-- 2.6+ -->
 		<Migration sourceVersion="2.6+" kind="UserData" path="HighlightingSchemes" isDirectory="true" />
 	</Extension>
-</ExtensionModel>
+</Addin>
