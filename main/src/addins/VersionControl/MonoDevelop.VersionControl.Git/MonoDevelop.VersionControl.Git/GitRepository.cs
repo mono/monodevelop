@@ -52,6 +52,15 @@ using NGit.Submodule;
 
 namespace MonoDevelop.VersionControl.Git
 {
+	[Flags]
+	public enum GitUpdateOptions
+	{
+		None = 0x0,
+		SaveLocalChanges = 0x1,
+		UpdateSubmodules = 0x2,
+		NormalUpdate = SaveLocalChanges | UpdateSubmodules,
+	}
+
 	public class GitRepository : UrlBasedRepository
 	{
 		static readonly byte[] EmptyContent = new byte[0];
@@ -428,10 +437,11 @@ namespace MonoDevelop.VersionControl.Git
 			if (upstreamRef == null)
 				upstreamRef = GetCurrentRemote () + "/" + GetCurrentBranch ();
 
+			GitUpdateOptions options = GitService.StashUnstashWhenUpdating ? GitUpdateOptions.NormalUpdate : GitUpdateOptions.UpdateSubmodules;
 			if (GitService.UseRebaseOptionWhenPulling)
-				Rebase (upstreamRef, GitService.StashUnstashWhenUpdating, monitor, true);
+				Rebase (upstreamRef, options, monitor);
 			else
-				Merge (upstreamRef, GitService.StashUnstashWhenUpdating, monitor, true);
+				Merge (upstreamRef, options, monitor);
 
 			monitor.Step (1);
 			
@@ -456,7 +466,13 @@ namespace MonoDevelop.VersionControl.Git
 			monitor.Step (1);
 		}
 
-		public void Rebase (string upstreamRef, bool saveLocalChanges, IProgressMonitor monitor, bool fromUpdate = false)
+		[Obsolete ("Will be removed. Please use the one with GitUpdateOptions flags.")]
+		public void Rebase (string upstreamRef, bool saveLocalChanges, IProgressMonitor monitor)
+		{
+			Rebase (upstreamRef, saveLocalChanges ? GitUpdateOptions.SaveLocalChanges : GitUpdateOptions.None, monitor);
+		}
+
+		public void Rebase (string upstreamRef, GitUpdateOptions options, IProgressMonitor monitor)
 		{
 			StashCollection stashes = GitUtil.GetStashes (RootRepository);
 			Stash stash = null;
@@ -466,7 +482,7 @@ namespace MonoDevelop.VersionControl.Git
 				monitor.BeginTask (GettextCatalog.GetString ("Rebasing"), 5);
 
 				// TODO: Fix stash so we don't have to do update before the main repo update.
-				if (fromUpdate) {
+				if ((options & GitUpdateOptions.UpdateSubmodules) == GitUpdateOptions.UpdateSubmodules) {
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Updating repository submodules"));
 					var submoduleUpdate = git.SubmoduleUpdate ();
 					foreach (var submodule in CachedSubmodules)
@@ -476,7 +492,7 @@ namespace MonoDevelop.VersionControl.Git
 				}
 				monitor.Step (1);
 
-				if (saveLocalChanges) {
+				if ((options & GitUpdateOptions.SaveLocalChanges) == GitUpdateOptions.SaveLocalChanges) {
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Saving local changes"));
 					using (var gm = new GitMonitor (monitor))
 						stash = stashes.Create (gm, GetStashName ("_tmp_"));
@@ -533,7 +549,7 @@ namespace MonoDevelop.VersionControl.Git
 				}
 				
 			} finally {
-				if (saveLocalChanges)
+				if ((options & GitUpdateOptions.SaveLocalChanges) == GitUpdateOptions.SaveLocalChanges)
 					monitor.Step (1);
 				
 				// Restore local changes
@@ -544,7 +560,7 @@ namespace MonoDevelop.VersionControl.Git
 					stashes.Remove (stash);
 				}
 
-				if (fromUpdate) {
+				if ((options & GitUpdateOptions.UpdateSubmodules) == GitUpdateOptions.UpdateSubmodules) {
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Updating repository submodules"));
 					var submoduleUpdate = git.SubmoduleUpdate ();
 					foreach (var submodule in CachedSubmodules)
@@ -556,8 +572,14 @@ namespace MonoDevelop.VersionControl.Git
 				monitor.EndTask ();
 			}
 		}
-		
-		public void Merge (string branch, bool saveLocalChanges, IProgressMonitor monitor, bool fromUpdate = false)
+
+		[Obsolete ("Will be removed. Please use the one with GitUpdateOptions flags.")]
+		public void Merge (string upstreamRef, bool saveLocalChanges, IProgressMonitor monitor)
+		{
+			Merge (upstreamRef, saveLocalChanges ? GitUpdateOptions.SaveLocalChanges : GitUpdateOptions.None, monitor);
+		}
+
+		public void Merge (string branch, GitUpdateOptions options, IProgressMonitor monitor)
 		{
 			IEnumerable<DiffEntry> statusList = null;
 			Stash stash = null;
@@ -568,7 +590,7 @@ namespace MonoDevelop.VersionControl.Git
 				monitor.BeginTask (GettextCatalog.GetString ("Merging"), 5);
 
 				// TODO: Fix stash so we don't have to do update before the main repo update.
-				if (fromUpdate) {
+				if ((options & GitUpdateOptions.UpdateSubmodules) == GitUpdateOptions.UpdateSubmodules) {
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Updating repository submodules"));
 					var submoduleUpdate = git.SubmoduleUpdate ();
 					foreach (var submodule in CachedSubmodules)
@@ -582,7 +604,7 @@ namespace MonoDevelop.VersionControl.Git
 				statusList = GitUtil.GetChangedFiles (RootRepository, branch);
 				monitor.Step (1);
 				
-				if (saveLocalChanges) {
+				if ((options & GitUpdateOptions.SaveLocalChanges) == GitUpdateOptions.SaveLocalChanges) {
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Saving local changes"));
 					using (var gm = new GitMonitor (monitor))
 						stash = stashes.Create (gm, GetStashName ("_tmp_"));
@@ -615,7 +637,7 @@ namespace MonoDevelop.VersionControl.Git
 				}
 				
 			} finally {
-				if (saveLocalChanges)
+				if ((options & GitUpdateOptions.SaveLocalChanges) == GitUpdateOptions.SaveLocalChanges)
 					monitor.Step (1);
 				
 				// Restore local changes
@@ -627,7 +649,7 @@ namespace MonoDevelop.VersionControl.Git
 					monitor.Step (1);
 				}
 
-				if (fromUpdate) {
+				if ((options & GitUpdateOptions.UpdateSubmodules) == GitUpdateOptions.UpdateSubmodules) {
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Updating repository submodules"));
 					var submoduleUpdate = git.SubmoduleUpdate ();
 					foreach (var submodule in CachedSubmodules)
