@@ -30,10 +30,11 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
 using System.Collections.Generic;
+using Xwt.Motion;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
-	public class WelcomePageFirstRun : EventBox, Animatable
+	public class WelcomePageFirstRun : EventBox, IAnimatable
 	{
 		static readonly int Padding = 35;
 		static readonly Gdk.Size WidgetSize = new Gdk.Size (880 + 2 * Padding, 460 + 2 * Padding);
@@ -99,6 +100,9 @@ namespace MonoDevelop.Ide.WelcomePage
 					ButtonHovered = false;
 			};
 		}
+		
+		void IAnimatable.BatchBegin () { }
+		void IAnimatable.BatchCommit () { QueueDraw (); }
 
 		protected override void OnMapped ()
 		{
@@ -111,14 +115,14 @@ namespace MonoDevelop.Ide.WelcomePage
 
 			GLib.Timeout.Add (750, () => {
 				new Animation ()
-					.Insert (0, 0.5f,    new Animation ((f) => TitleOffset.Y = (int) (40 * f), start: 1, end: 0, easing: Easing.CubicInOut))
-					.Insert (0.1f, 0.6f, new Animation ((f) => TextOffset.Y  = (int) (40 * f), start: 1, end: 0, easing: Easing.CubicInOut))
-					.Insert (0, 0.5f,    new Animation ((f) => TitleOpacity = f,      easing: Easing.CubicInOut))
-					.Insert (0.1f, 0.6f, new Animation ((f) => TextOpacity = f,       easing: Easing.CubicInOut))
-					.Insert (0.3f, 0.9f, new Animation ((f) => ButtonOpacity = f,     easing: Easing.CubicInOut))
-					.Insert (0, 0.2f,    new Animation ((f) => BackgroundOpacity = f, easing: Easing.CubicInOut))
-					.Insert (0.2f, 0.7f, new Animation ((f) => IconOpacity = f,       easing: Easing.CubicInOut))
-					.Insert (0.2f, 0.7f, new Animation ((f) => IconScale = f, start: 0.5f, end: 1, easing: Easing.SpringOut))
+					.AddConcurrent (new Animation ((f) => TitleOffset.Y = (int) (40 * f), start: 1, end: 0, easing: Easing.CubicInOut), 0, 0.5f)
+					.AddConcurrent (new Animation ((f) => TextOffset.Y  = (int) (40 * f), start: 1, end: 0, easing: Easing.CubicInOut), 0.1f, 0.6f)
+					.AddConcurrent (new Animation ((f) => TitleOpacity = f,      easing: Easing.CubicInOut), 0, 0.5f)
+					.AddConcurrent (new Animation ((f) => TextOpacity = f,       easing: Easing.CubicInOut), 0.1f, 0.6f)
+					.AddConcurrent (new Animation ((f) => ButtonOpacity = f,     easing: Easing.CubicInOut), 0.3f, 0.9f)
+					.AddConcurrent (new Animation ((f) => BackgroundOpacity = f, easing: Easing.CubicInOut), 0, 0.2f)
+					.AddConcurrent (new Animation ((f) => IconOpacity = f,       easing: Easing.CubicInOut), 0.2f, 0.7f)
+					.AddConcurrent (new Animation ((f) => IconScale = f, start: 0.5f, end: 1, easing: Easing.SpringOut), 0.2f, 0.7f)
 					.Commit (this, "Intro", length: 1200);
 				return false;
 			});
