@@ -58,6 +58,7 @@ namespace MonoDevelop.CSharp
 
 		public override void Dispose ()
 		{
+			RemoveHandler ();
 			Document.DocumentParsed -= HandleDocumentParsed; 
 			base.Dispose ();
 		}
@@ -101,6 +102,17 @@ namespace MonoDevelop.CSharp
 					}
 				});
 			});
+		}
+
+		
+		static uint timeoutHandler;
+
+		static void RemoveHandler ()
+		{
+			if (timeoutHandler != 0) {
+				GLib.Source.Remove (timeoutHandler); 
+				timeoutHandler = 0;
+			}
 		}
 
 		List<UnitTestMarker> currentMarker = new List<UnitTestMarker>();
@@ -245,6 +257,19 @@ namespace MonoDevelop.CSharp
 					this.debug = debug;
 				}
 
+				bool TimeoutHandler ()
+				{
+					var test = NUnitService.Instance.SearchTestById (testCase);
+					if (test != null) {
+						RunTest (test); 
+						timeoutHandler = 0;
+					} else {
+						return true;
+					}
+					return false;
+				}
+
+
 				internal void Run (object sender, EventArgs e)
 				{
 					menu.Destroy ();
@@ -256,19 +281,8 @@ namespace MonoDevelop.CSharp
 					buildOperation.Completed += delegate {
 						if (!buildOperation.Success)
 							return;
-						ThreadPool.QueueUserWorkItem (delegate {
-							var test = NUnitService.Instance.SearchTestById (testCase);
-							int t = 0;
-							while (test == null && t < 5) {
-								Console.WriteLine (t);
-								Thread.Sleep (250); 
-								test = NUnitService.Instance.SearchTestById (testCase);
-								t++;
-							}
-							if (test != null)
-								RunTest (test);
-						});
-
+						RemoveHandler ();
+						timeoutHandler = GLib.Timeout.Add (200, TimeoutHandler);
 					};
 				}
 
