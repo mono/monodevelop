@@ -466,6 +466,48 @@ namespace MonoDevelop.VersionControl.Git
 			monitor.Step (1);
 		}
 
+		bool GetSubmodulesToUpdate (List<string> UpdateSubmodules)
+		{
+			List<string> DirtySubmodules = new List<string> ();
+
+			// Iterate submodules and do status.
+			// SubmoduleStatus does not report changes for dirty submodules.
+			foreach (var submodule in CachedSubmodules) {
+				var submoduleGit = new NGit.Api.Git (submodule.Item2);
+				var statusCommand = submoduleGit.Status ();
+				var status = statusCommand.Call ();
+
+				if (status.IsClean ())
+					UpdateSubmodules.Add (submodule.Item1);
+				else
+					DirtySubmodules.Add (submodule.Item1);
+			}
+
+			if (DirtySubmodules.Count != 0) {
+				StringBuilder submodules = new StringBuilder (Environment.NewLine + Environment.NewLine);
+				foreach (var item in DirtySubmodules)
+					submodules.AppendLine (item);
+
+				AlertButton response = MessageService.GenericAlert (
+					MonoDevelop.Ide.Gui.Stock.Question,
+					GettextCatalog.GetString ("You have local changes in the submodules below"),
+					GettextCatalog.GetString ("Do you want continue? Detached HEADs will have their changes lost.{0}", submodules.ToString ()),
+					new AlertButton[] {
+							AlertButton.No,
+							new AlertButton ("Only unchanged"),
+							AlertButton.Yes
+						}
+				);
+
+				if (response == AlertButton.No)
+					return false;
+
+				if (response == AlertButton.Yes)
+					UpdateSubmodules.AddRange (DirtySubmodules);
+			}
+			return true;
+		}
+
 		[Obsolete ("Will be removed. Please use the one with GitUpdateOptions flags.")]
 		public void Rebase (string upstreamRef, bool saveLocalChanges, IProgressMonitor monitor)
 		{
@@ -480,17 +522,22 @@ namespace MonoDevelop.VersionControl.Git
 			try
 			{
 				monitor.BeginTask (GettextCatalog.GetString ("Rebasing"), 5);
+				List<string> UpdateSubmodules = new List<string> ();
 
 				// TODO: Fix stash so we don't have to do update before the main repo update.
 				if ((options & GitUpdateOptions.UpdateSubmodules) == GitUpdateOptions.UpdateSubmodules) {
+					monitor.Log.WriteLine (GettextCatalog.GetString ("Checking repository submodules"));
+					if (!GetSubmodulesToUpdate (UpdateSubmodules))
+						return;
+
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Updating repository submodules"));
 					var submoduleUpdate = git.SubmoduleUpdate ();
-					foreach (var submodule in CachedSubmodules)
-						submoduleUpdate.AddPath (submodule.Item1);
+					foreach (var submodule in UpdateSubmodules)
+						submoduleUpdate.AddPath (submodule);
 
 					submoduleUpdate.Call ();
+					monitor.Step (1);
 				}
-				monitor.Step (1);
 
 				if ((options & GitUpdateOptions.SaveLocalChanges) == GitUpdateOptions.SaveLocalChanges) {
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Saving local changes"));
@@ -536,6 +583,16 @@ namespace MonoDevelop.VersionControl.Git
 						}
 						result = rebase.Call ();
 					}
+
+					if ((options & GitUpdateOptions.UpdateSubmodules) == GitUpdateOptions.UpdateSubmodules) {
+						monitor.Log.WriteLine (GettextCatalog.GetString ("Updating repository submodules"));
+						var submoduleUpdate = git.SubmoduleUpdate ();
+						foreach (var submodule in UpdateSubmodules)
+							submoduleUpdate.AddPath (submodule);
+
+						submoduleUpdate.Call ();
+						monitor.Step (1);
+					}
 				} catch {
 					if (!aborted) {
 						rebase = git.Rebase ();
@@ -559,16 +616,6 @@ namespace MonoDevelop.VersionControl.Git
 						stash.Apply (gm);
 					stashes.Remove (stash);
 				}
-
-				if ((options & GitUpdateOptions.UpdateSubmodules) == GitUpdateOptions.UpdateSubmodules) {
-					monitor.Log.WriteLine (GettextCatalog.GetString ("Updating repository submodules"));
-					var submoduleUpdate = git.SubmoduleUpdate ();
-					foreach (var submodule in CachedSubmodules)
-						submoduleUpdate.AddPath (submodule.Item1);
-
-					submoduleUpdate.Call ();
-				}
-				monitor.Step (1);
 				monitor.EndTask ();
 			}
 		}
@@ -588,17 +635,22 @@ namespace MonoDevelop.VersionControl.Git
 
 			try {
 				monitor.BeginTask (GettextCatalog.GetString ("Merging"), 5);
+				List<string> UpdateSubmodules = new List<string> ();
 
 				// TODO: Fix stash so we don't have to do update before the main repo update.
 				if ((options & GitUpdateOptions.UpdateSubmodules) == GitUpdateOptions.UpdateSubmodules) {
+					monitor.Log.WriteLine (GettextCatalog.GetString ("Checking repository submodules"));
+					if (!GetSubmodulesToUpdate (UpdateSubmodules))
+						return;
+
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Updating repository submodules"));
 					var submoduleUpdate = git.SubmoduleUpdate ();
-					foreach (var submodule in CachedSubmodules)
-						submoduleUpdate.AddPath (submodule.Item1);
+					foreach (var submodule in UpdateSubmodules)
+						submoduleUpdate.AddPath (submodule);
 
 					submoduleUpdate.Call ();
+					monitor.Step (1);
 				}
-				monitor.Step (1);
 
 				// Get a list of files that are different in the target branch
 				statusList = GitUtil.GetChangedFiles (RootRepository, branch);
@@ -635,7 +687,16 @@ namespace MonoDevelop.VersionControl.Git
 					if (commit)
 						git.Commit ().Call ();
 				}
-				
+
+				if ((options & GitUpdateOptions.UpdateSubmodules) == GitUpdateOptions.UpdateSubmodules) {
+					monitor.Log.WriteLine (GettextCatalog.GetString ("Updating repository submodules"));
+					var submoduleUpdate = git.SubmoduleUpdate ();
+					foreach (var submodule in CachedSubmodules)
+						submoduleUpdate.AddPath (submodule.Item1);
+
+					submoduleUpdate.Call ();
+					monitor.Step (1);
+				}
 			} finally {
 				if ((options & GitUpdateOptions.SaveLocalChanges) == GitUpdateOptions.SaveLocalChanges)
 					monitor.Step (1);
@@ -648,16 +709,6 @@ namespace MonoDevelop.VersionControl.Git
 					stashes.Remove (stash);
 					monitor.Step (1);
 				}
-
-				if ((options & GitUpdateOptions.UpdateSubmodules) == GitUpdateOptions.UpdateSubmodules) {
-					monitor.Log.WriteLine (GettextCatalog.GetString ("Updating repository submodules"));
-					var submoduleUpdate = git.SubmoduleUpdate ();
-					foreach (var submodule in CachedSubmodules)
-						submoduleUpdate.AddPath (submodule.Item1);
-
-					submoduleUpdate.Call ();
-				}
-				monitor.Step (1);
 				monitor.EndTask ();
 			}
 			
