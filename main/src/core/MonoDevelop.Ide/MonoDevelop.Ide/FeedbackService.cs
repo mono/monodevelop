@@ -97,7 +97,7 @@ namespace MonoDevelop.Ide
 			PropertyService.Set ("MonoDevelop.Feedback.Email", email);
 			PropertyService.SaveProperties ();
 			
-			string header = "MonoDevelop: " + BuildVariables.PackageVersionLabel + "\n";
+			string header = "MonoDevelop: " + BuildInfo.VersionLabel + "\n";
 			
 			Type t = Type.GetType ("Mono.Runtime");
 			if (t != null) {
