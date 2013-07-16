@@ -37,3 +37,6 @@
 [submodule "main/external/guiunit"]
 	path = main/external/guiunit
 	url = git://github.com/mono/guiunit.git
+[submodule "main/external/fsharpbinding"]
+	path = main/external/fsharpbinding
+	url = https://github.com/fsharp/fsharpbinding
