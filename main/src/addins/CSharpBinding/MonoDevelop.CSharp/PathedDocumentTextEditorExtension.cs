@@ -398,8 +398,22 @@ namespace MonoDevelop.CSharp
 				return;
 
 			var loc = Document.Editor.Caret.Location;
+			var compExt = Document.GetContent<CSharpCompletionTextEditorExtension> ();
+			var caretOffset = Document.Editor.Caret.Offset;
+			var segType = compExt.GetTypeAt (caretOffset);
+			if (segType != null)
+				loc = segType.Region.Begin;
 
 			var curType = (EntityDeclaration)unit.GetNodeAt (loc, n => n is TypeDeclaration || n is DelegateDeclaration);
+
+
+			var segMember = compExt.GetMemberAt (caretOffset);
+			if (segMember != null) {
+				loc = segMember.Region.Begin;
+			} else {
+				loc = Document.Editor.Caret.Location;
+			}
+
 			var curMember = unit.GetNodeAt<EntityDeclaration> (loc);
 			if (curType == curMember)
 				curMember = null;
