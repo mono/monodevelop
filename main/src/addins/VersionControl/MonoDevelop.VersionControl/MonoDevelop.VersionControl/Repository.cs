@@ -132,7 +132,8 @@ namespace MonoDevelop.VersionControl
 			if (vinfo.IsVersioned) {
 				operations = VersionControlOperation.Commit | VersionControlOperation.Update | VersionControlOperation.Log;
 				if (exists) {
-					operations |= VersionControlOperation.Remove;
+					if (!vinfo.HasLocalChange (VersionStatus.ScheduledDelete))
+						operations |= VersionControlOperation.Remove;
 					if (vinfo.HasLocalChanges || vinfo.IsDirectory)
 						operations |= VersionControlOperation.Revert;
 				}
@@ -522,44 +523,60 @@ namespace MonoDevelop.VersionControl
 		// files. The default implementetions performs a system file delete.
 		public void DeleteFile (FilePath localPath, bool force, IProgressMonitor monitor)
 		{
-			DeleteFiles (new FilePath[] { localPath }, force, monitor);
+			DeleteFile (localPath, force, monitor, true);
+		}
+
+		public void DeleteFile (FilePath localPath, bool force, IProgressMonitor monitor, bool keepLocal)
+		{
+			DeleteFiles (new FilePath[] { localPath }, force, monitor, keepLocal);
 		}
 
 		public void DeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor)
 		{
-			ClearCachedVersionInfo (localPaths);
-			OnDeleteFiles (localPaths, force, monitor);
+			DeleteFiles (localPaths, force, monitor, true);
 		}
 
-		protected virtual void OnDeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor)
+		public void DeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
 		{
-			foreach (string localPath in localPaths) {
-				if (Directory.Exists (localPath))
-					Directory.Delete (localPath, true);
-				else
-					File.Delete (localPath);
-			}
+			OnDeleteFiles (localPaths, force, monitor, keepLocal);
+			ClearCachedVersionInfo (localPaths);
+		}
+
+		[Obsolete ("Use overload the overload with keepLocal parameter")]
+		protected abstract void OnDeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor);
+
+		protected virtual void OnDeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
+		{
+			OnDeleteFiles (localPaths, force, monitor);
 		}
 
 		public void DeleteDirectory (FilePath localPath, bool force, IProgressMonitor monitor)
 		{
-			DeleteDirectories (new FilePath[] { localPath }, force, monitor);
+			DeleteDirectory (localPath, force, monitor, true);
+		}
+
+		public void DeleteDirectory (FilePath localPath, bool force, IProgressMonitor monitor, bool keepLocal)
+		{
+			DeleteDirectories (new FilePath[] { localPath }, force, monitor, keepLocal);
 		}
 
 		public void DeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor)
 		{
-			ClearCachedVersionInfo (localPaths);
-			OnDeleteDirectories (localPaths, force, monitor);
+			DeleteDirectories (localPaths, force, monitor, true);
 		}
-		
-		protected virtual void OnDeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor)
+
+		public void DeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
 		{
-			foreach (string localPath in localPaths) {
-				if (Directory.Exists (localPath))
-					Directory.Delete (localPath, true);
-				else
-					File.Delete (localPath);
-			}
+			OnDeleteDirectories (localPaths, force, monitor, keepLocal);
+			ClearCachedVersionInfo (localPaths);
+		}
+
+		[Obsolete ("Use overload the overload with keepLocal parameter")]
+		protected abstract void OnDeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor);
+
+		protected virtual void OnDeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
+		{
+			OnDeleteDirectories (localPaths, force, monitor);
 		}
 		
 		// Creates a local directory.
