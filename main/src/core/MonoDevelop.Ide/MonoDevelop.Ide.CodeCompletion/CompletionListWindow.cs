@@ -134,6 +134,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 				HideDeclarationView ();
 				UpdateDeclarationView ();
 			};
+			List.WordsFiltered += delegate {
+				RepositionDeclarationViewWindow ();
+			};
 		}
 
 		bool completionListClosed;
@@ -540,6 +543,25 @@ namespace MonoDevelop.Ide.CodeCompletion
 				declarationViewTimer = 0;
 			}
 		}
+
+		void RepositionDeclarationViewWindow ()
+		{
+			if (declarationviewwindow == null || base.GdkWindow == null)
+				return;
+			var selectedItem = List.SelectedItem;
+			Gdk.Rectangle rect = List.GetRowArea (selectedItem);
+			if (rect.IsEmpty || rect.Bottom < (int)List.vadj.Value || rect.Y > List.Allocation.Height + (int)List.vadj.Value)
+				return;
+
+			declarationviewwindow.ShowArrow = true;
+			int ox;
+			int oy;
+			base.GdkWindow.GetOrigin (out ox, out oy);
+			declarationviewwindow.MaximumYTopBound = oy;
+			int y = rect.Y + Theme.Padding - (int)List.vadj.Value;
+			declarationviewwindow.ShowPopup (this, new Gdk.Rectangle (Gui.Styles.TooltipInfoSpacing, Math.Min (Allocation.Height, Math.Max (0, y)), Allocation.Width, rect.Height), PopupPosition.Left);
+			declarationViewHidden = false;
+		}
 		
 		bool DelayedTooltipShow ()
 		{
@@ -581,24 +603,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return false;
 			}
 
-			Gdk.Rectangle rect = List.GetRowArea (selectedItem);
-			if (rect.IsEmpty || rect.Bottom < (int)List.vadj.Value || rect.Y > List.Allocation.Height + (int)List.vadj.Value)
-				return false;
-
 			if (declarationViewHidden && Visible) {
-				declarationviewwindow.ShowArrow = true;
-				int ox;
-				int oy;
-				base.GdkWindow.GetOrigin (out ox, out oy);
-				declarationviewwindow.MaximumYTopBound = oy;
-				int y = rect.Y + Theme.Padding - (int)List.vadj.Value;
-				declarationviewwindow.ShowPopup (this, 
-				                                 new Gdk.Rectangle (Gui.Styles.TooltipInfoSpacing, 
-				                                                    Math.Min (Allocation.Height, Math.Max (0, y)), 
-				                                                    Allocation.Width, 
-				                                                    rect.Height), 
-				                                 PopupPosition.Left);
-				declarationViewHidden = false;
+				RepositionDeclarationViewWindow ();
 			}
 			
 			declarationViewTimer = 0;
