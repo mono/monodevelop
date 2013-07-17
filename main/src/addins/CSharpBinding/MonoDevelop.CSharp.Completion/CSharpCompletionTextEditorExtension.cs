@@ -275,6 +275,28 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			return new CompletionContextProvider (document, validTypeSystemSegmentTree, unstableTypeSystemSegmentTree);
 		}
+
+		CSharpTypeResolveContext CreateTypeResolveContext ()
+		{
+			var compilation = UnresolvedFileCompilation;
+			var rctx = new CSharpTypeResolveContext (compilation.MainAssembly);
+			var loc = TextEditorData.Caret.Location;
+			rctx = rctx.WithUsingScope (CSharpUnresolvedFile.GetUsingScope (loc).Resolve (compilation));
+			int offset = TextEditorData.Caret.Offset;
+			var curDef = GetTypeAt (offset);
+			if (curDef != null) {
+				var resolvedDef = curDef.Resolve (rctx).GetDefinition ();
+				if (resolvedDef == null)
+					return rctx;
+				rctx = rctx.WithCurrentTypeDefinition (resolvedDef);
+				var foundMember = GetMemberAt (offset);
+				var curMember = resolvedDef.Members.FirstOrDefault (m => m.Region.FileName == foundMember.Region.FileName && m.Region.Begin == foundMember.Region.Begin);
+				if (curMember != null)
+					rctx = rctx.WithCurrentMember (curMember);
+			}
+
+			return rctx;
+		}
 		
 		ICompletionDataList InternalHandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, bool ctrlSpace, ref int triggerWordLength)
 		{
@@ -290,7 +312,7 @@ namespace MonoDevelop.CSharp.Completion
 
 			var list = new CSharpCompletionDataList ();
 			list.Resolver = CSharpUnresolvedFile != null ? CSharpUnresolvedFile.GetResolver (UnresolvedFileCompilation, Document.Editor.Caret.Location) : new CSharpResolver (Compilation);
-			var ctx = CSharpUnresolvedFile.GetTypeResolveContext (UnresolvedFileCompilation, data.Caret.Location) as CSharpTypeResolveContext;
+			var ctx = CreateTypeResolveContext ();
 
 			var completionDataFactory = new CompletionDataFactory (this, new CSharpResolver (ctx));
 			var engine = new CSharpCompletionEngine (
@@ -367,7 +389,7 @@ namespace MonoDevelop.CSharp.Completion
 				CreateContextProvider (),
 				this,
 				Document.GetProjectContext (),
-				CSharpUnresolvedFile.GetTypeResolveContext (Document.Compilation, document.Editor.Caret.Location) as CSharpTypeResolveContext
+				CreateTypeResolveContext ()
 				);
 			List<string> list;
 			int cparam = engine.GetCurrentParameterIndex (provider.StartOffset, document.Editor.Caret.Offset, out list);
@@ -526,7 +548,7 @@ namespace MonoDevelop.CSharp.Completion
 					CreateContextProvider (),
 					this,
 					Document.GetProjectContext (),
-					CSharpUnresolvedFile.GetTypeResolveContext (Document.Compilation, document.Editor.Caret.Location) as CSharpTypeResolveContext
+					CreateTypeResolveContext ()
 				);
 				return engine.GetParameterDataProvider (completionContext.TriggerOffset, completionChar) as ParameterDataProvider;
 			} catch (Exception e) {
@@ -567,7 +589,7 @@ namespace MonoDevelop.CSharp.Completion
 				CreateContextProvider (),
 				this,
 				Document.GetProjectContext (),
-				CSharpUnresolvedFile.GetTypeResolveContext (Document.Compilation, document.Editor.Caret.Location) as CSharpTypeResolveContext
+				CreateTypeResolveContext ()
 			);
 			engine.SetOffset (document.Editor.Caret.Offset);
 			return engine.GetParameterCompletionCommandOffset (out cpos);
@@ -580,7 +602,7 @@ namespace MonoDevelop.CSharp.Completion
 				CreateContextProvider (),
 				this,
 				Document.GetProjectContext (),
-				CSharpUnresolvedFile.GetTypeResolveContext (Document.Compilation, document.Editor.Caret.Location) as CSharpTypeResolveContext
+				CreateTypeResolveContext ()
 				);
 			List<string> list;
 			return engine.GetCurrentParameterIndex (startOffset, document.Editor.Caret.Offset, out list);
@@ -1319,7 +1341,6 @@ namespace MonoDevelop.CSharp.Completion
 					}
 					--startOffset;
 				}
-
 				return Tuple.Create (caretOffset > startOffset ? document.Editor.GetTextAt (startOffset, caretOffset - startOffset) : "", 
 				                     (TextLocation)document.Editor.OffsetToLocation (startOffset));
 			}
