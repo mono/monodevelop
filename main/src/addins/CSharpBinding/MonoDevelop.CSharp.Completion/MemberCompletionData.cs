@@ -262,7 +262,7 @@ namespace MonoDevelop.CSharp.Completion
 							skipChars = 0;
 						} else {
 							if (keyChar == '.') {
-								text += "()|";
+								text += "()";
 								skipChars = 0;
 							} else {
 								if (insertSemicolon) {
