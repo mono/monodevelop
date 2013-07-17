@@ -147,13 +147,13 @@ namespace MonoDevelop.SourceEditor
 					return null;
 
 				if (mr.TargetResult != null) {
-					if (mr.TargetResult is LocalResolveResult) {
-						expression = GetLocalExpression (editor, (LocalResolveResult) mr.TargetResult, expressionRegion);
-					} else if (mr.TargetResult is MemberResolveResult) {
-						expression = GetMemberExpression (editor, (MemberResolveResult) mr.TargetResult, expressionRegion);
-					} else {
-						var targetRegion = mr.TargetResult.GetDefinitionRegion ();
+					var targetRegion = mr.TargetResult.GetDefinitionRegion ();
 
+					if (mr.TargetResult is LocalResolveResult) {
+						expression = GetLocalExpression (editor, (LocalResolveResult) mr.TargetResult, targetRegion);
+					} else if (mr.TargetResult is MemberResolveResult) {
+						expression = GetMemberExpression (editor, (MemberResolveResult) mr.TargetResult, targetRegion);
+					} else {
 						if (targetRegion.BeginLine != 0 && targetRegion.BeginColumn != 0) {
 							var start = new DocumentLocation (targetRegion.BeginLine, targetRegion.BeginColumn);
 							var end   = new DocumentLocation (targetRegion.EndLine, targetRegion.EndColumn);
