@@ -140,12 +140,11 @@ namespace MonoDevelop.SourceEditor
 				} else {
 					return null;
 				}
+			} else {
+				return null;
 			}
 
 			if (expression == null) {
-				if (member == null)
-					return null;
-
 				if (mr.TargetResult != null) {
 					var targetRegion = mr.TargetResult.GetDefinitionRegion ();
 
@@ -153,16 +152,20 @@ namespace MonoDevelop.SourceEditor
 						expression = GetLocalExpression (editor, (LocalResolveResult) mr.TargetResult, targetRegion);
 					} else if (mr.TargetResult is MemberResolveResult) {
 						expression = GetMemberExpression (editor, (MemberResolveResult) mr.TargetResult, targetRegion);
-					} else {
-						if (targetRegion.BeginLine != 0 && targetRegion.BeginColumn != 0) {
-							var start = new DocumentLocation (targetRegion.BeginLine, targetRegion.BeginColumn);
-							var end   = new DocumentLocation (targetRegion.EndLine, targetRegion.EndColumn);
-							expression = ed.GetTextBetween (start, end).Trim ();
-						} else {
-							var start = new DocumentLocation (expressionRegion.BeginLine, expressionRegion.BeginColumn);
-							var end   = new DocumentLocation (expressionRegion.EndLine, expressionRegion.EndColumn);
-							return ed.GetTextBetween (start, end).Trim ();
-						}
+					} else if (mr.TargetResult is InitializedObjectResolveResult) {
+						return null;
+					} else if (mr.TargetResult is ThisResolveResult) {
+						return member;
+					} else if (!targetRegion.IsEmpty) {
+						var start = new DocumentLocation (targetRegion.BeginLine, targetRegion.BeginColumn);
+						var end   = new DocumentLocation (targetRegion.EndLine, targetRegion.EndColumn);
+						expression = ed.GetTextBetween (start, end).Trim ();
+					}
+
+					if (expression == null) {
+						var start = new DocumentLocation (expressionRegion.BeginLine, expressionRegion.BeginColumn);
+						var end   = new DocumentLocation (expressionRegion.EndLine, expressionRegion.EndColumn);
+						return ed.GetTextBetween (start, end).Trim ();
 					}
 				}
 
@@ -235,17 +238,14 @@ namespace MonoDevelop.SourceEditor
 				} else if (res is MemberResolveResult) {
 					expression = GetMemberExpression (editor, (MemberResolveResult) res, expressionRegion);
 				} else if (res is NamedArgumentResolveResult) {
-					// Fall through...
+					expression = ed.GetTextBetween (start, end);
 				} else if (res is ThisResolveResult) {
-					// Fall through...
+					expression = ed.GetTextBetween (start, end);
 				} else if (res is TypeResolveResult) {
-					// Fall through...
+					expression = ed.GetTextBetween (start, end);
 				} else {
 					return null;
 				}
-				
-				if (expression == null)
-					expression = ed.GetTextBetween (start, end);
 			} else {
 				var data = editor.GetTextEditorData ();
 				startOffset = data.FindCurrentWordStart (offset);
