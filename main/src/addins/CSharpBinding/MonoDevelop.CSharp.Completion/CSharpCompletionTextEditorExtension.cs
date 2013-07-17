@@ -290,9 +290,11 @@ namespace MonoDevelop.CSharp.Completion
 					return rctx;
 				rctx = rctx.WithCurrentTypeDefinition (resolvedDef);
 				var foundMember = GetMemberAt (offset);
-				var curMember = resolvedDef.Members.FirstOrDefault (m => m.Region.FileName == foundMember.Region.FileName && m.Region.Begin == foundMember.Region.Begin);
-				if (curMember != null)
-					rctx = rctx.WithCurrentMember (curMember);
+				if (foundMember != null) {
+					var curMember = resolvedDef.Members.FirstOrDefault (m => m.Region.FileName == foundMember.Region.FileName && m.Region.Begin == foundMember.Region.Begin);
+					if (curMember != null)
+						rctx = rctx.WithCurrentMember (curMember);
+				}
 			}
 
 			return rctx;
