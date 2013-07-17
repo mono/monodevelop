@@ -84,7 +84,7 @@ namespace MonoDevelop.CSharp.Completion
 		public override string DisplayText {
 			get {
 				if (displayText == null) {
-					displayText = ambience.GetString (Entity, flags | OutputFlags.HideGenericParameterNames);
+					displayText = ambience.GetString (Entity.SymbolKind == SymbolKind.Constructor ? Entity.DeclaringTypeDefinition : Entity, flags | OutputFlags.HideGenericParameterNames);
 				}
 				return displayText; 
 			}
@@ -92,7 +92,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override IconId Icon {
 			get {
-				return Entity.GetStockIcon ();
+				return (Entity.SymbolKind == SymbolKind.Constructor ? Entity.DeclaringTypeDefinition : Entity).GetStockIcon ();
 			}
 		}
 
@@ -165,6 +165,8 @@ namespace MonoDevelop.CSharp.Completion
 
 		static bool HasAnyOverloadWithParameters (IMethod method)
 		{
+			if (method.SymbolKind == SymbolKind.Constructor) 
+				return method.DeclaringType.GetConstructors ().Any (m => m.Parameters.Count > 0);
 			return method.DeclaringType.GetMethods ().Any (m => m.Name == method.Name && m.Parameters.Count > 0);
 		}
 
@@ -213,7 +215,8 @@ namespace MonoDevelop.CSharp.Completion
 				bool insertSemicolon = false;
 				if (string.IsNullOrEmpty ((textBefore + textToEnd).Trim ()))
 					insertSemicolon = true;
-
+				if (Entity.SymbolKind == SymbolKind.Constructor)
+					insertSemicolon = false;
 				int pos;
 //				if (SearchBracket (window.CodeCompletionContext.TriggerOffset + partialWord.Length, out pos)) {
 //					window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, partialWord, text);
@@ -324,7 +327,7 @@ namespace MonoDevelop.CSharp.Completion
 		void SetMember (IEntity entity)
 		{
 			this.Entity = entity;
-			this.completionString = displayText = entity.Name;
+			this.completionString = displayText = (Entity.SymbolKind == SymbolKind.Constructor ? Entity.DeclaringTypeDefinition : Entity).Name;
 		}
 
 		TypeSystemAstBuilder GetBuilder (ICompilation compilation)

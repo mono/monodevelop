@@ -670,7 +670,8 @@ namespace MonoDevelop.CSharp.Completion
 			public CompletionDataFactory (CSharpCompletionTextEditorExtension ext, CSharpResolver state)
 			{
 //				this.state = state;
-				builder = new TypeSystemAstBuilder(state);
+				if (state != null)
+					builder = new TypeSystemAstBuilder(state);
 				this.ext = ext;
 			}
 			
@@ -816,12 +817,13 @@ namespace MonoDevelop.CSharp.Completion
 					return result;
 				}
 
-				public TypeCompletionData (IType type, CSharpCompletionTextEditorExtension ext, Lazy<string> displayText, string icon) : base (null, displayText, icon)
+				public TypeCompletionData (IType type, CSharpCompletionTextEditorExtension ext, Lazy<string> displayText, string icon, bool addConstructors) : base (null, displayText, icon)
 				{
 					this.type = type;
 					this.ext = ext;
 					this.file = ext.CSharpUnresolvedFile;
 					this.compilation = ext.UnresolvedFileCompilation;
+
 				}
 
 				Dictionary<string, ICSharpCode.NRefactory.Completion.ICompletionData> addedDatas = new Dictionary<string, ICSharpCode.NRefactory.Completion.ICompletionData> ();
@@ -856,8 +858,20 @@ namespace MonoDevelop.CSharp.Completion
 				return new GenericTooltipCompletionData ((list, sw) => MemberCompletionData.CreateTooltipInformation (ext, list.Resolver, entity, sw), text, entity.GetStockIcon ());
 			}
 
-			ICompletionData ICompletionDataFactory.CreateTypeCompletionData (IType type, bool showFullName, bool isInAttributeContext)
+			ICompletionData ICompletionDataFactory.CreateTypeCompletionData (IType type, bool showFullName, bool isInAttributeContext, bool addConstructors)
 			{
+				if (addConstructors) {
+					ICompletionData constructorResult = null;
+					foreach (var ctor in type.GetConstructors ()) {
+						if (constructorResult != null) {
+							constructorResult.AddOverload (((ICompletionDataFactory)this).CreateEntityCompletionData (ctor));
+						} else {
+							constructorResult = ((ICompletionDataFactory)this).CreateEntityCompletionData (ctor);
+						}
+					}
+					return constructorResult;
+				}
+
 				Lazy<string> displayText = new Lazy<string> (delegate {
 					string name = showFullName ? builder.ConvertType(type).ToString() : type.Name; 
 					if (isInAttributeContext && name.EndsWith("Attribute") && name.Length > "Attribute".Length) {
@@ -868,7 +882,8 @@ namespace MonoDevelop.CSharp.Completion
 
 				var result = new TypeCompletionData (type, ext,
 					displayText, 
-					type.GetStockIcon ());
+					type.GetStockIcon (),
+					addConstructors);
 				return result;
 			}
 
@@ -1010,17 +1025,19 @@ namespace MonoDevelop.CSharp.Completion
 				ParsedDocument unit;
 				MonoDevelop.Ide.Gui.Document doc;
 				bool useFullName;
+				bool addConstructors;
 
 				public IType Type {
 					get { return this.type; }
 				}
 
-				public ImportSymbolCompletionData (MonoDevelop.Ide.Gui.Document doc, bool useFullName, IType type)
+				public ImportSymbolCompletionData (MonoDevelop.Ide.Gui.Document doc, bool useFullName, IType type, bool addConstructors)
 				{
 					this.doc = doc;
 					this.useFullName = useFullName;
 					this.type = type;
 					this.unit = doc.ParsedDocument;
+					this.addConstructors = addConstructors;
 				}
 
 				bool initialized = false;
@@ -1113,9 +1130,9 @@ namespace MonoDevelop.CSharp.Completion
 			}
 
 
-			ICompletionData ICompletionDataFactory.CreateImportCompletionData(IType type, bool useFullName)
+			ICompletionData ICompletionDataFactory.CreateImportCompletionData(IType type, bool useFullName, bool addConstructors)
 			{
-				return new ImportSymbolCompletionData (ext.Document, useFullName, type);
+				return new ImportSymbolCompletionData (ext.Document, useFullName, type, addConstructors);
 			}
 
 		}
