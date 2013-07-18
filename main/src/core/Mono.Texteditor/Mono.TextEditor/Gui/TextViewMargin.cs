@@ -2715,7 +2715,7 @@ namespace Mono.TextEditor
 					DrawCaretLineMarker (cr, xPos, y, lineArea.X + lineArea.Width - xPos, _lineHeight);
 				}
 			}
-
+			
 			if (textEditor.Options.ShowWhitespaces != ShowWhitespaces.Never) {
 				if (!isEolFolded && isEolSelected || textEditor.Options.ShowWhitespaces == ShowWhitespaces.Always)
 					if (!(BackgroundRenderer != null && textEditor.Options.ShowWhitespaces == ShowWhitespaces.Selection))
@@ -2725,7 +2725,18 @@ namespace Mono.TextEditor
 			var extendingMarker = Document.GetExtendingTextMarker (lineNr);
 			if (extendingMarker != null)
 				extendingMarker.Draw (textEditor, cr, lineNr, lineArea);
-			
+
+			if (BackgroundRenderer == null) {
+				var metrics = new EndOfLineMetrics {
+					LineSegment = line,
+					TextRenderEndPosition = TextStartPosition + pangoPosition / Pango.Scale.PangoScale,
+					LineHeight = _lineHeight
+				};
+				foreach (var marker in line.Markers) {
+					marker.DrawAfterEol (textEditor, cr, y, metrics);
+				}
+			}
+
 			lastLineRenderWidth = pangoPosition / Pango.Scale.PangoScale;
 			if (textEditor.HAdjustment.Value > 0) {
 				cr.LineWidth = textEditor.Options.Zoom;

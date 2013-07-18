@@ -91,8 +91,18 @@ namespace MonoDevelop.VersionControl.Git
 			try {
 				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
 					dlg.Hide ();
-					using (IProgressMonitor monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Merging branch '{0}'...", dlg.SelectedBranch))) {
-						repo.Merge (dlg.SelectedBranch, dlg.StageChanges, monitor);
+					if (rebasing) {
+						using (IProgressMonitor monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Rebasing branch '{0}'...", dlg.SelectedBranch))) {
+							if (dlg.IsRemote)
+								repo.Fetch (monitor);
+							repo.Rebase (dlg.SelectedBranch, dlg.StageChanges, monitor);
+						}
+					} else {
+						using (IProgressMonitor monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Merging branch '{0}'...", dlg.SelectedBranch))) {
+							if (dlg.IsRemote)
+								repo.Fetch (monitor);
+							repo.Merge (dlg.SelectedBranch, dlg.StageChanges, monitor);
+						}
 					}
 				}
 			} finally {

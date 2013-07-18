@@ -7,16 +7,16 @@
        description = "Provides a text editor for the MonoDevelop based on Mono.TextEditor"
        category    = "MonoDevelop Core"
        flags       = "Hidden"
-       version     = "4.1.4">
+       version     = "4.1.7">
 	
 	<Runtime>
 		<Import assembly="MonoDevelop.SourceEditor2.dll"/>
 	</Runtime>
 
 	<Dependencies>
-	    <Addin id="Core" version="4.1.4"/>
-	    <Addin id="Ide" version="4.1.4"/>
-	    <Addin id="Debugger" version="4.1.4"/>
+	    <Addin id="Core" version="4.1.7"/>
+	    <Addin id="Ide" version="4.1.7"/>
+	    <Addin id="Debugger" version="4.1.7"/>
 	</Dependencies>
 
 	<!-- Extension points -->
@@ -190,6 +190,8 @@
 		<Section id = "General" insertbefore="Formatting" _label = "General" icon="md-text-editor" fill="true" class = "MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel"/>
 		<Section id = "Markers" _label = "Markers and Rulers" icon="md-markers-rulers" class = "MonoDevelop.SourceEditor.OptionPanels.MarkerPanel"/>
 		<Section id = "Behavior" _label = "Behavior" icon="md-text-editor-behavior" class = "MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel"/>
+		<Section id = "CompletionBehavior" _label = "Completion Behavior" class = "MonoDevelop.SourceEditor.OptionPanels.CompletionOptionsPanel"/>
+		<Section id = "CompletionAppearance" _label = "Completion Appearance" class = "MonoDevelop.SourceEditor.OptionPanels.CompletionAppearancePanel"/>
 		<Section id = "SyntaxHighlighting" _label = "Syntax Highlighting" fill="true" icon="md-syntax-highlighting" class = "MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel"/>
 	</Extension>
 

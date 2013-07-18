@@ -6,13 +6,13 @@
        url         = "http://www.monodevelop.com/"
        description = "CSharp Language Binding"
        category    = "Language bindings"
-       version     = "4.1.4">
+       version     = "4.1.7">
 	
 	<Dependencies>
-		<Addin id="Core" version="4.1.4"/>
-		<Addin id="Ide" version="4.1.4"/>
-		<Addin id="SourceEditor2" version="4.1.4"/>
-		<Addin id="Refactoring" version="4.1.4"/>
+		<Addin id="Core" version="4.1.7"/>
+		<Addin id="Ide" version="4.1.7"/>
+		<Addin id="SourceEditor2" version="4.1.7"/>
+		<Addin id="Refactoring" version="4.1.7"/>
 	</Dependencies>
 
 	<ConditionType id="MSBuildTargetIsAvailable" type="MonoDevelop.Projects.Formats.MSBuild.TargetsAvailableCondition" />
@@ -114,6 +114,7 @@
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Completion.CSharpCompletionTextEditorExtension" />
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Highlighting.HighlightUsagesExtension" />
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.PathedDocumentTextEditorExtension" />
+		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.UnitTestTextEditorExtension" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/MD1SerializationMaps">
@@ -128,6 +129,9 @@
 	<Extension path = "/MonoDevelop/Core/MimeTypes">
 		<MimeType id="text/x-csharp" _description="C# source code" icon="md-csharp-file" isText="true">
 			<File pattern="*.cs" />
+		</MimeType>
+		<MimeType id="application/csproject+xml" _description="C# project file" baseType="application/xml">
+			<File pattern="*.csproj" />
 		</MimeType>
 	</Extension>
 
@@ -271,7 +275,7 @@
 	        <Import assembly="MonoDevelop.CSharpBinding.Autotools.dll"/>
 	    </Runtime>
 		<Dependencies>
-			<Addin id="Autotools" version="4.1.4"/>
+			<Addin id="Autotools" version="4.1.7"/>
 		</Dependencies>
 		<Extension path = "/MonoDevelop/Autotools/SimpleSetups">
 			<Class class="CSharpBinding.Autotools.CSharpAutotoolsSetup" />
@@ -283,7 +287,7 @@
 			<Import assembly="MonoDevelop.CSharpBinding.AspNet.dll"/>
 		</Runtime>
 		<Dependencies>
-			<Addin id="AspNet" version="4.1.4"/>
+			<Addin id="AspNet" version="4.1.7"/>
 		</Dependencies>
 		<Extension path = "/MonoDevelop/Asp/CompletionBuilders">
 			<Class class = "MonoDevelop.CSharp.Completion.AspLanguageBuilder" />

@@ -1879,6 +1879,7 @@
     <Compile Include="MonoDevelop.Ide.Navigation\ClosedDocumentNavigationPoint.cs" />
     <Compile Include="MonoDevelop.Ide.CustomTools\ResXFileCodeGenerator.cs" />
     <Compile Include="MonoDevelop.Ide.CustomTools\ThreadAsyncOperation.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects\IdeFileSystemExtensionExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

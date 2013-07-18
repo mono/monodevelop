@@ -247,6 +247,8 @@ namespace MonoDevelop.CSharp.Highlighting
 				parameterModifierColor = "Keyword(Parameter)";
 				inactiveCodeColor = "Excluded Code";
 				syntaxErrorColor = "Syntax Error";
+
+				stringFormatItemColor = "String Format Items";
 			}
 
 			protected override void Colorize(TextLocation start, TextLocation end, string color)

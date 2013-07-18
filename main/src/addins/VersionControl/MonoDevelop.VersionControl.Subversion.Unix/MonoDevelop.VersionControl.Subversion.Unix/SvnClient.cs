@@ -11,6 +11,7 @@ using System.Text;
 
 using svn_revnum_t = System.IntPtr;
 using size_t = System.Int32;
+using MonoDevelop.Projects.Text;
 
 namespace MonoDevelop.VersionControl.Subversion.Unix
 {
@@ -28,11 +29,13 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		public static void CheckError (IntPtr error, int? allowedError)
 		{
 			string msg = null;
+			int errorCode = 0; // Innermost error-code.
 			while (error != IntPtr.Zero) {
 				LibSvnClient.svn_error_t error_t = (LibSvnClient.svn_error_t) Marshal.PtrToStructure (error, typeof (LibSvnClient.svn_error_t));
 				if (allowedError.HasValue && error_t.apr_err == allowedError.Value)
 					return;
 
+				errorCode = error_t.apr_err;
 				if (msg != null)
 					msg += "\n" + GetErrorMessage (error_t);
 				else
@@ -43,7 +46,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 					msg = GettextCatalog.GetString ("Unknown error");
 			}
 			if (msg != null)
-				throw new SubversionException (msg);
+				throw new SubversionException (msg, errorCode);
 		}
 		
 		static string GetErrorMessage (LibSvnClient.svn_error_t error)
@@ -571,10 +574,11 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			int numAnnotations = 0;
 			Cat (file, SvnRevision.Base, data);
 
-			StreamReader reader = new StreamReader (data);
-			while (reader.ReadLine () != null)
-				numAnnotations++;
-			reader.Close ();
+			using (StreamReader reader = new StreamReader (data)) {
+				reader.BaseStream.Seek (0, SeekOrigin.Begin);
+				while (reader.ReadLine () != null)
+					numAnnotations++;
+			}
 
 			Annotation[] annotations = new Annotation [numAnnotations];
 			AnnotationCollector collector = new AnnotationCollector (annotations);
@@ -595,18 +599,34 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 		public override string GetTextAtRevision (string pathorurl, Revision revision)
 		{
+			return null;
+		}
+
+		public override string GetTextAtRevision (string pathorurl, Revision revision, string rootPath)
+		{
 			MemoryStream memstream = new MemoryStream ();
-			Cat (pathorurl, (SvnRevision) revision, memstream);
+			try {
+				Cat (pathorurl, (SvnRevision) revision, memstream);
+			} catch (SubversionException e) {
+				// File got added/removed at some point.
+				// SVN_ERR_FS_NOT_FOUND
+				if (e.ErrorCode == 160013)
+					return "";
+				// We tried on a directory
+				// SVN_ERR_FS_NOT_FILE
+				if (e.ErrorCode == 160017)
+					return "";
+				throw;
+			}
 
 			var buffer = memstream.GetBuffer ();
 			try {
 				if (IsBinary (buffer, memstream.Length))
 					return null;
-				return System.Text.Encoding.UTF8.GetString (buffer, 0, (int) memstream.Length);
+				return Encoding.UTF8.GetString (buffer, 0, (int) memstream.Length);
 			} catch {
+				return "";
 			}
-			
-			return System.Text.Encoding.ASCII.GetString (buffer, 0, (int) memstream.Length);
 		}
 		
 		public void Cat (string pathorurl, SvnRevision rev, Stream stream)
@@ -623,8 +643,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				StreamCollector collector = new StreamCollector (stream);
 				IntPtr svnstream = svn.stream_create (IntPtr.Zero, localpool);
 				svn.stream_set_write (svnstream, collector.Func);
-				LibSvnClient.Rev peg_revision = LibSvnClient.Rev.Blank;
-				CheckError (svn.client_cat2 (svnstream, pathorurl, ref peg_revision, ref revision, ctx, localpool), 195007);
+				// Setting peg_revision to revision.
+				// Otherwise, it will use Head as peg and it will throw exceptions.
+				CheckError (svn.client_cat2 (svnstream, pathorurl, ref revision, ref revision, ctx, localpool), 195007);
 			} finally {
 				apr.pool_destroy (localpool);
 				TryEndOperation ();
@@ -650,7 +671,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				Marshal.FreeHGlobal (result);
 			} finally {
 				foreach (string file in updateFileList)
-					FileService.NotifyFileChanged (file);
+					FileService.NotifyFileChanged (file, true);
 				updateFileList = null;
 				
 				apr.pool_destroy (localpool);
@@ -972,7 +993,6 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			} finally {
 				try {
 					// Cleanup
-					apr.pool_destroy (localpool);
 					if (outfile != IntPtr.Zero)
 						apr.file_close (outfile); 
 					if (errfile != IntPtr.Zero)
@@ -981,9 +1001,11 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 						FileService.DeleteFile (ferr);
 					if (fout != null)
 						FileService.DeleteFile (fout);
-
+				} catch {
+				} finally {
+					apr.pool_destroy (localpool);
 					TryEndOperation ();
-				} catch {}
+				}
 			}
 		}
 
@@ -1018,6 +1040,103 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			finally {
 				apr.pool_destroy (localpool);
 				TryEndOperation ();
+			}
+		}
+
+		public override void Ignore (FilePath[] paths)
+		{
+			TryStartOperation ();
+
+			IntPtr localpool = newpool (pool);
+			IntPtr hash_item, hash_name, hash_val;
+			int length;
+			IntPtr result;
+			IntPtr props_ptr = IntPtr.Zero;
+			StringBuilder props = new StringBuilder ();
+			string new_path;
+			LibSvnClient.svn_string_t new_props;
+			LibSvnClient.Rev rev = LibSvnClient.Rev.Working;
+			try {
+				foreach (var path in paths) {
+					new_path = NormalizePath (path, localpool);
+					CheckError (svn.client_propget (out result, "svn:ignore", Path.GetDirectoryName (new_path),
+					                                ref rev, false, ctx, localpool));
+					hash_item = apr.hash_first (localpool, result);
+					while (hash_item != IntPtr.Zero) {
+						apr.hash_this (hash_item, out hash_name, out length, out hash_val);
+						new_props = (LibSvnClient.svn_string_t) Marshal.PtrToStructure (hash_val, typeof (LibSvnClient.svn_string_t));
+						props.Append (Marshal.PtrToStringAnsi (new_props.data));
+						hash_item = apr.hash_next (hash_item);
+					}
+					props.AppendLine (Path.GetFileName (new_path));
+					new_props = new LibSvnClient.svn_string_t ();
+					new_props.data = Marshal.StringToHGlobalAnsi (props.ToString ());
+					new_props.len = props.Length;
+					props_ptr = apr.pcalloc (localpool, new_props);
+					CheckError (svn.client_propset ("svn:ignore", props_ptr, Path.GetDirectoryName (new_path), false, localpool));
+				}
+			} finally {
+				apr.pool_destroy (localpool);
+				TryEndOperation ();
+			}
+		}
+
+		public override void Unignore (FilePath[] paths)
+		{
+			TryStartOperation ();
+
+			IntPtr localpool = newpool (pool);
+			IntPtr hash_item, hash_name, hash_val;
+			int length;
+			IntPtr result;
+			IntPtr props_ptr = IntPtr.Zero;
+			StringBuilder props = new StringBuilder ();
+			string new_path;
+			LibSvnClient.svn_string_t new_props;
+			LibSvnClient.Rev rev = LibSvnClient.Rev.Working;
+			int index;
+			string props_str;
+			try {
+				foreach (var path in paths) {
+					new_path = NormalizePath (path, localpool);
+					CheckError (svn.client_propget (out result, "svn:ignore", Path.GetDirectoryName (new_path),
+					                                ref rev, false, ctx, localpool));
+					hash_item = apr.hash_first (localpool, result);
+					while (hash_item != IntPtr.Zero) {
+						apr.hash_this (hash_item, out hash_name, out length, out hash_val);
+						new_props = (LibSvnClient.svn_string_t) Marshal.PtrToStructure (hash_val, typeof (LibSvnClient.svn_string_t));
+						props.Append (Marshal.PtrToStringAnsi (new_props.data));
+						hash_item = apr.hash_next (hash_item);
+					}
+					props_str = props.ToString ();
+					index = props_str.IndexOf (Path.GetFileName (new_path) + Environment.NewLine);
+					props_str = (index < 0) ? props_str : props_str.Remove (index, Path.GetFileName(new_path).Length+1);
+
+					new_props = new LibSvnClient.svn_string_t ();
+					new_props.data = Marshal.StringToHGlobalAnsi (props_str);
+					new_props.len = props_str.Length;
+					props_ptr = apr.pcalloc (localpool, new_props);
+					CheckError (svn.client_propset ("svn:ignore", props_ptr, Path.GetDirectoryName (new_path), false, localpool));
+				}
+			} finally {
+				apr.pool_destroy (localpool);
+				TryEndOperation ();
+			}
+		}
+
+		public override string GetTextBase (string sourcefile)
+		{
+			MemoryStream data = new MemoryStream ();
+			try {
+				Cat (sourcefile, SvnRevision.Base, data);
+				return TextFile.ReadFile (sourcefile, data).Text;
+				// This outputs the contents of the base revision
+				// of a file to a stream.
+			} catch (SubversionException e) {
+				// This occurs when we don't have a base file for
+				// the target file. We have no way of knowing if
+				// a file has a base version therefore this will do.
+				return String.Empty;
 			}
 		}
 		

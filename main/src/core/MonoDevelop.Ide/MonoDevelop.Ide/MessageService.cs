@@ -442,6 +442,9 @@ namespace MonoDevelop.Ide
 		{
 			public AlertButton ShowException (Gtk.Window parent, string title, string message, Exception e, params AlertButton[] buttons)
 			{
+				if (buttons.Length == 0 && (e is UserException) && ((UserException)e).AlreadyReportedToUser)
+					return AlertButton.Ok;
+
 				var exceptionDialog = new ExceptionDialog () {
 					Buttons = buttons ?? new AlertButton[] { AlertButton.Ok },
 					Title = title ?? GettextCatalog.GetString ("An error has occurred"),

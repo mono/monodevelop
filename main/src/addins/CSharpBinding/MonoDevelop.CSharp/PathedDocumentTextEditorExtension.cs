@@ -116,6 +116,9 @@ namespace MonoDevelop.CSharp
 						if (member is FieldDeclaration) {
 							foreach (var variable in ((FieldDeclaration)member).Variables)
 								memberList.Add (variable);
+						} else if (member is FixedFieldDeclaration) {
+							foreach (var variable in ((FixedFieldDeclaration)member).Variables)
+								memberList.Add (variable);
 						} else if (member is EventDeclaration) {
 							foreach (var variable in ((EventDeclaration)member).Variables)
 								memberList.Add (variable);
@@ -133,6 +136,9 @@ namespace MonoDevelop.CSharp
 					foreach (var member in type.Members) {
 						if (member is FieldDeclaration) {
 							foreach (var variable in ((FieldDeclaration)member).Variables)
+								memberList.Add (variable);
+						} if (member is FixedFieldDeclaration) {
+							foreach (var variable in ((FixedFieldDeclaration)member).Variables)
 								memberList.Add (variable);
 						} else {
 							memberList.Add (member);
@@ -198,6 +204,9 @@ namespace MonoDevelop.CSharp
 				}
 				if (node is EntityDeclaration)
 					return ((EntityDeclaration)node).Name;
+				if (node is FixedVariableInitializer) {
+					return ((FixedVariableInitializer)node).Name;
+				}
 				return ((VariableInitializer)node).Name;
 			}
 

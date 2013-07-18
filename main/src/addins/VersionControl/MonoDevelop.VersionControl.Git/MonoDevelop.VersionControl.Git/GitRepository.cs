@@ -112,10 +112,6 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
-		public FilePath RootPath {
-			get; private set;
-		}
-
 		public override void CopyConfigurationFrom (Repository other)
 		{
 			base.CopyConfigurationFrom (other);
@@ -315,7 +311,7 @@ namespace MonoDevelop.VersionControl.Git
 
 				GetDirectoryVersionInfoCore (repository, rev, files.ToArray (), existingFiles, nonVersionedMissingFiles, versions);
 				
-				// Existing files for which git did not report an status are supposed to be tracked
+				// Existing files for which git did not report a status are supposed to be tracked
 				foreach (FilePath file in existingFiles.Where (f => files.Contains (f))) {
 					VersionInfo vi = new VersionInfo (file, "", false, VersionStatus.Versioned, rev, VersionStatus.Versioned, null);
 					versions.Add (vi);
@@ -332,8 +328,8 @@ namespace MonoDevelop.VersionControl.Git
 
 		void GetDirectoryVersionInfoCore (NGit.Repository repository, GitRevision rev, FilePath [] localPaths, HashSet<FilePath> existingFiles, HashSet<FilePath> nonVersionedMissingFiles, List<VersionInfo> versions)
 		{
-			
-			var status = new FilteredStatus (repository, repository.ToGitPath (localPaths)).Call (); 
+			var filteredStatus = new FilteredStatus (repository, repository.ToGitPath (localPaths));
+			var status = filteredStatus.Call ();
 			HashSet<string> added = new HashSet<string> ();
 			Action<IEnumerable<string>, VersionStatus> AddFiles = delegate(IEnumerable<string> files, VersionStatus fstatus) {
 				foreach (string file in files) {
@@ -342,7 +338,7 @@ namespace MonoDevelop.VersionControl.Git
 					FilePath statFile = repository.FromGitPath (file);
 					existingFiles.Remove (statFile.CanonicalPath);
 					nonVersionedMissingFiles.Remove (statFile.CanonicalPath);
-					versions.Add (new VersionInfo (statFile, "", false, fstatus, rev, VersionStatus.Versioned, null));
+					versions.Add (new VersionInfo (statFile, "", false, fstatus, rev, fstatus == VersionStatus.Ignored ? VersionStatus.Unversioned : VersionStatus.Versioned, null));
 				}
 			};
 			
@@ -353,6 +349,7 @@ namespace MonoDevelop.VersionControl.Git
 			AddFiles (status.GetMissing (), VersionStatus.Versioned | VersionStatus.ScheduledDelete);
 			AddFiles (status.GetConflicting (), VersionStatus.Versioned | VersionStatus.Conflicted);
 			AddFiles (status.GetUntracked (), VersionStatus.Unversioned);
+			AddFiles (filteredStatus.GetIgnoredNotInIndex (), VersionStatus.Ignored);
 		}
 		
 		protected override VersionControlOperation GetSupportedOperations (VersionInfo vinfo)
@@ -424,18 +421,9 @@ namespace MonoDevelop.VersionControl.Git
 			IEnumerable<DiffEntry> statusList = null;
 			
 			monitor.BeginTask (GettextCatalog.GetString ("Updating"), 5);
-			
+
 			// Fetch remote commits
-			string remote = GetCurrentRemote ();
-			if (remote == null)
-				throw new InvalidOperationException ("No remotes defined");
-			monitor.Log.WriteLine (GettextCatalog.GetString ("Fetching from '{0}'", remote));
-			RemoteConfig remoteConfig = new RemoteConfig (RootRepository.GetConfig (), remote);
-			Transport tn = Transport.Open (RootRepository, remoteConfig);
-			using (var gm = new GitMonitor (monitor))
-				tn.Fetch (gm, null);
-			monitor.Step (1);
-			
+			Fetch (monitor);
 			string upstreamRef = GitUtil.GetUpstreamSource (RootRepository, GetCurrentBranch ());
 			if (upstreamRef == null)
 				upstreamRef = GetCurrentRemote () + "/" + GetCurrentBranch ();
@@ -454,6 +442,20 @@ namespace MonoDevelop.VersionControl.Git
 			monitor.EndTask ();
 		}
 
+		public void Fetch (IProgressMonitor monitor)
+		{
+			string remote = GetCurrentRemote ();
+			if (remote == null)
+				throw new InvalidOperationException ("No remotes defined");
+
+			monitor.Log.WriteLine (GettextCatalog.GetString ("Fetching from '{0}'", remote));
+			RemoteConfig remoteConfig = new RemoteConfig (RootRepository.GetConfig (), remote);
+			Transport tn = Transport.Open (RootRepository, remoteConfig);
+			using (var gm = new GitMonitor (monitor))
+				tn.Fetch (gm, null);
+			monitor.Step (1);
+		}
+
 		public void Rebase (string upstreamRef, bool saveLocalChanges, IProgressMonitor monitor)
 		{
 			StashCollection stashes = GitUtil.GetStashes (RootRepository);
@@ -468,12 +470,11 @@ namespace MonoDevelop.VersionControl.Git
 						stash = stashes.Create (gm, GetStashName ("_tmp_"));
 					monitor.Step (1);
 				}
-				
+
 				NGit.Api.Git git = new NGit.Api.Git (RootRepository);
 				RebaseCommand rebase = git.Rebase ();
 				rebase.SetOperation (RebaseCommand.Operation.BEGIN);
 				rebase.SetUpstream (upstreamRef);
-				
 				var gmonitor = new GitMonitor (monitor);
 				rebase.SetProgressMonitor (gmonitor);
 				
@@ -641,7 +642,7 @@ namespace MonoDevelop.VersionControl.Git
 			NGit.Api.Git git = new NGit.Api.Git (RootRepository);
 			NGit.Api.CommitCommand commit = git.Commit ();
 			commit.SetMessage (message);
-			
+
 			if (changeSet.ExtendedProperties.Contains ("Git.AuthorName")) {
 				commit.SetAuthor ((string)changeSet.ExtendedProperties ["Git.AuthorName"], (string)changeSet.ExtendedProperties ["Git.AuthorEmail"]);
 			}
@@ -676,6 +677,12 @@ namespace MonoDevelop.VersionControl.Git
 				iter.Next (1);
 			}
 		}
+
+		public bool IsUserInfoDefault ()
+		{
+			UserConfig config = RootRepository.GetConfig ().Get (UserConfig.KEY);
+			return config.IsCommitterNameImplicit () && config.IsCommitterEmailImplicit ();
+		}
 		
 		public void GetUserInfo (out string name, out string email)
 		{
@@ -699,6 +706,7 @@ namespace MonoDevelop.VersionControl.Git
 			cmd.SetRemote ("origin");
 			cmd.SetBranch ("refs/heads/master");
 			cmd.SetDirectory ((string)targetLocalPath);
+			cmd.SetCloneSubmodules (true);
 			using (var gm = new GitMonitor (monitor, 4)) {
 				cmd.SetProgressMonitor (gm);
 				cmd.Call ();
@@ -796,7 +804,7 @@ namespace MonoDevelop.VersionControl.Git
 			monitor.BeginTask (null, files.Length);
 
 			foreach (FilePath p in changedFiles) {
-				FileService.NotifyFileChanged (p);
+				FileService.NotifyFileChanged (p, true);
 				monitor.Step (1);
 			}
 			foreach (FilePath p in removedFiles) {
@@ -1269,8 +1277,8 @@ namespace MonoDevelop.VersionControl.Git
 			var modified = changes.Where (c => c.GetChangeType () != DiffEntry.ChangeType.ADD).Select (c => GetRepository (c.GetNewPath ()).FromGitPath (c.GetNewPath ())).ToList ();
 			
 			monitor.BeginTask (GettextCatalog.GetString ("Updating solution"), removed.Count + modified.Count);
-			
-			FileService.NotifyFilesChanged (modified);
+
+			FileService.NotifyFilesChanged (modified, true);
 			monitor.Step (modified.Count);
 			
 			FileService.NotifyFilesRemoved (removed);
@@ -1419,6 +1427,40 @@ namespace MonoDevelop.VersionControl.Git
 			if (id == null)
 				return null;
 			return new GitRevision (this, revision.GitRepository, id.Name);
+		}
+
+		protected override void OnIgnore (FilePath[] paths)
+		{
+			List<FilePath> ignored = new List<FilePath> ();
+			string txt;
+			using (StreamReader br = new StreamReader (RootPath + Path.DirectorySeparatorChar + ".gitignore")) {
+				while ((txt = br.ReadLine ()) != null) {
+					ignored.Add (txt);
+				}
+			}
+
+			StringBuilder sb = new StringBuilder ();
+			foreach (var path in paths.Except (ignored))
+				sb.AppendLine (RootRepository.ToGitPath (path));
+
+			File.AppendAllText (RootPath + Path.DirectorySeparatorChar + ".gitignore", sb.ToString ());
+		}
+
+		protected override void OnUnignore (FilePath[] paths)
+		{
+			List<string> ignored = new List<string> ();
+			string txt;
+			using (StreamReader br = new StreamReader (RootPath + Path.DirectorySeparatorChar + ".gitignore")) {
+				while ((txt = br.ReadLine ()) != null) {
+					ignored.Add (txt);
+				}
+			}
+
+			StringBuilder sb = new StringBuilder ();
+			foreach (var path in ignored.Except (RootRepository.ToGitPath (paths)))
+				sb.AppendLine (path);
+
+			File.WriteAllText (RootPath + Path.DirectorySeparatorChar + ".gitignore", sb.ToString ());
 		}
 	}
 	

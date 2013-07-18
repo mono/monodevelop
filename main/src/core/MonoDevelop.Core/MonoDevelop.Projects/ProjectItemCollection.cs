@@ -63,19 +63,29 @@ namespace MonoDevelop.Projects
 		public ProjectItemCollection ()
 		{
 		}
+
+		protected virtual void AddItem (T item)
+		{
+			Items.Add (item);
+		}
 		
 		public void AddRange (IEnumerable<T> items)
 		{
-			foreach (T t in items)
-				Items.Add (t);
+			foreach (var item in items)
+				AddItem (item);
 			NotifyAdded (items, false);
 			NotifyAdded (items, true);
+		}
+
+		protected virtual void RemoveItem (T item)
+		{
+			Items.Remove (item);
 		}
 		
 		public void RemoveRange (IEnumerable<T> items)
 		{
-			foreach (T t in items)
-				Items.Remove (t);
+			foreach (var item in items)
+				RemoveItem (item);
 			NotifyRemoved (items, false);
 			NotifyRemoved (items, true);
 		}
@@ -120,18 +130,20 @@ namespace MonoDevelop.Projects
 			NotifyRemoved (items, false);
 		}
 		
-		void IItemListHandler.InternalAdd (IEnumerable<ProjectItem> objs, bool comesFromParent)
+		void IItemListHandler.InternalAdd (IEnumerable<ProjectItem> items, bool comesFromParent)
 		{
-			foreach (T t in objs)
-				Items.Add (t);
-			NotifyAdded (objs, comesFromParent);
+			foreach (var item in items)
+				AddItem ((T) item);
+
+			NotifyAdded (items, comesFromParent);
 		}
 		
-		void IItemListHandler.InternalRemove (IEnumerable<ProjectItem> objs, bool comesFromParent)
+		void IItemListHandler.InternalRemove (IEnumerable<ProjectItem> items, bool comesFromParent)
 		{
-			foreach (T t in objs)
-				Items.Remove (t);
-			NotifyRemoved (objs, comesFromParent);
+			foreach (var item in items)
+				RemoveItem ((T) item);
+
+			NotifyRemoved (items, comesFromParent);
 		}
 		
 		bool IItemListHandler.CanHandle (ProjectItem obj)

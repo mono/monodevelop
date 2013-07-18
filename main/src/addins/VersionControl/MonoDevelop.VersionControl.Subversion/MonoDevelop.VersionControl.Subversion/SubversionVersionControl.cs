@@ -9,12 +9,6 @@ namespace MonoDevelop.VersionControl.Subversion
 {
 	public abstract class SubversionVersionControl : VersionControlSystem
 	{
-		internal static string GetTextBase(string sourcefile)
-		{
-			// Visible only to be overridden.
-			return "";
-		}
-		
 		internal static string GetDirectoryDotSvn (FilePath path)
 		{
 			if (path.IsEmpty || path.ParentDirectory.IsEmpty || path.IsNull || path.ParentDirectory.IsNull)
@@ -57,11 +51,8 @@ namespace MonoDevelop.VersionControl.Subversion
 
 	public abstract class SubversionBackend
 	{
-		public virtual string GetTextBase (string sourcefile)
-		{
-			return SubversionVersionControl.GetTextBase (sourcefile);
-		}
-		
+		public abstract string GetTextBase (string sourcefile);
+
 		string GetDirectoryDotSvn (FilePath path)
 		{
 			return SubversionVersionControl.GetDirectoryDotSvn (path);
@@ -96,7 +87,13 @@ namespace MonoDevelop.VersionControl.Subversion
 		/// <param name='revision'>
 		/// Revision.
 		/// </param>
+		[Obsolete ("Use the overload with rootPath parameter")]
 		public abstract string GetTextAtRevision (string repositoryPath, Revision revision);
+
+		public virtual string GetTextAtRevision (string repositoryPath, Revision revision, string rootPath)
+		{
+			return GetTextAtRevision (repositoryPath, revision);
+		}
 		
 		internal protected virtual VersionControlOperation GetSupportedOperations (Repository repo, VersionInfo vinfo, VersionControlOperation defaultValue)
 		{
@@ -194,6 +191,10 @@ namespace MonoDevelop.VersionControl.Subversion
 
 		public abstract void Delete (FilePath path, bool force, IProgressMonitor monitor);
 
+		public abstract void Ignore (FilePath[] paths);
+
+		public abstract void Unignore (FilePath[] paths);
+
 		public IEnumerable<DirectoryEntry> List (FilePath path, bool recurse)
 		{
 			return List (path, recurse, SvnRevision.Head);
@@ -270,7 +271,21 @@ namespace MonoDevelop.VersionControl.Subversion
 	}
 	
 
-	public class SubversionException : ApplicationException {
-		public SubversionException(string message) : base(message) { }
+	public class SubversionException : ApplicationException
+	{
+		public int ErrorCode {
+			get;
+			private set;
+		}
+		
+		public SubversionException (string message, int errorCode) : base (message)
+		{
+			ErrorCode = errorCode;
+		}
+
+		public SubversionException (string message) : base (message)
+		{
+			ErrorCode = 0;
+		}
 	}
 }

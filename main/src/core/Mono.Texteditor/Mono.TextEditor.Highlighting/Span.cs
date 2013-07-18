@@ -37,7 +37,8 @@ namespace Mono.TextEditor.Highlighting
 	{
 		None = 0,
 		StartsLine = 1,
-		FirstNonWs = 2
+		FirstNonWs = 2,
+		NewWord = 4
 	}
 
 	[Flags]

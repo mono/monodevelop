@@ -20,6 +20,12 @@ namespace MonoDevelop.VersionControl
 		string vcsName;
 
 		int references;
+
+		public MonoDevelop.Core.FilePath RootPath
+		{
+			get;
+			protected set;
+		}
 		
 		public event EventHandler NameChanged;
 		
@@ -738,6 +744,24 @@ namespace MonoDevelop.VersionControl
 		/// A revision
 		/// </param>
 		protected abstract RevisionPath[] OnGetRevisionChanges (Revision revision);
+
+		// Ignores a file for version control operations.
+		public void Ignore (FilePath[] localPath)
+		{
+			ClearCachedVersionInfo (localPath);
+			OnIgnore (localPath);
+		}
+
+		protected abstract void OnIgnore (FilePath[] localPath);
+
+		// Unignores a file for version control operations.
+		public void Unignore (FilePath[] localPath)
+		{
+			ClearCachedVersionInfo (localPath);
+			OnUnignore (localPath);
+		}
+
+		protected abstract void OnUnignore (FilePath[] localPath);
 	}
 	
 	public class Annotation
@@ -800,6 +824,7 @@ namespace MonoDevelop.VersionControl
 		}
 	}
 
+	[Flags]
 	public enum VersionInfoQueryFlags
 	{
 		None = 0,

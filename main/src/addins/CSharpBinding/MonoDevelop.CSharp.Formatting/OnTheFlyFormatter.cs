@@ -207,8 +207,8 @@ namespace MonoDevelop.CSharp.Formatting
 			int startDelta = 1;
 			if (exact) {
 				text = data.Editor.Text;
-				var seg = ext.typeSystemSegmentTree.GetMemberSegmentAt (startOffset);
-				var seg2 = ext.typeSystemSegmentTree.GetMemberSegmentAt (endOffset);
+				var seg = ext.GetMemberSegmentAt (startOffset);
+				var seg2 = ext.GetMemberSegmentAt (endOffset);
 				if (seg != null && seg == seg2) {
 					var member = seg.Entity;
 					if (member == null || member.Region.IsEmpty || member.BodyRegion.End.IsEmpty)
@@ -226,7 +226,7 @@ namespace MonoDevelop.CSharp.Formatting
 					formattingRegion = new DomRegion (data.Editor.OffsetToLocation (startOffset), data.Editor.OffsetToLocation (endOffset));
 				}
 			} else {
-				var seg = ext.typeSystemSegmentTree.GetMemberSegmentAt (startOffset - 1);
+				var seg = ext.GetMemberSegmentAt (startOffset - 1);
 				if (seg == null) {
 					return;
 				}

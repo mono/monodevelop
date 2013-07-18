@@ -203,6 +203,12 @@
     <EmbeddedResource Include="icons\MonoDevelop.Close.Selected.png">
       <LogicalName>MonoDevelop.Close.Selected.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\exception-icon.png">
+      <LogicalName>exception-icon.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\exception-icon%402x.png">
+      <LogicalName>exception-icon@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

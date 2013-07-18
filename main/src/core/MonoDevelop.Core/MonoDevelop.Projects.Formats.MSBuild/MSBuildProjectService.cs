@@ -300,12 +300,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		public static string ToMSBuildPath (string baseDirectory, string absPath)
 		{
-			absPath = EscapeString (absPath);
 			if (baseDirectory != null) {
-				absPath = FileService.NormalizeRelativePath (FileService.AbsoluteToRelativePath (
-				         baseDirectory, absPath));
+				absPath = FileService.NormalizeRelativePath (FileService.AbsoluteToRelativePath (baseDirectory, absPath));
 			}
-			return absPath.Replace ('/', '\\');
+			return EscapeString (absPath).Replace ('/', '\\');
 		}
 		
 		internal static string ToMSBuildPathRelative (string baseDirectory, string absPath)

@@ -145,6 +145,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 
+		void ReleaseObjects ()
+		{
+			CompletionWidget = null;
+			CompletionDataList = null;
+
+			CodeCompletionContext = null;
+		}
+
 		protected override void OnDestroyed ()
 		{
 			if (declarationviewwindow != null) {
@@ -171,6 +179,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				declarationviewwindow.Destroy ();
 				declarationviewwindow = null;
 			}
+			ReleaseObjects ();
 			base.OnDestroyed ();
 		}
 
@@ -344,9 +353,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			public int Compare (ICompletionData a, ICompletionData b)
 			{
-				return ((a.DisplayFlags & DisplayFlags.Obsolete) == (b.DisplayFlags & DisplayFlags.Obsolete))
-					? StringComparer.OrdinalIgnoreCase.Compare (a.DisplayText, b.DisplayText)
-					: (a.DisplayFlags & DisplayFlags.Obsolete) != 0 ? 1 : -1;
+				if (a is IComparable && b is IComparable)
+					return ((IComparable)a).CompareTo (b);
+				return CompletionData.Compare (a, b);
 			}
 		}
 		
@@ -367,7 +376,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			//which makes completion triggering noticeably more responsive
 			if (!completionDataList.IsSorted)
 				completionDataList.Sort (new DataItemComparer ());
-			
+
 			Reposition (true);
 			return true;
 		}
@@ -469,6 +478,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			Hide ();
 			HideDeclarationView ();
+			ReleaseObjects ();
 		}
 
 		protected override void DoubleClick ()
@@ -619,11 +629,16 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return completionDataList[n].DisplayText;
 		}
 		
-		string IListDataProvider.GetDescription (int n)
+		string IListDataProvider.GetDescription (int n, bool isSelected)
 		{
-			return ((CompletionData)completionDataList[n]).DisplayDescription;
+			return ((CompletionData)completionDataList[n]).GetDisplayDescription (isSelected);
 		}
-		
+
+		string IListDataProvider.GetRightSideDescription (int n, bool isSelected)
+		{
+			return ((CompletionData)completionDataList[n]).GetRightSideDescription (isSelected);
+		}
+
 		bool IListDataProvider.HasMarkup (int n)
 		{
 			return completionDataList[n].DisplayFlags.HasFlag (DisplayFlags.Obsolete);
@@ -642,6 +657,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 		string IListDataProvider.GetCompletionText (int n)
 		{
 			return completionDataList[n].CompletionText;
+		}
+		static DataItemComparer defaultComparer = new DataItemComparer ();
+		int IListDataProvider.CompareTo (int n, int m)
+		{
+			return defaultComparer.Compare (completionDataList [n], completionDataList [m]);
 		}
 		
 		Gdk.Pixbuf IListDataProvider.GetIcon (int n)

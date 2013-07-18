@@ -82,7 +82,7 @@ namespace MonoDevelop.SourceEditor
 				foreach (var view in openFiles) {
 					if (SkipView (view) || !string.Equals (view.ContentName, file.FileName, fileNameComparer))
 						continue;
-					if (!view.IsDirty && IdeApp.Workbench.AutoReloadDocuments)
+					if (!view.IsDirty && (IdeApp.Workbench.AutoReloadDocuments || file.AutoReload))
 						view.SourceEditorWidget.Reload ();
 					else
 						foundOneChange = true;

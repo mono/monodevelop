@@ -75,7 +75,7 @@ namespace MonoDevelop.VersionControl.Subversion
 
 		protected override string OnGetTextAtRevision (FilePath repositoryPath, Revision revision)
 		{
-			return Svn.GetTextAtRevision (repositoryPath, revision);
+			return Svn.GetTextAtRevision (repositoryPath, revision, RootPath);
 		}
 
 		protected override Revision[] OnGetHistory (FilePath sourcefile, Revision since)
@@ -517,9 +517,9 @@ namespace MonoDevelop.VersionControl.Subversion
 			
 			// "SubversionException: blame of the WORKING revision is not supported"
 			foreach (var hunk in baseDocument.Diff (workingDocument)) {
-				annotations.RemoveRange (hunk.InsertStart, hunk.Inserted);
+				annotations.RemoveRange (hunk.RemoveStart, hunk.Removed);
 				for (int i = 0; i < hunk.Inserted; ++i) {
-					annotations.Insert (hunk.InsertStart, nextRev);
+					annotations.Insert (hunk.InsertStart - 1, nextRev);
 				}
 			}
 			
@@ -547,6 +547,16 @@ namespace MonoDevelop.VersionControl.Subversion
 			}
 			
 			return patch.ToString ();
+		}
+
+		protected override void OnIgnore (FilePath[] paths)
+		{
+			Svn.Ignore (paths);
+		}
+
+		protected override void OnUnignore (FilePath[] paths)
+		{
+			Svn.Unignore (paths);
 		}
 	}
 }

@@ -63,6 +63,7 @@ namespace MonoDevelop.VersionControl.Git
 			if (rebasing) {
 				labelHeader.Text = GettextCatalog.GetString ("Select the branch to which to rebase:");
 				checkStage.Label = GettextCatalog.GetString ("Stash/unstash local changes before/after rebasing");
+				buttonOk.Label = GettextCatalog.GetString ("Rebase");
 			}
 			
 			checkStage.Active = true;
@@ -76,6 +77,10 @@ namespace MonoDevelop.VersionControl.Git
 		
 		public bool StageChanges {
 			get { return checkStage.Active; }
+		}
+
+		public bool IsRemote {
+			get { return currentType == "remote"; }
 		}
 
 		void HandleTreeSelectionChanged (object sender, EventArgs e)
@@ -116,7 +121,7 @@ namespace MonoDevelop.VersionControl.Git
 				if (rebasing) {
 					switch (currentType) {
 					case "branch": txt = GettextCatalog.GetString ("The branch <b>{1}</b> will be rebased to the branch <b>{0}</b>.", currentSel, cb); break;
-					case "tag": txt = GettextCatalog.GetString ("The branch <b>{1}</b> witl be rebased to the tag <b>{0}</b>.", currentSel, cb); break;
+					case "tag": txt = GettextCatalog.GetString ("The branch <b>{1}</b> will be rebased to the tag <b>{0}</b>.", currentSel, cb); break;
 					case "remote": txt = GettextCatalog.GetString ("The branch <b>{1}</b> will be rebased to the remote branch <b>{0}</b>.", currentSel, cb); break;
 					}
 				}

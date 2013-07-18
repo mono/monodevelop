@@ -189,6 +189,8 @@
 
 		{ "name": "Syntax Error", "fore":"invalid-red" },
 		
+		{ "name": "String Format Items", "fore":"base00" },
+
 		{ "name": "Breakpoint Text", "fore":"white", "back":"#AB616B" },
 		{ "name": "Breakpoint Text(Invalid)", "fore":"white", "back":"#eddcdc" },
 	

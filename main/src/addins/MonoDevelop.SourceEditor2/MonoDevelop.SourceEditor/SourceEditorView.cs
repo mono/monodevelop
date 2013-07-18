@@ -621,8 +621,7 @@ namespace MonoDevelop.SourceEditor
 				AutoSave.RemoveAutoSaveFile (ContentName);
 
 			if (ContentName != fileName) {
-				if (!FileService.RequestFileEdit (fileName))
-					return;
+				FileService.RequestFileEdit (fileName);
 				writeAllowed = true;
 				writeAccessChecked = true;
 			}
@@ -1045,7 +1044,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (!writeAccessChecked && !IsUntitled) {
 				writeAccessChecked = true;
-				writeAllowed = FileService.RequestFileEdit (ContentName);
+				writeAllowed = FileService.RequestFileEdit (ContentName, false);
 			}
 			return IsUntitled || writeAllowed;
 		}

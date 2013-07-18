@@ -110,7 +110,7 @@ namespace MonoDevelop.Projects
 			else
 				item = Services.ProjectService.ReadSolutionItem (monitor, itemFile);
 
-			using (item) {
+			using (var readItem = item) {
 				if (project != null) {
 					Solution solution = item as Solution;
 					item = null;

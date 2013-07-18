@@ -318,12 +318,10 @@
 	</Rule>
 	
 	<Rule name = "String">
-		<Delimiters></Delimiters>
 		<Match color ="String(Escape)">\\(['"\\abfnrtv]|x[0-9a-fA-F]{2,4}|0\d\d)</Match>
 	</Rule>
 	
 	<Rule name = "VerbatimString">
-		<Delimiters></Delimiters>
 		<Match color ="String(Escape)">""</Match>
 	</Rule>
 	

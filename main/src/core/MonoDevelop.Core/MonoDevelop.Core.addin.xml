@@ -6,7 +6,7 @@
        description = "Provides the core services of the MonoDevelop platform"
        category    = "MonoDevelop Core"
        isroot      = "true"
-       version     = "4.1.4"
+       version     = "4.1.7"
        compatVersion = "4.0">
        
 	<ConditionType id="PackageInstalled" type="MonoDevelop.Core.AddIns.PackageInstalledCondition" />
@@ -256,6 +256,12 @@
 		<Class class = "MonoDevelop.Projects.CompiledAssemblyExtension" />
 		<Class id="MidStep" class = "MonoDevelop.Projects.ProjectServiceExtension" />
 		<Class id="FinalStep" class = "MonoDevelop.Projects.ProjectServiceExtension" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Core/FileSystemExtensions">
+		<Class id="InitialStep" class = "MonoDevelop.Core.FileSystem.DummyFileSystemExtension" />
+		<Class id="MidStep" class = "MonoDevelop.Core.FileSystem.DummyFileSystemExtension" />
+		<Class id="FinalStep" class = "MonoDevelop.Core.FileSystem.DummyFileSystemExtension" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/MD1SerializationMaps">

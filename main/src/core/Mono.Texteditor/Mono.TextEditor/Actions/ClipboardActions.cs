@@ -82,13 +82,13 @@ namespace Mono.TextEditor
 			{
 			}
 
-			string GetCopiedPlainText ()
+			string GetCopiedPlainText (string eol = "\n")
 			{
 				var plainText = new StringBuilder ();
 				bool first = true;
 				foreach (var line in copiedColoredChunks) {
 					if (!first) {
-						plainText.AppendLine ();
+						plainText.Append (eol);
 					} else {
 						first = false;
 					}
@@ -106,10 +106,6 @@ namespace Mono.TextEditor
 					return;
 				switch (info) {
 				case TextType:
-					// Windows specific hack to work around bug: Bug 661973 - copy operation in TextEditor braks text lines with duplicate line endings when the file has CRLF
-					// Remove when https://bugzilla.gnome.org/show_bug.cgi?id=640439 is fixed.
-
-
 					selection_data.Text = GetCopiedPlainText ();
 					break;
 				case RichTextType:

@@ -142,7 +142,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		public abstract IntPtr client_unlock (IntPtr apr_array_header_t_targets, bool break_lock, IntPtr ctx, IntPtr pool);
 		
 		public abstract IntPtr client_propget (out IntPtr value, string name, string target, ref Rev revision, bool recurse, IntPtr ctx, IntPtr pool);
-		
+
+		public abstract IntPtr client_propset (string propname, IntPtr propval, string target, bool recurse, IntPtr pool);
+
 		public abstract IntPtr client_blame (string path, ref Rev rev_start, ref Rev rev_end, svn_client_blame_receiver_t receiver, IntPtr baton, IntPtr ctx, IntPtr pool);
 
 		public abstract IntPtr wc_context_create (out IntPtr svn_wc_context_t, IntPtr config, IntPtr result_pool, IntPtr scratch_pool);

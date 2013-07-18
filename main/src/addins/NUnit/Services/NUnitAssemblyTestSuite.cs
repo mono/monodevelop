@@ -495,7 +495,9 @@ namespace MonoDevelop.NUnit
 							testContext.Monitor.WriteGlobalLog ("ERROR:\n");
 							testContext.Monitor.WriteGlobalLog (et);
 						}
-						return ReportXmlResult (localMonitor, root, "");
+
+						bool macunitStyle = doc.Root.Element ("environment") != null && doc.Root.Element ("environment").Attribute ("macunit-version") != null;
+						return ReportXmlResult (localMonitor, root, "", macunitStyle);
 					}
 				}
 				throw new Exception ("Test results could not be parsed.");
@@ -515,7 +517,7 @@ namespace MonoDevelop.NUnit
 			}
 		}
 
-		UnitTestResult ReportXmlResult (IRemoteEventListener listener, XElement elem, string testPrefix)
+		UnitTestResult ReportXmlResult (IRemoteEventListener listener, XElement elem, string testPrefix, bool macunitStyle)
 		{
 			UnitTestResult result = new UnitTestResult ();
 			var time = (string)elem.Attribute ("time");
@@ -554,16 +556,27 @@ namespace MonoDevelop.NUnit
 			}
 
 			if (elem.Name == "test-suite") {
+				// nunitlite does not emit <test-suite type="Namespace" elements so we need to fake
+				// them by deconstructing the full type name and emitting the suite started events manually
+				var names = new List<string> ();
+				if (!macunitStyle || (string)elem.Attribute ("type") == "Assembly")
+					names.Add ("<root>");
+				else
+					names.AddRange (elem.Attribute ("name").Value.Split ('.'));
+
+				for (int i = 0; i < names.Count; i ++)
+					listener.SuiteStarted (testPrefix + string.Join (".", names.Take (i + 1)));
+
 				var name = (string)elem.Attribute ("type") == "Assembly" ? "<root>" : (string) elem.Attribute ("name");
-				listener.SuiteStarted (testPrefix + name);
 				var cts = elem.Element ("results");
 				if (cts != null) {
 					foreach (var ct in cts.Elements ()) {
-						var r = ReportXmlResult (listener, ct, name != "<root>" ? testPrefix + name + "." : "");
+						var r = ReportXmlResult (listener, ct, name != "<root>" ? testPrefix + name + "." : "", macunitStyle);
 						result.Add (r);
 					}
 				}
-				listener.SuiteFinished (testPrefix + name, result);
+				for (int i = 0; i < names.Count; i ++)
+					listener.SuiteFinished (testPrefix + string.Join (".", names.Take (i + 1)), result);
 			} else {
 				string name = (string)elem.Attribute ("name");
 				switch (result.Status) {

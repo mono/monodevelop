@@ -49,8 +49,8 @@ namespace Mono.TextEditor
 		TextEditorData textEditorData;
 		
 		protected IconMargin       iconMargin;
+		protected ActionMargin     actionMargin;
 		protected GutterMargin     gutterMargin;
-//		protected DashedLineMargin dashedLineMargin;
 		protected FoldMarkerMargin foldMarkerMargin;
 		protected TextViewMargin   textViewMargin;
 		
@@ -323,15 +323,15 @@ namespace Mono.TextEditor
 
 			iconMargin = new IconMargin (editor);
 			gutterMargin = new GutterMargin (editor);
-//			dashedLineMargin = new DashedLineMargin (this);
+			actionMargin = new ActionMargin (editor);
 			foldMarkerMargin = new FoldMarkerMargin (editor);
 			textViewMargin = new TextViewMargin (editor);
 
 			margins.Add (iconMargin);
 			margins.Add (gutterMargin);
+			margins.Add (actionMargin);
 			margins.Add (foldMarkerMargin);
-//			margins.Add (dashedLineMargin);
-			
+
 			margins.Add (textViewMargin);
 			this.textEditorData.SelectionChanged += TextEditorDataSelectionChanged;
 			this.textEditorData.UpdateAdjustmentsRequested += TextEditorDatahandleUpdateAdjustmentsRequested;
@@ -1113,8 +1113,11 @@ namespace Mono.TextEditor
 			ResetMouseState ();
 			return base.OnButtonReleaseEvent (e);
 		}
-		
-		protected void ResetMouseState ()
+
+		/// <summary>
+		/// Use this method with care.
+		/// </summary>
+		public void ResetMouseState ()
 		{
 			mouseButtonPressed = 0;
 			textViewMargin.inDrag = false;
@@ -1401,6 +1404,10 @@ namespace Mono.TextEditor
 		
 		public Margin IconMargin {
 			get { return iconMargin; }
+		}
+
+		public ActionMargin ActionMargin {
+			get { return actionMargin; }
 		}
 		
 		public DocumentLocation LogicalToVisualLocation (DocumentLocation location)

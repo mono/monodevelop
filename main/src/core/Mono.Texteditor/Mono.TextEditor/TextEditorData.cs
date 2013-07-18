@@ -512,6 +512,8 @@ namespace Mono.TextEditor
 			options = options.Kill ();
 			HeightTree.Dispose ();
 			DetachDocument ();
+			ClearTooltipProviders ();
+			tooltipProviders = null;
 		}
 
 		/// <summary>

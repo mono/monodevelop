@@ -185,6 +185,8 @@
 
 		{ "name": "Syntax Error", "fore":"monokai-invalid", "back":"monokai-invalidBackground" },
 		
+		{ "name": "String Format Items", "fore":"monokai-white" },
+
 		{ "name": "Breakpoint Text", "fore":"white", "back":"#AB616B" },
 		{ "name": "Breakpoint Text(Invalid)", "fore":"white", "back":"#eddcdc" },
 	

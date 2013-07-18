@@ -47,7 +47,15 @@ namespace MonoDevelop.Ide.Gui.Content
 		public readonly static PropertyWrapper<bool> EnableCodeCompletion = PropertyService.Wrap ("EnableCodeCompletion", true);
 		public readonly static PropertyWrapper<bool> EnableParameterInsight = PropertyService.Wrap ("EnableParameterInsight", true);
 		public readonly static PropertyWrapper<bool> EnableAutoCodeCompletion = PropertyService.Wrap ("EnableAutoCodeCompletion", true);
-//		public readonly static PropertyWrapper<bool> HideObsoleteItems = PropertyService.Wrap ("HideObsoleteItems", false);
+		public readonly static PropertyWrapper<bool> AddImportedItemsToCompletionList = PropertyService.Wrap ("AddImportedItemsToCompletionList", false);
+		public readonly static PropertyWrapper<bool> IncludeKeywordsInCompletionList = PropertyService.Wrap ("IncludeKeywordsInCompletionList", true);
+		public readonly static PropertyWrapper<bool> AddParenthesesAfterCompletion = PropertyService.Wrap ("AddParenthesesAfterCompletion", false);
+		public readonly static PropertyWrapper<bool> AddOpeningOnly = PropertyService.Wrap ("AddOpeningOnly", false);
+		public readonly static PropertyWrapper<int>  CompletionListRows = PropertyService.Wrap ("CompletionListRows", 7);
+
+		public readonly static PropertyWrapper<bool> FilterCompletionListByEditorBrowsable = PropertyService.Wrap ("FilterCompletionListByEditorBrowsable", true);
+		public readonly static PropertyWrapper<bool> IncludeEditorBrowsableAdvancedMembers = PropertyService.Wrap ("IncludeEditorBrowsableAdvancedMembers", true);
+
 		#endregion
 
 		public ICompletionWidget CompletionWidget {
@@ -264,7 +272,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		[CommandHandler (TextEditorCommands.ShowParameterCompletionWindow)]
 		public virtual void RunParameterCompletionCommand ()
 		{
-			if (Document.Editor.SelectionMode == Mono.TextEditor.SelectionMode.Block)
+			if (Document.Editor.SelectionMode == Mono.TextEditor.SelectionMode.Block || CompletionWidget == null)
 				return;
 			ParameterDataProvider cp = null;
 			int cpos;

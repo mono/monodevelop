@@ -58,7 +58,12 @@
 		<Begin>@"</Begin>
 		<End>"</End>
 	</Span>
-
+	
+	<Span color="String(C# @ Verbatim)" rule="TripleQuotedString" stopateol="false">
+		<Begin>"""</Begin>
+		<End>"""</End>
+	</Span>
+	
 	<Span color="String" rule="String" stopateol="true">
 		<Begin>"</Begin>
 		<End>"</End>
@@ -70,7 +75,7 @@
 	</Span>
 	
 	<Span rule="String" stopateol = "false">
-		<Begin color="Keyword(Iteration)">let</Begin>
+		<Begin color="Keyword(Iteration)" flags="NewWord">let</Begin>
 		<End>=</End>
 	</Span>
 
@@ -278,6 +283,10 @@
 	<Rule name = "VerbatimString">
 		<Delimiters></Delimiters>
 		<Match color ="String(Escape)">""</Match>
+	</Rule>
+
+	<Rule name = "TripleQuotedString">
+		<Delimiters></Delimiters>
 	</Rule>
 
 	<Rule name="XmlDocumentation">

@@ -389,6 +389,9 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("Syntax Error", VSSetting = "Syntax Error")]
 		public ChunkStyle SyntaxError { get; private set; }
 
+		[ColorDescription("String Format Items", VSSetting = "String")]
+		public ChunkStyle StringFormatItems { get; private set; }
+
 		[ColorDescription("Breakpoint Text", VSSetting = "Breakpoint (Enabled)")]
 		public ChunkStyle BreakpointText { get; private set; }
 

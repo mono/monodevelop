@@ -107,10 +107,26 @@ namespace MonoDevelop.VersionControl.Git
 				labelError.Markup = "<span color='red'>" + GettextCatalog.GetString ("A branch with this name already exists") + "</span>";
 				labelError.Show ();
 				buttonOk.Sensitive = false;
+			} else if (!IsValidBranchName (entryName.Text)) {
+				labelError.Markup = "<span color='red'>" + GettextCatalog.GetString (@"A branch name can not:
+Start with '.' or end with '/' or '.lock'
+Contain a ' ', '..', '~', '^', ':', '\', '?', '['") + "</span>";
+				labelError.Show ();
+				buttonOk.Sensitive = false;
 			} else
 				labelError.Hide ();
 		}
-		
+
+		static bool IsValidBranchName (string name)
+		{
+			// List from: https://github.com/git/git/blob/master/refs.c#L21
+			if (name.StartsWith (".") || name.EndsWith ("/") || name.EndsWith (".lock"))
+				return false;
+			if (name.Contains (" ") || name.Contains ("~") || name.Contains ("..") || name.Contains ("^") || name.Contains (":") || name.Contains ("\\") || name.Contains ("?") || name.Contains ("["))
+				return false;
+			return true;
+		}
+
 		protected virtual void OnCheckTrackToggled (object sender, System.EventArgs e)
 		{
 			UpdateStatus ();

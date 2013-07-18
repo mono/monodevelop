@@ -171,7 +171,17 @@ namespace MonoDevelop.CSharp.Completion
 			unit = null;
 			CSharpUnresolvedFile = null;
 			UnresolvedFileCompilation = null;
-			Document.DocumentParsed -= HandleDocumentParsed; 
+			Document.DocumentParsed -= HandleDocumentParsed;
+			if (unstableTypeSystemSegmentTree != null) {
+				unstableTypeSystemSegmentTree.RemoveListener ();
+				unstableTypeSystemSegmentTree = null;
+			}
+
+			if (validTypeSystemSegmentTree != null) {
+				validTypeSystemSegmentTree.RemoveListener ();
+				validTypeSystemSegmentTree = null;
+			}
+
 			base.Dispose ();
 		}
 
@@ -181,10 +191,19 @@ namespace MonoDevelop.CSharp.Completion
 			if (newDocument == null) 
 				return;
 			var newTree = TypeSystemSegmentTree.Create (Document);
-			if (typeSystemSegmentTree != null)
-				typeSystemSegmentTree.RemoveListener ();
-			typeSystemSegmentTree = newTree;
-			typeSystemSegmentTree.InstallListener (document.Editor.Document);
+
+			if (unstableTypeSystemSegmentTree != null)
+				unstableTypeSystemSegmentTree.RemoveListener ();
+
+			if (!newDocument.HasErrors) {
+				if (validTypeSystemSegmentTree != null)
+					validTypeSystemSegmentTree.RemoveListener ();
+				validTypeSystemSegmentTree = newTree;
+				unstableTypeSystemSegmentTree = null;
+			} else {
+				unstableTypeSystemSegmentTree = newTree;
+			}
+			newTree.InstallListener (document.Editor.Document);
 			
 			this.Unit = newDocument.GetAst<SyntaxTree> ();
 			this.CSharpUnresolvedFile = newDocument.ParsedFile as CSharpUnresolvedFile;
@@ -251,6 +270,33 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			CSharpCompletionDataList List { get; set; }
 		}
+
+		ICompletionContextProvider CreateContextProvider ()
+		{
+			return new CompletionContextProvider (document, validTypeSystemSegmentTree, unstableTypeSystemSegmentTree);
+		}
+
+		CSharpTypeResolveContext CreateTypeResolveContext ()
+		{
+			var compilation = UnresolvedFileCompilation;
+			var rctx = new CSharpTypeResolveContext (compilation.MainAssembly);
+			var loc = TextEditorData.Caret.Location;
+			rctx = rctx.WithUsingScope (CSharpUnresolvedFile.GetUsingScope (loc).Resolve (compilation));
+			int offset = TextEditorData.Caret.Offset;
+			var curDef = GetTypeAt (offset);
+			if (curDef != null) {
+				var resolvedDef = curDef.Resolve (rctx).GetDefinition ();
+				if (resolvedDef == null)
+					return rctx;
+				rctx = rctx.WithCurrentTypeDefinition (resolvedDef);
+				var foundMember = GetMemberAt (offset);
+				var curMember = resolvedDef.Members.FirstOrDefault (m => m.Region.FileName == foundMember.Region.FileName && m.Region.Begin == foundMember.Region.Begin);
+				if (curMember != null)
+					rctx = rctx.WithCurrentMember (curMember);
+			}
+
+			return rctx;
+		}
 		
 		ICompletionDataList InternalHandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, bool ctrlSpace, ref int triggerWordLength)
 		{
@@ -261,21 +307,29 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			if (Unit == null || CSharpUnresolvedFile == null)
 				return null;
-			if(typeSystemSegmentTree == null)
+			if(unstableTypeSystemSegmentTree == null && validTypeSystemSegmentTree == null)
 				return null;
 
 			var list = new CSharpCompletionDataList ();
 			list.Resolver = CSharpUnresolvedFile != null ? CSharpUnresolvedFile.GetResolver (UnresolvedFileCompilation, Document.Editor.Caret.Location) : new CSharpResolver (Compilation);
-			var ctx = CSharpUnresolvedFile.GetTypeResolveContext (UnresolvedFileCompilation, data.Caret.Location) as CSharpTypeResolveContext;
+			var ctx = CreateTypeResolveContext ();
 
+			var completionDataFactory = new CompletionDataFactory (this, new CSharpResolver (ctx));
 			var engine = new CSharpCompletionEngine (
 				data.Document,
-				typeSystemSegmentTree,
-				new CompletionDataFactory (this, new CSharpResolver (ctx)),
+				CreateContextProvider (),
+				completionDataFactory,
 				Document.GetProjectContext (),
 				ctx
 			);
-
+			completionDataFactory.Engine = engine;
+			engine.AutomaticallyAddImports = AddImportedItemsToCompletionList.Value;
+			engine.IncludeKeywordsInCompletionList = IncludeKeywordsInCompletionList.Value;
+			if (FilterCompletionListByEditorBrowsable) {
+				engine.EditorBrowsableBehavior = IncludeEditorBrowsableAdvancedMembers ? EditorBrowsableBehavior.IncludeAdvanced : EditorBrowsableBehavior.Normal;
+			} else {
+				engine.EditorBrowsableBehavior = EditorBrowsableBehavior.Ignore;
+			}
 			if (Document.HasProject) {
 				var configuration = Document.Project.GetConfiguration (MonoDevelop.Ide.IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
 				var par = configuration != null ? configuration.CompilationParameters as CSharpCompilerParameters : null;
@@ -332,10 +386,10 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			var engine = new CSharpParameterCompletionEngine (
 				TextEditorData.Document,
-				typeSystemSegmentTree,
+				CreateContextProvider (),
 				this,
 				Document.GetProjectContext (),
-				CSharpUnresolvedFile.GetTypeResolveContext (Document.Compilation, document.Editor.Caret.Location) as CSharpTypeResolveContext
+				CreateTypeResolveContext ()
 				);
 			List<string> list;
 			int cparam = engine.GetCurrentParameterIndex (provider.StartOffset, document.Editor.Caret.Offset, out list);
@@ -491,10 +545,10 @@ namespace MonoDevelop.CSharp.Completion
 			try {
 				var engine = new CSharpParameterCompletionEngine (
 					TextEditorData.Document,
-					typeSystemSegmentTree,
+					CreateContextProvider (),
 					this,
 					Document.GetProjectContext (),
-					CSharpUnresolvedFile.GetTypeResolveContext (Document.Compilation, document.Editor.Caret.Location) as CSharpTypeResolveContext
+					CreateTypeResolveContext ()
 				);
 				return engine.GetParameterDataProvider (completionContext.TriggerOffset, completionChar) as ParameterDataProvider;
 			} catch (Exception e) {
@@ -532,10 +586,10 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			var engine = new CSharpParameterCompletionEngine (
 				TextEditorData.Document,
-				typeSystemSegmentTree,
+				CreateContextProvider (),
 				this,
 				Document.GetProjectContext (),
-				CSharpUnresolvedFile.GetTypeResolveContext (Document.Compilation, document.Editor.Caret.Location) as CSharpTypeResolveContext
+				CreateTypeResolveContext ()
 			);
 			engine.SetOffset (document.Editor.Caret.Offset);
 			return engine.GetParameterCompletionCommandOffset (out cpos);
@@ -545,10 +599,10 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			var engine = new CSharpParameterCompletionEngine (
 				TextEditorData.Document,
-				typeSystemSegmentTree,
+				CreateContextProvider (),
 				this,
 				Document.GetProjectContext (),
-				CSharpUnresolvedFile.GetTypeResolveContext (Document.Compilation, document.Editor.Caret.Location) as CSharpTypeResolveContext
+				CreateTypeResolveContext ()
 				);
 			List<string> list;
 			return engine.GetCurrentParameterIndex (startOffset, document.Editor.Caret.Offset, out list);
@@ -600,11 +654,16 @@ namespace MonoDevelop.CSharp.Completion
 
 
 		#region ICompletionDataFactory implementation
-		class CompletionDataFactory : ICompletionDataFactory
+		internal class CompletionDataFactory : ICompletionDataFactory
 		{
-			CSharpCompletionTextEditorExtension ext;
+			internal readonly CSharpCompletionTextEditorExtension ext;
 //			readonly CSharpResolver state;
 			readonly TypeSystemAstBuilder builder;
+
+			public CSharpCompletionEngine Engine {
+				get;
+				set;
+			}
 
 			public CompletionDataFactory (CSharpCompletionTextEditorExtension ext, CSharpResolver state)
 			{
@@ -615,7 +674,7 @@ namespace MonoDevelop.CSharp.Completion
 			
 			ICompletionData ICompletionDataFactory.CreateEntityCompletionData (IEntity entity)
 			{
-				return new MemberCompletionData (ext, entity, OutputFlags.IncludeGenerics | OutputFlags.HideArrayBrackets | OutputFlags.IncludeParameterName) {
+				return new MemberCompletionData (this, entity, OutputFlags.IncludeGenerics | OutputFlags.HideArrayBrackets | OutputFlags.IncludeParameterName) {
 					HideExtensionParameter = true
 				};
 			}
@@ -657,7 +716,7 @@ namespace MonoDevelop.CSharp.Completion
 
 				public override TooltipInformation CreateTooltipInformation (bool smartWrap)
 				{
-					return tooltipFunc (List, smartWrap);
+					return tooltipFunc != null ? tooltipFunc (List, smartWrap) : new TooltipInformation ();
 				}
 
 				protected List<ICompletionData> overloads;
@@ -885,6 +944,64 @@ namespace MonoDevelop.CSharp.Completion
 					
 			}
 
+			class FormatItemCompletionData : CompletionData
+			{
+				string format;
+				string description;
+				object example;
+
+				public FormatItemCompletionData (string format, string description, object example)
+				{
+					this.format = format;
+					this.description = description;
+					this.example = example;
+				}
+
+				
+				public override string DisplayText {
+					get {
+						return format;
+					}
+				}
+				public override string GetDisplayDescription (bool isSelected)
+				{
+					return "- <span foreground=\"darkgray\" size='small'>" + description + "</span>";
+				}
+
+
+				string rightSideDescription = null;
+				public override string GetRightSideDescription (bool isSelected)
+				{
+					if (rightSideDescription == null) {
+						try {
+							rightSideDescription = "<span size='small'>" + string.Format ("{0:" +format +"}", example) +"</span>";
+						} catch (Exception e) {
+							rightSideDescription = "";
+							LoggingService.LogError ("Format error.", e);
+						}
+					}
+					return rightSideDescription;
+				}
+
+				public override string CompletionText {
+					get {
+						return format;
+					}
+				}
+
+				public override int CompareTo (object obj)
+				{
+					return 0;
+				}
+			}
+
+
+			ICompletionData ICompletionDataFactory.CreateFormatItemCompletionData(string format, string description, object example)
+			{
+				return new FormatItemCompletionData (format, description, example);
+			}
+
+
 			class ImportSymbolCompletionData : CompletionData
 			{
 				IType type;
@@ -922,19 +1039,21 @@ namespace MonoDevelop.CSharp.Completion
 				public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
 				{
 					Initialize ();
-					string text = insertNamespace ? type.Namespace + "." + type.Name : type.Name;
-					if (text != GetCurrentWord (window)) {
-						if (window.WasShiftPressed && generateUsing) 
-							text = type.Namespace + "." + text;
-						window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, GetCurrentWord (window), text);
-					}
+					using (var undo = doc.Editor.OpenUndoGroup ()) {
+						string text = insertNamespace ? type.Namespace + "." + type.Name : type.Name;
+						if (text != GetCurrentWord (window)) {
+							if (window.WasShiftPressed && generateUsing) 
+								text = type.Namespace + "." + text;
+							window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, GetCurrentWord (window), text);
+						}
 
-					if (!window.WasShiftPressed && generateUsing) {
-						var generator = CodeGenerator.CreateGenerator (doc);
-						if (generator != null) {
-							generator.AddGlobalNamespaceImport (doc, type.Namespace);
-							// reparse
-							doc.UpdateParseDocument ();
+						if (!window.WasShiftPressed && generateUsing) {
+							var generator = CodeGenerator.CreateGenerator (doc);
+							if (generator != null) {
+								generator.AddGlobalNamespaceImport (doc, type.Namespace);
+								// reparse
+								doc.UpdateParseDocument ();
+							}
 						}
 					}
 				}
@@ -946,26 +1065,32 @@ namespace MonoDevelop.CSharp.Completion
 						return type.GetStockIcon ();
 					}
 				}
-
+				
 				public override string DisplayText {
 					get {
 						return type.Name;
 					}
 				}
 
+				static string GetDefaultDisplaySelection (string description, bool isSelected)
+				{
+					if (!isSelected)
+						return "<span foreground=\"darkgray\">" + description + "</span>";
+					return description;
+				}
+
 				string displayDescription = null;
-				public override string DisplayDescription {
-					get {
-						if (displayDescription == null) {
-							Initialize ();
-							if (generateUsing || insertNamespace) {
-								displayDescription = string.Format (GettextCatalog.GetString ("(from '{0}')"), type.Namespace);
-							} else {
-								displayDescription = "";
-							}
+				public override string GetDisplayDescription (bool isSelected)
+				{
+					if (displayDescription == null) {
+						Initialize ();
+						if (generateUsing || insertNamespace) {
+							displayDescription = string.Format (GettextCatalog.GetString ("(from '{0}')"), type.Namespace);
+						} else {
+							displayDescription = "";
 						}
-						return displayDescription;
 					}
+					return GetDefaultDisplaySelection (displayDescription, isSelected);
 				}
 
 				public override string Description {
@@ -1034,9 +1159,10 @@ namespace MonoDevelop.CSharp.Completion
 		#endregion
 		
 		#region TypeSystemSegmentTree
-		
-		internal TypeSystemSegmentTree typeSystemSegmentTree;
-		
+
+		TypeSystemSegmentTree validTypeSystemSegmentTree;
+		TypeSystemSegmentTree unstableTypeSystemSegmentTree;
+
 		internal class TypeSystemTreeSegment : TreeSegment
 		{
 			public IUnresolvedEntity Entity {
@@ -1049,16 +1175,19 @@ namespace MonoDevelop.CSharp.Completion
 				this.Entity = entity;
 			}
 		}
-		
-		internal class TypeSystemSegmentTree : SegmentTree<TypeSystemTreeSegment>, ICompletionContextProvider
+
+		internal TypeSystemTreeSegment GetMemberSegmentAt (int offset)
 		{
-			MonoDevelop.Ide.Gui.Document document;
-
-			public TypeSystemSegmentTree (MonoDevelop.Ide.Gui.Document document)
-			{
-				this.document = document;
-			}
-
+			TypeSystemTreeSegment result = null;
+			if (unstableTypeSystemSegmentTree != null)
+				result = unstableTypeSystemSegmentTree.GetMemberSegmentAt (offset);
+			if (result == null && validTypeSystemSegmentTree != null)
+				result = validTypeSystemSegmentTree.GetMemberSegmentAt (offset);
+			return result;
+		}
+		
+		internal class TypeSystemSegmentTree : SegmentTree<TypeSystemTreeSegment>
+		{
 			public IUnresolvedTypeDefinition GetTypeAt (int offset)
 			{
 				IUnresolvedTypeDefinition result = null;
@@ -1090,7 +1219,7 @@ namespace MonoDevelop.CSharp.Completion
 			
 			internal static TypeSystemSegmentTree Create (MonoDevelop.Ide.Gui.Document document)
 			{
-				TypeSystemSegmentTree result = new TypeSystemSegmentTree (document);
+				TypeSystemSegmentTree result = new TypeSystemSegmentTree ();
 				
 				foreach (var type in document.ParsedDocument.TopLevelTypeDefinitions)
 					AddType (document, result, type);
@@ -1116,8 +1245,47 @@ namespace MonoDevelop.CSharp.Completion
 				foreach (var nested in type.NestedTypes)
 					AddType (document, result, nested);
 			}
+		}
+		
+		public IUnresolvedTypeDefinition GetTypeAt (int offset)
+		{
+			if (unstableTypeSystemSegmentTree == null && validTypeSystemSegmentTree == null)
+				return null;
+			IUnresolvedTypeDefinition type = null;
+			if (unstableTypeSystemSegmentTree != null)
+				type = unstableTypeSystemSegmentTree.GetTypeAt (offset);
+			if (type == null && validTypeSystemSegmentTree != null)
+				type = validTypeSystemSegmentTree.GetTypeAt (offset);
+			return type;
+		}
+			
+		public IUnresolvedMember GetMemberAt (int offset)
+		{
+			if (unstableTypeSystemSegmentTree == null && validTypeSystemSegmentTree == null)
+				return null;
 
-			#region ICompletionContextProvider implementation
+			IUnresolvedMember member = null;
+			if (unstableTypeSystemSegmentTree != null)
+				member = unstableTypeSystemSegmentTree.GetMemberAt (offset);
+			if (member == null && validTypeSystemSegmentTree != null)
+				member = validTypeSystemSegmentTree.GetMemberAt (offset);
+			return member;
+		}
+		#endregion
+
+
+		class CompletionContextProvider : ICompletionContextProvider
+		{
+			MonoDevelop.Ide.Gui.Document document;
+			TypeSystemSegmentTree validTypeSystemSegmentTree;
+			TypeSystemSegmentTree unstableTypeSystemSegmentTree;
+
+			public CompletionContextProvider (MonoDevelop.Ide.Gui.Document document, TypeSystemSegmentTree validTypeSystemSegmentTree, TypeSystemSegmentTree unstableTypeSystemSegmentTree)
+			{
+				this.document = document;
+				this.validTypeSystemSegmentTree = validTypeSystemSegmentTree;
+				this.unstableTypeSystemSegmentTree = unstableTypeSystemSegmentTree;
+			}
 
 			IList<string> ICompletionContextProvider.ConditionalSymbols {
 				get {
@@ -1129,6 +1297,31 @@ namespace MonoDevelop.CSharp.Completion
 			{
 				currentType = GetTypeAt (offset);
 				currentMember = GetMemberAt (offset);
+			}
+
+			public IUnresolvedTypeDefinition GetTypeAt (int offset)
+			{
+				if (unstableTypeSystemSegmentTree == null && validTypeSystemSegmentTree == null)
+					return null;
+				IUnresolvedTypeDefinition type = null;
+				if (unstableTypeSystemSegmentTree != null)
+					type = unstableTypeSystemSegmentTree.GetTypeAt (offset);
+				if (type == null && validTypeSystemSegmentTree != null)
+					type = validTypeSystemSegmentTree.GetTypeAt (offset);
+				return type;
+			}
+
+			public IUnresolvedMember GetMemberAt (int offset)
+			{
+				if (unstableTypeSystemSegmentTree == null && validTypeSystemSegmentTree == null)
+					return null;
+
+				IUnresolvedMember member = null;
+				if (unstableTypeSystemSegmentTree != null)
+					member = unstableTypeSystemSegmentTree.GetMemberAt (offset);
+				if (member == null && validTypeSystemSegmentTree != null)
+					member = validTypeSystemSegmentTree.GetMemberAt (offset);
+				return member;
 			}
 
 			Tuple<string, TextLocation> ICompletionContextProvider.GetMemberTextToCaret (int caretOffset, IUnresolvedTypeDefinition currentType, IUnresolvedMember currentMember)
@@ -1148,7 +1341,6 @@ namespace MonoDevelop.CSharp.Completion
 					}
 					--startOffset;
 				}
-
 				return Tuple.Create (caretOffset > startOffset ? document.Editor.GetTextAt (startOffset, caretOffset - startOffset) : "", 
 				                     (TextLocation)document.Editor.OffsetToLocation (startOffset));
 			}
@@ -1158,22 +1350,6 @@ namespace MonoDevelop.CSharp.Completion
 			{
 				return new CSharpAstResolver (resolver, rootNode, document.ParsedDocument.ParsedFile as CSharpUnresolvedFile);
 			}
-			#endregion
 		}
-		
-		public IUnresolvedTypeDefinition GetTypeAt (int offset)
-		{
-			if (typeSystemSegmentTree == null)
-				return null;
-			return typeSystemSegmentTree.GetTypeAt (offset);
-		}
-			
-		public IUnresolvedMember GetMemberAt (int offset)
-		{
-			if (typeSystemSegmentTree == null)
-				return null;
-			return typeSystemSegmentTree.GetMemberAt (offset);
-		}
-		#endregion
 	}
 }

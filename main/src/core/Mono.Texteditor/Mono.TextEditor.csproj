@@ -224,6 +224,7 @@
     <Compile Include="Mono.TextEditor\UrlMarker.cs" />
     <Compile Include="Mono.TextEditor\StyleTextLineMarker.cs" />
     <Compile Include="Mono.TextEditor\Standalone\UnicodeNewline.cs" />
+    <Compile Include="Mono.TextEditor\Gui\ActionMargin.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mono.TextEditor.dll.config">

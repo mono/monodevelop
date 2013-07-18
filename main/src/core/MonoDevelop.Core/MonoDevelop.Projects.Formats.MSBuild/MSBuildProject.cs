@@ -681,21 +681,19 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return Element [name, MSBuildProject.Schema] != null;
 		}
 		
-		public void SetMetadata (string name, string value)
-		{
-			SetMetadata (name, value, true);
-		}
-		
-		public void SetMetadata (string name, string value, bool isLiteral)
+		public void SetMetadata (string name, string value, bool isXml = false)
 		{
 			XmlElement elem = Element [name, MSBuildProject.Schema];
 			if (elem == null) {
 				elem = AddChildElement (name);
 				Element.AppendChild (elem);
 			}
-			elem.InnerXml = value;
+			if (isXml)
+				elem.InnerXml = value;
+			else
+				elem.InnerText = value;
 		}
-		
+
 		public void UnsetMetadata (string name)
 		{
 			XmlElement elem = Element [name, MSBuildProject.Schema];
@@ -706,15 +704,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 		
-		public string GetMetadata (string name)
+		public string GetMetadata (string name, bool isXml = false)
 		{
 			XmlElement elem = Element [name, MSBuildProject.Schema];
 			if (elem != null)
-				return elem.InnerXml;
+				return isXml ? elem.InnerXml : elem.InnerText;
 			else
 				return null;
 		}
-		
+
 		public bool GetMetadataIsFalse (string name)
 		{
 			return String.Compare (GetMetadata (name), "False", StringComparison.OrdinalIgnoreCase) == 0;
@@ -724,7 +722,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			foreach (XmlNode node in Element.ChildNodes) {
 				if (node is XmlElement)
-					SetMetadata (node.LocalName, node.InnerXml);
+					SetMetadata (node.LocalName, node.InnerXml, true);
 			}
 		}
 	}

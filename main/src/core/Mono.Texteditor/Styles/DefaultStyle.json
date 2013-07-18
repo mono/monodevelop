@@ -195,6 +195,8 @@
 		{ "name": "User Variable Usage", "fore":"text-black" },
 		{ "name": "User Variable Declaration", "fore":"text-black" },
 
+		{ "name": "String Format Items", "fore":"#FF0000" },
+
 		{ "name": "Syntax Error", "fore":"invalid-red" },
 		
 		{ "name": "Breakpoint Text", "fore":"white", "back":"#AB616B" },
