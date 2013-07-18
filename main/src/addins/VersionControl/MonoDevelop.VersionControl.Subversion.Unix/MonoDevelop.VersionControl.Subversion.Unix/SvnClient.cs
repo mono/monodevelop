@@ -150,6 +150,16 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 			return Marshal.PtrToStringAnsi (ret);
 		}
+
+		public override string GetDirectoryDotSvn (FilePath path)
+		{
+			UnixSvnBackend backend = CreateBackend () as UnixSvnBackend;
+			bool pre_1_7;
+			string new_path = backend.GetDirectoryDotSvnInternal (path, out pre_1_7);
+			if (pre_1_7)
+				return base.GetDirectoryDotSvn (path);
+			return new_path;
+		}
 	}
 
 	public class UnixSvnBackend : SubversionBackend
@@ -1409,11 +1419,13 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				lockFileList.Add (file);
 		}
 
-		protected override string GetDirectoryDotSvn (FilePath path)
+		internal string GetDirectoryDotSvnInternal (FilePath path, out bool pre_1_7)
 		{
-			if (pre_1_7)
-				return base.GetDirectoryDotSvn (path);
-			
+			pre_1_7 = this.pre_1_7;
+			if (pre_1_7) {
+				return "";
+			}
+
 			TryStartOperation ();
 			IntPtr result;
 			IntPtr localpool = newpool (pool);

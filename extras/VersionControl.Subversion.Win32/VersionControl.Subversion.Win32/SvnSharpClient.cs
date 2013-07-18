@@ -12,7 +12,7 @@ using MonoDevelop.Projects.Text;
 
 namespace SubversionAddinWindows
 {
-	public class SvnSharpClient: SubversionVersionControl
+	public class SvnSharpClient: SubversionVersionControl, SvnSharpClient17Extensions
 	{
 		static bool errorShown;
 		static bool installError;
@@ -55,6 +55,11 @@ namespace SubversionAddinWindows
 				}
 				return !installError;
 			}
+		}
+
+		public override string GetDirectoryDotSvn (FilePath path)
+		{
+			return client.GetWorkingCopyRoot (path.FullPath);
 		}
 	}
 
@@ -701,11 +706,6 @@ namespace SubversionAddinWindows
 
 			if (notifyChange && File.Exists (file))
 				FileService.NotifyFileChanged (file, true);
-		}
-
-		protected override string GetDirectoryDotSvn (FilePath path)
-		{
-			return client.GetWorkingCopyRoot (path.FullPath);
 		}
 	}
 }
