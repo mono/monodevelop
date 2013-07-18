@@ -691,7 +691,14 @@ namespace MonoDevelop.Projects
 		{
 			return true;
 		}
-		
+
+		internal bool InternalCheckNeedsBuild (ConfigurationSelector configuration)
+		{
+			using (Counters.NeedsBuildingTimer.BeginTiming ("NeedsBuilding check for " + Name)) {
+				return Services.ProjectService.GetExtensionChain (this).GetNeedsBuilding (this, configuration);
+			}
+		}
+
 		/// <summary>
 		/// States whether this solution item needs to be built or not
 		/// </summary>
