@@ -11,13 +11,10 @@ namespace MonoDevelop.VersionControl.Subversion
 	{
 		internal static string GetDirectoryDotSvn (FilePath path)
 		{
-			if (path.IsEmpty || path.ParentDirectory.IsEmpty || path.IsNull || path.ParentDirectory.IsNull)
-				return String.Empty;
-
 			if (Directory.Exists (path.Combine (".svn")))
 				return path;
 
-			return GetDirectoryDotSvn (path.ParentDirectory);
+			return String.Empty;
 		}
 
 		public override string Name
