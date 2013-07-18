@@ -609,7 +609,6 @@ namespace MonoDevelop.CSharp.Formatting
 				lastCharInserted = TranslateKeyCharForIndenter (key, keyChar, textEditorData.GetCharAt (textEditorData.Caret.Offset - 1));
 				if (lastCharInserted == '\0')
 					return retval;
-
 				using (var undo = textEditorData.OpenUndoGroup ()) {
 					stateTracker.UpdateEngine ();
 
@@ -625,8 +624,13 @@ namespace MonoDevelop.CSharp.Formatting
 
 					stateTracker.UpdateEngine ();
 					automaticReindent = (stateTracker.Engine.NeedsReindent && lastCharInserted != '\0');
-					if (key == Gdk.Key.Return && (reIndent || automaticReindent))
-						DoReSmartIndent ();
+					if (key == Gdk.Key.Return && (reIndent || automaticReindent)) {
+						if (textEditorData.Options.IndentStyle == IndentStyle.Virtual) {
+							textEditorData.Caret.Column = textEditorData.IndentationTracker.GetVirtualIndentationColumn (textEditorData.Caret.Location);
+						} else {
+							DoReSmartIndent ();
+						}
+					}
 				}
 
 				if (key != Gdk.Key.Return && (reIndent || automaticReindent)) {
@@ -935,6 +939,7 @@ namespace MonoDevelop.CSharp.Formatting
 			if (stateTracker.Engine.LineBeganInsideVerbatimString || stateTracker.Engine.LineBeganInsideMultiLineComment)
 				return;
 			DocumentLine line = textEditorData.Document.GetLineByOffset (cursor);
+
 //			stateTracker.UpdateEngine (line.Offset);
 			// Get context to the end of the line w/o changing the main engine's state
 			var ctx = (CSharpIndentEngine)stateTracker.Engine.Clone ();
