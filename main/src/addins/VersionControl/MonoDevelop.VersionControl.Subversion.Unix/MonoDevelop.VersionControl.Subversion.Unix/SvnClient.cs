@@ -1416,8 +1416,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			
 			TryStartOperation ();
 			IntPtr result;
-			IntPtr localpool;
-			IntPtr scratch;
+			IntPtr localpool = newpool (pool);
+			IntPtr scratch = newpool (pool);
 			try {
 				string new_path = path.FullPath;
 				CheckError (svn.client_get_wc_root (out result, new_path, ctx, localpool, scratch));
