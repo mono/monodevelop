@@ -3,14 +3,9 @@
 //
 
 using System;
-using System.IO;
-using System.Threading;
-using System.Collections;
 using System.Runtime.InteropServices;
 
-using MonoDevelop.Core;
 using MonoDevelop.VersionControl;
-using MonoDevelop.VersionControl.Subversion.Gui;
 
 using svn_revnum_t = System.IntPtr;
 using off_t = System.Int64;
@@ -148,6 +143,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		public abstract IntPtr client_blame (string path, ref Rev rev_start, ref Rev rev_end, svn_client_blame_receiver_t receiver, IntPtr baton, IntPtr ctx, IntPtr pool);
 
 		public abstract IntPtr wc_context_create (out IntPtr svn_wc_context_t, IntPtr config, IntPtr result_pool, IntPtr scratch_pool);
+
+		public abstract IntPtr client_get_wc_root (out IntPtr wcroot_abspath, string local_abspath, IntPtr ctx, IntPtr result_pool, IntPtr scratch_pool);
 
 		// TODO: Check if intptr
 		public abstract IntPtr strerror (int statcode, byte[] buf, int bufsize);

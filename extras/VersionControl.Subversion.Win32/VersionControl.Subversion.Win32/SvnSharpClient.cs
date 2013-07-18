@@ -32,7 +32,7 @@ namespace SubversionAddinWindows
 		{
 			return new SvnSharpBackend ();
 		}
-			
+
 		public override string GetPathUrl (FilePath path)
 		{
 			lock (client) {
@@ -701,6 +701,11 @@ namespace SubversionAddinWindows
 
 			if (notifyChange && File.Exists (file))
 				FileService.NotifyFileChanged (file, true);
+		}
+
+		protected override string GetDirectoryDotSvn (FilePath path)
+		{
+			return client.GetWorkingCopyRoot (path.FullPath);
 		}
 	}
 }

@@ -53,7 +53,7 @@ namespace MonoDevelop.VersionControl.Subversion
 	{
 		public abstract string GetTextBase (string sourcefile);
 
-		string GetDirectoryDotSvn (FilePath path)
+		protected virtual string GetDirectoryDotSvn (FilePath path)
 		{
 			return SubversionVersionControl.GetDirectoryDotSvn (path);
 		}
@@ -115,7 +115,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		private VersionInfo GetFileStatus (Repository repo, FilePath sourcefile, bool getRemoteStatus)
 		{
 			SubversionRepository srepo = (SubversionRepository) repo;
-			
+
 			// If the directory is not versioned, there is no version info
 			if (!Directory.Exists (GetDirectoryDotSvn (sourcefile.ParentDirectory)))
 				return VersionInfo.CreateUnversioned (sourcefile, false);
