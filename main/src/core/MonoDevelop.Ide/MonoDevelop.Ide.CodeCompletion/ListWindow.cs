@@ -133,12 +133,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			list.CompletionString = PartialWord;
 			
-			if (IsRealized && !Visible)
+			var allocWidth = Allocation.Width;
+			if (IsRealized && !Visible) {
+				allocWidth = list.WidthRequest = WindowWidth;
 				Show ();
+			}
 
-			int width = Math.Max (Allocation.Width, list.WidthRequest + Theme.CornerRadius * 2);
+			int width = Math.Max (allocWidth, list.WidthRequest + Theme.CornerRadius * 2);
 			int height = Math.Max (Allocation.Height, list.HeightRequest + 2 + (footer != null ? footer.Allocation.Height : 0) + Theme.CornerRadius * 2);
-			
 			SetSizeRequest (width, height);
 			if (IsRealized) 
 				Resize (width, height);
