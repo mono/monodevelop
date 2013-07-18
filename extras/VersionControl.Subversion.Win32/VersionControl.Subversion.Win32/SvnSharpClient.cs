@@ -12,7 +12,7 @@ using MonoDevelop.Projects.Text;
 
 namespace SubversionAddinWindows
 {
-	public class SvnSharpClient: SubversionVersionControl, SvnSharpClient17Extensions
+	public class SvnSharpClient: SubversionVersionControl
 	{
 		static bool errorShown;
 		static bool installError;
