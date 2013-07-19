@@ -301,6 +301,11 @@ namespace MonoDevelop.Refactoring
 				foreach (var curProject in solution.GetAllProjects ()) {
 					if (curProject == project || referencedItems.Contains (curProject))
 						continue;
+
+					var otherRefes = IdeApp.Workspace != null ? curProject.GetReferencedItems (IdeApp.Workspace.ActiveConfiguration).ToList () : (IEnumerable<SolutionItem>) new SolutionItem[0];
+					if (otherRefes.Contains (project))
+						continue;
+
 					var comp = TypeSystemService.GetCompilation (curProject);
 					if (comp == null)
 						continue;
