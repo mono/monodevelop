@@ -69,10 +69,6 @@
       <Name>Mono.Addins</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\MonoDevelop.VersionControl.Git\MonoDevelop.VersionControl.Git.csproj">
-      <Project>{0413DB7D-8B35-423F-9752-D75C9225E7DE}</Project>
-      <Name>MonoDevelop.VersionControl.Git</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\..\external\ngit\Sharpen\Sharpen.csproj">
       <Project>{72944A6C-45FF-4EF8-B349-8C9CABF519D4}</Project>
       <Name>Sharpen</Name>

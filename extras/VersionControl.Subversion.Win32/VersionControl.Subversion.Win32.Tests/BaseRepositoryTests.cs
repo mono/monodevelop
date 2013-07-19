@@ -30,7 +30,6 @@ using System;
 using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.VersionControl;
-using MonoDevelop.VersionControl.Git;
 
 namespace MonoDevelop.VersionControl.Tests
 {
@@ -63,14 +62,12 @@ namespace MonoDevelop.VersionControl.Tests
 		[Test]
 		public virtual void FileIsAdded ()
 		{
-			if (DOT_DIR == ".svn")
-				Assert.Ignore ("Problem with version info cache for Svn.");
-
 			FilePath added = rootCheckout + "testfile";
 			File.Create (added).Close ();
 			repo.Add (added, false, new NullProgressMonitor ());
 
 			VersionInfo vi = repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache);
+
 			if (DOT_DIR == ".git")
 				Assert.AreEqual (VersionStatus.Versioned, (VersionStatus.Versioned & vi.Status));
 
@@ -82,10 +79,6 @@ namespace MonoDevelop.VersionControl.Tests
 		[Test]
 		public virtual void FileIsCommitted ()
 		{
-			if (DOT_DIR == ".svn")
-				Assert.Ignore ("Problem with version info cache for Svn.");
-
-			GitRepository repo3;
 			FilePath added = rootCheckout + "testfile";
 
 			File.Create (added).Close ();
@@ -95,13 +88,14 @@ namespace MonoDevelop.VersionControl.Tests
 			changes.GlobalComment = "test";
 			repo.Commit (changes, new NullProgressMonitor ());
 
-			if (DOT_DIR == ".git") {
-				repo3 = (GitRepository)repo;
-				repo3.Push (new NullProgressMonitor (), repo3.GetCurrentRemote (), repo3.GetCurrentBranch ());
-			}
+			PostCommit (repo);
 
 			VersionInfo vi = repo.GetVersionInfo (added, VersionInfoQueryFlags.IncludeRemoteStatus);
-			Assert.AreEqual (VersionStatus.Versioned, (VersionStatus.Versioned & vi.RemoteStatus));
+			Assert.AreEqual (VersionStatus.Versioned, (VersionStatus.Versioned & vi.Status));
+		}
+
+		protected virtual void PostCommit (Repository repo)
+		{
 		}
 
 		[Test]
@@ -111,11 +105,6 @@ namespace MonoDevelop.VersionControl.Tests
 			if (DOT_DIR == ".git")
 				Assert.Ignore ("Checkout command locks a pack file for Git.");
 
-			if (DOT_DIR == ".svn")
-				Assert.Ignore ("Problem with version info cache for Svn.");
-
-			GitRepository repo3;
-
 			string added = rootCheckout + "testfile";
 			File.Create (added).Close ();
 			repo.Add (added, false, new NullProgressMonitor ());
@@ -124,11 +113,7 @@ namespace MonoDevelop.VersionControl.Tests
 			changes.GlobalComment = "test";
 			repo.Commit (changes, new NullProgressMonitor ());
 
-			// We need to push on Git.
-			if (DOT_DIR == ".git") {
-				repo3 = (GitRepository)repo;
-				repo3.Push (new NullProgressMonitor (), repo3.GetCurrentRemote (), repo3.GetCurrentBranch ());
-			}
+			PostCommit (repo);
 
 			// Checkout a second repository.
 			FilePath second = new FilePath (FileService.CreateTempDirectory () + Path.DirectorySeparatorChar);
@@ -142,10 +127,7 @@ namespace MonoDevelop.VersionControl.Tests
 			changes.GlobalComment = "test2";
 			repo2.Commit (changes, new NullProgressMonitor ());
 
-			if (DOT_DIR == ".git") {
-				repo3 = (GitRepository)repo2;
-				repo3.Push (new NullProgressMonitor (), repo3.GetCurrentRemote (), repo3.GetCurrentBranch ());
-			}
+			PostCommit (repo2);
 
 			repo.Update (repo.RootPath, true, new NullProgressMonitor ());
 			Assert.True (File.Exists (rootCheckout + "testfile2"));
@@ -158,11 +140,11 @@ namespace MonoDevelop.VersionControl.Tests
 		{
 			string added = rootCheckout + "testfile";
 			File.Create (added).Close ();
-			repo.Add (added, false, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
+			repo.Add (added, false, new NullProgressMonitor ());
 			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
 			changes.AddFile (added);
 			changes.GlobalComment = "File committed";
-			repo.Commit (changes, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
+			repo.Commit (changes, new NullProgressMonitor ());
 			foreach (Revision rev in repo.GetHistory (added, null)) {
 				Assert.AreEqual ("File committed", rev.Message);
 			}

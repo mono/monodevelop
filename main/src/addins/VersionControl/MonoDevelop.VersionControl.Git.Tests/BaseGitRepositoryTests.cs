@@ -85,6 +85,12 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			Assert.AreEqual (difftext, repo.GenerateDiff (added, repo.GetVersionInfo (added)).Content.Replace ("\n", "\r\n"));
 		}
 
+		protected override void PostCommit (Repository repo)
+		{
+			GitRepository repo2 = (GitRepository)repo;
+			repo2.Push (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), repo2.GetCurrentRemote (), repo2.GetCurrentBranch ());
+		}
+
 		protected override Repository GetRepo (string path, string url)
 		{
 			return new GitRepository (path, url);

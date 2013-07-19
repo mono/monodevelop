@@ -46,9 +46,6 @@
       <HintPath>..\..\..\main\build\AddIns\VersionControl\MonoDevelop.VersionControl.Subversion.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="MonoDevelop.VersionControl.Git">
-      <HintPath>..\..\..\main\build\AddIns\VersionControl\MonoDevelop.VersionControl.Git.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="RepositoryTests.cs" />

@@ -78,6 +78,7 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 
 			// Check out the repository.
 			Checkout (rootCheckout, repoLocation);
+			repo = GetRepo (rootCheckout, repoLocation);
 			DOT_DIR = ".svn";
 		}
 	}

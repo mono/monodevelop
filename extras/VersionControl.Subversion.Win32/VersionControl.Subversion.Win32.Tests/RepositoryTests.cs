@@ -76,14 +76,10 @@ namespace VersionControl.Subversion.Win32.Tests
 			Assert.AreEqual (difftext, repo.GenerateDiff (added, repo.GetVersionInfo (added)).Content.Replace ("\n", "\r\n"));
 		}
 
-		#region Util
-
 		protected override Repository GetRepo (string path, string url)
 		{
 			return new SubversionRepository (new SvnSharpClient (), url, path);
 		}
-
-		#endregion
 	}
 }
 

@@ -26,7 +26,6 @@
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
-using MonoDevelop.VersionControl;
 using MonoDevelop.VersionControl.Subversion;
 using MonoDevelop.VersionControl.Subversion.Unix;
 using NUnit.Framework;
@@ -66,14 +65,10 @@ namespace VersionControl.Subversion.Unix.Tests
 			Assert.AreEqual (difftext, repo.GetUnifiedDiff (added, false, false));
 		}
 
-		#region Util
-
 		public override SubversionRepository GetRepo (string url, string path)
 		{
 			return new SubversionRepository (new SvnClient (), url, path);
 		}
-
-		#endregion
 	}
 }
 
