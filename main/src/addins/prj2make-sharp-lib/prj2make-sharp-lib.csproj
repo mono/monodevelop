@@ -98,6 +98,7 @@
     <Compile Include="csproj_ver2003.cs" />
     <Compile Include="VS2003ProjectFileFormat.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="AddinInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="prj2make-sharp-lib.addin.xml">
