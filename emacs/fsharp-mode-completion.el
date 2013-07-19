@@ -197,7 +197,6 @@ display in a help buffer instead.")
     (kill-process fsharp-ac-completion-process))
 
   (setq fsharp-ac-completion-process (fsharp-ac--configure-proc))
-  (log-psendstr fsharp-ac-completion-process "outputmode json\n")
   (fsharp-ac--reset-timer))
 
 (defun fsharp-ac--configure-proc ()
@@ -214,6 +213,7 @@ display in a help buffer instead.")
           (with-current-buffer (process-buffer proc)
             (delete-region (point-min) (point-max)))
           (add-to-list 'ac-modes 'fsharp-mode)
+          (log-psendstr proc "outputmode json\n")
           proc)
       (fsharp-ac-message-safely "Failed to launch: '%s'"
                                 (s-join " " fsharp-ac-complete-command))
