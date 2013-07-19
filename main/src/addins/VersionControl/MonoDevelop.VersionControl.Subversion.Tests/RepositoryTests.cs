@@ -25,12 +25,12 @@
 // THE SOFTWARE.
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.VersionControl.Subversion;
 using MonoDevelop.VersionControl.Subversion.Unix;
 using NUnit.Framework;
 using System.IO;
 using System;
+using MonoDevelop.VersionControl;
 
 namespace VersionControl.Subversion.Unix.Tests
 {
@@ -50,22 +50,22 @@ namespace VersionControl.Subversion.Unix.Tests
 		{
 			string added = rootCheckout + "testfile";
 			File.Create (added).Close ();
-			repo.Add (added, false, new NullProgressMonitor ());
-			repo.Commit (new FilePath[] { rootCheckout }, "File committed", new NullProgressMonitor ());
+			repo.Add (added, false, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
+			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
+			changes.AddFile (added);
+			changes.GlobalComment = "File committed";
+			repo.Commit (changes, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
 			File.AppendAllText (added, "text" + Environment.NewLine);
 
-			string difftext = @"Index: " + added + @"
-===================================================================
---- " + added + @"	(revision 1)
-+++ " + added + @"	(working copy)
+			string difftext = @"--- testfile	(revision 1)
++++ testfile	(working copy)
 @@ -0,0 +1 @@
 +text
 ";
-
-			Assert.AreEqual (difftext, repo.GetUnifiedDiff (added, false, false));
+			Assert.AreEqual (difftext, repo.GenerateDiff (added, repo.GetVersionInfo (added)).Content);
 		}
 
-		public override SubversionRepository GetRepo (string url, string path)
+		protected override Repository GetRepo (string path, string url)
 		{
 			return new SubversionRepository (new SvnClient (), url, path);
 		}
