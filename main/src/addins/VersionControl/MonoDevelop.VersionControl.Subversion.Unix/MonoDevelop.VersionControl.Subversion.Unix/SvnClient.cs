@@ -1427,7 +1427,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 
 			TryStartOperation ();
-			IntPtr result = IntPtr.Zero;
+			IntPtr result;
 			IntPtr localpool = newpool (pool);
 			IntPtr scratch = newpool (pool);
 			try {
@@ -1437,10 +1437,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				} catch (SubversionException e) {
 					if (e.ErrorCode == 115007)
 						return "";
+					throw;
 				}
-				if (result != IntPtr.Zero)
-					return Marshal.PtrToStringAnsi (result);
-				return "";
+				return Marshal.PtrToStringAnsi (result);
 			} finally {
 				apr.pool_destroy (localpool);
 				apr.pool_destroy (scratch);
