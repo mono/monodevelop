@@ -28,46 +28,172 @@ using NUnit.Framework;
 using System.IO;
 using System;
 using MonoDevelop.Core;
+using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.VersionControl;
+using MonoDevelop.VersionControl.Git;
 
 namespace MonoDevelop.VersionControl.Tests
 {
 	[TestFixture]
 	public abstract class BaseRepoUtilsTest
 	{
-		protected FilePath repoLocation = "";
+		protected string repoLocation = "";
 		protected FilePath rootUrl = "";
 		protected FilePath rootCheckout;
+		protected Repository repo;
+		protected Repository repo2;
+		protected string DOT_DIR;
 
 		[SetUp]
 		public abstract void Setup ();
 
 		[TearDown]
-		public abstract void TearDown ();
+		public virtual void TearDown ()
+		{
+			DeleteDirectory (rootUrl);
+			DeleteDirectory (rootCheckout);
+		}
 
 		[Test]
-		public abstract void CheckoutExists ();
+		public virtual void CheckoutExists ()
+		{
+			Assert.True (Directory.Exists (rootCheckout + DOT_DIR));
+		}
 
 		[Test]
-		public abstract void FileIsAdded ();
+		public virtual void FileIsAdded ()
+		{
+			FilePath added = rootCheckout + "testfile";
+			File.Create (added).Close ();
+			repo.Add (added, false, new NullProgressMonitor ());
+
+			VersionInfo vi = repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache);
+			if (DOT_DIR == ".git")
+				Assert.AreEqual (VersionStatus.Versioned, (VersionStatus.Versioned & vi.Status));
+
+			if (DOT_DIR == ".svn")
+				Assert.AreEqual (VersionStatus.ScheduledAdd, (VersionStatus.ScheduledAdd & vi.Status));
+			Assert.IsFalse (vi.CanAdd);
+		}
 
 		[Test]
-		public abstract void FileIsCommitted ();
+		public virtual void FileIsCommitted ()
+		{
+			GitRepository repo3;
+			FilePath added = rootCheckout + "testfile";
+
+			File.Create (added).Close ();
+			repo.Add (added, false, new NullProgressMonitor ());
+			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
+			changes.AddFile (added);
+			changes.GlobalComment = "test";
+			repo.Commit (changes, new NullProgressMonitor ());
+
+			if (DOT_DIR == ".git") {
+				repo3 = (GitRepository)repo;
+				repo3.Push (new NullProgressMonitor (), repo3.GetCurrentRemote (), repo3.GetCurrentBranch ());
+			}
+
+			VersionInfo vi = repo.GetVersionInfo (added, VersionInfoQueryFlags.IncludeRemoteStatus);
+			Assert.AreEqual (VersionStatus.Versioned, (VersionStatus.Versioned & vi.RemoteStatus));
+		}
 
 		[Test]
-		public abstract void UpdateIsDone ();
+		public virtual void UpdateIsDone ()
+		{
+			//TODO: Fix the issue.
+			if (DOT_DIR == ".git")
+				Assert.Ignore ("Checkout command locks a pack file for Git.");
+
+			GitRepository repo3;
+
+			string added = rootCheckout + "testfile";
+			File.Create (added).Close ();
+			repo.Add (added, false, new NullProgressMonitor ());
+			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
+			changes.AddFile (added);
+			changes.GlobalComment = "test";
+			repo.Commit (changes, new NullProgressMonitor ());
+
+			// We need to push on Git.
+			if (DOT_DIR == ".git") {
+				repo3 = (GitRepository)repo;
+				repo3.Push (new NullProgressMonitor (), repo3.GetCurrentRemote (), repo3.GetCurrentBranch ());
+			}
+
+			// Checkout a second repository.
+			FilePath second = new FilePath (FileService.CreateTempDirectory () + Path.DirectorySeparatorChar);
+			Checkout (second, repoLocation);
+			repo2 = GetRepo (second, repoLocation);
+			added = second + "testfile2";
+			File.Create (added).Close ();
+			repo2.Add (added, false, new NullProgressMonitor ());
+			changes = repo.CreateChangeSet (repo.RootPath);
+			changes.AddFile (added);
+			changes.GlobalComment = "test2";
+			repo2.Commit (changes, new NullProgressMonitor ());
+
+			if (DOT_DIR == ".git") {
+				repo3 = (GitRepository)repo2;
+				repo3.Push (new NullProgressMonitor (), repo3.GetCurrentRemote (), repo3.GetCurrentBranch ());
+			}
+
+			repo.Update (repo.RootPath, true, new NullProgressMonitor ());
+			Assert.True (File.Exists (rootCheckout + "testfile2"));
+
+			DeleteDirectory (second);
+		}
 
 		[Test]
-		public abstract void LogIsProper ();
+		public virtual void LogIsProper ()
+		{
+			string added = rootCheckout + "testfile";
+			File.Create (added).Close ();
+			repo.Add (added, false, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
+			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
+			changes.AddFile (added);
+			changes.GlobalComment = "File committed";
+			repo.Commit (changes, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
+			foreach (Revision rev in repo.GetHistory (added, null)) {
+				Assert.AreEqual ("File committed", rev.Message);
+			}
+		}
 
 		[Test]
 		public abstract void DiffIsProper ();
 
 		[Test]
-		public abstract void Reverts ();
+		public virtual void Reverts ()
+		{
+			string added = rootCheckout + "testfile";
+			string content = "text";
+
+			File.Create (added).Close ();
+			repo.Add (added, false, new NullProgressMonitor ());
+			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
+			changes.AddFile (added);
+			changes.GlobalComment = "File committed";
+			repo.Commit (changes, new NullProgressMonitor ());
+
+			// Revert to head.
+			File.WriteAllText (added, content);
+			repo.Revert (added, false, new NullProgressMonitor ());
+			Assert.AreEqual (repo.GetBaseText (added), File.ReadAllText (added));
+		}
 
 		#region Util
 
-		public abstract void Checkout (string path);
+		public virtual void Checkout (string path, string url)
+		{
+			Repository _repo = GetRepo (path, url);
+			_repo.Checkout (path, true, new NullProgressMonitor ());
+			if (repo == null)
+				repo = _repo;
+			else
+				repo2 = _repo;
+		}
+
+		protected abstract Repository GetRepo (string path, string url);
 
 		public static void DeleteDirectory (string path)
 		{
