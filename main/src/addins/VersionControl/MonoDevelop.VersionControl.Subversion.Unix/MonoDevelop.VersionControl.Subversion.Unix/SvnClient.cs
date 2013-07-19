@@ -1422,20 +1422,19 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		internal string GetDirectoryDotSvnInternal (FilePath path, out bool pre_1_7)
 		{
 			pre_1_7 = this.pre_1_7;
-			if (pre_1_7) {
+			if (pre_1_7)
 				return "";
-			}
 
 			TryStartOperation ();
 			IntPtr result;
 			IntPtr localpool = newpool (pool);
 			IntPtr scratch = newpool (pool);
 			try {
-				string new_path = path.FullPath;
+				string new_path = NormalizePath (path.FullPath, localpool);
 				try {
 					CheckError (svn.client_get_wc_root (out result, new_path, ctx, localpool, scratch));
 				} catch (SubversionException e) {
-					if (e.ErrorCode == 115007)
+					if (e.ErrorCode == 155007)
 						return "";
 					throw;
 				}
