@@ -68,11 +68,15 @@
 		<End>"</End>
 	</Span>
 	
-	<Span rule="String" stopateol = "false">
+	<Span rule="Let" stopateol = "false">
 		<Begin color="Keyword(Iteration)" flags="NewWord">let</Begin>
 		<End>=</End>
 	</Span>
 
+	<Span color = "String" rule="String" stopateol = "true">
+		<Begin>&apos;</Begin>
+		<End>&apos;</End>
+	</Span>
   
 <!-- 
 	<Span color="String" rule="String" stopateol="true" escape='\'>
@@ -273,8 +277,10 @@
 	</Rule>
 
 	<Rule name="String">
-		<Delimiters></Delimiters>
 		<Match color ="String(Escape)">\\(U[0-9a-fA-F]{8}|u[0-9a-fA-F]{4}|[\\'ntbrafv])</Match>
+	</Rule>
+	
+	<Rule name="Let">
 	</Rule>
 	
 	<Rule name = "VerbatimString">

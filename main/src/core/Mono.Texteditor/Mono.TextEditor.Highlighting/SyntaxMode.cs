@@ -611,7 +611,7 @@ namespace Mono.TextEditor.Highlighting
 								var len = foundMatchLength [j];
 								if (len > 0) {
 									AddChunk (ref curChunk, len, GetChunkStyleColor (foundMatch.Groups [j - 1]));
-									i += len;
+									i += len - 1;
 									curChunk.Length = 0;
 								}
 							}
@@ -619,7 +619,7 @@ namespace Mono.TextEditor.Highlighting
 						}
 						if (foundMatchLength[0] > 0) {
 							AddChunk (ref curChunk, foundMatchLength[0], GetChunkStyleColor (foundMatch.Color));
-							i += foundMatchLength[0];
+							i += foundMatchLength[0] - 1;
 							curChunk.Length = 0;
 							return;
 						}
