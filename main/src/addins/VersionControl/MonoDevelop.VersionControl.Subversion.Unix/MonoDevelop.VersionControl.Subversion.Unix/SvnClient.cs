@@ -1432,7 +1432,12 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			IntPtr scratch = newpool (pool);
 			try {
 				string new_path = path.FullPath;
-				CheckError (svn.client_get_wc_root (out result, new_path, ctx, localpool, scratch));
+				try {
+					CheckError (svn.client_get_wc_root (out result, new_path, ctx, localpool, scratch));
+				} catch (SubversionException e) {
+					if (e.ErrorCode == 115007)
+						return "";
+				}
 				return Marshal.PtrToStringAnsi (result);
 			} finally {
 				apr.pool_destroy (localpool);
