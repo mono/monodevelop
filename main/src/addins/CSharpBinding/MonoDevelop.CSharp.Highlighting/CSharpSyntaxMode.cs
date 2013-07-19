@@ -144,6 +144,8 @@ namespace MonoDevelop.CSharp.Highlighting
 						var newResolverTask = guiDocument.GetSharedResolver ();
 						var cancellationToken = src.Token;
 						System.Threading.Tasks.Task.Factory.StartNew (delegate {
+							if (newResolverTask == null)
+								return;
 							var newResolver = newResolverTask.Result;
 							if (newResolver == null)
 								return;

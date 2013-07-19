@@ -74,7 +74,7 @@ namespace MonoDevelop.CSharp
 			var token = src.Token;
 			ThreadPool.QueueUserWorkItem (delegate {
 				var resolver = document.GetSharedResolver ();
-				if (resolver.Result == null)
+				if (resolver == null || resolver.Result == null)
 					return;
 				var visitor = new NUnitVisitor (resolver.Result);
 				try {
