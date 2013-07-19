@@ -32,7 +32,7 @@ namespace SubversionAddinWindows
 		{
 			return new SvnSharpBackend ();
 		}
-			
+
 		public override string GetPathUrl (FilePath path)
 		{
 			lock (client) {
@@ -55,6 +55,11 @@ namespace SubversionAddinWindows
 				}
 				return !installError;
 			}
+		}
+
+		public override string GetDirectoryDotSvn (FilePath path)
+		{
+			return client.GetWorkingCopyRoot (path.FullPath);
 		}
 	}
 

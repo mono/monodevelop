@@ -2,11 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 
 using System.Runtime.InteropServices;
 using MonoDevelop.Core;
-using MonoDevelop.VersionControl.Subversion.Gui;
 using System.Text;
 
 using svn_revnum_t = System.IntPtr;
@@ -151,6 +149,16 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				return null;
 
 			return Marshal.PtrToStringAnsi (ret);
+		}
+
+		public override string GetDirectoryDotSvn (FilePath path)
+		{
+			UnixSvnBackend backend = CreateBackend () as UnixSvnBackend;
+			bool pre_1_7;
+			string new_path = backend.GetDirectoryDotSvnInternal (path, out pre_1_7);
+			if (pre_1_7)
+				return base.GetDirectoryDotSvn (path);
+			return new_path;
 		}
 	}
 
@@ -1409,6 +1417,28 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			
 			if (lockFileList != null && data.lock_state == requiredLockState)
 				lockFileList.Add (file);
+		}
+
+		internal string GetDirectoryDotSvnInternal (FilePath path, out bool pre_1_7)
+		{
+			pre_1_7 = this.pre_1_7;
+			if (pre_1_7) {
+				return "";
+			}
+
+			TryStartOperation ();
+			IntPtr result;
+			IntPtr localpool = newpool (pool);
+			IntPtr scratch = newpool (pool);
+			try {
+				string new_path = path.FullPath;
+				CheckError (svn.client_get_wc_root (out result, new_path, ctx, localpool, scratch));
+				return Marshal.PtrToStringAnsi (result);
+			} finally {
+				apr.pool_destroy (localpool);
+				apr.pool_destroy (scratch);
+				TryEndOperation ();
+			}
 		}
 		
 		public class StatusCollector {
