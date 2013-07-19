@@ -73,6 +73,9 @@ namespace MonoDevelop.Ide
 		
 		int Run (MonoDevelopOptions options)
 		{
+			LoggingService.LogInfo ("Starting {0} {1}", BrandingService.ApplicationName, IdeVersionInfo.MonoDevelopVersion);
+			LoggingService.LogInfo ("Running on {0}", IdeVersionInfo.GetRuntimeInfo ());
+
 			Counters.Initialization.BeginTiming ();
 			
 			if (options.PerfLog) {
@@ -91,7 +94,7 @@ namespace MonoDevelop.Ide
 			SetupExceptionManager ();
 			
 			try {
-				MonoDevelop.Ide.Gui.GLibLogging.Enabled = true;
+				GLibLogging.Enabled = true;
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error initialising GLib logging.", ex);
 			}
@@ -100,6 +103,8 @@ namespace MonoDevelop.Ide
 
 			var args = options.RemainingArgs.ToArray ();
 			Gtk.Application.Init (BrandingService.ApplicationName, ref args);
+
+			LoggingService.LogInfo ("Using GTK+ {0}", IdeVersionInfo.GetGtkVersion ());
 
 			FilePath p = typeof(IdeStartup).Assembly.Location;
 			Assembly.LoadFrom (p.ParentDirectory.Combine ("Xwt.Gtk.dll"));
@@ -145,9 +150,11 @@ namespace MonoDevelop.Ide
 			Counters.Initialization.Trace ("Initializing theme and splash window");
 
 			DefaultTheme = Gtk.Settings.Default.ThemeName;
-			if (!string.IsNullOrEmpty (IdeApp.Preferences.UserInterfaceTheme)) {
+			//we can't access IdeApp.Preferences yet as it's not initialized yet
+			var themePref = PropertyService.Get<string> ("MonoDevelop.Ide.UserInterfaceTheme");
+			if (!string.IsNullOrEmpty (themePref)) {
 				string theme;
-				if (!ValidateGtkTheme (IdeApp.Preferences.UserInterfaceTheme, out theme))
+				if (!ValidateGtkTheme (themePref, out theme))
 					return 1;
 				Gtk.Settings.Default.ThemeName = theme;
 			}
