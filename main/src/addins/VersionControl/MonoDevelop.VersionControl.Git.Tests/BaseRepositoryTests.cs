@@ -101,10 +101,6 @@ namespace MonoDevelop.VersionControl.Tests
 		[Test]
 		public virtual void UpdateIsDone ()
 		{
-			//TODO: Fix the issue.
-			if (DOT_DIR == ".git")
-				Assert.Ignore ("Checkout command locks a pack file for Git.");
-
 			string added = rootCheckout + "testfile";
 			File.Create (added).Close ();
 			repo.Add (added, false, new NullProgressMonitor ());
