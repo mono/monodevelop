@@ -39,11 +39,12 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 	{
 		readonly ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction act;
 		
-		public NRefactoryCodeAction (string id, string title, ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction act)
+		public NRefactoryCodeAction (string id, string title, ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction act, object siblingKey = null)
 		{
 			this.IdString = id;
 			this.Title = title;
 			this.act = act;
+			this.SiblingKey = siblingKey;
 			this.DocumentRegion = new Mono.TextEditor.DocumentRegion (act.Start, act.End);
 		}
 

@@ -31,12 +31,14 @@ using MonoDevelop.Projects;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
 using System.Diagnostics;
+using System.Linq;
 
 namespace MonoDevelop.CodeIssues
 {
 	public class CodeIssuePadControl : VBox
 	{
 		const int UpdatePeriod = 500;
+		const int BatchChoiceCount = 5;
 
 		TreeView view = new TreeView ();
 		DataField<string> textField = new DataField<string> ();
@@ -87,6 +89,7 @@ namespace MonoDevelop.CodeIssues
 			
 			view.RowActivated += OnRowActivated;
 			view.RowExpanding += OnRowExpanding;
+			view.ButtonPressed += HandleButtonPressed;
 			PackStart (view, BoxMode.FillAndExpand);
 			
 			IIssueTreeNode node = rootGroup;
@@ -367,6 +370,44 @@ namespace MonoDevelop.CodeIssues
 			if (!syncedNodes.Contains (node)) {
 				SyncNode (navigator, true);
 			}
+		}
+
+		void HandleButtonPressed (object sender, ButtonEventArgs e)
+		{
+			if (e.Button == PointerButton.Right) {
+				ShowContextMenu (e.X, e.Y);
+			}
+		}
+
+		void ShowContextMenu (double x, double y)
+		{
+			var issues = view.SelectedRows
+				.Select (row => store.GetNavigatorAt (row).GetValue (nodeField))
+				.Where (node1 => node1 != null)
+				.SelectMany (node2 => node2.AllChildren)
+				.OfType<IssueSummary> ();
+			var possibleFixes = issues
+				.SelectMany (issue => issue.Actions.Select (a => new { Issue = issue, Action = a }))
+				.Where (item1 => item1.Action.Batchable)
+				// I'm using the ProviderTitle to distiguish between different providers because it is easy
+				// TODO: Don't use the free-form ProviderTitle property to distiguish between providers
+				.GroupBy (item2 => Tuple.Create (item2.Action.SiblingKey, item2.Issue.ProviderTitle))
+				.OrderBy (fixGroup => fixGroup.Count ())
+				.Select (fixGroup2 => new {
+					SiblingKey = fixGroup2.Key.Item1,
+					Title = fixGroup2.First ().Action.Title
+				});
+				
+			var menu = new Menu ();
+			foreach (var _choice in possibleFixes.Take (BatchChoiceCount)) {
+				var choice = _choice;
+				var menuItem = new MenuItem (choice.Title);
+				menuItem.Clicked += delegate {
+					
+				};
+				menu.Items.Add (menuItem);
+			}
+			menu.Popup (view, x, y);
 		}
 	}
 

@@ -155,7 +155,12 @@ namespace MonoDevelop.CodeIssues
 										return;
 									try {
 										foreach (var r in provider.GetIssues (context, tokenSource.Token)) {
-											var issue = new IssueSummary {
+											var actions = r.Actions.Select (a => new ActionSummary {
+												Batchable = a.SupportsBatchRunning,
+												SiblingKey = a.SiblingKey,
+												Title = a.Title
+											});
+											var issue = new IssueSummary (actions) {
 												IssueDescription = r.Description,
 												Region = r.Region,
 												ProviderTitle = provider.Title,
@@ -164,7 +169,8 @@ namespace MonoDevelop.CodeIssues
 												Severity = provider.GetSeverity (),
 												IssueMarker = provider.IssueMarker,
 												File = file,
-												Project = project
+												Project = project,
+												InspectorType = r.GetType ()
 											};
 											IssueSink.AddIssue (issue);
 										}

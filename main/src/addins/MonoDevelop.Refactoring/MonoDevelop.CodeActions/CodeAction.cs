@@ -55,6 +55,12 @@ namespace MonoDevelop.CodeActions
 		/// The region of the code action.
 		/// </summary>
 		public DocumentRegion DocumentRegion { get; set; }
+		
+		/// <summary>
+		/// Gets or sets the sibling key.
+		/// </summary>
+		/// <value>The sibling key.</value>
+		public object SiblingKey { get; set; }
 
 		public CodeAction ()
 		{

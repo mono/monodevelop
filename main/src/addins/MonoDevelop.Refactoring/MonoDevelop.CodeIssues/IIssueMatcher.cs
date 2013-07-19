@@ -1,5 +1,5 @@
 //
-// IIssueTreeNode.cs
+// IIssueMatcher.cs
 //
 // Author:
 //       Simon Lindgren <simon.n.lindgren@gmail.com>
@@ -24,53 +24,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace MonoDevelop.CodeIssues
 {
-	public interface IIssueTreeNode
+	public interface IIssueMatcher
 	{
-		/// <summary>
-		/// The text that should be displayed in the ui.
-		/// </summary>
-		/// <value>The text.</value>
-		string Text { get; }
-		
-		/// <summary>
-		/// The children of this instance.
-		/// </summary>
-		/// <value>The children.</value>
-		ICollection<IIssueTreeNode> Children { get; }
-
-		/// <summary>
-		/// Indicates whether this instance has any children.
-		/// </summary>
-		/// <value><c>true</c> if this instance has children; otherwise, <c>false</c>.</value>
-		bool HasChildren {
-			get;
-		}
-
-		/// <summary>
-		/// Gets all children including nested children of this instance.
-		/// </summary>
-		/// <value>All children.</value>
-		ICollection<IIssueTreeNode> AllChildren { get; }
-		
-		/// <summary>
-		/// Occurs when children of this node are invalidated.
-		/// </summary>
-		event EventHandler<IssueGroupEventArgs> ChildrenInvalidated;
-		
-		/// <summary>
-		/// Occurs when children of this node are invalidated.
-		/// </summary>
-		event EventHandler<IssueTreeNodeEventArgs> ChildAdded;
-		
-		/// <summary>
-		/// Occurs when <see cref="Text"/> is updated.
-		/// </summary>
-		event EventHandler<IssueGroupEventArgs> TextChanged;
+		IList<IssueMatch> Match (IList<IssueSummary> summaries, IList<CodeIssue> realIssues);
 	}
 }
 

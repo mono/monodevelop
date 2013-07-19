@@ -1,5 +1,5 @@
 //
-// IIssueTreeNode.cs
+// IGroupingProvider.cs
 //
 // Author:
 //       Simon Lindgren <simon.n.lindgren@gmail.com>
@@ -23,54 +23,36 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-using System.Collections;
-using System.Collections.Generic;
 
 namespace MonoDevelop.CodeIssues
 {
-	public interface IIssueTreeNode
+
+	public class ActionSummary
 	{
 		/// <summary>
-		/// The text that should be displayed in the ui.
+		/// Gets or sets the title.
 		/// </summary>
-		/// <value>The text.</value>
-		string Text { get; }
+		/// <value>The title.</value>
+		public string Title { get; set; }
 		
 		/// <summary>
-		/// The children of this instance.
+		/// Gets or sets the sibling key.
 		/// </summary>
-		/// <value>The children.</value>
-		ICollection<IIssueTreeNode> Children { get; }
+		/// <value>The sibling key.</value>
+		public object SiblingKey { get; set; }
 
 		/// <summary>
-		/// Indicates whether this instance has any children.
+		/// Gets a value indicating whether this <see cref="MonoDevelop.CodeIssues.ActionSummary"/> is batchable.
 		/// </summary>
-		/// <value><c>true</c> if this instance has children; otherwise, <c>false</c>.</value>
-		bool HasChildren {
-			get;
-		}
+		/// <value><c>true</c> if batchable; otherwise, <c>false</c>.</value>
+		public bool Batchable { get; set; }
 
 		/// <summary>
-		/// Gets all children including nested children of this instance.
+		/// Gets or sets the <see cref="IssueSummary"/> representing the source of this action.
 		/// </summary>
-		/// <value>All children.</value>
-		ICollection<IIssueTreeNode> AllChildren { get; }
-		
-		/// <summary>
-		/// Occurs when children of this node are invalidated.
-		/// </summary>
-		event EventHandler<IssueGroupEventArgs> ChildrenInvalidated;
-		
-		/// <summary>
-		/// Occurs when children of this node are invalidated.
-		/// </summary>
-		event EventHandler<IssueTreeNodeEventArgs> ChildAdded;
-		
-		/// <summary>
-		/// Occurs when <see cref="Text"/> is updated.
-		/// </summary>
-		event EventHandler<IssueGroupEventArgs> TextChanged;
+		/// <value>The issue summary.</value>
+		public IssueSummary IssueSummary { get; set; }
 	}
+
 }
 

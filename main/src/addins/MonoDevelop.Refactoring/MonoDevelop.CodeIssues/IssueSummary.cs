@@ -28,12 +28,23 @@ using ICSharpCode.NRefactory.Refactoring;
 using MonoDevelop.Projects;
 using System.Collections.Generic;
 using System.IO;
+using System;
 
 namespace MonoDevelop.CodeIssues
 {
 
 	public class IssueSummary: IIssueTreeNode
 	{
+	
+		public IssueSummary (IEnumerable<ActionSummary> actions = null)
+		{
+			if (actions != null) {
+				Actions = new List<ActionSummary> (actions);
+			} else {
+				Actions = new List<ActionSummary> ();
+			}
+		}
+		
 		#region IIssueTreeNode implementation
 
 		string IIssueTreeNode.Text {
@@ -49,17 +60,23 @@ namespace MonoDevelop.CodeIssues
 			}
 		}
 	
-		static readonly ICollection<IIssueTreeNode> children = new IIssueTreeNode[0];
+		static readonly ICollection<IIssueTreeNode> emptyCollection = new IIssueTreeNode[0];
 
 		ICollection<IIssueTreeNode> IIssueTreeNode.Children {
 			get {
-				return children;
+				return emptyCollection;
 			}
 		}
 		
 		bool IIssueTreeNode.HasChildren {
 			get {
 				return false;
+			}
+		}
+		
+		ICollection<IIssueTreeNode> IIssueTreeNode.AllChildren {
+			get {
+				return emptyCollection;
 			}
 		}
 		
@@ -134,6 +151,18 @@ namespace MonoDevelop.CodeIssues
 		/// </summary>
 		/// <value>The project.</value>
 		public Project Project { get; set; }
+
+		/// <summary>
+		/// Gets or sets the type of the inspector that was the source of this issue.
+		/// </summary>
+		/// <value>The type of the inspector.</value>
+		public Type InspectorType { get; set; }
+		
+		/// <summary>
+		/// Gets or sets the actions available to fix this issue.
+		/// </summary>
+		/// <value>The actions.</value>
+		public IList<ActionSummary> Actions { get; private set; }
 	}
 }
 

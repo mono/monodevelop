@@ -79,22 +79,7 @@ namespace MonoDevelop.CodeIssues
 				OnChildrenInvalidated (new IssueGroupEventArgs(this));
 			}
 		}
-
-		/*void HandleNextChanged (object sender, GroupingProviderEventArgs eventArgs)
-		{
-			lock(_lock) {
-				processingEnabled = false;
-				groupingProvider = eventArgs.GroupingProvider.Next;
-				groups.Clear ();
-				children.Clear ();
-			}
-			// By disabling processing, no events will be raised until EnableGrouping() has been
-			// called. There is a slight possibility of a race between two different grouping provider
-			// changes but all such changes should originate in the ui and thus it should not happen
-			// TODO: Fix the race described above.
-			OnChildrenInvalidated (new IssueGroupEventArgs(this));
-		}*/
-
+		
 		#region IIssueTreeNode implementation
 
 		string IIssueTreeNode.Text {
@@ -115,6 +100,14 @@ namespace MonoDevelop.CodeIssues
 		bool IIssueTreeNode.HasChildren {
 			get {
 				return HasChildren;
+			}
+		}
+		
+		ICollection<IIssueTreeNode> IIssueTreeNode.AllChildren {
+			get {
+				lock (_lock) {
+					return new List<IIssueTreeNode> (allIssues);
+				}
 			}
 		}
 
