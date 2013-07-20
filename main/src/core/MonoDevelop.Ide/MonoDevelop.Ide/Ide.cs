@@ -101,6 +101,11 @@ namespace MonoDevelop.Ide
 		public static bool HasInputFocus {
 			get { return CommandService.ApplicationHasFocus; }
 		}
+
+		static IdeApp ()
+		{
+			preferences = new IdePreferences ();
+		}
 		
 		public static Workbench Workbench {
 			get { return workbench; }
@@ -168,8 +173,6 @@ namespace MonoDevelop.Ide
 		
 		public static void Initialize (IProgressMonitor monitor)
 		{
-			preferences = new IdePreferences ();
-
 			Counters.Initialization.Trace ("Creating Workbench");
 			workbench = new Workbench ();
 			Counters.Initialization.Trace ("Creating Root Workspace");
