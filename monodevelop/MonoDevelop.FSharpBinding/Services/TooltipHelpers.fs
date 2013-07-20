@@ -81,19 +81,27 @@ module Tooltips =
         processNodes sb <| element.Nodes()
         
     let getTooltip (addStyle: Style -> string) (str:string) = 
-        let xdoc = XElement.Parse("<Root>" + str + "</Root>")
-        let summary = xdoc.Descendants(xn "summary") |> firstOrDefault |> elementValue addStyle
-     
-        xdoc.Elements(xn "exception")
-        |> Seq.iteri (fun i element -> 
-            if i = 0 then summary.Append("\n\nExceptions:") |> ignore
-            match element |> attribute "cref" with 
-            | null -> () 
-            | cref -> let fragment = cref.Value 
-                                     |> strip "T:"
-                                     |> unqualifyName
-                      summary.Append(addStyle <| Exception fragment) |> ignore)         
-        summary.ToString()
+        try let xdoc = XElement.Parse("<Root>" + str + "</Root>")
+            //if no nodes were found then return the string verbatim
+            let anyNodes = xdoc.Descendants() |> Enumerable.Any
+            if not anyNodes then str else
+            let summary = xdoc.Descendants(xn "summary") |> firstOrDefault |> elementValue addStyle
+            
+            xdoc.Elements(xn "exception")
+            |> Seq.iteri (fun i element -> 
+                if i = 0 then summary.Append("\n\nExceptions:") |> ignore
+                match element |> attribute "cref" with 
+                | null -> () 
+                | cref -> let fragment = cref.Value 
+                                         |> strip "T:"
+                                         |> unqualifyName
+                          summary.Append(addStyle <| Exception fragment) |> ignore)         
+            if summary.Length > 0  then summary.ToString()
+            //If theres nothing in the StringBuilder then there's either no summary or exception elements,
+            //or something went wrong, simply return the str escaped rather than nothing.
+            else GLib.Markup.EscapeText str
+        //if the tooltip contains invalid xml return the str escaped
+        with _ -> GLib.Markup.EscapeText str
        
     let getParameterTip (addStyle: Style -> string) (str:String) (param:String) =
         let xdoc = XElement.Parse("<Root>" + str + "</Root>")

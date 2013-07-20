@@ -121,7 +121,10 @@ type FSharpResolverProvider() =
                               DomRegion.Empty
                     member x.Type = (SpecialType.UnknownType :> _)
                     member x.IsConst = false
-                    member x.ConstantValue = Unchecked.defaultof<_> }
+                    member x.ConstantValue = Unchecked.defaultof<_>
+                  interface ISymbol with
+                    member x.SymbolKind = SymbolKind.Variable 
+                    member x.Name = "item--item"}
                     
             new FSharpLocalResolveResult(tip, ivar) :> ResolveResult
       with exn -> 
