@@ -154,7 +154,7 @@ namespace Parser
 		partial void OnCreated();
 		partial void EnterRule(string ruleName, int ruleIndex);
 		partial void LeaveRule(string ruleName, int ruleIndex);
-
+		
 		#region Rules
 
 		partial void EnterRule_styleSheet();
