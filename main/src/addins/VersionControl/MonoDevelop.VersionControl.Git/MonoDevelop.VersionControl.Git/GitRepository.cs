@@ -295,7 +295,7 @@ namespace MonoDevelop.VersionControl.Git
 						paths = new FilePath [0];
 				}
 			} else {
-				paths = localFileNames.Select (f => f).ToArray ();
+				paths = localFileNames.ToArray ();
 			}
 
 			foreach (var group in paths.GroupBy (p => GetRepository (p))) {
