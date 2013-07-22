@@ -30,7 +30,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		{
 			string svnPath = GetDirectoryDotSvn (path);
 			if (svnPath != String.Empty)
-				return new SubversionRepository (this, String.Empty, svnPath);
+				return new SubversionRepository (this, null, svnPath);
 
 			return null;
 		}
