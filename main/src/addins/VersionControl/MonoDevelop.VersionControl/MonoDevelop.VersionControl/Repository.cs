@@ -225,8 +225,7 @@ namespace MonoDevelop.VersionControl
 
 				if (status != null && status.RequiresRefresh && (!getRemoteStatus || status.HasRemoteStatus))
 					return status.FileInfo;
-				else
-					return new VersionInfo[0];
+				return new VersionInfo[0];
 			} finally {
 				//Console.WriteLine ("GetDirectoryVersionInfo " + localDirectory + " - " + (DateTime.Now - now).TotalMilliseconds);
 			}
