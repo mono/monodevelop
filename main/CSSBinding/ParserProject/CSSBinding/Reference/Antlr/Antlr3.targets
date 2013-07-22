@@ -1,0 +1,161 @@
+﻿<!--
+   [The "BSD licence"]
+   Copyright (c) 2011 Sam Harwell
+   All rights reserved.
+
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+   3. The name of the author may not be used to endorse or promote products
+      derived from this software without specific prior written permission.
+
+   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+   OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+   IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+   INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+   NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+   DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+   THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+   THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <BuildSystem>MSBuild</BuildSystem>
+    <TaskVersion>3.3.0.7239</TaskVersion>
+    <TaskKeyToken>eb42632606e9261f</TaskKeyToken>
+    <AntlrBuildTaskAssemblyName Condition="'$(AntlrBuildTaskAssemblyName)'==''">AntlrBuildTask, Version=$(TaskVersion), Culture=neutral, PublicKeyToken=$(TaskKeyToken)</AntlrBuildTaskAssemblyName>
+  </PropertyGroup>
+
+  <!--<PropertyGroup>
+    <LoadTimeSensitiveTargets>
+      $(LoadTimeSensitiveTargets);
+      AntlrCompile;
+    </LoadTimeSensitiveTargets>
+    <LoadTimeSensitiveProperties>
+      $(LoadTimeSensitiveProperties);
+      AntlrCompileDependsOn;
+    </LoadTimeSensitiveProperties>
+
+
+    <PrepareResourcesDependsOn>
+      AntlrCompile;
+      $(PrepareResourcesDependsOn)
+    </PrepareResourcesDependsOn>
+  </PropertyGroup>-->
+
+  <PropertyGroup>
+    <AntlrBuildTaskLocation Condition="'$(AntlrBuildTaskPath)'==''">$(MSBuildBinPath)</AntlrBuildTaskLocation>
+    <AntlrBuildTaskLocation Condition="'$(AntlrBuildTaskPath)'!=''">$(AntlrBuildTaskPath)</AntlrBuildTaskLocation>
+    <AntlrToolLocation Condition="'$(AntlrToolPath)'==''">$(MSBuildBinPath)\Antlr3\Antlr3.exe</AntlrToolLocation>
+    <AntlrToolLocation Condition="'$(AntlrToolPath)'!=''">$(AntlrToolPath)</AntlrToolLocation>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <AntlrGenCodeFileNames Condition="'$(AntlrGenCodeFileNames)'==''">$(MSBuildProjectFile).AntlrGeneratedCodeFileListAbsolute.txt</AntlrGenCodeFileNames>
+  </PropertyGroup>
+
+  <UsingTask Condition="'$(AntlrBuildTaskPath)'==''" TaskName="Antlr3.Build.Tasks.AntlrClassGenerationTask" AssemblyName="$(AntlrBuildTaskAssemblyName)" />
+  <UsingTask Condition="'$(AntlrBuildTaskPath)'!=''" TaskName="Antlr3.Build.Tasks.AntlrClassGenerationTask" AssemblyFile="$(AntlrBuildTaskPath)\AntlrBuildTask.dll" />
+
+  <PropertyGroup>
+    <PrepareResourcesDependsOn>
+      AntlrCompile;
+      AntlrCompileAddFilesGenerated;
+      $(PrepareResourcesDependsOn)
+    </PrepareResourcesDependsOn>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <AntlrCompileDependsOn>
+      AntlrCompileReadGeneratedFileList
+    </AntlrCompileDependsOn>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(BuildingInsideVisualStudio)'=='true'">
+    <AvailableItemName Include="Antlr3" />
+    <AvailableItemName Include="AntlrTokens" />
+  </ItemGroup>
+
+  <Target Name="AntlrCompileReadGeneratedFileList">
+    <ReadLinesFromFile File="$(IntermediateOutputPath)$(AntlrGenCodeFileNames)">
+      <Output TaskParameter="Lines" ItemName="AntlrOutputCodeFilesList"/>
+    </ReadLinesFromFile>
+  </Target>
+
+  <PropertyGroup>
+    <!-- Add grammar compilation to the CoreCompileDependsOn so that the IDE inproc compilers (particularly VB)
+         can "see" the generated source files. -->
+    <CoreCompileDependsOn Condition="'$(BuildingInsideVisualStudio)' == 'true' ">
+      DesignTimeGrammarCompilation;
+      $(CoreCompileDependsOn)
+    </CoreCompileDependsOn>
+  </PropertyGroup>
+
+  <Target Name="DesignTimeGrammarCompilation">
+    <!-- Only if we are not actually performing a compile i.e. we are in design mode -->
+    <CallTarget Condition="'$(BuildingProject)' != 'true'"
+                Targets="AntlrCompile" />
+  </Target>
+
+  <Target Name="AntlrCompile"
+          DependsOnTargets="$(AntlrCompileDependsOn)"
+          Condition="'@(Antlr3)' != ''"
+          Inputs="@(Antlr3);@(AntlrTokens)"
+          Outputs="@(AntlrOutputCodeFilesList);
+                  $(IntermediateOutputPath)$(AntlrGenCodeFileNames);">
+
+    <ItemGroup>
+      <AntlrGeneratedCodeFiles Remove="@(AntlrGeneratedCodeFiles)" />
+    </ItemGroup>
+
+    <PropertyGroup>
+      <_IntellisenseOnlyCompile>false</_IntellisenseOnlyCompile>
+      <_IntellisenseOnlyCompile Condition="'$(BuildingProject)' != 'true'">true</_IntellisenseOnlyCompile>
+    </PropertyGroup>
+    <AntlrClassGenerationTask
+      AntlrToolPath="$(AntlrToolLocation)"
+      BuildTaskPath="$(AntlrBuildTaskLocation)"
+      OutputPath="$(IntermediateOutputPath)"
+      Language="$(Language)"
+      SourceCodeFiles="@(Antlr3)"
+      ContinueOnError="$(_IntellisenseOnlyCompile)"
+      TokensFiles="@(AntlrTokens)">
+
+      <Output ItemName="AntlrGeneratedCodeFiles" TaskParameter="GeneratedCodeFiles" />
+      <Output ItemName="Compile" TaskParameter="GeneratedCodeFiles" />
+    </AntlrClassGenerationTask>
+
+    <WriteLinesToFile
+      Condition="'$(_IntellisenseOnlyCompile)' != 'true'"
+      File="$(IntermediateOutputPath)$(AntlrGenCodeFileNames)"
+      Lines="@(AntlrGeneratedCodeFiles)"
+      Overwrite="true"/>
+  </Target>
+
+  <Target Name="AntlrCompileAddFilesGenerated"
+          DependsOnTargets="AntlrCompile"
+          Condition="'@(Antlr3)' != ''">
+
+    <ItemGroup>
+      <Compile Condition="'@(AntlrGeneratedCodeFiles)' == ''" Include="@(AntlrOutputCodeFilesList)" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_AntlrCodeGenFileWrites Condition="'@(AntlrGeneratedCodeFiles)' != ''" Include="@(AntlrGeneratedCodeFiles)" />
+      <_AntlrCodeGenFileWrites Condition="'@(AntlrGeneratedCodeFiles)' == ''" Include="@(AntlrOutputCodeFilesList)" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <FileWrites Include="@(_AntlrCodeGenFileWrites);
+                           $(IntermediateOutputPath)$(AntlrGenCodeFileNames);" />
+    </ItemGroup>
+
+  </Target>
+</Project>

@@ -1,0 +1,158 @@
+/*
+ * [The "BSD licence"]
+ * Copyright (c) 2011 Terence Parr
+ * All rights reserved.
+ *
+ * Conversion to C#:
+ * Copyright (c) 2011 Sam Harwell, Pixel Mine, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. The name of the author may not be used to endorse or promote products
+ *    derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+ * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+/** Template subgroup to add template rewrite output
+ *  If debugging, then you'll also get STDbg.stg loaded.
+ */
+group ST;
+
+@outputFile.imports() ::= <<
+<@super.imports()>
+using Antlr3.ST;
+using Antlr3.ST.Language;
+>>
+
+/** Add this to each rule's return value struct */
+@returnScope.ruleReturnMembers() ::= <<
+private StringTemplate _st;
+public StringTemplate Template { get { return _st; } set { _st = value; } }
+public override string ToString() { return (Template==null) ? string.Empty : Template.ToString(); }
+<@super.ruleReturnMembers()>
+>>
+
+@genericParser.members() ::= <<
+<@super.members()>
+private StringTemplateGroup _templateGroup = new StringTemplateGroup("<name>Templates", typeof(AngleBracketTemplateLexer) );
+
+public StringTemplateGroup TemplateGroup
+{
+	get { return _templateGroup; }
+	set { _templateGroup = value; }
+}
+>>
+
+/** x+=rule when output=template */
+ruleRefAndListLabel(rule,label,elementIndex,args,scope) ::= <<
+<ruleRef(...)>
+<listLabelElem(elem=label+".Template",elemType="StringTemplate",...)>
+>>
+
+rewriteTemplate(alts) ::= <<
+
+// TEMPLATE REWRITE
+<if(backtracking)>
+if (<actions.(actionScope).synpredgate>)
+{
+	<alts:rewriteTemplateAlt(); separator="else ">
+	<if(rewriteMode)><replaceTextInLine()><endif>
+}
+<else>
+<alts:rewriteTemplateAlt(); separator="else ">
+<if(rewriteMode)><replaceTextInLine()><endif>
+<endif>
+>>
+
+replaceTextInLine() ::= <<
+<if(TREE_PARSER)>
+((TokenRewriteStream)input.TokenStream).Replace(
+	input.TreeAdaptor.GetTokenStartIndex(retval.Start),
+	input.TreeAdaptor.GetTokenStopIndex(retval.Start),
+	retval.Template);
+<else>
+((TokenRewriteStream)input).Replace(
+	retval.Start.TokenIndex,
+	input.LT(-1).TokenIndex,
+	retval.Template);
+<endif>
+>>
+
+rewriteTemplateAlt() ::= <<
+// <it.description>
+<if(it.pred)>
+if (<it.pred>)
+{
+	retval.Template = <it.alt>;
+}<\n>
+<else>
+{
+	retval.Template = <it.alt>;
+}<\n>
+<endif>
+>>
+
+rewriteEmptyTemplate(alts) ::= <<
+null;
+>>
+
+/** Invoke a template with a set of attribute name/value pairs.
+ *  Set the value of the rule's template *after* having set
+ *  the attributes because the rule's template might be used as
+ *  an attribute to build a bigger template; you get a self-embedded
+ *  template.
+ */
+rewriteExternalTemplate(name,args) ::= <<
+TemplateGroup.GetInstanceOf("<name>"<optionalArguments(args)>)
+>>
+
+/** expr is a string expression that says what template to load */
+rewriteIndirectTemplate(expr,args) ::= <<
+TemplateGroup.GetInstanceOf(<expr><optionalArguments(args)>)
+>>
+
+/** Invoke an inline template with a set of attribute name/value pairs */
+rewriteInlineTemplate(args, template) ::= <<
+new StringTemplate(TemplateGroup, "<template>"<optionalArguments(args)>)
+>>
+
+optionalArguments(args) ::= <<
+<if(args)>,
+	new Dictionary\<string, object>() { <args:optionalArgument(); separator=", "> }
+<endif>
+>>
+
+optionalArgument() ::= <<
+{"<it.name>", <it.value>}
+>>
+
+/** plain -> {foo} action */
+rewriteAction(action) ::= <<
+<action>
+>>
+
+/** An action has %st.attrName=expr; or %{st}.attrName=expr; */
+actionSetAttribute(st,attrName,expr) ::= <<
+(<st>).SetAttribute("<attrName>",<expr>);
+>>
+
+/** Translate %{stringExpr} */
+actionStringConstructor(stringExpr) ::= <<
+new StringTemplate(TemplateGroup,<stringExpr>)
+>>
