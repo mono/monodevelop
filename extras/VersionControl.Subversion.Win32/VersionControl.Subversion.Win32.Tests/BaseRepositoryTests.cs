@@ -68,11 +68,8 @@ namespace MonoDevelop.VersionControl.Tests
 
 			VersionInfo vi = repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache);
 
-			if (DOT_DIR == ".git")
-				Assert.AreEqual (VersionStatus.Versioned, (VersionStatus.Versioned & vi.Status));
-
-			if (DOT_DIR == ".svn")
-				Assert.AreEqual (VersionStatus.ScheduledAdd, (VersionStatus.ScheduledAdd & vi.Status));
+			Assert.AreEqual (VersionStatus.Versioned, (VersionStatus.Versioned & vi.Status));
+			Assert.AreEqual (VersionStatus.ScheduledAdd, (VersionStatus.ScheduledAdd & vi.Status));
 			Assert.IsFalse (vi.CanAdd);
 		}
 
