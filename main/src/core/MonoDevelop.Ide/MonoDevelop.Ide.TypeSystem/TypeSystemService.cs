@@ -329,7 +329,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		
 		public static IFoldingParser GetFoldingParser (string mimeType)
 		{
-			var node = FoldingParsers.Where (n => n.MimeType == mimeType).FirstOrDefault ();
+			var node = FoldingParsers.FirstOrDefault (n => n.MimeType == mimeType);
 			if (node == null)
 				return null;
 			return node.CreateInstance () as IFoldingParser;

@@ -131,7 +131,7 @@ namespace MonoDevelop.Xml.StateEngine
 		public void AssertErrorCount (int count, Func<Error,bool> filter)
 		{
 			string msg = null;
-			int actualCount = errors.Where (filter).Count ();
+			int actualCount = errors.Count (filter);
 			if (actualCount != count) {
 				System.Text.StringBuilder sb = new System.Text.StringBuilder ();
 				foreach (Error err in errors)
