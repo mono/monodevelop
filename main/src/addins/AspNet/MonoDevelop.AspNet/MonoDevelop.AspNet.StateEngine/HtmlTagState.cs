@@ -78,7 +78,7 @@ namespace MonoDevelop.AspNet.StateEngine
 					//Note: the node stack will always be at least 1 deep due to the XDocument
 					var parent = context.Nodes.Peek (1) as XElement;
 
-					while (parent.ValidAndNoPrefix () && parent.IsImplicitlyClosedBy (element)) {
+					while (parent != null && parent.ValidAndNoPrefix () && parent.IsImplicitlyClosedBy (element)) {
 						context.Nodes.Pop ();
 						context.Nodes.Pop ();
 						if (warnAutoClose) {

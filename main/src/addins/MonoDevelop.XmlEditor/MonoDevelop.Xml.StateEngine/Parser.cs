@@ -135,6 +135,8 @@ namespace MonoDevelop.Xml.StateEngine
 				for (int loopLimit = 0; loopLimit < 10; loopLimit++) {
 					currentStateLength++;
 					string rollback = null;
+					if (currentState == null)
+						return;
 					State nextState = currentState.PushChar (c, this, ref rollback);
 					
 					// no state change
