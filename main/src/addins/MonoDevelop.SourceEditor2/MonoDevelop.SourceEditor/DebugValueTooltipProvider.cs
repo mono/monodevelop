@@ -178,7 +178,7 @@ namespace MonoDevelop.SourceEditor
 			return expression;
 		}
 
-		internal static bool TryResolveExpression (ExtensibleTextEditor editor, ResolveResult res, DomRegion expressionRegion, out string expression)
+		internal static bool TryResolveExpression (TextEditor editor, ResolveResult res, DomRegion expressionRegion, out string expression)
 		{
 			expression = null;
 
@@ -248,10 +248,10 @@ namespace MonoDevelop.SourceEditor
 				startOffset = ed.SelectionRange.Offset;
 				expression = ed.SelectedText;
 			} else if ((res = ed.GetLanguageItem (offset, out expressionRegion)) != null && !res.IsError && res.GetType () != typeof (ResolveResult)) {
-				if (!TryResolveExpression (ed, res, expressionRegion, out expression))
+				if (!TryResolveExpression (editor, res, expressionRegion, out expression))
 					return null;
 
-				startOffset = editor.Document.LocationToOffset (new DocumentLocation (expressionRegion.BeginLine, expressionRegion.BeginColumn));
+				startOffset = editor.LocationToOffset (new DocumentLocation (expressionRegion.BeginLine, expressionRegion.BeginColumn));
 			} else {
 				var data = editor.GetTextEditorData ();
 				startOffset = data.FindCurrentWordStart (offset);
