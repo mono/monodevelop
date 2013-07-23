@@ -268,7 +268,7 @@ namespace MonoDevelop.Projects
 					var oldLink = link;
 					link = value;
 
-					OnLinkChanged (oldLink, link);
+					OnVirtualPathChanged (oldLink, link);
 					OnChanged ("Link");
 				}
 			}
@@ -410,6 +410,9 @@ namespace MonoDevelop.Projects
 		internal void SetProject (Project project)
 		{
 			this.project = project;
+
+			if (project != null)
+				OnVirtualPathChanged (FilePath.Null, ProjectVirtualPath);
 		}
 
 		public override string ToString ()
@@ -430,14 +433,14 @@ namespace MonoDevelop.Projects
 		{
 		}
 
-		internal event EventHandler<ProjectFileLinkChangedEventArgs> LinkChanged;
+		internal event EventHandler<ProjectFileVirtualPathChangedEventArgs> VirtualPathChanged;
 
-		void OnLinkChanged (FilePath oldLink, FilePath newLink)
+		void OnVirtualPathChanged (FilePath oldVirtualPath, FilePath newVirtualPath)
 		{
-			var handler = LinkChanged;
+			var handler = VirtualPathChanged;
 
 			if (handler != null)
-				handler (this, new ProjectFileLinkChangedEventArgs (this, oldLink, newLink));
+				handler (this, new ProjectFileVirtualPathChangedEventArgs (this, oldVirtualPath, newVirtualPath));
 		}
 
 		protected virtual void OnChanged (string property)
@@ -453,17 +456,17 @@ namespace MonoDevelop.Projects
 		}
 	}
 
-	internal class ProjectFileLinkChangedEventArgs : EventArgs
+	internal class ProjectFileVirtualPathChangedEventArgs : EventArgs
 	{
-		public ProjectFileLinkChangedEventArgs (ProjectFile projectFile, FilePath oldLink, FilePath newLink)
+		public ProjectFileVirtualPathChangedEventArgs (ProjectFile projectFile, FilePath oldPath, FilePath newPath)
 		{
 			ProjectFile = projectFile;
-			OldLink = oldLink;
-			NewLink = newLink;
+			OldVirtualPath = oldPath;
+			NewVirtualPath = newPath;
 		}
 
 		public ProjectFile ProjectFile { get; private set; }
-		public FilePath OldLink { get; private set; }
-		public FilePath NewLink { get; private set; }
+		public FilePath OldVirtualPath { get; private set; }
+		public FilePath NewVirtualPath { get; private set; }
 	}
 }
