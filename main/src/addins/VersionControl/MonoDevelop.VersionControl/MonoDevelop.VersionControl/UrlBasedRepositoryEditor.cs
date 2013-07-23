@@ -9,6 +9,7 @@ namespace MonoDevelop.VersionControl
 	public partial class UrlBasedRepositoryEditor : Gtk.Bin, IRepositoryEditor
 	{
 		UrlBasedRepository repo;
+		public event EventHandler<EventArgs> PathChanged;
 		bool updating;
 		List<string> protocols = new List<string> ();
 
@@ -17,7 +18,7 @@ namespace MonoDevelop.VersionControl
 			Build ();
 			protocols = new List<string> (repo.SupportedProtocols);
 			protocols.AddRange (repo.SupportedNonUrlProtocols);
-				
+
 			this.repo = repo;
 			foreach (string p in protocols)
 				comboProtocol.AppendText (p);
@@ -42,6 +43,10 @@ namespace MonoDevelop.VersionControl
 				return true;
 			}
 		}
+
+		public string RelativePath {
+			get { return repositoryPathEntry.Text; }
+		}
 		
 		void Fill ()
 		{
@@ -53,6 +58,8 @@ namespace MonoDevelop.VersionControl
 				repositoryPathEntry.Text = repo.Uri.PathAndQuery;
 				repositoryUserEntry.Text = repo.Uri.UserInfo;
 				comboProtocol.Active = protocols.IndexOf (repo.Uri.Scheme);
+				if (PathChanged != null)
+					PathChanged (this, new EventArgs ());
 			} else {
 				// The url may have a scheme, but it may be an incomplete or incorrect url. Do the best to select
 				// the correct value in the protocol combo
