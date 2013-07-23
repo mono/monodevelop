@@ -86,11 +86,10 @@ namespace MonoDevelop.SourceEditor
 			return index;
 		}
 
-		static string GetLocalExpression (TextEditor editor, LocalResolveResult lr, DomRegion expressionRegion)
+		static string GetLocalExpression (TextEditorData editor, LocalResolveResult lr, DomRegion expressionRegion)
 		{
 			var start = new DocumentLocation (expressionRegion.BeginLine, expressionRegion.BeginColumn);
 			var end   = new DocumentLocation (expressionRegion.EndLine, expressionRegion.EndColumn);
-			var ed = (ExtensibleTextEditor) editor;
 
 			// In a setter, the 'value' variable will have a begin line/column of 0,0 which is an undefined offset
 			if (lr.Variable.Region.BeginLine != 0 && lr.Variable.Region.BeginColumn != 0) {
@@ -99,7 +98,7 @@ namespace MonoDevelop.SourceEditor
 				end = new DocumentLocation (lr.Variable.Region.EndLine, lr.Variable.Region.EndColumn);
 			}
 
-			string expression = ed.GetTextBetween (start, end).Trim ();
+			string expression = editor.GetTextBetween (start, end).Trim ();
 
 			// Note: When the LocalResolveResult is a parameter, the Variable.Region includes the type
 			if (lr.IsParameter) {
@@ -111,9 +110,8 @@ namespace MonoDevelop.SourceEditor
 			return expression;
 		}
 
-		static string GetMemberExpression (TextEditor editor, MemberResolveResult mr, DomRegion expressionRegion)
+		static string GetMemberExpression (TextEditorData editor, MemberResolveResult mr, DomRegion expressionRegion)
 		{
-			var ed = (ExtensibleTextEditor) editor;
 			string expression = null;
 			string member = null;
 
@@ -159,13 +157,13 @@ namespace MonoDevelop.SourceEditor
 					} else if (!targetRegion.IsEmpty) {
 						var start = new DocumentLocation (targetRegion.BeginLine, targetRegion.BeginColumn);
 						var end   = new DocumentLocation (targetRegion.EndLine, targetRegion.EndColumn);
-						expression = ed.GetTextBetween (start, end).Trim ();
+						expression = editor.GetTextBetween (start, end).Trim ();
 					}
 
 					if (expression == null) {
 						var start = new DocumentLocation (expressionRegion.BeginLine, expressionRegion.BeginColumn);
 						var end   = new DocumentLocation (expressionRegion.EndLine, expressionRegion.EndColumn);
-						return ed.GetTextBetween (start, end).Trim ();
+						return editor.GetTextBetween (start, end).Trim ();
 					}
 				}
 
@@ -178,7 +176,7 @@ namespace MonoDevelop.SourceEditor
 			return expression;
 		}
 
-		internal static bool TryResolveExpression (TextEditor editor, ResolveResult res, DomRegion expressionRegion, out string expression)
+		internal static bool TryResolveExpression (TextEditorData editor, ResolveResult res, DomRegion expressionRegion, out string expression)
 		{
 			expression = null;
 
@@ -248,7 +246,7 @@ namespace MonoDevelop.SourceEditor
 				startOffset = ed.SelectionRange.Offset;
 				expression = ed.SelectedText;
 			} else if ((res = ed.GetLanguageItem (offset, out expressionRegion)) != null && !res.IsError && res.GetType () != typeof (ResolveResult)) {
-				if (!TryResolveExpression (editor, res, expressionRegion, out expression))
+				if (!TryResolveExpression (editor.GetTextEditorData (), res, expressionRegion, out expression))
 					return null;
 
 				startOffset = editor.LocationToOffset (new DocumentLocation (expressionRegion.BeginLine, expressionRegion.BeginColumn));
