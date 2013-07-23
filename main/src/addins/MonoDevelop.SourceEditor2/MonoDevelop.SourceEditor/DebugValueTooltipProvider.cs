@@ -155,7 +155,7 @@ namespace MonoDevelop.SourceEditor
 					} else if (mr.TargetResult is InitializedObjectResolveResult) {
 						return null;
 					} else if (mr.TargetResult is ThisResolveResult) {
-						return member;
+						return "this." + member;
 					} else if (!targetRegion.IsEmpty) {
 						var start = new DocumentLocation (targetRegion.BeginLine, targetRegion.BeginColumn);
 						var end   = new DocumentLocation (targetRegion.EndLine, targetRegion.EndColumn);
@@ -177,6 +177,54 @@ namespace MonoDevelop.SourceEditor
 
 			return expression;
 		}
+
+		internal static bool TryResolveExpression (ExtensibleTextEditor editor, ResolveResult res, DomRegion expressionRegion, out string expression)
+		{
+			expression = null;
+
+			//Console.WriteLine ("res is a {0}", res.GetType ().Name);
+
+			if (expressionRegion.IsEmpty)
+				return false;
+
+			if (res is NamespaceResolveResult ||
+			    res is ConversionResolveResult ||
+			    res is ConstantResolveResult ||
+			    res is ForEachResolveResult ||
+			    res is TypeIsResolveResult ||
+			    res is TypeOfResolveResult ||
+			    res is ErrorResolveResult)
+				return false;
+
+			if (res.IsCompileTimeConstant)
+				return false;
+
+			var start = new DocumentLocation (expressionRegion.BeginLine, expressionRegion.BeginColumn);
+			var end   = new DocumentLocation (expressionRegion.EndLine, expressionRegion.EndColumn);
+
+			if (res is LocalResolveResult) {
+				expression = GetLocalExpression (editor, (LocalResolveResult) res, expressionRegion);
+			} else if (res is InvocationResolveResult) {
+				var ir = (InvocationResolveResult) res;
+
+				if (ir.Member.Name != ".ctor")
+					return false;
+
+				expression = ir.Member.DeclaringType.FullName;
+			} else if (res is MemberResolveResult) {
+				expression = GetMemberExpression (editor, (MemberResolveResult) res, expressionRegion);
+			} else if (res is NamedArgumentResolveResult) {
+				expression = editor.GetTextBetween (start, end);
+			} else if (res is ThisResolveResult) {
+				expression = editor.GetTextBetween (start, end);
+			} else if (res is TypeResolveResult) {
+				expression = editor.GetTextBetween (start, end);
+			} else {
+				return false;
+			}
+
+			return true;
+		}
 		
 		public override TooltipItem GetItem (TextEditor editor, int offset)
 		{
@@ -189,63 +237,21 @@ namespace MonoDevelop.SourceEditor
 			StackFrame frame = DebuggingService.CurrentFrame;
 			if (frame == null)
 				return null;
-			
+
 			var ed = (ExtensibleTextEditor)editor;
-			int startOffset = 0, length = 0;
 			DomRegion expressionRegion;
 			string expression = null;
 			ResolveResult res;
+			int startOffset;
 
 			if (ed.IsSomethingSelected && offset >= ed.SelectionRange.Offset && offset <= ed.SelectionRange.EndOffset) {
-				expression = ed.SelectedText;
 				startOffset = ed.SelectionRange.Offset;
-				length = ed.SelectionRange.Length;
+				expression = ed.SelectedText;
 			} else if ((res = ed.GetLanguageItem (offset, out expressionRegion)) != null && !res.IsError && res.GetType () != typeof (ResolveResult)) {
-				//Console.WriteLine ("res is a {0}", res.GetType ().Name);
-				
-				if (expressionRegion.IsEmpty)
+				if (!TryResolveExpression (ed, res, expressionRegion, out expression))
 					return null;
 
-				if (res is NamespaceResolveResult ||
-				    res is ConversionResolveResult ||
-				    res is ConstantResolveResult ||
-				    res is ForEachResolveResult ||
-				    res is TypeIsResolveResult ||
-				    res is TypeOfResolveResult ||
-				    res is ErrorResolveResult)
-					return null;
-
-				if (res.IsCompileTimeConstant)
-					return null;
-				
-				var start = new DocumentLocation (expressionRegion.BeginLine, expressionRegion.BeginColumn);
-				var end   = new DocumentLocation (expressionRegion.EndLine, expressionRegion.EndColumn);
-				
-				startOffset = editor.Document.LocationToOffset (start);
-				int endOffset = editor.Document.LocationToOffset (end);
-				length = endOffset - startOffset;
-				
-				if (res is LocalResolveResult) {
-					expression = GetLocalExpression (editor, (LocalResolveResult) res, expressionRegion);
-					length = expression.Length;
-				} else if (res is InvocationResolveResult) {
-					var ir = (InvocationResolveResult) res;
-					
-					if (ir.Member.Name != ".ctor")
-						return null;
-					
-					expression = ir.Member.DeclaringType.FullName;
-				} else if (res is MemberResolveResult) {
-					expression = GetMemberExpression (editor, (MemberResolveResult) res, expressionRegion);
-				} else if (res is NamedArgumentResolveResult) {
-					expression = ed.GetTextBetween (start, end);
-				} else if (res is ThisResolveResult) {
-					expression = ed.GetTextBetween (start, end);
-				} else if (res is TypeResolveResult) {
-					expression = ed.GetTextBetween (start, end);
-				} else {
-					return null;
-				}
+				startOffset = editor.Document.LocationToOffset (new DocumentLocation (expressionRegion.BeginLine, expressionRegion.BeginColumn));
 			} else {
 				var data = editor.GetTextEditorData ();
 				startOffset = data.FindCurrentWordStart (offset);
@@ -268,7 +274,7 @@ namespace MonoDevelop.SourceEditor
 			
 			val.Name = expression;
 			
-			return new TooltipItem (val, startOffset, length);
+			return new TooltipItem (val, startOffset, expression.Length);
 		}
 		
 		/*string GetExpressionBeforeOffset (TextEditor editor, int offset)
