@@ -248,6 +248,10 @@ namespace MonoDevelop.VersionControl.Git
 			return GetDirectoryVersionInfo (localDirectory, null, getRemoteStatus, recursive);
 		}
 
+		// Used for checking if we will dupe data.
+		// This way we reduce the number of GitRevisions created and RevWalks done.
+		NGit.Repository versionInfoCacheRepository;
+		GitRevision versionInfoCacheRevision;
 		VersionInfo[] GetDirectoryVersionInfo (FilePath localDirectory, IEnumerable<FilePath> localFileNames, bool getRemoteStatus, bool recursive)
 		{
 			List<VersionInfo> versions = new List<VersionInfo> ();
@@ -298,18 +302,20 @@ namespace MonoDevelop.VersionControl.Git
 				paths = localFileNames.ToArray ();
 			}
 
-			foreach (var group in paths.GroupBy (p => GetRepository (p))) {
+			foreach (var group in paths.GroupBy (GetRepository)) {
 				var repository = group.Key;
 				var files = group.ToArray ();
-				
-				GitRevision rev;
-				var headCommit = GetHeadCommit (repository);
-				if (headCommit != null)
-					rev = new GitRevision (this, repository, headCommit.Id.Name);
-				else
-					rev = null;
 
-				GetDirectoryVersionInfoCore (repository, rev, files.ToArray (), existingFiles, nonVersionedMissingFiles, versions);
+				GitRevision rev = null;
+				if (versionInfoCacheRepository == null || versionInfoCacheRepository != repository) {
+					versionInfoCacheRepository = repository;
+					RevCommit headCommit = GetHeadCommit (repository);
+					if (headCommit != null)
+						rev = new GitRevision (this, repository, headCommit.Id.Name);
+				} else
+					rev = versionInfoCacheRevision;
+
+				GetDirectoryVersionInfoCore (repository, rev, files, existingFiles, nonVersionedMissingFiles, versions);
 				
 				// Existing files for which git did not report a status are supposed to be tracked
 				foreach (FilePath file in existingFiles.Where (f => files.Contains (f))) {
