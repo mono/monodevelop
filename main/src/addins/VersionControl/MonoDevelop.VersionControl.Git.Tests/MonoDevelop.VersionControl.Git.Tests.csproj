@@ -71,12 +71,10 @@
     <ProjectReference Include="..\..\..\..\external\ngit\Sharpen\Sharpen.csproj">
       <Project>{72944A6C-45FF-4EF8-B349-8C9CABF519D4}</Project>
       <Name>Sharpen</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\external\ngit\Sharpen.Unix\Sharpen.Unix.csproj">
       <Project>{849AE05D-0058-4A8C-A0E8-77DC6BB12E52}</Project>
       <Name>Sharpen.Unix</Name>
-      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
 </Project>
