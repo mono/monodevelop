@@ -199,6 +199,7 @@
     <Compile Include="Services\NUnitProjectServiceExtension.cs" />
     <Compile Include="Gui\NUnitOptionsPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.NUnit.NUnitOptionsWidget.cs" />
+    <Compile Include="Services\TcpTestListener.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
