@@ -34,7 +34,10 @@ using MonoDevelop.VersionControl;
 
 namespace VersionControl.Subversion.Unix.Tests
 {
+	// The RepositoryService.RunQueries code can execute at the same time as our own test code. This will cause
+	// multithreaded usage of libsvn which can corrupt memory and crash.
 	[TestFixture]
+	[Ignore ("These tests currently can trigger two simultaenous invocations into libsvn which is not allowed")]
 	public class UnixSvnUtilsTest : MonoDevelop.VersionControl.Subversion.Tests.BaseSvnUtilsTest
 	{
 		[SetUp]
