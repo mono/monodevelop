@@ -169,5 +169,18 @@ namespace MonoDevelop.VersionControl
 				return comboProtocol.Active != -1 ? protocols [comboProtocol.Active] : null;
 			}
 		}
+
+		protected void OnRepositoryUrlEntryClipboardPasted (object sender, EventArgs e)
+		{
+			Gtk.Clipboard clip = GetClipboard (Gdk.Atom.Intern ("CLIPBOARD", false));
+			clip.RequestText (delegate (Gtk.Clipboard clp, string text) {
+				if (String.IsNullOrEmpty (text))
+					return;
+
+				Uri url;
+				if (Uri.TryCreate (text, UriKind.Absolute, out url))
+					repositoryUrlEntry.Text = text;
+			});
+		}
 	}
 }
