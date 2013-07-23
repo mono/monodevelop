@@ -24,7 +24,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.IO;
 using MonoDevelop.Ide.TypeSystem;
+using Antlr.Runtime;
+using Antlr.Runtime.Misc;
+using MonoDevelop.Ide.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Projects;
+using System.Collections.Generic;
+
+
+
 
 namespace Parser
 {
@@ -36,10 +46,13 @@ namespace Parser
 
 		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader content, Project project = null)
 		{
-			ParsedTemplate template = new ParsedTemplate (fileName);
+			CSSParserManager template = new CSSParserManager (fileName);
 			try {
-				var tk = new Tokeniser (fileName, content.ReadToEnd ());
-				template.ParseWithoutIncludes (tk);
+				ANTLRInputStream input = new ANTLRInputStream(content.ReadToEnd ());
+				var lexer = new CSS3Lexer(input);
+				CommonTokenStream tokens = new CommonTokenStream(lexer);
+				CSS3Parser parser = new CSS3Parser(tokens);
+				//template.ParseWithoutIncludes (tk);
 			} catch (ParserException ex) {
 				template.LogError (ex.Message, ex.Location);
 			}
@@ -48,7 +61,7 @@ namespace Parser
 			foreach (System.CodeDom.Compiler.CompilerError err in template.Errors) {
 				errors.Add (new Error (err.IsWarning ? ErrorType.Warning : ErrorType.Error, err.ErrorText, err.Line, err.Column));
 			}
-			var doc = new T4ParsedDocument (fileName, template.RawSegments, errors);
+			var doc = new CSSParsedDocument (fileName, errors);
 			doc.Flags |= ParsedDocumentFlags.NonSerializable;
 
 			return doc;
