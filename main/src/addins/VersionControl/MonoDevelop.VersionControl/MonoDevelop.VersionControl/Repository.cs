@@ -292,38 +292,32 @@ namespace MonoDevelop.VersionControl
 		{
 		//	DateTime t = DateTime.Now;
 		//	Console.WriteLine ("RunQueries started");
-			do {
-				object query = null;
+			object query = null;
+			try {
 				lock (queryQueue) {
-					if (queryQueue.Count == 0) {
-						queryRunning = false;
-						break;
-					}
-					query = queryQueue.Dequeue ();
-					if (query is VersionInfoQuery) {
-						VersionInfoQuery q = (VersionInfoQuery) query;
-						filesInQueryQueue.ExceptWith (q.Paths);
-					}
-					else if (query is DirectoryInfoQuery) {
-						var q = (DirectoryInfoQuery) query;
-						directoriesInQueryQueue.Remove (q.Directory);
-					}
-				}
-				try {
-					if (query is VersionInfoQuery) {
-						VersionInfoQuery q = (VersionInfoQuery) query;
-						var status = OnGetVersionInfo (q.Paths, (q.QueryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0);
+					var groups = queryQueue.Select (q => q as VersionInfoQuery).GroupBy (q => q.QueryFlags);
+					foreach (var group in groups) {
+						var status = OnGetVersionInfo (group.SelectMany (q => q.Paths), (group.Key & VersionInfoQueryFlags.IncludeRemoteStatus) != 0);
 						infoCache.SetStatus (status);
 					}
-					else if (query is DirectoryInfoQuery) {
-						var q = (DirectoryInfoQuery) query;
-						var status = OnGetDirectoryVersionInfo (q.Directory, q.GetRemoteStatus, false);
-						infoCache.SetDirectoryStatus (q.Directory, status, q.GetRemoteStatus);
+					filesInQueryQueue.Clear ();
+
+					var groups2 = queryQueue.Select (q => q as DirectoryInfoQuery);
+					foreach (var item in groups2) {
+						if (item == null)
+							continue;
+
+						var status = OnGetDirectoryVersionInfo (item.Directory, item.GetRemoteStatus, false);
+						infoCache.SetDirectoryStatus (item.Directory, status, item.GetRemoteStatus);
 					}
-				} catch (Exception ex) {
-					LoggingService.LogError ("Version control status query failed", ex);
+					directoriesInQueryQueue.Clear ();
+
+					queryQueue.Clear ();
+					queryRunning = false;
 				}
-			} while (true);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Version control status query failed", ex);
+			}
 			//Console.WriteLine ("RunQueries finished - " + (DateTime.Now - t).TotalMilliseconds);
 		}
 
