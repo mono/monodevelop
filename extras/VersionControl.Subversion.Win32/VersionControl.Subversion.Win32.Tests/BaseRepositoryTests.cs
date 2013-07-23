@@ -88,7 +88,7 @@ namespace MonoDevelop.VersionControl.Tests
 			PostCommit (repo);
 
 			VersionInfo vi = repo.GetVersionInfo (added, VersionInfoQueryFlags.IncludeRemoteStatus);
-			Assert.AreEqual (VersionStatus.Versioned, (VersionStatus.Versioned & vi.Status));
+			Assert.AreEqual (VersionStatus.Versioned, (VersionStatus.Versioned & vi.RemoteStatus));
 		}
 
 		protected virtual void PostCommit (Repository repo)
