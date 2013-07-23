@@ -24,14 +24,61 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.CodeDom.Compiler;
 
 namespace Parser
 {
 	public class CSSParserManager
 	{
-		public CSSParserManager ()
+		string rootFileName;
+		CompilerErrorCollection errors = new CompilerErrorCollection ();
+
+		public CSSParserManager (string rootFileName)
 		{
+			this.rootFileName = rootFileName;
+		}
+
+		public CompilerErrorCollection Errors {
+			get { return errors; }
+		}
+
+
+		void LogError (string message, Location location, bool isWarning)
+		{
+			CompilerError err = new CompilerError ();
+			err.ErrorText = message;
+			if (location.FileName != null) {
+				err.Line = location.Line;
+				err.Column = location.Column;
+				err.FileName = location.FileName ?? string.Empty;
+			} else {
+				err.FileName = rootFileName ?? string.Empty;
+			}
+			err.IsWarning = isWarning;
+			errors.Add (err);
+		}
+
+		public void LogError (string message)
+		{
+			LogError (message, Location.Empty, false);
+		}
+
+		public void LogWarning (string message)
+		{
+			LogError (message, Location.Empty, true);
+		}
+
+		public void LogError (string message, Location location)
+		{
+			LogError (message, location, false);
+		}
+
+		public void LogWarning (string message, Location location)
+		{
+			LogError (message, location, true);
 		}
 	}
+
+
 }
 
