@@ -292,7 +292,6 @@ namespace MonoDevelop.VersionControl
 		{
 		//	DateTime t = DateTime.Now;
 		//	Console.WriteLine ("RunQueries started");
-			object query = null;
 			try {
 				lock (queryQueue) {
 					var groups = queryQueue.Select (q => q as VersionInfoQuery).GroupBy (q => q.QueryFlags);
