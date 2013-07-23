@@ -119,7 +119,7 @@ namespace MonoDevelop.Ide
 				sb.Append (GetRuntimeInfo ());
 				sb.AppendLine ();
 				sb.Append ("\tGTK+ ");
-				sb.AppendLine (GetGtkVersion ());
+				sb.AppendLine (GetGtkVersion () + " theme: " + Gtk.Settings.Default.ThemeName);
 				sb.Append ("\tGTK# (");
 				sb.Append (typeof(Gtk.VBox).Assembly.GetName ().Version);
 				sb.Append (")");
