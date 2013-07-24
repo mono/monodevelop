@@ -1,5 +1,5 @@
 //
-// SplitProjectHandler.cs
+// ProjectHasErrorsException.cs
 //
 // Author:
 //       Luís Reis <luiscubal@gmail.com>
@@ -24,40 +24,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.Components.Commands;
-using MonoDevelop.Projects;
-using MonoDevelop.Ide;
-using MonoDevelop.Ide.Gui.Pads;
 
 namespace MonoDevelop.CSharp.SplitProject
 {
-	public class SplitProjectHandler : CommandHandler
+	public class ProjectHasErrorsException : Exception
 	{
-		DotNetProject currentProject;
-
-		protected override void Run ()
-		{
-			var nativeWindow = IdeApp.Workbench.RootWindow;
-			Xwt.WindowFrame parentFrame = Xwt.Toolkit.CurrentEngine.WrapWindow(nativeWindow);
-
-			using (var dialog = new SplitProjectDialog (currentProject)) {
-				dialog.Run (parentFrame);
-			}
-		}
-
-		protected override void Update (CommandInfo info)
-		{
-			var solutionPad = IdeApp.Workbench.GetPad<SolutionPad> ().Content as SolutionPad;
-
-			currentProject = solutionPad.TreeView.GetSelectedNode ().DataItem as DotNetProject;
-
-			if (currentProject == null || currentProject.LanguageName != "C#") {
-				info.Visible = false;
-				return;
-			}
-
-			info.Visible = true;
-		}
 	}
 }
 
