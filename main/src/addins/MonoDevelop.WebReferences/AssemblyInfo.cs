@@ -4,6 +4,6 @@ using System.Reflection;
 
 [assembly: AssemblyProduct ("MonoDevelop")]
 [assembly: AssemblyTitle ("Project Web References")]
-[assembly: AssemblyDescription ("Provides support for adding and maintianing Web References for CSharp and VB projects.")]
+[assembly: AssemblyDescription ("Provides support for adding and maintaining Web References for C# and VB.NET projects.")]
 [assembly: AssemblyVersion ("2.6")]
 [assembly: AssemblyCopyright ("LGPL")]
