@@ -192,7 +192,6 @@ namespace MonoDevelop.VersionControl
 					// If there is no cached status, query it asynchronously
 					vi = new VersionInfo (p, "", Directory.Exists (p), VersionStatus.Versioned, null, VersionStatus.Versioned, null);
 					infoCache.SetStatus (vi, false);
-					vi.Init (this);
 					result.Add (vi);
 					pathsToQuery.Add (p);
 				}

@@ -729,7 +729,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override void OnRevert (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
 		{
-			foreach (var group in localPaths.GroupBy (f => GetRepository (f))) {
+			foreach (var group in GroupByRepository (localPaths)) {
 				var repository = group.Key;
 				var files = group.ToArray ();
 
@@ -872,7 +872,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override void OnAdd (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
 		{
-			foreach (var group in localPaths.GroupBy (p => GetRepository (p))) {
+			foreach (var group in GroupByRepository (localPaths)) {
 				var repository = group.Key;
 				var files = group;
 
@@ -936,7 +936,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		void DeleteCore (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
 		{
-			foreach (var group in localPaths.GroupBy (p => GetRepository (p))) {
+			foreach (var group in GroupByRepository (localPaths)) {
 				List<FilePath> backupFiles = new List<FilePath> ();
 				var repository = group.Key;
 				var files = group;
@@ -1076,14 +1076,14 @@ namespace MonoDevelop.VersionControl.Git
 				string fileName = null;
 				
 				while ((line = sr.ReadLine ()) != null) {
-					if (line.StartsWith ("+++ ") || line.StartsWith ("--- ")) {
+					if (line.StartsWith ("+++ ", StringComparison.Ordinal) || line.StartsWith ("--- ", StringComparison.Ordinal)) {
 						string newFile = RootPath.Combine (line.Substring (6));
 						if (fileName != null && fileName != newFile) {
 							list.Add (new DiffInfo (basePath, fileName, content.ToString ().Trim ('\n')));
 							content = new StringBuilder ();
 						}
 						fileName = newFile;
-					} else if (!line.StartsWith ("diff") && !line.StartsWith ("index")) {
+					} else if (!line.StartsWith ("diff", StringComparison.Ordinal) && !line.StartsWith ("index", StringComparison.Ordinal)) {
 						content.Append (line).Append ('\n');
 					}
 				}
@@ -1367,7 +1367,7 @@ namespace MonoDevelop.VersionControl.Git
 		
 		public static string GetStashBranchName (string stashName)
 		{
-			if (stashName.StartsWith ("__MD_"))
+			if (stashName.StartsWith ("__MD_", StringComparison.Ordinal))
 				return stashName.Substring (5);
 			else
 				return null;
