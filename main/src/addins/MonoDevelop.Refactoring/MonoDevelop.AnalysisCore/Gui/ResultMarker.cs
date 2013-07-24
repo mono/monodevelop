@@ -153,7 +153,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 				return;
 			int markerStart = Segment.Offset;
 			int markerEnd = Segment.EndOffset;
-			if (!(markerStart <= chunk.Offset && chunk.Offset < markerEnd)) 
+			if (chunk.EndOffset < markerStart || markerEnd <= chunk.Offset) 
 				return;
 
 			var bgc = editor.ColorStyle.PlainText.Background;
