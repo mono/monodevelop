@@ -331,12 +331,12 @@ namespace MonoDevelop.VersionControl.Git
 			return versions.ToArray ();
 		}
 
-		void GetDirectoryVersionInfoCore (NGit.Repository repository, GitRevision rev, IEnumerable<FilePath> localPaths, HashSet<FilePath> existingFiles, HashSet<FilePath> nonVersionedMissingFiles, List<VersionInfo> versions)
+		static void GetDirectoryVersionInfoCore (NGit.Repository repository, GitRevision rev, IEnumerable<FilePath> localPaths, HashSet<FilePath> existingFiles, HashSet<FilePath> nonVersionedMissingFiles, List<VersionInfo> versions)
 		{
 			var filteredStatus = new FilteredStatus (repository, repository.ToGitPath (localPaths));
 			var status = filteredStatus.Call ();
 			HashSet<string> added = new HashSet<string> ();
-			Action<IEnumerable<string>, VersionStatus> AddFiles = delegate(IEnumerable<string> files, VersionStatus fstatus) {
+			Action<IEnumerable<string>, VersionStatus> AddFiles = delegate (IEnumerable<string> files, VersionStatus fstatus) {
 				foreach (string file in files) {
 					if (!added.Add (file))
 						continue;
@@ -346,7 +346,16 @@ namespace MonoDevelop.VersionControl.Git
 					versions.Add (new VersionInfo (statFile, "", false, fstatus, rev, fstatus == VersionStatus.Ignored ? VersionStatus.Unversioned : VersionStatus.Versioned, null));
 				}
 			};
-			
+
+			if (status.IsClean ()) {
+				existingFiles.ExceptWith (localPaths);
+				nonVersionedMissingFiles.ExceptWith (localPaths);
+				foreach (var file in localPaths)
+					versions.Add (new VersionInfo (file, "", false, VersionStatus.Versioned, rev, VersionStatus.Versioned, null));
+
+				return;
+			}
+
 			AddFiles (status.GetAdded (), VersionStatus.Versioned | VersionStatus.ScheduledAdd);
 			AddFiles (status.GetChanged (), VersionStatus.Versioned | VersionStatus.Modified);
 			AddFiles (status.GetModified (), VersionStatus.Versioned | VersionStatus.Modified);
