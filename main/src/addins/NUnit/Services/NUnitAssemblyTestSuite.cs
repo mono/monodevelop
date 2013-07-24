@@ -474,7 +474,7 @@ namespace MonoDevelop.NUnit
 					cmd.Arguments += " -run=" + suiteName + "." + testName;
 				else if (!string.IsNullOrEmpty (suiteName))
 					cmd.Arguments += " -run=" + suiteName;
-				if (cmd.Command.Contains ("GuiUnit")) {
+				if (cmd.Command.Contains ("GuiUnit") || (cmd.Command.Contains ("mdtool.exe") && cmd.Arguments.Contains ("run-md-tests"))) {
 					var tcpListener = new MonoDevelop.NUnit.External.TcpTestListener (localMonitor);
 					cmd.Arguments += " -port=" + tcpListener.Port;
 				}
