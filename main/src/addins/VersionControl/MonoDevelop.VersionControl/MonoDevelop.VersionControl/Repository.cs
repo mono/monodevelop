@@ -298,9 +298,9 @@ namespace MonoDevelop.VersionControl
 		//	Console.WriteLine ("RunQueries started");
 			try {
 				lock (queryLock) {
-					var groups = fileQueryQueue.GroupBy (q => q.QueryFlags);
+					var groups = fileQueryQueue.GroupBy (q => (q.QueryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0);
 					foreach (var group in groups) {
-						var status = OnGetVersionInfo (group.SelectMany (q => q.Paths), (group.Key & VersionInfoQueryFlags.IncludeRemoteStatus) != 0);
+						var status = OnGetVersionInfo (group.SelectMany (q => q.Paths), group.Key);
 						infoCache.SetStatus (status);
 					}
 					filesInQueryQueue.Clear ();
