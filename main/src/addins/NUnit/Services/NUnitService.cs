@@ -339,6 +339,7 @@ namespace MonoDevelop.NUnit
 			this.test = test;
 			this.context = context;
 			this.monitor = new TestMonitor (resultsPad);
+			resultsPad.InitializeTestRun (test);
 		}
 		
 		public void Start ()
@@ -353,7 +354,7 @@ namespace MonoDevelop.NUnit
 		{
 			try {
 				NUnitService.ResetResult (test);
-				monitor.InitializeTestRun (test);
+
 				TestContext ctx = new TestContext (monitor, context, DateTime.Now);
 				test.Run (ctx);
 				test.SaveResults ();
