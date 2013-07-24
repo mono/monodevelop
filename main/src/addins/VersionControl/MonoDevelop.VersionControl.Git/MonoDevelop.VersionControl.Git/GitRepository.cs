@@ -294,17 +294,16 @@ namespace MonoDevelop.VersionControl.Git
 					paths = new [] { localDirectory };
 				} else {
 					if (Directory.Exists (localDirectory))
-						paths = Directory.GetFiles (localDirectory).Select (f => (FilePath)f).ToArray ();
+						paths = Directory.GetFiles (localDirectory).Select (f => (FilePath)f);
 					else
 						paths = new FilePath [0];
 				}
 			} else {
-				paths = localFileNames.ToArray ();
+				paths = localFileNames;
 			}
 
-			foreach (var group in paths.GroupBy (GetRepository)) {
+			foreach (var group in GroupByRepository (paths)) {
 				var repository = group.Key;
-				var files = group.ToArray ();
 
 				GitRevision rev = null;
 				if (versionInfoCacheRepository == null || versionInfoCacheRepository != repository) {
@@ -315,10 +314,10 @@ namespace MonoDevelop.VersionControl.Git
 				} else
 					rev = versionInfoCacheRevision;
 
-				GetDirectoryVersionInfoCore (repository, rev, files, existingFiles, nonVersionedMissingFiles, versions);
+				GetDirectoryVersionInfoCore (repository, rev, group, existingFiles, nonVersionedMissingFiles, versions);
 				
 				// Existing files for which git did not report a status are supposed to be tracked
-				foreach (FilePath file in existingFiles.Where (f => files.Contains (f))) {
+				foreach (FilePath file in existingFiles.Where (f => group.Contains (f))) {
 					VersionInfo vi = new VersionInfo (file, "", false, VersionStatus.Versioned, rev, VersionStatus.Versioned, null);
 					versions.Add (vi);
 				}
@@ -332,7 +331,7 @@ namespace MonoDevelop.VersionControl.Git
 			return versions.ToArray ();
 		}
 
-		void GetDirectoryVersionInfoCore (NGit.Repository repository, GitRevision rev, FilePath [] localPaths, HashSet<FilePath> existingFiles, HashSet<FilePath> nonVersionedMissingFiles, List<VersionInfo> versions)
+		void GetDirectoryVersionInfoCore (NGit.Repository repository, GitRevision rev, IEnumerable<FilePath> localPaths, HashSet<FilePath> existingFiles, HashSet<FilePath> nonVersionedMissingFiles, List<VersionInfo> versions)
 		{
 			var filteredStatus = new FilteredStatus (repository, repository.ToGitPath (localPaths));
 			var status = filteredStatus.Call ();
