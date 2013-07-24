@@ -102,9 +102,9 @@ namespace MonoDevelop.CSharp.Completion
 					return 1;
 				if (!left.Parameters.Any (p => p.IsParams) && right.Parameters.Any (p => p.IsParams))
 					return -1;
-				var cnt = left.Parameters.Where (p => !p.IsOptional).Count () - right.Parameters.Where (p => !p.IsOptional).Count ();
+				var cnt = left.Parameters.Count (p => !p.IsOptional) - right.Parameters.Count (p => !p.IsOptional);
 				if (cnt == 0)
-					cnt = left.Parameters.Where (p => p.IsOptional).Count () - right.Parameters.Where (p => p.IsOptional).Count ();
+					cnt = left.Parameters.Count (p => p.IsOptional) - right.Parameters.Count (p => p.IsOptional);
 				return cnt;
 			}
 			return lstate.CompareTo (rstate);

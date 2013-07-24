@@ -113,7 +113,7 @@ namespace MonoDevelop.VersionControl
 				return true;
 			
 			string msg = GettextCatalog.GetString ("Are you sure you want to remove the selected items from the version control system?");
-			string msg2 = GettextCatalog.GetString ("The files will be removed from disk");
+			string msg2 = GettextCatalog.GetString ("The files will be kept on disk.");
 			if (MessageService.Confirm (msg, msg2, AlertButton.Delete))
 				new RemoveWorker (items).Start();
 			return true;
@@ -135,10 +135,10 @@ namespace MonoDevelop.VersionControl
 				foreach (VersionControlItemList list in items.SplitByRepository ()) {
 					VersionControlItemList files = list.GetFiles ();
 					if (files.Count > 0)
-						files[0].Repository.DeleteFiles (files.Paths, true, Monitor);
+						files[0].Repository.DeleteFiles (files.Paths, true, Monitor, true);
 					VersionControlItemList dirs = list.GetDirectories ();
 					if (dirs.Count > 0)
-						dirs[0].Repository.DeleteDirectories (dirs.Paths, true, Monitor);
+						dirs[0].Repository.DeleteDirectories (dirs.Paths, true, Monitor, true);
 				}
 				
 				Gtk.Application.Invoke (delegate {

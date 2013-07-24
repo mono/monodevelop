@@ -165,20 +165,27 @@ namespace MonoDevelop.Refactoring
 			}
 		}
 		
-		string displayDescription = null;
-		public override string DisplayDescription {
-			get {
-				if (displayDescription == null) {
-					Initialize ();
-					if (generateUsing || insertNamespace) {
-						displayDescription = string.Format (GettextCatalog.GetString ("(from '{0}')"), type.Namespace);
-					} else {
-						displayDescription = "";
-					}
-				}
-				return displayDescription;
-			}
+		static string GetDefaultDisplaySelection (string description, bool isSelected)
+		{
+			if (!isSelected)
+				return "<span foreground=\"darkgray\">" + description + "</span>";
+			return description;
 		}
+
+		string displayDescription = null;
+		public override string GetDisplayDescription (bool isSelected)
+		{
+			if (displayDescription == null) {
+				Initialize ();
+				if (generateUsing || insertNamespace) {
+					displayDescription = string.Format (GettextCatalog.GetString ("(from '{0}')"), type.Namespace);
+				} else {
+					displayDescription = "";
+				}
+			}
+			return GetDefaultDisplaySelection (displayDescription, isSelected);
+		}
+
 		
 		public override string Description {
 			get {

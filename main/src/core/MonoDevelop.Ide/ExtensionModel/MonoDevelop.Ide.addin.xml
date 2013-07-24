@@ -1,23 +1,5 @@
-<Addin id          = "Ide"
-       namespace   = "MonoDevelop"
-       name        = "MonoDevelop Ide"
-       author      = "Todd Berman, Pedro Abelleira Seco, John Luke, Daniel Kornhauser, Alex Graveley, nricciar, John Bou Antoun, Ben Maurer, Jeroen Zwartepoorte, Gustavo Giráldez, Miguel de Icaza, Inigo Illan, Iain McCoy, Nick Drochak, Paweł Różański, Richard Torkar, Paco Martinez, Lluis Sanchez Gual, Christian Hergert, Mike Krueger"
-       copyright   = "LGPL"
-       url         = "http://www.monodevelop.com"
-       description = "The MonoDevelop IDE application."
-       category    = "MonoDevelop Core"
-       isroot      = "true"
-       version     = "4.1.4"
-       compatVersion = "4.0">
+<ExtensionModel>
 	
-	<Runtime>
-		<Import assembly="MonoDevelop.Ide.dll"/>
-	</Runtime>
-	
-	<Dependencies>
-		<Addin id="Core" version="4.1.4"/>
-	</Dependencies>
-
 	<!-- Extension ponts -->
 	
 	<ConditionType id="combineopen" type="MonoDevelop.Ide.Codons.CombineOpenCondition" />
@@ -304,4 +286,8 @@
 	<Extension path = "/MonoDevelop/Ide/CustomTools">
 		<Tool name="ResXFileCodeGenerator" type="MonoDevelop.Ide.CustomTools.ResXFileCodeGenerator" />
 	</Extension>
-</Addin>
+	
+	<Extension path = "/MonoDevelop/Core/FileSystemExtensions">
+		<Class id="Ide" class = "MonoDevelop.Ide.Projects.IdeFileSystemExtensionExtension" insertafter = "FinalStep"/>
+	</Extension>
+</ExtensionModel>

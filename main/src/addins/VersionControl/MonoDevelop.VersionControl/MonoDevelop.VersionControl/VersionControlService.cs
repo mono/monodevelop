@@ -53,35 +53,37 @@ namespace MonoDevelop.VersionControl
 		
 		static VersionControlService ()
 		{
-			try {
-				overlay_modified = Xwt.Drawing.Image.FromResource("overlay_modified.png");
-				overlay_removed = Xwt.Drawing.Image.FromResource("overlay_removed.png");
-				overlay_conflicted = Xwt.Drawing.Image.FromResource("overlay_conflicted.png");
-				overlay_added = Xwt.Drawing.Image.FromResource("overlay_added.png");
-				overlay_controled = Xwt.Drawing.Image.FromResource("overlay_controled.png");
-				overlay_unversioned = Xwt.Drawing.Image.FromResource("overlay_unversioned.png");
-				overlay_protected = Xwt.Drawing.Image.FromResource("overlay_lock_required.png");
-				overlay_unlocked = Xwt.Drawing.Image.FromResource("overlay_unlocked.png");
-				overlay_locked = Xwt.Drawing.Image.FromResource("overlay_locked.png");
-	//			overlay_normal = Gdk.Pixbuf.LoadFromResource("overlay_normal.png");
+			if (IdeApp.IsInitialized) {
+				try {
+					overlay_modified = Xwt.Drawing.Image.FromResource("overlay_modified.png");
+					overlay_removed = Xwt.Drawing.Image.FromResource("overlay_removed.png");
+					overlay_conflicted = Xwt.Drawing.Image.FromResource("overlay_conflicted.png");
+					overlay_added = Xwt.Drawing.Image.FromResource("overlay_added.png");
+					overlay_controled = Xwt.Drawing.Image.FromResource("overlay_controled.png");
+					overlay_unversioned = Xwt.Drawing.Image.FromResource("overlay_unversioned.png");
+					overlay_protected = Xwt.Drawing.Image.FromResource("overlay_lock_required.png");
+					overlay_unlocked = Xwt.Drawing.Image.FromResource("overlay_unlocked.png");
+					overlay_locked = Xwt.Drawing.Image.FromResource("overlay_locked.png");
+		//			overlay_normal = Gdk.Pixbuf.LoadFromResource("overlay_normal.png");
 			
-				icon_modified = ImageService.GetPixbuf ("gtk-edit", Gtk.IconSize.Menu);
-				icon_removed = ImageService.GetPixbuf (Gtk.Stock.Remove, Gtk.IconSize.Menu);
-				icon_conflicted = ImageService.GetPixbuf (Gtk.Stock.DialogWarning, Gtk.IconSize.Menu);
-				icon_added = ImageService.GetPixbuf (Gtk.Stock.Add, Gtk.IconSize.Menu);
-				icon_controled = Gdk.Pixbuf.LoadFromResource("overlay_controled.png");
-			} catch (Exception e) {
-				LoggingService.LogError ("Error while loading icons.", e);
+					icon_modified = ImageService.GetPixbuf ("gtk-edit", Gtk.IconSize.Menu);
+					icon_removed = ImageService.GetPixbuf (Gtk.Stock.Remove, Gtk.IconSize.Menu);
+					icon_conflicted = ImageService.GetPixbuf (Gtk.Stock.DialogWarning, Gtk.IconSize.Menu);
+					icon_added = ImageService.GetPixbuf (Gtk.Stock.Add, Gtk.IconSize.Menu);
+					icon_controled = Gdk.Pixbuf.LoadFromResource("overlay_controled.png");
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while loading icons.", e);
+				}
+				IdeApp.Workspace.FileAddedToProject += OnFileAdded;
+				//IdeApp.Workspace.FileChangedInProject += OnFileChanged;
+				//IdeApp.Workspace.FileRemovedFromProject += OnFileRemoved;
+				//IdeApp.Workspace.FileRenamedInProject += OnFileRenamed;
+			
+				IdeApp.Workspace.ItemAddedToSolution += OnEntryAdded;
+				IdeApp.Exiting += delegate {
+					DelayedSaveComments (null);
+				};
 			}
-			IdeApp.Workspace.FileAddedToProject += OnFileAdded;
-			//IdeApp.Workspace.FileChangedInProject += OnFileChanged;
-			//IdeApp.Workspace.FileRemovedFromProject += OnFileRemoved;
-			//IdeApp.Workspace.FileRenamedInProject += OnFileRenamed;
-			
-			IdeApp.Workspace.ItemAddedToSolution += OnEntryAdded;
-			IdeApp.Exiting += delegate {
-				DelayedSaveComments (null);
-			};
 			
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/VersionControl/VersionControlSystems", OnExtensionChanged);
 		}

@@ -331,33 +331,52 @@ namespace MonoDevelop.MacIntegration
 					});
 					e.Handled = true;
 				};
-				
-				//if not running inside an app bundle, assume usual MD build layout and load the app icon
-				FilePath exePath = System.Reflection.Assembly.GetExecutingAssembly ().Location;
-				string iconFile = null;
 
-				iconFile = BrandingService.GetString ("ApplicationIcon");
-				if (iconFile != null) {
-					iconFile = BrandingService.GetFile (iconFile);
-				}
-				else if (!exePath.ToString ().Contains ("MonoDevelop.app")) {
-						var mdSrcMain = exePath.ParentDirectory.ParentDirectory.ParentDirectory;
-						iconFile = mdSrcMain.Combine ("theme-icons", "Mac", "monodevelop.icns");
-				} else {
-					//HACK: override the app image
-					//NSApplication doesn't seem to pick up the image correctly, probably due to the
-					//getting confused about the bundle root because of the launch script
-					var bundleContents = exePath.ParentDirectory.ParentDirectory.ParentDirectory
-						.ParentDirectory.ParentDirectory;
-					iconFile = bundleContents.Combine ("Resources", "monodevelop.icns");
-				}
-				if (File.Exists (iconFile)) {
-					NSApplication.SharedApplication.ApplicationIconImage = new NSImage (iconFile);
+				//if not running inside an app bundle (at dev time), need to do some additional setup
+				if (NSBundle.MainBundle.InfoDictionary ["CFBundleIdentifier"] == null) {
+					SetupWithoutBundle ();
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Could not install app event handlers", ex);
 				setupFail = true;
 			}
+		}
+
+		static void SetupWithoutBundle ()
+		{
+			// set a bundle IDE to prevent NSProgress crash
+			// https://bugzilla.xamarin.com/show_bug.cgi?id=8850
+			NSBundle.MainBundle.InfoDictionary ["CFBundleIdentifier"] = new NSString ("com.xamarin.monodevelop");
+
+			FilePath exePath = System.Reflection.Assembly.GetExecutingAssembly ().Location;
+			string iconFile = null;
+			iconFile = BrandingService.GetString ("ApplicationIcon");
+			if (iconFile != null) {
+				iconFile = BrandingService.GetFile (iconFile);
+			} else {
+				var bundleRoot = GetAppBundleRoot (exePath);
+				if (bundleRoot.IsNotNull) {
+					//running from inside an app bundle, use its icon
+					iconFile = bundleRoot.Combine ("Contents", "Resources", "monodevelop.icns");
+				} else {
+					// assume running from build directory
+					var mdSrcMain = exePath.ParentDirectory.ParentDirectory.ParentDirectory;
+					iconFile = mdSrcMain.Combine ("theme-icons", "Mac", "monodevelop.icns");
+				}
+			}
+
+			if (File.Exists (iconFile)) {
+				NSApplication.SharedApplication.ApplicationIconImage = new NSImage (iconFile);
+			}
+		}
+
+		static FilePath GetAppBundleRoot (FilePath path)
+		{
+			do {
+				if (path.Extension == ".app")
+					return path;
+			} while ((path = path.ParentDirectory).IsNotNull);
+			return null;
 		}
 		
 		[GLib.ConnectBefore]

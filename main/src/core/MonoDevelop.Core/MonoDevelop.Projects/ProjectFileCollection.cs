@@ -26,41 +26,204 @@
 //
 
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
+using System.Collections.Generic;
+
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects
 {
+	class ProjectFileNode
+	{
+		public SortedList<string, ProjectFileNode> Children { get; private set; }
+		public ProjectFileNode Parent { get; private set; }
+
+		public ProjectFile ProjectFile { get; set; }
+		public string FileName { get; set; }
+
+		public ProjectFileNode () : this (null, string.Empty) { }
+
+		public ProjectFileNode (ProjectFileNode parent, ProjectFile file)
+		{
+			Children = new SortedList<string, ProjectFileNode> ();
+			FileName = file.ProjectVirtualPath.FileName;
+			ProjectFile = file;
+			Parent = parent;
+		}
+
+		public ProjectFileNode (ProjectFileNode parent, string fileName)
+		{
+			Children = new SortedList<string, ProjectFileNode> ();
+			FileName = fileName;
+			ProjectFile = null;
+			Parent = parent;
+		}
+
+		ProjectFileNode Find (string[] path, int pathIndex, bool create)
+		{
+			ProjectFileNode child;
+
+			if (Children.TryGetValue (path[pathIndex], out child)) {
+				if (pathIndex + 1 == path.Length)
+					return child;
+
+				return child.Find (path, pathIndex + 1, create);
+			}
+
+			if (create) {
+				child = new ProjectFileNode (this, path[pathIndex]);
+				Children.Add (child.FileName, child);
+
+				if (pathIndex + 1 == path.Length)
+					return child;
+
+				return child.Find (path, pathIndex + 1, create);
+			}
+
+			return null;
+		}
+
+		public ProjectFileNode Find (string vpath, bool create)
+		{
+			if (string.IsNullOrEmpty (vpath))
+				return this;
+
+			var path = vpath.Split (new char[] { Path.DirectorySeparatorChar }, StringSplitOptions.None);
+
+			return Find (path, 0, create);
+		}
+
+		public IEnumerable<ProjectFile> EnumerateProjectFiles (bool recursive)
+		{
+			foreach (var child in Children.Select (x => x.Value)) {
+				if (child.ProjectFile != null)
+					yield return child.ProjectFile;
+
+				if (recursive) {
+					foreach (var pf in child.EnumerateProjectFiles (recursive))
+						yield return pf;
+				}
+			}
+
+			yield break;
+		}
+	}
+
 	[Serializable()]
-	public class ProjectFileCollection : ProjectItemCollection<ProjectFile> {
-	
+	public class ProjectFileCollection : ProjectItemCollection<ProjectFile>
+	{
+		Dictionary<FilePath, ProjectFile> files;
+		ProjectFileNode root;
+
 		public ProjectFileCollection ()
 		{
+			files = new Dictionary<FilePath, ProjectFile> ();
+			root = new ProjectFileNode ();
 		}
-		
-		public ProjectFile GetFile (FilePath fileName)
+
+		void ProjectVirtualPathChanged (object sender, ProjectFileVirtualPathChangedEventArgs e)
 		{
-			if (fileName.IsNull) return null;
-			fileName = fileName.FullPath;
-			
-			foreach (ProjectFile file in this) {
-				if (file.FilePath == fileName)
-					return file;
+			ProjectFileNode node;
+
+			// Note: if the OldVirtualPath is null, then it means that a Project was just set on the ProjectFile
+			// which means that it hasn't yet been added to our VirtualProjectPath tree.
+			if (e.OldVirtualPath.IsNotNull) {
+				node = root.Find (e.OldVirtualPath, false);
+				if (node != null) {
+					node.Parent.Children.Remove (node.FileName);
+					PruneEmptyParents (node.Parent);
+				}
 			}
+
+			node = root.Find (e.NewVirtualPath, true);
+			node.ProjectFile = e.ProjectFile;
+		}
+
+		void AddProjectFile (ProjectFile item)
+		{
+			item.VirtualPathChanged += ProjectVirtualPathChanged;
+
+			if (item.Project != null) {
+				// Note: the ProjectVirtualPath is useless unless a Project is specified.
+				var node = root.Find (item.ProjectVirtualPath, true);
+				node.ProjectFile = item;
+			}
+
+			files[item.FilePath] = item;
+		}
+
+		void PruneEmptyParents (ProjectFileNode node)
+		{
+			if (node.Children.Count > 0 || node.ProjectFile != null || node.Parent == null)
+				return;
+
+			node.Parent.Children.Remove (node.FileName);
+			PruneEmptyParents (node.Parent);
+		}
+
+		void RemoveProjectFile (ProjectFile item)
+		{
+			var node = root.Find (item.ProjectVirtualPath, false);
+			if (node != null) {
+				node.Parent.Children.Remove (node.FileName);
+				PruneEmptyParents (node.Parent);
+			}
+
+			files.Remove (item.FilePath);
+
+			item.VirtualPathChanged -= ProjectVirtualPathChanged;
+		}
+
+		#region ItemCollection<T>
+		protected override void OnItemAdded (ProjectFile item)
+		{
+			AddProjectFile (item);
+			base.OnItemAdded (item);
+		}
+
+		protected override void OnItemRemoved (ProjectFile item)
+		{
+			RemoveProjectFile (item);
+			base.OnItemRemoved (item);
+		}
+		#endregion
+
+		#region ProjectItemCollection<T>
+		protected override void AddItem (ProjectFile item)
+		{
+			AddProjectFile (item);
+			base.AddItem (item);
+		}
+
+		protected override void RemoveItem (ProjectFile item)
+		{
+			RemoveProjectFile (item);
+			base.RemoveItem (item);
+		}
+		#endregion
+
+		public ProjectFile GetFile (FilePath path)
+		{
+			if (path.IsNull)
+				return null;
+
+			ProjectFile pf;
+			if (files.TryGetValue (path.FullPath, out pf))
+				return pf;
+
 			return null;
 		}
 		
 		public ProjectFile GetFileWithVirtualPath (string virtualPath)
 		{
-			if (String.IsNullOrEmpty (virtualPath))
+			if (string.IsNullOrEmpty (virtualPath))
 				return null;
-			
-			foreach (ProjectFile file in this) {
-				if (file.ProjectVirtualPath == virtualPath)
-					return file;
-			}
+
+			var node = root.Find (virtualPath, false);
+			if (node != null && node.ProjectFile != null)
+				return node.ProjectFile;
+
 			return null;
 		}
 		
@@ -68,14 +231,15 @@ namespace MonoDevelop.Projects
 		{
 			if (string.IsNullOrEmpty (virtualPath))
 				yield break;
-			
-			//saves a ton of string allocations in IsChildPathOf
-			if (virtualPath[virtualPath.Length-1] != Path.DirectorySeparatorChar)
-				virtualPath = virtualPath + Path.DirectorySeparatorChar;
-			
-			foreach (ProjectFile file in this)
-				if (file.ProjectVirtualPath.IsChildPathOf (virtualPath))
-					yield return file;
+
+			var node = root.Find (virtualPath, false);
+			if (node == null)
+				yield break;
+
+			foreach (var pf in node.EnumerateProjectFiles (true))
+				yield return pf;
+
+			yield break;
 		}
 		
 		public ProjectFile[] GetFilesInPath (FilePath path)

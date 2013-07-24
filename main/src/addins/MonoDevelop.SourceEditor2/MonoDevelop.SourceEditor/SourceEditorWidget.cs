@@ -1047,6 +1047,9 @@ namespace MonoDevelop.SourceEditor
 		public void Reload ()
 		{
 			try {
+				if (!System.IO.File.Exists (view.ContentName))
+					return;
+
 				view.StoreSettings ();
 				reloadSettings = true;
 				view.Load (view.ContentName);

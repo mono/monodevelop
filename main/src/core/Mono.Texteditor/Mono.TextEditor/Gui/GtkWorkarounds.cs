@@ -1076,7 +1076,7 @@ namespace Mono.TextEditor
 			return result;
 		}
 		
-		static bool supportsHiResIcons = true;
+		static bool supportsHiResIcons = false; // Disabled for now
 
 		[DllImport ("libgtk-quartz-2.0.dylib")]
 		static extern void gtk_icon_source_set_scale (IntPtr source, double scale);
@@ -1128,7 +1128,7 @@ namespace Mono.TextEditor
 			try {
 				IntPtr res = g_object_get_data (px.Handle, "gdk-pixbuf-2x-variant");
 				if (res != IntPtr.Zero && res != px.Handle)
-					return new Gdk.Pixbuf (res);
+					return (Gdk.Pixbuf) GLib.Object.GetObject (res);
 				else
 					return null;
 			} catch (DllNotFoundException) {

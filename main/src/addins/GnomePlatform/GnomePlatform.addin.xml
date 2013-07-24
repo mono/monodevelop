@@ -1,24 +1,7 @@
-<Addin id          = "GnomePlatform"
-       namespace   = "MonoDevelop"
-       name        = "GNOME Platform Support"
-       author      = "Geoff Norton"
-       copyright   = "MIT X11"
-       url         = "http://monodevelop.com/"
-       description = "GNOME Platform Support for MonoDevelop"
-       category    = "MonoDevelop Core"
-       flags       = "Hidden"
-       version     = "4.1.4">
-	
-	<Runtime>
-		<Import assembly="GnomePlatform.dll"/>
-	</Runtime>
-
-	<Dependencies>
-		<Addin id="Core" version="4.1.4"/>
-		<Addin id="Ide" version="4.1.4"/>
-	</Dependencies>
+<ExtensionModel>
 
 	<Extension path = "/MonoDevelop/Core/PlatformService">
 		<Class class = "MonoDevelop.Platform.GnomePlatform"/>
 	</Extension>
-</Addin>
+	
+</ExtensionModel>

@@ -106,16 +106,20 @@ namespace MonoDevelop.VersionControl.Views
 
 			VersionControlItem item = items [0];
 			if (item.VersionInfo.IsVersioned) {
-				if (test) return true;
-				StatusView d = new StatusView (item.Path, item.Repository);
-				IdeApp.Workbench.OpenDocument (d, true);
+				if (test)
+					return true;
+
+				if (!BringStatusViewToFront (item.Path)) {
+					StatusView d = new StatusView (item.Path, item.Repository);
+					IdeApp.Workbench.OpenDocument (d, true);
+				}
 				return true;
 			}
 			return false;
 		}
 		
 		public StatusView (string filepath, Repository vc) 
-			: base(Path.GetFileName(filepath) + " Status") 
+			: base (Path.GetFileName (filepath) + " Status") 
 		{
 			this.vc = vc;
 			this.filepath = filepath;
@@ -396,7 +400,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		private void StartUpdate ()
+		void StartUpdate ()
 		{
 			if (!remoteStatus)
 				status.Text = GettextCatalog.GetString ("Scanning for changes...");
@@ -482,7 +486,7 @@ namespace MonoDevelop.VersionControl.Views
 			commitBox.Visible = filelist.Selection.CountSelectedRows () != 0;
 		}
 		
-		private void Update ()
+		void Update ()
 		{
 			localDiff.Clear ();
 			remoteDiff.Clear ();
@@ -683,12 +687,12 @@ namespace MonoDevelop.VersionControl.Views
 			return null;
 		}
 		
-		private void OnShowRemoteStatusClicked(object src, EventArgs args) {
+		void OnShowRemoteStatusClicked(object src, EventArgs args) {
 			remoteStatus = true;
 			StartUpdate ();
 		}
 		
-		private void OnCommitClicked (object src, EventArgs args)
+		void OnCommitClicked (object src, EventArgs args)
 		{
 			// Nothing to commit
 			if (changeSet.IsEmpty)
@@ -708,7 +712,7 @@ namespace MonoDevelop.VersionControl.Views
 		}
 
 		
-		private void OnTestExpandRow (object sender, Gtk.TestExpandRowArgs args)
+		void OnTestExpandRow (object sender, Gtk.TestExpandRowArgs args)
 		{
 			bool filled = (bool) filestore.GetValue (args.Iter, ColFilled);
 			if (!filled) {
@@ -1038,6 +1042,18 @@ namespace MonoDevelop.VersionControl.Views
 			} else {
 				rc.InitCell (filelist, true, lines, path);
 			}
+		}
+
+		static bool BringStatusViewToFront (string filepath)
+		{
+			foreach (var doc in IdeApp.Workbench.Documents) {
+				StatusView view = doc.GetContent<StatusView> ();
+				if (view != null && view.filepath == filepath) {
+					doc.Select ();
+					return true;
+				}
+			}
+			return false;
 		}
 	}
 

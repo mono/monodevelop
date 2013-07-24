@@ -441,10 +441,13 @@
     <Compile Include="MonoDevelop.Projects.Extensions\UnknownProjectTypeNode.cs" />
     <Compile Include="MonoDevelop.Core.Execution\ICommandFactory.cs" />
     <Compile Include="MonoDevelop.Core.Execution\DotNetCommandFactory.cs" />
+    <Compile Include="BuildVariables.cs" />
+    <Compile Include="AddinInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
     <None Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\InvalidProjectFileException.cs" />
+    <None Include="BuildVariables.cs.in" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Core.addin.xml">

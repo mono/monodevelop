@@ -21,6 +21,7 @@ TEST_ASSEMBLIES_MAC = \
 	$(TEST_DIR)/MacPlatform.Tests.dll
 
 TEST_ASSEMBLIES_COMMON = \
+	$(TEST_DIR)/MonoDevelop.VersionControl.Git.Tests.dll \
 	$(TEST_DIR)/UnitTests.dll \
 	$(TEST_DIR)/MonoDevelop.Debugger.Tests.dll \
 	$(TEST_DIR)/Mono.TextTemplating.Tests.dll \

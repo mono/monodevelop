@@ -110,6 +110,7 @@
     <Compile Include="MonoDevelop.Refactoring\ResolveCommandHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring\ExtensionMethods.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CodeIssuePad.cs" />
+    <Compile Include="AddinInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />

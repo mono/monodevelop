@@ -43,6 +43,27 @@ namespace MonoDevelop.Components
 			get;
 			private set;
 		}
+
+		public int FixedRowHeight {
+			get {
+				return list.FixedRowHeight;
+			}
+			set {
+				list.FixedRowHeight = value;
+				list.CalcRowHeight ();
+			}
+		}
+
+		public int MaxVisibleRows {
+			get {
+				return list.MaxVisibleRows;
+			}
+			set {
+				list.MaxVisibleRows = value;
+				list.CalcVisibleRows ();
+				SetSizeRequest (list.WidthRequest, list.HeightRequest);
+			}
+		}
 		
 		public DropDownBoxListWindow (IListDataProvider provider) : base(Gtk.WindowType.Popup)
 		{
@@ -218,6 +239,11 @@ namespace MonoDevelop.Components
 				}
 			}
 
+			public int FixedRowHeight {
+				get;
+				set;
+			}
+
 		//	bool buttonPressed;
 			bool disableSelection;
 	
@@ -232,12 +258,16 @@ namespace MonoDevelop.Components
 				CalcVisibleRows ();
 			}
 			
-			void CalcRowHeight ()
+			internal void CalcRowHeight ()
 			{
-				layout.SetText ("|");
-				int rowWidth;
-				layout.GetPixelSize (out rowWidth, out rowHeight);
-				rowHeight += padding;
+				if (FixedRowHeight > 0) {
+					rowHeight = FixedRowHeight;
+				} else {
+					layout.SetText ("|");
+					int rowWidth;
+					layout.GetPixelSize (out rowWidth, out rowHeight);
+					rowHeight += padding;
+				}
 				SetBounds (Allocation);
 			}
 			
@@ -456,20 +486,20 @@ namespace MonoDevelop.Components
 				}
 			}
 
-			const int maxVisibleRows = 8;
-			void CalcVisibleRows ()
+			internal int MaxVisibleRows = 8;
+			internal void CalcVisibleRows ()
 			{
 				int lvWidth, lvHeight;
 				this.GetSizeRequest (out lvWidth, out lvHeight);
 				if (layout == null)
 					return;
-
 				int newHeight;
-				if (this.win.DataProvider.IconCount > maxVisibleRows)
-					newHeight = (rowHeight * maxVisibleRows) + margin * 2;
+				if (this.win.DataProvider.IconCount > MaxVisibleRows)
+					newHeight = (rowHeight * MaxVisibleRows) + margin * 2;
 				else
 					newHeight = (rowHeight * this.win.DataProvider.IconCount) + margin * 2;
 				listWidth = Math.Min (450, CalcWidth ());
+				Console.WriteLine ("new height:"+newHeight);
 				this.SetSizeRequest (listWidth, newHeight);
 			} 
 			internal int CalcWidth ()
@@ -501,7 +531,7 @@ namespace MonoDevelop.Components
 					return;
 				var h = allocation.Height;
 				var height = Math.Max (h, rowHeight * win.DataProvider.IconCount);
-				if (this.win.DataProvider.IconCount < maxVisibleRows) {
+				if (this.win.DataProvider.IconCount < MaxVisibleRows) {
 					vadj.SetBounds (0, h, 0, 0, h);
 				} else {
 					vadj.SetBounds (0, height, RowHeight, h, h);

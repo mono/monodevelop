@@ -25,14 +25,12 @@
 // THE SOFTWARE.
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.ProgressMonitoring;
-using MonoDevelop.VersionControl;
 using MonoDevelop.VersionControl.Subversion;
 using MonoDevelop.VersionControl.Subversion.Unix;
 using NUnit.Framework;
-using System.Diagnostics;
 using System.IO;
 using System;
+using MonoDevelop.VersionControl;
 
 namespace VersionControl.Subversion.Unix.Tests
 {
@@ -42,56 +40,35 @@ namespace VersionControl.Subversion.Unix.Tests
 		[SetUp]
 		public override void Setup ()
 		{
-			svnRoot = new FilePath (FileService.CreateTempDirectory ());
-			repoLocation = "file://" + svnRoot + "/repo";
-			backend = new UnixSvnBackend ();
+			rootUrl = new FilePath (FileService.CreateTempDirectory ());
+			repoLocation = "file://" + rootUrl + "/repo";
 			base.Setup ();
-		}
-
-		[Test]
-		public override void LogIsProper ()
-		{
-			string added = svnCheckout + "testfile";
-			File.Create (added).Close ();
-			backend.Add (added, false, new NullProgressMonitor ());
-			backend.Commit (new FilePath[] { svnCheckout }, "File committed", new NullProgressMonitor ());
-			foreach (var rev in backend.Log (repo, added, SvnRevision.First, SvnRevision.Working)) {
-				Assert.AreEqual ("File committed", rev.Message);
-				foreach (var change in rev.ChangedFiles) {
-					Assert.AreEqual (RevisionAction.Add, change.Action);
-					Assert.AreEqual (repoLocation + "//testfile", change.Path);
-				}
-			}
 		}
 
 		[Test]
 		public override void DiffIsProper ()
 		{
-			string added = svnCheckout + "testfile";
+			string added = rootCheckout + "testfile";
 			File.Create (added).Close ();
-			backend.Add (added, false, new NullProgressMonitor ());
-			backend.Commit (new FilePath[] { svnCheckout }, "File committed", new NullProgressMonitor ());
+			repo.Add (added, false, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
+			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
+			changes.AddFile (repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache));
+			changes.GlobalComment = "File committed";
+			repo.Commit (changes, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
 			File.AppendAllText (added, "text" + Environment.NewLine);
 
-			string difftext = @"Index: " + added + @"
-===================================================================
---- " + added + @"	(revision 1)
-+++ " + added + @"	(working copy)
+			string difftext = @"--- testfile	(revision 1)
++++ testfile	(working copy)
 @@ -0,0 +1 @@
 +text
 ";
-
-			Assert.AreEqual (difftext, backend.GetUnifiedDiff (added, false, false));
+			Assert.AreEqual (difftext, repo.GenerateDiff (added, repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache)).Content);
 		}
 
-		#region Util
-
-		public override SubversionRepository GetRepo (string url, string path)
+		protected override Repository GetRepo (string path, string url)
 		{
 			return new SubversionRepository (new SvnClient (), url, path);
 		}
-
-		#endregion
 	}
 }
 

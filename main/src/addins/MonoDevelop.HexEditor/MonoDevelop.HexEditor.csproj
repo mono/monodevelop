@@ -99,6 +99,7 @@
     <Compile Include="MonoDevelop.HexEditor\HexEditorView.cs" />
     <Compile Include="MonoDevelop.HexEditor\MonoDevelopHexEditorStyle.cs" />
     <Compile Include="MonoDevelop.HexEditor\HexEditorNodeExtension.cs" />
+    <Compile Include="AddinInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

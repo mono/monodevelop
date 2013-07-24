@@ -1527,7 +1527,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				if (name == "Include")
 					ditem.ItemData.Add (new DataValue ("Include", buildItem.Include));
 				else if (buildItem.HasMetadata (name)) {
-					string data = buildItem.GetMetadata (name);
+					string data = buildItem.GetMetadata (name, !prop.DataType.IsSimpleType);
 					ditem.ItemData.Add (GetDataNode (prop, data));
 				}
 			}
@@ -1793,7 +1793,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		string GetXmlString (DataNode node)
 		{
 			if (node is DataValue)
-				return EscapeText (((DataValue)node).Value);
+				return ((DataValue)node).Value;
 			else {
 				StringWriter sw = new StringWriter ();
 				XmlTextWriter xw = new XmlTextWriter (sw);
@@ -1844,49 +1844,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		internal static readonly IList<string> UnsupportedItems = new string[] {
 			"BootstrapperFile", "AppDesigner", "WebReferences", "WebReferenceUrl", "Service"
 		};
-		
-		public static string EscapeText (string text)
-		{
-			var result = new StringBuilder ();
-			foreach (char ch in text) {
-				switch (ch) {
-				case '<':
-					result.Append ("&lt;");
-					break;
-				case '>':
-					result.Append ("&gt;");
-					break;
-				case '&':
-					result.Append ("&amp;");
-					break;
-				case '\'':
-					result.Append ("&apos;");
-					break;
-				case '"':
-					result.Append ("&quot;");
-					break;
-				default:
-					int charValue = (int)ch;
-					if (IsSpecialChar (charValue)) {
-						result.AppendFormat ("&#x{0:X};", charValue);
-					} else {
-						result.Append (ch);
-					}
-					break;
-				}
-			}
-			return result.ToString ();
-		}
-		
-		static bool IsSpecialChar (int charValue)
-		{
-			return 
-				0x01 <= charValue && charValue <= 0x08 ||
-				0x0B <= charValue && charValue <= 0x0C ||
-				0x0E <= charValue && charValue <= 0x1F ||
-				0x7F <= charValue && charValue <= 0x84 ||
-				0x86 <= charValue && charValue <= 0x9F;
-		}
 		
 		public static string UnescapeText (string text)
 		{

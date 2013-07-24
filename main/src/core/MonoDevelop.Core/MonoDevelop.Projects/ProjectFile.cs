@@ -264,7 +264,11 @@ namespace MonoDevelop.Projects
 				if (link != value) {
 					if (value.IsAbsolute || value.ToString ().StartsWith ("..", StringComparison.Ordinal))
 						throw new ArgumentException ("value");
+
+					var oldLink = link;
 					link = value;
+
+					OnVirtualPathChanged (oldLink, link);
 					OnChanged ("Link");
 				}
 			}
@@ -406,6 +410,9 @@ namespace MonoDevelop.Projects
 		internal void SetProject (Project project)
 		{
 			this.project = project;
+
+			if (project != null)
+				OnVirtualPathChanged (FilePath.Null, ProjectVirtualPath);
 		}
 
 		public override string ToString ()
@@ -426,6 +433,16 @@ namespace MonoDevelop.Projects
 		{
 		}
 
+		internal event EventHandler<ProjectFileVirtualPathChangedEventArgs> VirtualPathChanged;
+
+		void OnVirtualPathChanged (FilePath oldVirtualPath, FilePath newVirtualPath)
+		{
+			var handler = VirtualPathChanged;
+
+			if (handler != null)
+				handler (this, new ProjectFileVirtualPathChangedEventArgs (this, oldVirtualPath, newVirtualPath));
+		}
+
 		protected virtual void OnChanged (string property)
 		{
 			if (project != null)
@@ -437,5 +454,19 @@ namespace MonoDevelop.Projects
 		{
 			OnChanged (null);
 		}
+	}
+
+	internal class ProjectFileVirtualPathChangedEventArgs : EventArgs
+	{
+		public ProjectFileVirtualPathChangedEventArgs (ProjectFile projectFile, FilePath oldPath, FilePath newPath)
+		{
+			ProjectFile = projectFile;
+			OldVirtualPath = oldPath;
+			NewVirtualPath = newPath;
+		}
+
+		public ProjectFile ProjectFile { get; private set; }
+		public FilePath OldVirtualPath { get; private set; }
+		public FilePath NewVirtualPath { get; private set; }
 	}
 }

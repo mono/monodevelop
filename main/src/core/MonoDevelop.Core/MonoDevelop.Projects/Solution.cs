@@ -90,7 +90,7 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		public SolutionFolder DefaultSolutionFolder {
 			get {
-				var itemsFolder = (SolutionFolder) RootFolder.Items.Where (item => item.Name == "Solution Items").FirstOrDefault ();
+				var itemsFolder = (SolutionFolder)RootFolder.Items.FirstOrDefault (item => item.Name == "Solution Items");
 				if (itemsFolder == null) {
 					itemsFolder = new SolutionFolder ();
 					itemsFolder.Name = "Solution Items";

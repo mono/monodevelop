@@ -20,6 +20,12 @@ namespace MonoDevelop.VersionControl
 		string vcsName;
 
 		int references;
+
+		public FilePath RootPath
+		{
+			get;
+			protected set;
+		}
 		
 		public event EventHandler NameChanged;
 		
@@ -126,7 +132,8 @@ namespace MonoDevelop.VersionControl
 			if (vinfo.IsVersioned) {
 				operations = VersionControlOperation.Commit | VersionControlOperation.Update | VersionControlOperation.Log;
 				if (exists) {
-					operations |= VersionControlOperation.Remove;
+					if (!vinfo.HasLocalChange (VersionStatus.ScheduledDelete))
+						operations |= VersionControlOperation.Remove;
 					if (vinfo.HasLocalChanges || vinfo.IsDirectory)
 						operations |= VersionControlOperation.Revert;
 				}
@@ -185,7 +192,6 @@ namespace MonoDevelop.VersionControl
 					// If there is no cached status, query it asynchronously
 					vi = new VersionInfo (p, "", Directory.Exists (p), VersionStatus.Versioned, null, VersionStatus.Versioned, null);
 					infoCache.SetStatus (vi, false);
-					vi.Init (this);
 					result.Add (vi);
 					pathsToQuery.Add (p);
 				}
@@ -218,8 +224,7 @@ namespace MonoDevelop.VersionControl
 
 				if (status != null && status.RequiresRefresh && (!getRemoteStatus || status.HasRemoteStatus))
 					return status.FileInfo;
-				else
-					return new VersionInfo[0];
+				return new VersionInfo[0];
 			} finally {
 				//Console.WriteLine ("GetDirectoryVersionInfo " + localDirectory + " - " + (DateTime.Now - now).TotalMilliseconds);
 			}
@@ -248,7 +253,9 @@ namespace MonoDevelop.VersionControl
 			public bool GetRemoteStatus;
 		}
 
-		Queue<object> queryQueue = new Queue<object> ();
+		Queue<VersionInfoQuery> fileQueryQueue = new Queue<VersionInfoQuery> ();
+		Queue<DirectoryInfoQuery> directoryQueryQueue = new Queue<DirectoryInfoQuery> ();
+		object queryLock = new object ();
 		bool queryRunning;
 		VersionInfoCache infoCache;
 		HashSet<FilePath> filesInQueryQueue = new HashSet<FilePath> ();
@@ -260,21 +267,23 @@ namespace MonoDevelop.VersionControl
 
 		void AddQuery (object query)
 		{
-			lock (queryQueue) {
+			lock (queryLock) {
 				if (query is VersionInfoQuery) {
-					VersionInfoQuery vi = (VersionInfoQuery) query;
+					VersionInfoQuery vi = (VersionInfoQuery)query;
 					vi.Paths.RemoveAll (p => filesInQueryQueue.Contains (p) || directoriesInQueryQueue.Contains (p.ParentDirectory));
 					if (vi.Paths.Count == 0)
 						return;
 					filesInQueryQueue.UnionWith (vi.Paths);
+					fileQueryQueue.Enqueue (vi);
 				//	Console.WriteLine ("GetVersionInfo AddQuery " + string.Join (", ", vi.Paths.Select (p => p.FullPath)));
 				}
 				else if (query is DirectoryInfoQuery) {
-					if (!directoriesInQueryQueue.Add (((DirectoryInfoQuery)query).Directory))
+					DirectoryInfoQuery di = (DirectoryInfoQuery)query;
+					if (!directoriesInQueryQueue.Add (di.Directory))
 						return;
+					directoryQueryQueue.Enqueue (di);
 				//	Console.WriteLine ("GetDirectoryVersionInfo AddQuery " + ((DirectoryInfoQuery)query).Directory);
 				}
-				queryQueue.Enqueue (query);
 				if (!queryRunning) {
 					queryRunning = true;
 					System.Threading.ThreadPool.QueueUserWorkItem (RunQueries);
@@ -286,38 +295,28 @@ namespace MonoDevelop.VersionControl
 		{
 		//	DateTime t = DateTime.Now;
 		//	Console.WriteLine ("RunQueries started");
-			do {
-				object query = null;
-				lock (queryQueue) {
-					if (queryQueue.Count == 0) {
-						queryRunning = false;
-						break;
-					}
-					query = queryQueue.Dequeue ();
-					if (query is VersionInfoQuery) {
-						VersionInfoQuery q = (VersionInfoQuery) query;
-						filesInQueryQueue.ExceptWith (q.Paths);
-					}
-					else if (query is DirectoryInfoQuery) {
-						var q = (DirectoryInfoQuery) query;
-						directoriesInQueryQueue.Remove (q.Directory);
-					}
-				}
-				try {
-					if (query is VersionInfoQuery) {
-						VersionInfoQuery q = (VersionInfoQuery) query;
-						var status = OnGetVersionInfo (q.Paths, (q.QueryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0);
+			try {
+				lock (queryLock) {
+					var groups = fileQueryQueue.GroupBy (q => (q.QueryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0);
+					foreach (var group in groups) {
+						var status = OnGetVersionInfo (group.SelectMany (q => q.Paths), group.Key);
 						infoCache.SetStatus (status);
 					}
-					else if (query is DirectoryInfoQuery) {
-						var q = (DirectoryInfoQuery) query;
-						var status = OnGetDirectoryVersionInfo (q.Directory, q.GetRemoteStatus, false);
-						infoCache.SetDirectoryStatus (q.Directory, status, q.GetRemoteStatus);
+					filesInQueryQueue.Clear ();
+
+					foreach (var item in directoryQueryQueue) {
+						var status = OnGetDirectoryVersionInfo (item.Directory, item.GetRemoteStatus, false);
+						infoCache.SetDirectoryStatus (item.Directory, status, item.GetRemoteStatus);
 					}
-				} catch (Exception ex) {
-					LoggingService.LogError ("Version control status query failed", ex);
+					directoriesInQueryQueue.Clear ();
+
+					fileQueryQueue.Clear ();
+					directoryQueryQueue.Clear ();
+					queryRunning = false;
 				}
-			} while (true);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Version control status query failed", ex);
+			}
 			//Console.WriteLine ("RunQueries finished - " + (DateTime.Now - t).TotalMilliseconds);
 		}
 
@@ -516,44 +515,60 @@ namespace MonoDevelop.VersionControl
 		// files. The default implementetions performs a system file delete.
 		public void DeleteFile (FilePath localPath, bool force, IProgressMonitor monitor)
 		{
-			DeleteFiles (new FilePath[] { localPath }, force, monitor);
+			DeleteFile (localPath, force, monitor, true);
+		}
+
+		public void DeleteFile (FilePath localPath, bool force, IProgressMonitor monitor, bool keepLocal)
+		{
+			DeleteFiles (new FilePath[] { localPath }, force, monitor, keepLocal);
 		}
 
 		public void DeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor)
 		{
-			ClearCachedVersionInfo (localPaths);
-			OnDeleteFiles (localPaths, force, monitor);
+			DeleteFiles (localPaths, force, monitor, true);
 		}
 
-		protected virtual void OnDeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor)
+		public void DeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
 		{
-			foreach (string localPath in localPaths) {
-				if (Directory.Exists (localPath))
-					Directory.Delete (localPath, true);
-				else
-					File.Delete (localPath);
-			}
+			OnDeleteFiles (localPaths, force, monitor, keepLocal);
+			ClearCachedVersionInfo (localPaths);
+		}
+
+		[Obsolete ("Use overload the overload with keepLocal parameter")]
+		protected abstract void OnDeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor);
+
+		protected virtual void OnDeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
+		{
+			OnDeleteFiles (localPaths, force, monitor);
 		}
 
 		public void DeleteDirectory (FilePath localPath, bool force, IProgressMonitor monitor)
 		{
-			DeleteDirectories (new FilePath[] { localPath }, force, monitor);
+			DeleteDirectory (localPath, force, monitor, true);
+		}
+
+		public void DeleteDirectory (FilePath localPath, bool force, IProgressMonitor monitor, bool keepLocal)
+		{
+			DeleteDirectories (new FilePath[] { localPath }, force, monitor, keepLocal);
 		}
 
 		public void DeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor)
 		{
-			ClearCachedVersionInfo (localPaths);
-			OnDeleteDirectories (localPaths, force, monitor);
+			DeleteDirectories (localPaths, force, monitor, true);
 		}
-		
-		protected virtual void OnDeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor)
+
+		public void DeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
 		{
-			foreach (string localPath in localPaths) {
-				if (Directory.Exists (localPath))
-					Directory.Delete (localPath, true);
-				else
-					File.Delete (localPath);
-			}
+			OnDeleteDirectories (localPaths, force, monitor, keepLocal);
+			ClearCachedVersionInfo (localPaths);
+		}
+
+		[Obsolete ("Use overload the overload with keepLocal parameter")]
+		protected abstract void OnDeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor);
+
+		protected virtual void OnDeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
+		{
+			OnDeleteDirectories (localPaths, force, monitor);
 		}
 		
 		// Creates a local directory.
@@ -738,6 +753,24 @@ namespace MonoDevelop.VersionControl
 		/// A revision
 		/// </param>
 		protected abstract RevisionPath[] OnGetRevisionChanges (Revision revision);
+
+		// Ignores a file for version control operations.
+		public void Ignore (FilePath[] localPath)
+		{
+			ClearCachedVersionInfo (localPath);
+			OnIgnore (localPath);
+		}
+
+		protected abstract void OnIgnore (FilePath[] localPath);
+
+		// Unignores a file for version control operations.
+		public void Unignore (FilePath[] localPath)
+		{
+			ClearCachedVersionInfo (localPath);
+			OnUnignore (localPath);
+		}
+
+		protected abstract void OnUnignore (FilePath[] localPath);
 	}
 	
 	public class Annotation

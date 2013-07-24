@@ -6,16 +6,16 @@ namespace MonoDevelop.Debugger
 	{
 		private global::Gtk.VBox dialog1_VBox;
 		private global::Gtk.VBox vbox2;
+		private global::Gtk.HBox hbox2;
+		private global::Gtk.Image imageWarning;
+		private global::Gtk.VBox vboxExceptionInfo;
 		private global::Gtk.Label labelType;
 		private global::Gtk.Label labelMessage;
-		private global::Gtk.Notebook notebook1;
-		private global::Gtk.ScrolledWindow GtkScrolledWindow1;
-		private global::Gtk.TreeView treeStack;
-		private global::Gtk.Label label2;
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
 		private global::MonoDevelop.Debugger.ObjectValueTreeView valueView;
-		private global::Gtk.Label page1;
-		
+		private global::Gtk.ScrolledWindow GtkScrolledWindow1;
+		private global::Gtk.TreeView treeStack;
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
@@ -25,63 +25,66 @@ namespace MonoDevelop.Debugger
 			// Container child MonoDevelop.Debugger.ExceptionCaughtWidget.Gtk.Container+ContainerChild
 			this.dialog1_VBox = new global::Gtk.VBox ();
 			this.dialog1_VBox.Name = "dialog1_VBox";
-			this.dialog1_VBox.BorderWidth = ((uint)(2));
 			// Container child dialog1_VBox.Gtk.Box+BoxChild
 			this.vbox2 = new global::Gtk.VBox ();
 			this.vbox2.Name = "vbox2";
-			this.vbox2.Spacing = 6;
-			this.vbox2.BorderWidth = ((uint)(6));
 			// Container child vbox2.Gtk.Box+BoxChild
+			this.hbox2 = new global::Gtk.HBox ();
+			this.hbox2.Name = "hbox2";
+			this.hbox2.Spacing = 12;
+			this.hbox2.BorderWidth = ((uint)(12));
+			// Container child hbox2.Gtk.Box+BoxChild
+			this.imageWarning = new global::Gtk.Image ();
+			this.imageWarning.Name = "imageWarning";
+			this.imageWarning.Pixbuf = global::Gdk.Pixbuf.LoadFromResource ("exception-icon.png");
+			this.hbox2.Add (this.imageWarning);
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.imageWarning]));
+			w1.Position = 0;
+			w1.Expand = false;
+			w1.Fill = false;
+			// Container child hbox2.Gtk.Box+BoxChild
+			this.vboxExceptionInfo = new global::Gtk.VBox ();
+			this.vboxExceptionInfo.Name = "vboxExceptionInfo";
+			this.vboxExceptionInfo.Spacing = 6;
+			// Container child vboxExceptionInfo.Gtk.Box+BoxChild
 			this.labelType = new global::Gtk.Label ();
 			this.labelType.Name = "labelType";
 			this.labelType.Xalign = 0F;
 			this.labelType.LabelProp = "<b>Exception</b> has been thrown";
 			this.labelType.UseMarkup = true;
-			this.vbox2.Add (this.labelType);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.labelType]));
-			w1.Position = 0;
-			w1.Expand = false;
-			w1.Fill = false;
-			// Container child vbox2.Gtk.Box+BoxChild
+			this.vboxExceptionInfo.Add (this.labelType);
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vboxExceptionInfo [this.labelType]));
+			w2.Position = 0;
+			w2.Expand = false;
+			w2.Fill = false;
+			// Container child vboxExceptionInfo.Gtk.Box+BoxChild
 			this.labelMessage = new global::Gtk.Label ();
 			this.labelMessage.WidthRequest = 500;
 			this.labelMessage.Name = "labelMessage";
 			this.labelMessage.Xalign = 0F;
 			this.labelMessage.LabelProp = "test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test";
 			this.labelMessage.Wrap = true;
-			this.vbox2.Add (this.labelMessage);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.labelMessage]));
-			w2.Position = 1;
-			w2.Expand = false;
-			w2.Fill = false;
+			this.labelMessage.Selectable = true;
+			this.vboxExceptionInfo.Add (this.labelMessage);
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vboxExceptionInfo [this.labelMessage]));
+			w3.Position = 1;
+			w3.Expand = false;
+			w3.Fill = false;
+			this.hbox2.Add (this.vboxExceptionInfo);
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.vboxExceptionInfo]));
+			w4.Position = 1;
+			w4.Expand = false;
+			w4.Fill = false;
+			this.vbox2.Add (this.hbox2);
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox2]));
+			w5.Position = 0;
+			w5.Expand = false;
+			w5.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.notebook1 = new global::Gtk.Notebook ();
-			this.notebook1.CanFocus = true;
-			this.notebook1.Name = "notebook1";
-			this.notebook1.CurrentPage = 0;
-			// Container child notebook1.Gtk.Notebook+NotebookChild
-			this.GtkScrolledWindow1 = new global::Gtk.ScrolledWindow ();
-			this.GtkScrolledWindow1.Name = "GtkScrolledWindow1";
-			this.GtkScrolledWindow1.ShadowType = ((global::Gtk.ShadowType)(1));
-			this.GtkScrolledWindow1.BorderWidth = ((uint)(3));
-			// Container child GtkScrolledWindow1.Gtk.Container+ContainerChild
-			this.treeStack = new global::Gtk.TreeView ();
-			this.treeStack.CanFocus = true;
-			this.treeStack.Name = "treeStack";
-			this.treeStack.HeadersVisible = false;
-			this.GtkScrolledWindow1.Add (this.treeStack);
-			this.notebook1.Add (this.GtkScrolledWindow1);
-			// Notebook tab
-			this.label2 = new global::Gtk.Label ();
-			this.label2.Name = "label2";
-			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Stack Trace");
-			this.notebook1.SetTabLabel (this.GtkScrolledWindow1, this.label2);
-			this.label2.ShowAll ();
-			// Container child notebook1.Gtk.Notebook+NotebookChild
 			this.GtkScrolledWindow = new global::Gtk.ScrolledWindow ();
+			this.GtkScrolledWindow.HeightRequest = 128;
 			this.GtkScrolledWindow.Name = "GtkScrolledWindow";
 			this.GtkScrolledWindow.ShadowType = ((global::Gtk.ShadowType)(1));
-			this.GtkScrolledWindow.BorderWidth = ((uint)(3));
 			// Container child GtkScrolledWindow.Gtk.Container+ContainerChild
 			this.valueView = new global::MonoDevelop.Debugger.ObjectValueTreeView ();
 			this.valueView.CanFocus = true;
@@ -94,21 +97,26 @@ namespace MonoDevelop.Debugger
 			this.valueView.PinnedWatchLine = 0;
 			this.valueView.CompactView = false;
 			this.GtkScrolledWindow.Add (this.valueView);
-			this.notebook1.Add (this.GtkScrolledWindow);
-			global::Gtk.Notebook.NotebookChild w6 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1 [this.GtkScrolledWindow]));
-			w6.Position = 1;
-			// Notebook tab
-			this.page1 = new global::Gtk.Label ();
-			this.page1.Name = "page1";
-			this.page1.LabelProp = global::Mono.Unix.Catalog.GetString ("Details");
-			this.notebook1.SetTabLabel (this.GtkScrolledWindow, this.page1);
-			this.page1.ShowAll ();
-			this.vbox2.Add (this.notebook1);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.notebook1]));
-			w7.Position = 2;
+			this.vbox2.Add (this.GtkScrolledWindow);
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.GtkScrolledWindow]));
+			w7.Position = 1;
+			// Container child vbox2.Gtk.Box+BoxChild
+			this.GtkScrolledWindow1 = new global::Gtk.ScrolledWindow ();
+			this.GtkScrolledWindow1.HeightRequest = 128;
+			this.GtkScrolledWindow1.Name = "GtkScrolledWindow1";
+			this.GtkScrolledWindow1.ShadowType = ((global::Gtk.ShadowType)(1));
+			// Container child GtkScrolledWindow1.Gtk.Container+ContainerChild
+			this.treeStack = new global::Gtk.TreeView ();
+			this.treeStack.CanFocus = true;
+			this.treeStack.Name = "treeStack";
+			this.treeStack.HeadersVisible = false;
+			this.GtkScrolledWindow1.Add (this.treeStack);
+			this.vbox2.Add (this.GtkScrolledWindow1);
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.GtkScrolledWindow1]));
+			w9.Position = 2;
 			this.dialog1_VBox.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.dialog1_VBox [this.vbox2]));
-			w8.Position = 0;
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.dialog1_VBox [this.vbox2]));
+			w10.Position = 0;
 			this.Add (this.dialog1_VBox);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();

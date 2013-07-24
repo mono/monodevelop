@@ -155,4 +155,6 @@ THE SOFTWARE.
 	<BlankLinesBetweenFields>0</BlankLinesBetweenFields>
 	<BlankLinesBetweenEventFields>0</BlankLinesBetweenEventFields>
 	<BlankLinesBetweenMembers>1</BlankLinesBetweenMembers>
+	<BlankLinesInsideRegion>1</BlankLinesInsideRegion>
+	<BlankLinesAroundRegion>1</BlankLinesAroundRegion>
 </CSharpFormattingPolicy>

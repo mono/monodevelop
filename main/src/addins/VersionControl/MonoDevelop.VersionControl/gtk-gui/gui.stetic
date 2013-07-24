@@ -759,7 +759,6 @@
                 <property name="CanFocus">True</property>
                 <property name="Upper">99999</property>
                 <property name="PageIncrement">10</property>
-                <property name="PageSize">10</property>
                 <property name="StepIncrement">1</property>
                 <property name="ClimbRate">1</property>
                 <property name="Numeric">True</property>
@@ -1005,6 +1004,7 @@
             <property name="IsEditable">True</property>
             <property name="InvisibleChar">●</property>
             <signal name="Changed" handler="OnRepositoryUrlEntryChanged" />
+            <signal name="ClipboardPasted" handler="OnRepositoryUrlEntryClipboardPasted" />
           </widget>
           <packing>
             <property name="LeftAttach">1</property>

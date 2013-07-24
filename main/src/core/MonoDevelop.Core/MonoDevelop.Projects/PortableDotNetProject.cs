@@ -53,7 +53,7 @@ namespace MonoDevelop.Projects
 		{
 			int version;
 			
-			if (!format.Id.StartsWith ("MSBuild"))
+			if (!format.Id.StartsWith ("MSBuild", StringComparison.Ordinal))
 				return false;
 			
 			if (!int.TryParse (format.Id.Substring ("MSBuild".Length), out version))
@@ -86,8 +86,8 @@ namespace MonoDevelop.Projects
 		
 		public override TargetFrameworkMoniker GetDefaultTargetFrameworkId ()
 		{
-			// Profile1 is the most-inclusive subset of the profiles, so we'll default to that one.
-			return new TargetFrameworkMoniker (".NETPortable", "4.0", "Profile1");
+			// Profile136 includes .NET 4.0+, Silverlight 5, Windows Phone 8, and Xamarin.iOS/Android, so make that our default.
+			return new TargetFrameworkMoniker (".NETPortable", "4.0", "Profile136");
 		}
 	}
 }

@@ -92,7 +92,7 @@ namespace MonoDevelop.Debugger
 			stackStore.Clear ();
 			valueView.ClearValues ();
 
-			labelType.Markup = GettextCatalog.GetString ("<b>{0}</b> has been thrown", exception.Type);
+			labelType.Markup = GettextCatalog.GetString ("A <b>{0}</b> was thrown.", exception.Type);
 			labelMessage.Text = string.IsNullOrEmpty (exception.Message) ?
 			                    string.Empty : 
 			                    exception.Message;
@@ -118,7 +118,7 @@ namespace MonoDevelop.Debugger
 			}
 
 			foreach (ExceptionStackFrame frame in exc.StackTrace) {
-				string text = GLib.Markup.EscapeText (frame.DisplayText);
+				string text = string.Format ("<b>{0}</b>", GLib.Markup.EscapeText (frame.DisplayText));
 				if (!string.IsNullOrEmpty (frame.File)) {
 					text += "\n<small>" + GLib.Markup.EscapeText (frame.File);
 					if (frame.Line > 0) {
@@ -165,9 +165,11 @@ namespace MonoDevelop.Debugger
 			box.Spacing = 6;
 			box.PackStart (widget, true, true, 0);
 			HButtonBox buttonBox = new HButtonBox ();
+			buttonBox.Layout = ButtonBoxStyle.End;
 			buttonBox.BorderWidth = 6;
+			buttonBox.Spacing = 12;
 
-			var copy = new Gtk.Button (GettextCatalog.GetString ("Copy to Clipboard"));
+			var copy = new Gtk.Button (GettextCatalog.GetString ("Copy"));
 			buttonBox.PackStart (copy, false, false, 0);
 			copy.Clicked += HandleCopyClicked;
 

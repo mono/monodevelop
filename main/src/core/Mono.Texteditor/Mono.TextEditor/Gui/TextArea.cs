@@ -290,7 +290,6 @@ namespace Mono.TextEditor
 		{
 			GtkWorkarounds.FixContainerLeak (this);
 			this.Events = EventMask.PointerMotionMask | EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.EnterNotifyMask | EventMask.LeaveNotifyMask | EventMask.VisibilityNotifyMask | EventMask.FocusChangeMask | EventMask.ScrollMask | EventMask.KeyPressMask | EventMask.KeyReleaseMask;
-			this.DoubleBuffered = true;
 			base.CanFocus = true;
 
 			// This is required to properly handle resizing and rendering of children
@@ -1113,8 +1112,11 @@ namespace Mono.TextEditor
 			ResetMouseState ();
 			return base.OnButtonReleaseEvent (e);
 		}
-		
-		protected void ResetMouseState ()
+
+		/// <summary>
+		/// Use this method with care.
+		/// </summary>
+		public void ResetMouseState ()
 		{
 			mouseButtonPressed = 0;
 			textViewMargin.inDrag = false;

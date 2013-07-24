@@ -1,23 +1,7 @@
-<Addin id = "Prj2Make"
-       namespace   = "MonoDevelop"
-       name	 = "Visual Studio .NET Project Support"
-       author	 = "Francisco 'Paco' Martinez, Ankit Jain"
-       copyright = "LGPL"
-       url       = ""
-       description = "Importer for VS2003 projects"
-       category    = "Project Import and Export"
-       version   = "4.1.4">
-
-	<Dependencies>
-	    <Addin id="Core" version="4.1.4"/>
-		<Addin id="Ide" version="4.1.4"/>
-		<Addin id="CSharpBinding" version="4.1.4"/>
-		<Addin id="VBBinding" version="4.1.4"/>
-	</Dependencies>
-	
+<ExtensionModel>
 	<Extension path = "/MonoDevelop/ProjectModel/FileFormats">
 		<FileFormat id="VS2003ProjectFileFormat"
 		            class="MonoDevelop.Prj2Make.VS2003ProjectFileFormat"/>
 	</Extension>
-</Addin>
+</ExtensionModel>
 

@@ -161,6 +161,7 @@
     <Compile Include="XmlDocIdLib\CompatibilityType.cs" />
     <Compile Include="XmlDocIdLib\OperatorType.cs" />
     <Compile Include="XmlDocIdLib\XmlDocIdGenerator.cs" />
+    <Compile Include="AddinInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

@@ -37,6 +37,7 @@ namespace MonoDevelop.VersionControl.Git
 	class FilteredStatus : NGit.Api.StatusCommand
 	{
 		WorkingTreeIterator iter;
+		IndexDiff diff;
 
 		IEnumerable<string> Files {
 			get; set;
@@ -73,7 +74,13 @@ namespace MonoDevelop.VersionControl.Git
 			}
 			
 			diff.Diff ();
-			return new NGit.Api.Status(diff);
+			this.diff = diff;
+			return new NGit.Api.Status (diff);
+		}
+
+		public virtual ICollection<string> GetIgnoredNotInIndex()
+		{
+			return diff.GetIgnoredNotInIndex ();
 		}
 	}
 }

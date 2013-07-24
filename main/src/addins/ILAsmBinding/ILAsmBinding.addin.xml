@@ -1,22 +1,5 @@
-<Addin id          = "ILAsmBinding"
-       namespace   = "MonoDevelop"
-       name        = "ILAsm Language Binding"
-       author      = "Mike Krüger"
-       copyright   = "MIT X11"
-       url         = "http://www.monodevelop.com"
-       description = "ILAsm Language Binding" 
-       category    = "Language bindings"
-       version     = "4.1.4">
+<ExtensionModel>
 
-	<Runtime>
-		<Import assembly = "ILAsmBinding.dll"/>
-	</Runtime>
-
-	<Dependencies>
-		<Addin id="Core" version="4.1.4"/>
-		<Addin id="Ide" version="4.1.4"/>
-	</Dependencies>
-	
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
 		<ProjectTemplate id = "ILAsmConsoleProject" resource = "ILAsmConsoleProject.xpt.xml"/>
 	</Extension>
@@ -42,4 +25,4 @@
 		<DotNetProject  language="IL" extension="ilproj" guid="{B4EC64DC-6D44-11DD-AAB0-C9A155D89593}"/>
 	</Extension>
 	
-</Addin>
+</ExtensionModel>

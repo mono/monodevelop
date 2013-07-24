@@ -1,22 +1,4 @@
-<Addin id           = "ChangeLogAddIn"
-        namespace   = "MonoDevelop"
-        name        = "ChangeLog Add-in"
-        author      = "Jacob Ilsø Christensen"
-        copyright   = "LGPL"
-        url         = "http://monodevelop.com"
-        description = "Add-in for working with ChangeLog files"
-        category    = "Version Control"
-        version     = "4.1.4">
- 
-        <Runtime>
-		<Import assembly="ChangeLogAddIn.dll" />
-		</Runtime>
-
-	<Dependencies>
-		<Addin id="Core" version="4.1.4"/>
-		<Addin id="Ide" version="4.1.4"/>
-		<Addin id="VersionControl" version="4.1.4"/>
-	</Dependencies>
+<ExtensionModel>
 
 	<Extension path = "/MonoDevelop/VersionControl/CommitDialogExtensions">
 		<Class class="MonoDevelop.ChangeLogAddIn.CommitDialogExtensionWidget" />
@@ -62,4 +44,4 @@
 			name = "MonoDevelop.ChangeLogAddIn.ChangeLogInfo" type = "MonoDevelop.ChangeLogAddIn.OldChangeLogData" />
 	</Extension>
 
-</Addin>
+</ExtensionModel>

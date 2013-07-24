@@ -54,7 +54,6 @@ namespace MonoDevelop.VersionControl
 				Repository rep = VersionControlService.GetRepository (ce);
 				if (rep != null) {
 					AddFolderOverlay (rep, ce.BaseDirectory, ref icon, ref closedIcon, false);
-					rep.GetDirectoryVersionInfo (ce.BaseDirectory, false, false);
 				}
 				return;
 			} else if (dataObject is ProjectFolder) {
@@ -63,7 +62,6 @@ namespace MonoDevelop.VersionControl
 					Repository rep = VersionControlService.GetRepository (ce.ParentWorkspaceObject);
 					if (rep != null) {
 						AddFolderOverlay (rep, ce.Path, ref icon, ref closedIcon, true);
-						rep.GetDirectoryVersionInfo (ce.Path, false, false);
 					}
 				}
 				return;
@@ -389,8 +387,35 @@ namespace MonoDevelop.VersionControl
 		protected void UpdateCreatePatch(CommandInfo item) {
 			TestCommand(Commands.CreatePatch, item);
 		}
-			
-		private void TestCommand(Commands cmd, CommandInfo item, bool projRecurse = true) {
+
+		[AllowMultiSelection]
+		[CommandHandler (Commands.Ignore)]
+		protected void OnIgnore ()
+		{
+			RunCommand(Commands.Ignore, false);
+		}
+
+		[CommandUpdateHandler (Commands.Ignore)]
+		protected void UpdateIgnore (CommandInfo item)
+		{
+			TestCommand(Commands.Ignore, item);
+		}
+
+		[AllowMultiSelection]
+		[CommandHandler (Commands.Unignore)]
+		protected void OnUnignore ()
+		{
+			RunCommand(Commands.Unignore, false);
+		}
+
+		[CommandUpdateHandler (Commands.Unignore)]
+		protected void UpdateUnignore (CommandInfo item)
+		{
+			TestCommand(Commands.Unignore, item);
+		}
+
+		private void TestCommand(Commands cmd, CommandInfo item, bool projRecurse = true)
+		{
 			TestResult res = RunCommand(cmd, true, projRecurse);
 			if (res == TestResult.NoVersionControl && cmd == Commands.Log) {
 				// Use the update command to show the "not available" message
@@ -458,6 +483,12 @@ namespace MonoDevelop.VersionControl
 					break;
 				case Commands.CreatePatch:
 					res = CreatePatchCommand.CreatePatch (items, test);
+					break;
+				case Commands.Ignore:
+					res = IgnoreCommand.Ignore (items, test);
+					break;
+				case Commands.Unignore:
+					res = UnignoreCommand.Unignore (items, test);
 					break;
 				}
 			}

@@ -101,13 +101,25 @@ namespace MonoDevelop.VersionControl.Views
 			this.info = info;
 			var sourceEditor = info.Document.GetContent<MonoDevelop.SourceEditor.SourceEditorView> ();
 			
-			vAdjustment = new Adjustment (0, 0, 0, 0, 0, 0);
+			vAdjustment = new Adjustment (
+				sourceEditor.TextEditor.VAdjustment.Value, 
+				sourceEditor.TextEditor.VAdjustment.Lower, 
+				sourceEditor.TextEditor.VAdjustment.Upper, 
+				sourceEditor.TextEditor.VAdjustment.StepIncrement, 
+				sourceEditor.TextEditor.VAdjustment.PageIncrement, 
+				sourceEditor.TextEditor.VAdjustment.PageSize);
 			vAdjustment.Changed += HandleAdjustmentChanged;
 			
 			vScrollBar = new VScrollbar (vAdjustment);
 			AddChild (vScrollBar);
 			
-			hAdjustment = new Adjustment (0, 0, 0, 0, 0, 0);
+			hAdjustment = new Adjustment (
+				sourceEditor.TextEditor.HAdjustment.Value, 
+				sourceEditor.TextEditor.HAdjustment.Lower, 
+				sourceEditor.TextEditor.HAdjustment.Upper, 
+				sourceEditor.TextEditor.HAdjustment.StepIncrement, 
+				sourceEditor.TextEditor.HAdjustment.PageIncrement, 
+				sourceEditor.TextEditor.HAdjustment.PageSize);
 			hAdjustment.Changed += HandleAdjustmentChanged;
 
 			hScrollBar = new HScrollbar (hAdjustment);

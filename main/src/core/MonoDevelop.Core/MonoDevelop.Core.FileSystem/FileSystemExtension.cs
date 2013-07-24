@@ -128,16 +128,38 @@ namespace MonoDevelop.Core.FileSystem
 		{
 			GetNextForPath (path, true).DeleteDirectory (path);
 		}
-		
+
+		public virtual void RequestFileEdit (IEnumerable<FilePath> files)
+		{
+#pragma warning disable 618
+			foreach (var f in files) {
+				if (!RequestFileEdit (f))
+					throw new UserException (GettextCatalog.GetString ("File '{0}' can't be modified", f.FileName));
+			}
+#pragma warning restore 618
+
+			foreach (var fg in files.GroupBy (f => GetNextForPath (f, false)))
+				fg.Key.RequestFileEdit (fg);
+		}
+
+		[Obsolete ("This will be removed. Override RequestFileEdit (IEnumerable<FilePath>) instead")]
 		public virtual bool RequestFileEdit (FilePath file)
 		{
-			return GetNextForPath (file, false).RequestFileEdit (file);
+			return true;
 		}
 		
 		public virtual void NotifyFilesChanged (IEnumerable<FilePath> files)
 		{
 			foreach (var fsFiles in files.GroupBy (f => GetNextForPath (f, false)))
 				fsFiles.Key.NotifyFilesChanged (files);
+		}
+	}
+
+	class DummyFileSystemExtension: FileSystemExtension
+	{
+		public override bool CanHandlePath (FilePath path, bool isDirectory)
+		{
+			return false;
 		}
 	}
 }

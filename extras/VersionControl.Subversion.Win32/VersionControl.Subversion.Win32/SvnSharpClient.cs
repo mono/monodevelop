@@ -17,24 +17,6 @@ namespace SubversionAddinWindows
 		static bool errorShown;
 		static bool installError;
 		static SvnClient client;
-
-		internal static string GetBaseText (string file)
-		{
-			MemoryStream data = new MemoryStream();
-			try {
-				// This outputs the contents of the base revision
-				// of a file to a stream.
-				client.Write (new SvnPathTarget (file), data);
-				return TextFile.ReadFile (file, data).Text;
-			} catch (SvnIllegalTargetException e) {
-				// This occurs when we don't have a base file for
-				// the target file. We have no way of knowing if
-				// a file has a base version therefore this will do.
-				if (e.SvnErrorCode == SvnErrorCode.SVN_ERR_ILLEGAL_TARGET)
-					return String.Empty;
-				throw;
-			}
-		}
 		
 		static SvnSharpClient ()
 		{
@@ -50,7 +32,7 @@ namespace SubversionAddinWindows
 		{
 			return new SvnSharpBackend ();
 		}
-			
+
 		public override string GetPathUrl (FilePath path)
 		{
 			lock (client) {
@@ -74,6 +56,11 @@ namespace SubversionAddinWindows
 				return !installError;
 			}
 		}
+
+		public override string GetDirectoryDotSvn (FilePath path)
+		{
+			return client.GetWorkingCopyRoot (path.FullPath);
+		}
 	}
 
 	public class SvnSharpBackend: SubversionBackend
@@ -82,7 +69,20 @@ namespace SubversionAddinWindows
 
 		public override string GetTextBase (string file)
 		{
-			return SvnSharpClient.GetBaseText (file);
+			MemoryStream data = new MemoryStream ();
+			try {
+				// This outputs the contents of the base revision
+				// of a file to a stream.
+				client.Write (new SvnPathTarget (file), data);
+				return TextFile.ReadFile (file, data).Text;
+			} catch (SvnIllegalTargetException e) {
+				// This occurs when we don't have a base file for
+				// the target file. We have no way of knowing if
+				// a file has a base version therefore this will do.
+				if (e.SvnErrorCode == SvnErrorCode.SVN_ERR_ILLEGAL_TARGET)
+					return String.Empty;
+				throw;
+			}
 		}
 
 		public SvnSharpBackend ()
@@ -93,7 +93,7 @@ namespace SubversionAddinWindows
 		void Init ()
 		{
 			client = new SvnClient ();
-			client.Authentication.SslClientCertificateHandlers += new EventHandler<SharpSvn.Security.SvnSslClientCertificateEventArgs> (AuthenticationSslClientCertificateHandlers);
+			client.Authentication.SslClientCertificateHandlers += new EventHandler<SvnSslClientCertificateEventArgs> (AuthenticationSslClientCertificateHandlers);
 			client.Authentication.SslClientCertificatePasswordHandlers += new EventHandler<SvnSslClientCertificatePasswordEventArgs> (AuthenticationSslClientCertificatePasswordHandlers);
 			client.Authentication.SslServerTrustHandlers += new EventHandler<SvnSslServerTrustEventArgs> (AuthenticationSslServerTrustHandlers);
 			client.Authentication.UserNameHandlers += new EventHandler<SvnUserNameEventArgs> (AuthenticationUserNameHandlers);
@@ -195,16 +195,40 @@ namespace SubversionAddinWindows
 
 		public override string GetTextAtRevision (string repositoryPath, Revision revision)
 		{
-			MemoryStream ms = new MemoryStream ();
-			lock (client) 
-				client.Write (new SvnUriTarget (repositoryPath, GetRevision (revision)), ms);
-			ms.Position = 0;
-			using (StreamReader sr = new StreamReader (ms)) {
-				return sr.ReadToEnd ();
-			}
+			return null;
 		}
 
-		public override string GetVersion ( )
+		public override string GetTextAtRevision (string repositoryPath, Revision revision, string rootPath)
+		{
+			MemoryStream ms = new MemoryStream ();
+			SvnUriTarget target = client.GetUriFromWorkingCopy (rootPath);
+			// Redo path link.
+			repositoryPath = repositoryPath.TrimStart (new char[] { '/' });
+			foreach (var segment in target.Uri.Segments) {
+				if (repositoryPath.StartsWith (segment))
+					repositoryPath = repositoryPath.Remove (0, segment.Length);
+			}
+
+			lock (client) {
+				// repositoryPath already contains the relative URL path.
+				try {
+					client.Write (new SvnUriTarget (target.Uri.AbsoluteUri + repositoryPath, GetRevision (revision)), ms);
+				} catch (SvnFileSystemException e) {
+					// File got added/deleted at some point.
+					if (e.SvnErrorCode == SvnErrorCode.SVN_ERR_FS_NOT_FOUND)
+						return "";
+					throw;
+				} catch (SvnClientNodeKindException e) {
+					// We're trying on a directory.
+					if (e.SvnErrorCode == SvnErrorCode.SVN_ERR_CLIENT_IS_DIRECTORY)
+						return "";
+					throw;
+				}
+			}
+			return TextFile.ReadFile (repositoryPath, ms).Text;
+		}
+
+		public override string GetVersion ()
 		{
 			return SvnClient.Version.ToString ();
 		}
@@ -363,6 +387,7 @@ namespace SubversionAddinWindows
 			VersionStatus rs = VersionStatus.Unversioned;
 			Revision rr = null;
 
+			// TODO: Fix remote status for Win32 Svn.
 			if (ent.IsRemoteUpdated) {
 				rs = ConvertStatus (SvnSchedule.Normal, ent.RemoteContentStatus);
 				rr = new SvnRevision (repo, (int) ent.RemoteUpdateRevision, ent.RemoteUpdateCommitTime,
@@ -447,6 +472,65 @@ namespace SubversionAddinWindows
 			BindMonitor (args, monitor);
 			args.Depth = recurse ? SvnDepth.Infinity : SvnDepth.Children;
 			client.Update (path, args);
+		}
+
+		public override void Ignore (FilePath[] paths)
+		{
+			string result;
+			lock (client) {
+				foreach (var path in paths) {
+					if (client.GetProperty (new SvnPathTarget (path.ParentDirectory), SvnPropertyNames.SvnIgnore, out result)) {
+						client.SetProperty (path.ParentDirectory, SvnPropertyNames.SvnIgnore, result + path.FileName);
+					}
+				}
+			}
+		}
+
+		public override void Unignore (FilePath[] paths)
+		{
+			string result;
+			lock (client) {
+				foreach (var path in paths) {
+					if (client.GetProperty (new SvnPathTarget (path.ParentDirectory), SvnPropertyNames.SvnIgnore, out result)) {
+						int index = result.IndexOf (path.FileName + Environment.NewLine);
+						result = (index < 0) ? result : result.Remove (index, path.FileName.Length+Environment.NewLine.Length);
+						client.SetProperty (path.ParentDirectory, SvnPropertyNames.SvnIgnore, result);
+					}
+				}
+			}
+		}
+
+		public override Annotation[] GetAnnotations (Repository repo, FilePath file, SvnRevision revStart, SvnRevision revEnd)
+		{
+			if (file == FilePath.Null)
+				throw new ArgumentNullException ();
+
+			SvnPathTarget target = new SvnPathTarget (file, SharpSvn.SvnRevision.Base);
+			MemoryStream data = new MemoryStream ();
+			int numAnnotations = 0;
+			client.Write (target, data);
+
+			using (StreamReader reader = new StreamReader (data)) {
+				reader.BaseStream.Seek (0, SeekOrigin.Begin);
+				while (reader.ReadLine () != null)
+					numAnnotations++;
+			}
+
+			System.Collections.ObjectModel.Collection<SvnBlameEventArgs> list;
+			SvnBlameArgs args = new SvnBlameArgs ();
+			args.Start = GetRevision (revStart);
+			args.End = GetRevision (revEnd);
+
+			if (client.GetBlame (target, args, out list)) {
+				Annotation[] annotations = new Annotation [numAnnotations];
+				foreach (var annotation in list) {
+					if (annotation.LineNumber < annotations.Length)
+						annotations [(int)annotation.LineNumber] = new Annotation (annotation.Revision.ToString (),
+																					annotation.Author, annotation.Time);
+				}
+				return annotations;
+			}
+			return new Annotation[0];
 		}
 
 		SharpSvn.SvnRevision GetRevision (Revision rev)
@@ -622,7 +706,7 @@ namespace SubversionAddinWindows
 			}
 
 			if (notifyChange && File.Exists (file))
-				FileService.NotifyFileChanged (file);
+				FileService.NotifyFileChanged (file, true);
 		}
 	}
 }

@@ -329,7 +329,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		
 		public static IFoldingParser GetFoldingParser (string mimeType)
 		{
-			var node = FoldingParsers.Where (n => n.MimeType == mimeType).FirstOrDefault ();
+			var node = FoldingParsers.FirstOrDefault (n => n.MimeType == mimeType);
 			if (node == null)
 				return null;
 			return node.CreateInstance () as IFoldingParser;
@@ -1260,13 +1260,13 @@ namespace MonoDevelop.Ide.TypeSystem
 			{
 				if (nonCyclicCache.Contains (wrapper.Project))
 					return false;
+				nonCyclicCache.Add (wrapper.Project);
 				foreach (var referencedProject in wrapper.ReferencedProjects) {
 					ProjectContentWrapper w;
 					if (referencedProject == Project || referencedProject == wrapper.Project || projectContents.TryGetValue (referencedProject, out w) && HasCyclicRefs (w, nonCyclicCache)) {
 						return true;
 					}
 				}
-				nonCyclicCache.Add (wrapper.Project);
 				return false;
 			}
 

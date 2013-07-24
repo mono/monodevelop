@@ -75,7 +75,7 @@ namespace MonoDevelop.VersionControl.Subversion
 
 		protected override string OnGetTextAtRevision (FilePath repositoryPath, Revision revision)
 		{
-			return Svn.GetTextAtRevision (repositoryPath, revision);
+			return Svn.GetTextAtRevision (repositoryPath, revision, RootPath);
 		}
 
 		protected override Revision[] OnGetHistory (FilePath sourcefile, Revision since)
@@ -382,12 +382,12 @@ namespace MonoDevelop.VersionControl.Subversion
 					string df = Path.GetDirectoryName (dst);
 					copiedFolders [df] = df;
 				}
-				
+
 				// Delete all old files which have not been replaced
 				ArrayList foldersToDelete = new ArrayList ();
 				foreach (string oldFile in oldFiles) {
 					if (!copiedFiles.Contains (oldFile)) {
-						DeleteFile (oldFile, true, monitor);
+						DeleteFile (oldFile, true, monitor, false);
 						string fd = Path.GetDirectoryName (oldFile);
 						if (!copiedFolders.Contains (fd) && !foldersToDelete.Contains (fd))
 							foldersToDelete.Add (fd);
@@ -400,7 +400,7 @@ namespace MonoDevelop.VersionControl.Subversion
 				}
 				
 				// Delete the source directory
-				DeleteDirectory (srcPath, true, monitor);
+				DeleteDirectory (srcPath, true, monitor, false);
 			}
 			else {
 				if (Directory.Exists (destPath))
@@ -450,30 +450,68 @@ namespace MonoDevelop.VersionControl.Subversion
 				collection.Add(f);
 		}
 
-
 		protected override void OnDeleteFiles (FilePath[] paths, bool force, IProgressMonitor monitor)
 		{
+		}
+
+		protected override void OnDeleteFiles (FilePath[] paths, bool force, IProgressMonitor monitor, bool keepLocal)
+		{
 			foreach (string path in paths) {
-				if (IsVersioned (path))
-					Svn.Delete (path, force, monitor);
-				else {
-					VersionInfo srcInfo = GetVersionInfo (path, VersionInfoQueryFlags.IgnoreCache);
-					if (srcInfo != null && srcInfo.HasLocalChange (VersionStatus.ScheduledAdd)) {
-						// Revert the add command
-						Revert (path, false, monitor);
+				if (IsVersioned (path)) {
+					string newPath = String.Empty;
+					if (keepLocal) {
+						newPath = Path.GetTempFileName ();
+						File.Copy (path, newPath, true);
 					}
-					File.Delete (path);
+					try {
+						Svn.Delete (path, force, monitor);
+					} finally {
+						if (keepLocal)
+							File.Move (newPath, path);
+					}
+				} else {
+					if (keepLocal) {
+						VersionInfo srcInfo = GetVersionInfo (path, VersionInfoQueryFlags.IgnoreCache);
+						if (srcInfo != null && srcInfo.HasLocalChange (VersionStatus.ScheduledAdd)) {
+							// Revert the add command
+							Revert (path, false, monitor);
+						}
+					} else
+						File.Delete (path);
 				}
 			}
 		}
 
 		protected override void OnDeleteDirectories (FilePath[] paths, bool force, IProgressMonitor monitor)
 		{
+		}
+
+		protected override void OnDeleteDirectories (FilePath[] paths, bool force, IProgressMonitor monitor, bool keepLocal)
+		{
 			foreach (string path in paths) {
-				if (IsVersioned (path))
-					Svn.Delete (path, force, monitor);
-				else
-					Directory.Delete (path, true);
+				if (IsVersioned (path)) {
+					string newPath = String.Empty;
+					if (keepLocal) {
+						newPath = FileService.CreateTempDirectory ();
+						FileService.CopyDirectory (path, newPath);
+					}
+					try {
+						Svn.Delete (path, force, monitor);
+					} finally {
+						if (keepLocal)
+							FileService.MoveDirectory (newPath, path);
+					}
+				} else {
+					if (keepLocal) {
+						foreach (var info in GetDirectoryVersionInfo (path, false, true)) {
+							if (info != null && info.HasLocalChange (VersionStatus.ScheduledAdd)) {
+								// Revert the add command
+								Revert (path, false, monitor);
+							}
+						}
+					} else
+						Directory.Delete (path, true);
+				}
 			}
 		}
 		
@@ -517,9 +555,9 @@ namespace MonoDevelop.VersionControl.Subversion
 			
 			// "SubversionException: blame of the WORKING revision is not supported"
 			foreach (var hunk in baseDocument.Diff (workingDocument)) {
-				annotations.RemoveRange (hunk.InsertStart, hunk.Inserted);
+				annotations.RemoveRange (hunk.RemoveStart, hunk.Removed);
 				for (int i = 0; i < hunk.Inserted; ++i) {
-					annotations.Insert (hunk.InsertStart, nextRev);
+					annotations.Insert (hunk.InsertStart - 1, nextRev);
 				}
 			}
 			
@@ -547,6 +585,16 @@ namespace MonoDevelop.VersionControl.Subversion
 			}
 			
 			return patch.ToString ();
+		}
+
+		protected override void OnIgnore (FilePath[] paths)
+		{
+			Svn.Ignore (paths);
+		}
+
+		protected override void OnUnignore (FilePath[] paths)
+		{
+			Svn.Unignore (paths);
 		}
 	}
 }

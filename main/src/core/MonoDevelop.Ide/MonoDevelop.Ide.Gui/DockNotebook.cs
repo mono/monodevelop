@@ -34,6 +34,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Cairo;
 using MonoDevelop.Components;
+using Xwt.Motion;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -291,7 +292,7 @@ namespace MonoDevelop.Ide.Gui
 		bool Dirty { get; set; }
 	}
 
-	internal class DockNotebookTab: IDockNotebookTab, Animatable
+	internal class DockNotebookTab: IDockNotebookTab, IAnimatable
 	{
 		DockNotebook notebook;
 		TabStrip strip;
@@ -308,15 +309,18 @@ namespace MonoDevelop.Ide.Gui
 
 		public bool Notify { get; set; }
 
-		public float WidthModifier { get; set; }
+		public double WidthModifier { get; set; }
 
-		public float Opacity { get; set; }
+		public double Opacity { get; set; }
 
-		public float GlowStrength { get; set; }
+		public double GlowStrength { get; set; }
 
 		public bool Hidden { get; set; }
 
-		public float DirtyStrength { get; set; }
+		public double DirtyStrength { get; set; }
+		
+		void IAnimatable.BatchBegin () { }
+		void IAnimatable.BatchCommit () { QueueDraw (); }
 
 		bool dirty;
 		public bool Dirty {
@@ -384,7 +388,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		internal Gdk.Rectangle SavedAllocation { get; private set; }
-		internal float SaveStrength { get; set; }
+		internal double SaveStrength { get; set; }
 
 		internal void SaveAllocation ()
 		{
@@ -402,7 +406,7 @@ namespace MonoDevelop.Ide.Gui
 		public DockNotebookTab Tab { get; set; }
 	}
 
-	class TabStrip: EventBox, Animatable
+	class TabStrip: EventBox, Xwt.Motion.IAnimatable
 	{
 		List<Gtk.Widget> children = new List<Widget> ();
 		DockNotebook notebook;
@@ -416,7 +420,7 @@ namespace MonoDevelop.Ide.Gui
 		bool draggingTab;
 		int dragX;
 		int dragOffset;
-		float dragXProgress;
+		double dragXProgress;
 
 		int renderOffset;
 		int targetOffset;
@@ -456,10 +460,10 @@ namespace MonoDevelop.Ide.Gui
 				targetWidth = value;
 				if (TabWidth != value) {
 					this.Animate ("TabWidth",
-					              easing: Easing.CubicOut,
-					              start: TabWidth,
-					              end: value,
-					              callback: f => TabWidth = (int) f);
+					              f => TabWidth = (int) f,
+					              TabWidth,
+					              value,
+					              easing: Easing.CubicOut);
 				}
 			}
 		}
@@ -520,12 +524,15 @@ namespace MonoDevelop.Ide.Gui
 
 			closingTabs = new Dictionary<int, DockNotebookTab> ();
 		}
+		
+		void IAnimatable.BatchBegin () { }
+		void IAnimatable.BatchCommit () { QueueDraw (); }
 
 		public void StartOpenAnimation (DockNotebookTab tab)
 		{
 			tab.WidthModifier = 0;
 			new Animation (f => tab.WidthModifier = f)
-				.Insert (0.0f, 0.2f, new Animation (f => tab.Opacity = f))
+				.AddConcurrent (new Animation (f => tab.Opacity = f), 0.0d, 0.2d)
 				.Commit (tab, "Open", easing: Easing.CubicInOut);
 		}
 
@@ -533,7 +540,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			closingTabs[tab.Index] = tab;
 			new Animation (f => tab.WidthModifier = f, tab.WidthModifier, 0)
-				.Insert (0.8f, 1.0f, new Animation (f => tab.Opacity = f, tab.Opacity, 0))
+				.AddConcurrent (new Animation (f => tab.Opacity = f, tab.Opacity, 0), 0.8d, 1.0d)
 				.Commit (tab, "Closing", 
 					     easing: Easing.CubicOut,
 					     finished: (f, a) => { if (!a) closingTabs.Remove (tab.Index); });
@@ -681,8 +688,8 @@ namespace MonoDevelop.Ide.Gui
 
 					t.Animate ("TabMotion",
 					           f => t.SaveStrength = f,
-					           start: 1.0f,
-					           end: 0.0f,
+					           1.0f,
+					           0.0f,
 					           easing: Easing.CubicInOut);
 				}
 				lastDragX = (int)evnt.X;
@@ -749,10 +756,10 @@ namespace MonoDevelop.Ide.Gui
 			allowDoubleClick = true;
 			if (dragX != 0)
 				this.Animate ("EndDrag",
+				              f => dragXProgress = f,
+				              1.0d,
+				              0.0d,
 				              easing: Easing.CubicOut,
-				              start: 1.0f,
-				              end: 0.0f,
-				              callback: f => dragXProgress = f,
 				              finished: (f, a) => draggingTab = false);
 			QueueDraw ();
 			return base.OnButtonReleaseEvent (evnt);

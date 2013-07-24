@@ -283,7 +283,7 @@ namespace MonoDevelop.Components.Extensions
 			var currentFilter = fdiag.Filter;
 			if (currentFilter != null) {
 				var name = fdiag.Filter.Name;
-				var def = data.Filters.Where (f => f.Name == name).FirstOrDefault ();
+				var def = data.Filters.FirstOrDefault (f => f.Name == name);
 				if (def != null)
 					DefaultFilter = def;
 			}

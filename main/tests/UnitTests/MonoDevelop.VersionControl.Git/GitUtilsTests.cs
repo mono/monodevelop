@@ -230,8 +230,8 @@ namespace MonoDevelop.VersionControl.Git
 			var commit = "9ed729ee";
 			var changes = GitUtil.CompareCommits (repo, repo.Resolve (commit), repo.Resolve (commit + "^")).ToArray ();
 
-			var add = changes.Where (c => c.GetNewPath ().EndsWith ("DocumentLine.cs")).First ();
-			var remove = changes.Where (c => c.GetOldPath ().EndsWith ("LineSegment.cs")).First ();
+			var add = changes.First (c => c.GetNewPath ().EndsWith ("DocumentLine.cs"));
+			var remove = changes.First (c => c.GetOldPath ().EndsWith ("LineSegment.cs"));
 
 			Assert.AreEqual (NGit.Diff.DiffEntry.ChangeType.ADD, add.GetChangeType (), "#1");
 			Assert.AreEqual ("/dev/null", add.GetOldPath (), "#2");

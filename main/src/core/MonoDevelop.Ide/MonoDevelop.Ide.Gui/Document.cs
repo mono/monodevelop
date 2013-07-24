@@ -184,7 +184,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		public bool HasProject {
-			get { return Window.ViewContent.Project != null; }
+			get { return Window != null ? Window.ViewContent.Project != null : false; }
 		}
 		
 		public Project Project {
@@ -341,8 +341,11 @@ namespace MonoDevelop.Ide.Gui
 				if (Window.ViewContent.ContentName == null) {
 					SaveAs ();
 				} else {
-					if (!FileService.RequestFileEdit (Window.ViewContent.ContentName))
-						MessageService.ShowMessage (GettextCatalog.GetString ("The file could not be saved. Write permission has not been granted."));
+					try {
+						FileService.RequestFileEdit (Window.ViewContent.ContentName, true);
+					} catch (Exception ex) {
+						MessageService.ShowException (ex, GettextCatalog.GetString ("The file could not be saved."));
+					}
 					
 					FileAttributes attr = FileAttributes.ReadOnly | FileAttributes.Directory | FileAttributes.Offline | FileAttributes.System;
 	

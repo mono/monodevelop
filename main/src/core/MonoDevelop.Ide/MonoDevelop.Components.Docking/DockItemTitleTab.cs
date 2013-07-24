@@ -278,10 +278,12 @@ namespace MonoDevelop.Components.Docking
 		{
 			if (tabActivated) {
 				tabActivated = false;
-				if (item.Status == DockItemStatus.AutoHide)
-					item.Status = DockItemStatus.Dockable;
-				else
-					item.Status = DockItemStatus.AutoHide;
+				if (!item.Behavior.HasFlag (DockItemBehavior.CantAutoHide)) {
+					if (item.Status == DockItemStatus.AutoHide)
+						item.Status = DockItemStatus.Dockable;
+					else
+						item.Status = DockItemStatus.AutoHide;
+				}
 			}
 			else if (!evnt.TriggersContextMenu () && evnt.Button == 1) {
 				frame.DockInPlaceholder (item);
@@ -297,7 +299,7 @@ namespace MonoDevelop.Components.Docking
 
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion evnt)
 		{
-			if (tabPressed && Math.Abs (evnt.X - pressX) > 3 && Math.Abs (evnt.Y - pressY) > 3) {
+			if (tabPressed && !item.Behavior.HasFlag (DockItemBehavior.NoGrip) && Math.Abs (evnt.X - pressX) > 3 && Math.Abs (evnt.Y - pressY) > 3) {
 				frame.ShowPlaceholder (item);
 				GdkWindow.Cursor = fleurCursor;
 				frame.Toplevel.KeyPressEvent += HeaderKeyPress;

@@ -24,125 +24,125 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using NUnit.Framework;
+using System.IO;
+using System;
 using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.VersionControl;
-using MonoDevelop.VersionControl.Subversion;
-using NUnit.Framework;
-using System.Diagnostics;
-using System.IO;
-using System;
 
-namespace MonoDevelop.VersionControl.Subversion.Tests
+namespace MonoDevelop.VersionControl.Tests
 {
 	[TestFixture]
-	public abstract class BaseSvnUtilsTest
+	public abstract class BaseRepoUtilsTest
 	{
-		protected SubversionBackend backend;
-		protected SubversionRepository repo;
-		protected FilePath svnRoot = ""; // Moved to Win32 and Unix versions.
-		protected FilePath svnCheckout;
-		protected FilePath repoLocation = "";
-		protected Process svnServe = null;
+		protected string repoLocation = "";
+		protected FilePath rootUrl = "";
+		protected FilePath rootCheckout;
+		protected Repository repo;
+		protected Repository repo2;
+		protected string DOT_DIR;
 
 		[SetUp]
-		public virtual void Setup ()
-		{
-			Process svnAdmin;
-			ProcessStartInfo info;
-
-			// Generate directories and a svn util.
-			svnCheckout = new FilePath (FileService.CreateTempDirectory () + Path.DirectorySeparatorChar);
-
-			// Create repo in "repo".
-			svnAdmin = new Process ();
-			info = new ProcessStartInfo ();
-			info.FileName = "svnadmin";
-			info.Arguments = "create " + svnRoot + Path.DirectorySeparatorChar + "repo";
-			info.WindowStyle = ProcessWindowStyle.Hidden;
-			svnAdmin.StartInfo = info;
-			svnAdmin.Start ();
-			svnAdmin.WaitForExit ();
-
-			// Create host (Win32)
-			// This needs to be done after doing the svnAdmin creation.
-			// And before checkout.
-			if (svnServe != null) {
-				info = new ProcessStartInfo ();
-				info.FileName = "svnserve";
-				info.Arguments = "-dr " + svnRoot;
-				info.WindowStyle = ProcessWindowStyle.Hidden;
-				svnServe.StartInfo = info;
-				svnServe.Start ();
-
-				// Create user to auth.
-				using (var perm = File. CreateText (svnRoot + Path.DirectorySeparatorChar + "repo" +
-				                                    Path.DirectorySeparatorChar + "conf" + Path.DirectorySeparatorChar + "svnserve.conf")) {
-					perm.WriteLine ("[general]");
-					perm.WriteLine ("anon-access = write");
-					perm.WriteLine ("[sasl]");
-				}
-			}
-
-			// Check out the repository.
-			Checkout (svnCheckout);
-			repo = GetRepo (repoLocation, svnCheckout);
-		}
+		public abstract void Setup ();
 
 		[TearDown]
 		public virtual void TearDown ()
 		{
-			DeleteDirectory (svnRoot);
-			DeleteDirectory (svnCheckout);
+			DeleteDirectory (rootUrl);
+			DeleteDirectory (rootCheckout);
 		}
 
 		[Test]
 		public virtual void CheckoutExists ()
 		{
-			Assert.True (Directory.Exists (svnCheckout + ".svn"));
+			Assert.True (Directory.Exists (rootCheckout + DOT_DIR));
 		}
 
 		[Test]
 		public virtual void FileIsAdded ()
 		{
-			string added = svnCheckout + "testfile";
+			FilePath added = rootCheckout + "testfile";
 			File.Create (added).Close ();
-			backend.Add (added, false, new NullProgressMonitor ());
+			repo.Add (added, false, new NullProgressMonitor ());
 
-			foreach (var vi in backend.Status (repo, added, SvnRevision.First))
-				Assert.AreEqual (VersionStatus.ScheduledAdd, (VersionStatus.ScheduledAdd & vi.Status));
+			VersionInfo vi = repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache);
+
+			Assert.AreEqual (VersionStatus.Versioned, (VersionStatus.Versioned & vi.Status));
+			Assert.AreEqual (VersionStatus.ScheduledAdd, (VersionStatus.ScheduledAdd & vi.Status));
+			Assert.IsFalse (vi.CanAdd);
 		}
 
 		[Test]
 		public virtual void FileIsCommitted ()
 		{
-			string added = svnCheckout + "testfile";
-			File.Create (added).Close ();
-			backend.Add (added, false, new NullProgressMonitor ());
-			backend.Commit (new FilePath[] { svnCheckout }, "File committed", new NullProgressMonitor ());
+			FilePath added = rootCheckout + "testfile";
 
-			foreach (var vi in backend.Status (repo, added, SvnRevision.First))
-				Assert.AreEqual (VersionStatus.Versioned, vi.Status);
+			File.Create (added).Close ();
+			repo.Add (added, false, new NullProgressMonitor ());
+			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
+			changes.AddFile (repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache));
+			changes.GlobalComment = "test";
+			repo.Commit (changes, new NullProgressMonitor ());
+
+			PostCommit (repo);
+
+			// TODO: Fix remote status for Win32 Svn.
+			VersionInfo vi = repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache);
+			Assert.AreEqual (VersionStatus.Versioned, (VersionStatus.Versioned & vi.Status));
+		}
+
+		protected virtual void PostCommit (Repository repo)
+		{
 		}
 
 		[Test]
 		public virtual void UpdateIsDone ()
 		{
-			FilePath second = new FilePath (FileService.CreateTempDirectory () + Path.DirectorySeparatorChar);
-			Checkout (second);
-
-			string added = second + "testfile";
+			string added = rootCheckout + "testfile";
 			File.Create (added).Close ();
-			backend.Add (added, false, new NullProgressMonitor ());
-			backend.Commit (new FilePath[] { second }, "Check text", new NullProgressMonitor ());
+			repo.Add (added, false, new NullProgressMonitor ());
+			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
+			changes.AddFile (repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache));
+			changes.GlobalComment = "test";
+			repo.Commit (changes, new NullProgressMonitor ());
 
-			backend.Update (svnCheckout, true, new NullProgressMonitor ());
-			Assert.True (File.Exists (svnCheckout + "testfile"));
+			PostCommit (repo);
+
+			// Checkout a second repository.
+			FilePath second = new FilePath (FileService.CreateTempDirectory () + Path.DirectorySeparatorChar);
+			Checkout (second, repoLocation);
+			repo2 = GetRepo (second, repoLocation);
+			added = second + "testfile2";
+			File.Create (added).Close ();
+			repo2.Add (added, false, new NullProgressMonitor ());
+			changes = repo.CreateChangeSet (repo.RootPath);
+			changes.AddFile (repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache));
+			changes.GlobalComment = "test2";
+			repo2.Commit (changes, new NullProgressMonitor ());
+
+			PostCommit (repo2);
+
+			repo.Update (repo.RootPath, true, new NullProgressMonitor ());
+			Assert.True (File.Exists (rootCheckout + "testfile2"));
+
 			DeleteDirectory (second);
 		}
 
 		[Test]
-		public abstract void LogIsProper ();
+		public virtual void LogIsProper ()
+		{
+			string added = rootCheckout + "testfile";
+			File.Create (added).Close ();
+			repo.Add (added, false, new NullProgressMonitor ());
+			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
+			changes.AddFile (repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache));
+			changes.GlobalComment = "File committed";
+			repo.Commit (changes, new NullProgressMonitor ());
+			foreach (Revision rev in repo.GetHistory (added, null)) {
+				Assert.AreEqual ("File committed", rev.Message);
+			}
+		}
 
 		[Test]
 		public abstract void DiffIsProper ();
@@ -150,43 +150,35 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 		[Test]
 		public virtual void Reverts ()
 		{
-			string added = svnCheckout + "testfile";
+			string added = rootCheckout + "testfile";
 			string content = "text";
 
 			File.Create (added).Close ();
-			backend.Add (added, false, new NullProgressMonitor ());
-			backend.Commit (new FilePath[] { svnCheckout }, "File committed", new NullProgressMonitor ());
+			repo.Add (added, false, new NullProgressMonitor ());
+			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
+			changes.AddFile (repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache));
+			changes.GlobalComment = "File committed";
+			repo.Commit (changes, new NullProgressMonitor ());
 
 			// Revert to head.
 			File.WriteAllText (added, content);
-
-			backend.Revert (new FilePath[] { added }, false, new NullProgressMonitor ());
-			Assert.AreEqual (backend.GetTextBase (added), File.ReadAllText (added));
-
-			// Revert revision.
-			File.AppendAllText (added, content);
-			File.Copy (added, added + "2");
-
-			backend.Commit (new FilePath[] { added }, "File modified", new NullProgressMonitor ());
-			backend.RevertRevision (added, new SvnRevision (repo, 2), new NullProgressMonitor ());
-			backend.Commit (new FilePath[] { added }, "File reverted", new NullProgressMonitor ());
-
-			Assert.AreNotEqual (File.ReadAllText (added + "2"), File.ReadAllText (added));
+			repo.Revert (added, false, new NullProgressMonitor ());
+			Assert.AreEqual (repo.GetBaseText (added), File.ReadAllText (added));
 		}
 
 		#region Util
 
-		public void Checkout (string path)
+		public virtual void Checkout (string path, string url)
 		{
-			backend.Checkout (repoLocation,
-				path, SvnRevision.Head,
-				true, new NullProgressMonitor ());
+			Repository _repo = GetRepo (path, url);
+			_repo.Checkout (path, true, new NullProgressMonitor ());
+			if (repo == null)
+				repo = _repo;
+			else
+				repo2 = _repo;
 		}
 
-		public virtual SubversionRepository GetRepo (string url, string path)
-		{
-			return null;
-		}
+		protected abstract Repository GetRepo (string path, string url);
 
 		public static void DeleteDirectory (string path)
 		{
@@ -202,7 +194,7 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 				DeleteDirectory (dir);
 			}
 
-			Directory.Delete (path);
+			Directory.Delete (path, true);
 		}
 
 		#endregion

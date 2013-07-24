@@ -28,8 +28,7 @@
 	<Property name="BlockCommentStart">(*</Property>
 	<Property name="BlockCommentEnd">*)</Property>
 	<Property name="StringQuote">"</Property>
-	<Property name="StringQuote">'</Property>
-	
+
 	<EolSpan tagColor = "Preprocessor" rule="text.preprocessor">#if</EolSpan>
 	<EolSpan tagColor = "Preprocessor" rule="text.preprocessor">#else</EolSpan>
 	<EolSpan tagColor = "Preprocessor" rule="text.preprocessor">#elif</EolSpan>
@@ -58,22 +57,26 @@
 		<Begin>@"</Begin>
 		<End>"</End>
 	</Span>
-
+	
+	<Span color="String(C# @ Verbatim)" rule="TripleQuotedString" stopateol="false">
+		<Begin>"""</Begin>
+		<End>"""</End>
+	</Span>
+	
 	<Span color="String" rule="String" stopateol="true">
 		<Begin>"</Begin>
 		<End>"</End>
 	</Span>
 	
+	<Span rule="Let" stopateol = "false">
+		<Begin color="Keyword(Iteration)" flags="NewWord">let</Begin>
+		<End>=</End>
+	</Span>
+
 	<Span color = "String" rule="String" stopateol = "true">
 		<Begin>&apos;</Begin>
 		<End>&apos;</End>
 	</Span>
-	
-	<Span rule="String" stopateol = "false">
-		<Begin color="Keyword(Iteration)">let</Begin>
-		<End>=</End>
-	</Span>
-
   
 <!-- 
 	<Span color="String" rule="String" stopateol="true" escape='\'>
@@ -82,11 +85,14 @@
 	</Span>
 	-->
 
-	<!-- ' is also used for type parameters therefore we need a regex match to find out if something is a string -->
-	<Match expression="(&apos;(.|(\\.+))&apos;)">
-			<Group color = "String"/>
-			<Group color = "String"/>
-			<Group color = "String"/>
+	<!-- ' is also used for type parameters therefore we need a regex match to find out if something is a char literal 
+         Here we capture unicode literals and escaped chars in a separate group for colouring. Char literals are not part
+         of the 'String' rule, and unicode literal matching will not happen. -->
+	<Match expression="(')(?:(apa|\\U[0-9a-fA-F]{8}|\\u[0-9a-fA-F]{4}|\\[\\'ntbrafv])|([^\\']))(')">
+       <Group color="String"/>
+       <Group color="String(Escape)"/>
+       <Group color="String"/>
+       <Group color="String"/>
 	</Match>
 
 	<Match color="Number">CSharpNumber</Match>
@@ -271,13 +277,19 @@
 	</Rule>
 
 	<Rule name="String">
-		<Delimiters></Delimiters>
-		<Match color ="String(Escape)">\\(["\\'ntbrafv]|u[0-9a-fA-F]{4,4}|U[0-9a-fA-F]{8,8}|\d\d\d)</Match>
+		<Match color ="String(Escape)">\\(U[0-9a-fA-F]{8}|u[0-9a-fA-F]{4}|[\\'ntbrafv])</Match>
+	</Rule>
+	
+	<Rule name="Let">
 	</Rule>
 	
 	<Rule name = "VerbatimString">
 		<Delimiters></Delimiters>
 		<Match color ="String(Escape)">""</Match>
+	</Rule>
+
+	<Rule name = "TripleQuotedString">
+		<Delimiters></Delimiters>
 	</Rule>
 
 	<Rule name="XmlDocumentation">

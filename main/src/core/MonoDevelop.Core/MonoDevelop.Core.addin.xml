@@ -1,14 +1,5 @@
-<Addin id          = "Core"
-       namespace   = "MonoDevelop"
-       name        = "MonoDevelop Runtime"
-       copyright   = "MIT/X11"
-       url         = "http://www.monodevelop.com"
-       description = "Provides the core services of the MonoDevelop platform"
-       category    = "MonoDevelop Core"
-       isroot      = "true"
-       version     = "4.1.4"
-       compatVersion = "4.0">
-       
+<ExtensionModel>
+
 	<ConditionType id="PackageInstalled" type="MonoDevelop.Core.AddIns.PackageInstalledCondition" />
 	<ConditionType id="PackageNotInstalled" type="MonoDevelop.Core.AddIns.PackageNotInstalledCondition" />
 	<ConditionType id="Platform" type="MonoDevelop.Core.AddIns.PlatformCondition" />
@@ -258,6 +249,12 @@
 		<Class id="FinalStep" class = "MonoDevelop.Projects.ProjectServiceExtension" />
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/Core/FileSystemExtensions">
+		<Class id="InitialStep" class = "MonoDevelop.Core.FileSystem.DummyFileSystemExtension" />
+		<Class id="MidStep" class = "MonoDevelop.Core.FileSystem.DummyFileSystemExtension" />
+		<Class id="FinalStep" class = "MonoDevelop.Core.FileSystem.DummyFileSystemExtension" />
+	</Extension>
+	
 	<Extension path = "/MonoDevelop/ProjectModel/MD1SerializationMaps">
 		<SerializationMap resource="md1format.xml" />
 	</Extension>
@@ -340,4 +337,4 @@
 		<ProjectType guid = "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}" name = "Visual C++" />
 		<ProjectType guid = "{E6FDF86B-F3D1-11D4-8576-0002A516ECE8}" name = "Visual J#" />
 	</Extension>
-</Addin>
+</ExtensionModel>

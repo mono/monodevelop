@@ -27,6 +27,7 @@
 
 
 using System;
+using System.Linq;
 using System.IO;
 using MonoDevelop.Core;
 using System.Collections.Generic;
@@ -104,9 +105,8 @@ namespace MonoDevelop.Core.FileSystem
 			Directory.Delete (path, true);
 		}
 		
-		public override bool RequestFileEdit (FilePath file)
+		public override void RequestFileEdit (IEnumerable<FilePath> files)
 		{
-			return true;
 		}
 		
 		public override void NotifyFilesChanged (IEnumerable<FilePath> file)

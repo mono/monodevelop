@@ -34,6 +34,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Components;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
@@ -112,6 +113,20 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					return;
 				}
 			}
+		}
+
+		[CommandHandler (ProjectCommands.EditSolutionItem)]
+		public void OnEditUnknownSolutionItem ()
+		{
+			UnknownSolutionItem si = (UnknownSolutionItem) CurrentNode.DataItem;
+			IdeApp.Workbench.OpenDocument (si.FileName);
+		}
+
+		[CommandUpdateHandler (ProjectCommands.EditSolutionItem)]
+		public void OnEditUnknownSolutionItemUpdate (CommandInfo info)
+		{
+			var si = (UnknownSolutionItem) CurrentNode.DataItem;
+			info.Visible = !IdeApp.Workbench.Documents.Any (d => d.FileName == si.FileName);
 		}
 		
 		public override void DeleteItem ()

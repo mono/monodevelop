@@ -39,13 +39,11 @@ namespace VersionControl.Subversion.Win32.Tests
 	[TestFixture]
 	public class SharpSvnUtilsTest : MonoDevelop.VersionControl.Subversion.Tests.BaseSvnUtilsTest
 	{
-
 		[SetUp]
 		public override void Setup ()
 		{
-			svnRoot = new FilePath (FileService.CreateTempDirectory ());
+			rootUrl = new FilePath (FileService.CreateTempDirectory ());
 			repoLocation = "svn://localhost:3690/repo";
-			backend = new SvnSharpBackend ();
 			svnServe = new Process ();
 			base.Setup ();
 		}
@@ -59,48 +57,29 @@ namespace VersionControl.Subversion.Win32.Tests
 		}
 
 		[Test]
-		public override void LogIsProper ()
-		{
-			string added = svnCheckout + "testfile";
-			File.Create (added).Close ();
-			backend.Add (added, false, new NullProgressMonitor ());
-			backend.Commit (new FilePath[] { svnCheckout }, "File committed", new NullProgressMonitor ());
-			foreach (var rev in backend.Log (repo, added, SvnRevision.First, SvnRevision.Working)) {
-				Assert.AreEqual ("File committed", rev.Message);
-				foreach (var change in rev.ChangedFiles) {
-					Assert.AreEqual (RevisionAction.Add, change.Action);
-					Assert.AreEqual ("/testfile", change.Path);
-				}
-			}
-		}
-
-		[Test]
 		public override void DiffIsProper ()
 		{
-			string added = svnCheckout + "testfile";
+			string added = rootCheckout + "testfile";
 			File.Create (added).Close ();
-			backend.Add (added, false, new NullProgressMonitor ());
-			backend.Commit (new FilePath[] { svnCheckout }, "File committed", new NullProgressMonitor ());
+			repo.Add (added, false, new NullProgressMonitor ());
+			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
+			changes.AddFile (repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache));
+			changes.GlobalComment = "File committed";
+			repo.Commit (changes, new NullProgressMonitor ());
 			File.AppendAllText (added, "text" + Environment.NewLine);
 
-			string difftext = @"Index: " + added.Replace ('\\', '/') + @"
-===================================================================
---- " + added.Replace ('\\', '/') + @"	(revision 1)
-+++ " + added.Replace ('\\', '/') + @"	(working copy)
+			string difftext = @"--- testfile	(revision 1)
++++ testfile	(working copy)
 @@ -0,0 +1 @@
 +text
 ";
-			Assert.AreEqual (difftext, backend.GetUnifiedDiff (added, false, false));
+			Assert.AreEqual (difftext, repo.GenerateDiff (added, repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache)).Content.Replace ("\n", "\r\n"));
 		}
 
-		#region Util
-
-		public override SubversionRepository GetRepo (string url, string path)
+		protected override Repository GetRepo (string path, string url)
 		{
 			return new SubversionRepository (new SvnSharpClient (), url, path);
 		}
-
-		#endregion
 	}
 }
 

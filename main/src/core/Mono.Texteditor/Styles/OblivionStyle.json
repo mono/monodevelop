@@ -200,6 +200,8 @@
 
 		{ "name": "Syntax Error", "fore":"scarletred1" },
 		
+		{ "name": "String Format Items", "fore":"chocolate2" },
+
 		{ "name": "Breakpoint Text", "fore":"white", "back":"#AB616B" },
 		{ "name": "Breakpoint Text(Invalid)", "fore":"white", "back":"#eddcdc" },
 	

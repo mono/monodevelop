@@ -626,8 +626,6 @@ namespace MonoDevelop.Ide.Gui
 			}
 
 			subViewContent = viewContents[newIndex] as IAttachableViewContent;
-			if (subViewContent != null)
-				subViewContent.Selected ();
 
 			DetachFromPathedDocument ();
 			
@@ -643,6 +641,8 @@ namespace MonoDevelop.Ide.Gui
 
 			foreach (var t in documentToolbars)
 				t.Value.Container.Visible = ActiveViewContent == t.Key;
+			if (subViewContent != null)
+				subViewContent.Selected ();
 
 			OnActiveViewContentChanged (new ActiveViewContentEventArgs (this.ActiveViewContent));
 		}

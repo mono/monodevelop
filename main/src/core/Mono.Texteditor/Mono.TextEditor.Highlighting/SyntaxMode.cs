@@ -199,6 +199,8 @@ namespace Mono.TextEditor.Highlighting
 			protected CloneableStack<Span> spanStack;
 			protected Stack<Rule> ruleStack;
 			protected TextDocument doc;
+
+			internal Func<bool> IsAtWordStart = () => true;
 			int maxEnd;
 
 			public Rule CurRule {
@@ -358,6 +360,8 @@ namespace Mono.TextEditor.Highlighting
 					bool mismatch = false;
 					if ((span.BeginFlags & SpanBeginFlags.FirstNonWs) == SpanBeginFlags.FirstNonWs)
 						mismatch = CurText.Take (i).Any (ch => !char.IsWhiteSpace (ch));
+					if ((span.BeginFlags & SpanBeginFlags.NewWord) == SpanBeginFlags.NewWord)
+						mismatch = !IsAtWordStart ();
 					if (mismatch)
 						continue;
 					FoundSpanBegin (span, i, match.Length);
@@ -452,6 +456,7 @@ namespace Mono.TextEditor.Highlighting
 				spanParser.FoundSpanEnd = FoundSpanEnd;
 				spanParser.FoundSpanExit = FoundSpanExit;
 				spanParser.ParseChar += ParseChar;
+				spanParser.IsAtWordStart = () => wordbuilder.Length == 0;
 				if (line == null)
 					throw new ArgumentNullException ("line");
 			}

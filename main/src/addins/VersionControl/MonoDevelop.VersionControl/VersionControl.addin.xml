@@ -7,7 +7,7 @@
        description = "A MonoDevelop addin for using version control systems like Subversion"
        category    = "Version Control"
        flags = "Hidden"
-       version   = "4.1.4">
+       version   = "4.1.7">
  
 	<Runtime>
 		<Import file="comment.png" />
@@ -24,9 +24,9 @@
 	</Runtime>
 
 	<Dependencies>
-	    <Addin id="Core" version="4.1.4"/>
-	    <Addin id="Ide" version="4.1.4"/>
-	    <Addin id="SourceEditor2" version="4.1.4"/>
+	    <Addin id="Core" version="4.1.7"/>
+	    <Addin id="Ide" version="4.1.7"/>
+	    <Addin id="SourceEditor2" version="4.1.7"/>
 	</Dependencies>
 
 	<ExtensionPoint path = "/MonoDevelop/VersionControl/VersionControlSystems" name = "Version control systems">
@@ -96,7 +96,7 @@
 	</ExtensionPoint>
 
 	<Extension path = "/MonoDevelop/Core/FileSystemExtensions">
-		<Class class = "MonoDevelop.VersionControl.VersionControlFileSystemExtension" />
+		<Class class = "MonoDevelop.VersionControl.VersionControlFileSystemExtension" insertafter = "MidStep" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
@@ -197,6 +197,12 @@
 			_label = "Create _Patch"
 			icon = "vc-diff"
 			description = "Create a patch representing local changes."/>
+		<Command id = "MonoDevelop.VersionControl.Commands.Ignore"
+			_label = "Add to ignore list"
+			description = "Add items to version control ignore list"/>
+		<Command id = "MonoDevelop.VersionControl.Commands.Unignore"
+			_label = "Remove from ignore list"
+			description = "Add items to version control ignore list"/>
 
 		<Command id = "MonoDevelop.VersionControl.Views.BlameCommands.CopyRevision"
 			_label = "_Copy revision"/>
@@ -230,6 +236,8 @@
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Revert"/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Lock"/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Unlock"/>
+			<CommandItem id = "MonoDevelop.VersionControl.Commands.Ignore"/>
+			<CommandItem id = "MonoDevelop.VersionControl.Commands.Unignore"/>
 			<SeparatorItem/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Diff"/>
 			<CommandItem id = "MonoDevelop.VersionControl.Commands.Log"/>
@@ -254,6 +262,8 @@
 				<CommandItem id = "MonoDevelop.VersionControl.Commands.Add"/>
 				<CommandItem id = "MonoDevelop.VersionControl.Commands.Remove"/>
 				<CommandItem id = "MonoDevelop.VersionControl.Commands.Revert"/>
+				<CommandItem id = "MonoDevelop.VersionControl.Commands.Ignore"/>
+				<CommandItem id = "MonoDevelop.VersionControl.Commands.Unignore"/>
 				<Condition id="ItemType" value="IFileItem">
 					<CommandItem id = "MonoDevelop.VersionControl.Commands.Lock"/>
 					<CommandItem id = "MonoDevelop.VersionControl.Commands.Unlock"/>

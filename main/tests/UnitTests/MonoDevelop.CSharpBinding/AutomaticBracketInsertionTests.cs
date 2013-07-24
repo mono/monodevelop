@@ -170,7 +170,7 @@ namespace MonoDevelop.CSharpBinding
 			return compExt;
 		}
 
-		string Test(string input, string type, string member)
+		string Test(string input, string type, string member, Gdk.Key key = Gdk.Key.Return, bool isDelegateExpected = false)
 		{
 			TestViewContent content;
 			var ext = Setup (input, out content);
@@ -181,11 +181,11 @@ namespace MonoDevelop.CSharpBinding
 			listWindow.CompletionWidget = widget;
 			listWindow.CodeCompletionContext = widget.CurrentCodeCompletionContext;
 			var t = ext.Document.Compilation.FindType (new FullTypeName (type)); 
-			var method = t.GetMembers (m => m.Name == member).First ();
+			var method = member != null ? t.GetMembers (m => m.Name == member).First () : t.GetConstructors ().First ();
 			var data = new MemberCompletionData (ext, method, OutputFlags.ClassBrowserEntries);
-
+			data.IsDelegateExpected = isDelegateExpected;
 			KeyActions ka = KeyActions.Process;
-			data.InsertCompletionText (listWindow, ref ka, Gdk.Key.Return, '\n', Gdk.ModifierType.None); 
+			data.InsertCompletionText (listWindow, ref ka, key, (char)key, Gdk.ModifierType.None, true, false); 
 			return widget.CompletedWord;
 		}
 
@@ -199,7 +199,130 @@ namespace MonoDevelop.CSharpBinding
 		$
 	}
 }", "MyClass", "FooBar");
+			Assert.AreEqual ("FooBar ();|", completion); 
+		}
+
+		[Test]
+		public void TestBracketAlreadyThere ()
+		{
+			string completion = Test (@"class MyClass
+{
+	void FooBar ()
+	{
+		$ ();
+	}
+}", "MyClass", "FooBar");
+			Assert.AreEqual ("FooBar", completion); 
+		}
+
+
+		[Test]
+		public void TestOverloads ()
+		{
+			string completion = Test (@"class MyClass
+{
+	void FooBar (int foo)
+	{
+	}
+	void FooBar ()
+	{
+		$
+	}
+}", "MyClass", "FooBar");
 			Assert.AreEqual ("FooBar (|);", completion); 
+		}
+
+		[Test]
+		public void TestExpressionCase ()
+		{
+			string completion = Test (@"class MyClass
+{
+	int FooBar ()
+	{
+		int i;
+		i = $
+	}
+}", "MyClass", "FooBar");
+			Assert.AreEqual ("FooBar ()|", completion); 
+		}
+
+		[Test]
+		public void TestExpressionCaseWithOverloads ()
+		{
+			string completion = Test (@"class MyClass
+{
+	int FooBar (int foo)
+	{
+	}
+	
+	int FooBar ()
+	{
+		int i;
+		i = $
+	}
+}", "MyClass", "FooBar");
+			Assert.AreEqual ("FooBar (|)", completion); 
+		}
+
+		[Test]
+		public void TestDelegateCase ()
+		{
+			string completion = Test (@"using System;
+class MyClass
+{
+	int FooBar ()
+	{
+		Func<int> i;
+		i = $
+	}
+}", "MyClass", "FooBar", Gdk.Key.Return, true);
+			Assert.AreEqual ("FooBar", completion); 
+		}
+
+		[Test]
+		public void TestDotCompletion ()
+		{
+			string completion = Test (@"class MyClass
+{
+	void FooBar ()
+	{
+		$
+	}
+}", "MyClass", "FooBar", (Gdk.Key)'.');
+			Assert.AreEqual ("FooBar ().|", completion); 
+		}
+
+
+		
+		[Test]
+		public void TestConstructorSimple ()
+		{
+			string completion = Test (@"class MyClass
+{
+	public MyClass () {}
+
+	void FooBar ()
+	{
+		$
+	}
+}", "MyClass", null);
+			Assert.AreEqual ("MyClass ()|", completion); 
+		}
+
+		[Test]
+		public void TestConstructorWithOverloads ()
+		{
+			string completion = Test (@"class MyClass
+{
+	public MyClass () {}
+	public MyClass (int x) {}
+
+	void FooBar ()
+	{
+		$
+	}
+}", "MyClass", null);
+			Assert.AreEqual ("MyClass (|)", completion); 
 		}
 
 	}

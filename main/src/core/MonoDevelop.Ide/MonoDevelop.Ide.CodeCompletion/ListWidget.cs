@@ -485,16 +485,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 						xpos = iconTextSpacing;
 					}
 					string markup = win.DataProvider.HasMarkup (item) ? (win.DataProvider.GetMarkup (item) ?? "&lt;null&gt;") : GLib.Markup.EscapeText (win.DataProvider.GetText (item) ?? "<null>");
-					string description = win.DataProvider.GetDescription (item);
+					string description = win.DataProvider.GetDescription (item, item == SelectedItem);
 					
 					if (string.IsNullOrEmpty (description)) {
 						layout.SetMarkup (markup);
 					} else {
-						if (item == SelectedItem) {
-							layout.SetMarkup (markup + " " + description);
-						} else {
-							layout.SetMarkup (markup + " <span foreground=\"darkgray\">" + description + "</span>");
-						}
+						layout.SetMarkup (markup + " " + description);
 					}
 				
 					string text = win.DataProvider.GetText (item);
@@ -552,6 +548,23 @@ namespace MonoDevelop.Ide.CodeCompletion
 					context.MoveTo (xpos + iconWidth + 2, typos);
 					PangoCairoHelper.ShowLayout (context, layout);
 
+					layout.SetMarkup ("");
+					if (layout.Attributes != null) {
+						layout.Attributes.Dispose ();
+						layout.Attributes = null;
+					}
+
+					string rightText = win.DataProvider.GetRightSideDescription (item, item == SelectedItem);
+					if (!string.IsNullOrEmpty (rightText)) {
+						layout.SetMarkup (rightText);
+						int w, h;
+						layout.GetPixelSize (out w, out h);
+						wi += w;
+						typos = h < rowHeight ? ypos + (rowHeight - h) / 2 : ypos;
+						context.MoveTo (Allocation.Width - w, typos);
+						PangoCairoHelper.ShowLayout (context, layout);
+					}
+
 					if (wi + xpos + iconWidth + 2 > listWidth) {
 						WidthRequest = listWidth = wi + xpos + iconWidth + 2 + iconTextSpacing;
 						win.ResetSizes ();
@@ -566,11 +579,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 					}
 
 
-					layout.SetMarkup ("");
-					if (layout.Attributes != null) {
-						layout.Attributes.Dispose ();
-						layout.Attributes = null;
-					}
 					return true;
 				});
 
@@ -633,18 +641,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 
 			filteredItems.Sort (delegate (int left, int right) {
-				var lt = win.DataProvider.GetText (left);
-				var rt = win.DataProvider.GetText (right);
-				var result = string.Compare (lt, rt, StringComparison.Ordinal);
-				if (result == 0) {
-					lt = win.DataProvider.GetDescription (left);
-					rt = win.DataProvider.GetDescription (right);
-					result = string.Compare (lt, rt, StringComparison.Ordinal);
-					if (result != 0)
-						return result;
-					return right.CompareTo (left);
-				}
-				return result;
+				return win.DataProvider.CompareTo (left, right);
 			});
 			categories.Sort (delegate (Category left, Category right) {
 				return left.CompletionCategory != null ? left.CompletionCategory.CompareTo (right.CompletionCategory) : -1;

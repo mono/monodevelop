@@ -1,23 +1,10 @@
-<Addin id          = "MacPlatform"
-       namespace   = "MonoDevelop"
-       name        = "MonoDevelop Mac Platform Support"
-       author      = "Geoff Norton, Michael Hutchinson"
-       copyright   = "MIT X11"
-       url         = "http://monodevelop.com/"
-       description = "Mac Platform Support for MonoDevelop"
-       category    = "Platform Support"
-       flags       = "Hidden"
-       version     = "4.1.4">
+<ExtensionModel>
 	
 	<Runtime>
 		<Import assembly="MonoMac.dll" />
 		<ScanExclude path="MonoMac.dll" />
 	</Runtime>
 
-	<Dependencies>
-	    <Addin id="Ide" version="4.1.4"/>
-	</Dependencies>
-	
 	<Extension path = "/MonoDevelop/Core/PlatformService">
 		<Condition id = "Platform" value = "mac">
 			<Class id      = "PlatformService"
@@ -75,4 +62,4 @@
 			<Class class="MonoDevelop.MacIntegration.MacExceptionDialogHandler" />
 		</Condition>
 	</Extension>
-</Addin>
+</ExtensionModel>

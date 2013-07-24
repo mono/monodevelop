@@ -142,6 +142,7 @@
     <Compile Include="MonoDevelop.Gettext\PluralForms.cs" />
     <Compile Include="MonoDevelop.Gettext\TranslationCollection.cs" />
     <Compile Include="MonoDevelop.Gettext.NodeBuilders\ProjectFileNodeBuilderExtension.cs" />
+    <Compile Include="AddinInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

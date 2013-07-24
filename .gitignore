@@ -19,6 +19,7 @@ obj/
 /local-libs
 /main/build/tests
 /main/monodevelop_version
+/main/tests/TestResult.xml
 
 #VS writes these sometimes even when it doesn't change anything
 /main/_UpgradeReport_Files
@@ -163,6 +164,7 @@ main/external/Makefile
 /main/tests/MacPlatform.Tests/Makefile
 /main/tests/MonoDevelop.MacDev.Tests/Makefile
 /main/tests/UserInterfaceTests/Makefile
+/main/src/addins/VersionControl/MonoDevelop.VersionControl.Git.Tests/Makefile
 
 # extras configure junk
 /extras/MonoDevelop.Database/INSTALL

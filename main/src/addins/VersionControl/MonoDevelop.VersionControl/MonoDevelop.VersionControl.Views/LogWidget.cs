@@ -191,7 +191,7 @@ namespace MonoDevelop.VersionControl.Views
 			                                  typeof(Xwt.Drawing.Image), typeof (string), // icon/operation
 				typeof (string), // path
 				typeof (string), // revision path (invisible)
-				typeof (string[]) // diff
+				typeof (string []) // diff
 				);
 			
 			TreeViewColumn colChangedFile = new TreeViewColumn ();
@@ -338,7 +338,8 @@ namespace MonoDevelop.VersionControl.Views
 				i++;
 			}
 		}
-		
+
+		const int colOperation = 4;
 		const int colPath = 5;
 		const int colDiff = 6;
 		
@@ -350,11 +351,12 @@ namespace MonoDevelop.VersionControl.Views
 				if (diff != null)
 					return;
 
-				string path = (string)changedpathstore .GetValue (args.Iter, colPath);
+				string path = (string)changedpathstore.GetValue (args.Iter, colPath);
+
 				changedpathstore.SetValue (iter, colDiff, new string[] { GettextCatalog.GetString ("Loading data...") });
 				var rev = SelectedRevision;
 				ThreadPool.QueueUserWorkItem (delegate {
-					string text;
+					string text = "";
 					try {
 						text = info.Repository.GetTextAtRevision (path, rev);
 					} catch (Exception e) {
@@ -381,7 +383,7 @@ namespace MonoDevelop.VersionControl.Views
 					} else {
 						var changedDocument = new Mono.TextEditor.TextDocument (text);
 						if (prevRev == null) {
-							lines = new string[changedDocument.LineCount];
+							lines = new string [changedDocument.LineCount];
 							for (int i = 0; i < changedDocument.LineCount; i++) {
 								lines[i] = "+ " + changedDocument.GetLineText (i + 1).TrimEnd ('\r','\n');
 							}
@@ -390,12 +392,25 @@ namespace MonoDevelop.VersionControl.Views
 							try {
 								prevRevisionText = info.Repository.GetTextAtRevision (path, prevRev);
 							} catch (Exception e) {
-								// The file did not exist at this point in time, so just treat it as empty
+								Application.Invoke (delegate {
+									LoggingService.LogError ("Error while getting revision text", e);
+									MessageService.ShowError ("Error while getting revision text.", "The file may not be part of the working copy.");
+								});
+								return;
 							}
-							
+
+							if (String.IsNullOrEmpty (text)) {
+								if (!String.IsNullOrEmpty (prevRevisionText)) {
+									lines = new string [changedDocument.LineCount];
+									for (int i = 0; i < changedDocument.LineCount; i++) {
+										lines [i] = "- " + changedDocument.GetLineText (i + 1).TrimEnd ('\r','\n');
+									}
+								}
+							}
+
 							var originalDocument = new Mono.TextEditor.TextDocument (prevRevisionText);
-							originalDocument.FileName = "Revision " + prevRev.ToString ();
-							changedDocument.FileName = "Revision " + rev.ToString ();
+							originalDocument.FileName = "Revision " + prevRev;
+							changedDocument.FileName = "Revision " + rev;
 							lines = Mono.TextEditor.Utils.Diff.GetDiffString (originalDocument, changedDocument).Split ('\n');
 						}
 					}
@@ -417,7 +432,7 @@ namespace MonoDevelop.VersionControl.Views
 			TreeIter iter;
 			if (!treeviewFiles.Selection.GetSelected (out iter))
 				return;
-			string path = (string)changedpathstore.GetValue (iter, 5);
+			string path = (string)changedpathstore.GetValue (iter, colPath);
 			ThreadPool.QueueUserWorkItem (delegate {
 				string text = info.Repository.GetTextAtRevision (path, rev);
 				string prevRevision = text; // info.Repository.GetTextAtRevision (path, rev.GetPrevious ());
@@ -539,7 +554,7 @@ namespace MonoDevelop.VersionControl.Views
 			CellRendererDiff rc = (CellRendererDiff)cell;
 			string[] lines = (string[])changedpathstore.GetValue (iter, colDiff);
 			if (lines == null)
-				lines = new string[] { (string)changedpathstore.GetValue (iter, 4) };
+				lines = new string[] { (string)changedpathstore.GetValue (iter, colOperation) };
 			rc.InitCell (treeviewFiles, changedpathstore.IterDepth (iter) != 0, lines, changedpathstore.GetPath (iter));
 		}
 		
@@ -696,6 +711,18 @@ namespace MonoDevelop.VersionControl.Views
 				Revision d = SelectedRevision;
 				labelRevision.Text = GettextCatalog.GetString ("revision: {0}", d.Name);
 				currentRevisionShortened = false;
+			}
+		}
+
+		internal string DiffText {
+			get {
+				TreeIter iter;
+				if (treeviewFiles.Selection.GetSelected (out iter)) {
+					string [] items = changedpathstore.GetValue (iter, colDiff) as string [];
+					if (items != null)
+						return String.Join (Environment.NewLine, items);
+				}
+				return null;
 			}
 		}
 	}

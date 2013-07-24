@@ -144,6 +144,8 @@ namespace MonoDevelop.CSharp.Highlighting
 						var newResolverTask = guiDocument.GetSharedResolver ();
 						var cancellationToken = src.Token;
 						System.Threading.Tasks.Task.Factory.StartNew (delegate {
+							if (newResolverTask == null)
+								return;
 							var newResolver = newResolverTask.Result;
 							if (newResolver == null)
 								return;
@@ -247,6 +249,8 @@ namespace MonoDevelop.CSharp.Highlighting
 				parameterModifierColor = "Keyword(Parameter)";
 				inactiveCodeColor = "Excluded Code";
 				syntaxErrorColor = "Syntax Error";
+
+				stringFormatItemColor = "String Format Items";
 			}
 
 			protected override void Colorize(TextLocation start, TextLocation end, string color)

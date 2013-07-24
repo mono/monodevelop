@@ -21,7 +21,7 @@ namespace MonoDevelop.VersionControl
 		private global::Gtk.Entry repositoryServerEntry;
 		private global::Gtk.Entry repositoryUrlEntry;
 		private global::Gtk.Entry repositoryUserEntry;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
@@ -58,14 +58,13 @@ namespace MonoDevelop.VersionControl
 			this.hbox2 = new global::Gtk.HBox ();
 			this.hbox2.Name = "hbox2";
 			// Container child hbox2.Gtk.Box+BoxChild
-			this.repositoryPortSpin = new global::Gtk.SpinButton (0, 99999, 1);
+			this.repositoryPortSpin = new global::Gtk.SpinButton (0D, 99999D, 1D);
 			this.repositoryPortSpin.CanFocus = true;
 			this.repositoryPortSpin.Name = "repositoryPortSpin";
-			this.repositoryPortSpin.Adjustment.PageIncrement = 10;
-			this.repositoryPortSpin.Adjustment.PageSize = 10;
-			this.repositoryPortSpin.ClimbRate = 1;
+			this.repositoryPortSpin.Adjustment.PageIncrement = 10D;
+			this.repositoryPortSpin.ClimbRate = 1D;
 			this.repositoryPortSpin.Numeric = true;
-			this.repositoryPortSpin.Value = 1;
+			this.repositoryPortSpin.Value = 1D;
 			this.hbox2.Add (this.repositoryPortSpin);
 			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.repositoryPortSpin]));
 			w3.Position = 0;
@@ -158,7 +157,7 @@ namespace MonoDevelop.VersionControl
 			this.labelError = new global::Gtk.Label ();
 			this.labelError.Name = "labelError";
 			this.labelError.Xalign = 0F;
-			this.labelError.LabelProp = global::Mono.Unix.Catalog.GetString ("<small><span color='red'>Invalid URL</span></small>");
+			this.labelError.LabelProp = global::Mono.Unix.Catalog.GetString ("<small><span color=\'red\'>Invalid URL</span></small>");
 			this.labelError.UseMarkup = true;
 			this.table1.Add (this.labelError);
 			global::Gtk.Table.TableChild w12 = ((global::Gtk.Table.TableChild)(this.table1 [this.labelError]));
@@ -229,6 +228,7 @@ namespace MonoDevelop.VersionControl
 			this.repositoryServerEntry.Changed += new global::System.EventHandler (this.OnRepositoryServerEntryChanged);
 			this.repositoryPathEntry.Changed += new global::System.EventHandler (this.OnRepositoryPathEntryChanged);
 			this.repositoryPortSpin.ValueChanged += new global::System.EventHandler (this.OnRepositoryPortSpinValueChanged);
+			this.repositoryUrlEntry.ClipboardPasted += new global::System.EventHandler (this.OnRepositoryUrlEntryClipboardPasted);
 			this.comboProtocol.Changed += new global::System.EventHandler (this.OnComboProtocolChanged);
 		}
 	}

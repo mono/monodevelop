@@ -116,6 +116,9 @@ namespace MonoDevelop.CSharp
 						if (member is FieldDeclaration) {
 							foreach (var variable in ((FieldDeclaration)member).Variables)
 								memberList.Add (variable);
+						} else if (member is FixedFieldDeclaration) {
+							foreach (var variable in ((FixedFieldDeclaration)member).Variables)
+								memberList.Add (variable);
 						} else if (member is EventDeclaration) {
 							foreach (var variable in ((EventDeclaration)member).Variables)
 								memberList.Add (variable);
@@ -133,6 +136,9 @@ namespace MonoDevelop.CSharp
 					foreach (var member in type.Members) {
 						if (member is FieldDeclaration) {
 							foreach (var variable in ((FieldDeclaration)member).Variables)
+								memberList.Add (variable);
+						} if (member is FixedFieldDeclaration) {
+							foreach (var variable in ((FixedFieldDeclaration)member).Variables)
 								memberList.Add (variable);
 						} else {
 							memberList.Add (member);
@@ -198,6 +204,9 @@ namespace MonoDevelop.CSharp
 				}
 				if (node is EntityDeclaration)
 					return ((EntityDeclaration)node).Name;
+				if (node is FixedVariableInitializer) {
+					return ((FixedVariableInitializer)node).Name;
+				}
 				return ((VariableInitializer)node).Name;
 			}
 
@@ -327,6 +336,8 @@ namespace MonoDevelop.CSharp
 				return null;
 			var tag = path [index].Tag;
 			var window = new DropDownBoxListWindow (tag == null ? (DropDownBoxListWindow.IListDataProvider)new CompilationUnitDataProvider (Document) : new DataProvider (this, tag));
+			window.FixedRowHeight = 22;
+			window.MaxVisibleRows = 14;
 			window.SelectItem (path [index].Tag);
 			return window;
 		}
@@ -347,7 +358,7 @@ namespace MonoDevelop.CSharp
 			PathEntry entry;
 			if (!unit.UserRegions.Any ())
 				return null;
-			var reg = unit.UserRegions.Where (r => r.Region.IsInside (loc)).LastOrDefault ();
+			var reg = unit.UserRegions.LastOrDefault (r => r.Region.IsInside (loc));
 			if (reg == null) {
 				entry = new PathEntry (GettextCatalog.GetString ("No region"));
 			} else {
@@ -389,8 +400,22 @@ namespace MonoDevelop.CSharp
 				return;
 
 			var loc = Document.Editor.Caret.Location;
+			var compExt = Document.GetContent<CSharpCompletionTextEditorExtension> ();
+			var caretOffset = Document.Editor.Caret.Offset;
+			var segType = compExt.GetTypeAt (caretOffset);
+			if (segType != null)
+				loc = segType.Region.Begin;
 
 			var curType = (EntityDeclaration)unit.GetNodeAt (loc, n => n is TypeDeclaration || n is DelegateDeclaration);
+
+
+			var segMember = compExt.GetMemberAt (caretOffset);
+			if (segMember != null) {
+				loc = segMember.Region.Begin;
+			} else {
+				loc = Document.Editor.Caret.Location;
+			}
+
 			var curMember = unit.GetNodeAt<EntityDeclaration> (loc);
 			if (curType == curMember)
 				curMember = null;

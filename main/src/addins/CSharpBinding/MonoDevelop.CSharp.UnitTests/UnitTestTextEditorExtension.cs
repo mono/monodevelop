@@ -44,6 +44,7 @@ using MonoDevelop.Components.Commands;
 using Gdk;
 using Gtk;
 using System.Text;
+using MonoDevelop.AnalysisCore;
 
 namespace MonoDevelop.CSharp
 {
@@ -57,6 +58,7 @@ namespace MonoDevelop.CSharp
 
 		public override void Dispose ()
 		{
+			RemoveHandler ();
 			Document.DocumentParsed -= HandleDocumentParsed; 
 			base.Dispose ();
 		}
@@ -65,12 +67,14 @@ namespace MonoDevelop.CSharp
 
 		void HandleDocumentParsed (object sender, EventArgs e)
 		{
+			if (!AnalysisOptions.EnableUnitTestEditorIntegration)
+				return;
 			src.Cancel ();
 			src = new CancellationTokenSource ();
 			var token = src.Token;
 			ThreadPool.QueueUserWorkItem (delegate {
 				var resolver = document.GetSharedResolver ();
-				if (resolver.Result == null)
+				if (resolver == null || resolver.Result == null)
 					return;
 				var visitor = new NUnitVisitor (resolver.Result);
 				try {
@@ -98,6 +102,17 @@ namespace MonoDevelop.CSharp
 					}
 				});
 			});
+		}
+
+		
+		static uint timeoutHandler;
+
+		static void RemoveHandler ()
+		{
+			if (timeoutHandler != 0) {
+				GLib.Source.Remove (timeoutHandler); 
+				timeoutHandler = 0;
+			}
 		}
 
 		List<UnitTestMarker> currentMarker = new List<UnitTestMarker>();
@@ -162,39 +177,48 @@ namespace MonoDevelop.CSharp
 				if (menu != null) {
 					menu.Destroy ();
 				}
+				var debugModeSet = Runtime.ProcessService.GetDebugExecutionMode ();
 
 				menu = new Gtk.Menu ();
 				if (unitTest.IsFixture) {
 					var menuItem = new Gtk.MenuItem ("_Run All");
 					menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, false).Run;
 					menu.Add (menuItem);
-					menuItem = new Gtk.MenuItem ("_Debug All");
-					menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, true).Run;
-					menu.Add (menuItem);
+					if (debugModeSet != null) {
+						menuItem = new Gtk.MenuItem ("_Debug All");
+						menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, true).Run;
+						menu.Add (menuItem);
+					}
 				} else {
 					if (unitTest.TestCases.Count == 0) {
 						var menuItem = new Gtk.MenuItem ("_Run");
 						menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, false).Run;
 						menu.Add (menuItem);
-						menuItem = new Gtk.MenuItem ("_Debug");
-						menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, true).Run;
-						menu.Add (menuItem);
+						if (debugModeSet != null) {
+							menuItem = new Gtk.MenuItem ("_Debug");
+							menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, true).Run;
+							menu.Add (menuItem);
+						}
 					} else {
 						var menuItem = new Gtk.MenuItem ("_Run All");
 						menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, false).Run;
 						menu.Add (menuItem);
-						menuItem = new Gtk.MenuItem ("_Debug All");
-						menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, true).Run;
-						menu.Add (menuItem);
+						if (debugModeSet != null) {
+							menuItem = new Gtk.MenuItem ("_Debug All");
+							menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, true).Run;
+							menu.Add (menuItem);
+						}
 						menu.Add (new Gtk.SeparatorMenuItem ());
 						foreach (var id in unitTest.TestCases) {
 							var submenu = new Gtk.Menu ();
 							menuItem = new Gtk.MenuItem ("_Run");
 							menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier + id, false).Run;
 							submenu.Add (menuItem);
-							menuItem = new Gtk.MenuItem ("_Debug");
-							menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier + id, true).Run;
-							submenu.Add (menuItem);
+							if (debugModeSet != null) {
+								menuItem = new Gtk.MenuItem ("_Debug");
+								menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier + id, true).Run;
+								submenu.Add (menuItem);
+							}
 
 							var label = "Test" + id;
 							string tooltip = null;
@@ -216,6 +240,7 @@ namespace MonoDevelop.CSharp
 					}
 				}
 				menu.ShowAll ();
+				editor.TextArea.ResetMouseState (); 
 				GtkWorkarounds.ShowContextMenu (menu, editor, new Gdk.Rectangle ((int)args.X, (int)args.Y, 1, 1));
 			}
 
@@ -232,6 +257,19 @@ namespace MonoDevelop.CSharp
 					this.debug = debug;
 				}
 
+				bool TimeoutHandler ()
+				{
+					var test = NUnitService.Instance.SearchTestById (testCase);
+					if (test != null) {
+						RunTest (test); 
+						timeoutHandler = 0;
+					} else {
+						return true;
+					}
+					return false;
+				}
+
+
 				internal void Run (object sender, EventArgs e)
 				{
 					menu.Destroy ();
@@ -243,21 +281,32 @@ namespace MonoDevelop.CSharp
 					buildOperation.Completed += delegate {
 						if (!buildOperation.Success)
 							return;
-						bool first = true;
-						var test = NUnitService.Instance.SearchTestById (testCase);
-						Console.WriteLine (testCase +":"+test);
-						if (test != null) {
-							if (first)
-								NUnitService.ResetResult (test.RootTest);
-							// TODO: Run with debugger, if debug == true
-							NUnitService.Instance.RunTest (test, null).Completed += delegate {
-								Application.Invoke (delegate {
-									doc.Editor.Parent.QueueDraw ();
-								});
-							};
-						}
+						RemoveHandler ();
+						timeoutHandler = GLib.Timeout.Add (200, TimeoutHandler);
 					};
 				}
+
+				void RunTest (UnitTest test)
+				{
+					NUnitService.ResetResult (test.RootTest);
+					var debugModeSet = Runtime.ProcessService.GetDebugExecutionMode ();
+					MonoDevelop.Core.Execution.IExecutionHandler ctx = null;
+					if (debug && debugModeSet != null) {
+						foreach (var executionMode in debugModeSet.ExecutionModes) {
+							if (test.CanRun (executionMode.ExecutionHandler)) {
+								ctx = executionMode.ExecutionHandler;
+								break;
+							}
+						}
+					}
+					NUnitService.Instance.RunTest (test, ctx).Completed += delegate {
+						Application.Invoke (delegate {
+							doc.Editor.Parent.QueueDraw ();
+						});
+					};
+				}
+
+
 			}
 
 			bool isFailed;
@@ -270,17 +319,17 @@ namespace MonoDevelop.CSharp
 				bool searchCases = false;
 				if (test != null) {
 					var result = test.GetLastResult ();
-					if (result == null || result.IsNotRun || test.IsHistoricResult) {
+					if (result == null || result.IsNotRun) {
 						cr.Color = new Cairo.Color (0.5, 0.5, 0.5);
 						searchCases = true;
-				} else if (result.IsSuccess) {
-						cr.Color = new Cairo.Color (0, 1, 0);
+					} else if (result.IsSuccess) {
+						cr.Color = new Cairo.Color (0, 1, 0, test.IsHistoricResult ? 0.2 : 1.0);
 					} else if (result.IsFailure) {
-						cr.Color = new Cairo.Color (1, 0, 0);
+						cr.Color = new Cairo.Color (1, 0, 0, test.IsHistoricResult ? 0.2 : 1.0);
 						failMessage = result.Message;
 						isFailed = true;
 					} else if (result.IsInconclusive) {
-						cr.Color = new Cairo.Color (0, 1, 1);
+						cr.Color = new Cairo.Color (0, 1, 1, test.IsHistoricResult ? 0.2 : 1.0);
 					} 
 				} else {
 					cr.Color = new Cairo.Color (0.5, 0.5, 0.5);
@@ -307,7 +356,25 @@ namespace MonoDevelop.CSharp
 					}
 				}
 
-				cr.Fill ();
+				cr.FillPreserve ();
+
+				if (test != null) {
+					var result = test.GetLastResult ();
+					if (result == null || result.IsNotRun) {
+						cr.Color = new Cairo.Color (0.2, 0.2, 0.2);
+						cr.Stroke ();
+					} else if (result.IsSuccess && !test.IsHistoricResult) {
+						cr.Color = new Cairo.Color (0, 0.5, 0);
+						cr.Stroke ();
+					} else if (result.IsFailure && !test.IsHistoricResult) {
+						cr.Color = new Cairo.Color (0.5, 0, 0);
+						cr.Stroke ();
+					} else if (result.IsInconclusive && !test.IsHistoricResult) {
+						cr.Color = new Cairo.Color (0, 0.7, 0.7);
+						cr.Stroke ();
+					} 
+				}
+				cr.NewPath ();
 			}
 		}
 

@@ -52,7 +52,10 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 		
 		[NodeAttribute ("macShortcut", "Mac version of the shortcut. Format is that same as 'shortcut', but the 'Meta' modifier corresponds to the Command key.")]
 		string macShortcut;
-		
+
+		[NodeAttribute ("winShortcut", "Win version of the shortcut. Format is that same as 'shortcut'.")]
+		string winShortcut;
+
 		[NodeAttribute("icon", "Icon of the command. The provided value must be a registered stock icon. A resource icon can also be specified using 'res:' as prefix for the name, for example: 'res:customIcon.png'")]
 		string icon;
 		
@@ -152,7 +155,10 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 			if (icon != null)
 				cmd.Icon = GetStockId (Addin, icon);
 			
-			cmd.AccelKey = KeyBindingManager.CanonicalizeBinding (Platform.IsMac? macShortcut : shortcut);
+			var keyBinding = Platform.IsMac ? macShortcut : shortcut;
+			if (Platform.IsWindows && !string.IsNullOrEmpty (winShortcut))
+				keyBinding = winShortcut;
+			cmd.AccelKey = KeyBindingManager.CanonicalizeBinding (keyBinding);
 			
 			cmd.DisabledVisible = disabledVisible;
 			

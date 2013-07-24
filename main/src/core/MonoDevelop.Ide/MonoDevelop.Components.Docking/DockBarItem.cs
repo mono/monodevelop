@@ -34,18 +34,18 @@ using Gtk;
 using Mono.TextEditor;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
-
-using Animations = MonoDevelop.Components.AnimationExtensions;
+using Xwt.Motion;
+using Animations = Xwt.Motion.AnimationExtensions;
 
 namespace MonoDevelop.Components.Docking
 {	
-	class CrossfadeIcon: Gtk.Image, Animatable
+	class CrossfadeIcon: Gtk.Image, IAnimatable
 	{
 		// This class should be subclassed from Gtk.Misc, but there is no reasonable way to do that due to there being no bindings to gtk_widget_set_has_window
 
 		Xwt.Drawing.Image primary, secondary;
 
-		float secondaryOpacity;
+		double secondaryOpacity;
 
 		public CrossfadeIcon (Xwt.Drawing.Image primary, Xwt.Drawing.Image secondary)
 		{
@@ -57,6 +57,9 @@ namespace MonoDevelop.Components.Docking
 			this.primary = primary;
 			this.secondary = secondary;
 		}
+
+		void IAnimatable.BatchBegin () { }
+		void IAnimatable.BatchCommit () { QueueDraw (); }
 
 		public void ShowPrimary ()
 		{
@@ -70,10 +73,10 @@ namespace MonoDevelop.Components.Docking
 
 		void AnimateCrossfade (bool toSecondary)
 		{
-			this.Animate (name: "CrossfadeIconSwap",
-			              start: secondaryOpacity,
-			              end: toSecondary ? 1.0f : 0.0f,
-			              callback: x => secondaryOpacity = x);
+			this.Animate ("CrossfadeIconSwap",
+			              x => secondaryOpacity = x,
+			              secondaryOpacity,
+			              toSecondary ? 1.0f : 0.0f);
 		}
 
 		protected override void OnSizeRequested (ref Requisition requisition)
@@ -97,7 +100,7 @@ namespace MonoDevelop.Components.Docking
 			return false;
 		}
 
-		void RenderIcon (Cairo.Context context, Xwt.Drawing.Image surface, float opacity)
+		void RenderIcon (Cairo.Context context, Xwt.Drawing.Image surface, double opacity)
 		{
 			context.DrawImage (this, surface.WithAlpha (opacity),
 			                          Allocation.X + (Allocation.Width - surface.Width) / 2,
@@ -105,7 +108,7 @@ namespace MonoDevelop.Components.Docking
 		}
 	}
 
-	class DockBarItem: EventBox, Animatable
+	class DockBarItem: EventBox, IAnimatable
 	{
 		DockBar bar;
 		DockItem it;
@@ -120,7 +123,7 @@ namespace MonoDevelop.Components.Docking
 		Gdk.Size lastFrameSize;
 		MouseTracker tracker;
 		CrossfadeIcon crossfade;
-		float hoverProgress;
+		double hoverProgress;
 
 		public DockBarItem (DockBar bar, DockItem it, int size)
 		{
@@ -148,13 +151,16 @@ namespace MonoDevelop.Components.Docking
 			};
 		}
 
+		void IAnimatable.BatchBegin () { }
+		void IAnimatable.BatchCommit () { QueueDraw (); }
+
 		void AnimateHover (bool hovered)
 		{
 			this.Animate ("Hover",
-			              length: 100,
-			              start: hoverProgress,
-			              end: hovered ? 1.0f : 0.0f,
-			              callback: x => hoverProgress = x);
+			              x => hoverProgress = x,
+			              hoverProgress,
+			              hovered ? 1.0f : 0.0f,
+			              length: 100);
 		}
 		
 		void HandleBarFrameSizeAllocated (object o, SizeAllocatedArgs args)

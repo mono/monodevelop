@@ -84,7 +84,7 @@ namespace MonoDevelop.CSharp.Completion
 		public override string DisplayText {
 			get {
 				if (displayText == null) {
-					displayText = ambience.GetString (Entity, flags | OutputFlags.HideGenericParameterNames);
+					displayText = ambience.GetString (Entity.SymbolKind == SymbolKind.Constructor ? Entity.DeclaringTypeDefinition : Entity, flags | OutputFlags.HideGenericParameterNames);
 				}
 				return displayText; 
 			}
@@ -92,7 +92,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override IconId Icon {
 			get {
-				return Entity.GetStockIcon ();
+				return (Entity.SymbolKind == SymbolKind.Constructor ? Entity.DeclaringTypeDefinition : Entity).GetStockIcon ();
 			}
 		}
 
@@ -105,12 +105,26 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
-		public bool IsDelegateExpected { get; set; }
+		bool isDelegateExpected;
+		public bool IsDelegateExpected {
+			get {
+				return isDelegateExpected || factory != null && factory.Engine.PossibleDelegates.Count > 0;
+			} 
+			set {
+				isDelegateExpected = value;
+			}
+		}
 
 		ICompilation compilation;
 		CSharpUnresolvedFile file;
+		CSharpCompletionTextEditorExtension.CompletionDataFactory factory;
 
-		public MemberCompletionData (CSharpCompletionTextEditorExtension  editorCompletion, IEntity entity, OutputFlags flags)
+		public MemberCompletionData (CSharpCompletionTextEditorExtension.CompletionDataFactory factory, IEntity entity, OutputFlags flags) : this(factory.ext, entity, flags)
+		{
+			this.factory = factory;
+		}
+
+		public MemberCompletionData (CSharpCompletionTextEditorExtension editorCompletion, IEntity entity, OutputFlags flags)
 		{
 			compilation = editorCompletion.UnresolvedFileCompilation;
 			file = editorCompletion.CSharpUnresolvedFile;
@@ -140,7 +154,7 @@ namespace MonoDevelop.CSharp.Completion
 			return false;
 		}
 
-		bool HasNonMethodMembersWithSameName (IMember member)
+		static bool HasNonMethodMembersWithSameName (IMember member)
 		{
 			return member.DeclaringType.GetFields ().Cast<INamedElement> ()
 				.Concat (member.DeclaringType.GetProperties ().Cast<INamedElement> ())
@@ -149,19 +163,39 @@ namespace MonoDevelop.CSharp.Completion
 				.Any (e => e.Name == member.Name);
 		}
 
-		bool HasAnyOverloadWithParameters (IMethod method)
+		static bool HasAnyOverloadWithParameters (IMethod method)
 		{
-			return method.DeclaringType.GetMethods ().Any (m => m.Parameters.Count > 0);
+			if (method.SymbolKind == SymbolKind.Constructor) 
+				return method.DeclaringType.GetConstructors ().Any (m => m.Parameters.Count > 0);
+			return method.DeclaringType.GetMethods ().Any (m => m.Name == method.Name && m.Parameters.Count > 0);
 		}
 
 		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
+		{
+			InsertCompletionText (window, ref ka, closeChar, keyChar, modifier, CompletionTextEditorExtension.AddParenthesesAfterCompletion, CompletionTextEditorExtension.AddOpeningOnly);
+		}
+
+		bool IsBracketAlreadyInserted ()
+		{
+			int offset = Editor.Caret.Offset;
+			while (offset < Editor.Length) {
+				char ch = Editor.GetCharAt (offset);
+				if (!char.IsLetterOrDigit (ch) && !char.IsWhiteSpace (ch)) {
+					return ch == '(';
+				}
+				offset++;
+			}
+			return false;
+		}
+
+		public void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier, bool addParens, bool addOpeningOnly)
 		{
 			string text = CompletionText;
 			string partialWord = GetCurrentWord (window);
 			int skipChars = 0;
 			bool runParameterCompletionCommand = false;
 
-			if (CompletionTextEditorExtension.AddParenthesesAfterCompletion && !IsDelegateExpected && Entity is IMethod && !HasNonMethodMembersWithSameName ((IMember)Entity)) {
+			if (addParens && !IsDelegateExpected && Entity is IMethod && !HasNonMethodMembersWithSameName ((IMember)Entity) && !IsBracketAlreadyInserted ()) {
 				var line = Editor.GetLine (Editor.Caret.Line);
 				var method = (IMethod)Entity;
 				var start = window.CodeCompletionContext.TriggerOffset + partialWord.Length + 2;
@@ -181,7 +215,8 @@ namespace MonoDevelop.CSharp.Completion
 				bool insertSemicolon = false;
 				if (string.IsNullOrEmpty ((textBefore + textToEnd).Trim ()))
 					insertSemicolon = true;
-
+				if (Entity.SymbolKind == SymbolKind.Constructor)
+					insertSemicolon = false;
 				int pos;
 //				if (SearchBracket (window.CodeCompletionContext.TriggerOffset + partialWord.Length, out pos)) {
 //					window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, partialWord, text);
@@ -222,12 +257,12 @@ namespace MonoDevelop.CSharp.Completion
 				Gdk.Key[] keys = new [] { Gdk.Key.Return, Gdk.Key.Tab, Gdk.Key.space, Gdk.Key.KP_Enter, Gdk.Key.ISO_Enter };
 				if (keys.Contains (closeChar) || keyChar == '.') {
 					if (HasAnyOverloadWithParameters (method)) {
-						if (CompletionTextEditorExtension.AddOpeningOnly) {
+						if (addOpeningOnly) {
 							text += "(|";
 							skipChars = 0;
 						} else {
 							if (keyChar == '.') {
-								text += "()|";
+								text += "()";
 								skipChars = 0;
 							} else {
 								if (insertSemicolon) {
@@ -241,7 +276,7 @@ namespace MonoDevelop.CSharp.Completion
 						}
 						runParameterCompletionCommand = true;
 					} else {
-						if (CompletionTextEditorExtension.AddOpeningOnly) {
+						if (addOpeningOnly) {
 							text += "(|";
 							skipChars = 0;
 						} else {
@@ -265,7 +300,19 @@ namespace MonoDevelop.CSharp.Completion
 				}
 				ka |= KeyActions.Ignore;
 			}
-			
+			if ((DisplayFlags & DisplayFlags.NamedArgument) == DisplayFlags.NamedArgument &&
+			    (closeChar == Gdk.Key.Tab ||
+				 closeChar == Gdk.Key.KP_Tab ||
+				 closeChar == Gdk.Key.ISO_Left_Tab ||
+				 closeChar == Gdk.Key.Return ||
+				 closeChar == Gdk.Key.KP_Enter ||
+				 closeChar == Gdk.Key.ISO_Enter)) {
+				if (Policy.AroundAssignmentParentheses)
+					text += " ";
+				text += "=";
+				if (Policy.AroundAssignmentParentheses)
+					text += " ";
+			}
 			window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, partialWord, text);
 			int offset = Editor.Caret.Offset;
 			for (int i = 0; i < skipChars; i++) {
@@ -280,7 +327,7 @@ namespace MonoDevelop.CSharp.Completion
 		void SetMember (IEntity entity)
 		{
 			this.Entity = entity;
-			this.completionString = displayText = entity.Name;
+			this.completionString = displayText = (Entity.SymbolKind == SymbolKind.Constructor ? Entity.DeclaringTypeDefinition : Entity).Name;
 		}
 
 		TypeSystemAstBuilder GetBuilder (ICompilation compilation)

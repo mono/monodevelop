@@ -210,9 +210,14 @@ namespace MonoDevelop.CSharp
 				result.Append (Highlight ("public ", colorStyle.KeywordModifiers));
 				break;
 			}
+			var field = entity as IField;
 
-			if (entity is IField && ((IField)entity).IsConst) {
-				result.Append (Highlight ("const ", colorStyle.KeywordModifiers));
+			if (field != null) {
+				if (field.IsFixed) {
+					result.Append (Highlight ("fixed ", colorStyle.KeywordModifiers));
+				} else if (field.IsConst) {
+					result.Append (Highlight ("const ", colorStyle.KeywordModifiers));
+				}
 			} else if (entity.IsStatic) {
 				result.Append (Highlight ("static ", colorStyle.KeywordModifiers));
 			} else if (entity.IsSealed) {
@@ -235,7 +240,6 @@ namespace MonoDevelop.CSharp
 					result.Append (Highlight ("virtual ", colorStyle.KeywordModifiers));
 				}
 			}
-			var field = entity as IField;
 			if (field != null) {
 				if (field.IsVolatile)
 					result.Append (Highlight ("volatile ", colorStyle.KeywordModifiers));
@@ -652,7 +656,19 @@ namespace MonoDevelop.CSharp
 
 			result.Append (HighlightSemantically (CSharpAmbience.FilterName (field.Name), colorStyle.UserFieldDeclaration));
 
-			if (field.IsConst) {
+			if (field.IsFixed){
+				if (formattingOptions.SpaceBeforeArrayDeclarationBrackets) {
+					result.Append (" [");
+				} else {
+					result.Append ("[");
+				}
+				if (formattingOptions.SpacesWithinBrackets)
+					result.Append (" ");
+				AppendConstant (result, field.Type, field.ConstantValue);
+				if (formattingOptions.SpacesWithinBrackets)
+					result.Append (" ");
+				result.Append ("]");
+			} else if (field.IsConst) {
 				if (isEnum && !(field.DeclaringTypeDefinition.Attributes.Any (attr => attr.AttributeType.FullName == "System.FlagsAttribute"))) {
 					return result.ToString ();
 				}
