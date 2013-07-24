@@ -74,7 +74,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			File.Create (added).Close ();
 			repo.Add (added, false, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
 			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
-			changes.AddFile (added);
+			changes.AddFile (repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache));
 			changes.GlobalComment = "File committed";
 			repo.Commit (changes, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
 			File.AppendAllText (added, "text" + Environment.NewLine);
@@ -82,7 +82,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			string difftext = @"@@ -0,0 +1 @@
 +text
 ";
-			Assert.AreEqual (difftext, repo.GenerateDiff (added, repo.GetVersionInfo (added)).Content.Replace ("\n", "\r\n"));
+			Assert.AreEqual (difftext, repo.GenerateDiff (added, repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache)).Content.Replace ("\n", "\r\n"));
 		}
 
 		[Test]

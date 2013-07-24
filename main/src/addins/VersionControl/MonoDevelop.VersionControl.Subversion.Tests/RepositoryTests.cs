@@ -34,10 +34,7 @@ using MonoDevelop.VersionControl;
 
 namespace VersionControl.Subversion.Unix.Tests
 {
-	// The RepositoryService.RunQueries code can execute at the same time as our own test code. This will cause
-	// multithreaded usage of libsvn which can corrupt memory and crash.
 	[TestFixture]
-	[Ignore ("These tests currently can trigger two simultaenous invocations into libsvn which is not allowed")]
 	public class UnixSvnUtilsTest : MonoDevelop.VersionControl.Subversion.Tests.BaseSvnUtilsTest
 	{
 		[SetUp]
@@ -55,7 +52,7 @@ namespace VersionControl.Subversion.Unix.Tests
 			File.Create (added).Close ();
 			repo.Add (added, false, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
 			ChangeSet changes = repo.CreateChangeSet (repo.RootPath);
-			changes.AddFile (added);
+			changes.AddFile (repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache));
 			changes.GlobalComment = "File committed";
 			repo.Commit (changes, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
 			File.AppendAllText (added, "text" + Environment.NewLine);
@@ -65,7 +62,7 @@ namespace VersionControl.Subversion.Unix.Tests
 @@ -0,0 +1 @@
 +text
 ";
-			Assert.AreEqual (difftext, repo.GenerateDiff (added, repo.GetVersionInfo (added)).Content);
+			Assert.AreEqual (difftext, repo.GenerateDiff (added, repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache)).Content);
 		}
 
 		protected override Repository GetRepo (string path, string url)

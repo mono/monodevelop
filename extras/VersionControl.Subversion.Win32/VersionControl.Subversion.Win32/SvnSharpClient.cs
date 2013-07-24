@@ -387,6 +387,7 @@ namespace SubversionAddinWindows
 			VersionStatus rs = VersionStatus.Unversioned;
 			Revision rr = null;
 
+			// TODO: Fix remote status for Win32 Svn.
 			if (ent.IsRemoteUpdated) {
 				rs = ConvertStatus (SvnSchedule.Normal, ent.RemoteContentStatus);
 				rr = new SvnRevision (repo, (int) ent.RemoteUpdateRevision, ent.RemoteUpdateCommitTime,
