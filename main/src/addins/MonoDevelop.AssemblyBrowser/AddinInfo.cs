@@ -9,7 +9,7 @@ using Mono.Addins.Description;
         Category = "IDE extensions")]
 
 [assembly:AddinName ("MonoDevelop Assembly Browser")]
-[assembly:AddinDescription ("Provides an assembly browser for the MonoDevelop")]
+[assembly:AddinDescription ("Provides an assembly browser for MonoDevelop")]
 
 [assembly:AddinDependency ("Core", MonoDevelop.BuildInfo.Version)]
 [assembly:AddinDependency ("Ide", MonoDevelop.BuildInfo.Version)]
