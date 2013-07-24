@@ -152,8 +152,12 @@ namespace MonoDevelop.AnalysisCore
 					infos.Add (label, action);
 				}
 				if (result.HasOptionsDialog) {
-					var label = GettextCatalog.GetString ("_Inspection options for \"{0}\"", result.OptionsTitle);
-					infos.Add (label, result);
+					var declSet = new CommandInfoSet ();
+					declSet.Text = GettextCatalog.GetString ("_Options for \"{0}\"", result.OptionsTitle);
+
+					declSet.CommandInfos.Add (GettextCatalog.GetString ("_Configure inspection severity"), result);
+
+					infos.Add (declSet);
 				}
 			}
 		}

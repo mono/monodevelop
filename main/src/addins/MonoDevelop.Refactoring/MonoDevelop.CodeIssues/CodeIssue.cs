@@ -77,6 +77,26 @@ namespace MonoDevelop.CodeIssues
 			Region = region;
 			Actions = actions;
 		}
+
+		public virtual void DisableOnce (MonoDevelop.Ide.Gui.Document document)
+		{
+			throw new NotSupportedException ();
+		}
+
+		public virtual void DisableAndRestore (MonoDevelop.Ide.Gui.Document document)
+		{
+			throw new NotSupportedException ();
+		}
+
+		public virtual void DisableWithPragma (MonoDevelop.Ide.Gui.Document document)
+		{
+			throw new NotSupportedException ();
+		}
+
+		public virtual void SuppressWithAttribute (MonoDevelop.Ide.Gui.Document document)
+		{
+			throw new NotSupportedException ();
+		}
 	}
 }
 

@@ -115,6 +115,15 @@ namespace MonoDevelop.CodeIssues
 		/// Gets all the code issues inside a document.
 		/// </summary>
 		public abstract IEnumerable<CodeIssue> GetIssues (object refactoringContext, CancellationToken cancellationToken);
+	
+		public virtual bool CanDisableOnce { get { return false; } }
+
+		public virtual bool CanDisableAndRestore { get { return false; } }
+
+		public virtual bool CanDisableWithPragma { get { return false; } }
+
+		public virtual bool CanSuppressWithAttribute { get { return false; } }
+
 	}
 }
 
