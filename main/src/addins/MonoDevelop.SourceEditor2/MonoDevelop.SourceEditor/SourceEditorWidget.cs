@@ -1475,8 +1475,6 @@ namespace MonoDevelop.SourceEditor
 			if (marker != null) {
 				marker.IsVisible = !marker.IsVisible;
 				TextEditor.QueueDraw ();
-				MonoDevelop.Ide.Gui.Pads.ErrorListPad pad = IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ().Content as MonoDevelop.Ide.Gui.Pads.ErrorListPad;
-				pad.Control.QueueDraw ();
 			}
 		}
 		
