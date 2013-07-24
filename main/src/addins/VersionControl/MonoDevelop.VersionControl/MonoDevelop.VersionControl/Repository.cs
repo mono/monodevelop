@@ -21,7 +21,7 @@ namespace MonoDevelop.VersionControl
 
 		int references;
 
-		public MonoDevelop.Core.FilePath RootPath
+		public FilePath RootPath
 		{
 			get;
 			protected set;
@@ -254,7 +254,9 @@ namespace MonoDevelop.VersionControl
 			public bool GetRemoteStatus;
 		}
 
-		Queue<object> queryQueue = new Queue<object> ();
+		Queue<VersionInfoQuery> fileQueryQueue = new Queue<VersionInfoQuery> ();
+		Queue<DirectoryInfoQuery> directoryQueryQueue = new Queue<DirectoryInfoQuery> ();
+		object queryLock = new object ();
 		bool queryRunning;
 		VersionInfoCache infoCache;
 		HashSet<FilePath> filesInQueryQueue = new HashSet<FilePath> ();
@@ -266,21 +268,23 @@ namespace MonoDevelop.VersionControl
 
 		void AddQuery (object query)
 		{
-			lock (queryQueue) {
+			lock (queryLock) {
 				if (query is VersionInfoQuery) {
-					VersionInfoQuery vi = (VersionInfoQuery) query;
+					VersionInfoQuery vi = (VersionInfoQuery)query;
 					vi.Paths.RemoveAll (p => filesInQueryQueue.Contains (p) || directoriesInQueryQueue.Contains (p.ParentDirectory));
 					if (vi.Paths.Count == 0)
 						return;
 					filesInQueryQueue.UnionWith (vi.Paths);
+					fileQueryQueue.Enqueue (vi);
 				//	Console.WriteLine ("GetVersionInfo AddQuery " + string.Join (", ", vi.Paths.Select (p => p.FullPath)));
 				}
 				else if (query is DirectoryInfoQuery) {
-					if (!directoriesInQueryQueue.Add (((DirectoryInfoQuery)query).Directory))
+					DirectoryInfoQuery di = (DirectoryInfoQuery)query;
+					if (!directoriesInQueryQueue.Add (di.Directory))
 						return;
+					directoryQueryQueue.Enqueue (di);
 				//	Console.WriteLine ("GetDirectoryVersionInfo AddQuery " + ((DirectoryInfoQuery)query).Directory);
 				}
-				queryQueue.Enqueue (query);
 				if (!queryRunning) {
 					queryRunning = true;
 					System.Threading.ThreadPool.QueueUserWorkItem (RunQueries);
@@ -293,25 +297,22 @@ namespace MonoDevelop.VersionControl
 		//	DateTime t = DateTime.Now;
 		//	Console.WriteLine ("RunQueries started");
 			try {
-				lock (queryQueue) {
-					var groups = queryQueue.Select (q => q as VersionInfoQuery).GroupBy (q => q.QueryFlags);
+				lock (queryLock) {
+					var groups = fileQueryQueue.GroupBy (q => q.QueryFlags);
 					foreach (var group in groups) {
 						var status = OnGetVersionInfo (group.SelectMany (q => q.Paths), (group.Key & VersionInfoQueryFlags.IncludeRemoteStatus) != 0);
 						infoCache.SetStatus (status);
 					}
 					filesInQueryQueue.Clear ();
 
-					var groups2 = queryQueue.Select (q => q as DirectoryInfoQuery);
-					foreach (var item in groups2) {
-						if (item == null)
-							continue;
-
+					foreach (var item in directoryQueryQueue) {
 						var status = OnGetDirectoryVersionInfo (item.Directory, item.GetRemoteStatus, false);
 						infoCache.SetDirectoryStatus (item.Directory, status, item.GetRemoteStatus);
 					}
 					directoriesInQueryQueue.Clear ();
 
-					queryQueue.Clear ();
+					fileQueryQueue.Clear ();
+					directoryQueryQueue.Clear ();
 					queryRunning = false;
 				}
 			} catch (Exception ex) {
