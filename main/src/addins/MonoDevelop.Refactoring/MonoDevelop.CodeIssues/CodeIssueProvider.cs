@@ -30,7 +30,8 @@ using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory;
 using System.Threading;
 using MonoDevelop.Core;
-using ICSharpCode.NRefactory.Refactoring; 
+using ICSharpCode.NRefactory.Refactoring;
+using Mono.TextEditor; 
 
 namespace MonoDevelop.CodeIssues
 {
@@ -124,6 +125,25 @@ namespace MonoDevelop.CodeIssues
 
 		public virtual bool CanSuppressWithAttribute { get { return false; } }
 
+		public virtual void DisableOnce (MonoDevelop.Ide.Gui.Document document, DocumentLocation loc)
+		{
+			throw new NotSupportedException ();
+		}
+
+		public virtual void DisableAndRestore (MonoDevelop.Ide.Gui.Document document, DocumentLocation loc)
+		{
+			throw new NotSupportedException ();
+		}
+
+		public virtual void DisableWithPragma (MonoDevelop.Ide.Gui.Document document, DocumentLocation loc)
+		{
+			throw new NotSupportedException ();
+		}
+
+		public virtual void SuppressWithAttribute (MonoDevelop.Ide.Gui.Document document, DocumentLocation loc)
+		{
+			throw new NotSupportedException ();
+		}
 	}
 }
 
