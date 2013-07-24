@@ -65,12 +65,11 @@ namespace MonoDevelop.VersionControl
 
 		public DirectoryStatus GetDirectoryStatus (FilePath localPath)
 		{
-			lock (fileStatus) {
+			lock (directoryStatus) {
 				DirectoryStatus vis;
 				if (directoryStatus.TryGetValue (localPath.CanonicalPath, out vis))
 					return vis;
-				else
-					return null;
+				return null;
 			}
 		}
 
