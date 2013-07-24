@@ -30,6 +30,8 @@ using System;
 using System.Collections.Generic;
 
 using Mono.TextEditor;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Debugger;
 using MonoDevelop.Components;
 using Mono.Debugging.Client;
@@ -37,6 +39,9 @@ using TextEditor = Mono.TextEditor.TextEditor;
 
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -86,176 +91,149 @@ namespace MonoDevelop.SourceEditor
 			return index;
 		}
 
-		static string GetLocalExpression (TextEditorData editor, LocalResolveResult lr, DomRegion expressionRegion)
+		static string GetIdentifierName (TextEditorData editor, Identifier id, out int startOffset)
 		{
-			var start = new DocumentLocation (expressionRegion.BeginLine, expressionRegion.BeginColumn);
-			var end   = new DocumentLocation (expressionRegion.EndLine, expressionRegion.EndColumn);
+			startOffset = editor.LocationToOffset (id.StartLocation.Line, id.StartLocation.Column);
 
-			// In a setter, the 'value' variable will have a begin line/column of 0,0 which is an undefined offset
-			if (lr.Variable.Region.BeginLine != 0 && lr.Variable.Region.BeginColumn != 0) {
-				// Use the start and end offsets of the variable region so that we get the "@" in variable names like "@class"
-				start = new DocumentLocation (lr.Variable.Region.BeginLine, lr.Variable.Region.BeginColumn);
-				end = new DocumentLocation (lr.Variable.Region.EndLine, lr.Variable.Region.EndColumn);
-			}
-
-			string expression = editor.GetTextBetween (start, end).Trim ();
-
-			// Note: When the LocalResolveResult is a parameter, the Variable.Region includes the type
-			if (lr.IsParameter) {
-				int index = IndexOfLastWhiteSpace (expression);
-				if (index != -1)
-					expression = expression.Substring (index + 1);
-			}
-
-			return expression;
+			return editor.GetTextBetween (id.StartLocation, id.EndLocation);
 		}
 
-		static string GetMemberExpression (TextEditorData editor, MemberResolveResult mr, DomRegion expressionRegion)
+		public static string ResolveExpression (TextEditorData editor, ResolveResult result, AstNode node, out int startOffset)
 		{
-			string expression = null;
-			string member = null;
+			//Console.WriteLine ("result is a {0}", result.GetType ().Name);
+			startOffset = -1;
 
-			if (mr.Member != null) {
-				if (mr.Member is IProperty) {
-					// Visual Studio will evaluate Properties if you hover over their definitions...
-					var prop = (IProperty) mr.Member;
-
-					if (prop.CanGet) {
-						if (prop.IsStatic)
-							expression = prop.FullName;
-						else
-							member = prop.Name;
-					} else {
-						return null;
-					}
-				} else if (mr.Member is IField) {
-					var field = (IField) mr.Member;
-
-					if (field.IsStatic)
-						expression = field.FullName;
-					else
-						member = field.Name;
-				} else {
-					return null;
-				}
-			} else {
+			if (result is NamespaceResolveResult ||
+			    result is ConversionResolveResult ||
+			    result is ConstantResolveResult ||
+			    result is ForEachResolveResult ||
+			    result is TypeIsResolveResult ||
+			    result is TypeOfResolveResult ||
+			    result is ErrorResolveResult)
 				return null;
-			}
 
-			if (expression == null) {
-				if (mr.TargetResult != null) {
-					var targetRegion = mr.TargetResult.GetDefinitionRegion ();
+			if (result.IsCompileTimeConstant)
+				return null;
 
-					if (mr.TargetResult is LocalResolveResult) {
-						expression = GetLocalExpression (editor, (LocalResolveResult) mr.TargetResult, targetRegion);
-					} else if (mr.TargetResult is MemberResolveResult) {
-						expression = GetMemberExpression (editor, (MemberResolveResult) mr.TargetResult, targetRegion);
-					} else if (mr.TargetResult is InitializedObjectResolveResult) {
-						return null;
-					} else if (mr.TargetResult is ThisResolveResult) {
-						return "this." + member;
-					} else if (!targetRegion.IsEmpty) {
-						var start = new DocumentLocation (targetRegion.BeginLine, targetRegion.BeginColumn);
-						var end   = new DocumentLocation (targetRegion.EndLine, targetRegion.EndColumn);
-						expression = editor.GetTextBetween (start, end).Trim ();
-					}
+			startOffset = editor.LocationToOffset (node.StartLocation.Line, node.StartLocation.Column);
 
-					if (expression == null) {
-						var start = new DocumentLocation (expressionRegion.BeginLine, expressionRegion.BeginColumn);
-						var end   = new DocumentLocation (expressionRegion.EndLine, expressionRegion.EndColumn);
-						return editor.GetTextBetween (start, end).Trim ();
-					}
+			if (result is InvocationResolveResult) {
+				var ir = (InvocationResolveResult) result;
+				if (ir.Member.Name == ".ctor")
+					return ir.Member.DeclaringType.FullName;
+			} else if (result is LocalResolveResult) {
+				if (node is ParameterDeclaration) {
+					var param = (ParameterDeclaration) node;
+
+					return GetIdentifierName (editor, param.NameToken, out startOffset);
 				}
 
-				if (!string.IsNullOrEmpty (expression))
-					expression += "." + member;
-				else
-					expression = member;
+				if (node is VariableInitializer) {
+					var variable = (VariableInitializer) node;
+
+					return GetIdentifierName (editor, variable.NameToken, out startOffset);
+				}
+			} else if (result is MemberResolveResult) {
+				var mr = (MemberResolveResult) result;
+
+				if (node is PropertyDeclaration) {
+					var prop = (PropertyDeclaration) node;
+					var name = GetIdentifierName (editor, prop.NameToken, out startOffset);
+
+					if (prop.Modifiers.HasFlag (Modifiers.Static))
+						return mr.Member.DeclaringType.FullName + "." + name;
+
+					return "this." + name;
+				}
+
+				if (node is FieldDeclaration) {
+					var field = (FieldDeclaration) node;
+					var name = GetIdentifierName (editor, field.NameToken, out startOffset);
+
+					if (field.Modifiers.HasFlag (Modifiers.Static))
+						return mr.Member.DeclaringType.FullName + "." + name;
+
+					return "this." + name;
+				}
+
+				if (node is VariableInitializer) {
+					var variable = (VariableInitializer) node;
+					var name = GetIdentifierName (editor, variable.NameToken, out startOffset);
+
+					var field = variable.GetParent<FieldDeclaration> ();
+					if (field.Modifiers.HasFlag (Modifiers.Static))
+						return mr.Member.DeclaringType.FullName + "." + name;
+
+					return "this." + name;
+				}
+			} else if (result is TypeResolveResult) {
+				return ((TypeResolveResult) result).Type.FullName;
 			}
 
-			return expression;
+			return editor.GetTextBetween (node.StartLocation, node.EndLocation);
 		}
 
-		internal static bool TryResolveExpression (TextEditorData editor, ResolveResult res, DomRegion expressionRegion, out string expression)
+		static bool TryResolveAt (Document doc, DocumentLocation loc, out ResolveResult result, out AstNode node)
 		{
-			expression = null;
+			if (doc == null)
+				throw new ArgumentNullException ("doc");
 
-			//Console.WriteLine ("res is a {0}", res.GetType ().Name);
+			result = null;
+			node = null;
 
-			if (expressionRegion.IsEmpty)
+			var parsedDocument = doc.ParsedDocument;
+			if (parsedDocument == null)
 				return false;
 
-			if (res is NamespaceResolveResult ||
-			    res is ConversionResolveResult ||
-			    res is ConstantResolveResult ||
-			    res is ForEachResolveResult ||
-			    res is TypeIsResolveResult ||
-			    res is TypeOfResolveResult ||
-			    res is ErrorResolveResult)
+			var unit = parsedDocument.GetAst<SyntaxTree> ();
+			var parsedFile = parsedDocument.ParsedFile as CSharpUnresolvedFile;
+
+			if (unit == null || parsedFile == null)
 				return false;
 
-			if (res.IsCompileTimeConstant)
-				return false;
-
-			var start = new DocumentLocation (expressionRegion.BeginLine, expressionRegion.BeginColumn);
-			var end   = new DocumentLocation (expressionRegion.EndLine, expressionRegion.EndColumn);
-
-			if (res is LocalResolveResult) {
-				expression = GetLocalExpression (editor, (LocalResolveResult) res, expressionRegion);
-			} else if (res is InvocationResolveResult) {
-				var ir = (InvocationResolveResult) res;
-
-				if (ir.Member.Name != ".ctor")
+			try {
+				result = ResolveAtLocation.Resolve (new Lazy<ICompilation> (() => doc.Compilation), parsedFile, unit, loc, out node);
+				if (result == null || node is Statement)
 					return false;
-
-				expression = ir.Member.DeclaringType.FullName;
-			} else if (res is MemberResolveResult) {
-				expression = GetMemberExpression (editor, (MemberResolveResult) res, expressionRegion);
-			} else if (res is NamedArgumentResolveResult) {
-				expression = editor.GetTextBetween (start, end);
-			} else if (res is ThisResolveResult) {
-				expression = editor.GetTextBetween (start, end);
-			} else if (res is TypeResolveResult) {
-				expression = editor.GetTextBetween (start, end);
-			} else {
+			} catch {
 				return false;
 			}
 
 			return true;
 		}
-		
+
 		public override TooltipItem GetItem (TextEditor editor, int offset)
 		{
 			if (offset >= editor.Document.TextLength)
 				return null;
-			
+
 			if (!DebuggingService.IsDebugging || DebuggingService.IsRunning)
 				return null;
-				
+
 			StackFrame frame = DebuggingService.CurrentFrame;
 			if (frame == null)
 				return null;
 
-			var ed = (ExtensibleTextEditor)editor;
-			DomRegion expressionRegion;
+			var ed = (ExtensibleTextEditor) editor;
 			string expression = null;
-			ResolveResult res;
 			int startOffset;
 
 			if (ed.IsSomethingSelected && offset >= ed.SelectionRange.Offset && offset <= ed.SelectionRange.EndOffset) {
 				startOffset = ed.SelectionRange.Offset;
 				expression = ed.SelectedText;
-			} else if ((res = ed.GetLanguageItem (offset, out expressionRegion)) != null && !res.IsError && res.GetType () != typeof (ResolveResult)) {
-				if (!TryResolveExpression (editor.GetTextEditorData (), res, expressionRegion, out expression))
+			} else {
+				var doc = IdeApp.Workbench.ActiveDocument;
+				if (doc == null || doc.ParsedDocument == null)
 					return null;
 
-				startOffset = editor.LocationToOffset (new DocumentLocation (expressionRegion.BeginLine, expressionRegion.BeginColumn));
-			} else {
-				var data = editor.GetTextEditorData ();
-				startOffset = data.FindCurrentWordStart (offset);
-				int endOffset = data.FindCurrentWordEnd (offset);
+				ResolveResult result;
+				AstNode node;
 
-				expression = ed.GetTextBetween (ed.OffsetToLocation (startOffset), ed.OffsetToLocation (endOffset));
+				var loc = editor.OffsetToLocation (offset);
+				if (!TryResolveAt (doc, loc, out result, out node))
+					return null;
+
+				expression = ResolveExpression (editor.GetTextEditorData (), result, node, out startOffset);
 			}
 			
 			if (string.IsNullOrEmpty (expression))

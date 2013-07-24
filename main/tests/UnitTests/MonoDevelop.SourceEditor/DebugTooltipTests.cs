@@ -40,10 +40,13 @@ using MonoDevelop.CSharp;
 
 namespace MonoDevelop.SourceEditor
 {
-	[TestFixture ()]
+	[TestFixture]
 	public class DebugTooltipTests
 	{
-		static Document Setup (string input)
+		Document document;
+		string content;
+
+		static Document CreateDocument (string input)
 		{
 			var tww = new TestWorkbenchWindow ();
 			var content = new TestViewContent ();
@@ -68,62 +71,209 @@ namespace MonoDevelop.SourceEditor
 			return doc;
 		}
 
-		static string ResolveExpression (Document doc, int offset)
+		[TestFixtureSetUp]
+		public virtual void Setup ()
 		{
-			var editor = doc.Editor;
-			var unit = doc.ParsedDocument.GetAst<SyntaxTree> ();
-			if (unit == null)
-				return null;
-
-			var file = doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile;
-			if (file == null)
-				return null;
-
-			ResolveResult result;
-			AstNode node;
-			var loc = editor.OffsetToLocation (offset);
-			if (!doc.TryResolveAt (loc, out result, out node))
-				return null;
-			if (result is LocalResolveResult)
-				return ((LocalResolveResult)result).Variable.Name;
-			return editor.GetTextBetween (node.StartLocation, node.EndLocation);
-		}
-
-		[Test ()]
-		public void TestLocalVariables ()
-		{
-			var content = @"// Test local variables
-using System;
+			content = @"using System;
 
 namespace DebuggerTooltipTests
 {
-	class MainClass
+	class Base
 	{
-		public int MyField {
-			get; set;
+		public string BaseProperty { get; set; }
+
+		protected Base ()
+		{
+		}
+	}
+
+	class Abc : Base
+	{
+		// TEST: make sure we can resolve member variable declarations
+		static int StaticProperty { get; set; }
+		static int StaticField = 5;
+
+		string @double;
+		string field;
+
+		public Abc ()
+		{
 		}
 
+		public string Text {
+			get { return string.Empty; }
+			set {
+				// TEST: make sure that we can resolve the variable being set
+				Console.WriteLine (value);
+			}
+		}
+
+		// TEST: make sure that we can resolve parameters...
+		public bool Method (Abc abc)
+		{
+			// TEST: make sure we can resolve everything here...
+			return this.Text.Length == abc.Text.Length;
+		}
+
+		public bool BaseTest ()
+		{
+			// TEST: make sure we can resolve these...
+			return base.BaseProperty == 5;
+		}
+
+		public bool AtVariables (Abc abc)
+		{
+			// TEST: make sure that we can resolve @variables
+			var @class = ""resolve me"";
+			var result = @class.Length;
+			result = @double.Length;
+			result = this.@double.Length;
+			result = abc.@double.Length;
+		}
+	}
+
+	class MainClass
+	{
 		public static void Main (string[] args)
 		{
+			// TEST: make sure that a simple local can be resolved
 			int basicLocalVariable = 5;
-			int localVarFromMethod = Foo ();
-			int castingLocalVariable = ((Foo) args [0]).FooValue;
-			int localVarFromProperties = this.FirstProperty.SecondProperty;
-			int propertyFromBase = base.BaseProperty;
 
-			MyField = 7;
+			// TEST: make sure that a .ctor can be resolved
+			var instanceVariable = new Abc ();
+
+			// TEST: make sure that the cast, Text, and Text.Length can be resolved
+			var castingLocalVariable = ((Abc) instanceVariable).Text.Length;
+
+			// TEST: make sure that 'Name' can be resolved
+			var invokingVariable = instanceVariable.GetType ().Name;
 		}
 	}
 }
 ";
-			var document = Setup (content);
-			Assert.AreEqual ("basicLocalVariable", ResolveExpression (document, content.IndexOf ("basicLocalVariable") + 1));
-			Assert.AreEqual ("localVarFromMethod", ResolveExpression (document, content.IndexOf ("localVarFromMethod") + 1));
-			Assert.AreEqual ("((Foo) args [0]).FooValue", ResolveExpression (document, content.IndexOf ("FooValue") + 1));
-			Assert.AreEqual ("this.FirstProperty", ResolveExpression (document, content.IndexOf ("FirstProperty") + 1));
-			Assert.AreEqual ("this.FirstProperty.SecondProperty", ResolveExpression (document, content.IndexOf ("SecondProperty") + 1));
-			Assert.AreEqual ("base.BaseProperty", ResolveExpression (document, content.IndexOf ("BaseProperty") + 1));
-			Assert.AreEqual ("MyField", ResolveExpression (document, content.LastIndexOf ("MyField") + 1));
+
+			document = CreateDocument (content);
+		}
+
+		static string ResolveExpression (Document doc, string content, int offset)
+		{
+			var editor = doc.Editor;
+			ResolveResult result;
+			int startOffset;
+			AstNode node;
+
+			var loc = editor.OffsetToLocation (offset);
+			if (!doc.TryResolveAt (loc, out result, out node))
+				return null;
+
+			return DebugValueTooltipProvider.ResolveExpression (doc.Editor, result, node, out startOffset);
+		}
+
+		int GetBasicOffset (string expr)
+		{
+			int startOffset = content.IndexOf (expr, StringComparison.Ordinal);
+
+			return startOffset + (expr.Length / 2);
+		}
+
+		int GetCtorOffset (string expr)
+		{
+			int startOffset = content.IndexOf (expr, StringComparison.Ordinal);
+			int length = expr.IndexOf ('(');
+
+			while (expr[length - 1] == ' ')
+				length--;
+
+			int dot = expr.LastIndexOf ('.', length, length);
+			if (dot != -1)
+				return startOffset + dot + ((length - dot) / 2);
+
+			return startOffset + (length / 2);
+		}
+
+		int GetPropertyOffset (string expr)
+		{
+			int startOffset = content.IndexOf (expr, StringComparison.Ordinal);
+			int dot = expr.LastIndexOf ('.');
+
+			if (dot != -1)
+				return startOffset + dot + ((expr.Length - dot) / 2);
+
+			return startOffset + (expr.Length / 2);
+		}
+
+		[Test]
+		public void TestBasicLocalVariable ()
+		{
+			Assert.AreEqual ("basicLocalVariable", ResolveExpression (document, content, GetBasicOffset ("basicLocalVariable")));
+		}
+
+		[Test]
+		public void TestConstructorInvocation ()
+		{
+			Assert.AreEqual ("DebuggerTooltipTests.Abc", ResolveExpression (document, content, GetCtorOffset ("new Abc ()")));
+		}
+
+		[Test]
+		public void TestCastExpression ()
+		{
+			Assert.AreEqual ("((Abc) instanceVariable).Text", ResolveExpression (document, content, GetPropertyOffset ("((Abc) instanceVariable).Text")));
+			Assert.AreEqual ("((Abc) instanceVariable).Text.Length", ResolveExpression (document, content, GetPropertyOffset ("((Abc) instanceVariable).Text.Length")));
+		}
+
+		[Test]
+		public void TestPropertyOfMethodInvocation ()
+		{
+			Assert.AreEqual ("instanceVariable.GetType ().Name", ResolveExpression (document, content, GetPropertyOffset ("instanceVariable.GetType ().Name")));
+		}
+
+		[Test]
+		public void TestFieldDeclarations ()
+		{
+			Assert.AreEqual ("DebuggerTooltipTests.Abc.StaticField", ResolveExpression (document, content, GetBasicOffset ("StaticField")));
+			Assert.AreEqual ("this.@double", ResolveExpression (document, content, GetBasicOffset ("@double")));
+			Assert.AreEqual ("this.field", ResolveExpression (document, content, GetBasicOffset ("field")));
+		}
+
+		[Test]
+		public void TestPropertyDeclarations ()
+		{
+			Assert.AreEqual ("DebuggerTooltipTests.Abc.StaticProperty", ResolveExpression (document, content, GetBasicOffset ("StaticProperty")));
+			Assert.AreEqual ("this.Text", ResolveExpression (document, content, GetBasicOffset ("Text")));
+		}
+
+		[Test]
+		public void TestPropertySetter ()
+		{
+			Assert.AreEqual ("value", ResolveExpression (document, content, GetBasicOffset ("value")));
+		}
+
+		[Test]
+		public void TestMethodParameters ()
+		{
+			Assert.AreEqual ("this", ResolveExpression (document, content, GetBasicOffset ("this")));
+			Assert.AreEqual ("this.Text", ResolveExpression (document, content, GetPropertyOffset ("this.Text")));
+			Assert.AreEqual ("this.Text.Length", ResolveExpression (document, content, GetPropertyOffset ("this.Text.Length")));
+			Assert.AreEqual ("abc", ResolveExpression (document, content, GetBasicOffset ("abc")));
+			Assert.AreEqual ("abc.Text", ResolveExpression (document, content, GetPropertyOffset ("abc.Text")));
+			Assert.AreEqual ("abc.Text.Length", ResolveExpression (document, content, GetPropertyOffset ("abc.Text.Length")));
+		}
+
+		[Test]
+		public void TestBaseExpressions ()
+		{
+			Assert.AreEqual ("base.BaseProperty", ResolveExpression (document, content, GetPropertyOffset ("base.BaseProperty")));
+		}
+
+		[Test]
+		public void TestEscapedVariables ()
+		{
+			// Inside class Abc
+			Assert.AreEqual ("@class", ResolveExpression (document, content, GetBasicOffset ("@class")));
+			Assert.AreEqual ("@class.Length", ResolveExpression (document, content, GetPropertyOffset ("@class.Length")));
+			Assert.AreEqual ("@double.Length", ResolveExpression (document, content, GetPropertyOffset ("@double.Length")));
+			Assert.AreEqual ("this.@double.Length", ResolveExpression (document, content, GetPropertyOffset ("this.@double.Length")));
+			Assert.AreEqual ("abc.@double.Length", ResolveExpression (document, content, GetPropertyOffset ("abc.@double.Length")));
 		}
 	}
 }
