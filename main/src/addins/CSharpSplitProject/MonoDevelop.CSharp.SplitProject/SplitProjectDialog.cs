@@ -42,6 +42,7 @@ using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Core;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace MonoDevelop.CSharp.SplitProject
 {
@@ -95,16 +96,50 @@ namespace MonoDevelop.CSharp.SplitProject
 							throw task.Exception;
 						}
 						ProjectGraph graph = task.Result;
-						token.ThrowIfCancellationRequested ();
 
-						//TODO: Compute strongly connected components
+						var nodeStack = new List<ProjectGraph.Node>();
+						foreach (var node in graph.Nodes) {
+							if (!nodeStack.Contains (node)) {
+								Visit(node, nodeStack, token);
+							}
+						}
+
+						graph.ResetVisitedNodes();
+
+						//The algorithm requires that we reverse the direction of all graph arcs
+						//so we'll use VisitReversed instead of Visit
+
+						var stronglyConnectedComponents = new List<List<ProjectGraph.Node>>();
+
+						while (nodeStack.Any ()) {
+							ProjectGraph.Node topVertex = nodeStack[nodeStack.Count - 1];
+
+							var stronglyConnectedComponent = new List<ProjectGraph.Node>();
+
+							VisitReversed(topVertex, stronglyConnectedComponent, token);
+
+							nodeStack.RemoveAll(stronglyConnectedComponent.Contains);
+
+							stronglyConnectedComponents.Add (stronglyConnectedComponent);
+						}
+
+						Application.Invoke (() => {
+							foreach (var stronglyConnectedComponent in stronglyConnectedComponents) {
+								Console.WriteLine("Component:");
+
+								foreach (var node in stronglyConnectedComponent) {
+									Console.WriteLine (node);
+								}
+
+								Console.WriteLine("---");
+							}
+
+							okButton.Sensitive = true;
+						});
 
 					} catch (AggregateException ex) {
 						ex.Handle(innerEx => innerEx is TaskCanceledException);
 					}
-					Application.Invoke (() => {
-						okButton.Sensitive = true;
-					});
 				} catch (AggregateException ex) {
 					if (ex.InnerExceptions.All (innerEx => innerEx is ProjectHasErrorsException)) {
 						Content = new Label(GettextCatalog.GetString("Error: Please fix all errors before splitting project."));
@@ -114,6 +149,36 @@ namespace MonoDevelop.CSharp.SplitProject
 					}
 				}
 			});;
+		}
+
+		void Visit (ProjectGraph.Node node, List<ProjectGraph.Node> nodeStack, CancellationToken token)
+		{
+			token.ThrowIfCancellationRequested ();
+
+			node.Visited = true;
+
+			foreach (var destinationNode in node.DestinationNodes) {
+				if (!destinationNode.Visited) {
+					Visit (destinationNode, nodeStack, token);
+				}
+			}
+
+			nodeStack.Add (node);
+		}
+
+		void VisitReversed (ProjectGraph.Node node, List<ProjectGraph.Node> nodeStack, CancellationToken token)
+		{
+			token.ThrowIfCancellationRequested ();
+
+			node.Visited = true;
+
+			foreach (var destinationNode in node.SourceNodes) {
+				if (!destinationNode.Visited) {
+					VisitReversed (destinationNode, nodeStack, token);
+				}
+			}
+
+			nodeStack.Add (node);
 		}
 
 		Task<ProjectGraph> BuildGraph (CancellationToken token) {
@@ -161,7 +226,7 @@ namespace MonoDevelop.CSharp.SplitProject
 					var typeDeclarations = ctx.RootNode.Descendants.OfType<TypeDeclaration>();
 					foreach (var typeDeclaration in typeDeclarations) {
 						var resolveResult = ctx.Resolve(typeDeclaration);
-						if (resolveResult is ErrorResolveResult) {
+						if (resolveResult.IsError) {
 							throw new ProjectHasErrorsException();
 						}
 						var typeResolveResult = resolveResult as TypeResolveResult;
@@ -177,8 +242,8 @@ namespace MonoDevelop.CSharp.SplitProject
 						token.ThrowIfCancellationRequested();
 
 						var resolveResult = ctx.Resolve(expression);
-						var types = GetTypeDependencies(projectGraph, node, resolveResult);
-						node.AddTypeDependencies(types);
+						var type = GetTypeDependency(projectGraph, node, resolveResult);
+						node.AddTypeDependency(type);
 					}
 
 					foreach (var type in ctx.RootNode.Descendants.OfType<AstType>()) {
@@ -207,62 +272,15 @@ namespace MonoDevelop.CSharp.SplitProject
 			}, TaskCreationOptions.LongRunning);
 		}
 
-		IEnumerable<IType> GetTypeDependencies (ProjectGraph projectGraph, ProjectGraph.Node node, ResolveResult resolveResult)
+		IType GetTypeDependency (ProjectGraph projectGraph, ProjectGraph.Node node, ResolveResult resolveResult)
 		{
-			//We won't worry about generics here
-			//because if we have Foo<T>, then T is already handled separately
-			//and if we have Foo<T>(T x) called as Foo(exprOfTypeT), then the implicit T dependency is handled by the expression
-
 			if (resolveResult.IsError) {
-				throw new ProjectHasErrorsException();
+				//FIXME
+				return SpecialType.NullType;
+				//throw new ProjectHasErrorsException();
 			}
 
-			if (resolveResult is ConstantResolveResult || resolveResult is AwaitResolveResult || resolveResult is MethodGroupResolveResult
-			    || resolveResult is LocalResolveResult || resolveResult is ThisResolveResult || resolveResult is NamespaceResolveResult) {
-
-				//We don't care about await expr, because we already solved the dependencies in expr
-				//We don't care about MethodGroupResolveResult because we only want to choose the dependency of the specific chosen method
-				//LocalResolveResult has been resolved where it was declared, so we also don't care about that
-
-				return Enumerable.Empty<IType>();
-			}
-
-			var typeResolveResult = resolveResult as TypeResolveResult;
-			if (typeResolveResult != null) {
-				return new IType[] { typeResolveResult.Type };
-			}
-
-			var memberResolveResult = resolveResult as MemberResolveResult;
-			if (memberResolveResult != null) {
-				return new IType[] {
-					memberResolveResult.Member.DeclaringType,
-					memberResolveResult.Type
-				};
-			}
-
-			var lambdaResult = resolveResult as LambdaResolveResult;
-			if (lambdaResult != null) {
-				return new IType[] { lambdaResult.Type };
-			}
-
-			var operatorResolveResult = resolveResult as OperatorResolveResult;
-			if (operatorResolveResult != null) {
-				var types = new List<IType> ();
-				var userDefinedMethod = operatorResolveResult.UserDefinedOperatorMethod;
-				if (userDefinedMethod != null) {
-					types.Add (userDefinedMethod.DeclaringType);
-				}
-				types.Add (operatorResolveResult.Type);
-				return types;
-			}
-
-			var conversionResolveResult = resolveResult as ConversionResolveResult;
-			if (conversionResolveResult != null) {
-				//We have to check because of implicit conversions
-				return new IType[] { conversionResolveResult.Type };
-			}
-
-			throw new NotImplementedException("TODO: SplitProjectDialog.GetTypeDependencies for " + resolveResult.GetType ().FullName);
+			return resolveResult.Type;
 		}
 	}
 }
