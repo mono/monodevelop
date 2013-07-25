@@ -35,14 +35,12 @@ using MonoDevelop.Projects;
 using MonoDevelop.CSharp.Refactoring.CodeActions;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Core;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace MonoDevelop.CSharp.SplitProject
 {
@@ -52,33 +50,18 @@ namespace MonoDevelop.CSharp.SplitProject
 
 		CancellationTokenSource cancellationTokenSource;
 
-		DialogButton okButton;
-		DialogButton cancelButton;
-
-		public SplitProjectDialog (DotNetProject project)
+		public SplitProjectDialog (DotNetProject project, ProjectGraph graph)
 		{
 			this.project = project;
 
 			cancellationTokenSource = new CancellationTokenSource ();
 
-			var task = RunGraphGeneration (cancellationTokenSource.Token);
+			SetupDialog (graph);
 
 			Title = "Split Project";
 
-			Buttons.Add (okButton = new Xwt.DialogButton (Command.Ok) { Sensitive = false });
-			Buttons.Add (cancelButton = new Xwt.DialogButton (Command.Cancel));
-
-			cancelButton.Clicked += (object sender, EventArgs e) => {
-				cancellationTokenSource.Cancel();
-				try {
-					task.Wait ();
-				} catch (AggregateException) {
-					// Ensure the dialog is closed
-					Dispose ();
-
-					throw;
-				}
-			};
+			Buttons.Add (new Xwt.DialogButton (Command.Ok));
+			Buttons.Add (new Xwt.DialogButton (Command.Cancel));
 		}
 
 		protected override void Dispose (bool disposing)
@@ -88,194 +71,93 @@ namespace MonoDevelop.CSharp.SplitProject
 			cancellationTokenSource.Dispose ();
 		}
 
-		Task RunGraphGeneration (CancellationToken token) {
-			 return BuildGraph(token).ContinueWith ((Task<ProjectGraph> task) => {
-				try {
-					try {
-						if (task.Exception != null) {
-							throw task.Exception;
-						}
-						ProjectGraph graph = task.Result;
+		void SetupDialog (ProjectGraph result)
+		{
+			DataField<bool> selectedField = new DataField<bool> ();
+			DataField<ProjectGraph.Node> nodeField = new DataField<ProjectGraph.Node> ();
+			DataField<string> nameField = new DataField<string> ();
 
-						var nodeStack = new List<ProjectGraph.Node>();
-						foreach (var node in graph.Nodes) {
-							if (!nodeStack.Contains (node)) {
-								Visit(node, nodeStack, token);
-							}
-						}
+			var dataSource = new TreeStore (selectedField, nodeField, nameField);
 
-						graph.ResetVisitedNodes();
+			Dictionary<ProjectGraph.Node, TreePosition> nodePositions = new Dictionary<ProjectGraph.Node, TreePosition> ();
 
-						//The algorithm requires that we reverse the direction of all graph arcs
-						//so we'll use VisitReversed instead of Visit
+			foreach (var node in result.Nodes) {
+				var position = dataSource.AddNode ().SetValue (nodeField, node).SetValue (nameField, node.ToString ()).CurrentPosition;
+				nodePositions.Add (node, position);
+			}
 
-						var stronglyConnectedComponents = new List<List<ProjectGraph.Node>>();
+			TreeView tree = new TreeView ();
+			var cellView = new CheckBoxCellView (selectedField) { Editable = true };
 
-						while (nodeStack.Any ()) {
-							ProjectGraph.Node topVertex = nodeStack[nodeStack.Count - 1];
+			bool propagatingChanges = false;
 
-							var stronglyConnectedComponent = new List<ProjectGraph.Node>();
-
-							VisitReversed(topVertex, stronglyConnectedComponent, token);
-
-							nodeStack.RemoveAll(stronglyConnectedComponent.Contains);
-
-							stronglyConnectedComponents.Add (stronglyConnectedComponent);
-						}
-
-						Application.Invoke (() => {
-							foreach (var stronglyConnectedComponent in stronglyConnectedComponents) {
-								Console.WriteLine("Component:");
-
-								foreach (var node in stronglyConnectedComponent) {
-									Console.WriteLine (node);
-								}
-
-								Console.WriteLine("---");
-							}
-
-							okButton.Sensitive = true;
-						});
-
-					} catch (AggregateException ex) {
-						ex.Handle(innerEx => innerEx is TaskCanceledException);
-					}
-				} catch (AggregateException ex) {
-					if (ex.InnerExceptions.All (innerEx => innerEx is ProjectHasErrorsException)) {
-						Content = new Label(GettextCatalog.GetString("Error: Please fix all errors before splitting project."));
-					}
-					else {
-						throw;
-					}
+			cellView.Toggled += (object sender, WidgetEventArgs e) => {
+				if (propagatingChanges)
+				{
+					return;
 				}
-			});;
+
+				propagatingChanges = true;
+
+				var rowPosition = tree.SelectedRow;
+				if (rowPosition == null) {
+					return;
+				}
+
+				var row = dataSource.GetNavigatorAt(rowPosition);
+
+				var selected = row.GetValue(selectedField);
+				var node = row.GetValue(nodeField);
+
+				if (selected) {
+					//Deselect
+
+					VisitReversed (node, (foundNode) => {
+						dataSource.GetNavigatorAt(nodePositions[node]).SetValue(selectedField, false);
+					});
+				}
+				else {
+					//Select
+					
+					Visit (node, (foundNode) => {
+						dataSource.GetNavigatorAt(nodePositions[node]).SetValue(selectedField, true);
+					});
+				}
+
+				e.Handled = true;
+				propagatingChanges = false;
+			};
+			tree.Columns.Add (new ListViewColumn("Move to new project", cellView));
+			tree.Columns.Add ("Name", nameField);
+
+			tree.DataSource = dataSource;
+			Content = tree;
 		}
 
-		void Visit (ProjectGraph.Node node, List<ProjectGraph.Node> nodeStack, CancellationToken token)
+		void Visit (ProjectGraph.Node node, Action<ProjectGraph.Node> callback)
 		{
-			token.ThrowIfCancellationRequested ();
+			callback (node);
 
 			node.Visited = true;
 
 			foreach (var destinationNode in node.DestinationNodes) {
 				if (!destinationNode.Visited) {
-					Visit (destinationNode, nodeStack, token);
+					Visit (destinationNode, callback);
 				}
 			}
-
-			nodeStack.Add (node);
 		}
 
-		void VisitReversed (ProjectGraph.Node node, List<ProjectGraph.Node> nodeStack, CancellationToken token)
+		void VisitReversed (ProjectGraph.Node node, Action<ProjectGraph.Node> callback)
 		{
-			token.ThrowIfCancellationRequested ();
+			callback (node);
 
 			node.Visited = true;
 
 			foreach (var destinationNode in node.SourceNodes) {
 				if (!destinationNode.Visited) {
-					VisitReversed (destinationNode, nodeStack, token);
+					VisitReversed (destinationNode, callback);
 				}
 			}
-
-			nodeStack.Add (node);
-		}
-
-		Task<ProjectGraph> BuildGraph (CancellationToken token) {
-			return Task.Factory.StartNew(() => {
-				var projectGraph = new ProjectGraph();
-
-				//Get nodes
-				foreach (var file in project.Files) {
-					token.ThrowIfCancellationRequested();
-					projectGraph.AddNode(new ProjectGraph.Node(file));
-				}
-
-				//Find out which types each file depends on
-
-				Dictionary<IType, List<ProjectGraph.Node>> typeDefinitions = new Dictionary<IType, List<ProjectGraph.Node>>();
-
-				foreach (var node in projectGraph.Nodes) {
-					token.ThrowIfCancellationRequested();
-
-					var file = node.File;
-
-					if (file.BuildAction != "Compile") continue;
-
-					if (!file.Name.EndsWith (".cs", StringComparison.InvariantCultureIgnoreCase)) {
-						continue;
-					}
-
-					bool isOpen;
-					System.Text.Encoding encoding;
-					bool hadBom;
-
-					var data = TextFileProvider.Instance.GetTextEditorData (file.Name, out hadBom, out encoding, out isOpen);
-
-					ParsedDocument parsedDocument;
-					using (var reader = new StreamReader (data.OpenStream ()))
-						parsedDocument = new MonoDevelop.CSharp.Parser.TypeSystemParser ().Parse (true, file.Name, reader, project);
-
-					token.ThrowIfCancellationRequested();
-
-					var resolver = new CSharpAstResolver (TypeSystemService.GetCompilation (project), (SyntaxTree) parsedDocument.Ast, parsedDocument.ParsedFile as CSharpUnresolvedFile);
-
-					var ctx = new MDRefactoringContext (project as DotNetProject, data, parsedDocument, resolver, resolver.RootNode.StartLocation, token);
-
-					//Step 1. Find all type declarations and identify which are partial
-					var typeDeclarations = ctx.RootNode.Descendants.OfType<TypeDeclaration>();
-					foreach (var typeDeclaration in typeDeclarations) {
-						var resolveResult = ctx.Resolve(typeDeclaration);
-						if (resolveResult.IsError) {
-							throw new ProjectHasErrorsException();
-						}
-						var typeResolveResult = resolveResult as TypeResolveResult;
-						var type = typeResolveResult.Type;
-						if (!typeDefinitions.ContainsKey(type)) {
-							typeDefinitions[type] = new List<ProjectGraph.Node>();
-						}
-						typeDefinitions[type].Add (node);
-						node.AddTypeDependency(type);
-					}
-
-					foreach (var expression in ctx.RootNode.Descendants.OfType<IdentifierExpression>()) {
-						token.ThrowIfCancellationRequested();
-
-						var resolveResult = ctx.Resolve(expression);
-						if (resolveResult.IsError) {
-							Console.WriteLine ("File " + file.Name + "(" + expression.StartLocation.Line + ":" + expression.StartLocation.Column + ")");
-							Console.WriteLine ("Error at node " + expression);
-							Console.WriteLine (resolveResult.GetType().Name);
-							//throw new ProjectHasErrorsException();
-						}
-
-						node.AddTypeDependency(resolveResult.Type);
-					}
-
-					foreach (var type in ctx.RootNode.Descendants.OfType<AstType>()) {
-						token.ThrowIfCancellationRequested();
-
-						var resolvedType = ctx.ResolveType (type);
-						node.AddTypeDependency (resolvedType);
-					}
-				}
-
-				//Turn the type dependencies into node dependencies
-				foreach (var node in projectGraph.Nodes) {
-					token.ThrowIfCancellationRequested();
-
-					foreach (var dependedType in node.TypeDependencies) {
-						List<ProjectGraph.Node> dependedNodes;
-						if (typeDefinitions.TryGetValue(dependedType, out dependedNodes)) {
-							foreach (var dependedNode in dependedNodes) {
-								node.AddEdgeTo(dependedNode);
-							}
-						}
-					}
-				}
-
-				return projectGraph;
-			}, TaskCreationOptions.LongRunning);
 		}
 	}
 }
