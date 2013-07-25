@@ -221,6 +221,8 @@ namespace MonoDevelop.CodeActions
 				if (args.Button != 0)
 					return;
 				var line = editor.GetLine (loc.Line);
+				if (line == null)
+					return;
 				var x = editor.ColumnToX (line, loc.Column) - editor.HAdjustment.Value + editor.TextViewMargin.TextStartPosition;
 				var y = editor.LineToY (line.LineNumber + 1) - editor.VAdjustment.Value;
 				if (args.X - x >= 0 * editor.Options.Zoom && 
