@@ -125,7 +125,7 @@ namespace DebuggerTooltipTests
 			return base.BaseProperty == 5;
 		}
 
-		public bool AtVariables (Abc abc)
+		public void AtVariables (Abc abc)
 		{
 			// TEST: make sure that we can resolve @variables
 			var @class = ""resolve me"";
@@ -133,6 +133,13 @@ namespace DebuggerTooltipTests
 			result = @double.Length;
 			result = this.@double.Length;
 			result = abc.@double.Length;
+		}
+
+		// TEST: make sure that we can resolve parameters with default values
+		public void DefaultValues (int defaultValue = 5)
+		{
+			if (defaultValue == 5)
+				Console.WriteLine (""it's the default value!!"");
 		}
 	}
 
@@ -300,6 +307,12 @@ namespace DebuggerTooltipTests
 		public void TestPropertyInitializers ()
 		{
 			Assert.AreEqual ("propertyInitializer.Property", ResolveExpression (document, content, GetAssignmentOffset ("Property = string.Empty")));
+		}
+
+		[Test]
+		public void TestDefaultValueParameters ()
+		{
+			Assert.AreEqual ("defaultValue", ResolveExpression (document, content, GetAssignmentOffset ("defaultValue = 5")));
 		}
 	}
 }
