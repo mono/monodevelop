@@ -177,7 +177,8 @@ namespace MonoDevelop.VersionControl
 			}
 			return String.Empty;
 		}
-		
+
+		internal static Dictionary<Repository, InternalRepositoryReference> referenceCache = new Dictionary<Repository, InternalRepositoryReference> ();
 		public static Repository GetRepository (IWorkspaceObject entry)
 		{
 			InternalRepositoryReference repoRef = (InternalRepositoryReference) entry.ExtendedProperties [typeof(InternalRepositoryReference)];
@@ -188,7 +189,10 @@ namespace MonoDevelop.VersionControl
 			InternalRepositoryReference rref = null;
 			if (repo != null) {
 				repo.AddRef ();
-				rref = new InternalRepositoryReference (repo);
+				if (!referenceCache.TryGetValue (repo, out rref)) {
+					rref = new InternalRepositoryReference (repo);
+					referenceCache [repo] = rref;
+				}
 			}
 			entry.ExtendedProperties [typeof(InternalRepositoryReference)] = rref;
 			
@@ -738,12 +742,13 @@ namespace MonoDevelop.VersionControl
 
 		public Repository Repo {
 			get {
-				return this.repo;
+				return repo;
 			}
 		}
 		
 		public void Dispose ()
 		{
+			VersionControlService.referenceCache.Remove (repo);
 			repo.Unref ();
 		}
 	}
