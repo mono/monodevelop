@@ -238,7 +238,7 @@ namespace MonoDevelop.CSharp.SplitProject
 						node.AddTypeDependency(type);
 					}
 
-					foreach (var expression in ctx.RootNode.Descendants.OfType<Expression>()) {
+					foreach (var expression in ctx.RootNode.Descendants.OfType<IdentifierExpression>()) {
 						token.ThrowIfCancellationRequested();
 
 						var resolveResult = ctx.Resolve(expression);
@@ -246,7 +246,7 @@ namespace MonoDevelop.CSharp.SplitProject
 							Console.WriteLine ("File " + file.Name + "(" + expression.StartLocation.Line + ":" + expression.StartLocation.Column + ")");
 							Console.WriteLine ("Error at node " + expression);
 							Console.WriteLine (resolveResult.GetType().Name);
-							throw new ProjectHasErrorsException();
+							//throw new ProjectHasErrorsException();
 						}
 
 						node.AddTypeDependency(resolveResult.Type);
