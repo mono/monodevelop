@@ -166,6 +166,16 @@ namespace MonoDevelop.SourceEditor
 
 					return "this." + name;
 				}
+
+				if (node is NamedExpression) {
+					var variable = node.GetParent<VariableInitializer> ();
+					if (variable != null) {
+						var variableName = GetIdentifierName (editor, variable.NameToken, out startOffset);
+						var name = GetIdentifierName (editor, ((NamedExpression) node).NameToken, out startOffset);
+
+						return variableName + "." + name;
+					}
+				}
 			} else if (result is TypeResolveResult) {
 				return ((TypeResolveResult) result).Type.FullName;
 			}

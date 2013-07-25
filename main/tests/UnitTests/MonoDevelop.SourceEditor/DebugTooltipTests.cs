@@ -108,6 +108,10 @@ namespace DebuggerTooltipTests
 			}
 		}
 
+		public string Property {
+			get; set;
+		}
+
 		// TEST: make sure that we can resolve parameters...
 		public bool Method (Abc abc)
 		{
@@ -147,6 +151,11 @@ namespace DebuggerTooltipTests
 
 			// TEST: make sure that 'Name' can be resolved
 			var invokingVariable = instanceVariable.GetType ().Name;
+
+			// TEST: make sure that property initializers can be resolved
+			var propertyInitializer = new Abc () {
+				Property = string.Empty
+			};
 		}
 	}
 }
@@ -176,6 +185,17 @@ namespace DebuggerTooltipTests
 			return startOffset + (expr.Length / 2);
 		}
 
+		int GetAssignmentOffset (string expr)
+		{
+			int startOffset = content.IndexOf (expr, StringComparison.Ordinal);
+			int length = expr.IndexOf ('=');
+
+			while (expr[length - 1] == ' ')
+				length--;
+
+			return startOffset + (length / 2);
+		}
+
 		int GetCtorOffset (string expr)
 		{
 			int startOffset = content.IndexOf (expr, StringComparison.Ordinal);
@@ -184,11 +204,11 @@ namespace DebuggerTooltipTests
 			while (expr[length - 1] == ' ')
 				length--;
 
-			int dot = expr.LastIndexOf ('.', length, length);
+			int dot = expr.LastIndexOf ('.', length, length - 4);
 			if (dot != -1)
 				return startOffset + dot + ((length - dot) / 2);
 
-			return startOffset + (length / 2);
+			return startOffset + 4 + ((length - 4) / 2);
 		}
 
 		int GetPropertyOffset (string expr)
@@ -274,6 +294,12 @@ namespace DebuggerTooltipTests
 			Assert.AreEqual ("@double.Length", ResolveExpression (document, content, GetPropertyOffset ("@double.Length")));
 			Assert.AreEqual ("this.@double.Length", ResolveExpression (document, content, GetPropertyOffset ("this.@double.Length")));
 			Assert.AreEqual ("abc.@double.Length", ResolveExpression (document, content, GetPropertyOffset ("abc.@double.Length")));
+		}
+
+		[Test]
+		public void TestPropertyInitializers ()
+		{
+			Assert.AreEqual ("propertyInitializer.Property", ResolveExpression (document, content, GetAssignmentOffset ("Property = string.Empty")));
 		}
 	}
 }
