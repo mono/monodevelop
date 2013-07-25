@@ -242,8 +242,14 @@ namespace MonoDevelop.CSharp.SplitProject
 						token.ThrowIfCancellationRequested();
 
 						var resolveResult = ctx.Resolve(expression);
-						var type = GetTypeDependency(projectGraph, node, resolveResult);
-						node.AddTypeDependency(type);
+						if (resolveResult.IsError) {
+							Console.WriteLine ("File " + file.Name + "(" + expression.StartLocation.Line + ":" + expression.StartLocation.Column + ")");
+							Console.WriteLine ("Error at node " + expression);
+							Console.WriteLine (resolveResult.GetType().Name);
+							throw new ProjectHasErrorsException();
+						}
+
+						node.AddTypeDependency(resolveResult.Type);
 					}
 
 					foreach (var type in ctx.RootNode.Descendants.OfType<AstType>()) {
@@ -270,17 +276,6 @@ namespace MonoDevelop.CSharp.SplitProject
 
 				return projectGraph;
 			}, TaskCreationOptions.LongRunning);
-		}
-
-		IType GetTypeDependency (ProjectGraph projectGraph, ProjectGraph.Node node, ResolveResult resolveResult)
-		{
-			if (resolveResult.IsError) {
-				//FIXME
-				return SpecialType.NullType;
-				//throw new ProjectHasErrorsException();
-			}
-
-			return resolveResult.Type;
 		}
 	}
 }
