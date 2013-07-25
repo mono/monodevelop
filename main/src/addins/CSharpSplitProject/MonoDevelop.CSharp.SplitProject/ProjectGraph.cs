@@ -36,6 +36,7 @@ namespace MonoDevelop.CSharp.SplitProject
 		public class Node
 		{
 			public readonly ProjectFile File;
+			public bool Visited { get; set; }
 			ISet<IType> typeDependencies = new HashSet<IType>();
 			List<Node> destinationNodes = new List<Node>();
 			List<Node> sourceNodes = new List<Node>();
@@ -59,6 +60,14 @@ namespace MonoDevelop.CSharp.SplitProject
 				get { return typeDependencies; }
 			}
 
+			public IEnumerable<Node> DestinationNodes {
+				get { return destinationNodes.AsReadOnly (); }
+			}
+
+			public IEnumerable<Node> SourceNodes {
+				get { return sourceNodes.AsReadOnly (); }
+			}
+
 			internal void AddDestination(Node node) {
 				destinationNodes.Add (node);
 			}
@@ -77,6 +86,14 @@ namespace MonoDevelop.CSharp.SplitProject
 				destination.sourceNodes.Add (this);
 				destinationNodes.Add (destination);
 			}
+
+			public override string ToString ()
+			{
+				int lastSlash = File.Name.LastIndexOf ('/');
+				if (lastSlash == -1)
+					return File.Name;
+				return File.Name.Substring (lastSlash + 1);
+			}
 		}
 
 		List<Node> nodes = new List<Node>();
@@ -89,6 +106,13 @@ namespace MonoDevelop.CSharp.SplitProject
 
 			nodes.Add (node);
 			nodesForProjectFiles.Add (node.File, node);
+		}
+
+		public void ResetVisitedNodes ()
+		{
+			foreach (var node in nodes) {
+				node.Visited = false;
+			}
 		}
 
 		public Node GetNodeForFile(ProjectFile file) {
