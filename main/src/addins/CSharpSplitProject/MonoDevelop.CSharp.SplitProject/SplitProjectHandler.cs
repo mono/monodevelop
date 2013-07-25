@@ -24,10 +24,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Linq;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Pads;
+using System.Threading;
+using System.Threading.Tasks;
+using MonoDevelop.Ide.ProgressMonitoring;
+using MonoDevelop.Core;
+using System.Collections.Generic;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Semantics;
+using MonoDevelop.CSharp.Refactoring.CodeActions;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using MonoDevelop.Ide.TypeSystem;
+using System.IO;
+using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
 
 namespace MonoDevelop.CSharp.SplitProject
 {
@@ -37,11 +51,15 @@ namespace MonoDevelop.CSharp.SplitProject
 
 		protected override void Run ()
 		{
-			var nativeWindow = IdeApp.Workbench.RootWindow;
-			Xwt.WindowFrame parentFrame = Xwt.Toolkit.CurrentEngine.WrapWindow(nativeWindow);
+			ProjectGraph graph = BuildGraph (currentProject);
 
-			using (var dialog = new SplitProjectDialog (currentProject)) {
-				dialog.Run (parentFrame);
+			if (graph != null) {
+				var nativeWindow = IdeApp.Workbench.RootWindow;
+				Xwt.WindowFrame parentFrame = Xwt.Toolkit.CurrentEngine.WrapWindow (nativeWindow);
+
+				using (var dialog = new SplitProjectDialog (currentProject, graph)) {
+					dialog.Run (parentFrame);
+				}
 			}
 		}
 
@@ -57,6 +75,134 @@ namespace MonoDevelop.CSharp.SplitProject
 			}
 
 			info.Visible = true;
+		}
+
+		ProjectGraph BuildGraph (DotNetProject project) {
+			using (var progress = new MessageDialogProgressMonitor (true, true)) {
+				CancellationTokenSource tokenSource = new CancellationTokenSource ();
+				CancellationToken token = tokenSource.Token;
+				progress.CancelRequested += (IProgressMonitor monitor) => tokenSource.Cancel ();
+
+				progress.BeginTask (GettextCatalog.GetString ("Preparing to split project"), project.Files.Count);
+
+				var projectGraph = new ProjectGraph ();
+
+				//Get nodes
+				foreach (var file in project.Files) {
+					if (progress.IsCancelRequested) {
+						return null;
+					}
+					projectGraph.AddNode (new ProjectGraph.Node (file));
+				}
+
+				progress.EndTask ();
+
+				progress.BeginStepTask (GettextCatalog.GetString ("Analyzing files"), project.Files.Count, 1);
+
+				//Find out which types each file depends on
+
+				Dictionary<IType, List<ProjectGraph.Node>> typeDefinitions = new Dictionary<IType, List<ProjectGraph.Node>> ();
+
+				foreach (var node in projectGraph.Nodes) {
+					if (progress.IsCancelRequested) {
+						return null;
+					}
+
+					progress.BeginStepTask (GettextCatalog.GetString ("Analyzing {0}", node), 4, 1);
+
+					var file = node.File;
+
+					if (file.BuildAction != "Compile")
+						continue;
+
+					if (!file.Name.EndsWith (".cs", StringComparison.InvariantCultureIgnoreCase)) {
+						continue;
+					}
+
+					bool isOpen;
+					System.Text.Encoding encoding;
+					bool hadBom;
+
+					var data = TextFileProvider.Instance.GetTextEditorData (file.Name, out hadBom, out encoding, out isOpen);
+
+					progress.Step (1);
+
+					ParsedDocument parsedDocument;
+					using (var reader = new StreamReader (data.OpenStream ()))
+						parsedDocument = new MonoDevelop.CSharp.Parser.TypeSystemParser ().Parse (true, file.Name, reader, project);
+
+					if (progress.IsCancelRequested) {
+						return null;
+					}
+
+					var resolver = new CSharpAstResolver (TypeSystemService.GetCompilation (project), (SyntaxTree)parsedDocument.Ast, parsedDocument.ParsedFile as CSharpUnresolvedFile);
+
+					var ctx = new MDRefactoringContext (project as DotNetProject, data, parsedDocument, resolver, resolver.RootNode.StartLocation, token);
+
+					progress.Step (1);
+
+					//Step 1. Find all type declarations and identify which are partial
+					var typeDeclarations = ctx.RootNode.Descendants.OfType<TypeDeclaration> ();
+					foreach (var typeDeclaration in typeDeclarations) {
+						if (progress.IsCancelRequested) {
+							return null;
+						}
+
+						var resolveResult = ctx.Resolve (typeDeclaration);
+						if (resolveResult.IsError) {
+							progress.ReportError ("Project has errors. Could not resolve type declaration for type " + typeDeclaration.Name, new ProjectHasErrorsException ());
+						}
+						var typeResolveResult = resolveResult as TypeResolveResult;
+						var type = typeResolveResult.Type;
+						if (!typeDefinitions.ContainsKey (type)) {
+							typeDefinitions [type] = new List<ProjectGraph.Node> ();
+						}
+						typeDefinitions [type].Add (node);
+						node.AddTypeDependency (type);
+					}
+
+					progress.Step (1);
+
+					foreach (var type in ctx.RootNode.Descendants.OfType<AstType>()) {
+						if (progress.IsCancelRequested) {
+							return null;
+						}
+
+						var resolvedType = ctx.ResolveType (type);
+						node.AddTypeDependency (resolvedType);
+					}
+
+					progress.Step (1);
+
+					progress.EndTask ();
+				}
+
+				progress.EndTask ();
+
+				progress.BeginStepTask (GettextCatalog.GetString ("Analyzing dependencies between different files"), project.Files.Count, 1);
+
+				//Turn the type dependencies into node dependencies
+				foreach (var node in projectGraph.Nodes) {
+					if (progress.IsCancelRequested) {
+						return null;
+					}
+
+					foreach (var dependedType in node.TypeDependencies) {
+						List<ProjectGraph.Node> dependedNodes;
+						if (typeDefinitions.TryGetValue (dependedType, out dependedNodes)) {
+							foreach (var dependedNode in dependedNodes) {
+								node.AddEdgeTo (dependedNode);
+							}
+						}
+					}
+
+					progress.Step (1);
+				}
+
+				progress.EndTask ();
+
+				return progress.IsCancelRequested ? null : projectGraph;
+			}
 		}
 	}
 }
