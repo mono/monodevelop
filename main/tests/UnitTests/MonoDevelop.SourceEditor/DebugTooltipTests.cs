@@ -105,6 +105,9 @@ namespace DebuggerTooltipTests
 			set {
 				// TEST: make sure that we can resolve the variable being set
 				Console.WriteLine (value);
+
+				// TEST: make sure that we don't resolve method invocations
+				Method (null);
 			}
 		}
 
@@ -152,6 +155,9 @@ namespace DebuggerTooltipTests
 
 			// TEST: make sure that a .ctor can be resolved
 			var instanceVariable = new Abc ();
+
+			// TEST: make sure that we don't resolve method invocations
+			instanceVariable.Method (null);
 
 			// TEST: make sure that the cast, Text, and Text.Length can be resolved
 			var castingLocalVariable = ((Abc) instanceVariable).Text.Length;
@@ -313,6 +319,13 @@ namespace DebuggerTooltipTests
 		public void TestDefaultValueParameters ()
 		{
 			Assert.AreEqual ("defaultValue", ResolveExpression (document, content, GetAssignmentOffset ("defaultValue = 5")));
+		}
+
+		[Test]
+		public void TestMethodInvocations ()
+		{
+			Assert.AreEqual (null, ResolveExpression (document, content, GetPropertyOffset ("instanceVariable.Method")));
+			Assert.AreEqual (null, ResolveExpression (document, content, GetBasicOffset ("Method")));
 		}
 	}
 }
