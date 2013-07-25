@@ -34,13 +34,30 @@ using Mono.Addins.Description;
 
 namespace MonoDevelop.Tests.TestRunner
 {
+	class GtkMainLoop : GuiUnit.IMainLoopIntegration
+	{
+		public void InitializeToolkit ()
+		{
+			Gtk.Application.Init ();
+		}
+		public void InvokeOnMainLoop (GuiUnit.InvokerHelper helper)
+		{
+			Gtk.Application.Invoke (delegate { helper.Invoke (); });
+		}
+		public void RunMainLoop ()
+		{
+			Gtk.Application.Run ();
+		}
+		public void Shutdown ()
+		{
+			Gtk.Application.Quit ();
+		}
+	}
+
 	public class Runer: IApplication
 	{
 		public int Run (string[] arguments)
 		{
-			var list = new List<string> (arguments);
-			list.Add ("-domain=None");
-
 			foreach (var ar in arguments) {
 				if ((ar.EndsWith (".dll") || ar.EndsWith (".exe")) && File.Exists (ar)) {
 					try {
@@ -57,7 +74,8 @@ namespace MonoDevelop.Tests.TestRunner
 					}
 				}
 			}
-			return NUnit.ConsoleRunner.Runner.Main (list.ToArray ());
+			GuiUnit.TestRunner.MainLoop = new GtkMainLoop ();
+			return GuiUnit.TestRunner.Main (arguments);
 		}
 
 		IEnumerable<string> GetAddinsFromReferences (AssemblyName aname)
