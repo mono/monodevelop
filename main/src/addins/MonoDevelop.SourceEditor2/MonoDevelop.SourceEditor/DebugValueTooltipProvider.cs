@@ -78,19 +78,6 @@ namespace MonoDevelop.SourceEditor
 
 		#region ITooltipProvider implementation
 
-		static int IndexOfLastWhiteSpace (string text)
-		{
-			int index = text.Length - 1;
-
-			while (index >= 0) {
-				if (char.IsWhiteSpace (text[index]))
-					break;
-				index--;
-			}
-
-			return index;
-		}
-
 		static string GetIdentifierName (TextEditorData editor, Identifier id, out int startOffset)
 		{
 			startOffset = editor.LocationToOffset (id.StartLocation.Line, id.StartLocation.Column);
@@ -278,25 +265,6 @@ namespace MonoDevelop.SourceEditor
 			val.Name = expression;
 			
 			return new TooltipItem (val, startOffset, expression.Length);
-		}
-		
-		/*string GetExpressionBeforeOffset (TextEditor editor, int offset)
-		{
-			int start = offset;
-			while (start > 0 && IsIdChar (editor.Document.GetCharAt (start)))
-				start--;
-			while (offset < editor.Document.Length && IsIdChar (editor.Document.GetCharAt (offset)))
-				offset++;
-			start++;
-			if (offset - start > 0 && start < editor.Document.Length)
-				return editor.Document.GetTextAt (start, offset - start);
-			else
-				return string.Empty;
-		}*/
-		
-		public static bool IsIdChar (char c)
-		{
-			return char.IsLetterOrDigit (c) || c == '_';
 		}
 			
 		public override Gtk.Window ShowTooltipWindow (TextEditor editor, int offset, Gdk.ModifierType modifierState, int mouseX, int mouseY, TooltipItem item)
