@@ -267,8 +267,7 @@ namespace MonoDevelop.VersionControl.Git
 						if (Directory.Exists (p)) {
 							if (recursive)
 								versions.AddRange (GetDirectoryVersionInfo (p, getRemoteStatus, true));
-							else
-								versions.Add (new VersionInfo (p, "", true, VersionStatus.Versioned, arev, VersionStatus.Versioned, null));
+							versions.Add (new VersionInfo (p, "", true, VersionStatus.Versioned, arev, VersionStatus.Versioned, null));
 						}
 						else {
 							localFiles.Add (p);
