@@ -96,9 +96,6 @@
       <Link>SharpSvn-Sasl21-23-win32.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="..\..\VersionControl.Subversion.Win32\VersionControl.Subversion.Win32\SubversionAddinWindows.exclude.addins">
-      <Link>SubversionAddinWindows.exclude.addins</Link>
-    </None>
     <None Include="..\..\VersionControl.Subversion.Win32\VersionControl.Subversion.Win32\subversion-logo.png">
       <Link>subversion-logo.png</Link>
     </None>

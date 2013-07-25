@@ -18,12 +18,15 @@
 		<Addin id="VersionControl.Subversion" version="4.1.7"/>
 	</Dependencies>
 
-	<Runtime>
-    <Import file="SharpSvn.dll" />
-    <Import file="SharpPlink-Win32.svnExe" />
-    <Import file="SharpSvn-DB44-20-Win32.dll" />
-    <Import file="SharpSvn-SASL21-23-Win32.dll" />
-    <Import file="SubversionAddinWindows.exclude.addins" />
+  <Runtime>
+    <Import      file="SharpSvn.dll" />
+    <ScanExclude path="SharpSvn.dll"/>
+    <Import      file="SharpPlink-Win32.svnExe" />
+    <ScanExclude path="SharpPlink-Win32.svnExe" />
+    <Import      file="SharpSvn-DB44-20-Win32.dll" />
+    <ScanExclude path="SharpSvn-DB44-20-win32.dll" />
+    <Import      file="SharpSvn-SASL21-23-Win32.dll" />
+    <ScanExclude path="SharpSvn-Sasl21-23-win32.dll" />
   </Runtime>
 
 	<Extension path = "/MonoDevelop/VersionControl/VersionControlSystems">
