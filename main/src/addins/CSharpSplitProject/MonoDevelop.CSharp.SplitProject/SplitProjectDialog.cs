@@ -41,6 +41,7 @@ using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp.SplitProject
 {
@@ -61,17 +62,20 @@ namespace MonoDevelop.CSharp.SplitProject
 
 			var task = RunGraphGeneration (cancellationTokenSource.Token);
 
+			Title = "Split Project";
+
 			Buttons.Add (okButton = new Xwt.DialogButton (Command.Ok) { Sensitive = false });
 			Buttons.Add (cancelButton = new Xwt.DialogButton (Command.Cancel));
 
 			cancelButton.Clicked += (object sender, EventArgs e) => {
 				cancellationTokenSource.Cancel();
 				try {
-					task.Wait();
-				} catch (AggregateException ex) {
-					ex.Handle(innerException => {
-						return innerException is OperationCanceledException;
-					});
+					task.Wait ();
+				} catch (AggregateException) {
+					// Ensure the dialog is closed
+					Dispose ();
+
+					throw;
 				}
 			};
 		}
@@ -85,14 +89,30 @@ namespace MonoDevelop.CSharp.SplitProject
 
 		Task RunGraphGeneration (CancellationToken token) {
 			 return BuildGraph(token).ContinueWith ((Task<ProjectGraph> task) => {
-				ProjectGraph graph = task.Result;
-				token.ThrowIfCancellationRequested ();
+				try {
+					try {
+						if (task.Exception != null) {
+							throw task.Exception;
+						}
+						ProjectGraph graph = task.Result;
+						token.ThrowIfCancellationRequested ();
 
-				//TODO: Compute strongly connected components
+						//TODO: Compute strongly connected components
 
-				Application.Invoke (() => {
-					okButton.Sensitive = true;
-				});
+					} catch (AggregateException ex) {
+						ex.Handle(innerEx => innerEx is TaskCanceledException);
+					}
+					Application.Invoke (() => {
+						okButton.Sensitive = true;
+					});
+				} catch (AggregateException ex) {
+					if (ex.InnerExceptions.All (innerEx => innerEx is ProjectHasErrorsException)) {
+						Content = new Label(GettextCatalog.GetString("Error: Please fix all errors before splitting project."));
+					}
+					else {
+						throw;
+					}
+				}
 			});;
 		}
 
@@ -107,7 +127,6 @@ namespace MonoDevelop.CSharp.SplitProject
 				}
 
 				//Find out which types each file depends on
-				var parser = new MonoDevelop.CSharp.Parser.TypeSystemParser ();
 
 				Dictionary<IType, List<ProjectGraph.Node>> typeDefinitions = new Dictionary<IType, List<ProjectGraph.Node>>();
 
@@ -118,27 +137,28 @@ namespace MonoDevelop.CSharp.SplitProject
 
 					if (file.BuildAction != "Compile") continue;
 
+					if (!file.Name.EndsWith (".cs", StringComparison.InvariantCultureIgnoreCase)) {
+						continue;
+					}
+
 					bool isOpen;
 					System.Text.Encoding encoding;
 					bool hadBom;
-					TextEditorData data = TextFileProvider.Instance.GetTextEditorData (file.FilePath, out hadBom, out encoding, out isOpen);
 
-					token.ThrowIfCancellationRequested();
+					var data = TextFileProvider.Instance.GetTextEditorData (file.Name, out hadBom, out encoding, out isOpen);
 
 					ParsedDocument parsedDocument;
 					using (var reader = new StreamReader (data.OpenStream ()))
-						parsedDocument = parser.Parse (true, file.FilePath.FullPath.FileName, reader, project);
-
-					var syntaxTree = (SyntaxTree) parsedDocument.Ast;
-					var compilation = TypeSystemService.GetCompilation (project);
-					var resolver = new CSharpAstResolver (compilation, syntaxTree, parsedDocument.ParsedFile as CSharpUnresolvedFile);
+						parsedDocument = new MonoDevelop.CSharp.Parser.TypeSystemParser ().Parse (true, file.Name, reader, project);
 
 					token.ThrowIfCancellationRequested();
 
-					MDRefactoringContext ctx = new MDRefactoringContext(project, data, parsedDocument, resolver, new TextLocation(1, 1), token);
+					var resolver = new CSharpAstResolver (TypeSystemService.GetCompilation (project), (SyntaxTree) parsedDocument.Ast, parsedDocument.ParsedFile as CSharpUnresolvedFile);
+
+					var ctx = new MDRefactoringContext (project as DotNetProject, data, parsedDocument, resolver, resolver.RootNode.StartLocation, token);
 
 					//Step 1. Find all type declarations and identify which are partial
-					var typeDeclarations = syntaxTree.Descendants.OfType<TypeDeclaration>();
+					var typeDeclarations = ctx.RootNode.Descendants.OfType<TypeDeclaration>();
 					foreach (var typeDeclaration in typeDeclarations) {
 						var resolveResult = ctx.Resolve(typeDeclaration);
 						if (resolveResult is ErrorResolveResult) {
@@ -153,7 +173,7 @@ namespace MonoDevelop.CSharp.SplitProject
 						node.AddTypeDependency(type);
 					}
 
-					foreach (var expression in syntaxTree.Descendants.OfType<Expression>()) {
+					foreach (var expression in ctx.RootNode.Descendants.OfType<Expression>()) {
 						token.ThrowIfCancellationRequested();
 
 						var resolveResult = ctx.Resolve(expression);
@@ -161,7 +181,7 @@ namespace MonoDevelop.CSharp.SplitProject
 						node.AddTypeDependencies(types);
 					}
 
-					foreach (var type in syntaxTree.Descendants.OfType<AstType>()) {
+					foreach (var type in ctx.RootNode.Descendants.OfType<AstType>()) {
 						token.ThrowIfCancellationRequested();
 
 						var resolvedType = ctx.ResolveType (type);
@@ -193,7 +213,7 @@ namespace MonoDevelop.CSharp.SplitProject
 			//because if we have Foo<T>, then T is already handled separately
 			//and if we have Foo<T>(T x) called as Foo(exprOfTypeT), then the implicit T dependency is handled by the expression
 
-			if (resolveResult.IsError || resolveResult is UnknownMemberResolveResult) {
+			if (resolveResult.IsError) {
 				throw new ProjectHasErrorsException();
 			}
 
@@ -204,43 +224,42 @@ namespace MonoDevelop.CSharp.SplitProject
 				//We don't care about MethodGroupResolveResult because we only want to choose the dependency of the specific chosen method
 				//LocalResolveResult has been resolved where it was declared, so we also don't care about that
 
-				yield break;
+				return Enumerable.Empty<IType>();
 			}
 
 			var typeResolveResult = resolveResult as TypeResolveResult;
 			if (typeResolveResult != null) {
-				yield return typeResolveResult.Type;
-				yield break;
+				return new IType[] { typeResolveResult.Type };
 			}
 
 			var memberResolveResult = resolveResult as MemberResolveResult;
 			if (memberResolveResult != null) {
-				yield return memberResolveResult.Member.DeclaringType;
-				yield return memberResolveResult.Type;
-				yield break;
+				return new IType[] {
+					memberResolveResult.Member.DeclaringType,
+					memberResolveResult.Type
+				};
 			}
 
 			var lambdaResult = resolveResult as LambdaResolveResult;
 			if (lambdaResult != null) {
-				yield return lambdaResult.Type;
-				yield break;
+				return new IType[] { lambdaResult.Type };
 			}
 
 			var operatorResolveResult = resolveResult as OperatorResolveResult;
 			if (operatorResolveResult != null) {
+				var types = new List<IType> ();
 				var userDefinedMethod = operatorResolveResult.UserDefinedOperatorMethod;
 				if (userDefinedMethod != null) {
-					yield return userDefinedMethod.DeclaringType;
+					types.Add (userDefinedMethod.DeclaringType);
 				}
-				yield return operatorResolveResult.Type;
-				yield break;
+				types.Add (operatorResolveResult.Type);
+				return types;
 			}
 
 			var conversionResolveResult = resolveResult as ConversionResolveResult;
 			if (conversionResolveResult != null) {
 				//We have to check because of implicit conversions
-				yield return conversionResolveResult.Type;
-				yield break;
+				return new IType[] { conversionResolveResult.Type };
 			}
 
 			throw new NotImplementedException("TODO: SplitProjectDialog.GetTypeDependencies for " + resolveResult.GetType ().FullName);
