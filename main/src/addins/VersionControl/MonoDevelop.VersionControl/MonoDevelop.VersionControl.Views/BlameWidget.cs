@@ -722,35 +722,61 @@ namespace MonoDevelop.VersionControl.Views
 						double curStart = curY;
 //						widget.JumpOverFoldings (ref line);
 						int lineStart = line;
-						int w = 0, w2 = 0, h = 16;
+						int authorWidth = 0, revisionWidth = 0, dateWidth = 0, h = 16;
 						Annotation ann = line <= annotations.Count ? annotations[line - 1] : null;
 						if (ann != null) {
 							do {
 								widget.JumpOverFoldings (ref line);
 								line++;
 							} while (line <= annotations.Count && annotations[line - 1] != null && annotations[line - 1].Revision == ann.Revision);
+
 							double nextY = widget.editor.LineToY (line) - widget.editor.VAdjustment.Value;
 							if (highlightAnnotation != null && highlightAnnotation.Revision == ann.Revision && curStart <= highlightPositon && highlightPositon < nextY) {
 								cr.Rectangle (leftSpacer, curStart + cr.LineWidth, Allocation.Width - leftSpacer, nextY - curStart - cr.LineWidth);
 								cr.Color = new Cairo.Color (1, 1, 1);
 								cr.Fill ();
 							}
-							layout.SetText (ann.Author);
-							layout.GetPixelSize (out w, out h);
-							e.Window.DrawLayout (Style.BlackGC, leftSpacer + margin, (int)(curY + (widget.Editor.LineHeight - h) / 2), layout);
-							
-							
-							layout.SetText (TruncRevision (ann.Revision));
-							layout.GetPixelSize (out w2, out h);
-							e.Window.DrawLayout (Style.BlackGC, Allocation.Width - w2 - margin, (int)(curY + (widget.Editor.LineHeight - h) / 2), layout);
 
+							// use a fixed size revision to get a approx. revision width
+							layout.SetText ("88888888");
+							layout.GetPixelSize (out revisionWidth, out h);
+							layout.SetText (TruncRevision (ann.Revision));
+							e.Window.DrawLayout (Style.BlackGC, Allocation.Width - revisionWidth - margin, (int)(curY + (widget.Editor.LineHeight - h) / 2), layout);
+
+							const int dateRevisionSpacing = 16;
 							if (ann.HasDate) {
 								string dateTime = ann.Date.ToShortDateString ();
-								int middle = w + (Allocation.Width - margin * 2 - leftSpacer - w - w2) / 2;
+								// use a fixed size date to get a approx. date width
+								layout.SetText (new DateTime (1999, 10, 10).ToShortDateString ());
+								layout.GetPixelSize (out dateWidth, out h);
 								layout.SetText (dateTime);
-								layout.GetPixelSize (out w, out h);
-								e.Window.DrawLayout (Style.BlackGC, leftSpacer + margin + middle - w / 2, (int)(curY + (widget.Editor.LineHeight - h) / 2), layout);
+								e.Window.DrawLayout (Style.BlackGC, Allocation.Width - revisionWidth - margin - revisionWidth - dateRevisionSpacing, (int)(curY + (widget.Editor.LineHeight - h) / 2), layout);
 							}
+
+							using (var authorLayout = PangoUtil.CreateLayout (this)) {
+								var description = Pango.FontDescription.FromString ("Tahoma " + (int)(10 * widget.Editor.Options.Zoom));
+								authorLayout.FontDescription = description;
+								authorLayout.SetText (ann.Author);
+								authorLayout.GetPixelSize (out authorWidth, out h);
+
+								var maxWidth = Allocation.Width - revisionWidth - margin - revisionWidth - dateRevisionSpacing;
+				/*				if (authorWidth > maxWidth) {
+									int idx = ann.Author.IndexOf ('<');
+									if (idx > 0)
+										authorLayout.SetText (ann.Author.Substring (0, idx) + Environment.NewLine + ann.Author.Substring (idx));
+									authorLayout.GetPixelSize (out authorWidth, out h);
+								}*/
+
+								cr.Save ();
+								cr.Rectangle (0, 0, maxWidth, Allocation.Height); 
+								cr.Clip ();
+								cr.Translate (leftSpacer + margin, (int)(curY + (widget.Editor.LineHeight - h) / 2)); 
+								cr.SetSourceRGB (0, 0, 0);
+								cr.ShowLayout (authorLayout);
+								cr.ResetClip ();
+								cr.Restore ();
+							}
+
 							curY = nextY;
 						} else {
 							curY += widget.Editor.GetLineHeight (line);
@@ -762,6 +788,7 @@ namespace MonoDevelop.VersionControl.Views
 							string msg = GetCommitMessage (lineStart);
 							if (!string.IsNullOrEmpty (msg)) {
 								msg = FormatMessage (msg);
+
 								layout.SetText (msg);
 								layout.Width = (int)(Allocation.Width * Pango.Scale.PangoScale);
 								using (var gc = new Gdk.GC (e.Window)) {
