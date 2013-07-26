@@ -358,7 +358,7 @@ namespace MonoDevelop.VersionControl.Views
 			for (int i = 1; i <= doc.LineCount; i++) {
 				string text = doc.GetLineText (i).Trim ();
 				int idx = text.IndexOf (':');
-				if (text.StartsWith ("*") && idx >= 0 && idx < text.Length - 1) {
+				if (text.StartsWith ("*", StringComparison.Ordinal) && idx >= 0 && idx < text.Length - 1) {
 					int offset = doc.GetLine (i).EndOffsetIncludingDelimiter;
 					msg = text.Substring (idx + 1) + doc.GetTextAt (offset, doc.TextLength - offset);
 					break;
@@ -438,8 +438,8 @@ namespace MonoDevelop.VersionControl.Views
 				int startLine = widget.Editor.YToLine (widget.Editor.VAdjustment.Value + evnt.Y);
 				var ann = startLine > 0 && startLine <= annotations.Count ? annotations[startLine - 1] : null;
 				if (ann != null)
-					TooltipText = GetCommitMessage (startLine);
-				
+					TooltipText = GetCommitMessage (startLine, true);
+
 				highlightPositon = evnt.Y;
 				if (highlightAnnotation != ann) {
 					highlightAnnotation = ann;
@@ -633,13 +633,15 @@ namespace MonoDevelop.VersionControl.Views
 			/// <summary>
 			/// Gets the commit message matching a given annotation index.
 			/// </summary>
-			internal string GetCommitMessage (int index)
+			internal string GetCommitMessage (int index, bool tooltip)
 			{
 				Annotation annotation = (index < annotations.Count)? annotations[index]: null;
 				var history = widget.info.History;
 				if (null != history && annotation != null) {
 					foreach (Revision rev in history) {
 						if (rev.ToString () == annotation.Revision) {
+							if (tooltip && annotation.HasEmail)
+								return String.Format ("Email: {0}{1}{2}", annotation.Email, Environment.NewLine, rev.Message);
 							return rev.Message;
 						}
 					}
@@ -683,7 +685,7 @@ namespace MonoDevelop.VersionControl.Views
 				int tmpwidth, height, width = 120;
 				int dateTimeLength = -1;
 				foreach (Annotation note in annotations) {
-					if (!string.IsNullOrEmpty (note.Author)) { 
+					if (!String.IsNullOrEmpty (note.Author)) { 
 						if (dateTimeLength < 0 && note.HasDate) {
 							layout.SetText (note.Date.ToShortDateString ());
 							layout.GetPixelSize (out dateTimeLength, out height);
@@ -785,7 +787,7 @@ namespace MonoDevelop.VersionControl.Views
 						}
 						
 						if (ann != null && line - lineStart > 1) {
-							string msg = GetCommitMessage (lineStart);
+							string msg = GetCommitMessage (lineStart, false);
 							if (!string.IsNullOrEmpty (msg)) {
 								msg = FormatMessage (msg);
 
