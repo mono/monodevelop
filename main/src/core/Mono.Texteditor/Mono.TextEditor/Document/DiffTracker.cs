@@ -66,11 +66,15 @@ namespace Mono.TextEditor
 
 		void HandleLineRemoved (object sender, LineEventArgs e)
 		{
-			lineStates.RemoveAt (e.Line.LineNumber);
+			if (lineStates == null) 
+				return;
+			lineStates.RemoveAt (e.LineNumber);
 		}
 
 		void HandleLineInserted (object sender, LineEventArgs e)
 		{
+			if (lineStates == null) 
+				return;
 			lineStates.Insert(e.Line.LineNumber, new LineChangeInfo (Mono.TextEditor.TextDocument.LineState.Dirty));
 		}
 
