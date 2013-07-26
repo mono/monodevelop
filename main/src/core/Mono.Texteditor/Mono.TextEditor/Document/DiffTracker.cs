@@ -84,7 +84,8 @@ namespace Mono.TextEditor
 			if (lineStates [lineNumber].state == Mono.TextEditor.TextDocument.LineState.Dirty)
 				return;
 			lineStates [lineNumber] = new LineChangeInfo (Mono.TextEditor.TextDocument.LineState.Dirty);
-			trackDocument.CommitLineUpdate (lineNumber); 
+			if (trackDocument != null)
+				trackDocument.CommitLineUpdate (lineNumber); 
 		}
 
 		public void SetBaseDocument (TextDocument document)
