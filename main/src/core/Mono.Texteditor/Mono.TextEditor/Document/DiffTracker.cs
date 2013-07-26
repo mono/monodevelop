@@ -62,9 +62,6 @@ namespace Mono.TextEditor
 		public void SetTrackDocument (TextDocument document)
 		{
 			trackDocument = document;
-			document.Splitter.LineChanged += HandleLineChanged;
-			document.Splitter.LineInserted += HandleLineInserted;
-			document.Splitter.LineRemoved += HandleLineRemoved;
 		}
 
 		void HandleLineRemoved (object sender, LineEventArgs e)
@@ -96,6 +93,10 @@ namespace Mono.TextEditor
 			} else {
 				lineStates = new CompressingTreeList<LineChangeInfo>((x, y) => x.Equals(y));
 				lineStates.InsertRange(0, document.LineCount + 1, new LineChangeInfo (Mono.TextEditor.TextDocument.LineState.Unchanged));
+
+				trackDocument.Splitter.LineChanged += HandleLineChanged;
+				trackDocument.Splitter.LineInserted += HandleLineInserted;
+				trackDocument.Splitter.LineRemoved += HandleLineRemoved;
 			}
 		}
 	}
