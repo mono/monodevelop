@@ -36,4 +36,4 @@
 	url = git://github.com/mono/debugger-libs.git
 [submodule "main/external/guiunit"]
 	path = main/external/guiunit
-	url = https://github.com/mono/guiunit.git
+	url = git://github.com/mono/guiunit.git
