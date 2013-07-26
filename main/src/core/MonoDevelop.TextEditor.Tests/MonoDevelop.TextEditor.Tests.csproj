@@ -76,6 +76,7 @@
     <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\FoldActionTests.cs" />
     <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\MiscActionsTest.cs" />
     <Compile Include="Mono.TextEditor.Tests\ClipboardTests.cs" />
+    <Compile Include="Mono.TextEditor.Tests\CompressingTreeListTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
