@@ -228,7 +228,6 @@ namespace Mono.TextEditor
 				throw new ArgumentOutOfRangeException ("count", "must be > 0, was: " + count);
 
 			InterruptFoldWorker ();
-			
 			//int oldLineCount = LineCount;
 			var args = new DocumentChangeEventArgs (offset, count > 0 ? GetTextAt (offset, count) : "", value, anchorMovementType);
 			OnTextReplacing (args);
@@ -654,21 +653,23 @@ namespace Mono.TextEditor
 			
 			public override void Undo (TextDocument doc)
 			{
-				doc.currentAtomicUndoOperationType = operationType;
+				doc.currentAtomicUndoOperationType.Push (operationType);
 				for (int i = operations.Count - 1; i >= 0; i--) {
 					operations [i].Undo (doc);
 					doc.OnUndone (new UndoOperationEventArgs (operations[i]));
 				}
+				doc.currentAtomicUndoOperationType.Pop (); 
 				OnUndoDone ();
 			}
 			
 			public override void Redo (TextDocument doc)
 			{
-				doc.currentAtomicUndoOperationType = operationType;
+				doc.currentAtomicUndoOperationType.Push (operationType);
 				foreach (UndoOperation operation in this.operations) {
 					operation.Redo (doc);
 					doc.OnRedone (new UndoOperationEventArgs (operation));
 				}
+				doc.currentAtomicUndoOperationType.Pop (); 
 				OnRedoDone ();
 			}
 		}
@@ -925,7 +926,7 @@ namespace Mono.TextEditor
 		
 		public event EventHandler<UndoOperationEventArgs> Redone;
 		 
-		OperationType currentAtomicUndoOperationType;
+		Stack<OperationType> currentAtomicUndoOperationType =  new Stack<OperationType> ();
 		int atomicUndoLevel;
 
 		public bool IsInAtomicUndo {
@@ -936,7 +937,7 @@ namespace Mono.TextEditor
 
 		public OperationType CurrentAtomicUndoOperationType {
 			get {
-				return currentAtomicUndoOperationType;
+				return currentAtomicUndoOperationType.Count > 0 ?  currentAtomicUndoOperationType.Peek () : OperationType.Undefined;
 			}
 		}
 		
@@ -948,8 +949,8 @@ namespace Mono.TextEditor
 			{
 				if (doc == null)
 					throw new ArgumentNullException ("doc");
-				this.doc = doc;
 				doc.BeginAtomicUndo (operationType);
+				this.doc = doc;
 			}
 
 			public void Dispose ()
@@ -973,6 +974,7 @@ namespace Mono.TextEditor
 
 		internal void BeginAtomicUndo (OperationType operationType = OperationType.Undefined)
 		{
+			currentAtomicUndoOperationType.Push (operationType);
 			if (atomicUndoLevel == 0) {
 				if (this.syntaxMode != null && !SuppressHighlightUpdate)
 					Mono.TextEditor.Highlighting.SyntaxModeService.WaitUpdate (this);
@@ -1006,6 +1008,7 @@ namespace Mono.TextEditor
 				}
 				currentAtomicOperation = null;
 			}
+			currentAtomicUndoOperationType.Pop ();
 		}
 		
 		protected virtual void OnBeginUndo ()
