@@ -499,7 +499,8 @@ namespace MonoDevelop.CSharp
 			public override void VisitTypeDeclaration (TypeDeclaration typeDeclaration)
 			{
 				var result = resolver.Resolve (typeDeclaration);
-
+				if (result == null || result.Type.GetDefinition () == null)
+					return;
 				UnitTest unitTest = null;
 				bool isIgnored = false;
 
