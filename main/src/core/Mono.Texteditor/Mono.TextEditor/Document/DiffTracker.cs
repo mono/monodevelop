@@ -24,21 +24,79 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using Mono.TextEditor.Utils;
 
 namespace Mono.TextEditor
 {
 	public class DiffTracker
 	{
-		TextDocument baseDocument;
+		class LineChangeInfo
+		{
+			public Mono.TextEditor.TextDocument.LineState state;
+
+			public LineChangeInfo (Mono.TextEditor.TextDocument.LineState state)
+			{
+				this.state = state;
+			}
+		}
+
+		CompressingTreeList<LineChangeInfo> lineStates;
+		TextDocument trackDocument;
+//		TextDocument baseDocument;
 
 		public Mono.TextEditor.TextDocument.LineState GetLineState (DocumentLine line)
 		{
+			if (line != null) {
+				try {
+					var info = lineStates [line.LineNumber];
+					if (info != null) {
+						return info.state;
+					}
+				} catch (Exception) {
+
+				}
+			}
 			return Mono.TextEditor.TextDocument.LineState.Unchanged;
+		}
+
+		public void SetTrackDocument (TextDocument document)
+		{
+			trackDocument = document;
+			document.Splitter.LineChanged += HandleLineChanged;
+			document.Splitter.LineInserted += HandleLineInserted;
+			document.Splitter.LineRemoved += HandleLineRemoved;
+		}
+
+		void HandleLineRemoved (object sender, LineEventArgs e)
+		{
+			lineStates.RemoveAt (e.Line.LineNumber);
+		}
+
+		void HandleLineInserted (object sender, LineEventArgs e)
+		{
+			lineStates.Insert(e.Line.LineNumber, new LineChangeInfo (Mono.TextEditor.TextDocument.LineState.Dirty));
+		}
+
+		void HandleLineChanged (object sender, LineEventArgs e)
+		{
+			var lineNumber = e.Line.LineNumber;
+			if (lineStates [lineNumber].state == Mono.TextEditor.TextDocument.LineState.Dirty)
+				return;
+			lineStates [lineNumber] = new LineChangeInfo (Mono.TextEditor.TextDocument.LineState.Dirty);
+			trackDocument.CommitLineUpdate (lineNumber); 
 		}
 
 		public void SetBaseDocument (TextDocument document)
 		{
-			baseDocument = document;
+			if (lineStates != null) {
+				foreach (var node in lineStates.tree) {
+					if (node.value.state == Mono.TextEditor.TextDocument.LineState.Dirty)
+						node.value.state = Mono.TextEditor.TextDocument.LineState.Changed;
+				}
+			} else {
+				lineStates = new CompressingTreeList<LineChangeInfo>((x, y) => x.Equals(y));
+				lineStates.InsertRange(0, document.LineCount + 1, new LineChangeInfo (Mono.TextEditor.TextDocument.LineState.Unchanged));
+			}
 		}
 	}
 }

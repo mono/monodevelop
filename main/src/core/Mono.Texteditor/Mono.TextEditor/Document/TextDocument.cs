@@ -134,6 +134,7 @@ namespace Mono.TextEditor
 			splitter.LineRemoved += HandleSplitterLineSegmentTreeLineRemoved;
 			foldSegmentTree.tree.NodeRemoved += HandleFoldSegmentTreetreeNodeRemoved; 
 			textSegmentMarkerTree.InstallListener (this);
+			this.diffTracker.SetTrackDocument (this); 
 		}
 
 		void HandleFoldSegmentTreetreeNodeRemoved (object sender, RedBlackTree<FoldSegment>.RedBlackTreeNodeEventArgs e)
