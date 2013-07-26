@@ -71,6 +71,7 @@ namespace MonoDevelop.Tests.TestRunner
 				method.Invoke (null, new [] { args.ToArray () });
 			} else {
 				args.RemoveAll (a => a.StartsWith ("-port="));
+				args.Add ("-domain=None");
 				NUnit.ConsoleRunner.Runner.Main (args.ToArray ());
 			}
 			return 0;
