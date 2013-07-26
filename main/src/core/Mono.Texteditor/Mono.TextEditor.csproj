@@ -226,6 +226,7 @@
     <Compile Include="Mono.TextEditor\Standalone\UnicodeNewline.cs" />
     <Compile Include="Mono.TextEditor\Gui\ActionMargin.cs" />
     <Compile Include="Mono.TextEditor\Document\OperationType.cs" />
+    <Compile Include="Mono.TextEditor\Document\DiffTracker.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mono.TextEditor.dll.config">

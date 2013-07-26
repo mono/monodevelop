@@ -828,6 +828,7 @@ namespace MonoDevelop.SourceEditor
 					text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText (fileName, loadEncoding, out hadBom);
 				}
 				Document.Text = text;
+				Document.DiffTracker.SetBaseDocument (Document.CreateDocumentSnapshot ());
 				inLoad = false;
 				didLoadCleanly = true;
 			}

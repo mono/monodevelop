@@ -250,10 +250,6 @@ namespace Mono.TextEditor
 			splitter.TextReplaced (this, args);
 			versionProvider.AppendChange (args);
 			OnTextReplaced (args);
-			
-			UpdateUndoStackOnReplace (args);
-			if (operation != null)
-				operation.Setup (this, args);
 		}
 		
 		public string GetTextBetween (int startOffset, int endOffset)
@@ -521,8 +517,7 @@ namespace Mono.TextEditor
 		public class UndoOperation
 		{
 			DocumentChangeEventArgs args;
-			int startOffset, length;
-			
+
 			public virtual DocumentChangeEventArgs Args {
 				get {
 					return args;
@@ -538,39 +533,11 @@ namespace Mono.TextEditor
 			{
 			}
 
-			internal virtual bool ChangedLine (int offset, int lastLineOffset, int endOffset)
-			{
-				if (Args == null)
-					return false;
-				return startOffset <= lastLineOffset && offset <= startOffset + length 
-						|| lastLineOffset <= startOffset && startOffset <= endOffset
-						;
-					;
-			}
-			
 			public UndoOperation (DocumentChangeEventArgs args)
 			{
 				this.args = args;
 			}
-			
-			
-			internal void Setup (TextDocument doc, DocumentChangeEventArgs args)
-			{
-				if (args != null) {
-					startOffset = args.Offset;
-					length = args.InsertionLength;
-				}
-			}
-			
-			internal virtual void InformTextReplace (DocumentChangeEventArgs args)
-			{
-				if (args.Offset < startOffset) {
-					startOffset = System.Math.Max (startOffset + args.ChangeDelta, args.Offset);
-				} else if (args.Offset < startOffset + length) {
-					length = System.Math.Max (length + args.ChangeDelta, startOffset - args.Offset);
-				}
-			}
-			
+
 			public virtual void Undo (TextDocument doc)
 			{
 				doc.Replace (args.Offset, args.InsertionLength, args.RemovedText.Text);
@@ -625,22 +592,8 @@ namespace Mono.TextEditor
 			{
 				this.operationType = operationType;
 			}
-			
-			
-			internal override void InformTextReplace (DocumentChangeEventArgs args)
-			{
-				operations.ForEach (o => o.InformTextReplace (args));
-			}
-			
-			internal override bool ChangedLine (int lineOffset, int lastLineOffset, int lineEndOffset)
-			{
-				foreach (var op in Operations) {
-					if (op.ChangedLine (lineOffset, lastLineOffset, lineEndOffset))
-						return true;
-				}
-				return false;
-			}
-			
+		
+
 			public void Insert (int index, UndoOperation operation)
 			{
 				operations.Insert (index, operation);
@@ -698,19 +651,6 @@ namespace Mono.TextEditor
 		Stack<UndoOperation> undoStack = new Stack<UndoOperation> ();
 		Stack<UndoOperation> redoStack = new Stack<UndoOperation> ();
 		AtomicUndoOperation currentAtomicOperation = null;
-		
-		// The undo stack needs to be updated on replace, because the text editor
-		// draws a replace operation marker at the left margin.
-		public void UpdateUndoStackOnReplace (DocumentChangeEventArgs args)
-		{
-			foreach (UndoOperation op in undoStack) {
-				op.InformTextReplace (args);
-			}
-			// since we're only displaying the undo stack it's not required to update the redo stack
-//			foreach (UndoOperation op in redoStack) {
-//				op.InformTextReplace (args);
-//			}
-		}
 
 		internal int UndoBeginOffset {
 			get {
@@ -767,27 +707,21 @@ namespace Mono.TextEditor
 			Dirty,
 			Changed
 		}
+
+		public DiffTracker diffTracker = new DiffTracker ();
+
+		public DiffTracker DiffTracker {
+			get {
+				return diffTracker;
+			}
+			set {
+				diffTracker = value;
+			}
+		}
 		
 		public LineState GetLineState (DocumentLine line)
 		{
-			if (line == null)
-				return LineState.Unchanged;
-				
-			int lineOffset = line.Offset;
-			int lastLineEnd = line.Offset - line.DelimiterLength;
-			int lineEndOffset = lineOffset + line.LengthIncludingDelimiter;
-			foreach (UndoOperation op in undoStack) {
-				if (op.ChangedLine (lineOffset, lastLineEnd, lineEndOffset)) {
-					if (savePoint != null) {
-						foreach (UndoOperation savedUndo in savePoint) {
-							if (op == savedUndo)
-								return LineState.Changed;
-						}
-					}
-					return LineState.Dirty;
-				}
-			}
-			return LineState.Unchanged;
+			return diffTracker.GetLineState (line);
 		}
 		
 		
@@ -801,6 +735,7 @@ namespace Mono.TextEditor
 				((KeyboardStackUndo)undoStack.Peek ()).IsClosed = true;
 			savePoint = undoStack.ToArray ();
 			this.CommitUpdateAll ();
+			DiffTracker.SetBaseDocument (CreateDocumentSnapshot ());
 		}
 		
 		public void OptimizeTypedUndo ()
@@ -1947,6 +1882,11 @@ namespace Mono.TextEditor
 				Text = text;
 				ReadOnly = true;
 			}
+		}
+
+		public TextDocument CreateDocumentSnapshot ()
+		{
+			return new SnapshotDocument (Text, Version);
 		}
 
 		ICSharpCode.NRefactory.Editor.IDocument ICSharpCode.NRefactory.Editor.IDocument.CreateDocumentSnapshot ()
