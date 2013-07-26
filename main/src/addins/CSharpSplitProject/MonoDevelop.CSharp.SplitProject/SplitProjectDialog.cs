@@ -41,6 +41,8 @@ using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Core;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
 
 namespace MonoDevelop.CSharp.SplitProject
 {
@@ -79,28 +81,20 @@ namespace MonoDevelop.CSharp.SplitProject
 
 			var dataSource = new TreeStore (selectedField, nodeField, nameField);
 
-			Dictionary<ProjectGraph.Node, TreePosition> nodePositions = new Dictionary<ProjectGraph.Node, TreePosition> ();
+			Dictionary<ProjectGraph.Node, TreeNavigator> nodePositions = new Dictionary<ProjectGraph.Node, TreeNavigator> ();
 
 			foreach (var node in result.Nodes) {
-				var position = dataSource.AddNode ().SetValue (nodeField, node).SetValue (nameField, node.ToString ()).CurrentPosition;
+				var position = dataSource.AddNode ().SetValue (nodeField, node).SetValue (nameField, node.ToString ());
 				nodePositions.Add (node, position);
 			}
 
 			TreeView tree = new TreeView ();
 			var cellView = new CheckBoxCellView (selectedField) { Editable = true };
 
-			bool propagatingChanges = false;
-
 			cellView.Toggled += (object sender, WidgetEventArgs e) => {
-				if (propagatingChanges)
-				{
-					return;
-				}
-
-				propagatingChanges = true;
-
 				var rowPosition = tree.SelectedRow;
 				if (rowPosition == null) {
+					Console.WriteLine("<null>");
 					return;
 				}
 
@@ -109,23 +103,28 @@ namespace MonoDevelop.CSharp.SplitProject
 				var selected = row.GetValue(selectedField);
 				var node = row.GetValue(nodeField);
 
+				Console.WriteLine("node={0}", node);
+
 				if (selected) {
 					//Deselect
 
+					Console.WriteLine("Deselect");
+
 					VisitReversed (node, (foundNode) => {
-						dataSource.GetNavigatorAt(nodePositions[node]).SetValue(selectedField, false);
+						Console.WriteLine ("Deselecting {0}", foundNode);
+						nodePositions[foundNode].SetValue(selectedField, false);
 					});
 				}
 				else {
 					//Select
 					
 					Visit (node, (foundNode) => {
-						dataSource.GetNavigatorAt(nodePositions[node]).SetValue(selectedField, true);
+						Console.WriteLine ("Selecting {0}", foundNode);
+						nodePositions[foundNode].SetValue(selectedField, true);
 					});
 				}
 
 				e.Handled = true;
-				propagatingChanges = false;
 			};
 			tree.Columns.Add (new ListViewColumn("Move to new project", cellView));
 			tree.Columns.Add ("Name", nameField);
