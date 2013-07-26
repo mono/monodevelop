@@ -208,8 +208,9 @@ namespace MonoDevelop.CSharp.Formatting
 
 		void HandleTextReplaced (object sender, DocumentChangeEventArgs e)
 		{
-			if (e.RemovalLength != 1)
+			if (e.RemovalLength != 1 || textEditorData.Document.CurrentAtomicUndoOperationType == OperationType.Format) {
 				return;
+			}
 			stateTracker.UpdateEngine (Math.Min (textEditorData.Document.TextLength, e.Offset + e.InsertionLength + 1));
 			if (wasInVerbatimString && !stateTracker.Engine.IsInsideVerbatimString) {
 				textEditorData.Document.TextReplacing -= HandleTextReplacing;

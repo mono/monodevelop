@@ -82,7 +82,7 @@ namespace Mono.TextEditor
 			int startLineNr, endLineNr;
 			GetSelectedLines (data, out startLineNr, out endLineNr);
 			
-			using (var undo = data.OpenUndoGroup ()) {
+			using (var undo = data.OpenUndoGroup (OperationType.Format)) {
 				var anchor = data.MainSelection.Anchor;
 				var lead = data.MainSelection.Lead;
 				bool first = true;
@@ -163,7 +163,7 @@ namespace Mono.TextEditor
 			var anchor = data.MainSelection.Anchor;
 			var lead = data.MainSelection.Lead;
 			var indentationString = data.Options.IndentationString;
-			using (var undo = data.OpenUndoGroup ()) {
+			using (var undo = data.OpenUndoGroup (OperationType.Format)) {
 				foreach (DocumentLine line in data.SelectedLines) {
 					if (data.Options.IndentStyle == IndentStyle.Virtual && line.Length == 0)
 						continue;

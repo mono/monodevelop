@@ -264,6 +264,8 @@ namespace MonoDevelop.SourceEditor
 
 		void HandleTextReplaced (object sender, DocumentChangeEventArgs args)
 		{
+			if (Document.CurrentAtomicUndoOperationType == OperationType.Format)
+				return;
 			if (!inLoad) {
 				if (widget.TextEditor.Document.IsInAtomicUndo) {
 					wasEdited = true;

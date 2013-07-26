@@ -601,7 +601,14 @@ namespace Mono.TextEditor
 		
 		class AtomicUndoOperation : UndoOperation
 		{
+			OperationType operationType;
 			protected List<UndoOperation> operations = new List<UndoOperation> ();
+
+			public OperationType OperationType {
+				get {
+					return operationType;
+				}
+			}
 			
 			public List<UndoOperation> Operations {
 				get {
@@ -613,6 +620,11 @@ namespace Mono.TextEditor
 				get {
 					return null;
 				}
+			}
+
+			public AtomicUndoOperation (OperationType operationType = OperationType.Undefined)
+			{
+				this.operationType = operationType;
 			}
 			
 			
@@ -642,6 +654,7 @@ namespace Mono.TextEditor
 			
 			public override void Undo (TextDocument doc)
 			{
+				doc.currentAtomicUndoOperationType = operationType;
 				for (int i = operations.Count - 1; i >= 0; i--) {
 					operations [i].Undo (doc);
 					doc.OnUndone (new UndoOperationEventArgs (operations[i]));
@@ -651,6 +664,7 @@ namespace Mono.TextEditor
 			
 			public override void Redo (TextDocument doc)
 			{
+				doc.currentAtomicUndoOperationType = operationType;
 				foreach (UndoOperation operation in this.operations) {
 					operation.Redo (doc);
 					doc.OnRedone (new UndoOperationEventArgs (operation));
@@ -671,7 +685,7 @@ namespace Mono.TextEditor
 					isClosed = value;
 				}
 			}
-			
+
 			public override DocumentChangeEventArgs Args {
 				get {
 					return operations.Count > 0 ? operations [operations.Count - 1].Args : null;
@@ -910,7 +924,8 @@ namespace Mono.TextEditor
 		}
 		
 		public event EventHandler<UndoOperationEventArgs> Redone;
-		
+		 
+		OperationType currentAtomicUndoOperationType;
 		int atomicUndoLevel;
 
 		public bool IsInAtomicUndo {
@@ -918,17 +933,23 @@ namespace Mono.TextEditor
 				return atomicUndoLevel > 0;
 			}
 		}
+
+		public OperationType CurrentAtomicUndoOperationType {
+			get {
+				return currentAtomicUndoOperationType;
+			}
+		}
 		
 		class UndoGroup : IDisposable
 		{
 			TextDocument doc;
 			
-			public UndoGroup (TextDocument doc)
+			public UndoGroup (TextDocument doc, OperationType operationType)
 			{
 				if (doc == null)
 					throw new ArgumentNullException ("doc");
 				this.doc = doc;
-				doc.BeginAtomicUndo ();
+				doc.BeginAtomicUndo (operationType);
 			}
 
 			public void Dispose ()
@@ -942,10 +963,15 @@ namespace Mono.TextEditor
 		
 		public IDisposable OpenUndoGroup()
 		{
-			return new UndoGroup (this);
+			return OpenUndoGroup(OperationType.Undefined);
 		}
-		
-		internal void BeginAtomicUndo ()
+
+		public IDisposable OpenUndoGroup(OperationType operationType)
+		{
+			return new UndoGroup (this, operationType);
+		}
+
+		internal void BeginAtomicUndo (OperationType operationType = OperationType.Undefined)
 		{
 			if (atomicUndoLevel == 0) {
 				if (this.syntaxMode != null && !SuppressHighlightUpdate)
@@ -953,7 +979,7 @@ namespace Mono.TextEditor
 			}
 			if (currentAtomicOperation == null) {
 				Debug.Assert (atomicUndoLevel == 0); 
-				currentAtomicOperation = new AtomicUndoOperation ();
+				currentAtomicOperation = new AtomicUndoOperation (operationType);
 				OnBeginUndo ();
 			}
 			atomicUndoLevel++;
