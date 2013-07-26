@@ -284,7 +284,14 @@ namespace MonoDevelop.VersionControl.Git
 				
 				localFileNames = localFiles;
 			} else {
-				CollectFiles (existingFiles, localDirectory, recursive);
+				List<FilePath> directories = new List<FilePath> ();
+				CollectFiles (existingFiles, directories, localDirectory, recursive);
+				foreach (var group in GroupByRepository (directories)) {
+					var repository = group.Key;
+					var arev = new GitRevision (this, repository, "");
+					foreach (var p in group)
+						versions.Add (new VersionInfo (p, "", true, VersionStatus.Versioned, arev, VersionStatus.Versioned, null));
+				}
 			}
 
 			IEnumerable<FilePath> paths;
@@ -375,15 +382,17 @@ namespace MonoDevelop.VersionControl.Git
 			return ops;
 		}
 
-		void CollectFiles (HashSet<FilePath> files, FilePath dir, bool recursive)
+		void CollectFiles (HashSet<FilePath> files, List<FilePath> directories, FilePath dir, bool recursive)
 		{
 			if (!Directory.Exists (dir))
 				return;
 			foreach (string file in Directory.GetFiles (dir))
 				files.Add (new FilePath (file).CanonicalPath);
-			if (recursive) {
-				foreach (string sub in Directory.GetDirectories (dir))
-					CollectFiles (files, sub, true);
+
+			foreach (string sub in Directory.GetDirectories (dir)) {
+				directories.Add (new FilePath (sub));
+				if (recursive)
+					CollectFiles (files, directories, sub, true);
 			}
 		}
 
