@@ -134,7 +134,7 @@ namespace MonoDevelop.VersionControl.Git
 				int secs = int.Parse (line.Substring (i2, i - i2));
 				DateTime t = new DateTime (1970, 1, 1) + TimeSpan.FromSeconds (secs);
 				string st = t.ToString ("yyyy-MM-ddTHH:mm:ss") + line.Substring (i + 1, 3) + ":" + line.Substring (i + 4, 2);
-				s.DateTime = DateTimeOffset.Parse (st);
+				s.DateTime = DateTimeOffset.Parse (st, System.Globalization.CultureInfo.InvariantCulture);
 				s.Comment = line.Substring (i + 7);
 				i = s.Comment.IndexOf (':');
 				if (i != -1)
