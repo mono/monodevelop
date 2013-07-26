@@ -1483,9 +1483,8 @@ namespace MonoDevelop.VersionControl.Git
 				var commit = result.GetSourceCommit (i);
 				var author = result.GetSourceAuthor (i);
 				if (commit != null && author != null) {
-					string name = string.Format ("{0} <{1}>", author.GetName (), author.GetEmailAddress ());
 					var commitTime = new DateTime (1970, 1, 1).AddSeconds (commit.CommitTime);
-					list.Add (new Annotation (commit.Name, name, commitTime));
+					list.Add (new Annotation (commit.Name, author.GetName (), commitTime, String.Format ("<{0}>", author.GetEmailAddress ())));
 				} else {
 					list.Add (new Annotation (new string ('0', 20), "<uncommitted>", DateTime.Now));
 				}

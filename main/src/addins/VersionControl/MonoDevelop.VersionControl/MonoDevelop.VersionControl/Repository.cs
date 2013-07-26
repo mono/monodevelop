@@ -789,6 +789,15 @@ namespace MonoDevelop.VersionControl
 			get;
 			private set;
 		}
+
+		public string Email {
+			get;
+			private set;
+		}
+
+		public bool HasEmail {
+			get { return Email != null; }
+		}
 		
 		public bool HasDate {
 			get { return Date != DateTime.MinValue; }
@@ -800,10 +809,19 @@ namespace MonoDevelop.VersionControl
 			this.Author = author;
 			this.Date = date;
 		}
+
+		public Annotation (string revision, string author, DateTime date, string email)
+		{
+			this.Revision = revision;
+			this.Author = author;
+			this.Date = date;
+			this.Email = email;
+		}
 		
 		public override string ToString ()
 		{
-			return string.Format ("[Annotation: Revision={0}, Author={1}, Date={2}, HasDate={3}]", Revision, Author, Date, HasDate);
+			return String.Format ("[Annotation: Revision={0}, Author={1}, Date={2}, HasDate={3}, Email={4}, HasEmail={5}]",
+									Revision, Author, Date, HasDate, Email, HasEmail);
 		}
 	}
 	
