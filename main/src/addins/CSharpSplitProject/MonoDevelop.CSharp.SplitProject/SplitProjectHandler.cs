@@ -42,6 +42,8 @@ using MonoDevelop.Ide.TypeSystem;
 using System.IO;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
+using System.Xml;
+using MonoDevelop.Ide.Templates;
 
 namespace MonoDevelop.CSharp.SplitProject
 {
@@ -58,7 +60,29 @@ namespace MonoDevelop.CSharp.SplitProject
 				Xwt.WindowFrame parentFrame = Xwt.Toolkit.CurrentEngine.WrapWindow (nativeWindow);
 
 				using (var dialog = new SplitProjectDialog (currentProject, graph)) {
-					dialog.Run (parentFrame);
+					if (dialog.Run (parentFrame) == Xwt.Command.Ok) {
+						//Create class library project
+						string classLibraryName = "Testing 123";
+						var classLibraryBasePath = currentProject.BaseDirectory.ParentDirectory.Combine (classLibraryName);
+						Directory.CreateDirectory (classLibraryBasePath.ToString ());
+
+						ProjectCreateInformation info = new ProjectCreateInformation();
+						info.ProjectName = classLibraryName;
+						info.ParentFolder = currentProject.ParentFolder;
+						info.ProjectBasePath = classLibraryBasePath;
+						info.SolutionPath = currentProject.ParentSolution.FileName;
+						info.SolutionName = currentProject.ParentSolution.Name;
+						info.ActiveConfiguration = IdeApp.Workspace.ActiveConfiguration;
+
+						var template = ProjectTemplate.ProjectTemplates.Single (t => t.Id == "CSharpEmptyProject");
+						var newProject = template.CreateProject (currentProject, info);
+						newProject.FileFormat = currentProject.ParentSolution.FileFormat;
+						IdeApp.ProjectOperations.Save (newProject);
+
+						currentProject.ParentFolder.AddItem (newProject);
+
+						IdeApp.ProjectOperations.Save (currentProject.ParentSolution);
+					}
 				}
 			}
 		}
@@ -115,7 +139,7 @@ namespace MonoDevelop.CSharp.SplitProject
 					if (file.BuildAction != "Compile")
 						continue;
 
-					if (!file.Name.EndsWith (".cs", StringComparison.InvariantCultureIgnoreCase)) {
+					if (!project.LanguageBinding.IsSourceCodeFile(file.FilePath)) {
 						continue;
 					}
 
