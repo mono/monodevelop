@@ -42,50 +42,58 @@ using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Core;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography.X509Certificates;
+using System.Collections.ObjectModel;
 
 namespace MonoDevelop.CSharp.SplitProject
 {
 	public class SplitProjectDialog : Dialog
 	{
 		DotNetProject project;
+		ProjectGraph graph;
 
-		CancellationTokenSource cancellationTokenSource;
+		DataField<bool> selectedField = new DataField<bool> ();
+		DataField<ProjectGraph.Node> nodeField = new DataField<ProjectGraph.Node> ();
+		DataField<string> nameField = new DataField<string> ();
+
+		TreeStore dataSource;
+
+		Dictionary<ProjectGraph.Node, TreeNavigator> nodePositions;
+
+		public ReadOnlyCollection<ProjectGraph.Node> SelectedNodes
+		{
+			get {
+				var nodes = new List<ProjectGraph.Node>();
+				foreach (var keyValue in nodePositions) {
+					var node = keyValue.Key;
+					var navigator = keyValue.Value;
+
+					if (navigator.GetValue (selectedField)) {
+						nodes.Add (node);
+					}
+				}
+
+				return nodes.AsReadOnly();
+			}
+		}
 
 		public SplitProjectDialog (DotNetProject project, ProjectGraph graph)
 		{
 			this.project = project;
-
-			cancellationTokenSource = new CancellationTokenSource ();
-
-			SetupDialog (graph);
-
-			Title = "Split Project";
-
-			Buttons.Add (new Xwt.DialogButton (Command.Ok));
-			Buttons.Add (new Xwt.DialogButton (Command.Cancel));
-		}
-
-		protected override void Dispose (bool disposing)
-		{
-			base.Dispose (disposing);
-
-			cancellationTokenSource.Dispose ();
-		}
-
-		void SetupDialog (ProjectGraph result)
-		{
-			DataField<bool> selectedField = new DataField<bool> ();
-			DataField<ProjectGraph.Node> nodeField = new DataField<ProjectGraph.Node> ();
-			DataField<string> nameField = new DataField<string> ();
+			this.graph = graph;
 
 			var dataSource = new TreeStore (selectedField, nodeField, nameField);
 
-			Dictionary<ProjectGraph.Node, TreeNavigator> nodePositions = new Dictionary<ProjectGraph.Node, TreeNavigator> ();
+			nodePositions = new Dictionary<ProjectGraph.Node, TreeNavigator> ();
+			var directories = new Dictionary<string, TreeNavigator> ();
 
-			foreach (var node in result.Nodes) {
-				var position = dataSource.AddNode ().SetValue (nodeField, node).SetValue (nameField, node.ToString ());
-				nodePositions.Add (node, position);
+			foreach (var node in graph.Nodes) {
+				var virtualPath = node.File.ProjectVirtualPath;
+
+				var parentNavigator = BuildDirectories (dataSource, directories, virtualPath.ParentDirectory);
+
+				var nodeNavigator = parentNavigator == null ? dataSource.AddNode () : parentNavigator.Clone ().AddChild ();
+				nodeNavigator.SetValue (nodeField, node).SetValue (nameField, node.ToString ());
+				nodePositions.Add (node, nodeNavigator);
 			}
 
 			TreeView tree = new TreeView ();
@@ -94,36 +102,29 @@ namespace MonoDevelop.CSharp.SplitProject
 			cellView.Toggled += (object sender, WidgetEventArgs e) => {
 				var rowPosition = tree.CurrentEventRow;
 				if (rowPosition == null) {
-					Console.WriteLine("<null>");
+					Console.WriteLine ("<null>");
 					return;
 				}
 
-				var row = dataSource.GetNavigatorAt(rowPosition);
+				var row = dataSource.GetNavigatorAt (rowPosition);
 
-				var selected = row.GetValue(selectedField);
-				var node = row.GetValue(nodeField);
+				var selected = row.GetValue (selectedField);
+				var node = row.GetValue (nodeField);
 
-				Console.WriteLine("node={0}", node);
+				Console.WriteLine ("node={0}", node);
 
-				result.ResetVisitedNodes ();
+				graph.ResetVisitedNodes ();
 
-				if (selected) {
-					//Deselect
-
-					Console.WriteLine("Deselect");
-
-					VisitReversed (node, (foundNode) => {
-						Console.WriteLine ("Deselecting {0}", foundNode);
-						nodePositions[foundNode].SetValue(selectedField, false);
-					});
+				if (node == null) {
+					//TODO: Handle folders
 				}
 				else {
-					//Select
-					
-					Visit (node, (foundNode) => {
-						Console.WriteLine ("Selecting {0}", foundNode);
-						nodePositions[foundNode].SetValue(selectedField, true);
-					});
+					if (selected) {
+						DeselectNode (node);
+					}
+					else {
+						SelectNode (node);
+					}
 				}
 
 				e.Handled = true;
@@ -133,8 +134,47 @@ namespace MonoDevelop.CSharp.SplitProject
 
 			tree.DataSource = dataSource;
 			Content = tree;
+
+			Title = "Split Project";
+
+			Buttons.Add (new Xwt.DialogButton (Command.Ok));
+			Buttons.Add (new Xwt.DialogButton (Command.Cancel));
 		}
 
+		TreeNavigator BuildDirectories (TreeStore dataSource, Dictionary<string, TreeNavigator> directories, FilePath directory)
+		{
+			if (directory == "") {
+				return null;
+			}
+
+			if (directories.ContainsKey (directory.ToString ())) {
+				return directories[directory.ToString ()];
+			}
+
+			var parentNavigator = BuildDirectories (dataSource, directories, directory.ParentDirectory);
+
+			var directoryNavigator = parentNavigator == null ? dataSource.AddNode () : parentNavigator.Clone().AddChild();
+			directoryNavigator.SetValue (nameField, directory.FileName);
+
+			directories.Add (directory.ToString (), directoryNavigator);
+
+			return directoryNavigator;
+		}
+
+		void DeselectNode (ProjectGraph.Node node)
+		{
+			VisitReversed (node, foundNode =>  {
+				nodePositions [foundNode].SetValue (selectedField, false);
+			});
+		}
+
+		void SelectNode (ProjectGraph.Node node)
+		{
+			Visit (node, foundNode =>  {
+				nodePositions [foundNode].SetValue (selectedField, true);
+			});
+		}
+		
 		void Visit (ProjectGraph.Node node, Action<ProjectGraph.Node> callback)
 		{
 			callback (node);
