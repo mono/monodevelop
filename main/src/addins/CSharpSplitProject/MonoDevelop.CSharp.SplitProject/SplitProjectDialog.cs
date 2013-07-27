@@ -92,7 +92,7 @@ namespace MonoDevelop.CSharp.SplitProject
 			var cellView = new CheckBoxCellView (selectedField) { Editable = true };
 
 			cellView.Toggled += (object sender, WidgetEventArgs e) => {
-				var rowPosition = tree.SelectedRow;
+				var rowPosition = tree.CurrentEventRow;
 				if (rowPosition == null) {
 					Console.WriteLine("<null>");
 					return;
@@ -104,6 +104,8 @@ namespace MonoDevelop.CSharp.SplitProject
 				var node = row.GetValue(nodeField);
 
 				Console.WriteLine("node={0}", node);
+
+				result.ResetVisitedNodes ();
 
 				if (selected) {
 					//Deselect
