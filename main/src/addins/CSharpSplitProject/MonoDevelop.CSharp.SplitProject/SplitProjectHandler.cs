@@ -42,8 +42,8 @@ using MonoDevelop.Ide.TypeSystem;
 using System.IO;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
-using System.Xml;
 using MonoDevelop.Ide.Templates;
+using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.CSharp.SplitProject
 {
@@ -75,8 +75,12 @@ namespace MonoDevelop.CSharp.SplitProject
 						info.ActiveConfiguration = IdeApp.Workspace.ActiveConfiguration;
 
 						var template = ProjectTemplate.ProjectTemplates.Single (t => t.Id == "CSharpEmptyProject");
-						var newProject = template.CreateProject (currentProject, info);
+						var newProject = (DotNetProject) template.CreateProject (currentProject, info);
 						newProject.FileFormat = currentProject.ParentSolution.FileFormat;
+
+						newProject.TargetFramework = currentProject.TargetFramework;
+						newProject.CompileTarget = CompileTarget.Library;
+
 						IdeApp.ProjectOperations.Save (newProject);
 
 						currentProject.ParentFolder.AddItem (newProject);
