@@ -70,8 +70,6 @@ namespace MonoDevelop.Core.FileSystem
 		
 		public virtual void MoveFile (FilePath source, FilePath dest)
 		{
-			//GetNextForPath (source, false).MoveFile (source, dest);
-			
 			FileSystemExtension srcExt = GetNextForPath (source, false);
 			FileSystemExtension dstExt = GetNextForPath (dest, false);
 			
