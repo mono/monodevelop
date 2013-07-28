@@ -29,12 +29,12 @@ namespace MonoDevelop.CodeIssues
 {
 	public class IssueGroupEventArgs: EventArgs
 	{
-		public IssueGroupEventArgs (IssueGroup group)
+		public IssueGroupEventArgs (IIssueTreeNode node)
 		{
-			IssueGroup = group;
+			Node = node;
 		}
 		
-		public IssueGroup IssueGroup { get; private set; }
+		public IIssueTreeNode Node { get; private set; }
 	}
 }
 

@@ -84,7 +84,9 @@ namespace MonoDevelop.CodeIssues
 
 		string IIssueTreeNode.Text {
 			get {
-				return string.Format ("{0} ({1})", Description, IssueCount);
+				lock (_lock) {
+					return string.Format ("{0} ({1})", Description, allIssues.Count (issue => ((IIssueTreeNode)issue).Visible));
+				}
 			}
 		}
 
@@ -97,9 +99,19 @@ namespace MonoDevelop.CodeIssues
 			}
 		}
 		
-		bool IIssueTreeNode.HasChildren {
+		bool IIssueTreeNode.HasVisibleChildren {
 			get {
-				return HasChildren;
+				return allIssues.Any (issue => ((IIssueTreeNode) issue).Visible);
+			}
+		}
+		
+		bool IIssueTreeNode.Visible {
+			get {
+				return allIssues.Any (issue => ((IIssueTreeNode) issue).Visible);
+			}
+			
+			set {
+				throw new InvalidOperationException ("Not supported");
 			}
 		}
 		
@@ -165,6 +177,24 @@ namespace MonoDevelop.CodeIssues
 			}
 		}
 
+		event EventHandler<IssueGroupEventArgs> visibleChanged;
+		event EventHandler<IssueGroupEventArgs> IIssueTreeNode.VisibleChanged {
+			add {
+				visibleChanged += value;
+			}
+			remove {
+				visibleChanged -= value;
+			}
+		}
+
+		protected virtual void OnVisibleChanged (IssueGroupEventArgs eventArgs)
+		{
+			var handler = visibleChanged;
+			if (handler != null) {
+				handler (this, eventArgs);
+			}
+		}
+
 		#endregion
 
 		/// <summary>
@@ -183,14 +213,6 @@ namespace MonoDevelop.CodeIssues
 		public int IssueCount {
 			get;
 			private set;
-		}
-		
-		public bool HasChildren {
-			get {
-				lock (_lock) {
-					return allIssues.Count > 0;
-				}
-			}
 		}
 		
 		public void ClearStatistics ()
@@ -239,6 +261,7 @@ namespace MonoDevelop.CodeIssues
 				if (!allIssues.Contains (issue)) {
 					IssueCount++;
 					allIssues.Add (issue);
+					((IIssueTreeNode) issue).VisibleChanged += HandleVisibleChanged;
 					issueAdded = true;
 				}
 				if (processingEnabled) {
@@ -260,6 +283,17 @@ namespace MonoDevelop.CodeIssues
 			}
 			
 		}
+
+		void HandleVisibleChanged (object sender, IssueGroupEventArgs e)
+		{
+			lock (_lock) {
+				var visibleChildren = children.Any (child => child.Visible);
+				if ((e.Node.Visible && visibleChildren) || (!e.Node.Visible && !visibleChildren)) {
+					OnVisibleChanged (new IssueGroupEventArgs (this));
+				}
+				OnTextChanged (new IssueGroupEventArgs (this));
+			}
+		}
 		
 		#endregion
 
@@ -278,6 +312,11 @@ namespace MonoDevelop.CodeIssues
 				children.Add (group);
 			}
 			return groupAdded;
+		}
+		
+		public override string ToString ()
+		{
+			return string.Format ("[IssueGroup: Description={1}, IssueCount={2}, GroupingProvider={0}]", GroupingProvider, Description, IssueCount);
 		}
 	}
 }

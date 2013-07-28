@@ -31,25 +31,24 @@ using ICSharpCode.NRefactory.CSharp.Resolver;
 using MonoDevelop.Core;
 using System.Threading.Tasks;
 using MonoDevelop.Refactoring;
-using System.IO;
-using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.Refactoring;
 using System.Threading;
 using MonoDevelop.Projects;
+using System.IO;
+using MonoDevelop.Ide.TypeSystem;
+using ICSharpCode.NRefactory.CSharp;
+using Mono.TextEditor.Utils;
+using System.Text;
+using Mono.TextEditor;
 
 namespace MonoDevelop.CodeIssues
 {
 	public class BatchFixer
 	{
-		object _lock = new object ();
-		IIssueMatcher matcher;
+		IActionMatcher matcher;
+		string lastMime;
 
-		static string lastMime;
-
-		static TypeSystemParser parser;
-
-		public BatchFixer (IIssueMatcher matcher)
+		public BatchFixer (IActionMatcher matcher)
 		{
 			this.matcher = matcher;
 		}
@@ -59,67 +58,93 @@ namespace MonoDevelop.CodeIssues
 		/// </summary>
 		/// <param name="issues">The issues to fix.</param>
 		/// <returns>The fix issues.</returns>
-		public IEnumerable<IssueSummary> TryFixIssues (IEnumerable<ActionSummary> actions)
+		public IEnumerable<ActionSummary> TryFixIssues (IEnumerable<ActionSummary> actions)
 		{
+			if (actions == null)
+				throw new ArgumentNullException ("actions");
+				
 			// enumerate once
 			var actionSummaries = actions as IList<ActionSummary> ?? actions.ToArray ();
-			var summaries = actionSummaries.Select (action => action.IssueSummary).ToArray ();
-			var files = summaries.Select (issue => issue.File);
+			var issueSummaries = actionSummaries.Select (action => action.IssueSummary).ToArray ();
+			var files = issueSummaries.Select (issue => issue.File);
 			
-			var fixedIssues = new List<IssueSummary> (summaries.Length);
+			var appliedActions = new List<ActionSummary> (issueSummaries.Length);
 			foreach (var file in files) {
-				var fileSummaries = summaries.Where (summary => summary.File == file);
-				var inspectorTypes = new HashSet<Type> (fileSummaries.Select (summary => summary.InspectorType));
-				var realIssues = GetIssues (file, inspectorTypes);
-				var matches = matcher.Match (summaries, realIssues);
+				var fileSummaries = issueSummaries.Where (summary => summary.File == file);
+				var inspectorIds = new HashSet<string> (fileSummaries.Select (summary => summary.InspectorIdString));
 				
-				foreach (var match in matches) {
-					var codeAction = match.Issue;
+				bool hadBom;
+				Encoding encoding;
+				bool isOpen;
+				var data = TextFileProvider.Instance.GetTextEditorData (file.FilePath, out hadBom, out encoding, out isOpen);
+				object refactoringContext;
+				var realActions = GetIssues (data, file, inspectorIds, out refactoringContext).SelectMany (issue => issue.Actions).ToList ();
+				if (realActions.Count == 0 || refactoringContext == null)
+					continue;
+				
+				var fileActionSummaries = actionSummaries.Where (summary => summary.IssueSummary.File == file).ToList ();
+				var matches = matcher.Match (fileActionSummaries, realActions).ToList ();
+				
+				var appliedFixes = RefactoringService.ApplyFixes (matches.Select (match => match.Action), refactoringContext);
+				appliedActions.AddRange (matches.Where (match => appliedFixes.Contains (match.Action)).Select (match => match.Summary));
+				
+				if (!isOpen) {
+					// If the file is open we leave it to the user to explicitly save the file
+					TextFileUtility.WriteText (file.Name, data.Text, encoding, hadBom);
 				}
 			}
+			return appliedActions;
 		}
 
-		static IList<CodeIssue> GetIssues (ProjectFile file, ISet<Type> inspectorTypes)
+		IList<CodeIssue> GetIssues (TextEditorData data, ProjectFile file, ISet<string> inspectorIds, out object refactoringContext)
 		{
+			refactoringContext = null;
+			var issues = new List<CodeIssue> ();
 			lastMime = null;
-			parser = null;
-			CodeIssueProvider[] codeIssueProvider = null;
-			var editor = TextFileProvider.Instance.GetReadOnlyTextEditorData (file.FilePath);
-			var project = file.Project;
-			var compilation = TypeSystemService.GetCompilation (project);
-			
-			if (lastMime != editor.MimeType || parser == null)
-				parser = TypeSystemService.GetParser (editor.MimeType);
+			IList<CodeIssueProvider> codeIssueProviders = null;
+
+			TypeSystemParser parser = null;
+			if (lastMime != data.MimeType)
+				parser = TypeSystemService.GetParser (data.MimeType);
 			if (parser == null)
-				continue;
+				return issues;
 			ParsedDocument document;
-			using (var stream = editor.OpenStream ())
-			using (var reader = new StreamReader (stream)) {
-				document = parser.Parse (true, editor.FileName, reader, project);
+			using (var stream = data.OpenStream ()) {
+				using (var reader = new StreamReader (stream)) {
+					document = parser.Parse (true, data.FileName, reader, file.Project);
+				}
 			}
-			if (document == null)
-				continue;
+			if (document == null) 
+				return issues;
+			
+			if (lastMime != data.MimeType || codeIssueProviders == null)
+				codeIssueProviders = GetInspectors (data, inspectorIds);
+			
+			var compilation = TypeSystemService.GetCompilation (file.Project);
 			var resolver = new CSharpAstResolver (compilation, document.GetAst<SyntaxTree> (), document.ParsedFile as ICSharpCode.NRefactory.CSharp.TypeSystem.CSharpUnresolvedFile);
-			var context = document.CreateRefactoringContextWithEditor (editor, resolver, CancellationToken.None);
-			if (lastMime != editor.MimeType || codeIssueProvider == null)
-				codeIssueProvider = GetInspectors (editor, inspectorTypes);
-			Parallel.ForEach (codeIssueProvider, provider => {
+			refactoringContext = document.CreateRefactoringContextWithEditor (data, resolver, CancellationToken.None);
+			var context = refactoringContext;
+			Parallel.ForEach (codeIssueProviders, provider => {
 				var severity = provider.GetSeverity ();
 				if (severity == Severity.None)
 					return;
 				try {
-					var realIssues = provider;
+					lock (issues) {
+						issues.AddRange (provider.GetIssues (context, CancellationToken.None));
+					}
 				} catch (Exception ex) {
-					LoggingService.LogError ("Error while running code issue on: " + editor.FileName, ex);
+					LoggingService.LogError ("Error while running code issue on: " + data.FileName, ex);
 				}
 			});
+			return issues;
 		}
 
-		CodeIssueProvider[] GetInspectors (Mono.TextEditor.TextEditorData editor, ISet<Type> inspectorTypes)
+		static IList<CodeIssueProvider> GetInspectors (Mono.TextEditor.TextEditorData editor, ICollection<string> inspectorIds)
 		{
-			return RefactoringService.GetInspectors (editor.MimeType)
-				.Where (inspector => inspectorTypes.Contains (inspector.GetType ()))
-				.ToArray ();
+			var inspectors = RefactoringService.GetInspectors (editor.MimeType).ToList ();
+			return inspectors
+				.Where (inspector => inspectorIds.Contains (inspector.IdString))
+				.ToList ();
 		}
 	}
 }

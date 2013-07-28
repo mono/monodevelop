@@ -23,14 +23,15 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using MonoDevelop.CodeActions;
 
 namespace MonoDevelop.CodeIssues
 {
 	public class IssueMatch
 	{
-		public IssueSummary Summary { get; set; }
+		public ActionSummary Summary { get; set; }
 		
-		public CodeIssue Issue { get; set; }
+		public CodeAction Action { get; set; }
 	}
 
 }

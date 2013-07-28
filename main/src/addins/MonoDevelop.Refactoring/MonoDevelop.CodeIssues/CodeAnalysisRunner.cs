@@ -41,6 +41,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.CodeIssues;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.Refactoring;
+using MonoDevelop.CodeActions;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -77,7 +78,16 @@ namespace MonoDevelop.CodeIssues
 								batchAction = () => a.BatchRun (input, loc);
 							return new GenericFix (
 								a.Title,
-								() => a.Run (input, loc),
+								() => {
+									var scriptProvider = context as IScriptProvider;
+									if (scriptProvider != null) {
+										using (var script = scriptProvider.CreateScript ()) {
+											a.Run (context, script);
+										}
+									} else {
+										a.Run (context, null);
+									}
+								},
 								batchAction) {
 								DocumentRegion = new DocumentRegion (r.Region.Begin, r.Region.End)
 							};

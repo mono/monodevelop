@@ -79,7 +79,7 @@ namespace MonoDevelop.CodeActions
 				Result = result;
 			}
 	
-			public override void Run (MonoDevelop.Ide.Gui.Document document, TextLocation loc)
+			public override void Run (object context, object script)
 			{
 				Action.Fix ();
 			}

@@ -26,7 +26,7 @@
 using ICSharpCode.NRefactory;
 using System;
 using Mono.TextEditor;
-using System.Collections.Generic;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
 
 namespace MonoDevelop.CodeActions
 {
@@ -57,6 +57,17 @@ namespace MonoDevelop.CodeActions
 		public DocumentRegion DocumentRegion { get; set; }
 		
 		/// <summary>
+		/// Gets or sets the type of the inspector that generated this action.
+		/// </summary>
+		/// <remarks>
+		/// While this looks the same as <see cref="BoundToIssue"/>, this is not the case.
+		/// BoundToIssue is used when an Action has been explicitly bound to an inspector,
+		/// while this property holds the type of the inspector that generated the action.
+		/// </remarks>
+		/// <value>The type of the inspector.</value>
+		public Type InspectorType { get; set; }
+		
+		/// <summary>
 		/// Gets or sets the sibling key.
 		/// </summary>
 		/// <value>The sibling key.</value>
@@ -70,7 +81,7 @@ namespace MonoDevelop.CodeActions
 		/// <summary>
 		/// Performs the specified code action in document at loc.
 		/// </summary>
-		public abstract void Run (MonoDevelop.Ide.Gui.Document document, TextLocation loc);
+		public abstract void Run (object context, object script);
 
 		/// <summary>
 		/// True if <see cref="BatchRun"/> can be used on the current instance.
@@ -92,17 +103,17 @@ namespace MonoDevelop.CodeActions
 
 	public class DefaultCodeAction : CodeAction
 	{
-		public Action<MonoDevelop.Ide.Gui.Document, TextLocation> act;
+		public Action<RefactoringContext, Script> act;
 
-		public DefaultCodeAction (string title, Action<MonoDevelop.Ide.Gui.Document, TextLocation> act)
+		public DefaultCodeAction (string title, Action<RefactoringContext, Script> act)
 		{
 			Title = title;
 			this.act = act;
 		}
 
-		public override void Run (MonoDevelop.Ide.Gui.Document document, TextLocation loc)
+		public override void Run (object context, object script)
 		{
-			act (document, loc);
+			act ((RefactoringContext)context, (Script)script);
 		}
 	}
 

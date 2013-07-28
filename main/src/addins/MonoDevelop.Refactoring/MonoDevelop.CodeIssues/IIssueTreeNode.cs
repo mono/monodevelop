@@ -47,9 +47,15 @@ namespace MonoDevelop.CodeIssues
 		/// Indicates whether this instance has any children.
 		/// </summary>
 		/// <value><c>true</c> if this instance has children; otherwise, <c>false</c>.</value>
-		bool HasChildren {
+		bool HasVisibleChildren {
 			get;
 		}
+
+		/// <summary>
+		/// Indicates whether this node should be shown in the ui.
+		/// </summary>
+		/// <value><c>true</c> if the current instance should be shown; otherwise, <c>false</c>.</value>
+		bool Visible { get; set; }
 
 		/// <summary>
 		/// Gets all children including nested children of this instance.
@@ -71,6 +77,11 @@ namespace MonoDevelop.CodeIssues
 		/// Occurs when <see cref="Text"/> is updated.
 		/// </summary>
 		event EventHandler<IssueGroupEventArgs> TextChanged;
+		
+		/// <summary>
+		/// Occurs when <see cref="Visible"/> is updated.
+		/// </summary>
+		event EventHandler<IssueGroupEventArgs> VisibleChanged;
 	}
 }
 

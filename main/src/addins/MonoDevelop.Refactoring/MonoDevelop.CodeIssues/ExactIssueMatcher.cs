@@ -1,5 +1,5 @@
 //
-// IIssueMatcher.cs
+// ExactIssueMatcher.cs
 //
 // Author:
 //       Simon Lindgren <simon.n.lindgren@gmail.com>
@@ -25,12 +25,30 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using MonoDevelop.CodeActions;
+using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.CodeIssues
 {
-	public interface IIssueMatcher
+	public class ExactIssueMatcher: IActionMatcher
 	{
-		IList<IssueMatch> Match (IList<IssueSummary> summaries, IList<CodeIssue> realIssues);
+		#region IIssueMatcher implementation
+
+		public IEnumerable<IssueMatch> Match (IList<ActionSummary> summaries, IList<CodeAction> realActions)
+		{
+			var summaryLookup = summaries.ToLookup (summary => summary.Region);
+			foreach (var action in realActions) {
+				if (summaryLookup.Contains (action.DocumentRegion)) {
+					yield return new IssueMatch {
+						Action = action,
+						Summary = summaryLookup[action.DocumentRegion].First ()
+					};
+				}
+			}
+		}
+
+		#endregion
 	}
 }
 

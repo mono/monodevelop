@@ -38,6 +38,7 @@ using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Refactoring;
 using ICSharpCode.NRefactory.Refactoring;
 using MonoDevelop.Core;
+using System.Collections.Concurrent;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -121,21 +122,24 @@ namespace MonoDevelop.CodeIssues
 							work += project.Files.Count (f => f.BuildAction == BuildAction.Compile);
 						}
 						monitor.BeginTask ("Analyzing solution", work);
-						TypeSystemParser parser = null;
-						string lastMime = null;
-						CodeIssueProvider[] codeIssueProvider = null;
+						var processedFiles = new ConcurrentDictionary<string, object> ();
+						//TypeSystemParser parser = null;
 						foreach (var project in solution.GetAllProjects ()) {
 							if (tokenSource.IsCancellationRequested)
 								break;
 							var compilation = TypeSystemService.GetCompilation (project);
 							Parallel.ForEach (project.Files, file => {
+								var me = new object();
+								var owner = processedFiles.AddOrUpdate(file.Name, me, (key, old) => old);
+								if (me != owner)
+									return;
 								if (file.BuildAction != BuildAction.Compile || tokenSource.IsCancellationRequested)
 									return;
 
 								var editor = TextFileProvider.Instance.GetReadOnlyTextEditorData (file.FilePath);
 
-								if (lastMime != editor.MimeType || parser == null)
-									parser = TypeSystemService.GetParser (editor.MimeType);
+								//if (lastMime != editor.MimeType || parser == null)
+									var parser = TypeSystemService.GetParser (editor.MimeType);
 								if (parser == null)
 									return;
 								var reader = new StreamReader (editor.OpenStream ());
@@ -147,20 +151,14 @@ namespace MonoDevelop.CodeIssues
 								var resolver = new CSharpAstResolver (compilation, document.GetAst<SyntaxTree> (), document.ParsedFile as ICSharpCode.NRefactory.CSharp.TypeSystem.CSharpUnresolvedFile);
 								var context = document.CreateRefactoringContextWithEditor (editor, resolver, tokenSource.Token);
 
-								if (lastMime != editor.MimeType || codeIssueProvider == null)
-									codeIssueProvider = RefactoringService.GetInspectors (editor.MimeType).ToArray ();
+								CodeIssueProvider[] codeIssueProvider = RefactoringService.GetInspectors (editor.MimeType).ToArray ();
 								Parallel.ForEach (codeIssueProvider, (provider) => { 
 									var severity = provider.GetSeverity ();
 									if (severity == Severity.None || tokenSource.IsCancellationRequested)
 										return;
 									try {
 										foreach (var r in provider.GetIssues (context, tokenSource.Token)) {
-											var actions = r.Actions.Select (a => new ActionSummary {
-												Batchable = a.SupportsBatchRunning,
-												SiblingKey = a.SiblingKey,
-												Title = a.Title
-											});
-											var issue = new IssueSummary (actions) {
+											var issue = new IssueSummary {
 												IssueDescription = r.Description,
 												Region = r.Region,
 												ProviderTitle = provider.Title,
@@ -170,8 +168,15 @@ namespace MonoDevelop.CodeIssues
 												IssueMarker = provider.IssueMarker,
 												File = file,
 												Project = project,
-												InspectorType = r.GetType ()
+												InspectorIdString = r.InspectorIdString
 											};
+											issue.Actions = r.Actions.Select (a => new ActionSummary {
+												Batchable = a.SupportsBatchRunning,
+												SiblingKey = a.SiblingKey,
+												Title = a.Title,
+												Region = a.DocumentRegion,
+												IssueSummary = issue
+											}).ToList ();
 											IssueSink.AddIssue (issue);
 										}
 									} catch (OperationCanceledException) {
@@ -181,7 +186,7 @@ namespace MonoDevelop.CodeIssues
 										LoggingService.LogError ("Error while running code issue on:" + editor.FileName, ex);
 									}
 								});
-								lastMime = editor.MimeType;
+								//lastMime = editor.MimeType;
 								monitor.Step (1);
 							});
 						}

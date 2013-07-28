@@ -23,6 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using Mono.TextEditor;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -46,6 +47,8 @@ namespace MonoDevelop.CodeIssues
 		/// </summary>
 		/// <value><c>true</c> if batchable; otherwise, <c>false</c>.</value>
 		public bool Batchable { get; set; }
+		
+		public DocumentRegion Region { get; set; }
 
 		/// <summary>
 		/// Gets or sets the <see cref="IssueSummary"/> representing the source of this action.

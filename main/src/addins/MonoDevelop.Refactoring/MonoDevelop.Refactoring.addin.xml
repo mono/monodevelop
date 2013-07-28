@@ -40,9 +40,9 @@
 	<ExtensionPoint path = "/MonoDevelop/Refactoring/CodeActionSource" name = "CodeActionSource">
 		<ExtensionNode name="Source"/>
 	</ExtensionPoint>
-
+	
 	<ExtensionPoint path = "/MonoDevelop/Refactoring/CodeIssues" name = "CodeIssue">
-		<ExtensionNode name="CodeIssue" type ="MonoDevelop.CodeIssues.CodeIssueAddinNode"/>
+		<ExtensionNode name="CodeIssue" type ="MonoDevelop.CodeActions.CodeIssueAddinNode"/>
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/Refactoring/CodeIssueSource" name = "CodeIssueSource">

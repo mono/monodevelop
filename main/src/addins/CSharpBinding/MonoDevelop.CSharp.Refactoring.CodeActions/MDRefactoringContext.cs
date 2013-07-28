@@ -39,10 +39,11 @@ using MonoDevelop.CSharp.Refactoring.CodeIssues;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using MonoDevelop.CSharp.Formatting;
+using MonoDevelop.CodeActions;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
-	public class MDRefactoringContext : RefactoringContext
+	public class MDRefactoringContext : RefactoringContext, IScriptProvider
 	{
 		public TextEditorData TextEditor {
 			get;
@@ -165,6 +166,11 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 		public Script StartScript ()
 		{
 			return new MDRefactoringScript (this, formattingOptions);
+		}
+		
+		public IDisposable CreateScript ()
+		{
+			return StartScript ();
 		}
 
 		public MDRefactoringContext (Document document, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken)) : base (document.GetSharedResolver ().Result, cancellationToken)

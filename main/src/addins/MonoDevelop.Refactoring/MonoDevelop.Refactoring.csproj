@@ -129,9 +129,11 @@
     <Compile Include="MonoDevelop.CodeIssues\IIssueSummarySink.cs" />
     <Compile Include="MonoDevelop.CodeIssues\IssueTreeNodeEventArgs.cs" />
     <Compile Include="MonoDevelop.CodeIssues\ActionSummary.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\IIssueMatcher.cs" />
     <Compile Include="MonoDevelop.CodeIssues\BatchFixer.cs" />
     <Compile Include="MonoDevelop.CodeIssues\IssueMatch.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\ExactIssueMatcher.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\IActionMatcher.cs" />
+    <Compile Include="MonoDevelop.CodeActions\IScriptProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />

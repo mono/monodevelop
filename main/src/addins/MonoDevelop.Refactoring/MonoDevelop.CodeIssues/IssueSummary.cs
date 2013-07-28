@@ -32,21 +32,10 @@ using System;
 
 namespace MonoDevelop.CodeIssues
 {
-
 	public class IssueSummary: IIssueTreeNode
-	{
-	
-		public IssueSummary (IEnumerable<ActionSummary> actions = null)
-		{
-			if (actions != null) {
-				Actions = new List<ActionSummary> (actions);
-			} else {
-				Actions = new List<ActionSummary> ();
-			}
-		}
-		
+	{		
 		#region IIssueTreeNode implementation
-
+		
 		string IIssueTreeNode.Text {
 			get {
 				string lineDescription;
@@ -59,7 +48,7 @@ namespace MonoDevelop.CodeIssues
 				return string.Format ("{0} [{1}:{2}]", IssueDescription, fileName, lineDescription);
 			}
 		}
-	
+
 		static readonly ICollection<IIssueTreeNode> emptyCollection = new IIssueTreeNode[0];
 
 		ICollection<IIssueTreeNode> IIssueTreeNode.Children {
@@ -67,16 +56,48 @@ namespace MonoDevelop.CodeIssues
 				return emptyCollection;
 			}
 		}
-		
-		bool IIssueTreeNode.HasChildren {
+
+		bool IIssueTreeNode.HasVisibleChildren {
 			get {
 				return false;
 			}
 		}
-		
+
+		bool visible = true;
+		bool IIssueTreeNode.Visible {
+			get {
+				return visible;
+			}
+				
+			set {
+				if (visible != value) {
+					visible = value;
+					OnVisibleChanged (new IssueGroupEventArgs (this));
+				}
+			}
+		}
+
 		ICollection<IIssueTreeNode> IIssueTreeNode.AllChildren {
 			get {
 				return emptyCollection;
+			}
+		}
+		
+		event EventHandler<IssueGroupEventArgs> visibleChanged;
+		event EventHandler<IssueGroupEventArgs> IIssueTreeNode.VisibleChanged {
+			add {
+				visibleChanged += value;
+			}
+			remove {
+				visibleChanged -= value;
+			}
+		}
+
+		protected virtual void OnVisibleChanged (IssueGroupEventArgs eventArgs)
+		{
+			var handler = visibleChanged;
+			if (handler != null) {
+				handler (this, eventArgs);
 			}
 		}
 		
@@ -101,19 +122,19 @@ namespace MonoDevelop.CodeIssues
 			remove {
 			}
 		}
-
+		
 		#endregion
-
+		
 		/// <summary>
 		/// The description of the issue.
 		/// </summary>
 		public string IssueDescription { get; set; }
-		
+
 		/// <summary>
 		/// The region.
 		/// </summary>
-		public DomRegion Region { get; set;	}
-		
+		public DomRegion Region { get; set; }
+
 		/// <summary>
 		/// Gets or sets the category of the issue provider.
 		/// </summary>
@@ -145,7 +166,7 @@ namespace MonoDevelop.CodeIssues
 		/// </summary>
 		/// <value>The file.</value>
 		public ProjectFile File { get; set; }
-		
+
 		/// <summary>
 		/// Gets or sets the project this issue was found in.
 		/// </summary>
@@ -156,13 +177,32 @@ namespace MonoDevelop.CodeIssues
 		/// Gets or sets the type of the inspector that was the source of this issue.
 		/// </summary>
 		/// <value>The type of the inspector.</value>
-		public Type InspectorType { get; set; }
-		
+		public string InspectorIdString { get; set; }
+
+		IList<ActionSummary> actions;
+
 		/// <summary>
 		/// Gets or sets the actions available to fix this issue.
 		/// </summary>
 		/// <value>The actions.</value>
-		public IList<ActionSummary> Actions { get; private set; }
+		public IList<ActionSummary> Actions {
+			get {
+				if (actions == null) {
+					Actions = new List<ActionSummary> ();
+				}
+				return actions;
+			}
+			set {
+				if (value == null)
+					throw new ArgumentNullException ("value");
+				actions = value;
+			}
+		}
+		
+		public override string ToString ()
+		{
+			return string.Format ("[IssueSummary: ProviderTitle={2}, Region={0}, ProviderCategory={1}]", Region, ProviderCategory, ProviderTitle);
+		}
 	}
 }
 

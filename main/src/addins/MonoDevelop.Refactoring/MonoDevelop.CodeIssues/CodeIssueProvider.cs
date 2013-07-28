@@ -23,14 +23,10 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.CSharp.Refactoring;
-using ICSharpCode.NRefactory.CSharp;
-using ICSharpCode.NRefactory;
 using System.Threading;
 using MonoDevelop.Core;
-using ICSharpCode.NRefactory.Refactoring; 
+using ICSharpCode.NRefactory.Refactoring;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -114,7 +110,7 @@ namespace MonoDevelop.CodeIssues
 		/// <summary>
 		/// Gets all the code issues inside a document.
 		/// </summary>
-		public abstract IEnumerable<CodeIssue> GetIssues (object refactoringContext, CancellationToken cancellationToken);
+		public abstract IEnumerable<MonoDevelop.CodeIssues.CodeIssue> GetIssues (object refactoringContext, CancellationToken cancellationToken);
 	}
 }
 

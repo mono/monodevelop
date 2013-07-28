@@ -82,7 +82,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 						LoggingService.LogError ("NRefactory issue action was null in :" + Title);
 						continue;
 					}
-					var nrefactoryCodeAction = new NRefactoryCodeAction (providerIdString, act.Description, act, act.SiblingKey);
+					var nrefactoryCodeAction = new NRefactoryCodeAction (IdString, act.Description, act, act.SiblingKey);
 					if (act.SiblingKey != null) {
 						// make sure the action has a list of its siblings
 						IList<ICSharpCode.NRefactory.CSharp.Refactoring.CodeAction> siblingGroup;
@@ -100,6 +100,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 					context.TextEditor.FileName,
 					action.Start,
 					action.End,
+					IdString,
 					actions
 				);
 				yield return issue;

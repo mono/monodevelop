@@ -48,11 +48,9 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			this.DocumentRegion = new Mono.TextEditor.DocumentRegion (act.Start, act.End);
 		}
 
-		public override void Run (Document document, TextLocation loc)
+		public override void Run (object context, object script)
 		{
-			var context = new MDRefactoringContext (document, loc);
-			using (var script = context.StartScript ())
-				act.Run (script);
+			act.Run ((Script) script);
 		}
 
 		/// <summary>
@@ -64,7 +62,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 		
 		public override bool SupportsBatchRunning {
 			get{
-				return SiblingActions != null && SiblingActions.Count > 1;
+				return SiblingActions != null;// && SiblingActions.Count > 1;
 			}
 		}
 		

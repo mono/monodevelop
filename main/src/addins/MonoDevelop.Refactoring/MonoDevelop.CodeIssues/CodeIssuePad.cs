@@ -86,6 +86,7 @@ namespace MonoDevelop.CodeIssues
 			view.DataSource = store;
 			view.HeadersVisible = false;
 			view.Columns.Add ("Name", textField);
+			view.SelectionMode = SelectionMode.Multiple;
 			
 			view.RowActivated += OnRowActivated;
 			view.RowExpanding += OnRowExpanding;
@@ -142,14 +143,14 @@ namespace MonoDevelop.CodeIssues
 			runPeriodicUpdate = true;
 			Application.TimeoutInvoke (UpdatePeriod, RunPeriodicUpdate);
 		}
-		
-		bool RunPeriodicUpdate ()
+
+		void ProcessUpdateQueue ()
 		{
 			IList<IIssueTreeNode> nodes;
 			lock (queueLock) {
 				nodes = new List<IIssueTreeNode> (updateQueue);
+				updateQueue.Clear ();
 			}
-			
 			foreach (var node in nodes) {
 				TreePosition position;
 				if (!nodePositions.TryGetValue (node, out position)) {
@@ -157,15 +158,31 @@ namespace MonoDevelop.CodeIssues
 					continue;
 				}
 				var navigator = store.GetNavigatorAt (position);
+				if (!node.Visible) {
+					// Check above means node is always in nodePositions
+					nodePositions.Remove (node);
+					if (syncedNodes.Contains (node)) {
+						syncedNodes.Remove (node);
+					}
+					ClearChildNodes (navigator);
+					navigator.Remove ();
+					continue;
+				}
 				UpdateText (navigator, node);
-				if (!syncedNodes.Contains (node) && node.HasChildren) {
+				if (!syncedNodes.Contains (node) && node.HasVisibleChildren) {
 					if (navigator.MoveToChild ()) {
 						navigator.MoveToParent ();
-					} else {
+					}
+					else {
 						AddDummyChild (navigator);
 					}
 				}
 			}
+		}
+		
+		bool RunPeriodicUpdate ()
+		{
+			ProcessUpdateQueue ();
 			return runPeriodicUpdate;
 		}
 
@@ -259,8 +276,15 @@ namespace MonoDevelop.CodeIssues
 			};
 			node.TextChanged += (sender, e) => {
 				lock (queueLock) {
-					if (!updateQueue.Contains (e.IssueGroup)) {
-						updateQueue.Enqueue (e.IssueGroup);
+					if (!updateQueue.Contains (e.Node)) {
+						updateQueue.Enqueue (e.Node);
+					}
+				}
+			};
+			node.VisibleChanged += (sender, e) => {
+				lock (queueLock) {
+					if (!updateQueue.Contains (e.Node)) {
+						updateQueue.Enqueue (e.Node);
 					}
 				}
 			};
@@ -298,10 +322,10 @@ namespace MonoDevelop.CodeIssues
 			ClearChildNodes (navigator);
 			syncedNodes.Remove (node);
 			navigator.RemoveChildren ();
-			if (!node.HasChildren) 
+			if (!node.HasVisibleChildren) 
 				return;
 			if (isExpanded) {
-				foreach (var childNode in node.Children) {
+				foreach (var childNode in node.Children.Where (child => child.Visible)) {
 					navigator.AddChild ();
 					SetNode (navigator, childNode);
 					SyncNode (navigator);
@@ -375,16 +399,25 @@ namespace MonoDevelop.CodeIssues
 		void HandleButtonPressed (object sender, ButtonEventArgs e)
 		{
 			if (e.Button == PointerButton.Right) {
-				ShowContextMenu (e.X, e.Y);
+				ShowBatchFixContextMenu (e.X, e.Y);
 			}
 		}
 
-		void ShowContextMenu (double x, double y)
+		void UpdateParents (TreeNavigator navigator)
+		{
+			do {
+				var node = navigator.GetValue (nodeField);
+				UpdateText (navigator, node);
+			} while (navigator.MoveToParent ());
+		}
+
+		void ShowBatchFixContextMenu (double x, double y)
 		{
 			var issues = view.SelectedRows
 				.Select (row => store.GetNavigatorAt (row).GetValue (nodeField))
 				.Where (node1 => node1 != null)
-				.SelectMany (node2 => node2.AllChildren)
+				.SelectMany (node2 => node2.AllChildren.Union (new [] { node2 }))
+				.Where (node3 => node3.Visible)
 				.OfType<IssueSummary> ();
 			var possibleFixes = issues
 				.SelectMany (issue => issue.Actions.Select (a => new { Issue = issue, Action = a }))
@@ -392,18 +425,28 @@ namespace MonoDevelop.CodeIssues
 				// I'm using the ProviderTitle to distiguish between different providers because it is easy
 				// TODO: Don't use the free-form ProviderTitle property to distiguish between providers
 				.GroupBy (item2 => Tuple.Create (item2.Action.SiblingKey, item2.Issue.ProviderTitle))
-				.OrderBy (fixGroup => fixGroup.Count ())
+				.OrderBy (fixGroup => -fixGroup.Count ())
 				.Select (fixGroup2 => new {
 					SiblingKey = fixGroup2.Key.Item1,
-					Title = fixGroup2.First ().Action.Title
+					Title = fixGroup2.First ().Action.Title,
+					Actions = fixGroup2.Select (item => item.Action).ToList ()
 				});
 				
+			var choices = possibleFixes.Take (BatchChoiceCount).ToList ();
+			if (!choices.Any ())
+				return;
+			
 			var menu = new Menu ();
-			foreach (var _choice in possibleFixes.Take (BatchChoiceCount)) {
+			foreach (var _choice in choices) {
 				var choice = _choice;
 				var menuItem = new MenuItem (choice.Title);
 				menuItem.Clicked += delegate {
-					
+					var fixer = new BatchFixer (new ExactIssueMatcher ());
+					var appliedActions = fixer.TryFixIssues (choice.Actions);
+					foreach (var action in appliedActions) {
+						((IIssueTreeNode)action.IssueSummary).Visible = false;
+					}
+					ProcessUpdateQueue ();
 				};
 				menu.Items.Add (menuItem);
 			}
