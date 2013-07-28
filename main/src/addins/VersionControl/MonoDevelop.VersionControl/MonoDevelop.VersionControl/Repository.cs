@@ -21,7 +21,7 @@ namespace MonoDevelop.VersionControl
 
 		int references;
 
-		public MonoDevelop.Core.FilePath RootPath
+		public FilePath RootPath
 		{
 			get;
 			protected set;
@@ -192,7 +192,6 @@ namespace MonoDevelop.VersionControl
 					// If there is no cached status, query it asynchronously
 					vi = new VersionInfo (p, "", Directory.Exists (p), VersionStatus.Versioned, null, VersionStatus.Versioned, null);
 					infoCache.SetStatus (vi, false);
-					vi.Init (this);
 					result.Add (vi);
 					pathsToQuery.Add (p);
 				}
@@ -225,8 +224,7 @@ namespace MonoDevelop.VersionControl
 
 				if (status != null && status.RequiresRefresh && (!getRemoteStatus || status.HasRemoteStatus))
 					return status.FileInfo;
-				else
-					return new VersionInfo[0];
+				return new VersionInfo[0];
 			} finally {
 				//Console.WriteLine ("GetDirectoryVersionInfo " + localDirectory + " - " + (DateTime.Now - now).TotalMilliseconds);
 			}
@@ -255,7 +253,9 @@ namespace MonoDevelop.VersionControl
 			public bool GetRemoteStatus;
 		}
 
-		Queue<object> queryQueue = new Queue<object> ();
+		Queue<VersionInfoQuery> fileQueryQueue = new Queue<VersionInfoQuery> ();
+		Queue<DirectoryInfoQuery> directoryQueryQueue = new Queue<DirectoryInfoQuery> ();
+		object queryLock = new object ();
 		bool queryRunning;
 		VersionInfoCache infoCache;
 		HashSet<FilePath> filesInQueryQueue = new HashSet<FilePath> ();
@@ -267,21 +267,23 @@ namespace MonoDevelop.VersionControl
 
 		void AddQuery (object query)
 		{
-			lock (queryQueue) {
+			lock (queryLock) {
 				if (query is VersionInfoQuery) {
-					VersionInfoQuery vi = (VersionInfoQuery) query;
+					VersionInfoQuery vi = (VersionInfoQuery)query;
 					vi.Paths.RemoveAll (p => filesInQueryQueue.Contains (p) || directoriesInQueryQueue.Contains (p.ParentDirectory));
 					if (vi.Paths.Count == 0)
 						return;
 					filesInQueryQueue.UnionWith (vi.Paths);
+					fileQueryQueue.Enqueue (vi);
 				//	Console.WriteLine ("GetVersionInfo AddQuery " + string.Join (", ", vi.Paths.Select (p => p.FullPath)));
 				}
 				else if (query is DirectoryInfoQuery) {
-					if (!directoriesInQueryQueue.Add (((DirectoryInfoQuery)query).Directory))
+					DirectoryInfoQuery di = (DirectoryInfoQuery)query;
+					if (!directoriesInQueryQueue.Add (di.Directory))
 						return;
+					directoryQueryQueue.Enqueue (di);
 				//	Console.WriteLine ("GetDirectoryVersionInfo AddQuery " + ((DirectoryInfoQuery)query).Directory);
 				}
-				queryQueue.Enqueue (query);
 				if (!queryRunning) {
 					queryRunning = true;
 					System.Threading.ThreadPool.QueueUserWorkItem (RunQueries);
@@ -293,38 +295,28 @@ namespace MonoDevelop.VersionControl
 		{
 		//	DateTime t = DateTime.Now;
 		//	Console.WriteLine ("RunQueries started");
-			do {
-				object query = null;
-				lock (queryQueue) {
-					if (queryQueue.Count == 0) {
-						queryRunning = false;
-						break;
-					}
-					query = queryQueue.Dequeue ();
-					if (query is VersionInfoQuery) {
-						VersionInfoQuery q = (VersionInfoQuery) query;
-						filesInQueryQueue.ExceptWith (q.Paths);
-					}
-					else if (query is DirectoryInfoQuery) {
-						var q = (DirectoryInfoQuery) query;
-						directoriesInQueryQueue.Remove (q.Directory);
-					}
-				}
-				try {
-					if (query is VersionInfoQuery) {
-						VersionInfoQuery q = (VersionInfoQuery) query;
-						var status = OnGetVersionInfo (q.Paths, (q.QueryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0);
+			try {
+				lock (queryLock) {
+					var groups = fileQueryQueue.GroupBy (q => (q.QueryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0);
+					foreach (var group in groups) {
+						var status = OnGetVersionInfo (group.SelectMany (q => q.Paths), group.Key);
 						infoCache.SetStatus (status);
 					}
-					else if (query is DirectoryInfoQuery) {
-						var q = (DirectoryInfoQuery) query;
-						var status = OnGetDirectoryVersionInfo (q.Directory, q.GetRemoteStatus, false);
-						infoCache.SetDirectoryStatus (q.Directory, status, q.GetRemoteStatus);
+					filesInQueryQueue.Clear ();
+
+					foreach (var item in directoryQueryQueue) {
+						var status = OnGetDirectoryVersionInfo (item.Directory, item.GetRemoteStatus, false);
+						infoCache.SetDirectoryStatus (item.Directory, status, item.GetRemoteStatus);
 					}
-				} catch (Exception ex) {
-					LoggingService.LogError ("Version control status query failed", ex);
+					directoriesInQueryQueue.Clear ();
+
+					fileQueryQueue.Clear ();
+					directoryQueryQueue.Clear ();
+					queryRunning = false;
 				}
-			} while (true);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Version control status query failed", ex);
+			}
 			//Console.WriteLine ("RunQueries finished - " + (DateTime.Now - t).TotalMilliseconds);
 		}
 
@@ -797,6 +789,15 @@ namespace MonoDevelop.VersionControl
 			get;
 			private set;
 		}
+
+		public string Email {
+			get;
+			private set;
+		}
+
+		public bool HasEmail {
+			get { return Email != null; }
+		}
 		
 		public bool HasDate {
 			get { return Date != DateTime.MinValue; }
@@ -808,10 +809,19 @@ namespace MonoDevelop.VersionControl
 			this.Author = author;
 			this.Date = date;
 		}
+
+		public Annotation (string revision, string author, DateTime date, string email)
+		{
+			this.Revision = revision;
+			this.Author = author;
+			this.Date = date;
+			this.Email = email;
+		}
 		
 		public override string ToString ()
 		{
-			return string.Format ("[Annotation: Revision={0}, Author={1}, Date={2}, HasDate={3}]", Revision, Author, Date, HasDate);
+			return String.Format ("[Annotation: Revision={0}, Author={1}, Date={2}, HasDate={3}, Email={4}, HasEmail={5}]",
+									Revision, Author, Date, HasDate, Email, HasEmail);
 		}
 	}
 	

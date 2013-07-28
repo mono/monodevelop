@@ -38,16 +38,24 @@ namespace MonoDevelop.Tests.TestRunner
 	{
 		public int Run (string[] arguments)
 		{
-			var list = new List<string> (arguments);
-			list.Add ("-domain=None");
-
-			foreach (var ar in arguments) {
+			var args = new List<string> (arguments);
+			bool useGuiUnit = false;
+			foreach (var ar in args) {
 				if ((ar.EndsWith (".dll") || ar.EndsWith (".exe")) && File.Exists (ar)) {
 					try {
 						var asm = Assembly.LoadFrom (ar);
 						HashSet<string> ids = new HashSet<string> ();
-						foreach (var aname in asm.GetReferencedAssemblies ())
+						foreach (var aname in asm.GetReferencedAssemblies ()) {
+							if (aname.Name == "GuiUnit") {
+								try {
+									Assembly.LoadFile (Path.Combine (Path.GetDirectoryName (ar), "GuiUnit.exe"));
+									useGuiUnit = true;
+								} catch {
+
+								}
+							}
 							ids.UnionWith (GetAddinsFromReferences (aname));
+						}
 
 						foreach (var id in ids)
 							AddinManager.LoadAddin (new Mono.Addins.ConsoleProgressStatus (false), id);
@@ -57,7 +65,16 @@ namespace MonoDevelop.Tests.TestRunner
 					}
 				}
 			}
-			return NUnit.ConsoleRunner.Runner.Main (list.ToArray ());
+			if (useGuiUnit) {
+				var runnerType = Type.GetType ("GuiUnit.TestRunner, GuiUnit");
+				var method = runnerType.GetMethod ("Main", BindingFlags.Public | BindingFlags.Static);
+				method.Invoke (null, new [] { args.ToArray () });
+			} else {
+				args.RemoveAll (a => a.StartsWith ("-port="));
+				args.Add ("-domain=None");
+				NUnit.ConsoleRunner.Runner.Main (args.ToArray ());
+			}
+			return 0;
 		}
 
 		IEnumerable<string> GetAddinsFromReferences (AssemblyName aname)

@@ -549,15 +549,18 @@ namespace MonoDevelop.VersionControl.Subversion
 		public override Annotation[] GetAnnotations (FilePath localPath)
 		{
 			List<Annotation> annotations = new List<Annotation> (Svn.GetAnnotations (this, localPath, SvnRevision.First, SvnRevision.Base));
-			Annotation nextRev = new Annotation (GettextCatalog.GetString ("working copy"), "", DateTime.MinValue);
+			Annotation nextRev = new Annotation (GettextCatalog.GetString ("working copy"), "<uncommitted>", DateTime.MinValue);
 			var baseDocument = new Mono.TextEditor.TextDocument (GetBaseText (localPath));
 			var workingDocument = new Mono.TextEditor.TextDocument (File.ReadAllText (localPath));
 			
 			// "SubversionException: blame of the WORKING revision is not supported"
 			foreach (var hunk in baseDocument.Diff (workingDocument)) {
-				annotations.RemoveRange (hunk.RemoveStart, hunk.Removed);
+				annotations.RemoveRange (hunk.RemoveStart - 1, hunk.Removed);
 				for (int i = 0; i < hunk.Inserted; ++i) {
-					annotations.Insert (hunk.InsertStart - 1, nextRev);
+					if (hunk.InsertStart + i >= annotations.Count)
+						annotations.Add (nextRev);
+					else
+						annotations.Insert (hunk.InsertStart - 1, nextRev);
 				}
 			}
 			

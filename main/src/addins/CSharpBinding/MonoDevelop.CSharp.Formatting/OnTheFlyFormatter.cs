@@ -249,7 +249,7 @@ namespace MonoDevelop.CSharp.Formatting
 			// Do the actual formatting
 //			var originalVersion = data.Editor.Document.Version;
 
-			using (var undo = data.Editor.OpenUndoGroup ()) {
+			using (var undo = data.Editor.OpenUndoGroup (OperationType.Format)) {
 				try {
 					changes.ApplyChanges (formatStartOffset + startDelta, Math.Max (0, formatLength - startDelta - 1), delegate (int replaceOffset, int replaceLength, string insertText) {
 						int translatedOffset = realTextDelta + replaceOffset;

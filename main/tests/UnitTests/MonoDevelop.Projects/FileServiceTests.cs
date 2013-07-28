@@ -89,6 +89,18 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public void MoveFile ()
+		{
+			var tmp = System.IO.Path.GetTempFileName ();
+
+			FileService.MoveFile (tmp, tmp + ".tmp");
+			Assert.IsTrue (System.IO.File.Exists (tmp + ".tmp"), "#1");
+
+			FileService.DeleteFile (tmp + ".tmp");
+			Assert.IsFalse (System.IO.File.Exists (tmp + ".tmp"), "#2");
+		}
+
+		[Test]
 		public void TestGetRelativeBadInput ()
 		{
 			Assert.AreEqual (@"bbb", FileService.AbsoluteToRelativePath (@"aaa", @"bbb"));

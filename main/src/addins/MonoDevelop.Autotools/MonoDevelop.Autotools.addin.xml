@@ -1,15 +1,6 @@
-<Addin	id          = "Autotools"
-        namespace   = "MonoDevelop"
-	name        = "Makefile generation"
-	author      = "Matthias Braun, Scott Ellington"
-        copyright   = "LGPL"
-        url         = "http://monodevelop.com"
-        description = "Allows generating simple makefiles and Autotools based makefiles for projects"
-        category    = "Project Import and Export"
-        version     = "4.1.7">
+<ExtensionModel>
         
 	<Runtime>
-		<Import assembly="MonoDevelop.Autotools.dll" />
 		<Import file="templates/autogen.sh.template"/>
 		<Import file="templates/Makefile.am.project.template"/>
 		<Import file="templates/Makefile.include"/>
@@ -17,13 +8,6 @@
 		<Import file="templates/exe.wrapper.in.template"/>
 		<Import file="templates/expansions.m4"/>
 	</Runtime>
-
-	<Dependencies>
-		<Addin id="Core" version="4.1.7"/>
-		<Addin id="Ide" version="4.1.7"/>
-		<Addin id="Deployment" version="4.1.7"/>
-		<Addin id="DesignerSupport" version="4.1.7"/>
-	</Dependencies>
 
 	<ExtensionPoint path = "/MonoDevelop/Autotools/SimpleSetups">
 		<Description>Simple autotools setups. Specified classes must implement ISimpleAutotoolsSetup</Description>
@@ -145,4 +129,4 @@
 	</Extension>
 -->
 
-</Addin>
+</ExtensionModel>

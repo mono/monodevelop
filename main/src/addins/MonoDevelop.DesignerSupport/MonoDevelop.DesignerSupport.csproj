@@ -152,6 +152,7 @@
     <Compile Include="gtk-gui\MonoDevelop.DesignerSupport.ClassOutlineSortingPreferencesDialog.cs" />
     <Compile Include="MonoDevelop.DesignerSupport\ClassOutlineSettings.cs" />
     <Compile Include="MonoDevelop.DesignerSupport.Toolbox\IToolboxCustomizer.cs" />
+    <Compile Include="AddinInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.DesignerSupport.addin.xml">

@@ -11,10 +11,10 @@ namespace MonoDevelop.Debugger
 		private global::Gtk.VBox vboxExceptionInfo;
 		private global::Gtk.Label labelType;
 		private global::Gtk.Label labelMessage;
-		private global::Gtk.ScrolledWindow GtkScrolledWindow1;
-		private global::Gtk.TreeView treeStack;
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
 		private global::MonoDevelop.Debugger.ObjectValueTreeView valueView;
+		private global::Gtk.ScrolledWindow GtkScrolledWindow1;
+		private global::Gtk.TreeView treeStack;
 
 		protected virtual void Build ()
 		{
@@ -81,20 +81,6 @@ namespace MonoDevelop.Debugger
 			w5.Expand = false;
 			w5.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.GtkScrolledWindow1 = new global::Gtk.ScrolledWindow ();
-			this.GtkScrolledWindow1.HeightRequest = 128;
-			this.GtkScrolledWindow1.Name = "GtkScrolledWindow1";
-			this.GtkScrolledWindow1.ShadowType = ((global::Gtk.ShadowType)(1));
-			// Container child GtkScrolledWindow1.Gtk.Container+ContainerChild
-			this.treeStack = new global::Gtk.TreeView ();
-			this.treeStack.CanFocus = true;
-			this.treeStack.Name = "treeStack";
-			this.treeStack.HeadersVisible = false;
-			this.GtkScrolledWindow1.Add (this.treeStack);
-			this.vbox2.Add (this.GtkScrolledWindow1);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.GtkScrolledWindow1]));
-			w7.Position = 1;
-			// Container child vbox2.Gtk.Box+BoxChild
 			this.GtkScrolledWindow = new global::Gtk.ScrolledWindow ();
 			this.GtkScrolledWindow.HeightRequest = 128;
 			this.GtkScrolledWindow.Name = "GtkScrolledWindow";
@@ -112,7 +98,21 @@ namespace MonoDevelop.Debugger
 			this.valueView.CompactView = false;
 			this.GtkScrolledWindow.Add (this.valueView);
 			this.vbox2.Add (this.GtkScrolledWindow);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.GtkScrolledWindow]));
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.GtkScrolledWindow]));
+			w7.Position = 1;
+			// Container child vbox2.Gtk.Box+BoxChild
+			this.GtkScrolledWindow1 = new global::Gtk.ScrolledWindow ();
+			this.GtkScrolledWindow1.HeightRequest = 128;
+			this.GtkScrolledWindow1.Name = "GtkScrolledWindow1";
+			this.GtkScrolledWindow1.ShadowType = ((global::Gtk.ShadowType)(1));
+			// Container child GtkScrolledWindow1.Gtk.Container+ContainerChild
+			this.treeStack = new global::Gtk.TreeView ();
+			this.treeStack.CanFocus = true;
+			this.treeStack.Name = "treeStack";
+			this.treeStack.HeadersVisible = false;
+			this.GtkScrolledWindow1.Add (this.treeStack);
+			this.vbox2.Add (this.GtkScrolledWindow1);
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.GtkScrolledWindow1]));
 			w9.Position = 2;
 			this.dialog1_VBox.Add (this.vbox2);
 			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.dialog1_VBox [this.vbox2]));

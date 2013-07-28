@@ -387,7 +387,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			result.AppendLine ("// NOTE: Don't call the base implementation on a Model class");
 			
 			AppendIndent (result);
-			result.AppendLine ("// see http://docs.xamarin.com/ios/tutorials/Events%2c_Protocols_and_Delegates ");
+			result.AppendLine ("// see http://docs.xamarin.com/guides/ios/application_fundamentals/delegates,_protocols,_and_events ");
 
 			AppendIndent (result);
 			result.Append ("throw new ");

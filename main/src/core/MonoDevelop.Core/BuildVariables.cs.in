@@ -1,0 +1,10 @@
+namespace MonoDevelop
+{
+	public static class BuildInfo
+	{
+		public const string Version = "@PACKAGE_VERSION@";
+		public const string VersionLabel = "@PACKAGE_VERSION_LABEL@";
+		public const string CompatVersion = "@COMPAT_ADDIN_VERSION@";
+	}
+}
+

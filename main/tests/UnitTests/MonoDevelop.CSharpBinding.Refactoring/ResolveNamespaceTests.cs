@@ -36,10 +36,11 @@ using MonoDevelop.CSharp;
 using MonoDevelop.CSharp.Completion;
 using MonoDevelop.Refactoring;
 using System.Linq;
+using MonoDevelop.Projects;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharpBinding.Refactoring
 {
-	[Ignore("Ignored till the tests run inside md.")]
 	[TestFixture]
 	public class ResolveNamespaceTests : UnitTests.TestBase
 	{
@@ -47,6 +48,18 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 		{
 			var tww = new TestWorkbenchWindow ();
 			var content = new TestViewContent ();
+
+			var project = new DotNetAssemblyProject ("C#");
+			project.Name = "test";
+			project.References.Add (new ProjectReference (ReferenceType.Package, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
+			project.References.Add (new ProjectReference (ReferenceType.Package, "System.Core"));
+
+			project.FileName = "test.csproj";
+
+			TypeSystemService.LoadProject (project);
+			TypeSystemService.GetProjectContentWrapper (project).ReconnectAssemblyReferences (); 
+			content.Project = project;
+
 			tww.ViewContent = content;
 			content.ContentName = "a.cs";
 			content.GetTextEditorData ().Document.MimeType = "text/x-csharp";
@@ -63,7 +76,6 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 			var compExt = new CSharpCompletionTextEditorExtension ();
 			compExt.Initialize (doc);
 			content.Contents.Add (compExt);
-
 			doc.UpdateParseDocument ();
 			return doc;
 		}
@@ -301,8 +313,6 @@ namespace sadfhgjhkfj
         }
     }
 }");
-			foreach (var a in result)
-				Console.WriteLine (a);
 			Assert.IsTrue (result.Any (t => t.Namespace == "System.Threading"));
 		}
 

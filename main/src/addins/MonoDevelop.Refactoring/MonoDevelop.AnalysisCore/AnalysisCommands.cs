@@ -102,6 +102,10 @@ namespace MonoDevelop.AnalysisCore
 				((Result)dataItem).ShowResultOptionsDialog ();
 				return;
 			}
+			if (dataItem is System.Action)  {
+				((System.Action)dataItem) ();
+				return;
+			}
 			var action = (IAnalysisFixAction)dataItem;
 			action.Fix ();
 		}
@@ -152,8 +156,34 @@ namespace MonoDevelop.AnalysisCore
 					infos.Add (label, action);
 				}
 				if (result.HasOptionsDialog) {
-					var label = GettextCatalog.GetString ("_Inspection options for \"{0}\"", result.OptionsTitle);
-					infos.Add (label, result);
+					var declSet = new CommandInfoSet ();
+					declSet.Text = GettextCatalog.GetString ("_Options for \"{0}\"", result.OptionsTitle);
+
+					var ir = result as InspectorResults;
+					if (ir != null) {
+						var inspector = ir.Inspector;
+						if (inspector.CanDisableWithPragma) {
+							declSet.CommandInfos.Add (GettextCatalog.GetString ("_Suppress with #pragma"), new System.Action(delegate {
+								inspector.DisableWithPragma (doc, doc.Editor.Caret.Location); 
+							}));
+						}
+
+						if (inspector.CanDisableOnce) {
+							declSet.CommandInfos.Add (GettextCatalog.GetString ("_Disable once with comment"), new System.Action(delegate {
+								inspector.DisableOnce (doc, doc.Editor.Caret.Location); 
+							}));
+						}
+
+						if (inspector.CanDisableAndRestore) {
+							declSet.CommandInfos.Add (GettextCatalog.GetString ("Disable _and restore with comments"), new System.Action(delegate {
+								inspector.DisableAndRestore (doc, doc.Editor.Caret.Location); 
+							}));
+						}
+					}
+
+					declSet.CommandInfos.Add (GettextCatalog.GetString ("_Configure inspection severity"), result);
+
+					infos.Add (declSet);
 				}
 			}
 		}

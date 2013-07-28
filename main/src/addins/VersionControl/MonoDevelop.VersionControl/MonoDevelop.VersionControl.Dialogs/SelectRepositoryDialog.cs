@@ -22,6 +22,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 		SelectRepositoryMode mode;
 		ArrayList loadingRepos = new ArrayList ();
 		IRepositoryEditor currentEditor;
+		string defaultPath;
 		
 		const int RepositoryCol = 0;
 		const int RepoNameCol = 1;
@@ -62,8 +63,8 @@ namespace MonoDevelop.VersionControl.Dialogs
 				entryName.Visible = false;
 				boxMessage.Visible = false;
 				labelMessage.Visible = false;
-				string pathName = MonoDevelop.Core.PropertyService.Get ("MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", Environment.GetFolderPath (Environment.SpecialFolder.Personal)).ToString ();
-				entryFolder.Text = pathName;
+				defaultPath = PropertyService.Get ("MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", Environment.GetFolderPath (Environment.SpecialFolder.Personal));
+				entryFolder.Text = defaultPath;
 			} else {
 				labelTargetDir.Visible = false;
 				boxFolder.Visible = false;
@@ -76,8 +77,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			get {
 				if (notebook.Page == 0)
 					return repo;
-				else
-					return GetSelectedRepository ();
+				return GetSelectedRepository ();
 			}
 		}
 		
@@ -117,6 +117,9 @@ namespace MonoDevelop.VersionControl.Dialogs
 			currentEditor = vcs.CreateRepositoryEditor (repo);
 			repoContainer.Add (currentEditor.Widget);
 			currentEditor.Widget.Show ();
+			UrlBasedRepositoryEditor edit = currentEditor as UrlBasedRepositoryEditor;
+			if (edit != null)
+				edit.PathChanged += OnPathChanged;
 			UpdateRepoDescription ();
 		}
 		
@@ -217,8 +220,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			TreeModel model;
 			if (repoTree.Selection.GetSelected (out model, out iter))
 				return (Repository) store.GetValue (iter, RepositoryCol);
-			else
-				return null;
+			return null;
 		}
 
 		private void OnTestExpandRow (object sender, Gtk.TestExpandRowArgs args)
@@ -310,8 +312,10 @@ namespace MonoDevelop.VersionControl.Dialogs
 		protected virtual void OnButtonBrowseClicked(object sender, System.EventArgs e)
 		{
 			var dlg = new MonoDevelop.Components.SelectFolderDialog (GettextCatalog.GetString ("Select target directory"));
-			if (dlg.Run ())
-				entryFolder.Text = dlg.SelectedFile;
+			if (dlg.Run ()) {
+				defaultPath = dlg.SelectedFile;
+				AppendRelativePath ();
+			}
 		}
 
 		protected virtual void OnNotebookChangeCurrentPage(object o, Gtk.ChangeCurrentPageArgs args)
@@ -332,6 +336,26 @@ namespace MonoDevelop.VersionControl.Dialogs
 					return;
 			}
 			Respond (ResponseType.Ok);
+		}
+
+		protected virtual void OnPathChanged (object sender, EventArgs e)
+		{
+			AppendRelativePath ();
+		}
+
+		void AppendRelativePath ()
+		{
+			UrlBasedRepositoryEditor edit = currentEditor as UrlBasedRepositoryEditor;
+			if (edit == null)
+				return;
+
+			// RelativePath always is at least '/'.
+			if (edit.RelativePath == "/") {
+				entryFolder.Text = defaultPath;
+				return;
+			}
+
+			entryFolder.Text = defaultPath + edit.RelativePath.Replace ('/', System.IO.Path.DirectorySeparatorChar);
 		}
 	}
 }

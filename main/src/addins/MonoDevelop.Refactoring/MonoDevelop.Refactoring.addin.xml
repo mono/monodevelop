@@ -1,24 +1,4 @@
-<Addin
-        id = "Refactoring"
-        namespace = "MonoDevelop"
-        name = "Refactoring Support"
-        author = "Mike Krüger"
-        copyright = "X11"
-        url = "http://www.monodevelop.com/"
-        description = "Provides refactoring support to MonoDevelop"
-        category = "IDE extensions"
-        version = "4.1.7">
-
-	<Runtime>
-		<Import assembly = "MonoDevelop.Refactoring.dll"/>
-	</Runtime>
-
-	<Dependencies>
-		<Addin id="Core" version="4.1.7"/>
-		<Addin id="Ide" version="4.1.7"/>
-		<Addin id="DesignerSupport" version="4.1.7"/>
-		<Addin id="SourceEditor2" version="4.1.7"/>
-	</Dependencies>
+<ExtensionModel>
 	
 	<!-- Extension Points -->
 	<ExtensionPoint path = "/MonoDevelop/Refactoring/Refactorings" name = "Refactorings">
@@ -214,4 +194,4 @@
 		<Handler fixName="RenameMember" class = "MonoDevelop.AnalysisCore.Fixes.RenameMemberHandler" />
 		<Handler fixName="Generic" class = "MonoDevelop.AnalysisCore.Fixes.GenericFixHandler" />
 	</Extension>
-</Addin>
+</ExtensionModel>

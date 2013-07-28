@@ -4,5 +4,5 @@ using System.Reflection;
 
 [assembly: AssemblyProduct ("MonoDevelop")]
 [assembly: AssemblyTitle ("MonoDevelop Assembly Browser")]
-[assembly: AssemblyDescription ("Provides an assembly browser for the MonoDevelop")]
+[assembly: AssemblyDescription ("Provides an assembly browser for MonoDevelop")]
 [assembly: AssemblyVersion ("2.6")]

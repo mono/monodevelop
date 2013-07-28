@@ -186,7 +186,7 @@ namespace Mono.TextEditor
 		/// </summary>
 		public static void ToggleAllFolds (TextEditorData data)
 		{
-			if (data.Document.FoldSegments.Where (s => s.IsFolded).Any ()) {
+			if (data.Document.FoldSegments.Any (s => s.IsFolded)) {
 				OpenAllFolds (data);
 			} else {
 				CloseAllFolds (data);

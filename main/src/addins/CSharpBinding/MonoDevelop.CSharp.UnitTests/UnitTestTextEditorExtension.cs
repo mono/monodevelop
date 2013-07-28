@@ -29,19 +29,13 @@ using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Refactoring;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Threading;
-using System.Linq;
 using Mono.TextEditor;
 using MonoDevelop.NUnit;
 using MonoDevelop.Core;
-using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Ide;
-using MonoDevelop.Components.Docking;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.Components.Commands;
-using Gdk;
 using Gtk;
 using System.Text;
 using MonoDevelop.AnalysisCore;
@@ -74,7 +68,7 @@ namespace MonoDevelop.CSharp
 			var token = src.Token;
 			ThreadPool.QueueUserWorkItem (delegate {
 				var resolver = document.GetSharedResolver ();
-				if (resolver.Result == null)
+				if (resolver == null || resolver.Result == null)
 					return;
 				var visitor = new NUnitVisitor (resolver.Result);
 				try {
@@ -170,7 +164,7 @@ namespace MonoDevelop.CSharp
 				editor.TooltipText = toolTip;
 			}
 
-			static Gtk.Menu menu;
+			static Menu menu;
 
 			public override void InformMousePress (TextEditor editor, Margin margin, MarginMouseEventArgs args)
 			{
@@ -179,43 +173,43 @@ namespace MonoDevelop.CSharp
 				}
 				var debugModeSet = Runtime.ProcessService.GetDebugExecutionMode ();
 
-				menu = new Gtk.Menu ();
+				menu = new Menu ();
 				if (unitTest.IsFixture) {
-					var menuItem = new Gtk.MenuItem ("_Run All");
+					var menuItem = new MenuItem ("_Run All");
 					menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, false).Run;
 					menu.Add (menuItem);
 					if (debugModeSet != null) {
-						menuItem = new Gtk.MenuItem ("_Debug All");
+						menuItem = new MenuItem ("_Debug All");
 						menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, true).Run;
 						menu.Add (menuItem);
 					}
 				} else {
 					if (unitTest.TestCases.Count == 0) {
-						var menuItem = new Gtk.MenuItem ("_Run");
+						var menuItem = new MenuItem ("_Run");
 						menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, false).Run;
 						menu.Add (menuItem);
 						if (debugModeSet != null) {
-							menuItem = new Gtk.MenuItem ("_Debug");
+							menuItem = new MenuItem ("_Debug");
 							menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, true).Run;
 							menu.Add (menuItem);
 						}
 					} else {
-						var menuItem = new Gtk.MenuItem ("_Run All");
+						var menuItem = new MenuItem ("_Run All");
 						menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, false).Run;
 						menu.Add (menuItem);
 						if (debugModeSet != null) {
-							menuItem = new Gtk.MenuItem ("_Debug All");
+							menuItem = new MenuItem ("_Debug All");
 							menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, true).Run;
 							menu.Add (menuItem);
 						}
-						menu.Add (new Gtk.SeparatorMenuItem ());
+						menu.Add (new SeparatorMenuItem ());
 						foreach (var id in unitTest.TestCases) {
-							var submenu = new Gtk.Menu ();
-							menuItem = new Gtk.MenuItem ("_Run");
+							var submenu = new Menu ();
+							menuItem = new MenuItem ("_Run");
 							menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier + id, false).Run;
 							submenu.Add (menuItem);
 							if (debugModeSet != null) {
-								menuItem = new Gtk.MenuItem ("_Debug");
+								menuItem = new MenuItem ("_Debug");
 								menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier + id, true).Run;
 								submenu.Add (menuItem);
 							}
@@ -231,7 +225,7 @@ namespace MonoDevelop.CSharp
 								}
 							}
 
-							var subMenuItem = new Gtk.MenuItem (label);
+							var subMenuItem = new MenuItem (label);
 							if (!string.IsNullOrEmpty (tooltip))
 								subMenuItem.TooltipText = tooltip;
 							subMenuItem.Submenu = submenu;
@@ -317,62 +311,80 @@ namespace MonoDevelop.CSharp
 				isFailed = false;
 				var test = NUnitService.Instance.SearchTestById (unitTest.UnitTestIdentifier);
 				bool searchCases = false;
-				if (test != null) {
-					var result = test.GetLastResult ();
-					if (result == null || result.IsNotRun) {
-						cr.Color = new Cairo.Color (0.5, 0.5, 0.5);
-						searchCases = true;
-					} else if (result.IsSuccess) {
-						cr.Color = new Cairo.Color (0, 1, 0, test.IsHistoricResult ? 0.2 : 1.0);
-					} else if (result.IsFailure) {
-						cr.Color = new Cairo.Color (1, 0, 0, test.IsHistoricResult ? 0.2 : 1.0);
-						failMessage = result.Message;
-						isFailed = true;
-					} else if (result.IsInconclusive) {
-						cr.Color = new Cairo.Color (0, 1, 1, test.IsHistoricResult ? 0.2 : 1.0);
-					} 
-				} else {
-					cr.Color = new Cairo.Color (0.5, 0.5, 0.5);
-					searchCases = true;
-				}
 
-				if (searchCases) {
-					foreach (var caseId in unitTest.TestCases) {
-						test = NUnitService.Instance.SearchTestById (unitTest.UnitTestIdentifier + caseId);
-						if (test != null) {
-							var result = test.GetLastResult ();
-							if (result == null || result.IsNotRun || test.IsHistoricResult) {
-							} else if (result.IsSuccess) {
-								cr.Color = new Cairo.Color (0, 1, 0);
-							} else if (result.IsFailure) {
-								cr.Color = new Cairo.Color (1, 0, 0);
-								failMessage = result.Message;
-								isFailed = true;
-								break;
-							} else if (result.IsInconclusive) {
-								cr.Color = new Cairo.Color (0, 1, 1);
-							} 
+				if (unitTest.IsIgnored) {
+					cr.SetSourceRGB (0.9, 0.9, 0);
+				} else {
+
+					if (test != null) {
+						var result = test.GetLastResult ();
+						if (result == null) {
+							cr.SetSourceRGB (0.5, 0.5, 0.5);
+							searchCases = true;
+
+						} else if (result.IsNotRun) {
+							cr.SetSourceRGBA (0.9, 0.9, 0, test.IsHistoricResult ? 0.5 : 1.0);
+						} else if (result.IsSuccess) {
+							cr.SetSourceRGBA (0, 1, 0, test.IsHistoricResult ? 0.2 : 1.0);
+						} else if (result.IsFailure) {
+							cr.SetSourceRGBA (1, 0, 0, test.IsHistoricResult ? 0.2 : 1.0);
+							failMessage = result.Message;
+							isFailed = true;
+						} else if (result.IsInconclusive) {
+							cr.SetSourceRGBA (0, 1, 1, test.IsHistoricResult ? 0.2 : 1.0);
+						} 
+					} else {
+						cr.SetSourceRGB (0.5, 0.5, 0.5);
+						searchCases = true;
+					}
+					if (searchCases) {
+						foreach (var caseId in unitTest.TestCases) {
+							test = NUnitService.Instance.SearchTestById (unitTest.UnitTestIdentifier + caseId);
+							if (test != null) {
+								var result = test.GetLastResult ();
+								if (result == null || result.IsNotRun || test.IsHistoricResult) {
+								} else if (result.IsNotRun) {
+									cr.SetSourceRGB (0.9, 0.9, 0);
+								} else if (result.IsSuccess) {
+									cr.SetSourceRGB (0, 1, 0);
+								} else if (result.IsFailure) {
+									cr.SetSourceRGB (1, 0, 0);
+									failMessage = result.Message;
+									isFailed = true;
+									break;
+								} else if (result.IsInconclusive) {
+									cr.SetSourceRGB (0, 1, 1);
+								} 
+							}
 						}
 					}
 				}
 
 				cr.FillPreserve ();
+				if (unitTest.IsIgnored) {
+					cr.SetSourceRGB (0.4, 0.4, 0);
+					cr.Stroke ();
 
-				if (test != null) {
-					var result = test.GetLastResult ();
-					if (result == null || result.IsNotRun) {
-						cr.Color = new Cairo.Color (0.2, 0.2, 0.2);
-						cr.Stroke ();
-					} else if (result.IsSuccess && !test.IsHistoricResult) {
-						cr.Color = new Cairo.Color (0, 0.5, 0);
-						cr.Stroke ();
-					} else if (result.IsFailure && !test.IsHistoricResult) {
-						cr.Color = new Cairo.Color (0.5, 0, 0);
-						cr.Stroke ();
-					} else if (result.IsInconclusive && !test.IsHistoricResult) {
-						cr.Color = new Cairo.Color (0, 0.7, 0.7);
-						cr.Stroke ();
-					} 
+				} else {
+					if (test != null) {
+						var result = test.GetLastResult ();
+						if (result == null) {
+							cr.SetSourceRGB (0.2, 0.2, 0.2);
+							cr.Stroke ();
+						} else if (result.IsNotRun && !test.IsHistoricResult) {
+							cr.SetSourceRGB (0.4, 0.4, 0);
+							cr.Stroke ();
+						} else if (result.IsSuccess && !test.IsHistoricResult) {
+							cr.SetSourceRGB (0, 0.5, 0);
+							cr.Stroke ();
+						} else if (result.IsFailure && !test.IsHistoricResult) {
+							cr.SetSourceRGB (0.5, 0, 0);
+							cr.Stroke ();
+						} else if (result.IsInconclusive && !test.IsHistoricResult) {
+							cr.SetSourceRGB (0, 0.7, 0.7);
+							cr.Stroke ();
+						} 
+					}
 				}
 				cr.NewPath ();
 			}
@@ -394,6 +406,8 @@ namespace MonoDevelop.CSharp
 				public int LineNumber { get; set; }
 				public bool IsFixture { get; set; }
 				public string UnitTestIdentifier { get; set; }
+				public bool IsIgnored { get; set; }
+
 				public List<string> TestCases = new List<string> ();
 
 				public UnitTest (int lineNumber)
@@ -407,19 +421,19 @@ namespace MonoDevelop.CSharp
 				this.resolver = resolver;
 			}
 
-			string GetFullName (TypeDeclaration typeDeclaration)
+			static string GetFullName (TypeDeclaration typeDeclaration)
 			{
 				var parts = new List<string> ();
-
 				while (true) {
 					parts.Add (typeDeclaration.Name);
 					if (typeDeclaration.Parent is TypeDeclaration) {
 						typeDeclaration = (TypeDeclaration)typeDeclaration.Parent;
-					} else {
+					}
+					else {
 						break;
 					}
-				};
-
+				}
+				;
 				var ns = typeDeclaration.Parent as NamespaceDeclaration;
 				if (ns != null)
 					parts.Add (ns.FullName);
@@ -427,7 +441,7 @@ namespace MonoDevelop.CSharp
 				return string.Join (".", parts);
 			}
 
-			void AppendConstant (StringBuilder sb, object constantValue)
+			static void AppendConstant (StringBuilder sb, object constantValue)
 			{
 				if (constantValue is string)
 					sb.Append ('"');
@@ -440,9 +454,9 @@ namespace MonoDevelop.CSharp
 					sb.Append ('\"');
 			}
 
-			string BuildArguments (IAttribute attr)
+			static string BuildArguments (IAttribute attr)
 			{
-				StringBuilder sb = new StringBuilder ();
+				var sb = new StringBuilder ();
 				foreach (var arg in attr.PositionalArguments) {
 					if (sb.Length > 0)
 						sb.Append (", ");
@@ -464,7 +478,7 @@ namespace MonoDevelop.CSharp
 				var method = result.Member as IMethod;
 
 				UnitTest test = null;
-
+				bool isIgnored = false;
 				foreach (var attr in method.Attributes) {
 					if (attr.AttributeType.ReflectionName == "NUnit.Framework.TestAttribute") {
 						if (test == null) {
@@ -474,23 +488,37 @@ namespace MonoDevelop.CSharp
 						}
 					} else if (attr.AttributeType.ReflectionName == "NUnit.Framework.TestCaseAttribute") {
 						test.TestCases.Add ("(" + BuildArguments (attr) + ")");
+					} else if (attr.AttributeType.ReflectionName == "NUnit.Framework.IgnoreAttribute") {
+						isIgnored = true;
 					}
 				}
+				if (test != null)
+					test.IsIgnored = isIgnored;
 			}
 
 			public override void VisitTypeDeclaration (TypeDeclaration typeDeclaration)
 			{
 				var result = resolver.Resolve (typeDeclaration);
+				if (result == null || result.Type.GetDefinition () == null)
+					return;
+				UnitTest unitTest = null;
+				bool isIgnored = false;
 
 				foreach (var attr in result.Type.GetDefinition ().Attributes) {
 					
 					if (attr.AttributeType.ReflectionName == "NUnit.Framework.TestFixtureAttribute") {
-						var unitTest = new UnitTest (typeDeclaration.NameToken.StartLocation.Line);
+						unitTest = new UnitTest (typeDeclaration.NameToken.StartLocation.Line);
 						unitTest.IsFixture = true;
 						unitTest.UnitTestIdentifier = GetFullName (typeDeclaration);
 						foundTests.Add (unitTest);
 					}
+					else if (attr.AttributeType.ReflectionName == "NUnit.Framework.IgnoreAttribute") {
+						isIgnored = true;
+					}
 				}
+				if (unitTest != null)
+					unitTest.IsIgnored = isIgnored;
+
 				base.VisitTypeDeclaration (typeDeclaration);
 			}
 

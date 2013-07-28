@@ -60,7 +60,7 @@ namespace Mono.TextEditor.Highlighting
 
 		void HandleTextReplaced (object sender, DocumentChangeEventArgs e)
 		{
-			if (doc == null || doc.SuppressHighlightUpdate)
+			if (doc == null || doc.SuppressHighlightUpdate || doc.CurrentAtomicUndoOperationType == OperationType.Format)
 				return;
 			SyntaxModeService.StartUpdate (doc, this, e.Offset, e.Offset + e.InsertionLength);
 		}

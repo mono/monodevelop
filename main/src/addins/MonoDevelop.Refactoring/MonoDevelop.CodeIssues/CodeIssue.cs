@@ -77,6 +77,7 @@ namespace MonoDevelop.CodeIssues
 			Region = region;
 			Actions = actions;
 		}
+
 	}
 }
 

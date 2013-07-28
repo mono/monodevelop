@@ -1050,7 +1050,9 @@ delegate void BarFoo ();
 			entryBetweenFields.Text = profile.BlankLinesBetweenFields.ToString ();
 			entryBetweenEvents.Text = profile.BlankLinesBetweenEventFields.ToString ();
 			entryBetweenMembers.Text = profile.BlankLinesBetweenMembers.ToString ();
-			
+			entryInsideRegion.Text = profile.BlankLinesInsideRegion.ToString ();
+			entryAroundRegion.Text = profile.BlankLinesAroundRegion.ToString ();
+
 			entryBeforUsings.Changed += HandleEntryBeforUsingsChanged;
 			entryAfterUsings.Changed += HandleEntryBeforUsingsChanged;
 			entryBeforeFirstDeclaration.Changed += HandleEntryBeforUsingsChanged;
@@ -1058,6 +1060,8 @@ delegate void BarFoo ();
 			entryBetweenFields.Changed += HandleEntryBeforUsingsChanged;
 			entryBetweenEvents.Changed += HandleEntryBeforUsingsChanged;
 			entryBetweenMembers.Changed += HandleEntryBeforUsingsChanged;
+			entryAroundRegion.Changed += HandleEntryBeforUsingsChanged;
+			entryInsideRegion.Changed += HandleEntryBeforUsingsChanged;
 			#endregion
 		}
 		
@@ -1078,7 +1082,9 @@ delegate void BarFoo ();
 			profile.BlankLinesBetweenFields = SetFlag (entryBetweenFields, profile.BlankLinesBetweenFields);
 			profile.BlankLinesBetweenMembers = SetFlag (entryBetweenMembers, profile.BlankLinesBetweenMembers);
 			profile.BlankLinesBetweenEventFields = SetFlag (entryBetweenEvents, profile.BlankLinesBetweenMembers);
-			UpdateExample (blankLineExample);
+			profile.BlankLinesAroundRegion = SetFlag (entryAroundRegion, profile.BlankLinesAroundRegion);
+			profile.BlankLinesInsideRegion = SetFlag (entryInsideRegion, profile.BlankLinesInsideRegion);
+	UpdateExample (blankLineExample);
 		}
 		
 		static PropertyInfo GetPropertyByName (string name)

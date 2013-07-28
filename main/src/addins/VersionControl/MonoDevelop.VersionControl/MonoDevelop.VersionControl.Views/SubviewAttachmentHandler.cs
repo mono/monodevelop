@@ -73,8 +73,7 @@ namespace MonoDevelop.VersionControl.Views
 			where T : IAttachableViewContent
 		{
 			var handler = AddinManager.GetExtensionObjects<IVersionControlViewHandler<T>> (type)
-				.Where (h => h.CanHandle (info.Item, info.Document))
-				.FirstOrDefault ();
+				.FirstOrDefault (h => h.CanHandle (info.Item, info.Document));
 			if (handler != null)
 				document.Window.AttachViewContent (handler.CreateView (info));
 		}

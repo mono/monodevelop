@@ -1,20 +1,5 @@
-<Addin id          = "AssemblyBrowser"
-       namespace   = "MonoDevelop"
-       name        = "MonoDevelop Assembly Browser"
-       author      = "Mike Krüger"
-       copyright   = ""
-       url         = ""
-       description = "Provides an assembly browser for the MonoDevelop"
-       category    = "IDE extensions"
-       version     = "4.1.7">
+<ExtensionModel>
 	
-	<Dependencies>
-		<Addin id="Core" version="4.1.7"/>
-		<Addin id="Ide" version="4.1.7"/>
-		<Addin id="Refactoring" version="4.1.7"/>
-		<Addin id="CSharpBinding" version="4.1.7"/>
-	</Dependencies>
-
 	<!-- Extension points -->
 	<ExtensionPoint path = "/MonoDevelop/AssemblyBrowser/TypeNode/ContextMenu">
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
@@ -41,4 +26,4 @@
 		<CommandItem id = "MonoDevelop.AssemblyBrowser.ShowAssemblyBrowser" insertbefore="ViewSeparator3" />
 	</Extension>
 
-</Addin>
+</ExtensionModel>

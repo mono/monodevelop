@@ -336,6 +336,8 @@ namespace MonoDevelop.CSharp
 				return null;
 			var tag = path [index].Tag;
 			var window = new DropDownBoxListWindow (tag == null ? (DropDownBoxListWindow.IListDataProvider)new CompilationUnitDataProvider (Document) : new DataProvider (this, tag));
+			window.FixedRowHeight = 22;
+			window.MaxVisibleRows = 14;
 			window.SelectItem (path [index].Tag);
 			return window;
 		}
@@ -356,7 +358,7 @@ namespace MonoDevelop.CSharp
 			PathEntry entry;
 			if (!unit.UserRegions.Any ())
 				return null;
-			var reg = unit.UserRegions.Where (r => r.Region.IsInside (loc)).LastOrDefault ();
+			var reg = unit.UserRegions.LastOrDefault (r => r.Region.IsInside (loc));
 			if (reg == null) {
 				entry = new PathEntry (GettextCatalog.GetString ("No region"));
 			} else {

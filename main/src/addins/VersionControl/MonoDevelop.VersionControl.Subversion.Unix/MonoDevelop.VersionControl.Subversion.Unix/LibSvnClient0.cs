@@ -26,14 +26,7 @@
 // THE SOFTWARE.
 
 using System;
-using System.IO;
-using System.Threading;
-using System.Collections;
 using System.Runtime.InteropServices;
-
-using MonoDevelop.Core;
-using MonoDevelop.VersionControl;
-using MonoDevelop.VersionControl.Subversion.Gui;
 
 using svn_revnum_t = System.IntPtr;
 
@@ -304,6 +297,11 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		{
 			return svn_wc_context_create (out svn_wc_context_t, config, result_pool, scratch_pool);
 		}
+
+		public override IntPtr client_get_wc_root (out IntPtr wcroot_abspath, string local_abspath, IntPtr ctx, IntPtr result_pool, IntPtr scratch_pool)
+		{
+			return svn_client_get_wc_root (out wcroot_abspath, local_abspath, ctx, result_pool, scratch_pool);
+		}
 		
 		public override IntPtr strerror (int statcode, byte[] buf, int bufsize)
 		{
@@ -449,6 +447,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 		[DllImport(svnclientlib)] static extern IntPtr svn_client_blame (string path, ref Rev rev_start, ref Rev rev_end, svn_client_blame_receiver_t receiver, IntPtr baton, IntPtr ctx, IntPtr pool);
 
 		[DllImport(svnclientlib)] static extern IntPtr svn_wc_context_create (out IntPtr svn_wc_context_t, IntPtr svn_config_ensure, IntPtr result_pool, IntPtr scratch_pool);
+
+		[DllImport(svnclientlib)] static extern IntPtr svn_client_get_wc_root (out IntPtr wcroot_abspath, string local_abspath, IntPtr ctx, IntPtr result_pool, IntPtr scratch_pool);
 
 		[DllImport(svnclientlib)] static extern IntPtr svn_strerror (int statcode, byte[] buf, int bufsize);
 		

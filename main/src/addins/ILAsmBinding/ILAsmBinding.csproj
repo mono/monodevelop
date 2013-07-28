@@ -87,6 +87,7 @@
     <Compile Include="Gui\CompilerParametersPanelWidget.cs" />
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="gtk-gui\ILAsmBinding.CompilerParametersPanelWidget.cs" />
+    <Compile Include="AddinInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

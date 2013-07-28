@@ -32,7 +32,7 @@ namespace SubversionAddinWindows
 		{
 			return new SvnSharpBackend ();
 		}
-			
+
 		public override string GetPathUrl (FilePath path)
 		{
 			lock (client) {
@@ -55,6 +55,11 @@ namespace SubversionAddinWindows
 				}
 				return !installError;
 			}
+		}
+
+		public override string GetDirectoryDotSvn (FilePath path)
+		{
+			return client.GetWorkingCopyRoot (path.FullPath);
 		}
 	}
 
@@ -382,6 +387,7 @@ namespace SubversionAddinWindows
 			VersionStatus rs = VersionStatus.Unversioned;
 			Revision rr = null;
 
+			// TODO: Fix remote status for Win32 Svn.
 			if (ent.IsRemoteUpdated) {
 				rs = ConvertStatus (SvnSchedule.Normal, ent.RemoteContentStatus);
 				rr = new SvnRevision (repo, (int) ent.RemoteUpdateRevision, ent.RemoteUpdateCommitTime,
