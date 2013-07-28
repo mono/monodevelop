@@ -35,8 +35,13 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CSSLanguageBinding.cs" />
-    <Compile Include="Parser\CSS3Lexer.cs" />
-    <Compile Include="Parser\CSS3Parser.cs" />
+    <Compile Include="Parser\CSSParsedDocument.cs" />
+    <Compile Include="Parser\CSSParserAdapter.cs" />
+    <Compile Include="Parser\CSSParserManager.cs" />
+    <Compile Include="Parser\Location.cs" />
+    <Compile Include="Parser\ParserException.cs" />
+    <Compile Include="Parser\CSSParser.cs" />
+    <Compile Include="Parser\CSSLexer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -64,6 +69,14 @@
     <ProjectReference Include="..\src\addins\MonoDevelop.Debugger\MonoDevelop.Debugger.csproj">
       <Project>{2357AABD-08C7-4808-A495-8FF2D3CDFDB0}</Project>
       <Name>MonoDevelop.Debugger</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\src\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
+      <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
+      <Name>MonoDevelop.Ide</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

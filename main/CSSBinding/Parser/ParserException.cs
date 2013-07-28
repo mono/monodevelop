@@ -27,11 +27,14 @@ using System;
 
 namespace Parser
 {
-	public class ParserException
+	public class ParserException : Exception
 	{
-		public ParserException ()
+		public ParserException (string message, Location location) : base (message)
 		{
+			Location = location;
 		}
+
+		public Location Location { get; private set; }
 	}
 }
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using Antlr.Runtime;
-using Antlr.Runtime.Misc;
+
 
 namespace CssParser
 {
@@ -11,14 +11,37 @@ namespace CssParser
 		{
 			Stream inputStream = Console.OpenStandardInput();
 			ANTLRInputStream input = new ANTLRInputStream(inputStream);
-			CSS3Lexer lexer = new CSS3Lexer(input);
+			CSSLexer lexer = new CSSLexer(input);
 			CommonTokenStream tokens = new CommonTokenStream(lexer);
-			CSS3Parser parser = new CSS3Parser(tokens);
-			//parser.addSubExpr();
+			CSSParser parser = new CSSParser(tokens);
+			parser.styleSheet();
+
+			Console.Read();
+			
 		}
 	}
 
-	
+	public partial class CSSLexer
+	{
+		public override void ReportError(RecognitionException e)
+		{
+			base.ReportError(e);
+			Console.WriteLine("Error in lexer at line " + e.Line + ":" + e.CharPositionInLine + e.Message);
+		}
+
+	}
+
+
+	public partial class CSSParser
+	{
+		public override void ReportError(RecognitionException e)
+		{
+			base.ReportError(e);
+			int x = e.CharPositionInLine;
+			Console.WriteLine("Error in lexer at line " + e.Line + ":" + x);
+		}
+
+	}
 }
 
 
