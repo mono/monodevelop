@@ -44,6 +44,7 @@ using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Core.Assemblies;
+using System.Runtime.InteropServices;
 
 namespace MonoDevelop.CSharp.SplitProject
 {
@@ -79,11 +80,33 @@ namespace MonoDevelop.CSharp.SplitProject
 
 						newProject.TargetFramework = currentProject.TargetFramework;
 						newProject.CompileTarget = CompileTarget.Library;
-
-						IdeApp.ProjectOperations.Save (newProject);
+						newProject.References.AddRange (currentProject.References);
 
 						currentProject.ParentFolder.AddItem (newProject);
 
+						currentProject.References.Add (new MonoDevelop.Projects.ProjectReference (newProject));
+
+						var nodesToMove = dialog.SelectedNodes;
+
+						using (var transferFilesMonitor = new MessageDialogProgressMonitor(true, false)) {
+							transferFilesMonitor.BeginStepTask (GettextCatalog.GetString ("Moving files"), nodesToMove.Count, 1);
+
+							foreach (var node in nodesToMove) {
+								Console.WriteLine ("move = {0}", node.File.FilePath);
+
+								var newPath = newProject.BaseDirectory.Combine (node.File.ProjectVirtualPath.ToRelative(currentProject.BaseDirectory));
+
+								IdeApp.ProjectOperations.TransferFiles (transferFilesMonitor, currentProject, node.File.FilePath,
+								                                       newProject, newPath, true, true);
+
+								transferFilesMonitor.Step (1);
+							}
+
+							transferFilesMonitor.EndTask ();
+						}
+
+						IdeApp.ProjectOperations.Save (newProject);
+						IdeApp.ProjectOperations.Save (currentProject);
 						IdeApp.ProjectOperations.Save (currentProject.ParentSolution);
 					}
 				}
