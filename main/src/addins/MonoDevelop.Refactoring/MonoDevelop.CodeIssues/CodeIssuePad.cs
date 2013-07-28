@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -441,12 +442,18 @@ namespace MonoDevelop.CodeIssues
 				var choice = _choice;
 				var menuItem = new MenuItem (choice.Title);
 				menuItem.Clicked += delegate {
-					var fixer = new BatchFixer (new ExactIssueMatcher ());
-					var appliedActions = fixer.TryFixIssues (choice.Actions);
-					foreach (var action in appliedActions) {
-						((IIssueTreeNode)action.IssueSummary).Visible = false;
-					}
-					ProcessUpdateQueue ();
+					ThreadPool.QueueUserWorkItem (delegate {
+						using (var monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor ("Applying fixes", null, false)) {
+							var fixer = new BatchFixer (new ExactIssueMatcher (), monitor);
+							var appliedActions = fixer.TryFixIssues (choice.Actions);
+							foreach (var action in appliedActions) {
+								((IIssueTreeNode)action.IssueSummary).Visible = false;
+							}
+						}
+						Application.Invoke (delegate {
+							ProcessUpdateQueue ();
+						});
+					});
 				};
 				menu.Items.Add (menuItem);
 			}

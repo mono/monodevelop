@@ -46,11 +46,15 @@ namespace MonoDevelop.CodeIssues
 	public class BatchFixer
 	{
 		IActionMatcher matcher;
+
+		IProgressMonitor monitor;
+
 		string lastMime;
 
-		public BatchFixer (IActionMatcher matcher)
+		public BatchFixer (IActionMatcher matcher, IProgressMonitor monitor)
 		{
 			this.matcher = matcher;
+			this.monitor = monitor;
 		}
 
 		/// <summary>
@@ -66,10 +70,13 @@ namespace MonoDevelop.CodeIssues
 			// enumerate once
 			var actionSummaries = actions as IList<ActionSummary> ?? actions.ToArray ();
 			var issueSummaries = actionSummaries.Select (action => action.IssueSummary).ToArray ();
-			var files = issueSummaries.Select (issue => issue.File);
+			var files = issueSummaries.Select (issue => issue.File).ToList ();
+			monitor.BeginTask ("Applying fixes", files.Count);
 			
 			var appliedActions = new List<ActionSummary> (issueSummaries.Length);
-			foreach (var file in files) {
+			Parallel.ForEach (files, file => {
+				monitor.Step (1);
+				
 				var fileSummaries = issueSummaries.Where (summary => summary.File == file);
 				var inspectorIds = new HashSet<string> (fileSummaries.Select (summary => summary.InspectorIdString));
 				
@@ -80,7 +87,7 @@ namespace MonoDevelop.CodeIssues
 				object refactoringContext;
 				var realActions = GetIssues (data, file, inspectorIds, out refactoringContext).SelectMany (issue => issue.Actions).ToList ();
 				if (realActions.Count == 0 || refactoringContext == null)
-					continue;
+					return;
 				
 				var fileActionSummaries = actionSummaries.Where (summary => summary.IssueSummary.File == file).ToList ();
 				var matches = matcher.Match (fileActionSummaries, realActions).ToList ();
@@ -92,7 +99,7 @@ namespace MonoDevelop.CodeIssues
 					// If the file is open we leave it to the user to explicitly save the file
 					TextFileUtility.WriteText (file.Name, data.Text, encoding, hadBom);
 				}
-			}
+			});
 			return appliedActions;
 		}
 
@@ -124,10 +131,10 @@ namespace MonoDevelop.CodeIssues
 			var resolver = new CSharpAstResolver (compilation, document.GetAst<SyntaxTree> (), document.ParsedFile as ICSharpCode.NRefactory.CSharp.TypeSystem.CSharpUnresolvedFile);
 			refactoringContext = document.CreateRefactoringContextWithEditor (data, resolver, CancellationToken.None);
 			var context = refactoringContext;
-			Parallel.ForEach (codeIssueProviders, provider => {
+			foreach (var provider in codeIssueProviders) {
 				var severity = provider.GetSeverity ();
 				if (severity == Severity.None)
-					return;
+					continue;
 				try {
 					lock (issues) {
 						issues.AddRange (provider.GetIssues (context, CancellationToken.None));
@@ -135,7 +142,7 @@ namespace MonoDevelop.CodeIssues
 				} catch (Exception ex) {
 					LoggingService.LogError ("Error while running code issue on: " + data.FileName, ex);
 				}
-			});
+			}
 			return issues;
 		}
 

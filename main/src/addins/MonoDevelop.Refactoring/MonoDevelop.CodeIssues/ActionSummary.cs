@@ -55,6 +55,11 @@ namespace MonoDevelop.CodeIssues
 		/// </summary>
 		/// <value>The issue summary.</value>
 		public IssueSummary IssueSummary { get; set; }
+		
+		public override string ToString ()
+		{
+			return string.Format ("[ActionSummary: Title={0}, Batchable={1}, Region={2}]", Title, Batchable, Region);
+		}
 	}
 
 }
