@@ -31,7 +31,7 @@ using System.Diagnostics;
 
 namespace Mono.TextEditor.Utils
 {
-	public interface IAvlNode
+	internal interface IAvlNode
 	{
 		IAvlNode Parent { get; set; }
 
@@ -44,7 +44,7 @@ namespace Mono.TextEditor.Utils
 		void UpdateAugmentedData ();
 	}
 
-	public class AvlTree<T> : ICollection<T> where T : class, IAvlNode
+	internal class AvlTree<T> : ICollection<T> where T : class, IAvlNode
 	{
 		readonly Func<T, T, int> comparisonFunc;
 
@@ -459,7 +459,7 @@ namespace Mono.TextEditor.Utils
 		}
 	}
 
-	public static class AvlExtensions
+	internal static class AvlExtensions
 	{
 		public static bool IsLeaf (this IAvlNode node)
 		{
