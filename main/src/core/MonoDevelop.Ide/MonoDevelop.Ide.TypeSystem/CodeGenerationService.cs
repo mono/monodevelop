@@ -164,6 +164,41 @@ namespace MonoDevelop.Ide.TypeSystem
 			return tcs.Task;
 		}
 		
+		public static Task<bool> InsertMember (
+			string operation, ITypeDefinition parentType, IUnresolvedTypeDefinition part,
+			IUnresolvedMember newMember, bool implementExplicit = false)
+		{
+			var tcs = new TaskCompletionSource<bool>();
+			if (parentType == null)
+				return tcs.Task;
+			part = part ?? parentType.Parts.FirstOrDefault ();
+			if (part == null)
+				return tcs.Task;
+
+			var loadedDocument = IdeApp.Workbench.OpenDocument (part.Region.FileName);
+			loadedDocument.RunWhenLoaded (delegate {
+				var editor = loadedDocument.Editor;
+				var loc = part.Region.Begin;
+				var parsedDocument = loadedDocument.UpdateParseDocument ();
+				var declaringType = parsedDocument.GetInnermostTypeDefinition (loc);
+				var insertionPoints = CodeGenerationService.GetInsertionPoints (loadedDocument, declaringType);
+				if (insertionPoints.Count == 0) {
+					MessageService.ShowError (
+						GettextCatalog.GetString ("No valid insertion point can be found in type '{0}'.", declaringType.Name)
+						);
+					return;
+				}
+				var suitableInsertionPoint = GetSuitableInsertionPoint (insertionPoints, part, newMember) ?? insertionPoints.First ();
+
+				var generator = CreateCodeGenerator (editor, parentType.Compilation);
+				generator.IndentLevel = CalculateBodyIndentLevel (declaringType);
+				var generatedCode = generator.CreateMemberImplementation (parentType, part, newMember, implementExplicit);
+				suitableInsertionPoint.Insert (editor, generatedCode.Code);
+			});
+
+			return tcs.Task;
+		}
+
 		public static int CalculateBodyIndentLevel (IUnresolvedTypeDefinition declaringType)
 		{
 			if (declaringType == null)
