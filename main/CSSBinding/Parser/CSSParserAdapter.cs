@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 using System;
 using System.IO;
-using MonoDevelop.Ide.TypeSystem;
 using Antlr.Runtime;
 using Antlr.Runtime.Misc;
 using MonoDevelop.Ide.TypeSystem;
@@ -47,21 +46,23 @@ namespace Parser
 		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader content, Project project = null)
 		{
 			CSSParserManager template = new CSSParserManager (fileName);
-			try {
-				ANTLRInputStream input = new ANTLRInputStream(content.ReadToEnd ());
-				var lexer = new CSSLexer(input);
-				CommonTokenStream tokens = new CommonTokenStream(lexer);
-				CSSParser parser = new CSSParser(tokens);
-				parser.styleSheet();
-				//template.ParseWithoutIncludes (tk);
-			} catch (ParserException ex) {
-				template.LogError (ex.Message, ex.Location);
-			}
+			//try {
+
+			ANTLRStringStream input = new ANTLRStringStream(content.ReadToEnd());
+
+			var lexer = new CSSLexer(input);
+			CommonTokenStream tokens = new CommonTokenStream(lexer);
+			CSSParser parser = new CSSParser(tokens);
+			parser.styleSheet();
+
+			//template.ParseWithoutIncludes (tk);
+			//} catch (ParserException ex) {
+			//	template.LogError (ex.Message, ex.Location);
+			//}
 
 			var errors = new List<Error> ();
-			foreach (System.CodeDom.Compiler.CompilerError err in template.Errors) {
-				errors.Add (new Error (err.IsWarning ? ErrorType.Warning : ErrorType.Error, err.ErrorText, err.Line, err.Column));
-			}
+			errors.AddRange (lexer.lexerErrors);
+			errors.AddRange (parser.parserErrors);
 			var doc = new CSSParsedDocument (fileName, errors);
 			doc.Flags |= ParsedDocumentFlags.NonSerializable;
 
@@ -71,23 +72,25 @@ namespace Parser
 
 	public partial class CSSLexer
 	{
+		public List<Error> lexerErrors = new List<Error>();
 		public override void ReportError(RecognitionException e)
 		{
 			//Handle has to be implimented!
 			base.ReportError(e);
-			Console.WriteLine("Error in lexer at line " + e.Line + ":" + e.CharPositionInLine + e.Message);
+			lexerErrors.Add (new Error (ErrorType.Error, e.Message, e.Line, e.CharPositionInLine));
 		}
 
 	}
 
 	public partial class CSSParser
 	{
+		public List<Error> parserErrors = new List<Error>();
 		public override void ReportError(RecognitionException e)
 		{
 			//Handle has to be implimented!
 			base.ReportError(e);
-			int x = e.CharPositionInLine;
-			Console.WriteLine("Error in lexer at line " + e.Line + ":" + x);
+			parserErrors.Add (new Error (ErrorType.Error, e.Message, e.Line, e.CharPositionInLine));
+
 		}
 
 	}
