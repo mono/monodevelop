@@ -101,30 +101,23 @@ namespace MonoDevelop.VersionControl.Views
 		
 		public static bool Show (VersionControlItemList items, bool test)
 		{
-			if (items.Count != 1)
-				return false;
+			FilePath path = items.FindMostSpecificParent ();
 
-			VersionControlItem item = items [0];
-			if (item.VersionInfo.IsVersioned) {
+			if (items.Any (v => v.VersionInfo.IsVersioned)) {
 				if (test)
 					return true;
 
-				if (!BringStatusViewToFront (item.Path)) {
-					StatusView d = new StatusView (item.Path, item.Repository);
+				if (!BringStatusViewToFront (path)) {
+					StatusView d = new StatusView (path, items);
 					IdeApp.Workbench.OpenDocument (d, true);
 				}
 				return true;
 			}
 			return false;
 		}
-		
-		public StatusView (string filepath, Repository vc) 
-			: base (Path.GetFileName (filepath) + " Status") 
+
+		void Init ()
 		{
-			this.vc = vc;
-			this.filepath = filepath;
-			changeSet = vc.CreateChangeSet (filepath);
-			
 			main = new VBox(false, 6);
 			widget = main;
 			
@@ -267,6 +260,31 @@ namespace MonoDevelop.VersionControl.Views
 			filelist.DoPopupMenu = DoPopupMenu;
 			
 			StartUpdate();
+		}
+
+		public StatusView (string filepath, VersionControlItemList list)
+			: this (filepath, list [0].Repository)
+		{
+			var group = list.GroupBy (v => v.IsDirectory);
+			foreach (var item in group) {
+				// Is directory.
+				if (item.Key) {
+					foreach (var directory in item)
+						changeSet.AddFiles (vc.GetDirectoryVersionInfo (directory.Path, remoteStatus, true));
+				} else
+					changeSet.AddFiles (item.Select (v => v.VersionInfo).ToArray ());
+			}
+			changeSet.AddFiles (list.Where (v => !v.IsDirectory).Select (v => v.VersionInfo).ToArray ());
+			firstLoad = false;
+		}
+
+		public StatusView (string filepath, Repository vc)
+			: base (Path.GetFileName (filepath) + " Status")
+		{
+			this.vc = vc;
+			this.filepath = Directory.Exists (filepath) ? filepath : Path.GetDirectoryName (filepath);
+			changeSet = vc.CreateChangeSet (filepath);
+			Init ();
 		}
 
 		protected override void OnWorkbenchWindowChanged (EventArgs e)
@@ -636,7 +654,7 @@ namespace MonoDevelop.VersionControl.Views
 		string GetCommitMessage (string file)
 		{
 			string txt = VersionControlService.GetCommitComment (file);
-			return txt != null ? txt : String.Empty;
+			return txt ?? String.Empty;
 		}
 		
 		void SetCommitMessage (string file, string text)
@@ -785,7 +803,7 @@ namespace MonoDevelop.VersionControl.Views
 		internal static object ParseCommandId (ExtensionNode codon)
 		{
 			string id = codon.Id;
-			if (id.StartsWith ("@"))
+			if (id.StartsWith ("@", StringComparison.Ordinal))
 				return id.Substring (1);
 			else
 				return id;
