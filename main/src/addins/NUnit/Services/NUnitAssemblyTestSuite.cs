@@ -470,11 +470,13 @@ namespace MonoDevelop.NUnit
 				if (!string.IsNullOrEmpty (cmd.Arguments))
 					cmd.Arguments += " ";
 				cmd.Arguments += "\"-xml=" + outFile + "\" " + AssemblyPath;
+
+				bool automaticUpdates = cmd.Command.Contains ("GuiUnit") || (cmd.Command.Contains ("mdtool.exe") && cmd.Arguments.Contains ("run-md-tests"));
 				if (!string.IsNullOrEmpty (testName))
 					cmd.Arguments += " -run=" + suiteName + "." + testName;
 				else if (!string.IsNullOrEmpty (suiteName))
 					cmd.Arguments += " -run=" + suiteName;
-				if (cmd.Command.Contains ("GuiUnit") || (cmd.Command.Contains ("mdtool.exe") && cmd.Arguments.Contains ("run-md-tests"))) {
+				if (automaticUpdates) {
 					var tcpListener = new MonoDevelop.NUnit.External.TcpTestListener (localMonitor);
 					cmd.Arguments += " -port=" + tcpListener.Port;
 				}
@@ -487,9 +489,13 @@ namespace MonoDevelop.NUnit
 				
 				if (new FileInfo (outFile).Length == 0)
 					throw new Exception ("Command failed");
-
+				
 				XDocument doc = XDocument.Load (outFile);
+
 				if (doc.Root != null) {
+					if (automaticUpdates)
+						testContext.ResultsPad.InitializeTestRun (test);
+
 					var root = doc.Root.Elements ("test-suite").FirstOrDefault ();
 					if (root != null) {
 						cons.SetDone ();

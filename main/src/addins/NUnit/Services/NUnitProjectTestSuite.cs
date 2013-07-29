@@ -28,6 +28,7 @@
 
 
 using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 
 using MonoDevelop.Projects;
@@ -127,6 +128,12 @@ namespace MonoDevelop.NUnit
 			var r = project.ExtendedProperties ["TestRunnerCommand"];
 			command = r != null ? project.BaseDirectory.Combine (r.ToString ()).ToString () : null;
 			args = (string)project.ExtendedProperties ["TestRunnerArgs"];
+			if (command == null && args == null) {
+				var guiUnit = project.References.FirstOrDefault (pref => pref.ReferenceType == ReferenceType.Assembly && Path.GetFileName (pref.Reference) == "GuiUnit.exe");
+				if (guiUnit != null) {
+					command = guiUnit.Reference;
+				}
+			}
 		}
 
 		protected override string AssemblyPath {
