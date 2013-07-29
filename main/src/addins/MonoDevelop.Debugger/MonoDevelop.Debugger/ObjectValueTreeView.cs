@@ -1012,12 +1012,24 @@ namespace MonoDevelop.Debugger
 			editing = true;
 			editEntry = (Gtk.Entry) args.Editable;
 			editEntry.KeyPressEvent += OnEditKeyPress;
-			editEntry.KeyReleaseEvent += HandleChanged;
+			editEntry.KeyReleaseEvent += OnEditKeyRelease;
 			if (StartEditing != null)
 				StartEditing (this, EventArgs.Empty);
 		}
 
-		void HandleChanged (object sender, EventArgs e)
+		void OnEndEditing ()
+		{
+			editing = false;
+			editEntry.KeyPressEvent -= OnEditKeyPress;
+			editEntry.KeyReleaseEvent -= OnEditKeyRelease;
+
+			CompletionWindowManager.HideWindow ();
+			currentCompletionData = null;
+			if (EndEditing != null)
+				EndEditing (this, EventArgs.Empty);
+		}
+
+		void OnEditKeyRelease (object sender, EventArgs e)
 		{
 			if (!wasHandled) {
 				string text = ctx == null ? editEntry.Text : editEntry.Text.Substring (Math.Max (0, Math.Min (ctx.TriggerOffset, editEntry.Text.Length)));
@@ -1027,17 +1039,6 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		void OnEndEditing ()
-		{
-			editing = false;
-			editEntry.KeyPressEvent -= OnEditKeyPress;
-			editEntry.KeyReleaseEvent -= HandleChanged;
-
-			CompletionWindowManager.HideWindow ();
-			currentCompletionData = null;
-			if (EndEditing != null)
-				EndEditing (this, EventArgs.Empty);
-		}
 		bool wasHandled = false;
 		CodeCompletionContext ctx;
 		Gdk.Key key;
@@ -1053,9 +1054,10 @@ namespace MonoDevelop.Debugger
 			keyChar =  (char)args.Event.Key;
 			modifierState = args.Event.State;
 			keyValue = args.Event.KeyValue;
+
 			if (currentCompletionData != null) {
 				wasHandled  = CompletionWindowManager.PreProcessKeyEvent (key, keyChar, modifierState);
-				args.RetVal = wasHandled ;
+				args.RetVal = wasHandled;
 			}
 		}
 
