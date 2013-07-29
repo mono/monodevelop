@@ -1061,6 +1061,11 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
+		static bool IsCompletionChar (char c)
+		{
+			return (char.IsLetterOrDigit (c) || char.IsPunctuation (c) || char.IsSymbol (c) || char.IsWhiteSpace (c));
+		}
+
 		void PopupCompletion (Entry entry)
 		{
 			Gtk.Application.Invoke (delegate {
@@ -1072,9 +1077,9 @@ namespace MonoDevelop.Debugger
 						DebugCompletionDataList dataList = new DebugCompletionDataList (currentCompletionData);
 						ctx = ((ICompletionWidget)this).CreateCodeCompletionContext (entry.CursorPosition - currentCompletionData.ExpressionLength);
 						CompletionWindowManager.ShowWindow (null, c, dataList, this, ctx);
-					}
-					else
+					} else {
 						currentCompletionData = null;
+					}
 				}
 			});
 		}
@@ -1505,12 +1510,6 @@ namespace MonoDevelop.Debugger
 			if (PinStatusChanged != null)
 				PinStatusChanged (this, EventArgs.Empty);
 		}
-		
-		bool IsCompletionChar (char c)
-		{
-			return (char.IsLetterOrDigit (c) || char.IsPunctuation (c) || char.IsSymbol (c) || char.IsWhiteSpace (c));
-		}
-		
 
 		#region ICompletionWidget implementation 
 		
@@ -1572,7 +1571,7 @@ namespace MonoDevelop.Debugger
 			c.TriggerLineOffset = c.TriggerOffset;
 			c.TriggerTextHeight = editEntry.SizeRequest ().Height;
 			c.TriggerWordLength = currentCompletionData.ExpressionLength;
-			
+
 			int x, y;
 			int tx, ty;
 			editEntry.GdkWindow.GetOrigin (out x, out y);
@@ -1581,7 +1580,7 @@ namespace MonoDevelop.Debugger
 			Pango.Rectangle rect = editEntry.Layout.IndexToPos (cp);
 			tx += Pango.Units.ToPixels (rect.X) + x;
 			y += editEntry.Allocation.Height;
-				
+
 			c.TriggerXCoord = tx;
 			c.TriggerYCoord = y;
 			return c;
