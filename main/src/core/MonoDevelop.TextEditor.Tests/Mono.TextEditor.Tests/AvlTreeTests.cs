@@ -103,48 +103,6 @@ namespace Mono.TextEditor.Tests
 		} 
 
 		[Test]
-		public void TestRemoveCase2 ()
-		{
-			var tree = new AvlTree<TestNode> ();
-			var t1 = new TestNode (1);
-			var t2 = new TestNode (2);
-			var t3 = new TestNode (3);
-
-			tree.Add (t2);
-			tree.Add (t1);
-			tree.Add (t3);
-			Assert.AreEqual (3, tree.Count);
-
-			Assert.IsTrue (tree.Remove (t1));
-
-			Assert.AreEqual (2, tree.Count);
-			Assert.IsFalse (tree.Contains (t1));
-			Assert.IsTrue (tree.Contains (t2));
-			Assert.IsTrue (tree.Contains (t3));
-		}
-
-		[Test]
-		public void TestRemoveCase3 ()
-		{
-			var tree = new AvlTree<TestNode> ();
-			var t1 = new TestNode (1);
-			var t2 = new TestNode (2);
-			var t3 = new TestNode (3);
-
-			tree.Add (t2);
-			tree.Add (t1);
-			tree.Add (t3);
-			Assert.AreEqual (3, tree.Count);
-
-			Assert.IsTrue (tree.Remove (t3));
-
-			Assert.AreEqual (2, tree.Count);
-			Assert.IsTrue (tree.Contains (t1));
-			Assert.IsTrue (tree.Contains (t2));
-			Assert.IsFalse (tree.Contains (t3));
-		} 
-
-		[Test]
 		public void TestAdd ()
 		{
 			var tree = new AvlTree<TestNode> ();
@@ -159,6 +117,42 @@ namespace Mono.TextEditor.Tests
 			Assert.IsTrue (tree.Contains (t1));
 			Assert.IsTrue (tree.Contains (t2));
 			Assert.IsTrue (tree.Contains (t3));
+		}
+
+		[Test]
+		public void TestReverseOrderRemoval ()
+		{
+			var tree = new AvlTree<TestNode> ();
+			TestNode[] nodes = new TestNode[10];
+			for (int i = 0; i < 10; i++) {
+				tree.Add (nodes [i] = new TestNode (i));
+			}
+			Assert.AreEqual (10, tree.Count);
+
+			for (int i = 0; i < 10; i++) {
+				Assert.IsTrue (tree.Contains (nodes[9 - i]), "case : " + (9 - i));
+				tree.Remove (nodes[9 - i]);
+				Assert.IsFalse (tree.Contains (nodes[9 - i]), "case : " + (9 - i));
+			}
+			Assert.AreEqual (0, tree.Count);
+		} 
+
+		[Test]
+		public void TestInOrderRemoval ()
+		{
+			var tree = new AvlTree<TestNode> ();
+			TestNode[] nodes = new TestNode[10];
+			for (int i = 0; i < 10; i++) {
+				tree.Add (nodes [i] = new TestNode (i));
+			}
+			Assert.AreEqual (10, tree.Count);
+
+			for (int i = 0; i < 10; i++) {
+				Assert.IsTrue (tree.Contains (nodes[i]), "case : " + i);
+				tree.Remove (nodes[i]);
+				Assert.IsFalse (tree.Contains (nodes[i]), "case : " + i);
+			}
+			Assert.AreEqual (0, tree.Count);
 		} 
 	}
 }
