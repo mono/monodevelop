@@ -955,14 +955,14 @@ namespace MonoDevelop.Debugger
 			if (!store.GetIterFromString (out it, args.Path))
 				return;
 			
-			Gtk.Entry e = (Gtk.Entry) args.Editable;
+			var entry = (Gtk.Entry) args.Editable;
 			
 			ObjectValue val = store.GetValue (it, ObjectCol) as ObjectValue;
-			string strVal = val.Value;
+			string strVal = val != null ? val.Value : null;
 			if (!string.IsNullOrEmpty (strVal))
-				e.Text = strVal;
+				entry.Text = strVal;
 			
-			e.GrabFocus ();
+			entry.GrabFocus ();
 			OnStartEditing (args);
 		}
 		
