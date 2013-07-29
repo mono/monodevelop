@@ -118,7 +118,12 @@ namespace MonoDevelop.VersionControl.Views
 			: base(Path.GetFileName(filepath) + " Status") 
 		{
 			this.vc = vc;
+			//File path can be:
+			//1. Path to .sln file when is invoked from Menu -> Version Control -> Review Solution Changes
+			//2. Path to directory when is invoked from Solution Pad.
 			this.filepath = filepath;
+			if (!this.filepath.IsDirectory)
+				this.filepath = this.filepath.ParentDirectory;
 			changeSet = vc.CreateChangeSet (filepath);
 			
 			main = new VBox(false, 6);
@@ -412,7 +417,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			ThreadPool.QueueUserWorkItem (delegate {
 				List<VersionInfo> newList = new List<VersionInfo> ();
-				newList.AddRange (vc.GetDirectoryVersionInfo(filepath.ParentDirectory, remoteStatus, true));
+				newList.AddRange (vc.GetDirectoryVersionInfo(filepath, remoteStatus, true));
 				DispatchService.GuiDispatch (delegate {
 					if (!disposed)
 						LoadStatus (newList);
@@ -531,7 +536,7 @@ namespace MonoDevelop.VersionControl.Views
 
 			string scolor = n.HasLocalChanges && n.HasRemoteChanges ? "red" : null;
 			
-			string localpath = n.LocalPath.ToRelative (filepath.ParentDirectory);
+			string localpath = n.LocalPath.ToRelative (filepath);
 			if (localpath.Length > 0 && localpath[0] == Path.DirectorySeparatorChar) localpath = localpath.Substring(1);
 			if (localpath == "") { localpath = "."; } // not sure if this happens
 			
@@ -869,7 +874,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		void OnFileStatusChanged (object s, FileUpdateEventArgs args)
 		{
-			if (args.Any (f => f.FilePath == filepath || (f.FilePath.IsChildPathOf (filepath.ParentDirectory) && f.IsDirectory))) {
+			if (args.Any (f => f.FilePath == filepath || (f.FilePath.IsChildPathOf (filepath) && f.IsDirectory))) {
 				StartUpdate ();
 				return;
 			}
@@ -882,7 +887,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		bool OnFileStatusChanged (FileUpdateEventInfo args)
 		{
-			if (!args.FilePath.IsChildPathOf (filepath.ParentDirectory) && args.FilePath != filepath)
+			if (!args.FilePath.IsChildPathOf (filepath) && args.FilePath != filepath)
 				return true;
 			
 			if (args.IsDirectory) {
