@@ -20,7 +20,7 @@ namespace MonoDevelop.VersionControl.Views
 {
 	internal class StatusView : BaseView 
 	{
-		string filepath;
+		FilePath filepath;
 		Repository vc;
 		bool disposed;
 		
@@ -122,7 +122,12 @@ namespace MonoDevelop.VersionControl.Views
 			: base (Path.GetFileName (filepath) + " Status") 
 		{
 			this.vc = vc;
+			//File path can be:
+			//1. Path to .sln file when is invoked from Menu -> Version Control -> Review Solution Changes
+			//2. Path to directory when is invoked from Solution Pad.
 			this.filepath = filepath;
+			if (!this.filepath.IsDirectory)
+				this.filepath = this.filepath.ParentDirectory;
 			changeSet = vc.CreateChangeSet (filepath);
 			
 			main = new VBox(false, 6);
@@ -941,10 +946,18 @@ namespace MonoDevelop.VersionControl.Views
 					// Just remove the file from the change set
 					changeSet.RemoveFile (args.FilePath);
 					statuses.RemoveAt (oldStatusIndex);
+					localDiff.RemoveAt (oldStatusIndex);
+					remoteDiff.RemoveAt (oldStatusIndex);
 					filestore.Remove (ref oldStatusIter);
 					return true;
 				}
-				
+
+				//Update Diff
+				localDiff.RemoveAt (oldStatusIndex);
+				remoteDiff.RemoveAt (oldStatusIndex);
+				localDiff.Insert(oldStatusIndex, new DiffData (vc, filepath, newInfo, false));
+				remoteDiff.Insert(oldStatusIndex, new DiffData (vc, filepath, newInfo, true));
+
 				statuses [oldStatusIndex] = newInfo;
 				
 				// Update the tree
@@ -955,6 +968,8 @@ namespace MonoDevelop.VersionControl.Views
 				if (FileVisible (newInfo)) {
 					statuses.Add (newInfo);
 					changeSet.AddFile (newInfo);
+					localDiff.Add (new DiffData (vc, filepath, newInfo, false));
+					remoteDiff.Add (new DiffData (vc, filepath, newInfo, true));
 					AppendFileInfo (newInfo);
 				}
 			}
