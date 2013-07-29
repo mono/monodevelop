@@ -84,16 +84,24 @@ namespace MonoDevelop.CSharp.SplitProject
 			var dataSource = new TreeStore (selectedField, nodeField, nameField);
 
 			nodePositions = new Dictionary<ProjectGraph.Node, TreeNavigator> ();
-			var directories = new Dictionary<string, TreeNavigator> ();
+			var navigators = new Dictionary<string, TreeNavigator> ();
 
 			foreach (var node in graph.Nodes) {
 				var virtualPath = node.File.ProjectVirtualPath;
 
-				var parentNavigator = BuildDirectories (dataSource, directories, virtualPath.ParentDirectory);
+				var parentNavigator = BuildDirectories (dataSource, navigators, virtualPath.ParentDirectory);
 
-				var nodeNavigator = parentNavigator == null ? dataSource.AddNode () : parentNavigator.Clone ().AddChild ();
-				nodeNavigator.SetValue (nodeField, node).SetValue (nameField, node.ToString ());
-				nodePositions.Add (node, nodeNavigator);
+				TreeNavigator nodeNavigator;
+				if (navigators.TryGetValue (virtualPath, out nodeNavigator)) {
+					nodeNavigator.SetValue (nodeField, node);
+				}
+				else {
+					nodeNavigator = parentNavigator == null ? dataSource.AddNode () : parentNavigator.Clone ().AddChild ();
+					nodeNavigator.SetValue (nodeField, node).SetValue (nameField, node.ToString ());
+					nodePositions.Add (node, nodeNavigator);
+				}
+				
+				navigators.Add (virtualPath, nodeNavigator);
 			}
 
 			TreeView tree = new TreeView ();
