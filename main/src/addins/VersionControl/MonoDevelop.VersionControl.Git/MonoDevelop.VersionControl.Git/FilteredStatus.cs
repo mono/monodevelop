@@ -46,7 +46,6 @@ namespace MonoDevelop.VersionControl.Git
 		public FilteredStatus (NGit.Repository repository)
 			: base (repository)
 		{
-			
 		}
 		
 		public FilteredStatus (NGit.Repository repository, IEnumerable<string> files)
@@ -64,21 +63,20 @@ namespace MonoDevelop.VersionControl.Git
 		public override NGit.Api.Status Call ()
 		{
 			if (iter == null)
-				iter = new FileTreeIterator(repo);
+				iter = new FileTreeIterator (repo);
 			
-			IndexDiff diff = new IndexDiff(repo, Constants.HEAD, iter);
+			diff = new IndexDiff (repo, Constants.HEAD, iter);
 			if (Files != null) {
 				var filters = Files.Where (f => f != ".").ToArray ();
 				if (filters.Length > 0)
 					diff.SetFilter (PathFilterGroup.CreateFromStrings (filters));
 			}
-			
+
 			diff.Diff ();
-			this.diff = diff;
 			return new NGit.Api.Status (diff);
 		}
 
-		public virtual ICollection<string> GetIgnoredNotInIndex()
+		public virtual ICollection<string> GetIgnoredNotInIndex ()
 		{
 			return diff.GetIgnoredNotInIndex ();
 		}
