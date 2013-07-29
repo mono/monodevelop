@@ -165,7 +165,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 		
 		public static Task<bool> InsertMember (
-			string operation, ITypeDefinition parentType, IUnresolvedTypeDefinition part,
+			ITypeDefinition parentType, IUnresolvedTypeDefinition part,
 			IUnresolvedMember newMember, bool implementExplicit = false)
 		{
 			var tcs = new TaskCompletionSource<bool>();
