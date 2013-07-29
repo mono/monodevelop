@@ -577,6 +577,12 @@ namespace MonoDevelop.Components.MainToolbar
 							selected = true;
 							break;
 						}
+
+						if (target.Equals (IdeApp.Workspace.ActiveExecutionTarget)) {
+							runtimeCombo.Active = i;
+							UpdateBuildConfiguration ();
+							selected = true;
+						}
 						i++;
 					} while (runtimeStore.IterNext (ref iter));
 
