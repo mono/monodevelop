@@ -95,7 +95,7 @@ namespace MonoDevelop.CSharp.SplitProject
 							foreach (var node in nodesToMove) {
 								Console.WriteLine ("move = {0}", node.File.FilePath);
 
-								var newPath = newProject.BaseDirectory.Combine (node.File.ProjectVirtualPath.ToRelative(currentProject.BaseDirectory));
+								var newPath = newProject.BaseDirectory.Combine (node.File.ProjectVirtualPath.ToRelative (currentProject.BaseDirectory));
 
 								IdeApp.ProjectOperations.TransferFiles (transferFilesMonitor, currentProject, node.File.FilePath,
 								                                       newProject, newPath, true, true);
@@ -162,6 +162,9 @@ namespace MonoDevelop.CSharp.SplitProject
 					progress.BeginStepTask (GettextCatalog.GetString ("Analyzing {0}", node), 4, 1);
 
 					var file = node.File;
+
+					if (file.Subtype != Subtype.Code)
+						continue;
 
 					if (file.BuildAction != "Compile")
 						continue;
