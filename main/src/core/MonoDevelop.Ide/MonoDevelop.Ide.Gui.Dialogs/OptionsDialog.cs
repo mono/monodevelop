@@ -452,7 +452,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 			if (!IsRealized) {
 				// Defer this until the dialog is realized due to the sizing logic in CreatePageWidget.
-				EventHandler deferredShowPage;
+				EventHandler deferredShowPage = null;
 				deferredShowPage = delegate {
 					ShowPage (section);
 					Realized -= deferredShowPage;
